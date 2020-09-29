@@ -239,8 +239,6 @@ void TextFieldInputType::ForwardEvent(Event& event) {
        event.HasInterface(event_interface_names::kWheelEvent) ||
        event.type() == event_type_names::kBlur ||
        event.type() == event_type_names::kFocus)) {
-    auto* layout_text_control =
-        To<LayoutTextControlSingleLine>(GetElement().GetLayoutObject());
     if (event.type() == event_type_names::kBlur) {
       if (LayoutBox* inner_editor_layout_object =
               GetElement().InnerEditorElement()->GetLayoutBox()) {
@@ -253,10 +251,6 @@ void TextFieldInputType::ForwardEvent(Event& event) {
           }
         }
       }
-
-      layout_text_control->CapsLockStateMayHaveChanged();
-    } else if (event.type() == event_type_names::kFocus) {
-      layout_text_control->CapsLockStateMayHaveChanged();
     }
 
     GetElement().ForwardEvent(event);

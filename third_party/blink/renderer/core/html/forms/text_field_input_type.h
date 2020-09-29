@@ -58,6 +58,7 @@ class TextFieldInputType : public InputType,
   void DisabledAttributeChanged() override;
   void ReadonlyAttributeChanged() override;
   bool SupportsReadOnly() const override;
+  void ForwardEvent(Event&) override;
   void HandleBlurEvent() override;
   void HandleBeforeTextInsertedEvent(BeforeTextInsertedEvent&) override;
   String SanitizeValue(const String&) const override;
@@ -84,7 +85,6 @@ class TextFieldInputType : public InputType,
   bool MayTriggerVirtualKeyboard() const final;
   bool IsTextField() const final;
   bool ValueMissing(const String&) const override;
-  void ForwardEvent(Event&) final;
   bool ShouldSubmitImplicitly(const Event&) final;
   bool ShouldRespectListAttribute() override;
   void ListAttributeTargetChanged() override;

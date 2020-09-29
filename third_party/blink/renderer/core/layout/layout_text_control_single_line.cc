@@ -26,15 +26,10 @@
 
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
-#include "third_party/blink/renderer/core/editing/frame_selection.h"
-#include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
-#include "third_party/blink/renderer/core/input/keyboard_event_manager.h"
-#include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/layout_analyzer.h"
-#include "third_party/blink/renderer/core/layout/layout_theme.h"
-#include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/text_control_single_line_painter.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
 
@@ -42,7 +37,7 @@ namespace blink {
 
 LayoutTextControlSingleLine::LayoutTextControlSingleLine(
     HTMLInputElement* element)
-    : LayoutTextControl(element), should_draw_caps_lock_indicator_(false) {}
+    : LayoutTextControl(element) {}
 
 LayoutTextControlSingleLine::~LayoutTextControlSingleLine() = default;
 
@@ -177,31 +172,6 @@ bool LayoutTextControlSingleLine::NodeAtPoint(
     HitInnerEditorElement(result, hit_test_location, accumulated_offset);
   }
   return true;
-}
-
-void LayoutTextControlSingleLine::CapsLockStateMayHaveChanged() {
-  NOT_DESTROYED();
-  if (!GetNode())
-    return;
-
-  // Only draw the caps lock indicator if these things are true:
-  // 1) The field is a password field
-  // 2) The frame is active
-  // 3) The element is focused
-  // 4) The caps lock is on
-  bool should_draw_caps_lock_indicator = false;
-
-  if (LocalFrame* frame = GetDocument().GetFrame())
-    should_draw_caps_lock_indicator =
-        InputElement()->type() == input_type_names::kPassword &&
-        frame->Selection().FrameIsFocusedAndActive() &&
-        GetDocument().FocusedElement() == GetNode() &&
-        KeyboardEventManager::CurrentCapsLockState();
-
-  if (should_draw_caps_lock_indicator != should_draw_caps_lock_indicator_) {
-    should_draw_caps_lock_indicator_ = should_draw_caps_lock_indicator;
-    SetShouldDoFullPaintInvalidation();
-  }
 }
 
 LayoutUnit LayoutTextControlSingleLine::PreferredContentLogicalWidth(

@@ -1966,6 +1966,14 @@ bool HTMLInputElement::SupportsInputModeAttribute() const {
   return input_type_->SupportsInputModeAttribute();
 }
 
+void HTMLInputElement::CapsLockStateMayHaveChanged() {
+  input_type_view_->CapsLockStateMayHaveChanged();
+}
+
+bool HTMLInputElement::ShouldDrawCapsLockIndicator() const {
+  return input_type_view_->ShouldDrawCapsLockIndicator();
+}
+
 void HTMLInputElement::SetShouldRevealPassword(bool value) {
   if (!!should_reveal_password_ == value)
     return;

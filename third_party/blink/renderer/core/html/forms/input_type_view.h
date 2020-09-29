@@ -132,6 +132,8 @@ class CORE_EXPORT InputTypeView : public GarbageCollectedMixin {
   virtual void ValueAttributeChanged();
   virtual void DidSetValue(const String&, bool value_changed);
   virtual void ListAttributeTargetChanged();
+  virtual void CapsLockStateMayHaveChanged();
+  virtual bool ShouldDrawCapsLockIndicator() const;
   virtual void UpdateClearButtonVisibility();
   virtual void UpdatePlaceholderText();
   virtual AXObject* PopupRootAXObject();

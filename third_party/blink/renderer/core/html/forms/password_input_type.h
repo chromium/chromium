@@ -54,16 +54,20 @@ class PasswordInputType final : public BaseTextInputType {
   void CreateShadowSubtree() override;
 
   void UpdateView() override;
+  void CapsLockStateMayHaveChanged() override;
+  bool ShouldDrawCapsLockIndicator() const override;
   void UpdatePasswordRevealButton();
   void DidSetValueByUserEdit() override;
   void DidSetValue(const String&, bool value_changed) override;
 
+  void ForwardEvent(Event& event) override;
   void HandleKeydownEvent(KeyboardEvent&) override;
   void HandleBeforeTextInsertedEvent(BeforeTextInsertedEvent&) override;
 
   void HandleBlurEvent() override;
   bool SupportsInputModeAttribute() const override;
 
+  bool should_draw_caps_lock_indicator_ = false;
   bool should_show_reveal_button_ = false;
 };
 

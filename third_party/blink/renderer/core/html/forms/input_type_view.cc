@@ -180,6 +180,12 @@ void InputTypeView::SubtreeHasChanged() {
 
 void InputTypeView::ListAttributeTargetChanged() {}
 
+void InputTypeView::CapsLockStateMayHaveChanged() {}
+
+bool InputTypeView::ShouldDrawCapsLockIndicator() const {
+  return false;
+}
+
 void InputTypeView::UpdateClearButtonVisibility() {}
 
 void InputTypeView::UpdatePlaceholderText() {}

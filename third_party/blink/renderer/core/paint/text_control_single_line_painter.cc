@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/paint/text_control_single_line_painter.h"
 
+#include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/layout/layout_text_control_single_line.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
 #include "third_party/blink/renderer/core/paint/block_painter.h"
@@ -18,7 +19,8 @@ void TextControlSingleLinePainter::Paint(const PaintInfo& paint_info) {
   BlockPainter(text_control_).Paint(paint_info);
 
   if (!ShouldPaintSelfBlockBackground(paint_info.phase) ||
-      !text_control_.ShouldDrawCapsLockIndicator())
+      !To<HTMLInputElement>(text_control_.GetNode())
+           ->ShouldDrawCapsLockIndicator())
     return;
 
   if (DrawingRecorder::UseCachedDrawingIfPossible(

@@ -42,12 +42,6 @@ class LayoutTextControlSingleLine : public LayoutTextControl {
   LayoutTextControlSingleLine(HTMLInputElement*);
   ~LayoutTextControlSingleLine() override;
 
-  void CapsLockStateMayHaveChanged();
-  bool ShouldDrawCapsLockIndicator() const {
-    NOT_DESTROYED();
-    return should_draw_caps_lock_indicator_;
-  }
-
  protected:
   Element* ContainerElement() const;
   Element* EditingViewPortElement() const;
@@ -90,8 +84,6 @@ class LayoutTextControlSingleLine : public LayoutTextControl {
   }
 
   HTMLElement* InnerSpinButtonElement() const;
-
-  bool should_draw_caps_lock_indicator_;
 };
 
 template <>
