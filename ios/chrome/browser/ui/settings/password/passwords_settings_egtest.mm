@@ -26,15 +26,12 @@
 #include "ios/web/public/test/element_selector.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if defined(CHROME_EARL_GREY_2)
 #include "ios/third_party/earl_grey2/src/CommonLib/Matcher/GREYLayoutConstraint.h"  // nogncheck
-#endif  // defined(CHROME_EARL_GREY_2)
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
-#if defined(CHROME_EARL_GREY_2)
 // TODO(crbug.com/1015113) The EG2 macro is breaking indexing for some reason
 // without the trailing semicolon.  For now, disable the extra semi warning
 // so Xcode indexing works for the egtest.
@@ -42,7 +39,6 @@
 #pragma clang diagnostic ignored "-Wc++98-compat-extra-semi"
 GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(PasswordSettingsAppInterface);
 #pragma clang diagnostic pop
-#endif  // defined(CHROME_EARL_GREY_2)
 
 // This test complements
 // password_details_collection_view_controller_unittest.mm. Very simple
@@ -224,7 +220,6 @@ id<GREYMatcher> NavigationBarEditButton() {
                     grey_userInteractionEnabled(), nil);
 }
 
-#if defined(CHROME_EARL_GREY_2)
 // Matches the pop-up (call-out) menu item with accessibility label equal to the
 // translated string identified by |label|.
 id<GREYMatcher> PopUpMenuItemWithLabel(int label) {
@@ -251,60 +246,7 @@ id<GREYMatcher> PopUpMenuItemWithLabel(int label) {
                       nullptr);
   }
 }
-#endif  // defined(CHROME_EARL_GREY_2)
 
-#if defined(CHROME_EARL_GREY_1)
-// This is similar to grey_ancestor, but only limited to the immediate parent.
-id<GREYMatcher> MatchParentWith(id<GREYMatcher> parentMatcher) {
-  GREYMatchesBlock matches = ^BOOL(id element) {
-    id parent = [element isKindOfClass:[UIView class]]
-                    ? [element superview]
-                    : [element accessibilityContainer];
-    return (parent && [parentMatcher matches:parent]);
-  };
-  GREYDescribeToBlock describe = ^void(id<GREYDescription> description) {
-    [description appendText:[NSString stringWithFormat:@"parentThatMatches(%@)",
-                                                       parentMatcher]];
-  };
-  return grey_allOf(
-      grey_anyOf(grey_kindOfClassName(@"UIView"),
-                 grey_respondsToSelector(@selector(accessibilityContainer)),
-                 nil),
-      [[GREYElementMatcherBlock alloc] initWithMatchesBlock:matches
-                                           descriptionBlock:describe],
-      nil);
-}
-
-// Matches the pop-up (call-out) menu item with accessibility label equal to the
-// translated string identified by |label|.
-id<GREYMatcher> PopUpMenuItemWithLabel(int label) {
-  if (@available(iOS 13, *)) {
-    // iOS13 reworked menu button subviews to no longer be accessibility
-    // elements.  Multiple menu button subviews no longer show up as potential
-    // matches, which means the matcher logic does not need to be as complex as
-    // the iOS 11/12 logic.  Various table view cells may share the same
-    // accesibility label, but those can be filtered out by ignoring
-    // UIAccessibilityTraitButton.
-    return grey_allOf(
-        grey_accessibilityLabel(l10n_util::GetNSString(label)),
-        grey_not(grey_accessibilityTrait(UIAccessibilityTraitButton)), nil);
-  } else {
-    // This is a hack relying on UIKit's internal structure. There are multiple
-    // items with the label the test is looking for, because the menu items
-    // likely have the same labels as the buttons for the same function. There
-    // is no easy way to identify elements which are part of the pop-up, because
-    // the associated classes are internal to UIKit. However, the pop-up items
-    // are composed of a button-type element (without accessibility traits of a
-    // button) owning a label, both with the same accessibility labels. This is
-    // differentiating the pop-up items from the other buttons.
-    return grey_allOf(
-        grey_accessibilityLabel(l10n_util::GetNSString(label)),
-        MatchParentWith(grey_accessibilityLabel(l10n_util::GetNSString(label))),
-        nullptr);
-  }
-}
-
-#endif  // defined(CHROME_EARL_GREY_1)
 
 // Saves an example form in the store.
 void SaveExamplePasswordForm() {

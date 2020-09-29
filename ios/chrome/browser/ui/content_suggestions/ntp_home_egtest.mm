@@ -93,17 +93,10 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 
 @implementation NTPHomeTestCase
 
-#if defined(CHROME_EARL_GREY_1)
-+ (void)setUp {
-  [super setUp];
-  [NTPHomeTestCase setUpHelper];
-}
-#elif defined(CHROME_EARL_GREY_2)
 + (void)setUpForTestCase {
   [super setUpForTestCase];
   [NTPHomeTestCase setUpHelper];
 }
-#endif  // CHROME_EARL_GREY_2
 
 + (void)setUpHelper {
   // Clear the pasteboard in case there is a URL copied, triggering an omnibox
@@ -133,11 +126,7 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 - (void)tearDown {
   [ContentSuggestionsAppInterface disableSuggestions];
   [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait
-#if defined(CHROME_EARL_GREY_1)
-                           errorOrNil:nil];
-#elif defined(CHROME_EARL_GREY_2)
                                 error:nil];
-#endif
 
   [ContentSuggestionsAppInterface resetSearchEngineTo:self.defaultSearchEngine];
 
@@ -251,11 +240,7 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
       assertWithMatcher:OmniboxWidth(fakeOmniboxWidth)];
 
   [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationLandscapeLeft
-#if defined(CHROME_EARL_GREY_1)
-                           errorOrNil:nil];
-#elif defined(CHROME_EARL_GREY_2)
                                 error:nil];
-#endif
 
   [ChromeEarlGreyUI waitForAppToIdle];
 
@@ -298,11 +283,7 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
   [ChromeEarlGreyUI openSettingsMenu];
 
   [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationLandscapeLeft
-#if defined(CHROME_EARL_GREY_1)
-                           errorOrNil:nil];
-#elif defined(CHROME_EARL_GREY_2)
                                 error:nil];
-#endif
 
   [ChromeEarlGreyUI waitForAppToIdle];
 
@@ -347,11 +328,7 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
       assertWithMatcher:OmniboxWidthBetween(collectionWidth + 1, 2)];
 
   [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationLandscapeLeft
-#if defined(CHROME_EARL_GREY_1)
-                           errorOrNil:nil];
-#elif defined(CHROME_EARL_GREY_2)
                                 error:nil];
-#endif
 
   [ChromeEarlGreyUI waitForAppToIdle];
   CGFloat collectionWidthAfterRotation =

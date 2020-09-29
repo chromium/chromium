@@ -248,19 +248,11 @@ void TestResponseProvider::GetLanguageResponse(
 @end
 
 @implementation TranslateInfobarTestCase {
-#if defined(CHROME_EARL_GREY_1)
-  base::test::ScopedFeatureList _featureList;
-#endif
 }
 
 - (void)setUp {
   [super setUp];
 
-#if defined(CHROME_EARL_GREY_1)
-  _featureList.InitWithFeatures(
-      /*enabled_features=*/{kIOSInfobarUIReboot},
-      /*disabled_features=*/{kInfobarUIRebootOnlyiOS13});
-#endif
 
   // Set up the fake URL for the translate script to hit the mock HTTP server.
   GURL translateScriptURL = web::test::HttpServer::MakeUrl(

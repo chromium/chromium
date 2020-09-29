@@ -16,12 +16,10 @@
 #error "This file requires ARC support."
 #endif
 
-#if defined(CHROME_EARL_GREY_2)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wc++98-compat-extra-semi"
 GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(HandoffManagerAppInterface);
 #pragma clang diagnostic pop
-#endif  // defined(CHROME_EARL_GREY_2)
 
 namespace {
 

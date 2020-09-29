@@ -14,13 +14,7 @@ namespace {
 // EG1 and EG2 have different API to obtain shared GREYConfiguration object.
 // This function abstracts the API access.
 GREYConfiguration* GetSharedGREYConfiguration() {
-#if defined(CHROME_EARL_GREY_1)
-  return [GREYConfiguration sharedInstance];
-#elif defined(CHROME_EARL_GREY_2)
   return [GREYConfiguration sharedConfiguration];
-#else
-#error Either CHROME_EARL_GREY_1 or CHROME_EARL_GREY_2 must be defined
-#endif
 }
 }  // namespace
 

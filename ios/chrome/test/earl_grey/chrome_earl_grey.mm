@@ -18,20 +18,6 @@
 #include "ios/web/public/test/element_selector.h"
 #include "net/base/mac/url_conversions.h"
 
-#if defined(CHROME_EARL_GREY_1)
-#import <WebKit/WebKit.h>
-
-#import "ios/chrome/test/app/browsing_data_test_util.h"          // nogncheck
-#import "ios/chrome/test/app/chrome_test_util.h"                 // nogncheck
-#include "ios/chrome/test/app/navigation_test_util.h"            // nogncheck
-#import "ios/chrome/test/app/sync_test_util.h"                   // nogncheck
-#import "ios/chrome/test/app/tab_test_util.h"                    // nogncheck
-#import "ios/web/public/deprecated/crw_js_injection_receiver.h"  // nogncheck
-#import "ios/web/public/test/earl_grey/js_test_util.h"           // nogncheck
-#import "ios/web/public/test/web_view_content_test_util.h"       // nogncheck
-#import "ios/web/public/test/web_view_interaction_test_util.h"   // nogncheck
-#import "ios/web/public/web_state.h"                             // nogncheck
-#endif
 
 using base::test::ios::kWaitForActionTimeout;
 using base::test::ios::kWaitForJSCompletionTimeout;
@@ -58,9 +44,7 @@ NSString* const kWaitForRestoreSessionToFinishError =
 #error "This file requires ARC support."
 #endif
 
-#if defined(CHROME_EARL_GREY_2)
 GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeEarlGreyAppInterface)
-#endif  // defined(CHROME_EARL_GREY_2)
 
 @interface ChromeEarlGreyImpl ()
 
@@ -98,62 +82,32 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeEarlGreyAppInterface)
 
 - (void)rotateDeviceToOrientation:(UIDeviceOrientation)deviceOrientation
                             error:(NSError**)error {
-#if defined(CHROME_EARL_GREY_1)
-  NSError* strongErrorReference = nil;
-  [EarlGrey rotateDeviceToOrientation:deviceOrientation
-                           errorOrNil:&strongErrorReference];
-  if (error)
-    *error = strongErrorReference;
-#elif defined(CHROME_EARL_GREY_2)
   [EarlGrey rotateDeviceToOrientation:deviceOrientation error:error];
-#else
-#error Neither CHROME_EARL_GREY_1 nor CHROME_EARL_GREY_2 are defined
-#endif
 }
 
 - (BOOL)isKeyboardShownWithError:(NSError**)error {
   return
-#if defined(CHROME_EARL_GREY_1)
-      [GREYKeyboard isKeyboardShown];
-#elif defined(CHROME_EARL_GREY_2)
       [EarlGrey isKeyboardShownWithError:error];
-#else
-#error Neither CHROME_EARL_GREY_1 nor CHROME_EARL_GREY_2 are defined
-#endif
 }
 
 - (BOOL)isIPadIdiom {
-#if defined(CHROME_EARL_GREY_1)
-  UIUserInterfaceIdiom idiom = [[UIDevice currentDevice] userInterfaceIdiom];
-#elif defined(CHROME_EARL_GREY_2)
   UIUserInterfaceIdiom idiom =
       [[GREY_REMOTE_CLASS_IN_APP(UIDevice) currentDevice] userInterfaceIdiom];
-#endif
 
   return idiom == UIUserInterfaceIdiomPad;
 }
 
 - (BOOL)isCompactWidth {
   UIUserInterfaceSizeClass horizontalSpace =
-#if defined(CHROME_EARL_GREY_1)
-      [[[[UIApplication sharedApplication] keyWindow] traitCollection]
-          horizontalSizeClass];
-#elif defined(CHROME_EARL_GREY_2)
       [[[[GREY_REMOTE_CLASS_IN_APP(UIApplication) sharedApplication] keyWindow]
           traitCollection] horizontalSizeClass];
-#endif
   return horizontalSpace == UIUserInterfaceSizeClassCompact;
 }
 
 - (BOOL)isCompactHeight {
   UIUserInterfaceSizeClass verticalSpace =
-#if defined(CHROME_EARL_GREY_1)
-      [[[[UIApplication sharedApplication] keyWindow] traitCollection]
-          verticalSizeClass];
-#elif defined(CHROME_EARL_GREY_2)
       [[[[GREY_REMOTE_CLASS_IN_APP(UIApplication) sharedApplication] keyWindow]
           traitCollection] verticalSizeClass];
-#endif
   return verticalSpace == UIUserInterfaceSizeClassCompact;
 }
 
@@ -163,12 +117,8 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeEarlGreyAppInterface)
 
 - (BOOL)isRegularXRegularSizeClass {
   UITraitCollection* traitCollection =
-#if defined(CHROME_EARL_GREY_1)
-      [[[UIApplication sharedApplication] keyWindow] traitCollection];
-#elif defined(CHROME_EARL_GREY_2)
       [[[GREY_REMOTE_CLASS_IN_APP(UIApplication) sharedApplication] keyWindow]
           traitCollection];
-#endif
   return traitCollection.verticalSizeClass == UIUserInterfaceSizeClassRegular &&
          traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassRegular;
 }
@@ -1112,45 +1062,3 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeEarlGreyAppInterface)
 }
 
 @end
-
-// The helpers below only compile under EarlGrey1.
-// TODO(crbug.com/922813): Update these helpers to compile under EG2 and move
-// them into the main class declaration as they are converted.
-#if defined(CHROME_EARL_GREY_1)
-
-namespace chrome_test_util {
-
-id ExecuteJavaScript(NSString* javascript,
-                     NSError* __autoreleasing* out_error) {
-  __block bool did_complete = false;
-  __block id result = nil;
-  __block NSError* temp_error = nil;
-  CRWJSInjectionReceiver* evaluator =
-      chrome_test_util::GetCurrentWebState()->GetJSInjectionReceiver();
-  [evaluator executeJavaScript:javascript
-             completionHandler:^(id value, NSError* error) {
-               did_complete = true;
-               result = [value copy];
-               temp_error = [error copy];
-             }];
-
-  bool success =
-      WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
-        return did_complete;
-      });
-  if (!success)
-    return nil;
-  if (out_error) {
-    NSError* __autoreleasing auto_released_error = temp_error;
-    *out_error = auto_released_error;
-  }
-  return result;
-}
-
-}  // namespace chrome_test_util
-
-@implementation ChromeEarlGreyImpl (EG1)
-
-@end
-
-#endif  // defined(CHROME_EARL_GREY_1)

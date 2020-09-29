@@ -34,11 +34,7 @@ const char kPDFURL[] = "http://ios/testing/data/http_server_files/testpage.pdf";
 // in landscape.
 - (void)tearDown {
   [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait
-#if defined(CHROME_EARL_GREY_1)
-                           errorOrNil:nil];
-#elif defined(CHROME_EARL_GREY_2)
                                 error:nil];
-#endif
   [super tearDown];
 }
 
@@ -131,11 +127,7 @@ const char kPDFURL[] = "http://ios/testing/data/http_server_files/testpage.pdf";
       assertWithMatcher:grey_sufficientlyVisible()];
 
   [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationLandscapeRight
-#if defined(CHROME_EARL_GREY_1)
-                           errorOrNil:nil];
-#elif defined(CHROME_EARL_GREY_2)
                                 error:nil];
-#endif
 
   // Expect that the tools menu has disappeared.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::ToolsMenuView()]
@@ -159,12 +151,6 @@ const char kPDFURL[] = "http://ios/testing/data/http_server_files/testpage.pdf";
 // Navigates to a pdf page and verifies that the "Find in Page..." tool
 // is not enabled
 - (void)testNoSearchForPDF {
-#if defined(CHROME_EARL_GREY_1)
-  // TODO(crbug.com/1036078): EG1 Test flaky on iOS 12.
-  if (!base::ios::IsRunningOnIOS13OrLater()) {
-    EARL_GREY_TEST_DISABLED(@"EG1 flaky on iOS 12.");
-  }
-#endif
   const GURL URL = web::test::HttpServer::MakeUrl(kPDFURL);
 
   // Navigate to a mock pdf and verify that the find button is disabled.

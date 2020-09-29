@@ -55,14 +55,12 @@ class ScopedQRScannerVoiceSearchOverride {
   DISALLOW_COPY_AND_ASSIGN(ScopedQRScannerVoiceSearchOverride);
 };
 
-#if defined(CHROME_EARL_GREY_2)
 // TODO(crbug.com/1015113) The EG2 macro is breaking indexing for some reason
 // without the trailing semicolon.  For now, disable the extra semi warning
 // so Xcode indexing works for the egtest.
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wc++98-compat-extra-semi"
 GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(QRScannerAppInterface);
-#endif  // defined(CHROME_EARL_GREY_2)
 
 namespace {
 
@@ -652,15 +650,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 }
 
 // Tests that an error dialog is dismissed if the camera becomes available.
-// TODO(crbug.com/1036094): Re-enable test on device.
-#if defined(CHROME_EARL_GREY_1) && !TARGET_IPHONE_SIMULATOR
-#define MAYBE_testDialogDismissedIfCameraBecomesAvailable \
-  DISABLED_testDialogDismissedIfCameraBecomesAvailable
-#else
-#define MAYBE_testDialogDismissedIfCameraBecomesAvailable \
-  testDialogDismissedIfCameraBecomesAvailable
-#endif
-- (void)MAYBE_testDialogDismissedIfCameraBecomesAvailable {
+- (void)testDialogDismissedIfCameraBecomesAvailable {
   id cameraControllerMock =
       [QRScannerAppInterface cameraControllerMockWithAuthorizationStatus:
                                  AVAuthorizationStatusAuthorized];

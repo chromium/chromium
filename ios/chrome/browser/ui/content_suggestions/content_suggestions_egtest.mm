@@ -32,12 +32,10 @@
 #error "This file requires ARC support."
 #endif
 
-#if defined(CHROME_EARL_GREY_2)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wc++98-compat-extra-semi"
 GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ContentSuggestionsAppInterface);
 #pragma clang diagnostic pop
-#endif  // defined(CHROME_EARL_GREY_2)
 
 namespace {
 
@@ -104,19 +102,10 @@ GREYElementInteraction* CellWithMatcher(id<GREYMatcher> matcher) {
   return config;
 }
 
-#if defined(CHROME_EARL_GREY_2)
 + (void)setUpForTestCase {
   [super setUpForTestCase];
   [self setUpHelper];
 }
-#elif defined(CHROME_EARL_GREY_1)
-+ (void)setUp {
-  [super setUp];
-  [self setUpHelper];
-}
-#else
-#error Not an EarlGrey Test
-#endif
 
 + (void)setUpHelper {
   [self closeAllTabs];

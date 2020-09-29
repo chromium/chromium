@@ -273,11 +273,6 @@ bool WaitForOpenInDownloadsButton() {
   if ([ChromeEarlGrey isIPadIdiom])
     EARL_GREY_TEST_SKIPPED(@"Test skipped on iPad.");
 
-// Earl Grey 1 can't test UI elements out of Chrome process.
-#if defined(CHROME_EARL_GREY_1)
-  EARL_GREY_TEST_SKIPPED(@"Test skipped on Earl Grey 1.");
-#endif
-
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
   [ChromeEarlGrey waitForWebStateContainingText:"Download"];
   [ChromeEarlGrey tapWebStateElementWithID:@"download"];

@@ -316,14 +316,12 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 // Tests that switching to closed tab opens the tab in foreground, except if it
 // is from NTP without history.
 - (void)testSwitchToClosedTab {
-#if defined(CHROME_EARL_GREY_2)
   if (@available(iOS 13, *)) {
     if ([ChromeEarlGrey isIPadIdiom]) {
       // TODO(crbug.com/992480):test fails on iPad.
       EARL_GREY_TEST_DISABLED(@"Test disabled on iPad.");
     }
   }
-#endif
 // TODO(crbug.com/1067817): Test won't pass on iPad devices.
 #if !TARGET_IPHONE_SIMULATOR
   if ([ChromeEarlGrey isIPadIdiom]) {

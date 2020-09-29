@@ -53,18 +53,11 @@ id<GREYAction> ScrollDown() {
 }
 
 bool IsAppCompactWidth() {
-#if defined(CHROME_EARL_GREY_1)
-  UIApplication* application = [UIApplication sharedApplication];
-  UIWindow* keyWindow = application.keyWindow;
-  UIUserInterfaceSizeClass sizeClass =
-      keyWindow.traitCollection.horizontalSizeClass;
-#elif defined(CHROME_EARL_GREY_2)
   UIApplication* remoteApplication =
       [GREY_REMOTE_CLASS_IN_APP(UIApplication) sharedApplication];
   UIWindow* remoteKeyWindow = remoteApplication.keyWindow;
   UIUserInterfaceSizeClass sizeClass =
       remoteKeyWindow.traitCollection.horizontalSizeClass;
-#endif
 
   return sizeClass == UIUserInterfaceSizeClassCompact;
 }

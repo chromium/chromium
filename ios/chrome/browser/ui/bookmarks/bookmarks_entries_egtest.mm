@@ -60,12 +60,6 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 #pragma mark - BookmarksEntriesTestCase Tests
 
 - (void)testUndoDeleteBookmarkFromSwipe {
-#if defined(CHROME_EARL_GREY_1)
-  // TODO(crbug.com/1035764): EG1 Test fails on iOS 12.
-  if (!base::ios::IsRunningOnIOS13OrLater()) {
-    EARL_GREY_TEST_DISABLED(@"EG1 Fails on iOS 12.");
-  }
-#endif
   // TODO(crbug.com/851227): On Compact Width, the bookmark cell is being
   // deleted by grey_swipeFastInDirection.
   // grey_swipeFastInDirectionWithStartPoint doesn't work either and it might
@@ -116,12 +110,6 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
   FLAKY_testSwipeToDeleteDisabledInEditMode
 #endif
 - (void)testSwipeToDeleteDisabledInEditMode {
-#if defined(CHROME_EARL_GREY_1)
-  // TODO(crbug.com/1035764): EG1 Test fails on iOS 12.
-  if (!base::ios::IsRunningOnIOS13OrLater()) {
-    EARL_GREY_TEST_DISABLED(@"EG1 Fails on iOS 12.");
-  }
-#endif
   // TODO(crbug.com/851227): On non Compact Width  the bookmark cell is being
   // deleted by grey_swipeFastInDirection.
   // grey_swipeFastInDirectionWithStartPoint doesn't work either and it might
@@ -183,12 +171,6 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 }
 
 - (void)testActionSheetsForSingleURLSelection {
-#if defined(CHROME_EARL_GREY_1)
-  // TODO(crbug.com/1035764): EG1 Test fails on iOS 12.
-  if (!base::ios::IsRunningOnIOS13OrLater()) {
-    EARL_GREY_TEST_DISABLED(@"EG1 Fails on iOS 12.");
-  }
-#endif
   [BookmarkEarlGrey setupStandardBookmarks];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
@@ -329,12 +311,6 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
 // Verify Move functionality on single URL selection.
 - (void)testMoveOnSingleURL {
-#if defined(CHROME_EARL_GREY_1)
-  // TODO(crbug.com/1035764): EG1 Test fails on iOS 12.
-  if (!base::ios::IsRunningOnIOS13OrLater()) {
-    EARL_GREY_TEST_DISABLED(@"EG1 Fails on iOS 12.");
-  }
-#endif
   [BookmarkEarlGrey setupStandardBookmarks];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
@@ -443,12 +419,6 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 }
 
 - (void)testContextMenuForMultipleURLSelection {
-#if defined(CHROME_EARL_GREY_1)
-  // TODO(crbug.com/1035764): EG1 Test fails on iOS 12.
-  if (!base::ios::IsRunningOnIOS13OrLater()) {
-    EARL_GREY_TEST_DISABLED(@"EG1 Fails on iOS 12.");
-  }
-#endif
   [BookmarkEarlGrey setupStandardBookmarks];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
@@ -579,12 +549,6 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
 // Verify the Open and Open in Incognito functionality on single url.
 - (void)testOpenSingleBookmarkInNormalAndIncognitoTab {
-#if defined(CHROME_EARL_GREY_1)
-  // TODO(crbug.com/1035764): EG1 Test fails on iOS 12.
-  if (!base::ios::IsRunningOnIOS13OrLater()) {
-    EARL_GREY_TEST_DISABLED(@"EG1 Fails on iOS 12.");
-  }
-#endif
   [BookmarkEarlGrey setupStandardBookmarks];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
@@ -741,12 +705,6 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 }
 
 - (void)testLongPressOnSingleURL {
-#if defined(CHROME_EARL_GREY_1)
-  // TODO(crbug.com/1035764): EG1 Test fails on iOS 12.
-  if (!base::ios::IsRunningOnIOS13OrLater()) {
-    EARL_GREY_TEST_DISABLED(@"EG1 Fails on iOS 12.");
-  }
-#endif
   [BookmarkEarlGrey setupStandardBookmarks];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
@@ -761,12 +719,6 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
 // Verify Move functionality on mixed folder / url selection.
 - (void)testMoveFunctionalityOnMixedSelection {
-#if defined(CHROME_EARL_GREY_1)
-  // TODO(crbug.com/1035764): EG1 Test fails on iOS 12.
-  if (!base::ios::IsRunningOnIOS13OrLater()) {
-    EARL_GREY_TEST_DISABLED(@"EG1 Fails on iOS 12.");
-  }
-#endif
   [BookmarkEarlGrey setupStandardBookmarks];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
@@ -859,12 +811,6 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
 // Verify Move functionality on multiple url selection.
 - (void)testMoveFunctionalityOnMultipleUrlSelection {
-#if defined(CHROME_EARL_GREY_1)
-  // TODO(crbug.com/1035764): EG1 Test fails on iOS 12.
-  if (!base::ios::IsRunningOnIOS13OrLater()) {
-    EARL_GREY_TEST_DISABLED(@"EG1 Fails on iOS 12.");
-  }
-#endif
   [BookmarkEarlGrey setupStandardBookmarks];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
@@ -930,12 +876,6 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 // Verify Move is cancelled when all selected folder/url are deleted in
 // background.
 - (void)testMoveCancelledWhenAllSelectionDeleted {
-#if defined(CHROME_EARL_GREY_1)
-  // TODO(crbug.com/1035764): EG1 Test fails on iOS 12.
-  if (!base::ios::IsRunningOnIOS13OrLater()) {
-    EARL_GREY_TEST_DISABLED(@"EG1 Fails on iOS 12.");
-  }
-#endif
   [BookmarkEarlGrey setupStandardBookmarks];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
@@ -981,12 +921,6 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
 // Try deleting a bookmark from the edit screen, then undoing that delete.
 - (void)testUndoDeleteBookmarkFromEditScreen {
-#if defined(CHROME_EARL_GREY_1)
-  // TODO(crbug.com/1035764): EG1 Test fails on iOS 12.
-  if (!base::ios::IsRunningOnIOS13OrLater()) {
-    EARL_GREY_TEST_DISABLED(@"EG1 Fails on iOS 12.");
-  }
-#endif
   [BookmarkEarlGrey setupStandardBookmarks];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
@@ -1051,12 +985,6 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 }
 
 - (void)testDeleteSingleURLNode {
-#if defined(CHROME_EARL_GREY_1)
-  // TODO(crbug.com/1035764): EG1 Test fails on iOS 12.
-  if (!base::ios::IsRunningOnIOS13OrLater()) {
-    EARL_GREY_TEST_DISABLED(@"EG1 Fails on iOS 12.");
-  }
-#endif
   [BookmarkEarlGrey setupStandardBookmarks];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
@@ -1095,12 +1023,6 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 }
 
 - (void)testDeleteMultipleNodes {
-#if defined(CHROME_EARL_GREY_1)
-  // TODO(crbug.com/1035764): EG1 Test fails on iOS 12.
-  if (!base::ios::IsRunningOnIOS13OrLater()) {
-    EARL_GREY_TEST_DISABLED(@"EG1 Fails on iOS 12.");
-  }
-#endif
   [BookmarkEarlGrey setupStandardBookmarks];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];

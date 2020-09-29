@@ -10,12 +10,3 @@
 #error "This file requires ARC support."
 #endif
 
-#if defined(CHROME_EARL_GREY_1)
-
-id<GREYMatcher> grey_kindOfClassName(NSString* name) {
-  Class klass = NSClassFromString(name);
-  DCHECK(klass);
-  return grey_kindOfClass(klass);
-}
-
-#endif

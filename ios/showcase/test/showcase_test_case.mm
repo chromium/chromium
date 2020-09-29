@@ -13,23 +13,14 @@
 #error "This file requires ARC support."
 #endif
 
-#if defined(CHROME_EARL_GREY_2)
 GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ShowcaseTestCaseAppInterface)
-#endif  // defined(CHROME_EARL_GREY_2)
 
 @implementation ShowcaseTestCase
 
-#if defined(CHROME_EARL_GREY_1)
-+ (void)setUp {
-  [super setUp];
-  [ShowcaseTestCase setUpHelper];
-}
-#elif defined(CHROME_EARL_GREY_2)
 + (void)setUpForTestCase {
   [super setUpForTestCase];
   [ShowcaseTestCase setUpHelper];
 }
-#endif  // CHROME_EARL_GREY_2
 
 + (void)setUpHelper {
   [CoverageUtils configureCoverageReportPath];

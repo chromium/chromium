@@ -11,9 +11,7 @@
 #error "This file requires ARC support."
 #endif
 
-#if defined(CHROME_EARL_GREY_2)
 GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(EarlGreyScopedBlockSwizzlerAppInterface)
-#endif  // defined(CHROME_EARL_GREY_2)
 
 EarlGreyScopedBlockSwizzler::EarlGreyScopedBlockSwizzler(NSString* target,
                                                          NSString* selector,

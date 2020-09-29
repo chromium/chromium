@@ -63,12 +63,6 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
 // Tests moving bookmarks into a new folder created in the moving process.
 - (void)testCreateNewFolderWhileMovingBookmarks {
-#if defined(CHROME_EARL_GREY_1)
-  // TODO(crbug.com/1035764): EG1 Test fails on iOS 12.
-  if (!base::ios::IsRunningOnIOS13OrLater()) {
-    EARL_GREY_TEST_DISABLED(@"EG1 Fails on iOS 12.");
-  }
-#endif
   [BookmarkEarlGrey setupStandardBookmarks];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
@@ -649,12 +643,6 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
 // Verify Move functionality on multiple folder selection.
 - (void)testMoveFunctionalityOnMultipleFolder {
-#if defined(CHROME_EARL_GREY_1)
-  // TODO(crbug.com/1035764): EG1 Test fails on iOS 12.
-  if (!base::ios::IsRunningOnIOS13OrLater()) {
-    EARL_GREY_TEST_DISABLED(@"EG1 Fails on iOS 12.");
-  }
-#endif
   [BookmarkEarlGrey setupStandardBookmarks];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
@@ -807,12 +795,6 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 // Tests that the default folder bookmarks are saved in is updated to the last
 // used folder.
 - (void)testStickyDefaultFolder {
-#if defined(CHROME_EARL_GREY_1)
-  // TODO(crbug.com/1035764): EG1 Test fails on iOS 12.
-  if (!base::ios::IsRunningOnIOS13OrLater()) {
-    EARL_GREY_TEST_DISABLED(@"EG1 Fails on iOS 12.");
-  }
-#endif
   [BookmarkEarlGrey setupStandardBookmarks];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
@@ -888,12 +870,6 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 // Tests the new folder name is committed when name editing is interrupted by
 // navigating away.
 - (void)testNewFolderNameCommittedOnNavigatingAway {
-#if defined(CHROME_EARL_GREY_1)
-  // TODO(crbug.com/1035764): EG1 Test fails on iOS 12.
-  if (!base::ios::IsRunningOnIOS13OrLater()) {
-    EARL_GREY_TEST_DISABLED(@"EG1 Fails on iOS 12.");
-  }
-#endif
   [BookmarkEarlGrey setupStandardBookmarks];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];

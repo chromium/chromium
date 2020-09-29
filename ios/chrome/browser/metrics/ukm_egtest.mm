@@ -28,19 +28,10 @@ using chrome_test_util::SettingsDoneButton;
 
 @implementation UKMTestCase
 
-#if defined(CHROME_EARL_GREY_2)
 + (void)setUpForTestCase {
   [super setUpForTestCase];
   [self setUpHelper];
 }
-#elif defined(CHROME_EARL_GREY_1)
-+ (void)setUp {
-  [super setUp];
-  [self setUpHelper];
-}
-#else
-#error Not an EarlGrey Test
-#endif
 
 + (void)setUpHelper {
   if (![ChromeEarlGrey isUKMEnabled]) {
@@ -240,12 +231,6 @@ using chrome_test_util::SettingsDoneButton;
 // Corresponds to MetricsConsentCheck in //chrome/browser/metrics/
 // ukm_browsertest.cc.
 - (void)testMetricsConsent {
-#if defined(CHROME_EARL_GREY_1)
-  // TODO(crbug.com/1033726): EG1 Test fails on iOS 12.
-  if (!base::ios::IsRunningOnIOS13OrLater()) {
-    EARL_GREY_TEST_DISABLED(@"EG1 Fails on iOS 12.");
-  }
-#endif
 
   const uint64_t originalClientID = [MetricsAppInterface UKMClientID];
 
@@ -290,12 +275,6 @@ using chrome_test_util::SettingsDoneButton;
 // Corresponds to ConsentAddedButNoSyncCheck in //chrome/browser/metrics/
 // ukm_browsertest.cc.
 - (void)testSingleDisableSync {
-#if defined(CHROME_EARL_GREY_1)
-  // TODO(crbug.com/1033726): EG1 Test fails on iOS 12.
-  if (!base::ios::IsRunningOnIOS13OrLater()) {
-    EARL_GREY_TEST_DISABLED(@"EG1 Fails on iOS 12.");
-  }
-#endif
 
   const uint64_t originalClientID = [MetricsAppInterface UKMClientID];
 
@@ -336,12 +315,6 @@ using chrome_test_util::SettingsDoneButton;
 // Corresponds to SingleSyncSignoutCheck in //chrome/browser/metrics/
 // ukm_browsertest.cc.
 - (void)testSingleSyncSignout {
-#if defined(CHROME_EARL_GREY_1)
-  // TODO(crbug.com/1033726): EG1 Test fails on iOS 12.
-  if (!base::ios::IsRunningOnIOS13OrLater()) {
-    EARL_GREY_TEST_DISABLED(@"EG1 Fails on iOS 12.");
-  }
-#endif
   const uint64_t clientID1 = [MetricsAppInterface UKMClientID];
 
   [SigninEarlGrey signOut];
@@ -370,7 +343,6 @@ using chrome_test_util::SettingsDoneButton;
 //
 // Corresponds to HistoryDeleteCheck in //chrome/browser/metrics/
 // ukm_browsertest.cc.
-#if defined(CHROME_EARL_GREY_2)
 - (void)testHistoryDelete {
   const uint64_t originalClientID = [MetricsAppInterface UKMClientID];
 
@@ -392,6 +364,5 @@ using chrome_test_util::SettingsDoneButton;
   GREYAssert([MetricsAppInterface checkUKMRecordingEnabled:YES],
              @"Failed to assert that UKM was enabled.");
 }
-#endif  // defined(CHROME_EARL_GREY_2)
 
 @end

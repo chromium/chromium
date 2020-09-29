@@ -8,8 +8,3 @@
 #error "This file requires ARC support."
 #endif
 
-#if defined(CHROME_EARL_GREY_1)
-void grey_dispatch_sync_on_main_thread(void (^block)(void)) {
-  block();
-}
-#endif

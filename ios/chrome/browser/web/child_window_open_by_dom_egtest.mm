@@ -71,19 +71,10 @@ std::unique_ptr<net::test_server::HttpResponse> SlowResponseHandler(
 
 @implementation ChildWindowOpenByDOMTestCase
 
-#if defined(CHROME_EARL_GREY_2)
 + (void)setUpForTestCase {
   [super setUpForTestCase];
   [self setUpHelper];
 }
-#elif defined(CHROME_EARL_GREY_1)
-+ (void)setUp {
-  [super setUp];
-  [self setUpHelper];
-}
-#else
-#error Not an EarlGrey Test
-#endif
 
 + (void)setUpHelper {
   [ChromeEarlGrey setContentSettings:CONTENT_SETTING_ALLOW];

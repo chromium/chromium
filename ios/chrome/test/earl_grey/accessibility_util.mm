@@ -2,9 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#if defined(CHROME_EARL_GREY_1)
-#import <EarlGrey/EarlGrey.h>
-#endif
 
 #import <GTXiLib/GTXiLib.h>
 
@@ -34,24 +31,5 @@ BOOL VerifyAccessibilityForCurrentScreen(NSError* error) {
   return YES;
 }
 
-#if defined(CHROME_EARL_GREY_1)
-
-void VerifyAccessibilityForCurrentScreen() {
-  // TODO(crbug.com/972681): The GTX analytics ping is preventing the app from
-  // idling, causing EG tests to fail.  Disabling analytics will allow tests to
-  // run, but may not be the correct long-term solution.
-  [GTXAnalytics setEnabled:NO];
-
-  GTXToolKit* toolkit = [[GTXToolKit alloc] init];
-  NSError* error = nil;
-  for (UIWindow* window in [[UIApplication sharedApplication] windows]) {
-    // Run the checks on all elements on the screen.
-    BOOL success = [toolkit checkAllElementsFromRootElements:@[ window ]
-                                                       error:&error];
-    GREYAssert(success, @"Accessibility checks failed! Error: %@", error);
-  }
-}
-
-#endif
 
 }  // namespace chrome_test_util

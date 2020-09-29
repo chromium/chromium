@@ -60,7 +60,6 @@ const metrics::UserDemographicsProto::Gender kTestGender =
   [super tearDown];
 }
 
-#if defined(CHROME_EARL_GREY_2)
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
 
@@ -95,7 +94,6 @@ const metrics::UserDemographicsProto::Gender kTestGender =
   }
   return config;
 }
-#endif  // defined(CHROME_EARL_GREY_2)
 
 #pragma mark - Helpers
 
@@ -182,7 +180,6 @@ const metrics::UserDemographicsProto::Gender kTestGender =
 //
 // Corresponds to AddSyncedUserBirthYearAndGenderToProtoData in
 // //chrome/browser/metrics/ukm_browsertest.cc with features enabled.
-#if defined(CHROME_EARL_GREY_2)
 - (void)testUKMDemographicsReportingWithFeatureEnabled {
   // See |appConfigurationForTestCase| for feature set-up. The kUkmFeature is
   // enabled by default.
@@ -206,14 +203,12 @@ const metrics::UserDemographicsProto::Gender kTestGender =
                                    forHistogram:@"UKM.UserDemographics.Status"],
                 @"Unexpected histogram contents");
 }
-#endif  // defined(CHROME_EARL_GREY_2)
 
 // Tests that user demographics are neither recorded by UKM nor logged in
 // histograms when sync is turned on.
 //
 // Corresponds to AddSyncedUserBirthYearAndGenderToProtoData in
 // //chrome/browser/metrics/ukm_browsertest.cc with features disabled.
-#if defined(CHROME_EARL_GREY_2)
 - (void)testUKMDemographicsReportingWithFeatureDisabled {
   // See |appConfigurationForTestCase| for feature set-up. The kUkmFeature is
   // enabled by default.
@@ -233,7 +228,6 @@ const metrics::UserDemographicsProto::Gender kTestGender =
                                   forHistogram:@"UKM.UserDemographics.Status"],
                 @"Unexpected histogram contents.");
 }
-#endif  // defined(CHROME_EARL_GREY_2)
 
 // Tests that user demographics are synced, recorded by UMA, and logged in
 // histograms.
@@ -241,7 +235,6 @@ const metrics::UserDemographicsProto::Gender kTestGender =
 // Corresponds to AddSyncedUserBirthYearAndGenderToProtoData in
 // //chrome/browser/metrics/metrics_service_user_demographics_browsertest.cc
 // with features enabled.
-#if defined(CHROME_EARL_GREY_2)
 - (void)testUMADemographicsReportingWithFeatureEnabled {
   // See |appConfigurationForTestCase| for feature set-up. The kUkmFeature is
   // enabled by default.
@@ -264,7 +257,6 @@ const metrics::UserDemographicsProto::Gender kTestGender =
                                    forHistogram:@"UMA.UserDemographics.Status"],
                 @"Unexpected histogram contents");
 }
-#endif  // defined(CHROME_EARL_GREY_2)
 
 // Tests that user demographics are neither recorded by UMA nor logged in
 // histograms when sync is turned on.
@@ -272,7 +264,6 @@ const metrics::UserDemographicsProto::Gender kTestGender =
 // Corresponds to AddSyncedUserBirthYearAndGenderToProtoData in
 // //chrome/browser/metrics/metrics_service_user_demographics_browsertest.cc
 // with features disabled.
-#if defined(CHROME_EARL_GREY_2)
 - (void)testUMADemographicsReportingWithFeatureDisabled {
   // See |appConfigurationForTestCase| for feature set-up.
   GREYAssertFalse([ChromeEarlGrey isDemographicMetricsReportingEnabled],
@@ -286,6 +277,5 @@ const metrics::UserDemographicsProto::Gender kTestGender =
                                   forHistogram:@"UMA.UserDemographics.Status"],
                 @"Unexpected histogram contents.");
 }
-#endif  // defined(CHROME_EARL_GREY_2)
 
 @end

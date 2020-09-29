@@ -31,18 +31,10 @@ bool gExecutedSetUpForTestCase = false;
 
 bool gIsMockAuthenticationDisabled = false;
 
-#if defined(CHROME_EARL_GREY_1)
-NSString* const kFlakyEarlGreyTestTargetSuffix = @"_flaky_egtests";
-NSString* const kMultitaskingEarlGreyTestTargetName =
-    @"ios_chrome_multitasking_egtests";
-#elif defined(CHROME_EARL_GREY_2)
 NSString* const kFlakyEarlGreyTestTargetSuffix =
     @"_flaky_eg2tests_module-Runner";
 NSString* const kMultitaskingEarlGreyTestTargetName =
     @"ios_chrome_multitasking_eg2tests_module-Runner";
-#else
-#error Must define either CHROME_EARL_GREY_1 or CHROME_EARL_GREY_2.
-#endif
 
 // Contains a list of test names that run in multitasking test suite.
 NSArray* multitaskingTests = @[
@@ -121,18 +113,12 @@ void RemoveInfoBarsAndPresentedState() {
 }
 
 UIDeviceOrientation GetCurrentDeviceOrientation() {
-#if defined(CHROME_EARL_GREY_1)
-  return [[UIDevice currentDevice] orientation];
-#elif defined(CHROME_EARL_GREY_2)
   return [[GREY_REMOTE_CLASS_IN_APP(UIDevice) currentDevice] orientation];
-#endif
 }
 
 }  // namespace
 
-#if defined(CHROME_EARL_GREY_2)
 GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeTestCaseAppInterface)
-#endif
 
 @interface ChromeTestCase () <AppLaunchManagerObserver> {
   // Block to be executed during object tearDown.
@@ -167,27 +153,6 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeTestCaseAppInterface)
 // Overrides testInvocations so the set of tests run can be modified, as
 // necessary.
 + (NSArray*)testInvocations {
-#if defined(CHROME_EARL_GREY_1)
-  NSError* error = nil;
-  [[EarlGrey selectElementWithMatcher:grey_systemAlertViewShown()]
-      assertWithMatcher:grey_nil()
-                  error:&error];
-  if (error != nil) {
-    NSLog(@"System alert view is present, so skipping all tests!");
-#if TARGET_IPHONE_SIMULATOR
-    return @[];
-#else
-    // Invoke XCTFail via call to stubbed out test.
-    NSMethodSignature* signature =
-        [ChromeTestCase instanceMethodSignatureForSelector:@selector
-                        (failAllTestsDueToSystemAlertVisible)];
-    NSInvocation* systemAlertTest =
-        [NSInvocation invocationWithMethodSignature:signature];
-    systemAlertTest.selector = @selector(failAllTestsDueToSystemAlertVisible);
-    return @[ systemAlertTest ];
-#endif  // !TARGET_IPHONE_SIMULATOR
-  }
-#endif  // defined(CHROME_EARL_GREY_1)
 
   // Return specific list of tests based on the target.
   NSString* targetName = [NSBundle mainBundle].infoDictionary[@"CFBundleName"];
@@ -202,18 +167,11 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeTestCaseAppInterface)
   }
 }
 
-#if defined(CHROME_EARL_GREY_1)
-+ (void)setUp {
-  [super setUp];
-  [ChromeTestCase setUpHelper];
-}
-#elif defined(CHROME_EARL_GREY_2)
 + (void)setUpForTestCase {
   [super setUpForTestCase];
   [ChromeTestCase setUpHelper];
   gExecutedSetUpForTestCase = true;
 }
-#endif  // CHROME_EARL_GREY_2
 
 // Tear down called once for the class, to shutdown mock authentication.
 + (void)tearDown {
