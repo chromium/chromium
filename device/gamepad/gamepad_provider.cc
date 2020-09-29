@@ -29,6 +29,8 @@
 
 namespace device {
 
+constexpr int64_t kPollingIntervalMilliseconds = 4;  // ~250 Hz
+
 GamepadProvider::GamepadProvider(
     GamepadConnectionChangeClient* connection_change_client)
     : gamepad_shared_buffer_(std::make_unique<GamepadSharedBuffer>()),
@@ -139,7 +141,7 @@ void GamepadProvider::OnDevicesChanged(base::SystemMonitor::DeviceType type) {
 
 void GamepadProvider::Initialize(std::unique_ptr<GamepadDataFetcher> fetcher) {
   sampling_interval_delta_ =
-      base::TimeDelta::FromMilliseconds(features::GetGamepadPollingInterval());
+      base::TimeDelta::FromMilliseconds(kPollingIntervalMilliseconds);
 
   base::SystemMonitor* monitor = base::SystemMonitor::Get();
   if (monitor)

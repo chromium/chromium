@@ -14,12 +14,9 @@ GAMEPAD_FEATURES_EXPORT extern const base::Feature
     kEnableGamepadButtonAxisEvents;
 GAMEPAD_FEATURES_EXPORT extern const base::Feature
     kEnableWindowsGamingInputDataFetcher;
-GAMEPAD_FEATURES_EXPORT extern const base::Feature kGamepadPollingInterval;
 GAMEPAD_FEATURES_EXPORT extern const base::Feature kRestrictGamepadAccess;
-GAMEPAD_FEATURES_EXPORT extern const char kGamepadPollingIntervalParamKey[];
 
 GAMEPAD_FEATURES_EXPORT bool AreGamepadButtonAxisEventsEnabled();
-GAMEPAD_FEATURES_EXPORT size_t GetGamepadPollingInterval();
 
 }  // namespace features
 
