@@ -41,7 +41,6 @@ js_library("image_loader") {
     ":cache",
     ":image_request_task",
     ":load_image_request",
-    ":piex_loader",
     ":scheduler",
     "//ui/file_manager/externs:file_manager_private",
   ]

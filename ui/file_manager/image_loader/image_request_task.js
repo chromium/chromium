@@ -8,12 +8,11 @@
  *
  * @param {string} id Request ID.
  * @param {ImageCache} cache Cache object.
- * @param {!PiexLoader} piexLoader Piex loader for RAW file.
  * @param {!LoadImageRequest} request Request message as a hash array.
  * @param {function(!LoadImageResponse)} callback Response handler.
  * @constructor
  */
-function ImageRequestTask(id, cache, piexLoader, request, callback) {
+function ImageRequestTask(id, cache, request, callback) {
   /**
    * Global ID (concatenated client ID and client request ID).
    * @type {string}
@@ -26,12 +25,6 @@ function ImageRequestTask(id, cache, piexLoader, request, callback) {
    * @private
    */
   this.cache_ = cache;
-
-  /**
-   * @type {!PiexLoader}
-   * @private
-   */
-  this.piexLoader_ = piexLoader;
 
   /**
    * @type {!LoadImageRequest}
@@ -339,7 +332,8 @@ ImageRequestTask.prototype.downloadOriginal_ = function(onSuccess, onFailure) {
 
   // Load RAW image source thumbnail.
   if (fileType.type === 'raw') {
-    this.piexLoader_.load(this.request_.url, chrome.runtime.reload)
+    const piexLoader = ImageRequestTask.getPiexLoaderInstance();
+    piexLoader.load(this.request_.url, chrome.runtime.reload)
         .then(
             function(data) {
               this.request_.orientation =
@@ -635,4 +629,15 @@ ImageRequestTask.prototype.cleanup_ = function() {
   // Dispose memory allocated by Canvas.
   this.canvas_.width = 0;
   this.canvas_.height = 0;
+};
+
+/**
+ * Returns the singleton instance of the PiexLoader RAW image loader.
+ * @return {!PiexLoader} PiexLoader object.
+ */
+ImageRequestTask.getPiexLoaderInstance = function() {
+  if (!ImageRequestTask.piexLoaderInstance_) {
+    ImageRequestTask.piexLoaderInstance_ = new PiexLoader();
+  }
+  return ImageRequestTask.piexLoaderInstance_;
 };

@@ -21,12 +21,6 @@ function ImageLoader() {
    */
   this.scheduler_ = new Scheduler();
 
-  /**
-   * Piex loader for RAW images.
-   * @private {!PiexLoader}
-   */
-  this.piexLoader_ = new PiexLoader();
-
   // Grant permissions to all volumes, initialize the cache and then start the
   // scheduler.
   chrome.fileManagerPrivate.getVolumeMetadataList(function(volumeMetadataList) {
@@ -155,8 +149,8 @@ ImageLoader.prototype.onMessage_ = function(senderOrigin, request, callback) {
     return false;  // No callback calls.
   } else {
     // Create a request task and add it to the scheduler (queue).
-    const requestTask = new ImageRequestTask(
-        requestId, this.cache_, this.piexLoader_, request, callback);
+    const requestTask =
+        new ImageRequestTask(requestId, this.cache_, request, callback);
     this.scheduler_.add(requestTask);
     return true;  // Request will call the callback.
   }
