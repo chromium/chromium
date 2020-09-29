@@ -57959,6 +57959,58 @@
        {}
       ]
      ],
+     "flex-aspect-ratio-img-column-012.html": [
+      "e78ededfb2b2c5872e782b4c51d896c8f495e45b",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "flex-aspect-ratio-img-column-013.html": [
+      "81640d518c97c19388d3a53f35ed6aad1e3c48d5",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "flex-aspect-ratio-img-column-014.html": [
+      "b4f2b223cf6fcc7b60a3217b2042e435d52ef0fd",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "flex-aspect-ratio-img-column-015.html": [
+      "688955db0e70fcb0aa728465dfb557c218e9dfd4",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "flex-aspect-ratio-img-row-001.html": [
       "14fabf760ca4293abf5af9e618b2e2ed627be2b2",
       [
@@ -63599,6 +63651,32 @@
        [
         [
          "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "svg-root-as-flex-item-004.html": [
+      "1321433634599bf4c185b4882d6ca3bee4b71e2b",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "svg-root-as-flex-item-005.html": [
+      "19501347662f387141f0eb0dbb16c23906c35589",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
          "=="
         ]
        ],
@@ -156640,6 +156718,32 @@
         {}
        ]
       ],
+      "legacy-scriptminsize-attribute.html": [
+       "ef861c8e79b87b598df9d01f3cbf70caf6c8c23e",
+       [
+        null,
+        [
+         [
+          "/mathml/relations/css-styling/legacy-scriptminsize-attribute-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "legacy-scriptsizemultiplier-attribute.html": [
+       "66e0da17693be608076218df744e309d02d1207c",
+       [
+        null,
+        [
+         [
+          "/mathml/relations/css-styling/legacy-scriptsizemultiplier-attribute-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "lengths-1.html": [
        "9b0c27a26715dd2724360b841b3c581d0e967811",
        [
@@ -227838,6 +227942,14 @@
        "111ea79e243a83880783b5ab46ae6d989ead1f32",
        []
       ],
+      "legacy-scriptminsize-attribute-ref.html": [
+       "8e3d7b1c21907400af22f5df001515a2372ba2d2",
+       []
+      ],
+      "legacy-scriptsizemultiplier-attribute-ref.html": [
+       "422325da28185bf5b77946192760e0deaeaf6324",
+       []
+      ],
       "lengths-1-ref.html": [
        "9fca6f49632ca080ee1b2a32a9ce2d251241dfcc",
        []
@@ -281855,7 +281967,7 @@
      ],
      "math-script-level-and-math-style": {
       "math-script-level-001.tentative.html": [
-       "f2ae5bf35bd24413bfd3feeee1215c74218dc753",
+       "9dff79025acf8d934ac96e3720b308c969d5189e",
        [
         null,
         {}
@@ -390623,6 +390735,13 @@
     ],
     "isCollapsed.html": [
      "819a3e297a3cf22f55e407d39f4d23d27fb3547a",
+     [
+      null,
+      {}
+     ]
+    ],
+    "modify.tentative.html": [
+     "c4436fcafeb5e43ea43948183d3e64842abb8be6",
      [
       null,
       {}
