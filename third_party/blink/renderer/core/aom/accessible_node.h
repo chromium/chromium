@@ -95,8 +95,6 @@ class CORE_EXPORT AOMPropertyClient {
  public:
   virtual void AddStringProperty(AOMStringProperty, const String&) = 0;
   virtual void AddBooleanProperty(AOMBooleanProperty, bool) = 0;
-  virtual void AddIntProperty(AOMIntProperty, int32_t) = 0;
-  virtual void AddUIntProperty(AOMUIntProperty, uint32_t) = 0;
   virtual void AddFloatProperty(AOMFloatProperty, float) = 0;
   virtual void AddRelationProperty(AOMRelationProperty,
                                    const AccessibleNode&) = 0;

@@ -68,8 +68,6 @@ class BLINK_EXPORT WebAXSparseAttributeClient {
   virtual ~WebAXSparseAttributeClient() = default;
 
   virtual void AddBoolAttribute(WebAXBoolAttribute, bool) = 0;
-  virtual void AddIntAttribute(WebAXIntAttribute, int32_t) = 0;
-  virtual void AddUIntAttribute(WebAXUIntAttribute, uint32_t) = 0;
   virtual void AddStringAttribute(WebAXStringAttribute, const WebString&) = 0;
   virtual void AddObjectAttribute(WebAXObjectAttribute, const WebAXObject&) = 0;
   virtual void AddObjectVectorAttribute(WebAXObjectVectorAttribute,
@@ -332,10 +330,6 @@ class WebAXObject {
   BLINK_EXPORT bool ScrollToGlobalPoint(const gfx::Point&) const;
 
   // For a table
-  BLINK_EXPORT int AriaColumnCount() const;
-  BLINK_EXPORT unsigned AriaColumnIndex() const;
-  BLINK_EXPORT int AriaRowCount() const;
-  BLINK_EXPORT unsigned AriaRowIndex() const;
   BLINK_EXPORT unsigned ColumnCount() const;
   BLINK_EXPORT unsigned RowCount() const;
   BLINK_EXPORT WebAXObject CellForColumnAndRow(unsigned column,

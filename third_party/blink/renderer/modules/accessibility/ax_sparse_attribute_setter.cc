@@ -5,8 +5,15 @@
 #include "third_party/blink/renderer/modules/accessibility/ax_sparse_attribute_setter.h"
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
+
+void SetIntAttribute(ax::mojom::blink::IntAttribute attribute,
+                     ui::AXNodeData* node_data,
+                     const AtomicString& value) {
+  node_data->AddIntAttribute(attribute, value.ToInt());
+}
 
 class BoolAttributeSetter : public AXSparseAttributeSetter {
  public:
@@ -23,34 +30,6 @@ class BoolAttributeSetter : public AXSparseAttributeSetter {
                    !EqualIgnoringASCIICase(value, "false");
     if (is_true)  // Not necessary to add if false
       attribute_map.AddBoolAttribute(attribute_, true);
-  }
-};
-
-class IntAttributeSetter : public AXSparseAttributeSetter {
- public:
-  IntAttributeSetter(AXIntAttribute attribute) : attribute_(attribute) {}
-
- private:
-  AXIntAttribute attribute_;
-
-  void Run(const AXObject& obj,
-           AXSparseAttributeClient& attribute_map,
-           const AtomicString& value) override {
-    attribute_map.AddIntAttribute(attribute_, value.ToInt());
-  }
-};
-
-class UIntAttributeSetter : public AXSparseAttributeSetter {
- public:
-  UIntAttributeSetter(AXUIntAttribute attribute) : attribute_(attribute) {}
-
- private:
-  AXUIntAttribute attribute_;
-
-  void Run(const AXObject& obj,
-           AXSparseAttributeClient& attribute_map,
-           const AtomicString& value) override {
-    attribute_map.AddUIntAttribute(attribute_, value.ToInt());
   }
 };
 
@@ -188,26 +167,43 @@ AXSparseAttributeSetterMap& GetSparseAttributeSetterMap() {
     ax_sparse_attribute_setter_map.Set(
         html_names::kAriaBusyAttr,
         new BoolAttributeSetter(AXBoolAttribute::kAriaBusy));
-    ax_sparse_attribute_setter_map.Set(
-        html_names::kAriaColcountAttr,
-        new IntAttributeSetter(AXIntAttribute::kAriaColumnCount));
-    ax_sparse_attribute_setter_map.Set(
-        html_names::kAriaColindexAttr,
-        new UIntAttributeSetter(AXUIntAttribute::kAriaColumnIndex));
-    ax_sparse_attribute_setter_map.Set(
-        html_names::kAriaColspanAttr,
-        new UIntAttributeSetter(AXUIntAttribute::kAriaColumnSpan));
-    ax_sparse_attribute_setter_map.Set(
-        html_names::kAriaRowcountAttr,
-        new IntAttributeSetter(AXIntAttribute::kAriaRowCount));
-    ax_sparse_attribute_setter_map.Set(
-        html_names::kAriaRowindexAttr,
-        new UIntAttributeSetter(AXUIntAttribute::kAriaRowIndex));
-    ax_sparse_attribute_setter_map.Set(
-        html_names::kAriaRowspanAttr,
-        new UIntAttributeSetter(AXUIntAttribute::kAriaRowSpan));
   }
   return ax_sparse_attribute_setter_map;
+}
+
+// TODO(meredithl): move the rest of the sparse attributes to this map.
+TempSetterMap& GetTempSetterMap(ui::AXNodeData* node_data) {
+  DEFINE_STATIC_LOCAL(TempSetterMap, temp_setter_map, ());
+  if (temp_setter_map.IsEmpty()) {
+    temp_setter_map.Set(
+        html_names::kAriaColcountAttr,
+        WTF::BindRepeating(&SetIntAttribute,
+                           ax::mojom::blink::IntAttribute::kAriaColumnCount));
+    temp_setter_map.Set(
+        html_names::kAriaColindexAttr,
+        WTF::BindRepeating(
+            &SetIntAttribute,
+            ax::mojom::blink::IntAttribute::kAriaCellColumnIndex));
+    temp_setter_map.Set(
+        html_names::kAriaColspanAttr,
+        WTF::BindRepeating(
+            &SetIntAttribute,
+            ax::mojom::blink::IntAttribute::kAriaCellColumnSpan));
+    temp_setter_map.Set(
+        html_names::kAriaRowcountAttr,
+        WTF::BindRepeating(&SetIntAttribute,
+                           ax::mojom::blink::IntAttribute::kAriaRowCount));
+    temp_setter_map.Set(
+        html_names::kAriaRowindexAttr,
+        WTF::BindRepeating(&SetIntAttribute,
+                           ax::mojom::blink::IntAttribute::kAriaCellRowIndex));
+    temp_setter_map.Set(
+        html_names::kAriaRowspanAttr,
+        WTF::BindRepeating(&SetIntAttribute,
+                           ax::mojom::blink::IntAttribute::kAriaCellRowSpan));
+  }
+
+  return temp_setter_map;
 }
 
 void AXSparseAttributeAOMPropertyClient::AddStringProperty(
@@ -240,13 +236,6 @@ void AXSparseAttributeAOMPropertyClient::AddBooleanProperty(
   }
   sparse_attribute_client_.AddBoolAttribute(attribute, value);
 }
-
-void AXSparseAttributeAOMPropertyClient::AddIntProperty(AOMIntProperty property,
-                                                        int32_t value) {}
-
-void AXSparseAttributeAOMPropertyClient::AddUIntProperty(
-    AOMUIntProperty property,
-    uint32_t value) {}
 
 void AXSparseAttributeAOMPropertyClient::AddFloatProperty(
     AOMFloatProperty property,

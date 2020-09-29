@@ -101,16 +101,6 @@ class WebAXSparseAttributeClientAdapter : public AXSparseAttributeClient {
                                     value);
   }
 
-  void AddIntAttribute(AXIntAttribute attribute, int32_t value) override {
-    attribute_map_.AddIntAttribute(static_cast<WebAXIntAttribute>(attribute),
-                                   value);
-  }
-
-  void AddUIntAttribute(AXUIntAttribute attribute, uint32_t value) override {
-    attribute_map_.AddUIntAttribute(static_cast<WebAXUIntAttribute>(attribute),
-                                    value);
-  }
-
   void AddStringAttribute(AXStringAttribute attribute,
                           const String& value) override {
     attribute_map_.AddStringAttribute(
@@ -1188,34 +1178,6 @@ bool WebAXObject::AccessibilityIsIncludedInTree() const {
     return false;
 
   return private_->AccessibilityIsIncludedInTree();
-}
-
-int WebAXObject::AriaColumnCount() const {
-  if (IsDetached())
-    return 0;
-
-  return private_->IsTableLikeRole() ? private_->AriaColumnCount() : 0;
-}
-
-unsigned WebAXObject::AriaColumnIndex() const {
-  if (IsDetached())
-    return 0;
-
-  return private_->AriaColumnIndex();
-}
-
-int WebAXObject::AriaRowCount() const {
-  if (IsDetached())
-    return 0;
-
-  return private_->IsTableLikeRole() ? private_->AriaRowCount() : 0;
-}
-
-unsigned WebAXObject::AriaRowIndex() const {
-  if (IsDetached())
-    return 0;
-
-  return private_->AriaRowIndex();
 }
 
 unsigned WebAXObject::ColumnCount() const {

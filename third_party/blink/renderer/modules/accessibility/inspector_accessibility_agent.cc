@@ -24,16 +24,16 @@
 
 namespace blink {
 
-using protocol::Accessibility::AXPropertyName;
+using protocol::Maybe;
+using protocol::Response;
 using protocol::Accessibility::AXNode;
 using protocol::Accessibility::AXNodeId;
 using protocol::Accessibility::AXProperty;
-using protocol::Accessibility::AXValueSource;
-using protocol::Accessibility::AXValueType;
+using protocol::Accessibility::AXPropertyName;
 using protocol::Accessibility::AXRelatedNode;
 using protocol::Accessibility::AXValue;
-using protocol::Maybe;
-using protocol::Response;
+using protocol::Accessibility::AXValueSource;
+using protocol::Accessibility::AXValueType;
 namespace AXPropertyNameEnum = protocol::Accessibility::AXPropertyNameEnum;
 
 namespace {
@@ -401,10 +401,6 @@ class SparseAttributeAXPropertyAdapter
         break;
     }
   }
-
-  void AddIntAttribute(AXIntAttribute attribute, int32_t value) override {}
-
-  void AddUIntAttribute(AXUIntAttribute attribute, uint32_t value) override {}
 
   void AddStringAttribute(AXStringAttribute attribute,
                           const String& value) override {

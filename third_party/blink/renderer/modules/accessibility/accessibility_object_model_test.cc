@@ -285,16 +285,6 @@ class SparseAttributeAdapter : public AXSparseAttributeClient {
     bool_attributes.insert(attribute, value);
   }
 
-  void AddIntAttribute(AXIntAttribute attribute, int32_t value) override {
-    ASSERT_TRUE(int_attributes.find(attribute) == int_attributes.end());
-    int_attributes.insert(attribute, value);
-  }
-
-  void AddUIntAttribute(AXUIntAttribute attribute, uint32_t value) override {
-    ASSERT_TRUE(uint_attributes.find(attribute) == uint_attributes.end());
-    uint_attributes.insert(attribute, value);
-  }
-
   void AddStringAttribute(AXStringAttribute attribute,
                           const String& value) override {
     ASSERT_TRUE(string_attributes.find(attribute) == string_attributes.end());

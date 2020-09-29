@@ -470,14 +470,6 @@ void AccessibleNode::GetAllAOMProperties(
     client->AddFloatProperty(item.first, item.second);
     shadowed_aria_attributes.insert(GetCorrespondingARIAAttribute(item.first));
   }
-  for (auto& item : int_properties_) {
-    client->AddIntProperty(item.first, item.second);
-    shadowed_aria_attributes.insert(GetCorrespondingARIAAttribute(item.first));
-  }
-  for (auto& item : uint_properties_) {
-    client->AddUIntProperty(item.first, item.second);
-    shadowed_aria_attributes.insert(GetCorrespondingARIAAttribute(item.first));
-  }
   for (auto& item : relation_properties_) {
     if (!item.second)
       continue;

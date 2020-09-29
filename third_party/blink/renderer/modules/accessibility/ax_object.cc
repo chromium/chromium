@@ -831,7 +831,8 @@ void AXObject::Serialize(ui::AXNodeData* node_data,
     }
   }
 
-  if (accessibility_mode.has_mode(ui::AXMode::kPDF)) {
+  if (accessibility_mode.has_mode(ui::AXMode::kScreenReader) ||
+      accessibility_mode.has_mode(ui::AXMode::kPDF)) {
     // The DOMNodeID from Blink. Currently only populated when using
     // the accessibility tree for PDF exporting. Warning, this is totally
     // unrelated to the accessibility node ID, or the ID attribute for an
@@ -841,7 +842,12 @@ void AXObject::Serialize(ui::AXNodeData* node_data,
       node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kDOMNodeId,
                                  dom_node_id);
     }
-    // None of the following attributes are needed for PDF accessibility.
+
+    SerializeTableAttributes(node_data);
+  }
+
+  if (accessibility_mode.has_mode(ui::AXMode::kPDF)) {
+    // Return early. None of the following attributes are needed for PDFs.
     return;
   }
 
@@ -872,6 +878,94 @@ void AXObject::Serialize(ui::AXNodeData* node_data,
     TruncateAndAddStringAttribute(node_data,
                                   ax::mojom::blink::StringAttribute::kUrl,
                                   Url().GetString().Utf8());
+  }
+
+  SerializePartialSparseAttributes(node_data);
+}
+
+void AXObject::SerializeTableAttributes(ui::AXNodeData* node_data) {
+  if (ui::IsTableLike(RoleValue())) {
+    int aria_colcount = AriaColumnCount();
+    if (aria_colcount) {
+      node_data->AddIntAttribute(
+          ax::mojom::blink::IntAttribute::kAriaColumnCount, aria_colcount);
+    }
+    int aria_rowcount = AriaRowCount();
+    if (aria_rowcount) {
+      node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kAriaRowCount,
+                                 aria_rowcount);
+    }
+  }
+
+  if (ui::IsTableRow(RoleValue())) {
+    AXObject* header = HeaderObject();
+    if (header && !header->IsDetached()) {
+      // TODO(accessibility): these should be computed by ui::AXTableInfo and
+      // removed here.
+      node_data->AddIntAttribute(
+          ax::mojom::blink::IntAttribute::kTableRowHeaderId,
+          header->AXObjectID());
+    }
+  }
+
+  if (ui::IsCellOrTableHeader(RoleValue())) {
+    node_data->AddIntAttribute(
+        ax::mojom::blink::IntAttribute::kTableCellColumnSpan, ColumnSpan());
+    node_data->AddIntAttribute(
+        ax::mojom::blink::IntAttribute::kTableCellRowSpan, RowSpan());
+  }
+
+  if (ui::IsCellOrTableHeader(RoleValue()) || ui::IsTableRow(RoleValue())) {
+    // aria-rowindex and aria-colindex are supported on cells, headers and
+    // rows.
+    int aria_rowindex = AriaRowIndex();
+    if (aria_rowindex) {
+      node_data->AddIntAttribute(
+          ax::mojom::blink::IntAttribute::kAriaCellRowIndex, aria_rowindex);
+    }
+
+    int aria_colindex = AriaColumnIndex();
+    if (aria_colindex) {
+      node_data->AddIntAttribute(
+          ax::mojom::blink::IntAttribute::kAriaCellColumnIndex, aria_colindex);
+    }
+  }
+
+  if (ui::IsTableHeader(RoleValue()) &&
+      GetSortDirection() != ax::mojom::blink::SortDirection::kNone) {
+    node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kSortDirection,
+                               static_cast<int32_t>(GetSortDirection()));
+  }
+}
+
+void AXObject::SerializePartialSparseAttributes(ui::AXNodeData* node_data) {
+  Element* element = GetElement();
+  if (!element)
+    return;
+
+  TempSetterMap& setter_map = GetTempSetterMap(node_data);
+  AttributeCollection attributes = element->AttributesWithoutUpdate();
+  HashSet<QualifiedName> set_attributes;
+  for (const Attribute& attr : attributes) {
+    set_attributes.insert(attr.GetName());
+    AXSparseSetterFunc callback = setter_map.at(attr.GetName());
+
+    if (callback)
+      callback.Run(node_data, attr.Value());
+  }
+
+  if (!element->DidAttachInternals())
+    return;
+  const auto& internals_attributes =
+      element->EnsureElementInternals().GetAttributes();
+  for (const QualifiedName& attr : internals_attributes.Keys()) {
+    if (set_attributes.Contains(attr))
+      continue;
+
+    AXSparseSetterFunc callback = setter_map.at(attr);
+
+    if (callback)
+      callback.Run(node_data, internals_attributes.at(attr));
   }
 }
 

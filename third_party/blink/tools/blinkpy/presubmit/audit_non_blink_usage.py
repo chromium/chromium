@@ -477,12 +477,19 @@ _CONFIG = [
             'ui::AXEventIntent',
             'ui::AXMode',
             'ui::AXNodeData',
-            'ui::IsDialog',
-            'ui::IsContainerWithSelectableChildren',
             'ax::mojom::BoolAttribute',
             'ax::mojom::HasPopup',
             'ax::mojom::State',
             'ax::mojom::Restriction',
+
+            # Accessibility helper functions - mostly used in Blink for
+            # serialization.
+            'ui::IsDialog',
+            'ui::IsContainerWithSelectableChildren',
+            'ui::IsTableLike',
+            'ui::IsTableRow',
+            'ui::IsCellOrTableHeader',
+            'ui::IsTableHeader',
 
             # Blink uses UKM for logging e.g. always-on leak detection (crbug/757374)
             'ukm::.+',

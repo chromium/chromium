@@ -620,8 +620,6 @@ class SparseAttributeAdapter : public blink::WebAXSparseAttributeClient {
   ~SparseAttributeAdapter() override {}
 
   std::map<blink::WebAXBoolAttribute, bool> bool_attributes;
-  std::map<blink::WebAXIntAttribute, int32_t> int_attributes;
-  std::map<blink::WebAXUIntAttribute, int32_t> uint_attributes;
   std::map<blink::WebAXStringAttribute, blink::WebString> string_attributes;
   std::map<blink::WebAXObjectAttribute, blink::WebAXObject> object_attributes;
   std::map<blink::WebAXObjectVectorAttribute,
@@ -632,16 +630,6 @@ class SparseAttributeAdapter : public blink::WebAXSparseAttributeClient {
   void AddBoolAttribute(blink::WebAXBoolAttribute attribute,
                         bool value) override {
     bool_attributes[attribute] = value;
-  }
-
-  void AddIntAttribute(blink::WebAXIntAttribute attribute,
-                       int32_t value) override {
-    int_attributes[attribute] = value;
-  }
-
-  void AddUIntAttribute(blink::WebAXUIntAttribute attribute,
-                        uint32_t value) override {
-    uint_attributes[attribute] = value;
   }
 
   void AddStringAttribute(blink::WebAXStringAttribute attribute,
@@ -1419,50 +1407,46 @@ std::string WebAXObjectProxy::KeyShortcuts() {
 
 int32_t WebAXObjectProxy::AriaColumnCount() {
   blink::WebAXObject::UpdateLayout(accessibility_object_.GetDocument());
-  SparseAttributeAdapter attribute_adapter;
-  accessibility_object_.GetSparseAXAttributes(attribute_adapter);
-  return attribute_adapter
-      .int_attributes[blink::WebAXIntAttribute::kAriaColumnCount];
+  ui::AXNodeData node_data;
+  accessibility_object_.Serialize(&node_data, ui::kAXModeComplete);
+  return node_data.GetIntAttribute(ax::mojom::IntAttribute::kAriaColumnCount);
 }
 
 uint32_t WebAXObjectProxy::AriaColumnIndex() {
   blink::WebAXObject::UpdateLayout(accessibility_object_.GetDocument());
-  SparseAttributeAdapter attribute_adapter;
-  accessibility_object_.GetSparseAXAttributes(attribute_adapter);
-  return attribute_adapter
-      .uint_attributes[blink::WebAXUIntAttribute::kAriaColumnIndex];
+  ui::AXNodeData node_data;
+  accessibility_object_.Serialize(&node_data, ui::kAXModeComplete);
+  return node_data.GetIntAttribute(
+      ax::mojom::IntAttribute::kAriaCellColumnIndex);
 }
 
 uint32_t WebAXObjectProxy::AriaColumnSpan() {
   blink::WebAXObject::UpdateLayout(accessibility_object_.GetDocument());
-  SparseAttributeAdapter attribute_adapter;
-  accessibility_object_.GetSparseAXAttributes(attribute_adapter);
-  return attribute_adapter
-      .uint_attributes[blink::WebAXUIntAttribute::kAriaColumnSpan];
+  ui::AXNodeData node_data;
+  accessibility_object_.Serialize(&node_data, ui::kAXModeComplete);
+  return node_data.GetIntAttribute(
+      ax::mojom::IntAttribute::kAriaCellColumnSpan);
 }
 
 int32_t WebAXObjectProxy::AriaRowCount() {
   blink::WebAXObject::UpdateLayout(accessibility_object_.GetDocument());
-  SparseAttributeAdapter attribute_adapter;
-  accessibility_object_.GetSparseAXAttributes(attribute_adapter);
-  return attribute_adapter
-      .int_attributes[blink::WebAXIntAttribute::kAriaRowCount];
+  ui::AXNodeData node_data;
+  accessibility_object_.Serialize(&node_data, ui::kAXModeComplete);
+  return node_data.GetIntAttribute(ax::mojom::IntAttribute::kAriaRowCount);
 }
 
 uint32_t WebAXObjectProxy::AriaRowIndex() {
   blink::WebAXObject::UpdateLayout(accessibility_object_.GetDocument());
-  SparseAttributeAdapter attribute_adapter;
-  accessibility_object_.GetSparseAXAttributes(attribute_adapter);
-  return attribute_adapter
-      .uint_attributes[blink::WebAXUIntAttribute::kAriaRowIndex];
+  ui::AXNodeData node_data;
+  accessibility_object_.Serialize(&node_data, ui::kAXModeComplete);
+  return node_data.GetIntAttribute(ax::mojom::IntAttribute::kAriaCellRowIndex);
 }
 
 uint32_t WebAXObjectProxy::AriaRowSpan() {
   blink::WebAXObject::UpdateLayout(accessibility_object_.GetDocument());
-  SparseAttributeAdapter attribute_adapter;
-  accessibility_object_.GetSparseAXAttributes(attribute_adapter);
-  return attribute_adapter
-      .uint_attributes[blink::WebAXUIntAttribute::kAriaRowSpan];
+  ui::AXNodeData node_data;
+  accessibility_object_.Serialize(&node_data, ui::kAXModeComplete);
+  return node_data.GetIntAttribute(ax::mojom::IntAttribute::kAriaCellRowSpan);
 }
 
 std::string WebAXObjectProxy::Live() {

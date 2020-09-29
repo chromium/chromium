@@ -104,43 +104,6 @@ class AXNodeDataSparseAttributeAdapter
     }
   }
 
-  void AddIntAttribute(blink::WebAXIntAttribute attribute,
-                       int32_t value) override {
-    switch (attribute) {
-      case blink::WebAXIntAttribute::kAriaColumnCount:
-        dst_->AddIntAttribute(ax::mojom::IntAttribute::kAriaColumnCount, value);
-        break;
-      case blink::WebAXIntAttribute::kAriaRowCount:
-        dst_->AddIntAttribute(ax::mojom::IntAttribute::kAriaRowCount, value);
-        break;
-      default:
-        NOTREACHED();
-    }
-  }
-
-  void AddUIntAttribute(blink::WebAXUIntAttribute attribute,
-                        uint32_t value) override {
-    switch (attribute) {
-      case blink::WebAXUIntAttribute::kAriaColumnIndex:
-        dst_->AddIntAttribute(ax::mojom::IntAttribute::kAriaCellColumnIndex,
-                              value);
-        break;
-      case blink::WebAXUIntAttribute::kAriaColumnSpan:
-        dst_->AddIntAttribute(ax::mojom::IntAttribute::kAriaCellColumnSpan,
-                              value);
-        break;
-      case blink::WebAXUIntAttribute::kAriaRowIndex:
-        dst_->AddIntAttribute(ax::mojom::IntAttribute::kAriaCellRowIndex,
-                              value);
-        break;
-      case blink::WebAXUIntAttribute::kAriaRowSpan:
-        dst_->AddIntAttribute(ax::mojom::IntAttribute::kAriaCellRowSpan, value);
-        break;
-      default:
-        NOTREACHED();
-    }
-  }
-
   void AddStringAttribute(blink::WebAXStringAttribute attribute,
                           const blink::WebString& value) override {
     switch (attribute) {
@@ -207,8 +170,7 @@ WebAXObject ParentObjectUnignored(WebAXObject child) {
 // which means that when walking up the parent chain from |child|,
 // |ancestor| is the *first* ancestor that isn't marked as
 // accessibilityIsIgnored().
-bool IsParentUnignoredOf(WebAXObject ancestor,
-                         WebAXObject child) {
+bool IsParentUnignoredOf(WebAXObject ancestor, WebAXObject child) {
   WebAXObject parent = ParentObjectUnignored(child);
   return parent.Equals(ancestor);
 }
@@ -323,8 +285,7 @@ BlinkAXTreeSource::BlinkAXTreeSource(RenderFrameImpl* render_frame,
           ::switches::kEnableExperimentalAccessibilityLabelsDebugging);
 }
 
-BlinkAXTreeSource::~BlinkAXTreeSource() {
-}
+BlinkAXTreeSource::~BlinkAXTreeSource() {}
 
 void BlinkAXTreeSource::Freeze() {
   CHECK(!frozen_);
@@ -478,9 +439,8 @@ bool BlinkAXTreeSource::GetTreeData(ui::AXTreeData* tree_data) const {
   WebAXObject anchor_object, focus_object;
   int anchor_offset, focus_offset;
   ax::mojom::TextAffinity anchor_affinity, focus_affinity;
-    root().Selection(is_selection_backward, anchor_object, anchor_offset,
-                     anchor_affinity, focus_object, focus_offset,
-                     focus_affinity);
+  root().Selection(is_selection_backward, anchor_object, anchor_offset,
+                   anchor_affinity, focus_object, focus_offset, focus_affinity);
   if (!anchor_object.IsNull() && !focus_object.IsNull() && anchor_offset >= 0 &&
       focus_offset >= 0) {
     int32_t anchor_id = anchor_object.AxID();
@@ -634,7 +594,6 @@ void BlinkAXTreeSource::SerializeNode(WebAXObject src,
     }
 
     SerializeListAttributes(src, dst);
-    SerializeTableAttributes(src, dst);
   }
 
   if (accessibility_mode_.has_mode(ui::AXMode::kPDF)) {
@@ -928,63 +887,6 @@ void BlinkAXTreeSource::SerializeListAttributes(WebAXObject src,
 
   if (src.PosInSet())
     dst->AddIntAttribute(ax::mojom::IntAttribute::kPosInSet, src.PosInSet());
-}
-
-void BlinkAXTreeSource::SerializeTableAttributes(WebAXObject src,
-                                                 ui::AXNodeData* dst) const {
-  const bool is_table_like_role = ui::IsTableLike(dst->role);
-  if (is_table_like_role) {
-    int aria_colcount = src.AriaColumnCount();
-    if (aria_colcount) {
-      dst->AddIntAttribute(ax::mojom::IntAttribute::kAriaColumnCount,
-                           aria_colcount);
-    }
-
-    int aria_rowcount = src.AriaRowCount();
-    if (aria_rowcount) {
-      dst->AddIntAttribute(ax::mojom::IntAttribute::kAriaRowCount,
-                           aria_rowcount);
-    }
-  }
-
-  if (ui::IsTableRow(dst->role)) {
-    WebAXObject header = src.RowHeader();
-    if (!header.IsDetached()) {
-      // TODO(accessibility): these should be computed by ui::AXTableInfo and
-      // removed here.
-      dst->AddIntAttribute(ax::mojom::IntAttribute::kTableRowHeaderId,
-                           header.AxID());
-    }
-  }
-
-  if (ui::IsCellOrTableHeader(dst->role)) {
-    dst->AddIntAttribute(ax::mojom::IntAttribute::kTableCellColumnSpan,
-                         src.CellColumnSpan());
-    dst->AddIntAttribute(ax::mojom::IntAttribute::kTableCellRowSpan,
-                         src.CellRowSpan());
-  }
-
-  if (ui::IsCellOrTableHeader(dst->role) || ui::IsTableRow(dst->role)) {
-    // aria-rowindex and aria-colindex are supported on cells, headers and
-    // rows.
-    int aria_rowindex = src.AriaRowIndex();
-    if (aria_rowindex) {
-      dst->AddIntAttribute(ax::mojom::IntAttribute::kAriaCellRowIndex,
-                           aria_rowindex);
-    }
-
-    int aria_colindex = src.AriaColumnIndex();
-    if (aria_colindex) {
-      dst->AddIntAttribute(ax::mojom::IntAttribute::kAriaCellColumnIndex,
-                           aria_colindex);
-    }
-  }
-
-  if (ui::IsTableHeader(dst->role) &&
-      src.SortDirection() != ax::mojom::SortDirection::kNone) {
-    dst->AddIntAttribute(ax::mojom::IntAttribute::kSortDirection,
-                         static_cast<int32_t>(src.SortDirection()));
-  }
 }
 
 void BlinkAXTreeSource::SerializeScrollAttributes(WebAXObject src,
