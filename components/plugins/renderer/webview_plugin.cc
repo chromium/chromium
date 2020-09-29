@@ -223,7 +223,7 @@ blink::WebInputEventResult WebViewPlugin::HandleInputEvent(
   if (event.GetType() == blink::WebInputEvent::Type::kContextMenu) {
     if (delegate_) {
       const WebMouseEvent& mouse_event =
-          reinterpret_cast<const WebMouseEvent&>(event);
+          static_cast<const WebMouseEvent&>(event);
       delegate_->ShowContextMenu(mouse_event);
     }
     return blink::WebInputEventResult::kHandledSuppressed;
