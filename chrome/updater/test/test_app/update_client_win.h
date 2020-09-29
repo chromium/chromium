@@ -7,6 +7,7 @@
 
 #include "chrome/updater/test/test_app/update_client.h"
 
+#include <windows.h>
 #include <wrl/client.h>
 
 #include "chrome/updater/app/server/win/updater_idl.h"

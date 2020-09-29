@@ -7,7 +7,6 @@
 
 #include <windows.h>
 #include <wrl/implements.h>
-#include <wrl/module.h>
 
 #include "base/strings/string16.h"
 #include "chrome/updater/app/server/win/updater_idl.h"

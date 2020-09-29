@@ -34,8 +34,6 @@ class ControlServiceOutOfProcess : public ControlService {
   void RunOnSTA(base::OnceClosure callback);
   void InitializeUpdateServiceOnSTA(base::OnceClosure callback);
 
-  static void ModuleStop();
-
   // Bound to the main sequence.
   SEQUENCE_CHECKER(sequence_checker_);
 

@@ -17,6 +17,13 @@ group("win") {
   ]
 }
 
+config("wrl_strict") {
+  # This definition is used in <wrl/module.h> to specify that only COM
+  # support is provided by WRL, and thus, avoid a dependency on WinRT, which
+  # is not available in Windows 7.
+  defines = [ "__WRL_CLASSIC_COM_STRICT__" ]
+}
+
 executable("updater") {
   sources = [
     "main.cc",

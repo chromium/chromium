@@ -156,6 +156,7 @@ if (is_win || is_mac) {
         "prefs_win.cc",
         "service_factory_win.cc",
         "setup_win.cc",
+        "win/wrl_module.h",
       ]
     }
 
@@ -199,7 +200,10 @@ if (is_win || is_mac) {
 
     if (is_win) {
       configs -= [ "//build/config/win:winver" ]
-      configs += [ "//chrome/updater/app/server/win:winver" ]
+      configs += [
+        "//chrome/updater/app/server/win:winver",
+        "//chrome/updater/win:wrl_strict",
+      ]
     }
   }
 

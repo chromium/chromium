@@ -5,8 +5,7 @@
 #ifndef CHROME_UPDATER_APP_SERVER_WIN_SERVER_H_
 #define CHROME_UPDATER_APP_SERVER_WIN_SERVER_H_
 
-#include <wrl/implements.h>
-#include <wrl/module.h>
+#include <windows.h>
 
 #include <string>
 

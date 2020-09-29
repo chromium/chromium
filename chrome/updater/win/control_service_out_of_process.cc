@@ -2,19 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// This macro is used in <wrl/module.h>. Since only the COM functionality is
-// used here (while WinRT is not being used), define this macro to optimize
-// compilation of <wrl/module.h> for COM-only.
-#ifndef __WRL_CLASSIC_COM_STRICT__
-#define __WRL_CLASSIC_COM_STRICT__
-#endif  // __WRL_CLASSIC_COM_STRICT__
-
 #include "chrome/updater/win/control_service_out_of_process.h"
 
 #include <windows.h>
 #include <wrl/client.h>
 #include <wrl/implements.h>
-#include <wrl/module.h>
 
 #include "base/callback.h"
 #include "base/check_op.h"
@@ -130,17 +122,10 @@ void UpdaterControlObserver::OnCompleteOnSTA() {
 
 ControlServiceOutOfProcess::ControlServiceOutOfProcess(ServiceScope /*scope*/)
     : com_task_runner_(
-          base::ThreadPool::CreateCOMSTATaskRunner(kComClientTraits)) {
-  Microsoft::WRL::Module<Microsoft::WRL::OutOfProc>::Create(
-      &ControlServiceOutOfProcess::ModuleStop);
-}
+          base::ThreadPool::CreateCOMSTATaskRunner(kComClientTraits)) {}
 
 ControlServiceOutOfProcess::~ControlServiceOutOfProcess() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-}
-
-void ControlServiceOutOfProcess::ModuleStop() {
-  DVLOG(2) << __func__ << ": COM client is shutting down.";
 }
 
 void ControlServiceOutOfProcess::Uninitialize() {

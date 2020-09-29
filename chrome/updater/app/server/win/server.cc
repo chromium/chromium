@@ -2,16 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// This macro is used in <wrl/module.h>. Since only the COM functionality is
-// used here (while WinRT is not being used), define this macro to optimize
-// compilation of <wrl/module.h> for COM-only.
-#ifndef __WRL_CLASSIC_COM_STRICT__
-#define __WRL_CLASSIC_COM_STRICT__
-#endif  // __WRL_CLASSIC_COM_STRICT__
-
 #include "chrome/updater/app/server/win/server.h"
 
-#include <windows.h>
+#include <wrl/implements.h>
 
 #include <algorithm>
 
@@ -31,6 +24,7 @@
 #include "chrome/updater/prefs.h"
 #include "chrome/updater/update_service_in_process.h"
 #include "chrome/updater/win/constants.h"
+#include "chrome/updater/win/wrl_module.h"
 #include "components/prefs/pref_service.h"
 
 namespace updater {
