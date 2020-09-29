@@ -79,9 +79,9 @@ public final class DownloadForegroundServiceManagerTest {
         }
 
         @Override
-        void startOrUpdateForegroundService(int notificationId, Notification notification) {
-            mUpdatedNotificationId = notificationId;
-            super.startOrUpdateForegroundService(notificationId, notification);
+        void startOrUpdateForegroundService(DownloadUpdate downloadUpdate) {
+            mUpdatedNotificationId = downloadUpdate.mNotificationId;
+            super.startOrUpdateForegroundService(downloadUpdate);
         }
 
         // Skip waiting for delayed runnable in tests.

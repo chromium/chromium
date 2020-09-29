@@ -286,9 +286,9 @@ public class DownloadNotificationService {
                 mDownloadSharedPreferenceHelper.getDownloadSharedPreferenceEntry(id);
         if (entry == null) return;
 
-        cancelNotification(entry.notificationId, id);
         mDownloadForegroundServiceManager.updateDownloadStatus(ContextUtils.getApplicationContext(),
                 DownloadStatus.CANCELLED, entry.notificationId, null);
+        cancelNotification(entry.notificationId, id);
     }
 
     /**
