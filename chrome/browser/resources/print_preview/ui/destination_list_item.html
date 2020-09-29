@@ -67,23 +67,12 @@
       }
 
 <if expr="chromeos">
-      printer-status-icon-cros {
-        padding-inline-end: 12px;
-      }
-
       :host([is-destination-cros-local_]) .connection-status {
         color: var(--google-red-600);
       }
 </if>
     </style>
-    <iron-icon icon$="[[destination.icon]]"
-        hidden="[[isDestinationCrosLocal_]]">
-    </iron-icon>
-<if expr="chromeos">
-    <printer-status-icon-cros icon-location="[[iconLocation_.DROPDOWN]]"
-        printer-state="[[printerState_]]" hidden="[[!isDestinationCrosLocal_]]">
-    </printer-status-icon-cros>
-</if>
+    <iron-icon icon="[[destinationIcon_]]"></iron-icon>
     <span class="name searchable">[[destination.displayName]]</span>
     <span class="search-hint searchable" hidden="[[!searchHint_]]">
       [[searchHint_]]

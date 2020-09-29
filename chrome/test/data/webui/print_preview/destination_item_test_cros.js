@@ -70,11 +70,11 @@ suite(destination_item_test_cros.suiteName, function() {
   test(
       assert(destination_item_test_cros.TestNames.NewStatusUpdatesIcon),
       function() {
-        const statusIcon = listItem.$$('printer-status-icon-cros');
-        assertEquals(PrinterState.UNKNOWN, statusIcon.printerState);
+        const icon = listItem.$$('iron-icon');
+        assertEquals('print-preview:printer-status-grey', icon.icon);
 
         return listItem.destination.requestPrinterStatus().then(() => {
-          assertEquals(PrinterState.GOOD, statusIcon.printerState);
+          assertEquals('print-preview:printer-status-green', icon.icon);
         });
       });
 
@@ -82,8 +82,8 @@ suite(destination_item_test_cros.suiteName, function() {
       assert(
           destination_item_test_cros.TestNames.ChangingDestinationUpdatesIcon),
       function() {
-        const statusIcon = listItem.$$('printer-status-icon-cros');
-        assertEquals(PrinterState.UNKNOWN, statusIcon.printerState);
+        const icon = listItem.$$('iron-icon');
+        assertEquals('print-preview:printer-status-grey', icon.icon);
 
         listItem.destination = new Destination(
             'Two', DestinationType.LOCAL, DestinationOrigin.CROS,
@@ -91,7 +91,7 @@ suite(destination_item_test_cros.suiteName, function() {
             {description: 'ABC'});
 
         return waitBeforeNextRender(listItem).then(() => {
-          assertEquals(PrinterState.ERROR, statusIcon.printerState);
+          assertEquals('print-preview:printer-status-red', icon.icon);
         });
       });
 
@@ -102,8 +102,8 @@ suite(destination_item_test_cros.suiteName, function() {
       assert(
           destination_item_test_cros.TestNames.OnlyUpdateMatchingDestination),
       function() {
-        const statusIcon = listItem.$$('printer-status-icon-cros');
-        assertEquals(PrinterState.UNKNOWN, statusIcon.printerState);
+        const icon = listItem.$$('iron-icon');
+        assertEquals('print-preview:printer-status-grey', icon.icon);
         const firstDestinationStatusRequestPromise =
             listItem.destination.requestPrinterStatus();
 
@@ -117,7 +117,7 @@ suite(destination_item_test_cros.suiteName, function() {
         return firstDestinationStatusRequestPromise.then(() => {
           // PrinterState should stay the same because the destination in the
           // status request response doesn't match.
-          assertEquals(PrinterState.UNKNOWN, statusIcon.printerState);
+          assertEquals('print-preview:printer-status-grey', icon.icon);
         });
       });
 });

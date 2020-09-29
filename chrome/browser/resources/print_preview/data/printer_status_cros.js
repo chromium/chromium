@@ -1,6 +1,7 @@
 // Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+import {assertNotReached} from 'chrome://resources/js/assert.m.js';
 
 /**
  *  These values must be kept in sync with the Reason enum in
@@ -139,4 +140,21 @@ export function computePrinterState(printerStatusReason) {
     return PrinterState.GOOD;
   }
   return PrinterState.ERROR;
+}
+
+/**
+ * @param {?PrinterStatusReason} printerStatusReason
+ * @return {string}
+ */
+export function getPrinterStatusIcon(printerStatusReason) {
+  switch (computePrinterState(printerStatusReason)) {
+    case PrinterState.GOOD:
+      return 'print-preview:printer-status-green';
+    case PrinterState.ERROR:
+      return 'print-preview:printer-status-red';
+    case PrinterState.UNKNOWN:
+      return 'print-preview:printer-status-grey';
+    default:
+      assertNotReached();
+  }
 }
