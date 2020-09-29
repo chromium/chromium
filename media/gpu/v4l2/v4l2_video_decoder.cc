@@ -11,6 +11,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/post_task.h"
+#include "media/base/limits.h"
 #include "media/base/video_types.h"
 #include "media/base/video_util.h"
 #include "media/gpu/chromeos/dmabuf_video_frame_pool.h"
@@ -37,6 +38,11 @@ constexpr uint32_t kSupportedInputFourccs[] = {
     V4L2_PIX_FMT_H264_SLICE, V4L2_PIX_FMT_VP8_FRAME, V4L2_PIX_FMT_VP9_FRAME,
     V4L2_PIX_FMT_H264,       V4L2_PIX_FMT_VP8,       V4L2_PIX_FMT_VP9,
 };
+
+// Number of output buffers to use for each VD stage above what's required by
+// the decoder (e.g. DPB size, in H264).  We need limits::kMaxVideoFrames to
+// fill up the GpuVideoDecode pipeline, and +1 for a frame in transit.
+constexpr size_t kDpbOutputBufferExtraCount = limits::kMaxVideoFrames + 1;
 
 }  // namespace
 
@@ -514,7 +520,8 @@ void V4L2VideoDecoder::ContinueChangeResolution(
       base::BindOnce(&V4L2VideoDecoderBackend::OnChangeResolutionDone,
                      base::Unretained(backend_.get()), false));
 
-  num_output_frames_ = num_output_frames;
+  DCHECK_GT(num_output_frames, 0u);
+  num_output_frames_ = num_output_frames + kDpbOutputBufferExtraCount;
 
   // Stateful decoders require the input queue to keep running during resolution
   // changes, but stateless ones require it to be stopped.
@@ -525,9 +532,8 @@ void V4L2VideoDecoder::ContinueChangeResolution(
     SetState(State::kError);
     return;
   }
-  DCHECK_GT(num_output_frames, 0u);
 
-  if (!backend_->ApplyResolution(pic_size, visible_rect, num_output_frames)) {
+  if (!backend_->ApplyResolution(pic_size, visible_rect, num_output_frames_)) {
     SetState(State::kError);
     return;
   }
