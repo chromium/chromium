@@ -328,7 +328,6 @@ _NOT_CONVERTED_TO_MODERN_BIND_AND_CALLBACK = '|'.join((
   '^chrome/browser/devtools/',
   '^chrome/browser/download/',
   '^chrome/browser/extensions/',
-  '^chrome/browser/external_protocol/external_protocol_handler.cc',
   '^chrome/browser/history/',
   '^chrome/browser/installable/installable_manager_browsertest.cc',
   '^chrome/browser/lifetime/',
