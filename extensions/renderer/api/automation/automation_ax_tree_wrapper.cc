@@ -280,7 +280,7 @@ void AutomationAXTreeWrapper::OnAtomicUpdateFinished(
     bool root_changed,
     const std::vector<ui::AXTreeObserver::Change>& changes) {
   DCHECK_EQ(&tree_, tree);
-  for (const auto change : changes) {
+  for (const auto& change : changes) {
     ui::AXNode* node = change.node;
     switch (change.type) {
       case NODE_CREATED:
