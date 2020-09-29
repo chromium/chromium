@@ -7,13 +7,15 @@
 <link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
 <link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
 <link rel="import" href="chrome://resources/html/find_shortcut_behavior.html">
+<link rel="import" href="chrome://resources/html/load_time_data.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-list/iron-list.html">
+<link rel="import" href="shared_style.html">
 <link rel="import" href="../../languages_page/languages.html">
 <link rel="import" href="../../settings_shared_css.html">
 
 <dom-module id="os-settings-add-languages-dialog">
   <template>
-    <style include="settings-shared">
+    <style include="settings-shared shared-style">
       #dialog-body {
         display: flex;
         flex-direction: column;
@@ -23,20 +25,19 @@
       }
 
       cr-search-field {
-        padding-inline-end: 24px;
+        margin-bottom: 16px;
       }
 
       iron-list {
         flex: 1;
       }
 
-      .ripple-padding {
-        /* Create a little extra space for checkbox ink ripple to flow into. */
-        padding-inline-start: 20px;
-      }
-
       cr-checkbox::part(label-container) {
         white-space: nowrap;
+      }
+
+      .list-item {
+        min-height: 36px;
       }
     </style>
     <cr-dialog id="dialog" close-text="$i18n{close}">
@@ -46,7 +47,7 @@
             on-search-changed="onSearchChanged_" on-keydown="onKeydown_"
             clear-label="$i18n{clearSearch}" autofocus>
         </cr-search-field>
-        <iron-list class="ripple-padding" scroll-target="[[$$('[slot=body]')]]"
+        <iron-list scroll-target="[[$$('[slot=body]')]]"
             items="[[getLanguages_(
                 languages.supported, languages.enabled.*, filterValue_)]]">
           <template>

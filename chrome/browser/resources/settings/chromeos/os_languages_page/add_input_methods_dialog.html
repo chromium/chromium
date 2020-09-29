@@ -7,12 +7,13 @@
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-list/iron-list.html">
 <link rel="import" href="../metrics_recorder.html">
+<link rel="import" href="shared_style.html">
 <link rel="import" href="../../languages_page/languages.html">
 <link rel="import" href="../../settings_shared_css.html">
 
 <dom-module id="os-settings-add-input-methods-dialog">
   <template>
-    <style include="settings-shared iron-flex">
+    <style include="settings-shared iron-flex shared-style">
       #dialogBody {
         display: flex;
         flex-direction: column;
@@ -22,9 +23,7 @@
       }
 
       cr-search-field {
-        --cr-search-field-search-input-width: 100%;
-        padding-bottom: 8px;
-        padding-inline-end: 20px;
+        margin-bottom: 8px;
       }
 
       .label {

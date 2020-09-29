@@ -371,6 +371,7 @@ group("polymer3_elements") {
     ":os_languages_page_module",
     ":os_languages_page_v2_module",
     ":os_languages_section_module",
+    ":shared_style_module",
     ":smart_inputs_page_module",
     "../../languages_page:languages_module",
     "../../languages_page:modulize",
@@ -465,6 +466,12 @@ polymer_modulizer("input_page") {
   migrated_imports = settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites
   auto_imports = os_settings_auto_imports
+}
+
+polymer_modulizer("shared_style") {
+  js_file = "shared_style.m.js"
+  html_file = "shared_style.html"
+  html_type = "style-module"
 }
 
 polymer_modulizer("smart_inputs_page") {
