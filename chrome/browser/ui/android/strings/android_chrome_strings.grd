@@ -2506,7 +2506,7 @@ In Incognito, your activity might still be visible to websites that you visit, y
         Choose an account
       </message>
       <message name="IDS_SIGNIN_ACCOUNT_PICKER_BOTTOM_SHEET_SUBTITLE" desc="The subtitle for the account picker bottom sheet that tells the user what happens if the button 'Continue as John Doe' is clicked">
-        Sign in to this site, your Google Account, and Chrome. You may turn on sync later.
+        Sign in to this site and Chrome with your Google Account. You can turn on sync later.
       </message>
       <message name="IDS_SIGNIN_ACCOUNT_PICKER_BOTTOM_SHEET_SIGNIN_TITLE" desc="The title of the account picker bottom sheet tells that the user is in the process of signing in with their Google Account">
         Signing in...
