@@ -41,7 +41,6 @@ source_set("audio") {
   visibility = [
     ":wav_audio_handler_fuzzer",
     "//media",
-
     "//media/renderers",
 
     # TODO(dalecurtis): CoreAudioUtil::IsCoreAudioSupported() should probably
@@ -85,6 +84,8 @@ source_set("audio") {
     "audio_manager.h",
     "audio_manager_base.cc",
     "audio_manager_base.h",
+    "audio_opus_encoder.cc",
+    "audio_opus_encoder.h",
     "audio_output_delegate.cc",
     "audio_output_delegate.h",
     "audio_output_device.cc",
@@ -103,6 +104,8 @@ source_set("audio") {
     "audio_output_resampler.h",
     "audio_output_stream_sink.cc",
     "audio_output_stream_sink.h",
+    "audio_pcm_encoder.cc",
+    "audio_pcm_encoder.h",
     "audio_sink_parameters.cc",
     "audio_sink_parameters.h",
     "audio_source_diverter.h",
@@ -144,6 +147,7 @@ source_set("audio") {
     "//base",
     "//build:chromecast_buildflags",
     "//media/base",
+    "//third_party/opus:opus",
     "//url",
   ]
   libs = []
@@ -269,10 +273,10 @@ source_set("audio") {
       ]
       deps += [ "//chromeos/audio" ]
     } else if (is_linux) {
-        sources += [
-          "cras/audio_manager_cras.cc",
-          "cras/audio_manager_cras.h",
-        ]
+      sources += [
+        "cras/audio_manager_cras.cc",
+        "cras/audio_manager_cras.h",
+      ]
     }
   }
 
@@ -379,6 +383,7 @@ source_set("unit_tests") {
     "audio_debug_recording_helper_unittest.cc",
     "audio_debug_recording_manager_unittest.cc",
     "audio_debug_recording_session_impl_unittest.cc",
+    "audio_encoders_unittest.cc",
     "audio_input_device_unittest.cc",
     "audio_input_stream_data_interceptor_unittest.cc",
     "audio_input_unittest.cc",
@@ -398,6 +403,7 @@ source_set("unit_tests") {
     "//media:test_support",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/opus:opus",
     "//url",
   ]
 

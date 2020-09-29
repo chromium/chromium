@@ -57,6 +57,8 @@ source_set("base") {
     "audio_decoder_config.h",
     "audio_discard_helper.cc",
     "audio_discard_helper.h",
+    "audio_encoder.cc",
+    "audio_encoder.h",
     "audio_fifo.cc",
     "audio_fifo.h",
     "audio_hash.cc",
