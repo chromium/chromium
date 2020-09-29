@@ -178,7 +178,13 @@
 }
 
 - (void)showUpdateAtLocation:(NSString*)location {
-  // TODO(crbug.com/1078782): Add navigation to various app update locations.
+  if (!location) {
+    NOTREACHED();
+    return;
+  }
+  const GURL url(base::SysNSStringToUTF8(location));
+  OpenNewTabCommand* command = [OpenNewTabCommand commandWithURLFromChrome:url];
+  [self.handler closeSettingsUIAndOpenURL:command];
 }
 
 - (void)showSafeBrowsingPreferencePage {

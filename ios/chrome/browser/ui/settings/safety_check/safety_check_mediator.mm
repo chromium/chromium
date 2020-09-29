@@ -39,6 +39,7 @@
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#include "ios/chrome/browser/upgrade/upgrade_constants.h"
 #include "ios/chrome/browser/upgrade/upgrade_recommended_details.h"
 #include "ios/chrome/browser/upgrade/upgrade_utils.h"
 #include "ios/chrome/common/channel_info.h"
@@ -94,8 +95,6 @@ typedef NS_ENUM(NSInteger, UpdateCheckRowStates) {
   UpdateCheckRowStateOmahaError,
   // When there is a connectivity issue.
   UpdateCheckRowStateNetError,
-  // When the device is too old and no longer able to update.
-  UpdateCheckRowStateUnableUpdate,
   // When the device is on a non-supported channel.
   UpdateCheckRowStateChannel,
 };
@@ -382,10 +381,13 @@ typedef NS_ENUM(NSInteger, CheckStartStates) {
         case UpdateCheckRowStateManaged:       // i tap: Managed state popover.
         case UpdateCheckRowStateOmahaError:    // i tap: Show error popover.
         case UpdateCheckRowStateNetError:      // i tap: Show error popover.
-        case UpdateCheckRowStateUnableUpdate:  // i tap: Show error popover.
           break;
-        case UpdateCheckRowStateOutOfDate:  // i tap: Go to app store.
+        case UpdateCheckRowStateOutOfDate: {  // i tap: Go to app store.
+          NSString* updateLocation = [[NSUserDefaults standardUserDefaults]
+              stringForKey:kIOSChromeUpgradeURLKey];
+          [self.handler showUpdateAtLocation:updateLocation];
           break;
+        }
       }
       break;
     }
@@ -542,8 +544,6 @@ typedef NS_ENUM(NSInteger, CheckStartStates) {
       message = l10n_util::GetNSString(
           IDS_IOS_SETTINGS_SAFETY_CHECK_UPDATES_OFFLINE_INFO);
       break;
-    case UpdateCheckRowStateUnableUpdate:
-      return nil;
     case UpdateCheckRowStateChannel:
       break;
   }
@@ -683,6 +683,29 @@ typedef NS_ENUM(NSInteger, CheckStartStates) {
   // The display should be changed to loading icons before any checks are
   // started.
   if (self.checksRemaining) {
+    // Only perfom update check on supported channels.
+    switch (::GetChannel()) {
+      case version_info::Channel::STABLE:
+      case version_info::Channel::BETA:
+      case version_info::Channel::DEV: {
+        [self performUpdateCheck];
+        break;
+      }
+      case version_info::Channel::CANARY:
+      case version_info::Channel::UNKNOWN: {
+        // Want to show the loading wheel momentarily.
+        dispatch_after(
+            dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.75 * NSEC_PER_SEC)),
+            dispatch_get_main_queue(), ^{
+              // Check if the check was cancelled while waiting.
+              if (self.checksRemaining) {
+                self.updateCheckRowState = UpdateCheckRowStateChannel;
+                [self reconfigureUpdateCheckItem];
+              }
+            });
+        break;
+      }
+    }
     // This handles a discrepancy between password check and safety check.  In
     // password check a user cannot start a check if they have no passwords, but
     // in safety check they can, but the |passwordCheckManager| won't even start
@@ -709,20 +732,8 @@ typedef NS_ENUM(NSInteger, CheckStartStates) {
           if (self.checksRemaining)
             [self checkAndReconfigureSafeBrowsingState];
         });
-
-    [self performUpdateCheck];
   }
   return;
-}
-
-// Updates |updateCheckItem| to reflect the device being offline if the check
-// was running.
-- (void)handleUpdateCheckOffline {
-  if (self.updateCheckRowState == UpdateCheckRowStateRunning) {
-    self.updateCheckRowState = UpdateCheckRowStateNetError;
-
-    [self reconfigureUpdateCheckItem];
-  }
 }
 
 // Checks if any of the safety checks are still running, resets |checkStartItem|
@@ -760,6 +771,16 @@ typedef NS_ENUM(NSInteger, CheckStartStates) {
   return updateCheckRunning || passwordCheckRunning || safeBrowsingCheckRunning;
 }
 
+// Updates |updateCheckItem| to reflect the device being offline if the check
+// was running.
+- (void)handleUpdateCheckOffline {
+  if (self.updateCheckRowState == UpdateCheckRowStateRunning) {
+    self.updateCheckRowState = UpdateCheckRowStateNetError;
+
+    [self reconfigureUpdateCheckItem];
+  }
+}
+
 // Verifies if the Omaha service returned an answer, if not sets
 // |updateCheckItem| to an Omaha error state.
 - (void)verifyUpdateCheckComplete {
@@ -771,11 +792,57 @@ typedef NS_ENUM(NSInteger, CheckStartStates) {
   return;
 }
 
+- (void)handleOmahaResponse:(const UpgradeRecommendedDetails&)details {
+  // If before the response the check was canceled, or Omaha assumed faulty,
+  // do nothing.
+  if (self.updateCheckRowState != UpdateCheckRowStateRunning) {
+    return;
+  }
+
+  const GURL& upgradeUrl = details.upgrade_url;
+
+  if (!upgradeUrl.is_valid()) {
+    self.updateCheckRowState = UpdateCheckRowStateOmahaError;
+    [self reconfigureUpdateCheckItem];
+    return;
+  }
+
+  if (!details.next_version.size() ||
+      !base::Version(details.next_version).IsValid()) {
+    self.updateCheckRowState = UpdateCheckRowStateOmahaError;
+    [self reconfigureUpdateCheckItem];
+    return;
+  }
+
+  // Valid results, update NSUserDefaults.
+  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+
+  [defaults setValue:base::SysUTF8ToNSString(upgradeUrl.spec())
+              forKey:kIOSChromeUpgradeURLKey];
+  [defaults setValue:base::SysUTF8ToNSString(details.next_version)
+              forKey:kIOSChromeNextVersionKey];
+  [defaults setBool:details.is_up_to_date forKey:kIOSChromeUpToDateKey];
+
+  if (details.is_up_to_date) {
+    self.updateCheckRowState = UpdateCheckRowStateUpToDate;
+  } else {
+    self.updateCheckRowState = UpdateCheckRowStateOutOfDate;
+    // Treat the safety check finding the device out of date as if the update
+    // infobar was just shown to not overshow the infobar to the user.
+    [defaults setObject:[NSDate date] forKey:kLastInfobarDisplayTimeKey];
+  }
+  [self reconfigureUpdateCheckItem];
+  return;
+}
+
 // Performs the update check and triggers the display update to
 // |updateCheckItem|.
 - (void)performUpdateCheck {
   __weak __typeof__(self) weakSelf = self;
-  // TODO(crbug.com/1078782): Add Omaha support after refactor.
+
+  OmahaService::CheckNow(base::BindOnce(^(UpgradeRecommendedDetails details) {
+    [weakSelf handleOmahaResponse:details];
+  }));
 
   // If after 30 seconds the Omaha server has not responded, assume Omaha error.
   dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(30 * NSEC_PER_SEC)),
@@ -859,12 +926,6 @@ typedef NS_ENUM(NSInteger, CheckStartStates) {
       self.updateCheckItem.infoButtonHidden = NO;
       self.updateCheckItem.detailText =
           GetNSString(IDS_IOS_SETTINGS_SAFETY_CHECK_UPDATES_OFFLINE_DESC);
-      break;
-    }
-    case UpdateCheckRowStateUnableUpdate: {
-      self.updateCheckItem.infoButtonHidden = NO;
-      self.updateCheckItem.detailText =
-          GetNSString(IDS_IOS_SETTINGS_SAFETY_CHECK_UPDATES_OUT_OF_DATE_DESC);
       break;
     }
     case UpdateCheckRowStateChannel: {
