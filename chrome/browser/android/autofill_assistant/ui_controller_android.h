@@ -168,7 +168,7 @@ class UiControllerAndroid : public ControllerObserver {
 
   // Called by AssistantBottomBarNativeDelegate:
   bool OnBackButtonClicked();
-  void OnBottomSheetDismissed();
+  void OnBottomSheetClosedWithSwipe();
 
   // Called by Java.
   void SnackbarResult(JNIEnv* env,

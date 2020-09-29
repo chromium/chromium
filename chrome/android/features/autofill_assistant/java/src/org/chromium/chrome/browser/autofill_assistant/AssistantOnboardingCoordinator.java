@@ -111,7 +111,7 @@ class AssistantOnboardingCoordinator {
                     }
 
                     @Override
-                    public void onBottomSheetDismissed() {}
+                    public void onBottomSheetClosedWithSwipe() {}
                 });
         initContent(callback);
         BottomSheetUtils.showContentAndMaybeExpand(

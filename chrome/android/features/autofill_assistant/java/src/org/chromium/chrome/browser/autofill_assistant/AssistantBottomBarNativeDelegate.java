@@ -32,9 +32,9 @@ public class AssistantBottomBarNativeDelegate implements AssistantBottomBarDeleg
     }
 
     @Override
-    public void onBottomSheetDismissed() {
+    public void onBottomSheetClosedWithSwipe() {
         if (mNativeAssistantBottomBarDelegate != 0) {
-            AssistantBottomBarNativeDelegateJni.get().onBottomSheetDismissed(
+            AssistantBottomBarNativeDelegateJni.get().onBottomSheetClosedWithSwipe(
                     mNativeAssistantBottomBarDelegate, AssistantBottomBarNativeDelegate.this);
         }
     }
@@ -48,7 +48,7 @@ public class AssistantBottomBarNativeDelegate implements AssistantBottomBarDeleg
     interface Natives {
         boolean onBackButtonClicked(
                 long nativeAssistantBottomBarDelegate, AssistantBottomBarNativeDelegate caller);
-        void onBottomSheetDismissed(
+        void onBottomSheetClosedWithSwipe(
                 long nativeAssistantBottomBarDelegate, AssistantBottomBarNativeDelegate caller);
     }
 }

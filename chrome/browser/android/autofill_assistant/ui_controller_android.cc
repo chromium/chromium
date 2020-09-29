@@ -922,7 +922,7 @@ bool UiControllerAndroid::OnBackButtonClicked() {
   return true;
 }
 
-void UiControllerAndroid::OnBottomSheetDismissed() {
+void UiControllerAndroid::OnBottomSheetClosedWithSwipe() {
   if (ui_delegate_->IsTabSelected() && ui_delegate_->IsRunningLiteScript()) {
     // Destroying UI here because Shutdown does not do so in all cases.
     DestroySelf();

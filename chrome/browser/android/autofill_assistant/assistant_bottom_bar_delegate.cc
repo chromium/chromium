@@ -30,10 +30,10 @@ bool AssistantBottomBarDelegate::OnBackButtonClicked(
   return ui_controller_->OnBackButtonClicked();
 }
 
-void AssistantBottomBarDelegate::OnBottomSheetDismissed(
+void AssistantBottomBarDelegate::OnBottomSheetClosedWithSwipe(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jcaller) {
-  ui_controller_->OnBottomSheetDismissed();
+  ui_controller_->OnBottomSheetClosedWithSwipe();
 }
 
 base::android::ScopedJavaGlobalRef<jobject>

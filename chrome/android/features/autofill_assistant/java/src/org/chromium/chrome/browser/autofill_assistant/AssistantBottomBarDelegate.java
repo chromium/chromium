@@ -13,6 +13,9 @@ public interface AssistantBottomBarDelegate {
     // the new bottom sheet state and have the logic to shutdown there. Currently, this would be
     // tricky to do because it would interfere with the existing Controller::SetBottomSheetState
     // method and in particular tab switching.
-    /** The bottom sheet was dismissed. */
-    void onBottomSheetDismissed();
+    /**
+     * The bottom sheet was closed with a swipe gesture. Note that this will be fired both when
+     * going into the PEEK state as well as when dismissing the sheet altogether.
+     */
+    void onBottomSheetClosedWithSwipe();
 }

@@ -19,7 +19,7 @@ class AssistantBottomBarDelegate {
   bool OnBackButtonClicked(JNIEnv* env,
                            const base::android::JavaParamRef<jobject>& jcaller);
 
-  void OnBottomSheetDismissed(
+  void OnBottomSheetClosedWithSwipe(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& jcaller);
 
