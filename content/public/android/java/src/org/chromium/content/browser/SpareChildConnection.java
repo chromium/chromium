@@ -58,7 +58,7 @@ public class SpareChildConnection {
                     @Override
                     public void onChildStartFailed(ChildProcessConnection connection) {
                         assert LauncherThread.runningOnLauncherThread();
-                        Log.e(TAG, "Failed to warm up the spare sandbox service");
+                        Log.w(TAG, "Failed to warm up the spare sandbox service");
                         if (mConnectionServiceCallback != null) {
                             mConnectionServiceCallback.onChildStartFailed(connection);
                         }
