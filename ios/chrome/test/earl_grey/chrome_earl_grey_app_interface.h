@@ -482,6 +482,9 @@
 
 #pragma mark - Pasteboard utilities
 
+// Clears the URLs stored in the pasteboard, from the tested app's perspective.
++ (void)clearPasteboardURLs;
+
 // Retrieves the currently stored string on the pasteboard from the tested app's
 // perspective.
 + (NSString*)pasteboardString;

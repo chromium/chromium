@@ -582,6 +582,12 @@ id ExecuteJavaScript(NSString* javascript, NSError* __autoreleasing* out_error);
 // present in the omnibox.
 - (void)verifyOpenInNewTabActionWithURL:(const std::string&)URL;
 
+// Taps on the Open in Incognito context menu action and waits for the |URL| to
+// be present in the omnibox. |useNewString| determines which action string
+// to use.
+- (void)verifyOpenInIncognitoActionWithURL:(const std::string&)URL
+                              useNewString:(BOOL)useNewString;
+
 // Taps on the Share context menu action and validates that the ActivityView
 // was brought up with |pageTitle| in its header.
 - (void)verifyShareActionWithPageTitle:(NSString*)pageTitle;

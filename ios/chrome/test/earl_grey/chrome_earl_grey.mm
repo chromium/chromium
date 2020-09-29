@@ -41,6 +41,7 @@ using base::test::ios::WaitUntilConditionOrTimeout;
 using chrome_test_util::ActivityViewHeader;
 using chrome_test_util::CopyLinkButton;
 using chrome_test_util::OpenLinkInNewTabButton;
+using chrome_test_util::OpenLinkInIncognitoButton;
 using chrome_test_util::ShareButton;
 
 namespace {
@@ -1058,6 +1059,7 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeEarlGreyAppInterface)
 
 - (void)verifyCopyLinkActionWithText:(NSString*)text
                         useNewString:(BOOL)useNewString {
+  [ChromeEarlGreyAppInterface clearPasteboardURLs];
   [[EarlGrey selectElementWithMatcher:CopyLinkButton(useNewString)]
       performAction:grey_tap()];
   [self verifyStringCopied:text];
@@ -1065,12 +1067,31 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeEarlGreyAppInterface)
 
 - (void)verifyOpenInNewTabActionWithURL:(const std::string&)URL {
   // Check tab count prior to execution.
-  NSUInteger oldTabCount = [ChromeEarlGreyAppInterface mainTabCount];
+  NSUInteger oldRegularTabCount = [ChromeEarlGreyAppInterface mainTabCount];
+  NSUInteger oldIncognitoTabCount =
+      [ChromeEarlGreyAppInterface incognitoTabCount];
 
   [[EarlGrey selectElementWithMatcher:OpenLinkInNewTabButton()]
       performAction:grey_tap()];
 
-  [self waitForMainTabCount:oldTabCount + 1];
+  [self waitForMainTabCount:oldRegularTabCount + 1];
+  [self waitForIncognitoTabCount:oldIncognitoTabCount];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxText(URL)]
+      assertWithMatcher:grey_notNil()];
+}
+
+- (void)verifyOpenInIncognitoActionWithURL:(const std::string&)URL
+                              useNewString:(BOOL)useNewString {
+  // Check tab count prior to execution.
+  NSUInteger oldRegularTabCount = [ChromeEarlGreyAppInterface mainTabCount];
+  NSUInteger oldIncognitoTabCount =
+      [ChromeEarlGreyAppInterface incognitoTabCount];
+
+  [[EarlGrey selectElementWithMatcher:OpenLinkInIncognitoButton(useNewString)]
+      performAction:grey_tap()];
+
+  [self waitForIncognitoTabCount:oldIncognitoTabCount + 1];
+  [self waitForMainTabCount:oldRegularTabCount];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxText(URL)]
       assertWithMatcher:grey_notNil()];
 }

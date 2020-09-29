@@ -840,6 +840,10 @@ NSString* SerializedPref(const PrefService::Preference* pref) {
 
 #pragma mark - Pasteboard utilities
 
++ (void)clearPasteboardURLs {
+  [[UIPasteboard generalPasteboard] setURLs:nil];
+}
+
 + (NSString*)pasteboardString {
   return [UIPasteboard generalPasteboard].string;
 }

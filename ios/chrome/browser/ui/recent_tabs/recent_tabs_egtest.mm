@@ -321,7 +321,8 @@ GURL TestPageURL() {
 // Tests the Copy Link action on a recent tab's context menu.
 - (void)testContextMenuCopyLink {
   if (![ChromeEarlGrey isNativeContextMenusEnabled]) {
-    EARL_GREY_TEST_SKIPPED(@"Test disabled on when feature flag is off.");
+    EARL_GREY_TEST_SKIPPED(
+        @"Test disabled when Native Context Menus feature flag is off.");
   }
 
   [self loadTestURL];
@@ -338,7 +339,8 @@ GURL TestPageURL() {
 // Tests the Open in New Tab action on a recent tab's context menu.
 - (void)testContextMenuOpenInNewTab {
   if (![ChromeEarlGrey isNativeContextMenusEnabled]) {
-    EARL_GREY_TEST_SKIPPED(@"Test disabled on when feature flag is off.");
+    EARL_GREY_TEST_SKIPPED(
+        @"Test disabled when Native Context Menus feature flag is off.");
   }
 
   [self loadTestURL];
@@ -355,7 +357,8 @@ GURL TestPageURL() {
 // Tests the Share action on a recent tab's context menu.
 - (void)testContextMenuShare {
   if (![ChromeEarlGrey isNativeContextMenusEnabled]) {
-    EARL_GREY_TEST_SKIPPED(@"Test disabled on when feature flag is off.");
+    EARL_GREY_TEST_SKIPPED(
+        @"Test disabled when Native Context Menus feature flag is off.");
   }
 
   [self loadTestURL];

@@ -160,7 +160,8 @@ char kResponse3[] = "Test Page 3 content";
 // Tests the Copy Link action on a recent tab's context menu.
 - (void)testRecentTabsContextMenuCopyLink {
   if (![ChromeEarlGrey isNativeContextMenusEnabled]) {
-    EARL_GREY_TEST_SKIPPED(@"Test disabled on when feature flag is off.");
+    EARL_GREY_TEST_SKIPPED(
+        @"Test disabled when Native Context Menus feature flag is off.");
   }
 
   [self prepareRecentTabWithURL:_URL1 response:kResponse1];
@@ -175,7 +176,8 @@ char kResponse3[] = "Test Page 3 content";
 // Tests the Open in New Tab action on a recent tab's context menu.
 - (void)testRecentTabsContextMenuOpenInNewTab {
   if (![ChromeEarlGrey isNativeContextMenusEnabled]) {
-    EARL_GREY_TEST_SKIPPED(@"Test disabled on when feature flag is off.");
+    EARL_GREY_TEST_SKIPPED(
+        @"Test disabled when Native Context Menus feature flag is off.");
   }
 
   [self prepareRecentTabWithURL:_URL1 response:kResponse1];
@@ -191,7 +193,8 @@ char kResponse3[] = "Test Page 3 content";
 // Tests the Share action on a recent tab's context menu.
 - (void)testRecentTabsContextMenuShare {
   if (![ChromeEarlGrey isNativeContextMenusEnabled]) {
-    EARL_GREY_TEST_SKIPPED(@"Test disabled on when feature flag is off.");
+    EARL_GREY_TEST_SKIPPED(
+        @"Test disabled when Native Context Menus feature flag is off.");
   }
 
   [self prepareRecentTabWithURL:_URL1 response:kResponse1];

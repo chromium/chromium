@@ -330,7 +330,7 @@ id<GREYMatcher> EditButton(BOOL use_new_string);
 // Matcher for the Move option on the updated context menus.
 id<GREYMatcher> MoveButton();
 
-// Matcher for the Share option on the updated context menus.
+// Matcher for the Delete option on the updated context menus.
 id<GREYMatcher> DeleteButton();
 
 // Returns matcher for the Copy item on the old-style context menu.
