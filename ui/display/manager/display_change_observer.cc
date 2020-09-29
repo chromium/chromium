@@ -14,6 +14,8 @@
 
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/cpu.h"
+#include "base/no_destructor.h"
 #include "base/stl_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/user_activity/user_activity_detector.h"
@@ -95,6 +97,13 @@ gfx::DisplayColorSpaces FillDisplayColorSpaces(
   // Instead, clamp at DCI-P3 and clamp at that level or with a small overshoot.
   gfx::DisplayColorSpaces display_color_spaces(
       gfx::ColorSpace::CreateSRGB(), DisplaySnapshot::PrimaryFormat());
+
+  // AMD Chromebooks have issues playing back and scanning out high bit depth
+  // content. TODO(b/169576243, b/165825264): remove this provision when fixed.
+  static const base::NoDestructor<base::CPU> cpuid;
+  static const bool is_amd = cpuid->vendor_name() == "AuthenticAMD";
+  if (is_amd)
+    return display_color_spaces;
 
   if (allow_high_bit_depth && snapshot_color_space.IsHDR()) {
     constexpr float kSDRJoint = 0.75;
