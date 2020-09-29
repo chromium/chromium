@@ -209,13 +209,6 @@ void DidOpenURLOnUI(WindowType type,
   new OpenURLObserver(web_contents,
                       rfhi->frame_tree_node()->frame_tree_node_id(),
                       std::move(callback));
-
-  if (type == WindowType::PAYMENT_HANDLER_WINDOW) {
-    // Set the opened web_contents to payment app provider to manage its life
-    // cycle.
-    PaymentAppProvider::GetOrCreateForWebContents(web_contents)
-        ->SetOpenedWindow();
-  }
 }
 
 void OpenWindowOnUI(

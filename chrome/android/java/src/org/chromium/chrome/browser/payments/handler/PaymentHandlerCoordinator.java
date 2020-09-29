@@ -79,8 +79,10 @@ public class PaymentHandlerCoordinator {
 
         PropertyModel model = new PropertyModel.Builder(PaymentHandlerProperties.ALL_KEYS).build();
         PaymentHandlerMediator mediator = new PaymentHandlerMediator(model, this::hide,
-                mPaymentHandlerWebContents, uiObserver, activity.getActivityTab().getView(),
-                mToolbarCoordinator.getToolbarHeightPx(), activity.getLifecycleDispatcher(),
+                /*paymentRequestWebContents=*/paymentRequestWebContents,
+                /*paymentHandlerWebContents*/ mPaymentHandlerWebContents, uiObserver,
+                activity.getActivityTab().getView(), mToolbarCoordinator.getToolbarHeightPx(),
+                activity.getLifecycleDispatcher(),
                 BottomSheetControllerProvider.from(activity.getWindowAndroid()));
         activity.getWindow().getDecorView().addOnLayoutChangeListener(mediator);
         BottomSheetController bottomSheetController =

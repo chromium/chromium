@@ -104,19 +104,21 @@ void AddModifiersToMap(const std::vector<PaymentDetailsModifierPtr>& modifiers,
 
 // static
 PaymentAppProvider* PaymentAppProvider::GetOrCreateForWebContents(
-    WebContents* web_contents) {
-  return PaymentAppProviderImpl::GetOrCreateForWebContents(web_contents);
+    WebContents* payment_request_web_contents) {
+  return PaymentAppProviderImpl::GetOrCreateForWebContents(
+      payment_request_web_contents);
 }
 
 // static
 PaymentAppProviderImpl* PaymentAppProviderImpl::GetOrCreateForWebContents(
-    WebContents* web_contents) {
+    WebContents* payment_request_web_contents) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  auto* data = PaymentAppProviderImpl::FromWebContents(web_contents);
+  auto* data =
+      PaymentAppProviderImpl::FromWebContents(payment_request_web_contents);
   if (!data)
-    PaymentAppProviderImpl::CreateForWebContents(web_contents);
+    PaymentAppProviderImpl::CreateForWebContents(payment_request_web_contents);
 
-  return PaymentAppProviderImpl::FromWebContents(web_contents);
+  return PaymentAppProviderImpl::FromWebContents(payment_request_web_contents);
 }
 
 void PaymentAppProviderImpl::InvokePaymentApp(
@@ -125,7 +127,7 @@ void PaymentAppProviderImpl::InvokePaymentApp(
     PaymentRequestEventDataPtr event_data,
     InvokePaymentAppCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(web_contents_);
+  DCHECK(payment_request_web_contents_);
 
   scoped_refptr<DevToolsBackgroundServicesContextImpl> dev_tools =
       GetDevTools(sw_origin);
@@ -148,7 +150,7 @@ void PaymentAppProviderImpl::InvokePaymentApp(
 
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
       BrowserContext::GetDefaultStoragePartition(
-          web_contents_->GetBrowserContext()));
+          payment_request_web_contents_->GetBrowserContext()));
   scoped_refptr<ServiceWorkerContextWrapper> service_worker_context =
       partition->GetServiceWorkerContext();
 
@@ -173,7 +175,7 @@ void PaymentAppProviderImpl::InstallAndInvokePaymentApp(
     RegistrationIdCallback registration_id_callback,
     InvokePaymentAppCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(web_contents_);
+  DCHECK(payment_request_web_contents_);
 
   if (!sw_js_url.is_valid() || !sw_scope.is_valid() || method.empty()) {
     GetUIThreadTaskRunner({})->PostTask(
@@ -196,8 +198,8 @@ void PaymentAppProviderImpl::InstallAndInvokePaymentApp(
   }
 
   PaymentAppInstaller::Install(
-      web_contents_, app_name, string_encoded_icon, sw_js_url, sw_scope,
-      sw_use_cache, method, supported_delegations,
+      payment_request_web_contents_, app_name, string_encoded_icon, sw_js_url,
+      sw_scope, sw_use_cache, method, supported_delegations,
       base::BindOnce(&PaymentAppProviderImpl::OnInstallPaymentApp,
                      weak_ptr_factory_.GetWeakPtr(),
                      url::Origin::Create(sw_scope), std::move(event_data),
@@ -214,7 +216,7 @@ void PaymentAppProviderImpl::UpdatePaymentAppIcon(
     PaymentAppProvider::UpdatePaymentAppIconCallback callback) {
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
       BrowserContext::GetDefaultStoragePartition(
-          web_contents_->GetBrowserContext()));
+          payment_request_web_contents_->GetBrowserContext()));
   scoped_refptr<PaymentAppContextImpl> payment_app_context =
       partition->GetPaymentAppContext();
 
@@ -232,7 +234,7 @@ void PaymentAppProviderImpl::CanMakePayment(
     CanMakePaymentEventDataPtr event_data,
     CanMakePaymentCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(web_contents_);
+  DCHECK(payment_request_web_contents_);
 
   scoped_refptr<DevToolsBackgroundServicesContextImpl> dev_tools =
       GetDevTools(sw_origin);
@@ -255,7 +257,7 @@ void PaymentAppProviderImpl::CanMakePayment(
 
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
       BrowserContext::GetDefaultStoragePartition(
-          web_contents_->GetBrowserContext()));
+          payment_request_web_contents_->GetBrowserContext()));
   scoped_refptr<ServiceWorkerContextWrapper> service_worker_context =
       partition->GetServiceWorkerContext();
 
@@ -274,7 +276,7 @@ void PaymentAppProviderImpl::AbortPayment(int64_t registration_id,
                                           const std::string& payment_request_id,
                                           AbortCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(web_contents_);
+  DCHECK(payment_request_web_contents_);
 
   scoped_refptr<DevToolsBackgroundServicesContextImpl> dev_tools =
       GetDevTools(sw_origin);
@@ -287,7 +289,7 @@ void PaymentAppProviderImpl::AbortPayment(int64_t registration_id,
 
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
       BrowserContext::GetDefaultStoragePartition(
-          web_contents_->GetBrowserContext()));
+          payment_request_web_contents_->GetBrowserContext()));
   scoped_refptr<ServiceWorkerContextWrapper> service_worker_context =
       partition->GetServiceWorkerContext();
 
@@ -300,15 +302,16 @@ void PaymentAppProviderImpl::AbortPayment(int64_t registration_id,
           std::move(service_worker_context), std::move(callback)));
 }
 
-void PaymentAppProviderImpl::SetOpenedWindow() {
+void PaymentAppProviderImpl::SetOpenedWindow(
+    WebContents* payment_handler_web_contents) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(web_contents_);
+  DCHECK(payment_handler_web_contents);
 
   CloseOpenedWindow();
   DCHECK(!payment_handler_window_);
 
-  payment_handler_window_ =
-      std::make_unique<PaymentHandlerWindowObserver>(web_contents_);
+  payment_handler_window_ = std::make_unique<PaymentHandlerWindowObserver>(
+      payment_handler_web_contents);
 }
 
 void PaymentAppProviderImpl::CloseOpenedWindow() {
@@ -338,9 +341,9 @@ void PaymentAppProviderImpl::OnClosingOpenedWindow(
 scoped_refptr<DevToolsBackgroundServicesContextImpl>
 PaymentAppProviderImpl::GetDevTools(const url::Origin& sw_origin) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(web_contents_);
+  DCHECK(payment_request_web_contents_);
   auto* storage_partition = BrowserContext::GetStoragePartitionForSite(
-      web_contents_->GetBrowserContext(), sw_origin.GetURL(),
+      payment_request_web_contents_->GetBrowserContext(), sw_origin.GetURL(),
       /*can_create=*/true);
   if (!storage_partition)
     return nullptr;
@@ -362,7 +365,7 @@ void PaymentAppProviderImpl::StartServiceWorkerForDispatch(
 
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
       BrowserContext::GetDefaultStoragePartition(
-          web_contents_->GetBrowserContext()));
+          payment_request_web_contents_->GetBrowserContext()));
   scoped_refptr<ServiceWorkerContextWrapper> service_worker_context =
       partition->GetServiceWorkerContext();
 
@@ -381,7 +384,7 @@ void PaymentAppProviderImpl::OnInstallPaymentApp(
     InvokePaymentAppCallback callback,
     int64_t registration_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(web_contents_);
+  DCHECK(payment_request_web_contents_);
 
   if (registration_id >= 0) {
     std::move(registration_id_callback).Run(registration_id);
@@ -394,11 +397,12 @@ void PaymentAppProviderImpl::OnInstallPaymentApp(
   }
 }
 
-PaymentAppProviderImpl::PaymentAppProviderImpl(WebContents* web_contents)
-    : web_contents_(web_contents),
+PaymentAppProviderImpl::PaymentAppProviderImpl(
+    WebContents* payment_request_web_contents)
+    : payment_request_web_contents_(payment_request_web_contents),
       event_dispatcher_(
           std::make_unique<ServiceWorkerCoreThreadEventDispatcher>(
-              web_contents_)) {
+              payment_request_web_contents_)) {
   event_dispatcher_->set_payment_app_provider(weak_ptr_factory_.GetWeakPtr());
 }
 
@@ -408,8 +412,8 @@ PaymentAppProviderImpl::~PaymentAppProviderImpl() {
 }
 
 PaymentAppProviderImpl::PaymentHandlerWindowObserver::
-    PaymentHandlerWindowObserver(WebContents* web_contents)
-    : WebContentsObserver(web_contents) {}
+    PaymentHandlerWindowObserver(WebContents* payment_handler_web_contents)
+    : WebContentsObserver(payment_handler_web_contents) {}
 PaymentAppProviderImpl::PaymentHandlerWindowObserver::
     ~PaymentHandlerWindowObserver() = default;
 

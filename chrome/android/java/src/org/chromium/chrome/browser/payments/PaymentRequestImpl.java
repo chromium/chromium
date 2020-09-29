@@ -708,6 +708,10 @@ public class PaymentRequestImpl
         WebContents paymentHandlerWebContents = mPaymentUIsManager.showPaymentHandlerUI(
                 url, mComponentPaymentRequestImpl.isOffTheRecord());
         if (paymentHandlerWebContents != null) {
+            ServiceWorkerPaymentAppBridge.onOpeningPaymentAppWindow(
+                    /*paymentRequestWebContents=*/mWebContents,
+                    /*paymentHandlerWebContents=*/paymentHandlerWebContents);
+
             // UKM for payment app origin should get recorded only when the origin of the invoked
             // payment app is shown to the user.
             mJourneyLogger.setPaymentAppUkmSourceId(mInvokedPaymentApp.getUkmSourceId());

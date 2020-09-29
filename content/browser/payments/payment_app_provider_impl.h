@@ -20,7 +20,7 @@ class CONTENT_EXPORT PaymentAppProviderImpl
  public:
   ~PaymentAppProviderImpl() override;
   static PaymentAppProviderImpl* GetOrCreateForWebContents(
-      WebContents* web_contents);
+      WebContents* payment_request_web_contents);
 
   // Disallow copy and assign.
   PaymentAppProviderImpl(const PaymentAppProviderImpl& other) = delete;
@@ -60,13 +60,13 @@ class CONTENT_EXPORT PaymentAppProviderImpl
                     const url::Origin& sw_origin,
                     const std::string& payment_request_id,
                     AbortCallback callback) override;
-  void SetOpenedWindow() override;
+  void SetOpenedWindow(WebContents* payment_handler_web_contents) override;
   void CloseOpenedWindow() override;
   void OnClosingOpenedWindow(
       payments::mojom::PaymentEventResponseType reason) override;
 
  private:
-  explicit PaymentAppProviderImpl(WebContents* web_contents);
+  explicit PaymentAppProviderImpl(WebContents* payment_request_web_contents);
   friend class WebContentsUserData<PaymentAppProviderImpl>;
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 
@@ -86,14 +86,15 @@ class CONTENT_EXPORT PaymentAppProviderImpl
   // Note that constructor of WebContentsObserver is protected.
   class PaymentHandlerWindowObserver : public WebContentsObserver {
    public:
-    explicit PaymentHandlerWindowObserver(WebContents* web_contents);
+    explicit PaymentHandlerWindowObserver(
+        WebContents* payment_handler_web_contents);
     ~PaymentHandlerWindowObserver() override;
   };
 
   std::unique_ptr<PaymentHandlerWindowObserver> payment_handler_window_;
 
   // Owns this object.
-  WebContents* web_contents_;
+  WebContents* payment_request_web_contents_;
 
   // It should be accessed only on the service worker core thread.
   std::unique_ptr<ServiceWorkerCoreThreadEventDispatcher> event_dispatcher_;

@@ -121,14 +121,33 @@ static void JNI_ServiceWorkerPaymentAppBridge_GetServiceWorkerPaymentAppsInfo(
 
 static void JNI_ServiceWorkerPaymentAppBridge_OnClosingPaymentAppWindow(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jweb_contents,
+    const JavaParamRef<jobject>& payment_request_jweb_contents,
     jint reason) {
-  content::WebContents* web_contents =
-      content::WebContents::FromJavaWebContents(jweb_contents);
-  DCHECK(web_contents);  // Verified in Java before invoking this function.
-  content::PaymentAppProvider::GetOrCreateForWebContents(web_contents)
+  content::WebContents* payment_request_web_contents =
+      content::WebContents::FromJavaWebContents(payment_request_jweb_contents);
+  DCHECK(payment_request_web_contents);  // Verified in Java before invoking
+                                         // this function.
+  content::PaymentAppProvider::GetOrCreateForWebContents(
+      payment_request_web_contents)
       ->OnClosingOpenedWindow(
           static_cast<payments::mojom::PaymentEventResponseType>(reason));
+}
+
+static void JNI_ServiceWorkerPaymentAppBridge_OnOpeningPaymentAppWindow(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& payment_request_jweb_contents,
+    const JavaParamRef<jobject>& payment_handler_jweb_contents) {
+  content::WebContents* payment_request_web_contents =
+      content::WebContents::FromJavaWebContents(payment_request_jweb_contents);
+  content::WebContents* payment_handler_web_contents =
+      content::WebContents::FromJavaWebContents(payment_handler_jweb_contents);
+  DCHECK(payment_request_web_contents);  // Verified in Java before invoking
+                                         // this function.
+  DCHECK(payment_handler_web_contents);  // Verified in Java before invoking
+                                         // this function.
+  content::PaymentAppProvider::GetOrCreateForWebContents(
+      payment_request_web_contents)
+      ->SetOpenedWindow(payment_handler_web_contents);
 }
 
 static jlong

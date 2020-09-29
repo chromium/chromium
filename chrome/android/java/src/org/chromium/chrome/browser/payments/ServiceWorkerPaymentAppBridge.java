@@ -110,18 +110,20 @@ public class ServiceWorkerPaymentAppBridge {
             @Override
             public void onDidFinishNavigation(Tab tab, NavigationHandle navigationHandle) {
                 // Notify closing payment app window so as to abort payment if unsecure.
-                WebContents webContents = tab.getWebContents();
-                if (!SslValidityChecker.isValidPageInPaymentHandlerWindow(webContents)) {
-                    onClosingPaymentAppWindowForInsecureNavigation(webContents);
+                WebContents paymentRequestWebContents = tab.getWebContents();
+                if (!SslValidityChecker.isValidPageInPaymentHandlerWindow(
+                            paymentRequestWebContents)) {
+                    onClosingPaymentAppWindowForInsecureNavigation(paymentRequestWebContents);
                 }
             }
 
             @Override
             public void onSSLStateUpdated(Tab tab) {
                 // Notify closing payment app window so as to abort payment if unsecure.
-                WebContents webContents = tab.getWebContents();
-                if (!SslValidityChecker.isValidPageInPaymentHandlerWindow(webContents)) {
-                    onClosingPaymentAppWindowForInsecureNavigation(webContents);
+                WebContents paymentRequestWebContents = tab.getWebContents();
+                if (!SslValidityChecker.isValidPageInPaymentHandlerWindow(
+                            paymentRequestWebContents)) {
+                    onClosingPaymentAppWindowForInsecureNavigation(paymentRequestWebContents);
                 }
             }
         });
@@ -130,23 +132,39 @@ public class ServiceWorkerPaymentAppBridge {
     /**
      * Notify closing the opened payment app window for insecure navigation.
      *
-     * @param webContents The web contents in the opened window.
+     * @param paymentRequestWebContents The web contents in the opened window.
      */
-    public static void onClosingPaymentAppWindowForInsecureNavigation(WebContents webContents) {
-        if (webContents.isDestroyed()) return;
-        ServiceWorkerPaymentAppBridgeJni.get().onClosingPaymentAppWindow(
-                webContents, PaymentEventResponseType.PAYMENT_HANDLER_INSECURE_NAVIGATION);
+    public static void onClosingPaymentAppWindowForInsecureNavigation(
+            WebContents paymentRequestWebContents) {
+        if (paymentRequestWebContents.isDestroyed()) return;
+        ServiceWorkerPaymentAppBridgeJni.get().onClosingPaymentAppWindow(paymentRequestWebContents,
+                PaymentEventResponseType.PAYMENT_HANDLER_INSECURE_NAVIGATION);
     }
 
     /**
      * Notify closing the opened payment app window.
      *
-     * @param webContents The web contents in the opened window. Can be null.
+     * @param paymentRequestWebContents The web contents in the opened window. Can be null.
      */
-    public static void onClosingPaymentAppWindow(@Nullable WebContents webContents) {
-        if (webContents == null || webContents.isDestroyed()) return;
+    public static void onClosingPaymentAppWindow(@Nullable WebContents paymentRequestWebContents) {
+        if (paymentRequestWebContents == null || paymentRequestWebContents.isDestroyed()) return;
         ServiceWorkerPaymentAppBridgeJni.get().onClosingPaymentAppWindow(
-                webContents, PaymentEventResponseType.PAYMENT_HANDLER_WINDOW_CLOSING);
+                paymentRequestWebContents, PaymentEventResponseType.PAYMENT_HANDLER_WINDOW_CLOSING);
+    }
+
+    /**
+     * Called when payment handler's window is being opened.
+     *
+     * @param paymentRequestWebContents The web contents of the merchant's frame, cannot be null.
+     * @param paymentHandlerWebContents The web contents of the payment handler, cannot be null.
+     */
+    public static void onOpeningPaymentAppWindow(
+            WebContents paymentRequestWebContents, WebContents paymentHandlerWebContents) {
+        if (paymentHandlerWebContents == null || paymentHandlerWebContents.isDestroyed()) return;
+        if (paymentRequestWebContents == null || paymentRequestWebContents.isDestroyed()) return;
+        ServiceWorkerPaymentAppBridgeJni.get().onOpeningPaymentAppWindow(
+                /*paymentRequestWebContents=*/paymentRequestWebContents,
+                /*paymentHandlerWebContents=*/paymentHandlerWebContents);
     }
 
     /**
@@ -189,7 +207,9 @@ public class ServiceWorkerPaymentAppBridge {
     interface Natives {
         void hasServiceWorkerPaymentApps(HasServiceWorkerPaymentAppsCallback callback);
         void getServiceWorkerPaymentAppsInfo(GetServiceWorkerPaymentAppsInfoCallback callback);
-        void onClosingPaymentAppWindow(WebContents webContents, int reason);
+        void onClosingPaymentAppWindow(WebContents paymentRequestWebContents, int reason);
+        void onOpeningPaymentAppWindow(
+                WebContents paymentRequestWebContents, WebContents paymentHandlerWebContents);
         long getSourceIdForPaymentAppFromScope(GURL swScope);
     }
 }

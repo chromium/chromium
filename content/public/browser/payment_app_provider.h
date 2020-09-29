@@ -32,7 +32,7 @@ class CONTENT_EXPORT PaymentAppProvider {
   // This static function is actually implemented in PaymentAppProviderImpl.cc.
   // Please see: content/browser/payments/payment_app_provider_impl.cc
   static PaymentAppProvider* GetOrCreateForWebContents(
-      WebContents* web_contents);
+      WebContents* payment_request_web_contents);
 
   using RegistrationIdCallback =
       base::OnceCallback<void(int64_t registration_id)>;
@@ -84,7 +84,7 @@ class CONTENT_EXPORT PaymentAppProvider {
   // opened window for payment handler at any moment in a browser context. The
   // previously opened window in the same browser context will be closed after
   // calling this interface.
-  virtual void SetOpenedWindow() = 0;
+  virtual void SetOpenedWindow(WebContents* payment_handler_web_contents) = 0;
   virtual void CloseOpenedWindow() = 0;
 
   // Notify the opened payment handler window is closing or closed by user so as

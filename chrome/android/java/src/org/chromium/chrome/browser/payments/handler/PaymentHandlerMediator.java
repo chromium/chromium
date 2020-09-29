@@ -46,11 +46,8 @@ import java.lang.annotation.RetentionPolicy;
     private final PropertyModel mModel;
     // Whenever invoked, invoked outside of the WebContentsObserver callbacks.
     private final Runnable mHider;
-    // Postfixes with "Ref" to distinguish from mWebContent in WebContentsObserver. Although
-    // referencing the same object, mWebContentsRef is preferable to WebContents here because
-    // mWebContents (a weak ref) requires null checks, while mWebContentsRef is guaranteed to be not
-    // null.
-    private final WebContents mWebContentsRef;
+    private final WebContents mPaymentRequestWebContents;
+    private final WebContents mPaymentHandlerWebContents;
     private final PaymentHandlerUiObserver mPaymentHandlerUiObserver;
     // Used to postpone execution of a callback to avoid destroy objects (e.g., WebContents) in
     // their own methods.
@@ -82,7 +79,8 @@ import java.lang.annotation.RetentionPolicy;
      *         payment handler component.
      * @param hider The callback to clean up {@link PaymentHandlerCoordinator} when the sheet is
      *         hidden.
-     * @param webContents The web-contents that loads the payment app.
+     * @param paymentRequestWebContents The WebContents of the merchant's frame.
+     * @param paymentHandlerWebContents The WebContents of the payment handler.
      * @param observer The {@link PaymentHandlerUiObserver} that observes this Payment Handler UI.
      * @param tabView The view of the main tab.
      * @param toolbarViewHeightPx The height of the toolbar view in px.
@@ -91,14 +89,16 @@ import java.lang.annotation.RetentionPolicy;
      * @param sheetController A {@link BottomSheetController} to show UI in.
      */
     /* package */ PaymentHandlerMediator(PropertyModel model, Runnable hider,
-            WebContents webContents, PaymentHandlerUiObserver observer, View tabView,
-            int toolbarViewHeightPx, ActivityLifecycleDispatcher activityLifeCycleDispatcher,
+            WebContents paymentRequestWebContents, WebContents paymentHandlerWebContents,
+            PaymentHandlerUiObserver observer, View tabView, int toolbarViewHeightPx,
+            ActivityLifecycleDispatcher activityLifeCycleDispatcher,
             BottomSheetController sheetController) {
-        super(webContents);
-        assert webContents != null;
+        super(paymentHandlerWebContents);
+        assert paymentHandlerWebContents != null;
         mTabView = tabView;
         mBottomSheetController = sheetController;
-        mWebContentsRef = webContents;
+        mPaymentRequestWebContents = paymentRequestWebContents;
+        mPaymentHandlerWebContents = paymentHandlerWebContents;
         mToolbarViewHeightPx = toolbarViewHeightPx;
         mModel = model;
         mModel.set(PaymentHandlerProperties.BACK_PRESS_CALLBACK, this::onSystemBackButtonClicked);
@@ -166,7 +166,7 @@ import java.lang.annotation.RetentionPolicy;
 
     private void showScrim() {
         // Using an empty scrim observer is to avoid the dismissal of the bottom-sheet on tapping.
-        ChromeActivity activity = ChromeActivity.fromWebContents(mWebContentsRef);
+        ChromeActivity activity = ChromeActivity.fromWebContents(mPaymentHandlerWebContents);
         assert activity != null;
 
         PropertyModel params = mBottomSheetController.createScrimParams();
@@ -206,7 +206,7 @@ import java.lang.annotation.RetentionPolicy;
         switch (mCloseReason) {
             case CloseReason.INSECURE_NAVIGATION:
                 ServiceWorkerPaymentAppBridge.onClosingPaymentAppWindowForInsecureNavigation(
-                        mWebContentsRef);
+                        mPaymentRequestWebContents);
                 break;
             case CloseReason.USER:
                 // Intentional fallthrough.
@@ -214,7 +214,7 @@ import java.lang.annotation.RetentionPolicy;
                 // Intentional fallthrough.
                 // TODO(crbug.com/1017926): Respond to service worker with the net error.
             case CloseReason.ACTIVITY_DIED:
-                ServiceWorkerPaymentAppBridge.onClosingPaymentAppWindow(mWebContentsRef);
+                ServiceWorkerPaymentAppBridge.onClosingPaymentAppWindow(mPaymentRequestWebContents);
                 break;
             case CloseReason.OTHERS:
                 // No need to notify ServiceWorkerPaymentAppBridge when merchant aborts the
@@ -230,7 +230,7 @@ import java.lang.annotation.RetentionPolicy;
     }
 
     private void hideScrim() {
-        ChromeActivity activity = ChromeActivity.fromWebContents(mWebContentsRef);
+        ChromeActivity activity = ChromeActivity.fromWebContents(mPaymentHandlerWebContents);
         // activity would be null when this method is triggered by activity being destroyed.
         if (activity == null) return;
 
@@ -255,7 +255,7 @@ import java.lang.annotation.RetentionPolicy;
     }
 
     private void closeIfInsecure() {
-        if (!SslValidityChecker.isValidPageInPaymentHandlerWindow(mWebContentsRef)) {
+        if (!SslValidityChecker.isValidPageInPaymentHandlerWindow(mPaymentHandlerWebContents)) {
             closeUIForInsecureNavigation();
         }
     }
@@ -284,7 +284,7 @@ import java.lang.annotation.RetentionPolicy;
     }
 
     private void onSystemBackButtonClicked() {
-        NavigationController navigation = mWebContentsRef.getNavigationController();
+        NavigationController navigation = mPaymentHandlerWebContents.getNavigationController();
         if (navigation.canGoBack()) navigation.goBack();
     }
 }
