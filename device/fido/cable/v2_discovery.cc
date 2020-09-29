@@ -7,10 +7,10 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/strings/string_number_conversions.h"
-#include "device/fido/cable/v2_handshake.h"
-#include "device/fido/fido_parsing_utils.h"
 #include "components/device_event_log/device_event_log.h"
 #include "device/fido/cable/fido_tunnel_device.h"
+#include "device/fido/cable/v2_handshake.h"
+#include "device/fido/fido_parsing_utils.h"
 #include "third_party/boringssl/src/include/openssl/aes.h"
 
 namespace device {
@@ -18,7 +18,7 @@ namespace cablev2 {
 
 Discovery::Discovery(
     network::mojom::NetworkContext* network_context,
-    QRGeneratorKey qr_generator_key,
+    base::span<const uint8_t, kQRKeySize> qr_generator_key,
     std::vector<std::unique_ptr<Pairing>> pairings,
     base::Optional<base::RepeatingCallback<void(std::unique_ptr<Pairing>)>>
         pairing_callback)
@@ -26,22 +26,18 @@ Discovery::Discovery(
           FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy),
       network_context_(network_context),
       local_identity_seed_(fido_parsing_utils::Materialize(
-          base::span<const uint8_t, kCableIdentityKeySeedSize>(
-              qr_generator_key.data(),
-              kCableIdentityKeySeedSize))),
+          base::span<const uint8_t, kQRSeedSize>(qr_generator_key.data(),
+                                                 kQRSeedSize))),
       qr_secret_(fido_parsing_utils::Materialize(
-          base::span<const uint8_t, kCableQRSecretSize>(
-              qr_generator_key.data() + kCableIdentityKeySeedSize,
-              kCableQRSecretSize))),
+          base::span<const uint8_t, kQRSecretSize>(
+              qr_generator_key.data() + kQRSeedSize,
+              kQRSecretSize))),
       eid_key_(Derive<EXTENT(eid_key_)>(qr_secret_,
                                         base::span<const uint8_t>(),
                                         DerivedValueType::kEIDKey)),
       pairings_(std::move(pairings)),
       pairing_callback_(std::move(pairing_callback)) {
-  // TODO(agl): disabled in order to separate out CLs. Re-enable.
-  // static_assert(EXTENT(qr_generator_key) ==
-  //                   kCableIdentityKeySeedSize + kCableQRSecretSize,
-  //              "");
+  static_assert(EXTENT(qr_generator_key) == kQRSecretSize + kQRSeedSize, "");
 }
 
 Discovery::~Discovery() = default;

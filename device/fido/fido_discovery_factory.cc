@@ -98,7 +98,8 @@ bool FidoDiscoveryFactory::IsTestOverride() {
 
 void FidoDiscoveryFactory::set_cable_data(
     std::vector<CableDiscoveryData> cable_data,
-    base::Optional<QRGeneratorKey> qr_generator_key,
+    const base::Optional<std::array<uint8_t, cablev2::kQRKeySize>>&
+        qr_generator_key,
     std::vector<std::unique_ptr<cablev2::Pairing>> v2_pairings) {
   cable_data_ = std::move(cable_data);
   qr_generator_key_ = std::move(qr_generator_key);

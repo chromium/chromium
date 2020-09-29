@@ -5767,9 +5767,11 @@ class CableV2AuthenticatorImplTest : public AuthenticatorImplTest {
 
   const std::array<uint8_t, device::cablev2::kRootSecretSize> root_secret_ = {
       0};
-  const device::QRGeneratorKey qr_generator_key_ = {0};
-  const std::array<uint8_t, 16> zero_qr_secret_ = {0};
-  const device::CableIdentityKeySeed zero_seed_ = {0};
+  const std::array<uint8_t, device::cablev2::kQRKeySize> qr_generator_key_ = {
+      0};
+  const std::array<uint8_t, device::cablev2::kQRSecretSize> zero_qr_secret_ = {
+      0};
+  const std::array<uint8_t, device::cablev2::kQRSeedSize> zero_seed_ = {0};
 
   std::unique_ptr<network::mojom::NetworkContext> network_context_;
   uint8_t peer_identity_x962_[device::kP256X962Length] = {0};

@@ -25,6 +25,12 @@ constexpr size_t kEIDKeySize = 32;
 constexpr size_t kPSKSize = 32;
 // kRootSecretSize is the size of the main key maintained by authenticators.
 constexpr size_t kRootSecretSize = 32;
+// kQRKeySize is the size of the private key data that generates a QR code. It
+// consists of a 256-bit seed value that's used to genertate the P-256 private
+// key and a 128-bit secret.
+constexpr size_t kQRSecretSize = 16;
+constexpr size_t kQRSeedSize = 32;
+constexpr size_t kQRKeySize = kQRSeedSize + kQRSecretSize;
 
 }  // namespace cablev2
 }  // namespace device

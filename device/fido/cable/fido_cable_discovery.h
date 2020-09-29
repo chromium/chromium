@@ -21,6 +21,7 @@
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/fido/cable/cable_discovery_data.h"
 #include "device/fido/cable/fido_cable_device.h"
+#include "device/fido/cable/v2_constants.h"
 #include "device/fido/fido_device_discovery.h"
 
 namespace device {
@@ -151,7 +152,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoCableDiscovery
   // will be ignored. However, devices may rotate their BLE address at will so
   // this is not completely effective.
   std::set<std::string> active_devices_;
-  base::Optional<QRGeneratorKey> qr_generator_key_;
+  base::Optional<std::array<uint8_t, cablev2::kQRKeySize>> qr_generator_key_;
 
   // Note that on Windows, |advertisements_| is the only reference holder of
   // BluetoothAdvertisement.

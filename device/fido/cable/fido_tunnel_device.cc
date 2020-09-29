@@ -74,7 +74,7 @@ FidoTunnelDevice::FidoTunnelDevice(
     network::mojom::NetworkContext* network_context,
     base::OnceCallback<void(std::unique_ptr<Pairing>)> pairing_callback,
     base::span<const uint8_t> secret,
-    base::span<const uint8_t, kCableIdentityKeySeedSize> local_identity_seed,
+    base::span<const uint8_t, kQRSeedSize> local_identity_seed,
     const CableEidArray& eid,
     const CableEidArray& decrypted_eid)
     : info_(absl::in_place_type<QRInfo>), id_(RandomId()) {

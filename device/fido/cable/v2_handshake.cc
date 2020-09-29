@@ -489,8 +489,7 @@ ResponderResult::ResponderResult(ResponderResult&&) = default;
 base::Optional<ResponderResult> RespondToHandshake(
     base::span<const uint8_t, 32> psk,
     base::span<const uint8_t, kCableEphemeralIdSize> eid,
-    base::Optional<base::span<const uint8_t, kCableIdentityKeySeedSize>>
-        identity_seed,
+    base::Optional<base::span<const uint8_t, kQRSeedSize>> identity_seed,
     base::Optional<base::span<const uint8_t, kP256X962Length>> peer_identity,
     base::span<const uint8_t> in,
     std::vector<uint8_t>* out_response) {
@@ -617,7 +616,7 @@ base::Optional<ResponderResult> RespondToHandshake(
 }
 
 bool VerifyPairingSignature(
-    base::span<const uint8_t, kCableIdentityKeySeedSize> identity_seed,
+    base::span<const uint8_t, kQRSeedSize> identity_seed,
     base::span<const uint8_t, kP256X962Length> peer_public_key_x962,
     base::span<const uint8_t, std::tuple_size<HandshakeHash>::value>
         handshake_hash,

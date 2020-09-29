@@ -21,6 +21,7 @@
 #include "chrome/browser/webauthn/authenticator_transport.h"
 #include "chrome/browser/webauthn/observable_authenticator_list.h"
 #include "device/fido/cable/cable_discovery_data.h"
+#include "device/fido/cable/v2_constants.h"
 #include "device/fido/fido_request_handler_base.h"
 #include "device/fido/fido_transport_protocol.h"
 
@@ -361,11 +362,9 @@ class AuthenticatorRequestDialogModel {
     return transport_availability_.available_transports;
   }
 
-  base::span<const uint8_t, 32> qr_generator_key() const {
-    // TODO(agl): return the true generator key. This is currently broken to
-    // allow CLs to be split up reasonably.
-    static_assert(EXTENT(*qr_generator_key_) >= 32, "");
-    return base::span<const uint8_t, 32>(qr_generator_key_->data(), 32);
+  base::span<const uint8_t, device::cablev2::kQRKeySize> qr_generator_key()
+      const {
+    return *qr_generator_key_;
   }
 
   void CollectPIN(base::Optional<int> attempts,
@@ -410,7 +409,8 @@ class AuthenticatorRequestDialogModel {
   void set_cable_transport_info(
       bool cable_extension_provided,
       bool has_paired_phones,
-      base::Optional<device::QRGeneratorKey> qr_generator_key);
+      const base::Optional<std::array<uint8_t, device::cablev2::kQRKeySize>>&
+          qr_generator_key);
 
   bool win_native_api_enabled() const {
     return transport_availability_.has_win_native_api_authenticator;
@@ -505,7 +505,8 @@ class AuthenticatorRequestDialogModel {
   // have_paired_phones_ indicates whether this profile knows of any paired
   // phones.
   bool have_paired_phones_ = false;
-  base::Optional<device::QRGeneratorKey> qr_generator_key_;
+  base::Optional<std::array<uint8_t, device::cablev2::kQRKeySize>>
+      qr_generator_key_;
   // win_native_api_already_tried_ is true if the Windows-native UI has been
   // displayed already and the user cancelled it. In this case, we shouldn't
   // jump straight to showing it again.

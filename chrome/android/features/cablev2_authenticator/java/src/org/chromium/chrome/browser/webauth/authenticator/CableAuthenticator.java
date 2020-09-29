@@ -36,7 +36,6 @@ import com.google.android.gms.fido.fido2.api.common.PublicKeyCredentialUserEntit
 import com.google.android.gms.tasks.Task;
 
 import org.chromium.base.Log;
-import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.SingleThreadTaskRunner;
@@ -168,7 +167,6 @@ class CableAuthenticator {
      * Called by C++ code to start advertising a given UUID, which is passed
      * as 16 bytes.
      */
-    @CalledByNative
     public void sendBLEAdvert(byte[] dataUuidBytes) {
         assert mTaskRunner.belongsToCurrentThread();
 
@@ -184,7 +182,6 @@ class CableAuthenticator {
     /**
      * Called by native code to store a new state blob.
      */
-    @CalledByNative
     public void setState(byte[] newState) {
         assert mTaskRunner.belongsToCurrentThread();
 
@@ -200,7 +197,6 @@ class CableAuthenticator {
     /**
      * Called by native code to send BLE data to a specified client.
      */
-    @CalledByNative
     public void sendNotification(long client, byte[][] fragments, boolean isTransactionEnd) {
         assert mTaskRunner.belongsToCurrentThread();
         assert mBleStarted;
@@ -208,7 +204,6 @@ class CableAuthenticator {
         mBleHandler.sendNotification(client, fragments, /*closeWhenDone=*/isTransactionEnd);
     }
 
-    @CalledByNative
     public void makeCredential(String origin, String rpId, byte[] challenge, byte[] userId,
             int[] algorithms, byte[][] excludedCredentialIds, boolean residentKeyRequired) {
         // TODO: handle concurrent requests
@@ -277,7 +272,6 @@ class CableAuthenticator {
         Log.i(TAG, "op done");
     }
 
-    @CalledByNative
     public void getAssertion(
             String origin, String rpId, byte[] challenge, byte[][] allowedCredentialIds) {
         // TODO: handle concurrent requests

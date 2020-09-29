@@ -79,8 +79,8 @@ std::array<uint8_t, kP256X962Length> PublicKeyOf(const EC_KEY* private_key) {
 }
 
 TEST(CableV2Encoding, HandshakeSignatures) {
-  static const uint8_t kSeed0[kCableIdentityKeySeedSize] = {0};
-  static const uint8_t kSeed1[kCableIdentityKeySeedSize] = {1};
+  static const uint8_t kSeed0[kQRSeedSize] = {0};
+  static const uint8_t kSeed1[kQRSeedSize] = {1};
 
   bssl::UniquePtr<EC_GROUP> group(
       EC_GROUP_new_by_curve_name(NID_X9_62_prime256v1));
@@ -135,7 +135,7 @@ class CableV2HandshakeTest : public ::testing::Test {
   CableEidArray eid_;
   bssl::UniquePtr<EC_KEY> identity_key_;
   std::array<uint8_t, kP256X962Length> identity_public_;
-  std::array<uint8_t, kCableIdentityKeySeedSize> identity_seed_;
+  std::array<uint8_t, kQRSeedSize> identity_seed_;
 };
 
 TEST_F(CableV2HandshakeTest, MessageEncrytion) {

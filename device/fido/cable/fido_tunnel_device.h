@@ -34,7 +34,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoTunnelDevice : public FidoDevice {
       network::mojom::NetworkContext* network_context,
       base::OnceCallback<void(std::unique_ptr<Pairing>)> pairing_callback,
       base::span<const uint8_t> secret,
-      base::span<const uint8_t, kCableIdentityKeySeedSize> local_identity_seed,
+      base::span<const uint8_t, kQRSeedSize> local_identity_seed,
       const CableEidArray& eid,
       const CableEidArray& decrypted_eid);
 
@@ -76,7 +76,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoTunnelDevice : public FidoDevice {
     CableEidArray eid;
     std::array<uint8_t, 32> psk;
     base::OnceCallback<void(std::unique_ptr<Pairing>)> pairing_callback;
-    std::array<uint8_t, kCableIdentityKeySeedSize> local_identity_seed;
+    std::array<uint8_t, kQRSeedSize> local_identity_seed;
     uint32_t tunnel_server_domain;
     base::Optional<HandshakeHash> handshake_hash;
   };

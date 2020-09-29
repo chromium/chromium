@@ -581,10 +581,11 @@ void AuthenticatorRequestDialogModel::RequestAttestationPermission(
 void AuthenticatorRequestDialogModel::set_cable_transport_info(
     bool cable_extension_provided,
     bool have_paired_phones,
-    base::Optional<device::QRGeneratorKey> qr_generator_key) {
+    const base::Optional<std::array<uint8_t, device::cablev2::kQRKeySize>>&
+        qr_generator_key) {
   cable_extension_provided_ = cable_extension_provided;
   have_paired_phones_ = have_paired_phones;
-  qr_generator_key_ = std::move(qr_generator_key);
+  qr_generator_key_ = qr_generator_key;
 }
 
 base::WeakPtr<AuthenticatorRequestDialogModel>

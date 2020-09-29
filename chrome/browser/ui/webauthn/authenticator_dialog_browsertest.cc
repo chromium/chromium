@@ -40,9 +40,9 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
         AuthenticatorTransport::kUsbHumanInterfaceDevice,
         AuthenticatorTransport::kInternal,
         AuthenticatorTransport::kCloudAssistedBluetoothLowEnergy};
+    std::array<uint8_t, device::cablev2::kQRKeySize> qr_key = {0};
     model->set_cable_transport_info(/*cable_extension_provided=*/true,
-                                    /*have_paired_phones=*/false,
-                                    device::CableDiscoveryData::NewQRKey());
+                                    /*have_paired_phones=*/false, qr_key);
     model->StartFlow(std::move(transport_availability), base::nullopt);
 
     // The dialog should immediately close as soon as it is displayed.
