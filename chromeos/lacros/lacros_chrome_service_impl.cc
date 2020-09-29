@@ -24,6 +24,12 @@ bool g_disable_all_crosapi_for_tests = false;
 // testing.
 std::atomic<LacrosChromeServiceImpl*> g_instance = {nullptr};
 
+crosapi::mojom::LacrosInfoPtr ToMojo(const std::string& lacros_version) {
+  auto mojo_lacros_info = crosapi::mojom::LacrosInfo::New();
+  mojo_lacros_info->lacros_version = lacros_version;
+  return mojo_lacros_info;
+}
+
 }  // namespace
 
 // This class that holds all state that is affine to a single, never-blocking
@@ -125,6 +131,17 @@ class LacrosChromeServiceNeverBlockingState
       mojo::PendingReceiver<crosapi::mojom::KeystoreService> pending_receiver) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     ash_chrome_service_->BindKeystoreService(std::move(pending_receiver));
+  }
+
+  void BindFeedbackReceiver(
+      mojo::PendingReceiver<crosapi::mojom::Feedback> pending_receiver) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    ash_chrome_service_->BindFeedback(std::move(pending_receiver));
+  }
+
+  void OnLacrosStartup(crosapi::mojom::LacrosInfoPtr lacros_info) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    ash_chrome_service_->OnLacrosStartup(std::move(lacros_info));
   }
 
   base::WeakPtr<LacrosChromeServiceNeverBlockingState> GetWeakPtr() {
@@ -258,6 +275,23 @@ void LacrosChromeServiceImpl::BindReceiver(
             &LacrosChromeServiceNeverBlockingState::BindHidManagerReceiver,
             weak_sequenced_state_, std::move(hid_manager_pending_receiver)));
   }
+
+  if (IsFeedbackAvailable()) {
+    never_blocking_sequence_->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &LacrosChromeServiceNeverBlockingState::BindFeedbackReceiver,
+            weak_sequenced_state_,
+            feedback_remote_.BindNewPipeAndPassReceiver()));
+  }
+
+  if (IsOnLacrosStartupAvailable()) {
+    never_blocking_sequence_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&LacrosChromeServiceNeverBlockingState::OnLacrosStartup,
+                       weak_sequenced_state_,
+                       ToMojo(delegate_->GetChromeVersion())));
+  }
 }
 
 void LacrosChromeServiceImpl::DisableCrosapiForTests() {
@@ -282,6 +316,14 @@ bool LacrosChromeServiceImpl::IsHidManagerAvailable() {
 
 bool LacrosChromeServiceImpl::IsScreenManagerAvailable() {
   return AshChromeServiceVersion() >= 0;
+}
+
+bool LacrosChromeServiceImpl::IsFeedbackAvailable() {
+  return AshChromeServiceVersion() >= 3;
+}
+
+bool LacrosChromeServiceImpl::IsOnLacrosStartupAvailable() {
+  return AshChromeServiceVersion() >= 3;
 }
 
 void LacrosChromeServiceImpl::BindScreenManagerReceiver(

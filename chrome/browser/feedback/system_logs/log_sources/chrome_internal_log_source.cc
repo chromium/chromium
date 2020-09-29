@@ -43,10 +43,13 @@
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/chromeos/arc/arc_util.h"
 #include "chrome/browser/chromeos/arc/policy/arc_policy_bridge.h"
+#include "chrome/browser/chromeos/crosapi/browser_manager.h"
+#include "chrome/browser/chromeos/crosapi/browser_util.h"
 #include "chrome/browser/chromeos/login/demo_mode/demo_session.h"
 #include "chrome/browser/chromeos/login/login_pref_names.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/metrics/chromeos_metrics_provider.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/dbus/util/version_loader.h"
 #include "chromeos/system/statistics_provider.h"
 #endif
@@ -73,11 +76,12 @@ constexpr char kPowerApiListKey[] = "chrome.power extensions";
 constexpr char kDataReductionProxyKey[] = "data_reduction_proxy";
 constexpr char kChromeVersionTag[] = "CHROME VERSION";
 
-#if BUILDFLAG(IS_LACROS)
+#if defined(OS_CHROMEOS) || BUILDFLAG(IS_LACROS)
 constexpr char kLacrosChromeVersionPrefix[] = "Lacros ";
 #endif
 
 #if defined(OS_CHROMEOS)
+constexpr char kAshChromeVersionPrefix[] = "Ash ";
 constexpr char kArcPolicyComplianceReportKey[] =
     "CHROMEOS_ARC_POLICY_COMPLIANCE_REPORT";
 constexpr char kArcPolicyKey[] = "CHROMEOS_ARC_POLICY";
@@ -229,6 +233,34 @@ void PopulateEntriesAsync(SystemLogsResponse* response) {
 }
 #endif  // defined(OS_CHROMEOS)
 
+std::string GetChromeVersionString() {
+  // Version of the current running browser.
+  std::string browser_version = chrome::GetVersionString();
+
+// This is used by simple lacros feedback for backward compatibility.
+// TODO(http://crbug.com/1132106): Remove after M87 beta when Feedback
+// crosapi is available in all ash versions.
+#if BUILDFLAG(IS_LACROS)
+  browser_version = kLacrosChromeVersionPrefix + browser_version;
+#endif
+
+#if defined(OS_CHROMEOS)
+  // If lacros-chrome is allowed & supported, and launched before, which
+  // is indicated by |lacros_version| in BrowserManager being set to non-empty
+  // string during lacros startup, attach its version in the chrome
+  // version string.
+  if (chromeos::features::IsLacrosSupportEnabled() &&
+      crosapi::browser_util::IsLacrosAllowed() &&
+      !crosapi::BrowserManager::Get()->lacros_version().empty()) {
+    std::string lacros_version =
+        crosapi::BrowserManager::Get()->lacros_version();
+    return kLacrosChromeVersionPrefix + lacros_version + ", " +
+           kAshChromeVersionPrefix + browser_version;
+  }
+#endif  // defined(OS_CHROMEOS)
+  return browser_version;
+}
+
 #if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 // Returns true if the path identified by |key| with the PathService is a parent
 // or ancestor of |child|.
@@ -292,15 +324,7 @@ void ChromeInternalLogSource::Fetch(SysLogsSourceCallback callback) {
   DCHECK(!callback.is_null());
 
   auto response = std::make_unique<SystemLogsResponse>();
-
-#if BUILDFLAG(IS_LACROS)
-  // Add a Lacros prefix string in the chrome version string to
-  // differentiate lacros chrome vs ash chrome in the feedback report.
-  response->emplace(kChromeVersionTag,
-                    kLacrosChromeVersionPrefix + chrome::GetVersionString());
-#else
-  response->emplace(kChromeVersionTag, chrome::GetVersionString());
-#endif
+  response->emplace(kChromeVersionTag, GetChromeVersionString());
 
 #if defined(OS_CHROMEOS)
   response->emplace(kChromeEnrollmentTag, GetEnrollmentStatusString());

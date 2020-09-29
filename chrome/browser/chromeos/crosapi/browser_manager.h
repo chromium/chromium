@@ -67,6 +67,11 @@ class BrowserManager : public session_manager::SessionManagerObserver {
   // so should be avoided.
   void NewWindow();
 
+  const std::string& lacros_version() const { return lacros_version_; }
+  void set_lacros_version(const std::string& version) {
+    lacros_version_ = version;
+  }
+
  private:
   enum class State {
     // Lacros is not initialized yet.
@@ -135,6 +140,12 @@ class BrowserManager : public session_manager::SessionManagerObserver {
 
   // Path to the lacros-chrome disk image directory.
   base::FilePath lacros_path_;
+
+  // Version of lacros-chrome displayed to user in feedback report, etc.
+  // It includes both browser version and channel in the format of:
+  // {browser version} {channel}
+  // For example, "87.0.0.1 dev", "86.0.4240.38 beta".
+  std::string lacros_version_;
 
   // Called when the binary download completes.
   LoadCompleteCallback load_complete_callback_;

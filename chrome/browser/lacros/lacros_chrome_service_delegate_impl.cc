@@ -8,6 +8,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/common/channel_info.h"
 
 LacrosChromeServiceDelegateImpl::LacrosChromeServiceDelegateImpl() = default;
 
@@ -18,4 +19,8 @@ void LacrosChromeServiceDelegateImpl::NewWindow() {
   Profile* profile = ProfileManager::GetLastUsedProfileAllowedByPolicy();
   DCHECK(profile) << "No last used profile is found.";
   chrome::NewEmptyWindow(profile);
+}
+
+std::string LacrosChromeServiceDelegateImpl::GetChromeVersion() {
+  return chrome::GetVersionString();
 }

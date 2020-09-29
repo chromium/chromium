@@ -959,6 +959,8 @@ source_set("chromeos") {
     "crosapi/browser_manager.h",
     "crosapi/browser_util.cc",
     "crosapi/browser_util.h",
+    "crosapi/feedback_ash.cc",
+    "crosapi/feedback_ash.h",
     "crosapi/keystore_service_ash.cc",
     "crosapi/keystore_service_ash.h",
     "crosapi/message_center_ash.cc",

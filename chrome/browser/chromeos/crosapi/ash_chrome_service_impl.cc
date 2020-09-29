@@ -9,10 +9,13 @@
 #include <vector>
 
 #include "base/logging.h"
+#include "chrome/browser/chromeos/crosapi/browser_manager.h"
+#include "chrome/browser/chromeos/crosapi/feedback_ash.h"
 #include "chrome/browser/chromeos/crosapi/keystore_service_ash.h"
 #include "chrome/browser/chromeos/crosapi/message_center_ash.h"
 #include "chrome/browser/chromeos/crosapi/screen_manager_ash.h"
 #include "chrome/browser/chromeos/crosapi/select_file_ash.h"
+#include "chromeos/crosapi/mojom/feedback.mojom.h"
 #include "chromeos/crosapi/mojom/keystore_service.mojom.h"
 #include "chromeos/crosapi/mojom/message_center.mojom.h"
 #include "chromeos/crosapi/mojom/screen_manager.mojom.h"
@@ -56,6 +59,15 @@ void AshChromeServiceImpl::BindScreenManager(
 void AshChromeServiceImpl::BindHidManager(
     mojo::PendingReceiver<device::mojom::HidManager> receiver) {
   content::GetDeviceService().BindHidManager(std::move(receiver));
+}
+
+void AshChromeServiceImpl::BindFeedback(
+    mojo::PendingReceiver<mojom::Feedback> receiver) {
+  feedback_ash_ = std::make_unique<FeedbackAsh>(std::move(receiver));
+}
+
+void AshChromeServiceImpl::OnLacrosStartup(mojom::LacrosInfoPtr lacros_info) {
+  BrowserManager::Get()->set_lacros_version(lacros_info->lacros_version);
 }
 
 }  // namespace crosapi

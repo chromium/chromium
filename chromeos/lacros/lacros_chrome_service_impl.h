@@ -13,6 +13,7 @@
 #include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
+#include "chromeos/crosapi/mojom/feedback.mojom.h"
 #include "chromeos/crosapi/mojom/keystore_service.mojom.h"
 #include "chromeos/crosapi/mojom/message_center.mojom.h"
 #include "chromeos/crosapi/mojom/screen_manager.mojom.h"
@@ -121,6 +122,16 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosChromeServiceImpl {
     return hid_manager_remote_;
   }
 
+  // feedback_remote() can only be used when this method returns true;
+  bool IsFeedbackAvailable();
+
+  // This must be called on the affine sequence.
+  mojo::Remote<crosapi::mojom::Feedback>& feedback_remote() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(affine_sequence_checker_);
+    DCHECK(IsFeedbackAvailable());
+    return feedback_remote_;
+  }
+
   // --------------------------------------------------------------------------
   // Some clients will want to use mojo::Remotes on arbitrary sequences (e.g.
   // background threads). The following methods allow the client to construct a
@@ -134,6 +145,10 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosChromeServiceImpl {
   // This may be called on any thread.
   void BindScreenManagerReceiver(
       mojo::PendingReceiver<crosapi::mojom::ScreenManager> pending_receiver);
+
+  // OnLacrosStartup method of AshChromeService crosapi can only be called
+  // if this method returns true.
+  bool IsOnLacrosStartupAvailable();
 
   const crosapi::mojom::LacrosInitParams* init_params() const {
     return init_params_.get();
@@ -165,6 +180,7 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosChromeServiceImpl {
   mojo::Remote<crosapi::mojom::MessageCenter> message_center_remote_;
   mojo::Remote<crosapi::mojom::SelectFile> select_file_remote_;
   mojo::Remote<device::mojom::HidManager> hid_manager_remote_;
+  mojo::Remote<crosapi::mojom::Feedback> feedback_remote_;
 
   // This member allows lacros-chrome to use the KeystoreService interface. This
   // member is affine to the affine sequence. It is initialized in the

@@ -20,6 +20,7 @@ class LacrosChromeServiceDelegateImpl
 
   // chromeos::LacrosChromeServiceDelegate:
   void NewWindow() override;
+  std::string GetChromeVersion() override;
 };
 
 #endif  // CHROME_BROWSER_LACROS_LACROS_CHROME_SERVICE_DELEGATE_IMPL_H_

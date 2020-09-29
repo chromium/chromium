@@ -1,0 +1,43 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module crosapi.mojom;
+
+import "url/mojom/url.mojom";
+
+[Stable, Extensible]
+enum LacrosFeedbackSource {
+  kLacrosBrowserCommand = 0,
+  kLacrosSettingsAboutPage = 1,
+};
+
+[Stable]
+struct FeedbackInfo {
+  // Url of the web page of lacros chrome from which the user reports an issue.
+  url.mojom.Url page_url@0;
+
+  // Source from which the user reports an issue.
+  LacrosFeedbackSource source@1;
+
+  // Template text for feedback description.
+  string description_template@2;
+
+  // Placehold text of feedback description.
+  string description_placeholder_text@3;
+
+  // Category tag of feedback report.
+  string category_tag@4;
+
+  // Extra diagnostics information.
+  // For example, "Failed to connect to wifi network.".
+  string extra_diagnostics@5;
+};
+
+// This interface is implemented by ash-chrome. It allows lacros-chrome to
+// request ash-chrome to display Feedback ui.
+[Stable]
+interface Feedback {
+  // Displays the Feedback ui.
+  ShowFeedbackPage@0(FeedbackInfo feedback_info);
+};

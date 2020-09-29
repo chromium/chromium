@@ -5,6 +5,8 @@
 #ifndef CHROMEOS_LACROS_LACROS_CHROME_SERVICE_DELEGATE_H_
 #define CHROMEOS_LACROS_LACROS_CHROME_SERVICE_DELEGATE_H_
 
+#include <string>
+
 namespace chromeos {
 
 // Interface to inject Chrome dependent behavior into LacrosChromeServiceImpl
@@ -15,6 +17,12 @@ class LacrosChromeServiceDelegate {
 
   // Opens a new browser window.
   virtual void NewWindow() = 0;
+
+  // Returns version of lacros-chrome displayed to user in feedback report, etc.
+  // It includes both browser version and channel in the format of:
+  // {browser version} {channel}
+  // For example, "87.0.0.1 dev", "86.0.4240.38 beta".
+  virtual std::string GetChromeVersion() = 0;
 };
 
 }  // namespace chromeos

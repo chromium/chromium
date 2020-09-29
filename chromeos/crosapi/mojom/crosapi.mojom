@@ -4,11 +4,26 @@
 
 module crosapi.mojom;
 
+import "chromeos/crosapi/mojom/feedback.mojom";
 import "chromeos/crosapi/mojom/keystore_service.mojom";
 import "chromeos/crosapi/mojom/message_center.mojom";
 import "chromeos/crosapi/mojom/screen_manager.mojom";
 import "chromeos/crosapi/mojom/select_file.mojom";
 import "services/device/public/mojom/hid.mojom";
+
+// LacrosInfo is a set of parameters passed to ash from lacros-chrome
+// upon lacros startup, which contains the lacros information such as version,
+// etc.
+[Stable]
+struct LacrosInfo {
+  // Version of lacros-chrome displayed to user in feedback report, etc.
+  // It includes both browser version and channel in the format of:
+  // {browser version} {channel}
+  // For example, "87.0.0.1 dev", "86.0.4240.38 beta".
+  string lacros_version@0;
+
+  // TODO(crbug.com/1119925): Add more parameters later.
+};
 
 // AshChromeService defines the APIs that live in ash-chrome and are
 // accessed from lacros-chrome. When adding a major new API please note the
@@ -36,6 +51,15 @@ interface AshChromeService {
   // Binds the HidManager interface for support HID devices.
   // Added in M87.
   BindHidManager@4(pending_receiver<device.mojom.HidManager> receiver);
+
+  // Binds the Feedback interface for showing feedback UI.
+  // Added in M87.
+  [MinVersion=3] BindFeedback@5(pending_receiver<Feedback> receiver);
+
+  // Passes generic lacros information such as lacros version, etc into ash
+  // in |lacros_info| during startup.
+  // Added in M87.
+  [MinVersion=3] OnLacrosStartup@6(LacrosInfo lacros_info);
 };
 
 // LacrosInitParams is a set of parameters for initialization of lacros-chrome,

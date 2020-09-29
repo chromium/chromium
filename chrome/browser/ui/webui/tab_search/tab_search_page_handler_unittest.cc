@@ -7,6 +7,7 @@
 #include "base/test/bind_test_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/timer/mock_timer.h"
+#include "build/build_config.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -342,7 +343,13 @@ TEST_F(TabSearchPageHandlerTest, CloseTab) {
   ASSERT_EQ(1, browser2()->tab_strip_model()->count());
 }
 
-TEST_F(TabSearchPageHandlerTest, ShowFeedbackPage) {
+// TODO(crbug.com/1128855): Fix the test for Lacros build.
+#if BUILDFLAG(IS_LACROS)
+#define MAYBE_ShowFeedbackPage DISABLED_ShowFeedbackPage
+#else
+#define MAYBE_ShowFeedbackPage ShowFeedbackPage
+#endif
+TEST_F(TabSearchPageHandlerTest, MAYBE_ShowFeedbackPage) {
   base::HistogramTester histogram_tester;
   handler()->ShowFeedbackPage();
   histogram_tester.ExpectTotalCount("Feedback.RequestSource", 1);
