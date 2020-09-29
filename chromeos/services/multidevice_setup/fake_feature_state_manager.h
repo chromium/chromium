@@ -21,6 +21,7 @@ class FakeFeatureStateManager : public FeatureStateManager {
   FakeFeatureStateManager();
   ~FakeFeatureStateManager() override;
 
+  mojom::FeatureState GetFeatureState(mojom::Feature feature);
   void SetFeatureState(mojom::Feature feature, mojom::FeatureState state);
   void SetFeatureStates(const FeatureStatesMap& feature_states_map);
 

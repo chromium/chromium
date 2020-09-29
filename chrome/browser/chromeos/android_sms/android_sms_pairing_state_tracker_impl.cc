@@ -96,11 +96,17 @@ void AndroidSmsPairingStateTrackerImpl::OnInstalledAppUrlChanged() {
 }
 
 GURL AndroidSmsPairingStateTrackerImpl::GetPairingUrl() {
-  base::Optional<GURL> app_url = android_sms_app_manager_->GetCurrentAppUrl();
-  if (app_url)
-    return *app_url;
+  // If the app registry is not ready, we can't see check what is currently
+  // installed.
+  if (android_sms_app_manager_->IsAppRegistryReady()) {
+    base::Optional<GURL> app_url = android_sms_app_manager_->GetCurrentAppUrl();
+    if (app_url)
+      return *app_url;
+  }
 
-  // If no app is installed, default to the normal messages URL.
+  // If no app is installed or the app registry is not ready, default to the
+  // expected messages URL.  This will only be incorrect if a migration must
+  // happen.
   return GetAndroidMessagesURL();
 }
 

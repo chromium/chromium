@@ -56,7 +56,12 @@ AndroidSmsAppInstallingStatusObserver::AndroidSmsAppInstallingStatusObserver(
       android_sms_app_helper_delegate_(android_sms_app_helper_delegate) {
   host_status_provider_->AddObserver(this);
   feature_state_manager_->AddObserver(this);
-  UpdatePwaInstallationState();
+
+  // Wait until the app registry has been loaded before updating installation
+  // status.
+  android_sms_app_helper_delegate_->ExecuteOnAppRegistryReady(base::BindOnce(
+      &AndroidSmsAppInstallingStatusObserver::UpdatePwaInstallationState,
+      weak_ptr_factory_.GetWeakPtr()));
 }
 
 bool AndroidSmsAppInstallingStatusObserver::
@@ -80,6 +85,11 @@ bool AndroidSmsAppInstallingStatusObserver::
 }
 
 void AndroidSmsAppInstallingStatusObserver::UpdatePwaInstallationState() {
+  if (!android_sms_app_helper_delegate_->IsAppRegistryReady()) {
+    PA_LOG(INFO) << "App registry is not ready.";
+    return;
+  }
+
   if (!DoesFeatureStateAllowInstallation()) {
     PA_LOG(INFO)
         << "Feature state does not allow installation, tearing down App.";

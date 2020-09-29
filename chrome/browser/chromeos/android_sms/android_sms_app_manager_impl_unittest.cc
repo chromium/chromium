@@ -83,10 +83,21 @@ class AndroidSmsAppManagerImplTest : public testing::Test {
       return true;
     }
 
+    bool IsAppRegistryReady(Profile* profile) override { return true; }
+
+    void ExecuteOnAppRegistryReady(Profile* profile,
+                                   base::OnceClosure task) override {
+      test_task_runner_->PostTask(FROM_HERE, std::move(task));
+    }
+
+    void RunPendingTasks() { test_task_runner_->RunUntilIdle(); }
+
    private:
     std::vector<std::string> opened_app_ids_;
     std::vector<std::pair<std::string, std::string>>
         transfer_item_attribute_params_;
+    scoped_refptr<base::TestSimpleTaskRunner> test_task_runner_ =
+        base::MakeRefCounted<base::TestSimpleTaskRunner>();
 
     DISALLOW_COPY_AND_ASSIGN(TestPwaDelegate);
   };
@@ -99,20 +110,16 @@ class AndroidSmsAppManagerImplTest : public testing::Test {
     fake_android_sms_app_setup_controller_ =
         std::make_unique<FakeAndroidSmsAppSetupController>();
 
-    test_task_runner_ = base::MakeRefCounted<base::TestSimpleTaskRunner>();
     test_pref_service_ =
         std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
     AndroidSmsAppManagerImpl::RegisterProfilePrefs(
         test_pref_service_->registry());
 
+    auto test_pwa_delegate = std::make_unique<TestPwaDelegate>();
+    test_pwa_delegate_ = test_pwa_delegate.get();
     android_sms_app_manager_ = std::make_unique<AndroidSmsAppManagerImpl>(
         &profile_, fake_android_sms_app_setup_controller_.get(),
         test_pref_service_.get(), nullptr /* app_list_syncable_service */,
-        test_task_runner_);
-
-    auto test_pwa_delegate = std::make_unique<TestPwaDelegate>();
-    test_pwa_delegate_ = test_pwa_delegate.get();
-    android_sms_app_manager_->SetPwaDelegateForTesting(
         std::move(test_pwa_delegate));
 
     test_observer_ = std::make_unique<TestObserver>();
@@ -123,7 +130,7 @@ class AndroidSmsAppManagerImplTest : public testing::Test {
     android_sms_app_manager_->RemoveObserver(test_observer_.get());
   }
 
-  void CompleteAsyncInitialization() { test_task_runner_->RunUntilIdle(); }
+  void CompleteAsyncInitialization() { test_pwa_delegate_->RunPendingTasks(); }
 
   TestPwaDelegate* test_pwa_delegate() { return test_pwa_delegate_; }
 
@@ -149,7 +156,6 @@ class AndroidSmsAppManagerImplTest : public testing::Test {
       test_pref_service_;
   std::unique_ptr<FakeAndroidSmsAppSetupController>
       fake_android_sms_app_setup_controller_;
-  scoped_refptr<base::TestSimpleTaskRunner> test_task_runner_;
 
   TestPwaDelegate* test_pwa_delegate_;
   std::unique_ptr<TestObserver> test_observer_;

@@ -39,6 +39,15 @@ bool FakeAndroidSmsAppHelperDelegate::HasAppBeenManuallyUninstalledByUser() {
   return has_app_been_manually_uninstalled_;
 }
 
+bool FakeAndroidSmsAppHelperDelegate::IsAppRegistryReady() {
+  return is_app_registry_ready_;
+}
+
+void FakeAndroidSmsAppHelperDelegate::ExecuteOnAppRegistryReady(
+    base::OnceClosure task) {
+  std::move(task).Run();
+}
+
 }  // namespace multidevice_setup
 
 }  // namespace chromeos

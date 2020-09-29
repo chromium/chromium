@@ -64,6 +64,8 @@ class AndroidSmsAppInstallingStatusObserver
   HostStatusProvider* host_status_provider_;
   FeatureStateManager* feature_state_manager_;
   AndroidSmsAppHelperDelegate* android_sms_app_helper_delegate_;
+  base::WeakPtrFactory<AndroidSmsAppInstallingStatusObserver> weak_ptr_factory_{
+      this};
 
   DISALLOW_COPY_AND_ASSIGN(AndroidSmsAppInstallingStatusObserver);
 };

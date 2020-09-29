@@ -31,6 +31,11 @@ FakeFeatureStateManager::FakeFeatureStateManager()
 
 FakeFeatureStateManager::~FakeFeatureStateManager() = default;
 
+mojom::FeatureState FakeFeatureStateManager::GetFeatureState(
+    mojom::Feature feature) {
+  return feature_states_map_[feature];
+}
+
 void FakeFeatureStateManager::SetFeatureState(mojom::Feature feature,
                                               mojom::FeatureState state) {
   if (feature_states_map_[feature] == state)
