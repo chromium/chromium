@@ -7,6 +7,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/find_bar/find_bar.h"
+#include "chrome/browser/ui/in_product_help/feature_promo_controller.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -264,6 +265,15 @@ void TestBrowserWindow::SetNativeWindow(gfx::NativeWindow window) {
 
 void TestBrowserWindow::SetCloseCallback(base::OnceClosure close_callback) {
   close_callback_ = std::move(close_callback);
+}
+
+FeaturePromoController* TestBrowserWindow::GetFeaturePromoController() {
+  return feature_promo_controller_.get();
+}
+
+void TestBrowserWindow::SetFeaturePromoController(
+    std::unique_ptr<FeaturePromoController> feature_promo_controller) {
+  feature_promo_controller_ = std::move(feature_promo_controller);
 }
 
 // TestBrowserWindowOwner -----------------------------------------------------

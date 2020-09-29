@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/in_product_help/feature_promo_controller.h"
+#include "chrome/browser/ui/in_product_help/feature_promo_controller.h"
 
 FeaturePromoController::PromoHandle::PromoHandle(
     base::WeakPtr<FeaturePromoController> controller)

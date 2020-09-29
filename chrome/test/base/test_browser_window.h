@@ -23,6 +23,7 @@
 #include "chrome/browser/apps/intent_helper/apps_navigation_types.h"
 #endif  //  !defined(OS_ANDROID)
 
+class FeaturePromoController;
 class LocationBarTesting;
 class OmniboxView;
 
@@ -201,6 +202,13 @@ class TestBrowserWindow : public BrowserWindow {
 
   void CreateTabSearchBubble() override {}
 
+  FeaturePromoController* GetFeaturePromoController() override;
+
+  // Sets the controller returned by GetFeaturePromoController().
+  // Deletes the existing one, if any.
+  void SetFeaturePromoController(
+      std::unique_ptr<FeaturePromoController> feature_promo_controller);
+
  protected:
   void DestroyBrowser() override {}
 
@@ -234,6 +242,8 @@ class TestBrowserWindow : public BrowserWindow {
   TestDownloadShelf download_shelf_{nullptr};
   TestLocationBar location_bar_;
   gfx::NativeWindow native_window_ = nullptr;
+
+  std::unique_ptr<FeaturePromoController> feature_promo_controller_;
 
   base::OnceClosure close_callback_;
 

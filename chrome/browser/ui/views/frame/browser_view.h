@@ -487,6 +487,7 @@ class BrowserView : public BrowserWindow,
   LocationBarView* GetLocationBarView() const;
 
   void ShowInProductHelpPromo(InProductHelpFeature iph_feature) override;
+  FeaturePromoController* GetFeaturePromoController() override;
 
   // TabStripModelObserver:
   void OnTabStripModelChanged(

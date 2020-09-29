@@ -3455,6 +3455,10 @@ void BrowserView::ShowInProductHelpPromo(InProductHelpFeature iph_feature) {
   }
 }
 
+FeaturePromoController* BrowserView::GetFeaturePromoController() {
+  return feature_promo_controller_.get();
+}
+
 bool BrowserView::DoCutCopyPasteForWebContents(
     WebContents* contents,
     void (WebContents::*method)()) {

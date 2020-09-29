@@ -40,6 +40,7 @@ class SharingDialog;
 class DownloadShelf;
 class ExclusiveAccessContext;
 class ExtensionsContainer;
+class FeaturePromoController;
 class FindBar;
 class GURL;
 class LocationBar;
@@ -502,6 +503,10 @@ class BrowserWindow : public ui::BaseWindow {
 
   // Create and open the tab search bubble.
   virtual void CreateTabSearchBubble() = 0;
+
+  // Gets the windows's FeaturePromoController which manages display of
+  // in-product help.
+  virtual FeaturePromoController* GetFeaturePromoController() = 0;
 
  protected:
   friend class BrowserCloseManager;

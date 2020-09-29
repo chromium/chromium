@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_IN_PRODUCT_HELP_MOCK_FEATURE_PROMO_CONTROLLER_H_
-#define CHROME_BROWSER_UI_VIEWS_IN_PRODUCT_HELP_MOCK_FEATURE_PROMO_CONTROLLER_H_
+#ifndef CHROME_BROWSER_UI_IN_PRODUCT_HELP_MOCK_FEATURE_PROMO_CONTROLLER_H_
+#define CHROME_BROWSER_UI_IN_PRODUCT_HELP_MOCK_FEATURE_PROMO_CONTROLLER_H_
 
 #include "base/feature_list.h"
-#include "chrome/browser/ui/views/in_product_help/feature_promo_bubble_params.h"
-#include "chrome/browser/ui/views/in_product_help/feature_promo_controller.h"
+#include "chrome/browser/ui/in_product_help/feature_promo_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 class MockFeaturePromoController : public FeaturePromoController {
@@ -26,4 +25,4 @@ class MockFeaturePromoController : public FeaturePromoController {
   MOCK_METHOD(void, FinishContinuedPromo, (), (override));
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_IN_PRODUCT_HELP_MOCK_FEATURE_PROMO_CONTROLLER_H_
+#endif  // CHROME_BROWSER_UI_IN_PRODUCT_HELP_MOCK_FEATURE_PROMO_CONTROLLER_H_
