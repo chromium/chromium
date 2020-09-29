@@ -29,7 +29,7 @@ import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bun
 import {GlobalScrollTargetBehavior} from '../global_scroll_target_behavior.m.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {OpenWindowProxyImpl} from '../open_window_proxy.js';
-import {StoredAccount, SyncBrowserProxyImpl, SyncStatus} from '../people_page/sync_browser_proxy.m.js';
+import {StoredAccount, SyncBrowserProxyImpl} from '../people_page/sync_browser_proxy.m.js';
 import {routes} from '../route.js';
 import {Route, RouteObserverBehavior, Router} from '../router.m.js';
 
@@ -89,8 +89,7 @@ Polymer({
 
     /**
      * Passwords displayed in the device-only subsection.
-     * @type {!Array<!MultiStorePasswordUiEntry>}
-     * @private
+     * @private {!Array<!MultiStorePasswordUiEntry>}
      */
     deviceOnlyPasswords_: {
       type: Array,
@@ -101,8 +100,7 @@ Polymer({
 
     /**
      * Passwords displayed in the 'device and account' subsection.
-     * @type {!Array<!MultiStorePasswordUiEntry>}
-     * @private
+     * @private {!Array<!MultiStorePasswordUiEntry>}
      */
     deviceAndAccountPasswords_: {
       type: Array,
@@ -120,6 +118,7 @@ Polymer({
     /** @private */
     accountEmail_: String,
 
+    /** @private */
     isUserAllowedToAccessPage_: {
       type: Boolean,
       computed: 'computeIsUserAllowedToAccessPage_(signedIn_, syncDisabled_,' +
@@ -128,8 +127,7 @@ Polymer({
 
     /**
      * Whether the user is signed in, one of the requirements to view this page.
-     * @private
-     * @type {boolean?}
+     * @private {boolean?}
      */
     signedIn_: {
       type: Boolean,
@@ -138,8 +136,7 @@ Polymer({
 
     /**
      * Whether Sync is disabled, one of the requirements to view this page.
-     * @private
-     * @type {boolean?}
+     * @private {boolean?}
      */
     syncDisabled_: {
       type: Boolean,
@@ -149,18 +146,14 @@ Polymer({
     /**
      * Whether the user has opted in to the account-scoped password storage, one
      * of the requirements to view this page.
-     * @private
-     * @type {boolean?}
+     * @private {boolean?}
      */
     optedInForAccountStorage_: {
       type: Boolean,
       value: null,
     },
 
-    /**
-     * @private
-     * @type {Route?}
-     */
+    /** @private {Route?} */
     currentRoute_: {
       type: Object,
       value: null,
@@ -168,12 +161,21 @@ Polymer({
 
   },
 
+  keyBindings: {
+    // <if expr="is_macosx">
+    'meta+z': 'onUndoKeyBinding_',
+    // </if>
+    // <if expr="not is_macosx">
+    'ctrl+z': 'onUndoKeyBinding_',
+    // </if>
+  },
+
+  /** @private {!function(boolean): void} */
+  accountStorageOptInStateListener_: Function,
+
   observers:
       ['maybeRedirectToPasswordsPage_(isUserAllowedToAccessPage_, ' +
        'currentRoute_)'],
-
-  /** @type {!function(boolean): void} */
-  accountStorageOptInStateListener_: Function,
 
   /** @override */
   attached() {
@@ -194,59 +196,6 @@ Polymer({
   detached() {
     PasswordManagerImpl.getInstance().removeAccountStorageOptInStateListener(
         this.accountStorageOptInStateListener_);
-  },
-
-  /**
-   * @private
-   */
-  addListenersForAccountStorageRequirements_() {
-    const setSyncDisabled = syncStatus => {
-      this.syncDisabled_ = !syncStatus.signedIn;
-    };
-    SyncBrowserProxyImpl.getInstance().getSyncStatus().then(setSyncDisabled);
-    this.addWebUIListener('sync-status-changed', setSyncDisabled);
-
-    const setSignedIn = storedAccounts => {
-      this.signedIn_ = storedAccounts.length > 0;
-    };
-    SyncBrowserProxyImpl.getInstance().getStoredAccounts().then(setSignedIn);
-    this.addWebUIListener('stored-accounts-updated', setSignedIn);
-
-    const setOptedIn = optedInForAccountStorage => {
-      this.optedInForAccountStorage_ = optedInForAccountStorage;
-    };
-    PasswordManagerImpl.getInstance().isOptedInForAccountStorage().then(
-        setOptedIn);
-    PasswordManagerImpl.getInstance().addAccountStorageOptInStateListener(
-        setOptedIn);
-    this.accountStorageOptInStateListener_ = setOptedIn;
-  },
-
-  /**
-   * From RouteObserverBehavior.
-   * @param {!Route|undefined} route
-   * @protected
-   */
-  currentRouteChanged(route) {
-    this.currentRoute_ = route || null;
-  },
-
-  /**
-   * @param {!Array<!MultiStorePasswordUiEntry>} passwords
-   * @return {boolean}
-   * @private
-   */
-  isNonEmpty_(passwords) {
-    return passwords.length > 0;
-  },
-
-  keyBindings: {
-    // <if expr="is_macosx">
-    'meta+z': 'onUndoKeyBinding_',
-    // </if>
-    // <if expr="not is_macosx">
-    'ctrl+z': 'onUndoKeyBinding_',
-    // </if>
   },
 
   /**
@@ -278,6 +227,48 @@ Polymer({
         (this.syncDisabled_ === null || !!this.syncDisabled_) &&
         (this.optedInForAccountStorage_ === null ||
          !!this.optedInForAccountStorage_);
+  },
+
+  /**
+   * From RouteObserverBehavior.
+   * @param {!Route|undefined} route
+   * @protected
+   */
+  currentRouteChanged(route) {
+    this.currentRoute_ = route || null;
+  },
+
+  /** @private */
+  addListenersForAccountStorageRequirements_() {
+    const setSyncDisabled = syncStatus => {
+      this.syncDisabled_ = !syncStatus.signedIn;
+    };
+    SyncBrowserProxyImpl.getInstance().getSyncStatus().then(setSyncDisabled);
+    this.addWebUIListener('sync-status-changed', setSyncDisabled);
+
+    const setSignedIn = storedAccounts => {
+      this.signedIn_ = storedAccounts.length > 0;
+    };
+    SyncBrowserProxyImpl.getInstance().getStoredAccounts().then(setSignedIn);
+    this.addWebUIListener('stored-accounts-updated', setSignedIn);
+
+    const setOptedIn = optedInForAccountStorage => {
+      this.optedInForAccountStorage_ = optedInForAccountStorage;
+    };
+    PasswordManagerImpl.getInstance().isOptedInForAccountStorage().then(
+        setOptedIn);
+    PasswordManagerImpl.getInstance().addAccountStorageOptInStateListener(
+        setOptedIn);
+    this.accountStorageOptInStateListener_ = setOptedIn;
+  },
+
+  /**
+   * @param {!Array<!MultiStorePasswordUiEntry>} passwords
+   * @return {boolean}
+   * @private
+   */
+  isNonEmpty_(passwords) {
+    return passwords.length > 0;
   },
 
   /**

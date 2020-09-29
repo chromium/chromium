@@ -5,7 +5,7 @@
 /** @fileoverview Runs the Polymer tests for the PasswordsDeviceSection page. */
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {MultiStorePasswordUiEntry, PasswordManagerImpl, PasswordManagerProxy, Router, routes, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
+import {MultiStorePasswordUiEntry, PasswordManagerImpl, Router, routes, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {createMultiStorePasswordEntry, createPasswordEntry} from 'chrome://test/settings/passwords_and_autofill_fake_data.js';
 import {simulateStoredAccounts, simulateSyncStatus} from 'chrome://test/settings/sync_test_util.m.js';
 import {TestPasswordManagerProxy} from 'chrome://test/settings/test_password_manager_proxy.js';

@@ -44,9 +44,7 @@ Polymer({
      */
     duplicatedPassword: Object,
 
-    /**
-     * @private
-     */
+    /** @private */
     removeFromAccountChecked_: {
       type: Boolean,
       // Both checkboxes are selected by default (see |removeFromDeviceChecked_|
@@ -54,17 +52,13 @@ Polymer({
       value: true,
     },
 
-    /**
-     * @private
-     */
+    /** @private */
     removeFromDeviceChecked_: {
       type: Boolean,
       value: true,
     },
 
-    /**
-     * @private
-     */
+    /** @private */
     accountEmail_: {
       type: String,
       value: '',
@@ -89,9 +83,7 @@ Polymer({
     });
   },
 
-  /**
-   * @private
-   */
+  /** @private */
   onRemoveButtonClick_() {
     /** @type{!Array<number>} */
     const idsToRemove = [];
@@ -110,9 +102,7 @@ Polymer({
     });
   },
 
-  /**
-   * @private
-   */
+  /** @private */
   onCancelButtonClick_() {
     this.$.dialog.close();
   },

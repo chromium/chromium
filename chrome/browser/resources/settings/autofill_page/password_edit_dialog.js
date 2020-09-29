@@ -70,7 +70,7 @@ Polymer({
      * Check if editPasswordsInSettings flag is true and entry isn't federation
      * credential.
      * @private
-     * */
+     */
     isEditDialog_: {
       type: Boolean,
       computed: 'computeIsEditDialog_(editPasswordsInSettings_, entry)'
@@ -118,19 +118,19 @@ Polymer({
                     .map(item => item.username));
   },
 
+  /** Closes the dialog. */
+  close() {
+    this.$.dialog.close();
+  },
+
   /**
    * Helper function that checks if editPasswordsInSettings flag is true and
    * entry isn't federation credential.
    * @return {boolean}
    * @private
-   * */
+   */
   computeIsEditDialog_() {
     return this.editPasswordsInSettings_ && !this.entry.federationText;
-  },
-
-  /** Closes the dialog. */
-  close() {
-    this.$.dialog.close();
   },
 
   /**
@@ -251,7 +251,10 @@ Polymer({
     return this.isEditDialog_ ? this.i18n('save') : this.i18n('done');
   },
 
-  /** Manually de-select texts for readonly inputs. */
+  /**
+   * Manually de-select texts for readonly inputs.
+   * @private
+   */
   onInputBlur_() {
     this.shadowRoot.getSelection().removeAllRanges();
   },
@@ -259,6 +262,7 @@ Polymer({
   /**
    * Gets the HTML-formatted message to indicate in which locations the password
    * is stored.
+   * @private
    */
   getStorageDetailsMessage_() {
     if (this.entry.isPresentInAccount() && this.entry.isPresentOnDevice()) {

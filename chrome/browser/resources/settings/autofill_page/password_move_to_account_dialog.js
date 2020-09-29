@@ -42,9 +42,7 @@ Polymer({
   behaviors: [I18nBehavior],
 
   properties: {
-    /**
-     * @type {!MultiStorePasswordUiEntry}
-     */
+    /** @type {!MultiStorePasswordUiEntry} */
     passwordToMove: Object,
 
   },
@@ -60,9 +58,7 @@ Polymer({
     this.$.dialog.showModal();
   },
 
-  /**
-   * @private
-   */
+  /** @private */
   onMoveButtonClick_() {
     assert(this.passwordToMove.isPresentOnDevice());
     PasswordManagerImpl.getInstance()
@@ -71,9 +67,7 @@ Polymer({
     this.$.dialog.close();
   },
 
-  /**
-   * @private
-   */
+  /** @private */
   onCancelButtonClick_() {
     this.$.dialog.close();
   }
