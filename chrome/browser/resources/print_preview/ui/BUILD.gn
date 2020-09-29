@@ -56,7 +56,6 @@ js_type_check("closure_compile_module") {
       ":destination_dropdown_cros",
       ":destination_select_cros",
       ":pin_settings",
-      ":printer_status_icon_cros",
     ]
   } else {
     deps += [ ":destination_select" ]
@@ -187,17 +186,10 @@ if (is_chromeos) {
 
   js_library("destination_dropdown_cros") {
     deps = [
-      ":printer_status_icon_cros",
       "..:print_preview_utils",
       "//third_party/polymer/v3_0/components-chromium/iron-dropdown:iron-dropdown",
       "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
       "//ui/webui/resources/cr_elements/cr_input:cr_input.m",
-    ]
-  }
-
-  js_library("printer_status_icon_cros") {
-    deps = [
-      "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     ]
   }
 } else {
@@ -571,7 +563,6 @@ html_to_js("web_components") {
       "destination_dropdown_cros.js",
       "destination_select_cros.js",
       "pin_settings.js",
-      "printer_status_icon_cros.js",
     ]
   } else {
     js_files += [ "destination_select.js" ]

@@ -51,16 +51,6 @@ export const PrinterState = {
 };
 
 /**
- * Enumeration used to choose styling based on whether this icon is located in
- * the destination display or the destination dropdown.
- * @enum {number}
- */
-export const IconLocation = {
-  DISPLAY: 0,
-  DROPDOWN: 1,
-};
-
-/**
  * A container for the results of a printer status query. A printer status query
  * can return multiple error reasons. |timestamp| is set at the time of status
  * creation.

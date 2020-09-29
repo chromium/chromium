@@ -136,7 +136,6 @@ preprocess_grit("preprocess_generated") {
       "ui/destination_dropdown_cros.js",
       "ui/destination_select_cros.js",
       "ui/pin_settings.js",
-      "ui/printer_status_icon_cros.js",
     ]
   } else {
     in_files += [
