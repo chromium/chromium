@@ -372,6 +372,7 @@ group("polymer3_elements") {
     ":os_languages_page_v2_module",
     ":os_languages_section_module",
     ":shared_style_module",
+    ":shared_vars_module",
     ":smart_inputs_page_module",
     "../../languages_page:languages_module",
     "../../languages_page:modulize",
@@ -472,6 +473,12 @@ polymer_modulizer("shared_style") {
   js_file = "shared_style.m.js"
   html_file = "shared_style.html"
   html_type = "style-module"
+}
+
+polymer_modulizer("shared_vars") {
+  js_file = "shared_vars.m.js"
+  html_file = "shared_vars.html"
+  html_type = "custom-style"
 }
 
 polymer_modulizer("smart_inputs_page") {

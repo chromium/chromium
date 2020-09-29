@@ -1,3 +1,4 @@
+<link rel="import" href="shared_vars.html">
 
 <!-- Common styles for 'Languages and inputs' section. -->
 <dom-module id="shared-style">
@@ -19,13 +20,23 @@
         --cr-search-field-search-icon-inline-margin-start: 6px;
         background-color: var(--google-grey-100);
         border-radius: 4px;
-        margin-inline-end: 20px;
+      }
+
+      cr-dialog [slot=title] {
+        padding-inline-end: var(--dialog-horizontal-padding);
+        padding-inline-start: var(--dialog-horizontal-padding);
+        padding-top: var(--dialog-horizontal-padding);
+      }
+
+      cr-dialog [slot=body] {
+        padding-inline-end: var(--dialog-horizontal-padding);
+        padding-inline-start: var(--dialog-horizontal-padding);
       }
 
       cr-dialog [slot=button-container] {
         padding-bottom: 20px;
-        padding-inline-end: 20px;
-        padding-inline-start: 20px;
+        padding-inline-end: var(--dialog-horizontal-padding);
+        padding-inline-start: var(--dialog-horizontal-padding);
         padding-top: 20px;
       }
     </style>

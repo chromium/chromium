@@ -782,6 +782,9 @@
       <structure name="IDR_OS_SETTINGS_LANGUAGES_SHARED_STYLE_HTML"
                  file="chromeos/os_languages_page/shared_style.html"
                  compress="false" type="chrome_html" />
+      <structure name="IDR_OS_SETTINGS_LANGUAGES_SHARED_VARS_HTML"
+                 file="chromeos/os_languages_page/shared_vars.html"
+                 compress="false" type="chrome_html" />
       <structure name="IDR_OS_SETTINGS_LANGUAGES_SMART_INPUTS_PAGE_HTML"
                  file="chromeos/os_languages_page/smart_inputs_page.html"
                  compress="false" type="chrome_html" />
