@@ -66,7 +66,8 @@ public class NavigationController {
                 mNavigationController.navigate2(uri.toString(),
                         params == null ? false : params.getShouldReplaceCurrentEntry(),
                         params == null ? false : params.isIntentProcessingDisabled(),
-                        params == null ? false : params.isNetworkErrorAutoReloadDisabled());
+                        params == null ? false : params.isNetworkErrorAutoReloadDisabled(),
+                        params == null ? false : params.isAutoPlayEnabled());
             }
         } catch (RemoteException e) {
             throw new APICallException(e);
