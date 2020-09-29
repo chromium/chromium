@@ -27,6 +27,10 @@ class DefaultPlatformConfiguration
       bool is_chrome_branded,
       version_info::Channel channel) const override;
 
+  RelativePopulations GetEnableRates(
+      bool is_chrome_branded,
+      version_info::Channel channel) const override;
+
  protected:
   bool IsSupportedForChannel(bool is_chrome_branded,
                              version_info::Channel channel) const override;
@@ -46,6 +50,26 @@ DefaultPlatformConfiguration::GetRuntimeModuleState(
     bool is_chrome_branded,
     version_info::Channel channel) const {
   return RuntimeModuleState::kModuleNotRequired;
+}
+
+ThreadProfilerPlatformConfiguration::RelativePopulations
+DefaultPlatformConfiguration::GetEnableRates(
+    bool is_chrome_branded,
+    version_info::Channel channel) const {
+  // TODO(https://crbug.com/1129939): Make this logic consistent with
+  // IsSupportedForChannel() for identifying local/CQ builds.
+  switch (channel) {
+    // Enable the profiler unconditionally for development/waterfall builds.
+    case version_info::Channel::UNKNOWN:
+      return RelativePopulations{100, 0};
+
+    case version_info::Channel::CANARY:
+    case version_info::Channel::DEV:
+      return RelativePopulations{80, 20};
+
+    default:
+      return RelativePopulations{0, 0};
+  }
 }
 
 bool DefaultPlatformConfiguration::IsSupportedForChannel(

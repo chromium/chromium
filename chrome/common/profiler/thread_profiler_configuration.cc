@@ -232,20 +232,18 @@ ThreadProfilerConfiguration::GenerateConfiguration(
       break;
   }
 
-  switch (chrome::GetChannel()) {
-    // Enable the profiler unconditionally for development/waterfall builds.
-    case version_info::Channel::UNKNOWN:
-      return PROFILE_ENABLED;
-
-#if (defined(OS_WIN) && defined(ARCH_CPU_X86_64)) || defined(OS_MAC)
-    case version_info::Channel::CANARY:
-    case version_info::Channel::DEV:
-      return ChooseConfiguration({{PROFILE_ENABLED, 80},
-                                  {PROFILE_CONTROL, 10},
-                                  {PROFILE_DISABLED, 10}});
-#endif
-
-    default:
-      return PROFILE_DISABLED;
+  ThreadProfilerPlatformConfiguration::RelativePopulations
+      relative_populations = platform_configuration.GetEnableRates(
+          BUILDFLAG(GOOGLE_CHROME_BRANDING), channel);
+  if (relative_populations.enabled == 0 &&
+      relative_populations.experiment == 0) {
+    return PROFILE_DISABLED;
   }
+
+  CHECK_EQ(0, relative_populations.experiment % 2);
+  return ChooseConfiguration({
+      {PROFILE_ENABLED, relative_populations.enabled},
+      {PROFILE_CONTROL, relative_populations.experiment / 2},
+      {PROFILE_DISABLED, relative_populations.experiment / 2},
+  });
 }

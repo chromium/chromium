@@ -17,6 +17,14 @@
 #define THREAD_PROFILER_SUPPORTED_ON_PLATFORM false
 #endif
 
+#if THREAD_PROFILER_SUPPORTED_ON_PLATFORM
+#define MAYBE_PLATFORM_CONFIG_TEST_F(suite, test) TEST_F(suite, test)
+#else
+#define MAYBE_PLATFORM_CONFIG_TEST_F(suite, test) TEST_F(suite, DISABLED_##test)
+#endif
+
+namespace {
+
 class ThreadProfilerPlatformConfigurationTest : public ::testing::Test {
  public:
   // The browser_test_mode_enabled=true scenario is already covered by the
@@ -33,11 +41,22 @@ class ThreadProfilerPlatformConfigurationTest : public ::testing::Test {
   const std::unique_ptr<ThreadProfilerPlatformConfiguration> config_;
 };
 
-#if THREAD_PROFILER_SUPPORTED_ON_PLATFORM
-#define MAYBE_PLATFORM_CONFIG_TEST_F(suite, test) TEST_F(suite, test)
-#else
-#define MAYBE_PLATFORM_CONFIG_TEST_F(suite, test) TEST_F(suite, DISABLED_##test)
-#endif
+}  // namespace
+
+// Glue functions to make RelativePopulations work with googletest.
+std::ostream& operator<<(
+    std::ostream& strm,
+    const ThreadProfilerPlatformConfiguration::RelativePopulations&
+        populations) {
+  return strm << "{" << populations.enabled << ", " << populations.experiment
+              << "}";
+}
+
+bool operator==(
+    const ThreadProfilerPlatformConfiguration::RelativePopulations& a,
+    const ThreadProfilerPlatformConfiguration::RelativePopulations& b) {
+  return a.enabled == b.enabled && a.experiment == b.experiment;
+}
 
 TEST_F(ThreadProfilerPlatformConfigurationTest, IsSupported) {
 #if !THREAD_PROFILER_SUPPORTED_ON_PLATFORM
@@ -130,4 +149,29 @@ MAYBE_PLATFORM_CONFIG_TEST_F(ThreadProfilerPlatformConfigurationTest,
             config()->GetRuntimeModuleState(/*is_chrome_branded=*/true,
                                             version_info::Channel::UNKNOWN));
 #endif
+}
+
+MAYBE_PLATFORM_CONFIG_TEST_F(ThreadProfilerPlatformConfigurationTest,
+                             GetEnableRates) {
+  using RelativePopulations =
+      ThreadProfilerPlatformConfiguration::RelativePopulations;
+  EXPECT_EQ((RelativePopulations{100, 0}),
+            config()->GetEnableRates(/*is_chrome_branded=*/true,
+                                     version_info::Channel::UNKNOWN));
+  EXPECT_EQ((RelativePopulations{80, 20}),
+            config()->GetEnableRates(/*is_chrome_branded=*/true,
+                                     version_info::Channel::CANARY));
+  EXPECT_EQ((RelativePopulations{80, 20}),
+            config()->GetEnableRates(/*is_chrome_branded=*/true,
+                                     version_info::Channel::DEV));
+  EXPECT_EQ((RelativePopulations{0, 0}),
+            config()->GetEnableRates(/*is_chrome_branded=*/true,
+                                     version_info::Channel::BETA));
+  EXPECT_EQ((RelativePopulations{0, 0}),
+            config()->GetEnableRates(/*is_chrome_branded=*/true,
+                                     version_info::Channel::STABLE));
+
+  EXPECT_EQ((RelativePopulations{100, 0}),
+            config()->GetEnableRates(/*is_chrome_branded=*/true,
+                                     version_info::Channel::UNKNOWN));
 }

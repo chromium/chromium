@@ -36,6 +36,17 @@ class ThreadProfilerPlatformConfiguration {
     kModuleNotAvailable,        // A module is necessary but not available.
   };
 
+  // The relative populations to use for enabling/disabling the profiler.
+  // |enabled| + |experiment| is expected to equal 100. Profiling is to be
+  // enabled with probability |enabled|/100. The fraction |experiment|/100 is to
+  // be split in to two equal-sized experiment groups with probability
+  // |experiment|/(2 * 100), one of which will be enabled and one disabled. As a
+  // special case {0, 0} means always disable.
+  struct RelativePopulations {
+    int enabled;
+    int experiment;
+  };
+
   virtual ~ThreadProfilerPlatformConfiguration() = default;
 
   // Create the platform configuration.
@@ -56,6 +67,13 @@ class ThreadProfilerPlatformConfiguration {
   // Request install of the runtime support module. May be invoked only if
   // GetRuntimeModuleState() returns kModuleAbsentButAvailable.
   virtual void RequestRuntimeModuleInstall() const {}
+
+  // Returns the relative population disposition for the channel/chrome branding
+  // on the platform. See the documentation on RelativePopulations. Enable rates
+  // are valid only if IsSupported().
+  virtual RelativePopulations GetEnableRates(
+      bool is_chrome_branded,
+      version_info::Channel channel) const = 0;
 
  protected:
   // True if the profiler is to be run for the channel/chrome branding on the
