@@ -2009,7 +2009,6 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "experiment_percentage": 100,
         "merge": {
           "args": [
             "--bucket",
@@ -5678,7 +5677,6 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "experiment_percentage": 100,
         "merge": {
           "args": [
             "--bucket",
@@ -9038,7 +9036,6 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "experiment_percentage": 100,
         "merge": {
           "args": [
             "--bucket",
@@ -12632,7 +12629,6 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "experiment_percentage": 100,
         "merge": {
           "args": [
             "--bucket",
@@ -17019,7 +17015,6 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "experiment_percentage": 100,
         "merge": {
           "args": [
             "--bucket",
@@ -29791,7 +29786,6 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/generic_android23.textpb"
         ],
-        "experiment_percentage": 100,
         "merge": {
           "args": [
             "--bucket",
@@ -34097,7 +34091,6 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "experiment_percentage": 100,
         "merge": {
           "args": [
             "--bucket",
@@ -38768,7 +38761,6 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/generic_android28.textpb"
         ],
-        "experiment_percentage": 100,
         "merge": {
           "args": [
             "--bucket",
