@@ -47,9 +47,11 @@ void SVGShapePainter::Paint(const PaintInfo& paint_info) {
       layout_svg_shape_.IsShapeEmpty())
     return;
 
-  if (SVGModelObjectPainter(layout_svg_shape_)
-          .CullRectSkipsPainting(paint_info)) {
-    return;
+  if (SVGModelObjectPainter::CanUseCullRect(layout_svg_shape_.StyleRef())) {
+    if (!paint_info.GetCullRect().IntersectsTransformed(
+            layout_svg_shape_.LocalSVGTransform(),
+            layout_svg_shape_.VisualRectInLocalSVGCoordinates()))
+      return;
   }
   // Shapes cannot have children so do not call TransformCullRect.
 

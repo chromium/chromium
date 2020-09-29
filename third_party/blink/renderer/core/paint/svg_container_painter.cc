@@ -28,6 +28,15 @@ bool HasReferenceFilterEffect(const ObjectPaintProperties& properties) {
 
 }  // namespace
 
+bool SVGContainerPainter::CanUseCullRect() const {
+  // LayoutSVGHiddenContainer's visual rect is always empty but we need to
+  // paint its descendants so we cannot skip painting.
+  if (layout_svg_container_.IsSVGHiddenContainer())
+    return false;
+  return SVGModelObjectPainter::CanUseCullRect(
+      layout_svg_container_.StyleRef());
+}
+
 void SVGContainerPainter::Paint(const PaintInfo& paint_info) {
   // Spec: An empty viewBox on the <svg> element disables rendering.
   DCHECK(layout_svg_container_.GetElement());
@@ -36,20 +45,20 @@ void SVGContainerPainter::Paint(const PaintInfo& paint_info) {
   if (svg_svg_element && svg_svg_element->HasEmptyViewBox())
     return;
 
-  if (SVGModelObjectPainter(layout_svg_container_)
-          .CullRectSkipsPainting(paint_info)) {
-    return;
-  }
-
   const auto* properties =
       layout_svg_container_.FirstFragment().PaintProperties();
   PaintInfo paint_info_before_filtering(paint_info);
-  if (SVGModelObjectPainter::ShouldUseInfiniteCullRect(
-          layout_svg_container_.StyleRef())) {
+  if (CanUseCullRect()) {
+    if (!paint_info.GetCullRect().IntersectsTransformed(
+            layout_svg_container_.LocalToSVGParentTransform(),
+            layout_svg_container_.VisualRectInLocalSVGCoordinates()))
+      return;
+    if (properties) {
+      if (const auto* transform = properties->Transform())
+        paint_info_before_filtering.TransformCullRect(*transform);
+    }
+  } else {
     paint_info_before_filtering.ApplyInfiniteCullRect();
-  } else if (properties) {
-    if (const auto* transform = properties->Transform())
-      paint_info_before_filtering.TransformCullRect(*transform);
   }
 
   ScopedSVGTransformState transform_state(

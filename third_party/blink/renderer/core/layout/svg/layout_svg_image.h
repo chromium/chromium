@@ -69,6 +69,11 @@ class LayoutSVGImage final : public LayoutSVGModelObject {
            LayoutSVGModelObject::IsOfType(type);
   }
 
+  AffineTransform LocalSVGTransform() const override {
+    NOT_DESTROYED();
+    return local_transform_;
+  }
+
   const char* GetName() const override {
     NOT_DESTROYED();
     return "LayoutSVGImage";
@@ -95,11 +100,6 @@ class LayoutSVGImage final : public LayoutSVGModelObject {
                    const HitTestLocation&,
                    const PhysicalOffset& accumulated_offset,
                    HitTestAction) override;
-
-  AffineTransform LocalSVGTransform() const override {
-    NOT_DESTROYED();
-    return local_transform_;
-  }
 
   FloatSize CalculateObjectSize() const;
   bool HasOverriddenIntrinsicSize() const;

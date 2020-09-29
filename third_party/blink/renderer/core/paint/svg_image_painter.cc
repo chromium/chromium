@@ -31,15 +31,16 @@ void SVGImagePainter::Paint(const PaintInfo& paint_info) {
       !layout_svg_image_.ImageResource()->HasImage())
     return;
 
-  if (SVGModelObjectPainter(layout_svg_image_)
-          .CullRectSkipsPainting(paint_info)) {
-    return;
+  if (SVGModelObjectPainter::CanUseCullRect(layout_svg_image_.StyleRef())) {
+    if (!paint_info.GetCullRect().IntersectsTransformed(
+            layout_svg_image_.LocalSVGTransform(),
+            layout_svg_image_.VisualRectInLocalSVGCoordinates()))
+      return;
   }
   // Images cannot have children so do not call TransformCullRect.
 
   ScopedSVGTransformState transform_state(
-      paint_info, layout_svg_image_,
-      layout_svg_image_.LocalToSVGParentTransform());
+      paint_info, layout_svg_image_, layout_svg_image_.LocalSVGTransform());
   {
     ScopedSVGPaintState paint_state(layout_svg_image_, paint_info);
     if (paint_state.ApplyEffects() &&
