@@ -88,5 +88,7 @@ public final class ProductionSupportedFlagList {
                             + "Elements v0, and HTML Imports)."),
             Flag.baseFeature(AwFeatures.WEBVIEW_DISPLAY_CUTOUT,
                     "Enables display cutout (notch) support in WebView for Android P and above."),
+            Flag.commandLine(AwSwitches.WEBVIEW_FORCE_LITTLE_CORES,
+                    "Forces WebView to do rendering work in little cores"),
     };
 }

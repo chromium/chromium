@@ -49,4 +49,7 @@ const char kFinchSeedMinDownloadPeriod[] = "finch-seed-min-download-period";
 // variations seed.
 const char kFinchSeedMinUpdatePeriod[] = "finch-seed-min-update-period";
 
+// Force WebView renderer to run in little cores
+const char kWebViewForceLittleCores[] = "webview-force-little-cores";
+
 }  // namespace switches
