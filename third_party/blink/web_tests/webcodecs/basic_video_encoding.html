@@ -176,13 +176,8 @@
     promise_test(encode_decode_test.bind(null, "vp8", "allow"),
       "encoding and decoding vp8");
 
-    /* TODO(crbug/1127073): re-enable these tests when they pass.
-    promise_test(encode_test.bind(null, "avc1.42001E", "allow"),
-      "encoding avc1.42001E");
-
     promise_test(encode_decode_test.bind(null, "avc1.42001E", "allow"),
       "encoding and decoding avc1.42001E");
-    */
 
     /* Uncomment this for manual testing, before we have GPU tests for that */
     // promise_test(encode_test.bind(null, "avc1.42001E", "require"),

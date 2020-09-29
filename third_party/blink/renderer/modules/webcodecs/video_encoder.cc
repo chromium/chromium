@@ -50,7 +50,9 @@
 namespace blink {
 
 namespace {
-std::unique_ptr<media::VideoEncoder> CreateAcceleratedVideoEncoder() {
+std::unique_ptr<media::VideoEncoder> CreateAcceleratedVideoEncoder(
+    media::VideoCodecProfile profile,
+    const media::VideoEncoder::Options& options) {
 #if defined(OS_MAC) || defined(OS_LINUX)
   // TODO(https://crbug.com/1110279) Flush() is not implemented on MacOS'
   // accelerated video encoder, so we can't use it yet.
@@ -58,6 +60,36 @@ std::unique_ptr<media::VideoEncoder> CreateAcceleratedVideoEncoder() {
 #else
   auto* gpu_factories = Platform::Current()->GetGpuFactories();
   if (!gpu_factories || !gpu_factories->IsGpuVideoAcceleratorEnabled())
+    return nullptr;
+
+  auto supported_profiles =
+      gpu_factories->GetVideoEncodeAcceleratorSupportedProfiles().value_or(
+          media::VideoEncodeAccelerator::SupportedProfiles());
+
+  bool found_supported_profile = false;
+  for (auto& supported_profile : supported_profiles) {
+    if (supported_profile.profile != profile)
+      continue;
+
+    if (supported_profile.min_resolution.width() > options.width ||
+        supported_profile.min_resolution.height() > options.height)
+      continue;
+
+    if (supported_profile.max_resolution.width() < options.width ||
+        supported_profile.max_resolution.height() < options.height)
+      continue;
+
+    double max_supported_framerate =
+        double{supported_profile.max_framerate_numerator} /
+        supported_profile.max_framerate_denominator;
+    if (options.framerate > max_supported_framerate)
+      continue;
+
+    found_supported_profile = true;
+    break;
+  }
+
+  if (!found_supported_profile)
     return nullptr;
 
   auto task_runner = Thread::MainThread()->GetTaskRunner();
@@ -255,19 +287,18 @@ std::unique_ptr<media::VideoEncoder> VideoEncoder::CreateMediaVideoEncoder(
   // detecting support of encoder configs.
   switch (config.acc_pref) {
     case AccelerationPreference::kRequire:
-      return CreateAcceleratedVideoEncoder();
+      return CreateAcceleratedVideoEncoder(config.profile, config.options);
     case AccelerationPreference::kAllow: {
+      auto result =
+          CreateAcceleratedVideoEncoder(config.profile, config.options);
+      if (result)
+        return result;
       switch (config.codec) {
         case media::kCodecVP8:
         case media::kCodecVP9:
-          /* No acceleration supported yet. */
           return CreateVpxVideoEncoder();
-
         case media::kCodecH264:
-          if (auto result = CreateAcceleratedVideoEncoder())
-            return result;
           return CreateOpenH264VideoEncoder();
-
         default:
           return nullptr;
       }
@@ -277,10 +308,8 @@ std::unique_ptr<media::VideoEncoder> VideoEncoder::CreateMediaVideoEncoder(
         case media::kCodecVP8:
         case media::kCodecVP9:
           return CreateVpxVideoEncoder();
-
         case media::kCodecH264:
           return CreateOpenH264VideoEncoder();
-
         default:
           return nullptr;
       }
@@ -357,8 +386,8 @@ void VideoEncoder::encode(VideoFrame* frame,
     return;
   }
 
-  // At this point, we have "consumed" the frame, and will destroy the clone in
-  // ProcessEncode().
+  // At this point, we have "consumed" the frame, and will destroy the clone
+  // in ProcessEncode().
   frame->destroy();
 
   Request* request = MakeGarbageCollected<Request>();
@@ -508,7 +537,8 @@ void VideoEncoder::ProcessEncode(Request* request) {
                          WTF::Bind(done_callback, WrapWeakPersistent(this),
                                    WrapPersistentIfNeeded(request)));
 
-  // We passed a copy of frame() above, so this should be safe to destroy here.
+  // We passed a copy of frame() above, so this should be safe to destroy
+  // here.
   request->frame->destroy();
 }
 
