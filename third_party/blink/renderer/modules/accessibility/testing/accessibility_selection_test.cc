@@ -8,6 +8,7 @@
 #include <iterator>
 
 #include "base/memory/scoped_refptr.h"
+#include "third_party/blink/public/platform/file_path_conversion.h"
 #include "third_party/blink/renderer/core/dom/character_data.h"
 #include "third_party/blink/renderer/core/dom/container_node.h"
 #include "third_party/blink/renderer/core/dom/node.h"
@@ -346,7 +347,7 @@ AccessibilitySelectionTest::AccessibilitySelectionTest(
 
 void AccessibilitySelectionTest::SetUp() {
   AccessibilityTest::SetUp();
-  RuntimeEnabledFeatures::SetAccessibilityExposeHTMLElementEnabled(false);
+  RuntimeEnabledFeatures::SetAccessibilityExposeHTMLElementEnabled(true);
 }
 
 std::string AccessibilitySelectionTest::GetCurrentSelectionText() const {
@@ -442,6 +443,11 @@ void AccessibilitySelectionTest::RunSelectionTest(
   }
 
   EXPECT_EQ(ax_file_contents, actual_ax_file_contents);
+
+  // Uncomment these lines to write the output to the expectations file.
+  // TODO(dmazzoni): make this a command-line parameter.
+  // if (ax_file_contents != actual_ax_file_contents)
+  //  base::WriteFile(WebStringToFilePath(ax_file), actual_ax_file_contents);
 }
 
 ParameterizedAccessibilitySelectionTest::
