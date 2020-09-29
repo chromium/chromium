@@ -16089,6 +16089,13 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="NewTabPage_Promos_SafetyCheck">
+  <owner>msramek@chromium.org</owner>
+  <description>
+    Recorded when the user clicks a Safety Check promotion on the New Tab Page.
+  </description>
+</action>
+
 <action name="NewTabPage_ReopenTab">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
