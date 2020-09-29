@@ -20,9 +20,7 @@
 #include "ui/base/ime/mac/input_method_mac.h"
 #elif defined(USE_X11) || defined(USE_OZONE)
 #if defined(USE_X11)
-// TODO(crbug.com/1085700): Remove nogncheck when we can build both Ozone
-// Wayland and X11 on Linux codesearch-gen bots.
-#include "ui/base/ime/linux/input_method_auralinux.h"  // nogncheck
+#include "ui/base/ime/linux/input_method_auralinux.h"
 #endif  // defined(USE_X11)
 #if defined(USE_OZONE)
 #include "ui/ozone/public/ozone_platform.h"

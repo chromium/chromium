@@ -16,6 +16,7 @@
 #include "ui/base/cursor/cursor_factory.h"
 #include "ui/base/dragdrop/os_exchange_data_provider_factory.h"
 #include "ui/base/dragdrop/os_exchange_data_provider_factory_ozone.h"
+#include "ui/base/ime/linux/linux_input_method_context_factory.h"
 #include "ui/base/x/x11_cursor_factory.h"
 #include "ui/base/x/x11_error_handler.h"
 #include "ui/base/x/x11_util.h"
@@ -44,8 +45,7 @@
 #include "ui/base/dragdrop/os_exchange_data_provider_non_backed.h"
 #include "ui/base/ime/chromeos/input_method_chromeos.h"
 #else
-#include "ui/base/ime/linux/input_method_auralinux.h"              // nogncheck
-#include "ui/base/ime/linux/linux_input_method_context_factory.h"  // nogncheck
+#include "ui/base/ime/linux/input_method_auralinux.h"
 #include "ui/ozone/platform/x11/x11_os_exchange_data_provider_ozone.h"
 #endif
 

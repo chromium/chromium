@@ -117,8 +117,8 @@
 #endif
 
 #if defined(OS_LINUX) && !defined(OS_CHROMEOS)
-#include "ui/base/ime/linux/text_edit_command_auralinux.h"  // nogncheck
-#include "ui/base/ime/linux/text_edit_key_bindings_delegate_auralinux.h"  // nogncheck
+#include "ui/base/ime/linux/text_edit_command_auralinux.h"
+#include "ui/base/ime/linux/text_edit_key_bindings_delegate_auralinux.h"
 #endif
 
 #if defined(OS_CHROMEOS)

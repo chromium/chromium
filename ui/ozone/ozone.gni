@@ -4,7 +4,6 @@
 
 import("//build/config/chromecast_build.gni")
 import("//build/config/ui.gni")
-import("//build/toolchain/kythe.gni")
 import("//build/toolchain/toolchain.gni")
 
 declare_args() {
@@ -70,12 +69,6 @@ declare_args() {
       ozone_platform = "x11"
       ozone_platform_drm = true
       ozone_platform_x11 = true
-
-      # Enable the Ozone Wayland platform for ChromiumOS codesearch-gen bots
-      # so we get cross-references in codesearch. We can remove this once
-      # we can compile both x11 and Ozone on desktop Linux Chrome.
-      # TODO(crbug.com/1085700): Remove enable_kythe_annotations here.
-      ozone_platform_wayland = enable_kythe_annotations
     } else if (is_desktop_linux) {
       ozone_platform = "x11"
       ozone_platform_wayland = true
