@@ -3,4 +3,4 @@ rootWebArea
 ++++genericContainer
 ++++++textFieldWithComboBox autoComplete='list' inputType='text' haspopup=listbox
 ++++++++genericContainer
-++++++genericContainer ignored invisible name='Option1 Option2'
+++++++genericContainer ignored invisible

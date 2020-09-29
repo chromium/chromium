@@ -1,4 +1,4 @@
 Document
-++Group Name='span-A3' DescribedBy='span-A4'
+++Group Name='span-A3' DescribedBy='{group}'
 ++Group Name='span-B' DescribedBy='span-A2'
 ++Group Name='span-C'

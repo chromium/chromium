@@ -4,10 +4,10 @@ rootWebArea isLineBreakingObject=true
 ++++++genericContainer isLineBreakingObject=true
 ++++++++staticText name='blockDisplay'
 ++++++++++inlineTextBox name='blockDisplay'
-++++++genericContainer ignored invisible name='noneDisplay'
+++++++genericContainer ignored invisible
 ++++++genericContainer ignored invisible isLineBreakingObject=true
 ++++++++staticText ignored invisible name='blockDisplay Hiddentrue'
-++++++genericContainer ignored invisible name='noneDisplay Hiddentrue'
+++++++genericContainer ignored invisible
 ++++++genericContainer isLineBreakingObject=true
 ++++++++staticText name='blockDisplay Hiddenfalse'
 ++++++++++inlineTextBox name='blockDisplay Hiddenfalse'

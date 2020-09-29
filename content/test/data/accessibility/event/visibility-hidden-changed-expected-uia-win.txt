@@ -1,4 +1,2 @@
-AriaProperties changed on role=document
-AriaProperties changed on role=document
 AriaProperties changed on role=heading, name=Item2
 AriaProperties changed on role=heading, name=Item4
