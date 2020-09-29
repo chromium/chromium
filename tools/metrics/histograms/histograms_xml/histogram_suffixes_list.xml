@@ -4405,8 +4405,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="DataSaverDisabled" label="Data Saver is disabled"/>
   <suffix name="DataSaverEnabled" label="Data Saver is enabled"/>
   <affected-histogram name="Previews.ContentLength"/>
-  <affected-histogram name="Previews.DataInflation"/>
-  <affected-histogram name="Previews.DataInflationPercent"/>
+  <affected-histogram name="Previews.DataInflation">
+    <obsolete>
+      Obsolete as of 09/2020.
+    </obsolete>
+  </affected-histogram>
+  <affected-histogram name="Previews.DataInflationPercent">
+    <obsolete>
+      Obsolete as of 09/2020.
+    </obsolete>
+  </affected-histogram>
   <affected-histogram name="Previews.DataSavings"/>
   <affected-histogram name="Previews.DataSavingsPercent"/>
   <affected-histogram name="Previews.OriginalContentLength"/>

@@ -10164,6 +10164,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Previews.DataInflation" units="KB" expires_after="M85">
+  <obsolete>
+    Not even logged by code. Obsolete in 09/2020.
+  </obsolete>
   <owner>ryansturm@chromium.org</owner>
   <summary>
     The estimated amount that the content was inflated for a page load using a
@@ -10173,6 +10176,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Previews.DataInflationPercent" units="%" expires_after="M85">
+  <obsolete>
+    Not even logged by code. Obsolete in 09/2020.
+  </obsolete>
   <owner>ryansturm@chromium.org</owner>
   <summary>
     The estimated percent of data used that a page load would have otherwise
@@ -10250,8 +10256,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Previews.OptOut.UserOptedOut" enum="PreviewsUserOptedOut"
-    expires_after="2020-09-27">
-  <owner>ryansturm@chromium.org</owner>
+    expires_after="2020-01-31">
+  <owner>sophiechang@chromium.org</owner>
   <summary>
     Whether the user chose to reload the original page when shown a preview.
   </summary>
