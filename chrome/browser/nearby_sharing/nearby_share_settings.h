@@ -61,7 +61,14 @@ class NearbyShareSettings : public nearby_share::mojom::NearbyShareSettings,
   void SetEnabled(bool enabled) override;
   void GetDeviceName(
       base::OnceCallback<void(const std::string&)> callback) override;
-  void SetDeviceName(const std::string& device_name) override;
+  void ValidateDeviceName(
+      const std::string& device_name,
+      base::OnceCallback<void(nearby_share::mojom::DeviceNameValidationResult)>
+          callback) override;
+  void SetDeviceName(
+      const std::string& device_name,
+      base::OnceCallback<void(nearby_share::mojom::DeviceNameValidationResult)>
+          callback) override;
   void GetDataUsage(base::OnceCallback<void(nearby_share::mojom::DataUsage)>
                         callback) override;
   void SetDataUsage(nearby_share::mojom::DataUsage data_usage) override;

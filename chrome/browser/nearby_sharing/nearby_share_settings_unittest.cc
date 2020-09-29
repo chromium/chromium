@@ -119,13 +119,43 @@ TEST_F(NearbyShareSettingsTest, GetAndSetEnabled) {
   EXPECT_EQ(true, observer_.enabled);
 }
 
+TEST_F(NearbyShareSettingsTest, ValidateDeviceName) {
+  auto result = nearby_share::mojom::DeviceNameValidationResult::kValid;
+  local_device_data_manager_.set_next_validation_result(
+      nearby_share::mojom::DeviceNameValidationResult::kErrorEmpty);
+  nearby_share_settings_waiter_.ValidateDeviceName("", &result);
+  EXPECT_EQ(result,
+            nearby_share::mojom::DeviceNameValidationResult::kErrorEmpty);
+
+  local_device_data_manager_.set_next_validation_result(
+      nearby_share::mojom::DeviceNameValidationResult::kValid);
+  nearby_share_settings_waiter_.ValidateDeviceName(
+      "this string is 32 bytes in UTF-8", &result);
+  EXPECT_EQ(result, nearby_share::mojom::DeviceNameValidationResult::kValid);
+}
+
 TEST_F(NearbyShareSettingsTest, GetAndSetDeviceName) {
   std::string name = "not_the_default";
   nearby_share_settings_waiter_.GetDeviceName(&name);
   EXPECT_EQ(kDefaultDeviceName, name);
 
+  // When we get a validation error, setting the name should not succeed.
   EXPECT_EQ("uncalled", observer_.device_name);
-  nearby_share_settings_.SetDeviceName("d");
+  auto result = nearby_share::mojom::DeviceNameValidationResult::kValid;
+  local_device_data_manager_.set_next_validation_result(
+      nearby_share::mojom::DeviceNameValidationResult::kErrorEmpty);
+  nearby_share_settings_waiter_.SetDeviceName("", &result);
+  EXPECT_EQ(result,
+            nearby_share::mojom::DeviceNameValidationResult::kErrorEmpty);
+  EXPECT_EQ(kDefaultDeviceName, nearby_share_settings_.GetDeviceName());
+
+  // When the name is valid, setting should succeed.
+  EXPECT_EQ("uncalled", observer_.device_name);
+  result = nearby_share::mojom::DeviceNameValidationResult::kValid;
+  local_device_data_manager_.set_next_validation_result(
+      nearby_share::mojom::DeviceNameValidationResult::kValid);
+  nearby_share_settings_waiter_.SetDeviceName("d", &result);
+  EXPECT_EQ(result, nearby_share::mojom::DeviceNameValidationResult::kValid);
   EXPECT_EQ("d", nearby_share_settings_.GetDeviceName());
 
   EXPECT_EQ("uncalled", observer_.device_name);

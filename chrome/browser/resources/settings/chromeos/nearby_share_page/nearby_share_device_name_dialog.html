@@ -5,6 +5,7 @@
 <link rel="import" href="chrome://resources/cr_elements/cr_input/cr_input.html">
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../../shared/nearby_share_settings.html">
 <link rel="import" href="../../shared/nearby_share_settings_behavior.html">
 
 <dom-module id="nearby-share-device-name-dialog">
@@ -16,14 +17,17 @@
         $i18n{nearbyShareDeviceNameDialogTitle}
       </div>
       <div slot="body">
-        <cr-input value="[[settings.deviceName]]" autofocus>
+        <cr-input value="[[settings.deviceName]]" on-input="onDeviceNameInput_"
+            error-message="[[errorMessage]]"
+            invalid="[[hasErrorMessage_(errorMessage)]]" autofocus>
         </cr-input>
       </div>
       <div class="layout horizontal center" slot="button-container">
         <cr-button class="cancel-button" on-click="onCancelTap_">
           $i18n{cancel}
         </cr-button>
-        <cr-button class="action-button" on-click="onDoneTap_">
+        <cr-button id="doneButton" class="action-button" on-click="onDoneTap_"
+            disabled="[[hasErrorMessage_(errorMessage)]]">
           $i18n{done}
         </cr-button>
       </div>

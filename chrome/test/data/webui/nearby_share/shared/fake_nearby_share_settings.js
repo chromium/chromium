@@ -25,6 +25,9 @@ cr.define('nearby_share', function() {
       this.allowedContacts_ = [];
       /** @private {!nearbyShare.mojom.NearbyShareSettingsObserverInterface} */
       this.observer_;
+      /** @private {!nearbyShare.mojom.DeviceNameValidationResult} */
+      this.nextDeviceNameResult_ =
+          nearbyShare.mojom.DeviceNameValidationResult.kValid;
       /** @private {Object} */
       this.$ = {
         close() {},
@@ -38,6 +41,15 @@ cr.define('nearby_share', function() {
     addSettingsObserver(observer) {
       // Just support a single observer for testing.
       this.observer_ = observer;
+    }
+
+    /**
+     * @param { !nearbyShare.mojom.DeviceNameValidationResult } result
+     */
+    setNextDeviceNameResult(result) {
+      // Set the next result to be used when calling ValidateDeviceName() or
+      // SetDeviceName().
+      this.nextDeviceNameResult_ = result;
     }
 
     /**
@@ -66,12 +78,32 @@ cr.define('nearby_share', function() {
 
     /**
      * @param { !string } deviceName
+     * @return {!Promise<{
+          result: !nearbyShare.mojom.DeviceNameValidationResult,
+     *  }>}
      */
-    setDeviceName(deviceName) {
+    async validateDeviceName(deviceName) {
+      return {result: this.nextDeviceNameResult_};
+    }
+
+    /**
+     * @param { !string } deviceName
+     * @return {!Promise<{
+          result: !nearbyShare.mojom.DeviceNameValidationResult,
+     *  }>}
+     */
+    async setDeviceName(deviceName) {
+      if (this.nextDeviceNameResult_ !==
+          nearbyShare.mojom.DeviceNameValidationResult.kValid) {
+        return {result: this.nextDeviceNameResult_};
+      }
+
       this.deviceName_ = deviceName;
       if (this.observer_) {
         this.observer_.onDeviceNameChanged(deviceName);
       }
+
+      return {result: this.nextDeviceNameResult_};
     }
 
     /**

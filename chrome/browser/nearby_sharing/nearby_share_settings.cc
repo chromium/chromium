@@ -96,8 +96,20 @@ void NearbyShareSettings::GetDeviceName(
   std::move(callback).Run(GetDeviceName());
 }
 
-void NearbyShareSettings::SetDeviceName(const std::string& device_name) {
-  local_device_data_manager_->SetDeviceName(device_name);
+void NearbyShareSettings::ValidateDeviceName(
+    const std::string& device_name,
+    base::OnceCallback<void(nearby_share::mojom::DeviceNameValidationResult)>
+        callback) {
+  std::move(callback).Run(
+      local_device_data_manager_->ValidateDeviceName(device_name));
+}
+
+void NearbyShareSettings::SetDeviceName(
+    const std::string& device_name,
+    base::OnceCallback<void(nearby_share::mojom::DeviceNameValidationResult)>
+        callback) {
+  return std::move(callback).Run(
+      local_device_data_manager_->SetDeviceName(device_name));
 }
 
 void NearbyShareSettings::GetDataUsage(

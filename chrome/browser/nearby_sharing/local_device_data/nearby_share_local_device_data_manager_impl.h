@@ -14,6 +14,7 @@
 #include "chrome/browser/nearby_sharing/local_device_data/nearby_share_local_device_data_manager.h"
 #include "chrome/browser/nearby_sharing/proto/device_rpc.pb.h"
 #include "chrome/browser/nearby_sharing/proto/rpc_resources.pb.h"
+#include "chrome/browser/ui/webui/nearby_share/public/mojom/nearby_share_settings.mojom.h"
 
 class NearbyShareClientFactory;
 class NearbyShareDeviceDataUpdater;
@@ -60,7 +61,10 @@ class NearbyShareLocalDeviceDataManagerImpl
   std::string GetDeviceName() const override;
   base::Optional<std::string> GetFullName() const override;
   base::Optional<std::string> GetIconUrl() const override;
-  void SetDeviceName(const std::string& name) override;
+  nearby_share::mojom::DeviceNameValidationResult ValidateDeviceName(
+      const std::string& name) override;
+  nearby_share::mojom::DeviceNameValidationResult SetDeviceName(
+      const std::string& name) override;
   void DownloadDeviceData() override;
   void UploadContacts(std::vector<nearbyshare::proto::Contact> contacts,
                       UploadCompleteCallback callback) override;

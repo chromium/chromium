@@ -30,6 +30,18 @@ enum Visibility {
   kSelectedContacts = 3
 };
 
+// Represents the error result when validating the device name.
+enum DeviceNameValidationResult {
+  // The device name was valid.
+  kValid = 0,
+  // The device name must not be empty.
+  kErrorEmpty = 1,
+  // The device name is too long.
+  kErrorTooLong = 2,
+  // The device name is not valid UTF-8.
+  kErrorNotValidUtf8 = 3
+};
+
 // This observer interface allows clients to be notified whenever key Nearby
 // Share settings are changed.
 interface NearbyShareSettingsObserver {
@@ -60,9 +72,14 @@ interface NearbyShareSettings {
   // Get the device name shown to a sender when this device is available as
   // a share target. |device_name| is the new device name.
   GetDeviceName() => (string device_name);
+  // Validate the device name shown to a sender when this device is available
+  // as a share target. This is a separate function so that we can call it to
+  // validate input as a user types.
+  ValidateDeviceName(string device_name) => (DeviceNameValidationResult result);
   // Set the device name shown to a sender when this device is available as
-  // a share target.
-  SetDeviceName(string device_name);
+  // a share target. Before saving the new name this will validate it and
+  // respond with an error if it is invalid.
+  SetDeviceName(string device_name) => (DeviceNameValidationResult result);
 
   // Get which type of network connectivity Nearby Share can operate on.
   GetDataUsage() => (DataUsage data_usage);

@@ -10,6 +10,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/rand_util.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
 #include "chrome/browser/nearby_sharing/local_device_data/nearby_share_device_data_updater.h"
 #include "chrome/browser/nearby_sharing/local_device_data/nearby_share_device_data_updater_impl.h"
@@ -36,6 +37,10 @@ constexpr base::TimeDelta kUpdateDeviceDataTimeout =
     base::TimeDelta::FromSeconds(30);
 constexpr base::TimeDelta kDeviceDataDownloadPeriod =
     base::TimeDelta::FromHours(1);
+
+// The maximum length allowed for a device name, as encoded in UTF-8 in a
+// std::string, which will not contain a null terminator.
+size_t kDeviceNameMaxByteLength = 32;
 
 }  // namespace
 
@@ -131,17 +136,37 @@ base::Optional<std::string> NearbyShareLocalDeviceDataManagerImpl::GetIconUrl()
   return url;
 }
 
-void NearbyShareLocalDeviceDataManagerImpl::SetDeviceName(
+nearby_share::mojom::DeviceNameValidationResult
+NearbyShareLocalDeviceDataManagerImpl::ValidateDeviceName(
     const std::string& name) {
-  if (name == GetDeviceName())
-    return;
+  if (name.empty())
+    return nearby_share::mojom::DeviceNameValidationResult::kErrorEmpty;
 
-  // TODO(b/161297140): Perform input validation.
+  if (!base::IsStringUTF8(name))
+    return nearby_share::mojom::DeviceNameValidationResult::kErrorNotValidUtf8;
+
+  if (name.length() > kDeviceNameMaxByteLength)
+    return nearby_share::mojom::DeviceNameValidationResult::kErrorTooLong;
+
+  return nearby_share::mojom::DeviceNameValidationResult::kValid;
+}
+
+nearby_share::mojom::DeviceNameValidationResult
+NearbyShareLocalDeviceDataManagerImpl::SetDeviceName(const std::string& name) {
+  if (name == GetDeviceName())
+    return nearby_share::mojom::DeviceNameValidationResult::kValid;
+
+  auto error = ValidateDeviceName(name);
+  if (error != nearby_share::mojom::DeviceNameValidationResult::kValid)
+    return error;
+
   pref_service_->SetString(prefs::kNearbySharingDeviceNamePrefName, name);
 
   NotifyLocalDeviceDataChanged(/*did_device_name_change=*/true,
                                /*did_full_name_change=*/false,
                                /*did_icon_url_change=*/false);
+
+  return nearby_share::mojom::DeviceNameValidationResult::kValid;
 }
 
 void NearbyShareLocalDeviceDataManagerImpl::DownloadDeviceData() {

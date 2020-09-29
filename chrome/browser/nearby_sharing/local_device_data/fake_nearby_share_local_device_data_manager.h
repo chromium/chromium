@@ -13,6 +13,7 @@
 #include "chrome/browser/nearby_sharing/local_device_data/nearby_share_local_device_data_manager.h"
 #include "chrome/browser/nearby_sharing/local_device_data/nearby_share_local_device_data_manager_impl.h"
 #include "chrome/browser/nearby_sharing/proto/rpc_resources.pb.h"
+#include "chrome/browser/ui/webui/nearby_share/public/mojom/nearby_share_settings.mojom.h"
 
 class NearbyShareClientFactory;
 class PrefService;
@@ -84,7 +85,10 @@ class FakeNearbyShareLocalDeviceDataManager
   std::string GetDeviceName() const override;
   base::Optional<std::string> GetFullName() const override;
   base::Optional<std::string> GetIconUrl() const override;
-  void SetDeviceName(const std::string& name) override;
+  nearby_share::mojom::DeviceNameValidationResult ValidateDeviceName(
+      const std::string& name) override;
+  nearby_share::mojom::DeviceNameValidationResult SetDeviceName(
+      const std::string& name) override;
   void DownloadDeviceData() override;
   void UploadContacts(std::vector<nearbyshare::proto::Contact> contacts,
                       UploadCompleteCallback callback) override;
@@ -112,6 +116,11 @@ class FakeNearbyShareLocalDeviceDataManager
     return upload_certificates_calls_;
   }
 
+  void set_next_validation_result(
+      nearby_share::mojom::DeviceNameValidationResult result) {
+    next_validation_result_ = result;
+  }
+
  private:
   // NearbyShareLocalDeviceDataManager:
   void OnStart() override;
@@ -124,6 +133,8 @@ class FakeNearbyShareLocalDeviceDataManager
   size_t num_download_device_data_calls_ = 0;
   std::vector<UploadContactsCall> upload_contacts_calls_;
   std::vector<UploadCertificatesCall> upload_certificates_calls_;
+  nearby_share::mojom::DeviceNameValidationResult next_validation_result_ =
+      nearby_share::mojom::DeviceNameValidationResult::kValid;
 };
 
 #endif  // CHROME_BROWSER_NEARBY_SHARING_LOCAL_DEVICE_DATA_FAKE_NEARBY_SHARE_LOCAL_DEVICE_DATA_MANAGER_H_

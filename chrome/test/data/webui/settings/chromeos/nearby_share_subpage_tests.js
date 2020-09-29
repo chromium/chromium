@@ -56,6 +56,8 @@ suite('NearbyShare', function() {
   let accountManagerBrowserProxy = null;
   /** @type {!nearby_share.FakeContactManager} */
   const fakeContactManager = new nearby_share.FakeContactManager();
+  /** @type {!nearby_share.FakeNearbyShareSettings} */
+  let fakeSettings = null;
 
   setup(function() {
     accountManagerBrowserProxy = new TestAccountManagerBrowserProxy();
@@ -68,8 +70,7 @@ suite('NearbyShare', function() {
     nearby_share.setContactManagerForTesting(fakeContactManager);
     fakeContactManager.setupContactRecords();
 
-    /** @type {!nearbyShare.mojom.NearbyShareSettingsInterface} */
-    const fakeSettings = new nearby_share.FakeNearbyShareSettings();
+    fakeSettings = new nearby_share.FakeNearbyShareSettings();
     fakeSettings.setEnabled(true);
     nearby_share.setNearbyShareSettingsForTesting(fakeSettings);
 
@@ -160,6 +161,31 @@ suite('NearbyShare', function() {
 
     assertEquals(newName, subpage.settings.deviceName);
     subpage.set('settings.deviceName', oldName);
+  });
+
+  test('validate device name preference', async () => {
+    subpage.$$('#editDeviceNameButton').click();
+    Polymer.dom.flush();
+    const dialog = subpage.$$('nearby-share-device-name-dialog');
+    const input = dialog.$$('cr-input');
+    const doneButton = dialog.$$('#doneButton');
+
+    fakeSettings.setNextDeviceNameResult(
+        nearbyShare.mojom.DeviceNameValidationResult.kErrorEmpty);
+    input.fire('input');
+    // Allow the validation promise to resolve.
+    await test_util.waitAfterNextRender();
+    Polymer.dom.flush();
+    assertTrue(input.invalid);
+    assertTrue(doneButton.disabled);
+
+    fakeSettings.setNextDeviceNameResult(
+        nearbyShare.mojom.DeviceNameValidationResult.kValid);
+    input.fire('input');
+    await test_util.waitAfterNextRender();
+    Polymer.dom.flush();
+    assertFalse(input.invalid);
+    assertFalse(doneButton.disabled);
   });
 
   test('update data usage preference', function() {

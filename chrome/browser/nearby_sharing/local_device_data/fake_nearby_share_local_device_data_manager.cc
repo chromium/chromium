@@ -77,16 +77,27 @@ base::Optional<std::string> FakeNearbyShareLocalDeviceDataManager::GetIconUrl()
   return icon_url_;
 }
 
-void FakeNearbyShareLocalDeviceDataManager::SetDeviceName(
+nearby_share::mojom::DeviceNameValidationResult
+FakeNearbyShareLocalDeviceDataManager::ValidateDeviceName(
     const std::string& name) {
-  if (device_name_ == name)
-    return;
+  return next_validation_result_;
+}
 
-  device_name_ = name;
-  NotifyLocalDeviceDataChanged(
-      /*did_device_name_change=*/true,
-      /*did_full_name_change=*/false,
-      /*did_icon_url_change=*/false);
+nearby_share::mojom::DeviceNameValidationResult
+FakeNearbyShareLocalDeviceDataManager::SetDeviceName(const std::string& name) {
+  if (next_validation_result_ !=
+      nearby_share::mojom::DeviceNameValidationResult::kValid)
+    return next_validation_result_;
+
+  if (device_name_ != name) {
+    device_name_ = name;
+    NotifyLocalDeviceDataChanged(
+        /*did_device_name_change=*/true,
+        /*did_full_name_change=*/false,
+        /*did_icon_url_change=*/false);
+  }
+
+  return nearby_share::mojom::DeviceNameValidationResult::kValid;
 }
 
 void FakeNearbyShareLocalDeviceDataManager::DownloadDeviceData() {
