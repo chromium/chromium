@@ -7613,6 +7613,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="InputMethod.Assistive.EmojiSuggested">
+  <owner>myy@chromium.org</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <description>
+    Recorded when users type some words and an emoji is suggested.
+  </description>
+</action>
+
 <action name="InputMethodOptions_Open_chewing">
   <obsolete>
     IMEs have since become extensions and no longer available as predetermined

@@ -8,6 +8,7 @@
 #include "base/feature_list.h"
 #include "base/hash/hash.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/user_metrics.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -360,6 +361,8 @@ void AssistiveSuggester::RecordAssistiveMatchMetrics(const base::string16& text,
       // Emoji suggestion match
     } else if (emoji_suggester_.ShouldShowSuggestion(text_before_cursor)) {
       RecordAssistiveMatchMetricsForAction(AssistiveType::kEmoji);
+      base::RecordAction(
+          base::UserMetricsAction("InputMethod.Assistive.EmojiSuggested"));
       RecordAssistiveDisabledReasonForEmoji(GetDisabledReasonForEmoji());
     }
   }
