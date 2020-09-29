@@ -8,7 +8,7 @@
   </outputs>
   <release seq="1">
     <includes>
-    <!-- TODO: Add resources. -->
+      <include name="IDR_KALEIDOSCOPE_NTP_MODULE_JS" file="resources/module.js" type="BINDATA"  />
     </includes>
   </release>
 </grit>
