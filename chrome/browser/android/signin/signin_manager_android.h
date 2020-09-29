@@ -74,6 +74,10 @@ class SigninManagerAndroid : public KeyedService {
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& j_callback);
 
+  // Logs out all Google accounts on the web as a part of the rollback flow.
+  // TODO(https://crbug.com/1065029): Remove this along with the feature flag.
+  void LogOutAllAccountsForMobileIdentityConsistencyRollback(JNIEnv* env);
+
  private:
   friend class SigninManagerAndroidTest;
   FRIEND_TEST_ALL_PREFIXES(SigninManagerAndroidTest,

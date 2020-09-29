@@ -23,6 +23,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.externalauth.ExternalAuthUtils;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.sync.AndroidSyncSettings;
 import org.chromium.components.signin.AccountTrackerService;
 import org.chromium.components.signin.AccountUtils;
@@ -271,6 +272,27 @@ public class SigninManager
         mIdentityManager.addObserver(this);
 
         reloadAllAccountsFromSystem();
+
+        maybeRollbackMobileIdentityConsistency();
+    }
+
+    /**
+     * Temporary code to handle rollback for {@link ChromeFeatureList#MOBILE_IDENTITY_CONSISTENCY}.
+     * TODO(https://crbug.com/1065029): Remove when the flag is removed.
+     */
+    private void maybeRollbackMobileIdentityConsistency() {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)) return;
+        // Nothing to do if there's no primary account.
+        if (mIdentityManager.getPrimaryAccountInfo(ConsentLevel.NOT_REQUIRED) == null) return;
+        // Nothing to do if sync is on - this state existed before MobileIdentityConsistency.
+        if (mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SYNC) != null) return;
+
+        Log.w(TAG, "Rolling back MobileIdentityConsistency: signing out.");
+        signOut(SignoutReason.MOBILE_IDENTITY_CONSISTENCY_ROLLBACK);
+        // Since AccountReconcilor currently operates in pre-MICE mode, it doesn't react to
+        // primary account changes when there's no sync consent. Log-out web accounts manually.
+        SigninManagerJni.get().logOutAllAccountsForMobileIdentityConsistencyRollback(
+                mNativeSigninManagerAndroid);
     }
 
     /**
@@ -817,6 +839,10 @@ public class SigninManager
                 Callback<Boolean> callback);
 
         String getManagementDomain(long nativeSigninManagerAndroid);
+
+        // Temporary code to handle rollback for MobileIdentityConsistency.
+        // TODO(https://crbug.com/1065029): Remove when the flag is removed.
+        void logOutAllAccountsForMobileIdentityConsistencyRollback(long nativeSigninManagerAndroid);
 
         void wipeProfileData(long nativeSigninManagerAndroid, Runnable callback);
 

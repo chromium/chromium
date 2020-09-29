@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/signin/chrome_signin_client.h"
-
 #include <memory>
 #include <utility>
 
@@ -246,8 +245,9 @@ bool IsSignoutDisallowedByPolicy(
       // Allow signout for tests that want to force it.
       return false;
     case signin_metrics::ProfileSignout::USER_DELETED_ACCOUNT_COOKIES:
-      // There's no special-casing for this in ChromeSigninClient, as this only
-      // happens when there's no sync account and policies aren't enforced.
+    case signin_metrics::ProfileSignout::MOBILE_IDENTITY_CONSISTENCY_ROLLBACK:
+      // There's no special-casing for these in ChromeSigninClient, as they only
+      // happen when there's no sync account and policies aren't enforced.
       // PrimaryAccountManager won't actually invoke PreSignOut in this case,
       // thus it is fine for ChromeSigninClient to not have any special-casing.
       return true;
@@ -324,6 +324,7 @@ const signin_metrics::ProfileSignout kSignoutSources[] = {
     signin_metrics::ProfileSignout::SIGNIN_NOT_ALLOWED_ON_PROFILE_INIT,
     signin_metrics::ProfileSignout::FORCE_SIGNOUT_ALWAYS_ALLOWED_FOR_TEST,
     signin_metrics::ProfileSignout::USER_DELETED_ACCOUNT_COOKIES,
+    signin_metrics::ProfileSignout::MOBILE_IDENTITY_CONSISTENCY_ROLLBACK,
 };
 static_assert(base::size(kSignoutSources) ==
                   signin_metrics::ProfileSignout::NUM_PROFILE_SIGNOUT_METRICS,

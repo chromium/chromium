@@ -66082,6 +66082,10 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
     User cleared account cookies when there's no sync consent, which has caused
     sign out.
   </int>
+  <int value="13" label="MobileIdentityConsistency rollback">
+    Signout was forced because MobileIdentityConsistency feature is disabled
+    when there's a primary account without sync consent.
+  </int>
 </enum>
 
 <enum name="SigninSource">

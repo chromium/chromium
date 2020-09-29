@@ -62,6 +62,8 @@ enum ProfileSignout : int {
   // User cleared account cookies when there's no sync consent, which has caused
   // sign out.
   USER_DELETED_ACCOUNT_COOKIES,
+  // Signout triggered by MobileIdentityConsistency rollback.
+  MOBILE_IDENTITY_CONSISTENCY_ROLLBACK,
   // Keep this as the last enum.
   NUM_PROFILE_SIGNOUT_METRICS,
 };
