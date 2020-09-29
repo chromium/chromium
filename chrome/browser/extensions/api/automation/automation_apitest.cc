@@ -4,11 +4,13 @@
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/json/json_reader.h"
 #include "base/location.h"
 #include "base/path_service.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/trace_event_analyzer.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_apitest.h"
@@ -21,6 +23,7 @@
 #include "content/public/browser/ax_event_notification_details.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "content/public/browser/tracing_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
@@ -471,6 +474,73 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, AccessibilityFocus) {
   ASSERT_TRUE(
       RunExtensionSubtest("automation/tests/tabs", "accessibility_focus.html"))
       << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(AutomationApiTest, TextareaAppendPerf) {
+  StartEmbeddedTestServer();
+
+  {
+    base::RunLoop wait_for_tracing;
+    content::TracingController::GetInstance()->StartTracing(
+        base::trace_event::TraceConfig(
+            R"({"included_categories": ["accessibility"])"),
+        wait_for_tracing.QuitClosure());
+    wait_for_tracing.Run();
+  }
+
+  ASSERT_TRUE(
+      RunExtensionSubtest("automation/tests/tabs", "textarea_append_perf.html"))
+      << message_;
+
+  std::string trace_output;
+  {
+    base::RunLoop wait_for_tracing;
+    content::TracingController::GetInstance()->StopTracing(
+        content::TracingController::CreateStringEndpoint(base::BindOnce(
+            [](base::OnceClosure quit_closure, std::string* output,
+               std::unique_ptr<std::string> trace_str) {
+              *output = *trace_str;
+              std::move(quit_closure).Run();
+            },
+            wait_for_tracing.QuitClosure(), &trace_output)));
+    wait_for_tracing.Run();
+  }
+
+  base::Optional<base::Value> trace_data = base::JSONReader::Read(trace_output);
+  ASSERT_TRUE(trace_data);
+
+  const base::Value* trace_events = trace_data->FindListKey("traceEvents");
+  ASSERT_TRUE(trace_events && trace_events->is_list());
+
+  int renderer_total_dur = 0;
+  int automation_total_dur = 0;
+  for (const base::Value& event : trace_events->GetList()) {
+    const std::string* cat = event.FindStringKey("cat");
+    if (!cat || *cat != "accessibility")
+      continue;
+
+    const std::string* name = event.FindStringKey("name");
+    if (!name)
+      continue;
+
+    base::Optional<int> dur = event.FindIntKey("dur");
+    if (!dur)
+      continue;
+
+    if (*name == "AutomationAXTreeWrapper::OnAccessibilityEvents")
+      automation_total_dur += *dur;
+    else if (*name == "RenderAccessibilityImpl::SendPendingAccessibilityEvents")
+      renderer_total_dur += *dur;
+  }
+
+  ASSERT_GT(automation_total_dur, 0);
+  ASSERT_GT(renderer_total_dur, 0);
+  LOG(INFO) << "Total duration in automation: " << automation_total_dur;
+  LOG(INFO) << "Total duration in renderer: " << renderer_total_dur;
+
+  // Assert that the time spent in automation isn't more than 2x
+  // the time spent in the renderer code.
+  ASSERT_LT(automation_total_dur, renderer_total_dur * 2);
 }
 
 #endif  // defined(OS_CHROMEOS)
