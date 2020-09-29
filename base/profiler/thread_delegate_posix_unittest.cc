@@ -11,7 +11,8 @@
 namespace base {
 
 // ASAN moves local variables outside of the stack extents.
-#if defined(ADDRESS_SANITIZER)
+// Test is flaky on ChromeOS. crbug.com/1133434.
+#if defined(ADDRESS_SANITIZER) || defined(OS_CHROMEOS)
 #define MAYBE_CurrentThreadBase DISABLED_CurrentThreadBase
 #else
 #define MAYBE_CurrentThreadBase CurrentThreadBase
