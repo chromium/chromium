@@ -106,17 +106,41 @@ TEST_F(WmGestureHandlerTest, VerticalScrolls) {
   Scroll(0, long_scroll, 3);
   EXPECT_TRUE(InOverviewSession());
 
-  // Swiping up again does nothing.
-  Scroll(0, long_scroll, 3);
-  EXPECT_TRUE(InOverviewSession());
-
   // Swiping down exits.
   Scroll(0, -long_scroll, 3);
   EXPECT_FALSE(InOverviewSession());
+}
 
-  // Swiping down again does nothing.
+// Tests wrong gestures that swiping down to enter and up to exit overview.
+TEST_F(WmGestureHandlerTest, WrongVerticalScrolls) {
+  const float long_scroll = 2 * WmGestureHandler::kVerticalThresholdDp;
+
+  // Swiping down can enter overview but a notification will be shown.
   Scroll(0, -long_scroll, 3);
+  EXPECT_TRUE(InOverviewSession());
+  // Notification is shown for the first time.
+  EXPECT_TRUE(IsOverviewReverseGestureNotificationShown());
+  CloseOverviewReverseGestureNotification();
+
+  // Swiping up can exit overview, but a notification will be shown.
+  Scroll(0, long_scroll, 3);
   EXPECT_FALSE(InOverviewSession());
+  // Notification is shown for the second time.
+  EXPECT_TRUE(IsOverviewReverseGestureNotificationShown());
+  CloseOverviewReverseGestureNotification();
+
+  // Swiping down triggers the notification for the last time.
+  Scroll(0, -long_scroll, 3);
+  EXPECT_TRUE(InOverviewSession());
+  // Notification is shown for the third (last) time.
+  EXPECT_TRUE(IsOverviewReverseGestureNotificationShown());
+  CloseOverviewReverseGestureNotification();
+
+  // Doing wrong gesture again won't trigger notification anymore.
+  Scroll(0, long_scroll, 3);
+  EXPECT_FALSE(InOverviewSession());
+  // No notification will be shown anymore.
+  EXPECT_FALSE(IsOverviewReverseGestureNotificationShown());
 }
 
 // Tests three or four finger horizontal scroll gesture (depending on flags) to
@@ -421,41 +445,20 @@ class ReverseGestureHandlerTest : public WmGestureHandlerTest {
 TEST_F(ReverseGestureHandlerTest, Overview) {
   const float long_scroll = 2 * WmGestureHandler::kVerticalThresholdDp;
 
-  // Swipe down with three fingers.
-  Scroll(0, -long_scroll, 3);
-  // When keep old overview gesture is on, the old gesture also works.
-  EXPECT_TRUE(InOverviewSession());
-  // Show notification for the first time.
-  EXPECT_TRUE(IsOverviewReverseGestureNotificationShown());
-  // Close the Notification.
-  CloseOverviewReverseGestureNotification();
-
-  // Swipe up with three fingers.
-  Scroll(0, long_scroll, 3);
-  EXPECT_FALSE(InOverviewSession());
-  // Show notification for the second time.
-  EXPECT_TRUE(IsOverviewReverseGestureNotificationShown());
-  // Close the Notification.
-  CloseOverviewReverseGestureNotification();
-
-  // Swipe down with three fingers.
-  Scroll(0, -long_scroll, 3);
-  EXPECT_TRUE(InOverviewSession());
-  // Show notification for the third time.
-  EXPECT_TRUE(IsOverviewReverseGestureNotificationShown());
-  // Close the Notification.
-  CloseOverviewReverseGestureNotification();
-
-  // Swipe up with three fingers.
-  Scroll(0, long_scroll, 3);
-  EXPECT_FALSE(InOverviewSession());
-  // The notification won't show anymore.
-  EXPECT_FALSE(IsOverviewReverseGestureNotificationShown());
-
   // Use the new gestures.
-  // Swipe up with three fingers.
+  // Swiping up with three fingers enters overview.
   Scroll(0, long_scroll, 3);
   EXPECT_TRUE(InOverviewSession());
+
+  // Swiping up again with three fingers does nothing.
+  Scroll(0, long_scroll, 3);
+  EXPECT_TRUE(InOverviewSession());
+
+  // Swiping down with three fingers exits overview.
+  Scroll(0, -long_scroll, 3);
+  EXPECT_FALSE(InOverviewSession());
+
+  // Swiping down again with three fingers does nothing.
   Scroll(0, -long_scroll, 3);
   EXPECT_FALSE(InOverviewSession());
 }

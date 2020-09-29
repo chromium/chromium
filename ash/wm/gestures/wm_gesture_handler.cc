@@ -120,15 +120,15 @@ bool Handle3FingerVerticalScroll(float scroll_y) {
   auto* overview_controller = Shell::Get()->overview_controller();
   const bool in_overview = overview_controller->InOverviewSession();
   if (in_overview) {
-    // If touchpad reverse scroll is off, only swip down can exit overview. If
-    // touchpad reverse scroll is on, in M87 swip up can also exit overview but
+    // If touchpad reverse scroll is on, only swip down can exit overview. If
+    // touchpad reverse scroll is off, in M87 swip up can also exit overview but
     // show notification; in M88, swip up will only show notification; in M89
     // the notification is removed.
     if (GetOffset(scroll_y) > 0) {
-      if (!IsNaturalScrollOn())
+      if (IsNaturalScrollOn())
         return false;
-      else
-        ShowOverviewGestureNotification();
+
+      ShowOverviewGestureNotification();
     }
 
     base::RecordAction(base::UserMetricsAction("Touchpad_Gesture_Overview"));
@@ -136,15 +136,15 @@ bool Handle3FingerVerticalScroll(float scroll_y) {
       return true;
     overview_controller->EndOverview();
   } else {
-    // If touchpad reverse scroll is off, only swip up can enter overview. If
-    // touchpad reverse scroll is on, in M87 swip down can also enter overview
+    // If touchpad reverse scroll is on, only swip up can enter overview. If
+    // touchpad reverse scroll is off, in M87 swip down can also enter overview
     // but show notification; in M88, swip down will only show notification; in
     // M89 the notification is removed.
     if (GetOffset(scroll_y) < 0) {
-      if (!IsNaturalScrollOn())
+      if (IsNaturalScrollOn())
         return false;
-      else
-        ShowOverviewGestureNotification();
+
+      ShowOverviewGestureNotification();
     }
 
     auto* window_cycle_controller = Shell::Get()->window_cycle_controller();
