@@ -279,7 +279,7 @@
   {
     "prefix": "dark-mode-images-grayscale",
     "bases": ["dark-mode/images"],
-    "args": ["--blink-settings=forceDarkModeEnabled=true,forceDarkModeImagePolicy=0,forceDarkModeImageStyle=1"]
+    "args": ["--blink-settings=forceDarkModeEnabled=true,forceDarkModeImagePolicy=0,forceDarkModeImageGrayscale=1.0"]
   },
   {
     "prefix": "presentation",
