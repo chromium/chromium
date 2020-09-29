@@ -15,12 +15,14 @@
 #include "base/notreached.h"
 #include "base/optional.h"
 #include "base/stl_util.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "components/content_settings/core/common/content_settings_pattern_parser.h"
 #include "net/base/url_util.h"
 #include "url/gurl.h"
+#include "url/url_constants.h"
 
 namespace {
 
@@ -240,9 +242,18 @@ bool ContentSettingsPattern::Builder::Canonicalize(PatternParts* parts) {
   parts->scheme = base::ToLowerASCII(parts->scheme);
 
   if (parts->scheme == url::kFileScheme && !parts->is_path_wildcard) {
-    GURL url(std::string(url::kFileScheme) +
-             std::string(url::kStandardSchemeSeparator) + parts->path);
-    parts->path = url.path();
+    // TODO(crbug.com/1132957): Remove this loop once GURL canonicalization is
+    // idempotent (see crbug.com/1128999).
+    while (true) {
+      std::string url_spec = base::StrCat(
+          {url::kFileScheme, url::kStandardSchemeSeparator, parts->path});
+      GURL url(url_spec);
+      if (!url.is_valid())
+        return false;
+      if (parts->path == url.path_piece())
+        break;
+      parts->path = url.path();
+    }
   }
 
   // Canonicalize the host part.
