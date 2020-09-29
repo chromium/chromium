@@ -10,8 +10,9 @@ When set_sources_assignment_filter is called, it configures a list of patterns
 that will be used to filter names every time a variable named "sources" is
 assigned a value.
 
-As Chromium calls this function in build/BUILDCONFIG.gn, the patterns are
-applied to every BUILD.gn file in the project. This has multiple drawbacks:
+Historically, Chromium used to call this function in build/BUILDCONFIG.gn thus
+causing the patterns to be applied to every BUILD.gn file in the project. This
+had multiple drawbacks:
 
 1.  the configuration of the list of patterns is located far from the point
     where they are applied and developer are usually confused when a file
@@ -25,6 +26,9 @@ applied to every BUILD.gn file in the project. This has multiple drawbacks:
 3.  the filtering is applied to every assignment to a variable named "sources"
     in the whole project, thus it has significant negative impact on the
     performance of gn
+
+Since September 2020, the filter is enabled only for the files that have not
+yet been converted. Eventually, this will be removed.
 
 ## Conversion pattern
 
@@ -70,19 +74,14 @@ Since the second pattern never assign a name that will be filtered out, then
 it is compatible whether the set_sources_assignment_filter feature is used or
 not.
 
-## Preventing regression
-
-As said above, while the converted file are compatible with the feature, there
-is a risk of regression. To prevent such regression, the following is added at
-the top of every BUILD.gn file after it has been converted:
+Once conversion is done, remove the following lines from the top of the file
+to avoid regressions:
 
 ```
-  # Reset sources_assignment_filter for the BUILD.gn file to prevent
-  # regression during the migration of Chromium away from the feature.
-  # See docs/no_sources_assignment_filter.md for more information.
-  # TODO(crbug.com/1018739): remove this when migration is done.
-  set_sources_assignment_filter([])
+import("//build/config/deprecated_default_sources_assignment_filter.gni")
+sources_assignment_filter = deprecated_default_sources_assignment_filter
 ```
+
 
 [0]: https://groups.google.com/a/chromium.org/d/topic/chromium-dev/hyLuCU6g2V4/discussion
 [1]: https://groups.google.com/a/chromium.org/d/topic/gn-dev/oQcYStl_WkI/discussion
