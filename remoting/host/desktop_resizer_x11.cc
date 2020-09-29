@@ -180,7 +180,7 @@ void DesktopResizerX11::SetResolution(const ScreenResolution& resolution) {
 
   // Grab the X server while we're changing the display resolution. This ensures
   // that the display configuration doesn't change under our feet.
-  ScopedXGrabServer grabber(connection_.display());
+  ScopedXGrabServer grabber(&connection_);
 
   if (exact_resize_)
     SetResolutionNewMode(resolution);

@@ -555,12 +555,12 @@ void GLSurfaceGLX::ShutdownOneOff() {
 
 // static
 std::string GLSurfaceGLX::QueryGLXExtensions() {
-  Display* display = gfx::GetXDisplay();
-  const int screen = (display ? XDefaultScreen(display) : 0);
-  const char* extensions = glXQueryExtensionsString(display, screen);
-  if (extensions) {
+  auto* connection = x11::Connection::Get();
+  const int screen = connection ? connection->DefaultScreenId() : 0;
+  const char* extensions =
+      glXQueryExtensionsString(connection->display(), screen);
+  if (extensions)
     return std::string(extensions);
-  }
   return "";
 }
 
@@ -739,8 +739,8 @@ bool NativeViewGLSurfaceGLX::Resize(const gfx::Size& size,
                                     bool has_alpha) {
   size_ = size;
   glXWaitGL();
-  XResizeWindow(gfx::GetXDisplay(), static_cast<uint32_t>(window_),
-                size.width(), size.height());
+  x11::Connection::Get()->ConfigureWindow(
+      {.window = window_, .width = size.width(), .height = size.height()});
   glXWaitX();
   return true;
 }
@@ -756,16 +756,18 @@ gfx::SwapResult NativeViewGLSurfaceGLX::SwapBuffers(
   GLSurfacePresentationHelper::ScopedSwapBuffers scoped_swap_buffers(
       presentation_helper_.get(), std::move(callback));
 
-  XDisplay* display = gfx::GetXDisplay();
-  glXSwapBuffers(display, GetDrawableHandle());
+  auto* connection = x11::Connection::Get();
+  glXSwapBuffers(connection->display(), GetDrawableHandle());
 
   // We need to restore the background pixel that we set to WhitePixel on
   // views::DesktopWindowTreeHostX11::InitX11Window back to None for the
   // XWindow associated to this surface after the first SwapBuffers has
   // happened, to avoid showing a weird white background while resizing.
   if (!has_swapped_buffers_) {
-    XSetWindowBackgroundPixmap(display, static_cast<uint32_t>(parent_window_),
-                               0);
+    connection->ChangeWindowAttributes({
+        .window = static_cast<x11::Window>(parent_window_),
+        .background_pixmap = x11::Pixmap::None,
+    });
     has_swapped_buffers_ = true;
   }
 

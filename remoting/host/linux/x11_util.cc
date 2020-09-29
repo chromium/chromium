@@ -36,13 +36,14 @@ int ScopedXErrorHandler::HandleXErrors(Display* display, XErrorEvent* error) {
   return 0;
 }
 
-ScopedXGrabServer::ScopedXGrabServer(Display* display) : display_(display) {
-  XGrabServer(display_);
+ScopedXGrabServer::ScopedXGrabServer(x11::Connection* connection)
+    : connection_(connection) {
+  connection_->GrabServer({});
 }
 
 ScopedXGrabServer::~ScopedXGrabServer() {
-  XUngrabServer(display_);
-  XFlush(display_);
+  connection_->UngrabServer({});
+  connection_->Flush();
 }
 
 bool IgnoreXServerGrabs(x11::Connection* connection, bool ignore) {

@@ -47,29 +47,6 @@ using XErrorEvent = struct _XErrorEvent {
   unsigned char minor_code;
 };
 
-using XRectangle = struct _XRectangle {
-  short x, y;
-  unsigned short width, height;
-};
-
-using XSetWindowAttributes = struct {
-  Pixmap background_pixmap;
-  unsigned long background_pixel;
-  Pixmap border_pixmap;
-  unsigned long border_pixel;
-  int bit_gravity;
-  int win_gravity;
-  int backing_store;
-  unsigned long backing_planes;
-  unsigned long backing_pixel;
-  Bool save_under;
-  long event_mask;
-  long do_not_propagate_mask;
-  Bool override_redirect;
-  Colormap colormap;
-  Cursor cursor;
-};
-
 using XModifierKeymap = struct {
   int max_keypermod;
   KeyCode* modifiermap;
@@ -81,12 +58,9 @@ using XIOErrorHandler = int (*)(Display*);
 Status XInitThreads(void);
 Display* XOpenDisplay(const char*);
 int XCloseDisplay(Display*);
-char* XDisplayString(Display*);
 int XFlush(Display*);
 xcb_connection_t* XGetXCBConnection(Display* dpy);
 void XSetEventQueueOwner(Display* dpy, enum XEventQueueOwner owner);
-int XDefaultScreen(Display*);
-Window XDefaultRootWindow(Display*);
 unsigned long XLastKnownRequestProcessed(Display*);
 int (*XSynchronize(Display*, Bool))(Display*);
 int XGetErrorDatabaseText(Display*,
@@ -98,26 +72,11 @@ int XGetErrorDatabaseText(Display*,
 int XGetErrorText(Display*, int, char*, int);
 XErrorHandler XSetErrorHandler(XErrorHandler);
 XIOErrorHandler XSetIOErrorHandler(XIOErrorHandler);
-void XLockDisplay(Display*);
-extern void XUnlockDisplay(Display*);
-int XConnectionNumber(Display*);
-int XSelectInput(Display*, Window, long);
-int XSetWindowBackgroundPixmap(Display*, Window, Pixmap);
-int XResizeWindow(Display*, Window, unsigned int, unsigned int);
-int XMapWindow(Display*, Window);
 KeyCode XKeysymToKeycode(Display*, KeySym);
 char* XKeysymToString(KeySym);
 XModifierKeymap* XGetModifierMapping(Display*);
 int XFreeModifiermap(XModifierKeymap*);
-int XGrabServer(Display*);
-int XUngrabServer(Display*);
-unsigned long XBlackPixel(Display*, int);
 int XStoreName(Display*, Window, const char*);
-Status XIconifyWindow(Display*, Window, int);
-int XConvertSelection(Display*, Atom, Atom, Atom, Window, Time);
-Window XGetSelectionOwner(Display*, Atom);
-int XSetSelectionOwner(Display*, Atom, Window, Time);
-Status XInternAtoms(Display*, char**, int, Bool, Atom*);
 int XDisplayKeycodes(Display*, int*, int*);
 KeySym* XGetKeyboardMapping(Display*, KeyCode, int, int*);
 KeySym XStringToKeysym(const char*);

@@ -232,7 +232,14 @@ void Connection::Set(std::unique_ptr<x11::Connection> connection) {
 }
 
 Connection::Connection(const std::string& address)
-    : XProto(this), display_(OpenNewXDisplay(address)) {
+    : XProto(this),
+      display_(OpenNewXDisplay(address)),
+      display_string_(address) {
+  char* host = nullptr;
+  int display = 0;
+  xcb_parse_display(address.c_str(), &host, &display, &default_screen_id_);
+  if (host)
+    free(host);
   if (display_) {
     XSetEventQueueOwner(display_, XCBOwnsEventQueue);
 
@@ -298,12 +305,22 @@ bool Connection::HasNextResponse() const {
                             requests_.front().sequence) >= 0;
 }
 
+int Connection::GetFd() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return Ready() ? xcb_get_file_descriptor(XcbConnection()) : -1;
+}
+
+const std::string& Connection::DisplayString() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return display_string_;
+}
+
 int Connection::DefaultScreenId() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // This is not part of the setup data as the server has no concept of a
   // default screen. Instead, it's part of the display name. Eg in
   // "localhost:0.0", the screen ID is the second "0".
-  return XDefaultScreen(display_);
+  return default_screen_id_;
 }
 
 bool Connection::Ready() const {
@@ -339,7 +356,7 @@ void Connection::ReadResponses() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   while (auto* event = xcb_poll_for_event(XcbConnection())) {
     events_.emplace_back(base::MakeRefCounted<MallocedRefCountedMemory>(event),
-                         this);
+                         this, true);
   }
 }
 
@@ -350,10 +367,9 @@ Event Connection::WaitForNextEvent() {
     events_.pop_front();
     return event;
   }
-  auto* xcb_event = xcb_wait_for_event(XcbConnection());
-  if (xcb_event) {
+  if (auto* xcb_event = xcb_wait_for_event(XcbConnection())) {
     return Event(base::MakeRefCounted<MallocedRefCountedMemory>(xcb_event),
-                 this);
+                 this, true);
   }
   return Event();
 }
@@ -396,7 +412,7 @@ KeySym Connection::KeycodeToKeysym(uint32_t keycode, unsigned int modifiers) {
 
 std::unique_ptr<Connection> Connection::Clone() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return std::make_unique<Connection>(display_ ? XDisplayString(display_) : "");
+  return std::make_unique<Connection>(display_string_);
 }
 
 void Connection::DetachFromSequence() {

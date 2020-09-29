@@ -43,11 +43,11 @@ bool GLImageGLX::Initialize(XID pixmap) {
   auto fbconfig_id =
       GLVisualPickerGLX::GetInstance()->GetFbConfigForFormat(format_);
 
-  auto* display = gfx::GetXDisplay();
+  auto* connection = x11::Connection::Get();
   int attrs[] = {GLX_FBCONFIG_ID, static_cast<uint32_t>(fbconfig_id), 0};
   int nitems;
-  gfx::XScopedPtr<GLXFBConfig> configs(
-      glXChooseFBConfig(display, XDefaultScreen(display), attrs, &nitems));
+  gfx::XScopedPtr<GLXFBConfig> configs(glXChooseFBConfig(
+      connection->display(), connection->DefaultScreenId(), attrs, &nitems));
   if (!nitems)
     return false;
 

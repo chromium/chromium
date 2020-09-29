@@ -86,8 +86,11 @@ gfx::SwapResult NativeViewGLSurfaceEGLX11::SwapBuffers(
   // views::DesktopWindowTreeHostX11::InitX11Window back to None for the
   // XWindow associated to this surface after the first SwapBuffers has
   // happened, to avoid showing a weird white background while resizing.
-  if (GetXNativeConnection()->display() && !has_swapped_buffers_) {
-    XSetWindowBackgroundPixmap(GetXNativeConnection()->display(), window_, 0);
+  if (GetXNativeConnection()->Ready() && !has_swapped_buffers_) {
+    GetXNativeConnection()->ChangeWindowAttributes({
+        .window = static_cast<x11::Window>(window_),
+        .background_pixmap = x11::Pixmap::None,
+    });
     GetXNativeConnection()->Flush();
     has_swapped_buffers_ = true;
   }

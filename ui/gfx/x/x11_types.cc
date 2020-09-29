@@ -19,8 +19,4 @@ XDisplay* GetXDisplay() {
   return x11::Connection::Get()->display();
 }
 
-XDisplay* CloneXDisplay(XDisplay* display) {
-  return XOpenDisplay(XDisplayString(display));
-}
-
 }  // namespace gfx

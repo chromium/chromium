@@ -40,10 +40,6 @@ using XScopedPtr = std::unique_ptr<T, D>;
 // Get the XDisplay singleton.  Prefer x11::Connection::Get() instead.
 GFX_EXPORT XDisplay* GetXDisplay();
 
-// Given a connection to an X server, opens a new parallel connection to the
-// same X server.  It's the caller's responsibility to call XCloseDisplay().
-GFX_EXPORT XDisplay* CloneXDisplay(XDisplay* display);
-
 }  // namespace gfx
 
 #endif  // UI_GFX_X_X11_UTIL_H_

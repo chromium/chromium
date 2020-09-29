@@ -10,6 +10,7 @@
 #include <xcb/xproto.h>
 
 #include "base/memory/singleton.h"
+#include "ui/base/x/x11_util.h"
 #include "ui/events/platform/x11/x11_event_source.h"
 #include "ui/gfx/x/event.h"
 #include "ui/gfx/x/x11.h"
@@ -73,23 +74,19 @@ void GtkEventLoopX11::ProcessGdkEventKey(const GdkEventKey& gdk_event_key) {
   // case.  ibus-gtk is used through gtk-immodule to support IMEs.
 
   auto* conn = x11::Connection::Get();
-  XDisplay* display = conn->display();
 
-  xcb_generic_event_t generic_event;
-  memset(&generic_event, 0, sizeof(generic_event));
-  auto* key_event = reinterpret_cast<xcb_key_press_event_t*>(&generic_event);
-  key_event->response_type = gdk_event_key.type == GDK_KEY_PRESS
-                                 ? x11::KeyEvent::Press
-                                 : x11::KeyEvent::Release;
-  if (gdk_event_key.send_event)
-    key_event->response_type |= x11::kSendEventMask;
-  key_event->event = gdk_x11_window_get_xid(gdk_event_key.window);
-  key_event->root = XDefaultRootWindow(display);
-  key_event->time = gdk_event_key.time;
-  key_event->detail = gdk_event_key.hardware_keycode;
-  key_event->same_screen = true;
-
-  x11::Event event(&generic_event, conn, false);
+  x11::KeyEvent key{
+      .opcode = gdk_event_key.type == GDK_KEY_PRESS ? x11::KeyEvent::Press
+                                                    : x11::KeyEvent::Release,
+      .send_event = gdk_event_key.send_event,
+      .detail = static_cast<x11::KeyCode>(gdk_event_key.hardware_keycode),
+      .time = static_cast<x11::Time>(gdk_event_key.time),
+      .root = ui::GetX11RootWindow(),
+      .event = static_cast<x11::Window>(
+          gdk_x11_window_get_xid(gdk_event_key.window)),
+      .same_screen = true,
+  };
+  x11::Event event(key, false);
 
   // The key state is 16 bits on the wire, but ibus-gtk adds additional flags
   // that may be outside this range, so set the state after conversion from

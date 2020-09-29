@@ -96,6 +96,12 @@ class StackingClientListWaiter : public ui::X11PropertyChangeWaiter {
   DISALLOW_COPY_AND_ASSIGN(StackingClientListWaiter);
 };
 
+void IconifyWindow(x11::Connection* connection, x11::Window window) {
+  ui::SendClientMessage(window, ui::GetX11RootWindow(),
+                        gfx::GetAtom("WM_CHANGE_STATE"),
+                        {ui::WM_STATE_ICONIC, 0, 0, 0, 0});
+}
+
 }  // namespace
 
 class X11TopmostWindowFinderTest : public test::DesktopWidgetTestInteractive {
@@ -160,7 +166,7 @@ class X11TopmostWindowFinderTest : public test::DesktopWidgetTestInteractive {
 
   // Shows |window| and sets its bounds.
   void ShowAndSetXWindowBounds(x11::Window window, const gfx::Rect& bounds) {
-    XMapWindow(xdisplay(), static_cast<uint32_t>(window));
+    connection()->MapWindow({window});
 
     connection()->ConfigureWindow({
         .window = window,
@@ -285,7 +291,7 @@ TEST_F(X11TopmostWindowFinderTest, Minimized) {
   EXPECT_EQ(x11_window1, FindTopmostXWindowAt(150, 150));
   {
     MinimizeWaiter minimize_waiter(x11_window1);
-    XIconifyWindow(xdisplay(), static_cast<uint32_t>(x11_window1), 0);
+    IconifyWindow(connection(), x11_window1);
     minimize_waiter.Wait();
   }
   EXPECT_NE(x11_window1, FindTopmostXWindowAt(150, 150));
@@ -296,7 +302,7 @@ TEST_F(X11TopmostWindowFinderTest, Minimized) {
   EXPECT_EQ(x11_window2, FindTopmostXWindowAt(350, 150));
   {
     MinimizeWaiter minimize_waiter(x11_window2);
-    XIconifyWindow(xdisplay(), static_cast<uint32_t>(x11_window2), 0);
+    IconifyWindow(connection(), x11_window2);
     minimize_waiter.Wait();
   }
   EXPECT_NE(x11_window1, FindTopmostXWindowAt(350, 150));

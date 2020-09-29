@@ -79,6 +79,12 @@ class COMPONENT_EXPORT(X11) Connection : public XProto,
     return *default_root_visual_;
   }
 
+  // Returns the underlying socket's FD if the connection is valid, or -1
+  // otherwise.
+  int GetFd();
+
+  const std::string& DisplayString() const;
+
   int DefaultScreenId() const;
 
   template <typename T>
@@ -172,6 +178,8 @@ class COMPONENT_EXPORT(X11) Connection : public XProto,
 
   uint32_t extended_max_request_length_ = 0;
 
+  std::string display_string_;
+  int default_screen_id_ = 0;
   Setup setup_;
   Screen* default_screen_ = nullptr;
   Depth* default_root_depth_ = nullptr;

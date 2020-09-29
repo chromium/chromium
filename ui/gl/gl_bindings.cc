@@ -73,9 +73,9 @@ std::string DriverEGL::GetClientExtensions() {
 
 #if defined(USE_GLX)
 std::string DriverGLX::GetPlatformExtensions() {
-  Display* display = gfx::GetXDisplay();
-  const int screen = (display == EGL_NO_DISPLAY ? 0 : XDefaultScreen(display));
-  const char* str = glXQueryExtensionsString(display, screen);
+  auto* connection = x11::Connection::Get();
+  const int screen = connection ? connection->DefaultScreenId() : 0;
+  const char* str = glXQueryExtensionsString(connection->display(), screen);
   return str ? std::string(str) : "";
 }
 #endif

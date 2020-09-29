@@ -44,20 +44,18 @@ class ScopedXErrorHandler {
   DISALLOW_COPY_AND_ASSIGN(ScopedXErrorHandler);
 };
 
-
 // Grab/release the X server within a scope. This can help avoid race
 // conditions that would otherwise lead to X errors.
 class ScopedXGrabServer {
  public:
-  ScopedXGrabServer(Display* display);
+  explicit ScopedXGrabServer(x11::Connection* connection);
   ~ScopedXGrabServer();
 
  private:
-  Display* display_;
+  x11::Connection* connection_;
 
   DISALLOW_COPY_AND_ASSIGN(ScopedXGrabServer);
 };
-
 
 // Make a connection to the X Server impervious to X Server grabs. Returns
 // true if successful or false if the required XTEST extension is not present.

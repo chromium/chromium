@@ -70,11 +70,11 @@ bool ShouldUseMitShm(x11::Connection* connection) {
   // codepath.  It may be possible in contrived cases for there to be a
   // false-positive, but in that case we'll just fallback to the non-SHM
   // codepath.
-  char* display_string = XDisplayString(connection->display());
+  const std::string& display_string = connection->DisplayString();
   char* host = nullptr;
   int display_id = 0;
   int screen = 0;
-  if (xcb_parse_display(display_string, &host, &display_id, &screen)) {
+  if (xcb_parse_display(display_string.c_str(), &host, &display_id, &screen)) {
     std::string name = host;
     free(host);
     if (IsRemoteHost(name))

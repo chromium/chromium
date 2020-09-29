@@ -120,8 +120,7 @@ x11::Event CreateXInput2Event(int deviceid,
   event.detail = tracking_id;
   event.event_x = ToFp1616(location.x()),
   event.event_y = ToFp1616(location.y()),
-  event.event =
-      static_cast<x11::Window>(XDefaultRootWindow(gfx::GetXDisplay()));
+  event.event = x11::Connection::Get()->default_root();
   event.button_mask = {0, 0};
   return x11::Event(std::move(event));
 }

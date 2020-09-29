@@ -113,10 +113,10 @@ bool VulkanSurfaceX11::Reshape(const gfx::Size& size,
                                gfx::OverlayTransform pre_transform) {
   DCHECK_EQ(pre_transform, gfx::OVERLAY_TRANSFORM_NONE);
 
-  Display* display = gfx::GetXDisplay();
-  XResizeWindow(display, static_cast<uint32_t>(window_), size.width(),
-                size.height());
-  XFlush(display);
+  auto* connection = x11::Connection::Get();
+  connection->ConfigureWindow(
+      {.window = window_, .width = size.width(), .height = size.height()});
+  connection->Flush();
   return VulkanSurface::Reshape(size, pre_transform);
 }
 

@@ -25,7 +25,7 @@ void ReadEvent(Event* event, Connection* connection, ReadBuffer* buffer);
 class COMPONENT_EXPORT(X11) Event {
  public:
   template <typename T>
-  explicit Event(T&& xproto_event) {
+  explicit Event(T&& xproto_event, bool sequence_valid = true) {
     using DecayT = std::decay_t<T>;
     sequence_valid_ = true;
     sequence_ = xproto_event.sequence;
@@ -34,6 +34,7 @@ class COMPONENT_EXPORT(X11) Event {
     auto* event = new DecayT(std::forward<T>(xproto_event));
     event_ = event;
     window_ = event->GetWindow();
+    sequence_valid_ = sequence_valid;
   }
 
   Event();

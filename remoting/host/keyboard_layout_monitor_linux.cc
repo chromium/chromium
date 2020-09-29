@@ -162,7 +162,7 @@ void GdkLayoutMonitorOnGtkThread::Start() {
       });
       connection_->Flush();
       controller_ = base::FileDescriptorWatcher::WatchReadable(
-          XConnectionNumber(connection_->display()),
+          connection_->GetFd(),
           base::BindRepeating(&GdkLayoutMonitorOnGtkThread::OnConnectionData,
                               base::Unretained(this)));
     }

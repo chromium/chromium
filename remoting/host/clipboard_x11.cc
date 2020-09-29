@@ -77,7 +77,7 @@ void ClipboardX11::Start(
                                              base::Unretained(this)));
 
   x_connection_watch_controller_ = base::FileDescriptorWatcher::WatchReadable(
-      XConnectionNumber(connection_->display()),
+      connection_->GetFd(),
       base::BindRepeating(&ClipboardX11::PumpXEvents, base::Unretained(this)));
   PumpXEvents();
 }
