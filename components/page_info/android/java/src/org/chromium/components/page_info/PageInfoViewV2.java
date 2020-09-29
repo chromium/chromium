@@ -64,6 +64,9 @@ public class PageInfoViewV2 extends PageInfoView {
         // TODO(crbug.com/1077766): Migrate image compression UI.
     }
 
+    @Override
+    protected void initSiteSettings(PageInfoViewParams params) {}
+
     public PageInfoRowView getConnectionRowView() {
         return mConnectionRow;
     }
