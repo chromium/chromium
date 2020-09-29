@@ -26,6 +26,8 @@
 #include "ios/web/common/web_view_creation_util.h"
 #include "ios/web/public/browser_state.h"
 #import "ios/web/public/navigation/web_state_policy_decider.h"
+#import "ios/web/public/web_state.h"
+#include "ios/web/public/web_state_observer.h"
 #include "net/base/mac/url_conversions.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/cookies/canonical_cookie.h"
@@ -63,14 +65,22 @@ static std::string GetDomainFromUrl(const GURL& url) {
 // reacting on the X-Chrome-Manage-Accounts header and notifying its delegate.
 // It also notifies the AccountConsistencyService of domains it should add the
 // CHROME_CONNECTED cookie to.
-class AccountConsistencyHandler : public web::WebStatePolicyDecider {
+class AccountConsistencyHandler : public web::WebStatePolicyDecider,
+                                  public web::WebStateObserver {
  public:
   AccountConsistencyHandler(web::WebState* web_state,
                             AccountConsistencyService* service,
                             AccountReconcilor* account_reconcilor,
                             id<ManageAccountsDelegate> delegate);
 
+  void WebStateDestroyed(web::WebState* web_state) override;
+
  private:
+  // web::WebStateObserver override.
+  void PageLoaded(
+      web::WebState* web_state,
+      web::PageLoadCompletionStatus load_completion_status) override;
+
   // web::WebStatePolicyDecider override.
   // Decides on navigation corresponding to |response| whether the navigation
   // should continue and updates authentication cookies on Google domains.
@@ -80,6 +90,7 @@ class AccountConsistencyHandler : public web::WebStatePolicyDecider {
       base::OnceCallback<void(PolicyDecision)> callback) override;
   void WebStateDestroyed() override;
 
+  bool show_consistency_promo_ = false;
   AccountConsistencyService* account_consistency_service_;  // Weak.
   AccountReconcilor* account_reconcilor_;                   // Weak.
   __weak id<ManageAccountsDelegate> delegate_;
@@ -94,7 +105,9 @@ AccountConsistencyHandler::AccountConsistencyHandler(
     : web::WebStatePolicyDecider(web_state),
       account_consistency_service_(service),
       account_reconcilor_(account_reconcilor),
-      delegate_(delegate) {}
+      delegate_(delegate) {
+  web_state->AddObserver(this);
+}
 
 void AccountConsistencyHandler::ShouldAllowResponse(
     NSURLResponse* response,
@@ -134,6 +147,11 @@ void AccountConsistencyHandler::ShouldAllowResponse(
       base::SysNSStringToUTF8(manage_accounts_header));
 
   account_reconcilor_->OnReceivedManageAccountsResponse(params.service_type);
+  // Reset boolean that tracks displaying the sign-in consistency promo. This
+  // ensures that the promo is cancelled once navigation has started and the
+  // WKWebView is cancelling previous navigations.
+  show_consistency_promo_ = false;
+
   switch (params.service_type) {
     case signin::GAIA_SERVICE_TYPE_INCOGNITO: {
       GURL continue_url = GURL(params.continue_url);
@@ -145,7 +163,12 @@ void AccountConsistencyHandler::ShouldAllowResponse(
     case signin::GAIA_SERVICE_TYPE_SIGNUP:
     case signin::GAIA_SERVICE_TYPE_ADDSESSION:
       if (params.show_consistency_promo) {
-        [delegate_ onShowConsistencyPromo];
+        show_consistency_promo_ = true;
+        // Allows the URL response to load before showing the consistency promo.
+        // The promo should always be displayed in the foreground of Gaia
+        // sign-on.
+        std::move(callback).Run(PolicyDecision::Allow());
+        return;
       } else {
         [delegate_ onAddAccount];
       }
@@ -168,6 +191,20 @@ void AccountConsistencyHandler::ShouldAllowResponse(
   // * Avoid adding this request to history.
   std::move(callback).Run(PolicyDecision::Cancel());
 }
+
+void AccountConsistencyHandler::PageLoaded(
+    web::WebState* web_state,
+    web::PageLoadCompletionStatus load_completion_status) {
+  if (!show_consistency_promo_ ||
+      !gaia::IsGaiaSignonRealm(web_state->GetLastCommittedURL().GetOrigin()) ||
+      load_completion_status == web::PageLoadCompletionStatus::FAILURE) {
+    return;
+  }
+  [delegate_ onShowConsistencyPromo];
+  show_consistency_promo_ = false;
+}
+
+void AccountConsistencyHandler::WebStateDestroyed(web::WebState* web_state) {}
 
 void AccountConsistencyHandler::WebStateDestroyed() {
   account_consistency_service_->RemoveWebStateHandler(web_state());
@@ -222,6 +259,8 @@ void AccountConsistencyService::SetWebStateHandler(
 void AccountConsistencyService::RemoveWebStateHandler(
     web::WebState* web_state) {
   DCHECK_LT(0u, web_state_handlers_.count(web_state));
+  web_state->RemoveObserver(
+      (AccountConsistencyHandler*)web_state_handlers_[web_state].get());
   web_state_handlers_.erase(web_state);
 }
 

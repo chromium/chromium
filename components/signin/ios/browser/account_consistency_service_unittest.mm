@@ -276,6 +276,13 @@ class AccountConsistencyServiceTest : public PlatformTest {
                        /*domain=*/std::string()));
   }
 
+  // Simulate navigating to a URL with the given page load completion status.
+  void SimulateNavigateToUrl(web::PageLoadCompletionStatus status,
+                             const GURL& url) {
+    web_state_.SetCurrentURL(url);
+    web_state_.OnPageLoaded(status);
+  }
+
   // Simulate the action of the action GaiaCookieManagerService to cleanup
   // the cookies once the sign-out is done.
   void SimulateGaiaCookieManagerServiceLogout() {
@@ -467,8 +474,111 @@ TEST_F(AccountConsistencyServiceTest,
   EXPECT_CALL(*account_reconcilor_, OnReceivedManageAccountsResponse(
                                         signin::GAIA_SERVICE_TYPE_ADDSESSION))
       .Times(1);
-  EXPECT_FALSE(
+  EXPECT_TRUE(
       web_state_.ShouldAllowResponse(response, /* for_main_frame = */ true));
+  SimulateNavigateToUrl(web::PageLoadCompletionStatus::SUCCESS,
+                        GURL("https://accounts.google.com/"));
+  web_state_.WebStateDestroyed();
+
+  EXPECT_OCMOCK_VERIFY(delegate);
+}
+
+// Tests that the consistency promo is not displayed when a page fails to load.
+TEST_F(AccountConsistencyServiceTest,
+       ChromeManageAccountsNotShowConsistencyPromoOnPageLoadFailure) {
+  id delegate =
+      [OCMockObject mockForProtocol:@protocol(ManageAccountsDelegate)];
+  [[delegate reject] onShowConsistencyPromo];
+
+  NSDictionary* headers = [NSDictionary
+      dictionaryWithObject:@"action=ADDSESSION,show_consistency_promo=true"
+                    forKey:@"X-Chrome-Manage-Accounts"];
+  NSHTTPURLResponse* response = [[NSHTTPURLResponse alloc]
+       initWithURL:[NSURL URLWithString:@"https://accounts.google.com/"]
+        statusCode:200
+       HTTPVersion:@"HTTP/1.1"
+      headerFields:headers];
+  account_consistency_service_->SetWebStateHandler(&web_state_, delegate);
+  EXPECT_CALL(*account_reconcilor_, OnReceivedManageAccountsResponse(
+                                        signin::GAIA_SERVICE_TYPE_ADDSESSION))
+      .Times(1);
+  EXPECT_TRUE(
+      web_state_.ShouldAllowResponse(response, /* for_main_frame = */ true));
+  SimulateNavigateToUrl(web::PageLoadCompletionStatus::FAILURE,
+                        GURL("https://accounts.google.com/"));
+  web_state_.WebStateDestroyed();
+
+  EXPECT_OCMOCK_VERIFY(delegate);
+}
+
+// Tests that the consistency promo is not displayed when a page fails to load
+// and user chooses another action.
+TEST_F(AccountConsistencyServiceTest,
+       ChromeManageAccountsNotShowConsistencyPromoOnPageLoadFailureRedirect) {
+  id delegate =
+      [OCMockObject mockForProtocol:@protocol(ManageAccountsDelegate)];
+  [[delegate expect] onAddAccount];
+  [[delegate reject] onShowConsistencyPromo];
+
+  NSDictionary* headers = [NSDictionary
+      dictionaryWithObject:@"action=ADDSESSION,show_consistency_promo=true"
+                    forKey:@"X-Chrome-Manage-Accounts"];
+  account_consistency_service_->SetWebStateHandler(&web_state_, delegate);
+  EXPECT_CALL(*account_reconcilor_, OnReceivedManageAccountsResponse(
+                                        signin::GAIA_SERVICE_TYPE_ADDSESSION))
+      .Times(2);
+
+  NSHTTPURLResponse* responseSignin = [[NSHTTPURLResponse alloc]
+       initWithURL:[NSURL URLWithString:@"https://accounts.google.com/"]
+        statusCode:200
+       HTTPVersion:@"HTTP/1.1"
+      headerFields:headers];
+  EXPECT_TRUE(web_state_.ShouldAllowResponse(responseSignin,
+                                             /* for_main_frame = */ true));
+  const GURL accountsUrl = GURL("https://accounts.google.com/");
+  SimulateNavigateToUrl(web::PageLoadCompletionStatus::FAILURE, accountsUrl);
+
+  NSDictionary* headersAddAccount =
+      [NSDictionary dictionaryWithObject:@"action=ADDSESSION"
+                                  forKey:@"X-Chrome-Manage-Accounts"];
+  NSHTTPURLResponse* responseAddAccount = [[NSHTTPURLResponse alloc]
+       initWithURL:[NSURL URLWithString:@"https://accounts.google.com/"]
+        statusCode:200
+       HTTPVersion:@"HTTP/1.1"
+      headerFields:headersAddAccount];
+  EXPECT_FALSE(web_state_.ShouldAllowResponse(responseAddAccount,
+                                              /* for_main_frame = */ true));
+  SimulateNavigateToUrl(web::PageLoadCompletionStatus::SUCCESS, accountsUrl);
+
+  web_state_.WebStateDestroyed();
+
+  EXPECT_OCMOCK_VERIFY(delegate);
+}
+
+// Tests that the consistency promo is not displayed when a non GAIA URL is
+// committed.
+TEST_F(AccountConsistencyServiceTest,
+       ChromeManageAccountsNotShowConsistencyPromoOnNonGaiaURL) {
+  id delegate =
+      [OCMockObject mockForProtocol:@protocol(ManageAccountsDelegate)];
+  [[delegate reject] onShowConsistencyPromo];
+
+  NSDictionary* headers = [NSDictionary
+      dictionaryWithObject:@"action=ADDSESSION,show_consistency_promo=true"
+                    forKey:@"X-Chrome-Manage-Accounts"];
+  NSHTTPURLResponse* response = [[NSHTTPURLResponse alloc]
+       initWithURL:[NSURL URLWithString:@"https://accounts.google.com/"]
+        statusCode:200
+       HTTPVersion:@"HTTP/1.1"
+      headerFields:headers];
+  account_consistency_service_->SetWebStateHandler(&web_state_, delegate);
+  EXPECT_CALL(*account_reconcilor_, OnReceivedManageAccountsResponse(
+                                        signin::GAIA_SERVICE_TYPE_ADDSESSION))
+      .Times(1);
+  EXPECT_TRUE(
+      web_state_.ShouldAllowResponse(response, /* for_main_frame = */ true));
+  SimulateNavigateToUrl(web::PageLoadCompletionStatus::SUCCESS,
+                        GURL("https://youtube.com/"));
   web_state_.WebStateDestroyed();
 
   EXPECT_OCMOCK_VERIFY(delegate);
@@ -680,5 +790,6 @@ TEST_F(AccountConsistencyServiceTest,
       headerFields:headers];
   EXPECT_TRUE(web_state_.ShouldAllowResponse(responseGaia,
                                              /* for_main_frame = */ true));
+  web_state_.WebStateDestroyed();
   CheckDomainHasChromeConnectedCookie("google.com");
 }

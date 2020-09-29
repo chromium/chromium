@@ -178,10 +178,6 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     [[bvc_ view] removeFromSuperview];
     [bvc_ shutdown];
 
-    // Cleanup to avoid debugger crash in non empty observer lists.
-    browser_->GetWebStateList()->CloseAllWebStates(
-        WebStateList::ClosingFlags::CLOSE_NO_FLAGS);
-
     BlockCleanupTest::TearDown();
   }
 
