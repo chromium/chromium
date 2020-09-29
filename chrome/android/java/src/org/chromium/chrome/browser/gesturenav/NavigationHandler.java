@@ -224,6 +224,9 @@ class NavigationHandler implements TouchEventObserver {
      * @see {@link HistoryNavigationCoordinator#triggerUi(boolean, float, float)}
      */
     boolean triggerUi(boolean forward, float x, float y) {
+        // Triggering requests may come after the action delegate is nulled out
+        // when the activity is being destroyed. Ignore it.
+        if (mActionDelegate == null) return false;
         mModel.set(DIRECTION, forward);
         boolean navigable = mActionDelegate.canNavigate(forward);
         if (navigable) {
