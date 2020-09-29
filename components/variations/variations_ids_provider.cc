@@ -215,13 +215,8 @@ void VariationsIdsProvider::InitVariationIDsCacheIfNeeded() {
   if (variation_ids_cache_initialized_)
     return;
 
-  // Must be done before AddObserver() to avoid deadlock in
-  // OnFieldTrialGroupFinalized().
-  is_restrict_google_web_visibility_enabled_ =
-      base::FeatureList::IsEnabled(internal::kRestrictGoogleWebVisibility);
-
-  // Register for additional cache updates. This is done before initializing the
-  // cache to avoid a race that could cause registered FieldTrials to be missed.
+  // Register for additional cache updates. This is done first to avoid a race
+  // that could cause registered FieldTrials to be missed.
   bool success = base::FieldTrialList::AddObserver(this);
   DCHECK(success);
 
@@ -295,7 +290,8 @@ std::string VariationsIdsProvider::GenerateBase64EncodedProto(
         proto.add_variation_id(entry.first);
         break;
       case GOOGLE_WEB_PROPERTIES_FIRST_PARTY:
-        if (IsRestrictGoogleWebVisibilityEnabled()) {
+        if (base::FeatureList::IsEnabled(
+                internal::kRestrictGoogleWebVisibility)) {
           if (is_first_party_context)
             proto.add_variation_id(entry.first);
         } else {
@@ -309,7 +305,8 @@ std::string VariationsIdsProvider::GenerateBase64EncodedProto(
         proto.add_trigger_variation_id(entry.first);
         break;
       case GOOGLE_WEB_PROPERTIES_TRIGGER_FIRST_PARTY:
-        if (IsRestrictGoogleWebVisibilityEnabled()) {
+        if (base::FeatureList::IsEnabled(
+                internal::kRestrictGoogleWebVisibility)) {
           if (is_first_party_context)
             proto.add_trigger_variation_id(entry.first);
         } else {
