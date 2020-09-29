@@ -709,6 +709,7 @@ chrome_java_resources = [
   "java/res/drawable/ic_signal_cellular_2_bar.xml",
   "java/res/drawable/ic_signal_cellular_3_bar.xml",
   "java/res/drawable/ic_signal_cellular_4_bar.xml",
+  "java/res/drawable/ic_signout_40dp.xml",
   "java/res/drawable/ic_site_timer.xml",
   "java/res/drawable/ic_swap_vert_round.xml",
   "java/res/drawable/ic_sync_badge_error_20dp.xml",

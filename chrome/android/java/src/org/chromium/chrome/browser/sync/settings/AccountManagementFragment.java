@@ -197,6 +197,10 @@ public class AccountManagementFragment extends PreferenceFragmentCompat
             getPreferenceScreen().removePreference(signOutPreference);
             getPreferenceScreen().removePreference(findPreference(PREF_SIGN_OUT_DIVIDER));
         } else {
+            if (ChromeFeatureList.isEnabled(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)) {
+                signOutPreference.setLayoutResource(R.layout.account_management_account_row);
+                signOutPreference.setIcon(R.drawable.ic_signout_40dp);
+            }
             signOutPreference.setTitle(getSignOutPreferenceText());
             signOutPreference.setEnabled(getSignOutAllowedPreferenceValue());
             signOutPreference.setOnPreferenceClickListener(preference -> {
