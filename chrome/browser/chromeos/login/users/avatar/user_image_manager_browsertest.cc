@@ -298,7 +298,7 @@ class UserImageManagerTestBase : public LoginManagerTest,
     const user_manager::User* user =
         user_manager::UserManager::Get()->GetActiveUser();
     ASSERT_TRUE(user);
-    UserImageManagerImpl* uim = reinterpret_cast<UserImageManagerImpl*>(
+    UserImageManagerImpl* uim = static_cast<UserImageManagerImpl*>(
         ChromeUserManager::Get()->GetUserImageManager(user->GetAccountId()));
     if (uim->job_.get()) {
       run_loop_.reset(new base::RunLoop);
