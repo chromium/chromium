@@ -140,29 +140,6 @@ TEST_F(QuotaSettingsTest, Default) {
   EXPECT_TRUE(callback_executed);
 }
 
-TEST_F(QuotaSettingsTest, ExpandedTempPool) {
-  MockQuotaDeviceInfoHelper device_info_helper;
-  ON_CALL(device_info_helper, AmountOfTotalDiskSpace(_))
-      .WillByDefault(::testing::Return(2000));
-  scoped_feature_list_.InitAndEnableFeatureWithParameters(
-      features::kQuotaExpandPoolSize,
-      {{"PoolSizeRatio", "0.75"}, {"PerHostRatio", "0.5"}});
-
-  bool callback_executed = false;
-  GetNominalDynamicSettings(
-      profile_path(), false, &device_info_helper,
-      base::BindLambdaForTesting([&](base::Optional<QuotaSettings> settings) {
-        callback_executed = true;
-        ASSERT_NE(settings, base::nullopt);
-        // 1500 = 2000 * PoolSizeRatio
-        EXPECT_EQ(settings->pool_size, 1500);
-        // 750 = 1500 * PerHostRatio
-        EXPECT_EQ(settings->per_host_quota, 750);
-      }));
-  task_environment_.RunUntilIdle();
-  EXPECT_TRUE(callback_executed);
-}
-
 TEST_F(QuotaSettingsTest, UnlimitedTempPool) {
   MockQuotaDeviceInfoHelper device_info_helper;
   ON_CALL(device_info_helper, AmountOfTotalDiskSpace(_))

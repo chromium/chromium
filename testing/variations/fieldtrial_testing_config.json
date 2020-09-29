@@ -5778,30 +5778,6 @@
             ]
         }
     ],
-    "QuotaExpandPoolSize": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_Pool_Four_Fifths_Origin_ThreeQuarters_20190710",
-                    "params": {
-                        "PerHostRatio": "0.75",
-                        "PoolSizeRatio": "0.8"
-                    },
-                    "enable_features": [
-                        "QuotaExpandPoolSize"
-                    ]
-                }
-            ]
-        }
-    ],
     "ReleaseNotesNotification": [
         {
             "platforms": [

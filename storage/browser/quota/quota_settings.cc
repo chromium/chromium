@@ -26,6 +26,8 @@ namespace {
 
 const int64_t kMBytes = 1024 * 1024;
 const int kRandomizedPercentage = 10;
+const double kDefaultPerHostRatio = 0.75;
+const double kDefaultPoolSizeRatio = 0.8;
 
 // Skews |value| by +/- |percent|.
 int64_t RandomizeByPercent(int64_t value, int percent) {
@@ -77,7 +79,7 @@ base::Optional<QuotaSettings> CalculateNominalDynamicSettings(
   const double kTemporaryPoolSizeRatio =
       base::FeatureList::IsEnabled(features::kQuotaUnlimitedPoolSize)
           ? 1.0
-          : features::kExperimentalPoolSizeRatio.Get();
+          : kDefaultPoolSizeRatio;
 
   // The amount of the device's storage the browser attempts to
   // keep free. If there is less than this amount of storage free
@@ -114,7 +116,7 @@ base::Optional<QuotaSettings> CalculateNominalDynamicSettings(
   const double kPerHostTemporaryRatio =
       base::FeatureList::IsEnabled(features::kQuotaUnlimitedPoolSize)
           ? 1.0
-          : features::kPerHostRatio.Get();
+          : kDefaultPerHostRatio;
 
   // SessionOnly (or ephemeral) origins are allotted a fraction of what
   // normal origins are provided, and the amount is capped to a hard limit.
