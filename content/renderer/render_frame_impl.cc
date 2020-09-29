@@ -4973,6 +4973,10 @@ RenderFrameImpl::MediaStreamDeviceObserver() {
   return web_media_stream_device_observer_.get();
 }
 
+bool RenderFrameImpl::AllowRTCLegacyTLSProtocols() {
+  return GetRendererPreferences().webrtc_allow_legacy_tls_protocols;
+}
+
 blink::WebEncryptedMediaClient* RenderFrameImpl::EncryptedMediaClient() {
   return media_factory_.EncryptedMediaClient();
 }

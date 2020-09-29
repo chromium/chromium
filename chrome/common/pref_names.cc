@@ -1559,6 +1559,10 @@ const char kWebRtcEventLogCollectionAllowed[] = "webrtc.event_logs_collection";
 // Holds URL patterns that specify URLs for which local IP addresses are exposed
 // in ICE candidates.
 const char kWebRtcLocalIpsAllowedUrls[] = "webrtc.local_ips_allowed_urls";
+// Whether WebRTC PeerConnections are allowed to use legacy versions of the TLS
+// and DTLS protocols.
+const char kWebRTCAllowLegacyTLSProtocols[] =
+    "webrtc.allow_legacy_tls_protocols";
 
 #if !defined(OS_ANDROID)
 // Whether or not this profile has been shown the Welcome page.

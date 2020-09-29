@@ -709,6 +709,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kURLsToNotCheckComplianceOfUploadedContent,
     prefs::kURLsToNotCheckComplianceOfUploadedContent,
     base::Value::Type::LIST },
+  { key::kWebRtcAllowLegacyTLSProtocols,
+    prefs::kWebRTCAllowLegacyTLSProtocols,
+    base::Value::Type::BOOLEAN },
 #endif  // defined(OS_ANDROID)
 
 #if defined(OS_CHROMEOS)

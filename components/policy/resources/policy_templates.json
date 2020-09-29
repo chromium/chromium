@@ -23415,7 +23415,29 @@ If you disable this policy, web page scrolling to specific text fragments via UR
       - Format the URL patterns according to this format ( https://www.chromium.org/administrators/url-blacklist-filter-format ).
 
       If the policy is left not set, no restrictions will be applied.''',
-    }
+    },
+    {
+      'name': 'WebRtcAllowLegacyTLSProtocols',
+      'owners': ['hta@chromium.org', 'guidou@chromium.org'],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'supported_on': ['chrome.*:87-', 'chrome_os:87-'],
+      'features': {
+        'dynamic_refresh': False,
+        'per_profile': False,
+      },
+      'example_value': False,
+      'id': 787,
+      'caption': '''Allow legacy TLS/DTLS downgrade in WebRTC''',
+      'tags': [],
+      'desc': '''If enabled, WebRTC peer connections can downgrade to obsolete
+      versions of the TLS/DTLS (DTLS 1.0, TLS 1.0 and TLS 1.1) protocols.
+      When this policy is disabled or not set, these TLS/DTLS versions are
+      disabled.
+
+      This policy is temporary and will be removed in a future version
+      of <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>.''',
+    },
   ],
 
   'messages': {
@@ -24340,6 +24362,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   ],
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 412, 476, 544, 546, 562, 569, 578],
-  'highest_id_currently_used': 786,
+  'highest_id_currently_used': 787,
   'highest_atomic_group_id_currently_used': 40
 }

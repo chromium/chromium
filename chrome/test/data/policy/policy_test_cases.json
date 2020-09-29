@@ -8199,5 +8199,14 @@
         "prefs": { "policy.dlp_rules_list": { "local_state": true } }
       }
     ]
+  },
+  "WebRtcAllowLegacyTLSProtocols": {
+    "os": ["win", "linux", "mac", "chromeos"],
+    "policy_pref_mapping_test": [
+      {
+        "policies": { "WebRtcAllowLegacyTLSProtocols": false },
+        "prefs": { "webrtc.allow_legacy_tls_protocols": {} }
+      }
+    ]
   }
 }

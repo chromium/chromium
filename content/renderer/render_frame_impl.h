@@ -707,6 +707,7 @@ class CONTENT_EXPORT RenderFrameImpl
                                 int world_id) override;
   void DidChangeScrollOffset() override;
   blink::WebMediaStreamDeviceObserver* MediaStreamDeviceObserver() override;
+  bool AllowRTCLegacyTLSProtocols() override;
   blink::WebEncryptedMediaClient* EncryptedMediaClient() override;
   blink::WebString UserAgentOverride() override;
   base::Optional<blink::UserAgentMetadata> UserAgentMetadataOverride() override;

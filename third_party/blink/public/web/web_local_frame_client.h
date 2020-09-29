@@ -553,6 +553,9 @@ class BLINK_EXPORT WebLocalFrameClient {
     return nullptr;
   }
 
+  // WebRTC
+  virtual bool AllowRTCLegacyTLSProtocols() { return false; }
+
   // Encrypted Media -------------------------------------------------
 
   virtual WebEncryptedMediaClient* EncryptedMediaClient() { return nullptr; }

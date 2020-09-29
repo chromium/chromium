@@ -141,6 +141,8 @@ void UpdateFromSystemSettings(blink::mojom::RendererPreferences* prefs,
   const base::ListValue* allowed_urls =
       pref_service->GetList(prefs::kWebRtcLocalIpsAllowedUrls);
   prefs->webrtc_local_ips_allowed_urls = GetLocalIpsAllowedUrls(allowed_urls);
+  prefs->webrtc_allow_legacy_tls_protocols =
+      pref_service->GetBoolean(prefs::kWebRTCAllowLegacyTLSProtocols);
 #if defined(USE_AURA)
   prefs->focus_ring_color = SkColorSetRGB(0x4D, 0x90, 0xFE);
 #if defined(OS_CHROMEOS)
