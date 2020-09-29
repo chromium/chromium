@@ -5,16 +5,6 @@
 'use strict';
 
 /**
- * Color space.
- *
- * @enum {string}
- */
-const ColorSpace = {
-  SRGB: 'sRgb',
-  ADOBE_RGB: 'adobeRgb'
-};
-
-/**
  * Response status.
  *
  * @enum {string}
@@ -143,13 +133,6 @@ class LoadImageRequest {
     this.cache;
     /** @type {number|undefined} */
     this.priority;
-
-    /**
-     * ColorSpace, only used for piex images.
-     *
-     * @type{ColorSpace|undefined}
-     */
-    this.colorSpace;
   }
 
   /**

@@ -60,12 +60,20 @@ function ImageRequestTask(id, cache, piexLoader, request, callback) {
   this.contentType_ = null;
 
   /**
-   * IFD data of the fetched image. Only RAW images provide non-null ifd
-   * data at this time; images on Drive might provide ifd in future.
+   * IFD data of the fetched image. Only RAW images provide a non-null
+   * ifd at this time. Drive images might provide an ifd in future.
    * @type {?string}
    * @private
    */
   this.ifd_ = null;
+
+  /**
+   * The color space of the fetched image. Only RAW images provide a
+   * color space at this time, being 'sRgb' or 'adobeRgb'.
+   * @type {?string}
+   * @private
+   */
+  this.colorSpace_ = null;
 
   /**
    * Used to download remote images using http:// or https:// protocols.
@@ -336,9 +344,7 @@ ImageRequestTask.prototype.downloadOriginal_ = function(onSuccess, onFailure) {
             function(data) {
               this.request_.orientation =
                   ImageOrientation.fromExifOrientation(data.orientation);
-              const isAdobeRgb = data.colorSpace === 'adobeRgb';
-              this.request_.colorSpace =
-                  isAdobeRgb ? ColorSpace.ADOBE_RGB : ColorSpace.SRGB;
+              this.colorSpace_ = data.colorSpace;
               this.ifd_ = data.ifd;
               this.contentType_ = data.mimeType;
               const blob = new Blob([data.thumbnail], {type: data.mimeType});
@@ -560,24 +566,27 @@ ImageRequestTask.prototype.sendImageData_ = function(width, height, data) {
 };
 
 /**
- * Handler, when contents are loaded into the image element. Performs resizing
- * and finalizes the request process.
+ * Handler, when contents are loaded into the image element. Performs image
+ * processing operations if needed, and finalizes the request process.
  * @private
  */
 ImageRequestTask.prototype.onImageLoad_ = function() {
+  const imageColorSpace = this.colorSpace_ || 'sRgb';
+
   // Perform processing if the url is not a data url, or if there are some
   // operations requested.
+  let imageChanged = false;
   if (!(this.request_.url.match(/^data/) ||
         this.request_.url.match(/^drivefs:/)) ||
       ImageLoaderUtil.shouldProcess(
-          this.image_.width, this.image_.height, this.request_)) {
+          this.image_.width, this.image_.height, this.request_) ||
+      (imageColorSpace !== 'sRgb')) {
     ImageLoaderUtil.resizeAndCrop(this.image_, this.canvas_, this.request_);
-    ImageLoaderUtil.convertColorSpace(
-        this.canvas_, this.request_.colorSpace || ColorSpace.SRGB);
-    this.sendImage_(true);  // Image changed.
-  } else {
-    this.sendImage_(false);  // Image not changed.
+    ImageLoaderUtil.convertColorSpace(this.canvas_, imageColorSpace);
+    imageChanged = true;  // The image is now on the <canvas>.
   }
+
+  this.sendImage_(imageChanged);
   this.cleanup_();
   this.downloadCallback_();
 };
