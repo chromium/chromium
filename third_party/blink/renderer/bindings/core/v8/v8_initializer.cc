@@ -355,11 +355,6 @@ static bool ContentSecurityPolicyCodeGenerationCheck(
     v8::Local<v8::Context> context,
     v8::Local<v8::String> source) {
   if (ExecutionContext* execution_context = ToExecutionContext(context)) {
-    DCHECK(execution_context->IsWindow() ||
-           execution_context->IsMainThreadWorkletGlobalScope());
-
-    v8::Context::Scope scope(context);
-
     // Note this callback is only triggered for contexts which have eval
     // disabled. Hence we don't need to handle the case of isolated world
     // contexts with no CSP specified. (They should be exempt from the page CSP.
@@ -367,6 +362,7 @@ static bool ContentSecurityPolicyCodeGenerationCheck(
 
     if (ContentSecurityPolicy* policy =
             execution_context->GetContentSecurityPolicyForCurrentWorld()) {
+      v8::Context::Scope scope(context);
       v8::String::Value source_str(context->GetIsolate(), source);
       UChar snippet[ContentSecurityPolicy::kMaxSampleLength + 1];
       size_t len = std::min((sizeof(snippet) / sizeof(UChar)) - 1,
@@ -786,6 +782,8 @@ void V8Initializer::InitializeWorker(v8::Isolate* isolate) {
 
   isolate->SetStackLimit(WTF::GetCurrentStackPosition() - kWorkerMaxStackSize);
   isolate->SetPromiseRejectCallback(PromiseRejectHandlerInWorker);
+  isolate->SetModifyCodeGenerationFromStringsCallback(
+      CodeGenerationCheckCallbackInMainThread);
 }
 
 }  // namespace blink

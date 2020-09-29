@@ -176,9 +176,6 @@ external/wpt/content-security-policy/reporting-api/reporting-api-sends-reports-o
 external/wpt/content-security-policy/reporting-api/reporting-api-works-on-frame-src.https.sub.html [ Pass ] # wpt_subtest_failure
 external/wpt/content-security-policy/script-src/script-src-strict_dynamic_hashes.html [ Failure ]
 external/wpt/content-security-policy/securitypolicyviolation/img-src-redirect-upgrade-reporting.https.html [ Timeout ] # wpt_subtest_failure
-external/wpt/content-security-policy/securitypolicyviolation/inside-dedicated-worker.html [ Timeout ] # wpt_subtest_failure
-external/wpt/content-security-policy/securitypolicyviolation/inside-service-worker.https.html [ Timeout ] # wpt_subtest_failure
-external/wpt/content-security-policy/securitypolicyviolation/inside-shared-worker.html [ Timeout ] # wpt_subtest_failure
 external/wpt/content-security-policy/securitypolicyviolation/securitypolicyviolation-block-cross-origin-image.sub.html [ Pass ] # wpt_subtest_failure
 external/wpt/content-security-policy/securitypolicyviolation/targeting.html [ Timeout ] # wpt_subtest_failure
 external/wpt/content-security-policy/worker-src/service-none.https.sub.html [ Pass Failure ]
