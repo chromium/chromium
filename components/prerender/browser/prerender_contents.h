@@ -140,14 +140,6 @@ class PrerenderContents : public content::NotificationObserver,
   bool has_finished_loading() const { return has_finished_loading_; }
   bool prerendering_has_started() const { return prerendering_has_started_; }
 
-  // Sets the parameter to the value of the associated RenderViewHost's child id
-  // and returns a boolean indicating the validity of that id.
-  virtual bool GetChildId(int* child_id) const;
-
-  // Sets the parameter to the value of the associated RenderViewHost's route id
-  // and returns a boolean indicating the validity of that id.
-  virtual bool GetRouteId(int* route_id) const;
-
   FinalStatus final_status() const { return final_status_; }
 
   Origin origin() const { return origin_; }
@@ -292,14 +284,14 @@ class PrerenderContents : public content::NotificationObserver,
   std::unique_ptr<PrerenderContentsDelegate> delegate_;
 
   // The URL being prerendered.
-  GURL prerender_url_;
+  const GURL prerender_url_;
 
   // The referrer.
-  content::Referrer referrer_;
+  const content::Referrer referrer_;
 
   // The origin of the page requesting the prerender. Empty when the prerender
   // is browser initiated.
-  base::Optional<url::Origin> initiator_origin_;
+  const base::Optional<url::Origin> initiator_origin_;
 
   // The browser context being used
   content::BrowserContext* browser_context_;
@@ -326,12 +318,8 @@ class PrerenderContents : public content::NotificationObserver,
 
   std::unique_ptr<WebContentsDelegateImpl> web_contents_delegate_;
 
-  // These are -1 before a RenderView is created.
-  int child_id_;
-  int route_id_;
-
   // Origin for this prerender.
-  Origin origin_;
+  const Origin origin_;
 
   // The bounds of the WebView from the launching page.
   gfx::Rect bounds_;

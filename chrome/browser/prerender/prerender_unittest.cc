@@ -95,18 +95,6 @@ class DummyPrerenderContents : public PrerenderContents {
       const gfx::Rect& bounds,
       content::SessionStorageNamespace* session_storage_namespace) override;
 
-  bool GetChildId(int* child_id) const override {
-    // Having a default child_id of -1 forces pending prerenders not to fail
-    // on session storage and cross domain checking.
-    *child_id = -1;
-    return true;
-  }
-
-  bool GetRouteId(int* route_id) const override {
-    *route_id = route_id_;
-    return true;
-  }
-
   FinalStatus expected_final_status() const { return expected_final_status_; }
 
   bool prerendering_has_been_cancelled() const {

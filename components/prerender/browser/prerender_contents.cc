@@ -142,8 +142,6 @@ PrerenderContents::PrerenderContents(
       final_status_(FINAL_STATUS_UNKNOWN),
       prerendering_has_been_cancelled_(false),
       process_pid_(base::kNullProcessId),
-      child_id_(-1),
-      route_id_(-1),
       origin_(origin),
       network_bytes_(0) {
   switch (origin) {
@@ -204,16 +202,11 @@ void PrerenderContents::StartPrerendering(
   content::WebContentsObserver::Observe(prerender_contents_.get());
   delegate_->OnPrerenderContentsCreated(prerender_contents_.get());
 
-  web_contents_delegate_.reset(new WebContentsDelegateImpl(this));
-  prerender_contents_.get()->SetDelegate(web_contents_delegate_.get());
+  web_contents_delegate_ = std::make_unique<WebContentsDelegateImpl>(this);
+  prerender_contents_->SetDelegate(web_contents_delegate_.get());
 
   // Set the size of the prerender WebContents.
-  prerender_contents_.get()->Resize(bounds_);
-
-  // TODO(davidben): This logic assumes each prerender has at most one
-  // route. https://crbug.com/440544
-  child_id_ = GetRenderViewHost()->GetProcess()->GetID();
-  route_id_ = GetRenderViewHost()->GetRoutingID();
+  prerender_contents_->Resize(bounds_);
 
   // TODO(davidben): This logic assumes each prerender has at most one
   // process. https://crbug.com/440544
@@ -238,21 +231,7 @@ void PrerenderContents::StartPrerendering(
     load_url_params.transition_type =
         ui::PageTransitionFromInt(ui::PAGE_TRANSITION_GENERATED);
   }
-  prerender_contents_.get()->GetController().LoadURLWithParams(load_url_params);
-}
-
-bool PrerenderContents::GetChildId(int* child_id) const {
-  CHECK(child_id);
-  DCHECK_GE(child_id_, -1);
-  *child_id = child_id_;
-  return child_id_ != -1;
-}
-
-bool PrerenderContents::GetRouteId(int* route_id) const {
-  CHECK(route_id);
-  DCHECK_GE(route_id_, -1);
-  *route_id = route_id_;
-  return route_id_ != -1;
+  prerender_contents_->GetController().LoadURLWithParams(load_url_params);
 }
 
 void PrerenderContents::SetFinalStatus(FinalStatus final_status) {
@@ -295,7 +274,7 @@ void PrerenderContents::Observe(int type,
                                 const content::NotificationDetails& details) {
   switch (type) {
     case content::NOTIFICATION_WEB_CONTENTS_RENDER_VIEW_HOST_CREATED: {
-      if (prerender_contents_.get()) {
+      if (prerender_contents_) {
         DCHECK_EQ(content::Source<WebContents>(source).ptr(),
                   prerender_contents_.get());
 
