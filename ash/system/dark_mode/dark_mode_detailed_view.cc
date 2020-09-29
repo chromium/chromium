@@ -28,7 +28,7 @@ class TrayRadioButton : public views::RadioButton {
       : views::RadioButton(button_label) {
     SetBorder(views::CreateEmptyBorder(kTrayRadioButtonPadding));
     SetImageLabelSpacing(kTrayRadioButtonInterSpacing);
-    set_listener(listener);
+    set_callback(views::Button::PressedCallback(listener, this));
   }
 
   // views::RadioButton:

@@ -30,7 +30,8 @@ class VIEWS_EXPORT ImageButton : public Button {
   // An enum describing the vertical alignment of images on Buttons.
   enum VerticalAlignment { ALIGN_TOP = 0, ALIGN_MIDDLE, ALIGN_BOTTOM };
 
-  explicit ImageButton(ButtonListener* listener = nullptr);
+  explicit ImageButton(PressedCallback callback = PressedCallback());
+  explicit ImageButton(ButtonListener* listener);
   ~ImageButton() override;
 
   // Returns the image for a given |state|.
@@ -130,7 +131,8 @@ class VIEWS_EXPORT ToggleImageButton : public ImageButton {
  public:
   METADATA_HEADER(ToggleImageButton);
 
-  explicit ToggleImageButton(ButtonListener* listener = nullptr);
+  explicit ToggleImageButton(PressedCallback callback = PressedCallback());
+  explicit ToggleImageButton(ButtonListener* listener);
   ~ToggleImageButton() override;
 
   // Change the toggled state.

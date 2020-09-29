@@ -81,13 +81,22 @@ MenuButtonController::PressedLock::~PressedLock() {
 
 MenuButtonController::MenuButtonController(
     Button* button,
-    ButtonListener* listener,
+    Button::PressedCallback callback,
     std::unique_ptr<ButtonControllerDelegate> delegate)
-    : ButtonController(button, std::move(delegate)), listener_(listener) {
+    : ButtonController(button, std::move(delegate)),
+      callback_(std::move(callback)) {
   // Triggers on button press by default, unless drag-and-drop is enabled, see
   // MenuButtonController::IsTriggerableEventType.
   set_notify_action(ButtonController::NotifyAction::kOnPress);
 }
+
+MenuButtonController::MenuButtonController(
+    Button* button,
+    ButtonListener* listener,
+    std::unique_ptr<ButtonControllerDelegate> delegate)
+    : MenuButtonController(button,
+                           Button::PressedCallback(listener, button),
+                           std::move(delegate)) {}
 
 MenuButtonController::~MenuButtonController() = default;
 
@@ -189,10 +198,10 @@ void MenuButtonController::OnGestureEvent(ui::GestureEvent* event) {
   if (button()->GetState() != Button::STATE_DISABLED) {
     auto ref = weak_factory_.GetWeakPtr();
     if (delegate()->IsTriggerableEvent(*event) && !Activate(event)) {
-      // When |Activate()| returns |false|, it means the click was handled by
-      // a button listener and has handled the gesture event. So, there is no
-      // need to further process the gesture event here. However, if the
-      // listener didn't run menu code, we should make sure to reset our state.
+      // When Activate() returns false, it means the click was handled by a
+      // button listener and has handled the gesture event. So, there is no need
+      // to further process the gesture event here. However, if the listener
+      // didn't run menu code, we should make sure to reset our state.
       if (ref && button()->GetState() == Button::STATE_HOVERED)
         button()->SetState(Button::STATE_NORMAL);
 
@@ -213,7 +222,7 @@ void MenuButtonController::OnGestureEvent(ui::GestureEvent* event) {
 }
 
 bool MenuButtonController::Activate(const ui::Event* event) {
-  if (listener_) {
+  if (callback_) {
     // We're about to show the menu from a mouse press. By showing from the
     // mouse press event we block RootView in mouse dispatching. This also
     // appears to cause RootView to get a mouse pressed BEFORE the mouse
@@ -240,8 +249,8 @@ bool MenuButtonController::Activate(const ui::Event* event) {
     if (!event)
       event = &fake_event;
     // We don't set our state here. It's handled in the MenuController code or
-    // by our click listener.
-    listener_->ButtonPressed(button(), *event);
+    // by the callback.
+    callback_.Run(*event);
 
     if (!ref) {
       // The menu was deleted while showing. Don't attempt any processing.

@@ -27,9 +27,9 @@ class VIEWS_EXPORT Checkbox : public LabelButton {
  public:
   METADATA_HEADER(Checkbox);
 
-  // |force_md| forces MD even when --secondary-ui-md flag is not set.
   explicit Checkbox(const base::string16& label = base::string16(),
-                    ButtonListener* listener = nullptr);
+                    PressedCallback callback = PressedCallback());
+  Checkbox(const base::string16& label, ButtonListener* listener);
   ~Checkbox() override;
 
   // Sets/Gets whether or not the checkbox is checked.

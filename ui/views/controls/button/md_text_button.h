@@ -19,11 +19,10 @@ class VIEWS_EXPORT MdTextButton : public LabelButton {
  public:
   METADATA_HEADER(MdTextButton);
 
-  // TODO(pbos): Replace uses of this with PressedCallback version below.
-  explicit MdTextButton(ButtonListener* listener = nullptr,
+  explicit MdTextButton(PressedCallback callback = PressedCallback(),
                         const base::string16& text = base::string16(),
                         int button_context = style::CONTEXT_BUTTON_MD);
-  explicit MdTextButton(PressedCallback callback,
+  explicit MdTextButton(ButtonListener* listener,
                         const base::string16& text = base::string16(),
                         int button_context = style::CONTEXT_BUTTON_MD);
   ~MdTextButton() override;

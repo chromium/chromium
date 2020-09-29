@@ -32,9 +32,8 @@ class ButtonController;
 class Event;
 
 // An interface implemented by an object to let it know that a button was
-// pressed.
-// Deprecated, please use callback versions instead.
-// TODO(pbos): Replace ButtonListener with ClickedCallback methods below.
+// pressed.  DEPRECATED; use PressedCallback instead.
+// TODO(crbug.com/772945): Replace ButtonListener with PressedCallback.
 class VIEWS_EXPORT ButtonListener {
  public:
   virtual void ButtonPressed(Button* sender, const ui::Event& event) = 0;
@@ -49,10 +48,6 @@ class VIEWS_EXPORT ButtonListener {
 class VIEWS_EXPORT Button : public InkDropHostView,
                             public AnimationDelegateViews {
  public:
-  METADATA_HEADER(Button);
-
-  ~Button() override;
-
   // Button states for various button sub-types.
   enum ButtonState {
     STATE_NORMAL = 0,
@@ -61,10 +56,6 @@ class VIEWS_EXPORT Button : public InkDropHostView,
     STATE_DISABLED,
     STATE_COUNT,
   };
-
-  static constexpr ButtonState kButtonStates[STATE_COUNT] = {
-      ButtonState::STATE_NORMAL, ButtonState::STATE_HOVERED,
-      ButtonState::STATE_PRESSED, ButtonState::STATE_DISABLED};
 
   // An enum describing the events on which a button should be clicked for a
   // given key event.
@@ -96,12 +87,50 @@ class VIEWS_EXPORT Button : public InkDropHostView,
     DISALLOW_COPY_AND_ASSIGN(DefaultButtonControllerDelegate);
   };
 
+  // PressedCallback wraps a one-arg callback type with a variety of
+  // constructors, both to aid conversion from ButtonListener and to allow
+  // callers to specify a RepeatingClosure if they don't care about the callback
+  // arg.
+  // TODO(crbug.com/772945): Remove ButtonListener constructor, then re-evaluate
+  // if this class can/should be converted to a type alias + various helpers or
+  // overloads to support the RepeatingClosure case.
+  class VIEWS_EXPORT PressedCallback {
+   public:
+    using Callback = base::RepeatingCallback<void(const ui::Event& event)>;
+
+    // Allow providing callbacks that expect either zero or one args, since many
+    // callers don't care about the argument and can avoid adapter functions
+    // this way.
+    PressedCallback(Callback callback = Callback());  // NOLINT
+    PressedCallback(base::RepeatingClosure closure);  // NOLINT
+    // TODO(crbug.com/772945): Remove.
+    PressedCallback(ButtonListener* listener, Button* button);
+    PressedCallback(const PressedCallback&);
+    PressedCallback(PressedCallback&&);
+    PressedCallback& operator=(const PressedCallback&);
+    PressedCallback& operator=(PressedCallback&&);
+    ~PressedCallback();
+
+    explicit operator bool() const { return !!callback_; }
+
+    void Run(const ui::Event& event) { callback_.Run(event); }
+
+   private:
+    Callback callback_;
+  };
+
+  static constexpr ButtonState kButtonStates[STATE_COUNT] = {
+      ButtonState::STATE_NORMAL, ButtonState::STATE_HOVERED,
+      ButtonState::STATE_PRESSED, ButtonState::STATE_DISABLED};
+
+  METADATA_HEADER(Button);
+
+  ~Button() override;
+
   static const Button* AsButton(const View* view);
   static Button* AsButton(View* view);
 
   static ButtonState GetButtonStateFrom(ui::NativeTheme::State state);
-
-  using PressedCallback = base::RepeatingCallback<void(const ui::Event& event)>;
 
   // Make the button focusable as per the platform.
   void SetFocusForPlatform();
@@ -112,21 +141,6 @@ class VIEWS_EXPORT Button : public InkDropHostView,
   int tag() const { return tag_; }
   void set_tag(int tag) { tag_ = tag; }
 
-  // TODO(pbos): Replace uses of this with set_callback().
-  void set_listener(ButtonListener* listener) {
-    set_callback(ListenerToPressedCallback(this, listener));
-  }
-
-  // Allow providing callbacks that expect either zero or one args, since many
-  // callers don't care about the argument and can avoid adapter functions this
-  // way.
-  void set_callback(base::RepeatingClosure callback) {
-    // Adapt this closure to a PressedCallback by discarding the extra arg.
-    callback_ =
-        base::BindRepeating([](base::RepeatingClosure closure,
-                               const ui::Event& event) { closure.Run(); },
-                            std::move(callback));
-  }
   void set_callback(PressedCallback callback) {
     callback_ = std::move(callback);
   }
@@ -238,17 +252,8 @@ class VIEWS_EXPORT Button : public InkDropHostView,
   gfx::Point GetMenuPosition() const;
 
  protected:
-  // Construct the Button with a Listener. The listener can be null. This can be
-  // true of buttons that don't have a listener - e.g. menubuttons where there's
-  // no default action and checkboxes.
-  explicit Button(ButtonListener* listener = nullptr);
-  explicit Button(PressedCallback callback);
-
-  // Wraps a ButtonListener for |button| into a PressedCallback, used during
-  // migration from ButtonListener to PressedCallback to let child classes use
-  // PressedCallback versions of parent constructors.
-  static PressedCallback ListenerToPressedCallback(Button* button,
-                                                   ButtonListener* listener);
+  explicit Button(PressedCallback callback = PressedCallback());
+  explicit Button(ButtonListener* listener);
 
   // Called when the button has been clicked or tapped and should request focus
   // if necessary.

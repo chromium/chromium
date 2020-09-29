@@ -4,6 +4,7 @@
 #include "ui/views/controls/button/image_button_factory.h"
 
 #include <memory>
+#include <utility>
 
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
@@ -11,25 +12,29 @@
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/views/border.h"
-#include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/painter.h"
 
+namespace views {
+
 namespace {
 
-class ColorTrackingVectorImageButton : public views::ImageButton {
+class ColorTrackingVectorImageButton : public ImageButton {
  public:
-  ColorTrackingVectorImageButton(views::ButtonListener* listener,
+  ColorTrackingVectorImageButton(PressedCallback callback,
                                  const gfx::VectorIcon& icon)
-      : ImageButton(listener), icon_(icon) {}
+      : ImageButton(std::move(callback)), icon_(icon) {}
+  ColorTrackingVectorImageButton(ButtonListener* listener,
+                                 const gfx::VectorIcon& icon)
+      : ColorTrackingVectorImageButton(PressedCallback(listener, this), icon) {}
 
-  // views::ImageButton:
+  // ImageButton:
   void OnThemeChanged() override {
     ImageButton::OnThemeChanged();
     const SkColor color = GetNativeTheme()->GetSystemColor(
         ui::NativeTheme::kColorId_DefaultIconColor);
-    views::SetImageFromVectorIconWithColor(this, icon_, color);
+    SetImageFromVectorIconWithColor(this, icon_, color);
   }
 
  private:
@@ -38,7 +43,14 @@ class ColorTrackingVectorImageButton : public views::ImageButton {
 
 }  // namespace
 
-namespace views {
+std::unique_ptr<ImageButton> CreateVectorImageButtonWithNativeTheme(
+    Button::PressedCallback callback,
+    const gfx::VectorIcon& icon) {
+  auto button = std::make_unique<ColorTrackingVectorImageButton>(
+      std::move(callback), icon);
+  ConfigureVectorImageButton(button.get());
+  return button;
+}
 
 std::unique_ptr<ImageButton> CreateVectorImageButtonWithNativeTheme(
     ButtonListener* listener,
@@ -49,8 +61,22 @@ std::unique_ptr<ImageButton> CreateVectorImageButtonWithNativeTheme(
   return button;
 }
 
+std::unique_ptr<ImageButton> CreateVectorImageButton(
+    Button::PressedCallback callback) {
+  auto button = std::make_unique<ImageButton>(std::move(callback));
+  ConfigureVectorImageButton(button.get());
+  return button;
+}
+
 std::unique_ptr<ImageButton> CreateVectorImageButton(ButtonListener* listener) {
   auto button = std::make_unique<ImageButton>(listener);
+  ConfigureVectorImageButton(button.get());
+  return button;
+}
+
+std::unique_ptr<ToggleImageButton> CreateVectorToggleImageButton(
+    Button::PressedCallback callback) {
+  auto button = std::make_unique<ToggleImageButton>(std::move(callback));
   ConfigureVectorImageButton(button.get());
   return button;
 }

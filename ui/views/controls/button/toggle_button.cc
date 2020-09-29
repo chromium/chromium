@@ -120,7 +120,8 @@ class ToggleButton::ThumbView : public InkDropHostView {
   DISALLOW_COPY_AND_ASSIGN(ThumbView);
 };
 
-ToggleButton::ToggleButton(ButtonListener* listener) : Button(listener) {
+ToggleButton::ToggleButton(PressedCallback callback)
+    : Button(std::move(callback)) {
   slide_animation_.SetSlideDuration(base::TimeDelta::FromMilliseconds(80));
   slide_animation_.SetTweenType(gfx::Tween::LINEAR);
   thumb_view_ = AddChildView(std::make_unique<ThumbView>());
@@ -133,6 +134,9 @@ ToggleButton::ToggleButton(ButtonListener* listener) : Button(listener) {
   SetInstallFocusRingOnFocus(false);
   SetHasInkDropActionOnClick(true);
 }
+
+ToggleButton::ToggleButton(ButtonListener* listener)
+    : ToggleButton(PressedCallback(listener, this)) {}
 
 ToggleButton::~ToggleButton() {
   // Destroying ink drop early allows ink drop layer to be properly removed,

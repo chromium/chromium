@@ -752,10 +752,10 @@ TEST_F(ButtonTest, InkDropStaysHiddenWhileDragging) {
   SetDraggedView(nullptr);
 }
 
-// Ensure ButtonListener is dynamically settable.
-TEST_F(ButtonTest, SetListener) {
+// Ensure PressedCallback is dynamically settable.
+TEST_F(ButtonTest, SetCallback) {
   TestButtonListener listener;
-  button()->set_listener(&listener);
+  button()->set_callback(Button::PressedCallback(&listener, button()));
 
   const gfx::Point center(10, 10);
   button()->OnMousePressed(ui::MouseEvent(

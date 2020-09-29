@@ -20,7 +20,8 @@ class VIEWS_EXPORT ToggleButton : public Button {
  public:
   METADATA_HEADER(ToggleButton);
 
-  explicit ToggleButton(ButtonListener* listener = nullptr);
+  explicit ToggleButton(PressedCallback callback = PressedCallback());
+  explicit ToggleButton(ButtonListener* listener);
   ~ToggleButton() override;
 
   // AnimateIsOn() animates the state change to |is_on|; SetIsOn() doesn't.

@@ -91,6 +91,40 @@ bool Button::DefaultButtonControllerDelegate::InDrag() {
   return button()->InDrag();
 }
 
+Button::PressedCallback::PressedCallback(
+    Button::PressedCallback::Callback callback)
+    : callback_(std::move(callback)) {}
+
+Button::PressedCallback::PressedCallback(base::RepeatingClosure closure)
+    : callback_(
+          base::BindRepeating([](base::RepeatingClosure closure,
+                                 const ui::Event& event) { closure.Run(); },
+                              std::move(closure))) {}
+
+Button::PressedCallback::PressedCallback(ButtonListener* listener,
+                                         Button* button)
+    : callback_(listener ? base::BindRepeating(
+                               [](ButtonListener* listener,
+                                  Button* button,
+                                  const ui::Event& event) {
+                                 listener->ButtonPressed(button, event);
+                               },
+                               listener,
+                               button)
+                         : Callback()) {}
+
+Button::PressedCallback::PressedCallback(const PressedCallback&) = default;
+
+Button::PressedCallback::PressedCallback(PressedCallback&&) = default;
+
+Button::PressedCallback& Button::PressedCallback::operator=(
+    const PressedCallback&) = default;
+
+Button::PressedCallback& Button::PressedCallback::operator=(PressedCallback&&) =
+    default;
+
+Button::PressedCallback::~PressedCallback() = default;
+
 // static
 constexpr Button::ButtonState Button::kButtonStates[STATE_COUNT];
 
@@ -573,9 +607,6 @@ void Button::AnimationProgressed(const gfx::Animation* animation) {
   SchedulePaint();
 }
 
-Button::Button(ButtonListener* listener)
-    : Button(ListenerToPressedCallback(this, listener)) {}
-
 Button::Button(PressedCallback callback)
     : AnimationDelegateViews(this),
       callback_(std::move(callback)),
@@ -588,17 +619,8 @@ Button::Button(PressedCallback callback)
       this, std::make_unique<DefaultButtonControllerDelegate>(this));
 }
 
-Button::PressedCallback Button::ListenerToPressedCallback(
-    Button* button,
-    ButtonListener* listener) {
-  if (!listener)
-    return base::DoNothing();
-  return base::BindRepeating(
-      [](ButtonListener* listener, Button* button, const ui::Event& event) {
-        listener->ButtonPressed(button, event);
-      },
-      listener, button);
-}
+Button::Button(ButtonListener* listener)
+    : Button(PressedCallback(listener, this)) {}
 
 void Button::RequestFocusFromEvent() {
   if (request_focus_on_press_)
@@ -611,9 +633,8 @@ void Button::NotifyClick(const ui::Event& event) {
                    ui::LocatedEvent::FromIfValid(&event));
   }
 
-  // We can be called when there is no listener, in cases like double clicks on
-  // menu buttons etc.
-  callback_.Run(event);
+  if (callback_)
+    callback_.Run(event);
 }
 
 void Button::OnClickCanceled(const ui::Event& event) {

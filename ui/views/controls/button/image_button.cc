@@ -28,12 +28,16 @@ static constexpr int kDefaultHeight = 14;
 ////////////////////////////////////////////////////////////////////////////////
 // ImageButton, public:
 
-ImageButton::ImageButton(ButtonListener* listener) : Button(listener) {
+ImageButton::ImageButton(PressedCallback callback)
+    : Button(std::move(callback)) {
   // By default, we request that the gfx::Canvas passed to our View::OnPaint()
   // implementation is flipped horizontally so that the button's images are
   // mirrored when the UI directionality is right-to-left.
   EnableCanvasFlippingForRTLUI(true);
 }
+
+ImageButton::ImageButton(ButtonListener* listener)
+    : ImageButton(PressedCallback(listener, this)) {}
 
 ImageButton::~ImageButton() = default;
 
@@ -212,8 +216,11 @@ const gfx::Point ImageButton::ComputeImagePaintPosition(
 ////////////////////////////////////////////////////////////////////////////////
 // ToggleImageButton, public:
 
+ToggleImageButton::ToggleImageButton(PressedCallback callback)
+    : ImageButton(std::move(callback)) {}
+
 ToggleImageButton::ToggleImageButton(ButtonListener* listener)
-    : ImageButton(listener) {}
+    : ToggleImageButton(PressedCallback(listener, this)) {}
 
 ToggleImageButton::~ToggleImageButton() = default;
 

@@ -32,13 +32,6 @@
 
 namespace views {
 
-LabelButton::LabelButton(ButtonListener* listener,
-                         const base::string16& text,
-                         int button_context)
-    : LabelButton(ListenerToPressedCallback(this, listener),
-                  text,
-                  button_context) {}
-
 LabelButton::LabelButton(PressedCallback callback,
                          const base::string16& text,
                          int button_context)
@@ -61,6 +54,11 @@ LabelButton::LabelButton(PressedCallback callback,
   SetAnimationDuration(base::TimeDelta::FromMilliseconds(170));
   SetTextInternal(text);
 }
+
+LabelButton::LabelButton(ButtonListener* listener,
+                         const base::string16& text,
+                         int button_context)
+    : LabelButton(PressedCallback(listener, this), text, button_context) {}
 
 LabelButton::~LabelButton() = default;
 
