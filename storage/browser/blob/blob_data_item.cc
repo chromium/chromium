@@ -193,6 +193,7 @@ void BlobDataItem::ShrinkBytes(size_t new_length) {
   DCHECK_EQ(type_, Type::kBytes);
   length_ = new_length;
   bytes_.resize(length_);
+  bytes_.shrink_to_fit();
 }
 
 void BlobDataItem::PopulateFile(
