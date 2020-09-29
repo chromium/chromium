@@ -2,8 +2,77 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chrome/common/features.gni")
 import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/grit/preprocess_grit.gni")
 import("//tools/polymer/html_to_js.gni")
+import("../../optimize_webui.gni")
+
+if (optimize_webui) {
+  preprocess_folder = "preprocessed"
+
+  optimize_webui("build") {
+    host = "profile-picker"
+    js_module_in_files = [
+      "profile_picker.js",
+      "lazy_load.js",
+    ]
+    input = rebase_path("$target_gen_dir/$preprocess_folder", root_build_dir)
+    js_out_files = [
+      "profile_picker.rollup.js",
+      "lazy_load.rollup.js",
+      "shared.rollup.js",
+    ]
+
+    deps = [
+      ":preprocess",
+      ":preprocess_generated",
+      ":shared",
+      "../../../../../ui/webui/resources:preprocess",
+    ]
+    excludes = [
+      "chrome://resources/js/cr.m.js",
+      "chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js",
+      "chrome://resources/mojo/skia/public/mojom/skcolor.mojom-lite.js",
+    ]
+  }
+
+  preprocess_grit("preprocess") {
+    in_folder = "./"
+    out_folder = "$target_gen_dir/$preprocess_folder"
+    in_files = [
+      "profile_picker.js",
+      "navigation_behavior.js",
+      "policy_helper.js",
+      "icons.js",
+      "lazy_load.js",
+      "ensure_lazy_loaded.js",
+      "manage_profiles_browser_proxy.js",
+    ]
+  }
+
+  preprocess_grit("shared") {
+    in_folder = "../"
+    out_folder = "$target_gen_dir/$preprocess_folder"
+    in_files = [ "signin_icons.js" ]
+  }
+
+  preprocess_grit("preprocess_generated") {
+    deps = [ ":web_components" ]
+    in_folder = target_gen_dir
+    out_folder = "$target_gen_dir/$preprocess_folder"
+    in_files = [
+      "profile_picker_app.js",
+      "profile_picker_main_view.js",
+      "profile_card.js",
+      "profile_card_menu.js",
+      "profile_creation_flow/profile_type_choice.js",
+      "profile_creation_flow/local_profile_customization.js",
+      "profile_picker_shared_css.js",
+      "profile_creation_flow/shared_css.js",
+    ]
+  }
+}
 
 group("closure_compile") {
   deps = [
@@ -20,8 +89,35 @@ js_type_check("profile_picker_files") {
         "js_module_root=./gen/chrome/browser/resources/signin/profile_picker/",
       ]
   deps = [
+    ":ensure_lazy_loaded",
+    ":lazy_load",
+    ":navigation_behavior",
+    ":policy_helper",
+    ":profile_card",
+    ":profile_card_menu",
+    ":profile_picker",
     ":profile_picker_app",
     ":profile_picker_main_view",
+  ]
+}
+
+js_library("profile_picker") {
+  deps = [
+    ":ensure_lazy_loaded",
+    ":manage_profiles_browser_proxy",
+    ":navigation_behavior",
+    ":profile_picker_app",
+  ]
+}
+
+js_library("ensure_lazy_loaded") {
+  deps = [ ":lazy_load" ]
+}
+
+js_library("lazy_load") {
+  deps = [
+    "profile_creation_flow:local_profile_customization",
+    "profile_creation_flow:profile_type_choice",
   ]
 }
 
@@ -50,7 +146,9 @@ js_library("navigation_behavior") {
 
 js_library("profile_picker_app") {
   deps = [
+    ":ensure_lazy_loaded",
     ":navigation_behavior",
+    ":profile_picker_main_view",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_lazy_render:cr_lazy_render.m",
     "//ui/webui/resources/cr_elements/cr_view_manager:cr_view_manager.m",

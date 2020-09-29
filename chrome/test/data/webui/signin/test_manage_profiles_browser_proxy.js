@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ManageProfilesBrowserProxy} from 'chrome://profile-picker/manage_profiles_browser_proxy.js';
+import {ManageProfilesBrowserProxy} from 'chrome://profile-picker/profile_picker.js';
 
 import {TestBrowserProxy} from '../test_browser_proxy.m.js';
 

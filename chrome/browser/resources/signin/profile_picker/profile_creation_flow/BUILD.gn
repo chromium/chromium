@@ -13,9 +13,6 @@ js_type_check("closure_compile") {
   ]
 }
 
-js_library("ensure_lazy_loaded") {
-}
-
 js_library("profile_type_choice") {
   deps = [
     "..:manage_profiles_browser_proxy",

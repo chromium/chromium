@@ -63,6 +63,11 @@
           type="chrome_html"
           compress="false"/>
       <structure
+          name="IDR_PROFILE_PICKER_PROFILE_PICKER_JS"
+          file="profile_picker.js"
+          type="chrome_html"
+          compress="false"/>
+      <structure
           name="IDR_PROFILE_PICKER_NAVIGATION_BEHAVIOR_JS"
           file="navigation_behavior.js"
           type="chrome_html"
@@ -78,18 +83,13 @@
           type="chrome_html"
           compress="false"/>
       <structure
-          name="IDR_SIGNIN_ICONS_JS"
-          file="../signin_icons.js"
-          type="chrome_html"
-          compress="false"/>
-      <structure
           name="IDR_PROFILE_PICKER_LAZY_LOAD_JS"
-          file="profile_creation_flow/lazy_load.js"
+          file="lazy_load.js"
           type="chrome_html"
           compress="false"/>
       <structure
           name="IDR_PROFILE_PICKER_ENSURE_LAZY_LOADED_JS"
-          file="profile_creation_flow/ensure_lazy_loaded.js"
+          file="ensure_lazy_loaded.js"
           type="chrome_html"
           compress="false"/>
       <structure

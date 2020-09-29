@@ -510,13 +510,18 @@ if (!is_android && !is_chromeos) {
   }
 
   grit("profile_picker_resources") {
-    source = "signin/profile_picker/profile_picker_resources.grd"
-
-    deps = [ "//chrome/browser/resources/signin/profile_picker:web_components" ]
     grit_flags = [
       "-E",
       "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
     ]
+    if (optimize_webui) {
+      source = "signin/profile_picker/profile_picker_resources_vulcanized.grd"
+      deps = [ "//chrome/browser/resources/signin/profile_picker:build" ]
+    } else {
+      source = "signin/profile_picker/profile_picker_resources.grd"
+      deps =
+          [ "//chrome/browser/resources/signin/profile_picker:web_components" ]
+    }
 
     defines = chrome_grit_defines
     outputs = [

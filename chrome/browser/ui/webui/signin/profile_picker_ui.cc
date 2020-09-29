@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/browser_resources.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/profile_picker_resources.h"
@@ -136,12 +137,40 @@ ProfilePickerUI::ProfilePickerUI(content::WebUI* web_ui)
 
   std::string generated_path =
       "@out_folder@/gen/chrome/browser/resources/signin/profile_picker/";
+
+  AddStrings(html_source);
+#if BUILDFLAG(OPTIMIZE_WEBUI)
+  webui::SetupBundledWebUIDataSource(
+      html_source, "profile_picker.js",
+      IDR_PROFILE_PICKER_PROFILE_PICKER_ROLLUP_JS,
+      IDR_PROFILE_PICKER_PROFILE_PICKER_HTML);
+  html_source->AddResourcePath("lazy_load.js",
+                               IDR_PROFILE_PICKER_LAZY_LOAD_ROLLUP_JS);
+  html_source->AddResourcePath("shared.rollup.js",
+                               IDR_PROFILE_PICKER_SHARED_ROLLUP_JS);
+  html_source->AddResourcePath("images/left_banner_image.svg",
+                               IDR_PROFILE_PICKER_IMAGES_LEFT_BANNER_IMAGE);
+  html_source->AddResourcePath("images/right_banner_image.svg",
+                               IDR_PROFILE_PICKER_IMAGES_RIGHT_BANNER_IMAGE);
+  html_source->AddResourcePath(
+      "images/dark_mode_left_banner_image.svg",
+      IDR_PROFILE_PICKER_IMAGES_DARK_MODE_LEFT_BANNER_IMAGE);
+  html_source->AddResourcePath(
+      "images/dark_mode_right_banner_image.svg",
+      IDR_PROFILE_PICKER_IMAGES_DARK_MODE_RIGHT_BANNER_IMAGE);
+  html_source->AddResourcePath(
+      "profile_creation_flow/images/banner_light_image.svg",
+      IDR_PROFILE_PICKER_PROFILE_CREATION_FLOW_IMAGES_BANNER_LIGHT_IMAGE);
+  html_source->AddResourcePath(
+      "profile_creation_flow/images/banner_dark_image.svg",
+      IDR_PROFILE_PICKER_PROFILE_CREATION_FLOW_IMAGES_BANNER_DARK_IMAGE);
+#else
+  html_source->AddResourcePath("signin_icons.js", IDR_SIGNIN_ICONS_JS);
   webui::SetupWebUIDataSource(
       html_source,
       base::make_span(kProfilePickerResources, kProfilePickerResourcesSize),
       generated_path, IDR_PROFILE_PICKER_PROFILE_PICKER_HTML);
-  html_source->AddResourcePath("signin_icons.js", IDR_SIGNIN_ICONS_JS);
-  AddStrings(html_source);
+#endif
   content::WebUIDataSource::Add(profile, html_source);
 }
 

@@ -36,7 +36,7 @@ js_library("profile_creation_flow_test") {
   deps = [
     "..:chai_assert",
     "..:test_util.m",
-    "//chrome/browser/resources/signin/profile_picker/profile_creation_flow:profile_type_choice",
+    "//chrome/browser/resources/signin/profile_picker:lazy_load",
   ]
 }
 
@@ -45,10 +45,7 @@ js_library("profile_picker_app_test") {
     ":test_manage_profiles_browser_proxy",
     "..:chai_assert",
     "..:test_util.m",
-    "//chrome/browser/resources/signin/profile_picker:navigation_behavior",
-    "//chrome/browser/resources/signin/profile_picker:profile_picker_app",
-    "//chrome/browser/resources/signin/profile_picker/profile_creation_flow:ensure_lazy_loaded",
-    "//chrome/browser/resources/signin/profile_picker/profile_creation_flow:local_profile_customization",
+    "//chrome/browser/resources/signin/profile_picker:profile_picker",
   ]
 }
 
@@ -62,6 +59,6 @@ js_library("test_dice_web_signin_intercept_browser_proxy") {
 js_library("test_manage_profiles_browser_proxy") {
   deps = [
     "..:test_browser_proxy.m",
-    "//chrome/browser/resources/signin/profile_picker:manage_profiles_browser_proxy",
+    "//chrome/browser/resources/signin/profile_picker:profile_picker",
   ]
 }

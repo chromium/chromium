@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grit latest_public_release="0" current_release="1" output_all_resource_defines="false">
+  <outputs>
+    <output filename="grit/profile_picker_resources.h" type="rc_header">
+      <emit emit_type='prepend'></emit>
+    </output>
+    <output filename="grit/profile_picker_resources_map.cc"
+            type="resource_map_source" />
+    <output filename="grit/profile_picker_resources_map.h"
+            type="resource_map_header" />
+    <output filename="profile_picker_resources.pak" type="data_package" />
+  </outputs>
+  <release seq="1">
+    <includes>
+      <include name="IDR_PROFILE_PICKER_PROFILE_PICKER_HTML"
+               file="profile_picker.html"
+               type="chrome_html" />
+      <include name="IDR_PROFILE_PICKER_PROFILE_PICKER_ROLLUP_JS"
+               file="${root_gen_dir}/chrome/browser/resources/signin/profile_picker/profile_picker.rollup.js"
+               use_base_dir="false"
+               type="chrome_html" />
+      <include name="IDR_PROFILE_PICKER_LAZY_LOAD_ROLLUP_JS"
+               file="${root_gen_dir}/chrome/browser/resources/signin/profile_picker/lazy_load.rollup.js"
+               type="BINDATA"
+               use_base_dir="false" />
+      <include name="IDR_PROFILE_PICKER_SHARED_ROLLUP_JS"
+               file="${root_gen_dir}/chrome/browser/resources/signin/profile_picker/shared.rollup.js"
+               type="BINDATA"
+               use_base_dir="false" />
+      <include name="IDR_PROFILE_PICKER_IMAGES_LEFT_BANNER_IMAGE"
+               file="images/left_banner_image.svg"
+               type="BINDATA" />
+      <include name="IDR_PROFILE_PICKER_IMAGES_RIGHT_BANNER_IMAGE"
+               file="images/right_banner_image.svg"
+               type="BINDATA" />
+      <include name="IDR_PROFILE_PICKER_IMAGES_DARK_MODE_LEFT_BANNER_IMAGE"
+               file="images/dark_mode_left_banner_image.svg"
+               type="BINDATA" />
+      <include name="IDR_PROFILE_PICKER_IMAGES_DARK_MODE_RIGHT_BANNER_IMAGE"
+               file="images/dark_mode_right_banner_image.svg"
+               type="BINDATA" />
+      <include name="IDR_PROFILE_PICKER_PROFILE_CREATION_FLOW_IMAGES_BANNER_LIGHT_IMAGE"
+               file="profile_creation_flow/images/banner_light_image.svg"
+               type="BINDATA" />
+      <include name="IDR_PROFILE_PICKER_PROFILE_CREATION_FLOW_IMAGES_BANNER_DARK_IMAGE"
+               file="profile_creation_flow/images/banner_dark_image.svg"
+               type="BINDATA" />
+    </includes>
+  </release>
+</grit>

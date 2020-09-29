@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://profile-picker/profile_creation_flow/profile_type_choice.js';
+import 'chrome://profile-picker/lazy_load.js';
 
 import {assertTrue} from '../chai_assert.js';
 import {isChildVisible} from '../test_util.m.js';

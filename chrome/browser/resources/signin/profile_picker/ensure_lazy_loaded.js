@@ -13,7 +13,7 @@ export function ensureLazyLoaded() {
   if (!lazyLoadPromise) {
     const script = document.createElement('script');
     script.type = 'module';
-    script.src = './profile_creation_flow/lazy_load.js';
+    script.src = './lazy_load.js';
     document.body.appendChild(script);
 
     lazyLoadPromise = Promise.all([

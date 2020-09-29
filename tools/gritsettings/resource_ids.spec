@@ -195,7 +195,10 @@
     "includes": [1830],
     "structures": [1840],
   },
-  "chrome/browser/resources/signin/profile_picker/profile_picker_resources.grd": {
+  "chrome/browser/resources/signin/profile_picker/profile_picker_resources_vulcanized.grd": {
+    "includes": [1850],
+  },
+ "chrome/browser/resources/signin/profile_picker/profile_picker_resources.grd": {
     "includes": [1860],
     "structures": [1870],
   },

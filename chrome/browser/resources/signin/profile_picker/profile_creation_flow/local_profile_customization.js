@@ -91,6 +91,12 @@ Polymer({
       type: Boolean,
       value: false,
     },
+
+    /** @private */
+    pattern_: {
+      type: String,
+      value: '.*\\S.*',
+    },
   },
 
   /** @private {?ManageProfilesBrowserProxy} */
