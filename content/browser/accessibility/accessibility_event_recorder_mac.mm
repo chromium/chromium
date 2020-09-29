@@ -62,10 +62,10 @@ static void EventReceivedThunk(AXObserverRef observer_ref,
 std::unique_ptr<AccessibilityEventRecorder> AccessibilityEventRecorder::Create(
     BrowserAccessibilityManager* manager,
     base::ProcessId pid,
-    const base::StringPiece& application_name_match_pattern) {
-  if (!application_name_match_pattern.empty()) {
-    LOG(ERROR) << "Recording accessibility events from an application name "
-                  "match pattern not supported on this platform yet.";
+    const AccessibilityTreeFormatter::TreeSelector& selector) {
+  if (!selector.empty()) {
+    LOG(ERROR) << "Recording accessibility events by an application selector "
+                  "is not supported on this platform yet.";
     NOTREACHED();
   }
 

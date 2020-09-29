@@ -14,6 +14,7 @@
 #include "base/macros.h"
 #include "base/process/process_handle.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/accessibility_tree_formatter.h"
 
 namespace content {
 
@@ -43,15 +44,14 @@ class CONTENT_EXPORT AccessibilityEventRecorder {
   static std::unique_ptr<AccessibilityEventRecorder> Create(
       BrowserAccessibilityManager* manager = nullptr,
       base::ProcessId pid = 0,
-      const base::StringPiece& application_name_match_pattern =
-          base::StringPiece());
+      const AccessibilityTreeFormatter::TreeSelector& selector = {});
 
   // Get a set of factory methods to create event-recorders, one for each test
   // pass; see |DumpAccessibilityTestBase|.
   using EventRecorderFactory = std::unique_ptr<AccessibilityEventRecorder> (*)(
       BrowserAccessibilityManager* manager,
       base::ProcessId pid,
-      const base::StringPiece& application_name_match_pattern);
+      const AccessibilityTreeFormatter::TreeSelector& selector);
   struct TestPass {
     const char* name;
     EventRecorderFactory create_recorder;

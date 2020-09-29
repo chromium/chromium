@@ -4166,8 +4166,7 @@ void WebContentsImpl::RecordAccessibilityEvents(
     auto* ax_mgr = GetOrCreateRootBrowserAccessibilityManager();
     DCHECK(ax_mgr);
     base::ProcessId pid = base::Process::Current().Pid();
-    event_recorder_ = content::AccessibilityEventRecorder::Create(
-        ax_mgr, pid, base::StringPiece{});
+    event_recorder_ = content::AccessibilityEventRecorder::Create(ax_mgr, pid);
     event_recorder_->ListenToEvents(*callback);
   } else {
     if (event_recorder_) {

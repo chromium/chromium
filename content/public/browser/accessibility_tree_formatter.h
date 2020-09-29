@@ -113,6 +113,7 @@ class CONTENT_EXPORT AccessibilityTreeFormatter
     int types;
     std::string pattern;
 
+    TreeSelector() : types(None) {}
     TreeSelector(int types, const std::string& pattern)
         : types(types), pattern(pattern) {}
 

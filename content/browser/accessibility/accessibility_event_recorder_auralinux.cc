@@ -35,7 +35,7 @@ class AccessibilityEventRecorderAuraLinux : public AccessibilityEventRecorder {
   explicit AccessibilityEventRecorderAuraLinux(
       BrowserAccessibilityManager* manager,
       base::ProcessId pid,
-      const base::StringPiece& application_name_match_pattern);
+      const AccessibilityTreeFormatter::TreeSelector& selector);
   ~AccessibilityEventRecorderAuraLinux() override;
 
   void ProcessATKEvent(const char* event,
@@ -98,9 +98,9 @@ gboolean AccessibilityEventRecorderAuraLinux::OnATKEventReceived(
 std::unique_ptr<AccessibilityEventRecorder> AccessibilityEventRecorder::Create(
     BrowserAccessibilityManager* manager,
     base::ProcessId pid,
-    const base::StringPiece& application_name_match_pattern) {
-  return std::make_unique<AccessibilityEventRecorderAuraLinux>(
-      manager, pid, application_name_match_pattern);
+    const AccessibilityTreeFormatter::TreeSelector& selector) {
+  return std::make_unique<AccessibilityEventRecorderAuraLinux>(manager, pid,
+                                                               selector);
 }
 
 std::vector<AccessibilityEventRecorder::TestPass>
@@ -120,10 +120,10 @@ bool AccessibilityEventRecorderAuraLinux::ShouldUseATSPI() {
 AccessibilityEventRecorderAuraLinux::AccessibilityEventRecorderAuraLinux(
     BrowserAccessibilityManager* manager,
     base::ProcessId pid,
-    const base::StringPiece& application_name_match_pattern)
+    const AccessibilityTreeFormatter::TreeSelector& selector)
     : AccessibilityEventRecorder(manager),
       pid_(pid),
-      application_name_match_pattern_(application_name_match_pattern) {
+      application_name_match_pattern_(selector.pattern) {
   CHECK(!instance_) << "There can be only one instance of"
                     << " AccessibilityEventRecorder at a time.";
 

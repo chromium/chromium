@@ -140,8 +140,7 @@ std::vector<std::string> DumpAccessibilityEventsTest::Dump(
     // Create a new Event Recorder for the run
     std::unique_ptr<AccessibilityEventRecorder> event_recorder =
         event_recorder_factory_(
-            web_contents->GetRootBrowserAccessibilityManager(), pid,
-            base::StringPiece{});
+            web_contents->GetRootBrowserAccessibilityManager(), pid, {});
     event_recorder->set_only_web_events(true);
 
     waiter.reset(new AccessibilityNotificationWaiter(

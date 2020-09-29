@@ -4,24 +4,17 @@
 
 #include "tools/accessibility/inspect/ax_event_server.h"
 
-#include <iostream>
-#include <sstream>
-#include <string>
-
 #include "base/bind.h"
 
 namespace tools {
 
-AXEventServer::AXEventServer(base::ProcessId pid,
-                             const base::StringPiece& pattern)
+AXEventServer::AXEventServer(
+    base::ProcessId pid,
+    const content::AccessibilityTreeFormatter::TreeSelector& selector)
     : recorder_(
-          content::AccessibilityEventRecorder::Create(nullptr, pid, pattern)) {
+          content::AccessibilityEventRecorder::Create(nullptr, pid, selector)) {
   recorder_->ListenToEvents(
       base::BindRepeating(&AXEventServer::OnEvent, base::Unretained(this)));
-
-  std::stringstream output;
-  output << "Events for process id: " << pid;
-  printf("%s", output.str().c_str());
 }
 
 AXEventServer::~AXEventServer() = default;

@@ -21,7 +21,7 @@ AccessibilityEventRecorder::~AccessibilityEventRecorder() = default;
 std::unique_ptr<AccessibilityEventRecorder> AccessibilityEventRecorder::Create(
     BrowserAccessibilityManager* manager,
     base::ProcessId pid,
-    const base::StringPiece& application_name_match_pattern) {
+    const AccessibilityTreeFormatter::TreeSelector& selector) {
   return std::make_unique<AccessibilityEventRecorder>(manager);
 }
 

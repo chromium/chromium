@@ -14,11 +14,12 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_executor.h"
 #include "tools/accessibility/inspect/ax_event_server.h"
+#include "tools/accessibility/inspect/ax_utils.h"
 
 namespace {
 
 constexpr char kPidSwitch[] = "pid";
-constexpr char kPatternSwitch[] = "pattern";
+constexpr char kHelpSwitch[] = "help";
 
 // Convert from string to int, whether in 0x hex format or decimal format.
 bool StringToInt(std::string str, int* result) {
@@ -38,21 +39,40 @@ bool AXDumpEventsLogMessageHandler(int severity,
   printf("%s", str.substr(message_start).c_str());
   return true;
 }
+
+void PrintHelp() {
+  printf(
+      "ax_dump_evemts is a tool designed to dump platform accessible events "
+      "of running applications.\n");
+  printf("\nusage: ax_dump_events <options>\n");
+  printf("options:\n");
+  printf(
+      "  --pid\t\tprocess id of an application to dump accessible tree for\n");
+  tools::PrintHelpForTreeSelectors();
+}
+
 }  // namespace
 
 int main(int argc, char** argv) {
   logging::SetLogMessageHandler(AXDumpEventsLogMessageHandler);
 
   base::CommandLine::Init(argc, argv);
+  const base::CommandLine* command_line =
+      base::CommandLine::ForCurrentProcess();
+
+  if (command_line->HasSwitch(kHelpSwitch)) {
+    PrintHelp();
+    return 0;
+  }
 
   const std::string pid_str =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(kPidSwitch);
-  const std::string pattern_str =
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          kPatternSwitch);
-  if (pid_str.empty() && pattern_str.empty()) {
-    LOG(ERROR) << "* Error: No process id provided via --pid=[process-id] or"
-                  " application name pattern via --pattern=[pattern].";
+  const tools::TreeSelector selector =
+      tools::TreeSelectorFromCommandLine(command_line);
+
+  if (pid_str.empty() && selector.empty()) {
+    LOG(ERROR) << "* Error: no application was identified to dump events for. "
+                  "Run with --help for help.";
     return 1;
   }
 
@@ -66,7 +86,7 @@ int main(int argc, char** argv) {
 
   base::AtExitManager exit_manager;
   base::SingleThreadTaskExecutor main_task_executor(base::MessagePumpType::UI);
-  const auto server = std::make_unique<tools::AXEventServer>(pid, pattern_str);
+  const auto server = std::make_unique<tools::AXEventServer>(pid, selector);
   base::RunLoop().Run();
   return 0;
 }
