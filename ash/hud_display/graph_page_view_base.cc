@@ -149,5 +149,10 @@ Grid* GraphPageViewBase::CreateGrid(float left,
       horizontal_ticks_interval));
 }
 
+void GraphPageViewBase::RefreshLegendValues() {
+  if (legend_)
+    legend_->RefreshValues();
+}
+
 }  // namespace hud_display
 }  // namespace ash

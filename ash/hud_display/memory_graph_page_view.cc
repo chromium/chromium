@@ -4,6 +4,7 @@
 
 #include "ash/hud_display/memory_graph_page_view.h"
 
+#include <algorithm>
 #include <numeric>
 
 #include "ash/hud_display/grid.h"
@@ -58,25 +59,34 @@ MemoryGraphPageView::MemoryGraphPageView(const base::TimeDelta refresh_interval)
   // Hide grid until we know total memory size.
   grid_->SetVisible(false);
 
+  Legend::Formatter formatter = base::BindRepeating([](float value) {
+    return base::ASCIIToUTF16(
+        base::StringPrintf("%d Mb", std::max(0, (int)(value * 1024))));
+  });
+
   const std::vector<Legend::Entry> legend({
-      {graph_gpu_kernel_.color(), base::ASCIIToUTF16("GPU Driver"),
+      {graph_gpu_kernel_, base::ASCIIToUTF16("GPU Driver"),
        base::ASCIIToUTF16("Kernel GPU buffers as reported\nby "
-                          "base::SystemMemoryInfo::gem_size.")},
-      {graph_gpu_rss_private_.color(), base::ASCIIToUTF16("Chrome GPU"),
+                          "base::SystemMemoryInfo::gem_size."),
+       formatter},
+      {graph_gpu_rss_private_, base::ASCIIToUTF16("Chrome GPU"),
        base::ASCIIToUTF16(
-           "RSS private memory of\n --type=gpu-process Chrome process.")},
+           "RSS private memory of\n --type=gpu-process Chrome process."),
+       formatter},
       // ARC memory is not usually visible (skipped)
-      {graph_renderers_rss_private_.color(),
-       base::ASCIIToUTF16("Chrome Renderer"),
+      {graph_renderers_rss_private_, base::ASCIIToUTF16("Renderers"),
        base::ASCIIToUTF16(
-           "Sum of RSS private memory of\n--type=renderer Chrome process.")},
-      {graph_mem_used_unknown_.color(), base::ASCIIToUTF16("Other"),
+           "Sum of RSS private memory of\n--type=renderer Chrome process."),
+       formatter},
+      {graph_mem_used_unknown_, base::ASCIIToUTF16("Other"),
        base::ASCIIToUTF16(
-           "Amount of other used memory.\nEquals to total used minus known.")},
-      {graph_mem_free_.color(), base::ASCIIToUTF16("Free"),
-       base::ASCIIToUTF16("Free memory as reported by kernel.")},
-      {graph_chrome_rss_private_.color(), base::ASCIIToUTF16("Browser"),
-       base::ASCIIToUTF16("RSS private memory of the\nmain Chrome process.")}
+           "Amount of other used memory.\nEquals to total used minus known."),
+       formatter},
+      {graph_mem_free_, base::ASCIIToUTF16("Free"),
+       base::ASCIIToUTF16("Free memory as reported by kernel."), formatter},
+      {graph_chrome_rss_private_, base::ASCIIToUTF16("Browser"),
+       base::ASCIIToUTF16("RSS private memory of the\nmain Chrome process."),
+       formatter}
       // Browser RSS hairline skipped.
   });
   CreateLegend(legend);
@@ -122,27 +132,35 @@ void MemoryGraphPageView::UpdateData(const DataSource::Snapshot& snapshot) {
   if (total < 1)
     return;
 
+  constexpr float one_gigabyte = 1024 * 1024 * 1024;
+
   if (total_ram_ != total) {
     total_ram_ = total;
-    constexpr float one_gigabyte = 1024 * 1024 * 1024;
     grid_->SetTopLabel(total / one_gigabyte);  // In Gigabytes.
     grid_->SetVisible(true);
   }
 
-  const float chrome_rss_private =
-      (snapshot.browser_rss - snapshot.browser_rss_shared) / total;
-  const float mem_free = snapshot.free_ram / total;
+  const float chrome_rss_private_unscaled =
+      (snapshot.browser_rss - snapshot.browser_rss_shared);
+  const float chrome_rss_private = chrome_rss_private_unscaled / total;
+  const float mem_free_unscaled = snapshot.free_ram;
+  const float mem_free = mem_free_unscaled / total;
   // mem_used_unknown is calculated below.
-  const float renderers_rss_private =
-      (snapshot.renderers_rss - snapshot.renderers_rss_shared) / total;
-  const float arc_rss_private =
-      (snapshot.arc_rss - snapshot.arc_rss_shared) / total;
-  const float gpu_rss_private =
-      (snapshot.gpu_rss - snapshot.gpu_rss_shared) / total;
-  const float gpu_kernel = snapshot.gpu_kernel / total;
+  const float renderers_rss_private_unscaled =
+      snapshot.renderers_rss - snapshot.renderers_rss_shared;
+  const float renderers_rss_private = renderers_rss_private_unscaled / total;
+  const float arc_rss_private_unscaled =
+      snapshot.arc_rss - snapshot.arc_rss_shared;
+  const float arc_rss_private = arc_rss_private_unscaled / total;
+  const float gpu_rss_private_unscaled =
+      snapshot.gpu_rss - snapshot.gpu_rss_shared;
+  const float gpu_rss_private = gpu_rss_private_unscaled / total;
+  const float gpu_kernel_unscaled = snapshot.gpu_kernel;
+  const float gpu_kernel = gpu_kernel_unscaled / total;
 
   // not stacked.
-  const float chrome_rss_shared = snapshot.browser_rss_shared / total;
+  const float chrome_rss_shared_unscaled = snapshot.browser_rss_shared;
+  const float chrome_rss_shared = chrome_rss_shared_unscaled / total;
 
   std::vector<float> used_buckets;
   used_buckets.push_back(chrome_rss_private);
@@ -152,22 +170,32 @@ void MemoryGraphPageView::UpdateData(const DataSource::Snapshot& snapshot) {
   used_buckets.push_back(gpu_rss_private);
   used_buckets.push_back(gpu_kernel);
 
-  float mem_used_unknown =
+  const float mem_used_unknown =
       1 - std::accumulate(used_buckets.begin(), used_buckets.end(), 0.0f);
+  const float mem_used_unknown_unscaled = mem_used_unknown * total;
 
   if (mem_used_unknown < 0)
     LOG(WARNING) << "mem_used_unknown=" << mem_used_unknown << " < 0 !";
 
   // Update graph data.
-  graph_chrome_rss_private_.AddValue(chrome_rss_private);
-  graph_mem_free_.AddValue(mem_free);
-  graph_mem_used_unknown_.AddValue(std::max(mem_used_unknown, 0.0f));
-  graph_renderers_rss_private_.AddValue(renderers_rss_private);
-  graph_arc_rss_private_.AddValue(arc_rss_private);
-  graph_gpu_rss_private_.AddValue(gpu_rss_private);
-  graph_gpu_kernel_.AddValue(gpu_kernel);
+  graph_chrome_rss_private_.AddValue(
+      chrome_rss_private, chrome_rss_private_unscaled / one_gigabyte);
+  graph_mem_free_.AddValue(mem_free, mem_free_unscaled / one_gigabyte);
+  graph_mem_used_unknown_.AddValue(
+      std::max(mem_used_unknown, 0.0f),
+      std::max(mem_used_unknown_unscaled / one_gigabyte, 0.0f));
+  graph_renderers_rss_private_.AddValue(
+      renderers_rss_private, renderers_rss_private_unscaled / one_gigabyte);
+  graph_arc_rss_private_.AddValue(arc_rss_private,
+                                  arc_rss_private_unscaled / one_gigabyte);
+  graph_gpu_rss_private_.AddValue(gpu_rss_private,
+                                  gpu_rss_private_unscaled / one_gigabyte);
+  graph_gpu_kernel_.AddValue(gpu_kernel, gpu_kernel_unscaled / one_gigabyte);
   // Not stacked.
-  graph_chrome_rss_shared_.AddValue(chrome_rss_shared);
+  graph_chrome_rss_shared_.AddValue(chrome_rss_shared,
+                                    chrome_rss_shared_unscaled / one_gigabyte);
+
+  RefreshLegendValues();
 }
 
 }  // namespace hud_display

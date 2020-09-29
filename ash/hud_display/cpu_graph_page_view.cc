@@ -4,9 +4,12 @@
 
 #include "ash/hud_display/cpu_graph_page_view.h"
 
+#include <algorithm>
 #include <numeric>
 
 #include "ash/hud_display/hud_constants.h"
+#include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "ui/gfx/canvas.h"
 
 namespace ash {
@@ -41,19 +44,28 @@ CpuGraphPageView::CpuGraphPageView(const base::TimeDelta refresh_interval)
       /*top=*/100, /*right=*/0, /*bottom=*/0, base::ASCIIToUTF16("s"),
       base::ASCIIToUTF16("%"), data_width, 10 / refresh_interval.InSecondsF());
 
+  Legend::Formatter formatter = base::BindRepeating([](float value) {
+    return base::ASCIIToUTF16(base::StringPrintf(
+        "%d %%", std::min(100, std::max(0, (int)(value * 100)))));
+  });
+
   const std::vector<Legend::Entry> legend(
-      {{cpu_idle_.color(), base::ASCIIToUTF16("Idle"),
-        base::ASCIIToUTF16("Total amount of CPU time spent\nin idle mode.")},
-       {cpu_user_.color(), base::ASCIIToUTF16("User"),
+      {{cpu_idle_, base::ASCIIToUTF16("Idle"),
+        base::ASCIIToUTF16("Total amount of CPU time spent\nin idle mode."),
+        formatter},
+       {cpu_user_, base::ASCIIToUTF16("User"),
         base::ASCIIToUTF16(
-            "Total amount of CPU time spent\n running user processes.")},
-       {cpu_system_.color(), base::ASCIIToUTF16("System"),
+            "Total amount of CPU time spent\n running user processes."),
+        formatter},
+       {cpu_system_, base::ASCIIToUTF16("System"),
         base::ASCIIToUTF16(
-            "Total amount of CPU time spent\nrunning system processes.")},
-       {cpu_other_.color(), base::ASCIIToUTF16("Other"),
+            "Total amount of CPU time spent\nrunning system processes."),
+        formatter},
+       {cpu_other_, base::ASCIIToUTF16("Other"),
         base::ASCIIToUTF16(
             "Total amount of CPU time spent\nrunning other tasks.\nThis "
-            "includes IO wait, IRQ, guest OS, etc.")}});
+            "includes IO wait, IRQ, guest OS, etc."),
+        formatter}});
   CreateLegend(legend);
 }
 
@@ -91,10 +103,13 @@ void CpuGraphPageView::UpdateData(const DataSource::Snapshot& snapshot) {
   // Assume total already equals 1, no need to re-weight.
 
   // Update graph data.
-  cpu_other_.AddValue(snapshot.cpu_other_part);
-  cpu_system_.AddValue(snapshot.cpu_system_part);
-  cpu_user_.AddValue(snapshot.cpu_user_part);
-  cpu_idle_.AddValue(snapshot.cpu_idle_part);
+  // unscaled values for CPU are the same. Formatter will display it as %.
+  cpu_other_.AddValue(snapshot.cpu_other_part, snapshot.cpu_other_part);
+  cpu_system_.AddValue(snapshot.cpu_system_part, snapshot.cpu_system_part);
+  cpu_user_.AddValue(snapshot.cpu_user_part, snapshot.cpu_user_part);
+  cpu_idle_.AddValue(snapshot.cpu_idle_part, snapshot.cpu_idle_part);
+
+  RefreshLegendValues();
 }
 
 }  // namespace hud_display

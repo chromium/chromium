@@ -19,6 +19,7 @@ namespace ash {
 namespace hud_display {
 
 class Grid;
+class Legend;
 
 // Interface for a single graph page.
 class GraphPageViewBase : public views::View, public views::ButtonListener {
@@ -49,6 +50,9 @@ class GraphPageViewBase : public views::View, public views::ButtonListener {
                    int horizontal_points_number,
                    int horizontal_ticks_interval);
 
+ protected:
+  void RefreshLegendValues();
+
  private:
   // Container for the Grid object.
   views::View* grid_container_ = nullptr;  // not owned
@@ -56,7 +60,7 @@ class GraphPageViewBase : public views::View, public views::ButtonListener {
   // Container for the legend object.
   views::View* legend_container_ = nullptr;              // not owned
   views::ImageButton* legend_min_max_button_ = nullptr;  // not owned
-  views::View* legend_ = nullptr;                        // not owned
+  Legend* legend_ = nullptr;                             // not owned
 
   SEQUENCE_CHECKER(ui_sequence_checker_);
 };

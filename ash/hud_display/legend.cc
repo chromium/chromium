@@ -4,6 +4,7 @@
 
 #include "ash/hud_display/legend.h"
 
+#include "ash/hud_display/graph.h"
 #include "ash/hud_display/hud_constants.h"
 #include "ash/hud_display/solid_source_background.h"
 #include "cc/paint/paint_flags.h"
@@ -35,14 +36,24 @@ class LegendEntry : public views::View {
   // views::View:
   void OnPaint(gfx::Canvas* canvas) override;
 
+  void SetValueIndex(size_t index);
+  void RefreshValue();
+
  private:
   const SkColor color_;
+  const Graph& graph_;
+  size_t value_index_ = 0;
+  Legend::Formatter formatter_;
+  views::Label* value_ = nullptr;
 };
 
 BEGIN_METADATA(LegendEntry, View)
 END_METADATA
 
-LegendEntry::LegendEntry(const Legend::Entry& data) : color_(data.color) {
+LegendEntry::LegendEntry(const Legend::Entry& data)
+    : color_(data.graph.color()),
+      graph_(data.graph),
+      formatter_(data.formatter) {
   views::BoxLayout* layout_manager =
       SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kHorizontal));
@@ -60,6 +71,16 @@ LegendEntry::LegendEntry(const Legend::Entry& data) : color_(data.color) {
   label->SetEnabledColor(kHUDDefaultColor);
   if (!data.tooltip.empty())
     label->SetTooltipText(data.tooltip);
+
+  constexpr int kLabelToValueSpece = 5;
+  value_ = AddChildView(std::make_unique<views::Label>(
+      base::string16(), views::style::CONTEXT_LABEL));
+  layout_manager->SetFlexForView(value_, /*flex=*/1);
+  value_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_RIGHT);
+  value_->SetBorder(views::CreateEmptyBorder(0, kLabelToValueSpece, 0, 0));
+  value_->SetEnabledColor(kHUDDefaultColor);
+
+  ALLOW_UNUSED_LOCAL(formatter_);
 }
 
 LegendEntry::~LegendEntry() = default;
@@ -99,7 +120,33 @@ void LegendEntry::OnPaint(gfx::Canvas* canvas) {
   views::View::OnPaint(canvas);
 }
 
+void LegendEntry::SetValueIndex(size_t index) {
+  if (index == value_index_)
+    return;
+
+  value_index_ = index;
+  RefreshValue();
+}
+
+void LegendEntry::RefreshValue() {
+  if (graph_.IsFilledIndex(value_index_)) {
+    value_->SetText(formatter_.Run(graph_.GetUnscaledValueAt(value_index_)));
+  } else {
+    value_->SetText(base::string16());
+  }
+}
+
 }  // namespace
+
+Legend::Entry::Entry(const Graph& graph,
+                     base::string16 label,
+                     base::string16 tooltip,
+                     Formatter formatter)
+    : graph(graph), label(label), tooltip(tooltip), formatter(formatter) {}
+
+Legend::Entry::Entry(const Entry&) = default;
+
+Legend::Entry::~Entry() = default;
 
 BEGIN_METADATA(Legend, View)
 END_METADATA
@@ -121,6 +168,24 @@ Legend::Legend(const std::vector<Legend::Entry>& contents) {
 }
 
 Legend::~Legend() = default;
+
+void Legend::SetValuesIndex(size_t index) {
+  for (auto* view : children()) {
+    if (view->GetClassName() != LegendEntry::kViewClassName)
+      continue;
+
+    static_cast<LegendEntry*>(view)->SetValueIndex(index);
+  }
+}
+
+void Legend::RefreshValues() {
+  for (auto* view : children()) {
+    if (view->GetClassName() != LegendEntry::kViewClassName)
+      continue;
+
+    static_cast<LegendEntry*>(view)->RefreshValue();
+  }
+}
 
 }  // namespace hud_display
 }  // namespace ash

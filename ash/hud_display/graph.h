@@ -47,7 +47,8 @@ class Graph {
 
   // |value| must be normalized to [0,1]. When graphs are drawn stacked,
   // the full stack must be normalized.
-  void AddValue(float value);
+  // |unscaled_value| is used to label graph values to the user.
+  void AddValue(float value, float unscaled_value);
   void Layout(const gfx::Rect& graph_bounds, const Graph* base);
   void Draw(gfx::Canvas* canvas) const;
 
@@ -56,6 +57,18 @@ class Graph {
   size_t GetDataBufferSize() const { return data_.BufferSize(); }
 
   SkColor color() const { return color_; }
+
+  // Returns value from |unscaled_data_|.
+  // |index| is always interpreted as "negative", i.e. "0" - current data, "1"
+  // - previous graph data, 2 - two steps "ago". I.e. it's number of graph
+  // points from the right graph edge.
+  float GetUnscaledValueAt(size_t index) const;
+
+  // Returns true if |data_| is populated at the given index.
+  // |index| is always interpreted as "negative", i.e. "0" - current data, "1"
+  // - previous graph data, 2 - two steps ago. I.e. it's number of graph
+  // points from the right graph edge.
+  bool IsFilledIndex(size_t index) const;
 
 #if !defined(NDEBUG)
   // Returns string representation os this object for debug.
@@ -79,6 +92,7 @@ class Graph {
   std::vector<SkPoint> bottom_path_;
 
   Data data_;
+  Data unscaled_data_;
 };
 
 }  // namespace hud_display

@@ -22,8 +22,9 @@ Graph::Graph(Baseline baseline, Fill fill, SkColor color)
 
 Graph::~Graph() {}
 
-void Graph::AddValue(float value) {
+void Graph::AddValue(float value, float unscaled_value) {
   data_.SaveToBuffer(value);
+  unscaled_data_.SaveToBuffer(unscaled_value);
 }
 
 void Graph::Layout(const gfx::Rect& graph_bounds, const Graph* base) {
@@ -115,6 +116,28 @@ void Graph::Draw(gfx::Canvas* canvas) const {
   flags.setStrokeWidth(1);
   flags.setColor(color_);
   canvas->DrawPath(path, flags);
+}
+
+float Graph::GetUnscaledValueAt(size_t index) const {
+  // 0 - the oldest value
+  // BufferSize() - 1  - the newest value.
+  const size_t raw_index = index < unscaled_data_.BufferSize()
+                               ? unscaled_data_.BufferSize() - 1 - index
+                               : 0;
+
+  // It will CHECK() if index is not populated.
+  if (!unscaled_data_.IsFilledIndex(raw_index))
+    return 0;
+
+  return unscaled_data_.ReadBuffer(raw_index);
+}
+
+bool Graph::IsFilledIndex(size_t index) const {
+  // 0 - the oldest value
+  // BufferSize() - 1  - the newest value.
+  const size_t raw_index =
+      index < data_.BufferSize() ? data_.BufferSize() - 1 - index : 0;
+  return data_.IsFilledIndex(raw_index);
 }
 
 #if !defined(NDEBUG)
