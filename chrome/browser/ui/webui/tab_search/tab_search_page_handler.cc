@@ -185,12 +185,8 @@ tab_search::mojom::TabPtr TabSearchPageHandler::GetTabData(
   if (tab_renderer_data.favicon.isNull()) {
     tab_data->is_default_favicon = true;
   } else {
-    // Only send favicon_url for OTR profile where chrome://favicon2 is not
-    // available.
-    if (browser_->profile()->IsOffTheRecord()) {
-      tab_data->favicon_url = webui::EncodePNGAndMakeDataURI(
-          tab_renderer_data.favicon, web_ui_->GetDeviceScaleFactor());
-    }
+    tab_data->favicon_url = webui::EncodePNGAndMakeDataURI(
+        tab_renderer_data.favicon, web_ui_->GetDeviceScaleFactor());
     tab_data->is_default_favicon =
         tab_renderer_data.favicon.BackedBySameObjectAs(
             favicon::GetDefaultFavicon().AsImageSkia());
