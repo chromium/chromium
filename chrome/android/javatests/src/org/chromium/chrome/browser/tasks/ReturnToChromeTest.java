@@ -138,6 +138,7 @@ public class ReturnToChromeTest {
     @CommandLineFlags.Add({BASE_PARAMS + "/" + TAB_SWITCHER_ON_RETURN_MS_PARAM + "/100000"
             + "/start_surface_variation/single/open_ntp_instead_of_start/true"})
     @DisableIf.Device(type = {UiDisableIf.TABLET}) // See https://crbug.com/1081754.
+    @DisabledTest(message="https://crbug.com/1130696")
     public void testTabSwitcherModeNotTriggeredWithinThreshold() throws Exception {
         // clang-format on
         InstantStartTest.createTabStateFile(new int[] {0, 1});
@@ -348,6 +349,7 @@ public class ReturnToChromeTest {
     // clang-format off
     @CommandLineFlags.Add({BASE_PARAMS + "/" + TAB_SWITCHER_ON_RETURN_MS_PARAM + "/0"
             + "/start_surface_variation/omniboxonly"})
+    @DisabledTest(message = "https://crbug.com/1130696")
     public void testTabSwitcherModeTriggeredBeyondThreshold() throws Exception {
         // clang-format on
         InstantStartTest.createTabStateFile(new int[] {0, 1});
