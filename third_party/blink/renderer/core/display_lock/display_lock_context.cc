@@ -395,14 +395,17 @@ void DisplayLockContext::CommitForActivationWithSignal(
   DCHECK(IsLocked());
   DCHECK(ShouldCommitForActivation(DisplayLockActivationReason::kAny));
 
-  // Find in page scrolls content into view. However, if the position of the
-  // target is outside of the bounds that would cause the auto-context to
-  // unlock, then we can scroll into wrong content while the context remains
-  // lock. To avoid this, unlock it until the next lifecycle. If the scroll is
-  // successful, then we will gain visibility anyway so the context will be
-  // unlocked for other reasons.
-  // TODO(vmpstr): See if scrollIntoView() needs this as well.
-  if (reason == DisplayLockActivationReason::kFindInPage) {
+  // The following actions (can) scroll content into view. However, if the
+  // position of the target is outside of the bounds that would cause the
+  // auto-context to unlock, then we can scroll into wrong content while the
+  // context remains lock. To avoid this, unlock it until the next lifecycle.
+  // If the scroll is successful, then we will gain visibility anyway so the
+  // context will be unlocked for other reasons.
+  if (reason == DisplayLockActivationReason::kAccessibility ||
+      reason == DisplayLockActivationReason::kFindInPage ||
+      reason == DisplayLockActivationReason::kFragmentNavigation ||
+      reason == DisplayLockActivationReason::kScrollIntoView ||
+      reason == DisplayLockActivationReason::kSimulatedClick) {
     // Note that because the visibility is only determined at the _end_ of the
     // next frame, we need to ensure that we stay unlocked for two frames.
     SetKeepUnlockedUntilLifecycleCount(2);
