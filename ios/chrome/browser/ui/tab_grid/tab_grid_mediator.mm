@@ -459,10 +459,9 @@ web::WebState* GetWebStateWithId(WebStateList* web_state_list,
   }
 
   // Handle URLs from within Chrome synchronously using a local object.
-  if ([dragItem.localObject isKindOfClass:[NSURL class]]) {
-    NSURL* droppedURL = static_cast<NSURL*>(dragItem.localObject);
-    [self insertNewItemAtIndex:destinationIndex
-                       withURL:net::GURLWithNSURL(droppedURL)];
+  if ([dragItem.localObject isKindOfClass:[URLInfo class]]) {
+    URLInfo* droppedURL = static_cast<URLInfo*>(dragItem.localObject);
+    [self insertNewItemAtIndex:destinationIndex withURL:droppedURL.URL];
     return;
   }
 }
