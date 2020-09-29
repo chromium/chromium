@@ -35,7 +35,7 @@ MediaNotificationService* MediaNotificationServiceFactory::GetForProfile(
 KeyedService* MediaNotificationServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   bool show_from_all_profiles = false;
-#if defined(CHROME_OS)
+#if defined(OS_CHROMEOS)
   show_from_all_profiles = true;
 #endif
   return new MediaNotificationService(Profile::FromBrowserContext(context),
