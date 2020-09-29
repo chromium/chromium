@@ -3592,6 +3592,42 @@
         "value": "24",
         "value2": "27"
       }
+    },
+    {
+      "id": 355,
+      "cr_bugs": [1127387],
+      "description": "Always assume float formats are renderable on Mac Intel",
+      "os": {
+        "type": "macosx"
+      },
+      "vendor_id": "0x8086",
+      "features": [
+        "force_enable_color_buffer_float"
+      ]
+    },
+    {
+      "id": 356,
+      "cr_bugs": [1127387],
+      "description": "Always assume float formats are renderable on Mac AMD",
+      "os": {
+        "type": "macosx"
+      },
+      "vendor_id": "0x1002",
+      "features": [
+        "force_enable_color_buffer_float"
+      ]
+    },
+    {
+      "id": 357,
+      "cr_bugs": [1127387],
+      "description": "Always assume float formats are renderable on Mac Nvidia",
+      "os": {
+        "type": "macosx"
+      },
+      "vendor_id": "0x10de",
+      "features": [
+        "force_enable_color_buffer_float"
+      ]
     }
   ]
 }

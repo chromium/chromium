@@ -1823,112 +1823,128 @@ void FeatureInfo::InitializeFloatAndHalfFloatFeatures(
 
   if (may_enable_chromium_color_buffer_float &&
       !had_native_chromium_color_buffer_float_ext) {
-    static_assert(GL_RGBA32F_ARB == GL_RGBA32F &&
-                      GL_RGBA32F_EXT == GL_RGBA32F &&
-                      GL_RGB32F_ARB == GL_RGB32F && GL_RGB32F_EXT == GL_RGB32F,
-                  "sized float internal format variations must match");
-    // We don't check extension support beyond ARB_texture_float on desktop GL,
-    // and format support varies between GL configurations. For example, spec
-    // prior to OpenGL 3.0 mandates framebuffer support only for one
-    // implementation-chosen format, and ES3.0 EXT_color_buffer_float does not
-    // support rendering to RGB32F. Check for framebuffer completeness with
-    // formats that the extensions expose, and only enable an extension when a
-    // framebuffer created with its texture format is reported as complete.
-    GLint fb_binding = 0;
-    GLint tex_binding = 0;
-    glGetIntegerv(GL_FRAMEBUFFER_BINDING, &fb_binding);
-    glGetIntegerv(GL_TEXTURE_BINDING_2D, &tex_binding);
-
-    GLuint tex_id = 0;
-    GLuint fb_id = 0;
-    GLsizei width = 16;
-
-    glGenTextures(1, &tex_id);
-    glGenFramebuffersEXT(1, &fb_id);
-    glBindTexture(GL_TEXTURE_2D, tex_id);
-    // Nearest filter needed for framebuffer completeness on some drivers.
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, width, width, 0, GL_RGBA,
-                 GL_FLOAT, nullptr);
-    glBindFramebufferEXT(GL_FRAMEBUFFER, fb_id);
-    glFramebufferTexture2DEXT(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-                              GL_TEXTURE_2D, tex_id, 0);
-    GLenum status_rgba = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, width, width, 0, GL_RGB, GL_FLOAT,
-                 nullptr);
-    GLenum status_rgb = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER);
-    base::UmaHistogramBoolean("GPU.RenderableFormat.RGBA32F.FLOAT",
-                              status_rgba == GL_FRAMEBUFFER_COMPLETE);
-    base::UmaHistogramBoolean("GPU.RenderableFormat.RGB32F.FLOAT",
-                              status_rgb == GL_FRAMEBUFFER_COMPLETE);
-
-    // For desktop systems, check to see if we support rendering to the full
-    // range of formats supported by EXT_color_buffer_float
-    if (status_rgba == GL_FRAMEBUFFER_COMPLETE && enable_es3) {
-      bool full_float_support = true;
-      const GLenum kInternalFormats[] = {
-          GL_R16F, GL_RG16F, GL_RGBA16F, GL_R32F, GL_RG32F, GL_R11F_G11F_B10F,
-      };
-      const GLenum kFormats[] = {
-          GL_RED, GL_RG, GL_RGBA, GL_RED, GL_RG, GL_RGB,
-      };
-      const char* kInternalFormatHistogramNames[] = {
-          "GPU.RenderableFormat.R16F.FLOAT",
-          "GPU.RenderableFormat.RG16F.FLOAT",
-          "GPU.RenderableFormat.RGBA16F.FLOAT",
-          "GPU.RenderableFormat.R32F.FLOAT",
-          "GPU.RenderableFormat.RG32F.FLOAT",
-          "GPU.RenderableFormat.R11F_G11F_B10F.FLOAT",
-      };
-      DCHECK_EQ(base::size(kInternalFormats), base::size(kFormats));
-      for (size_t i = 0; i < base::size(kFormats); ++i) {
-        glTexImage2D(GL_TEXTURE_2D, 0, kInternalFormats[i], width, width, 0,
-                     kFormats[i], GL_FLOAT, nullptr);
-        bool supported = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER) ==
-                         GL_FRAMEBUFFER_COMPLETE;
-        base::UmaHistogramBoolean(kInternalFormatHistogramNames[i], supported);
-        full_float_support &= supported;
+    if (workarounds_.force_enable_color_buffer_float) {
+      if (enable_es3)
+        enable_ext_color_buffer_float = true;
+      if (IsWebGL1OrES2Context() && !enable_ext_color_buffer_half_float &&
+          gl_version_info_->IsAtLeastGL(3, 0)) {
+        enable_ext_color_buffer_half_float = true;
       }
-      enable_ext_color_buffer_float = full_float_support;
-    }
-    // Likewise for EXT_color_buffer_half_float on ES2 contexts. On desktop,
-    // require at least GL 3.0, to ensure that all formats are defined.
-    if (IsWebGL1OrES2Context() && !enable_ext_color_buffer_half_float &&
-        (gl_version_info_->IsAtLeastGLES(3, 0) ||
-         gl_version_info_->IsAtLeastGL(3, 0))) {
-      // EXT_color_buffer_half_float requires at least one of the formats is
-      // supported to be color-renderable. WebGL's extension requires RGBA16F
-      // to be the supported effective format. Here we only expose the extension
-      // if RGBA16F is color-renderable.
-      GLenum internal_format = GL_RGBA16F;
-      GLenum format = GL_RGBA;
-      GLenum data_type = GL_HALF_FLOAT;
-      glTexImage2D(GL_TEXTURE_2D, 0, internal_format, width, width, 0, format,
-                   data_type, nullptr);
-      bool supported = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER) ==
-                       GL_FRAMEBUFFER_COMPLETE;
-      base::UmaHistogramBoolean("GPU.RenderableFormat.RGBA16F.HALF_FLOAT",
-                                supported);
-      enable_ext_color_buffer_half_float = supported;
-    }
-
-    glDeleteFramebuffersEXT(1, &fb_id);
-    glDeleteTextures(1, &tex_id);
-
-    glBindFramebufferEXT(GL_FRAMEBUFFER, static_cast<GLuint>(fb_binding));
-    glBindTexture(GL_TEXTURE_2D, static_cast<GLuint>(tex_binding));
-
-    DCHECK_EQ(glGetError(), static_cast<GLuint>(GL_NO_ERROR));
-
-    if (status_rgba == GL_FRAMEBUFFER_COMPLETE) {
       feature_flags_.chromium_color_buffer_float_rgba = true;
       if (!disallowed_features_.chromium_color_buffer_float_rgba)
         EnableCHROMIUMColorBufferFloatRGBA();
-    }
-    if (status_rgb == GL_FRAMEBUFFER_COMPLETE) {
       feature_flags_.chromium_color_buffer_float_rgb = true;
       if (!disallowed_features_.chromium_color_buffer_float_rgb)
         EnableCHROMIUMColorBufferFloatRGB();
+    } else {
+      static_assert(
+          GL_RGBA32F_ARB == GL_RGBA32F && GL_RGBA32F_EXT == GL_RGBA32F &&
+              GL_RGB32F_ARB == GL_RGB32F && GL_RGB32F_EXT == GL_RGB32F,
+          "sized float internal format variations must match");
+      // We don't check extension support beyond ARB_texture_float on desktop
+      // GL, and format support varies between GL configurations. For example,
+      // spec prior to OpenGL 3.0 mandates framebuffer support only for one
+      // implementation-chosen format, and ES3.0 EXT_color_buffer_float does not
+      // support rendering to RGB32F. Check for framebuffer completeness with
+      // formats that the extensions expose, and only enable an extension when a
+      // framebuffer created with its texture format is reported as complete.
+      GLint fb_binding = 0;
+      GLint tex_binding = 0;
+      glGetIntegerv(GL_FRAMEBUFFER_BINDING, &fb_binding);
+      glGetIntegerv(GL_TEXTURE_BINDING_2D, &tex_binding);
+
+      GLuint tex_id = 0;
+      GLuint fb_id = 0;
+      GLsizei width = 16;
+
+      glGenTextures(1, &tex_id);
+      glGenFramebuffersEXT(1, &fb_id);
+      glBindTexture(GL_TEXTURE_2D, tex_id);
+      // Nearest filter needed for framebuffer completeness on some drivers.
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, width, width, 0, GL_RGBA,
+                   GL_FLOAT, nullptr);
+      glBindFramebufferEXT(GL_FRAMEBUFFER, fb_id);
+      glFramebufferTexture2DEXT(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+                                GL_TEXTURE_2D, tex_id, 0);
+      GLenum status_rgba = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER);
+      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, width, width, 0, GL_RGB,
+                   GL_FLOAT, nullptr);
+      GLenum status_rgb = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER);
+      base::UmaHistogramBoolean("GPU.RenderableFormat.RGBA32F.FLOAT",
+                                status_rgba == GL_FRAMEBUFFER_COMPLETE);
+      base::UmaHistogramBoolean("GPU.RenderableFormat.RGB32F.FLOAT",
+                                status_rgb == GL_FRAMEBUFFER_COMPLETE);
+
+      // For desktop systems, check to see if we support rendering to the full
+      // range of formats supported by EXT_color_buffer_float
+      if (status_rgba == GL_FRAMEBUFFER_COMPLETE && enable_es3) {
+        bool full_float_support = true;
+        const GLenum kInternalFormats[] = {
+            GL_R16F, GL_RG16F, GL_RGBA16F, GL_R32F, GL_RG32F, GL_R11F_G11F_B10F,
+        };
+        const GLenum kFormats[] = {
+            GL_RED, GL_RG, GL_RGBA, GL_RED, GL_RG, GL_RGB,
+        };
+        const char* kInternalFormatHistogramNames[] = {
+            "GPU.RenderableFormat.R16F.FLOAT",
+            "GPU.RenderableFormat.RG16F.FLOAT",
+            "GPU.RenderableFormat.RGBA16F.FLOAT",
+            "GPU.RenderableFormat.R32F.FLOAT",
+            "GPU.RenderableFormat.RG32F.FLOAT",
+            "GPU.RenderableFormat.R11F_G11F_B10F.FLOAT",
+        };
+        DCHECK_EQ(base::size(kInternalFormats), base::size(kFormats));
+        for (size_t i = 0; i < base::size(kFormats); ++i) {
+          glTexImage2D(GL_TEXTURE_2D, 0, kInternalFormats[i], width, width, 0,
+                       kFormats[i], GL_FLOAT, nullptr);
+          bool supported = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER) ==
+                           GL_FRAMEBUFFER_COMPLETE;
+          base::UmaHistogramBoolean(kInternalFormatHistogramNames[i],
+                                    supported);
+          full_float_support &= supported;
+        }
+        enable_ext_color_buffer_float = full_float_support;
+      }
+      // Likewise for EXT_color_buffer_half_float on ES2 contexts. On desktop,
+      // require at least GL 3.0, to ensure that all formats are defined.
+      if (IsWebGL1OrES2Context() && !enable_ext_color_buffer_half_float &&
+          (gl_version_info_->IsAtLeastGLES(3, 0) ||
+           gl_version_info_->IsAtLeastGL(3, 0))) {
+        // EXT_color_buffer_half_float requires at least one of the formats is
+        // supported to be color-renderable. WebGL's extension requires RGBA16F
+        // to be the supported effective format. Here we only expose the
+        // extension if RGBA16F is color-renderable.
+        GLenum internal_format = GL_RGBA16F;
+        GLenum format = GL_RGBA;
+        GLenum data_type = GL_HALF_FLOAT;
+        glTexImage2D(GL_TEXTURE_2D, 0, internal_format, width, width, 0, format,
+                     data_type, nullptr);
+        bool supported = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER) ==
+                         GL_FRAMEBUFFER_COMPLETE;
+        base::UmaHistogramBoolean("GPU.RenderableFormat.RGBA16F.HALF_FLOAT",
+                                  supported);
+        enable_ext_color_buffer_half_float = supported;
+      }
+
+      glDeleteFramebuffersEXT(1, &fb_id);
+      glDeleteTextures(1, &tex_id);
+
+      glBindFramebufferEXT(GL_FRAMEBUFFER, static_cast<GLuint>(fb_binding));
+      glBindTexture(GL_TEXTURE_2D, static_cast<GLuint>(tex_binding));
+
+      DCHECK_EQ(glGetError(), static_cast<GLuint>(GL_NO_ERROR));
+
+      if (status_rgba == GL_FRAMEBUFFER_COMPLETE) {
+        feature_flags_.chromium_color_buffer_float_rgba = true;
+        if (!disallowed_features_.chromium_color_buffer_float_rgba)
+          EnableCHROMIUMColorBufferFloatRGBA();
+      }
+      if (status_rgb == GL_FRAMEBUFFER_COMPLETE) {
+        feature_flags_.chromium_color_buffer_float_rgb = true;
+        if (!disallowed_features_.chromium_color_buffer_float_rgb)
+          EnableCHROMIUMColorBufferFloatRGB();
+      }
     }
   }
 
