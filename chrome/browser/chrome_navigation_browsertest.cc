@@ -6,6 +6,7 @@
 #include "base/feature_list.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
@@ -414,17 +415,43 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
   content::WebContents* main_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  // Simulate a click on the link and wait for the new window.
-  content::WebContentsAddedObserver new_tab_observer;
-  EXPECT_TRUE(ExecuteScript(main_contents, "simulateClick()"));
-  content::WebContents* new_contents = new_tab_observer.GetWebContents();
+  const char* kTestUrls[] = {
+      // https://crbug.com/850824
+      "a.a:@javascript:foo()",
 
-  // The load in the new window should fail.
-  EXPECT_FALSE(WaitForLoadStop(new_contents));
+      // https://crbug.com/1116280
+      "o.o:@javascript::://foo.com%0Aalert(document.domain)"};
+  for (const char* kTestUrl : kTestUrls) {
+    SCOPED_TRACE(testing::Message() << "kTestUrl = " << kTestUrl);
 
-  // Ensure that there is no pending entry or visible URL.
-  EXPECT_EQ(nullptr, new_contents->GetController().GetPendingEntry());
-  EXPECT_EQ(GURL(), new_contents->GetVisibleURL());
+    // Set the test URL.
+    const char kUrlSettingTemplate[] = R"(
+        var url = $1;
+        var anchor = document.getElementById('invalid_url_link');
+        anchor.target = 'target_name: ' + url;
+        anchor.href = url;
+    )";
+    EXPECT_TRUE(ExecuteScript(
+        main_contents, content::JsReplace(kUrlSettingTemplate, kTestUrl)));
+
+    // Simulate a click on the link and wait for the new window.
+    content::WebContentsAddedObserver new_tab_observer;
+    EXPECT_TRUE(ExecuteScript(main_contents, "simulateClick()"));
+    content::WebContents* new_contents = new_tab_observer.GetWebContents();
+
+    // The load in the new window should fail.
+    EXPECT_FALSE(WaitForLoadStop(new_contents));
+
+    // Ensure that there is no pending entry or visible URL.
+    EXPECT_EQ(nullptr, new_contents->GetController().GetPendingEntry());
+    EXPECT_EQ(GURL(), new_contents->GetVisibleURL());
+
+    // Ensure that the omnibox doesn't start with javascript: scheme.
+    OmniboxView* omnibox_view =
+        browser()->window()->GetLocationBar()->GetOmniboxView();
+    std::string omnibox_text = base::UTF16ToASCII(omnibox_view->GetText());
+    EXPECT_THAT(omnibox_text, testing::Not(testing::StartsWith("javascript:")));
+  }
 }
 
 // A test performing two simultaneous navigations, to ensure code in chrome/,
