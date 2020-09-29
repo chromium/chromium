@@ -126,6 +126,12 @@ class VariationsIdsProvider : public base::FieldTrialList::Observer,
   // Resets any cached state for tests.
   void ResetForTesting();
 
+  // Returns true if kRestrictGoogleWebVisibility is enabled and false
+  // otherwise.
+  bool IsRestrictGoogleWebVisibilityEnabled() {
+    return is_restrict_google_web_visibility_enabled_;
+  }
+
  private:
   friend struct base::DefaultSingletonTraits<VariationsIdsProvider>;
 
@@ -220,6 +226,9 @@ class VariationsIdsProvider : public base::FieldTrialList::Observer,
 
   // Whether or not we've initialized the caches.
   bool variation_ids_cache_initialized_;
+
+  // Denotes whether kRestrictGoogleWebVisibility is enabled.
+  bool is_restrict_google_web_visibility_enabled_ = false;
 
   // Keep a cache of variation IDs that are transmitted in headers to Google.
   // This consists of a list of valid IDs, and the actual transmitted header.

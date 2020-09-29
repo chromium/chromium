@@ -196,7 +196,8 @@ variations::mojom::GoogleWebVisibility GetVisibilityKey(
     const network::ResourceRequest& resource_request) {
   bool use_first_party_visibility =
       IsFirstPartyContext(owner, resource_request) &&
-      base::FeatureList::IsEnabled(internal::kRestrictGoogleWebVisibility);
+      VariationsIdsProvider::GetInstance()
+          ->IsRestrictGoogleWebVisibilityEnabled();
 
   return use_first_party_visibility
              ? variations::mojom::GoogleWebVisibility::FIRST_PARTY
