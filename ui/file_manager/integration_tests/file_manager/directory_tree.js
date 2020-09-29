@@ -252,26 +252,27 @@
   };
 
   /**
+   * Creates a folder test entry from a folder |path|.
+   * @param {string} path The folder path.
+   * @return {!TestEntryInfo}
+   */
+  function createFolderTestEntry(path) {
+    const name = path.split('/').pop();
+    return new TestEntryInfo({
+      targetPath: path,
+      nameText: name,
+      type: EntryType.DIRECTORY,
+      lastModifiedTime: 'Dec 28, 1962, 10:42 PM',
+      sizeText: '--',
+      typeText: 'Folder',
+    });
+  }
+
+  /**
    * Tests that the directory tree does not horizontally scroll when expanding
    * nested folder items when the text direction is RTL.
    */
   testcase.directoryTreeExpandHorizontalScrollRTL = async () => {
-    /**
-     * Creates a folder test entry from a folder |path|.
-     * @param {string} path The folder path.
-     * @return {!TestEntryInfo}
-     */
-    function createFolderTestEntry(path) {
-      const name = path.split('/').pop();
-      return new TestEntryInfo({
-        targetPath: path,
-        nameText: name,
-        type: EntryType.DIRECTORY,
-        lastModifiedTime: 'Dec 28, 1962, 10:42 PM',
-        sizeText: '--',
-        typeText: 'Folder',
-      });
-    }
 
     // Build an array of nested folder test entries.
     const nestedFolderTestEntries = [];
@@ -395,5 +396,62 @@
 
     const testTime = Date.now() - start;
     console.log(`[measurement] Test time: ${testTime}ms`);
+  };
+
+  /**
+   * Tests to ensure expand icon does not show up if show hidden files is off
+   * and a directory only contains hidden directories.
+   */
+  testcase.directoryTreeExpandFolderWithHiddenFileAndShowHiddenFilesOff =
+      async () => {
+    // Populate a normal folder entry with a hidden folder inside.
+    const entries = [
+      createFolderTestEntry('normal-folder'),
+      createFolderTestEntry('normal-folder/.hidden-folder'),
+    ];
+
+    // Opens FilesApp on downloads.
+    const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, entries, []);
+
+    // Expand all sub-directories in downloads.
+    await recursiveExpand(appId, '/My files/Downloads');
+
+    // Target the non-hidden folder.
+    const normalFolder = '#directory-tree [entry-label="normal-folder"]';
+    const response = await remoteCall.waitForElement(appId, normalFolder);
+
+    // Assert that the expand icon will not show up.
+    chrome.test.assertTrue(response.attributes['has-children'] === 'false');
+  };
+
+  /**
+   * Tests to ensure expand icon shows up if show hidden files
+   * is on and a directory only contains hidden directories.
+   */
+  testcase.directoryTreeExpandFolderWithHiddenFileAndShowHiddenFilesOn =
+      async () => {
+    // Populate a normal folder entry with a hidden folder inside.
+    const entries = [
+      createFolderTestEntry('normal-folder'),
+      createFolderTestEntry('normal-folder/.hidden-folder'),
+    ];
+
+    // Opens FilesApp on downloads.
+    const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, entries, []);
+
+    // Enable show hidden files.
+    await remoteCall.waitAndClickElement(appId, '#gear-button');
+    await remoteCall.waitAndClickElement(
+        appId,
+        '#gear-menu-toggle-hidden-files' +
+            ':not([checked]):not([hidden])');
+
+    // Expand all sub-directories in Downloads.
+    await recursiveExpand(appId, '/My files/Downloads');
+
+    // Assert that the expand icon shows up.
+    const normalFolder =
+        '#directory-tree [entry-label="normal-folder"][has-children="true"]';
+    await remoteCall.waitForElement(appId, normalFolder);
   };
 })();
