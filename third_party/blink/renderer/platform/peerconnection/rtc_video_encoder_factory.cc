@@ -169,6 +169,8 @@ SupportedFormats GetSupportedFormatsInternal(
     }
   }
 
+  cricket::AddH264ConstrainedBaselineProfileToSupportedFormats(
+      &supported_formats.sdp_formats);
   return supported_formats;
 }
 
