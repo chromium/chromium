@@ -70,8 +70,8 @@ class PhoneHubView : public views ::View {
           std::make_unique<NotificationOptInView>(bubble_view_));
     }
 
-    setup_layered_view(
-        bubble_view_->AddChildView(std::make_unique<QuickActionsView>()));
+    setup_layered_view(bubble_view_->AddChildView(
+        std::make_unique<QuickActionsView>(phone_hub_manager)));
 
     AddSeparator();
 
