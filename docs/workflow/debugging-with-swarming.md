@@ -152,10 +152,15 @@ for a platform you can't build for locally, does not yet exist.
 
 ## Authenticating
 
-You may need to log in to `https://isolateserver.appspot.com` to do this:
+You may need to log in to `https://chromium-swarm.appspot.com` to do this
+(for now you need to authenticate with python too,
+TODO(https://crbug.com/984869): remove this):
+
 
 ```
 $ tools/luci-go/isolate login
+$ python tools/swarming_client/auth.py login \
+      --service=https://chromium-swarm.appspot.com
 ```
 
 Use your google.com account for this.
