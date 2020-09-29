@@ -4,7 +4,7 @@
 
 #include "base/fuchsia/test_component_context_for_process.h"
 
-#include <fuchsia/intl/cpp/fidl.h>
+#include <fuchsia/sys/cpp/fidl.h>
 #include <lib/sys/cpp/component_context.h>
 
 #include "base/fuchsia/fuchsia_logging.h"
@@ -92,29 +92,37 @@ TEST_F(TestComponentContextForProcessTest, PublishTestInterface) {
 }
 
 TEST_F(TestComponentContextForProcessTest, ProvideSystemService) {
-  // Expose fuchsia.device.NameProvider through the ComponentContext.
-  const base::StringPiece kServiceNames[] = {
-      ::fuchsia::intl::PropertyProvider::Name_};
+  // Expose fuchsia.sys.Loader through the ComponentContext.
+  // This service was chosen because it is one of the ambient services in
+  // Fuchsia's hermetic environment for component tests (see
+  // https://fuchsia.dev/fuchsia-src/concepts/testing/test_component#ambient_services).
+  const base::StringPiece kServiceNames[] = {::fuchsia::sys::Loader::Name_};
   test_context_.AddServices(kServiceNames);
 
-  // Attempt to use the PropertyProvider via the process ComponentContext.
+  // Connect to the Loader service via the process ComponentContext.
   RunLoop wait_loop;
-  auto property_provider = ComponentContextForProcess()
-                               ->svc()
-                               ->Connect<::fuchsia::intl::PropertyProvider>();
-  property_provider.set_error_handler(
+  auto loader =
+      ComponentContextForProcess()->svc()->Connect<::fuchsia::sys::Loader>();
+  loader.set_error_handler(
       [quit_loop = wait_loop.QuitClosure()](zx_status_t status) {
-        if (status == ZX_ERR_PEER_CLOSED) {
-          ADD_FAILURE() << "PropertyProvider disconnected; probably not found.";
-        } else {
-          ZX_LOG(FATAL, status);
-        }
+        ZX_LOG(ERROR, status);
+        ADD_FAILURE();
         quit_loop.Run();
       });
-  property_provider->GetProfile(
-      [quit_loop = wait_loop.QuitClosure()](::fuchsia::intl::Profile profile) {
-        quit_loop.Run();
-      });
+
+  // Use the Loader to verify that it was the system service that was connected.
+  // Load the component containing this test since we know it exists.
+  // TODO(https://fxbug.dev/51490): Use a programmatic mechanism to obtain this.
+  const char kComponentUrl[] =
+      "fuchsia-pkg://fuchsia.com/base_unittests#meta/base_unittests.cmx";
+  loader->LoadUrl(kComponentUrl, [quit_loop = wait_loop.QuitClosure(),
+                                  expected_path = kComponentUrl](
+                                     ::fuchsia::sys::PackagePtr package) {
+    // |package| would be null on failure.
+    ASSERT_TRUE(package);
+    EXPECT_EQ(package->resolved_url, expected_path);
+    quit_loop.Run();
+  });
   wait_loop.Run();
 }
 
