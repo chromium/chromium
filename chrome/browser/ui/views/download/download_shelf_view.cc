@@ -72,10 +72,12 @@ DownloadShelfView::DownloadShelfView(Browser* browser, BrowserView* parent)
   SetVisible(false);
 
   show_all_view_ = AddChildView(std::make_unique<views::MdTextButton>(
-      this, l10n_util::GetStringUTF16(IDS_SHOW_ALL_DOWNLOADS)));
+      base::BindRepeating(&chrome::ShowDownloads, browser),
+      l10n_util::GetStringUTF16(IDS_SHOW_ALL_DOWNLOADS)));
   show_all_view_->SizeToPreferredSize();
 
-  close_button_ = AddChildView(views::CreateVectorImageButton(this));
+  close_button_ = AddChildView(views::CreateVectorImageButton(
+      base::BindRepeating(&DownloadShelf::Close, base::Unretained(this))));
   close_button_->SetAccessibleName(
       l10n_util::GetStringUTF16(IDS_ACCNAME_CLOSE));
   close_button_->SetFocusForPlatform();
@@ -233,16 +235,6 @@ void DownloadShelfView::AnimationEnded(const gfx::Animation* animation) {
   if (focus_manager && Contains(focus_manager->GetFocusedView()))
     parent_->contents_web_view()->RequestFocus();
   SetVisible(false);
-}
-
-void DownloadShelfView::ButtonPressed(views::Button* button,
-                                      const ui::Event& event) {
-  if (button == close_button_) {
-    Close();
-  } else {
-    DCHECK_EQ(show_all_view_, button);
-    chrome::ShowDownloads(browser());
-  }
 }
 
 void DownloadShelfView::MouseMovedOutOfHost() {

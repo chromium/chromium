@@ -145,7 +145,7 @@ class TransparentButton : public views::Button {
  public:
   METADATA_HEADER(TransparentButton);
 
-  explicit TransparentButton(DownloadItemView* parent) : Button(parent) {
+  explicit TransparentButton(DownloadItemView* parent) : Button(nullptr) {
     SetFocusForPlatform();
     views::InstallRectHighlightPathGenerator(this);
     SetInkDropMode(InkDropMode::ON);
@@ -256,6 +256,8 @@ DownloadItemView::DownloadItemView(DownloadUIModel::DownloadUIModelPtr model,
   // views to localize functionality and simplify this class.
 
   open_button_ = AddChildView(std::make_unique<TransparentButton>(this));
+  open_button_->set_callback(base::BindRepeating(
+      &DownloadItemView::OpenButtonPressed, base::Unretained(this)));
 
   file_name_label_ = AddChildView(std::make_unique<views::StyledLabel>());
   file_name_label_->SetTextContext(CONTEXT_DOWNLOAD_SHELF);
@@ -278,17 +280,27 @@ DownloadItemView::DownloadItemView(DownloadUIModel::DownloadUIModelPtr model,
   deep_scanning_label_->set_can_process_events_within_subtree(false);
 
   open_now_button_ = AddChildView(std::make_unique<views::MdTextButton>(
-      this, l10n_util::GetStringUTF16(IDS_OPEN_DOWNLOAD_NOW)));
+      base::BindRepeating(&DownloadItemView::OpenDownloadDuringAsyncScanning,
+                          base::Unretained(this)),
+      l10n_util::GetStringUTF16(IDS_OPEN_DOWNLOAD_NOW)));
 
-  save_button_ = AddChildView(std::make_unique<views::MdTextButton>(this));
+  save_button_ = AddChildView(std::make_unique<views::MdTextButton>(
+      base::BindRepeating(&DownloadItemView::SaveOrDiscardButtonPressed,
+                          base::Unretained(this), DownloadCommands::KEEP)));
 
   discard_button_ = AddChildView(std::make_unique<views::MdTextButton>(
-      this, l10n_util::GetStringUTF16(IDS_DISCARD_DOWNLOAD)));
+      base::BindRepeating(&DownloadItemView::SaveOrDiscardButtonPressed,
+                          base::Unretained(this), DownloadCommands::DISCARD),
+      l10n_util::GetStringUTF16(IDS_DISCARD_DOWNLOAD)));
 
   scan_button_ = AddChildView(std::make_unique<views::MdTextButton>(
-      this, l10n_util::GetStringUTF16(IDS_SCAN_DOWNLOAD)));
+      base::BindRepeating(&DownloadItemView::ExecuteCommand,
+                          base::Unretained(this), DownloadCommands::DEEP_SCAN),
+      l10n_util::GetStringUTF16(IDS_SCAN_DOWNLOAD)));
 
-  dropdown_button_ = AddChildView(views::CreateVectorImageButton(this));
+  dropdown_button_ =
+      AddChildView(views::CreateVectorImageButton(base::BindRepeating(
+          &DownloadItemView::DropdownButtonPressed, base::Unretained(this))));
   dropdown_button_->SetAccessibleName(l10n_util::GetStringUTF16(
       IDS_DOWNLOAD_ITEM_DROPDOWN_BUTTON_ACCESSIBLE_TEXT));
   dropdown_button_->SetBorder(views::CreateEmptyBorder(gfx::Insets(10)));
@@ -403,37 +415,6 @@ void DownloadItemView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   // Set the description to the empty string, otherwise the tooltip will be
   // used, which is redundant with the accessible name.
   node_data->SetDescription(base::string16());
-}
-
-void DownloadItemView::ButtonPressed(views::Button* sender,
-                                     const ui::Event& event) {
-  if (sender == open_button_) {
-    if (mode_ == Mode::kNormal) {
-      complete_animation_.End();
-      announce_accessible_alert_soon_ = true;
-      model_->OpenDownload();
-      // WARNING: |this| may be deleted!
-    } else {
-      ShowOpenDialog(
-          shelf_->browser()->tab_strip_model()->GetActiveWebContents());
-    }
-  } else if (sender == open_now_button_) {
-    OpenDownloadDuringAsyncScanning();
-  } else if (sender == scan_button_) {
-    ExecuteCommand(DownloadCommands::DEEP_SCAN);
-  } else if (sender == dropdown_button_) {
-    SetDropdownPressed(true);
-    ShowContextMenuImpl(dropdown_button_->GetBoundsInScreen(),
-                        ui::GetMenuSourceTypeForEvent(event));
-  } else {
-    const auto command = (sender == save_button_) ? DownloadCommands::KEEP
-                                                  : DownloadCommands::DISCARD;
-    if (is_mixed_content(mode_))
-      ExecuteCommand(command);
-    else
-      MaybeSubmitDownloadToFeedbackService(command);
-    // WARNING: |this| may be deleted!
-  }
 }
 
 void DownloadItemView::ShowContextMenuForViewImpl(
@@ -1139,6 +1120,33 @@ void DownloadItemView::UpdateDropdownButtonImage() {
   views::SetImageFromVectorIcon(
       dropdown_button_, dropdown_pressed_ ? kCaretDownIcon : kCaretUpIcon,
       GetThemeProvider()->GetColor(ThemeProperties::COLOR_BOOKMARK_TEXT));
+}
+
+void DownloadItemView::OpenButtonPressed() {
+  if (mode_ == Mode::kNormal) {
+    complete_animation_.End();
+    announce_accessible_alert_soon_ = true;
+    model_->OpenDownload();
+    // WARNING: |this| may be deleted!
+  } else {
+    ShowOpenDialog(
+        shelf_->browser()->tab_strip_model()->GetActiveWebContents());
+  }
+}
+
+void DownloadItemView::SaveOrDiscardButtonPressed(
+    DownloadCommands::Command command) {
+  if (is_mixed_content(mode_))
+    ExecuteCommand(command);
+  else
+    MaybeSubmitDownloadToFeedbackService(command);
+  // WARNING: |this| may be deleted!
+}
+
+void DownloadItemView::DropdownButtonPressed(const ui::Event& event) {
+  SetDropdownPressed(true);
+  ShowContextMenuImpl(dropdown_button_->GetBoundsInScreen(),
+                      ui::GetMenuSourceTypeForEvent(event));
 }
 
 void DownloadItemView::ShowOpenDialog(content::WebContents* web_contents) {

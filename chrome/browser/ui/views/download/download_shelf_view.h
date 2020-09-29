@@ -34,7 +34,6 @@ class MdTextButton;
 class DownloadShelfView : public DownloadShelf,
                           public views::AccessiblePaneView,
                           public views::AnimationDelegateViews,
-                          public views::ButtonListener,
                           public views::MouseWatcherListener {
  public:
   DownloadShelfView(Browser* browser, BrowserView* parent);
@@ -54,9 +53,6 @@ class DownloadShelfView : public DownloadShelf,
   // views::AnimationDelegateViews:
   void AnimationProgressed(const gfx::Animation* animation) override;
   void AnimationEnded(const gfx::Animation* animation) override;
-
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* button, const ui::Event& event) override;
 
   // views::MouseWatcherListener:
   void MouseMovedOutOfHost() override;

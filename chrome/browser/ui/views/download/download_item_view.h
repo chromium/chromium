@@ -63,7 +63,6 @@ class StyledLabel;
 // The DownloadItemView lives in the Browser, and has a corresponding
 // DownloadController that receives / writes data which lives in the Renderer.
 class DownloadItemView : public views::View,
-                         public views::ButtonListener,
                          public views::ContextMenuController,
                          public DownloadUIModel::Observer,
                          public views::AnimationDelegateViews {
@@ -83,9 +82,6 @@ class DownloadItemView : public views::View,
   void OnMouseCaptureLost() override;
   base::string16 GetTooltipText(const gfx::Point& p) const override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
 
   // views::ContextMenuController:
   void ShowContextMenuForViewImpl(View* source,
@@ -195,6 +191,11 @@ class DownloadItemView : public views::View,
 
   // Sets |dropdown_button_| to have the correct image for the current state.
   void UpdateDropdownButtonImage();
+
+  // Called when various buttons are pressed.
+  void OpenButtonPressed();
+  void SaveOrDiscardButtonPressed(DownloadCommands::Command command);
+  void DropdownButtonPressed(const ui::Event& event);
 
   // Shows an appropriate prompt dialog when the user hits the "open" button
   // when not in normal mode.
