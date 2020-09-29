@@ -77,6 +77,7 @@
     <div id="item" on-click="onClick_">
       <div id="expand-container">
         <cr-icon-button id="expand" iron-icon="cr:chevron-right"
+            aria-expanded$="[[getAriaExpanded_(childrenShown_)]]"
             on-click="toggleChildren_"></cr-icon-button>
       </div>
       <span id="title" tabindex="0">[[bookmark.title]]</span>

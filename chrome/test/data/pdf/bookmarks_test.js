@@ -76,10 +76,13 @@ const tests = [
     const rootBookmarks = /** @type {!NodeList<!ViewerBookmarkElement>} */ (
         bookmarkContent.shadowRoot.querySelectorAll('viewer-bookmark'));
     chrome.test.assertEq(3, rootBookmarks.length, 'three root bookmarks');
-    rootBookmarks[0].$.expand.click();
+    const expandButton = rootBookmarks[0].$.expand;
+    chrome.test.assertEq('false', expandButton.getAttribute('aria-expanded'));
+    expandButton.click();
 
     flush();
 
+    chrome.test.assertEq('true', expandButton.getAttribute('aria-expanded'));
     const subBookmarks = /** @type {!NodeList<!ViewerBookmarkElement>} */ (
         rootBookmarks[0].shadowRoot.querySelectorAll('viewer-bookmark'));
     chrome.test.assertEq(1, subBookmarks.length, 'one sub bookmark');

@@ -29,7 +29,7 @@ Polymer({
 
     depth: {
       type: Number,
-      observer: 'depthChanged_'
+      observer: 'depthChanged_',
     },
 
     /** @private */
@@ -122,5 +122,13 @@ Polymer({
   toggleChildren_(e) {
     this.childrenShown_ = !this.childrenShown_;
     e.stopPropagation();  // Prevent the above onClick_ handler from firing.
-  }
+  },
+
+  /**
+   * @return {string}
+   * @private
+   */
+  getAriaExpanded_() {
+    return this.childrenShown_ ? 'true' : 'false';
+  },
 });
