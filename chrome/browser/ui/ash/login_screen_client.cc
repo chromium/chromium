@@ -15,16 +15,22 @@
 #include "chrome/browser/chromeos/login/help_app_launcher.h"
 #include "chrome/browser/chromeos/login/lock/screen_locker.h"
 #include "chrome/browser/chromeos/login/login_auth_recorder.h"
+#include "chrome/browser/chromeos/login/login_pref_names.h"
 #include "chrome/browser/chromeos/login/reauth_stats.h"
+#include "chrome/browser/chromeos/login/saml/in_session_password_sync_manager.h"
+#include "chrome/browser/chromeos/login/saml/in_session_password_sync_manager_factory.h"
 #include "chrome/browser/chromeos/login/ui/login_display_host.h"
 #include "chrome/browser/chromeos/login/ui/user_adding_screen.h"
+#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/browser/ui/ash/wallpaper_controller_client.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
+#include "chrome/browser/ui/webui/chromeos/in_session_password_change/lock_screen_reauth_dialogs.h"
 #include "chrome/browser/ui/webui/chromeos/login/l10n_util.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/remove_user_delegate.h"
 #include "components/user_manager/user_names.h"
 
@@ -329,5 +335,21 @@ void LoginScreenClient::ShowGaiaSigninInternal(
   if (chromeos::LoginDisplayHost::default_host()) {
     chromeos::LoginDisplayHost::default_host()->ShowGaiaDialog(
         prefilled_account);
+  } else {
+    const user_manager::User* user =
+        user_manager::UserManager::Get()->FindUser(prefilled_account);
+    Profile* profile = chromeos::ProfileHelper::Get()->GetProfileByUser(user);
+    if (profile->GetPrefs()->GetBoolean(
+            chromeos::prefs::kSamlLockScreenReauthenticationEnabled)) {
+      DCHECK(session_manager::SessionManager::Get()->IsScreenLocked());
+      chromeos::InSessionPasswordSyncManager* password_sync_manager =
+          chromeos::InSessionPasswordSyncManagerFactory::GetForProfile(profile);
+      if (!password_sync_manager->lock_screen_start_reauth_dialog) {
+        password_sync_manager->lock_screen_start_reauth_dialog =
+            std::unique_ptr<chromeos::LockScreenStartReauthDialog>(
+                new chromeos::LockScreenStartReauthDialog());
+      }
+      password_sync_manager->lock_screen_start_reauth_dialog->Show();
+    }
   }
 }

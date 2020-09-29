@@ -1,0 +1,129 @@
+<!doctype html>
+<html dir="$i18n{textdirection}" lang="$i18n{language}">
+
+<head>
+  <include src="../login/components/oobe_icons.html">
+  <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
+
+  <script src="chrome://resources/js/cr.js"></script>
+  <script src="chrome://resources/js/cr/event_target.js"></script>
+  <script src="chrome://resources/js/load_time_data.js"></script>
+  <script src="chrome://resources/js/util.js"></script>
+  <script src="chrome://lock-reauth/authenticator.js"></script>
+
+  <script type="module" src="chrome://lock-reauth/lock_screen_reauth.js"></script>
+
+  <dom-module id="lock-reauth">
+    <template>
+      <style>
+        ::part(dialog) {
+          /* The HTML dialog should fill the entire system dialog. */
+          height: 100%;
+          width: 100%;
+          display: flex;
+        }
+
+        ::part(wrapper) {
+          height: 100%;
+          width: 100%;
+          display: flex;
+        }
+
+        #saml-close-button {
+          --cr-icon-button-margin-end: 0;
+          --cr-icon-button-margin-start: 0;
+        }
+
+        [slot='body'],
+        #signin-frame {
+          width: 100%;
+          height: 100%;
+        }
+
+        #title-icon {
+          --iron-icon-height: 32px;
+          --iron-icon-width: 32px;
+          /* #1a73e8 */
+          --iron-icon-fill-color: rgb(26, 115, 232);
+        }
+
+        [slot='header'] {
+          background: white;
+          padding-bottom: 0;
+          padding-inline-end: 64px;
+          padding-inline-start: 64px;
+          padding-top: 64px;
+          flex: 1;
+        }
+
+        [slot='header'],
+        #title {
+          /* #202124 */
+          color: rgb(32, 33, 36);
+          font-size: 28px;
+          font-weight: 400;
+          padding-top: 20px;
+          margin: 0;
+        }
+
+        [slot='header'],
+        #subtitle {
+          /* #5f6368 */
+          color: rgb(95, 99, 104);
+          font-size: 13px;
+          font-weight: 400;
+          padding-top: 8px;
+          margin: 0;
+        }
+
+        [slot="button-container"] {
+          padding: 40px;
+        }
+      </style>
+      <cr-dialog id="dialog" exportparts="dialog">
+        <div slot="header">
+          <iron-icon id="title-icon" icon="oobe-64:alert"></iron-icon>
+          <div id="title" hidden="[[isErrorDisplayed_]]">
+            $i18n{loginWelcomeMessage}
+          </div>
+          <div id="title" hidden="[[!isErrorDisplayed_]]">
+            $i18n{loginWelcomeMessageWithError}
+          </div>
+          <div id="subtitle" hidden="[[isErrorDisplayed_]]">
+            $i18n{lockScreenReauthSubtitile}
+          </div>
+          <div id="subtitle" hidden="[[!isErrorDisplayed_]]">
+            $i18n{lockScreenReauthSubtitileWithError}
+          </div>
+        </div>
+        <div slot="body" hidden="[[isButtonsEnabled_]]">
+          <cr-icon-button id="saml-close-button" iron-icon="cr:close" on-click="onCloseTap_">
+          </cr-icon-button>
+          <webview id="signin-frame" name="signin-frame" class="flex">
+          </webview>
+        </div>
+        <div slot="button-container" class="flex layout horizontal">
+          <cr-button id="cancelButton" class="cancel-button" on-click="onCloseTap_"
+              hidden="[[!isButtonsEnabled_]]">
+            $i18n{lockScreenCancelButton}
+          </cr-button>
+          <cr-button id="nextButton" class="action-button" on-click="onNext_"
+              hidden="[[!isVerifyButtonEnabled_]]">
+            $i18n{lockScreenVerifyButton}
+          </cr-button>
+          <cr-button id="nextButton" class="action-button" on-click="onNext_"
+              hidden="[[!isVerifyAgainButtonEnabled_]]">
+            $i18n{lockScreenVerifyAgainButton}
+          </cr-button>
+        </div>
+      </cr-dialog>
+    </template>
+  </dom-module>
+</head>
+
+<body>
+  <lock-reauth id="main-element">
+  </lock-reauth>
+</body>
+
+</html>

@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/chromeos/login/saml/password_sync_token_fetcher.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/chromeos/in_session_password_change/lock_screen_reauth_dialogs.h"
 #include "chromeos/components/proximity_auth/screenlock_bridge.h"
 #include "components/account_id/account_id.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -80,6 +81,8 @@ class InSessionPasswordSyncManager
   void OnTokenFetched(const std::string& sync_token) override;
   void OnTokenVerified(bool is_valid) override;
   void OnApiCallFailed(PasswordSyncTokenFetcher::ErrorType error_type) override;
+
+  std::unique_ptr<LockScreenStartReauthDialog> lock_screen_start_reauth_dialog;
 
  private:
   void UpdateOnlineAuth();

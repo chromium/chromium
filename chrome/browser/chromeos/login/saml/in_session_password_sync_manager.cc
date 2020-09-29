@@ -26,7 +26,6 @@ InSessionPasswordSyncManager::InSessionPasswordSyncManager(
       clock_(base::DefaultClock::GetInstance()),
       primary_user_(ProfileHelper::Get()->GetUserByProfile(primary_profile)) {
   DCHECK(primary_user_);
-
   auto* session_manager = session_manager::SessionManager::Get();
   // Extra check as SessionManager may be not initialized in some unit
   // tests

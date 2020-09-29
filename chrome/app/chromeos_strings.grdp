@@ -2597,6 +2597,27 @@
   <message name="IDS_ENTERPRISE_LOGIN_ERROR_ALLOWLIST" desc="Couldn't sign in because user is not authorized by the administrator.">
     You are not authorized to use this device. Please contact the administrator for sign-in permission.
   </message>
+  <message name="IDS_LOCK_SCREEN_VERIFY_ACCOUNT" desc="Title of online account verification on the lock screen">
+    Verify account
+  </message>
+  <message name="IDS_LOCK_SCREEN_VERIFY_BUTTON" desc="Next button for online account verification on the lock screen">
+    Verify
+  </message>
+  <message name="IDS_LOCK_SCREEN_VERIFY_AGAIN_BUTTON" desc="Next button for 2nd online account verification on the lock screen">
+    Verify again
+  </message>
+  <message name="IDS_LOCK_SCREEN_CANCEL_BUTTON" desc="Cancel button for online account verification on the lock screen">
+    Cancel
+  </message>
+  <message name="IDS_LOCK_SCREEN_VERIFICATION_FAILED" desc="Title of incorrect user online reauthentication on the lock screen">
+    Verification was not successful
+  </message>
+  <message name="IDS_LOCK_SCREEN_WRONG_USER" desc="User that was not logged in tries to unlock the device">
+    The account you verified is not authorized to access this device. Please make sure you are verifying <ph name="ACCOUNT">$1<ex>test@example.com</ex></ph> to unlock the session.
+  </message>
+  <message name="IDS_LOCK_SCREEN_REAUTH_SUBTITLE" desc="Subtitle for lock screen user re-auth dialog">
+    Sign in to <ph name="ACCOUNT">$1<ex>test@example.com</ex></ph> again to verify this account
+  </message>
   <message name="IDS_LOGIN_ERROR_GOOGLE_ACCOUNT_NOT_ALLOWED" desc="Couldn't sign into Google account on the Active Directory managed device.">
     Sorry, Google accounts are not allowed on this device.
   </message>

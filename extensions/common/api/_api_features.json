@@ -231,7 +231,8 @@
         "chrome://hats/*",
         "chrome://mobilesetup/*",
         "chrome://oobe/*",
-        "chrome://password-change/*"
+        "chrome://password-change/*",
+        "chrome://lock-reauth/*"
       ]
     }
   ],
@@ -652,7 +653,8 @@
       "chrome://home/*",
       "chrome://mobilesetup/*",
       "chrome://oobe/*",
-      "chrome://password-change/*"
+      "chrome://password-change/*",
+      "chrome://lock-reauth/*"
     ]
   }],
   "webViewInternal": [{
@@ -673,7 +675,8 @@
       "chrome://home/*",
       "chrome://mobilesetup/*",
       "chrome://oobe/*",
-      "chrome://password-change/*"
+      "chrome://password-change/*",
+      "chrome://lock-reauth/*"
     ]
   }],
   "webViewRequest": [{
