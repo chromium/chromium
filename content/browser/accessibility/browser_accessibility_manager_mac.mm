@@ -222,6 +222,13 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
       }
       break;
     case ui::AXEventGenerator::Event::LOAD_COMPLETE:
+      // On MacOS 10.15, firing AXLoadComplete causes focus to move to the
+      // webpage and read content, despite the "Automatically speak the webpage"
+      // checkbox in Voiceover utility being unchecked. The checkbox is
+      // unchecked by default in 10.15 so we don't fire AXLoadComplete events to
+      // support the default behavior.
+      if (base::mac::IsOS10_15())
+        return;
       // |NSAccessibilityLoadCompleteNotification| should only be fired on the
       // top document and when the document is not Chrome's new tab page.
       if (IsRootTree() && !IsChromeNewTabPage()) {
