@@ -16,8 +16,8 @@
 #include "base/time/time.h"
 #include "chrome/browser/password_check/android/password_check_ui_status.h"
 #include "chrome/browser/password_manager/bulk_leak_check_service_factory.h"
+#include "chrome/browser/password_manager/password_manager_test_util.h"
 #include "chrome/browser/password_manager/password_scripts_fetcher_factory.h"
-#include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/sync/profile_sync_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/password_manager/core/browser/bulk_leak_check_service.h"
@@ -96,19 +96,6 @@ class MockPasswordScriptsFetcher
 
   MOCK_METHOD(bool, IsScriptAvailable, (const url::Origin&), (const override));
 };
-
-// TODO(crbug.com/1112804): Extract this into a password manager test utils
-// file, since it's used across multiple tests.
-scoped_refptr<TestPasswordStore> CreateAndUseTestPasswordStore(
-    Profile* profile) {
-  return base::WrapRefCounted(static_cast<TestPasswordStore*>(
-      PasswordStoreFactory::GetInstance()
-          ->SetTestingFactoryAndUse(
-              profile,
-              base::BindRepeating(&password_manager::BuildPasswordStore<
-                                  content::BrowserContext, TestPasswordStore>))
-          .get()));
-}
 
 BulkLeakCheckService* CreateAndUseBulkLeakCheckService(
     signin::IdentityManager* identity_manager,
