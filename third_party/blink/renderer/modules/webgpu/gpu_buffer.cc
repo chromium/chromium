@@ -291,6 +291,16 @@ void GPUBuffer::OnMapAsyncCallback(ScriptPromiseResolver* resolver,
       resolver->Reject(MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kOperationError, "Device is lost"));
       break;
+    case WGPUBufferMapAsyncStatus_DestroyedBeforeCallback:
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kOperationError,
+          "Buffer is destroyed before the mapping is resolved"));
+      break;
+    case WGPUBufferMapAsyncStatus_UnmappedBeforeCallback:
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kOperationError,
+          "Buffer is unmapped before the mapping is resolved"));
+      break;
     default:
       NOTREACHED();
   }
