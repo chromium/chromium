@@ -278,7 +278,7 @@ bool GetShortcutLocationsAndDeleteShortcuts(
       // Any shortcut could have been pinned, either by chrome or the user, so
       // they are all unpinned.
       base::win::UnpinShortcutFromTaskbar(*j);
-      if (base::DeleteFile(*j))
+      if (!base::DeleteFile(*j))
         result = false;
     }
   }
