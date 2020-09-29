@@ -9,4 +9,5 @@ def _outages_config(*, disable_cq_experiments = False):
 
 # See README.md for documentation on allowable configuration values
 config = _outages_config(
+    disable_cq_experiments = True,
 )
