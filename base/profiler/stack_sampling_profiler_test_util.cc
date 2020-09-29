@@ -372,7 +372,7 @@ void ExpectStackDoesNotContain(
 
   std::set<FunctionAddressRange, FunctionAddressRangeCompare> seen_functions;
   for (const auto& frame : stack) {
-    for (const auto function : functions) {
+    for (const auto& function : functions) {
       if (frame.instruction_pointer >=
               reinterpret_cast<uintptr_t>(function.start) &&
           frame.instruction_pointer <=
@@ -382,7 +382,7 @@ void ExpectStackDoesNotContain(
     }
   }
 
-  for (const auto function : seen_functions) {
+  for (const auto& function : seen_functions) {
     ADD_FAILURE() << "Function at " << function.start
                   << " was unexpectedly found in stack:\n"
                   << FormatSampleForDiagnosticOutput(stack);
