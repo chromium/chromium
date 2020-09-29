@@ -745,7 +745,8 @@ class IsolatedPrerenderBrowserTest
     std::unique_ptr<net::test_server::BasicHttpResponse> resp =
         std::make_unique<net::test_server::BasicHttpResponse>();
     resp->set_code(net::HTTP_OK);
-    resp->set_content("OK");
+    // Make sure whitespace is ok, especially trailing newline.
+    resp->set_content("   OK\n");
     return resp;
   }
 

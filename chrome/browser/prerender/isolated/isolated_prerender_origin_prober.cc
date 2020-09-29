@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
+#include "base/strings/string_util.h"
 #include "base/task/post_task.h"
 #include "chrome/browser/availability/availability_prober.h"
 #include "chrome/browser/prerender/isolated/isolated_prerender_params.h"
@@ -189,8 +190,18 @@ class CanaryCheckDelegate : public AvailabilityProber::Delegate {
   bool IsResponseSuccess(net::Error net_error,
                          const network::mojom::URLResponseHead* head,
                          std::unique_ptr<std::string> body) override {
-    return net_error == net::OK && head && head->headers &&
-           head->headers->response_code() == 200 && body && *body == "OK";
+    if (net_error != net::OK)
+      return false;
+    if (!head)
+      return false;
+    if (!head->headers)
+      return false;
+    if (head->headers->response_code() != 200)
+      return false;
+    if (!body)
+      return false;
+    // Strip any whitespace, especially trailing newlines.
+    return "OK" == base::TrimWhitespaceASCII(*body, base::TRIM_ALL);
   }
 };
 
