@@ -553,6 +553,10 @@ base::string16 BrowserAccessibilityAndroid::GetStateDescription() const {
   if (IsMultiselectable())
     return GetMultiselectableStateDescription();
 
+  // For Toggle buttons, we will append "on"/"off" in the state description.
+  if (GetRole() == ax::mojom::Role::kToggleButton)
+    return GetToggleButtonStateDescription();
+
   // Otherwise we will not use state description
   return base::string16();
 }
@@ -587,6 +591,17 @@ base::string16 BrowserAccessibilityAndroid::GetMultiselectableStateDescription()
       content_client->GetLocalizedString(
           IDS_AX_MULTISELECTABLE_STATE_DESCRIPTION),
       values, nullptr);
+}
+
+base::string16 BrowserAccessibilityAndroid::GetToggleButtonStateDescription()
+    const {
+  content::ContentClient* content_client = content::GetContentClient();
+
+  // For checked Toggle buttons, we will return "on", otherwise "off".
+  if (IsChecked())
+    return content_client->GetLocalizedString(IDS_AX_TOGGLE_BUTTON_ON);
+
+  return content_client->GetLocalizedString(IDS_AX_TOGGLE_BUTTON_OFF);
 }
 
 std::string BrowserAccessibilityAndroid::GetRoleString() const {

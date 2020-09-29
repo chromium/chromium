@@ -92,6 +92,7 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid : public BrowserAccessibility {
 
   base::string16 GetStateDescription() const;
   base::string16 GetMultiselectableStateDescription() const;
+  base::string16 GetToggleButtonStateDescription() const;
 
   base::string16 GetRoleDescription() const;
 

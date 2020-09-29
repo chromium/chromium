@@ -784,6 +784,12 @@ below:
         <message name="IDS_AX_MULTISELECTABLE_STATE_DESCRIPTION_NONE" desc="Accessibility state description for a multiselectable node when no children are selected">
           multiselectable, none selected.
         </message>
+        <message name="IDS_AX_TOGGLE_BUTTON_ON" desc="Accessibility state description for a toggle button when it is in the on/checked state">
+          On
+        </message>
+        <message name="IDS_AX_TOGGLE_BUTTON_OFF" desc="Accessibility state description for a toggle button when it is in the off/unchecked state">
+          Off
+        </message>
       </if>
 
       <!-- Automatic image annotations for accessibility -->
