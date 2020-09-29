@@ -1,0 +1,10 @@
+# Networking Metrics Owners
+
+dschinazi@chromium.org
+eroman@chromium.org
+
+# If none of these reviewers are available, please send CLs to
+# <chromium-metrics-reviews@google.com>. See tools/metrics/histograms/OWNERS
+# for details.
+
+# COMPONENT: Internals>Metrics
