@@ -170,6 +170,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>URL fetcher status for auto-enrollment requests.</summary>
 </histogram>
 
+<histogram base="true" name="Enterprise.CachedDevicePolicyDeviceIdValidity"
+    enum="EnterprisePolicyDeviceIdValidity" expires_after="M95">
+  <owner>emaxx@chromium.org</owner>
+  <owner>rodmartin@chromium.org</owner>
+  <summary>
+    Result of the device ID validation in the device policy blob for those which
+    were loaded from disk. This validation happens on enrolled devices on
+    startup, on scheduled policy reloads that happen every few hours, and on
+    forced policy reloads.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.CBCMPolicyInvalidations"
     enum="EnterprisePolicyInvalidations" expires_after="2021-06-16">
   <owner>anthonyvd@google.com</owner>
