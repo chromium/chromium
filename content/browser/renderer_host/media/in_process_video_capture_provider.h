@@ -38,7 +38,7 @@ class CONTENT_EXPORT InProcessVideoCaptureProvider
 
  private:
   // Can be nullptr.
-  const std::unique_ptr<media::VideoCaptureSystem> video_capture_system_;
+  std::unique_ptr<media::VideoCaptureSystem> video_capture_system_;
   // The message loop of media stream device thread, where VCD's live.
   const scoped_refptr<base::SingleThreadTaskRunner> device_task_runner_;
   base::RepeatingCallback<void(const std::string&)> emit_log_message_cb_;
