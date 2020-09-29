@@ -226,7 +226,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Security.SafetyTips.DownloadStarted" enum="SafetyTipStatus"
-    expires_after="M87">
+    expires_after="M90">
   <owner>jdeblasio@chromium.org</owner>
   <owner>estark@chromium.org</owner>
   <summary>
@@ -239,7 +239,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Security.SafetyTips.FormSubmission" enum="SafetyTipStatus"
-    expires_after="M87">
+    expires_after="M90">
   <owner>jdeblasio@chromium.org</owner>
   <owner>estark@chromium.org</owner>
   <summary>
@@ -252,7 +252,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Security.SafetyTips.Interaction" enum="SafetyTipInteraction"
-    expires_after="M87">
+    expires_after="M90">
   <owner>jdeblasio@chromium.org</owner>
   <owner>estark@chromium.org</owner>
   <summary>
@@ -264,7 +264,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Security.SafetyTips.OpenTime.Dismiss" units="ms"
-    expires_after="M87">
+    expires_after="M90">
   <owner>jdeblasio@chromium.org</owner>
   <owner>estark@chromium.org</owner>
   <summary>
@@ -275,7 +275,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Security.SafetyTips.OpenTime.DismissWithClose" units="ms"
-    expires_after="M87">
+    expires_after="M90">
   <owner>jdeblasio@chromium.org</owner>
   <owner>estark@chromium.org</owner>
   <owner>livvielin@chromium.org</owner>
@@ -287,7 +287,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Security.SafetyTips.OpenTime.DismissWithEsc" units="ms"
-    expires_after="M87">
+    expires_after="M90">
   <owner>jdeblasio@chromium.org</owner>
   <owner>estark@chromium.org</owner>
   <owner>livvielin@chromium.org</owner>
@@ -299,7 +299,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Security.SafetyTips.OpenTime.DismissWithIgnore" units="ms"
-    expires_after="M87">
+    expires_after="M90">
   <owner>jdeblasio@chromium.org</owner>
   <owner>estark@chromium.org</owner>
   <owner>livvielin@chromium.org</owner>
@@ -311,7 +311,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Security.SafetyTips.OpenTime.LeaveSite" units="ms"
-    expires_after="M87">
+    expires_after="M90">
   <owner>jdeblasio@chromium.org</owner>
   <owner>estark@chromium.org</owner>
   <summary>
@@ -321,7 +321,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Security.SafetyTips.OpenTime.NoActionTaken" units="ms"
-    expires_after="M87">
+    expires_after="M90">
   <owner>jdeblasio@chromium.org</owner>
   <owner>estark@chromium.org</owner>
   <summary>
@@ -331,7 +331,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Security.SafetyTips.PageInfo.Action"
-    enum="WebsiteSettingsAction" expires_after="M87">
+    enum="WebsiteSettingsAction" expires_after="M90">
   <owner>estark@chromium.org</owner>
   <owner>jdeblasio@chromium.org</owner>
   <summary>
@@ -341,7 +341,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Security.SafetyTips.ReputationCheckComplete"
-    enum="SafetyTipStatus" expires_after="M87">
+    enum="SafetyTipStatus" expires_after="M90">
   <owner>jdeblasio@chromium.org</owner>
   <owner>src/chrome/browser/reputation/OWNERS</owner>
   <summary>
@@ -352,7 +352,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Security.SafetyTips.SafetyTipIgnoredPageLoad"
-    enum="SafetyTipStatus" expires_after="M87">
+    enum="SafetyTipStatus" expires_after="M90">
   <owner>jdeblasio@chromium.org</owner>
   <owner>livvielin@chromium.org</owner>
   <summary>
@@ -362,7 +362,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Security.SafetyTips.SafetyTipShown" enum="SafetyTipStatus"
-    expires_after="M87">
+    expires_after="M90">
   <owner>jdeblasio@chromium.org</owner>
   <owner>livvielin@chromium.org</owner>
   <summary>
@@ -372,7 +372,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Security.SafetyTips.SafetyTipShown_AfterFlag"
-    enum="SafetyTipStatus" expires_after="M87">
+    enum="SafetyTipStatus" expires_after="M90">
   <owner>jdeblasio@chromium.org</owner>
   <owner>src/chrome/browser/reputation/OWNERS</owner>
   <summary>
@@ -384,7 +384,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Security.SafetyTips.StatusWithInitiator.{SafetyTipInitiator}"
-    enum="SafetyTipStatus" expires_after="M87">
+    enum="SafetyTipStatus" expires_after="M90">
   <owner>jdeblasio@chromium.org</owner>
   <owner>meacer@chromium.org</owner>
   <summary>
