@@ -722,8 +722,9 @@ TEST_F(TouchExplorationTest, DoubleTapTiming) {
   generator_->ReleaseTouch();
 
   std::vector<ui::LocatedEvent*> captured_events = GetCapturedLocatedEvents();
-  ASSERT_EQ(0U, captured_events.size());
-  EXPECT_EQ(ax::mojom::Gesture::kClick, delegate_.GetLastGesture());
+  ASSERT_EQ(2U, captured_events.size());
+  EXPECT_EQ(ui::ET_TOUCH_PRESSED, captured_events[0]->type());
+  EXPECT_EQ(ui::ET_TOUCH_RELEASED, captured_events[1]->type());
 }
 
 // If an explicit anchor point is set during touch exploration, double-tapping
@@ -760,9 +761,10 @@ TEST_F(TouchExplorationTest, DoubleTapWithExplicitAnchorPoint) {
   generator_->ReleaseTouch();
 
   std::vector<ui::LocatedEvent*> captured_events = GetCapturedLocatedEvents();
-  ASSERT_EQ(0U, captured_events.size());
+  ASSERT_EQ(2U, captured_events.size());
   EXPECT_TRUE(IsInNoFingersDownState());
-  EXPECT_EQ(ax::mojom::Gesture::kClick, delegate_.GetLastGesture());
+  EXPECT_EQ(ui::ET_TOUCH_PRESSED, captured_events[0]->type());
+  EXPECT_EQ(ui::ET_TOUCH_RELEASED, captured_events[1]->type());
 }
 
 // Double-tapping where the user holds their finger down for the second time

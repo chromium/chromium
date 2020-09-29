@@ -265,9 +265,8 @@ class TouchExplorationController : public ui::EventRewriter,
 
   void PlaySoundForTimer();
 
-  // Sends a simulated click, if an anchor point was set explicitly. Otherwise,
-  // sends a simulated tap at anchor point.
-  void SendSimulatedClickOrTap(const Continuation continuation);
+  // Sends a simulated click.
+  void SendSimulatedClick(const Continuation continuation);
 
   // Sends a simulated tap at anchor point.
   void SendSimulatedTap(const Continuation continuation);

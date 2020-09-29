@@ -425,7 +425,7 @@ ui::EventDispatchDetails TouchExplorationController::InDoubleTapPending(
     if (current_touch_ids_.size() != 0)
       return DiscardEvent(continuation);
 
-    SendSimulatedClickOrTap(continuation);
+    SendSimulatedClick(continuation);
 
     SET_STATE(NO_FINGERS_DOWN);
     return DiscardEvent(continuation);
@@ -445,7 +445,7 @@ ui::EventDispatchDetails TouchExplorationController::InTouchReleasePending(
     if (current_touch_ids_.size() != 0)
       return DiscardEvent(continuation);
 
-    SendSimulatedClickOrTap(continuation);
+    SendSimulatedClick(continuation);
     SET_STATE(NO_FINGERS_DOWN);
     return DiscardEvent(continuation);
   }
@@ -590,7 +590,7 @@ ui::EventDispatchDetails TouchExplorationController::InTouchExploreSecondPress(
       return DiscardEvent(continuation);
     }
 
-    SendSimulatedClickOrTap(continuation);
+    SendSimulatedClick(continuation);
 
     SET_STATE(TOUCH_EXPLORATION);
     EnterTouchToMouseMode();
@@ -608,16 +608,13 @@ ui::EventDispatchDetails TouchExplorationController::InWaitForNoFingers(
   return DiscardEvent(continuation);
 }
 
-void TouchExplorationController::SendSimulatedClickOrTap(
+void TouchExplorationController::SendSimulatedClick(
     const Continuation continuation) {
-  // If we got an anchor point from ChromeVox, send a double-tap gesture
-  // and let ChromeVox handle the click.
   const gfx::Point location;
+  // For Chromecast, always send a simulated tap. NOTE: This differs
+  // from chromeos's touch exploration controller which always send an
+  // accessibility gesture.
   delegate_->HandleTap(location);
-  if (anchor_point_state_ == ANCHOR_POINT_EXPLICITLY_SET) {
-    delegate_->HandleAccessibilityGesture(ax::mojom::Gesture::kClick);
-    return;
-  }
   SendSimulatedTap(continuation);
 }
 

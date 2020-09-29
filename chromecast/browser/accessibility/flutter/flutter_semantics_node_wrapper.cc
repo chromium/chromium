@@ -301,8 +301,9 @@ void FlutterSemanticsNodeWrapper::Serialize(ui::AXNodeData* out_data) const {
     out_data->SetValue(GetValue());
   }
 
-  out_data->AddBoolAttribute(ax::mojom::BoolAttribute::kClickable,
-                             IsActionable());
+  if (IsActionable()) {
+    out_data->SetDefaultActionVerb(ax::mojom::DefaultActionVerb::kClick);
+  }
   out_data->AddBoolAttribute(ax::mojom::BoolAttribute::kScrollable,
                              IsScrollable());
 
@@ -495,18 +496,8 @@ bool FlutterSemanticsNodeWrapper::HasTapOrPress() const {
 }
 
 bool FlutterSemanticsNodeWrapper::IsActionable() const {
-  // When flutter tells us a generic container is actionable, do not allow this
-  // unless all children of this node are NOT actionable.  Otherwise, the
-  // tree walker will consider this node a leaf and it will not navigate to
-  // any actionable children.
   bool actionable = HasTapOrPress();
 
-  ui::AXNodeData data;
-  PopulateAXRole(&data);
-  if (actionable && data.role == ax::mojom::Role::kGenericContainer &&
-      AnyChildIsActionable()) {
-    actionable = false;
-  }
   // If this node is actionable but is also the host for a child tree,
   // don't make it actionable or else chromevox won't traverse into
   // any child.

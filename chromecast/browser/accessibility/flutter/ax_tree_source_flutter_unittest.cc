@@ -632,5 +632,27 @@ TEST_F(AXTreeSourceFlutterTest, ResetFocus) {
   ASSERT_EQ(0, tree_data.focus_id);
 }
 
+TEST_F(AXTreeSourceFlutterTest, NoClickable) {
+  OnAccessibilityEventRequest event;
+
+  event.set_source_id(0);
+  event.set_window_id(1);
+  event.set_event_type(OnAccessibilityEventRequest_EventType_FOCUSED);
+
+  SemanticsNode* root = event.add_node_data();
+  root->set_node_id(0);
+  ActionProperties* action_properties = root->mutable_action_properties();
+  action_properties->set_tap(true);
+  Rect* bounds = root->mutable_bounds_in_screen();
+  SetRect(bounds, 0, 0, 1280, 800);
+
+  CallNotifyAccessibilityEvent(&event);
+  std::unique_ptr<ui::AXNodeData> data;
+  CallSerializeNode(root, &data);
+
+  // No node should get the clickable attribute.
+  ASSERT_FALSE(data->GetBoolAttribute(ax::mojom::BoolAttribute::kClickable));
+}
+
 }  // namespace accessibility
 }  // namespace chromecast
