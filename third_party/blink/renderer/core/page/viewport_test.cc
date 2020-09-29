@@ -3304,11 +3304,6 @@ class ViewportHistogramsTest : public SimTest {
                                          static_cast<int>(type), 1);
   }
 
-  void ExpectOverviewZoom(int sample) {
-    histogram_tester_.ExpectTotalCount("Viewport.OverviewZoom", 1);
-    histogram_tester_.ExpectBucketCount("Viewport.OverviewZoom", sample, 1);
-  }
-
   void ExpectTotalCount(const std::string& histogram, int count) {
     histogram_tester_.ExpectTotalCount(histogram, 0);
   }
@@ -3331,19 +3326,16 @@ TEST_F(ViewportHistogramsTest, NoOpOnWhenViewportDisabled) {
   UseMetaTag("<meta name='viewport' content='width=device-width'>");
 
   ExpectTotalCount("Viewport.MetaTagType", 0);
-  ExpectTotalCount("Viewport.OverviewZoom", 0);
 }
 
 TEST_F(ViewportHistogramsTest, TypeNone) {
   UseMetaTag("");
   ExpectType(ViewportDescription::ViewportUMAType::kNoViewportTag);
-  ExpectTotalCount("Viewport.OverviewZoom", 0);
 }
 
 TEST_F(ViewportHistogramsTest, TypeDeviceWidth) {
   UseMetaTag("<meta name='viewport' content='width=device-width'>");
   ExpectType(ViewportDescription::ViewportUMAType::kDeviceWidth);
-  ExpectTotalCount("Viewport.OverviewZoom", 0);
 }
 
 TEST_F(ViewportHistogramsTest, TypeConstant) {
@@ -3354,13 +3346,11 @@ TEST_F(ViewportHistogramsTest, TypeConstant) {
 TEST_F(ViewportHistogramsTest, TypeHandheldFriendlyMeta) {
   UseMetaTag("<meta name='HandheldFriendly' content='true'/> ");
   ExpectType(ViewportDescription::ViewportUMAType::kMetaHandheldFriendly);
-  ExpectTotalCount("Viewport.OverviewZoom", 0);
 }
 
 TEST_F(ViewportHistogramsTest, TypeMobileOptimizedMeta) {
   UseMetaTag("<meta name='MobileOptimized' content='320'/> ");
   ExpectType(ViewportDescription::ViewportUMAType::kMetaMobileOptimized);
-  ExpectTotalCount("Viewport.OverviewZoom", 0);
 }
 
 TEST_F(ViewportHistogramsTest, TypeXhtml) {
@@ -3368,15 +3358,6 @@ TEST_F(ViewportHistogramsTest, TypeXhtml) {
       "<!DOCTYPE html PUBLIC '-//WAPFORUM//DTD XHTML Mobile 1.1//EN' "
       "'http://www.openmobilealliance.org/tech/DTD/xhtml-mobile11.dtd'");
   ExpectType(ViewportDescription::ViewportUMAType::kXhtmlMobileProfile);
-  ExpectTotalCount("Viewport.OverviewZoom", 0);
-}
-
-TEST_F(ViewportHistogramsTest, OverviewZoom) {
-  UseMetaTag("<meta name='viewport' content='width=1000'>");
-
-  // Since the viewport is 500px wide and the layout width is 1000px we expect
-  // the metric to report 50%.
-  ExpectOverviewZoom(50);
 }
 
 }  // namespace blink

@@ -267,21 +267,6 @@ void ViewportDescription::ReportMobilePageStats(
     if (max_width.IsFixed()) {
       meta_tag_type_histogram.Count(
           static_cast<int>(ViewportUMAType::kConstantWidth));
-
-      if (main_frame->View()) {
-        // To get an idea of how "far" the viewport is from the device's ideal
-        // width, we report the zoom level that we'd need to be at for the
-        // entire page to be visible.
-        int viewport_width = max_width.IntValue();
-        int window_width =
-            main_frame->GetPage()->GetVisualViewport().Size().Width();
-        int overview_zoom_percent =
-            100 * window_width / static_cast<float>(viewport_width);
-        DEFINE_STATIC_LOCAL(SparseHistogram, overview_zoom_histogram,
-                            ("Viewport.OverviewZoom"));
-        overview_zoom_histogram.Sample(overview_zoom_percent);
-      }
-
     } else if (max_width.IsDeviceWidth() || max_width.IsExtendToZoom()) {
       meta_tag_type_histogram.Count(
           static_cast<int>(ViewportUMAType::kDeviceWidth));

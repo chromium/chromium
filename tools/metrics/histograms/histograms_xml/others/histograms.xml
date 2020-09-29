@@ -15399,6 +15399,7 @@ regressions. -->
 <histogram name="Viewport.DidScalePage" enum="BooleanDidScalePage"
     expires_after="M90">
   <owner>bokan@chromium.org</owner>
+  <owner>input-dev@chromium.org</owner>
   <summary>
     Tracks the proportion of non-mobile optimized (i.e. zoom disabled or layout
     width matches viewport) page views that had a user-initiated page scale
@@ -15410,6 +15411,7 @@ regressions. -->
 <histogram name="Viewport.MaxPageScale" enum="PageScaleFactorRange"
     expires_after="M90">
   <owner>bokan@chromium.org</owner>
+  <owner>input-dev@chromium.org</owner>
   <summary>
     Tracks the maximum scale factor that a user has scaled to over the lifetime
     of the page. The scale is counted at pinch end (e.g. zooming to 300% and
@@ -15421,15 +15423,20 @@ regressions. -->
 </histogram>
 
 <histogram name="Viewport.MetaTagType" enum="MetaTagTypeEnum"
-    expires_after="M85">
+    expires_after="M95">
   <owner>bokan@chromium.org</owner>
+  <owner>input-dev@chromium.org</owner>
   <summary>
     The viewport meta tag type seen on each page load. Only recorded on Android.
   </summary>
 </histogram>
 
 <histogram name="Viewport.OverviewZoom" units="%" expires_after="M85">
+  <obsolete>
+    Expired in M85.
+  </obsolete>
   <owner>bokan@chromium.org</owner>
+  <owner>input-dev@chromium.org</owner>
   <summary>
     The screen width as a percentage of viewport width (i.e. zoom at which we
     can see the whole page). Only recorded on Android and for viewport meta tags
