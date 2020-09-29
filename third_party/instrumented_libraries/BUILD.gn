@@ -120,6 +120,7 @@ if (use_locally_built_instrumented_libraries) {
       ":libtasn1-6",
       ":libunity9",
       ":libva1",
+      ":libwayland-client0",
       ":libx11-6",
       ":libxau6",
       ":libxcb1",
@@ -627,12 +628,16 @@ if (use_locally_built_instrumented_libraries) {
     extra_configure_flags = [ "--disable-static" ]
 
     pre_build = "scripts/pre-build/libnih1.sh"
+
+    patch = "patches/libnih1.diff"
   }
 
   instrumented_library("libnih-dbus1") {
     extra_configure_flags = [ "--disable-static" ]
 
     pre_build = "scripts/pre-build/libnih1.sh"
+
+    patch = "patches/libnih1.diff"
   }
 
   instrumented_library("libnspr4") {
@@ -725,6 +730,14 @@ if (use_locally_built_instrumented_libraries) {
     # http://cgit.freedesktop.org/libva/diff/va/va.c?h=staging&id=d4988142a3f2256e38c5c5cdcdfc1b4f5f3c1ea9
     patch = "patches/libva1.diff"
     pre_build = "scripts/pre-build/libva1.sh"
+  }
+
+  instrumented_library("libwayland-client0") {
+    extra_configure_flags = [
+      "--disable-static",
+      "--disable-scanner",
+      "--disable-documentation",
+    ]
   }
 
   instrumented_library("libx11-6") {

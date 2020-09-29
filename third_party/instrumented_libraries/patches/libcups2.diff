@@ -29,3 +29,18 @@ diff -rupN ./man/Makefile.l10n ../cups-1.5.3-patched/man/Makefile.l10n
  
  #
  # Make everything...
+diff -ru cups-1.7.2.bak/scheduler/conf.h cups-1.7.2/scheduler/conf.h
+--- cups-1.7.2.bak/scheduler/conf.h	2020-09-28 13:36:59.018017680 -0700
++++ cups-1.7.2/scheduler/conf.h	2020-09-28 13:36:47.393946500 -0700
+@@ -266,9 +266,9 @@
+ #ifdef HAVE_GSSAPI
+ VAR char		*GSSServiceName		VALUE(NULL);
+ 					/* GSS service name */
+-int			HaveServerCreds		VALUE(0);
++__attribute__((weak)) int			HaveServerCreds		VALUE(0);
+ 					/* Do we have server credentials? */
+-gss_cred_id_t		ServerCreds;	/* Server's GSS credentials */
++__attribute__((weak)) gss_cred_id_t		ServerCreds;	/* Server's GSS credentials */
+ #endif /* HAVE_GSSAPI */
+ 
+ 

@@ -1,0 +1,12 @@
+diff -ru libnih-1.0.3.bak/nih-dbus-tool/output.h libnih-1.0.3/nih-dbus-tool/output.h
+--- libnih-1.0.3.bak/nih-dbus-tool/output.h	2020-09-28 13:19:09.795416156 -0700
++++ libnih-1.0.3/nih-dbus-tool/output.h	2020-09-28 13:19:29.139536349 -0700
+@@ -27,7 +27,7 @@
+ 
+ NIH_BEGIN_EXTERN
+ 
+-char *output_package;
++extern char *output_package;
+ 
+ int   output          (const char *source_path, int source_fd,
+ 		       const char *header_path, int header_fd,

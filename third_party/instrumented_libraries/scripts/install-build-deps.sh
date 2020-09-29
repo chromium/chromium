@@ -52,6 +52,7 @@ libpcre3 \
 libpixman-1-0 \
 libpng12-0 \
 libunity9 \
+libwayland-client0\
 libx11-6 \
 libxau6 \
 libxcb1 \
