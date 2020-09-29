@@ -1337,7 +1337,7 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded() const {
 
 #if DCHECK_IS_ON()  // Required in order to get Lifecycle().ToString()
   DCHECK(!GetDocument() || GetDocument()->Lifecycle().GetState() >=
-                               DocumentLifecycle::kLayoutClean)
+                               DocumentLifecycle::kAfterPerformLayout)
       << "Unclean document at lifecycle "
       << GetDocument()->Lifecycle().ToString();
 #endif

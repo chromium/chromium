@@ -532,7 +532,8 @@ AXObject* AXObjectCacheImpl::GetOrCreate(Node* node) {
 #if DCHECK_IS_ON()
   Document* document = &node->GetDocument();
   DCHECK(document);
-  DCHECK(document->Lifecycle().GetState() >= DocumentLifecycle::kLayoutClean)
+  DCHECK(document->Lifecycle().GetState() >=
+         DocumentLifecycle::kAfterPerformLayout)
       << "Unclean document at lifecycle " << document->Lifecycle().ToString();
 #endif  // DCHECK_IS_ON()
 
@@ -574,7 +575,8 @@ AXObject* AXObjectCacheImpl::GetOrCreate(LayoutObject* layout_object) {
 #if DCHECK_IS_ON()
   Document* document = &layout_object->GetDocument();
   DCHECK(document);
-  DCHECK(document->Lifecycle().GetState() >= DocumentLifecycle::kLayoutClean)
+  DCHECK(document->Lifecycle().GetState() >=
+         DocumentLifecycle::kAfterPerformLayout)
       << "Unclean document at lifecycle " << document->Lifecycle().ToString();
 #endif  // DCHECK_IS_ON()
 
@@ -2369,21 +2371,14 @@ void AXObjectCacheImpl::HandleLoadCompleteWithCleanLayout(Node* document_node) {
 
 void AXObjectCacheImpl::HandleLayoutComplete(Document* document) {
   SCOPED_DISALLOW_LIFECYCLE_TRANSITION(*document);
-  DeferTreeUpdate(&AXObjectCacheImpl::HandleLayoutCompleteWithCleanLayout,
-                  document);
-}
-
-void AXObjectCacheImpl::HandleLayoutCompleteWithCleanLayout(
-    Node* document_node) {
-  DCHECK(document_node);
-  DCHECK(IsA<Document>(document_node));
-#if DCHECK_IS_ON()
-  Document* document = To<Document>(document_node);
-  DCHECK(document->Lifecycle().GetState() >= DocumentLifecycle::kLayoutClean)
-      << "Unclean document at lifecycle " << document->Lifecycle().ToString();
-#endif  // DCHECK_IS_ON()
-  PostNotification(GetOrCreate(document_node),
-                   ax::mojom::blink::Event::kLayoutComplete);
+  if (document->Lifecycle().GetState() >=
+      DocumentLifecycle::kAfterPerformLayout) {
+    PostNotification(GetOrCreate(document),
+                     ax::mojom::blink::Event::kLayoutComplete);
+  } else {
+    DeferTreeUpdate(&AXObjectCacheImpl::EnsurePostNotification, document,
+                    ax::mojom::blink::Event::kLayoutComplete);
+  }
 }
 
 void AXObjectCacheImpl::HandleScrolledToAnchor(const Node* anchor_node) {

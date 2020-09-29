@@ -210,7 +210,6 @@ class MODULES_EXPORT AXObjectCacheImpl
   void HandleAriaSelectedChangedWithCleanLayout(Node*);
   void HandleNodeLostFocusWithCleanLayout(Node*);
   void HandleNodeGainedFocusWithCleanLayout(Node*);
-  void HandleLayoutCompleteWithCleanLayout(Node*);
   void HandleLoadCompleteWithCleanLayout(Node*);
   void UpdateCacheAfterNodeIsAttachedWithCleanLayout(Node*);
   void DidShowMenuListPopupWithCleanLayout(Node*);
