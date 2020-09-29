@@ -22,7 +22,3 @@ crbug.com/1006045 [ android android-nexus-5x skia-renderer ] ScreenshotSync_GPUR
 crbug.com/1006045 [ android android-nexus-5x skia-renderer ] ScreenshotSync_GPURasterWithDivs [ Failure ]
 crbug.com/1006045 [ android android-nexus-5x skia-renderer ] ScreenshotSync_SWRasterWithCanvas [ Failure ]
 crbug.com/1006045 [ android android-nexus-5x skia-renderer ] ScreenshotSync_SWRasterWithDivs [ Failure ]
-
-# Fuchsia
-crbug.com/1097962 [ fuchsia ] ScreenshotSync_SWRasterWithCanvas [ RetryOnFailure ]
-crbug.com/1097962 [ fuchsia ] ScreenshotSync_GPURasterWithCanvas [ RetryOnFailure ]
