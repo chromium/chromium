@@ -11,6 +11,7 @@
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/optional.h"
 #include "base/sequence_checker.h"
@@ -149,6 +150,10 @@ class NetworkChangeNotifier::NetworkChangeCalculator
         (pending_connection_type_ == CONNECTION_NONE)) {
       return;
     }
+
+    base::UmaHistogramEnumeration("Net.NetworkChangeNotifier.NewConnectionType",
+                                  pending_connection_type_, CONNECTION_LAST);
+
     have_announced_ = true;
     last_announced_connection_type_ = pending_connection_type_;
     // Immediately before sending out an online signal, send out an offline

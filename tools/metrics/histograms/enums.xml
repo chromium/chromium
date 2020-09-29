@@ -51045,6 +51045,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="5" label="4g"/>
   <int value="6" label="None"/>
   <int value="7" label="Bluetooth"/>
+  <int value="8" label="5g"/>
 </enum>
 
 <enum name="NetworkCorruptedProfile">
