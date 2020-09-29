@@ -252,6 +252,10 @@ class WasmStreamingClient : public v8::WasmStreaming::Client {
       return;
 
     v8::OwnedBuffer serialized_module = compiled_module.Serialize();
+    // V8 might not be able to serialize the module.
+    if (serialized_module.size == 0)
+      return;
+
     TRACE_EVENT_INSTANT1(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
                          "v8.wasm.cachedModule", TRACE_EVENT_SCOPE_THREAD,
                          "producedCacheSize", serialized_module.size);
