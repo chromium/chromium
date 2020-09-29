@@ -45,7 +45,7 @@ goog.provide('{{module.namespace}}.{{struct.name}}');
 {{module.namespace}}.{{struct.name}} = class {
   constructor() {
 {%- for packed_field in struct.packed.packed_fields %}
-    /** @type { {{packed_field.field.kind|lite_closure_field_type}} } */
+    /** @export { {{packed_field.field.kind|lite_closure_field_type}} } */
     this.{{packed_field.field.name}};
 {%-  endfor %}
   }
