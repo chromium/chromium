@@ -3978,6 +3978,10 @@ In Incognito, your activity might still be visible to websites that you visit, y
         More
       </message>
 
+      <message name="IDS_SHARING_COPY" desc="Label for the Copy button in the sharing hub.">
+        Copy
+      </message>
+
       <message name="IDS_SHARING_COPY_URL" desc="Label for the Copy URL button in the sharing hub.">
         Copy link
       </message>
@@ -3996,6 +4000,10 @@ In Incognito, your activity might still be visible to websites that you visit, y
 
       <message name="IDS_SHARING_HIGHLIGHTS" desc="Label for Link-to-text button in the sharing hub.">
         Link to text
+      </message>
+
+      <message name="IDS_SHARING_COPIED" desc="Text shown in the toast notification when Copy is selected in the sharing hub.">
+        Copied
       </message>
 
       <message name="IDS_TEXT_COPIED" desc="Text shown in the toast notification when Copy Text is selected in the sharing hub.">

@@ -106,6 +106,7 @@ class ChromeProvidedSharingOptionsProvider {
      */
     private static class FirstPartyOption {
         final Collection<Integer> mContentTypes;
+        final Collection<Integer> mContentTypesToDisableFor;
         final PropertyModel mPropertyModel;
         final boolean mDisableForMultiWindow;
 
@@ -115,12 +116,14 @@ class ChromeProvidedSharingOptionsProvider {
          *
          * @param model Property model for the first party option.
          * @param contentTypes Content types to trigger for.
+         * @param contentTypesToDisableFor Content types to disable for.
          * @param disableForMultiWindow If the feature should be disabled if in multi-window mode.
          */
         FirstPartyOption(PropertyModel model, Collection<Integer> contentTypes,
-                boolean disableForMultiWindow) {
+                Collection<Integer> contentTypesToDisableFor, boolean disableForMultiWindow) {
             mPropertyModel = model;
             mContentTypes = contentTypes;
+            mContentTypesToDisableFor = contentTypesToDisableFor;
             mDisableForMultiWindow = disableForMultiWindow;
         }
     }
@@ -131,10 +134,12 @@ class ChromeProvidedSharingOptionsProvider {
         private String mFeatureNameForMetrics;
         private Callback<View> mOnClickCallback;
         private boolean mDisableForMultiWindow;
+        private Integer[] mContentTypesToDisableFor;
         private final Integer[] mContentTypesInBuilder;
 
         FirstPartyOptionBuilder(Integer... contentTypes) {
             mContentTypesInBuilder = contentTypes;
+            mContentTypesToDisableFor = new Integer[] {};
         }
 
         FirstPartyOptionBuilder setIcon(int icon, int iconLabel) {
@@ -153,6 +158,11 @@ class ChromeProvidedSharingOptionsProvider {
             return this;
         }
 
+        FirstPartyOptionBuilder setContentTypesToDisableFor(Integer... contentTypesToDisableFor) {
+            mContentTypesToDisableFor = contentTypesToDisableFor;
+            return this;
+        }
+
         FirstPartyOptionBuilder setDisableForMultiWindow(boolean disableForMultiWindow) {
             mDisableForMultiWindow = disableForMultiWindow;
             return this;
@@ -167,8 +177,8 @@ class ChromeProvidedSharingOptionsProvider {
                         mBottomSheetController.hideContent(mBottomSheetContent, true);
                         mOnClickCallback.onResult(view);
                     });
-            return new FirstPartyOption(
-                    model, Arrays.asList(mContentTypesInBuilder), mDisableForMultiWindow);
+            return new FirstPartyOption(model, Arrays.asList(mContentTypesInBuilder),
+                    Arrays.asList(mContentTypesToDisableFor), mDisableForMultiWindow);
         }
     }
 
@@ -184,6 +194,8 @@ class ChromeProvidedSharingOptionsProvider {
         List<PropertyModel> propertyModels = new ArrayList<>();
         for (FirstPartyOption firstPartyOption : mOrderedFirstPartyOptions) {
             if (!Collections.disjoint(contentTypes, firstPartyOption.mContentTypes)
+                    && Collections.disjoint(
+                            contentTypes, firstPartyOption.mContentTypesToDisableFor)
                     && !(isMultiWindow && firstPartyOption.mDisableForMultiWindow)) {
                 propertyModels.add(firstPartyOption.mPropertyModel);
             }
@@ -202,8 +214,7 @@ class ChromeProvidedSharingOptionsProvider {
         mOrderedFirstPartyOptions.add(createCopyLinkFirstPartyOption());
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.CHROME_SHARING_HUB_V15)) {
             mOrderedFirstPartyOptions.add(createCopyImageFirstPartyOption());
-        }
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.CHROME_SHARING_HUB_V15)) {
+            mOrderedFirstPartyOptions.add(createCopyFirstPartyOption());
             mOrderedFirstPartyOptions.add(createCopyTextFirstPartyOption());
         }
         mOrderedFirstPartyOptions.add(createSendTabToSelfFirstPartyOption());
@@ -252,12 +263,14 @@ class ChromeProvidedSharingOptionsProvider {
         return new FirstPartyOption(propertyModel,
                 Arrays.asList(ContentType.LINK_PAGE_VISIBLE, ContentType.TEXT,
                         ContentType.HIGHLIGHTED_TEXT, ContentType.IMAGE),
+                /*contentTypesToDisableFor=*/Collections.emptySet(),
                 /*disableForMultiWindow=*/true);
     }
 
     private FirstPartyOption createCopyLinkFirstPartyOption() {
         return new FirstPartyOptionBuilder(
                 ContentType.LINK_PAGE_VISIBLE, ContentType.LINK_PAGE_NOT_VISIBLE)
+                .setContentTypesToDisableFor(ContentType.LINK_AND_TEXT)
                 .setIcon(R.drawable.ic_content_copy_black, R.string.sharing_copy_url)
                 .setFeatureNameForMetrics("SharingHubAndroid.CopyURLSelected")
                 .setOnClickCallback((view) -> {
@@ -283,8 +296,23 @@ class ChromeProvidedSharingOptionsProvider {
                 .build();
     }
 
+    private FirstPartyOption createCopyFirstPartyOption() {
+        return new FirstPartyOptionBuilder(ContentType.LINK_AND_TEXT)
+                .setIcon(R.drawable.ic_content_copy_black, R.string.sharing_copy)
+                .setFeatureNameForMetrics("SharingHubAndroid.CopySelected")
+                .setOnClickCallback((view) -> {
+                    ClipboardManager clipboard = (ClipboardManager) mActivity.getSystemService(
+                            Context.CLIPBOARD_SERVICE);
+                    clipboard.setPrimaryClip(ClipData.newPlainText(
+                            mShareParams.getTitle(), mShareParams.getTextAndUrl()));
+                    Toast.makeText(mActivity, R.string.sharing_copied, Toast.LENGTH_SHORT).show();
+                })
+                .build();
+    }
+
     private FirstPartyOption createCopyTextFirstPartyOption() {
         return new FirstPartyOptionBuilder(ContentType.TEXT, ContentType.HIGHLIGHTED_TEXT)
+                .setContentTypesToDisableFor(ContentType.LINK_AND_TEXT)
                 .setIcon(R.drawable.ic_content_copy_black, R.string.sharing_copy_text)
                 .setFeatureNameForMetrics("SharingHubAndroid.CopyTextSelected")
                 .setOnClickCallback((view) -> {

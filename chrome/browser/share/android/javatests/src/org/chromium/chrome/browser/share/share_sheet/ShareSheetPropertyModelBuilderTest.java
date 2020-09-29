@@ -246,7 +246,7 @@ public final class ShareSheetPropertyModelBuilderTest {
 
         assertEquals("Should contain correct content types.",
                 ImmutableSet.of(ContentType.LINK_PAGE_NOT_VISIBLE, ContentType.OTHER_FILE_TYPE,
-                        ContentType.TEXT),
+                        ContentType.TEXT, ContentType.LINK_AND_TEXT),
                 ShareSheetPropertyModelBuilder.getContentTypes(shareParams, shareExtras));
     }
 
