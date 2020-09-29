@@ -10,6 +10,7 @@
 #include "base/test/task_environment.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "chromeos/components/quick_answers/test/test_helpers.h"
+#include "chromeos/components/quick_answers/utils/quick_answers_utils.h"
 #include "chromeos/services/assistant/public/shared/constants.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -78,7 +79,7 @@ TEST_F(SearchResultLoaderTest, Success) {
       *mock_delegate_,
       OnQuickAnswerReceived(QuickAnswerEqual(&(*expected_quick_answer))));
   EXPECT_CALL(*mock_delegate_, OnNetworkError()).Times(0);
-  loader_->Fetch("23cm");
+  loader_->Fetch(PreprocessRequest(IntentInfo("23cm", IntentType::kUnknown)));
   base::RunLoop().RunUntilIdle();
 }
 
@@ -89,7 +90,7 @@ TEST_F(SearchResultLoaderTest, NetworkError) {
       network::URLLoaderCompletionStatus(net::HTTP_NOT_FOUND));
   EXPECT_CALL(*mock_delegate_, OnNetworkError());
   EXPECT_CALL(*mock_delegate_, OnQuickAnswerReceived(testing::_)).Times(0);
-  loader_->Fetch("23cm");
+  loader_->Fetch(PreprocessRequest(IntentInfo("23cm", IntentType::kUnknown)));
   base::RunLoop().RunUntilIdle();
 }
 
@@ -98,7 +99,7 @@ TEST_F(SearchResultLoaderTest, EmptyResponse) {
                                        std::string());
   EXPECT_CALL(*mock_delegate_, OnQuickAnswerReceived(testing::Eq(nullptr)));
   EXPECT_CALL(*mock_delegate_, OnNetworkError()).Times(0);
-  loader_->Fetch("23cm");
+  loader_->Fetch(PreprocessRequest(IntentInfo("23cm", IntentType::kUnknown)));
   base::RunLoop().RunUntilIdle();
 }
 

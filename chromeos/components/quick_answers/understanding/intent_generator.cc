@@ -159,7 +159,7 @@ void IntentGenerator::FindLanguagesCallback(
     const QuickAnswersRequest& request,
     std::vector<machine_learning::mojom::TextLanguagePtr> languages) {
   auto intent_type = IntentType::kUnknown;
-  // TODO(b/b/150034512): Take confidence level into consideration.
+  // TODO(b/150034512): Take confidence level into consideration.
   if (languages.empty() ||
       languages.front()->locale == request.context.device_properties.language) {
     std::move(complete_callback_)

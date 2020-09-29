@@ -8,12 +8,12 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/weak_ptr.h"
 #include "chromeos/components/quick_answers/search_result_parsers/search_response_parser.h"
-
-class GURL;
 
 namespace network {
 class SimpleURLLoader;
+struct ResourceRequest;
 
 namespace mojom {
 class URLLoaderFactory;
@@ -24,6 +24,7 @@ namespace chromeos {
 namespace quick_answers {
 
 enum class IntentType;
+struct PreprocessedOutput;
 
 class ResultLoader {
  public:
@@ -51,6 +52,9 @@ class ResultLoader {
   using ResponseParserCallback =
       base::OnceCallback<void(std::unique_ptr<QuickAnswer> quick_answer)>;
 
+  using BuildRequestCallback = base::OnceCallback<void(
+      std::unique_ptr<network::ResourceRequest> resource_request)>;
+
   ResultLoader(network::mojom::URLLoaderFactory* url_loader_factory,
                ResultLoaderDelegate* delegate);
 
@@ -70,11 +74,12 @@ class ResultLoader {
   // calling |ResultLoaderDelegate| methods when finished.
   // Note that delegate methods should be called only once per
   // ResultLoader instance. Virtual for testing.
-  virtual void Fetch(const std::string& selected_text);
+  virtual void Fetch(const PreprocessedOutput& preprocessed_output);
 
  protected:
   // Builds the request URL from |selected_text|.
-  virtual GURL BuildRequestUrl(const std::string& selected_text) const = 0;
+  virtual void BuildRequest(const PreprocessedOutput& preprocessed_output,
+                            BuildRequestCallback callback) const = 0;
 
   // Process the |response_body| and invoked the callback with |QuickAnswer|.
   virtual void ProcessResponse(std::unique_ptr<std::string> response_body,
@@ -85,11 +90,15 @@ class ResultLoader {
   std::unique_ptr<network::SimpleURLLoader> loader_;
   ResultLoaderDelegate* const delegate_;
 
+  void OnBuildRequestComplete(
+      std::unique_ptr<network::ResourceRequest> resource_request);
   void OnSimpleURLLoaderComplete(std::unique_ptr<std::string> response_body);
   void OnResultParserComplete(std::unique_ptr<QuickAnswer> quick_answer);
 
   // Time when the query is issued.
   base::TimeTicks fetch_start_time_;
+
+  base::WeakPtrFactory<ResultLoader> weak_factory_{this};
 };
 
 }  // namespace quick_answers

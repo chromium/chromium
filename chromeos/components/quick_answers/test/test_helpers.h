@@ -50,6 +50,10 @@ MATCHER_P(QuickAnswersRequestEqual, quick_answers_request, "") {
   return (arg.selected_text == quick_answers_request.selected_text);
 }
 
+MATCHER_P(PreprocessedOutputEqual, preprocessed_output, "") {
+  return (arg.query == preprocessed_output.query);
+}
+
 }  // namespace quick_answers
 }  // namespace chromeos
 

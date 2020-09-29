@@ -110,7 +110,7 @@ void QuickAnswersClient::FetchQuickAnswers(
   result_loader_ = CreateResultLoader(
       preprocessed_request.preprocessed_output.intent_info.intent_type);
   // Load and parse search result.
-  result_loader_->Fetch(preprocessed_request.preprocessed_output.query);
+  result_loader_->Fetch(preprocessed_request.preprocessed_output);
 }
 
 void QuickAnswersClient::SendRequest(

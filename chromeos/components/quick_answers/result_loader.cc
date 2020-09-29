@@ -6,7 +6,9 @@
 #include "base/bind.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "chromeos/components/quick_answers/search_result_loader.h"
+#include "chromeos/components/quick_answers/translation_result_loader.h"
 #include "chromeos/components/quick_answers/utils/quick_answers_metrics.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 
@@ -50,17 +52,25 @@ std::unique_ptr<ResultLoader> ResultLoader::Create(
     IntentType intent_type,
     URLLoaderFactory* url_loader_factory,
     ResultLoader::ResultLoaderDelegate* delegate) {
-  // TODO(llin): Add TranslationResultLoader if the intent type is translation.
+  if (features::IsQuickAnswersTranslationCloudAPIEnabled() &&
+      intent_type == IntentType::kTranslation)
+    return std::make_unique<TranslationResultLoader>(url_loader_factory,
+                                                     delegate);
   return std::make_unique<SearchResultLoader>(url_loader_factory, delegate);
 }
 
-void ResultLoader::Fetch(const std::string& selected_text) {
+void ResultLoader::Fetch(const PreprocessedOutput& preprocessed_output) {
   DCHECK(network_loader_factory_);
-  DCHECK(!selected_text.empty());
+  DCHECK(!preprocessed_output.query.empty());
 
   // Load the resource.
-  auto resource_request = std::make_unique<network::ResourceRequest>();
-  resource_request->url = BuildRequestUrl(selected_text);
+  BuildRequest(preprocessed_output,
+               base::BindOnce(&ResultLoader::OnBuildRequestComplete,
+                              weak_factory_.GetWeakPtr()));
+}
+
+void ResultLoader::OnBuildRequestComplete(
+    std::unique_ptr<network::ResourceRequest> resource_request) {
   loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
                                              kNetworkTrafficAnnotationTag);
 
@@ -68,7 +78,7 @@ void ResultLoader::Fetch(const std::string& selected_text) {
   loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       network_loader_factory_,
       base::BindOnce(&ResultLoader::OnSimpleURLLoaderComplete,
-                     base::Unretained(this)));
+                     weak_factory_.GetWeakPtr()));
 }
 
 void ResultLoader::OnSimpleURLLoaderComplete(
@@ -84,7 +94,7 @@ void ResultLoader::OnSimpleURLLoaderComplete(
 
   ProcessResponse(std::move(response_body),
                   base::BindOnce(&ResultLoader::OnResultParserComplete,
-                                 base::Unretained(this)));
+                                 weak_factory_.GetWeakPtr()));
 }
 
 void ResultLoader::OnResultParserComplete(

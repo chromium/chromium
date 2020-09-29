@@ -461,6 +461,10 @@ const base::Feature kQuickAnswersSubToggle{"QuickAnswersSubToggle",
 const base::Feature kQuickAnswersTranslation{"QuickAnswersTranslation",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Controls whether to enable quick answers translation using Cloud API.
+const base::Feature kQuickAnswersTranslationCloudAPI{
+    "QuickAnswersTranslationCloudAPI", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls whether the PIN auto submit feature is enabled.
 const base::Feature kQuickUnlockPinAutosubmit{"QuickUnlockPinAutosubmit",
                                               base::FEATURE_ENABLED_BY_DEFAULT};
@@ -708,6 +712,10 @@ bool IsQuickAnswersTextAnnotatorEnabled() {
 
 bool IsQuickAnswersTranslationEnabled() {
   return base::FeatureList::IsEnabled(kQuickAnswersTranslation);
+}
+
+bool IsQuickAnswersTranslationCloudAPIEnabled() {
+  return base::FeatureList::IsEnabled(kQuickAnswersTranslationCloudAPI);
 }
 
 bool IsSplitSettingsSyncEnabled() {

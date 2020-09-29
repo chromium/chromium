@@ -16,6 +16,7 @@
 #include "chromeos/components/quick_answers/utils/quick_answers_utils.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -31,8 +32,10 @@ class TestResultLoader : public ResultLoader {
                    ResultLoaderDelegate* delegate)
       : ResultLoader(url_loader_factory, delegate) {}
   // ResultLoader:
-  GURL BuildRequestUrl(const std::string& selected_text) const override {
-    return GURL();
+  void BuildRequest(const PreprocessedOutput& preprocessed_output,
+                    BuildRequestCallback callback) const override {
+    return std::move(callback).Run(
+        std::make_unique<network::ResourceRequest>());
   }
   void ProcessResponse(std::unique_ptr<std::string> response_body,
                        ResponseParserCallback complete_callback) override {}
@@ -48,7 +51,7 @@ class MockResultLoader : public TestResultLoader {
   MockResultLoader& operator=(const MockResultLoader&) = delete;
 
   // TestResultLoader:
-  MOCK_METHOD1(Fetch, void(const std::string&));
+  MOCK_METHOD1(Fetch, void(const PreprocessedOutput&));
 };
 
 MATCHER_P(QuickAnswersRequestWithOutputEqual, quick_answers_request, "") {
@@ -305,7 +308,9 @@ TEST_F(QuickAnswersClientTest, SendRequest) {
 
   mock_result_loader_ =
       std::make_unique<MockResultLoader>(&test_url_loader_factory_, nullptr);
-  EXPECT_CALL(*mock_result_loader_, Fetch(::testing::Eq("Define:sel")));
+  EXPECT_CALL(*mock_result_loader_,
+              Fetch(PreprocessedOutputEqual(PreprocessRequest(
+                  IntentInfo("sel", IntentType::kDictionary)))));
   QuickAnswersClient::SetResultLoaderFactoryForTesting(
       &result_loader_factory_callback_);
 
@@ -347,7 +352,9 @@ TEST_F(QuickAnswersClientTest, FetchQuickAnswers) {
 
   mock_result_loader_ =
       std::make_unique<MockResultLoader>(&test_url_loader_factory_, nullptr);
-  EXPECT_CALL(*mock_result_loader_, Fetch(::testing::Eq("Define:sel")));
+  EXPECT_CALL(*mock_result_loader_,
+              Fetch(PreprocessedOutputEqual(
+                  quick_answers_request->preprocessed_output)));
   QuickAnswersClient::SetResultLoaderFactoryForTesting(
       &result_loader_factory_callback_);
 
