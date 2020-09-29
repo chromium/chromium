@@ -11,6 +11,7 @@
 #include "build/build_config.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/common/profiler/thread_profiler_platform_configuration.h"
 #include "components/version_info/version_info.h"
 #include "content/public/common/content_switches.h"
 #include "extensions/buildflags/buildflags.h"
@@ -66,21 +67,6 @@ bool IsBrowserTestModeEnabled() {
          switches::kStartStackProfilerBrowserTest;
 }
 
-bool IsProfilerEnabledForChannel() {
-#if defined(OS_ANDROID)
-  // Profiling is only enable in it's own dedicated browser tests on Android.
-  // TODO(crbug.com/1004855): Remove this logic to launch profiler.
-  return IsBrowserTestModeEnabled();
-#elif BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  // Only run on canary and dev.
-  const version_info::Channel channel = chrome::GetChannel();
-  return channel == version_info::Channel::CANARY ||
-         channel == version_info::Channel::DEV;
-#else
-  return true;
-#endif
-}
-
 bool ShouldEnableProfilerForNextRendererProcess() {
   // Ensure deterministic behavior for testing the profiler itself.
   if (IsBrowserTestModeEnabled())
@@ -93,7 +79,11 @@ bool ShouldEnableProfilerForNextRendererProcess() {
 }  // namespace
 
 ThreadProfilerConfiguration::ThreadProfilerConfiguration()
-    : configuration_(GenerateConfiguration()) {}
+    : platform_configuration_(ThreadProfilerPlatformConfiguration::Create(
+          IsBrowserTestModeEnabled())),
+      configuration_(GenerateConfiguration(*platform_configuration_)) {}
+
+ThreadProfilerConfiguration::~ThreadProfilerConfiguration() = default;
 
 base::StackSamplingProfiler::SamplingParams
 ThreadProfilerConfiguration::GetSamplingParams() const {
@@ -129,10 +119,10 @@ bool ThreadProfilerConfiguration::GetSyntheticFieldTrial(
     std::string* group_name) const {
   DCHECK(IsBrowserProcess());
 
-  if (!base::StackSamplingProfiler::IsSupported())
+  if (!platform_configuration_->IsSupported(BUILDFLAG(GOOGLE_CHROME_BRANDING),
+                                            chrome::GetChannel())) {
     return false;
-  if (!IsProfilerEnabledForChannel())
-    return false;
+  }
 
   *trial_name = "SyntheticStackProfilingConfiguration";
   *group_name = std::string();
@@ -220,14 +210,16 @@ ThreadProfilerConfiguration::ChooseConfiguration(
 
 // static
 ThreadProfilerConfiguration::ProfileConfiguration
-ThreadProfilerConfiguration::GenerateConfiguration() {
+ThreadProfilerConfiguration::GenerateConfiguration(
+    const ThreadProfilerPlatformConfiguration& platform_configuration) {
   if (!IsBrowserProcess())
     return PROFILE_FROM_COMMAND_LINE;
 
-  if (!base::StackSamplingProfiler::IsSupported())
+  const version_info::Channel channel = chrome::GetChannel();
+  if (!platform_configuration.IsSupported(BUILDFLAG(GOOGLE_CHROME_BRANDING),
+                                          channel)) {
     return PROFILE_DISABLED;
-  if (!IsProfilerEnabledForChannel())
-    return PROFILE_DISABLED;
+  }
 
 #if defined(OS_ANDROID)
   // Allow profiling if the Android Java/native unwinder module is available at
