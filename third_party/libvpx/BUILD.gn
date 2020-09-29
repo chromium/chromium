@@ -29,7 +29,7 @@ if (current_cpu == "x86") {
     cpu_arch_full = "arm"
   }
 } else if (current_cpu == "arm64") {
-  if (is_chromeos || is_win || is_mac) {
+  if (is_chromeos || is_mac) {
     cpu_arch_full = "arm64-highbd"
   } else {
     cpu_arch_full = current_cpu
