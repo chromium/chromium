@@ -29,6 +29,7 @@ struct EntryProperties;
 }  // namespace api
 
 namespace app_file_handler_util {
+class IsDirectoryCollector;
 class MimeTypeCollector;
 }  // namespace app_file_handler_util
 
@@ -57,8 +58,15 @@ class FileManagerPrivateInternalSharesheetHasTargetsFunction
       std::unique_ptr<api::file_manager_private::EntryProperties> properties,
       base::File::Error error);
 
+  void OnIsDirectoryCollected(
+      std::unique_ptr<std::vector<std::string>> mime_types,
+      std::unique_ptr<api::file_manager_private::EntryProperties> properties,
+      std::unique_ptr<std::set<base::FilePath>> path_directory_set);
+
   std::unique_ptr<app_file_handler_util::MimeTypeCollector>
       mime_type_collector_;
+  std::unique_ptr<app_file_handler_util::IsDirectoryCollector>
+      is_directory_collector_;
   std::vector<GURL> urls_;
   const ChromeExtensionFunctionDetails chrome_details_;
   std::vector<storage::FileSystemURL> file_system_urls_;
@@ -89,8 +97,15 @@ class FileManagerPrivateInternalInvokeSharesheetFunction
       std::unique_ptr<api::file_manager_private::EntryProperties> properties,
       base::File::Error error);
 
+  void OnIsDirectoryCollected(
+      std::unique_ptr<std::vector<std::string>> mime_types,
+      std::unique_ptr<api::file_manager_private::EntryProperties> properties,
+      std::unique_ptr<std::set<base::FilePath>> path_directory_set);
+
   std::unique_ptr<app_file_handler_util::MimeTypeCollector>
       mime_type_collector_;
+  std::unique_ptr<app_file_handler_util::IsDirectoryCollector>
+      is_directory_collector_;
   std::vector<GURL> urls_;
   const ChromeExtensionFunctionDetails chrome_details_;
   std::vector<storage::FileSystemURL> file_system_urls_;

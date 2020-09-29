@@ -156,11 +156,14 @@ apps::mojom::IntentPtr CreateShareIntentFromFiles(
 apps::mojom::IntentPtr CreateShareIntentFromDriveFile(
     const GURL& filesystem_url,
     const std::string& mime_type,
-    const GURL& drive_share_url) {
+    const GURL& drive_share_url,
+    bool is_directory) {
   auto intent = apps::mojom::Intent::New();
   intent->action = kIntentActionSend;
-  intent->mime_type = mime_type;
-  intent->file_urls = std::vector<GURL>{filesystem_url};
+  if (!is_directory) {
+    intent->mime_type = mime_type;
+    intent->file_urls = std::vector<GURL>{filesystem_url};
+  }
   if (!drive_share_url.is_empty()) {
     intent->drive_share_url = drive_share_url;
   }
@@ -304,6 +307,29 @@ bool MatchGlob(const std::string& value, const std::string& pattern) {
   return false;
 
 #undef GET_CHAR
+}
+
+bool OnlyShareToDrive(const apps::mojom::IntentPtr& intent) {
+  if (intent->action == kIntentActionSend ||
+      intent->action == kIntentActionSendMultiple) {
+    if (intent->drive_share_url.has_value() &&
+        !intent->share_text.has_value() && !intent->file_urls.has_value()) {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool IsIntentValid(const apps::mojom::IntentPtr& intent) {
+  // TODO(crbug.com/853604):Add more checks here to make this a general intent
+  // validity check. Check if this is a share intent with no file or text.
+  if (intent->action == kIntentActionSend ||
+      intent->action == kIntentActionSendMultiple) {
+    if (!intent->share_text.has_value() && !intent->file_urls.has_value()) {
+      return false;
+    }
+  }
+  return true;
 }
 
 }  // namespace apps_util

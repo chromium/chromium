@@ -117,14 +117,30 @@ void FileManagerPrivateInternalSharesheetHasTargetsFunction::
         base::File::Error error) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  bool result = false;
-
   if (error != base::File::FILE_OK) {
     LOG(ERROR) << "Error reading file properties in Drive: " << error;
     Respond(ArgumentList(extensions::api::file_manager_private_internal::
-                             SharesheetHasTargets::Results::Create(result)));
+                             SharesheetHasTargets::Results::Create(false)));
     return;
   }
+
+  is_directory_collector_ =
+      std::make_unique<app_file_handler_util::IsDirectoryCollector>(
+          chrome_details_.GetProfile());
+  is_directory_collector_->CollectForEntriesPaths(
+      std::vector<base::FilePath>{file_system_urls_[0].path()},
+      base::BindOnce(&FileManagerPrivateInternalSharesheetHasTargetsFunction::
+                         OnIsDirectoryCollected,
+                     this, std::move(mime_types), std::move(properties)));
+}
+
+void FileManagerPrivateInternalSharesheetHasTargetsFunction::
+    OnIsDirectoryCollected(
+        std::unique_ptr<std::vector<std::string>> mime_types,
+        std::unique_ptr<api::file_manager_private::EntryProperties> properties,
+        std::unique_ptr<std::set<base::FilePath>> path_directory_set) {
+  bool is_directory = path_directory_set->find(file_system_urls_[0].path()) !=
+                      path_directory_set->end();
 
   sharesheet::SharesheetService* sharesheet_service =
       sharesheet::SharesheetServiceFactory::GetForProfile(
@@ -133,9 +149,9 @@ void FileManagerPrivateInternalSharesheetHasTargetsFunction::
       (properties->can_share && *properties->can_share && properties->share_url)
           ? GURL(*properties->share_url)
           : GURL();
-  result = sharesheet_service->HasShareTargets(
+  bool result = sharesheet_service->HasShareTargets(
       apps_util::CreateShareIntentFromDriveFile(urls_[0], (*mime_types)[0],
-                                                share_url),
+                                                share_url, is_directory),
       contains_hosted_document_);
   Respond(ArgumentList(extensions::api::file_manager_private_internal::
                            SharesheetHasTargets::Results::Create(result)));
@@ -233,6 +249,23 @@ void FileManagerPrivateInternalInvokeSharesheetFunction::
     return;
   }
 
+  is_directory_collector_ =
+      std::make_unique<app_file_handler_util::IsDirectoryCollector>(
+          chrome_details_.GetProfile());
+  is_directory_collector_->CollectForEntriesPaths(
+      std::vector<base::FilePath>{file_system_urls_[0].path()},
+      base::BindOnce(&FileManagerPrivateInternalInvokeSharesheetFunction::
+                         OnIsDirectoryCollected,
+                     this, std::move(mime_types), std::move(properties)));
+}
+
+void FileManagerPrivateInternalInvokeSharesheetFunction::OnIsDirectoryCollected(
+    std::unique_ptr<std::vector<std::string>> mime_types,
+    std::unique_ptr<api::file_manager_private::EntryProperties> properties,
+    std::unique_ptr<std::set<base::FilePath>> path_directory_set) {
+  bool is_directory = path_directory_set->find(file_system_urls_[0].path()) !=
+                      path_directory_set->end();
+
   auto* profile = chrome_details_.GetProfile();
   sharesheet::SharesheetService* sharesheet_service =
       sharesheet::SharesheetServiceFactory::GetForProfile(profile);
@@ -245,10 +278,11 @@ void FileManagerPrivateInternalInvokeSharesheetFunction::
       (properties->can_share && *properties->can_share && properties->share_url)
           ? GURL(*properties->share_url)
           : GURL();
-  sharesheet_service->ShowBubble(GetSenderWebContents(),
-                                 apps_util::CreateShareIntentFromDriveFile(
-                                     urls_[0], (*mime_types)[0], share_url),
-                                 contains_hosted_document_);
+  sharesheet_service->ShowBubble(
+      GetSenderWebContents(),
+      apps_util::CreateShareIntentFromDriveFile(urls_[0], (*mime_types)[0],
+                                                share_url, is_directory),
+      contains_hosted_document_);
   Respond(NoArguments());
 }
 

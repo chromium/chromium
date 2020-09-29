@@ -546,6 +546,11 @@ std::vector<IntentLaunchInfo> AppServiceProxy::GetAppsForIntent(
     const apps::mojom::IntentPtr& intent,
     bool exclude_browsers) {
   std::vector<IntentLaunchInfo> intent_launch_info;
+  if (apps_util::OnlyShareToDrive(intent) ||
+      !apps_util::IsIntentValid(intent)) {
+    return intent_launch_info;
+  }
+
   if (app_service_.is_bound()) {
     cache_.ForEachApp([&intent_launch_info, &intent,
                        &exclude_browsers](const apps::AppUpdate& update) {

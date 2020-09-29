@@ -1588,7 +1588,9 @@ CommandHandler.COMMANDS_['invoke-sharesheet'] = new class extends Command {
     const entries = fileManager.selectionHandler.selection.entries;
 
     if (!util.isSharesheetEnabled() || !entries || entries.length === 0 ||
-        entries.some(entry => entry.isDirectory)) {
+        (entries.some(entry => entry.isDirectory) &&
+         (!CommandUtil.isDriveEntries(entries, fileManager.volumeManager) ||
+          entries.length > 1))) {
       event.canExecute = false;
       event.command.setHidden(true);
       event.command.disabled = true;
