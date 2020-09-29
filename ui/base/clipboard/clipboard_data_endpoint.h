@@ -16,11 +16,14 @@ namespace ui {
 // Whenever a new format is supported, a new enum should be added.
 enum class EndpointType {
 #if defined(OS_CHROMEOS) || (OS_LINUX) || (OS_FUCHSIA)
-  kGuestOs = 0,  // Guest OS: ARC++, PluginVM, Crostini.
-#endif
-  kUrl = 1,  // Website URL e.g. www.example.com.
-  kClipboardHistory =
-      2,  // Clipboard History UI has privileged access to any clipboard data.
+  kGuestOs = 0,  // Guest OS: PluginVM, Crostini.
+#endif           // defined(OS_CHROMEOS) || (OS_LINUX) || (OS_FUCHSIA)
+#if defined(OS_CHROMEOS)
+  kArc = 1,               // ARC.
+#endif                    // defined(OS_CHROMEOS)
+  kUrl = 2,               // Website URL e.g. www.example.com.
+  kClipboardHistory = 3,  // Clipboard History UI has privileged access to any
+                          // clipboard data.
   kMaxValue = kClipboardHistory
 };
 

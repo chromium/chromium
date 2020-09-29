@@ -8,6 +8,7 @@
 
 #include "ash/public/cpp/toast_data.h"
 #include "ash/public/cpp/toast_manager.h"
+#include "base/notreached.h"
 #include "base/optional.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/crostini/crostini_util.h"
@@ -60,10 +61,13 @@ bool EnterpriseClipboardDlpController::IsDataReadAllowed(
             DlpRulesManager::Component::kPluginVm,
             DlpRulesManager::Component::kCrostini},
         DlpRulesManager::Restriction::kClipboard);
+  } else if (data_dst->type() == ui::EndpointType::kArc) {
+    level = DlpRulesManager::Get()->IsRestrictedComponent(
+        data_src->origin()->GetURL(), DlpRulesManager::Component::kArc,
+        DlpRulesManager::Restriction::kClipboard);
   } else {
     NOTREACHED();
   }
-  // TODO(crbug.com/1129345): Add a separate handling for ARC
 
   if (level == DlpRulesManager::Level::kBlock) {
     ShowBlockToast(GetToastText(data_dst));
@@ -107,6 +111,13 @@ base::string16 EnterpriseClipboardDlpController::GetToastText(
       NOTREACHED();
     }
   }
+
+  if (data_dst && data_dst->type() == ui::EndpointType::kArc) {
+    return l10n_util::GetStringFUTF16(
+        IDS_POLICY_DLP_CLIPBOARD_BLOCKED_ON_COPY_VM,
+        l10n_util::GetStringUTF16(IDS_POLICY_DLP_ANDROID_APPS));
+  }
+
   return l10n_util::GetStringUTF16(IDS_POLICY_DLP_CLIPBOARD_BLOCKED_ON_PASTE);
 }
 
