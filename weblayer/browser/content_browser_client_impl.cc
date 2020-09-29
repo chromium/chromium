@@ -39,6 +39,7 @@
 #include "components/site_isolation/preloaded_isolated_origins.h"
 #include "components/site_isolation/site_isolation_policy.h"
 #include "components/strings/grit/components_locale_settings.h"
+#include "components/subresource_filter/content/browser/ruleset_version.h"
 #include "components/user_prefs/user_prefs.h"
 #include "components/variations/service/variations_service.h"
 #include "content/public/browser/browser_context.h"
@@ -245,6 +246,7 @@ void RegisterPrefs(PrefRegistrySimple* pref_registry) {
   metrics::AndroidMetricsServiceClient::RegisterPrefs(pref_registry);
 #endif
   variations::VariationsService::RegisterPrefs(pref_registry);
+  subresource_filter::IndexedRulesetVersion::RegisterPrefs(pref_registry);
 }
 
 mojo::PendingRemote<prerender::mojom::PrerenderCanceler> GetPrerenderCanceler(

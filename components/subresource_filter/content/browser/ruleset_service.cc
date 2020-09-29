@@ -29,6 +29,7 @@
 #include "components/subresource_filter/content/common/subresource_filter_messages.h"
 #include "components/subresource_filter/core/browser/copying_file_stream.h"
 #include "components/subresource_filter/core/browser/subresource_filter_constants.h"
+#include "components/subresource_filter/core/browser/subresource_filter_features.h"
 #include "components/subresource_filter/core/common/common_features.h"
 #include "components/subresource_filter/core/common/indexed_ruleset.h"
 #include "components/subresource_filter/core/common/time_measurements.h"
@@ -160,6 +161,35 @@ decltype(&RulesetService::IndexRuleset) RulesetService::g_index_ruleset_func =
 // static
 decltype(&base::ReplaceFile) RulesetService::g_replace_file_func =
     &base::ReplaceFile;
+
+// static
+std::unique_ptr<RulesetService> RulesetService::Create(
+    PrefService* local_state,
+    const base::FilePath& user_data_dir) {
+  if (!base::FeatureList::IsEnabled(kSafeBrowsingSubresourceFilter)) {
+    return nullptr;
+  }
+
+  // Runner for tasks critical for user experience.
+  scoped_refptr<base::SequencedTaskRunner> blocking_task_runner(
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
+           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN}));
+
+  // Runner for tasks that do not influence user experience.
+  scoped_refptr<base::SequencedTaskRunner> background_task_runner(
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN}));
+
+  base::FilePath indexed_ruleset_base_dir =
+      user_data_dir.Append(kTopLevelDirectoryName)
+          .Append(kIndexedRulesetBaseDirectoryName);
+
+  return std::make_unique<RulesetService>(local_state, background_task_runner,
+                                          indexed_ruleset_base_dir,
+                                          blocking_task_runner);
+}
 
 RulesetService::RulesetService(
     PrefService* local_state,

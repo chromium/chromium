@@ -56,6 +56,8 @@ include_rules = [
   "+components/ssl_errors",
   "+components/startup_metric_utils",
   "+components/strings",
+  "+components/subresource_filter/content/browser",
+  "+components/subresource_filter/core/browser",
   "+components/translate/content/android",
   "+components/translate/content/browser",
   "+components/translate/core/browser",

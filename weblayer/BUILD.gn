@@ -426,6 +426,8 @@ source_set("weblayer_lib_base") {
     "//components/ssl_errors",
     "//components/startup_metric_utils/browser",
     "//components/strings",
+    "//components/subresource_filter/content/browser",
+    "//components/subresource_filter/core/browser",
     "//components/translate/content/browser",
     "//components/translate/content/renderer",
     "//components/translate/core/browser",

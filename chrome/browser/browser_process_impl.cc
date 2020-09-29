@@ -111,8 +111,6 @@
 #include "components/safe_browsing/core/safe_browsing_service_interface.h"
 #include "components/sessions/core/session_id_generator.h"
 #include "components/subresource_filter/content/browser/ruleset_service.h"
-#include "components/subresource_filter/core/browser/subresource_filter_constants.h"
-#include "components/subresource_filter/core/browser/subresource_filter_features.h"
 #include "components/translate/core/browser/translate_download_manager.h"
 #include "components/ukm/ukm_service.h"
 #include "components/update_client/update_query_params.h"
@@ -1269,32 +1267,10 @@ void BrowserProcessImpl::CreateSubresourceFilterRulesetService() {
   DCHECK(!subresource_filter_ruleset_service_);
   created_subresource_filter_ruleset_service_ = true;
 
-  if (!base::FeatureList::IsEnabled(
-          subresource_filter::kSafeBrowsingSubresourceFilter)) {
-    return;
-  }
-
-  // Runner for tasks critical for user experience.
-  scoped_refptr<base::SequencedTaskRunner> blocking_task_runner(
-      base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
-           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN}));
-
-  // Runner for tasks that do not influence user experience.
-  scoped_refptr<base::SequencedTaskRunner> background_task_runner(
-      base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN}));
-
   base::FilePath user_data_dir;
   base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
-  base::FilePath indexed_ruleset_base_dir =
-      user_data_dir.Append(subresource_filter::kTopLevelDirectoryName)
-          .Append(subresource_filter::kIndexedRulesetBaseDirectoryName);
   subresource_filter_ruleset_service_ =
-      std::make_unique<subresource_filter::RulesetService>(
-          local_state(), background_task_runner, indexed_ruleset_base_dir,
-          blocking_task_runner);
+      subresource_filter::RulesetService::Create(local_state(), user_data_dir);
 }
 
 void BrowserProcessImpl::CreateFlocBlocklistService() {

@@ -149,6 +149,7 @@ test("weblayer_browsertests") {
     "../browser/profile_browsertest.cc",
     "../browser/site_isolation_browsertest.cc",
     "../browser/ssl_browsertest.cc",
+    "../browser/subresource_filter_browsertest.cc",
     "../browser/translate_browsertest.cc",
     "../browser/url_bar/url_bar_browsertest.cc",
     "../browser/weblayer_variations_http_browsertest.cc",

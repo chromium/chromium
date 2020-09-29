@@ -144,10 +144,18 @@ class RulesetService : public base::SupportsWeakPtr<RulesetService> {
     MAX,
   };
 
-  // Creates a new instance of a ruleset.  This is then assigned to a
-  // RulesetPublisher that calls Initialize for this ruleset service.
-  // Starts initialization of the RulesetService, performing tasks that won't
-  // slow down Chrome startup, then queues the FinishInitialization task.
+  // Creates a new instance of a ruleset with common configuration for
+  // production usage in embedders.
+  static std::unique_ptr<RulesetService> Create(
+      PrefService* local_state,
+      const base::FilePath& user_data_dir);
+
+  // Creates a new instance of a ruleset This is then assigned to a
+  // RulesetPublisher that calls Initialize for this ruleset service.  Starts
+  // initialization of the RulesetService, performing tasks that won't slow down
+  // Chrome startup, then queues the FinishInitialization task.
+  // NOTE: This constructor supports specifying various params explicitly for
+  // tests. Production code should favor RulesetService::Create().
   RulesetService(
       PrefService* local_state,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner,

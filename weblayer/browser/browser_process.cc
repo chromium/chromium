@@ -6,15 +6,18 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
+#include "base/path_service.h"
 #include "base/time/default_clock.h"
 #include "base/time/default_tick_clock.h"
 #include "components/network_time/network_time_tracker.h"
 #include "components/prefs/pref_service.h"
+#include "components/subresource_filter/content/browser/ruleset_service.h"
 #include "content/public/browser/network_quality_observer_factory.h"
 #include "content/public/browser/network_service_instance.h"
 #include "services/network/public/cpp/network_quality_tracker.h"
 #include "weblayer/browser/system_network_context_manager.h"
 #include "weblayer/browser/user_agent.h"
+#include "weblayer/common/weblayer_paths.h"
 
 #if defined(OS_ANDROID)
 #include "weblayer/browser/safe_browsing/safe_browsing_service.h"
@@ -92,11 +95,29 @@ network::NetworkQualityTracker* BrowserProcess::GetNetworkQualityTracker() {
   return network_quality_tracker_.get();
 }
 
+subresource_filter::RulesetService*
+BrowserProcess::subresource_filter_ruleset_service() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!subresource_filter_ruleset_service_)
+    CreateSubresourceFilterRulesetService();
+  return subresource_filter_ruleset_service_.get();
+}
+
 void BrowserProcess::CreateNetworkQualityObserver() {
   DCHECK(!network_quality_observer_);
   network_quality_observer_ =
       content::CreateNetworkQualityObserver(GetNetworkQualityTracker());
   DCHECK(network_quality_observer_);
+}
+
+void BrowserProcess::CreateSubresourceFilterRulesetService() {
+  DCHECK(!subresource_filter_ruleset_service_);
+
+  base::FilePath user_data_dir;
+  CHECK(base::PathService::Get(DIR_USER_DATA, &user_data_dir));
+  subresource_filter_ruleset_service_ =
+      subresource_filter::RulesetService::Create(GetLocalState(),
+                                                 user_data_dir);
 }
 
 #if defined(OS_ANDROID)
