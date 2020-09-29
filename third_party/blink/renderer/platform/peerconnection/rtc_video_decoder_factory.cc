@@ -7,12 +7,8 @@
 #include <array>
 #include <memory>
 
-#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/sequenced_task_runner.h"
-#include "base/task/task_traits.h"
-#include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "media/base/media_util.h"
 #include "media/base/video_codecs.h"
@@ -30,11 +26,6 @@ namespace {
 const int kDefaultFps = 30;
 // Any reasonable size, will be overridden by the decoder anyway.
 const gfx::Size kDefaultSize(640, 480);
-
-const base::Feature kRtcDecoderSupportTimeout{"RtcDecoderSupportTimeout",
-                                              base::FEATURE_ENABLED_BY_DEFAULT};
-
-const uint32_t kDefaultRtcDecoderSupportTimeoutMs = 10000;
 
 struct CodecConfig {
   media::VideoCodec codec;
@@ -180,70 +171,16 @@ class ScopedVideoDecoder : public webrtc::VideoDecoder {
   std::unique_ptr<webrtc::VideoDecoder> decoder_;
 };
 
-base::Optional<base::TimeDelta> GetRtcDecoderSupportTimeoutMs() {
-  if (!base::FeatureList::IsEnabled(kRtcDecoderSupportTimeout)) {
-    return base::nullopt;
-  }
-  int timeout_ms = base::GetFieldTrialParamByFeatureAsInt(
-      kRtcDecoderSupportTimeout, "timeout", kDefaultRtcDecoderSupportTimeoutMs);
-  return base::TimeDelta::FromMilliseconds(timeout_ms);
-}
-
 }  // namespace
 
 RTCVideoDecoderFactory::RTCVideoDecoderFactory(
     media::GpuVideoAcceleratorFactories* gpu_factories)
-    : gpu_factories_(gpu_factories),
-      decoder_support_known_(base::WaitableEvent::ResetPolicy::MANUAL,
-                             base::WaitableEvent::InitialState::NOT_SIGNALED),
-      decoder_support_timeout_ms_(GetRtcDecoderSupportTimeoutMs()) {
+    : gpu_factories_(gpu_factories) {
   DVLOG(2) << __func__;
-}
-
-bool RTCVideoDecoderFactory::IsDecoderSupportKnown() const {
-  if (gpu_factories_->IsDecoderSupportKnown()) {
-    return true;
-  }
-
-  if (!decoder_support_timeout_ms_) {
-    return false;
-  }
-
-  // Callback passed to NotifyDecoderSupportKnown is called on caller's
-  // sequence. To not block the callback while waiting for it, call
-  // NotifyDecoderSupportKnown on a separate sequence.
-  scoped_refptr<base::SequencedTaskRunner> task_runner =
-      base::ThreadPool::CreateSequencedTaskRunner({});
-
-  bool is_decoder_support_notification_requested = task_runner->PostTask(
-      FROM_HERE, base::BindOnce(
-                     [](media::GpuVideoAcceleratorFactories* gpu_factories,
-                        base::WaitableEvent* decoder_support_known) {
-                       gpu_factories->NotifyDecoderSupportKnown(base::BindOnce(
-                           [](base::WaitableEvent* decoder_support_known) {
-                             decoder_support_known->Signal();
-                           },
-                           decoder_support_known));
-                     },
-                     gpu_factories_, &decoder_support_known_));
-
-  if (!is_decoder_support_notification_requested) {
-    DLOG(WARNING) << "Failed to request decoder support notification.";
-    return false;
-  }
-
-  return decoder_support_known_.TimedWait(*decoder_support_timeout_ms_);
 }
 
 std::vector<webrtc::SdpVideoFormat>
 RTCVideoDecoderFactory::GetSupportedFormats() const {
-  if (!IsDecoderSupportKnown()) {
-    DLOG(WARNING) << "Decoder support is unknown. Timeout "
-                  << decoder_support_timeout_ms_.value_or(base::TimeDelta())
-                         .InMilliseconds()
-                  << "ms. Decoders might not be available.";
-  }
-
   std::vector<webrtc::SdpVideoFormat> supported_formats;
   for (auto& codec_config : kCodecConfigs) {
     media::VideoDecoderConfig config(
@@ -276,13 +213,6 @@ std::unique_ptr<webrtc::VideoDecoder>
 RTCVideoDecoderFactory::CreateVideoDecoder(
     const webrtc::SdpVideoFormat& format) {
   DVLOG(2) << __func__;
-  if (!IsDecoderSupportKnown()) {
-    DLOG(WARNING) << "Decoder support is unknown. Timeout "
-                  << decoder_support_timeout_ms_.value_or(base::TimeDelta())
-                         .InMilliseconds()
-                  << "ms. Decoders might not be available.";
-  }
-
   std::unique_ptr<webrtc::VideoDecoder> decoder =
       RTCVideoDecoderAdapter::Create(gpu_factories_, format);
   // ScopedVideoDecoder uses the task runner to make sure the decoder is
