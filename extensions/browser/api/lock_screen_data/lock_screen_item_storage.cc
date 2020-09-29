@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/guid.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/strcat.h"
 #include "base/time/default_tick_clock.h"
 #include "base/values.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -668,7 +669,7 @@ void LockScreenItemStorage::RemoveExtensionFromLocalState(
     const std::string& id) {
   {
     DictionaryPrefUpdate update(local_state_, kLockScreenDataPrefKey);
-    update->RemovePath({user_id_, id});
+    update->RemovePath(base::StrCat({user_id_, ".", id}));
   }
 
   data_item_cache_[id].state = CachedExtensionData::State::kLoaded;

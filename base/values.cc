@@ -717,29 +717,6 @@ Value* Value::SetPath(span<const StringPiece> path, Value&& value) {
   return cur->SetKey(*cur_path, std::move(value));
 }
 
-bool Value::RemovePath(std::initializer_list<StringPiece> path) {
-  DCHECK_GE(path.size(), 2u) << "Use RemoveKey() for a path of length 1.";
-  return RemovePath(make_span(path.begin(), path.size()));
-}
-
-bool Value::RemovePath(span<const StringPiece> path) {
-  if (!is_dict() || path.empty())
-    return false;
-
-  if (path.size() == 1)
-    return RemoveKey(path[0]);
-
-  auto found = dict().find(path[0]);
-  if (found == dict().end() || !found->second->is_dict())
-    return false;
-
-  bool removed = found->second->RemovePath(path.subspan(1));
-  if (removed && found->second->dict().empty())
-    dict().erase(found);
-
-  return removed;
-}
-
 Value::dict_iterator_proxy Value::DictItems() {
   return dict_iterator_proxy(&dict());
 }

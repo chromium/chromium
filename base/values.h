@@ -430,10 +430,6 @@ class BASE_EXPORT Value {
   //   bool success = value.RemovePath("foo.bar");
   bool RemovePath(StringPiece path);
 
-  // Deprecated versions
-  bool RemovePath(std::initializer_list<StringPiece> path);
-  bool RemovePath(span<const StringPiece> path);
-
   // Tries to extract a Value at the given path.
   //
   // If the current value is not a dictionary or any path component does not
