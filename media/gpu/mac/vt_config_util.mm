@@ -253,17 +253,17 @@ void SetMasteringMetadata(const gl::HDRMetadata& hdr_metadata,
 // Use the list of pairs in |cfstr_id_pairs| to do the conversion (by doing a
 // linear lookup).
 template <typename IdType, typename StringIdPair>
-bool GetImageBufferProperty(CVImageBufferRef image_buffer,
-                            CFStringRef key,
+bool GetImageBufferProperty(CFTypeRef value_untyped,
                             const std::vector<StringIdPair>& cfstr_id_pairs,
                             IdType* value_as_id) {
-  CFStringRef value_as_string = reinterpret_cast<CFStringRef>(
-      CVBufferGetAttachment(image_buffer, key, nullptr));
+  CFStringRef value_as_string = base::mac::CFCast<CFStringRef>(value_untyped);
   if (!value_as_string)
     return false;
 
   for (const auto& p : cfstr_id_pairs) {
-    if (!CFStringCompare(value_as_string, p.cfstr, 0)) {
+    if (p.cfstr_cm)
+      DCHECK(!CFStringCompare(p.cfstr_cv, p.cfstr_cm, 0));
+    if (!CFStringCompare(value_as_string, p.cfstr_cv, 0)) {
       *value_as_id = p.id;
       return true;
     }
@@ -272,24 +272,32 @@ bool GetImageBufferProperty(CVImageBufferRef image_buffer,
   return false;
 }
 
-gfx::ColorSpace::PrimaryID GetImageBufferPrimary(
-    CVImageBufferRef image_buffer) {
+gfx::ColorSpace::PrimaryID GetCoreVideoPrimary(CFTypeRef primaries_untyped) {
   struct CVImagePrimary {
-    const CFStringRef cfstr;
+    const CFStringRef cfstr_cv;
+    const CFStringRef cfstr_cm;
     const gfx::ColorSpace::PrimaryID id;
   };
   static const base::NoDestructor<std::vector<CVImagePrimary>>
       kSupportedPrimaries([] {
         std::vector<CVImagePrimary> supported_primaries;
-        supported_primaries.push_back({kCVImageBufferColorPrimaries_ITU_R_709_2,
-                                       gfx::ColorSpace::PrimaryID::BT709});
-        supported_primaries.push_back({kCVImageBufferColorPrimaries_EBU_3213,
-                                       gfx::ColorSpace::PrimaryID::BT470BG});
-        supported_primaries.push_back({kCVImageBufferColorPrimaries_SMPTE_C,
-                                       gfx::ColorSpace::PrimaryID::SMPTE240M});
+        supported_primaries.push_back(
+            {kCVImageBufferColorPrimaries_ITU_R_709_2,
+             kCMFormatDescriptionColorPrimaries_ITU_R_709_2,
+             gfx::ColorSpace::PrimaryID::BT709});
+        supported_primaries.push_back(
+            {kCVImageBufferColorPrimaries_EBU_3213,
+             kCMFormatDescriptionColorPrimaries_EBU_3213,
+             gfx::ColorSpace::PrimaryID::BT470BG});
+        supported_primaries.push_back(
+            {kCVImageBufferColorPrimaries_SMPTE_C,
+             kCMFormatDescriptionColorPrimaries_SMPTE_C,
+
+             gfx::ColorSpace::PrimaryID::SMPTE240M});
         if (@available(macos 10.11, *)) {
           supported_primaries.push_back(
               {kCVImageBufferColorPrimaries_ITU_R_2020,
+               kCMFormatDescriptionColorPrimaries_ITU_R_2020,
                gfx::ColorSpace::PrimaryID::BT2020});
         }
         return supported_primaries;
@@ -297,18 +305,19 @@ gfx::ColorSpace::PrimaryID GetImageBufferPrimary(
 
   // The named primaries. Default to BT709.
   auto primary_id = gfx::ColorSpace::PrimaryID::BT709;
-  if (!GetImageBufferProperty(image_buffer, kCVImageBufferColorPrimariesKey,
-                              *kSupportedPrimaries, &primary_id)) {
+  if (!GetImageBufferProperty(primaries_untyped, *kSupportedPrimaries,
+                              &primary_id)) {
     DLOG(ERROR) << "Failed to find CVImageBufferRef primaries.";
   }
   return primary_id;
 }
 
-gfx::ColorSpace::TransferID GetImageBufferTransferFn(
-    CVImageBufferRef image_buffer,
-    double* gamma) {
+gfx::ColorSpace::TransferID GetCoreVideoTransferFn(CFTypeRef transfer_untyped,
+                                                   CFTypeRef gamma_untyped,
+                                                   double* gamma) {
   struct CVImageTransferFn {
-    const CFStringRef cfstr;
+    const CFStringRef cfstr_cv;
+    const CFStringRef cfstr_cm;
     const gfx::ColorSpace::TransferID id;
   };
   static const base::NoDestructor<std::vector<CVImageTransferFn>>
@@ -316,38 +325,52 @@ gfx::ColorSpace::TransferID GetImageBufferTransferFn(
         std::vector<CVImageTransferFn> supported_transfer_funcs;
         supported_transfer_funcs.push_back(
             {kCVImageBufferTransferFunction_ITU_R_709_2,
+             kCMFormatDescriptionTransferFunction_ITU_R_709_2,
              gfx::ColorSpace::TransferID::BT709_APPLE});
         supported_transfer_funcs.push_back(
             {kCVImageBufferTransferFunction_SMPTE_240M_1995,
+             kCMFormatDescriptionTransferFunction_SMPTE_240M_1995,
              gfx::ColorSpace::TransferID::SMPTE240M});
         supported_transfer_funcs.push_back(
             {kCVImageBufferTransferFunction_UseGamma,
+             kCMFormatDescriptionTransferFunction_UseGamma,
              gfx::ColorSpace::TransferID::CUSTOM});
         if (@available(macos 10.11, *)) {
           supported_transfer_funcs.push_back(
               {kCVImageBufferTransferFunction_ITU_R_2020,
+               kCMFormatDescriptionTransferFunction_ITU_R_2020,
                gfx::ColorSpace::TransferID::BT2020_10});
         }
         if (@available(macos 10.12, *)) {
           supported_transfer_funcs.push_back(
               {kCVImageBufferTransferFunction_SMPTE_ST_428_1,
+               kCMFormatDescriptionTransferFunction_SMPTE_ST_428_1,
                gfx::ColorSpace::TransferID::SMPTEST428_1});
         }
         if (@available(macos 10.13, *)) {
           supported_transfer_funcs.push_back(
               {kCVImageBufferTransferFunction_SMPTE_ST_2084_PQ,
+               kCMFormatDescriptionTransferFunction_SMPTE_ST_2084_PQ,
                gfx::ColorSpace::TransferID::SMPTEST2084});
           supported_transfer_funcs.push_back(
               {kCVImageBufferTransferFunction_ITU_R_2100_HLG,
+               kCMFormatDescriptionTransferFunction_ITU_R_2100_HLG,
                gfx::ColorSpace::TransferID::ARIB_STD_B67});
           supported_transfer_funcs.push_back(
-              {kCVImageBufferTransferFunction_sRGB,
+              {kCVImageBufferTransferFunction_sRGB, nullptr,
                gfx::ColorSpace::TransferID::IEC61966_2_1});
         }
         if (@available(macos 10.14, *)) {
           supported_transfer_funcs.push_back(
               {kCVImageBufferTransferFunction_Linear,
+               kCMFormatDescriptionTransferFunction_Linear,
                gfx::ColorSpace::TransferID::LINEAR});
+        }
+        if (@available(macos 10.15, *)) {
+          supported_transfer_funcs.push_back(
+              {kCVImageBufferTransferFunction_sRGB,
+               kCMFormatDescriptionTransferFunction_sRGB,
+               gfx::ColorSpace::TransferID::IEC61966_2_1});
         }
 
         return supported_transfer_funcs;
@@ -355,8 +378,8 @@ gfx::ColorSpace::TransferID GetImageBufferTransferFn(
 
   // The named transfer function.
   auto transfer_id = gfx::ColorSpace::TransferID::BT709;
-  if (!GetImageBufferProperty(image_buffer, kCVImageBufferTransferFunctionKey,
-                              *kSupportedTransferFuncs, &transfer_id)) {
+  if (!GetImageBufferProperty(transfer_untyped, *kSupportedTransferFuncs,
+                              &transfer_id)) {
     DLOG(ERROR) << "Failed to find CVImageBufferRef transfer.";
   }
 
@@ -365,11 +388,9 @@ gfx::ColorSpace::TransferID GetImageBufferTransferFn(
 
   // If we fail to retrieve the gamma parameter, fall back to BT709.
   constexpr auto kDefaultTransferFn = gfx::ColorSpace::TransferID::BT709;
-  CFNumberRef gamma_number =
-      reinterpret_cast<CFNumberRef>(CVBufferGetAttachment(
-          image_buffer, kCVImageBufferGammaLevelKey, nullptr));
+  CFNumberRef gamma_number = base::mac::CFCast<CFNumberRef>(gamma_untyped);
   if (!gamma_number) {
-    DLOG(ERROR) << "Failed to get CVImageBufferRef gamma level.";
+    DLOG(ERROR) << "Failed to get gamma level.";
     return kDefaultTransferFn;
   }
 
@@ -389,30 +410,39 @@ gfx::ColorSpace::TransferID GetImageBufferTransferFn(
   return transfer_id;
 }
 
-gfx::ColorSpace::MatrixID GetImageBufferMatrix(CVImageBufferRef image_buffer) {
+gfx::ColorSpace::MatrixID GetCoreVideoMatrix(CFTypeRef matrix_untyped) {
   struct CVImageMatrix {
-    const CFStringRef cfstr;
+    const CFStringRef cfstr_cv;
+    const CFStringRef cfstr_cm;
     gfx::ColorSpace::MatrixID id;
   };
   static const base::NoDestructor<std::vector<CVImageMatrix>>
       kSupportedMatrices([] {
         std::vector<CVImageMatrix> supported_matrices;
-        supported_matrices.push_back({kCVImageBufferYCbCrMatrix_ITU_R_709_2,
-                                      gfx::ColorSpace::MatrixID::BT709});
-        supported_matrices.push_back({kCVImageBufferYCbCrMatrix_ITU_R_601_4,
-                                      gfx::ColorSpace::MatrixID::SMPTE170M});
-        supported_matrices.push_back({kCVImageBufferYCbCrMatrix_SMPTE_240M_1995,
-                                      gfx::ColorSpace::MatrixID::SMPTE240M});
+        supported_matrices.push_back(
+            {kCVImageBufferYCbCrMatrix_ITU_R_709_2,
+             kCMFormatDescriptionYCbCrMatrix_ITU_R_709_2,
+             gfx::ColorSpace::MatrixID::BT709});
+        supported_matrices.push_back(
+            {kCVImageBufferYCbCrMatrix_ITU_R_601_4,
+             kCMFormatDescriptionYCbCrMatrix_ITU_R_601_4,
+             gfx::ColorSpace::MatrixID::SMPTE170M});
+        supported_matrices.push_back(
+            {kCVImageBufferYCbCrMatrix_SMPTE_240M_1995,
+             kCMFormatDescriptionYCbCrMatrix_SMPTE_240M_1995,
+             gfx::ColorSpace::MatrixID::SMPTE240M});
         if (@available(macos 10.11, *)) {
-          supported_matrices.push_back({kCVImageBufferYCbCrMatrix_ITU_R_2020,
-                                        gfx::ColorSpace::MatrixID::BT2020_NCL});
+          supported_matrices.push_back(
+              {kCVImageBufferYCbCrMatrix_ITU_R_2020,
+               kCMFormatDescriptionYCbCrMatrix_ITU_R_2020,
+               gfx::ColorSpace::MatrixID::BT2020_NCL});
         }
         return supported_matrices;
       }());
 
   auto matrix_id = gfx::ColorSpace::MatrixID::INVALID;
-  if (!GetImageBufferProperty(image_buffer, kCVImageBufferYCbCrMatrixKey,
-                              *kSupportedMatrices, &matrix_id)) {
+  if (!GetImageBufferProperty(matrix_untyped, *kSupportedMatrices,
+                              &matrix_id)) {
     DLOG(ERROR) << "Failed to find CVImageBufferRef YUV matrix.";
   }
   return matrix_id;
@@ -512,11 +542,17 @@ CFMutableDictionaryRef CreateFormatExtensions(
   return base::mac::NSToCFCast(extensions);
 }
 
-gfx::ColorSpace GetImageBufferColorSpace(CVImageBufferRef image_buffer) {
+namespace {
+
+gfx::ColorSpace GetCoreVideoColorSpaceInternal(CFTypeRef primaries_untyped,
+                                               CFTypeRef transfer_untyped,
+                                               CFTypeRef gamma_untyped,
+                                               CFTypeRef matrix_untyped) {
   double gamma;
-  auto primary_id = GetImageBufferPrimary(image_buffer);
-  auto matrix_id = GetImageBufferMatrix(image_buffer);
-  auto transfer_id = GetImageBufferTransferFn(image_buffer, &gamma);
+  auto primary_id = GetCoreVideoPrimary(primaries_untyped);
+  auto matrix_id = GetCoreVideoMatrix(matrix_untyped);
+  auto transfer_id =
+      GetCoreVideoTransferFn(transfer_untyped, gamma_untyped, &gamma);
 
   // Use a matrix id that is coherent with a primary id. Useful when we fail to
   // parse the matrix. Previously it was always defaulting to MatrixID::BT709
@@ -546,6 +582,32 @@ gfx::ColorSpace GetImageBufferColorSpace(CVImageBufferRef image_buffer) {
   }
 
   return gfx::ColorSpace(primary_id, transfer_id, matrix_id, range_id);
+}
+
+}  // anonymous namespace
+
+gfx::ColorSpace GetImageBufferColorSpace(CVImageBufferRef image_buffer) {
+  return GetCoreVideoColorSpaceInternal(
+      CVBufferGetAttachment(image_buffer, kCVImageBufferColorPrimariesKey,
+                            nullptr),
+      CVBufferGetAttachment(image_buffer, kCVImageBufferTransferFunctionKey,
+                            nullptr),
+      CVBufferGetAttachment(image_buffer, kCVImageBufferGammaLevelKey, nullptr),
+      CVBufferGetAttachment(image_buffer, kCVImageBufferYCbCrMatrixKey,
+                            nullptr));
+}
+
+gfx::ColorSpace GetFormatDescriptionColorSpace(
+    CMFormatDescriptionRef format_description) {
+  return GetCoreVideoColorSpaceInternal(
+      CMFormatDescriptionGetExtension(
+          format_description, kCMFormatDescriptionExtension_ColorPrimaries),
+      CMFormatDescriptionGetExtension(
+          format_description, kCMFormatDescriptionExtension_TransferFunction),
+      CMFormatDescriptionGetExtension(format_description,
+                                      kCMFormatDescriptionExtension_GammaLevel),
+      CMFormatDescriptionGetExtension(
+          format_description, kCMFormatDescriptionExtension_YCbCrMatrix));
 }
 
 }  // namespace media

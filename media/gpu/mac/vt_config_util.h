@@ -26,6 +26,9 @@ CreateFormatExtensions(CMVideoCodecType codec_type,
 MEDIA_GPU_EXPORT gfx::ColorSpace GetImageBufferColorSpace(
     CVImageBufferRef image_buffer);
 
+MEDIA_GPU_EXPORT gfx::ColorSpace GetFormatDescriptionColorSpace(
+    CMFormatDescriptionRef format_description);
+
 }  // namespace media
 
 #endif  // MEDIA_GPU_MAC_VT_CONFIG_UTIL_H_
