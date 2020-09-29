@@ -25,10 +25,6 @@ UnifiedMediaControlsDetailedView::UnifiedMediaControlsDetailedView(
 }
 
 void UnifiedMediaControlsDetailedView::CreateExtraTitleRowButtons() {
-  // DetailedView should only be visible when global media controls
-  // is NOT pinned to shelf.
-  DCHECK(!MediaTray::IsPinnedToShelf());
-
   tri_view()->SetContainerVisible(TriView::Container::END, true);
   tri_view()->AddView(TriView::Container::END, new MediaTray::PinButton());
 }
