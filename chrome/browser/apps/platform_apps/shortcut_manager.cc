@@ -129,7 +129,7 @@ void AppShortcutManager::OnExtensionWillBeInstalled(
   // shortcut in the applications menu (e.g., Start Menu).
   if (is_update) {
     web_app::UpdateAllShortcuts(base::UTF8ToUTF16(old_name), profile_,
-                                extension, base::Closure());
+                                extension, base::OnceClosure());
   } else {
     CreateShortcutsForApp(profile_, extension);
   }

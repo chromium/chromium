@@ -319,7 +319,6 @@ _NOT_CONVERTED_TO_MODERN_BIND_AND_CALLBACK = '|'.join((
   '^base/callback.h',  # Intentional.
   '^chrome/browser/android/webapps/add_to_homescreen_data_fetcher_unittest.cc',
   '^chrome/browser/apps/guest_view/',
-  '^chrome/browser/apps/platform_apps/shortcut_manager.cc',
   '^chrome/browser/browsing_data/',
   '^chrome/browser/captive_portal/captive_portal_browsertest.cc',
   '^chrome/browser/chromeos/',
