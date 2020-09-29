@@ -160,6 +160,12 @@ bool AndroidSmsAppManagerImpl::HasAppBeenManuallyUninstalledByUser() {
          !setup_controller_->GetPwa(url);
 }
 
+bool AndroidSmsAppManagerImpl::IsAppInstalled() {
+  if (GetInstalledPwaDomain())
+    return true;
+  return false;
+}
+
 bool AndroidSmsAppManagerImpl::IsAppRegistryReady() {
   return pwa_delegate_->IsAppRegistryReady(profile_);
 }

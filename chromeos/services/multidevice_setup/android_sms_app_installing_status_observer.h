@@ -10,6 +10,9 @@
 #include "chromeos/services/multidevice_setup/feature_state_manager.h"
 #include "chromeos/services/multidevice_setup/host_status_provider.h"
 
+class PrefRegistrySimple;
+class PrefService;
+
 namespace chromeos {
 
 namespace multidevice_setup {
@@ -27,7 +30,8 @@ class AndroidSmsAppInstallingStatusObserver
     static std::unique_ptr<AndroidSmsAppInstallingStatusObserver> Create(
         HostStatusProvider* host_status_provider,
         FeatureStateManager* feature_state_manager,
-        AndroidSmsAppHelperDelegate* android_sms_app_helper_delegate);
+        AndroidSmsAppHelperDelegate* android_sms_app_helper_delegate,
+        PrefService* pref_service);
     static void SetFactoryForTesting(Factory* test_factory);
 
    protected:
@@ -44,11 +48,14 @@ class AndroidSmsAppInstallingStatusObserver
 
   ~AndroidSmsAppInstallingStatusObserver() override;
 
+  static void RegisterPrefs(PrefRegistrySimple* registry);
+
  private:
   AndroidSmsAppInstallingStatusObserver(
       HostStatusProvider* host_status_provider,
       FeatureStateManager* feature_state_manager,
-      AndroidSmsAppHelperDelegate* android_sms_app_helper_delegate);
+      AndroidSmsAppHelperDelegate* android_sms_app_helper_delegate,
+      PrefService* pref_service);
 
   // HostStatusProvider::Observer:
   void OnHostStatusChange(const HostStatusProvider::HostStatusWithDevice&
@@ -60,10 +67,12 @@ class AndroidSmsAppInstallingStatusObserver
 
   bool DoesFeatureStateAllowInstallation();
   void UpdatePwaInstallationState();
+  void ReenableIfAppropriate();
 
   HostStatusProvider* host_status_provider_;
   FeatureStateManager* feature_state_manager_;
   AndroidSmsAppHelperDelegate* android_sms_app_helper_delegate_;
+  PrefService* pref_service_;
   base::WeakPtrFactory<AndroidSmsAppInstallingStatusObserver> weak_ptr_factory_{
       this};
 

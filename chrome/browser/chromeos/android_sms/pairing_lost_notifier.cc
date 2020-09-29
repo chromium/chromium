@@ -75,10 +75,18 @@ void PairingLostNotifier::HandleMessagesFeatureState() {
           .find(multidevice_setup::mojom::Feature::kMessages)
           ->second;
 
-  // If Messages is currently enabled or disabled, the user has completed the
-  // setup process.
-  if (state == multidevice_setup::mojom::FeatureState::kDisabledByUser ||
-      state == multidevice_setup::mojom::FeatureState::kEnabledByUser) {
+  // If the feature is disabled we should never show any notifications or
+  // track the pairing state.  To avoid showing the notification immediately
+  // if the feature is ever enabled in the future, the pref should also be
+  // cleared.
+  if (state == multidevice_setup::mojom::FeatureState::kDisabledByUser) {
+    pref_service_->SetBoolean(kWasPreviouslySetUpPrefName, false);
+    ClosePairingLostNotificationIfVisible();
+    return;
+  }
+
+  // If Messages is enabled, the user has completed the setup process.
+  if (state == multidevice_setup::mojom::FeatureState::kEnabledByUser) {
     HandleSetUpFeatureState();
     return;
   }

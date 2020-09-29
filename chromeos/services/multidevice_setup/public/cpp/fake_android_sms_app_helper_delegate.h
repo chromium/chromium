@@ -19,6 +19,10 @@ class FakeAndroidSmsAppHelperDelegate
   ~FakeAndroidSmsAppHelperDelegate() override;
 
   bool has_installed_app() const { return has_installed_app_; }
+  void set_has_installed_app(bool has_installed_app) {
+    has_installed_app_ = has_installed_app;
+  }
+
   bool has_launched_app() const { return has_launched_app_; }
   bool is_default_to_persist_cookie_set() const {
     return is_default_to_persist_cookie_set_;
@@ -42,6 +46,7 @@ class FakeAndroidSmsAppHelperDelegate
   void SetUpAndLaunchAndroidSmsApp() override;
   void TearDownAndroidSmsApp() override;
   bool HasAppBeenManuallyUninstalledByUser() override;
+  bool IsAppInstalled() override;
   bool IsAppRegistryReady() override;
   void ExecuteOnAppRegistryReady(base::OnceClosure task) override;
 
