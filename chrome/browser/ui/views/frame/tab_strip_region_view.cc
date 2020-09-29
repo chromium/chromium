@@ -94,13 +94,13 @@ bool TabStripRegionView::IsRectInWindowCaption(const gfx::Rect& rect) {
   if (tab_strip_container_->HitTestRect(get_target_rect(tab_strip_container_)))
     return tab_strip_->IsRectInWindowCaption(get_target_rect(tab_strip_));
 
-  // Check to see if the rect intersects the non-button parts of the tab search
-  // button. The enclosed button has a non-rectangular shape, so if it's not in
-  // the visual portions of the buttons we treat it as a click to the caption.
-  if (tab_search_button_ && tab_search_button_->GetLocalBounds().Intersects(
-                                get_target_rect(tab_search_button_))) {
-    return !tab_search_button_->HitTestRect(
-        get_target_rect(tab_search_button_));
+  // The child could have a non-rectangular shape, so if the rect is not in the
+  // visual portions of the child view we treat it as a click to the caption.
+  for (View* const child : children()) {
+    if (child != tab_strip_container_ &&
+        child->GetLocalBounds().Intersects(get_target_rect(child))) {
+      return !child->HitTestRect(get_target_rect(child));
+    }
   }
 
   return true;
