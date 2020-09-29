@@ -13,8 +13,9 @@
 
 namespace cr_fuchsia {
 
-void RegisterCrashReportingFields(base::StringPiece component_url,
-                                  base::StringPiece crash_product_name) {
+void RegisterProductDataForCrashReporting(
+    base::StringPiece component_url,
+    base::StringPiece crash_product_name) {
   fuchsia::feedback::CrashReportingProduct product_data;
   product_data.set_name(crash_product_name.as_string());
   product_data.set_version(version_info::GetVersionNumber());
@@ -25,6 +26,18 @@ void RegisterCrashReportingFields(base::StringPiece component_url,
       ->svc()
       ->Connect<fuchsia::feedback::CrashReportingProductRegister>()
       ->Upsert(component_url.as_string(), std::move(product_data));
+}
+
+void RegisterProductDataForFeedback(base::StringPiece component_namespace) {
+  fuchsia::feedback::ComponentData component_data;
+  component_data.set_namespace_(component_namespace.as_string());
+  // TODO(https://crbug.com/1077428): Add release channel to the annotations.
+  component_data.mutable_annotations()->push_back(
+      {"version", version_info::GetVersionNumber()});
+  base::ComponentContextForProcess()
+      ->svc()
+      ->Connect<fuchsia::feedback::ComponentDataRegister>()
+      ->Upsert(std::move(component_data), []() {});
 }
 
 }  // namespace cr_fuchsia

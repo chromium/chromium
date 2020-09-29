@@ -14,8 +14,15 @@ namespace cr_fuchsia {
 // the version from version_info, and an appropriate value for the release
 // channel. |component_url| must match the current component. The calling
 // process must have access to "fuchsia.feedback.CrashReportingProductRegister".
-void RegisterCrashReportingFields(base::StringPiece component_url,
-                                  base::StringPiece crash_product_name);
+void RegisterProductDataForCrashReporting(base::StringPiece component_url,
+                                          base::StringPiece crash_product_name);
+
+// Registers basic annotations for the component in |component_namespace|.
+// Feedback reports will contain a namespace |component_namespace| that contains
+// the version from version_info, and an appropriate value for the release
+// channel. The calling process must have access to
+// "fuchsia.feedback.ComponentDataRegister".
+void RegisterProductDataForFeedback(base::StringPiece component_namespace);
 
 }  // namespace cr_fuchsia
 

@@ -54,7 +54,8 @@ int main(int argc, char** argv) {
   base::SingleThreadTaskExecutor io_task_executor(base::MessagePumpType::IO);
   base::RunLoop run_loop;
 
-  cr_fuchsia::RegisterCrashReportingFields(kComponentUrl, kCrashProductName);
+  cr_fuchsia::RegisterProductDataForCrashReporting(kComponentUrl,
+                                                   kCrashProductName);
 
   base::CommandLine::Init(argc, argv);
   CHECK(cr_fuchsia::InitLoggingFromCommandLine(
