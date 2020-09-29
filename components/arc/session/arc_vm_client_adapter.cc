@@ -23,6 +23,7 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/optional.h"
 #include "base/posix/eintr_wrapper.h"
@@ -77,6 +78,14 @@ constexpr const char kArcVmBootNotificationServerJobName[] =
 constexpr const char kCrosSystemPath[] = "/usr/bin/crossystem";
 constexpr const char kArcVmBootNotificationServerSocketPath[] =
     "/run/arcvm_boot_notification_server/host.socket";
+
+constexpr base::TimeDelta kArcBugReportBackupTimeMetricMinTime =
+    base::TimeDelta::FromMilliseconds(1);
+constexpr base::TimeDelta kArcBugReportBackupTimeMetricMaxTime =
+    base::TimeDelta::FromSeconds(60);
+constexpr int kArcBugReportBackupTimeMetricBuckets = 50;
+constexpr const char kArcBugReportBackupTimeMetric[] =
+    "Login.ArcBugReportBackupTime";
 
 constexpr int64_t kInvalidCid = -1;
 
@@ -543,7 +552,7 @@ class ArcVmClientAdapter : public ArcClientAdapter,
       GetDebugDaemonClient()->BackupArcBugReport(
           cryptohome::CreateAccountIdentifierFromIdentification(cryptohome_id_),
           base::BindOnce(&ArcVmClientAdapter::OnArcBugReportBackedUp,
-                         weak_factory_.GetWeakPtr()));
+                         weak_factory_.GetWeakPtr(), base::TimeTicks::Now()));
     } else {
       StopArcInstanceInternal();
     }
@@ -577,9 +586,18 @@ class ArcVmClientAdapter : public ArcClientAdapter,
   void ConciergeServiceStarted() override {}
 
  private:
-  void OnArcBugReportBackedUp(bool result) {
-    VLOG(1) << "OnArcBugReportBackedUp: back up "
-            << (result ? "done" : "failed");
+  void OnArcBugReportBackedUp(base::TimeTicks arc_bug_report_backup_time,
+                              bool result) {
+    if (result) {
+      base::TimeDelta elapsed_time =
+          base::TimeTicks::Now() - arc_bug_report_backup_time;
+      base::UmaHistogramCustomTimes(kArcBugReportBackupTimeMetric, elapsed_time,
+                                    kArcBugReportBackupTimeMetricMinTime,
+                                    kArcBugReportBackupTimeMetricMaxTime,
+                                    kArcBugReportBackupTimeMetricBuckets);
+    } else {
+      LOG(ERROR) << "Error contacting debugd to back up ARC bug report.";
+    }
 
     StopArcInstanceInternal();
   }
