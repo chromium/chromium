@@ -58,8 +58,10 @@ FileResult::FileResult(const std::string& schema,
   SetResultType(result_type);
   switch (result_type) {
     case ResultType::kDriveQuickAccess:
+    case ResultType::kDriveQuickAccessChip:
       SetMetricsType(ash::DRIVE_QUICK_ACCESS);
       break;
+    case ResultType::kFileChip:
     case ResultType::kZeroStateFile:
       SetMetricsType(ash::ZERO_STATE_FILE);
       break;

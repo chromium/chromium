@@ -13,6 +13,7 @@
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -27,7 +28,9 @@
 namespace app_list {
 namespace {
 
-constexpr char kSchema[] = "drive_zero_state://";
+// Schemas of result IDs for the results list and suggestion chips.
+constexpr char kListSchema[] = "drive_zero_state://";
+constexpr char kChipSchema[] = "drive_zero_state_chip://";
 
 // Given an absolute path representing a file in the user's Drive, returns a
 // reparented version of the path within the user's drive fs mount.
@@ -56,18 +59,36 @@ DriveZeroStateProvider::DriveZeroStateProvider(
   task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
       {base::TaskPriority::BEST_EFFORT, base::MayBlock(),
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
+
+  // Warm the results cache if or when drivefs is mounted by fetching from the
+  // Drive QuickAccess API. This is necessary only if the suggested files
+  // experiment is enabled, so that results are ready for display in the
+  // suggested chips on the first launcher open after login.
+  if (suggested_files_enabled_ && drive_service_) {
+    if (drive_service_->IsMounted()) {
+      // Drivefs is mounted, so we can fetch results immediately.
+      OnFileSystemMounted();
+    } else {
+      // Wait for DriveFS to be mounted, then fetch results. This happens in
+      // OnFileSystemMounted.
+      drive_service_->AddObserver(this);
+    }
+  }
 }
 
-DriveZeroStateProvider::~DriveZeroStateProvider() = default;
+DriveZeroStateProvider::~DriveZeroStateProvider() {
+  if (suggested_files_enabled_ && drive_service_)
+    drive_service_->RemoveObserver(this);
+}
 
 void DriveZeroStateProvider::OnFileSystemMounted() {
+  // This method is called on login, and each time the device wakes from sleep.
+  // We only want to warm the cache once.
   if (have_warmed_up_cache_)
     return;
   have_warmed_up_cache_ = true;
 
-  // TODO(crbug.com/1034842): Query ItemSuggest. We may need to call
-  // SearchController::Start afterwards, or preferably could just publish the
-  // results for this search provider.
+  item_suggest_cache_.UpdateCache();
 }
 
 void DriveZeroStateProvider::AppListShown() {
@@ -144,10 +165,10 @@ void DriveZeroStateProvider::OnFilePathsLocated(
     // the result.
 
     provider_results.emplace_back(
-        MakeResult(path_or_error->get_path(), score, /*is_chip=*/false));
+        MakeListResult(path_or_error->get_path(), score));
     if (suggested_files_enabled_) {
       provider_results.emplace_back(
-          MakeResult(path_or_error->get_path(), score, /*is_chip=*/true));
+          MakeChipResult(path_or_error->get_path(), score));
     }
   }
 
@@ -155,16 +176,22 @@ void DriveZeroStateProvider::OnFilePathsLocated(
   SwapResults(&provider_results);
 }
 
-std::unique_ptr<FileResult> DriveZeroStateProvider::MakeResult(
+std::unique_ptr<FileResult> DriveZeroStateProvider::MakeListResult(
     const base::FilePath& filepath,
-    const float relevance,
-    const bool is_chip) {
+    const float relevance) {
   return std::make_unique<FileResult>(
-      kSchema, ReparentToDriveMount(filepath, drive_service_),
+      kListSchema, ReparentToDriveMount(filepath, drive_service_),
+      ash::AppListSearchResultType::kDriveQuickAccess,
+      ash::SearchResultDisplayType::kList, relevance, profile_);
+}
+
+std::unique_ptr<FileResult> DriveZeroStateProvider::MakeChipResult(
+    const base::FilePath& filepath,
+    const float relevance) {
+  return std::make_unique<FileResult>(
+      kChipSchema, ReparentToDriveMount(filepath, drive_service_),
       ash::AppListSearchResultType::kDriveQuickAccessChip,
-      is_chip ? ash::SearchResultDisplayType::kChip
-              : ash::SearchResultDisplayType::kList,
-      relevance, profile_);
+      ash::SearchResultDisplayType::kChip, relevance, profile_);
 }
 
 }  // namespace app_list

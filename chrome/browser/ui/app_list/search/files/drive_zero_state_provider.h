@@ -50,9 +50,10 @@ class DriveZeroStateProvider : public SearchProvider,
   void OnFilePathsLocated(
       base::Optional<std::vector<drivefs::mojom::FilePathOrErrorPtr>> paths);
 
-  std::unique_ptr<FileResult> MakeResult(const base::FilePath& filepath,
-                                         const float relevance,
-                                         const bool is_chip);
+  std::unique_ptr<FileResult> MakeListResult(const base::FilePath& filepath,
+                                             const float relevance);
+  std::unique_ptr<FileResult> MakeChipResult(const base::FilePath& filepath,
+                                             const float relevance);
 
   Profile* const profile_;
   drive::DriveIntegrationService* const drive_service_;
