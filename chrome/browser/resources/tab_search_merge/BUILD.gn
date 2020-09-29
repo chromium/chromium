@@ -36,6 +36,7 @@ js_library("app") {
 }
 
 js_library("fuzzy_search") {
+  deps = [ "//ui/webui/resources/js:util.m" ]
 }
 
 js_library("tab_search_api_proxy") {
