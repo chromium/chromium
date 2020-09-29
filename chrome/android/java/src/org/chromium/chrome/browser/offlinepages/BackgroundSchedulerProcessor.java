@@ -7,7 +7,7 @@ package org.chromium.chrome.browser.offlinepages;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
-import org.chromium.chrome.browser.DeviceConditions;
+import org.chromium.chrome.browser.device.DeviceConditions;
 
 /** Class allowing for mocking out calls to BackgroundSchedulerBridge.  */
 public class BackgroundSchedulerProcessor {

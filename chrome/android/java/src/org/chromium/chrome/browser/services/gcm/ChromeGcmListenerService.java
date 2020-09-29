@@ -16,7 +16,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
-import org.chromium.chrome.browser.DeviceConditions;
+import org.chromium.chrome.browser.device.DeviceConditions;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.init.ProcessInitializationHandler;
 import org.chromium.components.background_task_scheduler.BackgroundTaskSchedulerFactory;

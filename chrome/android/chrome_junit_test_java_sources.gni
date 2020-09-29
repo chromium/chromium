@@ -4,8 +4,6 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/ChromeBackupAgentTest.java",
   "junit/src/org/chromium/chrome/browser/DeferredStartupHandlerTest.java",
   "junit/src/org/chromium/chrome/browser/DelayedScreenLockIntentHandlerTest.java",
-  "junit/src/org/chromium/chrome/browser/DeviceConditionsTest.java",
-  "junit/src/org/chromium/chrome/browser/ShadowDeviceConditions.java",
   "junit/src/org/chromium/chrome/browser/ShadowIdleHandlerAwareMessageQueue.java",
   "junit/src/org/chromium/chrome/browser/ShortcutHelperTest.java",
   "junit/src/org/chromium/chrome/browser/about_settings/AboutSettingsBridgeTest.java",

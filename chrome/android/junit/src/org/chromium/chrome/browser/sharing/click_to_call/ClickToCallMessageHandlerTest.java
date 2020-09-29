@@ -19,8 +19,8 @@ import org.robolectric.shadows.ShadowNotificationManager;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
-import org.chromium.chrome.browser.DeviceConditions;
-import org.chromium.chrome.browser.ShadowDeviceConditions;
+import org.chromium.chrome.browser.device.DeviceConditions;
+import org.chromium.chrome.browser.device.ShadowDeviceConditions;
 import org.chromium.net.ConnectionType;
 
 /**
