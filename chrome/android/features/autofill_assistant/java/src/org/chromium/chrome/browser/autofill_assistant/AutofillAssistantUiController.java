@@ -166,7 +166,8 @@ public class AutofillAssistantUiController {
                         dismissSnackbar();
 
                         if (tab == null) {
-                            safeOnTabSwitched(getModel().getBottomSheetState());
+                            safeOnTabSwitched(getModel().getBottomSheetState(),
+                                    /* activityChanged = */ false);
                             // A null tab indicates that there's no selected tab; Most likely, we're
                             // in the process of selecting a new tab. Hide the UI for possible reuse
                             // later.
@@ -183,7 +184,8 @@ public class AutofillAssistantUiController {
                             }
                         } else {
                             //
-                            safeOnTabSwitched(getModel().getBottomSheetState());
+                            safeOnTabSwitched(getModel().getBottomSheetState(),
+                                    /* activityChanged = */ false);
                             // A new tab was selected. If Autofill Assistant is running on it,
                             // attach the UI to that other instance, otherwise destroy the UI.
                             AutofillAssistantClient.fromWebContents(mWebContents)
@@ -205,7 +207,8 @@ public class AutofillAssistantUiController {
                                 return;
                             }
 
-                            safeOnTabSwitched(getModel().getBottomSheetState());
+                            safeOnTabSwitched(
+                                    getModel().getBottomSheetState(), /* activityChanged = */ true);
                             // If we have an open snackbar, execute the callback immediately. This
                             // may shut down the Autofill Assistant.
                             if (mSnackbarController != null) {
@@ -481,10 +484,10 @@ public class AutofillAssistantUiController {
         }
     }
 
-    private void safeOnTabSwitched(@SheetState int state) {
+    private void safeOnTabSwitched(@SheetState int state, boolean activityChanged) {
         if (mNativeUiController != 0) {
-            AutofillAssistantUiControllerJni.get().onTabSwitched(
-                    mNativeUiController, AutofillAssistantUiController.this, state);
+            AutofillAssistantUiControllerJni.get().onTabSwitched(mNativeUiController,
+                    AutofillAssistantUiController.this, state, activityChanged);
         }
     }
 
@@ -514,7 +517,7 @@ public class AutofillAssistantUiController {
         void setVisible(long nativeUiControllerAndroid, AutofillAssistantUiController caller,
                 boolean visible);
         void onTabSwitched(long nativeUiControllerAndroid, AutofillAssistantUiController caller,
-                @SheetState int state);
+                @SheetState int state, boolean activityChanged);
         void onTabSelected(long nativeUiControllerAndroid, AutofillAssistantUiController caller);
     }
 }

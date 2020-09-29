@@ -696,8 +696,18 @@ void UiControllerAndroid::RestoreUi() {
 void UiControllerAndroid::OnTabSwitched(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jcaller,
-    jint state) {
+    jint state,
+    jboolean activity_changed) {
   if (ui_delegate_ == nullptr) {
+    return;
+  }
+
+  // TODO(b/167947210) Allow lite scripts to transition from CCT to regular
+  // scripts.
+  if (activity_changed && ui_delegate_->IsRunningLiteScript()) {
+    // Destroying UI here because Shutdown does not do so in all cases.
+    DestroySelf();
+    Shutdown(Metrics::DropOutReason::CUSTOM_TAB_CLOSED);
     return;
   }
 
