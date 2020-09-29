@@ -169,6 +169,8 @@ component("capture_lib") {
 
   if (is_mac) {
     sources += [
+      "video/mac/pixel_buffer_pool_mac.cc",
+      "video/mac/pixel_buffer_pool_mac.h",
       "video/mac/video_capture_device_avfoundation_legacy_mac.h",
       "video/mac/video_capture_device_avfoundation_legacy_mac.mm",
       "video/mac/video_capture_device_avfoundation_mac.h",
@@ -195,6 +197,7 @@ component("capture_lib") {
       "CoreVideo.framework",
       "Foundation.framework",
       "IOSurface.framework",
+      "VideoToolbox.framework",
     ]
   }
 
@@ -407,6 +410,7 @@ test("capture_unittests") {
     "video/linux/camera_config_chromeos_unittest.cc",
     "video/linux/v4l2_capture_delegate_unittest.cc",
     "video/linux/video_capture_device_factory_linux_unittest.cc",
+    "video/mac/pixel_buffer_pool_mac_unittest.mm",
     "video/mac/test/mock_video_capture_device_avfoundation_frame_receiver_mac.h",
     "video/mac/test/mock_video_capture_device_avfoundation_frame_receiver_mac.mm",
     "video/mac/test/video_capture_test_utils_mac.h",
@@ -459,6 +463,7 @@ test("capture_unittests") {
     frameworks = [
       "AVFoundation.framework",
       "CoreMedia.framework",
+      "CoreVideo.framework",
     ]
   }
 
