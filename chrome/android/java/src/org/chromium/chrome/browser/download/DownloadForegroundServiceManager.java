@@ -276,6 +276,7 @@ public class DownloadForegroundServiceManager {
         stopAndUnbindServiceInternal(
                 stopForegroundNotification, mPinnedNotificationId, oldNotification);
 
+        mBoundService = null;
 
         mPinnedNotificationId = INVALID_NOTIFICATION_ID;
     }
