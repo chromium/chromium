@@ -1459,8 +1459,9 @@ void ProfileSyncService::UpdateDataTypesForInvalidations() {
     return;
   }
 
-  // No need to register invalidations for commit-only types.
-  ModelTypeSet types = Difference(GetDataTypesToConfigure(), CommitOnlyTypes());
+  // No need to register invalidations for non-protocol or commit-only types.
+  ModelTypeSet types = Intersection(GetDataTypesToConfigure(), ProtocolTypes());
+  types.RemoveAll(CommitOnlyTypes());
   if (!sessions_invalidations_enabled_) {
     types.Remove(SESSIONS);
   }
