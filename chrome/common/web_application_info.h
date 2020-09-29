@@ -103,6 +103,9 @@ struct WebApplicationInfo {
   // https://www.w3.org/TR/appmanifest/#start_url-member
   GURL start_url;
 
+  // Optional query parameters to add to the start_url when launching the app.
+  base::Optional<std::string> launch_query_params;
+
   // Scope for the app. Dictates what URLs will be opened in the app.
   GURL scope;
 

@@ -157,6 +157,9 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
   local_data->set_is_locally_installed(web_app.is_locally_installed());
 
   // Optional fields:
+  if (web_app.launch_query_params())
+    local_data->set_launch_query_params(*web_app.launch_query_params());
+
   if (web_app.display_mode() != DisplayMode::kUndefined) {
     local_data->set_display_mode(
         ToWebAppProtoDisplayMode(web_app.display_mode()));
@@ -394,6 +397,9 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
   }
 
   // Optional fields:
+  if (local_data.has_launch_query_params())
+    web_app->SetLaunchQueryParams(local_data.launch_query_params());
+
   if (local_data.has_display_mode())
     web_app->SetDisplayMode(ToMojomDisplayMode(local_data.display_mode()));
 

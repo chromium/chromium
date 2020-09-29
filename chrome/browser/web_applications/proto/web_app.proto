@@ -157,4 +157,6 @@ message WebAppProto {
   optional RunOnOsLoginMode user_run_on_os_login_mode = 24;
 
   optional ShareTarget share_target = 25;
+
+  optional string launch_query_params = 26;
 }

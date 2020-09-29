@@ -122,6 +122,8 @@ class InstallManager {
     bool require_manifest = false;
 
     std::vector<std::string> additional_search_terms;
+
+    base::Optional<std::string> launch_query_params;
   };
   // Starts a background web app installation process for a given
   // |web_contents|.

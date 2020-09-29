@@ -245,6 +245,9 @@ class WebAppDatabaseTest : public WebAppTest {
     app->SetDisplayModeOverride(std::vector<DisplayMode>(
         display_mode_override.begin(), display_mode_override.end()));
 
+    if (random.next_bool())
+      app->SetLaunchQueryParams(base::NumberToString(random.next_uint()));
+
     const RunOnOsLoginMode run_on_os_login_modes[3] = {
         RunOnOsLoginMode::kUndefined, RunOnOsLoginMode::kWindowed,
         RunOnOsLoginMode::kMinimized};

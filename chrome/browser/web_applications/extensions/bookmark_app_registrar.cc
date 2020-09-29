@@ -149,6 +149,12 @@ const GURL& BookmarkAppRegistrar::GetAppStartUrl(
                    : GURL::EmptyGURL();
 }
 
+// Only implemented for WebApp. Bookmark apps are going away.
+const std::string* BookmarkAppRegistrar::GetAppLaunchQueryParams(
+    const web_app::AppId& app_id) const {
+  return nullptr;
+}
+
 base::Optional<GURL> BookmarkAppRegistrar::GetAppScopeInternal(
     const web_app::AppId& app_id) const {
   const Extension* extension = GetBookmarkAppDchecked(app_id);

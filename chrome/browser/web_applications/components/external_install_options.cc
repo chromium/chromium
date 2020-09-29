@@ -120,6 +120,8 @@ InstallManager::InstallParams ConvertExternalInstallOptionsToParams(
 
   params.additional_search_terms = install_options.additional_search_terms;
 
+  params.launch_query_params = install_options.launch_query_params;
+
   return params;
 }
 

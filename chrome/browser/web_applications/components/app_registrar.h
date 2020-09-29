@@ -90,6 +90,11 @@ class AppRegistrar {
   virtual base::Optional<SkColor> GetAppBackgroundColor(
       const AppId& app_id) const = 0;
   virtual const GURL& GetAppStartUrl(const AppId& app_id) const = 0;
+  virtual const std::string* GetAppLaunchQueryParams(
+      const AppId& app_id) const = 0;
+
+  // Returns the start_url with launch_query_params appended to the end if any.
+  GURL GetAppLaunchUrl(const AppId& app_id) const;
 
   // TODO(crbug.com/910016): Replace uses of this with GetAppScope().
   virtual base::Optional<GURL> GetAppScopeInternal(

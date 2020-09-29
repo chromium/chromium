@@ -263,6 +263,11 @@ void WebApp::SetSyncFallbackData(SyncFallbackData sync_fallback_data) {
   sync_fallback_data_ = std::move(sync_fallback_data);
 }
 
+void WebApp::SetLaunchQueryParams(
+    base::Optional<std::string> launch_query_params) {
+  launch_query_params_ = std::move(launch_query_params);
+}
+
 WebApp::SyncFallbackData::SyncFallbackData() = default;
 
 WebApp::SyncFallbackData::~SyncFallbackData() = default;
@@ -288,6 +293,9 @@ std::ostream& operator<<(std::ostream& out, const WebApp& app) {
   out << "app_id: " << app.app_id_ << std::endl
       << "  name: " << app.name_ << std::endl
       << "  start_url: " << app.start_url_ << std::endl
+      << "  launch_query_params: "
+      << (app.launch_query_params_ ? *app.launch_query_params_ : std::string())
+      << std::endl
       << "  scope: " << app.scope_ << std::endl
       << "  theme_color: " << ColorToString(app.theme_color_) << std::endl
       << "  background_color: " << ColorToString(app.background_color_)
@@ -354,8 +362,8 @@ bool operator!=(const WebApp::SyncFallbackData& sync_fallback_data1,
 
 bool operator==(const WebApp& app1, const WebApp& app2) {
   return std::tie(app1.app_id_, app1.sources_, app1.name_, app1.start_url_,
-                  app1.description_, app1.scope_, app1.theme_color_,
-                  app1.background_color_, app1.icon_infos_,
+                  app1.launch_query_params_, app1.description_, app1.scope_,
+                  app1.theme_color_, app1.background_color_, app1.icon_infos_,
                   app1.downloaded_icon_sizes_any_,
                   app1.downloaded_icon_sizes_maskable_, app1.is_generated_icon_,
                   app1.display_mode_, app1.display_mode_override_,
@@ -367,8 +375,8 @@ bool operator==(const WebApp& app1, const WebApp& app2) {
                   app1.sync_fallback_data_, app1.last_launch_time_,
                   app1.install_time_, app1.run_on_os_login_mode_) ==
          std::tie(app2.app_id_, app2.sources_, app2.name_, app2.start_url_,
-                  app2.description_, app2.scope_, app2.theme_color_,
-                  app2.background_color_, app2.icon_infos_,
+                  app2.launch_query_params_, app2.description_, app2.scope_,
+                  app2.theme_color_, app2.background_color_, app2.icon_infos_,
                   app2.downloaded_icon_sizes_any_,
                   app2.downloaded_icon_sizes_maskable_, app2.is_generated_icon_,
                   app2.display_mode_, app2.display_mode_override_,

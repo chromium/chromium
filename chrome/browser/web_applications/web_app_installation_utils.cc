@@ -157,6 +157,7 @@ void SetWebAppManifestFields(const WebApplicationInfo& web_app_info,
   web_app.SetDisplayModeOverride(web_app_info.display_override);
 
   web_app.SetDescription(base::UTF16ToUTF8(web_app_info.description));
+  web_app.SetLaunchQueryParams(web_app_info.launch_query_params);
   web_app.SetScope(web_app_info.scope);
   DCHECK(!web_app_info.theme_color.has_value() ||
          SkColorGetA(*web_app_info.theme_color) == SK_AlphaOPAQUE);

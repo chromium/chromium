@@ -81,8 +81,73 @@ class ExternalWebAppManagerBrowserTest
   ~ExternalWebAppManagerBrowserTest() override = default;
 };
 
-// This JSON config functionality is only available on Chrome OS.
-#if defined(OS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(ExternalWebAppManagerBrowserTest,
+                       LaunchQueryParamsBasic) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL start_url = embedded_test_server()->GetURL("/web_apps/basic.html");
+  AppId app_id = GenerateAppIdFromURL(start_url);
+  EXPECT_FALSE(registrar().IsInstalled(app_id));
+
+  InstallResultCode code =
+      SyncDefaultAppConfig(start_url, base::ReplaceStringPlaceholders(
+                                          R"({
+                "app_url": "$1",
+                "launch_container": "window",
+                "user_type": ["unmanaged"],
+                "launch_query_params": "test_launch_params"
+              })",
+                                          {start_url.spec()}, nullptr));
+  EXPECT_EQ(code, InstallResultCode::kSuccessNewInstall);
+
+  EXPECT_TRUE(registrar().IsInstalled(app_id));
+  EXPECT_EQ(registrar().GetAppStartUrl(app_id).spec(), start_url);
+
+  GURL launch_url =
+      embedded_test_server()->GetURL("/web_apps/basic.html?test_launch_params");
+  EXPECT_EQ(registrar().GetAppLaunchUrl(app_id), launch_url);
+
+  Browser* app_browser = LaunchWebAppBrowserAndWait(profile(), app_id);
+  EXPECT_EQ(
+      app_browser->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
+      launch_url);
+}
+
+IN_PROC_BROWSER_TEST_F(ExternalWebAppManagerBrowserTest,
+                       LaunchQueryParamsComplex) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL install_url = embedded_test_server()->GetURL(
+      "/web_apps/query_params_in_start_url.html");
+  GURL start_url = embedded_test_server()->GetURL(
+      "/web_apps/query_params_in_start_url.html?query_params=in&start=url");
+  AppId app_id = GenerateAppIdFromURL(start_url);
+  EXPECT_FALSE(registrar().IsInstalled(app_id));
+
+  InstallResultCode code =
+      SyncDefaultAppConfig(install_url, base::ReplaceStringPlaceholders(
+                                            R"({
+                "app_url": "$1",
+                "launch_container": "window",
+                "user_type": ["unmanaged"],
+                "launch_query_params": "!@#$$%^*&)("
+              })",
+                                            {install_url.spec()}, nullptr));
+  EXPECT_EQ(code, InstallResultCode::kSuccessNewInstall);
+
+  EXPECT_TRUE(registrar().IsInstalled(app_id));
+  EXPECT_EQ(registrar().GetAppStartUrl(app_id).spec(), start_url);
+
+  GURL launch_url = embedded_test_server()->GetURL(
+      "/web_apps/"
+      "query_params_in_start_url.html?query_params=in&start=url&!@%23$%^*&)(");
+  EXPECT_EQ(registrar().GetAppLaunchUrl(app_id), launch_url);
+
+  Browser* app_browser = LaunchWebAppBrowserAndWait(profile(), app_id);
+  EXPECT_EQ(
+      app_browser->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
+      launch_url);
+}
 
 IN_PROC_BROWSER_TEST_F(ExternalWebAppManagerBrowserTest, UninstallAndReplace) {
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -116,6 +181,10 @@ IN_PROC_BROWSER_TEST_F(ExternalWebAppManagerBrowserTest, UninstallAndReplace) {
       uninstall_observer.WaitForExtensionUninstalled();
   EXPECT_EQ(app, uninstalled_app.get());
 }
+
+// The offline manifest JSON config functionality is only available on Chrome
+// OS.
+#if defined(OS_CHROMEOS)
 
 // Check that offline fallback installs work offline.
 IN_PROC_BROWSER_TEST_F(ExternalWebAppManagerBrowserTest,

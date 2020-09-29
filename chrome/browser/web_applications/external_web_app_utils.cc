@@ -71,6 +71,10 @@ constexpr char kLaunchContainer[] = "launch_container";
 constexpr char kLaunchContainerTab[] = "tab";
 constexpr char kLaunchContainerWindow[] = "window";
 
+// kLaunchQueryParams is an optional string which specifies query parameters to
+// add to the start_url when launching the app.
+constexpr char kLaunchQueryParams[] = "launch_query_params";
+
 // kLoadAndAwaitServiceWorkerRegistration is an optional bool that specifies
 // whether to fetch the |kServiceWorkerRegistrationUrl| after installation to
 // allow time for the app to register its service worker. This is done as a
@@ -279,6 +283,16 @@ ExternalConfigParseResult ParseConfig(FileUtilsWrapper& file_utils,
   } else {
     LOG(ERROR) << file << " had an invalid " << kLaunchContainer;
     return Result::Error();
+  }
+
+  // launch_query_params
+  value = app_config.FindKey(kLaunchQueryParams);
+  if (value) {
+    if (!value->is_string()) {
+      LOG(ERROR) << file << " had an invalid " << kLaunchQueryParams;
+      return Result::Error();
+    }
+    options.launch_query_params = value->GetString();
   }
 
   // load_and_await_service_worker_registration

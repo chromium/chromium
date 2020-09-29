@@ -45,6 +45,11 @@ class WebApp {
   const std::string& description() const { return description_; }
 
   const GURL& start_url() const { return start_url_; }
+
+  const std::string* launch_query_params() const {
+    return launch_query_params_ ? &launch_query_params_.value() : nullptr;
+  }
+
   const GURL& scope() const { return scope_; }
 
   const base::Optional<SkColor>& theme_color() const { return theme_color_; }
@@ -171,6 +176,7 @@ class WebApp {
   void SetName(const std::string& name);
   void SetDescription(const std::string& description);
   void SetStartUrl(const GURL& launch_url);
+  void SetLaunchQueryParams(base::Optional<std::string> launch_query_params);
   void SetScope(const GURL& scope);
   void SetThemeColor(base::Optional<SkColor> theme_color);
   void SetBackgroundColor(base::Optional<SkColor> background_color);
@@ -218,6 +224,7 @@ class WebApp {
   std::string name_;
   std::string description_;
   GURL start_url_;
+  base::Optional<std::string> launch_query_params_;
   // TODO(loyso): Implement IsValid() function that verifies that the start_url
   // is within the scope.
   GURL scope_;

@@ -112,6 +112,11 @@ const GURL& TestAppRegistrar::GetAppStartUrl(const AppId& app_id) const {
   return iterator->second.launch_url;
 }
 
+const std::string* TestAppRegistrar::GetAppLaunchQueryParams(
+    const AppId& app_id) const {
+  return nullptr;
+}
+
 base::Optional<GURL> TestAppRegistrar::GetAppScopeInternal(
     const AppId& app_id) const {
   const auto& result = installed_apps_.find(app_id);

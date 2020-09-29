@@ -449,6 +449,9 @@ void WebAppInstallTask::OnGetWebApplicationInfo(
       if (!search_term.empty())
         web_app_info->additional_search_terms.push_back(std::move(search_term));
     }
+
+    if (install_params_->launch_query_params)
+      web_app_info->launch_query_params = install_params_->launch_query_params;
   }
 
   data_retriever_->CheckInstallabilityAndRetrieveManifest(

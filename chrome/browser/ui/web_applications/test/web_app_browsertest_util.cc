@@ -84,7 +84,7 @@ Browser* LaunchWebAppBrowser(Profile* profile, const AppId& app_id) {
 // Launches the app, waits for the app url to load.
 Browser* LaunchWebAppBrowserAndWait(Profile* profile, const AppId& app_id) {
   ui_test_utils::UrlLoadObserver url_observer(
-      WebAppProvider::Get(profile)->registrar().GetAppStartUrl(app_id),
+      WebAppProvider::Get(profile)->registrar().GetAppLaunchUrl(app_id),
       content::NotificationService::AllSources());
   Browser* const app_browser = LaunchWebAppBrowser(profile, app_id);
   url_observer.Wait();

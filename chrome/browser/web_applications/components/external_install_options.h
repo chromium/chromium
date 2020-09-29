@@ -103,6 +103,9 @@ struct ExternalInstallOptions {
   // it.
   bool reinstall_placeholder = false;
 
+  // Optional query parameters to add to the start_url when launching the app.
+  base::Optional<std::string> launch_query_params;
+
   // Whether we should load |service_worker_registration_url| after successful
   // installation to allow the site to install its service worker and set up
   // offline caching.
