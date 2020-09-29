@@ -3555,7 +3555,7 @@ if (enable_java_templates) {
             "$target_out_dir/$_output_name.processed.jar"
         _dex_path = "$target_out_dir/$_main_target_name.dex.jar"
         _enable_desugar =
-            !defined(invoker.enable_desugar) || !invoker.enable_desugar
+            !defined(invoker.enable_desugar) || invoker.enable_desugar
       }
 
       # For static libraries, the javac jar output is created at the intermediate
