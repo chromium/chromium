@@ -237,7 +237,7 @@ class SkiaOutputDeviceBufferQueueTest : public TestOnGpu {
             gl_surface_, dependency_.get(), shared_image_factory_.get(),
             shared_image_representation_factory_.get(), shared_image_usage),
         dependency_.get(), shared_image_representation_factory_.get(),
-        memory_tracker_.get(), present_callback, false);
+        memory_tracker_.get(), present_callback);
 
     output_device_ = std::move(onscreen_device);
   }

@@ -352,12 +352,11 @@ void DirectRenderer::DrawFrame(
 
     // If we promote any quad to an underlay then the main plane must support
     // alpha.
-    // TODO(ccameron): We should update |frame_color_space|, and
+    // TODO(ccameron): We should update
+    // |root_render_pass->has_transparent_background|, |frame_color_space|, and
     // |frame_buffer_format| based on the change in |frame_has_alpha|.
-    if (current_frame()->output_surface_plane) {
+    if (current_frame()->output_surface_plane)
       frame_has_alpha |= current_frame()->output_surface_plane->enable_blending;
-      root_render_pass->has_transparent_background = frame_has_alpha;
-    }
 
     overlay_processor_->AdjustOutputSurfaceOverlay(
         &(current_frame()->output_surface_plane));

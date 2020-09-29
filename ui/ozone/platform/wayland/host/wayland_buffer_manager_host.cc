@@ -234,11 +234,9 @@ class WaylandBufferManagerHost::Surface {
 
     // If the same buffer has been submitted again right after the client
     // received OnSubmission for that buffer, just damage the buffer and
-    // commit the surface again. However, if the buffer is released, it's safe
-    // to reattach the buffer.
+    // commit the surface again.
     if (submitted_buffers_.empty() ||
-        submitted_buffers_.back().buffer_id != buffer->buffer_id ||
-        buffer->released) {
+        submitted_buffers_.back().buffer_id != buffer->buffer_id) {
       // Once the BufferRelease is called, the buffer will be released.
       DCHECK(buffer->released);
       buffer->released = false;
@@ -925,21 +923,11 @@ void WaylandBufferManagerHost::DestroyBuffer(gfx::AcceleratedWidget widget,
       if (!surface->HasBuffers() && !surface->HasSurface())
         surfaces_.erase(window->root_surface());
     }
-    if (!destroyed_count) {
-      surface = GetSurface(window->primary_subsurface()->wayland_surface());
-      if (surface) {
-        destroyed_count = surface->DestroyBuffer(buffer_id);
-        if (!surface->HasBuffers() && !surface->HasSurface())
-          surfaces_.erase(window->root_surface());
-      }
-    }
-    if (!destroyed_count) {
-      const auto& subsurfaces = window->wayland_subsurfaces();
-      for (const auto& it : subsurfaces) {
-        Surface* subsurface = GetSurface((*it).wayland_surface());
-        if (subsurface)
-          destroyed_count += subsurface->DestroyBuffer(buffer_id);
-      }
+    const auto& subsurfaces = window->wayland_subsurfaces();
+    for (const auto& it : subsurfaces) {
+      Surface* subsurface = GetSurface((*it).wayland_surface());
+      if (subsurface)
+        destroyed_count += subsurface->DestroyBuffer(buffer_id);
     }
   } else {
     // Case 3)

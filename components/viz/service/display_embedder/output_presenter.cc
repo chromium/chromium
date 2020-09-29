@@ -115,14 +115,4 @@ void OutputPresenter::Image::PreGrContextSubmit() {
   }
 }
 
-std::unique_ptr<OutputPresenter::Image>
-OutputPresenter::AllocateBackgroundImage(gfx::ColorSpace color_space,
-                                         gfx::Size image_size) {
-  return nullptr;
-}
-
-void OutputPresenter::ScheduleBackground(Image* image) {
-  NOTREACHED();
-}
-
 }  // namespace viz

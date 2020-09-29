@@ -47,8 +47,6 @@ WaylandWindow::~WaylandWindow() {
 
   PlatformEventSource::GetInstance()->RemovePlatformEventDispatcher(this);
 
-  connection_->wayland_window_manager()->RemoveSubsurface(
-      GetWidget(), primary_subsurface_.get());
   for (const auto& widget_subsurface : wayland_subsurfaces()) {
     connection_->wayland_window_manager()->RemoveSubsurface(
         GetWidget(), widget_subsurface.get());
@@ -353,12 +351,6 @@ bool WaylandWindow::Initialize(PlatformWindowInitProperties properties) {
   if (!OnInitialize(std::move(properties)))
     return false;
 
-  primary_subsurface_ = std::make_unique<WaylandSubsurface>(connection_, this);
-  if (!primary_subsurface_->surface())
-    return false;
-  connection_->wayland_window_manager()->AddSubsurface(
-      GetWidget(), primary_subsurface_.get());
-
   connection_->ScheduleFlush();
 
   PlatformEventSource::GetInstance()->AddPlatformEventDispatcher(this);
@@ -555,10 +547,6 @@ bool WaylandWindow::CommitOverlays(
 
   size_t above = (overlays.end() - split) - num_primary_planes;
   size_t below = split - overlays.begin();
-
-  if (overlays.front()->z_order == INT32_MIN)
-    --below;
-
   // Re-arrange the list of subsurfaces to fit the |overlays|. Request extra
   // subsurfaces if needed.
   if (!ArrangeSubsurfaceStack(above, below))
@@ -571,14 +559,12 @@ bool WaylandWindow::CommitOverlays(
     auto overlay_iter = split - 1;
     for (auto iter = subsurface_stack_below_.begin();
          iter != subsurface_stack_below_.end(); ++iter, --overlay_iter) {
-      if (overlays.front()->z_order == INT32_MIN
-              ? overlay_iter >= ++overlays.begin()
-              : overlay_iter >= overlays.begin()) {
+      if (overlay_iter >= overlays.begin()) {
         WaylandSurface* reference_above = nullptr;
         if (overlay_iter == split - 1) {
           // It's possible that |overlays| does not contain primary plane, we
           // still want to place relative to the surface with z_order=0.
-          reference_above = primary_subsurface_->wayland_surface();
+          reference_above = root_surface();
         } else {
           reference_above = (*std::next(iter))->wayland_surface();
         }
@@ -607,7 +593,7 @@ bool WaylandWindow::CommitOverlays(
         if (overlay_iter == split + num_primary_planes) {
           // It's possible that |overlays| does not contain primary plane, we
           // still want to place relative to the surface with z_order=0.
-          reference_below = primary_subsurface_->wayland_surface();
+          reference_below = root_surface();
         } else {
           reference_below = (*std::prev(iter))->wayland_surface();
         }
@@ -627,22 +613,11 @@ bool WaylandWindow::CommitOverlays(
   }
 
   if (num_primary_planes) {
-    primary_subsurface_->ConfigureAndShowSurface(
-        (*split)->transform, (*split)->crop_rect, (*split)->bounds_rect,
-        (*split)->enable_blend, nullptr, nullptr);
     connection_->buffer_manager_host()->CommitBufferInternal(
-        primary_subsurface_->wayland_surface(), (*split)->buffer_id,
-        (*split)->damage_region, /*wait_for_frame_callback=*/false);
-  }
-
-  root_surface_->SetViewportDestination(bounds_px_.size());
-  if (overlays.front()->z_order == INT32_MIN) {
-    connection_->buffer_manager_host()->CommitBufferInternal(
-        root_surface(), overlays.front()->buffer_id,
-        /*damage_region=*/gfx::Rect(0, 0, 1, 1),
+        root_surface(), (*split)->buffer_id, (*split)->damage_region,
         /*wait_for_frame_callback=*/true);
   } else {
-    // Subsurfaces are set to sync, above surface configs will only take effect
+    // Subsurfaces are set to sync, above operations will only take effects
     // when root_surface is committed.
     connection_->buffer_manager_host()->CommitWithoutBufferInternal(
         root_surface(), /*wait_for_frame_callback=*/true);

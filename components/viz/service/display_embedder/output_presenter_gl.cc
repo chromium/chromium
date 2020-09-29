@@ -17,7 +17,6 @@
 #include "ui/display/types/display_snapshot.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/geometry/rect_conversions.h"
-#include "ui/gfx/overlay_transform.h"
 #include "ui/gl/gl_fence.h"
 #include "ui/gl/gl_surface.h"
 
@@ -283,20 +282,6 @@ OutputPresenterGL::AllocateImages(gfx::ColorSpace color_space,
   return images;
 }
 
-std::unique_ptr<OutputPresenter::Image>
-OutputPresenterGL::AllocateBackgroundImage(gfx::ColorSpace color_space,
-                                           gfx::Size image_size) {
-  auto image = std::make_unique<PresenterImageGL>();
-  if (!image->Initialize(shared_image_factory_,
-                         shared_image_representation_factory_, image_size,
-                         color_space, image_format_, dependency_,
-                         shared_image_usage_)) {
-    DLOG(ERROR) << "Failed to initialize image.";
-    return nullptr;
-  }
-  return image;
-}
-
 void OutputPresenterGL::SwapBuffers(
     SwapCompletionCallback completion_callback,
     BufferPresentedCallback presentation_callback) {
@@ -342,22 +327,6 @@ void OutputPresenterGL::SchedulePrimaryPlane(
   gl_surface_->ScheduleOverlayPlane(kPlaneZOrder, plane.transform, gl_image,
                                     ToNearestRect(plane.display_rect), kUVRect,
                                     plane.enable_blending, std::move(fence));
-}
-
-void OutputPresenterGL::ScheduleBackground(Image* image) {
-  // Background is not seen by user, and is created before buffer queue buffers.
-  // So fence is not needed.
-  auto* gl_image =
-      reinterpret_cast<PresenterImageGL*>(image)->GetGLImage(nullptr);
-
-  // Background is also z-order 0.
-  constexpr int kPlaneZOrder = INT32_MIN;
-  // Background always uses the full texture.
-  constexpr gfx::RectF kUVRect(0.f, 0.f, 1.0f, 1.0f);
-  gl_surface_->ScheduleOverlayPlane(
-      kPlaneZOrder, gfx::OVERLAY_TRANSFORM_NONE, gl_image, gfx::Rect(),
-      /*crop_rect=*/kUVRect,
-      /*enable_blend=*/false, /*gpu_fence=*/nullptr);
 }
 
 void OutputPresenterGL::CommitOverlayPlanes(

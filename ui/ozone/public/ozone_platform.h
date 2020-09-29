@@ -104,10 +104,6 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
     // calculating bounds of menu windows.
     bool ignore_screen_bounds_for_menus = false;
 
-    // Wayland only: determines whether BufferQueue needs a background image to
-    // be stacked below an AcceleratedWidget to make a widget opaque.
-    bool needs_background_image = false;
-
     // If true, the platform shows and updates the drag image.
     bool platform_shows_drag_image = true;
 

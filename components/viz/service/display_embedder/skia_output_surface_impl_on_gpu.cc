@@ -1126,26 +1126,16 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForGL() {
 
     if (MakeCurrent(true /* need_fbo0 */)) {
       if (gl_surface_->IsSurfaceless()) {
-#if defined(USE_OZONE)
-        bool needs_background_image = ui::OzonePlatform::GetInstance()
-                                          ->GetPlatformProperties()
-                                          .needs_background_image;
-#else   // defined(USE_OZONE)
-        bool needs_background_image = false;
-#endif  // !defined(USE_OZONE)
-
 #if !defined(OS_WIN)
         output_device_ = std::make_unique<SkiaOutputDeviceBufferQueue>(
             std::make_unique<OutputPresenterGL>(
                 gl_surface_, dependency_, shared_image_factory_.get(),
                 shared_image_representation_factory_.get()),
             dependency_, shared_image_representation_factory_.get(),
-            memory_tracker_, GetDidSwapBuffersCompleteCallback(),
-            needs_background_image);
-#else   // !defined(OS_WIN)
+            memory_tracker_, GetDidSwapBuffersCompleteCallback());
+#else
         NOTIMPLEMENTED();
-        (void)needs_background_image;
-#endif  // defined(OS_WIN)
+#endif
       } else {
         if (dependency_->NeedsSupportForExternalStencil()) {
           output_device_ = std::make_unique<SkiaOutputDeviceWebView>(
@@ -1197,14 +1187,6 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForVulkan() {
   }
 #endif  // defined(USE_X11)
 
-#if defined(USE_OZONE)
-  bool needs_background_image = ui::OzonePlatform::GetInstance()
-                                    ->GetPlatformProperties()
-                                    .needs_background_image;
-#else   // defined(USE_OZONE)
-  bool needs_background_image = false;
-#endif  // !defined(USE_OZONE)
-
 #if !defined(OS_WIN)
 #if defined(OS_FUCHSIA)
   auto output_presenter = OutputPresenterFuchsia::Create(
@@ -1223,11 +1205,10 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForVulkan() {
     output_device_ = std::make_unique<SkiaOutputDeviceBufferQueue>(
         std::move(output_presenter), dependency_,
         shared_image_representation_factory_.get(), memory_tracker_,
-        GetDidSwapBuffersCompleteCallback(), needs_background_image);
+        GetDidSwapBuffersCompleteCallback());
     return true;
   }
 #endif  // !defined(OS_WIN)
-  (void)needs_background_image;
 
   auto output_device = SkiaOutputDeviceVulkan::Create(
       vulkan_context_provider_, dependency_->GetSurfaceHandle(),

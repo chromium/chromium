@@ -255,7 +255,7 @@ TEST_P(WaylandSurfaceFactoryTest,
 
     // Prepare overlay plane.
     gl_surface->ScheduleOverlayPlane(
-        INT32_MIN, gfx::OverlayTransform::OVERLAY_TRANSFORM_FLIP_VERTICAL,
+        0, gfx::OverlayTransform::OVERLAY_TRANSFORM_FLIP_VERTICAL,
         gl_image.get(), window_->GetBounds(), {}, false, nullptr);
 
     std::vector<scoped_refptr<FakeGLImageNativePixmap>> gl_images;
@@ -452,10 +452,8 @@ TEST_P(WaylandSurfaceFactoryTest,
     Sync();
   }
 
-  auto* root_surface = server_.GetObject<wl::MockSurface>(
-      window_->root_surface()->GetSurfaceId());
   auto* mock_primary_surface = server_.GetObject<wl::MockSurface>(
-      window_->primary_subsurface()->wayland_surface()->GetSurfaceId());
+      window_->root_surface()->GetSurfaceId());
 
   CallbacksHelper cbs_helper;
   // Submit a frame with only primary plane
@@ -490,11 +488,9 @@ TEST_P(WaylandSurfaceFactoryTest,
 
   // Also, we expect only one buffer to be committed.
   EXPECT_CALL(*mock_primary_surface, Attach(_, _, _)).Times(1);
-  EXPECT_CALL(*mock_primary_surface, Frame(_)).Times(0);
+  EXPECT_CALL(*mock_primary_surface, Frame(_)).Times(1);
   EXPECT_CALL(*mock_primary_surface, DamageBuffer(_, _, _, _)).Times(1);
   EXPECT_CALL(*mock_primary_surface, Commit()).Times(1);
-  EXPECT_CALL(*root_surface, Frame(_)).Times(1);
-  EXPECT_CALL(*root_surface, Commit()).Times(1);
 
   Sync();
 
@@ -550,15 +546,13 @@ TEST_P(WaylandSurfaceFactoryTest,
 
   // Expect one buffer to be committed.
   EXPECT_CALL(*mock_primary_surface, Attach(_, _, _)).Times(1);
-  EXPECT_CALL(*mock_primary_surface, Frame(_)).Times(0);
+  EXPECT_CALL(*mock_primary_surface, Frame(_)).Times(1);
   EXPECT_CALL(*mock_primary_surface, DamageBuffer(_, _, _, _)).Times(1);
   EXPECT_CALL(*mock_primary_surface, Commit()).Times(1);
-  EXPECT_CALL(*root_surface, Frame(_)).Times(1);
-  EXPECT_CALL(*root_surface, Commit()).Times(1);
 
   // Send the frame callback so that pending buffer for swap id=1u is processed
   // and swapped.
-  root_surface->SendFrameCallback();
+  mock_primary_surface->SendFrameCallback();
 
   Sync();
 
@@ -610,19 +604,15 @@ TEST_P(WaylandSurfaceFactoryTest,
         base::BindOnce(&CallbacksHelper::BufferPresented,
                        base::Unretained(&cbs_helper), swap_id));
   }
-
-  // Do not expect parent surface to be committed.
+  // Expect parent surface to be committed without a buffer.
   EXPECT_CALL(*mock_primary_surface, Attach(_, _, _)).Times(0);
-  EXPECT_CALL(*mock_primary_surface, Frame(_)).Times(0);
+  EXPECT_CALL(*mock_primary_surface, Frame(_)).Times(1);
   EXPECT_CALL(*mock_primary_surface, DamageBuffer(_, _, _, _)).Times(0);
-  EXPECT_CALL(*mock_primary_surface, Commit()).Times(0);
-  // Expect root surface to be committed.
-  EXPECT_CALL(*root_surface, Frame(_)).Times(1);
-  EXPECT_CALL(*root_surface, Commit()).Times(1);
+  EXPECT_CALL(*mock_primary_surface, Commit()).Times(1);
 
   // Send the frame callback so that pending buffer for swap id=2u is processed
   // and swapped.
-  root_surface->SendFrameCallback();
+  mock_primary_surface->SendFrameCallback();
 
   Sync();
 
@@ -701,10 +691,8 @@ TEST_P(WaylandSurfaceFactoryTest,
     Sync();
   }
 
-  auto* root_surface = server_.GetObject<wl::MockSurface>(
-      window_->root_surface()->GetSurfaceId());
   auto* mock_primary_surface = server_.GetObject<wl::MockSurface>(
-      window_->primary_subsurface()->wayland_surface()->GetSurfaceId());
+      window_->root_surface()->GetSurfaceId());
 
   CallbacksHelper cbs_helper;
   // Submit a frame with 1 primary plane and 1 overlay
@@ -749,13 +737,11 @@ TEST_P(WaylandSurfaceFactoryTest,
   // Let's sync so that 1) GbmSurfacelessWayland submits the buffer according to
   // internal queue and fake server processes the request.
 
-  // Also, we expect primary buffer to be committed.
+  // Also, we expect only one buffer to be committed.
   EXPECT_CALL(*mock_primary_surface, Attach(_, _, _)).Times(1);
-  EXPECT_CALL(*mock_primary_surface, Frame(_)).Times(0);
+  EXPECT_CALL(*mock_primary_surface, Frame(_)).Times(1);
   EXPECT_CALL(*mock_primary_surface, DamageBuffer(_, _, _, _)).Times(1);
   EXPECT_CALL(*mock_primary_surface, Commit()).Times(1);
-  EXPECT_CALL(*root_surface, Frame(_)).Times(1);
-  EXPECT_CALL(*root_surface, Commit()).Times(1);
 
   Sync();
 
@@ -824,25 +810,21 @@ TEST_P(WaylandSurfaceFactoryTest,
                        base::Unretained(&cbs_helper), swap_id));
   }
 
-  // Expect primary buffer to be committed.
+  // Expect one buffer to be committed.
   EXPECT_CALL(*mock_primary_surface, Attach(_, _, _)).Times(1);
-  EXPECT_CALL(*mock_primary_surface, Frame(_)).Times(0);
+  EXPECT_CALL(*mock_primary_surface, Frame(_)).Times(1);
   EXPECT_CALL(*mock_primary_surface, DamageBuffer(_, _, _, _)).Times(1);
   EXPECT_CALL(*mock_primary_surface, Commit()).Times(1);
 
-  // Expect overlay buffer to be committed.
+  // Expect one buffer to be committed.
   EXPECT_CALL(*mock_overlay_surface, Attach(_, _, _)).Times(1);
   EXPECT_CALL(*mock_overlay_surface, Frame(_)).Times(0);
   EXPECT_CALL(*mock_overlay_surface, DamageBuffer(_, _, _, _)).Times(1);
   EXPECT_CALL(*mock_overlay_surface, Commit()).Times(1);
 
-  // Expect root surface to be committed without buffer.
-  EXPECT_CALL(*root_surface, Frame(_)).Times(1);
-  EXPECT_CALL(*root_surface, Commit()).Times(1);
-
   // Send the frame callback so that pending buffer for swap id=1u is processed
   // and swapped.
-  root_surface->SendFrameCallback();
+  mock_primary_surface->SendFrameCallback();
 
   Sync();
 
