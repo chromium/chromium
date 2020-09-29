@@ -40,6 +40,7 @@
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink-forward.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/loader/request_context_frame_type.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/page_state/page_state.mojom-blink.h"
 #include "third_party/blink/public/platform/scheduler/web_scoped_virtual_time_pauser.h"
 #include "third_party/blink/public/web/web_document_loader.h"
 #include "third_party/blink/public/web/web_frame_load_type.h"
@@ -257,7 +258,7 @@ class CORE_EXPORT FrameLoader final {
 
   void RestoreScrollPositionAndViewState(WebFrameLoadType,
                                          const HistoryItem::ViewState&,
-                                         HistoryScrollRestorationType);
+                                         mojom::blink::ScrollRestorationType);
 
   void DetachDocumentLoader(Member<DocumentLoader>&,
                             bool flush_microtask_queue = false);

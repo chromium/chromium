@@ -27,6 +27,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_HISTORY_H_
 
 #include "base/gtest_prod_util.h"
+#include "third_party/blink/public/mojom/page_state/page_state.mojom-blink.h"
 #include "third_party/blink/public/web/web_frame_load_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
@@ -91,11 +92,11 @@ class CORE_EXPORT History final : public ScriptWrappable,
   void StateObjectAdded(scoped_refptr<SerializedScriptValue>,
                         const String& title,
                         const String& url,
-                        HistoryScrollRestorationType,
+                        mojom::blink::ScrollRestorationType,
                         WebFrameLoadType,
                         ExceptionState&);
   SerializedScriptValue* StateInternal() const;
-  HistoryScrollRestorationType ScrollRestorationInternal() const;
+  mojom::blink::ScrollRestorationType ScrollRestorationInternal() const;
 
   scoped_refptr<SerializedScriptValue> last_state_object_requested_;
 };

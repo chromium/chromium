@@ -40,6 +40,7 @@
 #include "third_party/blink/public/common/loader/loading_behavior_flag.h"
 #include "third_party/blink/public/mojom/loader/content_security_notifier.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/mhtml_load_result.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/page_state/page_state.mojom-blink.h"
 #include "third_party/blink/public/mojom/timing/worker_timing_container.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/scheduler/web_scoped_virtual_time_pauser.h"
 #include "third_party/blink/public/platform/web_navigation_body_loader.h"
@@ -156,7 +157,7 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   void UpdateForSameDocumentNavigation(const KURL&,
                                        SameDocumentNavigationSource,
                                        scoped_refptr<SerializedScriptValue>,
-                                       HistoryScrollRestorationType,
+                                       mojom::blink::ScrollRestorationType,
                                        WebFrameLoadType,
                                        bool is_content_initiated);
   const ResourceResponse& GetResponse() const { return response_; }

@@ -461,7 +461,7 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
     const KURL& new_url,
     SameDocumentNavigationSource same_document_navigation_source,
     scoped_refptr<SerializedScriptValue> data,
-    HistoryScrollRestorationType scroll_restoration_type,
+    mojom::blink::ScrollRestorationType scroll_restoration_type,
     WebFrameLoadType type,
     bool is_content_initiated) {
   SinglePageAppNavigationType single_page_app_navigation_type =
@@ -1044,8 +1044,8 @@ void DocumentLoader::CommitSameDocumentNavigationInternal(
   if (extra_data)
     GetLocalFrameClient().UpdateDocumentLoader(this, std::move(extra_data));
   UpdateForSameDocumentNavigation(url, kSameDocumentNavigationDefault, nullptr,
-                                  kScrollRestorationAuto, frame_load_type,
-                                  is_content_initiated);
+                                  mojom::blink::ScrollRestorationType::kAuto,
+                                  frame_load_type, is_content_initiated);
 
   initial_scroll_state_.was_scrolled_by_user = false;
 

@@ -66,6 +66,7 @@
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
 #include "third_party/blink/public/mojom/insecure_input/insecure_input_service.mojom-blink.h"
+#include "third_party/blink/public/mojom/page_state/page_state.mojom-blink.h"
 #include "third_party/blink/public/mojom/ukm/ukm.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -2668,8 +2669,8 @@ void Document::ApplyScrollRestorationLogic() {
   if (!View()->GetScrollableArea()->HasPendingHistoryRestoreScrollOffset())
     return;
 
-  bool should_restore_scroll =
-      history_item->ScrollRestorationType() != kScrollRestorationManual;
+  bool should_restore_scroll = history_item->ScrollRestorationType() !=
+                               mojom::blink::ScrollRestorationType::kManual;
   auto& scroll_offset = history_item->GetViewState()->scroll_offset_;
 
   // This tries to balance:

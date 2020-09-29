@@ -48,11 +48,6 @@ enum SameDocumentNavigationSource {
   kSameDocumentNavigationHistoryApi,
 };
 
-enum HistoryScrollRestorationType {
-  kScrollRestorationAuto,
-  kScrollRestorationManual
-};
-
 enum class SavePreviousDocumentResources {
   kNever,
   kUntilOnDOMContentLoaded,

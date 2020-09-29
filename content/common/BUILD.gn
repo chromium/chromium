@@ -456,7 +456,6 @@ mojom("mojo_bindings") {
     "native_types.mojom",
     "navigation_client.mojom",
     "navigation_params.mojom",
-    "page_state.mojom",
     "prefetched_signed_exchange_info.mojom",
     "render_accessibility.mojom",
     "render_message_filter.mojom",

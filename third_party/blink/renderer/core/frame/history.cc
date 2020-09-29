@@ -140,8 +140,9 @@ void History::setScrollRestoration(const String& value,
     return;
   }
 
-  HistoryScrollRestorationType scroll_restoration =
-      value == "manual" ? kScrollRestorationManual : kScrollRestorationAuto;
+  mojom::blink::ScrollRestorationType scroll_restoration =
+      value == "manual" ? mojom::blink::ScrollRestorationType::kManual
+                        : mojom::blink::ScrollRestorationType::kAuto;
   if (scroll_restoration == ScrollRestorationInternal())
     return;
 
@@ -159,12 +160,15 @@ String History::scrollRestoration(ExceptionState& exception_state) {
         "fully active");
     return "auto";
   }
-  return ScrollRestorationInternal() == kScrollRestorationManual ? "manual"
-                                                                 : "auto";
+  return ScrollRestorationInternal() ==
+                 mojom::blink::ScrollRestorationType::kManual
+             ? "manual"
+             : "auto";
 }
 
-HistoryScrollRestorationType History::ScrollRestorationInternal() const {
-  constexpr HistoryScrollRestorationType default_type = kScrollRestorationAuto;
+mojom::blink::ScrollRestorationType History::ScrollRestorationInternal() const {
+  constexpr mojom::blink::ScrollRestorationType default_type =
+      mojom::blink::ScrollRestorationType::kAuto;
 
   LocalFrame* frame = GetFrame();
   if (!frame)
@@ -321,12 +325,13 @@ bool History::CanChangeToUrl(const KURL& url,
   return true;
 }
 
-void History::StateObjectAdded(scoped_refptr<SerializedScriptValue> data,
-                               const String& /* title */,
-                               const String& url_string,
-                               HistoryScrollRestorationType restoration_type,
-                               WebFrameLoadType type,
-                               ExceptionState& exception_state) {
+void History::StateObjectAdded(
+    scoped_refptr<SerializedScriptValue> data,
+    const String& /* title */,
+    const String& url_string,
+    mojom::blink::ScrollRestorationType restoration_type,
+    WebFrameLoadType type,
+    ExceptionState& exception_state) {
   if (!GetFrame() || !GetFrame()->GetPage() ||
       !GetFrame()->Loader().GetDocumentLoader()) {
     exception_state.ThrowSecurityError(

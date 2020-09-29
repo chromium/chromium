@@ -16,7 +16,7 @@
 #include "content/common/content_export.h"
 #include "services/network/public/cpp/resource_request_body.h"
 #include "services/network/public/mojom/referrer_policy.mojom.h"
-#include "third_party/blink/public/platform/web_history_scroll_restoration_type.h"
+#include "third_party/blink/public/mojom/page_state/page_state.mojom.h"
 #include "third_party/blink/public/platform/web_http_body.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -43,18 +43,20 @@ struct CONTENT_EXPORT ExplodedFrameState {
   base::Optional<base::string16> target;
   base::Optional<base::string16> state_object;
   std::vector<base::Optional<base::string16>> document_state;
-  blink::WebHistoryScrollRestorationType scroll_restoration_type;
-  bool did_save_scroll_or_scale_state;
+  blink::mojom::ScrollRestorationType scroll_restoration_type =
+      blink::mojom::ScrollRestorationType::kAuto;
+  bool did_save_scroll_or_scale_state = true;
   gfx::PointF visual_viewport_scroll_offset;
   gfx::Point scroll_offset;
-  int64_t item_sequence_number;
-  int64_t document_sequence_number;
-  double page_scale_factor;
-  network::mojom::ReferrerPolicy referrer_policy;
+  int64_t item_sequence_number = 0;
+  int64_t document_sequence_number = 0;
+  double page_scale_factor = 0.f;
+  network::mojom::ReferrerPolicy referrer_policy =
+      network::mojom::ReferrerPolicy::kDefault;
   ExplodedHttpBody http_body;
   base::Optional<base::string16> scroll_anchor_selector;
   gfx::PointF scroll_anchor_offset;
-  uint64_t scroll_anchor_simhash;
+  uint64_t scroll_anchor_simhash = 0;
   std::vector<ExplodedFrameState> children;
 
   ExplodedFrameState();

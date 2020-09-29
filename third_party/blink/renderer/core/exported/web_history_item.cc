@@ -151,15 +151,14 @@ void WebHistoryItem::SetDocumentSequenceNumber(
   private_->SetDocumentSequenceNumber(document_sequence_number);
 }
 
-WebHistoryScrollRestorationType WebHistoryItem::ScrollRestorationType() const {
-  return static_cast<WebHistoryScrollRestorationType>(
-      private_->ScrollRestorationType());
+mojom::blink::ScrollRestorationType WebHistoryItem::ScrollRestorationType()
+    const {
+  return private_->ScrollRestorationType();
 }
 
 void WebHistoryItem::SetScrollRestorationType(
-    WebHistoryScrollRestorationType type) {
-  private_->SetScrollRestorationType(
-      static_cast<HistoryScrollRestorationType>(type));
+    mojom::blink::ScrollRestorationType type) {
+  private_->SetScrollRestorationType(type);
 }
 
 WebSerializedScriptValue WebHistoryItem::StateObject() const {

@@ -20,11 +20,11 @@
 #include "third_party/blink/public/common/security/security_style.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
+#include "third_party/blink/public/mojom/page_state/page_state.mojom.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 #include "third_party/blink/public/mojom/renderer_preferences.mojom.h"
 #include "third_party/blink/public/mojom/v8_cache_options.mojom.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
-#include "third_party/blink/public/platform/web_history_scroll_restoration_type.h"
 #include "third_party/blink/public/platform/web_rect.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "ui/accessibility/ax_param_traits.h"
@@ -49,8 +49,8 @@ IPC_ENUM_TRAITS_MAX_VALUE(blink::mojom::ConsoleMessageLevel,
                           blink::mojom::ConsoleMessageLevel::kError)
 IPC_ENUM_TRAITS_MAX_VALUE(network::mojom::ReferrerPolicy,
                           network::mojom::ReferrerPolicy::kMaxValue)
-IPC_ENUM_TRAITS_MAX_VALUE(blink::WebHistoryScrollRestorationType,
-                          blink::kWebHistoryScrollRestorationManual)
+IPC_ENUM_TRAITS_MAX_VALUE(blink::mojom::ScrollRestorationType,
+                          blink::mojom::ScrollRestorationType::kMaxValue)
 IPC_ENUM_TRAITS_MAX_VALUE(blink::SecurityStyle, blink::SecurityStyle::kMaxValue)
 IPC_ENUM_TRAITS_MAX_VALUE(blink::mojom::PermissionStatus,
                           blink::mojom::PermissionStatus::LAST)

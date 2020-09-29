@@ -28,6 +28,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_HISTORY_ITEM_H_
 
 #include "base/optional.h"
+#include "third_party/blink/public/mojom/page_state/page_state.mojom-blink.h"
 #include "third_party/blink/public/platform/web_scroll_anchor_data.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/loader/frame_loader_types.h"
@@ -105,10 +106,10 @@ class CORE_EXPORT HistoryItem final : public GarbageCollected<HistoryItem> {
   }
   int64_t DocumentSequenceNumber() const { return document_sequence_number_; }
 
-  void SetScrollRestorationType(HistoryScrollRestorationType type) {
+  void SetScrollRestorationType(mojom::blink::ScrollRestorationType type) {
     scroll_restoration_type_ = type;
   }
-  HistoryScrollRestorationType ScrollRestorationType() {
+  mojom::blink::ScrollRestorationType ScrollRestorationType() {
     return scroll_restoration_type_;
   }
 
@@ -143,7 +144,8 @@ class CORE_EXPORT HistoryItem final : public GarbageCollected<HistoryItem> {
 
   // Type of the scroll restoration for the history item determines if scroll
   // position should be restored when it is loaded during history traversal.
-  HistoryScrollRestorationType scroll_restoration_type_;
+  mojom::blink::ScrollRestorationType scroll_restoration_type_ =
+      mojom::blink::ScrollRestorationType::kAuto;
 
   // Support for HTML5 History
   scoped_refptr<SerializedScriptValue> state_object_;

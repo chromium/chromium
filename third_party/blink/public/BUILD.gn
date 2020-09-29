@@ -213,7 +213,6 @@ source_set("blink_headers") {
     "platform/web_frame_request_blocker.h",
     "platform/web_gesture_curve.h",
     "platform/web_graphics_context_3d_provider.h",
-    "platform/web_history_scroll_restoration_type.h",
     "platform/web_http_body.h",
     "platform/web_http_header_visitor.h",
     "platform/web_http_load_info.h",

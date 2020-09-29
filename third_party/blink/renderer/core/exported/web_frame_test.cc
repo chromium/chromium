@@ -66,6 +66,7 @@
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/find_in_page.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_element_type.mojom-blink.h"
+#include "third_party/blink/public/mojom/page_state/page_state.mojom-blink.h"
 #include "third_party/blink/public/mojom/scroll/scrollbar_mode.mojom-blink.h"
 #include "third_party/blink/public/platform/web_cache.h"
 #include "third_party/blink/public/platform/web_float_rect.h"
@@ -13062,22 +13063,22 @@ TEST_F(WebFrameTest, RecordSameDocumentNavigationToHistogram) {
   tester.ExpectTotalCount(histogramName, 0);
   document_loader.UpdateForSameDocumentNavigation(
       ToKURL("about:blank"), kSameDocumentNavigationHistoryApi, message,
-      kScrollRestorationAuto, WebFrameLoadType::kReplaceCurrentItem,
-      frame->GetDocument());
+      mojom::blink::ScrollRestorationType::kAuto,
+      WebFrameLoadType::kReplaceCurrentItem, frame->GetDocument());
   // The bucket index corresponds to the definition of
   // |SinglePageAppNavigationType|.
   tester.ExpectBucketCount(histogramName,
                            kSPANavTypeHistoryPushStateOrReplaceState, 1);
   document_loader.UpdateForSameDocumentNavigation(
       ToKURL("about:blank"), kSameDocumentNavigationDefault, message,
-      kScrollRestorationManual, WebFrameLoadType::kBackForward,
-      frame->GetDocument());
+      mojom::blink::ScrollRestorationType::kManual,
+      WebFrameLoadType::kBackForward, frame->GetDocument());
   tester.ExpectBucketCount(histogramName,
                            kSPANavTypeSameDocumentBackwardOrForward, 1);
   document_loader.UpdateForSameDocumentNavigation(
       ToKURL("about:blank"), kSameDocumentNavigationDefault, message,
-      kScrollRestorationManual, WebFrameLoadType::kReplaceCurrentItem,
-      frame->GetDocument());
+      mojom::blink::ScrollRestorationType::kManual,
+      WebFrameLoadType::kReplaceCurrentItem, frame->GetDocument());
   tester.ExpectBucketCount(histogramName, kSPANavTypeOtherFragmentNavigation,
                            1);
   // kSameDocumentNavigationHistoryApi and WebFrameLoadType::kBackForward is an

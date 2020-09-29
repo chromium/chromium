@@ -1263,7 +1263,7 @@ void FrameLoader::RestoreScrollPositionAndViewState() {
 void FrameLoader::RestoreScrollPositionAndViewState(
     WebFrameLoadType load_type,
     const HistoryItem::ViewState& view_state,
-    HistoryScrollRestorationType scroll_restoration_type) {
+    mojom::blink::ScrollRestorationType scroll_restoration_type) {
   LocalFrameView* view = frame_->View();
   if (!view || !view->LayoutViewport() || !frame_->IsAttached() ||
       frame_->GetDocument()->IsInitialEmptyDocument()) {
@@ -1273,9 +1273,11 @@ void FrameLoader::RestoreScrollPositionAndViewState(
     return;
 
   view->LayoutViewport()->SetPendingHistoryRestoreScrollOffset(
-      view_state, scroll_restoration_type != kScrollRestorationManual);
+      view_state,
+      scroll_restoration_type != mojom::blink::ScrollRestorationType::kManual);
   view->GetScrollableArea()->SetPendingHistoryRestoreScrollOffset(
-      view_state, scroll_restoration_type != kScrollRestorationManual);
+      view_state,
+      scroll_restoration_type != mojom::blink::ScrollRestorationType::kManual);
 
   view->ScheduleAnimation();
 }
@@ -1379,7 +1381,7 @@ void FrameLoader::ProcessFragment(const KURL& url,
   const bool uses_manual_scroll_restoration =
       GetDocumentLoader()->GetHistoryItem() &&
       GetDocumentLoader()->GetHistoryItem()->ScrollRestorationType() ==
-          kScrollRestorationManual;
+          mojom::blink::ScrollRestorationType::kManual;
 
   // If we restored a scroll position from history, we shouldn't clobber it
   // with the fragment.
@@ -1849,9 +1851,5 @@ ContentSecurityPolicy* FrameLoader::CreateCSP(
 
   return csp;
 }
-
-STATIC_ASSERT_ENUM(kWebHistoryScrollRestorationManual,
-                   kScrollRestorationManual);
-STATIC_ASSERT_ENUM(kWebHistoryScrollRestorationAuto, kScrollRestorationAuto);
 
 }  // namespace blink

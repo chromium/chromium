@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-module content.history.mojom;
+module blink.mojom;
 
 // WARNING: Please read the comments below, before including other Mojo types.
 import "mojo/public/mojom/base/string16.mojom";
@@ -44,7 +44,7 @@ import "ui/gfx/geometry/mojom/geometry.mojom";
 
 // Next Ordinal: 4
 // FileSystemFile is no longer supported.
-[Stable]
+[Stable, RenamedFrom="content.history.mojom.DEPRECATED_FileSystemFile"]
 struct DEPRECATED_FileSystemFile {
   url.mojom.Url filesystem_url@0;
   uint64 offset@1;
@@ -53,7 +53,7 @@ struct DEPRECATED_FileSystemFile {
 };
 
 // Next Ordinal: 4
-[Stable]
+[Stable, RenamedFrom="content.history.mojom.File"]
 struct File {
   mojo_base.mojom.String16 path@0;
   uint64 offset@1;
@@ -62,7 +62,7 @@ struct File {
 };
 
 // Next Ordinal: 4
-[Stable]
+[Stable, RenamedFrom="content.history.mojom.Element"]
 union Element {
   string blob_uuid@0;
   array<uint8> bytes@1;
@@ -72,7 +72,7 @@ union Element {
 };
 
 // Next Ordinal: 3
-[Stable]
+[Stable, RenamedFrom="content.history.mojom.RequestBody"]
 struct RequestBody {
   array<Element> elements@0;
   int64 identifier@1;
@@ -80,23 +80,21 @@ struct RequestBody {
 };
 
 // Next Ordinal: 3
-[Stable]
+[Stable, RenamedFrom="content.history.mojom.HttpBody"]
 struct HttpBody {
   mojo_base.mojom.String16? http_content_type@0;
   RequestBody? request_body@1;
   bool contains_passwords@2 = false;
 };
 
-// This enum's values must match blink::WebHistoryScrollRestorationType. This
-// is enforced with static asserts in page_state_serialization.cc.
-[Stable, Extensible]
+[Stable, Extensible, RenamedFrom="content.history.mojom.ScrollRestorationType"]
 enum ScrollRestorationType {
   kAuto = 0,
   kManual = 1
 };
 
 // Next Ordinal: 6
-[Stable]
+[Stable, RenamedFrom="content.history.mojom.ViewState"]
 struct ViewState {
   gfx.mojom.PointF visual_viewport_scroll_offset@0;
   gfx.mojom.Point scroll_offset@1;
@@ -108,7 +106,7 @@ struct ViewState {
 };
 
 // Next Ordinal: 13
-[Stable]
+[Stable, RenamedFrom="content.history.mojom.FrameState"]
 struct FrameState {
   mojo_base.mojom.String16? url_string@0;
   mojo_base.mojom.String16? referrer@1;
@@ -126,7 +124,7 @@ struct FrameState {
 };
 
 // Next Ordinal: 2
-[Stable]
+[Stable, RenamedFrom="content.history.mojom.PageState"]
 struct PageState {
   array<mojo_base.mojom.String16?> referenced_files@0;
   FrameState top@1;

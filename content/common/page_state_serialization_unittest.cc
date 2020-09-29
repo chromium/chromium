@@ -117,7 +117,7 @@ class PageStateSerializationTest : public testing::Test {
     frame_state->document_state.push_back(
         base::UTF8ToUTF16("dev.chromium.org"));
     frame_state->scroll_restoration_type =
-        blink::kWebHistoryScrollRestorationManual;
+        blink::mojom::ScrollRestorationType::kManual;
     frame_state->visual_viewport_scroll_offset = gfx::PointF(10, 15);
     frame_state->scroll_offset = gfx::Point(0, 100);
     frame_state->item_sequence_number = 1;
@@ -176,7 +176,7 @@ class PageStateSerializationTest : public testing::Test {
     if (!is_child)
       frame_state->target = base::UTF8ToUTF16("target");
     frame_state->scroll_restoration_type =
-        blink::kWebHistoryScrollRestorationAuto;
+        blink::mojom::ScrollRestorationType::kAuto;
     frame_state->visual_viewport_scroll_offset = gfx::PointF(-1, -1);
     frame_state->scroll_offset = gfx::Point(42, -42);
     frame_state->item_sequence_number = 123;
@@ -638,7 +638,8 @@ TEST_F(PageStateSerializationTest, BackwardsCompat_DocumentState) {
 
 TEST_F(PageStateSerializationTest, BackwardsCompat_ScrollRestorationType) {
   ExplodedPageState state;
-  state.top.scroll_restoration_type = blink::kWebHistoryScrollRestorationManual;
+  state.top.scroll_restoration_type =
+      blink::mojom::ScrollRestorationType::kManual;
 
   ExplodedPageState saved_state;
   ReadBackwardsCompatPageState("scroll_restoration_type", 26, &saved_state);
