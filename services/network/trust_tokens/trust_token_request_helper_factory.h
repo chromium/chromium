@@ -20,6 +20,30 @@
 
 namespace network {
 
+namespace internal {
+
+// These are the possible results of constructing a Trust Tokens request helper;
+// exposed in the header file for use in tests. Please do not use them directly
+// outside of the class's implementation.
+//
+// Additionally, since this enum is used in histograms:
+// 1. please do not reorder or delete values;
+// 2. the values must be kept in sync with the enum of the same name in
+// enums.xml.
+enum class TrustTokenRequestHelperFactoryOutcome {
+  kSuccessfullyCreatedAnIssuanceHelper = 0,
+  kSuccessfullyCreatedARedemptionHelper = 1,
+  kSuccessfullyCreatedASigningHelper = 2,
+  kEmptyIssuersParameter = 3,
+  kUnsuitableIssuerInIssuersParameter = 4,
+  kUnsuitableTopFrameOrigin = 5,
+  kRequestRejectedDueToBearingAnInternalTrustTokensHeader = 6,
+  kRejectedByAuthorizer = 7,
+  kMaxValue = kRejectedByAuthorizer
+};
+
+}  // namespace internal
+
 class TrustTokenStatusOrRequestHelper;
 
 // TrustTokenRequestHelperFactory dispatches a helper capable for executing a

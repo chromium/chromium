@@ -9,6 +9,7 @@
 
 #include "base/strings/string_piece_forward.h"
 #include "base/time/time.h"
+#include "services/network/public/mojom/trust_tokens.mojom-shared.h"
 #include "url/origin.h"
 
 namespace network {
@@ -23,6 +24,10 @@ base::Optional<base::Time> StringToTime(base::StringPiece my_string);
 
 // Serializes a base::Time.
 std::string TimeToString(base::Time my_time);
+
+// Serializes a TrustTokenOperationType.
+base::StringPiece TrustTokenOperationTypeToString(
+    mojom::TrustTokenOperationType type);
 
 }  // namespace internal
 }  // namespace network

@@ -15,6 +15,9 @@
 #include "base/strings/string_piece.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
+#include "net/log/net_log.h"
+#include "net/log/test_net_log.h"
+#include "net/log/test_net_log_util.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/url_request_test_util.h"
 #include "services/network/public/mojom/trust_tokens.mojom.h"
@@ -35,6 +38,8 @@ class TestURLRequestMaker {
   TestURLRequestMaker();
   virtual ~TestURLRequestMaker();
 
+  net::NetLog* net_log() const { return context_.net_log(); }
+
   TestURLRequestMaker(const TestURLRequestMaker&) = delete;
   TestURLRequestMaker& operator=(const TestURLRequestMaker&) = delete;
 
@@ -42,6 +47,7 @@ class TestURLRequestMaker {
   std::unique_ptr<net::URLRequest> MakeURLRequest(base::StringPiece spec);
 
  protected:
+  net::RecordingTestNetLog net_log_;
   net::TestDelegate delegate_;
   net::TestURLRequestContext context_;
 };

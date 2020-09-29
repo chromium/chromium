@@ -71713,6 +71713,18 @@ Full version information for the fingerprint enum values:
   <int value="3" label="Digital assetlinks verification failure"/>
 </enum>
 
+<enum name="TrustTokenRequestHelperFactoryOutcome">
+  <int value="0" label="Successfully created an issuance helper"/>
+  <int value="1" label="Successfully created a redemption helper"/>
+  <int value="2" label="Successfully created a signing helper"/>
+  <int value="3" label="Empty 'issuers' parameter"/>
+  <int value="4" label="Unsuitable issuer in 'issuers' parameter"/>
+  <int value="5" label="Unsuitable top frame origin"/>
+  <int value="6"
+      label="Request rejected due to bearing an internal Trust Tokens header"/>
+  <int value="7" label="Rejected by authorizer (check cookie settings?)"/>
+</enum>
+
 <enum name="TunnelRedirectHistogramValue">
   <obsolete>
     Removed in Chrome 76.
