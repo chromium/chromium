@@ -420,10 +420,6 @@ scoped_refptr<const NGLayoutResult> NGBlockNode::Layout(
   if (!CanUseNewLayout())
     return RunLegacyLayout(constraint_space);
 
-  auto* block_flow = DynamicTo<LayoutBlockFlow>(box_);
-  if (RuntimeEnabledFeatures::TrackLayoutPassesPerBlockEnabled() && block_flow)
-    block_flow->IncrementLayoutPassCount();
-
   // The exclusion space internally is a pointer to a shared vector, and
   // equality of exclusion spaces is performed using pointer comparison on this
   // internal shared vector.
@@ -475,6 +471,8 @@ scoped_refptr<const NGLayoutResult> NGBlockNode::Layout(
 
   NGLayoutAlgorithmParams params(*this, *fragment_geometry, constraint_space,
                                  break_token, early_break);
+
+  auto* block_flow = DynamicTo<LayoutBlockFlow>(box_);
 
   // Try to perform "simplified" layout.
   if (cache_status == NGLayoutCacheStatus::kNeedsSimplifiedLayout &&

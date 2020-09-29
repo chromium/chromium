@@ -1182,7 +1182,6 @@ source_set("unit_tests") {
     "layout/layout_block_test.cc",
     "layout/layout_box_model_object_test.cc",
     "layout/layout_box_test.cc",
-    "layout/layout_count_test.cc",
     "layout/layout_embedded_content_test.cc",
     "layout/layout_flexible_box_test.cc",
     "layout/layout_geometry_map_test.cc",

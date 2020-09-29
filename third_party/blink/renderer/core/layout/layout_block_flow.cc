@@ -87,12 +87,6 @@ ASSERT_SIZE(LayoutBlockFlow, SameSizeAsLayoutBlockFlow);
 
 ASSERT_SIZE(LayoutBlockFlow::MarginValues, LayoutUnit[4]);
 
-typedef HashMap<LayoutBlockFlow*, int> LayoutPassCountMap;
-static LayoutPassCountMap& GetLayoutPassCountMap() {
-  DEFINE_STATIC_LOCAL(LayoutPassCountMap, map, ());
-  return map;
-}
-
 // Caches all our current margin collapsing state.
 class MarginInfo {
   // Collapsing flags for whether we can collapse our margins with our
@@ -451,9 +445,6 @@ void LayoutBlockFlow::UpdateBlockLayout(bool relayout_children) {
   NOT_DESTROYED();
   DCHECK(NeedsLayout());
   DCHECK(IsInlineBlockOrInlineTable() || !IsInline());
-
-  if (RuntimeEnabledFeatures::TrackLayoutPassesPerBlockEnabled())
-    IncrementLayoutPassCount();
 
   ClearOffsetMappingIfNeeded();
 
@@ -4949,21 +4940,6 @@ void LayoutBlockFlow::InvalidateDisplayItemClients(
   NOT_DESTROYED();
   BlockFlowPaintInvalidator(*this).InvalidateDisplayItemClients(
       invalidation_reason);
-}
-
-void LayoutBlockFlow::IncrementLayoutPassCount() {
-  NOT_DESTROYED();
-  int layout_pass_count = 0;
-  HashMap<LayoutBlockFlow*, int>::iterator layout_count_iterator =
-      GetLayoutPassCountMap().find(this);
-  if (layout_count_iterator != GetLayoutPassCountMap().end())
-    layout_pass_count = layout_count_iterator->value;
-  GetLayoutPassCountMap().Set(this, ++layout_pass_count);
-}
-
-int LayoutBlockFlow::GetLayoutPassCountForTesting() {
-  NOT_DESTROYED();
-  return GetLayoutPassCountMap().find(this)->value;
 }
 
 LayoutBlockFlow::LayoutBlockFlowRareData::LayoutBlockFlowRareData(

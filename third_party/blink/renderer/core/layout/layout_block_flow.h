@@ -877,11 +877,6 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
 
   bool ShouldTruncateOverflowingText() const;
 
-  int GetLayoutPassCountForTesting();
-
-  // This is public only for use by LayoutNG, so that NGBlockNode can call it.
-  void IncrementLayoutPassCount();
-
  protected:
   LayoutUnit MaxPositiveMarginBefore() const {
     NOT_DESTROYED();
