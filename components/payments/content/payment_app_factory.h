@@ -58,6 +58,9 @@ class PaymentAppFactory {
     GetPaymentManifestWebDataService() const = 0;
     virtual bool MayCrawlForInstallablePaymentApps() = 0;
     virtual bool IsOffTheRecord() const = 0;
+
+    // Returns the merchant provided information, or null if the payment is
+    // being aborted.
     virtual PaymentRequestSpec* GetSpec() const = 0;
 
     // Returns the Android package name of the Trusted Web Activity that invoked

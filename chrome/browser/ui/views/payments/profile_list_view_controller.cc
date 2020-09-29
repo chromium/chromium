@@ -115,14 +115,20 @@ class ProfileItem : public PaymentRequestItemList::Item {
 class ShippingProfileViewController : public ProfileListViewController,
                                       public PaymentRequestSpec::Observer {
  public:
+  // The `spec` parameter should not be null
   ShippingProfileViewController(PaymentRequestSpec* spec,
                                 PaymentRequestState* state,
                                 PaymentRequestDialogView* dialog)
       : ProfileListViewController(spec, state, dialog) {
+    DCHECK(spec);
     spec->AddObserver(this);
     PopulateList();
   }
-  ~ShippingProfileViewController() override { spec()->RemoveObserver(this); }
+
+  ~ShippingProfileViewController() override {
+    if (spec())
+      spec()->RemoveObserver(this);
+  }
 
  protected:
   // ProfileListViewController:
@@ -175,8 +181,8 @@ class ShippingProfileViewController : public ProfileListViewController,
   }
 
   std::unique_ptr<views::View> CreateHeaderView() override {
-    if (!spec()->GetShippingOptions().empty() &&
-        spec()->selected_shipping_option_error().empty()) {
+    if (!spec() || (!spec()->GetShippingOptions().empty() &&
+                    spec()->selected_shipping_option_error().empty())) {
       return nullptr;
     }
 
@@ -188,7 +194,8 @@ class ShippingProfileViewController : public ProfileListViewController,
   }
 
   base::string16 GetSheetTitle() override {
-    return GetShippingAddressSectionString(spec()->shipping_type());
+    return spec() ? GetShippingAddressSectionString(spec()->shipping_type())
+                  : base::string16();
   }
 
   base::string16 GetSecondaryButtonLabel() override {
@@ -214,6 +221,9 @@ class ShippingProfileViewController : public ProfileListViewController,
 
  private:
   void OnSpecUpdated() override {
+    if (!spec())
+      return;
+
     // If there's an error, stay on this screen so the user can select a
     // different address. Otherwise, go back to the payment sheet.
     if (spec()->current_update_reason() ==
@@ -235,10 +245,12 @@ class ShippingProfileViewController : public ProfileListViewController,
 
 class ContactProfileViewController : public ProfileListViewController {
  public:
+  // The `spec` parameter should not be null.
   ContactProfileViewController(PaymentRequestSpec* spec,
                                PaymentRequestState* state,
                                PaymentRequestDialogView* dialog)
       : ProfileListViewController(spec, state, dialog) {
+    DCHECK(spec);
     PopulateList();
   }
   ~ContactProfileViewController() override {}
@@ -248,9 +260,13 @@ class ContactProfileViewController : public ProfileListViewController {
   std::unique_ptr<views::View> GetLabel(
       autofill::AutofillProfile* profile,
       base::string16* accessible_content) override {
+    DCHECK(profile);
     return GetContactInfoLabel(
         AddressStyleType::DETAILED, state()->GetApplicationLocale(), *profile,
-        *spec(), *(state()->profile_comparator()), accessible_content);
+        /*request_payer_name=*/spec() && spec()->request_payer_name(),
+        /*request_payer_email=*/spec() && spec()->request_payer_email(),
+        /*request_payer_phone=*/spec() && spec()->request_payer_phone(),
+        *(state()->profile_comparator()), accessible_content);
   }
 
   void SelectProfile(autofill::AutofillProfile* profile) override {
@@ -347,6 +363,9 @@ std::unique_ptr<views::View> ProfileListViewController::CreateHeaderView() {
 }
 
 void ProfileListViewController::PopulateList() {
+  if (!spec())
+    return;
+
   autofill::AutofillProfile* selected_profile = GetSelectedProfile();
 
   list_.Clear();

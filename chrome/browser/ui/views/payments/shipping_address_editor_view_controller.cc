@@ -289,6 +289,9 @@ void ShippingAddressEditorViewController::ShippingAddressValidationDelegate::
 
 bool ShippingAddressEditorViewController::ShippingAddressValidationDelegate::
     ValidateValue(const base::string16& value, base::string16* error_message) {
+  if (!controller_->spec())
+    return false;
+
   // Show errors from merchant's retry() call. Note that changing the selected
   // shipping address will clear the validation errors from retry().
   autofill::AutofillProfile* invalid_shipping_profile =

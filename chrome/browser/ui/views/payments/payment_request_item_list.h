@@ -33,9 +33,9 @@ class PaymentRequestItemList {
   // Represents an item in the item list.
   class Item : public views::ButtonListener, public PaymentRequestRowView {
    public:
-    // Creates an item that will be owned by |list| with the initial state set
-    // to |selected|. |clickable| indicates whether or not the user can interact
-    // with this row.
+    // Creates an item that will be owned by `list` with the initial state set
+    // to `selected`. `clickable` indicates whether or not the user can interact
+    // with this row. The `spec` parameter should not be null.
     Item(PaymentRequestSpec* spec,
          PaymentRequestState* state,
          PaymentRequestItemList* list,
@@ -54,7 +54,7 @@ class PaymentRequestItemList {
 
     // Returns a pointer to the PaymentRequestSpec/State objects associated with
     // this instance of the UI.
-    PaymentRequestSpec* spec() { return spec_; }
+    PaymentRequestSpec* spec() { return spec_.get(); }
     PaymentRequestState* state() { return state_; }
 
    protected:
@@ -110,7 +110,7 @@ class PaymentRequestItemList {
     // status (selected/not).
     void UpdateAccessibleName();
 
-    PaymentRequestSpec* spec_;
+    base::WeakPtr<PaymentRequestSpec> spec_;
     PaymentRequestState* state_;
     PaymentRequestItemList* list_;
     base::string16 accessible_item_description_;

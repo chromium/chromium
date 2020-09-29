@@ -33,12 +33,11 @@ PaymentResponseHelper::PaymentResponseHelper(
     : app_locale_(app_locale),
       is_waiting_for_shipping_address_normalization_(false),
       is_waiting_for_instrument_details_(false),
-      spec_(spec),
+      spec_(spec->GetWeakPtr()),
       delegate_(delegate),
       selected_app_(selected_app),
       payment_request_delegate_(payment_request_delegate),
       selected_contact_profile_(selected_contact_profile) {
-  DCHECK(spec_);
   DCHECK(selected_app_);
   DCHECK(delegate_);
 
@@ -113,6 +112,9 @@ mojom::PayerDetailPtr PaymentResponseHelper::GeneratePayerDetail(
     const autofill::AutofillProfile* selected_contact_profile) const {
   mojom::PayerDetailPtr payer = mojom::PayerDetail::New();
 
+  if (!spec_)
+    return payer;
+
   if (spec_->request_payer_name()) {
     if (selected_app_->HandlesPayerName()) {
       payer->name = payer_data_from_app_.payer_name;
@@ -158,6 +160,9 @@ mojom::PayerDetailPtr PaymentResponseHelper::GeneratePayerDetail(
 void PaymentResponseHelper::GeneratePaymentResponse() {
   DCHECK(!is_waiting_for_instrument_details_);
   DCHECK(!is_waiting_for_shipping_address_normalization_);
+
+  if (!spec_)
+    return;
 
   mojom::PaymentResponsePtr payment_response = mojom::PaymentResponse::New();
 

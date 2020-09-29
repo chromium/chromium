@@ -38,7 +38,7 @@ class PaymentAppServiceBridge : public PaymentAppFactory::Delegate {
 
   // Creates a new PaymentAppServiceBridge. This object is self-deleting; its
   // memory is freed when OnDoneCreatingPaymentApps() is called
-  // |number_of_factories| times.
+  // `number_of_factories` times. The `spec` parameter should not be null.
   static PaymentAppServiceBridge* Create(
       size_t number_of_factories,
       content::RenderFrameHost* render_frame_host,
@@ -87,7 +87,8 @@ class PaymentAppServiceBridge : public PaymentAppFactory::Delegate {
   void SetCanMakePaymentEvenWithoutApps() override;
 
  private:
-  // Prevents direct instantiation. Callers should use Create() instead.
+  // Prevents direct instantiation. Callers should use Create() instead. The
+  // `spec` parameter should not be null.
   PaymentAppServiceBridge(
       size_t number_of_factories,
       content::RenderFrameHost* render_frame_host,
@@ -107,7 +108,7 @@ class PaymentAppServiceBridge : public PaymentAppFactory::Delegate {
   const GURL top_origin_;
   const GURL frame_origin_;
   const url::Origin frame_security_origin_;
-  PaymentRequestSpec* spec_;
+  base::WeakPtr<PaymentRequestSpec> spec_;
   const std::string twa_package_name_;
   scoped_refptr<PaymentManifestWebDataService>
       payment_manifest_web_data_service_;

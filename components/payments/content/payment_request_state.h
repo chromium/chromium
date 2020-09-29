@@ -114,6 +114,7 @@ class PaymentRequestState : public PaymentAppFactory::Delegate,
       base::OnceCallback<void(bool methods_supported,
                               const std::string& error_message)>;
 
+  // The `spec` parameter should not be null.
   PaymentRequestState(content::WebContents* web_contents,
                       content::RenderFrameHost* initiator_render_frame_host,
                       const GURL& top_level_origin,
@@ -390,8 +391,9 @@ class PaymentRequestState : public PaymentAppFactory::Delegate,
 
   const std::string app_locale_;
 
+  base::WeakPtr<PaymentRequestSpec> spec_;
+
   // Not owned. Never null. Will outlive this object.
-  PaymentRequestSpec* spec_;
   Delegate* delegate_;
   autofill::PersonalDataManager* personal_data_manager_;
   JourneyLogger* journey_logger_;

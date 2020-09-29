@@ -52,7 +52,7 @@ PaymentRequestItemList::Item::Item(PaymentRequestSpec* spec,
                                    bool clickable,
                                    bool show_edit_button)
     : PaymentRequestRowView(this, clickable, kRowInsets),
-      spec_(spec),
+      spec_(spec->GetWeakPtr()),
       state_(state),
       list_(list),
       selected_(selected),

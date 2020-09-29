@@ -58,6 +58,7 @@ class AppFinder : public base::SupportsUserData::Data {
     DCHECK_EQ(0U, number_of_pending_is_ready_to_pay_queries_);
     DCHECK_EQ(nullptr, communication_.get());
     DCHECK_NE(nullptr, communication.get());
+    DCHECK(delegate->GetSpec());
     DCHECK(delegate->GetSpec()->details().id.has_value());
 
     delegate_ = delegate;
@@ -87,7 +88,7 @@ class AppFinder : public base::SupportsUserData::Data {
       std::vector<std::unique_ptr<AndroidAppDescription>> app_descriptions) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     // The browser could be shutting down.
-    if (!communication_ || !delegate_)
+    if (!communication_ || !delegate_ || !delegate_->GetSpec())
       return;
 
     if (error_message.has_value()) {
@@ -177,7 +178,7 @@ class AppFinder : public base::SupportsUserData::Data {
     DCHECK_LT(0U, number_of_pending_is_ready_to_pay_queries_);
 
     // The browser could be shutting down.
-    if (!communication_ || !delegate_) {
+    if (!communication_ || !delegate_ || !delegate_->GetSpec()) {
       OnDoneCreatingPaymentApps();
       return;
     }

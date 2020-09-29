@@ -30,6 +30,7 @@ class PaymentSheetViewController : public PaymentRequestSheetController,
                                    public views::StyledLabelListener {
  public:
   // Does not take ownership of the arguments, which should outlive this object.
+  // The `spec` and `state` objects should not be null.
   PaymentSheetViewController(PaymentRequestSpec* spec,
                              PaymentRequestState* state,
                              PaymentRequestDialogView* dialog);

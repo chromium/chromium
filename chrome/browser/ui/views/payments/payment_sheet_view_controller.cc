@@ -387,12 +387,16 @@ PaymentSheetViewController::PaymentSheetViewController(
     PaymentRequestState* state,
     PaymentRequestDialogView* dialog)
     : PaymentRequestSheetController(spec, state, dialog) {
+  DCHECK(spec);
+  DCHECK(state);
   spec->AddObserver(this);
   state->AddObserver(this);
 }
 
 PaymentSheetViewController::~PaymentSheetViewController() {
-  spec()->RemoveObserver(this);
+  if (spec())
+    spec()->RemoveObserver(this);
+
   state()->RemoveObserver(this);
 }
 
@@ -429,6 +433,9 @@ base::string16 PaymentSheetViewController::GetSheetTitle() {
 }
 
 void PaymentSheetViewController::FillContentView(views::View* content_view) {
+  if (!spec())
+    return;
+
   views::GridLayout* layout =
       content_view->SetLayoutManager(std::make_unique<views::GridLayout>());
   views::ColumnSet* columns = layout->AddColumnSet(0);
@@ -445,12 +452,18 @@ void PaymentSheetViewController::FillContentView(views::View* content_view) {
   // The shipping address and contact info rows are optional.
   std::unique_ptr<PaymentRequestRowView> summary_row =
       CreatePaymentSheetSummaryRow();
+  if (!summary_row)
+    return;
+
   PaymentRequestRowView* previous_row = summary_row.get();
   layout->StartRow(views::GridLayout::kFixedSize, 0);
   layout->AddView(std::move(summary_row));
 
   if (state()->ShouldShowShippingSection()) {
     std::unique_ptr<PaymentRequestRowView> shipping_row = CreateShippingRow();
+    if (!shipping_row)
+      return;
+
     shipping_row->set_previous_row(previous_row->AsWeakPtr());
     previous_row = shipping_row.get();
     layout->StartRow(views::GridLayout::kFixedSize, 0);
@@ -496,7 +509,7 @@ PaymentSheetViewController::CreateExtraFooterView() {
 
 void PaymentSheetViewController::ButtonPressed(views::Button* sender,
                                                const ui::Event& event) {
-  if (!dialog()->IsInteractive())
+  if (!dialog()->IsInteractive() || !spec())
     return;
 
   bool should_reset_retry_error_message = true;
@@ -591,7 +604,8 @@ void PaymentSheetViewController::UpdatePayButtonState(bool enabled) {
 }
 
 // Creates the Order Summary row, which contains an "Order Summary" label,
-// an inline list of display items, a Total Amount label, and a Chevron.
+// an inline list of display items, a Total Amount label, and a Chevron. Returns
+// nullptr if WeakPtr<PaymentRequestSpec> has become null.
 // +----------------------------------------------+
 // | Order Summary   Item 1            $ 1.34     |
 // |                 Item 2            $ 2.00   > |
@@ -600,6 +614,9 @@ void PaymentSheetViewController::UpdatePayButtonState(bool enabled) {
 // +----------------------------------------------+
 std::unique_ptr<PaymentRequestRowView>
 PaymentSheetViewController::CreatePaymentSheetSummaryRow() {
+  if (!spec())
+    return nullptr;
+
   std::unique_ptr<views::View> inline_summary = std::make_unique<views::View>();
   views::GridLayout* layout =
       inline_summary->SetLayoutManager(std::make_unique<views::GridLayout>());
@@ -697,7 +714,8 @@ PaymentSheetViewController::CreateShippingSectionContent(
 }
 
 // Creates the Shipping row, which contains a "Shipping address" label, the
-// user's selected shipping address, and a chevron.
+// user's selected shipping address, and a chevron. Returns null if the
+// WeakPtr<PaymentRequestSpec> has become null.
 // +----------------------------------------------+
 // | Shipping Address   Barack Obama              |
 // |                    1600 Pennsylvania Ave.  > |
@@ -705,6 +723,9 @@ PaymentSheetViewController::CreateShippingSectionContent(
 // +----------------------------------------------+
 std::unique_ptr<PaymentRequestRowView>
 PaymentSheetViewController::CreateShippingRow() {
+  if (!spec())
+    return nullptr;
+
   std::unique_ptr<views::Button> section;
   PaymentSheetRowBuilder builder(
       this, GetShippingAddressSectionString(spec()->shipping_type()));
@@ -823,11 +844,18 @@ PaymentSheetViewController::CreateContactInfoSectionContent(
     base::string16* accessible_content) {
   autofill::AutofillProfile* profile = state()->selected_contact_profile();
   *accessible_content = base::string16();
-  return profile ? payments::GetContactInfoLabel(
-                       AddressStyleType::SUMMARY,
-                       state()->GetApplicationLocale(), *profile, *spec(),
-                       *(state()->profile_comparator()), accessible_content)
-                 : std::make_unique<views::Label>(base::string16());
+  return profile && spec()
+             ? payments::GetContactInfoLabel(
+                   AddressStyleType::SUMMARY, state()->GetApplicationLocale(),
+                   *profile,
+                   /*request_payer_name=*/spec() &&
+                       spec()->request_payer_name(),
+                   /*request_payer_email=*/spec() &&
+                       spec()->request_payer_email(),
+                   /*request_payer_phone=*/spec() &&
+                       spec()->request_payer_phone(),
+                   *(state()->profile_comparator()), accessible_content)
+             : std::make_unique<views::Label>(base::string16());
 }
 
 // Creates the Contact Info row, which contains a "Contact info" label; the
@@ -888,6 +916,9 @@ PaymentSheetViewController::CreateContactInfoRow() {
 
 std::unique_ptr<PaymentRequestRowView>
 PaymentSheetViewController::CreateShippingOptionRow() {
+  if (!spec())
+    return nullptr;
+
   // The Shipping Options row has many different ways of being displayed
   // depending on the state of the dialog and Payment Request.
   // 1. There is a selected shipping address. The website updated the shipping

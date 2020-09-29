@@ -65,8 +65,9 @@ class PaymentResponseHelper
   bool is_waiting_for_shipping_address_normalization_;
   bool is_waiting_for_instrument_details_;
 
+  base::WeakPtr<PaymentRequestSpec> spec_;
+
   // Not owned, cannot be null.
-  PaymentRequestSpec* spec_;
   Delegate* delegate_;
   PaymentApp* selected_app_;
   PaymentRequestDelegate* payment_request_delegate_;

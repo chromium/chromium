@@ -366,6 +366,10 @@ bool PaymentRequestSpec::IsSecurePaymentConfirmationRequested() const {
              methods::kSecurePaymentConfirmation;
 }
 
+base::WeakPtr<PaymentRequestSpec> PaymentRequestSpec::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 const mojom::PaymentDetailsModifierPtr*
 PaymentRequestSpec::GetApplicableModifier(PaymentApp* selected_app) const {
   if (!selected_app ||

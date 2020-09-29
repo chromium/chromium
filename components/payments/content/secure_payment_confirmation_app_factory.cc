@@ -109,9 +109,11 @@ SecurePaymentConfirmationAppFactory::~SecurePaymentConfirmationAppFactory() =
 
 void SecurePaymentConfirmationAppFactory::Create(
     base::WeakPtr<Delegate> delegate) {
+  DCHECK(delegate);
+
   PaymentRequestSpec* spec = delegate->GetSpec();
-  if (!base::Contains(spec->payment_method_identifiers_set(),
-                      methods::kSecurePaymentConfirmation)) {
+  if (!spec || !base::Contains(spec->payment_method_identifiers_set(),
+                               methods::kSecurePaymentConfirmation)) {
     delegate->OnDoneCreatingPaymentApps();
     return;
   }
@@ -210,11 +212,11 @@ void SecurePaymentConfirmationAppFactory::OnAppIconDecoded(
     std::unique_ptr<SecurePaymentConfirmationInstrument> instrument,
     std::unique_ptr<Request> request,
     const SkBitmap& decoded_icon) {
-  if (!request->delegate || !request->web_contents())
-    return;
-
-  if (request->authenticator->GetRenderFrameHost() !=
-      request->web_contents()->GetMainFrame()) {
+  DCHECK(request);
+  if (!request->delegate || !request->web_contents() ||
+      !request->delegate->GetSpec() ||
+      request->authenticator->GetRenderFrameHost() !=
+          request->web_contents()->GetMainFrame()) {
     request->delegate->OnDoneCreatingPaymentApps();
     return;
   }

@@ -120,7 +120,7 @@ void PaymentRequestDialogView::CloseDialog() {
 }
 
 void PaymentRequestDialogView::ShowErrorMessage() {
-  if (being_closed_)
+  if (being_closed_ || !request_->spec())
     return;
 
   view_stack_->Push(CreateViewAndInstallController(
@@ -148,6 +148,9 @@ bool PaymentRequestDialogView::IsInteractive() const {
 void PaymentRequestDialogView::ShowPaymentHandlerScreen(
     const GURL& url,
     PaymentHandlerOpenWindowCallback callback) {
+  if (!request_->spec())
+    return;
+
   if (PaymentsExperimentalFeatures::IsEnabled(
           features::kPaymentHandlerPopUpSizeWindow)) {
     is_showing_large_payment_handler_window_ = true;
@@ -180,6 +183,9 @@ void PaymentRequestDialogView::ShowPaymentHandlerScreen(
 }
 
 void PaymentRequestDialogView::RetryDialog() {
+  if (!request_->spec())
+    return;
+
   HideProcessingSpinner();
   GoBackToPaymentSheet(false /* animate */);
 
@@ -222,6 +228,9 @@ void PaymentRequestDialogView::OnStartUpdating(
 }
 
 void PaymentRequestDialogView::OnSpecUpdated() {
+  if (!request_->spec())
+    return;
+
   if (request_->spec()->current_update_reason() !=
       PaymentRequestSpec::UpdateReason::NONE) {
     HideProcessingSpinner();
@@ -287,6 +296,9 @@ void PaymentRequestDialogView::GoBackToPaymentSheet(bool animate) {
 }
 
 void PaymentRequestDialogView::ShowContactProfileSheet() {
+  if (!request_->spec())
+    return;
+
   view_stack_->Push(
       CreateViewAndInstallController(
           ProfileListViewController::GetContactProfileViewController(
@@ -298,6 +310,9 @@ void PaymentRequestDialogView::ShowContactProfileSheet() {
 }
 
 void PaymentRequestDialogView::ShowOrderSummary() {
+  if (!request_->spec())
+    return;
+
   view_stack_->Push(CreateViewAndInstallController(
                         std::make_unique<OrderSummaryViewController>(
                             request_->spec(), request_->state(), this),
@@ -308,6 +323,9 @@ void PaymentRequestDialogView::ShowOrderSummary() {
 }
 
 void PaymentRequestDialogView::ShowPaymentMethodSheet() {
+  if (!request_->spec())
+    return;
+
   view_stack_->Push(CreateViewAndInstallController(
                         std::make_unique<PaymentMethodViewController>(
                             request_->spec(), request_->state(), this),
@@ -318,6 +336,9 @@ void PaymentRequestDialogView::ShowPaymentMethodSheet() {
 }
 
 void PaymentRequestDialogView::ShowShippingProfileSheet() {
+  if (!request_->spec())
+    return;
+
   view_stack_->Push(
       CreateViewAndInstallController(
           ProfileListViewController::GetShippingProfileViewController(
@@ -329,6 +350,9 @@ void PaymentRequestDialogView::ShowShippingProfileSheet() {
 }
 
 void PaymentRequestDialogView::ShowShippingOptionSheet() {
+  if (!request_->spec())
+    return;
+
   view_stack_->Push(CreateViewAndInstallController(
                         std::make_unique<ShippingOptionViewController>(
                             request_->spec(), request_->state(), this),
@@ -343,6 +367,9 @@ void PaymentRequestDialogView::ShowCvcUnmaskPrompt(
     base::WeakPtr<autofill::payments::FullCardRequest::ResultDelegate>
         result_delegate,
     content::WebContents* web_contents) {
+  if (!request_->spec())
+    return;
+
   view_stack_->Push(CreateViewAndInstallController(
                         std::make_unique<CvcUnmaskViewController>(
                             request_->spec(), request_->state(), this,
@@ -359,6 +386,9 @@ void PaymentRequestDialogView::ShowCreditCardEditor(
     base::OnceClosure on_edited,
     base::OnceCallback<void(const autofill::CreditCard&)> on_added,
     autofill::CreditCard* credit_card) {
+  if (!request_->spec())
+    return;
+
   view_stack_->Push(
       CreateViewAndInstallController(
           std::make_unique<CreditCardEditorViewController>(
@@ -376,6 +406,9 @@ void PaymentRequestDialogView::ShowShippingAddressEditor(
     base::OnceClosure on_edited,
     base::OnceCallback<void(const autofill::AutofillProfile&)> on_added,
     autofill::AutofillProfile* profile) {
+  if (!request_->spec())
+    return;
+
   view_stack_->Push(
       CreateViewAndInstallController(
           std::make_unique<ShippingAddressEditorViewController>(
@@ -393,6 +426,9 @@ void PaymentRequestDialogView::ShowContactInfoEditor(
     base::OnceClosure on_edited,
     base::OnceCallback<void(const autofill::AutofillProfile&)> on_added,
     autofill::AutofillProfile* profile) {
+  if (!request_->spec())
+    return;
+
   view_stack_->Push(
       CreateViewAndInstallController(
           std::make_unique<ContactInfoEditorViewController>(
@@ -427,6 +463,8 @@ PaymentRequestDialogView::PaymentRequestDialogView(
     PaymentRequestDialogView::ObserverForTest* observer)
     : request_(request), observer_for_testing_(observer) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(request);
+  DCHECK(request->spec());
 
   SetButtons(ui::DIALOG_BUTTON_NONE);
 
@@ -467,6 +505,9 @@ PaymentRequestDialogView::PaymentRequestDialogView(
 PaymentRequestDialogView::~PaymentRequestDialogView() = default;
 
 void PaymentRequestDialogView::OnDialogOpened() {
+  if (!request_->spec())
+    return;
+
   if (request_->spec()->request_shipping() &&
       !request_->state()->selected_shipping_profile() &&
       PaymentsExperimentalFeatures::IsEnabled(
@@ -484,6 +525,9 @@ void PaymentRequestDialogView::OnDialogOpened() {
 }
 
 void PaymentRequestDialogView::ShowInitialPaymentSheet() {
+  if (!request_->spec())
+    return;
+
   view_stack_->Push(CreateViewAndInstallController(
                         std::make_unique<PaymentSheetViewController>(
                             request_->spec(), request_->state(), this),

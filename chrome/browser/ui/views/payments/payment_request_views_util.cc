@@ -318,20 +318,22 @@ std::unique_ptr<views::View> GetContactInfoLabel(
     AddressStyleType type,
     const std::string& locale,
     const autofill::AutofillProfile& profile,
-    const PaymentOptionsProvider& options,
+    bool request_payer_name,
+    bool request_payer_email,
+    bool request_payer_phone,
     const PaymentsProfileComparator& comp,
     base::string16* accessible_content) {
   DCHECK(accessible_content);
-  base::string16 name = options.request_payer_name()
+  base::string16 name = request_payer_name
                             ? profile.GetInfo(autofill::NAME_FULL, locale)
                             : base::string16();
 
   base::string16 phone =
-      options.request_payer_phone()
+      request_payer_phone
           ? autofill::i18n::GetFormattedPhoneNumberForDisplay(profile, locale)
           : base::string16();
 
-  base::string16 email = options.request_payer_email()
+  base::string16 email = request_payer_email
                              ? profile.GetInfo(autofill::EMAIL_ADDRESS, locale)
                              : base::string16();
 

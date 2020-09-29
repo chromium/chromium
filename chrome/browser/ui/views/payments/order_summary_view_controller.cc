@@ -123,12 +123,16 @@ OrderSummaryViewController::OrderSummaryViewController(
     PaymentRequestState* state,
     PaymentRequestDialogView* dialog)
     : PaymentRequestSheetController(spec, state, dialog), pay_button_(nullptr) {
+  DCHECK(spec);
+  DCHECK(state);
   spec->AddObserver(this);
   state->AddObserver(this);
 }
 
 OrderSummaryViewController::~OrderSummaryViewController() {
-  spec()->RemoveObserver(this);
+  if (spec())
+    spec()->RemoveObserver(this);
+
   state()->RemoveObserver(this);
 }
 
@@ -164,6 +168,9 @@ base::string16 OrderSummaryViewController::GetSheetTitle() {
 }
 
 void OrderSummaryViewController::FillContentView(views::View* content_view) {
+  if (!spec())
+    return;
+
   auto layout = std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical);
   layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kStart);

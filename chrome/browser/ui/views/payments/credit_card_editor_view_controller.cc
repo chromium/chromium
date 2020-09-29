@@ -186,6 +186,8 @@ CreditCardEditorViewController::~CreditCardEditorViewController() {}
 std::unique_ptr<views::View>
 CreditCardEditorViewController::CreateHeaderView() {
   std::unique_ptr<views::View> view = std::make_unique<views::View>();
+  if (!spec())
+    return view;
 
   // 9dp is required between the first row (label) and second row (icons).
   constexpr int kRowVerticalSpacing = 9;

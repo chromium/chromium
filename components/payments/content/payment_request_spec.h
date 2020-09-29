@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/strings/string16.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
@@ -204,6 +205,8 @@ class PaymentRequestSpec : public PaymentOptionsProvider,
 
   bool IsSecurePaymentConfirmationRequested() const;
 
+  base::WeakPtr<PaymentRequestSpec> GetWeakPtr();
+
  private:
   // Returns the first applicable modifier in the Payment Request for the
   // |selected_app|.
@@ -283,6 +286,8 @@ class PaymentRequestSpec : public PaymentOptionsProvider,
 
   base::string16 retry_error_message_;
   mojom::PayerErrorsPtr payer_errors_;
+
+  base::WeakPtrFactory<PaymentRequestSpec> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PaymentRequestSpec);
 };

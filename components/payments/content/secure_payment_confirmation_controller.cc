@@ -34,7 +34,7 @@ void SecurePaymentConfirmationController::ShowDialog() {
   NOTREACHED();
 #endif  // OS_ANDROID
 
-  if (!request_)
+  if (!request_ || request_->spec())
     return;
 
   if (!request_->state()->IsInitialized()) {
@@ -57,7 +57,7 @@ void SecurePaymentConfirmationController::
   // If no apps are available then don't show any UI. The payment_request.cc
   // code will reject the PaymentRequest.show() call with appropriate error
   // message on its own.
-  if (!request_ || !request_->state() ||
+  if (!request_ || !request_->state() || !request_->spec() ||
       request_->state()->available_apps().empty()) {
     return;
   }

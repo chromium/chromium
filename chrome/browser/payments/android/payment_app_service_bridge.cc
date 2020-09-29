@@ -206,7 +206,7 @@ PaymentAppServiceBridge::PaymentAppServiceBridge(
       frame_origin_(url_formatter::FormatUrlForSecurityDisplay(
           render_frame_host->GetLastCommittedURL())),
       frame_security_origin_(render_frame_host->GetLastCommittedOrigin()),
-      spec_(spec),
+      spec_(spec->GetWeakPtr()),
       twa_package_name_(twa_package_name),
       payment_manifest_web_data_service_(web_data_service),
       may_crawl_for_installable_payment_apps_(
@@ -247,6 +247,7 @@ content::RenderFrameHost* PaymentAppServiceBridge::GetInitiatorRenderFrameHost()
 
 const std::vector<PaymentMethodDataPtr>&
 PaymentAppServiceBridge::GetMethodData() const {
+  DCHECK(spec_);
   return spec_->method_data();
 }
 
@@ -301,7 +302,7 @@ void PaymentAppServiceBridge::ShowProcessingSpinner() {
 }
 
 PaymentRequestSpec* PaymentAppServiceBridge::GetSpec() const {
-  return spec_;
+  return spec_.get();
 }
 
 std::string PaymentAppServiceBridge::GetTwaPackageName() const {

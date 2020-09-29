@@ -8,18 +8,28 @@
 #include <utility>
 #include <vector>
 
+#include "components/payments/content/payment_request_spec.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/payments/payment_request.mojom.h"
 #include "ui/views/view.h"
 
 namespace payments {
-
 namespace {
+
+std::unique_ptr<PaymentRequestSpec> BuildSpec() {
+  return std::make_unique<PaymentRequestSpec>(
+      mojom::PaymentOptions::New(), mojom::PaymentDetails::New(),
+      std::vector<mojom::PaymentMethodDataPtr>(),
+      /*observer=*/nullptr, /*app_locale=*/"en-US");
+}
 
 class TestListItem : public PaymentRequestItemList::Item {
  public:
-  TestListItem(PaymentRequestItemList* list, bool selected)
-      : PaymentRequestItemList::Item(nullptr,
-                                     nullptr,
+  TestListItem(PaymentRequestSpec* spec,
+               PaymentRequestItemList* list,
+               bool selected)
+      : PaymentRequestItemList::Item(spec,
+                                     /*state=*/nullptr,
                                      list,
                                      selected,
                                      /*clickable=*/true,
@@ -63,11 +73,12 @@ TEST(PaymentRequestItemListTest, TestAddItem) {
   std::unique_ptr<views::View> list_view = list.CreateListView();
   EXPECT_TRUE(list_view->children().empty());
 
+  std::unique_ptr<PaymentRequestSpec> spec = BuildSpec();
   std::vector<std::unique_ptr<TestListItem>> items;
-  items.push_back(std::make_unique<TestListItem>(&list, false));
-  items.push_back(std::make_unique<TestListItem>(&list, true));
-  items.push_back(std::make_unique<TestListItem>(&list, false));
-  items.push_back(std::make_unique<TestListItem>(&list, true));
+  items.push_back(std::make_unique<TestListItem>(spec.get(), &list, false));
+  items.push_back(std::make_unique<TestListItem>(spec.get(), &list, true));
+  items.push_back(std::make_unique<TestListItem>(spec.get(), &list, false));
+  items.push_back(std::make_unique<TestListItem>(spec.get(), &list, true));
 
   // The unique_ptr objects will become owned by |list|, but the underlying
   // pointers will be needed for assertions after the unique_ptr is moved.
@@ -91,10 +102,11 @@ TEST(PaymentRequestItemListTest, TestAddItem) {
 TEST(PaymentRequestItemListTest, TestSelectItemResultsInSingleItemSelected) {
   PaymentRequestItemList list(nullptr);
 
+  std::unique_ptr<PaymentRequestSpec> spec = BuildSpec();
   std::vector<std::unique_ptr<TestListItem>> items;
-  items.push_back(std::make_unique<TestListItem>(&list, false));
-  items.push_back(std::make_unique<TestListItem>(&list, false));
-  items.push_back(std::make_unique<TestListItem>(&list, false));
+  items.push_back(std::make_unique<TestListItem>(spec.get(), &list, false));
+  items.push_back(std::make_unique<TestListItem>(spec.get(), &list, false));
+  items.push_back(std::make_unique<TestListItem>(spec.get(), &list, false));
 
   // The unique_ptr objects will become owned by |list|, but the underlying
   // pointers will be needed for assertions after the unique_ptr is moved.

@@ -73,7 +73,7 @@ PaymentRequestState::PaymentRequestState(
       frame_origin_(frame_origin),
       frame_security_origin_(frame_security_origin),
       app_locale_(app_locale),
-      spec_(spec),
+      spec_(spec->GetWeakPtr()),
       delegate_(delegate),
       personal_data_manager_(personal_data_manager),
       journey_logger_(journey_logger),
@@ -108,7 +108,7 @@ void PaymentRequestState::ShowProcessingSpinner() {
 }
 
 PaymentRequestSpec* PaymentRequestState::GetSpec() const {
-  return spec_;
+  return spec_.get();
 }
 
 std::string PaymentRequestState::GetTwaPackageName() const {
@@ -134,6 +134,7 @@ content::RenderFrameHost* PaymentRequestState::GetInitiatorRenderFrameHost()
 
 const std::vector<mojom::PaymentMethodDataPtr>&
 PaymentRequestState::GetMethodData() const {
+  DCHECK(GetSpec());
   return GetSpec()->method_data();
 }
 
@@ -159,7 +160,7 @@ bool PaymentRequestState::IsRequestedAutofillDataAvailable() {
 bool PaymentRequestState::MayCrawlForInstallablePaymentApps() {
   return PaymentsExperimentalFeatures::IsEnabled(
              features::kAlwaysAllowJustInTimePaymentApp) ||
-         !spec_->supports_basic_card();
+         !spec_ || !spec_->supports_basic_card();
 }
 
 bool PaymentRequestState::IsOffTheRecord() const {
@@ -254,6 +255,9 @@ void PaymentRequestState::OnPaymentResponseError(
 }
 
 void PaymentRequestState::OnSpecUpdated() {
+  if (!spec_)
+    return;
+
   autofill::AutofillProfile* selected_shipping_profile =
       selected_shipping_profile_;
   autofill::AutofillProfile* selected_contact_profile =
@@ -330,6 +334,9 @@ void PaymentRequestState::CheckRequestedMethodsSupported(
     MethodsSupportedCallback callback) {
   DCHECK(get_all_apps_finished_);
 
+  if (!spec_)
+    return;
+
   // Don't modify the value of |are_requested_methods_supported_|, because it's
   // used for canMakePayment().
   bool supported = are_requested_methods_supported_;
@@ -369,9 +376,12 @@ void PaymentRequestState::RemoveObserver(Observer* observer) {
 void PaymentRequestState::GeneratePaymentResponse() {
   DCHECK(is_ready_to_pay());
 
+  if (!spec_)
+    return;
+
   // Once the response is ready, will call back into OnPaymentResponseReady.
   response_helper_ = std::make_unique<PaymentResponseHelper>(
-      app_locale_, spec_, selected_app_, payment_request_delegate_,
+      app_locale_, spec_.get(), selected_app_, payment_request_delegate_,
       selected_shipping_profile_, selected_contact_profile_, this);
 }
 
@@ -461,6 +471,9 @@ void PaymentRequestState::AddAutofillContactProfile(
 
 void PaymentRequestState::SetSelectedShippingOption(
     const std::string& shipping_option_id) {
+  if (!spec_)
+    return;
+
   spec_->StartWaitingForUpdateWith(
       PaymentRequestSpec::UpdateReason::SHIPPING_OPTION);
   // This will inform the merchant and will lead to them calling updateWith with
@@ -471,6 +484,9 @@ void PaymentRequestState::SetSelectedShippingOption(
 void PaymentRequestState::SetSelectedShippingProfile(
     autofill::AutofillProfile* profile,
     SectionSelectionStatus selection_status) {
+  if (!spec_)
+    return;
+
   spec_->StartWaitingForUpdateWith(
       PaymentRequestSpec::UpdateReason::SHIPPING_ADDRESS);
   selected_shipping_profile_ = profile;
@@ -566,7 +582,8 @@ void PaymentRequestState::SelectDefaultShippingAddressAndNotifyObservers() {
   // Only pre-select an address if the merchant provided at least one selected
   // shipping option, and the top profile is complete. Assumes that profiles
   // have already been sorted for completeness and frecency.
-  if (!shipping_profiles().empty() && spec_->selected_shipping_option() &&
+  if (!shipping_profiles().empty() && spec_ &&
+      spec_->selected_shipping_option() &&
       profile_comparator()->IsShippingComplete(shipping_profiles_[0])) {
     selected_shipping_profile_ = shipping_profiles()[0];
   }
@@ -578,13 +595,16 @@ void PaymentRequestState::SelectDefaultShippingAddressAndNotifyObservers() {
 }
 
 bool PaymentRequestState::ShouldShowShippingSection() const {
-  if (!spec_->request_shipping())
+  if (!spec_ || !spec_->request_shipping())
     return false;
 
   return selected_app_ ? !selected_app_->HandlesShippingAddress() : true;
 }
 
 bool PaymentRequestState::ShouldShowContactSection() const {
+  if (!spec_)
+    return false;
+
   if (spec_->request_payer_name() &&
       (!selected_app_ || !selected_app_->HandlesPayerName())) {
     return true;
@@ -674,7 +694,7 @@ void PaymentRequestState::SetDefaultProfileSelections() {
   // Record the missing required payment fields when no complete payment
   // info exists.
   if (available_apps_.empty()) {
-    if (spec_->supports_basic_card()) {
+    if (spec_ && spec_->supports_basic_card()) {
       // All fields are missing when basic-card is requested but no card exits.
       base::UmaHistogramSparse("PaymentRequest.MissingPaymentFields",
                                CREDIT_CARD_EXPIRED | CREDIT_CARD_NO_CARDHOLDER |
@@ -718,7 +738,7 @@ bool PaymentRequestState::ArePaymentDetailsSatisfied() {
 }
 
 bool PaymentRequestState::ArePaymentOptionsSatisfied() {
-  if (is_waiting_for_merchant_validation_)
+  if (is_waiting_for_merchant_validation_ || !spec_)
     return false;
 
   if (ShouldShowShippingSection() &&

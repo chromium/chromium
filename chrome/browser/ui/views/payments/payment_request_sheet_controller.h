@@ -52,7 +52,7 @@ class PaymentRequestSheetController : public views::ButtonListener {
   // +---------------------------+
   std::unique_ptr<views::View> CreateView();
 
-  PaymentRequestSpec* spec() { return spec_; }
+  PaymentRequestSpec* spec() { return spec_.get(); }
   PaymentRequestState* state() { return state_; }
 
   // The dialog that contains and owns this object.
@@ -181,8 +181,9 @@ class PaymentRequestSheetController : public views::ButtonListener {
   void AddPrimaryButton(views::View* container);
   void AddSecondaryButton(views::View* container);
 
+  base::WeakPtr<PaymentRequestSpec> spec_;
+
   // All these are not owned. Will outlive this.
-  PaymentRequestSpec* spec_ = nullptr;
   PaymentRequestState* state_ = nullptr;
   PaymentRequestDialogView* dialog_ = nullptr;
 
