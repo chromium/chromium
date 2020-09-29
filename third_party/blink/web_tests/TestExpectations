@@ -6399,10 +6399,7 @@ crbug.com/1066579 http/tests/devtools/har-importer.js [ Pass Failure ]
 crbug.com/1069714 [ Mac10.13 ] external/wpt/webrtc/RTCRtpSender-replaceTrack.https.html [ Pass Failure Timeout ]
 
 # COOP access reporting:
-crbug.com/1090273 external/wpt/html/cross-origin-opener-policy/reporting/access-reporting/property-frames.https.html [ Timeout ]
 crbug.com/1090273 external/wpt/html/cross-origin-opener-policy/reporting/access-reporting/property-opener-set.https.html [ Timeout ]
-crbug.com/1090273 external/wpt/html/cross-origin-opener-policy/reporting/access-reporting/property-self.https.html [ Timeout ]
-crbug.com/1090273 external/wpt/html/cross-origin-opener-policy/reporting/access-reporting/property-window.https.html [ Timeout ]
 
 # Sheriff 2020-04-17
 crbug.com/1071909 external/wpt/html/cross-origin-opener-policy/popup-coop-by-sw.https.html [ Pass Timeout ]
