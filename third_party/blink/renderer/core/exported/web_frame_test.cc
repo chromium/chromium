@@ -10670,6 +10670,59 @@ TEST_F(WebFrameTest, MaxFrames) {
   EXPECT_FALSE(iframe->ContentFrame());
 }
 
+class ViewportIntersectionCatcher
+    : public frame_test_helpers::TestWebRemoteFrameClient {
+ public:
+  void UpdateRemoteViewportIntersection(
+      const ViewportIntersectionState& state) override {
+    intersection_state_ = state;
+    frame_test_helpers::TestWebRemoteFrameClient::
+        UpdateRemoteViewportIntersection(state);
+  }
+  const ViewportIntersectionState& GetState() const {
+    return intersection_state_;
+  }
+
+ private:
+  ViewportIntersectionState intersection_state_;
+};
+
+TEST_F(WebFrameTest, RotatedIframeViewportIntersection) {
+  frame_test_helpers::WebViewHelper web_view_helper;
+  web_view_helper.Initialize();
+  WebViewImpl* web_view = web_view_helper.GetWebView();
+  web_view->Resize(WebSize(800, 600));
+  InitializeWithHTML(*web_view->MainFrameImpl()->GetFrame(), R"HTML(
+<!DOCTYPE html>
+<style>
+  iframe {
+    position: absolute;
+    top: 200px;
+    left: 200px;
+    transform: rotate(45deg);
+  }
+</style>
+<iframe></iframe>
+  )HTML");
+  ViewportIntersectionCatcher intersection_catcher;
+  WebRemoteFrameImpl* remote_frame =
+      frame_test_helpers::CreateRemote(&intersection_catcher);
+  web_view_helper.LocalMainFrame()->FirstChild()->Swap(remote_frame);
+  web_view->MainFrameImpl()->GetFrame()->View()->UpdateAllLifecyclePhases(
+      DocumentUpdateReason::kTest);
+  web_view->MainFrameImpl()->GetFrame()->View()->RunPostLifecycleSteps();
+  ASSERT_TRUE(!intersection_catcher.GetState().viewport_intersection.IsEmpty());
+  EXPECT_TRUE(
+      IntRect(IntPoint(), remote_frame->GetFrame()->View()->Size())
+          .Contains(intersection_catcher.GetState().viewport_intersection));
+  ASSERT_TRUE(
+      !intersection_catcher.GetState().main_frame_intersection.IsEmpty());
+  EXPECT_TRUE(
+      IntRect(IntPoint(), remote_frame->GetFrame()->View()->Size())
+          .Contains(intersection_catcher.GetState().main_frame_intersection));
+  remote_frame->Detach();
+}
+
 TEST_F(WebFrameTest, ImageDocumentLoadResponseEnd) {
   // Loading an image resource directly generates an ImageDocument with
   // the document loader feeding image data into the resource of a generated
