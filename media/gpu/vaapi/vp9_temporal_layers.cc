@@ -112,20 +112,24 @@ std::vector<uint8_t> VP9TemporalLayers::GetFpsAllocation(
     size_t num_temporal_layers) {
   DCHECK_GT(num_temporal_layers, 1u);
   DCHECK_LT(num_temporal_layers, 4u);
-  // The frame rate fraction is given as an 8bit unsigned integer where 0 = 0%
-  // and 255 = 100%. VideoEncoderInfo::fps_allocation is filled in the
-  // cumulative manner. For example, if
-  // fps_allocation[0][0] = kFullFramerate / 4;
-  // fps_allocation[0][1] = kFullFramerate / 2;
-  // fps_allocation[0][2] = kFullFramerate;
-  // then fourth of the frames are in the base layer, fourth are in TL1 and half
-  // are in TL2.
-  constexpr uint8_t kFullFramerate = 255;
+  constexpr uint8_t kFullAllocation = 255;
+  // The frame rate fraction is given as an 8 bit unsigned integer where 0 = 0%
+  // and 255 = 100%. Each layer's allocated fps refers to the previous one, so
+  // e.g. your camera is opened at 30fps, and you want to have decode targets at
+  // 15fps and 7.5fps as well:
+  // TL0 then gets an allocation of 7.5/30 = 1/4. TL1 adds another 7.5fps to end
+  // up at (7.5 + 7.5)/30 = 15/30 = 1/2 of the total allocation. TL2 adds the
+  // final 15fps to end up at (15 + 15)/30, which is the full allocation.
+  // Therefor, fps_allocation values are as follows,
+  // fps_allocation[0][0] = kFullAllocation / 4;
+  // fps_allocation[0][1] = kFullAllocation / 2;
+  // fps_allocation[0][2] = kFullAllocation;
+  //  For more information, see webrtc::VideoEncoderInfo::fps_allocation.
   switch (num_temporal_layers) {
     case 2:
-      return {kFullFramerate / 2, kFullFramerate};
+      return {kFullAllocation / 2, kFullAllocation};
     case 3:
-      return {kFullFramerate / 4, kFullFramerate / 2, kFullFramerate};
+      return {kFullAllocation / 4, kFullAllocation / 2, kFullAllocation};
     default:
       NOTREACHED() << "Unsupported temporal layers";
       return {};
