@@ -155,6 +155,11 @@ public class StatusIndicatorCoordinator {
         return mSceneLayer;
     }
 
+    /** @return The class of the {@link SceneOverlay} owned by this coordinator. */
+    public static Class getSceneOverlayClass() {
+        return StatusIndicatorSceneLayer.class;
+    }
+
     private void initialize() {
         final ViewStub stub = mActivity.findViewById(R.id.status_indicator_stub);
         final ViewResourceFrameLayout root = (ViewResourceFrameLayout) stub.inflate();

@@ -45,15 +45,9 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
 
         mTabStripLayoutHelperManager = new StripLayoutHelperManager(
                 host.getContext(), this, mHost.getLayoutRenderHost(), () -> mTitleCache);
+        addSceneOverlay(mTabStripLayoutHelperManager);
 
         setNextLayout(null);
-    }
-
-    @Override
-    protected void addAllSceneOverlays() {
-        // Add the tab strip overlay before any others.
-        mSceneOverlays.add(mTabStripLayoutHelperManager);
-        super.addAllSceneOverlays();
     }
 
     @Override

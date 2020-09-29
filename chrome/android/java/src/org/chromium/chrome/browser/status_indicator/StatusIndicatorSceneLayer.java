@@ -41,7 +41,7 @@ class StatusIndicatorSceneLayer extends SceneOverlayLayer implements SceneOverla
      * @param browserControlsStateProvider {@link BrowserControlsStateProvider} to access browser
      *                                     controls offsets.
      */
-    public StatusIndicatorSceneLayer(BrowserControlsStateProvider browserControlsStateProvider) {
+    StatusIndicatorSceneLayer(BrowserControlsStateProvider browserControlsStateProvider) {
         mBrowserControlsStateProvider = browserControlsStateProvider;
     }
 
@@ -120,11 +120,6 @@ class StatusIndicatorSceneLayer extends SceneOverlayLayer implements SceneOverla
 
     @Override
     public void getVirtualViews(List<VirtualView> views) {}
-
-    @Override
-    public int getPosition() {
-        return Position.DEFAULT;
-    }
 
     @NativeMethods
     interface Natives {

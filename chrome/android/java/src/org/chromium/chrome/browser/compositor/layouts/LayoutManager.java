@@ -36,13 +36,17 @@ import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.compositor.layouts.eventfilter.EdgeSwipeHandler;
 import org.chromium.chrome.browser.compositor.layouts.eventfilter.EventFilter;
 import org.chromium.chrome.browser.compositor.overlays.SceneOverlay;
+import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager;
 import org.chromium.chrome.browser.compositor.overlays.toolbar.TopToolbarOverlayCoordinator;
 import org.chromium.chrome.browser.compositor.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.compositor.scene_layer.SceneOverlayLayer;
+import org.chromium.chrome.browser.compositor.scene_layer.ScrollingBottomViewSceneLayer;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManagementDelegate;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
+import org.chromium.chrome.browser.gesturenav.HistoryNavigationCoordinator;
 import org.chromium.chrome.browser.native_page.NativePageFactory;
+import org.chromium.chrome.browser.status_indicator.StatusIndicatorCoordinator;
 import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabBrowserControlsConstraintsHelper;
@@ -69,7 +73,9 @@ import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 import org.chromium.ui.util.TokenHolder;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A class that is responsible for managing an active {@link Layout} to show to the screen.  This
@@ -132,7 +138,6 @@ public class LayoutManager implements LayoutUpdateHost, LayoutProvider,
     private ContextualSearchPanel mContextualSearchPanel;
     private final OverlayPanelManager mOverlayPanelManager;
     private TopToolbarOverlayCoordinator mToolbarOverlay;
-    private SceneOverlay mStatusIndicatorSceneOverlay;
     private SceneOverlay mGestureNavigationOverscrollGlow;
 
     /** A delegate for interacting with the Contextual Search manager. */
@@ -165,6 +170,9 @@ public class LayoutManager implements LayoutUpdateHost, LayoutProvider,
 
     /** The overlays that can be drawn on top of the active layout. */
     protected final List<SceneOverlay> mSceneOverlays = new ArrayList<>();
+
+    /** A map of {@link SceneOverlay} to its position relative to the others. */
+    private Map<Class, Integer> mOverlayOrderMap = new HashMap<>();
 
     /**
      * Protected class to handle {@link TabModelObserver} related tasks. Extending classes will
@@ -253,6 +261,19 @@ public class LayoutManager implements LayoutUpdateHost, LayoutProvider,
 
         mContext = host.getContext();
         LayoutRenderHost renderHost = host.getLayoutRenderHost();
+
+        // clang-format off
+        // Overlays are ordered back (closest to the web content) to front.
+        Class[] overlayOrder = new Class[] {
+                HistoryNavigationCoordinator.getSceneOverlayClass(),
+                TopToolbarOverlayCoordinator.class,
+                ScrollingBottomViewSceneLayer.class,
+                StripLayoutHelperManager.class,
+                StatusIndicatorCoordinator.getSceneOverlayClass(),
+                ContextualSearchPanel.class};
+        // clang-format off
+
+        for (int i = 0; i < overlayOrder.length; i++) mOverlayOrderMap.put(overlayOrder[i], i);
 
         assert contentContainer != null;
         mContentContainer = contentContainer;
@@ -449,6 +470,7 @@ public class LayoutManager implements LayoutUpdateHost, LayoutProvider,
             mToolbarOverlay = new TopToolbarOverlayCoordinator(mContext, mFrameRequestSupplier,
                     this, controlContainer, tabProvider, getBrowserControlsManager(),
                     mAndroidViewShownSupplier, () -> renderHost.getResourceManager());
+            addSceneOverlay(mToolbarOverlay);
         }
 
         // Initialize Layouts
@@ -456,9 +478,7 @@ public class LayoutManager implements LayoutUpdateHost, LayoutProvider,
 
         // Contextual Search scene overlay.
         mContextualSearchPanel = new ContextualSearchPanel(mContext, this, mOverlayPanelManager);
-
-        // Add any SceneOverlays to a layout.
-        addAllSceneOverlays();
+        addSceneOverlay(mContextualSearchPanel);
 
         // Save state
         mContextualSearchDelegate = contextualSearchDelegate;
@@ -1008,46 +1028,34 @@ public class LayoutManager implements LayoutUpdateHost, LayoutProvider,
     }
 
     /**
-     * Set the status indicator {@link SceneOverlay} to be added to the layout.
-     * @param overlay The {@link SceneOverlay} to set.
+     * Add a {@link SceneOverlay} to be drawn on the composited layer of the active layout.
+     * @param overlay The overlay to add.
      */
-    public void setStatusIndicatorSceneOverlay(SceneOverlay overlay) {
-        mStatusIndicatorSceneOverlay = overlay;
-    }
+    public void addSceneOverlay(SceneOverlay overlay) {
+        if (mSceneOverlays.contains(overlay)) throw new RuntimeException("Overlay already added!");
 
-    /**
-     * Add any {@link SceneOverlay}s to the layout. This can be used to add the overlays in a
-     * particular order.
-     * Classes that override this method should be careful about the order that
-     * overlays are added and when super is called (i.e. cases where one overlay needs to be
-     * on top of another positioned.
-     */
-    protected void addAllSceneOverlays() {
-        mSceneOverlays.add(mToolbarOverlay);
-        if (mStatusIndicatorSceneOverlay != null) {
-            mSceneOverlays.add(mStatusIndicatorSceneOverlay);
+        if (!mOverlayOrderMap.containsKey(overlay.getClass())) {
+            throw new RuntimeException("Please add overlay to order list in constructor.");
         }
-        mSceneOverlays.add(mContextualSearchPanel);
+
+        int overlayPosition = mOverlayOrderMap.get(overlay.getClass());
+
+        int index;
+        for (index = 0; index < mSceneOverlays.size(); index++) {
+            if (overlayPosition < mOverlayOrderMap.get(mSceneOverlays.get(index).getClass())) break;
+        }
+
+        mSceneOverlays.add(index, overlay);
     }
 
-    /**
-     * Add a {@link SceneOverlay} to the front of the list. This means the overlay will be drawn
-     * last and therefore above all other overlays currently in the list.
-     * @param overlay The overlay to be added to the back of the list.
-     */
-    public void addSceneOverlayToFront(SceneOverlay overlay) {
-        assert !mSceneOverlays.contains(overlay);
-        mSceneOverlays.add(overlay);
+    @VisibleForTesting
+    void setSceneOverlayOrderForTesting(Map<Class, Integer> order) {
+        mOverlayOrderMap = order;
     }
 
-    /**
-     * Add a {@link SceneOverlay} to the back of the list. This means the overlay will be drawn
-     * first and therefore behind all other overlays currently in the list.
-     * @param overlay The overlay to be added to the back of the list.
-     */
-    public void addSceneOverlayToBack(SceneOverlay overlay) {
-        assert !mSceneOverlays.contains(overlay);
-        mSceneOverlays.add(0, overlay);
+    @VisibleForTesting
+    List<SceneOverlay> getSceneOverlaysForTesting() {
+        return mSceneOverlays;
     }
 
     /**

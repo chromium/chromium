@@ -56,8 +56,7 @@ class BottomControlsViewBinder {
                     new ScrollingBottomViewSceneLayer(view.root, view.root.getTopShadowHeight());
             view.sceneLayer.setIsVisible(
                     model.get(BottomControlsProperties.COMPOSITED_VIEW_VISIBLE));
-            model.get(BottomControlsProperties.LAYOUT_MANAGER)
-                    .addSceneOverlayToBack(view.sceneLayer);
+            model.get(BottomControlsProperties.LAYOUT_MANAGER).addSceneOverlay(view.sceneLayer);
         } else if (BottomControlsProperties.RESOURCE_MANAGER == propertyKey) {
             model.get(BottomControlsProperties.RESOURCE_MANAGER)
                     .getDynamicResourceLoader()

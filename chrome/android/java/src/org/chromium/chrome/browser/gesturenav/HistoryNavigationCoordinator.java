@@ -88,6 +88,11 @@ public class HistoryNavigationCoordinator
         return coordinator;
     }
 
+    /** @return The class of the {@link SceneOverlay} owned by this coordinator. */
+    public static Class getSceneOverlayClass() {
+        return OverscrollGlowOverlay.class;
+    }
+
     /**
      * Initializes the navigation layout and internal objects.
      */
@@ -155,7 +160,7 @@ public class HistoryNavigationCoordinator
             mInsetObserverView = insetObserverView;
             insetObserverView.addObserver(this);
         }
-        layoutManager.addSceneOverlayToFront(mOverscrollGlowOverlay);
+        layoutManager.addSceneOverlay(mOverscrollGlowOverlay);
     }
 
     private boolean isNativePage() {
