@@ -33,14 +33,14 @@ namespace {
 constexpr size_t kHUDGraphsInset = 5;
 
 // Default HUDDisplayView height.
-static constexpr size_t kDefaultHUDGraphHeight = 300;
+constexpr size_t kDefaultHUDGraphHeight = 300;
 
 // Top border + Header height + margin + graph height + bottom border..
 constexpr int kHUDViewDefaultHeight =
     kHUDInset + (kHUDSettingsIconSize + 2 * kSettingsIconBorder) +
     kHUDGraphsInset + kDefaultHUDGraphHeight + kHUDInset;
 
-std::unique_ptr<views::Widget> g_hud_widget;
+views::Widget* g_hud_widget = nullptr;
 
 // ClientView that return HTNOWHERE by default. A child view can receive event
 // by setting kHitTestComponentKey property to HTCLIENT.
@@ -79,9 +79,11 @@ END_METADATA
 
 // static
 void HUDDisplayView::Destroy() {
-  g_hud_widget.reset();
+  delete g_hud_widget;
+  g_hud_widget = nullptr;
 }
 
+// static
 void HUDDisplayView::Toggle() {
   if (g_hud_widget) {
     Destroy();
@@ -101,7 +103,7 @@ void HUDDisplayView::Toggle() {
   widget->GetLayer()->SetName("HUDDisplayView");
   widget->Show();
 
-  g_hud_widget = base::WrapUnique(widget);
+  g_hud_widget = widget;
 }
 
 HUDDisplayView::HUDDisplayView() {
