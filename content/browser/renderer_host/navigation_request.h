@@ -1113,6 +1113,7 @@ class CONTENT_EXPORT NavigationRequest
   // In that case, the caller must immediately return.
   bool MaybeCancelFailedNavigation();
 
+  // Never null. The pointee node owns this navigation request instance.
   FrameTreeNode* const frame_tree_node_;
 
   // Value of |is_for_commit| supplied to the constructor.

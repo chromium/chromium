@@ -589,8 +589,24 @@ URLLoader::URLLoader(
       CrossOriginReadBlockingExceptionForPlugin::ShouldAllowForPlugin(
           factory_params_->process_id);
   request_mode_ = request.mode;
+
   if (request.trusted_params) {
     has_user_activation_ = request.trusted_params->has_user_activation;
+
+    if (factory_params_->client_security_state) {
+      // Enforce that only one ClientSecurityState is ever given to us, as this
+      // is an invariant in the current codebase. In case of a compromised
+      // renderer process, we might be passed both, in which case we prefer to
+      // use the factory params' value: contrary to the request params, it is
+      // always sourced from the browser process.
+      DCHECK(!request.trusted_params->client_security_state)
+          << "Must not provide a ClientSecurityState in both "
+             "URLLoaderFactoryParams and ResourceRequest::TrustedParams.";
+    } else {
+      // This might be nullptr, but that does not matter. Clone it anyways.
+      request_client_security_state_ =
+          request.trusted_params->client_security_state.Clone();
+    }
   }
 
   throttling_token_ = network::ScopedThrottlingToken::MaybeCreate(
@@ -977,8 +993,24 @@ int URLLoader::CanConnectToRemoteEndpoint(
     return net::ERR_INSECURE_PRIVATE_NETWORK_REQUEST;
   }
 
-  const mojom::ClientSecurityStatePtr& security_state =
-      factory_params_->client_security_state;
+  // Depending on the type of URL request, we source the client security state
+  // from either the URLRequest's trusted params (for navigations, which share
+  // a factory) or the URLLoaderFactory's params. We prefer the factory params
+  // over the request params, as the former always come from the browser
+  // process.
+  //
+  // We use a raw pointer instead of a const-ref to a StructPtr in order to be
+  // able to assign a new value to the variable. A ternary operator would let us
+  // define a const-ref but would prevent logging which branch was taken.
+  const mojom::ClientSecurityState* security_state =
+      factory_params_->client_security_state.get();
+  if (security_state) {
+    DVLOG(1) << "CORS-RFC1918 check: using factory client security state.";
+  } else {
+    DVLOG(1) << "CORS-RFC1918 check: using request client security state.";
+    security_state = request_client_security_state_.get();
+  }
+
   if (!security_state) {
     DVLOG(1) << "CORS-RFC1918 check: skipped, missing client security state.";
     return net::OK;

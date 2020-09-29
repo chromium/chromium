@@ -87,7 +87,6 @@
 namespace content {
 namespace {
 
-using ::testing::EndsWith;
 using ::testing::NotNull;
 
 // Implementation of ContentBrowserClient that overrides
@@ -3938,11 +3937,8 @@ IN_PROC_BROWSER_TEST_F(
   // Check that the child iframe failed to fetch.
   ASSERT_EQ(1ul, root_frame_host()->child_count());
   auto* child_frame = root_frame_host()->child_at(0)->current_frame_host();
-  // TODO(crbug.com/1124346): Expect 0 once the load fails.
-  EXPECT_EQ(200, child_frame->last_http_status_code());
-  // TODO(crbug.com/1124346): Expect an empty URL once the load fails.
-  EXPECT_THAT(child_frame->last_successful_url().spec(),
-              EndsWith("/empty.html"));
+  EXPECT_EQ(0, child_frame->last_http_status_code());
+  EXPECT_EQ(GURL(), child_frame->last_successful_url());
 }
 
 namespace {

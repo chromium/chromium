@@ -509,6 +509,13 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // Observer listening to all cookie reads and writes made by this request.
   mojo::Remote<mojom::CookieAccessObserver> cookie_observer_;
 
+  // Client security state copied from the input ResourceRequest.
+  //
+  // If |factory_params_->client_security_state| is non-null, this is null.
+  // We indeed prefer the factory params over the request params as we trust the
+  // former more, given that they always come from the browser process.
+  mojom::ClientSecurityStatePtr request_client_security_state_;
+
   // Indicates |url_request_| is fetch upload request and that has streaming
   // body.
   const bool has_fetch_streaming_upload_body_;

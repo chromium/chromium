@@ -203,6 +203,8 @@ std::unique_ptr<network::ResourceRequest> CreateResourceRequest(
   new_request->trusted_params = network::ResourceRequest::TrustedParams();
   new_request->trusted_params->isolation_info = request_info->isolation_info;
   new_request->trusted_params->cookie_observer = std::move(cookie_observer);
+  new_request->trusted_params->client_security_state =
+      request_info->client_security_state.Clone();
   new_request->is_main_frame = request_info->is_main_frame;
 
   net::RequestPriority net_priority = net::HIGHEST;

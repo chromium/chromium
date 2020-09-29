@@ -2791,6 +2791,31 @@ void NavigationRequest::OnStartChecksComplete(
     interceptor.push_back(web_bundle_handle_->TakeInterceptor());
   net::HttpRequestHeaders cors_exempt_headers;
   std::swap(cors_exempt_headers, cors_exempt_request_headers_);
+
+  // For subresource requests the ClientSecurityState is passed through
+  // URLLoaderFactoryParams. That does not work for navigation requests
+  // because they all share a common factory, so each request is tagged with
+  // a ClientSecurityState to use instead.
+  //
+  // We currently define the client of the fetch as the parent frame, if any.
+  // This is probably incorrect: frames can cause others in the same browsing
+  // context group to navigate to pages, without being the parent. Additionally
+  // there is no client security state for top-level navigations, which mainly
+  // means that CORS-RFC1918 checks are skipped for such requests.
+  //
+  // TODO(https://crbug.com/1129326): Figure out the UX story for top-level
+  // navigations and spooky-action-at-a-distance navigations, then revisit this.
+  // The client security state might need to be that of the initiator of the
+  // navigation, or we might need to take into account both the parent frame and
+  // the initiator's client security states. In any case, we should probably
+  // always provide a client security state.
+  network::mojom::ClientSecurityStatePtr client_security_state = nullptr;
+  RenderFrameHostImpl* parent = GetParentFrame();
+  if (parent) {
+    client_security_state =
+        parent->last_committed_client_security_state().Clone();
+  }
+
   loader_ = NavigationURLLoader::Create(
       browser_context, partition,
       std::make_unique<NavigationRequestInfo>(
@@ -2806,7 +2831,7 @@ void NavigationRequest::OnStartChecksComplete(
                                    : nullptr,
           devtools_navigation_token(), frame_tree_node_->devtools_frame_token(),
           OriginPolicyThrottle::ShouldRequestOriginPolicy(common_params_->url),
-          std::move(cors_exempt_headers), nullptr /* client_security_state */),
+          std::move(cors_exempt_headers), std::move(client_security_state)),
       std::move(navigation_ui_data), service_worker_handle_.get(),
       appcache_handle_.get(), std::move(prefetched_signed_exchange_cache_),
       this, IsServedFromBackForwardCache(), CreateCookieAccessObserver(),
