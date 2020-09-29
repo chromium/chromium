@@ -24,6 +24,12 @@ namespace crosapi {
 
 namespace {
 
+class FakeEnvironmentProvider : public EnvironmentProvider {
+  crosapi::mojom::SessionType GetSessionType() override {
+    return crosapi::mojom::SessionType::kRegularSession;
+  }
+};
+
 // TODO(crbug.com/1124494): Refactor the code to share with ARC.
 base::ScopedFD CreateSocketForTesting(const base::FilePath& socket_path) {
   auto endpoint = mojo::NamedPlatformChannel({socket_path.value()});
@@ -45,7 +51,8 @@ base::ScopedFD CreateSocketForTesting(const base::FilePath& socket_path) {
 }  // namespace
 
 TestMojoConnectionManager::TestMojoConnectionManager(
-    const base::FilePath& socket_path) {
+    const base::FilePath& socket_path)
+    : environment_provider_(std::make_unique<FakeEnvironmentProvider>()) {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
       base::BindOnce(&CreateSocketForTesting, socket_path),
@@ -79,7 +86,7 @@ void TestMojoConnectionManager::OnTestingSocketAvailable() {
   // TODO(crbug.com/1124490): Support multiple mojo connections from lacros.
   mojo::PlatformChannel channel;
   lacros_chrome_service_ = browser_util::SendMojoInvitationToLacrosChrome(
-      channel.TakeLocalEndpoint(),
+      environment_provider_.get(), channel.TakeLocalEndpoint(),
       base::BindOnce(&TestMojoConnectionManager::OnMojoDisconnected,
                      weak_factory_.GetWeakPtr()),
       base::BindOnce(

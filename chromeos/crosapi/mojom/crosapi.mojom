@@ -62,6 +62,14 @@ interface AshChromeService {
   [MinVersion=3] OnLacrosStartup@6(LacrosInfo lacros_info);
 };
 
+[Stable, Extensible]
+enum SessionType {
+  kUnknown,
+  kRegularSession,
+  kGuestSession,
+  kPublicSession
+};
+
 // LacrosInitParams is a set of parameters for initialization of lacros-chrome,
 // which is passed from ash-chrome to lacros-chrome. Since ash-chrome and
 // lacros-chrome may have different versions, lacros-chrome must handle this
@@ -96,6 +104,10 @@ struct LacrosInitParams {
   // consent via settings.
   [MinVersion=2]
   bool ash_metrics_enabled@2;
+
+  // Type of the ash-chrome session.
+  [MinVersion=3]
+  SessionType session_type@3;
 };
 
 // LacrosChromeService defines the APIs that live in lacros-chrome and

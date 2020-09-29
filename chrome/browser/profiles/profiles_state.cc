@@ -8,6 +8,7 @@
 #include "base/files/file_path.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate.h"
 #include "chrome/browser/profiles/profile.h"
@@ -38,6 +39,10 @@
 #include "chrome/browser/profiles/gaia_info_update_service.h"
 #include "chrome/browser/profiles/gaia_info_update_service_factory.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#endif
+
+#if BUILDFLAG(IS_LACROS)
+#include "chromeos/lacros/lacros_chrome_service_impl.h"
 #endif
 
 namespace profiles {
@@ -262,6 +267,11 @@ bool IsPublicSession() {
   if (chromeos::LoginState::IsInitialized()) {
     return chromeos::LoginState::Get()->IsPublicSessionUser();
   }
+#elif BUILDFLAG(IS_LACROS)
+  DCHECK(chromeos::LacrosChromeServiceImpl::Get());
+  return chromeos::LacrosChromeServiceImpl::Get()
+             ->init_params()
+             ->session_type == crosapi::mojom::SessionType::kPublicSession;
 #endif
   return false;
 }

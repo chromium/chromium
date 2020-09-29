@@ -12,6 +12,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/process.h"
+#include "chrome/browser/chromeos/crosapi/environment_provider.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "components/session_manager/core/session_manager_observer.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -165,6 +166,9 @@ class BrowserManager : public session_manager::SessionManagerObserver {
   // ash-chrome in testing environment. Only applicable when
   // '--lacros-mojo-socket-for-testing' is present in the command line.
   std::unique_ptr<TestMojoConnectionManager> test_mojo_connection_manager_;
+
+  // Used to pass ash-chrome specific flags/configurations to lacros-chrome.
+  std::unique_ptr<EnvironmentProvider> environment_provider_;
 
   base::WeakPtrFactory<BrowserManager> weak_factory_{this};
 };

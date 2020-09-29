@@ -7,6 +7,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
@@ -30,6 +31,7 @@
 #include "chrome/browser/chromeos/crosapi/ash_chrome_service_impl.h"
 #include "chrome/browser/chromeos/crosapi/browser_loader.h"
 #include "chrome/browser/chromeos/crosapi/browser_util.h"
+#include "chrome/browser/chromeos/crosapi/environment_provider.h"
 #include "chrome/browser/chromeos/crosapi/test_mojo_connection_manager.h"
 #include "chrome/browser/component_updater/cros_component_manager.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -139,7 +141,8 @@ BrowserManager* BrowserManager::Get() {
 
 BrowserManager::BrowserManager(
     scoped_refptr<component_updater::CrOSComponentManager> manager)
-    : component_manager_(manager) {
+    : component_manager_(manager),
+      environment_provider_(std::make_unique<EnvironmentProvider>()) {
   DCHECK(!g_instance);
   g_instance = this;
 
@@ -296,7 +299,7 @@ void BrowserManager::StartWithLogFile(base::ScopedFD logfd) {
 
   // TODO(crbug.com/1124490): Support multiple mojo connections from lacros.
   lacros_chrome_service_ = browser_util::SendMojoInvitationToLacrosChrome(
-      channel.TakeLocalEndpoint(),
+      environment_provider_.get(), channel.TakeLocalEndpoint(),
       base::BindOnce(&BrowserManager::OnMojoDisconnected,
                      weak_factory_.GetWeakPtr()),
       base::BindOnce(&BrowserManager::OnAshChromeServiceReceiverReceived,

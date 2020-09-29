@@ -13,6 +13,7 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/chromeos/crosapi/environment_provider.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -75,6 +76,9 @@ class TestMojoConnectionManager {
   // |OnTestingSocketAvailable| when it becomes readable.
   std::unique_ptr<base::FileDescriptorWatcher::Controller>
       testing_socket_watcher_;
+
+  // Used to pass ash-chrome specific flags/configurations to lacros-chrome.
+  std::unique_ptr<EnvironmentProvider> environment_provider_;
 
   base::WeakPtrFactory<TestMojoConnectionManager> weak_factory_{this};
 };

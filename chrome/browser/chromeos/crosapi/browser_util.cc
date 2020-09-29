@@ -54,13 +54,16 @@ bool IsUserTypeAllowed(const User* user) {
   }
 }
 
-mojom::LacrosInitParamsPtr GetLacrosInitParams() {
+mojom::LacrosInitParamsPtr GetLacrosInitParams(
+    EnvironmentProvider* environment_provider) {
   auto params = mojom::LacrosInitParams::New();
   params->ash_chrome_service_version =
       crosapi::mojom::AshChromeService::Version_;
   params->ash_metrics_enabled_has_value = true;
   params->ash_metrics_enabled = g_browser_process->local_state()->GetBoolean(
       metrics::prefs::kMetricsReportingEnabled);
+
+  params->session_type = environment_provider->GetSessionType();
   return params;
 }
 
@@ -120,6 +123,7 @@ bool IsLacrosWindow(const aura::Window* window) {
 
 mojo::Remote<crosapi::mojom::LacrosChromeService>
 SendMojoInvitationToLacrosChrome(
+    EnvironmentProvider* environment_provider,
     mojo::PlatformChannelEndpoint local_endpoint,
     base::OnceClosure mojo_disconnected_callback,
     base::OnceCallback<
@@ -132,7 +136,7 @@ SendMojoInvitationToLacrosChrome(
           invitation.AttachMessagePipe(0 /* token */), /*version=*/0));
   lacros_chrome_service.set_disconnect_handler(
       std::move(mojo_disconnected_callback));
-  lacros_chrome_service->Init(GetLacrosInitParams());
+  lacros_chrome_service->Init(GetLacrosInitParams(environment_provider));
   lacros_chrome_service->RequestAshChromeServiceReceiver(
       std::move(ash_chrome_service_callback));
   mojo::OutgoingInvitation::Send(std::move(invitation),

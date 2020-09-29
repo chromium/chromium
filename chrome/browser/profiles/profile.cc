@@ -9,6 +9,7 @@
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/net/profile_network_context_service.h"
@@ -62,6 +63,10 @@
 #include "extensions/browser/extension_pref_store.h"
 #include "extensions/browser/extension_pref_value_map_factory.h"
 #include "extensions/browser/pref_names.h"
+#endif
+
+#if BUILDFLAG(IS_LACROS)
+#include "chromeos/lacros/lacros_chrome_service_impl.h"
 #endif
 
 #if DCHECK_IS_ON()
@@ -376,8 +381,17 @@ bool Profile::IsGuestSession() const {
           chromeos::switches::kGuestSession);
   return is_guest_session;
 #else
+#if BUILDFLAG(IS_LACROS)
+  DCHECK(chromeos::LacrosChromeServiceImpl::Get());
+  if (chromeos::LacrosChromeServiceImpl::Get()->init_params()->session_type !=
+      crosapi::mojom::SessionType::kUnknown) {
+    return chromeos::LacrosChromeServiceImpl::Get()
+               ->init_params()
+               ->session_type == crosapi::mojom::SessionType::kGuestSession;
+  }
+#endif  // BUILDFLAG(IS_LACROS)
   return is_guest_profile_;
-#endif
+#endif  // defined(OS_CHROMEOS)
 }
 
 bool Profile::IsSystemProfile() const {

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_CHROMEOS_CROSAPI_BROWSER_UTIL_H_
 
 #include "base/callback_forward.h"
+#include "chrome/browser/chromeos/crosapi/environment_provider.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -57,6 +58,7 @@ bool IsLacrosWindow(const aura::Window* window);
 // available already when lacros-chrome accepts the invitation.
 mojo::Remote<crosapi::mojom::LacrosChromeService>
 SendMojoInvitationToLacrosChrome(
+    ::crosapi::EnvironmentProvider* environment_provider,
     mojo::PlatformChannelEndpoint local_endpoint,
     base::OnceClosure mojo_disconnected_callback,
     base::OnceCallback<
