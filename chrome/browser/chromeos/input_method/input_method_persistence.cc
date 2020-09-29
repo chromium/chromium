@@ -9,6 +9,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/language_preferences.h"
 #include "chrome/browser/chromeos/login/lock/screen_locker.h"
+#include "chrome/browser/chromeos/login/login_pref_names.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -60,6 +61,9 @@ static void SetUserLastInputMethod(
   if (profile == NULL)
     return;
 
+  // TODO(https://crbug.com/1121565): Create more general fix for all the data
+  // that is required on the lock screen.
+  profile->GetPrefs()->SetString(prefs::kLastLoginInputMethod, input_method);
   SetUserLastInputMethodPreference(GetUserAccount(profile), input_method);
 }
 
@@ -77,14 +81,13 @@ void PersistUserInputMethod(const std::string& input_method,
   SetUserLastInputMethod(input_method, manager, profile);
 
   const std::string current_input_method_on_pref =
-      user_prefs->GetString(prefs::kLanguageCurrentInputMethod);
+      user_prefs->GetString(::prefs::kLanguageCurrentInputMethod);
   if (current_input_method_on_pref == input_method)
     return;
 
-  user_prefs->SetString(prefs::kLanguagePreviousInputMethod,
+  user_prefs->SetString(::prefs::kLanguagePreviousInputMethod,
                         current_input_method_on_pref);
-  user_prefs->SetString(prefs::kLanguageCurrentInputMethod,
-                        input_method);
+  user_prefs->SetString(::prefs::kLanguageCurrentInputMethod, input_method);
 }
 
 }  // namespace

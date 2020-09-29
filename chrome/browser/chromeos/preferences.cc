@@ -439,6 +439,9 @@ void Preferences::RegisterProfilePrefs(
                                 false);
 
   // OOBE and login related prefs.
+  registry->RegisterStringPref(chromeos::prefs::kLastLoginInputMethod,
+                               std::string(),
+                               PrefRegistry::NO_REGISTRATION_FLAGS);
   registry->RegisterTimePref(chromeos::prefs::kOobeOnboardingTime,
                              base::Time());
 

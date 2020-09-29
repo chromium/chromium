@@ -12,6 +12,9 @@ namespace prefs {
 // These are attached to the user profile. Here only login/oobe specific prefs
 // are presented.
 
+// Last input user method which could be used on the login/lock screens.
+const char kLastLoginInputMethod[] = "login.last_input_method";
+
 // Time when new user has finished onboarding.
 const char kOobeOnboardingTime[] = "oobe.onboarding_time";
 
