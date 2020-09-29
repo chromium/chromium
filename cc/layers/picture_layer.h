@@ -33,11 +33,6 @@ class CC_EXPORT PictureLayer : public Layer {
     return picture_layer_inputs_.nearest_neighbor;
   }
 
-  void SetTransformedRasterizationAllowed(bool allowed);
-  bool transformed_rasterization_allowed() const {
-    return picture_layer_inputs_.transformed_rasterization_allowed;
-  }
-
   void SetIsBackdropFilterMask(bool is_backdrop_filter_mask);
   bool is_backdrop_filter_mask() const {
     return picture_layer_inputs_.is_backdrop_filter_mask;
@@ -70,7 +65,6 @@ class CC_EXPORT PictureLayer : public Layer {
 
     ContentLayerClient* client = nullptr;
     bool nearest_neighbor = false;
-    bool transformed_rasterization_allowed = false;
     bool is_backdrop_filter_mask = false;
     scoped_refptr<DisplayItemList> display_list;
     base::Optional<gfx::Size> directly_composited_image_size = base::nullopt;
@@ -91,8 +85,6 @@ class CC_EXPORT PictureLayer : public Layer {
   friend class TestSerializationPictureLayer;
 
   void DropRecordingSourceContentIfInvalid();
-
-  bool ShouldUseTransformedRasterization() const;
 
   std::unique_ptr<RecordingSource> recording_source_;
   devtools_instrumentation::

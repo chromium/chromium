@@ -27,7 +27,6 @@ TransformNode::TransformNode()
       to_screen_is_potentially_animated(false),
       flattens_inherited_transform(true),
       node_and_ancestors_are_flat(true),
-      node_and_ancestors_have_only_integer_translation(true),
       scrolls(false),
       should_be_snapped(false),
       moved_by_outer_viewport_bounds_delta_y(false),
@@ -60,8 +59,6 @@ bool TransformNode::operator==(const TransformNode& other) const {
              other.to_screen_is_potentially_animated &&
          flattens_inherited_transform == other.flattens_inherited_transform &&
          node_and_ancestors_are_flat == other.node_and_ancestors_are_flat &&
-         node_and_ancestors_have_only_integer_translation ==
-             other.node_and_ancestors_have_only_integer_translation &&
          scrolls == other.scrolls &&
          should_be_snapped == other.should_be_snapped &&
          moved_by_outer_viewport_bounds_delta_y ==

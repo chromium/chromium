@@ -421,45 +421,6 @@ TEST(PropertyTreeTest, ScreenSpaceOpacityUpdateTest) {
   EXPECT_EQ(tree.Node(child)->screen_space_opacity, 0.25f);
 }
 
-TEST(PropertyTreeTest, NonIntegerTranslationTest) {
-  // This tests that when a node has non-integer translation, the information
-  // is propagated to the subtree.
-  PropertyTrees property_trees;
-  TransformTree& tree = property_trees.transform_tree;
-
-  int parent = tree.Insert(TransformNode(), 0);
-  tree.Node(parent)->local.Translate(1.5f, 1.5f);
-
-  int child = tree.Insert(TransformNode(), parent);
-  tree.Node(child)->local.Translate(1, 1);
-  tree.set_needs_update(true);
-  draw_property_utils::ComputeTransforms(&tree);
-  EXPECT_FALSE(
-      tree.Node(parent)->node_and_ancestors_have_only_integer_translation);
-  EXPECT_FALSE(
-      tree.Node(child)->node_and_ancestors_have_only_integer_translation);
-
-  tree.Node(parent)->local.Translate(0.5f, 0.5f);
-  tree.Node(child)->local.Translate(0.5f, 0.5f);
-  tree.Node(parent)->needs_local_transform_update = true;
-  tree.Node(child)->needs_local_transform_update = true;
-  tree.set_needs_update(true);
-  draw_property_utils::ComputeTransforms(&tree);
-  EXPECT_TRUE(
-      tree.Node(parent)->node_and_ancestors_have_only_integer_translation);
-  EXPECT_FALSE(
-      tree.Node(child)->node_and_ancestors_have_only_integer_translation);
-
-  tree.Node(child)->local.Translate(0.5f, 0.5f);
-  tree.Node(child)->needs_local_transform_update = true;
-  tree.set_needs_update(true);
-  draw_property_utils::ComputeTransforms(&tree);
-  EXPECT_TRUE(
-      tree.Node(parent)->node_and_ancestors_have_only_integer_translation);
-  EXPECT_TRUE(
-      tree.Node(child)->node_and_ancestors_have_only_integer_translation);
-}
-
 TEST(PropertyTreeTest, SingularTransformSnapTest) {
   // This tests that to_target transform is not snapped when it has a singular
   // transform.

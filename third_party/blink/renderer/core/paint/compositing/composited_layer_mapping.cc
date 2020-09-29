@@ -337,18 +337,6 @@ void CompositedLayerMapping::UpdateContentsOpaque() {
   }
 }
 
-void CompositedLayerMapping::UpdateRasterizationPolicy() {
-  bool transformed_rasterization_allowed =
-      !(owning_layer_.GetCompositingReasons() &
-        CompositingReason::kComboTransformedRasterizationDisallowedReasons);
-  graphics_layer_->CcLayer().SetTransformedRasterizationAllowed(
-      transformed_rasterization_allowed);
-  if (non_scrolling_squashing_layer_) {
-    non_scrolling_squashing_layer_->CcLayer()
-        .SetTransformedRasterizationAllowed(true);
-  }
-}
-
 void CompositedLayerMapping::UpdateCompositedBounds() {
   DCHECK_EQ(owning_layer_.Compositor()->Lifecycle().GetState(),
             DocumentLifecycle::kInCompositingAssignmentsUpdate);
@@ -716,7 +704,6 @@ void CompositedLayerMapping::UpdateGraphicsLayerGeometry(
   UpdateDrawsContentAndPaintsHitTest();
   UpdateElementId();
   UpdateContentsOpaque();
-  UpdateRasterizationPolicy();
   UpdateCompositingReasons();
 }
 
