@@ -59,10 +59,8 @@ mojom::VREyeParametersPtr GetEyeDetails(ovrSession session,
   return eye_parameters;
 }
 
-mojom::VRDisplayInfoPtr CreateVRDisplayInfo(mojom::XRDeviceId id,
-                                            ovrSession session) {
+mojom::VRDisplayInfoPtr CreateVRDisplayInfo(ovrSession session) {
   mojom::VRDisplayInfoPtr display_info = mojom::VRDisplayInfo::New();
-  display_info->id = id;
 
   ovrHmdDesc hmdDesc = ovr_GetHmdDesc(session);
   display_info->left_eye = GetEyeDetails(session, hmdDesc, ovrEye_Left);
@@ -174,7 +172,7 @@ bool OculusDevice::EnsureValidDisplayInfo() {
       return false;
     }
 
-    SetVRDisplayInfo(CreateVRDisplayInfo(GetId(), session_));
+    SetVRDisplayInfo(CreateVRDisplayInfo(session_));
     have_real_display_info_ = true;
   }
   return have_real_display_info_;

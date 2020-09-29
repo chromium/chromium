@@ -111,16 +111,11 @@ device::mojom::VREyeParametersPtr ValidateEyeParameters(
 }
 
 device::mojom::VRDisplayInfoPtr ValidateVRDisplayInfo(
-    const device::mojom::VRDisplayInfo* info,
-    device::mojom::XRDeviceId id) {
+    const device::mojom::VRDisplayInfo* info) {
   if (!info)
     return nullptr;
 
   device::mojom::VRDisplayInfoPtr ret = device::mojom::VRDisplayInfo::New();
-
-  // Rather than just cloning everything, we copy over each field and validate
-  // individually.  This ensures new fields don't bypass validation.
-  ret->id = id;
 
   // Maximum 1000km translation.
   if (info->stage_parameters &&
@@ -215,7 +210,7 @@ BrowserXRRuntimeImpl::BrowserXRRuntimeImpl(
     : id_(id),
       device_data_(std::move(device_data)),
       runtime_(std::move(runtime)),
-      display_info_(ValidateVRDisplayInfo(display_info.get(), id)) {
+      display_info_(ValidateVRDisplayInfo(display_info.get())) {
   DVLOG(2) << __func__ << ": id=" << id;
   // Unretained is safe because we are calling through an InterfacePtr we own,
   // so we won't be called after runtime_ is destroyed.
@@ -357,7 +352,7 @@ bool BrowserXRRuntimeImpl::SupportsNonEmulatedHeight() const {
 void BrowserXRRuntimeImpl::OnDisplayInfoChanged(
     device::mojom::VRDisplayInfoPtr vr_device_info) {
   bool had_display_info = !!display_info_;
-  display_info_ = ValidateVRDisplayInfo(vr_device_info.get(), id_);
+  display_info_ = ValidateVRDisplayInfo(vr_device_info.get());
   if (had_display_info) {
     for (VRServiceImpl* service : services_) {
       service->OnDisplayInfoChanged();
