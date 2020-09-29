@@ -42,10 +42,11 @@ class SubresourceFilterClient;
 // within a given WebContents. It contains a mapping of all activated
 // RenderFrameHosts, along with their associated DocumentSubresourceFilters.
 //
-// The class is designed to be used by a Delegate, which shares lifetime with
-// this class (aka the typical lifetime of a WebContentsObserver). The delegate
-// will be notified of the first disallowed subresource load for a top level
-// navgation, and has veto power for frame activation.
+// The class is designed to be used by a SubresourceFilterClient instance that
+// shares lifetime with this class (aka the typical lifetime of a
+// WebContentsObserver). The client will be notified of the first disallowed
+// subresource load for a top level navgation, and has veto power for frame
+// activation.
 class ContentSubresourceFilterThrottleManager
     : public content::WebContentsObserver,
       public mojom::SubresourceFilterHost,
