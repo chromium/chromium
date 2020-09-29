@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/main/scene_controller.h"
 
 #include "base/bind_helpers.h"
+#include "base/i18n/message_formatter.h"
 #import "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -81,6 +82,7 @@
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/window_activities/window_activity_helpers.h"
+#include "ios/chrome/grit/ios_strings.h"
 #include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #include "ios/public/provider/chrome/browser/mailto/mailto_handler_provider.h"
 #include "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
@@ -88,6 +90,7 @@
 #include "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/web_state.h"
 #import "net/base/mac/url_conversions.h"
+#include "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -310,6 +313,14 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
       // crashes.
       [[PreviousSessionInfo sharedInstance]
           addSceneSessionID:sceneState.scene.session.persistentIdentifier];
+    }
+  }
+
+  // When the scene transitions to inactive (such as when it's being shown in
+  // the OS app-switcher), update the title for display on iPadOS.
+  if (@available(iOS 13, *)) {
+    if (level == SceneActivationLevelForegroundInactive) {
+      sceneState.scene.title = [self displayTitleForAppSwitcher];
     }
   }
 
@@ -730,6 +741,35 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   self.hasInitializedUI = NO;
 
   [self.sceneState.appState removeObserver:self];
+}
+
+// Formats string for display on iPadOS application switcher with the
+// domain of the foreground tab and the tab count. Assumes the scene is
+// visible. Will return nil if there are no tabs.
+- (NSString*)displayTitleForAppSwitcher {
+  DCHECK(self.currentInterface.browser);
+  web::WebState* webState =
+      self.currentInterface.browser->GetWebStateList()->GetActiveWebState();
+  if (!webState)
+    return nil;
+
+  // At this point there is at least one tab.
+  int numberOfTabs = self.currentInterface.browser->GetWebStateList()->count();
+  DCHECK(numberOfTabs > 0);
+  GURL url = webState->GetVisibleURL();
+  base::string16 urlText = url_formatter::FormatUrl(
+      url,
+      url_formatter::kFormatUrlOmitDefaults |
+          url_formatter::kFormatUrlOmitTrivialSubdomains |
+          url_formatter::kFormatUrlOmitHTTPS |
+          url_formatter::kFormatUrlTrimAfterHost,
+      net::UnescapeRule::SPACES, nullptr, nullptr, nullptr);
+  base::string16 pattern =
+      l10n_util::GetStringUTF16(IDS_IOS_APP_SWITCHER_SCENE_TITLE);
+  base::string16 formattedTitle =
+      base::i18n::MessageFormatter::FormatWithNamedArgs(
+          pattern, "domain", urlText, "count", numberOfTabs - 1);
+  return base::SysUTF16ToNSString(formattedTitle);
 }
 
 #pragma mark - First Run

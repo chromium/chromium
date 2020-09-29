@@ -2632,6 +2632,12 @@ New Search
       <message name="IDS_IOS_UI_BLOCKED_USE_OTHER_WINDOW_SWITCH_WINDOW_ACTION" desc="Button label that appears on a button to switch to some other window, when the user has multiple windows open, and one window is showing a dialog that has to be interacted with before any other window can be used.">
           Switch to Open Window
       </message>
+      <message name="IDS_IOS_APP_SWITCHER_SCENE_TITLE" desc="Shown under the Application title in the OS-level app switcher with the number of tabs in the window">
+        {count, plural,
+          =0 {{domain}}
+          =1 {{domain} and 1 other}
+          other {{domain} and {count} others}}
+      </message>
     </messages>
   </release>
 </grit>
