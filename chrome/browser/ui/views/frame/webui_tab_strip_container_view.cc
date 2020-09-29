@@ -33,7 +33,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/chrome_view_class_properties.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
@@ -560,7 +559,10 @@ views::NativeViewHost* WebUITabStripContainerView::GetNativeViewHost() {
 std::unique_ptr<views::View> WebUITabStripContainerView::CreateTabCounter() {
   DCHECK_EQ(nullptr, tab_counter_);
 
-  auto tab_counter = CreateWebUITabCounterButton(this, browser_view_);
+  auto tab_counter = CreateWebUITabCounterButton(
+      base::BindRepeating(&WebUITabStripContainerView::TabCounterPressed,
+                          base::Unretained(this)),
+      browser_view_);
 
   tab_counter_ = tab_counter.get();
   view_observer_.Add(tab_counter_);
@@ -655,6 +657,30 @@ void WebUITabStripContainerView::EndDragToOpen(
       opening, fling_direction.has_value()
                    ? WebUITabStripOpenCloseReason::kFling
                    : WebUITabStripOpenCloseReason::kDragRelease);
+}
+
+void WebUITabStripContainerView::TabCounterPressed() {
+  const bool new_visibility = !GetVisible();
+  if (new_visibility) {
+    RecordTabStripUIOpenHistogram(TabStripUIOpenAction::kTapOnTabCounter);
+    browser_view_->feature_promo_controller()
+        ->feature_engagement_tracker()
+        ->NotifyEvent(feature_engagement::events::kWebUITabStripOpened);
+  } else {
+    RecordTabStripUICloseHistogram(TabStripUICloseAction::kTapOnTabCounter);
+    browser_view_->feature_promo_controller()
+        ->feature_engagement_tracker()
+        ->NotifyEvent(feature_engagement::events::kWebUITabStripClosed);
+  }
+
+  SetContainerTargetVisibility(new_visibility,
+                               WebUITabStripOpenCloseReason::kOther);
+
+  if (GetVisible() && tab_counter_->HasFocus()) {
+    // Automatically move focus to the tab strip WebUI if the focus is
+    // currently on the toggle button.
+    SetPaneFocusAndFocusDefault();
+  }
 }
 
 void WebUITabStripContainerView::SetContainerTargetVisibility(
@@ -793,32 +819,6 @@ gfx::Size WebUITabStripContainerView::FlexRule(
                          .CalculateContainerHeight();
 
   return gfx::Size(width, height);
-}
-
-void WebUITabStripContainerView::ButtonPressed(views::Button* sender,
-                                               const ui::Event& event) {
-  DCHECK_EQ(sender->GetID(), VIEW_ID_WEBUI_TAB_STRIP_TAB_COUNTER);
-  const bool new_visibility = !GetVisible();
-  if (new_visibility) {
-    RecordTabStripUIOpenHistogram(TabStripUIOpenAction::kTapOnTabCounter);
-    browser_view_->feature_promo_controller()
-        ->feature_engagement_tracker()
-        ->NotifyEvent(feature_engagement::events::kWebUITabStripOpened);
-  } else {
-    RecordTabStripUICloseHistogram(TabStripUICloseAction::kTapOnTabCounter);
-    browser_view_->feature_promo_controller()
-        ->feature_engagement_tracker()
-        ->NotifyEvent(feature_engagement::events::kWebUITabStripClosed);
-  }
-
-  SetContainerTargetVisibility(new_visibility,
-                               WebUITabStripOpenCloseReason::kOther);
-
-  if (GetVisible() && sender->HasFocus()) {
-    // Automatically move focus to the tab strip WebUI if the focus is
-    // currently on the toggle button.
-    SetPaneFocusAndFocusDefault();
-  }
 }
 
 void WebUITabStripContainerView::OnViewBoundsChanged(View* observed_view) {

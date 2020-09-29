@@ -68,8 +68,8 @@ class DefaultFavicon {
 }  // namespace
 
 TabIconView::TabIconView(TabIconViewModel* model,
-                         views::ButtonListener* listener)
-    : views::MenuButton(listener), model_(model), is_light_(false) {
+                         views::Button::PressedCallback callback)
+    : views::MenuButton(std::move(callback)), model_(model), is_light_(false) {
   // Inheriting from Button causes this View to be focusable, but it us
   // purely decorative and should not be exposed as focusable in accessibility.
   SetFocusBehavior(FocusBehavior::NEVER);

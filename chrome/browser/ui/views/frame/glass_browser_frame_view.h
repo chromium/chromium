@@ -12,13 +12,11 @@
 #include "chrome/browser/ui/views/frame/windows_10_caption_button.h"
 #include "chrome/browser/ui/views/tab_icon_view.h"
 #include "chrome/browser/ui/views/tab_icon_view_model.h"
-#include "ui/views/controls/button/button.h"
 #include "ui/views/window/non_client_view.h"
 
 class BrowserView;
 
 class GlassBrowserFrameView : public BrowserNonClientFrameView,
-                              public views::ButtonListener,
                               public TabIconViewModel {
  public:
   // Alpha to use for features in the titlebar (the window title and caption
@@ -58,9 +56,6 @@ class GlassBrowserFrameView : public BrowserNonClientFrameView,
   void GetWindowMask(const gfx::Size& size, SkPath* window_mask) override {}
   void ResetWindowControls() override;
   void SizeConstraintsChanged() override {}
-
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
 
   // TabIconViewModel:
   bool ShouldTabIconViewAnimate() const override;

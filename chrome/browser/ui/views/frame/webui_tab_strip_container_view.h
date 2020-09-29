@@ -11,13 +11,13 @@
 #include "base/optional.h"
 #include "base/scoped_observer.h"
 #include "base/time/time.h"
-#include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui_embedder.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui_metrics.h"
 #include "chrome/common/buildflags.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "ui/events/event_handler.h"
+#include "ui/gfx/animation/animation_delegate.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/views/accessible_pane_view.h"
 #include "ui/views/view.h"
@@ -46,7 +46,6 @@ class ImmersiveRevealedLock;
 class WebUITabStripContainerView : public TabStripUIEmbedder,
                                    public gfx::AnimationDelegate,
                                    public views::AccessiblePaneView,
-                                   public views::ButtonListener,
                                    public views::ViewObserver {
  public:
   WebUITabStripContainerView(BrowserView* browser_view,
@@ -97,6 +96,8 @@ class WebUITabStripContainerView : public TabStripUIEmbedder,
   void EndDragToOpen(base::Optional<WebUITabStripDragDirection>
                          fling_direction = base::nullopt);
 
+  void TabCounterPressed();
+
   void SetContainerTargetVisibility(bool target_visible,
                                     WebUITabStripOpenCloseReason reason);
 
@@ -124,9 +125,6 @@ class WebUITabStripContainerView : public TabStripUIEmbedder,
   // gfx::AnimationDelegate:
   void AnimationEnded(const gfx::Animation* animation) override;
   void AnimationProgressed(const gfx::Animation* animation) override;
-
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
 
   // views::ViewObserver:
   void OnViewBoundsChanged(View* observed_view) override;

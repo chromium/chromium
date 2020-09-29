@@ -96,7 +96,7 @@ GlassBrowserFrameView::GlassBrowserFrameView(BrowserFrame* frame,
   if (browser_view->CanShowWindowIcon()) {
     InitThrobberIcons();
 
-    window_icon_ = new TabIconView(this, nullptr);
+    window_icon_ = new TabIconView(this, views::Button::PressedCallback());
     window_icon_->set_is_light(true);
     window_icon_->SetID(VIEW_ID_WINDOW_ICON);
     // Stop the icon from intercepting clicks intended for the HTSYSMENU region
@@ -366,12 +366,6 @@ void GlassBrowserFrameView::ResetWindowControls() {
   BrowserNonClientFrameView::ResetWindowControls();
   if (caption_button_container_)
     caption_button_container_->ResetWindowControls();
-}
-
-void GlassBrowserFrameView::ButtonPressed(views::Button* sender,
-                                          const ui::Event& event) {
-  if (caption_button_container_)
-    caption_button_container_->ButtonPressed(sender);
 }
 
 bool GlassBrowserFrameView::ShouldTabIconViewAnimate() const {

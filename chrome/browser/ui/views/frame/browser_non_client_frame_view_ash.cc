@@ -111,7 +111,7 @@ void BrowserNonClientFrameViewAsh::Init() {
 
   // Initializing the TabIconView is expensive, so only do it if we need to.
   if (browser_view()->ShouldShowWindowIcon()) {
-    window_icon_ = new TabIconView(this, nullptr);
+    window_icon_ = new TabIconView(this, views::Button::PressedCallback());
     window_icon_->set_is_light(true);
     AddChildView(window_icon_);
     window_icon_->Update();

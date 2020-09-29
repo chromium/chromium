@@ -44,7 +44,6 @@ class GlassBrowserCaptionButtonContainer : public views::View,
                              const gfx::Rect& new_bounds) override;
 
   void ResetWindowControls();
-  void ButtonPressed(views::Button* sender);
 
   // Sets caption button visibility and enabled state based on window state.
   // Only one of maximize or restore button should ever be visible at the same

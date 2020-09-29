@@ -151,7 +151,7 @@ class OpaqueBrowserFrameViewLayoutTest
   }
 
   void AddWindowTitleIcons() {
-    tab_icon_view_ = new TabIconView(nullptr, nullptr);
+    tab_icon_view_ = new TabIconView(nullptr, views::Button::PressedCallback());
     tab_icon_view_->set_is_light(true);
     tab_icon_view_->SetID(VIEW_ID_WINDOW_ICON);
     root_view_->AddChildView(tab_icon_view_);

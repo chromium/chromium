@@ -13,7 +13,8 @@ class GlassBrowserFrameView;
 
 class Windows10CaptionButton : public views::Button {
  public:
-  Windows10CaptionButton(GlassBrowserFrameView* frame_view,
+  Windows10CaptionButton(PressedCallback callback,
+                         GlassBrowserFrameView* frame_view,
                          ViewID button_type,
                          const base::string16& accessible_name);
 

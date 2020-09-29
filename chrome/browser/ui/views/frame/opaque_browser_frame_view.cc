@@ -157,18 +157,30 @@ void OpaqueBrowserFrameView::InitViews() {
         CreateImageButton(IDR_CLOSE, IDR_CLOSE_H, IDR_CLOSE_P,
                           IDR_CLOSE_BUTTON_MASK, VIEW_ID_CLOSE_BUTTON);
   }
-  InitWindowCaptionButton(minimize_button_, IDS_ACCNAME_MINIMIZE,
-                          VIEW_ID_MINIMIZE_BUTTON);
-  InitWindowCaptionButton(maximize_button_, IDS_ACCNAME_MAXIMIZE,
-                          VIEW_ID_MAXIMIZE_BUTTON);
-  InitWindowCaptionButton(restore_button_, IDS_ACCNAME_RESTORE,
-                          VIEW_ID_RESTORE_BUTTON);
-  InitWindowCaptionButton(close_button_, IDS_ACCNAME_CLOSE,
-                          VIEW_ID_CLOSE_BUTTON);
+  InitWindowCaptionButton(
+      minimize_button_,
+      base::BindRepeating(&BrowserFrame::Minimize, base::Unretained(frame())),
+      IDS_ACCNAME_MINIMIZE, VIEW_ID_MINIMIZE_BUTTON);
+  InitWindowCaptionButton(
+      maximize_button_,
+      base::BindRepeating(&BrowserFrame::Maximize, base::Unretained(frame())),
+      IDS_ACCNAME_MAXIMIZE, VIEW_ID_MAXIMIZE_BUTTON);
+  InitWindowCaptionButton(
+      restore_button_,
+      base::BindRepeating(&BrowserFrame::Restore, base::Unretained(frame())),
+      IDS_ACCNAME_RESTORE, VIEW_ID_RESTORE_BUTTON);
+  InitWindowCaptionButton(
+      close_button_,
+      base::BindRepeating(&BrowserFrame::CloseWithReason,
+                          base::Unretained(frame()),
+                          views::Widget::ClosedReason::kCloseButtonClicked),
+      IDS_ACCNAME_CLOSE, VIEW_ID_CLOSE_BUTTON);
 
   // Initializing the TabIconView is expensive, so only do it if we need to.
   if (browser_view()->ShouldShowWindowIcon()) {
-    window_icon_ = new TabIconView(this, this);
+    window_icon_ = new TabIconView(
+        this, base::BindRepeating(&OpaqueBrowserFrameView::WindowIconPressed,
+                                  base::Unretained(this)));
     window_icon_->set_is_light(true);
     window_icon_->SetID(VIEW_ID_WINDOW_ICON);
     AddChildView(window_icon_);
@@ -330,33 +342,6 @@ const char* OpaqueBrowserFrameView::GetClassName() const {
 
 void OpaqueBrowserFrameView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kTitleBar;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-// OpaqueBrowserFrameView, views::ButtonListener implementation:
-
-void OpaqueBrowserFrameView::ButtonPressed(views::Button* sender,
-                                           const ui::Event& event) {
-  if (sender == minimize_button_) {
-    frame()->Minimize();
-  } else if (sender == maximize_button_) {
-    frame()->Maximize();
-  } else if (sender == restore_button_) {
-    frame()->Restore();
-  } else if (sender == close_button_) {
-    frame()->CloseWithReason(views::Widget::ClosedReason::kCloseButtonClicked);
-  } else if (sender == window_icon_) {
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
-    // TODO(pbos): Figure out / document why this is Linux only. This needs a
-    // comment.
-    views::MenuRunner menu_runner(frame()->GetSystemMenuModel(),
-                                  views::MenuRunner::HAS_MNEMONICS);
-    menu_runner.RunMenuAt(
-        browser_view()->GetWidget(), window_icon_->button_controller(),
-        window_icon_->GetBoundsInScreen(), views::MenuAnchorPosition::kTopLeft,
-        ui::MENU_SOURCE_MOUSE);
-#endif
-  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -552,7 +537,7 @@ views::Button* OpaqueBrowserFrameView::CreateFrameCaptionButton(
     int ht_component,
     const gfx::VectorIcon& icon_image) {
   views::FrameCaptionButton* button =
-      new views::FrameCaptionButton(this, icon_type, ht_component);
+      new views::FrameCaptionButton(nullptr, icon_type, ht_component);
   button->SetImage(button->icon(), views::FrameCaptionButton::ANIMATE_NO,
                    icon_image);
   return button;
@@ -563,7 +548,7 @@ views::Button* OpaqueBrowserFrameView::CreateImageButton(int normal_image_id,
                                                          int pushed_image_id,
                                                          int mask_image_id,
                                                          ViewID view_id) {
-  views::ImageButton* button = new views::ImageButton(this);
+  views::ImageButton* button = new views::ImageButton(nullptr);
   const ui::ThemeProvider* tp = frame()->GetThemeProvider();
   button->SetImage(views::Button::STATE_NORMAL,
                    tp->GetImageSkiaNamed(normal_image_id));
@@ -592,8 +577,10 @@ views::Button* OpaqueBrowserFrameView::CreateImageButton(int normal_image_id,
 
 void OpaqueBrowserFrameView::InitWindowCaptionButton(
     views::Button* button,
+    views::Button::PressedCallback callback,
     int accessibility_string_id,
     ViewID view_id) {
+  button->set_callback(std::move(callback));
   button->SetAccessibleName(l10n_util::GetStringUTF16(accessibility_string_id));
   button->SetID(view_id);
   AddChildView(button);
@@ -667,6 +654,19 @@ int OpaqueBrowserFrameView::FrameTopBorderThickness(bool restored) const {
 
 gfx::Rect OpaqueBrowserFrameView::IconBounds() const {
   return layout_->IconBounds();
+}
+
+void OpaqueBrowserFrameView::WindowIconPressed() {
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+  // TODO(pbos): Figure out / document why this is Linux only. This needs a
+  // comment.
+  views::MenuRunner menu_runner(frame()->GetSystemMenuModel(),
+                                views::MenuRunner::HAS_MNEMONICS);
+  menu_runner.RunMenuAt(
+      browser_view()->GetWidget(), window_icon_->button_controller(),
+      window_icon_->GetBoundsInScreen(), views::MenuAnchorPosition::kTopLeft,
+      ui::MENU_SOURCE_MOUSE);
+#endif
 }
 
 bool OpaqueBrowserFrameView::ShouldShowWindowTitleBar() const {

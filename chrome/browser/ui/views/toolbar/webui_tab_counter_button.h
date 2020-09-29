@@ -7,15 +7,16 @@
 
 #include <memory>
 
+#include "ui/views/controls/button/button.h"
+
 namespace views {
-class ButtonListener;
 class View;
 }  // namespace views
 
 class BrowserView;
 
 std::unique_ptr<views::View> CreateWebUITabCounterButton(
-    views::ButtonListener* listener,
+    views::Button::PressedCallback pressed_callback,
     BrowserView* browser_view);
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_WEBUI_TAB_COUNTER_BUTTON_H_

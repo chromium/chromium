@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/frame/browser_frame.h"
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
@@ -38,7 +39,6 @@ class Label;
 }
 
 class OpaqueBrowserFrameView : public BrowserNonClientFrameView,
-                               public views::ButtonListener,
                                public TabIconViewModel,
                                public OpaqueBrowserFrameViewLayoutDelegate {
  public:
@@ -77,9 +77,6 @@ class OpaqueBrowserFrameView : public BrowserNonClientFrameView,
   // views::View:
   const char* GetClassName() const override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
 
   // TabIconViewModel:
   bool ShouldTabIconViewAnimate() const override;
@@ -137,6 +134,7 @@ class OpaqueBrowserFrameView : public BrowserNonClientFrameView,
   // Initializes state on |button| common to both FrameCaptionButtons and
   // ImageButtons.
   void InitWindowCaptionButton(views::Button* button,
+                               views::Button::PressedCallback callback,
                                int accessibility_string_id,
                                ViewID view_id);
 
@@ -172,6 +170,8 @@ class OpaqueBrowserFrameView : public BrowserNonClientFrameView,
   // Returns the bounds of the titlebar icon (or where the icon would be if
   // there was one).
   gfx::Rect IconBounds() const;
+
+  void WindowIconPressed();
 
   // Returns true if the view should draw its own custom title bar.
   bool ShouldShowWindowTitleBar() const;

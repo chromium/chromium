@@ -18,7 +18,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
-#include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/chrome_view_class_properties.h"
@@ -441,7 +440,7 @@ class WebUITabCounterButton : public views::Button,
   static constexpr int WEBUI_TAB_COUNTER_CXMENU_CLOSE_TAB = 13;
   static constexpr int WEBUI_TAB_COUNTER_CXMENU_NEW_TAB = 14;
 
-  WebUITabCounterButton(views::ButtonListener* listener,
+  WebUITabCounterButton(PressedCallback pressed_callback,
                         BrowserView* browser_view);
   ~WebUITabCounterButton() override;
 
@@ -491,9 +490,9 @@ class WebUITabCounterButton : public views::Button,
       link_opened_from_gesture_subscription_;
 };
 
-WebUITabCounterButton::WebUITabCounterButton(views::ButtonListener* listener,
+WebUITabCounterButton::WebUITabCounterButton(PressedCallback pressed_callback,
                                              BrowserView* browser_view)
-    : Button(listener),
+    : Button(std::move(pressed_callback)),
       tab_strip_model_(browser_view->browser()->tab_strip_model()),
       browser_view_(browser_view) {}
 
@@ -532,8 +531,6 @@ void WebUITabCounterButton::UpdateColors() {
 }
 
 void WebUITabCounterButton::Init() {
-  SetID(VIEW_ID_WEBUI_TAB_STRIP_TAB_COUNTER);
-
   SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
@@ -687,10 +684,10 @@ void WebUITabCounterButton::ExecuteCommand(int command_id, int event_flags) {
 }  // namespace
 
 std::unique_ptr<views::View> CreateWebUITabCounterButton(
-    views::ButtonListener* listener,
+    views::Button::PressedCallback pressed_callback,
     BrowserView* browser_view) {
-  auto tab_counter =
-      std::make_unique<WebUITabCounterButton>(listener, browser_view);
+  auto tab_counter = std::make_unique<WebUITabCounterButton>(
+      std::move(pressed_callback), browser_view);
 
   tab_counter->Init();
 

@@ -18,7 +18,7 @@ class ImageSkia;
 // A view to display a tab favicon or a throbber.
 class TabIconView : public views::MenuButton {
  public:
-  TabIconView(TabIconViewModel* model, views::ButtonListener* button_listener);
+  TabIconView(TabIconViewModel* model, views::Button::PressedCallback callback);
   ~TabIconView() override;
 
   // Invoke whenever the tab state changes or the throbber should update.
