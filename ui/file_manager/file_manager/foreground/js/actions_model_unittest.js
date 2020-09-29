@@ -109,6 +109,17 @@ function setUp() {
   installMockChrome(mockChrome);
   new MockCommandLinePrivate();
 
+  // Mock metrics.
+  window.metrics = {
+    calls: {
+      DrivePinSuccess: 0,
+      DriveHostedFilePinSuccess: 0,
+    },
+    recordBoolean: function(name) {
+      window.metrics.calls[name]++;
+    },
+  };
+
   // Setup Drive file system.
   volumeManager = new MockVolumeManager();
   let type = VolumeManagerCommon.VolumeType.DRIVE;
@@ -265,6 +276,9 @@ function testDriveFileEntry(callback) {
             assertTrue(metadataModel.properties.pinned);
             assertEquals(1, invalidated);
 
+            assertEquals(1, window.metrics.calls['DrivePinSuccess']);
+            assertEquals(0, window.metrics.calls['DriveHostedFilePinSuccess']);
+
             // The model is invalidated, as list of actions have changed.
             // Recreated the model and check that the actions are updated.
             model = new ActionsModel(
@@ -382,6 +396,9 @@ function testDriveHostedFileEntry(callback) {
             assertTrue(!!metadataModel.getCache([testDocument])[0].pinned);
             assertTrue(!!metadataModel.getCache([testFile])[0].pinned);
 
+            assertEquals(2, window.metrics.calls['DrivePinSuccess']);
+            assertEquals(1, window.metrics.calls['DriveHostedFilePinSuccess']);
+
             model = new ActionsModel(
                 volumeManager, metadataModel, shortcutsModel, driveSyncHandler,
                 ui, [testDocument, testFile]);
@@ -488,6 +505,9 @@ function testDriveHostedFileEntryWithoutExtension(callback) {
           .then(() => {
             assertFalse(!!metadataModel.getCache([testDocument])[0].pinned);
             assertTrue(!!metadataModel.getCache([testFile])[0].pinned);
+
+            assertEquals(1, window.metrics.calls['DrivePinSuccess']);
+            assertEquals(0, window.metrics.calls['DriveHostedFilePinSuccess']);
 
             model = new ActionsModel(
                 volumeManager, metadataModel, shortcutsModel, driveSyncHandler,

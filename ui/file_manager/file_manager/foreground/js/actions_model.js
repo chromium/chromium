@@ -254,6 +254,11 @@ class DriveToggleOfflineAction {
       // Check the result of pinning.
       entryPinned: () => {
         error = !!chrome.runtime.lastError;
+        metrics.recordBoolean('DrivePinSuccess', !error);
+        if (this.metadataModel_.getCache([currentEntry], ['hosted'])[0]
+                .hosted) {
+          metrics.recordBoolean('DriveHostedFilePinSuccess', !error);
+        }
         if (error && this.value_) {
           this.metadataModel_.get([currentEntry], ['size']).then(results => {
             steps.showError(results[0].size);
