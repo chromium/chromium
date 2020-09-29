@@ -11,7 +11,6 @@
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/views/touch_selection_menu_chromeos.h"
-#include "components/arc/arc_features.h"
 #include "components/arc/arc_service_manager.h"
 #include "components/arc/session/arc_bridge_service.h"
 #include "ui/aura/window.h"
@@ -54,9 +53,6 @@ bool TouchSelectionMenuRunnerChromeOS::RequestTextSelection(
     const gfx::Rect& anchor_rect,
     const gfx::Size& handle_image_size,
     aura::Window* context) {
-  if (!base::FeatureList::IsEnabled(arc::kSmartTextSelectionFeature))
-    return false;
-
   const std::string converted_text =
       base::UTF16ToUTF8(client->GetSelectedText());
   if (converted_text.empty())

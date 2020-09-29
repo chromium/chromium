@@ -887,7 +887,6 @@ void RenderViewContextMenu::InitMenu() {
   bool supports_smart_text_selection = false;
 #if defined(OS_CHROMEOS)
   supports_smart_text_selection =
-      base::FeatureList::IsEnabled(arc::kSmartTextSelectionFeature) &&
       content_type_->SupportsGroup(
           ContextMenuContentType::ITEM_GROUP_SMART_SELECTION) &&
       arc::IsArcPlayStoreEnabledForProfile(GetProfile());

@@ -73,12 +73,6 @@ const base::Feature kNativeBridgeToggleFeature{
 const base::Feature kPictureInPictureFeature{"ArcPictureInPicture",
                                              base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Controls Smart Text Selection for Chrome.
-// When enabled, the context menu will show contextual quick actions based on
-// the current text selection.
-const base::Feature kSmartTextSelectionFeature{
-    "ArcSmartTextSelection", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Controls ARC USB host integration.
 // When enabled, Android apps will be able to use usb host features.
 const base::Feature kUsbHostFeature{"ArcUsbHost",

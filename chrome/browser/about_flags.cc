@@ -4648,12 +4648,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kUseAAudioDriver)},
 #endif
 
-#if defined(OS_CHROMEOS)
-    {"smart-text-selection", flag_descriptions::kSmartTextSelectionName,
-     flag_descriptions::kSmartTextSelectionDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(arc::kSmartTextSelectionFeature)},
-#endif  // OS_CHROMEOS
-
     {"allow-sxg-certs-without-extension",
      flag_descriptions::kAllowSignedHTTPExchangeCertsWithoutExtensionName,
      flag_descriptions::

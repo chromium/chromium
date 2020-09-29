@@ -2501,9 +2501,6 @@ extern const char kSmartDimModelV3Description[];
 extern const char kSmartDimNewMlAgentName[];
 extern const char kSmartDimNewMlAgentDescription[];
 
-extern const char kSmartTextSelectionName[];
-extern const char kSmartTextSelectionDescription[];
-
 extern const char kSmbfsFileSharesName[];
 extern const char kSmbfsFileSharesDescription[];
 

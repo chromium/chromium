@@ -26,7 +26,6 @@ extern const base::Feature kFilePickerExperimentFeature;
 extern const base::Feature kNativeBridge64BitSupportExperimentFeature;
 extern const base::Feature kNativeBridgeToggleFeature;
 extern const base::Feature kPictureInPictureFeature;
-extern const base::Feature kSmartTextSelectionFeature;
 extern const base::Feature kUsbHostFeature;
 extern const base::Feature kUsbStorageUIFeature;
 extern const base::Feature kVideoDecoder;

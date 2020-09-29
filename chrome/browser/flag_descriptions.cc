@@ -4294,11 +4294,6 @@ const char kSmartDimNewMlAgentDescription[] =
     "Uses a new machine learning agent to switch between builtin and dynamic "
     "ML models.";
 
-const char kSmartTextSelectionName[] = "Smart Text Selection";
-const char kSmartTextSelectionDescription[] =
-    "Shows quick actions for text "
-    "selections in the context menu.";
-
 const char kSmbfsFileSharesName[] = "Smbfs file shares";
 const char kSmbfsFileSharesDescription[] =
     "Use smbfs for accessing network file shares.";

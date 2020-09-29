@@ -17,7 +17,6 @@
 #include "chrome/browser/apps/app_service/app_icon_factory.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/arc/arc_features.h"
 #include "components/arc/arc_service_manager.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "components/arc/metrics/arc_metrics_constants.h"
@@ -44,9 +43,6 @@ StartSmartSelectionActionMenu::~StartSmartSelectionActionMenu() = default;
 
 void StartSmartSelectionActionMenu::InitMenu(
     const content::ContextMenuParams& params) {
-  if (!base::FeatureList::IsEnabled(kSmartTextSelectionFeature))
-    return;
-
   const std::string converted_text = base::UTF16ToUTF8(params.selection_text);
   if (converted_text.empty())
     return;
