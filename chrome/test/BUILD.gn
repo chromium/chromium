@@ -556,7 +556,7 @@ if (is_android) {
     # "strip_debug" config that strips the debug info, on android_browsertests
     # apk.
     if (enable_arm_cfi_table) {
-      sources += [ "../common/profiler/stack_sampling_browsertest.cc" ]
+      sources += [ "../common/profiler/thread_profiler_browsertest.cc" ]
       deps += [
         "//chrome/android/modules/stack_unwinder/internal:java",
         "//chrome/android/modules/stack_unwinder/internal:stack_unwinder_for_testing",
@@ -2840,7 +2840,7 @@ if (!is_android) {
         "../browser/ui/cocoa/task_manager_mac_browsertest.mm",
         "../browser/ui/cocoa/touchbar/browser_window_touch_bar_controller_browsertest.mm",
         "../browser/ui/views/frame/browser_non_client_frame_view_mac_browsertest.cc",
-        "../common/profiler/stack_sampling_browsertest.cc",
+        "../common/profiler/thread_profiler_browsertest.cc",
 
         # TODO(crbug/845389): Re-Enable the following, which were temporarily
         # omitted from the build, but are still in use.
@@ -2877,7 +2877,7 @@ if (!is_android) {
       ]
 
       if (target_cpu == "x64") {
-        sources += [ "../common/profiler/stack_sampling_browsertest.cc" ]
+        sources += [ "../common/profiler/thread_profiler_browsertest.cc" ]
       }
 
       configs += [ "//build/config/win:delayloads" ]
