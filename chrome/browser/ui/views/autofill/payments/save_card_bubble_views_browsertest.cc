@@ -1985,6 +1985,75 @@ IN_PROC_BROWSER_TEST_F(
 // TODO(crbug.com/884817): Investigate combining local vs. upload tests using a
 //                         boolean to branch local vs. upload logic.
 
+// Tests StrikeDatabase interaction with the local save bubble. Ensures that a
+// strike is added if the bubble is ignored.
+IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
+                       StrikeDatabase_Local_AddStrikeIfBubbleIgnored) {
+  TestAutofillClock test_clock;
+  test_clock.SetNow(base::Time::Now());
+
+  // Set up the Payments RPC.
+  SetUploadDetailsRpcPaymentsDeclines();
+
+  FillForm();
+  SubmitFormAndWaitForCardLocalSaveBubble();
+
+  // Clicking the [X] close button should dismiss the bubble.
+  ClickOnCloseButton();
+
+  // Add an event observer to the controller to detect strike changes.
+  AddEventObserverToController();
+
+  base::HistogramTester histogram_tester;
+
+  // Wait long enough to avoid bubble stickiness, then navigate away from the
+  // page.
+  test_clock.Advance(kCardBubbleSurviveNavigationTime);
+  ResetEventWaiterForSequence({DialogEvent::STRIKE_CHANGE_COMPLETE});
+  NavigateTo(kCreditCardAndAddressUploadForm);
+  WaitForObservedEvent();
+
+  // Ensure that a strike was added due to the bubble being ignored.
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.StrikeDatabase.NthStrikeAdded.CreditCardSave",
+      /*sample=*/1, /*count=*/1);
+}
+
+// Tests StrikeDatabase interaction with the upload save bubble. Ensures that a
+// strike is added if the bubble is ignored.
+IN_PROC_BROWSER_TEST_F(
+    SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
+    StrikeDatabase_Upload_AddStrikeIfBubbleIgnored) {
+  TestAutofillClock test_clock;
+  test_clock.SetNow(base::Time::Now());
+
+  // Start sync.
+  harness_->SetupSync();
+
+  FillForm();
+  SubmitFormAndWaitForCardUploadSaveBubble();
+
+  // Clicking the [X] close button should dismiss the bubble.
+  ClickOnCloseButton();
+
+  // Add an event observer to the controller to detect strike changes.
+  AddEventObserverToController();
+
+  base::HistogramTester histogram_tester;
+
+  // Wait long enough to avoid bubble stickiness, then navigate away from the
+  // page.
+  test_clock.Advance(kCardBubbleSurviveNavigationTime);
+  ResetEventWaiterForSequence({DialogEvent::STRIKE_CHANGE_COMPLETE});
+  NavigateTo(kCreditCardAndAddressUploadForm);
+  WaitForObservedEvent();
+
+  // Ensure that a strike was added due to the bubble being ignored.
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.StrikeDatabase.NthStrikeAdded.CreditCardSave",
+      /*sample=*/1, /*count=*/1);
+}
+
 // Tests the local save bubble. Ensures that clicking the [No thanks] button
 // successfully causes a strike to be added.
 IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
@@ -2680,97 +2749,5 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTestForManageCard,
                    "Signin_Signin_FromManageCardsBubble"));
 }
 #endif
-
-// TODO(crbug.com/1070799): Remove the following two tests when the sticky
-// bubble feature is launched.
-class SaveCardBubbleViewsFullFormBrowserTestForStrikeDatabaseWithoutStickyBubble
-    : public SaveCardBubbleViewsFullFormBrowserTest {
- protected:
-  ~SaveCardBubbleViewsFullFormBrowserTestForStrikeDatabaseWithoutStickyBubble()
-      override = default;
-
-  void SetUp() override {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{},
-        /*disabled_features=*/{
-            features::kAutofillEnableStickyPaymentsBubble,
-            features::kAutofillEnableFixedPaymentsBubbleLogging});
-
-    SaveCardBubbleViewsFullFormBrowserTest::SetUp();
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-// Tests StrikeDatabase interaction with the local save bubble. Ensures that a
-// strike is added if the bubble is ignored.
-IN_PROC_BROWSER_TEST_F(
-    SaveCardBubbleViewsFullFormBrowserTestForStrikeDatabaseWithoutStickyBubble,
-    StrikeDatabase_Local_AddStrikeIfBubbleIgnored) {
-  TestAutofillClock test_clock;
-  test_clock.SetNow(base::Time::Now());
-
-  // Set up the Payments RPC.
-  SetUploadDetailsRpcPaymentsDeclines();
-
-  FillForm();
-  SubmitFormAndWaitForCardLocalSaveBubble();
-
-  // Clicking the [X] close button should dismiss the bubble.
-  ClickOnCloseButton();
-
-  // Add an event observer to the controller to detect strike changes.
-  AddEventObserverToController();
-
-  base::HistogramTester histogram_tester;
-
-  // Wait long enough to avoid bubble stickiness, then navigate away from the
-  // page.
-  test_clock.Advance(kCardBubbleSurviveNavigationTime);
-  ResetEventWaiterForSequence({DialogEvent::STRIKE_CHANGE_COMPLETE});
-  NavigateTo(kCreditCardAndAddressUploadForm);
-  WaitForObservedEvent();
-
-  // Ensure that a strike was added due to the bubble being ignored.
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.StrikeDatabase.NthStrikeAdded.CreditCardSave",
-      /*sample=*/1, /*count=*/1);
-}
-
-// Tests StrikeDatabase interaction with the upload save bubble. Ensures that a
-// strike is added if the bubble is ignored.
-IN_PROC_BROWSER_TEST_F(
-    SaveCardBubbleViewsFullFormBrowserTestForStrikeDatabaseWithoutStickyBubble,
-    StrikeDatabase_Upload_AddStrikeIfBubbleIgnored) {
-  TestAutofillClock test_clock;
-  test_clock.SetNow(base::Time::Now());
-
-  // Start sync.
-  harness_->SetupSync();
-
-  FillForm();
-  SubmitFormAndWaitForCardUploadSaveBubble();
-
-  // Clicking the [X] close button should dismiss the bubble.
-  ClickOnCloseButton();
-
-  // Add an event observer to the controller to detect strike changes.
-  AddEventObserverToController();
-
-  base::HistogramTester histogram_tester;
-
-  // Wait long enough to avoid bubble stickiness, then navigate away from the
-  // page.
-  test_clock.Advance(kCardBubbleSurviveNavigationTime);
-  ResetEventWaiterForSequence({DialogEvent::STRIKE_CHANGE_COMPLETE});
-  NavigateTo(kCreditCardAndAddressUploadForm);
-  WaitForObservedEvent();
-
-  // Ensure that a strike was added due to the bubble being ignored.
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.StrikeDatabase.NthStrikeAdded.CreditCardSave",
-      /*sample=*/1, /*count=*/1);
-}
 
 }  // namespace autofill
