@@ -18,6 +18,7 @@ include_rules = [
   "+services/network/test",
   "+ui/base/l10n",
   "+ui/base/resource",
+  "+ui/base/template_expressions.h",
   "+ui/gfx",
 
   # The dom distiller is a layered component; subdirectories must explicitly

@@ -27,6 +27,7 @@
 #include "net/base/escape.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/base/template_expressions.h"
 #include "url/gurl.h"
 
 namespace dom_distiller {
@@ -112,6 +113,47 @@ std::string ReplaceHtmlTemplateValues(const mojom::Theme theme,
   std::string html_template =
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
           IDR_DOM_DISTILLER_VIEWER_HTML);
+
+  // Replace placeholders of the form $i18n{foo} with translated strings
+  // using ReplaceTemplateExpressions. Do this step first because
+  // ReplaceStringPlaceholders, below, considers $i18n to be an error.
+  ui::TemplateReplacements i18n_replacements;
+  i18n_replacements["title"] =
+      l10n_util::GetStringUTF8(IDS_DOM_DISTILLER_VIEWER_LOADING_TITLE);
+  i18n_replacements["customizeAppearance"] =
+      l10n_util::GetStringUTF8(IDS_DOM_DISTILLER_VIEWER_CUSTOMIZE_APPEARANCE);
+  i18n_replacements["fontStyle"] =
+      l10n_util::GetStringUTF8(IDS_DOM_DISTILLER_VIEWER_FONT_STYLE);
+  i18n_replacements["sansSerifFont"] =
+      l10n_util::GetStringUTF8(IDS_DOM_DISTILLER_VIEWER_SANS_SERIF_FONT);
+  i18n_replacements["serifFont"] =
+      l10n_util::GetStringUTF8(IDS_DOM_DISTILLER_VIEWER_SERIF_FONT);
+  i18n_replacements["monospaceFont"] =
+      l10n_util::GetStringUTF8(IDS_DOM_DISTILLER_VIEWER_MONOSPACE_FONT);
+  i18n_replacements["pageColor"] =
+      l10n_util::GetStringUTF8(IDS_DOM_DISTILLER_VIEWER_PAGE_COLOR);
+  i18n_replacements["light"] =
+      l10n_util::GetStringUTF8(IDS_DOM_DISTILLER_VIEWER_PAGE_COLOR_LIGHT);
+  i18n_replacements["sepia"] =
+      l10n_util::GetStringUTF8(IDS_DOM_DISTILLER_VIEWER_PAGE_COLOR_SEPIA);
+  i18n_replacements["dark"] =
+      l10n_util::GetStringUTF8(IDS_DOM_DISTILLER_VIEWER_PAGE_COLOR_DARK);
+  i18n_replacements["fontSize"] =
+      l10n_util::GetStringUTF8(IDS_DOM_DISTILLER_VIEWER_FONT_SIZE);
+  i18n_replacements["small"] =
+      l10n_util::GetStringUTF8(IDS_DOM_DISTILLER_VIEWER_FONT_SIZE_SMALL);
+  i18n_replacements["large"] =
+      l10n_util::GetStringUTF8(IDS_DOM_DISTILLER_VIEWER_FONT_SIZE_LARGE);
+  i18n_replacements["close"] =
+      l10n_util::GetStringUTF8(IDS_DOM_DISTILLER_VIEWER_CLOSE);
+
+  html_template =
+      ui::ReplaceTemplateExpressions(html_template, i18n_replacements);
+
+  // There shouldn't be any unsubstituted i18n placeholders left.
+  DCHECK_EQ(html_template.find("$i18n"), std::string::npos);
+
+  // Now do other non-i18n string replacements.
   std::vector<std::string> substitutions;
 
   std::ostringstream css;
@@ -126,19 +168,14 @@ std::string ReplaceHtmlTemplateValues(const mojom::Theme theme,
   svg << "<img src=\"/" << kViewerLoadingImagePath << "\">";
 #endif  // defined(OS_IOS)
 
-  substitutions.push_back(
-      l10n_util::GetStringUTF8(IDS_DOM_DISTILLER_VIEWER_LOADING_TITLE));  // $1
-
-  substitutions.push_back(css.str());  // $2
+  substitutions.push_back(css.str());  // $1
   substitutions.push_back(GetThemeCssClass(theme) + " " +
-                          GetFontCssClass(font_family));  // $3
+                          GetFontCssClass(font_family));  // $2
 
-  substitutions.push_back(
-      l10n_util::GetStringUTF8(IDS_DOM_DISTILLER_VIEWER_LOADING_TITLE));  // $4
   substitutions.push_back(l10n_util::GetStringUTF8(
-      IDS_DOM_DISTILLER_JAVASCRIPT_DISABLED_CONTENT));  // $5
+      IDS_DOM_DISTILLER_JAVASCRIPT_DISABLED_CONTENT));  // $3
 
-  substitutions.push_back(svg.str());  // $6
+  substitutions.push_back(svg.str());  // $4
 
   return base::ReplaceStringPlaceholders(html_template, substitutions, nullptr);
 }
