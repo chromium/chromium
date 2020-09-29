@@ -4619,7 +4619,7 @@
             ]
         }
     ],
-    "OmniboxAssistantVoiceSearchAndroid": [
+    "OmniboxAssistantVoiceSearch": [
         {
             "platforms": [
                 "android"
