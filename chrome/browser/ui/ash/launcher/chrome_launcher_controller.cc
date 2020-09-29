@@ -18,6 +18,7 @@
 #include "ash/public/cpp/window_animation_types.h"
 #include "base/bind.h"
 #include "base/bind_helpers.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/pattern.h"
@@ -1153,7 +1154,13 @@ ash::ShelfID ChromeLauncherController::InsertAppLauncherItem(
     ash::ShelfItemType shelf_item_type,
     const base::string16& title) {
   CHECK(item_delegate);
-  CHECK(!GetItem(item_delegate->shelf_id()));
+  if (GetItem(item_delegate->shelf_id())) {
+    // TODO(crbug.com/1090134): try and identify why this would be called when
+    // there is an already existing shelf item for this ID.
+    base::debug::DumpWithoutCrashing();
+    return item_delegate->shelf_id();
+  }
+
   ash::ShelfItem item;
   item.status = status;
   item.type = shelf_item_type;
