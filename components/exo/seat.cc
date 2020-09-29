@@ -25,6 +25,7 @@
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/surface.h"
 #include "components/exo/wm_helper.h"
+#include "components/exo/xkb_tracker.h"
 #include "services/data_decoder/public/cpp/decode_image.h"
 #include "ui/aura/client/focus_client.h"
 #include "ui/base/clipboard/clipboard_data_endpoint.h"
@@ -62,6 +63,14 @@ Seat::Seat() : changing_clipboard_data_to_selection_source_(false) {
     ui::PlatformEventSource::GetInstance()->AddPlatformEventObserver(this);
 #if defined(OS_CHROMEOS)
   ui_lock_controller_ = std::make_unique<UILockController>(this);
+
+  // Seat needs to be registered as observers before any Keyboard,
+  // because Keyboard expects that the XkbTracker is up-to-date when its
+  // observer method is called.
+  xkb_tracker_ = std::make_unique<XkbTracker>();
+  ash::ImeControllerImpl* ime_controller = ash::Shell::Get()->ime_controller();
+  xkb_tracker_->UpdateKeyboardLayout(ime_controller->keyboard_layout_name());
+  ime_controller->AddObserver(this);
 #endif
 }
 
@@ -74,6 +83,9 @@ void Seat::Shutdown() {
     return;
   shutdown_ = true;
   DCHECK(!selection_source_) << "DataSource must be released before Seat";
+#if defined(OS_CHROMEOS)
+  ash::Shell::Get()->ime_controller()->RemoveObserver(this);
+#endif
   WMHelper::GetInstance()->RemoveFocusObserver(this);
   WMHelper::GetInstance()->RemovePreTargetHandler(this);
   ui::ClipboardMonitor::GetInstance()->RemoveObserver(this);
@@ -291,7 +303,9 @@ void Seat::OnKeyEvent(ui::KeyEvent* event) {
         break;
     }
   }
-  modifier_flags_ = event->flags();
+#if defined(OS_CHROMEOS)
+  xkb_tracker_->UpdateKeyboardModifiers(event->flags());
+#endif
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -303,6 +317,17 @@ void Seat::OnClipboardDataChanged() {
   selection_source_->get()->Cancelled();
   selection_source_.reset();
 }
+
+#if defined(OS_CHROMEOS)
+////////////////////////////////////////////////////////////////////////////////
+// ash::ImeControllerImpl::Observer overrides:
+
+void Seat::OnCapsLockChanged(bool enabled) {}
+
+void Seat::OnKeyboardLayoutNameChanged(const std::string& layout_name) {
+  xkb_tracker_->UpdateKeyboardLayout(layout_name);
+}
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////
 // DataSourceObserver overrides:
