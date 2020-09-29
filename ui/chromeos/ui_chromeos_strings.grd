@@ -1134,7 +1134,7 @@
         Transliteration (mausam &#x2192; &#x0a2e;&#x0a4c;&#x0a38;&#x0a2e;)
       </message>
       <message name="IDS_IME_NAME_TRANSLITERATION_SA" desc="The input method name shows in system tray menu and settings page.">
-        Sankrit
+        Sanskrit
       </message>
       <message name="IDS_IME_NAME_TRANSLITERATION_SR" desc="The input method name shows in system tray menu. Please translate only for 'transliteration'.">
         Transliteration (zdravo &#x2192; &#x0437;&#x0434;&#x0440;&#x0430;&#x0432;&#x043e;)
