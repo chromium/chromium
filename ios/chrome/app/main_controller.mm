@@ -1147,16 +1147,16 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   return result;
 }
 
-- (void)purgeUnusedSnapshotsInBrowser:(Browser*)browser {
-  NSSet* liveSessions =
-      [self liveSessionsForWebStateList:browser->GetWebStateList()];
+- (void)purgeUnusedSnapshots:(NSSet*)liveSnapshotIDs {
   // Keep snapshots that are less than one minute old, to prevent a concurrency
   // issue if they are created while the purge is running.
   const base::Time oneMinuteAgo =
       base::Time::Now() - base::TimeDelta::FromMinutes(1);
-  [SnapshotBrowserAgent::FromBrowser(browser)->GetSnapshotCache()
-      purgeCacheOlderThan:oneMinuteAgo
-                  keeping:liveSessions];
+  if (self.currentBrowser) {
+    [SnapshotBrowserAgent::FromBrowser(self.currentBrowser)->GetSnapshotCache()
+        purgeCacheOlderThan:oneMinuteAgo
+                    keeping:liveSnapshotIDs];
+  }
 }
 
 - (void)purgeSnapshots {
@@ -1164,12 +1164,18 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   // BrowserList, so this may not reach all folders.
   BrowserList* browser_list =
       BrowserListFactory::GetForBrowserState(self.mainBrowserState);
+
+  NSMutableSet* liveSnapshotIDs = [[NSMutableSet alloc] init];
   for (Browser* browser : browser_list->AllRegularBrowsers()) {
-    [self purgeUnusedSnapshotsInBrowser:browser];
+    [liveSnapshotIDs
+        unionSet:[self liveSessionsForWebStateList:browser->GetWebStateList()]];
   }
   for (Browser* browser : browser_list->AllIncognitoBrowsers()) {
-    [self purgeUnusedSnapshotsInBrowser:browser];
+    [liveSnapshotIDs
+        unionSet:[self liveSessionsForWebStateList:browser->GetWebStateList()]];
   }
+
+  [self purgeUnusedSnapshots:liveSnapshotIDs];
 }
 
 - (void)markEulaAsAccepted {
