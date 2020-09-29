@@ -51,6 +51,7 @@ class CC_EXPORT DroppedFrameCounter {
   void ReportFrames();
 
   void Reset();
+  void OnFcpReceived();
 
   void set_total_counter(TotalFrameCounter* total_counter) {
     total_counter_ = total_counter;
@@ -62,6 +63,7 @@ class CC_EXPORT DroppedFrameCounter {
   size_t total_partial_ = 0;
   size_t total_dropped_ = 0;
   size_t total_smoothness_dropped_ = 0;
+  bool fcp_received_ = false;
 
   TotalFrameCounter* total_counter_ = nullptr;
 };

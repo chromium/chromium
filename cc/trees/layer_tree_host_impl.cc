@@ -554,7 +554,7 @@ void LayerTreeHostImpl::ReadyToCommit(
       begin_main_frame_metrics->should_measure_smoothness) {
     is_measuring_smoothness_ = true;
     total_frame_counter_.Reset();
-    dropped_frame_counter_.Reset();
+    dropped_frame_counter_.OnFcpReceived();
   }
 }
 

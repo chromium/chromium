@@ -44,7 +44,8 @@ void DroppedFrameCounter::AddDroppedFrame() {
 }
 
 void DroppedFrameCounter::AddDroppedFrameAffectingSmoothness() {
-  ++total_smoothness_dropped_;
+  if (fcp_received_)
+    ++total_smoothness_dropped_;
   ReportFrames();
 }
 
@@ -60,7 +61,12 @@ void DroppedFrameCounter::Reset() {
   total_partial_ = 0;
   total_dropped_ = 0;
   total_smoothness_dropped_ = 0;
+  fcp_received_ = false;
   ring_buffer_.Clear();
+}
+
+void DroppedFrameCounter::OnFcpReceived() {
+  fcp_received_ = true;
 }
 
 }  // namespace cc
