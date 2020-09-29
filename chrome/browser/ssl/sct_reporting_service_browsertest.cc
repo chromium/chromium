@@ -53,7 +53,7 @@ class ConnectionListener
       std::unique_ptr<net::StreamSocket> socket) override {}
 
   void WaitForConnections(size_t num_connections) {
-    if (connections_seen_ >= connections_expected_)
+    if (connections_seen_ >= num_connections)
       return;
 
     connections_expected_ = num_connections;
@@ -206,7 +206,7 @@ IN_PROC_BROWSER_TEST_F(SCTReportingServiceBrowserTest,
 
 // Tests that disabling Extended Reporting causes the cache to be cleared.
 IN_PROC_BROWSER_TEST_F(SCTReportingServiceBrowserTest,
-                       DISABLED_OptingOutClearsSCTAuditingCache) {
+                       OptingOutClearsSCTAuditingCache) {
   // Enable SCT auditing and enqueue a report.
   SetExtendedReportingEnabled(true);
 
@@ -231,7 +231,7 @@ IN_PROC_BROWSER_TEST_F(SCTReportingServiceBrowserTest,
 // Tests that reports are still sent for opted-in profiles after the network
 // service crashes and is restarted.
 IN_PROC_BROWSER_TEST_F(SCTReportingServiceBrowserTest,
-                       DISABLED_ReportsSentAfterNetworkServiceRestart) {
+                       ReportsSentAfterNetworkServiceRestart) {
   // This test is only applicable to out-of-process network service because it
   // tests what happens when the network service crashes and restarts.
   if (content::IsInProcessNetworkService()) {
