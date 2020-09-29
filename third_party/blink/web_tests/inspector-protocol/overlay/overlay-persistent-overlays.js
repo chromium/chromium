@@ -42,6 +42,11 @@
     }]
   });
 
+  // Wait for overlay rendering to finish by requesting an animation frame.
+  await session.evaluate(() => {
+    return new Promise(resolve => requestAnimationFrame(resolve));
+  });
+
   testRunner.log('Expected 3 track size labels; actual: ' + await getTrackSizeLabels());
 
   testRunner.completeTest();
