@@ -3318,6 +3318,32 @@ void WebGLRenderingContextBase::RecordIdentifiableGLParameterDigest(
   }
 }
 
+void WebGLRenderingContextBase::RecordShaderPrecisionFormatForStudy(
+    GLenum shader_type,
+    GLenum precision_type,
+    WebGLShaderPrecisionFormat* format) {
+  if (!IdentifiabilityStudySettings::Get()->IsTypeAllowed(
+          blink::IdentifiableSurface::Type::kWebGLShaderPrecisionFormat))
+    return;
+
+  if (const auto& ukm_params = GetUkmParameters()) {
+    IdentifiableTokenBuilder builder;
+    auto surface_token =
+        builder.AddValue(shader_type).AddValue(precision_type).GetToken();
+    auto sample_token = builder.AddValue(format->rangeMin())
+                            .AddValue(format->rangeMax())
+                            .AddValue(format->precision())
+                            .GetToken();
+
+    blink::IdentifiabilityMetricBuilder(ukm_params->source_id)
+        .Set(blink::IdentifiableSurface::FromTypeAndToken(
+                 blink::IdentifiableSurface::Type::kWebGLShaderPrecisionFormat,
+                 surface_token),
+             sample_token)
+        .Record(ukm_params->ukm_recorder);
+  }
+}
+
 ScriptValue WebGLRenderingContextBase::getParameter(ScriptState* script_state,
                                                     GLenum pname) {
   if (isContextLost())
@@ -3821,8 +3847,10 @@ WebGLShaderPrecisionFormat* WebGLRenderingContextBase::getShaderPrecisionFormat(
   GLint precision = 0;
   ContextGL()->GetShaderPrecisionFormat(shader_type, precision_type, range,
                                         &precision);
-  return MakeGarbageCollected<WebGLShaderPrecisionFormat>(range[0], range[1],
-                                                          precision);
+  auto* result = MakeGarbageCollected<WebGLShaderPrecisionFormat>(
+      range[0], range[1], precision);
+  RecordShaderPrecisionFormatForStudy(shader_type, precision_type, result);
+  return result;
 }
 
 String WebGLRenderingContextBase::getShaderSource(WebGLShader* shader) {

@@ -178,6 +178,12 @@ class IdentifiableSurface {
     // Extension cancelled a network request. Input is the extension ID.
     kExtensionCancelRequest = 15,
 
+    // WebGLRenderingContext.getShaderPrecisionFormat() is a high entropy API
+    // that leaks entropy about the underlying GL implementation.
+    // The output is keyed on two enums, but for the identifiability study we
+    // will key this type on a digest of both the enums' values.
+    kWebGLShaderPrecisionFormat = 16,
+
     // We can use values up to and including |kMax|.
     kMax = (1 << kTypeBits) - 1
   };

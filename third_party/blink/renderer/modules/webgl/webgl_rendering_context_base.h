@@ -1790,6 +1790,10 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
   void RecordIdentifiableGLParameterDigest(GLenum pname,
                                            IdentifiableToken value);
 
+  void RecordShaderPrecisionFormatForStudy(GLenum shader_type,
+                                           GLenum precision_type,
+                                           WebGLShaderPrecisionFormat* format);
+
   static bool webgl_context_limits_initialized_;
   static unsigned max_active_webgl_contexts_;
   static unsigned max_active_webgl_contexts_on_worker_;
