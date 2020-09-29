@@ -22,17 +22,12 @@ static constexpr char const* kVertexShader = SHADER(
   uniform mat4 u_UvTransform;
   attribute vec4 a_Position;
   varying vec2 v_TexCoordinate;
-  uniform float u_XBorder;
-  uniform float u_YBorder;
 
   void main() {
     // The quad vertex coordinate range is [-0.5, 0.5]. Transform to [0, 1],
-    // scale to cause the borders to wrap the texture, then apply the supplied
-    // affine transform matrix to get the final UV.
+    // then apply the supplied affine transform matrix to get the final UV.
     float xposition = a_Position[0] + 0.5;
-    xposition = xposition * (2.0 * u_XBorder + 1.0) - u_XBorder;
     float yposition = a_Position[1] + 0.5;
-    yposition = yposition * (2.0 * u_YBorder + 1.0) - u_YBorder;
     vec4 uv_in = vec4(xposition, yposition, 0.0, 1.0);
     vec4 uv_out = u_UvTransform * uv_in;
     v_TexCoordinate = vec2(uv_out.x, uv_out.y);
@@ -77,14 +72,9 @@ ArRenderer::ArRenderer() {
   clip_rect_handle_ = glGetUniformLocation(program_handle_, "u_ClipRect");
   texture_handle_ = glGetUniformLocation(program_handle_, "u_Texture");
   uv_transform_ = glGetUniformLocation(program_handle_, "u_UvTransform");
-  x_border_handle_ = glGetUniformLocation(program_handle_, "u_XBorder");
-  y_border_handle_ = glGetUniformLocation(program_handle_, "u_YBorder");
 }
 
-void ArRenderer::Draw(int texture_handle,
-                      const float (&uv_transform)[16],
-                      float xborder,
-                      float yborder) {
+void ArRenderer::Draw(int texture_handle, const float (&uv_transform)[16]) {
   if (!vertex_buffer_ || !index_buffer_) {
     GLuint buffers[2];
     glGenBuffersARB(2, buffers);
@@ -117,9 +107,6 @@ void ArRenderer::Draw(int texture_handle,
   glBindTexture(GL_TEXTURE_EXTERNAL_OES, texture_handle);
   vr::SetTexParameters(GL_TEXTURE_EXTERNAL_OES);
   glUniform1i(texture_handle_, 0);
-
-  glUniform1f(x_border_handle_, xborder);
-  glUniform1f(y_border_handle_, yborder);
 
   glUniformMatrix4fv(uv_transform_, 1, GL_FALSE, &uv_transform[0]);
 

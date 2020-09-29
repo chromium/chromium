@@ -17,10 +17,7 @@ class ArRenderer {
   ArRenderer();
   ~ArRenderer();
 
-  void Draw(int texture_handle,
-            const float (&uv_transform)[16],
-            float xborder,
-            float yborder);
+  void Draw(int texture_handle, const float (&uv_transform)[16]);
 
  private:
   GLuint program_handle_ = 0;
@@ -28,8 +25,6 @@ class ArRenderer {
   GLuint clip_rect_handle_ = 0;
   GLuint texture_handle_ = 0;
   GLuint uv_transform_ = 0;
-  GLuint x_border_handle_ = 0;
-  GLuint y_border_handle_ = 0;
   GLuint vertex_buffer_ = 0;
   GLuint index_buffer_ = 0;
 

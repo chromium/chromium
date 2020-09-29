@@ -373,7 +373,7 @@ void ArImageTransport::CopyTextureToFramebuffer(
   // Draw the ARCore texture!
   float uv_transform_floats[16];
   uv_transform.matrix().asColMajorf(uv_transform_floats);
-  ar_renderer_->Draw(texture, uv_transform_floats, 0, 0);
+  ar_renderer_->Draw(texture, uv_transform_floats);
 }
 
 void ArImageTransport::CopyMailboxToSurfaceAndSwap(
