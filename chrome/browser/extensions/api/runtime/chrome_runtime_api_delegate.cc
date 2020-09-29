@@ -122,16 +122,8 @@ const base::TickClock* g_test_clock = nullptr;
 }  // namespace
 
 struct ChromeRuntimeAPIDelegate::UpdateCheckInfo {
- public:
-  UpdateCheckInfo() {
-    if (g_test_clock)
-      backoff.reset(
-          new net::BackoffEntry(BackoffPolicy::Get(), g_test_clock));
-    else
-      backoff.reset(new net::BackoffEntry(BackoffPolicy::Get()));
-  }
-
-  std::unique_ptr<net::BackoffEntry> backoff;
+  std::unique_ptr<net::BackoffEntry> backoff =
+      std::make_unique<net::BackoffEntry>(BackoffPolicy::Get(), g_test_clock);
   std::vector<UpdateCheckCallback> callbacks;
 };
 
