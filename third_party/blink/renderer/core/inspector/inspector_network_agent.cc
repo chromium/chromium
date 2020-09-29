@@ -641,9 +641,11 @@ BuildObjectForResourceResponse(const ResourceResponse& response,
       break;
   }
 
-  // Use mime type from cached resource in case the one in response is empty.
+  // Use mime type from cached resource in case the one in response is empty
+  // or the response is a 304 Not Modified.
   String mime_type = response.MimeType();
-  if (mime_type.IsEmpty() && cached_resource)
+  if (cached_resource &&
+      (mime_type.IsEmpty() || response.HttpStatusCode() == 304))
     mime_type = cached_resource->GetResponse().MimeType();
 
   if (is_empty)
