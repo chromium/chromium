@@ -129,12 +129,12 @@ class CertificateProviderService : public KeyedService {
 
   // Must be called when an extension replied to a previous certificate
   // request, after the new certificates were registered with
-  // SetCertificatesForExtension(). For each request, it is expected that every
-  // registered extension replies exactly once. |cert_request_id| must refer to
-  // a previously broadcast certificate request. Returns false if the request id
-  // is unknown or it was called before with the same combination of request id
-  // and extension id. E.g. the request could have timed out before an extension
-  // replies.
+  // SetCertificatesProvidedByExtension(). For each request, it is expected that
+  // every registered extension replies exactly once. |cert_request_id| must
+  // refer to a previously broadcast certificate request. Returns false if the
+  // request id is unknown or it was called before with the same combination of
+  // request id and extension id. E.g. the request could have timed out before
+  // an extension replies.
   bool SetExtensionCertificateReplyReceived(const std::string& extension_id,
                                             int cert_request_id);
 
