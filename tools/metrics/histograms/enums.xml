@@ -54918,6 +54918,13 @@ Called by update_net_trust_anchors.py.-->
   <int value="1" label="Passwords and generate new password"/>
 </enum>
 
+<enum name="PasswordEditUpdatedValues">
+  <int value="0" label="None"/>
+  <int value="1" label="Username"/>
+  <int value="2" label="Password"/>
+  <int value="3" label="Both"/>
+</enum>
+
 <enum name="PasswordFormQueryVolume">
   <int value="0" label="New password query"/>
   <int value="1" label="Current query"/>

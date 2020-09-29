@@ -336,6 +336,22 @@ void LogProtectedPasswordHashCounts(size_t gaia_hash_count,
 void LogProtectedPasswordReuse(PasswordType reused_password_type) {}
 #endif
 
+void LogPasswordEditResult(IsUsernameChanged username_changed,
+                           IsPasswordChanged password_changed) {
+  PasswordEditUpdatedValues values;
+  if (username_changed && password_changed) {
+    values = PasswordEditUpdatedValues::kBoth;
+  } else if (username_changed) {
+    values = PasswordEditUpdatedValues::kUsername;
+  } else if (password_changed) {
+    values = PasswordEditUpdatedValues::kPassword;
+  } else {
+    values = PasswordEditUpdatedValues::kNone;
+  }
+  base::UmaHistogramEnumeration("PasswordManager.PasswordEditUpdatedValues",
+                                values);
+}
+
 }  // namespace metrics_util
 
 }  // namespace password_manager

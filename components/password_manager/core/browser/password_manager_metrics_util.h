@@ -17,6 +17,9 @@ namespace password_manager {
 
 namespace metrics_util {
 
+using IsUsernameChanged = util::StrongAlias<class IsUsernameChangedTag, bool>;
+using IsPasswordChanged = util::StrongAlias<class IsPasswordChangedTag, bool>;
+
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 // Metrics: "PasswordBubble.DisplayDisposition"
@@ -473,6 +476,20 @@ enum class GetChangePasswordUrlMetric {
   kMaxValue = kGroupUrlOverrideUsed,
 };
 
+// Used to record what exactly was updated during password editing flow.
+// Entries should not be renumbered and numeric values should never be reused.
+enum class PasswordEditUpdatedValues {
+  // Nothing was updated.
+  kNone = 0,
+  // Only username was changed.
+  kUsername = 1,
+  // Only password was changed.
+  kPassword = 2,
+  // Both password and username were updated.
+  kBoth = 3,
+  kMaxValue = kBoth,
+};
+
 std::string GetPasswordAccountStorageUserStateHistogramSuffix(
     PasswordAccountStorageUserState user_state);
 
@@ -618,6 +635,10 @@ void LogProtectedPasswordHashCounts(size_t gaia_hash_count,
                                     bool is_signed_in);
 
 #endif
+
+// Log the result of the password edit action.
+void LogPasswordEditResult(IsUsernameChanged password_changed,
+                           IsPasswordChanged username_changed);
 
 }  // namespace metrics_util
 
