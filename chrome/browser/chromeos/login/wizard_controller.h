@@ -70,6 +70,12 @@ struct TimeZoneResponseData;
 // interacts with screen controllers to move the user between screens.
 class WizardController {
  public:
+  class ScreenObserver : public base::CheckedObserver {
+   public:
+    virtual void OnCurrentScreenChanged(BaseScreen* new_screen) = 0;
+    virtual void OnShutdown() = 0;
+  };
+
   WizardController();
   ~WizardController();
 
@@ -202,6 +208,9 @@ class WizardController {
   OobeScreenId first_screen_for_testing() const {
     return first_screen_for_testing_;
   }
+
+  void AddObserver(ScreenObserver* obs);
+  void RemoveObserver(ScreenObserver* obs);
 
  private:
   // Create BaseScreen instances. These are owned by |screen_manager_|.
@@ -373,9 +382,7 @@ class WizardController {
   // attestation-based enrollment if appropriate.
   void StartEnrollmentScreen(bool force_interactive);
 
-  void OnConfigurationLoaded(
-      OobeScreenId first_screen,
-      std::unique_ptr<base::DictionaryValue> configuration);
+  void NotifyScreenChanged();
 
   // Returns auto enrollment controller (lazily initializes one if it doesn't
   // exist already).
@@ -461,6 +468,8 @@ class WizardController {
   base::Closure on_timezone_resolved_for_testing_;
 
   bool is_initialized_ = false;
+
+  base::ObserverList<ScreenObserver> screen_observers_;
 
   base::WeakPtrFactory<WizardController> weak_factory_{this};
 

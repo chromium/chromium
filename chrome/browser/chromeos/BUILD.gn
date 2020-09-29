@@ -3018,6 +3018,8 @@ static_library("test_support") {
     "login/test/test_condition_waiter.h",
     "login/test/test_predicate_waiter.cc",
     "login/test/test_predicate_waiter.h",
+    "login/test/wizard_controller_screen_exit_waiter.cc",
+    "login/test/wizard_controller_screen_exit_waiter.h",
     "login/version_updater/mock_version_updater_delegate.cc",
     "login/version_updater/mock_version_updater_delegate.h",
     "platform_keys/key_permissions/mock_key_permissions_service.cc",

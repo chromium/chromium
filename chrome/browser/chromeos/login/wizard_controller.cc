@@ -371,6 +371,8 @@ WizardController::WizardController()
 }
 
 WizardController::~WizardController() {
+  for (ScreenObserver& obs : screen_observers_)
+    obs.OnShutdown();
   screen_manager_.reset();
 }
 
@@ -1572,8 +1574,10 @@ void WizardController::SetCurrentScreen(BaseScreen* new_current) {
   previous_screen_ = current_screen_;
   current_screen_ = new_current;
 
-  if (!current_screen_)
+  if (!current_screen_) {
+    NotifyScreenChanged();
     return;
+  }
 
   // Record show time for UMA.
   screen_show_times_[new_current->screen_id()] = base::TimeTicks::Now();
@@ -1586,6 +1590,7 @@ void WizardController::SetCurrentScreen(BaseScreen* new_current) {
 
   UpdateStatusAreaVisibilityForScreen(current_screen_->screen_id());
   current_screen_->Show(wizard_context_.get());
+  NotifyScreenChanged();
 }
 
 void WizardController::UpdateStatusAreaVisibilityForScreen(
@@ -1874,6 +1879,14 @@ bool WizardController::IsSigninScreen(OobeScreenId screen_id) {
          screen_id == GaiaView::kScreenId;
 }
 
+void WizardController::AddObserver(ScreenObserver* obs) {
+  screen_observers_.AddObserver(obs);
+}
+
+void WizardController::RemoveObserver(ScreenObserver* obs) {
+  screen_observers_.RemoveObserver(obs);
+}
+
 void WizardController::OnLocalStateInitialized(bool /* succeeded */) {
   if (GetLocalState()->GetInitializationStatus() !=
       PrefService::INITIALIZATION_STATUS_ERROR) {
@@ -2031,6 +2044,11 @@ void WizardController::StartEnrollmentScreen(bool force_interactive) {
   screen->SetEnrollmentConfig(effective_config);
   UpdateStatusAreaVisibilityForScreen(EnrollmentScreenView::kScreenId);
   SetCurrentScreen(screen);
+}
+
+void WizardController::NotifyScreenChanged() {
+  for (ScreenObserver& obs : screen_observers_)
+    obs.OnCurrentScreenChanged(current_screen_);
 }
 
 AutoEnrollmentController* WizardController::GetAutoEnrollmentController() {
