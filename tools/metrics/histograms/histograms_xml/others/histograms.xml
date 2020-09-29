@@ -7956,10 +7956,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ManagedUsers.SafetyFilter"
-    enum="SupervisedUserSafetyFilterResult" expires_after="M85">
-  <owner>treib@chromium.org</owner>
-  <owner>escordeiro@chromium.org</owner>
-  <owner>menegola@chromium.org</owner>
+    enum="SupervisedUserSafetyFilterResult" expires_after="2021-09-27">
+  <owner>agawronska@chromium.org</owner>
+  <owner>cros-families-eng@google.com</owner>
   <summary>
     The counts of results from the supervised user safety filter. Each entry
     includes the outcome of the filter (i.e. allowed, blocked, or unknown) and
