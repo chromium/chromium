@@ -33,22 +33,26 @@ class MODULES_EXPORT WebTransport final
   ~WebTransport() override;
 
   // WebTransport IDL implementation.
-  ScriptPromise createSendStream(ScriptState* script_state,
-                                 ExceptionState& exception_state) {
+  ScriptPromise createUnidirectionalStream(ScriptState* script_state,
+                                           ExceptionState& exception_state) {
     return quic_transport_->createSendStream(script_state, exception_state);
   }
-  ReadableStream* receiveStreams() { return quic_transport_->receiveStreams(); }
+  ReadableStream* incomingUnidirectionalStreams() {
+    return quic_transport_->receiveStreams();
+  }
 
   ScriptPromise createBidirectionalStream(ScriptState* script_state,
                                           ExceptionState& exception_state) {
     return quic_transport_->createBidirectionalStream(script_state,
                                                       exception_state);
   }
-  ReadableStream* receiveBidirectionalStreams() {
+  ReadableStream* incomingBidirectionalStreams() {
     return quic_transport_->receiveBidirectionalStreams();
   }
-  WritableStream* sendDatagrams() { return quic_transport_->sendDatagrams(); }
-  ReadableStream* receiveDatagrams() {
+  WritableStream* writableDatagrams() {
+    return quic_transport_->sendDatagrams();
+  }
+  ReadableStream* readableDatagrams() {
     return quic_transport_->receiveDatagrams();
   }
   void close(const WebTransportCloseInfo* close_info) {

@@ -11209,15 +11209,15 @@ interface WebSocketStream
 interface WebTransport
     attribute @@toStringTag
     getter closed
+    getter incomingBidirectionalStreams
+    getter incomingUnidirectionalStreams
+    getter readableDatagrams
     getter ready
+    getter writableDatagrams
     method close
     method constructor
     method createBidirectionalStream
-    method createSendStream
-    method receiveBidirectionalStreams
-    method receiveDatagrams
-    method receiveStreams
-    method sendDatagrams
+    method createUnidirectionalStream
 interface WheelEvent : MouseEvent
     attribute @@toStringTag
     attribute DOM_DELTA_LINE

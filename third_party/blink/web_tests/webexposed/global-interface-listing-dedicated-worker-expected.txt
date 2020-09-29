@@ -3900,15 +3900,15 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker] interface WebTransport
 [Worker]     attribute @@toStringTag
 [Worker]     getter closed
+[Worker]     getter incomingBidirectionalStreams
+[Worker]     getter incomingUnidirectionalStreams
+[Worker]     getter readableDatagrams
 [Worker]     getter ready
+[Worker]     getter writableDatagrams
 [Worker]     method close
 [Worker]     method constructor
 [Worker]     method createBidirectionalStream
-[Worker]     method createSendStream
-[Worker]     method receiveBidirectionalStreams
-[Worker]     method receiveDatagrams
-[Worker]     method receiveStreams
-[Worker]     method sendDatagrams
+[Worker]     method createUnidirectionalStream
 [Worker] interface Worker : EventTarget
 [Worker]     attribute @@toStringTag
 [Worker]     getter onerror
