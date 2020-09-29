@@ -10,11 +10,13 @@
 #include "base/stl_util.h"
 #include "build/build_config.h"
 #include "chrome/browser/history/history_service_factory.h"
+#include "chrome/browser/prerender/prerender_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/history/content/browser/history_context_helper.h"
 #include "components/history/core/browser/history_constants.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/ntp_snippets/features.h"
+#include "components/prerender/browser/prerender_manager.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
@@ -41,8 +43,7 @@ using content::WebContents;
 HistoryTabHelper::HistoryTabHelper(WebContents* web_contents)
     : content::WebContentsObserver(web_contents) {}
 
-HistoryTabHelper::~HistoryTabHelper() {
-}
+HistoryTabHelper::~HistoryTabHelper() {}
 
 void HistoryTabHelper::UpdateHistoryForNavigation(
     const history::HistoryAddPageArgs& add_page_args) {
@@ -51,8 +52,7 @@ void HistoryTabHelper::UpdateHistoryForNavigation(
     hs->AddPage(add_page_args);
 }
 
-history::HistoryAddPageArgs
-HistoryTabHelper::CreateHistoryAddPageArgs(
+history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
     const GURL& virtual_url,
     base::Time timestamp,
     int nav_entry_id,
@@ -132,6 +132,17 @@ void HistoryTabHelper::DidFinishNavigation(
   // activated.
   if (navigation_handle->GetWebContents()->IsPortal())
     return;
+
+  // Prerenders should not update history. Prerenders will have their own
+  // WebContents with all observers (including |this|), and go through the
+  // normal flow of a navigation, including commit.
+  prerender::PrerenderManager* prerender_manager =
+      prerender::PrerenderManagerFactory::GetForBrowserContext(
+          web_contents()->GetBrowserContext());
+  if (prerender_manager &&
+      prerender_manager->IsWebContentsPrerendering(web_contents(), nullptr)) {
+    return;
+  }
 
   // Most of the time, the displayURL matches the loaded URL, but for about:
   // URLs, we use a data: URL as the real value.  We actually want to save the
