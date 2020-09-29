@@ -244,4 +244,47 @@
       }
     });
   };
+
+  /**
+   * Tests that Files app performs a search at app start up when
+   * LaunchParam.searchQuery is specified.
+   */
+  testcase.searchQueryLaunchParam = async () => {
+    addEntries(['local'], BASIC_LOCAL_ENTRY_SET);
+    addEntries(['drive'], BASIC_DRIVE_ENTRY_SET);
+
+    // Open Files app with LaunchParam.searchQuery='gdoc'.
+    const query = 'gdoc';
+    const appState = {searchQuery: query};
+    const appId =
+        await remoteCall.callRemoteTestUtil('openMainWindow', null, [appState]);
+
+    // Check: search box should be filled with the query.
+    const caller = getCaller();
+    await repeatUntil(async () => {
+      const searchBoxInput =
+          await remoteCall.waitForElement(appId, '#search-box cr-input');
+      if (searchBoxInput.value !== query) {
+        return pending(
+            caller, 'Waiting search box to be filled with the query.');
+      }
+    });
+
+    // Check: "My Drive" directory should be selected because it is the sole
+    //        directory that contains query-matched files (*.gdoc).
+    const selectedTreeRow = await remoteCall.waitForElement(
+        appId, '#directory-tree .tree-row[selected][active]');
+    chrome.test.assertTrue(selectedTreeRow.text.includes('My Drive'));
+
+    // Check: Query-matched files should be shown in the files list.
+    await repeatUntil(async () => {
+      const filenameLabel =
+          await remoteCall.waitForElement(appId, '#file-list .filename-label');
+      if (!filenameLabel.text.includes(query)) {
+        // Pre-search results might be shown only for a moment before the search
+        // spinner is shown.
+        return pending(caller, 'Waiting files list to be updated.');
+      }
+    });
+  };
 })();
