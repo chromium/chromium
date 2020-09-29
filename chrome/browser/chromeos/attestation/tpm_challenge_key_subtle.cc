@@ -248,8 +248,7 @@ bool TpmChallengeKeySubtleImpl::IsRemoteAttestationEnabledForUser() const {
   DCHECK(profile_);
 
   PrefService* prefs = profile_->GetPrefs();
-  // TODO(crbug.com/1000589): Check it's mandatory after fixing corp policy.
-  if (prefs) {
+  if (prefs && prefs->IsManagedPreference(prefs::kAttestationEnabled)) {
     return prefs->GetBoolean(prefs::kAttestationEnabled);
   }
   return false;
