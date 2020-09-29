@@ -243,10 +243,14 @@ public class TabbedPaintPreviewPlayer implements TabViewProvider, UserData {
                 .setListener(new AnimatorListenerAdapter() {
                     @Override
                     public void onAnimationEnd(Animator animation) {
-                        mTab.getTabViewManager().removeTabViewProvider(
-                                TabbedPaintPreviewPlayer.this);
-                        mPlayerManager.destroy();
-                        mPlayerManager = null;
+                        if (mTab != null) {
+                            mTab.getTabViewManager().removeTabViewProvider(
+                                    TabbedPaintPreviewPlayer.this);
+                        }
+                        if (mPlayerManager != null) {
+                            mPlayerManager.destroy();
+                            mPlayerManager = null;
+                        }
                         mFadingOut = false;
                     }
                 });
