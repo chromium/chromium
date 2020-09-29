@@ -224,6 +224,13 @@ bool ForceInstalledTracker::IsMisconfiguration(
     }
   }
 
+  if (installation_data.manifest_invalid_error ==
+          ManifestInvalidError::BAD_APP_STATUS &&
+      installation_data.app_status_error ==
+          InstallStageTracker::AppStatusError::kErrorUnknownApplication) {
+    return true;
+  }
+
   return false;
 }
 

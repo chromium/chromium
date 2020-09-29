@@ -865,7 +865,8 @@ TEST_F(ForceInstalledMetricsTest, ExtensionManifestInvalid) {
 }
 
 // Errors occurred because the fetched update manifest was invalid because app
-// status was not OK.
+// status was not OK. Verifies that this error with app status error as
+// "error-unknownApplication" is considered as a misconfiguration.
 TEST_F(ForceInstalledMetricsTest, ExtensionManifestInvalidAppStatusError) {
   SetupForceList();
   auto extension =
@@ -883,6 +884,11 @@ TEST_F(ForceInstalledMetricsTest, ExtensionManifestInvalidAppStatusError) {
   histogram_tester_.ExpectUniqueSample(
       kExtensionManifestInvalidAppStatusError,
       InstallStageTracker::AppStatusError::kErrorUnknownApplication, 1);
+  // Verify that the session with either all the extensions installed
+  // successfully, or all failures as admin-side misconfigurations is recorded
+  // here and BAD_APP_STATUS error is considered as a misconfiguration.
+  histogram_tester_.ExpectBucketCount(kPossibleNonMisconfigurationFailures, 0,
+                                      1);
 }
 
 // Session in which either all the extensions installed successfully, or all
