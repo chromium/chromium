@@ -787,7 +787,6 @@ DeviceSection::~DeviceSection() {
 void DeviceSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kDeviceStrings[] = {
       {"devicePageTitle", IDS_SETTINGS_DEVICE_TITLE},
-      {"scrollLabel", IDS_SETTINGS_SCROLL_LABEL},
       {"touchPadScrollLabel", IDS_OS_SETTINGS_TOUCHPAD_REVERSE_SCROLL_LABEL},
   };
   AddLocalizedStringsBulk(html_source, kDeviceStrings);

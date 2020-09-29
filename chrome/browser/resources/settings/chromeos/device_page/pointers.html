@@ -87,12 +87,22 @@
             </settings-slider>
           </div>
         </template>
-        <settings-toggle-button id="mouseReverseScroll"
-            class="hr"
-            pref="{{prefs.settings.mouse.reverse_scroll}}"
-            label="$i18n{mouseReverseScroll}"
-            deep-link-focus-id$="[[Setting.kMouseReverseScrolling]]">
-        </settings-toggle-button>
+        <div class="settings-box" id="mouseReverseScrollRow"
+             on-click="onMouseReverseScrollRowClicked_">
+          <div class="start settings-box-text">
+            <settings-localized-link
+                on-click="onLearnMoreLinkClicked_"
+                id="enableMouseReverseScrollingLabel"
+                localized-string="$i18n{mouseReverseScroll}"
+                link-url="$i18n{naturalScrollLearnMoreLink}">
+            </settings-localized-link>
+          </div>
+          <cr-toggle id="mouseReverseScroll"
+              checked="{{prefs.settings.mouse.reverse_scroll.value}}"
+              aria-labelledby="enableMouseReverseScrollingLabel"
+              deep-link-focus-id$="[[Setting.kMouseReverseScrolling]]">
+          </cr-toggle>
+        </div>
       </div>
     </div>
     <div id="touchpad" hidden$="[[!hasTouchpad]]">
@@ -152,7 +162,7 @@
           </div>
         </template>
         <div class="settings-box" id="reverseScrollRow"
-             on-click="onReverseScrollRowClicked_">
+             on-click="onTouchpadReverseScrollRowClicked_">
           <div class="start settings-box-text">
             <settings-localized-link
                 on-click="onLearnMoreLinkClicked_"

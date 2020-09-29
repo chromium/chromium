@@ -498,13 +498,10 @@
 
   <!-- Device Page (OS Settings) -->
   <message name="IDS_OS_SETTINGS_TOUCHPAD_REVERSE_SCROLL_LABEL">
-    Reverse scrolling <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+    Enable reverse scrolling <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_SETTINGS_DEVICE_TITLE" desc="Name of the settings page which displays device and peripheral settings.">
     Device
-  </message>
-  <message name="IDS_SETTINGS_SCROLL_LABEL" desc="In Device Settings, the title above the radio buttons to choose the scrolling behavior.">
-    Scrolling
   </message>
 
   <!-- Personalization Page (OS settings) -->
@@ -1641,7 +1638,7 @@
     Swap primary mouse button
   </message>
   <message name="IDS_SETTINGS_MOUSE_REVERSE_SCROLL_LABEL" desc="In Device Settings, the text next to the checkbox to set reverse scrolling.">
-    Reverse scrolling
+    Enable reverse scrolling <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_SETTINGS_MOUSE_ACCELERATION_LABEL" desc="In Device Settings, the text next to the checkbox to disable mouse acceleration.">
     Enable mouse acceleration
