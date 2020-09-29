@@ -6735,3 +6735,4 @@ crbug.com/1045599 fast/css-grid-layout/flex-content-sized-columns-resize.html [ 
 
 # Sheriff 2020-09-29
 crbug.com/1133342 external/wpt/html/cross-origin-opener-policy/reporting/access-reporting/reporting-observer.html [ Pass Failure Timeout ]
+crbug.com/1083605 media/controls-styling-strict.html [ Pass Failure ]
