@@ -553,7 +553,7 @@ This file contains the strings for ash.
         <ph name="UPDATE_TEXT">$1<ex>Learn more about the latest Chromium OS update</ex></ph>. This Chromebook needs to restart to apply an update. This can take up to 1 minute.
       </message>
       <message name="IDS_DIALOG_TITLE_SLOW_BOOT" desc="The title of the Slow Boot Shutdown Confirmation Dialog.">
-        Restart may take awhile
+	Restart may take awhile
       </message>
       <message name="IDS_DIALOG_MESSAGE_SLOW_BOOT" desc="The body of the Slow Boot Shutdown Confirmation Dialog.">
         Your screen will go blank for longer than usual (up to a minute) during this update. Please don't press the power button while the update is in progress.
@@ -1020,35 +1020,11 @@ This file contains the strings for ash.
       <message name="IDS_ASH_PHONE_HUB_QUICK_ACTIONS_DISABLED_STATE_TOOLTIP" desc="The tooltip text indicating the quick actions feature is off.">
         <ph name="FEATURE_NAME">$1<ex>Silence</ex></ph> is off.
       </message>
-      <message name="IDS_ASH_PHONE_HUB_QUICK_ACTIONS_CONNECTING_STATE_TOOLTIP" desc="The tooltip text indicating the quick actions feature is currently sending a signal and try to connect to the phone.">
-        <ph name="FEATURE_NAME">$1<ex>Silence</ex></ph> is connecting.
-      </message>
-      <message name="IDS_ASH_PHONE_HUB_QUICK_ACTIONS_NOT_CONNECTED_STATE_TOOLTIP" desc="The tooltip text indicating the quick actions feature is not available to use.">
-        <ph name="FEATURE_NAME">$1<ex>Enable Hotspot</ex></ph> is not connected.
-      </message>
-      <message name="IDS_ASH_PHONE_HUB_QUICK_ACTIONS_CONNECTED_STATE_TOOLTIP" desc="The tooltip text indicating the quick actions feature is not available to use.">
-        <ph name="FEATURE_NAME">$1<ex>Enable Hotspot</ex></ph> is connected.
-      </message>
-      <message name="IDS_ASH_PHONE_HUB_QUICK_ACTIONS_NOT_AVAILABLE_STATE_TOOLTIP" desc="The tooltip text indicating the quick actions feature is not available to use.">
-        <ph name="FEATURE_NAME">$1<ex>Silence</ex></ph> is not available.
-      </message>
       <message name="IDS_ASH_PHONE_HUB_QUICK_ACTIONS_OFF_STATE" desc="Quick actions state in phone hub bubble." meaning="Quick actions feature is off.">
         Off
       </message>
       <message name="IDS_ASH_PHONE_HUB_QUICK_ACTIONS_ON_STATE" desc="Quick actions state in phone hub bubble." meaning="Quick actions feature is on.">
         On
-      </message>
-      <message name="IDS_ASH_PHONE_HUB_QUICK_ACTIONS_CONNECTING_STATE" desc="Quick actions state in phone hub bubble." meaning="The feature is currently sending a signal and try to connect to the phone.">
-        Connecting...
-      </message>
-      <message name="IDS_ASH_PHONE_HUB_QUICK_ACTIONS_NOT_CONNECTED_STATE" desc="Quick actions state in phone hub bubble." meaning="The feature is not connected to the phone.">
-        Not connected
-      </message>
-      <message name="IDS_ASH_PHONE_HUB_QUICK_ACTIONS_CONNECTED_STATE" desc="Quick actions state in phone hub bubble." meaning="The feature is connected to the phone and ready to use.">
-        Connected
-      </message>
-      <message name="IDS_ASH_PHONE_HUB_QUICK_ACTIONS_NOT_AVAILABLE_STATE" desc="Quick actions state in phone hub bubble." meaning="Quick actions feature is not available to use.">
-        Not available
       </message>
       <message name="IDS_ASH_PHONE_HUB_TASK_CONTINUATION_TITLE" desc="Title of the task continuation section (where users pick up unfinished task left off from their phone, currently only support web browsing) in phone hub bubble.">
         Continue browsing
