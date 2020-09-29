@@ -9348,14 +9348,9 @@
         'admin-sharing',
         'google-sharing',
       ],
-      'desc': '''Controls whether usage metrics and diagnostic data, including crash reports, are reported back to Google.
+      'desc': '''Setting the policy to Enabled has <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> report usage metrics and diagnostic data, including crash reports, back to Google. Setting the policy to Disabled turns off metrics and diagnostic data reporting.
 
-      If set to true, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> will report usage metrics and diagnostic data.
-
-      If set to false, metrics and diagnostic data reporting will be disabled.
-
-      If not configured, metrics and diagnostic data reporting will be disabled on unmanaged devices and enabled on managed devices.''',
-
+       Leaving the policy unset keeps metrics and diagnostic data reporting off on unmanaged devices and on for managed devices.''',
       'arc_support': 'This policy also controls Android usage and diagnostic data collection.',
     },
     {
