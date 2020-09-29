@@ -134,6 +134,10 @@ PeerConnectionControls* WebrtcConnectionToClient::peer_connection_controls() {
   return transport_.get();
 }
 
+WebrtcEventLogData* WebrtcConnectionToClient::rtc_event_log() {
+  return transport_->rtc_event_log();
+}
+
 void WebrtcConnectionToClient::OnSessionStateChange(Session::State state) {
   DCHECK(thread_checker_.CalledOnValidThread());
 

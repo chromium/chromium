@@ -52,6 +52,7 @@ class WebrtcConnectionToClient : public ConnectionToClient,
   void set_input_stub(InputStub* input_stub) override;
   void ApplySessionOptions(const SessionOptions& options) override;
   PeerConnectionControls* peer_connection_controls() override;
+  WebrtcEventLogData* rtc_event_log() override;
 
   // Session::EventHandler interface.
   void OnSessionStateChange(Session::State state) override;

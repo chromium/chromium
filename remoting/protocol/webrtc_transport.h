@@ -87,6 +87,7 @@ class WebrtcTransport : public Transport,
     return video_encoder_factory_;
   }
   WebrtcAudioModule* audio_module();
+  WebrtcEventLogData* rtc_event_log() { return &rtc_event_log_; }
 
   // Creates outgoing data channel. The channel is created in CONNECTING state.
   // The caller must wait for OnMessagePipeOpen() notification before sending

@@ -147,6 +147,10 @@ PeerConnectionControls* IceConnectionToClient::peer_connection_controls() {
   return nullptr;
 }
 
+WebrtcEventLogData* IceConnectionToClient::rtc_event_log() {
+  return nullptr;
+}
+
 void IceConnectionToClient::OnSessionStateChange(Session::State state) {
   DCHECK(thread_checker_.CalledOnValidThread());
 

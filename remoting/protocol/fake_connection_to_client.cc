@@ -105,5 +105,9 @@ PeerConnectionControls* FakeConnectionToClient::peer_connection_controls() {
   return nullptr;
 }
 
+WebrtcEventLogData* FakeConnectionToClient::rtc_event_log() {
+  return nullptr;
+}
+
 }  // namespace protocol
 }  // namespace remoting

@@ -68,6 +68,7 @@ class FakeConnectionToClient : public ConnectionToClient {
   void set_input_stub(InputStub* input_stub) override;
 
   PeerConnectionControls* peer_connection_controls() override;
+  WebrtcEventLogData* rtc_event_log() override;
 
   base::WeakPtr<FakeVideoStream> last_video_stream() {
     return last_video_stream_;
