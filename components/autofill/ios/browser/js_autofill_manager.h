@@ -8,6 +8,7 @@
 #include "base/ios/block_types.h"
 #include "base/values.h"
 #include "components/autofill/core/common/autofill_constants.h"
+#include "components/autofill/core/common/renderer_id.h"
 
 namespace web {
 class WebFrame;
@@ -43,6 +44,7 @@ class WebFrame;
 // corresponding filled values. |completionHandler| cannot be nil.
 - (void)fillForm:(std::unique_ptr<base::Value>)data
     forceFillFieldIdentifier:(NSString*)forceFillFieldIdentifier
+      forceFillFieldUniqueID:(autofill::FieldRendererId)forceFillFieldUniqueID
                      inFrame:(web::WebFrame*)frame
            completionHandler:(void (^)(NSString*))completionHandler;
 
