@@ -10,9 +10,6 @@
 #include "services/device/public/mojom/usb_device.mojom-blink.h"
 #include "services/device/public/mojom/usb_enumeration_options.mojom-blink.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
-#include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
-#include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
-#include "third_party/blink/public/common/privacy_budget/identifiable_token_builder.h"
 #include "third_party/blink/public/mojom/feature_policy/feature_policy.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -27,9 +24,7 @@
 #include "third_party/blink/renderer/modules/webusb/usb_device.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
-#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/mojo/mojo_helper.h"
-#include "third_party/blink/renderer/platform/privacy_budget/identifiability_digest_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 using device::mojom::blink::UsbDevice;
@@ -192,31 +187,7 @@ void USB::ContextDestroyed() {
   get_permission_requests_.clear();
 }
 
-namespace {
-
-void RecordDevice(LocalFrame* frame, const UsbDeviceInfoPtr& device_info) {
-  IdentifiableSurface s = IdentifiableSurface::FromTypeAndToken(
-      IdentifiableSurface::Type::kWebFeature, WebFeature::kUsbGetDevices);
-  if (!IdentifiabilityStudySettings::Get()->IsSurfaceAllowed(s))
-    return;
-  DCHECK(frame && frame->GetDocument());
-
-  Document* document = frame->GetDocument();
-  IdentifiableTokenBuilder builder;
-  builder.AddToken(device_info->vendor_id);
-  builder.AddToken(device_info->product_id);
-  builder.AddToken(
-      IdentifiabilitySensitiveStringToken(device_info->serial_number));
-
-  IdentifiabilityMetricBuilder(document->UkmSourceID())
-      .Set(s, builder.GetToken())
-      .Record(document->UkmRecorder());
-}
-
-}  // namespace
-
 USBDevice* USB::GetOrCreateDevice(UsbDeviceInfoPtr device_info) {
-  RecordDevice(GetFrame(), device_info);
   USBDevice* device = device_cache_.at(device_info->guid);
   if (!device) {
     String guid = device_info->guid;
