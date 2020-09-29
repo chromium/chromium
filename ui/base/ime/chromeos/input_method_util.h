@@ -77,7 +77,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) InputMethodUtil {
   // Note that the function might return false or |language_code| is unknown.
   //
   // The retured input method IDs are sorted by populalirty per
-  // chromeos/platform/assets/input_methods/whitelist.txt.
+  // chromeos/platform/assets/input_methods/allowlist.txt.
   bool GetInputMethodIdsFromLanguageCode(
       const std::string& language_code,
       InputMethodType type,

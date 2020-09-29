@@ -54,12 +54,12 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) ImeKeyboard {
   // Updates keyboard LEDs on all keyboards.
   // XKB asymmetrically propagates keyboard modifier indicator state changes to
   // slave keyboards. If the state change is initiated from a client to the
-  // "core/master keyboard", XKB changes global state and pushes an indication
-  // change down to all keyboards. If the state change is initiated by one slave
+  // "core keyboard", XKB changes global state and pushes an indication change
+  // down to all keyboards. If the state change is initiated by one slave
   // (physical) keyboard, it changes global state but only pushes an indicator
   // state change down to that one keyboard.
   // This function changes LEDs on all keyboards by explicitly updating the
-  // core/master keyboard.
+  // core keyboard.
   virtual void ReapplyCurrentModifierLockStatus() = 0;
 
   // Disables the num lock.

@@ -77,9 +77,9 @@ bool COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS)
     IsExtensionIME(const std::string& input_method_id);
 
 // Returns true if |input_method_id| is component extension IME ID. This
-// function does not check |input_method_id| is really whitelisted one or not.
-// If you want to check |input_method_id| is whitelisted component extension
-// IME, please use ComponentExtensionIMEManager::IsWhitelisted instead.
+// function does not check |input_method_id| is really allowlisted one or not.
+// If you want to check |input_method_id| is allowlisted component extension
+// IME, please use ComponentExtensionIMEManager::Isallowlisted instead.
 bool COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS)
     IsComponentExtensionIME(const std::string& input_method_id);
 
