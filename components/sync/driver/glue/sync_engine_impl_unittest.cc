@@ -340,6 +340,21 @@ class SyncEngineImplWithSyncInvalidationsTest : public SyncEngineImplTest {
   NiceMock<MockSyncInvalidationsService> mock_instance_id_driver_;
 };
 
+class SyncEngineImplWithSyncInvalidationsForWalletAndOfferTest
+    : public SyncEngineImplTest {
+ public:
+  SyncEngineImplWithSyncInvalidationsForWalletAndOfferTest() {
+    override_features_.InitWithFeatures(
+        /*enabled_features=*/{switches::kSyncSendInterestedDataTypes,
+                              switches::kUseSyncInvalidations,
+                              switches::kUseSyncInvalidationsForWalletAndOffer},
+        /*disabled_features=*/{});
+  }
+
+ protected:
+  base::test::ScopedFeatureList override_features_;
+};
+
 // Test basic initialization with no initial types (first time initialization).
 // Only the nigori should be configured.
 TEST_F(SyncEngineImplTest, InitShutdown) {
@@ -676,6 +691,32 @@ TEST_F(SyncEngineImplWithSyncInvalidationsTest,
   fake_manager_->WaitForSyncThread();
   EXPECT_EQ(1, fake_manager_->GetInvalidationCount(ModelType::BOOKMARKS));
   EXPECT_EQ(1, fake_manager_->GetInvalidationCount(ModelType::PREFERENCES));
+}
+
+TEST_F(SyncEngineImplWithSyncInvalidationsTest,
+       UseOldInvalidationsOnlyForWalletAndOffer) {
+  enabled_types_.PutAll({AUTOFILL_WALLET_DATA, AUTOFILL_WALLET_OFFER});
+
+  InitializeBackend(/*expect_success=*/true);
+  EXPECT_CALL(
+      invalidator_,
+      UpdateInterestedTopics(
+          backend_.get(), ModelTypeSetToTopicSet(
+                              {AUTOFILL_WALLET_DATA, AUTOFILL_WALLET_OFFER})));
+  ConfigureDataTypes();
+
+  // At shutdown, we clear the registered invalidation ids.
+  EXPECT_CALL(invalidator_, UpdateInterestedTopics(backend_.get(), TopicSet()));
+}
+
+TEST_F(SyncEngineImplWithSyncInvalidationsForWalletAndOfferTest,
+       DoNotUseOldInvalidationsAtAll) {
+  enabled_types_.PutAll({AUTOFILL_WALLET_DATA, AUTOFILL_WALLET_OFFER});
+
+  InitializeBackend(/*expect_success=*/true);
+  EXPECT_CALL(invalidator_, UpdateInterestedTopics(testing::_, testing::_))
+      .Times(0);
+  ConfigureDataTypes();
 }
 
 }  // namespace

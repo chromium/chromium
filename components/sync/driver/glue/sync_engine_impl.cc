@@ -31,6 +31,7 @@
 #include "components/sync/engine/sync_manager_factory.h"
 #include "components/sync/engine/sync_string_conversions.h"
 #include "components/sync/invalidations/fcm_handler.h"
+#include "components/sync/invalidations/switches.h"
 #include "components/sync/invalidations/sync_invalidations_service.h"
 
 namespace syncer {
@@ -44,9 +45,29 @@ SyncEngineImpl::SyncEngineImpl(
     : name_(name),
       sync_prefs_(sync_prefs),
       invalidator_(invalidator),
-      sync_invalidations_service_(sync_invalidations_service) {
+      sync_invalidations_service_(sync_invalidations_service),
+#if defined(OS_ANDROID)
+      sessions_invalidation_enabled_(false) {
+#else
+      sessions_invalidation_enabled_(true) {
+#endif
   backend_ = base::MakeRefCounted<SyncEngineBackend>(
       name_, sync_data_folder, weak_ptr_factory_.GetWeakPtr());
+
+  // If the new invalidations system (SyncInvalidationsService) is fully
+  // enabled, then the SyncService doesn't need to communicate with the old
+  // InvalidationService anymore.
+  if (invalidator_ &&
+      base::FeatureList::IsEnabled(switches::kSyncSendInterestedDataTypes) &&
+      base::FeatureList::IsEnabled(switches::kUseSyncInvalidations) &&
+      base::FeatureList::IsEnabled(
+          switches::kUseSyncInvalidationsForWalletAndOffer)) {
+    invalidator_->RegisterInvalidationHandler(this);
+    bool success = invalidator_->UpdateInterestedTopics(this, /*topics=*/{});
+    DCHECK(success);
+    invalidator_->UnregisterInvalidationHandler(this);
+    invalidator_ = nullptr;
+  }
 }
 
 SyncEngineImpl::~SyncEngineImpl() {
@@ -285,19 +306,7 @@ void SyncEngineImpl::FinishConfigureDataTypesOnFrontendLoop(
     const ModelTypeSet failed_configuration_types,
     base::OnceCallback<void(ModelTypeSet, ModelTypeSet)> ready_task) {
   last_enabled_types_ = enabled_types;
-  if (invalidator_) {
-    // No need to register invalidations for CommitOnlyTypes().
-    ModelTypeSet invalidation_enabled_types(
-        Difference(enabled_types, CommitOnlyTypes()));
-#if defined(OS_ANDROID)
-    if (!sessions_invalidation_enabled_) {
-      invalidation_enabled_types.Remove(syncer::SESSIONS);
-    }
-#endif
-    bool success = invalidator_->UpdateInterestedTopics(
-        this, ModelTypeSetToTopicSet(invalidation_enabled_types));
-    DCHECK(success);
-  }
+  SendInterestedTopicsToInvalidator();
 
   if (!ready_task.is_null()) {
     std::move(ready_task)
@@ -324,6 +333,7 @@ void SyncEngineImpl::HandleInitializationSuccessOnFrontendLoop(
 
     // Fake a state change to initialize the SyncManager's cached invalidator
     // state.
+    // TODO(crbug.com/1132868): Do this for the new invalidations as well.
     OnInvalidatorStateChange(invalidator_->GetInvalidatorState());
   }
 
@@ -445,20 +455,7 @@ void SyncEngineImpl::OnCookieJarChanged(bool account_mismatch,
 
 void SyncEngineImpl::SetInvalidationsForSessionsEnabled(bool enabled) {
   sessions_invalidation_enabled_ = enabled;
-  // TODO(crbug.com/1050970): unify logic here and in
-  // FinishConfigureDataTypesOnFrontedLoop() and factor it out.
-  // |last_enabled_types_| contains all datatypes, for which user
-  // has enabled Sync. There is no need to register invalidations for
-  // CommitOnlyTypes(), so they are filtered out.
-  ModelTypeSet enabled_for_invalidation(
-      Difference(last_enabled_types_, CommitOnlyTypes()));
-  if (!enabled) {
-    enabled_for_invalidation.Remove(syncer::SESSIONS);
-  }
-  bool success = invalidator_->UpdateInterestedTopics(
-      this, ModelTypeSetToTopicSet(enabled_for_invalidation));
-  DCHECK(success);
-  // TODO(crbug.com/1102312): update enabled data types for sync invalidations.
+  SendInterestedTopicsToInvalidator();
 }
 
 void SyncEngineImpl::GetNigoriNodeForDebugging(AllNodesCallback callback) {
@@ -488,6 +485,30 @@ void SyncEngineImpl::OnCookieJarChangedDoneOnFrontendLoop(
     base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::move(callback).Run();
+}
+
+void SyncEngineImpl::SendInterestedTopicsToInvalidator() {
+  if (!invalidator_) {
+    return;
+  }
+
+  // No need to register invalidations for CommitOnlyTypes().
+  ModelTypeSet invalidation_enabled_types(
+      Difference(last_enabled_types_, CommitOnlyTypes()));
+  if (!sessions_invalidation_enabled_) {
+    invalidation_enabled_types.Remove(syncer::SESSIONS);
+  }
+  // switches::kUseSyncInvalidations means that the new invalidations system is
+  // used for all data types except Wallet and Offer, so only keep these types.
+  if (base::FeatureList::IsEnabled(switches::kSyncSendInterestedDataTypes) &&
+      base::FeatureList::IsEnabled(switches::kUseSyncInvalidations)) {
+    invalidation_enabled_types.RetainAll(
+        {AUTOFILL_WALLET_DATA, AUTOFILL_WALLET_OFFER});
+  }
+
+  bool success = invalidator_->UpdateInterestedTopics(
+      this, ModelTypeSetToTopicSet(invalidation_enabled_types));
+  DCHECK(success);
 }
 
 }  // namespace syncer

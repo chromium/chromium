@@ -186,6 +186,8 @@ class SyncEngineImpl : public SyncEngine,
 
   void OnCookieJarChangedDoneOnFrontendLoop(base::OnceClosure callback);
 
+  void SendInterestedTopicsToInvalidator();
+
   // The task runner where all the sync engine operations happen.
   scoped_refptr<base::SequencedTaskRunner> sync_task_runner_;
 
@@ -222,7 +224,7 @@ class SyncEngineImpl : public SyncEngine,
   SyncInvalidationsService* sync_invalidations_service_ = nullptr;
 
   ModelTypeSet last_enabled_types_;
-  bool sessions_invalidation_enabled_ = false;
+  bool sessions_invalidation_enabled_;
 
   SyncStatus cached_status_;
 
