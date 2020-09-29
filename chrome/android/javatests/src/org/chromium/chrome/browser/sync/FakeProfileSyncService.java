@@ -25,7 +25,6 @@ public class FakeProfileSyncService extends ProfileSyncService {
     private boolean mTrustedVaultKeyRequired;
     private boolean mTrustedVaultKeyRequiredForPreferredDataTypes;
     private boolean mEncryptEverythingEnabled;
-    private boolean mRequiresClientUpgrade;
     private Set<Integer> mChosenTypes = new HashSet<>();
     private boolean mCanSyncFeatureStart;
     @GoogleServiceAuthError.State
@@ -139,14 +138,5 @@ public class FakeProfileSyncService extends ProfileSyncService {
 
     public void setCanSyncFeatureStart(boolean canSyncFeatureStart) {
         mCanSyncFeatureStart = canSyncFeatureStart;
-    }
-
-    @Override
-    public boolean requiresClientUpgrade() {
-        return mRequiresClientUpgrade;
-    }
-
-    public void setRequiresClientUpgrade(boolean requiresClientUpgrade) {
-        mRequiresClientUpgrade = requiresClientUpgrade;
     }
 }
