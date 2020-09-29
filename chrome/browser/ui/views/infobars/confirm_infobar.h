@@ -13,7 +13,6 @@
 class ElevationIconSetter;
 
 namespace views {
-class Button;
 class Label;
 class MdTextButton;
 }
@@ -28,17 +27,18 @@ class ConfirmInfoBar : public InfoBarView {
 
   // InfoBarView:
   void Layout() override;
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
+
+  ConfirmInfoBarDelegate* GetDelegate();
+
+  views::MdTextButton* ok_button_for_testing() { return ok_button_; }
 
  protected:
   // InfoBarView:
   int ContentMinimumWidth() const override;
 
-  ConfirmInfoBarDelegate* GetDelegate();
-
  private:
-  // Creates a button suitable for use as either OK or Cancel.
-  views::MdTextButton* CreateButton(ConfirmInfoBarDelegate::InfoBarButton type);
+  void OkButtonPressed();
+  void CancelButtonPressed();
 
   // Returns the width of all content other than the label and link.  Layout()
   // uses this to determine how much space the label and link can take.

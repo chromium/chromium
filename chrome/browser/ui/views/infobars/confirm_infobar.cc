@@ -36,9 +36,24 @@ ConfirmInfoBar::ConfirmInfoBar(std::unique_ptr<ConfirmInfoBarDelegate> delegate)
   label_->SetElideBehavior(delegate_ptr->GetMessageElideBehavior());
   AddChildView(label_);
 
+  const auto create_button = [this](ConfirmInfoBarDelegate::InfoBarButton type,
+                                    void (ConfirmInfoBar::*click_function)()) {
+    auto* button = AddChildView(std::make_unique<views::MdTextButton>(
+        base::BindRepeating(click_function, base::Unretained(this)),
+        GetDelegate()->GetButtonLabel(type)));
+    button->SetProperty(
+        views::kMarginsKey,
+        gfx::Insets(ChromeLayoutProvider::Get()->GetDistanceMetric(
+                        DISTANCE_TOAST_CONTROL_VERTICAL),
+                    0));
+    button->SizeToPreferredSize();
+    return button;
+  };
+
   const auto buttons = delegate_ptr->GetButtons();
   if (buttons & ConfirmInfoBarDelegate::BUTTON_OK) {
-    ok_button_ = CreateButton(ConfirmInfoBarDelegate::BUTTON_OK);
+    ok_button_ = create_button(ConfirmInfoBarDelegate::BUTTON_OK,
+                               &ConfirmInfoBar::OkButtonPressed);
     ok_button_->SetProminent(true);
     if (delegate_ptr->OKButtonTriggersUACPrompt()) {
       elevation_icon_setter_ = std::make_unique<ElevationIconSetter>(
@@ -48,7 +63,8 @@ ConfirmInfoBar::ConfirmInfoBar(std::unique_ptr<ConfirmInfoBarDelegate> delegate)
   }
 
   if (buttons & ConfirmInfoBarDelegate::BUTTON_CANCEL) {
-    cancel_button_ = CreateButton(ConfirmInfoBarDelegate::BUTTON_CANCEL);
+    cancel_button_ = create_button(ConfirmInfoBarDelegate::BUTTON_CANCEL,
+                                   &ConfirmInfoBar::CancelButtonPressed);
     if (buttons == ConfirmInfoBarDelegate::BUTTON_CANCEL)
       cancel_button_->SetProminent(true);
   }
@@ -92,43 +108,27 @@ void ConfirmInfoBar::Layout() {
   link_->SetPosition(gfx::Point(EndX() - link_->width(), OffsetY(link_)));
 }
 
-void ConfirmInfoBar::ButtonPressed(views::Button* sender,
-                                   const ui::Event& event) {
+void ConfirmInfoBar::OkButtonPressed() {
   if (!owner())
     return;  // We're closing; don't call anything, it might access the owner.
-  ConfirmInfoBarDelegate* delegate = GetDelegate();
-  if (sender == ok_button_) {
-    if (delegate->Accept())
-      RemoveSelf();
-  } else if (sender == cancel_button_) {
-    if (delegate->Cancel())
-      RemoveSelf();
-  } else {
-    InfoBarView::ButtonPressed(sender, event);
-  }
+  if (GetDelegate()->Accept())
+    RemoveSelf();
 }
 
-int ConfirmInfoBar::ContentMinimumWidth() const {
-  return label_->GetMinimumSize().width() + link_->GetMinimumSize().width() +
-         NonLabelWidth();
+void ConfirmInfoBar::CancelButtonPressed() {
+  if (!owner())
+    return;  // We're closing; don't call anything, it might access the owner.
+  if (GetDelegate()->Cancel())
+    RemoveSelf();
 }
 
 ConfirmInfoBarDelegate* ConfirmInfoBar::GetDelegate() {
   return delegate()->AsConfirmInfoBarDelegate();
 }
 
-views::MdTextButton* ConfirmInfoBar::CreateButton(
-    ConfirmInfoBarDelegate::InfoBarButton type) {
-  auto button = std::make_unique<views::MdTextButton>(
-      this, GetDelegate()->GetButtonLabel(type));
-  button->SetProperty(
-      views::kMarginsKey,
-      gfx::Insets(ChromeLayoutProvider::Get()->GetDistanceMetric(
-                      DISTANCE_TOAST_CONTROL_VERTICAL),
-                  0));
-  auto* button_ptr = AddChildView(std::move(button));
-  button_ptr->SizeToPreferredSize();
-  return button_ptr;
+int ConfirmInfoBar::ContentMinimumWidth() const {
+  return label_->GetMinimumSize().width() + link_->GetMinimumSize().width() +
+         NonLabelWidth();
 }
 
 int ConfirmInfoBar::NonLabelWidth() const {

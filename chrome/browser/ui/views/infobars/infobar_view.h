@@ -10,9 +10,9 @@
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_container.h"
 #include "third_party/skia/include/core/SkPath.h"
-#include "ui/views/controls/button/button.h"
 #include "ui/views/controls/menu/menu_types.h"
 #include "ui/views/focus/external_focus_tracker.h"
+#include "ui/views/view.h"
 
 namespace views {
 class ImageButton;
@@ -24,7 +24,6 @@ class MenuRunner;
 
 class InfoBarView : public infobars::InfoBar,
                     public views::View,
-                    public views::ButtonListener,
                     public views::ExternalFocusTracker {
  public:
   explicit InfoBarView(std::unique_ptr<infobars::InfoBarDelegate> delegate);
@@ -41,11 +40,6 @@ class InfoBarView : public infobars::InfoBar,
       const views::ViewHierarchyChangedDetails& details) override;
   void OnPaint(gfx::Canvas* canvas) override;
   void OnThemeChanged() override;
-
-  // views::ButtonListener:
-  // NOTE: This must not be called if we're unowned.  (Subclasses should ignore
-  // calls to ButtonPressed() in this case.)
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
 
   // views::ExternalFocusTracker:
   void OnWillChangeFocus(View* focused_before, View* focused_now) override;
@@ -110,6 +104,8 @@ class InfoBarView : public infobars::InfoBar,
 
   // Callback used by the link created by CreateLink().
   void LinkClicked(const ui::Event& event);
+
+  void CloseButtonPressed();
 
   // The optional icon at the left edge of the InfoBar.
   views::ImageView* icon_ = nullptr;
