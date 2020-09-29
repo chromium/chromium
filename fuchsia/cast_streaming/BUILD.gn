@@ -15,6 +15,7 @@ source_set("cast_streaming") {
     "//media/mojo/mojom",
     "//mojo/public/cpp/system",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web",
+    "//third_party/openscreen/src/cast/common:public",
     "//third_party/openscreen/src/cast/streaming:receiver",
     "//third_party/openscreen/src/platform:api",
     "//third_party/openscreen/src/util",

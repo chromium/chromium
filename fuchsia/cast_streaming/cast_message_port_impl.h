@@ -9,7 +9,7 @@
 #include <lib/fidl/cpp/binding.h>
 
 #include "base/containers/circular_deque.h"
-#include "third_party/openscreen/src/cast/streaming/message_port.h"
+#include "third_party/openscreen/src/cast/common/public/message_port.h"
 
 namespace cast_streaming {
 
@@ -26,10 +26,11 @@ class CastMessagePortImpl : public openscreen::cast::MessagePort,
   CastMessagePortImpl& operator=(const CastMessagePortImpl&) = delete;
 
   // openscreen::cast::MessagePort implementation.
-  void SetClient(Client* client) final;
-  void PostMessage(absl::string_view sender_id,
-                   absl::string_view message_namespace,
-                   absl::string_view message) final;
+  void SetClient(Client* client, std::string client_sender_id) final;
+  void ResetClient() final;
+  void PostMessage(const std::string& sender_id,
+                   const std::string& message_namespace,
+                   const std::string& message) final;
 
  private:
   // Sends one message in |pending_fidl_messages_| if

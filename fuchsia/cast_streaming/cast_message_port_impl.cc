@@ -85,13 +85,13 @@ bool ParseMessageBuffer(const fuchsia::mem::Buffer& buffer,
 
 // Creates a WebMessage out of the |sender_id|, |message_namespace| and
 // |message|.
-fuchsia::web::WebMessage CreateWebMessage(absl::string_view sender_id,
-                                          absl::string_view message_namespace,
-                                          absl::string_view message) {
+fuchsia::web::WebMessage CreateWebMessage(const std::string& sender_id,
+                                          const std::string& message_namespace,
+                                          const std::string& message) {
   base::Value value(base::Value::Type::DICTIONARY);
-  value.SetStringKey(kKeyNamespace, std::string(message_namespace));
-  value.SetStringKey(kKeySenderId, std::string(sender_id));
-  value.SetStringKey(kKeyData, std::string(message));
+  value.SetStringKey(kKeyNamespace, message_namespace);
+  value.SetStringKey(kKeySenderId, sender_id);
+  value.SetStringKey(kKeyData, message);
 
   std::string json_message;
   CHECK(base::JSONWriter::Write(value, &json_message));
@@ -148,7 +148,8 @@ void CastMessagePortImpl::MaybeCloseWithEpitaph(zx_status_t epitaph) {
 }
 
 void CastMessagePortImpl::SetClient(
-    openscreen::cast::MessagePort::Client* client) {
+    openscreen::cast::MessagePort::Client* client,
+    std::string client_sender_id) {
   DVLOG(2) << __func__;
   DCHECK_NE(!client_, !client);
   client_ = client;
@@ -156,9 +157,14 @@ void CastMessagePortImpl::SetClient(
     MaybeCloseWithEpitaph(ZX_OK);
 }
 
-void CastMessagePortImpl::PostMessage(absl::string_view sender_id,
-                                      absl::string_view message_namespace,
-                                      absl::string_view message) {
+void CastMessagePortImpl::ResetClient() {
+  client_ = nullptr;
+  MaybeCloseWithEpitaph(ZX_OK);
+}
+
+void CastMessagePortImpl::PostMessage(const std::string& sender_id,
+                                      const std::string& message_namespace,
+                                      const std::string& message) {
   DVLOG(3) << __func__;
   if (!message_port_binding_.is_bound())
     return;

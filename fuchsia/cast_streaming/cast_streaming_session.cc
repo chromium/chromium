@@ -50,15 +50,14 @@ class CastStreamingSession::Internal
         cast_message_port_impl_(std::move(message_port_request)),
         // TODO(crbug.com/1087520): Add streaming session Constraints and
         // DisplayDescription.
-        receiver_session_(
-            this,
-            &environment_,
-            &cast_message_port_impl_,
-            openscreen::cast::ReceiverSession::Preferences(
-                {openscreen::cast::ReceiverSession::VideoCodec::kH264,
-                 openscreen::cast::ReceiverSession::VideoCodec::kVp8},
-                {openscreen::cast::ReceiverSession::AudioCodec::kAac,
-                 openscreen::cast::ReceiverSession::AudioCodec::kOpus})),
+        receiver_session_(this,
+                          &environment_,
+                          &cast_message_port_impl_,
+                          openscreen::cast::ReceiverSession::Preferences(
+                              {openscreen::cast::VideoCodec::kH264,
+                               openscreen::cast::VideoCodec::kVp8},
+                              {openscreen::cast::AudioCodec::kAac,
+                               openscreen::cast::AudioCodec::kOpus})),
         client_(client) {
     DCHECK(task_runner);
     DCHECK(client_);
