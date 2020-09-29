@@ -752,10 +752,8 @@ void StartupBrowserCreatorImpl::AddInfoBarsIfNecessary(
 
     InfoBarService* infobar_service =
         InfoBarService::FromWebContents(web_contents);
-    if (!google_apis::HasAPIKeyConfigured() ||
-        !google_apis::HasOAuthClientConfigured()) {
+    if (!google_apis::HasAPIKeyConfigured())
       GoogleApiKeysInfoBarDelegate::Create(infobar_service);
-    }
 
     if (ObsoleteSystem::IsObsoleteNowOrSoon()) {
       PrefService* local_state = g_browser_process->local_state();
