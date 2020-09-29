@@ -409,6 +409,9 @@ def main():
         format='%(levelname).1s %(relativeCreated)6d %(message)s')
     debug = args.verbose_count >= 2
 
+    if args.android_deps_dir.endswith("/"):
+        args.android_deps_dir = args.android_deps_dir[:-1]
+
     abs_android_deps_dir = os.path.normpath(
         os.path.join(_CHROMIUM_SRC, args.android_deps_dir))
 
