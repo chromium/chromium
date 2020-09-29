@@ -2363,14 +2363,6 @@ void MainThreadSchedulerImpl::SetCurrentAgentGroupScheduler(
     TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
         TRACE_DISABLED_BY_DEFAULT("agent_scheduling_group"), "MTS_scope", this);
   }
-  if (agent_group_scheduler_impl) {
-    sequence_manager_->SetDefaultTaskRunner(
-        agent_group_scheduler_impl->DefaultTaskRunner());
-  } else {
-    // If there is no proper AgentGroupScheduler, it means that the
-    // current scheduler is MainThreadScheduler.
-    sequence_manager_->SetDefaultTaskRunner(helper_.DefaultTaskRunner());
-  }
 }
 
 std::unique_ptr<ThreadScheduler::RendererPauseHandle>
