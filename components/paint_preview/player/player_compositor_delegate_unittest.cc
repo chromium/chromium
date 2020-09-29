@@ -155,12 +155,12 @@ class FakePaintPreviewCompositorService : public PaintPreviewCompositorService {
 
 FakePaintPreviewCompositorClient* AsFakeClient(
     PaintPreviewCompositorClient* client) {
-  return reinterpret_cast<FakePaintPreviewCompositorClient*>(client);
+  return static_cast<FakePaintPreviewCompositorClient*>(client);
 }
 
 FakePaintPreviewCompositorService* AsFakeService(
     PaintPreviewCompositorService* service) {
-  return reinterpret_cast<FakePaintPreviewCompositorService*>(service);
+  return static_cast<FakePaintPreviewCompositorService*>(service);
 }
 
 class PlayerCompositorDelegateImpl : public PlayerCompositorDelegate {
