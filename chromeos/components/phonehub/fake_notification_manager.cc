@@ -22,10 +22,10 @@ FakeNotificationManager::~FakeNotificationManager() = default;
 
 void FakeNotificationManager::SetNotification(
     const Notification& notification) {
-  SetNotifications(base::flat_set<Notification>{notification});
+  SetNotificationsInternal(base::flat_set<Notification>{notification});
 }
 
-void FakeNotificationManager::SetNotifications(
+void FakeNotificationManager::SetNotificationsInternal(
     const base::flat_set<Notification>& notifications) {
   base::flat_set<int64_t> added_ids;
   base::flat_set<int64_t> updated_ids;
@@ -49,10 +49,10 @@ void FakeNotificationManager::SetNotifications(
 }
 
 void FakeNotificationManager::RemoveNotification(int64_t id) {
-  RemoveNotifications(base::flat_set<int64_t>{id});
+  RemoveNotificationsInternal(base::flat_set<int64_t>{id});
 }
 
-void FakeNotificationManager::RemoveNotifications(
+void FakeNotificationManager::RemoveNotificationsInternal(
     const base::flat_set<int64_t>& ids) {
   for (int64_t id : ids) {
     auto it = id_to_notification_map_.find(id);

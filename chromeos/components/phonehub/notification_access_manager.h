@@ -72,6 +72,12 @@ class NotificationAccessManager {
  private:
   friend class NotificationAccessManagerImplTest;
 
+  // This only sets the internal state of the whether notification access has
+  // mode been enabled and does not send a request to set the state of the
+  // remote phone device.
+  virtual void SetHasAccessBeenGrantedInternal(
+      bool has_access_been_granted) = 0;
+
   void OnSetupOperationDeleted(int operation_id);
 
   int next_operation_id_ = 0;

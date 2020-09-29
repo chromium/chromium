@@ -32,13 +32,17 @@ class DoNotDisturbController {
   // Note: Setting DND state is not a synchronous operation, since it requires
   // sending a message to the connected phone. Use the observer interface to be
   // notified of when the state changes.
-  virtual void SetDoNotDisturbState(bool enabled) = 0;
+  virtual void RequestNewDoNotDisturbState(bool enabled) = 0;
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
  protected:
   DoNotDisturbController();
+
+  // This only sets the internal state of the DoNotDisturb mode and does not
+  // send a request to set the state of the remote phone device.
+  virtual void SetDoNotDisturbStateInternal(bool is_dnd_enabled) = 0;
 
   void NotifyDndStateChanged();
 

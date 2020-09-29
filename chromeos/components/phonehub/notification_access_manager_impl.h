@@ -28,6 +28,7 @@ class NotificationAccessManagerImpl : public NotificationAccessManager {
  private:
   // NotificationAccessManager:
   bool HasAccessBeenGranted() const override;
+  void SetHasAccessBeenGrantedInternal(bool has_access_been_granted) override;
   void OnSetupAttemptStarted() override;
   void OnSetupAttemptEnded() override;
 

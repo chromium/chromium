@@ -17,7 +17,7 @@ class FakeNotificationAccessManager : public NotificationAccessManager {
 
   using NotificationAccessManager::IsSetupOperationInProgress;
 
-  void SetHasAccessBeenGranted(bool has_access_been_granted);
+  void SetHasAccessBeenGrantedInternal(bool has_access_been_granted) override;
   void SetNotificationSetupOperationStatus(
       NotificationAccessSetupOperation::Status new_status);
 

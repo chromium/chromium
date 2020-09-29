@@ -236,7 +236,7 @@ class MultideviceHandlerTest : public testing::Test {
   }
 
   void CallAttemptNotificationSetup(bool has_access_been_granted) {
-    fake_notification_access_manager()->SetHasAccessBeenGranted(
+    fake_notification_access_manager()->SetHasAccessBeenGrantedInternal(
         has_access_been_granted);
     base::ListValue empty_args;
     test_web_ui()->HandleReceivedMessage("attemptNotificationSetup",
