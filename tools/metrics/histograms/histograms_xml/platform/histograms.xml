@@ -286,9 +286,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Platform.DailyUseTime" units="seconds" expires_after="M85">
+<histogram name="Platform.DailyUseTime" units="seconds" expires_after="M90">
+<!-- TODO(mutexlox): See if this is still in use and find owners -->
+
   <owner>semenzato@chromium.org</owner>
   <owner>bsimonnet@chromium.org</owner>
+  <owner>mutexlox@chromium.org</owner>
+  <owner>cros-telemetry@google.com</owner>
   <summary>
     Total use time (device ON and not asleep) in the previous day, or the most
     recent day the device was in use. Reported at most once a day.
@@ -1240,9 +1244,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Platform.UncleanShutdownsDaily" units="count per day"
-    expires_after="M85">
+    expires_after="never">
+<!-- expires-never: Used to assess Chrome OS platform stability. -->
+
   <owner>semenzato@chromium.org</owner>
   <owner>bsimonnet@chromium.org</owner>
+  <owner>iby@chromium.org</owner>
+  <owner>mutexlox@chromium.org</owner>
+  <owner>cros-telemetry@google.com</owner>
   <summary>
     Count of crashes (unclean shutdown) during the previous day, or the most
     recent day the device was in use. Reported at most once a day.
@@ -1250,9 +1259,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Platform.UserCrashesDaily" units="count per day"
-    expires_after="M85">
+    expires_after="never">
+<!-- expires-never: Used to assess Chrome OS platform stability. -->
+
   <owner>semenzato@chromium.org</owner>
   <owner>bsimonnet@chromium.org</owner>
+  <owner>iby@chromium.org</owner>
+  <owner>mutexlox@chromium.org</owner>
+  <owner>cros-telemetry@google.com</owner>
   <summary>
     Count of crashes (user) during the previous day, or the most recent day the
     device was in use. Reported at most once a day.
