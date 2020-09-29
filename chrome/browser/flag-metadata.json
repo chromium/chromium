@@ -2340,7 +2340,7 @@
   {
     "name": "enable-webrtc-pipewire-capturer",
     "owners": [ "tomas.popela@gmail.com" ],
-    "expiry_milestone": 86
+    "expiry_milestone": 90
   },
   {
     "name": "enable-webrtc-remote-event-log",
