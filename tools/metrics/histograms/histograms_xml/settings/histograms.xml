@@ -482,8 +482,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SettingsResetPrompt.PromptAccepted" enum="BooleanAccepted"
-    expires_after="M85">
-  <owner>alito@chromium.org</owner>
+    expires_after="M90">
+  <owner>proberge@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     Indicates whether the user accepted the settings reset prompt.
   </summary>
