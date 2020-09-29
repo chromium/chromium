@@ -109,6 +109,11 @@ void ChromeSearchResult::SetIsRecommendation(bool is_recommendation) {
   SetSearchResultMetadata();
 }
 
+void ChromeSearchResult::SetIsAnswer(bool is_answer) {
+  metadata_->is_answer = is_answer;
+  SetSearchResultMetadata();
+}
+
 void ChromeSearchResult::SetQueryUrl(const GURL& url) {
   metadata_->query_url = url;
   auto* updater = model_updater();

@@ -274,7 +274,8 @@ struct ASH_PUBLIC_EXPORT SearchResultMetadata {
 
   // The subtype of this result. Derived search result classes can use this to
   // represent their own subtypes. Currently, OmniboxResult sets this to
-  // indicate this is a history result, previous query, etc. A value of -1
+  // indicate this is a history result, previous query, etc. If a result is an
+  // Answer, OmniboxResult will set this to be the answer type. A value of -1
   // indicates no subtype has been set.
   int result_subtype = -1;
 
@@ -302,6 +303,10 @@ struct ASH_PUBLIC_EXPORT SearchResultMetadata {
 
   // Whether this result is a recommendation.
   bool is_recommendation = false;
+
+  // Whether this result is an answer. Answer results should originate from
+  // base::SuggestionAnswer.
+  bool is_answer = false;
 
   // A query URL associated with this result. The meaning and treatment of the
   // URL (e.g. displaying inline web contents) is dependent on the result type.

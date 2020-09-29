@@ -26,7 +26,6 @@ namespace app_list {
 class AppContextMenu;
 }  // namespace app_list
 
-
 // ChromeSearchResult consists of an icon, title text and details text. Title
 // and details text can have tagged ranges that are displayed differently from
 // default style.
@@ -67,6 +66,7 @@ class ChromeSearchResult {
   double display_score() const { return metadata_->display_score; }
   bool is_installing() const { return metadata_->is_installing; }
   bool is_recommendation() const { return metadata_->is_recommendation; }
+  bool is_answer() const { return metadata_->is_answer; }
   const base::Optional<GURL>& query_url() const { return metadata_->query_url; }
   const base::Optional<std::string>& equivalent_result_id() const {
     return metadata_->equivalent_result_id;
@@ -97,6 +97,7 @@ class ChromeSearchResult {
   void SetActions(const Actions& actions);
   void SetIsOmniboxSearch(bool is_omnibox_search);
   void SetIsRecommendation(bool is_recommendation);
+  void SetIsAnswer(bool is_answer);
   void SetIsInstalling(bool is_installing);
   void SetQueryUrl(const GURL& url);
   void SetEquivalentResutlId(const std::string& equivlanet_result_id);
