@@ -56,6 +56,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
+using testing::_;
 using testing::NiceMock;
 using testing::NotNull;
 
@@ -196,12 +197,8 @@ class SyncEngineImplTest : public testing::Test {
 
     sync_prefs_ = std::make_unique<SyncPrefs>(&pref_service_);
     sync_thread_.StartAndWaitForTesting();
-    ON_CALL(invalidator_, UpdateInterestedTopics(testing::_, testing::_))
+    ON_CALL(invalidator_, UpdateInterestedTopics(_, _))
         .WillByDefault(testing::Return(true));
-    backend_ = std::make_unique<SyncEngineImpl>(
-        "dummyDebugName", &invalidator_, GetSyncInvalidationsService(),
-        sync_prefs_->AsWeakPtr(),
-        temp_dir_.GetPath().Append(base::FilePath(kTestSyncDir)));
 
     fake_manager_factory_ = std::make_unique<FakeSyncManagerFactory>(
         &fake_manager_, network::TestNetworkConnectionTracker::GetInstance());
@@ -229,8 +226,19 @@ class SyncEngineImplTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
+  void CreateBackend() {
+    backend_ = std::make_unique<SyncEngineImpl>(
+        "dummyDebugName", &invalidator_, GetSyncInvalidationsService(),
+        sync_prefs_->AsWeakPtr(),
+        temp_dir_.GetPath().Append(base::FilePath(kTestSyncDir)));
+  }
+
   // Synchronously initializes the backend.
   void InitializeBackend(bool expect_success) {
+    if (!backend_) {
+      CreateBackend();
+    }
+
     host_.SetExpectSuccess(expect_success);
 
     SyncEngine::InitParams params;
@@ -675,6 +683,7 @@ TEST_F(SyncEngineImplTest, ShouldDestroyAfterInitFailure) {
 
 TEST_F(SyncEngineImplWithSyncInvalidationsTest,
        ShouldInvalidateDataTypesOnIncomingInvalidation) {
+  CreateBackend();
   EXPECT_CALL(mock_instance_id_driver_, AddListener(backend_.get()));
   InitializeBackend(/*expect_success=*/true);
 
@@ -713,9 +722,14 @@ TEST_F(SyncEngineImplWithSyncInvalidationsForWalletAndOfferTest,
        DoNotUseOldInvalidationsAtAll) {
   enabled_types_.PutAll({AUTOFILL_WALLET_DATA, AUTOFILL_WALLET_OFFER});
 
+  // Since the old invalidations system is not being used anymore (based on the
+  // enabled feature flags), SyncEngine should call the (old) invalidator with
+  // an empty TopicSet upon construction.
+  EXPECT_CALL(invalidator_, UpdateInterestedTopics(_, TopicSet()));
+  CreateBackend();
+
+  EXPECT_CALL(invalidator_, UpdateInterestedTopics(_, _)).Times(0);
   InitializeBackend(/*expect_success=*/true);
-  EXPECT_CALL(invalidator_, UpdateInterestedTopics(testing::_, testing::_))
-      .Times(0);
   ConfigureDataTypes();
 }
 
