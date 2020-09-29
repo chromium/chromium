@@ -58411,10 +58411,15 @@ Called by update_net_trust_anchors.py.-->
   <int value="5" label="Invalid values are used to update printer"/>
   <int value="6" label="Could not install component"/>
   <int value="7" label="Edit success"/>
+  <int value="8" label="Printer sent unexpected response"/>
+  <int value="9" label="Printer requires PPD"/>
   <int value="10" label="PPD exceeds size limit"/>
   <int value="11" label="PPD Rejected by cupstestppd"/>
   <int value="12" label="Could not find PPD"/>
   <int value="13" label="Failed to download PPD"/>
+  <int value="14" label="I/O error in CUPS"/>
+  <int value="15" label="Memory allocation error in Cups"/>
+  <int value="16" label="Printer's URI is incorrect"/>
   <int value="64" label="No reply from debugd over D-Bus"/>
   <int value="65" label="Generic D-Bus timeout"/>
 </enum>

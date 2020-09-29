@@ -28,14 +28,20 @@ enum PrinterSetupResult {
   kNativePrintersNotAllowed = 4,  // Tried adding/editing printers policy set
   kInvalidPrinterUpdate = 5,      // Tried updating printer with invalid values
   kComponentUnavailable = 6,      // Could not install component
-  kEditSuccess = 7,               // Printer editted successfully
-  // Space left for additional errors
+  kEditSuccess = 7,               // Printer edited successfully
+  kPrinterSentWrongResponse = 8,  // Printer sent unexpected response
+  kPrinterIsNotAutoconfigurable = 9,  // Printer requires PPD
 
   // PPD errors
   kPpdTooLarge = 10,       // PPD exceeds size limit
   kInvalidPpd = 11,        // PPD rejected by cupstestppd
   kPpdNotFound = 12,       // Could not find PPD
   kPpdUnretrievable = 13,  // Could not download PPD
+
+  // Other errors
+  kIoError = 14,                // I/O error in CUPS
+  kMemoryAllocationError = 15,  // Memory allocation error in Cups
+  kBadUri = 16,                 // Printer's URI is incorrect
   // Space left for additional errors
 
   // Specific DBus errors. This must stay in sync with the DbusLibraryError
@@ -95,8 +101,8 @@ class PrinterConfigurer {
   DISALLOW_COPY_AND_ASSIGN(PrinterConfigurer);
 };
 
-// Stream operator for ease of logging |result|.
-std::ostream& operator<<(std::ostream& out, const PrinterSetupResult& result);
+// Return a message for |result| that can be used in device-log.
+std::string ResultCodeToMessage(const PrinterSetupResult result);
 
 }  // namespace chromeos
 

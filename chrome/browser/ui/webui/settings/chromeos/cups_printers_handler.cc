@@ -761,47 +761,30 @@ void CupsPrintersHandler::OnAddedOrEditedPrinterCommon(
       }
       return;
     case PrinterSetupResult::kEditSuccess:
-      PRINTER_LOG(USER) << "Printer updated";
+      PRINTER_LOG(USER) << ResultCodeToMessage(result_code);
       printers_manager_->SavePrinter(printer);
       return;
-    case PrinterSetupResult::kPpdNotFound:
-      PRINTER_LOG(ERROR) << "Could not locate requested PPD";
-      break;
-    case PrinterSetupResult::kPpdTooLarge:
-      PRINTER_LOG(ERROR) << "PPD is too large";
-      break;
-    case PrinterSetupResult::kPpdUnretrievable:
-      PRINTER_LOG(ERROR) << "Could not retrieve PPD from server";
-      break;
-    case PrinterSetupResult::kInvalidPpd:
-      PRINTER_LOG(ERROR) << "Provided PPD is invalid.";
-      break;
+    case PrinterSetupResult::kNativePrintersNotAllowed:
+    case PrinterSetupResult::kBadUri:
+    case PrinterSetupResult::kInvalidPrinterUpdate:
     case PrinterSetupResult::kPrinterUnreachable:
-      PRINTER_LOG(ERROR) << "Could not contact printer for configuration";
+    case PrinterSetupResult::kPrinterSentWrongResponse:
+    case PrinterSetupResult::kPrinterIsNotAutoconfigurable:
+    case PrinterSetupResult::kPpdTooLarge:
+    case PrinterSetupResult::kInvalidPpd:
+    case PrinterSetupResult::kPpdNotFound:
+    case PrinterSetupResult::kPpdUnretrievable:
+    case PrinterSetupResult::kDbusError:
+    case PrinterSetupResult::kDbusNoReply:
+    case PrinterSetupResult::kDbusTimeout:
+    case PrinterSetupResult::kIoError:
+    case PrinterSetupResult::kMemoryAllocationError:
+    case PrinterSetupResult::kFatalError:
+      PRINTER_LOG(ERROR) << ResultCodeToMessage(result_code);
       break;
     case PrinterSetupResult::kComponentUnavailable:
-      LOG(WARNING) << "Could not install component";
-      break;
-    case PrinterSetupResult::kDbusError:
-    case PrinterSetupResult::kFatalError:
-      PRINTER_LOG(ERROR) << "Unrecoverable error.  Reboot required.";
-      break;
-    case PrinterSetupResult::kNativePrintersNotAllowed:
-      PRINTER_LOG(ERROR)
-          << "Unable to add or edit printer due to enterprise policy.";
-      break;
-    case PrinterSetupResult::kInvalidPrinterUpdate:
-      PRINTER_LOG(ERROR)
-          << "Requested printer changes would make printer unusable";
-      break;
-    case PrinterSetupResult::kDbusNoReply:
-      PRINTER_LOG(ERROR) << "Couldn't talk to debugd over D-Bus.";
-      break;
-    case PrinterSetupResult::kDbusTimeout:
-      PRINTER_LOG(ERROR) << "Timed out trying to reach debugd over D-Bus.";
-      break;
     case PrinterSetupResult::kMaxValue:
-      NOTREACHED() << "This is not an expected value";
+      NOTREACHED() << ResultCodeToMessage(result_code);
       break;
   }
   // Log an event that tells us this printer setup failed, so we can get

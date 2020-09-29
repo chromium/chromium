@@ -52,15 +52,36 @@ PrinterSetupResult PrinterSetupResultFromDbusResultCode(const Printer& printer,
     case debugd::CupsResult::CUPS_INVALID_PPD:
       PRINTER_LOG(EVENT) << printer.make_and_model() << " PPD Invalid";
       return PrinterSetupResult::kInvalidPpd;
-    case debugd::CupsResult::CUPS_AUTOCONF_FAILURE:
-      PRINTER_LOG(EVENT) << printer.make_and_model() << " Autoconf failed";
-      // There are other reasons autoconf fails but this is the most likely.
-      return PrinterSetupResult::kPrinterUnreachable;
     case debugd::CupsResult::CUPS_LPADMIN_FAILURE:
-      // Printers should always be configurable by lpadmin.
       PRINTER_LOG(ERROR) << printer.make_and_model()
-                         << " lpadmin could not add the printer";
+                         << " lpadmin-manual failed";
       return PrinterSetupResult::kFatalError;
+    case debugd::CupsResult::CUPS_AUTOCONF_FAILURE:
+      PRINTER_LOG(EVENT) << printer.make_and_model()
+                         << " lpadmin-autoconf failed";
+      return PrinterSetupResult::kFatalError;
+    case debugd::CupsResult::CUPS_BAD_URI:
+      PRINTER_LOG(EVENT) << printer.make_and_model() << " Bad URI";
+      return PrinterSetupResult::kBadUri;
+    case debugd::CupsResult::CUPS_IO_ERROR:
+      PRINTER_LOG(EVENT) << printer.make_and_model() << " I/O error";
+      return PrinterSetupResult::kIoError;
+    case debugd::CupsResult::CUPS_MEMORY_ALLOC_ERROR:
+      PRINTER_LOG(EVENT) << printer.make_and_model()
+                         << " Memory allocation error";
+      return PrinterSetupResult::kMemoryAllocationError;
+    case debugd::CupsResult::CUPS_PRINTER_UNREACHABLE:
+      PRINTER_LOG(EVENT) << printer.make_and_model()
+                         << " Printer is ureachable";
+      return PrinterSetupResult::kPrinterUnreachable;
+    case debugd::CupsResult::CUPS_PRINTER_WRONG_RESPONSE:
+      PRINTER_LOG(EVENT) << printer.make_and_model()
+                         << " Unexpected response from printer";
+      return PrinterSetupResult::kPrinterSentWrongResponse;
+    case debugd::CupsResult::CUPS_PRINTER_NOT_AUTOCONF:
+      PRINTER_LOG(EVENT) << printer.make_and_model()
+                         << "Printer is not autoconfigurable";
+      return PrinterSetupResult::kPrinterIsNotAutoconfigurable;
     case debugd::CupsResult::CUPS_FATAL:
     default:
       // We have no idea.  It must be fatal.
@@ -248,56 +269,58 @@ GURL PrinterConfigurer::GeneratePrinterEulaUrl(const std::string& license) {
   return eula_url.ReplaceComponents(replacements);
 }
 
-std::ostream& operator<<(std::ostream& out, const PrinterSetupResult& result) {
+std::string ResultCodeToMessage(const PrinterSetupResult result) {
   switch (result) {
-    case kFatalError:
-      out << "fatal error";
-      break;
-    case kSuccess:
-      out << "add success";
-      break;
-    case kEditSuccess:
-      out << "edit success";
-      break;
-    case kPrinterUnreachable:
-      out << "printer unreachable";
-      break;
-    case kDbusError:
-      out << "failed to connect over dbus";
-      break;
-    case kNativePrintersNotAllowed:
-      out << "native printers denied by policy";
-      break;
-    case kInvalidPrinterUpdate:
-      out << "printer edits would make printer unusable";
-      break;
-    case kComponentUnavailable:
-      out << "component driver was requested but installation failed.";
-      break;
-    case kPpdTooLarge:
-      out << "PPD too large";
-      break;
-    case kInvalidPpd:
-      out << "PPD rejected by cupstestppd";
-      break;
-    case kPpdNotFound:
-      out << "could not find PPD";
-      break;
-    case kPpdUnretrievable:
-      out << "failed to download PPD";
-      break;
-    case kDbusNoReply:
-      out << "no reply from debugd";
-      break;
-    case kDbusTimeout:
-      out << "timeout in D-Bus";
-      break;
-    case kMaxValue:
-      out << "unexpected result";
-      break;
+    // Success.
+    case PrinterSetupResult::kSuccess:
+      return "Printer successfully configured.";
+    case PrinterSetupResult::kEditSuccess:
+      return "Printer successfully updated.";
+    // Invalid configuration.
+    case PrinterSetupResult::kNativePrintersNotAllowed:
+      return "Unable to add or edit printer due to enterprise policy.";
+    case PrinterSetupResult::kBadUri:
+      return "Invalid URI.";
+    case PrinterSetupResult::kInvalidPrinterUpdate:
+      return "Requested printer changes would make printer unusable.";
+    // Problem with a printer.
+    case PrinterSetupResult::kPrinterUnreachable:
+      return "Could not contact printer for configuration.";
+    case PrinterSetupResult::kPrinterSentWrongResponse:
+      return "Printer sent unexpected response.";
+    case PrinterSetupResult::kPrinterIsNotAutoconfigurable:
+      return "Printer is not autoconfigurable.";
+    // Problem with a PPD file.
+    case PrinterSetupResult::kPpdTooLarge:
+      return "PPD is too large.";
+    case PrinterSetupResult::kInvalidPpd:
+      return "Provided PPD is invalid.";
+    case PrinterSetupResult::kPpdNotFound:
+      return "Could not locate requested PPD. Check printer configuration.";
+    case PrinterSetupResult::kPpdUnretrievable:
+      return "Could not retrieve PPD from server. Check Internet connection.";
+    // Cannot load a required compomonent.
+    case PrinterSetupResult::kComponentUnavailable:
+      return "Could not install component.";
+    // Problem with D-Bus.
+    case PrinterSetupResult::kDbusError:
+      return "D-Bus error occurred. Reboot required.";
+    case PrinterSetupResult::kDbusNoReply:
+      return "Couldn't talk to debugd over D-Bus.";
+    case PrinterSetupResult::kDbusTimeout:
+      return "Timed out trying to reach debugd over D-Bus.";
+    // Problem reported by OS.
+    case PrinterSetupResult::kIoError:
+      return "I/O error occurred.";
+    case PrinterSetupResult::kMemoryAllocationError:
+      return "Memory allocation error occurred.";
+    // Unknown problem.
+    case PrinterSetupResult::kFatalError:
+      return "Unknown error occurred.";
+    // This is not supposed to happen.
+    case PrinterSetupResult::kMaxValue:
+      return "The error code is invalid.";
   }
-
-  return out;
 }
 
 }  // namespace chromeos
