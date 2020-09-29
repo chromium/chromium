@@ -532,13 +532,7 @@ void SetCustomizedRuntimeFeaturesFromCombinedArgs(
   // They're moved here to distinguish them from actual base checks
   WebRuntimeFeatures::EnableOverlayScrollbars(ui::IsOverlayScrollbarEnabled());
 
-  if (base::FeatureList::GetInstance()->IsFeatureOverriddenFromCommandLine(
-          blink::features::kNativeFileSystemAPI.name,
-          base::FeatureList::OVERRIDE_ENABLE_FEATURE)) {
-    WebRuntimeFeatures::EnableFeatureFromString("NativeFileSystem", true);
-  }
-  if (base::FeatureList::IsEnabled(blink::features::kNativeFileSystemAPI) &&
-      base::FeatureList::IsEnabled(blink::features::kFileHandlingAPI)) {
+  if (base::FeatureList::IsEnabled(blink::features::kFileHandlingAPI)) {
     WebRuntimeFeatures::EnableFeatureFromString("FileHandling", true);
   }
 

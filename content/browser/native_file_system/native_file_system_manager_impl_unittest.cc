@@ -14,7 +14,6 @@
 #include "base/run_loop.h"
 #include "base/test/bind_test_util.h"
 #include "base/test/gmock_callback_support.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "content/browser/native_file_system/fixed_native_file_system_permission_grant.h"
 #include "content/browser/native_file_system/mock_native_file_system_permission_context.h"
@@ -34,7 +33,6 @@
 #include "storage/browser/test/async_file_test_helper.h"
 #include "storage/browser/test/test_file_system_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom.h"
 #include "third_party/blink/public/mojom/blob/serialized_blob.mojom.h"
 #include "third_party/blink/public/mojom/native_file_system/native_file_system_drag_drop_token.mojom.h"
@@ -116,10 +114,7 @@ using HandleType = content::NativeFileSystemPermissionContext::HandleType;
 class NativeFileSystemManagerImplTest : public testing::Test {
  public:
   NativeFileSystemManagerImplTest()
-      : task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {
-    scoped_feature_list_.InitAndEnableFeature(
-        blink::features::kNativeFileSystemAPI);
-  }
+      : task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {}
 
   void SetUp() override {
     ASSERT_TRUE(dir_.CreateUniqueTempDir());
@@ -230,7 +225,6 @@ class NativeFileSystemManagerImplTest : public testing::Test {
   const NativeFileSystemManagerImpl::BindingContext kBindingContext = {
       kTestOrigin, kTestURL, kFrameId};
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   BrowserTaskEnvironment task_environment_;
 
   base::ScopedTempDir dir_;

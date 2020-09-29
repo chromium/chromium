@@ -220,9 +220,6 @@ suite('SiteDetails', function() {
                                                 .WINDOW_PLACEMENT] =
         'enableExperimentalWebPlatformFeatures';
     optionalSiteDetailsContentSettingsTypes[ContentSettingsTypes
-                                                .FILE_SYSTEM_WRITE] =
-        'enableFileSystemWriteContentSetting';
-    optionalSiteDetailsContentSettingsTypes[ContentSettingsTypes
                                                 .PAYMENT_HANDLER] =
         'enablePaymentHandlerContentSetting';
     optionalSiteDetailsContentSettingsTypes[ContentSettingsTypes.ADS] =
@@ -236,7 +233,6 @@ suite('SiteDetails', function() {
     const controlledSettingsCount = /** @type{string : int } */ ({});
 
     controlledSettingsCount['enableExperimentalWebPlatformFeatures'] = 2;
-    controlledSettingsCount['enableFileSystemWriteContentSetting'] = 1;
     controlledSettingsCount['enableFontAccessContentSetting'] = 1;
     controlledSettingsCount['enablePaymentHandlerContentSetting'] = 1;
     controlledSettingsCount['enableSafeBrowsingSubresourceFilter'] = 1;

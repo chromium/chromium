@@ -16,7 +16,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind_test_util.h"
 #include "base/test/gmock_callback_support.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "content/browser/native_file_system/fixed_native_file_system_permission_grant.h"
 #include "content/browser/native_file_system/mock_native_file_system_permission_context.h"
@@ -34,7 +33,6 @@
 #include "storage/browser/test/test_file_system_backend.h"
 #include "storage/browser/test/test_file_system_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features.h"
 
 using blink::mojom::NativeFileSystemStatus;
 using storage::FileSystemURL;
@@ -103,10 +101,7 @@ std::string GetHexEncodedString(const std::string& input) {
 class NativeFileSystemFileWriterImplTest : public testing::Test {
  public:
   NativeFileSystemFileWriterImplTest()
-      : task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {
-    scoped_feature_list_.InitAndEnableFeature(
-        blink::features::kNativeFileSystemAPI);
-  }
+      : task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {}
 
   virtual NativeFileSystemPermissionContext* permission_context() {
     return nullptr;
@@ -321,7 +316,6 @@ class NativeFileSystemFileWriterImplTest : public testing::Test {
   const int kProcessId = 1;
   const int kFrameRoutingId = 2;
   const GlobalFrameRoutingId kFrameId{kProcessId, kFrameRoutingId};
-  base::test::ScopedFeatureList scoped_feature_list_;
   BrowserTaskEnvironment task_environment_;
 
   base::ScopedTempDir dir_;

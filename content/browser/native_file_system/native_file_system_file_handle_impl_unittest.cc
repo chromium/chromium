@@ -15,7 +15,6 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind_test_util.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "content/browser/native_file_system/fixed_native_file_system_permission_grant.h"
 #include "content/public/test/browser_task_environment.h"
@@ -28,7 +27,6 @@
 #include "storage/browser/test/async_file_test_helper.h"
 #include "storage/browser/test/test_file_system_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features.h"
 
 using storage::FileSystemURL;
 
@@ -41,8 +39,6 @@ class NativeFileSystemFileHandleImplTest : public testing::Test {
  public:
   NativeFileSystemFileHandleImplTest()
       : task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {
-    scoped_feature_list_.InitAndEnableFeature(
-        blink::features::kNativeFileSystemAPI);
   }
 
   void SetUp() override {
@@ -103,7 +99,6 @@ class NativeFileSystemFileHandleImplTest : public testing::Test {
   const GURL test_src_url_ = GURL("http://example.com/foo");
   const url::Origin test_src_origin_ = url::Origin::Create(test_src_url_);
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   BrowserTaskEnvironment task_environment_;
 
   base::ScopedTempDir dir_;

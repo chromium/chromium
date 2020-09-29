@@ -292,10 +292,6 @@ const base::Feature kInterestCohortAPI{"InterestCohortAPI",
 const base::Feature kTextFragmentAnchor{"TextFragmentAnchor",
                                         base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Writable files and native file system access. https://crbug.com/853326
-const base::Feature kNativeFileSystemAPI{"NativeFileSystemAPI",
-                                         base::FEATURE_ENABLED_BY_DEFAULT};
-
 // File handling integration. https://crbug.com/829689
 const base::Feature kFileHandlingAPI{"FileHandlingAPI",
                                      base::FEATURE_DISABLED_BY_DEFAULT};

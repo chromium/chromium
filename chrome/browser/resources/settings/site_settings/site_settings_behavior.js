@@ -223,9 +223,6 @@ const SiteSettingsBehaviorImpl = {
         ContentSettingsTypes.PAYMENT_HANDLER,
         'enablePaymentHandlerContentSetting');
     addOrRemoveSettingWithFlag(
-        ContentSettingsTypes.FILE_SYSTEM_WRITE,
-        'enableFileSystemWriteContentSetting');
-    addOrRemoveSettingWithFlag(
         ContentSettingsTypes.BLUETOOTH_DEVICES,
         'enableWebBluetoothNewPermissionsBackend');
     addOrRemoveSettingWithFlag(

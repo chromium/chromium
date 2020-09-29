@@ -782,9 +782,7 @@ TEST_F(FileManagerFileTasksComplexTest,
       "text/csv", false);
 
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({blink::features::kNativeFileSystemAPI,
-                                        blink::features::kFileHandlingAPI},
-                                       {});
+  scoped_feature_list.InitWithFeatures({blink::features::kFileHandlingAPI}, {});
   FindFileHandlerTasks(&test_profile_, entries, &tasks);
   EXPECT_EQ(0u, tasks.size());
 }

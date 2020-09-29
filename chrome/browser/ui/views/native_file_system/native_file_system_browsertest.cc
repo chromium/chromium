@@ -7,7 +7,6 @@
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind_test_util.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_path_override.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -20,7 +19,6 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -35,7 +33,6 @@
 #include "content/public/test/web_ui_browsertest_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "third_party/blink/public/common/features.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "ui/shell_dialogs/select_file_dialog_factory.h"
 #include "ui/shell_dialogs/select_file_policy.h"
@@ -105,9 +102,6 @@ class NativeFileSystemBrowserTest : public InProcessBrowserTest {
  public:
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-    scoped_feature_list_.InitWithFeatures(
-        {blink::features::kNativeFileSystemAPI}, {});
-
     InProcessBrowserTest::SetUp();
   }
 
@@ -158,7 +152,6 @@ class NativeFileSystemBrowserTest : public InProcessBrowserTest {
   }
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
   base::ScopedTempDir temp_dir_;
 };
 
@@ -729,9 +722,6 @@ IN_PROC_BROWSER_TEST_F(NativeFileSystemBrowserTest,
 class NativeFileSystemBrowserTestForWebUI : public InProcessBrowserTest {
  public:
   NativeFileSystemBrowserTestForWebUI() {
-    native_file_system_feature_.InitAndEnableFeature(
-        blink::features::kNativeFileSystemAPI);
-
     content::WebUIControllerFactory::RegisterFactory(&factory_);
 
     base::ScopedAllowBlockingForTesting allow_blocking;
@@ -849,7 +839,6 @@ class NativeFileSystemBrowserTestForWebUI : public InProcessBrowserTest {
   base::ScopedTempDir temp_dir_;
 
  private:
-  base::test::ScopedFeatureList native_file_system_feature_;
   content::TestWebUIControllerFactory factory_;
 };
 

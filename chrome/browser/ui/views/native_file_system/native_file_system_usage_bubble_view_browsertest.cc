@@ -5,21 +5,13 @@
 #include "chrome/browser/ui/views/native_file_system/native_file_system_usage_bubble_view.h"
 
 #include "base/files/file_path.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "content/public/test/browser_test.h"
-#include "third_party/blink/public/common/features.h"
 
 class NativeFileSystemUsageBubbleViewTest : public DialogBrowserTest {
  public:
   // DialogBrowserTest:
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        blink::features::kNativeFileSystemAPI);
-    DialogBrowserTest::SetUp();
-  }
-
   void ShowUi(const std::string& name) override {
     NativeFileSystemUsageBubbleView::Usage usage;
     url::Origin origin = kTestOrigin;
@@ -108,7 +100,6 @@ class NativeFileSystemUsageBubbleViewTest : public DialogBrowserTest {
   }
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
   const url::Origin kTestOrigin =
       url::Origin::Create(GURL("https://example.com"));
 };

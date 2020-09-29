@@ -2169,10 +2169,6 @@ void AddSiteSettingsStrings(content::WebUIDataSource* html_source,
       cmd.HasSwitch(::switches::kEnableExperimentalWebPlatformFeatures));
 
   html_source->AddBoolean(
-      "enableFileSystemWriteContentSetting",
-      base::FeatureList::IsEnabled(::blink::features::kNativeFileSystemAPI));
-
-  html_source->AddBoolean(
       "enableRemovingAllThirdPartyCookies",
       base::FeatureList::IsEnabled(
           browsing_data::features::kEnableRemovingAllThirdPartyCookies));

@@ -3128,11 +3128,6 @@
     "expiry_milestone": 90
   },
   {
-    "name": "native-file-system-api",
-    "owners": [ "mek", "pwnall" ],
-    "expiry_milestone": 87
-  },
-  {
     "name": "nearby-sharing",
     "owners": [ "vecore@google.com", "cros-system-services@google.com", "cross-device-team@google.com" ],
     "expiry_milestone": 90

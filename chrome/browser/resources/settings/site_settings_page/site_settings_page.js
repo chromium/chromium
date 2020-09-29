@@ -193,8 +193,6 @@ function getCategoryItemMap() {
       icon: 'settings:save-original',
       enabledLabel: 'siteSettingsFileSystemWriteAsk',
       disabledLabel: 'siteSettingsFileSystemWriteBlock',
-      shouldShow: () =>
-          loadTimeData.getBoolean('enableFileSystemWriteContentSetting'),
     },
     {
       route: routes.SITE_SETTINGS_FONT_ACCESS,
