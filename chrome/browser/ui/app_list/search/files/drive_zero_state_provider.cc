@@ -29,7 +29,16 @@ namespace {
 
 constexpr char kSchema[] = "drive_zero_state://";
 
+// Given an absolute path representing a file in the user's Drive, returns a
+// reparented version of the path within the user's drive fs mount.
+base::FilePath ReparentToDriveMount(
+    const base::FilePath& path,
+    const drive::DriveIntegrationService* drive_service) {
+  DCHECK(path.IsAbsolute());
+  return drive_service->GetMountPointPath().Append(path.value());
 }
+
+}  // namespace
 
 DriveZeroStateProvider::DriveZeroStateProvider(
     Profile* profile,
@@ -82,6 +91,7 @@ void DriveZeroStateProvider::Start(const base::string16& query) {
   //  - the |file_tasks_notifier_| is unavailable, as we stat files using it.
   const bool drive_fs_mounted = drive_service_ && drive_service_->IsMounted();
   if (!query.empty() || !drive_fs_mounted || !file_tasks_notifier_) {
+    // TODO(crbug.com/1034842): Log error metrics.
     return;
   }
 
@@ -90,8 +100,10 @@ void DriveZeroStateProvider::Start(const base::string16& query) {
 
   // Get the most recent results from the cache.
   cache_results_ = item_suggest_cache_.GetResults();
-  if (!cache_results_)
+  if (!cache_results_) {
+    // TODO(crbug.com/1034842): Log error metrics.
     return;
+  }
 
   std::vector<std::string> item_ids;
   for (const auto& result : cache_results_->results) {
@@ -105,8 +117,10 @@ void DriveZeroStateProvider::Start(const base::string16& query) {
 
 void DriveZeroStateProvider::OnFilePathsLocated(
     base::Optional<std::vector<drivefs::mojom::FilePathOrErrorPtr>> paths) {
-  if (!paths)
+  if (!paths) {
+    // TODO(crbug.com/1034842): Log error metrics.
     return;
+  }
   DCHECK(cache_results_);
   DCHECK_EQ(cache_results_->results.size(), paths->size());
 
@@ -117,16 +131,24 @@ void DriveZeroStateProvider::OnFilePathsLocated(
   int item_index = 0;
   SearchProvider::Results provider_results;
   for (int i = 0; i < static_cast<int>(paths->size()); ++i) {
-    if ((*paths)[i]->get_error() != drive::FILE_ERROR_OK)
+    const auto& path_or_error = paths.value()[i];
+    if (path_or_error->is_error()) {
+      // TODO(crbug.com/1034842): Log error metrics.
       continue;
+    }
 
     const double score = 1.0 - (item_index / total_items);
     ++item_index;
 
     // TODO(crbug.com/1034842): Use |cache_results_| to attach the session id to
     // the result.
+
     provider_results.emplace_back(
-        MakeResult((*paths)[i]->get_path(), score, /*is_chip=*/false));
+        MakeResult(path_or_error->get_path(), score, /*is_chip=*/false));
+    if (suggested_files_enabled_) {
+      provider_results.emplace_back(
+          MakeResult(path_or_error->get_path(), score, /*is_chip=*/true));
+    }
   }
 
   cache_results_.reset();
@@ -138,7 +160,8 @@ std::unique_ptr<FileResult> DriveZeroStateProvider::MakeResult(
     const float relevance,
     const bool is_chip) {
   return std::make_unique<FileResult>(
-      kSchema, filepath, ash::AppListSearchResultType::kDriveQuickAccessChip,
+      kSchema, ReparentToDriveMount(filepath, drive_service_),
+      ash::AppListSearchResultType::kDriveQuickAccessChip,
       is_chip ? ash::SearchResultDisplayType::kChip
               : ash::SearchResultDisplayType::kList,
       relevance, profile_);

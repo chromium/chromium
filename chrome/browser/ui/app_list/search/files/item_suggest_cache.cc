@@ -30,8 +30,8 @@
 namespace app_list {
 namespace {
 
-// Maximum accepted size of an ItemSuggest response. 10 KB.
-constexpr int kMaxResponseSize = 10 * 1024;
+// Maximum accepted size of an ItemSuggest response. 1MB.
+constexpr int kMaxResponseSize = 1024 * 1024;
 
 // TODO(crbug.com/1034842): Investigate:
 //  - enterprise policies that should limit this traffic.
@@ -69,8 +69,7 @@ constexpr char kRequestBody[] = R"({
         'platform_type': 'CHROME_OS',
         'scenario_type': 'CHROME_OS_ZSS_FILES'
       },
-      'max_suggestions': 10,
-      'type_detail_fields': []
+      'max_suggestions': 10
     })";
 
 bool IsDisabledByPolicy(const Profile* profile) {
