@@ -90,15 +90,15 @@ constexpr base::TimeDelta kJustCheckedTimeThresholdInMinutes =
     _syncService = syncService;
     _savedPasswordsConsumer =
         std::make_unique<ios::SavePasswordsConsumer>(self);
+    _passwordStoreObserver =
+        std::make_unique<PasswordStoreObserverBridge>(self);
+    _passwordStore->AddObserver(_passwordStoreObserver.get());
 
     if (base::FeatureList::IsEnabled(
             password_manager::features::kPasswordCheck)) {
       _passwordCheckManager = passwordCheckManager;
       _passwordCheckObserver = std::make_unique<PasswordCheckObserverBridge>(
           self, _passwordCheckManager.get());
-      _passwordStoreObserver =
-          std::make_unique<PasswordStoreObserverBridge>(self);
-      _passwordStore->AddObserver(_passwordStoreObserver.get());
     }
   }
   return self;
