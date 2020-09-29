@@ -538,9 +538,28 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
   std::vector<gfx::Rect> expected_segments;
   expected_segments.emplace_back(0, 0, emulated_display_feature.offset,
                                  root_view_size.height());
-  expected_segments.emplace_back(
-      emulated_display_feature.offset + emulated_display_feature.mask_length, 0,
-      emulated_display_feature.offset, root_view_size.height());
+  const int second_segment_offset =
+      emulated_display_feature.offset + emulated_display_feature.mask_length;
+  expected_segments.emplace_back(second_segment_offset, 0,
+                                 root_view_size.width() - second_segment_offset,
+                                 root_view_size.height());
+
+  base::Optional<blink::VisualProperties> properties =
+      oopchild->current_frame_host()
+          ->GetRenderWidgetHost()
+          ->GetLastVisualPropertiesSentToRendererForTesting();
+  EXPECT_TRUE(properties);
+  EXPECT_TRUE(properties->local_surface_id);
+  viz::LocalSurfaceId oopchild_initial_lsid =
+      properties->local_surface_id.value();
+
+  properties = oopdescendant->current_frame_host()
+                   ->GetRenderWidgetHost()
+                   ->GetLastVisualPropertiesSentToRendererForTesting();
+  EXPECT_TRUE(properties);
+  EXPECT_TRUE(properties->local_surface_id);
+  viz::LocalSurfaceId oopdescendant_initial_lsid =
+      properties->local_surface_id.value();
 
   {
     // Watch for visual properties changes, first to the child oop-iframe, then
@@ -555,9 +574,11 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
           oopchild->current_frame_host()
               ->GetRenderWidgetHost()
               ->GetLastVisualPropertiesSentToRendererForTesting();
-      if (properties &&
-          properties->root_widget_window_segments == expected_segments)
+      if (properties && properties->local_surface_id &&
+          oopchild_initial_lsid < properties->local_surface_id) {
+        EXPECT_EQ(properties->root_widget_window_segments, expected_segments);
         break;
+      }
       base::RunLoop().RunUntilIdle();
     }
     while (true) {
@@ -565,9 +586,11 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
           oopdescendant->current_frame_host()
               ->GetRenderWidgetHost()
               ->GetLastVisualPropertiesSentToRendererForTesting();
-      if (properties &&
-          properties->root_widget_window_segments == expected_segments)
+      if (properties && properties->local_surface_id &&
+          oopdescendant_initial_lsid < properties->local_surface_id) {
+        EXPECT_EQ(properties->root_widget_window_segments, expected_segments);
         break;
+      }
       base::RunLoop().RunUntilIdle();
     }
   }
