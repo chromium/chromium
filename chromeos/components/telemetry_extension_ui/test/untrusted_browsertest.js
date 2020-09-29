@@ -279,6 +279,66 @@ UNTRUSTED_TEST(
       assertDeepEquals(response2, {id: 123456789, status: 'ready'});
     });
 
+// Tests that runDiskReadRoutine throws the correct error when invalid enum
+// is passed as input.
+UNTRUSTED_TEST(
+    'UntrustedDiagnosticsRequestRunDiskReadRoutineInvalidInput', async () => {
+      let caughtError1;
+      try {
+        await chromeos.diagnostics.runDiskReadRoutine(
+            'this-does-not-exist', 10, 10);
+      } catch (error) {
+        caughtError1 = error;
+      }
+
+      assertEquals(caughtError1.name, 'TypeError');
+      assertEquals(
+          caughtError1.message,
+          `Diagnostic disk read type \'this-does-not-exist\' is unknown.`);
+
+      let caughtError2;
+      try {
+        await chromeos.diagnostics.runDiskReadRoutine('linear-read', 0, 10);
+      } catch (error) {
+        caughtError2 = error;
+      }
+      let caughtError3;
+      try {
+        await chromeos.diagnostics.runDiskReadRoutine(
+            'random-read', -2147483648, 10);
+      } catch (error) {
+        caughtError3 = error;
+      }
+
+      assertEquals(caughtError3.name, 'RangeError');
+      assertEquals(caughtError3.message, `Parameter must be positive.`);
+
+      let caughtError4;
+      try {
+        await chromeos.diagnostics.runDiskReadRoutine(
+            'random-read', 10, 987654321);
+      } catch (error) {
+        caughtError4 = error;
+      }
+
+      assertEquals(caughtError4.name, 'RangeError');
+      assertEquals(
+          caughtError4.message,
+          `Diagnostic disk read routine does not allow file sizes greater ` +
+              `than '10000'.`);
+    });
+
+// Tests that runDiskReadRoutine returns the correct Object.
+UNTRUSTED_TEST('UntrustedDiagnosticsRequestRunDiskReadRoutine', async () => {
+  const response1 =
+      await chromeos.diagnostics.runDiskReadRoutine('linear-read', 12, 20);
+  assertDeepEquals(response1, {id: 123456789, status: 'ready'});
+
+  const response2 =
+      await chromeos.diagnostics.runDiskReadRoutine('random-read', 20, 10);
+  assertDeepEquals(response2, {id: 123456789, status: 'ready'});
+});
+
 // Tests that runPrimeSearchRoutine throws the correct error when invalid enum
 // is passed as input.
 UNTRUSTED_TEST(

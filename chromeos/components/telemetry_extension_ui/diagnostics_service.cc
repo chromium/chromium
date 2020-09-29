@@ -190,6 +190,22 @@ void DiagnosticsService::RunNvmeSelfTestRoutine(
           std::move(callback)));
 }
 
+void DiagnosticsService::RunDiskReadRoutine(
+    health::mojom::DiskReadRoutineTypeEnum type,
+    uint32_t length_seconds,
+    uint32_t file_size_mb,
+    RunDiskReadRoutineCallback callback) {
+  GetService()->RunDiskReadRoutine(
+      converters::Convert(type), length_seconds, file_size_mb,
+      base::BindOnce(
+          [](health::mojom::DiagnosticsService::RunDiskReadRoutineCallback
+                 callback,
+             cros_healthd::mojom::RunRoutineResponsePtr ptr) {
+            std::move(callback).Run(converters::ConvertPtr(std::move(ptr)));
+          },
+          std::move(callback)));
+}
+
 void DiagnosticsService::RunPrimeSearchRoutine(
     uint32_t length_seconds,
     uint64_t max_num,

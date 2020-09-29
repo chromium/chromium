@@ -86,5 +86,15 @@ TEST(DiagnosticsServiceConvertersTest, ConvertNvmeSelfTestTypeEnum) {
             cros_healthd::NvmeSelfTestTypeEnum::kLongSelfTest);
 }
 
+TEST(DiagnosticsServiceConvertersTest, ConvertDiskReadRoutineTypeEnum) {
+  namespace cros_healthd = ::chromeos::cros_healthd::mojom;
+  namespace health = ::chromeos::health::mojom;
+
+  EXPECT_EQ(Convert(health::DiskReadRoutineTypeEnum::kLinearRead),
+            cros_healthd::DiskReadRoutineTypeEnum::kLinearRead);
+  EXPECT_EQ(Convert(health::DiskReadRoutineTypeEnum::kRandomRead),
+            cros_healthd::DiskReadRoutineTypeEnum::kRandomRead);
+}
+
 }  // namespace converters
 }  // namespace chromeos

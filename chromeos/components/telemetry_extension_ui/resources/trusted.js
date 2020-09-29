@@ -162,6 +162,24 @@ class DiagnosticsProxy {
       throw RangeError(
           'nvmeSelfTestTypeToEnum_ does not contain all items from enum!');
     }
+
+    const diskReadRoutineTypeEnum =
+        chromeos.health.mojom.DiskReadRoutineTypeEnum;
+
+    /**
+     * @type { !Map<!string, !chromeos.health.mojom.DiskReadRoutineTypeEnum> }
+     * @const
+     */
+    this.diskReadRoutineTypeToEnum_ = new Map([
+      ['linear-read', diskReadRoutineTypeEnum.kLinearRead],
+      ['random-read', diskReadRoutineTypeEnum.kRandomRead],
+    ]);
+
+    if (this.diskReadRoutineTypeToEnum_.size !==
+        diskReadRoutineTypeEnum.MAX_VALUE + 1) {
+      throw RangeError(
+          'diskReadRoutineTypeToEnum_ does not contain all items from enum!');
+    }
   }
 
   /**
@@ -475,6 +493,48 @@ class DiagnosticsProxy {
         (message);
     return await getOrCreateDiagnosticsService().runNvmeSelfTestRoutine(
         this.convertNvmeSelfTestTypeToEnum(request.nvmeSelfTestType));
+  };
+
+  /**
+   * Converts disk read type string to DiskReadRoutineTypeEnum.
+   * @param { !string } type
+   * @return { !chromeos.health.mojom.DiskReadRoutineTypeEnum }
+   */
+  convertDiskReadTypeToEnum(type) {
+    if (!this.diskReadRoutineTypeToEnum_.has(type)) {
+      throw TypeError(`Diagnostic disk read type '${type}' is unknown.`);
+    }
+
+    return this.diskReadRoutineTypeToEnum_.get(type);
+  }
+
+  /**
+   * Throws an error if fileSizeMb exceeds maxSizeMb.
+   * @param { !number } fileSizeMb
+   * @param { !number } maxSizeMb
+   */
+  assertFileSizeLargerThan(fileSizeMb, maxSizeMb) {
+    if (fileSizeMb > maxSizeMb) {
+      throw RangeError(
+          `Diagnostic disk read routine does not allow file sizes greater ` +
+          `than '${maxSizeMb}'.`);
+    }
+  }
+
+  /**
+   * Runs disk read routine.
+   * @param { !Object } message
+   * @return { !RunRoutineResponsePromise }
+   */
+  async handleRunDiskReadRoutine(message) {
+    const request =
+        /** @type {!dpsl_internal.DiagnosticsRunDiskReadRoutineRequest} */
+        (message);
+    this.assertNumberIsPositive(request.lengthSeconds);
+    this.assertFileSizeLargerThan(request.fileSizeMb, 10 * 1000);
+    return await getOrCreateDiagnosticsService().runDiskReadRoutine(
+        this.convertDiskReadTypeToEnum(request.type), request.lengthSeconds,
+        request.fileSizeMb);
   };
 
   /**
@@ -854,6 +914,12 @@ untrustedMessagePipe.registerHandler(
     dpsl_internal.Message.DIAGNOSTICS_RUN_NVME_SELF_TEST_ROUTINE,
     (message) => diagnosticsProxy.genericRunRoutineHandler(
         (message) => diagnosticsProxy.handleRunNvmeSelfTestRoutine(message),
+        message));
+
+untrustedMessagePipe.registerHandler(
+    dpsl_internal.Message.DIAGNOSTICS_RUN_DISK_READ_ROUTINE,
+    (message) => diagnosticsProxy.genericRunRoutineHandler(
+        (message) => diagnosticsProxy.handleRunDiskReadRoutine(message),
         message));
 
 untrustedMessagePipe.registerHandler(

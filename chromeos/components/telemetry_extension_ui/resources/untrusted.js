@@ -268,6 +268,30 @@ chromeos.test_support = {};
     }
 
     /**
+     * Requests disk read routine to be run.
+     * @param { !string } type
+     * @param { !number } lengthSeconds
+     * @param { !number } fileSizeMb
+     * @return { !Promise<!Object> }
+     * @public
+     */
+    async runDiskReadRoutine(type, lengthSeconds, fileSizeMb) {
+      const message =
+          /**
+             @type {!dpsl_internal.DiagnosticsRunDiskReadRoutineRequest}
+           */
+          ({type: type, lengthSeconds: lengthSeconds, fileSizeMb: fileSizeMb});
+      const response =
+          /** @type {!Object} */ (await messagePipe.sendMessage(
+              dpsl_internal.Message.DIAGNOSTICS_RUN_DISK_READ_ROUTINE,
+              message));
+      if (response instanceof Error) {
+        throw response;
+      }
+      return response;
+    }
+
+    /**
      * Requests prime search routine to be run.
      * @param { !number } lengthSeconds
      * @param { !number } maximumNumber

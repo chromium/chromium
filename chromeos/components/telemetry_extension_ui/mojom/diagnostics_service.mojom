@@ -184,6 +184,28 @@ interface DiagnosticsService {
   RunNvmeSelfTestRoutine(NvmeSelfTestTypeEnum nvme_self_test_type)
       => (RunRoutineResponse response);
 
+  // Requests that the DiskRead routine is created and started on the platform.
+  // The routine will create a test file with md5 checksum, read the test file
+  // either randomly or linearly, repeatedly for a dedicated duration. If the
+  // md5 checksum of read back is validated, then the test will pass.
+  // This routine is only available if GetAvailableRoutines returned kDiskRead.
+  //
+  // The request:
+  // * |type| - type of how disk reading is performed, either linear or random.
+  //
+  // * |length_seconds| - length of time, in seconds, to run the DiskRead
+  //                      routine for. This parameter needs to be strictly
+  //                      greater than zero.
+  //                    - TODO(b:167963397) - limit routine duration.
+  // * |file_size_mb| - test file size, in mega bytes, to test with DiskRead
+  //                    routine. Maximum file size is 10 GB.
+  // The response:
+  // * |response| - contains a unique identifier and status for the created
+  //                routine.
+  RunDiskReadRoutine(DiskReadRoutineTypeEnum type, uint32 length_seconds,
+                     uint32 file_size_mb)
+      => (RunRoutineResponse response);
+
   // Requests that the PrimeSearch routine is created and started on the
   // platform. Calculate prime numbers between 2 to max_num and verify the
   // calculation repeatedly in a duration. This routine is only available
@@ -354,4 +376,10 @@ enum AcPowerStatusEnum {
 enum NvmeSelfTestTypeEnum {
   kShortSelfTest = 0, // Short time self-test.
   kLongSelfTest = 1,  // Long time self-test.
+};
+
+// Enumeration of the possible DiskRead routine's command type
+enum DiskReadRoutineTypeEnum {
+  kLinearRead,
+  kRandomRead,
 };

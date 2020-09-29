@@ -63,6 +63,9 @@ cros_healthd::mojom::AcPowerStatusEnum Convert(
 cros_healthd::mojom::NvmeSelfTestTypeEnum Convert(
     health::mojom::NvmeSelfTestTypeEnum input);
 
+cros_healthd::mojom::DiskReadRoutineTypeEnum Convert(
+    health::mojom::DiskReadRoutineTypeEnum input);
+
 }  // namespace converters
 }  // namespace chromeos
 

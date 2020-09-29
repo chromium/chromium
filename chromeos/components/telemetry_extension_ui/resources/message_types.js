@@ -35,6 +35,7 @@ dpsl_internal.Message = {
       'DiagnosticsService.RunNvmeWearLevelRoutine',
   DIAGNOSTICS_RUN_NVME_SELF_TEST_ROUTINE:
       'DiagnosticsService.RunNvmeSelfTestRoutine',
+  DIAGNOSTICS_RUN_DISK_READ_ROUTINE: 'DiagnosticsService.RunDiskReadRoutine',
   DIAGNOSTICS_RUN_PRIME_SEARCH_ROUTINE:
       'DiagnosticsService.RunPrimeSearchRoutine',
   DIAGNOSTICS_RUN_BATTERY_DISCHARGE_ROUTINE:
@@ -143,6 +144,16 @@ dpsl_internal.DiagnosticsRunNvmeWearLevelRoutineRequest;
  * @typedef {{ nvmeSelfTestType: !string }}
  */
 dpsl_internal.DiagnosticsRunNvmeSelfTestRoutineRequest;
+
+/**
+ * Request message sent by the unprivileged context to the privileged
+ * context to run disk read routine.
+ * @typedef {{
+ * type: !string,
+ * lengthSeconds: !number,
+ * fileSizeMb: !number}}
+ */
+dpsl_internal.DiagnosticsRunDiskReadRoutineRequest;
 
 /**
  * Request message sent by the unprivileged context to the privileged

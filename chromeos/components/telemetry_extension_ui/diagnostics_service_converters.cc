@@ -205,5 +205,20 @@ cros_healthd::mojom::NvmeSelfTestTypeEnum Convert(
       1);
 }
 
+cros_healthd::mojom::DiskReadRoutineTypeEnum Convert(
+    health::mojom::DiskReadRoutineTypeEnum input) {
+  switch (input) {
+    case health::mojom::DiskReadRoutineTypeEnum::kLinearRead:
+      return cros_healthd::mojom::DiskReadRoutineTypeEnum::kLinearRead;
+    case health::mojom::DiskReadRoutineTypeEnum::kRandomRead:
+      return cros_healthd::mojom::DiskReadRoutineTypeEnum::kRandomRead;
+  }
+  NOTREACHED();
+  return static_cast<cros_healthd::mojom::DiskReadRoutineTypeEnum>(
+      static_cast<int>(
+          cros_healthd::mojom::DiskReadRoutineTypeEnum::kMaxValue) +
+      1);
+}
+
 }  // namespace converters
 }  // namespace chromeos

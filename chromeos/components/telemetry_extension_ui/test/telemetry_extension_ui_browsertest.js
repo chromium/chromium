@@ -133,6 +133,15 @@ TEST_F('TelemetryExtensionUIBrowserTest', 'ConvertDiagnosticsEnums', () => {
       diagnosticsProxy.convertNvmeSelfTestTypeToEnum('long-self-test'),
       nvmeSelfTestTypeEnum.kLongSelfTest);
 
+  // Unit tests for convertDiskReadTypeToEnum
+  const diskReadRoutineTypeEnum = chromeos.health.mojom.DiskReadRoutineTypeEnum;
+  assertEquals(
+      diagnosticsProxy.convertDiskReadTypeToEnum('linear-read'),
+      diskReadRoutineTypeEnum.kLinearRead);
+  assertEquals(
+      diagnosticsProxy.convertDiskReadTypeToEnum('random-read'),
+      diskReadRoutineTypeEnum.kRandomRead);
+
   testDone();
 });
 
@@ -391,6 +400,8 @@ const untrustedTests = [
   ['UntrustedDiagnosticsRequestRunNvmeWearLevelRoutine'],
   ['UntrustedDiagnosticsRequestRunNvmeSelfTestRoutineInvalidInput'],
   ['UntrustedDiagnosticsRequestRunNvmeSelfTestRoutine'],
+  ['UntrustedDiagnosticsRequestRunDiskReadRoutineInvalidInput'],
+  ['UntrustedDiagnosticsRequestRunDiskReadRoutine'],
   ['UntrustedDiagnosticsRequestRunPrimeSearchRoutineInvalidInput'],
   ['UntrustedDiagnosticsRequestRunPrimeSearchRoutine'],
   ['UntrustedDiagnosticsRequestRunBatteryDischargeRoutineInvalidInput'],
