@@ -6131,7 +6131,7 @@ crbug.com/1044415 [ Release ] http/tests/devtools/runtime/evaluate-without-side-
 # crbug.com/1044424 [ Release ] http/tests/devtools/elements/css-rule-hover-highlights-selectors.js [ Pass Timeout ]
 crbug.com/1044425 [ Release ] http/tests/devtools/elements/shadow/elements-panel-shadow-selection-on-refresh-1.js [ Pass Timeout ]
 crbug.com/1044429 [ Release ] http/tests/devtools/oopif/oopif-navigator.js [ Pass Timeout ]
-crbug.com/1002914 http/tests/devtools/elements/elements-panel-styles.js [ Pass Timeout Failure ]
+crbug.com/1002914 http/tests/devtools/elements/elements-panel-styles.js [ Pass Timeout ]
 crbug.com/1044433 [ Release ] http/tests/devtools/editor/text-editor-search-replace.js [ Pass Timeout ]
 crbug.com/1044459 [ Release ] http/tests/devtools/elements/edit/set-outer-html-for-xhtml.js [ Pass Timeout ]
 crbug.com/1044505 http/tests/devtools/tracing-session-id.js [ Pass Failure Timeout ]

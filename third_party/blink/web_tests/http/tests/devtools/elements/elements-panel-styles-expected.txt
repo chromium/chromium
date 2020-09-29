@@ -85,7 +85,7 @@ body .foo { (elements-pa…tyles.css:6 -> elements-panel-styles.css:6:12)
         margin-top: 10px;
         margin-right: 0px;
         margin-bottom: 2px;
-        margin-left: 1px;
+    /-- overloaded --/     margin-left: 1px;
     border-radius: 5px;
         border-top-left-radius: 5px;
         border-top-right-radius: 5px;
@@ -96,7 +96,7 @@ body .foo { (elements-pa…tyles.css:6 -> elements-panel-styles.css:6:12)
 /-- overloaded --/     font-weight: bold;
     padding: 4px;
         padding-top: 4px;
-        padding-right: 1px;
+    /-- overloaded --/     padding-right: 1px;
         padding-bottom: 4px;
         padding-left: 4px;
     padding-right: 1px;
