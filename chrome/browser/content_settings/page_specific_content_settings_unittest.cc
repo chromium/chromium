@@ -61,6 +61,10 @@ TEST_F(PageSpecificContentSettingsTest, HistogramTest) {
   // Count should stay same even after multiple usage of permission
   histograms.ExpectTotalCount(kGeolocationHistogramName, 1);
 
+  content_settings->OnContentAllowed(ContentSettingsType::NOTIFICATIONS);
+  // Count should stay same even if a different permission is used
+  histograms.ExpectTotalCount(kGeolocationHistogramName, 1);
+
   PageSpecificContentSettings::MicrophoneCameraState microphone_accessed =
       PageSpecificContentSettings::MICROPHONE_ACCESSED |
       PageSpecificContentSettings::CAMERA_ACCESSED |
@@ -88,6 +92,10 @@ TEST_F(PageSpecificContentSettingsTest, HistogramTest) {
                                                std::string(), std::string(),
                                                std::string(), std::string());
   // Count should stay same even after multiple usage of permission
+  histograms.ExpectTotalCount(kMicrophoneHistogramName, 1);
+  histograms.ExpectTotalCount(kCameraHistogramName, 1);
+
+  // Count should stay same even if a different permission is used
   histograms.ExpectTotalCount(kMicrophoneHistogramName, 1);
   histograms.ExpectTotalCount(kCameraHistogramName, 1);
 }

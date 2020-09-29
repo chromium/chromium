@@ -577,7 +577,7 @@ void PageSpecificContentSettings::OnContentAllowed(ContentSettingsType type) {
   if (!status.allowed) {
     status.allowed = true;
     access_changed = true;
-    delegate_->OnContentAllowed(ContentSettingsType::GEOLOCATION);
+    delegate_->OnContentAllowed(type);
   }
 
   if (access_changed)
