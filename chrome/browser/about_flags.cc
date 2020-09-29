@@ -2961,6 +2961,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPluginVmShowMicrophonePermissionsDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(
          chromeos::features::kPluginVmShowMicrophonePermissions)},
+    {"vm-camera-mic-indicators-and-notifications",
+     flag_descriptions::kVmCameraMicIndicatorsAndNotificationsName,
+     flag_descriptions::kVmCameraMicIndicatorsAndNotificationsDescription,
+     kOsCrOS,
+     FEATURE_VALUE_TYPE(
+         chromeos::features::kVmCameraMicIndicatorsAndNotifications)},
 #if BUILDFLAG(USE_TCMALLOC)
     {"dynamic-tcmalloc-tuning", flag_descriptions::kDynamicTcmallocName,
      flag_descriptions::kDynamicTcmallocDescription, kOsCrOS,

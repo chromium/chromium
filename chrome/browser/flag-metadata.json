@@ -4588,6 +4588,11 @@
     "expiry_milestone": 90
   },
   {
+    "name": "vm-camera-mic-indicators-and-notifications",
+    "owners": [ "lxj", "joelhockey", "timloh" ],
+    "expiry_milestone": 90
+  },
+  {
     "name": "wallet-service-use-sandbox",
     "owners": [ "jsaul@google.com", "payments-autofill-team@google.com" ],
     // This flag is used by testing teams to run Google Payments calls against

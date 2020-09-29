@@ -597,6 +597,10 @@ const base::Feature kUseSearchClickForRightClick{
 const base::Feature kVirtualKeyboardBorderedKey{
     "VirtualKeyboardBorderedKey", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enable or disable the camera/mic indicators/notifications for VMs.
+const base::Feature kVmCameraMicIndicatorsAndNotifications{
+    "VmCameraMicIndicatorsAndNotifications", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls whether to enable syncing of Wi-Fi configurations between
 // ChromeOS and a connected Android phone.
 const base::Feature kWifiSyncAndroid{"WifiSyncAndroid",

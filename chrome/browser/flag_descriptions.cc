@@ -4394,6 +4394,11 @@ const char kVirtualKeyboardDescription[] =
     "Always show virtual keyboard regardless of having a physical keyboard "
     "present";
 
+const char kVmCameraMicIndicatorsAndNotificationsName[] =
+    "VM camera/mic indicators/notifications";
+const char kVmCameraMicIndicatorsAndNotificationsDescription[] =
+    "Show VM camera/mic indicators/notifications";
+
 const char kWifiSyncAndroidName[] =
     "Sync Wi-Fi network configurations with Android";
 const char kWifiSyncAndroidDescription[] =

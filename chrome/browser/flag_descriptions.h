@@ -2556,6 +2556,9 @@ extern const char kVirtualKeyboardBorderedKeyDescription[];
 extern const char kVirtualKeyboardName[];
 extern const char kVirtualKeyboardDescription[];
 
+extern const char kVmCameraMicIndicatorsAndNotificationsName[];
+extern const char kVmCameraMicIndicatorsAndNotificationsDescription[];
+
 extern const char kWifiSyncAndroidName[];
 extern const char kWifiSyncAndroidDescription[];
 

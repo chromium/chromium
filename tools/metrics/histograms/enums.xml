@@ -41483,6 +41483,8 @@ from previous Chrome versions.
   <int value="-1472825316" label="ContextualSearchLongpressResolve:enabled"/>
   <int value="-1471021059"
       label="OmniboxUIExperimentShowSuggestionFavicons:disabled"/>
+  <int value="-1469555275"
+      label="VmCameraMicIndicatorsAndNotifications:enabled"/>
   <int value="-1469536698" label="ChromeHomeDoodle:enabled"/>
   <int value="-1469228683" label="QuickUnlockPinSignin:disabled"/>
   <int value="-1468126425" label="ResourceLoadScheduler:disabled"/>
@@ -42771,6 +42773,8 @@ from previous Chrome versions.
   <int value="-177974995" label="CrostiniShowMicSetting:disabled"/>
   <int value="-177085741"
       label="EnableEphemeralGuestProfilesOnDesktop:disabled"/>
+  <int value="-176524053"
+      label="VmCameraMicIndicatorsAndNotifications:disabled"/>
   <int value="-175666252" label="Portals:disabled"/>
   <int value="-174829803" label="TabOutlinesInLowContrastThemes:enabled"/>
   <int value="-174706795"
