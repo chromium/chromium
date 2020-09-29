@@ -12,7 +12,9 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/bind_test_util.h"
+#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/os_crypt/os_crypt.h"
 #include "components/os_crypt/os_crypt_mocker.h"
 #include "components/sync/driver/sync_driver_switches.h"
 #include "components/sync/trusted_vault/securebox.h"
@@ -25,9 +27,18 @@ namespace syncer {
 namespace {
 
 using testing::_;
+using testing::ElementsAre;
 using testing::Eq;
 using testing::IsEmpty;
+using testing::Ne;
 using testing::NotNull;
+
+MATCHER_P(KeyMaterialEq, expected, "") {
+  const std::string& key_material = arg.key_material();
+  const std::vector<uint8_t> key_material_as_bytes(key_material.begin(),
+                                                   key_material.end());
+  return key_material_as_bytes == expected;
+}
 
 base::FilePath CreateUniqueTempDir(base::ScopedTempDir* temp_dir) {
   EXPECT_TRUE(temp_dir->CreateUniqueTempDir());
@@ -78,6 +89,8 @@ class StandaloneTrustedVaultBackendTest : public testing::Test {
 
   StandaloneTrustedVaultBackend* backend() { return backend_.get(); }
 
+  const base::FilePath& file_path() { return file_path_; }
+
   // Stores |vault_keys| and mimics successful device registration, returns
   // private device key material.
   std::vector<uint8_t> StoreKeysAndMimicDeviceRegistration(
@@ -122,6 +135,138 @@ class StandaloneTrustedVaultBackendTest : public testing::Test {
   testing::NiceMock<MockTrustedVaultConnection>* connection_;
   scoped_refptr<StandaloneTrustedVaultBackend> backend_;
 };
+
+TEST_F(StandaloneTrustedVaultBackendTest, ShouldFetchEmptyKeys) {
+  CoreAccountInfo account_info;
+  account_info.gaia = "user";
+  // Callback should be called immediately.
+  base::MockCallback<StandaloneTrustedVaultBackend::FetchKeysCallback>
+      fetch_keys_callback;
+  EXPECT_CALL(fetch_keys_callback, Run(/*keys=*/IsEmpty()));
+  backend()->FetchKeys(account_info, fetch_keys_callback.Get());
+}
+
+TEST_F(StandaloneTrustedVaultBackendTest, ShouldReadAndFetchNonEmptyKeys) {
+  CoreAccountInfo account_info_1;
+  account_info_1.gaia = "user1";
+  CoreAccountInfo account_info_2;
+  account_info_2.gaia = "user2";
+
+  const std::vector<uint8_t> kKey1 = {0, 1, 2, 3, 4};
+  const std::vector<uint8_t> kKey2 = {1, 2, 3, 4};
+  const std::vector<uint8_t> kKey3 = {2, 3, 4};
+
+  sync_pb::LocalTrustedVault initial_data;
+  sync_pb::LocalTrustedVaultPerUser* user_data1 = initial_data.add_user();
+  sync_pb::LocalTrustedVaultPerUser* user_data2 = initial_data.add_user();
+  user_data1->set_gaia_id(account_info_1.gaia);
+  user_data2->set_gaia_id(account_info_2.gaia);
+  user_data1->add_vault_key()->set_key_material(kKey1.data(), kKey1.size());
+  user_data2->add_vault_key()->set_key_material(kKey2.data(), kKey2.size());
+  user_data2->add_vault_key()->set_key_material(kKey3.data(), kKey3.size());
+
+  std::string encrypted_data;
+  ASSERT_TRUE(OSCrypt::EncryptString(initial_data.SerializeAsString(),
+                                     &encrypted_data));
+  ASSERT_NE(-1, base::WriteFile(file_path(), encrypted_data.c_str(),
+                                encrypted_data.size()));
+
+  backend()->ReadDataFromDisk();
+
+  // Keys should be fetched immediately for both accounts.
+  base::MockCallback<StandaloneTrustedVaultBackend::FetchKeysCallback>
+      fetch_keys_callback;
+  EXPECT_CALL(fetch_keys_callback, Run(/*keys=*/ElementsAre(kKey1)));
+  backend()->FetchKeys(account_info_1, fetch_keys_callback.Get());
+  EXPECT_CALL(fetch_keys_callback, Run(/*keys=*/ElementsAre(kKey2, kKey3)));
+  backend()->FetchKeys(account_info_2, fetch_keys_callback.Get());
+}
+
+TEST_F(StandaloneTrustedVaultBackendTest, ShouldStoreKeys) {
+  const std::string kGaiaId1 = "user1";
+  const std::string kGaiaId2 = "user2";
+  const std::vector<uint8_t> kKey1 = {0, 1, 2, 3, 4};
+  const std::vector<uint8_t> kKey2 = {1, 2, 3, 4};
+  const std::vector<uint8_t> kKey3 = {2, 3, 4};
+  const std::vector<uint8_t> kKey4 = {3, 4};
+
+  backend()->StoreKeys(kGaiaId1, {kKey1}, /*last_key_version=*/7);
+  backend()->StoreKeys(kGaiaId2, {kKey2}, /*last_key_version=*/8);
+  // Keys for |kGaiaId2| overridden, so |kKey2| should be lost.
+  backend()->StoreKeys(kGaiaId2, {kKey3, kKey4}, /*last_key_version=*/9);
+
+  // Read the file from disk.
+  std::string ciphertext;
+  std::string decrypted_content;
+  sync_pb::LocalTrustedVault proto;
+  EXPECT_TRUE(base::ReadFileToString(file_path(), &ciphertext));
+  EXPECT_THAT(ciphertext, Ne(""));
+  EXPECT_TRUE(OSCrypt::DecryptString(ciphertext, &decrypted_content));
+  EXPECT_TRUE(proto.ParseFromString(decrypted_content));
+  ASSERT_THAT(proto.user_size(), Eq(2));
+  EXPECT_THAT(proto.user(0).vault_key(), ElementsAre(KeyMaterialEq(kKey1)));
+  EXPECT_THAT(proto.user(0).last_vault_key_version(), Eq(7));
+  EXPECT_THAT(proto.user(1).vault_key(),
+              ElementsAre(KeyMaterialEq(kKey3), KeyMaterialEq(kKey4)));
+  EXPECT_THAT(proto.user(1).last_vault_key_version(), Eq(9));
+}
+
+TEST_F(StandaloneTrustedVaultBackendTest, ShouldFetchPreviouslyStoredKeys) {
+  CoreAccountInfo account_info_1;
+  account_info_1.gaia = "user1";
+  CoreAccountInfo account_info_2;
+  account_info_2.gaia = "user2";
+
+  const std::vector<uint8_t> kKey1 = {0, 1, 2, 3, 4};
+  const std::vector<uint8_t> kKey2 = {1, 2, 3, 4};
+  const std::vector<uint8_t> kKey3 = {2, 3, 4};
+
+  backend()->StoreKeys(account_info_1.gaia, {kKey1}, /*last_key_version=*/0);
+  backend()->StoreKeys(account_info_2.gaia, {kKey2, kKey3},
+                       /*last_key_version=*/1);
+
+  // Instantiate a second backend to read the file.
+  auto other_backend = base::MakeRefCounted<StandaloneTrustedVaultBackend>(
+      file_path(),
+      std::make_unique<testing::NiceMock<MockTrustedVaultConnection>>());
+  other_backend->ReadDataFromDisk();
+
+  // Keys should be fetched immediately for both accounts.
+  base::MockCallback<StandaloneTrustedVaultBackend::FetchKeysCallback>
+      fetch_keys_callback;
+  EXPECT_CALL(fetch_keys_callback, Run(/*keys=*/ElementsAre(kKey1)));
+  other_backend->FetchKeys(account_info_1, fetch_keys_callback.Get());
+  EXPECT_CALL(fetch_keys_callback, Run(/*keys=*/ElementsAre(kKey2, kKey3)));
+  other_backend->FetchKeys(account_info_2, fetch_keys_callback.Get());
+}
+
+TEST_F(StandaloneTrustedVaultBackendTest, ShouldRemoveAllStoredKeys) {
+  CoreAccountInfo account_info_1;
+  account_info_1.gaia = "user1";
+  CoreAccountInfo account_info_2;
+  account_info_2.gaia = "user2";
+
+  const std::vector<uint8_t> kKey1 = {0, 1, 2, 3, 4};
+  const std::vector<uint8_t> kKey2 = {1, 2, 3, 4};
+  const std::vector<uint8_t> kKey3 = {2, 3, 4};
+
+  backend()->StoreKeys(account_info_1.gaia, {kKey1}, /*last_key_version=*/0);
+  backend()->StoreKeys(account_info_2.gaia, {kKey2, kKey3},
+                       /*last_key_version=*/1);
+
+  backend()->RemoveAllStoredKeys();
+
+  // Keys should be removed from both in-memory and disk storages.
+  base::MockCallback<StandaloneTrustedVaultBackend::FetchKeysCallback>
+      fetch_keys_callback;
+  EXPECT_CALL(fetch_keys_callback, Run(/*keys=*/IsEmpty()));
+  backend()->FetchKeys(account_info_1, fetch_keys_callback.Get());
+
+  EXPECT_CALL(fetch_keys_callback, Run(/*keys=*/IsEmpty()));
+  backend()->FetchKeys(account_info_2, fetch_keys_callback.Get());
+
+  EXPECT_FALSE(base::PathExists(file_path()));
+}
 
 TEST_F(StandaloneTrustedVaultBackendTest, ShouldRegisterDevice) {
   CoreAccountInfo account_info;
@@ -182,13 +327,10 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldFetchKeysImmediately) {
 
   std::vector<std::vector<uint8_t>> fetched_keys;
   // Callback should be called immediately.
-  backend()->FetchKeys(account_info,
-                       base::BindLambdaForTesting(
-                           [&](const std::vector<std::vector<uint8_t>>& keys) {
-                             fetched_keys = keys;
-                           }));
-
-  EXPECT_THAT(fetched_keys, Eq(kVaultKeys));
+  base::MockCallback<StandaloneTrustedVaultBackend::FetchKeysCallback>
+      fetch_keys_callback;
+  EXPECT_CALL(fetch_keys_callback, Run(/*keys=*/Eq(kVaultKeys)));
+  backend()->FetchKeys(account_info, fetch_keys_callback.Get());
 }
 
 TEST_F(StandaloneTrustedVaultBackendTest, ShouldDownloadKeys) {
@@ -220,28 +362,23 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldDownloadKeys) {
         download_keys_callback = std::move(callback);
       });
 
-  std::vector<std::vector<uint8_t>> fetched_keys;
   // FetchKeys() should trigger keys downloading.
-  backend()->FetchKeys(account_info,
-                       base::BindLambdaForTesting(
-                           [&](const std::vector<std::vector<uint8_t>>& keys) {
-                             fetched_keys = keys;
-                           }));
+  base::MockCallback<StandaloneTrustedVaultBackend::FetchKeysCallback>
+      fetch_keys_callback;
+  backend()->FetchKeys(account_info, fetch_keys_callback.Get());
   ASSERT_FALSE(download_keys_callback.is_null());
-  ASSERT_THAT(fetched_keys, IsEmpty());
 
   // Ensure that the right device key was passed into DonwloadKeys().
   ASSERT_THAT(device_key_pair, NotNull());
   EXPECT_THAT(device_key_pair->private_key().ExportToBytes(),
               Eq(private_device_key_material));
 
-  // Mimic successful key downloading.
+  // Mimic successful key downloading, it should make fetch keys attempt
+  // completed.
+  EXPECT_CALL(fetch_keys_callback, Run(/*keys=*/Eq(kNewVaultKeys)));
   std::move(download_keys_callback)
       .Run(TrustedVaultRequestStatus::kSuccess, kNewVaultKeys,
            kNewLastKeyVersion);
-
-  // Now fetch keys attempt should be completed.
-  EXPECT_THAT(fetched_keys, Eq(kNewVaultKeys));
 }
 
 }  // namespace
