@@ -9,4 +9,4 @@
 #endif
 
 NSString* const kPasswordDetailsViewControllerId =
-    @"kPasswordDetailsViewControllerId";
+    @"PasswordDetailsTableViewId";
