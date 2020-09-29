@@ -25,10 +25,21 @@
 
 // Tells the receiver to incorporate the |dragItem| into the model layer at the
 // |destinationIndex|. |fromSameCollection| is an indication that the operation
-// is a reorder within the same collection.
+// is a reorder within the same collection. |dragItem| must have a localObject,
+// which means the item is dragged from within the same app.
 - (void)dropItem:(UIDragItem*)dragItem
                toIndex:(NSUInteger)destinationIndex
     fromSameCollection:(BOOL)fromSameCollection;
+
+// Tells the receiver to asynchronously extract data from |itemProvider| into
+// the model layer at the |destinationIndex|. |placeholderContext| is used to
+// delete the placeholder once the item is ready to be inserted into the model
+// layer.
+- (void)dropItemFromProvider:(NSItemProvider*)itemProvider
+                     toIndex:(NSUInteger)destinationIndex
+          placeholderContext:
+              (id<UICollectionViewDropPlaceholderContext>)placeholderContext;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_GRID_GRID_GRID_DRAG_DROP_HANDLER_H_

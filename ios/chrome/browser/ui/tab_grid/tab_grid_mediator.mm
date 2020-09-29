@@ -465,31 +465,34 @@ web::WebState* GetWebStateWithId(WebStateList* web_state_list,
                        withURL:net::GURLWithNSURL(droppedURL)];
     return;
   }
+}
 
-  // Handle URLs from other apps asynchronously, as synchronous is not possible
-  // with NSItemProvider.
-  NSItemProvider* itemProvider = dragItem.itemProvider;
-  if ([itemProvider canLoadObjectOfClass:[NSURL class]]) {
-    // The parameter type has changed with Xcode 12 SDK.
-    // TODO(crbug.com/1098318): Remove this once Xcode 11 support is dropped.
-#if defined(__IPHONE_14_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
-    using providerType = __kindof id<NSItemProviderReading>;
-#else
-    using providerType = id<NSItemProviderReading>;
-#endif
-
-    auto loadHandler = ^(providerType providedItem, NSError* error) {
-      dispatch_async(dispatch_get_main_queue(), ^{
-        NSURL* droppedURL = static_cast<NSURL*>(providedItem);
-        [self insertNewItemAtIndex:destinationIndex
-                           withURL:net::GURLWithNSURL(droppedURL)];
-      });
-    };
-
-    [itemProvider loadObjectOfClass:[NSURL class]
-                  completionHandler:loadHandler];
+- (void)dropItemFromProvider:(NSItemProvider*)itemProvider
+                     toIndex:(NSUInteger)destinationIndex
+          placeholderContext:
+              (id<UICollectionViewDropPlaceholderContext>)placeholderContext {
+  if (![itemProvider canLoadObjectOfClass:[NSURL class]]) {
+    [placeholderContext deletePlaceholder];
     return;
   }
+
+  // The parameter type has changed with Xcode 12 SDK.
+  // TODO(crbug.com/1098318): Remove this once Xcode 11 support is dropped.
+#if defined(__IPHONE_14_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
+  using providerType = __kindof id<NSItemProviderReading>;
+#else
+  using providerType = id<NSItemProviderReading>;
+#endif
+
+  auto loadHandler = ^(providerType providedItem, NSError* error) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [placeholderContext deletePlaceholder];
+      NSURL* droppedURL = static_cast<NSURL*>(providedItem);
+      [self insertNewItemAtIndex:destinationIndex
+                         withURL:net::GURLWithNSURL(droppedURL)];
+    });
+  };
+  [itemProvider loadObjectOfClass:[NSURL class] completionHandler:loadHandler];
 }
 
 #pragma mark - GridImageDataSource

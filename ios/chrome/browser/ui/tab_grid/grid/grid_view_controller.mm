@@ -438,11 +438,9 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
 - (UIDragPreviewParameters*)collectionView:(UICollectionView*)collectionView
     dragPreviewParametersForItemAtIndexPath:(NSIndexPath*)indexPath {
-  UIDragPreviewParameters* params = [[UIDragPreviewParameters alloc] init];
-  GridCell* cell = base::mac::ObjCCastStrict<GridCell>(
+  GridCell* gridCell = base::mac::ObjCCastStrict<GridCell>(
       [self.collectionView cellForItemAtIndexPath:indexPath]);
-  params.visiblePath = cell.visiblePath;
-  return params;
+  return gridCell.dragPreviewParameters;
 }
 
 #pragma mark - UICollectionViewDropDelegate
@@ -471,21 +469,52 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
         (id<UICollectionViewDropCoordinator>)coordinator {
   id<UICollectionViewDropItem> item = coordinator.items.firstObject;
 
-  NSIndexPath* dropIndexPath = coordinator.destinationIndexPath;
-  if (!dropIndexPath) {
-    dropIndexPath = [NSIndexPath indexPathForItem:(self.items.count - 1)
-                                        inSection:0];
+  // Append to the end of the collection, unless drop index is specified.
+  NSUInteger destinationIndex = self.items.count;
+  if (item.sourceIndexPath) {
+    // The sourceIndexPath is non-nil if the drop item is from this same
+    // collection view. Move to last position rather than appending if this is a
+    // reorder operation.
+    destinationIndex = self.items.count - 1;
+  }
+  if (coordinator.destinationIndexPath) {
+    destinationIndex =
+        base::checked_cast<NSUInteger>(coordinator.destinationIndexPath.item);
+  }
+  NSIndexPath* dropIndexPath = [NSIndexPath indexPathForItem:destinationIndex
+                                                   inSection:0];
+
+  // Drop synchronously if local object is available.
+  if (item.dragItem.localObject) {
+    [coordinator dropItem:item.dragItem toItemAtIndexPath:dropIndexPath];
+    // The sourceIndexPath is non-nil if the drop item is from this same
+    // collection view.
+    [self.dragDropHandler dropItem:item.dragItem
+                           toIndex:destinationIndex
+                fromSameCollection:(item.sourceIndexPath != nil)];
+    return;
   }
 
-  NSUInteger destinationIndex =
-      base::checked_cast<NSUInteger>(dropIndexPath.item);
-  [coordinator dropItem:item.dragItem toItemAtIndexPath:dropIndexPath];
+  // Drop asynchronously if local object is not available.
+  UICollectionViewDropPlaceholder* placeholder =
+      [[UICollectionViewDropPlaceholder alloc]
+          initWithInsertionIndexPath:dropIndexPath
+                     reuseIdentifier:kCellIdentifier];
+  placeholder.cellUpdateHandler = ^(UICollectionViewCell* placeholderCell) {
+    GridCell* gridCell = base::mac::ObjCCastStrict<GridCell>(placeholderCell);
+    gridCell.theme = self.theme;
+  };
+  placeholder.previewParametersProvider =
+      ^UIDragPreviewParameters*(UICollectionViewCell* placeholderCell) {
+    GridCell* gridCell = base::mac::ObjCCastStrict<GridCell>(placeholderCell);
+    return gridCell.dragPreviewParameters;
+  };
 
-  // TODO(crbug.com/1095200): Handle the edge case that two windows are
-  // simultaneously dragging and dropping.
-  [self.dragDropHandler dropItem:item.dragItem
-                         toIndex:destinationIndex
-              fromSameCollection:collectionView.hasActiveDrag];
+  id<UICollectionViewDropPlaceholderContext> context =
+      [coordinator dropItem:item.dragItem toPlaceholder:placeholder];
+  [self.dragDropHandler dropItemFromProvider:item.dragItem.itemProvider
+                                     toIndex:destinationIndex
+                          placeholderContext:context];
 }
 
 #pragma mark - UIScrollViewDelegate

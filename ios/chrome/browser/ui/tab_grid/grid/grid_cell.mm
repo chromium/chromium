@@ -255,10 +255,13 @@ void PositionView(UIView* view, CGPoint point) {
   _titleHidden = titleHidden;
 }
 
-- (UIBezierPath*)visiblePath {
-  return [UIBezierPath
+- (UIDragPreviewParameters*)dragPreviewParameters {
+  UIBezierPath* visiblePath = [UIBezierPath
       bezierPathWithRoundedRect:self.bounds
                    cornerRadius:self.contentView.layer.cornerRadius];
+  UIDragPreviewParameters* params = [[UIDragPreviewParameters alloc] init];
+  params.visiblePath = visiblePath;
+  return params;
 }
 
 #pragma mark - Private
