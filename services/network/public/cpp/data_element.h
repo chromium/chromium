@@ -51,8 +51,7 @@ class COMPONENT_EXPORT(NETWORK_CPP_BASE) DataElement {
 
   mojom::DataElementType type() const { return type_; }
   const char* bytes() const {
-    return bytes_ ? reinterpret_cast<const char*>(bytes_)
-                  : reinterpret_cast<const char*>(buf_.data());
+    return reinterpret_cast<const char*>(buf_.data());
   }
   const base::FilePath& path() const { return path_; }
   const std::string& blob_uuid() const { return blob_uuid_; }
@@ -62,14 +61,9 @@ class COMPONENT_EXPORT(NETWORK_CPP_BASE) DataElement {
     return expected_modification_time_;
   }
 
-  // For use with SetToAllocatedBytes. Should only be used after calling
-  // SetToAllocatedBytes.
-  char* mutable_bytes() { return reinterpret_cast<char*>(&buf_[0]); }
-
   // Sets TYPE_BYTES data. This copies the given data into the element.
   void SetToBytes(const char* bytes, int bytes_len) {
     type_ = mojom::DataElementType::kBytes;
-    bytes_ = nullptr;
     buf_.assign(reinterpret_cast<const uint8_t*>(bytes),
                 reinterpret_cast<const uint8_t*>(bytes + bytes_len));
     length_ = buf_.size();
@@ -78,7 +72,6 @@ class COMPONENT_EXPORT(NETWORK_CPP_BASE) DataElement {
   // Sets TYPE_BYTES data. This moves the given data vector into the element.
   void SetToBytes(std::vector<uint8_t> bytes) {
     type_ = mojom::DataElementType::kBytes;
-    bytes_ = nullptr;
     buf_ = std::move(bytes);
     length_ = buf_.size();
   }
@@ -89,7 +82,6 @@ class COMPONENT_EXPORT(NETWORK_CPP_BASE) DataElement {
     type_ = mojom::DataElementType::kBytes;
     buf_.clear();
     length_ = 0;
-    bytes_ = nullptr;
   }
 
   // Copies and appends the given data into the element. SetToEmptyBytes or
@@ -97,35 +89,9 @@ class COMPONENT_EXPORT(NETWORK_CPP_BASE) DataElement {
   void AppendBytes(const char* bytes, int bytes_len) {
     DCHECK_EQ(type_, mojom::DataElementType::kBytes);
     DCHECK_NE(length_, std::numeric_limits<uint64_t>::max());
-    DCHECK(!bytes_);
     buf_.insert(buf_.end(), reinterpret_cast<const uint8_t*>(bytes),
                 reinterpret_cast<const uint8_t*>(bytes + bytes_len));
     length_ = buf_.size();
-  }
-
-  // Sets TYPE_BYTES data. This does NOT copy the given data and the caller
-  // should make sure the data is alive when this element is accessed.
-  // You cannot use AppendBytes with this method.
-  void SetToSharedBytes(const char* bytes, int bytes_len) {
-    type_ = mojom::DataElementType::kBytes;
-    bytes_ = reinterpret_cast<const uint8_t*>(bytes);
-    length_ = bytes_len;
-  }
-
-  // Sets TYPE_BYTES data. This allocates the space for the bytes in the
-  // internal vector but does not populate it with anything.  The caller can
-  // then use the bytes() method to access this buffer and populate it.
-  void SetToAllocatedBytes(size_t bytes_len) {
-    type_ = mojom::DataElementType::kBytes;
-    bytes_ = nullptr;
-    buf_.resize(bytes_len);
-    length_ = bytes_len;
-  }
-
-  // Sets TYPE_FILE data.
-  void SetToFilePath(const base::FilePath& path) {
-    SetToFilePathRange(path, 0, std::numeric_limits<uint64_t>::max(),
-                       base::Time());
   }
 
   // Sets TYPE_BLOB data.
@@ -181,8 +147,6 @@ class COMPONENT_EXPORT(NETWORK_CPP_BASE) DataElement {
   mojom::DataElementType type_;
   // For TYPE_BYTES.
   std::vector<uint8_t> buf_;
-  // For TYPE_BYTES.
-  const uint8_t* bytes_;
   // For TYPE_FILE.
   base::FilePath path_;
   // For TYPE_BLOB.

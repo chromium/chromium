@@ -55,12 +55,8 @@ struct BLINK_COMMON_EXPORT
       const network::DataElement& element) {
     return element.type_;
   }
-  static std::vector<uint8_t> buf(const network::DataElement& element) {
-    if (element.bytes_) {
-      return std::vector<uint8_t>(element.bytes_,
-                                  element.bytes_ + element.length_);
-    }
-    return std::move(element.buf_);
+  static const std::vector<uint8_t>& buf(const network::DataElement& element) {
+    return element.buf_;
   }
   static const base::FilePath& path(const network::DataElement& element) {
     return element.path_;
