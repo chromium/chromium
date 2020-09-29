@@ -21,7 +21,6 @@ import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.espresso.matcher.RootMatchers;
 import androidx.test.filters.MediumTest;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -31,7 +30,8 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
-import org.chromium.chrome.browser.feed.FeedProcessScopeFactory;
+import org.chromium.chrome.browser.feed.DataFilePath;
+import org.chromium.chrome.browser.feed.FeedDataInjectRule;
 import org.chromium.chrome.browser.feed.shared.stream.Stream;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -64,8 +64,10 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
     private static final int FIRST_CARD_POSITION = 3;
 
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule =
-            new ChromeTabbedActivityTestRule(FEED_TEST_RESPONSE_FILE_PATH);
+    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+
+    @Rule
+    public FeedDataInjectRule mFeedDataInjector = new FeedDataInjectRule(false);
 
     @Rule
     public SuggestionsDependenciesRule mSuggestionsDeps = new SuggestionsDependenciesRule();
@@ -105,14 +107,10 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
         mStream.addOnContentChangedListener(mTestObserver);
     }
 
-    @After
-    public void tearDown() {
-        FeedProcessScopeFactory.setTestNetworkClient(null);
-    }
-
     @Test
     @MediumTest
     @Feature({"FeedNewTabPage"})
+    @DataFilePath(FEED_TEST_RESPONSE_FILE_PATH)
     public void testShowTooltip() throws Exception {
         int callCount = mTestObserver.firstCardShownCallback.getCallCount();
         TestThreadUtils.runOnUiThreadBlocking(() -> mStream.triggerRefresh());

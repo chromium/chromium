@@ -41,8 +41,7 @@ import java.util.concurrent.TimeoutException;
  *     public FeedDataInjectRule mDataInjector = new FeedDataInjectRule();
  *
  *     @Rule
- *     public ChromeActivityTestRule<ChromeTabbedActivity> mActivityTestRule =
- *         new ChromeActivityTestRule(ChromeTabbedActivity.class);
+ *     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
  *
  *     @Test
  *     @Feature({"FeedNewTabPage"})
@@ -58,13 +57,8 @@ import java.util.concurrent.TimeoutException;
  * }
  * }
  * </pre>
- *
- * Note when using this test rule, do not also use ChromeTabbedActivityTestRule.
- * ChromeTabbedActivityTestRule also try to set a default feed response file and
- * it could results to strange behaviors in test, such as always see the same
- * set of cards in each test case.
  */
-final class FeedDataInjectRule extends TestWatcher {
+public final class FeedDataInjectRule extends TestWatcher {
     private static final String TAG = "FeedDataInjectRule";
     private static final int FIRST_CARD_BASE_POSITION = 2;
 
