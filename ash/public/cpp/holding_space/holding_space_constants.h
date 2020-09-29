@@ -25,11 +25,13 @@ constexpr int kHoldingSpaceChipsPerRow = 2;
 constexpr int kHoldingSpaceColumnSpacing = 8;
 constexpr int kHoldingSpaceColumnWidth = 160;
 constexpr int kHoldingSpaceCornerRadius = 8;
+constexpr int kHoldingSpacePinIconSize = 20;
 constexpr int kHoldingSpaceRowSpacing = 8;
 constexpr gfx::Insets kHoldingSpaceScreenshotPadding(8);
 constexpr int kHoldingSpaceScreenshotSpacing = 8;
 constexpr gfx::Size kHoldingSpaceScreenshotSize(104, 80);
 constexpr gfx::Insets kHoldingSpaceScreenshotsContainerPadding(8, 0);
+constexpr float kHoldingSpaceSelectedOverlayOpacity = 0.24f;
 constexpr int kHoldingSpaceTrayIconMainAxisMargin = 6;
 
 // Context menu commands.

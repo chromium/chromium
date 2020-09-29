@@ -99,6 +99,8 @@ PinnedFilesContainer::PinnedFilesContainer(
   scroll_view->SetBackgroundColor(base::nullopt);
   scroll_view->SetDrawOverflowIndicator(false);
   scroll_view->SetVisible(false);
+  scroll_view->SetPaintToLayer();
+  scroll_view->layer()->SetFillsBoundsOpaquely(false);
   scroll_view->ClipHeightTo(0, INT_MAX);
 
   item_chips_container_ = scroll_view->SetContents(

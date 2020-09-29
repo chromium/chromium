@@ -14,13 +14,16 @@
 #include "ash/system/holding_space/holding_space_item_view_delegate.h"
 #include "base/bind.h"
 #include "ui/base/class_property.h"
+#include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/background.h"
 #include "ui/views/controls/button/image_button.h"
-#include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
+#include "ui/views/painter.h"
+#include "ui/views/style/platform_style.h"
 #include "ui/views/vector_icons.h"
 
 namespace ash {
@@ -31,6 +34,37 @@ namespace {
 // `HoldingSpaceItemView`. Class name is not an adequate identifier as it may be
 // overridden by subclasses.
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kIsHoldingSpaceItemViewProperty, false)
+
+// CallbackPainter -------------------------------------------------------------
+
+// A painter which delegates painting to a callback.
+class CallbackPainter : public views::Painter {
+ public:
+  using Callback = base::RepeatingCallback<void(gfx::Canvas*, gfx::Size)>;
+
+  CallbackPainter(const CallbackPainter&) = delete;
+  CallbackPainter& operator=(const CallbackPainter&) = delete;
+  ~CallbackPainter() override = default;
+
+  // Creates a painted layer which delegates painting to `callback`.
+  static std::unique_ptr<ui::LayerOwner> CreatePaintedLayer(Callback callback) {
+    auto owner = views::Painter::CreatePaintedLayer(
+        base::WrapUnique(new CallbackPainter(callback)));
+    owner->layer()->SetFillsBoundsOpaquely(false);
+    return owner;
+  }
+
+ private:
+  explicit CallbackPainter(Callback callback) : callback_(callback) {}
+
+  // views::Painter:
+  gfx::Size GetMinimumSize() const override { return gfx::Size(); }
+  void Paint(gfx::Canvas* canvas, const gfx::Size& size) override {
+    callback_.Run(canvas, size);
+  }
+
+  Callback callback_;
+};
 
 }  // namespace
 
@@ -47,24 +81,39 @@ HoldingSpaceItemView::HoldingSpaceItemView(
 
   SetNotifyEnterExitOnChild(true);
 
+  // Accessibility.
+  GetViewAccessibility().OverrideName(item->text());
+  GetViewAccessibility().OverrideRole(ax::mojom::Role::kButton);
+
+  // Background.
+  SetBackground(views::CreateRoundedRectBackground(
+      AshColorProvider::Get()->GetControlsLayerColor(
+          AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive),
+      kHoldingSpaceCornerRadius));
+
+  // Layer.
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
 
-  GetViewAccessibility().OverrideName(item->text());
-
-  // Install the selection ring before installing the focus ring so that the
-  // selection ring will paint beneath the focus ring.
-  views::FocusRing* selection_ring = views::FocusRing::Install(this);
-  selection_ring->SetColor(gfx::kPlaceholderColor);
-  selection_ring->SetHasFocusPredicate(
-      [this](views::View* selection_ring) { return this->selected(); });
-
+  // Focus.
   SetFocusBehavior(FocusBehavior::ALWAYS);
-  views::FocusRing* focus_ring = views::FocusRing::Install(this);
-  focus_ring->SetColor(ShelfConfig::Get()->shelf_focus_border_color());
+  focused_layer_owner_ =
+      CallbackPainter::CreatePaintedLayer(base::BindRepeating(
+          &HoldingSpaceItemView::OnPaintFocus, base::Unretained(this)));
+  layer()->Add(focused_layer_owner_->layer());
 
-  // The selection ring, focus ring, and ink drop layers should match the corner
-  // radius of this view. Installation of a highlight path generator does this.
+  // Selection.
+  selected_layer_owner_ =
+      CallbackPainter::CreatePaintedLayer(base::BindRepeating(
+          &HoldingSpaceItemView::OnPaintSelect, base::Unretained(this)));
+  layer()->Add(selected_layer_owner_->layer());
+
+  // Ink drop.
+  SetInkDropMode(InkDropMode::ON_NO_GESTURE_HANDLER);
+  SetInkDropVisibleOpacity(
+      AshColorProvider::Get()->GetRippleAttributes().inkdrop_opacity);
+
+  // Ink drop layers should match the corner radius of this view.
   views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
                                                 kHoldingSpaceCornerRadius);
 
@@ -83,6 +132,32 @@ HoldingSpaceItemView* HoldingSpaceItemView::Cast(views::View* view) {
 
 SkColor HoldingSpaceItemView::GetInkDropBaseColor() const {
   return AshColorProvider::Get()->GetRippleAttributes().base_color;
+}
+
+void HoldingSpaceItemView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
+  gfx::Rect bounds = GetLocalBounds();
+  selected_layer_owner_->layer()->SetBounds(bounds);
+  selected_layer_owner_->layer()->SchedulePaint(
+      selected_layer_owner_->layer()->bounds());
+
+  // The focus ring is painted just outside the bounds for this view.
+  const float kFocusInsets =
+      -2.f - (views::PlatformStyle::kFocusHaloThickness / 2.f);
+
+  bounds.Inset(gfx::Insets(kFocusInsets));
+  focused_layer_owner_->layer()->SetBounds(bounds);
+  focused_layer_owner_->layer()->SchedulePaint(
+      focused_layer_owner_->layer()->bounds());
+}
+
+void HoldingSpaceItemView::OnFocus() {
+  focused_layer_owner_->layer()->SchedulePaint(
+      focused_layer_owner_->layer()->bounds());
+}
+
+void HoldingSpaceItemView::OnBlur() {
+  focused_layer_owner_->layer()->SchedulePaint(
+      focused_layer_owner_->layer()->bounds());
 }
 
 void HoldingSpaceItemView::OnGestureEvent(ui::GestureEvent* event) {
@@ -118,7 +193,9 @@ void HoldingSpaceItemView::SetSelected(bool selected) {
     return;
 
   selected_ = selected;
-  InvalidateLayout();
+
+  selected_layer_owner_->layer()->SchedulePaint(
+      selected_layer_owner_->layer()->bounds());
 }
 
 void HoldingSpaceItemView::AddPin(views::View* parent) {
@@ -130,15 +207,56 @@ void HoldingSpaceItemView::AddPin(views::View* parent) {
   const SkColor icon_color = AshColorProvider::Get()->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kSystemMenuIconColor);
 
-  const gfx::ImageSkia unpinned_icon =
-      gfx::CreateVectorIcon(views::kUnpinIcon, icon_color);
-  const gfx::ImageSkia pinned_icon =
-      gfx::CreateVectorIcon(views::kPinIcon, icon_color);
+  const gfx::ImageSkia unpinned_icon = gfx::CreateVectorIcon(
+      views::kUnpinIcon, kHoldingSpacePinIconSize, icon_color);
+  const gfx::ImageSkia pinned_icon = gfx::CreateVectorIcon(
+      views::kPinIcon, kHoldingSpacePinIconSize, icon_color);
 
   pin_->SetImage(views::Button::STATE_NORMAL, unpinned_icon);
   pin_->SetToggledImage(views::Button::STATE_NORMAL, &pinned_icon);
   pin_->set_callback(base::BindRepeating(&HoldingSpaceItemView::OnPinPressed,
                                          base::Unretained(this)));
+}
+
+void HoldingSpaceItemView::OnPaintFocus(gfx::Canvas* canvas, gfx::Size size) {
+  if (!HasFocus())
+    return;
+
+  cc::PaintFlags flags;
+  flags.setAntiAlias(true);
+  flags.setColor(AshColorProvider::Get()->GetControlsLayerColor(
+      AshColorProvider::ControlsLayerType::kFocusRingColor));
+  flags.setStrokeWidth(views::PlatformStyle::kFocusHaloThickness);
+  flags.setStyle(cc::PaintFlags::kStroke_Style);
+
+  gfx::Rect bounds = gfx::Rect(size);
+  bounds.Inset(gfx::Insets(flags.getStrokeWidth() / 2));
+  canvas->DrawRoundRect(bounds, kHoldingSpaceCornerRadius, flags);
+}
+
+void HoldingSpaceItemView::OnPaintSelect(gfx::Canvas* canvas, gfx::Size size) {
+  if (!selected_)
+    return;
+
+  const SkColor color = AshColorProvider::Get()->GetControlsLayerColor(
+      AshColorProvider::ControlsLayerType::kFocusRingColor);
+
+  const SkColor overlay_color =
+      SkColorSetA(color, kHoldingSpaceSelectedOverlayOpacity * 0xFF);
+
+  cc::PaintFlags flags;
+  flags.setAntiAlias(true);
+  flags.setColor(overlay_color);
+
+  gfx::Rect bounds = gfx::Rect(size);
+  canvas->DrawRoundRect(bounds, kHoldingSpaceCornerRadius, flags);
+
+  flags.setColor(color);
+  flags.setStrokeWidth(views::PlatformStyle::kFocusHaloThickness);
+  flags.setStyle(cc::PaintFlags::kStroke_Style);
+
+  bounds.Inset(gfx::Insets(flags.getStrokeWidth() / 2));
+  canvas->DrawRoundRect(bounds, kHoldingSpaceCornerRadius, flags);
 }
 
 void HoldingSpaceItemView::OnPinPressed() {

@@ -6,16 +6,11 @@
 
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
-#include "ash/public/cpp/shelf_config.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/holding_space/holding_space_item_view.h"
 #include "ash/system/tray/tray_popup_item_style.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/user/rounded_image_view.h"
-#include "ui/base/dragdrop/drag_drop_types.h"
-#include "ui/views/animation/flood_fill_ink_drop_ripple.h"
-#include "ui/views/animation/ink_drop_impl.h"
-#include "ui/views/background.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
@@ -42,16 +37,6 @@ HoldingSpaceItemChipView::HoldingSpaceItemChipView(
   TrayPopupItemStyle(TrayPopupItemStyle::FontStyle::DETAILED_VIEW_LABEL)
       .SetupLabel(label_);
 
-  const auto* color_provider = AshColorProvider::Get();
-  SetBackground(views::CreateRoundedRectBackground(
-      color_provider->GetControlsLayerColor(
-          AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive),
-      kHoldingSpaceCornerRadius));
-
-  SetInkDropMode(InkDropMode::ON_NO_GESTURE_HANDLER);
-  SetInkDropVisibleOpacity(
-      color_provider->GetRippleAttributes().inkdrop_opacity);
-
   // Subscribe to be notified of changes to `item_`'s image.
   image_subscription_ =
       item->image().AddImageSkiaChangedCallback(base::BindRepeating(
@@ -59,7 +44,7 @@ HoldingSpaceItemChipView::HoldingSpaceItemChipView(
 
   UpdateImage();
 
-  AddPin(this /*parent*/);
+  AddPin(/*parent=*/this);
 }
 
 HoldingSpaceItemChipView::~HoldingSpaceItemChipView() = default;
