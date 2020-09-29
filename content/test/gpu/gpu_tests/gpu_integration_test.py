@@ -242,6 +242,11 @@ class GpuIntegrationTest(
       if len(args) == 1 and isinstance(args[0], tuple):
         args = args[0]
       expected_crashes = self.GetExpectedCrashes(args)
+      os_name = self.browser.platform.GetOSName()
+      # The GPU tests don't function correctly if the screen is not on, so
+      # ensure that this is the case.
+      if os_name == 'android':
+        self.browser.platform.android_action_runner.TurnScreenOn()
       self.RunActualGpuTest(url, *args)
     except Exception:
       if ResultType.Failure in expected_results or should_retry_on_failure:
