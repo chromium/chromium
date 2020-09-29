@@ -339,7 +339,7 @@ class PLATFORM_EXPORT CanvasResourceRasterSharedImage final
     gpu::Mailbox shared_image_mailbox;
     gpu::SyncToken sync_token;
     size_t bitmap_image_read_refs = 0u;
-    MailboxSyncMode mailbox_sync_mode = kVerifiedSyncToken;
+    MailboxSyncMode mailbox_sync_mode = kUnverifiedSyncToken;
     bool is_lost = false;
 
     // We need to create 2 representations if canvas is operating in single
@@ -478,7 +478,7 @@ class PLATFORM_EXPORT CanvasResourceSkiaDawnSharedImage final
     GLuint id;
     GLuint generation;
     size_t bitmap_image_read_refs = 0u;
-    MailboxSyncMode mailbox_sync_mode = kVerifiedSyncToken;
+    MailboxSyncMode mailbox_sync_mode = kUnverifiedSyncToken;
     bool is_lost = false;
   };
 

@@ -627,6 +627,9 @@ scoped_refptr<StaticBitmapImage> CanvasResourceRasterSharedImage::Bitmap() {
   scoped_refptr<StaticBitmapImage> image;
 
   // If its cross thread, then the sync token was already verified.
+  if (!is_cross_thread()) {
+    owning_thread_data().mailbox_sync_mode = kUnverifiedSyncToken;
+  }
   image = AcceleratedStaticBitmapImage::CreateFromCanvasMailbox(
       mailbox(), GetSyncToken(), texture_id_for_image, image_info, texture_target_,
       is_origin_top_left_, context_provider_wrapper_, owning_thread_ref_,
@@ -952,13 +955,14 @@ scoped_refptr<StaticBitmapImage> CanvasResourceSkiaDawnSharedImage::Bitmap() {
 
   scoped_refptr<StaticBitmapImage> image;
 
-  // If its cross thread, then the sync token was already verified. If not, then
-  // we don't need one. The image lazily generates a token if needed.
-  gpu::SyncToken token = is_cross_thread() ? sync_token() : gpu::SyncToken();
+  // If its cross thread, then the sync token was already verified.
+  if (!is_cross_thread()) {
+    owning_thread_data().mailbox_sync_mode = kUnverifiedSyncToken;
+  }
   image = AcceleratedStaticBitmapImage::CreateFromCanvasMailbox(
-      mailbox(), token, 0, image_info, GL_TEXTURE_2D, is_origin_top_left_,
-      context_provider_wrapper_, owning_thread_ref_, owning_thread_task_runner_,
-      std::move(release_callback));
+      mailbox(), GetSyncToken(), 0, image_info, GL_TEXTURE_2D,
+      is_origin_top_left_, context_provider_wrapper_, owning_thread_ref_,
+      owning_thread_task_runner_, std::move(release_callback));
 
   DCHECK(image);
   return image;
