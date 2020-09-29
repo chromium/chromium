@@ -100,10 +100,6 @@ base::ThreadLocalPointer<CurrentGL>* g_current_gl_context_tls = NULL;
 EGLApi* g_current_egl_context;
 #endif
 
-#if defined(OS_WIN)
-WGLApi* g_current_wgl_context;
-#endif
-
 #if defined(USE_GLX)
 GLXApi* g_current_glx_context;
 #endif

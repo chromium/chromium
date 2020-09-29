@@ -504,10 +504,6 @@ typedef uint64_t EGLuint64CHROMIUM;
 #include "gl_bindings_autogen_egl.h"
 #endif
 
-#if defined(OS_WIN)
-#include "gl_bindings_autogen_wgl.h"
-#endif
-
 #if defined(USE_GLX)
 #include "gl_bindings_autogen_glx.h"
 #endif
@@ -536,20 +532,6 @@ struct GL_EXPORT CurrentGL {
   DriverGL* Driver = nullptr;
   const GLVersionInfo* Version = nullptr;
 };
-
-#if defined(OS_WIN)
-struct GL_EXPORT DriverWGL {
-  void InitializeStaticBindings();
-  void InitializeExtensionBindings();
-  void ClearBindings();
-
-  ProcsWGL fn;
-  ExtensionsWGL ext;
-
- private:
-  static std::string GetPlatformExtensions();
-};
-#endif
 
 #if defined(USE_EGL)
 struct GL_EXPORT DriverEGL {
@@ -590,11 +572,6 @@ GL_EXPORT extern base::ThreadLocalPointer<CurrentGL>* g_current_gl_context_tls;
 #if defined(USE_EGL)
 GL_EXPORT extern EGLApi* g_current_egl_context;
 GL_EXPORT extern DriverEGL g_driver_egl;
-#endif
-
-#if defined(OS_WIN)
-GL_EXPORT extern WGLApi* g_current_wgl_context;
-GL_EXPORT extern DriverWGL g_driver_wgl;
 #endif
 
 #if defined(USE_GLX)

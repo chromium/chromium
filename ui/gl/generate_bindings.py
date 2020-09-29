@@ -22,8 +22,6 @@ HEADER_PATHS = [
 ]
 
 UNCONDITIONALLY_BOUND_EXTENSIONS = set([
-  'WGL_ARB_extensions_string',
-  'WGL_EXT_extensions_string',
   'GL_CHROMIUM_gles_depth_binding_hack', # crbug.com/448206
   'GL_CHROMIUM_glgetstringi_hack', # crbug.com/470396
   'GL_CHROMIUM_egl_khr_fence_sync_hack', # crbug.com/504758
@@ -2744,69 +2742,6 @@ EGL_FUNCTIONS = [
   'arguments': 'EGLDisplay dpy, EGLSyncKHR sync, EGLint flags' },
 ]
 
-WGL_FUNCTIONS = [
-{ 'return_type': 'BOOL',
-  'names': ['wglChoosePixelFormatARB'],
-  'arguments':
-      'HDC dc, const int* int_attrib_list, const float* float_attrib_list, '
-      'UINT max_formats, int* formats, UINT* num_formats', },
-{ 'return_type': 'BOOL',
-  'names': ['wglCopyContext'],
-  'arguments': 'HGLRC hglrcSrc, HGLRC hglrcDst, UINT mask', },
-{ 'return_type': 'HGLRC',
-  'names': ['wglCreateContext'],
-  'arguments': 'HDC hdc', },
-{ 'return_type': 'HGLRC',
-  'names': ['wglCreateContextAttribsARB'],
-  'arguments': 'HDC hDC, HGLRC hShareContext, const int* attribList', },
-{ 'return_type': 'HGLRC',
-  'names': ['wglCreateLayerContext'],
-  'arguments': 'HDC hdc, int iLayerPlane', },
-{ 'return_type': 'HPBUFFERARB',
-  'names': ['wglCreatePbufferARB'],
-  'arguments': 'HDC hDC, int iPixelFormat, int iWidth, int iHeight, '
-               'const int* piAttribList', },
-{ 'return_type': 'BOOL',
-  'names': ['wglDeleteContext'],
-  'arguments': 'HGLRC hglrc', },
-{ 'return_type': 'BOOL',
-  'names': ['wglDestroyPbufferARB'],
-  'arguments': 'HPBUFFERARB hPbuffer', },
-{ 'return_type': 'HGLRC',
-  'names': ['wglGetCurrentContext'],
-  'arguments': '', },
-{ 'return_type': 'HDC',
-  'names': ['wglGetCurrentDC'],
-  'arguments': '', },
-{ 'return_type': 'const char*',
-  'names': ['wglGetExtensionsStringARB'],
-  'arguments': 'HDC hDC', },
-{ 'return_type': 'const char*',
-  'names': ['wglGetExtensionsStringEXT'],
-  'arguments': '', },
-{ 'return_type': 'HDC',
-  'names': ['wglGetPbufferDCARB'],
-  'arguments': 'HPBUFFERARB hPbuffer', },
-{ 'return_type': 'BOOL',
-  'names': ['wglMakeCurrent'],
-  'arguments': 'HDC hdc, HGLRC hglrc', },
-{ 'return_type': 'BOOL',
-  'names': ['wglQueryPbufferARB'],
-  'arguments': 'HPBUFFERARB hPbuffer, int iAttribute, int* piValue', },
-{ 'return_type': 'int',
-  'names': ['wglReleasePbufferDCARB'],
-  'arguments': 'HPBUFFERARB hPbuffer, HDC hDC', },
-{ 'return_type': 'BOOL',
-  'names': ['wglShareLists'],
-  'arguments': 'HGLRC hglrc1, HGLRC hglrc2', },
-{ 'return_type': 'BOOL',
-  'names': ['wglSwapIntervalEXT'],
-  'arguments': 'int interval', },
-{ 'return_type': 'BOOL',
-  'names': ['wglSwapLayerBuffers'],
-  'arguments': 'HDC hdc, UINT fuPlanes', },
-]
-
 GLX_FUNCTIONS = [
 { 'return_type': 'void',
   'names': ['glXBindTexImageEXT'],
@@ -2999,7 +2934,6 @@ FUNCTION_SETS = [
       'EGL_ANGLE_surface_d3d_texture_2d_share_handle',
     ],
   ],
-  [WGL_FUNCTIONS, 'wgl', ['noninclude/GL/wglext.h'], []],
   [GLX_FUNCTIONS, 'glx', ['GL/glx.h', 'noninclude/GL/glxext.h'], []],
 ]
 
@@ -3800,7 +3734,7 @@ def ParseFunctionsFromHeader(header_file, extensions, versions):
   version_start = re.compile(
       r'#ifndef GL_(ES_|)VERSION((?:_[0-9])+)$')
   extension_start = re.compile(
-      r'#ifndef ((?:GL|EGL|WGL|GLX)_[A-Z]+_[a-zA-Z]\w+)')
+      r'#ifndef ((?:GL|EGL|GLX)_[A-Z]+_[a-zA-Z]\w+)')
   extension_function = re.compile(r'.+\s+([a-z]+\w+)\s*\(')
   typedef = re.compile(r'typedef .*')
   macro_start = re.compile(r'^#(if|ifdef|ifndef).*')
