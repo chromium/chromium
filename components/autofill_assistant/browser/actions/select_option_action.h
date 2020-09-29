@@ -28,11 +28,13 @@ class SelectOptionAction : public Action {
   // Overrides Action:
   void InternalProcessAction(ProcessActionCallback callback) override;
 
-  void OnWaitForElement(ProcessActionCallback callback,
-                        const Selector& selector,
+  void OnWaitForElement(const Selector& selector,
                         const ClientStatus& element_status);
-  void OnSelectOption(ProcessActionCallback callback,
-                      const ClientStatus& status);
+
+  void EndAction(const ClientStatus& status);
+
+  std::string value_;
+  ProcessActionCallback process_action_callback_;
 
   base::WeakPtrFactory<SelectOptionAction> weak_ptr_factory_{this};
 

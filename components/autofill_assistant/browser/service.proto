@@ -939,13 +939,20 @@ message SelectOptionProto {
   // The drop down element on which to select an option.
   optional SelectorProto element = 2;
 
-  // Value of the option to use.
-  optional string selected_option = 3;
+  oneof value {
+    // Value of the option to use.
+    string selected_option = 3;
+    // A value from an Autofill source. Note that this must be proceeded by a
+    // |CollectUserDataAction|.
+    AutofillValue autofill_value = 5;
+  }
 
   // The strategy used to select a value option. This defaults to
   // |LABEL_STARTS_WITH| for the legacy case.
   optional DropdownSelectStrategy select_strategy = 4
       [default = LABEL_STARTS_WITH];
+
+  reserved 1;
 }
 
 // Contain a localized text message from the server.
