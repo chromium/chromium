@@ -208,6 +208,7 @@ static_library("browser") {
   ]
 
   public_deps = [
+    ":buildflags",
     ":location_bar",
     "//base",
     "//base:i18n",
@@ -219,7 +220,6 @@ static_library("browser") {
     "//url",
   ]
   deps = [
-    ":buildflags",
     ":in_memory_url_index_cache_proto",
     "//components/bookmarks/browser",
     "//components/component_updater",
