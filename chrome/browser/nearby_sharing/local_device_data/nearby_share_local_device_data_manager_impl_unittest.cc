@@ -8,7 +8,6 @@
 
 #include "base/optional.h"
 #include "base/test/bind_test_util.h"
-#include "build/build_config.h"
 #include "chrome/browser/nearby_sharing/client/fake_nearby_share_client.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
 #include "chrome/browser/nearby_sharing/local_device_data/fake_nearby_share_device_data_updater.h"
@@ -28,7 +27,7 @@ const char kFakeDefaultDeviceName[] = "Barack's Chromebook";
 const char kFakeDeviceName[] = "My Cool Chromebook";
 const char kFakeEmptyDeviceName[] = "";
 const char kFakeTooLongDeviceName[] = "this string is 33 bytes in UTF-8!";
-const char kFakeInvalidDeviceName[] = {0xC0};
+const char kFakeInvalidDeviceName[] = {0xC0, 0x00};
 const char kFakeFullName[] = "Barack Obama";
 const char kFakeIconUrl[] = "https://www.google.com";
 
@@ -260,13 +259,7 @@ TEST_F(NearbyShareLocalDeviceDataManagerImplTest, DeviceId) {
   EXPECT_EQ(id, manager()->GetId());
 }
 
-// Test is flaky. crbug.com/1133295.
-#if defined(OS_CHROMEOS)
-#define MAYBE_ValidateDeviceName DISABLED_ValidateDeviceName
-#else
-#define MAYBE_ValidateDeviceName ValidateDeviceName
-#endif
-TEST_F(NearbyShareLocalDeviceDataManagerImplTest, MAYBE_ValidateDeviceName) {
+TEST_F(NearbyShareLocalDeviceDataManagerImplTest, ValidateDeviceName) {
   CreateManager();
   EXPECT_EQ(manager()->ValidateDeviceName(kFakeDeviceName),
             nearby_share::mojom::DeviceNameValidationResult::kValid);
@@ -279,13 +272,7 @@ TEST_F(NearbyShareLocalDeviceDataManagerImplTest, MAYBE_ValidateDeviceName) {
       nearby_share::mojom::DeviceNameValidationResult::kErrorNotValidUtf8);
 }
 
-// Test is flaky. crbug.com/1133295.
-#if defined(OS_CHROMEOS)
-#define MAYBE_SetDeviceName DISABLED_SetDeviceName
-#else
-#define MAYBE_SetDeviceName SetDeviceName
-#endif
-TEST_F(NearbyShareLocalDeviceDataManagerImplTest, MAYBE_SetDeviceName) {
+TEST_F(NearbyShareLocalDeviceDataManagerImplTest, SetDeviceName) {
   CreateManager();
 
   // The default device name is set in the ctor when the device name is empty.
