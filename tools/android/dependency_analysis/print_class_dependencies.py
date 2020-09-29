@@ -11,6 +11,7 @@ from typing import List
 import chrome_names
 import class_dependency
 import graph
+import package_dependency
 import print_dependencies_helper
 import serialization
 
@@ -35,6 +36,7 @@ ALLOWED_PREFIXES = {
     '//ui/',
     '//url:',
 }
+IGNORED_CLASSES = {'org.chromium.base.natives.GEN_JNI'}
 
 
 def get_class_name_to_display(fully_qualified_name: str,
@@ -53,8 +55,12 @@ def get_build_target_name_to_display(build_target: str,
         return chrome_names.shorten_build_target(build_target)
 
 
-def is_allowed_dependency(build_target: str) -> bool:
+def is_allowed_target_dependency(build_target: str) -> bool:
     return any(build_target.startswith(p) for p in ALLOWED_PREFIXES)
+
+
+def is_ignored_class_dependency(class_name: str) -> bool:
+    return class_name in IGNORED_CLASSES
 
 
 def print_class_nodes(class_nodes: List[class_dependency.JavaClass],
@@ -73,8 +79,10 @@ def print_class_nodes(class_nodes: List[class_dependency.JavaClass],
     for class_node in class_nodes:
         if ignore_modularized:
             if all(
-                    is_allowed_dependency(target)
+                    is_allowed_target_dependency(target)
                     for target in class_node.build_targets):
+                continue
+            if is_ignored_class_dependency(class_node.name):
                 continue
             else:
                 suspect_dependencies += 1
@@ -93,16 +101,15 @@ def print_class_nodes(class_nodes: List[class_dependency.JavaClass],
     # Print header
     if ignore_modularized:
         cleared = len(class_nodes) - suspect_dependencies
-        print(
-            f'{suspect_dependencies} outbound dependencies from {class_name} '
-            f'may need to be broken (omitted {cleared} cleared dependencies):')
+        print(f'{class_name} has {suspect_dependencies} outbound dependencies '
+              f'that may need to be broken (omitted {cleared} cleared '
+              f'dependencies):')
     else:
         if direction == INBOUND:
-            print(
-                f'{len(class_nodes)} inbound dependencies into {class_name}:')
+            print(f'{class_name} has {len(class_nodes)} inbound dependencies:')
         else:
             print(
-                f'{len(class_nodes)} outbound dependencies from {class_name}:')
+                f'{class_name} has {len(class_nodes)} outbound dependencies:')
 
     # Print build targets and dependencies
     for indent, message in print_backlog:
@@ -126,6 +133,67 @@ def print_class_dependencies_for_key(
                           print_mode, class_name, OUTBOUND)
 
 
+def get_valid_classes_from_class_input(
+        class_graph: class_dependency.JavaClassDependencyGraph,
+        class_names_input: str) -> List[str]:
+    """Parses classes given as input into fully qualified, valid classes."""
+    result = []
+
+    class_graph_keys = [node.name for node in class_graph.nodes]
+
+    class_names = class_names_input.split(',')
+
+    for class_name in class_names:
+        valid_keys = print_dependencies_helper.get_valid_class_keys_matching(
+            class_graph_keys, class_name)
+
+        check_only_one_valid_key(valid_keys, class_name, 'class')
+
+        result.append(valid_keys[0])
+
+    return result
+
+
+def get_valid_classes_from_package_input(
+        package_graph: package_dependency.JavaPackageDependencyGraph,
+        package_names_input: str) -> List[str]:
+    """Parses packages given as input into fully qualified, valid classes."""
+    result = []
+
+    package_graph_keys = [node.name for node in package_graph.nodes]
+
+    package_names = package_names_input.split(',')
+
+    for package_name in package_names:
+        valid_keys = print_dependencies_helper.get_valid_package_keys_matching(
+            package_graph_keys, package_name)
+
+        check_only_one_valid_key(valid_keys, package_name, 'package')
+
+        package_key: str = valid_keys[0]
+        package_node: package_dependency.JavaPackage = \
+            package_graph.get_node_by_key(package_key)
+        classes_in_package: List[str] = sorted(package_node.classes.keys())
+        result.extend(classes_in_package)
+
+    return result
+
+
+def check_only_one_valid_key(valid_keys: List[str], key_input: str,
+                             entity: str) -> None:
+    if len(valid_keys) == 0:
+        raise ValueError(f'No {entity} found by the name {key_input}.')
+    elif len(valid_keys) > 1:
+        print(f'Multiple valid keys found for the name {key_input}, '
+              'please disambiguate between one of the following options:')
+        for valid_key in valid_keys:
+            print(f'\t{valid_key}')
+        raise ValueError(
+            f'Multiple valid keys found for the name {key_input}.')
+    else:  # len(valid_keys) == 1
+        return
+
+
 def main():
     """Prints class-level dependencies for one or more input classes."""
     arg_parser = argparse.ArgumentParser(
@@ -138,10 +206,11 @@ def main():
         required=True,
         help='Path to the JSON file containing the dependency graph. '
         'See the README on how to generate this file.')
-    required_arg_group.add_argument(
+    required_arg_group_either = arg_parser.add_argument_group(
+        'required arguments (at least one)')
+    required_arg_group_either.add_argument(
         '-c',
         '--classes',
-        required=True,
         dest='class_names',
         help='Case-sensitive name of the classes to print dependencies for. '
         'Matches either the simple class name without package or the fully '
@@ -149,6 +218,13 @@ def main():
         '`org.chromium.browser.AppHooks`. Specify multiple classes with a '
         'comma-separated list, for example '
         '`ChromeActivity,ChromeTabbedActivity`')
+    required_arg_group_either.add_argument(
+        '-p',
+        '--packages',
+        dest='package_names',
+        help='Case-sensitive name of the packages to print dependencies for, '
+        'such as `org.chromium.browser`. Specify multiple packages with a '
+        'comma-separated list.`')
     direction_arg_group = arg_parser.add_mutually_exclusive_group()
     direction_arg_group.add_argument('--inbound',
                                      dest='inbound_only',
@@ -169,37 +245,35 @@ def main():
                             'dependencies.')
     arguments = arg_parser.parse_args()
 
+    if not arguments.class_names and not arguments.package_names:
+        raise ValueError('Either -c/--classes or -p/--packages need to be '
+                         'specified.')
+
     print_mode = PrintMode(inbound=not arguments.outbound_only,
                            outbound=not arguments.inbound_only,
                            ignore_modularized=arguments.ignore_modularized,
                            fully_qualified=arguments.fully_qualified)
 
-    class_graph = serialization.load_class_graph_from_file(arguments.file)
-    class_graph_keys = [node.name for node in class_graph.nodes]
+    class_graph, package_graph = \
+        serialization.load_class_and_package_graphs_from_file(arguments.file)
 
-    class_names = arguments.class_names.split(',')
+    valid_class_names = []
+    if arguments.class_names:
+        valid_class_names.extend(
+            get_valid_classes_from_class_input(class_graph,
+                                               arguments.class_names))
+    if arguments.package_names:
+        valid_class_names.extend(
+            get_valid_classes_from_package_input(package_graph,
+                                                 arguments.package_names))
 
-    for i, class_name in enumerate(class_names):
-        valid_keys = print_dependencies_helper.get_valid_class_keys_matching(
-            class_graph_keys, class_name)
-
+    for i, fully_qualified_class_name in enumerate(valid_class_names):
         if i > 0:
             print()
 
-        if len(valid_keys) == 0:
-            print(f'No class found by the name {class_name}.')
-        elif len(valid_keys) > 1:
-            print(f'Multiple valid keys found for the name {class_name}, '
-                  'please disambiguate between one of the following options:')
-            for valid_key in valid_keys:
-                print(f'\t{valid_key}')
-        else:  # len(valid_keys) == 1
-            fully_qualified_class_name = valid_keys[0]
-            class_name = get_class_name_to_display(fully_qualified_class_name,
-                                                   print_mode)
-            print_class_dependencies_for_key(class_graph,
-                                             fully_qualified_class_name,
-                                             print_mode)
+        print_class_dependencies_for_key(class_graph,
+                                         fully_qualified_class_name,
+                                         print_mode)
 
 
 if __name__ == '__main__':
