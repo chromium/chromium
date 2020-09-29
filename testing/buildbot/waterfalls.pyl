@@ -4065,14 +4065,7 @@
           'win10_nvidia_quadro_p400_stable',
         ],
         'test_suites': {
-          # UseSkiaRenderer is enabled through fieldtrial_testing_config.json on
-          # Windows. Telemetry tests now run with SkiaRenderer by default, so
-          # this bot runs them with GLRenderer to maintain coverage. Other
-          # content based tests still run with GLRenderer by default so this bot
-          # runs them with SkiaRenderer.
-          'gtest_tests': 'skia_renderer_gtests',
-          'isolated_scripts': 'gpu_blink_web_tests_skia_renderer',
-          'gpu_telemetry_tests': 'gpu_gl_renderer_full_telemetry_tests',
+          'gpu_telemetry_tests': 'gpu_noop_sleep_telemetry_test',
         },
       },
      'Win10 FYI x64 dEQP Release (Intel HD 630)': {

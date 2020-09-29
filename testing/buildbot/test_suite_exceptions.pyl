@@ -2392,16 +2392,6 @@
       }
     }
   },
-  'skia_renderer_gl_blink_web_tests': {
-    'modifications': {
-      'Win10 FYI x64 SkiaRenderer GL (NVIDIA)': {
-        'args': [
-          '--target',
-          'Release_x64',
-        ],
-      },
-    },
-  },
   'storage_service_content_browsertests': {
     'modifications': {
       'Linux Tests (dbg)(1)': {

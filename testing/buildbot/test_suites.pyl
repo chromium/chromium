@@ -2361,78 +2361,6 @@
       },
     },
 
-    'gpu_gl_renderer_full_telemetry_tests': {
-      'context_lost': {
-        'name': 'gl_renderer_context_lost_tests',
-        'args': [
-          '--extra-browser-args=--disable-features=UseSkiaRenderer',
-        ],
-      },
-      'depth_capture': {
-        'name': 'gl_renderer_depth_capture_tests',
-        'args': [
-          '--extra-browser-args=--disable-features=UseSkiaRenderer',
-        ],
-      },
-      'gpu_process': {
-        'name': 'gl_renderer_gpu_process_launch_tests',
-        'args': [
-          '--extra-browser-args=--disable-features=UseSkiaRenderer',
-        ],
-      },
-      'hardware_accelerated_feature': {
-        'name': 'gl_renderer_hardware_accelerated_feature_tests',
-        'args': [
-          '--extra-browser-args=--disable-features=UseSkiaRenderer',
-        ],
-      },
-      'maps': {
-        'name': 'gl_renderer_maps_pixel_tests',
-        'args': [
-          '--dont-restore-color-profile-after-test',
-          '--test-machine-name',
-          '${buildername}',
-          '--extra-browser-args=--disable-features=UseSkiaRenderer',
-        ],
-        'android_args': [
-          # TODO(crbug.com/1093085): Remove this once we fix the tests.
-          '--extra-browser-args=--force-online-connection-state-for-indicator',
-        ],
-        'mixins': [
-          'chrome-gpu-gold-service-account',
-          'skia_gold_test',
-        ],
-      },
-      'pixel': {
-        'name': 'gl_renderer_pixel_skia_gold_tests',
-        'args': [
-          '--dont-restore-color-profile-after-test',
-          '--test-machine-name',
-          '${buildername}',
-          '--extra-browser-args=--disable-features=UseSkiaRenderer',
-        ],
-        'android_args': [
-          # TODO(crbug.com/1093085): Remove this once we fix the tests.
-          '--extra-browser-args=--force-online-connection-state-for-indicator',
-        ],
-        'mixins': [
-          'chrome-gpu-gold-service-account',
-          'skia_gold_test',
-        ],
-      },
-      'screenshot_sync': {
-        'name': 'gl_renderer_screenshot_sync_tests',
-        'args': [
-          '--dont-restore-color-profile-after-test',
-          '--extra-browser-args=--disable-features=UseSkiaRenderer',
-        ],
-        'android_args': [
-          # TODO(crbug.com/1093085): Remove this once we fix the tests.
-          '--extra-browser-args=--force-online-connection-state-for-indicator',
-        ],
-      },
-    },
-
     # Very small set of test that exercise GLRenderer and produce pixels for CQ.
     # For use where SkiaRenderer is enabled by field trial or default.
     'gpu_gl_renderer_small_telemetry_tests': {
@@ -3987,19 +3915,6 @@
       },
     },
 
-    'skia_renderer_gtests': {
-      'skia_renderer_content_browsertests': {
-        'args': [
-          '--enable-features=UseSkiaRenderer',
-          '--test-launcher-filter-file=../../testing/buildbot/filters/skia_renderer.content_browsertests.filter',
-        ],
-        'swarming': {
-          'shards': 1,
-        },
-        'test': 'content_browsertests',
-      },
-    },
-
     'skia_renderer_isolated_scripts': {
       'non_skia_renderer_swiftshader_blink_web_tests': {
         # layout test failures are retried 3 times when '--test-list' is not
@@ -5128,7 +5043,6 @@
       'gpu_common_and_optional_telemetry_tests',
       'gpu_passthrough_telemetry_tests',
       'gpu_webgl_conformance_d3d11_passthrough_telemetry_tests',
-      'gpu_gl_renderer_small_telemetry_tests',
     ],
 
     'gpu_dawn_asan_isolated_scripts': [

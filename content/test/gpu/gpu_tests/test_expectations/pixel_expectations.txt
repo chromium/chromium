@@ -232,12 +232,6 @@ crbug.com/974380 [ mac ] Pixel_OffscreenCanvasUnaccelerated2DGPUCompositingWorke
 crbug.com/1008450 [ android use-vulkan skia-renderer ] Pixel_Video_BackdropFilter [ Skip ]
 crbug.com/1008450 [ android skia-renderer ] Pixel_Video_MP4_Rounded_Corner [ Skip ]
 
-# Test is producing a large number of visually identical images with minor (eg.
-# between one and four pixels off by a tiny bit) pixel diffs on Windows with
-# GLRenderer. There are too many images to add to gold so just disable test
-# until we can drop GLRenderer from FYI bots.
-crbug.com/1068301 [ win no-skia-renderer ] Pixel_DirectComposition_Video_MP4_Rounded_Corner [ Skip ]
-
 # Produces blank images on Intel HD 630 w/ Mesa 19.0.2
 crbug.com/976861 [ linux intel-0x5912 no-use-skia-dawn ] Pixel_OffscreenCanvasTransferToImageBitmap [ Skip ]
 
