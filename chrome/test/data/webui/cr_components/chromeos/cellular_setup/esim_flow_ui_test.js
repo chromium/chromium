@@ -7,6 +7,8 @@
 // #import 'chrome://resources/cr_components/chromeos/cellular_setup/esim_flow_ui.m.js';
 
 // #import {flush, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+// #import {ButtonState} from 'chrome://resources/cr_components/chromeos/cellular_setup/cellular_types.m.js';
+// #import {ESimPageName} from 'chrome://resources/cr_components/chromeos/cellular_setup/esim_flow_ui.m.js';
 // #import {assertTrue} from '../../../chai_assert.js';
 // #import {FakeCellularSetupDelegate} from './fake_cellular_setup_delegate.m.js';
 // clang-format on
@@ -16,12 +18,33 @@ suite('CrComponentsEsimFlowUiTest', function() {
   setup(function() {
     eSimPage = document.createElement('esim-flow-ui');
     eSimPage.delegate = new cellular_setup.FakeCellularSetupDelegate();
+    eSimPage.initSubflow();
     document.body.appendChild(eSimPage);
     Polymer.dom.flush();
   });
 
-  test('Base test', function() {
-    const crInput = eSimPage.$$('cr-input');
-    assertTrue(!!crInput);
+  test('Forward navigation goes to final page', function() {
+    assertTrue(
+        eSimPage.selectedESimPageName_ === cellular_setup.ESimPageName.ESIM);
+
+    eSimPage.navigateForward();
+    Polymer.dom.flush();
+
+    assertTrue(
+        eSimPage.selectedESimPageName_ === cellular_setup.ESimPageName.FINAL);
+  });
+
+
+  test('Enable next button', function() {
+    assertTrue(
+        eSimPage.buttonState.next ===
+        cellularSetup.ButtonState.SHOWN_BUT_DISABLED);
+
+    eSimPage.activationCode_ = 'ACTIVATION CODE';
+    Polymer.dom.flush();
+
+    assertTrue(
+        eSimPage.buttonState.next ===
+        cellularSetup.ButtonState.SHOWN_AND_ENABLED);
   });
 });

@@ -15,6 +15,7 @@ Polymer({
   ],
 
   properties: {
+
     /**
      * Element name of the current selected sub-page.
      * @private {!cellularSetup.CellularSetupPageName}

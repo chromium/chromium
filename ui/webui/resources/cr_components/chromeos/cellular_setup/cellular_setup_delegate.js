@@ -15,6 +15,11 @@ cr.define('cellular_setup', function() {
      * @return {boolean} true if base page title text should be visible.
      */
     shouldShowPageTitle() {}
+
+    /**
+     * @return {boolean} true if cancel button should be visible.
+     */
+    shouldShowCancelButton() {}
   }
 
   // #cr_define_end

@@ -4,6 +4,7 @@
 <link rel="import" href="subflow_behavior.html">
 <link rel="import" href="cellular_types.html">
 <link rel="import" href="cellular_setup_delegate.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-pages/iron-pages.html">
 
 <dom-module id="esim-flow-ui">
   <template>
@@ -22,13 +23,24 @@
         margin: 10px 0;
       }
     </style>
-    [[i18n('scanQRCode')]]
-    <!-- TODO(crbug.com/1093185): Add QR code detection-->
-    <div id="esim-qrcode-detection"></div>
-    <cr-input id="activation-code"
-        label="[[i18n('activationCode')]]"
-        value="{{activationCode_}}">
-    </cr-input>
+    <iron-pages attr-for-selected="id"
+        selected="[[selectedESimPageName_]]">
+      <!-- TODO(crbug.com/1093185): Move to separate page-->
+      <div id="qr-code-page">
+        [[i18n('scanQRCode')]]
+        <!-- TODO(crbug.com/1093185): Add QR code detection-->
+        <div id="esim-qrcode-detection"></div>
+        <cr-input id="activation-code"
+            label="[[i18n('activationCode')]]"
+            value="{{activationCode_}}">
+        </cr-input>
+      </div>
+      <final-page
+        id="final-page"
+        delegate="[[delegate]]" 
+        show-error="[[showError_]]">
+      </final-page>
+    </iron-pages>
   </template>
   <script src="esim_flow_ui.js"></script>
 </dom-module>

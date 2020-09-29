@@ -52,6 +52,11 @@ Polymer({
   },
 
   /** @private */
+  onCancelButtonClicked_() {
+    this.fire('cancel-requested');
+  },
+
+  /** @private */
   onTryAgainButtonClicked_() {
     this.fire('retry-requested');
   },

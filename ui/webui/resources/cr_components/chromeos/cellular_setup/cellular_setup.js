@@ -59,6 +59,7 @@ Polymer({
     'retry-requested': 'onRetryRequested_',
     'complete-flow-requested': 'onCompleteFlowRequested_',
     'forward-nav-requested': 'onForwardNavRequested_',
+    'cancel-requested': 'onCancelRequested_',
   },
 
   /** @private */
@@ -79,6 +80,10 @@ Polymer({
       this.currentPageName_ =
           cellularSetup.CellularSetupPageName.SETUP_FLOW_SELECTION;
     }
+  },
+
+  onCancelRequested_() {
+    this.fire('exit-cellular-setup');
   },
 
   /** @private */

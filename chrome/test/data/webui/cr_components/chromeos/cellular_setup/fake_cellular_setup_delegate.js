@@ -13,6 +13,11 @@ cr.define('cellular_setup', function() {
     shouldShowPageTitle() {
       return false;
     }
+
+    /** @override */
+    shouldShowCancelButton() {
+      return true;
+    }
   }
 
   // #cr_define_end

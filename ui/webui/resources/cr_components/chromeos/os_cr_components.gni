@@ -10,6 +10,7 @@ cr_components_chromeos_namespace_rewrites = [
   "cellularSetup.Button|Button",
   "cellularSetup.ButtonBarState|ButtonBarState",
   "cellularSetup.CellularSetupPageName|CellularSetupPageName",
+  "cellular_setup.ESimPageName|ESimPageName",
   "cellularSetup.PSimPageName|PSimPageName",
   "cellularSetup.PSimUIState|PSimUIState",
   "cellularSetup.getTimeoutMsForPSimUIState|getTimeoutMsForPSimUIState",
