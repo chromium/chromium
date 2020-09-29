@@ -345,10 +345,7 @@ class SkiaGoldSession(object):
           '--corpus',
           self._corpus,
           '--instance',
-          # TODO(skbug.com/10610): Decide whether to use the public or
-          # non-public instance once authentication is fixed for the non-public
-          # instance.
-          str(self._instance) + '-public',
+          self._GetDiffGoldInstance(),
           '--input',
           png_file,
           '--test',
@@ -469,6 +466,17 @@ class SkiaGoldSession(object):
 
   def _CreateDiffOutputDir(self):
     return tempfile.mkdtemp(dir=self._working_dir)
+
+  def _GetDiffGoldInstance(self):
+    """Gets the Skia Gold instance to use for the Diff step.
+
+    This can differ based on how a particular instance is set up, mainly
+    depending on whether it is set up for internal results or not.
+    """
+    # TODO(skbug.com/10610): Decide whether to use the public or
+    # non-public instance once authentication is fixed for the non-public
+    # instance.
+    return str(self._instance) + '-public'
 
   def _StoreDiffLinks(self, image_name, output_manager, output_dir):
     """Stores the local diff files as links.
