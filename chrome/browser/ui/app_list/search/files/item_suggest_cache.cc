@@ -77,34 +77,41 @@ bool IsDisabledByPolicy(const Profile* profile) {
   return profile->GetPrefs()->GetBoolean(drive::prefs::kDisableDrive);
 }
 
-//----------------
-// Error utilities
-//----------------
+//------------------
+// Metrics utilities
+//------------------
 
-// Possible error states of the item suggest cache.
-enum class Error {
+// TODO(crbug.com/1034842): Add unit tests for histograms
+
+// Possible outcomes of a call to the ItemSuggest API. These values persist to
+// logs. Entries should not be renumbered and numeric values should never be
+// reused.
+enum class Status {
+  kOk = 0,
   kDisabledByExperiment = 1,
   kDisabledByPolicy = 2,
   kInvalidServerUrl = 3,
   kNoIdentityManager = 4,
   kGoogleAuthError = 5,
   kNetError = 6,
-  k3xxError = 7,
-  k4xxError = 8,
-  k5xxError = 9,
-  kEmptyResponse = 10,
-  kNoResultsInResponse = 11,
-  kJsonParseFailure = 12,
-  kJsonConversionFailure = 13,
+  kResponseTooLarge = 7,
+  k3xxStatus = 8,
+  k4xxStatus = 9,
+  k5xxStatus = 10,
+  kEmptyResponse = 11,
+  kNoResultsInResponse = 12,
+  kJsonParseFailure = 13,
+  kJsonConversionFailure = 14,
   kMaxValue = kJsonConversionFailure,
 };
 
-void LogError(Error error) {
-  // TODO(crbug.com/1034842): Implement.
+void LogStatus(Status status) {
+  UMA_HISTOGRAM_ENUMERATION("Apps.AppList.ItemSuggestCache.Status", status);
 }
 
 void LogResponseSize(const int size) {
-  // TODO(crbug.com/1034842): Implement.
+  UMA_HISTOGRAM_COUNTS_100000("Apps.AppList.ItemSuggestCache.ResponseSize",
+                              size);
 }
 
 //---------------
@@ -233,21 +240,21 @@ void ItemSuggestCache::UpdateCache() {
   if (url_loader_) {
     return;
   } else if (!enabled_) {
-    LogError(Error::kDisabledByExperiment);
+    LogStatus(Status::kDisabledByExperiment);
     return;
   } else if (IsDisabledByPolicy(profile_)) {
-    LogError(Error::kDisabledByPolicy);
+    LogStatus(Status::kDisabledByPolicy);
     return;
   } else if (!server_url_.SchemeIs(url::kHttpsScheme) ||
              !google_util::IsGoogleAssociatedDomainUrl(server_url_)) {
-    LogError(Error::kInvalidServerUrl);
+    LogStatus(Status::kInvalidServerUrl);
     return;
   }
 
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile_);
   if (!identity_manager) {
-    LogError(Error::kNoIdentityManager);
+    LogStatus(Status::kNoIdentityManager);
     return;
   }
 
@@ -268,7 +275,7 @@ void ItemSuggestCache::OnTokenReceived(GoogleServiceAuthError error,
   token_fetcher_.reset();
 
   if (error.state() != GoogleServiceAuthError::NONE) {
-    LogError(Error::kGoogleAuthError);
+    LogStatus(Status::kGoogleAuthError);
     return;
   }
 
@@ -292,21 +299,25 @@ void ItemSuggestCache::OnSuggestionsReceived(
   const int net_error = url_loader_->NetError();
   if (net_error != net::OK) {
     if (!url_loader_->ResponseInfo() || !url_loader_->ResponseInfo()->headers) {
-      LogError(Error::kNetError);
+      if (net_error == net::ERR_INSUFFICIENT_RESOURCES) {
+        LogStatus(Status::kResponseTooLarge);
+      } else {
+        LogStatus(Status::kNetError);
+      }
     } else {
       const int status = url_loader_->ResponseInfo()->headers->response_code();
       if (status >= 500) {
-        LogError(Error::k5xxError);
+        LogStatus(Status::k5xxStatus);
       } else if (status >= 400) {
-        LogError(Error::k4xxError);
+        LogStatus(Status::k4xxStatus);
       } else if (status >= 300) {
-        LogError(Error::k3xxError);
+        LogStatus(Status::k3xxStatus);
       }
     }
 
     return;
   } else if (!json_response || json_response->empty()) {
-    LogError(Error::kEmptyResponse);
+    LogStatus(Status::kEmptyResponse);
     return;
   }
 
@@ -323,7 +334,7 @@ void ItemSuggestCache::OnJsonParsed(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!result.value) {
-    LogError(Error::kJsonParseFailure);
+    LogStatus(Status::kJsonParseFailure);
     return;
   }
 
@@ -332,10 +343,11 @@ void ItemSuggestCache::OnJsonParsed(
   // results.
   const auto& results = ConvertResults(&result.value.value());
   if (!results) {
-    LogError(Error::kJsonConversionFailure);
+    LogStatus(Status::kJsonConversionFailure);
   } else if (results->results.empty()) {
-    LogError(Error::kNoResultsInResponse);
+    LogStatus(Status::kNoResultsInResponse);
   } else {
+    LogStatus(Status::kOk);
     results_ = std::move(results.value());
   }
 }

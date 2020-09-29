@@ -276,6 +276,30 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Apps.AppList.ItemSuggestCache.ResponseSize" units="bytes"
+    expires_after="2021-03-15">
+  <owner>tby@chromium.org</owner>
+  <owner>jiameng@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <owner>wrong@chromium.org</owner>
+  <summary>
+    Records the size of a response from the ItemSuggest API. Reported once per
+    successful response. Will not be reported if the response exceeds the
+    maximum size, instead check Apps.AppList.ItemSuggestCache.Status.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppList.ItemSuggestCache.Status"
+    enum="ItemSuggestCacheStatus" expires_after="2021-03-15">
+  <owner>tby@chromium.org</owner>
+  <owner>jiameng@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <owner>wrong@chromium.org</owner>
+  <summary>
+    Records the outcome of a call to ItemSuggest. Reported once per call.
+  </summary>
+</histogram>
+
 <histogram name="Apps.AppList.LauncherSearchProvider.QueryTime" units="ms"
     expires_after="2020-12-31">
   <owner>jennyz@chromium.org</owner>
