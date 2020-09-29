@@ -30,9 +30,6 @@
 namespace chromeos {
 namespace memory {
 
-const base::Feature kCrOSUserSpaceLowMemoryNotification{
-    "CrOSUserSpaceLowMemoryNotification", base::FEATURE_ENABLED_BY_DEFAULT};
-
 namespace {
 // Pointer to the SystemMemoryPressureEvaluator used by TabManagerDelegate for
 // chromeos to need to call into ScheduleEarlyCheck.
@@ -49,11 +46,6 @@ constexpr base::TimeDelta kModerateMemoryPressureCooldownTime =
 // memory pressure notifications in chromeos.
 constexpr char kMarginMemFile[] = "/sys/kernel/mm/chromeos-low_mem/margin";
 
-// The available memory file contains the available memory as determined
-// by the kernel.
-constexpr char kAvailableMemFile[] =
-    "/sys/kernel/mm/chromeos-low_mem/available";
-
 // Converts an available memory value in MB to a memory pressure level.
 base::MemoryPressureListener::MemoryPressureLevel
 GetMemoryPressureLevelFromAvailable(int available_mb,
@@ -67,76 +59,20 @@ GetMemoryPressureLevelFromAvailable(int available_mb,
   return base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE;
 }
 
-uint64_t ReadAvailableMemoryMB(int available_fd) {
-  // Read the available memory.
-  char buf[32] = {};
-
-  // kernfs/file.c:
-  // "Once poll/select indicates that the value has changed, you
-  // need to close and re-open the file, or seek to 0 and read again.
-  ssize_t bytes_read = HANDLE_EINTR(pread(available_fd, buf, sizeof(buf), 0));
-  PCHECK(bytes_read != -1);
-
-  std::string mem_str(buf, bytes_read);
-  uint64_t available = std::numeric_limits<uint64_t>::max();
-  CHECK(base::StringToUint64(
-      base::TrimWhitespaceASCII(mem_str, base::TrimPositions::TRIM_ALL),
-      &available));
-
-  return available;
-}
-
-// This function will wait until the /sys/kernel/mm/chromeos-low_mem/available
-// file becomes readable and then read the latest value. This file will only
-// become readable once the available memory cross through one of the margin
-// values specified in /sys/kernel/mm/chromeos-low_mem/margin, for more
-// details see https://crrev.com/c/536336.
-bool WaitForMemoryPressureChanges(int available_fd) {
-  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
-                                                base::BlockingType::WILL_BLOCK);
-
-  pollfd pfd = {available_fd, POLLPRI | POLLERR, 0};
-  int res = HANDLE_EINTR(poll(&pfd, 1, -1));  // Wait indefinitely.
-  PCHECK(res != -1);
-
-  if (pfd.revents != (POLLPRI | POLLERR)) {
-    // If we didn't receive POLLPRI | POLLERR it means we likely received
-    // POLLNVAL because the fd has been closed we will only log an error in
-    // other situations.
-    LOG_IF(ERROR, pfd.revents != POLLNVAL)
-        << "WaitForMemoryPressureChanges received unexpected revents: "
-        << pfd.revents;
-
-    // We no longer want to wait for a kernel notification if the fd has been
-    // closed.
-    return false;
-  }
-
-  return true;
-}
-
 }  // namespace
 
 SystemMemoryPressureEvaluator::SystemMemoryPressureEvaluator(
     std::unique_ptr<util::MemoryPressureVoter> voter)
     : SystemMemoryPressureEvaluator(
           kMarginMemFile,
-          kAvailableMemFile,
-          base::BindRepeating(&WaitForMemoryPressureChanges),
           /*disable_timer_for_testing*/ false,
-          base::FeatureList::IsEnabled(
-              chromeos::memory::kCrOSUserSpaceLowMemoryNotification),
           std::move(voter)) {}
 
 SystemMemoryPressureEvaluator::SystemMemoryPressureEvaluator(
     const std::string& margin_file,
-    const std::string& available_file,
-    base::RepeatingCallback<bool(int)> kernel_waiting_callback,
     bool disable_timer_for_testing,
-    bool is_user_space_notify,
     std::unique_ptr<util::MemoryPressureVoter> voter)
     : util::SystemMemoryPressureEvaluator(std::move(voter)),
-      is_user_space_notify_(is_user_space_notify),
       weak_ptr_factory_(this) {
   DCHECK(g_system_evaluator == nullptr);
   g_system_evaluator = this;
@@ -151,19 +87,7 @@ SystemMemoryPressureEvaluator::SystemMemoryPressureEvaluator(
   critical_pressure_threshold_mb_ = margin_parts[0];
   moderate_pressure_threshold_mb_ = margin_parts[1];
 
-  if (is_user_space_notify_) {
-    chromeos::memory::pressure::UpdateMemoryParameters();
-  }
-
-  if (!is_user_space_notify_) {
-    kernel_waiting_callback_ = base::BindRepeating(
-        std::move(kernel_waiting_callback), available_mem_file_.get());
-    available_mem_file_ =
-        base::ScopedFD(HANDLE_EINTR(open(available_file.c_str(), O_RDONLY)));
-    CHECK(available_mem_file_.is_valid());
-
-    ScheduleWaitForKernelNotification();
-  }
+  chromeos::memory::pressure::UpdateMemoryParameters();
 
   if (!disable_timer_for_testing) {
     // We will check the memory pressure and report the metric
@@ -217,16 +141,6 @@ std::vector<int> SystemMemoryPressureEvaluator::GetMarginFileParts(
   return margin_values;
 }
 
-uint64_t SystemMemoryPressureEvaluator::GetAvailableMemoryKB() {
-  if (is_user_space_notify_) {
-    return chromeos::memory::pressure::GetAvailableMemoryKB();
-  } else {
-    const uint64_t available_mem_mb =
-        ReadAvailableMemoryMB(available_mem_file_.get());
-    return available_mem_mb * 1024;
-  }
-}
-
 bool SystemMemoryPressureEvaluator::SupportsKernelNotifications() {
   // Unfortunately at the moment the only way to determine if the chromeos
   // kernel supports polling on the available file is to observe two values
@@ -235,14 +149,19 @@ bool SystemMemoryPressureEvaluator::SupportsKernelNotifications() {
   return SystemMemoryPressureEvaluator::GetMarginFileParts().size() >= 2;
 }
 
-// CheckMemoryPressure will get the current memory pressure level by reading
-// the available file.
+// CheckMemoryPressure will get the current memory pressure level by checking
+// the available memory.
 void SystemMemoryPressureEvaluator::CheckMemoryPressure() {
+  uint64_t mem_avail_mb =
+      chromeos::memory::pressure::GetAvailableMemoryKB() / 1024;
+  CheckMemoryPressureImpl(mem_avail_mb);
+}
+
+void SystemMemoryPressureEvaluator::CheckMemoryPressureImpl(
+    uint64_t mem_avail_mb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto old_vote = current_vote();
-
-  uint64_t mem_avail_mb = GetAvailableMemoryKB() / 1024;
 
   SetCurrentVote(GetMemoryPressureLevelFromAvailable(
       mem_avail_mb, moderate_pressure_threshold_mb_,
@@ -279,22 +198,6 @@ void SystemMemoryPressureEvaluator::CheckMemoryPressure() {
   SendCurrentVote(notify);
 }
 
-void SystemMemoryPressureEvaluator::HandleKernelNotification(bool result) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  // If WaitForKernelNotification returned false then the FD has been closed and
-  // we just exit without waiting again.
-  if (!result) {
-    return;
-  }
-
-  CheckMemoryPressure();
-
-  // Now we need to schedule back our blocking task to wait for more
-  // kernel notifications.
-  ScheduleWaitForKernelNotification();
-}
-
 void SystemMemoryPressureEvaluator::CheckMemoryPressureAndRecordStatistics() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -316,17 +219,6 @@ void SystemMemoryPressureEvaluator::ScheduleEarlyCheck() {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(&SystemMemoryPressureEvaluator::CheckMemoryPressure,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
-void SystemMemoryPressureEvaluator::ScheduleWaitForKernelNotification() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE,
-      {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-      base::BindOnce(kernel_waiting_callback_),
-      base::BindOnce(&SystemMemoryPressureEvaluator::HandleKernelNotification,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 

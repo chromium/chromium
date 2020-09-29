@@ -22,9 +22,6 @@
 namespace chromeos {
 namespace memory {
 
-// A feature which controls user space low memory notification.
-extern const base::Feature kCrOSUserSpaceLowMemoryNotification;
-
 ////////////////////////////////////////////////////////////////////////////////
 // SystemMemoryPressureEvaluator
 //
@@ -49,9 +46,6 @@ class COMPONENT_EXPORT(CHROMEOS_MEMORY) SystemMemoryPressureEvaluator
   // the first two. The first represents critical memory pressure, the second
   // is moderate memory pressure level.
   static std::vector<int> GetMarginFileParts();
-
-  // GetAvailableMemoryKB returns the available memory in KiB.
-  uint64_t GetAvailableMemoryKB();
 
   // SupportsKernelNotifications will return true if the kernel supports and is
   // configured for notifications on memory availability changes.
@@ -79,19 +73,17 @@ class COMPONENT_EXPORT(CHROMEOS_MEMORY) SystemMemoryPressureEvaluator
   // This constructor is only used for testing.
   SystemMemoryPressureEvaluator(
       const std::string& margin_file,
-      const std::string& available_file,
-      base::RepeatingCallback<bool(int)> kernel_waiting_callback,
       bool disable_timer_for_testing,
-      bool is_user_space_notify,
       std::unique_ptr<util::MemoryPressureVoter> voter);
 
   static std::vector<int> GetMarginFileParts(const std::string& margin_file);
 
   void CheckMemoryPressure();
 
+  // Split CheckMemoryPressure and CheckMemoryPressureImpl for testing.
+  void CheckMemoryPressureImpl(uint64_t mem_avail_mb);
+
  private:
-  void HandleKernelNotification(bool result);
-  void ScheduleWaitForKernelNotification();
   void CheckMemoryPressureAndRecordStatistics();
   int moderate_pressure_threshold_mb_ = 0;
   int critical_pressure_threshold_mb_ = 0;
@@ -104,21 +96,9 @@ class COMPONENT_EXPORT(CHROMEOS_MEMORY) SystemMemoryPressureEvaluator
   // Memory.PressureLevel metric.
   base::TimeTicks last_pressure_level_report_;
 
-  // File descriptor used to read and poll(2) available memory from sysfs,
-  // In /sys/kernel/mm/chromeos-low_mem/available.
-  base::ScopedFD available_mem_file_;
-
   // A timer to check the memory pressure and to report an UMA metric
   // periodically.
   base::RepeatingTimer checking_timer_;
-
-  // Kernel waiting callback which is responsible for blocking on the
-  // available file until it receives a kernel notification, this is
-  // configurable to make testing easier.
-  base::RepeatingCallback<bool()> kernel_waiting_callback_;
-
-  // User space low memory notification mode.
-  const bool is_user_space_notify_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

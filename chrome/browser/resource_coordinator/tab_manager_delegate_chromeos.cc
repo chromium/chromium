@@ -36,6 +36,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/memory/pressure/pressure.h"
 #include "chromeos/memory/pressure/system_memory_pressure_evaluator.h"
 #include "components/arc/arc_service_manager.h"
 #include "components/arc/arc_util.h"
@@ -234,14 +235,14 @@ int TabManagerDelegate::MemoryStat::LowMemoryMarginKB() {
 // memory back to the margin.
 int TabManagerDelegate::MemoryStat::TargetMemoryToFreeKB() {
   uint64_t available_mem_mb;
-  auto* monitor = chromeos::memory::SystemMemoryPressureEvaluator::Get();
-  if (monitor) {
-    available_mem_mb = monitor->GetAvailableMemoryKB();
+  if (chromeos::memory::SystemMemoryPressureEvaluator::Get()) {
+    available_mem_mb = chromeos::memory::pressure::GetAvailableMemoryKB();
   } else {
     // When TabManager::DiscardTab(LifecycleUnitDiscardReason::EXTERNAL) is
     // called by a test or an extension, TabManagerDelegate might be used
     // without chromeos SystemMemoryPressureEvaluator, e.g. the browser test
-    // DiscardTabsWithMinimizedWindow.
+    // DiscardTabsWithMinimizedWindow. Set available to 0 to force discarding a
+    // tab to pass the test.
     LOG(WARNING) << "SystemMemoryPressureEvaluator is not available";
     available_mem_mb = 0;
   }

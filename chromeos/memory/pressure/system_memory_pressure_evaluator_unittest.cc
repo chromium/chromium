@@ -27,27 +27,6 @@ namespace memory {
 
 namespace {
 
-// Since it would be very hard to mock sysfs instead we will send in our own
-// implementation of WaitForKernelNotification which instead will block on a
-// pipe that we can trigger for the test to cause a mock kernel notification.
-bool WaitForMockKernelNotification(int pipe_read_fd, int available_fd) {
-  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
-                                                base::BlockingType::WILL_BLOCK);
-
-  // We just use a pipe to block our kernel notification thread until we have
-  // a fake kernel notification.
-  char buf = 0;
-  int res = HANDLE_EINTR(read(pipe_read_fd, &buf, sizeof(buf)));
-
-  // Fail if we encounter any error.
-  return res > 0;
-}
-
-void TriggerKernelNotification(int pipe_write_fd) {
-  char buf = '1';
-  HANDLE_EINTR(write(pipe_write_fd, &buf, sizeof(buf)));
-}
-
 // Processes OnMemoryPressure calls by just storing the sequence of events so we
 // can validate that we received the expected pressure levels as the test runs.
 void OnMemoryPressure(
@@ -56,35 +35,24 @@ void OnMemoryPressure(
   history->push_back(level);
 }
 
-void RunLoopRunWithTimeout(base::TimeDelta timeout) {
-  base::RunLoop run_loop;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(FROM_HERE,
-
-                                                       run_loop.QuitClosure(),
-                                                       timeout);
-  run_loop.Run();
-}
-
 }  // namespace
 
 class TestSystemMemoryPressureEvaluator : public SystemMemoryPressureEvaluator {
  public:
   TestSystemMemoryPressureEvaluator(
       const std::string& mock_margin_file,
-      const std::string& mock_available_file,
-      base::RepeatingCallback<bool(int)> kernel_waiting_callback,
       bool disable_timer_for_testing,
-      bool is_user_space_notify,
       std::unique_ptr<util::MemoryPressureVoter> voter)
       : SystemMemoryPressureEvaluator(mock_margin_file,
-                                      mock_available_file,
-                                      std::move(kernel_waiting_callback),
                                       disable_timer_for_testing,
-                                      is_user_space_notify,
                                       std::move(voter)) {}
 
   static std::vector<int> GetMarginFileParts(const std::string& file) {
     return SystemMemoryPressureEvaluator::GetMarginFileParts(file);
+  }
+
+  void CheckMemoryPressureImpl(uint64_t mem_avail_mb) {
+    SystemMemoryPressureEvaluator::CheckMemoryPressureImpl(mem_avail_mb);
   }
 
   ~TestSystemMemoryPressureEvaluator() override = default;
@@ -145,15 +113,10 @@ TEST(ChromeOSSystemMemoryPressureEvaluatorTest, CheckMemoryPressure) {
   ASSERT_TRUE(tmp_dir.CreateUniqueTempDir());
 
   base::FilePath margin_file = tmp_dir.GetPath().Append("margin");
-  base::FilePath available_file = tmp_dir.GetPath().Append("available");
 
   // Set the margin values to 500 (critical) and 1000 (moderate).
   const std::string kMarginContents = "500 1000";
   ASSERT_TRUE(base::WriteFile(margin_file, kMarginContents));
-
-  // Write the initial available contents.
-  const std::string kInitialAvailableContents = "1500";
-  ASSERT_TRUE(base::WriteFile(available_file, kInitialAvailableContents));
 
   base::test::TaskEnvironment task_environment(
       base::test::TaskEnvironment::MainThreadType::UI);
@@ -170,21 +133,8 @@ TEST(ChromeOSSystemMemoryPressureEvaluatorTest, CheckMemoryPressure) {
   util::MultiSourceMemoryPressureMonitor monitor;
   monitor.ResetSystemEvaluatorForTesting();
 
-  // We use a pipe to notify our blocked kernel notification thread that there
-  // is a kernel notification we need to use a simple blocking syscall and
-  // read(2)/write(2) will work.
-  int fds[2] = {};
-  ASSERT_EQ(0, HANDLE_EINTR(pipe(fds)));
-
-  // Make sure the pipe FDs get closed.
-  base::ScopedFD write_end(fds[1]);
-  base::ScopedFD read_end(fds[0]);
-
   auto evaluator = std::make_unique<TestSystemMemoryPressureEvaluator>(
-      margin_file.value(), available_file.value(),
-      // Bind the read end to WaitForMockKernelNotification.
-      base::BindRepeating(&WaitForMockKernelNotification, read_end.get()),
-      /*disable_timer_for_testing=*/true, /*is_user_space_notify*/ false,
+      margin_file.value(), /*disable_timer_for_testing=*/true,
       monitor.CreateVoter());
 
   // Validate that our margin levels are as expected after being parsed from our
@@ -197,39 +147,32 @@ TEST(ChromeOSSystemMemoryPressureEvaluatorTest, CheckMemoryPressure) {
             evaluator->current_vote());
 
   // Moderate Pressure.
-  ASSERT_TRUE(base::WriteFile(available_file, "900"));
-  TriggerKernelNotification(write_end.get());
-  // TODO(bgeffon): Use RunLoop::QuitClosure() instead of relying on "spin for
-  // 1 second".
-  RunLoopRunWithTimeout(base::TimeDelta::FromSeconds(1));
+  evaluator->CheckMemoryPressureImpl(900);
+  base::RunLoop().RunUntilIdle();
   ASSERT_EQ(base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE,
             evaluator->current_vote());
 
   // Critical Pressure.
-  ASSERT_TRUE(base::WriteFile(available_file, "450"));
-  TriggerKernelNotification(write_end.get());
-  RunLoopRunWithTimeout(base::TimeDelta::FromSeconds(1));
+  evaluator->CheckMemoryPressureImpl(450);
+  base::RunLoop().RunUntilIdle();
   ASSERT_EQ(base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL,
             evaluator->current_vote());
 
   // Moderate Pressure.
-  ASSERT_TRUE(base::WriteFile(available_file, "550"));
-  TriggerKernelNotification(write_end.get());
-  RunLoopRunWithTimeout(base::TimeDelta::FromSeconds(1));
+  evaluator->CheckMemoryPressureImpl(550);
+  base::RunLoop().RunUntilIdle();
   ASSERT_EQ(base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE,
             evaluator->current_vote());
 
   // No pressure, note: this will not cause any event.
-  ASSERT_TRUE(base::WriteFile(available_file, "1150"));
-  TriggerKernelNotification(write_end.get());
-  RunLoopRunWithTimeout(base::TimeDelta::FromSeconds(1));
+  evaluator->CheckMemoryPressureImpl(1150);
+  base::RunLoop().RunUntilIdle();
   ASSERT_EQ(base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE,
             evaluator->current_vote());
 
   // Back into moderate.
-  ASSERT_TRUE(base::WriteFile(available_file, "950"));
-  TriggerKernelNotification(write_end.get());
-  RunLoopRunWithTimeout(base::TimeDelta::FromSeconds(1));
+  evaluator->CheckMemoryPressureImpl(950);
+  base::RunLoop().RunUntilIdle();
   ASSERT_EQ(base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE,
             evaluator->current_vote());
 
