@@ -87,10 +87,6 @@ class AccountConsistencyModeManager : public KeyedService {
   signin::AccountConsistencyMethod account_consistency_;
   bool account_consistency_initialized_;
 
-  // By default, DICE is not enabled in builds lacking an API key. Set to true
-  // for tests.
-  static bool ignore_missing_oauth_client_for_testing_;
-
   DISALLOW_COPY_AND_ASSIGN(AccountConsistencyModeManager);
 };
 

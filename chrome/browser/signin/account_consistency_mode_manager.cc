@@ -29,6 +29,10 @@ using signin::AccountConsistencyMethod;
 
 namespace {
 
+// By default, DICE is not enabled in builds lacking an API key. May be set to
+// true for tests.
+bool g_ignore_missing_oauth_client_for_testing = false;
+
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 // Preference indicating that the Dice migraton has happened.
 const char kDiceMigrationCompletePref[] = "signin.DiceMigrationComplete";
@@ -45,12 +49,28 @@ bool IsBrowserSigninAllowedByCommandLine() {
   // If the commandline flag is not provided, the default is true.
   return true;
 }
+
+// Returns true if Desktop Identity Consistency can be enabled for this build
+// (i.e. if OAuth client ID and client secret are configured).
+bool CanEnableDiceForBuild() {
+  if (g_ignore_missing_oauth_client_for_testing ||
+      google_apis::HasOAuthClientConfigured()) {
+    return true;
+  }
+
+  // Only log this once.
+  static bool logged_warning = []() {
+    LOG(WARNING) << "Desktop Identity Consistency cannot be enabled as no "
+                    "OAuth client ID and client secret have been configured.";
+    return true;
+  }();
+  ALLOW_UNUSED_LOCAL(logged_warning);
+
+  return false;
+}
 #endif
 
 }  // namespace
-
-bool AccountConsistencyModeManager::ignore_missing_oauth_client_for_testing_ =
-    false;
 
 // static
 AccountConsistencyModeManager* AccountConsistencyModeManager::GetForProfile(
@@ -69,8 +89,9 @@ AccountConsistencyModeManager::AccountConsistencyModeManager(Profile* profile)
   PrefService* prefs = profile->GetPrefs();
   // Propagate settings changes from the previous launch to the signin-allowed
   // pref.
-  bool signin_allowed = prefs->GetBoolean(prefs::kSigninAllowedOnNextStartup) &&
-                        IsBrowserSigninAllowedByCommandLine();
+  bool signin_allowed = CanEnableDiceForBuild() &&
+                        IsBrowserSigninAllowedByCommandLine() &&
+                        prefs->GetBoolean(prefs::kSigninAllowedOnNextStartup);
   prefs->SetBoolean(prefs::kSigninAllowed, signin_allowed);
 
   UMA_HISTOGRAM_BOOLEAN("Signin.SigninAllowed", signin_allowed);
@@ -135,7 +156,7 @@ bool AccountConsistencyModeManager::IsMirrorEnabledForProfile(
 
 // static
 void AccountConsistencyModeManager::SetIgnoreMissingOAuthClientForTesting() {
-  ignore_missing_oauth_client_for_testing_ = true;
+  g_ignore_missing_oauth_client_for_testing = true;
 }
 
 // static
@@ -187,20 +208,6 @@ AccountConsistencyModeManager::ComputeAccountConsistencyMethod(
   // supported.
   if (profile->IsLegacySupervised())
     return AccountConsistencyMethod::kDisabled;
-
-  bool can_enable_dice_for_build = ignore_missing_oauth_client_for_testing_ ||
-                                   google_apis::HasOAuthClientConfigured();
-  if (!can_enable_dice_for_build) {
-    // Only log this once.
-    static bool logged_warning = []() {
-      LOG(WARNING) << "Desktop Identity Consistency cannot be enabled as no "
-                      "OAuth client ID and client secret have been configured.";
-      return true;
-    }();
-    ALLOW_UNUSED_LOCAL(logged_warning);
-
-    return AccountConsistencyMethod::kDisabled;
-  }
 
   if (!profile->GetPrefs()->GetBoolean(prefs::kSigninAllowed)) {
     VLOG(1) << "Desktop Identity Consistency disabled as sign-in to Chrome"
