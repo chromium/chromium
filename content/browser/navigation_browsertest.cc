@@ -69,6 +69,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/http_response.h"
 #include "net/test/url_request/url_request_failed_job.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
@@ -3550,6 +3551,32 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, FormSubmissionThenDeleteFrame) {
     parent.document.querySelector("iframe").remove();
   )");
   loop.Run();
+}
+
+using MediaNavigationBrowserTest = NavigationBaseBrowserTest;
+
+// Media navigations synchronously complete the time of the `CommitNavigation`
+// IPC call. Ensure that the renderer does not crash if the media navigation
+// results in an HTTP error with no body, since the renderer will reentrantly
+// commit an error page while handling the `CommitNavigation` IPC.
+IN_PROC_BROWSER_TEST_F(MediaNavigationBrowserTest, FailedNavigation) {
+  embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+      [](const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+        response->set_code(net::HTTP_NOT_FOUND);
+        response->set_content_type("video/mp4");
+        return response;
+      }));
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  const GURL error_url(embedded_test_server()->GetURL("/moo.mp4"));
+  EXPECT_FALSE(NavigateToURL(shell(), error_url));
+  EXPECT_EQ(error_url,
+            shell()->web_contents()->GetMainFrame()->GetLastCommittedURL());
+  NavigationEntry* entry =
+      shell()->web_contents()->GetController().GetLastCommittedEntry();
+  EXPECT_EQ(PAGE_TYPE_ERROR, entry->GetPageType());
 }
 
 class DocumentPolicyBrowserTest : public NavigationBaseBrowserTest {

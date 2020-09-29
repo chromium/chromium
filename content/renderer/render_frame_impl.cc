@@ -4550,11 +4550,27 @@ void RenderFrameImpl::RunScriptsAtDocumentReady(bool document_is_empty) {
   navigation_params->service_worker_network_provider =
       ServiceWorkerNetworkProviderForFrame::CreateInvalidInstance();
 
-  CHECK_EQ(NavigationCommitState::kNone, navigation_commit_state_);
-  AssertNavigationCommits assert_navigation_commits(this);
-  frame_->CommitNavigation(std::move(navigation_params), BuildDocumentState());
+  // TODO(dcheng): Remove this strange case. Typically, loading finishes
+  // asynchronously, so this will not be called while `CommitNavigation()`
+  // is on the stack. However, completion for media files is synchronously
+  // signalled in `blink::DocumentLoader::StartLoadingResponse()`. To prevent
+  // the CHECK in `AssertNavigationCommits` from tripping, temporarily reset the
+  // state and restore it after the reentrant `CommitNavigation()` completes.
+  bool reentrantly_committing =
+      (NavigationCommitState::kNone != navigation_commit_state_);
+  if (reentrantly_committing) {
+    CHECK_EQ(NavigationCommitState::kDidCommit, navigation_commit_state_);
+    navigation_commit_state_ = NavigationCommitState::kNone;
+  }
+  {
+    AssertNavigationCommits assert_navigation_commits(this);
+    frame_->CommitNavigation(std::move(navigation_params),
+                             BuildDocumentState());
+  }
   // WARNING: The previous call may have have deleted |this|.
   // Do not use |this| or |frame_| here without checking |weak_self|.
+  if (weak_self && reentrantly_committing)
+    navigation_commit_state_ = NavigationCommitState::kDidCommit;
 }
 
 void RenderFrameImpl::RunScriptsAtDocumentIdle() {
