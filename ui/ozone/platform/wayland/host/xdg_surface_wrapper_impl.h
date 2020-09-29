@@ -9,7 +9,9 @@
 
 #include <xdg-decoration-unstable-v1-client-protocol.h>
 
-#include "base/macros.h"
+#include <cstdint>
+#include <string>
+
 #include "base/strings/string16.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 
@@ -27,6 +29,8 @@ class XDGSurfaceWrapperImpl : public ShellSurfaceWrapper {
  public:
   XDGSurfaceWrapperImpl(WaylandWindow* wayland_window,
                         WaylandConnection* connection);
+  XDGSurfaceWrapperImpl(const XDGSurfaceWrapperImpl&) = delete;
+  XDGSurfaceWrapperImpl& operator=(const XDGSurfaceWrapperImpl&) = delete;
   ~XDGSurfaceWrapperImpl() override;
 
   // ShellSurfaceWrapper overrides:
@@ -103,9 +107,11 @@ class XDGSurfaceWrapperImpl : public ShellSurfaceWrapper {
   wl::Object<zxdg_toplevel_decoration_v1> zxdg_toplevel_decoration_;
 
   bool surface_for_popup_ = false;
-  enum zxdg_toplevel_decoration_v1_mode zxdg_toplevel_decoration_mode_;
 
-  DISALLOW_COPY_AND_ASSIGN(XDGSurfaceWrapperImpl);
+  // Keeps track of the decoration mode currently in use if xdg-decoration
+  // protocol extension is available, otherwise CLIENT_SIDE is assumed.
+  enum zxdg_toplevel_decoration_v1_mode decoration_mode_ =
+      ZXDG_TOPLEVEL_DECORATION_V1_MODE_CLIENT_SIDE;
 };
 
 }  // namespace ui

@@ -4,6 +4,7 @@
 
 #include "ui/ozone/platform/wayland/host/xdg_surface_wrapper_impl.h"
 
+#include <xdg-decoration-unstable-v1-client-protocol.h>
 #include <xdg-shell-client-protocol.h>
 #include <xdg-shell-unstable-v6-client-protocol.h>
 
@@ -205,7 +206,10 @@ void XDGSurfaceWrapperImpl::CloseTopLevelStable(
 
 void XDGSurfaceWrapperImpl::SetTopLevelDecorationMode(
     zxdg_toplevel_decoration_v1_mode requested_mode) {
-  zxdg_toplevel_decoration_mode_ = requested_mode;
+  if (requested_mode == decoration_mode_)
+    return;
+
+  decoration_mode_ = requested_mode;
   zxdg_toplevel_decoration_v1_set_mode(zxdg_toplevel_decoration_.get(),
                                        requested_mode);
 }
