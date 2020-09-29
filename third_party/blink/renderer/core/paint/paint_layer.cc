@@ -856,17 +856,6 @@ void PaintLayer::UpdateSizeAndScrollingAfterLayout() {
   }
 }
 
-FloatPoint PaintLayer::PerspectiveOrigin() const {
-  if (!GetLayoutObject().HasTransformRelatedProperty())
-    return FloatPoint();
-
-  const LayoutRect border_box = ToLayoutBox(GetLayoutObject()).BorderBoxRect();
-  const ComputedStyle& style = GetLayoutObject().StyleRef();
-
-  return FloatPointForLengthPoint(style.PerspectiveOrigin(),
-                                  FloatSize(border_box.Size()));
-}
-
 PaintLayer* PaintLayer::ContainingLayer(const PaintLayer* ancestor,
                                         bool* skipped_ancestor) const {
   // If we have specified an ancestor, surely the caller needs to know whether

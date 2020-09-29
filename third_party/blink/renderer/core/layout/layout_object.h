@@ -2724,9 +2724,13 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
       LayoutGeometryMap&) const;
 
   bool ShouldUseTransformFromContainer(const LayoutObject* container) const;
+
+  // The optional |size| parameter is used if the size of the object isn't
+  // correct yet.
   void GetTransformFromContainer(const LayoutObject* container,
                                  const PhysicalOffset& offset_in_container,
-                                 TransformationMatrix&) const;
+                                 TransformationMatrix&,
+                                 const PhysicalSize* size = nullptr) const;
 
   bool CreatesGroup() const {
     NOT_DESTROYED();

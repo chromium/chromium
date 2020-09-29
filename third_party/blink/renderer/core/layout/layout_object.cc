@@ -3123,7 +3123,8 @@ bool LayoutObject::ShouldUseTransformFromContainer(
 void LayoutObject::GetTransformFromContainer(
     const LayoutObject* container_object,
     const PhysicalOffset& offset_in_container,
-    TransformationMatrix& transform) const {
+    TransformationMatrix& transform,
+    const PhysicalSize* size) const {
   NOT_DESTROYED();
   transform.MakeIdentity();
   PaintLayer* layer =
@@ -3143,8 +3144,9 @@ void LayoutObject::GetTransformFromContainer(
   if (has_perspective) {
     // Perspective on the container affects us, so we have to factor it in here.
     DCHECK(container_object->HasLayer());
-    FloatPoint perspective_origin =
-        ToLayoutBoxModelObject(container_object)->Layer()->PerspectiveOrigin();
+    FloatPoint perspective_origin;
+    if (const auto* container_box = ToLayoutBoxOrNull(container_object))
+      perspective_origin = container_box->PerspectiveOrigin(size);
 
     TransformationMatrix perspective_matrix;
     perspective_matrix.ApplyPerspective(

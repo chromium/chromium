@@ -1793,6 +1793,10 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
                      TransformState::TransformAccumulation,
                      VisualRectFlags) const;
 
+  // The optional |size| parameter is used if the size of the object isn't
+  // correct yet.
+  FloatPoint PerspectiveOrigin(const PhysicalSize* size = nullptr) const;
+
   // Maps the visual rect state |transform_state| from this box into its
   // container, applying adjustments for the given container offset,
   // scrolling, container clipping, and transform (including container

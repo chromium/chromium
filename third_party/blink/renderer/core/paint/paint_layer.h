@@ -532,7 +532,6 @@ class CORE_EXPORT PaintLayer : public DisplayItemClient {
   TransformationMatrix CurrentTransform() const;
   TransformationMatrix RenderableTransform(GlobalPaintFlags) const;
 
-  FloatPoint PerspectiveOrigin() const;
   bool Preserves3D() const {
     return GetLayoutObject().StyleRef().Preserves3D();
   }

@@ -1666,6 +1666,16 @@ PhysicalRect LayoutBox::ClippingRect(const PhysicalOffset& location) const {
   return result;
 }
 
+FloatPoint LayoutBox::PerspectiveOrigin(const PhysicalSize* size) const {
+  if (!HasTransformRelatedProperty())
+    return FloatPoint();
+
+  // Use the |size| parameter instead of |Size()| if present.
+  FloatSize float_size = size ? FloatSize(*size) : FloatSize(Size());
+
+  return FloatPointForLengthPoint(StyleRef().PerspectiveOrigin(), float_size);
+}
+
 bool LayoutBox::MapVisualRectToContainer(
     const LayoutObject* container_object,
     const PhysicalOffset& container_offset,
@@ -1740,8 +1750,9 @@ bool LayoutBox::MapVisualRectToContainer(
   if (has_perspective) {
     // Perspective on the container affects us, so we have to factor it in here.
     DCHECK(container_object->HasLayer());
-    FloatPoint perspective_origin =
-        ToLayoutBoxModelObject(container_object)->Layer()->PerspectiveOrigin();
+    FloatPoint perspective_origin;
+    if (const auto* container_box = ToLayoutBoxOrNull(container_object))
+      perspective_origin = container_box->PerspectiveOrigin();
 
     TransformationMatrix perspective_matrix;
     perspective_matrix.ApplyPerspective(
