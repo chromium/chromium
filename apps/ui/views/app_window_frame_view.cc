@@ -53,8 +53,7 @@ AppWindowFrameView::~AppWindowFrameView() = default;
 void AppWindowFrameView::Init() {
   if (draw_frame_) {
     ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
-    auto close_button = std::make_unique<views::ImageButton>();
-    close_button->set_callback(
+    auto close_button = std::make_unique<views::ImageButton>(
         base::BindRepeating(&views::Widget::Close, base::Unretained(widget_)));
     close_button->SetImage(
         views::Button::STATE_NORMAL,
@@ -69,9 +68,9 @@ void AppWindowFrameView::Init() {
         l10n_util::GetStringUTF16(IDS_APP_ACCNAME_CLOSE));
     close_button_ = AddChildView(std::move(close_button));
     // STATE_NORMAL images are set in SetButtonImagesForFrame, not here.
-    auto maximize_button = std::make_unique<views::ImageButton>();
-    maximize_button->set_callback(base::BindRepeating(
-        &views::Widget::Maximize, base::Unretained(widget_)));
+    auto maximize_button =
+        std::make_unique<views::ImageButton>(base::BindRepeating(
+            &views::Widget::Maximize, base::Unretained(widget_)));
     maximize_button->SetImage(
         views::Button::STATE_HOVERED,
         rb.GetNativeImageNamed(IDR_APP_WINDOW_MAXIMIZE_H).ToImageSkia());
@@ -84,9 +83,9 @@ void AppWindowFrameView::Init() {
     maximize_button->SetAccessibleName(
         l10n_util::GetStringUTF16(IDS_APP_ACCNAME_MAXIMIZE));
     maximize_button_ = AddChildView(std::move(maximize_button));
-    auto restore_button = std::make_unique<views::ImageButton>();
-    restore_button->set_callback(base::BindRepeating(
-        &views::Widget::Restore, base::Unretained(widget_)));
+    auto restore_button =
+        std::make_unique<views::ImageButton>(base::BindRepeating(
+            &views::Widget::Restore, base::Unretained(widget_)));
     restore_button->SetImage(
         views::Button::STATE_HOVERED,
         rb.GetNativeImageNamed(IDR_APP_WINDOW_RESTORE_H).ToImageSkia());
@@ -96,9 +95,9 @@ void AppWindowFrameView::Init() {
     restore_button->SetAccessibleName(
         l10n_util::GetStringUTF16(IDS_APP_ACCNAME_RESTORE));
     restore_button_ = AddChildView(std::move(restore_button));
-    auto minimize_button = std::make_unique<views::ImageButton>();
-    minimize_button->set_callback(base::BindRepeating(
-        &views::Widget::Minimize, base::Unretained(widget_)));
+    auto minimize_button =
+        std::make_unique<views::ImageButton>(base::BindRepeating(
+            &views::Widget::Minimize, base::Unretained(widget_)));
     minimize_button->SetImage(
         views::Button::STATE_HOVERED,
         rb.GetNativeImageNamed(IDR_APP_WINDOW_MINIMIZE_H).ToImageSkia());

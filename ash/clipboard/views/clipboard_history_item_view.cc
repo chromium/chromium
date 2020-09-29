@@ -110,10 +110,10 @@ class ash::ClipboardHistoryItemView::MainButton : public views::Button {
 
 ClipboardHistoryItemView::DeleteButton::DeleteButton(
     ClipboardHistoryItemView* listener)
-    : views::ImageButton() {
-  set_callback(base::BindRepeating(&ClipboardHistoryItemView::ExecuteCommand,
-                                   base::Unretained(listener),
-                                   ClipboardHistoryUtil::kDeleteCommandId));
+    : views::ImageButton(
+          base::BindRepeating(&ClipboardHistoryItemView::ExecuteCommand,
+                              base::Unretained(listener),
+                              ClipboardHistoryUtil::kDeleteCommandId)) {
   SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
   SetAccessibleName(base::ASCIIToUTF16(std::string(GetClassName())));
   SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
