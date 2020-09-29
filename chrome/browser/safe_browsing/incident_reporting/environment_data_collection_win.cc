@@ -242,12 +242,11 @@ void CollectModuleVerificationData(
   using ModuleState = ClientIncidentReport_EnvironmentData_Process_ModuleState;
 
   for (size_t i = 0; i < num_modules_to_verify; ++i) {
-    std::unique_ptr<ModuleState> module_state(new ModuleState());
+    auto module_state = std::make_unique<ModuleState>();
 
     int num_bytes_different = 0;
-    bool scan_complete = VerifyModule(modules_to_verify[i],
-                                      module_state.get(),
-                                      &num_bytes_different);
+    VerifyModule(modules_to_verify[i], module_state.get(),
+                 &num_bytes_different);
 
     if (module_state->modified_state() == ModuleState::MODULE_STATE_UNMODIFIED)
       continue;
@@ -256,12 +255,6 @@ void CollectModuleVerificationData(
       UMA_HISTOGRAM_COUNTS_10000(
           "ModuleIntegrityVerification.BytesModified.WithoutByteSet",
           num_bytes_different);
-    }
-
-    if (!scan_complete) {
-      UMA_HISTOGRAM_EXACT_LINEAR(
-          "ModuleIntegrityVerification.RelocationsUnordered", i,
-          num_modules_to_verify);
     }
 
     process->mutable_module_state()->AddAllocated(module_state.release());

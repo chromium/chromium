@@ -48354,6 +48354,9 @@ Called by update_use_counter_css.py.-->
 </enum>
 
 <enum name="ModuleIndex">
+  <obsolete>
+    Removed in M87.
+  </obsolete>
   <int value="0" label="chrome.dll"/>
   <int value="1" label="chrome_elf.dll"/>
   <int value="2" label="ntdll.dll"/>

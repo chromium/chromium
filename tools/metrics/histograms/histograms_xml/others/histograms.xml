@@ -8223,6 +8223,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="ModuleIntegrityVerification.RelocationsUnordered"
     enum="ModuleIndex" expires_after="M85">
+  <obsolete>
+    Removed in M87.
+  </obsolete>
   <owner>grt@chromium.org</owner>
   <summary>
     Logged when the relocations in a module are not ordered causing the module
