@@ -70,7 +70,6 @@ void HTMLViewSourceDocument::CreateContainingTable() {
   body->ParserAppendChild(div);
 
   auto* table = MakeGarbageCollected<HTMLTableElement>(*this);
-  table->SetInlineStyleProperty(CSSPropertyID::kWhiteSpace, CSSValueID::kPre);
   body->ParserAppendChild(table);
   tbody_ = MakeGarbageCollected<HTMLTableSectionElement>(html_names::kTbodyTag,
                                                          *this);

@@ -38,8 +38,7 @@ TEST_F(HTMLViewSourceDocumentTest, ViewSource1) {
   EXPECT_EQ(
       GetDocument().documentElement()->outerHTML(),
       "<html><head></head><body><div "
-      "class=\"line-gutter-backdrop\"></div><table style=\"white-space: "
-      "pre;\"><tbody><tr><td "
+      "class=\"line-gutter-backdrop\"></div><table><tbody><tr><td "
       "class=\"line-number\" value=\"1\"></td><td "
       "class=\"line-content\"><br></td></tr><tr><td class=\"line-number\" "
       "value=\"2\"></td><td class=\"line-content\">      <span "
@@ -92,8 +91,7 @@ TEST_F(HTMLViewSourceDocumentTest, ViewSource2) {
   EXPECT_EQ(
       GetDocument().documentElement()->outerHTML(),
       "<html><head></head><body><div "
-      "class=\"line-gutter-backdrop\"></div><table style=\"white-space: "
-      "pre;\"><tbody><tr><td "
+      "class=\"line-gutter-backdrop\"></div><table><tbody><tr><td "
       "class=\"line-number\" value=\"1\"></td><td "
       "class=\"line-content\"><br></td></tr><tr><td class=\"line-number\" "
       "value=\"2\"></td><td class=\"line-content\">      <span "
@@ -145,8 +143,7 @@ TEST_F(HTMLViewSourceDocumentTest, ViewSource3) {
   EXPECT_EQ(
       GetDocument().documentElement()->outerHTML(),
       "<html><head></head><body><div "
-      "class=\"line-gutter-backdrop\"></div><table style=\"white-space: "
-      "pre;\"><tbody><tr><td "
+      "class=\"line-gutter-backdrop\"></div><table><tbody><tr><td "
       "class=\"line-number\" value=\"1\"></td><td "
       "class=\"line-content\"><br></td></tr><tr><td class=\"line-number\" "
       "value=\"2\"></td><td class=\"line-content\">      <span "
@@ -211,8 +208,7 @@ TEST_F(HTMLViewSourceDocumentTest, ViewSource4) {
   EXPECT_EQ(
       GetDocument().documentElement()->outerHTML(),
       "<html><head></head><body><div "
-      "class=\"line-gutter-backdrop\"></div><table style=\"white-space: "
-      "pre;\"><tbody><tr><td "
+      "class=\"line-gutter-backdrop\"></div><table><tbody><tr><td "
       "class=\"line-number\" value=\"1\"></td><td "
       "class=\"line-content\"><br></td></tr><tr><td class=\"line-number\" "
       "value=\"2\"></td><td class=\"line-content\">      <span "
@@ -280,8 +276,7 @@ TEST_F(HTMLViewSourceDocumentTest, ViewSource5) {
   EXPECT_EQ(
       GetDocument().documentElement()->outerHTML(),
       "<html><head></head><body><div "
-      "class=\"line-gutter-backdrop\"></div><table style=\"white-space: "
-      "pre;\"><tbody><tr><td "
+      "class=\"line-gutter-backdrop\"></div><table><tbody><tr><td "
       "class=\"line-number\" value=\"1\"></td><td "
       "class=\"line-content\"><br></td></tr><tr><td class=\"line-number\" "
       "value=\"2\"></td><td class=\"line-content\"><br></td></tr><tr><td "
@@ -313,8 +308,7 @@ TEST_F(HTMLViewSourceDocumentTest, ViewSource6) {
   LoadMainResource((many_spaces + std::string("       <b>A</b>  ")).c_str());
   std::string expected_beginning(
       "<html><head></head><body><div "
-      "class=\"line-gutter-backdrop\"></div><table style=\"white-space: "
-      "pre;\"><tbody><tr><td "
+      "class=\"line-gutter-backdrop\"></div><table><tbody><tr><td "
       "class=\"line-number\" value=\"1\"></td><td class=\"line-content\">     "
       " ");
   std::string expected_ending(
@@ -330,8 +324,7 @@ TEST_F(HTMLViewSourceDocumentTest, ViewSource7) {
   LoadMainResource("1234567");
   EXPECT_EQ(GetDocument().documentElement()->outerHTML(),
             "<html><head></head><body><div "
-            "class=\"line-gutter-backdrop\"></div><table style=\"white-space: "
-            "pre;\"><tbody><tr><td "
+            "class=\"line-gutter-backdrop\"></div><table><tbody><tr><td "
             "class=\"line-number\" value=\"1\"></td><td "
             "class=\"line-content\">1234567<span "
             "class=\"html-end-of-file\"></span></td></tr></tbody></table></"
@@ -353,8 +346,7 @@ TEST_F(HTMLViewSourceDocumentTest, ViewSource8) {
   EXPECT_EQ(
       GetDocument().documentElement()->outerHTML(),
       "<html><head></head><body><div "
-      "class=\"line-gutter-backdrop\"></div><table style=\"white-space: "
-      "pre;\"><tbody><tr><td "
+      "class=\"line-gutter-backdrop\"></div><table><tbody><tr><td "
       "class=\"line-number\" value=\"1\"></td><td "
       "class=\"line-content\"><br></td></tr><tr><td class=\"line-number\" "
       "value=\"2\"></td><td class=\"line-content\">      <span "
@@ -421,8 +413,7 @@ TEST_F(HTMLViewSourceDocumentTest, ViewSource9) {
   EXPECT_EQ(
       GetDocument().documentElement()->outerHTML(),
       "<html><head></head><body><div "
-      "class=\"line-gutter-backdrop\"></div><table style=\"white-space: "
-      "pre;\"><tbody><tr><td "
+      "class=\"line-gutter-backdrop\"></div><table><tbody><tr><td "
       "class=\"line-number\" value=\"1\"></td><td "
       "class=\"line-content\"><br></td></tr><tr><td class=\"line-number\" "
       "value=\"2\"></td><td class=\"line-content\">      <span "
@@ -453,8 +444,7 @@ TEST_F(HTMLViewSourceDocumentTest, IncompleteToken) {
   EXPECT_EQ(
       GetDocument().documentElement()->outerHTML(),
       "<html><head></head><body><div "
-      "class=\"line-gutter-backdrop\"></div><table style=\"white-space: "
-      "pre;\"><tbody><tr><td "
+      "class=\"line-gutter-backdrop\"></div><table><tbody><tr><td "
       "class=\"line-number\" value=\"1\"></td><td "
       "class=\"line-content\"><br></td></tr><tr><td class=\"line-number\" "
       "value=\"2\"></td><td class=\"line-content\">      Incomplete token "
@@ -476,8 +466,7 @@ TEST_F(HTMLViewSourceDocumentTest, UnfinishedTextarea) {
   EXPECT_EQ(
       GetDocument().documentElement()->outerHTML(),
       "<html><head></head><body><div "
-      "class=\"line-gutter-backdrop\"></div><table style=\"white-space: "
-      "pre;\"><tbody><tr><td "
+      "class=\"line-gutter-backdrop\"></div><table><tbody><tr><td "
       "class=\"line-number\" value=\"1\"></td><td class=\"line-content\"><span "
       "class=\"html-tag\">&lt;textarea&gt;</span>foobar in "
       "textarea</td></tr><tr><td class=\"line-number\" value=\"2\"></td><td "
@@ -492,8 +481,7 @@ TEST_F(HTMLViewSourceDocumentTest, UnfinishedScript) {
   EXPECT_EQ(
       GetDocument().documentElement()->outerHTML(),
       "<html><head></head><body><div "
-      "class=\"line-gutter-backdrop\"></div><table style=\"white-space: "
-      "pre;\"><tbody><tr><td "
+      "class=\"line-gutter-backdrop\"></div><table><tbody><tr><td "
       "class=\"line-number\" value=\"1\"></td><td class=\"line-content\"><span "
       "class=\"html-tag\">&lt;script&gt;</span>foobar in "
       "script</td></tr><tr><td class=\"line-number\" value=\"2\"></td><td "

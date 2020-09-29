@@ -27,7 +27,7 @@ body {
 }
 
 table {
-    width: 100%;
+    width: max-content;
     border-spacing: 0;
     white-space: pre;
     margin: 0;
