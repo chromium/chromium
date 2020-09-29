@@ -1138,5 +1138,114 @@ TEST_F(NGOutOfFlowLayoutPartTest, AbsposFragWithSpannerAndNewEmptyColumns) {
   EXPECT_EQ(expectation, dump);
 }
 
+// Fragmented OOF element with block-size percentage resolution.
+TEST_F(NGOutOfFlowLayoutPartTest, AbsposFragmentationPctResolution) {
+  SetBodyInnerHTML(
+      R"HTML(
+      <style>
+        #multicol {
+          column-count:2; column-fill:auto; column-gap:16px; height:40px;
+        }
+        .rel {
+          position: relative; width:30px;
+        }
+        .abs {
+          position:absolute; top:30px; width:5px; height:100%;
+        }
+        .spanner {
+          column-span:all; height:25%;
+        }
+      </style>
+      <div id="container">
+        <div id="multicol">
+          <div class="rel">
+            <div class="abs"></div>
+            <div style="width: 10px; height:30px;"></div>
+          </div>
+          <div class="spanner"></div>
+        </div>
+      </div>
+      )HTML");
+  String dump = DumpFragmentTree(GetElementById("container"));
+
+  String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
+  offset:unplaced size:1000x40
+    offset:0,0 size:1000x40
+      offset:0,0 size:492x15
+        offset:0,0 size:30x15
+          offset:0,0 size:10x15
+      offset:508,0 size:492x15
+        offset:0,0 size:30x15
+          offset:0,0 size:10x15
+      offset:0,15 size:1000x10
+      offset:0,25 size:492x15
+        offset:0,0 size:5x15
+      offset:508,25 size:492x15
+        offset:0,0 size:5x15
+)DUMP";
+  EXPECT_EQ(expectation, dump);
+}
+
+// Fragmented OOF element with block-size percentage resolution and overflow.
+TEST_F(NGOutOfFlowLayoutPartTest,
+       AbsposFragmentationPctResolutionWithOverflow) {
+  SetBodyInnerHTML(
+      R"HTML(
+      <style>
+        #multicol {
+          columns:5; column-fill:auto; column-gap:0px; height:100px;
+        }
+        .rel {
+          position: relative; width:55px;
+        }
+        .abs {
+          position:absolute; top:0px; width:5px; height:100%;
+        }
+      </style>
+      <div id="container">
+        <div id="multicol">
+          <div style="height:30px;"></div>
+          <div class="rel">
+            <div class="abs"></div>
+            <div style="width:44px; height:200px;">
+              <div style="width:33px; height:400px;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      )HTML");
+  String dump = DumpFragmentTree(GetElementById("container"));
+
+  String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
+  offset:unplaced size:1000x100
+    offset:0,0 size:1000x100
+      offset:0,0 size:200x100
+        offset:0,0 size:200x30
+        offset:0,30 size:55x70
+          offset:0,0 size:44x70
+            offset:0,0 size:33x70
+        offset:0,30 size:5x70
+      offset:200,0 size:200x100
+        offset:0,0 size:55x100
+          offset:0,0 size:44x100
+            offset:0,0 size:33x100
+        offset:0,0 size:5x100
+      offset:400,0 size:200x100
+        offset:0,0 size:55x30
+          offset:0,0 size:44x30
+            offset:0,0 size:33x100
+        offset:0,0 size:5x30
+      offset:600,0 size:200x100
+        offset:0,0 size:55x0
+          offset:0,0 size:44x0
+            offset:0,0 size:33x100
+      offset:800,0 size:200x100
+        offset:0,0 size:55x0
+          offset:0,0 size:44x0
+            offset:0,0 size:33x30
+)DUMP";
+  EXPECT_EQ(expectation, dump);
+}
+
 }  // namespace
 }  // namespace blink

@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_box_fragment_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_length_utils.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 
 namespace blink {
@@ -168,6 +169,35 @@ NGLogicalStaticPosition LayoutBoxUtils::ComputeStaticPositionFromLegacy(
 bool LayoutBoxUtils::SkipContainingBlockForPercentHeightCalculation(
     const LayoutBlock* cb) {
   return LayoutBox::SkipContainingBlockForPercentHeightCalculation(cb);
+}
+
+LayoutUnit LayoutBoxUtils::TotalBlockSize(const LayoutBox& box) {
+  wtf_size_t num_fragments = box.PhysicalFragmentCount();
+  DCHECK_GT(num_fragments, 0u);
+
+  // Calculate the total block size by looking at the last two block fragments
+  // with a non-zero block-size.
+  LayoutUnit total_block_size;
+  while (num_fragments > 0) {
+    LayoutUnit block_size =
+        box.GetPhysicalFragment(num_fragments - 1)
+            ->Size()
+            .ConvertToLogical(box.StyleRef().GetWritingMode())
+            .block_size;
+    if (block_size > LayoutUnit()) {
+      total_block_size += block_size;
+      break;
+    }
+    num_fragments--;
+  }
+
+  if (num_fragments > 1) {
+    total_block_size +=
+        To<NGBlockBreakToken>(
+            box.GetPhysicalFragment(num_fragments - 2)->BreakToken())
+            ->ConsumedBlockSize();
+  }
+  return total_block_size;
 }
 
 }  // namespace blink

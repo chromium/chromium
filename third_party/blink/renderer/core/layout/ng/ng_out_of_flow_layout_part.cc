@@ -310,6 +310,9 @@ NGOutOfFlowLayoutPart::GetContainingBlockInfo(
     const ComputedStyle& style = containing_block->StyleRef();
     LogicalSize size = containing_block_fragment->Size().ConvertToLogical(
         style.GetWritingMode());
+    size.block_size =
+        LayoutBoxUtils::TotalBlockSize(*ToLayoutBox(containing_block));
+
     const NGPhysicalBoxFragment* fragment =
         To<NGPhysicalBoxFragment>(containing_block_fragment);
 
@@ -1185,8 +1188,9 @@ const NGConstraintSpace& NGOutOfFlowLayoutPart::GetFragmentainerConstraintSpace(
     column_size.block_size = column_size.block_size.ClampNegativeToZero();
   }
 
-  // TODO(layout-dev): Calculate correct percentage resolution size.
-  LogicalSize percentage_resolution_size = column_size;
+  LogicalSize percentage_resolution_size =
+      LogicalSize(column_size.inline_size,
+                  container_builder_->ChildAvailableSize().block_size);
 
   // TODO(bebeaudr): Need to handle different fragmentation types. It won't
   // always be multi-column.

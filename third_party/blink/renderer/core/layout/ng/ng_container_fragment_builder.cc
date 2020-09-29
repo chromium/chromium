@@ -87,8 +87,8 @@ void NGContainerFragmentBuilder::PropagateChildData(
             descendant.static_position.ConvertToLogical(empty_outer_size);
         oof_positioned_fragmentainer_descendants_.emplace_back(
             descendant.node, static_position, descendant.inline_container,
-            /* needs_block_offset_adjustment */ false,
-            containing_block_offset, containing_block_fragment);
+            /* needs_block_offset_adjustment */ false, containing_block_offset,
+            containing_block_fragment);
       }
     }
   }
