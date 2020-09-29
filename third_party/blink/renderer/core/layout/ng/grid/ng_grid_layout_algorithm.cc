@@ -479,6 +479,9 @@ void NGGridLayoutAlgorithm::PlaceGridItems() {
   NGGridChildIterator iterator(Node());
   LayoutUnit current_inline_offset, current_block_offset;
 
+  LayoutUnit column_grid_gap = GridGap(GridTrackSizingDirection::kForColumns);
+  LayoutUnit row_grid_gap = GridGap(GridTrackSizingDirection::kForRows);
+
   for (auto row_set_iterator = TrackCollection(kForRows).GetSetIterator();
        !row_set_iterator.IsAtEnd(); row_set_iterator.MoveToNextSet()) {
     LayoutUnit row_base_size = row_set_iterator.CurrentSet().BaseSize();
@@ -520,12 +523,9 @@ void NGGridLayoutAlgorithm::PlaceGridItems() {
       container_builder_.AddChild(
           result->PhysicalFragment(),
           {current_inline_offset, current_block_offset});
-
-      // TODO(kschmi): row-gap and column-gap should be accounted for in
-      // inline and block positioning.
-      current_inline_offset += column_base_size;
+      current_inline_offset += column_base_size + column_grid_gap;
     }
-    current_block_offset += row_base_size;
+    current_block_offset += row_base_size + row_grid_gap;
   }
 
   // TODO(kschmi): There should not be any remaining children, as grid auto
@@ -542,6 +542,24 @@ void NGGridLayoutAlgorithm::PlaceGridItems() {
     container_builder_.AddChild(result->PhysicalFragment(),
                                 {LayoutUnit(), LayoutUnit()});
   }
+}
+
+LayoutUnit NGGridLayoutAlgorithm::GridGap(
+    GridTrackSizingDirection track_direction) {
+  const base::Optional<Length>& gap =
+      track_direction == kForColumns ? Style().ColumnGap() : Style().RowGap();
+  if (!gap)
+    return LayoutUnit();
+
+  LayoutUnit available_size = track_direction == kForColumns
+                                  ? ChildAvailableSize().inline_size
+                                  : ChildAvailableSize().block_size;
+
+  // TODO (ansollan): handle block axis % resolution for grid-gap with
+  // auto-sized grids.
+  if (gap->IsPercentOrCalc() && available_size == kIndefiniteSize)
+    return LayoutUnit();
+  return ValueForLength(*gap, available_size);
 }
 
 }  // namespace blink

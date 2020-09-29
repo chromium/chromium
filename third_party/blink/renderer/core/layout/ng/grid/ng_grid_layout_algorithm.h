@@ -120,6 +120,8 @@ class CORE_EXPORT NGGridLayoutAlgorithm
 
   // Lays out and computes inline and block offsets for grid items.
   void PlaceGridItems();
+  // Gets the row or column gap of the grid.
+  LayoutUnit GridGap(GridTrackSizingDirection track_direction);
 
   GridTrackSizingDirection AutoFlowDirection() const;
 

@@ -1039,4 +1039,171 @@ TEST_F(NGGridLayoutAlgorithmTest, FixedSizePositioningAutoRows) {
   EXPECT_EQ(expectation, dump);
 }
 
+TEST_F(NGGridLayoutAlgorithmTest, GridWithGap) {
+  if (!RuntimeEnabledFeatures::LayoutNGGridEnabled())
+    return;
+
+  LoadAhem();
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      body {
+        font: 10px/1 Ahem;
+      }
+
+      #grid {
+        display: grid;
+        width: 200px;
+        height: 200px;
+        grid-template-columns: 100px 100px;
+        grid-template-rows: 100px 100px;
+        grid-gap: 10px;
+      }
+
+      .grid_item {
+        width: 100px;
+        height: 100px;
+        background-color: gray;
+      }
+
+    </style>
+    <div id="wrapper">
+      <div id="grid">
+        <div class="grid_item">1</div>
+        <div class="grid_item">2</div>
+        <div class="grid_item">3</div>
+        <div class="grid_item">4</div>
+      </div>
+    </div>
+  )HTML");
+  String dump = DumpFragmentTree(GetElementById("wrapper"));
+
+  String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
+  offset:unplaced size:1000x200
+    offset:0,0 size:200x200
+      offset:0,0 size:100x100
+        offset:0,0 size:10x10
+      offset:110,0 size:100x100
+        offset:0,0 size:10x10
+      offset:0,110 size:100x100
+        offset:0,0 size:10x10
+      offset:110,110 size:100x100
+        offset:0,0 size:10x10
+)DUMP";
+  EXPECT_EQ(expectation, dump);
+}
+
+TEST_F(NGGridLayoutAlgorithmTest, GridWithPercentGap) {
+  if (!RuntimeEnabledFeatures::LayoutNGGridEnabled())
+    return;
+
+  LoadAhem();
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      body {
+        font: 10px/1 Ahem;
+      }
+
+      #grid {
+        display: grid;
+        width: 100px;
+        height: 50px;
+        grid-column-gap: 50%;
+        grid-row-gap: 75%;
+        grid-template-columns: 100px 200px;
+        grid-template-rows: 100px 100px;
+      }
+      .grid-item-odd {
+        width: 100px;
+        height: 100px;
+        background: gray;
+      }
+      .grid-item-even {
+        width: 200px;
+        height: 100px;
+        background: green;
+      }
+    </style>
+    <div id="wrapper">
+      <div id="grid">
+        <div class="grid-item-odd">1</div>
+         <div class="grid-item-even">2</div>
+         <div class="grid-item-odd">3</div>
+         <div class="grid-item-even">4</div>
+     </div>
+    </div>
+  )HTML");
+  String dump = DumpFragmentTree(GetElementById("wrapper"));
+
+  String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
+  offset:unplaced size:1000x50
+    offset:0,0 size:100x50
+      offset:0,0 size:100x100
+        offset:0,0 size:10x10
+      offset:150,0 size:200x100
+        offset:0,0 size:10x10
+      offset:0,137.5 size:100x100
+        offset:0,0 size:10x10
+      offset:150,137.5 size:200x100
+        offset:0,0 size:10x10
+)DUMP";
+  EXPECT_EQ(expectation, dump);
+}
+
+TEST_F(NGGridLayoutAlgorithmTest, AutoSizedGridWithGap) {
+  if (!RuntimeEnabledFeatures::LayoutNGGridEnabled())
+    return;
+
+  LoadAhem();
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      body {
+        font: 10px/1 Ahem;
+      }
+
+      #grid {
+        display: grid;
+        width: auto;
+        height: auto;
+        grid-column-gap: 50px;
+        grid-row-gap: 75px;
+        grid-template-columns: 100px 200px;
+        grid-template-rows: 100px 100px;
+      }
+      .grid-item-odd {
+        width: 100px;
+        height: 100px;
+        background: gray;
+      }
+      .grid-item-even {
+        width: 200px;
+        height: 100px;
+        background: green;
+      }
+    </style>
+    <div id="wrapper">
+      <div id="grid">
+        <div class="grid-item-odd">1</div>
+         <div class="grid-item-even">2</div>
+         <div class="grid-item-odd">3</div>
+         <div class="grid-item-even">4</div>
+     </div>
+    </div>
+  )HTML");
+  String dump = DumpFragmentTree(GetElementById("wrapper"));
+
+  String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
+  offset:unplaced size:1000x0
+    offset:0,0 size:1000x0
+      offset:0,0 size:100x100
+        offset:0,0 size:10x10
+      offset:150,0 size:200x100
+        offset:0,0 size:10x10
+      offset:0,175 size:100x100
+        offset:0,0 size:10x10
+      offset:150,175 size:200x100
+        offset:0,0 size:10x10
+)DUMP";
+  EXPECT_EQ(expectation, dump);
+}
+
 }  // namespace blink
