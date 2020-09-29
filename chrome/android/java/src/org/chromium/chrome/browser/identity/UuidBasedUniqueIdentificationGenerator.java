@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.uid;
+package org.chromium.chrome.browser.identity;
 
 import android.content.Context;
 
@@ -40,6 +40,7 @@ public class UuidBasedUniqueIdentificationGenerator implements UniqueIdentificat
         // Store the field so we ensure we always return the same unique ID.
         preferences.writeString(mPreferenceKey, uniqueId);
         return uniqueId;
+
     }
 
     @VisibleForTesting

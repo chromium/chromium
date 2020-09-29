@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.uid;
+package org.chromium.chrome.browser.identity;
 
 import androidx.annotation.Nullable;
 import androidx.test.filters.SmallTest;
@@ -14,7 +14,6 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 
-/** Unit tests for {@link UniqueIdentificationGeneratorFactory}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 public class UniqueIdentificationGeneratorFactoryTest {
     @Test

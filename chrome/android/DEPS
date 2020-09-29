@@ -22,7 +22,6 @@ include_rules = [
   "+chrome/browser/ui/android/favicon/java",
   "+chrome/browser/ui/android/native_page",
   "+chrome/browser/ui/messages/android",
-  "+chrome/browser/uid/android",
   "+chrome/browser/util/android/java",
   "+chrome/browser/webauthn/android",
   "+components/browser_ui/android/bottomsheet",
