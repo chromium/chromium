@@ -332,7 +332,7 @@ IN_PROC_BROWSER_TEST_F(FlocIdProviderWithCustomizedServicesBrowserTest,
 
   EXPECT_EQ(1u, GetHistoryUrls().size());
 
-  EXPECT_EQ(GetFlocId().ToDebugHeaderValue(), FlocId().ToDebugHeaderValue());
+  EXPECT_EQ(GetFlocId(), FlocId());
 
   InitializeBlocklist({});
 
@@ -362,7 +362,7 @@ IN_PROC_BROWSER_TEST_F(FlocIdProviderWithCustomizedServicesBrowserTest,
 
   EXPECT_EQ(1u, GetHistoryUrls().size());
 
-  EXPECT_EQ(GetFlocId().ToDebugHeaderValue(), FlocId().ToDebugHeaderValue());
+  EXPECT_EQ(GetFlocId(), FlocId());
 
   InitializeBlocklist({});
 
@@ -382,7 +382,7 @@ IN_PROC_BROWSER_TEST_F(FlocIdProviderWithCustomizedServicesBrowserTest,
 
   EXPECT_EQ(1u, GetHistoryUrls().size());
 
-  EXPECT_EQ(GetFlocId().ToDebugHeaderValue(), FlocId().ToDebugHeaderValue());
+  EXPECT_EQ(GetFlocId(), FlocId());
 
   InitializeBlocklist({});
 
@@ -419,7 +419,7 @@ IN_PROC_BROWSER_TEST_F(FlocIdProviderWithCustomizedServicesBrowserTest,
 
   EXPECT_EQ(1u, GetHistoryUrls().size());
 
-  EXPECT_EQ(GetFlocId().ToDebugHeaderValue(), FlocId().ToDebugHeaderValue());
+  EXPECT_EQ(GetFlocId(), FlocId());
 
   // Load a blocklist that would block the upcoming floc.
   InitializeBlocklist({FlocId::CreateFromHistory({test_host()}).ToUint64()});
@@ -440,7 +440,7 @@ IN_PROC_BROWSER_TEST_F(FlocIdProviderWithCustomizedServicesBrowserTest,
 
   EXPECT_EQ(1u, GetHistoryUrls().size());
 
-  EXPECT_EQ(GetFlocId().ToDebugHeaderValue(), FlocId().ToDebugHeaderValue());
+  EXPECT_EQ(GetFlocId(), FlocId());
 
   // Load a blocklist that would block a floc different from the upcoming floc.
   InitializeBlocklist({FlocId::CreateFromHistory({"b.test"}).ToUint64()});

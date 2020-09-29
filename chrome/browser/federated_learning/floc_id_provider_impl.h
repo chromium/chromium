@@ -75,10 +75,9 @@ class FlocIdProviderImpl : public FlocIdProvider,
 
  protected:
   // protected virtual for testing.
+  virtual void OnComputeFlocCompleted(ComputeFlocTrigger trigger,
+                                      FlocId floc_id);
   virtual void NotifyFlocUpdated(ComputeFlocTrigger trigger);
-  virtual bool IsSyncHistoryEnabled() const;
-  virtual bool AreThirdPartyCookiesAllowed() const;
-  virtual void IsSwaaNacAccountEnabled(CanComputeFlocCallback callback);
 
  private:
   friend class FlocIdProviderUnitTest;
@@ -102,13 +101,18 @@ class FlocIdProviderImpl : public FlocIdProvider,
 
   void MaybeTriggerFirstFlocComputation();
 
+  void OnComputeFlocScheduledUpdate();
+
   void ComputeFloc(ComputeFlocTrigger trigger);
-  void OnComputeFlocCompleted(ComputeFlocTrigger trigger, FlocId floc_id);
 
   void CheckCanComputeFloc(CanComputeFlocCallback callback);
   void OnCheckCanComputeFlocCompleted(ComputeFlocCompletedCallback callback,
                                       bool can_compute_floc);
 
+  bool IsSyncHistoryEnabled() const;
+  bool AreThirdPartyCookiesAllowed() const;
+
+  void IsSwaaNacAccountEnabled(CanComputeFlocCallback callback);
   void OnCheckSwaaNacAccountEnabledCompleted(CanComputeFlocCallback callback,
                                              bool enabled);
 
@@ -116,9 +120,19 @@ class FlocIdProviderImpl : public FlocIdProvider,
   void OnGetRecentlyVisitedURLsCompleted(ComputeFlocCompletedCallback callback,
                                          history::QueryResults results);
 
+  // Apply any additional filtering or transformation on a floc computed from
+  // history. For example, invalidate it if it's in the blocklist.
+  void ApplyAdditionalFiltering(ComputeFlocCompletedCallback callback,
+                                const FlocId& floc_id);
+
   FlocId floc_id_;
   bool floc_computation_in_progress_ = false;
   bool first_floc_computation_triggered_ = false;
+
+  // We store a pending event if it arrives during an in-progress computation.
+  // When the in-progress one finishes, we would disregard the result (no
+  // loggings, updates, etc.), and compute again.
+  base::Optional<ComputeFlocTrigger> pending_recompute_event_;
 
   bool first_blocklist_loaded_seen_ = false;
   bool first_sync_history_enabled_seen_ = false;
