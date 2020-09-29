@@ -20,7 +20,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.payments.handler.PaymentHandlerCoordinator;
-import org.chromium.chrome.browser.payments.handler.PaymentHandlerCoordinator.PaymentHandlerWebContentsObserver;
 import org.chromium.chrome.browser.payments.ui.PaymentInformation;
 import org.chromium.chrome.browser.payments.ui.PaymentRequestUI;
 import org.chromium.chrome.browser.payments.ui.PaymentUIsManager;
@@ -683,39 +682,37 @@ public class PaymentRequestImpl
     /**
      * Called to open a new PaymentHandler UI on the showing PaymentRequest.
      * @param url The url of the payment app to be displayed in the UI.
-     * @param paymentHandlerWebContentsObserver The observer of the WebContents of the
-     * PaymentHandler.
-     * @return Whether the opening is successful.
+     * @return The WebContents of the payment handler that's just opened when the opening is
+     *         successful; null if failed.
      */
-    public static boolean openPaymentHandlerWindow(
-            GURL url, PaymentHandlerWebContentsObserver paymentHandlerWebContentsObserver) {
-        return sShowingPaymentRequest != null
-                && sShowingPaymentRequest.openPaymentHandlerWindowInternal(
-                        url, paymentHandlerWebContentsObserver);
+    @Nullable
+    public static WebContents openPaymentHandlerWindow(GURL url) {
+        if (sShowingPaymentRequest == null) return null;
+        return sShowingPaymentRequest.openPaymentHandlerWindowInternal(url);
     }
 
     /**
      * Called to open a new PaymentHandler UI on this PaymentRequest.
      * @param url The url of the payment app to be displayed in the UI.
-     * @param paymentHandlerWebContentsObserver The observer of the WebContents of the
-     * PaymentHandler.
-     * @return Whether the opening is successful.
+     * @return The WebContents of the payment handler that's just opened when the opening is
+     *         successful; null if failed.
      */
-    private boolean openPaymentHandlerWindowInternal(
-            GURL url, PaymentHandlerWebContentsObserver paymentHandlerWebContentsObserver) {
+    @Nullable
+    private WebContents openPaymentHandlerWindowInternal(GURL url) {
         assert mInvokedPaymentApp != null;
         assert mInvokedPaymentApp.getPaymentAppType() == PaymentAppType.SERVICE_WORKER_APP;
 
-        if (mComponentPaymentRequestImpl == null) return false;
+        if (mComponentPaymentRequestImpl == null) return null;
 
-        boolean success = mPaymentUIsManager.showPaymentHandlerUI(mWebContents, url,
-                paymentHandlerWebContentsObserver, mComponentPaymentRequestImpl.isOffTheRecord());
-        if (success) {
+        @Nullable
+        WebContents paymentHandlerWebContents = mPaymentUIsManager.showPaymentHandlerUI(
+                url, mComponentPaymentRequestImpl.isOffTheRecord());
+        if (paymentHandlerWebContents != null) {
             // UKM for payment app origin should get recorded only when the origin of the invoked
             // payment app is shown to the user.
             mJourneyLogger.setPaymentAppUkmSourceId(mInvokedPaymentApp.getUkmSourceId());
         }
-        return success;
+        return paymentHandlerWebContents;
     }
 
     @Override

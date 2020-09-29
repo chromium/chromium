@@ -36,7 +36,6 @@ import org.chromium.chrome.browser.payments.SettingsAutofillAndPaymentsObserver;
 import org.chromium.chrome.browser.payments.ShippingStrings;
 import org.chromium.chrome.browser.payments.handler.PaymentHandlerCoordinator;
 import org.chromium.chrome.browser.payments.handler.PaymentHandlerCoordinator.PaymentHandlerUiObserver;
-import org.chromium.chrome.browser.payments.handler.PaymentHandlerCoordinator.PaymentHandlerWebContentsObserver;
 import org.chromium.chrome.browser.payments.minimal.MinimalUICoordinator;
 import org.chromium.chrome.browser.payments.ui.PaymentRequestSection.OptionSection.FocusChangedObserver;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -941,23 +940,23 @@ public class PaymentUIsManager implements SettingsAutofillAndPaymentsObserver.Ob
 
     /**
      * Create and show the (BottomSheet) PaymentHandler UI.
-     * @param webContents The WebContents of the merchant page.
      * @param url The URL of the payment app.
-     * @param paymentHandlerWebContentsObserver An observer of the WebContents of the Payment
-     *         Handler UI.
      * @param isOffTheRecord Whether the merchant page is currently in an OffTheRecord tab.
-     * @return Whether the PaymentHandler UI is shown successfully.
+     * @return The WebContents of the payment handler that's just opened when the opening is
+     *         successful; null if failed.
      */
-    public boolean showPaymentHandlerUI(WebContents webContents, GURL url,
-            PaymentHandlerWebContentsObserver paymentHandlerWebContentsObserver,
-            boolean isOffTheRecord) {
-        if (mPaymentHandlerUi != null) return false;
-        ChromeActivity chromeActivity = ChromeActivity.fromWebContents(webContents);
-        if (chromeActivity == null) return false;
+    @Nullable
+    public WebContents showPaymentHandlerUI(GURL url, boolean isOffTheRecord) {
+        if (mPaymentHandlerUi != null) return null;
+        ChromeActivity chromeActivity = ChromeActivity.fromWebContents(mWebContents);
+        if (chromeActivity == null) return null;
 
-        mPaymentHandlerUi = new PaymentHandlerCoordinator();
-        return mPaymentHandlerUi.show(chromeActivity, url, isOffTheRecord,
-                paymentHandlerWebContentsObserver, /*uiObserver=*/this);
+        PaymentHandlerCoordinator paymentHandlerUi = new PaymentHandlerCoordinator();
+        WebContents paymentHandlerWebContents = paymentHandlerUi.show(
+                /*paymentRequestWebContents=*/mWebContents, url, isOffTheRecord,
+                /*uiObserver=*/this);
+        if (paymentHandlerWebContents != null) mPaymentHandlerUi = paymentHandlerUi;
+        return paymentHandlerWebContents;
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)

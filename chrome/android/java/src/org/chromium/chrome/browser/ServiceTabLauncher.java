@@ -81,8 +81,12 @@ public class ServiceTabLauncher {
         if (disposition == WindowOpenDisposition.NEW_POPUP) {
             boolean success = false;
             if (PaymentHandlerCoordinator.isEnabled()) {
-                success = PaymentRequestImpl.openPaymentHandlerWindow(url,
-                        (webContents) -> onWebContentsForRequestAvailable(requestId, webContents));
+                WebContents paymentHandlerWebContent =
+                        PaymentRequestImpl.openPaymentHandlerWindow(url);
+                if (paymentHandlerWebContent != null) {
+                    success = true;
+                    onWebContentsForRequestAvailable(requestId, paymentHandlerWebContent);
+                }
             } else {
                 success = createPopupCustomTab(requestId, url.getSpec(), incognito);
             }

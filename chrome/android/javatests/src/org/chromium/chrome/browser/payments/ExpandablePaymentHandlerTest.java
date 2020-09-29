@@ -38,7 +38,6 @@ import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.payments.handler.PaymentHandlerCoordinator;
 import org.chromium.chrome.browser.payments.handler.PaymentHandlerCoordinator.PaymentHandlerUiObserver;
-import org.chromium.chrome.browser.payments.handler.PaymentHandlerCoordinator.PaymentHandlerWebContentsObserver;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
@@ -71,7 +70,6 @@ public class ExpandablePaymentHandlerTest {
     private EmbeddedTestServer mServer;
     private boolean mUiShownCalled;
     private boolean mUiClosedCalled;
-    private boolean mWebContentsInitializedCallbackInvoked;
     private UiDevice mDevice;
     private boolean mDefaultIsIncognito;
     private ChromeActivity mDefaultActivity;
@@ -133,8 +131,8 @@ public class ExpandablePaymentHandlerTest {
         PaymentHandlerCoordinator paymentHandler = new PaymentHandlerCoordinator();
         mRule.runOnUiThread(
                 ()
-                        -> paymentHandler.show(mDefaultActivity, defaultPaymentAppUrl(),
-                                isIncognito, defaultWebContentObserver(), defaultUiObserver()));
+                        -> paymentHandler.show(mDefaultActivity.getCurrentWebContents(),
+                                defaultPaymentAppUrl(), isIncognito, defaultUiObserver()));
         return paymentHandler;
     }
 
@@ -159,15 +157,6 @@ public class ExpandablePaymentHandlerTest {
     private GURL defaultPaymentAppUrl() {
         return new GURL(mServer.getURL(
                 "/components/test/data/payments/maxpay.com/payment_handler_window.html"));
-    }
-
-    private PaymentHandlerWebContentsObserver defaultWebContentObserver() {
-        return new PaymentHandlerWebContentsObserver() {
-            @Override
-            public void onWebContentsInitialized(WebContents webContents) {
-                mWebContentsInitializedCallbackInvoked = true;
-            }
-        };
     }
 
     private PaymentHandlerUiObserver defaultUiObserver() {
@@ -246,8 +235,6 @@ public class ExpandablePaymentHandlerTest {
         startDefaultServer();
         PaymentHandlerCoordinator paymentHandler = createPaymentHandlerAndShow(mDefaultIsIncognito);
         waitForUiShown();
-
-        Assert.assertTrue(mWebContentsInitializedCallbackInvoked);
 
         mRule.runOnUiThread(() -> paymentHandler.hide());
         waitForUiClosed();
