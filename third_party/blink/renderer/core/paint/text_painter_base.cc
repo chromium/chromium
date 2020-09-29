@@ -31,10 +31,6 @@ namespace {
 // implementation.
 constexpr float kDecorationClipMaxDilation = 13;
 
-float DoubleOffsetFromThickness(float thickness_pixels) {
-  return thickness_pixels + 1.0f;
-}
-
 }  // anonymous namespace
 
 TextPainterBase::TextPainterBase(GraphicsContext& context,
@@ -247,7 +243,7 @@ void TextPainterBase::PaintDecorationsExceptLineThrough(
               decoration.UnderlineOffset(), resolved_thickness);
       decoration_info.SetPerLineData(
           TextDecoration::kUnderline, paint_underline_offset,
-          DoubleOffsetFromThickness(resolved_thickness), 1);
+          TextDecorationInfo::DoubleOffsetFromThickness(resolved_thickness), 1);
       PaintDecorationUnderOrOverLine(context, decoration_info,
                                      TextDecoration::kUnderline);
     }
@@ -263,7 +259,8 @@ void TextPainterBase::PaintDecorationsExceptLineThrough(
               position);
       decoration_info.SetPerLineData(
           TextDecoration::kOverline, paint_overline_offset,
-          -DoubleOffsetFromThickness(resolved_thickness), 1);
+          -TextDecorationInfo::DoubleOffsetFromThickness(resolved_thickness),
+          1);
       PaintDecorationUnderOrOverLine(context, decoration_info,
                                      TextDecoration::kOverline);
     }
@@ -314,7 +311,9 @@ void TextPainterBase::PaintDecorationsOnlyLineThrough(
       // GraphicsContext::DrawLineForText.
       decoration_info.SetPerLineData(
           TextDecoration::kLineThrough, line_through_offset,
-          floorf(DoubleOffsetFromThickness(resolved_thickness)), 0);
+          floorf(TextDecorationInfo::DoubleOffsetFromThickness(
+              resolved_thickness)),
+          0);
       AppliedDecorationPainter decoration_painter(context, decoration_info,
                                                   TextDecoration::kLineThrough);
       // No skip: ink for line-through,

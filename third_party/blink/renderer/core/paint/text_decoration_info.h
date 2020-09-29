@@ -84,16 +84,16 @@ class CORE_EXPORT TextDecorationInfo {
   FloatPoint StartPoint(TextDecoration line) const;
   float DoubleOffset(TextDecoration line) const;
 
-  // Computed bounds for all the decorations in the style passed at
-  // construction.
-  FloatRect Bounds() const;
-
   // Compute bounds for the given line and the current decoration.
   FloatRect BoundsForLine(TextDecoration line) const;
 
   // Return a path for a wavy line at the given position, for the
   // current decoration.
   base::Optional<Path> PrepareWavyStrokePath(TextDecoration line) const;
+
+  static float DoubleOffsetFromThickness(float thickness_pixels) {
+    return thickness_pixels + 1.0f;
+  }
 
  private:
   float ComputeUnderlineThickness(

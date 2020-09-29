@@ -547,7 +547,9 @@ void NGFragmentItem::RecalcInkOverflow(
 
   if (IsText()) {
     // Re-computing text item is not necessary, because all changes that needs
-    // to re-compute ink overflow invalidate layout.
+    // to re-compute ink overflow invalidate layout. Except for box shadows,
+    // text decorations and outlines that are invalidated before this point in
+    // the code.
     if (IsInkOverflowComputed()) {
       *self_and_contents_rect_out = SelfInkOverflow();
       return;

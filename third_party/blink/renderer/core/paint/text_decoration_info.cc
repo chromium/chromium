@@ -249,9 +249,8 @@ FloatRect TextDecorationInfo::BoundsForLine(TextDecoration line) const {
   FloatPoint start_point = StartPoint(line);
   switch (DecorationStyle()) {
     case ETextDecorationStyle::kDotted:
-    case ETextDecorationStyle::kDashed: {
+    case ETextDecorationStyle::kDashed:
       return BoundsForDottedOrDashed(line);
-    }
     case ETextDecorationStyle::kWavy:
       return BoundsForWavy(line);
     case ETextDecorationStyle::kDouble:

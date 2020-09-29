@@ -668,16 +668,11 @@ void NGTextFragmentPainter<Cursor>::Paint(const PaintInfo& paint_info,
         !text_item.IsEllipsis()) {
       PhysicalOffset local_origin = box_rect.offset;
       LayoutUnit width = box_rect.Width();
-      const NGPhysicalBoxFragment* decorating_box = nullptr;
-      const ComputedStyle* decorating_box_style =
-          decorating_box ? &decorating_box->Style() : nullptr;
 
       decoration_info.emplace(box_rect.offset, local_origin, width,
-                              style.GetFontBaseline(), style,
-                              decorating_box_style);
-
-      NGTextDecorationOffset decoration_offset(
-          decoration_info->Style(), text_item.Style(), decorating_box);
+                              style.GetFontBaseline(), style, nullptr);
+      NGTextDecorationOffset decoration_offset(decoration_info->Style(),
+                                               text_item.Style(), nullptr);
       text_painter.PaintDecorationsExceptLineThrough(
           decoration_offset, decoration_info.value(), paint_info,
           style.AppliedTextDecorations(), text_style,
