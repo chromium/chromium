@@ -244,7 +244,13 @@ bool FinishFragmentation(NGBlockNode node,
   LayoutUnit fragments_total_block_size = builder->FragmentsTotalBlockSize();
   LayoutUnit desired_block_size =
       fragments_total_block_size - previously_consumed_block_size;
-  DCHECK_GE(desired_block_size, LayoutUnit());
+
+  // Consumed block-size stored in the break tokens is always stretched to the
+  // fragmentainers. If this wasn't also the case for all previous fragments
+  // (because we reached the end of the node and were overflowing), we may end
+  // up with negative values here.
+  desired_block_size = desired_block_size.ClampNegativeToZero();
+
   LayoutUnit intrinsic_block_size = builder->IntrinsicBlockSize();
 
   LayoutUnit final_block_size = desired_block_size;
@@ -318,8 +324,18 @@ bool FinishFragmentation(NGBlockNode node,
     sides.block_end = false;
   builder->SetSidesToInclude(sides);
 
-  builder->SetConsumedBlockSize(previously_consumed_block_size +
-                                final_block_size);
+  LayoutUnit consumed_here = final_block_size;
+  if (builder->DidBreakSelf() || builder->HasChildBreakInside()) {
+    // If this node is to be resumed in the next fragmentainer, consumed
+    // block-size always includes the entire remainder of the fragmentainer. The
+    // frament itself will only do that unless we've reached the end of the node
+    // (and we are breaking because of overflow). We include the entire
+    // fragmentainer in consumed block-size in order to write offsets correctly
+    // back to legacy layout, which would otherwise become incorrect for
+    // overflowing content.
+    consumed_here = std::max(consumed_here, space_left);
+  }
+  builder->SetConsumedBlockSize(previously_consumed_block_size + consumed_here);
   builder->SetFragmentBlockSize(final_block_size);
 
   if (builder->FoundColumnSpanner())

@@ -1083,11 +1083,6 @@ crbug.com/829028 virtual/layout_ng_block_frag/fast/multicol/event-offset-in-nest
 crbug.com/1061423 virtual/layout_ng_block_frag/fast/multicol/flipped-blocks-hit-test.html [ Failure ]
 crbug.com/829028 virtual/layout_ng_block_frag/fast/multicol/float-margin-at-row-boundary.html [ Failure ]
 crbug.com/829028 virtual/layout_ng_block_frag/fast/multicol/float-margin-at-row-boundary-fixed-multicol-height.html [ Failure ]
-crbug.com/829028 virtual/layout_ng_block_frag/fast/multicol/float-moved-by-child-line-and-unbreakable.html [ Failure ]
-crbug.com/829028 virtual/layout_ng_block_frag/fast/multicol/float-with-margin-moved-by-child-block-and-unbreakable.html [ Failure ]
-crbug.com/829028 virtual/layout_ng_block_frag/fast/multicol/float-with-margin-moved-by-child-block.html [ Failure Timeout ]
-crbug.com/829028 virtual/layout_ng_block_frag/fast/multicol/float-with-margin-moved-by-child-line-and-unbreakable.html [ Failure ]
-crbug.com/829028 virtual/layout_ng_block_frag/fast/multicol/float-with-margin-moved-by-child-line.html [ Failure ]
 crbug.com/829028 virtual/layout_ng_block_frag/fast/multicol/forced-break-in-nested-columns.html [ Failure ]
 crbug.com/829028 virtual/layout_ng_block_frag/fast/multicol/forced-break-too-short-column.html [ Failure ]
 crbug.com/829028 virtual/layout_ng_block_frag/fast/multicol/hit-test-above-or-below.html [ Failure ]
@@ -1165,7 +1160,6 @@ crbug.com/1079031 virtual/layout_ng_block_frag/fragmentation/abspos-after-forced
 crbug.com/829028 virtual/layout_ng_block_frag/fragmentation/auto-scrollbar-shrink-to-fit.html [ Failure ]
 crbug.com/1079031 virtual/layout_ng_block_frag/fragmentation/content-preceding-first-fragmentainer.html [ Crash Failure ]
 crbug.com/829028 virtual/layout_ng_block_frag/fragmentation/float-after-forced-break.html [ Failure ]
-crbug.com/829028 virtual/layout_ng_block_frag/fragmentation/overflow-crossing-boundary.html [ Failure ]
 crbug.com/1079031 virtual/layout_ng_block_frag/fragmentation/relayout-abspos.html [ Failure ]
 
 ### With LayoutNGFragmentTraversal (and LayoutNGFragmentItem) enabled:

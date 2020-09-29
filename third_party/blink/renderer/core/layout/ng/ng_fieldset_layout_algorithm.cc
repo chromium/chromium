@@ -157,6 +157,9 @@ NGBreakStatus NGFieldsetLayoutAlgorithm::LayoutChildren() {
     }
   }
 
+  LogicalSize adjusted_padding_box_size =
+      ShrinkLogicalSize(border_box_size_, borders_);
+
   NGBlockNode legend = Node().GetRenderedLegend();
   if (legend) {
     if (!IsResumingLayout(BreakToken()))
@@ -168,40 +171,35 @@ NGBreakStatus NGFieldsetLayoutAlgorithm::LayoutChildren() {
       minimum_border_box_block_size_ =
           intrinsic_block_size_ + padding_.BlockSum() + borders_.block_end;
     }
-  }
 
-  LogicalSize adjusted_padding_box_size =
-      ShrinkLogicalSize(border_box_size_, borders_);
+    if (adjusted_padding_box_size.block_size != kIndefiniteSize) {
+      DCHECK_NE(border_box_size_.block_size, kIndefiniteSize);
+      LayoutUnit legend_size_contribution;
+      if (IsResumingLayout(BreakToken())) {
+        // The legend has been laid out in previous fragments, and
+        // adjusted_padding_box_size will need to be adjusted further to account
+        // for block size taken up by the legend.
+        //
+        // To calculate its size contribution to the border block-start area,
+        // take the difference between the previously consumed block-size of the
+        // fieldset excluding its specified block-start border, and the consumed
+        // block-size of the contents wrapper.
+        LayoutUnit content_consumed_block_size =
+            content_break_token ? content_break_token->ConsumedBlockSize()
+                                : LayoutUnit();
+        legend_size_contribution = consumed_block_size_ - borders_.block_start -
+                                   content_consumed_block_size;
+      } else {
+        // We're at the first fragment. The current layout position
+        // (intrinsic_block_size_) is at the outer block-end edge of the legend
+        // or just after the block-start border, whichever is larger.
+        legend_size_contribution = intrinsic_block_size_ - borders_.block_start;
+      }
 
-  // If the legend has been laid out in previous fragments,
-  // adjusted_padding_box_size will need to be adjusted further to account for
-  // block size taken up by the legend.
-  if (adjusted_padding_box_size.block_size != kIndefiniteSize && legend) {
-    LayoutUnit content_consumed_block_size =
-        content_break_token ? content_break_token->ConsumedBlockSize()
-                            : LayoutUnit();
-
-    // Calculate the amount of the border block-start that was consumed in
-    // previous fragments.
-    LayoutUnit consumed_border_block_start =
-        borders_.block_start - intrinsic_block_size_;
-
-    // Calculate the amount of the border block-end that was consumed in
-    // previous fragments.
-    DCHECK_NE(border_box_size_.block_size, kIndefiniteSize);
-    LayoutUnit consumed_border_block_end =
-        std::max(consumed_block_size_ -
-                     (border_box_size_.block_size - borders_.block_end),
-                 LayoutUnit());
-
-    LayoutUnit legend_block_size =
-        consumed_block_size_ - content_consumed_block_size -
-        consumed_border_block_start - consumed_border_block_end;
-    DCHECK_GE(legend_block_size, LayoutUnit());
-
-    adjusted_padding_box_size.block_size =
-        std::max(padding_.BlockSum(),
-                 adjusted_padding_box_size.block_size - legend_block_size);
+      adjusted_padding_box_size.block_size = std::max(
+          adjusted_padding_box_size.block_size - legend_size_contribution,
+          padding_.BlockSum());
+    }
   }
 
   // Proceed with normal fieldset children (excluding the rendered legend). They
