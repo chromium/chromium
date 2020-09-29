@@ -425,19 +425,28 @@ void ComputeOutOfFlowInlineDimensions(
     const ComputedStyle& style,
     const NGBoxStrut& border_padding,
     const NGLogicalStaticPosition& static_position,
-    const base::Optional<MinMaxSizes>& min_max_sizes,
+    const base::Optional<MinMaxSizes>& minmax_content_sizes,
+    const base::Optional<MinMaxSizes>& minmax_intrinsic_sizes_for_ar,
     const base::Optional<LogicalSize>& replaced_size,
     const WritingMode container_writing_mode,
     const TextDirection container_direction,
     NGLogicalOutOfFlowDimensions* dimensions) {
   DCHECK(dimensions);
 
-  LayoutUnit min_inline_size = ResolveMinInlineLength(
-      space, style, border_padding, min_max_sizes, style.LogicalMinWidth(),
-      LengthResolvePhase::kLayout);
+  Length min_inline_length = style.LogicalMinWidth();
+  base::Optional<MinMaxSizes> min_size_minmax = minmax_content_sizes;
+  // We don't need to check for IsInlineSizeComputableFromBlockSize; this is
+  // done by the caller.
+  if (minmax_intrinsic_sizes_for_ar) {
+    min_inline_length = Length::MinIntrinsic();
+    min_size_minmax = minmax_intrinsic_sizes_for_ar;
+  }
+  LayoutUnit min_inline_size =
+      ResolveMinInlineLength(space, style, border_padding, min_size_minmax,
+                             min_inline_length, LengthResolvePhase::kLayout);
   LayoutUnit max_inline_size = ResolveMaxInlineLength(
-      space, style, border_padding, min_max_sizes, style.LogicalMaxWidth(),
-      LengthResolvePhase::kLayout);
+      space, style, border_padding, minmax_content_sizes,
+      style.LogicalMaxWidth(), LengthResolvePhase::kLayout);
 
   // This implements the transferred min/max sizes per
   // https://drafts.csswg.org/css-sizing-4/#aspect-ratio
@@ -451,8 +460,9 @@ void ComputeOutOfFlowInlineDimensions(
   bool is_table = style.IsDisplayTableBox();
   base::Optional<LayoutUnit> inline_size;
   if (!style.LogicalWidth().IsAuto()) {
-    LayoutUnit resolved_inline_size = ResolveMainInlineLength(
-        space, style, border_padding, min_max_sizes, style.LogicalWidth());
+    LayoutUnit resolved_inline_size =
+        ResolveMainInlineLength(space, style, border_padding,
+                                minmax_content_sizes, style.LogicalWidth());
 
     // Tables use the inline-size as a minimum.
     if (is_table)
@@ -462,8 +472,8 @@ void ComputeOutOfFlowInlineDimensions(
   } else if (replaced_size.has_value()) {
     inline_size = replaced_size->inline_size;
   } else if (IsInlineSizeComputableFromBlockSize(style)) {
-    DCHECK(min_max_sizes.has_value());
-    inline_size = min_max_sizes->min_size;
+    DCHECK(minmax_content_sizes.has_value());
+    inline_size = minmax_content_sizes->min_size;
   }
 
   bool is_start_dominant;
@@ -478,7 +488,7 @@ void ComputeOutOfFlowInlineDimensions(
   }
 
   ComputeAbsoluteSize(
-      border_padding.InlineSum(), min_max_sizes,
+      border_padding.InlineSum(), minmax_content_sizes,
       space.PercentageResolutionInlineSizeForParentWritingMode(),
       space.AvailableSize().inline_size, style.MarginStart(), style.MarginEnd(),
       style.LogicalInlineStart(), style.LogicalInlineEnd(), min_inline_size,

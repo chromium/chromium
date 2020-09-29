@@ -61,6 +61,8 @@ bool IsInlineSizeComputableFromBlockSize(const ComputedStyle& style);
 
 // Computes part of the absolute position which depends on the child's
 // inline-size.
+// |minmax_intrinsic_size_for_ar| is only used for min-inline-size: auto in
+// combination with aspect-ratio.
 // |replaced_size| should be set if and only if element is replaced element.
 // Returns the partially filled position.
 CORE_EXPORT void ComputeOutOfFlowInlineDimensions(
@@ -68,7 +70,8 @@ CORE_EXPORT void ComputeOutOfFlowInlineDimensions(
     const ComputedStyle&,
     const NGBoxStrut& border_padding,
     const NGLogicalStaticPosition&,
-    const base::Optional<MinMaxSizes>& child_minmax,
+    const base::Optional<MinMaxSizes>& minmax_content_sizes,
+    const base::Optional<MinMaxSizes>& minmax_intrinsic_sizes_for_ar,
     const base::Optional<LogicalSize>& replaced_size,
     const WritingMode container_writing_mode,
     const TextDirection container_direction,
