@@ -498,6 +498,8 @@ static_library("test_support") {
     "mock_password_sync_metadata_store.h",
     "password_manager_test_utils.cc",
     "password_manager_test_utils.h",
+    "site_affiliation/mock_affiliation_fetcher_factory.cc",
+    "site_affiliation/mock_affiliation_fetcher_factory.h",
     "stub_credentials_filter.cc",
     "stub_credentials_filter.h",
     "stub_form_saver.cc",

@@ -11,8 +11,8 @@
 #include "base/test/task_environment.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_fetcher.h"
 #include "components/password_manager/core/browser/android_affiliation/mock_affiliation_fetcher.h"
-#include "components/password_manager/core/browser/site_affiliation/affiliation_fetcher_factory.h"
 #include "components/password_manager/core/browser/site_affiliation/affiliation_service_impl.h"
+#include "components/password_manager/core/browser/site_affiliation/mock_affiliation_fetcher_factory.h"
 #include "components/sync/driver/test_sync_service.h"
 #include "services/network/test/test_shared_url_loader_factory.h"
 
@@ -49,19 +49,6 @@ std::vector<FacetURI> ToFacetsURIs(const std::vector<GURL>& urls) {
 }
 
 }  // namespace
-
-class MockAffiliationFetcherFactory : public AffiliationFetcherFactory {
- public:
-  MockAffiliationFetcherFactory() = default;
-  ~MockAffiliationFetcherFactory() override = default;
-
-  MOCK_METHOD(
-      std::unique_ptr<AffiliationFetcherInterface>,
-      CreateInstance,
-      (scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-       AffiliationFetcherDelegate* delegate),
-      (override));
-};
 
 class AffiliationServiceImplTest : public testing::Test {
  public:
