@@ -157,16 +157,16 @@
     <message name="IDS_PRINT_PREVIEW_MARGINS_LABEL" desc="Margins option label. Provides user the option to change the margins of the printed page.">
       Margins
     </message>
-    <message name="IDS_PRINT_PREVIEW_DEFAULT_MARGINS" desc="Option that specifies the page be printed with default margins.">
+    <message name="IDS_PRINT_PREVIEW_DEFAULT_MARGINS" desc="Option that specifies the page be printed with default margins." meaning="Default print margins">
       Default
     </message>
-    <message name="IDS_PRINT_PREVIEW_NO_MARGINS" desc="Option that specifies the page be printed with no margins.">
+    <message name="IDS_PRINT_PREVIEW_NO_MARGINS" desc="Option that specifies the page be printed with no margins." meaning="No print margins">
       None
     </message>
-    <message name="IDS_PRINT_PREVIEW_CUSTOM_MARGINS" desc="Option that specifies the page be printed with user-specified custom margins.">
+    <message name="IDS_PRINT_PREVIEW_CUSTOM_MARGINS" desc="Option that specifies the page be printed with user-specified custom margins." meaning="Custom print margins">
       Custom
     </message>
-    <message name="IDS_PRINT_PREVIEW_MINIMUM_MARGINS" desc="Option that specifies the page be printed with the minimum allowed margins by the printer.">
+    <message name="IDS_PRINT_PREVIEW_MINIMUM_MARGINS" desc="Option that specifies the page be printed with the minimum allowed margins by the printer." meaning="Minimum print margins">
       Minimum
     </message>
     <message name="IDS_PRINT_PREVIEW_TOP_MARGIN_LABEL" desc="ARIA label used by screen reader to explain the purpose of the top margin textbox.">
