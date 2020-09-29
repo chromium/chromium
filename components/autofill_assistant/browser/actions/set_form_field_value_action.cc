@@ -8,9 +8,11 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill_assistant/browser/actions/action_delegate.h"
 #include "components/autofill_assistant/browser/actions/action_delegate_util.h"
 #include "components/autofill_assistant/browser/client_status.h"
+#include "components/autofill_assistant/browser/field_formatter.h"
 
 namespace autofill_assistant {
 namespace {
@@ -57,6 +59,7 @@ void SetFormFieldValueAction::InternalProcessAction(
   }
 
   // Check proto fields.
+  int keypress_index = 0;
   for (const auto& keypress : proto_.set_form_value().value()) {
     switch (keypress.keypress_case()) {
       case SetFormFieldValueProto_KeyPress::kKeycode:
@@ -68,7 +71,7 @@ void SetFormFieldValueAction::InternalProcessAction(
           VLOG(1) << "SetFormFieldValueAction: field `keycode' is deprecated "
                   << "and only supports US-ASCII values (encountered value > "
                      "127). Use field `key' instead.";
-          EndAction(ClientStatus(INVALID_ACTION));
+          FailAction(ClientStatus(INVALID_ACTION), keypress_index);
           return;
         }
         field_inputs_.emplace_back(
@@ -79,7 +82,7 @@ void SetFormFieldValueAction::InternalProcessAction(
         if (keypress.keyboard_input().empty()) {
           VLOG(1) << "SetFormFieldValueAction: field 'keyboard_input' must be "
                      "non-empty if set.";
-          EndAction(ClientStatus(INVALID_ACTION));
+          FailAction(ClientStatus(INVALID_ACTION), keypress_index);
           return;
         }
         field_inputs_.emplace_back(
@@ -93,7 +96,7 @@ void SetFormFieldValueAction::InternalProcessAction(
         if (!delegate_->GetUserData()->selected_login_.has_value()) {
           VLOG(1) << "SetFormFieldValueAction: requested login details not "
                      "available in client memory.";
-          EndAction(ClientStatus(PRECONDITION_FAILED));
+          FailAction(ClientStatus(PRECONDITION_FAILED), keypress_index);
           return;
         }
         if (keypress.keypress_case() ==
@@ -112,7 +115,7 @@ void SetFormFieldValueAction::InternalProcessAction(
       case SetFormFieldValueProto_KeyPress::kClientMemoryKey:
         if (keypress.client_memory_key().empty()) {
           VLOG(1) << "SetFormFieldValueAction: empty |client_memory_key|";
-          EndAction(ClientStatus(INVALID_ACTION));
+          FailAction(ClientStatus(INVALID_ACTION), keypress_index);
           return;
         }
         if (!delegate_->GetUserData()->has_additional_value(
@@ -125,7 +128,7 @@ void SetFormFieldValueAction::InternalProcessAction(
           VLOG(1) << "SetFormFieldValueAction: requested key '"
                   << keypress.client_memory_key()
                   << "' not available in client memory";
-          EndAction(ClientStatus(PRECONDITION_FAILED));
+          FailAction(ClientStatus(PRECONDITION_FAILED), keypress_index);
           return;
         }
         field_inputs_.emplace_back(
@@ -134,11 +137,43 @@ void SetFormFieldValueAction::InternalProcessAction(
                 ->strings()
                 .values(0));
         break;
+      case SetFormFieldValueProto_KeyPress::kAutofillValue: {
+        if (keypress.autofill_value().profile().identifier().empty() ||
+            keypress.autofill_value().value_expression().empty()) {
+          VLOG(1) << "SetFormFieldValueAction: |autofill_value| with empty "
+                     "|profile.identifier| or |value_expression|";
+          FailAction(ClientStatus(INVALID_ACTION), keypress_index);
+          return;
+        }
+
+        const autofill::AutofillProfile* address =
+            delegate_->GetUserData()->selected_address(
+                keypress.autofill_value().profile().identifier());
+        if (address == nullptr) {
+          VLOG(1) << "SetFormFieldValueAction: requested unknown address '"
+                  << keypress.autofill_value().profile().identifier() << "'";
+          FailAction(ClientStatus(PRECONDITION_FAILED), keypress_index);
+          return;
+        }
+
+        auto value = field_formatter::FormatString(
+            keypress.autofill_value().value_expression(),
+            field_formatter::CreateAutofillMappings(*address,
+                                                    /* locale= */ "en-US"));
+        if (!value.has_value()) {
+          FailAction(ClientStatus(AUTOFILL_INFO_NOT_AVAILABLE), keypress_index);
+          return;
+        }
+
+        field_inputs_.emplace_back(*value);
+        break;
+      }
       default:
         VLOG(1) << "Unrecognized field for SetFormFieldValueProto_KeyPress";
-        EndAction(ClientStatus(INVALID_ACTION));
+        FailAction(ClientStatus(INVALID_ACTION), keypress_index);
         return;
     }
+    ++keypress_index;
   }
 
   delegate_->ShortWaitForElement(
@@ -276,6 +311,14 @@ void SetFormFieldValueAction::OnGetStoredPassword(int field_index,
             weak_ptr_factory_.GetWeakPtr(),
             /* next = */ field_index, /* requested_value = */ password));
   }
+}
+
+void SetFormFieldValueAction::FailAction(const ClientStatus& status,
+                                         int keypress_index) {
+  processed_action_proto_->mutable_status_details()
+      ->mutable_form_field_error_info()
+      ->set_invalid_keypress_index(keypress_index);
+  EndAction(status);
 }
 
 void SetFormFieldValueAction::EndAction(const ClientStatus& status) {

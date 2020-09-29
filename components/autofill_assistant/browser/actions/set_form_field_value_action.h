@@ -70,6 +70,7 @@ class SetFormFieldValueAction : public Action {
 
   void OnGetStoredPassword(int field_index, bool success, std::string password);
 
+  void FailAction(const ClientStatus& status, int keypress_index);
   void EndAction(const ClientStatus& status);
 
   Selector selector_;

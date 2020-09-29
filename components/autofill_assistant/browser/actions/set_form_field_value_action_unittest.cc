@@ -7,8 +7,14 @@
 #include <string>
 #include <utility>
 
+#include "base/guid.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
+#include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill_assistant/browser/actions/action_test_utils.h"
 #include "components/autofill_assistant/browser/actions/mock_action_delegate.h"
 #include "components/autofill_assistant/browser/client_status.h"
@@ -355,6 +361,82 @@ TEST_F(SetFormFieldValueActionTest, PasswordIsClearedFromMemory) {
       .WillByDefault(RunOnceCallback<1>(OkClientStatus(), kFakePassword));
   action.ProcessAction(callback_.Get());
   EXPECT_TRUE(action.field_inputs_.empty());
+}
+
+TEST_F(SetFormFieldValueActionTest, EmptyProfileValueFails) {
+  set_form_field_proto_->add_value()->mutable_autofill_value();
+  SetFormFieldValueAction action(&mock_action_delegate_, proto_);
+
+  EXPECT_CALL(
+      callback_,
+      Run(Pointee(Property(&ProcessedActionProto::status, INVALID_ACTION))));
+  action.ProcessAction(callback_.Get());
+}
+
+TEST_F(SetFormFieldValueActionTest, RequestDataFromUnknownProfile) {
+  auto* value = set_form_field_proto_->add_value()->mutable_autofill_value();
+  value->mutable_profile()->set_identifier("none");
+  value->set_value_expression("value");
+  SetFormFieldValueAction action(&mock_action_delegate_, proto_);
+
+  EXPECT_CALL(callback_, Run(Pointee(Property(&ProcessedActionProto::status,
+                                              PRECONDITION_FAILED))));
+  action.ProcessAction(callback_.Get());
+}
+
+TEST_F(SetFormFieldValueActionTest, RequestUnknownDataFromProfile) {
+  autofill::AutofillProfile contact(base::GenerateGUID(),
+                                    autofill::test::kEmptyOrigin);
+  // Middle name is expected to be empty.
+  autofill::test::SetProfileInfo(&contact, "John", /* middle name */ "", "Doe",
+                                 "", "", "", "", "", "", "", "", "");
+  user_data_.selected_addresses_["contact"] =
+      std::make_unique<autofill::AutofillProfile>(contact);
+
+  auto* value = set_form_field_proto_->add_value()->mutable_autofill_value();
+  value->mutable_profile()->set_identifier("contact");
+  value->set_value_expression(
+      base::StrCat({"${",
+                    base::NumberToString(static_cast<int>(
+                        autofill::ServerFieldType::NAME_MIDDLE)),
+                    "}"}));
+  SetFormFieldValueAction action(&mock_action_delegate_, proto_);
+
+  EXPECT_CALL(callback_, Run(Pointee(Property(&ProcessedActionProto::status,
+                                              AUTOFILL_INFO_NOT_AVAILABLE))));
+  action.ProcessAction(callback_.Get());
+}
+
+TEST_F(SetFormFieldValueActionTest, SetFieldFromProfileValue) {
+  autofill::AutofillProfile contact(base::GenerateGUID(),
+                                    autofill::test::kEmptyOrigin);
+  autofill::test::SetProfileInfo(&contact, "John", "", "Doe", "", "", "", "",
+                                 "", "", "", "", "");
+  user_data_.selected_addresses_["contact"] =
+      std::make_unique<autofill::AutofillProfile>(contact);
+
+  auto* value = set_form_field_proto_->add_value()->mutable_autofill_value();
+  value->mutable_profile()->set_identifier("contact");
+  value->set_value_expression(
+      base::StrCat({"${",
+                    base::NumberToString(static_cast<int>(
+                        autofill::ServerFieldType::NAME_FIRST)),
+                    "}"}));
+  SetFormFieldValueAction action(&mock_action_delegate_, proto_);
+
+  ON_CALL(mock_action_delegate_, OnGetFieldValue(_, _))
+      .WillByDefault(RunOnceCallback<1>(OkClientStatus(), "not empty"));
+  EXPECT_CALL(mock_action_delegate_,
+              OnSetFieldValue("John", _, _,
+                              EqualsElement(test_util::MockFindElement(
+                                  mock_action_delegate_, fake_selector_)),
+                              _))
+      .WillOnce(RunOnceCallback<4>(OkClientStatus()));
+
+  EXPECT_CALL(
+      callback_,
+      Run(Pointee(Property(&ProcessedActionProto::status, ACTION_APPLIED))));
+  action.ProcessAction(callback_.Get());
 }
 
 }  // namespace autofill_assistant

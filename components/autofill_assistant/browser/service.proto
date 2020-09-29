@@ -459,6 +459,21 @@ enum ClickType {
   CLICK = 3;
 }
 
+message AutofillValue {
+  message Profile { optional string identifier = 1; }
+
+  // The profile to be used. This has to be requested with a
+  // |CollectUserDataAction| first.
+  optional Profile profile = 1;
+
+  // A string containing any number of "${key}" placeholders, where the key is
+  // an integer corresponding to entries from field_types.h or
+  // |AutofillFormatProto::AutofillAssistantCustomField|.
+  // Note that the set of actually available fields are outside of our
+  // control and are retrieved automatically from the provided profile.
+  optional string value_expression = 2;
+}
+
 // An action could be performed.
 message ActionProto {
   // Wait these many milliseconds before executing the action, if set.
@@ -607,6 +622,9 @@ message ProcessedActionStatusDetailsProto {
 
   // More information included for autofill related errors.
   optional AutofillErrorInfoProto autofill_error_info = 3;
+
+  // More information included for |SetFormFieldValueProto| related errors.
+  optional SetFormFieldErrorInfoProto form_field_error_info = 4;
 }
 
 message NavigationInfoProto {
@@ -709,6 +727,13 @@ message AutofillErrorInfoProto {
 
   // Errors that occurred during fallback filling of autofill fields.
   repeated AutofillFieldError autofill_field_error = 5;
+}
+
+// Message to report |SetFormFieldValueProto| related errors for debugging
+// purposes.
+message SetFormFieldErrorInfoProto {
+  // The index of |keypress| that caused the action to be invalid.
+  optional int32 invalid_keypress_index = 1;
 }
 
 // The pseudo type values come from
@@ -993,9 +1018,9 @@ message UseAddressProto {
   // Message used to indicate what form fields should be filled with what
   // information coming from the address.
   message RequiredField {
-    // A string containing either a single integer key or multiple "${key}"
-    // placeholders, where the key is an integer corresponding to entries from
-    // field_types.h or AutofillFormatProto::AutofillAssistantCustomField.
+    // A string containing any number of "${key}" placeholders, where the key
+    // is an integer corresponding to entries from field_types.h or
+    // |AutofillFormatProto::AutofillAssistantCustomField|.
     // Example:
     // * "3" -> First name.
     // * "${3}" -> First name.
@@ -1059,9 +1084,9 @@ message UseCreditCardProto {
   // Message used to indicate what form fields should be filled with what
   // information.
   message RequiredField {
-    // A string containing either a single integer key or multiple "${key}"
-    // placeholders, where the key is an integer corresponding to entries from
-    // field_types.h or AutofillFormatProto::AutofillAssistantCustomField.
+    // A string containing any number of "${key}" placeholders, where the key
+    // is an integer corresponding to entries from field_types.h or
+    // |AutofillFormatProto::AutofillAssistantCustomField|.
     // Example:
     // * "51" -> Full name.
     // * "${51}" -> Full Name.
@@ -1918,6 +1943,9 @@ message SetFormFieldValueProto {
       bool use_password = 5;
       // Use the value stored at the specified memory location.
       string client_memory_key = 6;
+      // A value from an Autofill source. Note that this must be proceeded by a
+      // |CollectUserDataAction|.
+      AutofillValue autofill_value = 8;
     }
 
     reserved 7;
