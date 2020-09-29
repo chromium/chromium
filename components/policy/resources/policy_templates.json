@@ -23433,6 +23433,22 @@ If you disable this policy, web page scrolling to specific text fragments via UR
       This policy is temporary and will be removed in a future version
       of <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>.''',
     },
+    {
+      'name': 'MediaRecommendationsEnabled',
+      'owners': ['beccahughes@chromium.org', 'steimel@chromium.org', 'mlamouri@chromium.org'],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'supported_on': ['chrome.*:87-', 'chrome_os:87-'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': True,
+      },
+      'example_value': True,
+      'id': 788,
+      'caption': 'Enable Media Recommendations',
+      'tags': [],
+      'desc': '''By default the browser will show media recommendations that are personalized to the user. Setting this policy to Disabled will result in these recommendations being hidden from the user. Setting this policy to Enabled or leaving it unset will result in the media recommendations being shown to the user.''',
+    },
   ],
 
   'messages': {
@@ -24357,6 +24373,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   ],
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 412, 476, 544, 546, 562, 569, 578],
-  'highest_id_currently_used': 787,
+  'highest_id_currently_used': 788,
   'highest_atomic_group_id_currently_used': 40
 }

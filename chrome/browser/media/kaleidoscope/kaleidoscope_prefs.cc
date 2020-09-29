@@ -15,9 +15,12 @@ const char kKaleidoscopeFirstRunCompleted[] =
 const char kKaleidoscopeAutoSelectMediaFeeds[] =
     "kaleidoscope.auto_select_media_feeds";
 
+const char kKaleidoscopePolicyEnabled[] = "kaleidoscope.enabled_by_policy";
+
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(kKaleidoscopeFirstRunCompleted, 0);
   registry->RegisterBooleanPref(kKaleidoscopeAutoSelectMediaFeeds, false);
+  registry->RegisterBooleanPref(kKaleidoscopePolicyEnabled, true);
 }
 
 }  // namespace prefs

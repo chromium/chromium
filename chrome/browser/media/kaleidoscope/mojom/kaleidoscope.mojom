@@ -13,6 +13,7 @@ enum CredentialsResult {
   kSuccess,
   kFailedIncognito,
   kFailedChild,
+  kDisabledByPolicy,
 };
 
 // The credentials required to make Google API calls from JS.

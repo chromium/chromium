@@ -106,6 +106,14 @@ void KaleidoscopeDataProviderImpl::GetCredentials(GetCredentialsCallback cb) {
     return;
   }
 
+  // If the administrator has disabled Kaleidoscope then stop.
+  auto* prefs = profile_->GetPrefs();
+  if (!prefs->GetBoolean(kaleidoscope::prefs::kKaleidoscopePolicyEnabled)) {
+    std::move(cb).Run(nullptr,
+                      media::mojom::CredentialsResult::kDisabledByPolicy);
+    return;
+  }
+
   // If the user is not signed in, return the credentials without an access
   // token. Sync consent is not required to use Kaleidoscope.
   if (!identity_manager_->HasPrimaryAccount(

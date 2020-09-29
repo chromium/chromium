@@ -21830,6 +21830,7 @@ Called by update_document_policy_enum.py.-->
   <int value="785" label="AttestationExtensionAllowlist"/>
   <int value="786" label="DataLeakPreventionRulesList"/>
   <int value="787" label="WebRtcAllowLegacyTLSProtocols"/>
+  <int value="788" label="MediaRecommendationsEnabled"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">

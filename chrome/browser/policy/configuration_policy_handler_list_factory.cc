@@ -107,6 +107,7 @@
 #include "chrome/browser/enterprise/connectors/connectors_prefs.h"
 #include "chrome/browser/enterprise/connectors/enterprise_connectors_policy_handler.h"
 #include "chrome/browser/enterprise/reporting/extension_request_policy_handler.h"
+#include "chrome/browser/media/kaleidoscope/kaleidoscope_prefs.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/policy/local_sync_policy_handler.h"
 #endif  // defined(OS_ANDROID)
@@ -711,6 +712,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     base::Value::Type::LIST },
   { key::kWebRtcAllowLegacyTLSProtocols,
     prefs::kWebRTCAllowLegacyTLSProtocols,
+    base::Value::Type::BOOLEAN },
+  { key::kMediaRecommendationsEnabled,
+    kaleidoscope::prefs::kKaleidoscopePolicyEnabled,
     base::Value::Type::BOOLEAN },
 #endif  // defined(OS_ANDROID)
 

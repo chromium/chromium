@@ -18,6 +18,9 @@ extern const char kKaleidoscopeFirstRunCompleted[];
 // automatically.
 extern const char kKaleidoscopeAutoSelectMediaFeeds[];
 
+// Stores true if Kaleidoscope has been enabled/disabled by an administrator.
+extern const char kKaleidoscopePolicyEnabled[];
+
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
 }  // namespace prefs
