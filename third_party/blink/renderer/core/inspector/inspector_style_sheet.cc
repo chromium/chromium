@@ -1900,6 +1900,24 @@ void InspectorStyleSheet::MapSourceDataToCSSOM() {
 
   CSSRuleVector& parsed_rules = parsed_flat_rules_;
 
+  if (page_style_sheet_->IsConstructed()) {
+    // If we are dealing with constructed stylesheets, the order
+    // of the parsed_rules matches the order of cssom_rules
+    // because the source CSS is generated based on CSSOM rules
+    // in the same order.
+    // Therefore, we can skip the expensive diff algorithm below
+    // that causes performance issues if there are subtle differences
+    // in rules due to specific issues with the CSS parser.
+    // See crbug.com/1131113, crbug.com/604023, crbug.com/1132778.
+    DCHECK(parsed_rules.size() == cssom_rules.size());
+    auto min_size = std::min(parsed_rules.size(), cssom_rules.size());
+    for (wtf_size_t i = 0; i < min_size; ++i) {
+      rule_to_source_data_.Set(i, i);
+      source_data_to_rule_.Set(i, i);
+    }
+    return;
+  }
+
   Vector<String> cssom_rules_text = Vector<String>();
   Vector<String> parsed_rules_text = Vector<String>();
   for (wtf_size_t i = 0; i < cssom_rules.size(); ++i)
