@@ -36,6 +36,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/renderer/content_renderer_client.h"
+#include "services/network/public/cpp/features.h"
 #include "services/service_manager/embedder/switches.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/web/web_frame.h"
@@ -146,15 +147,28 @@ RenderProcessImpl::RenderProcessImpl()
   SetV8FlagIfFeature(blink::features::kTopLevelAwait,
                      "--harmony-top-level-await");
 
-  if (base::FeatureList::IsEnabled(features::kWebAssemblyThreads)) {
-    constexpr char kFlags[] =
-        "--harmony-sharedarraybuffer "
-        "--experimental-wasm-threads";
+  constexpr char kAtomicsFlag[] = "--harmony-atomics";
+  v8::V8::SetFlagsFromString(kAtomicsFlag, sizeof(kAtomicsFlag));
 
-    v8::V8::SetFlagsFromString(kFlags, sizeof(kFlags));
+  // SharedArrayBuffers require the feature flag, or site isolation. On Android,
+  // the feature is disabled by default, so site isolation is required. On
+  // desktop, site isolation is optional while we migrate existing apps to use
+  // COOP+COEP.
+  bool enableSharedArrayBuffer = false;
+  if (base::FeatureList::IsEnabled(features::kWebAssemblyThreads)) {
+    constexpr char kWasmThreadsFlag[] = "--experimental-wasm-threads";
+    v8::V8::SetFlagsFromString(kWasmThreadsFlag, sizeof(kWasmThreadsFlag));
+    enableSharedArrayBuffer = true;
   } else {
+    enableSharedArrayBuffer =
+        base::FeatureList::IsEnabled(features::kSharedArrayBuffer) ||
+        base::FeatureList::IsEnabled(network::features::kCrossOriginIsolated);
+  }
+
+  if (enableSharedArrayBuffer) {
     SetV8FlagIfFeature(features::kSharedArrayBuffer,
                        "--harmony-sharedarraybuffer");
+  } else {
     SetV8FlagIfNotFeature(features::kSharedArrayBuffer,
                           "--no-harmony-sharedarraybuffer");
   }
