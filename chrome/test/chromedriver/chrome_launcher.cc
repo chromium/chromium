@@ -473,11 +473,11 @@ Status LaunchDesktopChrome(network::mojom::URLLoaderFactory* factory,
 
 #if defined(OS_WIN)
     // EnvironmentMap uses wide string
-    options.environment[L"CHROME_HEADLESS"] = 1;
+    options.environment[L"CHROME_HEADLESS"] = L"1";
     options.environment[L"BREAKPAD_DUMP_LOCATION"] =
         base::SysUTF8ToWide(capabilities.minidump_path);
 #else
-    options.environment["CHROME_HEADLESS"] = 1;
+    options.environment["CHROME_HEADLESS"] = "1";
     options.environment["BREAKPAD_DUMP_LOCATION"] = capabilities.minidump_path;
 #endif
 
