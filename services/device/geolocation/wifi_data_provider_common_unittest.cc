@@ -203,7 +203,7 @@ TEST_F(GeolocationWifiDataProviderCommonTest, DoScanWithResults) {
   EXPECT_CALL(*polling_policy_, PollingInterval()).Times(AtLeast(1));
   AccessPointData single_access_point;
   single_access_point.channel = 2;
-  single_access_point.mac_address = 3;
+  single_access_point.mac_address = base::ASCIIToUTF16("00:11:22:33:44:55");
   single_access_point.radio_signal_strength = 4;
   single_access_point.signal_to_noise = 5;
   single_access_point.ssid = base::ASCIIToUTF16("foossid");
