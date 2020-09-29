@@ -1533,7 +1533,10 @@ bool VTVideoDecodeAccelerator::SendFrame(const Frame& frame) {
     gpu::Mailbox mailbox = gpu::Mailbox::GenerateForSharedImage();
 
     gpu::SharedImageBackingGLCommon::InitializeGLTextureParams gl_params;
-    gl_params.target = GL_TEXTURE_RECTANGLE_ARB;
+    // ANGLE-on-Metal exposes IOSurfaces via GL_TEXTURE_2D. Be robust to that.
+    gl_params.target = gl_client_.supports_arb_texture_rectangle
+                           ? GL_TEXTURE_RECTANGLE_ARB
+                           : GL_TEXTURE_2D;
     gl_params.internal_format = gl_format;
     gl_params.format = gl_format;
     gl_params.type = GL_UNSIGNED_BYTE;
@@ -1567,7 +1570,7 @@ bool VTVideoDecodeAccelerator::SendFrame(const Frame& frame) {
         gpu_task_runner_);
     scoped_shared_image = scoped_refptr<Picture::ScopedSharedImage>(
         new Picture::ScopedSharedImage(
-            mailbox, GL_TEXTURE_RECTANGLE_ARB,
+            mailbox, gl_params.target,
             std::move(destroy_shared_image_callback)));
   } else {
     if (!gl_client_.bind_image.Run(picture_info->client_texture_id,

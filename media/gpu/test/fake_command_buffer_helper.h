@@ -62,6 +62,7 @@ class FakeCommandBufferHelper : public CommandBufferHelper {
                         base::OnceClosure done_cb) override;
   void SetWillDestroyStubCB(WillDestroyStubCB will_destroy_stub_cb) override;
   bool IsPassthrough() const override;
+  bool SupportsTextureRectangle() const override;
 
  private:
   ~FakeCommandBufferHelper() override;

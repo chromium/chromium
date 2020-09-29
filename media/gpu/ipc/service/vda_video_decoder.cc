@@ -76,6 +76,8 @@ std::unique_ptr<VideoDecodeAccelerator> CreateAndInitializeVda(
       &CommandBufferHelper::MakeContextCurrent, command_buffer_helper);
   gl_client.bind_image = base::BindRepeating(&BindImage, command_buffer_helper);
   gl_client.is_passthrough = command_buffer_helper->IsPassthrough();
+  gl_client.supports_arb_texture_rectangle =
+      command_buffer_helper->SupportsTextureRectangle();
 
   std::unique_ptr<GpuVideoDecodeAcceleratorFactory> factory =
       GpuVideoDecodeAcceleratorFactory::Create(gl_client);
