@@ -137,7 +137,7 @@ Tests that AudioBufferSourceNode supports loop-points with .loopStart and .loopE
                   // in ULP. This is experimentally determined. Assuming that
                   // the reference file is a 16-bit wav file, the max values in
                   // the wave file are +/- 32768.
-                  let maxUlp = 1.9532e-3;
+                  let maxUlp = 0;
                   let threshold = maxUlp / 32768;
 
                   for (let k = 0; k < renderedAudio.numberOfChannels; ++k) {
