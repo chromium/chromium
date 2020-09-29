@@ -25,10 +25,10 @@ const base::Feature kMacCoreLocationImplementation{
 
 #if defined(OS_WIN)
 // Switches from enumerating serial ports using GUID_DEVINTERFACE_SERIALPORT to
-// GUID_DEVINTERFACE_SERENUM_BUS_ENUMERATOR. This is an experimental solution to
+// GUID_DEVINTERFACE_SERENUM_BUS_ENUMERATOR. This is an partial solution to
 // https://crbug.com/1119497.
 const base::Feature kUseSerialBusEnumerator{"UseSerialBusEnumerator",
-                                            base::FEATURE_DISABLED_BY_DEFAULT};
+                                            base::FEATURE_ENABLED_BY_DEFAULT};
 #endif  // defined(OS_WIN)
 
 }  // namespace features
