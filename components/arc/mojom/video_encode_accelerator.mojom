@@ -158,7 +158,6 @@ interface VideoEncodeAccelerator {
 // Interface for clients that use VideoEncodeAccelerator. These callbacks will
 // not be made unless VideoEncodeAccelerator::Initialize() has returned
 // successfully.
-// Next MinVersion: 1
 // Next Method ID: 3
 interface VideoEncodeClient {
   // Callback to tell the client what size of frames and buffers to provide
