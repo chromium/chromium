@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/cocoa/accelerators_cocoa.h"
 #include "chrome/browser/ui/cocoa/history_menu_bridge.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/dom_distiller/core/dom_distiller_features.h"
@@ -362,6 +363,8 @@ base::scoped_nsobject<NSMenuItem> BuildWindowMenu(
     id app_delegate,
     const base::string16& product_name,
     bool is_pwa) {
+  const bool window_naming =
+      base::FeatureList::IsEnabled(features::kWindowNaming);
   base::scoped_nsobject<NSMenuItem> item =
       Item(IDS_WINDOW_MENU_MAC)
           .tag(IDC_WINDOW_MENU)
@@ -376,6 +379,9 @@ base::scoped_nsobject<NSMenuItem> BuildWindowMenu(
                 Item(IDS_SHOW_AS_TAB)
                     .command_id(IDC_SHOW_AS_TAB)
                     .remove_if(is_pwa),
+                Item(IDS_NAME_WINDOW)
+                    .command_id(IDC_NAME_WINDOW)
+                    .remove_if(is_pwa || !window_naming),
                 Item().is_separator().remove_if(is_pwa),
                 Item(IDS_SHOW_DOWNLOADS_MAC)
                     .command_id(IDC_SHOW_DOWNLOADS)
