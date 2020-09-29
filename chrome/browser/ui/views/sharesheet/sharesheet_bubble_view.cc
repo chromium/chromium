@@ -82,25 +82,10 @@ void SetUpTargetColumnSet(views::GridLayout* layout) {
 }  // namespace
 
 SharesheetBubbleView::SharesheetBubbleView(
-    views::View* anchor_view,
-    sharesheet::SharesheetServiceDelegate* delegate)
-    : delegate_(delegate) {
-  SetAnchorView(anchor_view);
-  CreateBubble();
-}
-
-SharesheetBubbleView::SharesheetBubbleView(
     content::WebContents* web_contents,
     sharesheet::SharesheetServiceDelegate* delegate)
     : delegate_(delegate) {
-  // TODO(crbug.com/1097623): When supporting open from multiple apps,
-  // pass in |app_id| and get NativeWindow from it.
-  Profile* const profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  gfx::NativeWindow parent =
-      extensions::AppWindowRegistry::Get(profile)
-          ->GetCurrentAppWindowForApp(extension_misc::kFilesManagerAppId)
-          ->GetNativeWindow();
+  gfx::NativeWindow parent = web_contents->GetTopLevelNativeWindow();
   set_parent_window(parent);
   parent_view_ = views::Widget::GetWidgetForNativeWindow(parent)->GetRootView();
   UpdateAnchorPosition();

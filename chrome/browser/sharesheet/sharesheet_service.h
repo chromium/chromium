@@ -49,8 +49,6 @@ class SharesheetService : public KeyedService {
   // other applications and targets. |intent| contains the list of the
   // files/content to be shared. If the files to share contains Google
   // Drive hosted document, only drive share action will be shown.
-  void ShowBubble(views::View* bubble_anchor_view,
-                  apps::mojom::IntentPtr intent);
   void ShowBubble(content::WebContents* web_contents,
                   apps::mojom::IntentPtr intent);
   void ShowBubble(content::WebContents* web_contents,

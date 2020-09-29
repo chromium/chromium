@@ -32,9 +32,6 @@ class SharesheetService;
 class SharesheetServiceDelegate : public SharesheetController {
  public:
   SharesheetServiceDelegate(uint32_t id,
-                            views::View* bubble_anchor_view,
-                            SharesheetService* sharesheet_service);
-  SharesheetServiceDelegate(uint32_t id,
                             content::WebContents* web_contents,
                             SharesheetService* sharesheet_service);
   ~SharesheetServiceDelegate() override;

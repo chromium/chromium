@@ -32,17 +32,6 @@ SharesheetService::SharesheetService(Profile* profile)
 
 SharesheetService::~SharesheetService() = default;
 
-void SharesheetService::ShowBubble(views::View* bubble_anchor_view,
-                                   apps::mojom::IntentPtr intent) {
-  DCHECK(intent->action == apps_util::kIntentActionSend ||
-         intent->action == apps_util::kIntentActionSendMultiple);
-  auto sharesheet_service_delegate =
-      std::make_unique<SharesheetServiceDelegate>(
-          delegate_counter_++, std::move(bubble_anchor_view), this);
-  ShowBubbleWithDelegate(std::move(sharesheet_service_delegate),
-                         std::move(intent), /*contains_hosted_document=*/false);
-}
-
 void SharesheetService::ShowBubble(content::WebContents* web_contents,
                                    apps::mojom::IntentPtr intent) {
   ShowBubble(web_contents, std::move(intent),

@@ -18,14 +18,6 @@ namespace sharesheet {
 
 SharesheetServiceDelegate::SharesheetServiceDelegate(
     uint32_t id,
-    views::View* bubble_anchor_view,
-    SharesheetService* sharesheet_service)
-    : id_(id),
-      sharesheet_bubble_view_(
-          std::make_unique<SharesheetBubbleView>(bubble_anchor_view, this)),
-      sharesheet_service_(sharesheet_service) {}
-SharesheetServiceDelegate::SharesheetServiceDelegate(
-    uint32_t id,
     content::WebContents* web_contents,
     SharesheetService* sharesheet_service)
     : id_(id),

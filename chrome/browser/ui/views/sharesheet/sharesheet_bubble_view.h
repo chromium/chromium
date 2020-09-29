@@ -31,8 +31,6 @@ class SharesheetBubbleView : public views::BubbleDialogDelegateView,
  public:
   using TargetInfo = sharesheet::TargetInfo;
 
-  SharesheetBubbleView(views::View* anchor_view,
-                       sharesheet::SharesheetServiceDelegate* delegate);
   SharesheetBubbleView(content::WebContents* web_contents,
                        sharesheet::SharesheetServiceDelegate* delegate);
   SharesheetBubbleView(const SharesheetBubbleView&) = delete;
