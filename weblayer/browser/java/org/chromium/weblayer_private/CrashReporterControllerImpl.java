@@ -15,6 +15,7 @@ import org.json.JSONObject;
 
 import org.chromium.base.Log;
 import org.chromium.base.PathUtils;
+import org.chromium.base.TraceEvent;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.components.crash.browser.ChildProcessCrashObserver;
 import org.chromium.components.minidump_uploader.CrashFileManager;
@@ -79,6 +80,7 @@ public final class CrashReporterControllerImpl extends ICrashReporterController.
     public void uploadCrash(String localId) {
         StrictModeWorkaround.apply();
         AsyncTask.THREAD_POOL_EXECUTOR.execute(() -> {
+            TraceEvent.instant(TAG, "CrashReporterController: Begin uploading crash");
             File minidumpFile = getCrashFileManager().getCrashFileWithLocalId(localId);
             MinidumpUploader.Result result = new MinidumpUploader().upload(minidumpFile);
             if (result.isSuccess()) {
@@ -88,8 +90,10 @@ public final class CrashReporterControllerImpl extends ICrashReporterController.
             }
             try {
                 if (result.isSuccess()) {
+                    TraceEvent.instant(TAG, "CrashReporterController: Crash upload succeeded.");
                     mClient.onCrashUploadSucceeded(localId, result.message());
                 } else {
+                    TraceEvent.instant(TAG, "CrashReporterController: Crash upload failed.");
                     mClient.onCrashUploadFailed(localId, result.message());
                 }
             } catch (RemoteException e) {
@@ -139,10 +143,12 @@ public final class CrashReporterControllerImpl extends ICrashReporterController.
         }
 
         // Now that there is a client, register to observe child process crashes.
+        TraceEvent.instant(TAG, "Start observing child process crashes");
         ChildProcessCrashObserver.registerCrashCallback(
                 new ChildProcessCrashObserver.ChildCrashedCallback() {
                     @Override
                     public void childCrashed(int pid) {
+                        TraceEvent.instant(TAG, "Child process crashed. Process new minidumps.");
                         processNewMinidumps();
                     }
                 });
@@ -183,6 +189,8 @@ public final class CrashReporterControllerImpl extends ICrashReporterController.
      * @return An array of local IDs for crashes that are ready to be uploaded.
      */
     private String[] getPendingMinidumpsOnBackgroundThread() {
+        TraceEvent.instant(
+                TAG, "CrashReporterController: Start determining crashes ready to be uploaded.");
         getCrashFileManager().cleanOutAllNonFreshMinidumpFiles();
         File[] pendingMinidumps =
                 getCrashFileManager().getMinidumpsReadyForUpload(MAX_UPLOAD_RETRIES);
@@ -190,6 +198,8 @@ public final class CrashReporterControllerImpl extends ICrashReporterController.
         for (File minidump : pendingMinidumps) {
             localIds.add(CrashFileManager.getCrashLocalIdFromFileName(minidump.getName()));
         }
+        TraceEvent.instant(
+                TAG, "CrashReporterController: Finish determinining crashes ready to be uploaded.");
         return localIds.toArray(new String[0]);
     }
 
@@ -202,6 +212,8 @@ public final class CrashReporterControllerImpl extends ICrashReporterController.
      * @return An array of local IDs of the new crashes (may be empty).
      */
     private String[] processNewMinidumpsOnBackgroundThread() {
+        TraceEvent.instant(
+                TAG, "CrashReporterController: Start processing minidumps in the background.");
         Map<String, Map<String, String>> crashesInfoMap =
                 getCrashFileManager().importMinidumpsCrashKeys();
         if (crashesInfoMap == null) return new String[0];
@@ -217,6 +229,8 @@ public final class CrashReporterControllerImpl extends ICrashReporterController.
         for (File minidump : getCrashFileManager().getMinidumpsSansLogcat()) {
             CrashFileManager.trySetReadyForUpload(minidump);
         }
+        TraceEvent.instant(
+                TAG, "CrashReporterController: Finish processing minidumps in the background.");
         return localIds.toArray(new String[0]);
     }
 
