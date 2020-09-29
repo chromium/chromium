@@ -5,8 +5,8 @@
 #include "content/renderer/agent_scheduling_group.h"
 
 #include "base/feature_list.h"
+#include "base/util/type_safety/pass_key.h"
 #include "content/public/common/content_features.h"
-#include "content/public/renderer/render_thread.h"
 #include "content/renderer/render_thread_impl.h"
 
 namespace content {
@@ -20,6 +20,8 @@ using ::mojo::PendingReceiver;
 using ::mojo::PendingRemote;
 using ::mojo::Receiver;
 using ::mojo::Remote;
+
+using PassKey = ::util::PassKey<AgentSchedulingGroup>;
 
 namespace {
 RenderThreadImpl& ToImpl(RenderThread& render_thread) {
@@ -135,6 +137,32 @@ void AgentSchedulingGroup::RemoveRoute(int32_t routing_id) {
   // TODO(crbug.com/1111231): For some reason, changing this to use
   // render_thread_ causes trybots to time out (not specific tests).
   RenderThread::Get()->RemoveRoute(routing_id);
+}
+
+void AgentSchedulingGroup::CreateView(mojom::CreateViewParamsPtr params) {
+  ToImpl(render_thread_).CreateView(std::move(params), PassKey());
+}
+
+void AgentSchedulingGroup::DestroyView(int32_t view_id) {
+  ToImpl(render_thread_).DestroyView(view_id, PassKey());
+}
+
+void AgentSchedulingGroup::CreateFrame(mojom::CreateFrameParamsPtr params) {
+  ToImpl(render_thread_).CreateFrame(std::move(params), PassKey());
+}
+
+void AgentSchedulingGroup::CreateFrameProxy(
+    int32_t routing_id,
+    int32_t render_view_routing_id,
+    const base::Optional<base::UnguessableToken>& opener_frame_token,
+    int32_t parent_routing_id,
+    const FrameReplicationState& replicated_state,
+    const base::UnguessableToken& frame_token,
+    const base::UnguessableToken& devtools_frame_token) {
+  ToImpl(render_thread_)
+      .CreateFrameProxy(routing_id, render_view_routing_id, opener_frame_token,
+                        parent_routing_id, replicated_state, frame_token,
+                        devtools_frame_token, PassKey());
 }
 
 void AgentSchedulingGroup::GetRoute(

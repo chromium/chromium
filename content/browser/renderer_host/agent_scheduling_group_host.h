@@ -81,6 +81,14 @@ class CONTENT_EXPORT AgentSchedulingGroupHost
   void CreateFrame(mojom::CreateFrameParamsPtr params);
   void CreateView(mojom::CreateViewParamsPtr params);
   void DestroyView(int32_t routing_id);
+  void CreateFrameProxy(
+      int32_t routing_id,
+      int32_t render_view_routing_id,
+      const base::Optional<base::UnguessableToken>& opener_frame_token,
+      int32_t parent_routing_id,
+      const FrameReplicationState& replicated_state,
+      const base::UnguessableToken& frame_token,
+      const base::UnguessableToken& devtools_frame_token);
 
  private:
   // `MaybeAssociatedReceiver` and `MaybeAssociatedRemote` are temporary helper
@@ -136,6 +144,7 @@ class CONTENT_EXPORT AgentSchedulingGroupHost
 
     void reset();
     bool is_bound();
+    mojom::AgentSchedulingGroup* get();
 
    private:
     absl::variant<mojo::Remote<mojom::AgentSchedulingGroup>,

@@ -52,6 +52,7 @@
 #include "components/viz/common/features.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/gpu/compositor_util.h"
+#include "content/browser/renderer_host/agent_scheduling_group_host.h"
 #include "content/browser/renderer_host/cross_process_frame_connector.h"
 #include "content/browser/renderer_host/frame_navigation_entry.h"
 #include "content/browser/renderer_host/frame_tree.h"
@@ -6193,6 +6194,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   SiteInstance* site_instance_a = root->current_frame_host()->GetSiteInstance();
   RenderProcessHost* process_a =
       root->render_manager()->current_frame_host()->GetProcess();
+  AgentSchedulingGroupHost* agent_scheduling_group_a =
+      AgentSchedulingGroupHost::Get(*site_instance_a, *process_a);
   int new_routing_id = process_a->GetNextRoutingID();
   int view_routing_id =
       root->frame_tree()->GetRenderViewHost(site_instance_a)->GetRoutingID();
@@ -6207,7 +6210,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // Send the message to create a proxy for B's new child frame in A.  This
   // used to crash, as parent_routing_id refers to a proxy that doesn't exist
   // anymore.
-  process_a->GetRendererInterface()->CreateFrameProxy(
+  agent_scheduling_group_a->CreateFrameProxy(
       new_routing_id, view_routing_id, base::nullopt, parent_routing_id,
       FrameReplicationState(), base::UnguessableToken::Create(),
       base::UnguessableToken::Create());
@@ -6252,6 +6255,10 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // attempted.
   RenderProcessHost* process =
       node->render_manager()->speculative_frame_host()->GetProcess();
+  AgentSchedulingGroupHost* agent_scheduling_group =
+      AgentSchedulingGroupHost::Get(
+          *node->render_manager()->speculative_frame_host()->GetSiteInstance(),
+          *process);
   RenderProcessHostWatcher watcher(
       process, RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
   int frame_routing_id =
@@ -6282,7 +6289,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
     params->frame_owner_properties = blink::mojom::FrameOwnerProperties::New();
     params->frame_token = frame_token;
     params->devtools_frame_token = base::UnguessableToken::Create();
-    process->GetRendererInterface()->CreateFrame(std::move(params));
+    agent_scheduling_group->CreateFrame(std::move(params));
   }
 
   // Disable the BackForwardCache to ensure the old process is going to be
@@ -6322,6 +6329,9 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, ParentDetachRemoteChild) {
   // observer to ensure there is no crash when a new RenderFrame creation is
   // attempted.
   RenderProcessHost* process = node->current_frame_host()->GetProcess();
+  AgentSchedulingGroupHost* agent_scheduling_group =
+      AgentSchedulingGroupHost::Get(
+          *node->current_frame_host()->GetSiteInstance(), *process);
   RenderProcessHostWatcher watcher(
       process, RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
   int frame_routing_id = node->current_frame_host()->GetRoutingID();
@@ -6372,7 +6382,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, ParentDetachRemoteChild) {
     params->replication_state.unique_name = "name";
     params->frame_token = frame_token;
     params->devtools_frame_token = base::UnguessableToken::Create();
-    process->GetRendererInterface()->CreateFrame(std::move(params));
+    agent_scheduling_group->CreateFrame(std::move(params));
   }
 
   // The test must wait for the process to exit, but if there is no leak, the

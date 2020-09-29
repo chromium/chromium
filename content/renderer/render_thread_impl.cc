@@ -158,8 +158,8 @@
 #endif
 
 #if defined(OS_WIN)
-#include <windows.h>
 #include <objbase.h>
+#include <windows.h>
 #endif
 
 #ifdef ENABLE_VTUNE_JIT_INTERFACE
@@ -181,19 +181,20 @@
 #include "base/test/clang_profiling.h"
 #endif
 
-using base::ThreadRestrictions;
-using blink::WebDocument;
-using blink::WebFrame;
-using blink::WebNetworkStateNotifier;
-using blink::WebRuntimeFeatures;
-using blink::WebScriptController;
-using blink::WebSecurityPolicy;
-using blink::WebString;
-using blink::WebView;
-
 namespace content {
 
 namespace {
+
+using ::base::ThreadRestrictions;
+using ::blink::WebDocument;
+using ::blink::WebFrame;
+using ::blink::WebNetworkStateNotifier;
+using ::blink::WebRuntimeFeatures;
+using ::blink::WebScriptController;
+using ::blink::WebSecurityPolicy;
+using ::blink::WebString;
+using ::blink::WebView;
+using ::util::PassKey;
 
 #if defined(OS_ANDROID)
 // Unique identifier for each output surface created.
@@ -218,14 +219,19 @@ base::LazyInstance<scoped_refptr<base::SingleThreadTaskRunner>>::
 
 // v8::MemoryPressureLevel should correspond to base::MemoryPressureListener.
 static_assert(static_cast<v8::MemoryPressureLevel>(
-    base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE) ==
-        v8::MemoryPressureLevel::kNone, "none level not align");
-static_assert(static_cast<v8::MemoryPressureLevel>(
-    base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE) ==
-        v8::MemoryPressureLevel::kModerate, "moderate level not align");
-static_assert(static_cast<v8::MemoryPressureLevel>(
-    base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL) ==
-        v8::MemoryPressureLevel::kCritical, "critical level not align");
+                  base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE) ==
+                  v8::MemoryPressureLevel::kNone,
+              "none level not align");
+static_assert(
+    static_cast<v8::MemoryPressureLevel>(
+        base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE) ==
+        v8::MemoryPressureLevel::kModerate,
+    "moderate level not align");
+static_assert(
+    static_cast<v8::MemoryPressureLevel>(
+        base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL) ==
+        v8::MemoryPressureLevel::kCritical,
+    "critical level not align");
 
 // WebMemoryPressureLevel should correspond to base::MemoryPressureListener.
 static_assert(static_cast<blink::WebMemoryPressureLevel>(
@@ -243,21 +249,20 @@ static_assert(
         blink::kWebMemoryPressureLevelCritical,
     "blink::WebMemoryPressureLevelCritical not align");
 
-void* CreateHistogram(
-    const char *name, int min, int max, size_t buckets) {
+void* CreateHistogram(const char* name, int min, int max, size_t buckets) {
   if (min <= 0)
     min = 1;
   std::string histogram_name;
   RenderThreadImpl* render_thread_impl = RenderThreadImpl::current();
   if (render_thread_impl) {  // Can be null in tests.
-    histogram_name = render_thread_impl->
-        histogram_customizer()->ConvertToCustomHistogramName(name);
+    histogram_name = render_thread_impl->histogram_customizer()
+                         ->ConvertToCustomHistogramName(name);
   } else {
     histogram_name = std::string(name);
   }
-  base::HistogramBase* histogram = base::Histogram::FactoryGet(
-      histogram_name, min, max, buckets,
-      base::Histogram::kUmaTargetedHistogramFlag);
+  base::HistogramBase* histogram =
+      base::Histogram::FactoryGet(histogram_name, min, max, buckets,
+                                  base::Histogram::kUmaTargetedHistogramFlag);
   return histogram;
 }
 
@@ -390,7 +395,8 @@ RenderThreadImpl::HistogramCustomizer::HistogramCustomizer() {
 RenderThreadImpl::HistogramCustomizer::~HistogramCustomizer() {}
 
 void RenderThreadImpl::HistogramCustomizer::RenderViewNavigatedToHost(
-    const std::string& host, size_t view_count) {
+    const std::string& host,
+    size_t view_count) {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDisableHistogramCustomizer)) {
     return;
@@ -1380,7 +1386,7 @@ void RenderThreadImpl::OnChannelError() {
   // more informative stack, since we will otherwise just crash later when we
   // try to restart it.
   CHECK(!base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kSingleProcess));
+      switches::kSingleProcess));
   ChildThreadImpl::OnChannelError();
 }
 
@@ -1821,7 +1827,8 @@ gpu::GpuChannelHost* RenderThreadImpl::GetGpuChannel() {
   return gpu_->GetGpuChannel().get();
 }
 
-void RenderThreadImpl::CreateView(mojom::CreateViewParamsPtr params) {
+void RenderThreadImpl::CreateView(mojom::CreateViewParamsPtr params,
+                                  PassKey<AgentSchedulingGroup>) {
   CompositorDependencies* compositor_deps = this;
   is_scroll_animator_enabled_ = params->web_preferences.enable_scroll_animator;
   // TODO(crbug.com/1111231): For as long as views are created via the
@@ -1836,7 +1843,8 @@ void RenderThreadImpl::CreateView(mojom::CreateViewParamsPtr params) {
                          GetWebMainThreadScheduler()->DefaultTaskRunner());
 }
 
-void RenderThreadImpl::DestroyView(int32_t view_id) {
+void RenderThreadImpl::DestroyView(int32_t view_id,
+                                   PassKey<AgentSchedulingGroup>) {
   RenderViewImpl* view = RenderViewImpl::FromRoutingID(view_id);
   DCHECK(view);
 
@@ -1850,7 +1858,8 @@ void RenderThreadImpl::DestroyView(int32_t view_id) {
       base::BindOnce(&RenderViewImpl::Destroy, base::Unretained(view)));
 }
 
-void RenderThreadImpl::CreateFrame(mojom::CreateFrameParamsPtr params) {
+void RenderThreadImpl::CreateFrame(mojom::CreateFrameParamsPtr params,
+                                   PassKey<AgentSchedulingGroup>) {
   CompositorDependencies* compositor_deps = this;
   mojo::PendingRemote<service_manager::mojom::InterfaceProvider>
       interface_provider(
@@ -1912,7 +1921,8 @@ void RenderThreadImpl::CreateFrameProxy(
     int32_t parent_routing_id,
     const FrameReplicationState& replicated_state,
     const base::UnguessableToken& frame_token,
-    const base::UnguessableToken& devtools_frame_token) {
+    const base::UnguessableToken& devtools_frame_token,
+    PassKey<AgentSchedulingGroup>) {
   // TODO(crbug.com/1111231): For as long as frame proxies are created via the
   // `Renderer` interface (as opposed to `AgentSchedulingGroup`), we will always
   // have *exactly one* `AgentSchedulingGroup` in the process.
@@ -2330,8 +2340,7 @@ void RenderThreadImpl::UnfreezableMessageFilter::
 
 // Called on the listener thread.
 void RenderThreadImpl::UnfreezableMessageFilter::
-    RemoveListenerUnfreezableTaskRunner(
-        int32_t routing_id) {
+    RemoveListenerUnfreezableTaskRunner(int32_t routing_id) {
   base::AutoLock lock(unfreezable_task_runners_lock_);
   unfreezable_task_runners_.erase(routing_id);
 }

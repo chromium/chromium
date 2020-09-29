@@ -127,6 +127,11 @@ bool AgentSchedulingGroupHost::MaybeAssociatedRemote::is_bound() {
   return absl::visit([](auto& remote) { return remote.is_bound(); }, remote_);
 }
 
+mojom::AgentSchedulingGroup*
+AgentSchedulingGroupHost::MaybeAssociatedRemote::get() {
+  return absl::visit([](auto& r) { return r.get(); }, remote_);
+}
+
 // AgentSchedulingGroupHost:
 
 // static
@@ -236,16 +241,30 @@ mojom::RouteProvider* AgentSchedulingGroupHost::GetRemoteRouteProvider() {
 
 void AgentSchedulingGroupHost::CreateFrame(mojom::CreateFrameParamsPtr params) {
   SetUpMojoIfNeeded();
-  process_.GetRendererInterface()->CreateFrame(std::move(params));
+  mojo_remote_.get()->CreateFrame(std::move(params));
 }
 
 void AgentSchedulingGroupHost::CreateView(mojom::CreateViewParamsPtr params) {
   SetUpMojoIfNeeded();
-  process_.GetRendererInterface()->CreateView(std::move(params));
+  mojo_remote_.get()->CreateView(std::move(params));
 }
 
 void AgentSchedulingGroupHost::DestroyView(int32_t routing_id) {
-  process_.GetRendererInterface()->DestroyView(routing_id);
+  if (mojo_remote_.is_bound())
+    mojo_remote_.get()->DestroyView(routing_id);
+}
+
+void AgentSchedulingGroupHost::CreateFrameProxy(
+    int32_t routing_id,
+    int32_t render_view_routing_id,
+    const base::Optional<base::UnguessableToken>& opener_frame_token,
+    int32_t parent_routing_id,
+    const FrameReplicationState& replicated_state,
+    const base::UnguessableToken& frame_token,
+    const base::UnguessableToken& devtools_frame_token) {
+  mojo_remote_.get()->CreateFrameProxy(
+      routing_id, render_view_routing_id, opener_frame_token, parent_routing_id,
+      replicated_state, frame_token, devtools_frame_token);
 }
 
 void AgentSchedulingGroupHost::GetRoute(

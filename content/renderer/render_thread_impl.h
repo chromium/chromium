@@ -27,6 +27,7 @@
 #include "base/optional.h"
 #include "base/strings/string16.h"
 #include "base/time/time.h"
+#include "base/util/type_safety/pass_key.h"
 #include "build/build_config.h"
 #include "cc/mojom/render_frame_metadata.mojom.h"
 #include "content/child/child_thread_impl.h"
@@ -213,6 +214,22 @@ class CONTENT_EXPORT RenderThreadImpl
 
   // viz::mojom::CompositingModeWatcher implementation.
   void CompositingModeFallbackToSoftware() override;
+
+  // Formerly in mojom::Renderer (moved to mojom::AgentSchedulingGroup):
+  void CreateView(mojom::CreateViewParamsPtr params,
+                  util::PassKey<AgentSchedulingGroup>);
+  void DestroyView(int32_t view_id, util::PassKey<AgentSchedulingGroup>);
+  void CreateFrame(mojom::CreateFrameParamsPtr params,
+                   util::PassKey<AgentSchedulingGroup>);
+  void CreateFrameProxy(
+      int32_t routing_id,
+      int32_t render_view_routing_id,
+      const base::Optional<base::UnguessableToken>& opener_frame_token,
+      int32_t parent_routing_id,
+      const FrameReplicationState& replicated_state,
+      const base::UnguessableToken& frame_token,
+      const base::UnguessableToken& devtools_frame_token,
+      util::PassKey<AgentSchedulingGroup>);
 
   // Whether gpu compositing is being used or is disabled for software
   // compositing. Clients of the compositor should give resources that match
@@ -439,9 +456,6 @@ class CONTENT_EXPORT RenderThreadImpl
   void OnGetAccessibilityTree();
 
   // mojom::Renderer:
-  void CreateView(mojom::CreateViewParamsPtr params) override;
-  void DestroyView(int32_t view_id) override;
-  void CreateFrame(mojom::CreateFrameParamsPtr params) override;
   void CreateAgentSchedulingGroup(
       mojo::PendingRemote<mojom::AgentSchedulingGroupHost>
           agent_scheduling_group_host,
@@ -452,14 +466,6 @@ class CONTENT_EXPORT RenderThreadImpl
           agent_scheduling_group_host,
       mojo::PendingAssociatedReceiver<mojom::AgentSchedulingGroup>
           agent_scheduling_group) override;
-  void CreateFrameProxy(
-      int32_t routing_id,
-      int32_t render_view_routing_id,
-      const base::Optional<base::UnguessableToken>& opener_frame_token,
-      int32_t parent_routing_id,
-      const FrameReplicationState& replicated_state,
-      const base::UnguessableToken& frame_token,
-      const base::UnguessableToken& devtools_frame_token) override;
   void OnNetworkConnectionChanged(
       net::NetworkChangeNotifier::ConnectionType type,
       double max_bandwidth_mbps) override;
