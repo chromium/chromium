@@ -16,7 +16,7 @@ Keyframe::PropertySpecificKeyframe::PropertySpecificKeyframe(
     scoped_refptr<TimingFunction> easing,
     EffectModel::CompositeOperation composite)
     : offset_(offset), easing_(std::move(easing)), composite_(composite) {
-  DCHECK(!Timing::IsNull(offset));
+  DCHECK(std::isfinite(offset));
   if (!easing_)
     easing_ = LinearTimingFunction::Shared();
 }

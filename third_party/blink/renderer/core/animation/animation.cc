@@ -626,7 +626,7 @@ void Animation::NotifyReady(double ready_time) {
 // Refer to Step 8.3 'pending play task' in
 // https://drafts.csswg.org/web-animations/#playing-an-animation-section.
 void Animation::CommitPendingPlay(double ready_time) {
-  DCHECK(!Timing::IsNull(ready_time));
+  DCHECK(std::isfinite(ready_time));
   DCHECK(start_time_ || hold_time_);
   DCHECK(pending_play_);
   pending_play_ = false;
@@ -1892,18 +1892,18 @@ void Animation::StartAnimationOnCompositor(
       start_time =
           start_time.value() - (EffectEnd() / fabs(EffectivePlaybackRate()));
     }
+    DCHECK(std::isfinite(start_time.value()));
   } else {
     base::Optional<double> current_time = CurrentTimeInternal();
     DCHECK(current_time);
     time_offset =
         reversed ? EffectEnd() - current_time.value() : current_time.value();
     time_offset = time_offset / fabs(EffectivePlaybackRate());
+    DCHECK(std::isfinite(time_offset));
   }
 
-  DCHECK(!start_time || !Timing::IsNull(start_time.value()));
   DCHECK_NE(compositor_group_, 0);
   DCHECK(To<KeyframeEffect>(content_.Get()));
-  DCHECK(std::isfinite(time_offset));
   To<KeyframeEffect>(content_.Get())
       ->StartAnimationOnCompositor(compositor_group_, start_time,
                                    base::TimeDelta::FromSecondsD(time_offset),

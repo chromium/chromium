@@ -61,14 +61,14 @@ inline bool LessThanOrEqualToWithinEpsilon(double a, double b) {
 }
 
 static inline double MultiplyZeroAlwaysGivesZero(double x, double y) {
-  DCHECK(!Timing::IsNull(x));
-  DCHECK(!Timing::IsNull(y));
+  DCHECK(!std::isnan(x));
+  DCHECK(!std::isnan(y));
   return x && y ? x * y : 0;
 }
 
 static inline double MultiplyZeroAlwaysGivesZero(AnimationTimeDelta x,
                                                  double y) {
-  DCHECK(!Timing::IsNull(y));
+  DCHECK(!std::isnan(y));
   return x.is_zero() || y == 0 ? 0 : (x * y).InSecondsF();
 }
 
