@@ -5,5 +5,5 @@ declare_args() {
   # The directory where to store generated resource files for strings. It is
   # used by SWA version of CCA.
   gen_camera_app_dir =
-      "$root_gen_dir/chromeos/components/camera_app_ui/resources/src"
+      "$root_gen_dir/chromeos/components/camera_app_ui/resources"
 }

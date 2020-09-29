@@ -67,7 +67,7 @@ template("chrome_repack_locales") {
       source_patterns += [
         "${root_gen_dir}/ash/shortcut_viewer/strings/shortcut_viewer_strings_",
         "${root_gen_dir}/ash/strings/ash_strings_",
-        "${root_gen_dir}/chromeos/components/camera_app_ui/resources/src/strings/chromeos_camera_app_strings_",
+        "${root_gen_dir}/chromeos/components/camera_app_ui/resources/strings/chromeos_camera_app_strings_",
         "${root_gen_dir}/chromeos/strings/chromeos_strings_",
         "${root_gen_dir}/remoting/resources/",
         "${root_gen_dir}/ui/chromeos/strings/ui_chromeos_strings_",
@@ -75,7 +75,7 @@ template("chrome_repack_locales") {
       deps += [
         "//ash/shortcut_viewer/strings",
         "//ash/strings",
-        "//chromeos/components/camera_app_ui/resources/src/strings",
+        "//chromeos/components/camera_app_ui/resources/strings",
         "//chromeos/strings",
         "//remoting/resources",
         "//ui/chromeos/strings",

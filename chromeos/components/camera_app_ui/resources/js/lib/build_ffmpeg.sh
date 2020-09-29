@@ -122,7 +122,7 @@ main() {
 
   # locate ffmpeg directory in chromium source tree
   local ffmpeg_dir
-  ffmpeg_dir=$(realpath ../../../../../../../third_party/ffmpeg)
+  ffmpeg_dir=$(realpath ../../../../../../third_party/ffmpeg)
   [[ -d "$ffmpeg_dir" ]] || die "ffmpeg not found"
 
   # copy ffmpeg/ into a temporary directory to patch and build

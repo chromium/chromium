@@ -41,7 +41,7 @@
       "chrome/browser/ui/android/strings/android_chrome_strings.grd",
       "chrome/credential_provider/gaiacp/gaia_resources.grd",
       "chromeos/chromeos_strings.grd",
-      "chromeos/components/camera_app_ui/resources/src/strings/camera_strings.grd",
+      "chromeos/components/camera_app_ui/resources/strings/camera_strings.grd",
       "components/autofill/android/java/strings/autofill_strings.grd",
       "components/browser_ui/strings/android/browser_ui_strings.grd",
       "components/components_chromium_strings.grd",

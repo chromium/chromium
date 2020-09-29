@@ -15,7 +15,7 @@ js_type_check("closure_compile") {
         "jscomp_error=conformanceViolations",
         "hide_warnings_for=mojo/public/js/",
         "hide_warnings_for=gen/",
-        "hide_warnings_for=src/js/lib/",
+        "hide_warnings_for=js/lib/",
       ]
   deps = [ ":compile_resources" ]
 }

@@ -5,14 +5,14 @@
 import("//chromeos/components/camera_app_ui/camera_app_ui.gni")
 
 group("closure_compile") {
-  deps = [ "src/js:closure_compile" ]
+  deps = [ "js:closure_compile" ]
 }
 
 group("chrome_camera_app") {
   # According to crbug.com/855747, we should list all the files we want to copy
   # rather than list only the folders to avoid potential building issue and ease
   # the difficulty to diagnose.
-  deps = [ "src/strings" ]
+  deps = [ "strings" ]
 
   data_deps = [
     ":chrome_camera_app_base",
@@ -34,61 +34,61 @@ group("chrome_camera_app") {
 }
 
 copy("chrome_camera_app_base") {
-  sources = [ "src/manifest.json" ]
+  sources = [ "manifest.json" ]
 
   outputs = [ "$out_camera_app_dir/{{source_file_part}}" ]
 }
 
 copy("chrome_camera_app_css") {
-  sources = [ "src/css/main.css" ]
+  sources = [ "css/main.css" ]
 
   outputs = [ "$out_camera_app_dir/css/{{source_file_part}}" ]
 }
 
 copy("chrome_camera_app_images") {
   sources = [
-    "src/images/camera_app_icons_128.png",
-    "src/images/camera_app_icons_48.png",
-    "src/images/camera_button_fps_30.svg",
-    "src/images/camera_button_fps_60.svg",
-    "src/images/camera_button_grid_off.svg",
-    "src/images/camera_button_grid_on.svg",
-    "src/images/camera_button_mic_off.svg",
-    "src/images/camera_button_mic_on.svg",
-    "src/images/camera_button_mirror_off.svg",
-    "src/images/camera_button_mirror_on.svg",
-    "src/images/camera_button_settings.svg",
-    "src/images/camera_button_switch_device.svg",
-    "src/images/camera_button_switch_photo.svg",
-    "src/images/camera_button_switch_video.svg",
-    "src/images/camera_button_timer_off.svg",
-    "src/images/camera_button_timer_on_10s.svg",
-    "src/images/camera_button_timer_on_3s.svg",
-    "src/images/camera_focus_aim.svg",
-    "src/images/camera_intent_play_video.svg",
-    "src/images/camera_intent_result_cancel.svg",
-    "src/images/camera_intent_result_confirm.svg",
-    "src/images/camera_intro_banner_close.svg",
-    "src/images/camera_intro_banner_icon.svg",
-    "src/images/camera_mode_photo.svg",
-    "src/images/camera_mode_portrait.svg",
-    "src/images/camera_mode_square.svg",
-    "src/images/camera_mode_video.svg",
-    "src/images/camera_shutter_photo_start.svg",
-    "src/images/camera_shutter_photo_start_active.svg",
-    "src/images/camera_shutter_photo_start_hover.svg",
-    "src/images/camera_shutter_photo_stop.svg",
-    "src/images/camera_shutter_photo_stop_hover.svg",
-    "src/images/camera_shutter_video_pause.svg",
-    "src/images/settings_button_back.svg",
-    "src/images/settings_button_expand.svg",
-    "src/images/settings_expert.svg",
-    "src/images/settings_feedback.svg",
-    "src/images/settings_grid_type.svg",
-    "src/images/settings_help.svg",
-    "src/images/settings_resolution.svg",
-    "src/images/settings_timer_duration.svg",
-    "src/images/spinner.svg",
+    "images/camera_app_icons_128.png",
+    "images/camera_app_icons_48.png",
+    "images/camera_button_fps_30.svg",
+    "images/camera_button_fps_60.svg",
+    "images/camera_button_grid_off.svg",
+    "images/camera_button_grid_on.svg",
+    "images/camera_button_mic_off.svg",
+    "images/camera_button_mic_on.svg",
+    "images/camera_button_mirror_off.svg",
+    "images/camera_button_mirror_on.svg",
+    "images/camera_button_settings.svg",
+    "images/camera_button_switch_device.svg",
+    "images/camera_button_switch_photo.svg",
+    "images/camera_button_switch_video.svg",
+    "images/camera_button_timer_off.svg",
+    "images/camera_button_timer_on_10s.svg",
+    "images/camera_button_timer_on_3s.svg",
+    "images/camera_focus_aim.svg",
+    "images/camera_intent_play_video.svg",
+    "images/camera_intent_result_cancel.svg",
+    "images/camera_intent_result_confirm.svg",
+    "images/camera_intro_banner_close.svg",
+    "images/camera_intro_banner_icon.svg",
+    "images/camera_mode_photo.svg",
+    "images/camera_mode_portrait.svg",
+    "images/camera_mode_square.svg",
+    "images/camera_mode_video.svg",
+    "images/camera_shutter_photo_start.svg",
+    "images/camera_shutter_photo_start_active.svg",
+    "images/camera_shutter_photo_start_hover.svg",
+    "images/camera_shutter_photo_stop.svg",
+    "images/camera_shutter_photo_stop_hover.svg",
+    "images/camera_shutter_video_pause.svg",
+    "images/settings_button_back.svg",
+    "images/settings_button_expand.svg",
+    "images/settings_expert.svg",
+    "images/settings_feedback.svg",
+    "images/settings_grid_type.svg",
+    "images/settings_help.svg",
+    "images/settings_resolution.svg",
+    "images/settings_timer_duration.svg",
+    "images/spinner.svg",
   ]
 
   outputs = [ "$out_camera_app_dir/images/{{source_file_part}}" ]
@@ -96,26 +96,26 @@ copy("chrome_camera_app_images") {
 
 copy("chrome_camera_app_js") {
   sources = [
-    "src/js/async_job_queue.js",
-    "src/js/background.js",
-    "src/js/background_ops.js",
-    "src/js/chrome_util.js",
-    "src/js/dom.js",
-    "src/js/error.js",
-    "src/js/gallerybutton.js",
-    "src/js/init.js",
-    "src/js/intent.js",
-    "src/js/main.js",
-    "src/js/metrics.js",
-    "src/js/nav.js",
-    "src/js/perf.js",
-    "src/js/sound.js",
-    "src/js/state.js",
-    "src/js/toast.js",
-    "src/js/tooltip.js",
-    "src/js/type.js",
-    "src/js/util.js",
-    "src/js/waitable_event.js",
+    "js/async_job_queue.js",
+    "js/background.js",
+    "js/background_ops.js",
+    "js/chrome_util.js",
+    "js/dom.js",
+    "js/error.js",
+    "js/gallerybutton.js",
+    "js/init.js",
+    "js/intent.js",
+    "js/main.js",
+    "js/metrics.js",
+    "js/nav.js",
+    "js/perf.js",
+    "js/sound.js",
+    "js/state.js",
+    "js/toast.js",
+    "js/tooltip.js",
+    "js/type.js",
+    "js/util.js",
+    "js/waitable_event.js",
   ]
 
   outputs = [ "$out_camera_app_dir/js/{{source_file_part}}" ]
@@ -124,8 +124,8 @@ copy("chrome_camera_app_js") {
 copy("chrome_camera_app_js_browser_proxy") {
   sources = [
     # TODO(b/129956426): Remove dependency used only in closure compiler check.
-    "src/js/browser_proxy/browser_proxy.js",
-    "src/js/browser_proxy/browser_proxy_interface.js",
+    "js/browser_proxy/browser_proxy.js",
+    "js/browser_proxy/browser_proxy_interface.js",
   ]
 
   outputs = [ "$out_camera_app_dir/js/browser_proxy/{{source_file_part}}" ]
@@ -133,9 +133,9 @@ copy("chrome_camera_app_js_browser_proxy") {
 
 copy("chrome_camera_app_js_device") {
   sources = [
-    "src/js/device/camera3_device_info.js",
-    "src/js/device/constraints_preferrer.js",
-    "src/js/device/device_info_updater.js",
+    "js/device/camera3_device_info.js",
+    "js/device/constraints_preferrer.js",
+    "js/device/device_info_updater.js",
   ]
 
   outputs = [ "$out_camera_app_dir/js/device/{{source_file_part}}" ]
@@ -143,10 +143,10 @@ copy("chrome_camera_app_js_device") {
 
 copy("chrome_camera_app_js_lib") {
   sources = [
-    "src/js/lib/analytics.js",
-    "src/js/lib/comlink.js",
-    "src/js/lib/ffmpeg.js",
-    "src/js/lib/ffmpeg.wasm",
+    "js/lib/analytics.js",
+    "js/lib/comlink.js",
+    "js/lib/ffmpeg.js",
+    "js/lib/ffmpeg.wasm",
   ]
 
   outputs = [ "$out_camera_app_dir/js/lib/{{source_file_part}}" ]
@@ -154,17 +154,17 @@ copy("chrome_camera_app_js_lib") {
 
 copy("chrome_camera_app_js_models") {
   sources = [
-    "src/js/models/async_writer.js",
-    "src/js/models/chrome_file_system_entry.js",
-    "src/js/models/file_namer.js",
-    "src/js/models/file_system.js",
-    "src/js/models/file_system_entry.js",
-    "src/js/models/file_util.js",
-    "src/js/models/lazy_directory_entry.js",
-    "src/js/models/mp4_video_processor.js",
-    "src/js/models/nop_video_processor.js",
-    "src/js/models/result_saver.js",
-    "src/js/models/video_saver.js",
+    "js/models/async_writer.js",
+    "js/models/chrome_file_system_entry.js",
+    "js/models/file_namer.js",
+    "js/models/file_system.js",
+    "js/models/file_system_entry.js",
+    "js/models/file_util.js",
+    "js/models/lazy_directory_entry.js",
+    "js/models/mp4_video_processor.js",
+    "js/models/nop_video_processor.js",
+    "js/models/result_saver.js",
+    "js/models/video_saver.js",
   ]
 
   outputs = [ "$out_camera_app_dir/js/models/{{source_file_part}}" ]
@@ -172,9 +172,9 @@ copy("chrome_camera_app_js_models") {
 
 copy("chrome_camera_app_js_mojo") {
   sources = [
-    "src/js/mojo/chrome_helper.js",
-    "src/js/mojo/device_operator.js",
-    "src/js/mojo/image_capture.js",
+    "js/mojo/chrome_helper.js",
+    "js/mojo/device_operator.js",
+    "js/mojo/image_capture.js",
   ]
 
   outputs = [ "$out_camera_app_dir/js/mojo/{{source_file_part}}" ]
@@ -182,12 +182,12 @@ copy("chrome_camera_app_js_mojo") {
 
 copy("chrome_camera_app_js_views") {
   sources = [
-    "src/js/views/camera.js",
-    "src/js/views/camera_intent.js",
-    "src/js/views/dialog.js",
-    "src/js/views/settings.js",
-    "src/js/views/view.js",
-    "src/js/views/warning.js",
+    "js/views/camera.js",
+    "js/views/camera_intent.js",
+    "js/views/dialog.js",
+    "js/views/settings.js",
+    "js/views/view.js",
+    "js/views/warning.js",
   ]
 
   outputs = [ "$out_camera_app_dir/js/views/{{source_file_part}}" ]
@@ -195,11 +195,11 @@ copy("chrome_camera_app_js_views") {
 
 copy("chrome_camera_app_js_views_camera") {
   sources = [
-    "src/js/views/camera/layout.js",
-    "src/js/views/camera/options.js",
-    "src/js/views/camera/preview.js",
-    "src/js/views/camera/review_result.js",
-    "src/js/views/camera/timertick.js",
+    "js/views/camera/layout.js",
+    "js/views/camera/options.js",
+    "js/views/camera/preview.js",
+    "js/views/camera/review_result.js",
+    "js/views/camera/timertick.js",
   ]
 
   outputs = [ "$out_camera_app_dir/js/views/camera/{{source_file_part}}" ]
@@ -207,13 +207,13 @@ copy("chrome_camera_app_js_views_camera") {
 
 copy("chrome_camera_app_js_views_camera_mode") {
   sources = [
-    "src/js/views/camera/mode/index.js",
-    "src/js/views/camera/mode/mode_base.js",
-    "src/js/views/camera/mode/photo.js",
-    "src/js/views/camera/mode/portrait.js",
-    "src/js/views/camera/mode/record_time.js",
-    "src/js/views/camera/mode/square.js",
-    "src/js/views/camera/mode/video.js",
+    "js/views/camera/mode/index.js",
+    "js/views/camera/mode/mode_base.js",
+    "js/views/camera/mode/photo.js",
+    "js/views/camera/mode/portrait.js",
+    "js/views/camera/mode/record_time.js",
+    "js/views/camera/mode/square.js",
+    "js/views/camera/mode/video.js",
   ]
 
   outputs = [ "$out_camera_app_dir/js/views/camera/mode/{{source_file_part}}" ]
@@ -221,13 +221,13 @@ copy("chrome_camera_app_js_views_camera_mode") {
 
 copy("chrome_camera_app_sounds") {
   sources = [
-    "src/sounds/record_end.ogg",
-    "src/sounds/record_pause.ogg",
-    "src/sounds/record_start.ogg",
-    "src/sounds/shutter.ogg",
-    "src/sounds/tick_final.ogg",
-    "src/sounds/tick_inc.ogg",
-    "src/sounds/tick_start.ogg",
+    "sounds/record_end.ogg",
+    "sounds/record_pause.ogg",
+    "sounds/record_start.ogg",
+    "sounds/shutter.ogg",
+    "sounds/tick_final.ogg",
+    "sounds/tick_inc.ogg",
+    "sounds/tick_start.ogg",
   ]
 
   outputs = [ "$out_camera_app_dir/sounds/{{source_file_part}}" ]
@@ -235,8 +235,8 @@ copy("chrome_camera_app_sounds") {
 
 copy("chrome_camera_app_views") {
   sources = [
-    "src/views/background.html",
-    "src/views/main.html",
+    "views/background.html",
+    "views/main.html",
   ]
 
   outputs = [ "$out_camera_app_dir/views/{{source_file_part}}" ]

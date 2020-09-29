@@ -325,7 +325,7 @@
     "includes": [2505],
     "structures": [2510],
   },
-  "chromeos/components/camera_app_ui/resources/src/strings/camera_strings.grd": {
+  "chromeos/components/camera_app_ui/resources/strings/camera_strings.grd": {
     "messages": [2515],
   },
   "chromeos/components/diagnostics_ui/resources/diagnostics_app_resources.grd": {

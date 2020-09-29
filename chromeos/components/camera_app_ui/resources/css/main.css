@@ -225,7 +225,7 @@ body.should-handle-intent-result #modes-group {
 }
 
 #play-result-video {
-  background-image: url(../images/camera_intent_play_video.svg);
+  background-image: url(/images/camera_intent_play_video.svg);
   height: 80px;
   width: 80px;
 }
@@ -253,11 +253,11 @@ body.playing-result-video #play-result-video {
 }
 
 #confirm-result {
-  background-image: url(../images/camera_intent_result_confirm.svg);
+  background-image: url(/images/camera_intent_result_confirm.svg);
 }
 
 #cancel-result {
-  background-image: url(../images/camera_intent_result_cancel.svg);
+  background-image: url(/images/camera_intent_result_cancel.svg);
 }
 
 .mode-item {
@@ -354,25 +354,25 @@ body.should-handle-intent-result #pause-recordvideo {
 
 #start-takephoto,
 #video-snapshot {
-  background-image: url(../images/camera_shutter_photo_start.svg);
+  background-image: url(/images/camera_shutter_photo_start.svg);
 }
 
 #start-takephoto:hover,
 #video-snapshot:hover {
-  background-image: url(../images/camera_shutter_photo_start_hover.svg);
+  background-image: url(/images/camera_shutter_photo_start_hover.svg);
 }
 
 #start-takephoto:active,
 #video-snapshot:active {
-  background-image: url(../images/camera_shutter_photo_start_active.svg);
+  background-image: url(/images/camera_shutter_photo_start_active.svg);
 }
 
 #stop-takephoto {
-  background-image: url(../images/camera_shutter_photo_stop.svg);
+  background-image: url(/images/camera_shutter_photo_stop.svg);
 }
 
 #stop-takephoto:hover {
-  background-image: url(../images/camera_shutter_photo_stop_hover.svg);
+  background-image: url(/images/camera_shutter_photo_stop_hover.svg);
 }
 
 #recordvideo {
@@ -462,7 +462,7 @@ body.taking.video #recordvideo .white-square {
 #pause-recordvideo .two-bars {
   --bar-size: 20px;
 
-  background-image: url(../images/camera_shutter_video_pause.svg);
+  background-image: url(/images/camera_shutter_video_pause.svg);
   height: var(--bar-size);
   left: calc(50% - var(--bar-size) / 2);
   position: absolute;
@@ -493,22 +493,22 @@ body:not(.multi-camera) #switch-device {
 }
 
 #camera-mode {
-  background-image: url(../images/camera_mode_photo.svg);
+  background-image: url(/images/camera_mode_photo.svg);
   height: 40px;
   visibility: hidden;
   width: 40px;
 }
 
 body.video #camera-mode {
-  background-image: url(../images/camera_mode_video.svg);
+  background-image: url(/images/camera_mode_video.svg);
 }
 
 body.square #camera-mode {
-  background-image: url(../images/camera_mode_square.svg);
+  background-image: url(/images/camera_mode_square.svg);
 }
 
 body.portrait #camera-mode {
-  background-image: url(../images/camera_mode_portrait.svg);
+  background-image: url(/images/camera_mode_portrait.svg);
 }
 
 body.mode-switching:not(.streaming) #camera-mode {
@@ -530,7 +530,7 @@ body.mode-switching:not(.streaming) #camera-mode {
 }
 
 #switch-device {
-  background-image: url(../images/camera_button_switch_device.svg);
+  background-image: url(/images/camera_button_switch_device.svg);
   height: var(--big-icon);
   width: var(--big-icon);
 }
@@ -591,39 +591,39 @@ body.max-wnd #options-group {
 }
 
 body._3sec #toggle-timer:checked {
-  background-image: url(../images/camera_button_timer_on_3s.svg);
+  background-image: url(/images/camera_button_timer_on_3s.svg);
 }
 
 body._10sec #toggle-timer:checked {
-  background-image: url(../images/camera_button_timer_on_10s.svg);
+  background-image: url(/images/camera_button_timer_on_10s.svg);
 }
 
 #toggle-timer {
-  background-image: url(../images/camera_button_timer_off.svg);
+  background-image: url(/images/camera_button_timer_off.svg);
 }
 
 #toggle-grid:checked {
-  background-image: url(../images/camera_button_grid_on.svg);
+  background-image: url(/images/camera_button_grid_on.svg);
 }
 
 #toggle-grid {
-  background-image: url(../images/camera_button_grid_off.svg);
+  background-image: url(/images/camera_button_grid_off.svg);
 }
 
 #toggle-mirror:checked {
-  background-image: url(../images/camera_button_mirror_on.svg);
+  background-image: url(/images/camera_button_mirror_on.svg);
 }
 
 #toggle-mirror {
-  background-image: url(../images/camera_button_mirror_off.svg);
+  background-image: url(/images/camera_button_mirror_off.svg);
 }
 
 #toggle-mic:checked {
-  background-image: url(../images/camera_button_mic_on.svg);
+  background-image: url(/images/camera_button_mic_on.svg);
 }
 
 #toggle-mic {
-  background-image: url(../images/camera_button_mic_off.svg);
+  background-image: url(/images/camera_button_mic_off.svg);
 }
 
 body:not(.multi-fps) #toggle-fps,
@@ -632,15 +632,15 @@ body:not(.video) #toggle-fps {
 }
 
 body._30fps #toggle-fps {
-  background-image: url(../images/camera_button_fps_30.svg);
+  background-image: url(/images/camera_button_fps_30.svg);
 }
 
 body._60fps #toggle-fps {
-  background-image: url(../images/camera_button_fps_60.svg);
+  background-image: url(/images/camera_button_fps_60.svg);
 }
 
 #open-settings {
-  background-image: url(../images/camera_button_settings.svg);
+  background-image: url(/images/camera_button_settings.svg);
 }
 
 body.should-handle-intent-result #open-settings {
@@ -1149,7 +1149,7 @@ body:not(.recording-ui-paused) #record-time [i18n-content=record_video_paused_ms
 }
 
 #banner-title-icon {
-  background-image: url(../images/camera_intro_banner_icon.svg);
+  background-image: url(/images/camera_intro_banner_icon.svg);
   display: inline-block;
   height: 20px;
   margin-right: 10px;
@@ -1168,7 +1168,7 @@ body:not(.recording-ui-paused) #record-time [i18n-content=record_video_paused_ms
 }
 
 #banner-close {
-  background-image: url(../images/camera_intro_banner_close.svg);
+  background-image: url(/images/camera_intro_banner_close.svg);
   display: block;
   height: 20px;
   position: absolute;
@@ -1337,7 +1337,7 @@ body.tab-navigation button.menu-item:focus::after {
 }
 
 .menu-header .icon {
-  background-image: url(../images/settings_button_back.svg);
+  background-image: url(/images/settings_button_back.svg);
 }
 
 .menu-header .icon:hover {
@@ -1345,11 +1345,11 @@ body.tab-navigation button.menu-item:focus::after {
 }
 
 #settings-gridtype .icon {
-  background-image: url(../images/settings_grid_type.svg);
+  background-image: url(/images/settings_grid_type.svg);
 }
 
 #settings-timerdur .icon {
-  background-image: url(../images/settings_timer_duration.svg);
+  background-image: url(/images/settings_timer_duration.svg);
 }
 
 body.no-resolution-settings #settings-resolution {
@@ -1357,19 +1357,19 @@ body.no-resolution-settings #settings-resolution {
 }
 
 #settings-resolution .icon {
-  background-image: url(../images/settings_resolution.svg);
+  background-image: url(/images/settings_resolution.svg);
 }
 
 #settings-expert .icon {
-  background-image: url(../images/settings_expert.svg);
+  background-image: url(/images/settings_expert.svg);
 }
 
 #settings-feedback .icon {
-  background-image: url(../images/settings_feedback.svg);
+  background-image: url(/images/settings_feedback.svg);
 }
 
 #settings-help .icon {
-  background-image: url(../images/settings_help.svg);
+  background-image: url(/images/settings_help.svg);
 }
 
 #settings-gridtype .icon.end,
@@ -1377,7 +1377,7 @@ body.no-resolution-settings #settings-resolution {
 #settings-resolution .icon.end,
 #settings-expert .icon.end,
 .resol-item.multi-option .icon.end {
-  background-image: url(../images/settings_button_expand.svg);
+  background-image: url(/images/settings_button_expand.svg);
 }
 
 #view-warning,
@@ -1476,7 +1476,7 @@ body.tab-navigation .dialog-buttons button:focus::after {
 }
 
 #spinner {
-  background-image: url(../images/spinner.svg);
+  background-image: url(/images/spinner.svg);
   height: 32px;
   visibility: hidden;
   width: 32px;
@@ -1484,7 +1484,7 @@ body.tab-navigation .dialog-buttons button:focus::after {
 }
 
 #view-splash {
-  background: no-repeat center url(../images/camera_mode_photo.svg), black;
+  background: no-repeat center url(/images/camera_mode_photo.svg), black;
   z-index: 2;
 }
 

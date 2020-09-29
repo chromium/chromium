@@ -22,7 +22,7 @@ static_library("camera_app_ui") {
   deps = [
     ":mojo_bindings",
     ":mojo_bindings_js",
-    "resources/src/strings",
+    "resources/strings",
     "//ash/public/cpp",
     "//chromeos/components/web_applications",
     "//chromeos/constants",

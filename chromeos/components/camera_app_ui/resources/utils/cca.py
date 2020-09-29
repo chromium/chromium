@@ -37,7 +37,7 @@ def build_locale_strings():
     grit_cmd = [
         os.path.join(get_chromium_root(), 'tools/grit/grit.py'),
         '-i',
-        'src/strings/camera_strings.grd',
+        'strings/camera_strings.grd',
         'build',
         '-o',
         'build/strings',
@@ -151,7 +151,14 @@ def build_cca(overlay=None, key=None):
         build_mojom_bindings(mojom_bindings)
 
     shutil.rmtree('build/camera', ignore_errors=True)
-    dir_util.copy_tree('src', 'build/camera')
+
+    dir_list = [src for src in os.listdir('.') if os.path.isdir(src)]
+    for d in dir_list:
+        if d == 'build':
+            continue
+        dir_util.copy_tree(d, os.path.join('build/camera', d))
+    shutil.copy2('manifest.json', 'build/camera/manifest.json')
+
     for f in mojo_files:
         shutil.copy2(os.path.join('build/mojo', f), 'build/camera/js/mojo')
     dir_util.copy_tree('build/strings', 'build/camera')
@@ -163,7 +170,7 @@ def build_cca(overlay=None, key=None):
         commit_hash = subprocess.check_output(git_cmd, text=True).strip()[:8]
         timestamp = time.strftime("%F %T")
 
-        with open('src/manifest.json') as f:
+        with open('manifest.json') as f:
             manifest = json.load(f)
         manifest['version_name'] = f'Dev {commit_hash} @ {timestamp}'
         if key is not None:
@@ -236,7 +243,7 @@ def lint(args):
     node = os.path.join(root, 'third_party/node/linux/node-linux-x64/bin/node')
     eslint = os.path.join(
         root, 'third_party/node/node_modules/eslint/bin/eslint.js')
-    subprocess.call([node, eslint, 'src/js'])
+    subprocess.call([node, eslint, 'js'])
 
 
 def parse_args(args):
