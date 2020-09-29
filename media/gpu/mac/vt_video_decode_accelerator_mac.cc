@@ -1690,6 +1690,11 @@ bool VTVideoDecodeAccelerator::TryToSetupDecodeOnSeparateThread(
   return false;
 }
 
+bool VTVideoDecodeAccelerator::SupportsSharedImagePictureBuffers() const {
+  // TODO(https://crbug.com/1108909): Enable shared image use on macOS.
+  return false;
+}
+
 // static
 VideoDecodeAccelerator::SupportedProfiles
 VTVideoDecodeAccelerator::GetSupportedProfiles() {

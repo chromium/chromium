@@ -414,6 +414,10 @@ class MEDIA_EXPORT VideoDecodeAccelerator {
   // TODO(dshwang): after moving to D3D11, remove this. crbug.com/438691
   virtual GLenum GetSurfaceInternalFormat() const;
 
+  // Returns true if the decoder supports SharedImage backed picture buffers.
+  // May be called on any thread at any time.
+  virtual bool SupportsSharedImagePictureBuffers() const;
+
  protected:
   // Do not delete directly; use Destroy() or own it with a scoped_ptr, which
   // will Destroy() it properly by default.

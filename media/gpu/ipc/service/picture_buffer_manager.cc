@@ -27,11 +27,6 @@ int32_t NextID(int32_t* counter) {
   return value;
 }
 
-bool UseSharedImage() {
-  // TODO(https://crbug.com/1108909): Enable shared image use on macOS.
-  return false;
-}
-
 class PictureBufferManagerImpl : public PictureBufferManager {
  public:
   explicit PictureBufferManagerImpl(
@@ -79,7 +74,8 @@ class PictureBufferManagerImpl : public PictureBufferManager {
       VideoPixelFormat pixel_format,
       uint32_t planes,
       gfx::Size texture_size,
-      uint32_t texture_target) override {
+      uint32_t texture_target,
+      bool use_shared_image) override {
     DVLOG(2) << __func__;
     DCHECK(gpu_task_runner_);
     DCHECK(gpu_task_runner_->BelongsToCurrentThread());
@@ -87,7 +83,7 @@ class PictureBufferManagerImpl : public PictureBufferManager {
     DCHECK(planes);
     DCHECK_LE(planes, static_cast<uint32_t>(VideoFrame::kMaxPlanes));
 
-    if (!UseSharedImage()) {
+    if (!use_shared_image) {
       // TODO(sandersd): Consider requiring that CreatePictureBuffers() is
       // called with the context current.
       if (!command_buffer_helper_->MakeContextCurrent()) {
@@ -98,9 +94,10 @@ class PictureBufferManagerImpl : public PictureBufferManager {
 
     std::vector<PictureBuffer> picture_buffers;
     for (uint32_t i = 0; i < count; i++) {
-      PictureBufferData picture_data = {pixel_format, texture_size};
+      PictureBufferData picture_data = {pixel_format, texture_size,
+                                        use_shared_image};
 
-      if (!UseSharedImage()) {
+      if (!use_shared_image) {
         for (uint32_t j = 0; j < planes; j++) {
           // Create a texture for this plane.
           GLuint service_id = command_buffer_helper_->CreateTexture(
@@ -219,7 +216,8 @@ class PictureBufferManagerImpl : public PictureBufferManager {
 
     // If this |picture| has a SharedImage, then keep a reference to the
     // SharedImage in |picture_buffer_data| and update the gpu::MailboxHolder.
-    DCHECK_EQ(UseSharedImage(), !!picture.scoped_shared_image());
+    DCHECK_EQ(picture_buffer_data.use_shared_image,
+              !!picture.scoped_shared_image());
     if (auto scoped_shared_image = picture.scoped_shared_image()) {
       picture_buffer_data.scoped_shared_image = scoped_shared_image;
       picture_buffer_data.mailbox_holders[0] =
@@ -350,6 +348,7 @@ class PictureBufferManagerImpl : public PictureBufferManager {
   struct PictureBufferData {
     VideoPixelFormat pixel_format;
     gfx::Size texture_size;
+    bool use_shared_image = false;
     std::vector<GLuint> service_ids;
     gpu::MailboxHolder mailbox_holders[VideoFrame::kMaxPlanes];
     scoped_refptr<Picture::ScopedSharedImage> scoped_shared_image;
