@@ -664,7 +664,7 @@ bool FrameTreeNode::UpdateUserActivationState(
                                 user_activation_verified);
       if (user_activation_verified) {
         update_result = NotifyUserActivation(
-            blink::mojom::UserActivationNotificationType::kNone);
+            blink::mojom::UserActivationNotificationType::kInteraction);
         update_type = blink::mojom::UserActivationUpdateType::kNotifyActivation;
       } else {
         // TODO(crbug.com/848778): We need to decide what to do when user
