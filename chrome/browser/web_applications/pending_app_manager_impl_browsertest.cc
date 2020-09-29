@@ -361,24 +361,26 @@ IN_PROC_BROWSER_TEST_P(PendingAppManagerImplBrowserTest, RegistrationSkipped) {
 
 IN_PROC_BROWSER_TEST_P(PendingAppManagerImplBrowserTest, AlreadyRegistered) {
   ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Ensure service worker registered for http://embedded_test_server/web_apps/.
+  // We don't need to be installing a web app here but it's convenient just to
+  // await the service worker registration.
   {
-    // Delay service worker registration to second load to simulate it not
-    // loading during the initial install pass.
-    GURL install_url(embedded_test_server()->GetURL(
-        "/web_apps/service_worker_on_second_load.html"));
+    GURL install_url(embedded_test_server()->GetURL("/web_apps/basic.html"));
     ExternalInstallOptions install_options = CreateInstallOptions(install_url);
     install_options.force_reinstall = true;
-    install_options.bypass_service_worker_check = true;
     InstallApp(std::move(install_options));
     EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result_code_.value());
     WebAppRegistrationWaiter(&pending_app_manager())
-        .AwaitNextRegistration(install_url, RegistrationResultCode::kSuccess);
+        .AwaitNextNonFailedRegistration(install_url);
+    CheckServiceWorkerStatus(
+        embedded_test_server()->GetURL("/web_apps/basic.html"),
+        content::ServiceWorkerCapability::SERVICE_WORKER_WITH_FETCH_HANDLER);
   }
 
-  CheckServiceWorkerStatus(
-      embedded_test_server()->GetURL("/web_apps/basic.html"),
-      content::ServiceWorkerCapability::SERVICE_WORKER_WITH_FETCH_HANDLER);
-
+  // With the service worker registered we install a page that doesn't register
+  // a service worker to check that the existing service worker is seen by our
+  // service worker registration step.
   {
     GURL install_url(
         embedded_test_server()->GetURL("/web_apps/no_service_worker.html"));

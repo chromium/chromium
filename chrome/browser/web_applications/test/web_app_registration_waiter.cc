@@ -5,6 +5,7 @@
 #include "chrome/browser/web_applications/test/web_app_registration_waiter.h"
 
 #include "base/test/bind_test_util.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace web_app {
 
@@ -12,8 +13,11 @@ WebAppRegistrationWaiter::WebAppRegistrationWaiter(PendingAppManager* manager)
     : manager_(manager) {
   manager_->SetRegistrationCallbackForTesting(base::BindLambdaForTesting(
       [this](const GURL& install_url, RegistrationResultCode code) {
-        CHECK_EQ(install_url_, install_url);
-        CHECK_EQ(code_, code);
+        ASSERT_EQ(install_url_, install_url);
+        if (code_)
+          ASSERT_EQ(code_, code);
+        else
+          ASSERT_NE(code, RegistrationResultCode::kTimeout);
         run_loop_.Quit();
       }));
   manager_->SetRegistrationsCompleteCallbackForTesting(
@@ -29,6 +33,13 @@ void WebAppRegistrationWaiter::AwaitNextRegistration(
     RegistrationResultCode code) {
   install_url_ = install_url;
   code_ = code;
+  run_loop_.Run();
+}
+
+void WebAppRegistrationWaiter::AwaitNextNonFailedRegistration(
+    const GURL& install_url) {
+  install_url_ = install_url;
+  code_ = base::nullopt;
   run_loop_.Run();
 }
 
