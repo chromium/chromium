@@ -17,12 +17,7 @@ bool FindMyDeviceControllerImpl::IsPhoneRinging() const {
   return is_phone_ringing_;
 }
 
-void FindMyDeviceControllerImpl::SetIsPhoneRingingInternal(
-    bool is_phone_ringing) {
-  is_phone_ringing_ = is_phone_ringing;
-}
-
-void FindMyDeviceControllerImpl::RequestNewPhoneRingingState(bool ringing) {
+void FindMyDeviceControllerImpl::SetPhoneRingingState(bool ringing) {
   PA_LOG(INFO) << "Attempting to set Find My Device phone ring state; new "
                << "value: " << ringing;
 }

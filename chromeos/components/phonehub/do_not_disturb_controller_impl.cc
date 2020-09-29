@@ -17,12 +17,7 @@ bool DoNotDisturbControllerImpl::IsDndEnabled() const {
   return is_dnd_enabled_;
 }
 
-void DoNotDisturbControllerImpl::SetDoNotDisturbStateInternal(
-    bool is_dnd_enabled) {
-  is_dnd_enabled_ = is_dnd_enabled;
-}
-
-void DoNotDisturbControllerImpl::RequestNewDoNotDisturbState(bool enabled) {
+void DoNotDisturbControllerImpl::SetDoNotDisturbState(bool enabled) {
   PA_LOG(INFO) << "Attempting to set DND state; new value: " << enabled;
 }
 

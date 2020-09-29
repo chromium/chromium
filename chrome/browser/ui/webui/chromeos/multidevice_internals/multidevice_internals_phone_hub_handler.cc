@@ -266,7 +266,7 @@ void MultidevicePhoneHubHandler::HandleEnableDnd(const base::ListValue* args) {
   CHECK(args->GetBoolean(0, &enabled));
   PA_LOG(VERBOSE) << "Setting Do Not Disturb state to " << enabled;
   fake_phone_hub_manager_->fake_do_not_disturb_controller()
-      ->SetDoNotDisturbStateInternal(enabled);
+      ->SetDoNotDisturbState(enabled);
 }
 
 void MultidevicePhoneHubHandler::HandleSetFindMyDeviceStatus(
@@ -278,7 +278,7 @@ void MultidevicePhoneHubHandler::HandleSetFindMyDeviceStatus(
   bool is_ringing = status_as_int == 2;
   PA_LOG(VERBOSE) << "Setting phone ringing status to " << is_ringing;
   fake_phone_hub_manager_->fake_find_my_device_controller()
-      ->SetIsPhoneRingingInternal(is_ringing);
+      ->SetPhoneRingingState(is_ringing);
 }
 
 void MultidevicePhoneHubHandler::HandleSetTetherStatus(

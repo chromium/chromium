@@ -126,7 +126,7 @@ TEST_F(PhoneHubTrayTest, ClickTrayButton) {
 }
 
 TEST_F(PhoneHubTrayTest, ShowNotificationOptInViewWhenAccessNotGranted) {
-  GetNotificationAccessManager()->SetHasAccessBeenGrantedInternal(false);
+  GetNotificationAccessManager()->SetHasAccessBeenGranted(false);
 
   ClickTrayButton();
 
@@ -141,7 +141,7 @@ TEST_F(PhoneHubTrayTest, ShowNotificationOptInViewWhenAccessNotGranted) {
 }
 
 TEST_F(PhoneHubTrayTest, HideNotificationOptInViewWhenAccessHasBeenGranted) {
-  GetNotificationAccessManager()->SetHasAccessBeenGrantedInternal(true);
+  GetNotificationAccessManager()->SetHasAccessBeenGranted(true);
 
   ClickTrayButton();
 
@@ -149,7 +149,7 @@ TEST_F(PhoneHubTrayTest, HideNotificationOptInViewWhenAccessHasBeenGranted) {
 }
 
 TEST_F(PhoneHubTrayTest, StartNotificationSetUpFlow) {
-  GetNotificationAccessManager()->SetHasAccessBeenGrantedInternal(false);
+  GetNotificationAccessManager()->SetHasAccessBeenGranted(false);
 
   ClickTrayButton();
   EXPECT_TRUE(notification_opt_in_view());

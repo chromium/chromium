@@ -19,8 +19,7 @@ class DoNotDisturbControllerImpl : public DoNotDisturbController {
  private:
   // DoNotDisturbController:
   bool IsDndEnabled() const override;
-  void SetDoNotDisturbStateInternal(bool is_dnd_enabled) override;
-  void RequestNewDoNotDisturbState(bool enabled) override;
+  void SetDoNotDisturbState(bool enabled) override;
 
   bool is_dnd_enabled_ = false;
 };
