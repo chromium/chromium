@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.identity;
+package org.chromium.chrome.browser.uid;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -21,8 +21,7 @@ public final class UniqueIdentificationGeneratorFactory {
     private static final Map<String, UniqueIdentificationGenerator> GENERATOR_MAP =
             new HashMap<String, UniqueIdentificationGenerator>();
 
-    private UniqueIdentificationGeneratorFactory() {
-    }
+    private UniqueIdentificationGeneratorFactory() {}
 
     /**
      * Returns a UniqueIdentificationGenerator if it exists, else throws IllegalArgumentException.
@@ -49,8 +48,8 @@ public final class UniqueIdentificationGeneratorFactory {
      * @param force         if set to true, will override any existing generator for this type. Else
      *                      discards calls where a generator exists.
      */
-    public static void registerGenerator(String generatorType, UniqueIdentificationGenerator gen,
-                                         boolean force) {
+    public static void registerGenerator(
+            String generatorType, UniqueIdentificationGenerator gen, boolean force) {
         synchronized (LOCK) {
             if (GENERATOR_MAP.containsKey(generatorType) && !force) {
                 return;
