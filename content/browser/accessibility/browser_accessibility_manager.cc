@@ -1368,7 +1368,7 @@ void BrowserAccessibilityManager::OnAtomicUpdateFinished(
   }
 
   // Calls OnDataChanged on newly created, reparented or changed nodes.
-  for (const auto change : changes) {
+  for (const auto& change : changes) {
     ui::AXNode* node = change.node;
     BrowserAccessibility* wrapper = GetFromAXNode(node);
     if (wrapper) {
