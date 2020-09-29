@@ -320,8 +320,8 @@ class CORE_EXPORT HTMLCanvasElement final
  private:
   void Dispose();
 
-  void RecordIdentifiabilityMetric(const blink::IdentifiableSurface& surface,
-                                   int64_t value) const;
+  void RecordIdentifiabilityMetric(IdentifiableSurface surface,
+                                   IdentifiableToken value) const;
 
   // If the user is enrolled in the identifiability study, report the canvas
   // type, and if applicable, canvas digest, taint bits, and

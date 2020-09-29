@@ -157,16 +157,12 @@ class ExtensionNavigationThrottleUnitTest
     ASSERT_EQ(1u, entries.size());
     EXPECT_EQ(source_id, entries[0].source);
     ASSERT_EQ(1u, entries[0].metrics.size());
-    EXPECT_EQ(
-        blink::IdentifiableSurface::FromTypeAndInput(
-            blink::IdentifiableSurface::Type::kExtensionFileAccess,
-            blink::IdentifiabilityDigestOfBytes(base::as_bytes(base::make_span(
-                ExtensionSet::GetExtensionIdByURL(extension_url)))))
-            .ToUkmMetricHash(),
-        entries[0].metrics[0].surface.ToUkmMetricHash());
-    EXPECT_EQ(
-        blink::IdentifiabilityDigestHelper(expected),
-        static_cast<uint64_t>(entries[0].metrics[0].value.ToUkmMetricValue()));
+    EXPECT_EQ(blink::IdentifiableSurface::FromTypeAndToken(
+                  blink::IdentifiableSurface::Type::kExtensionFileAccess,
+                  base::as_bytes(base::make_span(
+                      ExtensionSet::GetExtensionIdByURL(extension_url)))),
+              entries[0].metrics[0].surface);
+    EXPECT_EQ(blink::IdentifiableToken(expected), entries[0].metrics[0].value);
   }
 
  private:

@@ -260,8 +260,8 @@ void HTMLCanvasElement::RegisterRenderingContextFactory(
 }
 
 void HTMLCanvasElement::RecordIdentifiabilityMetric(
-    const blink::IdentifiableSurface& surface,
-    int64_t value) const {
+    IdentifiableSurface surface,
+    IdentifiableToken value) const {
   blink::IdentifiabilityMetricBuilder(GetDocument().UkmSourceID())
       .Set(surface, value)
       .Record(GetDocument().UkmRecorder());
@@ -335,11 +335,10 @@ CanvasRenderingContext* HTMLCanvasElement::GetCanvasRenderingContextInternal(
   if (!context_) {
     if (IsUserInIdentifiabilityStudy()) {
       RecordIdentifiabilityMetric(
-          blink::IdentifiableSurface::FromTypeAndInput(
+          IdentifiableSurface::FromTypeAndToken(
               blink::IdentifiableSurface::Type::kWebFeature,
-              static_cast<uint64_t>(
-                  blink::WebFeature::kCanvasRenderingContext)),
-          blink::IdentifiabilityDigestHelper(context_type));
+              blink::WebFeature::kCanvasRenderingContext),
+          context_type);
     }
     UMA_HISTOGRAM_ENUMERATION("Blink.Canvas.ContextType", context_type);
   }
