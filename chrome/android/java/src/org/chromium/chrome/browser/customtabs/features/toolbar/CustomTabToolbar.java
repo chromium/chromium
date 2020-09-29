@@ -445,8 +445,8 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                 // Using the current background color instead of the final color in case this
                 // animation was cancelled.  This ensures the assets are updated to the visible
                 // color.
-                mUseDarkColors =
-                        !ColorUtils.shouldUseLightForegroundOnBackground(background.getColor());
+                int backgroundColor = background.getColor();
+                mUseDarkColors = !ColorUtils.shouldUseLightForegroundOnBackground(backgroundColor);
                 mLocationBar.updateVisualsForState();
             }
         });

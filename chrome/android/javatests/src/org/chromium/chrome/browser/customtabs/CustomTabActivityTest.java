@@ -113,6 +113,7 @@ import org.chromium.chrome.browser.tab.TabTestUtils;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.test.ScreenShooter;
+import org.chromium.chrome.browser.toolbar.menu_button.MenuButton;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuTestSupport;
@@ -808,6 +809,10 @@ public class CustomTabActivityTest {
             assertEquals(ColorUtils.getDarkenedColorForStatusBar(expectedColor),
                     mCustomTabActivityTestRule.getActivity().getWindow().getStatusBarColor());
         }
+
+        MenuButton menuButtonView = toolbarView.findViewById(R.id.menu_button_wrapper);
+        assertEquals(menuButtonView.getUseLightDrawablesForTesting(),
+                ColorUtils.shouldUseLightForegroundOnBackground(expectedColor));
     }
 
     /**
@@ -2143,6 +2148,9 @@ public class CustomTabActivityTest {
 
         Assert.assertTrue("Night mode should be enabled on K+ with dark color scheme set.",
                 cctActivity.getNightModeStateProvider().isInNightMode());
+
+        MenuButton menuButtonView = cctActivity.findViewById(R.id.menu_button_wrapper);
+        assertTrue(menuButtonView.getUseLightDrawablesForTesting());
     }
 
     @Test
@@ -2157,6 +2165,9 @@ public class CustomTabActivityTest {
 
         Assert.assertNotNull(cctActivity.getNightModeStateProvider());
         Assert.assertFalse(cctActivity.getNightModeStateProvider().isInNightMode());
+
+        MenuButton menuButtonView = cctActivity.findViewById(R.id.menu_button_wrapper);
+        assertFalse(menuButtonView.getUseLightDrawablesForTesting());
     }
 
     private void addColorSchemeToIntent(Intent intent, int colorScheme) {

@@ -121,6 +121,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
     private final TabCountProvider mTabCountProvider;
     private final ThemeColorProvider mTabThemeColorProvider;
     private AppThemeColorProvider mAppThemeColorProvider;
+    private SettableThemeColorProvider mCustomTabThemeColorProvider;
     private final TopToolbarCoordinator mToolbar;
     private final ToolbarControlContainer mControlContainer;
     private final BrowserControlsStateProvider.Observer mBrowserControlsObserver;
@@ -286,6 +287,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         mAppThemeColorProvider = new AppThemeColorProvider(mActivity);
         // Observe tint changes to update sub-components that rely on the tint (crbug.com/1077684).
         mAppThemeColorProvider.addTintObserver(this);
+        mCustomTabThemeColorProvider = new SettableThemeColorProvider(mActivity);
 
         mActivityTabProvider = tabProvider;
         mToolbarTabController = new ToolbarTabControllerImpl(mLocationBarModel::getTab,
@@ -309,7 +311,8 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                         -> setUrlBarFocus(focus, type),
                 mActivity.getCompositorViewHolder()::requestFocus, shouldShowUpdateBadge,
                 mActivity::isInOverviewMode,
-                mActivity.isCustomTab() ? mAppThemeColorProvider : browsingModeThemeColorProvider,
+                mActivity.isCustomTab() ? mCustomTabThemeColorProvider
+                                        : browsingModeThemeColorProvider,
                 R.id.menu_button_wrapper);
         MenuButtonCoordinator startSurfaceMenuButtonCoordinator = new MenuButtonCoordinator(
                 appMenuCoordinatorSupplier, mControlsVisibilityDelegate, mActivity,
@@ -1038,6 +1041,11 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         mCurrentThemeColor = color;
         mLocationBarModel.setPrimaryColor(color);
         mToolbar.onPrimaryColorChanged(shouldAnimate);
+        // TODO(https://crbug.com/865801, pnoland): Rationalize theme color logic
+        // into a set of documented, self-contained providers that we can inject to the appropriate
+        // sub-components. That will let us have every component handle its own coloring, and remove
+        // onThemeColorChanged from ToolbarManager.
+        mCustomTabThemeColorProvider.setPrimaryColor(color, shouldAnimate);
     }
 
     @Override

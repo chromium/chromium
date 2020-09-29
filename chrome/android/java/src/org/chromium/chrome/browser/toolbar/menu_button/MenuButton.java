@@ -274,6 +274,11 @@ public class MenuButton extends FrameLayout implements TintObserver {
         drawable.draw(canvas);
     }
 
+    @VisibleForTesting
+    public boolean getUseLightDrawablesForTesting() {
+        return mUseLightDrawables;
+    }
+
     @Override
     public void onTintChanged(ColorStateList tintList, boolean useLight) {
         ApiCompatibilityUtils.setImageTintList(mMenuImageButton, tintList);
