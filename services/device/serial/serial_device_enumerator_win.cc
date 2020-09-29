@@ -31,6 +31,7 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_devinfo.h"
+#include "components/device_event_log/device_event_log.h"
 #include "services/device/public/cpp/device_features.h"
 #include "third_party/re2/src/re2/re2.h"
 
@@ -317,10 +318,10 @@ void SerialDeviceEnumeratorWin::EnumeratePort(HDEVINFO dev_info,
     product_id_str = base::StringPrintf("%04X", product_id);
   }
 
-  VLOG(1) << "Found serial device: path=" << info->path
-          << " instance_id=" << info->device_instance_id
-          << " vid=" << vendor_id_str.value_or("(none)")
-          << " pid=" << product_id_str.value_or("(none)");
+  SERIAL_LOG(EVENT) << "Serial device added: path=" << info->path
+                    << " instance_id=" << info->device_instance_id
+                    << " vid=" << vendor_id_str.value_or("(none)")
+                    << " pid=" << product_id_str.value_or("(none)");
 
   paths_.insert(std::make_pair(*path, token));
   AddPort(std::move(info));

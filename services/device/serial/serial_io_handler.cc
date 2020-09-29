@@ -16,6 +16,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
+#include "components/device_event_log/device_event_log.h"
 
 #if defined(OS_CHROMEOS)
 #include "chromeos/dbus/permission_broker/permission_broker_client.h"
@@ -98,8 +99,8 @@ void SerialIoHandler::ReportPathOpenError(const std::string& error_name,
                                           const std::string& error_message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(open_complete_);
-  LOG(ERROR) << "Permission broker failed to open '" << port_
-             << "': " << error_name << ": " << error_message;
+  SERIAL_LOG(ERROR) << "Permission broker failed to open '" << port_
+                    << "': " << error_name << ": " << error_message;
   std::move(open_complete_).Run(false);
 }
 
@@ -143,8 +144,8 @@ void SerialIoHandler::FinishOpen(base::File file) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(open_complete_);
   if (!file.IsValid()) {
-    LOG(ERROR) << "Failed to open serial port: "
-               << base::File::ErrorToString(file.error_details());
+    SERIAL_LOG(ERROR) << "Failed to open serial port: "
+                      << base::File::ErrorToString(file.error_details());
     std::move(open_complete_).Run(false);
     return;
   }

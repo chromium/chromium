@@ -14,6 +14,7 @@
 #include "base/files/file_util.h"
 #include "base/posix/eintr_wrapper.h"
 #include "build/build_config.h"
+#include "components/device_event_log/device_event_log.h"
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
 #include <asm-generic/ioctls.h>
@@ -171,7 +172,7 @@ bool SerialIoHandlerPosix::ConfigurePortImpl() {
   struct termios config;
   if (tcgetattr(file().GetPlatformFile(), &config) != 0) {
 #endif
-    VPLOG(1) << "Failed to get port configuration";
+    SERIAL_PLOG(DEBUG) << "Failed to get port configuration";
     return false;
   }
 
@@ -277,7 +278,7 @@ bool SerialIoHandlerPosix::ConfigurePortImpl() {
 #else
   if (tcsetattr(file().GetPlatformFile(), TCSANOW, &config) != 0) {
 #endif
-    VPLOG(1) << "Failed to set port attributes";
+    SERIAL_PLOG(DEBUG) << "Failed to set port attributes";
     return false;
   }
 
@@ -285,7 +286,7 @@ bool SerialIoHandlerPosix::ConfigurePortImpl() {
   if (need_iossiospeed) {
     speed_t bitrate = options().bitrate;
     if (ioctl(file().GetPlatformFile(), IOSSIOSPEED, &bitrate) == -1) {
-      VPLOG(1) << "Failed to set custom baud rate";
+      SERIAL_PLOG(DEBUG) << "Failed to set custom baud rate";
       return false;
     }
   }
@@ -330,7 +331,7 @@ void SerialIoHandlerPosix::AttemptRead(bool within_read) {
                          mojom::SerialReceiveError::DEVICE_LOST);
         StopWatchingFileRead();
       } else {
-        VPLOG(1) << "Read failed";
+        SERIAL_PLOG(DEBUG) << "Read failed";
         RunReadCompleted(within_read, 0,
                          mojom::SerialReceiveError::SYSTEM_ERROR);
       }
@@ -387,7 +388,7 @@ void SerialIoHandlerPosix::OnFileCanWriteWithoutBlocking() {
         WriteCompleted(0, mojom::SerialSendError::DISCONNECTED);
         StopWatchingFileWrite();
       } else {
-        VPLOG(1) << "Write failed";
+        SERIAL_PLOG(DEBUG) << "Write failed";
         WriteCompleted(0, mojom::SerialSendError::SYSTEM_ERROR);
       }
     } else {
@@ -458,19 +459,19 @@ void SerialIoHandlerPosix::Flush(mojom::SerialPortFlushMode mode) const {
   }
 
   if (tcflush(file().GetPlatformFile(), queue_selector) != 0)
-    VPLOG(1) << "Failed to flush port";
+    SERIAL_PLOG(DEBUG) << "Failed to flush port";
 }
 
 void SerialIoHandlerPosix::Drain() {
   if (tcdrain(file().GetPlatformFile()) != 0)
-    VPLOG(1) << "Failed to drain port";
+    SERIAL_PLOG(DEBUG) << "Failed to drain port";
 }
 
 mojom::SerialPortControlSignalsPtr SerialIoHandlerPosix::GetControlSignals()
     const {
   int status;
   if (ioctl(file().GetPlatformFile(), TIOCMGET, &status) == -1) {
-    VPLOG(1) << "Failed to get port control signals";
+    SERIAL_PLOG(DEBUG) << "Failed to get port control signals";
     return mojom::SerialPortControlSignalsPtr();
   }
 
@@ -505,24 +506,24 @@ bool SerialIoHandlerPosix::SetControlSignals(
   }
 
   if (set && ioctl(file().GetPlatformFile(), TIOCMBIS, &set) != 0) {
-    VPLOG(1) << "Failed to set port control signals";
+    SERIAL_PLOG(DEBUG) << "Failed to set port control signals";
     return false;
   }
 
   if (clear && ioctl(file().GetPlatformFile(), TIOCMBIC, &clear) != 0) {
-    VPLOG(1) << "Failed to clear port control signals";
+    SERIAL_PLOG(DEBUG) << "Failed to clear port control signals";
     return false;
   }
 
   if (signals.has_brk) {
     if (signals.brk) {
       if (ioctl(file().GetPlatformFile(), TIOCSBRK, 0) != 0) {
-        VPLOG(1) << "Failed to set break";
+        SERIAL_PLOG(DEBUG) << "Failed to set break";
         return false;
       }
     } else {
       if (ioctl(file().GetPlatformFile(), TIOCCBRK, 0) != 0) {
-        VPLOG(1) << "Failed to clear break";
+        SERIAL_PLOG(DEBUG) << "Failed to clear break";
         return false;
       }
     }
@@ -539,7 +540,7 @@ mojom::SerialConnectionInfoPtr SerialIoHandlerPosix::GetPortInfo() const {
   struct termios config;
   if (tcgetattr(file().GetPlatformFile(), &config) == -1) {
 #endif
-    VPLOG(1) << "Failed to get port info";
+    SERIAL_PLOG(DEBUG) << "Failed to get port info";
     return mojom::SerialConnectionInfoPtr();
   }
 

@@ -17,6 +17,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "components/device_event_log/device_event_log.h"
 #include "device/udev_linux/udev.h"
 
 namespace device {
@@ -189,6 +190,11 @@ void SerialDeviceEnumeratorLinux::CreatePort(ScopedUdevDevicePtr device,
       udev_device_get_property_value(device.get(), "ID_SERIAL_SHORT");
   if (serial_number)
     info->serial_number = serial_number;
+
+  SERIAL_LOG(EVENT) << "Serial device added: path=" << info->path
+                    << " vid=" << (vendor_id ? vendor_id : "(none)")
+                    << " pid=" << (product_id ? product_id : "(none)")
+                    << " serial=" << info->serial_number.value_or("(none)");
 
   paths_.insert(std::make_pair(syspath, token));
   AddPort(std::move(info));

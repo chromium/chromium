@@ -27,6 +27,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "components/device_event_log/device_event_log.h"
 
 namespace device {
 
@@ -230,13 +231,15 @@ void SerialDeviceEnumeratorMac::AddDevices() {
     auto token = base::UnguessableToken::Create();
     info->token = token;
 
-    VLOG(1) << "Found serial device: dialin="
-            << dialin_device.value_or("(none)")
-            << " callout=" << callout_device.value_or("(none)")
-            << " vid=" << vendor_id_str.value_or("(none)")
-            << " pid=" << product_id_str.value_or("(none)")
-            << " usb_serial=" << info->serial_number.value_or("(none)")
-            << " usb_driver=" << info->usb_driver_name.value_or("(none)");
+    SERIAL_LOG(EVENT) << "Serial device added: dialin="
+                      << dialin_device.value_or("(none)")
+                      << " callout=" << callout_device.value_or("(none)")
+                      << " vid=" << vendor_id_str.value_or("(none)")
+                      << " pid=" << product_id_str.value_or("(none)")
+                      << " usb_serial="
+                      << info->serial_number.value_or("(none)")
+                      << " usb_driver="
+                      << info->usb_driver_name.value_or("(none)");
 
     entries_.insert({entry_id, token});
     AddPort(std::move(info));

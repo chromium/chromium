@@ -58,6 +58,7 @@ if (is_win || ((is_linux || is_chromeos) && use_udev) || is_mac) {
 
     deps = [
       "//base",
+      "//components/device_event_log",
       "//device/bluetooth:bluetooth",
       "//device/bluetooth/public/cpp",
       "//mojo/public/cpp/bindings",

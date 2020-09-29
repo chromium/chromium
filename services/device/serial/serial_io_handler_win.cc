@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/sequence_checker.h"
 #include "base/task/current_thread.h"
+#include "components/device_event_log/device_event_log.h"
 
 namespace device {
 
@@ -158,7 +159,7 @@ bool SerialIoHandlerWin::PostOpen() {
   COMMTIMEOUTS timeouts = {0};
   timeouts.ReadIntervalTimeout = 1;
   if (!::SetCommTimeouts(file().GetPlatformFile(), &timeouts)) {
-    VPLOG(1) << "Failed to set serial timeouts";
+    SERIAL_PLOG(DEBUG) << "Failed to set serial timeouts";
     return false;
   }
 
@@ -208,21 +209,21 @@ void SerialIoHandlerWin::CancelReadImpl() {
   DCHECK(file().IsValid());
 
   if (!PurgeComm(file().GetPlatformFile(), PURGE_RXABORT))
-    VPLOG(1) << "RX abort failed";
+    SERIAL_PLOG(DEBUG) << "RX abort failed";
 }
 
 void SerialIoHandlerWin::CancelWriteImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(file().IsValid());
   if (!PurgeComm(file().GetPlatformFile(), PURGE_TXABORT))
-    VPLOG(1) << "TX abort failed";
+    SERIAL_PLOG(DEBUG) << "TX abort failed";
 }
 
 bool SerialIoHandlerWin::ConfigurePortImpl() {
   DCB config = {0};
   config.DCBlength = sizeof(config);
   if (!GetCommState(file().GetPlatformFile(), &config)) {
-    VPLOG(1) << "Failed to get serial port info";
+    SERIAL_PLOG(DEBUG) << "Failed to get serial port info";
     return false;
   }
 
@@ -258,7 +259,7 @@ bool SerialIoHandlerWin::ConfigurePortImpl() {
   }
 
   if (!SetCommState(file().GetPlatformFile(), &config)) {
-    VPLOG(1) << "Failed to set serial port info";
+    SERIAL_PLOG(DEBUG) << "Failed to set serial port info";
     return false;
   }
   return true;
@@ -286,7 +287,8 @@ void SerialIoHandlerWin::OnIOCompleted(
                error == ERROR_DEVICE_REMOVED) {
       ReadCompleted(0, mojom::SerialReceiveError::DEVICE_LOST);
     } else {
-      VLOG(1) << "Read failed: " << logging::SystemErrorCodeToString(error);
+      SERIAL_LOG(DEBUG) << "Read failed: "
+                        << logging::SystemErrorCodeToString(error);
       ReadCompleted(0, mojom::SerialReceiveError::SYSTEM_ERROR);
     }
   } else if (context == write_context_.get()) {
@@ -298,7 +300,8 @@ void SerialIoHandlerWin::OnIOCompleted(
     } else if (error == ERROR_GEN_FAILURE) {
       WriteCompleted(0, mojom::SerialSendError::DISCONNECTED);
     } else {
-      VLOG(1) << "Write failed: " << logging::SystemErrorCodeToString(error);
+      SERIAL_LOG(DEBUG) << "Write failed: "
+                        << logging::SystemErrorCodeToString(error);
       WriteCompleted(0, mojom::SerialSendError::SYSTEM_ERROR);
       if (error == ERROR_GEN_FAILURE && IsReadPending()) {
         // For devices using drivers such as FTDI, CP2xxx, when device is
@@ -321,7 +324,7 @@ void SerialIoHandlerWin::OnIOCompleted(
 void SerialIoHandlerWin::ClearPendingError() {
   DWORD errors;
   if (!ClearCommError(file().GetPlatformFile(), &errors, nullptr)) {
-    VPLOG(1) << "Failed to clear communication error";
+    SERIAL_PLOG(DEBUG) << "Failed to clear communication error";
     return;
   }
 
@@ -357,19 +360,19 @@ void SerialIoHandlerWin::Flush(mojom::SerialPortFlushMode mode) const {
   }
 
   if (!PurgeComm(file().GetPlatformFile(), flags))
-    VPLOG(1) << "Failed to flush serial port";
+    SERIAL_PLOG(DEBUG) << "Failed to flush serial port";
 }
 
 void SerialIoHandlerWin::Drain() {
   if (!FlushFileBuffers(file().GetPlatformFile()))
-    VPLOG(1) << "Failed to drain serial port";
+    SERIAL_PLOG(DEBUG) << "Failed to drain serial port";
 }
 
 mojom::SerialPortControlSignalsPtr SerialIoHandlerWin::GetControlSignals()
     const {
   DWORD status;
   if (!GetCommModemStatus(file().GetPlatformFile(), &status)) {
-    VPLOG(1) << "Failed to get port control signals";
+    SERIAL_PLOG(DEBUG) << "Failed to get port control signals";
     return mojom::SerialPortControlSignalsPtr();
   }
 
@@ -385,18 +388,18 @@ bool SerialIoHandlerWin::SetControlSignals(
     const mojom::SerialHostControlSignals& signals) {
   if (signals.has_dtr && !EscapeCommFunction(file().GetPlatformFile(),
                                              signals.dtr ? SETDTR : CLRDTR)) {
-    VPLOG(1) << "Failed to configure DTR signal";
+    SERIAL_PLOG(DEBUG) << "Failed to configure data-terminal-ready signal";
     return false;
   }
   if (signals.has_rts && !EscapeCommFunction(file().GetPlatformFile(),
                                              signals.rts ? SETRTS : CLRRTS)) {
-    VPLOG(1) << "Failed to configure RTS signal";
+    SERIAL_PLOG(DEBUG) << "Failed to configure request-to-send signal";
     return false;
   }
   if (signals.has_brk &&
       !EscapeCommFunction(file().GetPlatformFile(),
                           signals.brk ? SETBREAK : CLRBREAK)) {
-    VPLOG(1) << "Failed to configure break signal";
+    SERIAL_PLOG(DEBUG) << "Failed to configure break signal";
     return false;
   }
 
@@ -407,7 +410,7 @@ mojom::SerialConnectionInfoPtr SerialIoHandlerWin::GetPortInfo() const {
   DCB config = {0};
   config.DCBlength = sizeof(config);
   if (!GetCommState(file().GetPlatformFile(), &config)) {
-    VPLOG(1) << "Failed to get serial port info";
+    SERIAL_PLOG(DEBUG) << "Failed to get serial port info";
     return mojom::SerialConnectionInfoPtr();
   }
   auto info = mojom::SerialConnectionInfo::New();

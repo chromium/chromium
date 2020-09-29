@@ -37,6 +37,7 @@ const char* kLogTypeHidDesc = "HID";
 const char* kLogTypeMemoryDesc = "Memory";
 const char* kLogTypePrinterDesc = "Printer";
 const char* kLogTypeFidoDesc = "FIDO";
+const char* kLogTypeSerialDesc = "Serial";
 
 enum class ShowTime {
   kNone,
@@ -64,6 +65,8 @@ std::string GetLogTypeString(LogType type) {
       return kLogTypePrinterDesc;
     case LOG_TYPE_FIDO:
       return kLogTypeFidoDesc;
+    case LOG_TYPE_SERIAL:
+      return kLogTypeSerialDesc;
     case LOG_TYPE_UNKNOWN:
       break;
   }

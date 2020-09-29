@@ -8,6 +8,7 @@
 
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
+#include "components/device_event_log/device_event_log.h"
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
 #include "services/device/serial/serial_device_enumerator_linux.h"
@@ -91,6 +92,9 @@ void SerialDeviceEnumerator::RemovePort(base::UnguessableToken token) {
   auto it = ports_.find(token);
   DCHECK(it != ports_.end());
   mojom::SerialPortInfoPtr port = std::move(it->second);
+
+  SERIAL_LOG(EVENT) << "Serial device removed: path=" << port->path;
+
   ports_.erase(it);
 
   for (auto& observer : observer_list_)

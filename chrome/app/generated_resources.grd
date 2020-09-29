@@ -9970,6 +9970,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_DEVICE_LOG_TYPE_FIDO" desc="Checkbox to enable showing events related to security keys, which is physical devices used by users to log in to websites. It's called FIDO in English because that's the name of the standards body that defines security keys">
         FIDO
       </message>
+      <message name="IDS_DEVICE_LOG_TYPE_SERIAL" desc="Checkbox to enable showing events related to serial devices">
+        Serial
+      </message>
       <message name="IDS_DEVICE_LOG_FILEINFO" desc="File info checkbox in device event log">
         File Info
       </message>
