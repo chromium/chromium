@@ -4410,7 +4410,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, BadCertFollowedByGoodCert) {
 
   Profile* profile = Profile::FromBrowserContext(tab->GetBrowserContext());
   StatefulSSLHostStateDelegate* state =
-      reinterpret_cast<StatefulSSLHostStateDelegate*>(
+      static_cast<StatefulSSLHostStateDelegate*>(
           profile->GetSSLHostStateDelegate());
 
   // First check that frame requests revoke the decision.
@@ -4457,7 +4457,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, BadCertFollowedByBlobUrl) {
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
   Profile* profile = Profile::FromBrowserContext(tab->GetBrowserContext());
   StatefulSSLHostStateDelegate* state =
-      reinterpret_cast<StatefulSSLHostStateDelegate*>(
+      static_cast<StatefulSSLHostStateDelegate*>(
           profile->GetSSLHostStateDelegate());
 
   // Proceed through the interstitial, accepting the broken cert.
@@ -8132,7 +8132,7 @@ IN_PROC_BROWSER_TEST_F(RecurrentInterstitialBrowserTest,
       net::ERR_CERTIFICATE_TRANSPARENCY_REQUIRED);
 
   StatefulSSLHostStateDelegate* state =
-      reinterpret_cast<StatefulSSLHostStateDelegate*>(
+      static_cast<StatefulSSLHostStateDelegate*>(
           browser()->profile()->GetSSLHostStateDelegate());
   state->ResetRecurrentErrorCountForTesting();
 
