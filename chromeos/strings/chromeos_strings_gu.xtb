@@ -5,6 +5,7 @@
 <translation id="1195447618553298278">અજ્ઞાત ભૂલ.</translation>
 <translation id="1413240736185167732">નિષ્ફળ થયું - ફિલ્ટર નિષ્ફળ થયું</translation>
 <translation id="1468664791493211953">ઑફરો</translation>
+<translation id="1478594628797167447">સ્કૅનર</translation>
 <translation id="1482734542997480527"><ph name="ENROLLMENT_DOMAIN" /> તમારા ડિવાઇસને મેનેજ કરે છે અને કદાચ તમારી પ્રવૃત્તિનું નિરીક્ષણ કરી શકે છે.</translation>
 <translation id="150962533380566081">અમાન્ય PUK.</translation>
 <translation id="1510238584712386396">લૉન્ચર</translation>
@@ -19,10 +20,12 @@
 <translation id="2161394479394250669">પ્રિન્ટ જોબ રદ કરો</translation>
 <translation id="2338501278241028356">નજીકનાં ડિવાઇસ શોધવા માટે Bluetooth ચાલુ કરો</translation>
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> પ્રયત્ન બાકી</translation>
+<translation id="2517472476991765520">સ્કૅન કરો</translation>
 <translation id="2805756323405976993">એપ્સ</translation>
 <translation id="2872961005593481000">શટ ડાઉન કરો</translation>
 <translation id="3008341117444806826">રિફ્રેશ કરો</translation>
 <translation id="3091839911843451378">નિષ્ફળ થયું - પ્રિન્ટર બંધ થઈ ગયું છે</translation>
+<translation id="3246869037381808805">1 દિવસ કરતાં જૂના પ્રિન્ટ કાર્યો કાઢી નાખવામાં આવશે</translation>
 <translation id="3268178239013324452">નિષ્ફળ રહ્યું - પ્રિન્ટરનું ઢાંકણ ખૂલ્લું છે</translation>
 <translation id="3369013195428705271">શું તમે ખરેખર પ્રિન્ટનો બધો ઇતિહાસ સાફ કરવા માગો છો? તમારી હાલની પ્રિન્ટ જોબ સાફ કરવામાં આવશે નહીં.</translation>
 <translation id="3456078764689556234"><ph name="TOTAL_PAGES" />માંથી <ph name="PRINTED_PAGES" /> પેજ પ્રિન્ટ કર્યા.</translation>
@@ -33,6 +36,7 @@
 <translation id="38114475217616659">બધો ઇતિહાસ સાફ કરો</translation>
 <translation id="3820172043799983114">અમાન્ય PIN.</translation>
 <translation id="3838338534323494292">નવો પાસવર્ડ</translation>
+<translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> દિવસ કરતાં જૂના પ્રિન્ટ કાર્યો કાઢી નાખવામાં આવશે</translation>
 <translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> આ ડિવાઇસને મેનેજ કરે છે અને મુલાકાત લીધેલા વેબપેજ, પાસવર્ડ અને ઇમેઇલ સહિત, બધી વપરાશકર્તા પ્રવૃત્તિઓનો ઍક્સેસ ધરાવે છે.</translation>
 <translation id="4003384961948020559">નિષ્ફળ થયું - પ્રિન્ટરનું આઉટપુટ ભરાઈ ગયું છે</translation>
 <translation id="4027485274696301677"><ph name="ENROLLMENT_DOMAIN" /> દ્વારા <ph name="DEVICE_TYPE" />ને મેનેજ કરવામાં આવે છે. વ્યવસ્થાપકો દ્વારા ડિવાઇસને રિમોટલી કન્ફિગર કરવામાં આવી શકે છે.</translation>
@@ -69,6 +73,7 @@
 <translation id="649050271426829538">બંધ - કાગળ ફસાયો</translation>
 <translation id="6517239166834772319">શોધખોળ કરો</translation>
 <translation id="6564646048574748301">નિષ્ફળ થયું - પ્રિન્ટરથી કનેક્ટ થઈ શકાતું નથી</translation>
+<translation id="6620487321149975369">જ્યાં સુધી પ્રિન્ટ કાર્યોને મેન્યુઅલી કાઢી નાખવામાં નહીં આવે, ત્યાં સુધી તે ઇતિહાસમાં દેખાશે</translation>
 <translation id="6643016212128521049">સાફ કરો</translation>
 <translation id="6747215703636344499">બંધ - આઉટપુટ ભરાઈ ગયું છે</translation>
 <translation id="7162487448488904999">Gallery</translation>

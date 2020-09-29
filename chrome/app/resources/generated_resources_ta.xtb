@@ -2253,7 +2253,6 @@
 <translation id="3639220004740062347">படித்தல் பயன்முறையிலிருந்து வெளியேறு</translation>
 <translation id="3640214691812501263"><ph name="USER_NAME" />க்கு "<ph name="EXTENSION_NAME" />"ஐச் சேர்க்கவா?</translation>
 <translation id="3640613767643722554">உங்கள் குரலை அடையாளம் காண அசிஸ்டண்ட்டுக்குக் கற்றுத்தரவும்</translation>
-<translation id="3643014427358482789">ADB பிழைதிருத்தத்தை <ph name="DOMAIN" /> முடக்குவதால் உங்கள் <ph name="DEVICE_TYPE" /> மீட்டமைக்கப்படும். அதை மீண்டும் தொடங்கும் முன்னர் உங்கள் கோப்புகளைக் காப்புப் பிரதி எடுக்கவும்.</translation>
 <translation id="3643637292669952403">எனது இருப்பிடத் தகவலைத் தளங்கள் பார்ப்பதைத் தடு</translation>
 <translation id="3645372836428131288">கைரேகையின் வேறொரு பகுதியைப் பதிவுசெய்ய, விரலைக் கொஞ்சம் நகர்த்தவும்.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> சாதனத்திலிருந்து <ph name="ATTACHMENTS" /> வந்துள்ளது}other{<ph name="DEVICE_NAME" /> சாதனத்திலிருந்து <ph name="ATTACHMENTS" /> வந்துள்ளது}}</translation>
@@ -2490,7 +2489,7 @@
 <translation id="3894123633473837029">சமீபத்தில் அசிஸ்டண்ட்டைப் பயன்படுத்தித் தேடியவற்றையும் Sherlog மூலம் சேர். இதில் உங்கள் அடையாளம், இருப்பிடம் மற்றும் பிழைத்திருத்தத் தகவல் ஆகியவை இருக்கக்கூடும். <ph name="BEGIN_LINK" />மேலும் அறிக<ph name="END_LINK" /></translation>
 <translation id="3894427358181296146">கோப்புறையைச் சேர்</translation>
 <translation id="3894770151966614831">Google கணக்கிற்கு நகர்த்தவா?</translation>
-<translation id="3895076768659607631">&amp;தேடல் இன்ஜின்களை நிர்வகி...</translation>
+<translation id="3895076768659607631">&amp;தேடல் இன்ஜின்களை நிர்வகிக்கவும்...</translation>
 <translation id="3895090224522145010">Kerberos பயனர்பெயர்</translation>
 <translation id="389589731200570180">விருந்தினர்களுடன் பகிரவும்</translation>
 <translation id="3898233949376129212">சாதனத்தின் மொழி</translation>
@@ -3900,7 +3899,6 @@
 <translation id="5632566673632479864">உங்கள் <ph name="EMAIL" /> கணக்கு இனி முதன்மைக் கணக்காகச் செயல்பட அனுமதிக்கப்படாது. இந்தக் கணக்கை <ph name="DOMAIN" /> நிர்வகிப்பதால், உங்கள் புக்மார்க்குகள், வரலாறு, கடவுச்சொற்கள் மற்றும் பிற அமைப்புகள் இந்தச் சாதனத்திலிருந்து அழிக்கப்படும்.</translation>
 <translation id="5632592977009207922">பதிவிறக்குகிறது, <ph name="PERCENT_REMAINING" />% மீதமுள்ளது</translation>
 <translation id="563371367637259496">மொபைல்</translation>
-<translation id="563496044070985734">உங்கள் மொழி அமைப்புகளைப் பொறுத்தே எழுத்துப் பிழை சரிபார்ப்பானை ஆதரிக்கும் மொழிகள் கிடைக்கும்</translation>
 <translation id="563535393368633106">அணுகும் முன் கேள் (பரிந்துரைக்கப்படுகிறது)</translation>
 <translation id="5636996382092289526"><ph name="NETWORK_ID" /> ஐப் பயன்படுத்த, நீங்கள் முதலில் <ph name="LINK_START" />நெட்வொர்க்கின் உள்நுழைவுப் பக்கத்தைப்<ph name="LINK_END" /> பார்வையிட வேண்டும். இது சில வினாடிகளில் தானாகவே திறக்கும். அது நடைபெறவில்லை எனில், நெட்வொர்க்கைப் பயன்படுத்த முடியாது.</translation>
 <translation id="5637476008227280525">மொபைல் டேட்டாவை இயக்கு</translation>
@@ -4785,7 +4783,6 @@
 <translation id="6704062477274546131">DNS ரெசல்யூஷன்</translation>
 <translation id="6706210727756204531">வரம்பு</translation>
 <translation id="6707389671160270963">SSL க்ளையன்ட் சான்றிதழ்</translation>
-<translation id="670893696722244877">மொழிகள்/உள்ளீட்டு முறைகளின்படி தேடுக</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> &amp; 1 பிற தாவல்}other{<ph name="PAGE_TITLE" /> &amp; # பிற தாவல்கள்}}</translation>
 <translation id="6709133671862442373">செய்திகள்</translation>
 <translation id="6709357832553498500"><ph name="EXTENSIONNAME" />ஐப் பயன்படுத்தி இணை</translation>
@@ -4840,7 +4837,7 @@
 <translation id="6777817260680419853">திசைதிருப்புவது தடுக்கப்பட்டது</translation>
 <translation id="6778737459546443941">இன்னும் உங்கள் பெற்றோர் அனுமதிக்கவில்லை</translation>
 <translation id="677965093459947883">மிகச் சிறியது</translation>
-<translation id="6781005693196527806">&amp;தேடல் இன்ஜின்களை நிர்வகி...</translation>
+<translation id="6781005693196527806">&amp;தேடல் இன்ஜின்களை நிர்வகிக்கவும்...</translation>
 <translation id="6781284683813954823">Doodle இணைப்பு</translation>
 <translation id="6781978626986383437">Linux காப்புப் பிரதி ரத்துசெய்யப்பட்டது</translation>
 <translation id="6782067259631821405">தவறான பின்</translation>
@@ -5685,7 +5682,6 @@
 
 
 <ph name="EXTENSION_NAME" /></translation>
-<translation id="7788444488075094252">மொழிகள் மற்றும் உள்ளீடு</translation>
 <translation id="7788668840732459509">நிலை:</translation>
 <translation id="7789963078219276159">தொடக்கப் பக்கத்தின் பின்னணித் தோற்றம் <ph name="CATEGORY" /> வகைக்கு மாற்றப்பட்டது.</translation>
 <translation id="7791543448312431591">சேர்</translation>
@@ -5976,7 +5972,7 @@
 <translation id="80974698889265265">பின்கள் பொருந்தவில்லை</translation>
 <translation id="809792523045608178">நீட்டிப்பு ஒன்றில் இருந்து பெற்ற ப்ராக்ஸி அமைப்புகளை <ph name="IDS_SHORT_PRODUCT_NAME" /> பயன்படுத்துகிறது</translation>
 <translation id="8097959162767603171">முதலில் நிர்வாகி கன்சோல் Chrome சாதனப் பட்டியலில் உள்ள சேவை விதிமுறைகளை உங்கள் நிர்வாகி ஏற்க வேண்டும்.</translation>
-<translation id="810068641062493918"><ph name="LANGUAGE" /> தேர்ந்தெடுக்கப்பட்டது. தேர்வுநீக்க Search &amp; Space விசைகளைச் சேர்த்து அழுத்தவும்.</translation>
+<translation id="810068641062493918"><ph name="LANGUAGE" /> தேர்ந்தெடுக்கப்பட்டது. தேர்வுநீக்க Assistant பட்டன், Space ஆகியவற்றை ஒன்றாக அழுத்தவும்.</translation>
 <translation id="8101987792947961127">அடுத்த மறுதொடக்கத்திற்கு பவர்வாஷ் தேவைப்படுகிறது</translation>
 <translation id="8102139037507939978">system_logs.txt கோப்பில் இருக்கும், தனிப்பட்ட ஒருவரை அடையாளம் காணக்கூடியத் தகவலைக் கோடிட்டு மறைக்கும்.</translation>
 <translation id="8102159139658438129">இணைக்கப்பட்ட உங்கள் ஃபோனுக்கான விருப்பத்தேர்வுகளைப் பார்க்க, <ph name="LINK_BEGIN" />அமைப்புகளுக்குச்<ph name="LINK_END" /> செல்லவும்</translation>
@@ -6273,7 +6269,6 @@
 <translation id="8467326454809944210">மற்றொரு மொழியைத் தேர்வுசெய்க</translation>
 <translation id="8470214316007448308">பிறர்</translation>
 <translation id="8470513973197838199"><ph name="ORIGIN" />க்கான சேமித்த கடவுச்சொற்கள்</translation>
-<translation id="8471256130228705232">ADB பிழைதிருத்தத்தை <ph name="DOMAIN" /> முடக்குகிறது. இதனால் <ph name="DEVICE_TYPE" /> சாதனம் 24 மணிநேரத்தில் மீட்டமைக்கப்படும். உங்களுக்குத் தேவையான கோப்புகளைக் காப்புப் பிரதி எடுத்துக்கொள்ளவும்.</translation>
 <translation id="8471525937465764768">வழக்கமாக ஆவணத்தைப் பிரிண்ட் செய்தல், அதைச் சேமிப்பகச் சாதனத்தில் சேமித்தல் போன்ற அம்சங்களுக்காக USB சாதனங்களுடன் தளங்கள் இணையும்</translation>
 <translation id="8472623782143987204">வன்பொருளைச் சார்ந்தது</translation>
 <translation id="8473863474539038330">முகவரிகள் மற்றும் பல</translation>
@@ -6803,11 +6798,12 @@
 <translation id="9078316009970372699">உடனடி இணைப்பு முறையை முடக்கு</translation>
 <translation id="9084064520949870008">சாளரமாகத் திற</translation>
 <translation id="9085256200913095638">தேர்வுசெய்துள்ள தாவலை நகலெடுக்கவும்</translation>
-<translation id="9085776959277692427"><ph name="LANGUAGE" /> தேர்ந்தெடுக்கப்படவில்லை. தேர்ந்தெடுக்க Search &amp; Space விசைகளைச் சேர்த்து அழுத்தவும்.</translation>
+<translation id="9085776959277692427"><ph name="LANGUAGE" /> தேர்ந்தெடுக்கப்படவில்லை. தேர்ந்தெடுக்க Assistant பட்டன், Space ஆகியவற்றை ஒன்றாக அழுத்தவும்.</translation>
 <translation id="9087949559523851360">வரம்பிடப்பட்ட பயனரைச் சேர்த்தல்</translation>
 <translation id="9088234649737575428">நிறுவனக் கொள்கையால் <ph name="PLUGIN_NAME" /> முடக்கப்பட்டுள்ளது</translation>
 <translation id="9088446193279799727">Linuxஸை உள்ளமைக்க இயலவில்லை. இணையத்துடன் இணைத்து மீண்டும் முயலவும்.</translation>
 <translation id="9088917181875854783">"<ph name="DEVICE_NAME" />" இல் காண்பிக்கப்படும் இந்த கடவுவிசையை உறுதிப்படுத்துக:</translation>
+<translation id="9089416786594320554">உள்ளீட்டு முறைகள்</translation>
 <translation id="9093429538970210897">மேம்படுத்தலை நிறைவுசெய்ய முடியாமல் போகும்பட்சத்தில் கோப்புகளைக் காப்புப் பிரதி எடுத்துக்கொள்ளவும். மேம்படுத்தலைத் தொடங்கினால் Linux (பீட்டா) ஷட்-டவுன் செய்யப்படும். தொடர்வதற்கு முன்பு திறந்துள்ள கோப்புகளைச் சேமிக்கவும்.</translation>
 <translation id="9094033019050270033">கடவுச்சொல்லைப் புதுப்பி</translation>
 <translation id="9094038138851891550">பயனர்பெயர் செல்லாதது</translation>

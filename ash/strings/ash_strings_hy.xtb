@@ -104,7 +104,6 @@
 <translation id="1962969542251276847">Կողպել էկրանը</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Ողջույն, <ph name="USERNAME" /></translation>
-<translation id="1975500003782052650">Վերջին ներբեռնումները</translation>
 <translation id="1978498689038657292">Տեքսի մուտքագրում</translation>
 <translation id="1993072747612765854">Իմացեք ավելին <ph name="SYSTEM_APP_NAME" /> հավելվածի վերջին թարմացման մասին</translation>
 <translation id="1995660704900986789">Անջատել</translation>
@@ -376,6 +375,7 @@
 <translation id="4710243778082831592">IME կարգավորումներ</translation>
 <translation id="4731797938093519117">Ծնողի մուտք</translation>
 <translation id="4734965478015604180">Հորիզոնական</translation>
+<translation id="4759238208242260848">Ներբեռնումներ</translation>
 <translation id="4774338217796918551">Սարքը հասանելի կլինի վաղը, <ph name="COME_BACK_TIME" />։</translation>
 <translation id="4776917500594043016">Գաղտնաբառ <ph name="USER_EMAIL_ADDRESS" />-ի համար</translation>
 <translation id="4778095205580009397">Google Օգնականը հասանելի չէ դեմո աշխատաշրջանում։</translation>

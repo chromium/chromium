@@ -104,7 +104,6 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="1962969542251276847">Zaključaj zaslon</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Zdravo, <ph name="USERNAME" /></translation>
-<translation id="1975500003782052650">Nedavna preuzimanja</translation>
 <translation id="1978498689038657292">Unos teksta</translation>
 <translation id="1993072747612765854">Saznajte više o najnovijem ažuriranju za aplikaciju <ph name="SYSTEM_APP_NAME" /></translation>
 <translation id="1995660704900986789">Isključi</translation>
@@ -153,7 +152,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="2435457462613246316">Prikaži lozinku</translation>
 <translation id="2473177541599297363">Potvrdite rezoluciju</translation>
 <translation id="2475982808118771221">Došlo je do greške</translation>
-<translation id="2479579251444854687">Prevucite prema gore s tri prsta da otvorite pregled ili prema dolje da ga zatvorite.</translation>
+<translation id="2479579251444854687">Prevucite prema gore s tri prsta da otvorite Pregled ili prema dolje da ga zatvorite.</translation>
 <translation id="2482878487686419369">Obavještenja</translation>
 <translation id="2484513351006226581">Pritisnite <ph name="KEYBOARD_SHORTCUT" /> da promijenite raspored tastature.</translation>
 <translation id="2501920221385095727">Ljepljive tipke</translation>
@@ -198,6 +197,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="2996462380875591307">Omogućeno je priključeno uvećalo. Pritisnite ponovo Ctrl + tipku za pretraživanje + D da ga isključite.</translation>
 <translation id="3000461861112256445">Mono zvuk</translation>
 <translation id="3009178788565917040">Izlaz</translation>
+<translation id="3025081209054535615">Otkvačite globalne medijske kontrole s police</translation>
 <translation id="3033545621352269033">Uključeno</translation>
 <translation id="3038571455154067151">Da se prijavite, unesite kôd za pristup roditelja za Family Link</translation>
 <translation id="3045488863354895414">Dobar dan,</translation>
@@ -376,6 +376,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="4710243778082831592">Postavke za IME</translation>
 <translation id="4731797938093519117">Pristup roditelja</translation>
 <translation id="4734965478015604180">Horizontalno</translation>
+<translation id="4759238208242260848">Preuzimanja</translation>
 <translation id="4774338217796918551">Vratite se sutra u <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776917500594043016">Lozinka za račun <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4778095205580009397">Google Asistent nije dostupan u demo sesiji.</translation>
@@ -383,6 +384,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="4804818685124855865">Prekini vezu</translation>
 <translation id="4814539958450445987">Ekran za prijavu</translation>
 <translation id="4831034276697007977">Jeste li sigurni da želite isključiti automatske klikove?</translation>
+<translation id="4836108105469522644">Uključite Obavijesti Android telefona</translation>
 <translation id="4849058404725798627">Istakni objekat fokusom tastature</translation>
 <translation id="485592688953820832">Nema radnje (pauza)</translation>
 <translation id="4868492592575313542">aktivirano</translation>
@@ -696,6 +698,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="8297006494302853456">Slabo</translation>
 <translation id="8308637677604853869">Prethodni meni</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
+<translation id="8349293353728876872">Prikvačite globalne medijske kontrole na policu</translation>
 <translation id="8351131234907093545">Napravite bilješku</translation>
 <translation id="8371779926711439835">Slovo unaprijed</translation>
 <translation id="8375916635258623388">Uređaj <ph name="DEVICE_NAME" /> i vaš telefon će se povezati automatski</translation>

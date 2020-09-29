@@ -5,6 +5,7 @@
 <translation id="1195447618553298278">Nepoznata greška.</translation>
 <translation id="1413240736185167732">Nije uspelo – filter je otkazao</translation>
 <translation id="1468664791493211953">Ponude</translation>
+<translation id="1478594628797167447">Skener</translation>
 <translation id="1482734542997480527"><ph name="ENROLLMENT_DOMAIN" /> upravlja ovim uređajem i može da prati vaše aktivnosti.</translation>
 <translation id="150962533380566081">Nevažeći PUK.</translation>
 <translation id="1510238584712386396">Pokretač</translation>
@@ -19,10 +20,12 @@
 <translation id="2161394479394250669">Otkaži zadatak štampanja</translation>
 <translation id="2338501278241028356">Uključite Bluetooth da biste otkrili uređaje u blizini</translation>
 <translation id="2375079107209812402">Preostali pokušaji: <ph name="ATTEMPTS_LEFT" /></translation>
+<translation id="2517472476991765520">Skeniraj</translation>
 <translation id="2805756323405976993">Aplikacije</translation>
 <translation id="2872961005593481000">Isključi</translation>
 <translation id="3008341117444806826">OSVEŽI</translation>
 <translation id="3091839911843451378">Nije uspelo – zaustavljeno je</translation>
+<translation id="3246869037381808805">Zadaci štampanja stariji od 1 dana se uklanjaju</translation>
 <translation id="3268178239013324452">Nije uspelo – vrata su otvorena</translation>
 <translation id="3369013195428705271">Želite li stvarno da obrišete celu istoriju štampanja? Zadaci štampanja koji su u toku se ne brišu.</translation>
 <translation id="3456078764689556234">Odštampanih stranica: <ph name="PRINTED_PAGES" /> od <ph name="TOTAL_PAGES" />.</translation>
@@ -33,6 +36,7 @@
 <translation id="38114475217616659">Obriši svu istoriju</translation>
 <translation id="3820172043799983114">Nevažeći PIN.</translation>
 <translation id="3838338534323494292">Nova lozinka</translation>
+<translation id="39823212440917567">Zadaci štampanja stariji od <ph name="NUMBER_OF_DAYS" /> dana se uklanjaju</translation>
 <translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> upravlja ovim uređajem i ima pristup svim aktivnostima korisnika, uključujući posećene veb-stranice, lozinke i imejlove.</translation>
 <translation id="4003384961948020559">Nije uspelo – izlaz je pun</translation>
 <translation id="4027485274696301677"><ph name="ENROLLMENT_DOMAIN" /> upravlja ovim <ph name="DEVICE_TYPE" /> uređajem. Administratori mogu da konfigurišu uređaj daljinski.</translation>
@@ -70,6 +74,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="649050271426829538">Zaustavljeno – papir je zaglavljen</translation>
 <translation id="6517239166834772319">Istražite</translation>
 <translation id="6564646048574748301">Nije uspelo – štampač nije dostupan</translation>
+<translation id="6620487321149975369">Zadaci štampanja će se pojaviti u istoriji ako ih ne uklonite ručno</translation>
 <translation id="6643016212128521049">Obriši</translation>
 <translation id="6747215703636344499">Zaustavljeno – posuda za odštampani materijal je puna</translation>
 <translation id="7162487448488904999">Galerija</translation>

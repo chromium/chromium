@@ -2252,7 +2252,6 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="3639220004740062347">Saír do modo de lector</translation>
 <translation id="3640214691812501263">Queres engadir "<ph name="EXTENSION_NAME" />" para <ph name="USER_NAME" />?</translation>
 <translation id="3640613767643722554">Adestra o Asistente para que recoñeza a túa voz</translation>
-<translation id="3643014427358482789"><ph name="DOMAIN" /> vai desactivar a depuración de ADB, o cal provocará que se restableza o dispositivo (<ph name="DEVICE_TYPE" />). Antes de reinicialo, fai unha copia de seguranza dos ficheiros.</translation>
 <translation id="3643637292669952403">Impedir que os sitios consulten a túa localización</translation>
 <translation id="3645372836428131288">Move lixeiramente o dedo para capturar unha parte diferente da impresión dixital.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{Recibiches <ph name="ATTACHMENTS" /> deste dispositivo: <ph name="DEVICE_NAME" />}other{Recibiches <ph name="ATTACHMENTS" /> deste dispositivo: <ph name="DEVICE_NAME" />}}</translation>
@@ -2804,7 +2803,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="428565720843367874">O software antivirus fallou inesperadamente durante a exploración deste ficheiro.</translation>
 <translation id="4287099557599763816">Lector de pantalla</translation>
 <translation id="4289372044984810120">Xestiona as túas contas aquí. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
-<translation id="4289540628985791613">Descrición xeral</translation>
+<translation id="4289540628985791613">Visión xeral</translation>
 <translation id="4295072614469448764">A aplicación está dispoñible no terminal. Tamén pode haber unha icona no menú de aplicacións.</translation>
 <translation id="4295979599050707005">Volve iniciar sesión para confirmar que se pode utilizar a túa conta <ph name="USER_EMAIL" /> cos sitios web, aplicacións e extensións en Chrome e Google Play. Tamén podes quitar esta conta. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
 <translation id="4296575653627536209">Engadir usuario supervisado</translation>
@@ -3898,7 +3897,6 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="5632566673632479864">A túa conta <ph name="EMAIL" /> xa non é a principal. Dado que a xestiona <ph name="DOMAIN" />, eliminaranse deste dispositivo os teus marcadores, historial, contrasinais e outras opcións de configuración.</translation>
 <translation id="5632592977009207922">Descargando, porcentaxe restante: <ph name="PERCENT_REMAINING" /> %</translation>
 <translation id="563371367637259496">Móbil</translation>
-<translation id="563496044070985734">Os idiomas dispoñibles para o corrector ortográfico baséanse na túa configuración de idiomas</translation>
 <translation id="563535393368633106">Preguntar antes de acceder (recomendado)</translation>
 <translation id="5636996382092289526">Para utilizar <ph name="NETWORK_ID" /> é posible que primeiro necesites <ph name="LINK_START" />visitar a páxina de inicio de sesión da rede<ph name="LINK_END" />, que se abrirá automaticamente dentro duns segundos. De non ser así, a rede non se poderá usar.</translation>
 <translation id="5637476008227280525">Activación/desactivación de datos móbiles</translation>
@@ -4783,7 +4781,6 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="6704062477274546131">Resolución de DNS</translation>
 <translation id="6706210727756204531">Alcance</translation>
 <translation id="6707389671160270963">Certificado de cliente SSL</translation>
-<translation id="670893696722244877">Busca idiomas ou métodos de introdución de texto</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> e 1 pestana máis}other{<ph name="PAGE_TITLE" /> e # pestanas máis}}</translation>
 <translation id="6709133671862442373">Noticias</translation>
 <translation id="6709357832553498500">Conectar a través de <ph name="EXTENSIONNAME" /></translation>
@@ -5683,7 +5680,6 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 
 
 <ph name="EXTENSION_NAME" /></translation>
-<translation id="7788444488075094252">Idiomas e introdución de texto</translation>
 <translation id="7788668840732459509">Posición:</translation>
 <translation id="7789963078219276159">O fondo da páxina de inicio cambiouse por <ph name="CATEGORY" />.</translation>
 <translation id="7791543448312431591">Engadir</translation>
@@ -6270,7 +6266,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8467326454809944210">Escoller outro idioma</translation>
 <translation id="8470214316007448308">Outras persoas</translation>
 <translation id="8470513973197838199">Gardáronse os contrasinais para <ph name="ORIGIN" /></translation>
-<translation id="8471256130228705232"><ph name="DOMAIN" /> vai desactivar a depuración de ADB. Esta acción restablecerá o dispositivo (<ph name="DEVICE_TYPE" />) en 24 horas. Crea copias de seguranza dos ficheiros que queiras conservar.</translation>
 <translation id="8471525937465764768">Os sitios adoitan conectarse aos dispositivos USB para ofrecerche determinadas funcións (por exemplo, imprimir documentos ou gardar información nun dispositivo de almacenamento)</translation>
 <translation id="8472623782143987204">teclas de hardware</translation>
 <translation id="8473863474539038330">Enderezos e moito máis</translation>
@@ -6805,6 +6800,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="9088234649737575428"><ph name="PLUGIN_NAME" /> está bloqueado pola política da empresa</translation>
 <translation id="9088446193279799727">Non se puido configurar Linux. Conéctate a Internet e téntao de novo.</translation>
 <translation id="9088917181875854783">Confirma que esta clave de acceso se mostra en "<ph name="DEVICE_NAME" />":</translation>
+<translation id="9089416786594320554">Métodos de entrada</translation>
 <translation id="9093429538970210897">É recomendable facer unha copia de seguranza dos ficheiros en caso de que non se poida completar a actualización. Cando esta comece, pecharase Linux (Beta). Antes de continuar, garda os ficheiros que teñas abertos.</translation>
 <translation id="9094033019050270033">Actualizar contrasinal</translation>
 <translation id="9094038138851891550">O nome de usuario non é válido</translation>

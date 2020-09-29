@@ -2250,7 +2250,6 @@
 <translation id="3639220004740062347">කියවන ප්‍රකාරයෙන් ඉවත් වන්න</translation>
 <translation id="3640214691812501263"><ph name="USER_NAME" /> සඳහා "<ph name="EXTENSION_NAME" />" එක් කරන්නද?</translation>
 <translation id="3640613767643722554">ඔබේ හඬ හඳුනා ගැනීමට ඔබේ සහකරුට උගන්වන්න</translation>
-<translation id="3643014427358482789"><ph name="DOMAIN" /> ADB නිදොස් කිරීම අබල කරයි, එය ඔබේ <ph name="DEVICE_TYPE" /> යළි සකසනු ඇත. යළි ඇරඹීමට පෙර ඔබේ ගොනු උපස්ථ කරන්න.</translation>
 <translation id="3643637292669952403">ඔබගේ ස්ථානය දැකීමෙන් අඩවි අවහිර කරන්න</translation>
 <translation id="3645372836428131288">ඇඟිලි සලකුණේ වෙනස් කොටසක් ග්‍රහණයට මඳක් චලනය වන්න</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> වෙතින් <ph name="ATTACHMENTS" /> ලැබුණා}one{<ph name="DEVICE_NAME" /> වෙතින් <ph name="ATTACHMENTS" /> ලැබුණා}other{<ph name="DEVICE_NAME" /> වෙතින් <ph name="ATTACHMENTS" /> ලැබුණා}}</translation>
@@ -3898,7 +3897,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5632566673632479864">ඔබේ <ph name="EMAIL" /> ගිණුමට තවදුරටත් ප්‍රධාන ගිණුම ලෙස අවසර දෙනු නොලැබේ. මෙම ගිණුම <ph name="DOMAIN" /> විසින් කළමනා කරනු ලබන බැවින්, ඔබේ පිටුසන්, ඉතිහාසය, මුරපද, සහ අනෙකුත් සැකසීම් මෙම උපාංගයෙන් හිස් කරනු ලැබේ.</translation>
 <translation id="5632592977009207922">බාගනිමින්, <ph name="PERCENT_REMAINING" />% ඉතිරියි</translation>
 <translation id="563371367637259496">ජංගම</translation>
-<translation id="563496044070985734">අක්ෂර වින්‍යාසය පරීක්ෂාව සඳහා ඇති භාෂා ඔබගේ භාෂා සැකසීම් මත පදනම් වේ</translation>
 <translation id="563535393368633106">ප්‍රවේශයට පෙර විමසන්න (නිර්දේශිතයි)</translation>
 <translation id="5636996382092289526">ඔබට <ph name="NETWORK_ID" /> භාවිත කිරීමට පෙර <ph name="LINK_START" />ජාලයේ පිවිසුම් පිටුවට<ph name="LINK_END" /> පිවිසීමට සිදුවේ, එය තත්පර කිහිපයකින් ස්වයංක්‍රීයව විවෘත වනු ඇත. එය සිදු නොවුන හොත් ජාලය භාවිත කළ නොහැක.</translation>
 <translation id="5637476008227280525">ජංගම දත්ත සබල කිරීම</translation>
@@ -4781,7 +4779,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6704062477274546131">DNS විභේදනය</translation>
 <translation id="6706210727756204531">අවකාශය</translation>
 <translation id="6707389671160270963">SSL සේවාලාභී සහතිකය</translation>
-<translation id="670893696722244877">භාෂා හෝ ආදාන නම් අනුව සොයන්න</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> සහ තව 1 පටිත්තක්}one{<ph name="PAGE_TITLE" /> සහ තව පටිති # ක්}other{<ph name="PAGE_TITLE" /> සහ තව පටිති # ක්}}</translation>
 <translation id="6709133671862442373">පුවත්</translation>
 <translation id="6709357832553498500"><ph name="EXTENSIONNAME" /> භාවිතයෙන් සම්බන්ධ වන්න</translation>
@@ -5680,7 +5677,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7788298548579301890">ඔබේ පරිගණකයේ ඇති වෙනත් ක්‍රමලේඛයක් යෙදුමක් එක් කර ඇති අතර එයින් Chrome ක්‍රියා කරන ආකරය වෙනස් විය හැකිය.
 
 <ph name="EXTENSION_NAME" /></translation>
-<translation id="7788444488075094252">භාෂා සහ ආදානය</translation>
 <translation id="7788668840732459509">ස්ථානය:</translation>
 <translation id="7789963078219276159">ආරම්භක පිටු පසුබිම <ph name="CATEGORY" /> ලෙස වෙනස් විය.</translation>
 <translation id="7791543448312431591">එක් කරන්න</translation>
@@ -6267,7 +6263,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8467326454809944210">වෙනත් භාෂාවක් තෝරන්න</translation>
 <translation id="8470214316007448308">වෙනත් පුද්ගලයින්</translation>
 <translation id="8470513973197838199"><ph name="ORIGIN" /> සඳහා සුරැකි මුරපද</translation>
-<translation id="8471256130228705232"><ph name="DOMAIN" /> ADB නිදොස් කිරීම අබල කර ඇත. මෙය ඔබගේ <ph name="DEVICE_TYPE" /> පැය 24කින් යළි සකසනු ඇත. ඔබ තබා ගැනීමට කැමති ඕනෑම ගොනුවක් උපස්ථ කරන්න.</translation>
 <translation id="8471525937465764768">අඩවි සාමාන්‍යයෙන් ලේඛනයක් මුද්‍රණය කිරීම හෝ ගබඩා උපාංගයකට සුරැකීම වැනි විශේෂාංග සඳහා USB උපාංග සමඟ සම්බන්ධ වේ</translation>
 <translation id="8472623782143987204">දෘඪාංග-උපකාර ලද</translation>
 <translation id="8473863474539038330">ලිපින සහ තව</translation>
@@ -6802,6 +6797,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="9088234649737575428"><ph name="PLUGIN_NAME" /> ව්‍යාපාරික ප්‍රතිපත්තිය විසින් අවහිර කර ඇත</translation>
 <translation id="9088446193279799727">ලිනක්ස් වින්‍යාස කළ නොහැකි විය. අන්තර්ජාලයට සම්බන්ධ කර නැවත උත්සාහ කරන්න.</translation>
 <translation id="9088917181875854783">කරුණාකර මෙම passkey "<ph name="DEVICE_NAME" />" හි පෙනෙන බව තහවුරු කරන්න:</translation>
+<translation id="9089416786594320554">ආදාන ක්‍රම</translation>
 <translation id="9093429538970210897">උත්ශ්‍රේණි කිරීම සම්පූර්ණ කළ නොහැකි වන්නේ නම් ගොනු උපස්ථ කිරීම නිර්දේශ කෙරේ. උත්ශ්‍රේණි කිරීම පටන් ගැනීම Linux (බීටා) වසනු ඇත. කරුණාකර ඉදිරියට යාමට පෙර විවෘත ගොනු සුරකින්න.</translation>
 <translation id="9094033019050270033">මුරපදය යාවත්කාලීන කරන්න</translation>
 <translation id="9094038138851891550">පරිශීලක නාමය අවලංගුයි</translation>

@@ -2253,7 +2253,6 @@
 <translation id="3639220004740062347">Выйсці з рэжыму чытання</translation>
 <translation id="3640214691812501263">Дадаць пашырэнне "<ph name="EXTENSION_NAME" />" для карыстальніка <ph name="USER_NAME" />?</translation>
 <translation id="3640613767643722554">Навучыце Памочніка распазнаваць ваш голас</translation>
-<translation id="3643014427358482789">Сайт <ph name="DOMAIN" /> выключае адладку ADB, што прывядзе да скіду налад прылады <ph name="DEVICE_TYPE" />. Зрабіце рэзервовыя копіі файлаў перад перазапускам.</translation>
 <translation id="3643637292669952403">Забараніць сайтам атрымліваць звесткі пра ваша месцазнаходжанне</translation>
 <translation id="3645372836428131288">Крыху перамясціце палец, каб была захоплена іншая частка адбітка.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{З прылады "<ph name="DEVICE_NAME" />" атрыманы даныя (<ph name="ATTACHMENTS" />)}one{З прылады "<ph name="DEVICE_NAME" />" атрыманы даныя (<ph name="ATTACHMENTS" />)}few{З прылады "<ph name="DEVICE_NAME" />" атрыманы даныя (<ph name="ATTACHMENTS" />)}many{З прылады "<ph name="DEVICE_NAME" />" атрыманы даныя (<ph name="ATTACHMENTS" />)}other{З прылады "<ph name="DEVICE_NAME" />" атрыманы даныя (<ph name="ATTACHMENTS" />)}}</translation>
@@ -3899,7 +3898,6 @@
 <translation id="5632566673632479864">Уліковы запіс <ph name="EMAIL" /> больш не дазволена выкарыстоўваць як асноўны. Гэты ўліковы запіс знаходзіцца пад кіраваннем дамена <ph name="DOMAIN" />, таму з прылады будуць выдалены вашы закладкі, гісторыя, паролі і іншыя налады.</translation>
 <translation id="5632592977009207922">Ідзе спампоўванне, засталося <ph name="PERCENT_REMAINING" /> %</translation>
 <translation id="563371367637259496">Мабільная сетка</translation>
-<translation id="563496044070985734">Спіс моў, даступных для праверкі правапісу, грунтуецца на вашых моўных наладах</translation>
 <translation id="563535393368633106">Запытваць перад доступам (рэкамендуецца)</translation>
 <translation id="5636996382092289526">Каб выкарыстоўваць сетку "<ph name="NETWORK_ID" />", спачатку можа спатрэбіцца <ph name="LINK_START" />наведаць старонку ўваходу ў сетку<ph name="LINK_END" />, якая адкрыецца аўтаматычна праз некалькі секунд. Калі гэтага не адбылося, сетку выкарыстоўваць нельга.</translation>
 <translation id="5637476008227280525">Уключэнне мабільнай перадачы даных</translation>
@@ -4784,7 +4782,6 @@
 <translation id="6704062477274546131">Супастаўленне імён DNS</translation>
 <translation id="6706210727756204531">Ахоп</translation>
 <translation id="6707389671160270963">Кліенцкі сертыфікат SSL</translation>
-<translation id="670893696722244877">Шукаць па назве мовы або метаду ўводу</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> і яшчэ адна ўкладка}one{<ph name="PAGE_TITLE" /> і яшчэ # укладка}few{<ph name="PAGE_TITLE" /> і яшчэ # укладкі}many{<ph name="PAGE_TITLE" /> і яшчэ # укладак}other{<ph name="PAGE_TITLE" /> і яшчэ # укладкі}}</translation>
 <translation id="6709133671862442373">Навіны</translation>
 <translation id="6709357832553498500">Падключыцца праз: <ph name="EXTENSIONNAME" /></translation>
@@ -5684,7 +5681,6 @@
 
 
 <ph name="EXTENSION_NAME" /></translation>
-<translation id="7788444488075094252">Мовы і ўвод</translation>
 <translation id="7788668840732459509">Пазіцыя:</translation>
 <translation id="7789963078219276159">Фон пачатковай старонкі зменены. Цяпер гэта <ph name="CATEGORY" />.</translation>
 <translation id="7791543448312431591">Дадаць</translation>
@@ -6271,7 +6267,6 @@
 <translation id="8467326454809944210">Выбраць іншую мову</translation>
 <translation id="8470214316007448308">Іншыя людзі</translation>
 <translation id="8470513973197838199">Захаваныя паролі для сайта <ph name="ORIGIN" /></translation>
-<translation id="8471256130228705232">Сайт <ph name="DOMAIN" /> выключае адладку ADB. Гэта прывядзе да скіду прылады <ph name="DEVICE_TYPE" /> праз 24 гадзіны. Зрабіце рэзервовыя копіі ўсіх файлаў, якія трэба захаваць.</translation>
 <translation id="8471525937465764768">Сайты звычайна падключаюцца да прылад USB для работы такіх функцый, як друкаванне дакументаў або захаванне даных на прыладзе знешняга сховішча</translation>
 <translation id="8472623782143987204">патрабуюцца апаратныя сродкі</translation>
 <translation id="8473863474539038330">Адрасы і іншае</translation>
@@ -6806,6 +6801,7 @@
 <translation id="9088234649737575428">Убудова "<ph name="PLUGIN_NAME" />" заблакіравана карпаратыўнай палітыкай</translation>
 <translation id="9088446193279799727">Не ўдалося наладзіць Linux. Падключыцеся да інтэрнэту і паўтарыце спробу.</translation>
 <translation id="9088917181875854783">Пацвердзіце, што гэты ключ доступу паказаны на прыладзе "<ph name="DEVICE_NAME" />":</translation>
+<translation id="9089416786594320554">Метады ўводу</translation>
 <translation id="9093429538970210897">Мы рэкамендуем стварыць рэзервовыя копіі файлаў на выпадак збою пры абнаўленні. Калі вы пачняце абнаўленне, праца Linux (бэта-версія) будзе завершана. Перш чым працягнуць, захавайце адкрытыя файлы.</translation>
 <translation id="9094033019050270033">Абнавіць пароль</translation>
 <translation id="9094038138851891550">Імя карыстальніка няправільнае</translation>

@@ -76,7 +76,6 @@
 <translation id="1544826120773021464">உங்கள் Google கணக்கை நிர்வகிக்க "கணக்கை நிர்வகி" என்ற பட்டனைத் தட்டுங்கள்</translation>
 <translation id="1549000191223877751">வேறு சாளரத்திற்கு நகர்த்து</translation>
 <translation id="1553358976309200471">Chromeஐப் புதுப்பி</translation>
-<translation id="1565153191103764132">தெலுங்கு</translation>
 <translation id="1569387923882100876">இணைத்த சாதனம்</translation>
 <translation id="1571304935088121812">பயனர்பெயரை நகலெடுக்கும்</translation>
 <translation id="1592864538817356322">நிலையான பாதுகாப்பு:</translation>
@@ -525,7 +524,6 @@
 <translation id="5011311129201317034"><ph name="SITE" /> இணைய விரும்புகிறது</translation>
 <translation id="5013696553129441713">புதிய பரிந்துரைகள் இல்லை</translation>
 <translation id="5016205925109358554">Serif</translation>
-<translation id="5026887030745057099">இந்தி</translation>
 <translation id="5039804452771397117">அனுமதி</translation>
 <translation id="5040262127954254034">தனியுரிமை</translation>
 <translation id="5087580092889165836">கார்டைச் சேர்</translation>
@@ -627,7 +625,7 @@
 <translation id="5797070761912323120">தேடல், விளம்பரங்கள் மற்றும் பிற Google சேவைகளைத் தனிப்பயனாக்க, உங்கள் வரலாற்றை Google பயன்படுத்தக்கூடும்</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{# மணிநேரம் முன்பு}other{# மணிநேரம் முன்பு}}</translation>
 <translation id="5810288467834065221">பதிப்புரிமை <ph name="YEAR" /> Google LLC. அனைத்து உரிமைகளும் பாதுகாக்கப்பட்டுள்ளன.</translation>
-<translation id="5814131985548525293">தேடுவதற்கு இங்கே உள்ளிடவும் அல்லது குரல் ஐகானைத் தட்டவும்</translation>
+<translation id="5814131985548525293">தேடுவதற்கு இங்கே உள்ளிடவும் அல்லது மைக் ஐகானைத் தட்டவும்</translation>
 <translation id="5817918615728894473">இணை</translation>
 <translation id="583281660410589416">தெரியாதது</translation>
 <translation id="5833984609253377421">இணைப்பைப் பகிர்</translation>
@@ -896,7 +894,6 @@
 மறைநிலையில் உலாவினாலும் உங்கள் செயல்பாடுகளை நீங்கள் பார்க்கும் இணையதளம், உங்கள் நிறுவனம்/பள்ளி, இணையச் சேவை வழங்குநர் ஆகியோரால் பார்க்க முடியும்.</translation>
 <translation id="7704317875155739195">தேடல்களையும் URLகளையும் தானே நிரப்பு</translation>
 <translation id="7725024127233776428">நீங்கள் புக்மார்க் செய்த பக்கங்கள் இங்கு தோன்றும்</translation>
-<translation id="7732997068759397415">கன்னடம்</translation>
 <translation id="7735637452482172701">திரைப் பூட்டு மூலம் திற</translation>
 <translation id="7746457520633464754">ஆபத்தான ஆப்ஸையும் தளங்களையும் கண்டறிய நீங்கள் பார்வையிட்ட சில பக்கங்களின் URLகளையும், வரம்பிற்குட்பட்ட சிஸ்டம் தகவல்களையும், சில பக்கங்களின் உள்ளடக்கத்தையும் Googleளுக்கு Chrome அனுப்பும்</translation>
 <translation id="7757787379047923882">உரை <ph name="DEVICE_NAME" /> இலிருந்து பகிரப்பட்டுள்ளது</translation>
@@ -953,7 +950,6 @@
 <translation id="8073388330009372546">படத்தை புதிய தாவலில் திற</translation>
 <translation id="8076492880354921740">தாவல்கள்</translation>
 <translation id="8084114998886531721">சேமித்த கடவுச்சொல்</translation>
-<translation id="8099451332580698547">தமிழ்</translation>
 <translation id="8103578431304235997">மறைநிலைத் தாவல்</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109613176066109935">உங்கள் அனைத்துச் சாதனங்களிலும் புத்தகக்குறிகளைப் பெற, ஒத்திசைவை இயக்கவும்</translation>
@@ -1032,7 +1028,6 @@
 <translation id="8659579665266920523">Chromeமைப் பயன்படுத்தி எப்படித் தேடுவது?</translation>
 <translation id="8662811608048051533">பெரும்பாலான தளங்களிலிருந்து உங்களை வெளியேற்றும்.</translation>
 <translation id="8664979001105139458">கோப்புப் பெயர் ஏற்கனவே உள்ளது</translation>
-<translation id="8666678546361132282">ஆங்கிலம்</translation>
 <translation id="8683039184091909753">படம்</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{சிக்னல் வலிமையின் அளவு: # கோடு}other{சிக்னல் வலிமையின் அளவு: # கோடுகள்}}</translation>
 <translation id="869891660844655955">காலாவதியாகும் தேதி</translation>

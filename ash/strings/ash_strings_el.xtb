@@ -104,7 +104,6 @@
 <translation id="1962969542251276847">Οθόνη κλειδώματος</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Γεια σας, <ph name="USERNAME" /></translation>
-<translation id="1975500003782052650">Πρόσφατες λήψεις</translation>
 <translation id="1978498689038657292">Εισαγωγή κειμένου</translation>
 <translation id="1993072747612765854">Μάθετε περισσότερα σχετικά με την πιο πρόσφατη ενημέρωση της εφαρμογής <ph name="SYSTEM_APP_NAME" /></translation>
 <translation id="1995660704900986789">Απενεργοποίηση</translation>
@@ -198,6 +197,7 @@
 <translation id="2996462380875591307">Ο Μεγεθυντικός φακός σε παράθυρο ενεργοποιήθηκε. Πατήστε Ctrl+Αναζήτηση+D ξανά για να τον απενεργοποιήσετε.</translation>
 <translation id="3000461861112256445">Μονοφωνικός ήχος</translation>
 <translation id="3009178788565917040">Έξοδος</translation>
+<translation id="3025081209054535615">Ξεκαρφίτσωσμα καθολικών στοιχείων ελέγχου μέσων από το ράφι</translation>
 <translation id="3033545621352269033">Eνεργό</translation>
 <translation id="3038571455154067151">Για να συνδεθείτε, εισαγάγετε τον κωδικό πρόσβασης γονέα Family Link</translation>
 <translation id="3045488863354895414">Καλό απόγευμα,</translation>
@@ -376,6 +376,7 @@
 <translation id="4710243778082831592">Ρυθμίσεις IME</translation>
 <translation id="4731797938093519117">Γονική πρόσβαση</translation>
 <translation id="4734965478015604180">Οριζόντια περιστροφή</translation>
+<translation id="4759238208242260848">Λήψεις</translation>
 <translation id="4774338217796918551">Επιστρέψτε ξανά αύριο στις <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776917500594043016">Κωδικός πρόσβασης για <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4778095205580009397">Ο Βοηθός Google δεν είναι διαθέσιμος σε περίοδο λειτουργίας επίδειξης.</translation>
@@ -383,6 +384,7 @@
 <translation id="4804818685124855865">Αποσύνδεση</translation>
 <translation id="4814539958450445987">Οθόνη σύνδεσης</translation>
 <translation id="4831034276697007977">Είστε βέβαιοι ότι θέλετε να απενεργοποιήσετε τα αυτόματα κλικ;</translation>
+<translation id="4836108105469522644">Ενεργοποίηση των Ειδοποιήσεων από το τηλέφωνο Android</translation>
 <translation id="4849058404725798627">Επισήμανση αντικειμένου με εστίαση στο πληκτρολόγιο</translation>
 <translation id="485592688953820832">Καμία ενέργεια (παύση)</translation>
 <translation id="4868492592575313542">ενεργοποιημένο</translation>
@@ -696,6 +698,7 @@
 <translation id="8297006494302853456">Αδύναμο</translation>
 <translation id="8308637677604853869">Προηγούμενο μενού</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
+<translation id="8349293353728876872">Καρφίτσωσμα καθολικών στοιχείων ελέγχου μέσων στο ράφι</translation>
 <translation id="8351131234907093545">Δημιουργία σημείωσης</translation>
 <translation id="8371779926711439835">Προώθηση ανά γράμμα</translation>
 <translation id="8375916635258623388">Η συσκευή <ph name="DEVICE_NAME" /> και το τηλέφωνό σας θα συνδεθούν αυτόματα</translation>

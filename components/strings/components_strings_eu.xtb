@@ -108,6 +108,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="1348779747280417563">Berretsi izena</translation>
 <translation id="1357195169723583938">Gailua duela gutxi nork eta noiz erabili duen</translation>
 <translation id="1360955481084547712">Modu pribatuan arakatzeko, ireki ezkutuko moduko leiho bat</translation>
+<translation id="1363819917331173092">Ez eskaini <ph name="SOURCE_LANGUAGE" /> hizkuntzan dauden orriak itzultzea</translation>
 <translation id="1364822246244961190">Gidalerroa blokeatuta dago, eta ez ikusi egingo zaio haren balioari.</translation>
 <translation id="1374468813861204354">iradokizunak</translation>
 <translation id="1374692235857187091">Index-4x6 (postala)</translation>
@@ -493,6 +494,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2996674880327704673">Google-ren iradokizunak</translation>
 <translation id="3002501248619246229">Egiaztatu sarrerako erretiluaren euskarria</translation>
 <translation id="3005723025932146533">Erakutsi gordetako kopia</translation>
+<translation id="3007719053326478567">Administratzaileak blokeatu egin du eduki hau inprimatzeko aukera</translation>
 <translation id="3008447029300691911">Idatzi <ph name="CREDIT_CARD" /> txartelaren CVC kodea. Berretsi ondoren, webgune honekin partekatuko dira txartelaren xehetasunak.</translation>
 <translation id="3010559122411665027">"<ph name="ENTRY_INDEX" />" zerrenda-sarrera: <ph name="ERROR" /></translation>
 <translation id="301521992641321250">Automatikoki blokeatuta</translation>
@@ -507,7 +509,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3080254622891793721">Grafikoa</translation>
 <translation id="3086579638707268289">Webgunean egiten ari zarena gainbegiratzen ari dira</translation>
 <translation id="3087734570205094154">Behekoa</translation>
-<translation id="3094457892697649331">Oharpenak editatzen dituzunean, orri bakarreko ikuspegira itzuliko da dokumentua.</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3096100844101284527">Gehitu jasotze-helbidea</translation>
 <translation id="3105172416063519923">Aktibo IDa:</translation>
@@ -593,6 +594,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3443726618221119081">Juuro-Ku-Kai</translation>
 <translation id="3447661539832366887">Gailuaren jabeak Dinosaur jokoa desaktibatu du.</translation>
 <translation id="3447884698081792621">Erakutsi ziurtagiria (jaulkitzailea: <ph name="ISSUER" />)</translation>
+<translation id="3451824941663424536">Administratzaileak blokeatu egin du kokapen honetan itsasteko aukera</translation>
 <translation id="3452404311384756672">Eskuratzeko denbora tartea:</translation>
 <translation id="3453962258458347894">Saiakera kopurua</translation>
 <translation id="3456231139987291353">Number-11 (gutun-azala)</translation>
@@ -1379,6 +1381,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="6671697161687535275">Inprimaki-iradokizuna Chromium-etik kendu nahi duzu?</translation>
 <translation id="6685834062052613830">Amaitu saioa eta osatu konfigurazioa</translation>
 <translation id="6687335167692595844">Eskatutako letra-tamaina</translation>
+<translation id="6688998199862661005">Administratzaileak blokeatu egin du edukia <ph name="VM_NAME" /> makina birtualekin partekatzeko aukera</translation>
 <translation id="6689249931105087298">Erlatiboa, puntu beltzen konprimaketarekin</translation>
 <translation id="6689271823431384964">Saioa hasita duzunez, txartelak Google-ko kontuan gordetzeko aukera ematen dizu Chrome-k. Aukera hori aldatzeko, joan Ezarpenak atalera. Txartelaren titularraren izena kontutik hartu da.</translation>
 <translation id="6710213216561001401">Aurrekoa</translation>
@@ -1403,6 +1406,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="6810899417690483278">Pertsonalizazio IDa</translation>
 <translation id="6825578344716086703"><ph name="DOMAIN" /> domeinura konektatzen saiatu zara, baina zerbitzariak aurkeztu duen sinadura-algoritmoa ez da segurua (adibidez, SHA-1). Horrek esan nahi du zerbitzariak aurkeztutako segurtasun-kredentzialak faltsuak direla eta balitekeela zerbitzaria ez izatea zuk espero zenuena, hau da, posible dela erasotzaile batekin komunikatzen ari izatea.</translation>
 <translation id="6826993739343257035">Errealitate areagotua erabiltzeko baimena eman nahi duzu?</translation>
+<translation id="6829611662493319648">Administratzaileak blokeatu egin du edukia <ph name="VM_NAME_1" /> eta <ph name="VM_NAME_2" /> makina birtualekin partekatzeko aukera</translation>
 <translation id="6831043979455480757">Itzuli</translation>
 <translation id="6839929833149231406">Eskualdea</translation>
 <translation id="6846340164947227603">Erabili txartel birtualaren zenbakia…</translation>
@@ -1662,7 +1666,6 @@ Xehetasun gehiago:
 <translation id="7802523362929240268">Fidagarria da webgunea</translation>
 <translation id="780301667611848630">Ez, eskerrik asko</translation>
 <translation id="7805768142964895445">Egoera</translation>
-<translation id="7811322735445742657">Oharpenak editatzen dituzunean, orri bakarreko ikuspegira eta jatorrizko biratzera itzuliko da dokumentua.</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Inprimaki-iradokizuna Chrome-tik kendu nahi duzu?</translation>
 <translation id="781440967107097262">Arbela partekatu nahi duzu?</translation>
@@ -1772,6 +1775,7 @@ Xehetasun gehiago:
 <translation id="8267698848189296333"><ph name="USERNAME" /> gisa saioa hasten</translation>
 <translation id="8269242089528251720">Dokumentu bereiziak / Elkartutako kopiak</translation>
 <translation id="8269981117540303696">Modu pribatuan arakatu ahal izango duzu sarea, gailua erabiltzen duten gainerakoek zure jardueren berririk izan ez dezaten. Hala ere, deskargak eta laster-markak gordeta geratuko dira.</translation>
+<translation id="8275952078857499577">Ez eskaini webgune hau itzultzea</translation>
 <translation id="8277900682056760511">Ordainketa kudeatzeko orria irekita dago</translation>
 <translation id="8281084378435768645">Large-Photo</translation>
 <translation id="8282947398454257691">Ezagutu zure gailu-identifikatzaile esklusiboa</translation>
@@ -1780,7 +1784,6 @@ Xehetasun gehiago:
 <translation id="8289355894181816810">Ez badakizu ziur horrek zer esan nahi duen, jarri harremanetan sarearen administratzailearekin.</translation>
 <translation id="8293206222192510085">Gehitu laster-marka</translation>
 <translation id="8294431847097064396">Iturburua</translation>
-<translation id="8297398969342264569">Oharpenak editatzen dituzunean, jatorrizko biratzera itzuliko da dokumentua.</translation>
 <translation id="8298115750975731693">Baliteke darabilzun Wi-Fi konexioaren (<ph name="WIFI_NAME" />) <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> orrira joan behar izatea.</translation>
 <translation id="8303854710873047864">"<ph name="SECTION" />" atala ikusten ari zara</translation>
 <translation id="830498451218851433">Erdibitzeko tolestura</translation>

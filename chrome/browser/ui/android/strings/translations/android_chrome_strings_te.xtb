@@ -76,7 +76,6 @@
 <translation id="1544826120773021464">మీ Google ఖాతాను నిర్వహించడానికి, "ఖాతాను నిర్వహించు" బటన్‌ను నొక్కండి</translation>
 <translation id="1549000191223877751">వేరే విండోకు తరలించు</translation>
 <translation id="1553358976309200471">Chromeని నవీకరించు</translation>
-<translation id="1565153191103764132">తెలుగు</translation>
 <translation id="1569387923882100876">కనెక్ట్ చేసిన డివైజ్</translation>
 <translation id="1571304935088121812">వినియోగదారు పేరును కాపీ చేస్తుంది</translation>
 <translation id="1592864538817356322">ప్రామాణిక రక్షణ:</translation>
@@ -525,7 +524,6 @@
 <translation id="5011311129201317034"><ph name="SITE" /> దీనికి కనెక్ట్ చేయాలనుకుంటోంది</translation>
 <translation id="5013696553129441713">కొత్త సూచనలు ఏవీ లేవు</translation>
 <translation id="5016205925109358554">Serif</translation>
-<translation id="5026887030745057099">హిందీ</translation>
 <translation id="5039804452771397117">అనుమతించు</translation>
 <translation id="5040262127954254034">గోప్యత</translation>
 <translation id="5087580092889165836">కార్డ్‌ను జోడించు</translation>
@@ -896,7 +894,6 @@
 అజ్ఞాత మోడ్‌లో, మీ యాక్టివిటీ మీరు సందర్శించే వెబ్‌సైట్‌లకు, మీ యజమాని లేదా పాఠశాలకు, అలాగే మీ ఇంటర్నెట్ సర్వీస్ ప్రొవైడర్‌కు ఇప్పటికీ కనిపించవచ్చు.</translation>
 <translation id="7704317875155739195">ఆటో-ఫిల్ సెర్చ్‌లు, URLలు</translation>
 <translation id="7725024127233776428">మీరు బుక్‌మార్క్ చేసే పేజీలు ఇక్కడ కనిపిస్తాయి</translation>
-<translation id="7732997068759397415">కన్నడ</translation>
 <translation id="7735637452482172701">స్క్రీన్ లాక్‌తో అన్‌లాక్ చేయి</translation>
 <translation id="7746457520633464754">Chrome ప్రమాదకరమైన యాప్‌లు, సైట్‌లను గుర్తించడానికి, మీరు సందర్శించే కొన్ని పేజీల URLలు, పరిమిత సిస్టమ్ సమాచారం, కొంత పేజీ కంటెంట్‌ను Googleకు పంపుతుంది</translation>
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" /> నుండి షేర్ చేయబడిన వచనం</translation>
@@ -953,7 +950,6 @@
 <translation id="8073388330009372546">కొత్త ట్యాబ్‌లో చిత్రం తెరువు</translation>
 <translation id="8076492880354921740">ట్యాబ్‌లు</translation>
 <translation id="8084114998886531721">సేవ్ చేసిన పాస్‌వర్డ్</translation>
-<translation id="8099451332580698547">తమిళం</translation>
 <translation id="8103578431304235997">అజ్ఞాత ట్యాబ్</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109613176066109935">ఇక ఎప్పుడు ఎక్కడ బుక్‌మార్క్‌లను సెట్‌ చేసినా ఆటోమాటిక్‌గా మీ అన్ని పరికరాలలో పొందాలనుకుంటే, సమకాలీకరణ ఎంపికని ఆన్ చేయండి</translation>
@@ -1032,7 +1028,6 @@
 <translation id="8659579665266920523">Chromeతో సెర్చ్ చేయడం ఎలా</translation>
 <translation id="8662811608048051533">చాలా సైట్‌ల నుండి మిమ్మల్ని సైన్ అవుట్ చేస్తుంది.</translation>
 <translation id="8664979001105139458">ఫైల్ పేరు ఇప్పటికే ఉంది</translation>
-<translation id="8666678546361132282">ఇంగ్లీష్</translation>
 <translation id="8683039184091909753">ఇమేజ్</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{సిగ్నల్ సామర్థ్యం స్థాయి: # బార్}other{సిగ్నల్ సామర్థ్యం స్థాయి: # బార్‌లు}}</translation>
 <translation id="869891660844655955">గడువు తేదీ</translation>

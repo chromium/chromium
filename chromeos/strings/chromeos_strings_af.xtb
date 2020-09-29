@@ -5,6 +5,7 @@
 <translation id="1195447618553298278">Onbekende fout.</translation>
 <translation id="1413240736185167732">Misluk – Filter het misluk</translation>
 <translation id="1468664791493211953">Aanbiedings</translation>
+<translation id="1478594628797167447">Skandeerder</translation>
 <translation id="1482734542997480527"><ph name="ENROLLMENT_DOMAIN" /> bestuur hierdie toestel en sal dalk jou aktiwiteit kan monitor.</translation>
 <translation id="150962533380566081">Ongeldige PUK.</translation>
 <translation id="1510238584712386396">Lanseerder</translation>
@@ -19,10 +20,12 @@
 <translation id="2161394479394250669">Kanselleer druktaak</translation>
 <translation id="2338501278241028356">Skakel Bluetooth aan om toestelle in die omtrek te ontdek</translation>
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> pogings oor</translation>
+<translation id="2517472476991765520">Skandeer</translation>
 <translation id="2805756323405976993">Programme</translation>
 <translation id="2872961005593481000">Skakel af</translation>
 <translation id="3008341117444806826">HERLAAI</translation>
 <translation id="3091839911843451378">Misluk – Gestop</translation>
+<translation id="3246869037381808805">Druktake ouer as 1 dag sal verwyder word</translation>
 <translation id="3268178239013324452">Misluk – Deur is oop</translation>
 <translation id="3369013195428705271">Is jy seker jy wil alle drukgeskiedenis uitvee? Jou aangaande druktake sal nie uitgevee word nie.</translation>
 <translation id="3456078764689556234">Het bladsy <ph name="PRINTED_PAGES" /> van <ph name="TOTAL_PAGES" /> gedruk.</translation>
@@ -33,6 +36,7 @@
 <translation id="38114475217616659">Vee alle geskiedenis uit</translation>
 <translation id="3820172043799983114">Ongeldige PIN.</translation>
 <translation id="3838338534323494292">Nuwe wagwoord</translation>
+<translation id="39823212440917567">Druktake ouer as <ph name="NUMBER_OF_DAYS" /> dae sal verwyder word</translation>
 <translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> bestuur hierdie toestel en het toegang tot alle gebruikeraktiwiteit, insluitend webblaaie wat besoek is, wagwoorde en e-pos.</translation>
 <translation id="4003384961948020559">Misluk – Uitvoer is vol</translation>
 <translation id="4027485274696301677">Hierdie <ph name="DEVICE_TYPE" /> word bestuur deur <ph name="ENROLLMENT_DOMAIN" />. Administrateurs kan die toestel oor 'n afstand opstel.</translation>
@@ -70,6 +74,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="649050271426829538">Gestop – papierknoop</translation>
 <translation id="6517239166834772319">Verken</translation>
 <translation id="6564646048574748301">Misluk – Kon nie drukker bereik nie</translation>
+<translation id="6620487321149975369">Druktake sal in geskiedenis verskyn tensy hulle handmatig verwyder word</translation>
 <translation id="6643016212128521049">Vee uit</translation>
 <translation id="6747215703636344499">Gestop – uitvoer is vol</translation>
 <translation id="7162487448488904999">Galery</translation>

@@ -104,7 +104,6 @@
 <translation id="1962969542251276847">ჩაკეტილი ეკრანი</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">გამარჯობა, <ph name="USERNAME" /></translation>
-<translation id="1975500003782052650">ბოლოდროინდელი ჩამოტვირთვები</translation>
 <translation id="1978498689038657292">ტექსტის შეყვანა</translation>
 <translation id="1993072747612765854">შეიტყვეთ მეტი <ph name="SYSTEM_APP_NAME" />-ის ბოლო განახლების შესახებ</translation>
 <translation id="1995660704900986789">გამორთვა</translation>
@@ -198,6 +197,7 @@
 <translation id="2996462380875591307">ჩამაგრებული ლუპა ჩართულია. გამოსართავად ხელახლა დააჭირეთ კლავიშთა კომბინაციას: Ctrl+Search+D.</translation>
 <translation id="3000461861112256445">მონო აუდიო</translation>
 <translation id="3009178788565917040">გამოტანა</translation>
+<translation id="3025081209054535615">მედიის მართვის გლობალური საშუალებების ჩამაგრების მოხსნა თაროდან</translation>
 <translation id="3033545621352269033">ჩართვა</translation>
 <translation id="3038571455154067151">სისტემაში შესასვლელად შეიყვანეთ Family Link-ის წვდომის კოდი მშობლებისთვის</translation>
 <translation id="3045488863354895414">შუადღე მშვიდობის,</translation>
@@ -376,6 +376,7 @@
 <translation id="4710243778082831592">IME პარამეტრები</translation>
 <translation id="4731797938093519117">მშობლის წვდომა</translation>
 <translation id="4734965478015604180">ჰორიზონტალური</translation>
+<translation id="4759238208242260848">ჩამოტვირთვები</translation>
 <translation id="4774338217796918551">დაბრუნდით ხვალ, <ph name="COME_BACK_TIME" />-ზე.</translation>
 <translation id="4776917500594043016">პაროლი <ph name="USER_EMAIL_ADDRESS" />-თვის</translation>
 <translation id="4778095205580009397">Google ასისტენტი მიუწვდომელია დემო-სესიაში.</translation>
@@ -383,6 +384,7 @@
 <translation id="4804818685124855865">გათიშვა</translation>
 <translation id="4814539958450445987">შესვლის ეკრანი</translation>
 <translation id="4831034276697007977">ნამდვილად გსურთ, გამორთოთ ავტომატური დაწკაპუნებები?</translation>
+<translation id="4836108105469522644">ჩართეთ შეტყობინებები თქვენი Android ტელეფონიდან</translation>
 <translation id="4849058404725798627">კლავიატურის მეშვეობით არჩეული ობიექტის გამოყოფა</translation>
 <translation id="485592688953820832">ქმედების გარეშე (პაუზა)</translation>
 <translation id="4868492592575313542">გააქტიურებულია</translation>
@@ -696,6 +698,7 @@
 <translation id="8297006494302853456">სუსტი</translation>
 <translation id="8308637677604853869">წინა მენიუ</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
+<translation id="8349293353728876872">მედიის მართვის გლობალური საშუალებების ჩამაგრება თაროზე</translation>
 <translation id="8351131234907093545">ჩანიშვნის შექმნა</translation>
 <translation id="8371779926711439835">ერთი ასოთი წინ</translation>
 <translation id="8375916635258623388">ეს <ph name="DEVICE_NAME" /> და თქვენი ტელეფონი ავტომატურად დაკავშირდება</translation>

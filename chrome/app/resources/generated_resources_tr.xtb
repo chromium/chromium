@@ -2090,7 +2090,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3455436146814891176">Şifreleme şifresini senkronize et</translation>
 <translation id="345693547134384690">Resm&amp;i yeni sekmede aç</translation>
 <translation id="3458451003193188688">Ağ hatası nedeniyle sanal makine yüklenemedi. Lütfen tekrar deneyin veya yöneticinizle iletişime geçin. Hata kodu: <ph name="ERROR_CODE" />.</translation>
-<translation id="3458794975359644386">Paylaşılan geri alınamadı</translation>
+<translation id="3458794975359644386">Paylaşım kaldırılamadı</translation>
 <translation id="3459509316159669723">Yazdırma</translation>
 <translation id="3459697287128633276">Hesabınızın Google Play Store'a erişmesini sağlamak için lütfen Kimlik Sağlayıcınızı kullanarak kimliğinizi doğrulayın.</translation>
 <translation id="3462311546193741693">Bu işlem, çoğu sitedeki oturumunuzu kapatır. Google Hesabınızda oturumunuz açık kalacağından senkronize edilmiş verileriniz temizlenebilecektir.</translation>
@@ -2253,7 +2253,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3639220004740062347">Okuyucu Modundan Çık</translation>
 <translation id="3640214691812501263"><ph name="USER_NAME" /> için "<ph name="EXTENSION_NAME" />" uzantısı eklensin mi?</translation>
 <translation id="3640613767643722554">Asistanınıza sesinizi tanımayı öğretin</translation>
-<translation id="3643014427358482789"><ph name="DOMAIN" /> ADB hata ayıklama işlevini devre dışı bırakıyor ve <ph name="DEVICE_TYPE" /> cihazınız sıfırlanacak. Yeniden başlatmadan önce dosyalarınızı yedekleyin.</translation>
 <translation id="3643637292669952403">Sitelerin konumumu görmesini engelle</translation>
 <translation id="3645372836428131288">Parmak izinizin farklı bir kısmının yakalanması için parmağınızı çok az hareket ettirin.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> adlı cihazdan <ph name="ATTACHMENTS" /> alındı}other{<ph name="DEVICE_NAME" /> adlı cihazdan <ph name="ATTACHMENTS" /> alındı}}</translation>
@@ -2882,7 +2881,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4392896746540753732">Yapılandırma dosyasını düzenleyin</translation>
 <translation id="4393691030048716353"><ph name="DOMAIN" />, ADB hata ayıklama işlevini devre dışı bıraktı. <ph name="DEVICE_TYPE" /> cihazınızı yeniden başlattıktan sonra başka cihazdan uygulama yükleyemezsiniz.</translation>
 <translation id="4394049700291259645">Devre dışı bırak</translation>
-<translation id="4396956294839002702">{COUNT,plural, =0{Tümünü &amp;Aç}=1{Yer işaretini &amp;aç}other{Tümünü &amp;aç ({COUNT})}}</translation>
+<translation id="4396956294839002702">{COUNT,plural, =0{Tümünü &amp;aç}=1{Yer işaretini &amp;aç}other{Tümünü &amp;aç ({COUNT})}}</translation>
 <translation id="439817266247065935">Cihazınız düzgün bir şekilde kapatılmadı. Linux uygulamalarını kullanmak için Linux'u yeniden başlatın.</translation>
 <translation id="4400367121200150367">Şifreleri hiçbir zaman kaydedilmeyecek siteler burada görünür</translation>
 <translation id="4400632832271803360">Üst satırdaki tuşların davranışını değiştirmek için Başlatıcı tuşunu basılı tutun</translation>
@@ -3900,7 +3899,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="5632566673632479864"><ph name="EMAIL" /> hesabınızın artık birincil hesap olmasına izin verilmiyor. Bu hesap <ph name="DOMAIN" /> tarafından yönetildiğinden yer işaretleri, geçmiş, şifreler ve diğer ayarlarınız bu cihazdan silinecektir.</translation>
 <translation id="5632592977009207922">İndiriliyor, %<ph name="PERCENT_REMAINING" /> kaldı</translation>
 <translation id="563371367637259496">Mobil</translation>
-<translation id="563496044070985734">Yazım denetiminde kullanılan diller, dil ayarlarınıza göre belirlenir</translation>
 <translation id="563535393368633106">Erişmeden önce sor (önerilir)</translation>
 <translation id="5636996382092289526"><ph name="NETWORK_ID" /> ağını kullanabilmek için öncelikle <ph name="LINK_START" />ağın oturum açma sayfasını ziyaret etmeniz<ph name="LINK_END" /> gerekebilir. Söz konusu sayfa birkaç saniye içinde otomatik olarak açılacaktır. Açılmazsa, ağ kullanılamaz.</translation>
 <translation id="5637476008227280525">Mobil veriyi etkinleştir</translation>
@@ -4609,7 +4607,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6472893788822429178">Ana Sayfa düğmesini göster</translation>
 <translation id="6473842110411557830">Powerwash resmi</translation>
-<translation id="6474498546677193336">Bir uygulama bu klasörü kullandığından paylaşılan geri alınamadı. Linux kapatıldığında paylaşılan dosya geri alınacak.</translation>
+<translation id="6474498546677193336">Bir uygulama bu klasörü kullandığından paylaşım kaldırılamadı. Linux kapatıldığında klasörün paylaşımı kaldırılacak.</translation>
 <translation id="6474884162850599008">Google Drive hesabının bağlantısını kes</translation>
 <translation id="6475697075626596525"><ph name="APP_NAME" />, ekranınızın içeriğini paylaşmak istiyor. Neleri paylaşmak istediğinizi seçin.</translation>
 <translation id="6478248366783946499">Tehlikeli dosya tutulsun mu?</translation>
@@ -4785,7 +4783,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6704062477274546131">DNS Çözümlemesi</translation>
 <translation id="6706210727756204531">Kapsam</translation>
 <translation id="6707389671160270963">SSL İstemci Sertifikası</translation>
-<translation id="670893696722244877">Dillere veya giriş adlarına göre arayın</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> ve 1 Sekme Daha}other{<ph name="PAGE_TITLE" /> ve # Sekme Daha}}</translation>
 <translation id="6709133671862442373">Haberler</translation>
 <translation id="6709357832553498500"><ph name="EXTENSIONNAME" /> uzantısını kullanarak bağlan</translation>
@@ -5685,7 +5682,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 
 
 <ph name="EXTENSION_NAME" /></translation>
-<translation id="7788444488075094252">Diller ve giriş</translation>
 <translation id="7788668840732459509">Konum:</translation>
 <translation id="7789963078219276159">Başlangıç sayfası arka planı <ph name="CATEGORY" /> olarak değiştirildi.</translation>
 <translation id="7791543448312431591">Ekle</translation>
@@ -6272,7 +6268,6 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8467326454809944210">Başka bir dil seç</translation>
 <translation id="8470214316007448308">Diğer Kişiler</translation>
 <translation id="8470513973197838199"><ph name="ORIGIN" /> için kaydedilmiş şifreler</translation>
-<translation id="8471256130228705232"><ph name="DOMAIN" />, ADB hata ayıklama işlevini devre dışı bırakıyor. Bu işlem, 24 saat içinde <ph name="DEVICE_TYPE" /> cihazınızı sıfırlar. Saklamak istediğiniz dosyaları yedekleyin.</translation>
 <translation id="8471525937465764768">Doküman yazdırma veya depolama cihazına kaydetme gibi özelliklerin kullanılması için siteler genellikle USB cihazlara bağlanır</translation>
 <translation id="8472623782143987204">donanım esaslı</translation>
 <translation id="8473863474539038330">Adresler ve daha fazlası</translation>
@@ -6807,6 +6802,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="9088234649737575428"><ph name="PLUGIN_NAME" /> eklentisi kurumsal politika tarafından engellendi</translation>
 <translation id="9088446193279799727">Linux yapılandırılamadı. İnternete bağlanıp tekrar deneyin.</translation>
 <translation id="9088917181875854783">Lütfen bu parolanın "<ph name="DEVICE_NAME" />" cihazında gösterildiğini onaylayın:</translation>
+<translation id="9089416786594320554">Giriş yöntemleri</translation>
 <translation id="9093429538970210897">Yeni sürüme geçme işleminin tamamlanamaması durumunda dosyaları yedeklemeniz önerilir. Yeni sürüme geçme işleminin başlatılması Linux'un (Beta) kapanmasına neden olur. Devam etmeden önce lütfen açık dosyaları kaydedin.</translation>
 <translation id="9094033019050270033">Şifreyi güncelle</translation>
 <translation id="9094038138851891550">Kullanıcı adı geçersiz</translation>

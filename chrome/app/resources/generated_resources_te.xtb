@@ -2253,7 +2253,6 @@
 <translation id="3639220004740062347">రీడర్ మోడ్ నుండి నిష్క్రమించండి</translation>
 <translation id="3640214691812501263"><ph name="USER_NAME" /> కోసం "<ph name="EXTENSION_NAME" />"ని జోడించాలా?</translation>
 <translation id="3640613767643722554">మీ వాయిస్‌ను గుర్తించేలా అసిస్టెంట్‌కు తగిన శిక్షణ ఇవ్వండి</translation>
-<translation id="3643014427358482789">ADB డీబగ్గింగ్‌ను <ph name="DOMAIN" /> డిజేబుల్ చేస్తోంది, ఇది <ph name="DEVICE_TYPE" />ను రీసెట్ చేస్తుంది. రీస్టార్ట్ చేయడానికి ముందు మీ ఫైల్‌లను బ్యాకప్ చేయండి.</translation>
 <translation id="3643637292669952403">మీ లొకేషన్‌ను చూడనివ్వకుండా సైట్‌లను బ్లాక్ చేయండి</translation>
 <translation id="3645372836428131288">వేలిముద్రలోని వేరే భాగాన్ని క్యాప్చర్ చేయడం కోసం కొద్దిగా కదిలించండి.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> నుండి <ph name="ATTACHMENTS" /> అందుకున్నారు}other{<ph name="DEVICE_NAME" /> నుండి <ph name="ATTACHMENTS" /> అందుకున్నారు}}</translation>
@@ -3899,7 +3898,6 @@
 <translation id="5632566673632479864">మీ ఖాతా <ph name="EMAIL" /> ఇకపై ప్రాథమిక ఖాతాగా అనుమతించబడదు. ఈ ఖాతా <ph name="DOMAIN" /> ద్వారా నిర్వహించబడుతోంది కాబట్టి, మీ బుక్‌మార్క్‌లు, చరిత్ర, పాస్‌వర్డ్‌లు మరియు ఇతర సెట్టింగ్‌లు ఈ పరికరం నుండి తొలగించబడతాయి.</translation>
 <translation id="5632592977009207922">డౌన్‌లోడ్ చేస్తోంది, <ph name="PERCENT_REMAINING" />% మిగిలి ఉంది</translation>
 <translation id="563371367637259496">మొబైల్</translation>
-<translation id="563496044070985734">మీ భాషల సెట్టింగ్‌లు ఆధారంగా స్పెల్ చెక్‌కు భాషలు అందుబాటులో ఉంటాయి</translation>
 <translation id="563535393368633106">ప్రాప్యత చేయడానికి ముందు అడుగుతుంది (సిఫార్సు చేయబడింది)</translation>
 <translation id="5636996382092289526">మీరు <ph name="NETWORK_ID" />ను ఉపయోగించడానికి మొదట కొన్నిసెకన్లలో ఆటోమేటిక్‌గా తెరవబడే <ph name="LINK_START" />నెట్‌వర్క్ సైన్ ఇన్ పేజీని సందర్శించాలి<ph name="LINK_END" />. ఇది జరగకపోతే, నెట్‌వర్క్‌ను ఉపయోగించలేరు.</translation>
 <translation id="5637476008227280525">మొబైల్ డేటాను ప్రారంభించు</translation>
@@ -4784,7 +4782,6 @@
 <translation id="6704062477274546131">DNS రిజల్యూషన్</translation>
 <translation id="6706210727756204531">పరిధి</translation>
 <translation id="6707389671160270963">SSL క్లయింట్ సర్టిఫికెట్</translation>
-<translation id="670893696722244877">భాషలు లేదా ఇన్‌పుట్ పేర్ల ద్వారా సెర్చ్ చేయండి</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" />, 1 ఇతర ట్యాబ్}other{<ph name="PAGE_TITLE" />, # ఇతర ట్యాబ్‌లు}}</translation>
 <translation id="6709133671862442373">News</translation>
 <translation id="6709357832553498500"><ph name="EXTENSIONNAME" />ని ఉపయోగించి కనెక్ట్ చేయి</translation>
@@ -5683,7 +5680,6 @@
 <translation id="7788298548579301890">మీ కంప్యూటర్‌లోని మరొక ప్రోగ్రామ్ Chrome పని చేసే విధానాన్ని మార్చే యాప్‌ను జోడించింది.
 
 <ph name="EXTENSION_NAME" /></translation>
-<translation id="7788444488075094252">భాషలు మరియు ఇన్‌పుట్</translation>
 <translation id="7788668840732459509">స్థానం:</translation>
 <translation id="7789963078219276159">ప్రారంభ పేజీ నేపథ్యం <ph name="CATEGORY" />కు మార్చబడింది.</translation>
 <translation id="7791543448312431591">జోడించు</translation>
@@ -6268,7 +6264,6 @@
 <translation id="8467326454809944210">మరొక భాషను ఎంచుకోండి</translation>
 <translation id="8470214316007448308">ఇతర వ్యక్తులు</translation>
 <translation id="8470513973197838199"><ph name="ORIGIN" /> కోసం సేవ్ చేసిన పాస్‌వర్డ్‌లు</translation>
-<translation id="8471256130228705232"><ph name="DOMAIN" />, ADB డీబగ్గింగ్‌ను డిజేబుల్ చేస్తోంది. ఇది మీ <ph name="DEVICE_TYPE" />ను 24 గంటలలో రీసెట్ చేస్తుంది. మీరు ఉంచాలనుకునే ఫైల్స్‌ను బ్యాకప్ చేసుకోండి.</translation>
 <translation id="8471525937465764768">డాక్యుమెంట్‌ను ప్రింట్ చేయడం లేదా స్టోరేజ్ పరికరానికి సేవ్ చేయడం వంటి ఫీచర్‌ల కోసం సాధారణంగా సైట్‌లు USB పరికరాలకు కనెక్ట్ అవుతాయి</translation>
 <translation id="8472623782143987204">హార్డ్‌వేర్ మద్దతు గలది</translation>
 <translation id="8473863474539038330">అడ్రస్‌లు, మరికొన్ని వివరాలు</translation>
@@ -6803,6 +6798,7 @@
 <translation id="9088234649737575428"><ph name="PLUGIN_NAME" /> ఎంటర్‌ప్రైజ్ విధానం వలన బ్లాక్ చేయబడింది</translation>
 <translation id="9088446193279799727">Linuxను కాన్ఫిగర్ చేయడం సాధ్యం కాలేదు. ఇంటర్నెట్‌కు కనెక్ట్ చేసి, మళ్లీ ప్రయత్నించండి.</translation>
 <translation id="9088917181875854783">దయచేసి "<ph name="DEVICE_NAME" />"లో ఈ పాస్‌కీ చూపబడిందని నిర్ధారించండి:</translation>
+<translation id="9089416786594320554">ఇన్‌పుట్ పద్ధతులు</translation>
 <translation id="9093429538970210897">అప్‌గ్రేడ్ పూర్తి కాని సందర్భంలో, ఫైల్‌లను బ్యాకప్ చేయడం అనేది సిఫార్సు చేయబడుతుంది. అప్‌గ్రేడ్ ప్రారంభించడం వలన Linux (బీటా) షట్ డౌన్ అవుతుంది. కొనసాగడానికి ముందు దయచేసి తెరిచి ఉన్న ఫైల్‌లను సేవ్ చేయండి.</translation>
 <translation id="9094033019050270033">పాస్‌వర్డ్‌ను అప్‌డేట్ చేయి</translation>
 <translation id="9094038138851891550">వినియోగదారు పేరు చెల్లదు</translation>

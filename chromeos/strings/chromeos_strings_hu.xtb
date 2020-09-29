@@ -5,6 +5,7 @@
 <translation id="1195447618553298278">Ismeretlen hiba.</translation>
 <translation id="1413240736185167732">Sikertelen – Szűrőhiba</translation>
 <translation id="1468664791493211953">Ajánlatok</translation>
+<translation id="1478594628797167447">Szkenner</translation>
 <translation id="1482734542997480527">A(z) <ph name="ENROLLMENT_DOMAIN" /> kezeli ezt az eszközt, és előfordulhat, hogy megfigyeli az Ön tevékenységeit.</translation>
 <translation id="150962533380566081">Érvénytelen PUK-kód.</translation>
 <translation id="1510238584712386396">Indító</translation>
@@ -19,10 +20,12 @@
 <translation id="2161394479394250669">Nyomtatási feladat megszakítása</translation>
 <translation id="2338501278241028356">Kapcsolja be a Bluetooth-t a közeli eszközök felfedezéséhez</translation>
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> próbálkozás maradt</translation>
+<translation id="2517472476991765520">Keresés</translation>
 <translation id="2805756323405976993">Alkalmazások</translation>
 <translation id="2872961005593481000">Leállítás</translation>
 <translation id="3008341117444806826">FRISSÍTÉS</translation>
 <translation id="3091839911843451378">Sikertelen – Leállítva</translation>
+<translation id="3246869037381808805">Az 1 napnál régebbi nyomtatási feladatokat eltávolítja a rendszer</translation>
 <translation id="3268178239013324452">Sikertelen – Nyitva van a nyomtató fedele</translation>
 <translation id="3369013195428705271">Biztosan törli a nyomtatási előzményeket? A folyamatban lévő nyomtatási feladatok nem szakadnak meg.</translation>
 <translation id="3456078764689556234"><ph name="PRINTED_PAGES" /> oldal kinyomtatva (összesen ennyiből: <ph name="TOTAL_PAGES" />).</translation>
@@ -33,6 +36,7 @@
 <translation id="38114475217616659">Minden előzmény törlése</translation>
 <translation id="3820172043799983114">Érvénytelen PIN-kód.</translation>
 <translation id="3838338534323494292">Új jelszó</translation>
+<translation id="39823212440917567">A(z) <ph name="NUMBER_OF_DAYS" /> napnál régebbi nyomtatási feladatokat eltávolítja a rendszer</translation>
 <translation id="4003259559679196451">A(z) <ph name="ENROLLMENT_DOMAIN" /> kezeli ezt az eszközt, ezért hozzáfér az összes felhasználói tevékenységhez, köztük a felkeresett webhelyekhez, a jelszavakhoz és az e-mailekhez.</translation>
 <translation id="4003384961948020559">Sikertelen – Megtelt a kimenet</translation>
 <translation id="4027485274696301677">Ezt a(z) <ph name="DEVICE_TYPE" /> eszközt a(z) <ph name="ENROLLMENT_DOMAIN" /> kezeli. A rendszergazdák távolról konfigurálhatják az eszközt.</translation>
@@ -70,6 +74,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="649050271426829538">Leállt – Papírelakadás</translation>
 <translation id="6517239166834772319">Felfedezés</translation>
 <translation id="6564646048574748301">Sikertelen – Nem lehet hozzáférni a nyomtatóhoz</translation>
+<translation id="6620487321149975369">A nyomtatási feladatok láthatók az előzmények között, ha nem távolítják el őket manuálisan</translation>
 <translation id="6643016212128521049">Törlés</translation>
 <translation id="6747215703636344499">Leállt – Megtelt a kimenet</translation>
 <translation id="7162487448488904999">Galéria</translation>

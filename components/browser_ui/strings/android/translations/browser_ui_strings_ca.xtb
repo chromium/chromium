@@ -76,6 +76,7 @@
 <translation id="2913331724188855103">Permet que els llocs web desin i llegeixin les dades de les galetes (opció recomanada)</translation>
 <translation id="2968755619301702150">Lector de certificats</translation>
 <translation id="300526633675317032">Amb aquesta acció s'esborraran <ph name="SIZE_IN_KB" /> d'emmagatzematge del lloc web.</translation>
+<translation id="3008272652534848354">Restableix els permisos</translation>
 <translation id="301521992641321250">Bloquejada automàticament</translation>
 <translation id="3114012059975132928">Reproductor de vídeo</translation>
 <translation id="3115898365077584848">Mostra la informació</translation>
@@ -90,6 +91,7 @@
 <translation id="3386292677130313581">Pregunta abans de permetre que els llocs web sàpiguen la teva ubicació (opció recomanada)</translation>
 <translation id="3538390592868664640">Impedeix que els llocs web creïn un mapa en 3D del teu entorn o que facin un seguiment de la posició de la càmera</translation>
 <translation id="3586500876634962664">Ús de la càmera i el micròfon</translation>
+<translation id="3587482841069643663">Tots</translation>
 <translation id="358794129225322306">Permet que un lloc web baixi diversos fitxers automàticament.</translation>
 <translation id="3594780231884063836">Silencia el vídeo</translation>
 <translation id="3596414637720633074">Bloqueja les galetes de tercers en mode d'incògnit</translation>
@@ -122,6 +124,7 @@
 <translation id="4570913071927164677">Detalls</translation>
 <translation id="4645575059429386691">Gestionat pels pares</translation>
 <translation id="4670064810192446073">Realitat virtual</translation>
+<translation id="4708011789095599544">Confirmes que vols esborrar les galetes i altres dades d'aquest lloc web?</translation>
 <translation id="4751476147751820511">Sensors de moviment o de llum</translation>
 <translation id="4883854917563148705">Les opcions de configuració gestionades no es poden restablir</translation>
 <translation id="4887024562049524730">Pregunta abans de permetre que els llocs web utilitzin el teu dispositiu i les teves dades de realitat virtual (opció recomanada)</translation>

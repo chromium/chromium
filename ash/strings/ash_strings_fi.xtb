@@ -104,7 +104,6 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1962969542251276847">Näytönlukitus</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Hei <ph name="USERNAME" /></translation>
-<translation id="1975500003782052650">Viimeaikaiset lataukset</translation>
 <translation id="1978498689038657292">Tekstinsyöttö</translation>
 <translation id="1993072747612765854">Lue lisää uusimmasta <ph name="SYSTEM_APP_NAME" /> ‑päivityksestä.</translation>
 <translation id="1995660704900986789">Virta pois</translation>
@@ -153,7 +152,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2435457462613246316">Näytä salasana</translation>
 <translation id="2473177541599297363">Vahvista resoluutio</translation>
 <translation id="2475982808118771221">Tapahtui virhe</translation>
-<translation id="2479579251444854687">Avaa Viimeisimmät pyyhkäisemällä ylöspäin kolmella sormella ja sulje se pyyhkäisemällä sormilla alaspäin.</translation>
+<translation id="2479579251444854687">Avaa Viimeisimmät pyyhkäisemällä kolmella sormella ylöspäin ja sulje se pyyhkäisemällä alaspäin.</translation>
 <translation id="2482878487686419369">Ilmoitukset</translation>
 <translation id="2484513351006226581">Paina <ph name="KEYBOARD_SHORTCUT" /> vaihtaaksesi näppäimistöasettelua.</translation>
 <translation id="2501920221385095727">Päälle jäävät näppäimet</translation>
@@ -376,6 +375,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="4710243778082831592">IME-asetukset</translation>
 <translation id="4731797938093519117">Avaus vanhemmille</translation>
 <translation id="4734965478015604180">Vaakasuora</translation>
+<translation id="4759238208242260848">Lataukset</translation>
 <translation id="4774338217796918551">Palaa huomenna kello <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776917500594043016">Osoitteen <ph name="USER_EMAIL_ADDRESS" /> salasana</translation>
 <translation id="4778095205580009397">Google Assistantia ei voi käyttää demo-käyttökerralla.</translation>

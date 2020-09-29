@@ -76,7 +76,6 @@
 <translation id="1544826120773021464">Чтобы перейти к управлению аккаунтом Google, нажмите кнопку "Настройки аккаунта"</translation>
 <translation id="1549000191223877751">Перейти к другому окну</translation>
 <translation id="1553358976309200471">Обновить Chrome</translation>
-<translation id="1565153191103764132">Телугу</translation>
 <translation id="1569387923882100876">Подключенное устройство</translation>
 <translation id="1571304935088121812">Копировать имя пользователя</translation>
 <translation id="1592864538817356322">Стандартная защита:</translation>
@@ -290,7 +289,7 @@
 <translation id="3244271242291266297">ММ</translation>
 <translation id="3254409185687681395">Добавить страницу в закладки</translation>
 <translation id="3259831549858767975">Уменьшить масштаб страницы</translation>
-<translation id="3264124641674805320">Как заранее скачать контент</translation>
+<translation id="3264124641674805320">Как скачать контент</translation>
 <translation id="3269093882174072735">Загрузить изображение</translation>
 <translation id="3269956123044984603">Чтобы получить доступ к вкладкам на всех своих устройствах, включите автосинхронизацию данных в настройках аккаунта на устройстве Android.</translation>
 <translation id="3282568296779691940">Войти в Chrome</translation>
@@ -525,7 +524,6 @@
 <translation id="5011311129201317034">Сайт <ph name="SITE" /> запрашивает подключение</translation>
 <translation id="5013696553129441713">Новых рекомендаций нет</translation>
 <translation id="5016205925109358554">С засечками</translation>
-<translation id="5026887030745057099">Хинди</translation>
 <translation id="5039804452771397117">Разрешить</translation>
 <translation id="5040262127954254034">Конфиденциальность</translation>
 <translation id="5087580092889165836">Добавить карту</translation>
@@ -896,7 +894,6 @@
 В этом режиме информация о ваших действиях может быть по-прежнему доступна сайтам, которые вы посещаете, системному администратору в учебном заведении или на работе, а также вашему интернет-провайдеру.</translation>
 <translation id="7704317875155739195">Заполнять поисковые запросы и URL автоматически</translation>
 <translation id="7725024127233776428">Здесь будут страницы, которые вы добавляете в закладки.</translation>
-<translation id="7732997068759397415">Каннада</translation>
 <translation id="7735637452482172701">Использовать разблокировку экрана</translation>
 <translation id="7746457520633464754">Для обнаружения опасных приложений и сайтов Chrome отправляет в Google URL некоторых страниц, которые вы открываете, контент на них, а также определенные сведения о системе</translation>
 <translation id="7757787379047923882">Текст с устройства <ph name="DEVICE_NAME" /></translation>
@@ -953,7 +950,6 @@
 <translation id="8073388330009372546">Открыть в новой вкладке</translation>
 <translation id="8076492880354921740">Вкладки</translation>
 <translation id="8084114998886531721">Сохраненный пароль</translation>
-<translation id="8099451332580698547">Тамильский</translation>
 <translation id="8103578431304235997">Вкладка инкогнито</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109613176066109935">Чтобы получить доступ к закладкам на всех устройствах, включите синхронизацию.</translation>
@@ -1032,7 +1028,6 @@
 <translation id="8659579665266920523">Как выполнять поиск в Chrome</translation>
 <translation id="8662811608048051533">Вы автоматически выйдете из учетных записей на большинстве сайтов.</translation>
 <translation id="8664979001105139458">Файл с таким именем уже существует.</translation>
-<translation id="8666678546361132282">Английский</translation>
 <translation id="8683039184091909753">Изображение</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{Уровень сигнала: # линия}one{Уровень сигнала: # линия}few{Уровень сигнала: # линии}many{Уровень сигнала: # линий}other{Уровень сигнала: # линии}}</translation>
 <translation id="869891660844655955">Срок действия</translation>

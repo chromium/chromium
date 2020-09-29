@@ -2251,7 +2251,6 @@
 <translation id="3639220004740062347">Выйти из режима чтения</translation>
 <translation id="3640214691812501263">Добавить расширение "<ph name="EXTENSION_NAME" />" для пользователя <ph name="USER_NAME" />?</translation>
 <translation id="3640613767643722554">Научите Ассистента узнавать ваш голос</translation>
-<translation id="3643014427358482789">Администратор домена <ph name="DOMAIN" /> отключил отладку с использованием ADB, поэтому настройки вашего устройства <ph name="DEVICE_TYPE" /> будут сброшены. Прежде чем перезапускать его, выполните резервное копирование файлов.</translation>
 <translation id="3643637292669952403">Запретить сайтам получать информацию о вашем местоположении</translation>
 <translation id="3645372836428131288">Немного перемещайте палец, чтобы отсканировать его полностью.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{Вы получили <ph name="ATTACHMENTS" /> с устройства "<ph name="DEVICE_NAME" />".}one{Вы получили <ph name="ATTACHMENTS" /> с устройства "<ph name="DEVICE_NAME" />".}few{Вы получили <ph name="ATTACHMENTS" /> с устройства "<ph name="DEVICE_NAME" />".}many{Вы получили <ph name="ATTACHMENTS" /> с устройства "<ph name="DEVICE_NAME" />".}other{Вы получили <ph name="ATTACHMENTS" /> с устройства "<ph name="DEVICE_NAME" />".}}</translation>
@@ -3897,7 +3896,6 @@
 <translation id="5632566673632479864">Ваш аккаунт (<ph name="EMAIL" />) больше нельзя использовать в качестве основного. Поскольку этот аккаунт находится под управлением администраторов домена <ph name="DOMAIN" />, все закладки, пароли и настройки, а также история будут удалены с устройства.</translation>
 <translation id="5632592977009207922">Идет скачивание: осталось <ph name="PERCENT_REMAINING" /> %</translation>
 <translation id="563371367637259496">Мобильная сеть</translation>
-<translation id="563496044070985734">Список языков, для которых доступна проверка правописания, определяется языковыми настройками.</translation>
 <translation id="563535393368633106">Запрашивать разрешение на доступ (рекомендуется)</translation>
 <translation id="5636996382092289526">Чтобы подключиться к сети "<ph name="NETWORK_ID" />", <ph name="LINK_START" />перейдите на страницу входа<ph name="LINK_END" /> – она автоматически откроется через несколько секунд. Если этого не произойдет, значит использование сети невозможно.</translation>
 <translation id="5637476008227280525">Включить мобильные данные</translation>
@@ -4782,7 +4780,6 @@
 <translation id="6704062477274546131">Разрешение DNS</translation>
 <translation id="6706210727756204531">Область применения</translation>
 <translation id="6707389671160270963">Клиентский сертификат SSL</translation>
-<translation id="670893696722244877">Поиск по языку или способу ввода</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{"<ph name="PAGE_TITLE" />" и ещё 1 вкладка}one{"<ph name="PAGE_TITLE" />" и ещё # вкладка}few{"<ph name="PAGE_TITLE" />" и ещё # вкладки}many{"<ph name="PAGE_TITLE" />" и ещё # вкладок}other{"<ph name="PAGE_TITLE" />" и ещё # вкладки}}</translation>
 <translation id="6709133671862442373">Новости</translation>
 <translation id="6709357832553498500">Подключиться через <ph name="EXTENSIONNAME" /></translation>
@@ -5343,7 +5340,7 @@
 <translation id="7388209873137778229">Показаны только поддерживаемые устройства.</translation>
 <translation id="7392118418926456391">Не удалось выполнить проверку на вирусы</translation>
 <translation id="7392915005464253525">О&amp;ткрыть закрытое окно</translation>
-<translation id="7393073300870882456">{COUNT,plural, =1{Скопирован 1 объект.}one{Скопирован {COUNT} объект.}few{Скопировано {COUNT} объекта.}many{Скопировано {COUNT} объектов.}other{Скопировано {COUNT} объекта.}}</translation>
+<translation id="7393073300870882456">{COUNT,plural, =1{Скопирована 1 закладка.}one{Скопирована {COUNT} закладка.}few{Скопировано {COUNT} закладки.}many{Скопировано {COUNT} закладок.}other{Скопировано {COUNT} закладки.}}</translation>
 <translation id="7396017167185131589">Здесь будут появляться общие папки.</translation>
 <translation id="7396845648024431313">Приложение <ph name="APP_NAME" /> будет запущено при старте системы и продолжит работу в фоновом режиме даже после закрытия всех окон <ph name="PRODUCT_NAME" />.</translation>
 <translation id="7399045143794278225">Настроить синхронизацию</translation>
@@ -5682,7 +5679,6 @@
 
 
 <ph name="EXTENSION_NAME" /></translation>
-<translation id="7788444488075094252">Языки и ввод</translation>
 <translation id="7788668840732459509">Положение:</translation>
 <translation id="7789963078219276159">Фон стартовой страницы изменен на изображение "<ph name="CATEGORY" />".</translation>
 <translation id="7791543448312431591">Добавить</translation>
@@ -5973,7 +5969,7 @@
 <translation id="80974698889265265">PIN-коды не совпадают</translation>
 <translation id="809792523045608178">В <ph name="IDS_SHORT_PRODUCT_NAME" /> используются настройки прокси-сервера из расширения.</translation>
 <translation id="8097959162767603171">Сначала администратор должен принять Условия использования, которые можно найти на странице со списком устройств Chrome в консоли администратора.</translation>
-<translation id="810068641062493918">Выбран этот язык: <ph name="LANGUAGE" />. Чтобы отменить выбор, нажмите клавиши Поиск + Пробел.</translation>
+<translation id="810068641062493918">Выбранный язык: <ph name="LANGUAGE" />. Чтобы отменить выбор, нажмите клавиши Поиск + Пробел.</translation>
 <translation id="8101987792947961127">При следующей перезагрузке устройства необходимо выполнить Powerwash</translation>
 <translation id="8102139037507939978">Удалять из файла system_logs.txt информацию, позволяющую идентифицировать личность</translation>
 <translation id="8102159139658438129">Чтобы открыть параметры подключенного телефона, перейдите в <ph name="LINK_BEGIN" />Настройки<ph name="LINK_END" />.</translation>
@@ -6269,7 +6265,6 @@
 <translation id="8467326454809944210">Выбрать другой язык</translation>
 <translation id="8470214316007448308">Другие пользователи</translation>
 <translation id="8470513973197838199">Сохраненные пароли для <ph name="ORIGIN" /></translation>
-<translation id="8471256130228705232">Отладка с помощью ADB отключена администратором домена <ph name="DOMAIN" />. Сброс <ph name="DEVICE_TYPE" /> будет выполнен через 24 часа. Чтобы сохранить нужные файлы, создайте их резервную копию.</translation>
 <translation id="8471525937465764768">Обычно сайты подключаются к USB-устройствам, чтобы использовать некоторые функции, например печатать документы или сохранять данные на внешних накопителях.</translation>
 <translation id="8472623782143987204">требуется оборудование</translation>
 <translation id="8473863474539038330">Адреса и другие данные</translation>
@@ -6804,6 +6799,7 @@
 <translation id="9088234649737575428">Плагин "<ph name="PLUGIN_NAME" />" заблокирован в соответствии с корпоративной политикой</translation>
 <translation id="9088446193279799727">Не удалось настроить Linux. Подключитесь к Интернету и повторите попытку.</translation>
 <translation id="9088917181875854783">Подтвердите ключ доступа, отображенный на экране "<ph name="DEVICE_NAME" />":</translation>
+<translation id="9089416786594320554">Методы ввода</translation>
 <translation id="9093429538970210897">Рекомендуем создать резервные копии файлов, чтобы в случае ошибки вы не потеряли свои данные. Как только обновление начнется, работа операционной системы Linux (бета) будет завершена. Прежде чем продолжить, сохраните открытые файлы.</translation>
 <translation id="9094033019050270033">Обновить пароль</translation>
 <translation id="9094038138851891550">Недопустимое имя пользователя.</translation>

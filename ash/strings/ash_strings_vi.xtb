@@ -104,7 +104,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1962969542251276847">Khóa màn hình</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Chào <ph name="USERNAME" />!</translation>
-<translation id="1975500003782052650">Tệp đã tải xuống gần đây</translation>
 <translation id="1978498689038657292">Nhập văn bản</translation>
 <translation id="1993072747612765854">Tìm hiểu thêm về bản cập nhật <ph name="SYSTEM_APP_NAME" /> mới nhất</translation>
 <translation id="1995660704900986789">Tắt nguồn</translation>
@@ -376,6 +375,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="4710243778082831592">Cài đặt Trình chỉnh sửa phương thức nhập (IME)</translation>
 <translation id="4731797938093519117">Quyền truy cập của cha mẹ</translation>
 <translation id="4734965478015604180">Ngang</translation>
+<translation id="4759238208242260848">Tệp đã tải xuống</translation>
 <translation id="4774338217796918551">Hãy quay lại lúc <ph name="COME_BACK_TIME" /> ngày mai.</translation>
 <translation id="4776917500594043016">Mật khẩu cho <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4778095205580009397">Bạn không thể sử dụng Trợ lý Google trong phiên minh họa.</translation>

@@ -2253,7 +2253,6 @@
 <translation id="3639220004740062347">읽기 모드 종료</translation>
 <translation id="3640214691812501263"><ph name="USER_NAME" />님에 대하여 '<ph name="EXTENSION_NAME" />'을(를) 추가할까요?</translation>
 <translation id="3640613767643722554">어시스턴트가 내 음성을 인식하도록 학습시키기</translation>
-<translation id="3643014427358482789"><ph name="DOMAIN" />에서 ADB 디버깅이 사용 중지되었으며, <ph name="DEVICE_TYPE" />이 초기화됩니다. 다시 시작하기 전에 파일을 백업하세요.</translation>
 <translation id="3643637292669952403">사이트에서 위치를 확인하지 못하도록 차단</translation>
 <translation id="3645372836428131288">지문의 다른 부분이 인식되도록 손가락을 살짝 움직이세요.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="DEVICE_NAME" />에서 <ph name="ATTACHMENTS" /> 수신}other{<ph name="DEVICE_NAME" />에서 <ph name="ATTACHMENTS" /> 수신}}</translation>
@@ -3897,7 +3896,6 @@
 <translation id="5632566673632479864"><ph name="EMAIL" /> 계정이 더 이상 기본 계정으로 허용되지 않습니다. 이 계정은 <ph name="DOMAIN" />에 의해 관리되므로 북마크, 방문 기록, 비밀번호 및 기타 설정이 기기에서 삭제됩니다.</translation>
 <translation id="5632592977009207922">다운로드 중, <ph name="PERCENT_REMAINING" />% 남음</translation>
 <translation id="563371367637259496">모바일</translation>
-<translation id="563496044070985734">언어 설정에 따라 맞춤법 검사를 사용할 수 있는 언어가 결정됩니다.</translation>
 <translation id="563535393368633106">액세스하기 전에 확인(권장)</translation>
 <translation id="5636996382092289526"><ph name="NETWORK_ID" />을(를) 사용하려면 먼저 몇 초 뒤에 자동으로 열리는 <ph name="LINK_START" />네트워크 로그인 페이지로 이동<ph name="LINK_END" />해야 합니다. 네트워크 로그인 페이지가 자동으로 열리지 않으면 네트워크를 사용할 수 없습니다.</translation>
 <translation id="5637476008227280525">모바일 데이터 사용</translation>
@@ -4782,7 +4780,6 @@
 <translation id="6704062477274546131">DNS 변환</translation>
 <translation id="6706210727756204531">범위</translation>
 <translation id="6707389671160270963">SSL 클라이언트 인증서</translation>
-<translation id="670893696722244877">언어 또는 입력 방법 이름으로 검색</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> 외 탭 1개}other{<ph name="PAGE_TITLE" /> 외 탭 #개}}</translation>
 <translation id="6709133671862442373">뉴스</translation>
 <translation id="6709357832553498500"><ph name="EXTENSIONNAME" />을(를) 사용하여 연결</translation>
@@ -5682,7 +5679,6 @@
 
 
 <ph name="EXTENSION_NAME" /></translation>
-<translation id="7788444488075094252">언어 및 입력</translation>
 <translation id="7788668840732459509">위치:</translation>
 <translation id="7789963078219276159">시작 페이지 배경화면이 <ph name="CATEGORY" />(으)로 변경되었습니다.</translation>
 <translation id="7791543448312431591">추가</translation>
@@ -6270,7 +6266,6 @@
 <translation id="8467326454809944210">다른 언어 선택</translation>
 <translation id="8470214316007448308">다른 사용자</translation>
 <translation id="8470513973197838199"><ph name="ORIGIN" />의 저장된 비밀번호</translation>
-<translation id="8471256130228705232"><ph name="DOMAIN" />에서 ADB 디버깅을 사용 중지하고 있습니다. 24시간 후 <ph name="DEVICE_TYPE" /> 기기가 초기화됩니다. 유지하고 싶은 파일이 있으면 백업해 주세요.</translation>
 <translation id="8471525937465764768">사이트에서는 일반적으로 문서 인쇄 또는 스토리지 기기에 저장과 같은 기능을 사용하기 위해 USB 기기에 연결합니다.</translation>
 <translation id="8472623782143987204">하드웨어 지원</translation>
 <translation id="8473863474539038330">주소 및 기타</translation>
@@ -6805,6 +6800,7 @@
 <translation id="9088234649737575428"><ph name="PLUGIN_NAME" />이(가) 기업 정책에 의해 차단되었습니다.</translation>
 <translation id="9088446193279799727">Linux를 설정할 수 없습니다. 인터넷에 연결한 다음 다시 시도해 보세요.</translation>
 <translation id="9088917181875854783">다음 패스키가 '<ph name="DEVICE_NAME" />'에 표시되는지 확인하세요.</translation>
+<translation id="9089416786594320554">입력 방법</translation>
 <translation id="9093429538970210897">업그레이드를 완료할 수 없는 경우 파일을 백업해 두는 것이 좋습니다. 업그레이드를 시작하면 Linux(베타)가 종료됩니다. 진행하기 전에 열려 있는 파일을 저장하세요.</translation>
 <translation id="9094033019050270033">비밀번호 업데이트</translation>
 <translation id="9094038138851891550">사용자 이름이 잘못되었습니다.</translation>

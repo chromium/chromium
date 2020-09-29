@@ -104,7 +104,6 @@
 <translation id="1962969542251276847">អេក្រង់​ចាក់សោ​</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">សួស្តី <ph name="USERNAME" /></translation>
-<translation id="1975500003782052650">ការទាញយកថ្មីៗ</translation>
 <translation id="1978498689038657292">ការ​បញ្ចូល​អក្សរ</translation>
 <translation id="1993072747612765854">ស្វែងយល់​បន្ថែម​អំពី​កំណែ​ <ph name="SYSTEM_APP_NAME" /> ថ្មី​បំផុត</translation>
 <translation id="1995660704900986789">បិទ</translation>
@@ -376,6 +375,7 @@
 <translation id="4710243778082831592">ការកំណត់ IME</translation>
 <translation id="4731797938093519117">សិទ្ធិចូលប្រើប្រាស់​សម្រាប់មាតាបិតា</translation>
 <translation id="4734965478015604180">ផ្ដេក​</translation>
+<translation id="4759238208242260848">ទាញយក</translation>
 <translation id="4774338217796918551">ត្រឡប់​មកវិញ​នៅថ្ងៃស្អែកនៅម៉ោង <ph name="COME_BACK_TIME" />។</translation>
 <translation id="4776917500594043016">ពាក្យសម្ងាត់សម្រាប់ <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4778095205580009397">Google ជំនួយការ​មិន​អាចប្រើ​នៅក្នុងរយៈពេល​ចូលប្រើសាកល្បងបានទេ។</translation>

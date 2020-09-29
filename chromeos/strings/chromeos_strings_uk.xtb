@@ -5,6 +5,7 @@
 <translation id="1195447618553298278">Невідома помилка.</translation>
 <translation id="1413240736185167732">Не надруковано – помилка фільтра</translation>
 <translation id="1468664791493211953">Пропозиції</translation>
+<translation id="1478594628797167447">Сканери</translation>
 <translation id="1482734542997480527">Сайт <ph name="ENROLLMENT_DOMAIN" /> керує цим пристроєм і може відстежувати ваші дії.</translation>
 <translation id="150962533380566081">Недійсний PUK-код.</translation>
 <translation id="1510238584712386396">Панель запуску</translation>
@@ -19,10 +20,12 @@
 <translation id="2161394479394250669">Скасувати завдання друку</translation>
 <translation id="2338501278241028356">Щоб знайти пристрої поблизу, увімкніть Bluetooth</translation>
 <translation id="2375079107209812402">Залишилося спроб: <ph name="ATTEMPTS_LEFT" /></translation>
+<translation id="2517472476991765520">Сканувати</translation>
 <translation id="2805756323405976993">Додатки</translation>
 <translation id="2872961005593481000">Завершити роботу</translation>
 <translation id="3008341117444806826">ОНОВИТИ</translation>
 <translation id="3091839911843451378">Не надруковано – друк зупинено</translation>
+<translation id="3246869037381808805">Завдання друку, старіші за 1 день, буде вилучено</translation>
 <translation id="3268178239013324452">Не надруковано – відкрито кришку принтера</translation>
 <translation id="3369013195428705271">Видалити всю історію друку? Поточні завдання друку збережуться.</translation>
 <translation id="3456078764689556234">Надруковано сторінку <ph name="PRINTED_PAGES" /> з <ph name="TOTAL_PAGES" />.</translation>
@@ -33,6 +36,7 @@
 <translation id="38114475217616659">Очистити всю історію</translation>
 <translation id="3820172043799983114">Недійсний PIN-код.</translation>
 <translation id="3838338534323494292">Новий пароль</translation>
+<translation id="39823212440917567">Завдання друку, старіші за <ph name="NUMBER_OF_DAYS" /> дн., буде вилучено</translation>
 <translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> керує цим пристроєм і має доступ до всіх дій користувача, зокрема відвіданих сторінок, паролів і електронних листів.</translation>
 <translation id="4003384961948020559">Не надруковано – вихідний лоток заповнений</translation>
 <translation id="4027485274696301677">Цим пристроєм <ph name="DEVICE_TYPE" /> керує домен <ph name="ENROLLMENT_DOMAIN" />. Адміністратори можуть віддалено налаштовувати його.</translation>
@@ -70,6 +74,7 @@
 <translation id="649050271426829538">Зупинено – зам'яло папір</translation>
 <translation id="6517239166834772319">Можливості</translation>
 <translation id="6564646048574748301">Не надруковано – принтер недоступний</translation>
+<translation id="6620487321149975369">Завдання друку відображатимуться в історії, доки ви не вилучите їх вручну</translation>
 <translation id="6643016212128521049">Очистити</translation>
 <translation id="6747215703636344499">Зупинено – вихідний лоток заповнений</translation>
 <translation id="7162487448488904999">Галерея</translation>

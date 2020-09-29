@@ -2246,7 +2246,6 @@
 <translation id="3639220004740062347">ରିଡର୍ ମୋଡରୁ ବାହାରି ଯାଆନ୍ତୁ</translation>
 <translation id="3640214691812501263"><ph name="USER_NAME" /> ପାଇଁ <ph name="EXTENSION_NAME" /> ଯୋଗ କରିବେ?</translation>
 <translation id="3640613767643722554">ଆପଣଙ୍କର ସ୍ୱରକୁ ଚିହ୍ନଟ କରିବା ସକାଶେ ଆପଣଙ୍କର ଆସିଷ୍ଟାଣ୍ଟ୍‌କୁ ଶିକ୍ଷା ଦିଅନ୍ତୁ</translation>
-<translation id="3643014427358482789"><ph name="DOMAIN" /> ADB ଡିବଗିଂକୁ ଅକ୍ଷମ କରୁଛି ଯାହା ଆପଣଙ୍କ <ph name="DEVICE_TYPE" />କୁ ରିସେଟ୍ କରିବ। ରିଷ୍ଟାର୍ଟ କରିବା ପୂର୍ବରୁ ଆପଣଙ୍କ ଫାଇଲଗୁଡ଼ିକର ବ୍ୟାକଅପ୍ ନିଅନ୍ତୁ।</translation>
 <translation id="3643637292669952403">ସାଇଟଗୁଡ଼ିକୁ ଆପଣଙ୍କ ଲୋକେସନ୍ ଦେଖିବାରୁ ବ୍ଲକ୍ କରନ୍ତୁ</translation>
 <translation id="3645372836428131288">ଟିପଚିହ୍ନର ଏକ ଭିନ୍ନ ଅଂଶକୁ କ୍ୟାପଚର୍ କରିବା ପାଇଁ ଅଳ୍ପ ଘୁଞ୍ଚାନ୍ତୁ।</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="DEVICE_NAME" />ରୁ <ph name="ATTACHMENTS" /> ମିଳିଛି}other{<ph name="DEVICE_NAME" />ରୁ <ph name="ATTACHMENTS" /> ମିଳିଛି}}</translation>
@@ -2483,7 +2482,7 @@
 <translation id="3894123633473837029">Sherlog ଜରିଆରେ ସମ୍ପ୍ରତି ଆସିଷ୍ଟାଣ୍ଟର ଇତିବୃତ୍ତି ଅନ୍ତର୍ଭୁକ୍ତ କରନ୍ତୁ। ଏହା ଦ୍ବାରା ଆପଣଙ୍କ ପରିଚୟ, ଲୋକେସନ୍, ଏବଂ ଡିବଗ୍ ସୂଚନା ଅନ୍ତର୍ଭୁକ୍ତ ହୋଇପାରେ। <ph name="BEGIN_LINK" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="3894427358181296146">ଫୋଲ୍ଡର୍‍‍ରେ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="3894770151966614831">Google ଆକାଉଣ୍ଟକୁ ମୁଭ୍ କରିବେ?</translation>
-<translation id="3895076768659607631">ସନ୍ଧାନ ଇଞ୍ଜିନଗୁଡ଼ିକ &amp;ପରିଚାଳନା କରନ୍ତୁ...</translation>
+<translation id="3895076768659607631">ସନ୍ଧାନ ଇଞ୍ଜିନଗୁଡ଼ିକୁ &amp;ପରିଚାଳନା କରନ୍ତୁ...</translation>
 <translation id="3895090224522145010">Kerberos ଉପଯୋଗକର୍ତ୍ତାନାମ</translation>
 <translation id="389589731200570180">ଅତିଥିଙ୍କ ସହ ସେୟାର୍ କରନ୍ତୁ</translation>
 <translation id="3898233949376129212">ଡିଭାଇସର ଭାଷା</translation>
@@ -3891,7 +3890,6 @@
 <translation id="5632566673632479864">ଆପଣଙ୍କ ଆକାଉଣ୍ଟ <ph name="EMAIL" /> ଆଉ ପ୍ରାଥମିକ ଆକାଉଣ୍ଟ ଭାବେ ଅନୁମୋଦିତ ନୁହେଁ। ଯେହେତୁ ଏହି ଆକାଉଣ୍ଟ <ph name="DOMAIN" /> ଦ୍ୱାରା ପରିଚାଳନା କରାଯାଉଛି, ତେଣୁ ଆପଣଙ୍କ ବୁକ୍‌ମାର୍କ, ଇତିବୃତ୍ତି, ପାସ୍‌ୱାର୍ଡ, ଏବଂ ଅନ୍ୟାନ୍ୟ ସେଟିଂସ୍ ଏହି ଡିଭାଇସ୍‌ରୁ ଖାଲି କରିଦିଆଯିବ।</translation>
 <translation id="5632592977009207922">ଡାଉନ୍‌ଲୋଡିଂ <ph name="PERCENT_REMAINING" />% ବାକି ଅଛି</translation>
 <translation id="563371367637259496">ମୋବାଇଲ୍</translation>
-<translation id="563496044070985734">ଆପଣଙ୍କ ଭାଷାଗୁଡ଼ିକର ସେଟିଂସର ଆଧାରରେ ବନାନ ଯାଞ୍ଚ ପାଇଁ ଭାଷାଗୁଡ଼ିକ ଉପଲବ୍ଧ ଅଛି</translation>
 <translation id="563535393368633106">ଆକ୍ସେସ୍ କରିବା ପୂର୍ବରୁ ପଚାରନ୍ତୁ (ସୁପାରିଶ୍ କରାଯାଇଛି)</translation>
 <translation id="5636996382092289526"><ph name="NETWORK_ID" /> ବ୍ୟବହାର କରିବାକୁ ଆପଣଙ୍କୁ ହୁଏତ ପ୍ରଥମେ <ph name="LINK_START" />ନେଟ୍‌ୱାର୍କର ସାଇନ୍ ଇନ୍ ପୃଷ୍ଠାକୁ ଯିବା ଉଚିତ<ph name="LINK_END" />, ଯାହା କିଛି ସେକେଣ୍ଡ ମଧ୍ୟରେ ସ୍ୱଚାଳିତ ରୂପେ ଖୋଲିବ। ଯଦି ଏପରି ହେବ ନାହିଁ, ତେବେ ନେଟୱର୍କ୍‌କୁ ବ୍ୟବହାର କରାଯାଇପାରିବ ନାହିଁ।</translation>
 <translation id="5637476008227280525">ମୋବାଇଲ୍‌ ଡାଟା ସକ୍ଷମ</translation>
@@ -4778,7 +4776,6 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="6704062477274546131">DNS ରିଜୋଲ୍ୟୁସନ୍</translation>
 <translation id="6706210727756204531">ସ୍କୋପ୍</translation>
 <translation id="6707389671160270963">SSL କ୍ଲାଏଣ୍ଟ ସାର୍ଟିଫିକେଟ୍</translation>
-<translation id="670893696722244877">ଭାଷା ବା ଇନପୁଟ୍ ନାମ ଅନୁସାରେ ସନ୍ଧାନ କରନ୍ତୁ</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> ଏବଂ ଅନ୍ୟ 1ଟି ଟାବ୍}other{<ph name="PAGE_TITLE" /> ଏବଂ ଅନ୍ୟ #ଟି ଟାବ୍}}</translation>
 <translation id="6709133671862442373">News</translation>
 <translation id="6709357832553498500"><ph name="EXTENSIONNAME" /> ବ୍ୟବହାର କରି ସଂଯୋଗ କରନ୍ତୁ</translation>
@@ -4833,7 +4830,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="6777817260680419853">ରିଡାଇରେକ୍ଟକୁ ଅବରୋଧ କରାଯାଇଛି।</translation>
 <translation id="6778737459546443941">ଆପଣଙ୍କର ଅଭିଭାବକ ଏପର୍ଯ୍ୟନ୍ତ ଏହାକୁ ଅନୁମୋଦିତ କରିନାହାନ୍ତି</translation>
 <translation id="677965093459947883">ଅତି ଛୋଟ</translation>
-<translation id="6781005693196527806">ସନ୍ଧାନ ଇଞ୍ଜିନଗୁଡ଼ିକ &amp;ପରିଚାଳନା କରନ୍ତୁ...</translation>
+<translation id="6781005693196527806">ସନ୍ଧାନ ଇଞ୍ଜିନଗୁଡ଼ିକୁ &amp;ପରିଚାଳନା କରନ୍ତୁ...</translation>
 <translation id="6781284683813954823">ଡୁଡଲ୍ ଲିଙ୍କ</translation>
 <translation id="6781978626986383437">Linuxର ବ୍ୟାକ୍‌ଅପ୍ ବାତିଲ୍ କରାଯାଇଛି</translation>
 <translation id="6782067259631821405">ଅବୈଧ PIN</translation>
@@ -5678,7 +5675,6 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 
 
 <ph name="EXTENSION_NAME" /></translation>
-<translation id="7788444488075094252">ଭାଷା ଏବଂ ଇନ୍‍ପୁଟ୍</translation>
 <translation id="7788668840732459509">ଅବସ୍ଥିତି:</translation>
 <translation id="7789963078219276159">ପ୍ରାରମ୍ଭ ପୃଷ୍ଠାର ବ୍ୟାକ୍‌ଗ୍ରାଉଣ୍ଡ <ph name="CATEGORY" />କୁ ପରିବର୍ତ୍ତନ କରାଯାଇଛି।</translation>
 <translation id="7791543448312431591">ଯୋଡନ୍ତୁ</translation>
@@ -6263,7 +6259,6 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="8467326454809944210">ଅନ୍ୟ ଏକ ଭାଷା ବାଛନ୍ତୁ</translation>
 <translation id="8470214316007448308">ଅନ୍ୟ ବ୍ୟକ୍ତି</translation>
 <translation id="8470513973197838199"><ph name="ORIGIN" /> ପାଇଁ ପାସ୍‍ୱର୍ଡ ସେଭ୍ କରାଯାଇଛି</translation>
-<translation id="8471256130228705232"><ph name="DOMAIN" /> ADB ଡିବଗିଂକୁ ଅକ୍ଷମ କରୁଛି। ଏହା ଦ୍ୱାରା ଆପଣଙ୍କ <ph name="DEVICE_TYPE" /> 24 ଘଣ୍ଟାରେ ରିସେଟ୍ ହୋଇଯିବ। ଆପଣ ରଖିବାକୁ ଚାହୁଁଥିବା ଯେକୌଣସି ଫାଇଲର ବ୍ୟାକଅପ୍ ନିଅନ୍ତୁ।</translation>
 <translation id="8471525937465764768">ଏକ ଡକ୍ୟୁମେଣ୍ଟ ପ୍ରିଣ୍ଟ କରିବା କିମ୍ବା ଏକ ଷ୍ଟୋରେଜ୍ ଡିଭାଇସରେ ସେଭ୍ କରିବା ପରି ଫିଚରଗୁଡ଼ିକ ପାଇଁ ସାଇଟଗୁଡ଼ିକ ସାଧାରଣତଃ USB ଡିଭାଇସଗୁଡ଼ିକ ସହ ସଂଯୋଗ କରିଥାଏ</translation>
 <translation id="8472623782143987204">ହାର୍ଡୱେର୍-ସମର୍ଥିତ</translation>
 <translation id="8473863474539038330">ଠିକଣାଗୁଡ଼ିକ ଏବଂ ଅଧିକ</translation>
@@ -6798,6 +6793,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="9088234649737575428">ଏଣ୍ଟରପ୍ରାଇଜ୍ ନୀତି ଦ୍ଵାରା <ph name="PLUGIN_NAME" />କୁ ବ୍ଲକ୍‍ କରାଯାଇଛି</translation>
 <translation id="9088446193279799727">Linux କନଫିଗର୍ କରାଯାଇପାରିଲା ନାହିଁ। ଇଣ୍ଟର୍ନେଟକୁ ସଂଯୋଗ କରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="9088917181875854783">ଦୟାକରି ସୁନିଶ୍ଚିତ କରନ୍ତୁ ଯେ "<ph name="DEVICE_NAME" />"ରେ ଏହି ପାସ୍‌କୀ ପ୍ରଦର୍ଶିତ ହୋଇଛି:</translation>
+<translation id="9089416786594320554">ଇନ୍‌ପୁଟ୍ ପଦ୍ଧତି</translation>
 <translation id="9093429538970210897">ଅପଗ୍ରେଡ୍ ସମ୍ପୂର୍ଣ୍ଣ ହୋଇ ନପାରିବା ସ୍ଥଳେ ଫାଇଲଗୁଡ଼ିକର ବ୍ୟାକ୍ ଅପ୍ ନେବା ପାଇଁ ସୁପାରିଶ କରାଯାଇଛି। ଅପଗ୍ରେଡ୍ କରିବା ଆରମ୍ଭ କଲେ Linux (ବିଟା) ବନ୍ଦ ହୋଇଯିବ। ଆଗକୁ ବଢ଼ିବା ପୂର୍ବରୁ ଦୟାକରି ଖୋଲା ଥିବା ଫାଇଲଗୁଡ଼ିକୁ ସେଭ୍ କରନ୍ତୁ।</translation>
 <translation id="9094033019050270033">ପାସ୍‌ୱର୍ଡ ଅପ୍‌ଡେଟ୍ କରନ୍ତୁ</translation>
 <translation id="9094038138851891550">ଉପଯୋଗକର୍ତ୍ତାନାମ ଅବୈଧ ଅଟେ</translation>

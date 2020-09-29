@@ -104,7 +104,6 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="1962969542251276847">Khiya isikrini</translation>
 <translation id="1969011864782743497">I-<ph name="DEVICE_NAME" /> (i-USB)</translation>
 <translation id="1972950159383891558">Sawubona, <ph name="USERNAME" /></translation>
-<translation id="1975500003782052650">Okulandwe kamuva</translation>
 <translation id="1978498689038657292">Okufakwayo kombhalo</translation>
 <translation id="1993072747612765854">Funda kabanzi mayelana nesibuyekezo sakamuva se-<ph name="SYSTEM_APP_NAME" /></translation>
 <translation id="1995660704900986789">Vala amandla</translation>
@@ -198,6 +197,7 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="2996462380875591307">Isikhulisi esidokhiwe sivunyelwe. Cindezela u-Ctrl+Search+D futhi ukuze uyivale.</translation>
 <translation id="3000461861112256445">Umsindo we-mono</translation>
 <translation id="3009178788565917040">Okukhiphayo</translation>
+<translation id="3025081209054535615">Susa ukuphina izilawuli zemidiya yembulunga kushelufu</translation>
 <translation id="3033545621352269033">Vuliwe</translation>
 <translation id="3038571455154067151">Ukuze ungene ngemvume, faka ikhodi yokufinyelela yomzali ye-Family Link</translation>
 <translation id="3045488863354895414">Sawubona,</translation>
@@ -376,6 +376,7 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="4710243778082831592">Izilungiselelo ze-IME</translation>
 <translation id="4731797938093519117">Ukufinyelela komzali</translation>
 <translation id="4734965478015604180">Okuvundlile</translation>
+<translation id="4759238208242260848">Ukulanda</translation>
 <translation id="4774338217796918551">Buya kusasa ngo-<ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776917500594043016">Iphasiwedi ye-<ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4778095205580009397">Umsizi we-Google akatholakali kuseshini yedemo.</translation>
@@ -383,6 +384,7 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="4804818685124855865">Nqamula</translation>
 <translation id="4814539958450445987">Isikrini sokungena ngemvume</translation>
 <translation id="4831034276697007977">Ingabe uqinisekile ukuthi ufuna ukuvala ukuchofoza kwangokwezifiso?</translation>
+<translation id="4836108105469522644">Vula Izaziso kufoni yakho ye-Android</translation>
 <translation id="4849058404725798627">Gqamisa into nokugxila kwekhibhodi</translation>
 <translation id="485592688953820832">Asikho isenzo (kuphumuziwe)</translation>
 <translation id="4868492592575313542">yenziwe yasebenza</translation>
@@ -696,6 +698,7 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="8297006494302853456">Buthakathaka</translation>
 <translation id="8308637677604853869">Imenyu yangaphambilini</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
+<translation id="8349293353728876872">Phina izilawuli zemidiya yembulunga kushelufu</translation>
 <translation id="8351131234907093545">Dala inothi</translation>
 <translation id="8371779926711439835">Phambili ngohlamvu</translation>
 <translation id="8375916635258623388">Le <ph name="DEVICE_NAME" /> kanye nefoni yakho zizoxhumeka ngokuzenzakalela</translation>

@@ -104,7 +104,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1962969542251276847">Lås skärmen</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Hej <ph name="USERNAME" /></translation>
-<translation id="1975500003782052650">Senaste nedladdningar</translation>
 <translation id="1978498689038657292">Textinmatning</translation>
 <translation id="1993072747612765854">Läs mer om den senaste uppdateringen av <ph name="SYSTEM_APP_NAME" /></translation>
 <translation id="1995660704900986789">Stäng av</translation>
@@ -198,6 +197,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2996462380875591307">Dockad skärmförstoring har aktiverats. Tryck på Ctrl + Sök + D igen om du vill inaktivera funktionen.</translation>
 <translation id="3000461861112256445">Monoljud</translation>
 <translation id="3009178788565917040">Utgång</translation>
+<translation id="3025081209054535615">Lossa globala mediekontroller från fältet</translation>
 <translation id="3033545621352269033">På</translation>
 <translation id="3038571455154067151">Ange föräldraåtkomstkoden för Family Link om du vill logga in</translation>
 <translation id="3045488863354895414">Hej!</translation>
@@ -376,6 +376,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="4710243778082831592">IME-inställningar</translation>
 <translation id="4731797938093519117">Föräldraåtkomst</translation>
 <translation id="4734965478015604180">Horisontell</translation>
+<translation id="4759238208242260848">Nedladdningar</translation>
 <translation id="4774338217796918551">Prova igen i morgon klockan <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776917500594043016">Lösenord för <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4778095205580009397">Google-assistenten är inte tillgänglig i en demosession.</translation>
@@ -383,6 +384,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="4804818685124855865">Koppla från</translation>
 <translation id="4814539958450445987">Inloggningsskärm</translation>
 <translation id="4831034276697007977">Vill du inaktivera automatiska klick?</translation>
+<translation id="4836108105469522644">Aktivera aviseringar på Android-telefonen</translation>
 <translation id="4849058404725798627">Markera objekt med tangentbordsfokus</translation>
 <translation id="485592688953820832">Ingen åtgärd (pausa)</translation>
 <translation id="4868492592575313542">aktiverad</translation>
@@ -696,6 +698,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="8297006494302853456">Svag</translation>
 <translation id="8308637677604853869">Föregående meny</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
+<translation id="8349293353728876872">Fäst globala mediekontroller i fältet</translation>
 <translation id="8351131234907093545">Skapa anteckning</translation>
 <translation id="8371779926711439835">Framåt tecken för tecken</translation>
 <translation id="8375916635258623388">Denna <ph name="DEVICE_NAME" /> ansluts automatiskt till din mobil</translation>

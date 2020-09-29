@@ -76,7 +76,6 @@
 <translation id="1544826120773021464">Pentru a gestiona contul Google, atinge butonul „Gestionează contul”</translation>
 <translation id="1549000191223877751">Mută în altă fereastră</translation>
 <translation id="1553358976309200471">Actualizează Chrome</translation>
-<translation id="1565153191103764132">Telugu</translation>
 <translation id="1569387923882100876">Dispozitiv conectat</translation>
 <translation id="1571304935088121812">Copiază numele de utilizator</translation>
 <translation id="1592864538817356322">Protecție standard:</translation>
@@ -525,7 +524,6 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />resetează sincroniza
 <translation id="5011311129201317034"><ph name="SITE" /> dorește să se conecteze</translation>
 <translation id="5013696553129441713">Nicio sugestie nouă</translation>
 <translation id="5016205925109358554">Serif</translation>
-<translation id="5026887030745057099">Hindi</translation>
 <translation id="5039804452771397117">Permite</translation>
 <translation id="5040262127954254034">Confidențialitate</translation>
 <translation id="5087580092889165836">Adaugă un card</translation>
@@ -896,7 +894,6 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 În modul incognito, activitatea ta poate fi vizibilă pentru site-urile pe care le accesezi, pentru angajator, pentru școală sau pentru furnizorul de servicii de internet.</translation>
 <translation id="7704317875155739195">Completează automat căutările și adresele URL</translation>
 <translation id="7725024127233776428">Paginile pe care le marchezi apar aici</translation>
-<translation id="7732997068759397415">Kannada</translation>
 <translation id="7735637452482172701">Deblochează folosind blocarea ecranului</translation>
 <translation id="7746457520633464754">Pentru a detecta aplicațiile și site-urile periculoase, Chrome trimite la Google adresele URL ale unor pagini pe care le accesezi, informații de sistem limitate și o parte din conținutul paginii</translation>
 <translation id="7757787379047923882">Text trimis de pe <ph name="DEVICE_NAME" /></translation>
@@ -953,7 +950,6 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="8073388330009372546">Vezi imaginea în filă nouă</translation>
 <translation id="8076492880354921740">File</translation>
 <translation id="8084114998886531721">Parola a fost salvată</translation>
-<translation id="8099451332580698547">Tamilă</translation>
 <translation id="8103578431304235997">Filă incognito</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109613176066109935">Pentru a accesa marcajele pe toate dispozitivele, activează sincronizarea</translation>
@@ -1032,7 +1028,6 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="8659579665266920523">Cum să cauți folosind Chrome</translation>
 <translation id="8662811608048051533">Te deconectează de pe majoritatea site-urilor.</translation>
 <translation id="8664979001105139458">Numele fișierului există deja</translation>
-<translation id="8666678546361132282">Engleză</translation>
 <translation id="8683039184091909753">imagine</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{Nivelul puterii semnalului: # bară}few{Nivelul puterii semnalului: # bare}other{Nivelul puterii semnalului: # de bare}}</translation>
 <translation id="869891660844655955">Dată de expirare</translation>

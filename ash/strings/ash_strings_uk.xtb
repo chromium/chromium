@@ -104,7 +104,6 @@
 <translation id="1962969542251276847">Блокування екрана</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Вітаємо, <ph name="USERNAME" /></translation>
-<translation id="1975500003782052650">Нещодавні завантаження</translation>
 <translation id="1978498689038657292">Ввести текст</translation>
 <translation id="1993072747612765854">Докладніше про останнє оновлення додатка <ph name="SYSTEM_APP_NAME" /></translation>
 <translation id="1995660704900986789">Вимкнути</translation>
@@ -198,6 +197,7 @@
 <translation id="2996462380875591307">Увімкнено закріплену лупу. Щоб вимкнути її, знову натисніть комбінацію Ctrl + клавіша пошуку + D.</translation>
 <translation id="3000461861112256445">Монофонічне аудіо</translation>
 <translation id="3009178788565917040">Вихід</translation>
+<translation id="3025081209054535615">Відкріпити від панелі загальні елементи керування медіа</translation>
 <translation id="3033545621352269033">Увімкнено</translation>
 <translation id="3038571455154067151">Щоб увійти, введіть свій батьківський код доступу з Family Link</translation>
 <translation id="3045488863354895414">Доброго дня!</translation>
@@ -376,6 +376,7 @@
 <translation id="4710243778082831592">Налаштування IME</translation>
 <translation id="4731797938093519117">Батьківський доступ</translation>
 <translation id="4734965478015604180">Горизонтально</translation>
+<translation id="4759238208242260848">Завантаження</translation>
 <translation id="4774338217796918551">Поверніться завтра о <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776917500594043016">Пароль користувача  <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4778095205580009397">Google Асистент недоступний у демонстраційному сеансі.</translation>
@@ -383,6 +384,7 @@
 <translation id="4804818685124855865">Від'єднатися</translation>
 <translation id="4814539958450445987">Екран входу</translation>
 <translation id="4831034276697007977">Вимкнути автоматичні кліки?</translation>
+<translation id="4836108105469522644">Увімкнути сповіщення вашого телефона Android</translation>
 <translation id="4849058404725798627">Підсвічувати об’єкт, вибраний на клавіатурі</translation>
 <translation id="485592688953820832">Нічого не робити (призупинити)</translation>
 <translation id="4868492592575313542">активовано</translation>
@@ -696,6 +698,7 @@
 <translation id="8297006494302853456">Слабкий</translation>
 <translation id="8308637677604853869">Попереднє меню</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" /> <ph name="GET_STARTED" /></translation>
+<translation id="8349293353728876872">Закріпити на панелі загальні елементи керування медіа</translation>
 <translation id="8351131234907093545">Створити нотатку</translation>
 <translation id="8371779926711439835">Уперед на одну літеру</translation>
 <translation id="8375916635258623388"><ph name="DEVICE_NAME" /> і ваш телефон під’єднуватимуться автоматично</translation>

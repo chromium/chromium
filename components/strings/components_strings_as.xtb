@@ -108,6 +108,7 @@
 <translation id="1348779747280417563">নাম নিশ্চিত কৰক</translation>
 <translation id="1357195169723583938">যিয়ে শেহতীয়াকৈ ডিভাইচটো ব্যৱহাৰ কৰিছে আৰু যেতিয়া</translation>
 <translation id="1360955481084547712">ব্যক্তিগতভাৱে ব্ৰাউজ কৰিবলৈ এখন নতুন ইনক’গনিট’ ৱিণ্ড’ খোলক</translation>
+<translation id="1363819917331173092"><ph name="SOURCE_LANGUAGE" />ত থকা পৃষ্ঠাসমূহ অনুবাদ কৰাৰ সুবিধা প্ৰদান নকৰিব</translation>
 <translation id="1364822246244961190">এই নীতিটো অৱৰোধ কৰা হৈছে, ইয়াৰ মান অগ্ৰাহ্য কৰা হ’ব।</translation>
 <translation id="1374468813861204354">পৰামৰ্শ</translation>
 <translation id="1374692235857187091">সূচক-৪x৬ (প'ষ্টকাৰ্ড)</translation>
@@ -499,6 +500,7 @@
 <translation id="2996674880327704673">Googleৰ পৰামৰ্শসমূহ</translation>
 <translation id="3002501248619246229">ইনপুট ট্ৰে’ মিডিয়া পৰীক্ষা কৰক</translation>
 <translation id="3005723025932146533">ছে’ভ কৰা প্ৰতিলিপি দেখুৱাওক</translation>
+<translation id="3007719053326478567">এই সমলখিনি প্ৰিণ্ট কৰাটো আপোনাৰ প্ৰশাসকে অৱৰোধ কৰিছে</translation>
 <translation id="3008447029300691911"><ph name="CREDIT_CARD" />ৰ CVC দিয়ক। এবাৰ আপুনি নিশ্চিত কৰাৰ পিছত আপোনাৰ কাৰ্ডৰ সবিশেষ এই ছাইটবোৰৰ সৈতে শ্বেয়াৰ কৰা হ’ব।</translation>
 <translation id="3010559122411665027">তালিকাযুক্ত অন্তৰ্ভুক্তি "<ph name="ENTRY_INDEX" />": <ph name="ERROR" /></translation>
 <translation id="301521992641321250">স্বয়ংক্ৰিয়ভাৱে অৱৰোধ কৰা হৈছে</translation>
@@ -513,7 +515,6 @@
 <translation id="3080254622891793721">গ্ৰাফিক</translation>
 <translation id="3086579638707268289">ৱেবত আপোনাৰ কাৰ্যকলাপ নিৰীক্ষণ কৰি থকা হৈছে</translation>
 <translation id="3087734570205094154">একেবাৰে তলি</translation>
-<translation id="3094457892697649331">আপুনি এন’টেশ্বনসমূহ সম্পাদনা কৰিলে, এই নথিখন একক পৃষ্ঠাৰ ভিউলৈ সলনি হ'ব।</translation>
 <translation id="3095940652251934233">ভাষ্য</translation>
 <translation id="3096100844101284527">পিক আপ কৰাৰ ঠিকনা যোগ কৰক</translation>
 <translation id="3105172416063519923">সম্পদৰ আইডি:</translation>
@@ -600,6 +601,7 @@
 <translation id="3443726618221119081">Juuro-Ku-Kai</translation>
 <translation id="3447661539832366887">এই ডিভাইচৰ গৰাকীয়ে ডাইন’ছৰ গে’মটো অফ কৰিছে।</translation>
 <translation id="3447884698081792621">প্ৰমাণপত্ৰ দেখুৱাওক (<ph name="ISSUER" />এ প্ৰদান কৰা)</translation>
+<translation id="3451824941663424536">এই অৱস্থানটোলৈ প্ৰতিলিপি কৰাৰ সুবিধাটো আপোনাৰ প্ৰশাসকে অৱৰোধ কৰিছে</translation>
 <translation id="3452404311384756672">অন্তৰাল বিচাৰক:</translation>
 <translation id="3453962258458347894">পুনঃচেষ্টাৰ সংখ্যা</translation>
 <translation id="3456231139987291353">সংখ্যা-১১ (লেফাফা)</translation>
@@ -1388,6 +1390,7 @@
 <translation id="6671697161687535275">Chromiumৰ পৰা ফ’ৰ্মৰ পৰামৰ্শ আঁতৰাবনে?</translation>
 <translation id="6685834062052613830">ছাইন আউট কৰি ছেট আপ সম্পূৰ্ণ কৰক</translation>
 <translation id="6687335167692595844">ফ’ণ্টৰ আকাৰ অনুৰোধ কৰা হৈছে</translation>
+<translation id="6688998199862661005">আপোনাৰ প্ৰশাসকে <ph name="VM_NAME" />লৈ এই সমলখিনি শ্বেয়াৰ কৰাটো অৱৰোধ কৰিছে</translation>
 <translation id="6689249931105087298">ক’লা পইণ্টৰ কমপ্ৰেশ্বনৰ সৈতে আপেক্ষিক</translation>
 <translation id="6689271823431384964">আপুনি ছাইন ইন কৰি থোৱাৰ বাবে Chromeএ আপোনাৰ Google একাউণ্টত আপোনাৰ কার্ডসমূহ ছেভ কৰাৰ সুবিধা দিছে। আপুনি ছেটিংসমূহত এই আচৰণ সলনি কৰিব পাৰে। কাৰ্ডৰ ধাৰকৰ নামটো আপোনাৰ একাউণ্টৰ পৰা আহে।</translation>
 <translation id="6710213216561001401">পূৰ্বৱৰ্তী</translation>
@@ -1412,6 +1415,7 @@
 <translation id="6810899417690483278">কাষ্টমাইজেশ্বন আইডি</translation>
 <translation id="6825578344716086703">আপুনি <ph name="DOMAIN" />ক পাবলৈ প্ৰয়াস কৰিছিল কিন্ত ছার্ভাৰে কোনো দুর্বল চহীৰ এলগ’ৰিয়াম(যেনে SHA-1) ব্যৱহাৰ কৰি চহী কৰা প্ৰমাণপত্ৰ উপস্থাপন কৰিছিল। তাৰমানে ছার্ভাৰে দিয়া সুৰক্ষাৰ ক্ৰেডেনশ্বিয়েলসমূহ ভুৱা হ’ব পাৰে আৰু আপুনি বিচৰা ছার্ভাৰটো এইটো নহ’বও পাৰে ( আপুনি কোনো আক্ৰমণকাৰীৰ সৈতে যোগাযোগ কৰি থাকিব পাৰে)।</translation>
 <translation id="6826993739343257035">ARৰ অনুমতি দিবনে?</translation>
+<translation id="6829611662493319648">আপোনাৰ প্ৰশাসকে <ph name="VM_NAME_1" /> আৰু <ph name="VM_NAME_2" />লৈ এই সমলখিনি শ্বেয়াৰ কৰাটো অৱৰোধ কৰিছে</translation>
 <translation id="6831043979455480757">অনুবাদ কৰক</translation>
 <translation id="6839929833149231406">ক্ষেত্ৰ</translation>
 <translation id="6846340164947227603">এটা ভাৰ্চুৱেল কাৰ্ড নম্বৰ ব্যৱহাৰ কৰক...</translation>
@@ -1668,7 +1672,6 @@
 <translation id="7802523362929240268">ছাইটটো বৈধ</translation>
 <translation id="780301667611848630">নালাগে, ধন্যবাদ</translation>
 <translation id="7805768142964895445">স্থিতি</translation>
-<translation id="7811322735445742657">আপুনি এন’টেশ্বনসমূহ সম্পাদনা কৰিলে, এই নথিখন একক পৃষ্ঠাৰ ভিউলৈ আৰু ইয়াৰ প্ৰকৃত ঘূৰ্ণনলৈ পুনৰ সলনি হ'ব।</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Chromeৰ পৰামৰ্শৰ পৰা আঁতৰাবনে?</translation>
 <translation id="781440967107097262">ক্লিপব’ৰ্ড শ্বেয়াৰ কৰিবনে?</translation>
@@ -1778,6 +1781,7 @@
 <translation id="8267698848189296333"><ph name="USERNAME" /> হিচাপে ছাইন ইন কৰিছে</translation>
 <translation id="8269242089528251720">পৃথক নথি/মিলোৱা প্ৰতিলিপিসমূহ</translation>
 <translation id="8269981117540303696">বর্তমান আপুনি ব্যক্তিগতভাৱে ব্ৰাউজিং কৰিব পাৰে আৰু এই ডিভাইচটো ব্যৱহাৰ কৰা অন্য লোকসকলে আপোনাৰ কার্যকলাপ দেখা নাপাব। অৱশ্যে, ডাউনল’ড আৰু বুকমার্কসমূহ ছেভ কৰা হ’ব।</translation>
+<translation id="8275952078857499577">এই ছাইটটো অনুবাদ কৰাৰ সুবিধা প্ৰদান নকৰিব</translation>
 <translation id="8277900682056760511">পৰিশোধ নিয়ন্ত্ৰক শ্বীটখন খোলা আছে</translation>
 <translation id="8281084378435768645">ডাঙৰ-ফট'</translation>
 <translation id="8282947398454257691">আপোনাৰ অনন্য ডিভাইচ চিনাক্তকৰণকাৰীৰ বিষয়ে জানক</translation>
@@ -1786,7 +1790,6 @@
 <translation id="8289355894181816810">আপুনি যদি ইয়াৰ অৰ্থ কি নাজানে তেন্তে আপোনাৰ নেটৱৰ্কৰ প্ৰশাসকৰ সৈতে যোগাযোগ কৰক।</translation>
 <translation id="8293206222192510085">বুকমাৰ্ক যোগ কৰক</translation>
 <translation id="8294431847097064396">উৎস</translation>
-<translation id="8297398969342264569">আপুনি এন’টেশ্বনসমূহ সম্পাদনা কৰিলে, এই নথিখন ইয়াৰ প্ৰকৃত ঘূৰ্ণনলৈ পুনৰ সলনি হ'ব।</translation>
 <translation id="8298115750975731693">আপুনি ব্যৱহাৰ কৰি থকা ৱাই-ফাই (<ph name="WIFI_NAME" />)ৰ বাবে আপুনি <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />লৈ যাবলগীয়া হ'ব পাৰে।</translation>
 <translation id="8303854710873047864">"<ph name="SECTION" />" শাখাটো দেখুওৱা হৈছে</translation>
 <translation id="830498451218851433">আধা ফ'ল্ড কৰক</translation>

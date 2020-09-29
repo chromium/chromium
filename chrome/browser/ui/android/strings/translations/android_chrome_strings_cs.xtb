@@ -76,7 +76,6 @@
 <translation id="1544826120773021464">Chcete-li spravovat svůj účet Google, klepněte na tlačítko Spravovat účet</translation>
 <translation id="1549000191223877751">Přejít do jiného okna</translation>
 <translation id="1553358976309200471">Aktualizovat Chrome</translation>
-<translation id="1565153191103764132">Telugština</translation>
 <translation id="1569387923882100876">Připojené zařízení</translation>
 <translation id="1571304935088121812">Kopírovat uživatelské jméno</translation>
 <translation id="1592864538817356322">Standardní ochrana:</translation>
@@ -525,7 +524,6 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="5011311129201317034">Web <ph name="SITE" /> žádá o připojení</translation>
 <translation id="5013696553129441713">Žádné nové návrhy</translation>
 <translation id="5016205925109358554">Patková</translation>
-<translation id="5026887030745057099">Hindština</translation>
 <translation id="5039804452771397117">Povolit</translation>
 <translation id="5040262127954254034">Ochrana soukromí</translation>
 <translation id="5087580092889165836">Přidat kartu</translation>
@@ -896,7 +894,6 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 Aktivita v anonymním režimu není skryta před weby, které navštěvujete, před zaměstnavatelem či školou ani před poskytovatelem internetových služeb.</translation>
 <translation id="7704317875155739195">Automaticky doplňovat vyhledávací dotazy a adresy URL</translation>
 <translation id="7725024127233776428">Zde se zobrazují stránky přidané do záložek</translation>
-<translation id="7732997068759397415">Kannadština</translation>
 <translation id="7735637452482172701">Odemknout pomocí zámku obrazovky</translation>
 <translation id="7746457520633464754">Kvůli detekci nebezpečných aplikací a webů odesílá Chrome do Googlu adresy URL některých navštívených stránek, omezené informace o systému a část obsahu stránek</translation>
 <translation id="7757787379047923882">Text sdílený ze zařízení <ph name="DEVICE_NAME" /></translation>
@@ -953,7 +950,6 @@ Aktivita v anonymním režimu není skryta před weby, které navštěvujete, p
 <translation id="8073388330009372546">Otevřít na nové kartě</translation>
 <translation id="8076492880354921740">Karty</translation>
 <translation id="8084114998886531721">Uložené heslo</translation>
-<translation id="8099451332580698547">Tamilština</translation>
 <translation id="8103578431304235997">Anonymní karta</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109613176066109935">Chcete-li mít záložky ve všech zařízeních, zapněte synchronizaci</translation>
@@ -1032,7 +1028,6 @@ Aktivita v anonymním režimu není skryta před weby, které navštěvujete, p
 <translation id="8659579665266920523">Vyhledávání v Chromu</translation>
 <translation id="8662811608048051533">Odhlásí vás z většiny webů.</translation>
 <translation id="8664979001105139458">Název souboru již existuje</translation>
-<translation id="8666678546361132282">angličtina</translation>
 <translation id="8683039184091909753">obrázek</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{Síla signálu: # čárka}few{Síla signálu: # čárky}many{Síla signálu: # čárky}other{Síla signálu: # čárek}}</translation>
 <translation id="869891660844655955">Datum vypršení platnosti</translation>

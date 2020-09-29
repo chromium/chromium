@@ -70,7 +70,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="1589090746204042747">Získajte prístup k všetkej svojej aktivite v tejto relácii</translation>
 <translation id="1611993646327628135">Zapnuté</translation>
 <translation id="1632985212731562677">Ovládanie prepínačmi je možné deaktivovať v sekcii Nastavenia &gt; Dostupnosť.</translation>
-<translation id="1651447046299738444">Zdá sa, že máte v Chromebooku vypnuté rozhranie Bluetooth alebo pripojenie Wi-Fi. Ak chcete používať telefonické centrum, skontrolujte svoje pripojenie.</translation>
+<translation id="1651447046299738444">Zdá sa, že je rozhranie Bluetooth alebo Wi‑Fi v Chromebooku vypnuté. Ak chcete používať telefonické centrum, skontrolujte pripojenie.</translation>
 <translation id="1654477262762802994">Spustiť hlasový dopyt</translation>
 <translation id="1667964833127753507">Režim neutrálnych farieb nepoužíva farby získané z tapety. Nahradí ich skupinou svetlých a tmavých neutrálnych odtieňov.</translation>
 <translation id="1677472565718498478">Zostávajúci čas: <ph name="TIME" /></translation>
@@ -104,7 +104,6 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="1962969542251276847">Uzamknúť obrazovku</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Dobrý deň, <ph name="USERNAME" /></translation>
-<translation id="1975500003782052650">Nedávne stiahnutia</translation>
 <translation id="1978498689038657292">Zadávanie textu</translation>
 <translation id="1993072747612765854">Ďalšie informácie o najnovšej aktualizácii aplikácie <ph name="SYSTEM_APP_NAME" /></translation>
 <translation id="1995660704900986789">Vypnúť</translation>
@@ -311,7 +310,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Vyp. pre apl.}few{Vyp. pre # apl.}many{Off for # apps}other{Vyp. pre # apl.}}</translation>
 <translation id="4072264167173457037">Stredne silný signál</translation>
 <translation id="4112140312785995938">Pretočiť dozadu</translation>
-<translation id="4114315158543974537">Zapnutie funkcie Phone Hub</translation>
+<translation id="4114315158543974537">Zapnutie telefonického centra</translation>
 <translation id="4129129681837227511">Ak chcete, aby sa na uzamknutej obrazovke zobrazovali upozornenia, odomknite zariadenie a zmeňte nastavenie</translation>
 <translation id="4146833061457621061">Prehrať hudbu</translation>
 <translation id="4149156641122542261"><ph name="DEVICE_TYPE" /> spravuje <ph name="DOMAIN" /></translation>
@@ -376,6 +375,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="4710243778082831592">Nastavenia editora IME</translation>
 <translation id="4731797938093519117">Rodičovský prístup</translation>
 <translation id="4734965478015604180">Na šírku</translation>
+<translation id="4759238208242260848">Stiahnuté</translation>
 <translation id="4774338217796918551">Vráť sa zajtra o <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776917500594043016">Heslo pre účet <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4778095205580009397">Asistent Google nie je k dispozícii v relácii ukážky.</translation>

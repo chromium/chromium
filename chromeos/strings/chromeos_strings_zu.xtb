@@ -5,6 +5,7 @@
 <translation id="1195447618553298278">Iphutha elingaziwa.</translation>
 <translation id="1413240736185167732">Yehlulekile - Isihlungi sehlulekile</translation>
 <translation id="1468664791493211953">Ukunikezwa</translation>
+<translation id="1478594628797167447">Iskena</translation>
 <translation id="1482734542997480527"><ph name="ENROLLMENT_DOMAIN" /> iphatha le divayisi futhi ingakwazi ukwengamela umsebenzi wakho.</translation>
 <translation id="150962533380566081">I-PUK engavumelekile.</translation>
 <translation id="1510238584712386396">Isiqalisi</translation>
@@ -19,10 +20,12 @@
 <translation id="2161394479394250669">Khansela umsebenzi wokuphrinta</translation>
 <translation id="2338501278241028356">Vula i-Bluetooth ukuze uthole amadivayisi aseduze</translation>
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> imizamo esele</translation>
+<translation id="2517472476991765520">Skena</translation>
 <translation id="2805756323405976993">Izinhlelo zokusebenza</translation>
 <translation id="2872961005593481000">Cisha</translation>
 <translation id="3008341117444806826">VUSELELA</translation>
 <translation id="3091839911843451378">Yehlulekile - Imile</translation>
+<translation id="3246869037381808805">Imisebenzi yokuphrinta emidala kunosuku olu-1 izosuswa</translation>
 <translation id="3268178239013324452">Yehlulekile - Umnyango uvuliwe</translation>
 <translation id="3369013195428705271">Uqinisekile ukuthi ufuna ukusula wonke umlando wokuphrinta? Imisebenzi yakho yokuphrinta eqhubekayo ngeke isulwe.</translation>
 <translation id="3456078764689556234">Iphrinte ikhasi elingu-<ph name="PRINTED_PAGES" /> kwangu-<ph name="TOTAL_PAGES" />.</translation>
@@ -33,6 +36,7 @@
 <translation id="38114475217616659">Sula wonke umlando</translation>
 <translation id="3820172043799983114">Iphinikhodi engavumelekile</translation>
 <translation id="3838338534323494292">Iphasiwedi entsha</translation>
+<translation id="39823212440917567">Imisebenzi yokuphrinta engaphezu kwezinsuku ezingu-<ph name="NUMBER_OF_DAYS" /> izosuswa</translation>
 <translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> iphatha le divayisi futhi inokufinyelela kuwo wonke umsebenzi womsebenzisi, kufaka phakathi amakhasi ewebhu avakashelwe, amaphasiwedi, ne-imeyili.</translation>
 <translation id="4003384961948020559">Yehlulekile - Okukhiphayo kugcwele</translation>
 <translation id="4027485274696301677">Le-<ph name="DEVICE_TYPE" /> iphethwe yi-<ph name="ENROLLMENT_DOMAIN" />. Abalawuli bangase balungiselele ngokulawula kude idivayisi.</translation>
@@ -70,6 +74,7 @@ Zama ukuthepha imakrofoni ukuze ungibuze noma yini.</translation>
 <translation id="649050271426829538">Imile - Ukujema kwephepha</translation>
 <translation id="6517239166834772319">Hlola</translation>
 <translation id="6564646048574748301">Yehlulekile - Iphrinta ayifinyeleleki</translation>
+<translation id="6620487321149975369">Imisebenzi yokuphrinta izovela emlandweni ngaphandle kwalapho uma isuswe mathupha</translation>
 <translation id="6643016212128521049">Sula</translation>
 <translation id="6747215703636344499">Imile - Okukhiphayo kugcwele</translation>
 <translation id="7162487448488904999">Igalari</translation>

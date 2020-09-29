@@ -2248,7 +2248,6 @@
 <translation id="3639220004740062347">Уншигчийн горимоос гарах</translation>
 <translation id="3640214691812501263"><ph name="USER_NAME" />-д зориулсан "<ph name="EXTENSION_NAME" />"-ыг нэмэх үү?</translation>
 <translation id="3640613767643722554">Туслахдаа дуу хоолойгоо таниулна уу</translation>
-<translation id="3643014427358482789"><ph name="DOMAIN" /> таны <ph name="DEVICE_TYPE" />-г шинэчлэх ADB дебагийг идэвхгүй болгож байна. Дахин эхлүүлэхээс өмнө файлуудаа хуулбарлана уу.</translation>
 <translation id="3643637292669952403">Сайтуудыг таны байршлыг харахыг нь блоклоно</translation>
 <translation id="3645372836428131288">Хурууны хээг өөр талаас нь авахын тулд хуруугаа бага зэрэг хөдөлгөнө үү</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="DEVICE_NAME" />-с <ph name="ATTACHMENTS" /> хүлээж авсан}other{<ph name="DEVICE_NAME" />-с <ph name="ATTACHMENTS" /> хүлээж авсан}}</translation>
@@ -3894,7 +3893,6 @@
 <translation id="5632566673632479864">Таны <ph name="EMAIL" /> бүртгэл цаашид үндсэн бүртгэлээр зөвшөөрөгдөхөө больсон байна. Энэ бүртгэлийг <ph name="DOMAIN" />-с удирддаг тул таны хавчуурга, түүх, нууц үг болон бусад тохиргоог энэ төхөөрөмжөөс устгах болно.</translation>
 <translation id="5632592977009207922">Татаж байна, <ph name="PERCENT_REMAINING" />% үлдсэн</translation>
 <translation id="563371367637259496">Мобайл</translation>
-<translation id="563496044070985734">Зөв бичгийн алдаа шалгах онцлогийн боломжтой хэлнүүд нь таны хэлний тохиргоонд тулгуурладаг</translation>
 <translation id="563535393368633106">Хандалт хийхээс өмнө асуух (зөвлөж байна)</translation>
 <translation id="5636996382092289526"><ph name="NETWORK_ID" />-ыг ашиглахын тулд та эхлээд <ph name="LINK_START" /> сүлжээний нэвтрэх хуудас <ph name="LINK_END" />  руу орох хэрэгтэй бөгөөд  энэ нь хэдхэн секундын дотор автоматаар нээгдэнэ. Хэрвээ энэ ажиллахгүй байвал сүлжээг ашиглах боломжгүй.</translation>
 <translation id="5637476008227280525">Мобайл датаг идэвхжүүлэх</translation>
@@ -4778,7 +4776,6 @@
 <translation id="6704062477274546131">DNS-н тайлал</translation>
 <translation id="6706210727756204531">Хамрах хүрээ</translation>
 <translation id="6707389671160270963">SSL Үйлчлүүлэгчийн гэрчилгээ</translation>
-<translation id="670893696722244877">Хэл эсвэл оролтын нэрээр хайх</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> болон бусад 1 таб}other{<ph name="PAGE_TITLE" /> болон бусад # таб}}</translation>
 <translation id="6709133671862442373">Мэдээ</translation>
 <translation id="6709357832553498500"><ph name="EXTENSIONNAME" />-ыг ашиглан холбогдоно уу</translation>
@@ -5677,7 +5674,6 @@
 <translation id="7788298548579301890">Таны компьютерийн өөр нэг программ Chrome-н ажиллах зарчмыг өөрчилж болох апп нэмсэн байна.
 
 <ph name="EXTENSION_NAME" /></translation>
-<translation id="7788444488075094252">Хэлнүүд ба оролт</translation>
 <translation id="7788668840732459509">Байрлал:</translation>
 <translation id="7789963078219276159">Эхлүүлэх хуудасны арын дэвсгэрийг <ph name="CATEGORY" /> болгож өөрчиллөө.</translation>
 <translation id="7791543448312431591">Нэмэх</translation>
@@ -6262,7 +6258,6 @@
 <translation id="8467326454809944210">Өөр хэл сонгох</translation>
 <translation id="8470214316007448308">Бусад хүмүүс</translation>
 <translation id="8470513973197838199"><ph name="ORIGIN" />-н хадгалсан нууц үг</translation>
-<translation id="8471256130228705232"><ph name="DOMAIN" /> ADB дебаг хийхийг идэвхгүй болгож байна. Энэ нь таны <ph name="DEVICE_TYPE" />-г 24 цагийн дотор шинэчлэх болно. Та хадгалахыг хүссэн файлуудаа хуулбарлана уу.</translation>
 <translation id="8471525937465764768">Сайтууд ихэвчлэн документ хэвлэх эсвэл хадгалах сангийн төхөөрөмжид хадгалах зэрэг онцлогуудад зориулж USB төхөөрөмжид холбогддог</translation>
 <translation id="8472623782143987204">Техник хангамж дээр тулгуурласан</translation>
 <translation id="8473863474539038330">Хаяг болон бусад</translation>
@@ -6795,6 +6790,7 @@
 <translation id="9088234649737575428"><ph name="PLUGIN_NAME" />-г байгууллагын удирдамжийн дагуу блоклосон</translation>
 <translation id="9088446193279799727">Linux-г тохируулж чадсангүй. Интернэтэд холбогдоод, дахин оролдоно уу.</translation>
 <translation id="9088917181875854783">Энэхүү түлхүүр үг нь <ph name="DEVICE_NAME" /> дээр харагдаж байгаа гэдгийг баталгаажуулна уу:</translation>
+<translation id="9089416786594320554">Оролтын аргууд</translation>
 <translation id="9093429538970210897">Сайжруулалтыг дуусгаж чадахгүй тохиолдлыг бодолцож файлуудаа хуулбарлахыг санал болгодог. Сайжруулалтыг эхлүүлснээр Linux (Бэта) унтарна. Үргэлжлүүлэхийн өмнө нээлттэй байгаа файлуудаа хадгална уу.</translation>
 <translation id="9094033019050270033">Нууц үг шинэчлэх</translation>
 <translation id="9094038138851891550">Хэрэглэгчийн нэр буруу</translation>

@@ -735,7 +735,7 @@
 <translation id="1826516787628120939">檢查中</translation>
 <translation id="1827738518074806965">畫廊</translation>
 <translation id="1828378091493947763">此裝置不支援此外掛程式</translation>
-<translation id="1828879788654007962">{COUNT,plural, =0{開啟全部書籤(&amp;O)}=1{開啟書籤(&amp;O)}other{開啟全部 {COUNT} 個書籤(&amp;O)}}</translation>
+<translation id="1828879788654007962">{COUNT,plural, =0{開啟所有書籤(&amp;O)}=1{開啟書籤(&amp;O)}other{開啟全部 {COUNT} 個書籤(&amp;O)}}</translation>
 <translation id="1828901632669367785">使用系統對話方塊進行列印…</translation>
 <translation id="1829129547161959350">企鵝</translation>
 <translation id="1829192082282182671">縮小(&amp;O)</translation>
@@ -2252,7 +2252,6 @@
 <translation id="3639220004740062347">離開閱讀器模式</translation>
 <translation id="3640214691812501263">要為<ph name="USER_NAME" />新增「<ph name="EXTENSION_NAME" />」嗎？</translation>
 <translation id="3640613767643722554">教導「Google 助理」識別您的聲音</translation>
-<translation id="3643014427358482789"><ph name="DOMAIN" /> 正在停用 ADB 偵錯，此操作會重設 <ph name="DEVICE_TYPE" />。請在重新開機前備份檔案。</translation>
 <translation id="3643637292669952403">禁止網站查看您的位置</translation>
 <translation id="3645372836428131288">請輕輕移動您的手指，以便系統讀取指紋的不同部分</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{已收到來自「<ph name="DEVICE_NAME" />」的 <ph name="ATTACHMENTS" />}other{已收到來自「<ph name="DEVICE_NAME" />」的 <ph name="ATTACHMENTS" />}}</translation>
@@ -2881,7 +2880,7 @@
 <translation id="4392896746540753732">編輯設定檔案</translation>
 <translation id="4393691030048716353"><ph name="DOMAIN" /> 已停用 ADB 偵錯。重新啟動 <ph name="DEVICE_TYPE" /> 後，您將無法載入應用程式。</translation>
 <translation id="4394049700291259645">停用</translation>
-<translation id="4396956294839002702">{COUNT,plural, =0{開啟全部書籤(&amp;O)}=1{開啟書籤(&amp;O)}other{開啟全部 {COUNT} 個書籤(&amp;O)}}</translation>
+<translation id="4396956294839002702">{COUNT,plural, =0{開啟所有書籤(&amp;O)}=1{開啟書籤(&amp;O)}other{開啟全部 {COUNT} 個書籤(&amp;O)}}</translation>
 <translation id="439817266247065935">您的裝置先前未正確關閉。如要使用 Linux 應用程式，請重新啟動 Linux。</translation>
 <translation id="4400367121200150367">永不儲存密碼的網站會在這裡顯示</translation>
 <translation id="4400632832271803360">按住啟動器鍵，即可切換最上排按鍵的執行動作</translation>
@@ -3146,7 +3145,7 @@
 <translation id="469379815867856270">訊號強度</translation>
 <translation id="4694024090038830733">打印機由管理員設定。</translation>
 <translation id="4694604912444486114">猴子</translation>
-<translation id="4697071790493980729">找不到相符的搜尋結果</translation>
+<translation id="4697071790493980729">找不到相符的結果</translation>
 <translation id="4697551882387947560">瀏覽工作階段結束時</translation>
 <translation id="4699172675775169585">快取圖片和檔案</translation>
 <translation id="4699357559218762027">(自動啟動)</translation>
@@ -3898,7 +3897,6 @@
 <translation id="5632566673632479864">您的帳戶 <ph name="EMAIL" /> 已無法用作主要帳戶。 由於此帳戶由 <ph name="DOMAIN" /> 管理，因此系統將會從此裝置中清除您的書籤、記錄、密碼和其他設定。</translation>
 <translation id="5632592977009207922">下載中，尚餘 <ph name="PERCENT_REMAINING" />%</translation>
 <translation id="563371367637259496">流動網絡</translation>
-<translation id="563496044070985734">系統會根據語言設定來提供拼字檢查使用的語言</translation>
 <translation id="563535393368633106">存取前先詢問 (建議)</translation>
 <translation id="5636996382092289526">如要使用 <ph name="NETWORK_ID" />，您必須先<ph name="LINK_START" />前往網絡的登入頁面<ph name="LINK_END" /> (該頁面將在數秒內自動開啟)；如果沒有，表示您無法使用該網絡。</translation>
 <translation id="5637476008227280525">啟用流動數據</translation>
@@ -4783,7 +4781,6 @@
 <translation id="6704062477274546131">DNS 解析</translation>
 <translation id="6706210727756204531">範圍</translation>
 <translation id="6707389671160270963">SSL 用戶端憑證</translation>
-<translation id="670893696722244877">按語言或輸入名稱搜尋</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> 和另外 1 個分頁}other{<ph name="PAGE_TITLE" /> 和另外 # 個分頁}}</translation>
 <translation id="6709133671862442373">新聞內容</translation>
 <translation id="6709357832553498500">使用「<ph name="EXTENSIONNAME" />」連線</translation>
@@ -5056,7 +5053,7 @@
 <translation id="7022562585984256452">首頁已設定完成。</translation>
 <translation id="7025082428878635038">全新的手勢瀏覽功能</translation>
 <translation id="7025190659207909717">流動數據服務管理</translation>
-<translation id="7027258625819743915">{COUNT,plural, =0{在無痕式視窗中開啟所有書籤(&amp;I)}=1{在無痕式視窗中開啟(&amp;I)}other{在無痕式視窗中開啟全部 {COUNT} 個書籤(&amp;I)}}</translation>
+<translation id="7027258625819743915">{COUNT,plural, =0{在無痕式視窗中開啟所有書籤(&amp;I)}=1{在無痕式視窗中開啟書籤(&amp;I)}other{在無痕式視窗中開啟全部 {COUNT} 個書籤(&amp;I)}}</translation>
 <translation id="7029307918966275733">尚未安裝 Crostini。請安裝 Crostini 來查看製作人員名單。</translation>
 <translation id="7029809446516969842">密碼</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - 連接咗序列連接埠</translation>
@@ -5584,7 +5581,7 @@
 <translation id="7681095912841365527">網站可以使用藍牙</translation>
 <translation id="7682634383739326341">禁止網站連接 USB 裝置</translation>
 <translation id="7683373461016844951">如要繼續操作，請按一下 [確定]，然後按一下 [新增使用者]，即可為您的 <ph name="DOMAIN" /> 電郵地址建立新的設定檔。</translation>
-<translation id="7683593009096723900">{COUNT,plural, =0{在無痕式視窗中開啟所有書籤(&amp;I)}=1{在無痕式視窗中開啟(&amp;I)}other{在無痕式視窗中開啟全部 {COUNT} 個書籤(&amp;I)}}</translation>
+<translation id="7683593009096723900">{COUNT,plural, =0{在無痕式視窗中開啟所有書籤(&amp;I)}=1{在無痕式視窗中開啟書籤(&amp;I)}other{在無痕式視窗中開啟全部 {COUNT} 個書籤(&amp;I)}}</translation>
 <translation id="7684212569183643648">已由管理員安裝</translation>
 <translation id="7684559058815332124">前往網頁驗證入口登入網頁</translation>
 <translation id="7684718995427157417">如要建立並測試您的應用程式，請啟用「Android 偵錯橋接器」(ADB)。請注意，此操作允許安裝未經 Google 驗證的 Android 應用程式，並且需要恢復原廠設定才能停用。</translation>
@@ -5683,7 +5680,6 @@
 
 
 <ph name="EXTENSION_NAME" /></translation>
-<translation id="7788444488075094252">語言與輸入法</translation>
 <translation id="7788668840732459509">位置：</translation>
 <translation id="7789963078219276159">起始網頁背景改咗做<ph name="CATEGORY" />。</translation>
 <translation id="7791543448312431591">新增</translation>
@@ -5974,7 +5970,7 @@
 <translation id="80974698889265265">PIN 不相符</translation>
 <translation id="809792523045608178"><ph name="IDS_SHORT_PRODUCT_NAME" /> 正在使用擴充程式的 Proxy 設定</translation>
 <translation id="8097959162767603171">您的管理員必須先接受管理控制台 Chrome 裝置清單中的服務條款。</translation>
-<translation id="810068641062493918">揀咗「<ph name="LANGUAGE" />」。㩒搜尋鍵加空白鍵就可以取消揀咗嘅語言。</translation>
+<translation id="810068641062493918">揀咗「<ph name="LANGUAGE" />」。㩒搜尋鍵加空白鍵就可以取消選取揀咗嘅語言。</translation>
 <translation id="8101987792947961127">必須在下次重新啟動時執行 Powerwash</translation>
 <translation id="8102139037507939978">移除 system_logs.txt 中的個人識別資料。</translation>
 <translation id="8102159139658438129">前往「<ph name="LINK_BEGIN" />設定<ph name="LINK_END" />」查看已連接手機的選項</translation>
@@ -6270,7 +6266,6 @@
 <translation id="8467326454809944210">選擇其他語言</translation>
 <translation id="8470214316007448308">其他人</translation>
 <translation id="8470513973197838199">已儲存 <ph name="ORIGIN" /> 的密碼</translation>
-<translation id="8471256130228705232"><ph name="DOMAIN" /> 正在停用 ADB 偵錯。這會讓系統在 24 小時後重設您的 <ph name="DEVICE_TYPE" />。請備份您想保留的檔案。</translation>
 <translation id="8471525937465764768">網站通常會連接 USB 裝置，以提供列印文件或儲存至儲存裝置等功能</translation>
 <translation id="8472623782143987204">硬件支援</translation>
 <translation id="8473863474539038330">地址及其他資料</translation>
@@ -6800,11 +6795,12 @@
 <translation id="9078316009970372699">停用「即時網絡共享」</translation>
 <translation id="9084064520949870008">在視窗中開啟</translation>
 <translation id="9085256200913095638">複製已選取的分頁</translation>
-<translation id="9085776959277692427">無揀「<ph name="LANGUAGE" />」。㩒搜尋鍵加空白鍵就可以揀語言。</translation>
+<translation id="9085776959277692427">無揀「<ph name="LANGUAGE" />」。㩒搜尋鍵加空白鍵就可以揀呢種語言。</translation>
 <translation id="9087949559523851360">新增受限制的使用者</translation>
 <translation id="9088234649737575428">已根據公司政策封鎖 <ph name="PLUGIN_NAME" /></translation>
 <translation id="9088446193279799727">無法設定 Linux。請連接互聯網，然後再試一次。</translation>
 <translation id="9088917181875854783">請確認以下密碼金鑰是否顯示於「<ph name="DEVICE_NAME" />」上：</translation>
+<translation id="9089416786594320554">輸入法</translation>
 <translation id="9093429538970210897">建議您在升級前先備份檔案，避免系統無法完成升級。開始升級時會關閉 Linux (Beta 版本)，請在繼續下一步前儲存已開啟的檔案。</translation>
 <translation id="9094033019050270033">更新密碼</translation>
 <translation id="9094038138851891550">使用者名稱無效</translation>

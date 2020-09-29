@@ -80,7 +80,7 @@
 
       如果將這項政策設為 False 或未設定，系統將不會回報這項資訊。
       如果設為 True，系統會回報裝置背光的資訊。</translation>
-<translation id="1076751984131277498">卸除式 USB 裝置允許清單</translation>
+<translation id="1076751984131277498">卸除式 USB 裝置許可清單</translation>
 <translation id="1079801999187584280">禁止使用開發人員工具</translation>
 <translation id="1087437665304381368">這項政策只能控管 <ph name="PRODUCT_OS_NAME" />開發人員模式。如要禁止他人存取 Android 開發人員選項，則必須設定 <ph name="DEVELOPER_TOOLS_DISABLED_POLICY_NAME" /> 政策。</translation>
 <translation id="1087707496788636333">Chrome Enterprise 政策清單的網址已變更！請將你的書籤更新為 <ph name="POLICY_DOCUMENTATION_URL" />。</translation>
@@ -220,7 +220,7 @@
 <translation id="138847842893090358">回報作業系統的更新狀態</translation>
 <translation id="1390901586107713894">這項政策可讓你指定禁止使用者安裝的擴充功能。如果封鎖了已安裝的擴充功能，系統會停用該擴充功能，且使用者無法以任何方式啟用。將因為列入封鎖清單而遭到停用的擴充功能從清單中移除後，系統將自動重新啟用該擴充功能。
 
-          如果將封鎖清單的值設為「*」，系統會封鎖所有擴充功能 (允許清單中明確列出的擴充功能除外)。
+          如果將封鎖清單的值設為「*」，系統會封鎖所有擴充功能 (許可清單中明確列出的擴充功能除外)。
 
           如果不設定這項政策，使用者將可在 <ph name="PRODUCT_NAME" /> 中安裝任何擴充功能。</translation>
 <translation id="1393485621820363363">已啟用企業裝置印表機</translation>
@@ -734,9 +734,9 @@
       如果設定這項政策，使用者將無法變更。如果不設定或將其設為 False，這項政策將不會生效。</translation>
 <translation id="2200041405904405884">這項政策可讓你指定不受封鎖清單影響的內建訊息傳遞主機。
 
-          如果將封鎖清單的值設為「*」，系統會封鎖所有內建訊息傳遞主機，只會載入允許清單中列出的內建訊息傳遞主機。
+          如果將封鎖清單的值設為「*」，系統會封鎖所有內建訊息傳遞主機，只會載入許可清單中列出的內建訊息傳遞主機。
 
-          根據預設，系統會允許所有內建訊息傳遞主機，但如果政策封鎖了所有內建訊息傳遞主機，你可以使用允許清單覆寫該政策。</translation>
+          根據預設，系統會允許所有內建訊息傳遞主機，但如果政策封鎖了所有內建訊息傳遞主機，你可以使用許可清單覆寫該政策。</translation>
 <translation id="2200698565850397198">設定內建訊息傳遞封鎖清單</translation>
 <translation id="2201555246697292490">設定內建訊息傳遞許可清單</translation>
 <translation id="2204753382813641270">控制檔案櫃自動隱藏功能</translation>
@@ -938,7 +938,7 @@
       如果未設定這項政策，或是將這項政策設定為「True」，使用者將可以使用網路檔案共用功能。
 
       如果將這項政策設定為「False」，則使用者將無法使用網路檔案共用功能。</translation>
-<translation id="2435052056904485763">Kerberos 委派伺服器允許清單</translation>
+<translation id="2435052056904485763">Kerberos 委派伺服器許可清單</translation>
 <translation id="2439793457499023062">如果不設定這項政策，當 Chrome 清理功能偵測到垃圾軟體時，可能會根據 SafeBrowsingExtendedReportingEnabled 設定的政策，將掃描作業的相關中繼資料回報給 Google。然後，Chrome 清理功能會詢問使用者是否要清除垃圾軟體。使用者可以選擇將清理作業的執行結果提供給 Google，讓日後的垃圾軟體偵測作業更精確。提供的結果包含檔案中繼資料、自動安裝的擴充功能和登錄機碼，詳情請參閱《Chrome 隱私權白皮書》。
 
 
@@ -997,7 +997,7 @@
 <translation id="2517466659416174529">允許背景分頁凍結</translation>
 <translation id="2518231489509538392">允許播放音訊</translation>
 <translation id="2521581787935130926">在書籤列中顯示應用程式捷徑</translation>
-<translation id="2522304491589804974">設定擴充功能安裝允許清單</translation>
+<translation id="2522304491589804974">設定擴充功能安裝許可清單</translation>
 <translation id="2525272234967793245">你可以透過這項政策建立網址模式清單，指定哪些網站可以要求使用者授權，以取得主機作業系統中檔案系統的檔案或目錄寫入權限。
 
       如果未設定這項政策，系統會針對所有網站套用 <ph name="DEFAULT_FILE_SYSTEM_WRITE_GUARD_SETTING_POLICY_NAME" /> 政策 (如果已設定)。否則系統會套用使用者的個人設定。
@@ -1164,7 +1164,7 @@
 <translation id="2787774054174244402">如果將這項政策設為 True，使用者無法將內容寫入外部儲存裝置。
 
       除非外部儲存裝置遭到封鎖，否則將 ExternalStorageReadOnly 設為 False 或不設定時，只要外部儲存裝置實際可供寫入內容，使用者即可在其中建立及修改檔案 (將 ExternalStorageDisable 設為 True 即可封鎖外部儲存裝置)。</translation>
-<translation id="2796714419743648316">個別應用程式時間限制允許清單</translation>
+<translation id="2796714419743648316">個別應用程式時間限制許可清單</translation>
 <translation id="2796896367838042659">這項政策會指定哪些應用程式和網址應加入個別應用程式使用限制的許可清單。
         系統會將已設定的許可清單套用到 <ph name="PRODUCT_OS_NAME" />上安裝的應用程式，適用於設有個別應用程式時間限制的指定使用者。
         已設定的許可清單只能套用到兒童使用者帳戶，且必須設定 <ph name="PER_APP_TIME_LIMITS_POLICY_NAME" /> 政策才會生效。
@@ -2502,7 +2502,7 @@
 
           這項政策可讓你指定不應載入的內建訊息傳遞主機。
 
-          如果將封鎖清單的值設為「*」，系統會封鎖所有內建訊息傳遞主機 (允許清單中明確列出的內建訊息傳遞主機除外)。
+          如果將封鎖清單的值設為「*」，系統會封鎖所有內建訊息傳遞主機 (許可清單中明確列出的內建訊息傳遞主機除外)。
 
           如果不設定這項政策，<ph name="PRODUCT_NAME" /> 會載入所有已安裝的內建訊息傳遞主機。</translation>
 <translation id="4771144269610910963">這項政策可控管安全瀏覽功能是否要對使用者下載的內容進行深度掃描。如果不設定這項政策，或設為預設的「不要掃描檔案」，安全瀏覽功能將不會掃描使用者下載的內容。
@@ -2932,7 +2932,7 @@
       如果設為 true，則會回報狀態資訊。
 
       必須啟用 Android 應用程式才適用這項政策。</translation>
-<translation id="5393009997533871906">僅對使用者顯示允許清單中的印表機</translation>
+<translation id="5393009997533871906">僅對使用者顯示許可清單中的印表機</translation>
 <translation id="5395271912574071439">連線狀態下啟用遠端存取主機遮幕。
 
           如果你啟用這項設定，在遠端連線進行時，兩台主機的實體輸入與輸出裝置均會停用。
@@ -3537,7 +3537,7 @@
 <translation id="6221175752766085998">允許由本機信任錨點核發但缺少 subjectAlternativeName 擴充功能的憑證</translation>
 <translation id="6222839831045864769">這項政策可讓你指定不應載入的內建訊息傳遞主機。
 
-          如果將封鎖清單的值設為「*」，系統會封鎖所有內建訊息傳遞主機 (允許清單中明確列出的內建訊息傳遞主機除外)。
+          如果將封鎖清單的值設為「*」，系統會封鎖所有內建訊息傳遞主機 (許可清單中明確列出的內建訊息傳遞主機除外)。
 
           如果不設定這項政策，<ph name="PRODUCT_NAME" /> 會載入所有已安裝的內建訊息傳遞主機。</translation>
 <translation id="6224304369267200483">自動允許直接安全金鑰認證的網址/網域</translation>
@@ -3621,13 +3621,13 @@
 
           只有當閒置動作設為登出或關機時，系統才會顯示警告訊息。</translation>
 <translation id="6332546092866098577">禁止這些網站透過 File System API 進行讀取</translation>
-<translation id="6334330017384340264">這項政策會指定哪些應用程式和網址應加入個別應用程式使用限制的允許清單。
-        系統會將已設定的允許清單套用到 <ph name="PRODUCT_OS_NAME" />上安裝的應用程式，適用於設有個別應用程式時間限制的指定使用者。
-        已設定的允許清單只能套用到兒童使用者帳戶，且必須設定 <ph name="PER_APP_TIME_LIMITS_POLICY_NAME" /> 政策才會生效。
-        系統會將已設定的允許清單套用到應用程式和網址，如此一來，這些應用程式和網址就不會因個別應用程式的時間限制而遭到封鎖。
-        也就是說，存取允許清單上的網址所花的時間不會計入 Chrome 的限制使用時間。
-        將網址規則運算式新增到 |url_list|，即可將符合清單中任何規則運算式的網址加入允許清單。
-        將應用程式的 |app_id| 和 |app_type| 新增到 |app_list|，即可將應用程式加入允許清單。
+<translation id="6334330017384340264">這項政策會指定哪些應用程式和網址應加入個別應用程式使用限制的許可清單。
+        系統會將已設定的許可清單套用到 <ph name="PRODUCT_OS_NAME" />上安裝的應用程式，適用於設有個別應用程式時間限制的指定使用者。
+        已設定的許可清單只能套用到兒童使用者帳戶，且必須設定 <ph name="PER_APP_TIME_LIMITS_POLICY_NAME" /> 政策才會生效。
+        系統會將已設定的許可清單套用到應用程式和網址，如此一來，這些應用程式和網址就不會因個別應用程式的時間限制而遭到封鎖。
+        也就是說，存取許可清單上的網址所花的時間不會計入 Chrome 的限制使用時間。
+        將網址規則運算式新增到 |url_list|，即可將符合清單中任何規則運算式的網址加入許可清單。
+        將應用程式的 |app_id| 和 |app_type| 新增到 |app_list|，即可將應用程式加入許可清單。
        </translation>
 <translation id="6337782882143073193">這項政策已遭淘汰，請改用 <ph name="URL_BLOCKLIST_POLICY_NAME" />。
 
@@ -4035,9 +4035,9 @@
       如果某個語言同時列在這項政策和 <ph name="SPELLCHECK_LANGUAGE_POLICY_NAME" /> 政策中，系統會優先執行後者，為該語言啟用拼字檢查功能。
 
       拼字檢查功能目前支援的語言如下：af、bg、ca、cs、da、de、el、en-AU、en-CA、en-GB、en-US、es、es-419、es-AR、es-ES、es-MX、es-US、et、fa、fo、fr、he、hi、hr、hu、id、it、ko、lt、lv、nb、nl、pl、pt-BR、pt-PT、ro、ru、sh、sk、sl、sq、sr、sv、ta、tg、tr、uk、vi。</translation>
-<translation id="6924916062195228978">你可以設定這項政策，讓使用者存取允許清單中的網址，這些網址是 <ph name="URL_BLOCKLIST_POLICY_NAME" /> 的例外項目。請參閱該項政策的說明，瞭解這份清單所含項目的格式。舉例來說，如果將 <ph name="URL_BLOCKLIST_POLICY_NAME" /> 設為「*」，系統會封鎖所有要求。你可以透過這項政策允許使用者存取一些特定的網址。請使用 https://www.chromium.org/administrators/url-blacklist-filter-format 網頁中所指定的格式，透過這項政策將特定的網路協定、其他網域的子網域、通訊埠或特定路徑設為例外。需要判定是否封鎖某一個網址時，則會以條件最精確的篩選器做為判定依據。<ph name="URL_ALLOWLIST_POLICY_NAME" /> 政策的優先順序高於 <ph name="URL_BLOCKLIST_POLICY_NAME" />。最多只能為這項政策輸入 1000 個項目。
+<translation id="6924916062195228978">你可以設定這項政策，讓使用者存取許可清單中的網址，這些網址是 <ph name="URL_BLOCKLIST_POLICY_NAME" /> 的例外項目。請參閱該項政策的說明，瞭解這份清單所含項目的格式。舉例來說，如果將 <ph name="URL_BLOCKLIST_POLICY_NAME" /> 設為「*」，系統會封鎖所有要求。你可以透過這項政策允許使用者存取一些特定的網址。請使用 https://www.chromium.org/administrators/url-blacklist-filter-format 網頁中所指定的格式，透過這項政策將特定的網路協定、其他網域的子網域、通訊埠或特定路徑設為例外。需要判定是否封鎖某一個網址時，則會以條件最精確的篩選器做為判定依據。<ph name="URL_ALLOWLIST_POLICY_NAME" /> 政策的優先順序高於 <ph name="URL_BLOCKLIST_POLICY_NAME" />。最多只能為這項政策輸入 1000 個項目。
 
-      這項政策還可以讓瀏覽器叫用一些外部的應用程式，也就是註冊為協定處理常式的應用程式 (用於處理允許清單中的通訊協定，例如「tel:」或「ssh:」)。
+      這項政策還可以讓瀏覽器叫用一些外部的應用程式，也就是註冊為協定處理常式的應用程式 (用於處理許可清單中的通訊協定，例如「tel:」或「ssh:」)。
 
       如果未設定這項政策，<ph name="URL_BLOCKLIST_POLICY_NAME" /> 就不會有例外。
 
@@ -4335,9 +4335,9 @@
 <translation id="7258823566580374486">啟用遠端存取主機遮幕</translation>
 <translation id="7259664319370317355">這項政策已遭淘汰，請改用「<ph name="URL_ALLOWLIST_POLICY_NAME" />」政策。
 
-      你可以設定這項政策，讓使用者存取允許清單中的網址，這些網址是網址封鎖清單的例外項目。請參閱該項政策的說明，瞭解這份清單所含項目的格式。舉例來說，如果將 <ph name="URL_BLOCKLIST_POLICY_NAME" /> 設為「*」，系統會封鎖所有要求。你可以透過這項政策允許使用者存取一些特定的網址。請使用 https://www.chromium.org/administrators/url-blacklist-filter-format 網頁中所指定的格式，透過這項政策將特定的網路協定、其他網域的子網域、通訊埠或特定路徑設為例外。需要判定是否封鎖某一個網址時，則會以條件最精確的篩選器做為判定依據。允許清單的優先順序高於封鎖清單。最多只能為這項政策輸入 1000 個項目。
+      你可以設定這項政策，讓使用者存取許可清單中的網址，這些網址是網址封鎖清單的例外項目。請參閱該項政策的說明，瞭解這份清單所含項目的格式。舉例來說，如果將 <ph name="URL_BLOCKLIST_POLICY_NAME" /> 設為「*」，系統會封鎖所有要求。你可以透過這項政策允許使用者存取一些特定的網址。請使用 https://www.chromium.org/administrators/url-blacklist-filter-format 網頁中所指定的格式，透過這項政策將特定的網路協定、其他網域的子網域、通訊埠或特定路徑設為例外。需要判定是否封鎖某一個網址時，則會以條件最精確的篩選器做為判定依據。許可清單的優先順序高於封鎖清單。最多只能為這項政策輸入 1000 個項目。
 
-      這項政策還可以讓瀏覽器叫用一些外部的應用程式，也就是註冊為協定處理常式的應用程式 (用於處理允許清單中的通訊協定，例如「tel:」或「ssh:」)。
+      這項政策還可以讓瀏覽器叫用一些外部的應用程式，也就是註冊為協定處理常式的應用程式 (用於處理許可清單中的通訊協定，例如「tel:」或「ssh:」)。
 
       如果未設定這項政策，就不會有例外。
 
@@ -4728,9 +4728,9 @@
 
           這項政策可讓你指定不受封鎖清單影響的內建訊息傳遞主機。
 
-          如果將封鎖清單的值設為「*」，系統會封鎖所有內建訊息傳遞主機，只會載入允許清單中列出的內建訊息傳遞主機。
+          如果將封鎖清單的值設為「*」，系統會封鎖所有內建訊息傳遞主機，只會載入許可清單中列出的內建訊息傳遞主機。
 
-          根據預設，系統會允許所有內建訊息傳遞主機，但如果政策封鎖了所有內建訊息傳遞主機，你可以使用允許清單覆寫該政策。</translation>
+          根據預設，系統會允許所有內建訊息傳遞主機，但如果政策封鎖了所有內建訊息傳遞主機，你可以使用許可清單覆寫該政策。</translation>
 <translation id="7818131573217430250">設定高反差模式在登入畫面的預設狀態</translation>
 <translation id="7823902813460802031">如果將這項政策設為啟用，<ph name="PRODUCT_OS_NAME" />會阻止裝置進入開發人員模式。
 
@@ -4968,7 +4968,7 @@
 <translation id="8219777886736887686">你可以透過這項政策控管在替代瀏覽器中開啟網址時，系統所使用的指令。你可以將這項政策設為 <ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER" />、<ph name="FIREFOX_VALUE_PLACEHOLDER" />、<ph name="SAFARI_VALUE_PLACEHOLDER" />、<ph name="OPERA_VALUE_PLACEHOLDER" />、<ph name="EDGE_VALUE_PLACEHOLDER" /> 或檔案路徑的其中一項。如果將這項政策設為檔案路徑，系統會將該檔案做為執行檔使用。<ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER" /> 和 <ph name="EDGE_VALUE_PLACEHOLDER" /> 只適用於 <ph name="MS_WIN_NAME" />，而 <ph name="SAFARI_VALUE_PLACEHOLDER" /> 只適用於 <ph name="MS_WIN_NAME" /> 和 <ph name="MAC_OS_NAME" />。
 
       如果不設定這項政策，系統會使用平台專屬的預設值：<ph name="MS_WIN_NAME" /> 使用 <ph name="IE_PRODUCT_NAME" />、<ph name="MAC_OS_NAME" /> 使用 <ph name="SAFARI_PRODUCT_NAME" />。<ph name="LINUX_OS_NAME" /> 將無法啟動替代瀏覽器。</translation>
-<translation id="8220156281401380422">設定內建訊息傳遞允許清單</translation>
+<translation id="8220156281401380422">設定內建訊息傳遞許可清單</translation>
 <translation id="8244171102276095471">在傳輸層安全標準 (TLS) 中啟用 RC4 加密套件</translation>
 <translation id="8244525275280476362">政策失效後的最大擷取延遲</translation>
 <translation id="8251411417369363637">如果將這項政策設為 True，系統會在允許 <ph name="FLASH_PLUGIN_NAME" /> 的網站上執行所有內嵌的 <ph name="FLASH_PLUGIN_NAME" /> 內容，包括來自其他來源的內容或檔案較小的內容。
@@ -5075,7 +5075,7 @@
 
           如果想進一步瞭解有效的網址模式，請參閱 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。</translation>
 <translation id="8357681633047935212">限制使用者工作階段的時間長度</translation>
-<translation id="8357989008292691856">登入使用者允許清單</translation>
+<translation id="8357989008292691856">登入使用者許可清單</translation>
 <translation id="8359734107661430198">從 2008 年 9 月 2 日開始啟用 ExampleDeprecatedFeature API</translation>
 <translation id="8367209241899435947">在 Windows 裝置上啟用 Chrome 清理功能</translation>
 <translation id="8367473200119029349">雲端報告</translation>
@@ -5482,7 +5482,7 @@
       如果設為 true 或不予設定，則可顯示同步處理同意聲明。</translation>
 <translation id="8943934315109955032">不檢查是否違反機密資料保護規則</translation>
 <translation id="8947415621777543415">回報裝置位置</translation>
-<translation id="8948062138228904066">驗證伺服器允許清單</translation>
+<translation id="8948062138228904066">驗證伺服器許可清單</translation>
 <translation id="8951350807133946005">設定磁碟快取目錄</translation>
 <translation id="8952317565138994125">使用 Google 代管的同步處理服務停用 <ph name="PRODUCT_NAME" /> 的資料同步處理功能，並禁止使用者變更這項設定。
 

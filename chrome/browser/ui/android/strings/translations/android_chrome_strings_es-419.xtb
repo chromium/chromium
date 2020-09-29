@@ -76,7 +76,6 @@
 <translation id="1544826120773021464">Para administrar tu Cuenta de Google, presiona el botón "Administrar cuenta"</translation>
 <translation id="1549000191223877751">Mover a otra ventana</translation>
 <translation id="1553358976309200471">Actualizar Chrome</translation>
-<translation id="1565153191103764132">Telugu</translation>
 <translation id="1569387923882100876">Dispositivo conectado</translation>
 <translation id="1571304935088121812">Copiar el nombre de usuario</translation>
 <translation id="1592864538817356322">Protección estándar:</translation>
@@ -525,7 +524,6 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />restablece la sincroni
 <translation id="5011311129201317034"><ph name="SITE" /> desea conectarse</translation>
 <translation id="5013696553129441713">No hay sugerencias nuevas</translation>
 <translation id="5016205925109358554">Serif</translation>
-<translation id="5026887030745057099">Hindi</translation>
 <translation id="5039804452771397117">Permitir</translation>
 <translation id="5040262127954254034">Privacidad</translation>
 <translation id="5087580092889165836">Agregar tarjeta</translation>
@@ -896,7 +894,6 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 En el modo Incógnito, es posible que los sitios web que visitas, tu empleador, tu institución educativa o el proveedor de servicios de Internet aún puedan ver tu actividad.</translation>
 <translation id="7704317875155739195">Autocompletar búsquedas y URL</translation>
 <translation id="7725024127233776428">Las páginas que agregues a favoritos aparecerán aquí</translation>
-<translation id="7732997068759397415">Canarés</translation>
 <translation id="7735637452482172701">Desbloquear con el bloqueo de pantalla</translation>
 <translation id="7746457520633464754">Para detectar apps y sitios peligrosos, Chrome envía a Google URL de algunas páginas que visitas, información limitada sobre el sistema y contenido de algunas páginas</translation>
 <translation id="7757787379047923882">Texto compartido de <ph name="DEVICE_NAME" /></translation>
@@ -953,7 +950,6 @@ En el modo Incógnito, es posible que los sitios web que visitas, tu empleador, 
 <translation id="8073388330009372546">Abrir imagen en pestaña nueva</translation>
 <translation id="8076492880354921740">Pestañas</translation>
 <translation id="8084114998886531721">Se guardó la contraseña</translation>
-<translation id="8099451332580698547">Tamil</translation>
 <translation id="8103578431304235997">Pestaña de incógnito</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109613176066109935">Para que tus favoritos estén en todos tus dispositivos, activa la sincronización</translation>
@@ -1032,7 +1028,6 @@ En el modo Incógnito, es posible que los sitios web que visitas, tu empleador, 
 <translation id="8659579665266920523">Cómo realizar búsquedas en Chrome</translation>
 <translation id="8662811608048051533">Esta acción te hace salir de la mayoría de los sitios.</translation>
 <translation id="8664979001105139458">Ya existe el nombre del archivo</translation>
-<translation id="8666678546361132282">English</translation>
 <translation id="8683039184091909753">imagen</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{Nivel de potencia de la señal: # barra}other{Nivel de potencia de la señal: # barras}}</translation>
 <translation id="869891660844655955">Fecha de vencimiento</translation>

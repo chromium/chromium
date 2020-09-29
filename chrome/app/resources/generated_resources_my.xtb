@@ -2254,7 +2254,6 @@
 <translation id="3639220004740062347">'စာဖတ်သူမုဒ်' မှ ထွက်ရန်</translation>
 <translation id="3640214691812501263">"<ph name="EXTENSION_NAME" />" ကို <ph name="USER_NAME" /> အတွက်ထည့်မလား?</translation>
 <translation id="3640613767643722554">သင့်အသံကို မှတ်မိစေရန် Assistant အား သင်ကြားပေးပါ</translation>
-<translation id="3643014427358482789"><ph name="DOMAIN" /> သည် သင့် <ph name="DEVICE_TYPE" /> ကို ပြင်ဆင်သတ်မှတ်မည့် ADB အမှားရှာပြင်ခြင်းကို ပိတ်နေသည်။ ပြန်လည်မစတင်မီ သင့်ဖိုင်များကို အရန်သိမ်းပါ။</translation>
 <translation id="3643637292669952403">သင့်တည်နေရာကို ဝဘ်ဆိုက်များကကြည့်ခြင်းအား ပိတ်ထားရန်</translation>
 <translation id="3645372836428131288">လက်ဗွေ၏ အခြားအပိုင်းကို ရိုက်ကူးရန် အနည်းငယ် ရွှေ့လိုက်ပါ။</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> ထံမှရသော <ph name="ATTACHMENTS" /> ခု}other{<ph name="DEVICE_NAME" /> ထံမှရသော <ph name="ATTACHMENTS" /> ခု}}</translation>
@@ -3900,7 +3899,6 @@
 <translation id="5632566673632479864">သင်၏ <ph name="EMAIL" /> အကောင့်ကို ပင်မအကောင့်အဖြစ် ခွင့်ပြုတော့မည် မဟုတ်ပါ။ ဤအကောင့်ကို <ph name="DOMAIN" /> က စီမံခန့်ခွဲထားသည့်အတွက် သင့်လိပ်စာများ၊ မှတ်တမ်း၊ စကားဝှက်များနှင့် အခြားဆက်တင်များကို ဤစက်ပစ္စည်းမှ ရှင်းထုတ်သွားမည် ဖြစ်သည်။</translation>
 <translation id="5632592977009207922">ဒေါင်းလုဒ်လုပ်နေသည်၊ <ph name="PERCENT_REMAINING" />% ကျန်သည်</translation>
 <translation id="563371367637259496">မိုဘိုင်းလ်</translation>
-<translation id="563496044070985734">စာလုံးပေါင်းစစ်ဆေးခြင်း သုံးနိုင်သော ဘာသာစကားများကို သင်၏ဘာသာစကား ဆက်တင်များပေါ် အခြေခံပါသည်</translation>
 <translation id="563535393368633106">အသုံးမပြုမှီမေးပါ (အကြံပြုထား)</translation>
 <translation id="5636996382092289526"><ph name="NETWORK_ID" /> ကို အသုံးပြုရန် အတွက် သင်သည် စက္ကန့် အနည်းငယ် အတွင်းမှာ အလိုအလျောက် ပွင့်လာတော့မည့် <ph name="LINK_START" />ကွန်ရက်၏ လက်မှတ်ထိုး ဝင်ရေး စာမျက်နှာ <ph name="LINK_END" />ကို  ဦးစွာ ဝင်ရန်လိုပါသည်။ ထိုသို့ ပွင့်မလာလျှင်၊ ကွန်ရက်ကို သုံး၍ မရနိုင်ပါ။</translation>
 <translation id="5637476008227280525">မိုဘိုင်းဒေတာကို ဖွင့်ထားသည်</translation>
@@ -4782,7 +4780,6 @@
 <translation id="6704062477274546131">DNS ဖြေရှင်းချက်</translation>
 <translation id="6706210727756204531">ပါဝင်မှု</translation>
 <translation id="6707389671160270963">SSL ဖောက်သည် အသိမှတ်ပြု လက်မှတ်</translation>
-<translation id="670893696722244877">ဘာသာစကား (သို့) လက်ကွက်အမည်များအလိုက် ရှာရန်</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> နှင့် အခြားတဘ် ၁ ခု}other{<ph name="PAGE_TITLE" /> နှင့် အခြားတဘ် # ခု}}</translation>
 <translation id="6709133671862442373">သတင်းများ</translation>
 <translation id="6709357832553498500"><ph name="EXTENSIONNAME" /> သုံး၍ ချိတ်ဆက်ပါ</translation>
@@ -5682,7 +5679,6 @@
 
 
 <ph name="EXTENSION_NAME" /></translation>
-<translation id="7788444488075094252">ဘာသာစကားများ နှင့် ရိုက်သွင်းမှု</translation>
 <translation id="7788668840732459509">အနေအထား:</translation>
 <translation id="7789963078219276159">စတင်ရန် စာမျက်နှာနောက်ခံကို <ph name="CATEGORY" /> သို့ ပြောင်းလိုက်သည်။</translation>
 <translation id="7791543448312431591">ထည့်ရန်</translation>
@@ -6269,7 +6265,6 @@
 <translation id="8467326454809944210">အခြားဘာသာစကားတစ်ခု ရွေးရန်</translation>
 <translation id="8470214316007448308">အခြားလူများ</translation>
 <translation id="8470513973197838199"><ph name="ORIGIN" /> အတွက် သိမ်းဆည်းထားသည့် စကားဝှက်များ</translation>
-<translation id="8471256130228705232"><ph name="DOMAIN" /> သည် ADB အမှားရှာပြင်ခြင်းကို ပိတ်နေသည်။ ၎င်းက သင်၏ <ph name="DEVICE_TYPE" /> ကို ၂၄ နာရီအတွင်း ပြင်ဆင်သတ်မှတ်ပါမည်။ သိမ်းလိုသော ဖိုင်မှန်သမျှကို အရန်သိမ်းပါ။</translation>
 <translation id="8471525937465764768">မှတ်တမ်းဖိုင်ပုံနှိပ်ထုတ်ရန် သို့မဟုတ် သိုလှောင်ခန်းကိရိယာတွင် သိမ်းရန်ကဲ့သို့ ဝန်ဆောင်မှုများအတွက် USB ကိရိယာများသို့ ဝဘ်ဆိုက်များက ချိတ်ဆက်လေ့ရှိသည်</translation>
 <translation id="8472623782143987204">ဟာ့ဒ်ဝဲ-ပံ့ပိုးမှု</translation>
 <translation id="8473863474539038330">လိပ်စာများနှင့် အခြားအရာများ</translation>
@@ -6804,6 +6799,7 @@
 <translation id="9088234649737575428">စီးပွားရေးလုပ်ငန်းဆိုင်ရာ မူဝါဒအရ <ph name="PLUGIN_NAME" /> ကို ပိတ်ဆို့ထားသည်</translation>
 <translation id="9088446193279799727">Linux ကို စီစဉ်သတ်မှတ်၍မရပါ။ အင်တာနက် ချိတ်ပြီး ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="9088917181875854783">"<ph name="DEVICE_NAME" />" ပေါ်တွင်ဤလျှို့ဝှက်ကီး ပေါ်နေကြောင်း ကျေးဇူးပြု၍ အတည်ပြုပါ:</translation>
+<translation id="9089416786594320554">ထည့်သွင်းနည်းများ</translation>
 <translation id="9093429538970210897">အဆင့်မြှင့်ခြင်း မပြီးဆုံးခဲ့လျှင် ဖိုင်များကို အရန်သိမ်းရန် အကြံပြုထားသည်။ အဆင့်မြှင့်ခြင်း စတင်သည့်အခါ Linux (စမ်းသပ်ဆော့ဖ်ဝဲ) ကို ပိတ်လိုက်ပါမည်။ ရှေ့မဆက်မီ ဖွင့်ထားသောဖိုင်များကို သိမ်းပါ။</translation>
 <translation id="9094033019050270033">စကားဝှက် အပ်ဒိတ် လုပ်ပါ</translation>
 <translation id="9094038138851891550">အသုံးပြုသူအမည် မမှန်ပါ</translation>

@@ -2227,7 +2227,6 @@
 <translation id="3639220004740062347">रीडर मोड से बाहर निकलें</translation>
 <translation id="3640214691812501263"><ph name="USER_NAME" /> के लिए "<ph name="EXTENSION_NAME" />" को जोड़ें?</translation>
 <translation id="3640613767643722554">अपनी Assistant को आपकी आवाज़ पहचानना सिखाएं</translation>
-<translation id="3643014427358482789"><ph name="DOMAIN" />, ADB को डीबग करने की सुविधा बंद कर रहा है. इससे आपका <ph name="DEVICE_TYPE" /> रीसेट हो जाएगा. डिवाइस को रीस्टार्ट करने से पहले, अपनी फ़ाइलों का बैक अप लें.</translation>
 <translation id="3645372836428131288">फ़िंगरप्रिंट के अलग हिस्से को कैप्चर करने के लिए उंगली धीरे से हिलाएं</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> से <ph name="ATTACHMENTS" /> मिला}one{<ph name="DEVICE_NAME" /> से <ph name="ATTACHMENTS" /> मिला}other{<ph name="DEVICE_NAME" /> से <ph name="ATTACHMENTS" /> मिले}}</translation>
 <translation id="3648348069317717750"><ph name="USB_DEVICE_NAME" /> का पता चला</translation>
@@ -4718,7 +4717,6 @@
 <translation id="6704062477274546131">डीएनएस रिज़ॉल्यूशन</translation>
 <translation id="6706210727756204531">दायरा</translation>
 <translation id="6707389671160270963">SSL क्लाइंट प्रमाणपत्र</translation>
-<translation id="670893696722244877">भाषाओं या इनपुट नामों के हिसाब से खोजें</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> और 1 अन्य टैब}one{<ph name="PAGE_TITLE" /> और # अन्य टैब}other{<ph name="PAGE_TITLE" /> और # अन्य टैब}}</translation>
 <translation id="6709133671862442373">News</translation>
 <translation id="6709357832553498500"><ph name="EXTENSIONNAME" /> के उपयोग से कनेक्‍ट करें</translation>
@@ -5599,7 +5597,6 @@
 <translation id="7788298548579301890">आपके कंप्‍यूटर पर किसी दूसरे प्रोग्राम ने ऐसा ऐप्लिकेशन जोड़ा है जो Chrome के काम करने के तरीके को बदल सकता है.
 
 <ph name="EXTENSION_NAME" /></translation>
-<translation id="7788444488075094252">भाषाएं और इनपुट</translation>
 <translation id="7788668840732459509">स्थिति:</translation>
 <translation id="7789963078219276159">शुरुआत वाला पेज बैकग्राउंड <ph name="CATEGORY" /> में बदल गया है.</translation>
 <translation id="7791543448312431591">जोड़ें</translation>
@@ -6182,7 +6179,6 @@
 <translation id="8467326454809944210">कोई दूसरी भाषा चुनें</translation>
 <translation id="8470214316007448308">दूसरे लोग</translation>
 <translation id="8470513973197838199"><ph name="ORIGIN" /> के लिए सेव किए गए पासवर्ड</translation>
-<translation id="8471256130228705232"><ph name="DOMAIN" />, ADB को डीबग करने की सुविधा बंद कर रहा है. इससे आपका <ph name="DEVICE_TYPE" />, 24 घंटे में रीसेट हो जाएगा. आप जिन फ़ाइलों को सेव रखना चाहते हैं उनका बैक अप लें.</translation>
 <translation id="8472623782143987204">हार्डवेयर-समर्थित</translation>
 <translation id="8473863474539038330">पते वगैरह</translation>
 <translation id="8475313423285172237">आपके कंप्यूटर पर किसी अन्य प्रोग्राम ने एक्सटेंशन जोड़ा है, जो Chrome के काम करने के तरीके को बदल सकता है.</translation>
@@ -6711,6 +6707,7 @@
 <translation id="9088234649737575428"><ph name="PLUGIN_NAME" /> एंटरप्राइज़ नीति द्वारा अवरोधित है</translation>
 <translation id="9088446193279799727">Linux को कॉन्फ़िगर नहीं किया जा सका. इंटरनेट से जोड़ें और फिर से कोशिश करें.</translation>
 <translation id="9088917181875854783">कृपया पुष्टि करें कि यह पासकुंजी "<ph name="DEVICE_NAME" />" पर दिखाई गई है:</translation>
+<translation id="9089416786594320554">इनपुट के तरीके</translation>
 <translation id="9093429538970210897">अपग्रेड पूरा न होने की स्थिति में फ़ाइलों के बैक अप लेने का सुझाव दिया जाता है. अपग्रेड चालू करने से, Linux (बीटा) पूरी तरह बंद हो जाएगा. प्रोसेस शुरू करने से पहले, कृपया खुली हुई फ़ाइलें सेव कर लें.</translation>
 <translation id="9094033019050270033">पासवर्ड अपडेट करें</translation>
 <translation id="9094038138851891550">उपयोगकर्ता का नाम अमान्य है</translation>

@@ -76,7 +76,6 @@
 <translation id="1544826120773021464">Pour gérer votre compte Google, touchez le bouton « Gérer le compte »</translation>
 <translation id="1549000191223877751">Déplacer vers autre fenêtre</translation>
 <translation id="1553358976309200471">Mettre à jour Chrome</translation>
-<translation id="1565153191103764132">Télougou</translation>
 <translation id="1569387923882100876">Appareil connecté</translation>
 <translation id="1571304935088121812">Copier le nom d'utilisateur</translation>
 <translation id="1592864538817356322">Protection standard :</translation>
@@ -525,7 +524,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5011311129201317034"><ph name="SITE" /> veut se connecter</translation>
 <translation id="5013696553129441713">Aucune nouvelle suggestion</translation>
 <translation id="5016205925109358554">Avec empattement</translation>
-<translation id="5026887030745057099">Hindi</translation>
 <translation id="5039804452771397117">Autoriser</translation>
 <translation id="5040262127954254034">Confidentialité</translation>
 <translation id="5087580092889165836">Ajouter une carte</translation>
@@ -893,10 +891,9 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7698359219371678927">Créer un courriel dans <ph name="APP_NAME" /></translation>
 <translation id="7702724591845223485">Pour supprimer vos données de connexion et les autres données de Chrome, fermez tous les onglets de navigation privée.
 
-En mode de navigation privée, votre activité peut rester visible pour les sites Web que vous consultez, votre employeur ou votre établissement scolaire, ainsi que de votre fournisseur d'accès Internet.</translation>
+En mode de navigation privée, votre activité peut rester visible pour les sites Web que vous consultez, votre employeur ou votre établissement scolaire, ainsi que votre fournisseur d'accès Internet.</translation>
 <translation id="7704317875155739195">Saisie semi-automatique des recherches et des URL</translation>
 <translation id="7725024127233776428">Les pages que vous ajoutez aux favoris s'affichent ici</translation>
-<translation id="7732997068759397415">Kannada</translation>
 <translation id="7735637452482172701">Déverrouiller à l'aide du verrouillage de l'écran</translation>
 <translation id="7746457520633464754">Pour détecter les applications et les sites dangereux, Chrome envoie à Google l'URL de certaines pages que vous visitez, certaines données système et du contenu partiel des pages en question</translation>
 <translation id="7757787379047923882">Texte partagé à partir de <ph name="DEVICE_NAME" /></translation>
@@ -953,7 +950,6 @@ En mode de navigation privée, votre activité peut rester visible pour les site
 <translation id="8073388330009372546">Ouvrir dans un nouvel onglet</translation>
 <translation id="8076492880354921740">Onglets</translation>
 <translation id="8084114998886531721">Mot de passe enregistré</translation>
-<translation id="8099451332580698547">Tamoul</translation>
 <translation id="8103578431304235997">Onglet de navigation privée</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109613176066109935">Pour synchroniser vos favoris sur tous vos appareils, activez la synchronisation</translation>
@@ -1032,7 +1028,6 @@ En mode de navigation privée, votre activité peut rester visible pour les site
 <translation id="8659579665266920523">Effectuer une recherche avec Chrome</translation>
 <translation id="8662811608048051533">Vous déconnecte de la plupart des sites.</translation>
 <translation id="8664979001105139458">Ce nom de fichier existe déjà</translation>
-<translation id="8666678546361132282">Anglais</translation>
 <translation id="8683039184091909753">image</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{Niveau du signal : # barre}one{Niveau du signal : # barre}other{Niveau du signal : # barres}}</translation>
 <translation id="869891660844655955">Date d'expiration</translation>

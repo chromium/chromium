@@ -104,7 +104,6 @@
 <translation id="1962969542251276847">Заклучен екран</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Здраво, <ph name="USERNAME" /></translation>
-<translation id="1975500003782052650">Неодамнешни преземања</translation>
 <translation id="1978498689038657292">Внесување текст</translation>
 <translation id="1993072747612765854">Дознајте повеќе за најновото ажурирање на <ph name="SYSTEM_APP_NAME" /></translation>
 <translation id="1995660704900986789">Исклучи</translation>
@@ -198,6 +197,7 @@
 <translation id="2996462380875591307">Овозможена е закотвената лупа. Притиснете Ctrl+Search+D повторно за да ја исклучите.</translation>
 <translation id="3000461861112256445">Моно аудио</translation>
 <translation id="3009178788565917040">Излез</translation>
+<translation id="3025081209054535615">Откачи контроли за глобални контроли за аудиовизуелни содржини од полицата</translation>
 <translation id="3033545621352269033">Вклучено</translation>
 <translation id="3038571455154067151">За да се најавите, внесете го кодот за пристап на родители од Family Link</translation>
 <translation id="3045488863354895414">Добар ден,</translation>
@@ -377,6 +377,7 @@
 <translation id="4710243778082831592">Поставки за IME</translation>
 <translation id="4731797938093519117">Пристап за родители</translation>
 <translation id="4734965478015604180">Хоризонтално</translation>
+<translation id="4759238208242260848">Преземања</translation>
 <translation id="4774338217796918551">Вратете се утре во <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776917500594043016">Лозинка за <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4778095205580009397">„Помошникот на Google“ не е достапен во сесија за демонстрација.</translation>
@@ -384,6 +385,7 @@
 <translation id="4804818685124855865">Исклучи</translation>
 <translation id="4814539958450445987">Екран за најавување</translation>
 <translation id="4831034276697007977">Дали сигурно сакате да ги исклучите автоматските кликови?</translation>
+<translation id="4836108105469522644">Вклучете „Известувања“ од телефонот со Android</translation>
 <translation id="4849058404725798627">Нагласи го предметот со фокус на тастатурата</translation>
 <translation id="485592688953820832">Нема дејство (пауза)</translation>
 <translation id="4868492592575313542">активиранo</translation>
@@ -697,6 +699,7 @@
 <translation id="8297006494302853456">Слаб</translation>
 <translation id="8308637677604853869">Претходно мени</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" /> <ph name="GET_STARTED" /></translation>
+<translation id="8349293353728876872">Закачи контроли за глобални контроли за аудиовизуелни содржини на полицата</translation>
 <translation id="8351131234907093545">Создајте белешка</translation>
 <translation id="8371779926711439835">Напред за една буква</translation>
 <translation id="8375916635258623388">Овој <ph name="DEVICE_NAME" /> и вашиот телефон ќе се поврзат автоматски</translation>

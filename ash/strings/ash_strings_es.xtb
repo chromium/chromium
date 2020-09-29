@@ -70,7 +70,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="1589090746204042747">Acceder a toda tu actividad de esta sesión</translation>
 <translation id="1611993646327628135">Sí</translation>
 <translation id="1632985212731562677">La accesibilidad con interruptores se puede inhabilitar en Configuración &gt; Accesibilidad.</translation>
-<translation id="1651447046299738444">Parece que tu Bluetooth o Wi-Fi están desactivados en tu Chromebook. Comprueba tu conexión para usar el Panel del teléfono.</translation>
+<translation id="1651447046299738444">Parece que tu Bluetooth o Wi-Fi están desactivados en tu Chromebook. Comprueba tu conexión para usar Phone Hub.</translation>
 <translation id="1654477262762802994">Iniciar una consulta por voz</translation>
 <translation id="1667964833127753507">El modo de color neutro no usa los colores extraídos de un fondo de pantalla, sino que los sustituye por un conjunto de colores claros u oscuros con un tono neutro.</translation>
 <translation id="1677472565718498478">Queda: <ph name="TIME" /></translation>
@@ -104,7 +104,6 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="1962969542251276847">Bloquear pantalla</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Hola, <ph name="USERNAME" />:</translation>
-<translation id="1975500003782052650">Descargas recientes</translation>
 <translation id="1978498689038657292">Introducción de texto</translation>
 <translation id="1993072747612765854">Consulta más información sobre la última actualización de <ph name="SYSTEM_APP_NAME" /></translation>
 <translation id="1995660704900986789">Apagar</translation>
@@ -377,6 +376,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="4710243778082831592">Ajustes de IME</translation>
 <translation id="4731797938093519117">Acceso parental</translation>
 <translation id="4734965478015604180">Horizontal</translation>
+<translation id="4759238208242260848">Descargas</translation>
 <translation id="4774338217796918551">Vuelve mañana a las <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776917500594043016">Contraseña de <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4778095205580009397">El Asistente de Google no está disponible en las sesiones de demostración.</translation>
@@ -654,7 +654,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="7886277072580235377">Tu sesión de Internet se borrará cuando la cierres. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">Enviar un correo electrónico</translation>
 <translation id="7897375687985782769">Has pulsado la combinación de teclas que gira la pantalla. ¿Quieres girar la pantalla?</translation>
-<translation id="7901405293566323524">Panel del teléfono</translation>
+<translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7904094684485781019">El administrador de esta cuenta ha inhabilitado el inicio de sesión múltiple.</translation>
 <translation id="7933084174919150729">El Asistente de Google solo está disponible en el perfil principal.</translation>
 <translation id="79341161159229895">Cuenta gestionada por <ph name="FIRST_PARENT_EMAIL" /> y <ph name="SECOND_PARENT_EMAIL" /></translation>

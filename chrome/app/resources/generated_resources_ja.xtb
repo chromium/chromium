@@ -2253,7 +2253,6 @@
 <translation id="3639220004740062347">リーダーモードを終了</translation>
 <translation id="3640214691812501263"><ph name="USER_NAME" /> さんのアイテムとして「<ph name="EXTENSION_NAME" />」を追加しますか？</translation>
 <translation id="3640613767643722554">アシスタントに声を認識させましょう</translation>
-<translation id="3643014427358482789"><ph name="DOMAIN" /> によって ADB デバッグが無効にされたため、<ph name="DEVICE_TYPE" /> はリセットされます。再起動する前にファイルをバックアップしてください。</translation>
 <translation id="3643637292669952403">サイトが位置情報を取得できないようにする</translation>
 <translation id="3645372836428131288">指紋の別の部分を登録するため、指を少し移動してください。</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> から <ph name="ATTACHMENTS" />を受け取りました}other{<ph name="DEVICE_NAME" /> から <ph name="ATTACHMENTS" />を受け取りました}}</translation>
@@ -3899,7 +3898,6 @@
 <translation id="5632566673632479864">お使いのアカウント <ph name="EMAIL" /> は、メイン アカウントとして使用できなくなりました。このアカウントは <ph name="DOMAIN" /> で管理されているため、ブックマーク、履歴、パスワードなどの設定はこのデバイスから削除されます。</translation>
 <translation id="5632592977009207922">ダウンロードしています（残り <ph name="PERCENT_REMAINING" />%）</translation>
 <translation id="563371367637259496">モバイル</translation>
-<translation id="563496044070985734">言語設定に基づいてスペルチェックが可能な言語を表示しています</translation>
 <translation id="563535393368633106">アクセスする前に確認する（推奨）</translation>
 <translation id="5636996382092289526"><ph name="NETWORK_ID" /> を使用するには、最初に<ph name="LINK_START" />ネットワークのログイン ページにアクセス<ph name="LINK_END" />する必要がある場合があります。その場合は、数秒でログイン ページが自動的に開きます。ログイン ページが自動的に開かない場合、そのネットワークは使用できません。</translation>
 <translation id="5637476008227280525">モバイルデータの有効化</translation>
@@ -4784,7 +4782,6 @@
 <translation id="6704062477274546131">DNS の解決</translation>
 <translation id="6706210727756204531">範囲</translation>
 <translation id="6707389671160270963">SSL クライアント証明書</translation>
-<translation id="670893696722244877">言語または入力方法で検索</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" />、他 1 個のタブ}other{<ph name="PAGE_TITLE" />、他 # 個のタブ}}</translation>
 <translation id="6709133671862442373">ニュース</translation>
 <translation id="6709357832553498500">「<ph name="EXTENSIONNAME" />」を使用して接続</translation>
@@ -5684,7 +5681,6 @@
 
 
 <ph name="EXTENSION_NAME" /></translation>
-<translation id="7788444488075094252">言語と入力</translation>
 <translation id="7788668840732459509">位置:</translation>
 <translation id="7789963078219276159">スタートページの背景が<ph name="CATEGORY" />に変更されました。</translation>
 <translation id="7791543448312431591">追加</translation>
@@ -6272,7 +6268,6 @@
 <translation id="8467326454809944210">別の言語を選択</translation>
 <translation id="8470214316007448308">他のユーザー</translation>
 <translation id="8470513973197838199"><ph name="ORIGIN" /> 用に保存されているパスワード</translation>
-<translation id="8471256130228705232"><ph name="DOMAIN" /> により ADB デバッグが無効になりました。<ph name="DEVICE_TYPE" /> は 24 時間以内にリセットされます。必要なファイルがあればバックアップしてください。</translation>
 <translation id="8471525937465764768">多くのサイトは、ドキュメントを印刷したりストレージ デバイスに保存するために USB デバイスに接続します。</translation>
 <translation id="8472623782143987204">ハードウェア式</translation>
 <translation id="8473863474539038330">住所やその他の情報</translation>
@@ -6807,6 +6802,7 @@
 <translation id="9088234649737575428"><ph name="PLUGIN_NAME" /> は会社のポリシーによってブロックされています</translation>
 <translation id="9088446193279799727">Linux を設定できませんでした。インターネットに接続してから、もう一度お試しください。</translation>
 <translation id="9088917181875854783">「<ph name="DEVICE_NAME" />」でこのパスキーが表示されていることを確認してください:</translation>
+<translation id="9089416786594320554">入力方法</translation>
 <translation id="9093429538970210897">アップグレードを完了できない場合に備えて、ファイルをバックアップしておくことをおすすめします。アップグレードを開始すると、Linux（ベータ版）はシャットダウンされます。続行する前に、開いているファイルを保存してください。</translation>
 <translation id="9094033019050270033">パスワードを更新</translation>
 <translation id="9094038138851891550">無効なユーザー名です</translation>

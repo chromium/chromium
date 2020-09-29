@@ -514,7 +514,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3080254622891793721">Graphic</translation>
 <translation id="3086579638707268289">Your activity on the web is being monitored</translation>
 <translation id="3087734570205094154">Bottom</translation>
-<translation id="3094457892697649331">When you edit annotations, this document will return to single-page view.</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3096100844101284527">Add pickup address</translation>
 <translation id="3105172416063519923">Asset ID:</translation>
@@ -1682,7 +1681,6 @@ Additional details:
 <translation id="7802523362929240268">Site is legitimate</translation>
 <translation id="780301667611848630">No, thanks</translation>
 <translation id="7805768142964895445">Status</translation>
-<translation id="7811322735445742657">When you edit annotations, this document will return to single-page view and its original rotation.</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Remove form suggestion from Chrome?</translation>
 <translation id="781440967107097262">Share clipboard?</translation>
@@ -1801,7 +1799,6 @@ Additional details:
 <translation id="8289355894181816810">Contact your network administrator if you're not sure what this means.</translation>
 <translation id="8293206222192510085">Add Bookmark</translation>
 <translation id="8294431847097064396">Source</translation>
-<translation id="8297398969342264569">When you edit annotations, this document will return to its original rotation.</translation>
 <translation id="8298115750975731693">The Wi-Fi that you are using (<ph name="WIFI_NAME" />) may require you to visit <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="8303854710873047864">'<ph name="SECTION" />' section shown</translation>
 <translation id="830498451218851433">Fold half</translation>

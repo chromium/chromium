@@ -108,6 +108,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1348779747280417563">Confirmar nome</translation>
 <translation id="1357195169723583938">Quem utilizou o dispositivo recentemente e quando</translation>
 <translation id="1360955481084547712">Abra uma nova janela de navegação anónima para navegar em privado</translation>
+<translation id="1363819917331173092">Não se disponibilizar para traduzir páginas em <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1364822246244961190">Esta política está bloqueada e o valor será ignorado.</translation>
 <translation id="1374468813861204354">sugestões</translation>
 <translation id="1374692235857187091">Index-4x6 (Postcard)</translation>
@@ -499,6 +500,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2996674880327704673">Sugestões da Google</translation>
 <translation id="3002501248619246229">Verificar o suporte do tabuleiro de entrada</translation>
 <translation id="3005723025932146533">Mostrar cópia guardada</translation>
+<translation id="3007719053326478567">A impressão deste conteúdo está bloqueada pelo seu administrador.</translation>
 <translation id="3008447029300691911">Introduza o Código de Segurança/CVC de <ph name="CREDIT_CARD" />. Ao confirmar, os detalhes do cartão são partilhados com este site.</translation>
 <translation id="3010559122411665027">Entrada da lista "<ph name="ENTRY_INDEX" />": <ph name="ERROR" /></translation>
 <translation id="301521992641321250">Bloqueada automaticamente</translation>
@@ -513,7 +515,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3080254622891793721">Gráfico</translation>
 <translation id="3086579638707268289">A sua atividade na Web está a ser monitorizada</translation>
 <translation id="3087734570205094154">Parte inferior</translation>
-<translation id="3094457892697649331">Quando edita anotações, este documento volta à vista de página única.</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3096100844101284527">Adicionar endereço de levantamento</translation>
 <translation id="3105172416063519923">ID de recurso:</translation>
@@ -602,6 +603,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3443726618221119081">Juuro-Ku-Kai</translation>
 <translation id="3447661539832366887">O proprietário deste dispositivo desativou o jogo do dinossauro.</translation>
 <translation id="3447884698081792621">Mostrar certificado (emitido por <ph name="ISSUER" />)</translation>
+<translation id="3451824941663424536">A ação de colar nesta localização está bloqueada pelo seu administrador.</translation>
 <translation id="3452404311384756672">Intervalo de obtenção:</translation>
 <translation id="3453962258458347894">Número de tentativas</translation>
 <translation id="3456231139987291353">Number-11 (Envelope)</translation>
@@ -1395,6 +1397,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6671697161687535275">Remover a sugestão do formulário do Chromium?</translation>
 <translation id="6685834062052613830">Termine sessão e conclua a configuração</translation>
 <translation id="6687335167692595844">Tamanho do tipo de letra solicitado</translation>
+<translation id="6688998199862661005">O seu administrador bloqueou a partilha deste conteúdo com a VM <ph name="VM_NAME" />.</translation>
 <translation id="6689249931105087298">Relativa com compressão do ponto preto</translation>
 <translation id="6689271823431384964">O Chrome está a disponibilizar a opção de guardar os seus cartões na sua Conta Google porque tem sessão iniciada. Pode alterar este comportamento nas definições. O nome do titular do cartão vem da sua conta.</translation>
 <translation id="6710213216561001401">Anterior</translation>
@@ -1419,6 +1422,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6810899417690483278">ID de personalização</translation>
 <translation id="6825578344716086703">Tentou aceder a <ph name="DOMAIN" />, mas o servidor apresentou um certificado assinado utilizando um algoritmo de assinatura fraco (como SHA-1). Isto significa que as credenciais de segurança apresentadas pelo servidor podem ter sido falsificadas e que o servidor pode não ser aquele que pretende (pode estar a comunicar com um utilizador mal intencionado).</translation>
 <translation id="6826993739343257035">Pretende permitir a realidade aumentada?</translation>
+<translation id="6829611662493319648">O seu administrador bloqueou a partilha deste conteúdo com a VM <ph name="VM_NAME_1" /> e <ph name="VM_NAME_2" />.</translation>
 <translation id="6831043979455480757">Traduzir</translation>
 <translation id="6839929833149231406">Área</translation>
 <translation id="6846340164947227603">Utilizar um número de cartão virtual…</translation>
@@ -1677,7 +1681,6 @@ Detalhes adicionais:
 <translation id="7802523362929240268">O site é legítimo</translation>
 <translation id="780301667611848630">Não, obrigado</translation>
 <translation id="7805768142964895445">Estado</translation>
-<translation id="7811322735445742657">Quando edita anotações, este documento volta à vista de página única e à respetiva rotação original.</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Remover a sugestão do formulário do Chrome?</translation>
 <translation id="781440967107097262">Pretende partilhar a área de transferência?</translation>
@@ -1787,6 +1790,7 @@ Detalhes adicionais:
 <translation id="8267698848189296333">A iniciar sessão como <ph name="USERNAME" /></translation>
 <translation id="8269242089528251720">Documentos separados/cópias agrupadas</translation>
 <translation id="8269981117540303696">Agora, pode navegar em privado e as outras pessoas que utilizarem este dispositivo não veem a sua atividade. No entanto, as transferências e os marcadores são guardados.</translation>
+<translation id="8275952078857499577">Não se disponibilizar para traduzir este site</translation>
 <translation id="8277900682056760511">A página do controlador do pagamento está aberta.</translation>
 <translation id="8281084378435768645">Large-Photo</translation>
 <translation id="8282947398454257691">Saber o identificador único do seu dispositivo</translation>
@@ -1795,7 +1799,6 @@ Detalhes adicionais:
 <translation id="8289355894181816810">Se não tiver a certeza do que isto significa, contacte o gestor de rede.</translation>
 <translation id="8293206222192510085">Adicionar marcador</translation>
 <translation id="8294431847097064396">Origem</translation>
-<translation id="8297398969342264569">Quando edita anotações, este documento volta à respetiva rotação original.</translation>
 <translation id="8298115750975731693">A rede Wi-Fi que está a utilizar (<ph name="WIFI_NAME" />) pode exigir que visite <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="8303854710873047864">Secção "<ph name="SECTION" />" apresentada</translation>
 <translation id="830498451218851433">Dobrar a meio</translation>

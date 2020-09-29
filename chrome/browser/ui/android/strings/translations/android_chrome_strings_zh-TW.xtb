@@ -76,7 +76,6 @@
 <translation id="1544826120773021464">如要管理你的 Google 帳戶，請輕觸 [管理帳戶] 按鈕</translation>
 <translation id="1549000191223877751">移至其他視窗</translation>
 <translation id="1553358976309200471">更新 Chrome</translation>
-<translation id="1565153191103764132">泰盧固文</translation>
 <translation id="1569387923882100876">連結的裝置</translation>
 <translation id="1571304935088121812">複製使用者名稱</translation>
 <translation id="1592864538817356322">標準防護：</translation>
@@ -525,7 +524,6 @@
 <translation id="5011311129201317034"><ph name="SITE" /> 要求連線</translation>
 <translation id="5013696553129441713">沒有新的建議</translation>
 <translation id="5016205925109358554">Serif</translation>
-<translation id="5026887030745057099">北印度文</translation>
 <translation id="5039804452771397117">允許</translation>
 <translation id="5040262127954254034">隱私權</translation>
 <translation id="5087580092889165836">新增信用卡</translation>
@@ -627,7 +625,7 @@
 <translation id="5797070761912323120">Google 可能會使用你的歷史記錄，為你提供個人化的搜尋服務、廣告內容和其他各項 Google 服務</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{# 小時前}other{# 小時前}}</translation>
 <translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC. 保留所有權利。</translation>
-<translation id="5814131985548525293">在此輸入內容或輕觸語音圖示即可開始搜尋</translation>
+<translation id="5814131985548525293">在此輸入內容或麥克風語音圖示即可開始搜尋</translation>
 <translation id="5817918615728894473">配對</translation>
 <translation id="583281660410589416">未知</translation>
 <translation id="5833984609253377421">分享連結</translation>
@@ -896,7 +894,6 @@
 在無痕模式下，你造訪的網站、你的雇主或學校以及網際網路服務供應商可能仍可看到你的活動。</translation>
 <translation id="7704317875155739195">自動完成搜尋字詞與網址</translation>
 <translation id="7725024127233776428">加入書籤的頁面會顯示在這裡</translation>
-<translation id="7732997068759397415">卡納達文</translation>
 <translation id="7735637452482172701">使用螢幕鎖定功能解鎖</translation>
 <translation id="7746457520633464754">為了偵測危險的應用程式和網站，Chrome 會將你造訪的部分網頁網址、部分系統資訊以及部分網頁內容傳送給 Google</translation>
 <translation id="7757787379047923882">透過「<ph name="DEVICE_NAME" />」分享的文字</translation>
@@ -953,7 +950,6 @@
 <translation id="8073388330009372546">在新分頁中開啟圖片</translation>
 <translation id="8076492880354921740">分頁</translation>
 <translation id="8084114998886531721">已儲存的密碼</translation>
-<translation id="8099451332580698547">泰米爾文</translation>
 <translation id="8103578431304235997">無痕式分頁</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109613176066109935">如要將書籤同步到所有裝置，請開啟同步處理功能</translation>
@@ -1032,7 +1028,6 @@
 <translation id="8659579665266920523">如何透過 Chrome 進行搜尋</translation>
 <translation id="8662811608048051533">大多數網站都會將你登出。</translation>
 <translation id="8664979001105139458">檔案名稱已存在</translation>
-<translation id="8666678546361132282">英文</translation>
 <translation id="8683039184091909753">圖片</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{訊號強度等級：# 格}other{訊號強度等級：# 格}}</translation>
 <translation id="869891660844655955">到期日</translation>

@@ -104,7 +104,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1962969542251276847">Ekrani i kyçjes</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Përshëndetje, <ph name="USERNAME" /></translation>
-<translation id="1975500003782052650">Shkarkimet e fundit</translation>
 <translation id="1978498689038657292">Hyrjet e tekstit</translation>
 <translation id="1993072747612765854">Mëso më shumë rreth përditësimit të fundit të <ph name="SYSTEM_APP_NAME" /></translation>
 <translation id="1995660704900986789">Fik</translation>
@@ -376,6 +375,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="4710243778082831592">Cilësimet e redaktorit IME</translation>
 <translation id="4731797938093519117">Qasja e prindit</translation>
 <translation id="4734965478015604180">Horizontal</translation>
+<translation id="4759238208242260848">Shkarkimet</translation>
 <translation id="4774338217796918551">Kthehu përsëri nesër në <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776917500594043016">Fjalëkalimi për <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4778095205580009397">"Asistenti i Google" nuk ofrohet në një sesion demonstrimi.</translation>

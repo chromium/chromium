@@ -2253,7 +2253,6 @@
 <translation id="3639220004740062347">Դուրս գալ ընթերցման ռեժիմից</translation>
 <translation id="3640214691812501263">Ավելացնե՞լ «<ph name="EXTENSION_NAME" />» ընդլայնումը <ph name="USER_NAME" />-ի համար:</translation>
 <translation id="3640613767643722554">Սովորեցրեք Օգնականին ճանաչել ձեր ձայնը</translation>
-<translation id="3643014427358482789"><ph name="DOMAIN" /> կայքն անջատել է ADB վրիպազերծումը, ինչի արդյունքում ձեր <ph name="DEVICE_TYPE" /> սարքը կվերակայվի։ Վերագործարկելուց առաջ պահուստավորեք ձեր ֆայլերը։</translation>
 <translation id="3643637292669952403">Արգելել կայքերին դիտել ձեր տեղադրության տվյալները</translation>
 <translation id="3645372836428131288">Թեթևակի շարժեք մատը` ամբողջական մատնահետքը ստանալու համար։</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{Ստացվեց <ph name="ATTACHMENTS" /> <ph name="DEVICE_NAME" /> սարքից}one{Ստացվեց <ph name="ATTACHMENTS" /> <ph name="DEVICE_NAME" /> սարքից}other{Ստացվեց <ph name="ATTACHMENTS" /> <ph name="DEVICE_NAME" /> սարքից}}</translation>
@@ -3902,7 +3901,6 @@
 <translation id="5632566673632479864">Ձեր <ph name="EMAIL" /> հաշիվն այլևս չի կարող օգտագործվել որպես հիմնական հաշիվ: Քանի որ այս հաշիվը կառավարվում է <ph name="DOMAIN" /> տիրույթի կողմից, ձեր էջանիշները, այցելությունների պատմությունը, գաղտնաբառերը և մյուս կարգավորումները կջնջվեն այս սարքից:</translation>
 <translation id="5632592977009207922">Ներբեռնվում է, մնացել է <ph name="PERCENT_REMAINING" />%</translation>
 <translation id="563371367637259496">Բջջային</translation>
-<translation id="563496044070985734">Ուղղագրության ստուգման համար հասանելի լեզուների ցանկը հիմնված է ձեր լեզուների կարգավորումների վրա</translation>
 <translation id="563535393368633106">Հարցնել՝ մինչ օգտագործելը (խորհուրդ է տրվում)</translation>
 <translation id="5636996382092289526"><ph name="NETWORK_ID" />-ն օգտագործելու համար դուք նախ պետք է <ph name="LINK_START" />այցելեք ցանցի մուտքի էջ<ph name="LINK_END" />, որը կբացվի ավտոմատ մի քանի վայրկյանից: Եթե դա տեղի չունենա, ապա ցանցի օգտագործումն անհնար է:</translation>
 <translation id="5637476008227280525">Միացնել/անջատել բջջային ինտերնետը</translation>
@@ -4787,7 +4785,6 @@
 <translation id="6704062477274546131">DNS-ի լուծաչափ</translation>
 <translation id="6706210727756204531">Ընդգրկույթ</translation>
 <translation id="6707389671160270963">SSL սպասառուի վկայագիր</translation>
-<translation id="670893696722244877">Որոնեք ըստ լեզուների կամ ներածման մեթոդների</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> ու ևս 1 ներդիր}one{<ph name="PAGE_TITLE" /> ու ևս # ներդիր}other{<ph name="PAGE_TITLE" /> ու ևս # ներդիր}}</translation>
 <translation id="6709133671862442373">Նորություններ</translation>
 <translation id="6709357832553498500">Միանալ՝ օգտագործելով <ph name="EXTENSIONNAME" />-ը</translation>
@@ -5686,7 +5683,6 @@
 <translation id="7788298548579301890">Մեկ այլ ծրագիր ձեր համակարգչում ավելացրել է հավելված, որը կարող է ազդել Chrome-ի աշխատանքի վրա:
 
 <ph name="EXTENSION_NAME" /></translation>
-<translation id="7788444488075094252">Լեզուներ և ներածում</translation>
 <translation id="7788668840732459509">Դիրքը՝</translation>
 <translation id="7789963078219276159">Գլխավոր էջի ֆոնը վերակայվել է <ph name="CATEGORY" /> ֆոնով։</translation>
 <translation id="7791543448312431591">Ավելացնել</translation>
@@ -5976,7 +5972,7 @@
 <translation id="80974698889265265">PIN կոդերը չեն համընկնում</translation>
 <translation id="809792523045608178"><ph name="IDS_SHORT_PRODUCT_NAME" />-ն օգտագործում է ընդլայնումներից մեկի միջնորդ սերվերի կարգավորումները</translation>
 <translation id="8097959162767603171">Ձեր ադմինիստրատորը նախ պետք է ընդունի օգտագործման պայմանները Ադմինիստրատորի վահանակի Chrome սարքերի ցանկում։</translation>
-<translation id="810068641062493918">Ընտրվել է <ph name="LANGUAGE" /> լեզուն։ Ապընտրելու համար սեղմեք «Որոնում» + բացատ։</translation>
+<translation id="810068641062493918">Ընտրվել է <ph name="LANGUAGE" /> լեզուն։ Չեղարկելու համար սեղմեք «Որոնում» + բացատ։</translation>
 <translation id="8101987792947961127">Հաջորդ վերաբեռնման ժամանակ հարկավոր է կատարել Powerwash</translation>
 <translation id="8102139037507939978">Հեռացնել անձը նույնականացնող տեղեկությունները system_logs.txt ֆայլից։</translation>
 <translation id="8102159139658438129">Սարքին միացված հեռախոսի ընտրանքները տեսնելու համար անցեք <ph name="LINK_BEGIN" />կարգավորումներ<ph name="LINK_END" /></translation>
@@ -6273,7 +6269,6 @@
 <translation id="8467326454809944210">Ընտրել մեկ այլ լեզու</translation>
 <translation id="8470214316007448308">Այլ մարդիկ</translation>
 <translation id="8470513973197838199"><ph name="ORIGIN" /> կայքի պահված գաղտնաբառերը</translation>
-<translation id="8471256130228705232"><ph name="DOMAIN" /> կայքն անջատել է ADB վրիպազերծումը։ 24 ժամ հետո ձեր <ph name="DEVICE_TYPE" /> սարքը կվերակայվի։ Պահուստավորեք ֆայլերը, որոնք ուզում եք պահել։</translation>
 <translation id="8471525937465764768">Կայքերը սովորաբար միանում են USB սարքերին՝ փաստաթուղթ տպելու, սարքի հիշողությունում որևէ տարր պահելու և նման այլ գործառույթների համար</translation>
 <translation id="8472623782143987204">պահանջվում է սարքակազմ</translation>
 <translation id="8473863474539038330">Հասցեներ և այլ տեղեկություններ</translation>
@@ -6808,6 +6803,7 @@
 <translation id="9088234649737575428"><ph name="PLUGIN_NAME" /> փլագինն արգելափակվել է ձեռնարկության քաղաքականության համաձայն</translation>
 <translation id="9088446193279799727">Չհաջողվեց կարգավորել Լինուքսը։ Միացեք ինտերնետին և նորից փորձեք։</translation>
 <translation id="9088917181875854783">Հաստատեք անցաբառը, որը ցուցադրված է ձեր «<ph name="DEVICE_NAME" />»-ում՝</translation>
+<translation id="9089416786594320554">Ներածման եղանակներ</translation>
 <translation id="9093429538970210897">Ֆայլերը խորհուրդ է տրվում պահուստավորել այն դեպքերի համար, երբ թարմացումը չի հաջողվում ավարտել։ Թարմացումը սկսելու դեպքում Լինուքսը (բետա) կանջատվի։ Նախքան շարունակելը պահեք բացված ֆայլերը։</translation>
 <translation id="9094033019050270033">Թարմացնել գաղտնաբառը</translation>
 <translation id="9094038138851891550">Օգտանունն անվավեր է</translation>

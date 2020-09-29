@@ -5,6 +5,7 @@
 <translation id="1195447618553298278">Непозната грешка.</translation>
 <translation id="1413240736185167732">Није успело – филтер је отказао</translation>
 <translation id="1468664791493211953">Понуде</translation>
+<translation id="1478594628797167447">Скенер</translation>
 <translation id="1482734542997480527"><ph name="ENROLLMENT_DOMAIN" /> управља овим уређајем и може да прати ваше активности.</translation>
 <translation id="150962533380566081">Неважећи PUK.</translation>
 <translation id="1510238584712386396">Покретач</translation>
@@ -19,10 +20,12 @@
 <translation id="2161394479394250669">Откажи задатак штампања</translation>
 <translation id="2338501278241028356">Укључите Bluetooth да бисте открили уређаје у близини</translation>
 <translation id="2375079107209812402">Преостали покушаји: <ph name="ATTEMPTS_LEFT" /></translation>
+<translation id="2517472476991765520">Скенирај</translation>
 <translation id="2805756323405976993">Апликације</translation>
 <translation id="2872961005593481000">Искључи</translation>
 <translation id="3008341117444806826">ОСВЕЖИ</translation>
 <translation id="3091839911843451378">Није успело – заустављено је</translation>
+<translation id="3246869037381808805">Задаци штампања старији од 1 дана се уклањају</translation>
 <translation id="3268178239013324452">Није успело – врата су отворена</translation>
 <translation id="3369013195428705271">Желите ли стварно да обришете целу историју штампања? Задаци штампања који су у току се не бришу.</translation>
 <translation id="3456078764689556234">Одштампаних страница: <ph name="PRINTED_PAGES" /> од <ph name="TOTAL_PAGES" />.</translation>
@@ -33,6 +36,7 @@
 <translation id="38114475217616659">Обриши сву историју</translation>
 <translation id="3820172043799983114">Неважећи PIN.</translation>
 <translation id="3838338534323494292">Нова лозинка</translation>
+<translation id="39823212440917567">Задаци штампања старији од <ph name="NUMBER_OF_DAYS" /> дана се уклањају</translation>
 <translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> управља овим уређајем и има приступ свим активностима корисника, укључујући посећене веб-странице, лозинке и имејлове.</translation>
 <translation id="4003384961948020559">Није успело – излаз је пун</translation>
 <translation id="4027485274696301677"><ph name="ENROLLMENT_DOMAIN" /> управља овим <ph name="DEVICE_TYPE" /> уређајем. Администратори могу да конфигуришу уређај даљински.</translation>
@@ -70,6 +74,7 @@
 <translation id="649050271426829538">Заустављено – папир је заглављен</translation>
 <translation id="6517239166834772319">Истражите</translation>
 <translation id="6564646048574748301">Није успело – штампач није доступан</translation>
+<translation id="6620487321149975369">Задаци штампања ће се појавити у историји ако их не уклоните ручно</translation>
 <translation id="6643016212128521049">Обриши</translation>
 <translation id="6747215703636344499">Заустављено – посуда за одштампани материјал је пуна</translation>
 <translation id="7162487448488904999">Галерија</translation>

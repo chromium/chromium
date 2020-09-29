@@ -2257,7 +2257,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3639220004740062347">Exit Reader Mode</translation>
 <translation id="3640214691812501263">Add "<ph name="EXTENSION_NAME" />" for <ph name="USER_NAME" />?</translation>
 <translation id="3640613767643722554">Teach your Assistant to recognise your voice</translation>
-<translation id="3643014427358482789"><ph name="DOMAIN" /> is disabling ADB debugging, which will reset your <ph name="DEVICE_TYPE" />. Back up your files before restarting.</translation>
 <translation id="3643637292669952403">Block sites from seeing your location</translation>
 <translation id="3645372836428131288">Move slightly to capture a different part of the fingerprint.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> received from <ph name="DEVICE_NAME" />}other{<ph name="ATTACHMENTS" /> received from <ph name="DEVICE_NAME" />}}</translation>
@@ -3908,7 +3907,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="5632566673632479864">Your account <ph name="EMAIL" /> is no longer allowed as the primary account. Because this account is managed by <ph name="DOMAIN" />, your bookmarks, history, passwords and other settings will be cleared from this device.</translation>
 <translation id="5632592977009207922">Downloading, <ph name="PERCENT_REMAINING" />% remaining</translation>
 <translation id="563371367637259496">Mobile</translation>
-<translation id="563496044070985734">Languages available for spell check is based on your languages settings</translation>
 <translation id="563535393368633106">Ask before accessing (recommended)</translation>
 <translation id="5636996382092289526">To use <ph name="NETWORK_ID" /> you may first need to <ph name="LINK_START" />visit the network's sign-in page<ph name="LINK_END" />, which will open automatically in a few seconds. If it doesn't happen, the network can't be used.</translation>
 <translation id="5637476008227280525">Mobile data enable</translation>
@@ -4795,7 +4793,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="6704062477274546131">DNS resolution</translation>
 <translation id="6706210727756204531">Scope</translation>
 <translation id="6707389671160270963">SSL Client Certificate</translation>
-<translation id="670893696722244877">Search by languages or input names</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> and 1 Other Tab}other{<ph name="PAGE_TITLE" /> and # Other Tabs}}</translation>
 <translation id="6709133671862442373">News</translation>
 <translation id="6709357832553498500">Connect using <ph name="EXTENSIONNAME" /></translation>
@@ -5699,7 +5696,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 
 
 <ph name="EXTENSION_NAME" /></translation>
-<translation id="7788444488075094252">Languages and input</translation>
 <translation id="7788668840732459509">Position:</translation>
 <translation id="7789963078219276159">Start page background has been changed to <ph name="CATEGORY" />.</translation>
 <translation id="7791543448312431591">Add</translation>
@@ -6289,7 +6285,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8467326454809944210">Choose another language</translation>
 <translation id="8470214316007448308">Other People</translation>
 <translation id="8470513973197838199">Saved passwords for <ph name="ORIGIN" /></translation>
-<translation id="8471256130228705232"><ph name="DOMAIN" /> is disabling ADB debugging. This will reset your <ph name="DEVICE_TYPE" /> in 24 hours. Back up any files that you'd like to keep.</translation>
 <translation id="8471525937465764768">Sites usually connect to USB devices for features like printing a document or saving to a storage device</translation>
 <translation id="8472623782143987204">hardware-backed</translation>
 <translation id="8473863474539038330">Addresses and more</translation>
@@ -6824,6 +6819,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="9088234649737575428"><ph name="PLUGIN_NAME" /> is blocked by enterprise policy</translation>
 <translation id="9088446193279799727">Could not configure Linux. Connect to the Internet and try again.</translation>
 <translation id="9088917181875854783">Please confirm that  this passkey is shown on "<ph name="DEVICE_NAME" />":</translation>
+<translation id="9089416786594320554">Input methods</translation>
 <translation id="9093429538970210897">Backing up files is recommended in case the upgrade cannot be completed. Starting the upgrade will cause Linux (beta) to shut down. Please save open files before proceeding.</translation>
 <translation id="9094033019050270033">Update password</translation>
 <translation id="9094038138851891550">Username invalid</translation>

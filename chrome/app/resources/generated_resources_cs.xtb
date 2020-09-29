@@ -57,7 +57,7 @@
 <translation id="1056775291175587022">Žádné sítě</translation>
 <translation id="1056898198331236512">Upozornění</translation>
 <translation id="1058262162121953039">PUK</translation>
-<translation id="1059944192885972544">Pro dotaz <ph name="SEARCH_TEXT" /> byl nalezen tento počet karet: <ph name="NUM" /></translation>
+<translation id="1059944192885972544">Pro dotaz <ph name="SEARCH_TEXT" /> bylo nalezeno karet: <ph name="NUM" /></translation>
 <translation id="1060292118287751956">Určuje frekvenci obnovování obrazovky</translation>
 <translation id="1061904396131502319">Brzy bude čas na přestávku</translation>
 <translation id="1067048845568873861">Vytvořeno</translation>
@@ -2110,7 +2110,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3478685642445675458">Před odebráním osoby prosím odemkněte svůj profil.</translation>
 <translation id="3479552764303398839">Teď ne</translation>
 <translation id="3479685872808224578">K tiskovému serveru se nelze připojit. Zkontrolujte adresu a zkuste to znovu.</translation>
-<translation id="3480827850068960424">Byl nalezen tento počet karet: <ph name="NUM" /></translation>
+<translation id="3480827850068960424">Nalezeno karet: <ph name="NUM" /></translation>
 <translation id="3481268647794498892">Za <ph name="COUNTDOWN_SECONDS" /> se obsah otevře v prohlížeči <ph name="ALTERNATIVE_BROWSER_NAME" /></translation>
 <translation id="3482719661246593752">Web <ph name="ORIGIN" /> může číst následující soubory</translation>
 <translation id="3484273680291419129">Odstraňování škodlivého softwaru...</translation>
@@ -2252,7 +2252,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3639220004740062347">Ukončit režim čtečky</translation>
 <translation id="3640214691812501263">Přidat aplikaci <ph name="EXTENSION_NAME" /> pro uživatele <ph name="USER_NAME" />?</translation>
 <translation id="3640613767643722554">Naučte Asistenta rozpoznávat váš hlas</translation>
-<translation id="3643014427358482789">Web <ph name="DOMAIN" /> deaktivuje ladění ADB, a vaše zařízení <ph name="DEVICE_TYPE" /> proto bude resetováno. Před restartováním zálohujte soubory.</translation>
 <translation id="3643637292669952403">Nedovolit webům zjistit vaši polohu</translation>
 <translation id="3645372836428131288">Lehce prst natočte, aby se zaznamenala jiná část otisku.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{Byla přijata data ze zařízení <ph name="DEVICE_NAME" /> (<ph name="ATTACHMENTS" />)}few{Byla přijata data ze zařízení <ph name="DEVICE_NAME" /> (<ph name="ATTACHMENTS" />)}many{Byla přijata data ze zařízení <ph name="DEVICE_NAME" /> (<ph name="ATTACHMENTS" />)}other{Byla přijata data ze zařízení <ph name="DEVICE_NAME" /> (<ph name="ATTACHMENTS" />)}}</translation>
@@ -3897,7 +3896,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="5632566673632479864">Váš účet <ph name="EMAIL" /> již není povolen jako primární účet. Protože je tento účet spravován doménou <ph name="DOMAIN" />, budou z tohoto zařízení vymazány vaše záložky, historie, hesla a další nastavení.</translation>
 <translation id="5632592977009207922">Probíhá stahování, zbývá: <ph name="PERCENT_REMAINING" /> %</translation>
 <translation id="563371367637259496">Mobilní</translation>
-<translation id="563496044070985734">Jazyky dostupné pro kontrolu pravopisu vycházejí z jazykových nastavení</translation>
 <translation id="563535393368633106">Před přístupem se zeptat (doporučeno)</translation>
 <translation id="5636996382092289526">Chcete-li používat síť <ph name="NETWORK_ID" />, je třeba nejdříve <ph name="LINK_START" />přejít na přihlašovací stránku sítě<ph name="LINK_END" />, která se za několik sekund automaticky otevře. Pokud se tak nestane, nelze síť použít.</translation>
 <translation id="5637476008227280525">Aktivovat mobilní data</translation>
@@ -4782,7 +4780,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="6704062477274546131">Překlad DNS</translation>
 <translation id="6706210727756204531">Rozsah</translation>
 <translation id="6707389671160270963">Klientský certifikát SSL</translation>
-<translation id="670893696722244877">Vyhledávejte podle jazyků a metod zadávání</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> a 1 další karta}few{<ph name="PAGE_TITLE" /> a # další karty}many{<ph name="PAGE_TITLE" /> a # další karty}other{<ph name="PAGE_TITLE" /> a # dalších karet}}</translation>
 <translation id="6709133671862442373">Zprávy</translation>
 <translation id="6709357832553498500">Připojit pomocí rozšíření <ph name="EXTENSIONNAME" /></translation>
@@ -5576,7 +5573,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" /> na stránce <ph name="PAGE_TITLE" />.</translation>
 <translation id="7674416868315480713">Deaktivovat všechny porty přesměrovávané v Linuxu</translation>
 <translation id="7674542105240814168">Přístup k poloze byl odepřen</translation>
-<translation id="7676119992609591770">Pro dotaz <ph name="SEARCH_TEXT" /> byl nalezen tento počet karet: <ph name="NUM" /></translation>
+<translation id="7676119992609591770">Pro dotaz <ph name="SEARCH_TEXT" /> bylo nalezeno karet: <ph name="NUM" /></translation>
 <translation id="7676867886086876795">Odesílat hlasové údaje do Googlu, aby bylo možné diktovat do libovolného textového pole.</translation>
 <translation id="7678280409648629969">Přihlašovací údaje zůstanou v Chromu uložené i po ukončení anonymního režimu. Touch ID tak s tímto webem budete moci znovu použít později.</translation>
 <translation id="7680416688940118410">Kalibrace dotykové obrazovky</translation>
@@ -5682,7 +5679,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 
 
 <ph name="EXTENSION_NAME" /></translation>
-<translation id="7788444488075094252">Jazyky a zadávání</translation>
 <translation id="7788668840732459509">Pozice:</translation>
 <translation id="7789963078219276159">Pozadí úvodní stránky bylo změněno na: <ph name="CATEGORY" />.</translation>
 <translation id="7791543448312431591">Přidat</translation>
@@ -6269,7 +6265,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8467326454809944210">Vybrat jiný jazyk</translation>
 <translation id="8470214316007448308">Jiní lidé</translation>
 <translation id="8470513973197838199">Uložená hesla z webu <ph name="ORIGIN" /></translation>
-<translation id="8471256130228705232">Web <ph name="DOMAIN" /> nemá povoleno ladění ADB. Zařízení <ph name="DEVICE_TYPE" /> bude do 24 hodin resetováno. Zálohujte soubory, které si chcete ponechat.</translation>
 <translation id="8471525937465764768">Weby se obvykle připojují k zařízením USB kvůli funkcím, jako je tisk dokumentu nebo uložení obsahu na paměťové zařízení</translation>
 <translation id="8472623782143987204">hardwarová</translation>
 <translation id="8473863474539038330">Adresy a další</translation>
@@ -6804,6 +6799,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="9088234649737575428">Plugin <ph name="PLUGIN_NAME" /> je blokován podnikovými zásadami</translation>
 <translation id="9088446193279799727">Linux se nepodařilo nakonfigurovat. Připojte se k internetu a zkuste to znovu.</translation>
 <translation id="9088917181875854783">Potvrďte prosím, zda se toto přístupové heslo zobrazuje v zařízení <ph name="DEVICE_NAME" />:</translation>
+<translation id="9089416786594320554">Metody zadávání</translation>
 <translation id="9093429538970210897">Doporučujeme zálohovat soubory pro případ, že by se upgrade nepodařilo dokončit. Spuštění upgradu bude mít za následek ukončení Linuxu (beta). Než budete pokračovat, uložte všechny otevřené soubory.</translation>
 <translation id="9094033019050270033">Aktualizovat heslo</translation>
 <translation id="9094038138851891550">Neplatné uživatelské jméno</translation>

@@ -2252,7 +2252,6 @@
 <translation id="3639220004740062347">結束閱讀器模式</translation>
 <translation id="3640214691812501263">為<ph name="USER_NAME" />新增「<ph name="EXTENSION_NAME" />」？</translation>
 <translation id="3640613767643722554">訓練 Google 助理辨識你的聲音</translation>
-<translation id="3643014427358482789"><ph name="DOMAIN" /> 正在停用 ADB 偵錯，這項操作會重設 <ph name="DEVICE_TYPE" />。請先備份檔案再重新啟動。</translation>
 <translation id="3643637292669952403">禁止網站查看你的位置資訊</translation>
 <translation id="3645372836428131288">請稍微移動手指，讓系統擷取完整指紋</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{已收到來自「<ph name="DEVICE_NAME" />」的 <ph name="ATTACHMENTS" />}other{已收到來自「<ph name="DEVICE_NAME" />」的 <ph name="ATTACHMENTS" />}}</translation>
@@ -2444,7 +2443,7 @@
 <translation id="3839516600093027468">一律禁止 <ph name="HOST" /> 讀取剪貼簿</translation>
 <translation id="3841964634449506551">密碼無效</translation>
 <translation id="3842552989725514455">Serif 字型</translation>
-<translation id="3843464315703645664">已加入內部允許清單</translation>
+<translation id="3843464315703645664">已加入內部許可清單</translation>
 <translation id="3844888638014364087">已插入表情符號</translation>
 <translation id="3846116211488856547">取得網站開發工具、Android 應用程式等等。安裝 Linux 將下載 <ph name="DOWNLOAD_SIZE" /> 的資料。</translation>
 <translation id="3847319713229060696">協助我們改善所有人的網路安全性</translation>
@@ -3897,7 +3896,6 @@
 <translation id="5632566673632479864">你已不能再將 <ph name="EMAIL" /> 設為主要帳戶。這個帳戶是由 <ph name="DOMAIN" /> 所管理，因此系統會將您的書籤、歷史記錄、密碼和其他設定從這個裝置上清除。</translation>
 <translation id="5632592977009207922">下載中，還剩 <ph name="PERCENT_REMAINING" />%</translation>
 <translation id="563371367637259496">行動網路</translation>
-<translation id="563496044070985734">系統會根據你的語言設定，提供可使用拼字檢查功能的語言</translation>
 <translation id="563535393368633106">使用前詢問我 (建議)</translation>
 <translation id="5636996382092289526">如要使用 <ph name="NETWORK_ID" />，你必須先<ph name="LINK_START" />造訪網路的登入頁面<ph name="LINK_END" />，系統隨即會自動開啟登入頁面；如果沒有，你就無法使用這個網路。</translation>
 <translation id="5637476008227280525">啟用行動數據</translation>
@@ -4782,7 +4780,6 @@
 <translation id="6704062477274546131">DNS 解析</translation>
 <translation id="6706210727756204531">範圍</translation>
 <translation id="6707389671160270963">SSL 用戶端憑證</translation>
-<translation id="670893696722244877">依語言或輸入法名稱搜尋</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> 和另外 1 個分頁}other{<ph name="PAGE_TITLE" /> 和另外 # 個分頁}}</translation>
 <translation id="6709133671862442373">新聞內容</translation>
 <translation id="6709357832553498500">使用「<ph name="EXTENSIONNAME" />」連線</translation>
@@ -5682,7 +5679,6 @@
 
 
 <ph name="EXTENSION_NAME" /></translation>
-<translation id="7788444488075094252">語言與輸入法</translation>
 <translation id="7788668840732459509">位置：</translation>
 <translation id="7789963078219276159">起始網頁背景已變更為<ph name="CATEGORY" />。</translation>
 <translation id="7791543448312431591">新增</translation>
@@ -6269,7 +6265,6 @@
 <translation id="8467326454809944210">選擇其他語言</translation>
 <translation id="8470214316007448308">其他人</translation>
 <translation id="8470513973197838199">已儲存 <ph name="ORIGIN" /> 的密碼</translation>
-<translation id="8471256130228705232"><ph name="DOMAIN" /> 正在停用 ADB 偵錯功能。這會讓系統在 24 小時後重設你的 <ph name="DEVICE_TYPE" />。請備份你要保留的檔案。</translation>
 <translation id="8471525937465764768">網站通常會連線至 USB 裝置，以提供列印文件或儲存至裝置等功能</translation>
 <translation id="8472623782143987204">硬體支援</translation>
 <translation id="8473863474539038330">地址和其他資訊</translation>
@@ -6591,7 +6586,7 @@
 <translation id="8838601485495657486">不透明</translation>
 <translation id="8838770651474809439">漢堡</translation>
 <translation id="883911313571074303">為圖片加註</translation>
-<translation id="8841843049738266382">讀取及變更列入允許清單的使用者</translation>
+<translation id="8841843049738266382">讀取及變更列入許可清單的使用者</translation>
 <translation id="8842594465773264717">刪除這個指紋</translation>
 <translation id="8845001906332463065">尋求協助</translation>
 <translation id="8846132060409673887">閱讀這部電腦的製造商和型號資訊</translation>
@@ -6804,6 +6799,7 @@
 <translation id="9088234649737575428">「<ph name="PLUGIN_NAME" />」遭到企業政策封鎖</translation>
 <translation id="9088446193279799727">無法設定 Linux。請連線至網際網路，然後再試一次。</translation>
 <translation id="9088917181875854783">請確認以下密碼金鑰是否顯示於「<ph name="DEVICE_NAME" />」上：</translation>
+<translation id="9089416786594320554">輸入法</translation>
 <translation id="9093429538970210897">建議你先備份檔案，以免系統無法完成升級。啟動升級作業會關閉 Linux (Beta 版)，請先儲存已開啟的檔案再繼續。</translation>
 <translation id="9094033019050270033">更新密碼</translation>
 <translation id="9094038138851891550">使用者名稱無效</translation>

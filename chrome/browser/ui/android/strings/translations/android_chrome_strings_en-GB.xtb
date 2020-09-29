@@ -79,7 +79,6 @@
 <translation id="1544826120773021464">To manage your Google Account, tap the 'Manage account' button</translation>
 <translation id="1549000191223877751">Move to other window</translation>
 <translation id="1553358976309200471">Update Chrome</translation>
-<translation id="1565153191103764132">Telugu</translation>
 <translation id="1569387923882100876">Connected device</translation>
 <translation id="1571304935088121812">Copy username</translation>
 <translation id="1592864538817356322">Standard protection:</translation>
@@ -534,7 +533,6 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5011311129201317034"><ph name="SITE" /> wants to connect</translation>
 <translation id="5013696553129441713">No new suggestions</translation>
 <translation id="5016205925109358554">Serif</translation>
-<translation id="5026887030745057099">Hindi</translation>
 <translation id="5039804452771397117">Allow</translation>
 <translation id="5040262127954254034">Privacy</translation>
 <translation id="5087580092889165836">Add card</translation>
@@ -909,7 +907,6 @@ For example, some websites may respond to this request by showing you ads that a
 In Incognito, your activity might still be visible to websites that you visit, your employer or school, and your Internet Service Provider.</translation>
 <translation id="7704317875155739195">Auto-complete searches and URLs</translation>
 <translation id="7725024127233776428">Pages that you bookmark appear here</translation>
-<translation id="7732997068759397415">Kannada</translation>
 <translation id="7735637452482172701">Unlock with screen lock</translation>
 <translation id="7746457520633464754">To detect dangerous apps and sites, Chrome sends URLs of some pages that you visit, limited system information and some page content to Google</translation>
 <translation id="7757787379047923882">Text shared from <ph name="DEVICE_NAME" /></translation>
@@ -967,7 +964,6 @@ In Incognito, your activity might still be visible to websites that you visit, y
 <translation id="8073388330009372546">Open image in new tab</translation>
 <translation id="8076492880354921740">Tabs</translation>
 <translation id="8084114998886531721">Saved password</translation>
-<translation id="8099451332580698547">Tamil</translation>
 <translation id="8103578431304235997">Incognito Tab</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109613176066109935">To get your bookmarks on all your devices, turn on sync</translation>
@@ -1047,7 +1043,6 @@ In Incognito, your activity might still be visible to websites that you visit, y
 <translation id="8659579665266920523">How to search with Chrome</translation>
 <translation id="8662811608048051533">Signs you out of most sites.</translation>
 <translation id="8664979001105139458">File name already exists</translation>
-<translation id="8666678546361132282">English</translation>
 <translation id="8683039184091909753">image</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{Signal Strength Level: # bar}other{Signal Strength Level: # bars}}</translation>
 <translation id="869891660844655955">Expiry date</translation>

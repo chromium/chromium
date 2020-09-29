@@ -5,6 +5,7 @@
 <translation id="1195447618553298278">Nieznany błąd.</translation>
 <translation id="1413240736185167732">Niepowodzenie – błąd filtra</translation>
 <translation id="1468664791493211953">Oferty</translation>
+<translation id="1478594628797167447">Skanery</translation>
 <translation id="1482734542997480527">Tym urządzeniem zarządza domena <ph name="ENROLLMENT_DOMAIN" />. Możliwe, że monitoruje ona też Twoją aktywność.</translation>
 <translation id="150962533380566081">Nieprawidłowy PUK.</translation>
 <translation id="1510238584712386396">Menu z aplikacjami</translation>
@@ -19,10 +20,12 @@
 <translation id="2161394479394250669">Anuluj zadanie drukowania</translation>
 <translation id="2338501278241028356">Włącz Bluetooth, by wykryć urządzenia w pobliżu</translation>
 <translation id="2375079107209812402">Pozostałe próby: <ph name="ATTEMPTS_LEFT" /></translation>
+<translation id="2517472476991765520">Skanuj</translation>
 <translation id="2805756323405976993">Aplikacje</translation>
 <translation id="2872961005593481000">Wyłącz</translation>
 <translation id="3008341117444806826">ODŚWIEŻ</translation>
 <translation id="3091839911843451378">Niepowodzenie – drukarka została zatrzymana</translation>
+<translation id="3246869037381808805">Zadania drukowania starsze niż 1 dzień zostaną usunięte</translation>
 <translation id="3268178239013324452">Niepowodzenie – otwarte drzwiczki drukarki</translation>
 <translation id="3369013195428705271">Czy na pewno chcesz usunąć całą historię drukowania? Bieżące zadania drukowania nie zostaną usunięte.</translation>
 <translation id="3456078764689556234">Wydrukowano stronę <ph name="PRINTED_PAGES" /> z <ph name="TOTAL_PAGES" />.</translation>
@@ -33,6 +36,7 @@
 <translation id="38114475217616659">Wyczyść całą historię</translation>
 <translation id="3820172043799983114">Nieprawidłowy kod PIN.</translation>
 <translation id="3838338534323494292">Nowe hasło</translation>
+<translation id="39823212440917567">Zadania drukowania starsze niż <ph name="NUMBER_OF_DAYS" /> dni zostaną usunięte</translation>
 <translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> zarządza tym urządzeniem i ma dostęp do wszelkiej aktywności użytkownika, w tym odwiedzanych stron internetowych, haseł i e-maili.</translation>
 <translation id="4003384961948020559">Niepowodzenie – odbiornik papieru jest pełny</translation>
 <translation id="4027485274696301677">Tym urządzeniem (<ph name="DEVICE_TYPE" />) zarządza <ph name="ENROLLMENT_DOMAIN" />. Administratorzy mogą je zdalnie konfigurować.</translation>
@@ -70,6 +74,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="649050271426829538">Zatrzymano – zacięcie papieru</translation>
 <translation id="6517239166834772319">Odkrywaj</translation>
 <translation id="6564646048574748301">Niepowodzenie – drukarka jest nieosiągalna</translation>
+<translation id="6620487321149975369">Zadania drukowania będą widoczne w historii, dopóki ich nie usuniesz</translation>
 <translation id="6643016212128521049">Wyczyść</translation>
 <translation id="6747215703636344499">Zatrzymano – odbiornik papieru jest pełny</translation>
 <translation id="7162487448488904999">Galeria</translation>

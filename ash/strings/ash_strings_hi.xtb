@@ -104,7 +104,6 @@
 <translation id="1962969542251276847">लॉक स्‍क्रीन</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">नमस्ते, <ph name="USERNAME" /></translation>
-<translation id="1975500003782052650">हाल के डाउनलोड</translation>
 <translation id="1978498689038657292">टेक्स्ट इनपुट</translation>
 <translation id="1993072747612765854"><ph name="SYSTEM_APP_NAME" /> के नए अपडेट के बारे में ज़्यादा जानें</translation>
 <translation id="1995660704900986789">पावर बंद करें</translation>
@@ -153,7 +152,7 @@
 <translation id="2435457462613246316">पासवर्ड दिखाएं</translation>
 <translation id="2473177541599297363">रिज़ॉल्यूशन की पुष्टि करें</translation>
 <translation id="2475982808118771221">कोई गड़बड़ी आई</translation>
-<translation id="2479579251444854687">खास जानकारी देखने के लिए, तीन उंगुलियों से ऊपर स्वाइप करें और बंद करने के लिए नीचे स्वाइप करें.</translation>
+<translation id="2479579251444854687">खास जानकारी देखने के लिए, तीन उंगलियों से ऊपर स्वाइप करें और बंद करने के लिए नीचे स्वाइप करें.</translation>
 <translation id="2482878487686419369">सूचनाएं</translation>
 <translation id="2484513351006226581">कीबोर्ड लेआउट स्विच करने के लिए <ph name="KEYBOARD_SHORTCUT" /> दबाएं.</translation>
 <translation id="2501920221385095727">स्टिकी बटन</translation>
@@ -376,6 +375,7 @@
 <translation id="4710243778082831592">IME की सेटिंग</translation>
 <translation id="4731797938093519117">अभिभावक ऐक्सेस</translation>
 <translation id="4734965478015604180">हॉरिजेंटल व्यू</translation>
+<translation id="4759238208242260848">डाउनलोड</translation>
 <translation id="4774338217796918551">कल <ph name="COME_BACK_TIME" /> बजे फिर से देखें.</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> के लिए पासवर्ड</translation>
 <translation id="4778095205580009397">डेमो सत्र में Google Assistant मौजूद नहीं है.</translation>

@@ -473,7 +473,7 @@
 <translation id="1537254971476575106">全屏放大镜</translation>
 <translation id="15373452373711364">大号鼠标光标</translation>
 <translation id="1540605929960647700">启用演示模式</translation>
-<translation id="1541346352678737112">找不到任何网络</translation>
+<translation id="1541346352678737112">找不到网络</translation>
 <translation id="1542514202066550870">此标签页正在向头戴设备显示 VR 内容。</translation>
 <translation id="1543284117603151572">从 Edge 导入的书签</translation>
 <translation id="1545177026077493356">自动自助服务终端模式</translation>
@@ -2249,7 +2249,6 @@
 <translation id="3639220004740062347">退出阅读器模式</translation>
 <translation id="3640214691812501263">要为<ph name="USER_NAME" />添加“<ph name="EXTENSION_NAME" />”吗？</translation>
 <translation id="3640613767643722554">训练 Google 助理识别您的声音</translation>
-<translation id="3643014427358482789"><ph name="DOMAIN" /> 正在停用 ADB 调试，这会强制您重置 <ph name="DEVICE_TYPE" />。请先备份您的文件，然后再重启设备。</translation>
 <translation id="3643637292669952403">禁止网站查看您的位置信息</translation>
 <translation id="3645372836428131288">请稍微移动一下手指，以便系统记录您指纹的不同部分。</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{已收到“<ph name="DEVICE_NAME" />”发来的 <ph name="ATTACHMENTS" />}other{已收到“<ph name="DEVICE_NAME" />”发来的 <ph name="ATTACHMENTS" />}}</translation>
@@ -3894,7 +3893,6 @@
 <translation id="5632566673632479864">您的帐号 <ph name="EMAIL" /> 已无法再用作主帐号。该帐号由 <ph name="DOMAIN" /> 管理，因此您的书签、历史记录、密码及其他设置将从此设备中清除。</translation>
 <translation id="5632592977009207922">正在下载，还剩 <ph name="PERCENT_REMAINING" />%</translation>
 <translation id="563371367637259496">移动网络</translation>
-<translation id="563496044070985734">支持“拼写检查”功能的语言取决于您的语言设置</translation>
 <translation id="563535393368633106">使用前先询问（推荐）</translation>
 <translation id="5636996382092289526">要使用“<ph name="NETWORK_ID" />”，您可能需要先<ph name="LINK_START" />访问该网络的登录页面<ph name="LINK_END" />，该页面会在几秒钟后自动打开。如果未打开，就表示该网络无法使用。</translation>
 <translation id="5637476008227280525">移动数据开关</translation>
@@ -4166,7 +4164,7 @@
 <translation id="595959584676692139">如果您想使用该扩展程序，请先重新加载网页</translation>
 <translation id="5963117322306686970">若要将多个标签页合为一组，请右键点击某个标签页</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> 个（峰值：<ph name="NUM_KILOBYTES_LIVE" />）</translation>
-<translation id="5964113968897211042">{COUNT,plural, =0{在新窗口中打开全部书签(&amp;N)}=1{在新窗口中打开(&amp;N)}other{在新窗口中打开全部（{COUNT} 个）书签(&amp;N)}}</translation>
+<translation id="5964113968897211042">{COUNT,plural, =0{在新窗口中打开全部网页(&amp;N)}=1{在新窗口中打开(&amp;N)}other{在新窗口中打开全部（{COUNT} 个）网页(&amp;N)}}</translation>
 <translation id="5965661248935608907">它还能够控制您点击“主页”按钮后或通过多功能框进行搜索时系统显示的页面。</translation>
 <translation id="5969419185858894314"><ph name="ORIGIN" /> 可查看“<ph name="FOLDERNAME" />”内的文件</translation>
 <translation id="5971037678316050792">控制蓝牙适配器状态和配对</translation>
@@ -4779,7 +4777,6 @@
 <translation id="6704062477274546131">DNS 解析</translation>
 <translation id="6706210727756204531">范围</translation>
 <translation id="6707389671160270963">SSL 客户端证书</translation>
-<translation id="670893696722244877">按语言或输入法名称搜索</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> 及另外 1 个标签页}other{<ph name="PAGE_TITLE" /> 及另外 # 个标签页}}</translation>
 <translation id="6709133671862442373">资讯</translation>
 <translation id="6709357832553498500">使用“<ph name="EXTENSIONNAME" />”连接</translation>
@@ -5052,7 +5049,7 @@
 <translation id="7022562585984256452">您的主页已设置。</translation>
 <translation id="7025082428878635038">欢迎了解全新的手势导航</translation>
 <translation id="7025190659207909717">移动数据服务管理</translation>
-<translation id="7027258625819743915">{COUNT,plural, =0{在无痕式窗口中打开全部书签(&amp;I)}=1{在无痕式窗口中打开(&amp;I)}other{在无痕式窗口中打开全部（{COUNT} 个）书签(&amp;I)}}</translation>
+<translation id="7027258625819743915">{COUNT,plural, =0{在无痕式窗口中打开全部网址(&amp;I)}=1{在无痕式窗口中打开(&amp;I)}other{在无痕式窗口中打开全部（{COUNT} 个）网址(&amp;I)}}</translation>
 <translation id="7029307918966275733">未安装 Crostini。请安装 Crostini 以查看开发人员名单。</translation>
 <translation id="7029809446516969842">密码</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - 已连接到串行端口</translation>
@@ -5580,7 +5577,7 @@
 <translation id="7681095912841365527">该网站可能会使用蓝牙</translation>
 <translation id="7682634383739326341">禁止网站连接到 USB 设备</translation>
 <translation id="7683373461016844951">要想继续，请点击“确定”，然后点击“添加用户”为您位于 <ph name="DOMAIN" /> 中的电子邮件地址创建一份新个人资料。</translation>
-<translation id="7683593009096723900">{COUNT,plural, =0{在无痕式窗口中打开全部书签(&amp;I)}=1{在无痕式窗口中打开(&amp;I)}other{在无痕式窗口中打开全部（{COUNT} 个）书签(&amp;I)}}</translation>
+<translation id="7683593009096723900">{COUNT,plural, =0{在无痕式窗口中打开全部网址(&amp;I)}=1{在无痕式窗口中打开(&amp;I)}other{在无痕式窗口中打开全部（{COUNT} 个）网址(&amp;I)}}</translation>
 <translation id="7684212569183643648">安装者：您的管理员</translation>
 <translation id="7684559058815332124">访问强制门户登录页面</translation>
 <translation id="7684718995427157417">要创建和测试您的应用，请启用 Android 调试桥 (ADB)。请注意，此操作会允许安装未经 Google 验证的 Android 应用，而且您会需要将设备恢复出厂设置才能停用 ADB。</translation>
@@ -5679,7 +5676,6 @@
 
 
 <ph name="EXTENSION_NAME" /></translation>
-<translation id="7788444488075094252">语言和输入法</translation>
 <translation id="7788668840732459509">位置：</translation>
 <translation id="7789963078219276159">初始页背景已更改为 <ph name="CATEGORY" />。</translation>
 <translation id="7791543448312431591">添加</translation>
@@ -6266,7 +6262,6 @@
 <translation id="8467326454809944210">选择另一种语言</translation>
 <translation id="8470214316007448308">其他人</translation>
 <translation id="8470513973197838199">已保存用于登录 <ph name="ORIGIN" /> 的密码</translation>
-<translation id="8471256130228705232"><ph name="DOMAIN" /> 正在停用 ADB 调试。这将在 24 小时后重置您的 <ph name="DEVICE_TYPE" />。请备份您想保留的所有文件。</translation>
 <translation id="8471525937465764768">网站通常会连接到 USB 设备以实现某些功能（例如打印文档或保存到存储设备）</translation>
 <translation id="8472623782143987204">硬件支持</translation>
 <translation id="8473863474539038330">地址和其他信息</translation>
@@ -6336,7 +6331,7 @@
 <translation id="8557022314818157177">连续轻触您的安全密钥，直到您的指纹被捕获</translation>
 <translation id="855773602626431402">某个未经过沙盒屏蔽的插件已被禁止在此页上运行。</translation>
 <translation id="8557930019681227453">由应用缓存指定的网址</translation>
-<translation id="8560327176991673955">{COUNT,plural, =0{在新窗口中打开全部书签(&amp;N)}=1{在新窗口中打开(&amp;N)}other{在新窗口中打开全部（{COUNT} 个）书签(&amp;N)}}</translation>
+<translation id="8560327176991673955">{COUNT,plural, =0{在新窗口中打开全部网页(&amp;N)}=1{在新窗口中打开(&amp;N)}other{在新窗口中打开全部（{COUNT} 个）网页(&amp;N)}}</translation>
 <translation id="8561206103590473338">大象</translation>
 <translation id="8561853412914299728">“<ph name="TAB_TITLE" />”<ph name="EMOJI_PLAYING" /></translation>
 <translation id="8565650234829130278">已尝试降低应用版本。</translation>
@@ -6801,6 +6796,7 @@
 <translation id="9088234649737575428">系统已根据企业政策屏蔽 <ph name="PLUGIN_NAME" /></translation>
 <translation id="9088446193279799727">无法配置 Linux。请连接到互联网，然后重试。</translation>
 <translation id="9088917181875854783">请确认“<ph name="DEVICE_NAME" />”上显示有此密钥：</translation>
+<translation id="9089416786594320554">输入法</translation>
 <translation id="9093429538970210897">建议您备份文件，以防无法完成升级。启动升级会导致 Linux（Beta 版）关闭。请先保存打开的文件，然后再继续操作。</translation>
 <translation id="9094033019050270033">更新密码</translation>
 <translation id="9094038138851891550">用户名无效</translation>

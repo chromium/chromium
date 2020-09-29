@@ -357,7 +357,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />resetează sincroniza
 <translation id="5005498671520578047">Copiază parola</translation>
 <translation id="5010803260590204777">Deschide o filă incognito pentru a naviga privat pe web.</translation>
 <translation id="5039804452771397117">Permite</translation>
-<translation id="5056446788882570708">S-au găsit mai multe probleme la <ph name="TIME" />.</translation>
+<translation id="5056446788882570708">S-au găsit mai multe probleme <ph name="TIME" />.</translation>
 <translation id="5059136629401106827">OK</translation>
 <translation id="5062321486222145940">Instalează Google Drive</translation>
 <translation id="5083464117946352670">Dimensiune fișier necunoscută.</translation>

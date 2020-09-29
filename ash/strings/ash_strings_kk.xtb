@@ -104,7 +104,6 @@
 <translation id="1962969542251276847">Экран құлпы</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Сәлем, <ph name="USERNAME" />!</translation>
-<translation id="1975500003782052650">Соңғы жүктеп алынғандар</translation>
 <translation id="1978498689038657292">Мәтін енгізу</translation>
 <translation id="1993072747612765854"><ph name="SYSTEM_APP_NAME" /> қолданбасының ең соңғы жаңартылған нұсқасы туралы толығырақ</translation>
 <translation id="1995660704900986789">Өшіру</translation>
@@ -345,7 +344,7 @@
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> өшірулі.</translation>
 <translation id="4421231901400348175">Remote Assistance арқылы <ph name="HELPER_NAME" /> пайдаланушысымен экранды бөлісіп басқару.</translation>
 <translation id="4430019312045809116">Дыбыс деңгейі</translation>
-<translation id="4444978951615977024">Ой-ой-ой Интернет байланысын тексеріңіз.</translation>
+<translation id="4444978951615977024">Ой-ой-ой! Интернет байланысын тексеріңіз.</translation>
 <translation id="4450893287417543264">Қайта көрсетілмесін</translation>
 <translation id="445864333228800152">Қайырлы кеш!</translation>
 <translation id="4458688154122353284">Экран жазуды тоқтату</translation>
@@ -376,6 +375,7 @@
 <translation id="4710243778082831592">IME параметрлері</translation>
 <translation id="4731797938093519117">Ата-ананың кіру рұқсаты</translation>
 <translation id="4734965478015604180">Көлденең</translation>
+<translation id="4759238208242260848">Жүктеп алынғандар</translation>
 <translation id="4774338217796918551">Ертең сағат <ph name="COME_BACK_TIME" /> шамасында қайта қолдануыңызға болады.</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> құпия сөзі</translation>
 <translation id="4778095205580009397">Google Assistant демо сеанста қолжетімді емес.</translation>

@@ -104,7 +104,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1962969542251276847">Zablokuj ekran</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Cześć <ph name="USERNAME" />,</translation>
-<translation id="1975500003782052650">Ostatnio pobrane</translation>
 <translation id="1978498689038657292">Wprowadzanie tekstu</translation>
 <translation id="1993072747612765854">Więcej informacji o najnowszej aktualizacji <ph name="SYSTEM_APP_NAME" /></translation>
 <translation id="1995660704900986789">Wyłącz</translation>
@@ -198,6 +197,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="2996462380875591307">Lupa zadokowana została włączona. Aby ją wyłączyć, naciśnij ponownie Ctrl+Search+D.</translation>
 <translation id="3000461861112256445">Dźwięk mono</translation>
 <translation id="3009178788565917040">Urządzenie wyjściowe</translation>
+<translation id="3025081209054535615">Odepnij globalne opcje sterowania multimediami od półki</translation>
 <translation id="3033545621352269033">Włączono</translation>
 <translation id="3038571455154067151">Aby się zalogować, wpisz kod dostępu Family Link rodzica</translation>
 <translation id="3045488863354895414">Dzień dobry,</translation>
@@ -345,7 +345,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="4412944820643904175">Funkcja <ph name="FEATURE_NAME" /> jest wyłączona.</translation>
 <translation id="4421231901400348175">Udostępnianie sterowania ekranem użytkownikowi <ph name="HELPER_NAME" /> przy użyciu pomocy zdalnej.</translation>
 <translation id="4430019312045809116">Głośność</translation>
-<translation id="4444978951615977024">Ups! Sprawdź połączenie</translation>
+<translation id="4444978951615977024">Ups, sprawdź połączenie</translation>
 <translation id="4450893287417543264">Nie pokazuj ponownie</translation>
 <translation id="445864333228800152">Dobry wieczór,</translation>
 <translation id="4458688154122353284">Zatrzymaj nagrywanie ekranu</translation>
@@ -376,6 +376,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="4710243778082831592">Ustawienia IME</translation>
 <translation id="4731797938093519117">Dostęp rodzica</translation>
 <translation id="4734965478015604180">Poziomo</translation>
+<translation id="4759238208242260848">Pobrane pliki</translation>
 <translation id="4774338217796918551">Możesz wrócić jutro o <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776917500594043016">Hasło dla <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4778095205580009397">Asystent Google jest niedostępny w sesji demonstracyjnej.</translation>
@@ -383,6 +384,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="4804818685124855865">Rozłącz</translation>
 <translation id="4814539958450445987">Ekran logowania</translation>
 <translation id="4831034276697007977">Czy na pewno chcesz wyłączyć automatyczne kliknięcia?</translation>
+<translation id="4836108105469522644">Włącz powiadomienia z telefonu z Androidem</translation>
 <translation id="4849058404725798627">Podświetlaj obiekt wybrany za pomocą klawiatury</translation>
 <translation id="485592688953820832">Brak działania (wstrzymaj)</translation>
 <translation id="4868492592575313542">aktywna</translation>
@@ -696,6 +698,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="8297006494302853456">Słaby</translation>
 <translation id="8308637677604853869">Poprzednie menu</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" /> <ph name="GET_STARTED" /></translation>
+<translation id="8349293353728876872">Przypnij globalne opcje sterowania multimediami do półki</translation>
 <translation id="8351131234907093545">Utwórz notatkę</translation>
 <translation id="8371779926711439835">Do przodu o jedną literę</translation>
 <translation id="8375916635258623388">To urządzenie <ph name="DEVICE_NAME" /> i Twój telefon będą się łączyć automatycznie</translation>

@@ -1600,7 +1600,7 @@ Bu politika False (Yanlış) değerine ayarlanırsa <ph name="PRODUCT_NAME" /> y
 
       Bu politika başlangıçta hangi sayfaların açılacağını belirlemez. Bu sayfalar <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> politikaları ile kontrol edilir. Bu politika, Yeni Sekme sayfasını açacak şekilde ayarlanmışsa ana sayfayı etkiler. Aynı şekilde Yeni Sekme sayfasını açacak şekilde ayarlanmışsa başlangıç sayfasını da etkiler.
 
-      Tamamen standartlaştırılmış bir URL sağlamak en iyi uygulamadır. URL tamamen standartlaştırılmazsa <ph name="PRODUCT_NAME" /> ürünü, https:// URL'sini varsayılan olarak ayarlar.
+      Tamamen standartlaştırılmış bir URL sağlamak en iyi uygulamadır. URL tamamen standartlaştırılmazsa <ph name="PRODUCT_NAME" />, varsayılan olarak https:// seçer.
 
       Politika ayarlanmaz veya boş bırakılırsa varsayılan Yeni Sekme sayfası kullanılır.
 

@@ -104,7 +104,6 @@
 <translation id="1962969542251276847">صفحه قفل</translation>
 <translation id="1969011864782743497">‏<ph name="DEVICE_NAME" /> (‏USB)</translation>
 <translation id="1972950159383891558">سلام، <ph name="USERNAME" /></translation>
-<translation id="1975500003782052650">بارگیری‌های اخیر</translation>
 <translation id="1978498689038657292">ورودی نوشتاری</translation>
 <translation id="1993072747612765854">درباره جدیدترین به‌روزرسانی‌ <ph name="SYSTEM_APP_NAME" /> بیشتر بدانید.</translation>
 <translation id="1995660704900986789">خاموش کردن</translation>
@@ -376,6 +375,7 @@
 <translation id="4710243778082831592">‏تنظیمات IME</translation>
 <translation id="4731797938093519117">دسترسی والدین</translation>
 <translation id="4734965478015604180">افقی</translation>
+<translation id="4759238208242260848">بارگیری‌ها</translation>
 <translation id="4774338217796918551">فردا ساعت <ph name="COME_BACK_TIME" /> برگردید.</translation>
 <translation id="4776917500594043016">گذرواژه <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4778095205580009397">‏«دستیار Google» در جلسه نمایشی در دسترس نیست.</translation>

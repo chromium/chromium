@@ -5,6 +5,7 @@
 <translation id="1195447618553298278">Error desconegut.</translation>
 <translation id="1413240736185167732">Error: error en el filtre</translation>
 <translation id="1468664791493211953">Ofertes</translation>
+<translation id="1478594628797167447">Escàners</translation>
 <translation id="1482734542997480527"><ph name="ENROLLMENT_DOMAIN" /> gestiona aquest dispositiu i és possible que pugui supervisar la teva activitat.</translation>
 <translation id="150962533380566081">El PUK no és vàlid.</translation>
 <translation id="1510238584712386396">Menú d'aplicacions</translation>
@@ -19,10 +20,12 @@
 <translation id="2161394479394250669">Cancel·la la tasca d'impressió</translation>
 <translation id="2338501278241028356">Activa el Bluetooth per detectar dispositius propers</translation>
 <translation id="2375079107209812402">Intents restants: <ph name="ATTEMPTS_LEFT" /></translation>
+<translation id="2517472476991765520">Cerca</translation>
 <translation id="2805756323405976993">Aplicacions</translation>
 <translation id="2872961005593481000">Apaga</translation>
 <translation id="3008341117444806826">ACTUALITZA</translation>
 <translation id="3091839911843451378">Error: s'ha aturat</translation>
+<translation id="3246869037381808805">Se suprimiran les tasques d'impressió amb una antiguitat superior a 1 dia</translation>
 <translation id="3268178239013324452">Error: porta oberta</translation>
 <translation id="3369013195428705271">Confirmes que vols esborrar tot l'historial d'impressions? Les tasques d'impressió en curs no s'esborraran.</translation>
 <translation id="3456078764689556234">S'ha imprès la pàgina <ph name="PRINTED_PAGES" /> de <ph name="TOTAL_PAGES" />.</translation>
@@ -33,6 +36,7 @@
 <translation id="38114475217616659">Esborra tot l'historial</translation>
 <translation id="3820172043799983114">El PIN no és vàlid.</translation>
 <translation id="3838338534323494292">Contrasenya nova</translation>
+<translation id="39823212440917567">Se suprimiran les tasques d'impressió amb una antiguitat superior a <ph name="NUMBER_OF_DAYS" /> dies</translation>
 <translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> gestiona aquest dispositiu i té accés a tota l'activitat dels usuaris, com ara les pàgines web visitades, les contrasenyes i el correu electrònic.</translation>
 <translation id="4003384961948020559">Error: safata de sortida plena</translation>
 <translation id="4027485274696301677">Aquest dispositiu <ph name="DEVICE_TYPE" /> està gestionat per <ph name="ENROLLMENT_DOMAIN" />. És possible que els administradors el configurin de manera remota.</translation>
@@ -70,6 +74,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="649050271426829538">S'ha aturat: embús de paper</translation>
 <translation id="6517239166834772319">Explora</translation>
 <translation id="6564646048574748301">Error: no es pot accedir a la impressora</translation>
+<translation id="6620487321149975369">Les tasques d'impressió es mostraran a l'historial tret que se suprimeixin manualment</translation>
 <translation id="6643016212128521049">Esborra</translation>
 <translation id="6747215703636344499">S'ha aturat: safata de sortida plena</translation>
 <translation id="7162487448488904999">Galeria</translation>

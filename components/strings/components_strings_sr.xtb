@@ -108,6 +108,7 @@
 <translation id="1348779747280417563">Потврдите име</translation>
 <translation id="1357195169723583938">Ко је недавно користио уређај и када</translation>
 <translation id="1360955481084547712">Отворите нови прозор без архивирања да бисте прегледали приватно</translation>
+<translation id="1363819917331173092">Не нуди превод страница на језику <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1364822246244961190">Ове смернице су блокиране. Њихова вредност ће бити занемарена.</translation>
 <translation id="1374468813861204354">предлози</translation>
 <translation id="1374692235857187091">Index-4x6 (разгледница)</translation>
@@ -499,6 +500,7 @@
 <translation id="2996674880327704673">Google предлози</translation>
 <translation id="3002501248619246229">Проверите медије улазне фиоке</translation>
 <translation id="3005723025932146533">Прикажи сачувану копију</translation>
+<translation id="3007719053326478567">Администратор је блокирао штампање овог садржаја</translation>
 <translation id="3008447029300691911">Унесите CVC за картицу <ph name="CREDIT_CARD" />. Када будете потврдили, подаци о картици ће бити послати овом сајту.</translation>
 <translation id="3010559122411665027">Унос на листи „<ph name="ENTRY_INDEX" />“: <ph name="ERROR" /></translation>
 <translation id="301521992641321250">Аутоматски је блокирано</translation>
@@ -513,7 +515,6 @@
 <translation id="3080254622891793721">Слика</translation>
 <translation id="3086579638707268289">Ваше активности на вебу се прате</translation>
 <translation id="3087734570205094154">Дно</translation>
-<translation id="3094457892697649331">Када измените коментаре, овај документ се враћа на приказ појединачне странице.</translation>
 <translation id="3095940652251934233">Изјава</translation>
 <translation id="3096100844101284527">Додај адресу преузимања</translation>
 <translation id="3105172416063519923">ИД елемента:</translation>
@@ -602,6 +603,7 @@
 <translation id="3443726618221119081">Juuro-Ku-Kai</translation>
 <translation id="3447661539832366887">Власник овог уређаја је искључио ову застарелу игру.</translation>
 <translation id="3447884698081792621">Прикажи сертификат (издаје <ph name="ISSUER" />)</translation>
+<translation id="3451824941663424536">Администратор је блокирао налепљивање на ову локацију</translation>
 <translation id="3452404311384756672">Интервал учитавања:</translation>
 <translation id="3453962258458347894">Број поновних покушаја</translation>
 <translation id="3456231139987291353">Број-11 (коверат)</translation>
@@ -1394,6 +1396,7 @@
 <translation id="6671697161687535275">Желите ли да уклоните предлог из Chromium-а?</translation>
 <translation id="6685834062052613830">Одјавите се и довршите подешавање</translation>
 <translation id="6687335167692595844">Затражена је величина фонта</translation>
+<translation id="6688998199862661005">Администратор је блокирао дељење овог садржаја са виртуелном машином <ph name="VM_NAME" /></translation>
 <translation id="6689249931105087298">Релативно са компресијом црних тачака</translation>
 <translation id="6689271823431384964">Chrome вам нуди чување картица на Google налогу зато што сте пријављени. То можете да промените у подешавањима. Име власника картице смо узели са налога.</translation>
 <translation id="6710213216561001401">Претходно</translation>
@@ -1418,6 +1421,7 @@
 <translation id="6810899417690483278">ИД за прилагођавање</translation>
 <translation id="6825578344716086703">Покушали сте да посетите <ph name="DOMAIN" />, али је сервер послао сертификат потписан слабим алгоритмом (као што је SHA-1). То значи да су безбедносни акредитиви које је сервер послао можда кривотворени и сервер можда није онај који мислите да јесте (можда комуницирате са нападачем).</translation>
 <translation id="6826993739343257035">Дозволићете ПР?</translation>
+<translation id="6829611662493319648">Администратор је блокирао дељење овог садржаја са виртуелним машинама <ph name="VM_NAME_1" /> и <ph name="VM_NAME_2" /></translation>
 <translation id="6831043979455480757">Преведи</translation>
 <translation id="6839929833149231406">Област</translation>
 <translation id="6846340164947227603">Користи број виртуелне картице...</translation>
@@ -1677,7 +1681,6 @@
 <translation id="7802523362929240268">Сајт је легитиман</translation>
 <translation id="780301667611848630">Не, хвала</translation>
 <translation id="7805768142964895445">Статус</translation>
-<translation id="7811322735445742657">Када измените коментаре, овај документ се враћа на приказ појединачне странице и у првобитни положај.</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Желите ли да уклоните предлог из Chrome-а?</translation>
 <translation id="781440967107097262">Дозволићете дељење привремене меморије?</translation>
@@ -1787,6 +1790,7 @@
 <translation id="8267698848189296333">Пријављујете се као <ph name="USERNAME" /></translation>
 <translation id="8269242089528251720">Одвојени документи/сређене копије</translation>
 <translation id="8269981117540303696">Сада можете да прегледате приватно и други људи који користе овај уређај неће видети ваше активности. Међутим, преузимања и обележивачи ће бити сачувани.</translation>
+<translation id="8275952078857499577">Не нуди превод овог сајта</translation>
 <translation id="8277900682056760511">Страница обрађивача плаћања је отворена</translation>
 <translation id="8281084378435768645">Large-Photo</translation>
 <translation id="8282947398454257691">зна јединствени идентификатор уређаја</translation>
@@ -1795,7 +1799,6 @@
 <translation id="8289355894181816810">Контактирајте администратора мреже ако нисте сигурни шта то значи.</translation>
 <translation id="8293206222192510085">Додавање обележивача</translation>
 <translation id="8294431847097064396">Извор</translation>
-<translation id="8297398969342264569">Када измените коментаре, овај документ се враћа у првобитни положај.</translation>
 <translation id="8298115750975731693">Wi-Fi мрежа коју користите (<ph name="WIFI_NAME" />) ће можда захтевати да посетите <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="8303854710873047864">Приказује се одељак „<ph name="SECTION" />“</translation>
 <translation id="830498451218851433">Пресавијање напола</translation>

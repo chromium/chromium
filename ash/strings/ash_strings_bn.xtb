@@ -104,7 +104,6 @@
 <translation id="1962969542251276847">স্ক্রিন লক করুন</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">হাই, <ph name="USERNAME" /></translation>
-<translation id="1975500003782052650">সাম্প্রতিক ডাউনলোড</translation>
 <translation id="1978498689038657292">টেক্সট লেখার ফিল্ড</translation>
 <translation id="1993072747612765854">সাম্প্রতিক <ph name="SYSTEM_APP_NAME" /> আপডেট সম্পর্কে আরও জানুন</translation>
 <translation id="1995660704900986789">পাওয়ার বন্ধ করুন</translation>
@@ -376,6 +375,7 @@
 <translation id="4710243778082831592">IME সেটিংস</translation>
 <translation id="4731797938093519117">অভিভাবকীয় অ্যাক্সেস</translation>
 <translation id="4734965478015604180">অনুভূমিক</translation>
+<translation id="4759238208242260848">ডাউনলোড</translation>
 <translation id="4774338217796918551">আগামীকাল <ph name="COME_BACK_TIME" />-এ আবার ব্যবহার করতে পারবেন।</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" />-এর জন্য পাসওয়ার্ড</translation>
 <translation id="4778095205580009397">একটি ডেমো সেশনে Google অ্যাসিস্ট্যান্ট উপলভ্য নয়।</translation>

@@ -76,7 +76,6 @@
 <translation id="1544826120773021464">如要管理 Google 帳戶，請輕按「管理帳戶」按鈕</translation>
 <translation id="1549000191223877751">移至其他視窗</translation>
 <translation id="1553358976309200471">更新 Chrome</translation>
-<translation id="1565153191103764132">泰盧固文</translation>
 <translation id="1569387923882100876">已連接的裝置</translation>
 <translation id="1571304935088121812">複製使用者名稱</translation>
 <translation id="1592864538817356322">標準保護功能：</translation>
@@ -290,11 +289,11 @@
 <translation id="3244271242291266297">MM</translation>
 <translation id="3254409185687681395">將此頁加入書籤</translation>
 <translation id="3259831549858767975">縮小網頁中的所有內容</translation>
-<translation id="3264124641674805320">如何稍後再下載內容</translation>
+<translation id="3264124641674805320">如何下載內容供日後使用</translation>
 <translation id="3269093882174072735">載入圖片</translation>
 <translation id="3269956123044984603">如要取得其他裝置上的分頁，請在 Android 帳戶設定中開啟「自動同步資料」功能。</translation>
 <translation id="3282568296779691940">登入 Chrome</translation>
-<translation id="3285080554353377245">如何使用 Chrome 的相關影片</translation>
+<translation id="3285080554353377245">關於如何使用 Chrome 的影片</translation>
 <translation id="3288003805934695103">重新載入網頁</translation>
 <translation id="32895400574683172">允許顯示通知</translation>
 <translation id="3295530008794733555">瀏覽速度更快。使用較少流動數據。</translation>
@@ -525,7 +524,6 @@
 <translation id="5011311129201317034"><ph name="SITE" /> 要求連接至</translation>
 <translation id="5013696553129441713">沒有新建議</translation>
 <translation id="5016205925109358554">Serif</translation>
-<translation id="5026887030745057099">印度文</translation>
 <translation id="5039804452771397117">允許</translation>
 <translation id="5040262127954254034">私隱權</translation>
 <translation id="5087580092889165836">加入新卡</translation>
@@ -576,7 +574,7 @@
 <translation id="548278423535722844">在地圖應用程式中開啟</translation>
 <translation id="5483197086164197190">導覽 Chrome</translation>
 <translation id="5487521232677179737">清除資料</translation>
-<translation id="549025011754480756">如何透過語音搜尋</translation>
+<translation id="549025011754480756">如何使用語音搜尋</translation>
 <translation id="5500777121964041360">此功能可能無法在您所在的地區使用</translation>
 <translation id="5512137114520586844">這個帳戶是由 <ph name="PARENT_NAME" /> 管理。</translation>
 <translation id="5514904542973294328">此裝置的管理員已停用</translation>
@@ -627,7 +625,7 @@
 <translation id="5797070761912323120">Google 可能會使用您的記錄，為您提供個人化的搜尋服務、廣告和其他 Google 服務</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{# 小時前}other{# 小時前}}</translation>
 <translation id="5810288467834065221">版權所有 <ph name="YEAR" /> Google LLC。保留所有權利。</translation>
-<translation id="5814131985548525293">在此處輸入或輕按語音圖示以開始搜尋</translation>
+<translation id="5814131985548525293">在此處輸入或輕按麥克風圖示以開始搜尋</translation>
 <translation id="5817918615728894473">配對</translation>
 <translation id="583281660410589416">不明</translation>
 <translation id="5833984609253377421">分享連結</translation>
@@ -752,7 +750,7 @@
 <translation id="661266467055912436">為您和網絡上的所有使用者提高安全性。</translation>
 <translation id="6618554661997243500">㩒「主按鈕」就可以睇下熱門網站同報導</translation>
 <translation id="6627583120233659107">編輯資料夾</translation>
-<translation id="663674369910034433">如需更多與私隱權、安全性和資料收集相關的設定，請參閱<ph name="BEGIN_LINK1" />同步處理<ph name="END_LINK1" />和 <ph name="BEGIN_LINK2" />Google 服務<ph name="END_LINK2" />。</translation>
+<translation id="663674369910034433">如需更多與私隱權、安全性和資料收集相關的設定，請參閱<ph name="BEGIN_LINK1" />同步處理<ph name="END_LINK1" />和 <ph name="BEGIN_LINK2" />Google 服務<ph name="END_LINK2" /></translation>
 <translation id="6643016212128521049">清除</translation>
 <translation id="6643649862576733715">依節省數據量排序</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 和另外 <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> 個聯絡人}other{<ph name="CONTACT_PREVIEW" />\u2026 和另外 <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> 個聯絡人}}</translation>
@@ -896,7 +894,6 @@
 在無痕模式下，您瀏覽的網站、僱主或學校，以及互聯網服務供應商仍可看到您的活動。</translation>
 <translation id="7704317875155739195">自動完成搜尋和網址</translation>
 <translation id="7725024127233776428">加入書籤的網頁會在這裡顯示</translation>
-<translation id="7732997068759397415">卡納達文</translation>
 <translation id="7735637452482172701">透過「螢幕鎖定」功能解鎖</translation>
 <translation id="7746457520633464754">為了偵測危險的應用程式和網站，Chrome 會將您瀏覽的部分網頁網址、有限的系統資料以及部分網頁內容傳送給 Google</translation>
 <translation id="7757787379047923882">透過 <ph name="DEVICE_NAME" /> 分享的文字</translation>
@@ -953,7 +950,6 @@
 <translation id="8073388330009372546">在新分頁中開啟圖片</translation>
 <translation id="8076492880354921740">分頁</translation>
 <translation id="8084114998886531721">已儲存的密碼</translation>
-<translation id="8099451332580698547">泰米爾文</translation>
 <translation id="8103578431304235997">無痕式分頁</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109613176066109935">如要將書籤同步到所有裝置，請開啟同步處理功能</translation>
@@ -1029,10 +1025,9 @@
 <translation id="8636825310635137004">如要取得其他裝置上的分頁，請開啟同步處理功能。</translation>
 <translation id="8641930654639604085">嘗試封鎖成人網站</translation>
 <translation id="8655129584991699539">您可以在 Chrome 設定中清除資料</translation>
-<translation id="8659579665266920523">如何透過 Chrome 搜尋</translation>
+<translation id="8659579665266920523">如何使用 Chrome 搜尋</translation>
 <translation id="8662811608048051533">您會從大部分網站登出。</translation>
 <translation id="8664979001105139458">檔案名稱已存在</translation>
-<translation id="8666678546361132282">英文</translation>
 <translation id="8683039184091909753">圖片</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{訊號強度等級：# 格}other{訊號強度等級：# 格}}</translation>
 <translation id="869891660844655955">到期日</translation>
@@ -1048,7 +1043,7 @@
 <translation id="8840953339110955557">此網頁可能與網上版本不同。</translation>
 <translation id="8853345339104747198"><ph name="TAB_TITLE" /> (分頁)</translation>
 <translation id="8854223127042600341">查看離線檔案</translation>
-<translation id="8873817150012960745">輕按此處以開始搜尋</translation>
+<translation id="8873817150012960745">輕按此處即可開始搜尋</translation>
 <translation id="889338405075704026">前往 Chrome 設定</translation>
 <translation id="8898822736010347272">向 Google 傳送部分您瀏覽網頁的網址、特定的系統資料及部分網頁內容，以協助探索新威脅，並保護所有網絡使用者。</translation>
 <translation id="8909135823018751308">共用…</translation>

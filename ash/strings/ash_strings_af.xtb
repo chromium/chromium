@@ -104,7 +104,6 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1962969542251276847">Sluitskerm</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Hallo, <ph name="USERNAME" /></translation>
-<translation id="1975500003782052650">Onlangse aflaaie</translation>
 <translation id="1978498689038657292">Teksinvoer</translation>
 <translation id="1993072747612765854">Kom meer te wete oor die jongste <ph name="SYSTEM_APP_NAME" />-opdatering</translation>
 <translation id="1995660704900986789">Skakel af</translation>
@@ -198,6 +197,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="2996462380875591307">Gedokte vergrootglas is geaktiveer. Druk weer Ctrl+Search+D om dit af te skakel.</translation>
 <translation id="3000461861112256445">Mono-oudio</translation>
 <translation id="3009178788565917040">Uitvoer</translation>
+<translation id="3025081209054535615">Ontspeld globale mediakontroles van rak</translation>
 <translation id="3033545621352269033">Aan</translation>
 <translation id="3038571455154067151">Voer jou Family Link-ouertoegangskode in om aan te meld</translation>
 <translation id="3045488863354895414">Goeiemiddag</translation>
@@ -377,6 +377,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="4710243778082831592">IME-instellings</translation>
 <translation id="4731797938093519117">Ouertoegang</translation>
 <translation id="4734965478015604180">Horisontaal</translation>
+<translation id="4759238208242260848">Aflaaie</translation>
 <translation id="4774338217796918551">Kom môre om <ph name="COME_BACK_TIME" /> terug.</translation>
 <translation id="4776917500594043016">Wagwoord vir <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4778095205580009397">Die Google Assistent is nie in 'n demonstrasiesessie beskikbaar nie.</translation>
@@ -384,6 +385,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="4804818685124855865">Ontkoppel</translation>
 <translation id="4814539958450445987">Aanmeldskerm</translation>
 <translation id="4831034276697007977">Is jy seker jy wil outomatiese klikke afskakel?</translation>
+<translation id="4836108105469522644">Skakel kennisgewings vanaf jou Android-foon aan</translation>
 <translation id="4849058404725798627">Lig voorwerp met sleutelbordfokus uit</translation>
 <translation id="485592688953820832">Geen handeling nie (onderbreek)</translation>
 <translation id="4868492592575313542">geaktiveer</translation>
@@ -697,6 +699,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="8297006494302853456">Swak</translation>
 <translation id="8308637677604853869">Vorige kieslys</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
+<translation id="8349293353728876872">Speld globale mediakontroles aan rak vas</translation>
 <translation id="8351131234907093545">Skep nota</translation>
 <translation id="8371779926711439835">Vorentoe per letter</translation>
 <translation id="8375916635258623388">Hierdie <ph name="DEVICE_NAME" /> en jou foon sal outomaties koppel</translation>

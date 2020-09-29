@@ -104,7 +104,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1962969542251276847">Verrouiller l'écran</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Bonjour <ph name="USERNAME" /></translation>
-<translation id="1975500003782052650">Téléchargements récents</translation>
 <translation id="1978498689038657292">Saisie de texte</translation>
 <translation id="1993072747612765854">En savoir plus sur la dernière mise à jour <ph name="SYSTEM_APP_NAME" /></translation>
 <translation id="1995660704900986789">Éteindre</translation>
@@ -153,7 +152,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2435457462613246316">Afficher le mot de passe</translation>
 <translation id="2473177541599297363">Confirmer la résolution</translation>
 <translation id="2475982808118771221">Une erreur s'est produite.</translation>
-<translation id="2479579251444854687">Balayez l'écran vers le haut avec trois doigts pour ouvrir l'aperçu, et vers le bas pour le fermer.</translation>
+<translation id="2479579251444854687">Balayez l'écran avec trois doigts vers le haut pour ouvrir le mode Présentation, et vers le bas pour le fermer.</translation>
 <translation id="2482878487686419369">Notifications</translation>
 <translation id="2484513351006226581">Appuyez sur <ph name="KEYBOARD_SHORTCUT" /> pour changer la disposition du clavier.</translation>
 <translation id="2501920221385095727">Touches persistantes</translation>
@@ -355,7 +354,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="4479639480957787382">Ethernet </translation>
 <translation id="4481530544597605423">Appareils dissociés</translation>
 <translation id="4505050298327493054">Bureau actif.</translation>
-<translation id="4506458088675900627">Le geste à effectuer sur le pavé tactile pour afficher l'aperçu a changé</translation>
+<translation id="4506458088675900627">Le geste à effectuer sur le pavé tactile pour passer en mode Présentation a changé</translation>
 <translation id="4513946894732546136">Commentaires</translation>
 <translation id="4527045527269911712">L'appareil Bluetooth "<ph name="DEVICE_NAME" />" demande l'autorisation de s'associer.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> avant charge complète</translation>
@@ -376,6 +375,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="4710243778082831592">Paramètres IME</translation>
 <translation id="4731797938093519117">Accès parental</translation>
 <translation id="4734965478015604180">Horizontal</translation>
+<translation id="4759238208242260848">Téléchargements</translation>
 <translation id="4774338217796918551">Revenez demain à <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776917500594043016">Mot de passe de <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4778095205580009397">L'Assistant Google n'est pas disponible dans une session de démonstration.</translation>

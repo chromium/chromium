@@ -2253,7 +2253,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3639220004740062347">Ieși din modul Cititor</translation>
 <translation id="3640214691812501263">Adaugi „<ph name="EXTENSION_NAME" />” pentru <ph name="USER_NAME" />?</translation>
 <translation id="3640613767643722554">Învață Asistentul să îți recunoască vocea</translation>
-<translation id="3643014427358482789"><ph name="DOMAIN" /> dezactivează remedierea erorilor prin ADB, resetând astfel <ph name="DEVICE_TYPE" />. Fă backup fișierelor înainte de repornire.</translation>
 <translation id="3643637292669952403">Împiedică site-urile să-ți vadă locația</translation>
 <translation id="3645372836428131288">Mută ușor pentru a înregistra o altă parte a amprentei</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{Ai primit <ph name="ATTACHMENTS" /> de la <ph name="DEVICE_NAME" />}few{Ai primit <ph name="ATTACHMENTS" /> de la <ph name="DEVICE_NAME" />}other{Ai primit <ph name="ATTACHMENTS" /> de la <ph name="DEVICE_NAME" />}}</translation>
@@ -3899,7 +3898,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="5632566673632479864">Contul tău <ph name="EMAIL" /> nu mai are permisiunea de a fi contul principal. Deoarece acest cont este gestionat de <ph name="DOMAIN" />, vor fi șterse marcajele, istoricul, parolele și alte setări de pe acest dispozitiv.</translation>
 <translation id="5632592977009207922">Se descarcă, a mai rămas <ph name="PERCENT_REMAINING" />%</translation>
 <translation id="563371367637259496">Mobilă</translation>
-<translation id="563496044070985734">Limbile disponibile pentru verificarea ortografiei se bazează pe setările de limbă</translation>
 <translation id="563535393368633106">Solicită permisiunea înainte de accesare (recomandat)</translation>
 <translation id="5636996382092289526">Pentru a utiliza <ph name="NETWORK_ID" /> ar putea fi necesar să <ph name="LINK_START" />accesați mai întâi pagina de conectare a rețelei<ph name="LINK_END" />, care se va deschide automat în câteva secunde. Dacă acest lucru nu se întâmplă, rețeaua nu poate fi utilizată.</translation>
 <translation id="5637476008227280525">Activează datele mobile</translation>
@@ -4360,7 +4358,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="6176043333338857209">Funcția Bluetooth va fi activată temporar pentru a comunica cu cheia de securitate</translation>
 <translation id="6178664161104547336">Selectează un certificat</translation>
 <translation id="6181431612547969857">Descărcarea a fost blocată</translation>
-<translation id="6184099524311454384">File de căutare</translation>
+<translation id="6184099524311454384">Caută în file</translation>
 <translation id="6185132558746749656">Locația dispozitivului</translation>
 <translation id="6186394437969115158">Site-urile afișează de obicei anunțuri pentru a oferi gratuit conținut sau servicii. Unele site-uri afișează însă anunțuri deranjante sau înșelătoare.</translation>
 <translation id="6191293864534840972">Servere de nume cu formă incorectă</translation>
@@ -4784,7 +4782,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="6704062477274546131">Rezolvare DNS</translation>
 <translation id="6706210727756204531">Aplicabilitate</translation>
 <translation id="6707389671160270963">Certificat de client SSL</translation>
-<translation id="670893696722244877">Caută după limbă sau numele metodei de introducere a textului</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> și încă o filă}few{<ph name="PAGE_TITLE" /> și încă # file}other{<ph name="PAGE_TITLE" /> și încă # de file}}</translation>
 <translation id="6709133671862442373">Știri</translation>
 <translation id="6709357832553498500">Conectează-te folosind <ph name="EXTENSIONNAME" /></translation>
@@ -5684,7 +5681,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 
 
 <ph name="EXTENSION_NAME" /></translation>
-<translation id="7788444488075094252">Limbi și metodă de introducere</translation>
 <translation id="7788668840732459509">Poziție:</translation>
 <translation id="7789963078219276159">Fundalul paginii de pornire a fost modificat la <ph name="CATEGORY" />.</translation>
 <translation id="7791543448312431591">Adaugă</translation>
@@ -5975,7 +5971,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="80974698889265265">Codurile PIN nu se potrivesc</translation>
 <translation id="809792523045608178"><ph name="IDS_SHORT_PRODUCT_NAME" /> folosește setările proxy dintr-o extensie</translation>
 <translation id="8097959162767603171">Mai întâi, administratorul trebuie să accepte Termenii și condițiile din lista de dispozitive Chrome din Consola de administrare.</translation>
-<translation id="810068641062493918">S-a selectat <ph name="LANGUAGE" />. Apasă tasta de căutare + tasta de spațiu pentru a deselecta.</translation>
+<translation id="810068641062493918">S-a selectat <ph name="LANGUAGE" />. Apasă tasta de căutare + bara de spațiu pentru a deselecta.</translation>
 <translation id="8101987792947961127">Este necesară lansarea Powerwash la următoarea repornire</translation>
 <translation id="8102139037507939978">Elimină datele cu caracter personal din system_logs.txt.</translation>
 <translation id="8102159139658438129">Accesează <ph name="LINK_BEGIN" />Setări<ph name="LINK_END" /> ca să vezi opțiunile pentru telefonul conectat</translation>
@@ -6272,7 +6268,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8467326454809944210">Alege altă limbă</translation>
 <translation id="8470214316007448308">Alte persoane</translation>
 <translation id="8470513973197838199">Parole salvate pentru <ph name="ORIGIN" /></translation>
-<translation id="8471256130228705232"><ph name="DOMAIN" /> dezactivează remedierea erorilor prin ADB. Astfel, <ph name="DEVICE_TYPE" /> se va reseta în termen de 24 de ore. Fă backup pentru fișierele pe care vrei să le păstrezi.</translation>
 <translation id="8471525937465764768">Site-urile se conectează de obicei la dispozitive USB pentru funcții cum ar fi imprimarea unui document sau salvarea pe un dispozitiv de stocare</translation>
 <translation id="8472623782143987204">susținut de hardware</translation>
 <translation id="8473863474539038330">Adrese și altele</translation>
@@ -6802,11 +6797,12 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="9078316009970372699">Dezactivează Tetheringul instantaneu</translation>
 <translation id="9084064520949870008">Deschideți ca fereastră</translation>
 <translation id="9085256200913095638">Fila selectată este o dublură</translation>
-<translation id="9085776959277692427">Nu s-a selectat <ph name="LANGUAGE" />. Apasă tasta de căutare + tasta de spațiu pentru a selecta.</translation>
+<translation id="9085776959277692427">Nu s-a selectat <ph name="LANGUAGE" />. Apasă tasta de căutare + bara de spațiu pentru a selecta.</translation>
 <translation id="9087949559523851360">Adaugă un utilizator cu permisiuni limitate</translation>
 <translation id="9088234649737575428">Pluginul <ph name="PLUGIN_NAME" /> este blocat conform politicii companiei</translation>
 <translation id="9088446193279799727">Nu s-a putut configura Linux. Conectează-te la internet și încearcă din nou.</translation>
 <translation id="9088917181875854783">Confirmați că această cheie de acces este afișată pe „<ph name="DEVICE_NAME" />”:</translation>
+<translation id="9089416786594320554">Introducere</translation>
 <translation id="9093429538970210897">Backupul fișierelor este recomandat în cazul în care upgrade-ul nu se finalizează. Începerea upgrade-ului va determina oprirea sistemului de operare Linux (Beta). Salvează fișierele deschise înainte de a continua.</translation>
 <translation id="9094033019050270033">Actualizează parola</translation>
 <translation id="9094038138851891550">Nume de utilizator nevalid</translation>

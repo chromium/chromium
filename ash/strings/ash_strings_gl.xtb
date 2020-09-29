@@ -104,7 +104,6 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1962969542251276847">Pantalla de bloqueo</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Ola, <ph name="USERNAME" /></translation>
-<translation id="1975500003782052650">Descargas recentes</translation>
 <translation id="1978498689038657292">Introdución de texto</translation>
 <translation id="1993072747612765854">Máis información sobre a última actualización de <ph name="SYSTEM_APP_NAME" /></translation>
 <translation id="1995660704900986789">Apagar</translation>
@@ -377,6 +376,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="4710243778082831592">Configuración de IME</translation>
 <translation id="4731797938093519117">Acceso parental</translation>
 <translation id="4734965478015604180">Horizontal</translation>
+<translation id="4759238208242260848">Descargas</translation>
 <translation id="4774338217796918551">Volve mañá á seguinte hora: <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776917500594043016">Contrasinal de <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4778095205580009397">O Asistente de Google non está dispoñible cando se utiliza unha sesión de demostración.</translation>

@@ -2253,7 +2253,6 @@
 <translation id="3639220004740062347">ចាកចេញពីមុខងារអាន</translation>
 <translation id="3640214691812501263">បន្ថែម "<ph name="EXTENSION_NAME" />" សម្រាប់ <ph name="USER_NAME" />?</translation>
 <translation id="3640613767643722554">បង្រៀន​ជំនួយការ​របស់អ្នក​ឱ្យស្គាល់​សំឡេងរបស់អ្នក</translation>
-<translation id="3643014427358482789"><ph name="DOMAIN" /> កំពុងបិទ​ការជួសជុល ADB ដែលនឹងកំណត់ <ph name="DEVICE_TYPE" /> របស់អ្នកឡើងវិញ។ សូមបម្រុងទុកឯកសាររបស់អ្នក មុនពេលចាប់ផ្ដើមឡើងវិញ។</translation>
 <translation id="3643637292669952403">ទប់ស្កាត់គេហទំព័រ​មិនឱ្យមើលឃើញទីតាំងរបស់អ្នក</translation>
 <translation id="3645372836428131288">រំកិលតិចៗ​ដើម្បី​ថត​ផ្នែកផ្សេង​នៃស្នាមម្រាមដៃ។</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{បានទទួល <ph name="ATTACHMENTS" /> ពី <ph name="DEVICE_NAME" />}other{បានទទួល <ph name="ATTACHMENTS" /> ពី <ph name="DEVICE_NAME" />}}</translation>
@@ -3900,7 +3899,6 @@
 <translation id="5632566673632479864">គណនីរបស់អ្នក <ph name="EMAIL" /> មិនត្រូវបានអនុញ្ញាតឱ្យធ្វើជាគណនីចម្បងទៀតទេ។ ដោយសារគណនីនេះត្រូវបានគ្រប់គ្រងដោយ <ph name="DOMAIN" /> ចំណាំ ប្រវត្តិ ពាក្យសម្ងាត់ និងការកំណត់ផ្សេងទៀតរបស់អ្នកនឹងត្រូវបានសម្អាតពីឧបករណ៍នេះ។</translation>
 <translation id="5632592977009207922">កំពុងទាញយក នៅសល់ <ph name="PERCENT_REMAINING" />% ទៀត</translation>
 <translation id="563371367637259496">ចល័ត</translation>
-<translation id="563496044070985734">ភាសាដែលអាចប្រើការពិនិត្យ​អក្ខរាវិរុទ្ធគឺផ្អែកលើការកំណត់ភាសារបស់អ្នក</translation>
 <translation id="563535393368633106">សួរមុនពេលចូលប្រើ (បានណែនាំ)</translation>
 <translation id="5636996382092289526">ដើម្បីប្រើ <ph name="NETWORK_ID" /> ដំបូងអ្នកត្រូវ <ph name="LINK_START" />ទៅកាន់ទំព័រចូលរបស់បណ្តាញ<ph name="LINK_END" /> ដែលនឹងបើកដោយស្វ័យប្រវត្តិនៅក្នុងប៉ុន្មានវិនាទីទៀត។ ប្រសិនបើវាមិនកើតឡើង បណ្តាញមិនអាចប្រើបានទេ។</translation>
 <translation id="5637476008227280525">បើក​ទិន្នន័យ​ចល័ត</translation>
@@ -4785,7 +4783,6 @@
 <translation id="6704062477274546131">ដំណោះស្រាយ DNS</translation>
 <translation id="6706210727756204531">ដែនកំណត់</translation>
 <translation id="6707389671160270963">វិញ្ញាបនប័ត្រអតិថិជន SSL</translation>
-<translation id="670893696722244877">ស្វែងរកតាមភាសា ឬ​ឈ្មោះវិធីសាស្ត្របញ្ចូល</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> និងផ្ទាំង 1 ផ្សេងទៀត}other{<ph name="PAGE_TITLE" /> និងផ្ទាំង # ផ្សេងទៀត}}</translation>
 <translation id="6709133671862442373">ព័ត៌មាន</translation>
 <translation id="6709357832553498500">ភ្ជាប់ដោយប្រើ <ph name="EXTENSIONNAME" /></translation>
@@ -5668,7 +5665,7 @@
 <translation id="7772773261844472235">ពិនិត្យស្ថានភាព Chromebook របស់អ្នក</translation>
 <translation id="7773726648746946405">ចន្លោះផ្ទុកវេន</translation>
 <translation id="7774365994322694683">បក្សី</translation>
-<translation id="7774792847912242537">សំណើរច្រើនពេក។</translation>
+<translation id="7774792847912242537">សំណើច្រើនពេក។</translation>
 <translation id="7776156998370251340"><ph name="ORIGIN" /> នឹងអាច​មើលឯកសារ​នៅក្នុង <ph name="FOLDERNAME" /> បាន រហូតទាល់តែអ្នក​បិទផ្ទាំងទាំងអស់​សម្រាប់គេហទំព័រនេះ</translation>
 <translation id="7776701556330691704">រក​មិន​ឃើញ​សំឡេង​ទេ</translation>
 <translation id="7780252971640011240">មានបញ្ហា​ក្នុងការ​តភ្ជាប់។ សូម​ទាក់ទង​ក្រុមហ៊ុន​សេវាទូរសព្ទ​របស់អ្នក ដើម្បី​ទទួល​បានជំនួយ។</translation>
@@ -5685,7 +5682,6 @@
 
 
 <ph name="EXTENSION_NAME" /></translation>
-<translation id="7788444488075094252">ភាសា និងធាតុបញ្ចូល</translation>
 <translation id="7788668840732459509">ទីតាំង៖</translation>
 <translation id="7789963078219276159">ផ្ទៃខាងក្រោយ​នៃទំព័រចាប់​ផ្ដើមត្រូវបានប្ដូរទៅ <ph name="CATEGORY" /> ។</translation>
 <translation id="7791543448312431591">បន្ថែម</translation>
@@ -6272,7 +6268,6 @@
 <translation id="8467326454809944210">ជ្រើសរើស​ភាសា​ផ្សេងទៀត</translation>
 <translation id="8470214316007448308">មនុស្ស​ផ្សេងទៀត</translation>
 <translation id="8470513973197838199">បាន​រក្សា​ទុកពាក្យ​សម្ងាត់​​សម្រាប់ <ph name="ORIGIN" /></translation>
-<translation id="8471256130228705232"><ph name="DOMAIN" /> កំពុងបិទការជួសជុល ADB។ សកម្មភាពនេះនឹងកំណត់ <ph name="DEVICE_TYPE" /> របស់អ្នកឡើងវិញក្នុងរយៈពេល 24 ម៉ោង។ សូមបម្រុង​ទុកឯកសារទាំងឡាយ ដែលអ្នកចង់រក្សាទុក។</translation>
 <translation id="8471525937465764768">ជាធម្មតា គេហទំព័រភ្ជាប់ជាមួយឧបករណ៍ USB សម្រាប់មុខងារផ្សេងៗដូចជា ការបោះពុម្ពឯកសារ ឬការរក្សាទុកទៅក្នុងឧបករណ៍ផ្ទុកជាដើម</translation>
 <translation id="8472623782143987204">ផ្នែករឹងបម្រុង</translation>
 <translation id="8473863474539038330">អាសយដ្ឋាន​ និងច្រើន​ទៀត</translation>
@@ -6807,6 +6802,7 @@
 <translation id="9088234649737575428"><ph name="PLUGIN_NAME" /> ត្រូវបានរារាំងដោយគោលការណ៍សហគ្រាស</translation>
 <translation id="9088446193279799727">មិន​អាចកំណត់រចនាសម្ព័ន្ធ Linux បានទេ។ សូមភ្ជាប់​​អ៊ីនធឺណិត រួច​ព្យាយាមម្តងទៀត។</translation>
 <translation id="9088917181875854783">សូមអះអាងលេខសម្ងាត់នេះដែលត្រូវបានបង្ហាញនៅលើ "<ph name="DEVICE_NAME" />"៖</translation>
+<translation id="9089416786594320554">វិធីសាស្ត្របញ្ចូល</translation>
 <translation id="9093429538970210897">យើងសូមណែនាំឱ្យបម្រុងទុកឯកសារ ក្នុងករណីដែលការដំឡើងកំណែមិនអាចបញ្ចប់បាន។ ការចាប់ផ្ដើមការ​ដំឡើងកំណែនេះនឹងបិទ Linux (បេតា)។ សូមរក្សាទុកឯកសារដែលបើក មុនពេលបន្ត។</translation>
 <translation id="9094033019050270033">ធ្វើបច្ចុប្បន្នភាពពាក្យសម្ងាត់</translation>
 <translation id="9094038138851891550">ឈ្មោះអ្នកប្រើប្រាស់​មិនត្រឹមត្រូវទេ</translation>

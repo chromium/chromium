@@ -104,7 +104,6 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1962969542251276847">Lukusta ekraan</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Tere, <ph name="USERNAME" />!</translation>
-<translation id="1975500003782052650">Hiljutised allalaadimised</translation>
 <translation id="1978498689038657292">Tekstisisestus</translation>
 <translation id="1993072747612765854">Vaadake lisateavet operatsioonisüsteemi <ph name="SYSTEM_APP_NAME" /> uusima värskenduse kohta</translation>
 <translation id="1995660704900986789">Lülita välja</translation>
@@ -377,6 +376,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="4710243778082831592">IME seaded</translation>
 <translation id="4731797938093519117">Vanema juurdepääs</translation>
 <translation id="4734965478015604180">Horisontaalne</translation>
+<translation id="4759238208242260848">Allalaadimised</translation>
 <translation id="4774338217796918551">Tulge tagasi homme kell <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776917500594043016">Kasutaja <ph name="USER_EMAIL_ADDRESS" /> parool</translation>
 <translation id="4778095205580009397">Google'i assistent ei ole demoseansi puhul saadaval.</translation>

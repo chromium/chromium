@@ -104,7 +104,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="1962969542251276847">Lock Screen</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Hi, <ph name="USERNAME" /></translation>
-<translation id="1975500003782052650">Recent downloads</translation>
 <translation id="1978498689038657292">Text input</translation>
 <translation id="1993072747612765854">Learn more about the latest <ph name="SYSTEM_APP_NAME" /> update</translation>
 <translation id="1995660704900986789">Power off</translation>
@@ -377,6 +376,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="4710243778082831592">IME settings</translation>
 <translation id="4731797938093519117">Parent access</translation>
 <translation id="4734965478015604180">Horizontal</translation>
+<translation id="4759238208242260848">Downloads</translation>
 <translation id="4774338217796918551">Come back tomorrow at <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776917500594043016">Password for <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4778095205580009397">The Google Assistant is not available in a demo session.</translation>

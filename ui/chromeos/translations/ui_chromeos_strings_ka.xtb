@@ -30,6 +30,7 @@
 <translation id="1208421848177517699">ტრანსლიტერაცია (namaste → નમસ્તે)</translation>
 <translation id="1243314992276662751">ატვირთვა</translation>
 <translation id="1249250836236328755">ჟანრი</translation>
+<translation id="1276362640455948667">პორტუგალიური აშშ-ის საერთაშორისო კლავიატურით</translation>
 <translation id="1278813325885878377">უნგრული QWERTY კლავიატურა</translation>
 <translation id="1293556467332435079">ფაილები</translation>
 <translation id="1297922636971898492">Google Drive ამჟამად მიუწვდომელია. ატვირთვა ავტომატურად განახლდება Google Drive-ის დაბრუნების შემდეგ.</translation>
@@ -117,8 +118,10 @@
 <translation id="2208158072373999562">Zip არქივი</translation>
 <translation id="2225536596944493418">ნამდვილად გსურთ, წაშალოთ <ph name="NUMBER_OF_ITEMS" /> ერთეული?</translation>
 <translation id="2230062665678605299">ვერ შეიქმნა საქაღალდე „<ph name="FOLDER_NAME" />“. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2270413998793223379">სანსკრიტი</translation>
 <translation id="2275059641601412272">გადატანილია.</translation>
 <translation id="2278988676849463018">კანადური კლავიატურა (ფონეტიკური)</translation>
+<translation id="2287742181953707290">პორტუგალიური აშშ-ის საერთაშორისო (PC) კლავიატურით</translation>
 <translation id="2288278176040912387">ფლეიერი</translation>
 <translation id="2291538123825441971">მიმდინარეობს <ph name="NUMBER_OF_FILES" /> ფაილის გახსნა.</translation>
 <translation id="2303301624314357662">იხსნება <ph name="FILE_NAME" /> ფაილი.</translation>
@@ -222,6 +225,7 @@
 <translation id="3473378059788601120">კოპირებულია „<ph name="FOLDER_NAME" />“-ში.</translation>
 <translation id="3475447146579922140">Google ის ელ.ცხრილი</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> შეცდომა.</translation>
+<translation id="349603508045926994">სპარსული ტრანსლიტერაცია</translation>
 <translation id="3519867315646775981">ტრანსლიტერაცია (shalom ← שלום)</translation>
 <translation id="3522708245912499433">პორტუგალიური</translation>
 <translation id="3524311639100184459">გაფრთხილება: ეს ფაილები დროებითია და შეიძლება ავტომატურად წაიშალოს დისკზე ადგილის გასათავისუფლებლად.  <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
@@ -293,6 +297,7 @@
 <translation id="4298972503445160211">დანიური კლავიატურა</translation>
 <translation id="4299729908419173967">ბრაზილიური</translation>
 <translation id="4309915981827077375">ზოგადი ინფორმაცია</translation>
+<translation id="4315949787858895817">ნიდერლანდური (ბელგია)</translation>
 <translation id="4326192123064055915">ყავა</translation>
 <translation id="4336032328163998280">კოპირების ოპერაცია ვერ განხორციელდა. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4364327530094270451">ნესვი</translation>
@@ -339,6 +344,7 @@
 <translation id="4804827417948292437">ავოკადო</translation>
 <translation id="4823651846660089135">მოწყობილობა მხოლოდ კითხვადია</translation>
 <translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> ელემენტი არჩეულია</translation>
+<translation id="4849981557599196363">გერმანული (ბელგია)</translation>
 <translation id="4850886885716139402">გადახედვა</translation>
 <translation id="485316830061041779">გერმანული</translation>
 <translation id="4867079195717347957">დააწკაპუნეთ სვეტის კლებადი მიმდევრობით დასალაგებლად.</translation>
@@ -402,6 +408,7 @@
     ფაილებზე სხვებთან ერთად და ერთი სივრციდან.<ph name="MARKUP_9" /></translation>
 <translation id="5274350207900771082">დაკოპირდა.</translation>
 <translation id="5275973617553375938">აღდგენილი ფაილი Google Drive-დან</translation>
+<translation id="5283140566205748520">ფრანგული (ბელგია)</translation>
 <translation id="5317780077021120954">შენახვა</translation>
 <translation id="5318819489018851358">Linux-თან გაზიარება</translation>
 <translation id="5319782540886810524">ლატვიური კლავიატურა</translation>
@@ -687,6 +694,7 @@
 <translation id="8329978297633540474">ჩვეულებრივი ტექსტი</translation>
 <translation id="8335587457941836791">მოხსენით თაროდან</translation>
 <translation id="8336153091935557858">გუშინ <ph name="YESTERDAY_DAYTIME" /></translation>
+<translation id="8336524887811696057">ნეპალური ტრანსლიტერაცია</translation>
 <translation id="8336579025507394412">ისლანდიური კლავიატურა</translation>
 <translation id="8342318071240498787">ფაილი ან დირექტორია ამ სახელით უკვე არსებობს.</translation>
 <translation id="8382450452152102026">სად: <ph name="FOLDER_NAME" /></translation>
@@ -712,12 +720,14 @@
 <translation id="8600173386174225982">ფაილების სია ნაჩვენებია ესკიზების ხედში.</translation>
 <translation id="8601932370724196034">Crostini იმიჯის ფაილი</translation>
 <translation id="8669949407341943408">გადატანა...</translation>
+<translation id="8694836330346852143">ურდუ</translation>
 <translation id="8698464937041809063">Google ნახაზი</translation>
 <translation id="8714406895390098252">ველოსიპედი</translation>
 <translation id="8719721339511222681">არჩეულია <ph name="ENTRY_NAME" />.</translation>
 <translation id="8722421161699219904">შეერთებული შტატების საერთაშორისო კლავიატურა</translation>
 <translation id="872537912056138402">ხორვატიული</translation>
 <translation id="874420130893181774">ტრადიციული ფინინის შეყვანის მეთოდის</translation>
+<translation id="8770002329960263418">ნიდერლანდური (ნიდერლანდები) აშშ-ის საერთაშორისო (PC) კლავიატურით</translation>
 <translation id="8775404590947523323">ცვლილებები ავტომატურად ინახება. <ph name="BREAKS" />ორიგინალური გამოსახულების ასლის შესანახად მოხსენით მონიშვნა უჯრიდან „ორიგინალურის შეცვლა“.</translation>
 <translation id="8803496343472038847">რუსული ფონეტიკური კლავიატურა</translation>
 <translation id="8808686172382650546">კატა</translation>

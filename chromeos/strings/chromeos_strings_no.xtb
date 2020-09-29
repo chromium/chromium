@@ -5,6 +5,7 @@
 <translation id="1195447618553298278">Ukjent feil.</translation>
 <translation id="1413240736185167732">Mislykket – filtersvikt</translation>
 <translation id="1468664791493211953">Tilbud</translation>
+<translation id="1478594628797167447">Skanner</translation>
 <translation id="1482734542997480527"><ph name="ENROLLMENT_DOMAIN" /> administrerer denne enheten og kan muligens overvåke aktiviteten din.</translation>
 <translation id="150962533380566081">Ugyldig PUK.</translation>
 <translation id="1510238584712386396">Appoversikt</translation>
@@ -19,10 +20,12 @@
 <translation id="2161394479394250669">Avbryt utskriftsjobben</translation>
 <translation id="2338501278241028356">Slå på Bluetooth for å finne enheter i nærheten</translation>
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> forsøk igjen</translation>
+<translation id="2517472476991765520">Skann</translation>
 <translation id="2805756323405976993">Apper</translation>
 <translation id="2872961005593481000">Slå av</translation>
 <translation id="3008341117444806826">OPPDATER</translation>
 <translation id="3091839911843451378">Mislykket – stoppet</translation>
+<translation id="3246869037381808805">Utskriftsjobber som er eldre enn 1 dag, blir fjernet</translation>
 <translation id="3268178239013324452">Mislykket – luken er åpen</translation>
 <translation id="3369013195428705271">Er du sikker på at du vil tømme hele utskriftsloggen? Utskriftsjobber som allerede er i gang, fjernes ikke.</translation>
 <translation id="3456078764689556234">Skrev ut side <ph name="PRINTED_PAGES" /> av <ph name="TOTAL_PAGES" />.</translation>
@@ -33,6 +36,7 @@
 <translation id="38114475217616659">Tøm hele loggen</translation>
 <translation id="3820172043799983114">Ugyldig PIN-kode</translation>
 <translation id="3838338534323494292">Nytt passord</translation>
+<translation id="39823212440917567">Utskriftsjobber som er eldre enn <ph name="NUMBER_OF_DAYS" /> dager, blir fjernet</translation>
 <translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> administrerer denne enheten og har tilgang til all brukeraktivitet, blant annet nettsteder som besøkes, passord og e-post.</translation>
 <translation id="4003384961948020559">Mislykket – utskriftsmottaket er fullt</translation>
 <translation id="4027485274696301677">Denne <ph name="DEVICE_TYPE" />-enheten administreres av <ph name="ENROLLMENT_DOMAIN" />. Administratorer kan konfigurere enheten eksternt.</translation>
@@ -70,6 +74,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="649050271426829538">Stoppet – papirstopp</translation>
 <translation id="6517239166834772319">Utforsk</translation>
 <translation id="6564646048574748301">Mislykket – skriveren kan ikke nås</translation>
+<translation id="6620487321149975369">Utskriftsjobber vises i loggen med mindre de fjernes manuelt</translation>
 <translation id="6643016212128521049">Tøm</translation>
 <translation id="6747215703636344499">Stoppet – utskriftsmottaket er fullt</translation>
 <translation id="7162487448488904999">Galleri</translation>

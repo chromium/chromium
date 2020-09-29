@@ -5,6 +5,7 @@
 <translation id="1195447618553298278">Nepoznata pogreška.</translation>
 <translation id="1413240736185167732">Nije uspjelo – filtar ne radi</translation>
 <translation id="1468664791493211953">Ponude</translation>
+<translation id="1478594628797167447">Skener</translation>
 <translation id="1482734542997480527">Uređajem upravlja domena <ph name="ENROLLMENT_DOMAIN" /> i ona možda može nadzirati vašu aktivnost.</translation>
 <translation id="150962533380566081">PUK nije važeći.</translation>
 <translation id="1510238584712386396">Pokretač</translation>
@@ -19,10 +20,12 @@
 <translation id="2161394479394250669">Otkaži zadatak ispisa</translation>
 <translation id="2338501278241028356">Uključite Bluetooth da biste otkrili uređaje u blizini</translation>
 <translation id="2375079107209812402">Preostalo pokušaja: <ph name="ATTEMPTS_LEFT" /></translation>
+<translation id="2517472476991765520">Traži</translation>
 <translation id="2805756323405976993">Aplikacije</translation>
 <translation id="2872961005593481000">Isključi</translation>
 <translation id="3008341117444806826">OSVJEŽI</translation>
 <translation id="3091839911843451378">Nije uspjelo – zaustavljeno</translation>
+<translation id="3246869037381808805">Uklonit će se zadaci ispisa stariji od jednog dana</translation>
 <translation id="3268178239013324452">Nije uspjelo – vratašca su otvorena</translation>
 <translation id="3369013195428705271">Jeste li sigurni da želite izbrisati svu povijest ispisa? Zadaci ispisa u tijeku neće se izbrisati.</translation>
 <translation id="3456078764689556234">Ispisane stranice: <ph name="PRINTED_PAGES" /> od <ph name="TOTAL_PAGES" />.</translation>
@@ -33,6 +36,7 @@
 <translation id="38114475217616659">Izbriši svu povijest</translation>
 <translation id="3820172043799983114">PIN nije važeći.</translation>
 <translation id="3838338534323494292">Nova zaporka</translation>
+<translation id="39823212440917567">Uklonit će se zadaci ispisa stariji od <ph name="NUMBER_OF_DAYS" /> dana</translation>
 <translation id="4003259559679196451">Uređajem upravlja domena <ph name="ENROLLMENT_DOMAIN" /> i ona ima pristup svim aktivnostima korisnika, uključujući posjećene web-stranice, zaporke i e-poštu.</translation>
 <translation id="4003384961948020559">Nije uspjelo – izlaz je pun</translation>
 <translation id="4027485274696301677">Ovim uređajem <ph name="DEVICE_TYPE" /> upravlja <ph name="ENROLLMENT_DOMAIN" />. Administratori mogu konfigurirati uređaj na daljinu.</translation>
@@ -70,6 +74,7 @@ Dodirnite mikrofon da biste mi dali glasovnu naredbu.</translation>
 <translation id="649050271426829538">Zaustavljeno – zaglavljeni papir</translation>
 <translation id="6517239166834772319">Istražite</translation>
 <translation id="6564646048574748301">Nije uspjelo – pisač nije dostupan</translation>
+<translation id="6620487321149975369">Zadaci ispisa prikazivat će se u povijesti ako se ne uklone ručno</translation>
 <translation id="6643016212128521049">Izbriši</translation>
 <translation id="6747215703636344499">Zaustavljeno – izlaz je pun</translation>
 <translation id="7162487448488904999">Galerija</translation>

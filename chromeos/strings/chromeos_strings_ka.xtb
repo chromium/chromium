@@ -5,6 +5,7 @@
 <translation id="1195447618553298278">უცნობი შეცდომა.</translation>
 <translation id="1413240736185167732">ვერ მოხერხდა — ფილტრის ხარვეზი</translation>
 <translation id="1468664791493211953">შემოთავაზებები</translation>
+<translation id="1478594628797167447">სკანერი</translation>
 <translation id="1482734542997480527"><ph name="ENROLLMENT_DOMAIN" /> მართავს ამ მოწყობილობას და შეუძლია თქვენი აქტივობის მონიტორინგი.</translation>
 <translation id="150962533380566081">PUK კოდი არასწორია.</translation>
 <translation id="1510238584712386396">გამშვები</translation>
@@ -19,10 +20,12 @@
 <translation id="2161394479394250669">ბეჭდვის დავალების გაუქმება</translation>
 <translation id="2338501278241028356">ახლომდებარე მოწყობილობების საპოვნელად ჩართეთ Bluetooth</translation>
 <translation id="2375079107209812402">დარჩენილია <ph name="ATTEMPTS_LEFT" /> მცდელობა</translation>
+<translation id="2517472476991765520">სკანირება</translation>
 <translation id="2805756323405976993">პროგრამები</translation>
 <translation id="2872961005593481000">გამორთვა</translation>
 <translation id="3008341117444806826">განახლება</translation>
 <translation id="3091839911843451378">ვერ მოხერხდა — შეწყვიტა მუშაობა</translation>
+<translation id="3246869037381808805">ბეჭდვის 1 დღეზე ძველი დავალებები ამოიშლება</translation>
 <translation id="3268178239013324452">ვერ მოხერხდა — პრინტერის კარი ღიაა</translation>
 <translation id="3369013195428705271">ნამდვილად გსურთ ბეჭდვის ისტორიის მთლიანად გასუფთავება? ბეჭდვის მიმდინარე დავალებები არ წაიშლება.</translation>
 <translation id="3456078764689556234">ამობეჭდილი გვერდი <ph name="PRINTED_PAGES" /> / <ph name="TOTAL_PAGES" />-დან.</translation>
@@ -33,6 +36,7 @@
 <translation id="38114475217616659">მთელი ისტორიის გასუფთავება</translation>
 <translation id="3820172043799983114">PIN-კოდი არასწორია.</translation>
 <translation id="3838338534323494292">ახალი პაროლი</translation>
+<translation id="39823212440917567">ბეჭდვის <ph name="NUMBER_OF_DAYS" /> დღეზე ძველი დავალებები ამოიშლება</translation>
 <translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> მართავს ამ მოწყობილობას და აქვს წვდომა მომხმარებლების ნებისმიერ აქტივობაზე, მათ შორის, მონახულებულ ვებგვერდებზე, პაროლებსა და ელფოსტაზე.</translation>
 <translation id="4003384961948020559">ვერ მოხერხდა — გამომტანი სავსეა</translation>
 <translation id="4027485274696301677">ეს <ph name="DEVICE_TYPE" /> იმართება <ph name="ENROLLMENT_DOMAIN" />-ის მიერ. ადმინისტრატორებს შეუძლიათ ამ მოწყობილობის დისტანციურად კონფიგურაცია.</translation>
@@ -70,6 +74,7 @@
 <translation id="649050271426829538">გაჩერდა — ქაღალდი გაიჭედა</translation>
 <translation id="6517239166834772319">გაცნობა</translation>
 <translation id="6564646048574748301">ვერ მოხერხდა — პრინტერთან დაკავშირება ვერ ხერხდება</translation>
+<translation id="6620487321149975369">ბეჭდვის დავალებები გამოჩნდება ისტორიაში, თუ მათ ხელით არ ამოშლით</translation>
 <translation id="6643016212128521049">გასუფთავება</translation>
 <translation id="6747215703636344499">გაჩერდა — გამომტანი სავსეა</translation>
 <translation id="7162487448488904999">გალერეა</translation>

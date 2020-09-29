@@ -104,7 +104,6 @@
 <translation id="1962969542251276847">مقفل اسکرین</translation>
 <translation id="1969011864782743497">‎<ph name="DEVICE_NAME" /> (USB)‎</translation>
 <translation id="1972950159383891558">ہائے، <ph name="USERNAME" /></translation>
-<translation id="1975500003782052650">حالیہ ڈاؤن لوڈز</translation>
 <translation id="1978498689038657292">متن ان پٹ</translation>
 <translation id="1993072747612765854">تازہ ترین <ph name="SYSTEM_APP_NAME" /> اپ ڈیٹ کے بارے میں مزید جانیں</translation>
 <translation id="1995660704900986789">پاور آف کریں</translation>
@@ -376,6 +375,7 @@
 <translation id="4710243778082831592">‏IME کی ترتیبات</translation>
 <translation id="4731797938093519117">والدین کی رسائی</translation>
 <translation id="4734965478015604180">افقی</translation>
+<translation id="4759238208242260848">ڈاؤن لوڈز</translation>
 <translation id="4774338217796918551">کل <ph name="COME_BACK_TIME" /> پر پھر استعمال کریں۔</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> کیلئے پاس ورڈ</translation>
 <translation id="4778095205580009397">‏ڈیمو سیشن میں Google اسسٹنٹ دستیاب نہیں ہے۔</translation>

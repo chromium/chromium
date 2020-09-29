@@ -76,7 +76,6 @@
 <translation id="1544826120773021464">Google есептік жазбасын басқару үшін "Есептік жазбаны басқару" түймесін түртіңіз.</translation>
 <translation id="1549000191223877751">Басқа терезеге өту</translation>
 <translation id="1553358976309200471">Chrome жаңарту</translation>
-<translation id="1565153191103764132">Телугу</translation>
 <translation id="1569387923882100876">Қосылған құрылғы</translation>
 <translation id="1571304935088121812">Пайдаланушы атын көшіру</translation>
 <translation id="1592864538817356322">Стандартты қорғау:</translation>
@@ -525,7 +524,6 @@ Google есептік жазбасының шолу тарихы басқа Goog
 <translation id="5011311129201317034"><ph name="SITE" /> сайты байланыс орнатқысы келеді</translation>
 <translation id="5013696553129441713">Жаңа ұсыныстар жоқ</translation>
 <translation id="5016205925109358554">Serif</translation>
-<translation id="5026887030745057099">Хинди</translation>
 <translation id="5039804452771397117">Рұқсат беру</translation>
 <translation id="5040262127954254034">Құпиялылық</translation>
 <translation id="5087580092889165836">Несие картасын қосу</translation>
@@ -896,7 +894,6 @@ Google есептік жазбасының шолу тарихы басқа Goog
 Инкогнито режимінде сіз ашқан веб-сайттарға, жұмыс берушіңізге немесе мектебіңізге, сондай-ақ интернет провайдеріне сіздің әрекеттеріңіз көрініп тұрады.</translation>
 <translation id="7704317875155739195">Іздеулер мен URL мекенжайларын автотолтыру</translation>
 <translation id="7725024127233776428">Бетбелгі қойылған беттер осы жерде көрсетіледі</translation>
-<translation id="7732997068759397415">Каннада</translation>
 <translation id="7735637452482172701">Экран құлпымен ашу</translation>
 <translation id="7746457520633464754">Қауіпті қолданбалар мен сайттарды анықтау үшін Chrome браузері сіз кірген кейбір беттердің URL сілтемелерін, жүйе туралы шектеулі ақпаратты және беттің кейбір мазмұнын Google-ға жібереді.</translation>
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" /> бөліскен мәтін</translation>
@@ -953,7 +950,6 @@ Google есептік жазбасының шолу тарихы басқа Goog
 <translation id="8073388330009372546">Кескінді жаңа қойындыда ашу</translation>
 <translation id="8076492880354921740">Қойындылар</translation>
 <translation id="8084114998886531721">Сақталған құпия сөз</translation>
-<translation id="8099451332580698547">Тамил</translation>
 <translation id="8103578431304235997">Инкогнито қойындысы</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109613176066109935">Бетбелгілерді барлық құрылғылардан пайдалану үшін синхрондау функциясын қосыңыз</translation>
@@ -1032,7 +1028,6 @@ Google есептік жазбасының шолу тарихы басқа Goog
 <translation id="8659579665266920523">Chrome браузерімен қалай іздеуге болады?</translation>
 <translation id="8662811608048051533">Көп сайттардан шығарады.</translation>
 <translation id="8664979001105139458">Мұндай атаулы файл бұрыннан бар</translation>
-<translation id="8666678546361132282">ағылшын</translation>
 <translation id="8683039184091909753">сурет</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{Сигнал деңгейі: # сызықша}other{Сигнал деңгейі: # сызықша}}</translation>
 <translation id="869891660844655955">Аяқталу мерзімі</translation>

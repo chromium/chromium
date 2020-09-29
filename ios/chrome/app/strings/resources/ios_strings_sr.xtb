@@ -288,6 +288,7 @@
 <translation id="4181841719683918333">Језици</translation>
 <translation id="424315890655130736">Унесите приступну фразу</translation>
 <translation id="4263576668337963058">Прикажи доступне радње за страницу</translation>
+<translation id="4267380167363222949">Следећа картица</translation>
 <translation id="4272631900155121838">Да бисте скенирали QR кôд, омогућите камеру у подешавањима</translation>
 <translation id="4276041135170112053">Решите проблем.</translation>
 <translation id="4277990410970811858">Безбедно прегледање</translation>
@@ -357,7 +358,7 @@
 <translation id="5005498671520578047">Копирање лозинке</translation>
 <translation id="5010803260590204777">Отворите картицу Без архивирања да бисте приватно прегледали веб.</translation>
 <translation id="5039804452771397117">Дозволи</translation>
-<translation id="5056446788882570708">Проблеми су пронађени <ph name="TIME" /></translation>
+<translation id="5056446788882570708">Проблеми су пронађени <ph name="TIME" />.</translation>
 <translation id="5059136629401106827">Потврди</translation>
 <translation id="5062321486222145940">Инсталирај Google диск</translation>
 <translation id="5083464117946352670">Није могуће утврдити величину датотеке.</translation>
@@ -576,6 +577,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="734758817008927353">Опције за чување картице</translation>
 <translation id="7348502496356775519">Означи</translation>
 <translation id="7383797227493018512">Листа за читање</translation>
+<translation id="739941347996872055">Претходна картица</translation>
 <translation id="7400418766976504921">URL адреса</translation>
 <translation id="7409985198648820906">Непрочитаних чланака: <ph name="UNREAD_COUNT" />.</translation>
 <translation id="7425346204213733349">Промене обележивача, историје, лозинки и других подешавања се више неће синхронизовати са Google налогом. Међутим, постојећи подаци ће остати сачувани на Google налогу.</translation>

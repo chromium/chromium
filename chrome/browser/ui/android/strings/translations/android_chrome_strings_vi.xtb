@@ -76,7 +76,6 @@
 <translation id="1544826120773021464">Để quản lý Tài khoản Google của bạn, hãy nhấn vào nút "Quản lý tài khoản"</translation>
 <translation id="1549000191223877751">Di chuyển đến cửa sổ khác</translation>
 <translation id="1553358976309200471">Cập nhật Chrome</translation>
-<translation id="1565153191103764132">Tiếng Telugu</translation>
 <translation id="1569387923882100876">Thiết bị đã kết nối</translation>
 <translation id="1571304935088121812">Sao chép tên người dùng</translation>
 <translation id="1592864538817356322">Chế độ bảo vệ thông thường:</translation>
@@ -525,7 +524,6 @@ Tài khoản Google của bạn có thể có các dạng lịch sử duyệt we
 <translation id="5011311129201317034"><ph name="SITE" /> muốn kết nối</translation>
 <translation id="5013696553129441713">Không có nội dung đề xuất mới</translation>
 <translation id="5016205925109358554">Serif</translation>
-<translation id="5026887030745057099">Tiếng Hindi</translation>
 <translation id="5039804452771397117">Cho phép</translation>
 <translation id="5040262127954254034">Quyền riêng tư</translation>
 <translation id="5087580092889165836">Thêm thẻ</translation>
@@ -896,7 +894,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 Trong chế độ Ẩn danh, hoạt động của bạn có thể vẫn hiển thị với các trang web bạn truy cập, cơ quan/trường học cũng như nhà cung cấp dịch vụ Internet của bạn.</translation>
 <translation id="7704317875155739195">Tự động hoàn thành cụm từ tìm kiếm và URL</translation>
 <translation id="7725024127233776428">Các trang mà bạn đánh dấu sẽ xuất hiện tại đây</translation>
-<translation id="7732997068759397415">Tiếng Kannada</translation>
 <translation id="7735637452482172701">Mở khóa bằng phương thức khóa màn hình</translation>
 <translation id="7746457520633464754">Để phát hiện các ứng dụng và trang web nguy hiểm, Chrome sẽ gửi URL của một số trang mà bạn truy cập, thông tin hệ thống giới hạn và một số nội dung trang cho Google</translation>
 <translation id="7757787379047923882">Văn bản được chia sẻ từ <ph name="DEVICE_NAME" /></translation>
@@ -953,7 +950,6 @@ Trong chế độ Ẩn danh, hoạt động của bạn có thể vẫn hiển t
 <translation id="8073388330009372546">Mở ảnh trong thẻ mới</translation>
 <translation id="8076492880354921740">Thẻ</translation>
 <translation id="8084114998886531721">Mật khẩu đã lưu</translation>
-<translation id="8099451332580698547">Tiếng Tamil</translation>
 <translation id="8103578431304235997">Thẻ ẩn danh</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109613176066109935">Để sử dụng dấu trang trên tất cả các thiết bị, hãy bật tính năng đồng bộ hóa</translation>
@@ -1032,7 +1028,6 @@ Trong chế độ Ẩn danh, hoạt động của bạn có thể vẫn hiển t
 <translation id="8659579665266920523">Cách tìm kiếm bằng Chrome</translation>
 <translation id="8662811608048051533">Đăng xuất bạn khỏi hầu hết các trang web.</translation>
 <translation id="8664979001105139458">Tên tệp đã tồn tại</translation>
-<translation id="8666678546361132282">Tiếng Anh</translation>
 <translation id="8683039184091909753">hình ảnh</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{Mức cường độ tín hiệu: # vạch}other{Mức cường độ tín hiệu: # vạch}}</translation>
 <translation id="869891660844655955">Ngày hết hạn</translation>

@@ -5,6 +5,7 @@
 <translation id="1195447618553298278">Óþekkt villa.</translation>
 <translation id="1413240736185167732">Mistókst – bilun í síu</translation>
 <translation id="1468664791493211953">Tilboð</translation>
+<translation id="1478594628797167447">Skanni</translation>
 <translation id="1482734542997480527"><ph name="ENROLLMENT_DOMAIN" /> stjórnar þessu tæki og getur hugsanlega fylgst með því sem þú gerir.</translation>
 <translation id="150962533380566081">Ógilt PUK-númer.</translation>
 <translation id="1510238584712386396">Ræsiforrit</translation>
@@ -19,10 +20,12 @@
 <translation id="2161394479394250669">Hætta við prentverk</translation>
 <translation id="2338501278241028356">Kveiktu á Bluetooth til að uppgötva nálæg tæki</translation>
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> tilraunir eftir</translation>
+<translation id="2517472476991765520">Leita</translation>
 <translation id="2805756323405976993">Forrit</translation>
 <translation id="2872961005593481000">Slökkva</translation>
 <translation id="3008341117444806826">ENDURNÝJA</translation>
 <translation id="3091839911843451378">Mistókst – stöðvaðist</translation>
+<translation id="3246869037381808805">Prentverk sem eru meira en 1 dags gömul verða fjarlægð</translation>
 <translation id="3268178239013324452">Mistókst – hlíf er opin</translation>
 <translation id="3369013195428705271">Viltu örugglega hreinsa allan prentferil? Prentverk sem eru í gangi verða ekki hreinsuð.</translation>
 <translation id="3456078764689556234">Prentaði síðu <ph name="PRINTED_PAGES" /> af <ph name="TOTAL_PAGES" />.</translation>
@@ -33,6 +36,7 @@
 <translation id="38114475217616659">Hreinsa allan feril</translation>
 <translation id="3820172043799983114">Ógilt PIN-númer.</translation>
 <translation id="3838338534323494292">Nýtt aðgangsorð</translation>
+<translation id="39823212440917567">Prentverk sem eru eldri en <ph name="NUMBER_OF_DAYS" /> verða fjarlægð</translation>
 <translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> stjórnar þessu tæki og hefur aðgang að öllum aðgerðum, þ.m.t. heimsóttum vefsíðum, aðgangsorðum og tölvupósti.</translation>
 <translation id="4003384961948020559">Mistókst – úttakið er fullt</translation>
 <translation id="4027485274696301677"><ph name="DEVICE_TYPE" /> er stjórnað af <ph name="ENROLLMENT_DOMAIN" />. Kerfisstjórar geta stillt tækið í gegnum fjartengingu.</translation>
@@ -70,6 +74,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="649050271426829538">Stöðvað – pappírsstífla</translation>
 <translation id="6517239166834772319">Kanna</translation>
 <translation id="6564646048574748301">Mistókst – ekki næst í prentara</translation>
+<translation id="6620487321149975369">Prentverk birtast í ferli nema þau séu fjarlægð handvirkt</translation>
 <translation id="6643016212128521049">Hreinsa</translation>
 <translation id="6747215703636344499">Stöðvað – úttakið er fullt</translation>
 <translation id="7162487448488904999">Gallerí</translation>

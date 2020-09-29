@@ -19,6 +19,7 @@
 <translation id="1126809382673880764">Не захищає від небезпечних веб-сайтів, завантажень і розширень. Безпечний перегляд усе ще працюватиме в інших сервісах Google (у яких він доступний), як-от Gmail і Пошук.</translation>
 <translation id="1129510026454351943">Деталі. <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1141800923049248244">{FILE_COUNT,plural, =1{Очікується 1 завантаження.}one{Очікується # завантаження.}few{Очікується # завантаження.}many{Очікується # завантажень.}other{Очікується # завантаження.}}</translation>
+<translation id="1142732900304639782">Не пропонувати перекладати ці сайти</translation>
 <translation id="1145536944570833626">Видалити наявні дані.</translation>
 <translation id="1146678959555564648">Увійти у VR-режим</translation>
 <translation id="1154704303112745282">Сторінка недоступна в режимі офлайн: <ph name="VIOLATED_URL" /></translation>
@@ -41,6 +42,7 @@
 <translation id="1263231323834454256">Список читання</translation>
 <translation id="1266864766717917324">Не вдалося надіслати: <ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">Торкніться, щоб розгорнути</translation>
+<translation id="1285310382777185058">Змінити мову</translation>
 <translation id="1291207594882862231">Очистити історію, файли cookie, дані сайтів, кеш…</translation>
 <translation id="129553762522093515">Нещодавно закриті</translation>
 <translation id="1298077576058087471">Заощаджуйте до 60% даних і читайте сьогоднішні новини</translation>
@@ -52,6 +54,7 @@
 <translation id="1327257854815634930">Історію навігації відкрито</translation>
 <translation id="1331212799747679585">Неможливо оновити Chrome. Більше опцій</translation>
 <translation id="1332501820983677155">Комбінації клавіш для функцій Google Chrome</translation>
+<translation id="133857033449832692">Завантажується мовний пакет (<ph name="LANG" />)…</translation>
 <translation id="1347468774581902829">Керувати діями</translation>
 <translation id="1360432990279830238">Вийти й вимкнути синхронізацію?</translation>
 <translation id="1373696734384179344">Недостатньо пам’яті, щоб завантажити вибраний вміст.</translation>
@@ -76,7 +79,6 @@
 <translation id="1544826120773021464">Щоб налаштувати обліковий запис Google, натисніть кнопку "Керувати обліковим записом"</translation>
 <translation id="1549000191223877751">Відкрити в іншому вікні</translation>
 <translation id="1553358976309200471">Оновити Chrome</translation>
-<translation id="1565153191103764132">Телугу</translation>
 <translation id="1569387923882100876">Під’єднаний пристрій</translation>
 <translation id="1571304935088121812">Копіювати ім’я користувача</translation>
 <translation id="1592864538817356322">Стандартний захист:</translation>
@@ -111,6 +113,7 @@
 <translation id="1877026089748256423">Версія Chrome застаріла</translation>
 <translation id="1883903952484604915">Мої файли</translation>
 <translation id="189358972401248634">Інші мови</translation>
+<translation id="1922362554271624559">Пропоновані мови</translation>
 <translation id="1925021887439448749">Введіть користувацьку веб-адресу</translation>
 <translation id="1928696683969751773">Оновлення</translation>
 <translation id="19288952978244135">Знову відкрийте Chrome.</translation>
@@ -199,6 +202,7 @@
 <translation id="2496180316473517155">Історія переглядів</translation>
 <translation id="2497852260688568942">Ваш адміністратор вимкнув синхронізацію</translation>
 <translation id="250020030759455918">Ви зможете переглядати статус входу на сайті <ph name="SITE_NAME" />, дані веб-перегляду й сайту в Chrome</translation>
+<translation id="2512164632052122970">Мови контенту</translation>
 <translation id="2513403576141822879">Інші налаштування конфіденційності, безпеки та збору даних доступні в розділі <ph name="BEGIN_LINK" />Синхронізація та сервіси Google<ph name="END_LINK" /></translation>
 <translation id="2517472476991765520">Сканувати</translation>
 <translation id="2518590038762162553">У спрощеному режимі Chrome завантажує сторінки швидше та використовує на 60% менше трафіку. Щоб оптимізувати сторінки, які ви відвідуєте, Chrome надсилає ваш веб-трафік у Google. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
@@ -209,6 +213,7 @@
 <translation id="2537178555904266562">Не вдалося синхронізувати паролі</translation>
 <translation id="2546283357679194313">Файли cookie та дані із сайтів</translation>
 <translation id="2567385386134582609">ЗОБРАЖЕННЯ</translation>
+<translation id="2571711316400087311">Пропонувати надсилати на переклад сторінки іншими мовами в Google Перекладач</translation>
 <translation id="2581165646603367611">Буде видалено файли cookie, кеш та інші дані сайтів, які Chrome визначив як неважливі.</translation>
 <translation id="2587052924345400782">Доступна новіша версія</translation>
 <translation id="2593272815202181319">Однакової ширини</translation>
@@ -222,6 +227,7 @@
 <translation id="2689830683995595741">Використовуючи Chrome, ви погоджуєтесь із <ph name="BEGIN_LINK1" />Загальними положеннями та умовами Google<ph name="END_LINK1" /> і <ph name="BEGIN_LINK2" />Додатковими умовами використання Google Chrome і ОС Chrome<ph name="END_LINK2" />. Також застосовується <ph name="BEGIN_LINK3" />Примітка про конфіденційність для облікових записів Google, керованих у Family Link<ph name="END_LINK3" />.</translation>
 <translation id="2707726405694321444">Оновити сторінку</translation>
 <translation id="2709516037105925701">Автозаповнення</translation>
+<translation id="2718846868787000099">Сайти, які ви відвідуєте, можуть переглядати ваші налаштування, щоб показувати контент вибраними мовами</translation>
 <translation id="2723001399770238859">аудіо</translation>
 <translation id="2728754400939377704">Сортувати за сайтом</translation>
 <translation id="2744248271121720757">Торкніться слова для миттєвого пошуку або перегляду схожих дій</translation>
@@ -348,6 +354,7 @@
 <translation id="3714981814255182093">Відкрити рядок пошуку</translation>
 <translation id="3716182511346448902">Ця сторінка займає велику кількість пам’яті, тому Chrome призупинив її роботу.</translation>
 <translation id="3721119614952978349">Ви й Google</translation>
+<translation id="3737319253362202215">Налаштування перекладу</translation>
 <translation id="3738139272394829648">Пошук дотиком</translation>
 <translation id="3739899004075612870">Створено закладку в продукті <ph name="PRODUCT_NAME" /></translation>
 <translation id="3749259744154402564">Не підтримується</translation>
@@ -495,6 +502,7 @@
 <translation id="4842092870884894799">Показ спливаючих вікон для створення пароля</translation>
 <translation id="4860895144060829044">Зателефонувати</translation>
 <translation id="4864369630010738180">Вхід…</translation>
+<translation id="4865987431642283918">Мова пристрою за умовчанням</translation>
 <translation id="4866368707455379617">Не вдалося встановити модуль <ph name="MODULE" /> для Chrome</translation>
 <translation id="4875775213178255010">Пропозиції вмісту</translation>
 <translation id="4878404682131129617">Не вдалося налагодити зв’язок через проксі-сервер</translation>
@@ -525,7 +533,6 @@
 <translation id="5011311129201317034">Сайт <ph name="SITE" /> хоче підключитися</translation>
 <translation id="5013696553129441713">Немає нових пропозицій</translation>
 <translation id="5016205925109358554">Serif</translation>
-<translation id="5026887030745057099">Гінді</translation>
 <translation id="5039804452771397117">Дозволити</translation>
 <translation id="5040262127954254034">Конфіденційність</translation>
 <translation id="5087580092889165836">Додати картку</translation>
@@ -569,6 +576,7 @@
 <translation id="543338862236136125">Змінити пароль</translation>
 <translation id="5433691172869980887">Ім’я користувача скопійовано</translation>
 <translation id="543509235395288790">Завантажується файлів: <ph name="COUNT" /> (<ph name="MEGABYTES" />).</translation>
+<translation id="5441466871879044658">Перекладати на цю мову</translation>
 <translation id="5441522332038954058">Перейти до адресного рядка</translation>
 <translation id="544776284582297024">Щоб відкривати різні вкладки й одночасно переглядати кілька сторінок, натисніть кнопку відкритих вкладок</translation>
 <translation id="545042621069398927">Прискорюється завантаження.</translation>
@@ -647,6 +655,7 @@
 <translation id="5937580074298050696">Заощаджено <ph name="AMOUNT" /></translation>
 <translation id="5939518447894949180">Скинути</translation>
 <translation id="5942872142862698679">Пошук за допомогою Google</translation>
+<translation id="5951615825629292797">Мовний пакет завантажено, перезапустіть додаток <ph name="APP_NAME" /></translation>
 <translation id="5952764234151283551">Надсилає в Google URL-адресу сторінки, яку ви намагаєтеся відкрити</translation>
 <translation id="5956665950594638604">Відкрити Довідковий центр Chrome у новій вкладці</translation>
 <translation id="5957442310066583693">Щоб переглянути свої улюблені сайти, натисніть кнопку домашньої сторінки</translation>
@@ -672,6 +681,7 @@
 <translation id="6112702117600201073">Оновлення сторінки</translation>
 <translation id="6122831415929794347">Вимкнути Безпечний перегляд?</translation>
 <translation id="6127379762771434464">Веб-сайт видалено</translation>
+<translation id="6137022273846704445">Мова додатка <ph name="APP_NAME" /></translation>
 <translation id="6140709049082532940">Покращений захист:</translation>
 <translation id="6140912465461743537">Країна або регіон</translation>
 <translation id="614940544461990577">Спробуйте:</translation>
@@ -831,6 +841,7 @@
 <translation id="7290209999329137901">Не можна перейменувати</translation>
 <translation id="7291387454912369099">Оплата за допомогою Асистента</translation>
 <translation id="7293171162284876153">Щоб почати синхронізацію, увімкніть параметр "Синхронізувати дані Chrome".</translation>
+<translation id="7293429513719260019">Вибрати мову</translation>
 <translation id="729975465115245577">На пристрої немає додатка для зберігання файлу з паролями.</translation>
 <translation id="7302081693174882195">Деталі: відсортовано за кількістю заощадженого трафіку</translation>
 <translation id="7304873321153398381">Офлайн. Chrome не може перевірити паролі.</translation>
@@ -896,7 +907,6 @@
 Ваші дії в анонімному режимі можуть бачити адміністратори веб-сайтів, які ви відвідуєте, роботодавець або представник закладу освіти, постачальник послуг Інтернету.</translation>
 <translation id="7704317875155739195">Автоматично завершувати пошукові запити та URL-адреси</translation>
 <translation id="7725024127233776428">Сторінки, для яких ви робите закладки, з'являються тут</translation>
-<translation id="7732997068759397415">Каннада</translation>
 <translation id="7735637452482172701">Розблокувати через функцію блокування екрана</translation>
 <translation id="7746457520633464754">Щоб виявляти небезпечні додатки й сайти, Chrome надсилає URL-адреси певних відвіданих сторінок, обмежену системну інформацію та вміст деяких сторінок у Google</translation>
 <translation id="7757787379047923882">Текст, надісланий із пристрою <ph name="DEVICE_NAME" /></translation>
@@ -921,6 +931,7 @@
 <translation id="7882131421121961860">Історії не знайдено</translation>
 <translation id="7886917304091689118">Відкрито в Chrome</translation>
 <translation id="789763218334337857">Як користуватися веб-переглядачем Chrome</translation>
+<translation id="7919123827536834358">Перекладати ці мови автоматично</translation>
 <translation id="7925590027513907933">{FILE_COUNT,plural, =1{Завантажується файл.}one{Завантажується # файл.}few{Завантажується # файли.}many{Завантажується # файлів.}other{Завантажується # файлу.}}</translation>
 <translation id="7926975587469166629">Псевдонім картки</translation>
 <translation id="7929962904089429003">Відкрити меню</translation>
@@ -953,7 +964,6 @@
 <translation id="8073388330009372546">Відкрити в новій вкладці</translation>
 <translation id="8076492880354921740">Вкладки</translation>
 <translation id="8084114998886531721">Збережений пароль</translation>
-<translation id="8099451332580698547">Тамільська</translation>
 <translation id="8103578431304235997">Анонімна вкладка</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109613176066109935">Щоб мати доступ до закладок на всіх своїх пристроях, увімкніть синхронізацію</translation>
@@ -988,6 +998,7 @@
 <translation id="8349013245300336738">Сортувати за кількістю використаного трафіку</translation>
 <translation id="8364299278605033898">Перегляньте популярні сайти</translation>
 <translation id="8368027906805972958">Невідомий чи непідтримуваний пристрій (<ph name="DEVICE_ID" />)</translation>
+<translation id="8372925856448695381">Мовний пакет (<ph name="LANG" />) завантажено.</translation>
 <translation id="8393700583063109961">Надіслати повідомлення</translation>
 <translation id="8407396331882458341">1. Виберіть <ph name="APP_NAME" />\n2. Натисніть "Завжди".</translation>
 <translation id="8413126021676339697">Показати повну історію</translation>
@@ -1032,10 +1043,10 @@
 <translation id="8659579665266920523">Як шукати контент у веб-переглядачі Chrome</translation>
 <translation id="8662811608048051533">Ви вийдете з більшості сайтів.</translation>
 <translation id="8664979001105139458">Файл із такою назвою вже існує</translation>
-<translation id="8666678546361132282">Англійська</translation>
 <translation id="8683039184091909753">зображення</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{Рівень сигналу: # поділка}one{Рівень сигналу: # поділка}few{Рівень сигналу: # поділки}many{Рівень сигналу: # поділок}other{Рівень сигналу: # поділки}}</translation>
 <translation id="869891660844655955">Діє до</translation>
+<translation id="8699120352855309748">Не пропонувати перекладати ці мови</translation>
 <translation id="8712637175834984815">Виконано</translation>
 <translation id="8725066075913043281">Повторити спробу</translation>
 <translation id="8748850008226585750">Вміст сховано</translation>

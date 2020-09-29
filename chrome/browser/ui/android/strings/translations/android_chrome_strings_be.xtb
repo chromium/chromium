@@ -76,7 +76,6 @@
 <translation id="1544826120773021464">Каб змяніць налады вашага ўліковага запісу Google, націсніце кнопку "Кіраваць уліковым запісам"</translation>
 <translation id="1549000191223877751">Перамясціць у іншае акно</translation>
 <translation id="1553358976309200471">Абнавіць Chrome</translation>
-<translation id="1565153191103764132">Тэлугу</translation>
 <translation id="1569387923882100876">Падключаная прылада</translation>
 <translation id="1571304935088121812">Капіраваць імя карыстальніка</translation>
 <translation id="1592864538817356322">Стандартная абарона:</translation>
@@ -525,7 +524,6 @@
 <translation id="5011311129201317034"><ph name="SITE" /> хоча падключыцца</translation>
 <translation id="5013696553129441713">Няма новых прапаноў</translation>
 <translation id="5016205925109358554">З засечкамі</translation>
-<translation id="5026887030745057099">Хіндзі</translation>
 <translation id="5039804452771397117">Дазволіць</translation>
 <translation id="5040262127954254034">Прыватнасць</translation>
 <translation id="5087580092889165836">Дадаць картку</translation>
@@ -896,7 +894,6 @@
 У рэжыме інкогніта дзеянні могуць быць па-ранейшаму бачныя вэб-сайтам, якія вы наведваеце, работадаўцу, навучальнай установе або інтэрнэт-правайдару.</translation>
 <translation id="7704317875155739195">Аўтаматычна дапісваць пошукавыя запыты і URL-адрасы</translation>
 <translation id="7725024127233776428">Тут будуць паказвацца старонкі, якія вы дадалі ў закладкі</translation>
-<translation id="7732997068759397415">Канада</translation>
 <translation id="7735637452482172701">Разблакіраваць праз функцыю блакіроўкі экрана</translation>
 <translation id="7746457520633464754">Каб выявіць небяспечныя праграмы і сайты, Chrome адпраўляе URL-адрасы некаторых наведаных вамі старонак, пэўную сістэмную інфармацыю і змесціва старонак у Google</translation>
 <translation id="7757787379047923882">Тэкст абагулены з прылады "<ph name="DEVICE_NAME" />"</translation>
@@ -953,7 +950,6 @@
 <translation id="8073388330009372546">Адкрыць відарыс у нов. укладцы</translation>
 <translation id="8076492880354921740">Укладкі</translation>
 <translation id="8084114998886531721">Захаваны пароль</translation>
-<translation id="8099451332580698547">Тамільская</translation>
 <translation id="8103578431304235997">Укладка інкогніта</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109613176066109935">Каб мець свае закладкі на ўсіх прыладах, уключыце сінхранізацыю</translation>
@@ -1032,7 +1028,6 @@
 <translation id="8659579665266920523">Як выконваць пошук праз Chrome</translation>
 <translation id="8662811608048051533">Будзе выкананы выхад з уліковых запісаў на большасці сайтаў.</translation>
 <translation id="8664979001105139458">Файл з такой назвай ужо існуе</translation>
-<translation id="8666678546361132282">Англійская</translation>
 <translation id="8683039184091909753">відарыс</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{Узровень сігналу: # палоска}one{Узровень сігналу: # палоска}few{Узровень сігналу: # палоскі}many{Узровень сігналу: # палосак}other{Узровень сігналу: # палоскі}}</translation>
 <translation id="869891660844655955">Тэрмін дзеяння</translation>

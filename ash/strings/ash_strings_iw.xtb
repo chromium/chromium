@@ -70,7 +70,7 @@
 <translation id="1589090746204042747">גישה לכל הפעילות שלך בסשן הזה</translation>
 <translation id="1611993646327628135">פועל</translation>
 <translation id="1632985212731562677">ניתן להשבית את התכונה 'גישה באמצעות מתג' דרך 'הגדרות' &gt; 'נגישות'.</translation>
-<translation id="1651447046299738444">‏נראה שהחיבור ל-Bluetooth או ל-Wi-Fi ב-Chromebook שלך כבוי. יש לבדוק את החיבור כדי להשתמש במרכז הטלפוני.</translation>
+<translation id="1651447046299738444">‏נראה שהחיבור ל-Bluetooth או ל-Wi-Fi ב-Chromebook שלך כבוי. יש לבדוק את החיבור כדי להשתמש ב-Phone Hub.</translation>
 <translation id="1654477262762802994">הפעלה של שאילתה קולית</translation>
 <translation id="1667964833127753507">במצב 'צבעים ניטרליים' לא נעשה שימוש בצבעים שנשלפו מהטפט, אלא בערכת גוונים ניטרליים, בהירים וכהים.</translation>
 <translation id="1677472565718498478">זמן נותר - <ph name="TIME" /></translation>
@@ -104,7 +104,6 @@
 <translation id="1962969542251276847">נעל מסך</translation>
 <translation id="1969011864782743497">‏<ph name="DEVICE_NAME" />‏ (USB)</translation>
 <translation id="1972950159383891558">שלום, <ph name="USERNAME" /></translation>
-<translation id="1975500003782052650">הורדות אחרונות</translation>
 <translation id="1978498689038657292">קלט טקסט</translation>
 <translation id="1993072747612765854">מידע נוסף על העדכון האחרון של <ph name="SYSTEM_APP_NAME" /></translation>
 <translation id="1995660704900986789">כיבוי</translation>
@@ -376,6 +375,7 @@
 <translation id="4710243778082831592">‏הגדרות IME</translation>
 <translation id="4731797938093519117">גישת הורים</translation>
 <translation id="4734965478015604180">אופקי</translation>
+<translation id="4759238208242260848">הורדות</translation>
 <translation id="4774338217796918551">אפשר לחזור מחר בשעה <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776917500594043016">סיסמה עבור <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4778095205580009397">‏Google Assistant אינו זמין בסשן הדגמה.</translation>

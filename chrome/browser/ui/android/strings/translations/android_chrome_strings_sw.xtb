@@ -76,7 +76,6 @@
 <translation id="1544826120773021464">Ili udhibiti akaunti yako ya Google, gusa kitufe cha "Dhibiti akaunti"</translation>
 <translation id="1549000191223877751">Nenda kwenye dirisha jingine</translation>
 <translation id="1553358976309200471">Sasisha Chrome</translation>
-<translation id="1565153191103764132">Kitelugu</translation>
 <translation id="1569387923882100876">Kifaa Kilichounganishwa</translation>
 <translation id="1571304935088121812">Nakili jina la mtumiaji</translation>
 <translation id="1592864538817356322">Ulinzi wa kawaida:</translation>
@@ -525,7 +524,6 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />fanya usawazishaji upya<p
 <translation id="5011311129201317034"><ph name="SITE" /> inataka kuunganisha</translation>
 <translation id="5013696553129441713">Hakuna mapendekezo mapya</translation>
 <translation id="5016205925109358554">Serif</translation>
-<translation id="5026887030745057099">Kihindi</translation>
 <translation id="5039804452771397117">Ruhusu</translation>
 <translation id="5040262127954254034">Faragha</translation>
 <translation id="5087580092889165836">Ongeza kadi</translation>
@@ -545,7 +543,7 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />fanya usawazishaji upya<p
 <translation id="5199929503336119739">Wasifu wa kazini</translation>
 <translation id="5210286577605176222">Rudi kwenye kichupo cha awali</translation>
 <translation id="5210365745912300556">Funga kichupo</translation>
-<translation id="5213672942202814946">Kutumia kipengele cha kutafuta kwa kutamka</translation>
+<translation id="5213672942202814946">Kutafuta kwa kutamka</translation>
 <translation id="5222676887888702881">Ondoka</translation>
 <translation id="5230560987958996918"><ph name="SITE" /> inataka kutafuta vifaa vya Bluetooth vilivyo karibu. Vifaa vifuatavyo vimepatikana:</translation>
 <translation id="5233638681132016545">Kichupo kipya</translation>
@@ -896,7 +894,6 @@ Kwa mfano, baadhi ya tovuti zinaweza kujibu ombi hili kwa kukuonyesha matangazo 
 Katika Hali fiche, huenda shughuli zako bado zikaonekana na tovuti unazotembelea, shule au mwajiri wako na mtoa huduma zako za intaneti.</translation>
 <translation id="7704317875155739195">Jaza kiotomatiki URL na hoja za utafutaji</translation>
 <translation id="7725024127233776428">Kurasa unazoalamisha zitaonekana hapa</translation>
-<translation id="7732997068759397415">Kikanada</translation>
 <translation id="7735637452482172701">Fungua kwa kutumia kipengele cha Kufunga Skrini</translation>
 <translation id="7746457520633464754">Ili kutambua programu na tovuti hatari, Chrome hutuma URL za baadhi ya kurasa unazotembelea. maelezo machache ya mfumo na maudhui ya ukurasa kwa Google</translation>
 <translation id="7757787379047923882">Maandishi yameshirikiwa kutoka <ph name="DEVICE_NAME" /></translation>
@@ -953,7 +950,6 @@ Katika Hali fiche, huenda shughuli zako bado zikaonekana na tovuti unazotembelea
 <translation id="8073388330009372546">Fungua picha katika kichupo kipya</translation>
 <translation id="8076492880354921740">Vichupo</translation>
 <translation id="8084114998886531721">Nenosiri lililohifadhiwa</translation>
-<translation id="8099451332580698547">Kitamil</translation>
 <translation id="8103578431304235997">Kichupo Fiche</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109613176066109935">Washa kipengele cha usawazishaji ili upate alamisho kwenye vifaa vyako vyote</translation>
@@ -1032,7 +1028,6 @@ Katika Hali fiche, huenda shughuli zako bado zikaonekana na tovuti unazotembelea
 <translation id="8659579665266920523">Jinsi ya kutafuta kwa kutumia Chrome</translation>
 <translation id="8662811608048051533">Hukuondoa kwenye tovuti nyingi.</translation>
 <translation id="8664979001105139458">Jina la faili tayari lipo</translation>
-<translation id="8666678546361132282">Kiingereza</translation>
 <translation id="8683039184091909753">picha</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{Kiwango cha Udhibiti wa Mawimbi: upau #}other{Kiwango cha Udhibiti wa Mawimbi: pau #}}</translation>
 <translation id="869891660844655955">Muda wake unakwisha tarehe</translation>

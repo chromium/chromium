@@ -2224,7 +2224,6 @@
 <translation id="3639220004740062347">पाठक मोडबाट बाहिर निस्कनुहोस्</translation>
 <translation id="3640214691812501263">"<ph name="USER_NAME" />" का लागि <ph name="EXTENSION_NAME" /> थप्ने हो?</translation>
 <translation id="3640613767643722554">आफ्नो सहायकलाई तपाईंको आवाज पहिचान गर्न सिकाउनुहोस्</translation>
-<translation id="3643014427358482789"><ph name="DOMAIN" /> ले ADB डिबग प्रक्रिया असक्षम पार्दै छ। यसले गर्दा तपाईंको <ph name="DEVICE_TYPE" /> रिसेट हुने छ। यन्त्र रिस्टार्ट गर्नुअघि आफ्ना फाइलहरू ब्याकअप गर्नुहोस्।</translation>
 <translation id="3645372836428131288">फिंगरप्रिन्टको कुनै अर्को भाग समावेश गर्न औँला थोरै सार्नुहोस्।</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> बाट <ph name="ATTACHMENTS" /> प्राप्त भए}other{<ph name="DEVICE_NAME" /> बाट <ph name="ATTACHMENTS" /> प्राप्त भए}}</translation>
 <translation id="3648348069317717750"><ph name="USB_DEVICE_NAME" /> पत्ता लगाइयो</translation>
@@ -4714,7 +4713,6 @@
 <translation id="6704062477274546131">DNS रिजोल्युसन</translation>
 <translation id="6706210727756204531">स्कोप</translation>
 <translation id="6707389671160270963">SSL सेवाग्राही प्रमाणपत्र</translation>
-<translation id="670893696722244877">भाषा वा इनपुटका नामअनुसार खोज्नुहोस्</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> र अन्य १ ट्याब}other{<ph name="PAGE_TITLE" /> र अन्य # ट्याबहरू}}</translation>
 <translation id="6709133671862442373">समाचार</translation>
 <translation id="6709357832553498500"><ph name="EXTENSIONNAME" /> प्रयोग गरेर जडान गर्नुहोस्</translation>
@@ -5596,7 +5594,6 @@
 
 
 <ph name="EXTENSION_NAME" /></translation>
-<translation id="7788444488075094252">भाषाहरू र आगत</translation>
 <translation id="7788668840732459509">स्थिति:</translation>
 <translation id="7789963078219276159">सुरुवातको पृष्ठको पृष्ठभूमि परिवर्तन गरी <ph name="CATEGORY" /> पारिएको छ।</translation>
 <translation id="7791543448312431591">थप्नुहोस्</translation>
@@ -5882,7 +5879,7 @@
 <translation id="80974698889265265">PIN हरू मेल खाँदैनन्</translation>
 <translation id="809792523045608178"><ph name="IDS_SHORT_PRODUCT_NAME" /> ले विस्तारका प्रोक्सी सेटिङ प्रयोग गरिरहेको छ</translation>
 <translation id="8097959162767603171">तपाईंका एड्मिनले सर्वप्रथम एड्मिन कन्सोलमा रहेको Chrome यन्त्रको सूचीमा गई सेवाका सर्तहरू स्वीकार्नु पर्ने हुन्छ।</translation>
-<translation id="810068641062493918"><ph name="LANGUAGE" /> चयन गरियो। भाषाको चयन रद्द गर्न 'खोज' बटनसँगै 'स्पेस' बटन थिच्नुहोस्।</translation>
+<translation id="810068641062493918"><ph name="LANGUAGE" /> चयन गरियो। चयन गरिएको भाषा नचलाउन 'खोज' बटनसँगै 'स्पेस' बटन थिच्नुहोस्।</translation>
 <translation id="8101987792947961127">अर्को रिबुटमा पावरवास आवश्यक छ</translation>
 <translation id="8102139037507939978">system_logs.txt बाट व्यक्तिगत रूपमा पहिचान गर्न मिल्ने जानकारी हटाइयोस्।</translation>
 <translation id="8102159139658438129">आफ्नो जोडिएको फोनसम्बन्धी विकल्पहरू हेर्न <ph name="LINK_BEGIN" />सेटिङहरू<ph name="LINK_END" />मा जानुहोस्</translation>
@@ -6178,7 +6175,6 @@
 <translation id="8467326454809944210">अर्को भाषा छनौट गर्नुहोस्</translation>
 <translation id="8470214316007448308">अन्य मान्छेहरू</translation>
 <translation id="8470513973197838199"><ph name="ORIGIN" /> का सुरक्षित गरिएका पासवर्डहरू</translation>
-<translation id="8471256130228705232"><ph name="DOMAIN" /> ले ADB डिबग प्रक्रिया असक्षम पार्दै छ। परिणामस्वरूप, अबको २४ घन्टामा तपाईंको <ph name="DEVICE_TYPE" /> रिसेट हुने छ। आफूले सुरक्षित राख्न चाहेका सबै फाइलहरू ब्याकअप गर्नुहोस्।</translation>
 <translation id="8472623782143987204">हार्डवेयरद्वारा समर्थित</translation>
 <translation id="8473863474539038330">ठेगाना र थप कुराहरू</translation>
 <translation id="8475313423285172237">तपाईंको कम्प्युटरमा रहेको अर्को प्रोग्रामले एउटा एक्स्टेन्स थपेको छ जसले Chrome को काम गर्ने तरिकालाई परिवर्तन गर्न सक्छ।</translation>
@@ -6707,6 +6703,7 @@
 <translation id="9088234649737575428">इन्टरप्राइजको नीतिले <ph name="PLUGIN_NAME" /> माथि अवरोध लगाएको छ</translation>
 <translation id="9088446193279799727">Linux कन्फिगर गर्न सकिएन। इन्टरनेट जोड्नुहोस् र फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="9088917181875854783">कृपया यो पासकुञ्जी "<ph name="DEVICE_NAME" />" मा देखाइएको छ भनेर पुष्टि गर्नुहोस्:</translation>
+<translation id="9089416786594320554">आगत विधिहरू</translation>
 <translation id="9093429538970210897">अपग्रेड गर्ने कार्य पूरा हुन नसकेका खण्डमा फाइलहरू नगुमुन् भन्नाका खातिर अपग्रेड गर्नुअघि फाइलहरू ब्याकअप गर्नुहोस्। तपाईंले अपग्रेड सुरु गर्नुभयो भने Linux (बिटा) बन्द हुने छ। कृपया सुरु गर्नुअघि खोलिएका फाइलहरू सुरक्षित गर्नुहोस्।</translation>
 <translation id="9094033019050270033">पासवर्ड अपडेट गर्नुहोस्</translation>
 <translation id="9094038138851891550">प्रयोगकर्ताको नाम अमान्य छ</translation>

@@ -5,6 +5,7 @@
 <translation id="1195447618553298278">Erro desconhecido.</translation>
 <translation id="1413240736185167732">Falha – Falha no filtro</translation>
 <translation id="1468664791493211953">Ofertas</translation>
+<translation id="1478594628797167447">Scanner</translation>
 <translation id="1482734542997480527">O domínio <ph name="ENROLLMENT_DOMAIN" /> gere este dispositivo e pode conseguir monitorizar a sua atividade.</translation>
 <translation id="150962533380566081">PUK inválido.</translation>
 <translation id="1510238584712386396">Launcher</translation>
@@ -19,10 +20,12 @@
 <translation id="2161394479394250669">Cancelar tarefa de impressão</translation>
 <translation id="2338501278241028356">Ativar o Bluetooth para detetar dispositivos próximos</translation>
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> tentativas restantes</translation>
+<translation id="2517472476991765520">Analisar</translation>
 <translation id="2805756323405976993">Apps</translation>
 <translation id="2872961005593481000">Encerrar</translation>
 <translation id="3008341117444806826">ATUALIZAR</translation>
 <translation id="3091839911843451378">Falha – Parou</translation>
+<translation id="3246869037381808805">As tarefas de impressão com mais de um 1 dia serão removidas.</translation>
 <translation id="3268178239013324452">Falha – Porta aberta</translation>
 <translation id="3369013195428705271">Tem a certeza de que pretende limpar todo o histórico de impressões? As suas tarefas de impressão em curso não serão limpas.</translation>
 <translation id="3456078764689556234">Página <ph name="PRINTED_PAGES" /> impressa de <ph name="TOTAL_PAGES" />.</translation>
@@ -33,6 +36,7 @@
 <translation id="38114475217616659">Limpar todo o histórico</translation>
 <translation id="3820172043799983114">PIN inválido.</translation>
 <translation id="3838338534323494292">Nova palavra-passe</translation>
+<translation id="39823212440917567">As tarefas de impressão com mais de <ph name="NUMBER_OF_DAYS" /> dias serão removidas.</translation>
 <translation id="4003259559679196451">O domínio <ph name="ENROLLMENT_DOMAIN" /> gere este dispositivo e tem acesso a todas as atividades do utilizador, incluindo páginas Web visitadas, palavras-passe e emails.</translation>
 <translation id="4003384961948020559">Falha – Saída cheia</translation>
 <translation id="4027485274696301677">Este <ph name="DEVICE_TYPE" /> é gerido por <ph name="ENROLLMENT_DOMAIN" />. Os administradores podem configurar remotamente o dispositivo.</translation>
@@ -70,6 +74,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="649050271426829538">Parada – Encravamento de papel</translation>
 <translation id="6517239166834772319">Explore</translation>
 <translation id="6564646048574748301">Falha – Impressora inacessível</translation>
+<translation id="6620487321149975369">As tarefas de impressão serão apresentadas no histórico, exceto se forem removidas manualmente.</translation>
 <translation id="6643016212128521049">Limpar</translation>
 <translation id="6747215703636344499">Parada – Saída cheia</translation>
 <translation id="7162487448488904999">Galeria</translation>

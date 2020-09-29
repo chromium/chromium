@@ -507,7 +507,6 @@
 <translation id="3080254622891793721">Images</translation>
 <translation id="3086579638707268289">Votre activité sur le Web est actuellement surveillée</translation>
 <translation id="3087734570205094154">Bas</translation>
-<translation id="3094457892697649331">Lorsque vous modifiez des annotations, ce document s'affiche au format de vue par page.</translation>
 <translation id="3095940652251934233">Relevé</translation>
 <translation id="3096100844101284527">Ajouter une adresse de ramassage</translation>
 <translation id="3105172416063519923">Identifiant de ressource :</translation>
@@ -1667,7 +1666,6 @@ Détails supplémentaires :
 <translation id="7802523362929240268">Site officiel</translation>
 <translation id="780301667611848630">Non merci</translation>
 <translation id="7805768142964895445">État</translation>
-<translation id="7811322735445742657">Lorsque vous modifiez des annotations, ce document s'affiche au format de vue par page, dans son orientation d'origine.</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Supprimer la suggestion de formulaire de Chrome?</translation>
 <translation id="781440967107097262">Partager le presse-papiers?</translation>
@@ -1785,7 +1783,6 @@ Détails supplémentaires :
 <translation id="8289355894181816810">Communiquez avec votre administrateur réseau si vous n'êtes pas certain de ce que cela signifie.</translation>
 <translation id="8293206222192510085">Ajouter aux favoris</translation>
 <translation id="8294431847097064396">Source</translation>
-<translation id="8297398969342264569">Lorsque vous modifiez des annotations, ce document s'affiche dans son orientation d'origine.</translation>
 <translation id="8298115750975731693">Le réseau Wi-Fi que vous utilisez (<ph name="WIFI_NAME" />) peut vous demander de visiter <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="8303854710873047864">Section « <ph name="SECTION" /> » affichée</translation>
 <translation id="830498451218851433">Plier en deux</translation>

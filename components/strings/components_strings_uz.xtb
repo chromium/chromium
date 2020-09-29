@@ -512,7 +512,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3080254622891793721">Tasvirlar</translation>
 <translation id="3086579638707268289">Internetdagi faoliyatingiz kuzatuv ostida</translation>
 <translation id="3087734570205094154">Pastga</translation>
-<translation id="3094457892697649331">Izohlarni tahrirlash vaqtida bu hujjat bir sahifali shaklga qaytadi.</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3096100844101284527">Olib ketish manzilini qo‘shing</translation>
 <translation id="3105172416063519923">Obyekt identifikatori:</translation>
@@ -1672,7 +1671,6 @@ Batafsil axborot:
 <translation id="7802523362929240268">Bu – xavfsiz sayt</translation>
 <translation id="780301667611848630">Kerak emas</translation>
 <translation id="7805768142964895445">Holat</translation>
-<translation id="7811322735445742657">Izohlarni tahrirlash vaqtida bu hujjat bir sahifali shaklga va asl tiklik holatiga qaytadi.</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Bu taklif Chrome’dan o‘chirib tashlansinmi?</translation>
 <translation id="781440967107097262">Klipbord ulashilsinmi?</translation>
@@ -1790,7 +1788,6 @@ Batafsil axborot:
 <translation id="8289355894181816810">Bu nimalagini tushunmasangiz, tarmoq administratori bilan bog‘laning.</translation>
 <translation id="8293206222192510085">Xatcho‘p qo‘shish</translation>
 <translation id="8294431847097064396">Manba</translation>
-<translation id="8297398969342264569">Izohlarni tahrirlash vaqtida bu hujjat asl tiklik holatiga qaytadi.</translation>
 <translation id="8298115750975731693">Siz ulangan Wi-Fi (<ph name="WIFI_NAME" />) tarmog‘idan foydalanish uchun <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> sahifaga o‘tish talab qilinishi mumkin.</translation>
 <translation id="8303854710873047864">“<ph name="SECTION" />” rukni ochildi</translation>
 <translation id="830498451218851433">Yarim taxlash</translation>

@@ -76,7 +76,6 @@
 <translation id="1544826120773021464">Tik op de knop 'Account beheren' om je Google-account te beheren</translation>
 <translation id="1549000191223877751">Naar ander venster</translation>
 <translation id="1553358976309200471">Chrome updaten</translation>
-<translation id="1565153191103764132">Telugu</translation>
 <translation id="1569387923882100876">Gekoppeld apparaat</translation>
 <translation id="1571304935088121812">Gebruikersnaam kopiëren</translation>
 <translation id="1592864538817356322">Standaardbeveiliging:</translation>
@@ -525,7 +524,6 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="5011311129201317034"><ph name="SITE" /> wil verbinding maken</translation>
 <translation id="5013696553129441713">Geen nieuwe suggesties</translation>
 <translation id="5016205925109358554">Serif</translation>
-<translation id="5026887030745057099">Hindi</translation>
 <translation id="5039804452771397117">Toestaan</translation>
 <translation id="5040262127954254034">Privacy</translation>
 <translation id="5087580092889165836">Pas toevoegen</translation>
@@ -576,7 +574,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="548278423535722844">Openen in app voor passen</translation>
 <translation id="5483197086164197190">Navigeren in Chrome</translation>
 <translation id="5487521232677179737">Gegevens wissen</translation>
-<translation id="549025011754480756">Spraakgestuurd zoeken</translation>
+<translation id="549025011754480756">Met je stem zoeken</translation>
 <translation id="5500777121964041360">Mogelijk niet beschikbaar op jouw locatie</translation>
 <translation id="5512137114520586844">Dit account wordt beheerd door <ph name="PARENT_NAME" />.</translation>
 <translation id="5514904542973294328">Uitgeschakeld door de beheerder van dit apparaat</translation>
@@ -627,7 +625,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="5797070761912323120">Google kan je geschiedenis gebruiken om Google Zoeken, advertenties en andere Google-services te personaliseren</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{# uur geleden}other{# uur geleden}}</translation>
 <translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC. Alle rechten voorbehouden.</translation>
-<translation id="5814131985548525293">Typ hier of tik op het spraakicoon om te starten</translation>
+<translation id="5814131985548525293">Typ hier of tik op het microfoonicoon om te starten</translation>
 <translation id="5817918615728894473">Koppelen</translation>
 <translation id="583281660410589416">Onbekend</translation>
 <translation id="5833984609253377421">Link delen</translation>
@@ -896,7 +894,6 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties weer te gev
 Je activiteit in de incognitomodus is mogelijk nog altijd zichtbaar voor websites die je bezoekt, je werkgever of school en je internetprovider.</translation>
 <translation id="7704317875155739195">Zoekopdrachten en URL's automatisch aanvullen</translation>
 <translation id="7725024127233776428">Pagina's waaraan je een bookmark toevoegt, worden hier weergegeven</translation>
-<translation id="7732997068759397415">Kannada</translation>
 <translation id="7735637452482172701">Ontgrendelen met schermvergrendeling</translation>
 <translation id="7746457520633464754">Chrome verzendt de URL's van sommige pagina's die je bezoekt, beperkte systeemgegevens en bepaalde paginacontent naar Google om gevaarlijke apps en sites te detecteren</translation>
 <translation id="7757787379047923882">Tekst gedeeld vanaf <ph name="DEVICE_NAME" /></translation>
@@ -953,7 +950,6 @@ Je activiteit in de incognitomodus is mogelijk nog altijd zichtbaar voor website
 <translation id="8073388330009372546">Openen op nieuw tabblad</translation>
 <translation id="8076492880354921740">Tabbladen</translation>
 <translation id="8084114998886531721">Opgeslagen wachtwoord</translation>
-<translation id="8099451332580698547">Tamil</translation>
 <translation id="8103578431304235997">Incognitotabblad</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109613176066109935">Schakel synchronisatie in om op al je apparaten toegang tot je bookmarks te hebben</translation>
@@ -1032,7 +1028,6 @@ Je activiteit in de incognitomodus is mogelijk nog altijd zichtbaar voor website
 <translation id="8659579665266920523">Zoeken met Chrome</translation>
 <translation id="8662811608048051533">Hiermee word je uitgelogd van de meeste sites.</translation>
 <translation id="8664979001105139458">Bestandsnaam bestaat al</translation>
-<translation id="8666678546361132282">Engels</translation>
 <translation id="8683039184091909753">afbeelding</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{Signaalsterkte: # streepje}other{Signaalsterkte: # streepjes}}</translation>
 <translation id="869891660844655955">Vervaldatum</translation>

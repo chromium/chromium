@@ -76,7 +76,6 @@
 <translation id="1544826120773021464">अपना Google खाता प्रबंधित करने के लिए, "खाता प्रबंधित करें" बटन पर टैप करें</translation>
 <translation id="1549000191223877751">अन्य विंडो में ले जाएं</translation>
 <translation id="1553358976309200471">Chrome अपडेट करें</translation>
-<translation id="1565153191103764132">तेलुगु</translation>
 <translation id="1569387923882100876">कनेक्ट किया गया डिवाइस</translation>
 <translation id="1571304935088121812">उपयोगकर्ता नाम की कॉपी करें</translation>
 <translation id="1592864538817356322">सामान्य सुरक्षा मोड:</translation>
@@ -520,7 +519,6 @@
 <translation id="5011311129201317034"><ph name="SITE" /> कनेक्ट करना चाहती है</translation>
 <translation id="5013696553129441713">कोई नया सुझाव नहीं है</translation>
 <translation id="5016205925109358554">Serif</translation>
-<translation id="5026887030745057099">हिन्दी</translation>
 <translation id="5039804452771397117">अनुमति दें</translation>
 <translation id="5040262127954254034">निजता</translation>
 <translation id="5087580092889165836">कार्ड जोड़ें</translation>
@@ -883,7 +881,6 @@
 <translation id="7698359219371678927"><ph name="APP_NAME" /> में ईमेल बनाएं</translation>
 <translation id="7704317875155739195">खोजों और यूआरएल को अपने आप पूरा करें</translation>
 <translation id="7725024127233776428">आप जो पेज बुकमार्क करते हैं वे यहां दिखाई देंगे</translation>
-<translation id="7732997068759397415">कन्नड़</translation>
 <translation id="7735637452482172701">स्क्रीन लॉक की मदद से अनलॉक करें</translation>
 <translation id="7746457520633464754">खतरनाक ऐप्लिकेशन और साइटों का पता लगाने के लिए, Chrome ऐसे कुछ पेज का यूआरएल Google को भेजता है जिन पर आप जाते हैं. साथ ही, वह सिस्टम की सीमित जानकारी और पेज की कुछ सामग्री भी Google को भेजता है</translation>
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" /> से टेक्स्ट शेयर किया गया</translation>
@@ -940,7 +937,6 @@
 <translation id="8073388330009372546">इमेज 'नए टैब' में खोलें</translation>
 <translation id="8076492880354921740">टैब</translation>
 <translation id="8084114998886531721">सहेजा गया पासवर्ड</translation>
-<translation id="8099451332580698547">तमिल</translation>
 <translation id="8103578431304235997">गुप्त टैब</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109613176066109935">अपने सभी डिवाइस पर अपने बुकमार्क पाने के लिए, 'सिंक करें' को चालू करें</translation>
@@ -1018,7 +1014,6 @@
 <translation id="8659579665266920523">Chrome की मदद से खोजने का तरीका</translation>
 <translation id="8662811608048051533">आपको ज़्यादातर साइट से साइन आउट कर देता है.</translation>
 <translation id="8664979001105139458">इस नाम की फ़ाइल पहले से मौजूद है</translation>
-<translation id="8666678546361132282">अंग्रेज़ी</translation>
 <translation id="8683039184091909753">इमेज</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{सिग्नल सशक्तता का स्तर: # बार}one{सिग्नल सशक्तता का स्तर: # बार}other{सिग्नल सशक्तता का स्तर: # बार}}</translation>
 <translation id="869891660844655955">समय समाप्ति तारीख</translation>

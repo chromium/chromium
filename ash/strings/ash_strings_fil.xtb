@@ -104,7 +104,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1962969542251276847">Screen ng Lock</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Kumusta, <ph name="USERNAME" /></translation>
-<translation id="1975500003782052650">Mga kamakailang download</translation>
 <translation id="1978498689038657292">Pag-input ng text</translation>
 <translation id="1993072747612765854">Matuto pa tungkol sa pinakabagong update sa <ph name="SYSTEM_APP_NAME" /></translation>
 <translation id="1995660704900986789">I-off</translation>
@@ -376,6 +375,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="4710243778082831592">Mga Setting ng IME</translation>
 <translation id="4731797938093519117">Pangunahing access</translation>
 <translation id="4734965478015604180">Horizontal</translation>
+<translation id="4759238208242260848">Mga Download </translation>
 <translation id="4774338217796918551">Bumalik nang <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776917500594043016">Password para sa <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4778095205580009397">Hindi available ang Google Assistant sa demo session.</translation>

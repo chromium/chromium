@@ -104,7 +104,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1962969542251276847">Bloqueio de Ecrã</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Olá, <ph name="USERNAME" /></translation>
-<translation id="1975500003782052650">Transferências recentes</translation>
 <translation id="1978498689038657292">Entrada de texto</translation>
 <translation id="1993072747612765854">Saiba mais sobre a mais recente atualização do <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="1995660704900986789">Desligar</translation>
@@ -198,6 +197,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="2996462380875591307">Lupa ancorada ativada. Prima Ctrl + Pesquisa + D novamente para a desativar.</translation>
 <translation id="3000461861112256445">Áudio mono</translation>
 <translation id="3009178788565917040">Saída</translation>
+<translation id="3025081209054535615">Solte os controlos globais de multimédia da prateleira</translation>
 <translation id="3033545621352269033">Ativada</translation>
 <translation id="3038571455154067151">Para iniciar sessão, introduza o código de acesso parental do Family Link</translation>
 <translation id="3045488863354895414">Boa tarde,</translation>
@@ -376,6 +376,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="4710243778082831592">Definições do IME</translation>
 <translation id="4731797938093519117">Acesso parental</translation>
 <translation id="4734965478015604180">Horizontal</translation>
+<translation id="4759238208242260848">Transferências</translation>
 <translation id="4774338217796918551">Volte amanhã à(s) <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776917500594043016">Palavra-passe para <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4778095205580009397">O Assistente Google não está disponível numa sessão de demonstração.</translation>
@@ -383,6 +384,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="4804818685124855865">Desligar</translation>
 <translation id="4814539958450445987">Ecrã de início de sessão</translation>
 <translation id="4831034276697007977">Tem a certeza de que pretende desativar os cliques automáticos?</translation>
+<translation id="4836108105469522644">Ative as notificações no seu telemóvel Android.</translation>
 <translation id="4849058404725798627">Realçar objeto com foco do teclado</translation>
 <translation id="485592688953820832">Nenhuma ação (colocar em pausa)</translation>
 <translation id="4868492592575313542">ativada</translation>
@@ -696,6 +698,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="8297006494302853456">Fraca</translation>
 <translation id="8308637677604853869">Menu anterior</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
+<translation id="8349293353728876872">Fixar os controlos globais de multimédia à prateleira</translation>
 <translation id="8351131234907093545">Criar nota</translation>
 <translation id="8371779926711439835">Avançar por letra</translation>
 <translation id="8375916635258623388">Este <ph name="DEVICE_NAME" /> e o telemóvel serão associados automaticamente.</translation>

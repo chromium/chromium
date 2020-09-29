@@ -5,6 +5,7 @@
 <translation id="1195447618553298278">ያልታወቀ ስህተት።</translation>
 <translation id="1413240736185167732">አልተሳካም - ማጣሪያ አልተሳካም</translation>
 <translation id="1468664791493211953">ቅናሽ</translation>
+<translation id="1478594628797167447">ቃኚ</translation>
 <translation id="1482734542997480527"><ph name="ENROLLMENT_DOMAIN" /> ይህን መሣሪያ ያቀናብራል እና እንቅስቃሴዎን ሊከታተለው ይችላል።</translation>
 <translation id="150962533380566081">ልክ ያልኾነ PUK።</translation>
 <translation id="1510238584712386396">ማስጀመሪያ</translation>
@@ -19,10 +20,12 @@
 <translation id="2161394479394250669">የኅትመት ሥራን ሰርዝ</translation>
 <translation id="2338501278241028356">በአቅራቢያ ያሉ መሣሪያዎችን ለማግኘት ብሉቱዝን ያብሩ</translation>
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> ሙከራዎች ቀርተዋል</translation>
+<translation id="2517472476991765520">ቃኝ</translation>
 <translation id="2805756323405976993">መተግበሪያዎች</translation>
 <translation id="2872961005593481000">ዝጋ</translation>
 <translation id="3008341117444806826">አድስ</translation>
 <translation id="3091839911843451378">አልተሳካም - ተቋርጧል</translation>
+<translation id="3246869037381808805">ከ1 ቀን በላይ ዕድሜ ያላቸው የህትመት ሥራዎች ይወገዳሉ</translation>
 <translation id="3268178239013324452">አልተሳካም - በር ክፍት ነው</translation>
 <translation id="3369013195428705271">እርግጠኛ ነዎት ሁሉንም የህትመት ታሪክ ማጥፋት ይፈልጋሉ? በመካሄድ ላይ ያሉ የህትመት ስራዎችዎ አይጠፉም።</translation>
 <translation id="3456078764689556234"><ph name="PRINTED_PAGES" /> የታተመ ገጽ ከ <ph name="TOTAL_PAGES" /> ዉስጥ።</translation>
@@ -33,6 +36,7 @@
 <translation id="38114475217616659">ሁሉንም የዕይታ ታሪክ አፅዳ</translation>
 <translation id="3820172043799983114">ልክ ያልኾነ ፒን።</translation>
 <translation id="3838338534323494292">አዲስ የይለፍ ቃል</translation>
+<translation id="39823212440917567">ከ<ph name="NUMBER_OF_DAYS" /> ቀኖች በላይ ዕድሜ ያላቸው የህትመት ሥራዎች ይወገዳሉ</translation>
 <translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> ይህን መሣሪያ የሚያቀናብር ሲሆን የተጎበኙ ድረ-ገጾች፣ የይለፍ ቃላት እና ኢሜይል ጨምሮ የሁሉም የተጠቃሚ እንቅስቃሴ መዳረሻ አለው።</translation>
 <translation id="4003384961948020559">አልተሳካም - ውፅዓት ሞልቷል</translation>
 <translation id="4027485274696301677">ይህ <ph name="DEVICE_TYPE" /> በ<ph name="ENROLLMENT_DOMAIN" /> የሚተዳደር ነው። አስተዳዳሪዎች መሣሪያውን ከርቀት ማዋቀር ይችላሉ።</translation>
@@ -70,6 +74,7 @@
 <translation id="649050271426829538">ቆሟል - የወረቀት መታጨቅ</translation>
 <translation id="6517239166834772319">ያስሱ</translation>
 <translation id="6564646048574748301">አልተሳካም - አታሚ የማይደረስበት ነው</translation>
+<translation id="6620487321149975369">የህትመት ስራዎች በሰው ካልተወገዱ በቀር በታሪክ ውስጥ ይታያሉ</translation>
 <translation id="6643016212128521049">አጽዳ</translation>
 <translation id="6747215703636344499">ቆሟል - ውፅዓት ሞልቷል</translation>
 <translation id="7162487448488904999">ማዕከለ-ስዕላት</translation>

@@ -2253,7 +2253,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3639220004740062347">Desactivar modo de lectura</translation>
 <translation id="3640214691812501263">¿Añadir <ph name="EXTENSION_NAME" /> para <ph name="USER_NAME" />?</translation>
 <translation id="3640613767643722554">Enseña al Asistente a reconocer tu voz</translation>
-<translation id="3643014427358482789"><ph name="DOMAIN" /> ha inhabilitado la depuración adb, lo cual restablecerá tu <ph name="DEVICE_TYPE" />. Haz una copia de seguridad de tus archivos antes de reiniciar.</translation>
 <translation id="3643637292669952403">Impedir que los sitios web vean tu ubicación</translation>
 <translation id="3645372836428131288">Mueve el dedo ligeramente para capturar otra parte de la huella digital.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> recibidos de <ph name="DEVICE_NAME" />}other{<ph name="ATTACHMENTS" /> recibidos de <ph name="DEVICE_NAME" />}}</translation>
@@ -2490,7 +2489,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3894123633473837029">Incluir el historial reciente del Asistente mediante Sherlog. Puede contener datos de identidad y ubicación e información de depuración. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="3894427358181296146">Añadir carpeta</translation>
 <translation id="3894770151966614831">¿Mover a una cuenta de Google?</translation>
-<translation id="3895076768659607631">&amp;Gestionar buscadores...</translation>
+<translation id="3895076768659607631">&amp;Administrar buscadores...</translation>
 <translation id="3895090224522145010">Nombre de usuario de Kerberos</translation>
 <translation id="389589731200570180">Compartir con invitados</translation>
 <translation id="3898233949376129212">Idioma del dispositivo</translation>
@@ -3898,7 +3897,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="5632566673632479864">Tu cuenta <ph name="EMAIL" /> ya no puede ser tu cuenta principal. Dado que <ph name="DOMAIN" /> administra esta cuenta, tus marcadores, tu historial, tus contraseñas y otros ajustes se borrarán de este dispositivo.</translation>
 <translation id="5632592977009207922">Descargando, queda un <ph name="PERCENT_REMAINING" /> %</translation>
 <translation id="563371367637259496">Móvil</translation>
-<translation id="563496044070985734">Tu configuración de idioma determina qué idiomas están disponibles en la revisión ortográfica</translation>
 <translation id="563535393368633106">Preguntar antes de acceder (recomendado)</translation>
 <translation id="5636996382092289526">Para utilizar la red <ph name="NETWORK_ID" />, es posible que primero tengas que <ph name="LINK_START" />acceder a la página de inicio de sesión de la red<ph name="LINK_END" />, que se abrirá de forma automática en unos segundos. Si no se abre, no podrás utilizar esa red.</translation>
 <translation id="5637476008227280525">Permitir datos móviles</translation>
@@ -4783,7 +4781,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6704062477274546131">Resolución de DNS</translation>
 <translation id="6706210727756204531">Alcance</translation>
 <translation id="6707389671160270963">Certificado de cliente SSL</translation>
-<translation id="670893696722244877">Buscar por idiomas o nombres de introducción de texto</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> y 1 pestaña más}other{<ph name="PAGE_TITLE" /> y # pestañas más}}</translation>
 <translation id="6709133671862442373">Noticias</translation>
 <translation id="6709357832553498500">Conectar con <ph name="EXTENSIONNAME" /></translation>
@@ -4838,7 +4835,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6777817260680419853">Redirección bloqueada</translation>
 <translation id="6778737459546443941">Uno de tus padres aún no lo ha aprobado</translation>
 <translation id="677965093459947883">Muy pequeño</translation>
-<translation id="6781005693196527806">&amp;Gestionar buscadores...</translation>
+<translation id="6781005693196527806">&amp;Administrar buscadores...</translation>
 <translation id="6781284683813954823">Enlace del doodle</translation>
 <translation id="6781978626986383437">Copia de seguridad de Linux cancelada</translation>
 <translation id="6782067259631821405">PIN no válido</translation>
@@ -5683,7 +5680,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 
 
 <ph name="EXTENSION_NAME" /></translation>
-<translation id="7788444488075094252">Idiomas y métodos de entrada</translation>
 <translation id="7788668840732459509">Posición:</translation>
 <translation id="7789963078219276159">Se ha cambiado el fondo de la página de inicio a <ph name="CATEGORY" />.</translation>
 <translation id="7791543448312431591">Añadir</translation>
@@ -6271,7 +6267,6 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8467326454809944210">Elegir otro idioma</translation>
 <translation id="8470214316007448308">Otras personas</translation>
 <translation id="8470513973197838199">Contraseñas guardadas de <ph name="ORIGIN" /></translation>
-<translation id="8471256130228705232"><ph name="DOMAIN" /> ha inhabilitado la depuración adb. Este proceso restablecerá tu <ph name="DEVICE_TYPE" /> en 24 horas. Haz copias de seguridad de los archivos que quieras conservar.</translation>
 <translation id="8471525937465764768">Los sitios web se suelen conectar a dispositivos USB para usarlos en funciones como la impresión de documentos o el guardado de contenido en dispositivos de almacenamiento.</translation>
 <translation id="8472623782143987204">respaldado por hardware</translation>
 <translation id="8473863474539038330">Direcciones y más</translation>
@@ -6806,6 +6801,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="9088234649737575428">Una política de empresa ha bloqueado el complemento <ph name="PLUGIN_NAME" /></translation>
 <translation id="9088446193279799727">No se ha podido configurar Linux. Conéctate a Internet y vuelve a intentarlo.</translation>
 <translation id="9088917181875854783">Confirma que esta clave de acceso aparezca en "<ph name="DEVICE_NAME" />":</translation>
+<translation id="9089416786594320554">Métodos de entrada</translation>
 <translation id="9093429538970210897">Se recomienda crear una copia de seguridad de los archivos por si no se pudiera completar la actualización. Al iniciar la actualización, se apagará Linux (beta). Antes de continuar, guarda los archivos que tengas abiertos.</translation>
 <translation id="9094033019050270033">Actualizar contraseña</translation>
 <translation id="9094038138851891550">El nombre de usuario no es válido</translation>

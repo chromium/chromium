@@ -76,7 +76,6 @@
 <translation id="1544826120773021464">Për të menaxhuar "Llogarinë tënde të Google", prek butonin "Menaxho llogarinë"</translation>
 <translation id="1549000191223877751">Zhvendose te dritarja tjetër</translation>
 <translation id="1553358976309200471">Përditëso Chrome</translation>
-<translation id="1565153191103764132">teluguisht</translation>
 <translation id="1569387923882100876">Pajisja e lidhur</translation>
 <translation id="1571304935088121812">Kopjo emrin e përdoruesit</translation>
 <translation id="1592864538817356322">Mbrojtja standarde:</translation>
@@ -525,7 +524,6 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="5011311129201317034"><ph name="SITE" /> dëshiron që të lidhet</translation>
 <translation id="5013696553129441713">Nuk ka sugjerime të reja</translation>
 <translation id="5016205925109358554">Serif</translation>
-<translation id="5026887030745057099">hindisht</translation>
 <translation id="5039804452771397117">Lejo</translation>
 <translation id="5040262127954254034">Privatësia</translation>
 <translation id="5087580092889165836">Shto kartë</translation>
@@ -896,7 +894,6 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 Në modalitetin "E fshehtë", aktiviteti yt do të jetë përsëri i dukshëm për sajtet e uebit që viziton, për punëdhënësin ose shkollën dhe për ofruesin e shërbimit të internetit.</translation>
 <translation id="7704317875155739195">Plotësimi automatik i kërkimeve dhe i URL-ve</translation>
 <translation id="7725024127233776428">Faqet që shënon shfaqen këtu</translation>
-<translation id="7732997068759397415">kanadisht</translation>
 <translation id="7735637452482172701">Shkyçe me "Kyçjen e ekranit"</translation>
 <translation id="7746457520633464754">Për të zbuluar aplikacionet dhe sajtet e rrezikshme, Chrome dërgon URL-të e disa faqeve që viziton, informacione të kufizuara të sistemit dhe disa përmbajtje faqesh te Google</translation>
 <translation id="7757787379047923882">Teksti u nda nga <ph name="DEVICE_NAME" /></translation>
@@ -953,7 +950,6 @@ Në modalitetin "E fshehtë", aktiviteti yt do të jetë përsëri i dukshëm p�
 <translation id="8073388330009372546">Hape imazhin në një skedë të re</translation>
 <translation id="8076492880354921740">Skedat</translation>
 <translation id="8084114998886531721">Fjalëkalimi i ruajtur</translation>
-<translation id="8099451332580698547">tamilisht</translation>
 <translation id="8103578431304235997">Skeda "e fshehtë"</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109613176066109935">Për të marrë faqeshënuesit e tu në të gjitha pajisjet e tua, aktivizo sinkronizimin</translation>
@@ -1032,7 +1028,6 @@ Në modalitetin "E fshehtë", aktiviteti yt do të jetë përsëri i dukshëm p�
 <translation id="8659579665266920523">Si të kërkosh me Chrome</translation>
 <translation id="8662811608048051533">Të nxjerr nga shumica e sajteve.</translation>
 <translation id="8664979001105139458">Emri i skedarit ekziston tashmë</translation>
-<translation id="8666678546361132282">Anglisht</translation>
 <translation id="8683039184091909753">imazhi</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{Niveli i forcës së sinjalit: # shirit}other{Niveli i forcës së sinjalit: # shirita}}</translation>
 <translation id="869891660844655955">Data e skadimit</translation>

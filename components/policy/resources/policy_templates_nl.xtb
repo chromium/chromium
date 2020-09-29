@@ -1587,7 +1587,7 @@ Als dit beleid is ingesteld op False, gebruikt <ph name="PRODUCT_NAME" /> geen n
 
       Als dit beleid niet is ingesteld, wordt elke plug-in uitgeschakeld die overeenkomt met de patronen in 'DisabledPlugins', en kan de gebruiker deze niet inschakelen.</translation>
 <translation id="3381968327636295719"> gebruiken</translation>
-<translation id="3383794118443927579">Met dit beleid wordt de standaard-URL van pagina 'Nieuw tabblad' geconfigureerd en wordt voorkomen dat gebruikers deze kunnen wijzigen.
+<translation id="3383794118443927579">Met dit beleid wordt de standaard-URL van de pagina 'Nieuw tabblad' geconfigureerd en wordt voorkomen dat gebruikers deze kunnen wijzigen.
 
       De pagina 'Nieuw tabblad' wordt geopend als er nieuwe tabbladen en vensters worden geopend.
 

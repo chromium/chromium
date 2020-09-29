@@ -513,7 +513,6 @@
 <translation id="3080254622891793721">График</translation>
 <translation id="3086579638707268289">Вэб дээрх таны үйл ажиллагааг хянаж байна</translation>
 <translation id="3087734570205094154">Доод</translation>
-<translation id="3094457892697649331">Та тэмдэглэгээг засах үед энэ документ нэг хуудсаар харах руу буцна.</translation>
 <translation id="3095940652251934233">Мэдэгдэл</translation>
 <translation id="3096100844101284527">Авах хаяг нэмэх</translation>
 <translation id="3105172416063519923">Хөрөнгийн ID:</translation>
@@ -1678,7 +1677,6 @@
 <translation id="7802523362929240268">Энэ нь хууль ёсны сайт байна</translation>
 <translation id="780301667611848630">Үгүй, баярлалаа</translation>
 <translation id="7805768142964895445">Байр байдал</translation>
-<translation id="7811322735445742657">Та тэмдэглэгээг засах үед энэ документ нэг хуудсаар харах горим болон анхны эргүүлэлт рүүгээ буцна.</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Chrome-оос санал болгож буй зүйлийг устгах уу?</translation>
 <translation id="781440967107097262">Түр санах ойг хуваалцах уу?</translation>
@@ -1796,7 +1794,6 @@
 <translation id="8289355894181816810">Хэрэв та үүнийг юу гэсэн үг болохыг сайн мэдэхгүй байгаа бол сүлжээнийхээ админтай холбоо барина уу.</translation>
 <translation id="8293206222192510085">Хадгалагдсан хуудас нэмэх</translation>
 <translation id="8294431847097064396">Эх сурвалж</translation>
-<translation id="8297398969342264569">Та тэмдэглэгээг засаж байх үед энэ документ анхны эргүүлэлт рүүгээ буцна.</translation>
 <translation id="8298115750975731693">Таны ашиглаж буй Wi-Fi сүлжээ (<ph name="WIFI_NAME" />) таныг <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> нэвтрэхийг шаардах магадлалтай.</translation>
 <translation id="8303854710873047864">"<ph name="SECTION" />" хэсгийг харуулсан</translation>
 <translation id="830498451218851433">Хагас нугалаа</translation>

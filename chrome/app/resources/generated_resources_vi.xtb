@@ -2253,7 +2253,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3639220004740062347">Thoát khỏi Chế độ đọc</translation>
 <translation id="3640214691812501263">Thêm "<ph name="EXTENSION_NAME" />" cho <ph name="USER_NAME" />?</translation>
 <translation id="3640613767643722554">Hướng dẫn Trợ lý nhận dạng giọng nói của bạn</translation>
-<translation id="3643014427358482789"><ph name="DOMAIN" /> đang tắt tùy chọn gỡ lỗi ADB (Cầu gỡ lỗi Android). Thao tác này sẽ đặt lại <ph name="DEVICE_TYPE" />. Hãy sao lưu các tệp của bạn trước khi khởi động lại.</translation>
 <translation id="3643637292669952403">Không cho các trang web xem thông tin vị trí của bạn</translation>
 <translation id="3645372836428131288">Nhẹ nhàng di chuyển ngón tay để hệ thống quét các phần của vân tay.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{Đã nhận <ph name="ATTACHMENTS" /> từ thiết bị <ph name="DEVICE_NAME" />}other{Đã nhận <ph name="ATTACHMENTS" /> từ thiết bị <ph name="DEVICE_NAME" />}}</translation>
@@ -3899,7 +3898,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="5632566673632479864">Tài khoản <ph name="EMAIL" /> của bạn không còn được phép làm tài khoản chính nữa. Vì tài khoản này do <ph name="DOMAIN" /> quản lý, nên dấu trang, lịch sử, mật khẩu và các tùy chọn cài đặt khác sẽ bị xóa khỏi thiết bị này.</translation>
 <translation id="5632592977009207922">Đang tải xuống, còn <ph name="PERCENT_REMAINING" />%</translation>
 <translation id="563371367637259496">Di động</translation>
-<translation id="563496044070985734">Các ngôn ngữ hỗ trợ tính năng kiểm tra lỗi chính tả sẽ dựa trên các tùy chọn cài đặt ngôn ngữ của bạn</translation>
 <translation id="563535393368633106">Hỏi trước khi truy cập (khuyên dùng)</translation>
 <translation id="5636996382092289526">Để sử dụng <ph name="NETWORK_ID" />, trước hết bạn cần <ph name="LINK_START" />truy cập vào trang đăng nhập của mạng<ph name="LINK_END" />. Trang này thường tự động mở sau vài giây. Nếu trang này không mở thì không thể sử dụng mạng này.</translation>
 <translation id="5637476008227280525">Bật dữ liệu di động</translation>
@@ -4784,7 +4782,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="6704062477274546131">Phân giải DNS</translation>
 <translation id="6706210727756204531">Phạm vi</translation>
 <translation id="6707389671160270963">Chứng chỉ Ứng dụng khách SSL</translation>
-<translation id="670893696722244877">Tìm kiếm theo ngôn ngữ hoặc tên phương thức nhập</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> và 1 thẻ khác}other{<ph name="PAGE_TITLE" /> và # thẻ khác}}</translation>
 <translation id="6709133671862442373">Tin tức</translation>
 <translation id="6709357832553498500">Kết nối bằng <ph name="EXTENSIONNAME" /></translation>
@@ -5684,7 +5681,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 
 
 <ph name="EXTENSION_NAME" /></translation>
-<translation id="7788444488075094252">Ngôn ngữ và nhập liệu</translation>
 <translation id="7788668840732459509">Vị trí:</translation>
 <translation id="7789963078219276159">Nền của trang chủ đã được đổi thành <ph name="CATEGORY" />.</translation>
 <translation id="7791543448312431591">Thêm</translation>
@@ -6272,7 +6268,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8467326454809944210">Chọn ngôn ngữ khác</translation>
 <translation id="8470214316007448308">Người khác</translation>
 <translation id="8470513973197838199">Đã lưu mật khẩu cho <ph name="ORIGIN" /></translation>
-<translation id="8471256130228705232"><ph name="DOMAIN" /> đang tắt tùy chọn gỡ lỗi ADB. Thao tác này sẽ đặt lại <ph name="DEVICE_TYPE" /> của bạn sau 24 giờ nữa. Hãy sao lưu mọi tệp bạn muốn giữ lại.</translation>
 <translation id="8471525937465764768">Các trang web thường kết nối với thiết bị USB để áp dụng những tính năng như in tài liệu hoặc lưu vào thiết bị lưu trữ</translation>
 <translation id="8472623782143987204">được hỗ trợ bằng phần cứng</translation>
 <translation id="8473863474539038330">Địa chỉ và các tùy chọn khác</translation>
@@ -6807,6 +6802,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="9088234649737575428"><ph name="PLUGIN_NAME" /> bị chặn bởi chính sách doanh nghiệp</translation>
 <translation id="9088446193279799727">Không thể định cấu hình Linux. Hãy kết nối Internet rồi thử lại.</translation>
 <translation id="9088917181875854783">Vui lòng xác nhận mã xác nhận này được hiển thị trên "<ph name="DEVICE_NAME" />":</translation>
+<translation id="9089416786594320554">Phương thức nhập</translation>
 <translation id="9093429538970210897">Bạn nên sao lưu tệp để phòng trường hợp quá trình nâng cấp không hoàn tất được. Khi bắt đầu nâng cấp, Linux (Bản thử nghiệm) sẽ tắt. Vui lòng lưu các tệp đang mở trước khi tiếp tục.</translation>
 <translation id="9094033019050270033">Cập nhật mật khẩu</translation>
 <translation id="9094038138851891550">Tên người dùng không hợp lệ</translation>

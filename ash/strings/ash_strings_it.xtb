@@ -104,7 +104,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1962969542251276847">Blocco schermo</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Ciao <ph name="USERNAME" /></translation>
-<translation id="1975500003782052650">Download recenti</translation>
 <translation id="1978498689038657292">Inserimento testo</translation>
 <translation id="1993072747612765854">Leggi ulteriori informazioni sull'ultimo aggiornamento di <ph name="SYSTEM_APP_NAME" /></translation>
 <translation id="1995660704900986789">Spegni</translation>
@@ -377,6 +376,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="4710243778082831592">Impostazioni IME</translation>
 <translation id="4731797938093519117">Accesso genitore</translation>
 <translation id="4734965478015604180">Orizzontale</translation>
+<translation id="4759238208242260848">Download</translation>
 <translation id="4774338217796918551">Puoi riprendere domani alle ore <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776917500594043016">Password per <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4778095205580009397">L'Assistente Google non è disponibile in una sessione demo.</translation>

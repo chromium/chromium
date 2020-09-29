@@ -76,7 +76,6 @@
 <translation id="1544826120773021464">သင့် Google အကောင့်ကို စီမံခန့်ခွဲရန် "အကောင့် စီမံခန့်ခွဲရန်" ခလုတ်ကို တို့ပါ</translation>
 <translation id="1549000191223877751">အခြားဝင်းဒိုးသို့ ရွှေ့ပါ</translation>
 <translation id="1553358976309200471">Update Chrome</translation>
-<translation id="1565153191103764132">တယ်လူဂူ</translation>
 <translation id="1569387923882100876">ချိတ်ဆက်ထားသော စက်ပစ္စည်း</translation>
 <translation id="1571304935088121812">အသုံးပြုသူအမည်ကို ကူးယူပါ</translation>
 <translation id="1592864538817356322">ပုံမှန်ကာကွယ်မှု -</translation>
@@ -525,7 +524,6 @@
 <translation id="5011311129201317034"><ph name="SITE" /> သည် ချိတ်ဆက်လိုပါသည်</translation>
 <translation id="5013696553129441713">အကြံပြုချက်အသစ်များ မရှိပါ</translation>
 <translation id="5016205925109358554">Serif</translation>
-<translation id="5026887030745057099">ဟင်ဒီ</translation>
 <translation id="5039804452771397117">ခွင့်ပြုရန်</translation>
 <translation id="5040262127954254034">ကိုယ်ရေး</translation>
 <translation id="5087580092889165836">ကတ်ကိုထည့်ရန်</translation>
@@ -895,7 +893,6 @@
 'ရုပ်ဖျက်မုဒ်' တွင် သင်ဖွင့်ကြည့်သော ဝဘ်ဆိုက်များ၊ သင်၏အလုပ်ရှင်(သို့) သင်၏ အင်တာနက်ဝန်ဆောင်မှုပေးသူတို့က သင်၏လုပ်ဆောင်ချက်ကို မြင်ရနိုင်ပါသေးသည်။</translation>
 <translation id="7704317875155739195">ရှာဖွေမှုများနှင့် URL များကို အလိုအလျောက်ဖြည့်ခြင်း</translation>
 <translation id="7725024127233776428">သင်သိမ်းဆည်းထားသည့် လိပ်စာ၏ စာမျက်နှာများကို ဤနေရာတွင် တွေ့ရပါမည်</translation>
-<translation id="7732997068759397415">ကန်နာဒါ</translation>
 <translation id="7735637452482172701">ဖန်သားပြင် လော့ခ်ချခြင်းဖြင့် ဖွင့်ရန်</translation>
 <translation id="7746457520633464754">အန္တရာယ်ရှိသော အက်ပ်နှင့် ဝဘ်ဆိုက်များကို သိရှိရန် Chrome က သင်ဝင်ကြည့်ထားသော စာမျက်နှာအချို့၏ URL များ၊ ကန့်သတ်ထားသော စနစ် အချက်အလက်များနှင့် စာမျက်နှာ အကြောင်းအရာအချို့ကို Google သို့ ပို့ပါသည်</translation>
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" /> မှ မျှဝေထားသော စာသား</translation>
@@ -952,7 +949,6 @@
 <translation id="8073388330009372546">ပုံကို တဘ် အသစ်ထဲမှာ ဖွင့်ရန်</translation>
 <translation id="8076492880354921740">တဘ်များ</translation>
 <translation id="8084114998886531721">သိမ်းဆည်းထားသော စကားဝှက်</translation>
-<translation id="8099451332580698547">တမီးလ်</translation>
 <translation id="8103578431304235997">ကိုယ်ဖျောက်တဘ်</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109613176066109935">သင်၏ဝဘ်လိပ်စာများကို စက်အားလုံးတွင် ရယူနိုင်ရန် စင့်ခ်လုပ်ခြင်းကို ဖွင့်ပါ</translation>
@@ -1031,7 +1027,6 @@
 <translation id="8659579665266920523">Chrome ဖြင့် ရှာဖွေနည်း</translation>
 <translation id="8662811608048051533">သင့်ကို ဝက်ဆိုက်အများစုမှ ထွက်သွားစေပါမည်။</translation>
 <translation id="8664979001105139458">ဖိုင်အမည် ရှိပြီးသားဖြစ်သည်</translation>
-<translation id="8666678546361132282">အင်္ဂလိပ်</translation>
 <translation id="8683039184091909753">ပုံ</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{လိုင်းဆွဲအားအဆင့်- # ဘား}other{လိုင်းဆွဲအားအဆင့်- # ဘား}}</translation>
 <translation id="869891660844655955">သက်တမ်း ကုန်ဆုံးရက်</translation>
