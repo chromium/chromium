@@ -31,7 +31,6 @@ void WaitForEulaScreen();
 void TapEulaAccept();
 void WaitForSyncConsentScreen();
 void ExitScreenSyncConsent();
-void WaitForLastScreenAndTapGetStarted();
 
 class LanguageReloadObserver : public WelcomeScreen::Observer {
  public:

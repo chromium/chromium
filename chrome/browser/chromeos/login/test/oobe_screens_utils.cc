@@ -144,12 +144,6 @@ void TapUserCreationNext() {
   test::OobeJS().TapOnPath({"user-creation", "nextButton"});
 }
 
-void WaitForLastScreenAndTapGetStarted() {
-  WaitFor(MarketingOptInScreenView::kScreenId);
-  test::OobeJS().TapOnPath(
-      {"marketing-opt-in", "marketing-opt-in-next-button"});
-}
-
 void WaitForEulaScreen() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   WaitFor(EulaView::kScreenId);

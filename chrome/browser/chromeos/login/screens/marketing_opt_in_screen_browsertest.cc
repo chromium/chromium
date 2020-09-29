@@ -21,12 +21,15 @@
 #include "chrome/browser/chromeos/accessibility/accessibility_manager.h"
 #include "chrome/browser/chromeos/login/marketing_backend_connector.h"
 #include "chrome/browser/chromeos/login/screen_manager.h"
+#include "chrome/browser/chromeos/login/test/fake_gaia_mixin.h"
 #include "chrome/browser/chromeos/login/test/js_checker.h"
+#include "chrome/browser/chromeos/login/test/local_policy_test_server_mixin.h"
 #include "chrome/browser/chromeos/login/test/local_state_mixin.h"
 #include "chrome/browser/chromeos/login/test/login_manager_mixin.h"
 #include "chrome/browser/chromeos/login/test/oobe_base_test.h"
 #include "chrome/browser/chromeos/login/test/oobe_screen_exit_waiter.h"
 #include "chrome/browser/chromeos/login/test/oobe_screen_waiter.h"
+#include "chrome/browser/chromeos/login/test/user_policy_mixin.h"
 #include "chrome/browser/chromeos/login/ui/login_display_host.h"
 #include "chrome/browser/chromeos/login/wizard_controller.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -122,11 +125,16 @@ class MarketingOptInScreenTest : public OobeBaseTest,
   void WaitForScreenExit();
   void SetUpLocalState() override {}
 
+  // Logs in as a normal user. Overridden by subclasses.
+  virtual void PerformLogin();
+
   base::Optional<MarketingOptInScreen::Result> screen_result_;
   base::HistogramTester histogram_tester_;
 
  protected:
   base::test::ScopedFeatureList feature_list_;
+  LoginManagerMixin login_manager_mixin_{&mixin_host_, {}, &fake_gaia_};
+
  private:
   void HandleScreenExit(MarketingOptInScreen::Result result);
 
@@ -134,8 +142,8 @@ class MarketingOptInScreenTest : public OobeBaseTest,
   base::RepeatingClosure screen_exit_callback_;
   MarketingOptInScreen::ScreenExitCallback original_callback_;
 
+  FakeGaiaMixin fake_gaia_{&mixin_host_, embedded_test_server()};
   LocalStateMixin local_state_mixin_{&mixin_host_, this};
-  LoginManagerMixin login_manager_mixin_{&mixin_host_};
 };
 
 /**
@@ -179,7 +187,7 @@ void MarketingOptInScreenTest::SetUpOnMainThread() {
       &MarketingOptInScreenTest::HandleScreenExit, base::Unretained(this)));
 
   OobeBaseTest::SetUpOnMainThread();
-  login_manager_mixin_.LoginAsNewRegularUser();
+  PerformLogin();
   OobeScreenExitWaiter(GetFirstSigninScreen()).Wait();
   ProfileManager::GetActiveUserProfile()->GetPrefs()->SetBoolean(
       ash::prefs::kGestureEducationNotificationShown, true);
@@ -254,6 +262,10 @@ void MarketingOptInScreenTest::WaitForScreenExit() {
   base::RunLoop run_loop;
   screen_exit_callback_ = run_loop.QuitClosure();
   run_loop.Run();
+}
+
+void MarketingOptInScreenTest::PerformLogin() {
+  login_manager_mixin_.LoginAsNewRegularUser();
 }
 
 void MarketingOptInScreenTest::HandleScreenExit(
@@ -489,6 +501,35 @@ class MarketingOptInScreenTestDisabled : public MarketingOptInScreenTest {
 IN_PROC_BROWSER_TEST_F(MarketingOptInScreenTestDisabled, FeatureDisabled) {
   ShowMarketingOptInScreen();
 
+  WaitForScreenExit();
+  EXPECT_EQ(screen_result_.value(),
+            MarketingOptInScreen::Result::NOT_APPLICABLE);
+  histogram_tester_.ExpectTotalCount(
+      "OOBE.StepCompletionTimeByExitReason.Marketing-opt-in.Next", 0);
+  histogram_tester_.ExpectTotalCount("OOBE.StepCompletionTime.Marketing-opt-in",
+                                     0);
+}
+
+class MarketingOptInScreenTestChildUser : public MarketingOptInScreenTest {
+ protected:
+  void SetUpInProcessBrowserTestFixture() override {
+    // Child users require a user policy, set up an empty one so the user can
+    // get through login.
+    ASSERT_TRUE(user_policy_mixin_.RequestPolicyUpdate());
+    OobeBaseTest::SetUpInProcessBrowserTestFixture();
+  }
+  void PerformLogin() override { login_manager_mixin_.LoginAsNewChildUser(); }
+
+ private:
+  LocalPolicyTestServerMixin policy_server_mixin_{&mixin_host_};
+  UserPolicyMixin user_policy_mixin_{
+      &mixin_host_,
+      AccountId::FromUserEmailGaiaId(test::kTestEmail, test::kTestGaiaId),
+      &policy_server_mixin_};
+};
+
+IN_PROC_BROWSER_TEST_F(MarketingOptInScreenTestChildUser, DisabledForChild) {
+  ShowMarketingOptInScreen();
   WaitForScreenExit();
   EXPECT_EQ(screen_result_.value(),
             MarketingOptInScreen::Result::NOT_APPLICABLE);

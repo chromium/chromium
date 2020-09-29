@@ -57,10 +57,8 @@ class FamilyLinkNoticeScreenTest : public OobeBaseTest {
   }
 
   void ExpectHelpAppPrefValue(bool expected) {
-    WizardController::default_controller()->PrepareFirstRunPrefs();
-    bool value = ProfileManager::GetActiveUserProfile()->GetPrefs()->GetBoolean(
-        prefs::kHelpAppShouldShowParentalControl);
-    EXPECT_EQ(value, expected);
+    EXPECT_TRUE(help_app_pref_fal_.has_value());
+    EXPECT_EQ(help_app_pref_fal_.value(), expected);
   }
 
   void ClickContinueButtonOnFamilyLinkScreen() {
@@ -87,12 +85,21 @@ class FamilyLinkNoticeScreenTest : public OobeBaseTest {
     ASSERT_FALSE(screen_exited_);
     screen_exited_ = true;
     screen_result_ = result;
+
+    // Fetch the values before OOBE is eventually destroyed after the exit
+    // callback.
+    WizardController::default_controller()->PrepareFirstRunPrefs();
+    help_app_pref_fal_ =
+        ProfileManager::GetActiveUserProfile()->GetPrefs()->GetBoolean(
+            prefs::kHelpAppShouldShowParentalControl);
+
     original_callback_.Run(result);
     if (screen_exit_callback_)
       std::move(screen_exit_callback_).Run();
   }
 
   bool screen_exited_ = false;
+  base::Optional<bool> help_app_pref_fal_;
   base::RepeatingClosure screen_exit_callback_;
   FamilyLinkNoticeScreen::ScreenExitCallback original_callback_;
 

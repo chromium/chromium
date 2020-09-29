@@ -656,7 +656,6 @@ IN_PROC_BROWSER_TEST_F(SyncConsentActiveDirectoryTest, LoginDoesNotStartSync) {
   ad_login_.TestLoginVisible();
   ad_login_.SubmitActiveDirectoryCredentials(
       "test-user@locally-managed.localhost", "password");
-  test::WaitForLastScreenAndTapGetStarted();
   test::WaitForPrimaryUserSessionStart();
 
   // OS sync is off.
