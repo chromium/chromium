@@ -745,6 +745,7 @@ static_library("extensions") {
     "//components/safe_browsing/core:webprotect_proto",
     "//components/safe_browsing/core/db:util",
     "//components/signin/core/browser",
+    "//components/translate/content/browser",
     "//content/public/browser",
     "//mojo/public/cpp/bindings",
   ]
@@ -843,7 +844,6 @@ static_library("extensions") {
     "//components/sync",
     "//components/sync_preferences",
     "//components/sync_sessions",
-    "//components/translate/content/browser",
     "//components/translate/core/browser",
     "//components/translate/core/common",
     "//components/undo",
