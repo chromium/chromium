@@ -16,10 +16,9 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.CommandLine;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
@@ -35,8 +34,7 @@ import java.util.List;
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
 public class FeaturesAnnotationsTest {
     @Rule
-    public ChromeActivityTestRule<? extends ChromeActivity> mActivityRule =
-            new ChromeActivityTestRule(ChromeTabbedActivity.class);
+    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     /**
      * Tests that {@link EnableFeatures} and {@link DisableFeatures} can alter the flags registered
@@ -47,7 +45,7 @@ public class FeaturesAnnotationsTest {
     @EnableFeatures("One")
     @DisableFeatures("Two")
     public void testFeaturesSetExistingFlags() throws InterruptedException {
-        mActivityRule.startMainActivityOnBlankPage();
+        mActivityTestRule.startMainActivityOnBlankPage();
         List<String> finalEnabledList = getFeatureList(true);
 
         assertThat(finalEnabledList, hasItems("One"));
@@ -70,7 +68,7 @@ public class FeaturesAnnotationsTest {
     @CommandLineFlags.Add("enable-features=One,Two,Three")
     @EnableFeatures("Two")
     public void testFeaturesDoNotRemoveExistingFlags() throws InterruptedException {
-        mActivityRule.startMainActivityOnBlankPage();
+        mActivityTestRule.startMainActivityOnBlankPage();
         List<String> finalEnabledList = getFeatureList(true);
 
         assertThat(finalEnabledList, hasItems("One", "Two", "Three"));
@@ -88,7 +86,7 @@ public class FeaturesAnnotationsTest {
     @CommandLineFlags.Add("enable-features=One,Two,Three")
     @EnableFeatures({"Three", "Four"})
     public void testFeaturesAddToExistingFlags() throws InterruptedException {
-        mActivityRule.startMainActivityOnBlankPage();
+        mActivityTestRule.startMainActivityOnBlankPage();
         List<String> finalEnabledList = getFeatureList(true);
 
         assertThat(finalEnabledList, hasItems("Four"));

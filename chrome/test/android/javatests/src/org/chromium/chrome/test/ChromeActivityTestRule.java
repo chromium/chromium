@@ -95,11 +95,15 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends ActivityTe
     @Rule
     private EmbeddedTestServerRule mTestServerRule = new EmbeddedTestServerRule();
 
+    /**
+     * @deprecated Please use a derived rule directly. ChromeActivity is never directly launched.
+     */
+    @Deprecated
     public ChromeActivityTestRule(Class<T> activityClass) {
         this(activityClass, false);
     }
 
-    public ChromeActivityTestRule(Class<T> activityClass, boolean initialTouchMode) {
+    protected ChromeActivityTestRule(Class<T> activityClass, boolean initialTouchMode) {
         super(activityClass, initialTouchMode, false);
         mChromeActivityClass = activityClass;
     }
