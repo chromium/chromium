@@ -1751,6 +1751,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Media.Feeds.AggregateWatchtime" units="ms"
+    expires_after="2021-06-07">
+  <owner>beccahughes@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>
+    Records the aggregate watchtime for all Media Feeds on startup. The
+    aggregate watchtime is the total watchtime for a website recorded across
+    sessions. It is also cleared every 90 days.
+  </summary>
+</histogram>
+
 <histogram name="Media.Feeds.Feed.ReadResult" enum="MediaFeedReadResult"
     expires_after="2021-03-07">
   <owner>beccahughes@chromium.org</owner>

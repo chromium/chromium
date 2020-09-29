@@ -245,6 +245,7 @@ std::vector<media_feeds::mojom::MediaFeedPtr> MediaHistoryFeedsTable::GetRows(
     // LEFT JOIN mediaFeed. This means there should be a row for each origin
     // and if there is a media feed that will be included.
     sql.push_back(
+        ",origin.aggregate_watchtime_audio_video_s "
         "FROM origin "
         "LEFT JOIN mediaFeed "
         "ON origin.id = mediaFeed.origin_id");
@@ -446,6 +447,11 @@ std::vector<media_feeds::mojom::MediaFeedPtr> MediaHistoryFeedsTable::GetRows(
       media_feeds::FeedResetToken token;
       if (GetProto(statement, 19, token))
         feed->reset_token = ProtoToUnguessableToken(token);
+    }
+
+    if (top_feeds) {
+      feed->aggregate_watchtime =
+          base::TimeDelta::FromSeconds(statement.ColumnInt64(20));
     }
 
     feeds.push_back(std::move(feed));

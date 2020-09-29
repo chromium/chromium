@@ -2410,4 +2410,28 @@ TEST_F(MediaFeedsServiceTest, FetchTopMediaFeeds_DisableAutoSelection) {
       MediaFeedsFetcher::kFetchSizeKbHistogramName, 15, 1);
 }
 
+TEST_F(MediaFeedsServiceTest, AggregateWatchtimeHistogram) {
+  base::HistogramTester histogram_tester;
+
+  task_environment()->RunUntilIdle();
+
+  const GURL feed_url("https://www.google.com/feed");
+
+  GetMediaFeedsService()->DiscoverMediaFeed(feed_url);
+  WaitForDB();
+
+  content::MediaPlayerWatchTime watch_time(feed_url, feed_url.GetOrigin(),
+                                           base::TimeDelta::FromMinutes(30),
+                                           base::TimeDelta(), true, true);
+  GetMediaHistoryService()->SavePlayback(watch_time);
+  WaitForDB();
+
+  GetMediaFeedsService()->RecordFeedWatchtimes();
+  WaitForDB();
+
+  histogram_tester.ExpectUniqueTimeSample(
+      MediaFeedsService::kAggregateWatchtimeHistogramName,
+      base::TimeDelta::FromMinutes(30), 1);
+}
+
 }  // namespace media_feeds

@@ -83,6 +83,9 @@ struct MediaFeed {
 
   // The result of safe search checking this media feed.
   SafeSearchResult safe_search_result;
+
+  // The aggregate watchtime for the media feed.
+  mojo_base.mojom.TimeDelta? aggregate_watchtime;
 };
 
 // Contains details about the user signed into the website.
