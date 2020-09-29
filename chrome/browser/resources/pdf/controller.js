@@ -55,6 +55,15 @@ let EmailMessageData;
 export let PrintPreviewParams;
 
 /**
+ * @typedef {{
+ *   imageData: !ArrayBuffer,
+ *   width: number,
+ *   height: number,
+ * }}
+ */
+let ThumbnailMessageData;
+
+/**
  * Creates a cryptographically secure pseudorandom 128-bit token.
  * @return {string} The generated token as a hex string.
  */
@@ -316,6 +325,20 @@ export class PluginController extends ContentController {
 
   getSelectedText() {
     return this.postMessageWithReply_({type: 'getSelectedText'});
+  }
+
+  /**
+   * Post a thumbnail request message to the plugin.
+   * @param {number} page
+   * @return {!Promise<!ThumbnailMessageData>} A promise holding the thumbnail
+   *     response from the plugin.
+   */
+  requestThumbnail(page) {
+    return this.postMessageWithReply_({
+      type: 'getThumbnail',
+      // The plugin references pages using zero-based indices.
+      page: page - 1,
+    });
   }
 
   /** @param {!PrintPreviewParams} printPreviewParams */

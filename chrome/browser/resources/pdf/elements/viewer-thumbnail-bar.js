@@ -45,11 +45,11 @@ export class ViewerThumbnailBarElement extends PolymerElement {
         }
 
         const thumbnail = /** @type {!ViewerThumbnailElement} */ (entry.target);
-        if (thumbnail.hasAttribute('pending')) {
+        if (thumbnail.isPending()) {
           return;
         }
 
-        thumbnail.toggleAttribute('pending');
+        thumbnail.setPending();
         this.dispatchEvent(new CustomEvent(
             'paint-thumbnail',
             {detail: thumbnail, bubbles: true, composed: true}));

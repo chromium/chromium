@@ -26,6 +26,7 @@ import {BrowserApi} from './browser_api.js';
 import {Attachment, FittingType, Point, SaveRequestType} from './constants.js';
 import {ViewerPdfSidenavElement} from './elements/viewer-pdf-sidenav.js';
 import {ViewerPdfToolbarNewElement} from './elements/viewer-pdf-toolbar-new.js';
+import {ViewerThumbnailElement} from './elements/viewer-thumbnail.js';
 // <if expr="chromeos">
 import {InkController} from './ink_controller.js';
 //</if>
@@ -58,6 +59,15 @@ let NavigateMessageData;
  * }}
  */
 let MetadataMessageData;
+
+/**
+ * @typedef {{
+ *   type: string,
+ *   messageId: string,
+ *   page: number,
+ * }}
+ */
+let GetThumbnailMessageData;
 
 /**
  * @typedef {{
@@ -755,6 +765,13 @@ export class PDFViewerElement extends PDFViewerBaseElement {
         this.pluginController.getSelectedText().then(
             this.handleSelectedTextReply.bind(this));
         break;
+      case 'getThumbnail':
+        const getThumbnailData =
+            /** @type {GetThumbnailMessageData} */ (message.data);
+        const page = getThumbnailData.page;
+        this.pluginController.requestThumbnail(page).then(
+            this.sendScriptingMessage.bind(this));
+        break;
       case 'print':
         this.pluginController.print();
         break;
@@ -1034,6 +1051,22 @@ export class PDFViewerElement extends PDFViewerBaseElement {
         WindowOpenDisposition.NEW_BACKGROUND_TAB :
         WindowOpenDisposition.CURRENT_TAB;
     this.navigator_.navigate(e.detail.uri, disposition);
+  }
+
+  /**
+   * @param {!CustomEvent<!ViewerThumbnailElement>} e
+   * @private
+   */
+  onPaintThumbnail_(e) {
+    assert(this.currentController === this.pluginController);
+    assert(!this.annotationMode_);
+    const thumbnail = e.detail;
+    this.pluginController.requestThumbnail(thumbnail.pageNumber)
+        .then(response => {
+          const array = new Uint8ClampedArray(response.imageData);
+          const imageData = new ImageData(array, response.width);
+          thumbnail.image = imageData;
+        });
   }
 
   /** @private */

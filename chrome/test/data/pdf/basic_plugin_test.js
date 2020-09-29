@@ -42,6 +42,21 @@ const tests = [
     });
   },
 
+  function testGetThumbnail() {
+    const client = new PDFScriptingAPI(window, window);
+    client.getThumbnail(1, data => {
+      const expectedWidth = 108 * window.devicePixelRatio;
+      const expectedHeight = 140 * window.devicePixelRatio;
+      chrome.test.assertEq(expectedWidth, data.width);
+      chrome.test.assertEq(expectedHeight, data.height);
+
+      const expectedByteLength = expectedWidth * expectedHeight * 4;
+      chrome.test.assertEq(expectedByteLength, data.imageData.byteLength);
+
+      chrome.test.succeed();
+    });
+  },
+
   /**
    * Test that the filename is used as the title.pdf.
    */

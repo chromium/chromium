@@ -53,6 +53,16 @@ export class ViewerThumbnailElement extends PolymerElement {
 
     const ctx = canvas.getContext('2d');
     ctx.putImageData(imageData, 0, 0);
+    this.removeAttribute('pending');
+  }
+
+  /** @return {boolean} */
+  isPending() {
+    return this.hasAttribute('pending');
+  }
+
+  setPending() {
+    this.toggleAttribute('pending', true);
   }
 
   /** @private */
