@@ -340,6 +340,76 @@ TEST_F(UnifiedMediaControlsControllerTest,
   EXPECT_FALSE(delegate()->IsControlsVisible());
 }
 
+TEST_F(UnifiedMediaControlsControllerTest, FreezeControlsWhenUpdateSession) {
+  auto request_id = base::UnguessableToken::Create();
+  controller()->MediaSessionChanged(request_id);
+  EnableAction(MediaSessionAction::kPlay);
+  EnableAction(MediaSessionAction::kPause);
+  SimulateMediaPlaybackStateChanged(
+      media_session::mojom::MediaPlaybackState::kPlaying);
+
+  // Initial state of media controls.
+  EXPECT_TRUE(GetActionButton(MediaSessionAction::kPause)->GetVisible());
+  EXPECT_FALSE(
+      GetActionButton(MediaSessionAction::kPreviousTrack)->GetVisible());
+  EXPECT_EQ(title_label()->GetText(), base::ASCIIToUTF16(""));
+  EXPECT_EQ(artist_label()->GetText(), base::ASCIIToUTF16(""));
+  EXPECT_FALSE(artwork_view()->GetVisible());
+
+  controller()->MediaSessionChanged(base::nullopt);
+
+  // Test that metadata update is ignored when we waiting for new session.
+  media_session::MediaMetadata metadata;
+  metadata.title = base::ASCIIToUTF16("title");
+  metadata.artist = base::ASCIIToUTF16("artist");
+  controller()->MediaSessionMetadataChanged(metadata);
+
+  EXPECT_EQ(title_label()->GetText(), base::ASCIIToUTF16(""));
+  EXPECT_EQ(artist_label()->GetText(), base::ASCIIToUTF16(""));
+
+  // Test that media seeesion info update is ignored when we waiting for new
+  // session.
+  SimulateMediaPlaybackStateChanged(
+      media_session::mojom::MediaPlaybackState::kPaused);
+  EXPECT_TRUE(GetActionButton(MediaSessionAction::kPause)->GetVisible());
+
+  // Test that artwork update is ignored when we waiting for new session.
+  SkBitmap artwork;
+  artwork.allocN32Pixels(40, 40);
+  controller()->MediaControllerImageChanged(
+      media_session::mojom::MediaSessionImageType::kArtwork, artwork);
+  EXPECT_FALSE(artwork_view()->GetVisible());
+
+  // Test that enabled action update is ignored when we waiting for new session.
+  EnableAction(MediaSessionAction::kPreviousTrack);
+  EXPECT_FALSE(
+      GetActionButton(MediaSessionAction::kPreviousTrack)->GetVisible());
+
+  // Resume the session, now we should start updating controls.
+  controller()->MediaSessionChanged(request_id);
+
+  // Test that metadata is updated.
+  controller()->MediaSessionMetadataChanged(metadata);
+  EXPECT_EQ(metadata.title, title_label()->GetText());
+  EXPECT_EQ(metadata.artist, artist_label()->GetText());
+
+  // Test that media session info is updated.
+  SimulateMediaPlaybackStateChanged(
+      media_session::mojom::MediaPlaybackState::kPaused);
+  EXPECT_EQ(GetActionButton(MediaSessionAction::kPause), nullptr);
+  EXPECT_NE(GetActionButton(MediaSessionAction::kPlay), nullptr);
+
+  // Test that artwork is updated.
+  controller()->MediaControllerImageChanged(
+      media_session::mojom::MediaSessionImageType::kArtwork, artwork);
+  EXPECT_TRUE(artwork_view()->GetVisible());
+
+  // Test that enabled actions are updated.
+  EnableAction(MediaSessionAction::kPreviousTrack);
+  EXPECT_TRUE(
+      GetActionButton(MediaSessionAction::kPreviousTrack)->GetVisible());
+}
+
 TEST_F(UnifiedMediaControlsControllerTest,
        NotifyDelegateWhenMediaControlsViewClicked) {
   CreateWidget();
