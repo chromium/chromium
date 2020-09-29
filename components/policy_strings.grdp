@@ -571,13 +571,13 @@ Additional details:
 
   <!-- Strings for Data Leak Prevention -->
   <message name="IDS_POLICY_DLP_CLIPBOARD_BLOCKED_ON_PASTE" desc="A toast informing the user that paste is blocked.">
-    Pasting to this location is blocked by your administrator
+    Pasting from <ph name="ORIGIN_NAME">$1<ex>corp.google.com</ex></ph> to this location is blocked by your administrator
   </message>
   <message name="IDS_POLICY_DLP_CLIPBOARD_BLOCKED_ON_COPY_VM" desc="A toast informing the user that sharing clipboard data to VMs is blocked.">
-    Your administrator has blocked sharing this content to <ph name="VM_NAME">$1<ex>Linux</ex></ph>
+    Your administrator has blocked sharing from <ph name="ORIGIN_NAME">$1<ex>corp.google.com</ex></ph> to <ph name="VM_NAME">$2<ex>Linux</ex></ph>
   </message>
   <message name="IDS_POLICY_DLP_CLIPBOARD_BLOCKED_ON_COPY_TWO_VMS" desc="A toast informing the user that sharing clipboard data to VMs is blocked.">
-    Your administrator has blocked sharing this content to <ph name="VM_NAME_1">$1<ex>Linux</ex></ph> and <ph name="VM_NAME_2">$2<ex>Parallels</ex></ph>
+    Your administrator has blocked sharing from <ph name="ORIGIN_NAME">$1<ex>corp.google.com</ex></ph> to <ph name="VM_NAME_1">$2<ex>Linux</ex></ph> and <ph name="VM_NAME_2">$3<ex>Parallels</ex></ph>
   </message>
   <message name="IDS_POLICY_DLP_ANDROID_APPS" desc="Name shown for ARC in data leak prevention toasts.">
     Android apps

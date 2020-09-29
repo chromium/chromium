@@ -10,6 +10,7 @@
 #include "ash/public/cpp/toast_manager.h"
 #include "base/notreached.h"
 #include "base/optional.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/crostini/crostini_util.h"
 #include "chrome/browser/chromeos/plugin_vm/plugin_vm_util.h"
@@ -70,7 +71,7 @@ bool EnterpriseClipboardDlpController::IsDataReadAllowed(
   }
 
   if (level == DlpRulesManager::Level::kBlock) {
-    ShowBlockToast(GetToastText(data_dst));
+    ShowBlockToast(GetToastText(data_src, data_dst));
   }
 
   return level == DlpRulesManager::Level::kAllow;
@@ -85,7 +86,12 @@ void EnterpriseClipboardDlpController::ShowBlockToast(
 }
 
 base::string16 EnterpriseClipboardDlpController::GetToastText(
+    const ui::ClipboardDataEndpoint* const data_src,
     const ui::ClipboardDataEndpoint* const data_dst) const {
+  DCHECK(data_src);
+  DCHECK(data_src->origin());
+  base::string16 host_name = base::UTF8ToUTF16(data_src->origin()->host());
+
   if (data_dst && data_dst->type() == ui::EndpointType::kGuestOs) {
     ProfileManager* profile_manager = g_browser_process->profile_manager();
     Profile* profile =
@@ -96,16 +102,16 @@ base::string16 EnterpriseClipboardDlpController::GetToastText(
 
     if (is_crostini_running && is_plugin_vm_running) {
       return l10n_util::GetStringFUTF16(
-          IDS_POLICY_DLP_CLIPBOARD_BLOCKED_ON_COPY_TWO_VMS,
+          IDS_POLICY_DLP_CLIPBOARD_BLOCKED_ON_COPY_TWO_VMS, host_name,
           l10n_util::GetStringUTF16(IDS_CROSTINI_LINUX),
           l10n_util::GetStringUTF16(IDS_PLUGIN_VM_APP_NAME));
     } else if (is_crostini_running) {
       return l10n_util::GetStringFUTF16(
-          IDS_POLICY_DLP_CLIPBOARD_BLOCKED_ON_COPY_VM,
+          IDS_POLICY_DLP_CLIPBOARD_BLOCKED_ON_COPY_VM, host_name,
           l10n_util::GetStringUTF16(IDS_CROSTINI_LINUX));
     } else if (is_plugin_vm_running) {
       return l10n_util::GetStringFUTF16(
-          IDS_POLICY_DLP_CLIPBOARD_BLOCKED_ON_COPY_VM,
+          IDS_POLICY_DLP_CLIPBOARD_BLOCKED_ON_COPY_VM, host_name,
           l10n_util::GetStringUTF16(IDS_PLUGIN_VM_APP_NAME));
     } else {
       NOTREACHED();
@@ -114,11 +120,12 @@ base::string16 EnterpriseClipboardDlpController::GetToastText(
 
   if (data_dst && data_dst->type() == ui::EndpointType::kArc) {
     return l10n_util::GetStringFUTF16(
-        IDS_POLICY_DLP_CLIPBOARD_BLOCKED_ON_COPY_VM,
+        IDS_POLICY_DLP_CLIPBOARD_BLOCKED_ON_COPY_VM, host_name,
         l10n_util::GetStringUTF16(IDS_POLICY_DLP_ANDROID_APPS));
   }
 
-  return l10n_util::GetStringUTF16(IDS_POLICY_DLP_CLIPBOARD_BLOCKED_ON_PASTE);
+  return l10n_util::GetStringFUTF16(IDS_POLICY_DLP_CLIPBOARD_BLOCKED_ON_PASTE,
+                                    host_name);
 }
 
 }  // namespace policy

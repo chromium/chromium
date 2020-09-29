@@ -40,6 +40,7 @@ class EnterpriseClipboardDlpController : public ui::ClipboardDlpController {
   // The text will be different if the clipboard data is shared with Crostini
   // or Parallels or ARC.
   base::string16 GetToastText(
+      const ui::ClipboardDataEndpoint* const data_src,
       const ui::ClipboardDataEndpoint* const data_dst) const;
 };
 
