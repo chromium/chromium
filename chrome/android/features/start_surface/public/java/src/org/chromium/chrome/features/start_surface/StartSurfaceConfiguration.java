@@ -6,6 +6,7 @@ package org.chromium.chrome.features.start_surface;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Log;
 import org.chromium.base.SysUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.flags.BooleanCachedFieldTrialParameter;
@@ -25,6 +26,7 @@ import org.chromium.components.user_prefs.UserPrefs;
  * which variation should be used.
  */
 public class StartSurfaceConfiguration {
+    private static final String TAG = "StartSurfaceConfig";
     public static final StringCachedFieldTrialParameter START_SURFACE_VARIATION =
             new StringCachedFieldTrialParameter(
                     ChromeFeatureList.START_SURFACE_ANDROID, "start_surface_variation", "");
@@ -144,7 +146,7 @@ public class StartSurfaceConfiguration {
      */
     public static void recordHistogram(String name, long timeDurationMs, boolean isInstantStart) {
         if (timeDurationMs < 0) return;
-
+        Log.i(TAG, "Recorded %s = %d ms", getHistogramName(name, isInstantStart), timeDurationMs);
         RecordHistogram.recordTimesHistogram(
                 getHistogramName(name, isInstantStart), timeDurationMs);
     }
