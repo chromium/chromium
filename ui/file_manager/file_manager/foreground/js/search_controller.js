@@ -95,6 +95,9 @@ class SearchController {
     this.searchBox_.inputElement.focus();
     this.searchBox_.inputElement.value = searchQuery;
     this.onTextChange_();
+    if (this.isOnDrive_) {
+      this.onItemSelect_();
+    }
   }
 
   /**
