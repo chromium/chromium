@@ -22,7 +22,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {Base, html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {CloudOrigins, Destination, DestinationOrigin, PDF_DESTINATION_KEY, RecentDestination, SAVE_TO_DRIVE_CROS_DESTINATION_KEY} from '../data/destination.js';
-import {ERROR_STRING_KEY_MAP, getStatusReasonFromPrinterStatus, PrinterStatus, PrinterStatusReason, PrinterStatusSeverity} from '../data/printer_status_cros.js';
+import {ERROR_STRING_KEY_MAP, getPrinterStatusIcon, PrinterStatusReason} from '../data/printer_status_cros.js';
 import {getSelectDropdownBackground} from '../print_preview_utils.js';
 
 import {SelectBehavior} from './select_behavior.js';
@@ -87,7 +87,8 @@ Polymer({
     /** @private {string} */
     destinationIcon_: {
       type: String,
-      computed: 'computeDestinationIcon_(selectedValue, destination)',
+      computed:
+          'computeDestinationIcon_(selectedValue, destination, destination.printerStatusReason)',
     },
 
     /** @private */
@@ -155,6 +156,11 @@ Polymer({
     // If the destination matches the selected value, pull the icon from the
     // destination.
     if (this.destination && this.destination.key === this.selectedValue) {
+      if (this.printerStatusFlagEnabled_ &&
+          this.isCurrentDestinationCrosLocal_) {
+        return getPrinterStatusIcon(this.destination.printerStatusReason);
+      }
+
       return this.destination.icon;
     }
 

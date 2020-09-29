@@ -1439,20 +1439,6 @@ TEST_F('PrintPreviewDestinationDropdownCrosTest', 'Disabled', function() {
 });
 
 TEST_F(
-    'PrintPreviewDestinationDropdownCrosTest',
-    'NewStatusUpdatesDestinationIcon', function() {
-      this.runMochaTest(destination_dropdown_cros_test.TestNames
-                            .NewStatusUpdatesDestinationIcon);
-    });
-
-TEST_F(
-    'PrintPreviewDestinationDropdownCrosTest', 'ChangingDestinationUpdatesIcon',
-    function() {
-      this.runMochaTest(destination_dropdown_cros_test.TestNames
-                            .ChangingDestinationUpdatesIcon);
-    });
-
-TEST_F(
     'PrintPreviewDestinationDropdownCrosTest', 'HighlightedWhenOpened',
     function() {
       this.runMochaTest(

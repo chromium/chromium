@@ -104,14 +104,7 @@
     aria-description$="[[destinationStatusText]]">
   <div id="destination-display-container">
     <div id="destination-icon-box">
-      <iron-icon icon="[[destinationIcon]]"
-          hidden="[[isCurrentDestinationCrosLocal]]">
-      </iron-icon>
-      <printer-status-icon-cros id="destination-badge"
-          hidden="[[!isCurrentDestinationCrosLocal]]"
-          icon-location="[[IconLocation.DISPLAY]]"
-          printer-state="[[computePrinterState_( value.printerStatusReason)]]">
-      </printer-status-icon-cros>
+      <iron-icon icon="[[destinationIcon]]"></iron-icon>
     </div>
     <div id="destination-display" title="[[value.displayName]]">
       [[value.displayName]]
@@ -131,11 +124,9 @@
                   highlightedIndex_)]]"
               aria-description$="[[getPrinterStatusErrorString_(
                   item.printerStatusReason)]]">
-            <printer-status-icon-cros icon-location="[[IconLocation.DROPDOWN]]"
-                printer-state="[[computePrinterState_(
-                    item.printerStatusReason)]]"
-                class$="[[getHighlightedClass_(item.key, highlightedIndex_)]]">
-            </printer-status-icon-cros>
+            <iron-icon icon="[[getPrinterStatusIcon_(
+                item.printerStatusReason)]]">
+            </iron-icon>
             <span class="printer-display-name">[[item.displayName]]</span>
           </button>
         </template>

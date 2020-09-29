@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Destination, DestinationConnectionStatus, DestinationOrigin, DestinationType, getSelectDropdownBackground, NativeLayer, NativeLayerImpl, PrinterState, PrinterStatus, PrinterStatusReason, PrinterStatusSeverity, SAVE_TO_DRIVE_CROS_DESTINATION_KEY} from 'chrome://print/print_preview.js';
+import {Destination, DestinationConnectionStatus, DestinationOrigin, DestinationType, getSelectDropdownBackground, NativeLayer, NativeLayerImpl, PrinterStatus, PrinterStatusReason, PrinterStatusSeverity, SAVE_TO_DRIVE_CROS_DESTINATION_KEY} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {Base, flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -199,33 +199,33 @@ suite(printer_status_test_cros.suiteName, function() {
             .then(() => {
               const dropdown = destinationSelect.$$('#dropdown');
               assertEquals(
-                  PrinterState.GOOD,
+                  'print-preview:printer-status-green',
                   dropdown.$$(`#${escapeForwardSlahes(destination1.key)}`)
-                      .firstChild.printerState);
+                      .firstChild.icon);
               assertEquals(
-                  PrinterState.GOOD,
+                  'print-preview:printer-status-green',
                   dropdown.$$(`#${escapeForwardSlahes(destination2.key)}`)
-                      .firstChild.printerState);
+                      .firstChild.icon);
               assertEquals(
-                  PrinterState.GOOD,
+                  'print-preview:printer-status-green',
                   dropdown.$$(`#${escapeForwardSlahes(destination3.key)}`)
-                      .firstChild.printerState);
+                      .firstChild.icon);
               assertEquals(
-                  PrinterState.ERROR,
+                  'print-preview:printer-status-red',
                   dropdown.$$(`#${escapeForwardSlahes(destination4.key)}`)
-                      .firstChild.printerState);
+                      .firstChild.icon);
               assertEquals(
-                  PrinterState.ERROR,
+                  'print-preview:printer-status-red',
                   dropdown.$$(`#${escapeForwardSlahes(destination5.key)}`)
-                      .firstChild.printerState);
+                      .firstChild.icon);
               assertEquals(
-                  PrinterState.ERROR,
+                  'print-preview:printer-status-red',
                   dropdown.$$(`#${escapeForwardSlahes(destination6.key)}`)
-                      .firstChild.printerState);
+                      .firstChild.icon);
               assertEquals(
-                  PrinterState.UNKNOWN,
+                  'print-preview:printer-status-grey',
                   dropdown.$$(`#${escapeForwardSlahes(destination7.key)}`)
-                      .firstChild.printerState);
+                      .firstChild.icon);
             });
         });
 
@@ -311,6 +311,8 @@ suite(printer_status_test_cros.suiteName, function() {
     return waitBeforeNextRender(destinationSelect).then(() => {
       const localCrosPrinter =
           createDestination('ID1', 'One', DestinationOrigin.CROS);
+      const localNonCrosPrinter =
+          createDestination('ID2', 'Two', DestinationOrigin.LOCAL);
       const saveToDrive = getGoogleDriveDestination('account');
       const saveAsPdf = getSaveAsPdfDestination();
 
@@ -322,6 +324,11 @@ suite(printer_status_test_cros.suiteName, function() {
       const dropdown = destinationSelect.$$('#dropdown');
 
       destinationSelect.destination = localCrosPrinter;
+      destinationSelect.updateDestination();
+      assertEquals(
+          'print-preview:printer-status-grey', dropdown.destinationIcon);
+
+      destinationSelect.destination = localNonCrosPrinter;
       destinationSelect.updateDestination();
       assertEquals('print-preview:print', dropdown.destinationIcon);
 
