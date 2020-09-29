@@ -95,7 +95,7 @@ void CompositingInputsUpdater::ApplyAncestorInfoToSelfAndAncestorsRecursively(
     geometry_map_->PushMappingsToAncestor(layer, layer->Parent());
   UpdateAncestorInfo(layer, update_type, info);
   if (layer != compositing_inputs_root_ &&
-      (layer->IsRootLayer() || layer->GetLayoutObject().IsScrollContainer()))
+      layer->GetLayoutObject().IsScrollContainer())
     info.last_scroll_container_layer = layer;
 }
 
@@ -151,7 +151,7 @@ void CompositingInputsUpdater::UpdateSelfAndDescendantsRecursively(
       geometry_map_->PushMappingsToAncestor(layer, layer->Parent());
     UpdateAncestorInfo(layer, update_type, info);
   }
-  if (layer->IsRootLayer() || layout_object.IsScrollContainer())
+  if (layout_object.IsScrollContainer())
     info.last_scroll_container_layer = layer;
 
   PaintLayerCompositor* compositor =

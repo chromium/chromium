@@ -386,7 +386,7 @@ void PrePaintTreeWalk::UpdateAuxiliaryObjectProperties(
     // update layer position and ancestor inputs updates in the same walk).
     paint_layer->UpdateLayerPosition();
   }
-  if (paint_layer->IsRootLayer() || object.IsScrollContainer())
+  if (object.IsScrollContainer())
     context.ancestor_scroll_container_paint_layer = paint_layer;
 }
 
