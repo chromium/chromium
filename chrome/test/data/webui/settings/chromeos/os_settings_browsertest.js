@@ -1217,6 +1217,20 @@ TEST_F('OSSettingsNetworkSummaryTest', 'All', () => {
 });
 
 // eslint-disable-next-line no-var
+var OSSettingsTetherConnectionDialogTest = class extends OSSettingsBrowserTest {
+  /** @override */
+  get extraLibraries() {
+    return super.extraLibraries.concat([
+      'tether_connection_dialog_test.js',
+    ]);
+  }
+};
+
+TEST_F('OSSettingsTetherConnectionDialogTest', 'All', () => {
+  mocha.run();
+});
+
+// eslint-disable-next-line no-var
 var OSSettingsPeoplePageAccountManagerTest =
     class extends OSSettingsBrowserTest {
   /** @override */

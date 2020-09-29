@@ -75,6 +75,11 @@
            use_base_dir="false"
            compress="false"
            type="BINDATA" />
+  <include name="IDR_OS_SETTINGS_TETHER_CONNECTION_DIALOG_M_JS"
+           file="${root_gen_dir}/chrome/browser/resources/settings/chromeos/internet_page/tether_connection_dialog.m.js"
+           use_base_dir="false"
+           compress="false"
+           type="BINDATA" />
   <include name="IDR_OS_SETTINGS_PERSONALIZATION_PAGE_M_JS"
            file="${root_gen_dir}/chrome/browser/resources/settings/chromeos/personalization_page/personalization_page.m.js"
            use_base_dir="false"

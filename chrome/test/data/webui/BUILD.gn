@@ -327,6 +327,7 @@ if (include_js_tests) {
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/test_os_reset_browser_proxy.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/test_os_sync_browser_proxy.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/test_wallpaper_browser_proxy.m.js",
+        "$root_gen_dir/chrome/test/data/webui/settings/chromeos/tether_connection_dialog_test.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/timezone_selector_test.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/timezone_subpage_test.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/test_cups_printers_browser_proxy.m.js",

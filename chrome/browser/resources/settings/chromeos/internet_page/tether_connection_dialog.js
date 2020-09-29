@@ -2,12 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-(function() {
-'use strict';
-
-const mojom = chromeos.networkConfig.mojom;
-
-
 /**
  * Maps signal strength from [0, 100] to [0, 4] which represents the number
  * of bars in the signal icon displayed to the user. This is used to select
@@ -85,7 +79,8 @@ Polymer({
   },
 
   /**
-   * @param {!mojom.ManagedProperties|undefined} managedProperties
+   * @param {!chromeos.networkConfig.mojom.ManagedProperties|undefined}
+   *    managedProperties
    * @return {boolean}
    * @private
    */
@@ -97,7 +92,8 @@ Polymer({
   },
 
   /**
-   * @param {!mojom.ManagedProperties|undefined} managedProperties
+   * @param {!chromeos.networkConfig.mojom.ManagedProperties|undefined}
+   *    managedProperties
    * @return {string} The battery percentage integer value converted to a
    *     string. Note that this will not return a string with a "%" suffix.
    * @private
@@ -112,7 +108,8 @@ Polymer({
    * Retrieves an image that corresponds to signal strength of the tether host.
    * Custom icons are used here instead of a <network-icon> because this
    * dialog uses a special color scheme.
-   * @param {!mojom.ManagedProperties|undefined} managedProperties
+   * @param {!chromeos.networkConfig.mojom.ManagedProperties|undefined}
+   *    managedProperties
    * @return {string} The name of the icon to be used to represent the network's
    *     signal strength.
    */
@@ -126,7 +123,8 @@ Polymer({
 
   /**
    * Retrieves a localized accessibility label for the signal strength.
-   * @param {!mojom.ManagedProperties|undefined} managedProperties
+   * @param {!chromeos.networkConfig.mojom.ManagedProperties|undefined}
+   *    managedProperties
    * @return {string} The localized signal strength label.
    */
   getSignalStrengthLabel_(managedProperties) {
@@ -139,7 +137,8 @@ Polymer({
   },
 
   /**
-   * @param {!mojom.ManagedProperties|undefined} managedProperties
+   * @param {!chromeos.networkConfig.mojom.ManagedProperties|undefined}
+   *    managedProperties
    * @return {string}
    * @private
    */
@@ -148,7 +147,8 @@ Polymer({
   },
 
   /**
-   * @param {!mojom.ManagedProperties|undefined} managedProperties
+   * @param {!chromeos.networkConfig.mojom.ManagedProperties|undefined}
+   *    managedProperties
    * @return {string}
    * @private
    */
@@ -161,7 +161,8 @@ Polymer({
   },
 
   /**
-   * @param {!mojom.ManagedProperties|undefined} managedProperties
+   * @param {!chromeos.networkConfig.mojom.ManagedProperties|undefined}
+   *    managedProperties
    * @return {string}
    * @private
    */
@@ -174,7 +175,8 @@ Polymer({
   },
 
   /**
-   * @param {!mojom.ManagedProperties|undefined} managedProperties
+   * @param {!chromeos.networkConfig.mojom.ManagedProperties|undefined}
+   *    managedProperties
    * @return {string}
    * @private
    */
@@ -187,7 +189,8 @@ Polymer({
   },
 
   /**
-   * @param {!mojom.ManagedProperties|undefined} managedProperties
+   * @param {!chromeos.networkConfig.mojom.ManagedProperties|undefined}
+   *    managedProperties
    * @return {string}
    * @private
    */
@@ -199,4 +202,3 @@ Polymer({
         '';
   },
 });
-})();

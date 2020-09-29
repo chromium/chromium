@@ -1,13 +1,17 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 <link rel="import" href="chrome://resources/cr_components/chromeos/network/network_icon.html">
+<link rel="import" href="chrome://resources/cr_components/chromeos/network/onc_mojo.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
 <link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
+<link rel="import" href="chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
+<link rel="import" href="chrome://resources/html/i18n_behavior.html">
+<link rel="import" href="chrome://resources/html/util.html">
 <link rel="import" href="../../chromeos/os_icons.html">
-<link rel="import" href="../os_route.html">
 <link rel="import" href="../../settings_shared_css.html">
+<link rel="import" href="../os_route.html">
 
 <dom-module id="tether-connection-dialog">
   <template>
@@ -81,10 +85,10 @@
           <div id="host-device-text-container">
             <span id="host-device-text-name"
                 aria-describedby="host-device-signal-strength-icon
-                host-device-text-battery">
+                hostDeviceTextBattery">
               [[getDeviceName_(managedProperties)]]
             </span>
-            <span id="host-device-text-battery" class="secondary"
+            <span id="hostDeviceTextBattery" class="secondary"
                 aria-hidden="true">
               [[getBatteryPercentageString_(managedProperties)]]
             </span>

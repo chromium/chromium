@@ -122,6 +122,7 @@ TEST_F('OSSettingsNearbyShareSubPageV3Test', 'All', () => mocha.run());
  ['FilesPage', 'os_files_page_test.m.js'],
  ['ResetPage', 'os_reset_page_test.m.js'],
  ['SmartInputsPage', 'smart_inputs_page_test.m.js'],
+ ['TetherConnectionDialog', 'tether_connection_dialog_test.m.js'],
  ['TimezoneSelector', 'timezone_selector_test.m.js'],
  ['TimezoneSubpage', 'timezone_subpage_test.m.js'],
  ['CupsPrinterPage', 'cups_printer_page_tests.m.js'],
