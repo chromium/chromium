@@ -151,9 +151,10 @@ def InstallXcodeBinaries(version, binaries_root=None):
   current_license_path = '/Library/Preferences/com.apple.dt.Xcode.plist'
   if os.path.exists(current_license_path):
     current_license_plist = plistlib.readPlist(current_license_path)
-    xcode_version = current_license_plist['IDEXcodeVersionForAgreedToGMLicense']
-    if (pkg_resources.parse_version(xcode_version) >=
-        pkg_resources.parse_version(cipd_xcode_version)):
+    xcode_version = current_license_plist.get(
+        'IDEXcodeVersionForAgreedToGMLicense')
+    if (xcode_version is not None and pkg_resources.parse_version(xcode_version)
+        >= pkg_resources.parse_version(cipd_xcode_version)):
       should_overwrite_license = False
 
   if not should_overwrite_license:
