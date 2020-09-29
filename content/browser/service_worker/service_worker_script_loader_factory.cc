@@ -227,6 +227,12 @@ void ServiceWorkerScriptLoaderFactory::OnCopyScriptFinished(
     mojo::PendingRemote<network::mojom::URLLoaderClient> client,
     int64_t new_resource_id,
     net::Error error) {
+  if (!worker_host_) {
+    // Null |worker_host_| means the worker has been terminated unexpectedly.
+    // Nothing can do in this case.
+    return;
+  }
+
   int64_t resource_size = cache_writer_->bytes_written();
   cache_writer_.reset();
   scoped_refptr<ServiceWorkerVersion> version = worker_host_->version();
@@ -266,6 +272,12 @@ void ServiceWorkerScriptLoaderFactory::OnResourceIdAssignedForNewScriptLoader(
     mojo::PendingRemote<network::mojom::URLLoaderClient> client,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
     int64_t resource_id) {
+  if (!worker_host_) {
+    // Null |worker_host_| means the worker has been terminated unexpectedly.
+    // Nothing can do in this case.
+    return;
+  }
+
   if (resource_id == blink::mojom::kInvalidServiceWorkerResourceId) {
     mojo::Remote<network::mojom::URLLoaderClient>(std::move(client))
         ->OnComplete(network::URLLoaderCompletionStatus(net::ERR_ABORTED));
