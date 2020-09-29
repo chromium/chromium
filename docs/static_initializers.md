@@ -17,9 +17,9 @@ http://neugierig.org/software/chromium/notes/2011/08/static-initializers.html
 
 Common fixes include:
 
-* Add constexpr,
-* Use LazyInstance<>,
-* Move global variable to be a static variable within a function that returns it.
+* Add constexpr.
+* Move global variable to be a static variable within a function that returns
+  it, often wrapped in `base::NoDestructor`.
 
 ## Listing Static Initializers
 
