@@ -22,4 +22,22 @@ public final class PasswordCheckMetricsRecorder {
         RecordHistogram.recordEnumeratedHistogram("PasswordManager.BulkCheck.UserActionAndroid",
                 userAction, PasswordCheckUserAction.COUNT);
     }
+
+    public static void recordCheckResolutionAction(
+            @PasswordCheckResolutionAction int action, CompromisedCredential credential) {
+        if (credential.hasScript()) {
+            RecordHistogram.recordEnumeratedHistogram(
+                    "PasswordManager.AutomaticChange.ForSitesWithScripts", action,
+                    PasswordCheckResolutionAction.COUNT);
+        }
+        if (credential.hasAutoChangeButton()) {
+            RecordHistogram.recordEnumeratedHistogram(
+                    "PasswordManager.AutomaticChange.AcceptanceWithAutoButton", action,
+                    PasswordCheckResolutionAction.COUNT);
+        } else {
+            RecordHistogram.recordEnumeratedHistogram(
+                    "PasswordManager.AutomaticChange.AcceptanceWithoutAutoButton", action,
+                    PasswordCheckResolutionAction.COUNT);
+        }
+    }
 }

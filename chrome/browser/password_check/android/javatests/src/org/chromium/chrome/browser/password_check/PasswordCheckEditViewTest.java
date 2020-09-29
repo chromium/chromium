@@ -47,6 +47,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -68,7 +69,15 @@ public class PasswordCheckEditViewTest {
     private static final CompromisedCredential ANA = new CompromisedCredential(
             "https://some-url.com/signin", new GURL("https://some-url.com/"), "Ana", "some-url.com",
             "Ana", "password", "https://some-url.com/.well-known/change-password", "", 1, true,
-            false, false, false);
+            false, true, true);
+    private static final String PASSWORD_CHECK_RESOLUTION_HISTOGRAM_WITH_AUTO_BUTTON =
+            "PasswordManager.AutomaticChange.AcceptanceWithAutoButton";
+    private static final String PASSWORD_CHECK_RESOLUTION_HISTOGRAM_WITHOUT_AUTO_BUTTON =
+            "PasswordManager.AutomaticChange.AcceptanceWithoutAutoButton";
+    private static final String PASSWORD_CHECK_RESOLUTION_HISTOGRAM_FOR_SCRIPTED_SITES =
+            "PasswordManager.AutomaticChange.ForSitesWithScripts";
+    private static final String PASSWORD_CHECK_USER_ACTION_HISTOGRAM =
+            "PasswordManager.BulkCheck.UserActionAndroid";
 
     private PasswordCheckEditFragmentView mPasswordCheckEditView;
 
@@ -144,6 +153,22 @@ public class PasswordCheckEditViewTest {
         onView(withId(R.id.action_save_edited_password)).perform(click());
 
         verify(mPasswordCheck).updateCredential(eq(ANA), eq(newPassword));
+
+        assertThat(RecordHistogram.getHistogramValueCountForTesting(
+                           PASSWORD_CHECK_USER_ACTION_HISTOGRAM,
+                           PasswordCheckUserAction.EDITED_PASSWORD),
+                is(1));
+        assertThat(RecordHistogram.getHistogramTotalCountForTesting(
+                           PASSWORD_CHECK_RESOLUTION_HISTOGRAM_WITHOUT_AUTO_BUTTON),
+                is(0));
+        assertThat(RecordHistogram.getHistogramValueCountForTesting(
+                           PASSWORD_CHECK_RESOLUTION_HISTOGRAM_WITH_AUTO_BUTTON,
+                           PasswordCheckResolutionAction.EDITED_PASSWORD),
+                is(1));
+        assertThat(RecordHistogram.getHistogramValueCountForTesting(
+                           PASSWORD_CHECK_RESOLUTION_HISTOGRAM_FOR_SCRIPTED_SITES,
+                           PasswordCheckResolutionAction.EDITED_PASSWORD),
+                is(1));
     }
 
     @Test

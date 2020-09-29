@@ -153,6 +153,8 @@ public class PasswordCheckEditFragmentView extends PreferenceFragmentCompat {
         if (id == R.id.action_save_edited_password) {
             PasswordCheckMetricsRecorder.recordUiUserAction(
                     PasswordCheckUserAction.EDITED_PASSWORD);
+            PasswordCheckMetricsRecorder.recordCheckResolutionAction(
+                    PasswordCheckResolutionAction.EDITED_PASSWORD, mCredential);
             saveChanges();
             return true;
         }

@@ -54889,6 +54889,14 @@ Called by update_net_trust_anchors.py.-->
   <int value="2" label="Password Breach Dialog"/>
 </enum>
 
+<enum name="PasswordCheckResolutionAction">
+  <int value="0" label="Opened a site to change password manually"/>
+  <int value="1" label="Started an automated password change flow"/>
+  <int value="2" label="Removed a password"/>
+  <int value="3" label="Edited a password"/>
+  <int value="4" label="Did nothing"/>
+</enum>
+
 <enum name="PasswordCheckUIUserActionAndroid">
   <int value="0" label="Start check automatically"/>
   <int value="1" label="Start check manually"/>

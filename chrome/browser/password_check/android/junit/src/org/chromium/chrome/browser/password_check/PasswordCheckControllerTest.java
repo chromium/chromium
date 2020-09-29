@@ -89,7 +89,16 @@ public class PasswordCheckControllerTest {
             new CompromisedCredential("http://www.b.ch/signin", mock(GURL.class), "",
                     "http://www.b.ch", "(No username)", "DoneSth",
                     "http://www.b.ch/.well-known/change-password", "", 1, true, false, true, true);
+    private static final CompromisedCredential CHARLIE = new CompromisedCredential(
+            "http://www.c.de/login", mock(GURL.class), "", "http://www.c.de", "user1", "secret",
+            "http://www.c.de/.well-known/change-password", "", 1, true, false, true, false);
     private static final Pair<Integer, Integer> PROGRESS_UPDATE = new Pair<>(2, 19);
+    private static final String PASSWORD_CHECK_RESOLUTION_HISTOGRAM_WITH_AUTO_BUTTON =
+            "PasswordManager.AutomaticChange.AcceptanceWithAutoButton";
+    private static final String PASSWORD_CHECK_RESOLUTION_HISTOGRAM_WITHOUT_AUTO_BUTTON =
+            "PasswordManager.AutomaticChange.AcceptanceWithoutAutoButton";
+    private static final String PASSWORD_CHECK_RESOLUTION_HISTOGRAM_FOR_SCRIPTED_SITES =
+            "PasswordManager.AutomaticChange.ForSitesWithScripts";
     private static final String PASSWORD_CHECK_REFERRER_HISTOGRAM =
             "PasswordManager.BulkCheck.PasswordCheckReferrerAndroid";
     private static final String PASSWORD_CHECK_USER_ACTION_HISTOGRAM =
@@ -541,7 +550,7 @@ public class PasswordCheckControllerTest {
 
     @Test
     public void testRemovingElementRecordsDeletedPassword() {
-        mMediator.onRemove(ANA);
+        mMediator.onRemove(BOB);
         assertNotNull(mModel.get(DELETION_CONFIRMATION_HANDLER));
 
         // When the handler is triggered (because the dialog was confirmed), remove the credential:
@@ -552,18 +561,109 @@ public class PasswordCheckControllerTest {
                            PASSWORD_CHECK_USER_ACTION_HISTOGRAM,
                            PasswordCheckUserAction.DELETED_PASSWORD),
                 is(1));
+        assertThat(RecordHistogram.getHistogramTotalCountForTesting(
+                           PASSWORD_CHECK_RESOLUTION_HISTOGRAM_WITHOUT_AUTO_BUTTON),
+                is(0));
+        assertThat(RecordHistogram.getHistogramValueCountForTesting(
+                           PASSWORD_CHECK_RESOLUTION_HISTOGRAM_WITH_AUTO_BUTTON,
+                           PasswordCheckResolutionAction.DELETED_PASSWORD),
+                is(1));
+        assertThat(RecordHistogram.getHistogramValueCountForTesting(
+                           PASSWORD_CHECK_RESOLUTION_HISTOGRAM_FOR_SCRIPTED_SITES,
+                           PasswordCheckResolutionAction.DELETED_PASSWORD),
+                is(1));
     }
 
     @Test
     public void testOnChangePasswordButtonClick() {
+        // No auto change button. A user clicks "Change password" (manually).
         mMediator.onChangePasswordButtonClick(ANA);
         verify(mChangePasswordDelegate).launchAppOrCctWithChangePasswordUrl(eq(ANA));
+
+        assertThat(RecordHistogram.getHistogramValueCountForTesting(
+                           PASSWORD_CHECK_USER_ACTION_HISTOGRAM,
+                           PasswordCheckUserAction.CHANGE_PASSWORD),
+                is(1));
+        assertThat(RecordHistogram.getHistogramValueCountForTesting(
+                           PASSWORD_CHECK_RESOLUTION_HISTOGRAM_WITHOUT_AUTO_BUTTON,
+                           PasswordCheckResolutionAction.OPENED_SITE),
+                is(1));
+        assertThat(RecordHistogram.getHistogramTotalCountForTesting(
+                           PASSWORD_CHECK_RESOLUTION_HISTOGRAM_WITH_AUTO_BUTTON),
+                is(0));
+        assertThat(RecordHistogram.getHistogramTotalCountForTesting(
+                           PASSWORD_CHECK_RESOLUTION_HISTOGRAM_FOR_SCRIPTED_SITES),
+                is(0));
     }
 
     @Test
-    public void testOnChangePasswordWithScriptButtonClick() {
+    public void testOnChangePasswordManuallyButtonClick() {
+        // There is an auto change button, but a user clicks "Change manually".
+        mMediator.onChangePasswordButtonClick(BOB);
+        verify(mChangePasswordDelegate).launchAppOrCctWithChangePasswordUrl(eq(BOB));
+
+        assertThat(RecordHistogram.getHistogramValueCountForTesting(
+                           PASSWORD_CHECK_USER_ACTION_HISTOGRAM,
+                           PasswordCheckUserAction.CHANGE_PASSWORD_MANUALLY),
+                is(1));
+        assertThat(RecordHistogram.getHistogramTotalCountForTesting(
+                           PASSWORD_CHECK_RESOLUTION_HISTOGRAM_WITHOUT_AUTO_BUTTON),
+                is(0));
+        assertThat(RecordHistogram.getHistogramValueCountForTesting(
+                           PASSWORD_CHECK_RESOLUTION_HISTOGRAM_WITH_AUTO_BUTTON,
+                           PasswordCheckResolutionAction.OPENED_SITE),
+                is(1));
+        assertThat(RecordHistogram.getHistogramValueCountForTesting(
+                           PASSWORD_CHECK_RESOLUTION_HISTOGRAM_FOR_SCRIPTED_SITES,
+                           PasswordCheckResolutionAction.OPENED_SITE),
+                is(1));
+    }
+
+    @Test
+    public void testOnChangePasswordButtonClickScriptOnly() {
+        // There is a script but auto change button isn't shown. A user clicks "Change password"
+        // (manually).
+        mMediator.onChangePasswordButtonClick(CHARLIE);
+        verify(mChangePasswordDelegate).launchAppOrCctWithChangePasswordUrl(eq(CHARLIE));
+
+        assertThat(RecordHistogram.getHistogramValueCountForTesting(
+                           PASSWORD_CHECK_USER_ACTION_HISTOGRAM,
+                           PasswordCheckUserAction.CHANGE_PASSWORD),
+                is(1));
+        assertThat(RecordHistogram.getHistogramValueCountForTesting(
+                           PASSWORD_CHECK_RESOLUTION_HISTOGRAM_WITHOUT_AUTO_BUTTON,
+                           PasswordCheckResolutionAction.OPENED_SITE),
+                is(1));
+        assertThat(RecordHistogram.getHistogramTotalCountForTesting(
+                           PASSWORD_CHECK_RESOLUTION_HISTOGRAM_WITH_AUTO_BUTTON),
+                is(0));
+        assertThat(RecordHistogram.getHistogramValueCountForTesting(
+                           PASSWORD_CHECK_RESOLUTION_HISTOGRAM_FOR_SCRIPTED_SITES,
+                           PasswordCheckResolutionAction.OPENED_SITE),
+                is(1));
+    }
+
+    @Test
+    public void testOnAutoChangePasswordButtonClick() {
+        // There is a auto change button, a user clicks it.
         mMediator.onChangePasswordWithScriptButtonClick(BOB);
         verify(mChangePasswordDelegate).launchCctWithScript(eq(BOB));
+
+        assertThat(RecordHistogram.getHistogramValueCountForTesting(
+                           PASSWORD_CHECK_USER_ACTION_HISTOGRAM,
+                           PasswordCheckUserAction.CHANGE_PASSWORD_AUTOMATICALLY),
+                is(1));
+        assertThat(RecordHistogram.getHistogramTotalCountForTesting(
+                           PASSWORD_CHECK_RESOLUTION_HISTOGRAM_WITHOUT_AUTO_BUTTON),
+                is(0));
+        assertThat(RecordHistogram.getHistogramValueCountForTesting(
+                           PASSWORD_CHECK_RESOLUTION_HISTOGRAM_WITH_AUTO_BUTTON,
+                           PasswordCheckResolutionAction.STARTED_SCRIPT),
+                is(1));
+        assertThat(RecordHistogram.getHistogramValueCountForTesting(
+                           PASSWORD_CHECK_RESOLUTION_HISTOGRAM_FOR_SCRIPTED_SITES,
+                           PasswordCheckResolutionAction.STARTED_SCRIPT),
+                is(1));
     }
 
     @Test

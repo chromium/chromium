@@ -90,6 +90,7 @@ class PasswordCheckMediator
     }
 
     void destroy() {
+        // TODO(crbug.com/): Report PasswordCheckResolutionAction.DID_NOTHING.
         getPasswordCheck().removeObserver(this);
     }
 
@@ -229,6 +230,8 @@ class PasswordCheckMediator
                     public void onClick(DialogInterface dialog, int which) {
                         PasswordCheckMetricsRecorder.recordUiUserAction(
                                 PasswordCheckUserAction.DELETED_PASSWORD);
+                        PasswordCheckMetricsRecorder.recordCheckResolutionAction(
+                                PasswordCheckResolutionAction.DELETED_PASSWORD, credential);
                         if (which != AlertDialog.BUTTON_POSITIVE) return;
                         mDelegate.removeCredential(credential);
                         mModel.set(DELETION_CONFIRMATION_HANDLER, null);
@@ -277,6 +280,8 @@ class PasswordCheckMediator
         PasswordCheckMetricsRecorder.recordUiUserAction(credential.hasAutoChangeButton()
                         ? PasswordCheckUserAction.CHANGE_PASSWORD_MANUALLY
                         : PasswordCheckUserAction.CHANGE_PASSWORD);
+        PasswordCheckMetricsRecorder.recordCheckResolutionAction(
+                PasswordCheckResolutionAction.OPENED_SITE, credential);
         mChangePasswordDelegate.launchAppOrCctWithChangePasswordUrl(credential);
     }
 
@@ -285,6 +290,8 @@ class PasswordCheckMediator
         assert credential.hasAutoChangeButton();
         PasswordCheckMetricsRecorder.recordUiUserAction(
                 PasswordCheckUserAction.CHANGE_PASSWORD_AUTOMATICALLY);
+        PasswordCheckMetricsRecorder.recordCheckResolutionAction(
+                PasswordCheckResolutionAction.STARTED_SCRIPT, credential);
         mChangePasswordDelegate.launchCctWithScript(credential);
     }
 
