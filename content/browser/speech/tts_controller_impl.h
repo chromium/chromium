@@ -83,13 +83,7 @@ class CONTENT_EXPORT TtsControllerImpl : public TtsController,
   ~TtsControllerImpl() override;
 
  private:
-  friend class TtsControllerTestHelper;
-  FRIEND_TEST_ALL_PREFIXES(TtsControllerTest, TestTtsControllerShutdown);
-  FRIEND_TEST_ALL_PREFIXES(TtsControllerTest, TestGetMatchingVoice);
-  FRIEND_TEST_ALL_PREFIXES(TtsControllerTest,
-                           TestTtsControllerUtteranceDefaults);
-  FRIEND_TEST_ALL_PREFIXES(TtsControllerTest, TestBrowserContextRemoved);
-
+  friend class TestTtsControllerImpl;
   friend struct base::DefaultSingletonTraits<TtsControllerImpl>;
 
   // Get the platform TTS implementation (or injected mock).
@@ -151,7 +145,7 @@ class CONTENT_EXPORT TtsControllerImpl : public TtsController,
 
 #if defined(OS_CHROMEOS)
   TtsControllerDelegate* GetTtsControllerDelegate();
-
+  void SetTtsControllerDelegateForTesting(TtsControllerDelegate* delegate);
   TtsControllerDelegate* delegate_ = nullptr;
 #endif
 

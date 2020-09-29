@@ -772,6 +772,12 @@ TtsControllerDelegate* TtsControllerImpl::GetTtsControllerDelegate() {
   }
   return nullptr;
 }
+
+void TtsControllerImpl::SetTtsControllerDelegateForTesting(
+    TtsControllerDelegate* delegate) {
+  delegate_ = delegate;
+}
+
 #endif  // defined(OS_CHROMEOS)
 
 }  // namespace content
