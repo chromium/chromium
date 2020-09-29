@@ -89,6 +89,9 @@ class ASH_EXPORT UnifiedMediaControlsController
   std::unique_ptr<base::OneShotTimer> hide_controls_timer_ =
       std::make_unique<base::OneShotTimer>();
 
+  std::unique_ptr<base::OneShotTimer> hide_artwork_timer_ =
+      std::make_unique<base::OneShotTimer>();
+
   base::Optional<base::UnguessableToken> media_session_id_;
 
   base::flat_set<media_session::mojom::MediaSessionAction> enabled_actions_;

@@ -43,6 +43,8 @@ class ASH_EXPORT UnifiedMediaControlsView : public views::Button,
       const base::flat_set<media_session::mojom::MediaSessionAction>&
           enabled_actions);
 
+  views::ImageView* artwork_view() { return artwork_view_; }
+
  private:
   friend class UnifiedMediaControlsControllerTest;
 

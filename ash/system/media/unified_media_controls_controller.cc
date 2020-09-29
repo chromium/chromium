@@ -10,6 +10,7 @@
 #include "services/media_session/public/cpp/util.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "services/media_session/public/mojom/media_session_service.mojom.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -21,6 +22,10 @@ constexpr int kDisiredArtworkSize = 48;
 
 // Time to wait for new media session.
 constexpr base::TimeDelta kHideControlsDelay =
+    base::TimeDelta::FromMilliseconds(2000);
+
+// Time to wait for new artwork.
+constexpr base::TimeDelta kHideArtworkDelay =
     base::TimeDelta::FromMilliseconds(2000);
 
 }  // namespace
@@ -137,10 +142,28 @@ void UnifiedMediaControlsController::MediaControllerImageChanged(
     }
   }
 
-  base::Optional<gfx::ImageSkia> session_artwork;
-  if (!converted_bitmap.empty())
-    session_artwork = gfx::ImageSkia::CreateFrom1xBitmap(converted_bitmap);
-  media_controls_->SetArtwork(session_artwork);
+  // If we do get an artwork, set the artwork immediately and stop
+  // |hide_artwork_timer_| if necessary.
+  if (!converted_bitmap.empty()) {
+    if (hide_artwork_timer_->IsRunning())
+      hide_artwork_timer_->Stop();
+
+    media_controls_->SetArtwork(
+        gfx::ImageSkia::CreateFrom1xBitmap(converted_bitmap));
+    return;
+  }
+
+  if (media_controls_->artwork_view()->GetImage().isNull())
+    return;
+
+  // Start |hide_artork_timer_} if not already started and wait for
+  // artwork update.
+  if (!hide_artwork_timer_->IsRunning()) {
+    hide_artwork_timer_->Start(
+        FROM_HERE, kHideArtworkDelay,
+        base::BindOnce(&UnifiedMediaControlsView::SetArtwork,
+                       base::Unretained(media_controls_), base::nullopt));
+  }
 }
 
 void UnifiedMediaControlsController::OnMediaControlsViewClicked() {

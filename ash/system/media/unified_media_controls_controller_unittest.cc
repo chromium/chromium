@@ -25,6 +25,7 @@ using media_session::test::TestMediaController;
 namespace {
 
 constexpr int kHideControlsDelay = 2000; /* in milliseconds */
+constexpr int kHideArtworkDelay = 2000;  /* in milliseconds */
 constexpr int kArtworkCornerRadius = 4;
 constexpr int kArtworkHeight = 48;
 
@@ -305,10 +306,60 @@ TEST_F(UnifiedMediaControlsControllerTest, UpdateArtwork) {
     EXPECT_EQ(path, GetArtworkClipPath());
   }
 
-  // Test that artwork view will be hidden if we get an empty artowrk.
+  // Test that artwork view will be hidden after |kHideArtworkDelay| ms if
+  // we get an empty artowrk.
   artwork.reset();
   controller()->MediaControllerImageChanged(
       media_session::mojom::MediaSessionImageType::kArtwork, artwork);
+  task_environment()->FastForwardBy(
+      base::TimeDelta::FromMilliseconds(kHideArtworkDelay));
+  EXPECT_FALSE(artwork_view()->GetVisible());
+}
+
+// Test that artwork views hides after a certain delay
+// when received a null artwork image.
+TEST_F(UnifiedMediaControlsControllerTest, HideArtwork) {
+  // Artwork view starts hidden.
+  EXPECT_FALSE(artwork_view()->GetVisible());
+
+  // Artwork view should be visible after getting an artowrk image update.
+  SkBitmap artwork;
+  artwork.allocN32Pixels(40, 40);
+  controller()->MediaControllerImageChanged(
+      media_session::mojom::MediaSessionImageType::kArtwork, artwork);
+  EXPECT_TRUE(artwork_view()->GetVisible());
+
+  // Artwork should still be visible after getting an empty artowrk.
+  artwork.reset();
+  controller()->MediaControllerImageChanged(
+      media_session::mojom::MediaSessionImageType::kArtwork, artwork);
+  EXPECT_TRUE(artwork_view()->GetVisible());
+
+  // Artwork should still be visible if we are within hide artwork delay
+  // time frame.
+  task_environment()->FastForwardBy(
+      base::TimeDelta::FromMilliseconds(kHideArtworkDelay - 1));
+  EXPECT_TRUE(artwork_view()->GetVisible());
+
+  // Artwork should be visible after getting an artwork update and the
+  // timer should be stopped.
+  artwork.allocN32Pixels(40, 40);
+  controller()->MediaControllerImageChanged(
+      media_session::mojom::MediaSessionImageType::kArtwork, artwork);
+  EXPECT_TRUE(artwork_view()->GetVisible());
+
+  // Artwork should stay visible.
+  task_environment()->FastForwardBy(
+      base::TimeDelta::FromMilliseconds(kHideArtworkDelay));
+  EXPECT_TRUE(artwork_view()->GetVisible());
+
+  // Wait for |kHideartworkDelay| ms after getting an empty artwork,
+  // artwork view should now be hidden.
+  artwork.reset();
+  controller()->MediaControllerImageChanged(
+      media_session::mojom::MediaSessionImageType::kArtwork, artwork);
+  task_environment()->FastForwardBy(
+      base::TimeDelta::FromMilliseconds(kHideArtworkDelay));
   EXPECT_FALSE(artwork_view()->GetVisible());
 }
 
