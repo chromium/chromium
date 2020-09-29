@@ -11,8 +11,11 @@ audio {
 }
 
 body {
+  --default-font-family: 'Google Sans', sans-serif;
+
   background: black;
   bottom: 0;
+  font-family: var(--default-font-family);
   height: 100%;
   left: 0;
   margin: 0;
@@ -269,7 +272,6 @@ div.mode-item>span {
   border-radius: 16px/50%;
   color: white;
   display: inline-block;
-  font-family: 'Roboto', sans-serif;
   font-size: 14px;
   font-weight: 500;
   line-height: 32px;
@@ -517,7 +519,6 @@ body.mode-switching:not(.streaming) #camera-mode {
 
 #timer-tick-msg {
   color: white;
-  font-family: 'Roboto', sans-serif;
   font-size: 72px;
   visibility: hidden;
 }
@@ -825,7 +826,6 @@ body.mirror:not(.streaming) #preview-video {
 }
 
 #preview-metadata {
-  font-family: 'Roboto', sans-serif;
   font-size: 14px;
   left: 60px;
   position: absolute;
@@ -1024,7 +1024,6 @@ body:not(.recording-ui-paused) #record-time [i18n-content=record_video_paused_ms
 #record-time [i18n-content=record_video_paused_msg] {
   color: white;
   flex-shrink: 0;
-  font-family: 'Roboto', sans-serif;
   font-size: 13px;
 }
 
@@ -1059,7 +1058,6 @@ body:not(.recording-ui-paused) #record-time [i18n-content=record_video_paused_ms
   background: rgba(241, 243, 244, 0.8);
   border-radius: 2px;
   color: rgb(32, 33, 36);
-  font-family: 'Roboto', sans-serif;
   font-size: 12px;
   left: 0;
   line-height: 22px;
@@ -1081,7 +1079,6 @@ body:not(.recording-ui-paused) #record-time [i18n-content=record_video_paused_ms
   background: rgb(30, 30, 35);
   border-radius: 16px;
   color: white;
-  font-family: 'Roboto', sans-serif;
   font-size: 16px;
   line-height: 32px;
   opacity: 0;
@@ -1158,13 +1155,13 @@ body:not(.recording-ui-paused) #record-time [i18n-content=record_video_paused_ms
 }
 
 #banner-title-text {
-  font: 450 18px 'Google Sans', sans-serif;
+  font: 450 18px var(--default-font-family);
   vertical-align: middle;
 }
 
 #banner-msg {
   color: rgb(95, 99, 104);
-  font: 375 15px/22px 'Roboto';
+  font: 375 15px/22px var(--default-font-family);
 }
 
 #banner-close {
@@ -1199,7 +1196,6 @@ body:not(.recording-ui-paused) #record-time [i18n-content=record_video_paused_ms
   color: rgb(241, 243, 244);
   display: flex;
   flex-shrink: 0;
-  font-family: 'Roboto', sans-serif;
   font-size: 13px;
   height: 64px;
   justify-content: flex-start;
@@ -1394,7 +1390,6 @@ body.no-resolution-settings #settings-resolution {
 }
 
 #view-warning #error-msg {
-  font-family: 'Roboto', sans-serif;
   font-size: 18px;
   line-height: 32px;
   text-align: center;
@@ -1423,7 +1418,6 @@ body.no-resolution-settings #settings-resolution {
 .dialog .dialog-msg {
   color: rgb(32, 33, 36);
   cursor: text;
-  font-family: 'Roboto', sans-serif;
   font-size: 14px;
   max-height: 320px;
   max-width: 472px;
@@ -1459,7 +1453,6 @@ body.no-resolution-settings #settings-resolution {
   background-color: white;
   border-style: solid;
   color: rgb(37, 129, 223);
-  font-family: 'Roboto', sans-serif;
   font-size: 12px;
   margin: 4px;
   padding: 6px 18px;
