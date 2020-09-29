@@ -63,7 +63,7 @@
       },
       "cursorColor": {
         "$ref": "types.ChromeSetting",
-        "description": "<p><strong>ChromeOS only.</strong></p><p>Cursor color. The value indicates whether the feature is enabled or not. <code>get()</code> requires <code>accessibilityFeatures.read</code> permission. <code>set()</code> and <code>clear()</code> require <code>accessibilityFeatures.modify</code> permission.</p>",
+        "description": "<p><strong>ChromeOS only.</strong></p><p>Cursor color. The value indicates whether the feature is enabled or not, doesn't indicate the color of it. <code>get()</code> requires <code>accessibilityFeatures.read</code> permission. <code>set()</code> and <code>clear()</code> require <code>accessibilityFeatures.modify</code> permission.</p>",
         "value": ["cursorColor", {"type": "boolean"}],
         "platforms": ["chromeos"]
       },
