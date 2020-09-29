@@ -230,6 +230,11 @@ public class PaymentRequestTestBridge {
     }
 
     @CalledByNative
+    private static boolean clickPaymentHandlerCloseButtonForTest() {
+        return PaymentRequestImpl.clickPaymentHandlerCloseButtonForTest();
+    }
+
+    @CalledByNative
     private static boolean confirmMinimalUIForTest() {
         return PaymentRequestImpl.confirmMinimalUIForTest();
     }

@@ -972,6 +972,13 @@ public class PaymentUIsManager implements SettingsAutofillAndPaymentsObserver.Ob
         return true;
     }
 
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    public boolean clickPaymentHandlerCloseButtonForTest() {
+        if (mPaymentHandlerUi == null) return false;
+        mPaymentHandlerUi.clickCloseButtonForTest();
+        return true;
+    }
+
     /** Provide PaymentInformation to the PaymentRequest UI. */
     public void providePaymentInformationToPaymentRequestUI() {
         // Do not display service worker payment apps summary in single line so as to display its

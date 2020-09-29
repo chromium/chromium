@@ -155,6 +155,18 @@ bool PaymentRequestTestController::ConfirmPayment() {
   return true;
 }
 
+bool PaymentRequestTestController::ClickPaymentHandlerCloseButton() {
+  if (!delegate_)
+    return false;
+
+  PaymentRequestDialog* dialog = delegate_->GetDialogForTesting();
+  if (!dialog)
+    return false;
+
+  dialog->CloseDialog();
+  return true;
+}
+
 bool PaymentRequestTestController::ConfirmMinimalUI() {
   // Desktop does not have a minimal UI.
   return true;

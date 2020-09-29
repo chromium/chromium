@@ -24,6 +24,10 @@ bool PaymentRequestTestController::ClickPaymentHandlerSecurityIcon() {
   return ClickPaymentHandlerSecurityIconForTest();
 }
 
+bool PaymentRequestTestController::ClickPaymentHandlerCloseButton() {
+  return ClickPaymentHandlerCloseButtonForTest();
+}
+
 bool PaymentRequestTestController::ConfirmPayment() {
   NOTIMPLEMENTED();
   return false;

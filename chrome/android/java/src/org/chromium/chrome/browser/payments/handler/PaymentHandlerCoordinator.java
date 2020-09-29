@@ -166,4 +166,9 @@ public class PaymentHandlerCoordinator {
     public void clickSecurityIconForTest() {
         mToolbarCoordinator.clickSecurityIconForTest();
     }
+
+    @VisibleForTesting
+    public void clickCloseButtonForTest() {
+        mToolbarCoordinator.clickCloseButtonForTest();
+    }
 }

@@ -631,10 +631,10 @@ public class PaymentRequestImpl
     }
 
     /**
-     * Click the security icon of the Expandable Payment Handler for testing purpose; return false
+     * Clicks the security icon of the Expandable Payment Handler for testing purpose; return false
      * if failed.
      *
-     * @return The WebContents of the Expandable Payment Handler.
+     * @return Whether the click is successful.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     public static boolean clickPaymentHandlerSecurityIconForTest() {
@@ -645,6 +645,23 @@ public class PaymentRequestImpl
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     private boolean clickPaymentHandlerSecurityIconForTestInternal() {
         return mPaymentUIsManager.clickPaymentHandlerSecurityIconForTest();
+    }
+
+    /**
+     * Simulates a click on the close button of the Payment Handler for testing purpose; return
+     * false if failed.
+     *
+     * @return Whether the click is successful.
+     */
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    public static boolean clickPaymentHandlerCloseButtonForTest() {
+        if (sShowingPaymentRequest == null) return false;
+        return sShowingPaymentRequest.clickPaymentHandlerCloseButtonForTestInternal();
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    private boolean clickPaymentHandlerCloseButtonForTestInternal() {
+        return mPaymentUIsManager.clickPaymentHandlerCloseButtonForTest();
     }
 
     /**

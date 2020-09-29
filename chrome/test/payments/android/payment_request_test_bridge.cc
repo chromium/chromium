@@ -43,6 +43,12 @@ bool ClickPaymentHandlerSecurityIconForTest() {
       env);
 }
 
+bool ClickPaymentHandlerCloseButtonForTest() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  return Java_PaymentRequestTestBridge_clickPaymentHandlerCloseButtonForTest(
+      env);
+}
+
 bool ConfirmMinimalUIForTest() {
   return Java_PaymentRequestTestBridge_confirmMinimalUIForTest(
       base::android::AttachCurrentThread());
