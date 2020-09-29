@@ -17,53 +17,117 @@
 #define THREAD_PROFILER_SUPPORTED_ON_PLATFORM false
 #endif
 
-// The browser_test_mode_enabled=true scenario is already covered by the browser
-// tests so doesn't require separate testing here.
-TEST(ThreadProfilerPlatformConfigurationTest, IsSupported) {
-  const std::unique_ptr<ThreadProfilerPlatformConfiguration> config =
-      ThreadProfilerPlatformConfiguration::Create(
-          /*browser_test_mode_enabled=*/false);
-#if !THREAD_PROFILER_SUPPORTED_ON_PLATFORM
-  EXPECT_FALSE(config->IsSupported(/*is_chrome_branded=*/true,
-                                   version_info::Channel::UNKNOWN));
-  EXPECT_FALSE(config->IsSupported(/*is_chrome_branded=*/true,
-                                   version_info::Channel::CANARY));
-  EXPECT_FALSE(config->IsSupported(/*is_chrome_branded=*/true,
-                                   version_info::Channel::DEV));
-  EXPECT_FALSE(config->IsSupported(/*is_chrome_branded=*/true,
-                                   version_info::Channel::BETA));
-  EXPECT_FALSE(config->IsSupported(/*is_chrome_branded=*/true,
-                                   version_info::Channel::STABLE));
+class ThreadProfilerPlatformConfigurationTest : public ::testing::Test {
+ public:
+  // The browser_test_mode_enabled=true scenario is already covered by the
+  // browser tests so doesn't require separate testing here.
+  ThreadProfilerPlatformConfigurationTest()
+      : config_(ThreadProfilerPlatformConfiguration::Create(
+            /*browser_test_mode_enabled=*/false)) {}
 
-  EXPECT_FALSE(config->IsSupported(/*is_chrome_branded=*/false,
-                                   version_info::Channel::UNKNOWN));
-#elif defined(OS_ANDROID)
-  EXPECT_FALSE(config->IsSupported(/*is_chrome_branded=*/true,
-                                   version_info::Channel::UNKNOWN));
-  EXPECT_FALSE(config->IsSupported(/*is_chrome_branded=*/true,
-                                   version_info::Channel::CANARY));
-  EXPECT_FALSE(config->IsSupported(/*is_chrome_branded=*/true,
-                                   version_info::Channel::DEV));
-  EXPECT_FALSE(config->IsSupported(/*is_chrome_branded=*/true,
-                                   version_info::Channel::BETA));
-  EXPECT_FALSE(config->IsSupported(/*is_chrome_branded=*/true,
-                                   version_info::Channel::STABLE));
+  const std::unique_ptr<ThreadProfilerPlatformConfiguration>& config() {
+    return config_;
+  }
 
-  EXPECT_FALSE(config->IsSupported(/*is_chrome_branded=*/false,
-                                   version_info::Channel::UNKNOWN));
+ private:
+  const std::unique_ptr<ThreadProfilerPlatformConfiguration> config_;
+};
+
+#if THREAD_PROFILER_SUPPORTED_ON_PLATFORM
+#define MAYBE_PLATFORM_CONFIG_TEST_F(suite, test) TEST_F(suite, test)
 #else
-  EXPECT_FALSE(config->IsSupported(/*is_chrome_branded=*/true,
-                                   version_info::Channel::UNKNOWN));
-  EXPECT_TRUE(config->IsSupported(/*is_chrome_branded=*/true,
-                                  version_info::Channel::CANARY));
-  EXPECT_TRUE(config->IsSupported(/*is_chrome_branded=*/true,
-                                  version_info::Channel::DEV));
-  EXPECT_FALSE(config->IsSupported(/*is_chrome_branded=*/true,
-                                   version_info::Channel::BETA));
-  EXPECT_FALSE(config->IsSupported(/*is_chrome_branded=*/true,
-                                   version_info::Channel::STABLE));
+#define MAYBE_PLATFORM_CONFIG_TEST_F(suite, test) TEST_F(suite, DISABLED_##test)
+#endif
 
-  EXPECT_TRUE(config->IsSupported(/*is_chrome_branded=*/false,
-                                  version_info::Channel::UNKNOWN));
+TEST_F(ThreadProfilerPlatformConfigurationTest, IsSupported) {
+#if !THREAD_PROFILER_SUPPORTED_ON_PLATFORM
+  EXPECT_FALSE(config()->IsSupported(/*is_chrome_branded=*/true,
+                                     version_info::Channel::UNKNOWN));
+  EXPECT_FALSE(config()->IsSupported(/*is_chrome_branded=*/true,
+                                     version_info::Channel::CANARY));
+  EXPECT_FALSE(config()->IsSupported(/*is_chrome_branded=*/true,
+                                     version_info::Channel::DEV));
+  EXPECT_FALSE(config()->IsSupported(/*is_chrome_branded=*/true,
+                                     version_info::Channel::BETA));
+  EXPECT_FALSE(config()->IsSupported(/*is_chrome_branded=*/true,
+                                     version_info::Channel::STABLE));
+
+  EXPECT_FALSE(config()->IsSupported(/*is_chrome_branded=*/false,
+                                     version_info::Channel::UNKNOWN));
+#elif defined(OS_ANDROID)
+  EXPECT_FALSE(config()->IsSupported(/*is_chrome_branded=*/true,
+                                     version_info::Channel::UNKNOWN));
+  EXPECT_FALSE(config()->IsSupported(/*is_chrome_branded=*/true,
+                                     version_info::Channel::CANARY));
+  EXPECT_FALSE(config()->IsSupported(/*is_chrome_branded=*/true,
+                                     version_info::Channel::DEV));
+  EXPECT_FALSE(config()->IsSupported(/*is_chrome_branded=*/true,
+                                     version_info::Channel::BETA));
+  EXPECT_FALSE(config()->IsSupported(/*is_chrome_branded=*/true,
+                                     version_info::Channel::STABLE));
+
+  EXPECT_FALSE(config()->IsSupported(/*is_chrome_branded=*/false,
+                                     version_info::Channel::UNKNOWN));
+#else
+  EXPECT_FALSE(config()->IsSupported(/*is_chrome_branded=*/true,
+                                     version_info::Channel::UNKNOWN));
+  EXPECT_TRUE(config()->IsSupported(/*is_chrome_branded=*/true,
+                                    version_info::Channel::CANARY));
+  EXPECT_TRUE(config()->IsSupported(/*is_chrome_branded=*/true,
+                                    version_info::Channel::DEV));
+  EXPECT_FALSE(config()->IsSupported(/*is_chrome_branded=*/true,
+                                     version_info::Channel::BETA));
+  EXPECT_FALSE(config()->IsSupported(/*is_chrome_branded=*/true,
+                                     version_info::Channel::STABLE));
+
+  EXPECT_TRUE(config()->IsSupported(/*is_chrome_branded=*/false,
+                                    version_info::Channel::UNKNOWN));
+#endif
+}
+
+MAYBE_PLATFORM_CONFIG_TEST_F(ThreadProfilerPlatformConfigurationTest,
+                             GetRuntimeModuleState) {
+  using RuntimeModuleState =
+      ThreadProfilerPlatformConfiguration::RuntimeModuleState;
+#if defined(OS_ANDROID)
+  EXPECT_EQ(RuntimeModuleState::kModuleNotAvailable,
+            config()->GetRuntimeModuleState(/*is_chrome_branded=*/true,
+                                            version_info::Channel::UNKNOWN));
+  EXPECT_EQ(RuntimeModuleState::kModuleAbsentButAvailable,
+            config()->GetRuntimeModuleState(/*is_chrome_branded=*/true,
+                                            version_info::Channel::CANARY));
+  EXPECT_EQ(RuntimeModuleState::kModuleAbsentButAvailable,
+            config()->GetRuntimeModuleState(/*is_chrome_branded=*/true,
+                                            version_info::Channel::DEV));
+  EXPECT_EQ(RuntimeModuleState::kModuleNotAvailable,
+            config()->GetRuntimeModuleState(/*is_chrome_branded=*/true,
+                                            version_info::Channel::BETA));
+  EXPECT_EQ(RuntimeModuleState::kModuleNotAvailable,
+            config()->GetRuntimeModuleState(/*is_chrome_branded=*/true,
+                                            version_info::Channel::STABLE));
+
+  EXPECT_EQ(RuntimeModuleState::kModuleNotAvailable,
+            config()->GetRuntimeModuleState(/*is_chrome_branded=*/true,
+                                            version_info::Channel::UNKNOWN));
+#else
+  EXPECT_EQ(RuntimeModuleState::kModuleNotRequired,
+            config()->GetRuntimeModuleState(/*is_chrome_branded=*/true,
+                                            version_info::Channel::UNKNOWN));
+  EXPECT_EQ(RuntimeModuleState::kModuleNotRequired,
+            config()->GetRuntimeModuleState(/*is_chrome_branded=*/true,
+                                            version_info::Channel::CANARY));
+  EXPECT_EQ(RuntimeModuleState::kModuleNotRequired,
+            config()->GetRuntimeModuleState(/*is_chrome_branded=*/true,
+                                            version_info::Channel::DEV));
+  EXPECT_EQ(RuntimeModuleState::kModuleNotRequired,
+            config()->GetRuntimeModuleState(/*is_chrome_branded=*/true,
+                                            version_info::Channel::BETA));
+  EXPECT_EQ(RuntimeModuleState::kModuleNotRequired,
+            config()->GetRuntimeModuleState(/*is_chrome_branded=*/true,
+                                            version_info::Channel::STABLE));
+
+  EXPECT_EQ(RuntimeModuleState::kModuleNotRequired,
+            config()->GetRuntimeModuleState(/*is_chrome_branded=*/true,
+                                            version_info::Channel::UNKNOWN));
 #endif
 }

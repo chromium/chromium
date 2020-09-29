@@ -4,8 +4,14 @@
 
 #include "chrome/common/profiler/thread_profiler_platform_configuration.h"
 
+#include "base/command_line.h"
 #include "base/profiler/stack_sampling_profiler.h"
 #include "build/build_config.h"
+#include "content/public/common/content_switches.h"
+
+#if defined(OS_ANDROID)
+#include "chrome/android/modules/stack_unwinder/public/module.h"
+#endif
 
 namespace {
 
@@ -15,6 +21,11 @@ class DefaultPlatformConfiguration
     : public ThreadProfilerPlatformConfiguration {
  public:
   explicit DefaultPlatformConfiguration(bool browser_test_mode_enabled);
+
+  // ThreadProfilerPlatformConfiguration:
+  RuntimeModuleState GetRuntimeModuleState(
+      bool is_chrome_branded,
+      version_info::Channel channel) const override;
 
  protected:
   bool IsSupportedForChannel(bool is_chrome_branded,
@@ -30,6 +41,13 @@ DefaultPlatformConfiguration::DefaultPlatformConfiguration(
     bool browser_test_mode_enabled)
     : browser_test_mode_enabled_(browser_test_mode_enabled) {}
 
+ThreadProfilerPlatformConfiguration::RuntimeModuleState
+DefaultPlatformConfiguration::GetRuntimeModuleState(
+    bool is_chrome_branded,
+    version_info::Channel channel) const {
+  return RuntimeModuleState::kModuleNotRequired;
+}
+
 bool DefaultPlatformConfiguration::IsSupportedForChannel(
     bool is_chrome_branded,
     version_info::Channel channel) const {
@@ -44,6 +62,12 @@ bool DefaultPlatformConfiguration::IsSupportedForChannel(
 }
 
 #if defined(OS_ANDROID)
+bool IsBrowserProcess() {
+  return base::CommandLine::ForCurrentProcess()
+      ->GetSwitchValueASCII(switches::kProcessType)
+      .empty();
+}
+
 // The configuration to use for the Android platform. Applies to ARM32 which is
 // the only Android architecture currently supported by StackSamplingProfiler.
 // Defined in terms of DefaultPlatformConfiguration where Android does not
@@ -51,6 +75,13 @@ bool DefaultPlatformConfiguration::IsSupportedForChannel(
 class AndroidPlatformConfiguration : public DefaultPlatformConfiguration {
  public:
   explicit AndroidPlatformConfiguration(bool browser_test_mode_enabled);
+
+  // DefaultPlatformConfiguration:
+  RuntimeModuleState GetRuntimeModuleState(
+      bool is_chrome_branded,
+      version_info::Channel channel) const override;
+
+  void RequestRuntimeModuleInstall() const override;
 
  protected:
   bool IsSupportedForChannel(bool is_chrome_branded,
@@ -60,6 +91,46 @@ class AndroidPlatformConfiguration : public DefaultPlatformConfiguration {
 AndroidPlatformConfiguration::AndroidPlatformConfiguration(
     bool browser_test_mode_enabled)
     : DefaultPlatformConfiguration(browser_test_mode_enabled) {}
+
+ThreadProfilerPlatformConfiguration::RuntimeModuleState
+AndroidPlatformConfiguration::GetRuntimeModuleState(
+    bool is_chrome_branded,
+    version_info::Channel channel) const {
+  // The module will be present in releases due to having been installed via
+  // RequestRuntimeModuleInstall(), and in local/CQ builds of bundle targets
+  // where the module was installed with the bundle.
+  if (stack_unwinder::Module::IsInstalled())
+    return RuntimeModuleState::kModulePresent;
+
+  if (is_chrome_branded) {
+    // We only want to incur the cost of universally downloading the module in
+    // early channels, where profiling will occur over substantially all of
+    // the population. When supporting later channels in the future we will
+    // enable profiling for only a fraction of users and only download for
+    // those users.
+    if (channel == version_info::Channel::CANARY ||
+        channel == version_info::Channel::DEV) {
+      return RuntimeModuleState::kModuleAbsentButAvailable;
+    }
+
+    return RuntimeModuleState::kModuleNotAvailable;
+  }
+
+  // This is a local or CQ build of a bundle where the module was not
+  // installed with the bundle, or an apk where the module is not included.
+  // The module is installable from the Play Store only for released Chrome so
+  // is not available in this build.
+  return RuntimeModuleState::kModuleNotAvailable;
+}
+
+void AndroidPlatformConfiguration::RequestRuntimeModuleInstall() const {
+  // The install can only be done in the browser process.
+  CHECK(IsBrowserProcess());
+
+  // The install occurs asynchronously, with the module available at the first
+  // run of Chrome following install.
+  stack_unwinder::Module::RequestInstallation();
+}
 
 bool AndroidPlatformConfiguration::IsSupportedForChannel(
     bool is_chrome_branded,

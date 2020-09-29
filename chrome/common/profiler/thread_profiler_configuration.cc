@@ -17,10 +17,6 @@
 #include "extensions/buildflags/buildflags.h"
 #include "sandbox/policy/sandbox.h"
 
-#if defined(OS_ANDROID)
-#include "chrome/android/modules/stack_unwinder/public/module.h"
-#endif
-
 #if defined(OS_WIN)
 #include "base/win/static_constants.h"
 #endif
@@ -221,28 +217,20 @@ ThreadProfilerConfiguration::GenerateConfiguration(
     return PROFILE_DISABLED;
   }
 
-#if defined(OS_ANDROID)
-  // Allow profiling if the Android Java/native unwinder module is available at
-  // initialization time. Otherwise request that it be installed for use on the
-  // next run of Chrome and disable profiling.
-  if (!stack_unwinder::Module::IsInstalled()) {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    // We only want to incur the cost of universally downloading the module in
-    // early channels, where profiling will occur over substantially all of the
-    // population. When supporting later channels in the future we will enable
-    // profiling for only a fraction of users and only download for those users.
-    const version_info::Channel channel = chrome::GetChannel();
-    if (channel == version_info::Channel::CANARY ||
-        channel == version_info::Channel::DEV) {
-      stack_unwinder::Module::RequestInstallation();
-    }
-#else
-    // This is a development build. The module is only available in the Play
-    // Store for releases so don't try to install it.
-#endif
-    return PROFILE_DISABLED_MODULE_NOT_INSTALLED;
+  using RuntimeModuleState =
+      ThreadProfilerPlatformConfiguration::RuntimeModuleState;
+  switch (platform_configuration.GetRuntimeModuleState(
+      BUILDFLAG(GOOGLE_CHROME_BRANDING), channel)) {
+    case RuntimeModuleState::kModuleAbsentButAvailable:
+      platform_configuration.RequestRuntimeModuleInstall();
+      FALLTHROUGH;
+    case RuntimeModuleState::kModuleNotAvailable:
+      return PROFILE_DISABLED_MODULE_NOT_INSTALLED;
+
+    case RuntimeModuleState::kModuleNotRequired:
+    case RuntimeModuleState::kModulePresent:
+      break;
   }
-#endif
 
   switch (chrome::GetChannel()) {
     // Enable the profiler unconditionally for development/waterfall builds.

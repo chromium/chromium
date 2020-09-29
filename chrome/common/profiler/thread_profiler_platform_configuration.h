@@ -23,6 +23,19 @@
 // overall enable/disable state should be reported to UMA in this case.
 class ThreadProfilerPlatformConfiguration {
  public:
+  // State of the runtime module used by the profiler on the platform (if any).
+  // Android in particular requires use of a dynamic feature modules to provide
+  // the native unwinder.
+  enum class RuntimeModuleState {
+    // States that allow profiling.
+    kModuleNotRequired,  // No module is required.
+    kModulePresent,      // The module is present for use.
+
+    // States that don't allow profiling in this run of Chrome.
+    kModuleAbsentButAvailable,  // A module is not present but is installable.
+    kModuleNotAvailable,        // A module is necessary but not available.
+  };
+
   virtual ~ThreadProfilerPlatformConfiguration() = default;
 
   // Create the platform configuration.
@@ -32,6 +45,17 @@ class ThreadProfilerPlatformConfiguration {
   // True if the platform supports the StackSamplingProfiler and the profiler is
   // to be run for the channel/chrome branding.
   bool IsSupported(bool is_chrome_branded, version_info::Channel channel) const;
+
+  // Returns the current state of the runtime support module for the
+  // channel/chrome branding on the platform. Runtime module state is valid only
+  // if IsSupported().
+  virtual RuntimeModuleState GetRuntimeModuleState(
+      bool is_chrome_branded,
+      version_info::Channel channel) const = 0;
+
+  // Request install of the runtime support module. May be invoked only if
+  // GetRuntimeModuleState() returns kModuleAbsentButAvailable.
+  virtual void RequestRuntimeModuleInstall() const {}
 
  protected:
   // True if the profiler is to be run for the channel/chrome branding on the
