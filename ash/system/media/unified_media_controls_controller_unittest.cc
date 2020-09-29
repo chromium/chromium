@@ -202,6 +202,36 @@ TEST_F(UnifiedMediaControlsControllerTest, ActionButtonsTest) {
   EXPECT_EQ(1, media_controller()->resume_count());
 }
 
+TEST_F(UnifiedMediaControlsControllerTest, ActionButtonVisibility) {
+  SimulateMediaPlaybackStateChanged(
+      media_session::mojom::MediaPlaybackState::kPlaying);
+  EnableAction(MediaSessionAction::kPause);
+  EnableAction(MediaSessionAction::kPlay);
+  EXPECT_EQ(GetActionButton(MediaSessionAction::kPlay), nullptr);
+  EXPECT_TRUE(GetActionButton(MediaSessionAction::kPause)->GetVisible());
+  EXPECT_FALSE(
+      GetActionButton(MediaSessionAction::kPreviousTrack)->GetVisible());
+  EXPECT_FALSE(GetActionButton(MediaSessionAction::kNextTrack)->GetVisible());
+
+  EnableAction(MediaSessionAction::kPreviousTrack);
+  EXPECT_TRUE(GetActionButton(MediaSessionAction::kPause)->GetVisible());
+  EXPECT_TRUE(
+      GetActionButton(MediaSessionAction::kPreviousTrack)->GetVisible());
+  EXPECT_FALSE(GetActionButton(MediaSessionAction::kNextTrack)->GetVisible());
+
+  EnableAction(MediaSessionAction::kNextTrack);
+  DisableAction(MediaSessionAction::kPreviousTrack);
+  EXPECT_TRUE(GetActionButton(MediaSessionAction::kPause)->GetVisible());
+  EXPECT_FALSE(
+      GetActionButton(MediaSessionAction::kPreviousTrack)->GetVisible());
+  EXPECT_TRUE(GetActionButton(MediaSessionAction::kNextTrack)->GetVisible());
+
+  SimulateMediaPlaybackStateChanged(
+      media_session::mojom::MediaPlaybackState::kPaused);
+  EXPECT_EQ(GetActionButton(MediaSessionAction::kPause), nullptr);
+  EXPECT_TRUE(GetActionButton(MediaSessionAction::kPlay)->GetVisible());
+}
+
 TEST_F(UnifiedMediaControlsControllerTest, MetadataUpdate) {
   media_session::MediaMetadata metadata;
   metadata.title = base::ASCIIToUTF16("title");

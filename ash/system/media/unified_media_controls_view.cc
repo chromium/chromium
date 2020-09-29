@@ -105,12 +105,6 @@ void UnifiedMediaControlsView::MediaActionButton::SetAction(
                GetVectorIconForMediaAction(action), kMediaButtonIconSize,
                AshColorProvider::Get()->GetContentLayerColor(
                    AshColorProvider::ContentLayerType::kIconColorPrimary)));
-
-  SetImage(views::Button::STATE_DISABLED,
-           CreateVectorIcon(
-               GetVectorIconForMediaAction(action), kMediaButtonIconSize,
-               AshColorProvider::Get()->GetContentLayerColor(
-                   AshColorProvider::ContentLayerType::kIconColorSecondary)));
 }
 
 UnifiedMediaControlsView::UnifiedMediaControlsView(
@@ -228,12 +222,18 @@ void UnifiedMediaControlsView::SetArtist(const base::string16& artist) {
 
 void UnifiedMediaControlsView::UpdateActionButtonAvailability(
     const base::flat_set<MediaSessionAction>& enabled_actions) {
+  bool should_invalidate = false;
   for (views::View* child : button_row_->children()) {
     views::Button* button = static_cast<views::Button*>(child);
-    button->SetEnabled(
-        base::Contains(enabled_actions,
-                       media_message_center::GetActionFromButtonTag(*button)));
+    bool should_show = base::Contains(
+        enabled_actions, media_message_center::GetActionFromButtonTag(*button));
+
+    should_invalidate |= should_show != button->GetVisible();
+    button->SetVisible(should_show);
   }
+
+  if (should_invalidate)
+    button_row_->InvalidateLayout();
 }
 
 SkPath UnifiedMediaControlsView::GetArtworkClipPath() {
