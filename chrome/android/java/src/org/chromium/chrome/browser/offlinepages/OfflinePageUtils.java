@@ -394,7 +394,7 @@ public class OfflinePageUtils {
      *                      afterwards via PostTask.
      */
     public static void maybeShareOfflinePage(Tab tab, final Callback<ShareParams> shareCallback) {
-        if (tab == null) {
+        if (tab == null || !tab.isInitialized()) {
             shareCallback.onResult(null);
             return;
         }
