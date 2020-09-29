@@ -57,7 +57,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/window_proxy.h"
 #include "third_party/blink/renderer/core/dom/document_init.h"
-#include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/html_names.h"
 
 namespace blink {
@@ -94,8 +94,8 @@ void HTMLDocument::AddNamedItem(const AtomicString& name) {
   if (name.IsEmpty())
     return;
   named_item_counts_.insert(name);
-  if (LocalFrame* f = GetFrame()) {
-    f->GetScriptController()
+  if (LocalDOMWindow* window = domWindow()) {
+    window->GetScriptController()
         .WindowProxy(DOMWrapperWorld::MainWorld())
         ->NamedItemAdded(this, name);
   }
@@ -105,8 +105,8 @@ void HTMLDocument::RemoveNamedItem(const AtomicString& name) {
   if (name.IsEmpty())
     return;
   named_item_counts_.erase(name);
-  if (LocalFrame* f = GetFrame()) {
-    f->GetScriptController()
+  if (LocalDOMWindow* window = domWindow()) {
+    window->GetScriptController()
         .WindowProxy(DOMWrapperWorld::MainWorld())
         ->NamedItemRemoved(this, name);
   }

@@ -69,6 +69,7 @@ class MessageEvent;
 class Modulator;
 class Navigator;
 class Screen;
+class ScriptController;
 class ScriptPromise;
 class ScriptState;
 class ScrollToOptions;
@@ -119,6 +120,8 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   }
 
   LocalFrame* GetFrame() const { return To<LocalFrame>(DOMWindow::GetFrame()); }
+
+  ScriptController& GetScriptController() const { return *script_controller_; }
 
   void Initialize();
   void ClearForReuse() { document_ = nullptr; }
@@ -439,6 +442,8 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
 
   // Return the viewport size including scrollbars.
   IntSize GetViewportSize() const;
+
+  Member<ScriptController> script_controller_;
 
   Member<Document> document_;
   Member<DOMVisualViewport> visualViewport_;

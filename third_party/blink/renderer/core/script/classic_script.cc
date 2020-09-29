@@ -40,7 +40,7 @@ void ClassicScript::RunScript(LocalFrame* frame,
 v8::Local<v8::Value> ClassicScript::RunScriptAndReturnValue(
     LocalFrame* frame,
     ScriptController::ExecuteScriptPolicy policy) {
-  return frame->GetScriptController().EvaluateScriptInMainWorld(
+  return frame->DomWindow()->GetScriptController().EvaluateScriptInMainWorld(
       GetScriptSourceCode(), BaseURL(), sanitize_script_errors_, FetchOptions(),
       policy);
 }
@@ -48,7 +48,7 @@ v8::Local<v8::Value> ClassicScript::RunScriptAndReturnValue(
 v8::Local<v8::Value> ClassicScript::RunScriptInIsolatedWorldAndReturnValue(
     LocalFrame* frame,
     int32_t world_id) {
-  return frame->GetScriptController().ExecuteScriptInIsolatedWorld(
+  return frame->DomWindow()->GetScriptController().ExecuteScriptInIsolatedWorld(
       world_id, GetScriptSourceCode(), BaseURL(), sanitize_script_errors_);
 }
 

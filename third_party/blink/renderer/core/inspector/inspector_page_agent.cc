@@ -857,13 +857,14 @@ scoped_refptr<DOMWrapperWorld> InspectorPageAgent::EnsureDOMWrapperWorld(
   auto world_it = frame_worlds.find(world_name);
   if (world_it != frame_worlds.end())
     return world_it->value;
+  LocalDOMWindow* window = frame->DomWindow();
   scoped_refptr<DOMWrapperWorld> world =
-      frame->GetScriptController().CreateNewInspectorIsolatedWorld(world_name);
+      window->GetScriptController().CreateNewInspectorIsolatedWorld(world_name);
   if (!world)
     return nullptr;
   frame_worlds.Set(world_name, world);
   scoped_refptr<SecurityOrigin> security_origin =
-      frame->GetSecurityContext()->GetSecurityOrigin()->IsolatedCopy();
+      window->GetSecurityOrigin()->IsolatedCopy();
   if (grant_universal_access)
     security_origin->GrantUniversalAccess();
   DOMWrapperWorld::SetIsolatedWorldSecurityOrigin(world->GetWorldId(),
@@ -1307,7 +1308,7 @@ protocol::Response InspectorPageAgent::createIsolatedWorld(
     return Response::ServerError("Could not create isolated world");
 
   LocalWindowProxy* isolated_world_window_proxy =
-      frame->GetScriptController().WindowProxy(*world);
+      frame->DomWindow()->GetScriptController().WindowProxy(*world);
   v8::HandleScope handle_scope(V8PerIsolateData::MainThreadIsolate());
   *execution_context_id = v8_inspector::V8ContextInfo::executionContextId(
       isolated_world_window_proxy->ContextIfInitialized());

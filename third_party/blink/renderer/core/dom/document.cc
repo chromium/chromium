@@ -5983,7 +5983,7 @@ void Document::setDomain(const String& raw_domain,
         child_local_frame->View()->CrossOriginToParentFrameChanged();
     }
 
-    GetFrame()->GetScriptController().UpdateSecurityOrigin(
+    dom_window_->GetScriptController().UpdateSecurityOrigin(
         dom_window_->GetSecurityOrigin());
   }
 }
@@ -8350,12 +8350,12 @@ void Document::IncrementNumberOfCanvases() {
 }
 
 void Document::ExecuteJavaScriptUrls() {
-  DCHECK(GetFrame());
+  DCHECK(dom_window_);
   Vector<PendingJavascriptUrl> urls_to_execute;
   urls_to_execute.swap(pending_javascript_urls_);
 
   for (auto& url_to_execute : urls_to_execute) {
-    GetFrame()->GetScriptController().ExecuteJavaScriptURL(
+    dom_window_->GetScriptController().ExecuteJavaScriptURL(
         url_to_execute.url, network::mojom::CSPDisposition::CHECK,
         url_to_execute.world.get());
     if (!GetFrame())

@@ -104,10 +104,8 @@ class IsolatedWorldCSPDelegate final
   }
 
   void DisableEval(const String& error_message) override {
-    if (!window_->GetFrame())
-      return;
-    window_->GetFrame()->GetScriptController().DisableEvalForIsolatedWorld(
-        world_id_, error_message);
+    window_->GetScriptController().DisableEvalForIsolatedWorld(world_id_,
+                                                               error_message);
   }
 
   void ReportBlockedScriptExecutionToInspector(

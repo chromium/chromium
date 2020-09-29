@@ -159,7 +159,7 @@ void ScheduledAction::Execute(LocalFrame* frame) {
     // behavior, but this causes failures on
     // wpt/html/webappapis/scripting/processing-model-2/compile-error-cross-origin-setTimeout.html
     // and friends.
-    frame->GetScriptController().ExecuteScriptAndReturnValue(
+    frame->DomWindow()->GetScriptController().ExecuteScriptAndReturnValue(
         script_state_->GetContext(),
         ScriptSourceCode(code_,
                          ScriptSourceLocationType::kEvalForScheduledAction),

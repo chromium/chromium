@@ -444,7 +444,6 @@ void LocalFrame::Trace(Visitor* visitor) const {
   visitor->Trace(view_);
   visitor->Trace(dom_window_);
   visitor->Trace(page_popup_owner_);
-  visitor->Trace(script_controller_);
   visitor->Trace(editor_);
   visitor->Trace(selection_);
   visitor->Trace(event_handler_);
@@ -599,9 +598,9 @@ void LocalFrame::DetachImpl(FrameDetachType type) {
 
   DCHECK(!view_->IsAttached());
   Client()->WillBeDetached();
-  // Notify ScriptController that the frame is closing, since its cleanup ends
+  // Notify WindowProxyManager that the frame is closing, since its cleanup ends
   // up calling back to LocalFrameClient via WindowProxy.
-  GetScriptController().ClearForClose();
+  GetWindowProxyManager()->ClearForClose();
 
   // TODO(crbug.com/729196): Trace why LocalFrameView::DetachFromLayout crashes.
   CHECK(!view_->IsAttached());
@@ -768,7 +767,7 @@ void LocalFrame::SetDOMWindow(LocalDOMWindow* dom_window) {
     system_clipboard_ = nullptr;
     raw_system_clipboard_ = nullptr;
   }
-  GetScriptController().ClearWindowProxy();
+  GetWindowProxyManager()->ClearForNavigation();
   dom_window_ = dom_window;
   dom_window->Initialize();
 }
@@ -1355,9 +1354,6 @@ LocalFrame::LocalFrame(LocalFrameClient* client,
           IsMainFrame() ? FrameScheduler::FrameType::kMainFrame
                         : FrameScheduler::FrameType::kSubframe)),
       loader_(this),
-      script_controller_(MakeGarbageCollected<ScriptController>(
-          *this,
-          *static_cast<LocalWindowProxyManager*>(GetWindowProxyManager()))),
       editor_(MakeGarbageCollected<Editor>(*this)),
       selection_(MakeGarbageCollected<FrameSelection>(*this)),
       event_handler_(MakeGarbageCollected<EventHandler>(*this)),

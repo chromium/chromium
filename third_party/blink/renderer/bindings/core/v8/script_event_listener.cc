@@ -56,12 +56,11 @@ EventListener* CreateAttributeEventListener(Node* node,
                         OrdinalNumber::First());
   String source_url;
 
-  if (LocalFrame* frame = node->GetDocument().GetFrame()) {
-    ScriptController& script_controller = frame->GetScriptController();
-    if (!node->GetExecutionContext()->CanExecuteScripts(kAboutToExecuteScript))
+  if (LocalDOMWindow* window = node->GetDocument().domWindow()) {
+    if (!window->CanExecuteScripts(kAboutToExecuteScript))
       return nullptr;
-    position = script_controller.EventHandlerPosition();
-    source_url = node->GetDocument().Url().GetString();
+    position = window->GetScriptController().EventHandlerPosition();
+    source_url = window->Url().GetString();
   }
 
   // An assumption here is that the content attributes are used only in the main
@@ -86,13 +85,13 @@ EventListener* CreateAttributeEventListener(LocalFrame* frame,
   if (value.IsNull())
     return nullptr;
 
-  if (!frame->DomWindow()->CanExecuteScripts(kAboutToExecuteScript))
+  LocalDOMWindow* window = frame->DomWindow();
+  if (!window->CanExecuteScripts(kAboutToExecuteScript))
     return nullptr;
 
-  TextPosition position = frame->GetScriptController().EventHandlerPosition();
-  String source_url = frame->GetDocument()->Url().GetString();
-
-  v8::Isolate* isolate = ToIsolate(frame);
+  TextPosition position = window->GetScriptController().EventHandlerPosition();
+  String source_url = window->Url().GetString();
+  v8::Isolate* isolate = window->GetIsolate();
 
   // An assumption here is that the content attributes are used only in the main
   // world or the isolated world for the content scripts, they are never used in

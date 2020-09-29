@@ -137,6 +137,10 @@ namespace blink {
 LocalDOMWindow::LocalDOMWindow(LocalFrame& frame, WindowAgent* agent)
     : DOMWindow(frame),
       ExecutionContext(V8PerIsolateData::MainThreadIsolate(), agent),
+      script_controller_(MakeGarbageCollected<ScriptController>(
+          *this,
+          *static_cast<LocalWindowProxyManager*>(
+              frame.GetWindowProxyManager()))),
       visualViewport_(MakeGarbageCollected<DOMVisualViewport>(this)),
       should_print_when_finished_loading_(false),
       input_method_controller_(
@@ -273,8 +277,7 @@ KURL LocalDOMWindow::CompleteURL(const String& url) const {
 }
 
 void LocalDOMWindow::DisableEval(const String& error_message) {
-  if (GetFrame())
-    GetFrame()->GetScriptController().DisableEval(error_message);
+  GetScriptController().DisableEval(error_message);
 }
 
 String LocalDOMWindow::UserAgent() const {
@@ -596,7 +599,7 @@ Document* LocalDOMWindow::InstallNewDocument(const DocumentInit& init) {
   if (!GetFrame())
     return document_;
 
-  GetFrame()->GetScriptController().UpdateDocument();
+  GetScriptController().UpdateDocument();
   document_->GetViewportData().UpdateViewportDescription();
   if (FrameScheduler* frame_scheduler = GetFrame()->GetFrameScheduler()) {
     frame_scheduler->TraceUrlChange(document_->Url().GetString());
@@ -774,6 +777,7 @@ void LocalDOMWindow::FrameDestroyed() {
     agent_metrics->DidDetachWindow(*this);
   NotifyContextDestroyed();
   RemoveAllEventListeners();
+  MainThreadDebugger::Instance()->DidClearContextsForFrame(GetFrame());
   DisconnectFromFrame();
 }
 
@@ -2022,6 +2026,7 @@ DOMWindow* LocalDOMWindow::open(v8::Isolate* isolate,
 }
 
 void LocalDOMWindow::Trace(Visitor* visitor) const {
+  visitor->Trace(script_controller_);
   visitor->Trace(document_);
   visitor->Trace(screen_);
   visitor->Trace(history_);

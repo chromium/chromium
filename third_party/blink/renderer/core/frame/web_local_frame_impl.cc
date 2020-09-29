@@ -2239,7 +2239,7 @@ void WebLocalFrameImpl::LoadJavaScriptURL(const WebURL& url) {
   // into the omnibox.  See https://crbug.com/1082900
   LocalFrame::NotifyUserActivation(
       GetFrame(), mojom::blink::UserActivationNotificationType::kInteraction);
-  GetFrame()->GetScriptController().ExecuteJavaScriptURL(
+  GetFrame()->DomWindow()->GetScriptController().ExecuteJavaScriptURL(
       url, network::mojom::CSPDisposition::DO_NOT_CHECK,
       &DOMWrapperWorld::MainWorld());
 }

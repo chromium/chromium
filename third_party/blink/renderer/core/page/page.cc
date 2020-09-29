@@ -711,9 +711,9 @@ void Page::SettingsChanged(SettingsDelegate::ChangeType change_type) {
         break;
       for (Frame* frame = MainFrame(); frame;
            frame = frame->Tree().TraverseNext()) {
-        if (LocalFrame* local_frame = DynamicTo<LocalFrame>(frame)) {
+        if (auto* window = DynamicTo<LocalDOMWindow>(frame->DomWindow())) {
           // Forcibly instantiate WindowProxy.
-          local_frame->GetScriptController().WindowProxy(
+          window->GetScriptController().WindowProxy(
               DOMWrapperWorld::MainWorld());
         }
       }

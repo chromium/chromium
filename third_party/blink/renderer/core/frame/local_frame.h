@@ -128,7 +128,6 @@ class Node;
 class NodeTraversal;
 class PerformanceMonitor;
 class PluginData;
-class ScriptController;
 class SmoothScrollSequencer;
 class SpellChecker;
 class TextFragmentSelectorGenerator;
@@ -230,7 +229,6 @@ class CORE_EXPORT LocalFrame final
   FrameSelection& Selection() const;
   InputMethodController& GetInputMethodController() const;
   TextSuggestionController& GetTextSuggestionController() const;
-  ScriptController& GetScriptController() const;
   SpellChecker& GetSpellChecker() const;
   FrameConsole& Console() const;
 
@@ -798,7 +796,6 @@ class CORE_EXPORT LocalFrame final
   // Usually 0. Non-null if this is the top frame of PagePopup.
   Member<Element> page_popup_owner_;
 
-  const Member<ScriptController> script_controller_;
   const Member<Editor> editor_;
   const Member<FrameSelection> selection_;
   const Member<EventHandler> event_handler_;
@@ -928,10 +925,6 @@ inline FrameLoader& LocalFrame::Loader() const {
 
 inline LocalFrameView* LocalFrame::View() const {
   return view_.Get();
-}
-
-inline ScriptController& LocalFrame::GetScriptController() const {
-  return *script_controller_;
 }
 
 inline FrameSelection& LocalFrame::Selection() const {
