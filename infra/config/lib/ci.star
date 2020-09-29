@@ -112,7 +112,6 @@ def set_defaults(milestone_vars, **kwargs):
         service_account = "chromium-ci-builder@chops-service-accounts.iam.gserviceaccount.com",
         swarming_tags = ["vpython:native-python-wrapper"],
         triggered_by = [milestone_vars.ci_poller],
-        goma_use_luci_auth = True,
         # TODO(crbug.com/1129723): set default goma_backend here.
     )
     default_values.update(kwargs)
