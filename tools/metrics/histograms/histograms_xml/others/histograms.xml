@@ -8573,6 +8573,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="NativeSmbFileShare.ReadDirectoryCount" units="units"
     expires_after="M85">
+  <obsolete>
+    Removed in M87. No longer used with smbfs.
+  </obsolete>
   <owner>zentaro@chromium.org</owner>
   <summary>
     The number of entries read when calling ReadDirectory. This is recorded
@@ -8582,6 +8585,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="NativeSmbFileShare.ReadDirectoryDuration" units="ms"
     expires_after="M85">
+  <obsolete>
+    Removed in M87. No longer used with smbfs.
+  </obsolete>
   <owner>zentaro@chromium.org</owner>
   <summary>
     The duration of ReadDirectory call to SmbProvider in milliseconds. This is
@@ -8590,8 +8596,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="NativeSmbFileShare.RemountResult"
-    enum="NativeSmbFileShare_MountResult" expires_after="M85">
-  <owner>zentaro@chromium.org</owner>
+    enum="NativeSmbFileShare_MountResult" expires_after="M94">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/chrome/browser/chromeos/smb_client/OWNERS</owner>
   <summary>
     The result of the Remount operation during startup. This is recorded after
     the D-Bus call to Remount returns.

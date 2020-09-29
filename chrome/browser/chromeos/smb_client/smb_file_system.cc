@@ -108,15 +108,6 @@ void ConvertEntries(const smbprovider::DirectoryEntryListProto& entries_proto,
   }
 }
 
-// Metrics recording.
-void RecordReadDirectoryCount(int count) {
-  UMA_HISTOGRAM_COUNTS_100000("NativeSmbFileShare.ReadDirectoryCount", count);
-}
-
-void RecordReadDirectoryDuration(const base::TimeDelta& delta) {
-  UMA_HISTOGRAM_TIMES("NativeSmbFileShare.ReadDirectoryDuration", delta);
-}
-
 }  // namespace
 
 namespace smb_client {
@@ -641,9 +632,6 @@ void SmbFileSystem::HandleRequestReadDirectoryCallback(
   uint32_t batch_size = kReadDirectoryInitialBatchSize;
   storage::AsyncFileUtil::EntryList entry_list;
 
-  RecordReadDirectoryCount(entries.entries_size());
-  RecordReadDirectoryDuration(metrics_timer.Elapsed());
-
   // Loop through the entries and send when the desired batch size is hit.
   for (const smbprovider::DirectoryEntryProto& entry : entries.entries()) {
     entry_list.emplace_back(base::FilePath(entry.name()),
@@ -821,10 +809,6 @@ void SmbFileSystem::ProcessReadDirectoryResults(
                           std::move(metrics_timer));
     return;
   }
-
-  // Read Directory is complete, record metrics.
-  RecordReadDirectoryCount(entries_count);
-  RecordReadDirectoryDuration(metrics_timer.Elapsed());
 }
 
 AbortCallback SmbFileSystem::HandleSyncRedundantGetMetadata(
