@@ -3389,7 +3389,7 @@
             ]
         }
     ],
-    "IOSLookalikeUrlInterstitial": [
+    "IOSLookalikeInterstitials": [
         {
             "platforms": [
                 "ios"
