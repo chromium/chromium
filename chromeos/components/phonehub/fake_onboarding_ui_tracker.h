@@ -22,7 +22,7 @@ class FakeOnboardingUiTracker : public OnboardingUiTracker {
   bool ShouldShowOnboardingUi() const override;
   void DismissSetupUi() override;
 
-  bool should_show_onboarding_ui_;
+  bool should_show_onboarding_ui_ = false;
 };
 
 }  // namespace phonehub
