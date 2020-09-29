@@ -490,7 +490,7 @@ if [ -z $ONLY_CONFIGS ]; then
   make libvpx_srcs.txt target=libs $config > /dev/null
   convert_srcs_to_project_files libvpx_srcs.txt libvpx_srcs_arm64_highbd
 
-  echo "ARM64 Windows uses the ARM64 Linux HighBD source list. No need to generate it."
+  echo "ARM64 Windows and Mac use the ARM64 Linux HighBD source list. No need to generate it."
 
   echo "Generate MIPS source list."
   config=$(print_config_basic linux/mipsel)

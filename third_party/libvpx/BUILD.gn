@@ -28,12 +28,14 @@ if (current_cpu == "x86") {
   } else {
     cpu_arch_full = "arm"
   }
-} else {
-  if (is_chromeos) {
+} else if (current_cpu == "arm64") {
+  if (is_chromeos || is_win || is_mac) {
     cpu_arch_full = "arm64-highbd"
   } else {
     cpu_arch_full = current_cpu
   }
+} else {
+  cpu_arch_full = current_cpu
 }
 
 if (is_nacl) {
@@ -331,7 +333,7 @@ static_library("libvpx") {
       sources = libvpx_srcs_arm
     }
   } else if (current_cpu == "arm64") {
-    if (is_chromeos || is_win) {
+    if (is_chromeos || is_win || is_mac) {
       sources = libvpx_srcs_arm64_highbd
     } else {
       sources = libvpx_srcs_arm64
