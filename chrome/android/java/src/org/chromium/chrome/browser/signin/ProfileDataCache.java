@@ -32,6 +32,8 @@ import org.chromium.components.browser_ui.util.AvatarGenerator;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.ProfileDataSource;
 import org.chromium.components.signin.base.AccountInfo;
+import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -44,7 +46,8 @@ import java.util.Map;
  * should be provided by calling {@link #update(List)}
  */
 @MainThread
-public class ProfileDataCache implements ProfileDownloader.Observer, ProfileDataSource.Observer {
+public class ProfileDataCache implements ProfileDownloader.Observer, ProfileDataSource.Observer,
+                                         IdentityManager.Observer {
     /**
      * Observer to get notifications about changes in profile data.
      */
@@ -112,6 +115,7 @@ public class ProfileDataCache implements ProfileDownloader.Observer, ProfileData
     private final ObserverList<Observer> mObservers = new ObserverList<>();
     private final Map<String, DisplayableProfileData> mCachedProfileData = new HashMap<>();
     private @Nullable final ProfileDataSource mProfileDataSource;
+    private final IdentityManager mIdentityManager;
 
     public ProfileDataCache(Context context, @Px int imageSize) {
         this(context, imageSize, null);
@@ -130,6 +134,8 @@ public class ProfileDataCache implements ProfileDownloader.Observer, ProfileData
         mBadgeConfig = badgeConfig;
         mPlaceholderImage = getScaledPlaceholderImage(context, imageSize);
         mProfileDataSource = profileDataSource;
+        mIdentityManager = IdentityServicesProvider.get().getIdentityManager(
+                Profile.getLastUsedRegularProfile());
     }
 
     /**
@@ -202,6 +208,7 @@ public class ProfileDataCache implements ProfileDownloader.Observer, ProfileData
             } else {
                 ProfileDownloader.addObserver(this);
             }
+            mIdentityManager.addObserver(this);
         }
         mObservers.addObserver(observer);
     }
@@ -218,13 +225,14 @@ public class ProfileDataCache implements ProfileDownloader.Observer, ProfileData
             } else {
                 ProfileDownloader.removeObserver(this);
             }
+            mIdentityManager.removeObserver(this);
         }
     }
 
     private void updateCacheFromProfileDataSource() {
         for (ProfileDataSource.ProfileData profileData :
                 mProfileDataSource.getProfileDataMap().values()) {
-            updateCachedProfileData(createDisplayableProfileData(profileData));
+            updateCachedProfileDataAndNotifyObservers(createDisplayableProfileData(profileData));
         }
     }
 
@@ -239,7 +247,7 @@ public class ProfileDataCache implements ProfileDownloader.Observer, ProfileData
     public void onProfileDownloaded(String accountId, String fullName, String givenName,
             Bitmap bitmap) {
         ThreadUtils.assertOnUiThread();
-        updateCachedProfileData(new DisplayableProfileData(
+        updateCachedProfileDataAndNotifyObservers(new DisplayableProfileData(
                 accountId, prepareAvatar(bitmap, accountId), fullName, givenName));
     }
 
@@ -252,10 +260,37 @@ public class ProfileDataCache implements ProfileDownloader.Observer, ProfileData
             mCachedProfileData.remove(accountId);
             notifyObservers(accountId);
         } else {
-            updateCachedProfileData(createDisplayableProfileData(profileData));
+            updateCachedProfileDataAndNotifyObservers(createDisplayableProfileData(profileData));
         }
-
     }
+
+    /**
+     * Implements {@link IdentityManager.Observer}.
+     */
+    @Override
+    public void onExtendedAccountInfoUpdated(AccountInfo accountInfo) {
+        final String accountEmail = accountInfo.getEmail();
+        DisplayableProfileData profileData = mCachedProfileData.get(accountEmail);
+        // if profileData is null, we will fetch monogram when generating
+        // the cache so that different sources will be handled in order.
+        if (profileData != null && profileData.getImage() == mPlaceholderImage) {
+            updateCachedProfileDataAndNotifyObservers(new DisplayableProfileData(accountEmail,
+                    prepareAvatar(accountInfo.getAccountImage(), accountEmail),
+                    profileData.getFullName(), profileData.getGivenName()));
+        }
+    }
+
+    /**
+     * Implements {@link IdentityManager.Observer}.
+     */
+    @Override
+    public void onPrimaryAccountSet(CoreAccountInfo account) {}
+
+    /**
+     * Implements {@link IdentityManager.Observer}.
+     */
+    @Override
+    public void onPrimaryAccountCleared(CoreAccountInfo account) {}
 
     /**
      * Returns a profile data cache object without a badge.The badge is put with respect to
@@ -315,7 +350,7 @@ public class ProfileDataCache implements ProfileDownloader.Observer, ProfileData
         return overlayBadgeOnUserPicture(croppedAvatar);
     }
 
-    private void updateCachedProfileData(DisplayableProfileData profileData) {
+    private void updateCachedProfileDataAndNotifyObservers(DisplayableProfileData profileData) {
         mCachedProfileData.put(profileData.getAccountName(), profileData);
         notifyObservers(profileData.getAccountName());
     }
@@ -379,12 +414,10 @@ public class ProfileDataCache implements ProfileDownloader.Observer, ProfileData
      * TODO(https://crbug.com/1130545): We should refactor the different sources for getting
      *  the profile image.
      */
-    private static @Nullable Bitmap getAccountImageFromIdentityManager(String accountEmail) {
+    private @Nullable Bitmap getAccountImageFromIdentityManager(String accountEmail) {
         AccountInfo accountInfo =
-                IdentityServicesProvider.get()
-                        .getIdentityManager(Profile.getLastUsedRegularProfile())
-                        .findExtendedAccountInfoForAccountWithRefreshTokenByEmailAddress(
-                                accountEmail);
+                mIdentityManager.findExtendedAccountInfoForAccountWithRefreshTokenByEmailAddress(
+                        accountEmail);
         return accountInfo != null ? accountInfo.getAccountImage() : null;
     }
 }

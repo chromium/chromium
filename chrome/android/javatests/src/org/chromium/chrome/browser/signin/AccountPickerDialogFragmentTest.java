@@ -10,7 +10,6 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -26,7 +25,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.Spy;
 
@@ -42,6 +40,7 @@ import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.signin.ProfileDataSource;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.test.util.FakeProfileDataSource;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.DummyUiActivityTestCase;
@@ -71,8 +70,11 @@ public class AccountPickerDialogFragmentTest extends DummyUiActivityTestCase {
     @Mock
     private Profile mProfileMock;
 
-    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+    @Mock
     private IdentityServicesProvider mIdentityServicesProviderMock;
+
+    @Mock
+    private IdentityManager mIdentityManagerMock;
 
     @Spy
     private DummyAccountPickerTargetFragment mTargetFragment =
@@ -91,10 +93,8 @@ public class AccountPickerDialogFragmentTest extends DummyUiActivityTestCase {
         initMocks(this);
         Profile.setLastUsedProfileForTesting(mProfileMock);
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
-        when(mIdentityServicesProviderMock.getIdentityManager(mProfileMock)
-                        .findExtendedAccountInfoForAccountWithRefreshTokenByEmailAddress(
-                                anyString()))
-                .thenReturn(null);
+        when(mIdentityServicesProviderMock.getIdentityManager(mProfileMock))
+                .thenReturn(mIdentityManagerMock);
 
         addAccount(mAccountName1, mFullName1);
         addAccount(mAccountName2, "");
