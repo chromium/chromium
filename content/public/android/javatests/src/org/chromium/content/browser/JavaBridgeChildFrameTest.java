@@ -18,6 +18,7 @@ import org.chromium.base.test.params.ParameterAnnotations.UseMethodParameter;
 import org.chromium.base.test.params.ParameterAnnotations.UseMethodParameterBefore;
 import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.params.ParameterizedRunner;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
@@ -41,10 +42,10 @@ import java.util.concurrent.TimeoutException;
  */
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(ContentJUnit4RunnerDelegate.class)
+@Batch(JavaBridgeActivityTestRule.BATCH)
 public class JavaBridgeChildFrameTest {
     @Rule
-    public JavaBridgeActivityTestRule mActivityTestRule =
-            new JavaBridgeActivityTestRule().shouldSetUp(true);
+    public JavaBridgeActivityTestRule mActivityTestRule = new JavaBridgeActivityTestRule();
 
     private static class TestController extends Controller {
         private String mStringValue;

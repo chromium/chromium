@@ -10,7 +10,6 @@ import android.support.test.InstrumentationRegistry;
 
 import androidx.test.filters.SmallTest;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -51,11 +50,10 @@ import java.util.concurrent.CountDownLatch;
  */
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(ContentJUnit4RunnerDelegate.class)
-@Batch(Batch.PER_CLASS)
+@Batch(JavaBridgeActivityTestRule.BATCH)
 public class JavaBridgeBasicsTest {
     @Rule
-    public JavaBridgeActivityTestRule mActivityTestRule =
-            new JavaBridgeActivityTestRule().shouldSetUp(false);
+    public JavaBridgeActivityTestRule mActivityTestRule = new JavaBridgeActivityTestRule();
 
     private static class TestController extends Controller {
         private int mIntValue;
@@ -117,16 +115,8 @@ public class JavaBridgeBasicsTest {
 
     @Before
     public void setUp() {
-        mActivityTestRule.setUpContentView();
         mTestController = new TestController();
         mActivityTestRule.injectObjectAndReload(mTestController, "testController");
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        // TODO(yfriedman): Instead of finishing the activity, re-use it and launch a new Shell to
-        // minimize overhead.
-        mActivityTestRule.getActivity().finish();
     }
 
     // Note that this requires that we can pass a JavaScript string to Java.

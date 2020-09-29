@@ -9,8 +9,6 @@ import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
 import org.chromium.base.Log;
-import org.chromium.base.test.SetUpStatement;
-import org.chromium.base.test.SetUpTestRule;
 import org.chromium.base.test.params.ParameterProvider;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.util.UrlUtils;
@@ -28,8 +26,10 @@ import java.util.List;
 /**
  * ActivityTestRule with common functionality for testing the Java Bridge.
  */
-public class JavaBridgeActivityTestRule
-        extends ContentShellActivityTestRule implements SetUpTestRule<JavaBridgeActivityTestRule> {
+public class JavaBridgeActivityTestRule extends ContentShellActivityTestRule {
+    /** Shared name for batched JavaBridge tests. */
+    public static final String BATCH = "JavaBridgeActivityTestRule";
+
     /**
      * {@link ParameterProvider} used for parameterized test that provides the Mojo usage state.
      */
@@ -58,7 +58,6 @@ public class JavaBridgeActivityTestRule
     }
 
     private TestCallbackHelperContainer mTestCallbackHelperContainer;
-    private boolean mSetup;
     private boolean mUseMojo;
 
     public static class Controller {
@@ -183,18 +182,7 @@ public class JavaBridgeActivityTestRule
 
     @Override
     public Statement apply(Statement base, Description desc) {
-        SetUpStatement setUpBase = new SetUpStatement(base, this, mSetup);
-        return super.apply(setUpBase, desc);
-    }
-
-    @Override
-    public JavaBridgeActivityTestRule shouldSetUp(boolean runSetUp) {
-        mSetup = runSetUp;
-        return this;
-    }
-
-    @Override
-    public void setUp() {
         setUpContentView();
+        return super.apply(base, desc);
     }
 }
