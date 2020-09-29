@@ -37,11 +37,6 @@ class ShellBrowserContext : public BrowserContext {
                       bool delay_services_creation = false);
   ~ShellBrowserContext() override;
 
-  void set_guest_manager_for_testing(
-      BrowserPluginGuestManager* guest_manager) {
-    guest_manager_ = guest_manager;
-  }
-
   void set_client_hints_controller_delegate(
       ClientHintsControllerDelegate* delegate) {
     client_hints_controller_delegate_ = delegate;
@@ -93,10 +88,9 @@ class ShellBrowserContext : public BrowserContext {
   void InitWhileIOAllowed();
   void FinishInitWhileIOAllowed();
 
-  bool ignore_certificate_errors_;
-  bool off_the_record_;
+  const bool off_the_record_;
+  bool ignore_certificate_errors_ = false;
   base::FilePath path_;
-  BrowserPluginGuestManager* guest_manager_;
   std::unique_ptr<SimpleFactoryKey> key_;
   ClientHintsControllerDelegate* client_hints_controller_delegate_ = nullptr;
 

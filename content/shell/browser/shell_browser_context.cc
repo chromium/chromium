@@ -48,10 +48,8 @@ ShellBrowserContext::ShellResourceContext::~ShellResourceContext() {
 
 ShellBrowserContext::ShellBrowserContext(bool off_the_record,
                                          bool delay_services_creation)
-    : resource_context_(new ShellResourceContext),
-      ignore_certificate_errors_(false),
-      off_the_record_(off_the_record),
-      guest_manager_(nullptr) {
+    : resource_context_(std::make_unique<ShellResourceContext>()),
+      off_the_record_(off_the_record) {
   InitWhileIOAllowed();
   if (!delay_services_creation) {
     BrowserContextDependencyManager::GetInstance()
@@ -167,7 +165,7 @@ ResourceContext* ShellBrowserContext::GetResourceContext()  {
 }
 
 BrowserPluginGuestManager* ShellBrowserContext::GetGuestManager() {
-  return guest_manager_;
+  return nullptr;
 }
 
 storage::SpecialStoragePolicy* ShellBrowserContext::GetSpecialStoragePolicy() {
