@@ -19,7 +19,24 @@ source_set("reading_list") {
   # This target should not depend on anything in //chrome/* except the proto library.
   deps = [
     "//base",
+    "//components/bookmarks/browser",
     "//components/keyed_service/core",
     "//components/reading_list/core",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "reading_list_manager_unittest.cc" ]
+  deps = [
+    ":android",
+    "//base/test:test_support",
+    "//components/bookmarks/browser",
+    "//components/reading_list/core:core",
+    "//components/sync",
+    "//components/sync:test_support_model",
+    "//testing/gmock",
+    "//testing/gtest",
   ]
 }

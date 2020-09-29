@@ -39,5 +39,5 @@ ReadingListManagerFactory::BuildServiceInstanceFor(
       ProfileKey::FromSimpleFactoryKey(key));
   auto* reading_list_model =
       ReadingListModelFactory::GetForBrowserContext(profile);
-  return std::make_unique<ReadingListManager>(reading_list_model);
+  return ReadingListManager::Create(reading_list_model);
 }
