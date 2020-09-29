@@ -931,6 +931,7 @@ TEST_P(SignedExchangeHandlerTest, CTRequirementsMetForPubliclyTrustedCert) {
               net::CERT_STATUS_IS_EV);
   EXPECT_FALSE(resource_response().ssl_info->cert_status &
                net::CERT_STATUS_CT_COMPLIANCE_FAILED);
+  EXPECT_TRUE(resource_response().ssl_info->ct_policy_compliance_required);
   EXPECT_EQ(net::ct::CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS,
             resource_response().ssl_info->ct_policy_compliance);
   ExpectHistogramValues(
@@ -972,6 +973,7 @@ TEST_P(SignedExchangeHandlerTest, CTNotRequiredForLocalAnchors) {
                net::CERT_STATUS_IS_EV);
   EXPECT_TRUE(resource_response().ssl_info->cert_status &
               net::CERT_STATUS_CT_COMPLIANCE_FAILED);
+  EXPECT_FALSE(resource_response().ssl_info->ct_policy_compliance_required);
   EXPECT_EQ(net::ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS,
             resource_response().ssl_info->ct_policy_compliance);
   ExpectHistogramValues(

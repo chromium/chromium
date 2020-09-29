@@ -45,7 +45,6 @@
 #include "net/cert/ct_verifier.h"
 #include "net/cert/internal/parse_certificate.h"
 #include "net/cert/sct_auditing_delegate.h"
-#include "net/cert/sct_status_flags.h"
 #include "net/cert/x509_certificate_net_log_param.h"
 #include "net/cert/x509_util.h"
 #include "net/der/parse_values.h"
@@ -605,8 +604,7 @@ bool SSLClientSocketImpl::GetSSLInfo(SSLInfo* ssl_info) {
   ssl_info->pinning_failure_log = pinning_failure_log_;
   ssl_info->ocsp_result = server_cert_verify_result_.ocsp_result;
   ssl_info->is_fatal_cert_error = is_fatal_cert_error_;
-  ssl_info->signed_certificate_timestamps = server_cert_verify_result_.scts;
-  ssl_info->ct_policy_compliance = server_cert_verify_result_.policy_compliance;
+  AddCTInfoToSSLInfo(ssl_info);
 
   const SSL_CIPHER* cipher = SSL_get_current_cipher(ssl_.get());
   CHECK(cipher);
@@ -1544,21 +1542,19 @@ int SSLClientSocketImpl::VerifyCT() {
   // external communication.
   context_->cert_transparency_verifier()->Verify(
       host_and_port().host(), server_cert_verify_result_.verified_cert.get(),
-      ocsp_response, sct_list, &server_cert_verify_result_.scts, net_log_);
+      ocsp_response, sct_list, &ct_verify_result_.scts, net_log_);
 
-  ct::SCTList verified_scts;
-  for (const auto& sct_and_status : server_cert_verify_result_.scts) {
-    if (sct_and_status.status == ct::SCT_STATUS_OK)
-      verified_scts.push_back(sct_and_status.sct);
-  }
-  server_cert_verify_result_.policy_compliance =
+  ct::SCTList verified_scts =
+      ct::SCTsMatchingStatus(ct_verify_result_.scts, ct::SCT_STATUS_OK);
+
+  ct_verify_result_.policy_compliance =
       context_->ct_policy_enforcer()->CheckCompliance(
           server_cert_verify_result_.verified_cert.get(), verified_scts,
           net_log_);
   if (server_cert_verify_result_.cert_status & CERT_STATUS_IS_EV) {
-    if (server_cert_verify_result_.policy_compliance !=
+    if (ct_verify_result_.policy_compliance !=
             ct::CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS &&
-        server_cert_verify_result_.policy_compliance !=
+        ct_verify_result_.policy_compliance !=
             ct::CTPolicyCompliance::CT_POLICY_BUILD_NOT_TIMELY) {
       server_cert_verify_result_.cert_status |=
           CERT_STATUS_CT_COMPLIANCE_FAILED;
@@ -1570,7 +1566,7 @@ int SSLClientSocketImpl::VerifyCT() {
     // compliance.
     if (server_cert_verify_result_.is_issued_by_known_root) {
       UMA_HISTOGRAM_ENUMERATION("Net.CertificateTransparency.EVCompliance2.SSL",
-                                server_cert_verify_result_.policy_compliance,
+                                ct_verify_result_.policy_compliance,
                                 ct::CTPolicyCompliance::CT_POLICY_COUNT);
     }
   }
@@ -1580,7 +1576,7 @@ int SSLClientSocketImpl::VerifyCT() {
   if (server_cert_verify_result_.is_issued_by_known_root) {
     UMA_HISTOGRAM_ENUMERATION(
         "Net.CertificateTransparency.ConnectionComplianceStatus2.SSL",
-        server_cert_verify_result_.policy_compliance,
+        ct_verify_result_.policy_compliance,
         ct::CTPolicyCompliance::CT_POLICY_COUNT);
   }
 
@@ -1589,11 +1585,12 @@ int SSLClientSocketImpl::VerifyCT() {
           host_and_port_, server_cert_verify_result_.is_issued_by_known_root,
           server_cert_verify_result_.public_key_hashes,
           server_cert_verify_result_.verified_cert.get(), server_cert_.get(),
-          server_cert_verify_result_.scts,
+          ct_verify_result_.scts,
           TransportSecurityState::ENABLE_EXPECT_CT_REPORTS,
-          server_cert_verify_result_.policy_compliance,
+          ct_verify_result_.policy_compliance,
           ssl_config_.network_isolation_key);
   if (ct_requirement_status != TransportSecurityState::CT_NOT_REQUIRED) {
+    ct_verify_result_.policy_compliance_required = true;
     if (server_cert_verify_result_.is_issued_by_known_root) {
       // Record the CT compliance of connections for which compliance is
       // required; this helps answer the question: "Of all connections that are
@@ -1601,16 +1598,18 @@ int SSLClientSocketImpl::VerifyCT() {
       UMA_HISTOGRAM_ENUMERATION(
           "Net.CertificateTransparency.CTRequiredConnectionComplianceStatus2."
           "SSL",
-          server_cert_verify_result_.policy_compliance,
+          ct_verify_result_.policy_compliance,
           ct::CTPolicyCompliance::CT_POLICY_COUNT);
     }
+  } else {
+    ct_verify_result_.policy_compliance_required = false;
   }
 
   if (context_->sct_auditing_delegate() &&
       context_->sct_auditing_delegate()->IsSCTAuditingEnabled()) {
     context_->sct_auditing_delegate()->MaybeEnqueueReport(
         host_and_port_, server_cert_verify_result_.verified_cert.get(),
-        server_cert_verify_result_.scts);
+        ct_verify_result_.scts);
   }
 
   switch (ct_requirement_status) {
@@ -1704,6 +1703,10 @@ int SSLClientSocketImpl::NewSessionCallback(SSL_SESSION* session) {
   context_->ssl_client_session_cache()->Insert(
       GetSessionCacheKey(ip_addr), bssl::UniquePtr<SSL_SESSION>(session));
   return 1;
+}
+
+void SSLClientSocketImpl::AddCTInfoToSSLInfo(SSLInfo* ssl_info) const {
+  ssl_info->UpdateCertificateTransparencyInfo(ct_verify_result_);
 }
 
 SSLClientSessionCache::Key SSLClientSocketImpl::GetSessionCacheKey(

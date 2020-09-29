@@ -80,8 +80,9 @@ bool IsSupportedSignedExchangeVersion(
   return version == SignedExchangeVersion::kB3;
 }
 
-using VerifyCallback =
-    base::OnceCallback<void(int32_t, const net::CertVerifyResult&)>;
+using VerifyCallback = base::OnceCallback<void(int32_t,
+                                               const net::CertVerifyResult&,
+                                               const net::ct::CTVerifyResult&)>;
 
 void VerifyCert(const scoped_refptr<net::X509Certificate>& certificate,
                 const GURL& url,
@@ -90,7 +91,8 @@ void VerifyCert(const scoped_refptr<net::X509Certificate>& certificate,
                 int frame_tree_node_id,
                 VerifyCallback callback) {
   VerifyCallback wrapped_callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-      std::move(callback), net::ERR_FAILED, net::CertVerifyResult());
+      std::move(callback), net::ERR_FAILED, net::CertVerifyResult(),
+      net::ct::CTVerifyResult());
 
   network::mojom::NetworkContext* network_context =
       g_network_context_for_testing;
@@ -595,13 +597,14 @@ bool SignedExchangeHandler::CheckOCSPStatus(
 
 void SignedExchangeHandler::OnVerifyCert(
     int32_t error_code,
-    const net::CertVerifyResult& cv_result) {
+    const net::CertVerifyResult& cv_result,
+    const net::ct::CTVerifyResult& ct_result) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("loading"),
                "SignedExchangeHandler::OnCertVerifyComplete");
   // net::Error codes are negative, so we put - in front of it.
   base::UmaHistogramSparse(kHistogramCertVerificationResult, -error_code);
   UMA_HISTOGRAM_ENUMERATION(kHistogramCTVerificationResult,
-                            cv_result.policy_compliance,
+                            ct_result.policy_compliance,
                             net::ct::CTPolicyCompliance::CT_POLICY_COUNT);
 
   if (error_code != net::OK) {
@@ -611,7 +614,7 @@ void SignedExchangeHandler::OnVerifyCert(
       error_message = base::StringPrintf(
           "CT verification failed. result: %s, policy compliance: %d",
           net::ErrorToShortString(error_code).c_str(),
-          cv_result.policy_compliance);
+          ct_result.policy_compliance);
       result = SignedExchangeLoadResult::kCTVerificationError;
     } else {
       error_message =
@@ -687,8 +690,7 @@ void SignedExchangeHandler::OnVerifyCert(
   ssl_info.public_key_hashes = cv_result.public_key_hashes;
   ssl_info.ocsp_result = cv_result.ocsp_result;
   ssl_info.is_fatal_cert_error = net::IsCertStatusError(ssl_info.cert_status);
-  ssl_info.signed_certificate_timestamps = cv_result.scts;
-  ssl_info.ct_policy_compliance = cv_result.policy_compliance;
+  ssl_info.UpdateCertificateTransparencyInfo(ct_result);
 
   if (devtools_proxy_) {
     devtools_proxy_->OnSignedExchangeReceived(

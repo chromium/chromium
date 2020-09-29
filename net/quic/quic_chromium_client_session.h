@@ -28,6 +28,7 @@
 #include "net/base/net_error_details.h"
 #include "net/base/net_export.h"
 #include "net/base/proxy_server.h"
+#include "net/cert/ct_verify_result.h"
 #include "net/log/net_log_with_source.h"
 #include "net/quic/quic_chromium_client_stream.h"
 #include "net/quic/quic_chromium_packet_reader.h"
@@ -870,6 +871,7 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   SSLConfigService* ssl_config_service_;
   std::unique_ptr<QuicServerInfo> server_info_;
   std::unique_ptr<CertVerifyResult> cert_verify_result_;
+  std::unique_ptr<ct::CTVerifyResult> ct_verify_result_;
   std::string pinning_failure_log_;
   bool pkp_bypassed_;
   bool is_fatal_cert_error_;
