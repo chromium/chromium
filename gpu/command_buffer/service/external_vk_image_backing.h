@@ -34,7 +34,7 @@ struct VulkanImageUsageCache {
 class ExternalVkImageBacking final : public ClearTrackingSharedImageBacking {
  public:
   static std::unique_ptr<ExternalVkImageBacking> Create(
-      SharedContextState* context_state,
+      scoped_refptr<SharedContextState> context_state,
       VulkanCommandPool* command_pool,
       const Mailbox& mailbox,
       viz::ResourceFormat format,
@@ -48,7 +48,7 @@ class ExternalVkImageBacking final : public ClearTrackingSharedImageBacking {
       bool using_gmb = false);
 
   static std::unique_ptr<ExternalVkImageBacking> CreateFromGMB(
-      SharedContextState* context_state,
+      scoped_refptr<SharedContextState> context_state,
       VulkanCommandPool* command_pool,
       const Mailbox& mailbox,
       gfx::GpuMemoryBufferHandle handle,
@@ -68,14 +68,14 @@ class ExternalVkImageBacking final : public ClearTrackingSharedImageBacking {
                          GrSurfaceOrigin surface_origin,
                          SkAlphaType alpha_type,
                          uint32_t usage,
-                         SharedContextState* context_state,
+                         scoped_refptr<SharedContextState> context_state,
                          std::unique_ptr<VulkanImage> image,
                          VulkanCommandPool* command_pool,
                          bool use_separate_gl_texture);
 
   ~ExternalVkImageBacking() override;
 
-  SharedContextState* context_state() const { return context_state_; }
+  SharedContextState* context_state() const { return context_state_.get(); }
   const GrBackendTexture& backend_texture() const { return backend_texture_; }
   VulkanImage* image() const { return image_.get(); }
   const scoped_refptr<gles2::TexturePassthrough>& GetTexturePassthrough()
@@ -178,7 +178,7 @@ class ExternalVkImageBacking final : public ClearTrackingSharedImageBacking {
   void CopyPixelsFromGLTextureToVkImage();
   void CopyPixelsFromShmToGLTexture();
 
-  SharedContextState* const context_state_;
+  scoped_refptr<SharedContextState> context_state_;
   std::unique_ptr<VulkanImage> image_;
   GrBackendTexture backend_texture_;
   VulkanCommandPool* const command_pool_;

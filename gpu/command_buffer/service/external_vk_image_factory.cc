@@ -61,8 +61,8 @@ VulkanImageUsageCache CreateImageUsageCache(
 }  // namespace
 
 ExternalVkImageFactory::ExternalVkImageFactory(
-    SharedContextState* context_state)
-    : context_state_(context_state),
+    scoped_refptr<SharedContextState> context_state)
+    : context_state_(std::move(context_state)),
       command_pool_(context_state_->vk_context_provider()
                         ->GetDeviceQueue()
                         ->CreateCommandPool()),
