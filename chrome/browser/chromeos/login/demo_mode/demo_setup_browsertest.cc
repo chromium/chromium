@@ -129,7 +129,7 @@ std::string ScreenToContentQuery(OobeScreenId screen) {
   if (screen == ArcTermsOfServiceScreenView::kScreenId)
     return "$('arc-tos-root')";
   if (screen == DemoSetupScreenView::kScreenId)
-    return "$('demo-setup-content')";
+    return "$('demo-setup')";
   NOTREACHED() << "This OOBE screen is not a part of Demo Mode setup flow";
   return std::string();
 }
@@ -1238,7 +1238,7 @@ class DemoSetupProgressStepsTest : public DemoSetupTestBase {
   // Checks how many steps have been rendered in the demo setup screen.
   int CountNumberOfStepsInUi() {
     const std::string query =
-        "$('demo-setup-content').$$('oobe-dialog').querySelectorAll('progress-"
+        "$('demo-setup').$$('oobe-dialog').querySelectorAll('progress-"
         "list-item').length";
 
     return test::OobeJS().GetInt(query);
@@ -1247,7 +1247,7 @@ class DemoSetupProgressStepsTest : public DemoSetupTestBase {
   // Checks how many steps are marked as pending in the demo setup screen.
   int CountPendingStepsInUi() {
     const std::string query =
-        "Object.values($('demo-setup-content').$$('oobe-dialog')."
+        "Object.values($('demo-setup').$$('oobe-dialog')."
         "querySelectorAll('progress-list-item')).filter(node => "
         "node.shadowRoot.querySelector('#icon-pending:not([hidden])')).length";
 
@@ -1257,7 +1257,7 @@ class DemoSetupProgressStepsTest : public DemoSetupTestBase {
   // Checks how many steps are marked as active in the demo setup screen.
   int CountActiveStepsInUi() {
     const std::string query =
-        "Object.values($('demo-setup-content').$$('oobe-dialog')."
+        "Object.values($('demo-setup').$$('oobe-dialog')."
         "querySelectorAll('progress-list-item')).filter(node => "
         "node.shadowRoot.querySelector('#icon-active:not([hidden])')).length";
 
@@ -1267,7 +1267,7 @@ class DemoSetupProgressStepsTest : public DemoSetupTestBase {
   // Checks how many steps are marked as complete in the demo setup screen.
   int CountCompletedStepsInUi() {
     const std::string query =
-        "Object.values($('demo-setup-content').$$('oobe-dialog')."
+        "Object.values($('demo-setup').$$('oobe-dialog')."
         "querySelectorAll('progress-list-item')).filter(node => "
         "node.shadowRoot.querySelector('#icon-completed:not([hidden])'))."
         "length";

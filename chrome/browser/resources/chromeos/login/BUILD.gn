@@ -111,6 +111,8 @@ js_library("demo_preferences") {
 
 js_library("demo_setup") {
   deps = [
+    "components:login_screen_behavior",
+    "components:multi_step_behavior",
     "components:oobe_dialog_host_behavior",
     "components:oobe_i18n_behavior",
   ]

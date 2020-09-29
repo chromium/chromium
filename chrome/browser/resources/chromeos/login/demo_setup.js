@@ -7,10 +7,30 @@
  * screen.
  */
 
-Polymer({
-  is: 'demo-setup-md',
+'use strict';
 
-  behaviors: [OobeI18nBehavior, OobeDialogHostBehavior],
+(function() {
+
+/**
+ * UI mode for the dialog.
+ * @enum {string}
+ */
+const UIState = {
+  PROGRESS: 'progress',
+  ERROR: 'error',
+};
+
+Polymer({
+  is: 'demo-setup',
+
+  behaviors: [
+    OobeI18nBehavior,
+    OobeDialogHostBehavior,
+    LoginScreenBehavior,
+    MultiStepBehavior,
+  ],
+
+  EXTERNAL_API: ['setCurrentSetupStep', 'onSetupSucceeded', 'onSetupFailed'],
 
   properties: {
     /** Object mapping step strings to step indices */
@@ -39,15 +59,6 @@ Polymer({
       value: false,
     },
 
-    /** Ordered array of screen ids that are a part of demo setup flow. */
-    screens_: {
-      type: Array,
-      readonly: true,
-      value() {
-        return ['demoSetupProgressDialog', 'demoSetupErrorDialog'];
-      },
-    },
-
     /** Feature flag to display progress bar instead of spinner during setup. */
     showStepsInDemoModeSetup_: {
       type: Boolean,
@@ -58,10 +69,26 @@ Polymer({
     }
   },
 
+  defaultUIStep() {
+    return UIState.PROGRESS;
+  },
+
+  UI_STEPS: UIState,
+
+  ready() {
+    this.initializeLoginScreen('DemoSetupScreen', {
+      resetAllowed: false,
+    });
+  },
+
+  onBeforeShow() {
+    this.reset();
+  },
+
   /** Resets demo setup flow to the initial screen and starts setup. */
   reset() {
-    this.showScreen_('demoSetupProgressDialog');
-    chrome.send('login.DemoSetupScreen.userActed', ['start-setup']);
+    this.setUIStep(UIState.PROGRESS);
+    this.userActed('start-setup');
   },
 
   /** Called after resources are updated. */
@@ -94,41 +121,7 @@ Polymer({
   onSetupFailed(message, isPowerwashRequired) {
     this.errorMessage_ = message;
     this.isPowerwashRequired_ = isPowerwashRequired;
-    this.showScreen_('demoSetupErrorDialog');
-  },
-
-  /**
-   * Shows screen with the given id. Method exposed for testing environment.
-   * @param {string} id Screen id.
-   */
-  showScreenForTesting(id) {
-    this.showScreen_(id);
-  },
-
-  /**
-   * Shows screen with the given id.
-   * @param {string} id Screen id.
-   * @private
-   */
-  showScreen_(id) {
-    this.hideScreens_();
-
-    var screen = this.$[id];
-    assert(screen);
-    screen.hidden = false;
-    screen.show();
-  },
-
-  /**
-   * Hides all screens to help switching from one screen to another.
-   * @private
-   */
-  hideScreens_() {
-    for (let id of this.screens_) {
-      var screen = this.$[id];
-      assert(screen);
-      screen.hidden = true;
-    }
+    this.setUIStep(UIState.ERROR);
   },
 
   /**
@@ -144,7 +137,7 @@ Polymer({
    * @private
    */
   onPowerwashClicked_() {
-    chrome.send('login.DemoSetupScreen.userActed', ['powerwash']);
+    this.userActed('powerwash');
   },
 
   /**
@@ -155,7 +148,7 @@ Polymer({
     // TODO(wzang): Remove this after crbug.com/900640 is fixed.
     if (this.isPowerwashRequired_)
       return;
-    chrome.send('login.DemoSetupScreen.userActed', ['close-setup']);
+    this.userActed('close-setup');
   },
 
   /**
@@ -189,4 +182,6 @@ Polymer({
   stepIsCompleted_(stepName, setupSteps, currentStepIndex) {
     return currentStepIndex > setupSteps[stepName];
   },
+
 });
+})();

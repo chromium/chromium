@@ -234,9 +234,16 @@ cr.define('cr.ui.login.debug', function() {
       id: 'demo-setup',
       kind: ScreenKind.OTHER,
       suffix: 'demo',
+      handledSteps: 'progress,error',
       states: [
         {
-          id: 'progress',
+          id: 'download-resources',
+          trigger: (screen) => {
+            screen.setCurrentSetupStep('downloadResources');
+          },
+        },
+        {
+          id: 'enrollment',
           trigger: (screen) => {
             screen.setCurrentSetupStep('enrollment');
           },

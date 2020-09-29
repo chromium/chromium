@@ -33,7 +33,6 @@
 
 // <include src="../../gaia_auth_host/authenticator.js">
 // <include src="oobe_screen_auto_enrollment_check.js">
-// <include src="oobe_screen_demo_setup.js">
 // <include src="oobe_screen_demo_preferences.js">
 // <include src="oobe_screen_enable_debugging.js">
 // <include src="multi_tap_detector.js">
@@ -55,7 +54,6 @@ cr.define('cr.ui.Oobe', function() {
       login.ArcTermsOfServiceScreen.register();
       login.AppLaunchSplashScreen.register();
       login.FatalErrorScreen.register();
-      login.DemoSetupScreen.register();
       login.DemoPreferencesScreen.register();
       login.DiscoverScreen.register();
       login.AssistantOptInFlowScreen.register();

@@ -1,10 +1,10 @@
-<dom-module id="demo-setup-md">
+<dom-module id="demo-setup">
   <template>
     <style include="oobe-dialog-host"></style>
     <link rel="stylesheet" href="demo_setup.css">
 
-    <oobe-dialog id="demoSetupProgressDialog" role="dialog" has-buttons hidden
-      title-key="demoSetupProgressScreenTitle">
+    <oobe-dialog id="demoSetupProgressDialog" role="dialog" has-buttons
+      title-key="demoSetupProgressScreenTitle" for-step="progress">
       <hd-iron-icon slot="oobe-icon"
           icon1x="oobe-32:computer" icon2x="oobe-64:computer">
       </hd-iron-icon>
@@ -34,9 +34,9 @@
       </div>
     </oobe-dialog>
 
-    <oobe-dialog id="demoSetupErrorDialog" role="dialog" has-buttons hidden
+    <oobe-dialog id="demoSetupErrorDialog" role="dialog" has-buttons
         aria-label$="[[i18nDynamic(locale, 'demoSetupErrorScreenTitle')]]"
-        title-key="demoSetupErrorScreenTitle">
+        title-key="demoSetupErrorScreenTitle" for-step="error">
       <hd-iron-icon slot="oobe-icon"
           icon1x="oobe-32:computer" icon2x="oobe-64:computer">
       </hd-iron-icon>
