@@ -191,6 +191,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="SBClientMalware.IPBlacklistRequestNetError"
     enum="NetErrorCodes" expires_after="M85">
+  <obsolete>
+    Removed in 09-2020 since the SBClientMalware feature was removed.
+  </obsolete>
   <owner>vakh@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -200,6 +203,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="SBClientMalware.IPBlacklistRequestPayloadSize" units="bytes"
     expires_after="M85">
+  <obsolete>
+    Removed in 09-2020 since the SBClientMalware feature was removed.
+  </obsolete>
   <owner>vakh@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -209,6 +215,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="SBClientMalware.IPBlacklistRequestResponseCode"
     enum="HttpResponseCode" expires_after="M85">
+  <obsolete>
+    Removed in 09-2020 since the SBClientMalware feature was removed.
+  </obsolete>
   <owner>vakh@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -219,6 +228,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="SBClientMalware.SentReports" enum="SBClientMalwareSentReports"
     expires_after="M85">
+  <obsolete>
+    Removed in 09-2020 since the SBClientMalware feature was removed.
+  </obsolete>
   <owner>vakh@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -230,6 +242,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="SBClientMalware.ServerDeterminesMalware"
     enum="BooleanIsMalware" expires_after="M85">
+  <obsolete>
+    Removed in 09-2020 since the SBClientMalware feature was removed.
+  </obsolete>
   <owner>vakh@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>The counts for malware verdicts given by server side model.</summary>
@@ -281,8 +296,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SBClientPhishing.ClientModelDownloadResponseOrErrorCode"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="M85">
-  <owner>vakh@google.com</owner>
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="M90">
+  <owner>drubery@google.com</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     Response or error codes from the SafeBrowsing service. Logged after a
     request for the client side model finishes to capture the response code or
@@ -319,8 +335,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SBClientPhishing.DOMFeatureFrameRemoved" units="units"
-    expires_after="M85">
-  <owner>gab@chromium.org</owner>
+    expires_after="M90">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@chromium.org</owner>
   <summary>
     The number of times that DOM feature extraction finished early because the
     active WebDocument's frame was removed during traversal.
@@ -347,8 +364,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SBClientPhishing.DOMFeatureTimeout" units="units"
-    expires_after="M85">
-  <owner>gab@chromium.org</owner>
+    expires_after="M90">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     The number of phishing classifications that were aborted because DOM feature
     extraction took too long.
@@ -365,8 +383,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SBClientPhishing.IllegalFeatureValue" units="units"
-    expires_after="M85">
-  <owner>vakh@chromium.org</owner>
+    expires_after="M90">
+  <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     The number of features which were omitted from phishing classification
@@ -434,8 +452,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SBClientPhishing.RequestNotSerialized" units="units"
-    expires_after="M85">
-  <owner>vakh@chromium.org</owner>
+    expires_after="M90">
+  <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     The number of phishing classifier pingbacks that were skipped because
@@ -444,8 +462,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SBClientPhishing.RequestSatisfiedFromCache" enum="BooleanHit"
-    expires_after="M85">
-  <owner>vakh@chromium.org</owner>
+    expires_after="M90">
+  <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     The number of times that a cached phishing classification result was used,
@@ -454,8 +472,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SBClientPhishing.ScorerCreationStatus"
-    enum="SBClientPhishingScorerCreationStatus" expires_after="M85">
-  <owner>vakh@chromium.org</owner>
+    enum="SBClientPhishingScorerCreationStatus" expires_after="M90">
+  <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     Records the status when we create a scorer object for the client-side
@@ -475,8 +493,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SBClientPhishing.TermFeatureBreakIterError" units="units"
-    expires_after="M85">
-  <owner>vakh@chromium.org</owner>
+    expires_after="M90">
+  <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     The number of phishing classifications that were aborted because the term
