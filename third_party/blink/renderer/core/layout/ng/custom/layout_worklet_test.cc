@@ -44,7 +44,7 @@ class LayoutWorkletTest : public PageTestBase {
     return GetGlobalScope()->ScriptController()->GetScriptState();
   }
 
-  ModuleEvaluationResult EvaluateScriptModule(const String& source_code) {
+  ScriptEvaluationResult EvaluateScriptModule(const String& source_code) {
     ScriptState* script_state = GetScriptState();
     EXPECT_TRUE(script_state);
 
@@ -69,7 +69,7 @@ class LayoutWorkletTest : public PageTestBase {
 
 TEST_F(LayoutWorkletTest, ParseProperties) {
   ScriptState::Scope scope(GetScriptState());
-  EXPECT_TRUE(EvaluateScriptModule(R"JS(
+  EXPECT_EQ(EvaluateScriptModule(R"JS(
     registerLayout('foo', class {
       static get inputProperties() { return ['--prop', 'flex-basis', 'thing'] }
       static get childInputProperties() { return ['--child-prop', 'margin-top', 'other-thing'] }
@@ -77,7 +77,8 @@ TEST_F(LayoutWorkletTest, ParseProperties) {
       async layout() { }
     });
   )JS")
-                  .IsSuccess());
+                .GetResultType(),
+            ScriptEvaluationResult::ResultType::kSuccess);
 
   LayoutWorkletGlobalScope* global_scope = GetGlobalScope();
   CSSLayoutDefinition* definition = global_scope->FindDefinition("foo");
@@ -105,14 +106,15 @@ TEST_F(LayoutWorkletTest, ParseProperties) {
 
 TEST_F(LayoutWorkletTest, RegisterLayout) {
   ScriptState::Scope scope(GetScriptState());
-  ModuleEvaluationResult result = EvaluateScriptModule(R"JS(
+  ScriptEvaluationResult result = EvaluateScriptModule(R"JS(
     registerLayout('foo', class {
       async intrinsicSizes() { }
       async layout() { }
     });
   )JS");
 
-  EXPECT_TRUE(result.IsSuccess());
+  EXPECT_EQ(result.GetResultType(),
+            ScriptEvaluationResult::ResultType::kSuccess);
 
   result = EvaluateScriptModule(R"JS(
     registerLayout('bar', class {
@@ -123,23 +125,25 @@ TEST_F(LayoutWorkletTest, RegisterLayout) {
     });
   )JS");
 
-  EXPECT_TRUE(result.IsSuccess());
+  EXPECT_EQ(result.GetResultType(),
+            ScriptEvaluationResult::ResultType::kSuccess);
 }
 
 TEST_F(LayoutWorkletTest, RegisterLayout_EmptyName) {
   ScriptState::Scope scope(GetScriptState());
-  ModuleEvaluationResult result = EvaluateScriptModule(R"JS(
+  ScriptEvaluationResult result = EvaluateScriptModule(R"JS(
     registerLayout('', class {
     });
   )JS");
 
   // "The empty string is not a valid name."
-  EXPECT_TRUE(result.IsException());
+  EXPECT_EQ(result.GetResultType(),
+            ScriptEvaluationResult::ResultType::kException);
 }
 
 TEST_F(LayoutWorkletTest, RegisterLayout_Duplicate) {
   ScriptState::Scope scope(GetScriptState());
-  ModuleEvaluationResult result = EvaluateScriptModule(R"JS(
+  ScriptEvaluationResult result = EvaluateScriptModule(R"JS(
     registerLayout('foo', class {
       async intrinsicSizes() { }
       async layout() { }
@@ -151,95 +155,103 @@ TEST_F(LayoutWorkletTest, RegisterLayout_Duplicate) {
   )JS");
 
   // "A class with name:'foo' is already registered."
-  EXPECT_TRUE(result.IsException());
+  EXPECT_EQ(result.GetResultType(),
+            ScriptEvaluationResult::ResultType::kException);
 }
 
 TEST_F(LayoutWorkletTest, RegisterLayout_NoIntrinsicSizes) {
   ScriptState::Scope scope(GetScriptState());
-  ModuleEvaluationResult result = EvaluateScriptModule(R"JS(
+  ScriptEvaluationResult result = EvaluateScriptModule(R"JS(
     registerLayout('foo', class {
     });
   )JS");
 
   // "The 'intrinsicSizes' property on the prototype does not exist."
-  EXPECT_TRUE(result.IsException());
+  EXPECT_EQ(result.GetResultType(),
+            ScriptEvaluationResult::ResultType::kException);
 }
 
 TEST_F(LayoutWorkletTest, RegisterLayout_ThrowingPropertyGetter) {
   ScriptState::Scope scope(GetScriptState());
-  ModuleEvaluationResult result = EvaluateScriptModule(R"JS(
+  ScriptEvaluationResult result = EvaluateScriptModule(R"JS(
     registerLayout('foo', class {
       static get inputProperties() { throw Error(); }
     });
   )JS");
 
   // "Uncaught Error"
-  EXPECT_TRUE(result.IsException());
+  EXPECT_EQ(result.GetResultType(),
+            ScriptEvaluationResult::ResultType::kException);
 }
 
 TEST_F(LayoutWorkletTest, RegisterLayout_BadPropertyGetter) {
   ScriptState::Scope scope(GetScriptState());
-  ModuleEvaluationResult result = EvaluateScriptModule(R"JS(
+  ScriptEvaluationResult result = EvaluateScriptModule(R"JS(
     registerLayout('foo', class {
       static get inputProperties() { return 42; }
     });
   )JS");
 
   // "The provided value cannot be converted to a sequence."
-  EXPECT_TRUE(result.IsException());
+  EXPECT_EQ(result.GetResultType(),
+            ScriptEvaluationResult::ResultType::kException);
 }
 
 TEST_F(LayoutWorkletTest, RegisterLayout_NoPrototype) {
   ScriptState::Scope scope(GetScriptState());
-  ModuleEvaluationResult result = EvaluateScriptModule(R"JS(
+  ScriptEvaluationResult result = EvaluateScriptModule(R"JS(
     const foo = function() { };
     foo.prototype = undefined;
     registerLayout('foo', foo);
   )JS");
 
   // "The 'prototype' object on the class does not exist."
-  EXPECT_TRUE(result.IsException());
+  EXPECT_EQ(result.GetResultType(),
+            ScriptEvaluationResult::ResultType::kException);
 }
 
 TEST_F(LayoutWorkletTest, RegisterLayout_BadPrototype) {
   ScriptState::Scope scope(GetScriptState());
-  ModuleEvaluationResult result = EvaluateScriptModule(R"JS(
+  ScriptEvaluationResult result = EvaluateScriptModule(R"JS(
     const foo = function() { };
     foo.prototype = 42;
     registerLayout('foo', foo);
   )JS");
 
   // "The 'prototype' property on the class is not an object."
-  EXPECT_TRUE(result.IsException());
+  EXPECT_EQ(result.GetResultType(),
+            ScriptEvaluationResult::ResultType::kException);
 }
 
 TEST_F(LayoutWorkletTest, RegisterLayout_BadIntrinsicSizes) {
   ScriptState::Scope scope(GetScriptState());
-  ModuleEvaluationResult result = EvaluateScriptModule(R"JS(
+  ScriptEvaluationResult result = EvaluateScriptModule(R"JS(
     registerLayout('foo', class {
       get intrinsicSizes() { return 42; }
     });
   )JS");
 
   // "The 'intrinsicSizes' property on the prototype is not a function."
-  EXPECT_TRUE(result.IsException());
+  EXPECT_EQ(result.GetResultType(),
+            ScriptEvaluationResult::ResultType::kException);
 }
 
 TEST_F(LayoutWorkletTest, RegisterLayout_NoLayout) {
   ScriptState::Scope scope(GetScriptState());
-  ModuleEvaluationResult result = EvaluateScriptModule(R"JS(
+  ScriptEvaluationResult result = EvaluateScriptModule(R"JS(
     registerLayout('foo', class {
       async intrinsicSizes() { }
     });
   )JS");
 
   // "The 'layout' property on the prototype does not exist."
-  EXPECT_TRUE(result.IsException());
+  EXPECT_EQ(result.GetResultType(),
+            ScriptEvaluationResult::ResultType::kException);
 }
 
 TEST_F(LayoutWorkletTest, RegisterLayout_BadLayout) {
   ScriptState::Scope scope(GetScriptState());
-  ModuleEvaluationResult result = EvaluateScriptModule(R"JS(
+  ScriptEvaluationResult result = EvaluateScriptModule(R"JS(
     registerLayout('foo', class {
       async intrinsicSizes() { }
       get layout() { return 42; }
@@ -247,7 +259,8 @@ TEST_F(LayoutWorkletTest, RegisterLayout_BadLayout) {
   )JS");
 
   // "The 'layout' property on the prototype is not a function."
-  EXPECT_TRUE(result.IsException());
+  EXPECT_EQ(result.GetResultType(),
+            ScriptEvaluationResult::ResultType::kException);
 }
 
 }  // namespace blink

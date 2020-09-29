@@ -169,10 +169,10 @@ Vector<ModuleRequest> DummyModulator::ModuleRequestsFromModuleRecord(
   return Vector<ModuleRequest>();
 }
 
-ModuleEvaluationResult DummyModulator::ExecuteModule(ModuleScript*,
+ScriptEvaluationResult DummyModulator::ExecuteModule(ModuleScript*,
                                                      CaptureEvalErrorFlag) {
   NOTREACHED();
-  return ModuleEvaluationResult::Empty();
+  return ScriptEvaluationResult::FromModuleNotRun();
 }
 
 ModuleScriptFetcher* DummyModulator::CreateModuleScriptFetcher(

@@ -330,7 +330,7 @@ void WorkerGlobalScope::ImportScriptsInternal(const Vector<String>& urls) {
     ReportingProxy().WillEvaluateImportedClassicScript(
         source_code.length(), handler ? handler->GetCodeCacheSize() : 0);
     ScriptState::Scope scope(ScriptController()->GetScriptState());
-    ClassicEvaluationResult result = ScriptController()->EvaluateAndReturnValue(
+    ScriptEvaluationResult result = ScriptController()->EvaluateAndReturnValue(
         ScriptSourceCode(source_code, ScriptSourceLocationType::kUnknown,
                          handler,
                          ScriptSourceCode::UsePostRedirectURL() ? response_url
@@ -342,7 +342,7 @@ void WorkerGlobalScope::ImportScriptsInternal(const Vector<String>& urls) {
     // Step 5.2: "If an exception was thrown or if the script was prematurely
     // aborted, then abort all these steps, letting the exception or aborting
     // continue to be processed by the calling script."
-    if (result.IsEmpty())
+    if (result.GetResultType() != ScriptEvaluationResult::ResultType::kSuccess)
       return;
   }
 }

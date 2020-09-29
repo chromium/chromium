@@ -91,13 +91,13 @@ class DynamicModuleResolverTestModulator final : public DummyModulator {
     fetch_tree_was_called_ = true;
   }
 
-  ModuleEvaluationResult ExecuteModule(
+  ScriptEvaluationResult ExecuteModule(
       ModuleScript* module_script,
       CaptureEvalErrorFlag capture_error) final {
     EXPECT_EQ(CaptureEvalErrorFlag::kCapture, capture_error);
 
     ScriptState::EscapableScope scope(script_state_);
-    ModuleEvaluationResult result = ModuleRecord::Evaluate(
+    ScriptEvaluationResult result = ModuleRecord::Evaluate(
         script_state_, module_script->V8Module(), module_script->SourceURL());
     return result.Escape(&scope);
   }

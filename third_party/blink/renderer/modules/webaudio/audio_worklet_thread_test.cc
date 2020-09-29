@@ -120,9 +120,10 @@ class AudioWorkletThreadTest : public PageTestBase {
     ScriptValue exception =
         ModuleRecord::Instantiate(script_state, module, js_url);
     EXPECT_TRUE(exception.IsEmpty());
-    ModuleEvaluationResult result =
+    ScriptEvaluationResult result =
         ModuleRecord::Evaluate(script_state, module, js_url);
-    EXPECT_TRUE(result.IsSuccess());
+    EXPECT_EQ(result.GetResultType(),
+              ScriptEvaluationResult::ResultType::kSuccess);
     wait_event->Signal();
   }
 

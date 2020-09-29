@@ -148,9 +148,10 @@ class AudioWorkletGlobalScopeTest : public PageTestBase {
         ModuleRecord::Instantiate(script_state, module, js_url);
     EXPECT_TRUE(exception.IsEmpty());
 
-    ModuleEvaluationResult result =
+    ScriptEvaluationResult result =
         ModuleRecord::Evaluate(script_state, module, js_url);
-    return result.IsSuccess();
+    return result.GetResultType() ==
+           ScriptEvaluationResult::ResultType::kSuccess;
   }
 
   // Test if AudioWorkletGlobalScope and V8 components (ScriptState, Isolate)

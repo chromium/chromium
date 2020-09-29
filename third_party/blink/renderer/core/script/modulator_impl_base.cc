@@ -337,7 +337,7 @@ void ModulatorImplBase::ProduceCacheModuleTree(
 
 // <specdef href="https://html.spec.whatwg.org/C/#run-a-module-script">
 // Spec with TLA: https://github.com/whatwg/html/pull/4352
-ModuleEvaluationResult ModulatorImplBase::ExecuteModule(
+ScriptEvaluationResult ModulatorImplBase::ExecuteModule(
     ModuleScript* module_script,
     CaptureEvalErrorFlag capture_error) {
   // <spec step="1">If rethrow errors is not given, let it be false.</spec>
@@ -348,8 +348,9 @@ ModuleEvaluationResult ModulatorImplBase::ExecuteModule(
 
   // <spec step="3">Check if we can run script with settings. If this returns
   // "do not run" then return NormalCompletion(empty).</spec>
-  if (IsScriptingDisabled())
-    return ModuleEvaluationResult::Empty();
+  if (IsScriptingDisabled()) {
+    return ScriptEvaluationResult::FromModuleNotRun();
+  }
 
   // <spec step="4">Prepare to run script given settings.</spec>
   //
@@ -361,7 +362,7 @@ ModuleEvaluationResult ModulatorImplBase::ExecuteModule(
   ScriptState::EscapableScope scope(script_state_);
 
   // Without TLA: <spec step="5">Let evaluationStatus be null.</spec>
-  ModuleEvaluationResult result = ModuleEvaluationResult::Empty();
+  ScriptEvaluationResult result = ScriptEvaluationResult::FromModuleNotRun();
 
   // <spec step="6">If script's error to rethrow is not null, ...</spec>
   if (module_script->HasErrorToRethrow()) {
@@ -371,7 +372,7 @@ ModuleEvaluationResult ModulatorImplBase::ExecuteModule(
     // With TLA:    <spec step="5">If script's error to rethrow is not null,
     //     then let valuationPromise be a promise rejected with script's error
     //     to rethrow.</spec>
-    result = ModuleEvaluationResult::FromException(
+    result = ScriptEvaluationResult::FromModuleException(
         module_script->CreateErrorToRethrow().V8Value());
   } else {
     // <spec step="7">Otherwise:</spec>
@@ -390,7 +391,8 @@ ModuleEvaluationResult ModulatorImplBase::ExecuteModule(
     // DOMException, [[Target]]: empty }.</spec>
 
     // [not specced] Store V8 code cache on successful evaluation.
-    if (result.IsSuccess()) {
+    if (result.GetResultType() ==
+        ScriptEvaluationResult::ResultType::kSuccess) {
       TaskRunner()->PostTask(
           FROM_HERE,
           WTF::Bind(&ModulatorImplBase::ProduceCacheModuleTreeTopLevel,
@@ -398,27 +400,26 @@ ModuleEvaluationResult ModulatorImplBase::ExecuteModule(
     }
   }
 
-  if (base::FeatureList::IsEnabled(features::kTopLevelAwait)) {
-    if (capture_error == CaptureEvalErrorFlag::kReport) {
+  if (capture_error == CaptureEvalErrorFlag::kReport) {
+    if (base::FeatureList::IsEnabled(features::kTopLevelAwait)) {
       // <spec step="7"> If report errors is true, then upon rejection of
       // evaluationPromise with reason, report the exception given by reason
       // for script.</spec>
       v8::Local<v8::Function> callback_failure =
           ModuleEvaluationRejectionCallback::CreateFunction(script_state_);
-      // Add a rejection handler to report back errors once the result promise
-      // is rejected.
+      // Add a rejection handler to report back errors once the result
+      // promise is rejected.
       result.GetPromise(script_state_)
           .Then(v8::Local<v8::Function>(), callback_failure);
-    }
-  } else {
-    // <spec step="8">If evaluationStatus is an abrupt completion, then:</spec>
-    if (result.IsException()) {
-      // <spec step="8.1">If rethrow errors is true, rethrow the exception given
-      // by evaluationStatus.[[Value]].</spec>
-      if (capture_error == CaptureEvalErrorFlag::kReport) {
+    } else {
+      // <spec step="8">If evaluationStatus is an abrupt completion,
+      // then:</spec>
+      if (result.GetResultType() ==
+          ScriptEvaluationResult::ResultType::kException) {
         // <spec step="8.2">Otherwise, report the exception given by
         // evaluationStatus.[[Value]] for script.</spec>
-        ModuleRecord::ReportException(script_state_, result.GetException());
+        ModuleRecord::ReportException(script_state_,
+                                      result.GetExceptionForModule());
       }
     }
   }
