@@ -77,6 +77,8 @@ base::Optional<SkColor> SkColorFromColorId(
     // Dialogs
     case ui::NativeTheme::kColorId_DialogBackground:
     case ui::NativeTheme::kColorId_BubbleBackground:
+    // Notifications
+    case ui::NativeTheme::kColorId_NotificationDefaultBackground:
       return GetBgColor("");
     case ui::NativeTheme::kColorId_DialogForeground:
     case ui::NativeTheme::kColorId_BubbleForeground:

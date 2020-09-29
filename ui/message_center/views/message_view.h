@@ -209,6 +209,9 @@ class MESSAGE_CENTER_EXPORT MessageView
   // Sets the border if |is_nested_| is true.
   void SetNestedBorderIfNecessary();
 
+  // Updates the background painter using the themed background color and radii.
+  void UpdateBackgroundPainter();
+
   std::string notification_id_;
   views::ScrollView* scroller_ = nullptr;
 

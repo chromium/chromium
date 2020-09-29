@@ -70,6 +70,7 @@ base::Optional<SkColor> GetDarkSchemeColor(NativeTheme::ColorId color_id) {
     case NativeTheme::kColorId_ButtonColor:
     case NativeTheme::kColorId_DialogBackground:
     case NativeTheme::kColorId_BubbleBackground:
+    case NativeTheme::kColorId_NotificationDefaultBackground:
       return color_utils::AlphaBlend(SK_ColorWHITE, gfx::kGoogleGrey900, 0.04f);
     case NativeTheme::kColorId_DialogForeground:
       return gfx::kGoogleGrey500;
@@ -246,6 +247,7 @@ SkColor GetDefaultColor(NativeTheme::ColorId color_id,
     case NativeTheme::kColorId_ButtonColor:
     case NativeTheme::kColorId_DialogBackground:
     case NativeTheme::kColorId_BubbleBackground:
+    case NativeTheme::kColorId_NotificationDefaultBackground:
       return SK_ColorWHITE;
     case NativeTheme::kColorId_DialogForeground:
       return gfx::kGoogleGrey700;
@@ -422,15 +424,21 @@ SkColor GetDefaultColor(NativeTheme::ColorId color_id,
       return gfx::kGoogleBlue600;
 
     // Notification view
-    // TODO(crbug.com/1065604): Add support for dark mode.
-    case NativeTheme::kColorId_NotificationDefaultBackground:
     case NativeTheme::kColorId_NotificationPlaceholderIconColor:
       return SK_ColorWHITE;
     case NativeTheme::kColorId_NotificationActionsRowBackground:
-    case NativeTheme::kColorId_NotificationInlineSettingsBackground:
-      return SkColorSetRGB(0xee, 0xee, 0xee);
-    case NativeTheme::kColorId_NotificationLargeImageBackground:
-      return SkColorSetRGB(0xf5, 0xf5, 0xf5);
+    case NativeTheme::kColorId_NotificationInlineSettingsBackground: {
+      const SkColor bg = base_theme->GetSystemColor(
+          NativeTheme::kColorId_NotificationDefaultBackground, color_scheme);
+      // The alpha value here (0x14) is chosen to generate 0xEEE from 0xFFF.
+      return color_utils::BlendTowardMaxContrast(bg, 0x14);
+    }
+    case NativeTheme::kColorId_NotificationLargeImageBackground: {
+      const SkColor bg = base_theme->GetSystemColor(
+          NativeTheme::kColorId_NotificationDefaultBackground, color_scheme);
+      // The alpha value here (0x0C) is chosen to generate 0xF5F5F5 from 0xFFF.
+      return color_utils::BlendTowardMaxContrast(bg, 0x0C);
+    }
     case NativeTheme::kColorId_NotificationEmptyPlaceholderIconColor:
       return SkColorSetA(SK_ColorWHITE, 0x60);
     case NativeTheme::kColorId_NotificationEmptyPlaceholderTextColor:

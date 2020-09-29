@@ -173,9 +173,7 @@ void MessageView::SetManuallyExpandedOrCollapsed(bool value) {
 
 void MessageView::UpdateCornerRadius(int top_radius, int bottom_radius) {
   SetCornerRadius(top_radius, bottom_radius);
-  SetBackground(views::CreateBackgroundFromPainter(
-      std::make_unique<NotificationBackgroundPainter>(top_radius,
-                                                      bottom_radius)));
+  UpdateBackgroundPainter();
   SchedulePaint();
 }
 
@@ -251,7 +249,7 @@ bool MessageView::OnKeyPressed(const ui::KeyEvent& event) {
 }
 
 bool MessageView::OnKeyReleased(const ui::KeyEvent& event) {
-  // Space key handling is triggerred at key-release timing. See
+  // Space key handling is triggered at key-release timing. See
   // ui/views/controls/buttons/button.cc for why.
   if (event.flags() != ui::EF_NONE || event.key_code() != ui::VKEY_SPACE)
     return false;
@@ -327,6 +325,7 @@ void MessageView::AddedToWidget() {
 
 void MessageView::OnThemeChanged() {
   InkDropHostView::OnThemeChanged();
+  UpdateBackgroundPainter();
   SetNestedBorderIfNecessary();
 }
 
@@ -470,6 +469,14 @@ void MessageView::SetNestedBorderIfNecessary() {
     SetBorder(views::CreateRoundedRectBorder(
         kNotificationBorderThickness, kNotificationCornerRadius, border_color));
   }
+}
+
+void MessageView::UpdateBackgroundPainter() {
+  SkColor background_color = GetNativeTheme()->GetSystemColor(
+      ui::NativeTheme::kColorId_NotificationDefaultBackground);
+  SetBackground(views::CreateBackgroundFromPainter(
+      std::make_unique<NotificationBackgroundPainter>(
+          top_radius_, bottom_radius_, background_color)));
 }
 
 void MessageView::UpdateControlButtonsVisibility() {
