@@ -47,12 +47,15 @@ class UsbServiceWin final : public DeviceMonitorWin::Observer,
       const base::flat_map<int, UsbDeviceWin::FunctionInfo>& functions,
       uint32_t bus_number,
       uint32_t port_number,
+      bool is_supported,
       const std::wstring& driver_name);
   void UpdateFunction(const std::wstring& device_path,
                       int interface_number,
                       const UsbDeviceWin::FunctionInfo& function_info);
 
-  void DeviceReady(scoped_refptr<UsbDeviceWin> device, bool success);
+  void DeviceReady(scoped_refptr<UsbDeviceWin> device,
+                   const std::wstring& driver_name,
+                   bool success);
 
   bool enumeration_ready() {
     return helper_started_ && first_enumeration_countdown_ == 0;

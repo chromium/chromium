@@ -23,6 +23,7 @@ struct WebUsbPlatformCapabilityDescriptor;
 class UsbDeviceWin : public UsbDevice {
  public:
   struct FunctionInfo {
+    int interface_number;
     std::wstring driver;
     std::wstring path;
   };
@@ -32,7 +33,7 @@ class UsbDeviceWin : public UsbDevice {
                const base::flat_map<int, FunctionInfo>& functions,
                uint32_t bus_number,
                uint32_t port_number,
-               const std::wstring& driver_name);
+               bool is_supported);
 
   // UsbDevice implementation:
   void Open(OpenCallback callback) override;
@@ -47,7 +48,6 @@ class UsbDeviceWin : public UsbDevice {
   const base::flat_map<int, FunctionInfo>& functions() const {
     return functions_;
   }
-  const std::wstring& driver_name() const { return driver_name_; }
 
   // Opens the device's parent hub in order to read the device, configuration
   // and string descriptors.
@@ -85,7 +85,7 @@ class UsbDeviceWin : public UsbDevice {
   const std::wstring device_path_;
   const std::wstring hub_path_;
   base::flat_map<int, FunctionInfo> functions_;
-  const std::wstring driver_name_;
+  const bool is_supported_;
 
   DISALLOW_COPY_AND_ASSIGN(UsbDeviceWin);
 };
