@@ -57,7 +57,6 @@ js_unittest("image_loader_unittest") {
 js_library("image_loader_util") {
   deps = [
     ":load_image_request",
-    ":piex_loader",
     "//ui/webui/resources/js:assert",
   ]
 }
@@ -89,10 +88,9 @@ js_unittest("image_loader_client_unittest") {
 }
 
 js_library("piex_loader") {
-  deps = [
-    ":load_image_request",
-    "//ui/file_manager/file_manager/foreground/js/metadata:image_orientation",
-  ]
+  # No dependencies should be added here, so the module can be loaded as a
+  # standalone .js file.
+
   externs_list = [ "//ui/file_manager/externs/platform.js" ]
 }
 
