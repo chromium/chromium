@@ -10,7 +10,7 @@ const base::Feature kSyncDoNotCommitBookmarksWithoutFavicon = {
     "SyncDoNotCommitBookmarksWithoutFavicon", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kSyncReuploadBookmarkFullTitles{
-    "SyncReuploadBookmarkFullTitles", base::FEATURE_DISABLED_BY_DEFAULT};
+    "SyncReuploadBookmarkFullTitles", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kSyncDeduplicateAllBookmarksWithSameGUID{
     "SyncDeduplicateAllBookmarksWithSameGUID",

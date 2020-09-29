@@ -263,10 +263,9 @@ class BookmarkModelTypeProcessorTest : public testing::Test {
   }
 
   sync_pb::BookmarkModelMetadata BuildBookmarkModelMetadataWithoutFullTitles() {
-    base::test::ScopedFeatureList features;
-    features.InitAndDisableFeature(switches::kSyncReuploadBookmarkFullTitles);
     sync_pb::BookmarkModelMetadata model_metadata =
         processor()->GetTrackerForTest()->BuildBookmarkModelMetadata();
+    model_metadata.clear_bookmarks_full_title_reuploaded();
     return model_metadata;
   }
 
