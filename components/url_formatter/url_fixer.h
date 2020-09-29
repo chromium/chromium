@@ -19,10 +19,13 @@ struct Component;
 struct Parsed;
 }
 
-// This object is designed to convert various types of input into URLs that we
-// know are valid. For example, user typing in the URL bar or command line
-// options. This is NOT the place for converting between different types of URLs
-// or parsing them, see net_util.h for that.
+// These methods process user typed input that is meant to be a URL - like user
+// typing in the URL bar or command line switches. The output is NOT guaranteed
+// to be a valid URL.
+//
+// This is NOT the place for converting between different types of URLs or
+// parsing them, see net_util.h for that. These methods should only be used on
+// user typed input, NOT untrusted strings sourced from the web or elsewhere.
 namespace url_formatter {
 
 // Segments the given text string into parts of a URL. This is most useful for
@@ -33,13 +36,15 @@ namespace url_formatter {
 std::string SegmentURL(const std::string& text, url::Parsed* parts);
 base::string16 SegmentURL(const base::string16& text, url::Parsed* parts);
 
-// Converts |text| to a fixed-up URL and returns it. Attempts to make some
-// "smart" adjustments to obviously-invalid input where possible.
-// |text| may be an absolute path to a file, which will get converted to a
-// "file:" URL.
+// Attempts to fix common problems in user-typed text, making some "smart"
+// adjustments to obviously-invalid input where possible.
 //
-// The result will be a "more" valid URL than the input. It may still not be
-// valid, so check the return value's validity or use possibly_invalid_spec().
+// The result can still be invalid, so check the return value's validity or
+// use possibly_invalid_spec(). DO NOT USE this method on untrusted strings
+// from the web or elsewhere. Only use this for user-typed input.
+//
+// If |text| may be an absolute path to a file, it will get converted to a
+// "file:" URL.
 //
 // Schemes "about" and "chrome" are normalized to "chrome://", with slashes.
 // "about:blank" is unaltered, as Webkit allows frames to access about:blank.
