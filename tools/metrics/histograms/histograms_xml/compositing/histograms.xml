@@ -223,7 +223,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Compositing.Display.Draw.Occlusion.Calculation.Time"
-    units="microseconds" expires_after="2020-12-27">
+    units="microseconds" expires_after="2021-03-28">
   <owner>yiyix@chromium.org</owner>
   <owner>chromeos-gfx@chromium.org</owner>
   <summary>
@@ -562,7 +562,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Compositing.SurfaceAggregator.FrameContainsVideo"
-    enum="TypeOfVideoInFrame" expires_after="2021-01-24">
+    enum="TypeOfVideoInFrame" expires_after="2021-03-28">
   <owner>vikassoni@chromium.org</owner>
   <owner>khushalsagar@chromium.org</owner>
   <summary>

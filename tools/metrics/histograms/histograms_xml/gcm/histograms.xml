@@ -442,7 +442,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>Status code of the outcome of a GCM unregistration request.</summary>
 </histogram>
 
-<histogram name="GCM.UserSignedIn" enum="Boolean" expires_after="2021-01-10">
+<histogram name="GCM.UserSignedIn" enum="Boolean" expires_after="2021-03-28">
   <owner>jianli@chromium.org</owner>
   <summary>
     Indicates whether the user was signed in when GCM started up.

@@ -102,7 +102,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Arc.AppListRecommendedImp.AllImpression" units="count"
-    expires_after="2020-12-06">
+    expires_after="2021-03-28">
   <owner>robsc@chromium.org</owner>
   <owner>napper@chromium.org</owner>
   <summary>

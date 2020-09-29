@@ -102,7 +102,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="CrosDisksClient.MountCompletedError"
-    enum="CrosDisksClientMountError" expires_after="2021-01-24">
+    enum="CrosDisksClientMountError" expires_after="2021-03-28">
   <owner>amistry@chromium.org</owner>
   <summary>
     The error code of disk mount signals received from the Chrome OS cros-disks

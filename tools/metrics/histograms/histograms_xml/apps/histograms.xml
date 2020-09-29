@@ -199,7 +199,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.AppList.DriveQuickAccessProvider.CacheWarmed"
-    units="Boolean" expires_after="2021-01-03">
+    units="Boolean" expires_after="2021-03-28">
   <owner>tby@chromium.org</owner>
   <owner>jiameng@chromium.org</owner>
   <summary>
@@ -375,7 +375,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.AppList.SuggestedContent.Enabled" enum="BooleanEnabled"
-    expires_after="2021-01-24">
+    expires_after="2021-03-28">
   <owner>wrong@chromium.org</owner>
   <owner>jiameng@chromium.org</owner>
   <summary>
@@ -1231,7 +1231,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.HomeLauncherTransition.AnimationSmoothness" units="%"
-    expires_after="2021-01-24">
+    expires_after="2021-03-28">
 <!-- Name completed by histogram suffixes
      name="AppListTabletModeTransition" -->
 
