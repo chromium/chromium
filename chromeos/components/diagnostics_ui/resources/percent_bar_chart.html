@@ -1,0 +1,13 @@
+<style include="diagnostics-shared diagnostics-fonts">
+  paper-progress {
+    --paper-progress-active-color: var(--google-blue-500);
+    --paper-progress-container-color: var(--google-blue-100);
+  }
+</style>
+
+<div id="barChartContainer">
+  <label id="chartName">[[title]]</label>
+  <paper-progress id="barChart" value="[[value]]" max="[[max]]"></paper-progress>
+  <!-- TODO(joonbug): Add i18n string for percent number format -->
+  <label id="percentageLabel">[[computePercentage_(value, max)]]</label>
+</div>

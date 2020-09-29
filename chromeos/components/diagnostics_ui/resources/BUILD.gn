@@ -23,6 +23,7 @@ js_type_check("closure_compile_module") {
     ":memory_card",
     ":mojo_interface_provider",
     ":overview_card",
+    ":percent_bar_chart",
   ]
 }
 
@@ -105,6 +106,12 @@ js_library("overview_card") {
   ]
 }
 
+js_library("percent_bar_chart") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
 html_to_js("web_components") {
   js_files = [
     "battery_status_card.js",
@@ -116,5 +123,6 @@ html_to_js("web_components") {
     "diagnostics_shared_css.js",
     "memory_card.js",
     "overview_card.js",
+    "percent_bar_chart.js",
   ]
 }
