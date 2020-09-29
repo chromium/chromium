@@ -264,8 +264,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentSettings.EphemeralFlashPermission"
-    enum="ContentSettings.EphemeralFlashPermission" expires_after="M87">
+    enum="ContentSettings.EphemeralFlashPermission" expires_after="M89">
   <owner>engedy@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
     Records the number of times Flash permission is granted for a host.
   </summary>
