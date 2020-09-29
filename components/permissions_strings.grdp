@@ -123,7 +123,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
     Open and place windows on your screens
   </message>
   <message name="IDS_FONT_ACCESS_PERMISSION_FRAGMENT" desc="Permission request shown if the user is visiting a site that wants to access locally installed font data. Follows a prompt: 'This site would like to:'">
-    Use the fonts installed on your computer so you can create advanced typography
+    Use the fonts on your computer so you can create high-fidelity content
   </message>
   <message name="IDS_IDLE_DETECTION_PERMISSION_FRAGMENT" desc="Permission request shown if the user is visiting a site that wants to monitor when the user is interacting with their device. Follows a prompt: 'This site would like to:'">
     Know when you're present
