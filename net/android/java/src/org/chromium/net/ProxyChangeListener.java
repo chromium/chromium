@@ -18,10 +18,10 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
-import android.util.Log;
 
 import org.chromium.base.BuildConfig;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeClassQualifiedName;
@@ -232,6 +232,9 @@ public class ProxyChangeListener {
         if (proxyInfo == null) {
             return ProxyConfig.DIRECT;
         }
+
+        // Temporary logging to debug crbug.com/1122903
+        Log.i(TAG, "ProxyInfo: " + proxyInfo.toString());
 
         if (Build.VERSION.SDK_INT == Build.VERSION_CODES.Q
                 && proxyInfo.getHost().equals("localhost") && proxyInfo.getPort() == -1) {
