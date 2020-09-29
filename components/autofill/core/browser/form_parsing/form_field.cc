@@ -11,6 +11,7 @@
 #include <string>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -159,6 +160,13 @@ bool FormField::ParseField(AutofillScanner* scanner,
   return ParseFieldSpecifics(scanner, pattern, MATCH_DEFAULT, match, logging);
 }
 
+bool FormField::ParseField(AutofillScanner* scanner,
+                           const std::vector<MatchingPattern>& patterns,
+                           AutofillField** match,
+                           const RegExLogging& logging) {
+  return ParseFieldSpecifics(scanner, patterns, match, logging);
+}
+
 bool FormField::ParseFieldSpecifics(AutofillScanner* scanner,
                                     const base::string16& pattern,
                                     int match_field_attributes,
@@ -176,6 +184,43 @@ bool FormField::ParseFieldSpecifics(AutofillScanner* scanner,
 
   return MatchAndAdvance(scanner, pattern, match_field_attributes,
                          match_field_input_types, match, logging);
+}
+
+bool FormField::ParseFieldSpecifics(
+    AutofillScanner* scanner,
+    const std::vector<MatchingPattern>& patterns,
+    AutofillField** match,
+    const RegExLogging& logging) {
+  if (scanner->IsEnd())
+    return false;
+
+  const AutofillField* field = scanner->Cursor();
+
+  for (const auto& pattern : patterns) {
+    if (!MatchesFormControlType(field->form_control_type,
+                                pattern.match_field_input_types)) {
+      continue;
+    }
+
+    // TODO(crbug.com/1132831): Remove feature check once launched.
+    if (base::FeatureList::IsEnabled(
+            features::
+                kAutofillApplyNegativePatternsForFieldTypeDetectionHeuristics)) {
+      if (FormField::Match(field, base::UTF8ToUTF16(pattern.negative_pattern),
+                           pattern.match_field_attributes,
+                           pattern.match_field_input_types, logging)) {
+        continue;
+      }
+    }
+
+    if (MatchAndAdvance(scanner, base::UTF8ToUTF16(pattern.positive_pattern),
+                        pattern.match_field_attributes,
+                        pattern.match_field_input_types, match, logging)) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 // static

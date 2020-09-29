@@ -66,6 +66,11 @@ class FormField {
                          AutofillField** match,
                          const RegExLogging& logging = {});
 
+  static bool ParseField(AutofillScanner* scanner,
+                         const std::vector<MatchingPattern>& patterns,
+                         AutofillField** match,
+                         const RegExLogging& logging = {});
+
   // Parses the stream of fields in |scanner| with regular expression |pattern|
   // as specified in the |match_type| bit field (see |MatchType|).  If |match|
   // is non-NULL and the pattern matches, |match| will be set to the matched
@@ -74,6 +79,11 @@ class FormField {
   static bool ParseFieldSpecifics(AutofillScanner* scanner,
                                   const base::string16& pattern,
                                   int match_type,
+                                  AutofillField** match,
+                                  const RegExLogging& logging = {});
+
+  static bool ParseFieldSpecifics(AutofillScanner* scanner,
+                                  const std::vector<MatchingPattern>& patterns,
                                   AutofillField** match,
                                   const RegExLogging& logging = {});
 
