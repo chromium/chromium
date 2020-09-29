@@ -928,6 +928,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Android.FontLookup.FetchFontName" enum="FetchFontName"
+    expires_after="M89">
+  <owner>chouinard@chromium.org</owner>
+  <owner>twellington@chromium.org</owner>
+  <summary>
+    Records font fetch requests by font name. These results may be used to
+    determine whether it remains worthwhile to preload fonts that are available
+    for renderer font match requests.
+  </summary>
+</histogram>
+
 <histogram name="Android.FontLookup.FetchFontResult" enum="FetchFontResult"
     expires_after="M89">
   <owner>chouinard@chromium.org</owner>

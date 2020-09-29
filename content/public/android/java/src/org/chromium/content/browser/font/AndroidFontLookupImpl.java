@@ -12,6 +12,7 @@ import android.os.ParcelFileDescriptor;
 import android.os.SystemClock;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.provider.FontRequest;
 import androidx.core.provider.FontsContractCompat;
@@ -50,12 +51,18 @@ public class AndroidFontLookupImpl implements AndroidFontLookup {
     private static final String READ_ONLY_MODE = "r";
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    static final String FETCH_FONT_HISTOGRAM = "Android.FontLookup.FetchFontResult";
+    static final String FETCH_FONT_NAME_HISTOGRAM = "Android.FontLookup.FetchFontName";
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    static final String FETCH_FONT_RESULT_HISTOGRAM = "Android.FontLookup.FetchFontResult";
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     static final String MATCH_LOCAL_FONT_BY_UNIQUE_NAME_HISTOGRAM =
             "Android.FontLookup.MatchLocalFontByUniqueName.Time";
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     static final String GMS_FONT_REQUEST_HISTOGRAM = "Android.FontLookup.GmsFontRequest.Time";
+
+    private static final String GOOGLE_SANS_REGULAR = "google sans regular";
+    private static final String GOOGLE_SANS_MEDIUM = "google sans medium";
+    private static final String GOOGLE_SANS_BOLD = "google sans bold";
 
     private final Context mAppContext;
     private final FontsContractWrapper mFontsContract;
@@ -82,6 +89,19 @@ public class AndroidFontLookupImpl implements AndroidFontLookup {
         mFontsContract = fontsContract;
         mFullFontNameToQuery = fullFontNameToQuery;
         mExpectedFonts = new HashSet<>(mFullFontNameToQuery.keySet());
+    }
+
+    // These values are persisted to logs. Entries should not be renumbered and
+    // numeric values should never be reused. These values must stay in sync with enums.xml.
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @IntDef({FetchFontName.GOOGLE_SANS_REGULAR, FetchFontName.GOOGLE_SANS_MEDIUM,
+            FetchFontName.GOOGLE_SANS_BOLD})
+    @interface FetchFontName {
+        int OTHER = 0;
+        int GOOGLE_SANS_REGULAR = 1;
+        int GOOGLE_SANS_MEDIUM = 2;
+        int GOOGLE_SANS_BOLD = 3;
+        int COUNT = 4;
     }
 
     // These values are persisted to logs. Entries should not be renumbered and
@@ -132,8 +152,10 @@ public class AndroidFontLookupImpl implements AndroidFontLookup {
      */
     @Override
     public void matchLocalFontByUniqueName(
-            String fontUniqueName, MatchLocalFontByUniqueNameResponse callback) {
+            @NonNull String fontUniqueName, MatchLocalFontByUniqueNameResponse callback) {
         long startTimeMs = SystemClock.elapsedRealtime();
+
+        logFetchFontName(fontUniqueName);
 
         // Get executor associated with the current thread for running Mojo callback.
         Core core = CoreImpl.getInstance();
@@ -239,20 +261,22 @@ public class AndroidFontLookupImpl implements AndroidFontLookup {
      * Creates the map from ICU case folded full font name to GMS Core font provider query format,
      * for a selected subset of Android Downloadable fonts.
      *
-     * Note: Because the CaseMap.Fold Java API is only available in Android API 29+, these keys have
-     * been manually converted from full font name to ICU case folded full font name (i.e. "Google
-     * Sans Regular" to "google sans regular") using
-     * `third_party/blink/common/font_unique_name_lookup/icu_fold_case_util.cc`. When further map
-     * entries are added in future, consider importing ICU4J as a third_party library to do this
-     * case folding explicitly in Java code instead, or using the native utility via JNI.
+     * When adding additional fonts to this map:
+     * 1. Add the font to preloaded_fonts.xml, or consider alternatives to prefetch new fonts
+     *    programmatically at a different time in initialization as this may affect startup
+     *    performance.
+     * 2. Keys should be ICU case folded full font name. This can be done manually with
+     *    icu_fold_case_util.cc, or in Java by importing the ICU4J third_party library. (The
+     *    CaseMap.Fold Java API is only available in Android API 29+.)
+     * 3. Update the {@link FetchFontName} enum entries.
      *
      * @return The created map from font names to queries.
      */
     private static Map<String, String> createFullFontNameToQueryMap() {
         Map<String, String> map = new HashMap<>();
-        map.put("google sans regular", createFontQuery("Google Sans", 400));
-        map.put("google sans medium", createFontQuery("Google Sans", 500));
-        map.put("google sans bold", createFontQuery("Google Sans", 700));
+        map.put(GOOGLE_SANS_REGULAR, createFontQuery("Google Sans", 400));
+        map.put(GOOGLE_SANS_MEDIUM, createFontQuery("Google Sans", 500));
+        map.put(GOOGLE_SANS_BOLD, createFontQuery("Google Sans", 700));
         return map;
     }
 
@@ -270,7 +294,27 @@ public class AndroidFontLookupImpl implements AndroidFontLookup {
 
     private static void logFetchFontResult(@FetchFontResult int result) {
         RecordHistogram.recordEnumeratedHistogram(
-                FETCH_FONT_HISTOGRAM, result, FetchFontResult.COUNT);
+                FETCH_FONT_RESULT_HISTOGRAM, result, FetchFontResult.COUNT);
+    }
+
+    private static void logFetchFontName(String fontName) {
+        @FetchFontName
+        int result;
+        switch (fontName) {
+            case GOOGLE_SANS_REGULAR:
+                result = FetchFontName.GOOGLE_SANS_REGULAR;
+                break;
+            case GOOGLE_SANS_MEDIUM:
+                result = FetchFontName.GOOGLE_SANS_MEDIUM;
+                break;
+            case GOOGLE_SANS_BOLD:
+                result = FetchFontName.GOOGLE_SANS_BOLD;
+                break;
+            default:
+                result = FetchFontName.OTHER;
+        }
+        RecordHistogram.recordEnumeratedHistogram(
+                FETCH_FONT_NAME_HISTOGRAM, result, FetchFontName.COUNT);
     }
 
     @Override

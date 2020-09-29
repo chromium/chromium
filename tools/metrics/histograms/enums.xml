@@ -29774,6 +29774,13 @@ Called by update_feature_policy_enum.py.-->
   <int value="2" label="CONTENT_DISMISSED"/>
 </enum>
 
+<enum name="FetchFontName">
+  <int value="0" label="Other"/>
+  <int value="1" label="Google Sans Regular"/>
+  <int value="2" label="Google Sans Medium"/>
+  <int value="3" label="Google Sans Bold"/>
+</enum>
+
 <enum name="FetchFontResult">
   <int value="0" label="Success"/>
   <int value="1" label="Failed due to unexpected font name"/>
