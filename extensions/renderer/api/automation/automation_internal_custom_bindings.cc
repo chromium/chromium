@@ -54,15 +54,19 @@ namespace extensions {
 namespace {
 
 void ThrowInvalidArgumentsException(
-    AutomationInternalCustomBindings* automation_bindings) {
+    AutomationInternalCustomBindings* automation_bindings,
+    bool is_fatal = true) {
   v8::Isolate* isolate = automation_bindings->GetIsolate();
   automation_bindings->GetIsolate()->ThrowException(
       v8::String::NewFromUtf8Literal(
           isolate,
           "Invalid arguments to AutomationInternalCustomBindings function"));
 
-  LOG(FATAL) << "Invalid arguments to AutomationInternalCustomBindings function"
-             << automation_bindings->context()->GetStackTraceAsString();
+  if (is_fatal) {
+    LOG(FATAL)
+        << "Invalid arguments to AutomationInternalCustomBindings function"
+        << automation_bindings->context()->GetStackTraceAsString();
+  }
 }
 
 v8::Local<v8::String> CreateV8String(v8::Isolate* isolate,
@@ -534,7 +538,12 @@ class NodeIDPlusEventWrapper
     v8::Isolate* isolate = automation_bindings_->GetIsolate();
     if (args.Length() < 3 || !args[0]->IsString() || !args[1]->IsInt32() ||
         !args[2]->IsString()) {
-      ThrowInvalidArgumentsException(automation_bindings_);
+      // The extension system does not perform argument validation in js, so an
+      // extension author can do something like node.addEventListener(undefined)
+      // and reach here. Do not crash the process.
+      ThrowInvalidArgumentsException(automation_bindings_,
+                                     false /* is_fatal */);
+      return;
     }
 
     ui::AXTreeID tree_id =
@@ -542,6 +551,11 @@ class NodeIDPlusEventWrapper
     int node_id = args[1].As<v8::Int32>()->Value();
     auto event_type = api::automation::ParseEventType(
         *v8::String::Utf8Value(isolate, args[2]));
+    if (event_type == api::automation::EVENT_TYPE_NONE) {
+      ThrowInvalidArgumentsException(automation_bindings_,
+                                     false /* is_fatal */);
+      return;
+    }
 
     AutomationAXTreeWrapper* tree_wrapper =
         automation_bindings_->GetAutomationAXTreeWrapperFromTreeID(tree_id);

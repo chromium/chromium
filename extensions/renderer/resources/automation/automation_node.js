@@ -1049,12 +1049,17 @@ AutomationNodeImpl.prototype = {
     this.removeEventListener(eventType, callback);
     if (!this.listeners[eventType])
       this.listeners[eventType] = [];
+
+    // Calling EventListenerAdded will also validate the args
+    // and throw an exception it's not a valid event type, so no invalid event
+    // type/listener gets enqueued.
+    EventListenerAdded(this.treeID, this.id, eventType);
+
     $Array.push(this.listeners[eventType], {
       __proto__: null,
       callback: callback,
       capture: !!capture,
     });
-    EventListenerAdded(this.treeID, this.id, eventType);
   },
 
   // TODO(dtseng/aboxhall): Check this impl against spec.
