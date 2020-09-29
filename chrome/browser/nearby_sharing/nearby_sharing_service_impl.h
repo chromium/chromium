@@ -178,6 +178,7 @@ class NearbySharingServiceImpl
   bool ShouldStopNearbyProcess();
   void InvalidateSendSurfaceState();
   void InvalidateScanningState();
+  void InvalidateFastInitiationAdvertising();
   void InvalidateReceiveSurfaceState();
   void InvalidateAdvertisingState();
   void StopAdvertising();

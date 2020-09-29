@@ -1082,8 +1082,7 @@ TEST_F(NearbySharingServiceImplTest,
       NearbySharingService::StatusCodes::kOk,
       service_->RegisterSendSurface(&transfer_callback, &discovery_callback,
                                     SendSurfaceState::kForeground));
-  adapter_observer_->AdapterPresentChanged(mock_bluetooth_adapter_.get(),
-                                           false);
+  SetBluetoothIsPresent(false);
   EXPECT_TRUE(fast_initiation_manager_factory_
                   ->StopAdvertisingCalledAndManagerDestroyed());
 }
@@ -1097,8 +1096,7 @@ TEST_F(NearbySharingServiceImplTest,
       NearbySharingService::StatusCodes::kOk,
       service_->RegisterSendSurface(&transfer_callback, &discovery_callback,
                                     SendSurfaceState::kForeground));
-  adapter_observer_->AdapterPoweredChanged(mock_bluetooth_adapter_.get(),
-                                           false);
+  SetBluetoothIsPowered(false);
   EXPECT_TRUE(fast_initiation_manager_factory_
                   ->StopAdvertisingCalledAndManagerDestroyed());
 }

@@ -297,6 +297,7 @@ void NearbySharingServiceImpl::Shutdown() {
   incoming_share_target_info_map_.clear();
 
   StopAdvertising();
+  StopFastInitiationAdvertising();
   StopScanning();
   nearby_connections_manager_->Shutdown();
 
@@ -309,8 +310,6 @@ void NearbySharingServiceImpl::Shutdown() {
     process_manager_->StopProcess(profile_);
 
   power_client_->RemoveObserver(this);
-
-  StopFastInitiationAdvertising();
 
   if (bluetooth_adapter_)
     bluetooth_adapter_->RemoveObserver(this);
@@ -421,8 +420,6 @@ NearbySharingService::StatusCodes NearbySharingServiceImpl::RegisterSendSurface(
                   << ": A SendSurface has been registered for state: "
                   << SendSurfaceStateToString(state);
   InvalidateSendSurfaceState();
-  if (state == SendSurfaceState::kForeground)
-    StartFastInitiationAdvertising();
   return StatusCodes::kOk;
 }
 
@@ -475,7 +472,6 @@ NearbySharingServiceImpl::UnregisterSendSurface(
   NS_LOG(VERBOSE) << __func__ << ": A SendSurface has been unregistered: "
                   << SendSurfaceStateToString(state);
   InvalidateSurfaceState();
-  StopFastInitiationAdvertising();
   return StatusCodes::kOk;
 }
 
@@ -932,8 +928,6 @@ void NearbySharingServiceImpl::AdapterPresentChanged(
     bool present) {
   NS_LOG(VERBOSE) << "Bluetooth present changed: " << present;
   InvalidateSurfaceState();
-  if (!present)
-    StopFastInitiationAdvertising();
 }
 
 void NearbySharingServiceImpl::AdapterPoweredChanged(
@@ -941,8 +935,6 @@ void NearbySharingServiceImpl::AdapterPoweredChanged(
     bool powered) {
   NS_LOG(VERBOSE) << "Bluetooth powered changed: " << powered;
   InvalidateSurfaceState();
-  if (!powered)
-    StopFastInitiationAdvertising();
 }
 
 void NearbySharingServiceImpl::SuspendImminent() {
@@ -1039,23 +1031,6 @@ void NearbySharingServiceImpl::OnGetBluetoothAdapter(
 }
 
 void NearbySharingServiceImpl::StartFastInitiationAdvertising() {
-  if (!profile_) {
-    NS_LOG(INFO)
-        << "Failed to advertise FastInitiation. Profile is shutting down.";
-    return;
-  }
-
-  if (!IsBluetoothPowered()) {
-    NS_LOG(INFO) << "Failed to advertise FastInitiation. Bluetooth is not "
-                    "powered.";
-    return;
-  }
-
-  if (fast_initiation_manager_) {
-    NS_LOG(INFO) << "Failed to advertise FastInitiation. Already advertising.";
-    return;
-  }
-
   fast_initiation_manager_ =
       FastInitiationManager::Factory::Create(bluetooth_adapter_);
 
@@ -1085,7 +1060,8 @@ void NearbySharingServiceImpl::OnStartFastInitiationAdvertisingError() {
 
 void NearbySharingServiceImpl::StopFastInitiationAdvertising() {
   if (!fast_initiation_manager_) {
-    NS_LOG(INFO) << "Can't stop advertising FastInitiation. Not advertising.";
+    NS_LOG(VERBOSE)
+        << "Can't stop advertising FastInitiation. Not advertising.";
     return;
   }
 
@@ -1236,7 +1212,7 @@ bool NearbySharingServiceImpl::ShouldStopNearbyProcess() {
 
 void NearbySharingServiceImpl::InvalidateSendSurfaceState() {
   InvalidateScanningState();
-  // TODO(b/161889067) InvalidateFastInitAdvertisement();
+  InvalidateFastInitiationAdvertising();
 }
 
 void NearbySharingServiceImpl::InvalidateScanningState() {
@@ -1306,6 +1282,73 @@ void NearbySharingServiceImpl::InvalidateScanningState() {
   // Screen is on, Bluetooth is enabled, and Nearby Sharing is enabled! Start
   // discovery.
   StartScanning();
+}
+
+void NearbySharingServiceImpl::InvalidateFastInitiationAdvertising() {
+  // Nothing to do if we're shutting down the profile.
+  if (!profile_)
+    return;
+
+  if (power_client_->IsSuspended()) {
+    StopFastInitiationAdvertising();
+    NS_LOG(VERBOSE)
+        << __func__
+        << ": Stopping fast init advertising because the system is suspended.";
+    return;
+  }
+
+  if (!process_manager_->IsActiveProfile(profile_)) {
+    StopFastInitiationAdvertising();
+    NS_LOG(VERBOSE)
+        << __func__
+        << ": Stopping fast init advertising because profile was not active: "
+        << profile_->GetProfileUserName();
+    return;
+  }
+
+  // Screen is off. Do no work.
+  if (is_screen_locked_) {
+    StopFastInitiationAdvertising();
+    NS_LOG(VERBOSE)
+        << __func__
+        << ": Stopping fast init advertising because the screen is locked.";
+    return;
+  }
+
+  if (!IsBluetoothPowered()) {
+    StopFastInitiationAdvertising();
+    NS_LOG(VERBOSE) << __func__
+                    << ": Stopping fast init advertising because both "
+                       "bluetooth is disabled.";
+    return;
+  }
+
+  // Nearby Sharing is disabled. Don't fast init advertise.
+  if (!settings_.GetEnabled()) {
+    StopFastInitiationAdvertising();
+    NS_LOG(VERBOSE) << __func__
+                    << ": Stopping fast init advertising because Nearby "
+                       "Sharing is disabled.";
+    return;
+  }
+
+  if (!foreground_send_transfer_callbacks_.might_have_observers()) {
+    StopFastInitiationAdvertising();
+    NS_LOG(VERBOSE) << __func__
+                    << ": Stopping fast init advertising because no send "
+                       "surface is registered.";
+    return;
+  }
+
+  if (fast_initiation_manager_) {
+    NS_LOG(VERBOSE)
+        << "Failed to advertise FastInitiation. Already advertising.";
+    return;
+  }
+
+  NS_LOG(VERBOSE) << __func__ << ": Starting fast init advertising.";
+
+  StartFastInitiationAdvertising();
 }
 
 void NearbySharingServiceImpl::InvalidateReceiveSurfaceState() {
