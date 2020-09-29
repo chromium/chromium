@@ -19,6 +19,8 @@ ScrollingBottomViewSceneLayer::ScrollingBottomViewSceneLayer(
     JNIEnv* env,
     const JavaRef<jobject>& jobj)
     : SceneLayer(env, jobj),
+      should_show_background_(false),
+      background_color_(SK_ColorWHITE),
       view_container_(cc::Layer::Create()),
       view_layer_(cc::UIResourceLayer::Create()) {
   layer()->SetIsDrawable(true);
@@ -86,6 +88,18 @@ void ScrollingBottomViewSceneLayer::SetContentTree(
     layer_->AddChild(content_tree->layer());
     layer_->AddChild(view_container_);
   }
+
+  // Propagate the background color up from the content layer.
+  should_show_background_ = content_tree->ShouldShowBackground();
+  background_color_ = content_tree->GetBackgroundColor();
+}
+
+SkColor ScrollingBottomViewSceneLayer::GetBackgroundColor() {
+  return background_color_;
+}
+
+bool ScrollingBottomViewSceneLayer::ShouldShowBackground() {
+  return should_show_background_;
 }
 
 static jlong JNI_ScrollingBottomViewSceneLayer_Init(

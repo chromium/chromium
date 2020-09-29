@@ -44,7 +44,13 @@ class ScrollingBottomViewSceneLayer : public SceneLayer {
       const base::android::JavaParamRef<jobject>& jobj,
       const base::android::JavaParamRef<jobject>& jcontent_tree);
 
+  SkColor GetBackgroundColor() override;
+
+  bool ShouldShowBackground() override;
+
  private:
+  bool should_show_background_;
+  SkColor background_color_;
   scoped_refptr<cc::Layer> view_container_;
   scoped_refptr<cc::UIResourceLayer> view_layer_;
 
