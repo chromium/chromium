@@ -83,10 +83,6 @@ class COMPONENT_EXPORT(DLCSERVICE_CLIENT) DlcserviceClient {
       const std::string& err,
       const dlcservice::DlcsWithContent& dlcs_with_content)>;
 
-  // The callback to use for |Install()|, if the caller wants to ignore the
-  // progress updates.
-  static const ProgressCallback IgnoreProgress;
-
   // Installs the DLC passed in while reporting progress through the progress
   // callback and only calls install callback on install success/failure.
   virtual void Install(const std::string& dlc_id,

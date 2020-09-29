@@ -427,9 +427,6 @@ class DlcserviceClientImpl : public DlcserviceClient {
   DISALLOW_COPY_AND_ASSIGN(DlcserviceClientImpl);
 };
 
-const DlcserviceClient::ProgressCallback DlcserviceClient::IgnoreProgress =
-    base::BindRepeating([](double) {});
-
 DlcserviceClient::DlcserviceClient() {
   CHECK(!g_instance);
   g_instance = this;

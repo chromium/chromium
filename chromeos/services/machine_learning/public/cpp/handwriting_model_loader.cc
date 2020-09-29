@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "base/bind_helpers.h"
 #include "base/command_line.h"
 #include "base/metrics/histogram_macros.h"
 #include "chromeos/services/machine_learning/public/cpp/service_connection.h"
@@ -93,7 +94,7 @@ void OnGetExistingDlcsComplete(
           kLibHandwritingDlcId,
           base::BindOnce(&OnInstallDlcComplete, std::move(spec),
                          std::move(receiver), std::move(callback)),
-          chromeos::DlcserviceClient::IgnoreProgress);
+          base::DoNothing());
       return;
     }
   }

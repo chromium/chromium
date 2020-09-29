@@ -350,7 +350,7 @@ void PluginVmManagerImpl::InstallDlcAndUpdateVmState(
       base::BindOnce(&PluginVmManagerImpl::OnInstallPluginVmDlc,
                      weak_ptr_factory_.GetWeakPtr(),
                      std::move(success_callback), std::move(error_callback)),
-      chromeos::DlcserviceClient::IgnoreProgress);
+      base::DoNothing());
 }
 
 void PluginVmManagerImpl::OnInstallPluginVmDlc(

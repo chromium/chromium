@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/bind_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "dbus/mock_bus.h"
@@ -282,8 +283,7 @@ TEST_F(DlcserviceClientTest, InstallSuccessTest) {
       base::BindOnce([](const DlcserviceClient::InstallResult& install_result) {
         EXPECT_EQ(dlcservice::kErrorNone, install_result.error);
       });
-  client_->Install("foo-dlc", std::move(install_callback),
-                   DlcserviceClient::IgnoreProgress);
+  client_->Install("foo-dlc", std::move(install_callback), base::DoNothing());
   base::RunLoop().RunUntilIdle();
 }
 
@@ -302,8 +302,7 @@ TEST_F(DlcserviceClientTest, InstallFailureTest) {
       base::BindOnce([](const DlcserviceClient::InstallResult& install_result) {
         EXPECT_EQ(dlcservice::kErrorInternal, install_result.error);
       });
-  client_->Install("foo-dlc", std::move(install_callback),
-                   DlcserviceClient::IgnoreProgress);
+  client_->Install("foo-dlc", std::move(install_callback), base::DoNothing());
   base::RunLoop().RunUntilIdle();
 }
 
@@ -373,8 +372,7 @@ TEST_F(DlcserviceClientTest, InstallBusyStatusTest) {
       base::BindOnce([](const DlcserviceClient::InstallResult& install_result) {
         EXPECT_EQ(dlcservice::kErrorNone, install_result.error);
       });
-  client_->Install("foo-dlc", std::move(install_callback),
-                   DlcserviceClient::IgnoreProgress);
+  client_->Install("foo-dlc", std::move(install_callback), base::DoNothing());
   base::RunLoop().RunUntilIdle();
 }
 
@@ -395,8 +393,7 @@ TEST_F(DlcserviceClientTest, PendingTaskTest) {
         },
         &counter);
     responses_.push_back(dbus::Response::CreateEmpty());
-    client_->Install({}, std::move(install_callback),
-                     DlcserviceClient::IgnoreProgress);
+    client_->Install({}, std::move(install_callback), base::DoNothing());
   }
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(0u, counter.load());
