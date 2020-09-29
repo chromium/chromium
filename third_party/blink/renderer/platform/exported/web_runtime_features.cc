@@ -297,10 +297,6 @@ void WebRuntimeFeatures::EnableOrientationEvent(bool enable) {
   RuntimeEnabledFeatures::SetOrientationEventEnabled(enable);
 }
 
-void WebRuntimeFeatures::EnableOverflowIconsForMediaControls(bool enable) {
-  RuntimeEnabledFeatures::SetOverflowIconsForMediaControlsEnabled(enable);
-}
-
 void WebRuntimeFeatures::EnableOverscrollCustomization(bool enable) {
   RuntimeEnabledFeatures::SetOverscrollCustomizationEnabled(enable);
 }

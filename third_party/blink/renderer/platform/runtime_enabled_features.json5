@@ -1375,9 +1375,6 @@
       name: "OverflowClip",
     },
     {
-      name: "OverflowIconsForMediaControls",
-    },
-    {
       name: "OverscrollCustomization",
       settable_from_internals: true,
       status: "experimental",

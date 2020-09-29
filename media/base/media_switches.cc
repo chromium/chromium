@@ -685,11 +685,6 @@ std::string GetEffectiveAutoplayPolicy(const base::CommandLine& command_line) {
 #endif
 }
 
-// Adds icons to the overflow menu on the native media controls.
-// TODO(steimel): Remove this.
-const base::Feature kOverflowIconsForMediaControls{
-    "OverflowIconsForMediaControls", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enables Media Engagement Index recording. This data will be used to determine
 // when to bypass autoplay policies. This is recorded on all platforms.
 const base::Feature kRecordMediaEngagementScores{

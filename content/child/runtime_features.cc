@@ -238,8 +238,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
      features::kLazyInitializeMediaControls},
     {wf::EnableMediaEngagementBypassAutoplayPolicies,
      media::kMediaEngagementBypassAutoplayPolicies},
-    {wf::EnableOverflowIconsForMediaControls,
-     media::kOverflowIconsForMediaControls},
     {wf::EnableAllowActivationDelegationAttr,
      features::kAllowActivationDelegationAttr},
     {wf::EnableLazyFrameLoading, features::kLazyFrameLoading},
