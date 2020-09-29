@@ -48,6 +48,8 @@ NSString* const kRootObjectKey = @"root";  // Key for the root object.
 NSString* const kSessionDirectory =
     @"Sessions";  // The directory name inside BrowserState directory which
                   // contain all sessions directories.
+NSString* const kSessionFileName =
+    @"session.plist";  // The session file name on disk.
 }
 
 @implementation NSKeyedUnarchiver (CrLegacySessionCompatibility)
@@ -190,7 +192,16 @@ NSString* const kSessionDirectory =
 }
 
 + (NSString*)sessionPathForDirectory:(NSString*)directory {
-  return [directory stringByAppendingPathComponent:@"session.plist"];
+  return [directory stringByAppendingPathComponent:kSessionFileName];
+}
+
++ (NSString*)sessionPathForSessionID:(NSString*)sessionID
+                           directory:(NSString*)directory {
+  if (!sessionID)
+    return [[self class] sessionPathForDirectory:directory];
+  return [NSString pathWithComponents:@[
+    directory, kSessionDirectory, sessionID, kSessionFileName
+  ]];
 }
 
 #pragma mark - Private methods

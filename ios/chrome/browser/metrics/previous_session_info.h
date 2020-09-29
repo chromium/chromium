@@ -112,6 +112,11 @@ enum class DeviceBatteryState {
 // Reset to NO after resetSessionRestorationFlag call.
 @property(nonatomic, readonly) BOOL terminatedDuringSessionRestoration;
 
+// The list of the session IDs for all the connected scenes, used for crash
+// restoration.
+@property(nonatomic, readonly)
+    NSMutableSet<NSString*>* connectedSceneSessionsIDs;
+
 // Singleton PreviousSessionInfo. During the lifetime of the app, the returned
 // object is the same, and describes the previous session, even after a new
 // session has started (by calling beginRecordingCurrentSession).
