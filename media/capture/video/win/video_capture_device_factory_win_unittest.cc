@@ -19,6 +19,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/test/bind_test_util.h"
 #include "base/test/task_environment.h"
+#include "base/win/windows_version.h"
 #include "media/capture/video/win/video_capture_device_factory_win.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -1119,6 +1120,12 @@ class FakeVideoCaptureDeviceFactoryWin : public VideoCaptureDeviceFactoryWin {
             &symbolic_link[0], length + 1, &length))) {
       return false;
     }
+    const bool has_dxgi_device_manager =
+        static_cast<bool>(dxgi_device_manager_for_testing());
+    if (use_d3d11_with_media_foundation_for_testing() !=
+        has_dxgi_device_manager) {
+      return false;
+    }
     *source =
         AddReference(new StubMFMediaSource(base::SysWideToUTF8(symbolic_link)));
     return true;
@@ -1199,22 +1206,38 @@ class VideoCaptureDeviceFactoryWinTest : public ::testing::Test {
     return true;
   }
 
+  bool ShouldSkipD3D11Test() {
+    // D3D11 is only supported with Media Foundation on Windows 8 or later
+    if (base::win::GetVersion() >= base::win::Version::WIN8)
+      return false;
+    DVLOG(1) << "D3D11 with Media foundation is not supported by the current "
+                "platform. "
+                "Skipping test.";
+    return true;
+  }
+
   base::test::TaskEnvironment task_environment_;
   FakeVideoCaptureDeviceFactoryWin factory_;
   const bool media_foundation_supported_;
 };
 
 class VideoCaptureDeviceFactoryMFWinTest
-    : public VideoCaptureDeviceFactoryWinTest {
+    : public VideoCaptureDeviceFactoryWinTest,
+      public testing::WithParamInterface<bool> {
   void SetUp() override {
     VideoCaptureDeviceFactoryWinTest::SetUp();
     factory_.set_use_media_foundation_for_testing(true);
   }
 };
 
-TEST_F(VideoCaptureDeviceFactoryMFWinTest, GetDevicesInfo) {
+TEST_P(VideoCaptureDeviceFactoryMFWinTest, GetDevicesInfo) {
   if (ShouldSkipMFTest())
     return;
+
+  const bool use_d3d11 = GetParam();
+  if (use_d3d11 && ShouldSkipD3D11Test())
+    return;
+  factory_.set_use_d3d11_with_media_foundation_for_testing(use_d3d11);
 
   std::vector<VideoCaptureDeviceInfo> devices_info;
   base::RunLoop run_loop;
@@ -1297,5 +1320,9 @@ TEST_F(VideoCaptureDeviceFactoryMFWinTest, GetDevicesInfo) {
             base::SysWideToUTF8(kDirectShowDeviceName6));
   EXPECT_TRUE(it->descriptor.pan_tilt_zoom_supported());
 }
+
+INSTANTIATE_TEST_SUITE_P(VideoCaptureDeviceFactoryMFWinTests,
+                         VideoCaptureDeviceFactoryMFWinTest,
+                         testing::Bool());
 
 }  // namespace media
