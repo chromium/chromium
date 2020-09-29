@@ -140,6 +140,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     Size in kilobytes (after compression) of an uploaded UKM log. Recorded after
     a successful UKM upload.
+
+    Note: A related metric (UKM.ProtoCompressionRatio) logs the compression
+    ratio.
   </summary>
 </histogram>
 
@@ -180,6 +183,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>rkaplow@chromium.org</owner>
   <owner>ukm-team@google.com</owner>
   <summary>The status when loading UKM PersistedLogs from Prefs.</summary>
+</histogram>
+
+<histogram name="UKM.ProtoCompressionRatio" units="%"
+    expires_after="2021-02-07">
+  <owner>rkaplow@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Compression ratio of the serialized protobuf that will be uploaded to the
+    UKM server. This serialized protobuf is compressed using gzip. See also
+    UKM.LogSize.OnSuccess.
+  </summary>
 </histogram>
 
 <histogram name="UKM.ResetReason" enum="UkmResetReason"
