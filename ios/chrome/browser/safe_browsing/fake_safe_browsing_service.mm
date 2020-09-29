@@ -90,4 +90,5 @@ void FakeSafeBrowsingService::ClearCookies(
     const net::CookieDeletionInfo::TimeRange& creation_range,
     base::OnceClosure callback) {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
+  std::move(callback).Run();
 }
