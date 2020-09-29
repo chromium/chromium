@@ -307,6 +307,12 @@ export class ViewerPdfToolbarNewElement extends PolymerElement {
     if (Number.isNaN(value)) {
       return false;
     }
+
+    // The viewport can have non-integer zoom values.
+    if (Math.abs(this.viewportZoom * 100 - value) < 0.5) {
+      return false;
+    }
+
     this.dispatchEvent(new CustomEvent('zoom-changed', {detail: value}));
     return true;
   }
