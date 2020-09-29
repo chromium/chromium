@@ -200,12 +200,12 @@ class PanelItem extends HTMLElement {
 
               :host([detailed-summary][data-category='collapsed']) #indicator {
                   margin-inline-end: 20px;
-                  width: 28px;
+                  min-width: 28px;
               }
 
               :host([detailed-summary][data-category='expanded']) #indicator {
                   margin-inline-end: 18px;
-                  width: 32px;
+                  min-width: 32px;
               }
 
               :host([detailed-summary]) #primary-action {
