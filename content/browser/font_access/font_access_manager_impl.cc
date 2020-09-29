@@ -50,6 +50,7 @@ void FontAccessManagerImpl::EnumerateLocalFonts(
     std::move(callback).Run(
         blink::mojom::FontEnumerationStatus::kUnexpectedError,
         base::ReadOnlySharedMemoryRegion());
+    return;
   }
 
   // Sticky User Activation is required for the API to function at all.
