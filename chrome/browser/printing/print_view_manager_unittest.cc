@@ -94,7 +94,7 @@ class TestPrintViewManager : public PrintViewManagerBase {
 
  private:
   TestPrintJob* test_job() {
-    return reinterpret_cast<TestPrintJob*>(print_job_.get());
+    return static_cast<TestPrintJob*>(print_job_.get());
   }
 
   base::RunLoop* run_loop_ = nullptr;
