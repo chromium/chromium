@@ -373,7 +373,6 @@ _NOT_CONVERTED_TO_MODERN_BIND_AND_CALLBACK = '|'.join((
   '^chrome/browser/sync/',
   '^chrome/browser/themes/theme_service.cc',
   '^chrome/browser/thumbnail/cc/',
-  '^chrome/browser/tracing/chrome_tracing_delegate_browsertest.cc',
   '^chrome/browser/translate/',
   '^chrome/browser/ui/',
   '^chrome/browser/web_applications/',
