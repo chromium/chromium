@@ -26,6 +26,10 @@
 #include "ui/ozone/public/ozone_switches.h"
 #endif
 
+#if defined(OS_CHROMEOS)
+#include "ui/gl/gl_switches.h"
+#endif
+
 namespace content {
 namespace {
 
@@ -79,6 +83,10 @@ class LaunchAsMojoClientBrowserTest : public ContentBrowserTest {
     const base::CommandLine& cmdline = *base::CommandLine::ForCurrentProcess();
     command_line.CopySwitchesFrom(cmdline, kSwitchesToCopy,
                                   base::size(kSwitchesToCopy));
+
+#if defined(OS_CHROMEOS)
+    command_line.AppendSwitchASCII(switches::kUseGL, "swiftshader");
+#endif
     return command_line;
   }
 
