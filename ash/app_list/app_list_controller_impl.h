@@ -37,6 +37,7 @@
 #include "components/sync/model/string_ordinal.h"
 #include "ui/aura/window_observer.h"
 #include "ui/display/types/display_constants.h"
+#include "ui/message_center/message_center_observer.h"
 
 class PrefChangeRegistrar;
 class PrefRegistrySimple;
@@ -69,7 +70,8 @@ class ASH_EXPORT AppListControllerImpl
       public AssistantControllerObserver,
       public AssistantUiModelObserver,
       public HomeScreenDelegate,
-      public apps::AppRegistryCache::Observer {
+      public apps::AppRegistryCache::Observer,
+      public message_center::MessageCenterObserver {
  public:
   AppListControllerImpl();
   ~AppListControllerImpl() override;
@@ -306,6 +308,9 @@ class ASH_EXPORT AppListControllerImpl
   void OnAppRegistryCacheWillBeDestroyed(
       apps::AppRegistryCache* cache) override;
 
+  // message_center::MessageCenterObserver:
+  void OnQuietModeChanged(bool in_quiet_mode) override;
+
   bool onscreen_keyboard_shown() const { return onscreen_keyboard_shown_; }
 
   HomeLauncherTransitionState home_launcher_transition_state() const {
@@ -493,6 +498,9 @@ class ASH_EXPORT AppListControllerImpl
 
   // Whether the pref for notification badging is enabled.
   base::Optional<bool> notification_badging_pref_enabled_;
+
+  // Whether quiet mode is currently enabled.
+  base::Optional<bool> quiet_mode_enabled_;
 
   DISALLOW_COPY_AND_ASSIGN(AppListControllerImpl);
 };
