@@ -8,6 +8,7 @@
 
 #include "base/optional.h"
 #include "base/test/bind_test_util.h"
+#include "build/build_config.h"
 #include "chrome/browser/nearby_sharing/client/fake_nearby_share_client.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
 #include "chrome/browser/nearby_sharing/local_device_data/fake_nearby_share_device_data_updater.h"
@@ -259,7 +260,13 @@ TEST_F(NearbyShareLocalDeviceDataManagerImplTest, DeviceId) {
   EXPECT_EQ(id, manager()->GetId());
 }
 
-TEST_F(NearbyShareLocalDeviceDataManagerImplTest, ValidateDeviceName) {
+// Test is flaky. crbug.com/1133295.
+#if defined(OS_CHROMEOS)
+#define MAYBE_ValidateDeviceName DISABLED_ValidateDeviceName
+#else
+#define MAYBE_ValidateDeviceName ValidateDeviceName
+#endif
+TEST_F(NearbyShareLocalDeviceDataManagerImplTest, MAYBE_ValidateDeviceName) {
   CreateManager();
   EXPECT_EQ(manager()->ValidateDeviceName(kFakeDeviceName),
             nearby_share::mojom::DeviceNameValidationResult::kValid);
@@ -272,7 +279,13 @@ TEST_F(NearbyShareLocalDeviceDataManagerImplTest, ValidateDeviceName) {
       nearby_share::mojom::DeviceNameValidationResult::kErrorNotValidUtf8);
 }
 
-TEST_F(NearbyShareLocalDeviceDataManagerImplTest, SetDeviceName) {
+// Test is flaky. crbug.com/1133295.
+#if defined(OS_CHROMEOS)
+#define MAYBE_SetDeviceName DISABLED_SetDeviceName
+#else
+#define MAYBE_SetDeviceName SetDeviceName
+#endif
+TEST_F(NearbyShareLocalDeviceDataManagerImplTest, MAYBE_SetDeviceName) {
   CreateManager();
 
   // The default device name is set in the ctor when the device name is empty.
