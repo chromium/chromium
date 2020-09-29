@@ -543,6 +543,33 @@ TEST_F('CrElementsExpandButtonTest', 'All', function() {
   mocha.run();
 });
 
+/**
+ * @constructor
+ * @extends {CrElementsBrowserTest}
+ */
+function CrElementsFindShortcutBehaviorTest() {}
+
+CrElementsFindShortcutBehaviorTest.prototype = {
+  __proto__: CrElementsBrowserTest.prototype,
+
+  /**
+   * Preload a module that depends on both cr-dialog and FindShortcutBehavior.
+   * cr-dialog is used in the tests.
+   * @override
+   */
+  browsePreload: 'chrome://resources/cr_elements/find_shortcut_behavior.html',
+
+  /** @override */
+  extraLibraries: CrElementsBrowserTest.prototype.extraLibraries.concat([
+    '../test_util.js',
+    'find_shortcut_behavior_test.js',
+  ]),
+};
+
+TEST_F('CrElementsFindShortcutBehaviorTest', 'All', function() {
+  mocha.run();
+});
+
 GEN('#if defined(OS_CHROMEOS)');
 /**
  * @constructor

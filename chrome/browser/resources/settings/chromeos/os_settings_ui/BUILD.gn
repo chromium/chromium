@@ -19,10 +19,10 @@ js_library("os_settings_ui") {
     "../os_settings_main:os_settings_main",
     "../os_toolbar",
     "//ui/webui/resources/cr_elements:cr_container_shadow_behavior",
+    "//ui/webui/resources/cr_elements:find_shortcut_behavior",
     "//ui/webui/resources/cr_elements/cr_drawer:cr_drawer",
     "//ui/webui/resources/cr_elements/cr_toolbar:cr_toolbar_search_field",
     "//ui/webui/resources/cr_elements/policy:cr_policy_indicator_behavior",
-    "//ui/webui/resources/js:find_shortcut_behavior",
   ]
 }
 

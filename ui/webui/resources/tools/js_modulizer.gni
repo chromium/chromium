@@ -23,6 +23,7 @@ common_namespace_rewrites = [
   "cr.ui.FocusOutlineManager|FocusOutlineManager",
   "cr.ui.FocusRowBehavior|FocusRowBehavior",
   "cr.ui.focusWithoutInk|focusWithoutInk",
+  "cr.ui.KeyboardShortcutList|KeyboardShortcutList",
   "cr.ui.Store|Store",
   "Polymer.dom.flush|flush",
   "Polymer.IronA11yAnnouncer|IronA11yAnnouncer",

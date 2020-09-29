@@ -39,6 +39,7 @@ js_modulizer("modulize") {
     "cr_toast_manager_test.js",
     "cr_toggle_test.js",
     "cr_view_manager_test.js",
+    "find_shortcut_behavior_test.js",
     "iron_list_focus_test.js",
   ]
   namespace_rewrites = test_namespace_rewrites + [ "Polymer.Base|Base" ]

@@ -301,4 +301,8 @@
   <structure name="IDR_CR_ELEMENTS_CR_TOAST_MANAGER_JS"
              file="cr_elements/cr_toast/cr_toast_manager.js"
              type="chrome_html" />
+  <structure name="IDR_CR_ELEMENTS_FIND_SHORTCUT_BEHAVIOR_HTML"
+             file="cr_elements/find_shortcut_behavior.html" type="chrome_html" />
+  <structure name="IDR_CR_ELEMENTS_FIND_SHORTCUT_BEHAVIOR_JS"
+             file="cr_elements/find_shortcut_behavior.js" type="chrome_html" />
 </grit-part>

@@ -102,6 +102,19 @@ TEST_F('CrElementsExpandButtonV3Test', 'All', function() {
 });
 
 // eslint-disable-next-line no-var
+var CrElementsFindShortcutBehaviorV3Test =
+    class extends CrElementsV3BrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://test?module=cr_elements/find_shortcut_behavior_test.m.js';
+  }
+};
+
+TEST_F('CrElementsFindShortcutBehaviorV3Test', 'All', function() {
+  mocha.run();
+});
+
+// eslint-disable-next-line no-var
 var CrElementsFingerprintProgressArcV3Test =
     class extends CrElementsV3BrowserTest {
   /** @override */

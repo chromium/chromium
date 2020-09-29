@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// #import {assert, assertNotReached} from './assert.m.js';
-// #import {isMac} from './cr.m.js';
-// #import {isTextInputElement} from './util.m.js';
-// #import {KeyboardShortcutList} from './cr/ui/keyboard_shortcut_list.m.js';
+// #import {assert, assertNotReached} from '../js/assert.m.js';
+// #import {isMac} from '../js/cr.m.js';
+// #import {isTextInputElement} from '../js/util.m.js';
+// #import {KeyboardShortcutList} from '../js/cr/ui/keyboard_shortcut_list.m.js';
 
 /**
  * @fileoverview Listens for a find keyboard shortcut (i.e. Ctrl/Cmd+f or /)

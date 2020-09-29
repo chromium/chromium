@@ -156,6 +156,9 @@
          file="${root_gen_dir}/ui/webui/resources/cr_elements/cr_toolbar/cr_toolbar_selection_overlay.m.js"
          use_base_dir="false"
          type="BINDATA" />
+  <include name="IDR_CR_ELEMENTS_FIND_SHORTCUT_BEHAVIOR_M_JS"
+           file="${root_gen_dir}/ui/webui/resources/cr_elements/find_shortcut_behavior.m.js"
+           use_base_dir="false" type="BINDATA" />
   <include name="IDR_CR_ELEMENTS_POLICY_CR_TOOLTIP_ICON_M_JS"
          file="${root_gen_dir}/ui/webui/resources/cr_elements/policy/cr_tooltip_icon.m.js"
          use_base_dir="false"

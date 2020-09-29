@@ -77,6 +77,7 @@ js_type_check("cr_elements_resources") {
   deps = [
     ":cr_container_shadow_behavior",
     ":cr_scrollable_behavior",
+    ":find_shortcut_behavior",
   ]
 }
 
@@ -86,6 +87,15 @@ js_library("cr_scrollable_behavior") {
 
 js_library("cr_container_shadow_behavior") {
   deps = [ "//ui/webui/resources/js:assert" ]
+}
+
+js_library("find_shortcut_behavior") {
+  deps = [
+    "//ui/webui/resources/js:assert",
+    "//ui/webui/resources/js:cr",
+    "//ui/webui/resources/js:util",
+    "//ui/webui/resources/js/cr/ui:keyboard_shortcut_list",
+  ]
 }
 
 # Targets for auto-generating Polymer 3 JS Modules.
@@ -148,8 +158,8 @@ js_modulizer("modulize") {
   input_files = [
     "cr_container_shadow_behavior.js",
     "cr_scrollable_behavior.js",
+    "find_shortcut_behavior.js",
   ]
-  deps = []
 }
 
 group("polymer3_elements") {
@@ -207,6 +217,7 @@ js_type_check("cr_elements_module_resources") {
   deps = [
     ":cr_container_shadow_behavior.m",
     ":cr_scrollable_behavior.m",
+    ":find_shortcut_behavior.m",
   ]
 }
 
@@ -223,6 +234,19 @@ js_library("cr_scrollable_behavior.m") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/iron-list:iron-list",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+  extra_deps = [ ":modulize" ]
+}
+
+js_library("find_shortcut_behavior.m") {
+  sources = [
+    "$root_gen_dir/ui/webui/resources/cr_elements/find_shortcut_behavior.m.js",
+  ]
+  deps = [
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:util.m",
+    "//ui/webui/resources/js/cr/ui:keyboard_shortcut_list.m",
   ]
   extra_deps = [ ":modulize" ]
 }

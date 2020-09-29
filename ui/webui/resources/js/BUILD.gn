@@ -19,7 +19,6 @@ js_type_check("js_resources") {
     ":assert",
     ":cr",
     ":event_tracker",
-    ":find_shortcut_behavior",
     ":i18n_behavior",
     ":i18n_template_no_process",
     ":icon",
@@ -114,22 +113,12 @@ js_library("webui_resource_test") {
   externs_list = [ "dom_automation_controller.js" ]
 }
 
-js_library("find_shortcut_behavior") {
-  deps = [
-    ":assert",
-    ":cr",
-    ":util",
-    "cr/ui:keyboard_shortcut_list",
-  ]
-}
-
 # Targets for auto-generating and type-checking JS Modules
 
 js_modulizer("modulize") {
   input_files = [
     "assert.js",
     "event_tracker.js",
-    "find_shortcut_behavior.js",
     "icon.js",
     "i18n_behavior.js",
     "list_property_update_behavior.js",
@@ -142,7 +131,6 @@ js_modulizer("modulize") {
   ]
   namespace_rewrites = [
     "cr.search_highlight_utils.Range|Range",
-    "cr.ui.KeyboardShortcutList|KeyboardShortcutList",
     "Polymer.ArraySplice.calculateSplices|calculateSplices",
   ]
   deps = [ "cr:modulize" ]
@@ -161,7 +149,6 @@ js_type_check("js_resources_modules") {
     ":assert.m",
     ":cr.m",
     ":event_tracker.m",
-    ":find_shortcut_behavior.m",
     ":i18n_behavior.m",
     ":icon.m",
     ":list_property_update_behavior.m",
@@ -190,18 +177,6 @@ js_library("cr.m") {
 
 js_library("event_tracker.m") {
   sources = [ "$root_gen_dir/ui/webui/resources/js/event_tracker.m.js" ]
-  extra_deps = [ ":modulize" ]
-}
-
-js_library("find_shortcut_behavior.m") {
-  sources =
-      [ "$root_gen_dir/ui/webui/resources/js/find_shortcut_behavior.m.js" ]
-  deps = [
-    ":assert.m",
-    ":cr.m",
-    ":util.m",
-    "cr/ui:keyboard_shortcut_list.m",
-  ]
   extra_deps = [ ":modulize" ]
 }
 
