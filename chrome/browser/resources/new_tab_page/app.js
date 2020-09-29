@@ -323,7 +323,9 @@ class AppElement extends PolymerElement {
   async loadOneGoogleBar_() {
     if (this.iframeOneGoogleBarEnabled_) {
       const oneGoogleBar = document.querySelector('#oneGoogleBar');
-      oneGoogleBar.remove();
+      if (oneGoogleBar) {
+        oneGoogleBar.remove();
+      }
       return;
     }
 

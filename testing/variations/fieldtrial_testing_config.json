@@ -4563,6 +4563,7 @@
                     "name": "Enabled",
                     "enable_features": [
                         "DisableSearchSuggestChips",
+                        "IframeOneGoogleBar",
                         "NtpWebUI"
                     ]
                 }
