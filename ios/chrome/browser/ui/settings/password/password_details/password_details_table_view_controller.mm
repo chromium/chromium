@@ -210,8 +210,6 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
     item.identifyingIcon = [[UIImage imageNamed:image]
         imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     item.identifyingIconEnabled = YES;
-    item.identifyingIconAccessibilityLabel =
-        l10n_util::GetNSString(IDS_IOS_SETTINGS_PASSWORD_SHOW_BUTTON);
   }
   return item;
 }

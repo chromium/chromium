@@ -233,7 +233,6 @@ source_set("eg2_tests") {
     ":password_constants",
     "//base:base",
     "//base/test:test_support",
-    "//components/password_manager/core/common",
     "//components/strings:components_strings_grit",
     "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser/ui/settings:settings_root_constants",

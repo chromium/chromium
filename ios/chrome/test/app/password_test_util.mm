@@ -6,10 +6,8 @@
 
 #include "base/mac/foundation_util.h"
 #import "ios/chrome/browser/ui/settings/password/legacy_password_details_table_view_controller+testing.h"
-#import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
-#include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/top_view_controller.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -55,11 +53,12 @@ MockReauthenticationModule* SetUpAndReturnMockReauthenticationModule() {
   SettingsNavigationController* settings_navigation_controller =
       base::mac::ObjCCastStrict<SettingsNavigationController>(
           top_view_controller::TopPresentedViewController());
-  PasswordDetailsTableViewController* password_details_table_view_controller =
-      base::mac::ObjCCastStrict<PasswordDetailsTableViewController>(
-          settings_navigation_controller.topViewController);
-  password_details_table_view_controller.reauthModule =
-      mock_reauthentication_module;
+  LegacyPasswordDetailsTableViewController*
+      password_details_table_view_controller =
+          base::mac::ObjCCastStrict<LegacyPasswordDetailsTableViewController>(
+              settings_navigation_controller.topViewController);
+  [password_details_table_view_controller
+      setReauthenticationModule:mock_reauthentication_module];
   return mock_reauthentication_module;
 }
 
