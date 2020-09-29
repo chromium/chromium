@@ -43,7 +43,7 @@ class CrostiniUpgraderDialogBrowserTest : public CrostiniDialogBrowserTest {
 
   chromeos::CrostiniUpgraderDialog* GetCrostiniUpgraderDialog() {
     auto url = GURL{chrome::kChromeUICrostiniUpgraderUrl};
-    return reinterpret_cast<chromeos::CrostiniUpgraderDialog*>(
+    return static_cast<chromeos::CrostiniUpgraderDialog*>(
         chromeos::SystemWebDialogDelegate::FindInstance(url.spec()));
   }
 
