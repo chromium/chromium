@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/public/cpp/app_list/app_list_color_provider.h"
 #include "base/bind.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -285,7 +286,7 @@ void PrivacyInfoView::InitText() {
       ax::mojom::Role::kGenericContainer);
 
   views::StyledLabel::RangeStyleInfo style;
-  style.override_color = gfx::kGoogleGrey900;
+  style.override_color = AppListColorProvider::Get()->GetSearchBoxTextColor();
   text_view_->AddStyleRange(gfx::Range(0, offset), style);
 
   // Create a custom view for the link portion of the text. This allows an
