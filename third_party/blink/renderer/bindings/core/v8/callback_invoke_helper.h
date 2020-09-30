@@ -59,8 +59,6 @@ class CallbackInvokeHelper final {
         backup_incumbent_scope_(
             callback->IncumbentScriptState()->GetContext()) {}
 
-  ~CallbackInvokeHelper() = default;
-
   bool PrepareForCall(V8ValueOrScriptWrappableAdapter callback_this);
 
   bool Call(int argc, v8::Local<v8::Value>* argv);
