@@ -29,7 +29,7 @@ export class ViewerThumbnailElement extends PolymerElement {
     return {
       clockwiseRotations: {
         type: Number,
-        observer: 'clockwiseRotationsChanged_',
+        value: 0,
       },
 
       isActive: {
@@ -42,6 +42,12 @@ export class ViewerThumbnailElement extends PolymerElement {
     };
   }
 
+  static get observers() {
+    return [
+      'styleCanvas_(clockwiseRotations)',
+    ];
+  }
+
   constructor() {
     super();
 
@@ -52,23 +58,50 @@ export class ViewerThumbnailElement extends PolymerElement {
 
   /** @param {!ImageData} imageData */
   set image(imageData) {
-    const canvas = this.shadowRoot.querySelector('canvas');
+    const canvas = this.getCanvas_();
     canvas.width = imageData.width;
     canvas.height = imageData.height;
 
-    // Resize the canvas CSS size to maintain the resolution of the thumbnail.
-    const isPortrait = canvas.width < canvas.height;
-    const cssWidth = Math.min(
-        isPortrait ? PORTRAIT_WIDTH : LANDSCAPE_WIDTH,
-        parseInt(canvas.width / window.devicePixelRatio, 10));
-    const scale = cssWidth / canvas.width;
-    const cssHeight = parseInt(canvas.height * scale, 10);
-    canvas.style.width = `${cssWidth}px`;
-    canvas.style.height = `${cssHeight}px`;
+    this.styleCanvas_();
 
     const ctx = canvas.getContext('2d');
     ctx.putImageData(imageData, 0, 0);
     this.removeAttribute('pending');
+  }
+
+  /**
+   * @return {!HTMLCanvasElement}
+   * @private
+   */
+  getCanvas_() {
+    return /** @type {!HTMLCanvasElement} */ (
+        this.shadowRoot.querySelector('canvas'));
+  }
+
+  /**
+   * Calculates the CSS size of the thumbnail depending on the rotation, the
+   * dimensions of the image data, and the screen resolution. The plugin
+   * scales the thumbnail image data by the device to pixel ratio, so that
+   * scaling must be taken into account on the UI.
+   * @param {boolean} rotated
+   * @return {!{width: number, height: number}}
+   * @private
+   */
+  getThumbnailCssSize_(rotated) {
+    const canvas = this.getCanvas_();
+    const isPortrait = canvas.width < canvas.height !== rotated;
+    const orientedWidth = rotated ? canvas.height : canvas.width;
+    const orientedHeight = rotated ? canvas.width : canvas.height;
+
+    // Try scaling down such that the width of thumbnail is `PORTRAIT_WIDTH` or
+    // `LANDSCAPE_WIDTH`, but never scale up to retain the resolution of the
+    // thumbnail.
+    const cssWidth = Math.min(
+        isPortrait ? PORTRAIT_WIDTH : LANDSCAPE_WIDTH,
+        parseInt(orientedWidth / window.devicePixelRatio, 10));
+    const scale = cssWidth / orientedWidth;
+    const cssHeight = parseInt(orientedHeight * scale, 10);
+    return {width: cssWidth, height: cssHeight};
   }
 
   /** @return {boolean} */
@@ -78,12 +111,6 @@ export class ViewerThumbnailElement extends PolymerElement {
 
   setPending() {
     this.toggleAttribute('pending', true);
-  }
-
-  /** @private */
-  clockwiseRotationsChanged_() {
-    // TODO(crbug.com/652400): Respect the PDF content clockwiseRotation.
-    assert(this.clockwiseRotations >= 0 && this.clockwiseRotations < 4);
   }
 
   /** @private */
@@ -142,6 +169,33 @@ export class ViewerThumbnailElement extends PolymerElement {
         this.onClick_();
         break;
     }
+  }
+
+  /**
+   * Sets the canvas CSS size to maintain the resolution of the thumbnail at any
+   * rotation.
+   * @private
+   */
+  styleCanvas_() {
+    assert(this.clockwiseRotations >= 0 && this.clockwiseRotations < 4);
+
+    const canvas = this.getCanvas_();
+    const div = this.shadowRoot.querySelector('#thumbnail');
+
+    const degreesRotated = this.clockwiseRotations * 90;
+    canvas.style.transform = `rotate(${degreesRotated}deg)`;
+
+    // For the purposes of determining the dimensions, a rotation of 180deg is
+    // not rotated.
+    const rotated = this.clockwiseRotations % 2 !== 0;
+    const cssSize = this.getThumbnailCssSize_(rotated);
+    div.style.width = `${cssSize.width}px`;
+    div.style.height = `${cssSize.height}px`;
+
+    // When rotated, the canvas's height becomes the parent div's width and vice
+    // versa.
+    canvas.style.width = `${rotated ? cssSize.height : cssSize.width}px`;
+    canvas.style.height = `${rotated ? cssSize.width : cssSize.height}px`;
   }
 }
 
