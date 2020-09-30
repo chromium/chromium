@@ -7,6 +7,7 @@ import("//build/config/android/rules.gni")
 _jni_sources = [
   "java/src/org/chromium/components/policy/CombinedPolicyProvider.java",
   "java/src/org/chromium/components/policy/PolicyConverter.java",
+  "java/src/org/chromium/components/policy/PolicyMap.java",
   "java/src/org/chromium/components/policy/PolicyService.java",
 ]
 
@@ -76,7 +77,10 @@ java_library("components_policy_junit_tests") {
   ]
 }
 
-_test_jni_sources = [ "javatests/src/org/chromium/components/policy/test/PolicyServiceTestSupporter.java" ]
+_test_jni_sources = [
+  "javatests/src/org/chromium/components/policy/test/PolicyMapTestSupporter.java",
+  "javatests/src/org/chromium/components/policy/test/PolicyServiceTestSupporter.java",
+]
 
 android_library("native_test_support_java") {
   testonly = true

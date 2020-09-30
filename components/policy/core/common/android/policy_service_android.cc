@@ -10,10 +10,10 @@
 namespace policy {
 namespace android {
 
-// PolicyServiceAndroid
-
 PolicyServiceAndroid::PolicyServiceAndroid(PolicyService* policy_service)
-    : policy_service_(policy_service) {}
+    : policy_service_(policy_service),
+      policy_map_(policy_service->GetPolicies(
+          PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()))) {}
 PolicyServiceAndroid::~PolicyServiceAndroid() = default;
 
 void PolicyServiceAndroid::AddObserver(
@@ -38,8 +38,14 @@ void PolicyServiceAndroid::OnPolicyServiceInitialized(PolicyDomain domain) {
 
 bool PolicyServiceAndroid::IsInitializationComplete(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& caller) {
+    const base::android::JavaParamRef<jobject>& caller) const {
   return policy_service_->IsInitializationComplete(POLICY_DOMAIN_CHROME);
+}
+
+base::android::ScopedJavaLocalRef<jobject> PolicyServiceAndroid::GetPolicies(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& caller) {
+  return policy_map_.GetJavaObject();
 }
 
 base::android::ScopedJavaLocalRef<jobject>

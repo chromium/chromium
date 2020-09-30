@@ -75,6 +75,13 @@ public class PolicyService {
     }
 
     /**
+     * Returns {@link PolicyMap} that contains all Chrome policies.
+     */
+    public PolicyMap getPolicies() {
+        return PolicyServiceJni.get().getPolicies(mNativePolicyService, PolicyService.this);
+    }
+
+    /**
      * Pass the onPolicyServiceInitialized event to the |mObservers|.
      */
     @CalledByNative
@@ -95,5 +102,7 @@ public class PolicyService {
         void removeObserver(long nativePolicyService, PolicyService caller);
         @NativeClassQualifiedName("PolicyServiceAndroid")
         boolean isInitializationComplete(long nativePolicyService, PolicyService caller);
+        @NativeClassQualifiedName("PolicyServiceAndroid")
+        PolicyMap getPolicies(long nativePolicyService, PolicyService caller);
     }
 }

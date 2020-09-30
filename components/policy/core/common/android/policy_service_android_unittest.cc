@@ -13,6 +13,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::Return;
+using ::testing::ReturnRef;
 
 namespace policy {
 namespace android {
@@ -21,18 +22,24 @@ namespace android {
 // //components/policy/android/javatest/.../test/PolicyServiceTestSupporter.java
 class PolicyServiceAndroidTest : public ::testing::Test {
  public:
-  PolicyServiceAndroidTest() = default;
+  PolicyServiceAndroidTest() {
+    EXPECT_CALL(policy_service_, GetPolicies(PolicyNamespace(
+                                     POLICY_DOMAIN_CHROME, std::string())))
+        .WillOnce(ReturnRef(policies));
+    policy_service_android_ =
+        std::make_unique<PolicyServiceAndroid>(&policy_service_);
+    j_support_ = Java_PolicyServiceTestSupporter_Constructor(
+        env_, policy_service_android_->GetJavaObject());
+  }
   ~PolicyServiceAndroidTest() override {
     Java_PolicyServiceTestSupporter_verifyNoMoreInteractions(env_, j_support_);
   }
 
   JNIEnv* env_ = base::android::AttachCurrentThread();
   MockPolicyService policy_service_;
-  PolicyServiceAndroid policy_service_android_ = {&policy_service_};
-  base::android::ScopedJavaLocalRef<jobject> j_support_ =
-      Java_PolicyServiceTestSupporter_Constructor(
-          env_,
-          policy_service_android_.GetJavaObject());
+  policy::PolicyMap policies;
+  std::unique_ptr<PolicyServiceAndroid> policy_service_android_;
+  base::android::ScopedJavaLocalRef<jobject> j_support_;
 };
 
 TEST_F(PolicyServiceAndroidTest, IsInitializationComplete) {
@@ -56,17 +63,17 @@ TEST_F(PolicyServiceAndroidTest, IsInitializationComplete) {
 
 TEST_F(PolicyServiceAndroidTest, OneObserver) {
   EXPECT_CALL(policy_service_,
-              AddObserver(POLICY_DOMAIN_CHROME, &policy_service_android_))
+              AddObserver(POLICY_DOMAIN_CHROME, policy_service_android_.get()))
       .Times(1);
   int observer_id =
       Java_PolicyServiceTestSupporter_addObserver(env_, j_support_);
 
-  policy_service_android_.OnPolicyServiceInitialized(POLICY_DOMAIN_CHROME);
+  policy_service_android_->OnPolicyServiceInitialized(POLICY_DOMAIN_CHROME);
   Java_PolicyServiceTestSupporter_verifyObserverCalled(
       env_, j_support_, /*index*/ 0, /*times*/ 1);
 
-  EXPECT_CALL(policy_service_,
-              RemoveObserver(POLICY_DOMAIN_CHROME, &policy_service_android_))
+  EXPECT_CALL(policy_service_, RemoveObserver(POLICY_DOMAIN_CHROME,
+                                              policy_service_android_.get()))
       .Times(1);
   Java_PolicyServiceTestSupporter_removeObserver(env_, j_support_, observer_id);
   ::testing::Mock::VerifyAndClearExpectations(&policy_service_);
@@ -76,7 +83,7 @@ TEST_F(PolicyServiceAndroidTest, MultipleObservers) {
   // When multiple observers are added in Java, only one observer will be
   // created in C++.
   EXPECT_CALL(policy_service_,
-              AddObserver(POLICY_DOMAIN_CHROME, &policy_service_android_))
+              AddObserver(POLICY_DOMAIN_CHROME, policy_service_android_.get()))
       .Times(1);
   int observer1 = Java_PolicyServiceTestSupporter_addObserver(env_, j_support_);
   int observer2 = Java_PolicyServiceTestSupporter_addObserver(env_, j_support_);
@@ -88,15 +95,15 @@ TEST_F(PolicyServiceAndroidTest, MultipleObservers) {
   ::testing::Mock::VerifyAndClearExpectations(&policy_service_);
 
   // Trigger the event and only the activated Java observer get notified.
-  policy_service_android_.OnPolicyServiceInitialized(POLICY_DOMAIN_CHROME);
+  policy_service_android_->OnPolicyServiceInitialized(POLICY_DOMAIN_CHROME);
   Java_PolicyServiceTestSupporter_verifyObserverCalled(env_, j_support_,
                                                        observer1, /*times*/ 1);
   Java_PolicyServiceTestSupporter_verifyObserverCalled(env_, j_support_,
                                                        observer2, /*times*/ 0);
 
   // Remove the last Java observers and triggers the C++ observer cleanup too.
-  EXPECT_CALL(policy_service_,
-              RemoveObserver(POLICY_DOMAIN_CHROME, &policy_service_android_))
+  EXPECT_CALL(policy_service_, RemoveObserver(POLICY_DOMAIN_CHROME,
+                                              policy_service_android_.get()))
       .Times(1);
   Java_PolicyServiceTestSupporter_removeObserver(env_, j_support_, observer1);
   ::testing::Mock::VerifyAndClearExpectations(&policy_service_);
