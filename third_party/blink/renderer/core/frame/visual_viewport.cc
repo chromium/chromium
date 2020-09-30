@@ -571,9 +571,8 @@ void VisualViewport::CreateLayers() {
   if (!GetPage().GetSettings().GetAcceleratedCompositingEnabled())
     return;
 
-  DCHECK(!scrollbar_layer_horizontal_ && !scrollbar_layer_vertical_);
-  DCHECK(MainFrame());
-  DCHECK(MainFrame()->GetDocument());
+  DCHECK(!scrollbar_layer_horizontal_);
+  DCHECK(!scrollbar_layer_vertical_);
 
   needs_paint_property_update_ = true;
 
@@ -588,7 +587,9 @@ void VisualViewport::CreateLayers() {
   LayerForScrollingDidChange(coordinator->GetCompositorAnimationTimeline());
 
   InitializeScrollbars();
-  coordinator->UpdateCompositorScrollOffset(*MainFrame(), *this);
+
+  if (MainFrame())
+    coordinator->UpdateCompositorScrollOffset(*MainFrame(), *this);
 }
 
 void VisualViewport::InitializeScrollbars() {
