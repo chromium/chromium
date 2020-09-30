@@ -8839,6 +8839,7 @@ void WebContentsImpl::SetOpenerForNewContents(FrameTreeNode* opener,
     // by spawning from a subframe and deleting the subframe.
     // https://crbug.com/705316
     new_root->SetOriginalOpener(opener->frame_tree()->root());
+    new_root->SetOpenerDevtoolsFrameToken(opener->devtools_frame_token());
 
     if (!opener_suppressed) {
       new_root->SetOpener(opener);

@@ -276,6 +276,13 @@ void FrameTreeNode::SetOpener(FrameTreeNode* opener) {
   }
 }
 
+void FrameTreeNode::SetOpenerDevtoolsFrameToken(
+    base::UnguessableToken opener_devtools_frame_token) {
+  DCHECK(!opener_devtools_frame_token_ ||
+         opener_devtools_frame_token_->is_empty());
+  opener_devtools_frame_token_ = std::move(opener_devtools_frame_token);
+}
+
 void FrameTreeNode::SetOriginalOpener(FrameTreeNode* opener) {
   // The original opener tracks main frames only.
   DCHECK(opener == nullptr || !opener->parent());

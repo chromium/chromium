@@ -161,6 +161,10 @@ class CONTENT_EXPORT DevToolsAgentHost
   // when using 'noopener' or with enabled COOP).
   virtual bool CanAccessOpener() = 0;
 
+  // Returns the DevTools token of this window's opener, or empty string if no
+  // opener.
+  virtual std::string GetOpenerFrameId() = 0;
+
   // Returns web contents instance for this host if any.
   virtual WebContents* GetWebContents() = 0;
 

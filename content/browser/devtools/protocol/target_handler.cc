@@ -90,6 +90,8 @@ std::unique_ptr<Target::TargetInfo> CreateInfo(DevToolsAgentHost* host) {
           .Build();
   if (!host->GetOpenerId().empty())
     target_info->SetOpenerId(host->GetOpenerId());
+  if (!host->GetOpenerFrameId().empty())
+    target_info->SetOpenerFrameId(host->GetOpenerFrameId());
   if (host->GetBrowserContext())
     target_info->SetBrowserContextId(host->GetBrowserContext()->UniqueId());
   return target_info;

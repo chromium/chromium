@@ -93,6 +93,7 @@ class CONTENT_EXPORT RenderFrameDevToolsAgentHost
   WebContents* GetWebContents() override;
   std::string GetParentId() override;
   std::string GetOpenerId() override;
+  std::string GetOpenerFrameId() override;
   bool CanAccessOpener() override;
   std::string GetType() override;
   std::string GetTitle() override;

@@ -674,6 +674,15 @@ std::string RenderFrameDevToolsAgentHost::GetOpenerId() {
   return opener ? opener->devtools_frame_token().ToString() : std::string();
 }
 
+std::string RenderFrameDevToolsAgentHost::GetOpenerFrameId() {
+  if (!frame_tree_node_)
+    return std::string();
+  const base::Optional<base::UnguessableToken>& opener_devtools_frame_token =
+      frame_tree_node_->opener_devtools_frame_token();
+  return opener_devtools_frame_token ? opener_devtools_frame_token->ToString()
+                                     : std::string();
+}
+
 bool RenderFrameDevToolsAgentHost::CanAccessOpener() {
   return (frame_tree_node_ && frame_tree_node_->opener());
 }

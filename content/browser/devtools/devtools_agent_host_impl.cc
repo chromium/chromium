@@ -240,6 +240,10 @@ std::string DevToolsAgentHostImpl::GetOpenerId() {
   return std::string();
 }
 
+std::string DevToolsAgentHostImpl::GetOpenerFrameId() {
+  return std::string();
+}
+
 bool DevToolsAgentHostImpl::CanAccessOpener() {
   return false;
 }

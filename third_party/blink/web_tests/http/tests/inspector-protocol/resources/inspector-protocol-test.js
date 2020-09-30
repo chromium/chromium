@@ -18,7 +18,7 @@ var TestRunner = class {
         'backendNodeId', 'parentId', 'frameId', 'loaderId', 'baseURL',
         'documentURL', 'styleSheetId', 'executionContextId', 'openerId',
         'targetId', 'browserContextId', 'sessionId', 'receivedBytes',
-        'ownerNode', 'guid', 'requestId'];
+        'ownerNode', 'guid', 'requestId', 'openerFrameId'];
   }
 
   startDumpingProtocolMessages() {

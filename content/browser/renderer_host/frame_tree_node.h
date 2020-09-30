@@ -126,6 +126,10 @@ class CONTENT_EXPORT FrameTreeNode {
 
   FrameTreeNode* original_opener() const { return original_opener_; }
 
+  const base::Optional<base::UnguessableToken>& opener_devtools_frame_token() {
+    return opener_devtools_frame_token_;
+  }
+
   // Gets the total number of descendants to this FrameTreeNode in addition to
   // this node.
   size_t GetFrameTreeSize() const;
@@ -141,6 +145,12 @@ class CONTENT_EXPORT FrameTreeNode {
   //
   // It is not possible to change the opener once it was set.
   void SetOriginalOpener(FrameTreeNode* opener);
+
+  // Assigns an opener frame id for this node. This string id is only set once
+  // and cannot be changed. It persists, even if the |opener| is destroyed. It
+  // is used for attribution in the DevTools frontend.
+  void SetOpenerDevtoolsFrameToken(
+      base::UnguessableToken opener_devtools_frame_token);
 
   FrameTreeNode* child_at(size_t index) const {
     return current_frame_host()->child_at(index);
@@ -477,6 +487,10 @@ class CONTENT_EXPORT FrameTreeNode {
   // The frame that opened this frame, if any. Contrary to opener_, this
   // cannot be changed unless the original opener is destroyed.
   FrameTreeNode* original_opener_;
+
+  // The devtools frame token of the frame which opened this frame. This is
+  // not cleared even if the opener is destroyed or disowns the frame.
+  base::Optional<base::UnguessableToken> opener_devtools_frame_token_;
 
   // An observer that clears this node's |original_opener_| if the opener is
   // destroyed.
