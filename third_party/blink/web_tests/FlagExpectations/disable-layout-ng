@@ -423,6 +423,7 @@ virtual/web-components-v0-disabled/* [ Skip ]
 crbug.com/591099 external/wpt/css/css-tables/absolute-tables-002.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-tables/absolute-tables-007.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-tables/absolute-tables-011.tentative.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-tables/absolute-tables-015.html [ Failure ]
 
 crbug.com/591099 virtual/scalefactor200/external/wpt/element-timing/observe-text.html [ Failure ]
 crbug.com/591099 virtual/scalefactor200withoutzoom/external/wpt/element-timing/css-generated-text.html [ Failure ]
