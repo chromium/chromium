@@ -45,9 +45,14 @@ scoped_refptr<const NGPhysicalBoxFragment> NGPhysicalBoxFragment::Create(
   const NGPhysicalBoxStrut borders =
       builder->initial_fragment_geometry_->border.ConvertToPhysical(
           builder->GetWritingMode(), builder->Direction());
+  bool has_borders = !borders.IsZero();
   const NGPhysicalBoxStrut padding =
       builder->initial_fragment_geometry_->padding.ConvertToPhysical(
           builder->GetWritingMode(), builder->Direction());
+  bool has_padding = !padding.IsZero();
+  base::Optional<PhysicalRect> inflow_bounds;
+  const PhysicalRect layout_overflow;
+  bool has_layout_overflow = false;
   bool has_rare_data =
       builder->mathml_paint_info_ ||
       !builder->oof_positioned_fragmentainer_descendants_.IsEmpty() ||
@@ -58,9 +63,9 @@ scoped_refptr<const NGPhysicalBoxFragment> NGPhysicalBoxFragment::Create(
 
   wtf_size_t num_fragment_items =
       builder->ItemsBuilder() ? builder->ItemsBuilder()->Size() : 0;
-  size_t byte_size =
-      ByteSize(num_fragment_items, builder->children_.size(), !borders.IsZero(),
-               !padding.IsZero(), has_rare_data);
+  size_t byte_size = ByteSize(num_fragment_items, builder->children_.size(),
+                              has_layout_overflow, has_borders, has_padding,
+                              inflow_bounds.has_value(), has_rare_data);
 
   // We store the children list inline in the fragment as a flexible
   // array. Therefore, we need to make sure to allocate enough space for
@@ -69,7 +74,9 @@ scoped_refptr<const NGPhysicalBoxFragment> NGPhysicalBoxFragment::Create(
   // we pass the buffer as a constructor argument.
   void* data = ::WTF::Partitions::FastMalloc(
       byte_size, ::WTF::GetStringWithTypeName<NGPhysicalBoxFragment>());
-  new (data) NGPhysicalBoxFragment(PassKey(), builder, borders, padding,
+  new (data) NGPhysicalBoxFragment(PassKey(), builder, has_layout_overflow,
+                                   layout_overflow, has_borders, borders,
+                                   has_padding, padding, inflow_bounds,
                                    has_rare_data, block_or_line_writing_mode);
   return base::AdoptRef(static_cast<NGPhysicalBoxFragment*>(data));
 }
@@ -80,9 +87,10 @@ NGPhysicalBoxFragment::CloneWithPostLayoutFragments(
     const NGPhysicalBoxFragment& other) {
   // The size of the new fragment shouldn't differ from the old one.
   wtf_size_t num_fragment_items = other.Items() ? other.Items()->Size() : 0;
-  size_t byte_size =
-      ByteSize(num_fragment_items, other.num_children_, other.has_borders_,
-               other.has_padding_, other.has_rare_data_);
+  size_t byte_size = ByteSize(num_fragment_items, other.num_children_,
+                              other.has_layout_overflow_, other.has_borders_,
+                              other.has_padding_, other.has_inflow_bounds_,
+                              other.has_rare_data_);
 
   void* data = ::WTF::Partitions::FastMalloc(
       byte_size, ::WTF::GetStringWithTypeName<NGPhysicalBoxFragment>());
@@ -93,22 +101,31 @@ NGPhysicalBoxFragment::CloneWithPostLayoutFragments(
 // static
 size_t NGPhysicalBoxFragment::ByteSize(wtf_size_t num_fragment_items,
                                        wtf_size_t num_children,
+                                       bool has_layout_overflow,
                                        bool has_borders,
                                        bool has_padding,
+                                       bool has_inflow_bounds,
                                        bool has_rare_data) {
   return sizeof(NGPhysicalBoxFragment) +
          NGFragmentItems::ByteSizeFor(num_fragment_items) +
          sizeof(NGLink) * num_children +
+         (has_layout_overflow ? sizeof(PhysicalRect) : 0) +
          (has_borders ? sizeof(NGPhysicalBoxStrut) : 0) +
          (has_padding ? sizeof(NGPhysicalBoxStrut) : 0) +
+         (has_inflow_bounds ? sizeof(PhysicalRect) : 0) +
          (has_rare_data ? sizeof(NGPhysicalBoxFragment::RareData) : 0);
 }
 
 NGPhysicalBoxFragment::NGPhysicalBoxFragment(
     PassKey key,
     NGBoxFragmentBuilder* builder,
+    bool has_layout_overflow,
+    const PhysicalRect& layout_overflow,
+    bool has_borders,
     const NGPhysicalBoxStrut& borders,
+    bool has_padding,
     const NGPhysicalBoxStrut& padding,
+    const base::Optional<PhysicalRect>& inflow_bounds,
     bool has_rare_data,
     WritingMode block_or_line_writing_mode)
     : NGPhysicalContainerFragment(builder,
@@ -118,8 +135,6 @@ NGPhysicalBoxFragment::NGPhysicalBoxFragment(
                                   builder->BoxType()) {
   DCHECK(layout_object_);
   DCHECK(layout_object_->IsBoxModelObject());
-
-  has_rare_data_ = has_rare_data;
 
   has_fragment_items_ = false;
   if (NGFragmentItemsBuilder* items_builder = builder->ItemsBuilder()) {
@@ -134,12 +149,21 @@ NGPhysicalBoxFragment::NGPhysicalBoxFragment(
     }
   }
 
-  has_borders_ = !borders.IsZero();
+  has_layout_overflow_ = has_layout_overflow;
+  if (has_layout_overflow_) {
+    *const_cast<PhysicalRect*>(ComputeLayoutOverflowAddress()) =
+        layout_overflow;
+  }
+  has_borders_ = has_borders;
   if (has_borders_)
     *const_cast<NGPhysicalBoxStrut*>(ComputeBordersAddress()) = borders;
-  has_padding_ = !padding.IsZero();
+  has_padding_ = has_padding;
   if (has_padding_)
     *const_cast<NGPhysicalBoxStrut*>(ComputePaddingAddress()) = padding;
+  has_inflow_bounds_ = inflow_bounds.has_value();
+  if (has_inflow_bounds_)
+    *const_cast<PhysicalRect*>(ComputeInflowBoundsAddress()) = *inflow_bounds;
+  has_rare_data_ = has_rare_data;
   if (has_rare_data_) {
     new (const_cast<RareData*>(ComputeRareDataAddress()))
         RareData(builder, Size());
@@ -192,6 +216,10 @@ NGPhysicalBoxFragment::NGPhysicalBoxFragment(PassKey key,
         const_cast<NGFragmentItems*>(ComputeItemsAddress());
     new (items) NGFragmentItems(*other.ComputeItemsAddress());
   }
+  if (has_layout_overflow_) {
+    *const_cast<PhysicalRect*>(ComputeLayoutOverflowAddress()) =
+        *other.ComputeLayoutOverflowAddress();
+  }
   if (has_borders_) {
     *const_cast<NGPhysicalBoxStrut*>(ComputeBordersAddress()) =
         *other.ComputeBordersAddress();
@@ -199,6 +227,10 @@ NGPhysicalBoxFragment::NGPhysicalBoxFragment(PassKey key,
   if (has_padding_) {
     *const_cast<NGPhysicalBoxStrut*>(ComputePaddingAddress()) =
         *other.ComputePaddingAddress();
+  }
+  if (has_inflow_bounds_) {
+    *const_cast<PhysicalRect*>(ComputeInflowBoundsAddress()) =
+        *other.ComputeInflowBoundsAddress();
   }
   if (has_rare_data_) {
     new (const_cast<RareData*>(ComputeRareDataAddress()))

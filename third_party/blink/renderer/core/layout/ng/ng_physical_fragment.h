@@ -454,10 +454,12 @@ class CORE_EXPORT NGPhysicalFragment
   unsigned include_border_right_ : 1;
   unsigned include_border_bottom_ : 1;
   unsigned include_border_left_ : 1;
+  unsigned has_layout_overflow_ : 1;
   unsigned has_borders_ : 1;
   unsigned has_padding_ : 1;
-  unsigned is_first_for_node_ : 1;
+  unsigned has_inflow_bounds_ : 1;
   unsigned has_rare_data_ : 1;
+  unsigned is_first_for_node_ : 1;
 
   LayoutObject* layout_object_;
   const PhysicalSize size_;
