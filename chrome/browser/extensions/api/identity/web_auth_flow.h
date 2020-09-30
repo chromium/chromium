@@ -105,7 +105,8 @@ class WebAuthFlow : public content::NotificationObserver,
   // Returns the StoragePartitionConfig for a given |partition| used in the
   // WebAuthFlow.
   static content::StoragePartitionConfig GetWebViewPartitionConfig(
-      Partition partition);
+      Partition partition,
+      content::BrowserContext* browser_context);
 
  private:
   friend class ::WebAuthFlowTest;

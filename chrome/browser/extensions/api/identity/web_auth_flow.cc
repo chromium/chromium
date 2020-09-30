@@ -140,7 +140,7 @@ void WebAuthFlow::DetachDelegateAndDelete() {
 
 content::StoragePartition* WebAuthFlow::GetGuestPartition() {
   return content::BrowserContext::GetStoragePartition(
-      profile_, GetWebViewPartitionConfig(partition_));
+      profile_, GetWebViewPartitionConfig(partition_, profile_));
 }
 
 const std::string& WebAuthFlow::GetAppWindowKey() const {
@@ -149,13 +149,19 @@ const std::string& WebAuthFlow::GetAppWindowKey() const {
 
 // static
 content::StoragePartitionConfig WebAuthFlow::GetWebViewPartitionConfig(
-    Partition partition) {
+    Partition partition,
+    content::BrowserContext* browser_context) {
   // This has to mirror the logic in WebViewGuest::CreateWebContents for
   // creating the correct StoragePartitionConfig.
   auto result = content::StoragePartitionConfig::Create(
       extension_misc::kIdentityApiUiAppId, GetPartitionName(partition),
       /*in_memory=*/true);
-  result.set_fallback_to_partition_domain_for_blob_urls(true);
+  result.set_fallback_to_partition_domain_for_blob_urls(
+      browser_context->IsOffTheRecord()
+          ? content::StoragePartitionConfig::FallbackMode::
+                kFallbackPartitionInMemory
+          : content::StoragePartitionConfig::FallbackMode::
+                kFallbackPartitionOnDisk);
   return result;
 }
 

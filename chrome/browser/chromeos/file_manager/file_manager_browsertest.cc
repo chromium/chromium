@@ -494,6 +494,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("openQuickViewAudioWithImageMetadata"),
         TestCase("openQuickViewImageJpg"),
         TestCase("openQuickViewImageJpeg"),
+        TestCase("openQuickViewImageJpeg").InGuestMode(),
         TestCase("openQuickViewImageExif"),
         TestCase("openQuickViewImageRaw"),
         TestCase("openQuickViewImageRawWithOrientation"),

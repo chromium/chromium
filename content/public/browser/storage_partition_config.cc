@@ -51,16 +51,13 @@ StoragePartitionConfig StoragePartitionConfig::CopyWithInMemorySet() const {
 
 base::Optional<StoragePartitionConfig>
 StoragePartitionConfig::GetFallbackForBlobUrls() const {
-  if (!fallback_to_partition_domain_for_blob_urls_)
+  if (fallback_to_partition_domain_for_blob_urls_ == FallbackMode::kNone)
     return base::nullopt;
 
-  // Currently this fallback mechanism is only used in cases where the fallback
-  // partition is not in memory. If we ever need to support falling back to a
-  // in memory storage partition, we could change the fallback flag from the
-  // boolean it is today to some kind of enum.
-  // TODO(acolwell): Make this a little more robust.
-  return StoragePartitionConfig(partition_domain_, "",
-                                /*in_memory=*/false);
+  return StoragePartitionConfig(
+      partition_domain_, "",
+      /*in_memory=*/fallback_to_partition_domain_for_blob_urls_ ==
+          FallbackMode::kFallbackPartitionInMemory);
 }
 
 bool StoragePartitionConfig::operator<(

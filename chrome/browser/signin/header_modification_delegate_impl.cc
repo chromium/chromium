@@ -109,7 +109,8 @@ bool HeaderModificationDelegateImpl::ShouldIgnoreGuestWebViewRequest(
     GURL identity_api_site =
         extensions::WebViewGuest::GetSiteForGuestPartitionConfig(
             extensions::WebAuthFlow::GetWebViewPartitionConfig(
-                extensions::WebAuthFlow::GET_AUTH_TOKEN));
+                extensions::WebAuthFlow::GET_AUTH_TOKEN,
+                contents->GetBrowserContext()));
     if (contents->GetSiteInstance()->GetSiteURL() != identity_api_site)
       return true;
 

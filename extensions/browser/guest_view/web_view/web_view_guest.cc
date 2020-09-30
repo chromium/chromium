@@ -90,6 +90,11 @@ namespace extensions {
 
 namespace {
 
+// Strings used to encode blob url fallback mode in site URLs.
+constexpr char kNoFallback[] = "nofallback";
+constexpr char kInMemoryFallback[] = "inmemoryfallback";
+constexpr char kOnDiskFallback[] = "ondiskfallback";
+
 // Returns storage partition removal mask from web_view clearData mask. Note
 // that storage partition mask is a subset of webview's data removal mask.
 uint32_t GetStoragePartitionRemovalMask(uint32_t web_view_removal_mask) {
@@ -296,9 +301,24 @@ bool WebViewGuest::GetGuestPartitionConfigForSite(
   // partition_domain but empty partition_name. Setting this flag on the
   // partition config causes it to be used as fallback for the purpose of
   // resolving blob URLs.
-  bool use_fallback = site.ref() != "nofallback";
+
+  // Default to having the fallback partition on disk, as that matches most
+  // closely what we would have done before fallback behavior started being
+  // encoded in the site URL.
+  content::StoragePartitionConfig::FallbackMode fallback_mode =
+      content::StoragePartitionConfig::FallbackMode::kFallbackPartitionOnDisk;
+  if (site.ref() == kNoFallback) {
+    fallback_mode = content::StoragePartitionConfig::FallbackMode::kNone;
+  } else if (site.ref() == kInMemoryFallback) {
+    fallback_mode = content::StoragePartitionConfig::FallbackMode::
+        kFallbackPartitionInMemory;
+  } else if (site.ref() == kOnDiskFallback) {
+    fallback_mode =
+        content::StoragePartitionConfig::FallbackMode::kFallbackPartitionOnDisk;
+  }
+
   storage_partition_config->set_fallback_to_partition_domain_for_blob_urls(
-      use_fallback);
+      fallback_mode);
   return true;
 }
 
@@ -307,14 +327,26 @@ GURL WebViewGuest::GetSiteForGuestPartitionConfig(
     const content::StoragePartitionConfig& storage_partition_config) {
   std::string url_encoded_partition = net::EscapeQueryParamValue(
       storage_partition_config.partition_name(), false);
-  return GURL(base::StringPrintf(
-      "%s://%s/%s?%s%s", content::kGuestScheme,
-      storage_partition_config.partition_domain().c_str(),
-      storage_partition_config.in_memory() ? "" : "persist",
-      url_encoded_partition.c_str(),
-      storage_partition_config.fallback_to_partition_domain_for_blob_urls()
-          ? ""
-          : "#nofallback"));
+  const char* fallback = "";
+  switch (
+      storage_partition_config.fallback_to_partition_domain_for_blob_urls()) {
+    case content::StoragePartitionConfig::FallbackMode::kNone:
+      fallback = kNoFallback;
+      break;
+    case content::StoragePartitionConfig::FallbackMode::
+        kFallbackPartitionOnDisk:
+      fallback = kOnDiskFallback;
+      break;
+    case content::StoragePartitionConfig::FallbackMode::
+        kFallbackPartitionInMemory:
+      fallback = kInMemoryFallback;
+      break;
+  }
+  return GURL(
+      base::StringPrintf("%s://%s/%s?%s#%s", content::kGuestScheme,
+                         storage_partition_config.partition_domain().c_str(),
+                         storage_partition_config.in_memory() ? "" : "persist",
+                         url_encoded_partition.c_str(), fallback));
 }
 
 // static
@@ -379,8 +411,16 @@ void WebViewGuest::CreateWebContents(const base::DictionaryValue& create_params,
         extensions::util::GetStoragePartitionConfigForExtensionId(
             GetOwnerSiteURL().host(),
             owner_render_process_host->GetBrowserContext());
-    if (!owner_config.is_default() && !owner_config.in_memory()) {
-      partition_config.set_fallback_to_partition_domain_for_blob_urls(true);
+    if (owner_render_process_host->GetBrowserContext()->IsOffTheRecord()) {
+      owner_config = owner_config.CopyWithInMemorySet();
+    }
+    if (!owner_config.is_default()) {
+      partition_config.set_fallback_to_partition_domain_for_blob_urls(
+          owner_config.in_memory()
+              ? content::StoragePartitionConfig::FallbackMode::
+                    kFallbackPartitionInMemory
+              : content::StoragePartitionConfig::FallbackMode::
+                    kFallbackPartitionOnDisk);
       DCHECK(owner_config == partition_config.GetFallbackForBlobUrls().value());
     }
   }
