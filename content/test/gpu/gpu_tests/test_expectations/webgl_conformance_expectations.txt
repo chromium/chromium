@@ -276,8 +276,6 @@ crbug.com/630860 [ win nvidia ] conformance/textures/misc/texture-upload-size.ht
 crbug.com/1045339 [ win10 debug-x64 nvidia ] conformance/extensions/oes-texture-half-float-with-video.html [ Skip ]
 crbug.com/1109977 [ win nvidia passthrough ] conformance/glsl/misc/shader-with-non-reserved-words.html [ Skip ]
 
-# crbug.com/679696 [ win nvidia no_passthrough ] conformance/extensions/ext-sRGB.html [ Failure ]
-
 # Win10 / NVIDIA Quadro P400 / D3D11 failures
 crbug.com/898674 [ win10 nvidia-0x1cb3 d3d11 ] conformance/extensions/oes-texture-float-with-video.html [ RetryOnFailure ]
 
