@@ -53,6 +53,13 @@ class NTPUserDataLogger
   // all others require Google as the default search provider.
   void LogEvent(NTPLoggingEventType event, base::TimeDelta time);
 
+  // Logs a module impression. Called when a module is loaded and can be seen by
+  // the user (scrolled into view).
+  void LogModuleImpression(const std::string& id, base::TimeDelta time);
+
+  // Logs when a user interacts with a module which will result in a navigation.
+  void LogModuleUsage(const std::string& id);
+
   // Called when a search suggestion event occurs on the NTP that has an integer
   // value associated with it; N suggestions were shown on this NTP load, the
   // Nth suggestion was clicked, etc. |time| is the delta time from navigation

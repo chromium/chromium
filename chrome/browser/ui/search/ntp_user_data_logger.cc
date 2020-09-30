@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <string>
 
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "chrome/browser/after_startup_task_utils.h"
@@ -590,6 +591,19 @@ void NTPUserDataLogger::LogMostVisitedNavigation(
   // Records the action. This will be available as a time-stamped stream
   // server-side and can be used to compute time-to-long-dwell.
   base::RecordAction(base::UserMetricsAction("MostVisited_Clicked"));
+}
+
+void NTPUserDataLogger::LogModuleImpression(const std::string& id,
+                                            base::TimeDelta time) {
+  UMA_HISTOGRAM_LOAD_TIME("NewTabPage.Modules.Impression", time);
+  base::UmaHistogramCustomTimes("NewTabPage.Modules.Impression." + id, time,
+                                base::TimeDelta::FromMilliseconds(1),
+                                base::TimeDelta::FromSeconds(60), 100);
+}
+
+void NTPUserDataLogger::LogModuleUsage(const std::string& id) {
+  UMA_HISTOGRAM_EXACT_LINEAR("NewTabPage.Modules.Usage", 1, 1);
+  base::UmaHistogramExactLinear("NewTabPage.Modules.Usage." + id, 1, 1);
 }
 
 NTPUserDataLogger::NTPUserDataLogger(content::WebContents* contents)

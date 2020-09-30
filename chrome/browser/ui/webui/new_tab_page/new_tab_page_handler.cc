@@ -922,6 +922,16 @@ void NewTabPageHandler::OnVoiceSearchError(
   LogEvent(event);
 }
 
+void NewTabPageHandler::OnModuleImpression(const std::string& module_id,
+                                           double time) {
+  logger_->LogModuleImpression(
+      module_id, base::Time::FromJsTime(time) - ntp_navigation_start_time_);
+}
+
+void NewTabPageHandler::OnModuleUsage(const std::string& module_id) {
+  logger_->LogModuleUsage(module_id);
+}
+
 void NewTabPageHandler::OnModulesRendered(double time) {
   logger_->LogEvent(NTP_MODULES_SHOWN,
                     base::Time::FromJsTime(time) - ntp_navigation_start_time_);

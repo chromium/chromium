@@ -377,6 +377,11 @@ interface PageHandler {
   OnVoiceSearchAction(VoiceSearchAction action);
   // Logs an error occurred while using voice search.
   OnVoiceSearchError(VoiceSearchError error);
+  // Logs a module impression. Called when a module is loaded and can be seen by
+  // the user (scrolled into view).
+  OnModuleImpression(string module_id, double time);
+  // Logs when a user interacts with a module which will result in a navigation.
+  OnModuleUsage(string module_id);
   // Logs that the modules have been shown at |time|.
   OnModulesRendered(double time);
 

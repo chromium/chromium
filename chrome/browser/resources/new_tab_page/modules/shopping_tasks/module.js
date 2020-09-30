@@ -29,6 +29,11 @@ class ShoppingTasksModuleElement extends PolymerElement {
       shoppingTask: Object,
     };
   }
+
+  /** @private */
+  onClick_() {
+    this.dispatchEvent(new Event('usage', {bubbles: true, composed: true}));
+  }
 }
 
 customElements.define(

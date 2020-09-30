@@ -11118,6 +11118,15 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="NewTabPage.LogoShown"/>
 </histogram_suffixes>
 
+<histogram_suffixes name="NewTabPageModules" separator=".">
+  <suffix name="dummy" label="Module ID for a dummy module"/>
+  <suffix name="dummy2" label="Module ID for another dummy module"/>
+  <suffix name="kaleidoscope" label="Module ID for Kaleidoscope"/>
+  <suffix name="shopping_tasks" label="Module ID for Shopping Tasks"/>
+  <affected-histogram name="NewTabPage.Modules.Impression"/>
+  <affected-histogram name="NewTabPage.Modules.Usage"/>
+</histogram_suffixes>
+
 <histogram_suffixes name="NewTabPageProviders" separator=".">
   <suffix name="client" label="Suggestions coming from the client."/>
   <suffix name="client0" label="">

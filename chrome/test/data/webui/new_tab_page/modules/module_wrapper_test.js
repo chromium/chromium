@@ -32,4 +32,22 @@ suite('NewTabPageModulesModuleWrapperTest', () => {
     assertDeepEquals(
         moduleElement, $$(moduleWrapper, '#moduleElement').children[0]);
   });
+
+  test('descriptor can only be set once', () => {
+    const moduleElement = document.createElement('div');
+    moduleWrapper.descriptor = {
+      id: 'foo',
+      heightPx: 100,
+      title: 'Foo Title',
+      element: moduleElement,
+    };
+    assertThrows(() => {
+      moduleWrapper.descriptor = {
+        id: 'foo',
+        heightPx: 100,
+        title: 'Foo Title',
+        element: moduleElement,
+      };
+    });
+  });
 });
