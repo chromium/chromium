@@ -172,8 +172,8 @@ void DialogDelegate::RunCloseCallback(base::OnceClosure callback) {
 }
 
 View* DialogDelegate::GetInitiallyFocusedView() {
-  if (params_.initially_focused_view.has_value())
-    return *params_.initially_focused_view;
+  if (WidgetDelegate::HasConfiguredInitiallyFocusedView())
+    return WidgetDelegate::GetInitiallyFocusedView();
 
   // Focus the default button if any.
   const DialogClientView* dcv = GetDialogClientView();
@@ -366,10 +366,6 @@ void DialogDelegate::SetCancelCallback(base::OnceClosure callback) {
 
 void DialogDelegate::SetCloseCallback(base::OnceClosure callback) {
   close_callback_ = std::move(callback);
-}
-
-void DialogDelegate::SetInitiallyFocusedView(View* view) {
-  params_.initially_focused_view = view;
 }
 
 std::unique_ptr<View> DialogDelegate::DisownExtraView() {

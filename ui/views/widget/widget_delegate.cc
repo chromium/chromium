@@ -47,7 +47,11 @@ bool WidgetDelegate::OnCloseRequested(Widget::ClosedReason close_reason) {
 }
 
 View* WidgetDelegate::GetInitiallyFocusedView() {
-  return nullptr;
+  return params_.initially_focused_view.value_or(nullptr);
+}
+
+bool WidgetDelegate::HasConfiguredInitiallyFocusedView() const {
+  return params_.initially_focused_view.has_value();
 }
 
 BubbleDialogDelegate* WidgetDelegate::AsBubbleDialogDelegate() {
@@ -265,6 +269,11 @@ void WidgetDelegate::SetIcon(const gfx::ImageSkia& icon) {
   params_.icon = icon;
   if (GetWidget())
     GetWidget()->UpdateWindowIcon();
+}
+
+void WidgetDelegate::SetInitiallyFocusedView(View* initially_focused_view) {
+  DCHECK(!GetWidget());
+  params_.initially_focused_view = initially_focused_view;
 }
 
 void WidgetDelegate::SetModalType(ui::ModalType modal_type) {

@@ -64,6 +64,10 @@ class VIEWS_EXPORT WidgetDelegate {
     // The widget's icon, if any.
     gfx::ImageSkia icon;
 
+    // The widget's initially focused view, if any. This can only be set before
+    // this WidgetDelegate is used to initialize a Widget.
+    base::Optional<View*> initially_focused_view;
+
     // The widget's modality type. Note that MODAL_TYPE_SYSTEM does not work at
     // all on Mac.
     ui::ModalType modal_type = ui::MODAL_TYPE_NONE;
@@ -121,8 +125,9 @@ class VIEWS_EXPORT WidgetDelegate {
   virtual bool OnCloseRequested(Widget::ClosedReason close_reason);
 
   // Returns the view that should have the focus when the widget is shown.  If
-  // NULL no view is focused.
+  // nullptr no view is focused.
   virtual View* GetInitiallyFocusedView();
+  bool HasConfiguredInitiallyFocusedView() const;
 
   virtual BubbleDialogDelegate* AsBubbleDialogDelegate();
   virtual DialogDelegate* AsDialogDelegate();
@@ -297,6 +302,7 @@ class VIEWS_EXPORT WidgetDelegate {
   void SetCanResize(bool can_resize);
   void SetFocusTraversesOut(bool focus_traverses_out);
   void SetIcon(const gfx::ImageSkia& icon);
+  void SetInitiallyFocusedView(View* initially_focused_view);
   void SetModalType(ui::ModalType modal_type);
   void SetOwnedByWidget(bool delete_self);
   void SetShowCloseButton(bool show_close_button);
