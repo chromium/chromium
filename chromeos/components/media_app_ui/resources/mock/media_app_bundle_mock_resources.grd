@@ -18,10 +18,6 @@
           file="js/mock_module.js"
           compress="brotli"
           type="BINDATA" />
-      <include name="IDR_MEDIA_APP_APP_DROP_TARGET_MODULE_JS"
-          file="js/mock_module.js"
-          compress="brotli"
-          type="BINDATA" />
       <!-- Use a placeholder icon when enable_cros_media_app = false. -->
       <include name="IDR_MEDIA_APP_APP_ICON_256_PNG"
             file="../../../../../ui/file_manager/gallery/images/icon256.png"

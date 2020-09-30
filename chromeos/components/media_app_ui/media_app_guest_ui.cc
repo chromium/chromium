@@ -33,8 +33,6 @@ content::WebUIDataSource* CreateMediaAppUntrustedDataSource(
   source->AddResourcePath("js/app_main.js", IDR_MEDIA_APP_APP_MAIN_JS);
   source->AddResourcePath("js/app_image_handler_module.js",
                           IDR_MEDIA_APP_APP_IMAGE_HANDLER_MODULE_JS);
-  source->AddResourcePath("js/app_drop_target_module.js",
-                          IDR_MEDIA_APP_APP_DROP_TARGET_MODULE_JS);
 
   // Add all resources from chromeos_media_app_bundle_resources.pak.
   for (size_t i = 0; i < kChromeosMediaAppBundleResourcesSize; i++) {
