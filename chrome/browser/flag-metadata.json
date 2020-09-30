@@ -1990,7 +1990,12 @@
   {
     "name": "enable-quick-answers-translation",
     "owners": [ "croissant-eng" ],
-    "expiry_milestone": 88
+    "expiry_milestone": 90
+  },
+  {
+    "name": "enable-quick-answers-translation-cloud-api",
+    "owners": [ "croissant-eng" ],
+    "expiry_milestone": 90
   },
   {
     "name": "enable-reader-mode",

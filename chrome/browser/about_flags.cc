@@ -4944,6 +4944,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableQuickAnswersTranslationDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kQuickAnswersTranslation)},
 
+    {"enable-quick-answers-translation-cloud-api",
+     flag_descriptions::kEnableQuickAnswersTranslationCloudAPIName,
+     flag_descriptions::kEnableQuickAnswersTranslationCloudAPIDescription,
+     kOsCrOS,
+     FEATURE_VALUE_TYPE(chromeos::features::kQuickAnswersTranslationCloudAPI)},
+
     {"enable-on-device-assistant",
      flag_descriptions::kEnableOnDeviceAssistantName,
      flag_descriptions::kEnableOnDeviceAssistantDescription, kOsCrOS,
