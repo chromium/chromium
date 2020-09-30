@@ -326,7 +326,10 @@ gfx::Image OmniboxPopupModel::GetMatchIcon(const AutocompleteMatch& match,
       return edit_model_->client()->GetSizedIcon(favicon);
   }
 
-  const auto& vector_icon_type = match.GetVectorIcon(IsStarredMatch(match));
+  // The below lines are deliberately separate to try to debug
+  // https://crbug.com/1024114.
+  bool is_starred_match = IsStarredMatch(match);
+  const auto& vector_icon_type = match.GetVectorIcon(is_starred_match);
 
   return edit_model_->client()->GetSizedIcon(vector_icon_type,
                                              vector_icon_color);

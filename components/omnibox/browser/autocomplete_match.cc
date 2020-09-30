@@ -329,10 +329,14 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
       return (pedal ? pedal->GetVectorIcon() : omnibox::kPedalIcon);
 
     case Type::NUM_TYPES:
-      NOTREACHED();
-      static const gfx::VectorIcon dummy = {};
-      return dummy;
+      // TODO(https://crbug.com/1024114): Replace with NOTREACHED() once fixed.
+      CHECK(false);
+      return vector_icons::kErrorIcon;
   }
+
+  // TODO(https://crbug.com/1024114): Replace with NOTREACHED() once fixed.
+  CHECK(false);
+  return vector_icons::kErrorIcon;
 }
 #endif
 
