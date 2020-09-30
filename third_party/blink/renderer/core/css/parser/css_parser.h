@@ -114,6 +114,11 @@ class CORE_EXPORT CSSParser {
   static CSSPrimitiveValue* ParseLengthPercentage(const String&,
                                                   const CSSParserContext*);
 
+  // https://html.spec.whatwg.org/multipage/canvas.html#dom-context-2d-font
+  // https://drafts.csswg.org/css-font-loading/#find-the-matching-font-faces
+  static MutableCSSPropertyValueSet* ParseFont(const String&,
+                                               SecureContextMode);
+
  private:
   static MutableCSSPropertyValueSet::SetResult ParseValue(
       MutableCSSPropertyValueSet*,

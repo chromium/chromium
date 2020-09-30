@@ -293,4 +293,20 @@ CSSPrimitiveValue* CSSParser::ParseLengthPercentage(
                                                    kValueRangeAll);
 }
 
+MutableCSSPropertyValueSet* CSSParser::ParseFont(const String& string,
+                                                 SecureContextMode mode) {
+  auto* set =
+      MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLStandardMode);
+  ParseValue(set, CSSPropertyID::kFont, string, true /* important */, mode);
+  if (set->IsEmpty())
+    return nullptr;
+  const CSSValue* font_size =
+      set->GetPropertyCSSValue(CSSPropertyID::kFontSize);
+  if (!font_size || font_size->IsCSSWideKeyword())
+    return nullptr;
+  if (font_size->IsPendingSubstitutionValue())
+    return nullptr;
+  return set;
+}
+
 }  // namespace blink

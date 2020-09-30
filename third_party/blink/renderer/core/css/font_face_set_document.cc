@@ -166,15 +166,9 @@ bool FontFaceSetDocument::ResolveFontStyle(const String& font_string,
 
   // Interpret fontString in the same way as the 'font' attribute of
   // CanvasRenderingContext2D.
-  auto* parsed_style =
-      MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLStandardMode);
-  CSSParser::ParseValue(parsed_style, CSSPropertyID::kFont, font_string, true,
-                        GetExecutionContext()->GetSecureContextMode());
-  if (parsed_style->IsEmpty())
-    return false;
-
-  String font_value = parsed_style->GetPropertyValue(CSSPropertyID::kFont);
-  if (css_parsing_utils::IsCSSWideKeyword(font_value))
+  auto* parsed_style = CSSParser::ParseFont(
+      font_string, GetExecutionContext()->GetSecureContextMode());
+  if (!parsed_style)
     return false;
 
   if (!GetDocument()->documentElement()) {
