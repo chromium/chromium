@@ -39,7 +39,11 @@ class PasswordProtectionNavigationThrottle
       override;
   const char* GetNameForLogging() override;
 
+  // Called to resume a deferred navigation once the PasswordProtectionRequest
+  // has received a verdict and there is no modal warning shown.
   void ResumeNavigation();
+  // Called when the PasswordProtectionRequest has received a verdict and there
+  // is a modal warning shown.
   void CancelNavigation(
       content::NavigationThrottle::ThrottleCheckResult result);
 

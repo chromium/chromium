@@ -71,7 +71,10 @@ source_set("password_protection_metrics_util") {
 source_set("password_protection_unittest") {
   testonly = true
   if (safe_browsing_mode > 0) {
-    sources = [ "password_protection_service_unittest.cc" ]
+    sources = [
+      "password_protection_navigation_throttle_unittest.cc",
+      "password_protection_service_unittest.cc",
+    ]
     if (safe_browsing_mode == 1) {
       sources += [ "visual_utils_unittest.cc" ]
     }
