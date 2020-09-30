@@ -249,6 +249,12 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) ConciergeClient : public DBusClient {
       DBusMethodCallback<vm_tools::concierge::ResizeDiskImageResponse>
           callback) = 0;
 
+  // Sets the cryptohome id of the given VM.
+  // |callback| is called after the method call finishes.
+  virtual void SetVmId(
+      const vm_tools::concierge::SetVmIdRequest& request,
+      DBusMethodCallback<vm_tools::concierge::SetVmIdResponse> callback) = 0;
+
   // Creates an instance of ConciergeClient.
   static std::unique_ptr<ConciergeClient> Create();
 

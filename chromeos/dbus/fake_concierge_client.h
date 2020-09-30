@@ -116,6 +116,10 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeConciergeClient
       DBusMethodCallback<vm_tools::concierge::ResizeDiskImageResponse> callback)
       override;
 
+  void SetVmId(const vm_tools::concierge::SetVmIdRequest& request,
+               DBusMethodCallback<vm_tools::concierge::SetVmIdResponse>
+                   callback) override;
+
   const base::ObserverList<Observer>& observer_list() const {
     return observer_list_;
   }
@@ -286,6 +290,7 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeConciergeClient
   bool detach_usb_device_called_ = false;
   bool start_arc_vm_called_ = false;
   bool resize_disk_image_called_ = false;
+  bool set_vm_id_called_ = false;
   bool is_vm_started_signal_connected_ = true;
   bool is_vm_stopped_signal_connected_ = true;
   bool is_container_startup_failed_signal_connected_ = true;
@@ -321,6 +326,7 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeConciergeClient
       detach_usb_device_response_;
   base::Optional<vm_tools::concierge::ResizeDiskImageResponse>
       resize_disk_image_response_;
+  base::Optional<vm_tools::concierge::SetVmIdResponse> set_vm_id_response_;
 
   // Can be set to fake a series of disk image status signals.
   std::vector<vm_tools::concierge::DiskImageStatusResponse>
