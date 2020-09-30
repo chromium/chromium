@@ -51,12 +51,15 @@ PiexModule.onAbort = (error) => {
  * Loading the entire page is the only reliable way to recover from broken
  * Module state. Log the error, and return true to tell caller to initiate
  * failure recovery steps.
+ *
+ * @return {boolean}
  */
 function piexModuleFailed() {
   if (piexFailed || !PiexModule.calledRun) {
     console.error('[PiexLoader] piex wasm module failed');
     return true;
   }
+  return false;
 }
 
 /**
@@ -127,6 +130,7 @@ function readSourceData(source) {
   return new Promise((resolve, reject) => {
     /**
      * Reject the Promise on fileEntry URL resolve or file read failures.
+     * @param {!Error|string|!ProgressEvent<!FileReader>|!FileError} error
      */
     function failure(error) {
       reject(new Error('Reading file system: ' + (error.message || error)));
@@ -150,7 +154,9 @@ function readSourceData(source) {
       if (valid(file.size)) {
         const reader = new FileReader();
         reader.onerror = failure;
-        reader.onload = (_) => resolve(reader.result);
+        reader.onload = (_) => {
+          resolve(reader.result);
+        };
         reader.readAsArrayBuffer(file);
       } else {
         failure('invalid file size: ' + file.size);
@@ -447,8 +453,11 @@ class ImageBuffer {
       return null;
     }
 
+    /** @type {!Object<string|number, number|string>} */
     const format = {};
-    for (const [key, value] of Object.entries(details)) {
+    /** @type {!Array<!Array<string|number>>} */
+    const entries = Object.entries(details);
+    for (const [key, value] of entries) {
       if (typeof value === 'string') {
         format[key] = value.replace(/\0+$/, '').trim();
       } else if (typeof value === 'number') {
@@ -462,9 +471,9 @@ class ImageBuffer {
 
     const usesWidthAsHeight = orientation >= 5;
     if (usesWidthAsHeight) {
-      const width = format.width;
-      format.width = format.height;
-      format.height = width;
+      const width = format['width'];
+      format['width'] = format['height'];
+      format['height'] = width;
     }
 
     return JSON.stringify(format);
@@ -498,27 +507,29 @@ function PiexLoader() {}
  * the caller should initiate failure recovery steps.
  *
  * @param {!ArrayBuffer|!File|string} source
- * @param {!function()} onPiexModuleFailed
+ * @param {function()} onPiexModuleFailed
  * @return {!Promise<!PiexLoaderResponse>}
  */
 PiexLoader.prototype.load = function(source, onPiexModuleFailed) {
+  /** @type {?ImageBuffer} */
   let imageBuffer;
 
   return readSourceData(source)
       .then((buffer) => {
-        if (piexModuleFailed() === true) {
+        if (piexModuleFailed()) {
           // Just reject here: handle in the .catch() clause below.
           return Promise.reject('piex wasm module failed');
         }
         imageBuffer = new ImageBuffer(buffer);
         return imageBuffer.process();
       })
-      .then((result) => {
-        imageBuffer.close();
-        return new PiexLoaderResponse(imageBuffer.preview(result));
+      .then((/** !PiexWasmImageResult */ result) => {
+        const buffer = /** @type {!ImageBuffer} */ (imageBuffer);
+        buffer.close();
+        return new PiexLoaderResponse(buffer.preview(result));
       })
       .catch((error) => {
-        if (piexModuleFailed() === true) {
+        if (piexModuleFailed()) {
           setTimeout(onPiexModuleFailed, 0);
           return Promise.reject('piex wasm module failed');
         }
