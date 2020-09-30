@@ -1248,7 +1248,7 @@ bool NavigationControllerImpl::RendererDidNavigate(
 NavigationType NavigationControllerImpl::ClassifyNavigation(
     RenderFrameHostImpl* rfh,
     const FrameHostMsg_DidCommitProvisionalLoad_Params& params) {
-  TraceReturnReason<TracingCategory::kNavigation> trace_return(
+  TraceReturnReason<tracing_category::kNavigation> trace_return(
       "ClassifyNavigation");
 
   if (params.did_create_new_entry) {

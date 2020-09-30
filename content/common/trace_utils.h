@@ -11,9 +11,11 @@
 
 namespace content {
 
-struct TracingCategory {
-  static constexpr const char kNavigation[] = "navigation";
-};
+// This can't be a struct since in C++14 static constexpr structure members
+// have external linkage. This has been fixed in C++17.
+namespace tracing_category {
+static constexpr const char kNavigation[] = "navigation";
+}
 
 // Class which facilitates annotating with traces all possible return paths
 // from a function or a method. Setting the return reason is enforced by a
@@ -24,7 +26,7 @@ struct TracingCategory {
 // Example usage:
 //
 // void SomeMethod() {
-//   TraceReturnReason<TracingCategory::kNavigation> trace_return("Method");
+//   TraceReturnReason<tracing_category::kNavigation> trace_return("Method");
 //
 //   if (condition) {
 //     trace_return.set_return_reason("foo");
