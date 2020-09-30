@@ -1306,12 +1306,6 @@ void AXObjectCacheImpl::ChildrenChangedWithCleanLayout(Node* node) {
   if (!node)
     return;
 
-#ifndef NDEBUG
-  if (node->GetDocument().NeedsLayoutTreeUpdateForNode(*node)) {
-    LOG(ERROR) << "Node needs layout tree update: " << node;
-    node->ShowTreeForThisAcrossFrame();
-  }
-#endif
   DCHECK(!node->GetDocument().NeedsLayoutTreeUpdateForNode(*node));
 
   ChildrenChangedWithCleanLayout(node, Get(node));
