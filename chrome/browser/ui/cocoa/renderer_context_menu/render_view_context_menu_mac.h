@@ -21,6 +21,8 @@ class RenderViewContextMenuMac : public RenderViewContextMenu,
                            const content::ContextMenuParams& params);
   ~RenderViewContextMenuMac() override;
 
+  void Show() override {}
+
   // SimpleMenuModel::Delegate:
   void ExecuteCommand(int command_id, int event_flags) override;
   bool IsCommandIdChecked(int command_id) const override;
@@ -34,10 +36,10 @@ class RenderViewContextMenuMac : public RenderViewContextMenu,
       base::i18n::TextDirection direction) const override;
   void UpdateTextDirection(base::i18n::TextDirection direction) override;
 
- protected:
   // Adds menu to the platform's toolkit.
   void InitToolkitMenu();
 
+ protected:
   // RenderViewContextMenu:
   void AppendPlatformEditableItems() override;
 
