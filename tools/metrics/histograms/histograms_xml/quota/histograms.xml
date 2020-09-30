@@ -148,6 +148,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Quota.OSAccomodationDelta" units="MB" expires_after="M85">
+  <obsolete>
+    Expired in M85.
+  </obsolete>
   <owner>jarrydg@chromium.org</owner>
   <summary>
     If our hardcoded OS accomodation is too large for the volume size, we define
