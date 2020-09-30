@@ -31,8 +31,8 @@ class ArcAuthContext : public signin::IdentityManager::Observer {
   // cancel the inflight operation.
   // On completion, |true| is passed to the callback. On error, |false|
   // is passed.
-  using PrepareCallback = base::Callback<void(bool success)>;
-  void Prepare(const PrepareCallback& callback);
+  using PrepareCallback = base::OnceCallback<void(bool success)>;
+  void Prepare(PrepareCallback callback);
 
   // Creates and starts a request to fetch an access token for the given
   // |scopes|. The caller owns the returned request. |callback| will be

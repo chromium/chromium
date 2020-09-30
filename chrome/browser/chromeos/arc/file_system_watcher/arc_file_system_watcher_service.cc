@@ -174,9 +174,10 @@ class ArcFileSystemWatcherServiceFactory
 // directory.
 class ArcFileSystemWatcherService::FileSystemWatcher {
  public:
-  using Callback = base::Callback<void(const std::vector<std::string>& paths)>;
+  using Callback =
+      base::OnceCallback<void(const std::vector<std::string>& paths)>;
 
-  FileSystemWatcher(const Callback& callback,
+  FileSystemWatcher(Callback callback,
                     const base::FilePath& cros_dir,
                     const base::FilePath& android_dir);
   ~FileSystemWatcher();
@@ -219,10 +220,10 @@ class ArcFileSystemWatcherService::FileSystemWatcher {
 };
 
 ArcFileSystemWatcherService::FileSystemWatcher::FileSystemWatcher(
-    const Callback& callback,
+    Callback callback,
     const base::FilePath& cros_dir,
     const base::FilePath& android_dir)
-    : callback_(callback),
+    : callback_(std::move(callback)),
       cros_dir_(cros_dir),
       android_dir_(android_dir),
       last_notify_time_(base::TimeTicks()),
@@ -295,7 +296,7 @@ void ArcFileSystemWatcherService::FileSystemWatcher::OnBuildTimestampMap(
     string_paths[i] = changed_paths[i].value();
   }
   content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(callback_, std::move(string_paths)));
+      FROM_HERE, base::BindOnce(std::move(callback_), std::move(string_paths)));
   if (last_notify_time_ > snapshot_time)
     DelayBuildTimestampMap();
   else

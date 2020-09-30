@@ -30,8 +30,8 @@ class ArcAndroidManagementChecker : public signin::IdentityManager::Observer {
   // If the instance is destructed while it has inflight check, then the
   // check will be cancelled and |callback| will not be called.
   using CheckCallback =
-      base::Callback<void(policy::AndroidManagementClient::Result result)>;
-  void StartCheck(const CheckCallback& callback);
+      base::OnceCallback<void(policy::AndroidManagementClient::Result result)>;
+  void StartCheck(CheckCallback callback);
 
  private:
   void StartCheckInternal();

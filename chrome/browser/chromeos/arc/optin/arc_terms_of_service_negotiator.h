@@ -20,8 +20,8 @@ class ArcTermsOfServiceNegotiator {
   // accepts ToS. If user explicitly rejects ToS, invokes |callback| with
   // |accepted| = false. Deleting this instance cancels the operation, so
   // |callback| will never be invoked then.
-  using NegotiationCallback = base::Callback<void(bool accepted)>;
-  void StartNegotiation(const NegotiationCallback& callback);
+  using NegotiationCallback = base::OnceCallback<void(bool accepted)>;
+  void StartNegotiation(NegotiationCallback callback);
 
  protected:
   // Reports result of negotiation via callback and then resets it. If
