@@ -944,3 +944,15 @@ untrustedMessagePipe.registerHandler(
 untrustedMessagePipe.registerHandler(
     dpsl_internal.Message.PROBE_TELEMETRY_INFO,
     (message) => telemetryProxy.handleProbeTelemetryInfo(message));
+
+/**
+ * Promise that resolves once the iframe is ready to receive messages.
+ * @type {!Promise<undefined>}
+ */
+const iframeReady = new Promise(resolve => {
+  // Wait for 'load' (and not DOMContentLoaded) to ensure the subframe has been
+  // loaded and is ready to respond to postMessage.
+  window.addEventListener('load', () => {
+    resolve();
+  });
+});
