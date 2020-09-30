@@ -30,9 +30,7 @@ main() {
 "${update_dmg_mount_point}/${APP_DIR}/Contents/MacOS/${PRODUCT_NAME}"
 
   # Run the executable with install
-  exit_code="$(${path_to_executable} --install)"
-
-  return exit_code
+  "${path_to_executable}" --install
 }
 
 # Check "less than" instead of "not equal to" in case there are changes to pass
