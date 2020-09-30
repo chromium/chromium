@@ -8536,17 +8536,6 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
     last_commit_params_ = std::move(params);
   }
 
-  // TODO(arthursonzogni): Recording the metrics again for same-document or
-  // bfcache navigation is a no-op. They were already recorded when the document
-  // committed. This should be moved toward NewDocumentCreatedFromNavigation().
-  RecordCrossOriginIsolationMetrics(this);
-
-  // TODO(arthursonzogni): Calling this for same-document navigation doesn't
-  // hurt, but this is useless. This should be executed only once per new
-  // document. This should be moved to CommitNewDocumentFromNavigation().
-  CrossOriginOpenerPolicyReporter::InstallAccessMonitorsIfNeeded(
-      frame_tree_node_);
-
   return true;
 }
 
@@ -8632,6 +8621,11 @@ void RenderFrameHostImpl::DidCommitNewDocument(
   is_mhtml_document_ =
       navigation_request->GetMimeType() == "multipart/related" ||
       navigation_request->GetMimeType() == "message/rfc822";
+
+  RecordCrossOriginIsolationMetrics(this);
+
+  CrossOriginOpenerPolicyReporter::InstallAccessMonitorsIfNeeded(
+      frame_tree_node_);
 }
 
 void RenderFrameHostImpl::OnSameDocumentCommitProcessed(
