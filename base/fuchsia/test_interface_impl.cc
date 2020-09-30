@@ -5,7 +5,6 @@
 #include "base/fuchsia/test_interface_impl.h"
 
 namespace base {
-namespace fuchsia {
 
 TestInterfaceImpl::TestInterfaceImpl() = default;
 TestInterfaceImpl::~TestInterfaceImpl() = default;
@@ -14,5 +13,4 @@ void TestInterfaceImpl::Add(int32_t a, int32_t b, AddCallback callback) {
   callback(a + b);
 }
 
-}  // namespace fuchsia
 }  // namespace base

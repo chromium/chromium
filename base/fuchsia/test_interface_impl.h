@@ -8,10 +8,9 @@
 #include <lib/fidl/cpp/binding_set.h>
 #include <lib/zx/channel.h>
 
-#include "base/fuchsia/testfidl/cpp/fidl.h"
+#include "base/testfidl/cpp/fidl.h"
 
 namespace base {
-namespace fuchsia {
 
 class TestInterfaceImpl : public testfidl::TestInterface {
  public:
@@ -27,7 +26,6 @@ class TestInterfaceImpl : public testfidl::TestInterface {
   fidl::BindingSet<testfidl::TestInterface> bindings_;
 };
 
-}  // namespace fuchsia
 }  // namespace base
 
 #endif  // BASE_FUCHSIA_FAKE_INTERFACE_IMPL_H_

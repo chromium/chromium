@@ -10,12 +10,11 @@
 namespace mojo {
 
 template <>
-struct StructTraits<
-    fuchsia::test::mojom::TestInterfaceRequestDataView,
-    fidl::InterfaceRequest<base::fuchsia::testfidl::TestInterface>>
+struct StructTraits<fuchsia::test::mojom::TestInterfaceRequestDataView,
+                    fidl::InterfaceRequest<base::testfidl::TestInterface>>
     : public FidlInterfaceRequestStructTraits<
           fuchsia::test::mojom::TestInterfaceRequestDataView,
-          base::fuchsia::testfidl::TestInterface> {};
+          base::testfidl::TestInterface> {};
 
 }  // namespace mojo
 

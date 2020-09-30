@@ -2629,9 +2629,9 @@ if (is_apple) {
 
 if (is_fuchsia) {
   fidl_library("testfidl") {
-    library_name = "base.fuchsia.testfidl"
+    library_name = "base.testfidl"
 
-    sources = [ "fuchsia/test.fidl" ]
+    sources = [ "fuchsia/test.test-fidl" ]
   }
 
   source_set("test_interface_impl") {

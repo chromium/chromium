@@ -7,9 +7,9 @@
 #include <lib/sys/cpp/component_context.h>
 
 #include "base/fuchsia/fuchsia_logging.h"
-#include "base/fuchsia/testfidl/cpp/fidl.h"
 #include "base/logging.h"
 #include "base/test/task_environment.h"
+#include "base/testfidl/cpp/fidl.h"
 #include "fuchsia/base/fit_adapter.h"
 #include "fuchsia/base/result_receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -29,8 +29,7 @@ class EmptyComponentState : public AgentImpl::ComponentStateBase {
       : ComponentStateBase(component) {}
 };
 
-class AccumulatingTestInterfaceImpl
-    : public base::fuchsia::testfidl::TestInterface {
+class AccumulatingTestInterfaceImpl : public base::testfidl::TestInterface {
  public:
   AccumulatingTestInterfaceImpl() = default;
 
@@ -54,7 +53,7 @@ class AccumulatorComponentState : public AgentImpl::ComponentStateBase {
 
  protected:
   AccumulatingTestInterfaceImpl service_;
-  base::fuchsia::ScopedServiceBinding<base::fuchsia::testfidl::TestInterface>
+  base::fuchsia::ScopedServiceBinding<base::testfidl::TestInterface>
       service_binding_;
 };
 
@@ -170,13 +169,13 @@ TEST_F(AgentImplTest, DifferentComponentIdSameService) {
   agent->Connect(kAccumulatorComponentId2, component_services2.NewRequest());
 
   // Request the TestInterface from each of the service directories.
-  base::fuchsia::testfidl::TestInterfacePtr test_interface1;
+  base::testfidl::TestInterfacePtr test_interface1;
   component_services1->ConnectToService(
-      base::fuchsia::testfidl::TestInterface::Name_,
+      base::testfidl::TestInterface::Name_,
       test_interface1.NewRequest().TakeChannel());
-  base::fuchsia::testfidl::TestInterfacePtr test_interface2;
+  base::testfidl::TestInterfacePtr test_interface2;
   component_services2->ConnectToService(
-      base::fuchsia::testfidl::TestInterface::Name_,
+      base::testfidl::TestInterface::Name_,
       test_interface1.NewRequest().TakeChannel());
 
   // Both TestInterface pointers should remain valid until we are done.
@@ -226,13 +225,13 @@ TEST_F(AgentImplTest, SameComponentIdSameService) {
   agent->Connect(kAccumulatorComponentId1, component_services2.NewRequest());
 
   // Request the TestInterface from each of the service directories.
-  base::fuchsia::testfidl::TestInterfacePtr test_interface1;
+  base::testfidl::TestInterfacePtr test_interface1;
   component_services1->ConnectToService(
-      base::fuchsia::testfidl::TestInterface::Name_,
+      base::testfidl::TestInterface::Name_,
       test_interface1.NewRequest().TakeChannel());
-  base::fuchsia::testfidl::TestInterfacePtr test_interface2;
+  base::testfidl::TestInterfacePtr test_interface2;
   component_services2->ConnectToService(
-      base::fuchsia::testfidl::TestInterface::Name_,
+      base::testfidl::TestInterface::Name_,
       test_interface1.NewRequest().TakeChannel());
 
   // Both TestInterface pointers should remain valid until we are done.
@@ -279,9 +278,9 @@ TEST_F(AgentImplTest, KeepAliveBinding) {
     // Connect to the Agent and request the TestInterface.
     fuchsia::sys::ServiceProviderPtr component_services;
     agent->Connect(kAccumulatorComponentId1, component_services.NewRequest());
-    base::fuchsia::testfidl::TestInterfacePtr test_interface;
+    base::testfidl::TestInterfacePtr test_interface;
     component_services->ConnectToService(
-        base::fuchsia::testfidl::TestInterface::Name_,
+        base::testfidl::TestInterface::Name_,
         test_interface.NewRequest().TakeChannel());
 
     // The TestInterface pointer should be closed as soon as we Unbind() the
@@ -299,9 +298,9 @@ TEST_F(AgentImplTest, KeepAliveBinding) {
     // Connect to the Agent and request the TestInterface.
     fuchsia::sys::ServiceProviderPtr component_services;
     agent->Connect(kKeepAliveComponentId, component_services.NewRequest());
-    base::fuchsia::testfidl::TestInterfacePtr test_interface;
+    base::testfidl::TestInterfacePtr test_interface;
     component_services->ConnectToService(
-        base::fuchsia::testfidl::TestInterface::Name_,
+        base::testfidl::TestInterface::Name_,
         test_interface.NewRequest().TakeChannel());
 
     // The TestInterface pointer should remain valid until we are done.
@@ -329,9 +328,9 @@ TEST_F(AgentImplTest, DisconnectClientsAndTeardown) {
     // Connect to the Agent and request the TestInterface.
     fuchsia::sys::ServiceProviderPtr component_services;
     agent->Connect(kKeepAliveComponentId, component_services.NewRequest());
-    base::fuchsia::testfidl::TestInterfacePtr test_interface;
+    base::testfidl::TestInterfacePtr test_interface;
     component_services->ConnectToService(
-        base::fuchsia::testfidl::TestInterface::Name_,
+        base::testfidl::TestInterface::Name_,
         test_interface.NewRequest().TakeChannel());
 
     // The TestInterface pointer should remain valid until we call

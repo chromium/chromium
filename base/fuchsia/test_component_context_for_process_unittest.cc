@@ -10,40 +10,37 @@
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/process_context.h"
 #include "base/fuchsia/scoped_service_binding.h"
-#include "base/fuchsia/testfidl/cpp/fidl.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "base/testfidl/cpp/fidl.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
 
-class TestComponentContextForProcessTest
-    : public testing::Test,
-      public fuchsia::testfidl::TestInterface {
+class TestComponentContextForProcessTest : public testing::Test,
+                                           public testfidl::TestInterface {
  public:
   TestComponentContextForProcessTest()
       : task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {}
 
   bool HasTestInterface() {
-    return VerifyTestInterface(
-        ComponentContextForProcess()
-            ->svc()
-            ->Connect<fuchsia::testfidl::TestInterface>());
+    return VerifyTestInterface(ComponentContextForProcess()
+                                   ->svc()
+                                   ->Connect<testfidl::TestInterface>());
   }
 
   bool HasPublishedTestInterface() {
     return VerifyTestInterface(
-        test_context_.published_services()
-            ->Connect<fuchsia::testfidl::TestInterface>());
+        test_context_.published_services()->Connect<testfidl::TestInterface>());
   }
 
-  // fuchsia::testfidl::TestInterface implementation.
+  // testfidl::TestInterface implementation.
   void Add(int32_t a, int32_t b, AddCallback callback) override {
     callback(a + b);
   }
 
  protected:
-  bool VerifyTestInterface(fuchsia::testfidl::TestInterfacePtr test_interface) {
+  bool VerifyTestInterface(testfidl::TestInterfacePtr test_interface) {
     bool have_interface = false;
     RunLoop wait_loop;
     test_interface.set_error_handler([quit_loop = wait_loop.QuitClosure(),
@@ -75,8 +72,8 @@ TEST_F(TestComponentContextForProcessTest, NoServices) {
 
 TEST_F(TestComponentContextForProcessTest, InjectTestInterface) {
   // Publish a fake TestInterface for the process' ComponentContext to expose.
-  base::fuchsia::ScopedServiceBinding<fuchsia::testfidl::TestInterface>
-      service_binding(test_context_.additional_services(), this);
+  base::fuchsia::ScopedServiceBinding<testfidl::TestInterface> service_binding(
+      test_context_.additional_services(), this);
 
   // Verify that the TestInterface is accessible & usable.
   EXPECT_TRUE(HasTestInterface());
@@ -84,8 +81,8 @@ TEST_F(TestComponentContextForProcessTest, InjectTestInterface) {
 
 TEST_F(TestComponentContextForProcessTest, PublishTestInterface) {
   // Publish TestInterface to the process' outgoing-directory.
-  base::fuchsia::ScopedServiceBinding<fuchsia::testfidl::TestInterface>
-      service_binding(ComponentContextForProcess()->outgoing().get(), this);
+  base::fuchsia::ScopedServiceBinding<testfidl::TestInterface> service_binding(
+      ComponentContextForProcess()->outgoing().get(), this);
 
   // Attempt to use the TestInterface from the outgoing-directory.
   EXPECT_TRUE(HasPublishedTestInterface());

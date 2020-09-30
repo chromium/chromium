@@ -15,13 +15,13 @@ mojom("example_interfaces") {
       types = [
         {
           mojom = "fuchsia.test.mojom.TestInterfaceRequest"
-          cpp = "::fidl::InterfaceRequest<::base::fuchsia::testfidl::TestInterface>"
+          cpp = "::fidl::InterfaceRequest<::base::testfidl::TestInterface>"
           move_only = true
         },
       ]
 
       traits_headers = [
-        "//base/fuchsia/testfidl/cpp/fidl.h",
+        "//base/testfidl/cpp/fidl.h",
         "//fuchsia/mojom/test_interface_request_mojom_traits.h",
       ]
       traits_public_deps = [
