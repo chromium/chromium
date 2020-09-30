@@ -12,11 +12,23 @@ import re
 
 # We skip attributes that are already implemented in print preview.
 NOOP_ATTRS = [
-    'copies', 'job-hold-until', 'job-copies', 'job-password',
-    'job-password-encryption', 'media', 'media-col', 'number-up',
-    'orientation-requested', 'page-ranges', 'presentation-direction-number-up',
-    'print-color-mode', 'print-scaling', 'printer-resolution', 'sheet-collate',
-    'sides'
+    'copies',
+    'job-hold-until',
+    'job-copies',
+    'job-password',
+    'job-password-encryption',
+    'media',
+    'media-col',
+    'multiple-document-handling',
+    'number-up',
+    'orientation-requested',
+    'page-ranges',
+    'presentation-direction-number-up',
+    'print-color-mode',
+    'print-scaling',
+    'printer-resolution',
+    'sheet-collate',
+    'sides',
 ]
 
 # RFC 8011 (5.1.4) requires keywords to start with a letter. There's however at
