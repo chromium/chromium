@@ -232,7 +232,7 @@ bool IsNodeFullyGrown(NGBlockNode node,
 bool FinishFragmentation(NGBlockNode node,
                          const NGConstraintSpace& space,
                          const NGBlockBreakToken* previous_break_token,
-                         const NGBoxStrut& border_padding,
+                         LayoutUnit trailing_border_padding,
                          LayoutUnit space_left,
                          NGBoxFragmentBuilder* builder) {
   LayoutUnit previously_consumed_block_size;
@@ -280,7 +280,7 @@ bool FinishFragmentation(NGBlockNode node,
     // haven't already consumed (100px - 20px = 80px) over two columns. We get
     // two fragments for #container after the spanner, each 40px tall.
     final_block_size = std::min(final_block_size, intrinsic_block_size) -
-                       border_padding.block_end;
+                       trailing_border_padding;
   } else if (space_left != kIndefiniteSize && desired_block_size > space_left) {
     // We're taller than what we have room for. We don't want to use more than
     // |space_left|, but if the intrinsic block-size is larger than that, it
@@ -294,12 +294,12 @@ bool FinishFragmentation(NGBlockNode node,
     //
     // There is a last-resort breakpoint before trailing border and padding, so
     // first check if we can break there and still make progress.
-    DCHECK_GE(intrinsic_block_size, border_padding.block_end);
-    DCHECK_GE(desired_block_size, border_padding.block_end);
+    DCHECK_GE(intrinsic_block_size, trailing_border_padding);
+    DCHECK_GE(desired_block_size, trailing_border_padding);
 
     LayoutUnit subtractable_border_padding;
-    if (desired_block_size > border_padding.block_end)
-      subtractable_border_padding = border_padding.block_end;
+    if (desired_block_size > trailing_border_padding)
+      subtractable_border_padding = trailing_border_padding;
 
     final_block_size =
         std::min(desired_block_size - subtractable_border_padding,
@@ -381,7 +381,7 @@ bool FinishFragmentation(NGBlockNode node,
       // more), we're only at the end if no in-flow content inside broke.
       if (!builder->HasInflowChildBreakInside() ||
           IsNodeFullyGrown(node, space, fragments_total_block_size,
-                           border_padding,
+                           builder->BorderPadding(),
                            builder->InitialBorderBoxSize().inline_size))
         builder->SetIsAtBlockEnd();
 

@@ -303,7 +303,7 @@ scoped_refptr<const NGLayoutResult> NGColumnLayoutAlgorithm::Layout() {
     // In addition to establishing one, we're nested inside another
     // fragmentation context.
     FinishFragmentation(
-        Node(), ConstraintSpace(), BreakToken(), BorderPadding(),
+        Node(), ConstraintSpace(), BreakToken(), BorderPadding().block_end,
         FragmentainerSpaceAtBfcStart(ConstraintSpace()), &container_builder_);
   }
 
