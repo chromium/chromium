@@ -21,7 +21,6 @@
 #include "content/public/common/content_switches.h"
 #include "sandbox/policy/switches.h"
 #include "services/service_manager/embedder/result_codes.h"
-#include "services/service_manager/embedder/switches.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 
 namespace content {
@@ -226,8 +225,7 @@ void ZygoteCommunication::Init(
   CHECK(base::PathService::Get(base::FILE_EXE, &chrome_path));
 
   base::CommandLine cmd_line(chrome_path);
-  cmd_line.AppendSwitchASCII(service_manager::switches::kProcessType,
-                             service_manager::switches::kZygoteProcess);
+  cmd_line.AppendSwitchASCII(switches::kProcessType, switches::kZygoteProcess);
 
   if (type_ == ZygoteType::kUnsandboxed)
     cmd_line.AppendSwitch(sandbox::policy::switches::kNoZygoteSandbox);
@@ -242,7 +240,7 @@ void ZygoteCommunication::Init(
   // to the zygote/renderers.
   static const char* const kForwardSwitches[] = {
       sandbox::policy::switches::kAllowSandboxDebugging,
-      service_manager::switches::kDisableInProcessStackTraces,
+      switches::kDisableInProcessStackTraces,
       sandbox::policy::switches::kDisableSeccompFilterSandbox,
       sandbox::policy::switches::kNoSandbox,
   };

@@ -16,7 +16,6 @@
 #include "content/shell/browser/shell.h"
 #include "sandbox/policy/linux/sandbox_linux.h"
 #include "sandbox/policy/switches.h"
-#include "services/service_manager/embedder/switches.h"
 #if BUILDFLAG(USE_ZYGOTE_HANDLE)
 #include "content/browser/zygote_host/zygote_host_impl_linux.h"
 #include "content/common/zygote/zygote_communication_linux.h"

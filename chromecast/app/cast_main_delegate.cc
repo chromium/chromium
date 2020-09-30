@@ -159,7 +159,7 @@ void CastMainDelegate::PreSandboxStartup() {
 #elif defined(OS_LINUX) || defined(OS_CHROMEOS)
   crash_reporter::SetCrashReporterClient(GetCastCrashReporter());
 
-  if (process_type != service_manager::switches::kZygoteProcess) {
+  if (process_type != switches::kZygoteProcess) {
     CastCrashReporterClient::InitCrashReporter(process_type);
   }
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)

@@ -31,7 +31,6 @@
 #include "content/shell/utility/shell_content_utility_client.h"
 #include "ipc/ipc_buildflags.h"
 #include "net/cookies/cookie_monster.h"
-#include "services/service_manager/embedder/switches.h"
 #include "ui/base/resource/resource_bundle.h"
 
 #if BUILDFLAG(IPC_MESSAGE_LOG_ENABLED)
@@ -204,7 +203,7 @@ void ShellMainDelegate::PreSandboxStartup() {
             switches::kProcessType);
     crash_reporter::SetCrashReporterClient(g_shell_crash_client.Pointer());
     // Reporting for sub-processes will be initialized in ZygoteForked.
-    if (process_type != service_manager::switches::kZygoteProcess) {
+    if (process_type != switches::kZygoteProcess) {
       crash_reporter::InitializeCrashpad(process_type.empty(), process_type);
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
       crash_reporter::SetFirstChanceExceptionHandler(

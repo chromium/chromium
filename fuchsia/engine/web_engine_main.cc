@@ -6,17 +6,17 @@
 
 #include "base/command_line.h"
 #include "content/public/app/content_main.h"
+#include "content/public/common/content_switches.h"
 #include "fuchsia/engine/context_provider_impl.h"
 #include "fuchsia/engine/context_provider_main.h"
 #include "fuchsia/engine/web_engine_main_delegate.h"
-#include "services/service_manager/embedder/switches.h"
 
 int main(int argc, const char** argv) {
   base::CommandLine::Init(argc, argv);
 
   std::string process_type =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          service_manager::switches::kProcessType);
+          switches::kProcessType);
   fidl::InterfaceRequest<fuchsia::web::Context> context;
 
   if (process_type.empty()) {

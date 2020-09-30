@@ -17,7 +17,6 @@
 #include "content/public/common/content_descriptors.h"
 #include "content/public/common/content_switches.h"
 #include "mojo/public/cpp/platform/platform_channel_endpoint.h"
-#include "services/service_manager/embedder/switches.h"
 
 namespace content {
 namespace internal {
@@ -89,7 +88,7 @@ std::unique_ptr<PosixFileDescriptorInfo> CreateDefaultPosixFilesToMap(
     key++;
     DCHECK(key < kContentDynamicDescriptorMax);
   }
-  command_line->AppendSwitchASCII(service_manager::switches::kSharedFiles,
+  command_line->AppendSwitchASCII(switches::kSharedFiles,
                                   file_switch_value_builder.switch_value());
 
   return files_to_register;

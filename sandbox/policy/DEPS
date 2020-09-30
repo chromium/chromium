@@ -1,5 +1,4 @@
 include_rules = [
   "+sandbox/constants.h",
   "+sandbox",
-  "+services/service_manager/embedder/switches.h",
 ]

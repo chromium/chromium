@@ -110,6 +110,7 @@ const char kEnableSandboxLogging[] = "enable-sandbox-logging";
 #endif
 
 // Flags spied upon from other layers.
+const char kProcessType[] = "type";
 const char kGpuProcess[] = "gpu-process";
 const char kNaClBrokerProcess[] = "nacl-broker";
 const char kNaClLoaderProcess[] = "nacl-loader";
