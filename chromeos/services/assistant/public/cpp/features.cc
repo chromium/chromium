@@ -18,7 +18,7 @@ const base::Feature kAssistantAppSupport{"AssistantAppSupport",
                                          base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kAssistantBetterOnboarding{
-    "AssistantBetterOnboarding", base::FEATURE_DISABLED_BY_DEFAULT};
+    "AssistantBetterOnboarding", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kAssistantConversationStartersV2{
     "AssistantConversationStartersV2", base::FEATURE_DISABLED_BY_DEFAULT};

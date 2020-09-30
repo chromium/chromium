@@ -19,10 +19,14 @@ using chromeos::assistant::prefs::AssistantOnboardingMode;
 
 // AssistantSuggestionsControllerImplTest --------------------------------------
 
-class AssistantSuggestionsControllerImplTest : public AssistantAshTestBase {
+class AssistantSuggestionsControllerImplTest
+    : public AssistantAshTestBase,
+      public testing::WithParamInterface<bool> {
  public:
-  AssistantSuggestionsControllerImplTest() = default;
-  ~AssistantSuggestionsControllerImplTest() override = default;
+  AssistantSuggestionsControllerImplTest() {
+    feature_list_.InitWithFeatureState(
+        chromeos::assistant::features::kAssistantBetterOnboarding, GetParam());
+  }
 
   AssistantSuggestionsControllerImpl* controller() {
     return static_cast<AssistantSuggestionsControllerImpl*>(
@@ -39,33 +43,18 @@ class AssistantSuggestionsControllerImplTest : public AssistantAshTestBase {
 
 // Tests -----------------------------------------------------------------------
 
-TEST_F(AssistantSuggestionsControllerImplTest,
-       ShouldNotHaveOnboardingSuggestionsWhenFeatureDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      chromeos::assistant::features::kAssistantBetterOnboarding);
-
+TEST_P(AssistantSuggestionsControllerImplTest,
+       ShouldMaybeHaveOnboardingSuggestions) {
   for (int i = 0; i < static_cast<int>(AssistantOnboardingMode::kMaxValue);
        ++i) {
     const auto onboarding_mode = static_cast<AssistantOnboardingMode>(i);
     SetOnboardingMode(onboarding_mode);
-    EXPECT_TRUE(model()->GetOnboardingSuggestions().empty());
+    EXPECT_NE(GetParam(), model()->GetOnboardingSuggestions().empty());
   }
 }
 
-TEST_F(AssistantSuggestionsControllerImplTest,
-       ShouldMaybeHaveOnboardingSuggestionsWhenFeatureEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      chromeos::assistant::features::kAssistantBetterOnboarding);
-
-  for (int i = 0; i < static_cast<int>(AssistantOnboardingMode::kMaxValue);
-       ++i) {
-    const auto onboarding_mode = static_cast<AssistantOnboardingMode>(i);
-    SetOnboardingMode(onboarding_mode);
-    EXPECT_EQ(model()->GetOnboardingSuggestions().empty(),
-              onboarding_mode != AssistantOnboardingMode::kEducation);
-  }
-}
+INSTANTIATE_TEST_SUITE_P(All,
+                         AssistantSuggestionsControllerImplTest,
+                         testing::Bool());
 
 }  // namespace ash
