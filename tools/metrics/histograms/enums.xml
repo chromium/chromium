@@ -39077,6 +39077,10 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="2" label="Media Feeds Consent"/>
 </enum>
 
+<enum name="KaleidoscopeNavigation">
+  <int value="0" label="Normal navigation"/>
+</enum>
+
 <enum name="KeepaliveRequestBlockStatus">
   <int value="0" label="Not Blocked"/>
   <int value="1" label="Blocked due to NetworkContext::CanCreateLoader"/>

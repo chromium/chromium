@@ -2086,6 +2086,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Media.Kaleidoscope.Navigation" enum="KaleidoscopeNavigation"
+    expires_after="2021-08-19">
+  <owner>beccahughes@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>
+    Recorded each time a user selects a media recommendation inside Kaleidoscope
+    and this triggers a navigation to a media partner's site.
+  </summary>
+</histogram>
+
 <histogram name="Media.Kaleidoscope.NewTabPage.CacheHitWhenForced"
     enum="KaleidoscopeCacheHit" expires_after="2021-08-19">
   <owner>beccahughes@chromium.org</owner>
