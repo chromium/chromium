@@ -1,0 +1,35 @@
+# Copyright 2020 The Chromium Authors.All rights reserved.
+# Use of this source code is governed by a BSD - style license that can be
+# found in the LICENSE file.
+
+static_library("public") {
+  sources = [
+    "runtime_manager.cc",
+    "runtime_manager.h",
+    "runtime_manager_impl.cc",
+    "runtime_manager_impl.h",
+    "runtime_observer.h",
+    "ui_state.h",
+  ]
+
+  deps = [
+    "//base",
+    "//content/public/browser",
+  ]
+}
+
+static_library("unit_test_support") {
+  testonly = true
+  sources = [
+    "mock_runtime_manager.cc",
+    "mock_runtime_manager.h",
+  ]
+
+  deps = [
+    ":public",
+    "//base",
+    "//content/public/browser",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

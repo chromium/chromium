@@ -118,10 +118,12 @@ bool IsInWhitelist(const std::string& subdomain,
 Controller::Controller(content::WebContents* web_contents,
                        Client* client,
                        const base::TickClock* tick_clock,
+                       RuntimeManagerImpl* runtime_manager,
                        std::unique_ptr<Service> service)
     : content::WebContentsObserver(web_contents),
       client_(client),
       tick_clock_(tick_clock),
+      runtime_manager_(runtime_manager),
       service_(service ? std::move(service)
                        : ServiceImpl::Create(web_contents->GetBrowserContext(),
                                              client_)),
@@ -391,11 +393,16 @@ bool Controller::HasNavigationError() {
 }
 
 void Controller::RequireUI() {
-  if (needs_ui_)
+  if (ui_shown_)
     return;
 
   needs_ui_ = true;
   client_->AttachUI();
+}
+
+void Controller::SetUiShown(bool shown) {
+  ui_shown_ = shown;
+  runtime_manager_->SetUIState(shown ? UIState::kShown : UIState::kNotShown);
 }
 
 void Controller::SetGenericUi(
@@ -757,14 +764,14 @@ bool Controller::EnterState(AutofillAssistantState state) {
     observer.OnStateChanged(state);
   }
 
-  if (!needs_ui_ && StateNeedsUI(state)) {
+  if (!ui_shown_ && StateNeedsUI(state)) {
     RequireUI();
   } else if (needs_ui_ && state == AutofillAssistantState::TRACKING) {
     needs_ui_ = false;
-  } else if (browse_mode_invisible_ && needs_ui_ &&
+  } else if (browse_mode_invisible_ && ui_shown_ &&
              state == AutofillAssistantState::BROWSE) {
-    client_->DestroyUI();
     needs_ui_ = false;
+    client_->DestroyUI();
   }
 
   if (ShouldCheckScripts()) {

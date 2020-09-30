@@ -225,6 +225,9 @@ class UiDelegate {
                                  int choice_index,
                                  bool selected) = 0;
 
+  // Sets whether a UI is shown.
+  virtual void SetUiShown(bool shown) = 0;
+
   // Register an observer. Observers get told about changes to the
   // controller.
   virtual void AddObserver(ControllerObserver* observer) = 0;

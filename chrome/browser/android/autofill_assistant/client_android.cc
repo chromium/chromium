@@ -584,9 +584,10 @@ void ClientAndroid::CreateController(std::unique_ptr<Service> service) {
     status_message = controller_->GetStatusMessage();
     DestroyController();
   }
+
   controller_ = std::make_unique<Controller>(
       web_contents_, /* client= */ this, base::DefaultTickClock::GetInstance(),
-      std::move(service));
+      RuntimeManagerImpl::GetForWebContents(web_contents_), std::move(service));
   controller_->SetStatusMessage(status_message);
 }
 

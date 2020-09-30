@@ -22,6 +22,7 @@
 #include "components/autofill_assistant/browser/mock_controller_observer.h"
 #include "components/autofill_assistant/browser/mock_personal_data_manager.h"
 #include "components/autofill_assistant/browser/mock_service.h"
+#include "components/autofill_assistant/browser/public/mock_runtime_manager.h"
 #include "components/autofill_assistant/browser/service.h"
 #include "components/autofill_assistant/browser/trigger_context.h"
 #include "components/autofill_assistant/browser/web/mock_web_controller.h"
@@ -104,8 +105,16 @@ class ControllerTest : public content::RenderViewHostTestHarness {
 
     controller_ = std::make_unique<Controller>(
         web_contents(), &mock_client_, task_environment()->GetMockTickClock(),
-        std::move(service));
+        &mock_runtime_manager_, std::move(service));
     controller_->SetWebControllerForTest(std::move(web_controller));
+
+    ON_CALL(mock_client_, AttachUI()).WillByDefault(Invoke([this]() {
+      controller_->SetUiShown(true);
+    }));
+
+    ON_CALL(mock_client_, DestroyUI()).WillByDefault(Invoke([this]() {
+      controller_->SetUiShown(false);
+    }));
 
     // Fetching scripts succeeds for all URLs, but return nothing.
     ON_CALL(*mock_service_, OnGetScriptsForUrl(_, _, _))
@@ -228,6 +237,7 @@ class ControllerTest : public content::RenderViewHostTestHarness {
   MockService* mock_service_;
   MockWebController* mock_web_controller_;
   NiceMock<MockClient> mock_client_;
+  NiceMock<MockRuntimeManager> mock_runtime_manager_;
   NiceMock<MockControllerObserver> mock_observer_;
   std::unique_ptr<Controller> controller_;
 };
@@ -2840,4 +2850,11 @@ TEST_F(ControllerTest, RegularScriptShowsDefaultInitialStatusMessage) {
   Start("http://a.example.com/path");
 }
 
+TEST_F(ControllerTest, NotifyRuntimeManagerOnUiStateChange) {
+  EXPECT_CALL(mock_runtime_manager_, SetUIState(UIState::kShown)).Times(1);
+  controller_->SetUiShown(true);
+
+  EXPECT_CALL(mock_runtime_manager_, SetUIState(UIState::kNotShown)).Times(1);
+  controller_->SetUiShown(false);
+}
 }  // namespace autofill_assistant

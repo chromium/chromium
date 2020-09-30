@@ -362,6 +362,9 @@ void UiControllerAndroid::Detach() {
 UiControllerAndroid::~UiControllerAndroid() {
   Java_AutofillAssistantUiController_clearNativePtr(AttachCurrentThread(),
                                                     java_object_);
+  if (ui_delegate_) {
+    ui_delegate_->SetUiShown(false);
+  }
   Detach();
 }
 
@@ -641,6 +644,7 @@ void UiControllerAndroid::SetVisible(bool visible) {
   } else {
     SetOverlayState(OverlayState::HIDDEN);
   }
+  ui_delegate_->SetUiShown(visible);
 }
 
 void UiControllerAndroid::RestoreUi() {

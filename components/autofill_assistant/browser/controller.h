@@ -20,6 +20,7 @@
 #include "components/autofill_assistant/browser/element_area.h"
 #include "components/autofill_assistant/browser/event_handler.h"
 #include "components/autofill_assistant/browser/metrics.h"
+#include "components/autofill_assistant/browser/public/runtime_manager_impl.h"
 #include "components/autofill_assistant/browser/script.h"
 #include "components/autofill_assistant/browser/script_executor_delegate.h"
 #include "components/autofill_assistant/browser/script_tracker.h"
@@ -56,12 +57,13 @@ class Controller : public ScriptExecutorDelegate,
                    private content::WebContentsObserver,
                    public UserModel::Observer {
  public:
-  // |web_contents|, |client| and |tick_clock| must remain valid for the
-  // lifetime of the instance. Controller will take ownership of |service| if
-  // specified, otherwise will create and own the default service.
+  // |web_contents|, |client|, |tick_clock| and |runtime_manager| must remain
+  // valid for the lifetime of the instance. Controller will take ownership of
+  // |service| if specified, otherwise will create and own the default service.
   Controller(content::WebContents* web_contents,
              Client* client,
              const base::TickClock* tick_clock,
+             RuntimeManagerImpl* runtime_manager,
              std::unique_ptr<Service> service);
   ~Controller() override;
 
@@ -152,6 +154,7 @@ class Controller : public ScriptExecutorDelegate,
   // Show the UI if it's not already shown. This is only meaningful while in
   // states where showing the UI is optional, such as RUNNING, in tracking mode.
   void RequireUI() override;
+  void SetUiShown(bool shown) override;
 
   void AddNavigationListener(
       ScriptExecutorDelegate::NavigationListener* listener) override;
@@ -352,6 +355,7 @@ class Controller : public ScriptExecutorDelegate,
   ClientSettings settings_;
   Client* const client_;
   const base::TickClock* const tick_clock_;
+  RuntimeManagerImpl* const runtime_manager_;
 
   // Lazily instantiate in GetWebController().
   std::unique_ptr<WebController> web_controller_;
@@ -487,6 +491,9 @@ class Controller : public ScriptExecutorDelegate,
 
   // Whether the controller is in a state in which a UI should be shown.
   bool needs_ui_ = false;
+
+  // Whether UI is shown.
+  bool ui_shown_ = false;
 
   // True once the controller has run the first set of scripts and have either
   // declared it invalid - and entered stopped state - or have processed its
