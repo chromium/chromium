@@ -72,8 +72,8 @@ class ExternalFileURLLoaderFactoryTest : public testing::Test {
                                  kFileSystemId, "Test FileSystem"));
 
     // Create the URLLoaderFactory.
-    url_loader_factory_ = std::make_unique<ExternalFileURLLoaderFactory>(
-        profile, render_process_host_id());
+    url_loader_factory_.Bind(ExternalFileURLLoaderFactory::Create(
+        profile, render_process_host_id()));
   }
 
   virtual int render_process_host_id() {
@@ -106,7 +106,7 @@ class ExternalFileURLLoaderFactoryTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
 
-  std::unique_ptr<ExternalFileURLLoaderFactory> url_loader_factory_;
+  mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory_;
 
   std::unique_ptr<TestingProfileManager> profile_manager_;
   std::unique_ptr<chromeos::FakeChromeUserManager> user_manager_;
