@@ -25,6 +25,7 @@ enum class CompositorStatus : int {
   UNEXPECTED_VERSION,
   CAPTURE_EXPIRED,
   NO_CAPTURE,
+  TIMED_OUT,
   COUNT,
 };
 

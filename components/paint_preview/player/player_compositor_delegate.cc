@@ -115,7 +115,8 @@ void PlayerCompositorDelegate::Initialize(
     PaintPreviewBaseService* paint_preview_service,
     const GURL& expected_url,
     const DirectoryKey& key,
-    base::OnceCallback<void(int)> compositor_error) {
+    base::OnceCallback<void(int)> compositor_error,
+    base::TimeDelta timeout_duration) {
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("paint_preview",
                                     "PlayerCompositorDelegate CreateCompositor",
                                     TRACE_ID_LOCAL(this));
@@ -125,7 +126,7 @@ void PlayerCompositorDelegate::Initialize(
           weak_factory_.GetWeakPtr()));
 
   InitializeInternal(paint_preview_service, expected_url, key,
-                     std::move(compositor_error));
+                     std::move(compositor_error), timeout_duration);
 }
 
 void PlayerCompositorDelegate::InitializeWithFakeServiceForTest(
@@ -133,6 +134,7 @@ void PlayerCompositorDelegate::InitializeWithFakeServiceForTest(
     const GURL& expected_url,
     const DirectoryKey& key,
     base::OnceCallback<void(int)> compositor_error,
+    base::TimeDelta timeout_duration,
     std::unique_ptr<PaintPreviewCompositorService, base::OnTaskRunnerDeleter>
         fake_compositor_service) {
   paint_preview_compositor_service_ = std::move(fake_compositor_service);
@@ -141,14 +143,15 @@ void PlayerCompositorDelegate::InitializeWithFakeServiceForTest(
                      weak_factory_.GetWeakPtr()));
 
   InitializeInternal(paint_preview_service, expected_url, key,
-                     std::move(compositor_error));
+                     std::move(compositor_error), timeout_duration);
 }
 
 void PlayerCompositorDelegate::InitializeInternal(
     PaintPreviewBaseService* paint_preview_service,
     const GURL& expected_url,
     const DirectoryKey& key,
-    base::OnceCallback<void(int)> compositor_error) {
+    base::OnceCallback<void(int)> compositor_error,
+    base::TimeDelta timeout_duration) {
   compositor_error_ = std::move(compositor_error);
   paint_preview_service_ = paint_preview_service;
   key_ = key;
@@ -160,6 +163,14 @@ void PlayerCompositorDelegate::InitializeInternal(
   paint_preview_compositor_client_->SetDisconnectHandler(
       base::BindOnce(&PlayerCompositorDelegate::OnCompositorClientDisconnected,
                      weak_factory_.GetWeakPtr()));
+
+  if (!timeout_duration.is_inf() && !timeout_duration.is_zero()) {
+    timeout_.Reset(
+        base::BindOnce(&PlayerCompositorDelegate::OnCompositorTimeout,
+                       weak_factory_.GetWeakPtr()));
+    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+        FROM_HERE, timeout_.callback(), timeout_duration);
+  }
 }
 
 void PlayerCompositorDelegate::RequestBitmap(
@@ -194,6 +205,7 @@ std::vector<const GURL*> PlayerCompositorDelegate::OnClick(
 void PlayerCompositorDelegate::OnCompositorReadyStatusAdapter(
     mojom::PaintPreviewCompositor::BeginCompositeStatus status,
     mojom::PaintPreviewBeginCompositeResponsePtr composite_response) {
+  timeout_.Cancel();
   CompositorStatus new_status;
   switch (status) {
     // fallthrough
@@ -319,6 +331,14 @@ void PlayerCompositorDelegate::OnCompositorClientDisconnected() {
   if (compositor_error_) {
     std::move(compositor_error_)
         .Run(static_cast<int>(CompositorStatus::COMPOSITOR_CLIENT_DISCONNECT));
+  }
+}
+
+void PlayerCompositorDelegate::OnCompositorTimeout() {
+  DLOG(ERROR) << "Compositor process startup timed out.";
+  if (compositor_error_) {
+    std::move(compositor_error_)
+        .Run(static_cast<int>(CompositorStatus::TIMED_OUT));
   }
 }
 

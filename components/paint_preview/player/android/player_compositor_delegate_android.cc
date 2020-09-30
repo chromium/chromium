@@ -86,9 +86,9 @@ PlayerCompositorDelegateAndroid::PlayerCompositorDelegateAndroid(
       GURL(base::android::ConvertJavaStringToUTF8(env, j_url_spec)),
       DirectoryKey{
           base::android::ConvertJavaStringToUTF8(env, j_directory_key)},
-      base::BindOnce(
-          &base::android::RunIntCallbackAndroid,
-          ScopedJavaGlobalRef<jobject>(j_compositor_error_callback)));
+      base::BindOnce(&base::android::RunIntCallbackAndroid,
+                     ScopedJavaGlobalRef<jobject>(j_compositor_error_callback)),
+      base::TimeDelta::FromSeconds(15));
   java_ref_.Reset(env, j_object);
 }
 

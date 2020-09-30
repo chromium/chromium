@@ -117,7 +117,7 @@ class FakePaintPreviewCompositorService : public PaintPreviewCompositorService {
  public:
   explicit FakePaintPreviewCompositorService(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-      : task_runner_(task_runner) {}
+      : task_runner_(task_runner), timeout_(false) {}
   ~FakePaintPreviewCompositorService() override = default;
 
   FakePaintPreviewCompositorService(const FakePaintPreviewCompositorService&) =
@@ -127,12 +127,15 @@ class FakePaintPreviewCompositorService : public PaintPreviewCompositorService {
 
   std::unique_ptr<PaintPreviewCompositorClient, base::OnTaskRunnerDeleter>
   CreateCompositor(base::OnceClosure connected_closure) override {
-    task_runner_->PostTask(FROM_HERE, std::move(connected_closure));
+    task_runner_->PostTask(
+        FROM_HERE, timeout_ ? base::DoNothing() : std::move(connected_closure));
     return std::unique_ptr<FakePaintPreviewCompositorClient,
                            base::OnTaskRunnerDeleter>(
         new FakePaintPreviewCompositorClient(task_runner_),
         base::OnTaskRunnerDeleter(task_runner_));
   }
+
+  void SetTimeout() { timeout_ = true; }
 
   bool HasActiveClients() const override {
     NOTREACHED();
@@ -151,6 +154,7 @@ class FakePaintPreviewCompositorService : public PaintPreviewCompositorService {
  private:
   base::OnceClosure disconnect_handler_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+  bool timeout_;
 };
 
 FakePaintPreviewCompositorClient* AsFakeClient(
@@ -253,7 +257,8 @@ class PlayerCompositorDelegateTest : public testing::Test {
     loop.Run();
   }
 
-  base::test::TaskEnvironment env;
+  base::test::TaskEnvironment env{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
  private:
   std::unique_ptr<PaintPreviewBaseService> service_;
@@ -326,7 +331,8 @@ TEST_F(PlayerCompositorDelegateTest, OnClick) {
     PlayerCompositorDelegateImpl player_compositor_delegate;
     player_compositor_delegate.SetExpectedStatus(CompositorStatus::OK);
     player_compositor_delegate.InitializeWithFakeServiceForTest(
-        service, url, key, base::DoNothing(), CreateCompositorService());
+        service, url, key, base::DoNothing(), base::TimeDelta::Max(),
+        CreateCompositorService());
     env.RunUntilIdle();
     EXPECT_TRUE(player_compositor_delegate.WasStatusChecked());
 
@@ -369,7 +375,8 @@ TEST_F(PlayerCompositorDelegateTest, BadProto) {
     player_compositor_delegate.SetExpectedStatus(
         CompositorStatus::PROTOBUF_DESERIALIZATION_ERROR);
     player_compositor_delegate.InitializeWithFakeServiceForTest(
-        service, GURL(), key, base::DoNothing(), CreateCompositorService());
+        service, GURL(), key, base::DoNothing(), base::TimeDelta::Max(),
+        CreateCompositorService());
     env.RunUntilIdle();
     EXPECT_TRUE(player_compositor_delegate.WasStatusChecked());
   }
@@ -388,7 +395,8 @@ TEST_F(PlayerCompositorDelegateTest, OldVersion) {
     PlayerCompositorDelegateImpl player_compositor_delegate;
     player_compositor_delegate.SetExpectedStatus(CompositorStatus::OLD_VERSION);
     player_compositor_delegate.InitializeWithFakeServiceForTest(
-        service, url, key, base::DoNothing(), CreateCompositorService());
+        service, url, key, base::DoNothing(), base::TimeDelta::Max(),
+        CreateCompositorService());
     player_compositor_delegate.SetCompressOnClose(false);
     env.RunUntilIdle();
     EXPECT_TRUE(player_compositor_delegate.WasStatusChecked());
@@ -408,7 +416,8 @@ TEST_F(PlayerCompositorDelegateTest, URLMismatch) {
     player_compositor_delegate.SetExpectedStatus(
         CompositorStatus::URL_MISMATCH);
     player_compositor_delegate.InitializeWithFakeServiceForTest(
-        service, GURL(), key, base::DoNothing(), CreateCompositorService());
+        service, GURL(), key, base::DoNothing(), base::TimeDelta::Max(),
+        CreateCompositorService());
     env.RunUntilIdle();
     EXPECT_TRUE(player_compositor_delegate.WasStatusChecked());
   }
@@ -436,7 +445,7 @@ TEST_F(PlayerCompositorDelegateTest, ServiceDisconnect) {
               *called = true;
             },
             &called),
-        CreateCompositorService());
+        base::TimeDelta::Max(), CreateCompositorService());
     env.RunUntilIdle();
     AsFakeService(player_compositor_delegate.GetCompositorServiceForTest())
         ->Disconnect();
@@ -467,7 +476,7 @@ TEST_F(PlayerCompositorDelegateTest, ClientDisconnect) {
               *called = true;
             },
             &called),
-        CreateCompositorService());
+        base::TimeDelta::Max(), CreateCompositorService());
     env.RunUntilIdle();
     AsFakeClient(player_compositor_delegate.GetClientForTest())->Disconnect();
     EXPECT_TRUE(player_compositor_delegate.WasStatusChecked());
@@ -499,7 +508,8 @@ TEST_F(PlayerCompositorDelegateTest, InvalidCompositeRequest) {
     player_compositor_delegate.SetExpectedStatus(
         CompositorStatus::INVALID_REQUEST);
     player_compositor_delegate.InitializeWithFakeServiceForTest(
-        service, url, key, base::DoNothing(), CreateCompositorService());
+        service, url, key, base::DoNothing(), base::TimeDelta::Max(),
+        CreateCompositorService());
     env.RunUntilIdle();
     EXPECT_TRUE(player_compositor_delegate.WasStatusChecked());
   }
@@ -518,7 +528,8 @@ TEST_F(PlayerCompositorDelegateTest, CompositorDeserializationError) {
     player_compositor_delegate.SetExpectedStatus(
         CompositorStatus::COMPOSITOR_DESERIALIZATION_ERROR);
     player_compositor_delegate.InitializeWithFakeServiceForTest(
-        service, url, key, base::DoNothing(), CreateCompositorService());
+        service, url, key, base::DoNothing(), base::TimeDelta::Max(),
+        CreateCompositorService());
     AsFakeClient(player_compositor_delegate.GetClientForTest())
         ->SetBeginSeparatedFrameResponseStatus(
             mojom::PaintPreviewCompositor::BeginCompositeStatus::
@@ -541,7 +552,8 @@ TEST_F(PlayerCompositorDelegateTest, InvalidRootSkp) {
     player_compositor_delegate.SetExpectedStatus(
         CompositorStatus::INVALID_ROOT_FRAME_SKP);
     player_compositor_delegate.InitializeWithFakeServiceForTest(
-        service, url, key, base::DoNothing(), CreateCompositorService());
+        service, url, key, base::DoNothing(), base::TimeDelta::Max(),
+        CreateCompositorService());
     AsFakeClient(player_compositor_delegate.GetClientForTest())
         ->SetBeginSeparatedFrameResponseStatus(
             mojom::PaintPreviewCompositor::BeginCompositeStatus::
@@ -575,7 +587,8 @@ TEST_F(PlayerCompositorDelegateTest, CompressOnClose) {
     PlayerCompositorDelegateImpl player_compositor_delegate;
     player_compositor_delegate.SetExpectedStatus(CompositorStatus::NO_CAPTURE);
     player_compositor_delegate.InitializeWithFakeServiceForTest(
-        service, GURL(), key, base::DoNothing(), CreateCompositorService());
+        service, GURL(), key, base::DoNothing(), base::TimeDelta::Max(),
+        CreateCompositorService());
     env.RunUntilIdle();
     EXPECT_TRUE(player_compositor_delegate.WasStatusChecked());
   }
@@ -594,7 +607,8 @@ TEST_F(PlayerCompositorDelegateTest, RequestBitmapSuccess) {
     PlayerCompositorDelegateImpl player_compositor_delegate;
     player_compositor_delegate.SetExpectedStatus(CompositorStatus::NO_CAPTURE);
     player_compositor_delegate.InitializeWithFakeServiceForTest(
-        service, GURL(), key, base::DoNothing(), CreateCompositorService());
+        service, GURL(), key, base::DoNothing(), base::TimeDelta::Max(),
+        CreateCompositorService());
     env.RunUntilIdle();
     EXPECT_TRUE(player_compositor_delegate.WasStatusChecked());
 
@@ -610,6 +624,31 @@ TEST_F(PlayerCompositorDelegateTest, RequestBitmapSuccess) {
               std::move(quit).Run();
             },
             loop.QuitClosure()));
+    loop.Run();
+  }
+  env.RunUntilIdle();
+}
+
+TEST_F(PlayerCompositorDelegateTest, Timeout) {
+  auto* service = GetBaseService();
+  auto file_manager = service->GetFileManager();
+  auto key = file_manager->CreateKey(1U);
+  {
+    PlayerCompositorDelegateImpl player_compositor_delegate;
+    auto compositor_service = CreateCompositorService();
+    AsFakeService(compositor_service.get())->SetTimeout();
+    base::RunLoop loop;
+    player_compositor_delegate.InitializeWithFakeServiceForTest(
+        service, GURL(), key,
+        base::BindOnce(
+            [](base::OnceClosure quit, int status) {
+              EXPECT_EQ(static_cast<CompositorStatus>(status),
+                        CompositorStatus::TIMED_OUT);
+              std::move(quit).Run();
+            },
+            loop.QuitClosure()),
+        base::TimeDelta::FromSeconds(1), std::move(compositor_service));
+    env.FastForwardBy(base::TimeDelta::FromSeconds(5));
     loop.Run();
   }
   env.RunUntilIdle();

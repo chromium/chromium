@@ -6,6 +6,7 @@
 #define COMPONENTS_PAINT_PREVIEW_PLAYER_PLAYER_COMPOSITOR_DELEGATE_H_
 
 #include "base/callback.h"
+#include "base/cancelable_callback.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
@@ -42,7 +43,8 @@ class PlayerCompositorDelegate {
   void Initialize(PaintPreviewBaseService* paint_preview_service,
                   const GURL& url,
                   const DirectoryKey& key,
-                  base::OnceCallback<void(int)> compositor_error);
+                  base::OnceCallback<void(int)> compositor_error,
+                  base::TimeDelta timeout_duration);
 
   // Returns whether initialization has happened.
   bool IsInitialized() const { return paint_preview_service_; }
@@ -78,6 +80,7 @@ class PlayerCompositorDelegate {
       const GURL& expected_url,
       const DirectoryKey& key,
       base::OnceCallback<void(int)> compositor_error,
+      base::TimeDelta timeout_duration,
       std::unique_ptr<PaintPreviewCompositorService, base::OnTaskRunnerDeleter>
           fake_compositor_service);
 
@@ -96,7 +99,8 @@ class PlayerCompositorDelegate {
   void InitializeInternal(PaintPreviewBaseService* paint_preview_service,
                           const GURL& expected_url,
                           const DirectoryKey& key,
-                          base::OnceCallback<void(int)> compositor_error);
+                          base::OnceCallback<void(int)> compositor_error,
+                          base::TimeDelta timeout_duration);
 
   void OnCompositorReadyStatusAdapter(
       mojom::PaintPreviewCompositor::BeginCompositeStatus status,
@@ -108,6 +112,8 @@ class PlayerCompositorDelegate {
                                  const DirectoryKey& key);
 
   void OnCompositorClientDisconnected();
+
+  void OnCompositorTimeout();
 
   void OnProtoAvailable(const GURL& expected_url,
                         PaintPreviewBaseService::ProtoReadStatus proto_status,
@@ -123,6 +129,7 @@ class PlayerCompositorDelegate {
       paint_preview_compositor_service_;
   std::unique_ptr<PaintPreviewCompositorClient, base::OnTaskRunnerDeleter>
       paint_preview_compositor_client_;
+  base::CancelableOnceClosure timeout_;
   base::flat_map<base::UnguessableToken, std::unique_ptr<HitTester>>
       hit_testers_;
   std::unique_ptr<PaintPreviewProto> proto_;
