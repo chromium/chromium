@@ -1,6 +1,11 @@
 <style>
   :host {
+    --focus-border-color: var(--google-blue-refresh-300);
     display: block;
+  }
+
+  :host(:focus) {
+    outline: none;
   }
 
   #thumbnail {
@@ -11,6 +16,10 @@
     margin-bottom: 12px;
     margin-inline-end: auto;
     margin-inline-start: auto;
+  }
+
+  :host(:focus) #thumbnail {
+    box-shadow: 0 0 0 2px var(--focus-border-color);
   }
 
   :host([is-active]) #thumbnail {

@@ -14,8 +14,8 @@
 <div id="thumbnails">
   <template is="dom-repeat" items="[[pageNumbers_]]"
       on-dom-change="onDomChange_">
-    <viewer-thumbnail is-active="[[isActivePage_(item, activePage)]]"
-        page-number="[[item]]">
+    <viewer-thumbnail tabindex="0"
+        is-active="[[isActivePage_(item, activePage)]]" page-number="[[item]]">
     </viewer-thumbnail>
   </template>
 </div>

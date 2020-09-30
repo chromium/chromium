@@ -35,6 +35,12 @@ export class ViewerThumbnailElement extends PolymerElement {
     };
   }
 
+  constructor() {
+    super();
+
+    this.addEventListener('keydown', this.onKeydown_);
+  }
+
   /** @param {!ImageData} imageData */
   set image(imageData) {
     const canvas = this.shadowRoot.querySelector('canvas');
@@ -73,12 +79,54 @@ export class ViewerThumbnailElement extends PolymerElement {
   }
 
   /** @private */
+  focusThumbnailNext_() {
+    if (this.nextElementSibling) {
+      this.nextElementSibling.focus();
+    }
+  }
+
+  /** @private */
+  focusThumbnailPrev_() {
+    if (this.previousElementSibling) {
+      this.previousElementSibling.focus();
+    }
+  }
+
+  /** @private */
   onClick_() {
     this.dispatchEvent(new CustomEvent('change-page', {
       detail: {page: this.pageNumber - 1, origin: 'thumbnail'},
       bubbles: true,
       composed: true
     }));
+  }
+
+  /**
+   * @param {!Event} e
+   * @private
+   */
+  onKeydown_(e) {
+    const keyboardEvent = /** @type {!KeyboardEvent} */ (e);
+    switch (keyboardEvent.key) {
+      case 'ArrowDown':
+      case 'ArrowRight':
+        // Prevent default arrow scroll behavior.
+        keyboardEvent.preventDefault();
+        this.focusThumbnailNext_();
+        break;
+      case 'ArrowUp':
+      case 'ArrowLeft':
+        // Prevent default arrow scroll behavior.
+        keyboardEvent.preventDefault();
+        this.focusThumbnailPrev_();
+        break;
+      case 'Enter':
+      case ' ':
+        // Prevent default space scroll behavior.
+        keyboardEvent.preventDefault();
+        this.onClick_();
+        break;
+    }
   }
 }
 
