@@ -238,9 +238,12 @@ const AXPosition AXPosition::FromPosition(
     AXPosition ax_position(*container);
     // Convert from a DOM offset that may have uncompressed white space to a
     // character offset.
+    //
+    // Note that NGOffsetMapping::GetInlineFormattingContextOf will reject DOM
+    // positions that it does not support, so we don't need to explicitly check
+    // this before calling the method.)
     LayoutBlockFlow* formatting_context =
-        NGOffsetMapping::GetInlineFormattingContextOf(
-            *container_node->GetLayoutObject());
+        NGOffsetMapping::GetInlineFormattingContextOf(parent_anchored_position);
     const NGOffsetMapping* container_offset_mapping =
         formatting_context ? NGInlineNode::GetOffsetMapping(formatting_context)
                            : nullptr;
@@ -429,8 +432,15 @@ int AXPosition::MaxTextOffset() const {
   }
 
   const LayoutObject* layout_object = container_node->GetLayoutObject();
-  if (!layout_object || !layout_object->IsText())
+  if (!layout_object)
     return container_object_->ComputedName().length();
+  // TODO(nektar): Remove all this logic once we switch to
+  // AXObject::TextLength().
+  const bool is_atomic_inline_level =
+      layout_object->IsInline() && layout_object->IsAtomicInlineLevel();
+  if (!is_atomic_inline_level && !layout_object->IsText())
+    return container_object_->ComputedName().length();
+
   LayoutBlockFlow* formatting_context =
       NGOffsetMapping::GetInlineFormattingContextOf(*layout_object);
   const NGOffsetMapping* container_offset_mapping =
@@ -888,14 +898,29 @@ const PositionWithAffinity AXPosition::ToPositionWithAffinity(
                                 affinity_);
   }
 
-  // Convert from a text offset, which may have white space collapsed, to a DOM
-  // offset which should have uncompressed white space.
-  LayoutBlockFlow* formatting_context =
-      NGOffsetMapping::GetInlineFormattingContextOf(
-          *container_node->GetLayoutObject());
-  const NGOffsetMapping* container_offset_mapping =
-      formatting_context ? NGInlineNode::GetOffsetMapping(formatting_context)
-                         : nullptr;
+  // If NGOffsetMapping supports it, convert from a text offset, which may have
+  // white space collapsed, to a DOM offset which should have uncompressed white
+  // space. NGOffsetMapping supports layout text, layout replaced, ruby runs,
+  // list markers, and layout block flow at inline-level, i.e. "display=inline"
+  // or "display=inline-block". It also supports out-of-flow elements, which
+  // should not be relevant to text positions in the accessibility tree.
+  const LayoutObject* layout_object = container_node->GetLayoutObject();
+  // TODO(crbug.com/567964): LayoutObject::IsAtomicInlineLevel() also includes
+  // block-level replaced elements. We need to explicitly exclude them via
+  // LayoutObject::IsInline().
+  const bool supports_ng_offset_mapping =
+      layout_object &&
+      ((layout_object->IsInline() && layout_object->IsAtomicInlineLevel()) ||
+       layout_object->IsText());
+  const NGOffsetMapping* container_offset_mapping = nullptr;
+  if (supports_ng_offset_mapping) {
+    LayoutBlockFlow* formatting_context =
+        NGOffsetMapping::GetInlineFormattingContextOf(*layout_object);
+    container_offset_mapping =
+        formatting_context ? NGInlineNode::GetOffsetMapping(formatting_context)
+                           : nullptr;
+  }
+
   if (!container_offset_mapping) {
     // We are unable to compute the text offset in the accessibility tree that
     // corresponds to the DOM offset. We do the next best thing by returning

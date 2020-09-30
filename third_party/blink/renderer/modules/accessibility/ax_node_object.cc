@@ -3113,24 +3113,36 @@ int AXNodeObject::TextOffsetInFormattingContext(int offset) const {
     return AXObject::TextOffsetInFormattingContext(offset);
 
   // We support calculating the text offset from the start of the formatting
-  // contexts of the following layout objects: (Note that in the following
-  // examples, the paragraph is the formatting context.
+  // contexts of the following layout objects, provided that they are at
+  // inline-level, (display=inline) or "display=inline-block":
+  //
+  // (Note that in the following examples, the paragraph is the formatting
+  // context.
   //
   // Layout replaced, e.g. <p><img></p>.
   // Layout inline with a layout text child, e.g. <p><a href="#">link</a></p>.
   // Layout block flow, e.g. <p><b style="display: inline-block;"></b></p>.
   // Layout text, e.g. <p>Hello</p>.
   // Layout br (subclass of layout text), e.g. <p><br></p>.
+
   if (layout_obj->IsLayoutInline()) {
     // The NGOffsetMapping class doesn't map layout inline objects to their text
-    // mappings. We need to retrieve the first layout text or layout replaced
-    // child.
+    // mappings because such an operation could be ambiguous. An inline object
+    // may have another inline object inside it. For example,
+    // <span><span>Inner</span outer</span>. We need to recursively retrieve the
+    // first layout text or layout replaced child so that any potential
+    // ambiguity would be removed.
     const AXObject* first_child = FirstChildIncludingIgnored();
     return first_child ? first_child->TextOffsetInFormattingContext(offset)
                        : offset;
   }
-  if (!layout_obj->IsLayoutReplaced() && !layout_obj->IsLayoutBlockFlow() &&
-      !layout_obj->IsText()) {
+
+  // TODO(crbug.com/567964): LayoutObject::IsAtomicInlineLevel() also includes
+  // block-level replaced elements. We need to explicitly exclude them via
+  // LayoutObject::IsInline().
+  const bool is_atomic_inline_level =
+      layout_obj->IsInline() && layout_obj->IsAtomicInlineLevel();
+  if (!is_atomic_inline_level && !layout_obj->IsText()) {
     // Not in a formatting context in which text offsets are meaningful.
     return AXObject::TextOffsetInFormattingContext(offset);
   }

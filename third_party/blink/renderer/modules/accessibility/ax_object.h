@@ -716,22 +716,26 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
 
   virtual int TextLength() const { return 0; }
 
-  // Supported on layout inline, layout text, layout replaced, layout block flow
-  // and native text field. For all other object types, returns |offset|.
+  // Supported on layout inline, layout text, layout replaced, and layout block
+  // flow, provided that they are at inline-level, i.e. "display=inline" or
+  // "display=inline-block". Also supported on native text fields. For all other
+  // object types, returns |offset|.
   //
   // For layout inline, text, replaced, and block flow: Translates the given
   // character offset to the equivalent offset in the object's formatting
-  // context. This is the deepest block flow ancestor, (excluding the current
-  // object), e.g. a paragraph. If this object is somehow not a descendant of a
-  // block flow in the layout tree, returns the given offset.
+  // context. The formatting context is the deepest block flow ancestor,
+  // (excluding the current object), e.g. the containing paragraph. If this
+  // object is somehow not a descendant of a block flow in the layout tree,
+  // returns |offset|.
   //
-  // For example, if the given offset is 0, this would return the number of
-  // characters, excluding any collapsed white space found in the DOM, from the
-  // start of the layout inline's deepest block flow ancestor, e.g. the
-  // beginning of the paragraph in which a span is found.
+  // For example, if this object is a span, and |offset| is 0, this method would
+  // return the number of characters, excluding any collapsed white space found
+  // in the DOM, from the start of the layout inline's deepest block flow
+  // ancestor, e.g. the beginning of the paragraph in which the span is found.
   //
   // For native text fields: Simply returns |offset|, because native text fields
-  // have no collapsed white space and so no translation is necessary.
+  // have no collapsed white space and so no translation from a DOM to an
+  // accessible text offset is necessary.
   virtual int TextOffsetInFormattingContext(int offset) const;
 
   // For all inline text boxes and native text fields. For all other object
@@ -747,7 +751,8 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // start of the inline text box's static text parent.
   //
   // For native text fields: Simply returns |offset|, because native text fields
-  // have no collapsed white space and so no translation is necessary.
+  // have no collapsed white space and so no translation from a DOM to an
+  // accessible text offset is necessary.
   virtual int TextOffsetInContainer(int offset) const;
 
   // Properties of interactive elements.

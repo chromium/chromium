@@ -24,6 +24,7 @@ TEST_P(ParameterizedAccessibilityTest,
   // After white space is compressed, the word "before" plus a single white
   // space is of length 7.
   EXPECT_EQ(7, ax_replaced->TextOffsetInFormattingContext(0));
+  EXPECT_EQ(8, ax_replaced->TextOffsetInFormattingContext(1));
 }
 
 TEST_P(ParameterizedAccessibilityTest,
@@ -40,10 +41,11 @@ TEST_P(ParameterizedAccessibilityTest,
   // After white space is compressed, the word "before" plus a single white
   // space is of length 7.
   EXPECT_EQ(7, ax_inline->TextOffsetInFormattingContext(0));
+  EXPECT_EQ(8, ax_inline->TextOffsetInFormattingContext(1));
 }
 
 TEST_P(ParameterizedAccessibilityTest,
-       TextOffsetInFormattingContextWithLayoutBlockFlow) {
+       TextOffsetInFormattingContextWithLayoutBlockFlowAtInlineLevel) {
   SetBodyInnerHTML(R"HTML(
       <p>
         Before
@@ -57,6 +59,28 @@ TEST_P(ParameterizedAccessibilityTest,
   // After white space is compressed, the word "before" plus a single white
   // space is of length 7.
   EXPECT_EQ(7, ax_block_flow->TextOffsetInFormattingContext(0));
+  EXPECT_EQ(8, ax_block_flow->TextOffsetInFormattingContext(1));
+}
+
+TEST_P(ParameterizedAccessibilityTest,
+       TextOffsetInFormattingContextWithLayoutBlockFlowAtBlockLevel) {
+  // NGOffsetMapping does not support block flow objects that are at
+  // block-level, so we do not support them as well.
+  SetBodyInnerHTML(R"HTML(
+      <p>
+        Before
+        <b id="block-flow" style="display: block;">block flow</b>
+        after.
+      </p>)HTML");
+
+  const AXObject* ax_block_flow = GetAXObjectByElementId("block-flow");
+  ASSERT_NE(nullptr, ax_block_flow);
+  ASSERT_EQ(ax::mojom::Role::kGenericContainer, ax_block_flow->RoleValue());
+  // Since block-level elements do not expose a count of the number of
+  // characters from the beginning of their formatting context, we return the
+  // same offset that was passed in.
+  EXPECT_EQ(0, ax_block_flow->TextOffsetInFormattingContext(0));
+  EXPECT_EQ(1, ax_block_flow->TextOffsetInFormattingContext(1));
 }
 
 TEST_P(ParameterizedAccessibilityTest,
@@ -74,6 +98,7 @@ TEST_P(ParameterizedAccessibilityTest,
   // After white space is compressed, the word "before" plus a single white
   // space is of length 7.
   EXPECT_EQ(7, ax_text->TextOffsetInFormattingContext(0));
+  EXPECT_EQ(8, ax_text->TextOffsetInFormattingContext(1));
 }
 
 TEST_P(ParameterizedAccessibilityTest,
@@ -89,6 +114,7 @@ TEST_P(ParameterizedAccessibilityTest,
   ASSERT_EQ("\n", ax_br->ComputedName());
   // After white space is compressed, the word "before" is of length 6.
   EXPECT_EQ(6, ax_br->TextOffsetInFormattingContext(0));
+  EXPECT_EQ(7, ax_br->TextOffsetInFormattingContext(1));
 }
 
 TEST_P(ParameterizedAccessibilityTest,
@@ -111,6 +137,7 @@ TEST_P(ParameterizedAccessibilityTest,
   // After white space is compressed, the word "before" plus a single white
   // space is of length 7.
   EXPECT_EQ(7, ax_first_letter->TextOffsetInFormattingContext(0));
+  EXPECT_EQ(8, ax_first_letter->TextOffsetInFormattingContext(1));
 }
 
 TEST_P(ParameterizedAccessibilityTest,
@@ -136,6 +163,7 @@ TEST_P(ParameterizedAccessibilityTest,
   // After white space is compressed, the word "before" plus a single white
   // space is of length 7.
   EXPECT_EQ(7, ax_css_generated->TextOffsetInFormattingContext(0));
+  EXPECT_EQ(8, ax_css_generated->TextOffsetInFormattingContext(1));
 }
 
 }  // namespace test
