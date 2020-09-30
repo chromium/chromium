@@ -77,6 +77,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.ScalableTimeout;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.password_check.PasswordCheckProperties.HeaderProperties;
@@ -197,6 +198,7 @@ public class PasswordCheckViewTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1133604")
     public void testStatusIllustrationWarning() {
         Long checkTimestamp = System.currentTimeMillis();
         runOnUiThreadBlocking(
