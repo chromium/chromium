@@ -283,7 +283,6 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
                     this, view2.getCookiesRowView(), mDelegate, mFullUrl);
         } else {
             mView.showPerformanceInfo(mDelegate.shouldShowPerformanceBadge(mFullUrl));
-            mView.showHttpsImageCompressionInfo(mDelegate.isHttpsImageCompressionApplied());
 
             CookieControlsView.CookieControlsParams cookieControlsParams =
                     new CookieControlsView.CookieControlsParams();
@@ -294,6 +293,8 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
             };
             mView.getCookieControlsView().setParams(cookieControlsParams);
         }
+
+        mView.showHttpsImageCompressionInfo(mDelegate.isHttpsImageCompressionApplied());
 
         // TODO(crbug.com/1040091): Remove when cookie controls are launched.
         boolean showTitle = viewParams.cookieControlsShown;
