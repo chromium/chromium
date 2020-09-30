@@ -1,5 +1,6 @@
 include_rules = [
   "+cc/paint",
+  "+mojo/public",
   "+printing/printing_jni_headers",
   "+skia/ext",
   "+third_party/icu/source/common/unicode",

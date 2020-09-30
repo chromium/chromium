@@ -37,6 +37,12 @@ AdvancedCapability::~AdvancedCapability() = default;
 
 #endif  // defined(OS_CHROMEOS)
 
+bool PrinterSemanticCapsAndDefaults::Paper::operator==(
+    const PrinterSemanticCapsAndDefaults::Paper& other) const {
+  return display_name == other.display_name && vendor_id == other.vendor_id &&
+         size_um == other.size_um;
+}
+
 PrinterSemanticCapsAndDefaults::PrinterSemanticCapsAndDefaults() = default;
 
 PrinterSemanticCapsAndDefaults::PrinterSemanticCapsAndDefaults(

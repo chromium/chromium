@@ -1,0 +1,15 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module printing.mojom;
+
+import "ui/gfx/geometry/mojom/geometry.mojom";
+
+// Paper used by printer semantic capabilities and defaults.
+struct Paper {
+  string display_name;
+  string vendor_id;
+  gfx.mojom.Size size_um;
+};
+

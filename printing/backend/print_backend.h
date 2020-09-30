@@ -105,10 +105,12 @@ struct PRINTING_EXPORT PrinterSemanticCapsAndDefaults {
   mojom::ColorModel color_model = mojom::ColorModel::kUnknownColorModel;
   mojom::ColorModel bw_model = mojom::ColorModel::kUnknownColorModel;
 
-  struct Paper {
+  struct PRINTING_EXPORT Paper {
     std::string display_name;
     std::string vendor_id;
     gfx::Size size_um;
+
+    bool operator==(const Paper& other) const;
   };
   using Papers = std::vector<Paper>;
   Papers papers;
