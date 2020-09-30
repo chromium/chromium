@@ -29,6 +29,9 @@ class ClipboardHistoryBitmapItemView : public ClipboardHistoryItemView {
       const ClipboardHistoryBitmapItemView& rhs) = delete;
   ~ClipboardHistoryBitmapItemView() override;
 
+  // Updates |image_view_|'s size.
+  void UpdateChildImageViewSize();
+
  private:
   class BitmapContentsView;
 
@@ -39,9 +42,6 @@ class ClipboardHistoryBitmapItemView : public ClipboardHistoryItemView {
 
   // Builds `image_view_`.
   std::unique_ptr<views::ImageView> BuildImageView();
-
-  // Calculates the target size of the image to show.
-  gfx::Size CalculateTargetImageSize() const;
 
   // Owned by view hierarchy.
   views::ImageView* image_view_ = nullptr;

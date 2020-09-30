@@ -49,10 +49,12 @@ class FadeImageView : public views::ImageView,
                       public ui::ImplicitAnimationObserver,
                       public ClipboardHistoryResourceManager::Observer {
  public:
-  FadeImageView(const ClipboardHistoryItem& clipboard_history_item,
+  FadeImageView(ClipboardHistoryBitmapItemView* bitmap_item_view,
+                const ClipboardHistoryItem& clipboard_history_item,
                 const ClipboardHistoryResourceManager* resource_manager,
                 float opacity)
       : views::ImageView(),
+        bitmap_item_view_(bitmap_item_view),
         resource_manager_(resource_manager),
         clipboard_history_item_(clipboard_history_item),
         opacity_(opacity) {
@@ -121,6 +123,11 @@ class FadeImageView : public views::ImageView,
     } else {
       SetImage(image);
     }
+
+    // When fading in a new image, the ImageView's image has likely changed
+    // sizes.
+    if (animation_state_ == FadeAnimationState::kFadeIn)
+      bitmap_item_view_->UpdateChildImageViewSize();
   }
 
   // The different animation states possible when transitioning from one
@@ -133,6 +140,10 @@ class FadeImageView : public views::ImageView,
 
   // The current animation state.
   FadeAnimationState animation_state_ = FadeAnimationState::kNoFadeAnimation;
+
+  // The parent ClipboardHistoryBitmapItemView, used to notify of image changes.
+  // Owned by the view hierarchy.
+  ClipboardHistoryBitmapItemView* const bitmap_item_view_;
 
   // The resource manager, owned by ClipboardHistoryController.
   const ClipboardHistoryResourceManager* const resource_manager_;
@@ -193,6 +204,21 @@ ClipboardHistoryBitmapItemView::ClipboardHistoryBitmapItemView(
 
 ClipboardHistoryBitmapItemView::~ClipboardHistoryBitmapItemView() = default;
 
+void ClipboardHistoryBitmapItemView::UpdateChildImageViewSize() {
+  const gfx::Size image_size = image_view_->GetImage().size();
+  const double width_ratio = image_size.width() / double(width());
+  const double height_ratio = image_size.height() / double(height());
+
+  if (width_ratio <= 1.f || height_ratio <= 1.f) {
+    image_view_->SetImageSize(image_size);
+    return;
+  }
+
+  const double resize_ratio = std::fmin(width_ratio, height_ratio);
+  image_view_->SetImageSize(gfx::Size(image_size.width() / resize_ratio,
+                                      image_size.height() / resize_ratio));
+}
+
 const char* ClipboardHistoryBitmapItemView::GetClassName() const {
   return "ClipboardHistoryBitmapItemView";
 }
@@ -211,7 +237,7 @@ ClipboardHistoryBitmapItemView::CreateContentsView() {
 
 void ClipboardHistoryBitmapItemView::OnBoundsChanged(
     const gfx::Rect& previous_bounds) {
-  image_view_->SetImageSize(CalculateTargetImageSize());
+  UpdateChildImageViewSize();
 }
 
 std::unique_ptr<views::ImageView>
@@ -220,8 +246,9 @@ ClipboardHistoryBitmapItemView::BuildImageView() {
       ClipboardHistoryUtil::CalculateMainFormat(clipboard_history_item_.data())
           .value()) {
     case ui::ClipboardInternalFormat::kHtml:
-      return std::make_unique<FadeImageView>(
-          clipboard_history_item_, resource_manager_, GetContentsOpacity());
+      return std::make_unique<FadeImageView>(this, clipboard_history_item_,
+                                             resource_manager_,
+                                             GetContentsOpacity());
     case ui::ClipboardInternalFormat::kBitmap: {
       auto image_view = std::make_unique<views::ImageView>();
       gfx::ImageSkia bitmap_image = gfx::ImageSkia::CreateFrom1xBitmap(
@@ -237,19 +264,6 @@ ClipboardHistoryBitmapItemView::BuildImageView() {
       NOTREACHED();
       return std::make_unique<views::ImageView>();
   }
-}
-
-gfx::Size ClipboardHistoryBitmapItemView::CalculateTargetImageSize() const {
-  const gfx::Size image_size = image_view_->GetImage().size();
-  const double width_ratio = image_size.width() / double(width());
-  const double height_ratio = image_size.height() / double(height());
-
-  if (width_ratio <= 1.f || height_ratio <= 1.f)
-    return image_size;
-
-  const double resize_ratio = std::fmin(width_ratio, height_ratio);
-  return gfx::Size(image_size.width() / resize_ratio,
-                   image_size.height() / resize_ratio);
 }
 
 }  // namespace ash
