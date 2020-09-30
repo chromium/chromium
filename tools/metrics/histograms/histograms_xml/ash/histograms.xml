@@ -1389,7 +1389,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Ash.SwipeDownDrag.Tab.PresentationTime.MaxLatency.TabletMode"
-    units="ms" expires_after="2020-05-31">
+    units="ms" expires_after="2021-10-18">
+  <owner>xdai@chromium.org</owner>
   <owner>omrilio@chromium.org</owner>
   <summary>
     Maximum latency of the presentation timestamp while dragging a tab in tablet
@@ -1398,14 +1399,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Ash.SwipeDownDrag.Tab.PresentationTime.TabletMode" units="ms"
-    expires_after="2020-10-18">
+    expires_after="2021-10-18">
+  <owner>xdai@chromium.org</owner>
   <owner>omrilio@chromium.org</owner>
   <summary>Presentation time while dragging a tab in tablet mode.</summary>
 </histogram>
 
 <histogram
     name="Ash.SwipeDownDrag.Window.PresentationTime.MaxLatency.TabletMode"
-    units="ms" expires_after="2020-05-31">
+    units="ms" expires_after="2021-10-18">
+  <owner>xdai@chromium.org</owner>
   <owner>omrilio@chromium.org</owner>
   <summary>
     Maximum latency of the presentation timestamp while dragging maximized
@@ -1414,7 +1417,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Ash.SwipeDownDrag.Window.PresentationTime.TabletMode"
-    units="ms" expires_after="M85">
+    units="ms" expires_after="2021-10-18">
+  <owner>xdai@chromium.org</owner>
   <owner>omrilio@chromium.org</owner>
   <summary>
     Presentation time while dragging maximized window in tablet mode.
