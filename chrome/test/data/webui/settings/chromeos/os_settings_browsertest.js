@@ -774,7 +774,7 @@ var OSSettingsInternetDetailPageTest = class extends OSSettingsBrowserTest {
   }
 };
 
-TEST_F('OSSettingsInternetDetailPageTest', 'InternetDetailPage', () => {
+TEST_F('OSSettingsInternetDetailPageTest', 'All', () => {
   mocha.run();
 });
 

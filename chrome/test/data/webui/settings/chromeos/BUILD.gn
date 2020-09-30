@@ -44,6 +44,7 @@ js_modulizer("modulize") {
     "input_method_options_page_test.js",
     "input_page_test.js",
     "internet_config_test.js",
+    "internet_detail_page_tests.js",
     "internet_known_networks_page_tests.js",
     "localized_link_test.js",
     "multidevice_feature_item_tests.js",
