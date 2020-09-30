@@ -240,7 +240,12 @@ public class IdentityDiscController implements NativeInitObserver, ProfileDataCa
         }
     }
 
-    // IdentityManager.Observer implementation.
+    /**
+     * Implements {@link IdentityManager.Observer}.
+     *
+     * TODO(https://crbug.com/1132291): This method only observes sign-in with sync, we should also
+     * observe sign-in without sync.
+     */
     @Override
     public void onPrimaryAccountSet(CoreAccountInfo account) {
         resetIdentityDiscCache();

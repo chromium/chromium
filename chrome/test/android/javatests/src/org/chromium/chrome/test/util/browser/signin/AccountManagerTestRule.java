@@ -145,6 +145,20 @@ public class AccountManagerTestRule implements TestRule {
     /**
      * Add and sign in an account with the default name.
      *
+     * This method does not enable sync.
+     */
+    public CoreAccountInfo addTestAccountThenSignin() {
+        assert !mIsSignedIn : "An account is already signed in!";
+        Account account = addAccountAndWaitForSeeding(TEST_ACCOUNT_EMAIL);
+        CoreAccountInfo coreAccountInfo = toCoreAccountInfo(account.name);
+        SigninTestUtil.signin(coreAccountInfo);
+        mIsSignedIn = true;
+        return coreAccountInfo;
+    }
+
+    /**
+     * Add and sign in an account with the default name.
+     *
      * This method invokes native code. It shouldn't be called in a Robolectric test.
      */
     public Account addTestAccountThenSigninAndEnableSync() {

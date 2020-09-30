@@ -41,6 +41,7 @@ import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentUrlConstants;
 
 /**
@@ -87,7 +88,35 @@ public class IdentityDiscControllerTest {
 
     @Test
     @MediumTest
-    public void testIdentityDiscWithSignInState() {
+    @Features.EnableFeatures(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
+    public void testIdentityDiscWithSignin() {
+        // When user is signed out, Identity Disc should not be visible on the NTP.
+        onView(withId(R.id.optional_toolbar_button)).check((view, noViewException) -> {
+            if (view != null) {
+                ViewMatchers.assertThat("IdentityDisc view should be gone if it exists",
+                        view.getVisibility(), Matchers.is(View.GONE));
+            }
+        });
+
+        // Identity Disc should be shown on sign-in state change with a NTP refresh.
+        mAccountManagerTestRule.addTestAccountThenSignin();
+        // TODO(https://crbug.com/1132291): Remove the reload once the sign-in without sync observer
+        //  is implemented.
+        TestThreadUtils.runOnUiThreadBlocking(mTab::reload);
+        waitForView(allOf(withId(R.id.optional_toolbar_button), isDisplayed()));
+
+        onView(withId(R.id.optional_toolbar_button))
+                .check(matches(
+                        withContentDescription(R.string.accessibility_toolbar_btn_identity_disc)));
+
+        mAccountManagerTestRule.signOut();
+        waitForView(allOf(withId(R.id.optional_toolbar_button),
+                withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
+    }
+
+    @Test
+    @MediumTest
+    public void testIdentityDiscWithSigninAndEnableSync() {
         // When user is signed out, Identity Disc should not be visible on the NTP.
         onView(withId(R.id.optional_toolbar_button)).check((view, noViewException) -> {
             if (view != null) {

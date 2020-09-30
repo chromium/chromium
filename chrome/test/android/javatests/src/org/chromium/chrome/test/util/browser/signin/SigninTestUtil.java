@@ -43,6 +43,40 @@ public final class SigninTestUtil {
     }
 
     /**
+     * Signs the user into the given account.
+     */
+    static void signin(CoreAccountInfo coreAccountInfo) {
+        CallbackHelper callbackHelper = new CallbackHelper();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(
+                    Profile.getLastUsedRegularProfile());
+            signinManager.onFirstRunCheckDone(); // Allow sign-in
+            signinManager.signin(coreAccountInfo, new SigninManager.SignInCallback() {
+                @Override
+                public void onSignInComplete() {
+                    callbackHelper.notifyCalled();
+                }
+
+                @Override
+                public void onSignInAborted() {
+                    Assert.fail("Sign-in was aborted");
+                }
+            });
+        });
+        try {
+            callbackHelper.waitForFirst();
+        } catch (TimeoutException e) {
+            throw new RuntimeException("Timed out waiting for callback", e);
+        }
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Assert.assertEquals(coreAccountInfo,
+                    IdentityServicesProvider.get()
+                            .getIdentityManager(Profile.getLastUsedRegularProfile())
+                            .getPrimaryAccountInfo(ConsentLevel.NOT_REQUIRED));
+        });
+    }
+
+    /**
      * Signs into an account and enables the sync if given a {@link ProfileSyncService} object.
      *
      * @param profileSyncService Enable the sync with it if it is not null.
