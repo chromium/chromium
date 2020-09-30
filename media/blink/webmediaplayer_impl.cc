@@ -2973,7 +2973,8 @@ scoped_refptr<VideoFrame> WebMediaPlayerImpl::GetCurrentFrameFromCompositor()
   vfc_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&VideoFrameCompositor::UpdateCurrentFrameIfStale,
-                     base::Unretained(compositor_.get())));
+                     base::Unretained(compositor_.get()),
+                     VideoFrameCompositor::UpdateType::kNormal));
 
   return video_frame;
 }
@@ -3506,6 +3507,18 @@ void WebMediaPlayerImpl::OnNewFramePresentedCallback() {
 std::unique_ptr<blink::WebMediaPlayer::VideoFramePresentationMetadata>
 WebMediaPlayerImpl::GetVideoFramePresentationMetadata() {
   return compositor_->GetLastPresentedFrameMetadata();
+}
+
+void WebMediaPlayerImpl::UpdateFrameIfStale() {
+  // base::Unretained is safe here because |compositor_| is destroyed on
+  // |vfc_task_runner_|. The destruction is queued from |this|' destructor,
+  // which also runs on |main_task_runner_|, which makes it impossible for
+  // UpdateCurrentFrameIfStale() to be queued after |compositor_|'s dtor.
+  vfc_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&VideoFrameCompositor::UpdateCurrentFrameIfStale,
+                     base::Unretained(compositor_.get()),
+                     VideoFrameCompositor::UpdateType::kBypassClient));
 }
 
 base::WeakPtr<blink::WebMediaPlayer> WebMediaPlayerImpl::AsWeakPtr() {

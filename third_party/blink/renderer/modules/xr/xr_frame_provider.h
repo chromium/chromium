@@ -26,7 +26,13 @@ class XRWebGLLayer;
 // pose information for a given XRDevice.
 class XRFrameProvider final : public GarbageCollected<XRFrameProvider> {
  public:
-  using ImmersiveSessionStartCallback = base::OnceClosure;
+  // Class
+  class ImmersiveSessionObserver : public GarbageCollectedMixin {
+   public:
+    virtual void OnImmersiveSessionStart() = 0;
+    virtual void OnImmersiveSessionEnd() = 0;
+    virtual void OnImmersiveFrame() = 0;
+  };
 
   explicit XRFrameProvider(XRSystem*);
 
@@ -56,7 +62,8 @@ class XRFrameProvider final : public GarbageCollected<XRFrameProvider> {
     return immersive_data_provider_.get();
   }
 
-  void AddImmersiveSessionStartCallback(ImmersiveSessionStartCallback);
+  void AddImmersiveSessionObserver(ImmersiveSessionObserver*);
+  void RemoveImmersiveSessionObserver(ImmersiveSessionObserver*);
 
   virtual void Trace(Visitor*) const;
 
@@ -108,6 +115,7 @@ class XRFrameProvider final : public GarbageCollected<XRFrameProvider> {
       immersive_presentation_provider_;
   device::mojom::blink::VRPosePtr immersive_frame_pose_;
   bool is_immersive_frame_position_emulated_ = false;
+  HeapHashSet<WeakMember<ImmersiveSessionObserver>> immersive_observers_;
 
   // Time the first immersive frame has arrived - used to align the monotonic
   // clock the devices use with the base::TimeTicks.
@@ -123,8 +131,6 @@ class XRFrameProvider final : public GarbageCollected<XRFrameProvider> {
       non_immersive_data_providers_;
   HeapHashMap<Member<XRSession>, device::mojom::blink::XRFrameDataPtr>
       requesting_sessions_;
-
-  Vector<ImmersiveSessionStartCallback> immersive_session_start_callbacks_;
 
   // This frame ID is XR-specific and is used to track when frames arrive at the
   // XR compositor so that it knows which poses to use, when to apply bounds

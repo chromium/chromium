@@ -299,6 +299,7 @@ class MEDIA_BLINK_EXPORT WebMediaPlayerImpl
   void RequestVideoFrameCallback() override;
   std::unique_ptr<blink::WebMediaPlayer::VideoFramePresentationMetadata>
   GetVideoFramePresentationMetadata() override;
+  void UpdateFrameIfStale() override;
 
   base::WeakPtr<blink::WebMediaPlayer> AsWeakPtr() override;
 

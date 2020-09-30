@@ -437,6 +437,35 @@ TEST_P(VideoFrameCompositorTest, UpdateCurrentFrameIfStale) {
   StopVideoRendererSink(false);
 }
 
+TEST_P(VideoFrameCompositorTest, UpdateCurrentFrameIfStale_ClientBypass) {
+  scoped_refptr<VideoFrame> opaque_frame_1 = CreateOpaqueFrame();
+  scoped_refptr<VideoFrame> opaque_frame_2 = CreateOpaqueFrame();
+  compositor_->set_background_rendering_for_testing(true);
+
+  EXPECT_CALL(*submitter_, IsDrivingFrameUpdates)
+      .Times(AnyNumber())
+      .WillRepeatedly(Return(true));
+
+  // Move the clock forward. Otherwise, the current time will be 0, will appear
+  // null, and will cause DCHECKs.
+  tick_clock_.Advance(base::TimeDelta::FromSeconds(1));
+
+  // Starting the video renderer should return a single frame.
+  EXPECT_CALL(*this, Render(_, _, true)).WillOnce(Return(opaque_frame_1));
+  StartVideoRendererSink();
+  EXPECT_EQ(opaque_frame_1, compositor()->GetCurrentFrame());
+
+  // This call should return true even if we have a client that is driving frame
+  // updates.
+  tick_clock_.Advance(base::TimeDelta::FromSeconds(1));
+  EXPECT_CALL(*this, Render(_, _, _)).WillOnce(Return(opaque_frame_2));
+  compositor()->UpdateCurrentFrameIfStale(
+      VideoFrameCompositor::UpdateType::kBypassClient);
+  EXPECT_EQ(opaque_frame_2, compositor()->GetCurrentFrame());
+
+  StopVideoRendererSink(true);
+}
+
 TEST_P(VideoFrameCompositorTest, PreferredRenderInterval) {
   preferred_render_interval_ = base::TimeDelta::FromSeconds(1);
   compositor_->Start(this);

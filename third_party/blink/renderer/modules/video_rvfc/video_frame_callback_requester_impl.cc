@@ -48,6 +48,15 @@ VideoFrameCallbackRequesterImpl::VideoFrameCallbackRequesterImpl(
           MakeGarbageCollected<VideoFrameRequestCallbackCollection>(
               element.GetExecutionContext())) {}
 
+VideoFrameCallbackRequesterImpl::~VideoFrameCallbackRequesterImpl() {
+  if (!observing_immersive_session_)
+    return;
+
+  auto* frame_provider = GetXRFrameProvider();
+  if (frame_provider)
+    frame_provider->RemoveImmersiveSessionObserver(this);
+}
+
 // static
 VideoFrameCallbackRequesterImpl& VideoFrameCallbackRequesterImpl::From(
     HTMLVideoElement& element) {
@@ -109,57 +118,71 @@ void VideoFrameCallbackRequesterImpl::ScheduleExecution() {
 }
 
 void VideoFrameCallbackRequesterImpl::OnImmersiveSessionStart() {
-  listening_for_immersive_session_ = false;
-  TryScheduleImmersiveXRSessionRaf();
+  in_immersive_session_ = true;
+
+  if (pending_execution_ && !callback_collection_->IsEmpty())
+    TryScheduleImmersiveXRSessionRaf();
 }
 
-void VideoFrameCallbackRequesterImpl::OnXrFrame(bool ended, double timestamp) {
-  if (ended) {
-    // The immersive XRSession has ended, and we shouldn't run callbacks as part
-    // of XRSession.rAF. Instead, ask to be run as part of the next window.rAF
-    // callbacks.
+void VideoFrameCallbackRequesterImpl::OnImmersiveSessionEnd() {
+  in_immersive_session_ = false;
+
+  if (pending_execution_ && !callback_collection_->IsEmpty())
     ScheduleWindowRaf();
-    return;
-  }
-
-  OnExecution(timestamp);
 }
 
-bool VideoFrameCallbackRequesterImpl::TryScheduleImmersiveXRSessionRaf() {
-  auto& document = GetSupplementable()->GetDocument();
+void VideoFrameCallbackRequesterImpl::OnImmersiveFrame() {
+  if (callback_collection_->IsEmpty())
+    return;
 
-  // Nothing to do here, we will be notified via OnImmersiveSessionStart() when
-  // a new immersive session starts.
-  if (listening_for_immersive_session_)
-    return false;
+  if (auto* player = GetSupplementable()->GetWebMediaPlayer())
+    player->UpdateFrameIfStale();
+}
+
+XRFrameProvider* VideoFrameCallbackRequesterImpl::GetXRFrameProvider() {
+  auto& document = GetSupplementable()->GetDocument();
 
   // Do not force the lazy creation of the NavigatorXR by accessing it through
   // NavigatorXR::From(). If it doesn't exist already exist, the webpage isn't
   // using XR.
   if (!NavigatorXR::AlreadyExists(document))
-    return false;
+    return nullptr;
 
   auto* system = NavigatorXR::From(document)->xr();
 
   if (!system)
+    return nullptr;
+
+  return system->frameProvider();
+}
+
+bool VideoFrameCallbackRequesterImpl::TryScheduleImmersiveXRSessionRaf() {
+  // Nothing to do here, we will be notified via OnImmersiveSessionStart() when
+  // a new immersive session starts.
+  if (observing_immersive_session_ && !in_immersive_session_)
     return false;
 
-  XRSession* session = system->frameProvider()->immersive_session();
+  auto* frame_provider = GetXRFrameProvider();
 
-  if (session && !session->ended()) {
-    session->ScheduleVideoFrameCallbacksExecution(WTF::Bind(
-        &VideoFrameCallbackRequesterImpl::OnXrFrame, WrapWeakPersistent(this)));
+  if (!frame_provider)
+    return false;
 
-    return true;
+  if (!observing_immersive_session_) {
+    frame_provider->AddImmersiveSessionObserver(this);
+    observing_immersive_session_ = true;
   }
 
-  DCHECK(!listening_for_immersive_session_);
-  system->frameProvider()->AddImmersiveSessionStartCallback(
-      WTF::Bind(&VideoFrameCallbackRequesterImpl::OnImmersiveSessionStart,
-                WrapWeakPersistent(this)));
-  listening_for_immersive_session_ = true;
+  XRSession* session = frame_provider->immersive_session();
 
-  return false;
+  in_immersive_session_ = session && !session->ended();
+
+  if (!in_immersive_session_)
+    return false;
+
+  session->ScheduleVideoFrameCallbacksExecution(WTF::Bind(
+      &VideoFrameCallbackRequesterImpl::OnExecution, WrapWeakPersistent(this)));
+
+  return true;
 }
 
 void VideoFrameCallbackRequesterImpl::OnRequestVideoFrameCallback() {

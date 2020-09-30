@@ -32,6 +32,7 @@ namespace {
 
 class MockWebMediaPlayer : public EmptyWebMediaPlayer {
  public:
+  MOCK_METHOD0(UpdateFrameIfStale, void());
   MOCK_METHOD0(RequestVideoFrameCallback, void());
   MOCK_METHOD0(GetVideoFramePresentationMetadata,
                std::unique_ptr<VideoFramePresentationMetadata>());
@@ -347,63 +348,25 @@ TEST_F(VideoFrameCallbackRequesterImplTest, VerifyParameters_WindowRaf) {
   testing::Mock::VerifyAndClear(media_player());
 }
 
-TEST_F(VideoFrameCallbackRequesterImplTest, VerifyParameters_XRSession_rAF) {
-  auto timing = GetDocument().Loader()->GetTiming();
-  MetadataHelper::ReinitializeFields(timing.ReferenceMonotonicTime());
+TEST_F(VideoFrameCallbackRequesterImplTest, OnXrFrameData) {
+  V8TestingScope scope;
 
-  auto* callback =
-      MakeGarbageCollected<VfcRequesterParameterVerifierCallback>(timing);
+  // New immersive frames should not drive frame updates if we don't have any
+  // pending callbacks.
+  EXPECT_CALL(*media_player(), UpdateFrameIfStale()).Times(0);
 
-  // Register the non-V8 callback.
-  RegisterCallbackDirectly(callback);
-
-  EXPECT_CALL(*media_player(), GetVideoFramePresentationMetadata())
-      .WillOnce(Return(ByMove(MetadataHelper::CopyDefaultMedatada())));
-
-  const double now_ms =
-      timing.MonotonicTimeToZeroBasedDocumentTime(base::TimeTicks::Now())
-          .InMillisecondsF();
-
-  // Run the callbacks directly, as if scheduled by the XRSession.
-  vfc_requester().OnXrFrame(/* ended */ false, now_ms);
-
-  EXPECT_EQ(callback->last_now(), now_ms);
-  EXPECT_TRUE(callback->was_invoked());
+  vfc_requester().OnImmersiveFrame();
 
   testing::Mock::VerifyAndClear(media_player());
-}
 
-TEST_F(VideoFrameCallbackRequesterImplTest, VerifyParameters_XRSession_Ended) {
-  auto timing = GetDocument().Loader()->GetTiming();
-  MetadataHelper::ReinitializeFields(timing.ReferenceMonotonicTime());
+  auto* function = MockFunction::Create(scope.GetScriptState());
+  vfc_requester().requestVideoFrameCallback(GetCallback(function));
 
-  auto* callback =
-      MakeGarbageCollected<VfcRequesterParameterVerifierCallback>(timing);
+  // Immersive frames should trigger video frame updates when there are pending
+  // callbacks.
+  EXPECT_CALL(*media_player(), UpdateFrameIfStale());
 
-  // Register the non-V8 callback.
-  RegisterCallbackDirectly(callback);
-
-  EXPECT_CALL(*media_player(), GetVideoFramePresentationMetadata()).Times(0);
-
-  // Simulate the XRSession ending.
-  vfc_requester().OnXrFrame(/* ended */ true, 0.0);
-
-  // Calbacks should not have been run...
-  testing::Mock::VerifyAndClear(media_player());
-
-  auto now = base::TimeTicks::Now();
-  auto now_ms =
-      timing.MonotonicTimeToZeroBasedDocumentTime(now).InMillisecondsF();
-
-  EXPECT_CALL(*media_player(), GetVideoFramePresentationMetadata())
-      .WillOnce(Return(ByMove(MetadataHelper::CopyDefaultMedatada())));
-
-  // ... But there should have been a call to schedule the callbacks with the
-  // ScriptedAnimationController when the XR session ended.
-  SimulateVideoFrameCallback(now);
-
-  EXPECT_EQ(callback->last_now(), now_ms);
-  EXPECT_TRUE(callback->was_invoked());
+  vfc_requester().OnImmersiveFrame();
 
   testing::Mock::VerifyAndClear(media_player());
 }

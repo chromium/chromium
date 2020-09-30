@@ -237,7 +237,7 @@ void VideoFrameCompositor::PaintSingleFrame(scoped_refptr<VideoFrame> frame,
   }
 }
 
-void VideoFrameCompositor::UpdateCurrentFrameIfStale() {
+void VideoFrameCompositor::UpdateCurrentFrameIfStale(UpdateType type) {
   TRACE_EVENT0("media", "VideoFrameCompositor::UpdateCurrentFrameIfStale");
   DCHECK(task_runner_->BelongsToCurrentThread());
 
@@ -247,8 +247,10 @@ void VideoFrameCompositor::UpdateCurrentFrameIfStale() {
 
   // If we have a client, and it is currently rendering, then it's not stale
   // since the client is driving the frame updates at the proper rate.
-  if (IsClientSinkAvailable() && client_->IsDrivingFrameUpdates())
+  if (type != UpdateType::kBypassClient && IsClientSinkAvailable() &&
+      client_->IsDrivingFrameUpdates()) {
     return;
+  }
 
   // We're rendering, but the client isn't driving the updates.  See if the
   // frame is stale, and update it.

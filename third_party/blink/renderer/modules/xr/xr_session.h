@@ -79,14 +79,12 @@ class XRSession final
       "Anchors feature is not supported by the session.";
 
   // Runs all the video.requestVideoFrameCallback() callbacks associated with
-  // one HTMLVideoElement.
-  // - |bool| is whether or not the session has ended.
-  // - |double| is the |high_res_now_ms|, derived from
-  //    MonotonicTimeToZeroBasedDocumentTime(|current_frame_time|), to be passed
-  //    as the "now" parameter when executing rVFC callbacks. In other words, a
-  //    video.rVFC and an xrSession.rAF callback share the same "now" parameters
-  //    if they are run in the same turn of the render loop.
-  using ExecuteVfcCallback = base::OnceCallback<void(bool, double)>;
+  // one HTMLVideoElement. |double| is the |high_res_now_ms|, derived from
+  // MonotonicTimeToZeroBasedDocumentTime(|current_frame_time|), to be passed as
+  // the "now" parameter when executing rVFC callbacks. In other words, a
+  // video.rVFC and an xrSession.rAF callback share the same "now" parameters if
+  // they are run in the same turn of the render loop.
+  using ExecuteVfcCallback = base::OnceCallback<void(double)>;
 
   enum EnvironmentBlendMode {
     kBlendModeOpaque = 0,
@@ -432,7 +430,7 @@ class XRSession final
 
   void HandleShutdown();
 
-  void ExecuteVideoFrameCallbacks(bool ended, double timestamp);
+  void ExecuteVideoFrameCallbacks(double timestamp);
 
   const Member<XRSystem> xr_;
   const device::mojom::blink::XRSessionMode mode_;

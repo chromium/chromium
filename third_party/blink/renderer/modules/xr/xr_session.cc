@@ -701,11 +701,11 @@ void XRSession::ScheduleVideoFrameCallbacksExecution(
   MaybeRequestFrame();
 }
 
-void XRSession::ExecuteVideoFrameCallbacks(bool ended, double timestamp) {
+void XRSession::ExecuteVideoFrameCallbacks(double timestamp) {
   Vector<ExecuteVfcCallback> execute_vfc_callbacks;
   vfc_execution_queue_.swap(execute_vfc_callbacks);
   for (auto& callback : execute_vfc_callbacks)
-    std::move(callback).Run(ended, timestamp);
+    std::move(callback).Run(timestamp);
 }
 
 int XRSession::requestAnimationFrame(V8XRFrameRequestCallback* callback) {
@@ -1273,10 +1273,6 @@ void XRSession::ForceEnd(ShutdownPolicy shutdown_policy) {
   ended_ = true;
   pending_frame_ = false;
 
-  // Clear any pending callbacks. The timestamp is ignored by the callee.
-  constexpr double kIgnoredTimestamp = 0.0;
-  ExecuteVideoFrameCallbacks(/* ended */ true, kIgnoredTimestamp);
-
   for (unsigned i = 0; i < input_sources_->length(); i++) {
     auto* input_source = (*input_sources_)[i];
     input_source->OnRemoved();
@@ -1699,7 +1695,7 @@ void XRSession::OnFrame(
     // happen within these calls. resolving_frame_ will be true for the duration
     // of the callbacks.
     base::AutoReset<bool> resolving(&resolving_frame_, true);
-    ExecuteVideoFrameCallbacks(/* ended */ false, timestamp);
+    ExecuteVideoFrameCallbacks(timestamp);
     callback_collection_->ExecuteCallbacks(this, timestamp, presentation_frame);
 
     // The session might have ended in the middle of the frame. Only call

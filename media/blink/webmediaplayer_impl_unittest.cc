@@ -319,6 +319,8 @@ class MockVideoFrameCompositor : public VideoFrameCompositor {
       GetLastPresentedFrameMetadata,
       std::unique_ptr<blink::WebMediaPlayer::VideoFramePresentationMetadata>());
   MOCK_METHOD0(GetCurrentFrameOnAnyThread, scoped_refptr<VideoFrame>());
+  MOCK_METHOD1(UpdateCurrentFrameIfStale,
+               void(VideoFrameCompositor::UpdateType));
   MOCK_METHOD3(EnableSubmission,
                void(const viz::SurfaceId&, media::VideoRotation, bool));
 };
@@ -673,6 +675,7 @@ class WebMediaPlayerImplTest
   void GetVideoFramePresentationMetadata() {
     wmpi_->GetVideoFramePresentationMetadata();
   }
+  void UpdateFrameIfStale() { wmpi_->UpdateFrameIfStale(); }
 
   void OnNewFramePresentedCallback() { wmpi_->OnNewFramePresentedCallback(); }
 
@@ -1187,6 +1190,22 @@ TEST_F(WebMediaPlayerImplTest, RequestVideoFrameCallback) {
 
   EXPECT_CALL(*compositor_, SetOnFramePresentedCallback(_));
   RequestVideoFrameCallback();
+}
+
+TEST_F(WebMediaPlayerImplTest, UpdateFrameIfStale) {
+  InitializeWebMediaPlayerImpl();
+
+  base::RunLoop loop;
+  EXPECT_CALL(*compositor_,
+              UpdateCurrentFrameIfStale(
+                  VideoFrameCompositor::UpdateType::kBypassClient))
+      .WillOnce(RunClosure(loop.QuitClosure()));
+
+  UpdateFrameIfStale();
+
+  loop.Run();
+
+  testing::Mock::VerifyAndClearExpectations(compositor_);
 }
 
 TEST_F(WebMediaPlayerImplTest, GetVideoFramePresentationMetadata) {

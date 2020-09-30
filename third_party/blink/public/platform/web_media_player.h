@@ -471,6 +471,11 @@ class WebMediaPlayer {
     return nullptr;
   }
 
+  // Forces the WebMediaPlayer to update its frame if it is stale. This is used
+  // during immersive WebXR sessions with the RequestVideoFrameCallback() API,
+  // when compositors aren't driving frame updates.
+  virtual void UpdateFrameIfStale() {}
+
   virtual base::WeakPtr<WebMediaPlayer> AsWeakPtr() = 0;
 };
 

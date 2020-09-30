@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/html/media/video_frame_callback_requester.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/video_rvfc/video_frame_request_callback_collection.h"
+#include "third_party/blink/renderer/modules/xr/xr_frame_provider.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 
@@ -19,7 +20,8 @@ class HTMLVideoElement;
 // Implementation of the <video>.requestVideoFrameCallback() API.
 // Extends HTMLVideoElement via the VideoFrameCallbackRequester interface.
 class MODULES_EXPORT VideoFrameCallbackRequesterImpl final
-    : public VideoFrameCallbackRequester {
+    : public VideoFrameCallbackRequester,
+      public XRFrameProvider::ImmersiveSessionObserver {
  public:
   static VideoFrameCallbackRequesterImpl& From(HTMLVideoElement&);
 
@@ -29,7 +31,7 @@ class MODULES_EXPORT VideoFrameCallbackRequesterImpl final
   static void cancelVideoFrameCallback(HTMLVideoElement&, int);
 
   explicit VideoFrameCallbackRequesterImpl(HTMLVideoElement&);
-  ~VideoFrameCallbackRequesterImpl() override = default;
+  ~VideoFrameCallbackRequesterImpl() override;
 
   void Trace(Visitor*) const override;
 
@@ -43,8 +45,10 @@ class MODULES_EXPORT VideoFrameCallbackRequesterImpl final
   // right before executing window.rAF callbacks. Also called by OnXRFrame().
   void OnExecution(double high_res_now_ms);
 
-  // Called by XRSession right before executing xr_session.rAF callbacks.
-  void OnXrFrame(bool ended, double timestamp);
+  // XRFrameProvider::ImmersiveSessionObserver implementation.
+  void OnImmersiveSessionStart() override;
+  void OnImmersiveSessionEnd() override;
+  void OnImmersiveFrame() override;
 
  private:
   friend class VideoFrameCallbackRequesterImplTest;
@@ -79,8 +83,7 @@ class MODULES_EXPORT VideoFrameCallbackRequesterImpl final
   // session.
   bool TryScheduleImmersiveXRSessionRaf();
 
-  // Called when an immersive XR Session is started.
-  void OnImmersiveSessionStart();
+  XRFrameProvider* GetXRFrameProvider();
 
   // Used to keep track of whether or not we have already scheduled a call to
   // ExecuteFrameCallbacks() in the next rendering steps.
@@ -98,9 +101,12 @@ class MODULES_EXPORT VideoFrameCallbackRequesterImpl final
   // getting new frames.
   int consecutive_stale_frames_ = 0;
 
-  // Indicates whether or not we already notified the XR Frame provider that we
-  // want to be notified when a new immersive XR session starts.
-  bool listening_for_immersive_session_ = false;
+  // Indicates whether or not we have registered ourselves with the XR Frame
+  // provider to be notified of immersive XR session events.
+  bool observing_immersive_session_ = false;
+
+  // Indicates if we are currently in an XR session.
+  bool in_immersive_session_ = false;
 
   Member<VideoFrameRequestCallbackCollection> callback_collection_;
 
