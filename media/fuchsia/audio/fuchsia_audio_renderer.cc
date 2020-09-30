@@ -239,8 +239,8 @@ void FuchsiaAudioRenderer::SetVolume(float volume) {
 
 void FuchsiaAudioRenderer::SetLatencyHint(
     base::Optional<base::TimeDelta> latency_hint) {
-  // TODO(chcunningham): Implement at some later date after we've vetted the API
-  // shape and usefulness outside of fuchsia.
+  // TODO(crbug.com/1131116): Implement at some later date after we've vetted
+  // the API shape and usefulness outside of fuchsia.
 }
 
 void FuchsiaAudioRenderer::SetPreservesPitch(bool preserves_pitch) {}

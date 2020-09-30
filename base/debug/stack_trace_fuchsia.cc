@@ -120,9 +120,10 @@ void SymbolMap::Populate() {
 
   // Try to fetch the name of the process' main executable, which was set as the
   // name of the |process| kernel object.
-  // TODO(wez): Object names can only have up to ZX_MAX_NAME_LEN characters, so
-  // if we keep hitting problems with truncation, find a way to plumb argv[0]
-  // through to here instead, e.g. using CommandLine::GetProgramName().
+  // TODO(crbug.com/1131250): Object names can only have up to ZX_MAX_NAME_LEN
+  // characters, so if we keep hitting problems with truncation, find a way to
+  // plumb argv[0] through to here instead, e.g. using
+  // CommandLine::GetProgramName().
   char app_name[std::extent<decltype(SymbolMap::Module::name)>()];
   zx_status_t status =
       zx_object_get_property(process, ZX_PROP_NAME, app_name, sizeof(app_name));

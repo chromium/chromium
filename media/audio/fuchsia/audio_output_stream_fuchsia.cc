@@ -18,8 +18,9 @@
 namespace media {
 
 // Current AudioRenderer implementation allows only one buffer with id=0.
-// TODO(sergeyu): Replace with an incrementing buffer id once AddPayloadBuffer()
-// and RemovePayloadBuffer() are implemented properly in AudioRenderer.
+// TODO(crbug.com/1131179): Replace with an incrementing buffer id now that
+// AddPayloadBuffer() and RemovePayloadBuffer() are implemented properly in
+// AudioRenderer.
 const uint32_t kBufferId = 0;
 
 AudioOutputStreamFuchsia::AudioOutputStreamFuchsia(

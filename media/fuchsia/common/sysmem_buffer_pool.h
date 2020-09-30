@@ -106,8 +106,8 @@ class BufferAllocator {
   std::unique_ptr<SysmemBufferPool::Creator> MakeBufferPoolCreatorFromToken(
       fuchsia::sysmem::BufferCollectionTokenPtr token);
 
-  // TODO(sergeyu): Update FuchsiaVideoDecoder to use SysmemBufferPool and
-  // remove this function.
+  // TODO(crbug.com/1131183): Update FuchsiaVideoDecoder to use SysmemBufferPool
+  // and remove this function.
   fuchsia::sysmem::Allocator* raw() { return allocator_.get(); }
 
  private:

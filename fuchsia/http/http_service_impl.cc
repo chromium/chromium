@@ -8,7 +8,8 @@
 #include "net/url_request/url_request_context_builder.h"
 
 HttpServiceImpl::HttpServiceImpl() {
-  // TODO: Set the right options in the URLRequestContextBuilder.
+  // TODO(crbug.com/1131111): Set the right options in the
+  // URLRequestContextBuilder.
 }
 
 HttpServiceImpl::~HttpServiceImpl() = default;

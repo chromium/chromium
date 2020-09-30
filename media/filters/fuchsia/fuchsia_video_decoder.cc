@@ -265,7 +265,7 @@ class FuchsiaVideoDecoder : public VideoDecoder,
 
   VideoCodec current_codec_ = kUnknownVideoCodec;
 
-  // TODO(sergeyu): Use StreamProcessorHelper.
+  // TODO(crbug.com/1131175): Use StreamProcessorHelper.
   fuchsia::media::StreamProcessorPtr decoder_;
 
   base::Optional<fuchsia::media::StreamBufferConstraints>

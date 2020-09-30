@@ -319,7 +319,7 @@ void FuchsiaCdm::CreateSessionAndGenerateRequest(
     EmeInitDataType init_data_type,
     const std::vector<uint8_t>& init_data,
     std::unique_ptr<NewSessionCdmPromise> promise) {
-  // TODO(yucliu): Support persistent license.
+  // TODO(crbug.com/1131114): Support persistent license.
   if (session_type != CdmSessionType::kTemporary) {
     promise->reject(CdmPromise::Exception::NOT_SUPPORTED_ERROR, 0,
                     "session type is not supported.");

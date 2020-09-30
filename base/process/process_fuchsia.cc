@@ -254,8 +254,8 @@ bool Process::IsProcessBackgrounded() const {
 }
 
 bool Process::SetProcessBackgrounded(bool value) {
-  // No process priorities on Fuchsia. TODO(fuchsia): See MG-783, and update
-  // this later if priorities are implemented.
+  // No process priorities on Fuchsia.
+  // TODO(fxbug.dev/30735): Update this later if priorities are implemented.
   return false;
 }
 

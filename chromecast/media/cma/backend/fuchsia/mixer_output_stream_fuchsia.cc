@@ -32,8 +32,6 @@ constexpr base::TimeDelta kTargetWritePeriod =
 constexpr int kMaxOutputBufferSizeFrames = 4096;
 
 // Current AudioRenderer implementation allows only one buffer with id=0.
-// TODO(sergeyu): Replace with an incrementing buffer id once AddPayloadBuffer()
-// and RemovePayloadBuffer() are implemented properly in AudioRenderer.
 const uint32_t kBufferId = 0;
 
 // static
@@ -159,7 +157,6 @@ bool MixerOutputStreamFuchsia::Write(const float* data,
     // Block the thread to limit amount of buffered data. Currently
     // MixerOutputStreamAlsa uses blocking Write() and StreamMixer relies on
     // that behavior. Sleep() below replicates the same behavior on Fuchsia.
-    // TODO(sergeyu): Refactor StreamMixer to work with non-blocking Write().
     base::TimeDelta max_buffer_duration =
         ::media::AudioTimestampHelper::FramesToTime(kMaxOutputBufferSizeFrames,
                                                     sample_rate_);

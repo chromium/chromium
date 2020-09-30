@@ -34,8 +34,8 @@ TerminationStatus GetTerminationStatus(ProcessHandle handle, int* exit_code) {
     return TERMINATION_STATUS_STILL_RUNNING;
   }
 
-  // TODO(fuchsia): Is there more information about types of crashes, OOM, etc.
-  // available? https://crbug.com/706592.
+  // TODO(crbug.com/1133865): Is there more information about types of crashes,
+  // OOM, etc. available?
 
   *exit_code = process_info.return_code;
   return process_info.return_code == 0

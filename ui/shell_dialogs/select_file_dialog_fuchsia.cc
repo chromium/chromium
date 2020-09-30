@@ -11,7 +11,6 @@ namespace ui {
 SelectFileDialog* CreateSelectFileDialog(
     SelectFileDialog::Listener* listener,
     std::unique_ptr<SelectFilePolicy> policy) {
-  // TODO(fuchsia): Port once we have UI, see https://crbug.com/746674.
   NOTREACHED();
   return nullptr;
 }
