@@ -22,6 +22,10 @@
     overflow-x: hidden;
   }
 
+  #icons:not([hidden]) + #content {
+    --viewer-thumbnail-bar-padding-inline-end: 28px;
+  }
+
   .selected cr-icon-button {
     --cr-icon-button-fill-color: var(--sidenav-selected-tab-color);
   }
