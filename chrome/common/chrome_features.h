@@ -427,6 +427,9 @@ extern const base::Feature kQuickUnlockFingerprint;
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kQuietNotificationPrompts;
 
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::Feature kAbusiveNotificationPermissionRevocation;
+
 #if defined(OS_CHROMEOS)
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kRemoveSupervisedUsersOnStartup;

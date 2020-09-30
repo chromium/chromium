@@ -35,7 +35,11 @@ struct GCM_DRIVER_EXPORT OutgoingMessage {
 struct GCM_DRIVER_EXPORT IncomingMessage {
   IncomingMessage();
   IncomingMessage(const IncomingMessage& other);
+  IncomingMessage(IncomingMessage&& other);
   ~IncomingMessage();
+
+  IncomingMessage& operator=(const IncomingMessage& other);
+  IncomingMessage& operator=(IncomingMessage&& other);
 
   MessageData data;
   std::string collapse_key;

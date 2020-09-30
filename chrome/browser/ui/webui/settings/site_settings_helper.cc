@@ -148,6 +148,7 @@ const ContentSettingsTypeNameEntry kContentSettingsTypeGroupNames[] = {
     {ContentSettingsType::STORAGE_ACCESS, nullptr},
     {ContentSettingsType::CAMERA_PAN_TILT_ZOOM, nullptr},
     {ContentSettingsType::INSECURE_PRIVATE_NETWORK, nullptr},
+    {ContentSettingsType::PERMISSION_AUTOREVOCATION_DATA, nullptr},
 };
 static_assert(base::size(kContentSettingsTypeGroupNames) ==
                   // ContentSettingsType starts at -1, so add 1 here.

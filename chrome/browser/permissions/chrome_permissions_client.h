@@ -47,7 +47,9 @@ class ChromePermissionsClient : public permissions::PermissionsClient {
       content::BrowserContext* browser_context) override;
   void OnPromptResolved(content::BrowserContext* browser_context,
                         permissions::PermissionRequestType request_type,
-                        permissions::PermissionAction action) override;
+                        permissions::PermissionAction action,
+                        const GURL& origin,
+                        base::Optional<QuietUiReason> quiet_ui_reason) override;
   base::Optional<bool> HadThreeConsecutiveNotificationPermissionDenies(
       content::BrowserContext* browser_context) override;
   base::Optional<url::Origin> GetAutoApprovalOrigin() override;

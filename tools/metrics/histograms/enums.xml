@@ -40921,6 +40921,8 @@ from previous Chrome versions.
   <int value="-2097895488" label="NotificationScrollBar:enabled"/>
   <int value="-2097515669" label="disable-cast"/>
   <int value="-2095519429" label="FtpProtocol:enabled"/>
+  <int value="-2093047873"
+      label="AbusiveOriginNotificationPermissionRevocation:enabled"/>
   <int value="-2092067251" label="NativeFilesystemAPI:disabled"/>
   <int value="-2091414992" label="DlcSettingsUi:disabled"/>
   <int value="-2091404586" label="TabStripKeyboardFocus:enabled"/>
@@ -44093,6 +44095,8 @@ from previous Chrome versions.
   <int value="1112817963" label="WebViewConnectionlessSafeBrowsing:enabled"/>
   <int value="1113196543" label="ShowManagedUi:disabled"/>
   <int value="1113365156" label="tab-management-experiment-type-chive"/>
+  <int value="1113558288"
+      label="AbusiveOriginNotificationPermissionRevocation:disabled"/>
   <int value="1114270092" label="PortalsCrossOrigin:disabled"/>
   <int value="1114629582" label="enable-floating-virtual-keyboard"/>
   <int value="1115635149" label="EnableUnifiedMultiDeviceSetup:enabled"/>
@@ -59907,6 +59911,8 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="5" label="Service Worker error"/>
   <int value="6" label="event.waitUntil promise rejected"/>
   <int value="7" label="Service Worker timeout while processing event"/>
+  <int value="8"
+      label="Origin no longer has permission (auto-revoked due to abuse)"/>
 </enum>
 
 <enum name="PushGetRegistrationStatus">
@@ -59956,6 +59962,7 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="10" label="Service Worker database got wiped"/>
   <int value="11" label="Subscription has expired"/>
   <int value="12" label="Subscription has been refreshed"/>
+  <int value="13" label="Abusive origin permission auto-revoked"/>
 </enum>
 
 <enum name="PushUnregistrationStatus">

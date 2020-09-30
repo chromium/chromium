@@ -1115,6 +1115,9 @@ extern const char kQuicDescription[];
 extern const char kQuietNotificationPromptsName[];
 extern const char kQuietNotificationPromptsDescription[];
 
+extern const char kAbusiveNotificationPermissionRevocationName[];
+extern const char kAbusiveNotificationPermissionRevocationDescription[];
+
 extern const char kContentSettingsRedesignName[];
 extern const char kContentSettingsRedesignDescription[];
 

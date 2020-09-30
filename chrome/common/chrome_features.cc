@@ -660,6 +660,11 @@ const base::Feature kQuickUnlockFingerprint{"QuickUnlockFingerprint",
 const base::Feature kQuietNotificationPrompts{"QuietNotificationPrompts",
                                               base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enables notification permission revocation for abusive origins.
+const base::Feature kAbusiveNotificationPermissionRevocation{
+    "AbusiveOriginNotificationPermissionRevocation",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 #if defined(OS_CHROMEOS)
 // Enables permanent removal of Legacy Supervised Users on startup.
 const base::Feature kRemoveSupervisedUsersOnStartup{

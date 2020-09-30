@@ -92,6 +92,7 @@ constexpr HistogramValue kHistogramValue[] = {
     {ContentSettingsType::WINDOW_PLACEMENT, 69},
     {ContentSettingsType::INSECURE_PRIVATE_NETWORK, 70},
     {ContentSettingsType::FONT_ACCESS, 71},
+    {ContentSettingsType::PERMISSION_AUTOREVOCATION_DATA, 72},
 };
 
 }  // namespace

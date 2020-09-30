@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 #include <memory>
+#include <queue>
 #include <set>
 #include <vector>
 
@@ -18,6 +19,7 @@
 #include "base/optional.h"
 #include "base/scoped_observer.h"
 #include "base/time/time.h"
+#include "chrome/browser/permissions/abusive_origin_permission_revocation_request.h"
 #include "chrome/browser/push_messaging/push_messaging_notification_manager.h"
 #include "chrome/browser/push_messaging/push_messaging_refresher.h"
 #include "chrome/common/buildflags.h"
@@ -59,6 +61,19 @@ class GCMDriver;
 namespace instance_id {
 class InstanceIDDriver;
 }  // namespace instance_id
+
+namespace {
+struct PendingMessage {
+  PendingMessage(std::string app_id, gcm::IncomingMessage message);
+  PendingMessage(PendingMessage&& other);
+  ~PendingMessage();
+
+  PendingMessage& operator=(PendingMessage&& other);
+
+  std::string app_id;
+  gcm::IncomingMessage message;
+};
+}  // namespace
 
 class PushMessagingServiceImpl : public content::PushMessagingService,
                                  public gcm::GCMAppHandler,
@@ -194,6 +209,19 @@ class PushMessagingServiceImpl : public content::PushMessagingService,
                         const std::string& push_message_id,
                         base::OnceClosure completion_closure,
                         bool did_show_generic_notification);
+
+  void OnCheckedOriginForAbuse(
+      const std::string& app_id,
+      const gcm::IncomingMessage& message,
+      AbusiveOriginPermissionRevocationRequest::Outcome outcome);
+
+  void CheckOriginForAbuseAndDispatchNextMessage();
+
+  base::OnceClosure message_handled_callback() {
+    return message_callback_for_testing_.is_null()
+               ? base::DoNothing()
+               : message_callback_for_testing_;
+  }
 
   // Subscribe methods ---------------------------------------------------------
 
@@ -344,7 +372,7 @@ class PushMessagingServiceImpl : public content::PushMessagingService,
       blink::mojom::PushEventStatus status);
 
   // Checks if a given origin is allowed to use Push.
-  bool IsPermissionSet(const GURL& origin);
+  bool IsPermissionSet(const GURL& origin, bool user_visible = true);
 
   // Wrapper around {GCMDriver, InstanceID}::GetEncryptionInfo.
   void GetEncryptionInfoForAppId(
@@ -375,6 +403,9 @@ class PushMessagingServiceImpl : public content::PushMessagingService,
   }
 
   Profile* profile_;
+  std::unique_ptr<AbusiveOriginPermissionRevocationRequest>
+      abusive_origin_revocation_request_;
+  std::queue<PendingMessage> messages_pending_permission_check_;
 
   int push_subscription_count_;
   int pending_push_subscription_count_;

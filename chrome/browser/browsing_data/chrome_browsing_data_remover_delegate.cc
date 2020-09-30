@@ -703,6 +703,10 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
     ChromeTranslateClient::CreateTranslatePrefs(prefs)
         ->DeleteBlacklistedSitesBetween(delete_begin_, delete_end_);
 
+    host_content_settings_map_->ClearSettingsForOneTypeWithPredicate(
+        ContentSettingsType::PERMISSION_AUTOREVOCATION_DATA, delete_begin,
+        delete_end, website_settings_filter);
+
 #if !defined(OS_ANDROID)
     content::HostZoomMap* zoom_map =
         content::HostZoomMap::GetDefaultForBrowserContext(profile_);

@@ -548,6 +548,10 @@ void PermissionRequestManager::FinalizeBubble(
       PermissionsClient::Get()->GetPermissionDecisionAutoBlocker(
           browser_context);
 
+  base::Optional<QuietUiReason> quiet_ui_reason;
+  if (ShouldCurrentRequestUseQuietUI())
+    quiet_ui_reason = ReasonForUsingQuietUi();
+
   for (PermissionRequest* request : requests_) {
     // TODO(timloh): We only support dismiss and ignore embargo for permissions
     // which use PermissionRequestImpl as the other subclasses don't support
@@ -556,8 +560,8 @@ void PermissionRequestManager::FinalizeBubble(
       continue;
 
     PermissionsClient::Get()->OnPromptResolved(
-        browser_context, request->GetPermissionRequestType(),
-        permission_action);
+        browser_context, request->GetPermissionRequestType(), permission_action,
+        request->GetOrigin(), quiet_ui_reason);
 
     PermissionEmbargoStatus embargo_status =
         PermissionEmbargoStatus::NOT_EMBARGOED;

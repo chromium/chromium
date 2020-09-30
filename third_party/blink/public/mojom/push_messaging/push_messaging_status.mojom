@@ -30,6 +30,10 @@ enum PushEventStatus {
   // The event was delivered, but the Service Worker timed out processing it.
   TIMEOUT = 7,
 
+  // The event could not be delivered because permission was auto-revoked due
+  // to origin marked as abusive.
+  PERMISSION_REVOKED_ABUSIVE = 8,
+
   // NOTE: Do not renumber or delete these as that would confuse interpretation
   // of previously logged data. When making changes, also update the enum list
   // in tools/metrics/histograms/histograms.xml to keep it in sync.
@@ -189,6 +193,9 @@ enum PushUnregistrationReason {
   // The subscription was successfully refreshed, which is why we want to remove
   // the old subscription
   REFRESH_FINISHED = 12,
+
+  // Unregistering because permissions was auto-revoked due to abuse.
+  PERMISSION_REVOKED_ABUSIVE = 13,
 
   // NOTE: Do not renumber or delete these as that would confuse interpretation
   // of previously logged data. When making changes, also update the enum list

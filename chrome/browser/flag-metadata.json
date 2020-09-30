@@ -30,6 +30,11 @@
 
 [
   {
+    "name": "abusive-notification-permission-revocation",
+    "owners": [ "engedy", "mkwst", "andypaicu", "hkamila", "elklm" ],
+    "expiry_milestone": 90
+  },
+  {
     "name": "accessible-pdf-form",
     "owners": [ "ankk@microsoft.com", "mohitb@microsoft.com" ],
     "expiry_milestone": 90

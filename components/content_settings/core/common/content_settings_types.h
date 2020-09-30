@@ -225,6 +225,10 @@ enum class ContentSettingsType : int32_t {
   // locally installed font data using the Font Access API.
   FONT_ACCESS,
 
+  // Stores per-origin state for permission auto-revocation (for all permission
+  // types).
+  PERMISSION_AUTOREVOCATION_DATA,
+
   NUM_TYPES,
 };
 

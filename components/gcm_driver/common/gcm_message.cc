@@ -18,6 +18,11 @@ OutgoingMessage::~OutgoingMessage() = default;
 IncomingMessage::IncomingMessage() = default;
 
 IncomingMessage::IncomingMessage(const IncomingMessage& other) = default;
+IncomingMessage::IncomingMessage(IncomingMessage&& other) = default;
+
+IncomingMessage& IncomingMessage::operator=(const IncomingMessage& other) =
+    default;
+IncomingMessage& IncomingMessage::operator=(IncomingMessage&& other) = default;
 
 IncomingMessage::~IncomingMessage() = default;
 

@@ -13,6 +13,7 @@
 #include "chrome/browser/engagement/important_sites_util.h"
 #include "chrome/browser/engagement/site_engagement_service.h"
 #include "chrome/browser/metrics/ukm_background_recorder_service.h"
+#include "chrome/browser/permissions/abusive_origin_permission_revocation_request.h"
 #include "chrome/browser/permissions/adaptive_quiet_notification_permission_ui_enabler.h"
 #include "chrome/browser/permissions/contextual_notification_permission_ui_selector.h"
 #include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
@@ -204,12 +205,25 @@ ChromePermissionsClient::CreateNotificationPermissionUiSelector(
 void ChromePermissionsClient::OnPromptResolved(
     content::BrowserContext* browser_context,
     permissions::PermissionRequestType request_type,
-    permissions::PermissionAction action) {
+    permissions::PermissionAction action,
+    const GURL& origin,
+    base::Optional<QuietUiReason> quiet_ui_reason) {
   if (request_type ==
       permissions::PermissionRequestType::PERMISSION_NOTIFICATIONS) {
-    AdaptiveQuietNotificationPermissionUiEnabler::GetForProfile(
-        Profile::FromBrowserContext(browser_context))
+    Profile* profile = Profile::FromBrowserContext(browser_context);
+
+    AdaptiveQuietNotificationPermissionUiEnabler::GetForProfile(profile)
         ->RecordPermissionPromptOutcome(action);
+
+    if (action == permissions::PermissionAction::GRANTED &&
+        quiet_ui_reason.has_value() &&
+        (quiet_ui_reason.value() ==
+             QuietUiReason::kTriggeredDueToAbusiveRequests ||
+         quiet_ui_reason.value() ==
+             QuietUiReason::kTriggeredDueToAbusiveContent)) {
+      AbusiveOriginPermissionRevocationRequest::
+          ExemptOriginFromFutureRevocations(profile, origin);
+    }
   }
 }
 

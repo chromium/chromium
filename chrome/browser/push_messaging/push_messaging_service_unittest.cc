@@ -230,7 +230,7 @@ TEST_F(PushMessagingServiceTest, PayloadEncryptionTest) {
 
   // (1) Make sure that |kExampleOrigin| has access to use Push Messaging.
   ASSERT_EQ(blink::mojom::PermissionStatus::GRANTED,
-            push_service->GetPermissionStatus(origin, true));
+            push_service->GetPermissionStatus(origin, true /* user_visible */));
 
   // (2) Subscribe for Push Messaging, and verify that we've got the required
   // information in order to be able to create encrypted messages.
