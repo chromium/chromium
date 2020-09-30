@@ -12,7 +12,8 @@ RendererMainPlatformDelegate::RendererMainPlatformDelegate(
 RendererMainPlatformDelegate::~RendererMainPlatformDelegate() {}
 
 void RendererMainPlatformDelegate::PlatformInitialize() {
-  fuchsia_audio_device_factory_ = std::make_unique<FuchsiaAudioDeviceFactory>();
+  fuchsia_audio_device_factory_ =
+      std::make_unique<blink::FuchsiaAudioDeviceFactory>();
 }
 
 void RendererMainPlatformDelegate::PlatformUninitialize() {

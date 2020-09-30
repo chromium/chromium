@@ -31,8 +31,6 @@ namespace blink {
 // to provide specialized implementations.
 // TODO(olka): rename it, probably split it into AudioRendererSinkFactory and
 // AudioCapturerSourceFactory.
-//
-// TODO(https://crrev.com/787252): Add a 'Web' prefix to the class name.
 class BLINK_MODULES_EXPORT WebAudioDeviceFactory {
  public:
   // Maps the source type to the audio latency it requires.
