@@ -4486,9 +4486,10 @@ void ChromeContentBrowserClient::RegisterNonNetworkNavigationURLLoaderFactories(
 #if defined(OS_CHROMEOS)
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  factories->emplace(content::kExternalFileScheme,
-                     chromeos::ExternalFileURLLoaderFactory::Create(
-                         profile, content::ChildProcessHost::kInvalidUniqueID));
+  uniquely_owned_factories->emplace(
+      content::kExternalFileScheme,
+      std::make_unique<chromeos::ExternalFileURLLoaderFactory>(
+          profile, content::ChildProcessHost::kInvalidUniqueID));
 #endif  // defined(OS_CHROMEOS)
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS) || defined(OS_CHROMEOS)
 }
@@ -4642,9 +4643,10 @@ void ChromeContentBrowserClient::
   if (web_contents) {
     Profile* profile =
         Profile::FromBrowserContext(web_contents->GetBrowserContext());
-    factories->emplace(content::kExternalFileScheme,
-                       chromeos::ExternalFileURLLoaderFactory::Create(
-                           profile, render_process_id));
+    uniquely_owned_factories->emplace(
+        content::kExternalFileScheme,
+        std::make_unique<chromeos::ExternalFileURLLoaderFactory>(
+            profile, render_process_id));
   }
 #endif  // defined(OS_CHROMEOS)
 
