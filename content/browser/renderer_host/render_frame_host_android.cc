@@ -19,6 +19,7 @@
 #include "content/public/browser/site_instance.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/feature_policy/feature_policy_feature.mojom-shared.h"
+#include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom.h"
 #include "url/origin.h"
 
 using base::android::AttachCurrentThread;
@@ -136,7 +137,8 @@ RenderFrameHostAndroid::GetAndroidOverlayRoutingToken(
 void RenderFrameHostAndroid::NotifyUserActivation(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>&) {
-  render_frame_host_->GetAssociatedLocalFrame()->NotifyUserActivation();
+  render_frame_host_->GetAssociatedLocalFrame()->NotifyUserActivation(
+      blink::mojom::UserActivationNotificationType::kVoiceSearch);
 }
 
 jboolean RenderFrameHostAndroid::IsRenderFrameCreated(

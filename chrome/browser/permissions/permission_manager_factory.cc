@@ -26,6 +26,7 @@
 #include "chrome/browser/storage_access_api/storage_access_grant_permission_context.h"
 #include "chrome/browser/tab_contents/tab_util.h"
 #include "chrome/browser/wake_lock/wake_lock_permission_context.h"
+#include "chrome/browser/window_placement/window_placement_permission_context.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
@@ -33,7 +34,6 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/permissions/contexts/font_access_permission_context.h"
 #include "components/permissions/contexts/webxr_permission_context.h"
-#include "components/permissions/contexts/window_placement_permission_context.h"
 #include "components/permissions/permission_manager.h"
 #include "ppapi/buildflags/buildflags.h"
 

@@ -3755,6 +3755,11 @@ bool RenderFrameHostImpl::HasTransientUserActivation() {
   return frame_tree_node_->HasTransientUserActivation();
 }
 
+void RenderFrameHostImpl::NotifyUserActivation(
+    blink::mojom::UserActivationNotificationType notification_type) {
+  GetAssociatedLocalFrame()->NotifyUserActivation(notification_type);
+}
+
 void RenderFrameHostImpl::DidAccessInitialDocument() {
   delegate_->DidAccessInitialDocument();
 }

@@ -42,7 +42,8 @@ class FakeLocalFrame : public blink::mojom::LocalFrame {
                               const std::string& message) override;
   void SetFrameOwnerProperties(
       blink::mojom::FrameOwnerPropertiesPtr properties) override;
-  void NotifyUserActivation() override;
+  void NotifyUserActivation(
+      blink::mojom::UserActivationNotificationType notification_type) override;
   void NotifyVirtualKeyboardOverlayRect(const gfx::Rect&) override;
   void AddMessageToConsole(blink::mojom::ConsoleMessageLevel level,
                            const std::string& message,

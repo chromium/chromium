@@ -468,8 +468,9 @@ interface LocalFrame {
   SetFrameOwnerProperties(FrameOwnerProperties properties);
 
   // Notifies the RenderFrame about a user activation detected in the browser
-  // side (e.g. during Android voice search).
-  NotifyUserActivation();
+  // side (e.g. during Android voice search). The |notification_type| parameter
+  // is used for histograms only.
+  NotifyUserActivation(UserActivationNotificationType notification_type);
 
   // Notifies the |LocalFrame| about the Virtual keyboard rectangle that is occluding the web
   // content.

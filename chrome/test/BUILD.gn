@@ -1524,6 +1524,7 @@ if (!is_android) {
       "../browser/usb/usb_browsertest.cc",
       "../browser/wake_lock/wake_lock_browsertest.cc",
       "../browser/webauthn/authenticator_extension_browsertest.cc",
+      "../browser/window_placement/window_placement_permission_context_browsertest.cc",
       "../common/mac/app_mode_chrome_locator_browsertest.mm",
       "../common/mac/mock_launchd.h",
       "../common/mac/mock_launchd.mm",

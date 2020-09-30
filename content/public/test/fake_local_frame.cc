@@ -32,7 +32,8 @@ void FakeLocalFrame::SendInterventionReport(const std::string& id,
 void FakeLocalFrame::SetFrameOwnerProperties(
     blink::mojom::FrameOwnerPropertiesPtr properties) {}
 
-void FakeLocalFrame::NotifyUserActivation() {}
+void FakeLocalFrame::NotifyUserActivation(
+    blink::mojom::UserActivationNotificationType notification_type) {}
 
 void FakeLocalFrame::NotifyVirtualKeyboardOverlayRect(const gfx::Rect&) {}
 

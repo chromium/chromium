@@ -375,6 +375,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void UpdateSubresourceLoaderFactories() override;
   blink::mojom::FrameOwnerElementType GetFrameOwnerElementType() override;
   bool HasTransientUserActivation() override;
+  void NotifyUserActivation(
+      blink::mojom::UserActivationNotificationType notification_type) override;
   void UpdateBrowserControlsState(BrowserControlsState constraints,
                                   BrowserControlsState current,
                                   bool animate) override;

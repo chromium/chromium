@@ -588,7 +588,8 @@ class CORE_EXPORT LocalFrame final
   void SendInterventionReport(const String& id, const String& message) final;
   void SetFrameOwnerProperties(
       mojom::blink::FrameOwnerPropertiesPtr properties) final;
-  void NotifyUserActivation() final;
+  void NotifyUserActivation(
+      mojom::blink::UserActivationNotificationType notification_type) final;
   void NotifyVirtualKeyboardOverlayRect(const gfx::Rect& keyboard_rect) final;
   void AddMessageToConsole(mojom::blink::ConsoleMessageLevel level,
                            const WTF::String& message,

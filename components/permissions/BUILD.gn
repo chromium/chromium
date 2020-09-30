@@ -12,8 +12,6 @@ source_set("permissions") {
     "contexts/geolocation_permission_context.h",
     "contexts/webxr_permission_context.cc",
     "contexts/webxr_permission_context.h",
-    "contexts/window_placement_permission_context.cc",
-    "contexts/window_placement_permission_context.h",
     "features.cc",
     "features.h",
     "notification_permission_ui_selector.cc",

@@ -2670,9 +2670,9 @@ void LocalFrame::SetFrameOwnerProperties(
   Frame::ApplyFrameOwnerProperties(std::move(properties));
 }
 
-void LocalFrame::NotifyUserActivation() {
-  NotifyUserActivation(
-      mojom::blink::UserActivationNotificationType::kVoiceSearch, false);
+void LocalFrame::NotifyUserActivation(
+    mojom::blink::UserActivationNotificationType notification_type) {
+  NotifyUserActivation(notification_type, false);
 }
 
 void LocalFrame::RegisterVirtualKeyboardOverlayChangedObserver(

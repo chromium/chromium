@@ -154,6 +154,14 @@ class PermissionContextBase : public KeyedService {
   // Whether the permission should be restricted to secure origins.
   virtual bool IsRestrictedToSecureOrigins() const = 0;
 
+  // Called by PermissionDecided when the user has made a permission decision.
+  // Subclasses may override this method to perform context-specific logic
+  // before the content setting is changed and the permission callback is run.
+  virtual void UserMadePermissionDecision(const PermissionRequestID& id,
+                                          const GURL& requesting_origin,
+                                          const GURL& embedding_origin,
+                                          ContentSetting content_setting);
+
   ContentSettingsType content_settings_type() const {
     return content_settings_type_;
   }
@@ -173,14 +181,6 @@ class PermissionContextBase : public KeyedService {
                          const GURL& embedding_origin,
                          BrowserPermissionCallback callback,
                          ContentSetting content_setting);
-
-  // Called when the user has made a permission decision. This is a hook for
-  // descendent classes to do appropriate things they might need to do when this
-  // happens.
-  virtual void UserMadePermissionDecision(const PermissionRequestID& id,
-                                          const GURL& requesting_origin,
-                                          const GURL& embedding_origin,
-                                          ContentSetting content_setting);
 
   content::BrowserContext* browser_context_;
   const ContentSettingsType content_settings_type_;
