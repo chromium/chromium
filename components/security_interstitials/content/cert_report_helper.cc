@@ -159,17 +159,20 @@ void CertReportHelper::FinishCertCollection() {
 
 bool CertReportHelper::ShouldShowCertificateReporterCheckbox() {
   // Only show the checkbox iff the user is part of the respective Finch group
-  // and the window is not incognito and the feature is not disabled by policy.
+  // and the window is not incognito and the feature is not disabled by policy
+  // and enhanced protection is off.
   const bool in_incognito =
       web_contents_->GetBrowserContext()->IsOffTheRecord();
   const PrefService* pref_service = GetPrefs(web_contents_);
   bool can_show_checkbox =
       safe_browsing::IsExtendedReportingOptInAllowed(*pref_service) &&
       !safe_browsing::IsExtendedReportingPolicyManaged(*pref_service);
+  bool is_enhanced_protection_enabled =
+      safe_browsing::IsEnhancedProtectionEnabled(*pref_service);
 
   return base::FieldTrialList::FindFullName(kFinchExperimentName) ==
              kFinchGroupShowPossiblySend &&
-         !in_incognito && can_show_checkbox;
+         !in_incognito && can_show_checkbox && !is_enhanced_protection_enabled;
 }
 
 bool CertReportHelper::ShouldReportCertificateError() {

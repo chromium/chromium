@@ -2617,6 +2617,22 @@ IN_PROC_BROWSER_TEST_F(SSLUITestWithExtendedReporting,
       expect_report, browser());
 }
 
+// Test that when enhanced protection is on, hide the checkbox.
+IN_PROC_BROWSER_TEST_F(SSLUITestWithExtendedReporting,
+                       TestCheckboxHiddenInEnhancedProtection) {
+  ASSERT_TRUE(https_server_expired_.Start());
+  certificate_reporting_test_utils::SetCertReportingOptIn(
+      browser(), certificate_reporting_test_utils::EXTENDED_REPORTING_OPT_IN);
+  safe_browsing::SetEnhancedProtectionPrefForTests(
+      browser()->profile()->GetPrefs(), true);
+  ui_test_utils::NavigateToURL(browser(),
+                               https_server_expired_.GetURL("/title1.html"));
+  WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
+  WaitForInterstitial(tab);
+  ExpectInterstitialElementHidden(tab, "extended-reporting-opt-in",
+                                  true /* expect_hidden */);
+}
+
 // Visits a page that runs insecure content and tries to suppress the insecure
 // content warnings by randomizing location.hash.
 // Based on http://crbug.com/8706
