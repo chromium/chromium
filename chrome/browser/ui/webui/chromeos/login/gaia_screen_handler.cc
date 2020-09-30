@@ -53,6 +53,7 @@
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/login_screen_client.h"
+#include "chrome/browser/ui/webui/chromeos/login/cookie_waiter.h"
 #include "chrome/browser/ui/webui/chromeos/login/enrollment_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/signin_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/user_creation_screen_handler.h"
@@ -121,8 +122,6 @@ enum class ChromeOSSamlApiUsed {
   kSamlApiNotUsed = 2,
   kMaxValue = kSamlApiNotUsed,
 };
-
-constexpr base::TimeDelta kCookieDelay = base::TimeDelta::FromSeconds(20);
 
 void RecordAPILogin(bool is_third_party_idp, bool is_api_used) {
   ChromeOSSamlApiUsed login_type;
@@ -772,10 +771,6 @@ void GaiaScreenHandler::OnPortalDetectionCompleted(
   LoadAuthExtension(true /* force */, false /* offline */);
 }
 
-void GaiaScreenHandler::OnCookieChange(const net::CookieChangeInfo& change) {
-  ContinueAuthenticationWhenCookiesAvailable();
-}
-
 void GaiaScreenHandler::HandleIdentifierEntered(const std::string& user_email) {
   if (LoginDisplayHost::default_host() &&
       !LoginDisplayHost::default_host()->IsUserAllowlisted(
@@ -970,14 +965,13 @@ void GaiaScreenHandler::ContinueAuthenticationWhenCookiesAvailable() {
 
   network::mojom::CookieManager* cookie_manager =
       partition->GetCookieManagerForBrowserProcess();
-  if (!oauth_code_listener_.is_bound()) {
+  if (!oauth_code_waiter_) {
     // Set listener before requesting the cookies to avoid race conditions.
-    cookie_manager->AddCookieChangeListener(
-        GaiaUrls::GetInstance()->gaia_url(), kOAUTHCodeCookie,
-        oauth_code_listener_.BindNewPipeAndPassRemote());
-    cookie_waiting_timer_ = std::make_unique<base::OneShotTimer>();
-    cookie_waiting_timer_->Start(
-        FROM_HERE, kCookieDelay,
+    oauth_code_waiter_ = std::make_unique<CookieWaiter>(
+        cookie_manager, kOAUTHCodeCookie,
+        base::BindRepeating(
+            &GaiaScreenHandler::ContinueAuthenticationWhenCookiesAvailable,
+            weak_factory_.GetWeakPtr()),
         base::BindOnce(&GaiaScreenHandler::OnCookieWaitTimeout,
                        weak_factory_.GetWeakPtr()));
   }
@@ -1003,15 +997,14 @@ void GaiaScreenHandler::OnGetCookiesForCompleteAuthentication(
   }
 
   if (auth_code.empty()) {
-    // Will try again from onCookieChange.
+    // Will try again from oauth_code_waiter callback.
     return;
   }
 
   DCHECK(pending_user_context_);
   UserContext user_context = *pending_user_context_;
   pending_user_context_.reset();
-  oauth_code_listener_.reset();
-  cookie_waiting_timer_.reset();
+  oauth_code_waiter_.reset();
 
   user_context.SetAuthCode(auth_code);
   if (!gaps_cookie.empty())
@@ -1023,8 +1016,7 @@ void GaiaScreenHandler::OnGetCookiesForCompleteAuthentication(
 void GaiaScreenHandler::OnCookieWaitTimeout() {
   DCHECK(pending_user_context_);
   pending_user_context_.reset();
-  oauth_code_listener_.reset();
-  cookie_waiting_timer_.reset();
+  oauth_code_waiter_.reset();
   LoadAuthExtension(true /* force */, false /* offline */);
   core_oobe_view_->ShowSignInError(
       0, l10n_util::GetStringUTF8(IDS_LOGIN_FATAL_ERROR_NO_AUTH_TOKEN),

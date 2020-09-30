@@ -23,13 +23,11 @@
 #include "net/base/net_errors.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_access_result.h"
-#include "services/network/public/mojom/cookie_manager.mojom.h"
 
 class AccountId;
 
 namespace base {
 class DictionaryValue;
-class OneShotTimer;
 }  // namespace base
 
 namespace network {
@@ -38,6 +36,7 @@ class NSSTempCertsCacheChromeOS;
 
 namespace chromeos {
 
+class CookieWaiter;
 class Key;
 class SamlPasswordAttributes;
 class SigninScreenHandler;
@@ -97,7 +96,6 @@ class GaiaView {
 class GaiaScreenHandler : public BaseScreenHandler,
                           public GaiaView,
                           public NetworkPortalDetector::Observer,
-                          public network::mojom::CookieChangeListener,
                           public SecurityTokenPinDialogHost {
  public:
   using TView = GaiaView;
@@ -213,9 +211,6 @@ class GaiaScreenHandler : public BaseScreenHandler,
   void OnPortalDetectionCompleted(
       const NetworkState* network,
       const NetworkPortalDetector::CaptivePortalState& state) override;
-
-  // network::mojom::CookieChangeListener:
-  void OnCookieChange(const net::CookieChangeInfo& change) override;
 
   // WebUI message handlers.
   void HandleWebviewLoadAborted(int error_code);
@@ -472,10 +467,8 @@ class GaiaScreenHandler : public BaseScreenHandler,
   std::unique_ptr<SamlChallengeKeyHandler> saml_challenge_key_handler_for_test_;
 
   // Connection to the CookieManager that signals when the GAIA cookies change.
-  mojo::Receiver<network::mojom::CookieChangeListener> oauth_code_listener_{
-      this};
+  std::unique_ptr<CookieWaiter> oauth_code_waiter_;
   std::unique_ptr<UserContext> pending_user_context_;
-  std::unique_ptr<base::OneShotTimer> cookie_waiting_timer_;
 
   base::WeakPtrFactory<GaiaScreenHandler> weak_factory_{this};
 

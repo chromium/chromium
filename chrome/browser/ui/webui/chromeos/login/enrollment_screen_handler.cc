@@ -31,6 +31,7 @@
 #include "chrome/browser/chromeos/policy/policy_oauth2_token_fetcher.h"
 #include "chrome/browser/policy/enrollment_status.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/chromeos/login/cookie_waiter.h"
 #include "chrome/browser/ui/webui/chromeos/login/error_screen_handler.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/network/network_state.h"
@@ -63,6 +64,8 @@ const char kEnrollmentModeUIRecovery[] = "recovery";
 
 constexpr char kActiveDirectoryJoinHistogram[] =
     "Enterprise.ActiveDirectoryJoin";
+
+constexpr char kOAUTHCodeCookie[] = "oauth_code";
 
 // Converts |mode| to a mode identifier for the UI.
 std::string EnrollmentModeToUIMode(policy::EnrollmentConfig::Mode mode) {
@@ -773,7 +776,37 @@ void EnrollmentScreenHandler::HandleCompleteLogin(const std::string& user) {
   DCHECK_EQ(signin_partition_manager->GetCurrentStoragePartitionName(),
             signin_partition_name_);
 
-  partition->GetCookieManagerForBrowserProcess()->GetCookieList(
+  network::mojom::CookieManager* cookie_manager =
+      partition->GetCookieManagerForBrowserProcess();
+  if (!oauth_code_waiter_) {
+    // Set listener before requesting the cookies to avoid race conditions.
+    oauth_code_waiter_ = std::make_unique<CookieWaiter>(
+        cookie_manager, kOAUTHCodeCookie,
+        base::BindRepeating(&EnrollmentScreenHandler::
+                                ContinueAuthenticationWhenCookiesAvailable,
+                            weak_ptr_factory_.GetWeakPtr(), user),
+        base::BindOnce(&EnrollmentScreenHandler::OnCookieWaitTimeout,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+
+  ContinueAuthenticationWhenCookiesAvailable(user);
+}
+
+void EnrollmentScreenHandler::ContinueAuthenticationWhenCookiesAvailable(
+    const std::string& user) {
+  login::SigninPartitionManager* signin_partition_manager =
+      login::SigninPartitionManager::Factory::GetForBrowserContext(
+          Profile::FromWebUI(web_ui()));
+  content::StoragePartition* partition =
+      signin_partition_manager->GetCurrentStoragePartition();
+
+  // Validity check that partition did not change during enrollment flow.
+  DCHECK_EQ(signin_partition_manager->GetCurrentStoragePartitionName(),
+            signin_partition_name_);
+
+  network::mojom::CookieManager* cookie_manager =
+      partition->GetCookieManagerForBrowserProcess();
+  cookie_manager->GetCookieList(
       GaiaUrls::GetInstance()->gaia_url(),
       net::CookieOptions::MakeAllInclusive(),
       base::BindOnce(&EnrollmentScreenHandler::OnGetCookiesForCompleteLogin,
@@ -786,16 +819,25 @@ void EnrollmentScreenHandler::OnGetCookiesForCompleteLogin(
     const net::CookieAccessResultList& excluded_cookies) {
   std::string auth_code;
   for (const auto& cookie_with_access_result : cookies) {
-    if (cookie_with_access_result.cookie.Name() == "oauth_code") {
+    if (cookie_with_access_result.cookie.Name() == kOAUTHCodeCookie) {
       auth_code = cookie_with_access_result.cookie.Value();
       break;
     }
   }
 
-  DCHECK(!auth_code.empty());
+  if (auth_code.empty()) {
+    // Will try again from oauth_code_waiter callback.
+    return;
+  }
 
+  oauth_code_waiter_.reset();
   DCHECK(controller_);
   controller_->OnLoginDone(gaia::SanitizeEmail(user), auth_code);
+}
+
+void EnrollmentScreenHandler::OnCookieWaitTimeout() {
+  oauth_code_waiter_.reset();
+  ShowError(IDS_LOGIN_FATAL_ERROR_NO_AUTH_TOKEN, true);
 }
 
 void EnrollmentScreenHandler::HandleAdCompleteLogin(
