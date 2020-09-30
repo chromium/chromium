@@ -67,9 +67,18 @@ class Graph {
   // For convenience, allows you to pass ownership of an object to the graph.
   // Useful for attaching observers that will live with the graph until it dies.
   // If you can name the object you can also take it back via "TakeFromGraph".
-  virtual void PassToGraph(std::unique_ptr<GraphOwned> graph_owned) = 0;
+  virtual void PassToGraphImpl(std::unique_ptr<GraphOwned> graph_owned) = 0;
   virtual std::unique_ptr<GraphOwned> TakeFromGraph(
       GraphOwned* graph_owned) = 0;
+
+  // Templated PassToGraph helper that also returns a pointer to the object,
+  // which makes it easy to use PassToGraph in constructors.
+  template <typename DerivedType>
+  DerivedType* PassToGraph(std::unique_ptr<DerivedType> graph_owned) {
+    DerivedType* object = graph_owned.get();
+    PassToGraphImpl(std::move(graph_owned));
+    return object;
+  }
 
   // A TakeFromGraph helper for taking back the ownership of a GraphOwned
   // subclass.

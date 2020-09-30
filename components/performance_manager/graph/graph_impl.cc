@@ -256,7 +256,7 @@ void GraphImpl::RemoveWorkerNodeObserver(WorkerNodeObserver* observer) {
   RemoveObserverImpl(&worker_node_observers_, observer);
 }
 
-void GraphImpl::PassToGraph(std::unique_ptr<GraphOwned> graph_owned) {
+void GraphImpl::PassToGraphImpl(std::unique_ptr<GraphOwned> graph_owned) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   graph_owned_.PassObject(std::move(graph_owned), this);
 }

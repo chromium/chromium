@@ -68,7 +68,7 @@ class GraphImpl : public Graph {
   void RemoveProcessNodeObserver(ProcessNodeObserver* observer) override;
   void RemoveSystemNodeObserver(SystemNodeObserver* observer) override;
   void RemoveWorkerNodeObserver(WorkerNodeObserver* observer) override;
-  void PassToGraph(std::unique_ptr<GraphOwned> graph_owned) override;
+  void PassToGraphImpl(std::unique_ptr<GraphOwned> graph_owned) override;
   std::unique_ptr<GraphOwned> TakeFromGraph(GraphOwned* graph_owned) override;
   void RegisterObject(GraphRegistered* object) override;
   void UnregisterObject(GraphRegistered* object) override;
