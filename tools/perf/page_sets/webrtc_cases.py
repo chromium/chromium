@@ -2,16 +2,17 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from page_sets import press_story
 from telemetry import story
-from telemetry.page import page as page_module
 
 
-class WebrtcPage(page_module.Page):
+class WebrtcPage(press_story.PressStory):
 
   def __init__(self, url, page_set, name, tags):
     assert url.startswith('file://webrtc_cases/')
-    super(WebrtcPage, self).__init__(
-        url=url, page_set=page_set, name=name, tags=tags)
+    self.URL = url
+    self.NAME = name
+    super(WebrtcPage, self).__init__(page_set, tags=tags)
 
 
 class GetUserMedia(WebrtcPage):
@@ -23,7 +24,7 @@ class GetUserMedia(WebrtcPage):
         name='hd_local_stream_10s',
         page_set=page_set, tags=tags)
 
-  def RunPageInteractions(self, action_runner):
+  def ExecuteTest(self, action_runner):
     action_runner.ClickElement('button[id="hd"]')
     action_runner.Wait(10)
 
@@ -37,10 +38,17 @@ class DataChannel(WebrtcPage):
         name='10s_datachannel_transfer',
         page_set=page_set, tags=tags)
 
-  def RunPageInteractions(self, action_runner):
+  def ExecuteTest(self, action_runner):
     action_runner.ExecuteJavaScript('megsToSend.value = 100;')
     action_runner.ClickElement('button[id="sendTheData"]')
     action_runner.Wait(10)
+
+  def ParseTestResults(self, action_runner):
+    self.AddJavaScriptMeasurement(
+        'data_transferred',
+        'bytes',
+        'receiveProgress.value',
+        description='Amount of data transferred by data channel in 10 seconds')
 
 
 class AudioCall(WebrtcPage):
@@ -53,7 +61,7 @@ class AudioCall(WebrtcPage):
         page_set=page_set, tags=tags)
     self.codec = codec
 
-  def RunPageInteractions(self, action_runner):
+  def ExecuteTest(self, action_runner):
     action_runner.ExecuteJavaScript('codecSelector.value="%s";' % self.codec)
     action_runner.ClickElement('button[id="callButton"]')
     action_runner.Wait(10)
@@ -67,7 +75,7 @@ class CanvasCapturePeerConnection(WebrtcPage):
         name='canvas_capture_peer_connection',
         page_set=page_set, tags=tags)
 
-  def RunPageInteractions(self, action_runner):
+  def ExecuteTest(self, action_runner):
     with action_runner.CreateInteraction('Action_Canvas_PeerConnection',
                                          repeatable=False):
       action_runner.ClickElement('button[id="startButton"]')
@@ -84,7 +92,7 @@ class VideoCodecConstraints(WebrtcPage):
         page_set=page_set, tags=tags)
     self.video_codec = video_codec
 
-  def RunPageInteractions(self, action_runner):
+  def ExecuteTest(self, action_runner):
     with action_runner.CreateInteraction('Action_Codec_Constraints',
                                          repeatable=False):
       action_runner.ClickElement('input[id="%s"]' % self.video_codec)
@@ -103,7 +111,7 @@ class MultiplePeerConnections(WebrtcPage):
         name='multiple_peerconnections',
         page_set=page_set, tags=tags)
 
-  def RunPageInteractions(self, action_runner):
+  def ExecuteTest(self, action_runner):
     with action_runner.CreateInteraction('Action_Create_PeerConnection',
                                          repeatable=False):
       # Set the number of peer connections to create to 10.
@@ -124,7 +132,7 @@ class PausePlayPeerConnections(WebrtcPage):
         name='pause_play_peerconnections',
         page_set=page_set, tags=tags)
 
-  def RunPageInteractions(self, action_runner):
+  def ExecuteTest(self, action_runner):
     action_runner.ExecuteJavaScript(
         'startTest({test_runtime_s}, {num_peerconnections},'
         '{iteration_delay_ms}, "video");'.format(
