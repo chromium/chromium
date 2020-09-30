@@ -450,22 +450,6 @@
         android:name="org.chromium.chrome.browser.settings.SettingsActivity"
         android:theme="@style/Theme.Chromium.Settings">
     </activity>  # DIFF-ANCHOR: d32b85df
-    <activity  # DIFF-ANCHOR: dc9ccfb7
-        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
-        android:enabled="false"
-        android:excludeFromRecents="true"
-        android:exported="true"
-        android:icon="@drawable/ic_launcher"
-        android:label="@string/qr_code_share_icon_label"
-        android:name="org.chromium.chrome.browser.share.qrcode.QrCodeShareActivity"
-        android:noHistory="true"
-        android:theme="@android:style/Theme.NoDisplay">
-      <intent-filter>  # DIFF-ANCHOR: 4ee601b7
-        <action android:name="android.intent.action.SEND"/>
-        <category android:name="android.intent.category.DEFAULT"/>
-        <data android:mimeType="text/plain"/>
-      </intent-filter>  # DIFF-ANCHOR: 4ee601b7
-    </activity>  # DIFF-ANCHOR: dc9ccfb7
     <activity  # DIFF-ANCHOR: 44158f9b
         android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
         android:enabled="false"
