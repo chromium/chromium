@@ -201,6 +201,7 @@ public class TabbedAppMenuTest {
     @SmallTest
     @Feature({"Browser", "Main"})
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @DisabledTest(message = "crbug.com/1131455")
     public void testHideMenuOnToggleOverview() throws TimeoutException {
         CallbackHelper overviewModeFinishedShowingCallback = new CallbackHelper();
         OverviewModeBehavior.OverviewModeObserver overviewModeObserver =
