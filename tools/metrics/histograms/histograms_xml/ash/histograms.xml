@@ -1764,9 +1764,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Ash.WindowSelector.SelectionDepth" units="items"
-    expires_after="M85">
-  <owner>estade@chromium.org</owner>
-  <owner>tbuckley@chromium.org</owner>
+    expires_after="2021-09-29">
+  <owner>sammiequon@chromium.org</owner>
+  <owner>tclaiborne@chromium.org</owner>
   <summary>
     When a window is selected in overview mode, records that window's position
     in the global MRU ordering. 1 represents the most-recently used window, 2
