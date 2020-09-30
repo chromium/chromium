@@ -160,46 +160,6 @@ TEST_F(ClipboardHistoryControllerTest, MultiShowMenu) {
       "Ash.ClipboardHistory.ContextMenu.UserJourneyTime", 2);
 }
 
-// Tests that backspace deletes an item, and if it is the last item, the menu is
-// closed.
-TEST_F(ClipboardHistoryControllerTest, BasicShowMenu) {
-  base::HistogramTester histogram_tester;
-  WriteToClipboard("test");
-  WriteToClipboard("test");
-
-  ShowMenu();
-
-  EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
-
-  // Press any key to select the first item.
-  GetEventGenerator()->PressKey(ui::VKEY_RETURN, /*flags=*/0);
-  GetEventGenerator()->ReleaseKey(ui::VKEY_RETURN, /*flags=*/0);
-
-  // Press backspace to delete the first item, the menu should still be showing.
-  GetEventGenerator()->PressKey(ui::VKEY_BACK, /*flags=*/0);
-  GetEventGenerator()->ReleaseKey(ui::VKEY_BACK, /*flags=*/0);
-
-  EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
-
-  // Press any key to select the first item.
-  GetEventGenerator()->PressKey(ui::VKEY_RETURN, /*flags=*/0);
-  GetEventGenerator()->ReleaseKey(ui::VKEY_RETURN, /*flags=*/0);
-
-  // Delete the final item, the menu should close.
-  GetEventGenerator()->PressKey(ui::VKEY_BACK, /*flags=*/0);
-  GetEventGenerator()->ReleaseKey(ui::VKEY_BACK, /*flags=*/0);
-
-  EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
-
-  // This histogram is only recorded when the menu is initially built, so this
-  // should not be recorded more than once in one show, regardless of the menu
-  // contents changing.
-  histogram_tester.ExpectBucketCount(
-      "Ash.ClipboardHistory.ContextMenu.NumberOfItemsShown", 2, 1);
-  histogram_tester.ExpectTotalCount(
-      "Ash.ClipboardHistory.ContextMenu.UserJourneyTime", 1);
-}
-
 // Verifies that the clipboard history is disabled in some user modes, which
 // means that the clipboard history should not be recorded and meanwhile the
 // menu view should not show (https://crbug.com/1100739).

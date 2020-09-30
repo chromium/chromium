@@ -117,6 +117,29 @@ void ClipboardHistoryMenuModelAdapter::RemoveMenuItemWithCommandId(
   model_->RemoveItemAt(model_->GetIndexOfCommandId(command_id));
   root_view_->RemoveMenuItem(root_view_->GetMenuItemByID(command_id));
   root_view_->ChildrenChanged();
+
+  auto item_to_delete = item_snapshots_.find(command_id);
+  DCHECK(item_to_delete != item_snapshots_.end());
+  item_snapshots_.erase(item_to_delete);
+}
+
+ClipboardHistoryMenuModelAdapter::SelectionMoveDirection
+ClipboardHistoryMenuModelAdapter::CalculateSelectionMoveAfterDeletion(
+    int command_id) const {
+  auto item_to_delete = item_snapshots_.find(command_id);
+  DCHECK(item_to_delete != item_snapshots_.end());
+
+  // The menu item to be deleted should be selected.
+  DCHECK(root_view_->GetMenuItemByID(command_id)->IsSelected());
+
+  // If the menu item view to be deleted is the last one, Cancel()
+  // should be called so this function should not be hit.
+  DCHECK_GT(item_snapshots_.size(), 1u);
+
+  // select the next menu item if any or the previous one.
+  return std::next(item_to_delete, 1) == item_snapshots_.end()
+             ? SelectionMoveDirection::kPrevious
+             : SelectionMoveDirection::kNext;
 }
 
 gfx::Rect ClipboardHistoryMenuModelAdapter::GetMenuBoundsInScreenForTest()

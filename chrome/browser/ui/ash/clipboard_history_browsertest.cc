@@ -264,14 +264,8 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryWithMultiProfileBrowserTest,
   ASSERT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
   ASSERT_EQ(3, GetContextMenu()->GetMenuItemsCount());
 
-  // No item is selected. So pressing the backspace key has no effect.
-  PressAndRelease(ui::KeyboardCode::VKEY_BACK, ui::EF_NONE);
-  EXPECT_EQ(3, GetContextMenu()->GetMenuItemsCount());
-  EXPECT_TRUE(VerifyClipboardTextData({"C", "B", "A"}));
-
-  // Select the first menu item via key then delete it. Verify the menu and the
-  // clipboard history.
-  PressAndRelease(ui::KeyboardCode::VKEY_DOWN, ui::EF_NONE);
+  // The first item is selected as default. Press the deletion accelerator and
+  // verify the clipboard history.
   PressAndRelease(ui::KeyboardCode::VKEY_BACK, ui::EF_NONE);
   EXPECT_EQ(2, GetContextMenu()->GetMenuItemsCount());
   EXPECT_TRUE(VerifyClipboardTextData({"B", "A"}));
@@ -279,13 +273,11 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryWithMultiProfileBrowserTest,
   // Select the second menu item via key then delete it. Verify the menu and the
   // clipboard history.
   PressAndRelease(ui::KeyboardCode::VKEY_DOWN, ui::EF_NONE);
-  PressAndRelease(ui::KeyboardCode::VKEY_DOWN, ui::EF_NONE);
   PressAndRelease(ui::KeyboardCode::VKEY_BACK, ui::EF_NONE);
   EXPECT_EQ(1, GetContextMenu()->GetMenuItemsCount());
   EXPECT_TRUE(VerifyClipboardTextData({"B"}));
 
   // Delete the last item. Verify that the menu is closed.
-  PressAndRelease(ui::KeyboardCode::VKEY_DOWN, ui::EF_COMMAND_DOWN);
   PressAndRelease(ui::KeyboardCode::VKEY_BACK, ui::EF_NONE);
   EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
 
@@ -447,7 +439,6 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryTextfieldBrowserTest,
   // Verify we can paste the first history item via the ENTER key.
   PressAndRelease(ui::KeyboardCode::VKEY_V, ui::EF_COMMAND_DOWN);
   EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
-  PressAndRelease(ui::KeyboardCode::VKEY_DOWN);
   PressAndRelease(ui::KeyboardCode::VKEY_RETURN);
   EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
   EXPECT_EQ("C", base::UTF16ToUTF8(textfield_->GetText()));
@@ -458,7 +449,6 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryTextfieldBrowserTest,
   // Verify we can paste the first history item via the COMMAND+V shortcut.
   PressAndRelease(ui::KeyboardCode::VKEY_V, ui::EF_COMMAND_DOWN);
   EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
-  PressAndRelease(ui::KeyboardCode::VKEY_DOWN);
   PressAndRelease(ui::KeyboardCode::VKEY_V, ui::EF_COMMAND_DOWN);
   EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
   EXPECT_EQ("C", base::UTF16ToUTF8(textfield_->GetText()));
@@ -471,7 +461,6 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryTextfieldBrowserTest,
   EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
   PressAndRelease(ui::KeyboardCode::VKEY_DOWN);
   PressAndRelease(ui::KeyboardCode::VKEY_DOWN);
-  PressAndRelease(ui::KeyboardCode::VKEY_DOWN);
   PressAndRelease(ui::KeyboardCode::VKEY_RETURN);
   EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
   EXPECT_EQ("A", base::UTF16ToUTF8(textfield_->GetText()));
@@ -482,7 +471,6 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryTextfieldBrowserTest,
   // Verify we can paste the last history item via the COMMAND+V shortcut.
   PressAndRelease(ui::KeyboardCode::VKEY_V, ui::EF_COMMAND_DOWN);
   EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
-  PressAndRelease(ui::KeyboardCode::VKEY_DOWN);
   PressAndRelease(ui::KeyboardCode::VKEY_DOWN);
   PressAndRelease(ui::KeyboardCode::VKEY_DOWN);
   PressAndRelease(ui::KeyboardCode::VKEY_V, ui::EF_COMMAND_DOWN);
@@ -502,7 +490,6 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryTextfieldBrowserTest,
   Press(ui::KeyboardCode::VKEY_COMMAND);
   PressAndRelease(ui::KeyboardCode::VKEY_V, ui::EF_COMMAND_DOWN);
   EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
-  PressAndRelease(ui::KeyboardCode::VKEY_DOWN, ui::EF_COMMAND_DOWN);
   PressAndRelease(ui::KeyboardCode::VKEY_V, ui::EF_COMMAND_DOWN);
   EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
   EXPECT_EQ("C", base::UTF16ToUTF8(textfield_->GetText()));
@@ -516,7 +503,6 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryTextfieldBrowserTest,
   Press(ui::KeyboardCode::VKEY_COMMAND);
   PressAndRelease(ui::KeyboardCode::VKEY_V, ui::EF_COMMAND_DOWN);
   EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
-  PressAndRelease(ui::KeyboardCode::VKEY_DOWN, ui::EF_COMMAND_DOWN);
   PressAndRelease(ui::KeyboardCode::VKEY_DOWN, ui::EF_COMMAND_DOWN);
   PressAndRelease(ui::KeyboardCode::VKEY_DOWN, ui::EF_COMMAND_DOWN);
   PressAndRelease(ui::KeyboardCode::VKEY_V, ui::EF_COMMAND_DOWN);

@@ -58,6 +58,15 @@ bool IsRectContainedByAnyDisplay(const gfx::Rect& rect) {
   return false;
 }
 
+void SendSyntheticKeyEvent(ui::KeyboardCode key_code, int flags) {
+  ui::KeyEvent synthetic_key_event(/*type=*/ui::ET_KEY_PRESSED, key_code,
+                                   /*code=*/static_cast<ui::DomCode>(0), flags);
+  auto* host = GetWindowTreeHostForDisplay(
+      display::Screen::GetScreen()->GetPrimaryDisplay().id());
+  DCHECK(host);
+  host->DeliverEventToSink(&synthetic_key_event);
+}
+
 }  // namespace
 
 // ClipboardHistoryControllerImpl::AcceleratorTarget ---------------------------
@@ -207,6 +216,12 @@ void ClipboardHistoryControllerImpl::ShowMenu(
 
   DCHECK(IsMenuShowing());
   accelerator_target_->OnMenuShown();
+
+  // Send the synthetic key event to let the menu controller select the first
+  // menu item after showing the clipboard history menu. Note that calling
+  // `MenuItemView::SetSelected()` directly cannot update the menu controller
+  // so it does not work here.
+  SendSyntheticKeyEvent(ui::VKEY_DOWN, ui::EF_NONE);
 }
 
 bool ClipboardHistoryControllerImpl::CanShowMenu() const {
@@ -266,13 +281,7 @@ void ClipboardHistoryControllerImpl::MenuOptionSelected(int command_id,
     original_data = clipboard->WriteClipboardData(std::move(temp_data));
   }
 
-  ui::KeyEvent synthetic_key_event(ui::ET_KEY_PRESSED, ui::VKEY_V,
-                                   static_cast<ui::DomCode>(0),
-                                   ui::EF_CONTROL_DOWN);
-  auto* host = ash::GetWindowTreeHostForDisplay(
-      display::Screen::GetScreen()->GetPrimaryDisplay().id());
-  DCHECK(host);
-  host->DeliverEventToSink(&synthetic_key_event);
+  SendSyntheticKeyEvent(ui::VKEY_V, ui::EF_CONTROL_DOWN);
 
   if (!original_data)
     return;
@@ -321,7 +330,21 @@ void ClipboardHistoryControllerImpl::DeleteSelectedMenuItemIfAny() {
     return;
   }
 
+  using SelectionMoveDirection =
+      ClipboardHistoryMenuModelAdapter::SelectionMoveDirection;
+  SelectionMoveDirection move_direction =
+      context_menu_->CalculateSelectionMoveAfterDeletion(*selected_command);
+
   context_menu_->RemoveMenuItemWithCommandId(*selected_command);
+
+  // Select a new menu item.
+  switch (move_direction) {
+    case SelectionMoveDirection::kPrevious:
+      SendSyntheticKeyEvent(ui::VKEY_UP, ui::EF_NONE);
+      break;
+    case SelectionMoveDirection::kNext:
+      SendSyntheticKeyEvent(ui::VKEY_DOWN, ui::EF_NONE);
+  }
 }
 
 gfx::Rect ClipboardHistoryControllerImpl::CalculateAnchorRect() const {

@@ -33,6 +33,15 @@ class ClipboardHistoryResourceManager;
 // copied.
 class ASH_EXPORT ClipboardHistoryMenuModelAdapter : views::MenuModelAdapter {
  public:
+  // Indicates the direction of selection movement.
+  enum class SelectionMoveDirection {
+    // Selection moves up to the previous menu item.
+    kPrevious,
+
+    // Selection moves down to the next menu item.
+    kNext
+  };
+
   static std::unique_ptr<ClipboardHistoryMenuModelAdapter> Create(
       ui::SimpleMenuModel::Delegate* delegate,
       base::RepeatingClosure menu_closed_callback,
@@ -69,6 +78,11 @@ class ASH_EXPORT ClipboardHistoryMenuModelAdapter : views::MenuModelAdapter {
 
   // Remove the menu item specified by `command_id`.
   void RemoveMenuItemWithCommandId(int command_id);
+
+  // Returns the direction in which the selection state should move if the menu
+  // item corresponding to `command_id` is deleted.
+  SelectionMoveDirection CalculateSelectionMoveAfterDeletion(
+      int command_id) const;
 
   // Returns menu bounds in screen coordinates.
   gfx::Rect GetMenuBoundsInScreenForTest() const;
