@@ -1,4 +1,5 @@
 This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = Unhandled rejection: assert_equals: RTCRtpTransceiver.stop() with closed PC throws InvalidStateError expected "InvalidStateError" but got "Error"
 PASS checkAddTransceiverNoTrack
 PASS checkAddTransceiverWithTrack
 PASS checkAddTransceiverWithAddTrack
@@ -23,7 +24,7 @@ PASS checkRemoveAndReadd
 PASS checkAddTrackExistingTransceiverThenRemove
 FAIL checkRemoveTrackNegotiation assert_equals: pc2.setRemoteDescription(offer) should've added 2 tracks to receive stream expected 2 but got 0
 FAIL checkMute assert_true: expected true got false
-FAIL checkStop assert_equals: getReceivers does not expose a receiver of a stopped transceiver expected 0 but got 1
+PASS checkStop
 PASS checkStopAfterCreateOffer
 PASS checkStopAfterSetLocalOffer
 PASS checkStopAfterSetRemoteOffer
@@ -32,7 +33,7 @@ PASS checkStopAfterSetLocalAnswer
 PASS checkStopAfterClose
 PASS checkLocalRollback
 PASS checkRollbackAndSetRemoteOfferWithDifferentType
-FAIL checkRemoteRollback promise_test: Unhandled rejection with value: object "InvalidAccessError: Failed to execute 'addTrack' on 'RTCPeerConnection': A sender already exists for the track."
+FAIL checkRemoteRollback assert_equals: track event from remote rollback expected 1 but got 0
 FAIL checkMsectionReuse assert_equals: expected "[{currentDirection:null,mid:null}]" but got "[{currentDirection:\"inactive\",mid:\"0\"}]"
 PASS checkStopAfterCreateOfferWithReusedMsection
 PASS checkAddIceCandidateToStoppedTransceiver

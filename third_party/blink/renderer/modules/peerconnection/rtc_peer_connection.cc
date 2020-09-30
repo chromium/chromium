@@ -3146,6 +3146,17 @@ void RTCPeerConnection::DidModifyTransceivers(
         mute_tracks.push_back(transceiver->receiver()->track());
     }
   }
+  if (sdp_semantics_ == webrtc::SdpSemantics::kUnifiedPlan) {
+    // Update the rtp_senders_ and rtp_receivers_ members to only contain
+    // senders and receivers that are in the current set of transceivers.
+    rtp_senders_.clear();
+    rtp_receivers_.clear();
+    for (auto& transceiver : transceivers_) {
+      rtp_senders_.push_back(transceiver->sender());
+      rtp_receivers_.push_back(transceiver->receiver());
+    }
+  }
+
   MediaStreamVector current_streams = getRemoteStreams();
 
   // Modify and fire "pc.onsignalingchange" synchronously.
