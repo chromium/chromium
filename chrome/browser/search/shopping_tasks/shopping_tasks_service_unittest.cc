@@ -28,7 +28,7 @@ class ShoppingTasksServiceTest : public testing::Test {
     service_ = std::make_unique<ShoppingTasksService>(
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_),
-        &profile_);
+        &profile_, "en-US");
   }
 
   void TearDown() override {
@@ -49,7 +49,7 @@ class ShoppingTasksServiceTest : public testing::Test {
 // Verifies correct parsing of well-formed JSON.
 TEST_F(ShoppingTasksServiceTest, GoodResponse) {
   test_url_loader_factory_.AddResponse(
-      "https://www.google.com/async/newtab_shopping_tasks",
+      "https://www.google.com/async/newtab_shopping_tasks?hl=en-US",
       R"()]}'
 {
   "update": {
@@ -123,7 +123,7 @@ TEST_F(ShoppingTasksServiceTest, GoodResponse) {
 // Verifies service can handle multiple in flight requests.
 TEST_F(ShoppingTasksServiceTest, MultiRequest) {
   test_url_loader_factory_.AddResponse(
-      "https://www.google.com/async/newtab_shopping_tasks",
+      "https://www.google.com/async/newtab_shopping_tasks?hl=en-US",
       R"()]}'
 {
   "update": {
@@ -179,7 +179,7 @@ TEST_F(ShoppingTasksServiceTest, MultiRequest) {
 // Verifies error if JSON is malformed.
 TEST_F(ShoppingTasksServiceTest, BadResponse) {
   test_url_loader_factory_.AddResponse(
-      "https://www.google.com/async/newtab_shopping_tasks",
+      "https://www.google.com/async/newtab_shopping_tasks?hl=en-US",
       ")]}'{\"update\":{\"promotions\":{}}}");
 
   shopping_tasks::mojom::ShoppingTaskPtr result;
@@ -200,7 +200,7 @@ TEST_F(ShoppingTasksServiceTest, BadResponse) {
 // Verifies error if no products.
 TEST_F(ShoppingTasksServiceTest, NoProducts) {
   test_url_loader_factory_.AddResponse(
-      "https://www.google.com/async/newtab_shopping_tasks",
+      "https://www.google.com/async/newtab_shopping_tasks?hl=en-US",
       R"()]}'
 {
   "update": {
@@ -237,7 +237,7 @@ TEST_F(ShoppingTasksServiceTest, NoProducts) {
 // Verifies error if download fails.
 TEST_F(ShoppingTasksServiceTest, ErrorResponse) {
   test_url_loader_factory_.AddResponse(
-      GURL("https://www.google.com/async/newtab_shopping_tasks"),
+      GURL("https://www.google.com/async/newtab_shopping_tasks?hl=en-US"),
       network::mojom::URLResponseHead::New(), std::string(),
       network::URLLoaderCompletionStatus(net::HTTP_NOT_FOUND));
 

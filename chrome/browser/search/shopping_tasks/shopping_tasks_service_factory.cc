@@ -4,6 +4,7 @@
 
 #include "chrome/browser/search/shopping_tasks/shopping_tasks_service_factory.h"
 
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/shopping_tasks/shopping_tasks_service.h"
@@ -38,5 +39,6 @@ KeyedService* ShoppingTasksServiceFactory::BuildServiceInstanceFor(
       content::BrowserContext::GetDefaultStoragePartition(context)
           ->GetURLLoaderFactoryForBrowserProcess();
   return new ShoppingTasksService(url_loader_factory,
-                                  Profile::FromBrowserContext(context));
+                                  Profile::FromBrowserContext(context),
+                                  g_browser_process->GetApplicationLocale());
 }

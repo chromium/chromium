@@ -6,6 +6,7 @@
 
 #include "chrome/common/webui_url_constants.h"
 #include "components/google/core/common/google_util.h"
+#include "net/base/url_util.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -14,19 +15,23 @@ namespace {
 const char kNewTabShoppingTasksApiPath[] = "/async/newtab_shopping_tasks";
 const char kXSSIResponsePreamble[] = ")]}'";
 
-GURL GetApiUrl() {
+GURL GetApiUrl(const std::string& application_locale) {
   GURL google_base_url = google_util::CommandLineGoogleBaseURL();
   if (!google_base_url.is_valid()) {
     google_base_url = GURL(google_util::kGoogleHomepageURL);
   }
-  return google_base_url.Resolve(kNewTabShoppingTasksApiPath);
+  return net::AppendQueryParameter(
+      google_base_url.Resolve(kNewTabShoppingTasksApiPath), "hl",
+      application_locale);
 }
 }  // namespace
 
 ShoppingTasksService::ShoppingTasksService(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    Profile* profile)
-    : url_loader_factory_(url_loader_factory) {}
+    Profile* profile,
+    const std::string& application_locale)
+    : url_loader_factory_(url_loader_factory),
+      application_locale_(application_locale) {}
 
 ShoppingTasksService::~ShoppingTasksService() = default;
 
@@ -70,7 +75,7 @@ void ShoppingTasksService::GetPrimaryShoppingTask(
         })");
 
   auto resource_request = std::make_unique<network::ResourceRequest>();
-  resource_request->url = GetApiUrl();
+  resource_request->url = GetApiUrl(application_locale_);
   resource_request->credentials_mode =
       network::mojom::CredentialsMode::kInclude;
   resource_request->request_initiator =

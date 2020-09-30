@@ -26,7 +26,8 @@ class ShoppingTasksService : public KeyedService {
  public:
   ShoppingTasksService(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      Profile* profile);
+      Profile* profile,
+      const std::string& application_locale);
   ShoppingTasksService(const ShoppingTasksService&) = delete;
   ~ShoppingTasksService() override;
 
@@ -50,6 +51,7 @@ class ShoppingTasksService : public KeyedService {
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::list<std::unique_ptr<network::SimpleURLLoader>> loaders_;
+  std::string application_locale_;
 
   base::WeakPtrFactory<ShoppingTasksService> weak_ptr_factory_{this};
 };
