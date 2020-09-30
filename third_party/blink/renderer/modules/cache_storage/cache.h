@@ -40,6 +40,7 @@ struct TypeConverter<CacheQueryOptionsPtr, const blink::CacheQueryOptions*> {
 
 namespace blink {
 
+class AbortController;
 class CacheStorageBlobClientList;
 class ExceptionState;
 class Response;
@@ -49,7 +50,7 @@ class ScriptState;
 
 typedef RequestOrUSVString RequestInfo;
 
-class MODULES_EXPORT Cache final : public ScriptWrappable {
+class MODULES_EXPORT Cache : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -86,6 +87,10 @@ class MODULES_EXPORT Cache final : public ScriptWrappable {
                      ExceptionState&);
 
   void Trace(Visitor*) const override;
+
+ protected:
+  // Virtual for testing.
+  virtual AbortController* CreateAbortController(ExecutionContext* context);
 
  private:
   class BarrierCallbackForPutResponse;

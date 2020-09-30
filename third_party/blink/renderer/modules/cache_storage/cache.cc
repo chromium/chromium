@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_request_init.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_response.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
+#include "third_party/blink/renderer/core/dom/abort_controller.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/fetch/blob_bytes_consumer.h"
@@ -184,6 +185,8 @@ class Cache::BarrierCallbackForPutResponse final
                                 const ExceptionState& exception_state,
                                 int64_t trace_id)
       : resolver_(MakeGarbageCollected<ScriptPromiseResolver>(script_state)),
+        abort_controller_(
+            cache->CreateAbortController(ExecutionContext::From(script_state))),
         cache_(cache),
         method_name_(method_name),
         request_list_(request_list),
@@ -196,6 +199,8 @@ class Cache::BarrierCallbackForPutResponse final
 
   // Must be called prior to starting the load of any response.
   ScriptPromise Promise() const { return resolver_->Promise(); }
+
+  AbortSignal* Signal() const { return abort_controller_->signal(); }
 
   void CompletedResponse(int index,
                          Response* response,
@@ -251,6 +256,7 @@ class Cache::BarrierCallbackForPutResponse final
 
   void Trace(Visitor* visitor) const {
     visitor->Trace(resolver_);
+    visitor->Trace(abort_controller_);
     visitor->Trace(cache_);
     visitor->Trace(request_list_);
     visitor->Trace(response_list_);
@@ -258,11 +264,15 @@ class Cache::BarrierCallbackForPutResponse final
 
  private:
   void Stop() {
-    // TODO(crbug.com/1130781): abort outstanding requests
+    if (stopped_)
+      return;
+    abort_controller_->abort();
+    blob_list_.clear();
     stopped_ = true;
   }
 
   Member<ScriptPromiseResolver> resolver_;
+  Member<AbortController> abort_controller_;
   Member<Cache> cache_;
   const String method_name_;
   const HeapVector<Member<Request>> request_list_;
@@ -867,6 +877,10 @@ void Cache::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
 }
 
+AbortController* Cache::CreateAbortController(ExecutionContext* context) {
+  return AbortController::Create(context);
+}
+
 ScriptPromise Cache::MatchImpl(ScriptState* script_state,
                                const Request* request,
                                const CacheQueryOptions* options) {
@@ -1054,8 +1068,13 @@ ScriptPromise Cache::AddAllImpl(ScriptState* script_state,
 
   // Begin loading each of the requests.
   for (wtf_size_t i = 0; i < request_list.size(); ++i) {
+    // Chain the AbortSignal objects together so the requests will abort if
+    // the |barrier_callback| encounters an error.
+    request_list[i]->signal()->Follow(barrier_callback->Signal());
+
     RequestInfo info;
     info.SetRequest(request_list[i]);
+
     auto* response_loader = MakeGarbageCollected<ResponseBodyLoader>(
         script_state, barrier_callback, i, /*require_ok_response=*/true,
         trace_id);

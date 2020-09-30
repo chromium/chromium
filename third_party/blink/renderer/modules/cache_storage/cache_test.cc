@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_request_init.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_response.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_response_init.h"
+#include "third_party/blink/renderer/core/dom/abort_controller.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/fetch/body_stream_buffer.h"
@@ -257,18 +258,46 @@ class NotImplementedErrorCache : public ErrorCacheForTests {
             mojom::blink::CacheStorageError::kErrorNotImplemented) {}
 };
 
+class TestCache : public Cache {
+ public:
+  TestCache(
+      GlobalFetch::ScopedFetcher* fetcher,
+      mojo::PendingAssociatedRemote<mojom::blink::CacheStorageCache> remote,
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner)
+      : Cache(fetcher, std::move(remote), std::move(task_runner)) {}
+
+  bool IsAborted() const {
+    return abort_controller_ && abort_controller_->signal()->aborted();
+  }
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(abort_controller_);
+    Cache::Trace(visitor);
+  }
+
+ protected:
+  AbortController* CreateAbortController(ExecutionContext* context) override {
+    if (!abort_controller_)
+      abort_controller_ = AbortController::Create(context);
+    return abort_controller_;
+  }
+
+ private:
+  Member<blink::AbortController> abort_controller_;
+};
+
 class CacheStorageTest : public PageTestBase {
  public:
   void SetUp() override { PageTestBase::SetUp(IntSize(1, 1)); }
 
-  Cache* CreateCache(ScopedFetcherForTests* fetcher,
-                     std::unique_ptr<ErrorCacheForTests> cache) {
+  TestCache* CreateCache(ScopedFetcherForTests* fetcher,
+                         std::unique_ptr<ErrorCacheForTests> cache) {
     mojo::AssociatedRemote<mojom::blink::CacheStorageCache> cache_remote;
     cache_ = std::move(cache);
     receiver_ = std::make_unique<
         mojo::AssociatedReceiver<mojom::blink::CacheStorageCache>>(
         cache_.get(), cache_remote.BindNewEndpointAndPassDedicatedReceiver());
-    return MakeGarbageCollected<Cache>(
+    return MakeGarbageCollected<TestCache>(
         fetcher, cache_remote.Unbind(),
         blink::scheduler::GetSingleThreadTaskRunnerForTesting());
   }
@@ -752,6 +781,35 @@ TEST_F(CacheStorageTest, Add) {
   EXPECT_EQ(1, fetcher->FetchCount());
   EXPECT_EQ("dispatchBatch",
             test_cache()->GetAndClearLastErrorWebCacheMethodCalled());
+}
+
+// Verify an error response causes Cache::addAll() to trigger its associated
+// AbortController to cancel outstanding requests.
+TEST_F(CacheStorageTest, AddAllAbort) {
+  ScriptState::Scope scope(GetScriptState());
+  DummyExceptionStateForTesting exception_state;
+  auto* fetcher = MakeGarbageCollected<ScopedFetcherForTests>();
+  const String url = "http://www.cacheadd.test/";
+  const String content_type = "text/plain";
+  const String content = "hello cache";
+
+  TestCache* cache =
+      CreateCache(fetcher, std::make_unique<NotImplementedErrorCache>());
+
+  Request* request = NewRequestFromUrl(url);
+  fetcher->SetExpectedFetchUrl(&url);
+
+  Response* response = Response::error(GetScriptState());
+  fetcher->SetResponse(response);
+
+  HeapVector<RequestInfo> info_list;
+  info_list.push_back(RequestToRequestInfo(request));
+
+  ScriptPromise promise =
+      cache->addAll(GetScriptState(), info_list, exception_state);
+
+  EXPECT_EQ("TypeError: Request failed", GetRejectString(promise));
+  EXPECT_TRUE(cache->IsAborted());
 }
 
 }  // namespace
