@@ -67,11 +67,12 @@ std::unique_ptr<policy::PolicyMap> GetGoogleUpdatePolicies() {
   base::win::AssertComInitialized();
   Microsoft::WRL::ComPtr<IPolicyStatus> policy_status;
   HRESULT last_com_res =
-      ::CoCreateInstance(CLSID_PolicyStatusClass, nullptr, CLSCTX_ALL,
+      ::CoCreateInstance(CLSID_PolicyStatusMachineClass, nullptr, CLSCTX_ALL,
                          IID_PPV_ARGS(&policy_status));
 
-  // If IPolicyStatus could not be instantiated, assume the updater is not
-  // configured yet to return the policies.
+  // If PolicyStatusMachineClass cannot be instantiated or does not expose
+  // IPolicyStatus, assume the updater is not configured yet to return the
+  // policies.
   if (FAILED(last_com_res))
     return nullptr;
 

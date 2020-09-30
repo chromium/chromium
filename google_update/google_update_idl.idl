@@ -520,6 +520,8 @@ interface ICredentialDialog : IUnknown {
                                   [out] BSTR* password);
 };
 
+// This is a legacy interface that could be removed in future versions. Do not
+// use.
 [
   object,
   dual,
@@ -590,6 +592,132 @@ interface IPolicyStatus : IDispatch {
   [propget] HRESULT isRollbackToTargetVersionAllowed(
       [in] BSTR app_id,
       [out, retval] VARIANT_BOOL* rollback_allowed);
+};
+
+// IPolicyStatusValue represents the managed state of a single Google Update
+// policy. It contains the current source and value, as well as if any conflicts
+// exist with that policy.
+[
+  object,
+  dual,
+  uuid(27634814-8E41-4C35-8577-980134A96544),
+  helpstring("IPolicyStatusValue Interface"),
+  pointer_default(unique)
+]
+interface IPolicyStatusValue : IDispatch {
+  [propget] HRESULT source([out, retval] BSTR*);
+  [propget] HRESULT value([out, retval] BSTR*);
+  [propget] HRESULT hasConflict([out, retval] VARIANT_BOOL* has_conflict);
+  [propget] HRESULT conflictSource([out, retval] BSTR*);
+  [propget] HRESULT conflictValue([out, retval] BSTR*);
+}
+
+// IPolicyStatus2 exposes the following:
+// * properties for Google Update that includes Global Update state, such as the
+//   Version of the Updater, the Time that Updates were checked for last.
+// * A way to refresh the latest policies from the DM Server.
+// * the managed state of Omaha policies. Each policy returns an
+//   IPolicyStatusValue that can be queried for the current source and value, as
+//   well as if any conflicts exist with that policy.
+//   IPolicyStatusValue is implemented by an object that marshals itself by
+//   value. To get the "current" value, the policy needs to be queried fresh.
+[
+  object,
+  dual,
+  uuid(34527502-D3DB-4205-A69B-789B27EE0414),
+  helpstring("IPolicyStatus2 Interface"),
+  pointer_default(unique)
+]
+interface IPolicyStatus2 : IDispatch {
+  // Global Update Status.
+
+  // Returns the running version of the Updater. For instance, 1.3.35.454.
+  [propget] HRESULT updaterVersion([out, retval] BSTR* version);
+
+  // Returns the last time that the Updater successfully checked for updates.
+  [propget] HRESULT lastCheckedTime([out, retval] DATE* last_checked);
+
+  // DM policy cache refresh.
+
+  // Gets the latest policies from the DM Server.
+  HRESULT refreshPolicies();
+
+  // Global Update Policies
+
+  // Returns the time interval between update checks in minutes.
+  // 0 indicates updates are disabled.
+  [propget] HRESULT lastCheckPeriodMinutes(
+      [out, retval] IPolicyStatusValue** value);
+
+  // For domain-joined machines, returns the suppressed times if any, and also
+  // checks the current time against the times that updates are suppressed.
+  // Updates are suppressed if the current time falls between the start time and
+  // the duration.
+  // The duration does not account for daylight savings time. For instance, if
+  // the start time is 22:00 hours, and with a duration of 8 hours, the updates
+  // will be suppressed for 8 hours regardless of whether daylight savings time
+  // changes happen in between.
+  [propget] HRESULT updatesSuppressedTimes(
+      [out] IPolicyStatusValue** value,
+      VARIANT_BOOL* are_updates_suppressed);
+
+  // Returns the value of the "DownloadPreference" group policy or an
+  // empty string if the group policy does not exist, the policy is unknown, or
+  // an error happened.
+  [propget] HRESULT downloadPreferenceGroupPolicy(
+      [out, retval] IPolicyStatusValue** value);
+
+  // Gets the total disk size limit for cached packages. When this limit is hit,
+  // packages may be deleted from oldest until total size is below the limit.
+  [propget] HRESULT packageCacheSizeLimitMBytes(
+      [out, retval] IPolicyStatusValue** value);
+
+  // Gets the package cache life limit. If a cached package is older than this
+  // limit, it may be deleted.
+  [propget] HRESULT packageCacheExpirationTimeDays(
+      [out, retval] IPolicyStatusValue** value);
+
+  // Gets the proxy policy values.
+  [propget] HRESULT proxyMode([out, retval] IPolicyStatusValue** value);
+  [propget] HRESULT proxyPacUrl([out, retval] IPolicyStatusValue** value);
+  [propget] HRESULT proxyServer([out, retval] IPolicyStatusValue** value);
+
+  // Application Update Policies
+
+  // Returns 1 if installation of the specified app is allowed.
+  // Otherwise, returns 0.
+  [propget] HRESULT effectivePolicyForAppInstalls(
+      [in] BSTR app_id,
+      [out, retval] IPolicyStatusValue** value);
+
+  // Returns 1 if updates of the specified app is allowed.
+  // Otherwise, returns one of 0 (Disabled), 2 (ManualUpdatesOnly), or
+  // 3 (AutomaticUpdatesOnly).
+  [propget] HRESULT effectivePolicyForAppUpdates(
+      [in] BSTR app_id,
+      [out, retval] IPolicyStatusValue** value);
+
+  // Returns the target version prefix for the app, if the machine is joined to
+  // a domain and has the corresponding policy set.
+  // Examples:
+  // * "" (or not configured): update to latest version available.
+  // * "55.": update to any minor version of 55 (e.g. 55.24.34 or 55.60.2).
+  // * "55.2.": update to any minor version of 55.2 (e.g. 55.2.34 or 55.2.2).
+  // * "55.24.34": update to this specific version only.
+  [propget] HRESULT targetVersionPrefix(
+      [in] BSTR app_id,
+      [out, retval] IPolicyStatusValue** value);
+
+  // Returns whether the RollbackToTargetVersion policy has been set for the
+  // app. If RollbackToTargetVersion is set, the TargetVersionPrefix policy
+  // governs the version to rollback clients with higher versions to.
+  [propget] HRESULT isRollbackToTargetVersionAllowed(
+      [in] BSTR app_id, [out, retval] IPolicyStatusValue** value);
+
+  // Returns the target channel for the app, if the machine is joined to a
+  // domain and has the corresponding policy set.
+  [propget] HRESULT targetChannel([in] BSTR app_id,
+                                  [out, retval] IPolicyStatusValue** value);
 };
 
 // BEGIN gupdatem interfaces.
@@ -841,18 +969,6 @@ interface IProcessLauncher2 : IProcessLauncher {
                           [out] ULONG_PTR* stdout_handle);
 };
 
-[
-  object,
-  oleautomation,
-  uuid(5CCCB0EF-7073-4516-8028-4C628D0C8AAB),
-  helpstring("Google Update IOneClickProcessLauncher Interface"),
-  pointer_default(unique)
-]
-interface IOneClickProcessLauncher : IUnknown {
-  HRESULT LaunchAppCommand([in, string] const WCHAR* app_guid,
-                           [in, string] const WCHAR* cmd_id);
-};
-
 typedef enum {
   COMPLETION_CODE_SUCCESS = 1,
   COMPLETION_CODE_SUCCESS_CLOSE_UI,
@@ -994,6 +1110,9 @@ library GoogleUpdate3Lib {
   interface IPackage;
   interface ICurrentState;
 
+  interface IPolicyStatus;
+  interface IPolicyStatus2;
+  interface IPolicyStatusValue;
   interface IGoogleUpdate3Web;
   interface IAppBundleWeb;
   interface IAppWeb;
@@ -1090,13 +1209,68 @@ library GoogleUpdate3Lib {
   }
 
   [
-    uuid(521FDB42-7130-4806-822A-FC5163FAD983),
-    helpstring("PolicyStatusClass Class")
+    uuid(85D8EE2F-794F-41F0-BB03-49D56A23BEF4),
+    helpstring("PolicyStatusValueUserClass")
   ]
-  coclass PolicyStatusClass {
+  coclass PolicyStatusValueUserClass {
     [default] interface IUnknown;
   }
 
+  [
+    uuid(C6271107-A214-4F11-98C0-3F16BC670D28),
+    helpstring("PolicyStatusValueMachineClass")
+  ]
+  coclass PolicyStatusValueMachineClass {
+    [default] interface IUnknown;
+  }
+
+  [
+    uuid(6DDCE70D-A4AE-4E97-908C-BE7B2DB750AD),
+    helpstring("Policy Status for per-user applications.")
+  ]
+  coclass PolicyStatusUserClass {
+    [default] interface IUnknown;
+  }
+
+  [
+    uuid(521FDB42-7130-4806-822A-FC5163FAD983),
+    helpstring("Policy Status pass-through broker for machine applications.")
+  ]
+  coclass PolicyStatusMachineClass {
+    [default] interface IUnknown;
+  }
+
+  [
+    uuid(1C4CDEFF-756A-4804-9E77-3E8EB9361016),
+    helpstring("Policy Status for per-machine applications.")
+  ]
+  coclass PolicyStatusMachineServiceClass {
+    [default] interface IUnknown;
+  }
+
+  [
+    uuid(ADDF22CF-3E9B-4CD7-9139-8169EA6636E4),
+    helpstring("Fallback for if PolicyStatusMachineServiceClass fails.")
+  ]
+  coclass PolicyStatusMachineFallbackClass {
+    [default] interface IUnknown;
+  }
+
+  [
+    uuid(02B24573-5230-485A-8787-AD56B20E8ADB),
+    helpstring("GoogleComProxyMachineClass")
+  ]
+  coclass GoogleComProxyMachineClass {
+    [default] interface IUnknown;
+  }
+
+  [
+    uuid(D89179AA-B869-4491-AC5F-615D2B10696E),
+    helpstring("GoogleComProxyUserClass")
+  ]
+  coclass GoogleComProxyUserClass {
+    [default] interface IUnknown;
+  }
 
   // BEGIN Legacy google_update_idl coclasses.
 
@@ -1106,22 +1280,6 @@ library GoogleUpdate3Lib {
   ]
   coclass ProcessLauncherClass {
     [default] interface IUnknown;
-  }
-
-  [
-    uuid(51F9E8EF-59D7-475b-A106-C7EA6F30C119),
-    helpstring("OneClickUserProcessLauncherClass Class")
-  ]
-  coclass OneClickUserProcessLauncherClass {
-    [default] interface IOneClickProcessLauncher;
-  }
-
-  [
-    uuid(AAD4AE2E-D834-46d4-8B09-490FAC9C722B),
-    helpstring("OneClickMachineProcessLauncherClass Class")
-  ]
-  coclass OneClickMachineProcessLauncherClass {
-    [default] interface IOneClickProcessLauncher;
   }
 
   [
