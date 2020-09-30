@@ -154,7 +154,13 @@ IN_PROC_BROWSER_TEST_F(ProfileHelperTest, OpenNewWindowForProfile) {
 #endif
 }
 
-IN_PROC_BROWSER_TEST_F(ProfileHelperTest, DeleteSoleProfile) {
+// Test is flaky on Lacros. crbug.com/1130131
+#if defined(OS_LINUX)
+#define MAYBE_DeleteSoleProfile DISABLED_DeleteSoleProfile
+#else
+#define MAYBE_DeleteSoleProfile DeleteSoleProfile
+#endif
+IN_PROC_BROWSER_TEST_F(ProfileHelperTest, MAYBE_DeleteSoleProfile) {
   content::TestWebUI web_ui;
   Browser* original_browser = browser();
   ProfileAttributesStorage& storage =
