@@ -127,17 +127,6 @@ device::mojom::VRDisplayInfoPtr ValidateVRDisplayInfo(
 
   ret->left_eye = ValidateEyeParameters(info->left_eye.get());
   ret->right_eye = ValidateEyeParameters(info->right_eye.get());
-
-  float kMinFramebufferScale = 0.1f;
-  float kMaxFramebufferScale = 1.0f;
-
-  if (info->webxr_default_framebuffer_scale <= kMaxFramebufferScale &&
-      info->webxr_default_framebuffer_scale >= kMinFramebufferScale) {
-    ret->webxr_default_framebuffer_scale =
-        info->webxr_default_framebuffer_scale;
-  } else {
-    ret->webxr_default_framebuffer_scale = 1;
-  }
   return ret;
 }
 

@@ -119,6 +119,7 @@ class XRSession final
             EnvironmentBlendMode environment_blend_mode,
             InteractionMode interaction_mode,
             bool uses_input_eventing,
+            float default_framebuffer_scale,
             bool sensorless_session,
             XRSessionFeatureSet enabled_features);
   ~XRSession() override = default;
@@ -571,6 +572,7 @@ class XRSession final
   int output_height_ = 1;
 
   bool uses_input_eventing_ = false;
+  float default_framebuffer_scale_ = 1.0;
 
   // Indicates that this is a sensorless session which should only support the
   // identity reference space.

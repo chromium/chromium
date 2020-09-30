@@ -1424,11 +1424,11 @@ void XRSystem::OnRequestSessionReturned(
     enabled_features.insert(feature);
   }
 
-  XRSession* session =
-      CreateSession(query->mode(), blend_mode, interaction_mode,
-                    std::move(session_ptr->client_receiver),
-                    std::move(session_ptr->display_info),
-                    session_ptr->uses_input_eventing, enabled_features);
+  XRSession* session = CreateSession(
+      query->mode(), blend_mode, interaction_mode,
+      std::move(session_ptr->client_receiver),
+      std::move(session_ptr->display_info), session_ptr->uses_input_eventing,
+      session_ptr->default_framebuffer_scale, enabled_features);
 
   frameProvider()->OnSessionStarted(session, std::move(session_ptr));
 
@@ -1533,11 +1533,13 @@ XRSession* XRSystem::CreateSession(
         client_receiver,
     device::mojom::blink::VRDisplayInfoPtr display_info,
     bool uses_input_eventing,
+    float default_framebuffer_scale,
     XRSessionFeatureSet enabled_features,
     bool sensorless_session) {
   XRSession* session = MakeGarbageCollected<XRSession>(
       this, std::move(client_receiver), mode, blend_mode, interaction_mode,
-      uses_input_eventing, sensorless_session, std::move(enabled_features));
+      uses_input_eventing, default_framebuffer_scale, sensorless_session,
+      std::move(enabled_features));
   if (display_info)
     session->SetXRDisplayInfo(std::move(display_info));
   sessions_.insert(session);
@@ -1553,6 +1555,7 @@ XRSession* XRSystem::CreateSensorlessInlineSession() {
       device::mojom::blink::XRSessionMode::kInline, blend_mode,
       interaction_mode, mojo::NullReceiver() /* client receiver */,
       nullptr /* display_info */, false /* uses_input_eventing */,
+      1.0 /* default_framebuffer_scale */,
       {device::mojom::XRSessionFeature::REF_SPACE_VIEWER},
       true /* sensorless_session */);
 }

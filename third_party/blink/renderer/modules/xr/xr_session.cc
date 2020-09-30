@@ -12,6 +12,7 @@
 
 #include "base/auto_reset.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/ranges.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_xr_frame_request_callback.h"
@@ -99,6 +100,9 @@ const char kEntityTypesNotSpecified[] =
     "No entityTypes specified: the array cannot be empty!";
 
 const double kDegToRad = M_PI / 180.0;
+
+const float kMinDefaultFramebufferScale = 0.1f;
+const float kMaxDefaultFramebufferScale = 1.0f;
 
 // Indices into the views array.
 const unsigned int kMonoOrStereoLeftView = 0;
@@ -307,6 +311,7 @@ XRSession::XRSession(
     EnvironmentBlendMode environment_blend_mode,
     InteractionMode interaction_mode,
     bool uses_input_eventing,
+    float default_framebuffer_scale,
     bool sensorless_session,
     XRSessionFeatureSet enabled_features)
     : xr_(xr),
@@ -329,6 +334,11 @@ XRSession::XRSession(
   render_state_ = MakeGarbageCollected<XRRenderState>(immersive());
   // Ensure that frame focus is considered in the initial visibilityState.
   UpdateVisibilityState();
+
+  // Clamp to a reasonable min/max size for the default framebuffer scale.
+  default_framebuffer_scale_ =
+      base::ClampToRange(default_framebuffer_scale, kMinDefaultFramebufferScale,
+                         kMaxDefaultFramebufferScale);
 
   world_tracking_state_ = MakeGarbageCollected<XRWorldTrackingState>(
       IsFeatureEnabled(device::mojom::XRSessionFeature::PLANE_DETECTION));
@@ -1331,12 +1341,11 @@ void XRSession::HandleShutdown() {
 
 double XRSession::NativeFramebufferScale() const {
   if (immersive()) {
-    double scale = display_info_->webxr_default_framebuffer_scale;
-    DCHECK(scale);
+    DCHECK(default_framebuffer_scale_);
 
     // Return the inverse of the default scale, since that's what we'll need to
     // multiply the default size by to get back to the native size.
-    return 1.0 / scale;
+    return 1.0 / default_framebuffer_scale_;
   }
   return 1.0;
 }
@@ -1346,7 +1355,7 @@ DoubleSize XRSession::DefaultFramebufferSize() const {
     return OutputCanvasSize();
   }
 
-  double scale = display_info_->webxr_default_framebuffer_scale;
+  double scale = default_framebuffer_scale_;
   double width = display_info_->left_eye->render_width;
   double height = display_info_->left_eye->render_height;
 

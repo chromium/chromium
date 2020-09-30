@@ -29,6 +29,18 @@
 #include "ui/gl/gl_image_ahardwarebuffer.h"
 
 namespace {
+
+// Default downscale factor for computing the recommended WebXR
+// render_width/render_height from the 1:1 pixel mapped size. Using a rather
+// aggressive downscale due to the high overhead of copying pixels
+// twice before handing off to GVR. For comparison, the polyfill
+// uses approximately 0.55 on a Pixel XL.
+static constexpr float kRecommendedResolutionScale = 0.7;
+
+// The scale factor for WebXR on devices that don't have shared buffer
+// support. (Android N and earlier.)
+static constexpr float kNoSharedBufferResolutionScale = 0.5;
+
 constexpr int kWebVrInitialFrameTimeoutSeconds = 5;
 constexpr int kWebVrSpinnerTimeoutSeconds = 2;
 
@@ -199,6 +211,15 @@ void GvrSchedulerDelegate::ConnectPresentingService(
   session->data_provider = frame_data_receiver_.BindNewPipeAndPassRemote();
   session->submit_frame_sink = std::move(submit_frame_sink);
   session->display_info = std::move(display_info);
+
+  // This scalar will be applied in the renderer to the recommended render
+  // target sizes. For WebVR it will always be applied, for WebXR it can be
+  // overridden.
+  if (base::AndroidHardwareBufferCompat::IsSupportAvailable()) {
+    session->default_framebuffer_scale = kRecommendedResolutionScale;
+  } else {
+    session->default_framebuffer_scale = kNoSharedBufferResolutionScale;
+  }
 
   if (CanSendWebXrVSync())
     ScheduleWebXrFrameTimeout();

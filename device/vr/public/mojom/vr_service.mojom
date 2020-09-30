@@ -129,6 +129,10 @@ struct XRSession {
   // Indicates whether the device backing this session sends input events solely
   // via eventing (as opposed to polling).
   bool uses_input_eventing;
+
+  // The default scale that should be applied to the native framebuffer size
+  // unless overridden by the developer.
+  float default_framebuffer_scale = 1.0;
 };
 
 // This structure contains the infomation and interfaces needed to create a two
@@ -303,7 +307,6 @@ struct VRDisplayInfo {
   // required for devices which have the can_present capability.
   VREyeParameters? left_eye;
   VREyeParameters? right_eye;
-  float webxr_default_framebuffer_scale = 1.0;
 };
 
 // Frame transport method from the Renderer's point of view.

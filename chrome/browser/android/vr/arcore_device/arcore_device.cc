@@ -35,7 +35,6 @@ namespace {
 
 mojom::VRDisplayInfoPtr CreateVRDisplayInfo(const gfx::Size& frame_size) {
   mojom::VRDisplayInfoPtr device = mojom::VRDisplayInfo::New();
-  device->webxr_default_framebuffer_scale = 1.0;
   device->left_eye = mojom::VREyeParameters::New();
   device->right_eye = nullptr;
   mojom::VREyeParametersPtr& left_eye = device->left_eye;
