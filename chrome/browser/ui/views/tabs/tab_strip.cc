@@ -3415,6 +3415,11 @@ void TabStrip::UpdateIdealBounds() {
   if (tab_count() == 0)
     return;  // Should only happen during creation/destruction, ignore.
 
+  // Update |last_available_width_| in case there is a different amount of
+  // available width than there was in the last layout (e.g. if the tabstrip
+  // is currently hidden).
+  last_available_width_ = GetAvailableWidthForTabStrip();
+
   if (touch_layout_) {
     const int trailing_x = tabs_.ideal_bounds(tab_count() - 1).right();
     tab_controls_container_ideal_bounds_.set_origin(
