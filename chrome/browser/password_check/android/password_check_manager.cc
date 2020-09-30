@@ -72,7 +72,8 @@ PasswordCheckManager::PasswordCheckManager(Profile* profile, Observer* observer)
   // empty list.
   saved_passwords_presenter_.Init();
   insecure_credentials_manager_.Init();
-  if (!ShouldOfferAutomaticPasswordChange()) {
+
+  if (!ShouldFetchPasswordScripts()) {
     // Ensure that scripts are treated as initialized if they are unnecessary.
     FulfillPrecondition(kScriptsCachePrewarmed);
   }
@@ -224,13 +225,14 @@ CompromisedCredentialForUI PasswordCheckManager::MakeUICredential(
       credential.signon_realm);
 
   ui_credential.display_username = GetDisplayUsername(credential.username);
-  ui_credential.has_script =
-      !credential.username.empty() && ShouldOfferAutomaticPasswordChange() &&
+  ui_credential.has_startable_script =
+      !credential.username.empty() && ShouldFetchPasswordScripts() &&
       password_script_fetcher_->IsScriptAvailable(
           url::Origin::Create(credential.url.GetOrigin()));
-  // TODO(crbug.com/1132230): Implement separate logic for scripts fetching and
-  // auto buttons. For now, has_auto_change_button <=> has_script.
-  ui_credential.has_auto_change_button = ui_credential.has_script;
+  ui_credential.has_auto_change_button =
+      ui_credential.has_startable_script &&
+      base::FeatureList::IsEnabled(
+          password_manager::features::kPasswordChangeInSettings);
 
   if (facet.IsValidAndroidFacetURI()) {
     const PasswordForm& android_form =
@@ -305,7 +307,7 @@ bool PasswordCheckManager::AreScriptsRefreshed() const {
 }
 
 void PasswordCheckManager::RefreshScripts() {
-  if (!ShouldOfferAutomaticPasswordChange()) {
+  if (!ShouldFetchPasswordScripts()) {
     FulfillPrecondition(kScriptsCachePrewarmed);
     return;
   }
@@ -327,7 +329,7 @@ void PasswordCheckManager::OnScriptsFetched() {
   }
 }
 
-bool PasswordCheckManager::ShouldOfferAutomaticPasswordChange() const {
+bool PasswordCheckManager::ShouldFetchPasswordScripts() const {
   SyncState sync_state = password_manager_util::GetPasswordSyncState(
       ProfileSyncServiceFactory::GetForProfile(profile_));
 
@@ -338,7 +340,7 @@ bool PasswordCheckManager::ShouldOfferAutomaticPasswordChange() const {
   }
 
   return base::FeatureList::IsEnabled(
-      password_manager::features::kPasswordChangeInSettings);
+      password_manager::features::kPasswordScriptsFetching);
 }
 
 bool PasswordCheckManager::IsPreconditionFulfilled(

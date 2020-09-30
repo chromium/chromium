@@ -25,7 +25,7 @@ public final class PasswordCheckMetricsRecorder {
 
     public static void recordCheckResolutionAction(
             @PasswordCheckResolutionAction int action, CompromisedCredential credential) {
-        if (credential.hasScript()) {
+        if (credential.hasStartableScript()) {
             RecordHistogram.recordEnumeratedHistogram(
                     "PasswordManager.AutomaticChange.ForSitesWithScripts", action,
                     PasswordCheckResolutionAction.COUNT);

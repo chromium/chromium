@@ -175,6 +175,7 @@ auto ExpectCompromisedCredentialForUI(
     const base::Optional<std::string>& package_name,
     const base::Optional<std::string>& change_password_url,
     InsecureCredentialTypeFlags insecure_type,
+    bool has_startable_script,
     bool has_auto_change_button) {
   auto package_name_field_matcher =
       package_name.has_value()
@@ -191,6 +192,8 @@ auto ExpectCompromisedCredentialForUI(
       Field(&CompromisedCredentialForUI::display_origin, display_origin),
       package_name_field_matcher, change_password_url_field_matcher,
       Field(&CompromisedCredentialForUI::insecure_type, insecure_type),
+      Field(&CompromisedCredentialForUI::has_startable_script,
+            has_startable_script),
       Field(&CompromisedCredentialForUI::has_auto_change_button,
             has_auto_change_button));
 }
@@ -291,8 +294,10 @@ TEST_F(PasswordCheckManagerTest,
        RunCheckAfterLastInitializationAutomaticChangeOn) {
   // Enable password sync
   sync_service().SetActiveDataTypes(syncer::ModelTypeSet(syncer::PASSWORDS));
-  feature_list().InitAndEnableFeature(
-      password_manager::features::kPasswordChangeInSettings);
+  feature_list().InitWithFeatures(
+      {password_manager::features::kPasswordScriptsFetching,
+       password_manager::features::kPasswordChangeInSettings},
+      {});
   EXPECT_CALL(mock_observer(), OnPasswordCheckStatusChanged).Times(AtLeast(1));
   EXPECT_CALL(mock_observer(), OnSavedPasswordsFetched(1));
   store().AddLogin(MakeSavedPassword(kExampleCom, kUsername1));
@@ -331,6 +336,7 @@ TEST_F(PasswordCheckManagerTest, CorrectlyCreatesUIStructForSiteCredential) {
           base::ASCIIToUTF16(kUsername1), base::ASCIIToUTF16("example.com"),
           base::nullopt, "https://example.com/",
           InsecureCredentialTypeFlags::kCredentialLeaked,
+          /*has_startable_script=*/false,
           /*has_auto_change_button=*/false)));
 }
 
@@ -355,11 +361,13 @@ TEST_F(PasswordCheckManagerTest, CorrectlyCreatesUIStructForAppCredentials) {
               base::ASCIIToUTF16(kUsername1),
               base::ASCIIToUTF16("App (com.example.app)"), "com.example.app",
               base::nullopt, InsecureCredentialTypeFlags::kCredentialLeaked,
+              /*has_startable_script=*/false,
               /*has_auto_change_button=*/false),
           ExpectCompromisedCredentialForUI(
               base::ASCIIToUTF16(kUsername2), base::ASCIIToUTF16("Example App"),
               "com.example.app", base::nullopt,
               InsecureCredentialTypeFlags::kCredentialLeaked,
+              /*has_startable_script=*/false,
               /*has_auto_change_button=*/false)));
 }
 
@@ -394,22 +402,28 @@ TEST_F(PasswordCheckManagerTest,
   InitializeManager();
   // Disable password sync
   sync_service().SetActiveDataTypes(syncer::ModelTypeSet());
-  feature_list().InitAndEnableFeature(
-      password_manager::features::kPasswordChangeInSettings);
+  feature_list().InitWithFeatures(
+      {password_manager::features::kPasswordScriptsFetching,
+       password_manager::features::kPasswordChangeInSettings},
+      {});
   store().AddLogin(MakeSavedPassword(kExampleCom, kUsername1));
   store().AddCompromisedCredentials(MakeCompromised(kExampleCom, kUsername1));
 
   RunUntilIdle();
+  // To have precise metrics, scripts are not requested for users who cannot
+  // start a script, i.e. non-sync users.
   EXPECT_CALL(fetcher(), RefreshScriptsIfNecessary).Times(0);
 
   manager().RefreshScripts();
 
+  EXPECT_CALL(fetcher(), IsScriptAvailable).Times(0);
   EXPECT_THAT(
       manager().GetCompromisedCredentials(),
       ElementsAre(ExpectCompromisedCredentialForUI(
           base::ASCIIToUTF16(kUsername1), base::ASCIIToUTF16("example.com"),
           base::nullopt, "https://example.com/",
           InsecureCredentialTypeFlags::kCredentialLeaked,
+          /*has_startable_script=*/false,
           /*has_auto_change_button=*/false)));
 }
 
@@ -418,8 +432,10 @@ TEST_F(PasswordCheckManagerTest,
   InitializeManager();
   // Enable password sync
   sync_service().SetActiveDataTypes(syncer::ModelTypeSet(syncer::PASSWORDS));
-  feature_list().InitAndEnableFeature(
-      password_manager::features::kPasswordChangeInSettings);
+  feature_list().InitWithFeatures(
+      {password_manager::features::kPasswordScriptsFetching,
+       password_manager::features::kPasswordChangeInSettings},
+      {});
   store().AddLogin(MakeSavedPassword(kExampleCom, kUsername1));
   store().AddCompromisedCredentials(MakeCompromised(kExampleCom, kUsername1));
 
@@ -430,13 +446,14 @@ TEST_F(PasswordCheckManagerTest,
 
   manager().RefreshScripts();
 
-  EXPECT_CALL(fetcher(), IsScriptAvailable).WillRepeatedly(Return(true));
+  EXPECT_CALL(fetcher(), IsScriptAvailable).WillOnce(Return(true));
   EXPECT_THAT(
       manager().GetCompromisedCredentials(),
       ElementsAre(ExpectCompromisedCredentialForUI(
           base::ASCIIToUTF16(kUsername1), base::ASCIIToUTF16("example.com"),
           base::nullopt, "https://example.com/",
           InsecureCredentialTypeFlags::kCredentialLeaked,
+          /*has_startable_script=*/true,
           /*has_auto_change_button=*/true)));
 }
 
@@ -445,8 +462,10 @@ TEST_F(PasswordCheckManagerTest,
   InitializeManager();
   // Enable password sync
   sync_service().SetActiveDataTypes(syncer::ModelTypeSet(syncer::PASSWORDS));
-  feature_list().InitAndEnableFeature(
-      password_manager::features::kPasswordChangeInSettings);
+  feature_list().InitWithFeatures(
+      {password_manager::features::kPasswordScriptsFetching,
+       password_manager::features::kPasswordChangeInSettings},
+      {});
   store().AddLogin(MakeSavedPassword(kExampleCom, ""));
   store().AddCompromisedCredentials(MakeCompromised(kExampleCom, ""));
 
@@ -457,13 +476,80 @@ TEST_F(PasswordCheckManagerTest,
 
   manager().RefreshScripts();
 
-  // Scripts are not offered if username is empty.
+  // Particular script availability is not requested as a script cannot be
+  // started with an empty username.
+  EXPECT_CALL(fetcher(), IsScriptAvailable).Times(0);
   EXPECT_THAT(
       manager().GetCompromisedCredentials(),
       ElementsAre(ExpectCompromisedCredentialForUI(
           base::ASCIIToUTF16("No username"), base::ASCIIToUTF16("example.com"),
           base::nullopt, "https://example.com/",
           InsecureCredentialTypeFlags::kCredentialLeaked,
+          /*has_startable_script=*/false,
+          /*has_auto_change_button=*/false)));
+}
+
+TEST_F(PasswordCheckManagerTest,
+       CorrectlyCreatesUIStructWithScriptsFetchingButAutomaticChangeOff) {
+  InitializeManager();
+  // Enable password sync
+  sync_service().SetActiveDataTypes(syncer::ModelTypeSet(syncer::PASSWORDS));
+  feature_list().InitWithFeatures(
+      /*enabled_features=*/{password_manager::features::
+                                kPasswordScriptsFetching},
+      /*disabled_features=*/{
+          password_manager::features::kPasswordChangeInSettings});
+  store().AddLogin(MakeSavedPassword(kExampleCom, kUsername1));
+  store().AddCompromisedCredentials(MakeCompromised(kExampleCom, kUsername1));
+
+  RunUntilIdle();
+  EXPECT_CALL(fetcher(), RefreshScriptsIfNecessary)
+      .WillOnce(Invoke(
+          [](base::OnceClosure callback) { std::move(callback).Run(); }));
+
+  manager().RefreshScripts();
+
+  // A script is available but an auto change button is not shown because
+  // |kPasswordChangeInSettings| is disabled.
+  EXPECT_CALL(fetcher(), IsScriptAvailable).WillOnce(Return(true));
+  EXPECT_THAT(
+      manager().GetCompromisedCredentials(),
+      ElementsAre(ExpectCompromisedCredentialForUI(
+          base::ASCIIToUTF16(kUsername1), base::ASCIIToUTF16("example.com"),
+          base::nullopt, "https://example.com/",
+          InsecureCredentialTypeFlags::kCredentialLeaked,
+          /*has_startable_script=*/true,
+          /*has_auto_change_button=*/false)));
+}
+
+TEST_F(PasswordCheckManagerTest,
+       CorrectlyCreatesUIStructWithScriptsFetchingButNoAvailableScript) {
+  InitializeManager();
+  // Enable password sync
+  sync_service().SetActiveDataTypes(syncer::ModelTypeSet(syncer::PASSWORDS));
+  feature_list().InitWithFeatures(
+      {password_manager::features::kPasswordScriptsFetching,
+       password_manager::features::kPasswordChangeInSettings},
+      {});
+  store().AddLogin(MakeSavedPassword(kExampleCom, kUsername1));
+  store().AddCompromisedCredentials(MakeCompromised(kExampleCom, kUsername1));
+
+  RunUntilIdle();
+  EXPECT_CALL(fetcher(), RefreshScriptsIfNecessary)
+      .WillOnce(Invoke(
+          [](base::OnceClosure callback) { std::move(callback).Run(); }));
+
+  manager().RefreshScripts();
+
+  // A script is not available and therefore no auto change button is shown.
+  EXPECT_CALL(fetcher(), IsScriptAvailable).WillOnce(Return(false));
+  EXPECT_THAT(
+      manager().GetCompromisedCredentials(),
+      ElementsAre(ExpectCompromisedCredentialForUI(
+          base::ASCIIToUTF16(kUsername1), base::ASCIIToUTF16("example.com"),
+          base::nullopt, "https://example.com/",
+          InsecureCredentialTypeFlags::kCredentialLeaked,
+          /*has_startable_script=*/false,
           /*has_auto_change_button=*/false)));
 }
 

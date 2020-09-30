@@ -51,7 +51,7 @@ class PasswordCheckManager
     base::string16 display_origin;
     std::string package_name;
     std::string change_password_url;
-    bool has_script = false;
+    bool has_startable_script = false;
     bool has_auto_change_button = false;
   };
 
@@ -183,10 +183,11 @@ class PasswordCheckManager
   // in the account if the quota limit was reached.
   bool CanUseAccountCheck() const;
 
-  // Returns true if the automatic password change should be offered.
-  // It should be offered only to sync users and who have
-  // kPasswordChangeInSettings enabled.
-  bool ShouldOfferAutomaticPasswordChange() const;
+  // Returns true if the password scripts fetching (kPasswordScriptsFetching) is
+  // enabled. To have precise metrics about user actions on credentials with
+  // scripts, scripts are fetched only for the users who can start a script,
+  // i.e. sync users.
+  bool ShouldFetchPasswordScripts() const;
 
   // Callback when PasswordScriptsFetcher's cache has been warmed up.
   void OnScriptsFetched();
