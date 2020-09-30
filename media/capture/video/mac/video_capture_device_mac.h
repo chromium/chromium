@@ -103,7 +103,8 @@ class VideoCaptureDeviceMac
                                       VideoCaptureApi capture_api,
                                       VideoCaptureTransportType transport_type);
 
-  static bool IsPanTiltZoomSupported(const std::string& device_model);
+  static VideoCaptureControlSupport GetControlSupport(
+      const std::string& device_model);
 
  private:
   void SetErrorState(VideoCaptureError error,

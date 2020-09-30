@@ -138,18 +138,25 @@ class FakeV4L2Impl::OpenedDevice {
   int queryctrl(v4l2_queryctrl* control) {
     switch (control->id) {
       case V4L2_CID_PAN_ABSOLUTE:
-      case V4L2_CID_TILT_ABSOLUTE:
-      case V4L2_CID_ZOOM_ABSOLUTE:
-        if (!config_.descriptor.pan_tilt_zoom_supported())
+        if (!config_.descriptor.control_support().pan)
           return EINVAL;
-        control->flags = 0;
-        control->minimum = 100;
-        control->maximum = 400;
-        control->step = 1;
-        return 0;
+        break;
+      case V4L2_CID_TILT_ABSOLUTE:
+        if (!config_.descriptor.control_support().tilt)
+          return EINVAL;
+        break;
+      case V4L2_CID_ZOOM_ABSOLUTE:
+        if (!config_.descriptor.control_support().zoom)
+          return EINVAL;
+        break;
       default:
         return EINVAL;
     }
+    control->flags = 0;
+    control->minimum = 100;
+    control->maximum = 400;
+    control->step = 1;
+    return 0;
   }
 
   int s_fmt(v4l2_format* format) {

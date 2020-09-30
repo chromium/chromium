@@ -224,7 +224,7 @@ void FakeVideoCaptureDeviceFactory::GetDevicesInfo(
 
     devices_info.emplace_back(VideoCaptureDeviceDescriptor(
         base::StringPrintf("fake_device_%d", entry_index), entry.device_id, api,
-        entry.photo_device_config.pan_tilt_zoom_supported,
+        entry.photo_device_config.control_support,
         VideoCaptureTransportType::OTHER_TRANSPORT));
 
     devices_info.back().supported_formats =
@@ -341,11 +341,21 @@ void FakeVideoCaptureDeviceFactory::ParseFakeDevicesConfigFromOptionsString(
       }
     } else if (base::EqualsCaseInsensitiveASCII(param.front(),
                                                 "hardware-support")) {
-      photo_device_config.pan_tilt_zoom_supported = false;
-      if (base::EqualsCaseInsensitiveASCII(param.back(), "pan-tilt-zoom"))
-        photo_device_config.pan_tilt_zoom_supported = true;
-      else if (!base::EqualsCaseInsensitiveASCII(param.back(), "none"))
-        LOG(WARNING) << "Unknown hardware support " << param.back();
+      photo_device_config.control_support = VideoCaptureControlSupport();
+      if (!base::EqualsCaseInsensitiveASCII(param.back(), "none")) {
+        for (const std::string& support :
+             base::SplitString(param.back(), "-", base::KEEP_WHITESPACE,
+                               base::SPLIT_WANT_NONEMPTY)) {
+          if (base::EqualsCaseInsensitiveASCII(support, "pan"))
+            photo_device_config.control_support.pan = true;
+          else if (base::EqualsCaseInsensitiveASCII(support, "tilt"))
+            photo_device_config.control_support.tilt = true;
+          else if (base::EqualsCaseInsensitiveASCII(support, "zoom"))
+            photo_device_config.control_support.zoom = true;
+          else
+            LOG(WARNING) << "Unsupported hardware support " << support;
+        }
+      }
     }
   }
 

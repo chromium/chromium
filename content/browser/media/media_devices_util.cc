@@ -196,6 +196,8 @@ blink::WebMediaDeviceInfo TranslateMediaDeviceInfo(
           : GetHMACForMediaDeviceID(salt_and_origin.group_id_salt,
                                     salt_and_origin.origin,
                                     device_info.group_id),
+      has_permission ? device_info.video_control_support
+                     : media::VideoCaptureControlSupport(),
       has_permission ? device_info.video_facing
                      : media::MEDIA_VIDEO_FACING_NONE);
 }

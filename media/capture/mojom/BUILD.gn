@@ -42,6 +42,10 @@ mojom("video_capture") {
         cpp = "::media::VideoCaptureBufferType"
       },
       {
+        mojom = "media.mojom.VideoCaptureControlSupport"
+        cpp = "::media::VideoCaptureControlSupport"
+      },
+      {
         mojom = "media.mojom.VideoCaptureError"
         cpp = "::media::VideoCaptureError"
       },

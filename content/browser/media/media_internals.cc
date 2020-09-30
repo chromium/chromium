@@ -542,6 +542,7 @@ void MediaInternals::UpdateVideoCaptureDeviceCapabilities(
   video_capture_capabilities_cached_data_.Clear();
 
   for (const auto& device_format_pair : descriptors_and_formats) {
+    auto control_support = std::make_unique<base::ListValue>();
     auto format_list = std::make_unique<base::ListValue>();
     // TODO(nisse): Representing format information as a string, to be
     // parsed by the javascript handler, is brittle. Consider passing
@@ -551,6 +552,12 @@ void MediaInternals::UpdateVideoCaptureDeviceCapabilities(
         std::get<0>(device_format_pair);
     const media::VideoCaptureFormats& supported_formats =
         std::get<1>(device_format_pair);
+    if (descriptor.control_support().pan)
+      control_support->AppendString("pan");
+    if (descriptor.control_support().tilt)
+      control_support->AppendString("tilt");
+    if (descriptor.control_support().zoom)
+      control_support->AppendString("zoom");
     for (const auto& format : supported_formats)
       format_list->AppendString(media::VideoCaptureFormat::ToString(format));
 
@@ -558,8 +565,7 @@ void MediaInternals::UpdateVideoCaptureDeviceCapabilities(
         new base::DictionaryValue());
     device_dict->SetString("id", descriptor.device_id);
     device_dict->SetString("name", descriptor.GetNameAndModel());
-    device_dict->SetBoolean("panTiltZoomSupported",
-                            descriptor.pan_tilt_zoom_supported());
+    device_dict->Set("controlSupport", std::move(control_support));
     device_dict->Set("formats", std::move(format_list));
     device_dict->SetString("captureApi", descriptor.GetCaptureApiTypeString());
     video_capture_capabilities_cached_data_.Append(std::move(device_dict));

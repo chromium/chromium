@@ -68,14 +68,14 @@ MediaStreamDevice::MediaStreamDevice(
     mojom::MediaStreamType type,
     const std::string& id,
     const std::string& name,
+    const media::VideoCaptureControlSupport& control_support,
     media::VideoFacingMode facing,
-    const base::Optional<std::string>& group_id,
-    bool pan_tilt_zoom_supported)
+    const base::Optional<std::string>& group_id)
     : type(type),
       id(id),
+      video_control_support(control_support),
       video_facing(facing),
       group_id(group_id),
-      pan_tilt_zoom_supported(pan_tilt_zoom_supported),
       name(name) {}
 
 MediaStreamDevice::MediaStreamDevice(mojom::MediaStreamType type,
@@ -98,9 +98,9 @@ MediaStreamDevice::MediaStreamDevice(mojom::MediaStreamType type,
 MediaStreamDevice::MediaStreamDevice(const MediaStreamDevice& other)
     : type(other.type),
       id(other.id),
+      video_control_support(other.video_control_support),
       video_facing(other.video_facing),
       group_id(other.group_id),
-      pan_tilt_zoom_supported(other.pan_tilt_zoom_supported),
       matched_output_device_id(other.matched_output_device_id),
       name(other.name),
       input(other.input),
@@ -118,6 +118,7 @@ MediaStreamDevice& MediaStreamDevice::operator=(
     return *this;
   type = other.type;
   id = other.id;
+  video_control_support = other.video_control_support;
   video_facing = other.video_facing;
   group_id = other.group_id;
   matched_output_device_id = other.matched_output_device_id;

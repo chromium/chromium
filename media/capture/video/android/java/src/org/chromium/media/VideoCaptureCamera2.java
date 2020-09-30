@@ -1363,7 +1363,7 @@ public class VideoCaptureCamera2 extends VideoCapture {
         }
     }
 
-    public static boolean isPanTiltZoomSupported(int id) {
+    public static boolean isZoomSupported(int id) {
         final CameraCharacteristics cameraCharacteristics = getCameraCharacteristics(id);
         if (cameraCharacteristics == null) {
             return false;

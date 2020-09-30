@@ -32,6 +32,13 @@ enum class VideoCaptureApi {
   UNKNOWN
 };
 
+// Represents capture device's support for different controls.
+struct VideoCaptureControlSupport {
+  bool pan = false;
+  bool tilt = false;
+  bool zoom = false;
+};
+
 enum class VideoCaptureTransportType {
   // For AVFoundation Api, identify devices that are built-in or USB.
   MACOSX_USB_OR_BUILT_IN,
@@ -55,7 +62,8 @@ struct CAPTURE_EXPORT VideoCaptureDeviceDescriptor {
       const std::string& display_name,
       const std::string& device_id,
       VideoCaptureApi capture_api = VideoCaptureApi::UNKNOWN,
-      bool pan_tilt_zoom_supported = false,
+      const VideoCaptureControlSupport& control_support =
+          VideoCaptureControlSupport(),
       VideoCaptureTransportType transport_type =
           VideoCaptureTransportType::OTHER_TRANSPORT);
   VideoCaptureDeviceDescriptor(
@@ -63,7 +71,7 @@ struct CAPTURE_EXPORT VideoCaptureDeviceDescriptor {
       const std::string& device_id,
       const std::string& model_id,
       VideoCaptureApi capture_api,
-      bool pan_tilt_zoom_supported,
+      const VideoCaptureControlSupport& control_support,
       VideoCaptureTransportType transport_type =
           VideoCaptureTransportType::OTHER_TRANSPORT,
       VideoFacingMode facing = VideoFacingMode::MEDIA_VIDEO_FACING_NONE);
@@ -86,9 +94,11 @@ struct CAPTURE_EXPORT VideoCaptureDeviceDescriptor {
   const std::string& display_name() const { return display_name_; }
   void set_display_name(const std::string& name);
 
-  bool pan_tilt_zoom_supported() const { return pan_tilt_zoom_supported_; }
-  void set_pan_tilt_zoom_supported(bool supported) {
-    pan_tilt_zoom_supported_ = supported;
+  const VideoCaptureControlSupport& control_support() const {
+    return control_support_;
+  }
+  void set_control_support(const VideoCaptureControlSupport& control_support) {
+    control_support_ = control_support;
   }
 
   std::string device_id;
@@ -104,7 +114,7 @@ struct CAPTURE_EXPORT VideoCaptureDeviceDescriptor {
 
  private:
   std::string display_name_;  // Name that is intended for display in the UI
-  bool pan_tilt_zoom_supported_ = false;
+  VideoCaptureControlSupport control_support_;
 };
 
 using VideoCaptureDeviceDescriptors = std::vector<VideoCaptureDeviceDescriptor>;

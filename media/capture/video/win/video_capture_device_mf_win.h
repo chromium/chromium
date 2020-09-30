@@ -41,7 +41,7 @@ class CAPTURE_EXPORT VideoCaptureDeviceMFWin : public VideoCaptureDevice {
  public:
   static bool GetPixelFormatFromMFSourceMediaSubtype(const GUID& guid,
                                                      VideoPixelFormat* format);
-  static bool IsPanTiltZoomSupported(
+  static VideoCaptureControlSupport GetControlSupport(
       Microsoft::WRL::ComPtr<IMFMediaSource> source);
 
   explicit VideoCaptureDeviceMFWin(

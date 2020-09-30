@@ -145,8 +145,10 @@ bool CameraPanTiltZoomPermissionContext::HasAvailableCameraPtzDevices() const {
   const std::vector<blink::MediaStreamDevice> devices =
       MediaCaptureDevicesDispatcher::GetInstance()->GetVideoCaptureDevices();
   for (const blink::MediaStreamDevice& device : devices) {
-    if (device.pan_tilt_zoom_supported)
+    if (device.video_control_support.pan || device.video_control_support.tilt ||
+        device.video_control_support.zoom) {
       return true;
+    }
   }
   return false;
 }

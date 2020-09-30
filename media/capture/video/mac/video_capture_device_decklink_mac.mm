@@ -413,7 +413,7 @@ void VideoCaptureDeviceDeckLinkMac::EnumerateDevices(
             JoinDeviceNameAndFormat(device_model_name, format_name);
         descriptor.capture_api = VideoCaptureApi::MACOSX_DECKLINK;
         descriptor.transport_type = VideoCaptureTransportType::OTHER_TRANSPORT;
-        descriptor.set_pan_tilt_zoom_supported(false);
+        descriptor.set_control_support(VideoCaptureControlSupport());
         DVLOG(1) << "Blackmagic camera enumerated: "
                  << descriptor.display_name();
         devices_info->emplace_back(std::move(descriptor));

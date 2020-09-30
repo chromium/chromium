@@ -225,8 +225,7 @@ void VideoCaptureDeviceFactoryLinux::GetDevicesInfo(
 
       devices_info.emplace_back(VideoCaptureDeviceDescriptor(
           display_name, unique_id, model_id,
-          VideoCaptureApi::LINUX_V4L2_SINGLE_PLANE,
-          IsPanTiltZoomSupported(fd.get()),
+          VideoCaptureApi::LINUX_V4L2_SINGLE_PLANE, GetControlSupport(fd.get()),
           VideoCaptureTransportType::OTHER_TRANSPORT, facing_mode));
 
       GetSupportedFormatsForV4L2BufferType(
@@ -241,20 +240,22 @@ int VideoCaptureDeviceFactoryLinux::DoIoctl(int fd, int request, void* argp) {
   return HANDLE_EINTR(v4l2_->ioctl(fd, request, argp));
 }
 
-// Check if the video capture device supports at least one of pan, tilt and zoom
-// controls.
-bool VideoCaptureDeviceFactoryLinux::IsPanTiltZoomSupported(int fd) {
-  for (int control_id : {V4L2_CID_PAN_ABSOLUTE, V4L2_CID_TILT_ABSOLUTE,
-                         V4L2_CID_ZOOM_ABSOLUTE}) {
-    v4l2_queryctrl range = {};
-    range.id = control_id;
-    range.type = V4L2_CTRL_TYPE_INTEGER;
-    if (DoIoctl(fd, VIDIOC_QUERYCTRL, &range) == 0 &&
-        range.minimum < range.maximum) {
-      return true;
-    }
-  }
-  return false;
+// Check if the video capture device supports pan, tilt and zoom controls.
+VideoCaptureControlSupport VideoCaptureDeviceFactoryLinux::GetControlSupport(
+    int fd) {
+  VideoCaptureControlSupport control_support;
+  control_support.pan = GetControlSupport(fd, V4L2_CID_PAN_ABSOLUTE);
+  control_support.tilt = GetControlSupport(fd, V4L2_CID_TILT_ABSOLUTE);
+  control_support.zoom = GetControlSupport(fd, V4L2_CID_ZOOM_ABSOLUTE);
+  return control_support;
+}
+
+bool VideoCaptureDeviceFactoryLinux::GetControlSupport(int fd, int control_id) {
+  v4l2_queryctrl range = {};
+  range.id = control_id;
+  range.type = V4L2_CTRL_TYPE_INTEGER;
+  return DoIoctl(fd, VIDIOC_QUERYCTRL, &range) == 0 &&
+         range.minimum < range.maximum;
 }
 
 bool VideoCaptureDeviceFactoryLinux::HasUsableFormats(int fd,

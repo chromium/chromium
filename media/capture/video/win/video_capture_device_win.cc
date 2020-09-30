@@ -68,6 +68,31 @@ bool PinMatchesMajorType(IPin* pin, REFGUID major_type) {
   return SUCCEEDED(hr) && connection_media_type.majortype == major_type;
 }
 
+// Check if the video capture device supports pan, tilt and zoom controls.
+// static
+VideoCaptureControlSupport VideoCaptureDeviceWin::GetControlSupport(
+    ComPtr<IBaseFilter> capture_filter) {
+  VideoCaptureControlSupport control_support;
+  ComPtr<ICameraControl> camera_control;
+  ComPtr<IVideoProcAmp> video_control;
+
+  if (GetCameraAndVideoControls(capture_filter, &camera_control,
+                                &video_control)) {
+    long min, max, step, default_value, flags;
+    control_support.pan = SUCCEEDED(camera_control->getRange_Pan(
+                              &min, &max, &step, &default_value, &flags)) &&
+                          min < max;
+    control_support.tilt = SUCCEEDED(camera_control->getRange_Tilt(
+                               &min, &max, &step, &default_value, &flags)) &&
+                           min < max;
+    control_support.zoom = SUCCEEDED(camera_control->getRange_Zoom(
+                               &min, &max, &step, &default_value, &flags)) &&
+                           min < max;
+  }
+
+  return control_support;
+}
+
 // static
 void VideoCaptureDeviceWin::GetDeviceCapabilityList(
     ComPtr<IBaseFilter> capture_filter,
@@ -205,31 +230,6 @@ ComPtr<IPin> VideoCaptureDeviceWin::GetPin(ComPtr<IBaseFilter> capture_filter,
 
   DCHECK(!pin.Get());
   return pin;
-}
-
-// Check if the video capture device supports at least one of pan, tilt and zoom
-// controls.
-// static
-bool VideoCaptureDeviceWin::IsPanTiltZoomSupported(
-    ComPtr<IBaseFilter> capture_filter) {
-  ComPtr<ICameraControl> camera_control;
-  ComPtr<IVideoProcAmp> video_control;
-  if (!GetCameraAndVideoControls(capture_filter, &camera_control,
-                                 &video_control)) {
-    return false;
-  }
-
-  for (auto range_getter :
-       {&ICameraControl::getRange_Pan, &ICameraControl::getRange_Tilt,
-        &ICameraControl::getRange_Zoom}) {
-    long min, max, step, default_value, flags;
-    HRESULT hr = (camera_control.Get()->*range_getter)(&min, &max, &step,
-                                                       &default_value, &flags);
-    if (SUCCEEDED(hr) && min < max)
-      return true;
-  }
-
-  return false;
 }
 
 // static

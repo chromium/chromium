@@ -120,11 +120,11 @@ void VideoCaptureDeviceFactoryMac::GetDevicesInfo(
             : VideoCaptureTransportType::OTHER_TRANSPORT;
     const std::string model_id = VideoCaptureDeviceMac::GetDeviceModelId(
         device_id, capture_api, device_transport_type);
-    bool pan_tilt_zoom_supported =
-        VideoCaptureDeviceMac::IsPanTiltZoomSupported(model_id);
+    const VideoCaptureControlSupport control_support =
+        VideoCaptureDeviceMac::GetControlSupport(model_id);
     VideoCaptureDeviceDescriptor descriptor(
         [[[capture_devices valueForKey:key] deviceName] UTF8String], device_id,
-        model_id, capture_api, pan_tilt_zoom_supported, device_transport_type);
+        model_id, capture_api, control_support, device_transport_type);
     if (IsDeviceBlocked(descriptor))
       continue;
     devices_info.emplace_back(descriptor);

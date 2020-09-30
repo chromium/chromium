@@ -94,7 +94,9 @@ class MediaStreamConstraintsUtilVideoDeviceTest : public testing::Test {
         media::VideoCaptureFormat(gfx::Size(1000, 1000), 20.0f,
                                   media::PIXEL_FORMAT_I420),
     };
-    device.pan_tilt_zoom_supported = false;
+    device.control_support.pan = false;
+    device.control_support.tilt = false;
+    device.control_support.zoom = false;
     capabilities_.device_capabilities.push_back(std::move(device));
 
     // A low-resolution device.
@@ -115,7 +117,9 @@ class MediaStreamConstraintsUtilVideoDeviceTest : public testing::Test {
         media::VideoCaptureFormat(gfx::Size(800, 600), 20.0f,
                                   media::PIXEL_FORMAT_I420),
     };
-    device.pan_tilt_zoom_supported = true;
+    device.control_support.pan = true;
+    device.control_support.tilt = true;
+    device.control_support.zoom = true;
     capabilities_.device_capabilities.push_back(std::move(device));
 
     // A high-resolution device.
@@ -147,7 +151,9 @@ class MediaStreamConstraintsUtilVideoDeviceTest : public testing::Test {
         media::VideoCaptureFormat(gfx::Size(2304, 1536), 10.0f,
                                   media::PIXEL_FORMAT_I420),
     };
-    device.pan_tilt_zoom_supported = true;
+    device.control_support.pan = true;
+    device.control_support.tilt = true;
+    device.control_support.zoom = true;
     capabilities_.device_capabilities.push_back(std::move(device));
 
     // A depth capture device.
@@ -156,7 +162,9 @@ class MediaStreamConstraintsUtilVideoDeviceTest : public testing::Test {
     device.facing_mode = media::MEDIA_VIDEO_FACING_ENVIRONMENT;
     device.formats = {media::VideoCaptureFormat(gfx::Size(640, 480), 30.0f,
                                                 media::PIXEL_FORMAT_Y16)};
-    device.pan_tilt_zoom_supported = true;
+    device.control_support.pan = true;
+    device.control_support.tilt = true;
+    device.control_support.zoom = true;
     capabilities_.device_capabilities.push_back(std::move(device));
 
     // A device that reports invalid frame rates. These devices exist and should
@@ -172,7 +180,9 @@ class MediaStreamConstraintsUtilVideoDeviceTest : public testing::Test {
         media::VideoCaptureFormat(gfx::Size(500, 500), 0.1f,
                                   media::PIXEL_FORMAT_I420),
     };
-    device.pan_tilt_zoom_supported = true;
+    device.control_support.pan = true;
+    device.control_support.tilt = true;
+    device.control_support.zoom = true;
     capabilities_.device_capabilities.push_back(std::move(device));
 
     capabilities_.noise_reduction_capabilities = {
@@ -1985,7 +1995,9 @@ TEST_F(MediaStreamConstraintsUtilVideoDeviceTest,
       media::VideoCaptureFormat(gfx::Size(200, 200), 40.0f,
                                 media::PIXEL_FORMAT_I420),
   };
-  device.pan_tilt_zoom_supported = false;
+  device.control_support.pan = false;
+  device.control_support.tilt = false;
+  device.control_support.zoom = false;
   capabilities.device_capabilities.push_back(std::move(device));
   capabilities.noise_reduction_capabilities = {
       base::Optional<bool>(),

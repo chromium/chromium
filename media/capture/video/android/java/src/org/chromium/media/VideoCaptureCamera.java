@@ -189,7 +189,7 @@ public class VideoCaptureCamera
         return VideoCaptureApi.ANDROID_API1;
     }
 
-    static boolean isPanTiltZoomSupported(int id) {
+    static boolean isZoomSupported(int id) {
         android.hardware.Camera camera;
         try {
             camera = android.hardware.Camera.open(id);

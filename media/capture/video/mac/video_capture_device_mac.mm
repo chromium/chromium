@@ -880,39 +880,40 @@ std::string VideoCaptureDeviceMac::GetDeviceModelId(
   return id_vendor + ":" + id_product;
 }
 
-// Check if the video capture device supports at least one of pan, tilt and zoom
-// controls.
+// Check if the video capture device supports pan, tilt and zoom controls.
 // static
-bool VideoCaptureDeviceMac::IsPanTiltZoomSupported(
+VideoCaptureControlSupport VideoCaptureDeviceMac::GetControlSupport(
     const std::string& device_model) {
+  VideoCaptureControlSupport control_support;
+
   int unit_id = -1;
   ScopedIOUSBInterfaceInterface control_interface(
       OpenPanTiltZoomControlInterface(device_model, &unit_id));
   if (!control_interface)
-    return false;
+    return control_support;
 
-  bool result = false;
   int zoom_max, zoom_min = 0;
   if (SendZoomControlRequest(control_interface, unit_id, kVcRequestCodeGetMax,
                              &zoom_max) &&
       SendZoomControlRequest(control_interface, unit_id, kVcRequestCodeGetMin,
                              &zoom_min) &&
       zoom_min < zoom_max) {
-    result = true;
+    control_support.zoom = true;
   }
   int pan_max, pan_min = 0;
   int tilt_max, tilt_min = 0;
-  if (!result &&
-      SendPanTiltControlRequest(control_interface, unit_id,
+  if (SendPanTiltControlRequest(control_interface, unit_id,
                                 kVcRequestCodeGetMax, &pan_max, &tilt_max) &&
       SendPanTiltControlRequest(control_interface, unit_id,
-                                kVcRequestCodeGetMin, &pan_min, &tilt_min) &&
-      ((pan_min < pan_max || tilt_min < tilt_max))) {
-    result = true;
+                                kVcRequestCodeGetMin, &pan_min, &tilt_min)) {
+    if (pan_min < pan_max)
+      control_support.pan = true;
+    if (tilt_min < tilt_max)
+      control_support.tilt = true;
   }
 
   (*control_interface)->USBInterfaceClose(control_interface);
-  return result;
+  return control_support;
 }
 
 void VideoCaptureDeviceMac::SetErrorState(VideoCaptureError error,

@@ -81,11 +81,11 @@ class VideoCaptureFactory {
     }
 
     @CalledByNative
-    static boolean isPanTiltZoomSupported(int id) {
+    static boolean isZoomSupported(int id) {
         if (isLegacyOrDeprecatedDevice(id)) {
-            return VideoCaptureCamera.isPanTiltZoomSupported(id);
+            return VideoCaptureCamera.isZoomSupported(id);
         }
-        return VideoCaptureCamera2.isPanTiltZoomSupported(id);
+        return VideoCaptureCamera2.isZoomSupported(id);
     }
 
     @CalledByNative

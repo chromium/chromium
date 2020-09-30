@@ -63,7 +63,8 @@ class CAPTURE_EXPORT VideoCaptureDeviceFactoryLinux
   // Simple wrapper to do HANDLE_EINTR(v4l2_->ioctl(fd, ...)).
   int DoIoctl(int fd, int request, void* argp);
 
-  bool IsPanTiltZoomSupported(int fd);
+  VideoCaptureControlSupport GetControlSupport(int fd);
+  bool GetControlSupport(int fd, int control_id);
   bool HasUsableFormats(int fd, uint32_t capabilities);
   std::vector<float> GetFrameRateList(int fd,
                                       uint32_t fourcc,

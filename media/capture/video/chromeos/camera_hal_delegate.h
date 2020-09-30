@@ -79,8 +79,9 @@ class CAPTURE_EXPORT CameraHalDelegate final
   // Gets camera id from device id. Returns -1 on error.
   int GetCameraIdFromDeviceId(const std::string& device_id);
 
-  // Returns true if either pan, tilt, or zoom camera capability is supported.
-  bool IsPanTiltZoomSupported(const cros::mojom::CameraInfoPtr& camera_info);
+  // Returns camera pan, tilt, zoom capability support.
+  VideoCaptureControlSupport GetControlSupport(
+      const cros::mojom::CameraInfoPtr& camera_info);
 
   // Gets the camera info of |device_id|. Returns null CameraInfoPtr on error.
   cros::mojom::CameraInfoPtr GetCameraInfoFromDeviceId(

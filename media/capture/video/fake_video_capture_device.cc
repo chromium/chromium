@@ -616,7 +616,7 @@ void FakePhotoDevice::GetPhotoState(
   photo_state->focus_distance->step = kFocusDistanceStep;
 
   photo_state->pan = mojom::Range::New();
-  if (config_.pan_tilt_zoom_supported) {
+  if (config_.control_support.pan) {
     photo_state->pan->current = fake_device_state_->pan;
     photo_state->pan->max = kMaxPan;
     photo_state->pan->min = kMinPan;
@@ -624,7 +624,7 @@ void FakePhotoDevice::GetPhotoState(
   }
 
   photo_state->tilt = mojom::Range::New();
-  if (config_.pan_tilt_zoom_supported) {
+  if (config_.control_support.tilt) {
     photo_state->tilt->current = fake_device_state_->tilt;
     photo_state->tilt->max = kMaxTilt;
     photo_state->tilt->min = kMinTilt;
@@ -632,7 +632,7 @@ void FakePhotoDevice::GetPhotoState(
   }
 
   photo_state->zoom = mojom::Range::New();
-  if (config_.pan_tilt_zoom_supported) {
+  if (config_.control_support.zoom) {
     photo_state->zoom->current = fake_device_state_->zoom;
     photo_state->zoom->max = kMaxZoom;
     photo_state->zoom->min = kMinZoom;

@@ -1639,6 +1639,17 @@ bool EnumTraits<media::mojom::VideoCaptureTransportType,
 }
 
 // static
+bool StructTraits<media::mojom::VideoCaptureControlSupportDataView,
+                  media::VideoCaptureControlSupport>::
+    Read(media::mojom::VideoCaptureControlSupportDataView data,
+         media::VideoCaptureControlSupport* out) {
+  out->pan = data.pan();
+  out->tilt = data.tilt();
+  out->zoom = data.zoom();
+  return true;
+}
+
+// static
 bool StructTraits<media::mojom::VideoCaptureFormatDataView,
                   media::VideoCaptureFormat>::
     Read(media::mojom::VideoCaptureFormatDataView data,
@@ -1685,7 +1696,10 @@ bool StructTraits<media::mojom::VideoCaptureDeviceDescriptorDataView,
     return false;
   if (!data.ReadCaptureApi(&(output->capture_api)))
     return false;
-  output->set_pan_tilt_zoom_supported(data.pan_tilt_zoom_supported());
+  media::VideoCaptureControlSupport control_support;
+  if (!data.ReadControlSupport(&control_support))
+    return false;
+  output->set_control_support(control_support);
   if (!data.ReadTransportType(&(output->transport_type)))
     return false;
   return true;

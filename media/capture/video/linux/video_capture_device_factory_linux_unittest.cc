@@ -63,8 +63,12 @@ TEST_P(VideoCaptureDeviceFactoryLinuxTest, EnumerateSingleFakeV4L2DeviceUsing) {
   EXPECT_EQ(descriptor.device_id, devices_info[0].descriptor.device_id);
   EXPECT_EQ(descriptor.display_name(),
             devices_info[0].descriptor.display_name());
-  EXPECT_EQ(descriptor.pan_tilt_zoom_supported(),
-            devices_info[0].descriptor.pan_tilt_zoom_supported());
+  EXPECT_EQ(descriptor.control_support().pan,
+            devices_info[0].descriptor.control_support().pan);
+  EXPECT_EQ(descriptor.control_support().tilt,
+            devices_info[0].descriptor.control_support().tilt);
+  EXPECT_EQ(descriptor.control_support().zoom,
+            devices_info[0].descriptor.control_support().zoom);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -74,11 +78,15 @@ INSTANTIATE_TEST_SUITE_P(
         VideoCaptureDeviceDescriptor("Fake Device 0",
                                      "/dev/video0",
                                      VideoCaptureApi::UNKNOWN,
-                                     /*pan_tilt_zoom_supported=*/false),
+                                     /*control_support=*/{false, false, false}),
         VideoCaptureDeviceDescriptor("Fake Device 0",
                                      "/dev/video0",
                                      VideoCaptureApi::UNKNOWN,
-                                     /*pan_tilt_zoom_supported=*/true)));
+                                     /*control_support=*/{false, false, true}),
+        VideoCaptureDeviceDescriptor("Fake Device 0",
+                                     "/dev/video0",
+                                     VideoCaptureApi::UNKNOWN,
+                                     /*control_support=*/{true, true, true})));
 
 TEST_F(VideoCaptureDeviceFactoryLinuxTest,
        ReceiveFramesFromSinglePlaneFakeDevice) {

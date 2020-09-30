@@ -57,6 +57,8 @@ class VideoCaptureDeviceWin : public VideoCaptureDevice,
     AM_MEDIA_TYPE* media_type_;
   };
 
+  static VideoCaptureControlSupport GetControlSupport(
+      Microsoft::WRL::ComPtr<IBaseFilter> capture_filter);
   static void GetDeviceCapabilityList(
       Microsoft::WRL::ComPtr<IBaseFilter> capture_filter,
       bool query_detailed_frame_rates,
@@ -71,8 +73,6 @@ class VideoCaptureDeviceWin : public VideoCaptureDevice,
       PIN_DIRECTION pin_dir,
       REFGUID category,
       REFGUID major_type);
-  static bool IsPanTiltZoomSupported(
-      Microsoft::WRL::ComPtr<IBaseFilter> capture_filter);
   static VideoPixelFormat TranslateMediaSubtypeToPixelFormat(
       const GUID& sub_type);
 

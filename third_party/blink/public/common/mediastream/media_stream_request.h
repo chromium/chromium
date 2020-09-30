@@ -52,12 +52,13 @@ struct BLINK_COMMON_EXPORT MediaStreamDevice {
   MediaStreamDevice(mojom::MediaStreamType type,
                     const std::string& id,
                     const std::string& name);
-  MediaStreamDevice(mojom::MediaStreamType type,
-                    const std::string& id,
-                    const std::string& name,
-                    media::VideoFacingMode facing,
-                    const base::Optional<std::string>& group_id = base::nullopt,
-                    bool pan_tilt_zoom_supported = false);
+  MediaStreamDevice(
+      mojom::MediaStreamType type,
+      const std::string& id,
+      const std::string& name,
+      const media::VideoCaptureControlSupport& control_support,
+      media::VideoFacingMode facing,
+      const base::Optional<std::string>& group_id = base::nullopt);
   MediaStreamDevice(mojom::MediaStreamType type,
                     const std::string& id,
                     const std::string& name,
@@ -92,14 +93,14 @@ struct BLINK_COMMON_EXPORT MediaStreamDevice {
   // The device's unique ID.
   std::string id;
 
+  // The control support for video capture device.
+  media::VideoCaptureControlSupport video_control_support;
+
   // The facing mode for video capture device.
   media::VideoFacingMode video_facing;
 
   // The device's group ID.
   base::Optional<std::string> group_id;
-
-  // Whether the video capture device supports PTZ.
-  bool pan_tilt_zoom_supported = false;
 
   // The device id of a matched output device if any (otherwise empty).
   // Only applicable to audio devices.

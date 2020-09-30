@@ -29,11 +29,12 @@ MODULES_EXPORT MediaStreamTrackPlatform::FacingMode ToPlatformFacingMode(
 
 // This is a temporary struct to bridge blink and content mojo types.
 struct MODULES_EXPORT VideoInputDeviceCapabilities {
-  VideoInputDeviceCapabilities(String device_id,
-                               String group_id,
-                               Vector<media::VideoCaptureFormat> formats,
-                               media::VideoFacingMode facing_mode,
-                               bool pan_tilt_zoom_supported);
+  VideoInputDeviceCapabilities(
+      String device_id,
+      String group_id,
+      const media::VideoCaptureControlSupport& control_support,
+      Vector<media::VideoCaptureFormat> formats,
+      media::VideoFacingMode facing_mode);
   VideoInputDeviceCapabilities();
   VideoInputDeviceCapabilities(VideoInputDeviceCapabilities&& other);
   VideoInputDeviceCapabilities& operator=(VideoInputDeviceCapabilities&& other);
@@ -41,9 +42,9 @@ struct MODULES_EXPORT VideoInputDeviceCapabilities {
 
   String device_id;
   String group_id;
+  media::VideoCaptureControlSupport control_support;
   Vector<media::VideoCaptureFormat> formats;
   media::VideoFacingMode facing_mode;
-  bool pan_tilt_zoom_supported;
 };
 
 struct MODULES_EXPORT VideoDeviceCaptureCapabilities {

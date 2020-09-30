@@ -99,6 +99,13 @@ enum VideoCaptureBufferType {
   kGpuMemoryBuffer
 };
 
+// Represents capture device's support for different controls.
+struct VideoCaptureControlSupport {
+  bool pan;
+  bool tilt;
+  bool zoom;
+};
+
 enum VideoCaptureError {
   kNone,
   kVideoCaptureControllerInvalidOrUnsupportedVideoCaptureParametersRequested,
@@ -324,7 +331,7 @@ struct VideoCaptureDeviceDescriptor {
   string model_id;
   VideoFacingMode facing_mode;
   VideoCaptureApi capture_api;
-  bool pan_tilt_zoom_supported;
+  VideoCaptureControlSupport control_support;
   VideoCaptureTransportType transport_type;
 };
 

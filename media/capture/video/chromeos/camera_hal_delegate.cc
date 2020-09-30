@@ -340,7 +340,7 @@ void CameraHalDelegate::GetDevicesInfo(
       if (vid != nullptr && pid != nullptr) {
         desc.model_id = base::StrCat({vid, ":", pid});
       }
-      desc.set_pan_tilt_zoom_supported(IsPanTiltZoomSupported(camera_info));
+      desc.set_control_support(GetControlSupport(camera_info));
       device_id_to_camera_id_[desc.device_id] = camera_id;
       devices_info.emplace_back(desc);
       GetSupportedFormats(camera_id, &devices_info.back().supported_formats);
@@ -360,8 +360,10 @@ void CameraHalDelegate::GetDevicesInfo(
   std::move(callback).Run(std::move(devices_info));
 }
 
-bool CameraHalDelegate::IsPanTiltZoomSupported(
+VideoCaptureControlSupport CameraHalDelegate::GetControlSupport(
     const cros::mojom::CameraInfoPtr& camera_info) {
+  VideoCaptureControlSupport control_support;
+
   auto is_vendor_range_valid = [&](const std::string& key) -> bool {
     const VendorTagInfo* info = vendor_tag_ops_delegate_.GetInfoByName(key);
     if (info == nullptr)
@@ -372,23 +374,23 @@ bool CameraHalDelegate::IsPanTiltZoomSupported(
   };
 
   if (is_vendor_range_valid("com.google.control.panRange"))
-    return true;
+    control_support.pan = true;
 
   if (is_vendor_range_valid("com.google.control.tiltRange"))
-    return true;
+    control_support.tilt = true;
 
   if (is_vendor_range_valid("com.google.control.zoomRange"))
-    return true;
+    control_support.zoom = true;
 
   auto max_digital_zoom = GetMetadataEntryAsSpan<float>(
       camera_info->static_camera_characteristics,
       cros::mojom::CameraMetadataTag::
           ANDROID_SCALER_AVAILABLE_MAX_DIGITAL_ZOOM);
   if (max_digital_zoom.size() == 1 && max_digital_zoom[0] > 1) {
-    return true;
+    control_support.zoom = true;
   }
 
-  return false;
+  return control_support;
 }
 
 cros::mojom::CameraInfoPtr CameraHalDelegate::GetCameraInfoFromDeviceId(

@@ -913,6 +913,7 @@ void MediaDevicesManager::AudioDevicesEnumerated(
   for (const media::AudioDeviceDescription& description : device_descriptions) {
     snapshot.emplace_back(description.unique_id, description.device_name,
                           description.group_id,
+                          media::VideoCaptureControlSupport(),
                           media::VideoFacingMode::MEDIA_VIDEO_FACING_NONE);
   }
   DevicesEnumerated(type, snapshot);

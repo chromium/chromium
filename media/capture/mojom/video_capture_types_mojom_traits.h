@@ -105,6 +105,26 @@ struct COMPONENT_EXPORT(MEDIA_CAPTURE_MOJOM_TRAITS)
 
 template <>
 struct COMPONENT_EXPORT(MEDIA_CAPTURE_MOJOM_TRAITS)
+    StructTraits<media::mojom::VideoCaptureControlSupportDataView,
+                 media::VideoCaptureControlSupport> {
+  static bool pan(const media::VideoCaptureControlSupport& input) {
+    return input.pan;
+  }
+
+  static bool tilt(const media::VideoCaptureControlSupport& input) {
+    return input.tilt;
+  }
+
+  static bool zoom(const media::VideoCaptureControlSupport& input) {
+    return input.zoom;
+  }
+
+  static bool Read(media::mojom::VideoCaptureControlSupportDataView data,
+                   media::VideoCaptureControlSupport* out);
+};
+
+template <>
+struct COMPONENT_EXPORT(MEDIA_CAPTURE_MOJOM_TRAITS)
     StructTraits<media::mojom::VideoCaptureFormatDataView,
                  media::VideoCaptureFormat> {
   static const gfx::Size& frame_size(const media::VideoCaptureFormat& format) {
@@ -186,9 +206,9 @@ struct COMPONENT_EXPORT(MEDIA_CAPTURE_MOJOM_TRAITS)
     return input.capture_api;
   }
 
-  static bool pan_tilt_zoom_supported(
+  static media::VideoCaptureControlSupport control_support(
       const media::VideoCaptureDeviceDescriptor& input) {
-    return input.pan_tilt_zoom_supported();
+    return input.control_support();
   }
 
   static media::VideoCaptureTransportType transport_type(

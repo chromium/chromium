@@ -206,11 +206,13 @@ var Manager = (function() {
               this.parseVideoCaptureFormat_(
                   videoCaptureCapabilities[i]['formats'][j]);
         }
+        videoCaptureCapabilities[i]['controlSupport'] =
+            videoCaptureCapabilities[i]['controlSupport'].join(' ');
       }
 
       // The keys of each device to be shown in order of appearance.
       var videoCaptureDeviceKeys =
-          ['name', 'formats', 'captureApi', 'panTiltZoomSupported', 'id'];
+          ['name', 'formats', 'captureApi', 'controlSupport', 'id'];
 
       this.clientRenderer_.redrawVideoCaptureCapabilities(
           videoCaptureCapabilities, videoCaptureDeviceKeys);

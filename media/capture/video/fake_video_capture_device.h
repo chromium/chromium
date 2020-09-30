@@ -156,7 +156,7 @@ class FrameDelivererFactory {
 };
 
 struct FakePhotoDeviceConfig {
-  bool pan_tilt_zoom_supported = true;
+  VideoCaptureControlSupport control_support = {true, true, true};
   bool should_fail_get_photo_capabilities = false;
   bool should_fail_set_photo_options = false;
   bool should_fail_take_photo = false;

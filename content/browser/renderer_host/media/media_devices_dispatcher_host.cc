@@ -262,11 +262,11 @@ void MediaDevicesDispatcherHost::FinalizeGetVideoInputCapabilities(
         blink::mojom::VideoInputDeviceCapabilities::New();
     capabilities->device_id = std::move(hmac_device_id);
     capabilities->group_id = std::move(hmac_group_id);
+    capabilities->control_support = device_info.video_control_support;
     capabilities->formats =
         media_stream_manager_->media_devices_manager()->GetVideoInputFormats(
             device_info.device_id, true /* try_in_use_first */);
     capabilities->facing_mode = device_info.video_facing;
-    capabilities->pan_tilt_zoom_supported = device_info.pan_tilt_zoom_supported;
     if (device_info.device_id == default_device_id) {
       video_input_capabilities.insert(video_input_capabilities.begin(),
                                       std::move(capabilities));
