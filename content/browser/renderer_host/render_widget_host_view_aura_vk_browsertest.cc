@@ -250,7 +250,7 @@ class RenderWidgetHostViewAuraBrowserMockIMETest : public ContentBrowserTest {
                                           const std::string& name_or_value) {
     const std::string& name =
         node.GetStringAttribute(ax::mojom::StringAttribute::kName);
-    const std::string value = base::UTF16ToUTF8(node.GetValueForControl());
+    const std::string& value = base::UTF16ToUTF8(node.GetValue());
     if (node.GetRole() == role &&
         (name == name_or_value || value == name_or_value)) {
       return &node;

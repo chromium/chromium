@@ -111,14 +111,14 @@ class AccessibilityActionBrowserTest : public ContentBrowserTest {
                                           const std::string& name_or_value) {
     const std::string& name =
         node.GetStringAttribute(ax::mojom::StringAttribute::kName);
-    // Note that in the case of a text field,
-    // "BrowserAccessibility::GetValueForControl" has the added functionality
-    // of computing the value of an ARIA text box from its inner text.
+    // Note that in the case of a text field, "BrowserAccessibility::GetValue"
+    // has the added functionality of computing the value of an ARIA text box
+    // from its inner text.
     //
     // <div contenteditable="true" role="textbox">Hello world.</div>
     // Will expose no HTML value attribute, but some screen readers, such as
     // Jaws, VoiceOver and Talkback, require one to be computed.
-    const std::string value = base::UTF16ToUTF8(node.GetValueForControl());
+    const std::string& value = base::UTF16ToUTF8(node.GetValue());
     if (node.GetRole() == role &&
         (name == name_or_value || value == name_or_value)) {
       return &node;
@@ -423,7 +423,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest, InputSetValue) {
   BrowserAccessibility* target =
       FindNode(ax::mojom::Role::kTextField, "Answer");
   ASSERT_NE(nullptr, target);
-  EXPECT_EQ(base::ASCIIToUTF16("Before"), target->GetValueForControl());
+  EXPECT_EQ("Before",
+            target->GetStringAttribute(ax::mojom::StringAttribute::kValue));
 
   AccessibilityNotificationWaiter waiter2(shell()->web_contents(),
                                           ui::kAXModeComplete,
@@ -431,7 +432,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest, InputSetValue) {
   GetManager()->SetValue(*target, "After");
   waiter2.WaitForNotification();
 
-  EXPECT_EQ(base::ASCIIToUTF16("After"), target->GetValueForControl());
+  EXPECT_EQ("After",
+            target->GetStringAttribute(ax::mojom::StringAttribute::kValue));
 }
 
 IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest, TextareaSetValue) {
@@ -442,7 +444,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest, TextareaSetValue) {
   BrowserAccessibility* target =
       FindNode(ax::mojom::Role::kTextField, "Answer");
   ASSERT_NE(nullptr, target);
-  EXPECT_EQ(base::ASCIIToUTF16("Before"), target->GetValueForControl());
+  EXPECT_EQ("Before",
+            target->GetStringAttribute(ax::mojom::StringAttribute::kValue));
 
   AccessibilityNotificationWaiter waiter2(shell()->web_contents(),
                                           ui::kAXModeComplete,
@@ -450,7 +453,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest, TextareaSetValue) {
   GetManager()->SetValue(*target, "Line1\nLine2");
   waiter2.WaitForNotification();
 
-  EXPECT_EQ(base::ASCIIToUTF16("Line1\nLine2"), target->GetValueForControl());
+  EXPECT_EQ("Line1\nLine2",
+            target->GetStringAttribute(ax::mojom::StringAttribute::kValue));
 
   // TODO(dmazzoni): On Android we use an ifdef to disable inline text boxes,
   // which contain all of the line break information.
@@ -475,7 +479,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest,
   BrowserAccessibility* target =
       FindNode(ax::mojom::Role::kGenericContainer, "Answer");
   ASSERT_NE(nullptr, target);
-  EXPECT_EQ(base::ASCIIToUTF16("Before"), target->GetValueForControl());
+  EXPECT_EQ("Before",
+            target->GetStringAttribute(ax::mojom::StringAttribute::kValue));
 
   AccessibilityNotificationWaiter waiter2(
       shell()->web_contents(), ui::kAXModeComplete,
@@ -483,7 +488,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest,
   GetManager()->SetValue(*target, "Line1\nLine2");
   waiter2.WaitForNotification();
 
-  EXPECT_EQ(base::ASCIIToUTF16("Line1\nLine2"), target->GetValueForControl());
+  EXPECT_EQ("Line1\nLine2",
+            target->GetStringAttribute(ax::mojom::StringAttribute::kValue));
 
   // TODO(dmazzoni): On Android we use an ifdef to disable inline text boxes,
   // which contain all of the line break information.

@@ -36,7 +36,6 @@ class AX_EXPORT AXPlatformNodeDelegateBase : public AXPlatformNodeDelegate {
   const AXTreeData& GetTreeData() const override;
 
   base::string16 GetInnerText() const override;
-  base::string16 GetValueForControl() const override;
   const AXTree::Selection GetUnignoredSelection() const override;
 
   // Creates a text position rooted at this object.

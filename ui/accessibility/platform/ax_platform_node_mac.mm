@@ -752,7 +752,7 @@ bool AlsoUseShowMenuActionForDefaultAction(const ui::AXNodeData& data) {
         _node->GetIntAttribute(ax::mojom::IntAttribute::kCheckedState));
     return checkedState == ax::mojom::CheckedState::kTrue ? @1 : @0;
   }
-  return base::SysUTF16ToNSString(_node->GetValueForControl());
+  return [self getStringAttribute:ax::mojom::StringAttribute::kValue];
 }
 
 - (NSNumber*)AXEnabled {

@@ -5,7 +5,6 @@
 #include "ui/accessibility/ax_node_position.h"
 
 #include "base/strings/string_util.h"
-#include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -180,25 +179,36 @@ AXTreeID AXNodePosition::GetTreeID(AXNode* node) const {
 
 base::string16 AXNodePosition::GetText() const {
   if (IsNullPosition())
-    return base::string16();
+    return {};
 
-  // Special case, if a node has only ignored descendants, i.e., it appears to
-  // be empty to assistive software, on some platforms we need to still treat it
-  // as a character and a word boundary. We achieve this by adding an embedded
-  // object character in the text representation used by this class, but we
-  // don't expose that character to assistive software that tries to retrieve
-  // the node's inner text.
-  if (IsEmptyObjectReplacedByCharacter())
-    return base::string16(1, kEmbeddedCharacter);
+  base::string16 text;
+  if (IsEmptyObjectReplacedByCharacter()) {
+    text += kEmbeddedCharacter;
+    return text;
+  }
 
   const AXNode* anchor = GetAnchor();
   DCHECK(anchor);
-  switch (g_ax_embedded_object_behavior) {
-    case AXEmbeddedObjectBehavior::kSuppressCharacter:
-      return base::UTF8ToUTF16(anchor->GetInnerText());
-    case AXEmbeddedObjectBehavior::kExposeCharacter:
-      return base::UTF8ToUTF16(anchor->GetHypertext());
+  // TODO(nektar): Replace with PlatformChildCount when AXNodePosition and
+  // BrowserAccessibilityPosition are merged into one class.
+  if (!AnchorChildCount()) {
+    // Special case: Allows us to get text even in non-web content, e.g. in the
+    // browser's UI.
+    text =
+        anchor->data().GetString16Attribute(ax::mojom::StringAttribute::kValue);
+    if (!text.empty())
+      return text;
   }
+
+  if (anchor->IsText()) {
+    return anchor->data().GetString16Attribute(
+        ax::mojom::StringAttribute::kName);
+  }
+
+  for (int i = 0; i < AnchorChildCount(); ++i)
+    text += CreateChildPositionAt(i)->GetText();
+
+  return text;
 }
 
 bool AXNodePosition::IsInLineBreak() const {
@@ -238,14 +248,21 @@ int AXNodePosition::MaxTextOffset() const {
   const AXNode* anchor = GetAnchor();
   DCHECK(anchor);
   // TODO(nektar): Replace with PlatformChildCount when AXNodePosition and
-  // BrowserAccessibilityPosition will be merged.
-  if (!AnchorChildCount() || anchor->IsText())
-    return base::UTF8ToUTF16(anchor->GetInnerText()).length();
+  // BrowserAccessibilityPosition will make one.
+  if (!AnchorChildCount()) {
+    base::string16 value =
+        anchor->data().GetString16Attribute(ax::mojom::StringAttribute::kValue);
+    if (!value.empty())
+      return value.length();
+  }
+
+  if (anchor->IsText()) {
+    return anchor->data()
+        .GetString16Attribute(ax::mojom::StringAttribute::kName)
+        .length();
+  }
 
   int text_length = 0;
-  // This is an optimization over retrieving the text of the whole subtree and
-  // then finding its length. It saves time by adding lengths instead of
-  // concatenating strings.
   for (int i = 0; i < AnchorChildCount(); ++i)
     text_length += CreateChildPositionAt(i)->MaxTextOffset();
 

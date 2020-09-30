@@ -26,6 +26,7 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid : public BrowserAccessibility {
   // Overrides from BrowserAccessibility.
   void OnDataChanged() override;
   void OnLocationChanged() override;
+  base::string16 GetValue() const override;
 
   bool IsCheckable() const;
   bool IsChecked() const;
@@ -83,7 +84,6 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid : public BrowserAccessibility {
   bool IsChildOfLeaf() const override;
   bool IsLeaf() const override;
   base::string16 GetInnerText() const override;
-  base::string16 GetValueForControl() const override;
   base::string16 GetHint() const;
 
   std::string GetRoleString() const;

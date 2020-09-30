@@ -281,9 +281,6 @@ void AXPositionTest::SetUp() {
                            true);
   button_.SetHasPopup(ax::mojom::HasPopup::kMenu);
   button_.SetName("Button");
-  // Name is not visible in the tree's text representation, i.e. it may be
-  // coming from an aria-label.
-  button_.SetNameFrom(ax::mojom::NameFrom::kAttribute);
   button_.relative_bounds.bounds = gfx::RectF(20, 20, 200, 30);
   root_.child_ids.push_back(button_.id);
 
@@ -292,9 +289,6 @@ void AXPositionTest::SetUp() {
                               true);
   check_box_.SetCheckedState(ax::mojom::CheckedState::kTrue);
   check_box_.SetName("Check box");
-  // Name is not visible in the tree's text representation, i.e. it may be
-  // coming from an aria-label.
-  check_box_.SetNameFrom(ax::mojom::NameFrom::kAttribute);
   check_box_.relative_bounds.bounds = gfx::RectF(20, 50, 200, 30);
   root_.child_ids.push_back(check_box_.id);
 
@@ -1019,47 +1013,41 @@ TEST_F(AXPositionTest, GetMaxTextOffsetUpdate) {
   root_data.id = 1;
   root_data.role = ax::mojom::Role::kRootWebArea;
 
-  AXNodeData text_field_data;
-  text_field_data.id = 2;
-  text_field_data.role = ax::mojom::Role::kTextField;
-  text_field_data.SetName("some text");
-  text_field_data.SetNameFrom(ax::mojom::NameFrom::kPlaceholder);
-
   AXNodeData text_data;
-  text_data.id = 3;
+  text_data.id = 2;
   text_data.role = ax::mojom::Role::kStaticText;
-  text_data.SetName("more text");
-  text_data.SetNameFrom(ax::mojom::NameFrom::kContents);
+  text_data.SetName("some text");
 
-  root_data.child_ids = {text_field_data.id, text_data.id};
-  SetTree(CreateAXTree({root_data, text_field_data, text_data}));
+  AXNodeData more_text_data;
+  more_text_data.id = 3;
+  more_text_data.role = ax::mojom::Role::kStaticText;
+  more_text_data.SetName("more text");
 
-  AssertTextLengthEquals(GetTree(), text_field_data.id, 9);
+  root_data.child_ids = {2, 3};
+
+  SetTree(CreateAXTree({root_data, text_data, more_text_data}));
+
   AssertTextLengthEquals(GetTree(), text_data.id, 9);
   AssertTextLengthEquals(GetTree(), root_data.id, 18);
 
-  // Update the placeholder text.
-  text_field_data.SetName("Adjusted line 1");
-  SetTree(CreateAXTree({root_data, text_field_data, text_data}));
+  text_data.SetName("Adjusted line 1");
+  SetTree(CreateAXTree({root_data, text_data, more_text_data}));
 
-  AssertTextLengthEquals(GetTree(), text_field_data.id, 15);
-  AssertTextLengthEquals(GetTree(), text_data.id, 9);
+  AssertTextLengthEquals(GetTree(), text_data.id, 15);
   AssertTextLengthEquals(GetTree(), root_data.id, 24);
 
-  // Value should override name in text fields.
-  text_field_data.SetValue("Value should override name");
-  SetTree(CreateAXTree({root_data, text_field_data, text_data}));
+  // Value should override name
+  text_data.SetValue("Value should override name");
+  SetTree(CreateAXTree({root_data, text_data, more_text_data}));
 
-  AssertTextLengthEquals(GetTree(), text_field_data.id, 26);
-  AssertTextLengthEquals(GetTree(), text_data.id, 9);
+  AssertTextLengthEquals(GetTree(), text_data.id, 26);
   AssertTextLengthEquals(GetTree(), root_data.id, 35);
 
-  // An empty value should fall back to placeholder text.
-  text_field_data.SetValue("");
-  SetTree(CreateAXTree({root_data, text_field_data, text_data}));
+  // An empty value should fall back to name
+  text_data.SetValue("");
+  SetTree(CreateAXTree({root_data, text_data, more_text_data}));
 
-  AssertTextLengthEquals(GetTree(), text_field_data.id, 15);
-  AssertTextLengthEquals(GetTree(), text_data.id, 9);
+  AssertTextLengthEquals(GetTree(), text_data.id, 15);
   AssertTextLengthEquals(GetTree(), root_data.id, 24);
 }
 
@@ -2142,7 +2130,6 @@ TEST_F(AXPositionTest, AtStartOrEndOfParagraphOnAListMarker) {
 
   list_marker_ng.role = ax::mojom::Role::kListMarker;
   list_marker_ng.SetName("2. ");
-  list_marker_ng.SetNameFrom(ax::mojom::NameFrom::kContents);
   list_marker_ng.AddIntAttribute(ax::mojom::IntAttribute::kNextOnLineId,
                                  inline_box4.id);
 
@@ -3448,7 +3435,6 @@ TEST_F(AXPositionTest, AsLeafTextPositionWithTextPositionAndEmptyTextSandwich) {
   button_data.id = 3;
   button_data.role = ax::mojom::Role::kButton;
   button_data.SetName("");
-  button_data.SetNameFrom(ax::mojom::NameFrom::kContents);
 
   AXNodeData more_text_data;
   more_text_data.id = 4;
@@ -7507,8 +7493,6 @@ TEST_F(AXPositionTest, CreatePreviousWordPositionInList) {
 
 TEST_F(AXPositionTest, EmptyObjectReplacedByCharacterTextNavigation) {
   g_ax_embedded_object_behavior = AXEmbeddedObjectBehavior::kExposeCharacter;
-  const base::string16 embedded_character_str(
-      1, AXNodePosition::kEmbeddedCharacter);
 
   // ++1 kRootWebArea
   // ++++2 kStaticText
@@ -7631,148 +7615,137 @@ TEST_F(AXPositionTest, EmptyObjectReplacedByCharacterTextNavigation) {
 
   TestPositionType result_position =
       position->CreateNextWordStartPosition(AXBoundaryBehavior::CrossBoundary);
-  EXPECT_TRUE(result_position->IsTextPosition());
-  EXPECT_EQ(generic_container_5.id, result_position->anchor_id());
-  EXPECT_EQ(0, result_position->text_offset());
-  EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, result_position->affinity());
-  EXPECT_EQ(embedded_character_str, result_position->GetText());
+  std::string expectations =
+      "TextPosition anchor_id=5 text_offset=0 affinity=downstream "
+      "annotated_text=<\xEF\xBF\xBC>";
+  ASSERT_EQ(result_position->ToString(), expectations);
 
   position = std::move(result_position);
   result_position =
       position->CreateNextWordStartPosition(AXBoundaryBehavior::CrossBoundary);
-  EXPECT_TRUE(result_position->IsTextPosition());
-  EXPECT_EQ(inline_box_7.id, result_position->anchor_id());
-  EXPECT_EQ(1, result_position->text_offset());
-  EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, result_position->affinity());
-  EXPECT_EQ(base::WideToUTF16(L" world"), result_position->GetText());
+  expectations =
+      "TextPosition anchor_id=7 text_offset=1 affinity=downstream "
+      "annotated_text= <w>orld";
+  ASSERT_EQ(result_position->ToString(), expectations);
 
   // CreatePreviousWordStartPosition tests.
   position = std::move(result_position);
   result_position = position->CreatePreviousWordStartPosition(
       AXBoundaryBehavior::CrossBoundary);
-  EXPECT_TRUE(result_position->IsTextPosition());
-  EXPECT_EQ(generic_container_5.id, result_position->anchor_id());
-  EXPECT_EQ(0, result_position->text_offset());
-  EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, result_position->affinity());
-  EXPECT_EQ(embedded_character_str, result_position->GetText());
+  expectations =
+      "TextPosition anchor_id=5 text_offset=0 affinity=downstream "
+      "annotated_text=<\xEF\xBF\xBC>";
+  ASSERT_EQ(result_position->ToString(), expectations);
 
   position = std::move(result_position);
   result_position = position->CreatePreviousWordStartPosition(
       AXBoundaryBehavior::CrossBoundary);
-  EXPECT_TRUE(result_position->IsTextPosition());
-  EXPECT_EQ(inline_box_3.id, result_position->anchor_id());
-  EXPECT_EQ(0, result_position->text_offset());
-  EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, result_position->affinity());
-  EXPECT_EQ(base::WideToUTF16(L"Hello "), result_position->GetText());
+  expectations =
+      "TextPosition anchor_id=3 text_offset=0 affinity=downstream "
+      "annotated_text=<H>ello ";
+  ASSERT_EQ(result_position->ToString(), expectations);
 
   // CreateNextWordEndPosition tests.
   position = std::move(result_position);
   result_position =
       position->CreateNextWordEndPosition(AXBoundaryBehavior::CrossBoundary);
-  EXPECT_TRUE(result_position->IsTextPosition());
-  EXPECT_EQ(inline_box_3.id, result_position->anchor_id());
-  EXPECT_EQ(6, result_position->text_offset());
-  EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, result_position->affinity());
-  EXPECT_EQ(base::WideToUTF16(L"Hello "), result_position->GetText());
+  expectations =
+      "TextPosition anchor_id=3 text_offset=6 affinity=downstream "
+      "annotated_text=Hello <>";
+  ASSERT_EQ(result_position->ToString(), expectations);
 
   position = std::move(result_position);
   result_position =
       position->CreateNextWordEndPosition(AXBoundaryBehavior::CrossBoundary);
-  EXPECT_TRUE(result_position->IsTextPosition());
-  EXPECT_EQ(generic_container_5.id, result_position->anchor_id());
-  EXPECT_EQ(1, result_position->text_offset());
-  EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, result_position->affinity());
-  EXPECT_EQ(embedded_character_str, result_position->GetText());
+  expectations =
+      "TextPosition anchor_id=5 text_offset=1 affinity=downstream "
+      "annotated_text=\xEF\xBF\xBC<>";
+  ASSERT_EQ(result_position->ToString(), expectations);
 
   position = std::move(result_position);
   result_position =
       position->CreateNextWordEndPosition(AXBoundaryBehavior::CrossBoundary);
-  EXPECT_TRUE(result_position->IsTextPosition());
-  EXPECT_EQ(inline_box_7.id, result_position->anchor_id());
-  EXPECT_EQ(6, result_position->text_offset());
-  EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, result_position->affinity());
-  EXPECT_EQ(base::WideToUTF16(L" world"), result_position->GetText());
+  expectations =
+      "TextPosition anchor_id=7 text_offset=6 affinity=downstream "
+      "annotated_text= world<>";
+  ASSERT_EQ(result_position->ToString(), expectations);
 
   // CreatePreviousWordEndPosition tests.
   position = std::move(result_position);
   result_position = position->CreatePreviousWordEndPosition(
       AXBoundaryBehavior::CrossBoundary);
-  EXPECT_TRUE(result_position->IsTextPosition());
-  EXPECT_EQ(generic_container_5.id, result_position->anchor_id());
-  EXPECT_EQ(1, result_position->text_offset());
-  EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, result_position->affinity());
-  EXPECT_EQ(embedded_character_str, result_position->GetText());
+  expectations =
+      "TextPosition anchor_id=5 text_offset=1 affinity=downstream "
+      "annotated_text=\xEF\xBF\xBC<>";
+  ASSERT_EQ(result_position->ToString(), expectations);
 
   position = std::move(result_position);
   result_position = position->CreatePreviousWordEndPosition(
       AXBoundaryBehavior::CrossBoundary);
-  EXPECT_TRUE(result_position->IsTextPosition());
-  EXPECT_EQ(inline_box_3.id, result_position->anchor_id());
-  EXPECT_EQ(6, result_position->text_offset());
-  EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, result_position->affinity());
-  EXPECT_EQ(base::WideToUTF16(L"Hello "), result_position->GetText());
+  expectations =
+      "TextPosition anchor_id=3 text_offset=6 affinity=downstream "
+      "annotated_text=Hello <>";
+  ASSERT_EQ(result_position->ToString(), expectations);
 
   // GetText() with embedded object replacement character test.
   position = AXNodePosition::CreateTextPosition(
       GetTreeID(), generic_container_5.id, 0 /* text_offset */,
       ax::mojom::TextAffinity::kDownstream);
 
-  EXPECT_EQ(embedded_character_str, position->GetText());
+  base::string16 expected_text;
+  expected_text += AXNodePosition::kEmbeddedCharacter;
+  ASSERT_EQ(expected_text, position->GetText());
 
-  // GetText() on a node that is the parent of a set of text nodes and a
-  // non-text node, the latter represented by an embedded object replacement
+  // GetText() on a node parent of text nodes and an embedded object replacement
   // character.
   position = AXNodePosition::CreateTextPosition(
       GetTreeID(), root_1.id, 0 /* text_offset */,
       ax::mojom::TextAffinity::kDownstream);
 
-  base::string16 expected_text =
+  expected_text =
       base::WideToUTF16(L"Hello ") + AXNodePosition::kEmbeddedCharacter +
-      base::WideToUTF16(L" world") + AXNodePosition::kEmbeddedCharacter +
-      AXNodePosition::kEmbeddedCharacter + base::WideToUTF16(L"hey") +
-      AXNodePosition::kEmbeddedCharacter;
-  EXPECT_EQ(expected_text, position->GetText());
+      base::WideToUTF16(L" world3.14") + AXNodePosition::kEmbeddedCharacter +
+      base::WideToUTF16(L"hey") + AXNodePosition::kEmbeddedCharacter;
+  ASSERT_EQ(expected_text, position->GetText());
 
-  // MaxTextOffset() on a non-text node. This is represented by an embedded
-  // object replacement character.
+  // MaxTextOffset() with an embedded object replacement character.
   position = AXNodePosition::CreateTextPosition(
       GetTreeID(), generic_container_5.id, 0 /* text_offset */,
       ax::mojom::TextAffinity::kDownstream);
-  EXPECT_EQ(1, position->MaxTextOffset());
+
+  ASSERT_EQ(1, position->MaxTextOffset());
 
   // Parent positions created from a position inside a node represented by an
   // embedded object replacement character.
   position = position->CreateParentPosition();
-  EXPECT_TRUE(result_position->IsTextPosition());
-  EXPECT_EQ(inline_box_3.id, result_position->anchor_id());
-  EXPECT_EQ(6, result_position->text_offset());
-  EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, result_position->affinity());
-  EXPECT_EQ(base::WideToUTF16(L"Hello "), result_position->GetText());
-  EXPECT_EQ(1, position->MaxTextOffset());
+  expectations =
+      "TextPosition anchor_id=4 text_offset=0 affinity=downstream "
+      "annotated_text=<\xEF\xBF\xBC>";
+  ASSERT_EQ(position->ToString(), expectations);
+  ASSERT_EQ(1, position->MaxTextOffset());
 
   position = position->CreateParentPosition();
-  EXPECT_TRUE(result_position->IsTextPosition());
-  EXPECT_EQ(inline_box_3.id, result_position->anchor_id());
-  EXPECT_EQ(6, result_position->text_offset());
-  EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, result_position->affinity());
-  EXPECT_EQ(base::WideToUTF16(L"Hello "), result_position->GetText());
-  EXPECT_EQ(22, position->MaxTextOffset());
+  expectations =
+      "TextPosition anchor_id=1 text_offset=6 affinity=downstream "
+      "annotated_text=Hello <\xEF\xBF\xBC> "
+      "world3.14\xEF\xBF\xBChey\xEF\xBF\xBC";
+  ASSERT_EQ(position->ToString(), expectations);
+  ASSERT_EQ(22, position->MaxTextOffset());
 
-  // MaxTextOffset() on a node which is the parent of a set of text nodes and an
-  // a non-text node, the latter represented by an embedded object replacement
-  // character.
+  // MaxTextOffset() on a node parent of text nodes and an embedded object
+  // replacement character.
   position = AXNodePosition::CreateTextPosition(
       GetTreeID(), root_1.id, 0 /* text_offset */,
       ax::mojom::TextAffinity::kDownstream);
-  EXPECT_EQ(22, position->MaxTextOffset());
+  ASSERT_EQ(22, position->MaxTextOffset());
 
   // The following is to test a specific edge case with heading navigation,
   // occurring in AXPosition::CreatePreviousFormatStartPosition.
   //
   // When the position is at the beginning of an unignored empty object,
-  // preceded by an ignored empty object, which is itself preceded by a heading
-  // node, the previous format start position should stay on this unignored
-  // empty object. It shouldn't move to the beginning of the heading.
+  // preceded by an ignored empty object itself preceded by an heading node, the
+  // previous format start position should stay on this unignored empty object.
+  // It shouldn't move to the beginning of the heading.
   TestPositionType text_position = AXNodePosition::CreateTextPosition(
       GetTreeID(), generic_container_12.id, 0 /* text_offset */,
       ax::mojom::TextAffinity::kDownstream);
@@ -7780,16 +7753,14 @@ TEST_F(AXPositionTest, EmptyObjectReplacedByCharacterTextNavigation) {
 
   text_position = text_position->CreatePreviousFormatStartPosition(
       AXBoundaryBehavior::StopIfAlreadyAtBoundary);
-  ASSERT_NE(nullptr, text_position);
+  EXPECT_NE(nullptr, text_position);
   EXPECT_TRUE(text_position->IsTextPosition());
   EXPECT_EQ(generic_container_12.id, text_position->anchor_id());
   EXPECT_EQ(0, text_position->text_offset());
-  EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, text_position->affinity());
 
   // The following is to test a specific edge case that occurs when all the
   // children of a node are ignored and that node could be considered as an
-  // empty object, which would be replaced by an embedded object replacement
-  // character, (e.g., a button).
+  // empty object replaced by character (e.g., a button).
   //
   // The button element should be treated as a leaf node even though it has a
   // child. Because its only child is ignored, the button should be considered
@@ -7802,12 +7773,11 @@ TEST_F(AXPositionTest, EmptyObjectReplacedByCharacterTextNavigation) {
 
   text_position = text_position->CreateNextParagraphEndPosition(
       AXBoundaryBehavior::StopAtLastAnchorBoundary);
-  ASSERT_NE(nullptr, text_position);
+  EXPECT_NE(nullptr, text_position);
   EXPECT_TRUE(text_position->IsTextPosition());
   EXPECT_TRUE(text_position->IsLeafTextPosition());
   EXPECT_EQ(button_14.id, text_position->anchor_id());
   EXPECT_EQ(1, text_position->text_offset());
-  EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, text_position->affinity());
 }
 
 TEST_F(AXPositionTest, TextNavigationWithCollapsedCombobox) {
@@ -7866,7 +7836,6 @@ TEST_F(AXPositionTest, TextNavigationWithCollapsedCombobox) {
 
   menu_list_option_6.role = ax::mojom::Role::kMenuListOption;
   menu_list_option_6.SetName("Option");
-  menu_list_option_6.SetNameFrom(ax::mojom::NameFrom::kContents);
 
   static_text_7.role = ax::mojom::Role::kStaticText;
   static_text_7.SetName("3.14");
