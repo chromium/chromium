@@ -8,10 +8,18 @@
  */
 
 /**
+ * @typedef {{
+ *   info: (function()|undefined),
+ * }}
+ */
+let Actions;
+
+/**
  * @typedef {function(): !Promise<?{
  *    element: !HTMLElement,
  *    title: string,
- *   }>}
+ *    actions: (undefined|Actions),
+ *  }>}
  */
 let InitializeModuleCallback;
 
@@ -32,6 +40,8 @@ export class ModuleDescriptor {
     this.element_ = null;
     /** @private {!InitializeModuleCallback} */
     this.initializeCallback_ = initializeCallback;
+    /** @private {?Actions} */
+    this.actions_ = null;
   }
 
   /** @return {string} */
@@ -54,6 +64,11 @@ export class ModuleDescriptor {
     return this.element_;
   }
 
+  /** @return {?Actions} */
+  get actions() {
+    return this.actions_;
+  }
+
   async initialize() {
     const info = await this.initializeCallback_();
     if (!info) {
@@ -61,5 +76,6 @@ export class ModuleDescriptor {
     }
     this.title_ = info.title;
     this.element_ = info.element;
+    this.actions_ = info.actions || null;
   }
 }

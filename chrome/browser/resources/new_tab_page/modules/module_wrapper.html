@@ -18,6 +18,14 @@
     color: var(--cr-primary-text-color);
   }
 
+  #headerSpacer {
+    flex-grow: 1;
+  }
+
+  #infoButton {
+    --cr-icon-image: url(./icons/info.svg);
+  }
+
   #moduleElement {
     align-items: center;
     display: flex;
@@ -26,5 +34,11 @@
 </style>
 <div id="header">
   <span id="title">[[descriptor.title]]</span>
+  <div id="headerSpacer"></div>
+  <template is="dom-if" if="[[descriptor.actions.info]]">
+    <cr-icon-button id="infoButton" title="$i18n{moduleInfoButtonTitle}"
+        on-click="onInfoButtonClick_">
+    </cr-icon-button>
+  </template>
 </div>
 <div id="moduleElement"></div>
