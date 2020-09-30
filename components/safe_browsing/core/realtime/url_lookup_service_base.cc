@@ -174,11 +174,7 @@ SBThreatType RealTimeUrlLookupServiceBase::GetSBThreatTypeForRTThreatType(
 
 // static
 GURL RealTimeUrlLookupServiceBase::SanitizeURL(const GURL& url) {
-  GURL::Replacements replacements;
-  replacements.ClearRef();
-  replacements.ClearUsername();
-  replacements.ClearPassword();
-  return url.ReplaceComponents(replacements);
+  return net::SimplifyUrlForRequest(url);
 }
 
 // static
