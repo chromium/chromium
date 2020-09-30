@@ -93,6 +93,10 @@ suite('DiagnosticsAppTest', () => {
     // Verify the battery status card is in the page.
     const batteryStatus = page.$$('#batteryStatusCard');
     assertTrue(!!batteryStatus);
+
+    // Verify the session log button is in the page.
+    const sessionLog = page.$$('.session-log-button');
+    assertTrue(!!sessionLog);
   });
 });
 

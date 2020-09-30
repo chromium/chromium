@@ -16,8 +16,21 @@
   .overview-container {
     margin-bottom: 10px;
   }
+  .session-log-container {
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+  }
+  .session-log-button {
+    background-color: rgba(var(--google-blue-600), .06);
+    border-radius: 20px;
+    width: 144px;
+    height: 40px;
+    font-size: 14px;
+    padding: 5px;
+  }
 </style>
-<div id="diagnosticsContainer"class="cr-centered-card-container">
+<div id="diagnosticsContainer" class="cr-centered-card-container">
   <!-- TODO(zentaro) Localize once strings are confirmed -->
   <div id="header">Diagnostics</div>
   <div class="overview-container">
@@ -27,5 +40,11 @@
     <memory-card id="memoryCard"></memory-card>
     <cpu-card id="cpuCard"></cpu-card>
     <battery-status-card id="batteryStatusCard"></battery-status-card>
+  </div>
+  <div class="session-log-container">
+    <!-- TODO(michaelcheco): Localize string -->
+    <cr-button class="session-log-button">
+      Session log
+    </cr-button>
   </div>
 </div>

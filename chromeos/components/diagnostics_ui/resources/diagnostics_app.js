@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import './battery_status_card.js';
 import './cpu_card.js';
 import './diagnostics_fonts_css.js';
