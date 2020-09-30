@@ -83,6 +83,10 @@ bool FilterNeedsUpgrade(const apps::mojom::IntentFilterPtr& filter);
 // Upgrade the filter to contain action view.
 void UpgradeFilter(apps::mojom::IntentFilterPtr& filter);
 
+// Check if the filter is a browser filter, i.e. can handle all https
+// or http scheme.
+bool IsBrowserFilter(const apps::mojom::IntentFilterPtr& filter);
+
 }  // namespace apps_util
 
 #endif  // COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_INTENT_FILTER_UTIL_H_

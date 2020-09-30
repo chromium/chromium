@@ -193,7 +193,8 @@ CommonAppsNavigationThrottle::FindAllAppsForUrl(
   apps::AppServiceProxy* proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile);
 
-  std::vector<std::string> app_ids = proxy->GetAppIdsForUrl(url);
+  std::vector<std::string> app_ids =
+      proxy->GetAppIdsForUrl(url, /*exclude_browser=*/true);
 
   for (const std::string& app_id : app_ids) {
     proxy->AppRegistryCache().ForOneApp(
@@ -236,7 +237,8 @@ bool CommonAppsNavigationThrottle::ShouldCancelNavigation(
   apps::AppServiceProxy* proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile);
 
-  std::vector<std::string> app_ids = proxy->GetAppIdsForUrl(url);
+  std::vector<std::string> app_ids =
+      proxy->GetAppIdsForUrl(url, /*exclude_browser=*/true);
 
   if (app_ids.empty())
     return false;

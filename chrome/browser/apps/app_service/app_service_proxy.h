@@ -220,12 +220,16 @@ class AppServiceProxy : public KeyedService,
 #endif
 
   // Returns a list of apps (represented by their ids) which can handle |url|.
-  std::vector<std::string> GetAppIdsForUrl(const GURL& url);
+  // If |exclude_browsers| is true, then exclude the browser apps.
+  std::vector<std::string> GetAppIdsForUrl(const GURL& url,
+                                           bool exclude_browsers = false);
 
   // Returns a list of apps (represented by their ids) and activities (if
-  // applied) which can handle |intent|.
+  // applied) which can handle |intent|. If |exclude_browsers| is true, then
+  // exclude the browser apps.
   std::vector<IntentLaunchInfo> GetAppsForIntent(
-      const apps::mojom::IntentPtr& intent);
+      const apps::mojom::IntentPtr& intent,
+      bool exclude_browsers = false);
 
   // Returns a list of apps (represented by their ids) and activities (if
   // applied) which can handle |filesystem_urls| and |mime_types|.

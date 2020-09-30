@@ -525,9 +525,11 @@ void AppServiceProxy::UninstallForTesting(const std::string& app_id,
 
 #endif
 
-std::vector<std::string> AppServiceProxy::GetAppIdsForUrl(const GURL& url) {
+std::vector<std::string> AppServiceProxy::GetAppIdsForUrl(
+    const GURL& url,
+    bool exclude_browsers) {
   auto intent_launch_info =
-      GetAppsForIntent(apps_util::CreateIntentFromUrl(url));
+      GetAppsForIntent(apps_util::CreateIntentFromUrl(url), exclude_browsers);
   std::vector<std::string> app_ids;
   for (auto& entry : intent_launch_info) {
     app_ids.push_back(std::move(entry.app_id));
@@ -536,16 +538,20 @@ std::vector<std::string> AppServiceProxy::GetAppIdsForUrl(const GURL& url) {
 }
 
 std::vector<IntentLaunchInfo> AppServiceProxy::GetAppsForIntent(
-    const apps::mojom::IntentPtr& intent) {
+    const apps::mojom::IntentPtr& intent,
+    bool exclude_browsers) {
   std::vector<IntentLaunchInfo> intent_launch_info;
   if (app_service_.is_bound()) {
-    cache_.ForEachApp([&intent_launch_info,
-                       &intent](const apps::AppUpdate& update) {
+    cache_.ForEachApp([&intent_launch_info, &intent,
+                       &exclude_browsers](const apps::AppUpdate& update) {
       if (update.Readiness() == apps::mojom::Readiness::kUninstalledByUser) {
         return;
       }
       std::set<std::string> existing_activities;
       for (const auto& filter : update.IntentFilters()) {
+        if (exclude_browsers && apps_util::IsBrowserFilter(filter)) {
+          continue;
+        }
         if (apps_util::IntentMatchesFilter(intent, filter)) {
           IntentLaunchInfo entry;
           entry.app_id = update.AppId();
