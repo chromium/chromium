@@ -173,7 +173,10 @@ js_library("auto_scan_manager") {
 }
 
 js_library("background") {
-  deps = [ ":switch_access" ]
+  deps = [
+    ":switch_access",
+    "../common:instance_checker",
+  ]
   externs_list = [ "$externs_path/chrome_extensions.js" ]
 }
 

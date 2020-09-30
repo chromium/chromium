@@ -27,6 +27,7 @@ chromevox_modules = [
   "../common/constants.js",
   "../common/event_generator.js",
   "../common/key_code.js",
+  "../common/instance_checker.js",
   "../common/tree_walker.js",
   "background/annotation/node_identifier.js",
   "background/annotation/user_annotation_handler.js",

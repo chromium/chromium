@@ -76,5 +76,6 @@ class AccessibilityCommon {
   }
 }
 
+InstanceChecker.closeExtraInstances();
 // Initialize the AccessibilityCommon extension.
 var accessibilityCommon = new AccessibilityCommon();

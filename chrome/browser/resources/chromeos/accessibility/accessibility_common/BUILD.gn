@@ -87,6 +87,7 @@ js_library("accessibility_common") {
   deps = [
     ":autoclick",
     ":magnifier",
+    "../common:instance_checker",
   ]
   externs_list = [
     "$externs_path/chrome_extensions.js",

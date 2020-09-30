@@ -25,6 +25,7 @@ goog.require('ExtensionBridge');
 goog.require('FindHandler');
 goog.require('FocusAutomationHandler');
 goog.require('GestureCommandHandler');
+goog.require('InstanceChecker');
 goog.require('LiveRegions');
 goog.require('LocaleOutputHelper');
 goog.require('MathHandler');
@@ -555,17 +556,7 @@ Background = class extends ChromeVoxState {
   }
 };
 
-
-// In 'split' manifest mode, the extension system runs two copies of the
-// extension. One in an incognito context; the other not. In guest mode, the
-// extension system runs only the extension in an incognito context. To prevent
-// doubling of this extension, only continue for one context.
-const manifest =
-    /** @type {{incognito: (string|undefined)}} */ (
-        chrome.runtime.getManifest());
-if (manifest.incognito == 'split' && !chrome.extension.inIncognitoContext) {
-  window.close();
-}
+InstanceChecker.closeExtraInstances();
 new Background();
 
 });  // goog.scope
