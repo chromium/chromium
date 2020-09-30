@@ -49,7 +49,8 @@ PhoneConnectedView::PhoneConnectedView(
     AddChildView(std::make_unique<NotificationOptInView>(bubble_view));
   }
 
-  setup_layered_view(AddChildView(std::make_unique<QuickActionsView>()));
+  setup_layered_view(
+      AddChildView(std::make_unique<QuickActionsView>(phone_hub_manager)));
 
   AddSeparator();
 
