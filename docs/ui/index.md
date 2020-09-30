@@ -17,6 +17,7 @@ Details on Chrome UI.
 
 * [Best Practices](/docs/ui/learn/index.md#best-practices)
 * [Views](/docs/ui/views/overview.md)
+* [Platform Styling](/docs/ui/views/platform_style.md)
 * [Product Excellence](/docs/ui/product_excellence/index.md)
 * [UI Devtools](/docs/ui/ui_devtools/index.md)
 
