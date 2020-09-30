@@ -155,20 +155,26 @@ Then to run for example the headless platform:
                                   --ozone-dump-file=/tmp/
 ```
 
-### Linux Desktop - ([waterfall](https://build.chromium.org/p/chromium.fyi/builders/Ozone%20Linux/))
+### Linux Desktop - ([waterfall](https://ci.chromium.org/p/chromium/builders/try/linux-ozone-rel))
 
-**Warning: Experimental support for Linux Desktop is available since m57 and still under
-  development. The work is purely done in the upstream, but you can still find some Ozone/X11
-  patches in the the old [ozone-wayland-dev](https://github.com/Igalia/chromium/tree/ozone-wayland-dev) branch.**
+**Warning: Experimental Ozone feature is available in the official Chrome distributions since m87.
+  It is not required to build Ozone for Linux anymore for the purpose of testing. It is enough
+  to start Chrome with the following flags - ./chrome --enable-features=UseOzonePlatform
+  --ozone-platform={x11/wayland}.**
 
-To build `chrome`, do this from the `src` directory:
+To build `chrome` with Ozone support, it is no longer required to pass any additional
+gn arguments. One can just follow the manual about how to build Chromium for Linux as both
+(Aura/X11) 'use\_x11=true' and (Linux/Ozone) 'use\_ozone=true' are set by default.
+
+If you want to disable Aura/X11 in the build, do this from the `src` directory:
 
 ``` shell
-gn args out/OzoneLinuxDesktop --args="use_ozone=true use_system_minigbm=true use_system_libdrm=true"
+gn args out/OzoneLinuxDesktop --args="use_x11=false"
 ninja -C out/OzoneLinuxDesktop chrome
 ```
 
-Then to run for example the X11 platform:
+Then to run for example the X11 platform (note that passing --enable-features=UseOzonePlatform
+is not required if Aura/X11 is disabled):
 
 ``` shell
 ./out/OzoneLinuxDesktop/chrome --ozone-platform=x11
@@ -178,6 +184,13 @@ Or run for example the Wayland platform:
 
 ``` shell
 ./out/OzoneLinuxDesktop/chrome --ozone-platform=wayland
+```
+
+If you want to disable Linux/Ozone in the build, do this from the `src` directory:
+
+``` shell
+gn args out/LinuxDesktop --args="use_ozone=false"
+ninja -C out/LinuxDesktop chrome
 ```
 
 ### GN Configuration notes
