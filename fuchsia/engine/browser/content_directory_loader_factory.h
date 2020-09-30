@@ -12,24 +12,35 @@
 #include <string>
 #include <vector>
 
+#include "content/public/browser/non_network_url_loader_factory_base.h"
 #include "fuchsia/engine/web_engine_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 
-// Creates a URLLoaderFactory which services requests for resources stored
-// under named directories. The directories are accessed using the
-// fuchsia-dir:// scheme.
-class ContentDirectoryLoaderFactory : public network::mojom::URLLoaderFactory {
+// URLLoaderFactory which services requests for resources stored under named
+// directories. The directories are accessed using the fuchsia-dir:// scheme.
+class ContentDirectoryLoaderFactory
+    : public content::NonNetworkURLLoaderFactoryBase {
  public:
-  ContentDirectoryLoaderFactory();
-  ~ContentDirectoryLoaderFactory() override;
+  // Returns mojo::PendingRemote to a newly constructed
+  // ContentDirectoryLoaderFactory.  The factory is self-owned - it will delete
+  // itself once there are no more receivers (including the receiver associated
+  // with the returned mojo::PendingRemote and the receivers bound by the Clone
+  // method).
+  static mojo::PendingRemote<network::mojom::URLLoaderFactory> Create();
 
   // Sets the list of content directories for the duration of the process.
   // Can be called multiple times for clearing or replacing the list.
   static WEB_ENGINE_EXPORT void SetContentDirectoriesForTest(
       std::vector<fuchsia::web::ContentDirectoryProvider> directories);
+
+ private:
+  explicit ContentDirectoryLoaderFactory(
+      mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver);
+
+  ~ContentDirectoryLoaderFactory() override;
 
   // network::mojom::URLLoaderFactory:
   void CreateLoaderAndStart(
@@ -40,10 +51,7 @@ class ContentDirectoryLoaderFactory : public network::mojom::URLLoaderFactory {
       const network::ResourceRequest& request,
       mojo::PendingRemote<network::mojom::URLLoaderClient> client,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) final;
-  void Clone(
-      mojo::PendingReceiver<network::mojom::URLLoaderFactory> loader) final;
 
- private:
   net::Error OpenFileFromDirectory(
       const std::string& directory_name,
       base::FilePath path,
@@ -51,8 +59,6 @@ class ContentDirectoryLoaderFactory : public network::mojom::URLLoaderFactory {
 
   // Used for executing blocking URLLoader routines.
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
-
-  mojo::ReceiverSet<network::mojom::URLLoaderFactory> receivers_;
 
   DISALLOW_COPY_AND_ASSIGN(ContentDirectoryLoaderFactory);
 };
