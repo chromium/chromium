@@ -39,11 +39,6 @@ def main(argv):
   parser.add_argument(
       '--device',
       help='Serial number of device we should use.')
-  # TODO(crbug.com/1097306): Remove this once callers have all switched to
-  # --denylist-file.
-  parser.add_argument('--blacklist-file',
-                      dest='denylist_file',
-                      help=argparse.SUPPRESS)
   parser.add_argument('--denylist-file', help='Device denylist JSON file.')
   parser.add_argument(
       '--debug',

@@ -63,9 +63,6 @@ def main():
       description="Script to do semi-automated upgrade testing.")
   parser.add_argument('-v', '--verbose', action='count',
                       help='Print verbose log information.')
-  parser.add_argument('--blacklist-file',
-                      dest='denylist_file',
-                      help=argparse.SUPPRESS)
   parser.add_argument('--denylist-file', help='Device denylist JSON file.')
   command_parsers = parser.add_subparsers(dest='command')
 
