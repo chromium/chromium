@@ -41,6 +41,8 @@ install:
 	  "$(INSTALL_DIR)/chrome-remote-desktop"
 	install "$(SRC_DIR)/remoting/host/installer/linux/is-remoting-session" \
 	  "$(INSTALL_DIR)"
+	install "$(SRC_DIR)/remoting/host/installer/linux/Xsession" \
+	  "$(INSTALL_DIR)"
 
 	install -m 0644 \
 	  "$(BUILD_DIR)/remoting/com.google.chrome.remote_desktop.json" \

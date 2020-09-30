@@ -30,6 +30,7 @@
 #include "base/logging.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/optional.h"
+#include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_executor.h"
@@ -46,8 +47,6 @@
 namespace remoting {
 
 namespace {
-
-const char XSESSION_SCRIPT[] = "/etc/X11/Xsession";
 
 struct XSession {
   std::string name;
@@ -326,14 +325,22 @@ std::vector<XSession> CollectXSessions() {
 }
 
 void ExecXSession(base::OnceClosure quit_closure, XSession session) {
-  LOG(INFO) << "Running " << XSESSION_SCRIPT << " " << session.exec;
+  base::FilePath xsession_script;
+  if (!base::PathService::Get(base::DIR_EXE, &xsession_script)) {
+    PLOG(ERROR) << "Failed to get CRD install path";
+    std::move(quit_closure).Run();
+    return;
+  }
+  xsession_script = xsession_script.Append("Xsession");
+  LOG(INFO) << "Running " << xsession_script << " " << session.exec;
   if (!session.desktop_names.empty()) {
     std::unique_ptr<base::Environment> environment =
         base::Environment::Create();
     environment->SetVar("XDG_CURRENT_DESKTOP",
                         base::JoinString(session.desktop_names, ":"));
   }
-  execl(XSESSION_SCRIPT, XSESSION_SCRIPT, session.exec.c_str(), nullptr);
+  execl(xsession_script.value().c_str(), xsession_script.value().c_str(),
+        session.exec.c_str(), nullptr);
   PLOG(ERROR) << "Failed to exec XSession";
   std::move(quit_closure).Run();
 }
