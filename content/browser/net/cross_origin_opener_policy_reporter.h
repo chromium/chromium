@@ -46,10 +46,10 @@ class CONTENT_EXPORT CrossOriginOpenerPolicyReporter final
   }
 
   // network::mojom::CrossOriginOpenerPolicyReporter implementation.
-  void QueueAccessReport(
-      network::mojom::CoopAccessReportType report_type,
-      const std::string& property,
-      network::mojom::SourceLocationPtr source_location) final;
+  void QueueAccessReport(network::mojom::CoopAccessReportType report_type,
+                         const std::string& property,
+                         network::mojom::SourceLocationPtr source_location,
+                         const std::string& reported_window_url) final;
 
   // Sends reports when COOP causing a browsing context group switch that
   // breaks opener relationships.

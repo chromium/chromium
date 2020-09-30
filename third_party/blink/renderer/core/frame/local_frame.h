@@ -660,7 +660,8 @@ class CORE_EXPORT LocalFrame final
       const base::UnguessableToken& accessed_window,
       mojo::PendingRemote<
           network::mojom::blink::CrossOriginOpenerPolicyReporter> reporter,
-      bool endpoint_defined) final;
+      bool endpoint_defined,
+      const WTF::String& reported_window_url) final;
   void OnPortalActivated(
       const PortalToken& portal_token,
       mojo::PendingAssociatedRemote<mojom::blink::Portal> portal,

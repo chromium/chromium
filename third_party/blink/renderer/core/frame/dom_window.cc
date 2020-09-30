@@ -441,13 +441,16 @@ void DOMWindow::InstallCoopAccessMonitor(
     LocalFrame* accessing_frame,
     mojo::PendingRemote<network::mojom::blink::CrossOriginOpenerPolicyReporter>
         pending_reporter,
-    bool endpoint_defined) {
+    bool endpoint_defined,
+    const WTF::String& reported_window_url) {
   CoopAccessMonitor monitor;
 
   DCHECK(accessing_frame->IsMainFrame());
   monitor.report_type = report_type;
   monitor.accessing_main_frame = accessing_frame->GetFrameToken();
   monitor.endpoint_defined = endpoint_defined;
+  monitor.reported_window_url = std::move(reported_window_url);
+
   monitor.reporter.Bind(std::move(pending_reporter));
   // CoopAccessMonitor are cleared when their reporter are gone. This avoids
   // accumulation. However it would have been interesting continuing reporting
@@ -533,9 +536,12 @@ void DOMWindow::ReportCoopAccess(const char* property_name) {
     // interested.
     if (it->endpoint_defined) {
       it->reporter->QueueAccessReport(it->report_type, property_name,
-                                      std::move(source_location));
+                                      std::move(source_location),
+                                      std::move(it->reported_window_url));
       // Send a coop-access-violation report.
       if (network::IsAccessFromCoopPage(it->report_type)) {
+        // TODO(arthursonzogni): Fill the openeeURL, openerURL and
+        // otherDocumentURL.
         ReportingContext::From(accessing_main_frame.DomWindow())
             ->QueueReport(MakeGarbageCollected<Report>(
                 ReportType::kCoopAccessViolation,

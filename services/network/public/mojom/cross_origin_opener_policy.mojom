@@ -25,8 +25,11 @@ interface CrossOriginOpenerPolicyReporter {
   // context groups tries to access each other.
   // - |property| is the name of the access property (postMessage, open, ...).
   // - |source_location| represents the line of code that triggered the access.
+  // - |reported_window_url| the sanitized URL of the second window. Empty when
+  //   cross-origin with the reporting window.
   QueueAccessReport(CoopAccessReportType report_type, string property,
-                    SourceLocation source_location);
+                    SourceLocation source_location,
+                    string reported_window_url);
 
   // Connects a new pipe to this instance.
   Clone(pending_receiver<CrossOriginOpenerPolicyReporter> receiver);

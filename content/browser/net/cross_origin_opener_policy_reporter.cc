@@ -26,6 +26,9 @@ constexpr char kDisposition[] = "disposition";
 constexpr char kEffectivePolicy[] = "effectivePolicy";
 constexpr char kLineNumber[] = "lineNumber";
 constexpr char kNextURL[] = "nextResponseURL";
+constexpr char kOpeneeURL[] = "openeeURL";
+constexpr char kOpenerURL[] = "openerURL";
+constexpr char kOtherDocumentURL[] = "otherDocumentURL";
 constexpr char kPreviousURL[] = "previousResponseURL";
 constexpr char kProperty[] = "property";
 constexpr char kReferrer[] = "referrer";
@@ -181,7 +184,8 @@ void CrossOriginOpenerPolicyReporter::QueueNavigationAwayFromCOOPReport(
 void CrossOriginOpenerPolicyReporter::QueueAccessReport(
     network::mojom::CoopAccessReportType report_type,
     const std::string& property,
-    network::mojom::SourceLocationPtr source_location) {
+    network::mojom::SourceLocationPtr source_location,
+    const std::string& reported_window_url) {
   // Cross-Origin-Opener-Policy-Report-Only is not required to provide
   // endpoints.
   if (!coop_.report_only_reporting_endpoint)
@@ -198,13 +202,35 @@ void CrossOriginOpenerPolicyReporter::QueueAccessReport(
   body.SetStringPath(kEffectivePolicy,
                      ToString(coop_.report_only_value));
   body.SetStringPath(kProperty, property);
-  // TODO(arthursonzogni): Fill "blocked-window-url".
   if (network::IsAccessFromCoopPage(report_type) &&
       source_location->url != "") {
     body.SetStringPath(kSourceFile, source_location->url);
     body.SetIntPath(kLineNumber, source_location->line);
     body.SetIntPath(kColumnNumber, source_location->column);
   }
+
+  switch (report_type) {
+    // Reporter is the openee:
+    case network::mojom::CoopAccessReportType::kAccessFromCoopPageToOpener:
+    case network::mojom::CoopAccessReportType::kAccessToCoopPageFromOpener:
+      body.SetStringPath(kOpenerURL, reported_window_url);
+      // TODO(arthursonzogni): Fill body.referrer.
+      break;
+
+    // Reporter is the opener:
+    case network::mojom::CoopAccessReportType::kAccessFromCoopPageToOpenee:
+    case network::mojom::CoopAccessReportType::kAccessToCoopPageFromOpenee:
+      body.SetStringPath(kOpeneeURL, reported_window_url);
+      // TODO(arthursonzogni): Fill body.initial_popup_url.
+      break;
+
+    // Other:
+    case network::mojom::CoopAccessReportType::kAccessFromCoopPageToOther:
+    case network::mojom::CoopAccessReportType::kAccessToCoopPageFromOther:
+      body.SetStringPath(kOtherDocumentURL, reported_window_url);
+      break;
+  }
+
   storage_partition_->GetNetworkContext()->QueueReport(
       "coop", endpoint, context_url_, base::nullopt, std::move(body));
 }
@@ -278,6 +304,7 @@ void CrossOriginOpenerPolicyReporter::MonitorAccesses(
   // inside the same SiteInstance. Only one SiteInstance has to be updated.
 
   RenderFrameHostImpl* accessing_rfh = accessing_node->current_frame_host();
+  RenderFrameHostImpl* accessed_rfh = accessed_node->current_frame_host();
   SiteInstance* site_instance = accessing_rfh->GetSiteInstance();
 
   base::Optional<base::UnguessableToken> accessed_window_token =
@@ -310,12 +337,22 @@ void CrossOriginOpenerPolicyReporter::MonitorAccesses(
       report_type = CoopAccessReportType::kAccessToCoopPageFromOther;
   }
 
+  bool same_origin = accessing_rfh->GetLastCommittedOrigin().IsSameOriginWith(
+      accessed_rfh->GetLastCommittedOrigin());
+  RenderFrameHostImpl* reported_rfh =
+      access_from_coop_page ? accessed_rfh : accessing_rfh;
+  std::string reported_window_url =
+      same_origin ? SanitizedURL(reported_rfh->GetLastCommittedURL()) : "";
+
   bool endpoint_defined =
       coop_.report_only_reporting_endpoint || coop_.reporting_endpoint;
 
+  // Warning: Do not send cross-origin sensitive data. They will be read from:
+  // 1) A potentially compromised renderer (the accessing window).
+  // 2) A network server (defined from the reporter).
   accessing_rfh->GetAssociatedLocalMainFrame()->InstallCoopAccessMonitor(
       report_type, *accessed_window_token, std::move(remote_reporter),
-      endpoint_defined);
+      endpoint_defined, std::move(reported_window_url));
 }
 
 // static

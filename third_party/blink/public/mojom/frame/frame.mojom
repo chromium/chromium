@@ -907,11 +907,15 @@ interface LocalMainFrame {
   // 3) Devtool will be notified.
   //
   // |endpoint_defined|: The COOP header defines at least one endpoint.
+  // |reported_window_url|: The reported window's sanitized URL. This
+  // corresponds to openerURL, openeeURL or otherDocumentURL depending on the
+  // |report_type|.
   InstallCoopAccessMonitor(
       network.mojom.CoopAccessReportType report_type,
       mojo_base.mojom.UnguessableToken accessed_window,
       pending_remote<network.mojom.CrossOriginOpenerPolicyReporter> reporter,
-      bool endpoint_defined);
+      bool endpoint_defined,
+      string reported_window_url);
 
   // Called on the main frame of a page embedded in a Portal when it is
   // activated. The frame has the option to adopt the previous page as a portal
