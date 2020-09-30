@@ -18,6 +18,9 @@ class TextZoomProvider {
   // of 100 corresponds to a zoom of 100%.
   virtual void SetPageFontSize(web::WebState* web_state, int size);
 
+  // Returns whether text zoom is enabled currently.
+  virtual bool IsTextZoomEnabled();
+
  protected:
   // Uses injected javascript to change to zoom the page font size to the given
   // |size| as a percentage (size = 100 -> 100% zoom).

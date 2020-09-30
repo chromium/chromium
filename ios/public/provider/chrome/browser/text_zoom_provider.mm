@@ -30,3 +30,7 @@ void TextZoomProvider::SetPageFontSizeJavascript(web::WebState* web_state,
     frame->CallJavaScriptFunction("accessibility.adjustFontSize", parameters);
   }
 }
+
+bool TextZoomProvider::IsTextZoomEnabled() {
+  return false;
+}

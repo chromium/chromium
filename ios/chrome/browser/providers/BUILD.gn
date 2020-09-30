@@ -12,6 +12,8 @@ source_set("providers") {
     "chromium_logo_controller.mm",
     "chromium_spotlight_provider.h",
     "chromium_spotlight_provider.mm",
+    "chromium_text_zoom_provider.h",
+    "chromium_text_zoom_provider.mm",
     "chromium_voice_search_provider.h",
     "chromium_voice_search_provider.mm",
   ]
@@ -19,6 +21,7 @@ source_set("providers") {
     "//base",
     "//ios/chrome/browser/providers/images",
     "//ios/chrome/browser/providers/signin",
+    "//ios/chrome/browser/web:feature_flags",
     "//ios/public/provider/chrome/browser",
     "//ios/public/provider/chrome/browser/discover_feed",
     "//ios/public/provider/chrome/browser/distribution",
@@ -27,6 +30,7 @@ source_set("providers") {
     "//ios/public/provider/chrome/browser/ui",
     "//ios/public/provider/chrome/browser/user_feedback",
     "//ios/public/provider/chrome/browser/voice",
+    "//ui/base",
   ]
   configs += [ "//build/config/compiler:enable_arc" ]
 }
