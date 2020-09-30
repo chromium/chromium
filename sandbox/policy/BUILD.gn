@@ -21,12 +21,12 @@ component("policy") {
     "switches.h",
   ]
   defines = [ "SANDBOX_POLICY_IMPL" ]
+  public_deps = [ "//services/service_manager/embedder:embedder_switches" ]
   deps = [
     ":sanitizer_buildflags",
     "//base",
     "//sandbox:common",
   ]
-  public_deps = []
   if (is_linux || is_chromeos) {
     sources += [
       "linux/bpf_audio_policy_linux.cc",

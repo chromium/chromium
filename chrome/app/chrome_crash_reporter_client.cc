@@ -22,6 +22,7 @@
 #include "chrome/installer/util/google_update_settings.h"
 #include "components/crash/core/common/crash_keys.h"
 #include "content/public/common/content_switches.h"
+#include "services/service_manager/embedder/switches.h"
 
 #if defined(OS_POSIX) && !defined(OS_MAC)
 #include "components/upload_list/crash_upload_list.h"
@@ -75,7 +76,7 @@ bool ChromeCrashReporterClient::ShouldPassCrashLoopBefore(
   if (process_type == ::switches::kRendererProcess ||
       process_type == ::switches::kUtilityProcess ||
       process_type == ::switches::kPpapiPluginProcess ||
-      process_type == ::switches::kZygoteProcess) {
+      process_type == service_manager::switches::kZygoteProcess) {
     // These process types never cause a log-out, even if they crash. So the
     // normal crash handling process should work fine; we shouldn't need to
     // invoke the special crash-loop mode.
@@ -211,7 +212,7 @@ bool ChromeCrashReporterClient::EnableBreakpadForProcess(
     const std::string& process_type) {
   return process_type == switches::kRendererProcess ||
          process_type == switches::kPpapiPluginProcess ||
-         process_type == switches::kZygoteProcess ||
+         process_type == service_manager::switches::kZygoteProcess ||
          process_type == switches::kGpuProcess ||
          process_type == switches::kUtilityProcess;
 }

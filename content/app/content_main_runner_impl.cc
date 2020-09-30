@@ -95,6 +95,7 @@
 #include "sandbox/policy/sandbox_type.h"
 #include "sandbox/policy/switches.h"
 #include "services/network/public/cpp/features.h"
+#include "services/service_manager/embedder/switches.h"
 #include "services/tracing/public/cpp/trace_startup.h"
 #include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
 #include "ui/base/ui_base_paths.h"
@@ -534,7 +535,7 @@ int RunOtherNamedProcessTypeMain(const std::string& process_type,
 #if BUILDFLAG(USE_ZYGOTE_HANDLE)
   // Zygote startup is special -- see RunZygote comments above
   // for why we don't use ZygoteMain directly.
-  if (process_type == switches::kZygoteProcess)
+  if (process_type == service_manager::switches::kZygoteProcess)
     return RunZygote(delegate);
 #endif  // BUILDFLAG(USE_ZYGOTE_HANDLE)
 
@@ -652,7 +653,8 @@ int ContentMainRunnerImpl::Initialize(const ContentMainParams& params) {
   //
   // Startup tracing flags are not (and should not be) passed to Zygote
   // processes. We will enable tracing when forked, if needed.
-  bool enable_startup_tracing = process_type != switches::kZygoteProcess;
+  bool enable_startup_tracing =
+      process_type != service_manager::switches::kZygoteProcess;
 #if BUILDFLAG(USE_ZYGOTE_HANDLE)
   // In the browser process, we have to enable startup tracing after
   // InitializeZygoteSandboxForBrowserProcess() is run below, because that
@@ -763,7 +765,8 @@ int ContentMainRunnerImpl::Initialize(const ContentMainParams& params) {
     // the call to PreSandboxStartup() on the delegate below), because otherwise
     // this would interfere with signal handlers used by crash reporting.
     if (should_enable_stack_dump &&
-        !command_line.HasSwitch(switches::kDisableInProcessStackTraces)) {
+        !command_line.HasSwitch(
+            service_manager::switches::kDisableInProcessStackTraces)) {
       base::debug::EnableInProcessStackDumping();
     }
 
@@ -823,7 +826,7 @@ int ContentMainRunnerImpl::Run(bool start_service_manager_only) {
       command_line.GetSwitchValueASCII(switches::kProcessType);
   // Run this logic on all child processes.
   if (!process_type.empty()) {
-    if (process_type != switches::kZygoteProcess) {
+    if (process_type != service_manager::switches::kZygoteProcess) {
       // Zygotes will run this at a later point in time when the command line
       // has been updated.
       InitializeFieldTrialAndFeatureList();

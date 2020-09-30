@@ -28,6 +28,7 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/common/service_names.mojom.h"
 #include "sandbox/policy/sandbox.h"
+#include "services/service_manager/embedder/switches.h"
 
 #if defined(OS_ANDROID) && BUILDFLAG(ENABLE_ARM_CFI_TABLE)
 #include <sys/types.h>
@@ -78,7 +79,7 @@ CallStackProfileParams::Process GetProcess() {
       return CallStackProfileParams::NETWORK_SERVICE_PROCESS;
     return CallStackProfileParams::UTILITY_PROCESS;
   }
-  if (process_type == switches::kZygoteProcess)
+  if (process_type == service_manager::switches::kZygoteProcess)
     return CallStackProfileParams::ZYGOTE_PROCESS;
   if (process_type == switches::kPpapiPluginProcess)
     return CallStackProfileParams::PPAPI_PLUGIN_PROCESS;

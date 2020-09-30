@@ -62,7 +62,7 @@ namespace {
 void LogSandboxStarted(const std::string& sandbox_name) {
   const std::string process_type =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          switches::kProcessType);
+          service_manager::switches::kProcessType);
   const std::string activated_sandbox =
       "Activated " + sandbox_name +
       " sandbox for process type: " + process_type + ".";
@@ -107,8 +107,8 @@ bool UpdateProcessTypeAndEnableSandbox(
   base::CommandLine::ForCurrentProcess()->InitFromArgv(exec);
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  std::string new_process_type =
-      command_line->GetSwitchValueASCII(switches::kProcessType);
+  std::string new_process_type = command_line->GetSwitchValueASCII(
+      service_manager::switches::kProcessType);
   if (!new_process_type.empty()) {
     new_process_type.append("-broker");
   } else {
@@ -117,7 +117,8 @@ bool UpdateProcessTypeAndEnableSandbox(
 
   VLOG(3) << "UpdateProcessTypeAndEnableSandbox: Updating process type to "
           << new_process_type;
-  command_line->AppendSwitchASCII(switches::kProcessType, new_process_type);
+  command_line->AppendSwitchASCII(service_manager::switches::kProcessType,
+                                  new_process_type);
 
   if (broker_side_hook)
     CHECK(std::move(broker_side_hook).Run(options));
@@ -323,8 +324,8 @@ bool SandboxLinux::InitializeSandbox(SandboxType sandbox_type,
   initialize_sandbox_ran_ = true;
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  const std::string process_type =
-      command_line->GetSwitchValueASCII(switches::kProcessType);
+  const std::string process_type = command_line->GetSwitchValueASCII(
+      service_manager::switches::kProcessType);
 
   // We need to make absolutely sure that our sandbox is "sealed" before
   // returning.

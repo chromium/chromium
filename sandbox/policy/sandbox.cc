@@ -81,7 +81,8 @@ bool Sandbox::Initialize(SandboxType sandbox_type,
 // static
 bool Sandbox::IsProcessSandboxed() {
   auto* command_line = base::CommandLine::ForCurrentProcess();
-  bool is_browser = !command_line->HasSwitch(switches::kProcessType);
+  bool is_browser =
+      !command_line->HasSwitch(service_manager::switches::kProcessType);
 
   if (!is_browser &&
       base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kNoSandbox)) {

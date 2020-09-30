@@ -37,6 +37,7 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/renderer/content_renderer_client.h"
 #include "services/network/public/cpp/features.h"
+#include "services/service_manager/embedder/switches.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/web/web_frame.h"
 #include "v8/include/v8.h"
@@ -180,7 +181,8 @@ RenderProcessImpl::RenderProcessImpl()
 #if (defined(OS_LINUX) || defined(OS_CHROMEOS)) && defined(ARCH_CPU_X86_64)
   if (base::FeatureList::IsEnabled(features::kWebAssemblyTrapHandler)) {
     base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-    if (!command_line->HasSwitch(switches::kDisableInProcessStackTraces)) {
+    if (!command_line->HasSwitch(
+            service_manager::switches::kDisableInProcessStackTraces)) {
       // Only enable WebAssembly trap handler if we can set the callback.
       if (base::debug::SetStackDumpFirstChanceCallback(
               v8::TryHandleWebAssemblyTrapPosix)) {

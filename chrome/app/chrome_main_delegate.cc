@@ -69,6 +69,7 @@
 #include "pdf/buildflags.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "printing/buildflags/buildflags.h"
+#include "services/service_manager/embedder/switches.h"
 #include "services/tracing/public/cpp/stack_sampling/tracing_sampler_profiler.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_switches.h"
@@ -274,7 +275,8 @@ void AdjustLinuxOOMScore(const std::string& process_type) {
              process_type == switches::kNaClLoaderNonSfiProcess) {
     score = content::kPluginOomScore;
 #endif
-  } else if (process_type == switches::kZygoteProcess || process_type.empty()) {
+  } else if (process_type == service_manager::switches::kZygoteProcess ||
+             process_type.empty()) {
     // For zygotes and unlabeled process types, we want to still make
     // them killable by the OOM killer.
     score = content::kZygoteOomScore;
@@ -302,7 +304,7 @@ bool SubprocessNeedsResourceBundle(const std::string& process_type) {
   return
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
       // The zygote process opens the resources for the renderers.
-      process_type == switches::kZygoteProcess ||
+      process_type == service_manager::switches::kZygoteProcess ||
 #endif
 #if defined(OS_MAC)
       // Mac needs them too for scrollbar related images and for sandbox
@@ -978,13 +980,13 @@ void ChromeMainDelegate::PreSandboxStartup() {
     // browser process as a command line flag.
 #if !BUILDFLAG(ENABLE_NACL)
     DCHECK(command_line.HasSwitch(switches::kLang) ||
-           process_type == switches::kZygoteProcess ||
+           process_type == service_manager::switches::kZygoteProcess ||
            process_type == switches::kGpuProcess ||
            process_type == switches::kPpapiBrokerProcess ||
            process_type == switches::kPpapiPluginProcess);
 #else
     DCHECK(command_line.HasSwitch(switches::kLang) ||
-           process_type == switches::kZygoteProcess ||
+           process_type == service_manager::switches::kZygoteProcess ||
            process_type == switches::kGpuProcess ||
            process_type == switches::kNaClLoaderProcess ||
            process_type == switches::kPpapiBrokerProcess ||
@@ -998,7 +1000,7 @@ void ChromeMainDelegate::PreSandboxStartup() {
     // this value could be passed in a different way.
     std::string locale = command_line.GetSwitchValueASCII(switches::kLang);
 #if defined(OS_CHROMEOS)
-    if (process_type == switches::kZygoteProcess) {
+    if (process_type == service_manager::switches::kZygoteProcess) {
       DCHECK(locale.empty());
       // See comment at ReadAppLocale() for why we do this.
       locale = chromeos::startup_settings_cache::ReadAppLocale();
@@ -1058,7 +1060,7 @@ void ChromeMainDelegate::PreSandboxStartup() {
 
 #if defined(OS_POSIX) && !defined(OS_MAC)
   // Zygote needs to call InitCrashReporter() in RunZygote().
-  if (process_type != switches::kZygoteProcess) {
+  if (process_type != service_manager::switches::kZygoteProcess) {
 #if defined(OS_ANDROID)
     crash_reporter::InitializeCrashpad(process_type.empty(), process_type);
     if (process_type.empty()) {
