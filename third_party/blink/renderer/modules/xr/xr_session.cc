@@ -109,19 +109,19 @@ const unsigned int kMonoOrStereoLeftView = 0;
 const unsigned int kStereoRightView = 1;
 
 void UpdateViewFromEyeParameters(
-    XRViewData& view,
+    XRViewData* view,
     const device::mojom::blink::VREyeParametersPtr& eye,
     double depth_near,
     double depth_far) {
   const device::mojom::blink::VRFieldOfViewPtr& fov = eye->field_of_view;
 
-  view.UpdateProjectionMatrixFromFoV(
+  view->UpdateProjectionMatrixFromFoV(
       fov->up_degrees * kDegToRad, fov->down_degrees * kDegToRad,
       fov->left_degrees * kDegToRad, fov->right_degrees * kDegToRad, depth_near,
       depth_far);
 
   const TransformationMatrix matrix(eye->head_from_eye.matrix());
-  view.SetHeadFromEyeTransform(matrix);
+  view->SetHeadFromEyeTransform(matrix);
 }
 
 // Returns the session feature corresponding to the given reference space type.
@@ -2075,7 +2075,7 @@ void XRSession::SetXRDisplayInfo(
   display_info_ = std::move(display_info);
 }
 
-Vector<XRViewData>& XRSession::views() {
+const HeapVector<Member<XRViewData>>& XRSession::views() {
   // TODO(bajones): For now we assume that immersive sessions render a stereo
   // pair of views and non-immersive sessions render a single view. That doesn't
   // always hold true, however, so the view configuration should ultimately come
@@ -2084,9 +2084,10 @@ Vector<XRViewData>& XRSession::views() {
     if (immersive()) {
       // If we don't already have the views allocated, do so now.
       if (views_.IsEmpty()) {
-        views_.emplace_back(XRView::kEyeLeft);
+        views_.emplace_back(MakeGarbageCollected<XRViewData>(XRView::kEyeLeft));
         if (display_info_->right_eye) {
-          views_.emplace_back(XRView::kEyeRight);
+          views_.emplace_back(
+              MakeGarbageCollected<XRViewData>(XRView::kEyeRight));
         }
       }
       // In immersive mode the projection and view matrices must be aligned with
@@ -2101,7 +2102,7 @@ Vector<XRViewData>& XRSession::views() {
       }
     } else {
       if (views_.IsEmpty()) {
-        views_.emplace_back(XRView::kEyeNone);
+        views_.emplace_back(MakeGarbageCollected<XRViewData>(XRView::kEyeNone));
       }
 
       float aspect = 1.0f;
@@ -2118,7 +2119,7 @@ Vector<XRViewData>& XRSession::views() {
 
       // inlineVerticalFieldOfView should only be null in immersive mode.
       DCHECK(inline_vertical_fov.has_value());
-      views_[kMonoOrStereoLeftView].UpdateProjectionMatrixFromAspect(
+      views_[kMonoOrStereoLeftView]->UpdateProjectionMatrixFromAspect(
           inline_vertical_fov.value(), aspect, render_state_->depthNear(),
           render_state_->depthFar());
     }
@@ -2159,6 +2160,7 @@ void XRSession::Trace(Visitor* visitor) const {
   visitor->Trace(prev_base_layer_);
   visitor->Trace(hit_test_source_ids_to_hit_test_sources_);
   visitor->Trace(hit_test_source_ids_to_transient_input_hit_test_sources_);
+  visitor->Trace(views_);
   EventTargetWithInlineData::Trace(visitor);
 }
 

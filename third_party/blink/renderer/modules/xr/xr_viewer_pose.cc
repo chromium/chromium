@@ -16,14 +16,14 @@ XRViewerPose::XRViewerPose(XRFrame* frame,
     : XRPose(pose_model_matrix, frame->session()->EmulatedPosition()) {
   DVLOG(3) << __func__ << ": emulatedPosition()=" << emulatedPosition();
 
-  Vector<XRViewData>& view_data = frame->session()->views();
+  const HeapVector<Member<XRViewData>>& view_data = frame->session()->views();
 
   bool camera_access_enabled = frame->session()->IsFeatureEnabled(
       device::mojom::XRSessionFeature::CAMERA_ACCESS);
 
   // Snapshot the session's current views.
-  for (XRViewData& view : view_data) {
-    view.UpdatePoseMatrix(transform_->TransformMatrix());
+  for (XRViewData* view : view_data) {
+    view->UpdatePoseMatrix(transform_->TransformMatrix());
     XRView* xr_view = MakeGarbageCollected<XRView>(frame, view);
     views_.push_back(xr_view);
     if (camera_access_enabled) {

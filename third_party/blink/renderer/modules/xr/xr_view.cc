@@ -10,8 +10,8 @@
 
 namespace blink {
 
-XRView::XRView(XRFrame* frame, const XRViewData& view_data)
-    : eye_(view_data.Eye()), frame_(frame) {
+XRView::XRView(XRFrame* frame, XRViewData* view_data)
+    : eye_(view_data->Eye()), frame_(frame), view_data_(view_data) {
   switch (eye_) {
     case kEyeLeft:
       eye_string_ = "left";
@@ -23,9 +23,9 @@ XRView::XRView(XRFrame* frame, const XRViewData& view_data)
       eye_string_ = "none";
   }
   ref_space_from_eye_ =
-      MakeGarbageCollected<XRRigidTransform>(view_data.Transform());
+      MakeGarbageCollected<XRRigidTransform>(view_data->Transform());
   projection_matrix_ =
-      transformationMatrixToDOMFloat32Array(view_data.ProjectionMatrix());
+      transformationMatrixToDOMFloat32Array(view_data->ProjectionMatrix());
 }
 
 XRFrame* XRView::frame() const {
@@ -148,6 +148,7 @@ void XRView::Trace(Visitor* visitor) const {
   visitor->Trace(frame_);
   visitor->Trace(projection_matrix_);
   visitor->Trace(ref_space_from_eye_);
+  visitor->Trace(view_data_);
   ScriptWrappable::Trace(visitor);
 }
 
