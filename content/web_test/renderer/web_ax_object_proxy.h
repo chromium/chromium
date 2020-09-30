@@ -61,6 +61,9 @@ class WebAXObjectProxy : public gin::Wrappable<WebAXObjectProxy> {
  private:
   friend class WebAXObjectProxyBindings;
 
+  void UpdateLayout();
+  ui::AXNodeData GetAXNodeData() const;
+
   // Bound properties.
   std::string Role();
   std::string StringValue();
