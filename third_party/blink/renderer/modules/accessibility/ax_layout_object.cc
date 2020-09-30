@@ -71,7 +71,6 @@
 #include "third_party/blink/renderer/core/layout/layout_table_cell.h"
 #include "third_party/blink/renderer/core/layout/layout_table_row.h"
 #include "third_party/blink/renderer/core/layout/layout_table_section.h"
-#include "third_party/blink/renderer/core/layout/layout_text_control.h"
 #include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/list_marker.h"
@@ -592,18 +591,11 @@ bool AXLayoutObject::IsPlaceholder() const {
     return false;
 
   LayoutObject* parent_layout_object = parent_object->GetLayoutObject();
-  auto* layout_text_control =
-      DynamicTo<LayoutTextControl>(parent_layout_object);
-  if (!layout_text_control)
+  if (!parent_layout_object || !parent_layout_object->IsTextControl())
     return false;
 
-  DCHECK(layout_text_control);
-
-  TextControlElement* text_control_element =
-      layout_text_control->GetTextControlElement();
-  if (!text_control_element)
-    return false;
-
+  const auto* text_control_element =
+      To<TextControlElement>(parent_layout_object->GetNode());
   HTMLElement* placeholder_element = text_control_element->PlaceholderElement();
 
   return GetElement() == static_cast<Element*>(placeholder_element);

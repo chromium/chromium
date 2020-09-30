@@ -269,6 +269,14 @@ DEFINE_TEXT_CONTROL_CASTS(const TextControlElement, const Node);
 
 #undef DEFINE_TEXT_CONTROL_CASTS
 
+template <>
+struct DowncastTraits<TextControlElement> {
+  static bool AllowFrom(const Node& node) {
+    return node.HasTagName(html_names::kInputTag) ||
+           node.HasTagName(html_names::kTextareaTag);
+  }
+};
+
 TextControlElement* EnclosingTextControl(const Position&);
 TextControlElement* EnclosingTextControl(const PositionInFlatTree&);
 TextControlElement* EnclosingTextControl(const Node*);

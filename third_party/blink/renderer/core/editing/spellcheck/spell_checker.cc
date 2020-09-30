@@ -53,7 +53,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
-#include "third_party/blink/renderer/core/layout/layout_text_control.h"
+#include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
@@ -551,20 +551,21 @@ void SpellChecker::RemoveSpellingMarkersUnderWords(
 
 static Node* FindFirstMarkable(Node* node) {
   while (node) {
-    if (!node->GetLayoutObject())
+    LayoutObject* layout_object = node->GetLayoutObject();
+    if (!layout_object)
       return nullptr;
-    if (node->GetLayoutObject()->IsText())
+    if (layout_object->IsText())
       return node;
-    if (auto* text_control =
-            DynamicTo<LayoutTextControl>(node->GetLayoutObject()))
-      node = text_control->GetTextControlElement()
+    if (layout_object->IsTextControl()) {
+      node = To<TextControlElement>(node)
                  ->VisiblePositionForIndex(1)
                  .DeepEquivalent()
                  .AnchorNode();
-    else if (node->hasChildren())
+    } else if (node->hasChildren()) {
       node = node->firstChild();
-    else
+    } else {
       node = node->nextSibling();
+    }
   }
 
   return nullptr;

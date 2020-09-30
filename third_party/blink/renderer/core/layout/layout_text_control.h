@@ -99,13 +99,6 @@ class CORE_EXPORT LayoutTextControl : public LayoutBlockFlow {
   }
 };
 
-template <>
-struct DowncastTraits<LayoutTextControl> {
-  static bool AllowFrom(const LayoutObject& object) {
-    return object.IsTextControl();
-  }
-};
-
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_TEXT_CONTROL_H_
