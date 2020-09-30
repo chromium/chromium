@@ -62,3 +62,9 @@ message VideoTutorial {
   // Duration of the video in seconds.
   int64 video_length = 7;
 }
+
+// Response from the server containing tutorial groups for all languages.
+message ServerResponse {
+  // Tutorials for all available languages.
+  repeated VideoTutorialGroup tutorial_groups = 1;
+}

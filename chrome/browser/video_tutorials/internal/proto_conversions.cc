@@ -108,4 +108,15 @@ void TutorialGroupFromProto(TutorialGroupProto* proto, TutorialGroup* group) {
   }
 }
 
+void TutorialGroupsFromServerResponseProto(ServerResponseProto* proto,
+                                           std::vector<TutorialGroup>* groups) {
+  DCHECK(groups);
+  DCHECK(proto);
+  for (auto group_proto : proto->tutorial_groups()) {
+    TutorialGroup group;
+    TutorialGroupFromProto(&group_proto, &group);
+    groups->emplace_back(group);
+  }
+}
+
 }  // namespace video_tutorials

@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/bind_helpers.h"
 #include "chrome/browser/video_tutorials/internal/config.h"
+#include "chrome/browser/video_tutorials/internal/proto_conversions.h"
 #include "chrome/browser/video_tutorials/prefs.h"
 
 namespace video_tutorials {
@@ -61,6 +62,20 @@ void TutorialServiceImpl::OnFetchFinished(
     bool success,
     std::unique_ptr<std::string> response_body) {
   // TODO(shaktisahu): Save tutorials to the database.
+  if (!success || !response_body)
+    return;
+
+  proto::ServerResponse response_proto;
+  bool parse_success = response_proto.ParseFromString(*response_body.get());
+  if (!parse_success)
+    return;
+
+  auto tutorial_groups = std::make_unique<std::vector<TutorialGroup>>();
+  TutorialGroupsFromServerResponseProto(&response_proto, tutorial_groups.get());
+
+  auto lambda = [](bool success) {};
+  tutorial_manager_->SaveGroups(std::move(tutorial_groups),
+                                base::BindOnce(std::move(lambda)));
 }
 
 const std::vector<Language>& TutorialServiceImpl::GetSupportedLanguages() {

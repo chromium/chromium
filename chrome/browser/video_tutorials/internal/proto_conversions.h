@@ -13,6 +13,7 @@ namespace video_tutorials {
 using LanguageProto = video_tutorials::proto::Language;
 using TutorialProto = video_tutorials::proto::VideoTutorial;
 using TutorialGroupProto = video_tutorials::proto::VideoTutorialGroup;
+using ServerResponseProto = video_tutorials::proto::ServerResponse;
 
 // Convert in-memory struct Language to proto::Language.
 void LanguageToProto(Language* language, LanguageProto* proto);
@@ -31,6 +32,10 @@ void TutorialGroupToProto(TutorialGroup* group, TutorialGroupProto* proto);
 
 // Convert proto::VideoTutorialGroup to in-memory struct TutorialGroup.
 void TutorialGroupFromProto(TutorialGroupProto* proto, TutorialGroup* group);
+
+// Convert proto::ServerResponse to a list of TutorialGroups.
+void TutorialGroupsFromServerResponseProto(ServerResponseProto* proto,
+                                           std::vector<TutorialGroup>* groups);
 
 }  // namespace video_tutorials
 
