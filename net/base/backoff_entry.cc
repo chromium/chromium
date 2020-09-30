@@ -9,6 +9,7 @@
 #include <limits>
 
 #include "base/check_op.h"
+#include "base/numerics/clamped_math.h"
 #include "base/numerics/safe_math.h"
 #include "base/rand_util.h"
 #include "base/time/tick_clock.h"
@@ -119,8 +120,8 @@ base::TimeTicks BackoffEntry::GetTimeTicksNow() const {
 }
 
 base::TimeTicks BackoffEntry::CalculateReleaseTime() const {
-  int effective_failure_count =
-      std::max(0, failure_count_ - policy_->num_errors_to_ignore);
+  base::ClampedNumeric<int> effective_failure_count =
+      base::ClampSub(failure_count_, policy_->num_errors_to_ignore).Max(0);
 
   // If always_use_initial_delay is true, it's equivalent to
   // the effective_failure_count always being one greater than when it's false.
