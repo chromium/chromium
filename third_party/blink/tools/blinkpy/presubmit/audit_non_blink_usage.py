@@ -859,10 +859,6 @@ _CONFIG = [
             'base::EraseIf',
             'base::ScopedPlatformFile',
             'mojo::WrapCallbackWithDefaultInvokeIfNotRun',
-
-            # TODO(https://crrev.com/787252): Consider allowlisting fidl::*
-            # usage more broadly in Blink.
-            'fidl::InterfaceHandle',
         ]
     },
     {

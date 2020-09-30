@@ -413,6 +413,8 @@ target(link_target_type, "renderer") {
 
   if (is_fuchsia) {
     sources += [
+      "media/audio/fuchsia_audio_device_factory.cc",
+      "media/audio/fuchsia_audio_device_factory.h",
       "media/fuchsia_renderer_factory.cc",
       "media/fuchsia_renderer_factory.h",
       "render_view_fuchsia.cc",
