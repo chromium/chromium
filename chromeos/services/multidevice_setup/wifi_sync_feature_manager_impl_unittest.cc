@@ -128,18 +128,18 @@ class MultiDeviceSetupWifiSyncFeatureManagerImplTest
   }
 
   void SetIsWifiSyncEnabled(bool enabled) {
-    const base::Optional<multidevice::RemoteDeviceRef>& host_device =
-        fake_host_status_provider_->GetHostWithStatus().host_device();
-
     delegate_->SetIsWifiSyncEnabled(enabled);
 
-    if (fake_host_status_provider_->GetHostWithStatus().host_status() !=
-        mojom::HostStatus::kHostVerified) {
+    HostStatusProvider::HostStatusWithDevice host_with_status =
+        fake_host_status_provider_->GetHostWithStatus();
+    if (host_with_status.host_status() != mojom::HostStatus::kHostVerified) {
       return;
     }
 
+    multidevice::RemoteDeviceRef host_device = *host_with_status.host_device();
+
     bool enabled_on_backend =
-        (host_device->GetSoftwareFeatureState(
+        (host_device.GetSoftwareFeatureState(
              multidevice::SoftwareFeature::kWifiSyncHost) ==
          multidevice::SoftwareFeatureState::kEnabled);
     bool pending_request_state_same_as_backend =
@@ -149,7 +149,7 @@ class MultiDeviceSetupWifiSyncFeatureManagerImplTest
       return;
     }
 
-    VerifyLatestSetWifiSyncHostNetworkRequest(*host_device, enabled);
+    VerifyLatestSetWifiSyncHostNetworkRequest(host_device, enabled);
   }
 
   void VerifyLatestSetWifiSyncHostNetworkRequest(
