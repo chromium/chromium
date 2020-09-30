@@ -867,7 +867,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Ash.Overview.AnimationSmoothness.Close" units="%"
-    expires_after="M85">
+    expires_after="2021-12-31">
 <!-- Name completed by histogram_suffixes
      name="TabletOrClamshellMode" -->
 
@@ -880,7 +880,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Ash.Overview.AnimationSmoothness.Enter" units="%"
-    expires_after="M85">
+    expires_after="2021-12-31">
 <!-- Name completed by histogram_suffixes
      name="OverviewAnimationMode" -->
 
@@ -894,7 +894,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Ash.Overview.AnimationSmoothness.Exit" units="%"
-    expires_after="M85">
+    expires_after="2021-12-31">
 <!-- Name completed by histogram_suffixes
      name="OverviewAnimationMode" -->
 
@@ -929,7 +929,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Ash.Overview.WindowDrag.PresentationTime"
-    units="ms" expires_after="M85">
+    units="ms" expires_after="2021-12-31">
 <!-- Name completed by histogram_suffixes
      name="TabletOrClamshellMode" -->
 
@@ -940,7 +940,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true"
     name="Ash.Overview.WindowDrag.PresentationTime.MaxLatency" units="ms"
-    expires_after="M85">
+    expires_after="2021-12-31">
 <!-- Name completed by histogram_suffixes
      name="TabletOrClamshellMode" -->
 
