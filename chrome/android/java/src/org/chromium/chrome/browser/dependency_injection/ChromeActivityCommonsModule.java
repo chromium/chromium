@@ -46,7 +46,7 @@ import dagger.Provides;
 @Module
 public class ChromeActivityCommonsModule {
     private final ChromeActivity mActivity;
-    private final BottomSheetController mBottomSheetController;
+    private final Supplier<BottomSheetController> mBottomSheetControllerSupplier;
     private final Supplier<TabModelSelector> mTabModelSelectorSupplier;
     private final BrowserControlsManager mBrowserControlsManager;
     private final BrowserControlsVisibilityManager mBrowserControlsVisibilityManager;
@@ -69,7 +69,7 @@ public class ChromeActivityCommonsModule {
     /** See {@link ModuleFactoryOverrides} */
     public interface Factory {
         ChromeActivityCommonsModule create(ChromeActivity activity,
-                BottomSheetController bottomSheetController,
+                Supplier<BottomSheetController> bottomSheetControllerSupplier,
                 Supplier<TabModelSelector> tabModelSelectorSupplier,
                 BrowserControlsManager browserControlsManager,
                 BrowserControlsVisibilityManager browserControlsVisibilityManager,
@@ -88,7 +88,7 @@ public class ChromeActivityCommonsModule {
     }
 
     public ChromeActivityCommonsModule(ChromeActivity activity,
-            BottomSheetController bottomSheetController,
+            Supplier<BottomSheetController> bottomSheetControllerSupplier,
             Supplier<TabModelSelector> tabModelSelectorSupplier,
             BrowserControlsManager browserControlsManager,
             BrowserControlsVisibilityManager browserControlsVisibilityManager,
@@ -105,7 +105,7 @@ public class ChromeActivityCommonsModule {
             ScreenOrientationProvider screenOrientationProvider,
             Supplier<NotificationManagerProxy> notificationManagerProxySupplier) {
         mActivity = activity;
-        mBottomSheetController = bottomSheetController;
+        mBottomSheetControllerSupplier = bottomSheetControllerSupplier;
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
         mBrowserControlsManager = browserControlsManager;
         mBrowserControlsVisibilityManager = browserControlsVisibilityManager;
@@ -128,7 +128,7 @@ public class ChromeActivityCommonsModule {
 
     @Provides
     public BottomSheetController provideBottomSheetController() {
-        return mBottomSheetController;
+        return mBottomSheetControllerSupplier.get();
     }
 
     @Provides

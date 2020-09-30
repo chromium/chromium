@@ -79,14 +79,14 @@ public class RunningInChromeTest {
 
     private final TestRule mModuleOverridesRule = new ModuleOverridesRule().setOverride(
             ChromeActivityCommonsModule.Factory.class,
-            (activity, bottomSheetController, tabModelSelectorSupplier, browserControlsManager,
-                    browserControlsVisibilityManager, browserControlsSizer, fullscreenManager,
-                    layoutManagerSupplier, lifecycleDispatcher, snackbarManagerSupplier,
-                    activityTabProvider, tabContentManager, activityWindowAndroid,
-                    compositorViewHolderSupplier, tabCreatorManager, tabCreatorSupplier,
-                    isPromotableToTabSupplier, statusBarColorController, screenOrientationProvider,
-                    notificationManagerProxySupplier) -> {
-                return new ChromeActivityCommonsModule(activity, bottomSheetController,
+            (activity, bottomSheetControllerSupplier, tabModelSelectorSupplier,
+                    browserControlsManager, browserControlsVisibilityManager, browserControlsSizer,
+                    fullscreenManager, layoutManagerSupplier, lifecycleDispatcher,
+                    snackbarManagerSupplier, activityTabProvider, tabContentManager,
+                    activityWindowAndroid, compositorViewHolderSupplier, tabCreatorManager,
+                    tabCreatorSupplier, isPromotableToTabSupplier, statusBarColorController,
+                    screenOrientationProvider, notificationManagerProxySupplier) -> {
+                return new ChromeActivityCommonsModule(activity, bottomSheetControllerSupplier,
                         tabModelSelectorSupplier, browserControlsManager,
                         browserControlsVisibilityManager, browserControlsSizer, fullscreenManager,
                         layoutManagerSupplier, lifecycleDispatcher, snackbarManagerSupplier,

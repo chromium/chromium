@@ -403,7 +403,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
         ChromeActivityCommonsModule commonsModule = overridenCommonsFactory == null
                 ? new ChromeActivityCommonsModule(this,
-                        mRootUiCoordinator.getBottomSheetController(), mTabModelSelectorSupplier,
+                        mRootUiCoordinator::getBottomSheetController, mTabModelSelectorSupplier,
                         getBrowserControlsManager(), getBrowserControlsManager(),
                         getBrowserControlsManager(), getFullscreenManager(),
                         getLayoutManagerSupplier(), getLifecycleDispatcher(),
@@ -412,14 +412,13 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                         this::getCurrentTabCreator, this::isCustomTab,
                         getStatusBarColorController(), ScreenOrientationProvider.getInstance(),
                         this::getNotificationManagerProxy)
-                : overridenCommonsFactory.create(this,
-                        mRootUiCoordinator.getBottomSheetController(), mTabModelSelectorSupplier,
+                : overridenCommonsFactory.create(this, mRootUiCoordinator::getBottomSheetController,
+                        mTabModelSelectorSupplier, getBrowserControlsManager(),
                         getBrowserControlsManager(), getBrowserControlsManager(),
-                        getBrowserControlsManager(), getFullscreenManager(),
-                        getLayoutManagerSupplier(), getLifecycleDispatcher(),
-                        this::getSnackbarManager, mActivityTabProvider, getTabContentManager(),
-                        getWindowAndroid(), this::getCompositorViewHolder, this,
-                        this::getCurrentTabCreator, this::isCustomTab,
+                        getFullscreenManager(), getLayoutManagerSupplier(),
+                        getLifecycleDispatcher(), this::getSnackbarManager, mActivityTabProvider,
+                        getTabContentManager(), getWindowAndroid(), this::getCompositorViewHolder,
+                        this, this::getCurrentTabCreator, this::isCustomTab,
                         getStatusBarColorController(), ScreenOrientationProvider.getInstance(),
                         this::getNotificationManagerProxy);
 
