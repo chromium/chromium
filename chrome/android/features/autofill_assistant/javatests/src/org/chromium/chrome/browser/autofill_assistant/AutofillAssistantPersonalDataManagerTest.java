@@ -54,6 +54,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.autofill_assistant.R;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.autofill_assistant.proto.ActionProto;
@@ -901,6 +902,7 @@ public class AutofillAssistantPersonalDataManagerTest {
      */
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1130016")
     public void testCreateAndEnterAddress() throws Exception {
         ArrayList<ActionProto> list = new ArrayList<>();
         list.add((ActionProto) ActionProto.newBuilder()
