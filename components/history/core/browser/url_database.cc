@@ -563,7 +563,7 @@ bool URLDatabase::GetKeywordSearchTermRows(
     row.url_id = statement.ColumnInt64(1);
     row.keyword_id = statement.ColumnInt64(0);
     row.term = term;
-    row.normalized_term = statement.ColumnInt64(2);
+    row.normalized_term = statement.ColumnString16(2);
     rows->push_back(row);
   }
   return true;
