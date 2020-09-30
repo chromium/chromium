@@ -104,10 +104,17 @@ Polymer({
     activePassword_: Object,
 
     /** @private */
+    showCompromisedCredentialsBody_: {
+      type: Boolean,
+      computed: 'computeShowCompromisedCredentialsBody_(isSignedOut_, ' +
+          'leakedPasswords, passwordsWeaknessCheckEnabled)',
+    },
+
+    /** @private */
     showNoCompromisedPasswordsLabel_: {
       type: Boolean,
-      computed: 'computeShowNoCompromisedPasswordsLabel(' +
-          'syncStatus_, prefs.*, status, leakedPasswords)',
+      computed: 'computeShowNoCompromisedPasswordsLabel_(syncStatus_, ' +
+          'prefs.*, status, leakedPasswords, passwordsWeaknessCheckEnabled)',
     },
 
     /** @private */
@@ -252,11 +259,21 @@ Polymer({
       case CheckState.IDLE:
       case CheckState.CANCELED:
       case CheckState.OFFLINE:
-      case CheckState.SIGNED_OUT:
       case CheckState.OTHER_ERROR:
         this.passwordManager.recordPasswordCheckInteraction(
             PasswordManagerProxy.PasswordCheckInteraction.START_CHECK_MANUALLY);
         this.passwordManager.startBulkPasswordCheck();
+        return;
+      case CheckState.SIGNED_OUT:
+        // Runs the startBulkPasswordCheck to check passwords for weakness that
+        // works for both sign in and sign out users.
+        this.passwordManager.recordPasswordCheckInteraction(
+            PasswordManagerProxy.PasswordCheckInteraction.START_CHECK_MANUALLY);
+        this.passwordManager.startBulkPasswordCheck().then(
+            () => {},
+            error => {
+                // Catching error
+            });
         return;
       case CheckState.NO_PASSWORDS:
       case CheckState.QUOTA_LIMIT:
@@ -440,7 +457,13 @@ Polymer({
       case CheckState.OFFLINE:
         return this.i18n('checkPasswordsErrorOffline');
       case CheckState.SIGNED_OUT:
-        return this.i18n('checkPasswordsErrorSignedOut');
+        // When user is signed out and |passwordsWeaknessCheckEnabled| is
+        // true, we run the password weakness check. Since it works very fast,
+        // we always shows "Checked passwords" in this case.
+        return this.i18n(
+            this.passwordsWeaknessCheckEnabled ?
+                'checkedPasswords' :
+                'checkPasswordsErrorSignedOut');
       case CheckState.NO_PASSWORDS:
         return this.i18n('checkPasswordsErrorNoPasswords');
       case CheckState.QUOTA_LIMIT:
@@ -490,10 +513,17 @@ Polymer({
       case CheckState.RUNNING:
         return this.i18n('checkPasswordsStop');
       case CheckState.OFFLINE:
-      case CheckState.SIGNED_OUT:
       case CheckState.NO_PASSWORDS:
       case CheckState.OTHER_ERROR:
         return this.i18n('checkPasswordsAgainAfterError');
+      case CheckState.SIGNED_OUT:
+        // When |passwordsWeaknessCheckEnabled| is true, we should allow signed
+        // out users to click the "Check again" button to run the passwords
+        // weakness check.
+        return this.i18n(
+            this.passwordsWeaknessCheckEnabled ?
+                'checkPasswordsAgain' :
+                'checkPasswordsAgainAfterError');
       case CheckState.QUOTA_LIMIT:
         return '';  // Undefined behavior. Don't show any misleading text.
     }
@@ -525,7 +555,9 @@ Polymer({
       case CheckState.OTHER_ERROR:
         return false;
       case CheckState.SIGNED_OUT:
-        return this.isSignedOut_;
+        // When |passwordsWeaknessCheckEnabled| is true, we should allow signed
+        // out users to run the passwords weakness check.
+        return !this.passwordsWeaknessCheckEnabled && this.isSignedOut_;
       case CheckState.NO_PASSWORDS:
       case CheckState.QUOTA_LIMIT:
         return true;
@@ -578,11 +610,14 @@ Polymer({
         return false;
       case CheckState.CANCELED:
       case CheckState.OFFLINE:
-      case CheckState.SIGNED_OUT:
       case CheckState.NO_PASSWORDS:
       case CheckState.QUOTA_LIMIT:
       case CheckState.OTHER_ERROR:
         return true;
+      case CheckState.SIGNED_OUT:
+        // If |passwordsWeaknessCheckEnabled| is true and user is signed out,
+        // this is not an error and we can run the password weakness check.
+        return !this.passwordsWeaknessCheckEnabled;
     }
     assertNotReached(
         'Not specified whether to state is an error: ' + this.status.state);
@@ -604,11 +639,14 @@ Polymer({
       case CheckState.CANCELED:
       case CheckState.RUNNING:
       case CheckState.OFFLINE:
-      case CheckState.SIGNED_OUT:
       case CheckState.NO_PASSWORDS:
       case CheckState.QUOTA_LIMIT:
       case CheckState.OTHER_ERROR:
         return false;
+      case CheckState.SIGNED_OUT:
+        // Shows "No security issues found" if user is signed out and doesn't
+        // have insecure credentials.
+        return this.passwordsWeaknessCheckEnabled;
     }
     assertNotReached(
         'Not specified whether to show passwords for state: ' +
@@ -635,11 +673,16 @@ Polymer({
    * @private
    */
   waitsForFirstCheck_() {
+    // We don't run the compromise check if user is signed out and don't need to
+    // wait for the first check.
+    if (this.passwordsWeaknessCheckEnabled && this.isSignedOut_) {
+      return false;
+    }
     return !this.status.elapsedTimeSinceLastCheck;
   },
 
   /**
-   * Returns true iff the user is signed in.
+   * Returns true iff the user is signed out.
    * @return {boolean}
    * @private
    */
@@ -664,7 +707,20 @@ Polymer({
    * @return {boolean}
    * @private
    */
-  computeShowNoCompromisedPasswordsLabel() {
+  computeShowCompromisedCredentialsBody_() {
+    // Always shows compromised credetnials section if
+    // |passwordsWeaknessCheckEnabled| is true and user is signed out.
+    if (this.passwordsWeaknessCheckEnabled && this.isSignedOut_) {
+      return true;
+    }
+    return this.hasLeakedCredentials_();
+  },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  computeShowNoCompromisedPasswordsLabel_() {
     // Check if user isn't signed in.
     if (!this.syncStatus_ || !this.syncStatus_.signedIn) {
       return false;
