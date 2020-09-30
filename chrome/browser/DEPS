@@ -1,6 +1,5 @@
 include_rules = [
   "+apps",
-  "+cc/metrics",
   "+cc/paint",
   "+cc/test",
 

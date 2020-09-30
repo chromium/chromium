@@ -15,7 +15,6 @@
 namespace cc {
 
 class TotalFrameCounter;
-struct UkmSmoothnessDataShared;
 
 // This class maintains a counter for produced/dropped frames, and can be used
 // to estimate the recent throughput.
@@ -51,8 +50,6 @@ class CC_EXPORT DroppedFrameCounter {
   void AddDroppedFrameAffectingSmoothness();
   void ReportFrames();
 
-  void SetUkmSmoothnessDestination(UkmSmoothnessDataShared* smoothness_data);
-
   void Reset();
   void OnFcpReceived();
 
@@ -67,8 +64,6 @@ class CC_EXPORT DroppedFrameCounter {
   size_t total_dropped_ = 0;
   size_t total_smoothness_dropped_ = 0;
   bool fcp_received_ = false;
-
-  UkmSmoothnessDataShared* ukm_smoothness_data_ = nullptr;
 
   TotalFrameCounter* total_counter_ = nullptr;
 };

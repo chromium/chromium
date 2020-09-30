@@ -5,7 +5,6 @@
 module page_load_metrics.mojom;
 
 import "ui/gfx/geometry/mojom/geometry.mojom";
-import "mojo/public/mojom/base/shared_memory.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "third_party/blink/public/mojom/web_feature/web_feature.mojom";
 import "third_party/blink/public/mojom/use_counter/css_property_id.mojom";
@@ -335,12 +334,6 @@ interface PageLoadMetrics {
                CpuTiming cpu_load_timing,
                DeferredResourceCounts new_deferred_resource_data,
                InputTiming input_timing_delta);
-
-  // Set up a shared memory used to transfer smoothness data from the renderer
-  // to the browser. The structure is defined in
-  // //cc/metrics/ukm_smoothness_data.h
-  SetUpSharedMemoryForSmoothness(
-      mojo_base.mojom.ReadOnlySharedMemoryRegion shared_memory);
 };
 
 // TimeDelta below relative to the navigation start of the navigation restoring

@@ -96,9 +96,6 @@ class MetricsRenderFrameObserver
   void OnMainFrameIntersectionChanged(
       const blink::WebRect& main_frame_intersection) override;
 
-  bool SetUpSmoothnessReporting(
-      base::ReadOnlySharedMemoryRegion& shared_memory) override;
-
  protected:
   // The relative and monotonic page load timings.
   struct Timing {
@@ -154,9 +151,6 @@ class MetricsRenderFrameObserver
 
   // Set containing all request ids that were reported as completing before FCP.
   std::set<int> before_fcp_request_ids_;
-
-  // Handle to the shared memory for transporting smoothness related ukm data.
-  base::ReadOnlySharedMemoryRegion ukm_smoothness_data_;
 
   // Will be null when we're not actively sending metrics.
   std::unique_ptr<PageTimingMetricsSender> page_timing_metrics_sender_;

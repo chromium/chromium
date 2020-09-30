@@ -776,12 +776,6 @@ void ProxyImpl::SetSourceURL(ukm::SourceId source_id, const GURL& url) {
   host_impl_->SetActiveURL(url, source_id);
 }
 
-void ProxyImpl::SetUkmSmoothnessDestination(
-    UkmSmoothnessDataShared* ukm_smoothness_data) {
-  DCHECK(IsImplThread());
-  host_impl_->SetUkmSmoothnessDestination(ukm_smoothness_data);
-}
-
 void ProxyImpl::ClearHistory() {
   DCHECK(IsImplThread());
   DCHECK(IsMainThreadBlocked());

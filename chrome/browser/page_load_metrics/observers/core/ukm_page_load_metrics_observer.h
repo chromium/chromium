@@ -96,9 +96,6 @@ class UkmPageLoadMetricsObserver
       content::RenderFrameHost* subframe_rfh,
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
 
-  void SetUpSharedMemoryForSmoothness(
-      const base::ReadOnlySharedMemoryRegion& shared_memory) override;
-
   void OnCpuTimingUpdate(
       content::RenderFrameHost* subframe_rfh,
       const page_load_metrics::mojom::CpuTiming& timing) override;
@@ -148,7 +145,6 @@ class UkmPageLoadMetricsObserver
       ukm::builders::PageLoad* builder);
 
   void RecordInputTimingMetrics();
-  void RecordSmoothnessMetrics();
 
   // Captures the site engagement score for the committed URL and
   // returns the score rounded to the nearest 10.
@@ -265,8 +261,6 @@ class UkmPageLoadMetricsObserver
 
   // The connection info for the committed URL.
   base::Optional<net::HttpResponseInfo::ConnectionInfo> connection_info_;
-
-  base::ReadOnlySharedMemoryMapping ukm_smoothness_data_;
 
   DISALLOW_COPY_AND_ASSIGN(UkmPageLoadMetricsObserver);
 };

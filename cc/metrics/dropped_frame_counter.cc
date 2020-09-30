@@ -11,7 +11,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/metrics/total_frame_counter.h"
-#include "cc/metrics/ukm_smoothness_data.h"
 
 namespace cc {
 
@@ -51,21 +50,10 @@ void DroppedFrameCounter::AddDroppedFrameAffectingSmoothness() {
 }
 
 void DroppedFrameCounter::ReportFrames() {
-  const auto total_frames =
-      total_counter_->ComputeTotalVisibleFrames(base::TimeTicks::Now());
-  TRACE_EVENT2("cc,benchmark", "SmoothnessDroppedFrame", "total", total_frames,
-               "smoothness", total_smoothness_dropped_);
-
-  if (ukm_smoothness_data_) {
-    // TODO(sad): Use atomic memcpy here to write to the shared memory, instead
-    // of writing individual fields in the shared memory.
-    // https://chromium-review.googlesource.com/c/chromium/src/+/1572369
-  }
-}
-
-void DroppedFrameCounter::SetUkmSmoothnessDestination(
-    UkmSmoothnessDataShared* smoothness_data) {
-  ukm_smoothness_data_ = smoothness_data;
+  TRACE_EVENT2(
+      "cc,benchmark", "SmoothnessDroppedFrame", "total",
+      total_counter_->ComputeTotalVisibleFrames(base::TimeTicks::Now()),
+      "smoothness", total_smoothness_dropped_);
 }
 
 void DroppedFrameCounter::Reset() {

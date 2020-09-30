@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/read_only_shared_memory_region.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_data.h"
@@ -189,8 +188,6 @@ class MetricsWebContentsObserver
                     mojom::CpuTimingPtr cpu_timing,
                     mojom::DeferredResourceCountsPtr new_deferred_resource_data,
                     mojom::InputTimingPtr input_timing) override;
-  void SetUpSharedMemoryForSmoothness(
-      base::ReadOnlySharedMemoryRegion shared_memory) override;
 
   // Common part for UpdateThroughput and OnTimingUpdated.
   bool DoesTimingUpdateHaveError();
@@ -284,9 +281,6 @@ class MetricsWebContentsObserver
   std::vector<std::unique_ptr<PageLoadTracker>> aborted_provisional_loads_;
 
   std::unique_ptr<PageLoadTracker> committed_load_;
-
-  // This is currently set only for the main frame.
-  base::ReadOnlySharedMemoryRegion ukm_smoothness_data_;
 
   // A page can be stored in back-forward cache - in this case its
   // PageLoadTracker should be preserved as well. Here we store PageLoadTracker

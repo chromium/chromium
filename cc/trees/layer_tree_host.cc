@@ -43,7 +43,6 @@
 #include "cc/layers/heads_up_display_layer_impl.h"
 #include "cc/layers/layer.h"
 #include "cc/layers/painted_scrollbar_layer.h"
-#include "cc/metrics/ukm_smoothness_data.h"
 #include "cc/paint/paint_worklet_layer_painter.h"
 #include "cc/resources/ui_resource_manager.h"
 #include "cc/trees/clip_node.h"
@@ -1859,16 +1858,6 @@ void LayerTreeHost::SetSourceURL(ukm::SourceId source_id, const GURL& url) {
   // produced by this host so far.
   clear_caches_on_next_commit_ = true;
   proxy_->SetSourceURL(source_id, url);
-}
-
-base::ReadOnlySharedMemoryRegion
-LayerTreeHost::CreateSharedMemoryForSmoothnessUkm() {
-  const auto size = sizeof(UkmSmoothnessDataShared);
-  ukm_smoothness_mapping_ = base::ReadOnlySharedMemoryRegion::Create(size);
-  DCHECK(ukm_smoothness_mapping_.IsValid());
-  proxy_->SetUkmSmoothnessDestination(
-      ukm_smoothness_mapping_.mapping.GetMemoryAs<UkmSmoothnessDataShared>());
-  return std::move(ukm_smoothness_mapping_.region);
 }
 
 void LayerTreeHost::SetRenderFrameObserver(

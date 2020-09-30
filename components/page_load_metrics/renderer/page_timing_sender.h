@@ -23,8 +23,6 @@ class PageTimingSender {
       const mojom::CpuTimingPtr& cpu_timing,
       mojom::DeferredResourceCountsPtr new_deferred_resource_data,
       mojom::InputTimingPtr input_timing_delta) = 0;
-  virtual void SetUpSmoothnessReporting(
-      base::ReadOnlySharedMemoryRegion shared_memory) = 0;
 };
 
 }  // namespace page_load_metrics

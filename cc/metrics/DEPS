@@ -1,3 +1,0 @@
-include_rules = [
-  "+device/base/synchronization/one_writer_seqlock.h",
-]
