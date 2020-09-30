@@ -109,6 +109,15 @@ class ASH_EXPORT MagnificationController : public ui::EventHandler,
   void HandleFocusedNodeChanged(bool is_editable_node,
                                 const gfx::Rect& node_bounds_in_screen);
 
+  // Move |rect_in_screen| within the magnifier viewport. If |rect_in_screen| is
+  // already completely within the viewport, do nothing. If any edge of
+  // |rect_in_screen| is outside the viewport (e.g. if rect is larger than or
+  // extends partially beyond the viewport), center the overflowing dimensions
+  // of the viewport on center of |rect_in_screen| (e.g. center viewport
+  // vertically if |rect| extends beyond bottom of screen). Called from
+  // Accessibility Common extension. Called from Accessibility Common extension.
+  void HandleMoveMagnifierToRect(const gfx::Rect& rect_in_screen);
+
   // Switch the magnified root window to |new_root_window|. This does following:
   //  - Unzoom the current root_window.
   //  - Zoom the given new root_window |new_root_window|.

@@ -24634,6 +24634,7 @@ Called by update_extension_histograms.py.-->
   <int value="1507" label="ACCESSIBILITY_PRIVATE_PERFORMACCELERATORACTION"/>
   <int value="1508" label="DECLARATIVENETREQUEST_ISREGEXSUPPORTED"/>
   <int value="1509" label="PASSWORDSPRIVATE_GETWEAKCREDENTIALS"/>
+  <int value="1510" label="ACCESSIBILITY_PRIVATE_MOVEMAGNIFIERTORECT"/>
 </enum>
 
 <enum name="ExtensionIconState">

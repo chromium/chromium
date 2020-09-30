@@ -120,6 +120,16 @@ class AccessibilityPrivateHandleScrollableBoundsForPointFoundFunction
       ACCESSIBILITY_PRIVATE_HANDLESCROLLABLEBOUNDSFORPOINTFOUND)
 };
 
+// API function that is called by the Accessibility Common extension to center
+// the magnifier viewport on a passed-in rect.
+class AccessibilityPrivateMoveMagnifierToRectFunction
+    : public ExtensionFunction {
+  ~AccessibilityPrivateMoveMagnifierToRectFunction() override {}
+  ResponseAction Run() override;
+  DECLARE_EXTENSION_FUNCTION("accessibilityPrivate.moveMagnifierToRect",
+                             ACCESSIBILITY_PRIVATE_MOVEMAGNIFIERTORECT)
+};
+
 // API function that is called when a user toggles Dictation from another
 // acessibility feature.
 class AccessibilityPrivateToggleDictationFunction : public ExtensionFunction {

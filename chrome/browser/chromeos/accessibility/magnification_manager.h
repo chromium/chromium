@@ -68,6 +68,9 @@ class MagnificationManager
   void HandleFocusedRectChangedIfEnabled(const gfx::Rect& bounds_in_screen,
                                          bool is_editable);
 
+  // Move magnifier to ensure rect is within viewport if a magnifier is enabled.
+  void HandleMoveMagnifierToRectIfEnabled(const gfx::Rect& rect);
+
   // ProfileObserver:
   void OnProfileWillBeDestroyed(Profile* profile) override;
 

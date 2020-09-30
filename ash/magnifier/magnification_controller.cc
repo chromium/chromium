@@ -266,6 +266,16 @@ void MagnificationController::HandleFocusedNodeChanged(
   MoveMagnifierWindowFollowRect(node_bounds_in_root);
 }
 
+void MagnificationController::HandleMoveMagnifierToRect(
+    const gfx::Rect& rect_in_screen) {
+  gfx::Rect node_bounds_in_root = rect_in_screen;
+  ::wm::ConvertRectFromScreen(root_window_, &node_bounds_in_root);
+  if (GetViewportRect().Contains(node_bounds_in_root))
+    return;
+
+  MoveMagnifierWindowFollowRect(node_bounds_in_root);
+}
+
 void MagnificationController::SwitchTargetRootWindow(
     aura::Window* new_root_window,
     bool redraw_original_root_window) {

@@ -315,6 +315,14 @@ chrome.accessibilityPrivate.setSelectToSpeakState = function(state) {};
 chrome.accessibilityPrivate.handleScrollableBoundsForPointFound = function(rect) {};
 
 /**
+ * Called by the Accessibility Common extension to update the magnifier viewport
+ * (e.g. when focus has changed).
+ * @param {!chrome.accessibilityPrivate.ScreenRect} rect Rect to ensure visible
+ *     in the magnified viewport.
+ */
+chrome.accessibilityPrivate.moveMagnifierToRect = function(rect) {};
+
+/**
  * Toggles dictation between active and inactive states.
  */
 chrome.accessibilityPrivate.toggleDictation = function() {};

@@ -408,6 +408,19 @@
         "platforms": ["chromeos"]
       },
       {
+        "name": "moveMagnifierToRect",
+        "type": "function",
+        "description": "Called by the Accessibility Common extension to move |rect| within the magnifier viewport (e.g. when focus has changed). If |rect| is already completely within the viewport, magnifier doesn't move. If any edge of |rect| is outside the viewport (e.g. if rect is larger than or extends partially beyond the viewport), magnifier will center the overflowing dimensions of the viewport on center of |rect| (e.g. center viewport vertically if |rect| extends beyond bottom of screen).",
+        "parameters": [
+          {
+            "name": "rect",
+            "$ref": "ScreenRect",
+            "description": "Rect to ensure visible in the magnified viewport."
+          }
+        ],
+        "platforms": ["chromeos"]
+      },
+      {
         "name": "toggleDictation",
         "type": "function",
         "description": "Toggles dictation between active and inactive states.",
