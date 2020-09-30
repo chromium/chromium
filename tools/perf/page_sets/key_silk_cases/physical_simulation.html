@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<!-- saved from url=(0041)https://output.jsbin.com/UVIgUTa/38/quiet -->
+<!--
+  Modifications after saved:
+  1. Changed "-webkit-backface-visibility: hidden" to "will-change: transform"
+     which is modern way to hint future transform changes
+  2. Removed some deprecated webkit prefixes
+-->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+
+<!--
+Created using JS Bin
+http://jsbin.com
+
+Copyright (c) 2020 by anonymous (http://jsbin.com/UVIgUTa/38/edit)
+
+Released under the MIT license: http://jsbin.mit-license.org
+-->
+<meta name="robots" content="noindex">
+<title>JS Bin</title>
+
+<style id="jsbin-css">
+html, body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+}
+
+div {
+  clear: both;
+  float: left;
+  border-radius: 30px;
+  background: #2693FF;
+  padding: 8px 14px;
+  color: #FFF;
+  font-family: Arial;
+  will-change: transform;
+}
+
+div:nth-child(2n) {
+  float: right;
+  background: #36D900;
+}
+</style>
+</head>
+<body>
+  <div>I am a message</div>
+  <div>I am a message</div>
+  <div>I am a message</div>
+  <div>I am a message</div>
+  <div>I am a message</div>
+  <div>I am a message</div>
+  <div>I am a message</div>
+  <div>I am a message</div>
+  <div>I am a message</div>
+  <div>I am a message</div>
+  <div>I am a message</div>
+  <div>I am a message</div>
+<script>
+var divs = document.querySelectorAll('div');
+var tracking = false;
+var startY = 0;
+var currentY = 0;
+
+for (var d = 0; d < divs.length; d++) {
+  divs[d].targetOffset = 0;
+  divs[d].offset = 0;
+  divs[d].ease = d+5;
+  divs[d].matrix = new WebKitCSSMatrix(
+      "matrix3d(1,0,0,0," + 
+      "0,1,0,0," + 
+      "0,0,1,0," +
+      "0,0,0,1");
+  divs[d].style.transform = divs[d].matrix;
+}
+
+function onDown(e) {
+  tracking = true;
+  startY = e.offsetY;
+ 
+  if (typeof e.touches !== "undefined") {
+    startY = e.touches[0].pageY;
+  }
+  
+  e.preventDefault();
+}
+
+function onUp(e) {
+  tracking = false;
+}
+
+function onMove(e) {
+  if (!tracking)
+    return;
+ 
+  currentY = e.offsetY;
+  
+  if (e.touches) {
+    currentY = e.touches[0].pageY;
+  }
+  
+  var delta = currentY - startY;
+  for (var d = 0; d < divs.length; d++) {
+    divs[d].targetOffset = delta;
+  }
+}
+
+function update() {
+  
+  var data, div, y;
+  for (var d = 0; d < divs.length; d++) {
+   
+    div = divs[d];
+    div.offset += (div.targetOffset - div.offset) / div.ease;
+    
+    div.matrix.m42 = div.offset;
+    div.style.transform = div.matrix;
+  }
+  
+  requestAnimationFrame(update);
+}
+
+
+requestAnimationFrame(update);
+
+
+document.body.addEventListener('touchend', onUp);
+document.body.addEventListener('touchcancel', onUp);
+document.body.addEventListener('touchstart', onDown);
+document.body.addEventListener('touchmove', onMove);
+</script>
+
+</body></html>

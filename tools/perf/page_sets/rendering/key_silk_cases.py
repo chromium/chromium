@@ -510,7 +510,7 @@ class Page23(KeySilkPage):
   """
 
   BASE_NAME = 'physical_simulation'
-  URL = 'http://jsbin.com/UVIgUTa/38/quiet'
+  URL = 'file://../key_silk_cases/physical_simulation.html'
 
   def PerformPageInteractions(self, action_runner):
     with action_runner.CreateGestureInteraction('ScrollAction',
