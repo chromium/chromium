@@ -30,12 +30,6 @@ function hasImagePrefix(entry) {
 }
 
 /**
- * Directory in the internal file system.
- * @type {?AbstractDirectoryEntry}
- */
-let internalDir = null;
-
-/**
  * Temporary directory in the internal file system.
  * @type {?AbstractDirectoryEntry}
  */
@@ -53,18 +47,6 @@ let cameraDir = null;
  */
 export function getCameraDirectory() {
   return cameraDir;
-}
-
-/**
- * Initializes the directory in the internal file system.
- * @return {!Promise<!AbstractDirectoryEntry>} Promise for the directory result.
- */
-function initInternalDir() {
-  return new Promise((resolve, reject) => {
-    webkitRequestFileSystem(
-        window.PERSISTENT, 768 * 1024 * 1024 /* 768MB */,
-        (fs) => resolve(new ChromeDirectoryEntry(fs.root)), reject);
-  });
 }
 
 /**
@@ -93,9 +75,6 @@ async function initCameraDirectory() {
  * @return {!Promise}
  */
 export async function initialize() {
-  internalDir = await initInternalDir();
-  assert(internalDir !== null);
-
   internalTempDir = await initInternalTempDir();
   assert(internalTempDir !== null);
 
