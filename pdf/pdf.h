@@ -127,6 +127,18 @@ base::Optional<gfx::SizeF> GetPDFPageSizeByIndex(
     base::span<const uint8_t> pdf_buffer,
     int page_number);
 
+struct RenderOptions {
+  // Whether the output should be stretched to fit the supplied bitmap.
+  bool stretch_to_bounds;
+  // If any scaling is needed, whether the original aspect ratio of the page is
+  // preserved while scaling.
+  bool keep_aspect_ratio;
+  // Whether the final image should be rotated to match the output bound.
+  bool autorotate;
+  // Specifies color or grayscale.
+  bool use_color;
+};
+
 // Renders PDF page into 4-byte per pixel BGRA color bitmap.
 // |pdf_buffer| is the buffer that contains the entire PDF document to be
 //     rendered.
@@ -134,23 +146,14 @@ base::Optional<gfx::SizeF> GetPDFPageSizeByIndex(
 // |bitmap_buffer| is the output buffer for bitmap.
 // |bitmap_size| is the size of the output bitmap.
 // |dpi| is the 2D resolution.
-// |stretch_to_bounds| specifies whether the output should be stretched to fit
-//     the supplied |bitmap_size|.
-// |keep_aspect_ratio| If any scaling is needed, this parameter specifies
-//     whether the original aspect ratio of the page is preserved while scaling.
-// |autorotate| specifies whether the final image should be rotated to match
-//     the output bound.
-// |use_color| specifies color or grayscale.
+// |options| is the options to render with.
 // Returns false if the document or the page number are not valid.
 bool RenderPDFPageToBitmap(base::span<const uint8_t> pdf_buffer,
                            int page_number,
                            void* bitmap_buffer,
                            const gfx::Size& bitmap_size,
                            const gfx::Size& dpi,
-                           bool stretch_to_bounds,
-                           bool keep_aspect_ratio,
-                           bool autorotate,
-                           bool use_color);
+                           const RenderOptions& options);
 
 // Convert multiple PDF pages into a N-up PDF.
 // |input_buffers| is the vector of buffers with each buffer contains a PDF.

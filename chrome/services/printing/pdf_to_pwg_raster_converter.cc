@@ -48,16 +48,21 @@ base::ReadOnlySharedMemoryRegion RenderPdfPagesToPwgRaster(
   pwg_data = pwg_encoder::PwgEncoder::GetDocumentHeader();
   pwg_encoder::BitmapImage image(settings.area.size(),
                                  pwg_encoder::BitmapImage::BGRA);
+  const chrome_pdf::RenderOptions options = {
+      .stretch_to_bounds = false,
+      .keep_aspect_ratio = true,
+      .autorotate = settings.autorotate,
+      .use_color = settings.use_color,
+  };
   for (int i = 0; i < total_page_count; ++i) {
     int page_number = i;
 
     if (bitmap_settings.reverse_page_order)
       page_number = total_page_count - 1 - page_number;
 
-    if (!chrome_pdf::RenderPDFPageToBitmap(
-            pdf_data, page_number, image.pixel_data(), image.size(),
-            settings.dpi, false, true, settings.autorotate,
-            settings.use_color)) {
+    if (!chrome_pdf::RenderPDFPageToBitmap(pdf_data, page_number,
+                                           image.pixel_data(), image.size(),
+                                           settings.dpi, options)) {
       return invalid_pwg_region;
     }
 

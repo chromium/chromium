@@ -354,6 +354,12 @@ class PrintPreviewPdfGeneratedBrowserTest : public InProcessBrowserTest {
     double max_width_in_pixels =
         ConvertUnitDouble(max_width_in_points, kPointsPerInch, kDpi);
 
+    constexpr chrome_pdf::RenderOptions options = {
+        .stretch_to_bounds = false,
+        .keep_aspect_ratio = true,
+        .autorotate = false,
+        .use_color = true,
+    };
     for (int i = 0; i < num_pages; ++i) {
       base::Optional<gfx::SizeF> size_in_points =
           chrome_pdf::GetPDFPageSizeByIndex(pdf_span, i);
@@ -374,9 +380,9 @@ class PrintPreviewPdfGeneratedBrowserTest : public InProcessBrowserTest {
 
       total_height_in_pixels += height_in_pixels;
       gfx::Rect rect(width_in_pixels, height_in_pixels);
-      PdfRenderSettings settings(rect, gfx::Point(0, 0), gfx::Size(kDpi, kDpi),
-                                 /*autorotate=*/false,
-                                 /*use_color=*/true,
+
+      PdfRenderSettings settings(rect, gfx::Point(), gfx::Size(kDpi, kDpi),
+                                 options.autorotate, options.use_color,
                                  PdfRenderSettings::Mode::NORMAL);
 
       int int_max = std::numeric_limits<int>::max();
@@ -392,7 +398,7 @@ class PrintPreviewPdfGeneratedBrowserTest : public InProcessBrowserTest {
 
       ASSERT_TRUE(chrome_pdf::RenderPDFPageToBitmap(
           pdf_span, i, page_bitmap_data.data(), settings.area.size(),
-          settings.dpi, false, true, settings.autorotate, settings.use_color));
+          settings.dpi, options));
       FillPng(&page_bitmap_data, width_in_pixels, max_width_in_pixels,
               settings.area.size().height());
       bitmap_data.insert(bitmap_data.end(),

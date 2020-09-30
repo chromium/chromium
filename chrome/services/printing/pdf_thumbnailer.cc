@@ -63,9 +63,15 @@ void PdfThumbnailer::GetThumbnail(printing::mojom::ThumbParamsPtr params,
   }
 
   // Convert PDF bytes into a bitmap thumbnail.
-  if (!chrome_pdf::RenderPDFPageToBitmap(
-          pdf_buffer, 0, result.getPixels(), params->size_px, params->dpi,
-          params->stretch, params->keep_aspect, kAutorotate, kUseColor)) {
+  chrome_pdf::RenderOptions options = {
+      .stretch_to_bounds = params->stretch,
+      .keep_aspect_ratio = params->keep_aspect,
+      .autorotate = kAutorotate,
+      .use_color = kUseColor,
+  };
+  if (!chrome_pdf::RenderPDFPageToBitmap(pdf_buffer, 0, result.getPixels(),
+                                         params->size_px, params->dpi,
+                                         options)) {
     DLOG(ERROR) << "Failed to render PDF buffer as bitmap image";
     std::move(callback).Run(SkBitmap());
     return;

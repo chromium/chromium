@@ -119,16 +119,14 @@ bool RenderPDFPageToBitmap(base::span<const uint8_t> pdf_buffer,
                            void* bitmap_buffer,
                            const gfx::Size& bitmap_size,
                            const gfx::Size& dpi,
-                           bool stretch_to_bounds,
-                           bool keep_aspect_ratio,
-                           bool autorotate,
-                           bool use_color) {
+                           const RenderOptions& options) {
   ScopedSdkInitializer scoped_sdk_initializer(/*enable_v8=*/true);
   PDFEngineExports* engine_exports = PDFEngineExports::Get();
   PDFEngineExports::RenderingSettings settings(
       dpi, gfx::Rect(bitmap_size),
-      /*fit_to_bounds=*/true, stretch_to_bounds, keep_aspect_ratio,
-      /*center_in_bounds=*/true, autorotate, use_color);
+      /*fit_to_bounds=*/true, options.stretch_to_bounds,
+      options.keep_aspect_ratio,
+      /*center_in_bounds=*/true, options.autorotate, options.use_color);
   return engine_exports->RenderPDFPageToBitmap(pdf_buffer, page_number,
                                                settings, bitmap_buffer);
 }
