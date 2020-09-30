@@ -762,34 +762,68 @@ TEST_F(AccountConsistencyServiceTest, SetChromeConnectedCookiesAfterDelete) {
   CheckDomainHasChromeConnectedCookie("google.ca");
 }
 
-// Ensures that CHROME_CONNECTED cookies are only set on GAIA urls when the user
-// is signed out for |kMobileIdentityConsistency| experiment.
+// Ensures that CHROME_CONNECTED cookies are not set on google.com when the user
+// is signed out and navigating to google.com for |kMobileIdentityConsistency|
+// experiment.
 TEST_F(AccountConsistencyServiceTest,
-       SetMiceChromeConnectedCookiesSignedOutUser) {
+       SetMiceChromeConnectedCookiesSignedOutGoogleVisitor) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(signin::kMobileIdentityConsistency);
-
   id delegate =
       [OCMockObject mockForProtocol:@protocol(ManageAccountsDelegate)];
-  NSDictionary* headers = [NSDictionary dictionary];
-  NSHTTPURLResponse* responseGoogle = [[NSHTTPURLResponse alloc]
+
+  NSDictionary* headers =
+      [NSDictionary dictionaryWithObject:@"action=ADDSESSION"
+                                  forKey:@"X-Chrome-Manage-Accounts"];
+  NSHTTPURLResponse* response = [[NSHTTPURLResponse alloc]
        initWithURL:[NSURL URLWithString:@"https://google.com/"]
         statusCode:200
        HTTPVersion:@"HTTP/1.1"
       headerFields:headers];
   account_consistency_service_->SetWebStateHandler(&web_state_, delegate);
 
-  EXPECT_TRUE(web_state_.ShouldAllowResponse(responseGoogle,
+  EXPECT_TRUE(web_state_.ShouldAllowResponse(response,
                                              /* for_main_frame = */ true));
+
+  CheckNoChromeConnectedCookies();
+  SimulateNavigateToUrl(web::PageLoadCompletionStatus::SUCCESS,
+                        GURL("https://google.com/"));
   CheckNoChromeConnectedCookies();
 
-  NSHTTPURLResponse* responseGaia = [[NSHTTPURLResponse alloc]
+  web_state_.WebStateDestroyed();
+  EXPECT_OCMOCK_VERIFY(delegate);
+}
+
+// Ensures that CHROME_CONNECTED cookies are only set on GAIA urls when the user
+// is signed out and taps sign-in button for |kMobileIdentityConsistency|
+// experiment. These cookies are immediately removed after the sign-in promo is
+// shown.
+TEST_F(AccountConsistencyServiceTest,
+       SetMiceChromeConnectedCookiesSignedOutGaiaVisitor) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(signin::kMobileIdentityConsistency);
+  id delegate =
+      [OCMockObject mockForProtocol:@protocol(ManageAccountsDelegate)];
+  [[delegate expect] onShowConsistencyPromo];
+
+  NSDictionary* headers = [NSDictionary
+      dictionaryWithObject:@"action=ADDSESSION,show_consistency_promo=true"
+                    forKey:@"X-Chrome-Manage-Accounts"];
+  NSHTTPURLResponse* response = [[NSHTTPURLResponse alloc]
        initWithURL:[NSURL URLWithString:@"https://accounts.google.com/"]
         statusCode:200
        HTTPVersion:@"HTTP/1.1"
       headerFields:headers];
-  EXPECT_TRUE(web_state_.ShouldAllowResponse(responseGaia,
+  account_consistency_service_->SetWebStateHandler(&web_state_, delegate);
+
+  EXPECT_TRUE(web_state_.ShouldAllowResponse(response,
                                              /* for_main_frame = */ true));
+
+  CheckDomainHasChromeConnectedCookie("accounts.google.com");
+  SimulateNavigateToUrl(web::PageLoadCompletionStatus::SUCCESS,
+                        GURL("https://accounts.google.com/"));
+  CheckNoChromeConnectedCookies();
+
   web_state_.WebStateDestroyed();
-  CheckDomainHasChromeConnectedCookie("google.com");
+  EXPECT_OCMOCK_VERIFY(delegate);
 }

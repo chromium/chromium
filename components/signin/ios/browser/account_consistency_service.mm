@@ -53,10 +53,14 @@ constexpr base::TimeDelta kDelayThresholdToUpdateGaiaCookie =
 
 const char* kGoogleUrl = "https://google.com";
 const char* kYoutubeUrl = "https://youtube.com";
+const char* kGaiaDomain = "accounts.google.com";
 
 // Returns the registered, organization-identifying host, but no subdomains,
 // from the given GURL. Returns an empty string if the GURL is invalid.
 static std::string GetDomainFromUrl(const GURL& url) {
+  if (gaia::IsGaiaSignonRealm(url.GetOrigin())) {
+    return kGaiaDomain;
+  }
   return net::registry_controlled_domains::GetDomainAndRegistry(
       url, net::registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES);
 }
@@ -202,6 +206,12 @@ void AccountConsistencyHandler::PageLoaded(
   }
   [delegate_ onShowConsistencyPromo];
   show_consistency_promo_ = false;
+
+  // Chrome uses the CHROME_CONNECTED cookie to determine whether the
+  // eligibility promo should be shown. Once it is shown we should remove the
+  // cookie, since it should otherwise not be used unless the user is signed in.
+  account_consistency_service_->RemoveAllChromeConnectedCookies(
+      base::OnceClosure());
 }
 
 void AccountConsistencyHandler::WebStateDestroyed(web::WebState* web_state) {}
