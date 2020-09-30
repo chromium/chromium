@@ -406,28 +406,37 @@ bool AddressComponent::ParseValueAndAssignSubcomponentsByRegularExpressions() {
   for (const auto* parse_expression : GetParseRegularExpressionsByRelevance()) {
     if (!parse_expression)
       continue;
-    std::map<std::string, std::string> result_map;
-    if (ParseValueByRegularExpression(base::UTF16ToUTF8(GetValue()),
-                                      parse_expression, &result_map)) {
-      // Parsing was successful and results from the result map can be written
-      // to the structure.
-      for (const auto& result_entry : result_map) {
-        std::string field_type = result_entry.first;
-        base::string16 field_value = base::UTF8ToUTF16(result_entry.second);
-        // Do not reassign the value of this node.
-        if (field_type == GetStorageTypeName())
-          continue;
-        // crbug.com(1113617): Honorifics are temporally disabled.
-        if (field_type == AutofillType(NAME_HONORIFIC_PREFIX).ToString())
-          continue;
-        bool success = SetValueForTypeIfPossible(field_type, field_value,
-                                                 VerificationStatus::kParsed);
-        // Setting the value should always work unless the regular expression is
-        // invalid.
-        DCHECK(success);
-      }
+    if (ParseValueAndAssignSubcomponentsByRegularExpression(GetValue(),
+                                                            parse_expression))
       return true;
+  }
+  return false;
+}
+
+bool AddressComponent::ParseValueAndAssignSubcomponentsByRegularExpression(
+    const base::string16& value,
+    const RE2* parse_expression) {
+  std::map<std::string, std::string> result_map;
+  if (ParseValueByRegularExpression(base::UTF16ToUTF8(value), parse_expression,
+                                    &result_map)) {
+    // Parsing was successful and results from the result map can be written
+    // to the structure.
+    for (const auto& result_entry : result_map) {
+      const std::string& field_type = result_entry.first;
+      base::string16 field_value = base::UTF8ToUTF16(result_entry.second);
+      // Do not reassign the value of this node.
+      if (field_type == GetStorageTypeName())
+        continue;
+      // crbug.com(1113617): Honorifics are temporarily disabled.
+      if (field_type == AutofillType(NAME_HONORIFIC_PREFIX).ToString())
+        continue;
+      bool success = SetValueForTypeIfPossible(field_type, field_value,
+                                               VerificationStatus::kParsed);
+      // Setting the value should always work unless the regular expression is
+      // invalid.
+      DCHECK(success);
     }
+    return true;
   }
   return false;
 }

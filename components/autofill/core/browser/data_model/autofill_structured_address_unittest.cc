@@ -175,6 +175,34 @@ TEST(AutofillStructuredAddress, ParseStreetAddress) {
     TestAddressLineParsing(test_case);
 }
 
+TEST(AutofillStructuredAddress, ParseMultiLineStreetAddress) {
+  std::vector<AddressLineParsingTestCase> test_cases = {
+      {.street_address = "Implerstr. 73a\nObergeschoss 2 Wohnung 3",
+       .street_name = "Implerstr.",
+       .house_number = "73a",
+       .floor = "2",
+       .apartment = "3"},
+      {.street_address = "Implerstr. 73a\nSome Unparsable Text",
+       .street_name = "Implerstr.",
+       .house_number = "73a"},
+      {.street_address = "1600 Amphitheatre Parkway\nFloor 6 Apt 12",
+       .street_name = "Amphitheatre Parkway",
+       .house_number = "1600",
+       .floor = "6",
+       .apartment = "12"},
+      {.street_address = "1600 Amphitheatre Parkway\nSome UnparseableText",
+       .street_name = "Amphitheatre Parkway",
+       .house_number = "1600"},
+      {.street_address = "Av. Paulista, 1098\n1º andar, apto. 101",
+       .street_name = "Av. Paulista",
+       .house_number = "1098",
+       .floor = "1",
+       .apartment = "101"}};
+
+  for (const auto& test_case : test_cases)
+    TestAddressLineParsing(test_case);
+}
+
 TEST(AutofillStructuredAddress, TestStreetAddressFormatting) {
   Address address;
 

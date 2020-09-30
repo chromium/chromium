@@ -117,6 +117,21 @@ StreetAddress::GetParseRegularExpressionsByRelevance() const {
               RegEx::kParseStreetNameHouseNumberSuffixedFloor)};
 }
 
+void StreetAddress::ParseValueAndAssignSubcomponentsByFallbackMethod() {
+  // There is no point in doing a line-wise approach if there aren't multiple
+  // lines.
+  if (address_lines_.size() < 2)
+    return;
+
+  // Try to parse the address using only the first line.
+  for (const auto* parse_expression : GetParseRegularExpressionsByRelevance()) {
+    if (ParseValueAndAssignSubcomponentsByRegularExpression(
+            address_lines_.at(0), parse_expression)) {
+      return;
+    }
+  }
+}
+
 bool StreetAddress::HasNewerValuePrecendenceInMerging(
     const AddressComponent& newer_component) const {
   // If the newer component has a better verification status, use the newer one.

@@ -130,6 +130,9 @@ class StreetAddress : public AddressComponentWithRewriter {
   // Recalculates the address line after an assignment.
   void PostAssignSanitization() override;
 
+  // Apply line-wise parsing of the street address as a fallback method.
+  void ParseValueAndAssignSubcomponentsByFallbackMethod() override;
+
  protected:
   // Implements support for getting the value of the individual address lines.
   bool ConvertAndGetTheValueForAdditionalFieldTypeName(

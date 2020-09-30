@@ -463,6 +463,12 @@ class AddressComponent {
   virtual bool HasNewerValuePrecendenceInMerging(
       const AddressComponent& newer_component) const;
 
+  // Parses |value| by using |parse_expressions| and assigns the values.
+  // Returns true on success.
+  bool ParseValueAndAssignSubcomponentsByRegularExpression(
+      const base::string16& value,
+      const re2::RE2* parse_expression);
+
  private:
   // Unsets the node and all of its children.
   void UnsetAddressComponentAndItsSubcomponents();
