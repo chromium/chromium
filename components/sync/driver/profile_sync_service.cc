@@ -657,11 +657,11 @@ void ProfileSyncService::ShutdownImpl(ShutdownReason reason) {
     // If the engine hasn't started or is already shut down when a DISABLE_SYNC
     // happens, the data directory needs to be cleaned up here.
     if (reason == ShutdownReason::DISABLE_SYNC) {
-      // Clearing the Directory via Directory::DeleteDirectoryFiles() means
-      // there's IO involved which may we considerable overhead if triggered
-      // consistently upon browser startup (which is the case for certain
-      // codepaths such as the user being signed out). To avoid that, SyncPrefs
-      // is used to determine whether it's worth it.
+      // Clearing the Directory via DeleteLegacyDirectoryFilesAndNigoriStorage()
+      // means there's IO involved which may we considerable overhead if
+      // triggered consistently upon browser startup (which is the case for
+      // certain codepaths such as the user being signed out). To avoid that,
+      // SyncPrefs is used to determine whether it's worth it.
       if (!sync_prefs_.GetCacheGuid().empty()) {
         backend_task_runner_->PostTask(
             FROM_HERE,
@@ -1891,8 +1891,6 @@ void ProfileSyncService::StopAndClear() {
 void ProfileSyncService::ReconfigureDatatypeManager(
     bool bypass_setup_in_progress_check) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // If we haven't initialized yet, don't configure the DTM as it could cause
-  // association to start before a Directory has even been created.
   if (engine_ && engine_->IsInitialized()) {
     DCHECK(engine_);
     // Don't configure datatypes if the setup UI is still on the screen - this

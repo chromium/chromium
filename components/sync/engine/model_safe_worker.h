@@ -40,6 +40,9 @@ enum ModelSafeGroup {
 
 std::string ModelSafeGroupToString(ModelSafeGroup group);
 
+// TODO(crbug.com/1102835): This class is a remainder from the old Directory
+// implementation and should be removed.
+//
 // The Syncer uses a ModelSafeWorker for all tasks that could potentially
 // modify syncable entries (e.g under a WriteTransaction). The ModelSafeWorker
 // only knows how to do one thing, and that is take some work (in a fully

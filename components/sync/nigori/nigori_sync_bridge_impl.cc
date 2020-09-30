@@ -241,9 +241,8 @@ bool UpdateEncryptedTypes(const NigoriSpecifics& specifics,
   return true;
 }
 
-// Packs explicit passphrase key in order to persist it. Should be aligned with
-// Directory implementation (Cryptographer::GetBootstrapToken()) unless it is
-// removed. Returns empty string in case of errors.
+// Packs explicit passphrase key in order to persist it. Returns empty string in
+// case of errors.
 std::string PackExplicitPassphraseKey(const Encryptor& encryptor,
                                       const CryptographerImpl& cryptographer) {
   DCHECK(cryptographer.CanEncrypt());
@@ -271,8 +270,6 @@ std::string PackExplicitPassphraseKey(const Encryptor& encryptor,
 // Unpacks explicit passphrase keys. Returns a populated sync_pb::NigoriKey if
 // successful, or an empty instance (i.e. default value) if |packed_key| is
 // empty or decoding/decryption errors occur.
-// Should be aligned with Directory implementation (
-// Cryptographer::UnpackBootstrapToken()) unless it is removed.
 sync_pb::NigoriKey UnpackExplicitPassphraseKey(const Encryptor& encryptor,
                                                const std::string& packed_key) {
   if (packed_key.empty()) {
@@ -296,9 +293,7 @@ sync_pb::NigoriKey UnpackExplicitPassphraseKey(const Encryptor& encryptor,
   return key;
 }
 
-// Returns Base64 encoded keystore keys or empty vector if errors occur. Should
-// be aligned with Directory implementation (UnpackKeystoreBootstrapToken())
-// unless it is removed.
+// Returns Base64 encoded keystore keys or empty vector if errors occur.
 std::vector<std::string> UnpackKeystoreKeys(
     const std::string& packed_keystore_keys,
     const Encryptor& encryptor) {
@@ -664,7 +659,7 @@ void NigoriSyncBridgeImpl::AddTrustedVaultDecryptionKeys(
 
 void NigoriSyncBridgeImpl::EnableEncryptEverything() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // This method is relevant only for Directory implementation. USS
+  // This method was relevant only for Directory implementation. USS
   // implementation catches that as part of SetEncryptionPassphrase(), which
   // is always called together with this method.
   // TODO(crbug.com/1033040): remove this method and clean up calling sides.
@@ -672,7 +667,7 @@ void NigoriSyncBridgeImpl::EnableEncryptEverything() {
 
 bool NigoriSyncBridgeImpl::IsEncryptEverythingEnabled() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // This method is relevant only for Directory implementation and used only
+  // This method was relevant only for Directory implementation and used only
   // for testing.
   // TODO(crbug.com/1033040): remove this method or at least append ForTesting
   // suffix.

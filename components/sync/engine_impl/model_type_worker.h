@@ -35,9 +35,7 @@ namespace syncer {
 class CancelationSignal;
 class ModelTypeProcessor;
 
-// A smart cache for sync types that use message passing (rather than
-// transactions and the syncable::Directory) to communicate with the sync
-// thread.
+// A smart cache for sync types to communicate with the sync thread.
 //
 // When the non-blocking sync type wants to talk with the sync server, it will
 // send a message from its thread to this object on the sync thread. This

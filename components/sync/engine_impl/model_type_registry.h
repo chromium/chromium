@@ -144,7 +144,7 @@ class ModelTypeRegistry : public ModelTypeConnector,
 
   // The set of observers of per-type debug info.
   //
-  // Each of the DirectoryTypeDebugInfoEmitters needs such a list.  There's
+  // Each of the DataTypeDebugInfoEmitter needs such a list. There's
   // a lot of them, and their lifetimes are unpredictable, so it makes the
   // book-keeping easier if we just store the list here.  That way it's
   // guaranteed to live as long as this sync backend.

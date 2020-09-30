@@ -47,7 +47,7 @@ class DataTypeDebugInfoEmitter {
   // Allows others to mutate the commit counters.
   CommitCounters* GetMutableCommitCounters();
 
-  // Triggerss a commit counters update to registered observers.
+  // Triggers a commit counters update to registered observers.
   void EmitCommitCountersUpdate();
 
   // Returns a reference to the current update counters.

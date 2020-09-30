@@ -22,6 +22,9 @@ namespace syncer {
 
 struct ConfigureContext;
 
+// TODO(crbug.com/1102837): Association was a Directory concept, this class
+// should disappear or be refactored.
+//
 // |ModelAssociationManager| does the heavy lifting for doing the actual model
 // association. It instructs DataTypeControllers to load models, start
 // associating and stopping. Since the operations are async it uses an
@@ -59,7 +62,8 @@ class ModelAssociationManagerDelegate {
   virtual ~ModelAssociationManagerDelegate() {}
 };
 
-// The class that is responsible for model association.
+// TODO(crbug.com/1102837): Association was a Directory concept, this class
+// should disappear or be refactored.
 class ModelAssociationManager {
  public:
   enum State {
