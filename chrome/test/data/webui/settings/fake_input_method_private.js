@@ -20,6 +20,8 @@ cr.define('settings', function() {
       callback(null);
     },
 
+    setCurrentInputMethod: () => {},
+
     get onChanged() {
       return {
         addListener: function() {

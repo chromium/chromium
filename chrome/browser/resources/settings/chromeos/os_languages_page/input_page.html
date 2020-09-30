@@ -36,6 +36,12 @@
         margin-bottom: var(--cr-section-vertical-margin);
       }
 
+      .explain-selected {
+        color: var(--cros-success-color);
+        font-weight: initial;
+        margin-top: 4px;
+      }
+
       .icon-external {
         margin-inline-end: 0;
       }
@@ -131,7 +137,7 @@
           <template is="dom-repeat"
               items="[[languages.inputMethods.enabled]]">
             <div class$="list-item [[getInputMethodItemClass_(
-                item.id, languages.inputMethods.currentId)]]"
+                item.id, languages.inputMethods.currentId)]] no-outline"
                 actionable on-click="onInputMethodClick_"
                 on-keypress="onInputMethodKeyPress_"
                 tabindex$="[[getInputMethodTabIndex_(
@@ -139,6 +145,11 @@
                 aria-labelledby$="language-[[index]]" role="button">
               <div class="start" id="language-[[index]]" aria-hidden="true">
                 <div class="display-name">[[item.displayName]]</div>
+                <div class="explain-selected"
+                    hidden="[[!isCurrentInputMethod_(
+                        item.id, languages.inputMethods.currentId)]]">
+                  $i18n{inputMethodEnabled}
+                </div>
               </div>
               <template is="dom-if"
                   if="[[hasOptionsPageInSettings_(item.id)]]">

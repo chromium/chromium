@@ -141,6 +141,9 @@ Polymer({
     }
 
     this.languageHelper.setCurrentInputMethod(e.model.item.id);
+    this.languagesMetricsProxy_.recordInteraction(
+        settings.LanguagesPageInteraction.SWITCH_INPUT_METHOD);
+    settings.recordSettingChange();
   },
 
   /**

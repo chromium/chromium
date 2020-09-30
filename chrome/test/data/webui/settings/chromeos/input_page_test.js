@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import {LanguagesBrowserProxyImpl, LanguagesMetricsProxyImpl} from 'chrome://os-settings/chromeos/lazy_load.js';
+// #import {LanguagesBrowserProxyImpl, LanguagesMetricsProxyImpl, LanguagesPageInteraction} from 'chrome://os-settings/chromeos/lazy_load.js';
 // #import {CrSettingsPrefs, Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
 // #import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 // #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -409,6 +409,18 @@ suite('input page', () => {
       Polymer.dom.flush();
 
       await metricsProxy.whenCalled('recordAddInputMethod');
+    });
+
+    test('when switch input method', async () => {
+      const inputMethodsList = inputPage.$$('#inputMethodsList');
+      assertTrue(!!inputMethodsList);
+
+      // The test input methods should appear.
+      const items = inputMethodsList.querySelectorAll('.list-item');
+      items[0].click();
+      assertEquals(
+          settings.LanguagesPageInteraction.SWITCH_INPUT_METHOD,
+          await metricsProxy.whenCalled('recordInteraction'));
     });
   });
 
