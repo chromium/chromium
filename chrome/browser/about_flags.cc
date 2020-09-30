@@ -1113,6 +1113,43 @@ const FeatureEntry::FeatureVariation
             nullptr,
         }};
 
+const FeatureEntry::FeatureVariation
+    kOmniboxRichAutocompletionSplitVariations[] = {
+        {
+            "Titles & URLs, min char 5",
+            (FeatureEntry::FeatureParam[]){
+                {"RichAutocompletionSplitTitleCompletion", "true"},
+                {"RichAutocompletionSplitUrlCompletion", "true"},
+                {"RichAutocompletionSplitCompletionMinChar", "5"}},
+            3,
+            nullptr,
+        },
+        {
+            "Titles & URLs, min char 3",
+            (FeatureEntry::FeatureParam[]){
+                {"RichAutocompletionSplitTitleCompletion", "true"},
+                {"RichAutocompletionSplitUrlCompletion", "true"},
+                {"RichAutocompletionSplitCompletionMinChar", "3"}},
+            3,
+            nullptr,
+        },
+        {
+            "Titles, min char 5",
+            (FeatureEntry::FeatureParam[]){
+                {"RichAutocompletionSplitTitleCompletion", "true"},
+                {"RichAutocompletionSplitCompletionMinChar", "5"}},
+            2,
+            nullptr,
+        },
+        {
+            "Titles, min char 3",
+            (FeatureEntry::FeatureParam[]){
+                {"RichAutocompletionSplitTitleCompletion", "true"},
+                {"RichAutocompletionSplitCompletionMinChar", "3"}},
+            2,
+            nullptr,
+        }};
+
 // A limited number of combinations of the above variations that are most
 // promising.
 const FeatureEntry::FeatureVariation
@@ -3914,6 +3951,12 @@ const FeatureEntry kFeatureEntries[] = {
          omnibox::kRichAutocompletion,
          kOmniboxRichAutocompletionShowAdditionalTextVariations,
          "OmniboxBundledExperimentV1")},
+    {"omnibox-rich-autocompletion-split",
+     flag_descriptions::kOmniboxRichAutocompletionSplitName,
+     flag_descriptions::kOmniboxRichAutocompletionSplitDescription, kOsDesktop,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kRichAutocompletion,
+                                    kOmniboxRichAutocompletionSplitVariations,
+                                    "OmniboxBundledExperimentV1")},
     {"omnibox-rich-autocompletion-promising",
      flag_descriptions::kOmniboxRichAutocompletionPromisingName,
      flag_descriptions::kOmniboxRichAutocompletionPromisingDescription,

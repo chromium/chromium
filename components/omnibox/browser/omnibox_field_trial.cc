@@ -789,6 +789,26 @@ bool OmniboxFieldTrial::RichAutocompletionShowAdditionalText() {
              kRichAutocompletionShowAdditionalTextParam, true);
 }
 
+bool OmniboxFieldTrial::RichAutocompletionSplitTitleCompletion() {
+  return OmniboxFieldTrial::IsRichAutocompletionEnabled() &&
+         base::GetFieldTrialParamByFeatureAsBool(
+             omnibox::kRichAutocompletion,
+             kRichAutocompletionSplitTitleCompletionParam, false);
+}
+
+bool OmniboxFieldTrial::RichAutocompletionSplitUrlCompletion() {
+  return OmniboxFieldTrial::IsRichAutocompletionEnabled() &&
+         base::GetFieldTrialParamByFeatureAsBool(
+             omnibox::kRichAutocompletion,
+             kRichAutocompletionSplitUrlCompletionParam, false);
+}
+
+size_t OmniboxFieldTrial::RichAutocompletionSplitCompletionMinChar() {
+  return base::GetFieldTrialParamByFeatureAsInt(
+      omnibox::kRichAutocompletion,
+      kRichAutocompletionSplitCompletionMinCharParam, 0);
+}
+
 bool OmniboxFieldTrial::IsOnDeviceHeadSuggestEnabledForIncognito() {
   return base::FeatureList::IsEnabled(omnibox::kOnDeviceHeadProviderIncognito);
 }
@@ -995,6 +1015,12 @@ const char
         "RichAutocompletionAutocompleteNonPrefixMinChar";
 const char OmniboxFieldTrial::kRichAutocompletionShowAdditionalTextParam[] =
     "RichAutocompletionAutocompleteShowAdditionalText";
+const char OmniboxFieldTrial::kRichAutocompletionSplitTitleCompletionParam[] =
+    "RichAutocompletionSplitTitleCompletion";
+const char OmniboxFieldTrial::kRichAutocompletionSplitUrlCompletionParam[] =
+    "RichAutocompletionSplitUrlCompletion";
+const char OmniboxFieldTrial::kRichAutocompletionSplitCompletionMinCharParam[] =
+    "RichAutocompletionSplitCompletionMinChar";
 
 const char OmniboxFieldTrial::kImageSearchSuggestionThumbnail[] =
     "ImageSearchSuggestionThumbnail";

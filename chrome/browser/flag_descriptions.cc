@@ -1562,6 +1562,11 @@ const char kOmniboxRichAutocompletionShowAdditionalTextName[] =
 const char kOmniboxRichAutocompletionShowAdditionalTextDescription[] =
     "Show the suggestion title or URL additional text when the input matches "
     "the URL or title respectively. Defaults to true.";
+const char kOmniboxRichAutocompletionSplitName[] =
+    "Omnibox Rich Autocompletion Split";
+const char kOmniboxRichAutocompletionSplitDescription[] =
+    "Allow splitting the user input to intermix with autocompletions; e.g., "
+    "the user input 'x z' could be autocompleted as 'x [y ]z'.";
 const char kOmniboxRichAutocompletionPromisingName[] =
     "Omnibox Rich Autocompletion Promising Combinations";
 const char kOmniboxRichAutocompletionPromisingDescription[] =

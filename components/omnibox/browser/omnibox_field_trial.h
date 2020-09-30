@@ -422,6 +422,9 @@ bool RichAutocompletionAutocompleteNonPrefixAll();
 bool RichAutocompletionAutocompleteNonPrefixShortcutProvider();
 size_t RichAutocompletionAutocompleteNonPrefixMinChar();
 bool RichAutocompletionShowAdditionalText();
+bool RichAutocompletionSplitTitleCompletion();
+bool RichAutocompletionSplitUrlCompletion();
+size_t RichAutocompletionSplitCompletionMinChar();
 
 // On Device Head Suggestions feature and its helper functions.
 bool IsOnDeviceHeadSuggestEnabledForIncognito();
@@ -553,6 +556,9 @@ extern const char
     kRichAutocompletionAutocompleteNonPrefixShortcutProviderParam[];
 extern const char kRichAutocompletionAutocompleteNonPrefixMinCharParam[];
 extern const char kRichAutocompletionShowAdditionalTextParam[];
+extern const char kRichAutocompletionSplitTitleCompletionParam[];
+extern const char kRichAutocompletionSplitUrlCompletionParam[];
+extern const char kRichAutocompletionSplitCompletionMinCharParam[];
 
 // Parameter names used by image search experiment that shows thumbnail in front
 // of the Omnibox clipboard image search suggestion.
