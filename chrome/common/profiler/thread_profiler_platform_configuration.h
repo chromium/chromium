@@ -7,11 +7,8 @@
 
 #include <memory>
 
+#include "components/metrics/call_stack_profile_params.h"
 #include "components/version_info/version_info.h"
-
-namespace base {
-class CommandLine;
-}
 
 // Encapsulates the platform-specific configuration for the ThreadProfiler.
 //
@@ -80,10 +77,9 @@ class ThreadProfilerPlatformConfiguration {
       version_info::Channel channel) const = 0;
 
   // Returns the fraction of the time that profiling should be randomly enabled
-  // for the child process to be executed with |child_process_command_line|. The
-  // return value is in the range [0.0, 1.0].
+  // for the child |process|. The return value is in the range [0.0, 1.0].
   virtual double GetChildProcessEnableFraction(
-      const base::CommandLine& child_process_command_line) const = 0;
+      metrics::CallStackProfileParams::Process process) const = 0;
 
  protected:
   // True if the profiler is to be run for the channel/chrome branding on the

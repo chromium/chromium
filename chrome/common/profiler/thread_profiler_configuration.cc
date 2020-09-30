@@ -12,9 +12,9 @@
 #include "build/branding_buildflags.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/common/profiler/process_type.h"
 #include "chrome/common/profiler/thread_profiler_platform_configuration.h"
 #include "components/version_info/version_info.h"
-#include "content/public/common/content_switches.h"
 
 namespace {
 
@@ -22,14 +22,6 @@ base::LazyInstance<ThreadProfilerConfiguration>::Leaky g_configuration =
     LAZY_INSTANCE_INITIALIZER;
 
 // Returns true if the current execution is taking place in the browser process.
-bool IsBrowserProcess() {
-  const base::CommandLine* command_line =
-      base::CommandLine::ForCurrentProcess();
-  std::string process_type =
-      command_line->GetSwitchValueASCII(switches::kProcessType);
-  return process_type.empty();
-}
-
 // Allows the profiler to be run in a special browser test mode for testing that
 // profiles are collected as expected, by providing a switch value. The test
 // mode reduces the profiling duration to ensure the startup profiles complete
@@ -44,9 +36,12 @@ bool IsBrowserTestModeEnabled() {
 }  // namespace
 
 ThreadProfilerConfiguration::ThreadProfilerConfiguration()
-    : platform_configuration_(ThreadProfilerPlatformConfiguration::Create(
+    : current_process_(
+          GetProfileParamsProcess(*base::CommandLine::ForCurrentProcess())),
+      platform_configuration_(ThreadProfilerPlatformConfiguration::Create(
           IsBrowserTestModeEnabled())),
-      configuration_(GenerateConfiguration(*platform_configuration_)) {}
+      configuration_(
+          GenerateConfiguration(current_process_, *platform_configuration_)) {}
 
 ThreadProfilerConfiguration::~ThreadProfilerConfiguration() = default;
 
@@ -66,7 +61,7 @@ ThreadProfilerConfiguration::GetSamplingParams() const {
 }
 
 bool ThreadProfilerConfiguration::IsProfilerEnabledForCurrentProcess() const {
-  if (IsBrowserProcess()) {
+  if (current_process_ == metrics::CallStackProfileParams::BROWSER_PROCESS) {
     return configuration_ == PROFILE_ENABLED ||
            configuration_ == PROFILE_CONTROL;
   }
@@ -74,15 +69,14 @@ bool ThreadProfilerConfiguration::IsProfilerEnabledForCurrentProcess() const {
   DCHECK_EQ(PROFILE_FROM_COMMAND_LINE, configuration_);
   // This is a child process. The |kStartStackProfiler| switch passed by the
   // browser process determines whether the profiler is enabled for the process.
-  const base::CommandLine* command_line =
-      base::CommandLine::ForCurrentProcess();
-  return command_line->HasSwitch(switches::kStartStackProfiler);
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      switches::kStartStackProfiler);
 }
 
 bool ThreadProfilerConfiguration::GetSyntheticFieldTrial(
     std::string* trial_name,
     std::string* group_name) const {
-  DCHECK(IsBrowserProcess());
+  DCHECK_EQ(metrics::CallStackProfileParams::BROWSER_PROCESS, current_process_);
 
   if (!platform_configuration_->IsSupported(BUILDFLAG(GOOGLE_CHROME_BRANDING),
                                             chrome::GetChannel())) {
@@ -117,23 +111,26 @@ bool ThreadProfilerConfiguration::GetSyntheticFieldTrial(
 }
 
 void ThreadProfilerConfiguration::AppendCommandLineSwitchForChildProcess(
-    base::CommandLine* command_line) const {
-  DCHECK(IsBrowserProcess());
+    base::CommandLine* child_process_command_line) const {
+  DCHECK_EQ(metrics::CallStackProfileParams::BROWSER_PROCESS, current_process_);
 
   if (!(configuration_ == PROFILE_ENABLED || configuration_ == PROFILE_CONTROL))
     return;
 
+  const metrics::CallStackProfileParams::Process child_process =
+      GetProfileParamsProcess(*child_process_command_line);
   const double enable_fraction =
-      platform_configuration_->GetChildProcessEnableFraction(*command_line);
+      platform_configuration_->GetChildProcessEnableFraction(child_process);
   if (!(base::RandDouble() < enable_fraction))
     return;
 
   if (IsBrowserTestModeEnabled()) {
     // Propagate the browser test mode switch argument to the child processes.
-    command_line->AppendSwitchASCII(switches::kStartStackProfiler,
-                                    switches::kStartStackProfilerBrowserTest);
+    child_process_command_line->AppendSwitchASCII(
+        switches::kStartStackProfiler,
+        switches::kStartStackProfilerBrowserTest);
   } else {
-    command_line->AppendSwitch(switches::kStartStackProfiler);
+    child_process_command_line->AppendSwitch(switches::kStartStackProfiler);
   }
 }
 
@@ -167,8 +164,9 @@ ThreadProfilerConfiguration::ChooseConfiguration(
 // static
 ThreadProfilerConfiguration::ProfileConfiguration
 ThreadProfilerConfiguration::GenerateConfiguration(
+    metrics::CallStackProfileParams::Process process,
     const ThreadProfilerPlatformConfiguration& platform_configuration) {
-  if (!IsBrowserProcess())
+  if (process != metrics::CallStackProfileParams::BROWSER_PROCESS)
     return PROFILE_FROM_COMMAND_LINE;
 
   const version_info::Channel channel = chrome::GetChannel();

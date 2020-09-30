@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/threading/platform_thread.h"
+#include "chrome/common/profiler/process_type.h"
 #include "chrome/common/profiler/thread_profiler.h"
 #include "components/metrics/call_stack_profile_metrics_provider.h"
 #include "content/public/common/content_switches.h"
@@ -15,12 +16,11 @@ namespace {
 
 // Returns the profiler appropriate for the current process.
 std::unique_ptr<ThreadProfiler> CreateThreadProfiler() {
-  const base::CommandLine* command_line =
-      base::CommandLine::ForCurrentProcess();
+  const metrics::CallStackProfileParams::Process process =
+      GetProfileParamsProcess(*base::CommandLine::ForCurrentProcess());
 
-  // The browser process has an empty process type.
   // TODO(wittman): Do this for other process types too.
-  if (!command_line->HasSwitch(switches::kProcessType)) {
+  if (process == metrics::CallStackProfileParams::BROWSER_PROCESS) {
     ThreadProfiler::SetBrowserProcessReceiverCallback(base::BindRepeating(
         &metrics::CallStackProfileMetricsProvider::ReceiveProfile));
     return ThreadProfiler::CreateAndStartOnMainThread();

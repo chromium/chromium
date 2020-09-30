@@ -7,16 +7,10 @@
 #include "base/command_line.h"
 #include "base/profiler/stack_sampling_profiler.h"
 #include "build/build_config.h"
-#include "content/public/common/content_switches.h"
-#include "extensions/buildflags/buildflags.h"
-#include "sandbox/policy/sandbox.h"
+#include "chrome/common/profiler/process_type.h"
 
 #if defined(OS_ANDROID)
 #include "chrome/android/modules/stack_unwinder/public/module.h"
-#endif
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "extensions/common/switches.h"
 #endif
 
 namespace {
@@ -38,14 +32,11 @@ class DefaultPlatformConfiguration
       version_info::Channel channel) const override;
 
   double GetChildProcessEnableFraction(
-      const base::CommandLine& child_process_command_line) const override;
+      metrics::CallStackProfileParams::Process process) const override;
 
  protected:
   bool IsSupportedForChannel(bool is_chrome_branded,
                              version_info::Channel channel) const override;
-
-  // True if the command line corresponds to an extension renderer process.
-  bool IsExtensionRenderer(const base::CommandLine& command_line) const;
 
   bool browser_test_mode_enabled() const { return browser_test_mode_enabled_; }
 
@@ -85,30 +76,25 @@ DefaultPlatformConfiguration::GetEnableRates(
 }
 
 double DefaultPlatformConfiguration::GetChildProcessEnableFraction(
-    const base::CommandLine& child_process_command_line) const {
-  const std::string& process_type =
-      child_process_command_line.GetSwitchValueASCII(switches::kProcessType);
+    metrics::CallStackProfileParams::Process process) const {
+  DCHECK_NE(metrics::CallStackProfileParams::BROWSER_PROCESS, process);
 
-  if (process_type == switches::kGpuProcess)
-    return 1.0;
+  switch (process) {
+    case metrics::CallStackProfileParams::GPU_PROCESS:
+    case metrics::CallStackProfileParams::NETWORK_SERVICE_PROCESS:
+      return 1.0;
+      break;
 
-  // The network service is the only utility process that is profiled for now.
-  if (process_type == switches::kUtilityProcess &&
-      sandbox::policy::SandboxTypeFromCommandLine(child_process_command_line) ==
-          sandbox::policy::SandboxType::kNetwork) {
-    return 1.0;
+    case metrics::CallStackProfileParams::RENDERER_PROCESS:
+      // Run the profiler in all renderer processes if the browser test mode is
+      // enabled, otherwise run in 20% of the processes to collect roughly as
+      // many profiles for renderer processes as browser processes.
+      return browser_test_mode_enabled() ? 1.0 : 0.2;
+      break;
+
+    default:
+      return 0.0;
   }
-
-  // Only start the profiler for non-extension renderer processes.
-  if (process_type == switches::kRendererProcess &&
-      !IsExtensionRenderer(child_process_command_line)) {
-    // Run the profiler in all renderer processes if the browser test mode is
-    // enabled, otherwise run in 20% of the processes to collect roughly as
-    // many profiles for renderer processes as browser processes.
-    return browser_test_mode_enabled() ? 1.0 : 0.2;
-  }
-
-  return 0.0;
 }
 
 bool DefaultPlatformConfiguration::IsSupportedForChannel(
@@ -124,23 +110,7 @@ bool DefaultPlatformConfiguration::IsSupportedForChannel(
          channel == version_info::Channel::DEV;
 }
 
-// True if the command line corresponds to an extension renderer process.
-bool DefaultPlatformConfiguration::IsExtensionRenderer(
-    const base::CommandLine& command_line) const {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  return command_line.HasSwitch(extensions::switches::kExtensionProcess);
-#else
-  return false;
-#endif
-}
-
 #if defined(OS_ANDROID)
-bool IsBrowserProcess() {
-  return base::CommandLine::ForCurrentProcess()
-      ->GetSwitchValueASCII(switches::kProcessType)
-      .empty();
-}
-
 // The configuration to use for the Android platform. Applies to ARM32 which is
 // the only Android architecture currently supported by StackSamplingProfiler.
 // Defined in terms of DefaultPlatformConfiguration where Android does not
@@ -157,7 +127,7 @@ class AndroidPlatformConfiguration : public DefaultPlatformConfiguration {
   void RequestRuntimeModuleInstall() const override;
 
   double GetChildProcessEnableFraction(
-      const base::CommandLine& child_process_command_line) const override;
+      metrics::CallStackProfileParams::Process process) const override;
 
  protected:
   bool IsSupportedForChannel(bool is_chrome_branded,
@@ -201,7 +171,8 @@ AndroidPlatformConfiguration::GetRuntimeModuleState(
 
 void AndroidPlatformConfiguration::RequestRuntimeModuleInstall() const {
   // The install can only be done in the browser process.
-  CHECK(IsBrowserProcess());
+  CHECK_EQ(metrics::CallStackProfileParams::BROWSER_PROCESS,
+           GetProfileParamsProcess(*base::CommandLine::ForCurrentProcess()));
 
   // The install occurs asynchronously, with the module available at the first
   // run of Chrome following install.
@@ -209,13 +180,11 @@ void AndroidPlatformConfiguration::RequestRuntimeModuleInstall() const {
 }
 
 double AndroidPlatformConfiguration::GetChildProcessEnableFraction(
-    const base::CommandLine& child_process_command_line) const {
+    metrics::CallStackProfileParams::Process process) const {
   // Profile all processes in browser test mode since they're disabled
   // otherwise.
-  if (browser_test_mode_enabled()) {
-    return DefaultPlatformConfiguration::GetChildProcessEnableFraction(
-        child_process_command_line);
-  }
+  if (browser_test_mode_enabled())
+    return DefaultPlatformConfiguration::GetChildProcessEnableFraction(process);
 
   // TODO(https://crbug.com/1004855): Enable for all the default processes.
   return 0.0;

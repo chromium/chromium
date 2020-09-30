@@ -13,6 +13,8 @@ source_set("profiler") {
 
   sources = [
     "main_thread_stack_sampling_profiler.cc",
+    "process_type.cc",
+    "process_type.h",
     "thread_profiler.cc",
     "thread_profiler_configuration.cc",
     "thread_profiler_platform_configuration.cc",
@@ -35,6 +37,32 @@ source_set("profiler") {
   if (is_android) {
     deps += [ "//chrome/android/modules/stack_unwinder/public:module" ]
   }
+
+  if (enable_extensions) {
+    deps += [ "//extensions/common:common" ]
+  }
+
+  friend = [ ":unit_tests" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "process_type_unittest.cc",
+    "thread_profiler_platform_configuration_unittest.cc",
+    "thread_profiler_unittest.cc",
+  ]
+
+  deps = [
+    ":profiler",
+    "//base/test:test_support",
+    "//chrome/common:non_code_constants",
+    "//components/metrics",
+    "//components/version_info:version_info",
+    "//content/public/common",
+    "//extensions/buildflags",
+  ]
 
   if (enable_extensions) {
     deps += [ "//extensions/common:common" ]

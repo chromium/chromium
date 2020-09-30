@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/profiler/stack_sampling_profiler.h"
+#include "components/metrics/call_stack_profile_params.h"
 
 namespace base {
 class CommandLine;
@@ -75,11 +76,16 @@ class ThreadProfilerConfiguration {
 
   // Generates sampling profiler configurations for all processes.
   static ProfileConfiguration GenerateConfiguration(
+      metrics::CallStackProfileParams::Process process,
       const ThreadProfilerPlatformConfiguration& platform_configuration);
 
   // NOTE: all state in this class must be const and initialized at construction
   // time to ensure thread-safe access post-construction.
 
+  // The currently-executing process.
+  const metrics::CallStackProfileParams::Process current_process_;
+
+  // Platform-dependent configuration upon which |configuration_| is based.
   const std::unique_ptr<ThreadProfilerPlatformConfiguration>
       platform_configuration_;
 
