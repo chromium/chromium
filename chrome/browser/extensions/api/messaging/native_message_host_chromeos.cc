@@ -45,10 +45,10 @@ class EchoHost : public NativeMessageHost {
  public:
   static std::unique_ptr<NativeMessageHost> Create(
       content::BrowserContext* browser_context) {
-    return std::unique_ptr<NativeMessageHost>(new EchoHost());
+    return std::make_unique<EchoHost>();
   }
 
-  EchoHost() : message_number_(0), client_(NULL) {}
+  EchoHost() = default;
 
   void Start(Client* client) override { client_ = client; }
 
@@ -81,8 +81,8 @@ class EchoHost : public NativeMessageHost {
     client_->PostMessageFromNativeHost(response_string);
   }
 
-  int message_number_;
-  Client* client_;
+  int message_number_ = 0;
+  Client* client_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(EchoHost);
 };
@@ -112,24 +112,6 @@ const char* const kRemotingIt2MeOrigins[] = {
     "chrome-extension://inomeogfingihgjfjlpeplalcfajhgai/",
     "chrome-extension://hpodccmdligbeohchckkeajbfohibipg/"};
 
-static const BuiltInHost kBuiltInHost[] = {
-    {"com.google.chrome.test.echo",  // ScopedTestNativeMessagingHost::kHostName
-     kEchoHostOrigins, base::size(kEchoHostOrigins), &EchoHost::Create},
-    {"com.google.chrome.remote_assistance", kRemotingIt2MeOrigins,
-     base::size(kRemotingIt2MeOrigins), &CreateIt2MeHost},
-    {arc::ArcSupportMessageHost::kHostName,
-     arc::ArcSupportMessageHost::kHostOrigin, 1,
-     &arc::ArcSupportMessageHost::Create},
-    {chromeos::kWilcoDtcSupportdUiMessageHost,
-     chromeos::kWilcoDtcSupportdHostOrigins,
-     chromeos::kWilcoDtcSupportdHostOriginsSize,
-     &chromeos::CreateExtensionOwnedWilcoDtcSupportdMessageHost},
-    {drive::kDriveFsNativeMessageHostName,
-     drive::kDriveFsNativeMessageHostOrigins,
-     drive::kDriveFsNativeMessageHostOriginsSize,
-     &drive::CreateDriveFsNativeMessageHost},
-};
-
 bool MatchesSecurityOrigin(const BuiltInHost& host,
                            const std::string& extension_id) {
   GURL origin(std::string(kExtensionScheme) + "://" + extension_id);
@@ -151,10 +133,27 @@ std::unique_ptr<NativeMessageHost> NativeMessageHost::Create(
     const std::string& native_host_name,
     bool allow_user_level,
     std::string* error) {
-  for (unsigned int i = 0; i < base::size(kBuiltInHost); i++) {
-    const BuiltInHost& host = kBuiltInHost[i];
-    std::string name(host.name);
-    if (name == native_host_name) {
+  static const BuiltInHost kBuiltInHosts[] = {
+      // ScopedTestNativeMessagingHost::kHostName
+      {"com.google.chrome.test.echo", kEchoHostOrigins,
+       base::size(kEchoHostOrigins), &EchoHost::Create},
+      {"com.google.chrome.remote_assistance", kRemotingIt2MeOrigins,
+       base::size(kRemotingIt2MeOrigins), &CreateIt2MeHost},
+      {arc::ArcSupportMessageHost::kHostName,
+       arc::ArcSupportMessageHost::kHostOrigin, 1,
+       &arc::ArcSupportMessageHost::Create},
+      {chromeos::kWilcoDtcSupportdUiMessageHost,
+       chromeos::kWilcoDtcSupportdHostOrigins,
+       chromeos::kWilcoDtcSupportdHostOriginsSize,
+       &chromeos::CreateExtensionOwnedWilcoDtcSupportdMessageHost},
+      {drive::kDriveFsNativeMessageHostName,
+       drive::kDriveFsNativeMessageHostOrigins,
+       drive::kDriveFsNativeMessageHostOriginsSize,
+       &drive::CreateDriveFsNativeMessageHost},
+  };
+
+  for (const BuiltInHost& host : kBuiltInHosts) {
+    if (host.name == native_host_name) {
       if (MatchesSecurityOrigin(host, source_extension_id)) {
         return (*host.create_function)(browser_context);
       }
