@@ -621,12 +621,22 @@ ResultCode SetJobMemoryLimit(const base::CommandLine& cmd_line,
 // isn't a security concern.
 base::string16 GetAppContainerProfileName(const std::string& appcontainer_id,
                                           SandboxType sandbox_type) {
-  DCHECK(sandbox_type == SandboxType::kGpu ||
-         sandbox_type == SandboxType::kXrCompositing);
+  std::string sandbox_base_name;
+  switch (sandbox_type) {
+    case SandboxType::kXrCompositing:
+      sandbox_base_name = std::string("cr.sb.xr");
+      break;
+    case SandboxType::kGpu:
+      sandbox_base_name = std::string("cr.sb.gpu");
+      break;
+    case SandboxType::kMediaFoundationCdm:
+      sandbox_base_name = std::string("cr.sb.cdm");
+      break;
+    default:
+      DCHECK(0);
+  }
+
   auto sha1 = base::SHA1HashString(appcontainer_id);
-  std::string sandbox_base_name = (sandbox_type == SandboxType::kXrCompositing)
-                                      ? std::string("cr.sb.xr")
-                                      : std::string("cr.sb.gpu");
   std::string profile_name = base::StrCat(
       {sandbox_base_name, base::HexEncode(sha1.data(), sha1.size())});
   // CreateAppContainerProfile requires that the profile name is at most 64
@@ -640,7 +650,8 @@ base::string16 GetAppContainerProfileName(const std::string& appcontainer_id,
 ResultCode SetupAppContainerProfile(AppContainerProfile* profile,
                                     const base::CommandLine& command_line,
                                     SandboxType sandbox_type) {
-  if (sandbox_type != SandboxType::kGpu &&
+  if (sandbox_type != SandboxType::kMediaFoundationCdm &&
+      sandbox_type != SandboxType::kGpu &&
       sandbox_type != SandboxType::kXrCompositing)
     return SBOX_ERROR_UNSUPPORTED;
 
@@ -664,6 +675,36 @@ ResultCode SetupAppContainerProfile(AppContainerProfile* profile,
     DLOG(ERROR)
         << "AppContainerProfile::AddCapability(chromeInstallFiles) failed";
     return SBOX_ERROR_CREATE_APPCONTAINER_PROFILE_CAPABILITY;
+  }
+
+  if (sandbox_type == SandboxType::kMediaFoundationCdm) {
+    // Please refer to the following design doc on why we add the capabilities:
+    // https://docs.google.com/document/d/19Y4Js5v3BlzA5uSuiVTvcvPNIOwmxcMSFJWtuc1A-w8/edit#heading=h.iqvhsrml3gl9
+    if (!profile->AddCapability(
+            sandbox::WellKnownCapabilities::kPrivateNetworkClientServer) ||
+        !profile->AddCapability(
+            sandbox::WellKnownCapabilities::kInternetClient)) {
+      DLOG(ERROR)
+          << "AppContainerProfile::AddCapability() - "
+          << "SandboxType::kMediaFoundationCdm internet capabilities failed";
+      return sandbox::SBOX_ERROR_CREATE_APPCONTAINER_PROFILE_CAPABILITY;
+    }
+
+    if (!profile->AddCapability(L"lpacCom") ||
+        !profile->AddCapability(L"lpacIdentityServices") ||
+        !profile->AddCapability(L"lpacMedia") ||
+        !profile->AddCapability(L"lpacPnPNotifications") ||
+        !profile->AddCapability(L"lpacServicesManagement") ||
+        !profile->AddCapability(L"lpacSessionManagement") ||
+        !profile->AddCapability(L"lpacAppExperience") ||
+        !profile->AddCapability(L"lpacAppServices") ||
+        !profile->AddCapability(L"lpacCryptoServices") ||
+        !profile->AddCapability(L"lpacEnterprisePolicyChangeNotifications")) {
+      DLOG(ERROR)
+          << "AppContainerProfile::AddCapability() - "
+          << "SandboxType::kMediaFoundationCdm lpac capabilities failed";
+      return sandbox::SBOX_ERROR_CREATE_APPCONTAINER_PROFILE_CAPABILITY;
+    }
   }
 
   std::vector<base::string16> base_caps = {
@@ -697,6 +738,9 @@ ResultCode SetupAppContainerProfile(AppContainerProfile* profile,
       base::FeatureList::IsEnabled(features::kGpuLPAC)) {
     profile->SetEnableLowPrivilegeAppContainer(true);
   }
+
+  if (sandbox_type == SandboxType::kMediaFoundationCdm)
+    profile->SetEnableLowPrivilegeAppContainer(true);
 
   return SBOX_ALL_OK;
 }
@@ -813,9 +857,13 @@ ResultCode SandboxWin::AddAppContainerProfileToPolicy(
 bool SandboxWin::IsAppContainerEnabledForSandbox(
     const base::CommandLine& command_line,
     SandboxType sandbox_type) {
-  if (sandbox_type != SandboxType::kGpu)
-    return false;
   if (base::win::GetVersion() < base::win::Version::WIN10_RS1)
+    return false;
+
+  if (sandbox_type == SandboxType::kMediaFoundationCdm)
+    return true;
+
+  if (sandbox_type != SandboxType::kGpu)
     return false;
   return base::FeatureList::IsEnabled(features::kGpuAppContainer);
 }
@@ -1016,6 +1064,15 @@ ResultCode SandboxWin::StartSandboxedProcess(
     }
   }
 
+  if (sandbox_type == SandboxType::kMediaFoundationCdm) {
+    // Set a policy that would normally allow for process creation. This allows
+    // the mf cdm process to launch the protected media pipeline process
+    // (mfpmp.exe) without process interception.
+    result = policy->SetJobLevel(JOB_INTERACTIVE, 0);
+    if (result != SBOX_ALL_OK)
+      return result;
+  }
+
 #if !defined(OFFICIAL_BUILD)
   // If stdout/stderr point to a Windows console, these calls will
   // have no effect. These calls can fail with SBOX_ERROR_BAD_PARAMS.
@@ -1120,6 +1177,8 @@ std::string SandboxWin::GetSandboxTypeInEnglish(SandboxType sandbox_type) {
       return "Proxy Resolver";
     case SandboxType::kPdfConversion:
       return "PDF Conversion";
+    case SandboxType::kMediaFoundationCdm:
+      return "Media Foundation CDM";
     case SandboxType::kSharingService:
       return "Sharing";
     case SandboxType::kVideoCapture:

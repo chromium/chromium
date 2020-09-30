@@ -3783,6 +3783,7 @@ base::string16 ChromeContentBrowserClient::GetAppContainerSidForSandboxType(
     case sandbox::policy::SandboxType::kSharingService:
     case sandbox::policy::SandboxType::kVideoCapture:
     case sandbox::policy::SandboxType::kIconReader:
+    case sandbox::policy::SandboxType::kMediaFoundationCdm:
       // Should never reach here.
       CHECK(0);
       return base::string16();

@@ -74,8 +74,9 @@ bool NetworkPreSpawnTarget(sandbox::TargetPolicy* policy,
 
 bool UtilitySandboxedProcessLauncherDelegate::GetAppContainerId(
     std::string* appcontainer_id) {
-  if (sandbox_type_ == sandbox::policy::SandboxType::kXrCompositing &&
-      base::FeatureList::IsEnabled(sandbox::policy::features::kXRSandbox)) {
+  if ((sandbox_type_ == sandbox::policy::SandboxType::kXrCompositing &&
+       base::FeatureList::IsEnabled(sandbox::policy::features::kXRSandbox)) ||
+      sandbox_type_ == sandbox::policy::SandboxType::kMediaFoundationCdm) {
     *appcontainer_id = base::WideToUTF8(cmd_line_.GetProgram().value());
     return true;
   }
@@ -95,6 +96,10 @@ bool UtilitySandboxedProcessLauncherDelegate::DisableDefaultPolicy() {
     case sandbox::policy::SandboxType::kXrCompositing:
       return base::FeatureList::IsEnabled(
           sandbox::policy::features::kXRSandbox);
+    case sandbox::policy::SandboxType::kMediaFoundationCdm:
+      // Default policy is disabled for MF Cdm process to allow the application
+      // of specific LPAC sandbox policies.
+      return true;
     default:
       return false;
   }
@@ -177,6 +182,10 @@ bool UtilitySandboxedProcessLauncherDelegate::PreSpawnTarget(
     policy->SetTokenLevel(sandbox::USER_UNPROTECTED, sandbox::USER_UNPROTECTED);
     sandbox::policy::SandboxWin::SetJobLevel(
         cmd_line_, sandbox::JOB_UNPROTECTED, 0, policy);
+  }
+
+  if (sandbox_type_ == sandbox::policy::SandboxType::kMediaFoundationCdm) {
+    policy->SetTokenLevel(sandbox::USER_UNPROTECTED, sandbox::USER_UNPROTECTED);
   }
 
   if (sandbox_type_ == sandbox::policy::SandboxType::kSharingService) {

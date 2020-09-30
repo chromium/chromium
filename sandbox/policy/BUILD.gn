@@ -159,7 +159,10 @@ source_set("tests") {
   ]
 
   if (is_win) {
-    sources += [ "win/sandbox_win_unittest.cc" ]
+    sources += [
+      "win/mf_cdm_sandbox_type_unittest.cc",
+      "win/sandbox_win_unittest.cc",
+    ]
     deps += [ "//sandbox/win:sandbox" ]
     data = [
       "//base/test/data/pe_image/pe_image_test_32.dll",

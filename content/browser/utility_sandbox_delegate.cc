@@ -37,6 +37,7 @@ UtilitySandboxedProcessLauncherDelegate::
       sandbox_type_ == sandbox::policy::SandboxType::kProxyResolver ||
       sandbox_type_ == sandbox::policy::SandboxType::kPdfConversion ||
       sandbox_type_ == sandbox::policy::SandboxType::kIconReader ||
+      sandbox_type_ == sandbox::policy::SandboxType::kMediaFoundationCdm ||
 #endif
       sandbox_type_ == sandbox::policy::SandboxType::kUtility ||
       sandbox_type_ == sandbox::policy::SandboxType::kNetwork ||

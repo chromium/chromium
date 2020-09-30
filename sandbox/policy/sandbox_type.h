@@ -34,6 +34,9 @@ enum class SandboxType {
 
   // The icon reader service.
   kIconReader,
+
+  // The MediaFoundation CDM service process.
+  kMediaFoundationCdm,
 #endif
 
 #if defined(OS_FUCHSIA)
