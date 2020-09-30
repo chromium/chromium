@@ -447,6 +447,9 @@
   "runtime.getBackgroundPage": {
     "disallow_for_service_workers": true
   },
+  "runtime.getPackageDirectoryEntry": {
+    "disallow_for_service_workers": true
+  },
   "runtime.getManifest": {
     "contexts": [
       "blessed_extension",
