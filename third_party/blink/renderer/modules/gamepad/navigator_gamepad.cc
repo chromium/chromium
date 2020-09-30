@@ -28,6 +28,8 @@
 #include "base/auto_reset.h"
 #include "device/gamepad/public/cpp/gamepad_features.h"
 #include "device/gamepad/public/cpp/gamepads.h"
+#include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
+#include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -41,6 +43,7 @@
 #include "third_party/blink/renderer/modules/gamepad/gamepad_dispatcher.h"
 #include "third_party/blink/renderer/modules/gamepad/gamepad_event.h"
 #include "third_party/blink/renderer/modules/gamepad/gamepad_list.h"
+#include "third_party/blink/renderer/platform/privacy_budget/identifiability_digest_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
@@ -76,6 +79,38 @@ NavigatorGamepad& NavigatorGamepad::From(Navigator& navigator) {
   return *supplement;
 }
 
+namespace {
+
+void RecordGamepadsForIdentifiabilityStudy(ExecutionContext* context,
+                                           GamepadList* gamepads) {
+  if (!context || !IdentifiabilityStudySettings::Get()->IsSurfaceAllowed(
+                      IdentifiableSurface::FromTypeAndToken(
+                          IdentifiableSurface::Type::kWebFeature,
+                          WebFeature::kGetGamepads)))
+    return;
+  IdentifiableTokenBuilder builder;
+  if (gamepads) {
+    for (unsigned i = 0; i < gamepads->length(); i++) {
+      if (auto* gp = gamepads->item(i)) {
+        builder.AddValue(gp->axes().size())
+            .AddValue(gp->buttons().size())
+            .AddValue(gp->connected())
+            .AddToken(IdentifiabilityBenignStringToken(gp->id()))
+            .AddToken(IdentifiabilityBenignStringToken(gp->mapping()))
+            .AddValue(gp->timestamp());
+        if (auto* vb = gp->vibrationActuator()) {
+          builder.AddToken(IdentifiabilityBenignStringToken(vb->type()));
+        }
+      }
+    }
+  }
+  IdentifiabilityMetricBuilder(context->UkmSourceID())
+      .SetWebfeature(WebFeature::kGetGamepads, builder.GetToken())
+      .Record(context->UkmRecorder());
+}
+
+}  // namespace
+
 // static
 GamepadList* NavigatorGamepad::getGamepads(Navigator& navigator,
                                            ExceptionState& exception_state) {
@@ -83,7 +118,13 @@ GamepadList* NavigatorGamepad::getGamepads(Navigator& navigator,
     // Using an existing NavigatorGamepad if one exists, but don't create one
     // for a detached window, as its subclasses depend on a non-null window.
     auto* gamepad = Supplement<Navigator>::From<NavigatorGamepad>(navigator);
-    return gamepad ? gamepad->Gamepads() : nullptr;
+    if (gamepad) {
+      auto* result = gamepad->Gamepads();
+      RecordGamepadsForIdentifiabilityStudy(gamepad->GetExecutionContext(),
+                                            result);
+      return result;
+    }
+    return nullptr;
   }
 
   auto* navigator_gamepad = &NavigatorGamepad::From(navigator);
@@ -124,7 +165,9 @@ GamepadList* NavigatorGamepad::getGamepads(Navigator& navigator,
     }
   }
 
-  return NavigatorGamepad::From(navigator).Gamepads();
+  auto* result = NavigatorGamepad::From(navigator).Gamepads();
+  RecordGamepadsForIdentifiabilityStudy(context, result);
+  return result;
 }
 
 GamepadList* NavigatorGamepad::Gamepads() {
