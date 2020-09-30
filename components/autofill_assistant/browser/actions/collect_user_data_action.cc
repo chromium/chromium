@@ -23,6 +23,7 @@
 #include "components/autofill/core/browser/geo/address_i18n.h"
 #include "components/autofill_assistant/browser/actions/action_delegate.h"
 #include "components/autofill_assistant/browser/client_status.h"
+#include "components/autofill_assistant/browser/field_formatter.h"
 #include "components/autofill_assistant/browser/metrics.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/user_data_util.h"
@@ -385,6 +386,18 @@ void SetInitialUserDataForAdditionalSection(
       break;
   }
 }
+
+void AddNonEmptyFieldNames(
+    const autofill::AutofillProfile* profile,
+    google::protobuf::RepeatedPtrField<std::string>* dest) {
+  DCHECK(profile != nullptr);
+  const auto& map = autofill_assistant::field_formatter::CreateAutofillMappings(
+      *profile, /* locale= */ "en-US");
+  for (const auto& it : map) {
+    *dest->Add() = it.first;
+  }
+}
+
 }  // namespace
 
 namespace autofill_assistant {
@@ -1107,17 +1120,42 @@ void CollectUserDataAction::WriteProcessedAction(UserData* user_data,
     auto* selected_profile = user_data->selected_address(
         contact_details_proto.contact_details_name());
 
-    if (contact_details_proto.request_payer_name() &&
-        selected_profile != nullptr) {
-      Metrics::RecordPaymentRequestFirstNameOnly(
-          selected_profile->GetRawInfo(autofill::NAME_LAST).empty());
-    }
+    if (selected_profile != nullptr) {
+      AddNonEmptyFieldNames(
+          selected_profile,
+          processed_action_proto_->mutable_collect_user_data_result()
+              ->mutable_non_empty_contact_field());
 
-    if (contact_details_proto.request_payer_email() &&
-        selected_profile != nullptr) {
-      processed_action_proto_->mutable_collect_user_data_result()
-          ->set_payer_email(base::UTF16ToUTF8(
-              selected_profile->GetRawInfo(autofill::EMAIL_ADDRESS)));
+      if (contact_details_proto.request_payer_name()) {
+        Metrics::RecordPaymentRequestFirstNameOnly(
+            selected_profile->GetRawInfo(autofill::NAME_LAST).empty());
+      }
+
+      if (contact_details_proto.request_payer_email()) {
+        processed_action_proto_->mutable_collect_user_data_result()
+            ->set_payer_email(base::UTF16ToUTF8(
+                selected_profile->GetRawInfo(autofill::EMAIL_ADDRESS)));
+      }
+    }
+  }
+  if (!proto().collect_user_data().shipping_address_name().empty()) {
+    auto* selected_shipping_address = user_data->selected_address(
+        proto().collect_user_data().shipping_address_name());
+    if (selected_shipping_address != nullptr) {
+      AddNonEmptyFieldNames(
+          selected_shipping_address,
+          processed_action_proto_->mutable_collect_user_data_result()
+              ->mutable_non_empty_shipping_address_field());
+    }
+  }
+  if (!proto().collect_user_data().billing_address_name().empty()) {
+    auto* selected_billing_address = user_data->selected_address(
+        proto().collect_user_data().billing_address_name());
+    if (selected_billing_address != nullptr) {
+      AddNonEmptyFieldNames(
+          selected_billing_address,
+          processed_action_proto_->mutable_collect_user_data_result()
+              ->mutable_non_empty_billing_address_field());
     }
   }
 

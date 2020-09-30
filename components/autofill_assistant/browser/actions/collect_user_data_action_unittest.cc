@@ -8,10 +8,12 @@
 
 #include "base/guid.h"
 #include "base/strings/string16.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill_assistant/browser/actions/mock_action_delegate.h"
 #include "components/autofill_assistant/browser/mock_personal_data_manager.h"
 #include "components/autofill_assistant/browser/mock_website_login_manager.h"
@@ -51,6 +53,7 @@ using ::testing::_;
 using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::Invoke;
+using ::testing::IsSupersetOf;
 using ::testing::Property;
 using ::testing::Return;
 using ::testing::SizeIs;
@@ -618,12 +621,31 @@ TEST_F(CollectUserDataActionTest, SelectContactDetails) {
                 .Run(&user_data_, &user_model_);
           }));
 
-  EXPECT_CALL(callback_,
-              Run(Pointee(AllOf(
-                  Property(&ProcessedActionProto::status, ACTION_APPLIED),
-                  Property(&ProcessedActionProto::collect_user_data_result,
-                           Property(&CollectUserDataResultProto::payer_email,
-                                    "marion@me.xyz"))))));
+  std::vector<std::string> expected_non_empty_fields = {
+      base::NumberToString(
+          static_cast<int>(autofill::ServerFieldType::NAME_FULL)),
+      base::NumberToString(
+          static_cast<int>(autofill::ServerFieldType::NAME_FIRST)),
+      base::NumberToString(
+          static_cast<int>(autofill::ServerFieldType::NAME_MIDDLE)),
+      base::NumberToString(
+          static_cast<int>(autofill::ServerFieldType::NAME_LAST)),
+      base::NumberToString(
+          static_cast<int>(autofill::ServerFieldType::EMAIL_ADDRESS)),
+      base::NumberToString(static_cast<int>(
+          autofill::ServerFieldType::PHONE_HOME_WHOLE_NUMBER))};
+
+  EXPECT_CALL(
+      callback_,
+      Run(Pointee(AllOf(
+          Property(&ProcessedActionProto::status, ACTION_APPLIED),
+          Property(
+              &ProcessedActionProto::collect_user_data_result,
+              AllOf(
+                  Property(&CollectUserDataResultProto::payer_email,
+                           "marion@me.xyz"),
+                  Property(&CollectUserDataResultProto::non_empty_contact_field,
+                           IsSupersetOf(expected_non_empty_fields))))))));
 
   CollectUserDataAction action(&mock_action_delegate_, action_proto);
   action.ProcessAction(callback_.Get());
@@ -733,18 +755,77 @@ TEST_F(CollectUserDataActionTest, SelectPaymentMethod) {
                 .Run(&user_data_, &user_model_);
           }));
 
+  std::vector<std::string> expected_non_empty_fields = {
+      base::NumberToString(
+          static_cast<int>(autofill::ServerFieldType::NAME_FIRST)),
+      base::NumberToString(
+          static_cast<int>(autofill::ServerFieldType::NAME_MIDDLE)),
+      base::NumberToString(
+          static_cast<int>(autofill::ServerFieldType::NAME_LAST))};
+
   EXPECT_CALL(
       callback_,
       Run(Pointee(AllOf(
           Property(&ProcessedActionProto::status, ACTION_APPLIED),
-          Property(&ProcessedActionProto::collect_user_data_result,
-                   Property(&CollectUserDataResultProto::card_issuer_network,
-                            "visa"))))));
+          Property(
+              &ProcessedActionProto::collect_user_data_result,
+              AllOf(Property(&CollectUserDataResultProto::card_issuer_network,
+                             "visa"),
+                    Property(&CollectUserDataResultProto::
+                                 non_empty_billing_address_field,
+                             IsSupersetOf(expected_non_empty_fields))))))));
   CollectUserDataAction action(&mock_action_delegate_, action_proto);
   action.ProcessAction(callback_.Get());
 
   EXPECT_EQ(user_data_.selected_card_.get() != nullptr, true);
   EXPECT_THAT(user_data_.selected_card_->Compare(credit_card), Eq(0));
+}
+
+TEST_F(CollectUserDataActionTest, SelectShippingAddress) {
+  ActionProto action_proto;
+  auto* collect_user_data_proto = action_proto.mutable_collect_user_data();
+  collect_user_data_proto->set_request_terms_and_conditions(false);
+  collect_user_data_proto->set_shipping_address_name(kMemoryLocation);
+
+  autofill::AutofillProfile shipping_address(base::GenerateGUID(), kFakeUrl);
+  autofill::test::SetProfileInfo(&shipping_address, "Marion", "Mitchell",
+                                 "Morrison", "marion@me.xyz", "Fox",
+                                 "123 Zoo St.", "unit 5", "Hollywood", "CA",
+                                 "91601", "US", "16505678910");
+
+  ON_CALL(mock_action_delegate_, CollectUserData(_))
+      .WillByDefault(
+          Invoke([=](CollectUserDataOptions* collect_user_data_options) {
+            user_data_.selected_addresses_[kMemoryLocation] =
+                std::make_unique<autofill::AutofillProfile>(shipping_address);
+            std::move(collect_user_data_options->confirm_callback)
+                .Run(&user_data_, &user_model_);
+          }));
+
+  std::vector<std::string> expected_non_empty_fields = {
+      base::NumberToString(
+          static_cast<int>(autofill::ServerFieldType::NAME_FIRST)),
+      base::NumberToString(
+          static_cast<int>(autofill::ServerFieldType::NAME_MIDDLE)),
+      base::NumberToString(
+          static_cast<int>(autofill::ServerFieldType::NAME_LAST))};
+
+  EXPECT_CALL(
+      callback_,
+      Run(Pointee(AllOf(
+          Property(&ProcessedActionProto::status, ACTION_APPLIED),
+          Property(
+              &ProcessedActionProto::collect_user_data_result,
+              Property(
+                  &CollectUserDataResultProto::non_empty_shipping_address_field,
+                  IsSupersetOf(expected_non_empty_fields)))))));
+  CollectUserDataAction action(&mock_action_delegate_, action_proto);
+  action.ProcessAction(callback_.Get());
+
+  EXPECT_TRUE(user_data_.has_selected_address(kMemoryLocation));
+  EXPECT_EQ(user_data_.selected_addresses_[kMemoryLocation]->Compare(
+                shipping_address),
+            0);
 }
 
 TEST_F(CollectUserDataActionTest, MandatoryPostalCodeWithoutErrorMessageFails) {
