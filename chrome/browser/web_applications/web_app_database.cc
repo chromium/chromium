@@ -166,7 +166,7 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
   }
 
   for (const DisplayMode& display_mode : web_app.display_mode_override()) {
-    local_data->add_deprecated_display_mode_override(
+    local_data->add_display_mode_override(
         ToWebAppProtoDisplayMode(display_mode));
   }
 
@@ -404,9 +404,8 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
     web_app->SetDisplayMode(ToMojomDisplayMode(local_data.display_mode()));
 
   std::vector<DisplayMode> display_mode_override;
-  for (int i = 0; i < local_data.deprecated_display_mode_override_size(); i++) {
-    WebAppProto::DisplayMode display_mode =
-        local_data.deprecated_display_mode_override(i);
+  for (int i = 0; i < local_data.display_mode_override_size(); i++) {
+    WebAppProto::DisplayMode display_mode = local_data.display_mode_override(i);
     display_mode_override.push_back(ToMojomDisplayMode(display_mode));
   }
   web_app->SetDisplayModeOverride(std::move(display_mode_override));
