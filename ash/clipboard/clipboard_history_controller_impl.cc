@@ -15,6 +15,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "base/location.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "ui/aura/window_tree_host.h"
@@ -245,6 +246,9 @@ void ClipboardHistoryControllerImpl::ShowMenuByAccelerator() {
 
 void ClipboardHistoryControllerImpl::MenuOptionSelected(int command_id,
                                                         int event_flags) {
+  UMA_HISTOGRAM_ENUMERATION(
+      "Ash.ClipboardHistory.ContextMenu.MenuOptionSelected", command_id,
+      ClipboardHistoryUtil::kMaxCommandId);
   // Force close the context menu. Failure to do so before dispatching our
   // synthetic key event will result in the context menu consuming the event.
   DCHECK(context_menu_);

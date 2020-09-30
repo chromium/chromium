@@ -16,12 +16,6 @@
 
 namespace ash {
 
-namespace {
-
-constexpr size_t kMaxClipboardItemsShared = 5;
-
-}  // namespace
-
 ClipboardHistory::ScopedPause::ScopedPause(ClipboardHistory* clipboard_history)
     : clipboard_history_(clipboard_history) {
   clipboard_history_->Pause();
@@ -129,7 +123,7 @@ void ClipboardHistory::MaybeCommitData(ui::ClipboardData data) {
   for (auto& observer : observers_)
     observer.OnClipboardHistoryItemAdded(history_list_.front());
 
-  if (history_list_.size() > kMaxClipboardItemsShared) {
+  if (history_list_.size() > ClipboardHistoryUtil::kMaxClipboardItemsShared) {
     auto removed = std::move(history_list_.back());
     history_list_.pop_back();
     for (auto& observer : observers_)

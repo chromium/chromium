@@ -23,6 +23,12 @@ constexpr int kDeleteCommandId = 0;
 // The first available command id for normal clipboard history menu items.
 constexpr int kFirstItemCommandId = 1;
 
+// The max number of items stored in ClipboardHistory.
+constexpr int kMaxClipboardItemsShared = 5;
+
+// The max command ID, used to record histograms.
+constexpr int kMaxCommandId = kFirstItemCommandId + kMaxClipboardItemsShared;
+
 // Returns the main format of the specified clipboard `data`.
 // NOTE: One `ui::ClipboardData` instance may contain multiple formats.
 ASH_EXPORT base::Optional<ui::ClipboardInternalFormat> CalculateMainFormat(

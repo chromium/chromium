@@ -209,6 +209,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Ash.ClipboardHistory.ContextMenu.MenuOptionSelected"
+    units="index" expires_after="2021-09-01">
+  <owner>andrewxu@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
+  <summary>
+    The command ID index within the Clipboard History contextual menu that was
+    selected by the user. Recorded when the menu item is selected.
+  </summary>
+</histogram>
+
 <histogram name="Ash.ClipboardHistory.ContextMenu.NumberOfItemsShown"
     units="Items Shown" expires_after="2021-09-01">
   <owner>andrewxu@chromium.org</owner>
