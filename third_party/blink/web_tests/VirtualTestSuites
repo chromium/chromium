@@ -262,7 +262,8 @@
   },
   {
     "prefix": "dark-mode-default",
-    "bases": ["dark-mode/colors"],
+    "bases": ["dark-mode/colors",
+              "dark-mode/images"],
     "args": ["--blink-settings=forceDarkModeEnabled=true"]
   },
   {
