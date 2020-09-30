@@ -14,6 +14,8 @@ import android.system.OsConstants;
 import android.system.StructPollfd;
 
 import org.chromium.base.Log;
+import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.SingleThreadTaskRunner;
 import org.chromium.base.task.TaskTraits;
@@ -43,7 +45,7 @@ class USBHandler implements Closeable {
 
     private static final String TAG = "CableUSBHandler";
 
-    private final CableAuthenticator mAuthenticator;
+    private final UsbAccessory mAccessory;
     private final Context mContext;
     private final SingleThreadTaskRunner mTaskRunner;
     private final UsbManager mUsbManager;
@@ -61,18 +63,23 @@ class USBHandler implements Closeable {
     private int mBufferUsed;
     private int mBufferOffset;
 
-    USBHandler(CableAuthenticator authenticator, Context context, SingleThreadTaskRunner taskRunner,
-            UsbAccessory accessory) {
-        mAuthenticator = authenticator;
+    USBHandler(Context context, SingleThreadTaskRunner taskRunner, UsbAccessory accessory) {
+        mAccessory = accessory;
         mContext = context;
         mTaskRunner = taskRunner;
         mUsbManager = (UsbManager) context.getSystemService(Context.USB_SERVICE);
         mPollFds = new StructPollfd[1];
+        mPollFds[0] = new StructPollfd();
+    }
 
-        mTaskRunner.postTask(() -> this.openAccessory(accessory));
+    @CalledByNative
+    public void startReading() {
+        assert mTaskRunner.belongsToCurrentThread();
+        openAccessory(mAccessory);
     }
 
     @Override
+    @CalledByNative
     public void close() {
         assert mTaskRunner.belongsToCurrentThread();
 
@@ -90,6 +97,7 @@ class USBHandler implements Closeable {
      * Called by CableAuthenticator to write a deferred reply (e.g. to a makeCredential or
      * getAssertion request).
      */
+    @CalledByNative
     public void write(byte[] message) {
         assert mTaskRunner.belongsToCurrentThread();
         assert mOutput != null;
@@ -116,6 +124,7 @@ class USBHandler implements Closeable {
         Log.i(TAG, "Accessory opened " + accessory);
         if (mFd == null) {
             Log.i(TAG, "Returned file descriptor is null");
+            USBHandlerJni.get().onUSBData(null);
             return;
         }
 
@@ -135,7 +144,7 @@ class USBHandler implements Closeable {
         mBufferUsed = 0;
         mBufferOffset = 0;
 
-        PostTask.postTask(TaskTraits.THREAD_POOL_BEST_EFFORT, () -> { this.readLoop(); });
+        PostTask.postTask(TaskTraits.BEST_EFFORT_MAY_BLOCK, () -> { this.readLoop(); });
     }
 
     /**
@@ -312,16 +321,9 @@ class USBHandler implements Closeable {
 
         if (buffer == null) {
             Log.i(TAG, "Error reading from USB");
-            mAuthenticator.onComplete();
-            return;
         }
 
-        byte[] reply = mAuthenticator.onUSBWrite(buffer);
-        if (reply == null) {
-            close();
-        } else if (reply.length > 0) {
-            PostTask.postTask(TaskTraits.THREAD_POOL_BEST_EFFORT, () -> { this.doWrite(reply); });
-        }
+        USBHandlerJni.get().onUSBData(buffer);
     }
 
     private void doWrite(byte[] buffer) {
@@ -339,5 +341,12 @@ class USBHandler implements Closeable {
             // It's assumed that any errors will be caught by the reading thread.
             Log.i(TAG, "USB write failed");
         }
+    }
+
+    @NativeMethods
+    interface Natives {
+        // onUSBData is called when data is read from the USB data. If data is
+        // null then an error occurred.
+        void onUSBData(byte[] data);
     }
 };

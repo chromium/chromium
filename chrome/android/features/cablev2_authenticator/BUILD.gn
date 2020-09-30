@@ -6,7 +6,7 @@ import("//build/config/android/rules.gni")
 
 android_library("java") {
   sources = [
-    "java/src/org/chromium/chrome/browser/webauth/authenticator/BLEHandler.java",
+    "java/src/org/chromium/chrome/browser/webauth/authenticator/BLEAdvert.java",
     "java/src/org/chromium/chrome/browser/webauth/authenticator/CableAuthenticator.java",
     "java/src/org/chromium/chrome/browser/webauth/authenticator/CableAuthenticatorUI.java",
     "java/src/org/chromium/chrome/browser/webauth/authenticator/CameraView.java",
@@ -33,7 +33,11 @@ android_library("java") {
 }
 
 generate_jni("jni_headers") {
-  sources = [ "java/src/org/chromium/chrome/browser/webauth/authenticator/CableAuthenticator.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/webauth/authenticator/BLEAdvert.java",
+    "java/src/org/chromium/chrome/browser/webauth/authenticator/CableAuthenticator.java",
+    "java/src/org/chromium/chrome/browser/webauth/authenticator/USBHandler.java",
+  ]
 }
 
 source_set("native") {
@@ -47,6 +51,8 @@ source_set("native") {
     "//content/public/browser",
     "//crypto",
     "//device/fido",
+    "//device/fido:cablev2_authenticator",
+    "//device/fido:cablev2_registration",
     "//third_party/boringssl",
   ]
 }

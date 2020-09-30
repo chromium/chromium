@@ -35,6 +35,12 @@ public class CableAuthenticatorModuleProvider extends Fragment {
     // Fragment} in the module.
     private static final String NETWORK_CONTEXT_KEY =
             "org.chromium.chrome.modules.cablev2_authenticator.NetworkContext";
+    private static final String INSTANCE_ID_DRIVER_KEY =
+            "org.chromium.chrome.modules.cablev2_authenticator.InstanceIDDriver";
+    private static final String SETTINGS_ACTIVITY_CLASS_NAME =
+            "org.chromium.chrome.modules.cablev2_authenticator.SettingsActivityClassName";
+    private static final String WRAPPER_CLASS_NAME =
+            "org.chromium.chrome.modules.cablev2_authenticator.WrapperClassName";
     private TextView mStatus;
 
     @Override
@@ -86,6 +92,18 @@ public class CableAuthenticatorModuleProvider extends Fragment {
         }
         arguments.putLong(NETWORK_CONTEXT_KEY,
                 CableAuthenticatorModuleProviderJni.get().getSystemNetworkContext());
+        arguments.putLong(INSTANCE_ID_DRIVER_KEY,
+                CableAuthenticatorModuleProviderJni.get().getInstanceIDDriver());
+        // SettingsActivity has to be named as a string here because it cannot
+        // be depended upon without creating a cycle in the deps graph. It's
+        // used as the target of a notification and, in time we'll need our own
+        // top-level Activity in order to handle USB devices. For now, though,
+        // it serves for testing.
+        // TODO(agl): replace with custom top-level Activity.
+        arguments.putString(SETTINGS_ACTIVITY_CLASS_NAME,
+                "org.chromium.chrome.browser.settings.SettingsActivity");
+        arguments.putString(
+                WRAPPER_CLASS_NAME, CableAuthenticatorModuleProvider.class.getCanonicalName());
         fragment.setArguments(arguments);
         transaction.replace(getId(), fragment);
         // This fragment is deliberately not added to the back-stack here so
@@ -101,5 +119,6 @@ public class CableAuthenticatorModuleProvider extends Fragment {
         // static_library, cannot be depended on by another component thus we
         // pass this value into the feature module.
         long getSystemNetworkContext();
+        long getInstanceIDDriver();
     }
 }

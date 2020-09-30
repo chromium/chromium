@@ -23,8 +23,6 @@ namespace device {
 constexpr size_t kCableEphemeralIdSize = 16;
 constexpr size_t kCableSessionPreKeySize = 32;
 constexpr size_t kCableNonceSize = 8;
-constexpr size_t kCableCompressedPublicKeySize =
-    /* type byte */ 1 + /* field element */ (256 / 8);
 
 using CableEidArray = std::array<uint8_t, kCableEphemeralIdSize>;
 using CableSessionPreKeyArray = std::array<uint8_t, kCableSessionPreKeySize>;

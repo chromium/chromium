@@ -4,15 +4,23 @@
 
 package org.chromium.chrome.browser.webauth.authenticator;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
+import android.hardware.usb.UsbAccessory;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Base64;
+
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 
 import com.google.android.gms.fido.Fido;
 import com.google.android.gms.fido.common.Transport;
@@ -35,11 +43,13 @@ import com.google.android.gms.fido.fido2.api.common.PublicKeyCredentialType;
 import com.google.android.gms.fido.fido2.api.common.PublicKeyCredentialUserEntity;
 import com.google.android.gms.tasks.Task;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.SingleThreadTaskRunner;
-import org.chromium.base.task.TaskTraits;
+import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,6 +62,11 @@ class CableAuthenticator {
     private static final String TAG = "CableAuthenticator";
     private static final String FIDO2_KEY_CREDENTIAL_EXTRA = "FIDO2_CREDENTIAL_EXTRA";
     private static final double TIMEOUT_SECONDS = 20;
+    private static final String NOTIFICATION_CHANNEL_ID =
+            "chrome.android.features.cablev2_authenticator";
+    // ID is used when Android APIs demand a process-wide unique ID. This number
+    // is a random int.
+    private static final int ID = 424386536;
 
     private static final int REGISTER_REQUEST_CODE = 1;
     private static final int SIGN_REQUEST_CODE = 2;
@@ -69,9 +84,7 @@ class CableAuthenticator {
     private final Context mContext;
     private final CableAuthenticatorUI mUi;
     private final Callback mCallback;
-    private final BLEHandler mBleHandler;
     private final SingleThreadTaskRunner mTaskRunner;
-    private boolean mBleStarted;
 
     public enum Result {
         REGISTER_OK,
@@ -93,117 +106,61 @@ class CableAuthenticator {
         void onComplete();
     }
 
-    public CableAuthenticator(Context context, CableAuthenticatorUI ui) {
+    public CableAuthenticator(Context context, CableAuthenticatorUI ui, long networkContext,
+            long instanceIdDriver, String activityClassName, String fragmentClassName,
+            boolean isFcmNotification, UsbAccessory accessory) {
         mContext = context;
         mUi = ui;
         mCallback = ui;
 
         SharedPreferences prefs =
                 mContext.getSharedPreferences(STATE_FILE_NAME, Context.MODE_PRIVATE);
-        byte[] stateBytes = null;
+        byte[] stateBytes;
         try {
             stateBytes = Base64.decode(prefs.getString(STATE_VALUE_NAME, ""), Base64.DEFAULT);
-            if (stateBytes.length == 0) {
-                stateBytes = null;
-            }
         } catch (IllegalArgumentException e) {
             Log.w(TAG, "Ignoring corrupt state");
+            stateBytes = new byte[0];
         }
 
-        // All native code runs on this thread to avoid worrying about JNIEnv
-        // objects and references being incorrectly used across threads.
-        // TODO: in practice, this sadly appears to return the UI thread,
-        // despite requesting |BEST_EFFORT|.
-        mTaskRunner = PostTask.createSingleThreadTaskRunner(TaskTraits.BEST_EFFORT);
+        // networkContext can only be used from the UI thread, therefore all
+        // short-lived work is done on that thread.
+        mTaskRunner = PostTask.createSingleThreadTaskRunner(UiThreadTaskTraits.USER_VISIBLE);
+        assert mTaskRunner.belongsToCurrentThread();
 
-        mBleHandler = new BLEHandler(this, mTaskRunner);
-
-        // Local variables passed into a lambda must be final.
-        final byte[] state = stateBytes;
-        mTaskRunner.postTask(() -> CableAuthenticatorJni.get().start(this, state));
-
-        if (!mBleHandler.start()) {
-            // TODO: handle the case where exporting the GATT server fails.
+        byte[] newStateBytes = CableAuthenticatorJni.get().setup(
+                instanceIdDriver, activityClassName, fragmentClassName, networkContext, stateBytes);
+        if (newStateBytes.length > 0) {
+            Log.i(TAG, "Writing updated state");
+            prefs.edit()
+                    .putString(STATE_VALUE_NAME,
+                            Base64.encodeToString(
+                                    newStateBytes, Base64.NO_WRAP | Base64.NO_PADDING))
+                    .apply();
         }
-    }
 
-    // Calls from handler classes.
+        if (accessory != null) {
+            // USB mode can start immediately.
+            CableAuthenticatorJni.get().startUSB(
+                    this, new USBHandler(context, mTaskRunner, accessory));
+        }
 
-    /**
-     * Called by BLEHandler to indicate that a peer has connected.
-     */
-    public void notifyAuthenticatorConnected() {
-        mCallback.onAuthenticatorConnected();
-    }
+        if (isFcmNotification) {
+            // The user tapped a notification that resulted from an FCM message.
+            CableAuthenticatorJni.get().startFCM(this);
+        }
 
-    /**
-     * Called by BLEHandler to signal that a BLE peer wrote data.
-     */
-    public byte[][] onBLEWrite(long client, int mtu, byte[] payload) {
-        assert mTaskRunner.belongsToCurrentThread();
-
-        return CableAuthenticatorJni.get().onBLEWrite(client, mtu, payload);
-    }
-
-    /**
-     * Called by BLEHandler when transmission of a final reply is complete.
-     */
-    public void onComplete() {
-        mCallback.onComplete();
-    }
-
-    /**
-     * Called by USBHandler to signal that a USB peer wrote data.
-     */
-    public byte[] onUSBWrite(byte[] payload) {
-        assert mTaskRunner.belongsToCurrentThread();
-        // TODO: wire up.
-        return null;
+        // Otherwise wait for a QR scan.
     }
 
     // Calls from native code.
 
-    /**
-     * Called by C++ code to start advertising a given UUID, which is passed
-     * as 16 bytes.
-     */
-    public void sendBLEAdvert(byte[] dataUuidBytes) {
-        assert mTaskRunner.belongsToCurrentThread();
-
-        if (!mBleStarted && !mBleHandler.start()) {
-            // TODO: handle GATT failure.
-            return;
-        }
-
-        mBleStarted = true;
-        mBleHandler.sendBLEAdvert(dataUuidBytes);
+    @CalledByNative
+    public static BLEAdvert newBLEAdvert(byte[] payload) {
+        return new BLEAdvert(payload);
     }
 
-    /**
-     * Called by native code to store a new state blob.
-     */
-    public void setState(byte[] newState) {
-        assert mTaskRunner.belongsToCurrentThread();
-
-        SharedPreferences prefs =
-                mContext.getSharedPreferences(STATE_FILE_NAME, Context.MODE_PRIVATE);
-        Log.i(TAG, "Writing updated state");
-        prefs.edit()
-                .putString(STATE_VALUE_NAME,
-                        Base64.encodeToString(newState, Base64.NO_WRAP | Base64.NO_PADDING))
-                .apply();
-    }
-
-    /**
-     * Called by native code to send BLE data to a specified client.
-     */
-    public void sendNotification(long client, byte[][] fragments, boolean isTransactionEnd) {
-        assert mTaskRunner.belongsToCurrentThread();
-        assert mBleStarted;
-
-        mBleHandler.sendNotification(client, fragments, /*closeWhenDone=*/isTransactionEnd);
-    }
-
+    @CalledByNative
     public void makeCredential(String origin, String rpId, byte[] challenge, byte[] userId,
             int[] algorithms, byte[][] excludedCredentialIds, boolean residentKeyRequired) {
         // TODO: handle concurrent requests
@@ -254,10 +211,10 @@ class CableAuthenticator {
                         .setOrigin(Uri.parse(origin))
                         .build();
         Task<PendingIntent> result = client.getRegisterPendingIntent(browserRequestOptions);
-        result.addOnSuccessListener(pedingIntent -> {
+        result.addOnSuccessListener(pendingIntent -> {
                   Log.i(TAG, "got pending");
                   try {
-                      mUi.startIntentSenderForResult(pedingIntent.getIntentSender(),
+                      mUi.startIntentSenderForResult(pendingIntent.getIntentSender(),
                               REGISTER_REQUEST_CODE,
                               null, // fillInIntent,
                               0, // flagsMask,
@@ -272,6 +229,7 @@ class CableAuthenticator {
         Log.i(TAG, "op done");
     }
 
+    @CalledByNative
     public void getAssertion(
             String origin, String rpId, byte[] challenge, byte[][] allowedCredentialIds) {
         // TODO: handle concurrent requests
@@ -307,10 +265,10 @@ class CableAuthenticator {
                         .build();
 
         Task<PendingIntent> result = client.getSignPendingIntent(browserRequestOptions);
-        result.addOnSuccessListener(pedingIntent -> {
+        result.addOnSuccessListener(pendingIntent -> {
                   Log.i(TAG, "got pending");
                   try {
-                      mUi.startIntentSenderForResult(pedingIntent.getIntentSender(),
+                      mUi.startIntentSenderForResult(pendingIntent.getIntentSender(),
                               SIGN_REQUEST_CODE,
                               null, // fillInIntent,
                               0, // flagsMask,
@@ -323,6 +281,15 @@ class CableAuthenticator {
               }).addOnFailureListener(e -> { Log.e(TAG, "intent failure" + e); });
 
         Log.i(TAG, "op done");
+    }
+
+    /**
+     * Called from native code when a network-based operation has completed.
+     */
+    @CalledByNative
+    public void onComplete() {
+        assert mTaskRunner.belongsToCurrentThread();
+        mCallback.onComplete();
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -474,38 +441,119 @@ class CableAuthenticator {
      *              URL, i.e. "fido://c1/"...
      */
     public void onQRCode(String value) {
-        mTaskRunner.postTask(() -> { CableAuthenticatorJni.get().onQRScanned(value); });
+        mTaskRunner.postTask(() -> {
+            CableAuthenticatorJni.get().startQR(this, getName(), value);
+            // TODO: show the user an error if that returned false.
+            // that indicates that the QR code was invalid.
+        });
     }
 
     public void close() {
-        mBleHandler.close();
         mTaskRunner.postTask(() -> { CableAuthenticatorJni.get().stop(); });
+    }
+
+    static String getName() {
+        return Build.MANUFACTURER + " " + Build.MODEL;
+    }
+
+    /**
+     * showNotification is called by the C++ code to show an Android
+     * notification. When pressed, the notification will activity the given
+     * Activity and Fragment.
+     */
+    // TODO: localize
+    @SuppressLint("SetTextI18n")
+    @CalledByNative
+    public static void showNotification(String activityClassName, String fragmentClassName) {
+        Context context = ContextUtils.getApplicationContext();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            // Register a channel for this notification. Registering the same
+            // channel twice is harmless.
+            CharSequence name = "Security key activations";
+            String description =
+                    "Notifications that appear when you attempt to log in on another device";
+            int importance = NotificationManager.IMPORTANCE_HIGH;
+            NotificationChannel channel =
+                    new NotificationChannel(NOTIFICATION_CHANNEL_ID, name, importance);
+            channel.setDescription(description);
+            NotificationManager notificationManager =
+                    context.getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
+
+        Intent intent;
+        try {
+            intent = new Intent(context, Class.forName(activityClassName));
+        } catch (ClassNotFoundException e) {
+            Log.e(TAG, "Failed to find class " + activityClassName);
+            return;
+        }
+
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        intent.putExtra("show_fragment", fragmentClassName);
+        Bundle bundle = new Bundle();
+        bundle.putBoolean("org.chromium.chrome.modules.cablev2_authenticator.FCM", true);
+        intent.putExtra("show_fragment_args", bundle);
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, ID, intent, 0);
+
+        NotificationCompat.Builder builder =
+                new NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
+                        .setSmallIcon(android.R.drawable.stat_sys_download_done)
+                        .setContentTitle("Press to log in")
+                        .setContentText("A paired device is attempting to log in")
+                        .setPriority(NotificationCompat.PRIORITY_HIGH)
+                        .setAutoCancel(true)
+                        .setContentIntent(pendingIntent)
+                        .setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
+
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
+        notificationManager.notify(NOTIFICATION_CHANNEL_ID, ID, builder.build());
     }
 
     @NativeMethods
     interface Natives {
         /**
-         * Called to alert the C++ code to a new instance. The C++ code calls back into this object
-         * to send data.
+         * setup is called before any other functions in order for the native code to perform
+         * one-time setup operations. It may be called several times, but subsequent calls are
+         * ignored. It returns an empty byte array if the given state is valid, or the new contents
+         * of the persisted state otherwise.
          */
-        void start(CableAuthenticator cableAuthenticator, byte[] stateBytes);
+        byte[] setup(long instanceIdDriver, String activityClassName, String fragmentClassName,
+                long networkContext, byte[] stateBytes);
+
+        /**
+         * Called to instruct the C++ code to start a new transaction using |usbDevice|.
+         */
+        void startUSB(CableAuthenticator cableAuthenticator, USBHandler usbDevice);
+
+        /**
+         * Called to instruct the C++ code to start a new transaction based on the contents of a QR
+         * code. The given name will be transmitted to the peer in order to identify this device, it
+         * should be human-meaningful. The qrUrl must be a caBLE URL, i.e. starting with
+         * "fido://c1/"
+         */
+        boolean startQR(
+                CableAuthenticator cableAuthenticator, String authenticatorName, String qrUrl);
+
+        /**
+         * Called to instruct the C++ code to start a new transaction based on a cloud message
+         * because the user tapped the notification that was shown because |showNotification| was
+         * called.
+         */
+        void startFCM(CableAuthenticator cableAuthenticator);
+
+        /**
+         * Called to alert the C++ code to stop any ongoing transactions.
+         */
         void stop();
-        /**
-         * Called when a QR code has been scanned.
-         *
-         * @param value contents of the QR code, which will be a valid caBLE
-         *              URL, i.e. "fido://c1/"...
-         */
-        void onQRScanned(String value);
-        /**
-         * Called to alert the C++ code that a GATT client wrote data.
-         */
-        byte[][] onBLEWrite(long client, int mtu, byte[] data);
+
         /**
          * Called to alert native code of a response to a makeCredential request.
          */
         void onAuthenticatorAttestationResponse(
                 int ctapStatus, byte[] clientDataJSON, byte[] attestationObject);
+
         /**
          * Called to alert native code of a response to a getAssertion request.
          */
