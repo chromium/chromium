@@ -2897,6 +2897,7 @@
       'Win7 Tests (1)',
       'Win 7 Tests x64 (1)',
       'android-code-coverage-native', # crbug/1018431
+      'android-lollipop-arm-rel', # crbug.com/1133002#c6
     ],
     'modifications': {
       'Linux ASan LSan Tests (1)': {
