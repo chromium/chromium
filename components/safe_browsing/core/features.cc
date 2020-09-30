@@ -121,7 +121,7 @@ const base::Feature kRealTimeUrlLookupNonMainframeEnabledForEP{
     base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kSafeBrowsingAvailableOnIOS{
-    "SafeBrowsingAvailableOnIOS", base::FEATURE_DISABLED_BY_DEFAULT};
+    "SafeBrowsingAvailableOnIOS", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kSafeBrowsingSeparateNetworkContexts{
     "SafeBrowsingSeparateNetworkContexts", base::FEATURE_DISABLED_BY_DEFAULT};

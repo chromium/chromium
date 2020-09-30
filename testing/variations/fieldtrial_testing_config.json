@@ -3425,22 +3425,6 @@
             ]
         }
     ],
-    "IOSSSLCommittedInterstitials": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SSLCommittedInterstitials",
-                        "SafeBrowsingAvailableOnIOS"
-                    ]
-                }
-            ]
-        }
-    ],
     "Identifiability": [
         {
             "platforms": [
