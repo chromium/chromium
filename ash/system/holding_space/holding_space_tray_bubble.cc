@@ -134,7 +134,10 @@ HoldingSpaceTrayBubble::HoldingSpaceTrayBubble(
 
 HoldingSpaceTrayBubble::~HoldingSpaceTrayBubble() {
   bubble_wrapper_->bubble_view()->ResetDelegate();
-  bubble_wrapper_->GetBubbleWidget()->CloseNow();
+  if (bubble_wrapper_->GetBubbleWidget() &&
+      !bubble_wrapper_->GetBubbleWidget()->IsClosed()) {
+    bubble_wrapper_->GetBubbleWidget()->CloseNow();
+  }
 }
 
 void HoldingSpaceTrayBubble::AnchorUpdated() {

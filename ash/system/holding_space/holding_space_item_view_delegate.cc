@@ -76,6 +76,12 @@ void HoldingSpaceItemViewDelegate::OnHoldingSpaceItemViewDestroyed(
 void HoldingSpaceItemViewDelegate::OnHoldingSpaceItemViewGestureEvent(
     HoldingSpaceItemView* view,
     const ui::GestureEvent& event) {
+  // When a long press gesture occurs we are going to show the context menu.
+  // Ensure that the pressed `view` is the only view selected.
+  if (event.type() == ui::ET_GESTURE_LONG_PRESS) {
+    SetSelection(view);
+    return;
+  }
   // When a tap gesture occurs, we select and open only the item corresponding
   // to the tapped `view`.
   if (event.type() == ui::ET_GESTURE_TAP) {
@@ -176,17 +182,19 @@ void HoldingSpaceItemViewDelegate::ShowContextMenuForViewImpl(
     views::View* source,
     const gfx::Point& point,
     ui::MenuSourceType source_type) {
-  int run_types = views::MenuRunner::USE_TOUCHABLE_LAYOUT |
-                  views::MenuRunner::CONTEXT_MENU |
-                  views::MenuRunner::FIXED_ANCHOR;
+  const int run_types = views::MenuRunner::USE_TOUCHABLE_LAYOUT |
+                        views::MenuRunner::CONTEXT_MENU |
+                        views::MenuRunner::FIXED_ANCHOR;
 
   context_menu_runner_ =
       std::make_unique<views::MenuRunner>(BuildMenuModel(), run_types);
 
+  gfx::Rect bounds = source->GetBoundsInScreen();
+  bounds.Inset(gfx::Insets(-kHoldingSpaceContextMenuMargin, 0));
+
   context_menu_runner_->RunMenuAt(
-      source->GetWidget(), nullptr /*button_controller*/,
-      source->GetBoundsInScreen(), views::MenuAnchorPosition::kBubbleRight,
-      source_type);
+      source->GetWidget(), nullptr /*button_controller*/, bounds,
+      views::MenuAnchorPosition::kTopLeft, source_type);
 }
 
 bool HoldingSpaceItemViewDelegate::CanStartDragForView(
