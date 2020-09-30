@@ -24,6 +24,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/policy/core/common/cloud/realtime_reporting_job_configuration.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -192,14 +193,14 @@ class SafeBrowsingPrivateEventRouterTest : public testing::Test {
   }
 
   void TriggerOnSensitiveDataEvent(safe_browsing::EventResult event_result) {
-    safe_browsing::ContentAnalysisScanResult result;
-    result.tag = "dlp";
-    result.status = 1;
-    safe_browsing::ContentAnalysisTrigger trigger;
-    trigger.action = 3;
-    trigger.name = "fake rule";
-    trigger.id = "12345";
-    result.triggers.push_back(std::move(trigger));
+    enterprise_connectors::ContentAnalysisResponse::Result result;
+    result.set_tag("dlp");
+    result.set_status(
+        enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
+    auto* rule = result.add_triggered_rules();
+    rule->set_action(enterprise_connectors::TriggeredRule::BLOCK);
+    rule->set_rule_name("fake rule");
+    rule->set_rule_id("12345");
 
     SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile_)
         ->OnAnalysisConnectorResult(

@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/optional.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
+#include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 
 namespace base {
@@ -48,7 +49,8 @@ class EventReportValidator {
       const std::string& expected_filename,
       const std::string& expected_sha256,
       const std::string& expected_trigger,
-      const ContentAnalysisScanResult& expected_dlp_verdict,
+      const enterprise_connectors::ContentAnalysisResponse::Result&
+          expected_dlp_verdict,
       const std::set<std::string>* expected_mimetypes,
       int expected_content_size,
       const std::string& expected_result);
@@ -59,7 +61,8 @@ class EventReportValidator {
       const std::string& expected_sha256,
       const std::string& expected_threat_type,
       const std::string& expected_trigger,
-      const ContentAnalysisScanResult& expected_dlp_verdict,
+      const enterprise_connectors::ContentAnalysisResponse::Result&
+          expected_dlp_verdict,
       const std::set<std::string>* expected_mimetypes,
       int expected_content_size,
       const std::string& expected_result);
@@ -91,7 +94,8 @@ class EventReportValidator {
   void ValidateMimeType(base::Value* value);
   void ValidateDlpVerdict(base::Value* value);
   void ValidateDlpRule(base::Value* value,
-                       const ContentAnalysisTrigger& expected_rule);
+                       const enterprise_connectors::ContentAnalysisResponse::
+                           Result::TriggeredRule& expected_rule);
   void ValidateField(base::Value* value,
                      const std::string& field_key,
                      const base::Optional<std::string>& expected_value);
@@ -109,7 +113,8 @@ class EventReportValidator {
   std::string filename_;
   std::string sha256_;
   std::string trigger_;
-  base::Optional<ContentAnalysisScanResult> dlp_verdict_ = base::nullopt;
+  base::Optional<enterprise_connectors::ContentAnalysisResponse::Result>
+      dlp_verdict_ = base::nullopt;
   base::Optional<std::string> threat_type_ = base::nullopt;
   base::Optional<std::string> unscanned_reason_ = base::nullopt;
   base::Optional<int> content_size_ = base::nullopt;

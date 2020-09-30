@@ -27,35 +27,6 @@ class IdentityManager;
 
 namespace safe_browsing {
 
-// Represents a trigger that caused a a content analysis request to report a
-// violation.  This is a structure that abstracts the old and new protobufs,
-// to diminish dependencies on them.
-struct ContentAnalysisTrigger {
-  ContentAnalysisTrigger();
-  ContentAnalysisTrigger(const ContentAnalysisTrigger& other);
-  ContentAnalysisTrigger(ContentAnalysisTrigger&& other);
-  ~ContentAnalysisTrigger();
-  ContentAnalysisTrigger& operator=(const ContentAnalysisTrigger& other);
-
-  int action;        // The action taken by chrome.
-  std::string id;    // The id of the trigger.
-  std::string name;  // A friendly name for the trigger.
-};
-
-// Represents the result of a sensitive data scan.  This is a structure that
-// abstracts the old and new protobugs, to diminish dependencies on them.
-struct ContentAnalysisScanResult {
-  ContentAnalysisScanResult();
-  ContentAnalysisScanResult(const ContentAnalysisScanResult& other);
-  ContentAnalysisScanResult(ContentAnalysisScanResult&& other);
-  ~ContentAnalysisScanResult();
-  ContentAnalysisScanResult& operator=(const ContentAnalysisScanResult& other);
-
-  std::string tag;  // The tag associated with the scan.
-  int status;       // The status of scan for the given tag.
-  std::vector<ContentAnalysisTrigger> triggers;  // Triggers, if any.
-};
-
 // Access points used to record UMA metrics and specify which code location is
 // initiating a deep scan. Any new caller of
 // DeepScanningDialogDelegate::ShowForWebContents should add an access point
@@ -100,22 +71,6 @@ enum class EventResult {
   BYPASSED,
 };
 
-// Helper function to examine a DeepScanningClientResponse and report the
-// appropriate events to the enterprise admin. |download_digest_sha256| must be
-// encoded using base::HexEncode.  |event_result| indicates whether the user was
-// ultimately allowed to access the text or file.
-void MaybeReportDeepScanningVerdict(Profile* profile,
-                                    const GURL& url,
-                                    const std::string& file_name,
-                                    const std::string& download_digest_sha256,
-                                    const std::string& mime_type,
-                                    const std::string& trigger,
-                                    DeepScanAccessPoint access_point,
-                                    const int64_t content_size,
-                                    BinaryUploadService::Result result,
-                                    const DeepScanningClientResponse& response,
-                                    EventResult event_result);
-
 // Helper function to examine a ContentAnalysisResponse and report the
 // appropriate events to the enterprise admin. |download_digest_sha256| must be
 // encoded using base::HexEncode.  |event_result| indicates whether the user was
@@ -137,16 +92,6 @@ void MaybeReportDeepScanningVerdict(
 // admin. This is split from MaybeReportDeepScanningVerdict since it happens
 // after getting a response. |download_digest_sha256| must be encoded using
 // base::HexEncode.
-void ReportAnalysisConnectorWarningBypass(
-    Profile* profile,
-    const GURL& url,
-    const std::string& file_name,
-    const std::string& download_digest_sha256,
-    const std::string& mime_type,
-    const std::string& trigger,
-    DeepScanAccessPoint access_point,
-    const int64_t content_size,
-    const DlpDeepScanningVerdict& verdict);
 void ReportAnalysisConnectorWarningBypass(
     Profile* profile,
     const GURL& url,
@@ -200,19 +145,6 @@ std::string EventResultToString(EventResult result);
 std::string BinaryUploadServiceResultToString(
     const BinaryUploadService::Result& result,
     bool success);
-
-// Converts legacy DeepScanningResponse protos or an enterprise connectors
-// ContentAnalysisResponse proto to ContentAnalysisScanResult used by the
-// reporting layer.  This indirection is used during the conversion to
-// connectors and possibly could be removed once the conversion is done.
-ContentAnalysisScanResult SensitiveDataVerdictToResult(
-    const safe_browsing::DlpDeepScanningVerdict& verdict);
-ContentAnalysisScanResult ContentAnalysisResultToResult(
-    const enterprise_connectors::ContentAnalysisResponse::Result& result);
-ContentAnalysisScanResult MalwareVerdictToResult(
-    const safe_browsing::MalwareDeepScanningVerdict& verdict);
-std::vector<ContentAnalysisScanResult> ContentAnalysisResponseToResults(
-    const enterprise_connectors::ContentAnalysisResponse& response);
 
 // Returns the email address of the unconsented account signed in to the profile
 // or an empty string if no account is signed in.  If either |profile| or

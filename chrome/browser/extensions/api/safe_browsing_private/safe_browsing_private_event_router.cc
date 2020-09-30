@@ -72,15 +72,15 @@ const char kChromeBrowserCloudManagementClientDescription[] =
 #endif
 
 void AddAnalysisConnectorVerdictToEvent(
-    const safe_browsing::ContentAnalysisScanResult& result,
+    const enterprise_connectors::ContentAnalysisResponse::Result& result,
     base::Value* event) {
   DCHECK(event);
   base::ListValue triggered_rule_info;
-  for (const auto& trigger : result.triggers) {
+  for (const auto& trigger : result.triggered_rules()) {
     base::Value triggered_rule(base::Value::Type::DICTIONARY);
     triggered_rule.SetStringKey(
         extensions::SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleName,
-        trigger.name);
+        trigger.rule_name());
 
     triggered_rule_info.Append(std::move(triggered_rule));
   }
@@ -406,19 +406,19 @@ void SafeBrowsingPrivateEventRouter::OnAnalysisConnectorResult(
     const std::string& mime_type,
     const std::string& trigger,
     safe_browsing::DeepScanAccessPoint /* access_point */,
-    const safe_browsing::ContentAnalysisScanResult& result,
+    const enterprise_connectors::ContentAnalysisResponse::Result& result,
     const int64_t content_size,
     safe_browsing::EventResult event_result) {
   if (!IsRealtimeReportingEnabled())
     return;
 
-  if (result.tag == "malware") {
-    DCHECK_EQ(1u, result.triggers.size());
+  if (result.tag() == "malware") {
+    DCHECK_EQ(1, result.triggered_rules().size());
     OnDangerousDeepScanningResult(
         url, file_name, download_digest_sha256,
-        MalwareRuleToThreatType(result.triggers[0].name), mime_type, trigger,
-        content_size, event_result);
-  } else if (result.tag == "dlp") {
+        MalwareRuleToThreatType(result.triggered_rules(0).rule_name()),
+        mime_type, trigger, content_size, event_result);
+  } else if (result.tag() == "dlp") {
     OnSensitiveDataEvent(url, file_name, download_digest_sha256, mime_type,
                          trigger, result, content_size, event_result);
   }
@@ -478,7 +478,7 @@ void SafeBrowsingPrivateEventRouter::OnSensitiveDataEvent(
     const std::string& download_digest_sha256,
     const std::string& mime_type,
     const std::string& trigger,
-    const safe_browsing::ContentAnalysisScanResult& result,
+    const enterprise_connectors::ContentAnalysisResponse::Result& result,
     const int64_t content_size,
     safe_browsing::EventResult event_result) {
   if (!IsRealtimeReportingEnabled())
@@ -487,7 +487,8 @@ void SafeBrowsingPrivateEventRouter::OnSensitiveDataEvent(
   ReportRealtimeEvent(
       kKeySensitiveDataEvent,
       base::BindOnce(
-          [](const safe_browsing::ContentAnalysisScanResult& result,
+          [](const enterprise_connectors::ContentAnalysisResponse::Result&
+                 result,
              const std::string& url, const std::string& file_name,
              const std::string& download_digest_sha256,
              const std::string& profile_user_name, const std::string& mime_type,
@@ -530,7 +531,7 @@ void SafeBrowsingPrivateEventRouter::OnAnalysisConnectorWarningBypassed(
     const std::string& mime_type,
     const std::string& trigger,
     safe_browsing::DeepScanAccessPoint access_point,
-    const safe_browsing::ContentAnalysisScanResult& result,
+    const enterprise_connectors::ContentAnalysisResponse::Result& result,
     const int64_t content_size) {
   if (!IsRealtimeReportingEnabled())
     return;
@@ -538,7 +539,8 @@ void SafeBrowsingPrivateEventRouter::OnAnalysisConnectorWarningBypassed(
   ReportRealtimeEvent(
       kKeySensitiveDataEvent,
       base::BindOnce(
-          [](const safe_browsing::ContentAnalysisScanResult& result,
+          [](const enterprise_connectors::ContentAnalysisResponse::Result&
+                 result,
              const std::string& url, const std::string& file_name,
              const std::string& download_digest_sha256,
              const std::string& profile_user_name, const std::string& mime_type,

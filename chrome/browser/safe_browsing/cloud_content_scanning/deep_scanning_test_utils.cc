@@ -192,7 +192,8 @@ void EventReportValidator::ExpectSensitiveDataEvent(
     const std::string& expected_filename,
     const std::string& expected_sha256,
     const std::string& expected_trigger,
-    const ContentAnalysisScanResult& expected_dlp_verdict,
+    const enterprise_connectors::ContentAnalysisResponse::Result&
+        expected_dlp_verdict,
     const std::set<std::string>* expected_mimetypes,
     int expected_content_size,
     const std::string& expected_result) {
@@ -221,7 +222,8 @@ void EventReportValidator::
         const std::string& expected_sha256,
         const std::string& expected_threat_type,
         const std::string& expected_trigger,
-        const ContentAnalysisScanResult& expected_dlp_verdict,
+        const enterprise_connectors::ContentAnalysisResponse::Result&
+            expected_dlp_verdict,
         const std::set<std::string>* expected_mimetypes,
         int expected_content_size,
         const std::string& expected_result) {
@@ -332,20 +334,21 @@ void EventReportValidator::ValidateDlpVerdict(base::Value* value) {
   ASSERT_NE(nullptr, triggered_rules);
   ASSERT_EQ(base::Value::Type::LIST, triggered_rules->type());
   base::Value::ListView rules_list = triggered_rules->GetList();
-  size_t rules_size = rules_list.size();
-  ASSERT_EQ(rules_size, dlp_verdict_.value().triggers.size());
-  for (size_t i = 0; i < rules_size; ++i) {
+  int rules_size = rules_list.size();
+  ASSERT_EQ(rules_size, dlp_verdict_.value().triggered_rules_size());
+  for (int i = 0; i < rules_size; ++i) {
     base::Value* rule = &rules_list[i];
     ASSERT_EQ(base::Value::Type::DICTIONARY, rule->type());
-    ValidateDlpRule(rule, dlp_verdict_.value().triggers[i]);
+    ValidateDlpRule(rule, dlp_verdict_.value().triggered_rules(i));
   }
 }
 
 void EventReportValidator::ValidateDlpRule(
     base::Value* value,
-    const ContentAnalysisTrigger& expected_rule) {
+    const enterprise_connectors::ContentAnalysisResponse::Result::TriggeredRule&
+        expected_rule) {
   ValidateField(value, SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleName,
-                expected_rule.name);
+                expected_rule.rule_name());
 }
 
 void EventReportValidator::ValidateField(

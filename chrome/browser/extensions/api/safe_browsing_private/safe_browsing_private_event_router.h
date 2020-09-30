@@ -39,7 +39,6 @@ class DeviceManagementService;
 namespace safe_browsing {
 class BinaryUploadService;
 enum class DeepScanAccessPoint;
-struct ContentAnalysisScanResult;
 }
 
 #if defined(OS_CHROMEOS)
@@ -133,7 +132,7 @@ class SafeBrowsingPrivateEventRouter
       const std::string& mime_type,
       const std::string& trigger,
       safe_browsing::DeepScanAccessPoint access_point,
-      const safe_browsing::ContentAnalysisScanResult& result,
+      const enterprise_connectors::ContentAnalysisResponse::Result& result,
       const int64_t content_size,
       safe_browsing::EventResult event_result);
 
@@ -145,7 +144,7 @@ class SafeBrowsingPrivateEventRouter
       const std::string& mime_type,
       const std::string& trigger,
       safe_browsing::DeepScanAccessPoint access_point,
-      const safe_browsing::ContentAnalysisScanResult& result,
+      const enterprise_connectors::ContentAnalysisResponse::Result& result,
       const int64_t content_size);
 
   // Notifies listeners that deep scanning failed, for the given |reason|.
@@ -275,7 +274,7 @@ class SafeBrowsingPrivateEventRouter
       const std::string& download_digest_sha256,
       const std::string& mime_type,
       const std::string& trigger,
-      const safe_browsing::ContentAnalysisScanResult& result,
+      const enterprise_connectors::ContentAnalysisResponse::Result& result,
       const int64_t content_size,
       safe_browsing::EventResult event_result);
 

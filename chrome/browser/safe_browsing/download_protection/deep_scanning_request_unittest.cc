@@ -440,7 +440,6 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
                             base::Unretained(this)),
         &download_protection_service_, settings().value());
 
-    ContentAnalysisScanResult dlp_verdict;
     enterprise_connectors::ContentAnalysisResponse response;
 
     auto* malware_result = response.add_results();
@@ -462,7 +461,6 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
 
     download_protection_service_.GetFakeBinaryUploadService()->SetResponse(
         BinaryUploadService::Result::SUCCESS, response);
-    dlp_verdict = ContentAnalysisResultToResult(*dlp_result);
 
     EventReportValidator validator(client_.get());
     validator.ExpectDangerousDeepScanningResultAndSensitiveDataEvent(
@@ -475,7 +473,7 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
         /*threat_type*/ "DANGEROUS",
         /*trigger*/
         extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
-        /*dlp_verdict*/ dlp_verdict,
+        /*dlp_verdict*/ *dlp_result,
         /*mimetypes*/ ExeMimeTypes(),
         /*size*/ std::string("download contents").size(),
         /*result*/ EventResultToString(EventResult::WARNED));
@@ -492,7 +490,6 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
                             base::Unretained(this)),
         &download_protection_service_, settings().value());
 
-    ContentAnalysisScanResult dlp_verdict;
     enterprise_connectors::ContentAnalysisResponse response;
 
     auto* malware_result = response.add_results();
@@ -514,7 +511,6 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
 
     download_protection_service_.GetFakeBinaryUploadService()->SetResponse(
         BinaryUploadService::Result::SUCCESS, response);
-    dlp_verdict = ContentAnalysisResultToResult(*dlp_result);
 
     EventReportValidator validator(client_.get());
     validator.ExpectDangerousDeepScanningResultAndSensitiveDataEvent(
@@ -527,7 +523,7 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
         /*threat_type*/ "POTENTIALLY_UNWANTED",
         /*trigger*/
         extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
-        /*dlp_verdict*/ dlp_verdict,
+        /*dlp_verdict*/ *dlp_result,
         /*mimetypes*/ ExeMimeTypes(),
         /*size*/ std::string("download contents").size(),
         /*result*/ EventResultToString(EventResult::WARNED));
@@ -544,7 +540,6 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
                             base::Unretained(this)),
         &download_protection_service_, settings().value());
 
-    ContentAnalysisScanResult dlp_verdict;
     enterprise_connectors::ContentAnalysisResponse response;
 
     auto* dlp_result = response.add_results();
@@ -558,7 +553,6 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
 
     download_protection_service_.GetFakeBinaryUploadService()->SetResponse(
         BinaryUploadService::Result::SUCCESS, response);
-    dlp_verdict = ContentAnalysisResultToResult(*dlp_result);
 
     EventReportValidator validator(client_.get());
     validator.ExpectSensitiveDataEvent(
@@ -569,7 +563,7 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
         "76E00EB33811F5778A5EE557512C30D9341D4FEB07646BCE3E4DB13F9428573C",
         /*trigger*/
         extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
-        /*dlp_verdict*/ dlp_verdict,
+        /*dlp_verdict*/ *dlp_result,
         /*mimetypes*/ ExeMimeTypes(),
         /*size*/ std::string("download contents").size(),
         EventResultToString(EventResult::BLOCKED));
@@ -586,7 +580,6 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
                             base::Unretained(this)),
         &download_protection_service_, settings().value());
 
-    ContentAnalysisScanResult dlp_verdict;
     enterprise_connectors::ContentAnalysisResponse response;
 
     auto* dlp_result = response.add_results();
@@ -600,7 +593,6 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
 
     download_protection_service_.GetFakeBinaryUploadService()->SetResponse(
         BinaryUploadService::Result::SUCCESS, response);
-    dlp_verdict = ContentAnalysisResultToResult(*dlp_result);
 
     EventReportValidator validator(client_.get());
     validator.ExpectSensitiveDataEvent(
@@ -611,7 +603,7 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
         "76E00EB33811F5778A5EE557512C30D9341D4FEB07646BCE3E4DB13F9428573C",
         /*trigger*/
         extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
-        /*dlp_verdict*/ dlp_verdict,
+        /*dlp_verdict*/ *dlp_result,
         /*mimetypes*/ ExeMimeTypes(),
         /*size*/ std::string("download contents").size(),
         EventResultToString(EventResult::WARNED));
@@ -628,7 +620,6 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
                             base::Unretained(this)),
         &download_protection_service_, settings().value());
 
-    ContentAnalysisScanResult dlp_verdict;
     enterprise_connectors::ContentAnalysisResponse response;
 
     auto* dlp_result = response.add_results();
@@ -646,7 +637,6 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
 
     download_protection_service_.GetFakeBinaryUploadService()->SetResponse(
         BinaryUploadService::Result::SUCCESS, response);
-    dlp_verdict = ContentAnalysisResultToResult(*dlp_result);
 
     EventReportValidator validator(client_.get());
     validator.ExpectSensitiveDataEvent(
@@ -657,7 +647,7 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
         "76E00EB33811F5778A5EE557512C30D9341D4FEB07646BCE3E4DB13F9428573C",
         /*trigger*/
         extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
-        /*dlp_verdict*/ dlp_verdict,
+        /*dlp_verdict*/ *dlp_result,
         /*mimetypes*/ ExeMimeTypes(),
         /*size*/ std::string("download contents").size(),
         EventResultToString(EventResult::BLOCKED));

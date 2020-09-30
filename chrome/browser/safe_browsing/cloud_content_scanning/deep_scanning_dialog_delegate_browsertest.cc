@@ -365,7 +365,6 @@ IN_PROC_BROWSER_TEST_F(DeepScanningDialogDelegateBrowserTest, Texts) {
   FakeBinaryUploadServiceStorage()->SetAuthorized(true);
 
   EventReportValidator validator(client());
-  ContentAnalysisScanResult dlp_verdict;
   // Prepare a complex DLP response to test that the verdict is reported
   // correctly in the sensitive data event.
   enterprise_connectors::ContentAnalysisResponse response;
@@ -386,7 +385,6 @@ IN_PROC_BROWSER_TEST_F(DeepScanningDialogDelegateBrowserTest, Texts) {
 
   FakeBinaryUploadServiceStorage()->SetResponseForText(
       BinaryUploadService::Result::SUCCESS, response);
-  dlp_verdict = ContentAnalysisResultToResult(*result);
 
   // The DLP verdict means an event should be reported. The content size is
   // equal to the length of the concatenated texts (2 * 100 * 'a') times
@@ -397,7 +395,7 @@ IN_PROC_BROWSER_TEST_F(DeepScanningDialogDelegateBrowserTest, Texts) {
       // The hash should not be included for string requests.
       /*sha*/ "",
       /*trigger*/ SafeBrowsingPrivateEventRouter::kTriggerWebContentUpload,
-      /*dlp_verdict*/ dlp_verdict,
+      /*dlp_verdict*/ *result,
       /*mimetype*/ TextMimeTypes(),
       /*size*/ 400,
       /*result*/ EventResultToString(EventResult::BLOCKED));
@@ -781,7 +779,6 @@ IN_PROC_BROWSER_TEST_P(DeepScanningDialogDelegateDelayDeliveryUntilVerdictTest,
 
   // The file should be reported as malware and sensitive content.
   EventReportValidator validator(client());
-  ContentAnalysisScanResult dlp_verdict;
   enterprise_connectors::ContentAnalysisResponse response;
 
   auto* malware_result = response.add_results();
@@ -803,7 +800,6 @@ IN_PROC_BROWSER_TEST_P(DeepScanningDialogDelegateDelayDeliveryUntilVerdictTest,
 
   FakeBinaryUploadServiceStorage()->SetResponseForFile(
       "foo.doc", BinaryUploadService::Result::SUCCESS, response);
-  dlp_verdict = ContentAnalysisResultToResult(*dlp_result);
   validator.ExpectDangerousDeepScanningResultAndSensitiveDataEvent(
       /*url*/ "about:blank",
       /*filename*/ created_file_paths()[0].AsUTF8Unsafe(),
@@ -813,7 +809,7 @@ IN_PROC_BROWSER_TEST_P(DeepScanningDialogDelegateDelayDeliveryUntilVerdictTest,
       /*threat_type*/ "DANGEROUS",
       /*trigger*/
       extensions::SafeBrowsingPrivateEventRouter::kTriggerFileUpload,
-      /*dlp_verdict*/ dlp_verdict,
+      /*dlp_verdict*/ *dlp_result,
       /*mimetypes*/ DocMimeTypes(),
       /*size*/ std::string("foo content").size(),
       // If the policy allows immediate delivery of the file, then the result is
