@@ -173,6 +173,7 @@ def MakeHistogramSetWithDiagnostics(histograms_file,
   output_path = os.path.join(output_dir, test_name + '.json')
   cmd = ([sys.executable, add_reserved_diagnostics_path] +
          add_diagnostics_args + ['--output_path', output_path])
+  logging.info(cmd)
   subprocess.check_call(cmd)
 
 
