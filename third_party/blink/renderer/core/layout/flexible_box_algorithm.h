@@ -128,7 +128,8 @@ class FlexItem {
            LayoutUnit main_axis_border_padding,
            LayoutUnit cross_axis_border_padding,
            NGPhysicalBoxStrut physical_margins,
-           NGBoxStrut scrollbars);
+           NGBoxStrut scrollbars,
+           bool depends_on_min_max_sizes = false);
 
   LayoutUnit HypotheticalMainAxisMarginBoxSize() const {
     return hypothetical_main_content_size + main_axis_border_padding +
@@ -208,6 +209,7 @@ class FlexItem {
   // The algorithm stores the main axis offset in X and cross axis offset in Y.
   LayoutPoint desired_location;
 
+  const bool depends_on_min_max_sizes;
   bool frozen;
 
   // Legacy partially relies on FlexLayoutAlgorithm::AlignChildren to determine
