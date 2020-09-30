@@ -168,7 +168,7 @@ class FakeRegistrationManager : public RegistrationManager {
   void ExpectSignInGaiaSucceeds() {
     EXPECT_CALL(*this, SignInGaia(_)).WillOnce([&](DoneCallback callback) {
       is_signed_in_ = true;
-      std::move(callback).Run(ProtobufHttpStatus::OK);
+      std::move(callback).Run(ProtobufHttpStatus::OK());
     });
   }
 
@@ -380,7 +380,7 @@ TEST_F(FtlSignalStrategyTest, SendStanza_Success) {
                                 const ftl::ChromotingMessage& message,
                                 MessagingClient::DoneCallback on_done) {
         ASSERT_EQ(stanza_string, message.xmpp().stanza());
-        std::move(on_done).Run(ProtobufHttpStatus::OK);
+        std::move(on_done).Run(ProtobufHttpStatus::OK());
       });
   signal_strategy_->SendStanza(std::move(stanza));
 }
@@ -530,7 +530,7 @@ TEST_F(FtlSignalStrategyTest, SendMessage_Success) {
                                   const ftl::ChromotingMessage& message,
                                   MessagingClient::DoneCallback on_done) {
         ASSERT_EQ(message_payload, message.xmpp().stanza());
-        std::move(on_done).Run(ProtobufHttpStatus::OK);
+        std::move(on_done).Run(ProtobufHttpStatus::OK());
       });
 
   signal_strategy_->SendMessage(

@@ -404,7 +404,7 @@ TEST_F(FtlMessagingClientTest,
           FROM_HERE, ProtobufHttpStatus::Code::OK, &run_loop));
 
   test_responder_.AddStreamResponseToMostRecentRequestUrl(
-      {&response_1, &response_2}, ProtobufHttpStatus::OK);
+      {&response_1, &response_2}, ProtobufHttpStatus::OK());
 
   run_loop.Run();
 }

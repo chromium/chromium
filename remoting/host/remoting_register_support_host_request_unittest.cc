@@ -45,7 +45,7 @@ void RespondOk(RegisterSupportHostResponseCallback callback) {
   auto response = std::make_unique<apis::v1::RegisterSupportHostResponse>();
   response->set_support_id(kSupportId);
   response->set_support_id_lifetime_seconds(kSupportIdLifetime.InSeconds());
-  std::move(callback).Run(ProtobufHttpStatus::OK, std::move(response));
+  std::move(callback).Run(ProtobufHttpStatus::OK(), std::move(response));
 }
 
 decltype(auto) DoValidateRegisterHostAndRespondOk() {

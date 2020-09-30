@@ -37,7 +37,6 @@ _CROS_SI_FILE_ALLOWLIST = {
         'iostream.cpp',  # TODO(crbug.com/973554): Remove.
         'spinlock.cc',  # TODO(crbug.com/973556): Remove.
         'int256.cc',  # TODO(crbug.com/537099): Remove.
-        'protobuf_http_status.cc',  # TODO(crbug.com/537099): Remove.
         'rpc.pb.cc',  # TODO(crbug.com/537099): Remove.
     ],
     'nacl_helper_bootstrap': [],

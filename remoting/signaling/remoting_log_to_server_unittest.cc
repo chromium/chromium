@@ -66,7 +66,7 @@ TEST_F(RemotingLogToServerTest, SuccessfullySendOneLog) {
         ASSERT_EQ("test-key", request.payload().entry().field(0).key());
         ASSERT_EQ("test-value", request.payload().entry().field(0).value());
         std::move(callback).Run(
-            ProtobufHttpStatus::OK,
+            ProtobufHttpStatus::OK(),
             std::make_unique<apis::v1::CreateLogEntryResponse>());
       });
 
@@ -161,10 +161,10 @@ TEST_F(RemotingLogToServerTest, FailedToSendTwoLogs_RetryThenSucceeds) {
   ASSERT_EQ(2, GetBackoffEntry().failure_count());
 
   std::move(response_callback_1)
-      .Run(ProtobufHttpStatus::OK,
+      .Run(ProtobufHttpStatus::OK(),
            std::make_unique<apis::v1::CreateLogEntryResponse>());
   std::move(response_callback_2)
-      .Run(ProtobufHttpStatus::OK,
+      .Run(ProtobufHttpStatus::OK(),
            std::make_unique<apis::v1::CreateLogEntryResponse>());
   task_environment_.FastForwardUntilNoTasksRemain();
   ASSERT_EQ(0, GetBackoffEntry().failure_count());

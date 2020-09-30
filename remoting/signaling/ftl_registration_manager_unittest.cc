@@ -53,7 +53,7 @@ decltype(auto) RespondOkToSignInGaia(const std::string& registration_id) {
     response->mutable_auth_token()->set_payload(kAuthToken);
     response->mutable_auth_token()->set_expires_in(
         kAuthTokenExpiresInMicroseconds);
-    std::move(on_done).Run(ProtobufHttpStatus::OK, std::move(response));
+    std::move(on_done).Run(ProtobufHttpStatus::OK(), std::move(response));
   };
 }
 

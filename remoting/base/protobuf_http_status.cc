@@ -4,6 +4,7 @@
 
 #include "remoting/base/protobuf_http_status.h"
 
+#include "base/no_destructor.h"
 #include "net/http/http_status_code.h"
 #include "remoting/base/protobuf_http_client_messages.pb.h"
 
@@ -11,7 +12,7 @@ namespace remoting {
 
 namespace {
 
-ProtobufHttpStatus::Code HttpStatusCodeToClientCode(
+constexpr ProtobufHttpStatus::Code HttpStatusCodeToClientCode(
     net::HttpStatusCode http_status_code) {
   DCHECK_LT(0, http_status_code);
   switch (http_status_code) {
@@ -45,7 +46,7 @@ ProtobufHttpStatus::Code HttpStatusCodeToClientCode(
   }
 }
 
-ProtobufHttpStatus::Code NetErrorToClientCode(net::Error net_error) {
+constexpr ProtobufHttpStatus::Code NetErrorToClientCode(net::Error net_error) {
   DCHECK_GT(0, net_error);
   DCHECK_NE(net::Error::ERR_HTTP_RESPONSE_CODE_FAILURE, net_error)
       << "Use the HttpStatusCode overload";
@@ -72,11 +73,10 @@ ProtobufHttpStatus::Code NetErrorToClientCode(net::Error net_error) {
 
 }  // namespace
 
-const ProtobufHttpStatus& ProtobufHttpStatus::OK =
-    ProtobufHttpStatus(Code::OK, "OK");
-
-const ProtobufHttpStatus& ProtobufHttpStatus::CANCELLED =
-    ProtobufHttpStatus(Code::CANCELLED, "Cancelled");
+const ProtobufHttpStatus& ProtobufHttpStatus::OK() {
+  static const base::NoDestructor<ProtobufHttpStatus> kOK(Code::OK, "OK");
+  return *kOK;
+}
 
 ProtobufHttpStatus::ProtobufHttpStatus(net::HttpStatusCode http_status_code)
     : error_code_(HttpStatusCodeToClientCode(http_status_code)),

@@ -78,7 +78,7 @@ ProtobufHttpStatus ProtobufHttpRequest::ParseResponse(
     LOG(ERROR) << "Failed to parse response body";
     return ProtobufHttpStatus(net::ERR_INVALID_RESPONSE);
   }
-  return ProtobufHttpStatus::OK;
+  return ProtobufHttpStatus::OK();
 }
 
 }  // namespace remoting

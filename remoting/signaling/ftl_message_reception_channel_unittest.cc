@@ -323,7 +323,9 @@ TEST_F(FtlMessageReceptionChannelTest, StreamsTwoMessages) {
             *response->mutable_inbox_message() = message_2;
             on_incoming_msg.Run(std::move(response));
 
-            std::move(on_channel_closed).Run(ProtobufHttpStatus::CANCELLED);
+            const ProtobufHttpStatus kCancel(
+                ProtobufHttpStatus::Code::CANCELLED, "Cancelled");
+            std::move(on_channel_closed).Run(kCancel);
           }));
 
   channel_->StartReceivingMessages(
@@ -415,7 +417,7 @@ TEST_F(FtlMessageReceptionChannelTest, ServerClosesStream_ResetsStream) {
             std::move(on_channel_ready).Run();
 
             // Close the stream with OK.
-            std::move(on_channel_closed).Run(ProtobufHttpStatus::OK);
+            std::move(on_channel_closed).Run(ProtobufHttpStatus::OK());
           },
           &old_stream))
       .WillOnce(StartStream(

@@ -93,7 +93,7 @@ decltype(auto) DoValidateHeartbeatAndRespondOk(
                       expected_host_offline_reason, is_googler);
     auto response = std::make_unique<apis::v1::HeartbeatResponse>();
     response->set_set_interval_seconds(kGoodIntervalSeconds);
-    std::move(callback).Run(ProtobufHttpStatus::OK, std::move(response));
+    std::move(callback).Run(ProtobufHttpStatus::OK(), std::move(response));
   };
 }
 
@@ -315,7 +315,7 @@ TEST_F(HeartbeatSenderTest, RemoteCommand) {
         auto response = std::make_unique<apis::v1::HeartbeatResponse>();
         response->set_set_interval_seconds(kGoodIntervalSeconds);
         response->set_remote_command(apis::v1::HeartbeatResponse::RESTART_HOST);
-        std::move(callback).Run(ProtobufHttpStatus::OK, std::move(response));
+        std::move(callback).Run(ProtobufHttpStatus::OK(), std::move(response));
       });
   EXPECT_CALL(*mock_observer_, OnHeartbeatSent()).Times(1);
   EXPECT_CALL(mock_delegate_, OnFirstHeartbeatSuccessful()).Times(1);
