@@ -2023,8 +2023,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Tabs.UnusedAndClosedInInterval.Count" units="tabs"
-    expires_after="M85">
+    expires_after="M95">
   <owner>sebmarchand@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
   <summary>
     The number of tabs that haven't been interacted with, visible or audible
     over a given interval time, but which no longer exist at all at the end of
@@ -2033,8 +2034,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Tabs.UnusedInInterval.Count" units="tabs"
-    expires_after="M85">
+    expires_after="M95">
   <owner>sebmarchand@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
   <summary>
     The number of tabs that haven't been interacted with, visible or audible or
     visible during a given interval of time and still exist at the end of this
@@ -2043,8 +2045,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Tabs.UsedAndClosedInInterval.Count" units="tabs"
-    expires_after="M85">
+    expires_after="M95">
   <owner>sebmarchand@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
   <summary>
     The number of tabs that have been interacted with, visible or audible over a
     given interval of time, but which no longer exist at all at the end of this
@@ -2053,8 +2056,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Tabs.UsedInInterval.Count" units="tabs"
-    expires_after="M85">
+    expires_after="M95">
   <owner>sebmarchand@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
   <summary>
     The number of tabs that have been interacted with, visible or audible during
     a given interval of time, includes tabs that don't exist at the end of this
