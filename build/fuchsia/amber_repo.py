@@ -158,9 +158,6 @@ class ExternalAmberRepo(AmberRepo):
   def __init__(self, amber_root):
     self._amber_root = amber_root
     logging.info('Using existing Amber root: {}'.format(amber_root))
-
-    # TODO(kmarshall): Find a way to programmatically check if "fx serve" is
-    # running.
     logging.info('Ensure that "fx serve" is running.')
 
   def GetPath(self):
