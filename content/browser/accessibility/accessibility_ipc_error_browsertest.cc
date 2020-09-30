@@ -43,12 +43,15 @@ class AccessibilityIpcErrorBrowserTest : public ContentBrowserTest {
 // Failed on Android x86 in crbug.com/1123641.
 #if defined(OS_ANDROID) && defined(ARCH_CPU_X86)
 #define MAYBE_ResetBrowserAccessibilityManager \
-  DISABLED_WeeklyAggregateDataUseResetBrowserAccessibilityManager
+  DISABLED_ResetBrowserAccessibilityManager
 #else
-#define MAYBE_ResetBrowserAccessibilityManager WeeklyAggregateDataUse
+#define MAYBE_ResetBrowserAccessibilityManager ResetBrowserAccessibilityManager
 #endif
 IN_PROC_BROWSER_TEST_F(AccessibilityIpcErrorBrowserTest,
                        MAYBE_ResetBrowserAccessibilityManager) {
+  // Allow accessibility to reset itself on error, rather than failing.
+  RenderFrameHostImpl::max_accessibility_resets_ = 99;
+
   // Create a data url and load it.
   const char url_str[] =
       "data:text/html,"
@@ -109,6 +112,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityIpcErrorBrowserTest,
   frame->set_no_create_browser_accessibility_manager_for_testing(false);
   const ui::AXTree* tree = nullptr;
   {
+    // Because we missed one IPC message, AXTree::Unserialize() will fail.
     AccessibilityNotificationWaiter waiter(
         shell()->web_contents(), ui::kAXModeComplete, ax::mojom::Event::kFocus);
     ASSERT_TRUE(
@@ -148,6 +152,11 @@ IN_PROC_BROWSER_TEST_F(AccessibilityIpcErrorBrowserTest,
 #endif
 IN_PROC_BROWSER_TEST_F(AccessibilityIpcErrorBrowserTest,
                        MAYBE_MultipleBadAccessibilityIPCsKillsRenderer) {
+  // We should be able to reset accessibility |max_iterations-1| times
+  // (see render_frame_host_impl.cc - max_accessibility_resets_),
+  // but the subsequent time the renderer should be killed.
+  int max_iterations = RenderFrameHostImpl::max_accessibility_resets_ + 1;
+
   // Create a data url and load it.
   const char url_str[] =
       "data:text/html,"
@@ -178,11 +187,6 @@ IN_PROC_BROWSER_TEST_F(AccessibilityIpcErrorBrowserTest,
   bad_accessibility_event.updates[0].nodes.resize(1);
   bad_accessibility_event.updates[0].nodes[0].id = 1;
   bad_accessibility_event.updates[0].nodes[0].child_ids.push_back(2);
-
-  // We should be able to reset accessibility |max_iterations-1| times
-  // (see render_frame_host_impl.cc - kMaxAccessibilityResets),
-  // but the subsequent time the renderer should be killed.
-  int max_iterations = RenderFrameHostImpl::kMaxAccessibilityResets;
 
   for (int iteration = 0; iteration < max_iterations; iteration++) {
     // Make sure the manager has been created.

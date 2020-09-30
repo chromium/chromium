@@ -191,22 +191,32 @@ BrowserAccessibilityManager::~BrowserAccessibilityManager() {
   ui::AXTreeManagerMap::GetInstance().RemoveTreeManager(ax_tree_id_);
 }
 
+bool BrowserAccessibilityManager::Unserialize(
+    const ui::AXTreeUpdate& tree_update) {
+  if (ax_tree()->Unserialize(tree_update))
+    return true;
+
+  LOG(ERROR) << ax_tree()->error();
+  LOG(ERROR) << tree_update.ToString();
+
+  static auto* ax_tree_error = base::debug::AllocateCrashKeyString(
+      "ax_tree_error", base::debug::CrashKeySize::Size256);
+  static auto* ax_tree_update = base::debug::AllocateCrashKeyString(
+      "ax_tree_update", base::debug::CrashKeySize::Size256);
+  // Temporarily log some additional crash keys so we can try to
+  // figure out why we're getting bad accessibility trees here.
+  // http://crbug.com/765490, https://crbug.com/1094848.
+  // Be sure to re-enable BrowserAccessibilityManagerTest.TestFatalError
+  // when done (or delete it if no longer needed).
+  base::debug::SetCrashKeyString(ax_tree_error, ax_tree()->error());
+  base::debug::SetCrashKeyString(ax_tree_update, tree_update.ToString());
+  return false;
+}
+
 void BrowserAccessibilityManager::Initialize(
     const ui::AXTreeUpdate& initial_tree) {
-  if (!ax_tree()->Unserialize(initial_tree)) {
-    static auto* ax_tree_error = base::debug::AllocateCrashKeyString(
-        "ax_tree_error", base::debug::CrashKeySize::Size64);
-    static auto* ax_tree_update = base::debug::AllocateCrashKeyString(
-        "ax_tree_update", base::debug::CrashKeySize::Size256);
-    // Temporarily log some additional crash keys so we can try to
-    // figure out why we're getting bad accessibility trees here.
-    // http://crbug.com/765490
-    // Be sure to re-enable BrowserAccessibilityManagerTest.TestFatalError
-    // when done (or delete it if no longer needed).
-    base::debug::SetCrashKeyString(ax_tree_error, ax_tree()->error());
-    base::debug::SetCrashKeyString(ax_tree_update, initial_tree.ToString());
+  if (!Unserialize(initial_tree))
     LOG(FATAL) << ax_tree()->error();
-  }
 }
 
 // A flag for use in tests to ensure events aren't suppressed or delayed.
@@ -409,14 +419,12 @@ bool BrowserAccessibilityManager::OnAccessibilityEvents(
 
   // Process all changes to the accessibility tree first.
   for (const ui::AXTreeUpdate& tree_update : *tree_updates) {
-    if (!ax_tree()->Unserialize(tree_update)) {
+    if (!Unserialize(tree_update)) {
       // This is a fatal error, but if there is a delegate, it will handle the
-      // error result and recover by re-creating the manager.
-      if (delegate_) {
-        LOG(ERROR) << ax_tree()->error();
-      } else {
+      // error result and recover by re-creating the manager. After a max
+      // threshold number of errors is reached, it will crash the browser.
+      if (!delegate_)
         CHECK(false) << ax_tree()->error();
-      }
       return false;
     }
 

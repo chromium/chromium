@@ -178,6 +178,10 @@ class AX_EXPORT AXTree : public AXNode::OwnerTree {
  private:
   friend class AXTableInfoTest;
 
+  // Accumulate errors as there can be more than one before Chrome is crashed
+  // via AccessibilityFatalError();
+  void RecordError(std::string new_error);
+
   // AXNode::OwnerTree override.
   //
   // Given a node in this accessibility tree that corresponds to a table

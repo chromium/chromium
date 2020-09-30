@@ -265,7 +265,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // An accessibility reset is only allowed to prevent very rare corner cases
   // or race conditions where the browser and renderer get out of sync. If
   // this happens more than this many times, kill the renderer.
-  static const int kMaxAccessibilityResets = 5;
+  // Can be set to 0 to fail immediately during tests.
+  static int max_accessibility_resets_;
 
   static RenderFrameHostImpl* FromID(GlobalFrameRoutingId id);
   static RenderFrameHostImpl* FromID(int process_id, int routing_id);

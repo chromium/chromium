@@ -590,6 +590,10 @@ class CONTENT_EXPORT BrowserAccessibilityManager : public ui::AXTreeObserver,
   static base::Optional<ui::AXTreeID> last_focused_node_tree_id_;
 
  private:
+  // Helper that calls AXTree::Unserialize(). On failure it populates crash data
+  // with error information.
+  bool Unserialize(const ui::AXTreeUpdate& tree_update);
+
   // The underlying tree of accessibility objects.
   std::unique_ptr<ui::AXSerializableTree> tree_;
 

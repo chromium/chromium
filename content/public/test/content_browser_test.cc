@@ -10,6 +10,7 @@
 #include "base/run_loop.h"
 #include "base/task/current_thread.h"
 #include "build/build_config.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_paths.h"
 #include "content/public/common/content_switches.h"
@@ -52,6 +53,10 @@ ContentBrowserTest::ContentBrowserTest() {
   CHECK(base::PathService::Override(base::FILE_EXE, content_shell_path));
 #endif
   CreateTestServer(GetTestDataFilePath());
+
+  // Fail as quickly as possible during tests, rather than attempting to reset
+  // accessibility and continue when unserialization fails.
+  RenderFrameHostImpl::max_accessibility_resets_ = 0;
 }
 
 ContentBrowserTest::~ContentBrowserTest() {

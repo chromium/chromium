@@ -266,6 +266,15 @@ using base::TimeDelta;
 
 namespace content {
 
+#if defined(ADDRESS_SANITIZER) || !defined(NDEBUG)
+// Wrapping this in ADDRESS_SANITIZER will enable it to run on
+// clusterfuzz, which should help narrow down illegal ax trees more quickly.
+// static
+int RenderFrameHostImpl::max_accessibility_resets_ = 0;
+#else
+int RenderFrameHostImpl::max_accessibility_resets_ = 4;
+#endif
+
 struct RenderFrameHostOrProxy {
   RenderFrameHostImpl* const frame;
   RenderFrameProxyHost* const proxy;
@@ -1846,7 +1855,7 @@ void RenderFrameHostImpl::AccessibilityFatalError() {
     return;
 
   accessibility_reset_count_++;
-  if (accessibility_reset_count_ >= kMaxAccessibilityResets) {
+  if (accessibility_reset_count_ > max_accessibility_resets_) {
     render_accessibility_->FatalError();
   } else {
     AccessibilityReset();
