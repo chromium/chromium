@@ -26,9 +26,14 @@ source_set("public") {
     "tutorial.cc",
     "tutorial.h",
     "video_tutorial_service.h",
+    "video_tutorial_tab_helper.cc",
+    "video_tutorial_tab_helper.h",
   ]
 
-  deps = []
+  deps = [
+    "//chrome/common",
+    "//content/public/browser",
+  ]
 
   public_deps = [
     "//base",

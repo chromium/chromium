@@ -384,6 +384,7 @@ static_library("ui") {
     "//chrome/browser/ui/webui/read_later:mojo_bindings",
     "//chrome/browser/ui/webui/tab_search:mojo_bindings",
     "//chrome/browser/ui/webui/usb_internals:mojo_bindings",
+    "//chrome/browser/video_tutorials",
     "//chrome/common",
     "//chrome/common/net",
     "//chrome/common/search:mojo_bindings",

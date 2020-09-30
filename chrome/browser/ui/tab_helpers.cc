@@ -123,6 +123,7 @@
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/ui/android/context_menu_helper.h"
 #include "chrome/browser/ui/javascript_dialogs/javascript_tab_modal_dialog_manager_delegate_android.h"
+#include "chrome/browser/video_tutorials/video_tutorial_tab_helper.h"
 #else
 #include "chrome/browser/banners/app_banner_manager_desktop.h"
 #include "chrome/browser/safe_browsing/safe_browsing_tab_observer.h"
@@ -356,6 +357,7 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
         web_contents);
   }
   SearchGeolocationDisclosureTabHelper::CreateForWebContents(web_contents);
+  video_tutorials::VideoTutorialTabHelper::CreateForWebContents(web_contents);
 #else
   banners::AppBannerManagerDesktop::CreateForWebContents(web_contents);
   BookmarkTabHelper::CreateForWebContents(web_contents);
