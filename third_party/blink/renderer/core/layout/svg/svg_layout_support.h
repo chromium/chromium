@@ -61,12 +61,10 @@ class CORE_EXPORT SVGLayoutSupport {
   static bool IsOverflowHidden(const LayoutObject&);
   static bool IsOverflowHidden(const ComputedStyle&);
 
-  // Adjusts the visualRect in combination with filter, clipper and masker
-  // in local coordinates.
-  static void AdjustVisualRectWithResources(
-      const LayoutObject&,
-      const FloatRect& object_bounding_box,
-      FloatRect&);
+  // Adjusts the visual rect with clipper and masker in local coordinates.
+  static void AdjustWithClipPathAndMask(const LayoutObject& layout_object,
+                                        const FloatRect& object_bounding_box,
+                                        FloatRect& visual_rect);
 
   // Add any contribution from 'stroke' to a text content bounding rect.
   static FloatRect ExtendTextBBoxWithStroke(const LayoutObject&,
@@ -74,8 +72,7 @@ class CORE_EXPORT SVGLayoutSupport {
 
   // Compute the visual rect for the a text content LayoutObject.
   static FloatRect ComputeVisualRectForText(const LayoutObject&,
-                                            const FloatRect& text_bounds,
-                                            const FloatRect& reference_box);
+                                            const FloatRect& text_bounds);
 
   // Determine whether the passed location intersects a clip path referenced by
   // the passed LayoutObject.
@@ -105,9 +102,6 @@ class CORE_EXPORT SVGLayoutSupport {
       const LayoutObject&,
       const LayoutBoxModelObject& ancestor,
       VisualRectFlags = kDefaultVisualRectFlags);
-  static PhysicalRect TransformVisualRect(const LayoutObject&,
-                                          const AffineTransform&,
-                                          const FloatRect&);
   static bool MapToVisualRectInAncestorSpace(
       const LayoutObject&,
       const LayoutBoxModelObject* ancestor,

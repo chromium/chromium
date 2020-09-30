@@ -81,12 +81,7 @@ FloatRect LayoutSVGInline::VisualRectInLocalSVGCoordinates() const {
   NOT_DESTROYED();
   if (!FirstLineBox())
     return FloatRect();
-  const LayoutSVGText* text_root =
-      LayoutSVGText::LocateLayoutSVGTextAncestor(this);
-  if (!text_root)
-    return FloatRect();
-  return SVGLayoutSupport::ComputeVisualRectForText(
-      *this, ObjectBoundingBox(), text_root->ObjectBoundingBox());
+  return SVGLayoutSupport::ComputeVisualRectForText(*this, ObjectBoundingBox());
 }
 
 PhysicalRect LayoutSVGInline::VisualRectInDocument(

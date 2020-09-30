@@ -31,7 +31,6 @@
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_image.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_inline_text.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_clipper.h"
-#include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_filter.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_masker.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_root.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_shape.h"
@@ -84,29 +83,36 @@ PhysicalRect SVGLayoutSupport::VisualRectInAncestorSpace(
   return rect;
 }
 
-PhysicalRect SVGLayoutSupport::TransformVisualRect(
+static FloatRect MapToSVGRootIncludingFilter(
     const LayoutObject& object,
-    const AffineTransform& root_transform,
-    const FloatRect& local_rect) {
-  FloatRect adjusted_rect = root_transform.MapRect(local_rect);
+    const FloatRect& local_visual_rect) {
+  DCHECK(object.IsSVGChild());
 
-  if (adjusted_rect.IsEmpty())
-    return PhysicalRect();
+  FloatRect visual_rect = local_visual_rect;
+  const LayoutObject* parent = &object;
+  for (; !parent->IsSVGRoot(); parent = parent->Parent()) {
+    const ComputedStyle& style = parent->StyleRef();
+    if (style.HasFilter())
+      visual_rect = style.Filter().MapRect(visual_rect);
+    visual_rect = parent->LocalToSVGParentTransform().MapRect(visual_rect);
+  }
 
-  // Use EnclosingIntRect because we cannot properly apply subpixel offset of
-  // the SVGRoot since we don't know the desired subpixel accumulation at this
-  // point.
-  return PhysicalRect(EnclosingIntRect(adjusted_rect));
+  const LayoutSVGRoot& svg_root = ToLayoutSVGRoot(*parent);
+  return svg_root.LocalToBorderBoxTransform().MapRect(visual_rect);
 }
 
 static const LayoutSVGRoot& ComputeTransformToSVGRoot(
     const LayoutObject& object,
-    AffineTransform& root_border_box_transform) {
+    AffineTransform& root_border_box_transform,
+    bool* filter_skipped) {
   DCHECK(object.IsSVGChild());
 
-  const LayoutObject* parent;
-  for (parent = &object; !parent->IsSVGRoot(); parent = parent->Parent())
+  const LayoutObject* parent = &object;
+  for (; !parent->IsSVGRoot(); parent = parent->Parent()) {
+    if (filter_skipped && parent->StyleRef().HasFilter())
+      *filter_skipped = true;
     root_border_box_transform.PreMultiply(parent->LocalToSVGParentTransform());
+  }
 
   const LayoutSVGRoot& svg_root = ToLayoutSVGRoot(*parent);
   root_border_box_transform.PreMultiply(svg_root.LocalToBorderBoxTransform());
@@ -120,10 +126,24 @@ bool SVGLayoutSupport::MapToVisualRectInAncestorSpace(
     PhysicalRect& result_rect,
     VisualRectFlags visual_rect_flags) {
   AffineTransform root_border_box_transform;
-  const LayoutSVGRoot& svg_root =
-      ComputeTransformToSVGRoot(object, root_border_box_transform);
-  result_rect =
-      TransformVisualRect(object, root_border_box_transform, local_visual_rect);
+  bool filter_skipped = false;
+  const LayoutSVGRoot& svg_root = ComputeTransformToSVGRoot(
+      object, root_border_box_transform, &filter_skipped);
+
+  FloatRect adjusted_rect;
+  if (filter_skipped)
+    adjusted_rect = MapToSVGRootIncludingFilter(object, local_visual_rect);
+  else
+    adjusted_rect = root_border_box_transform.MapRect(local_visual_rect);
+
+  if (adjusted_rect.IsEmpty()) {
+    result_rect = PhysicalRect();
+  } else {
+    // Use EnclosingIntRect because we cannot properly apply subpixel offset of
+    // the SVGRoot since we don't know the desired subpixel accumulation at this
+    // point.
+    result_rect = PhysicalRect(EnclosingIntRect(adjusted_rect));
+  }
 
   // Apply initial viewport clip.
   if (svg_root.ShouldApplyViewportClip()) {
@@ -172,7 +192,7 @@ void SVGLayoutSupport::MapAncestorToLocal(const LayoutObject& object,
          object.IsSVGForeignObject());
   AffineTransform local_to_svg_root;
   const LayoutSVGRoot& svg_root =
-      ComputeTransformToSVGRoot(object, local_to_svg_root);
+      ComputeTransformToSVGRoot(object, local_to_svg_root, nullptr);
 
   svg_root.MapAncestorToLocal(ancestor, transform_state, flags);
 
@@ -277,8 +297,6 @@ void SVGLayoutSupport::ComputeContainerBoundingBoxes(
   }
 
   local_visual_rect = stroke_bounding_box;
-  AdjustVisualRectWithResources(*container, object_bounding_box,
-                                local_visual_rect);
 }
 
 bool SVGLayoutSupport::LayoutSizeOfNearestViewportChanged(
@@ -389,7 +407,7 @@ bool SVGLayoutSupport::IsOverflowHidden(const ComputedStyle& style) {
          style.OverflowX() == EOverflow::kScroll;
 }
 
-void SVGLayoutSupport::AdjustVisualRectWithResources(
+void SVGLayoutSupport::AdjustWithClipPathAndMask(
     const LayoutObject& layout_object,
     const FloatRect& object_bounding_box,
     FloatRect& visual_rect) {
@@ -397,13 +415,8 @@ void SVGLayoutSupport::AdjustVisualRectWithResources(
       SVGResourcesCache::CachedResourcesForLayoutObject(layout_object);
   if (!resources)
     return;
-
-  if (LayoutSVGResourceFilter* filter = resources->Filter())
-    visual_rect = filter->ResourceBoundingBox(object_bounding_box);
-
   if (LayoutSVGResourceClipper* clipper = resources->Clipper())
     visual_rect.Intersect(clipper->ResourceBoundingBox(object_bounding_box));
-
   if (LayoutSVGResourceMasker* masker = resources->Masker())
     visual_rect.Intersect(masker->ResourceBoundingBox(object_bounding_box, 1));
 }
@@ -426,13 +439,11 @@ FloatRect SVGLayoutSupport::ExtendTextBBoxWithStroke(
 
 FloatRect SVGLayoutSupport::ComputeVisualRectForText(
     const LayoutObject& layout_object,
-    const FloatRect& text_bounds,
-    const FloatRect& reference_box) {
+    const FloatRect& text_bounds) {
   DCHECK(layout_object.IsSVGText() || layout_object.IsSVGInline());
   FloatRect visual_rect = ExtendTextBBoxWithStroke(layout_object, text_bounds);
   if (const ShadowList* text_shadow = layout_object.StyleRef().TextShadow())
     text_shadow->AdjustRectForShadow(visual_rect);
-  AdjustVisualRectWithResources(layout_object, reference_box, visual_rect);
   return visual_rect;
 }
 

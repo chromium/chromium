@@ -383,9 +383,7 @@ FloatRect LayoutSVGText::VisualRectInLocalSVGCoordinates() const {
   NOT_DESTROYED();
   if (!FirstRootBox())
     return FloatRect();
-  const FloatRect object_bounds = ObjectBoundingBox();
-  return SVGLayoutSupport::ComputeVisualRectForText(*this, object_bounds,
-                                                    object_bounds);
+  return SVGLayoutSupport::ComputeVisualRectForText(*this, ObjectBoundingBox());
 }
 
 void LayoutSVGText::AddOutlineRects(Vector<PhysicalRect>& rects,

@@ -291,8 +291,6 @@ void LayoutSVGShape::UpdateLayout() {
     needs_shape_update_ = false;
 
     local_visual_rect_ = StrokeBoundingBox();
-    SVGLayoutSupport::AdjustVisualRectWithResources(*this, ObjectBoundingBox(),
-                                                    local_visual_rect_);
     needs_boundaries_update_ = false;
 
     update_parent_boundaries = true;

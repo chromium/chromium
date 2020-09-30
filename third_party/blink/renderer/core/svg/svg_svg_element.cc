@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_model_object.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_root.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_viewport_container.h"
+#include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
 #include "third_party/blink/renderer/core/svg/animation/smil_time_container.h"
 #include "third_party/blink/renderer/core/svg/svg_angle_tear_off.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_length.h"
@@ -321,8 +322,10 @@ bool SVGSVGElement::CheckIntersectionOrEnclosure(
 
   AffineTransform ctm =
       To<SVGGraphicsElement>(element).ComputeCTM(kAncestorScope, this);
-  FloatRect mapped_repaint_rect =
-      ctm.MapRect(layout_object->VisualRectInLocalSVGCoordinates());
+  FloatRect visual_rect = layout_object->VisualRectInLocalSVGCoordinates();
+  SVGLayoutSupport::AdjustWithClipPathAndMask(
+      *layout_object, layout_object->ObjectBoundingBox(), visual_rect);
+  FloatRect mapped_repaint_rect = ctm.MapRect(visual_rect);
 
   bool result = false;
   switch (mode) {

@@ -91,8 +91,14 @@ void LayoutSVGModelObject::AddOutlineRects(Vector<PhysicalRect>& rects,
                                            const PhysicalOffset&,
                                            NGOutlineType) const {
   NOT_DESTROYED();
-  rects.push_back(
-      PhysicalRect::EnclosingRect(VisualRectInLocalSVGCoordinates()));
+  FloatRect visual_rect = VisualRectInLocalSVGCoordinates();
+  bool was_empty = visual_rect.IsEmpty();
+  SVGLayoutSupport::AdjustWithClipPathAndMask(*this, ObjectBoundingBox(),
+                                              visual_rect);
+  // If visual rect is clipped away then don't add it.
+  if (!was_empty && visual_rect.IsEmpty())
+    return;
+  rects.push_back(PhysicalRect::EnclosingRect(visual_rect));
 }
 
 FloatRect LayoutSVGModelObject::LocalBoundingBoxRectForAccessibility() const {

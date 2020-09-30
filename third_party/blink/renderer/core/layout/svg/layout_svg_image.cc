@@ -175,8 +175,6 @@ void LayoutSVGImage::UpdateLayout() {
   bool update_parent_boundaries = false;
   if (needs_boundaries_update_) {
     local_visual_rect_ = object_bounding_box_;
-    SVGLayoutSupport::AdjustVisualRectWithResources(*this, object_bounding_box_,
-                                                    local_visual_rect_);
     needs_boundaries_update_ = false;
     update_parent_boundaries = true;
   }
