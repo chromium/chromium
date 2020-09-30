@@ -46,7 +46,7 @@ extern const char kSmartLockEnabledDeprecatedPrefName[];
 
 void RegisterFeaturePrefs(PrefRegistrySimple* registry);
 bool AreAnyMultiDeviceFeaturesAllowed(const PrefService* pref_service);
-bool IsFeatureAllowed(mojom::Feature feature, PrefService* pref_service);
+bool IsFeatureAllowed(mojom::Feature feature, const PrefService* pref_service);
 
 }  // namespace multidevice_setup
 

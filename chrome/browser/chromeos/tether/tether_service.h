@@ -75,10 +75,6 @@ class TetherService
 
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
-  // Whether the Tether feature has been enabled via a chrome://about or
-  // command line flag.
-  static bool IsFeatureFlagEnabled();
-
   // Attempt to start the Tether module. Only succeeds if all conditions to
   // reach chromeos::NetworkStateHandler::TechnologyState::ENABLED are reached.
   // Should only be called once a user is logged in.

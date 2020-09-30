@@ -48,6 +48,7 @@ source_set("prefs") {
 
   deps = [
     "//base",
+    "//chromeos/constants",
     "//chromeos/services/multidevice_setup/public/mojom",
     "//components/prefs:prefs",
   ]
