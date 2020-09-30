@@ -1074,12 +1074,15 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerAdditionalSearchTermsTest,
   WaitForTestSystemAppInstall();
   AppId app_id = GetManager().GetAppIdForSystemApp(GetMockAppType()).value();
 
+  // AdditionalSearchTerms is flaky on Windows as it's a Chrome OS feature.
+#if defined(OS_CHROMEOS)
   apps::AppServiceProxy* proxy = GetAppServiceProxy(browser()->profile());
   proxy->AppRegistryCache().ForOneApp(
       app_id, [](const apps::AppUpdate& update) {
         EXPECT_EQ(std::vector<std::string>({"Security"}),
                   update.AdditionalSearchTerms());
       });
+#endif  // defined(OS_CHROMEOS)
 }
 
 // Tests that SWA are correctly uninstalled across restarts.
