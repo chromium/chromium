@@ -130,11 +130,6 @@ fuchsia::web::FrameHost* CastRunner::main_context_frame_host() const {
   return main_context_.get();
 }
 
-void CastRunner::SetOnMainContextLostCallbackForTest(
-    base::OnceClosure on_context_lost) {
-  main_context_->SetOnContextLostCallbackForTest(std::move(on_context_lost));
-}
-
 void CastRunner::LaunchPendingComponent(PendingCastComponent* pending_component,
                                         CastComponent::Params params) {
   // Save the list of CORS exemptions so that they can be used in Context

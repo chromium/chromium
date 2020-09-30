@@ -19,6 +19,7 @@
 #include "fuchsia/base/init_logging.h"
 #include "fuchsia/base/inspect.h"
 #include "fuchsia/runners/cast/cast_runner.h"
+#include "fuchsia/runners/cast/cast_runner_switches.h"
 #include "mojo/core/embedder/embedder.h"
 
 namespace {
@@ -30,6 +31,12 @@ constexpr char kComponentUrl[] =
 
 bool IsHeadless() {
   constexpr char kHeadlessConfigKey[] = "headless";
+
+  // In tests headless mode can be enabled with a command-line flag.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          kForceHeadlessForTestsSwitch)) {
+    return true;
+  }
 
   const base::Optional<base::Value>& config = cr_fuchsia::LoadPackageConfig();
   if (config)
@@ -52,7 +59,6 @@ bool AllowMainContextSharing() {
 
 int main(int argc, char** argv) {
   base::SingleThreadTaskExecutor io_task_executor(base::MessagePumpType::IO);
-  base::RunLoop run_loop;
 
   cr_fuchsia::RegisterProductDataForCrashReporting(kComponentUrl,
                                                    kCrashProductName);
@@ -74,6 +80,11 @@ int main(int argc, char** argv) {
   base::fuchsia::ScopedServiceBinding<fuchsia::sys::Runner> binding(
       outgoing_directory, &runner);
 
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          kDisableVulkanForTestsSwitch)) {
+    runner.set_disable_vulkan_for_test();  // IN-TEST
+  }
+
   // Optionally publish the fuchsia.web.FrameHost service, to allow the Cast
   // application web.Context to be shared by other components.
   base::Optional<base::fuchsia::ScopedServiceBinding<fuchsia::web::FrameHost>>
@@ -89,6 +100,7 @@ int main(int argc, char** argv) {
   cr_fuchsia::PublishVersionInfoToInspect(base::ComponentInspectorForProcess());
 
   // TODO(https://crbug.com/952560): Implement Components v2 graceful exit.
+  base::RunLoop run_loop;
   run_loop.Run();
 
   return 0;

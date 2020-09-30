@@ -57,11 +57,8 @@ void WebContentRunner::CreateFrameWithParams(
   if (!context_) {
     DCHECK(get_context_params_callback_);
     context_ = CreateWebContext(get_context_params_callback_.Run());
-    context_.set_error_handler([this](zx_status_t status) {
+    context_.set_error_handler([](zx_status_t status) {
       ZX_LOG(ERROR, status) << "Connection to Context lost.";
-      if (on_context_lost_callback_) {
-        std::move(on_context_lost_callback_).Run();
-      }
     });
   }
 
@@ -111,9 +108,4 @@ void WebContentRunner::RegisterComponent(
 
 void WebContentRunner::SetOnEmptyCallback(base::OnceClosure on_empty) {
   on_empty_callback_ = std::move(on_empty);
-}
-
-void WebContentRunner::SetOnContextLostCallbackForTest(
-    base::OnceClosure callback) {
-  on_context_lost_callback_ = std::move(callback);
 }

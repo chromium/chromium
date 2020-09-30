@@ -60,6 +60,8 @@ source_set("cast_runner_core") {
     "cast/cast_component.h",
     "cast/cast_runner.cc",
     "cast/cast_runner.h",
+    "cast/cast_runner_switches.cc",
+    "cast/cast_runner_switches.h",
     "cast/cast_streaming.cc",
     "cast/cast_streaming.h",
     "cast/named_message_port_connector_fuchsia.cc",
@@ -195,10 +197,16 @@ test("cast_runner_integration_tests") {
     "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
   ]
   data_deps = [ ":cast_runner_core" ]
-  package_deps = [ [
-        "//fuchsia/engine:web_engine",
-        "web_engine",
-      ] ]
+  package_deps = [
+    [
+      ":cast_runner_pkg",
+      "cast_runner",
+    ],
+    [
+      "//fuchsia/engine:web_engine",
+      "web_engine",
+    ],
+  ]
 }
 
 test("cast_runner_browsertests") {

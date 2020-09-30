@@ -61,9 +61,6 @@ class WebContentRunner : public fuchsia::sys::Runner,
   // Sets a callback to invoke when |components_| next becomes empty.
   void SetOnEmptyCallback(base::OnceClosure on_empty);
 
-  // Sets a callback that's called when |context_| disconnects.
-  void SetOnContextLostCallbackForTest(base::OnceClosure on_context_lost);
-
   // TODO(https://crbug.com/1065707): Remove this once capability routing for
   // the fuchsia.legacymetrics.Provider service is properly set up.
   // Returns a pointer to any currently running component, or nullptr if no
@@ -82,8 +79,6 @@ class WebContentRunner : public fuchsia::sys::Runner,
       components_;
 
   base::OnceClosure on_empty_callback_;
-
-  base::OnceClosure on_context_lost_callback_;
 
   DISALLOW_COPY_AND_ASSIGN(WebContentRunner);
 };

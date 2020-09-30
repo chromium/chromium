@@ -56,8 +56,6 @@ class CastRunner : public fuchsia::sys::Runner,
   // host non-isolated Cast applications.
   fuchsia::web::FrameHost* main_context_frame_host() const;
 
-  void SetOnMainContextLostCallbackForTest(base::OnceClosure on_context_lost);
-
   // Disables use of the VULKAN feature when creating Contexts. Must be set
   // before calling StartComponent().
   void set_disable_vulkan_for_test() { disable_vulkan_for_test_ = true; }
