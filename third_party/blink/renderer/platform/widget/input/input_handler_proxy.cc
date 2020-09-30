@@ -598,7 +598,8 @@ void InputHandlerProxy::InjectScrollbarGestureScroll(
       std::make_unique<EventWithCallback>(
           std::make_unique<WebCoalescedInputEvent>(
               std::move(web_scoped_gesture_event), scrollbar_latency_info),
-          original_timestamp, original_timestamp, nullptr);
+          original_timestamp, original_timestamp,
+          EventWithCallback::OriginalEventList());
 
   bool needs_animate_input = compositor_event_queue_->empty();
   compositor_event_queue_->Queue(std::move(gesture_event_with_callback_update),

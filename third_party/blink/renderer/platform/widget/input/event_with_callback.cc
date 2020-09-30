@@ -24,12 +24,11 @@ EventWithCallback::EventWithCallback(
     std::unique_ptr<WebCoalescedInputEvent> event,
     base::TimeTicks creation_timestamp,
     base::TimeTicks last_coalesced_timestamp,
-    std::unique_ptr<OriginalEventList> original_events)
+    OriginalEventList original_events)
     : event_(std::move(event)),
       creation_timestamp_(creation_timestamp),
       last_coalesced_timestamp_(last_coalesced_timestamp) {
-  if (original_events)
-    original_events_.splice(original_events_.end(), *original_events);
+  original_events_.splice(original_events_.end(), original_events);
 }
 
 EventWithCallback::~EventWithCallback() {}

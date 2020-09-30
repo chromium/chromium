@@ -36,7 +36,7 @@ class PLATFORM_EXPORT EventWithCallback {
   EventWithCallback(std::unique_ptr<WebCoalescedInputEvent> event,
                     base::TimeTicks creation_timestamp,
                     base::TimeTicks last_coalesced_timestamp,
-                    std::unique_ptr<OriginalEventList> original_events);
+                    OriginalEventList original_events);
   ~EventWithCallback();
 
   bool CanCoalesceWith(const EventWithCallback& other) const WARN_UNUSED_RESULT;
