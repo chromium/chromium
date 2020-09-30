@@ -5797,9 +5797,7 @@
 
       Leaving the policy unset means <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME">DefaultWebUsbGuardSetting</ph> applies, if it's set. If not, the user's personal setting applies.
 
-      URL patterns in this policy shouldn't conflict with those configured through <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME">WebUsbBlockedForUrls</ph>. If they do, this policy takes precedence over <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME">WebUsbBlockedForUrls</ph> and <ph name="WEB_USB_ASK_FOR_URLS_POLICY_NAME">WebUsbAskForUrls</ph>.
-
-      Values for this policy and <ph name="DEVICE_WEB_USB_ALLOW_DEVICES_FOR_URLS_POLICY_NAME">DeviceWebUsbAllowDevicesForUrls</ph> merge.''',
+      URL patterns in this policy shouldn't conflict with those configured through <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME">WebUsbBlockedForUrls</ph>. If they do, this policy takes precedence over <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME">WebUsbBlockedForUrls</ph> and <ph name="WEB_USB_ASK_FOR_URLS_POLICY_NAME">WebUsbAskForUrls</ph>.''',
     },
     {
       'name': 'DeviceLoginScreenWebUsbAllowDevicesForUrls',
