@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_TEST_SUPPORT_PERFORMANCE_MANAGER_BROWSERTEST_HARNESS_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_TEST_SUPPORT_PERFORMANCE_MANAGER_BROWSERTEST_HARNESS_H_
 
-#include "components/performance_manager/test_support/test_harness_helper.h"
 #include "content/public/test/content_browser_test.h"
 
 namespace performance_manager {
@@ -18,7 +17,7 @@ class PerformanceManagerBrowserTestHarness
   using Super = content::ContentBrowserTest;
 
  public:
-  PerformanceManagerBrowserTestHarness();
+  PerformanceManagerBrowserTestHarness() = default;
   PerformanceManagerBrowserTestHarness(
       const PerformanceManagerBrowserTestHarness&) = delete;
   PerformanceManagerBrowserTestHarness& operator=(
@@ -27,10 +26,7 @@ class PerformanceManagerBrowserTestHarness
 
   // content::BrowserTestBase:
   void PreRunTestOnMainThread() override;
-  void PostRunTestOnMainThread() override;
   void SetUpCommandLine(base::CommandLine* command_line) override;
-  void CreatedBrowserMainParts(
-      content::BrowserMainParts* browser_main_parts) override;
 
   // Creates a content shell with its own window, hosting a single tab that is
   // navigated to about:blank. The WebContents will have the PM helpers
@@ -44,9 +40,6 @@ class PerformanceManagerBrowserTestHarness
 
   // Waits for an ongoing navigation to terminate on the given |contents|.
   void WaitForLoad(content::WebContents* contents);
-
- private:
-  std::unique_ptr<PerformanceManagerTestHarnessHelper> helper_;
 };
 
 }  // namespace performance_manager

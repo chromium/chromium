@@ -4,8 +4,11 @@
 
 #include "content/shell/browser/shell_browser_main_parts.h"
 
+#include <utility>
+
 #include "base/base_switches.h"
 #include "base/bind.h"
+#include "base/bind_helpers.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -14,6 +17,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "cc/base/switches.h"
+#include "components/performance_manager/embedder/performance_manager_lifetime.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/storage_partition.h"
@@ -190,6 +194,12 @@ int ShellBrowserMainParts::PreCreateThreads() {
   return 0;
 }
 
+void ShellBrowserMainParts::PostCreateThreads() {
+  performance_manager_lifetime_ =
+      std::make_unique<performance_manager::PerformanceManagerLifetime>(
+          performance_manager::Decorators::kNone, base::DoNothing());
+}
+
 void ShellBrowserMainParts::PreMainMessageLoopRun() {
   InitializeBrowserContexts();
   Shell::Initialize(CreateShellPlatformDelegate());
@@ -215,6 +225,7 @@ void ShellBrowserMainParts::PostMainMessageLoopRun() {
 #if BUILDFLAG(USE_GTK)
   views::LinuxUI::SetInstance(nullptr);
 #endif
+  performance_manager_lifetime_.reset();
 }
 
 void ShellBrowserMainParts::PreDefaultMainMessageLoopRun(

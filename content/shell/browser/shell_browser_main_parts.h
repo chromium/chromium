@@ -15,6 +15,10 @@
 #include "content/shell/browser/shell_browser_context.h"
 #include "ui/base/buildflags.h"
 
+namespace performance_manager {
+class PerformanceManagerLifetime;
+}  // namespace performance_manager
+
 #if BUILDFLAG(USE_GTK)
 namespace ui {
 class GtkUiDelegate;
@@ -32,6 +36,7 @@ class ShellBrowserMainParts : public BrowserMainParts {
   // BrowserMainParts overrides.
   int PreEarlyInitialization() override;
   int PreCreateThreads() override;
+  void PostCreateThreads() override;
   void PreMainMessageLoopStart() override;
   void PostMainMessageLoopStart() override;
   void ToolkitInitialized() override;
@@ -72,6 +77,9 @@ class ShellBrowserMainParts : public BrowserMainParts {
 #if BUILDFLAG(USE_GTK)
   std::unique_ptr<ui::GtkUiDelegate> gtk_ui_delegate_;
 #endif
+
+  std::unique_ptr<performance_manager::PerformanceManagerLifetime>
+      performance_manager_lifetime_;
 
   DISALLOW_COPY_AND_ASSIGN(ShellBrowserMainParts);
 };

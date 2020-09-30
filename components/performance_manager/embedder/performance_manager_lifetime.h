@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback_forward.h"
+#include "components/performance_manager/embedder/performance_manager_registry.h"
 #include "components/performance_manager/public/performance_manager.h"
 
 namespace performance_manager {
@@ -15,6 +16,20 @@ namespace performance_manager {
 class Graph;
 
 using GraphCreatedCallback = base::OnceCallback<void(Graph*)>;
+
+enum class Decorators { kNone, kDefault };
+
+// A helper class that manages the lifetime of PerformanceManager
+// and PerformanceManagerRegistry.
+class PerformanceManagerLifetime {
+ public:
+  PerformanceManagerLifetime(Decorators, GraphCreatedCallback);
+  ~PerformanceManagerLifetime();
+
+ private:
+  std::unique_ptr<PerformanceManager> performance_manager_;
+  std::unique_ptr<PerformanceManagerRegistry> performance_manager_registry_;
+};
 
 // Creates a PerformanceManager with default decorators.
 // |graph_created_callback| is invoked on the PM sequence once the Graph is

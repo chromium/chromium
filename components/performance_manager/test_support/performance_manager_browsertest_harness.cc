@@ -6,7 +6,6 @@
 
 #include "base/bind_helpers.h"
 #include "base/run_loop.h"
-#include "components/performance_manager/embedder/performance_manager_registry.h"
 #include "content/public/common/content_switches.h"
 #include "content/shell/browser/shell.h"
 #include "content/shell/browser/shell_content_browser_client.h"
@@ -17,10 +16,6 @@
 #include "services/service_manager/public/cpp/binder_registry.h"
 
 namespace performance_manager {
-
-PerformanceManagerBrowserTestHarness::PerformanceManagerBrowserTestHarness() {
-  helper_ = std::make_unique<PerformanceManagerTestHarnessHelper>();
-}
 
 PerformanceManagerBrowserTestHarness::~PerformanceManagerBrowserTestHarness() =
     default;
@@ -35,53 +30,11 @@ void PerformanceManagerBrowserTestHarness::PreRunTestOnMainThread() {
   ASSERT_TRUE(embedded_test_server()->Start());
 }
 
-void PerformanceManagerBrowserTestHarness::PostRunTestOnMainThread() {
-  helper_->TearDown();
-  Super::PostRunTestOnMainThread();
-}
-
 void PerformanceManagerBrowserTestHarness::SetUpCommandLine(
     base::CommandLine* command_line) {
   // Ensure the PM logic is enabled in renderers.
   command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
                                   "PerformanceManagerInstrumentation");
-}
-
-// We're a full embedder of the PM, so we have to wire up all of the embedder
-// hooks. Note that this runs *before* PreRunTestOnMainThread.
-void PerformanceManagerBrowserTestHarness::CreatedBrowserMainParts(
-    content::BrowserMainParts* browser_main_parts) {
-  helper_->SetUp();
-
-  content::ShellContentBrowserClient::Get()
-      ->set_web_contents_view_delegate_callback(
-          base::BindRepeating([](content::WebContents* contents)
-                                  -> content::WebContentsViewDelegate* {
-            PerformanceManagerRegistry::GetInstance()
-                ->MaybeCreatePageNodeForWebContents(contents);
-            return content::CreateShellWebContentsViewDelegate(contents);
-          }));
-
-  // Expose interfaces to RenderProcess.
-  content::ShellContentBrowserClient::Get()
-      ->set_expose_interfaces_to_renderer_callback(base::BindRepeating(
-          [](service_manager::BinderRegistry* registry,
-             blink::AssociatedInterfaceRegistry* associated_registry_unused,
-             content::RenderProcessHost* render_process_host) {
-            PerformanceManagerRegistry::GetInstance()
-                ->CreateProcessNodeAndExposeInterfacesToRendererProcess(
-                    registry, render_process_host);
-          }));
-
-  // Expose interfaces to RenderFrame.
-  content::ShellContentBrowserClient::Get()
-      ->set_register_browser_interface_binders_for_frame_callback(
-          base::BindRepeating(
-              [](content::RenderFrameHost* render_frame_host,
-                 mojo::BinderMapWithContext<content::RenderFrameHost*>* map) {
-                PerformanceManagerRegistry::GetInstance()
-                    ->ExposeInterfacesToRenderFrame(map);
-              }));
 }
 
 content::Shell* PerformanceManagerBrowserTestHarness::CreateShell() {

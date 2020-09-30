@@ -5,6 +5,7 @@
 #include "components/performance_manager/embedder/performance_manager_lifetime.h"
 
 #include "base/bind.h"
+#include "base/notreached.h"
 #include "build/build_config.h"
 #include "components/performance_manager/decorators/page_load_tracker_decorator.h"
 #include "components/performance_manager/execution_context/execution_context_registry_impl.h"
@@ -43,13 +44,49 @@ void DefaultGraphCreatedCallback(
   std::move(external_graph_created_callback).Run(graph);
 }
 
+void NullGraphCreatedCallback(
+    GraphCreatedCallback external_graph_created_callback,
+    GraphImpl* graph) {
+  std::move(external_graph_created_callback).Run(graph);
+}
+
+base::OnceCallback<void(GraphImpl*)> AddDecorators(
+    Decorators decorators,
+    GraphCreatedCallback graph_created_callback) {
+  switch (decorators) {
+    case Decorators::kNone:
+      return base::BindOnce(&NullGraphCreatedCallback,
+                            std::move(graph_created_callback));
+    case Decorators::kDefault:
+      return base::BindOnce(&DefaultGraphCreatedCallback,
+                            std::move(graph_created_callback));
+  }
+  NOTREACHED();
+  return {};
+}
+
 }  // namespace
+
+PerformanceManagerLifetime::PerformanceManagerLifetime(
+    Decorators decorators,
+    GraphCreatedCallback graph_created_callback)
+    : performance_manager_(PerformanceManagerImpl::Create(
+          AddDecorators(decorators, std::move(graph_created_callback)))),
+      performance_manager_registry_(
+          performance_manager::PerformanceManagerRegistry::Create()) {}
+
+PerformanceManagerLifetime::~PerformanceManagerLifetime() {
+  performance_manager_registry_->TearDown();
+  performance_manager_registry_.reset();
+  performance_manager::DestroyPerformanceManager(
+      std::move(performance_manager_));
+}
 
 std::unique_ptr<PerformanceManager>
 CreatePerformanceManagerWithDefaultDecorators(
     GraphCreatedCallback graph_created_callback) {
-  return PerformanceManagerImpl::Create(base::BindOnce(
-      &DefaultGraphCreatedCallback, std::move(graph_created_callback)));
+  return PerformanceManagerImpl::Create(
+      AddDecorators(Decorators::kDefault, std::move(graph_created_callback)));
 }
 
 void DestroyPerformanceManager(std::unique_ptr<PerformanceManager> instance) {

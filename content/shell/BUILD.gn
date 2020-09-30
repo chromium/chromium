@@ -217,6 +217,7 @@ static_library("content_shell_lib") {
     "//components/cdm/renderer",
     "//components/keyed_service/content",
     "//components/network_session_configurator/common",
+    "//components/performance_manager",
     "//components/services/storage/test_api",
     "//components/url_formatter",
     "//components/web_cache/renderer",
