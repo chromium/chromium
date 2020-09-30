@@ -29,6 +29,7 @@
 #include "components/sync/driver/test_sync_service.h"
 #include "components/sync_user_events/fake_user_event_service.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -119,9 +120,13 @@ class FlocIdProviderWithCustomizedServicesBrowserTest
   FlocIdProviderWithCustomizedServicesBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
         {features::kFlocIdComputedEventLogging,
-         features::kFlocIdBlocklistFiltering,
-         blink::features::kInterestCohortAPI},
+         features::kFlocIdBlocklistFiltering},
         {});
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
+                                    "InterestCohortAPI");
   }
 
   // BrowserTestBase::SetUpInProcessBrowserTestFixture

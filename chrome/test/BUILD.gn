@@ -1011,6 +1011,7 @@ if (!is_android) {
       "../browser/fast_shutdown_browsertest.cc",
       "../browser/favicon/content_favicon_driver_browsertest.cc",
       "../browser/federated_learning/floc_id_provider_browsertest.cc",
+      "../browser/federated_learning/floc_origin_trial_browsertest.cc",
       "../browser/first_run/first_run_browsertest.cc",
       "../browser/geolocation/geolocation_browsertest.cc",
       "../browser/guest_view/mime_handler_view/chrome_mime_handler_view_browsertest.cc",

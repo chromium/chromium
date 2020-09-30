@@ -352,7 +352,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {"HTMLImports", blink::features::kWebComponentsV0},
           {"IgnoreCrossOriginWindowWhenNamedAccessOnWindow",
            blink::features::kIgnoreCrossOriginWindowWhenNamedAccessOnWindow},
-          {"InterestCohortAPI", blink::features::kInterestCohortAPI},
           {"LangClientHintHeader", features::kLangClientHintHeader},
           {"LayoutNG", blink::features::kLayoutNG},
           {"LayoutNGFieldset", blink::features::kLayoutNGFieldset},
