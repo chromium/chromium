@@ -17437,6 +17437,7 @@ Called by update_document_policy_enum.py.-->
   <int value="7" label="CZ_NIC"/>
   <int value="8" label="NEXT_DNS"/>
   <int value="9" label="OPEN_DNS"/>
+  <int value="10" label="ALEK_BERG_NL"/>
 </enum>
 
 <enum name="DomainBoundCerts.DBLoadStatus">

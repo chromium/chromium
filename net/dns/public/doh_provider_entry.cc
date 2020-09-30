@@ -33,6 +33,13 @@ const DohProviderEntry::List& DohProviderEntry::GetList() {
   // DohProviderId histogram suffix list in
   // tools/metrics/histograms/histograms.xml.
   static const base::NoDestructor<DohProviderEntry::List> providers{{
+      new DohProviderEntry("AlekBergNl", DohProviderIdForHistogram::kAlekBergNl,
+                           {} /* ip_strs */, {} /* dns_over_tls_hostnames */,
+                           "https://dnsnl.alekberg.net/dns-query{?dns}",
+                           "alekberg.net (NL)" /* ui_name */,
+                           "https://alekberg.net/privacy" /* privacy_policy */,
+                           false /* display_globally */,
+                           {"NL"} /* display_countries */),
       new DohProviderEntry(
           "CleanBrowsingAdult", base::nullopt /* provider_id_for_histogram */,
           {"185.228.168.10", "185.228.169.11", "2a0d:2a00:1::1",

@@ -5299,6 +5299,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram_suffixes>
 
 <histogram_suffixes name="DohProviderId" separator="." ordering="prefix,4">
+  <suffix name="AlekBergNl" label="alekberg.net Amsterdam."/>
   <suffix name="CleanBrowsingAdult" label="CleanBrowsing adult filter."/>
   <suffix name="CleanBrowsingFamily" label="CleanBrowsing family filter."/>
   <suffix name="CleanBrowsingSecure" label="CleanBrowsing secure filter."/>
