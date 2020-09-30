@@ -1382,7 +1382,9 @@ apps::mojom::AppPtr ArcApps::Convert(ArcAppListPrefs* prefs,
 
   auto* intent_helper_bridge =
       arc::ArcIntentHelperBridge::GetForBrowserContext(profile_);
-  if (intent_helper_bridge) {
+  if (intent_helper_bridge &&
+      app_info.package_name !=
+          arc::ArcIntentHelperBridge::kArcIntentHelperPackageName) {
     UpdateAppIntentFilters(app_info.package_name, intent_helper_bridge,
                            &app->intent_filters);
   }
