@@ -76,7 +76,7 @@ bugs](https://bugs.chromium.org/p/chromium/issues/list?sort=pri%20-modified&q=Ne
 
 * If the requested feedback was provided, review the new information and repeat
   the same steps as (1) to re-triage based on the new information.
-* If the bug had the `Needs-Feedback` label for over a week and the
+* If the bug had the `Needs-Feedback` label for over 30 days, and the
   feedback needed to make progress was not yet provided, archive the bug.
 
 ## 3. Ensure P0 and P1 bugs have an owner
