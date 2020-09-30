@@ -790,6 +790,9 @@ below:
         <message name="IDS_AX_TOGGLE_BUTTON_OFF" desc="Accessibility state description for a toggle button when it is in the off/unchecked state">
           Off
         </message>
+        <message name="IDS_AX_CHECKBOX_PARTIALLY_CHECKED" desc="Accessibility state description for a checkbox that is in the partially checked state">
+          Partially Checked
+        </message>
       </if>
 
       <!-- Automatic image annotations for accessibility -->

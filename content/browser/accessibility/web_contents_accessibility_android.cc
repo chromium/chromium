@@ -758,11 +758,11 @@ jboolean WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfo(
         env, obj, info, android_node->unique_id());
   }
   Java_WebContentsAccessibilityImpl_setAccessibilityNodeInfoBooleanAttributes(
-      env, obj, info, unique_id, node->IsCheckable(), node->IsChecked(),
-      node->IsClickable(), node->IsContentInvalid(), node->IsEnabled(),
-      node->IsFocusable(), node->IsFocused(), node->HasImage(),
-      node->IsPasswordField(), node->IsScrollable(), node->IsSelected(),
-      node->IsVisibleToUser());
+      env, obj, info, unique_id, node->IsReportingCheckable(),
+      node->IsChecked(), node->IsClickable(), node->IsContentInvalid(),
+      node->IsEnabled(), node->IsFocusable(), node->IsFocused(),
+      node->HasImage(), node->IsPasswordField(), node->IsScrollable(),
+      node->IsSelected(), node->IsVisibleToUser());
   Java_WebContentsAccessibilityImpl_addAccessibilityNodeInfoActions(
       env, obj, info, unique_id, node->CanScrollForward(),
       node->CanScrollBackward(), node->CanScrollUp(), node->CanScrollDown(),

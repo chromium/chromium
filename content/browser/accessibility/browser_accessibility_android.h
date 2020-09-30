@@ -47,6 +47,7 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid : public BrowserAccessibility {
   bool IsMultiLine() const;
   bool IsMultiselectable() const;
   bool IsRangeType() const;
+  bool IsReportingCheckable() const;
   bool IsScrollable() const;
   bool IsSeekControl() const;
   bool IsSelected() const;
@@ -93,6 +94,7 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid : public BrowserAccessibility {
   base::string16 GetStateDescription() const;
   base::string16 GetMultiselectableStateDescription() const;
   base::string16 GetToggleButtonStateDescription() const;
+  base::string16 GetCheckboxStateDescription() const;
 
   base::string16 GetRoleDescription() const;
 
