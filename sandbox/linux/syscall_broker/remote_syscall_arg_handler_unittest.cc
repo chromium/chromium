@@ -75,11 +75,11 @@ pid_t ForkWaitingChild(base::OnceCallback<void(int)>
   pid_t pid = fork();
   if (!pid) {
     parent_sync.reset();
-    char dummy_buf[1];
+    char dummy_char = 'a';
     std::vector<base::ScopedFD> empty_fd_vec;
     // Wait for parent to exit before exiting ourselves.
-    base::UnixDomainSocket::RecvMsg(child_sync.get(), dummy_buf,
-                                    sizeof(dummy_buf), &empty_fd_vec);
+    base::UnixDomainSocket::RecvMsg(child_sync.get(), &dummy_char, 1,
+                                    &empty_fd_vec);
     std::move(after_parent_signals_callback).Run(child_sync.get());
     _exit(1);
   }
@@ -228,10 +228,10 @@ SANDBOX_TEST(BrokerRemoteSyscallArgHandler, ReadChildExited) {
   child_sync.reset();
 
   // Wait for child to exit before reading memory.
-  char dummy_buf[1];
+  char dummy_char = 'a';
   std::vector<base::ScopedFD> empty_fd_vec;
-  base::UnixDomainSocket::RecvMsg(parent_sync.get(), dummy_buf,
-                                  sizeof(dummy_buf), &empty_fd_vec);
+  base::UnixDomainSocket::RecvMsg(parent_sync.get(), &dummy_char, 1,
+                                  &empty_fd_vec);
 
   munmap(addr, base::GetPageSize());
 
@@ -266,9 +266,9 @@ SANDBOX_TEST(BrokerRemoteSyscallArgHandler, BasicWrite) {
   SANDBOX_ASSERT_EQ(result, RemoteProcessIOResult::kSuccess);
 
   // Release child.
-  char dummy_buf[1];
-  base::UnixDomainSocket::SendMsg(parent_signal_fd.get(), dummy_buf,
-                                  sizeof(dummy_buf), empty_fd_vec);
+  char dummy_char = 'a';
+  base::UnixDomainSocket::SendMsg(parent_signal_fd.get(), &dummy_char, 1,
+                                  empty_fd_vec);
 
   // Read result of memcmp and assert.
   int memcmp_res;
@@ -330,10 +330,10 @@ SANDBOX_TEST(BrokerRemoteSyscallArgHandler, WriteChildExited) {
   child_sync.reset();
 
   // Wait for child to exit before writing memory.
-  char dummy_buf[1];
+  char dummy_char = 'a';
   std::vector<base::ScopedFD> empty_fd_vec;
-  base::UnixDomainSocket::RecvMsg(parent_sync.get(), dummy_buf,
-                                  sizeof(dummy_buf), &empty_fd_vec);
+  base::UnixDomainSocket::RecvMsg(parent_sync.get(), &dummy_char, 1,
+                                  &empty_fd_vec);
 
   std::string out_str;
   SANDBOX_ASSERT_EQ(

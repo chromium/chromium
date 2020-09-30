@@ -18,6 +18,10 @@
 #include "sandbox/linux/system_headers/linux_seccomp.h"
 #include "sandbox/linux/system_headers/linux_syscalls.h"
 
+#if defined(MEMORY_SANITIZER)
+#include <sanitizer/msan_interface.h>
+#endif
+
 namespace sandbox {
 namespace syscall_broker {
 
@@ -106,6 +110,10 @@ RemoteProcessIOResult ReadFilePathFromRemoteProcess(pid_t pid,
     }
 
     // We successfully performed a read.
+#if defined(MEMORY_SANITIZER)
+    // Msan does not hook syscall(__NR_process_vm_readv, ...)
+    __msan_unpoison(local_iov.iov_base, bytes_read);
+#endif
     remote_ptr += bytes_read;
     buffer_span = buffer_span.subspan(bytes_read);
 

@@ -103,11 +103,7 @@ source_set("sandbox_linux_unittests_sources") {
     "syscall_broker/broker_file_permission_unittest.cc",
     "syscall_broker/broker_process_unittest.cc",
     "syscall_broker/broker_simple_message_unittest.cc",
-
-    # TODO(crbug/1117351): Fix unit tests:
-    # gn args is_msan = true, is_debug = false
-    # ./out/msan/sandbox_linux_unittests --gtest_filter="*BrokerRemote*"
-    # "syscall_broker/remote_syscall_arg_handler_unittest.cc",
+    "syscall_broker/remote_syscall_arg_handler_unittest.cc",
     "tests/main.cc",
     "tests/scoped_temporary_file.cc",
     "tests/scoped_temporary_file.h",
