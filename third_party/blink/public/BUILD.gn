@@ -278,6 +278,7 @@ source_set("blink_headers") {
     "platform/websocket_handshake_throttle.h",
     "web/blink.h",
     "web/modules/autofill/web_form_element_observer.h",
+    "web/modules/media/audio/fuchsia_audio_device_factory.h",
     "web/modules/media/audio/web_audio_device_factory.h",
     "web/modules/media/audio/web_audio_input_ipc_factory.h",
     "web/modules/media/audio/web_audio_output_ipc_factory.h",

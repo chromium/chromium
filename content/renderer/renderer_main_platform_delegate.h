@@ -16,7 +16,7 @@
 #include "content/public/common/main_function_params.h"
 
 #if defined(OS_FUCHSIA)
-#include "content/renderer/media/audio/fuchsia_audio_device_factory.h"
+#include "third_party/blink/public/web/modules/media/audio/fuchsia_audio_device_factory.h"
 #endif  // defined(OS_FUCHSIA)
 
 namespace content {
@@ -41,7 +41,8 @@ class CONTENT_EXPORT RendererMainPlatformDelegate {
 #endif
 
 #if defined(OS_FUCHSIA)
-  std::unique_ptr<FuchsiaAudioDeviceFactory> fuchsia_audio_device_factory_;
+  std::unique_ptr<blink::FuchsiaAudioDeviceFactory>
+      fuchsia_audio_device_factory_;
 #endif  // defined(OS_FUCHSIA)
 
   DISALLOW_COPY_AND_ASSIGN(RendererMainPlatformDelegate);

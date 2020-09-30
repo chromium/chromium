@@ -22,4 +22,8 @@ specific_include_rules = {
         "+base/test/test_mock_time_task_runner.h",
         "+base/threading/thread.h",
     ],
+    "fuchsia_audio_device_factory\.cc" : [
+        "+media/fuchsia/audio/fuchsia_audio_capturer_source.h",
+        "+media/fuchsia/mojom",
+    ],
 }
