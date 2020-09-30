@@ -115,6 +115,17 @@ void AccessibilityBridge::OnCommitComplete() {
   TryCommit();
 }
 
+uint32_t AccessibilityBridge::ConvertToFuchsiaNodeId(int32_t ax_node_id) {
+  if (ax_node_id == root_id_) {
+    // On the Fuchsia side, the root node is indicated by id
+    // |kSemanticNodeRootId|, which is 0.
+    return kSemanticNodeRootId;
+  } else {
+    // AXNode ids are signed, Semantic Node ids are unsigned.
+    return bit_cast<uint32_t>(ax_node_id);
+  }
+}
+
 void AccessibilityBridge::AccessibilityEventReceived(
     const content::AXEventNotificationDetails& details) {
   // Updates to AXTree must be applied first.
@@ -132,7 +143,7 @@ void AccessibilityBridge::AccessibilityEventReceived(
         pending_hit_test_callbacks_.find(event.action_request_id) !=
             pending_hit_test_callbacks_.end()) {
       fuchsia::accessibility::semantics::Hit hit;
-      hit.set_node_id(ConvertToFuchsiaNodeId(event.id, root_id_));
+      hit.set_node_id(ConvertToFuchsiaNodeId(event.id));
 
       // Run the pending callback with the hit.
       pending_hit_test_callbacks_[event.action_request_id](std::move(hit));
@@ -217,7 +228,7 @@ void AccessibilityBridge::DeleteSubtree(ui::AXNode* node) {
   if (node->id() != root_id_) {
     to_send_.push_back(
         SemanticUpdateOrDelete(SemanticUpdateOrDelete::Type::DELETE, {},
-                               ConvertToFuchsiaNodeId(node->id(), root_id_)));
+                               ConvertToFuchsiaNodeId(node->id())));
   }
   for (ui::AXNode* child : node->children())
     DeleteSubtree(child);
