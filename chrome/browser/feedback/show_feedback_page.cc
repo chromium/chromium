@@ -66,7 +66,7 @@ bool IsFromUserInteraction(FeedbackSource source) {
 #endif
 
 // TODO(http://crbug.com/1132106): Include the following code only in
-// non-lacros builds after M87 btea when Feedback crosapi is available in all
+// non-lacros builds after M87 beta when Feedback crosapi is available in all
 // ash versions.
 // Calls feedback private api to show Feedback ui.
 void RequestFeedbackFlow(const GURL& page_url,
