@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 
+#include "base/strings/strcat.h"
 #include "base/values.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_test_utils.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
@@ -25,6 +26,14 @@ constexpr char kUrlStr1[] = "https://wwww.example.com";
 constexpr char kUrlStr2[] = "https://wwww.google.com";
 constexpr char kUrlStr3[] = "*";
 constexpr char kUrlStr4[] = "https://www.gmail.com";
+
+constexpr char kHttpsPrefix[] = "https://www.";
+
+constexpr char kUrlPattern1[] = "chat.google.com";
+constexpr char kUrlPattern2[] = "salesforce.com";
+constexpr char kUrlPattern3[] = "docs.google.com";
+constexpr char kUrlPattern4[] = "drive.google.com";
+constexpr char kUrlPattern5[] = "*.company.com";
 
 }  // namespace
 
@@ -84,7 +93,8 @@ TEST_F(DlpRulesManagerTest, IsRestricted_LevelPrecedence) {
 
   rules.Append(dlp_test_util::CreateRule(
       "rule #1", "Block", std::move(src_urls_1), std::move(dst_urls_1),
-      base::Value(base::Value::Type::LIST), std::move(restrictions_1)));
+      /*dst_components=*/base::Value(base::Value::Type::LIST),
+      std::move(restrictions_1)));
 
   // Second Rule
   base::Value src_urls_2(base::Value::Type::LIST);
@@ -99,7 +109,8 @@ TEST_F(DlpRulesManagerTest, IsRestricted_LevelPrecedence) {
 
   rules.Append(dlp_test_util::CreateRule(
       "rule #2", "exceptional allow", std::move(src_urls_2),
-      std::move(dst_urls_2), base::Value(base::Value::Type::LIST),
+      std::move(dst_urls_2),
+      /*dst_components=*/base::Value(base::Value::Type::LIST),
       std::move(restrictions_2)));
   UpdatePolicyPref(std::move(rules));
 
@@ -148,8 +159,9 @@ TEST_F(DlpRulesManagerTest, UpdatePref) {
 
   rules_1.Append(dlp_test_util::CreateRule(
       "rule #1", "Block", std::move(src_urls_1),
-      base::Value(base::Value::Type::LIST),
-      base::Value(base::Value::Type::LIST), std::move(restrictions_1)));
+      /*dst_urls=*/base::Value(base::Value::Type::LIST),
+      /*dst_components=*/base::Value(base::Value::Type::LIST),
+      std::move(restrictions_1)));
   UpdatePolicyPref(std::move(rules_1));
 
   EXPECT_EQ(DlpRulesManager::Level::kBlock,
@@ -168,8 +180,9 @@ TEST_F(DlpRulesManagerTest, UpdatePref) {
 
   rules_2.Append(dlp_test_util::CreateRule(
       "rule #2", "exceptional allow", std::move(src_urls_2),
-      base::Value(base::Value::Type::LIST),
-      base::Value(base::Value::Type::LIST), std::move(restrictions_2)));
+      /*dst_urls=*/base::Value(base::Value::Type::LIST),
+      /*dst_components=*/base::Value(base::Value::Type::LIST),
+      std::move(restrictions_2)));
   UpdatePolicyPref(std::move(rules_2));
 
   EXPECT_EQ(DlpRulesManager::Level::kAllow,
@@ -195,8 +208,8 @@ TEST_F(DlpRulesManagerTest, IsRestrictedComponent_Clipboard) {
 
   rules.Append(dlp_test_util::CreateRule(
       "rule #1", "Block", std::move(src_urls),
-      base::Value(base::Value::Type::LIST), std::move(dst_components),
-      std::move(restrictions)));
+      /*dst_urls=*/base::Value(base::Value::Type::LIST),
+      std::move(dst_components), std::move(restrictions)));
   UpdatePolicyPref(std::move(rules));
 
   EXPECT_EQ(DlpRulesManager::Level::kBlock,
@@ -225,7 +238,8 @@ TEST_F(DlpRulesManagerTest, SameSrcDst_Clipboard) {
 
   rules.Append(dlp_test_util::CreateRule(
       "rule #1", "Block", std::move(src_urls), std::move(dst_urls),
-      base::Value(base::Value::Type::LIST), std::move(restrictions)));
+      /*dst_components=*/base::Value(base::Value::Type::LIST),
+      std::move(restrictions)));
 
   UpdatePolicyPref(std::move(rules));
 
@@ -251,7 +265,8 @@ TEST_F(DlpRulesManagerTest, EmptyUrl_Clipboard) {
 
   rules.Append(dlp_test_util::CreateRule(
       "rule #1", "Block *", std::move(src_urls_1), std::move(dst_urls_1),
-      base::Value(base::Value::Type::LIST), std::move(restrictions_1)));
+      /*dst_components=*/base::Value(base::Value::Type::LIST),
+      std::move(restrictions_1)));
 
   // First Rule
   base::Value src_urls_2(base::Value::Type::LIST);
@@ -266,7 +281,8 @@ TEST_F(DlpRulesManagerTest, EmptyUrl_Clipboard) {
 
   rules.Append(dlp_test_util::CreateRule(
       "rule #2", "Block", std::move(src_urls_2), std::move(dst_urls_2),
-      base::Value(base::Value::Type::LIST), std::move(restrictions_2)));
+      /*dst_components=*/base::Value(base::Value::Type::LIST),
+      std::move(restrictions_2)));
 
   UpdatePolicyPref(std::move(rules));
 
@@ -287,8 +303,8 @@ TEST_F(DlpRulesManagerTest, IsRestrictedAnyOfComponents_Clipboard) {
   base::Value src_urls(base::Value::Type::LIST);
   src_urls.Append(kUrlStr1);
 
-  base::Value dst_urls(base::Value::Type::LIST);
-  dst_urls.Append(dlp::kPluginVm);
+  base::Value dst_components(base::Value::Type::LIST);
+  dst_components.Append(dlp::kPluginVm);
 
   base::Value restrictions(base::Value::Type::LIST);
   restrictions.Append(dlp_test_util::CreateRestrictionWithLevel(
@@ -296,8 +312,8 @@ TEST_F(DlpRulesManagerTest, IsRestrictedAnyOfComponents_Clipboard) {
 
   rules.Append(dlp_test_util::CreateRule(
       "rule #1", "Block PluginVM", std::move(src_urls),
-      base::Value(base::Value::Type::LIST), std::move(dst_urls),
-      std::move(restrictions)));
+      /*dst_urls=*/base::Value(base::Value::Type::LIST),
+      std::move(dst_components), std::move(restrictions)));
 
   UpdatePolicyPref(std::move(rules));
 
@@ -315,6 +331,84 @@ TEST_F(DlpRulesManagerTest, IsRestrictedAnyOfComponents_Clipboard) {
                     DlpRulesManager::Component::kArc,
                     DlpRulesManager::Component::kCrostini},
                 DlpRulesManager::Restriction::kClipboard));
+}
+
+TEST_F(DlpRulesManagerTest, IsRestricted_MultipleURLs) {
+  base::Value rules(base::Value::Type::LIST);
+
+  base::Value src_urls_1(base::Value::Type::LIST);
+  src_urls_1.Append(kUrlPattern1);
+  src_urls_1.Append(kUrlPattern2);
+  src_urls_1.Append(kUrlPattern3);
+  src_urls_1.Append(kUrlPattern4);
+  src_urls_1.Append(kUrlPattern5);
+
+  base::Value dst_urls_1 = src_urls_1.Clone();
+  base::Value src_urls_2 = src_urls_1.Clone();
+
+  base::Value restrictions_1(base::Value::Type::LIST);
+  restrictions_1.Append(dlp_test_util::CreateRestrictionWithLevel(
+      dlp::kClipboardRestriction, dlp::kAllowLevel));
+
+  rules.Append(dlp_test_util::CreateRule(
+      "Support agent work flows", "Allow copy and paste for work purposes",
+      std::move(src_urls_1), std::move(dst_urls_1),
+      /*dst_components=*/base::Value(base::Value::Type::LIST),
+      std::move(restrictions_1)));
+
+  base::Value dst_urls_2(base::Value::Type::LIST);
+  dst_urls_2.Append(kUrlStr3);
+
+  base::Value restrictions_2(base::Value::Type::LIST);
+  restrictions_2.Append(dlp_test_util::CreateRestrictionWithLevel(
+      dlp::kClipboardRestriction, dlp::kBlockLevel));
+
+  rules.Append(dlp_test_util::CreateRule(
+      "Block non-agent work flows",
+      "Disallow copy and paste for non-work purposes", std::move(src_urls_2),
+      std::move(dst_urls_2),
+      /*dst_components=*/base::Value(base::Value::Type::LIST),
+      std::move(restrictions_2)));
+
+  UpdatePolicyPref(std::move(rules));
+
+  EXPECT_EQ(DlpRulesManager::Level::kAllow,
+            dlp_rules_manager_->IsRestrictedDestination(
+                GURL(base::StrCat({kHttpsPrefix, kUrlPattern1})),
+                GURL(base::StrCat({kHttpsPrefix, kUrlPattern2})),
+                DlpRulesManager::Restriction::kClipboard));
+  EXPECT_EQ(DlpRulesManager::Level::kAllow,
+            dlp_rules_manager_->IsRestrictedDestination(
+                GURL(base::StrCat({kHttpsPrefix, kUrlPattern3})),
+                GURL(base::StrCat({kHttpsPrefix, kUrlPattern4})),
+                DlpRulesManager::Restriction::kClipboard));
+  EXPECT_EQ(DlpRulesManager::Level::kAllow,
+            dlp_rules_manager_->IsRestrictedDestination(
+                GURL(base::StrCat({kHttpsPrefix, kUrlPattern5})),
+                GURL(base::StrCat({kHttpsPrefix, kUrlPattern2})),
+                DlpRulesManager::Restriction::kClipboard));
+  EXPECT_EQ(DlpRulesManager::Level::kAllow,
+            dlp_rules_manager_->IsRestrictedDestination(
+                GURL(base::StrCat({kHttpsPrefix, kUrlPattern2})),
+                GURL(base::StrCat({kHttpsPrefix, kUrlPattern3})),
+                DlpRulesManager::Restriction::kClipboard));
+
+  EXPECT_EQ(DlpRulesManager::Level::kBlock,
+            dlp_rules_manager_->IsRestrictedDestination(
+                GURL(base::StrCat({kHttpsPrefix, kUrlPattern1})),
+                GURL(kUrlStr2), DlpRulesManager::Restriction::kClipboard));
+  EXPECT_EQ(DlpRulesManager::Level::kBlock,
+            dlp_rules_manager_->IsRestrictedDestination(
+                GURL(base::StrCat({kHttpsPrefix, kUrlPattern2})),
+                GURL(kUrlStr1), DlpRulesManager::Restriction::kClipboard));
+  EXPECT_EQ(DlpRulesManager::Level::kBlock,
+            dlp_rules_manager_->IsRestrictedDestination(
+                GURL(base::StrCat({kHttpsPrefix, kUrlPattern3})),
+                GURL(kUrlStr2), DlpRulesManager::Restriction::kClipboard));
+  EXPECT_EQ(DlpRulesManager::Level::kBlock,
+            dlp_rules_manager_->IsRestrictedDestination(
+                GURL(base::StrCat({kHttpsPrefix, kUrlPattern4})),
+                GURL(kUrlStr1), DlpRulesManager::Restriction::kClipboard));
 }
 
 }  // namespace policy

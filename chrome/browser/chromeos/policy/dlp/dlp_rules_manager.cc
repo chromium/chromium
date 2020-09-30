@@ -18,7 +18,6 @@
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
-#include "components/url_matcher/url_matcher.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -102,6 +101,36 @@ DlpRulesManager::Level GetMinLevel(const DlpRulesManager::Level& level_1,
                                                                    : level_2;
 }
 
+// Inserts a mapping between URLs conditions IDs range to `rule_id` in `map`.
+void InsertUrlsRulesMapping(
+    DlpRulesManager::UrlConditionId url_condition_id_start,
+    DlpRulesManager::UrlConditionId url_condition_id_end,
+    DlpRulesManager::RuleId rule_id,
+    std::map<DlpRulesManager::UrlConditionId, DlpRulesManager::RuleId>& map) {
+  for (auto url_condition_id = url_condition_id_start;
+       url_condition_id <= url_condition_id_end; ++url_condition_id) {
+    map[url_condition_id] = rule_id;
+  }
+}
+
+// Matches `url` against `url_matcher` patterns and returns the rules IDs
+// configured with the matched patterns.
+std::set<DlpRulesManager::RuleId> MatchUrlAndGetRulesMapping(
+    const GURL& url,
+    const url_matcher::URLMatcher* url_matcher,
+    const std::map<DlpRulesManager::UrlConditionId, DlpRulesManager::RuleId>&
+        rules_map) {
+  DCHECK(url_matcher);
+  const std::set<DlpRulesManager::UrlConditionId> url_conditions_ids =
+      url_matcher->MatchURL(url);
+
+  std::set<DlpRulesManager::RuleId> rule_ids;
+  for (const auto& id : url_conditions_ids) {
+    rule_ids.insert(rules_map.at(id));
+  }
+  return rule_ids;
+}
+
 // A singleton instance of DlpRulesManager. Set from DlpRulesManager::Init().
 static DlpRulesManager* g_dlp_rules_manager = nullptr;
 
@@ -137,8 +166,8 @@ DlpRulesManager::Level DlpRulesManager::IsRestricted(
          restriction == Restriction::kPrivacyScreen ||
          restriction == Restriction::kScreenshot);
 
-  const std::set<url_matcher::URLMatcherConditionSet::ID> source_rules_ids =
-      src_url_matcher_->MatchURL(source);
+  const std::set<RuleId> source_rules_ids = MatchUrlAndGetRulesMapping(
+      source, src_url_matcher_.get(), src_url_rules_mapping_);
 
   return GetMaxJoinRestrictionLevel(restriction, source_rules_ids);
 }
@@ -156,11 +185,11 @@ DlpRulesManager::Level DlpRulesManager::IsRestrictedDestination(
           url::Origin::Create(destination)))
     return Level::kAllow;
 
-  std::set<url_matcher::URLMatcherConditionSet::ID> source_rules_ids =
-      src_url_matcher_->MatchURL(source);
+  const std::set<RuleId> source_rules_ids = MatchUrlAndGetRulesMapping(
+      source, src_url_matcher_.get(), src_url_rules_mapping_);
 
-  std::set<url_matcher::URLMatcherConditionSet::ID> destination_rules_ids =
-      dst_url_matcher_->MatchURL(destination);
+  const std::set<RuleId> destination_rules_ids = MatchUrlAndGetRulesMapping(
+      destination, dst_url_matcher_.get(), dst_url_rules_mapping_);
 
   return GetMaxJoinRestrictionLevel(restriction, source_rules_ids,
                                     destination_rules_ids);
@@ -173,8 +202,8 @@ DlpRulesManager::Level DlpRulesManager::IsRestrictedComponent(
   DCHECK(src_url_matcher_);
   DCHECK(restriction == Restriction::kClipboard);
 
-  const std::set<url_matcher::URLMatcherConditionSet::ID> source_rules_ids =
-      src_url_matcher_->MatchURL(source);
+  const std::set<RuleId> source_rules_ids = MatchUrlAndGetRulesMapping(
+      source, src_url_matcher_.get(), src_url_rules_mapping_);
 
   auto it = components_rules_.find(destination);
   if (it == components_rules_.end())
@@ -210,19 +239,23 @@ DlpRulesManager::DlpRulesManager() {
 DlpRulesManager::~DlpRulesManager() = default;
 
 void DlpRulesManager::OnPolicyUpdate() {
-  RuleId rules_counter = 0;
+  components_rules_.clear();
+  restrictions_map_.clear();
+  src_url_rules_mapping_.clear();
+  dst_url_rules_mapping_.clear();
+  src_url_matcher_ = std::make_unique<url_matcher::URLMatcher>();
+  dst_url_matcher_ = std::make_unique<url_matcher::URLMatcher>();
 
   const base::ListValue* rules_list =
       g_browser_process->local_state()->GetList(policy_prefs::kDlpRulesList);
 
-  src_url_matcher_ = std::make_unique<url_matcher::URLMatcher>();
-  dst_url_matcher_ = std::make_unique<url_matcher::URLMatcher>();
-  components_rules_.clear();
-  restrictions_map_.clear();
-
   if (!rules_list) {
     return;
   }
+
+  RuleId rules_counter = 0;
+  UrlConditionId src_url_condition_id = 0;
+  UrlConditionId dst_url_condition_id = 0;
 
   for (const base::Value& rule : *rules_list) {
     DCHECK(rule.is_dict());
@@ -232,18 +265,24 @@ void DlpRulesManager::OnPolicyUpdate() {
     DCHECK(sources_urls);  // This DCHECK should be removed when other types are
                            // supported as sources.
 
+    UrlConditionId prev_src_url_condition_id = src_url_condition_id;
     url_util::AddFilters(src_url_matcher_.get(), /* allowed= */ true,
-                         &rules_counter,
+                         &src_url_condition_id,
                          &base::Value::AsListValue(*sources_urls));
+    InsertUrlsRulesMapping(prev_src_url_condition_id + 1, src_url_condition_id,
+                           rules_counter, src_url_rules_mapping_);
 
     const auto* destinations = rule.FindDictKey("destinations");
     if (destinations) {
       const auto* destinations_urls = destinations->FindListKey("urls");
       if (destinations_urls) {
-        int destination_rule_id = rules_counter - 1;
+        UrlConditionId prev_dst_url_condition_id = dst_url_condition_id;
         url_util::AddFilters(dst_url_matcher_.get(), /* allowed= */ true,
-                             &destination_rule_id,
+                             &dst_url_condition_id,
                              &base::Value::AsListValue(*destinations_urls));
+        InsertUrlsRulesMapping(prev_dst_url_condition_id + 1,
+                               dst_url_condition_id, rules_counter,
+                               dst_url_rules_mapping_);
       }
       const auto* destinations_components =
           destinations->FindListKey("components");
@@ -274,6 +313,7 @@ void DlpRulesManager::OnPolicyUpdate() {
 
       restrictions_map_[rule_restriction].emplace(rules_counter, rule_level);
     }
+    ++rules_counter;
   }
 }
 
@@ -304,7 +344,7 @@ DlpRulesManager::Level DlpRulesManager::GetMaxJoinRestrictionLevel(
     const Restriction restriction,
     const std::set<RuleId>& source_rules,
     const std::set<RuleId>& destination_rules) const {
-  std::set<url_matcher::URLMatcherConditionSet::ID> intersection;
+  std::set<UrlConditionId> intersection;
   std::set_intersection(source_rules.begin(), source_rules.end(),
                         destination_rules.begin(), destination_rules.end(),
                         std::inserter(intersection, intersection.begin()));

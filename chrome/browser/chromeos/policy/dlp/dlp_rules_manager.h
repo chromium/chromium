@@ -10,10 +10,7 @@
 #include <set>
 
 #include "components/prefs/pref_change_registrar.h"
-
-namespace url_matcher {
-class URLMatcher;
-}
+#include "components/url_matcher/url_matcher.h"
 
 class GURL;
 class PrefRegistrySimple;
@@ -74,6 +71,7 @@ class DlpRulesManager {
   };
 
   using RuleId = int;
+  using UrlConditionId = url_matcher::URLMatcherConditionSet::ID;
 
   // Creates a singleton instance of the class.
   static void Init();
@@ -153,6 +151,14 @@ class DlpRulesManager {
 
   // Map from the restrictions to their configured rules IDs and levels.
   std::map<Restriction, std::map<RuleId, Level>> restrictions_map_;
+
+  // Map from the URL matching conditions IDs of the sources to their configured
+  // rules IDs.
+  std::map<UrlConditionId, RuleId> src_url_rules_mapping_;
+
+  // Map from the URL matching conditions IDs of the destinations to their
+  // configured rules IDs.
+  std::map<UrlConditionId, RuleId> dst_url_rules_mapping_;
 };
 
 }  // namespace policy
