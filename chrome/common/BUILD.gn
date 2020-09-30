@@ -402,8 +402,6 @@ static_library("common") {
   if (is_android) {
     sources -= [ "media_galleries/metadata_types.h" ]
     sources += [
-      "android/cpu_affinity_experiments.cc",
-      "android/cpu_affinity_experiments.h",
       "media/chrome_media_drm_bridge_client.cc",
       "media/chrome_media_drm_bridge_client.h",
     ]

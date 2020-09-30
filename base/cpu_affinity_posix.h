@@ -28,6 +28,15 @@ BASE_EXPORT bool SetThreadCpuAffinityMode(PlatformThreadId thread_id,
 BASE_EXPORT bool SetProcessCpuAffinityMode(ProcessHandle process_handle,
                                            CpuAffinityMode affinity);
 
+// Return true if the current architecture has big or bigger cores.
+BASE_EXPORT bool HasBigCpuCores();
+
+// For architectures with big cores, return the affinity mode that matches
+// the CPU affinity of the current thread. If no affinity mode exactly matches,
+// or if the architecture doesn't have different types of cores,
+// return nullopt.
+BASE_EXPORT base::Optional<CpuAffinityMode> CurrentThreadCpuAffinityMode();
+
 }  // namespace base
 
 #endif  // BASE_CPU_AFFINITY_POSIX_H_

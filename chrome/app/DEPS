@@ -32,6 +32,7 @@ include_rules = [
   "+components/version_info",
   "+content/public/app",
   "+content/public/browser/browser_main_runner.h",
+  "+content/public/common",
   "+extensions/common/constants.h",
   "+headless/public",
   "+native_client/src/trusted/service_runtime/osx",

@@ -166,6 +166,7 @@
 
 #if defined(OS_ANDROID)
 #include "content/browser/android/browser_startup_controller.h"
+#include "content/common/android/cpu_affinity.h"
 #endif
 
 namespace content {
@@ -925,6 +926,10 @@ int ContentMainRunnerImpl::RunServiceManager(MainFunctionParams& main_params,
 
 #if defined(OS_ANDROID)
     SetupCpuTimeMetrics();
+    // For child processes, this requires allowing of the
+    // sched_setaffinity() syscall in the sandbox (baseline_policy_android.cc).
+    // When this call is removed, the sandbox allowlist should be updated too.
+    SetupCpuAffinityPollingOnce();
 #endif
 
     if (should_start_service_manager_only)

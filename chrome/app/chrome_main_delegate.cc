@@ -133,8 +133,8 @@
 #include "chrome/browser/android/crash/pure_java_exception_handler.h"
 #include "chrome/browser/android/metrics/uma_session_stats.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
-#include "chrome/common/android/cpu_affinity_experiments.h"
 #include "chrome/common/chrome_descriptors.h"
+#include "content/public/common/cpu_affinity.h"
 #include "net/android/network_change_notifier_factory_android.h"
 #else  // defined(OS_ANDROID)
 // Diagnostics is only available on non-android platforms.
@@ -595,7 +595,10 @@ void ChromeMainDelegate::PostFieldTrialInitialization() {
   // For child processes, this requires allowlisting of the sched_setaffinity()
   // syscall in the sandbox (baseline_policy_android.cc). When this call is
   // removed, the sandbox allowlist should be updated too.
-  chrome::InitializeCpuAffinityExperiments();
+  if (base::FeatureList::IsEnabled(
+          features::kCpuAffinityRestrictToLittleCores)) {
+    content::EnforceProcessCpuAffinity(base::CpuAffinityMode::kLittleCoresOnly);
+  }
 #endif
 
 #if defined(OS_CHROMEOS)
