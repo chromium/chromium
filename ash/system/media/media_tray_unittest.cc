@@ -205,11 +205,16 @@ TEST_F(MediaTrayTest, PinButtonTest) {
   EXPECT_NE(GetBubbleWrapper(), nullptr);
 
   // Tapping the pin button while the media controls dialog is opened
-  // should have the dialog closed and the media tray hidden.
+  // should have the media tray hidden.
   SimulateTapOnPinButton();
-  EXPECT_EQ(GetBubbleWrapper(), nullptr);
+  EXPECT_NE(GetBubbleWrapper(), nullptr);
   EXPECT_FALSE(media_tray()->GetVisible());
   EXPECT_FALSE(MediaTray::IsPinnedToShelf());
+
+  // Tap pin button again should bring back media tray.
+  SimulateTapOnPinButton();
+  EXPECT_TRUE(media_tray()->GetVisible());
+  EXPECT_TRUE(MediaTray::IsPinnedToShelf());
 }
 
 TEST_F(MediaTrayTest, PinToShelfDefaultBehavior) {

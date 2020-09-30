@@ -306,12 +306,12 @@ void MediaTray::UpdateDisplayState() {
   bool should_show =
       (MediaNotificationProvider::Get()->HasActiveNotifications() ||
        MediaNotificationProvider::Get()->HasFrozenNotifications()) &&
-      !Shell::Get()->session_controller()->IsScreenLocked() &&
-      IsPinnedToShelf();
+      !Shell::Get()->session_controller()->IsScreenLocked();
 
   if (!should_show && bubble_)
     CloseBubble();
-  SetVisiblePreferred(should_show);
+
+  SetVisiblePreferred(should_show && IsPinnedToShelf());
 }
 
 void MediaTray::OnGlobalMediaControlsPinPrefChanged() {

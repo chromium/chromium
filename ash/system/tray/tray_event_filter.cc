@@ -136,7 +136,7 @@ void TrayEventFilter::ProcessPressedEvent(const ui::LocatedEvent& event) {
       // If the user clicks on the parent tray, don't process the event here,
       // let the tray logic handle the event and determine show/hide behavior.
       bounds = bubble->GetTray()->GetBoundsInScreen();
-      if (bounds.Contains(screen_location))
+      if (bubble->GetTray()->GetVisible() && bounds.Contains(screen_location))
         continue;
     }
     trays.insert(bubble->GetTray());
