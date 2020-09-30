@@ -7,26 +7,21 @@ body {
     height: 1800px;
 }
 </style>
-<body>
 <script>
+  // Compute ScrollableArea::pageStep.
+  var pageStep = innerHeight * 0.875;
+  if (navigator.userAgent.indexOf("Mac OS X") >= 0)
+      pageStep = Math.max(pageStep, innerHeight - 40);
 
-// Compute ScrollableArea::pageStep.
-var pageStep = innerHeight * 0.875;
-if (navigator.userAgent.indexOf("Mac OS X") >= 0)
-    pageStep = Math.max(pageStep, innerHeight - 40);
+  promise_test(async () => {
+      // Click in the vertical scrollbar track, below the thumb, and hold the
+      // mouse button down. The animation shouldn't continue past the initial
+      // page step since the initial page step will take the scrollbar thumb
+      // under the cursor.
+      await mouseMoveTo(790, 280);
+      await mouseDownAt(790, 280);
 
-// Turn on smooth scrolling.
-internals.settings.setScrollAnimatorEnabled(true);
-
-promise_test(async () => {
-    // Click in the vertical scrollbar track, below the thumb.
-    await mouseClickOn(790, 280);
-
-    // A second click should have no effect since we will be under the thumb
-    // by the time the animation completes.
-    await mouseClickOn(790, 280);
-
-    await waitFor( () => {return scrollY == pageStep;});
-}, 'This test scrolls by clicking in the scrollbar track.');
+      await waitForAnimationEndTimeBased( () => { return scrollY; } );
+      assert_equals(window.scrollY, pageStep);
+  }, 'Scrollbar track autoscrolling doesn\'t overshoot cursor.');
 </script>
-</body>

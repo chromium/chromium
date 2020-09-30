@@ -1851,8 +1851,6 @@ crbug.com/574283 virtual/threaded-prefer-compositing/fast/scroll-behavior/smooth
 crbug.com/574283 virtual/threaded-prefer-compositing/fast/scroll-behavior/smooth-scroll/mousewheel-scroll-interrupted.html [ Skip ]
 
 crbug.com/665577 virtual/threaded-prefer-compositing/fast/scroll-behavior/overflow-scroll-root-frame-animates.html [ Pass Timeout ]
-# This test was [Pass Failure] on Mac and linked crbug.com/665577, lately it's also flakey on all 3 platforms:
-crbug.com/901906 virtual/threaded-prefer-compositing/fast/scroll-behavior/smooth-scroll/track-scroll.html [ Pass Failure ]
 
 crbug.com/599670 [ Win ] http/tests/devtools/resource-parameters-ipv6.js [ Pass Failure Crash ]
 crbug.com/472330 fast/borders/border-image-outset-split-inline-vertical-lr.html [ Failure ]
@@ -5275,8 +5273,9 @@ crbug.com/849978 http/tests/devtools/elements/styles-4/stylesheet-source-url-com
 
 crbug.com/854538 [ Win7 ] http/tests/security/contentSecurityPolicy/1.1/form-action-src-default-ignored-with-redirect.html [ Skip ]
 
-# Sheriff 2018-06-21
-crbug.com/854910 [ Mac ] fast/scroll-behavior/smooth-scroll/track-scroll.html [ Failure Pass ]
+# The compositor scrollbar controller lacks a Mac-specific behavior so this
+# test fails when run with compositing enabled.
+crbug.com/1133538 [ Mac ] virtual/threaded-prefer-compositing/fast/scroll-behavior/smooth-scroll/track-scroll.html [ Failure ]
 
 # Sheriff 2018-06-25
 crbug.com/855816 [ Win ] virtual/stable/http/tests/navigation/rename-subframe-goback.html [ Pass Timeout ]
