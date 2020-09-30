@@ -54,6 +54,7 @@ import org.chromium.weblayer.FaviconCallback;
 import org.chromium.weblayer.FaviconFetcher;
 import org.chromium.weblayer.FindInPageCallback;
 import org.chromium.weblayer.FullscreenCallback;
+import org.chromium.weblayer.NavigateParams;
 import org.chromium.weblayer.NavigationCallback;
 import org.chromium.weblayer.NavigationController;
 import org.chromium.weblayer.NewTabCallback;
@@ -627,7 +628,13 @@ public class WebLayerShellActivity extends AppCompatActivity {
     }
 
     public void loadUrl(String input) {
-        mBrowser.getActiveTab().getNavigationController().navigate(getUriFromInput(input));
+        // Disable intent processing for urls typed in. This way the user can navigate to urls that
+        // match apps (this is similar to what Chrome does).
+        NavigateParams.Builder navigateParamsBuilder =
+                new NavigateParams.Builder().disableIntentProcessing();
+
+        mBrowser.getActiveTab().getNavigationController().navigate(
+                getUriFromInput(input), navigateParamsBuilder.build());
     }
 
     private static String getUrlFromIntent(Intent intent) {
@@ -643,6 +650,13 @@ public class WebLayerShellActivity extends AppCompatActivity {
     public static Uri getUriFromInput(String input) {
         if (TextUtils.isEmpty(input)) {
             return Uri.parse("https://google.com");
+        }
+
+        // WEB_URL doesn't match port numbers. Special case "localhost:" to aid
+        // testing where a port is remapped.
+        // Use WEB_URL first to ensure this matches urls such as 'https.'
+        if (WEB_URL.matcher(input).matches() || input.startsWith("http://localhost:")) {
+            return Uri.parse(input);
         }
 
         if (input.startsWith("www.") || input.indexOf(":") == -1) {
