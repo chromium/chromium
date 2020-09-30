@@ -11,6 +11,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
@@ -30,6 +31,7 @@ public class ChromeBrowserInitializerTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1131373")
     public void testSynchronousInitialization() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             Assert.assertFalse(mInstance.isFullBrowserInitialized());
