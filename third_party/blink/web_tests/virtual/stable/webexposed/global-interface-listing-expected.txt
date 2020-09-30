@@ -9566,6 +9566,7 @@ interface webkitURL
     getter clientInformation
     getter closed
     getter cookieStore
+    getter crossOriginIsolated
     getter crypto
     getter customElements
     getter defaultStatus

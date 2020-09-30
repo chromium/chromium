@@ -21,6 +21,7 @@ ch-viewport-width
 ch-width
 clipboard-read
 clipboard-write
+cross-origin-isolated
 document-domain
 encrypted-media
 fullscreen

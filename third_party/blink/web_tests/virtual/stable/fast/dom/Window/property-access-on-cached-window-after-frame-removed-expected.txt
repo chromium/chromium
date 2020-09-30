@@ -4,6 +4,7 @@ Tests property access on a cached DOMWindow after the associated frame is no lon
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
 PASS childWindow.closed is true
+PASS childWindow.crossOriginIsolated is false
 PASS childWindow.defaultStatus is ''
 PASS childWindow.defaultstatus is ''
 PASS childWindow.devicePixelRatio is 0

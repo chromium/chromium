@@ -401,7 +401,7 @@
     },
     {
       name: "CrossOriginIsolation",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "CrossOriginOpenerPolicyReporting",

@@ -2663,6 +2663,7 @@ interface WindowClient : Client
 interface WorkerGlobalScope : EventTarget
     attribute @@toStringTag
     getter caches
+    getter crossOriginIsolated
     getter crypto
     getter fonts
     getter indexedDB
