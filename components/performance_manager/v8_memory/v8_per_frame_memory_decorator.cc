@@ -473,6 +473,7 @@ V8PerFrameMemoryRequest::V8PerFrameMemoryRequest(
     : min_time_between_requests_(min_time_between_requests), mode_(mode) {
 #if DCHECK_IS_ON()
   DCHECK_GT(min_time_between_requests_, base::TimeDelta());
+  DCHECK(!min_time_between_requests_.is_inf());
   DCHECK(mode != MeasurementMode::kEagerForTesting ||
          g_test_eager_measurement_requests_enabled);
 #endif

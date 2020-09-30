@@ -37,9 +37,12 @@ namespace performance_manager {
 
 namespace v8_memory {
 
-using testing::_;
-using testing::Eq;
-using testing::Property;
+using ::testing::_;
+using ::testing::Eq;
+using ::testing::InSequence;
+using ::testing::Mock;
+using ::testing::Property;
+using ::testing::StrictMock;
 
 constexpr RenderProcessHostId kTestProcessID = RenderProcessHostId(0xFAB);
 constexpr uint64_t kUnassociatedBytes = 0xABBA;
@@ -66,7 +69,7 @@ class LenientMockV8DetailedMemoryReporter
 };
 
 using MockV8DetailedMemoryReporter =
-    testing::StrictMock<LenientMockV8DetailedMemoryReporter>;
+    StrictMock<LenientMockV8DetailedMemoryReporter>;
 
 class LenientMockV8PerFrameMemoryObserver : public V8PerFrameMemoryObserver {
  public:
@@ -89,7 +92,7 @@ class LenientMockV8PerFrameMemoryObserver : public V8PerFrameMemoryObserver {
 };
 
 using MockV8PerFrameMemoryObserver =
-    testing::StrictMock<LenientMockV8PerFrameMemoryObserver>;
+    StrictMock<LenientMockV8PerFrameMemoryObserver>;
 
 class LenientMockV8PerFrameMemoryObserverAnySeq
     : public V8PerFrameMemoryObserverAnySeq {
@@ -103,7 +106,7 @@ class LenientMockV8PerFrameMemoryObserverAnySeq
 };
 
 using MockV8PerFrameMemoryObserverAnySeq =
-    testing::StrictMock<LenientMockV8PerFrameMemoryObserverAnySeq>;
+    StrictMock<LenientMockV8PerFrameMemoryObserverAnySeq>;
 
 // The mode enum used in the API.
 using MeasurementMode = V8PerFrameMemoryRequest::MeasurementMode;
@@ -187,9 +190,7 @@ class V8PerFrameMemoryDecoratorTestBase {
       blink::mojom::PerProcessV8MemoryUsagePtr data,
       RenderProcessHostId expected_process_id = kTestProcessID,
       ExpectedMode expected_mode = ExpectedMode::DEFAULT) {
-    // Wrap the move-only |data| in a callback for the expectation below.
-    ExpectQueryAndReply(mock_reporter, std::move(data), expected_mode);
-
+    InSequence seq;
     EXPECT_CALL(*this, BindReceiverWithProxyHost(_, _))
         .WillOnce(
             [mock_reporter, expected_process_id](
@@ -199,6 +200,8 @@ class V8PerFrameMemoryDecoratorTestBase {
               DCHECK_EQ(expected_process_id, proxy.render_process_host_id());
               mock_reporter->Bind(std::move(pending_receiver));
             });
+
+    ExpectQueryAndReply(mock_reporter, std::move(data), expected_mode);
   }
 
   MOCK_METHOD(void,
@@ -369,7 +372,7 @@ TEST_F(V8PerFrameMemoryDecoratorTest, OnlyMeasureRenderers) {
         RenderProcessHostProxy::CreateForTesting(kTestProcessID));
 
     task_env().RunUntilIdle();
-    testing::Mock::VerifyAndClearExpectations(this);
+    Mock::VerifyAndClearExpectations(this);
   }
 }
 
@@ -397,7 +400,7 @@ TEST_F(V8PerFrameMemoryDecoratorTest, QueryRateIsLimited) {
 
   // There shouldn't be an additional request this soon.
   task_env().FastForwardBy(kMinTimeBetweenRequests / 2);
-  testing::Mock::VerifyAndClearExpectations(&mock_reporter);
+  Mock::VerifyAndClearExpectations(&mock_reporter);
 
   // Set up another request and capture the callback for later invocation.
   MockV8DetailedMemoryReporter::GetV8MemoryUsageCallback callback;
@@ -416,7 +419,7 @@ TEST_F(V8PerFrameMemoryDecoratorTest, QueryRateIsLimited) {
   // Skip forward a long while, and validate that no additional requests are
   // issued until the pending request has completed.
   task_env().FastForwardBy(10 * kMinTimeBetweenRequests);
-  testing::Mock::VerifyAndClearExpectations(&mock_reporter);
+  Mock::VerifyAndClearExpectations(&mock_reporter);
 
   EXPECT_TRUE(V8PerFrameMemoryProcessData::ForProcessNode(process.get()));
   EXPECT_EQ(1u, V8PerFrameMemoryProcessData::ForProcessNode(process.get())
@@ -448,7 +451,7 @@ TEST_F(V8PerFrameMemoryDecoratorTest, QueryRateIsLimited) {
   // Despite the long delay to respond to request 2, there shouldn't be another
   // request until kMinTimeBetweenRequests has expired.
   task_env().FastForwardBy(kMinTimeBetweenRequests / 2);
-  testing::Mock::VerifyAndClearExpectations(&mock_reporter);
+  Mock::VerifyAndClearExpectations(&mock_reporter);
 }
 
 TEST_F(V8PerFrameMemoryDecoratorTest, MultipleProcessesHaveDistinctSchedules) {
@@ -467,7 +470,7 @@ TEST_F(V8PerFrameMemoryDecoratorTest, MultipleProcessesHaveDistinctSchedules) {
       RenderProcessHostProxy::CreateForTesting(kTestProcessID));
 
   task_env().FastForwardBy(kMinTimeBetweenRequests / 4);
-  testing::Mock::VerifyAndClearExpectations(&reporter1);
+  Mock::VerifyAndClearExpectations(&reporter1);
 
   // Create a second process node and validate that it gets a request.
   MockV8DetailedMemoryReporter reporter2;
@@ -482,7 +485,7 @@ TEST_F(V8PerFrameMemoryDecoratorTest, MultipleProcessesHaveDistinctSchedules) {
       RenderProcessHostProxy::CreateForTesting(kTestProcessID));
 
   task_env().RunUntilIdle();
-  testing::Mock::VerifyAndClearExpectations(&reporter2);
+  Mock::VerifyAndClearExpectations(&reporter2);
 
   EXPECT_TRUE(V8PerFrameMemoryProcessData::ForProcessNode(process1.get()));
   EXPECT_EQ(1u, V8PerFrameMemoryProcessData::ForProcessNode(process1.get())
@@ -544,7 +547,7 @@ TEST_F(V8PerFrameMemoryDecoratorTest, MultipleisolatesInRenderer) {
   }
 
   task_env().RunUntilIdle();
-  testing::Mock::VerifyAndClearExpectations(&reporter);
+  Mock::VerifyAndClearExpectations(&reporter);
 
   ASSERT_TRUE(V8PerFrameMemoryFrameData::ForFrameNode(frame1.get()));
   EXPECT_EQ(
@@ -574,7 +577,7 @@ TEST_F(V8PerFrameMemoryDecoratorTest, PerFrameDataIsDistributed) {
       RenderProcessHostProxy::CreateForTesting(kTestProcessID));
 
   task_env().RunUntilIdle();
-  testing::Mock::VerifyAndClearExpectations(&reporter);
+  Mock::VerifyAndClearExpectations(&reporter);
 
   // Since the frame was unknown, the usage should have accrued to unassociated.
   EXPECT_TRUE(V8PerFrameMemoryProcessData::ForProcessNode(process.get()));
@@ -599,7 +602,7 @@ TEST_F(V8PerFrameMemoryDecoratorTest, PerFrameDataIsDistributed) {
   }
 
   task_env().FastForwardBy(kMinTimeBetweenRequests * 1.5);
-  testing::Mock::VerifyAndClearExpectations(&reporter);
+  Mock::VerifyAndClearExpectations(&reporter);
 
   ASSERT_TRUE(V8PerFrameMemoryFrameData::ForFrameNode(frame1.get()));
   EXPECT_EQ(
@@ -620,7 +623,7 @@ TEST_F(V8PerFrameMemoryDecoratorTest, PerFrameDataIsDistributed) {
     ExpectQueryAndReply(&reporter, std::move(data));
   }
   task_env().FastForwardBy(kMinTimeBetweenRequests);
-  testing::Mock::VerifyAndClearExpectations(&reporter);
+  Mock::VerifyAndClearExpectations(&reporter);
 
   ASSERT_TRUE(V8PerFrameMemoryFrameData::ForFrameNode(frame1.get()));
   EXPECT_EQ(
@@ -650,7 +653,7 @@ TEST_P(V8PerFrameMemoryDecoratorModeTest, LazyRequests) {
       RenderProcessHostProxy::CreateForTesting(kTestProcessID));
 
   task_env().FastForwardBy(base::TimeDelta::FromSeconds(1));
-  testing::Mock::VerifyAndClearExpectations(&reporter);
+  Mock::VerifyAndClearExpectations(&reporter);
 
   // If a lazy request takes too long to respond it should be upgraded to a
   // bounded request if one is in the queue.
@@ -677,7 +680,7 @@ TEST_P(V8PerFrameMemoryDecoratorModeTest, LazyRequests) {
   // Wait long enough for the upgraded request to be sent, to verify that it
   // wasn't sent.
   task_env().FastForwardBy(kLongBoundedRequestLength);
-  testing::Mock::VerifyAndClearExpectations(&reporter);
+  Mock::VerifyAndClearExpectations(&reporter);
 
   constexpr base::TimeDelta kUpgradeRequestLength =
       base::TimeDelta::FromSeconds(40);
@@ -689,7 +692,7 @@ TEST_P(V8PerFrameMemoryDecoratorModeTest, LazyRequests) {
   EXPECT_EQ(decorator->GetNextRequest()->mode(), MeasurementMode::kLazy);
 
   {
-    ::testing::InSequence seq;
+    InSequence seq;
 
     // Again, 40 sec total until reply arrives. kUpgradeRequestLength <= 40 sec
     // so a second upgraded request should be sent.
@@ -705,7 +708,7 @@ TEST_P(V8PerFrameMemoryDecoratorModeTest, LazyRequests) {
 
   // Wait long enough for the upgraded request to be sent.
   task_env().FastForwardBy(kUpgradeRequestLength);
-  testing::Mock::VerifyAndClearExpectations(&reporter);
+  Mock::VerifyAndClearExpectations(&reporter);
 
   EXPECT_TRUE(V8PerFrameMemoryProcessData::ForProcessNode(process.get()));
   EXPECT_EQ(3u, V8PerFrameMemoryProcessData::ForProcessNode(process.get())
@@ -724,10 +727,10 @@ TEST_P(V8PerFrameMemoryDecoratorModeTest, LazyRequests) {
 INSTANTIATE_TEST_SUITE_P(
     AllBoundedModes,
     V8PerFrameMemoryDecoratorModeTest,
-    testing::Values(std::make_pair(MeasurementMode::kBounded,
-                                   ExpectedMode::DEFAULT),
-                    std::make_pair(MeasurementMode::kEagerForTesting,
-                                   ExpectedMode::EAGER)));
+    ::testing::Values(std::make_pair(MeasurementMode::kBounded,
+                                     ExpectedMode::DEFAULT),
+                      std::make_pair(MeasurementMode::kEagerForTesting,
+                                     ExpectedMode::EAGER)));
 
 TEST_F(V8PerFrameMemoryDecoratorTest, MeasurementRequestsSorted) {
   // Create some queries with different sample frequencies.
@@ -1119,7 +1122,7 @@ TEST_F(V8PerFrameMemoryDecoratorTest, MeasurementRequestsWithDelay) {
   EXPECT_EQ(last_query_time_, measurement_start_time);
 
   // No more requests should be sent.
-  testing::Mock::VerifyAndClearExpectations(this);
+  Mock::VerifyAndClearExpectations(this);
   task_env().FastForwardBy(kLongInterval);
 }
 
@@ -1146,7 +1149,7 @@ TEST_F(V8PerFrameMemoryDecoratorTest, MeasurementRequestOutlivesDecorator) {
   graph()->TakeFromGraph(decorator);
 
   // No request should be sent, and the decorator destructor should not DCHECK.
-  testing::Mock::VerifyAndClearExpectations(this);
+  Mock::VerifyAndClearExpectations(this);
   task_env().FastForwardBy(kMinTimeBetweenRequests);
 }
 
@@ -1175,9 +1178,9 @@ TEST_F(V8PerFrameMemoryDecoratorTest, NotifyObservers) {
   observer2.ExpectObservationOnProcess(process1.get(), 1U);
 
   task_env().FastForwardBy(kMinTimeBetweenRequests / 2);
-  testing::Mock::VerifyAndClearExpectations(&reporter1);
-  testing::Mock::VerifyAndClearExpectations(&observer1);
-  testing::Mock::VerifyAndClearExpectations(&observer2);
+  Mock::VerifyAndClearExpectations(&reporter1);
+  Mock::VerifyAndClearExpectations(&observer1);
+  Mock::VerifyAndClearExpectations(&observer2);
 
   // Create a process node and validate that all observers are notified when
   // any measurement is available. After fast-forwarding the first measurement
@@ -1204,10 +1207,10 @@ TEST_F(V8PerFrameMemoryDecoratorTest, NotifyObservers) {
   observer2.ExpectObservationOnProcess(process1.get(), 3U);
 
   task_env().FastForwardBy(kMinTimeBetweenRequests / 2);
-  testing::Mock::VerifyAndClearExpectations(&reporter1);
-  testing::Mock::VerifyAndClearExpectations(&reporter2);
-  testing::Mock::VerifyAndClearExpectations(&observer1);
-  testing::Mock::VerifyAndClearExpectations(&observer2);
+  Mock::VerifyAndClearExpectations(&reporter1);
+  Mock::VerifyAndClearExpectations(&reporter2);
+  Mock::VerifyAndClearExpectations(&observer1);
+  Mock::VerifyAndClearExpectations(&observer2);
 
   // Remove an observer and make sure the other is still notified after the
   // next measurement.
@@ -1228,10 +1231,10 @@ TEST_F(V8PerFrameMemoryDecoratorTest, NotifyObservers) {
   observer2.ExpectObservationOnProcess(process2.get(), 5U);
 
   task_env().FastForwardBy(kMinTimeBetweenRequests);
-  testing::Mock::VerifyAndClearExpectations(&reporter1);
-  testing::Mock::VerifyAndClearExpectations(&reporter2);
-  testing::Mock::VerifyAndClearExpectations(&observer1);
-  testing::Mock::VerifyAndClearExpectations(&observer2);
+  Mock::VerifyAndClearExpectations(&reporter1);
+  Mock::VerifyAndClearExpectations(&reporter2);
+  Mock::VerifyAndClearExpectations(&observer1);
+  Mock::VerifyAndClearExpectations(&observer2);
 
   // Must remove the observer before destroying the request to avoid a DCHECK
   // from ObserverList.
@@ -1259,8 +1262,8 @@ TEST_F(V8PerFrameMemoryDecoratorTest, ObserverOutlivesDecorator) {
 
   task_env().FastForwardBy(base::TimeDelta::FromSeconds(1));
 
-  testing::Mock::VerifyAndClearExpectations(&reporter);
-  testing::Mock::VerifyAndClearExpectations(&observer);
+  Mock::VerifyAndClearExpectations(&reporter);
+  Mock::VerifyAndClearExpectations(&observer);
 
   // Start the next measurement.
   {
@@ -1315,7 +1318,7 @@ TEST_F(V8PerFrameMemoryDecoratorDeathTest, EnforceObserversRemoved) {
   });
 }
 
-TEST_F(V8PerFrameMemoryDecoratorDeathTest, EagerModeDisallowed) {
+TEST_F(V8PerFrameMemoryDecoratorDeathTest, InvalidParameters) {
   // Not allowed to use kEagerForTesting mode without calling
   // SetEagerMemoryMeasurementEnabledForTesting.
   EXPECT_DCHECK_DEATH({
@@ -1325,6 +1328,20 @@ TEST_F(V8PerFrameMemoryDecoratorDeathTest, EagerModeDisallowed) {
   EXPECT_DCHECK_DEATH({
     V8PerFrameMemoryRequestAnySeq memory_request(
         kMinTimeBetweenRequests, MeasurementMode::kEagerForTesting);
+  });
+  // Zero, negative and infinite TimeDelta's are disallowed.
+  EXPECT_DCHECK_DEATH({
+    base::TimeDelta zero;
+    V8PerFrameMemoryRequestAnySeq memory_request(zero);
+  });
+  EXPECT_DCHECK_DEATH({
+    V8PerFrameMemoryRequestAnySeq memory_request(base::TimeDelta::Min());
+  });
+  EXPECT_DCHECK_DEATH({
+    V8PerFrameMemoryRequestAnySeq memory_request(base::TimeDelta::Max());
+  });
+  EXPECT_DCHECK_DEATH({
+    V8PerFrameMemoryRequestAnySeq memory_request(kMinTimeBetweenRequests * -1);
   });
 }
 
@@ -1416,9 +1433,9 @@ TEST_F(V8PerFrameMemoryRequestAnySeqTest, RequestIsSequenceSafe) {
 
   // Now execute all the above tasks.
   run_loop.Run();
-  testing::Mock::VerifyAndClearExpectations(this);
-  testing::Mock::VerifyAndClearExpectations(&reporter);
-  testing::Mock::VerifyAndClearExpectations(&observer);
+  Mock::VerifyAndClearExpectations(this);
+  Mock::VerifyAndClearExpectations(&reporter);
+  Mock::VerifyAndClearExpectations(&observer);
 
   // Destroying the object on the main sequence should cause the wrapped
   // V8PerFrameMemoryRequest to be destroyed on the graph sequence after any
