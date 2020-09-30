@@ -41,7 +41,7 @@ class ControlServiceInProcess : public ControlService {
 
   // Provides a way to remove apps from the persisted data if the app is no
   // longer installed on the machine.
-  void RemoveApps();
+  void UnregisterMissingApps();
 
   scoped_refptr<updater::Configurator> config_;
   scoped_refptr<updater::PersistedData> persisted_data_;

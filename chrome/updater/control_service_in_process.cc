@@ -33,7 +33,7 @@ ControlServiceInProcess::ControlServiceInProcess(
 void ControlServiceInProcess::Run(base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  RemoveApps();
+  UnregisterMissingApps();
   MaybeCheckForUpdates(std::move(callback));
 }
 
@@ -79,14 +79,14 @@ void ControlServiceInProcess::MaybeCheckForUpdates(base::OnceClosure callback) {
           base::BindOnce(std::move(callback)), config_));
 }
 
-void ControlServiceInProcess::RemoveApps() {
+void ControlServiceInProcess::UnregisterMissingApps() {
   for (const auto& app_id : persisted_data_->GetAppIds()) {
     // Skip if app_id is equal to updater app id.
     if (app_id == kUpdaterAppId)
       continue;
 
     const base::FilePath ecp = persisted_data_->GetExistenceCheckerPath(app_id);
-    if (!ecp.empty() && base::PathExists(ecp)) {
+    if (!ecp.empty() && !base::PathExists(ecp)) {
       if (!persisted_data_->RemoveApp(app_id))
         VLOG(0) << "Could not remove registration of app " << app_id;
     }
