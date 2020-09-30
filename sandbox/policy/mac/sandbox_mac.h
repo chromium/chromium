@@ -46,6 +46,8 @@ class SANDBOX_POLICY_EXPORT SandboxMac {
   static const char* kSandboxBrowserPID;
   static const char* kSandboxBundlePath;
   static const char* kSandboxChromeBundleId;
+  static const char* kSandboxSodaComponentPath;
+  static const char* kSandboxSodaLanguagePackPath;
   static const char* kSandboxComponentPath;
   static const char* kSandboxDisableDenialLogging;
   static const char* kSandboxEnableLogging;

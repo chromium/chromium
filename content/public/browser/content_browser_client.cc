@@ -1144,4 +1144,12 @@ ukm::UkmService* ContentBrowserClient::GetUkmService() {
   return nullptr;
 }
 
+#if defined(OS_MAC)
+bool ContentBrowserClient::SetupEmbedderSandboxParameters(
+    sandbox::policy::SandboxType sandbox_type,
+    sandbox::SeatbeltExecClient* client) {
+  return false;
+}
+#endif  // defined(OS_MAC)
+
 }  // namespace content

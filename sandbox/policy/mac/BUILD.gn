@@ -15,6 +15,7 @@ action_foreach("package_sb_files") {
     "ppapi.sb",
     "print_compositor.sb",
     "renderer.sb",
+    "speech_recognition.sb",
     "utility.sb",
   ]
   outputs = [

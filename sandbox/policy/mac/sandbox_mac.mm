@@ -48,6 +48,7 @@
 #include "sandbox/policy/mac/ppapi.sb.h"
 #include "sandbox/policy/mac/print_compositor.sb.h"
 #include "sandbox/policy/mac/renderer.sb.h"
+#include "sandbox/policy/mac/speech_recognition.sb.h"
 #include "sandbox/policy/mac/utility.sb.h"
 #include "sandbox/policy/sandbox_type.h"
 #include "sandbox/policy/switches.h"
@@ -59,6 +60,9 @@ namespace policy {
 const char* SandboxMac::kSandboxBrowserPID = "BROWSER_PID";
 const char* SandboxMac::kSandboxBundlePath = "BUNDLE_PATH";
 const char* SandboxMac::kSandboxChromeBundleId = "BUNDLE_ID";
+const char* SandboxMac::kSandboxSodaComponentPath = "SODA_COMPONENT_PATH";
+const char* SandboxMac::kSandboxSodaLanguagePackPath =
+    "SODA_LANGUAGE_PACK_PATH";
 const char* SandboxMac::kSandboxComponentPath = "COMPONENT_PATH";
 const char* SandboxMac::kSandboxDisableDenialLogging =
     "DISABLE_SANDBOX_DENIAL_LOGGING";
@@ -254,6 +258,9 @@ std::string SandboxMac::GetSandboxProfile(SandboxType sandbox_type) {
     case SandboxType::kPrintCompositor:
       profile += kSeatbeltPolicyString_print_compositor;
       break;
+    case SandboxType::kSpeechRecognition:
+      profile += kSeatbeltPolicyString_speech_recognition;
+      break;
     case SandboxType::kUtility:
       profile += kSeatbeltPolicyString_utility;
       break;
@@ -262,7 +269,6 @@ std::string SandboxMac::GetSandboxProfile(SandboxType sandbox_type) {
       break;
     case SandboxType::kNoSandbox:
     case SandboxType::kVideoCapture:
-    case SandboxType::kSpeechRecognition:
       CHECK(false);
       break;
   }

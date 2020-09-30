@@ -156,6 +156,7 @@ struct ResourceRequest;
 }  // namespace network
 
 namespace sandbox {
+class SeatbeltExecClient;
 class TargetPolicy;
 namespace policy {
 enum class SandboxType;
@@ -1916,6 +1917,15 @@ class CONTENT_EXPORT ContentBrowserClient {
 
   // Returns the URL-Keyed Metrics service for chrome:ukm.
   virtual ukm::UkmService* GetUkmService();
+
+#if defined(OS_MAC)
+  // Sets up the embedder sandbox parameters for the given sandbox type. Returns
+  // true if parameters were successfully set up or false if no additional
+  // parameters were set up.
+  virtual bool SetupEmbedderSandboxParameters(
+      sandbox::policy::SandboxType sandbox_type,
+      sandbox::SeatbeltExecClient* client);
+#endif  // defined(OS_MAC)
 };
 
 }  // namespace content

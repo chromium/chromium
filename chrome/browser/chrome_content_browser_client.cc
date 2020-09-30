@@ -382,6 +382,9 @@
 #elif defined(OS_MAC)
 #include "chrome/browser/apps/intent_helper/mac_apps_navigation_throttle.h"
 #include "chrome/browser/chrome_browser_main_mac.h"
+#include "components/soda/constants.h"
+#include "sandbox/mac/seatbelt_exec.h"
+#include "sandbox/policy/mac/sandbox_mac.h"
 #elif defined(OS_CHROMEOS)
 #include "ash/public/cpp/ash_pref_names.h"
 #include "ash/public/cpp/tablet_mode.h"
@@ -5829,3 +5832,28 @@ bool ChromeContentBrowserClient::ShouldAllowInsecurePrivateNetworkRequests(
 ukm::UkmService* ChromeContentBrowserClient::GetUkmService() {
   return g_browser_process->GetMetricsServicesManager()->GetUkmService();
 }
+
+#if defined(OS_MAC)
+bool ChromeContentBrowserClient::SetupEmbedderSandboxParameters(
+    sandbox::policy::SandboxType sandbox_type,
+    sandbox::SeatbeltExecClient* client) {
+  if (sandbox_type == sandbox::policy::SandboxType::kSpeechRecognition) {
+    base::FilePath soda_component_path = speech::GetSodaDirectory();
+    CHECK(!soda_component_path.empty());
+    CHECK(client->SetParameter(
+        sandbox::policy::SandboxMac::kSandboxSodaComponentPath,
+        soda_component_path.value()));
+
+    base::FilePath soda_language_pack_path =
+        speech::GetSodaLanguagePacksDirectory();
+    CHECK(!soda_language_pack_path.empty());
+    CHECK(client->SetParameter(
+        sandbox::policy::SandboxMac::kSandboxSodaLanguagePackPath,
+        soda_language_pack_path.value()));
+    return true;
+  }
+
+  return false;
+}
+
+#endif  // defined(OS_MAC)

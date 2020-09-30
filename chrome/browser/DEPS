@@ -263,6 +263,7 @@ include_rules = [
   "+components/signin/core/browser",
   "+components/signin/public",
   "+components/site_isolation",
+  "+components/soda",
   "+components/spellcheck",
   "+components/sqlite_proto",
   "+components/ssl_errors",
@@ -348,7 +349,8 @@ include_rules = [
   "+ppapi/proxy",
   "+ppapi/shared_impl",
   "+rlz",
-  "+sandbox/win/src",  # The path doesn't say it, but this is the Windows sandbox.
+  "+sandbox/mac",
+  "+sandbox/win/src",
   "+services/audio/public",
   "+services/cert_verifier",
   "+services/data_decoder/public",

@@ -68,6 +68,10 @@ class SafeBrowsingService;
 class UrlCheckerDelegate;
 }  // namespace safe_browsing
 
+namespace sandbox {
+class SeatbeltExecClient;
+}  // namespace sandbox
+
 namespace ui {
 class NativeTheme;
 }
@@ -696,6 +700,12 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       content::BrowserContext* browser_context,
       const GURL& url) override;
   ukm::UkmService* GetUkmService() override;
+
+#if defined(OS_MAC)
+  bool SetupEmbedderSandboxParameters(
+      sandbox::policy::SandboxType sandbox_type,
+      sandbox::SeatbeltExecClient* client) override;
+#endif  // defined(OS_MAC)
 
  protected:
   static bool HandleWebUI(GURL* url, content::BrowserContext* browser_context);

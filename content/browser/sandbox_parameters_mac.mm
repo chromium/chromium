@@ -219,7 +219,6 @@ void SetupSandboxParameters(sandbox::policy::SandboxType sandbox_type,
                             sandbox::SeatbeltExecClient* client) {
   switch (sandbox_type) {
     case sandbox::policy::SandboxType::kAudio:
-    case sandbox::policy::SandboxType::kSpeechRecognition:
     case sandbox::policy::SandboxType::kNaClLoader:
     case sandbox::policy::SandboxType::kPrintCompositor:
     case sandbox::policy::SandboxType::kRenderer:
@@ -247,6 +246,12 @@ void SetupSandboxParameters(sandbox::policy::SandboxType sandbox_type,
     case sandbox::policy::SandboxType::kVideoCapture:
       CHECK(false) << "Unhandled parameters for sandbox_type "
                    << static_cast<int>(sandbox_type);
+      break;
+    // Setup parameters for sandbox types handled by embedders below.
+    case sandbox::policy::SandboxType::kSpeechRecognition:
+      SetupCommonSandboxParameters(client);
+      CHECK(GetContentClient()->browser()->SetupEmbedderSandboxParameters(
+          sandbox_type, client));
   }
 }
 
