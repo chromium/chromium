@@ -8,15 +8,11 @@
 #include "base/callback_forward.h"
 #include "base/memory/ref_counted.h"
 
-namespace base {
-class TaskRunner;
-}  // namespace base
-
 namespace updater {
 
-// Installs the candidate, then posts |callback| to |runner|.
+// Installs the candidate, then posts |callback| to the main sequence. Must
+// be called on the main sequence.
 void InstallCandidate(bool is_machine,
-                      scoped_refptr<base::TaskRunner> runner,
                       base::OnceCallback<void(int)> callback);
 
 }  // namespace updater

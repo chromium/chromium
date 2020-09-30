@@ -320,7 +320,7 @@ bool DeleteDataFolder() {
 
 }  // namespace
 
-int InstallCandidate() {
+int Setup() {
   const base::FilePath dest_path = GetVersionedUpdaterFolderPath();
 
   if (!CopyBundle(dest_path))

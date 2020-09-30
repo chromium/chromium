@@ -12,6 +12,9 @@
 
 namespace updater {
 
+const char kControlLaunchdName[] =
+    MAC_BUNDLE_IDENTIFIER_STRING ".control." UPDATER_VERSION_STRING;
+
 base::ScopedCFTypeRef<CFStringRef> CopyServiceLaunchdName() {
   return base::SysUTF8ToCFStringRef(MAC_BUNDLE_IDENTIFIER_STRING ".service");
 }
@@ -22,8 +25,7 @@ base::ScopedCFTypeRef<CFStringRef> CopyWakeLaunchdName() {
 }
 
 base::ScopedCFTypeRef<CFStringRef> CopyControlLaunchdName() {
-  return base::SysUTF8ToCFStringRef(MAC_BUNDLE_IDENTIFIER_STRING
-                                    ".control." UPDATER_VERSION_STRING);
+  return base::SysUTF8ToCFStringRef(kControlLaunchdName);
 }
 
 base::scoped_nsobject<NSString> GetServiceLaunchdLabel() {

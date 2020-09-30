@@ -90,19 +90,15 @@ void AppInstall::FirstTaskRun() {
   splash_screen_ = splash_screen_maker_.Run();
   splash_screen_->Show();
 
-  base::ThreadPool::PostTask(
-      FROM_HERE,
-      {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
-       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+  InstallCandidate(
+      false,
       base::BindOnce(
-          &InstallCandidate, false, base::SequencedTaskRunnerHandle::Get(),
-          base::BindOnce(
-              [](SplashScreen* splash_screen,
-                 base::OnceCallback<void(int)> done, int result) {
-                splash_screen->Dismiss(base::BindOnce(std::move(done), result));
-              },
-              splash_screen_.get(),
-              base::BindOnce(&AppInstall::InstallCandidateDone, this))));
+          [](SplashScreen* splash_screen, base::OnceCallback<void(int)> done,
+             int result) {
+            splash_screen->Dismiss(base::BindOnce(std::move(done), result));
+          },
+          splash_screen_.get(),
+          base::BindOnce(&AppInstall::InstallCandidateDone, this)));
 }
 
 void AppInstall::InstallCandidateDone(int result) {

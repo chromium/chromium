@@ -129,6 +129,8 @@ if (is_win || is_mac) {
         "app/server/mac/update_service_wrappers.mm",
         "external_constants_mac.mm",
         "installer_mac.cc",
+        "launchd_util.cc",
+        "launchd_util.h",
         "lib_util_mac.mm",
         "mac/control_service_out_of_process.h",
         "mac/control_service_out_of_process.mm",
@@ -136,7 +138,7 @@ if (is_win || is_mac) {
         "mac/update_service_out_of_process.mm",
         "prefs_mac.mm",
         "service_factory_mac.mm",
-        "setup_mac.cc",
+        "setup_mac.mm",
       ]
     }
 

@@ -42,11 +42,7 @@ void AppUpdate::Uninitialize() {
 }
 
 void AppUpdate::FirstTaskRun() {
-  base::ThreadPool::PostTask(
-      FROM_HERE, {base::MayBlock()},
-      base::BindOnce(&InstallCandidate, false,
-                     base::SequencedTaskRunnerHandle::Get(),
-                     base::BindOnce(&AppUpdate::SetupDone, this)));
+  InstallCandidate(false, base::BindOnce(&AppUpdate::SetupDone, this));
 }
 
 void AppUpdate::SetupDone(int result) {

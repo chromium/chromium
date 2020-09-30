@@ -57,12 +57,15 @@ constexpr int kFailedToStartLaunchdControlJob = 42;
 // Failed to start the wake job.
 constexpr int kFailedToStartLaunchdWakeJob = 43;
 
+// Timed out while awaiting launchctl to become aware of the control job.
+constexpr int kFailedAwaitingLaunchdControlJob = 44;
+
 }  // namespace setup_exit_codes
 
 // Sets up the candidate updater by copying the bundle, creating launchd plists
 // for administration service and XPC service tasks, and start the corresponding
 // launchd jobs.
-int InstallCandidate();
+int Setup();
 
 // Uninstalls this version of the updater.
 int UninstallCandidate();

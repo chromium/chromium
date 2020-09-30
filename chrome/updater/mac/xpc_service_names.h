@@ -10,6 +10,8 @@
 
 namespace updater {
 
+extern const char kControlLaunchdName[];
+
 base::ScopedCFTypeRef<CFStringRef> CopyServiceLaunchdName();
 base::ScopedCFTypeRef<CFStringRef> CopyWakeLaunchdName();
 base::ScopedCFTypeRef<CFStringRef> CopyControlLaunchdName();
