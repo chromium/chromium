@@ -8,7 +8,9 @@
 
 #include "base/check_op.h"
 #include "base/containers/span.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "net/base/net_string_util.h"
 #include "net/ntlm/ntlm_buffer_writer.h"
@@ -295,6 +297,15 @@ void GenerateNtlmHashV2(const base::string16& domain,
   base::string16 upper_username;
   bool result = ToUpper(username, &upper_username);
   DCHECK(result);
+
+  // TODO(https://crbug.com/1051924): Using a locale-sensitive upper casing
+  // algorithm is problematic. A more predictable approach is to only uppercase
+  // ASCII characters, so the hash does not change depending on the user's
+  // locale. Histogram how often the locale-sensitive ToUpper() gives a result
+  // that differs from ASCII uppercasing, to see how often this ambiguity arises
+  // in practice.
+  UMA_HISTOGRAM_BOOLEAN("Net.Ntlm.HashDependsOnLocale",
+                        upper_username != base::ToUpperASCII(username));
 
   uint8_t v1_hash[kNtlmHashLen];
   GenerateNtlmHashV1(password, v1_hash);
