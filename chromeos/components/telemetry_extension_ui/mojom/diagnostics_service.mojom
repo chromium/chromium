@@ -275,6 +275,7 @@ enum DiagnosticRoutineEnum {
   kDiskRead = 9,
   kPrimeSearch = 10,
   kBatteryDischarge = 11,
+  kBatteryCharge = 12,
 };
 
 // Enumeration of each of the possible statuses for a diagnostics routine.

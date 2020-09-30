@@ -62,6 +62,7 @@ class DiagnosticsProxy {
       [routineEnum.kDiskRead, 'disk-read'],
       [routineEnum.kPrimeSearch, 'prime-search'],
       [routineEnum.kBatteryDischarge, 'battery-discharge'],
+      [routineEnum.kBatteryCharge, 'battery-charge'],
     ]);
 
     if (this.enumToRoutineName_.size !== routineEnum.MAX_VALUE + 1) {

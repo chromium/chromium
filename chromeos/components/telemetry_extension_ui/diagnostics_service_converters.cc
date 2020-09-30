@@ -94,6 +94,8 @@ base::Optional<health::mojom::DiagnosticRoutineEnum> Convert(
       return health::mojom::DiagnosticRoutineEnum::kPrimeSearch;
     case cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryDischarge:
       return health::mojom::DiagnosticRoutineEnum::kBatteryDischarge;
+    case cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryCharge:
+      return health::mojom::DiagnosticRoutineEnum::kBatteryCharge;
     default:
       return base::nullopt;
   }

@@ -67,6 +67,7 @@ UNTRUSTED_TEST('UntrustedDiagnosticsRequestAvailableRoutines', async () => {
     'disk-read',
     'prime-search',
     'battery-discharge',
+    'battery-charge',
   ]);
 });
 

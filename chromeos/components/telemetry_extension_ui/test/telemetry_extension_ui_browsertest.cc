@@ -79,6 +79,7 @@ void TelemetryExtensionUiBrowserTest::SetUpOnMainThread() {
         cros_diagnostics::DiagnosticRoutineEnum::kDiskRead,
         cros_diagnostics::DiagnosticRoutineEnum::kPrimeSearch,
         cros_diagnostics::DiagnosticRoutineEnum::kBatteryDischarge,
+        cros_diagnostics::DiagnosticRoutineEnum::kBatteryCharge,
     };
 
     chromeos::cros_healthd::FakeCrosHealthdClient::Get()
