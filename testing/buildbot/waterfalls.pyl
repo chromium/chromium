@@ -2134,7 +2134,7 @@
           'mac_10.15',
           'mac_toolchain',
           'out_dir_arg',
-          'xcode_12a7209',
+          'xcode_12b5018i',
         ],
         'test_suites': {
           'isolated_scripts': 'ios14_beta_simulator_tests'
@@ -2150,7 +2150,7 @@
           'mac_10.15',
           'mac_toolchain',
           'out_dir_arg',
-          'xcode_12a7209',
+          'xcode_12b5018i',
         ],
         'test_suites': {
           'isolated_scripts': 'ios14_sdk_simulator_tests'
