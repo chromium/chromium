@@ -337,6 +337,13 @@ suite('MemoryCardTest', () => {
       assertEquals(
           fakeMemoryUsage[0].available_memory_kib, dataPoints[1].value);
       assertEquals(fakeMemoryUsage[0].free_memory_kib, dataPoints[2].value);
+
+      const barChart =
+          diagnostics_test_utils.getPercentBarChartElement(memoryElement);
+      const memInUse = fakeMemoryUsage[0].total_memory_kib -
+          fakeMemoryUsage[0].available_memory_kib;
+      assertEquals(fakeMemoryUsage[0].total_memory_kib, barChart.max);
+      assertEquals(memInUse, barChart.value);
     });
   });
 });

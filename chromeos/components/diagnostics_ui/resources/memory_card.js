@@ -5,6 +5,7 @@
 import './data_point.js';
 import './diagnostics_card.js';
 import './diagnostics_shared_css.js';
+import './percent_bar_chart.js';
 
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {MemoryUsage, SystemDataProviderInterface} from './diagnostics_types.js'
@@ -50,4 +51,14 @@ Polymer({
     this.memoryUsage_ = memoryUsage;
   },
 
+  /**
+   * Calculates total used memory from MemoryUsage object.
+   * @param {!MemoryUsage} memoryUsage
+   * @return {number}
+   * @private
+   */
+  getTotalUsedMemory_(memoryUsage) {
+    return memoryUsage.total_memory_kib -
+        memoryUsage.available_memory_kib;
+  }
 });

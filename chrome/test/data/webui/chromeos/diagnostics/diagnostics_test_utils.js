@@ -11,3 +11,13 @@
 export function getDataPointElements(element) {
   return element.shadowRoot.querySelectorAll('data-point');
 }
+
+/**
+ * Helper function for getting a percent-bar-chart element from a
+ * diagnostics card.
+ * @param {!HTMLElement} element
+ * @return {!Array<!HTMLElement>}
+ */
+export function getPercentBarChartElement(element) {
+  return element.shadowRoot.querySelector('percent-bar-chart');
+}

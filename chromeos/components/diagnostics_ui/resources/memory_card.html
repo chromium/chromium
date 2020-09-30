@@ -15,4 +15,9 @@
   <data-point slot="body" id="memoryFree"
     value="[[memoryUsage_.free_memory_kib]]">
   </data-point>
+  <!-- TODO(joonbug): Localize once strings are confirmed -->
+  <percent-bar-chart slot="body" title="Used memory"
+    value="[[getTotalUsedMemory_(memoryUsage_)]]"
+    max="[[memoryUsage_.total_memory_kib]]">
+  </percent-bar-chart>
 </diagnostics-card>
