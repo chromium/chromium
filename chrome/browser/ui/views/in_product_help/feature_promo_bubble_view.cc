@@ -79,7 +79,13 @@ class MdIPHBubbleButton : public MdTextButton {
     SetProminent(true);
     // Button color is the same as IPH bubble's color.
     SetBgColorOverride(SK_ColorTRANSPARENT);
-    // Do not grey out button text on blur.
+    // TODO(kerenzhu): IPH bubble uses blue600 as the background color
+    // for both regular and dark mode. We might want to use a
+    // dark-mode-appropriate background color so that overriding text color
+    // is not needed.
+    SetTextColor(ButtonState::STATE_NORMAL, kBubbleButtonTextColor);
+    // TODO(crbug/1112244): Temporary fix for Mac. Bubble shouldn't be in
+    // inactive style when the bubble loses focus.
     SetTextColor(ButtonState::STATE_DISABLED, kBubbleButtonTextColor);
     focus_ring()->SetColor(kBubbleButtonFocusRingColor);
   }
