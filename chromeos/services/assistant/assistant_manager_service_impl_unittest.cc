@@ -43,6 +43,7 @@ namespace assistant {
 using media_session::mojom::MediaSessionAction;
 using testing::ElementsAre;
 using testing::Invoke;
+using testing::NiceMock;
 using testing::StrictMock;
 using CommunicationErrorType = AssistantManagerService::CommunicationErrorType;
 using UserInfo = AssistantManagerService::UserInfo;
@@ -321,6 +322,10 @@ TEST_F(AssistantManagerServiceImplTest,
 
 TEST_F(AssistantManagerServiceImplTest,
        StateShouldBecomeRunningAfterLibassistantSignalsOnStartFinished) {
+  NiceMock<AssistantAlarmTimerControllerMock> alarm_timer_controller;
+  fake_service_context()->set_assistant_alarm_timer_controller(
+      &alarm_timer_controller);
+
   Start();
   WaitUntilStartIsFinished();
 
@@ -505,6 +510,10 @@ TEST_F(AssistantManagerServiceImplTest, ShouldFireStateObserverWhenStarted) {
 
 TEST_F(AssistantManagerServiceImplTest,
        ShouldFireStateObserverWhenLibAssistantSignalsOnStartFinished) {
+  NiceMock<AssistantAlarmTimerControllerMock> alarm_timer_controller;
+  fake_service_context()->set_assistant_alarm_timer_controller(
+      &alarm_timer_controller);
+
   Start();
   WaitUntilStartIsFinished();
 
@@ -555,7 +564,10 @@ TEST_F(AssistantManagerServiceImplTest,
 }
 
 TEST_F(AssistantManagerServiceImplTest,
-       ShouldNotifyAlarmTimerControllerOfOnlyRingingTimers) {
+       ShouldNotifyAlarmTimerControllerOfOnlyRingingTimersInV1) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(features::kAssistantTimersV2);
+
   Start();
   WaitUntilStartIsFinished();
   assistant_manager_service()->OnStartFinished();
