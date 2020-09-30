@@ -10,11 +10,11 @@
 
 #include "base/files/file_path.h"
 #include "base/strings/utf_string_conversions.h"
-#include "content/browser/native_file_system/native_file_system_manager_impl.h"
+#include "content/browser/file_system_access/native_file_system_manager_impl.h"
 #include "content/public/common/drop_data.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
-#include "third_party/blink/public/mojom/native_file_system/native_file_system_drag_drop_token.mojom.h"
+#include "third_party/blink/public/mojom/file_system_access/native_file_system_drag_drop_token.mojom.h"
 #include "third_party/blink/public/mojom/page/drag.mojom.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/dragdrop/file_info/file_info.h"

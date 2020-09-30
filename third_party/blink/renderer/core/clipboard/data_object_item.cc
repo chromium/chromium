@@ -31,7 +31,7 @@
 #include "third_party/blink/renderer/core/clipboard/data_object_item.h"
 
 #include "base/time/time.h"
-#include "third_party/blink/public/mojom/native_file_system/native_file_system_drag_drop_token.mojom-blink.h"
+#include "third_party/blink/public/mojom/file_system_access/native_file_system_drag_drop_token.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/clipboard/clipboard_mime_types.h"
 #include "third_party/blink/renderer/core/clipboard/system_clipboard.h"

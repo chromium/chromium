@@ -9,8 +9,8 @@
 
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
+#include "third_party/blink/public/mojom/file_system_access/native_file_system_transfer_token.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-blink-forward.h"
-#include "third_party/blink/public/mojom/native_file_system/native_file_system_transfer_token.mojom-blink-forward.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_key.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_key_path.h"
 #include "third_party/blink/renderer/modules/modules_export.h"

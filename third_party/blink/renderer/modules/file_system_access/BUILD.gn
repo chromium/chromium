@@ -1,0 +1,52 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/blink/renderer/modules/modules.gni")
+
+blink_modules_sources("file_system_access") {
+  sources = [
+    "data_transfer_item_native_file_system.cc",
+    "data_transfer_item_native_file_system.h",
+    "global_native_file_system.cc",
+    "global_native_file_system.h",
+    "native_file_system_directory_handle.cc",
+    "native_file_system_directory_handle.h",
+    "native_file_system_directory_iterator.cc",
+    "native_file_system_directory_iterator.h",
+    "native_file_system_error.cc",
+    "native_file_system_error.h",
+    "native_file_system_file_handle.cc",
+    "native_file_system_file_handle.h",
+    "native_file_system_handle.cc",
+    "native_file_system_handle.h",
+    "native_file_system_underlying_sink.cc",
+    "native_file_system_underlying_sink.h",
+    "native_file_system_writable_file_stream.cc",
+    "native_file_system_writable_file_stream.h",
+    "storage_manager_native_file_system.cc",
+    "storage_manager_native_file_system.h",
+  ]
+
+  deps = [ "//third_party/blink/renderer/platform" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "global_native_file_system_test.cc" ]
+
+  configs += [
+    "//third_party/blink/renderer:config",
+    "//third_party/blink/renderer:inside_blink",
+    "//third_party/blink/renderer/core:blink_core_pch",
+  ]
+
+  deps = [
+    "//testing/gtest",
+    "//third_party/blink/renderer/core:unit_test_support",
+    "//third_party/blink/renderer/modules",
+    "//third_party/blink/renderer/platform",
+    "//third_party/blink/renderer/platform:test_support",
+    "//third_party/blink/renderer/platform/wtf",
+  ]
+}

@@ -37,7 +37,7 @@
 #include "base/optional.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
-#include "third_party/blink/public/mojom/native_file_system/native_file_system_transfer_token.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/file_system_access/native_file_system_transfer_token.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/transferables.h"
 #include "third_party/blink/renderer/core/core_export.h"

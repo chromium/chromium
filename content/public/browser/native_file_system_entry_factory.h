@@ -12,7 +12,7 @@
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/native_file_system_permission_context.h"
 #include "ipc/ipc_message.h"
-#include "third_party/blink/public/mojom/native_file_system/native_file_system_directory_handle.mojom-forward.h"
+#include "third_party/blink/public/mojom/file_system_access/native_file_system_directory_handle.mojom-forward.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 

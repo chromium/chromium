@@ -33,7 +33,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
-#include "third_party/blink/public/mojom/native_file_system/native_file_system_drag_drop_token.mojom-shared.h"
+#include "third_party/blink/public/mojom/file_system_access/native_file_system_drag_drop_token.mojom-shared.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_data.h"

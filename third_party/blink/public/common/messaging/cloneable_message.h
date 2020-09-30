@@ -14,7 +14,7 @@
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/mojom/blob/serialized_blob.mojom.h"
-#include "third_party/blink/public/mojom/native_file_system/native_file_system_transfer_token.mojom.h"
+#include "third_party/blink/public/mojom/file_system_access/native_file_system_transfer_token.mojom.h"
 #include "url/origin.h"
 
 namespace blink {

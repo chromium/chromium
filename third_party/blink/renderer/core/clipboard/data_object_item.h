@@ -33,8 +33,8 @@
 
 #include "base/optional.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/blink/public/mojom/native_file_system/native_file_system_drag_drop_token.mojom-blink.h"
-#include "third_party/blink/public/mojom/native_file_system/native_file_system_transfer_token.mojom-blink.h"
+#include "third_party/blink/public/mojom/file_system_access/native_file_system_drag_drop_token.mojom-blink.h"
+#include "third_party/blink/public/mojom/file_system_access/native_file_system_transfer_token.mojom-blink.h"
 #include "third_party/blink/public/platform/web_drag_data.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/fileapi/file.h"

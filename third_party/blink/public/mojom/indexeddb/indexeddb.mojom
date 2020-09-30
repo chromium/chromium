@@ -8,7 +8,7 @@ import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "third_party/blink/public/mojom/blob/blob.mojom";
-import "third_party/blink/public/mojom/native_file_system/native_file_system_transfer_token.mojom";
+import "third_party/blink/public/mojom/file_system_access/native_file_system_transfer_token.mojom";
 
 // kIDBMaxMessageSize is 128MB, originally based on
 // IPC::Channel::kMaximumMessageSize.  The "usable" size is this value less

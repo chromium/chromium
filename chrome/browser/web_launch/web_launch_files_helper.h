@@ -14,7 +14,7 @@
 #include "content/public/browser/native_file_system_entry_factory.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
-#include "third_party/blink/public/mojom/native_file_system/native_file_system_directory_handle.mojom-forward.h"
+#include "third_party/blink/public/mojom/file_system_access/native_file_system_directory_handle.mojom-forward.h"
 #include "third_party/blink/public/mojom/web_launch/web_launch.mojom.h"
 #include "url/gurl.h"
 

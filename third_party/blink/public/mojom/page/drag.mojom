@@ -10,7 +10,7 @@ import "services/network/public/mojom/referrer_policy.mojom";
 import "ui/base/dragdrop/mojom/drag_drop_types.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
-import "third_party/blink/public/mojom/native_file_system/native_file_system_drag_drop_token.mojom";
+import "third_party/blink/public/mojom/file_system_access/native_file_system_drag_drop_token.mojom";
 
 // "Verb" of a drag-and-drop operation as negotiated between the source and
 // destination. It's typemapped to blink::DragOperation.

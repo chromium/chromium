@@ -8540,7 +8540,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="NativeFileSystemAPI.ConfirmReadDirectoryResult"
     enum="PermissionAction" expires_after="2021-06-01">
   <owner>mek@chromium.org</owner>
-  <owner>src/content/browser/native_file_system/OWNERS</owner>
+  <owner>src/content/browser/file_system_access/OWNERS</owner>
   <summary>
     Did the user confirm read access to a directory via the Native File System
     API.
@@ -8550,7 +8550,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="NativeFileSystemAPI.FileChooserResult" units="units"
     expires_after="2021-06-01">
   <owner>mek@chromium.org</owner>
-  <owner>src/content/browser/native_file_system/OWNERS</owner>
+  <owner>src/content/browser/file_system_access/OWNERS</owner>
   <summary>
     The number of files a user picked using the file picker in the Native File
     System API. Recorded as 0 if the user cancelled the picker.
@@ -8560,7 +8560,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="NativeFileSystemAPI.ReadPermissionRequestOutcome"
     enum="NativeFileSystemPermissionRequestOutcome" expires_after="2021-06-01">
   <owner>mek@chromium.org</owner>
-  <owner>src/content/browser/native_file_system/OWNERS</owner>
+  <owner>src/content/browser/file_system_access/OWNERS</owner>
   <summary>
     The result of an attempt to request write permission to a file or directory
     via the Native File System API.
@@ -8570,7 +8570,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="NativeFileSystemAPI.SensitiveDirectoryAccessResult"
     enum="SensitiveDirectoryAccessResult" expires_after="2021-06-01">
   <owner>mek@chromium.org</owner>
-  <owner>src/content/browser/native_file_system/OWNERS</owner>
+  <owner>src/content/browser/file_system_access/OWNERS</owner>
   <summary>
     Records if the file or directory selected by the user through the Native
     File System API is considered a sensitive directory, and thus was blocked.
@@ -8580,7 +8580,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="NativeFileSystemAPI.WritePermissionRequestOutcome"
     enum="NativeFileSystemPermissionRequestOutcome" expires_after="2021-06-01">
   <owner>mek@chromium.org</owner>
-  <owner>src/content/browser/native_file_system/OWNERS</owner>
+  <owner>src/content/browser/file_system_access/OWNERS</owner>
   <summary>
     The result of an attempt to request write permission to a file or directory
     via the Native File System API.

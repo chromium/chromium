@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_LAUNCH_WEB_LAUNCH_SERVICE_IMPL_H_
 
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
-#include "third_party/blink/public/mojom/native_file_system/native_file_system_directory_handle.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/file_system_access/native_file_system_directory_handle.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/web_launch/web_launch.mojom-blink.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
