@@ -11,6 +11,7 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 
+import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.ChromeVersionInfo;
 import org.chromium.chrome.browser.externalauth.ExternalAuthUtils;
 import org.chromium.chrome.browser.externalauth.VerifiedHandler;
@@ -25,8 +26,10 @@ public class ChromePrerenderService extends Service {
      */
     static class IncomingHandler extends VerifiedHandler {
         IncomingHandler(Context context) {
-            super(context, ChromeVersionInfo.isLocalBuild()
-                    ? 0 : ExternalAuthUtils.FLAG_SHOULD_BE_GOOGLE_SIGNED);
+            super(context, AppHooks.get().getExternalAuthUtils(),
+                    ChromeVersionInfo.isLocalBuild()
+                            ? 0
+                            : ExternalAuthUtils.FLAG_SHOULD_BE_GOOGLE_SIGNED);
         }
 
         @Override

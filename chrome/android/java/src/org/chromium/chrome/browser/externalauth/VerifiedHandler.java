@@ -10,8 +10,6 @@ import android.os.Message;
 import android.os.Messenger;
 import android.text.TextUtils;
 
-import org.chromium.chrome.browser.AppHooks;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,25 +22,32 @@ public class VerifiedHandler extends Handler {
     private final String mCallerPackageToMatch;
     private final Map<Messenger, Boolean> mClientTrustMap = new HashMap<Messenger, Boolean>();
     private final Context mContext;
+    private final ExternalAuthUtils mExternalAuthUtils;
 
     /**
      * Basic constructor for verified handler.
      * @param context The context to use for accessing the package manager.
+     * @param externalAuthUtils An {@link ExternalAuthUtils}, to check the package. Can be acquired
+     *                          from AppHooks.
      * @param authRequirements The requirements for authenticating the caller application.
      */
-    public VerifiedHandler(Context context, int authRequirements) {
-        this(context, authRequirements, "");
+    public VerifiedHandler(
+            Context context, ExternalAuthUtils externalAuthUtils, int authRequirements) {
+        this(context, externalAuthUtils, authRequirements, "");
     }
 
     /**
      * Constructor with package name requirement.
      * @param context The context to use for accessing the package manager.
+     * @param externalAuthUtils An {@link ExternalAuthUtils}, to check the package. Can be acquired
+     *                          from AppHooks.
      * @param authRequirements The requirements for authenticating the caller application.
      * @param callerPackageToMatch The package name to match to.
      */
-    public VerifiedHandler(Context context, int authRequirements,
-            String callerPackageToMatch) {
+    public VerifiedHandler(Context context, ExternalAuthUtils externalAuthUtils,
+            int authRequirements, String callerPackageToMatch) {
         mContext = context;
+        mExternalAuthUtils = externalAuthUtils;
         mAuthRequirements = authRequirements;
         mCallerPackageToMatch = callerPackageToMatch;
     }
@@ -59,10 +64,9 @@ public class VerifiedHandler extends Handler {
      *         set during construction.
      */
     public boolean checkCallerIsValid() {
-        ExternalAuthUtils externalAuthUtils = AppHooks.get().getExternalAuthUtils();
         return TextUtils.isEmpty(mCallerPackageToMatch)
-                ? externalAuthUtils.isCallerValid(mContext, mAuthRequirements)
-                : externalAuthUtils.isCallerValidForPackage(
+                ? mExternalAuthUtils.isCallerValid(mContext, mAuthRequirements)
+                : mExternalAuthUtils.isCallerValidForPackage(
                         mContext, mAuthRequirements, mCallerPackageToMatch);
     }
 }
