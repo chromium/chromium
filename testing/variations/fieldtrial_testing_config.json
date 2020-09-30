@@ -514,6 +514,21 @@
             ]
         }
     ],
+    "AssistAutocorrect": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20200925",
+                    "enable_features": [
+                        "AssistAutocorrect"
+                    ]
+                }
+            ]
+        }
+    ],
     "AssistPersonalInfo": [
         {
             "platforms": [
