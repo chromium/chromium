@@ -69,9 +69,11 @@ class TestingPlatformSupport : public Platform {
   WebData UncompressDataResource(int resource_id) override;
   ThreadSafeBrowserInterfaceBrokerProxy* GetBrowserInterfaceBroker() override;
   bool IsThreadedAnimationEnabled() override;
+  bool IsUseZoomForDSFEnabled() override;
 
   virtual void RunUntilIdle();
   void SetThreadedAnimationEnabled(bool enabled);
+  void SetUseZoomForDSF(bool enabeld);
 
   // Overrides the handling of GetInterface on the platform's associated
   // interface provider.
@@ -95,6 +97,7 @@ class TestingPlatformSupport : public Platform {
 
  private:
   bool is_threaded_animation_enabled_ = false;
+  bool is_zoom_for_dsf_enabled_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(TestingPlatformSupport);
 };

@@ -53,10 +53,22 @@
 #include "third_party/blink/renderer/platform/geometry/int_size.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/testing/histogram_tester.h"
+#include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
 
 namespace blink {
+
+class DSFStateTestingPlatformSupport : public TestingPlatformSupport {
+ public:
+  bool IsUseZoomForDSFEnabled() override { return use_zoom_for_dsf_; }
+  void SetUseZoomForDSF(bool use_zoom_for_dsf) {
+    use_zoom_for_dsf_ = use_zoom_for_dsf;
+  }
+
+ private:
+  bool use_zoom_for_dsf_ = false;
+};
 
 class ViewportTest : public testing::Test {
  protected:
@@ -88,8 +100,15 @@ class ViewportTest : public testing::Test {
     blink::test::RunPendingTasks();
   }
 
+  void SetUseZoomForDSF(bool use_zoom_for_dsf) {
+    platform_->SetUseZoomForDSF(use_zoom_for_dsf);
+  }
+
   std::string base_url_;
   std::string chrome_url_;
+
+ private:
+  ScopedTestingPlatformSupport<DSFStateTestingPlatformSupport> platform_;
 };
 
 static void SetViewportSettings(WebSettings* settings) {
@@ -3146,33 +3165,17 @@ TEST_F(ViewportTest, viewportWarnings8) {
   EXPECT_EQ(0U, web_frame_client.messages.size());
 }
 
-class ViewportClient : public frame_test_helpers::TestWebWidgetClient {
- public:
-  // WebWidgetClient overrides.
-  void ConvertWindowToViewport(WebFloatRect* rect) override {
-    rect->x *= device_scale_factor_;
-    rect->y *= device_scale_factor_;
-    rect->width *= device_scale_factor_;
-    rect->height *= device_scale_factor_;
-  }
-
-  void set_device_scale_factor(float device_scale_factor) {
-    device_scale_factor_ = device_scale_factor;
-  }
-
- private:
-  float device_scale_factor_ = 1.f;
-};
-
 TEST_F(ViewportTest, viewportUseZoomForDSF1) {
-  ViewportClient client;
-  client.set_device_scale_factor(3);
   RegisterMockedHttpURLLoad("viewport/viewport-legacy-merge-quirk-1.html");
+  SetUseZoomForDSF(true);
 
   frame_test_helpers::WebViewHelper web_view_helper;
-  web_view_helper.InitializeAndLoad(
-      base_url_ + "viewport/viewport-legacy-merge-quirk-1.html", nullptr,
-      nullptr, &client, SetQuirkViewportSettings);
+  WebViewImpl* web_view_impl =
+      web_view_helper.InitializeWithSettings(SetQuirkViewportSettings);
+  web_view_impl->MainFrameWidget()->SetDeviceScaleFactorForTesting(3.f);
+  frame_test_helpers::LoadFrame(
+      web_view_impl->MainFrameImpl(),
+      base_url_ + "viewport/viewport-legacy-merge-quirk-1.html");
 
   Page* page = web_view_helper.GetWebView()->GetPage();
   // Initial width and height must be scaled by DSF when --use-zoom-for-dsf
@@ -3192,15 +3195,16 @@ TEST_F(ViewportTest, viewportUseZoomForDSF1) {
 }
 
 TEST_F(ViewportTest, viewportUseZoomForDSF2) {
-  ViewportClient client;
-  client.set_device_scale_factor(3);
   RegisterMockedHttpURLLoad("viewport/viewport-legacy-merge-quirk-2.html");
+  SetUseZoomForDSF(true);
 
   frame_test_helpers::WebViewHelper web_view_helper;
-  web_view_helper.InitializeAndLoad(
-      base_url_ + "viewport/viewport-legacy-merge-quirk-2.html", nullptr,
-      nullptr, &client, SetQuirkViewportSettings);
-
+  WebViewImpl* web_view_impl =
+      web_view_helper.InitializeWithSettings(SetQuirkViewportSettings);
+  web_view_impl->MainFrameWidget()->SetDeviceScaleFactorForTesting(3.f);
+  frame_test_helpers::LoadFrame(
+      web_view_impl->MainFrameImpl(),
+      base_url_ + "viewport/viewport-legacy-merge-quirk-2.html");
   Page* page = web_view_helper.GetWebView()->GetPage();
 
   // This quirk allows content attributes of meta viewport tags to be merged.
@@ -3222,14 +3226,15 @@ TEST_F(ViewportTest, viewportUseZoomForDSF2) {
 }
 
 TEST_F(ViewportTest, viewportUseZoomForDSF3) {
-  ViewportClient client;
-  client.set_device_scale_factor(3);
   RegisterMockedHttpURLLoad("viewport/viewport-48.html");
+  SetUseZoomForDSF(true);
 
   frame_test_helpers::WebViewHelper web_view_helper;
-  web_view_helper.InitializeAndLoad(base_url_ + "viewport/viewport-48.html",
-                                    nullptr, nullptr, &client,
-                                    SetViewportSettings);
+  WebViewImpl* web_view_impl =
+      web_view_helper.InitializeWithSettings(SetViewportSettings);
+  web_view_impl->MainFrameWidget()->SetDeviceScaleFactorForTesting(3.f);
+  frame_test_helpers::LoadFrame(web_view_impl->MainFrameImpl(),
+                                base_url_ + "viewport/viewport-48.html");
 
   Page* page = web_view_helper.GetWebView()->GetPage();
   // Initial width and height must be scaled by DSF when --use-zoom-for-dsf
@@ -3247,14 +3252,15 @@ TEST_F(ViewportTest, viewportUseZoomForDSF3) {
 }
 
 TEST_F(ViewportTest, viewportUseZoomForDSF4) {
-  ViewportClient client;
-  client.set_device_scale_factor(3);
   RegisterMockedHttpURLLoad("viewport/viewport-39.html");
+  SetUseZoomForDSF(true);
 
   frame_test_helpers::WebViewHelper web_view_helper;
-  web_view_helper.InitializeAndLoad(base_url_ + "viewport/viewport-39.html",
-                                    nullptr, nullptr, &client,
-                                    SetViewportSettings);
+  WebViewImpl* web_view_impl =
+      web_view_helper.InitializeWithSettings(SetViewportSettings);
+  web_view_impl->MainFrameWidget()->SetDeviceScaleFactorForTesting(3.f);
+  frame_test_helpers::LoadFrame(web_view_impl->MainFrameImpl(),
+                                base_url_ + "viewport/viewport-39.html");
 
   Page* page = web_view_helper.GetWebView()->GetPage();
   // Initial width and height must be scaled by DSF when --use-zoom-for-dsf

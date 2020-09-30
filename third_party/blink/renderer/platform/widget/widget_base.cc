@@ -1292,6 +1292,21 @@ gfx::Size WidgetBase::DIPsToCeiledBlinkSpace(const gfx::Size& size) {
       size, client_->GetOriginalScreenInfo().device_scale_factor);
 }
 
+gfx::RectF WidgetBase::DIPsToBlinkSpace(const gfx::RectF& rect) {
+  if (!use_zoom_for_dsf_)
+    return rect;
+  // TODO(danakj): Should this be GetScreenInfo() so it changes under emulation?
+  return gfx::ScaleRect(rect,
+                        client_->GetOriginalScreenInfo().device_scale_factor);
+}
+
+float WidgetBase::DIPsToBlinkSpace(float scalar) {
+  if (!use_zoom_for_dsf_)
+    return scalar;
+  // TODO(danakj): Should this be GetScreenInfo() so it changes under emulation?
+  return client_->GetOriginalScreenInfo().device_scale_factor * scalar;
+}
+
 gfx::Size WidgetBase::BlinkSpaceToCeiledDIPs(const gfx::Size& size) {
   if (!use_zoom_for_dsf_)
     return size;
@@ -1299,7 +1314,7 @@ gfx::Size WidgetBase::BlinkSpaceToCeiledDIPs(const gfx::Size& size) {
   return gfx::ScaleToCeiledSize(size, reverse);
 }
 
-gfx::Rect WidgetBase::BlinkSpaceToEnclosingDIPs(const gfx::Rect& rect) {
+gfx::Rect WidgetBase::BlinkSpaceToEnclosedDIPs(const gfx::Rect& rect) {
   if (!use_zoom_for_dsf_)
     return rect;
   float reverse = 1 / client_->GetOriginalScreenInfo().device_scale_factor;

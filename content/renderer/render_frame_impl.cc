@@ -288,10 +288,6 @@ using blink::WebView;
 using blink::mojom::SelectionMenuBehavior;
 using network::mojom::ReferrerPolicy;
 
-#if defined(OS_ANDROID)
-using blink::WebFloatRect;
-#endif
-
 namespace content {
 
 namespace {

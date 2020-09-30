@@ -116,9 +116,7 @@ class PagePopupChromeClient final : public EmptyChromeClient {
 
   float WindowToViewportScalar(LocalFrame*,
                                const float scalar_value) const override {
-    WebFloatRect viewport_rect(0, 0, scalar_value, 0);
-    popup_->WidgetClient()->ConvertWindowToViewport(&viewport_rect);
-    return viewport_rect.width;
+    return popup_->widget_base_->DIPsToBlinkSpace(scalar_value);
   }
 
   void AddMessageToConsole(LocalFrame*,

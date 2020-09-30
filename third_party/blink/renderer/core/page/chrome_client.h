@@ -40,7 +40,6 @@
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/blame_context.h"
 #include "third_party/blink/public/platform/web_battery_savings.h"
-#include "third_party/blink/public/platform/web_float_rect.h"
 #include "third_party/blink/public/web/web_swap_result.h"
 #include "third_party/blink/public/web/web_widget_client.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
@@ -128,10 +127,6 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
   // Converts the scalar value from window coordinates to viewport scale.
   virtual float WindowToViewportScalar(LocalFrame*,
                                        const float value) const = 0;
-
-  // Converts the scalar value from window coordinates to viewport rectangle.
-  virtual void WindowToViewportRect(LocalFrame& frame,
-                                    WebFloatRect* viewport_rect) const {}
 
   virtual bool IsPopup() { return false; }
 

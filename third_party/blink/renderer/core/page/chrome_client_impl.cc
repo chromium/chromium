@@ -470,16 +470,7 @@ float ChromeClientImpl::WindowToViewportScalar(LocalFrame* frame,
     return scalar_value;
   }
 
-  WebFloatRect viewport_rect(0, 0, scalar_value, 0);
-  frame->GetWidgetForLocalRoot()->Client()->ConvertWindowToViewport(
-      &viewport_rect);
-  return viewport_rect.width;
-}
-
-void ChromeClientImpl::WindowToViewportRect(LocalFrame& frame,
-                                            WebFloatRect* viewport_rect) const {
-  frame.GetWidgetForLocalRoot()->Client()->ConvertWindowToViewport(
-      viewport_rect);
+  return frame->GetWidgetForLocalRoot()->DIPsToBlinkSpace(scalar_value);
 }
 
 ScreenInfo ChromeClientImpl::GetScreenInfo(LocalFrame& frame) const {

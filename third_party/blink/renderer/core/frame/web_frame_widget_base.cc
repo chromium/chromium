@@ -468,6 +468,23 @@ gfx::RectF WebFrameWidgetBase::BlinkSpaceToDIPs(const gfx::RectF& rect) {
   return widget_base_->BlinkSpaceToDIPs(rect);
 }
 
+gfx::RectF WebFrameWidgetBase::DIPsToBlinkSpace(const gfx::RectF& rect) {
+  return widget_base_->DIPsToBlinkSpace(rect);
+}
+
+gfx::PointF WebFrameWidgetBase::DIPsToBlinkSpace(const gfx::PointF& point) {
+  return widget_base_->DIPsToBlinkSpace(point);
+}
+
+gfx::Point WebFrameWidgetBase::DIPsToRoundedBlinkSpace(
+    const gfx::Point& point) {
+  return widget_base_->DIPsToRoundedBlinkSpace(point);
+}
+
+float WebFrameWidgetBase::DIPsToBlinkSpace(float scalar) {
+  return widget_base_->DIPsToBlinkSpace(scalar);
+}
+
 void WebFrameWidgetBase::SetActive(bool active) {
   View()->SetIsActive(active);
 }
@@ -1563,10 +1580,10 @@ void WebFrameWidgetBase::GetEditContextBoundsInWindow(
   WebRect selection_bounds;
   controller->GetLayoutBounds(&control_bounds, &selection_bounds);
   *edit_context_control_bounds =
-      widget_base_->BlinkSpaceToEnclosingDIPs(gfx::Rect(control_bounds));
+      widget_base_->BlinkSpaceToEnclosedDIPs(gfx::Rect(control_bounds));
   if (controller->IsEditContextActive()) {
     *edit_context_selection_bounds =
-        widget_base_->BlinkSpaceToEnclosingDIPs(gfx::Rect(selection_bounds));
+        widget_base_->BlinkSpaceToEnclosedDIPs(gfx::Rect(selection_bounds));
   }
 }
 
@@ -1597,7 +1614,7 @@ bool WebFrameWidgetBase::GetSelectionBoundsInWindow(
     // Current Pepper IME API does not handle selection bounds. So we simply
     // use the caret position as an empty range for now. It will be updated
     // after Pepper API equips features related to surrounding text retrieval.
-    gfx::Rect pepper_caret_in_dips = widget_base_->BlinkSpaceToEnclosingDIPs(
+    gfx::Rect pepper_caret_in_dips = widget_base_->BlinkSpaceToEnclosedDIPs(
         Client()->GetPepperCaretBounds());
     if (pepper_caret_in_dips == *focus && pepper_caret_in_dips == *anchor)
       return false;
@@ -1609,9 +1626,9 @@ bool WebFrameWidgetBase::GetSelectionBoundsInWindow(
   WebRect anchor_webrect;
   SelectionBounds(focus_webrect, anchor_webrect);
   gfx::Rect focus_rect_in_dips =
-      widget_base_->BlinkSpaceToEnclosingDIPs(gfx::Rect(focus_webrect));
+      widget_base_->BlinkSpaceToEnclosedDIPs(gfx::Rect(focus_webrect));
   gfx::Rect anchor_rect_in_dips =
-      widget_base_->BlinkSpaceToEnclosingDIPs(gfx::Rect(anchor_webrect));
+      widget_base_->BlinkSpaceToEnclosedDIPs(gfx::Rect(anchor_webrect));
 
   // if the bounds are the same return false.
   if (focus_rect_in_dips == *focus && anchor_rect_in_dips == *anchor)
@@ -1876,7 +1893,7 @@ void WebFrameWidgetBase::GetCompositionCharacterBoundsInWindow(
 
   for (auto& rect : bounds_from_blink) {
     bounds_in_dips->push_back(
-        widget_base_->BlinkSpaceToEnclosingDIPs(gfx::Rect(rect)));
+        widget_base_->BlinkSpaceToEnclosedDIPs(gfx::Rect(rect)));
   }
 }
 
@@ -1907,7 +1924,7 @@ WebFrameWidgetBase::GetImeTextSpansInfo(
 
     ime_text_spans_info.push_back(ui::mojom::blink::ImeTextSpanInfo::New(
         ime_text_span,
-        widget_base_->BlinkSpaceToEnclosingDIPs(gfx::Rect(webrect))));
+        widget_base_->BlinkSpaceToEnclosedDIPs(gfx::Rect(webrect))));
   }
   return ime_text_spans_info;
 }

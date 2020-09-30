@@ -26,6 +26,7 @@
 #include "content/common/content_constants_internal.h"
 #include "content/common/frame_messages.h"
 #include "content/public/common/content_constants.h"
+#include "content/public/common/use_zoom_for_dsf_policy.h"
 #include "content/public/renderer/content_renderer_client.h"
 #include "content/renderer/pepper/event_conversion.h"
 #include "content/renderer/pepper/fullscreen_container.h"
@@ -1248,10 +1249,15 @@ void PepperPluginInstanceImpl::ViewChanged(
   view_data_.device_scale = container_->DeviceScaleFactor();
   view_data_.css_scale =
       container_->PageZoomFactor() * container_->PageScaleFactor();
-  blink::WebFloatRect windowToViewportScale(0, 0, 1.0f, 0);
-  render_frame()->GetLocalRootRenderWidget()->ConvertWindowToViewport(
-      &windowToViewportScale);
-  viewport_to_dip_scale_ = 1.0f / windowToViewportScale.width;
+  if (IsUseZoomForDSFEnabled()) {
+    WebWidget* widget =
+        render_frame()->GetLocalRootRenderWidget()->GetWebWidget();
+
+    viewport_to_dip_scale_ =
+        1.0f / widget->GetOriginalScreenInfo().device_scale_factor;
+  } else {
+    viewport_to_dip_scale_ = 1.0f;
+  }
   ConvertRectToDIP(&view_data_.rect);
   ConvertRectToDIP(&view_data_.clip_rect);
   view_data_.css_scale *= viewport_to_dip_scale_;

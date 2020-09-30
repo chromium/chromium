@@ -695,17 +695,6 @@ void RenderWidget::ConvertViewportToWindow(blink::WebRect* rect) {
   }
 }
 
-void RenderWidget::ConvertWindowToViewport(blink::WebFloatRect* rect) {
-  if (compositor_deps_->IsUseZoomForDSFEnabled()) {
-    float device_scale_factor =
-        GetWebWidget()->GetOriginalScreenInfo().device_scale_factor;
-    rect->x *= device_scale_factor;
-    rect->y *= device_scale_factor;
-    rect->width *= device_scale_factor;
-    rect->height *= device_scale_factor;
-  }
-}
-
 void RenderWidget::UpdateSelectionBounds() {
   GetWebWidget()->UpdateSelectionBounds();
 }

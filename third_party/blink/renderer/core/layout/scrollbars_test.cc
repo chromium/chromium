@@ -314,38 +314,18 @@ TEST_F(ScrollbarsTest, DocumentStyleRecalcPreservesScrollbars) {
               layout_viewport->HorizontalScrollbar());
 }
 
-class ScrollbarsWebWidgetClient
-    : public frame_test_helpers::TestWebWidgetClient {
- public:
-  // WebWidgetClient overrides.
-  void ConvertWindowToViewport(WebFloatRect* rect) override {
-    rect->x *= device_scale_factor_;
-    rect->y *= device_scale_factor_;
-    rect->width *= device_scale_factor_;
-    rect->height *= device_scale_factor_;
-  }
-
-  void set_device_scale_factor(float device_scale_factor) {
-    device_scale_factor_ = device_scale_factor;
-  }
-
- private:
-  float device_scale_factor_;
-};
-
 TEST(ScrollbarsTestWithOwnWebViewHelper, ScrollbarSizeForUseZoomDSF) {
-  ScrollbarsWebWidgetClient client;
-  client.set_device_scale_factor(1.f);
-
+  ScopedTestingPlatformSupport<TestingPlatformSupport> platform;
+  platform->SetUseZoomForDSF(true);
   frame_test_helpers::WebViewHelper web_view_helper;
   // Needed so visual viewport supplies its own scrollbars. We don't support
   // this setting changing after initialization, so we must set it through
   // WebViewHelper.
   web_view_helper.set_viewport_enabled(true);
 
-  WebViewImpl* web_view_impl =
-      web_view_helper.Initialize(nullptr, nullptr, &client);
+  WebViewImpl* web_view_impl = web_view_helper.Initialize();
 
+  web_view_impl->MainFrameWidget()->SetDeviceScaleFactorForTesting(1.f);
   web_view_impl->MainFrameWidget()->Resize(IntSize(800, 600));
 
   WebURL base_url = url_test_helpers::ToKURL("http://example.com/");
@@ -373,7 +353,8 @@ TEST(ScrollbarsTestWithOwnWebViewHelper, ScrollbarSizeForUseZoomDSF) {
       visual_viewport.LayerForVerticalScrollbar()->bounds().width();
 
   const float device_scale = 3.5f;
-  client.set_device_scale_factor(device_scale);
+  web_view_impl->MainFrameWidget()->SetDeviceScaleFactorForTesting(
+      device_scale);
   web_view_impl->MainFrameWidget()->Resize(IntSize(400, 300));
 
   EXPECT_EQ(clampTo<int>(std::floor(horizontal_scrollbar * device_scale)),
@@ -381,7 +362,7 @@ TEST(ScrollbarsTestWithOwnWebViewHelper, ScrollbarSizeForUseZoomDSF) {
   EXPECT_EQ(clampTo<int>(std::floor(vertical_scrollbar * device_scale)),
             visual_viewport.LayerForVerticalScrollbar()->bounds().width());
 
-  client.set_device_scale_factor(1.f);
+  web_view_impl->MainFrameWidget()->SetDeviceScaleFactorForTesting(1.f);
   web_view_impl->MainFrameWidget()->Resize(IntSize(800, 600));
 
   EXPECT_EQ(horizontal_scrollbar,

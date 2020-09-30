@@ -136,6 +136,14 @@ void TestingPlatformSupport::SetThreadedAnimationEnabled(bool enabled) {
   is_threaded_animation_enabled_ = enabled;
 }
 
+bool TestingPlatformSupport::IsUseZoomForDSFEnabled() {
+  return is_zoom_for_dsf_enabled_;
+}
+
+void TestingPlatformSupport::SetUseZoomForDSF(bool enabled) {
+  is_zoom_for_dsf_enabled_ = enabled;
+}
+
 ScopedUnittestsEnvironmentSetup::ScopedUnittestsEnvironmentSetup(int argc,
                                                                  char** argv) {
   base::CommandLine::Init(argc, argv);

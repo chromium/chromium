@@ -229,6 +229,10 @@ class CORE_EXPORT WebFrameWidgetBase
   void SelectWordAroundCaret(SelectWordAroundCaretCallback callback) override;
 #endif
   gfx::RectF BlinkSpaceToDIPs(const gfx::RectF& rect) override;
+  gfx::RectF DIPsToBlinkSpace(const gfx::RectF& rect) override;
+  gfx::PointF DIPsToBlinkSpace(const gfx::PointF& point) override;
+  gfx::Point DIPsToRoundedBlinkSpace(const gfx::Point& point) override;
+  float DIPsToBlinkSpace(float scalar) override;
 
   // WebFrameWidget implementation.
   WebLocalFrame* LocalRoot() const override;
