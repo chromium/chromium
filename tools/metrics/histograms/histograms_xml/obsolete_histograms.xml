@@ -5,8 +5,16 @@ found in the LICENSE file.
 -->
 
 <!--
-This file is used to generate a comprehensive list of obsolete histograms
-along with a detailed description for each histogram.
+This file is used to generate a list of obsolete histograms along with a
+detailed description for each histogram.
+
+This was auto-generated from the split_xml.py script which splits out previously
+obsolete histograms. Users don't need to move newly marked obsolete histograms
+into this file.
+
+In other words, when marking an existing histogram as <obsolete>, it's fine
+to leave the histogram in its existing file in one of the histograms_xml
+ subdirectories.
 
 For best practices on writing histogram descriptions, see
 https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
