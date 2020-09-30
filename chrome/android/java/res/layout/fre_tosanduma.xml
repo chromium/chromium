@@ -151,5 +151,10 @@
         android:layout_height="wrap_content"
         android:textAppearance="@style/TextAppearance.Headline.Primary"
         android:visibility="gone"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/TextAppearance.Button.Text.Filled"
+        android:visibility="gone"/>
 
 </org.chromium.chrome.browser.firstrun.TosAndUmaFragmentView>
