@@ -81,8 +81,8 @@ ExtensionsMenuItemView::ExtensionsMenuItemView(
     AddChildView(std::move(pin_button));
   }
 
-  auto context_menu_button =
-      CreateBubbleMenuItem(EXTENSION_CONTEXT_MENU, nullptr);
+  auto context_menu_button = CreateBubbleMenuItem(
+      EXTENSION_CONTEXT_MENU, views::Button::PressedCallback());
   context_menu_button->SetBorder(
       views::CreateEmptyBorder(kSecondaryButtonInsets));
   context_menu_button->SetTooltipText(

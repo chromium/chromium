@@ -32,7 +32,7 @@ ExtensionsMenuButton::ExtensionsMenuButton(
       allow_pinning_(allow_pinning) {
   ConfigureBubbleMenuItem(this, 0);
   SetButtonController(std::make_unique<HoverButtonController>(
-      this, this,
+      this, PressedCallback(this, this),
       std::make_unique<views::Button::DefaultButtonControllerDelegate>(this)));
   controller_->SetDelegate(this);
   UpdateState();

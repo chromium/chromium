@@ -22,7 +22,7 @@ class HoverButtonController : public views::ButtonController {
  public:
   HoverButtonController(
       views::Button* button,
-      views::ButtonListener* listener,
+      views::Button::PressedCallback callback,
       std::unique_ptr<views::ButtonControllerDelegate> delegate);
   ~HoverButtonController() override;
 
@@ -33,8 +33,8 @@ class HoverButtonController : public views::ButtonController {
   void OnGestureEvent(ui::GestureEvent* event) override;
 
  private:
-  // Listener to be called when button is clicked.
-  views::ButtonListener* listener_;
+  // Callback to be called when button is clicked.
+  views::Button::PressedCallback callback_;
 
   DISALLOW_COPY_AND_ASSIGN(HoverButtonController);
 };

@@ -22,7 +22,6 @@ FORWARD_DECLARE_TEST(CastDialogSinkButtonTest, SetStatusLabel);
 }  // namespace media_router
 
 namespace views {
-class ButtonListener;
 class Label;
 class StyledLabel;
 class View;
@@ -37,11 +36,14 @@ class HoverButton : public views::LabelButton {
   enum Style { STYLE_PROMINENT, STYLE_ERROR };
 
   // Creates a single line hover button with no icon.
-  HoverButton(views::ButtonListener* button_listener,
-              const base::string16& text);
+  HoverButton(PressedCallback callback, const base::string16& text);
+  HoverButton(views::ButtonListener* listener, const base::string16& text);
 
   // Creates a single line hover button with an icon.
-  HoverButton(views::ButtonListener* button_listener,
+  HoverButton(PressedCallback callback,
+              const gfx::ImageSkia& icon,
+              const base::string16& text);
+  HoverButton(views::ButtonListener* listener,
               const gfx::ImageSkia& icon,
               const base::string16& text);
 
@@ -52,7 +54,14 @@ class HoverButton : public views::LabelButton {
   // When |resize_row_for_secondary_icon| is false, the button tries to
   // accommodate the view's preferred size by reducing the top and bottom
   // insets appropriately up to a value of 0.
-  HoverButton(views::ButtonListener* button_listener,
+  HoverButton(PressedCallback callback,
+              std::unique_ptr<views::View> icon_view,
+              const base::string16& title,
+              const base::string16& subtitle = base::string16(),
+              std::unique_ptr<views::View> secondary_view = nullptr,
+              bool resize_row_for_secondary_view = true,
+              bool secondary_view_can_process_events = false);
+  HoverButton(views::ButtonListener* listener,
               std::unique_ptr<views::View> icon_view,
               const base::string16& title,
               const base::string16& subtitle = base::string16(),
