@@ -46,10 +46,9 @@ public class SiteSettingsCategory {
             Type.USE_STORAGE})
     @Retention(RetentionPolicy.SOURCE)
     public @interface Type {
-        // Values used to address array index - should be enumerated from 0 and can't have gaps.
         // All updates here must also be reflected in {@link #preferenceKey(int)
         // preferenceKey} and {@link #contentSettingsType(int) contentSettingsType}.
-        int ALL_SITES = 0; // Always first as it should appear in the UI at the top.
+        int ALL_SITES = 0;
         int ADS = 1;
         int AUGMENTED_REALITY = 2;
         int AUTOMATIC_DOWNLOADS = 3;
@@ -71,7 +70,7 @@ public class SiteSettingsCategory {
         int USB = 19;
         int BLUETOOTH = 20;
         int VIRTUAL_REALITY = 21;
-        int USE_STORAGE = 22; // Always last as it should appear in the UI at the bottom.
+        int USE_STORAGE = 22;
         /**
          * Number of handled categories used for calculating array sizes.
          */

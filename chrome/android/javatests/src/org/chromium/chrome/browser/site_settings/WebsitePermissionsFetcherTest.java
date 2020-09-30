@@ -569,9 +569,9 @@ public class WebsitePermissionsFetcherTest {
             ArrayList<ChosenObjectInfo> chosenObjectInfos =
                     new ArrayList<>(site.getChosenObjectInfo());
             Assert.assertEquals(2, chosenObjectInfos.size());
-            Assert.assertEquals(ContentSettingsType.USB_CHOOSER_DATA,
-                    chosenObjectInfos.get(0).getContentSettingsType());
             Assert.assertEquals(ContentSettingsType.BLUETOOTH_CHOOSER_DATA,
+                    chosenObjectInfos.get(0).getContentSettingsType());
+            Assert.assertEquals(ContentSettingsType.USB_CHOOSER_DATA,
                     chosenObjectInfos.get(1).getContentSettingsType());
         });
     }
