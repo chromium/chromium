@@ -97,6 +97,7 @@ js_library("accessibility_common") {
 
 js_library("autoclick") {
   sources = [ "autoclick/autoclick.js" ]
+  deps = [ "../common:event_handler" ]
   externs_list = [
     "$externs_path/accessibility_private.js",
     "$externs_path/automation.js",

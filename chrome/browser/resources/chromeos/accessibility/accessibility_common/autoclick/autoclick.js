@@ -39,9 +39,11 @@ class Autoclick {
     this.scrollableBoundsListener_ = null;
 
     /**
-     * @private {?function(!chrome.automation.AutomationEvent)}
+     * @private {!EventHandler}
      */
-    this.hitTestListener_ = null;
+    this.hitTestHandler_ = new EventHandler(
+        [], chrome.automation.EventType.MOUSE_PRESSED,
+        this.onAutomationHitTestResult_.bind(this), {capture: true});
 
     this.init_();
   }
@@ -60,12 +62,7 @@ class Autoclick {
       this.scrollableBoundsListener_ = null;
     }
 
-    if (this.desktop_ && this.hitTestListener_) {
-      this.desktop_.removeEventListener(
-          chrome.automation.EventType.MOUSE_PRESSED, this.hitTestListener_,
-          true);
-      this.hitTestListener_ = null;
-    }
+    this.hitTestHandler_.stop();
   }
 
   /**
@@ -78,13 +75,11 @@ class Autoclick {
 
     chrome.automation.getDesktop((desktop) => {
       this.desktop_ = desktop;
-      this.hitTestListener_ = this.onAutomationHitTestResult_.bind(this);
 
       // We use a hit test at a point to determine what automation node is
       // at that point, in order to find the scrollable area.
-      this.desktop_.addEventListener(
-          chrome.automation.EventType.MOUSE_PRESSED, this.hitTestListener_,
-          true);
+      this.hitTestHandler_.setNodes(this.desktop_);
+      this.hitTestHandler_.start();
     });
 
     chrome.accessibilityPrivate.onScrollableBoundsForPointRequested.addListener(
