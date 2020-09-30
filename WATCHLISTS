@@ -942,6 +942,9 @@
     'devtools': {
       'filepath': 'devtools',
     },
+    'diagnostics_ui': {
+      'filepath': 'chromeos/components/diagnostics_ui/',
+    },
     'disk_cache': {
       'filepath': 'net/disk_cache/|http_cache',
     },
@@ -2451,6 +2454,10 @@
                        'mattreynolds+watch@chromium.org',
                        'odejesush+watch@chromium.org'],
     'devtools': ['devtools-reviews@chromium.org'],
+    'diagnostics_ui': ['baileyberro+diagnostics-watch@chromium.org',
+                       'joonbug+diagnostics-watch@chromium.org',
+                       'michaelcheco+diagnostics-watch@google.com',
+                       'zentaro+diagnostics-watch@chromium.org'],
     'disk_cache': ['gavinp+disk@chromium.org'],
     'dom_storage': ['dmurph+watchingdomstorage@chromium.org'],
     'download': ['dtrainor+watch@chromium.org'],
