@@ -1373,7 +1373,13 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest, DevToolsExtensionInItself) {
 
 // Tests that a devtools (not a devtools extension) Iframe can be injected into
 // devtools.  http://crbug.com/570483
-IN_PROC_BROWSER_TEST_F(DevToolsSanityTest, DevtoolsInDevTools) {
+// crbug.com/1124981: flaky on win
+#if defined(OS_WIN)
+#define MAYBE_DevtoolsInDevTools DISABLED_DevtoolsInDevTools
+#else
+#define MAYBE_DevtoolsInDevTools DevtoolsInDevTools
+#endif
+IN_PROC_BROWSER_TEST_F(DevToolsSanityTest, MAYBE_DevtoolsInDevTools) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   GURL devtools_url = GURL(chrome::kChromeUIDevToolsURL);
