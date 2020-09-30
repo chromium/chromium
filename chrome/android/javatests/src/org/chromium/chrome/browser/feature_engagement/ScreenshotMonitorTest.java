@@ -17,6 +17,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
@@ -29,6 +30,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Tests ScreenshotMonitor.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
+@Batch(Batch.PER_CLASS)
 public class ScreenshotMonitorTest {
     private static final String FILENAME = "image.jpeg";
     private static final String TAG = "ScreenshotTest";
