@@ -5,9 +5,9 @@
 #ifndef CONTENT_BROWSER_MEDIA_CAPTURE_DESKTOP_CAPTURER_LACROS_H_
 #define CONTENT_BROWSER_MEDIA_CAPTURE_DESKTOP_CAPTURER_LACROS_H_
 
-#include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "chromeos/crosapi/mojom/screen_manager.mojom.h"
-#include "mojo/public/cpp/bindings/shared_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_options.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
 
@@ -18,11 +18,13 @@ struct Bitmap;
 namespace content {
 
 // This class is responsible for communicating with ash-chrome to get snapshots
-// of the desktop. This class is used on several different threads with no clear
-// signaling. This is a contextual requirement of the current implementation of
-// the media capture code. We do our best to:
-//   * Minimize state stored in this class.
-//   * Ensure that stored state is accessed safely.
+// of the desktop.
+//
+// NOTE: Instances of this class may be allocated and configured on one affine
+// sequence and then transferred to another affine sequence (e.g., a worker
+// thread) where |Start| gets called. Subsequent methods are allowed to do
+// blocking I/O or other expensive operations. The instance, when no longer
+// needed, is deleted on the same affine sequence on which |Start| was called.
 class DesktopCapturerLacros : public webrtc::DesktopCapturer {
  public:
   enum CaptureType { kScreen, kWindow };
@@ -44,9 +46,15 @@ class DesktopCapturerLacros : public webrtc::DesktopCapturer {
   void SetExcludedWindow(webrtc::WindowId window) override;
 
  private:
+  // This method is used to lazily initialize screen_manager_ on the same
+  // affine sequence on which |Start| is called.
+  void EnsureScreenManager();
+
   // Callback for when ash-chrome returns a snapshot of the screen or window as
   // a bitmap.
   void DidTakeSnapshot(bool success, const crosapi::Bitmap& snapshot);
+
+  SEQUENCE_CHECKER(sequence_checker_);
 
   // Whether this object is capturing screens or windows.
   const CaptureType capture_type_;
@@ -67,10 +75,8 @@ class DesktopCapturerLacros : public webrtc::DesktopCapturer {
   // Thus, we do not worry about thread safety when invoking callback_.
   Callback* callback_ = nullptr;
 
-  // This remote is thread safe. Callbacks are invoked on the calling sequence.
-  mojo::SharedRemote<crosapi::mojom::ScreenManager> screen_manager_;
-
-  base::WeakPtrFactory<DesktopCapturerLacros> weak_factory_{this};
+  // The remote connection to the screen manager.
+  mojo::Remote<crosapi::mojom::ScreenManager> screen_manager_;
 };
 
 }  // namespace content
