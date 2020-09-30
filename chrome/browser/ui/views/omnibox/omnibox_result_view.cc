@@ -38,6 +38,7 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/events/event.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
@@ -50,8 +51,8 @@ namespace {
 
 class OmniboxRemoveSuggestionButton : public views::ImageButton {
  public:
-  explicit OmniboxRemoveSuggestionButton(views::ButtonListener* listener)
-      : ImageButton(listener) {
+  explicit OmniboxRemoveSuggestionButton(PressedCallback callback)
+      : ImageButton(std::move(callback)) {
     views::ConfigureVectorImageButton(this);
   }
 
@@ -86,6 +87,9 @@ OmniboxResultView::OmniboxResultView(
 
   suggestion_tab_switch_button_ =
       AddChildView(std::make_unique<OmniboxTabSwitchButton>(
+          base::BindRepeating(&OmniboxResultView::ButtonPressed,
+                              base::Unretained(this),
+                              OmniboxPopupModel::FOCUSED_BUTTON_TAB_SWITCH),
           popup_contents_view_, this,
           l10n_util::GetStringUTF16(IDS_OMNIBOX_TAB_SUGGEST_HINT),
           l10n_util::GetStringUTF16(IDS_OMNIBOX_TAB_SUGGEST_SHORT_HINT),
@@ -96,8 +100,10 @@ OmniboxResultView::OmniboxResultView(
   // priority button, which already has a Shift+Delete shortcut.
   // TODO(tommycli): Make sure we announce the Shift+Delete capability in the
   // accessibility node data for removable suggestions.
-  remove_suggestion_button_ =
-      AddChildView(std::make_unique<OmniboxRemoveSuggestionButton>(this));
+  remove_suggestion_button_ = AddChildView(
+      std::make_unique<OmniboxRemoveSuggestionButton>(base::BindRepeating(
+          &OmniboxResultView::ButtonPressed, base::Unretained(this),
+          OmniboxPopupModel::FOCUSED_BUTTON_REMOVE_SUGGESTION)));
   mouse_enter_exit_handler_.ObserveMouseEnterExitOn(remove_suggestion_button_);
   views::InstallCircleHighlightPathGenerator(remove_suggestion_button_);
   remove_suggestion_button_->SetTooltipText(
@@ -332,23 +338,10 @@ void OmniboxResultView::SetRichSuggestionImage(const gfx::ImageSkia& image) {
   suggestion_view_->SetImage(image);
 }
 
-////////////////////////////////////////////////////////////////////////////////
-// views::ButtonListener overrides:
-
-void OmniboxResultView::ButtonPressed(views::Button* button,
+void OmniboxResultView::ButtonPressed(OmniboxPopupModel::LineState state,
                                       const ui::Event& event) {
-  if (button == suggestion_tab_switch_button_) {
-    popup_contents_view_->model()->TriggerSelectionAction(
-        OmniboxPopupModel::Selection(
-            model_index_, OmniboxPopupModel::FOCUSED_BUTTON_TAB_SWITCH),
-        event.time_stamp());
-  } else if (button == remove_suggestion_button_) {
-    popup_contents_view_->model()->TriggerSelectionAction(
-        OmniboxPopupModel::Selection(
-            model_index_, OmniboxPopupModel::FOCUSED_BUTTON_REMOVE_SUGGESTION));
-  } else {
-    NOTREACHED();
-  }
+  popup_contents_view_->model()->TriggerSelectionAction(
+      OmniboxPopupModel::Selection(model_index_, state), event.time_stamp());
 }
 
 ////////////////////////////////////////////////////////////////////////////////

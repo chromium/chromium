@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_mouse_enter_exit_handler.h"
 #include "components/omnibox/browser/autocomplete_match.h"
+#include "components/omnibox/browser/omnibox_popup_model.h"
 #include "components/omnibox/browser/suggestion_answer.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/window_open_disposition.h"
@@ -21,8 +22,6 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/animation/animation_delegate_views.h"
 #include "ui/views/background.h"
-#include "ui/views/controls/button/button.h"
-#include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/view.h"
 
@@ -40,11 +39,11 @@ class Image;
 namespace views {
 class Button;
 class FocusRing;
+class ImageButton;
 }  // namespace views
 
 class OmniboxResultView : public views::View,
-                          public views::AnimationDelegateViews,
-                          public views::ButtonListener {
+                          public views::AnimationDelegateViews {
  public:
   OmniboxResultView(OmniboxPopupContentsView* popup_contents_view,
                     size_t model_index);
@@ -89,8 +88,8 @@ class OmniboxResultView : public views::View,
   // Stores the image in a local data member and schedules a repaint.
   void SetRichSuggestionImage(const gfx::ImageSkia& image);
 
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
+  void ButtonPressed(OmniboxPopupModel::LineState state,
+                     const ui::Event& event);
 
   // Helper to emit accessibility events (may only emit if conditions are met).
   void EmitTextChangedAccessiblityEvent();

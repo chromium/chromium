@@ -29,12 +29,13 @@ int OmniboxTabSwitchButton::short_text_width_;
 int OmniboxTabSwitchButton::full_text_width_;
 
 OmniboxTabSwitchButton::OmniboxTabSwitchButton(
+    PressedCallback callback,
     OmniboxPopupContentsView* popup_contents_view,
     OmniboxResultView* result_view,
     const base::string16& hint,
     const base::string16& hint_short,
     const gfx::VectorIcon& icon)
-    : MdTextButton(result_view,
+    : MdTextButton(std::move(callback),
                    base::string16(),
                    views::style::CONTEXT_BUTTON_MD),
       popup_contents_view_(popup_contents_view),

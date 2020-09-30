@@ -12,7 +12,8 @@ class OmniboxResultView;
 
 class OmniboxTabSwitchButton : public views::MdTextButton {
  public:
-  OmniboxTabSwitchButton(OmniboxPopupContentsView* popup_contents_view,
+  OmniboxTabSwitchButton(PressedCallback callback,
+                         OmniboxPopupContentsView* popup_contents_view,
                          OmniboxResultView* result_view,
                          const base::string16& hint,
                          const base::string16& hint_short,

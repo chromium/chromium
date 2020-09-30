@@ -33,8 +33,7 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/style/typography.h"
 
-class OmniboxRowView::HeaderView : public views::View,
-                                   public views::ButtonListener {
+class OmniboxRowView::HeaderView : public views::View {
  public:
   explicit HeaderView(OmniboxRowView* row_view)
       : row_view_(row_view),
@@ -57,7 +56,8 @@ class OmniboxRowView::HeaderView : public views::View,
     header_label_->SetFontList(font);
 
     header_toggle_button_ =
-        AddChildView(views::CreateVectorToggleImageButton(this));
+        AddChildView(views::CreateVectorToggleImageButton(base::BindRepeating(
+            &HeaderView::HeaderToggleButtonPressed, base::Unretained(this))));
     mouse_enter_exit_handler_.ObserveMouseEnterExitOn(header_toggle_button_);
     views::InstallCircleHighlightPathGenerator(header_toggle_button_);
 
@@ -138,13 +138,6 @@ class OmniboxRowView::HeaderView : public views::View,
                                                  : ax::mojom::State::kExpanded);
   }
 
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override {
-    DCHECK_EQ(sender, header_toggle_button_);
-    row_view_->popup_model_->TriggerSelectionAction(HeaderSelection());
-    // The PrefChangeRegistrar will update the actual button toggle state.
-  }
-
   // Updates the UI state for the new hover or selection state.
   void UpdateUI() {
     OmniboxPartState part_state = OmniboxPartState::NORMAL;
@@ -197,6 +190,11 @@ class OmniboxRowView::HeaderView : public views::View,
   views::Button* header_toggle_button() const { return header_toggle_button_; }
 
  private:
+  void HeaderToggleButtonPressed() {
+    row_view_->popup_model_->TriggerSelectionAction(HeaderSelection());
+    // The PrefChangeRegistrar will update the actual button toggle state.
+  }
+
   // Updates the hide button's toggle state.
   void OnPrefChanged() {
     DCHECK(row_view_->pref_service_);
