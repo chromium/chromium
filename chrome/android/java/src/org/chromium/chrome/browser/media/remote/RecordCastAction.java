@@ -18,22 +18,6 @@ import java.lang.annotation.RetentionPolicy;
  */
 public class RecordCastAction {
     /**
-     * UMA histogram value with a type of player and the result of the request to play remotely.
-     * <p>
-     * Keep in sync with enums.xml
-     */
-    @IntDef({CastPlayBackState.YT_PLAYER_SUCCESS, CastPlayBackState.YT_PLAYER_FAILURE,
-            CastPlayBackState.DEFAULT_PLAYER_SUCCESS, CastPlayBackState.DEFAULT_PLAYER_FAILURE})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface CastPlayBackState {
-        int YT_PLAYER_SUCCESS = 0;
-        int YT_PLAYER_FAILURE = 1;
-        int DEFAULT_PLAYER_SUCCESS = 2;
-        int DEFAULT_PLAYER_FAILURE = 3;
-        int NUM_ENTRIES = 4;
-    }
-
-    /**
      * UMA histogram values for the device types the user could select.
      * <p>
      * Keep in sync with enums.xml
@@ -78,37 +62,6 @@ public class RecordCastAction {
      */
     public static void castPlayRequested() {
         RecordUserAction.record("Cast_Sender_CastPlayRequested");
-    }
-
-    /**
-     * Record the result of the cast playback request.
-     *
-     * @param castSucceeded true if the playback succeeded, false if there was an error
-     */
-    public static void castDefaultPlayerResult(boolean castSucceeded) {
-        if (castSucceeded) {
-            castPlayerResult(CastPlayBackState.DEFAULT_PLAYER_SUCCESS);
-        } else {
-            castPlayerResult(CastPlayBackState.DEFAULT_PLAYER_FAILURE);
-        }
-    }
-
-    /**
-     * Record the result of casting a YouTube video.
-     *
-     * @param castSucceeded true if the playback succeeded, false if there was an error
-     */
-    public static void castYouTubePlayerResult(boolean castSucceeded) {
-        if (castSucceeded) {
-            castPlayerResult(CastPlayBackState.YT_PLAYER_SUCCESS);
-        } else {
-            castPlayerResult(CastPlayBackState.YT_PLAYER_FAILURE);
-        }
-    }
-
-    private static void castPlayerResult(@CastPlayBackState int result) {
-        RecordHistogram.recordEnumeratedHistogram(
-                "Cast.Sender.CastPlayerResult", result, CastPlayBackState.NUM_ENTRIES);
     }
 
     /**

@@ -9060,6 +9060,9 @@ Called by update_bad_message_reasons.py.-->
 </enum>
 
 <enum name="CastPlayBackState">
+  <obsolete>
+    Obsoleted on September 2020 as it's no longer being collected.
+  </obsolete>
   <int value="0" label="YT_PLAYER_SUCCESS"/>
   <int value="1" label="YT_PLAYER_FAILURE"/>
   <int value="2" label="DEFAULT_PLAYER_SUCCESS"/>
