@@ -3413,6 +3413,8 @@ source_set("unit_tests") {
     "net/network_diagnostics/dns_latency_routine_unittest.cc",
     "net/network_diagnostics/dns_resolution_routine_unittest.cc",
     "net/network_diagnostics/dns_resolver_present_routine_unittest.cc",
+    "net/network_diagnostics/fake_host_resolver.cc",
+    "net/network_diagnostics/fake_host_resolver.h",
     "net/network_diagnostics/gateway_can_be_pinged_routine_unittest.cc",
     "net/network_diagnostics/has_secure_wifi_connection_routine_unittest.cc",
     "net/network_diagnostics/http_firewall_routine_unittest.cc",
