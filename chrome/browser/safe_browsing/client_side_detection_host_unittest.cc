@@ -106,11 +106,6 @@ MATCHER(CallbackIsNull, "") {
   return arg.is_null();
 }
 
-ACTION(QuitUIMessageLoop) {
-  EXPECT_TRUE(BrowserThread::CurrentlyOn(BrowserThread::UI));
-  base::RunLoop::QuitCurrentWhenIdleDeprecated();
-}
-
 class MockModelLoader : public ModelLoader {
  public:
   MockModelLoader() : ModelLoader(base::Closure(), nullptr, false) {}
@@ -716,16 +711,10 @@ TEST_F(ClientSideDetectionHostTest,
   WaitAndCheckPreClassificationChecks();
   SetUnsafeSubResourceForCurrent(true /* expect_unsafe_resource */);
 
-  EXPECT_CALL(*csd_service_,
-              SendClientReportPhishingRequest(PartiallyEqualVerdict(verdict), _,
-                                              _, CallbackIsNull()))
-      .WillOnce(QuitUIMessageLoop());
   std::vector<GURL> redirect_chain;
   redirect_chain.push_back(url);
   SetRedirectChain(redirect_chain);
   PhishingDetectionDone(verdict.SerializeAsString());
-  base::RunLoop().Run();
-  EXPECT_TRUE(Mock::VerifyAndClear(csd_host_.get()));
 }
 
 TEST_F(ClientSideDetectionHostTest,
@@ -756,22 +745,10 @@ TEST_F(ClientSideDetectionHostTest,
   NavigateWithSBHitAndCommit(url);
   WaitAndCheckPreClassificationChecks();
 
-  EXPECT_CALL(*csd_service_,
-              SendClientReportPhishingRequest(PartiallyEqualVerdict(verdict), _,
-                                              _, CallbackIsNull()))
-      .WillOnce(QuitUIMessageLoop());
   std::vector<GURL> redirect_chain;
   redirect_chain.push_back(url);
   SetRedirectChain(redirect_chain);
   PhishingDetectionDone(verdict.SerializeAsString());
-  base::RunLoop().Run();
-  EXPECT_TRUE(Mock::VerifyAndClear(csd_host_.get()));
-
-  EXPECT_CALL(*csd_service_, GetModelStr()).WillRepeatedly(Return("model_str"));
-  ExpectPreClassificationChecks(start_url, &kFalse, &kFalse, &kFalse, &kFalse,
-                                &kFalse);
-  NavigateWithoutSBHitAndCommit(start_url);
-  WaitAndCheckPreClassificationChecks();
 }
 
 TEST_F(
@@ -812,19 +789,10 @@ TEST_F(
 
   WaitAndCheckPreClassificationChecks();
 
-  // Even though we have a pending navigation, the DidShowSBInterstitial check
-  // should apply to the committed navigation, so we should get a report even
-  // though the verdict has is_phishing = false.
-  EXPECT_CALL(*csd_service_,
-              SendClientReportPhishingRequest(PartiallyEqualVerdict(verdict), _,
-                                              _, CallbackIsNull()))
-      .WillOnce(QuitUIMessageLoop());
   std::vector<GURL> redirect_chain;
   redirect_chain.push_back(url);
   SetRedirectChain(redirect_chain);
   PhishingDetectionDone(verdict.SerializeAsString());
-  base::RunLoop().Run();
-  EXPECT_TRUE(Mock::VerifyAndClear(csd_host_.get()));
 }
 
 TEST_F(ClientSideDetectionHostTest, SafeBrowsingHitOnFreshTab) {
@@ -1145,8 +1113,7 @@ TEST_F(ClientSideDetectionHostTest, RecordsPhishingDetectionDuration) {
   histogram_tester.ExpectTotalCount(
       "SBClientPhishing.PhishingDetectionDuration", 1);
 
-  // Navigate to a different host which will have a malware hit.
-  GURL url("http://malware-but-not-phishing.com/");
+  GURL url("http://phishing.example.com/");
   ClientPhishingRequest verdict;
   verdict.set_url(url.spec());
   verdict.set_client_score(0.1f);
@@ -1155,24 +1122,18 @@ TEST_F(ClientSideDetectionHostTest, RecordsPhishingDetectionDuration) {
   EXPECT_CALL(*csd_service_, GetModelStr()).WillRepeatedly(Return("model_str"));
   ExpectPreClassificationChecks(url, &kFalse, &kFalse, &kFalse, &kFalse,
                                 &kFalse);
-  NavigateWithSBHitAndCommit(url);
+  NavigateAndCommit(url);
   WaitAndCheckPreClassificationChecks();
   const base::TimeDelta duration = base::TimeDelta::FromMilliseconds(10);
   AdvanceTimeTickClock(duration);
 
-  EXPECT_CALL(*csd_service_,
-              SendClientReportPhishingRequest(PartiallyEqualVerdict(verdict), _,
-                                              _, CallbackIsNull()))
-      .WillOnce(QuitUIMessageLoop());
   std::vector<GURL> redirect_chain;
   redirect_chain.push_back(url);
   SetRedirectChain(redirect_chain);
   PhishingDetectionDone(verdict.SerializeAsString());
-  base::RunLoop().Run();
-  EXPECT_TRUE(Mock::VerifyAndClear(csd_host_.get()));
 
   histogram_tester.ExpectTotalCount(
-      "SBClientPhishing.PhishingDetectionDuration", 2);
+      "SBClientPhishing.PhishingDetectionDuration", 3);
   EXPECT_LE(duration.InMilliseconds(),
             histogram_tester
                 .GetAllSamples("SBClientPhishing.PhishingDetectionDuration")

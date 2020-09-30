@@ -507,11 +507,8 @@ void ClientSideDetectionHost::PhishingDetectionDone(
     base::UmaHistogramBoolean("SBClientPhishing.LocalModelDetectsPhishing",
                               verdict->is_phishing());
 
-    // We only send phishing verdict to the server if the verdict is phishing or
-    // if a SafeBrowsing interstitial was already shown for this site.  E.g., a
-    // phishing interstitial was shown but the user clicked
-    // through.
-    if (verdict->is_phishing() || DidShowSBInterstitial()) {
+    // We only send phishing verdict to the server if the verdict is phishing.
+    if (verdict->is_phishing()) {
       if (DidShowSBInterstitial()) {
         browse_info_->unsafe_resource = std::move(unsafe_resource_);
       }
