@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/optional.h"
 #include "components/metrics/call_stack_profile_params.h"
 #include "components/version_info/version_info.h"
 
@@ -14,14 +15,19 @@
 //
 // The interface functions this class make a distinction between 'supported' and
 // 'enabled' state. Supported means the profiler can be run in *some*
-// circumstances for *some* fraction of the population on the
-// platform/branding/channel combination. This state is intended to enable
-// experiment reporting. This avoids spamming UMA with experiment state on
-// platforms/channels where the profiler is not being run.
+// circumstances for *some* fraction of the population on the platform/{released
+// Chrome channel, development/CQ build} combination. This state is intended to
+// enable experiment reporting. This avoids spamming UMA with experiment state
+// on platforms/channels where the profiler is not being run.
 //
 // Enabled means we chose to the run the profiler on at least some threads on a
-// platform/branding/channel combination that is configured for profiling. The
-// overall enable/disable state should be reported to UMA in this case.
+// platform/{released Chrome channel, development/CQ build} combination that is
+// configured for profiling. The overall enable/disable state should be reported
+// to UMA in this case.
+//
+// The base::Optional<version_info::Channel> release_channel passed to functions
+// in this interface should be the channel for released Chrome and nullopt for
+// development/CQ builds.
 class ThreadProfilerPlatformConfiguration {
  public:
   // State of the runtime module used by the profiler on the platform (if any).
@@ -41,8 +47,7 @@ class ThreadProfilerPlatformConfiguration {
   // |enabled| + |experiment| is expected to equal 100. Profiling is to be
   // enabled with probability |enabled|/100. The fraction |experiment|/100 is to
   // be split in to two equal-sized experiment groups with probability
-  // |experiment|/(2 * 100), one of which will be enabled and one disabled. As a
-  // special case {0, 0} means always disable.
+  // |experiment|/(2 * 100), one of which will be enabled and one disabled.
   struct RelativePopulations {
     int enabled;
     int experiment;
@@ -55,26 +60,24 @@ class ThreadProfilerPlatformConfiguration {
       bool browser_test_mode_enabled);
 
   // True if the platform supports the StackSamplingProfiler and the profiler is
-  // to be run for the channel/chrome branding.
-  bool IsSupported(bool is_chrome_branded, version_info::Channel channel) const;
+  // to be run for the released Chrome channel or development/CQ build.
+  bool IsSupported(base::Optional<version_info::Channel> release_channel) const;
 
-  // Returns the current state of the runtime support module for the
-  // channel/chrome branding on the platform. Runtime module state is valid only
-  // if IsSupported().
+  // Returns the current state of the runtime support module for the released
+  // Chrome channel or development/CQ build on the platform. Runtime module
+  // state is valid only if IsSupported().
   virtual RuntimeModuleState GetRuntimeModuleState(
-      bool is_chrome_branded,
-      version_info::Channel channel) const = 0;
+      base::Optional<version_info::Channel> release_channel) const = 0;
 
   // Request install of the runtime support module. May be invoked only if
   // GetRuntimeModuleState() returns kModuleAbsentButAvailable.
   virtual void RequestRuntimeModuleInstall() const {}
 
-  // Returns the relative population disposition for the channel/chrome branding
-  // on the platform. See the documentation on RelativePopulations. Enable rates
-  // are valid only if IsSupported().
+  // Returns the relative population disposition for the released Chrome channel
+  // or development/CQ build on the platform. See the documentation on
+  // RelativePopulations. Enable rates are valid only if IsSupported().
   virtual RelativePopulations GetEnableRates(
-      bool is_chrome_branded,
-      version_info::Channel channel) const = 0;
+      base::Optional<version_info::Channel> release_channel) const = 0;
 
   // Returns the fraction of the time that profiling should be randomly enabled
   // for the child |process|. The return value is in the range [0.0, 1.0].
@@ -87,11 +90,12 @@ class ThreadProfilerPlatformConfiguration {
       metrics::CallStackProfileParams::Thread thread) const = 0;
 
  protected:
-  // True if the profiler is to be run for the channel/chrome branding on the
-  // platform. Does not need to check whether the StackSamplingProfiler is
-  // supported on the platform since that's done in IsSupported().
-  virtual bool IsSupportedForChannel(bool is_chrome_branded,
-                                     version_info::Channel channel) const = 0;
+  // True if the profiler is to be run for the released Chrome channel or
+  // development/CQ build on the platform. Does not need to check whether the
+  // StackSamplingProfiler is supported on the platform since that's done in
+  // IsSupported().
+  virtual bool IsSupportedForChannel(
+      base::Optional<version_info::Channel> release_channel) const = 0;
 };
 
 #endif  // CHROME_COMMON_PROFILER_THREAD_PROFILER_PLATFORM_CONFIGURATION_H_

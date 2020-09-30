@@ -33,6 +33,17 @@ bool IsBrowserTestModeEnabled() {
          switches::kStartStackProfilerBrowserTest;
 }
 
+// Returns the channel if this is a Chrome release, otherwise returns nullopt. A
+// build is considered to be a Chrome release if it's official and has Chrome
+// branding.
+base::Optional<version_info::Channel> GetReleaseChannel() {
+#if defined(OFFICIAL_BUILD) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  return chrome::GetChannel();
+#else
+  return base::nullopt;
+#endif
+}
+
 }  // namespace
 
 ThreadProfilerConfiguration::ThreadProfilerConfiguration()
@@ -84,8 +95,7 @@ bool ThreadProfilerConfiguration::GetSyntheticFieldTrial(
     std::string* group_name) const {
   DCHECK_EQ(metrics::CallStackProfileParams::BROWSER_PROCESS, current_process_);
 
-  if (!platform_configuration_->IsSupported(BUILDFLAG(GOOGLE_CHROME_BRANDING),
-                                            chrome::GetChannel())) {
+  if (!platform_configuration_->IsSupported(GetReleaseChannel())) {
     return false;
   }
 
@@ -175,16 +185,14 @@ ThreadProfilerConfiguration::GenerateConfiguration(
   if (process != metrics::CallStackProfileParams::BROWSER_PROCESS)
     return PROFILE_FROM_COMMAND_LINE;
 
-  const version_info::Channel channel = chrome::GetChannel();
-  if (!platform_configuration.IsSupported(BUILDFLAG(GOOGLE_CHROME_BRANDING),
-                                          channel)) {
+  const base::Optional<version_info::Channel> release_channel =
+      GetReleaseChannel();
+  if (!platform_configuration.IsSupported(release_channel))
     return PROFILE_DISABLED;
-  }
 
   using RuntimeModuleState =
       ThreadProfilerPlatformConfiguration::RuntimeModuleState;
-  switch (platform_configuration.GetRuntimeModuleState(
-      BUILDFLAG(GOOGLE_CHROME_BRANDING), channel)) {
+  switch (platform_configuration.GetRuntimeModuleState(release_channel)) {
     case RuntimeModuleState::kModuleAbsentButAvailable:
       platform_configuration.RequestRuntimeModuleInstall();
       FALLTHROUGH;
@@ -197,12 +205,8 @@ ThreadProfilerConfiguration::GenerateConfiguration(
   }
 
   ThreadProfilerPlatformConfiguration::RelativePopulations
-      relative_populations = platform_configuration.GetEnableRates(
-          BUILDFLAG(GOOGLE_CHROME_BRANDING), channel);
-  if (relative_populations.enabled == 0 &&
-      relative_populations.experiment == 0) {
-    return PROFILE_DISABLED;
-  }
+      relative_populations =
+          platform_configuration.GetEnableRates(release_channel);
 
   CHECK_EQ(0, relative_populations.experiment % 2);
   return ChooseConfiguration({
