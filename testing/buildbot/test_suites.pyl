@@ -733,6 +733,10 @@
       'nacl_helper_nonsfi_unittests': {},
     },
 
+    'chromium_gtests_for_linux_and_mac_only': {
+      'openscreen_unittests': {},
+    },
+
     'chromium_gtests_for_linux_only': {
       'x11_unittests': {},
     },
@@ -1264,10 +1268,7 @@
           'shards': 10,
         },
         'test': 'browser_tests',
-      },
-      # TODO(crbug.com/1025244): Move Open Screen unit tests from fieldtrial
-      # to linux, mac bots once we have ensured the tests are stable.
-      'openscreen_unittests': {}
+      }
     },
 
     'fuchsia_gpu_telemetry_tests': {
@@ -4742,6 +4743,7 @@
       'chromium_gtests',
       'chromium_gtests_for_devices_with_graphical_output',
       'chromium_gtests_for_linux_and_chromeos_only',
+      'chromium_gtests_for_linux_and_mac_only',
       'chromium_gtests_for_linux_only',
       'chromium_gtests_for_win_and_linux_only',
       'linux_flavor_specific_chromium_gtests',
@@ -4765,6 +4767,7 @@
     'chromium_mac_gtests': [
       'chromium_gtests',
       'chromium_gtests_for_devices_with_graphical_output',
+      'chromium_gtests_for_linux_and_mac_only',
       'mac_specific_chromium_gtests',
       'nocompile_tests',
       'non_android_and_cast_and_chromeos_chromium_gtests',
@@ -4774,6 +4777,7 @@
     'chromium_mac_gtests_no_nacl': [
       'chromium_gtests',
       'chromium_gtests_for_devices_with_graphical_output',
+      'chromium_gtests_for_linux_and_mac_only',
       'mac_specific_chromium_gtests',
       'nocompile_tests',
       'non_android_and_cast_and_chromeos_chromium_gtests',
