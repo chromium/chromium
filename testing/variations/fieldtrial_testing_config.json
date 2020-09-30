@@ -6420,10 +6420,11 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_Stable",
+                    "name": "Experiment_Triple_Key_20201001",
                     "enable_features": [
                         "AppendFrameOriginToNetworkIsolationKey",
-                        "SplitCacheByNetworkIsolationKey"
+                        "SplitCacheByNetworkIsolationKey",
+                        "UseRegistrableDomainInNetworkIsolationKey"
                     ]
                 }
             ]
