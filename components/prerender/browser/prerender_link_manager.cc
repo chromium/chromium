@@ -52,6 +52,7 @@ PrerenderLinkManager::LinkPrerender::LinkPrerender(
     int launcher_render_process_id,
     int launcher_render_view_id,
     blink::mojom::PrerenderAttributesPtr attributes,
+    const url::Origin& initiator_origin,
     mojo::PendingRemote<blink::mojom::PrerenderProcessorClient>
         processor_client,
     base::TimeTicks creation_time,
@@ -61,7 +62,7 @@ PrerenderLinkManager::LinkPrerender::LinkPrerender(
       url(attributes->url),
       rel_type(attributes->rel_type),
       referrer(content::Referrer(*attributes->referrer)),
-      initiator_origin(attributes->initiator_origin),
+      initiator_origin(initiator_origin),
       size(attributes->view_size),
       remote_processor_client(std::move(processor_client)),
       creation_time(creation_time),
@@ -92,6 +93,7 @@ base::Optional<int> PrerenderLinkManager::OnStartPrerender(
     int launcher_render_process_id,
     int launcher_render_view_id,
     blink::mojom::PrerenderAttributesPtr attributes,
+    const url::Origin& initiator_origin,
     mojo::PendingRemote<blink::mojom::PrerenderProcessorClient>
         processor_client) {
 // TODO(crbug.com/722453): Use a dedicated build flag for GuestView.
@@ -120,7 +122,7 @@ base::Optional<int> PrerenderLinkManager::OnStartPrerender(
 
   auto prerender = std::make_unique<LinkPrerender>(
       launcher_render_process_id, launcher_render_view_id,
-      std::move(attributes), std::move(processor_client),
+      std::move(attributes), initiator_origin, std::move(processor_client),
       manager_->GetCurrentTimeTicks(), prerender_contents);
 
   // Observe disconnect of the client and treat as equivalent to explicit

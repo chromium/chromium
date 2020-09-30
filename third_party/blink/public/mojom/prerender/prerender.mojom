@@ -6,7 +6,6 @@ module blink.mojom;
 
 import "third_party/blink/public/mojom/loader/referrer.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
-import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
 // This interface is used to notify of events about prerendering from the
@@ -39,7 +38,6 @@ struct PrerenderAttributes {
   url.mojom.Url url;
   PrerenderRelType rel_type;
   blink.mojom.Referrer referrer;
-  url.mojom.Origin initiator_origin;
   gfx.mojom.Size view_size;
 };
 

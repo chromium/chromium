@@ -62,7 +62,6 @@ PrerenderHandle* PrerenderHandle::Create(
   attributes->rel_type = prerender_rel_type;
   attributes->referrer = mojom::blink::Referrer::New(
       KURL(NullURL(), referrer.referrer), referrer.referrer_policy);
-  attributes->initiator_origin = context->GetSecurityOrigin();
   attributes->view_size =
       gfx::Size(document.GetFrame()->GetMainFrameViewportSize());
 

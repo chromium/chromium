@@ -392,7 +392,6 @@ class PrerenderTest : public testing::Test {
     attributes->rel_type = blink::mojom::PrerenderRelType::kPrerender;
     attributes->referrer = blink::mojom::Referrer::New(
         initiator_url, network::mojom::ReferrerPolicy::kDefault);
-    attributes->initiator_origin = url::Origin::Create(initiator_url);
     attributes->view_size = kDefaultViewSize;
 
     mojo::PendingRemote<blink::mojom::PrerenderProcessorClient>
@@ -404,7 +403,7 @@ class PrerenderTest : public testing::Test {
     base::Optional<int> prerender_id =
         prerender_link_manager()->OnStartPrerender(
             render_process_id, render_view_id, std::move(attributes),
-            std::move(processor_client));
+            url::Origin::Create(initiator_url), std::move(processor_client));
 
     // Check if the new prerender request was added and running.
     return prerender_id && LastPrerenderIsRunning();

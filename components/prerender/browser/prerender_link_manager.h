@@ -44,6 +44,7 @@ class PrerenderLinkManager : public KeyedService,
       int launcher_render_process_id,
       int launcher_render_view_id,
       blink::mojom::PrerenderAttributesPtr attributes,
+      const url::Origin& initiator_origin,
       mojo::PendingRemote<blink::mojom::PrerenderProcessorClient>
           processor_client);
 
@@ -70,6 +71,7 @@ class PrerenderLinkManager : public KeyedService,
     LinkPrerender(int launcher_render_process_id,
                   int launcher_render_view_id,
                   blink::mojom::PrerenderAttributesPtr attributes,
+                  const url::Origin& initiator_origin,
                   mojo::PendingRemote<blink::mojom::PrerenderProcessorClient>
                       processor_client,
                   base::TimeTicks creation_time,

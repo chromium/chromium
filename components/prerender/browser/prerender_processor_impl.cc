@@ -17,9 +17,11 @@ namespace prerender {
 PrerenderProcessorImpl::PrerenderProcessorImpl(
     int render_process_id,
     int render_frame_id,
+    const url::Origin& initiator_origin,
     std::unique_ptr<PrerenderProcessorImplDelegate> delegate)
     : render_process_id_(render_process_id),
       render_frame_id_(render_frame_id),
+      initiator_origin_(initiator_origin),
       delegate_(std::move(delegate)) {}
 
 PrerenderProcessorImpl::~PrerenderProcessorImpl() = default;
@@ -32,17 +34,17 @@ void PrerenderProcessorImpl::Create(
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<PrerenderProcessorImpl>(
           frame_host->GetProcess()->GetID(), frame_host->GetRoutingID(),
-          std::move(delegate)),
+          frame_host->GetLastCommittedOrigin(), std::move(delegate)),
       std::move(receiver));
 }
 
 void PrerenderProcessorImpl::Start(
     blink::mojom::PrerenderAttributesPtr attributes,
     mojo::PendingRemote<blink::mojom::PrerenderProcessorClient> client) {
-  if (!attributes->initiator_origin.opaque() &&
+  if (!initiator_origin_.opaque() &&
       !content::ChildProcessSecurityPolicy::GetInstance()
            ->CanAccessDataForOrigin(render_process_id_,
-                                    attributes->initiator_origin.GetURL())) {
+                                    initiator_origin_.GetURL())) {
     mojo::ReportBadMessage("PPI_INVALID_INITIATOR_ORIGIN");
     return;
   }
@@ -66,7 +68,7 @@ void PrerenderProcessorImpl::Start(
   prerender_id_ = link_manager->OnStartPrerender(
       render_process_id_,
       render_frame_host->GetRenderViewHost()->GetRoutingID(),
-      std::move(attributes), std::move(client));
+      std::move(attributes), initiator_origin_, std::move(client));
 }
 
 void PrerenderProcessorImpl::Cancel() {
