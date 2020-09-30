@@ -32,6 +32,7 @@
 
 #include <algorithm>
 #include <bitset>
+#include "base/auto_reset.h"
 #include "third_party/blink/renderer/core/css/css_custom_ident_value.h"
 #include "third_party/blink/renderer/core/css/css_function_value.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
@@ -718,6 +719,8 @@ RuleFeatureSet::ExtractInvalidationSetFeaturesFromSelectorList(
     const CSSSelector& simple_selector,
     InvalidationSetFeatures& features,
     PositionType position) {
+  AutoRestoreMaxDirectAdjacentSelectors restore_max(&features);
+
   const CSSSelectorList* selector_list = simple_selector.SelectorList();
   if (!selector_list)
     return kNormalInvalidation;
@@ -872,6 +875,8 @@ void RuleFeatureSet::AddFeaturesToInvalidationSetsForSelectorList(
   for (const CSSSelector* sub_selector =
            simple_selector.SelectorList()->First();
        sub_selector; sub_selector = CSSSelectorList::Next(*sub_selector)) {
+    AutoRestoreMaxDirectAdjacentSelectors restore_max(sibling_features);
+
     descendant_features.has_features_for_rule_set_invalidation = false;
 
     AddFeaturesToInvalidationSets(*sub_selector, sibling_features,
@@ -991,9 +996,12 @@ RuleFeatureSet::SelectorPreMatch RuleFeatureSet::CollectFeaturesFromRuleData(
     const RuleData* rule_data) {
   CHECK(is_alive_);
   FeatureMetadata metadata;
-  if (CollectFeaturesFromSelector(rule_data->Selector(), metadata) ==
-      kSelectorNeverMatches)
+  const unsigned max_direct_adjacent_selectors = 0;
+  if (CollectFeaturesFromSelector(rule_data->Selector(), metadata,
+                                  max_direct_adjacent_selectors) ==
+      kSelectorNeverMatches) {
     return kSelectorNeverMatches;
+  }
 
   metadata_.Add(metadata);
 
@@ -1003,8 +1011,8 @@ RuleFeatureSet::SelectorPreMatch RuleFeatureSet::CollectFeaturesFromRuleData(
 
 RuleFeatureSet::SelectorPreMatch RuleFeatureSet::CollectFeaturesFromSelector(
     const CSSSelector& selector,
-    RuleFeatureSet::FeatureMetadata& metadata) {
-  unsigned max_direct_adjacent_selectors = 0;
+    RuleFeatureSet::FeatureMetadata& metadata,
+    unsigned max_direct_adjacent_selectors) {
   CSSSelector::RelationType relation = CSSSelector::kDescendant;
   bool found_host_pseudo = false;
 
@@ -1032,8 +1040,10 @@ RuleFeatureSet::SelectorPreMatch RuleFeatureSet::CollectFeaturesFromSelector(
         if (const CSSSelectorList* selector_list = current->SelectorList()) {
           for (const CSSSelector* sub_selector = selector_list->First();
                sub_selector;
-               sub_selector = CSSSelectorList::Next(*sub_selector))
-            CollectFeaturesFromSelector(*sub_selector, metadata);
+               sub_selector = CSSSelectorList::Next(*sub_selector)) {
+            CollectFeaturesFromSelector(*sub_selector, metadata,
+                                        max_direct_adjacent_selectors);
+          }
         }
         break;
     }

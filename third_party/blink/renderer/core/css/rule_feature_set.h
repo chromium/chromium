@@ -210,8 +210,10 @@ class CORE_EXPORT RuleFeatureSet {
     bool invalidates_parts = false;
   };
 
-  SelectorPreMatch CollectFeaturesFromSelector(const CSSSelector&,
-                                               FeatureMetadata&);
+  SelectorPreMatch CollectFeaturesFromSelector(
+      const CSSSelector&,
+      FeatureMetadata&,
+      unsigned max_direct_adjacent_selectors);
 
   InvalidationSet& EnsureClassInvalidationSet(const AtomicString& class_name,
                                               InvalidationType,
@@ -285,6 +287,38 @@ class CORE_EXPORT RuleFeatureSet {
     bool content_pseudo_crossing = false;
     bool has_nth_pseudo = false;
     bool has_features_for_rule_set_invalidation = false;
+  };
+
+  // Siblings which contain nested selectors (e.g. :is) only count as one
+  // sibling on the level where the nesting pseudo appears. To calculate
+  // the max direct adjacent count correctly for each level, we sometimes
+  // need to reset the count at certain boundaries.
+  //
+  // Example: .a + :is(.b + .c, .d + .e) + .f
+  //
+  // When processing the above selector, the InvalidationSetFeatures produced
+  // from '.f' is eventually passed to both '.b + .c' and '.d + .e' as a mutable
+  // reference. Each of those selectors will then increment the max direct
+  // adjacent counter, and without a timely reset, changes would leak from one
+  // sub-selector to another. It would also leak out of the :is() pseudo,
+  // resulting in the wrong count for '.a' as well.
+  class AutoRestoreMaxDirectAdjacentSelectors {
+    STACK_ALLOCATED();
+
+   public:
+    explicit AutoRestoreMaxDirectAdjacentSelectors(
+        InvalidationSetFeatures* features)
+        : features_(features),
+          original_value_(features ? features->max_direct_adjacent_selectors
+                                   : 0) {}
+    ~AutoRestoreMaxDirectAdjacentSelectors() {
+      if (features_)
+        features_->max_direct_adjacent_selectors = original_value_;
+    }
+
+   private:
+    InvalidationSetFeatures* features_;
+    unsigned original_value_ = 0;
   };
 
   static void ExtractInvalidationSetFeature(const CSSSelector&,
