@@ -41,9 +41,6 @@ HoldingSpaceItemScreenshotView::HoldingSpaceItemScreenshotView(
           views::BoxLayout::Orientation::kHorizontal,
           kHoldingSpaceScreenshotPadding));
   layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kEnd);
-  layout->set_cross_axis_alignment(
-      views::BoxLayout::CrossAxisAlignment::kStart);
-
   AddPin(pin_button_container);
 }
 

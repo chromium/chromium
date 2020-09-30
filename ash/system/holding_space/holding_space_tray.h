@@ -49,7 +49,6 @@ class ASH_EXPORT HoldingSpaceTray : public TrayBackgroundView,
   void HideBubble(const TrayBubbleView* bubble_view) override;
 
   // views::WidgetObserver:
-  void OnWidgetDragWillStart(views::Widget* widget) override;
   void OnWidgetDestroying(views::Widget* widget) override;
 
   std::unique_ptr<HoldingSpaceTrayBubble> bubble_;
