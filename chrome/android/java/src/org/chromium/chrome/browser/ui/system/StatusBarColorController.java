@@ -18,9 +18,9 @@ import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.compositor.layouts.EmptyOverviewModeObserver;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.Destroyable;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.status_indicator.StatusIndicatorCoordinator;
@@ -39,7 +39,7 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.util.ColorUtils;
 
 /**
- * Maintains the status bar color for a {@link ChromeActivity}.
+ * Maintains the status bar color for a {@link Window}.
  */
 public class StatusBarColorController
         implements Destroyable, TopToolbarCoordinator.UrlExpansionObserver,
@@ -94,16 +94,25 @@ public class StatusBarColorController
     private @ColorInt int mStatusBarColorWithoutStatusIndicator;
 
     /**
-     * @param chromeActivity The {@link ChromeActivity} that this class is attached to.
+     * Constructs a StatusBarColorController.
+     *
+     * @param window The Android app window, used to access decor view and set the status color.
+     * @param isTablet Whether the current context is on a tablet.
+     * @param resources An Android resources object, used to load colors.
+     * @param statusBarColorProvider An implementation of {@link StatusBarColorProvider}.
+     * @param overviewModeBehaviorSupplier Supplies the overview mode behavior.
+     * @param activityLifecycleDispatcher Allows observation of the activity lifecycle.
      * @param tabProvider The {@link ActivityTabProvider} to get current tab of the activity.
      */
-    public StatusBarColorController(
-            ChromeActivity chromeActivity, ActivityTabProvider tabProvider) {
-        mWindow = chromeActivity.getWindow();
-        mIsTablet = chromeActivity.isTablet();
-        mStatusBarColorProvider = chromeActivity;
+    public StatusBarColorController(Window window, boolean isTablet, Resources resources,
+            StatusBarColorProvider statusBarColorProvider,
+            OneshotSupplier<OverviewModeBehavior> overviewModeBehaviorSupplier,
+            ActivityLifecycleDispatcher activityLifecycleDispatcher,
+            ActivityTabProvider tabProvider) {
+        mWindow = window;
+        mIsTablet = isTablet;
+        mStatusBarColorProvider = statusBarColorProvider;
 
-        Resources resources = chromeActivity.getResources();
         mStandardPrimaryBgColor = ChromeColors.getPrimaryBackgroundColor(resources, false);
         mIncognitoPrimaryBgColor = ChromeColors.getPrimaryBackgroundColor(resources, true);
         mStandardDefaultThemeColor = ChromeColors.getDefaultThemeColor(resources, false);
@@ -175,8 +184,6 @@ public class StatusBarColorController
             }
         };
 
-        OneshotSupplier<OverviewModeBehavior> overviewModeBehaviorSupplier =
-                chromeActivity.getOverviewModeBehaviorSupplier();
         if (overviewModeBehaviorSupplier != null) {
             overviewModeBehaviorSupplier.onAvailable(
                     mCallbackController.makeCancelable(overviewModeBehavior -> {
@@ -199,7 +206,7 @@ public class StatusBarColorController
                     }));
         }
 
-        chromeActivity.getLifecycleDispatcher().register(this);
+        activityLifecycleDispatcher.register(this);
     }
 
     // Destroyable implementation.

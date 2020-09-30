@@ -196,6 +196,7 @@ import org.chromium.printing.PrintingControllerImpl;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.Clipboard;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayAndroid;
@@ -854,8 +855,14 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         // TODO(https://crbug.com/943371): Initialize in SystemUiCoordinator. This requires
         // SystemUiCoordinator to be created before WebappActivty#onResume().
         if (mStatusBarColorController == null) {
-            mStatusBarColorController =
-                    new StatusBarColorController(this, getActivityTabProvider());
+            // Context is ready, but AsyncInitializationActivity#isTablet won't be ready until
+            // after #createComponent() is called. Using
+            // DeviceFormFactor.isNonMultiDisplayContextOnTablet(...) directly instead.
+            mStatusBarColorController = new StatusBarColorController(getWindow(),
+                    DeviceFormFactor.isNonMultiDisplayContextOnTablet(/* Context */ this),
+                    getResources(),
+                    /* StatusBarColorProvider */ this, getOverviewModeBehaviorSupplier(),
+                    getLifecycleDispatcher(), getActivityTabProvider());
         }
 
         return mStatusBarColorController;
