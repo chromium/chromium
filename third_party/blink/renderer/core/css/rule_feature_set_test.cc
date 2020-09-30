@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/css/css_selector_list.h"
 #include "third_party/blink/renderer/core/css/invalidation/invalidation_set.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
+#include "third_party/blink/renderer/core/css/parser/media_query_parser.h"
 #include "third_party/blink/renderer/core/css/rule_set.h"
 #include "third_party/blink/renderer/core/css/style_rule.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
@@ -17,6 +18,7 @@
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/html_html_element.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -36,6 +38,12 @@ class RuleFeatureSetTest : public testing::Test {
 
   RuleFeatureSet::SelectorPreMatch CollectFeatures(
       const String& selector_text) {
+    return CollectFeaturesTo(selector_text, rule_feature_set_);
+  }
+
+  static RuleFeatureSet::SelectorPreMatch CollectFeaturesTo(
+      const String& selector_text,
+      RuleFeatureSet& set) {
     CSSSelectorList selector_list = CSSParser::ParseSelector(
         StrictCSSParserContext(SecureContextMode::kInsecureContext), nullptr,
         selector_text);
@@ -56,7 +64,7 @@ class RuleFeatureSetTest : public testing::Test {
       RuleData* rule_data = RuleData::MaybeCreate(style_rule, indices[i], 0,
                                                   kRuleHasNoSpecialState);
       DCHECK(rule_data);
-      if (rule_feature_set_.CollectFeaturesFromRuleData(rule_data))
+      if (set.CollectFeaturesFromRuleData(rule_data))
         result = RuleFeatureSet::SelectorPreMatch::kSelectorMayMatch;
     }
     return result;
@@ -1386,6 +1394,198 @@ TEST_F(RuleFeatureSetTest, invalidatesParts) {
     EXPECT_TRUE(invalidation_lists.descendants[0]->TreeBoundaryCrossing());
     EXPECT_TRUE(invalidation_lists.descendants[0]->InvalidatesParts());
   }
+}
+
+TEST_F(RuleFeatureSetTest, MediaQueryResultListEquality) {
+  scoped_refptr<MediaQuerySet> min_width1 =
+      MediaQueryParser::ParseMediaQuerySet("(min-width: 1000px)", nullptr);
+  scoped_refptr<MediaQuerySet> min_width2 =
+      MediaQueryParser::ParseMediaQuerySet("(min-width: 2000px)", nullptr);
+  scoped_refptr<MediaQuerySet> min_resolution1 =
+      MediaQueryParser::ParseMediaQuerySet("(min-resolution: 72dpi)", nullptr);
+  scoped_refptr<MediaQuerySet> min_resolution2 =
+      MediaQueryParser::ParseMediaQuerySet("(min-resolution: 300dpi)", nullptr);
+
+  {
+    RuleFeatureSet set1;
+    RuleFeatureSet set2;
+    RuleFeatureSet set3;
+    for (const auto& query : min_width1->QueryVector()) {
+      for (const auto& expresssion : query->Expressions()) {
+        set1.ViewportDependentMediaQueryResults().push_back(
+            MediaQueryResult(expresssion, true));
+        set2.ViewportDependentMediaQueryResults().push_back(
+            MediaQueryResult(expresssion, true));
+        set3.ViewportDependentMediaQueryResults().push_back(
+            MediaQueryResult(expresssion, false));
+      }
+    }
+    EXPECT_EQ(set1, set2);
+    EXPECT_NE(set1, set3);
+    EXPECT_NE(set3, set2);
+  }
+
+  {
+    RuleFeatureSet set1;
+    for (const auto& query : min_width1->QueryVector()) {
+      for (const auto& expresssion : query->Expressions()) {
+        set1.ViewportDependentMediaQueryResults().push_back(
+            MediaQueryResult(expresssion, true));
+      }
+    }
+
+    RuleFeatureSet set2;
+    for (const auto& query : min_width2->QueryVector()) {
+      for (const auto& expresssion : query->Expressions()) {
+        set1.ViewportDependentMediaQueryResults().push_back(
+            MediaQueryResult(expresssion, true));
+      }
+    }
+
+    EXPECT_NE(set1, set2);
+  }
+
+  {
+    RuleFeatureSet set1;
+    RuleFeatureSet set2;
+    RuleFeatureSet set3;
+    for (const auto& query : min_resolution1->QueryVector()) {
+      for (const auto& expresssion : query->Expressions()) {
+        set1.DeviceDependentMediaQueryResults().push_back(
+            MediaQueryResult(expresssion, true));
+        set2.DeviceDependentMediaQueryResults().push_back(
+            MediaQueryResult(expresssion, true));
+        set3.DeviceDependentMediaQueryResults().push_back(
+            MediaQueryResult(expresssion, false));
+      }
+    }
+    EXPECT_EQ(set1, set2);
+    EXPECT_NE(set1, set3);
+    EXPECT_NE(set3, set2);
+  }
+
+  {
+    RuleFeatureSet set1;
+    for (const auto& query : min_resolution1->QueryVector()) {
+      for (const auto& expresssion : query->Expressions()) {
+        set1.DeviceDependentMediaQueryResults().push_back(
+            MediaQueryResult(expresssion, true));
+      }
+    }
+
+    RuleFeatureSet set2;
+    for (const auto& query : min_resolution2->QueryVector()) {
+      for (const auto& expresssion : query->Expressions()) {
+        set2.DeviceDependentMediaQueryResults().push_back(
+            MediaQueryResult(expresssion, true));
+      }
+    }
+
+    EXPECT_NE(set1, set2);
+  }
+}
+
+struct RefTestData {
+  const char* main;
+  const char* ref;
+};
+
+// The test passes if |main| produces the same RuleFeatureSet as |ref|.
+RefTestData ref_equal_test_data[] = {
+    // clang-format off
+    {".a", ".a"},
+    // clang-format on
+};
+
+// The test passes if |main| does not produce the same RuleFeatureSet as |ref|.
+RefTestData ref_not_equal_test_data[] = {
+    // clang-format off
+    {"", ".a"},
+    {"", "#a"},
+    {"", "div"},
+    {"", ":hover"},
+    {"", "::before"},
+    {"", ":host"},
+    {"", ":host(.a)"},
+    {"", ":host-context(.a)"},
+    {"", "::content"},
+    {"", "*"},
+    {"", ":not(.a)"},
+    {".a", ".b"},
+    {".a", ".a, .b"},
+    {"#a", "#b"},
+    {"ol", "ul"},
+    {"[foo]", "[bar]"},
+    {":link", ":visited"},
+    {".a::before", ".b::after"},
+    {"::cue(a)", "::cue(b)"},
+    {".a .b", ".a .c"},
+    {".a + .b", ".a + .c"},
+    {".a + .b .c", ".a + .b .d"},
+    {"div + .a", "div + .b"},
+    {".a:nth-child(1)", ".b:nth-child(1)"},
+    {"div", "span"},
+    // clang-format on
+};
+
+class RuleFeatureSetRefTest : public RuleFeatureSetTest,
+                              private ScopedCSSPseudoIsForTest,
+                              private ScopedCSSPseudoWhereForTest {
+ public:
+  RuleFeatureSetRefTest()
+      : ScopedCSSPseudoIsForTest(true), ScopedCSSPseudoWhereForTest(true) {}
+
+  void Run(const RefTestData& data) {
+    RuleFeatureSet main_set;
+    RuleFeatureSet ref_set;
+
+    SCOPED_TRACE(testing::Message() << "Ref: " << data.ref);
+    SCOPED_TRACE(testing::Message() << "Main: " << data.main);
+    SCOPED_TRACE("Please see RuleFeatureSet::ToString for documentation");
+
+    CollectFeaturesTo(data.main, main_set);
+    CollectFeaturesTo(data.ref, ref_set);
+
+    Compare(main_set, ref_set);
+  }
+
+  virtual void Compare(const RuleFeatureSet&, const RuleFeatureSet&) const = 0;
+};
+
+class RuleFeatureSetRefEqualTest
+    : public RuleFeatureSetRefTest,
+      public testing::WithParamInterface<RefTestData> {
+ public:
+  void Compare(const RuleFeatureSet& main,
+               const RuleFeatureSet& ref) const override {
+    EXPECT_EQ(main, ref);
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(RuleFeatureSetTest,
+                         RuleFeatureSetRefEqualTest,
+                         testing::ValuesIn(ref_equal_test_data));
+
+TEST_P(RuleFeatureSetRefEqualTest, All) {
+  Run(GetParam());
+}
+
+class RuleFeatureSetRefNotEqualTest
+    : public RuleFeatureSetRefTest,
+      public testing::WithParamInterface<RefTestData> {
+ public:
+  void Compare(const RuleFeatureSet& main,
+               const RuleFeatureSet& ref) const override {
+    EXPECT_NE(main, ref);
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(RuleFeatureSetTest,
+                         RuleFeatureSetRefNotEqualTest,
+                         testing::ValuesIn(ref_not_equal_test_data));
+
+TEST_P(RuleFeatureSetRefNotEqualTest, All) {
+  Run(GetParam());
 }
 
 TEST_F(RuleFeatureSetTest, CopyOnWrite) {

@@ -53,6 +53,9 @@ class CORE_EXPORT RuleFeatureSet {
   RuleFeatureSet& operator=(const RuleFeatureSet&) = delete;
   ~RuleFeatureSet();
 
+  bool operator==(const RuleFeatureSet&) const;
+  bool operator!=(const RuleFeatureSet& o) const { return !(*this == o); }
+
   // Methods for updating the data in this object.
   void Add(const RuleFeatureSet&);
   void Clear();
@@ -146,6 +149,34 @@ class CORE_EXPORT RuleFeatureSet {
 
   bool IsAlive() const { return is_alive_; }
 
+  // Format the RuleFeatureSet for debugging purposes.
+  //
+  //  [>] Means descendant invalidation set.
+  //  [+] Means sibling invalidation set.
+  //  [>+] Means sibling descendant invalidation set.
+  //
+  // Examples:
+  //
+  //      .a[>] { ... } - Descendant invalidation set class |a|.
+  //      #a[+] { ... } - Sibling invalidation set for id |a|
+  //  [name][>] { ... } - Descendant invalidation set for attribute |name|.
+  //  :hover[>] { ... } - Descendant set for pseudo-class |hover|.
+  //       *[+] { ... } - Universal sibling invalidation set.
+  //    nth[+>] { ... } - Nth sibling descendant invalidation set.
+  //    type[>] { ... } - Type rule invalidation set.
+  //
+  // META flags (omitted if false):
+  //
+  //  F - Uses first line rules.
+  //  W - Uses window inactive selector.
+  //  R - Needs full recalc for ruleset invalidation.
+  //  P - Invalidates parts.
+  //  ~ - Max direct siblings is kDirectAdjacentMax.
+  //  <integer> - Max direct siblings is specified number (omitted if 0).
+  //
+  // See InvalidationSet::ToString for more information.
+  String ToString() const;
+
  protected:
   enum PositionType { kSubject, kAncestor };
   InvalidationSet* InvalidationSetForSimpleSelector(const CSSSelector&,
@@ -169,6 +200,8 @@ class CORE_EXPORT RuleFeatureSet {
     DISALLOW_NEW();
     void Add(const FeatureMetadata& other);
     void Clear();
+    bool operator==(const FeatureMetadata&) const;
+    bool operator!=(const FeatureMetadata& o) const { return !(*this == o); }
 
     bool uses_first_line_rules = false;
     bool uses_window_inactive_selector = false;
@@ -349,6 +382,8 @@ class CORE_EXPORT RuleFeatureSet {
 
   friend class RuleFeatureSetTest;
 };
+
+CORE_EXPORT std::ostream& operator<<(std::ostream&, const RuleFeatureSet&);
 
 }  // namespace blink
 

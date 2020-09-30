@@ -1193,6 +1193,21 @@ bool CSSSelector::NeedsUpdatedDistribution() const {
       *this);
 }
 
+String CSSSelector::FormatPseudoTypeForDebugging(PseudoType type) {
+  for (const auto& s : kPseudoTypeWithoutArgumentsMap) {
+    if (s.type == type)
+      return s.string;
+  }
+  for (const auto& s : kPseudoTypeWithArgumentsMap) {
+    if (s.type == type)
+      return s.string;
+  }
+  StringBuilder builder;
+  builder.Append("pseudo-");
+  builder.AppendNumber(static_cast<int>(type));
+  return builder.ToString();
+}
+
 CSSSelector::RareData::RareData(const AtomicString& value)
     : matching_value_(value),
       serializing_value_(value),

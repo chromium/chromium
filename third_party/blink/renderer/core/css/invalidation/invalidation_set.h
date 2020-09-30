@@ -101,6 +101,9 @@ class CORE_EXPORT InvalidationSet
   InvalidationSet(const InvalidationSet&) = delete;
   InvalidationSet& operator=(const InvalidationSet&) = delete;
 
+  bool operator==(const InvalidationSet&) const;
+  bool operator!=(const InvalidationSet& o) const { return !(*this == o); }
+
   InvalidationType GetType() const {
     return static_cast<InvalidationType>(type_);
   }
@@ -185,6 +188,35 @@ class CORE_EXPORT InvalidationSet
 
   void ToTracedValue(TracedValue*) const;
 
+  // Format the InvalidationSet for debugging purposes.
+  //
+  // Examples:
+  //
+  //         { .a } - Invalidates class |a|.
+  //         { #a } - Invalidates id |a|.
+  //      { .a #a } - Invalidates class |a| and id |a|.
+  //        { div } - Invalidates tag name |div|.
+  //     { :hover } - Invalidates pseudo-class :hover.
+  //  { .a [name] } - Invalidates class |a| and attribute |name|.
+  //          { $ } - Invalidates self.
+  //       { .a $ } - Invalidates class |a| and self.
+  //       { .b 4 } - Invalidates class |b|. Max direct siblings = 4.
+  //   { .a .b $4 } - Combination of the two previous examples.
+  //          { W } - Whole subtree invalid.
+  //
+  // Flags (omitted if false):
+  //
+  //  $ - Invalidates self.
+  //  W - Whole subtree invalid.
+  //  C - Invalidates custom pseudo.
+  //  T - Tree boundary crossing.
+  //  I - Insertion point crossing.
+  //  S - Invalidates slotted.
+  //  P - Invalidates parts.
+  //  ~ - Max direct siblings is kDirectAdjacentMax.
+  //  <integer> - Max direct siblings is specified number (omitted if 1).
+  String ToString() const;
+
 #ifndef NDEBUG
   void Show() const;
 #endif
@@ -253,6 +285,7 @@ class CORE_EXPORT InvalidationSet
     void Clear(Flags&);
     bool Contains(const Flags&, const AtomicString&) const;
     bool IsEmpty(const Flags&) const;
+    size_t Size(const Flags&) const;
     bool IsHashSet(const Flags& flags) const { return flags.bits_ & GetMask(); }
 
     StringImpl* GetStringImpl(const Flags& flags) const {
@@ -548,6 +581,16 @@ bool InvalidationSet::Backing<type>::IsEmpty(
   return !IsHashSet(flags) && !string_impl_;
 }
 
+template <typename InvalidationSet::BackingType type>
+size_t InvalidationSet::Backing<type>::Size(
+    const InvalidationSet::BackingFlags& flags) const {
+  if (const HashSet<AtomicString>* set = GetHashSet(flags))
+    return set->size();
+  if (const StringImpl* impl = GetStringImpl(flags))
+    return 1;
+  return 0;
+}
+
 template <>
 struct DowncastTraits<DescendantInvalidationSet> {
   static bool AllowFrom(const InvalidationSet& value) {
@@ -568,6 +611,8 @@ struct DowncastTraits<NthSiblingInvalidationSet> {
     return value.IsNthSiblingInvalidationSet();
   }
 };
+
+CORE_EXPORT std::ostream& operator<<(std::ostream&, const InvalidationSet&);
 
 }  // namespace blink
 

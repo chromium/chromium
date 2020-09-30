@@ -19,6 +19,9 @@ class InvalidationFlags {
         invalidates_slotted_(false),
         invalidates_parts_(false) {}
 
+  bool operator==(const InvalidationFlags&) const;
+  bool operator!=(const InvalidationFlags& o) const { return !(*this == o); }
+
   // Merges two sets of flags together by orring all fields.
   void Merge(const InvalidationFlags& other);
 

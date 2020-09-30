@@ -399,6 +399,8 @@ class CORE_EXPORT CSSSelector {
   bool FollowsPart() const;
   bool NeedsUpdatedDistribution() const;
 
+  static String FormatPseudoTypeForDebugging(PseudoType);
+
  private:
   unsigned relation_ : 4;     // enum RelationType
   unsigned match_ : 4;        // enum MatchType

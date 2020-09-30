@@ -30,6 +30,7 @@
 
 #include "third_party/blink/renderer/core/css/rule_feature_set.h"
 
+#include <algorithm>
 #include <bitset>
 #include "third_party/blink/renderer/core/css/css_custom_ident_value.h"
 #include "third_party/blink/renderer/core/css/css_function_value.h"
@@ -43,7 +44,9 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
+#include "third_party/blink/renderer/core/style/data_equivalency.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
 
@@ -250,6 +253,21 @@ scoped_refptr<InvalidationSet> CopyInvalidationSet(
   return copy;
 }
 
+template <typename KeyType,
+          typename MapType = HashMap<KeyType, scoped_refptr<InvalidationSet>>>
+bool InvalidationSetMapsEqual(const MapType& a, const MapType& b) {
+  if (a.size() != b.size())
+    return false;
+  for (const auto& entry : a) {
+    auto it = b.find(entry.key);
+    if (it == b.end())
+      return false;
+    if (!DataEquivalent(entry.value, it->value))
+      return false;
+  }
+  return true;
+}
+
 }  // anonymous namespace
 
 InvalidationSet& RuleFeatureSet::EnsureMutableInvalidationSet(
@@ -382,6 +400,31 @@ RuleFeatureSet::~RuleFeatureSet() {
   nth_invalidation_set_ = nullptr;
 
   is_alive_ = false;
+}
+
+bool RuleFeatureSet::operator==(const RuleFeatureSet& other) const {
+  return metadata_ == other.metadata_ &&
+         InvalidationSetMapsEqual<AtomicString>(
+             class_invalidation_sets_, other.class_invalidation_sets_) &&
+         InvalidationSetMapsEqual<AtomicString>(id_invalidation_sets_,
+                                                other.id_invalidation_sets_) &&
+         InvalidationSetMapsEqual<AtomicString>(
+             attribute_invalidation_sets_,
+             other.attribute_invalidation_sets_) &&
+         InvalidationSetMapsEqual<CSSSelector::PseudoType>(
+             pseudo_invalidation_sets_, other.pseudo_invalidation_sets_) &&
+         DataEquivalent(universal_sibling_invalidation_set_,
+                        other.universal_sibling_invalidation_set_) &&
+         DataEquivalent(nth_invalidation_set_, other.nth_invalidation_set_) &&
+         DataEquivalent(universal_sibling_invalidation_set_,
+                        other.universal_sibling_invalidation_set_) &&
+         DataEquivalent(type_rule_invalidation_set_,
+                        other.type_rule_invalidation_set_) &&
+         viewport_dependent_media_query_results_ ==
+             other.viewport_dependent_media_query_results_ &&
+         device_dependent_media_query_results_ ==
+             other.device_dependent_media_query_results_ &&
+         is_alive_ == other.is_alive_;
 }
 
 ALWAYS_INLINE InvalidationSet& RuleFeatureSet::EnsureClassInvalidationSet(
@@ -1014,6 +1057,16 @@ void RuleFeatureSet::FeatureMetadata::Clear() {
   invalidates_parts = false;
 }
 
+bool RuleFeatureSet::FeatureMetadata::operator==(
+    const FeatureMetadata& other) const {
+  return uses_first_line_rules == other.uses_first_line_rules &&
+         uses_window_inactive_selector == other.uses_window_inactive_selector &&
+         needs_full_recalc_for_rule_set_invalidation ==
+             other.needs_full_recalc_for_rule_set_invalidation &&
+         max_direct_adjacent_selectors == other.max_direct_adjacent_selectors &&
+         invalidates_parts == other.invalidates_parts;
+}
+
 void RuleFeatureSet::Add(const RuleFeatureSet& other) {
   CHECK(is_alive_);
   CHECK(other.is_alive_);
@@ -1325,6 +1378,129 @@ bool RuleFeatureSet::InvalidationSetFeatures::HasFeatures() const {
 
 bool RuleFeatureSet::InvalidationSetFeatures::HasIdClassOrAttribute() const {
   return !classes.IsEmpty() || !attributes.IsEmpty() || !ids.IsEmpty();
+}
+
+String RuleFeatureSet::ToString() const {
+  StringBuilder builder;
+
+  enum TypeFlags {
+    kId = 1 << 0,
+    kClass = 1 << 1,
+    kAttribute = 1 << 2,
+    kPseudo = 1 << 3,
+    kDescendant = 1 << 4,
+    kSibling = 1 << 5,
+    kType = 1 << 6,
+    kUniversal = 1 << 7,
+    kNth = 1 << 8,
+  };
+
+  struct Entry {
+    String name;
+    const InvalidationSet* set;
+    unsigned flags;
+  };
+
+  Vector<Entry> entries;
+
+  auto add_invalidation_sets =
+      [&entries](const String& base, InvalidationSet* set, unsigned flags,
+                 const char* prefix = "", const char* suffix = "") {
+        if (!set)
+          return;
+        DescendantInvalidationSet* descendants;
+        SiblingInvalidationSet* siblings;
+        ExtractInvalidationSets(set, descendants, siblings);
+
+        if (descendants)
+          entries.push_back(Entry{base, descendants, flags | kDescendant});
+        if (siblings)
+          entries.push_back(Entry{base, siblings, flags | kSibling});
+        if (siblings && siblings->SiblingDescendants()) {
+          entries.push_back(Entry{base, siblings->SiblingDescendants(),
+                                  flags | kSibling | kDescendant});
+        }
+      };
+
+  auto format_name = [](const String& base, unsigned flags) {
+    StringBuilder builder;
+    // Prefix:
+
+    builder.Append((flags & kId) ? "#" : "");
+    builder.Append((flags & kClass) ? "." : "");
+    builder.Append((flags & kAttribute) ? "[" : "");
+
+    builder.Append(base);
+
+    // Suffix:
+    builder.Append((flags & kAttribute) ? "]" : "");
+
+    builder.Append("[");
+    if (flags & kSibling)
+      builder.Append("+");
+    if (flags & kDescendant)
+      builder.Append(">");
+    builder.Append("]");
+
+    return builder.ToString();
+  };
+
+  auto format_max_direct_adjancent = [](unsigned max) -> String {
+    if (max == SiblingInvalidationSet::kDirectAdjacentMax)
+      return "~";
+    if (max)
+      return String::Number(max);
+    return g_empty_atom;
+  };
+
+  for (auto& i : id_invalidation_sets_)
+    add_invalidation_sets(i.key, i.value.get(), kId, "#");
+  for (auto& i : class_invalidation_sets_)
+    add_invalidation_sets(i.key, i.value.get(), kClass, ".");
+  for (auto& i : attribute_invalidation_sets_)
+    add_invalidation_sets(i.key, i.value.get(), kAttribute, "[", "]");
+  for (auto& i : pseudo_invalidation_sets_) {
+    String name = CSSSelector::FormatPseudoTypeForDebugging(
+        static_cast<CSSSelector::PseudoType>(i.key));
+    add_invalidation_sets(name, i.value.get(), kPseudo, ":", "");
+  }
+
+  add_invalidation_sets("type", type_rule_invalidation_set_.get(), kType);
+  add_invalidation_sets("*", universal_sibling_invalidation_set_.get(),
+                        kUniversal);
+  add_invalidation_sets("nth", nth_invalidation_set_.get(), kNth);
+
+  std::sort(entries.begin(), entries.end(), [](const auto& a, const auto& b) {
+    if (a.flags != b.flags)
+      return a.flags < b.flags;
+    return WTF::CodeUnitCompareLessThan(a.name, b.name);
+  });
+
+  for (const Entry& entry : entries) {
+    builder.Append(format_name(entry.name, entry.flags));
+    builder.Append(entry.set->ToString());
+    builder.Append(" ");
+  }
+
+  StringBuilder metadata;
+  metadata.Append(metadata_.uses_first_line_rules ? "F" : "");
+  metadata.Append(metadata_.uses_window_inactive_selector ? "W" : "");
+  metadata.Append(metadata_.needs_full_recalc_for_rule_set_invalidation ? "R"
+                                                                        : "");
+  metadata.Append(metadata_.invalidates_parts ? "P" : "");
+  metadata.Append(
+      format_max_direct_adjancent(metadata_.max_direct_adjacent_selectors));
+
+  if (!metadata.IsEmpty()) {
+    builder.Append("META:");
+    builder.Append(metadata.ToString());
+  }
+
+  return builder.ToString();
+}
+
+std::ostream& operator<<(std::ostream& ostream, const RuleFeatureSet& set) {
+  return ostream << set.ToString().Utf8();
 }
 
 }  // namespace blink

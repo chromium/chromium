@@ -36,10 +36,29 @@
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
+#include "third_party/blink/renderer/core/style/data_equivalency.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
+
+namespace {
+
+template <InvalidationSet::BackingType type>
+bool BackingEqual(const InvalidationSet::BackingFlags& a_flags,
+                  const InvalidationSet::Backing<type>& a,
+                  const InvalidationSet::BackingFlags& b_flags,
+                  const InvalidationSet::Backing<type>& b) {
+  if (a.Size(a_flags) != b.Size(b_flags))
+    return false;
+  for (const AtomicString& value : a.Items(a_flags)) {
+    if (!b.Contains(b_flags, value))
+      return false;
+  }
+  return true;
+}
+
+}  // namespace
 
 static const unsigned char* g_tracing_enabled = nullptr;
 
@@ -52,6 +71,37 @@ static const unsigned char* g_tracing_enabled = nullptr;
 // static
 void InvalidationSetDeleter::Destruct(const InvalidationSet* obj) {
   obj->Destroy();
+}
+
+bool InvalidationSet::operator==(const InvalidationSet& other) const {
+  if (GetType() != other.GetType())
+    return false;
+
+  if (GetType() == InvalidationType::kInvalidateSiblings) {
+    const auto& this_sibling = To<SiblingInvalidationSet>(*this);
+    const auto& other_sibling = To<SiblingInvalidationSet>(other);
+    if ((this_sibling.MaxDirectAdjacentSelectors() !=
+         other_sibling.MaxDirectAdjacentSelectors()) ||
+        !DataEquivalent(this_sibling.Descendants(),
+                        other_sibling.Descendants()) ||
+        !DataEquivalent(this_sibling.SiblingDescendants(),
+                        other_sibling.SiblingDescendants())) {
+      return false;
+    }
+  }
+
+  if (invalidation_flags_ != other.invalidation_flags_)
+    return false;
+  if (invalidates_self_ != other.invalidates_self_)
+    return false;
+
+  return BackingEqual(backing_flags_, classes_, other.backing_flags_,
+                      other.classes_) &&
+         BackingEqual(backing_flags_, ids_, other.backing_flags_, other.ids_) &&
+         BackingEqual(backing_flags_, tag_names_, other.backing_flags_,
+                      other.tag_names_) &&
+         BackingEqual(backing_flags_, attributes_, other.backing_flags_,
+                      other.attributes_);
 }
 
 void InvalidationSet::CacheTracingFlag() {
@@ -374,6 +424,80 @@ void InvalidationSet::Show() const {
 }
 #endif  // NDEBUG
 
+String InvalidationSet::ToString() const {
+  auto format_backing = [](auto range, const char* prefix, const char* suffix) {
+    StringBuilder builder;
+
+    Vector<AtomicString> names;
+    for (const auto& str : range)
+      names.push_back(str);
+    std::sort(names.begin(), names.end(), WTF::CodeUnitCompareLessThan);
+
+    for (const auto& name : names) {
+      if (!builder.IsEmpty())
+        builder.Append(" ");
+      builder.Append(prefix);
+      builder.Append(name);
+      builder.Append(suffix);
+    }
+
+    return builder.ToString();
+  };
+
+  StringBuilder features;
+
+  if (HasIds())
+    features.Append(format_backing(Ids(), "#", ""));
+  if (HasClasses()) {
+    features.Append(!features.IsEmpty() ? " " : "");
+    features.Append(format_backing(Classes(), ".", ""));
+  }
+  if (HasTagNames()) {
+    features.Append(!features.IsEmpty() ? " " : "");
+    features.Append(format_backing(TagNames(), "", ""));
+  }
+  if (HasAttributes()) {
+    features.Append(!features.IsEmpty() ? " " : "");
+    features.Append(format_backing(Attributes(), "[", "]"));
+  }
+
+  auto format_max_direct_adjancent = [](const InvalidationSet* set) -> String {
+    const auto* sibling = DynamicTo<SiblingInvalidationSet>(set);
+    if (!sibling)
+      return g_empty_atom;
+    unsigned max = sibling->MaxDirectAdjacentSelectors();
+    if (max == SiblingInvalidationSet::kDirectAdjacentMax)
+      return "~";
+    if (max != 1)
+      return String::Number(max);
+    return g_empty_atom;
+  };
+
+  StringBuilder metadata;
+  metadata.Append(InvalidatesSelf() ? "$" : "");
+  metadata.Append(invalidation_flags_.WholeSubtreeInvalid() ? "W" : "");
+  metadata.Append(invalidation_flags_.InvalidateCustomPseudo() ? "C" : "");
+  metadata.Append(invalidation_flags_.TreeBoundaryCrossing() ? "T" : "");
+  metadata.Append(invalidation_flags_.InsertionPointCrossing() ? "I" : "");
+  metadata.Append(invalidation_flags_.InvalidatesSlotted() ? "S" : "");
+  metadata.Append(invalidation_flags_.InvalidatesParts() ? "P" : "");
+  metadata.Append(format_max_direct_adjancent(this));
+
+  StringBuilder main;
+  main.Append("{");
+  if (!features.IsEmpty()) {
+    main.Append(" ");
+    main.Append(features);
+  }
+  if (!metadata.IsEmpty()) {
+    main.Append(" ");
+    main.Append(metadata);
+  }
+  main.Append(" }");
+
+  return main.ToString();
+}
+
 SiblingInvalidationSet::SiblingInvalidationSet(
     scoped_refptr<DescendantInvalidationSet> descendants)
     : InvalidationSet(InvalidationType::kInvalidateSiblings),
@@ -394,6 +518,10 @@ DescendantInvalidationSet& SiblingInvalidationSet::EnsureDescendants() {
   if (!descendant_invalidation_set_)
     descendant_invalidation_set_ = DescendantInvalidationSet::Create();
   return *descendant_invalidation_set_;
+}
+
+std::ostream& operator<<(std::ostream& ostream, const InvalidationSet& set) {
+  return ostream << set.ToString().Utf8();
 }
 
 }  // namespace blink
