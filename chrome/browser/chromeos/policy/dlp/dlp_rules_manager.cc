@@ -11,9 +11,11 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/common/chrome_features.h"
 #include "components/policy/core/browser/url_util.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -245,6 +247,10 @@ void DlpRulesManager::OnPolicyUpdate() {
   dst_url_rules_mapping_.clear();
   src_url_matcher_ = std::make_unique<url_matcher::URLMatcher>();
   dst_url_matcher_ = std::make_unique<url_matcher::URLMatcher>();
+
+  if (!base::FeatureList::IsEnabled(features::kDataLeakPreventionPolicy)) {
+    return;
+  }
 
   const base::ListValue* rules_list =
       g_browser_process->local_state()->GetList(policy_prefs::kDlpRulesList);

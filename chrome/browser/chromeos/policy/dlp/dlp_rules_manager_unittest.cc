@@ -8,8 +8,10 @@
 #include <vector>
 
 #include "base/strings/strcat.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_test_utils.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/policy/core/common/policy_pref_names.h"
@@ -35,12 +37,33 @@ constexpr char kUrlPattern3[] = "docs.google.com";
 constexpr char kUrlPattern4[] = "drive.google.com";
 constexpr char kUrlPattern5[] = "*.company.com";
 
+base::Value GenerateClipboardCopyDisallowedRule() {
+  base::Value rules(base::Value::Type::LIST);
+  base::Value src_urls(base::Value::Type::LIST);
+  src_urls.Append(kUrlStr1);
+  base::Value dst_urls(base::Value::Type::LIST);
+  dst_urls.Append(kUrlStr3);
+  base::Value restrictions(base::Value::Type::LIST);
+  restrictions.Append(dlp_test_util::CreateRestrictionWithLevel(
+      dlp::kClipboardRestriction, dlp::kBlockLevel));
+  restrictions.Append(dlp_test_util::CreateRestrictionWithLevel(
+      dlp::kScreenshotRestriction, dlp::kBlockLevel));
+  rules.Append(dlp_test_util::CreateRule(
+      "rule #1", "Block", std::move(src_urls), std::move(dst_urls),
+      /*dst_components=*/base::Value(base::Value::Type::LIST),
+      std::move(restrictions)));
+  return rules;
+}
+
 }  // namespace
 
 class DlpRulesManagerTest : public testing::Test {
  protected:
   void SetUp() override {
     testing::Test::SetUp();
+
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kDataLeakPreventionPolicy);
 
     DlpRulesManager::Init();
     dlp_rules_manager_ = DlpRulesManager::Get();
@@ -58,6 +81,7 @@ class DlpRulesManagerTest : public testing::Test {
   }
 
   DlpRulesManager* dlp_rules_manager_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 
  private:
   ScopedTestingLocalState testing_local_state_;
@@ -223,23 +247,7 @@ TEST_F(DlpRulesManagerTest, IsRestrictedComponent_Clipboard) {
 }
 
 TEST_F(DlpRulesManagerTest, SameSrcDst_Clipboard) {
-  base::Value rules(base::Value::Type::LIST);
-
-  // First Rule
-  base::Value src_urls(base::Value::Type::LIST);
-  src_urls.Append(kUrlStr1);
-
-  base::Value dst_urls(base::Value::Type::LIST);
-  dst_urls.Append(kUrlStr3);
-
-  base::Value restrictions(base::Value::Type::LIST);
-  restrictions.Append(dlp_test_util::CreateRestrictionWithLevel(
-      dlp::kClipboardRestriction, dlp::kBlockLevel));
-
-  rules.Append(dlp_test_util::CreateRule(
-      "rule #1", "Block", std::move(src_urls), std::move(dst_urls),
-      /*dst_components=*/base::Value(base::Value::Type::LIST),
-      std::move(restrictions)));
+  base::Value rules = GenerateClipboardCopyDisallowedRule();
 
   UpdatePolicyPref(std::move(rules));
 
@@ -250,25 +258,9 @@ TEST_F(DlpRulesManagerTest, SameSrcDst_Clipboard) {
 }
 
 TEST_F(DlpRulesManagerTest, EmptyUrl_Clipboard) {
-  base::Value rules(base::Value::Type::LIST);
+  base::Value rules = GenerateClipboardCopyDisallowedRule();
 
-  // First Rule
-  base::Value src_urls_1(base::Value::Type::LIST);
-  src_urls_1.Append(kUrlStr1);
-
-  base::Value dst_urls_1(base::Value::Type::LIST);
-  dst_urls_1.Append(kUrlStr3);
-
-  base::Value restrictions_1(base::Value::Type::LIST);
-  restrictions_1.Append(dlp_test_util::CreateRestrictionWithLevel(
-      dlp::kClipboardRestriction, dlp::kBlockLevel));
-
-  rules.Append(dlp_test_util::CreateRule(
-      "rule #1", "Block *", std::move(src_urls_1), std::move(dst_urls_1),
-      /*dst_components=*/base::Value(base::Value::Type::LIST),
-      std::move(restrictions_1)));
-
-  // First Rule
+  // Second Rule
   base::Value src_urls_2(base::Value::Type::LIST);
   src_urls_2.Append(kUrlStr4);
 
@@ -409,6 +401,34 @@ TEST_F(DlpRulesManagerTest, IsRestricted_MultipleURLs) {
             dlp_rules_manager_->IsRestrictedDestination(
                 GURL(base::StrCat({kHttpsPrefix, kUrlPattern4})),
                 GURL(kUrlStr1), DlpRulesManager::Restriction::kClipboard));
+}
+
+TEST_F(DlpRulesManagerTest, DisabledByFeature) {
+  base::Value rules = GenerateClipboardCopyDisallowedRule();
+
+  UpdatePolicyPref(std::move(rules));
+
+  EXPECT_EQ(DlpRulesManager::Level::kBlock,
+            dlp_rules_manager_->IsRestrictedDestination(
+                GURL(kUrlStr1), GURL(kUrlStr3),
+                DlpRulesManager::Restriction::kClipboard));
+  EXPECT_EQ(DlpRulesManager::Level::kBlock,
+            dlp_rules_manager_->IsRestricted(
+                GURL(kUrlStr1), DlpRulesManager::Restriction::kScreenshot));
+
+  // Disable feature
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitAndDisableFeature(
+      features::kDataLeakPreventionPolicy);
+  UpdatePolicyPref(std::move(rules));
+
+  EXPECT_EQ(DlpRulesManager::Level::kAllow,
+            dlp_rules_manager_->IsRestrictedDestination(
+                GURL(kUrlStr1), GURL(kUrlStr3),
+                DlpRulesManager::Restriction::kClipboard));
+  EXPECT_EQ(DlpRulesManager::Level::kAllow,
+            dlp_rules_manager_->IsRestricted(
+                GURL(kUrlStr1), DlpRulesManager::Restriction::kScreenshot));
 }
 
 }  // namespace policy

@@ -202,6 +202,14 @@ const base::Feature kCryptohomeUserDataAuthKillswitch{
 #endif
 
 #if defined(OS_CHROMEOS)
+// Enables parsing and enforcing Data Leak Prevention policy rules that
+// restricts usage of some system features, e.g.clipboard, screenshot, etc.
+// for confidential content.
+const base::Feature kDataLeakPreventionPolicy{
+    "DataLeakPreventionPolicy", base::FEATURE_DISABLED_BY_DEFAULT};
+#endif
+
+#if defined(OS_CHROMEOS)
 // Enables passing additional user authentication in requests to DMServer
 // (policy fetch, status report upload).
 const base::Feature kDMServerOAuthForChildUser{
