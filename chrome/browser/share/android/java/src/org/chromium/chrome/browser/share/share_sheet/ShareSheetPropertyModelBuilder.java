@@ -14,6 +14,7 @@ import android.view.View.OnClickListener;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -167,8 +168,12 @@ public class ShareSheetPropertyModelBuilder {
                 break;
             }
         }
+
+        String chromePackageName = ContextUtils.getApplicationContext().getPackageName();
         for (ResolveInfo res : resolveInfoList) {
-            thirdPartyActivities.add(res);
+            if (!res.activityInfo.packageName.equals(chromePackageName)) {
+                thirdPartyActivities.add(res);
+            }
             if (thirdPartyActivities.size() == MAX_NUM_APPS) {
                 break;
             }

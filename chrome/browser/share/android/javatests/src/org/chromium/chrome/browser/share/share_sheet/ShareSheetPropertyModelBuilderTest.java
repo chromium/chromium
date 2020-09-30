@@ -31,6 +31,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -72,6 +73,8 @@ public final class ShareSheetPropertyModelBuilderTest {
     private ResolveInfo mTextResolveInfo1;
     @Mock
     private ResolveInfo mTextResolveInfo2;
+    @Mock
+    private ResolveInfo mTextResolveInfo3;
     @Mock
     private ResolveInfo mImageResolveInfo1;
     @Mock
@@ -263,6 +266,33 @@ public final class ShareSheetPropertyModelBuilderTest {
     @MediumTest
     @Features.DisableFeatures({ChromeFeatureList.CHROME_SHARING_HUB_V15})
     public void selectThirdPartyApps_sharingHub15Disabled_returnsTextSharingModels() {
+        ShareParams shareParams = new ShareParams.Builder(null, "", "").build();
+
+        List<PropertyModel> propertyModels =
+                mPropertyModelBuilder.selectThirdPartyApps(null, new HashSet<>(), shareParams,
+                        /*saveLastUsed=*/false, /*WindowAndroid=*/null, /*shareStartTime=*/0);
+
+        assertEquals("Incorrect number of property models.", 2, propertyModels.size());
+        assertModelsAreInTheRightOrder(
+                propertyModels, ImmutableList.of(sTextModelLabel1, sTextModelLabel2));
+    }
+
+    @Test
+    @MediumTest
+    @Features.DisableFeatures({ChromeFeatureList.CHROME_SHARING_HUB_V15})
+    public void
+    selectThirdPartyApps_sharingHub15Disabled_returnsTextSharingModelsExcludeChromePackage() {
+        String chromePackage = ContextUtils.getApplicationContext().getPackageName();
+        try {
+            setUpResolveInfo(mTextResolveInfo3, chromePackage, sTextModelLabel2);
+        } catch (PackageManager.NameNotFoundException e) {
+            return;
+        }
+        doReturn(ImmutableList.of(mTextResolveInfo1, mTextResolveInfo2, mTextResolveInfo3))
+                .when(mPackageManager)
+                .queryIntentActivities(
+                        argThat(intent -> intent.getType().equals("text/plain")), anyInt());
+
         ShareParams shareParams = new ShareParams.Builder(null, "", "").build();
 
         List<PropertyModel> propertyModels =
