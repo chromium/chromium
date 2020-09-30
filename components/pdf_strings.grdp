@@ -61,6 +61,9 @@
     <message name="IDS_PDF_ANNOTATIONS_SHOW_TOGGLE" desc="Button text for toggling showing annotations on the PDF document">
       Annotations
     </message>
+    <message name="IDS_PDF_ZOOM_TEXT_INPUT_ARIA_LABEL" desc="aria-label describing the zoom level text input">
+      Zoom level
+    </message>
     <message name="IDS_PDF_TOOLTIP_ZOOM_IN" desc="Button tooltip for the button which zooms in a PDF, so that the document appears larger">
       Zoom in
     </message>
