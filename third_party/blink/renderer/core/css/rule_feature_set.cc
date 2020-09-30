@@ -874,8 +874,8 @@ void RuleFeatureSet::AddFeaturesToInvalidationSetsForSelectorList(
        sub_selector; sub_selector = CSSSelectorList::Next(*sub_selector)) {
     descendant_features.has_features_for_rule_set_invalidation = false;
 
-    AddFeaturesToInvalidationSetsForCompoundSelector(
-        *sub_selector, sibling_features, descendant_features);
+    AddFeaturesToInvalidationSets(*sub_selector, sibling_features,
+                                  descendant_features);
 
     if (!descendant_features.has_features_for_rule_set_invalidation)
       selector_list_contains_universal = true;

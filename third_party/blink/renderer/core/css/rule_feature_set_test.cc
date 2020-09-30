@@ -1516,6 +1516,14 @@ RefTestData ref_equal_test_data[] = {
     // selector in the ref.
     {".a :is(.b, .c:nth-child(1))",
      ".a .b, .a .c:nth-child(1), .b:nth-child(1)"},
+    {":is(.a) .b", ".a .b"},
+    {":is(.a, .b) .c", ".a .c, .b .c"},
+    {":is(.a .b, .c .d) .e", ".a .b .e, .c .d .e"},
+    {":is(:is(.a .b, .c) :is(.d, .e .f), .g) .h",
+     ".a .b .h, .c .h, .d .h, .e .f .h, .g .h"},
+    {":is(.a, .b) :is(.c, .d)", ".a .c, .a .d, .b .c, .b .d"},
+    {":is(.a .b, .c .d) :is(.e .f, .g .h)",
+     ".a .b .f, .a .b .h, .c .d .f, .c .d .h, .e .f, .g .h"},
     // clang-format on
 };
 
