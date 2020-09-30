@@ -4,6 +4,7 @@
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {FocusOutlineManager} from 'chrome://resources/js/cr/ui/focus_outline_manager.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ViewerThumbnailElement} from './viewer-thumbnail.js';
@@ -76,6 +77,15 @@ export class ViewerThumbnailBarElement extends PolymerElement {
    */
   computePageNumbers_() {
     return Array.from({length: this.docLength}, (_, i) => i + 1);
+  }
+
+  /**
+   * @param {number} pageNumber
+   * @return {string}
+   * @private
+   */
+  getAriaLabel_(pageNumber) {
+    return loadTimeData.getStringF('thumbnailPageAriaLabel', pageNumber);
   }
 
   /**

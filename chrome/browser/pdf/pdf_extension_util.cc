@@ -63,6 +63,7 @@ void AddPdfViewerStrings(base::Value* dict) {
     {"passwordInvalid", IDS_PDF_PASSWORD_INVALID},
     {"passwordPrompt", IDS_PDF_NEED_PASSWORD},
     {"passwordSubmit", IDS_PDF_PASSWORD_SUBMIT},
+    {"thumbnailPageAriaLabel", IDS_PDF_THUMBNAIL_PAGE_ARIA_LABEL},
     {"tooltipDocumentOutline", IDS_PDF_TOOLTIP_DOCUMENT_OUTLINE},
     {"tooltipDownload", IDS_PDF_TOOLTIP_DOWNLOAD},
     {"tooltipPrint", IDS_PDF_TOOLTIP_PRINT},

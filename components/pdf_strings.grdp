@@ -92,6 +92,9 @@
       =1 {PDF document containing {COUNT} page}
       other {PDF document containing {COUNT} pages}}
     </message>
+    <message name="IDS_PDF_THUMBNAIL_PAGE_ARIA_LABEL" desc="aria-label describing a thumbnail by its corresponding PDF page number">
+      Thumbnail for page <ph name="THUMBNAIL_PAGE"><ex>1</ex>$1</ph>
+    </message>
     <if expr="chromeos">
       <message name="IDS_PDF_DISCARD_FORM_CHANGES" desc="Title for a dialog that informs the user that the changes they have made to a form will be lost if they continue">
         Discard changes?
