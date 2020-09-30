@@ -131,12 +131,7 @@ bool InteractionHandlerAndroid::AddInteractionsFromProto(
     NOTREACHED() << "Interactions can not be added while listening to events!";
     return false;
   }
-  auto key = EventHandler::CreateEventKeyFromProto(proto.trigger_event());
-  if (!key) {
-    VLOG(1) << "Invalid trigger event for interaction";
-    return false;
-  }
-
+  std::vector<InteractionHandlerAndroid::InteractionCallback> callbacks;
   for (const auto& callback_proto : proto.callbacks()) {
     auto callback = CreateInteractionCallbackFromProto(callback_proto);
     if (!callback) {
@@ -150,7 +145,19 @@ bool InteractionHandlerAndroid::AddInteractionsFromProto(
           basic_interactions_->GetWeakPtr(),
           callback_proto.condition_model_identifier(), *callback));
     }
-    AddInteraction(*key, *callback);
+    callbacks.push_back(std::move(*callback));
+  }
+
+  for (const auto& trigger_event : proto.trigger_event()) {
+    auto key = EventHandler::CreateEventKeyFromProto(trigger_event);
+    if (!key) {
+      VLOG(1) << "Invalid trigger event of type " << trigger_event.kind_case();
+      return false;
+    }
+
+    for (const auto& callback : callbacks) {
+      AddInteraction(*key, callback);
+    }
   }
   return true;
 }

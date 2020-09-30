@@ -82,25 +82,25 @@ TEST(GenericUiReplacePlaceholdersTest, ReplacePlaceholdersInEvents) {
   GenericUserInterfaceProto input;
   auto* on_value_changed = input.mutable_interactions()
                                ->add_interactions()
-                               ->mutable_trigger_event()
+                               ->add_trigger_event()
                                ->mutable_on_value_changed();
   on_value_changed->set_model_identifier("value_${i}");
 
   auto* on_view_clicked = input.mutable_interactions()
                               ->add_interactions()
-                              ->mutable_trigger_event()
+                              ->add_trigger_event()
                               ->mutable_on_view_clicked();
   on_view_clicked->set_view_identifier("view_${i}");
 
   auto* on_view_container_cleared = input.mutable_interactions()
                                         ->add_interactions()
-                                        ->mutable_trigger_event()
+                                        ->add_trigger_event()
                                         ->mutable_on_view_container_cleared();
   on_view_container_cleared->set_view_identifier("view_${i}");
 
   auto* on_popup_dismissed = input.mutable_interactions()
                                  ->add_interactions()
-                                 ->mutable_trigger_event()
+                                 ->add_trigger_event()
                                  ->mutable_on_popup_dismissed();
   on_popup_dismissed->set_popup_identifier("popup_${i}");
 

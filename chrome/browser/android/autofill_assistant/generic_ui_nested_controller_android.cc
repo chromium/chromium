@@ -315,7 +315,7 @@ bool CreateImplicitInteractionsForView(
       // Auto-update the text of the view whenever the corresponding value in
       // the model changes.
       InteractionProto implicit_set_text_interaction;
-      implicit_set_text_interaction.mutable_trigger_event()
+      implicit_set_text_interaction.add_trigger_event()
           ->mutable_on_value_changed()
           ->set_model_identifier(proto.text_input_view().model_identifier());
       SetTextProto set_text_callback;
@@ -339,7 +339,7 @@ bool CreateImplicitInteractionsForView(
       }
       // Auto-update text view content.
       InteractionProto implicit_set_text_interaction;
-      implicit_set_text_interaction.mutable_trigger_event()
+      implicit_set_text_interaction.add_trigger_event()
           ->mutable_on_value_changed()
           ->set_model_identifier(proto.text_view().model_identifier());
       SetTextProto set_text_callback;

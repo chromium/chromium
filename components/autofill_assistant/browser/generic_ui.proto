@@ -26,12 +26,13 @@ message InteractionsProto {
   repeated InteractionProto interactions = 1;
 }
 
-// An interaction consists of a trigger event and a series of actions.
+// An interaction consists of a set of trigger events and a series of actions.
 message InteractionProto {
-  // Functions to call each time the event happens, in the specified order.
+  // Functions to call each time one of the events happens, in the specified
+  // order.
   repeated CallbackProto callbacks = 1;
-  // The trigger event for |callbacks|.
-  optional EventProto trigger_event = 2;
+  // The trigger events for |callbacks|.
+  repeated EventProto trigger_event = 2;
 }
 
 // UI Actions to invoke.

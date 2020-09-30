@@ -30,32 +30,33 @@ bool CreateJavaListenersFromProto(
     base::android::ScopedJavaGlobalRef<jobject> jdelegate,
     const InteractionsProto& proto) {
   for (const auto& interaction_proto : proto.interactions()) {
-    const auto& event_proto = interaction_proto.trigger_event();
-    switch (event_proto.kind_case()) {
-      case EventProto::kOnViewClicked: {
-        auto jview = view_handler->GetView(
-            event_proto.on_view_clicked().view_identifier());
-        if (!jview.has_value()) {
-          VLOG(1) << "Invalid click event, no view with id='"
-                  << event_proto.on_view_clicked().view_identifier()
-                  << "' found";
-          return false;
+    for (const auto& event_proto : interaction_proto.trigger_event()) {
+      switch (event_proto.kind_case()) {
+        case EventProto::kOnViewClicked: {
+          auto jview = view_handler->GetView(
+              event_proto.on_view_clicked().view_identifier());
+          if (!jview.has_value()) {
+            VLOG(1) << "Invalid click event, no view with id='"
+                    << event_proto.on_view_clicked().view_identifier()
+                    << "' found";
+            return false;
+          }
+          SetOnClickListener(env, *jview, jdelegate,
+                             event_proto.on_view_clicked());
+          break;
         }
-        SetOnClickListener(env, *jview, jdelegate,
-                           event_proto.on_view_clicked());
-        break;
+        case EventProto::kOnValueChanged:
+        case EventProto::kOnUserActionCalled:
+        case EventProto::kOnTextLinkClicked:
+        case EventProto::kOnPopupDismissed:
+        case EventProto::kOnViewContainerCleared:
+          // Skip events that do not require registering java-side listeners.
+          break;
+        case EventProto::KIND_NOT_SET:
+          VLOG(1)
+              << "Error creating java listener for trigger event: kind not set";
+          return false;
       }
-      case EventProto::kOnValueChanged:
-      case EventProto::kOnUserActionCalled:
-      case EventProto::kOnTextLinkClicked:
-      case EventProto::kOnPopupDismissed:
-      case EventProto::kOnViewContainerCleared:
-        // Skip events that do not require registering java-side listeners.
-        break;
-      case EventProto::KIND_NOT_SET:
-        VLOG(1)
-            << "Error creating java listener for trigger event: kind not set";
-        return false;
     }
   }
   return true;

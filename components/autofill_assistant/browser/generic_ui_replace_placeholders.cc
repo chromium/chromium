@@ -157,9 +157,8 @@ void ReplacePlaceholdersInValue(
 void ReplacePlaceholdersInInteraction(
     InteractionProto* in_out_proto,
     const std::map<std::string, std::string>& placeholders) {
-  if (in_out_proto->has_trigger_event()) {
-    ReplacePlaceholdersInEvent(in_out_proto->mutable_trigger_event(),
-                               placeholders);
+  for (auto& trigger_event : *in_out_proto->mutable_trigger_event()) {
+    ReplacePlaceholdersInEvent(&trigger_event, placeholders);
   }
 
   for (auto& callback : *in_out_proto->mutable_callbacks()) {
