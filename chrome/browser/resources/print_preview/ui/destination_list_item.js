@@ -70,7 +70,8 @@ Polymer({
     statusText_: {
       type: String,
       computed:
-          'computeStatusText_(destination, destination.printerStatusReason)',
+          'computeStatusText_(destination, destination.printerStatusReason,' +
+              'configurationStatus_)',
     },
 
     // <if expr="chromeos">
@@ -211,6 +212,11 @@ Polymer({
     // <if expr="chromeos">
     if (this.printerStatusFlagEnabled_ &&
         this.destination.origin === DestinationOrigin.CROS) {
+      // Don't show status text when destination is configuring.
+      if (this.configurationStatus_ !== DestinationConfigStatus.IDLE) {
+        return '';
+      }
+
       const printerStatusReason = this.destination.printerStatusReason;
       if (!printerStatusReason ||
           printerStatusReason === PrinterStatusReason.NO_ERROR ||
