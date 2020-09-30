@@ -403,6 +403,22 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, TabsExecuteScript) {
       << message_;
 }
 
+// Tests chrome.windows APIs.
+IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, WindowsBasic) {
+  base::HistogramTester histogram_tester;
+  ASSERT_TRUE(
+      RunExtensionTest("service_worker/worker_based_background/windows_basic"))
+      << message_;
+  // Extension should issue one chrome.windows.create call and two
+  // chrome.windows.getAll, verify that we logged histogram for it.
+  EXPECT_EQ(1, histogram_tester.GetBucketCount(
+                   "Extensions.Functions.ExtensionServiceWorkerCalls",
+                   functions::HistogramValue::WINDOWS_CREATE));
+  EXPECT_EQ(2, histogram_tester.GetBucketCount(
+                   "Extensions.Functions.ExtensionServiceWorkerCalls",
+                   functions::HistogramValue::WINDOWS_GETALL));
+}
+
 // Tests chrome.webRequest APIs.
 IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, WebRequest) {
   ASSERT_TRUE(

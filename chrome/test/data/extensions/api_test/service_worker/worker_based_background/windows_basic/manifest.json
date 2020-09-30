@@ -1,0 +1,8 @@
+{
+  "name": "Service Worker-based background script",
+  "version": "0.1",
+  "manifest_version": 2,
+  "description": "Test windows APIs for service worker-based background scripts.",
+  "permissions": ["tabs"],
+  "background": {"service_worker": "service_worker_background.js"}
+}
