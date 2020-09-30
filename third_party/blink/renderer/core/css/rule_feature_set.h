@@ -295,6 +295,28 @@ class CORE_EXPORT RuleFeatureSet {
     kRequiresSubtreeInvalidation
   };
 
+  // Extracts features for the given complex selector, and adds those features
+  // the appropriate invalidation sets.
+  //
+  // The returned InvalidationSetFeatures contain the descendant features,
+  // extracted from the rightmost compound selector.
+  //
+  // The PositionType indicates whether or not the complex selector resides
+  // in the rightmost compound (kSubject), or anything to the left of that
+  // (kAncestor). For example, for ':is(.a .b) :is(.c .d)', the nested
+  // complex selector '.c .d' should be called with kSubject, and the '.a .b'
+  // should be called with kAncestor.
+  //
+  // The PseudoType indicates whether or not we are inside a nested complex
+  // selector. For example, for :is(.a .b), this function is called with
+  // CSSSelector equal to '.a .b', and PseudoType equal to kPseudoIs.
+  // For top-level complex selectors, the PseudoType is kPseudoUnknown.
+  FeatureInvalidationType UpdateInvalidationSetsForComplex(
+      const CSSSelector&,
+      InvalidationSetFeatures&,
+      PositionType,
+      CSSSelector::PseudoType);
+
   void ExtractInvalidationSetFeaturesFromSimpleSelector(
       const CSSSelector&,
       InvalidationSetFeatures&);

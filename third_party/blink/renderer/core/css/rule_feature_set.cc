@@ -179,8 +179,6 @@ bool SupportsInvalidation(CSSSelector::PseudoType type) {
       return true;
     case CSSSelector::kPseudoIs:
     case CSSSelector::kPseudoWhere:
-      // TODO(crbug.com/1127347): Implement invalidation for :where and :is.
-      NOTIMPLEMENTED();
       return true;
     case CSSSelector::kPseudoUnknown:
     case CSSSelector::kPseudoLeftPage:
@@ -625,6 +623,23 @@ InvalidationSet* RuleFeatureSet::InvalidationSetForSimpleSelector(
 }
 
 void RuleFeatureSet::UpdateInvalidationSets(const RuleData* rule_data) {
+  InvalidationSetFeatures features;
+  FeatureInvalidationType feature_invalidation_type =
+      UpdateInvalidationSetsForComplex(rule_data->Selector(), features,
+                                       kSubject, CSSSelector::kPseudoUnknown);
+  if (feature_invalidation_type ==
+      FeatureInvalidationType::kRequiresSubtreeInvalidation) {
+    features.invalidation_flags.SetWholeSubtreeInvalid(true);
+  }
+  UpdateRuleSetInvalidation(features);
+}
+
+RuleFeatureSet::FeatureInvalidationType
+RuleFeatureSet::UpdateInvalidationSetsForComplex(
+    const CSSSelector& complex,
+    InvalidationSetFeatures& features,
+    PositionType position,
+    CSSSelector::PseudoType pseudo_type) {
   // Given a rule, update the descendant invalidation sets for the features
   // found in its selector. The first step is to extract the features from the
   // rightmost compound selector (ExtractInvalidationSetFeaturesFromCompound).
@@ -634,18 +649,21 @@ void RuleFeatureSet::UpdateInvalidationSets(const RuleData* rule_data) {
   // subtree recalc, nextCompound will be the rightmost compound and we will
   // addFeaturesToInvalidationSets for that one as well.
 
-  InvalidationSetFeatures features;
   InvalidationSetFeatures* sibling_features = nullptr;
 
   const CSSSelector* last_in_compound =
-      ExtractInvalidationSetFeaturesFromCompound(rule_data->Selector(),
-                                                 features, kSubject);
+      ExtractInvalidationSetFeaturesFromCompound(complex, features, position,
+                                                 pseudo_type);
+
+  bool was_whole_subtree_invalid =
+      features.invalidation_flags.WholeSubtreeInvalid();
 
   if (features.invalidation_flags.WholeSubtreeInvalid())
     features.has_features_for_rule_set_invalidation = false;
   else if (!features.HasFeatures())
     features.invalidation_flags.SetWholeSubtreeInvalid(true);
-  if (features.has_nth_pseudo) {
+  // Only check for has_nth_pseudo if this is the top-level complex selector.
+  if (pseudo_type == CSSSelector::kPseudoUnknown && features.has_nth_pseudo) {
     // The rightmost compound contains an :nth-* selector.
     // Add the compound features to the NthSiblingInvalidationSet. That is, for
     // '#id:nth-child(even)', add #id to the invalidation set and make sure we
@@ -655,20 +673,22 @@ void RuleFeatureSet::UpdateInvalidationSets(const RuleData* rule_data) {
     nth_set.SetInvalidatesSelf();
   }
 
-  const CSSSelector* next_compound = last_in_compound
-                                         ? last_in_compound->TagHistory()
-                                         : &rule_data->Selector();
-  if (!next_compound) {
-    UpdateRuleSetInvalidation(features);
-    return;
-  }
+  const CSSSelector* next_compound =
+      last_in_compound ? last_in_compound->TagHistory() : &complex;
+  if (!next_compound)
+    return kNormalInvalidation;
   if (last_in_compound) {
     UpdateFeaturesFromCombinator(*last_in_compound, nullptr, features,
                                  sibling_features, features);
   }
 
   AddFeaturesToInvalidationSets(*next_compound, sibling_features, features);
-  UpdateRuleSetInvalidation(features);
+
+  // We need to differentiate between no features (HasFeatures()==false)
+  // and RequiresSubtreeInvalidation at the callsite. Hence we reset the flag
+  // before returning, otherwise the distinction would be lost.
+  features.invalidation_flags.SetWholeSubtreeInvalid(was_whole_subtree_invalid);
+  return last_in_compound ? kNormalInvalidation : kRequiresSubtreeInvalidation;
 }
 
 void RuleFeatureSet::UpdateRuleSetInvalidation(
@@ -709,22 +729,19 @@ RuleFeatureSet::ExtractInvalidationSetFeaturesFromSelectorList(
   InvalidationSetFeatures any_features;
 
   for (; sub_selector; sub_selector = CSSSelectorList::Next(*sub_selector)) {
-    InvalidationSetFeatures compound_features;
-    if (!ExtractInvalidationSetFeaturesFromCompound(
-            *sub_selector, compound_features, position,
-            simple_selector.GetPseudoType())) {
-      // A null selector return means the sub-selector contained a
-      // selector which requiresSubtreeInvalidation().
-      DCHECK(compound_features.invalidation_flags.WholeSubtreeInvalid());
+    InvalidationSetFeatures complex_features;
+    if (UpdateInvalidationSetsForComplex(
+            *sub_selector, complex_features, position,
+            simple_selector.GetPseudoType()) == kRequiresSubtreeInvalidation) {
       features.invalidation_flags.SetWholeSubtreeInvalid(true);
       return kRequiresSubtreeInvalidation;
     }
-    if (compound_features.has_nth_pseudo)
+    if (complex_features.has_nth_pseudo)
       features.has_nth_pseudo = true;
     if (!all_sub_selectors_have_features)
       continue;
-    if (compound_features.HasFeatures())
-      any_features.Add(compound_features);
+    if (complex_features.HasFeatures())
+      any_features.Add(complex_features);
     else
       all_sub_selectors_have_features = false;
   }

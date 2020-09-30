@@ -1494,6 +1494,28 @@ struct RefTestData {
 RefTestData ref_equal_test_data[] = {
     // clang-format off
     {".a", ".a"},
+
+    // :is
+    {":is(.a)", ".a"},
+    {":is(.a .b)", ".a .b"},
+    {".a :is(.b .c)", ".a .c, .b .c"},
+    {".a + :is(.b .c)", ".a + .c, .b .c"},
+    {".a + :is(.b .c)", ".a + .c, .b .c"},
+    {"div + :is(.b .c)", "div + .c, .b .c"},
+    {":is(.a :is(.b + .c))", ".a .c, .b + .c"},
+    {".a + :is(.b) :is(.c)", ".a + .b .c"},
+    {":is(#a:nth-child(1))", "#a:nth-child(1)"},
+    {":is(#a:nth-child(1), #b:nth-child(1))",
+     "#a:nth-child(1), #b:nth-child(1)"},
+    {":is(#a, #b):nth-child(1)", "#a:nth-child(1), #b:nth-child(1)"},
+    {":is(:nth-child(1))", ":nth-child(1)"},
+    {".a :is(.b, .c):nth-child(1)", ".a .b:nth-child(1), .a .c:nth-child(1)"},
+    // TODO(andruud): We currently add _all_ rightmost features to the nth-
+    // sibling set, so .b is added here, since nth-child is present _somewhere_
+    // in the rightmost compound. Hence the unexpected '.b:nth-child(1)'
+    // selector in the ref.
+    {".a :is(.b, .c:nth-child(1))",
+     ".a .b, .a .c:nth-child(1), .b:nth-child(1)"},
     // clang-format on
 };
 
