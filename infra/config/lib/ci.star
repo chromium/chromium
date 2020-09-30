@@ -597,20 +597,58 @@ def clang_mac_builder(*, name, cores = 24, **kwargs):
         **kwargs
     )
 
-def dawn_builder(*, name, builderless = True, **kwargs):
+def dawn_builder(*, name, **kwargs):
     return ci.builder(
         name = name,
         builder_group = "chromium.dawn",
-        builderless = builderless,
-        goma_backend = builders.goma.backend.RBE_PROD,
         service_account =
             "chromium-ci-gpu-builder@chops-service-accounts.iam.gserviceaccount.com",
+        **kwargs
+    )
+
+def dawn_linux_builder(
+        *,
+        name,
+        goma_backend = builders.goma.backend.RBE_PROD,
+        **kwargs):
+    return dawn_builder(
+        name = name,
+        builderless = True,
+        goma_backend = goma_backend,
+        os = builders.os.LINUX_DEFAULT,
+        pool = "luci.chromium.gpu.ci",
+        **kwargs
+    )
+
+def dawn_mac_builder(*, name, **kwargs):
+    return dawn_builder(
+        name = name,
+        builderless = False,
+        cores = None,
+        goma_backend = builders.goma.backend.RBE_PROD,
+        os = builders.os.MAC_ANY,
+        **kwargs
+    )
+
+# Many of the GPU testers are thin testers, they use linux VMS regardless of the
+# actual OS that the tests are built for
+def dawn_thin_tester(
+        *,
+        name,
+        **kwargs):
+    return dawn_linux_builder(
+        name = name,
+        cores = 2,
+        # Setting goma_backend for testers is a no-op, but better to be explicit
+        goma_backend = None,
         **kwargs
     )
 
 def dawn_windows_builder(*, name, **kwargs):
     return dawn_builder(
         name = name,
+        builderless = True,
+        goma_backend = builders.goma.backend.RBE_PROD,
         os = builders.os.WINDOWS_ANY,
         pool = "luci.chromium.gpu.ci",
         **kwargs
@@ -736,20 +774,21 @@ def gpu_fyi_linux_builder(
         name,
         execution_timeout = 6 * time.hour,
         goma_backend = builders.goma.backend.RBE_PROD,
-        pool = "luci.chromium.gpu.ci",
         **kwargs):
     return gpu_fyi_builder(
         name = name,
         execution_timeout = execution_timeout,
         goma_backend = goma_backend,
-        pool = pool,
+        os = builders.os.LINUX_DEFAULT,
+        pool = "luci.chromium.gpu.ci",
         **kwargs
     )
 
-def gpu_fyi_mac_builder(*, name, cores = 4, **kwargs):
+def gpu_fyi_mac_builder(*, name, **kwargs):
     return gpu_fyi_builder(
         name = name,
-        cores = cores,
+        builderless = False,
+        cores = None,
         execution_timeout = 6 * time.hour,
         goma_backend = builders.goma.backend.RBE_PROD,
         os = builders.os.MAC_ANY,
@@ -770,7 +809,6 @@ def gpu_fyi_thin_tester(
         # Setting goma_backend for testers is a no-op, but better to be explicit
         # here and also leave the generated configs unchanged for these testers.
         goma_backend = None,
-        pool = "luci.chromium.ci",
         **kwargs
     )
 
@@ -784,28 +822,60 @@ def gpu_fyi_windows_builder(*, name, **kwargs):
         **kwargs
     )
 
-def gpu_builder(*, name, tree_closing = True, notifies = None, pool = "luci.chromium.gpu.ci", **kwargs):
+def gpu_builder(*, name, tree_closing = True, notifies = None, **kwargs):
     if tree_closing:
         notifies = (notifies or []) + ["gpu-tree-closer-email"]
     return ci.builder(
         name = name,
         builder_group = "chromium.gpu",
-        goma_backend = builders.goma.backend.RBE_PROD,
         tree_closing = tree_closing,
         notifies = notifies,
-        pool = pool,
+        **kwargs
+    )
+
+def gpu_linux_builder(
+        *,
+        name,
+        goma_backend = builders.goma.backend.RBE_PROD,
+        **kwargs):
+    return gpu_builder(
+        name = name,
+        builderless = True,
+        goma_backend = goma_backend,
+        os = builders.os.LINUX_DEFAULT,
+        pool = "luci.chromium.gpu.ci",
+        **kwargs
+    )
+
+def gpu_mac_builder(*, name, **kwargs):
+    return gpu_builder(
+        name = name,
+        builderless = False,
+        cores = None,
+        goma_backend = builders.goma.backend.RBE_PROD,
+        os = builders.os.MAC_ANY,
         **kwargs
     )
 
 # Many of the GPU testers are thin testers, they use linux VMS regardless of the
 # actual OS that the tests are built for
 def gpu_thin_tester(*, name, tree_closing = True, **kwargs):
-    return gpu_builder(
+    return gpu_linux_builder(
         name = name,
         cores = 2,
-        os = builders.os.LINUX_DEFAULT,
         tree_closing = tree_closing,
-        pool = "luci.chromium.ci",
+        # Setting goma_backend for testers is a no-op, but better to be explicit
+        goma_backend = None,
+        **kwargs
+    )
+
+def gpu_windows_builder(*, name, **kwargs):
+    return gpu_builder(
+        name = name,
+        builderless = True,
+        goma_backend = builders.goma.backend.RBE_PROD,
+        os = builders.os.WINDOWS_ANY,
+        pool = "luci.chromium.gpu.ci",
         **kwargs
     )
 
@@ -923,7 +993,7 @@ def swangle_mac_builder(
     return swangle_builder(
         name = name,
         builderless = False,
-        cores = 4,
+        cores = None,
         goma_backend = builders.goma.backend.RBE_PROD,
         os = builders.os.MAC_ANY,
         **kwargs
@@ -984,7 +1054,9 @@ ci = struct(
     chromiumos_builder = chromiumos_builder,
     clang_builder = clang_builder,
     clang_mac_builder = clang_mac_builder,
-    dawn_builder = dawn_builder,
+    dawn_linux_builder = dawn_linux_builder,
+    dawn_mac_builder = dawn_mac_builder,
+    dawn_thin_tester = dawn_thin_tester,
     dawn_windows_builder = dawn_windows_builder,
     fuzz_builder = fuzz_builder,
     fuzz_libfuzzer_builder = fuzz_libfuzzer_builder,
@@ -998,8 +1070,10 @@ ci = struct(
     gpu_fyi_mac_builder = gpu_fyi_mac_builder,
     gpu_fyi_thin_tester = gpu_fyi_thin_tester,
     gpu_fyi_windows_builder = gpu_fyi_windows_builder,
-    gpu_builder = gpu_builder,
+    gpu_linux_builder = gpu_linux_builder,
+    gpu_mac_builder = gpu_mac_builder,
     gpu_thin_tester = gpu_thin_tester,
+    gpu_windows_builder = gpu_windows_builder,
     linux_builder = linux_builder,
     mac_builder = mac_builder,
     mac_ios_builder = mac_ios_builder,

@@ -300,69 +300,57 @@ ci.chromiumos_builder(
     ),
 )
 
-ci.dawn_builder(
+ci.dawn_linux_builder(
     name = "Dawn Linux x64 DEPS Builder",
     console_view_entry = ci.console_view_entry(
         category = "DEPS|Linux|Builder",
         short_name = "x64",
     ),
-    pool = "luci.chromium.gpu.ci",
 )
 
-ci.dawn_builder(
+ci.dawn_thin_tester(
     name = "Dawn Linux x64 DEPS Release (Intel HD 630)",
     console_view_entry = ci.console_view_entry(
         category = "DEPS|Linux|Intel",
         short_name = "x64",
     ),
-    cores = 2,
-    os = os.LINUX_DEFAULT,
     triggered_by = [builder_name("Dawn Linux x64 DEPS Builder")],
 )
 
-ci.dawn_builder(
+ci.dawn_thin_tester(
     name = "Dawn Linux x64 DEPS Release (NVIDIA)",
     console_view_entry = ci.console_view_entry(
         category = "DEPS|Linux|Nvidia",
         short_name = "x64",
     ),
-    cores = 2,
-    os = os.LINUX_DEFAULT,
     triggered_by = [builder_name("Dawn Linux x64 DEPS Builder")],
 )
 
-ci.dawn_builder(
+ci.dawn_mac_builder(
     name = "Dawn Mac x64 DEPS Builder",
-    builderless = False,
     console_view_entry = ci.console_view_entry(
         category = "DEPS|Mac|Builder",
         short_name = "x64",
     ),
-    cores = None,
-    os = os.MAC_ANY,
 )
 
 # Note that the Mac testers are all thin Linux VMs, triggering jobs on the
 # physical Mac hardware in the Swarming pool which is why they run on linux
-ci.dawn_builder(
+ci.dawn_thin_tester(
     name = "Dawn Mac x64 DEPS Release (AMD)",
     console_view_entry = ci.console_view_entry(
         category = "DEPS|Mac|AMD",
         short_name = "x64",
     ),
-    cores = 2,
-    os = os.LINUX_DEFAULT,
     triggered_by = [builder_name("Dawn Mac x64 DEPS Builder")],
 )
 
-ci.dawn_builder(
+ci.dawn_thin_tester(
     name = "Dawn Mac x64 DEPS Release (Intel)",
     console_view_entry = ci.console_view_entry(
         category = "DEPS|Mac|Intel",
         short_name = "x64",
     ),
-    cores = 2,
-    os = os.LINUX_DEFAULT,
     triggered_by = [builder_name("Dawn Mac x64 DEPS Builder")],
 )
 
@@ -375,25 +363,21 @@ ci.dawn_builder(
     os = os.WINDOWS_ANY,
 )
 
-ci.dawn_builder(
+ci.dawn_thin_tester(
     name = "Dawn Win10 x64 DEPS Release (Intel HD 630)",
     console_view_entry = ci.console_view_entry(
         category = "DEPS|Windows|Intel",
         short_name = "x64",
     ),
-    cores = 2,
-    os = os.LINUX_DEFAULT,
     triggered_by = [builder_name("Dawn Win10 x64 DEPS Builder")],
 )
 
-ci.dawn_builder(
+ci.dawn_thin_tester(
     name = "Dawn Win10 x64 DEPS Release (NVIDIA)",
     console_view_entry = ci.console_view_entry(
         category = "DEPS|Windows|Nvidia",
         short_name = "x64",
     ),
-    cores = 2,
-    os = os.LINUX_DEFAULT,
     triggered_by = [builder_name("Dawn Win10 x64 DEPS Builder")],
 )
 
@@ -406,25 +390,21 @@ ci.dawn_builder(
     os = os.WINDOWS_ANY,
 )
 
-ci.dawn_builder(
+ci.dawn_thin_tester(
     name = "Dawn Win10 x86 DEPS Release (Intel HD 630)",
     console_view_entry = ci.console_view_entry(
         category = "DEPS|Windows|Intel",
         short_name = "x86",
     ),
-    cores = 2,
-    os = os.LINUX_DEFAULT,
     triggered_by = [builder_name("Dawn Win10 x86 DEPS Builder")],
 )
 
-ci.dawn_builder(
+ci.dawn_thin_tester(
     name = "Dawn Win10 x86 DEPS Release (NVIDIA)",
     console_view_entry = ci.console_view_entry(
         category = "DEPS|Windows|Nvidia",
         short_name = "x86",
     ),
-    cores = 2,
-    os = os.LINUX_DEFAULT,
     triggered_by = [builder_name("Dawn Win10 x86 DEPS Builder")],
 )
 
@@ -448,37 +428,32 @@ ci.fyi_ios_builder(
     },
 )
 
-ci.gpu_builder(
+ci.gpu_linux_builder(
     name = "Android Release (Nexus 5X)",
     console_view_entry = ci.console_view_entry(
         category = "Android",
     ),
 )
 
-ci.gpu_builder(
+ci.gpu_linux_builder(
     name = "GPU Linux Builder",
     console_view_entry = ci.console_view_entry(
         category = "Linux",
     ),
 )
 
-ci.gpu_builder(
+ci.gpu_mac_builder(
     name = "GPU Mac Builder",
     console_view_entry = ci.console_view_entry(
         category = "Mac",
     ),
-    cores = None,
-    os = os.MAC_ANY,
-    pool = "luci.chromium.ci",
 )
 
-ci.gpu_builder(
+ci.gpu_windows_builder(
     name = "GPU Win x64 Builder",
-    builderless = True,
     console_view_entry = ci.console_view_entry(
         category = "Windows",
     ),
-    os = os.WINDOWS_ANY,
 )
 
 ci.gpu_thin_tester(

@@ -1524,16 +1524,15 @@ ci.clang_mac_builder(
     executable = "recipe:chromium_clang_coverage_tot",
 )
 
-ci.dawn_builder(
+ci.dawn_linux_builder(
     name = "Dawn Linux x64 Builder",
     console_view_entry = ci.console_view_entry(
         category = "ToT|Linux|Builder",
         short_name = "x64",
     ),
-    pool = "luci.chromium.gpu.ci",
 )
 
-ci.dawn_builder(
+ci.dawn_linux_builder(
     name = "Dawn Linux x64 DEPS Builder",
     branch_selector = branches.STANDARD_RELEASES,
     console_view_entry = ci.console_view_entry(
@@ -1542,133 +1541,110 @@ ci.dawn_builder(
     ),
     cq_mirrors_console_view = settings.cq_mirrors_console_name,
     main_console_view = main_console_if_on_branch(),
-    pool = "luci.chromium.gpu.ci",
 )
 
-ci.dawn_builder(
+ci.dawn_thin_tester(
     name = "Dawn Linux x64 DEPS Release (Intel HD 630)",
     branch_selector = branches.STANDARD_RELEASES,
     console_view_entry = ci.console_view_entry(
         category = "DEPS|Linux|Intel",
         short_name = "x64",
     ),
-    cores = 2,
     cq_mirrors_console_view = settings.cq_mirrors_console_name,
     main_console_view = main_console_if_on_branch(),
-    os = os.LINUX_DEFAULT,
     triggered_by = [builder_name("Dawn Linux x64 DEPS Builder")],
 )
 
-ci.dawn_builder(
+ci.dawn_thin_tester(
     name = "Dawn Linux x64 DEPS Release (NVIDIA)",
     branch_selector = branches.STANDARD_RELEASES,
     console_view_entry = ci.console_view_entry(
         category = "DEPS|Linux|Nvidia",
         short_name = "x64",
     ),
-    cores = 2,
     cq_mirrors_console_view = settings.cq_mirrors_console_name,
     main_console_view = main_console_if_on_branch(),
-    os = os.LINUX_DEFAULT,
     triggered_by = [builder_name("Dawn Linux x64 DEPS Builder")],
 )
 
-ci.dawn_builder(
+ci.dawn_thin_tester(
     name = "Dawn Linux x64 Release (Intel HD 630)",
     console_view_entry = ci.console_view_entry(
         category = "ToT|Linux|Intel",
         short_name = "x64",
     ),
-    cores = 2,
-    os = os.LINUX_DEFAULT,
     triggered_by = ["Dawn Linux x64 Builder"],
 )
 
-ci.dawn_builder(
+ci.dawn_thin_tester(
     name = "Dawn Linux x64 Release (NVIDIA)",
     console_view_entry = ci.console_view_entry(
         category = "ToT|Linux|Nvidia",
         short_name = "x64",
     ),
-    cores = 2,
-    os = os.LINUX_DEFAULT,
     triggered_by = ["Dawn Linux x64 Builder"],
 )
 
-ci.dawn_builder(
+ci.dawn_mac_builder(
     name = "Dawn Mac x64 Builder",
     console_view_entry = ci.console_view_entry(
         category = "ToT|Mac|Builder",
         short_name = "x64",
     ),
-    builderless = False,
-    cores = None,
-    os = os.MAC_ANY,
 )
 
-ci.dawn_builder(
+ci.dawn_mac_builder(
     name = "Dawn Mac x64 DEPS Builder",
     branch_selector = branches.STANDARD_RELEASES,
-    builderless = False,
     console_view_entry = ci.console_view_entry(
         category = "DEPS|Mac|Builder",
         short_name = "x64",
     ),
-    cores = None,
     cq_mirrors_console_view = settings.cq_mirrors_console_name,
     main_console_view = main_console_if_on_branch(),
-    os = os.MAC_ANY,
 )
 
 # Note that the Mac testers are all thin Linux VMs, triggering jobs on the
 # physical Mac hardware in the Swarming pool which is why they run on linux
-ci.dawn_builder(
+ci.dawn_thin_tester(
     name = "Dawn Mac x64 DEPS Release (AMD)",
     branch_selector = branches.STANDARD_RELEASES,
     console_view_entry = ci.console_view_entry(
         category = "DEPS|Mac|AMD",
         short_name = "x64",
     ),
-    cores = 2,
     cq_mirrors_console_view = settings.cq_mirrors_console_name,
     main_console_view = main_console_if_on_branch(),
-    os = os.LINUX_DEFAULT,
     triggered_by = [builder_name("Dawn Mac x64 DEPS Builder")],
 )
 
-ci.dawn_builder(
+ci.dawn_thin_tester(
     name = "Dawn Mac x64 DEPS Release (Intel)",
     branch_selector = branches.STANDARD_RELEASES,
     console_view_entry = ci.console_view_entry(
         category = "DEPS|Mac|Intel",
         short_name = "x64",
     ),
-    cores = 2,
     cq_mirrors_console_view = settings.cq_mirrors_console_name,
     main_console_view = main_console_if_on_branch(),
-    os = os.LINUX_DEFAULT,
     triggered_by = [builder_name("Dawn Mac x64 DEPS Builder")],
 )
 
-ci.dawn_builder(
+ci.dawn_thin_tester(
     name = "Dawn Mac x64 Release (AMD)",
     console_view_entry = ci.console_view_entry(
         category = "ToT|Mac|AMD",
         short_name = "x64",
     ),
-    cores = 2,
-    os = os.LINUX_DEFAULT,
     triggered_by = ["Dawn Mac x64 Builder"],
 )
 
-ci.dawn_builder(
+ci.dawn_thin_tester(
     name = "Dawn Mac x64 Release (Intel)",
     console_view_entry = ci.console_view_entry(
         category = "ToT|Mac|Intel",
         short_name = "x64",
     ),
-    cores = 2,
-    os = os.LINUX_DEFAULT,
     triggered_by = ["Dawn Mac x64 Builder"],
 )
 
@@ -1699,55 +1675,47 @@ ci.dawn_windows_builder(
     main_console_view = main_console_if_on_branch(),
 )
 
-ci.dawn_builder(
+# Note that the Win testers are all thin Linux VMs, triggering jobs on the
+# physical Win hardware in the Swarming pool, which is why they run on linux
+ci.dawn_thin_tester(
     name = "Dawn Win10 x64 DEPS Release (Intel HD 630)",
     branch_selector = branches.STANDARD_RELEASES,
     console_view_entry = ci.console_view_entry(
         category = "DEPS|Windows|Intel",
         short_name = "x64",
     ),
-    cores = 2,
     cq_mirrors_console_view = settings.cq_mirrors_console_name,
     main_console_view = main_console_if_on_branch(),
-    os = os.LINUX_DEFAULT,
     triggered_by = [builder_name("Dawn Win10 x64 DEPS Builder")],
 )
 
-ci.dawn_builder(
+ci.dawn_thin_tester(
     name = "Dawn Win10 x64 DEPS Release (NVIDIA)",
     branch_selector = branches.STANDARD_RELEASES,
     console_view_entry = ci.console_view_entry(
         category = "DEPS|Windows|Nvidia",
         short_name = "x64",
     ),
-    cores = 2,
     cq_mirrors_console_view = settings.cq_mirrors_console_name,
     main_console_view = main_console_if_on_branch(),
-    os = os.LINUX_DEFAULT,
     triggered_by = [builder_name("Dawn Win10 x64 DEPS Builder")],
 )
 
-# Note that the Win testers are all thin Linux VMs, triggering jobs on the
-# physical Win hardware in the Swarming pool, which is why they run on linux
-ci.dawn_builder(
+ci.dawn_thin_tester(
     name = "Dawn Win10 x64 Release (Intel HD 630)",
     console_view_entry = ci.console_view_entry(
         category = "ToT|Windows|Intel",
         short_name = "x64",
     ),
-    cores = 2,
-    os = os.LINUX_DEFAULT,
     triggered_by = ["Dawn Win10 x64 Builder"],
 )
 
-ci.dawn_builder(
+ci.dawn_thin_tester(
     name = "Dawn Win10 x64 Release (NVIDIA)",
     console_view_entry = ci.console_view_entry(
         category = "ToT|Windows|Nvidia",
         short_name = "x64",
     ),
-    cores = 2,
-    os = os.LINUX_DEFAULT,
     triggered_by = ["Dawn Win10 x64 Builder"],
 )
 
@@ -1770,55 +1738,47 @@ ci.dawn_windows_builder(
     main_console_view = main_console_if_on_branch(),
 )
 
-ci.dawn_builder(
+# Note that the Win testers are all thin Linux VMs, triggering jobs on the
+# physical Win hardware in the Swarming pool, which is why they run on linux
+ci.dawn_thin_tester(
     name = "Dawn Win10 x86 DEPS Release (Intel HD 630)",
     branch_selector = branches.STANDARD_RELEASES,
     console_view_entry = ci.console_view_entry(
         category = "DEPS|Windows|Intel",
         short_name = "x86",
     ),
-    cores = 2,
     cq_mirrors_console_view = settings.cq_mirrors_console_name,
     main_console_view = main_console_if_on_branch(),
-    os = os.LINUX_DEFAULT,
     triggered_by = [builder_name("Dawn Win10 x86 DEPS Builder")],
 )
 
-ci.dawn_builder(
+ci.dawn_thin_tester(
     name = "Dawn Win10 x86 DEPS Release (NVIDIA)",
     branch_selector = branches.STANDARD_RELEASES,
     console_view_entry = ci.console_view_entry(
         category = "DEPS|Windows|Nvidia",
         short_name = "x86",
     ),
-    cores = 2,
     cq_mirrors_console_view = settings.cq_mirrors_console_name,
     main_console_view = main_console_if_on_branch(),
-    os = os.LINUX_DEFAULT,
     triggered_by = [builder_name("Dawn Win10 x86 DEPS Builder")],
 )
 
-# Note that the Win testers are all thin Linux VMs, triggering jobs on the
-# physical Win hardware in the Swarming pool, which is why they run on linux
-ci.dawn_builder(
+ci.dawn_thin_tester(
     name = "Dawn Win10 x86 Release (Intel HD 630)",
     console_view_entry = ci.console_view_entry(
         category = "ToT|Windows|Intel",
         short_name = "x86",
     ),
-    cores = 2,
-    os = os.LINUX_DEFAULT,
     triggered_by = ["Dawn Win10 x86 Builder"],
 )
 
-ci.dawn_builder(
+ci.dawn_thin_tester(
     name = "Dawn Win10 x86 Release (NVIDIA)",
     console_view_entry = ci.console_view_entry(
         category = "ToT|Windows|Nvidia",
         short_name = "x86",
     ),
-    cores = 2,
-    os = os.LINUX_DEFAULT,
     triggered_by = ["Dawn Win10 x86 Builder"],
 )
 
@@ -2971,7 +2931,7 @@ ci.fyi_windows_builder(
     ),
 )
 
-ci.gpu_builder(
+ci.gpu_linux_builder(
     name = "Android Release (Nexus 5X)",
     branch_selector = branches.STANDARD_RELEASES,
     console_view_entry = ci.console_view_entry(
@@ -2981,7 +2941,7 @@ ci.gpu_builder(
     main_console_view = main_console_if_on_branch(),
 )
 
-ci.gpu_builder(
+ci.gpu_linux_builder(
     name = "GPU Linux Builder",
     branch_selector = branches.STANDARD_RELEASES,
     console_view_entry = ci.console_view_entry(
@@ -2991,7 +2951,7 @@ ci.gpu_builder(
     main_console_view = main_console_if_on_branch(),
 )
 
-ci.gpu_builder(
+ci.gpu_linux_builder(
     name = "GPU Linux Builder (dbg)",
     console_view_entry = ci.console_view_entry(
         category = "Linux",
@@ -2999,49 +2959,39 @@ ci.gpu_builder(
     tree_closing = False,
 )
 
-ci.gpu_builder(
+ci.gpu_mac_builder(
     name = "GPU Mac Builder",
     branch_selector = branches.STANDARD_RELEASES,
     console_view_entry = ci.console_view_entry(
         category = "Mac",
     ),
-    cores = None,
     cq_mirrors_console_view = settings.cq_mirrors_console_name,
     main_console_view = main_console_if_on_branch(),
-    os = os.MAC_ANY,
-    pool = "luci.chromium.ci",
 )
 
-ci.gpu_builder(
+ci.gpu_mac_builder(
     name = "GPU Mac Builder (dbg)",
     console_view_entry = ci.console_view_entry(
         category = "Mac",
     ),
-    cores = None,
-    os = os.MAC_ANY,
-    pool = "luci.chromium.ci",
     tree_closing = False,
 )
 
-ci.gpu_builder(
+ci.gpu_windows_builder(
     name = "GPU Win x64 Builder",
     branch_selector = branches.STANDARD_RELEASES,
-    builderless = True,
     console_view_entry = ci.console_view_entry(
         category = "Windows",
     ),
     cq_mirrors_console_view = settings.cq_mirrors_console_name,
     main_console_view = main_console_if_on_branch(),
-    os = os.WINDOWS_ANY,
 )
 
-ci.gpu_builder(
+ci.gpu_windows_builder(
     name = "GPU Win x64 Builder (dbg)",
-    builderless = True,
     console_view_entry = ci.console_view_entry(
         category = "Windows",
     ),
-    os = os.WINDOWS_ANY,
     tree_closing = False,
 )
 
@@ -3325,7 +3275,6 @@ ci.gpu_fyi_mac_builder(
         category = "Mac",
         short_name = "dtk",
     ),
-    cores = 8,
 )
 
 ci.gpu_fyi_mac_builder(
