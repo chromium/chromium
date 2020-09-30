@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/ash/chrome_screenshot_grabber.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_ui.h"
 #include "chrome/browser/ui/ash/session_util.h"
+#include "chrome/browser/ui/ash/tab_scrubber.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_navigator.h"
@@ -86,6 +87,10 @@ bool ChromeShellDelegate::CanGoBack(gfx::NativeWindow window) const {
   content::WebContents* contents =
       GetActiveWebContentsForNativeBrowserWindow(window);
   return contents ? contents->GetController().CanGoBack() : false;
+}
+
+void ChromeShellDelegate::SetTabScrubberEnabled(bool enabled) {
+  TabScrubber::GetInstance()->SetEnabled(enabled);
 }
 
 bool ChromeShellDelegate::AllowDefaultTouchActions(gfx::NativeWindow window) {

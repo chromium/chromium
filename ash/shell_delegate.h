@@ -68,6 +68,9 @@ class ASH_EXPORT ShellDelegate {
   // Check whether the current tab of the browser window can go back.
   virtual bool CanGoBack(gfx::NativeWindow window) const = 0;
 
+  // Sets the tab scrubber |enabled_| field to |enabled|.
+  virtual void SetTabScrubberEnabled(bool enabled) = 0;
+
   // Returns true if |window| allows default touch behaviors. If false, it means
   // no default touch behavior is allowed (i.e., the touch action of window is
   // cc::TouchAction::kNone). This function is used by BackGestureEventHandler

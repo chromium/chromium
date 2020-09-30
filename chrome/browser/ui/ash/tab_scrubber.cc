@@ -67,6 +67,10 @@ bool TabScrubber::IsActivationPending() {
   return activate_timer_.IsRunning();
 }
 
+void TabScrubber::SetEnabled(bool enabled) {
+  enabled_ = enabled;
+}
+
 TabScrubber::TabScrubber() {
   // TODO(mash): Add window server API to observe swipe gestures. Observing
   // gestures on browser windows is not sufficient, as this feature works when
@@ -80,6 +84,9 @@ TabScrubber::~TabScrubber() {
 }
 
 void TabScrubber::OnScrollEvent(ui::ScrollEvent* event) {
+  if (!enabled_)
+    return;
+
   if (event->type() == ui::ET_SCROLL_FLING_CANCEL ||
       event->type() == ui::ET_SCROLL_FLING_START) {
     FinishScrub(true);

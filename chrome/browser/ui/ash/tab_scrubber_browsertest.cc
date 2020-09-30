@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "ash/display/event_transformation_handler.h"
+#include "ash/public/cpp/ash_features.h"
 #include "ash/shell.h"
 #include "base/command_line.h"
 #include "base/macros.h"
@@ -91,6 +92,12 @@ class TabScrubberTest : public InProcessBrowserTest,
   }
 
   // InProcessBrowserTest:
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(
+        ash::features::kInteractiveWindowCycleList);
+    InProcessBrowserTest::SetUp();
+  }
+
   void SetUpOnMainThread() override {
     TabScrubber::GetInstance()->use_default_activation_delay_ = false;
     // Disable external monitor scaling of coordinates.
@@ -216,6 +223,25 @@ class TabScrubberTest : public InProcessBrowserTest,
     browser->tab_strip_model()->RemoveObserver(this);
   }
 
+  // Sends alt-tab key press event to start the window cycle list.
+  void StartCyclingWindows(Browser* browser) {
+    auto event_generator = CreateEventGenerator(browser);
+    // Views use VKEY_MENU for both left and right Alt keys.
+    event_generator->PressKey(ui::VKEY_MENU, ui::EF_NONE);
+    event_generator->PressKey(ui::KeyboardCode::VKEY_TAB, ui::EF_ALT_DOWN);
+    event_generator->ReleaseKey(ui::KeyboardCode::VKEY_TAB, ui::EF_ALT_DOWN);
+  }
+
+  // Sends alt-tab key release event to start the window cycle list.
+  void StopCyclingWindows(Browser* browser) {
+    auto event_generator = CreateEventGenerator(browser);
+    event_generator->ReleaseKey(ui::VKEY_MENU, ui::EF_NONE);
+  }
+
+  bool IsTabScrubberEnabled() {
+    return TabScrubber::GetInstance()->GetEnabledForTesting();
+  }
+
   void AddTabs(Browser* browser, int num_tabs) {
     TabStrip* tab_strip = GetTabStrip(browser);
     for (int i = 0; i < num_tabs; ++i)
@@ -290,6 +316,8 @@ class TabScrubberTest : public InProcessBrowserTest,
     aura::Window* root = window->GetRootWindow();
     return std::make_unique<ui::test::EventGenerator>(root, window);
   }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 
   DISALLOW_COPY_AND_ASSIGN(TabScrubberTest);
 };
@@ -567,4 +595,34 @@ IN_PROC_BROWSER_TEST_F(TabScrubberTest, RTLMoveBefore) {
   browser()->tab_strip_model()->ToggleSelectionAt(2);
   browser()->tab_strip_model()->MoveSelectedTabsTo(2);
   EXPECT_EQ(0, TabScrubber::GetInstance()->highlighted_tab());
+}
+
+// If the window cycle list is open, the tab scrubber should be disabled.
+IN_PROC_BROWSER_TEST_F(TabScrubberTest, DisabledIfWindowCycleListOpen) {
+  AddTabs(browser(), 4);
+
+  // Create a second browser, but don't make it active.
+  Browser* browser2 = CreateBrowser(browser()->profile());
+  browser()->window()->Activate();
+  ASSERT_FALSE(browser2->window()->IsActive());
+  ASSERT_TRUE(browser()->window()->IsActive());
+
+  // Open window cycle list. It should be open now so tab scrubber should be
+  // disabled.
+  StartCyclingWindows(browser());
+  EXPECT_FALSE(IsTabScrubberEnabled());
+  Scrub(browser(), 0, EACH_TAB);
+  EXPECT_EQ(0u, activation_order_.size());
+  EXPECT_EQ(4, browser()->tab_strip_model()->active_index());
+
+  // Stop cycling. Scrub should work again.
+  StopCyclingWindows(browser());
+  EXPECT_TRUE(IsTabScrubberEnabled());
+  Scrub(browser(), 0, EACH_TAB);
+  ASSERT_EQ(4U, activation_order_.size());
+  EXPECT_EQ(3, activation_order_[0]);
+  EXPECT_EQ(2, activation_order_[1]);
+  EXPECT_EQ(1, activation_order_[2]);
+  EXPECT_EQ(0, activation_order_[3]);
+  EXPECT_EQ(0, browser()->tab_strip_model()->active_index());
 }

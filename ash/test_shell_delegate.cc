@@ -48,6 +48,10 @@ bool TestShellDelegate::CanGoBack(gfx::NativeWindow window) const {
   return can_go_back_;
 }
 
+void TestShellDelegate::SetTabScrubberEnabled(bool enabled) {
+  tab_scrubber_enabled_ = enabled;
+}
+
 bool TestShellDelegate::ShouldWaitForTouchPressAck(gfx::NativeWindow window) {
   return should_wait_for_touch_ack_;
 }

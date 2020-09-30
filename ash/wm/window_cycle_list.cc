@@ -16,6 +16,7 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
+#include "ash/shell_delegate.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/wm/window_mini_view.h"
 #include "ash/wm/window_preview_view.h"
@@ -38,8 +39,8 @@
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
-#include "ui/wm/core/window_animations.h"
 #include "ui/wm/core/coordinate_conversion.h"
+#include "ui/wm/core/window_animations.h"
 
 namespace ash {
 
@@ -520,6 +521,10 @@ WindowCycleList::WindowCycleList(const WindowList& windows)
     window->AddObserver(this);
 
   if (ShouldShowUi()) {
+    // Disable the tab scrubber so three finger scrolling doesn't scrub tabs as
+    // well.
+    Shell::Get()->shell_delegate()->SetTabScrubberEnabled(false);
+
     if (g_disable_initial_delay) {
       InitWindowCycleView();
     } else {
@@ -532,6 +537,8 @@ WindowCycleList::WindowCycleList(const WindowList& windows)
 WindowCycleList::~WindowCycleList() {
   if (!ShouldShowUi())
     Shell::Get()->mru_window_tracker()->SetIgnoreActivations(false);
+
+  Shell::Get()->shell_delegate()->SetTabScrubberEnabled(true);
 
   for (auto* window : windows_)
     window->RemoveObserver(this);
