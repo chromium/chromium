@@ -23,12 +23,13 @@
 #include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/external_install_options.h"
 #include "chrome/browser/web_applications/components/install_finalizer.h"
+#include "chrome/browser/web_applications/components/install_manager.h"
 #include "chrome/browser/web_applications/components/pending_app_manager.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/components/web_app_provider_base.h"
 #include "chrome/browser/web_applications/components/web_app_tab_helper_base.h"
-#include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/common/web_application_info.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "content/public/browser/notification_service.h"
@@ -64,6 +65,39 @@ AppId InstallWebApp(Profile* profile,
   return app_id;
 }
 
+AppId InstallWebAppFromManifest(Browser* browser, const GURL& app_url) {
+  NavigateToURLAndWait(browser, app_url);
+
+  AppId app_id;
+  base::RunLoop run_loop;
+
+  auto* provider = WebAppProviderBase::GetProviderBase(browser->profile());
+  DCHECK(provider);
+  provider->install_manager().InstallWebAppFromManifestWithFallback(
+      browser->tab_strip_model()->GetActiveWebContents(),
+      /*force_shortcut_app=*/true, WebappInstallSource::MENU_BROWSER_TAB,
+      base::BindLambdaForTesting(
+          [](content::WebContents* initiator_web_contents,
+             std::unique_ptr<WebApplicationInfo> web_app_info,
+             ForInstallableSite for_installable_site,
+             InstallManager::WebAppInstallationAcceptanceCallback
+                 acceptance_callback) {
+            std::move(acceptance_callback)
+                .Run(
+                    /*user_accepted=*/true, std::move(web_app_info));
+          }),
+      base::BindLambdaForTesting(
+          [&run_loop, &app_id](const AppId& installed_app_id,
+                               InstallResultCode code) {
+            DCHECK_EQ(code, InstallResultCode::kSuccessNewInstall);
+            app_id = installed_app_id;
+            run_loop.Quit();
+          }));
+
+  run_loop.Run();
+  return app_id;
+}
+
 Browser* LaunchWebAppBrowser(Profile* profile, const AppId& app_id) {
   EXPECT_TRUE(
       apps::AppServiceProxyFactory::GetForProfile(profile)
@@ -84,7 +118,8 @@ Browser* LaunchWebAppBrowser(Profile* profile, const AppId& app_id) {
 // Launches the app, waits for the app url to load.
 Browser* LaunchWebAppBrowserAndWait(Profile* profile, const AppId& app_id) {
   ui_test_utils::UrlLoadObserver url_observer(
-      WebAppProvider::Get(profile)->registrar().GetAppLaunchUrl(app_id),
+      WebAppProviderBase::GetProviderBase(profile)->registrar().GetAppLaunchUrl(
+          app_id),
       content::NotificationService::AllSources());
   Browser* const app_browser = LaunchWebAppBrowser(profile, app_id);
   url_observer.Wait();
@@ -182,7 +217,7 @@ void NavigateAndCheckForToolbar(Browser* browser,
                                 const GURL& url,
                                 bool expected_visibility,
                                 bool proceed_through_interstitial) {
-  web_app::NavigateToURLAndWait(browser, url, proceed_through_interstitial);
+  NavigateToURLAndWait(browser, url, proceed_through_interstitial);
   EXPECT_EQ(expected_visibility,
             browser->app_controller()->ShouldShowCustomTabBar());
 }

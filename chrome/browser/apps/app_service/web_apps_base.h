@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observer.h"
@@ -139,8 +140,6 @@ class WebAppsBase : public apps::PublisherBase,
                        const web_app::WebApp* web_app);
   void PopulatePermissions(const web_app::WebApp* web_app,
                            std::vector<mojom::PermissionPtr>* target);
-  void PopulateIntentFilters(const base::Optional<GURL>& app_scope,
-                             std::vector<mojom::IntentFilterPtr>* target);
   virtual apps::mojom::AppPtr Convert(const web_app::WebApp* web_app,
                                       apps::mojom::Readiness readiness) = 0;
   void ConvertWebApps(apps::mojom::Readiness readiness,
@@ -171,6 +170,9 @@ class WebAppsBase : public apps::PublisherBase,
 
   base::WeakPtrFactory<WebAppsBase> weak_ptr_factory_{this};
 };
+
+void PopulateIntentFilters(const web_app::WebApp& web_app,
+                           std::vector<mojom::IntentFilterPtr>& target);
 
 }  // namespace apps
 

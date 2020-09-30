@@ -31,6 +31,8 @@
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
+#include "components/services/app_service/public/cpp/intent_util.h"
+#include "components/services/app_service/public/cpp/share_target.h"
 #include "content/public/browser/web_contents.h"
 
 namespace {
@@ -57,6 +59,38 @@ apps::mojom::InstallSource GetHighestPriorityInstallSource(
     case web_app::Source::kDefault:
       return apps::mojom::InstallSource::kDefault;
   }
+}
+
+apps::mojom::IntentFilterPtr CreateShareFileFilter(
+    const std::vector<std::string>& intent_actions,
+    const std::vector<std::string>& content_types) {
+  auto intent_filter = apps::mojom::IntentFilter::New();
+
+  std::vector<apps::mojom::ConditionValuePtr> action_condition_values;
+  for (auto& action : intent_actions) {
+    action_condition_values.push_back(apps_util::MakeConditionValue(
+        action, apps::mojom::PatternMatchType::kNone));
+  }
+  if (!action_condition_values.empty()) {
+    auto action_condition =
+        apps_util::MakeCondition(apps::mojom::ConditionType::kAction,
+                                 std::move(action_condition_values));
+    intent_filter->conditions.push_back(std::move(action_condition));
+  }
+
+  std::vector<apps::mojom::ConditionValuePtr> mime_type_condition_values;
+  for (auto& mime_type : content_types) {
+    mime_type_condition_values.push_back(apps_util::MakeConditionValue(
+        mime_type, apps::mojom::PatternMatchType::kNone));
+  }
+  if (!mime_type_condition_values.empty()) {
+    auto mime_type_condition =
+        apps_util::MakeCondition(apps::mojom::ConditionType::kMimeType,
+                                 std::move(mime_type_condition_values));
+    intent_filter->conditions.push_back(std::move(mime_type_condition));
+  }
+
+  return intent_filter;
 }
 
 }  // namespace
@@ -124,8 +158,7 @@ apps::mojom::AppPtr WebAppsBase::ConvertImpl(const web_app::WebApp* web_app,
   SetShowInFields(app, web_app);
 
   // Get the intent filters for PWAs.
-  PopulateIntentFilters(GetRegistrar()->GetAppScope(web_app->app_id()),
-                        &app->intent_filters);
+  PopulateIntentFilters(*web_app, app->intent_filters);
 
   return app;
 }
@@ -508,16 +541,6 @@ void WebAppsBase::PopulatePermissions(
   }
 }
 
-void WebAppsBase::PopulateIntentFilters(
-    const base::Optional<GURL>& app_scope,
-    std::vector<mojom::IntentFilterPtr>* target) {
-  if (app_scope != base::nullopt) {
-    target->push_back(apps_util::CreateIntentFilterForUrlScope(
-        app_scope.value(),
-        base::FeatureList::IsEnabled(features::kIntentHandlingSharing)));
-  }
-}
-
 void WebAppsBase::ConvertWebApps(apps::mojom::Readiness readiness,
                                  std::vector<apps::mojom::AppPtr>* apps_out) {
   const web_app::WebAppRegistrar* registrar = GetRegistrar();
@@ -541,6 +564,50 @@ void WebAppsBase::StartPublishingWebApps(
       std::move(subscriber_remote));
   subscriber->OnApps(std::move(apps));
   subscribers_.Add(std::move(subscriber));
+}
+
+void PopulateIntentFilters(const web_app::WebApp& web_app,
+                           std::vector<mojom::IntentFilterPtr>& target) {
+  if (web_app.scope().is_empty())
+    return;
+
+  target.push_back(apps_util::CreateIntentFilterForUrlScope(
+      web_app.scope(),
+      base::FeatureList::IsEnabled(features::kIntentHandlingSharing)));
+
+  if (!base::FeatureList::IsEnabled(features::kIntentHandlingSharing) ||
+      !web_app.share_target().has_value()) {
+    return;
+  }
+
+  const apps::ShareTarget& share_target = web_app.share_target().value();
+
+  // TODO(crbug.com/1127670): Support title/text/url sharing on ChromeOS
+  if (share_target.params.files.empty() ||
+      share_target.method != apps::ShareTarget::Method::kPost ||
+      share_target.enctype != apps::ShareTarget::Enctype::kMultipartFormData) {
+    return;
+  }
+
+  std::vector<std::string> content_types;
+  for (const auto& files_entry : share_target.params.files) {
+    for (const auto& file_type : files_entry.accept) {
+      // Skip any file_type that is not a MIME type.
+      if (file_type.empty() || file_type[0] == '.' ||
+          std::count(file_type.begin(), file_type.end(), '/') != 1) {
+        continue;
+      }
+
+      content_types.push_back(file_type);
+    }
+  }
+
+  if (content_types.empty())
+    return;
+
+  const std::vector<std::string> intent_actions(
+      {apps_util::kIntentActionSend, apps_util::kIntentActionSendMultiple});
+  target.push_back(CreateShareFileFilter(intent_actions, content_types));
 }
 
 }  // namespace apps

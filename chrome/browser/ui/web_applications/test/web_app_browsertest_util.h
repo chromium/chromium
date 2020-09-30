@@ -23,6 +23,9 @@ enum class InstallResultCode;
 // Synchronous version of InstallManager::InstallWebAppFromInfo.
 AppId InstallWebApp(Profile* profile, std::unique_ptr<WebApplicationInfo>);
 
+// Navigates to |app_url|, verifies WebApp installability, and installs app.
+AppId InstallWebAppFromManifest(Browser* browser, const GURL& app_url);
+
 // Launches a new app window for |app| in |profile|.
 Browser* LaunchWebAppBrowser(Profile*, const AppId&);
 
