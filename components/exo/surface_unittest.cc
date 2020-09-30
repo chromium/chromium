@@ -25,6 +25,7 @@
 #include "ui/display/display_switches.h"
 #include "ui/gfx/geometry/dip_util.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/gpu_fence.h"
 #include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gfx/gpu_memory_buffer.h"
@@ -83,7 +84,8 @@ class SurfaceTest : public test::ExoTestBase,
   float device_scale_factor() const { return GetParam(); }
 
   gfx::Rect ToPixel(const gfx::Rect rect) {
-    return gfx::ConvertRectToPixel(device_scale_factor(), rect);
+    return gfx::ToEnclosingRect(
+        gfx::ConvertRectToPixels(rect, device_scale_factor()));
   }
 
   gfx::Rect ToTargetSpaceDamage(const gfx::Rect damage_rect) {

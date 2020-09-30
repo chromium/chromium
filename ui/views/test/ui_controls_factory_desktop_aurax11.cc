@@ -21,7 +21,6 @@
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/base/test/ui_controls_aura.h"
 #include "ui/base/x/x11_util.h"
-#include "ui/compositor/dip_util.h"
 #include "ui/events/keycodes/keyboard_code_conversion_x.h"
 #include "ui/events/test/x11_event_waiter.h"
 #include "ui/gfx/x/connection.h"

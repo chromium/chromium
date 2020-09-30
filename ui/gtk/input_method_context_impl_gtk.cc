@@ -16,6 +16,7 @@
 #include "ui/base/ime/text_input_client.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/dip_util.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gtk/gtk_ui.h"
 #include "ui/gtk/gtk_ui_delegate.h"
@@ -157,8 +158,8 @@ void InputMethodContextImplGtk::SetCursorLocation(const gfx::Rect& rect) {
   // gtk_im_context_set_cursor_location() later in ProcessKeyEvent() where
   // (and only where) we know the client window.
   if (views::LinuxUI::instance()) {
-    last_caret_bounds_ = gfx::ConvertRectToPixel(
-        views::LinuxUI::instance()->GetDeviceScaleFactor(), rect);
+    last_caret_bounds_ = gfx::ToEnclosingRect(gfx::ConvertRectToPixels(
+        rect, views::LinuxUI::instance()->GetDeviceScaleFactor()));
   } else {
     last_caret_bounds_ = rect;
   }

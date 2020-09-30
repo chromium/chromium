@@ -13,7 +13,6 @@
 #include "ash/utility/transformer_util.h"
 #include "base/command_line.h"
 #include "base/system/sys_info.h"
-#include "ui/compositor/dip_util.h"
 #include "ui/display/display.h"
 #include "ui/display/manager/display_layout_store.h"
 #include "ui/display/manager/display_manager.h"

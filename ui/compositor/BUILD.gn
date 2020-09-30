@@ -31,8 +31,6 @@ component("compositor") {
     "compositor_switches.h",
     "debug_utils.cc",
     "debug_utils.h",
-    "dip_util.cc",
-    "dip_util.h",
     "float_animation_curve_adapter.cc",
     "float_animation_curve_adapter.h",
     "layer.cc",

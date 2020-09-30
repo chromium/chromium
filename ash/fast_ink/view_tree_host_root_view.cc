@@ -30,6 +30,7 @@
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/dip_util.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 #include "ui/views/widget/widget.h"
@@ -398,7 +399,8 @@ void ViewTreeHostRootView::SubmitCompositorFrame() {
   gfx::Rect damage_rect;
 
   // TODO(oshima): Support partial content update.
-  damage_rect = gfx::ConvertRectToPixel(device_scale_factor, damage_rect_);
+  damage_rect = gfx::ToEnclosingRect(
+      gfx::ConvertRectToPixels(damage_rect_, device_scale_factor));
   damage_rect.Intersect(output_rect);
   damage_rect_ = gfx::Rect();
 

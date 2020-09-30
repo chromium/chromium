@@ -29,7 +29,6 @@
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/resources/transferable_resource.h"
 #include "ui/compositor/compositor_switches.h"
-#include "ui/compositor/dip_util.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/layer_observer.h"
 #include "ui/compositor/paint_context.h"
@@ -38,6 +37,7 @@
 #include "ui/gfx/geometry/dip_util.h"
 #include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/point_conversions.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/interpolated_transform.h"
 
@@ -1076,7 +1076,10 @@ void Layer::UpdateNinePatchLayerAperture(const gfx::Rect& aperture_in_dip) {
   DCHECK_EQ(type_, LAYER_NINE_PATCH);
   DCHECK(nine_patch_layer_.get());
   nine_patch_layer_aperture_ = aperture_in_dip;
-  gfx::Rect aperture_in_pixel = ConvertRectToPixel(this, aperture_in_dip);
+  // TODO(danakj): Specifying the aperture in DIPs as integers is not sufficient
+  // and means the resulting aperture in pixels will not be exact.
+  gfx::Rect aperture_in_pixel = gfx::ToEnclosingRect(
+      gfx::ConvertRectToPixels(aperture_in_dip, device_scale_factor()));
   nine_patch_layer_->SetAperture(aperture_in_pixel);
 }
 

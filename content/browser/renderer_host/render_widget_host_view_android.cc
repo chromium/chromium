@@ -51,7 +51,6 @@
 #include "content/browser/gpu/gpu_process_host.h"
 #include "content/browser/renderer_host/compositor_impl_android.h"
 #include "content/browser/renderer_host/delegated_frame_host_client_android.h"
-#include "content/browser/renderer_host/dip_util.h"
 #include "content/browser/renderer_host/display_util.h"
 #include "content/browser/renderer_host/frame_metadata_util.h"
 #include "content/browser/renderer_host/input/input_router.h"
@@ -97,6 +96,7 @@
 #include "ui/gfx/android/view_configuration.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 #include "ui/gfx/geometry/dip_util.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/touch_selection/touch_selection_controller.h"
 
@@ -1262,10 +1262,11 @@ void RenderWidgetHostViewAndroid::SynchronousCopyContents(
   // be made instead of using |current_frame_size_|. The latter sometimes also
   // includes extra height for the toolbar UI, which is not intended for
   // capture.
-  const gfx::Rect src_subrect_in_pixel = gfx::ConvertRectToPixel(
-      view_.GetDipScale(), src_subrect_dip.IsEmpty()
-                               ? gfx::Rect(GetVisibleViewportSize())
-                               : src_subrect_dip);
+  gfx::Rect valid_src_subrect_in_dips = src_subrect_dip;
+  if (valid_src_subrect_in_dips.IsEmpty())
+    valid_src_subrect_in_dips = gfx::Rect(GetVisibleViewportSize());
+  const gfx::Rect src_subrect_in_pixel = gfx::ToEnclosingRect(
+      gfx::ConvertRectToPixels(valid_src_subrect_in_dips, view_.GetDipScale()));
 
   // TODO(crbug/698974): [BUG] Current implementation does not support read-back
   // of regions that do not originate at (0,0).

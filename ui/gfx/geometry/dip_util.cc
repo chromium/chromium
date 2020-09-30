@@ -112,6 +112,23 @@ RectF ConvertRectToDips(const RectF& rect_in_pixels,
   return ScaleRect(rect_in_pixels, 1.f / device_scale_factor);
 }
 
+RectF ConvertRectToPixels(const Rect& rect_in_dips, float device_scale_factor) {
+#if defined(OS_MAC)
+  // Device scale factor on MacOSX is always an integer.
+  DCHECK(IsIntegerInFloat(device_scale_factor));
+#endif
+  return ScaleRect(RectF(rect_in_dips), device_scale_factor);
+}
+
+RectF ConvertRectToPixels(const RectF& rect_in_dips,
+                          float device_scale_factor) {
+#if defined(OS_MAC)
+  // Device scale factor on MacOSX is always an integer.
+  DCHECK(IsIntegerInFloat(device_scale_factor));
+#endif
+  return ScaleRect(rect_in_dips, device_scale_factor);
+}
+
 Insets ConvertInsetsToDIP(float scale_factor,
                           const gfx::Insets& insets_in_pixel) {
 #if defined(OS_MAC)
@@ -132,23 +149,6 @@ Insets ConvertInsetsToPixel(float scale_factor,
   if (scale_factor == 1.f)
     return insets_in_dip;
   return insets_in_dip.Scale(scale_factor);
-}
-
-Rect ConvertRectToPixel(float scale_factor, const Rect& rect_in_dip) {
-#if defined(OS_MAC)
-  // Device scale factor on MacOSX is always an integer.
-  DCHECK(IsIntegerInFloat(scale_factor));
-#endif
-  // Use ToEnclosingRect() to ensure we paint all the possible pixels
-  // touched. ToEnclosingRect() floors the origin, and ceils the max
-  // coordinate. To do otherwise (such as flooring the size) potentially
-  // results in rounding down and not drawing all the pixels that are
-  // touched.
-  if (scale_factor == 1.f)
-    return rect_in_dip;
-  return ToEnclosingRect(
-      RectF(ScalePoint(gfx::PointF(rect_in_dip.origin()), scale_factor),
-            ScaleSize(gfx::SizeF(rect_in_dip.size()), scale_factor)));
 }
 
 }  // namespace gfx

@@ -11,7 +11,6 @@
 #include "ash/wm/window_state.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
-#include "ui/compositor/dip_util.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/wm/core/window_properties.h"

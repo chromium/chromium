@@ -28,7 +28,6 @@
 #include "ui/base/cursor/cursors_aura.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/resource/resource_bundle.h"
-#include "ui/compositor/dip_util.h"
 #include "ui/compositor/paint_recorder.h"
 #include "ui/display/display.h"
 #include "ui/display/manager/display_manager.h"

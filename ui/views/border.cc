@@ -11,8 +11,8 @@
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "cc/paint/paint_flags.h"
-#include "ui/compositor/dip_util.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/geometry/dip_util.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/views/painter.h"
@@ -50,8 +50,8 @@ void SolidSidedBorder::Paint(const View& view, gfx::Canvas* canvas) {
 
   gfx::RectF scaled_bounds;
   if (view.layer()) {
-    scaled_bounds =
-        gfx::RectF(ui::ConvertRectToPixel(view.layer(), view.GetLocalBounds()));
+    scaled_bounds = gfx::ConvertRectToPixels(
+        view.GetLocalBounds(), view.layer()->device_scale_factor());
   } else {
     scaled_bounds = gfx::RectF(view.GetLocalBounds());
     scaled_bounds.Scale(dsf);

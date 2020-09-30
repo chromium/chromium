@@ -29,6 +29,7 @@
 #include "ui/aura/window_tree_host.h"
 #include "ui/gfx/geometry/dip_util.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 
@@ -307,7 +308,8 @@ void FastInkHost::SubmitCompositorFrame() {
     // Use minimal quad and damage rectangles when auto-refresh mode is off.
     quad_rect = BufferRectFromWindowRect(window_to_buffer_transform_,
                                          buffer_size_, content_rect_);
-    damage_rect = gfx::ConvertRectToPixel(device_scale_factor, damage_rect_);
+    damage_rect = gfx::ToEnclosingRect(
+        gfx::ConvertRectToPixels(damage_rect_, device_scale_factor));
     damage_rect.Intersect(output_rect);
     pending_compositor_frame_ = false;
   }
