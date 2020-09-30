@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Copyright (c) 2012 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
@@ -111,6 +111,20 @@ verify_clean_dir() {
   fi
 }
 
+linker_signed_arm64_needs_force() {
+  major=$(sw_vers -productVersion | sed -Ee 's/^([0-9]+)\..*$/\1/')
+  if (( ${major} >= 11 )) ; then
+    return 1
+  fi
+  flags=$(codesign --display --verbose --arch=arm64 -- "${1}" 2>&1 |
+          sed -Ene 's/^CodeDirectory .* flags=(0x[0-9a-f]+)( |\().*$/\1/p')
+  if [[ -z "${flags}" ]]; then
+    return 1
+  fi
+  (( rv=${flags} & 0x20000 ))
+  return ${rv}
+}
+
 sign() {
   local name="${1}"
   local keychain="${2}"
@@ -128,6 +142,9 @@ sign() {
   local args=(-vv --sign "${id}")
   if [[ -n "${keychain}" ]]; then
       args+=(--keychain "${keychain}")
+  fi
+  if linker_signed_arm64_needs_force "${name}"; then
+      args+=(--force)
   fi
   args+=(--timestamp --options runtime "${name}")
   codesign "${args[@]}"
