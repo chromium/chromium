@@ -104848,13 +104848,13 @@
        ]
       ],
       "control-chars-00D.html": [
-       "b7d1d44b0cc50f2761697de86f6ec3f2cf8904c1",
+       "7a85cc88139c046a7032e85cde392c59e429ccba",
        [
         null,
         [
          [
-          "/css/css-text/white-space/reference/control-chars-000-ref.html",
-          "!="
+          "/css/css-text/white-space/reference/control-chars-00D-ref.html",
+          "=="
          ]
         ],
         {}
@@ -108553,6 +108553,19 @@
         {}
        ]
       ],
+      "word-break-break-all-062.html": [
+       "6d2f25abc820ff16c4ada0d6f3fedc3ba3e692cb",
+       [
+        null,
+        [
+         [
+          "/css/css-text/word-break/reference/word-break-break-all-062-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "word-break-break-all-inline-001.html": [
        "a0c7c4958bd94be3ae199e6e18f1dace4cc2d28b",
        [
@@ -108798,6 +108811,19 @@
         [
          [
           "/css/css-text/word-break/reference/word-break-keep-all-005-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "word-break-keep-all-063.html": [
+       "3fa827b487060f6343c141ef0103ce2d70c1eb45",
+       [
+        null,
+        [
+         [
+          "/css/css-text/word-break/reference/word-break-keep-all-063-ref.html",
           "=="
          ]
         ],
@@ -109160,6 +109186,60 @@
      }
     },
     "css-text-decor": {
+     "invalidation": {
+      "text-decoration-invalidation-dashed.html": [
+       "b92f3ddcccb407aff29d486c8c3221626617a597",
+       [
+        null,
+        [
+         [
+          "/css/css-text-decor/invalidation/reference/text-decoration-invalidation-dashed-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "text-decoration-invalidation-double.html": [
+       "eb7ec1846aa2f4c741d579a4d6958115fff421e2",
+       [
+        null,
+        [
+         [
+          "/css/css-text-decor/invalidation/reference/text-decoration-invalidation-double-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "text-decoration-invalidation-solid.html": [
+       "4956557aeedc6c3a35ae46e24c85da1313d5634c",
+       [
+        null,
+        [
+         [
+          "/css/css-text-decor/invalidation/reference/text-decoration-invalidation-solid-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "text-decoration-invalidation-wavy.html": [
+       "cc3af52b93efc355e3cf3176cd3ba4dffcfba375",
+       [
+        null,
+        [
+         [
+          "/css/css-text-decor/invalidation/reference/text-decoration-invalidation-wavy-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ]
+     },
      "line-through-vertical.html": [
       "0ec8f016223018ee8fef1b440f7cb73c57ad81a4",
       [
@@ -195275,6 +195355,10 @@
         "9d5fcb27147a8c53e410d08511cb5035b612f80c",
         []
        ],
+       "control-chars-00D-ref.html": [
+        "ae214b7485dfe174c814452035c6e9b998f39fa3",
+        []
+       ],
        "eol-spaces-bidi-001-ref.html": [
         "430706c55697597681c71202dd4cb18da8b5de37",
         []
@@ -195739,6 +195823,10 @@
         "32b85542a7760d9757c4cd958f42de05336d1a41",
         []
        ],
+       "word-break-break-all-062-ref.html": [
+        "c44f82d7b37169224c8828af2d0f742cf8e40801",
+        []
+       ],
        "word-break-break-all-inline-001-ref.html": [
         "4eab639ac300e446558bc7171db32b32e74cd862",
         []
@@ -195809,6 +195897,10 @@
        ],
        "word-break-keep-all-005-ref.html": [
         "2a33ce75e23f6c65ec98a2a808633349b1ae465e",
+        []
+       ],
+       "word-break-keep-all-063-ref.html": [
+        "5ab3f5ff0f208b1e6d61f2e5bbb41e924396b362",
         []
        ],
        "word-break-keep-all-ref-000.html": [
@@ -195935,6 +196027,26 @@
       "1f27a3ed9719a56aa8fb9dcc14ef651b3af1d975",
       []
      ],
+     "invalidation": {
+      "reference": {
+       "text-decoration-invalidation-dashed-ref.html": [
+        "64356838638ce794bbf408351606bb68398bbf4c",
+        []
+       ],
+       "text-decoration-invalidation-double-ref.html": [
+        "5b0542d9249276f7e44aa446a0e4d057e3ace368",
+        []
+       ],
+       "text-decoration-invalidation-solid-ref.html": [
+        "65fedfb049b9e76b941ef8554921961cd039fc6d",
+        []
+       ],
+       "text-decoration-invalidation-wavy-ref.html": [
+        "eea8254e5aa47f6f17af0d96d0b96b0d92139772",
+        []
+       ]
+      }
+     },
      "parsing": {
       "text-decoration-computed-expected.txt": [
        "0cc9ba05073b996f5a517ee903c7c1a724c530fe",
@@ -245349,6 +245461,14 @@
     "support": {
      "HTMLScriptElement-internal-slot-support.html": [
       "b9a0ceefae22a7becb4552e0aadc7e9bfc24cd24",
+      []
+     ],
+     "WorkerGlobalScope-eval.https.js": [
+      "be0a4300e1a69b3a0f846ed2c8d31826e5ac739c",
+      []
+     ],
+     "WorkerGlobalScope-eval.https.js.headers": [
+      "604e765da46d85fe8ab85d3097fe7c2cbe00a930",
       []
      ],
      "WorkerGlobalScope-importScripts.https.js": [
@@ -368581,7 +368701,7 @@
      ]
     ],
     "MediaStreamTrack-applyConstraints-reject.html": [
-     "45599c076f0ff6b1ba53e69a423cdf0e5d2ce1bf",
+     "02ba251fc9f12265f58cd21b93875945700ed0c1",
      [
       null,
       {
@@ -403153,6 +403273,13 @@
     ],
     "Window-TrustedTypes.tentative.html": [
      "718c763afafd12bfa498eb8827fb1b12b509c51d",
+     [
+      null,
+      {}
+     ]
+    ],
+    "WorkerGlobalScope-eval.html": [
+     "9248784924d003c41620745dda2fe92fa42662e0",
      [
       null,
       {}
