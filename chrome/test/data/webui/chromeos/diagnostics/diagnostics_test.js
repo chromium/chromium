@@ -121,7 +121,7 @@ suite('BatteryStatusCardTest', () => {
       batteryStatusElement.remove();
     }
     batteryStatusElement = null;
-    provider = null;
+    provider.reset();
   });
 
   /**
@@ -198,7 +198,7 @@ suite('CpuCardTest', () => {
       cpuElement.remove();
     }
     cpuElement = null;
-    provider = null;
+    provider.reset();
   });
 
   /**
@@ -251,7 +251,7 @@ suite('OverviewCardTest', () => {
   teardown(() => {
     overviewElement.remove();
     overviewElement = null;
-    provider = null;
+    provider.reset();
   });
 
   /** @param {!SystemInfo} */
@@ -308,7 +308,7 @@ suite('MemoryCardTest', () => {
       memoryElement.remove();
     }
     memoryElement = null;
-    provider = null;
+    provider.reset();
   });
 
   /**
