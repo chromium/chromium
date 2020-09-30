@@ -149,6 +149,9 @@ class QuicTransport::Stream final {
   }
 
   ~Stream() {
+    if (!incoming_ && !outgoing_) {
+      return;
+    }
     transport_->transport_->session()->ResetStream(
         id_, quic::QuicRstStreamErrorCode::QUIC_STREAM_CANCELLED);
   }

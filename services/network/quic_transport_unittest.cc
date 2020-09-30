@@ -13,6 +13,7 @@
 #include "base/test/task_environment.h"
 #include "net/cert/mock_cert_verifier.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/log/test_net_log.h"
 #include "net/quic/crypto/proof_source_chromium.h"
 #include "net/test/test_data_directory.h"
 #include "net/third_party/quiche/src/quic/test_tools/crypto_test_utils.h"
@@ -254,6 +255,7 @@ class QuicTransportTest : public testing::Test {
 
     network_context_.url_request_context()->set_cert_verifier(&cert_verifier_);
     network_context_.url_request_context()->set_host_resolver(&host_resolver_);
+    network_context_.url_request_context()->set_net_log(&net_log_);
     auto* quic_context = network_context_.url_request_context()->quic_context();
     quic_context->params()->supported_versions.push_back(version_);
     quic_context->params()->origins_to_force_quic_on.insert(
@@ -298,6 +300,7 @@ class QuicTransportTest : public testing::Test {
   const url::Origin& origin() const { return origin_; }
   const NetworkContext& network_context() const { return network_context_; }
   NetworkContext& mutable_network_context() { return network_context_; }
+  net::RecordingTestNetLog& net_log() { return net_log_; }
 
   void RunPendingTasks() {
     base::RunLoop run_loop;
@@ -316,6 +319,7 @@ class QuicTransportTest : public testing::Test {
 
   net::MockCertVerifier cert_verifier_;
   net::MockHostResolver host_resolver_;
+  net::RecordingTestNetLog net_log_;
 
   NetworkContext network_context_;
 
@@ -508,6 +512,10 @@ TEST_F(QuicTransportTest, EchoOnUnidirectionalStreams) {
   EXPECT_FALSE(client.has_received_fin_for(stream_id));
   EXPECT_TRUE(client.has_received_fin_for(incoming_stream_id));
   EXPECT_FALSE(client.has_seen_mojo_connection_error());
+
+  std::vector<net::NetLogEntry> resets_sent = net_log().GetEntriesWithType(
+      net::NetLogEventType::QUIC_SESSION_RST_STREAM_FRAME_SENT);
+  EXPECT_EQ(0u, resets_sent.size());
 }
 
 TEST_F(QuicTransportTest, EchoOnBidirectionalStream) {
