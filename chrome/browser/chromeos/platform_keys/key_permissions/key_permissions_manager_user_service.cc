@@ -4,7 +4,7 @@
 
 #include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_manager_user_service.h"
 
-#include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_manager.h"
+#include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_manager_impl.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/extensions/extension_system_factory.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
@@ -19,15 +19,31 @@ namespace platform_keys {
 
 // ==================== KeyPermissionsManagerUserService =======================
 
-KeyPermissionsManagerUserService::KeyPermissionsManagerUserService(
-    Profile* profile)
-    : key_permissions_manager_(
-          profile->GetProfilePolicyConnector()->IsManaged(),
-          profile->GetPrefs(),
-          profile->GetProfilePolicyConnector()->policy_service(),
-          extensions::ExtensionSystem::Get(profile)->state_store()) {}
+KeyPermissionsManagerUserService::KeyPermissionsManagerUserService() = default;
 
 KeyPermissionsManagerUserService::~KeyPermissionsManagerUserService() = default;
+
+// ================== KeyPermissionsManagerUserServiceImpl =====================
+
+class KeyPermissionsManagerUserServiceImpl
+    : public KeyPermissionsManagerUserService {
+ public:
+  explicit KeyPermissionsManagerUserServiceImpl(Profile* profile)
+      : key_permissions_manager_(
+            profile->GetProfilePolicyConnector()->IsManaged(),
+            profile->GetPrefs(),
+            profile->GetProfilePolicyConnector()->policy_service(),
+            extensions::ExtensionSystem::Get(profile)->state_store()) {}
+
+  ~KeyPermissionsManagerUserServiceImpl() override = default;
+
+  KeyPermissionsManager* key_permissions_manager() override {
+    return &key_permissions_manager_;
+  }
+
+ private:
+  KeyPermissionsManagerImpl key_permissions_manager_;
+};
 
 // ================== KeyPermissionsManagerUserServiceFactory ==================
 
@@ -61,7 +77,7 @@ KeyedService* KeyPermissionsManagerUserServiceFactory::BuildServiceInstanceFor(
     return nullptr;
   }
 
-  return new KeyPermissionsManagerUserService(profile);
+  return new KeyPermissionsManagerUserServiceImpl(profile);
 }
 
 void KeyPermissionsManagerUserServiceFactory::RegisterProfilePrefs(
