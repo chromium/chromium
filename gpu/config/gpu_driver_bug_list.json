@@ -3628,6 +3628,17 @@
       "features": [
         "force_enable_color_buffer_float"
       ]
+    },
+    {
+      "id": 358,
+      "cr_bugs": [1127387],
+      "description": "Always assume float formats are renderable on Android except RGB32F",
+      "os": {
+        "type": "android"
+      },
+      "features": [
+        "force_enable_color_buffer_float_except_rgb32f"
+      ]
     }
   ]
 }

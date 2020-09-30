@@ -1823,7 +1823,8 @@ void FeatureInfo::InitializeFloatAndHalfFloatFeatures(
 
   if (may_enable_chromium_color_buffer_float &&
       !had_native_chromium_color_buffer_float_ext) {
-    if (workarounds_.force_enable_color_buffer_float) {
+    if (workarounds_.force_enable_color_buffer_float ||
+        workarounds_.force_enable_color_buffer_float_except_rgb32f) {
       if (enable_es3)
         enable_ext_color_buffer_float = true;
       if (IsWebGL1OrES2Context() && !enable_ext_color_buffer_half_float &&
@@ -1833,9 +1834,11 @@ void FeatureInfo::InitializeFloatAndHalfFloatFeatures(
       feature_flags_.chromium_color_buffer_float_rgba = true;
       if (!disallowed_features_.chromium_color_buffer_float_rgba)
         EnableCHROMIUMColorBufferFloatRGBA();
-      feature_flags_.chromium_color_buffer_float_rgb = true;
-      if (!disallowed_features_.chromium_color_buffer_float_rgb)
-        EnableCHROMIUMColorBufferFloatRGB();
+      if (!workarounds_.force_enable_color_buffer_float_except_rgb32f) {
+        feature_flags_.chromium_color_buffer_float_rgb = true;
+        if (!disallowed_features_.chromium_color_buffer_float_rgb)
+          EnableCHROMIUMColorBufferFloatRGB();
+      }
     } else {
       static_assert(
           GL_RGBA32F_ARB == GL_RGBA32F && GL_RGBA32F_EXT == GL_RGBA32F &&
