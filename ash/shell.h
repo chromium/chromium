@@ -540,6 +540,7 @@ class ASH_EXPORT Shell : public SessionObserver,
   BackGestureEventHandler* back_gesture_event_handler() {
     return back_gesture_event_handler_.get();
   }
+  ui::EventHandler* shell_tab_handler() { return shell_tab_handler_.get(); }
   ToplevelWindowEventHandler* toplevel_window_event_handler() {
     return toplevel_window_event_handler_.get();
   }
@@ -763,6 +764,10 @@ class ASH_EXPORT Shell : public SessionObserver,
 
   // An event filter which handles swiping back from left side of the window.
   std::unique_ptr<BackGestureEventHandler> back_gesture_event_handler_;
+
+  // An event filter which redirects focus when tab is pressed on a RootWindow
+  // with no active windows.
+  std::unique_ptr<ui::EventHandler> shell_tab_handler_;
 
   // An event filter which handles moving and resizing windows.
   std::unique_ptr<ToplevelWindowEventHandler> toplevel_window_event_handler_;

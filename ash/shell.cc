@@ -97,6 +97,7 @@
 #include "ash/shell_delegate.h"
 #include "ash/shell_init_params.h"
 #include "ash/shell_observer.h"
+#include "ash/shell_tab_handler.h"
 #include "ash/shutdown_controller_impl.h"
 #include "ash/sticky_keys/sticky_keys_controller.h"
 #include "ash/style/ash_color_provider.h"
@@ -627,6 +628,9 @@ Shell::~Shell() {
   // handler that depends on this shell and some of its members. Destroy early.
   capture_mode_controller_.reset();
 
+  RemovePreTargetHandler(shell_tab_handler_.get());
+  shell_tab_handler_.reset();
+
   RemovePreTargetHandler(magnifier_key_scroll_handler_.get());
   magnifier_key_scroll_handler_.reset();
 
@@ -1028,6 +1032,8 @@ void Shell::Init(
   shelf_config_ = std::make_unique<ShelfConfig>();
   shelf_controller_ = std::make_unique<ShelfController>();
 
+  shell_tab_handler_ = std::make_unique<ShellTabHandler>(this);
+  AddPreTargetHandler(shell_tab_handler_.get());
   magnifier_key_scroll_handler_ = MagnifierKeyScroller::CreateHandler();
   AddPreTargetHandler(magnifier_key_scroll_handler_.get());
   speech_feedback_handler_ = SpokenFeedbackToggler::CreateHandler();

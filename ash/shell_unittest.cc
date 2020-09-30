@@ -21,15 +21,19 @@
 #include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/session/test_session_controller_client.h"
+#include "ash/shelf/home_button.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_layout_manager.h"
+#include "ash/shelf/shelf_navigation_widget.h"
 #include "ash/shelf/shelf_widget.h"
+#include "ash/system/status_area_widget.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
 #include "ash/test_shell_delegate.h"
 #include "ash/wallpaper/wallpaper_widget_controller.h"
 #include "ash/window_factory.h"
 #include "ash/wm/desks/desks_util.h"
+#include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/window_util.h"
 #include "base/command_line.h"
 #include "base/containers/flat_set.h"
@@ -537,6 +541,57 @@ TEST_F(ShellTest, EnvPreTargetHandler) {
   generator.MoveMouseBy(1, 1);
   EXPECT_NE(0, event_handler.num_mouse_events());
   aura::Env::GetInstance()->RemovePreTargetHandler(&event_handler);
+}
+
+// Verifies that pressing tab on an empty shell (one with no windows visible)
+// will put focus on the shelf. This enables keyboard only users to get to the
+// shelf without knowing the more obscure accelerators. Tab should move focus to
+// the home button, shift + tab to the status widget. From there, normal shelf
+// tab behaviour takes over, and the shell no longer catches that event.
+TEST_F(ShellTest, NoWindowTabFocus) {
+  ExpectAllContainers();
+
+  auto* generator = GetEventGenerator();
+
+  StatusAreaWidget* status_area_widget =
+      GetPrimaryShelf()->status_area_widget();
+  ShelfNavigationWidget* home_button = GetPrimaryShelf()->navigation_widget();
+
+  // Create a normal window.  It is not maximized.
+  auto widget = CreateTestWidget();
+
+  // Hit tab with window open, and expect that focus is not on the navigation
+  // widget or status widget.
+  generator->PressKey(ui::VKEY_TAB, ui::EF_NONE);
+  generator->ReleaseKey(ui::VKEY_TAB, ui::EF_NONE);
+  EXPECT_FALSE(home_button->GetNativeView()->HasFocus());
+  EXPECT_FALSE(status_area_widget->GetNativeView()->HasFocus());
+
+  // Minimize the window, hit tab and expect that focus is on the launcher.
+  widget->Minimize();
+  generator->PressKey(ui::VKEY_TAB, ui::EF_NONE);
+  generator->ReleaseKey(ui::VKEY_TAB, ui::EF_NONE);
+  EXPECT_TRUE(home_button->GetNativeView()->HasFocus());
+
+  // Show (to steal focus back before continuing testing) and close the window.
+  widget->Show();
+  widget->Close();
+  EXPECT_FALSE(home_button->GetNativeView()->HasFocus());
+
+  // Confirm that pressing tab when overview mode is open does not go to home
+  // button. Tab should be handled by overview mode and not hit the shell event
+  // handler.
+  auto* overview_controller = Shell::Get()->overview_controller();
+  overview_controller->StartOverview();
+  generator->PressKey(ui::VKEY_TAB, ui::EF_NONE);
+  generator->ReleaseKey(ui::VKEY_TAB, ui::EF_NONE);
+  EXPECT_FALSE(home_button->GetNativeView()->HasFocus());
+  overview_controller->EndOverview();
+
+  // Hit shift tab and expect that focus is on status widget.
+  generator->PressKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
+  generator->ReleaseKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
+  EXPECT_TRUE(status_area_widget->GetNativeView()->HasFocus());
 }
 
 // This verifies WindowObservers are removed when a window is destroyed after

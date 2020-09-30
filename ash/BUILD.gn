@@ -817,6 +817,8 @@ component("ash") {
     "shell.cc",
     "shell_delegate.cc",
     "shell_init_params.cc",
+    "shell_tab_handler.cc",
+    "shell_tab_handler.h",
     "shutdown_controller_impl.cc",
     "shutdown_controller_impl.h",
     "shutdown_reason.cc",
