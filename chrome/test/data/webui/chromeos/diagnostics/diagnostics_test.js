@@ -12,7 +12,7 @@ import 'chrome://diagnostics/memory_card.js';
 import 'chrome://diagnostics/overview_card.js';
 
 import {SystemDataProviderInterface} from 'chrome://diagnostics/diagnostics_types.js';
-import {fakeBatteryChargeStatus, fakeBatteryHealth, fakeBatteryInfo, fakeCpuUsage, fakeMemoryUsage, fakeSystemInfo} from 'chrome://diagnostics/fake_data.js';
+import {fakeBatteryChargeStatus, fakeBatteryHealth, fakeBatteryInfo, fakeBatteryInfo2, fakeCpuUsage, fakeMemoryUsage, fakeSystemInfo} from 'chrome://diagnostics/fake_data.js';
 import {FakeMethodResolver} from 'chrome://diagnostics/fake_method_resolver.js';
 import {FakeObservables} from 'chrome://diagnostics/fake_observables.js';
 import {FakeSystemDataProvider} from 'chrome://diagnostics/fake_system_data_provider.js';
@@ -528,6 +528,48 @@ suite('FakeSystemDataProviderTest', () => {
     };
 
     return provider.observeMemoryUsage(memoryUsageObserverRemote);
+  });
+
+  test('CallMethodWithNoValue', () => {
+    // Don't set any fake data.
+    return provider.getBatteryInfo().then((value) => {
+      assertEquals(undefined, value);
+    });
+  });
+
+  test('CallMethodDifferentDataAfterReset', () => {
+    // Setup the fake data, but then reset it and set it with new data.
+    provider.setFakeBatteryInfo(fakeBatteryInfo);
+    provider.reset();
+    provider.setFakeBatteryInfo(fakeBatteryInfo2);
+
+    return provider.getBatteryInfo().then((batteryInfo) => {
+      assertDeepEquals(fakeBatteryInfo2, batteryInfo);
+    });
+  });
+
+  test('CallMethodFirstThenDifferentDataAfterReset', () => {
+    // Setup the initial fake data.
+    provider.setFakeBatteryInfo(fakeBatteryInfo);
+    return provider.getBatteryInfo()
+        .then((batteryInfo) => {
+          assertDeepEquals(fakeBatteryInfo, batteryInfo);
+        })
+        .then(() => {
+          // Reset and next time it should fire undefined.
+          provider.reset();
+          return provider.getBatteryInfo().then((value) => {
+            assertEquals(undefined, value);
+          });
+        })
+        .then(() => {
+          // Set different data and next time should fire with it.
+          provider.reset();
+          provider.setFakeBatteryInfo(fakeBatteryInfo2);
+          return provider.getBatteryInfo().then((batteryInfo) => {
+            assertDeepEquals(fakeBatteryInfo2, batteryInfo);
+          });
+        });
   });
 });
 

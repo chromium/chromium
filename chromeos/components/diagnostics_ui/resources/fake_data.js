@@ -43,6 +43,12 @@ export const fakeBatteryInfo = {
   manufacturer: 'BatterCorp USA',
 };
 
+/* @type {!BatteryInfo} */
+export const fakeBatteryInfo2 = {
+  charge_full_design_milliamp_hours: 9000,
+  manufacturer: 'PowerPod 9000',
+};
+
 /* @type {!Array<!CpuUsage>} */
 export const fakeCpuUsage = [
   {
