@@ -48,7 +48,6 @@ function addWPTTests(testcases) {
       });
 
       running.push(p);
-      return p;
     };
 
     async_test(wpt_fn, name);
