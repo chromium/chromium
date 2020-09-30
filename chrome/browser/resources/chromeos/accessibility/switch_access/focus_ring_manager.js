@@ -49,7 +49,7 @@ class FocusRingManager {
   }
 
   /**
-   * Sets the primary and next focus rings based on the current primary and
+   * Sets the primary and preview focus rings based on the current primary and
    *     group nodes used for navigation.
    * @param {!SAChildNode} node
    */
@@ -64,12 +64,12 @@ class FocusRingManager {
       manager.rings_.get(SAConstants.Focus.ID.PRIMARY).rects = [];
       // Clear the dashed ring between transitions, as the animation is
       // distracting.
-      manager.rings_.get(SAConstants.Focus.ID.NEXT).rects = [];
+      manager.rings_.get(SAConstants.Focus.ID.PREVIEW).rects = [];
       manager.updateFocusRings_();
 
       // The dashed focus ring should not be shown around the menu when exiting.
       if (!MenuManager.isMenuOpen()) {
-        manager.rings_.get(SAConstants.Focus.ID.NEXT).rects =
+        manager.rings_.get(SAConstants.Focus.ID.PREVIEW).rects =
             [backButton.group.location];
         manager.updateFocusRings_();
       }
@@ -83,13 +83,14 @@ class FocusRingManager {
           true /* shouldRecover */);
     }
 
-    // If the primary node is a group, show its first child as the "next" focus.
+    // If the primary node is a group, show its first child as the "preview"
+    // focus.
     if (node.isGroup()) {
       const firstChild = node.asRootNode().firstChild;
 
       // Clear the dashed ring between transitions, as the animation is
       // distracting.
-      manager.rings_.get(SAConstants.Focus.ID.NEXT).rects = [];
+      manager.rings_.get(SAConstants.Focus.ID.PREVIEW).rects = [];
       manager.updateFocusRings_();
 
       let focusRect = node.location;
@@ -99,7 +100,7 @@ class FocusRingManager {
         // expand to contain the child rect.
         focusRect = RectUtil.expandToFitWithPadding(
             SAConstants.Focus.GROUP_BUFFER, focusRect, childRect);
-        manager.rings_.get(SAConstants.Focus.ID.NEXT).rects = [childRect];
+        manager.rings_.get(SAConstants.Focus.ID.PREVIEW).rects = [childRect];
       }
       manager.rings_.get(SAConstants.Focus.ID.PRIMARY).rects = [focusRect];
       manager.updateFocusRings_();
@@ -107,7 +108,7 @@ class FocusRingManager {
     }
 
     manager.rings_.get(SAConstants.Focus.ID.PRIMARY).rects = [node.location];
-    manager.rings_.get(SAConstants.Focus.ID.NEXT).rects = [];
+    manager.rings_.get(SAConstants.Focus.ID.PREVIEW).rects = [];
     manager.updateFocusRings_();
   }
 
@@ -133,8 +134,8 @@ class FocusRingManager {
       secondaryColor: SAConstants.Focus.SECONDARY_COLOR
     };
 
-    const nextRing = {
-      id: SAConstants.Focus.ID.NEXT,
+    const previewRing = {
+      id: SAConstants.Focus.ID.PREVIEW,
       rects: [],
       type: chrome.accessibilityPrivate.FocusType.DASHED,
       color: SAConstants.Focus.PRIMARY_COLOR,
@@ -143,7 +144,7 @@ class FocusRingManager {
 
     return new Map([
       [SAConstants.Focus.ID.PRIMARY, primaryRing],
-      [SAConstants.Focus.ID.NEXT, nextRing]
+      [SAConstants.Focus.ID.PREVIEW, previewRing]
     ]);
   }
 

@@ -132,8 +132,9 @@ const SAConstants = {
     ID: {
       // The ID for the ring showing the user's current focus.
       PRIMARY: 'primary',
-      // The ID for the ring showing the next focus.
-      NEXT: 'next',
+      // The ID for the ring showing a preview of the next focus, if the user
+      // selects the current element.
+      PREVIEW: 'preview',
       // The ID for the area where text is being input.
       TEXT: 'text'
     },
