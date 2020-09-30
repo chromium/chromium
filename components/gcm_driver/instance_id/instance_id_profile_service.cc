@@ -11,11 +11,6 @@
 
 namespace instance_id {
 
-// static
-bool InstanceIDProfileService::IsInstanceIDEnabled() {
-  return InstanceIDDriver::IsInstanceIDEnabled();
-}
-
 InstanceIDProfileService::InstanceIDProfileService(gcm::GCMDriver* driver,
                                                    bool is_off_the_record) {
   DCHECK(!is_off_the_record);

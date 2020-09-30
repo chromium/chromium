@@ -21,9 +21,6 @@ class InstanceIDDriver;
 // Providing Instance ID support, via InstanceIDDriver, to a profile.
 class InstanceIDProfileService : public KeyedService {
  public:
-  // Returns whether InstanceID is enabled for |profile|.
-  static bool IsInstanceIDEnabled();
-
   InstanceIDProfileService(gcm::GCMDriver* driver, bool is_off_the_record);
 
   ~InstanceIDProfileService() override;

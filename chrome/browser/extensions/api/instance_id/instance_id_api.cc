@@ -61,17 +61,7 @@ ExtensionFunction::ResponseAction InstanceIDApiFunction::Run() {
     return RespondNow(Error(
         "chrome.instanceID not supported in incognito mode"));
   }
-
-  if (!IsEnabled()) {
-    return RespondNow(Error(
-        InstanceIDResultToError(instance_id::InstanceID::DISABLED)));
-  }
-
   return DoWork();
-}
-
-bool InstanceIDApiFunction::IsEnabled() const {
-  return instance_id::InstanceIDProfileService::IsInstanceIDEnabled();
 }
 
 instance_id::InstanceID* InstanceIDApiFunction::GetInstanceID() const {

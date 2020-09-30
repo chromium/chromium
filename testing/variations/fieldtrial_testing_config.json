@@ -3623,20 +3623,6 @@
             ]
         }
     ],
-    "InstanceID": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled"
-                }
-            ]
-        }
-    ],
     "InstantApps": [
         {
             "platforms": [

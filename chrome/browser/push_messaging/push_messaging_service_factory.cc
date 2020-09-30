@@ -32,12 +32,6 @@ PushMessagingServiceImpl* PushMessagingServiceFactory::GetForProfile(
   if (context->IsOffTheRecord())
     return nullptr;
 
-  if (!instance_id::InstanceIDProfileService::IsInstanceIDEnabled()) {
-    LOG(WARNING) << "PushMessagingService could not be built because "
-                    "InstanceID is unexpectedly disabled";
-    return nullptr;
-  }
-
   return static_cast<PushMessagingServiceImpl*>(
       GetInstance()->GetServiceForBrowserContext(context, true));
 }
