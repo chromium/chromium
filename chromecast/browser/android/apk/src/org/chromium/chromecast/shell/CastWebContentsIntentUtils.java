@@ -330,7 +330,7 @@ public class CastWebContentsIntentUtils {
         intent.putExtra(INTENT_EXTRA_TURN_ON_SCREEN, turnOnScreen);
         intent.putExtra(INTENT_EXTRA_REMOTE_CONTROL_MODE, isRemoteControlMode);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP
-                | Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                | Intent.FLAG_ACTIVITY_NO_ANIMATION | Intent.FLAG_ACTIVITY_TASK_ON_HOME);
         return intent;
     }
 
