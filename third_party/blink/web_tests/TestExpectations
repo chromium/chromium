@@ -4428,6 +4428,10 @@ crbug.com/576815 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftest
 
 crbug.com/664450 http/tests/devtools/console/console-on-animation-worklet.js [ Skip ]
 
+# Disabled to land DevTools changes https://chromium-review.googlesource.com/c/devtools/devtools-frontend/+/2436646
+crbug.com/1133060 http/tests/devtools/console/console-revoke-error.js [ Pass Failure ]
+crbug.com/1133060 http/tests/devtools/console/console-revoke-error-in-worker.js [ Pass Failure ]
+
 crbug.com/826419 external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-remove-track-inband.html [ Skip ]
 
 crbug.com/825798 external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-webvtt-non-snap-to-lines.html [ Failure ]
