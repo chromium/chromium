@@ -153,8 +153,19 @@ class AXTreeSourceFlutter : public ui::AXTreeSource<FlutterSemanticsNode*,
   // Detects live region changes and generates events for them.
   void HandleLiveRegions(std::vector<ui::AXEvent>* events);
 
+  // Detects added or deleted routes that trigger TTS from edge
+  // transitions (i.e. alert dialogs).
+  void HandleRoutes(std::vector<ui::AXEvent>* events);
+
   // Detects rapidly changing nodes and use native TTS instead.
   void HandleNativeTTS();
+
+  // Depth first search for a node under 'parent' with names route flag.
+  FlutterSemanticsNode* FindRoutesNode(FlutterSemanticsNode* parent);
+
+  // Find the first focusable node from the root.  If none found, return
+  // the root node id.
+  int32_t FindFirstFocusableNodeId();
 
   std::unique_ptr<AXTreeFlutterSerializer> current_tree_serializer_;
   int32_t root_id_;
@@ -181,6 +192,9 @@ class AXTreeSourceFlutter : public ui::AXTreeSource<FlutterSemanticsNode*,
 
   // Cache from node id to computed name for live region.
   std::map<int32_t, std::string> live_region_name_cache_;
+
+  // Cache for nodes with scopes route flags.
+  std::vector<int32_t> scopes_route_cache_;
 
   // Cache form node id to tts string for native tts components.
   std::map<int32_t, std::string> native_tts_name_cache_;

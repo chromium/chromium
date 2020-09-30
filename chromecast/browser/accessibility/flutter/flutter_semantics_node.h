@@ -29,6 +29,8 @@ class FlutterSemanticsNode {
   virtual bool IsVisibleToUser() const = 0;
   virtual bool IsFocused() const = 0;
   virtual bool IsLiveRegion() const = 0;
+  virtual bool HasScopesRoute() const = 0;
+  virtual bool HasNamesRoute() const = 0;
   virtual bool IsRapidChangingSlider() const = 0;
   virtual bool CanBeAccessibilityFocused() const = 0;
   virtual void PopulateAXRole(ui::AXNodeData* out_data) const = 0;

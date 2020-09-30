@@ -37,6 +37,8 @@ class FlutterSemanticsNodeWrapper : public FlutterSemanticsNode {
   bool IsVisibleToUser() const override;
   bool IsFocused() const override;
   bool IsLiveRegion() const override;
+  bool HasScopesRoute() const override;
+  bool HasNamesRoute() const override;
   bool IsRapidChangingSlider() const override;
   bool CanBeAccessibilityFocused() const override;
   void PopulateAXRole(ui::AXNodeData* out_data) const override;

@@ -7,6 +7,10 @@
 #include <string>
 
 #include "chromecast/browser/accessibility/flutter/flutter_semantics_node_wrapper.h"
+#include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/tts_controller.h"
+#include "content/public/browser/tts_platform.h"
+#include "content/public/common/content_client.h"
 #include "extensions/browser/api/automation_internal/automation_event_router_interface.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -17,8 +21,70 @@ using ::testing::StrictMock;
 using ::gallium::castos::ActionProperties;
 using ::gallium::castos::BooleanProperties;
 using ::gallium::castos::OnAccessibilityEventRequest;
+using ::gallium::castos::OnAccessibilityEventRequest_EventType_CONTENT_CHANGED;
 using ::gallium::castos::OnAccessibilityEventRequest_EventType_FOCUSED;
 using ::gallium::castos::Rect;
+
+namespace content {
+
+class MockTtsPlatformImpl : public TtsPlatform {
+ public:
+  MockTtsPlatformImpl() = default;
+  virtual ~MockTtsPlatformImpl() = default;
+
+  void set_voices(const std::vector<VoiceData>& voices) { voices_ = voices; }
+
+  void set_run_speak_callback(bool value) { run_speak_callback_ = value; }
+  void set_is_speaking(bool value) { is_speaking_ = value; }
+
+  // TtsPlatform:
+  bool PlatformImplAvailable() override { return true; }
+  void Speak(int utterance_id,
+             const std::string& utterance,
+             const std::string& lang,
+             const VoiceData& voice,
+             const UtteranceContinuousParameters& params,
+             base::OnceCallback<void(bool)> on_speak_finished) override {
+    if (run_speak_callback_)
+      std::move(on_speak_finished).Run(true);
+    last_spoken_utterance_ = utterance;
+  }
+  bool IsSpeaking() override { return is_speaking_; }
+  bool StopSpeaking() override { return true; }
+  void Pause() override {}
+  void Resume() override {}
+  void GetVoices(std::vector<VoiceData>* out_voices) override {
+    *out_voices = voices_;
+  }
+  bool LoadBuiltInTtsEngine(BrowserContext* browser_context) override {
+    return false;
+  }
+  void WillSpeakUtteranceWithVoice(TtsUtterance* utterance,
+                                   const VoiceData& voice_data) override {}
+  void SetError(const std::string& error) override {}
+  std::string GetError() override { return std::string(); }
+  void ClearError() override {}
+  const std::string& GetLastSpokenUtterance() { return last_spoken_utterance_; }
+  void ClearLastSpokenUtterance() { last_spoken_utterance_ = ""; }
+
+ private:
+  std::vector<VoiceData> voices_;
+  bool run_speak_callback_ = true;
+  bool is_speaking_ = false;
+  std::string last_spoken_utterance_;
+};
+
+class MockContentBrowserClient : public ContentBrowserClient {
+ public:
+  ~MockContentBrowserClient() override {}
+};
+
+class MockContentClient : public ContentClient {
+ public:
+  ~MockContentClient() override {}
+};
+
+}  // namespace content
 
 namespace chromecast {
 namespace accessibility {
@@ -652,6 +718,130 @@ TEST_F(AXTreeSourceFlutterTest, NoClickable) {
 
   // No node should get the clickable attribute.
   ASSERT_FALSE(data->GetBoolAttribute(ax::mojom::BoolAttribute::kClickable));
+}
+
+// Tests a new node with scopes route will focus and speak
+// a child with names route set.
+TEST_F(AXTreeSourceFlutterTest, ScopesRoute) {
+  // Install a mock tts platform
+  auto* tts_controller = content::TtsController::GetInstance();
+  content::MockTtsPlatformImpl mock_tts_platform;
+  tts_controller->SetTtsPlatform(&mock_tts_platform);
+
+  // Setup some mocks required for tts platform impl
+  content::MockContentBrowserClient mock_content_browser_client;
+  content::MockContentClient client;
+  content::SetContentClient(&client);
+  content::SetBrowserClientForTesting(&mock_content_browser_client);
+
+  // Add node with scopes route and child with names route. Focus
+  // should move to node with names route.
+  //
+  OnAccessibilityEventRequest event;
+
+  event.set_source_id(0);
+  event.set_window_id(1);
+  event.set_event_type(OnAccessibilityEventRequest_EventType_CONTENT_CHANGED);
+
+  SemanticsNode* root = event.add_node_data();
+  root->set_node_id(0);
+
+  SemanticsNode* child1;
+  SemanticsNode* child2;
+  SemanticsNode* child3;
+  SemanticsNode* child4;
+  SemanticsNode* child5;
+  SemanticsNode* child6;
+
+  child1 = AddChild(&event, root, 1, 0, 0, 1, 1, false);
+  child2 = AddChild(&event, child1, 2, 0, 0, 1, 1, false);
+  child3 = AddChild(&event, child2, 3, 0, 0, 1, 1, false);
+  std::string child_3_label = "Speak This";
+  child3->set_label(child_3_label);
+
+  child4 = AddChild(&event, root, 4, 0, 0, 1, 1, false);
+  child5 = AddChild(&event, child4, 5, 0, 0, 1, 1, false);
+  child6 = AddChild(&event, child5, 6, 0, 0, 1, 1, false);
+  std::string child_6_label = "Speak That";
+  child6->set_label(child_6_label);
+
+  BooleanProperties* boolean_properties;
+
+  // Set scopes on child2, names on child3
+  boolean_properties = child2->mutable_boolean_properties();
+  boolean_properties->set_scopes_route(true);
+  boolean_properties = child3->mutable_boolean_properties();
+  boolean_properties->set_names_route(true);
+
+  // Set scopes on child5, names on child6
+  boolean_properties = child5->mutable_boolean_properties();
+  boolean_properties->set_scopes_route(true);
+  boolean_properties = child6->mutable_boolean_properties();
+  boolean_properties->set_names_route(true);
+
+  CallNotifyAccessibilityEvent(&event);
+
+  // focus should have moved to child 6 since that is the first
+  // node that will be found with scopes
+  ui::AXTreeData tree_data;
+  CallGetTreeData(&tree_data);
+  ASSERT_EQ(6, tree_data.focus_id);
+
+  // Child 3 should have been spoken
+  ASSERT_TRUE(mock_tts_platform.GetLastSpokenUtterance() == child_6_label);
+
+  mock_tts_platform.ClearLastSpokenUtterance();
+
+  // Same tree should not speak the same scopes_route/names_route
+  CallNotifyAccessibilityEvent(&event);
+
+  ASSERT_TRUE(mock_tts_platform.GetLastSpokenUtterance() == "");
+
+  // Now setup another tree but with 5&6 removed. This should
+  // make the tree source focus (but not speak) 3
+
+  OnAccessibilityEventRequest event2;
+  event2.set_source_id(0);
+  event2.set_window_id(1);
+  event2.set_event_type(OnAccessibilityEventRequest_EventType_CONTENT_CHANGED);
+
+  root = event2.add_node_data();
+  root->set_node_id(0);
+
+  child1 = AddChild(&event2, root, 1, 0, 0, 1, 1, false);
+  child2 = AddChild(&event2, child1, 2, 0, 0, 1, 1, false);
+  child3 = AddChild(&event2, child2, 3, 0, 0, 1, 1, false);
+  child3->set_label(child_3_label);
+
+  // Set scopes on child2, names on child3
+  boolean_properties = child2->mutable_boolean_properties();
+  boolean_properties->set_scopes_route(true);
+  boolean_properties = child3->mutable_boolean_properties();
+  boolean_properties->set_names_route(true);
+
+  CallNotifyAccessibilityEvent(&event2);
+
+  // Focus moves to 3
+  CallGetTreeData(&tree_data);
+  ASSERT_EQ(3, tree_data.focus_id);
+
+  // Nothings spoken
+  ASSERT_TRUE(mock_tts_platform.GetLastSpokenUtterance() == "");
+
+  // Finally, remove 2&3
+  //
+  OnAccessibilityEventRequest event3;
+  event3.set_source_id(0);
+  event3.set_window_id(1);
+  event3.set_event_type(OnAccessibilityEventRequest_EventType_CONTENT_CHANGED);
+
+  root = event3.add_node_data();
+  root->set_node_id(0);
+
+  CallNotifyAccessibilityEvent(&event3);
+
+  CallGetTreeData(&tree_data);
+  ASSERT_EQ(0, tree_data.focus_id);
 }
 
 }  // namespace accessibility

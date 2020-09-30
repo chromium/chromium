@@ -65,6 +65,16 @@ bool FlutterSemanticsNodeWrapper::IsLiveRegion() const {
   return boolean_properties.is_live_region();
 }
 
+bool FlutterSemanticsNodeWrapper::HasScopesRoute() const {
+  const BooleanProperties& boolean_properties = node_ptr_->boolean_properties();
+  return boolean_properties.scopes_route();
+}
+
+bool FlutterSemanticsNodeWrapper::HasNamesRoute() const {
+  const BooleanProperties& boolean_properties = node_ptr_->boolean_properties();
+  return boolean_properties.names_route();
+}
+
 bool FlutterSemanticsNodeWrapper::CanBeAccessibilityFocused() const {
   // In Chrome, this means:
   // a node with a non-generic role and:
@@ -516,7 +526,7 @@ bool FlutterSemanticsNodeWrapper::IsScrollable() const {
 
 bool FlutterSemanticsNodeWrapper::IsFocusable() const {
   const BooleanProperties& boolean_properties = node_ptr_->boolean_properties();
-  if (boolean_properties.scopes_route())
+  if (boolean_properties.scopes_route() && !boolean_properties.names_route())
     return false;
 
   bool focusable_flags =

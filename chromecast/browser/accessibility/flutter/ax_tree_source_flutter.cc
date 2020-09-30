@@ -217,7 +217,7 @@ void AXTreeSourceFlutter::NotifyAccessibilityEvent(
     }
   }
 
-  // Do we need to put focus back on the root after a child tree
+  // Do we need to put focus somewhere after a child tree
   // has been removed?
   bool need_focus_clear = false;
   for (std::string id : child_trees_) {
@@ -281,6 +281,9 @@ void AXTreeSourceFlutter::NotifyAccessibilityEvent(
     // Clear reparented children.
     reparented_children_.clear();
 
+    // Handle routes added/removed from the tree.
+    HandleRoutes(&event_bundle.events);
+
     event_bundle.updates.emplace_back();
     current_tree_serializer_->SerializeChanges(GetFromId(event.id),
                                                &event_bundle.updates.back());
@@ -293,12 +296,12 @@ void AXTreeSourceFlutter::NotifyAccessibilityEvent(
     HandleNativeTTS();
   }
 
-  // Place focus back on the root if a child tree has disappeared
+  // Need to refocus
   if (need_focus_clear) {
     event_bundle.events.emplace_back();
     ui::AXEvent& focus_event = event_bundle.events.back();
     focus_event.event_type = ax::mojom::Event::kFocus;
-    focus_event.id = root_id_;
+    focus_event.id = focused_id_;
     focus_event.event_from = ax::mojom::EventFrom::kNone;
   }
 
@@ -620,6 +623,135 @@ void AXTreeSourceFlutter::HandleLiveRegions(std::vector<ui::AXEvent>* events) {
   }
 
   std::swap(live_region_name_cache_, new_live_region_map);
+}
+
+// Handle created/deleted nodes with scopes routes flag set.
+void AXTreeSourceFlutter::HandleRoutes(std::vector<ui::AXEvent>* events) {
+  bool focused_new = false;
+  for (const auto& it : tree_map_) {
+    FlutterSemanticsNode* node = it.second.get();
+    if (!node->HasScopesRoute())
+      continue;
+
+    // Do we know about this node already? If so, skip.
+    if (std::find(scopes_route_cache_.begin(), scopes_route_cache_.end(),
+                  node->GetId()) != scopes_route_cache_.end()) {
+      continue;
+    }
+
+    scopes_route_cache_.push_back(node->GetId());
+
+    // Find a node in the sub-tree with names route flag set.
+    FlutterSemanticsNode* sub_node = FindRoutesNode(node);
+    if (sub_node) {
+      ui::AXNodeData data;
+      SerializeNode(sub_node, &data);
+      std::string name;
+      data.GetStringAttribute(ax::mojom::StringAttribute::kName, &name);
+      if (name.length() > 0) {
+        focused_new = true;
+
+        // Focus the node.
+        focused_id_ = sub_node->GetId();
+        events->emplace_back();
+        ui::AXEvent& focus_event = events->back();
+        focus_event.event_type = ax::mojom::Event::kFocus;
+        focus_event.id = focused_id_;
+        focus_event.event_from = ax::mojom::EventFrom::kNone;
+
+        // Speak it.
+        std::unique_ptr<content::TtsUtterance> utterance =
+            content::TtsUtterance::Create(browser_context_);
+        utterance->SetText(name);
+        auto* tts_controller = content::TtsController::GetInstance();
+        tts_controller->Stop();
+        tts_controller->SpeakOrEnqueue(std::move(utterance));
+      }
+    }
+  }
+
+  // Detect any removed nodes with scopes_route flag.
+  bool need_refocus = false;
+  for (std::vector<int32_t>::iterator it = scopes_route_cache_.begin();
+       it != scopes_route_cache_.end();) {
+    int32_t id = *it;
+    if (GetFromId(id) == nullptr) {
+      // This was removed.
+      it = scopes_route_cache_.erase(it++);
+      need_refocus = true;
+    } else {
+      it++;
+    }
+  }
+
+  // After a deletion, use the last scopes route node to refocus on a child
+  // with names route set (unless we already focused on a new node from above).
+  if (need_refocus && !focused_new) {
+    // Select the last in-depth node with scopesRoute for refocus
+    FlutterSemanticsNode* refocused_routes_node = nullptr;
+    if (scopes_route_cache_.size() > 0)
+      refocused_routes_node =
+          FindRoutesNode(GetFromId(scopes_route_cache_.back()));
+    if (refocused_routes_node) {
+      focused_id_ = refocused_routes_node->GetId();
+    } else {
+      focused_id_ = FindFirstFocusableNodeId();
+    }
+    events->emplace_back();
+    ui::AXEvent& focus_event = events->back();
+    focus_event.event_type = ax::mojom::Event::kFocus;
+    focus_event.id = focused_id_;
+    focus_event.event_from = ax::mojom::EventFrom::kNone;
+  }
+}
+
+// Perform depth first search for a subtree node under 'parent'
+// with names route flag set.
+FlutterSemanticsNode* AXTreeSourceFlutter::FindRoutesNode(
+    FlutterSemanticsNode* parent) {
+  if (parent == nullptr)
+    return nullptr;
+
+  std::stack<FlutterSemanticsNode*> stack;
+  stack.push(parent);
+  while (!stack.empty()) {
+    FlutterSemanticsNode* node = stack.top();
+    stack.pop();
+    DCHECK(node);
+
+    if (node->HasNamesRoute()) {
+      return node;
+    }
+
+    std::vector<FlutterSemanticsNode*> children;
+    node->GetChildren(&children);
+    for (FlutterSemanticsNode* child : children)
+      stack.push(child);
+  }
+  return nullptr;
+}
+
+// Find the first focusable node.
+int32_t AXTreeSourceFlutter::FindFirstFocusableNodeId() {
+  std::stack<FlutterSemanticsNode*> stack;
+  stack.push(GetFromId(root_id_));
+  while (!stack.empty()) {
+    FlutterSemanticsNode* node = stack.top();
+    stack.pop();
+    DCHECK(node);
+
+    if (node->CanBeAccessibilityFocused()) {
+      return node->GetId();
+    }
+
+    std::vector<FlutterSemanticsNode*> children;
+    node->GetChildren(&children);
+    for (FlutterSemanticsNode* child : children)
+      stack.push(child);
+  }
+
+  // Fallback to root if none found.
+  return root_id_;
 }
 
 void AXTreeSourceFlutter::UpdateTree() {
