@@ -20,7 +20,7 @@
 #include "chrome/browser/ui/webui/settings/chromeos/os_settings_manager_factory.h"
 #include "chrome/browser/ui/webui/settings/chromeos/pref_names.h"
 #include "chrome/browser/ui/webui/settings/chromeos/search/search_handler.h"
-#include "chrome/browser/ui/webui/settings/chromeos/search/settings_user_action_tracker.h"
+#include "chrome/browser/ui/webui/settings/chromeos/settings_user_action_tracker.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/os_settings_resources.h"
@@ -139,8 +139,9 @@ void OSSettingsUI::BindInterface(
 
 void OSSettingsUI::BindInterface(
     mojo::PendingReceiver<mojom::UserActionRecorder> receiver) {
-  user_action_recorder_ =
-      std::make_unique<SettingsUserActionTracker>(std::move(receiver));
+  OsSettingsManagerFactory::GetForProfile(Profile::FromWebUI(web_ui()))
+      ->settings_user_action_tracker()
+      ->BindInterface(std::move(receiver));
 }
 
 void OSSettingsUI::BindInterface(

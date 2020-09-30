@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/settings/chromeos/search/settings_user_action_tracker.h"
+#include "chrome/browser/ui/webui/settings/chromeos/search/per_session_settings_user_action_tracker.h"
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
@@ -12,18 +12,18 @@
 namespace chromeos {
 namespace settings {
 
-class SettingsUserActionTrackerTest : public testing::Test {
+class PerSessionSettingsUserActionTrackerTest : public testing::Test {
  protected:
-  SettingsUserActionTrackerTest() = default;
-  ~SettingsUserActionTrackerTest() override = default;
+  PerSessionSettingsUserActionTrackerTest() = default;
+  ~PerSessionSettingsUserActionTrackerTest() override = default;
 
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::HistogramTester histogram_tester_;
-  SettingsUserActionTracker tracker_;
+  PerSessionSettingsUserActionTracker tracker_;
 };
 
-TEST_F(SettingsUserActionTrackerTest, TestRecordMetrics) {
+TEST_F(PerSessionSettingsUserActionTrackerTest, TestRecordMetrics) {
   // Focus the page, perform some tasks, and change a setting.
   tracker_.RecordPageFocus();
   tracker_.RecordClick();
@@ -117,7 +117,7 @@ TEST_F(SettingsUserActionTrackerTest, TestRecordMetrics) {
       /*count=*/2);
 }
 
-TEST_F(SettingsUserActionTrackerTest, TestBlurAndFocus) {
+TEST_F(PerSessionSettingsUserActionTrackerTest, TestBlurAndFocus) {
   // Focus the page, click, and change a setting.
   tracker_.RecordPageFocus();
   tracker_.RecordClick();

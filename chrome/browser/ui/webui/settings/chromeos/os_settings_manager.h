@@ -54,6 +54,7 @@ class Hierarchy;
 class OsSettingsSections;
 class SearchHandler;
 class SearchTagRegistry;
+class SettingsUserActionTracker;
 
 // Manager for the Chrome OS settings page. This class is implemented as a
 // KeyedService, so one instance of the class is intended to be active for the
@@ -109,6 +110,10 @@ class OsSettingsManager : public KeyedService {
 
   SearchHandler* search_handler() { return search_handler_.get(); }
 
+  SettingsUserActionTracker* settings_user_action_tracker() {
+    return settings_user_action_tracker_.get();
+  }
+
   const Hierarchy* hierarchy() const { return hierarchy_.get(); }
 
  private:
@@ -119,6 +124,7 @@ class OsSettingsManager : public KeyedService {
 
   std::unique_ptr<SearchTagRegistry> search_tag_registry_;
   std::unique_ptr<OsSettingsSections> sections_;
+  std::unique_ptr<SettingsUserActionTracker> settings_user_action_tracker_;
   std::unique_ptr<Hierarchy> hierarchy_;
   std::unique_ptr<SearchHandler> search_handler_;
 };

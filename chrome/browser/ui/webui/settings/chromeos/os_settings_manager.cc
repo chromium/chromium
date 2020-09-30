@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/webui/settings/chromeos/os_settings_sections.h"
 #include "chrome/browser/ui/webui/settings/chromeos/search/search_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/search/search_tag_registry.h"
+#include "chrome/browser/ui/webui/settings/chromeos/settings_user_action_tracker.h"
 #include "chromeos/components/local_search_service/local_search_service.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -44,6 +45,8 @@ OsSettingsManager::OsSettingsManager(
                                                identity_manager,
                                                android_sms_service,
                                                printers_manager)),
+      settings_user_action_tracker_(
+          std::make_unique<SettingsUserActionTracker>()),
       hierarchy_(std::make_unique<Hierarchy>(sections_.get())),
       search_handler_(
           std::make_unique<SearchHandler>(search_tag_registry_.get(),

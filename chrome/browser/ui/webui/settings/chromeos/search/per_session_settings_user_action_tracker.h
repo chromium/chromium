@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_CHROMEOS_SEARCH_SETTINGS_USER_ACTION_TRACKER_H_
-#define CHROME_BROWSER_UI_WEBUI_SETTINGS_CHROMEOS_SEARCH_SETTINGS_USER_ACTION_TRACKER_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_CHROMEOS_SEARCH_PER_SESSION_SETTINGS_USER_ACTION_TRACKER_H_
+#define CHROME_BROWSER_UI_WEBUI_SETTINGS_CHROMEOS_SEARCH_PER_SESSION_SETTINGS_USER_ACTION_TRACKER_H_
 
 #include "base/time/time.h"
 #include "chrome/browser/ui/webui/settings/chromeos/search/user_action_recorder.mojom.h"
@@ -17,14 +17,14 @@ namespace settings {
 // This class is only meant to track actions from an individual settings
 // session; if the settings window is closed and reopened again, a new instance
 // should be created for that new session.
-class SettingsUserActionTracker : public mojom::UserActionRecorder {
+class PerSessionSettingsUserActionTracker : public mojom::UserActionRecorder {
  public:
-  explicit SettingsUserActionTracker(
-      mojo::PendingReceiver<mojom::UserActionRecorder> pending_receiver);
-  SettingsUserActionTracker(const SettingsUserActionTracker& other) = delete;
-  SettingsUserActionTracker& operator=(const SettingsUserActionTracker& other) =
-      delete;
-  ~SettingsUserActionTracker() override;
+  PerSessionSettingsUserActionTracker();
+  PerSessionSettingsUserActionTracker(
+      const PerSessionSettingsUserActionTracker& other) = delete;
+  PerSessionSettingsUserActionTracker& operator=(
+      const PerSessionSettingsUserActionTracker& other) = delete;
+  ~PerSessionSettingsUserActionTracker() override;
 
   // mojom::UserActionRecorder:
   void RecordPageFocus() override;
@@ -35,10 +35,7 @@ class SettingsUserActionTracker : public mojom::UserActionRecorder {
   void RecordSettingChange() override;
 
  private:
-  friend class SettingsUserActionTrackerTest;
-
-  // For unit tests.
-  SettingsUserActionTracker();
+  friend class PerSessionSettingsUserActionTrackerTest;
 
   void ResetMetricsCountersAndTimestamp();
 
@@ -71,4 +68,4 @@ class SettingsUserActionTracker : public mojom::UserActionRecorder {
 }  // namespace settings
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_CHROMEOS_SEARCH_SETTINGS_USER_ACTION_TRACKER_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_CHROMEOS_SEARCH_PER_SESSION_SETTINGS_USER_ACTION_TRACKER_H_

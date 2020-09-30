@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/settings/chromeos/search/settings_user_action_tracker.h"
+#include "chrome/browser/ui/webui/settings/chromeos/search/per_session_settings_user_action_tracker.h"
 
 #include "base/metrics/histogram_functions.h"
 
@@ -35,18 +35,13 @@ void LogDurationMetric(const char* metric_name, base::TimeDelta duration) {
 
 }  // namespace
 
-SettingsUserActionTracker::SettingsUserActionTracker(
-    mojo::PendingReceiver<mojom::UserActionRecorder> pending_receiver)
-    : SettingsUserActionTracker() {
-  receiver_.Bind(std::move(pending_receiver));
-}
-
-SettingsUserActionTracker::SettingsUserActionTracker()
+PerSessionSettingsUserActionTracker::PerSessionSettingsUserActionTracker()
     : metric_start_time_(base::TimeTicks::Now()) {}
 
-SettingsUserActionTracker::~SettingsUserActionTracker() = default;
+PerSessionSettingsUserActionTracker::~PerSessionSettingsUserActionTracker() =
+    default;
 
-void SettingsUserActionTracker::RecordPageFocus() {
+void PerSessionSettingsUserActionTracker::RecordPageFocus() {
   if (last_blur_timestamp_.is_null())
     return;
 
@@ -65,23 +60,23 @@ void SettingsUserActionTracker::RecordPageFocus() {
   }
 }
 
-void SettingsUserActionTracker::RecordPageBlur() {
+void PerSessionSettingsUserActionTracker::RecordPageBlur() {
   last_blur_timestamp_ = base::TimeTicks::Now();
 }
 
-void SettingsUserActionTracker::RecordClick() {
+void PerSessionSettingsUserActionTracker::RecordClick() {
   ++num_clicks_since_start_time_;
 }
 
-void SettingsUserActionTracker::RecordNavigation() {
+void PerSessionSettingsUserActionTracker::RecordNavigation() {
   ++num_navigations_since_start_time_;
 }
 
-void SettingsUserActionTracker::RecordSearch() {
+void PerSessionSettingsUserActionTracker::RecordSearch() {
   ++num_searches_since_start_time_;
 }
 
-void SettingsUserActionTracker::RecordSettingChange() {
+void PerSessionSettingsUserActionTracker::RecordSettingChange() {
   base::TimeTicks now = base::TimeTicks::Now();
 
   if (!last_record_setting_changed_timestamp_.is_null()) {
@@ -120,7 +115,7 @@ void SettingsUserActionTracker::RecordSettingChange() {
   last_record_setting_changed_timestamp_ = now;
 }
 
-void SettingsUserActionTracker::ResetMetricsCountersAndTimestamp() {
+void PerSessionSettingsUserActionTracker::ResetMetricsCountersAndTimestamp() {
   metric_start_time_ = base::TimeTicks::Now();
   num_clicks_since_start_time_ = 0u;
   num_navigations_since_start_time_ = 0u;
