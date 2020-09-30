@@ -70,8 +70,8 @@ constexpr uint64_t kThreadInstructionCountTrackUuidBit =
 // Names of events that should be converted into a TaskExecution event.
 const char* kTaskExecutionEventCategory = "toplevel";
 const char* kTaskExecutionEventNames[3] = {"ThreadControllerImpl::RunTask",
-                                           "ThreadController::Task",
-                                           "ThreadPool_RunTask"};
+                                           "ThreadPool_RunTask",
+                                           "SimpleAlarmTimer::OnTimerFired"};
 
 void AddConvertableToTraceFormat(
     base::trace_event::ConvertableToTraceFormat* value,

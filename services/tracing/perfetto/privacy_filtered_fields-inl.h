@@ -30,7 +30,6 @@ constexpr int kClockIndices[] = {1, 2, 3, 4, -1};
 constexpr MessageInfo kClock = {kClockIndices, nullptr};
 
 // Proto Message: ClockSnapshot
-// Manually allowlisted: 2 (primary_trace_clock).
 constexpr int kClockSnapshotIndices[] = {1, 2, -1};
 constexpr MessageInfo const* kClockSnapshotComplexMessages[] = {&kClock,
                                                                 nullptr};
@@ -167,10 +166,14 @@ constexpr int kChromeFrameReporterIndices[] = {1, 2, 3, 4, -1};
 constexpr MessageInfo kChromeFrameReporter = {kChromeFrameReporterIndices,
                                               nullptr};
 
+// Proto Message: ChromeMessagePump
+constexpr int kChromeMessagePumpIndices[] = {1, -1};
+constexpr MessageInfo kChromeMessagePump = {kChromeMessagePumpIndices, nullptr};
+
 // Proto Message: TrackEvent
-constexpr int kTrackEventIndices[] = {1,  2,  3,  5,  6,  9,  10,
-                                      11, 12, 16, 17, 24, 25, 26,
-                                      27, 28, 29, 30, 31, 32, -1};
+constexpr int kTrackEventIndices[] = {1,  2,  3,  5,  6,  9,  10, 11,
+                                      12, 16, 17, 24, 25, 26, 27, 28,
+                                      29, 30, 31, 32, 33, 34, 35, -1};
 constexpr MessageInfo const* kTrackEventComplexMessages[] = {
     nullptr,
     nullptr,
@@ -191,7 +194,10 @@ constexpr MessageInfo const* kTrackEventComplexMessages[] = {
     &kChromeLatencyInfo,
     nullptr,
     nullptr,
-    &kChromeFrameReporter};
+    &kChromeFrameReporter,
+    &kSourceLocation,
+    nullptr,
+    &kChromeMessagePump};
 constexpr MessageInfo kTrackEvent = {kTrackEventIndices,
                                      kTrackEventComplexMessages};
 

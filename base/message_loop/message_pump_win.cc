@@ -15,6 +15,11 @@
 #include "base/numerics/ranges.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/trace_event/base_tracing.h"
+#include "base/tracing_buildflags.h"
+
+#if BUILDFLAG(ENABLE_BASE_TRACING)
+#include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_message_pump.pbzero.h"
+#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 
 namespace base {
 
@@ -483,9 +488,13 @@ bool MessagePumpForUI::ProcessNextWindowsMessage() {
     // PeekMessage can run a message if there are sent messages, trace that and
     // emit the boolean param to see if it ever janks independently (ref.
     // comment on GetQueueStatus).
-    TRACE_EVENT1("base",
-                 "MessagePumpForUI::ProcessNextWindowsMessage PeekMessage",
-                 "sent_messages_in_queue", more_work_is_plausible);
+    TRACE_EVENT(
+        "base", "MessagePumpForUI::ProcessNextWindowsMessage PeekMessage",
+        [&](perfetto::EventContext ctx) {
+          perfetto::protos::pbzero::ChromeMessagePump* msg_pump_data =
+              ctx.event()->set_chrome_message_pump();
+          msg_pump_data->set_sent_messages_in_queue(more_work_is_plausible);
+        });
     has_msg = ::PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE) != FALSE;
   }
   if (has_msg)

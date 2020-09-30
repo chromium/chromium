@@ -147,6 +147,14 @@ static inline void AddTraceEvent(char phase,
                 base::TimeTicks(), argument_func);
 }
 
+inline void AddTraceEvent(char phase,
+                          const unsigned char* category_group_enabled,
+                          const char* name,
+                          unsigned int flags) {
+  AddTraceEvent(phase, category_group_enabled, name, flags, perfetto::Track(),
+                base::TimeTicks(), [](perfetto::EventContext ctx) {});
+}
+
 template <typename TrackType,
           typename TrackTypeCheck = typename std::enable_if<
               std::is_convertible<TrackType, perfetto::Track>::value>::type>
