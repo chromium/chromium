@@ -35,17 +35,6 @@ MediaRouterFactory* MediaRouterFactory::GetInstance() {
   return g_instance;
 }
 
-void MediaRouterFactory::BrowserContextShutdown(
-    content::BrowserContext* context) {
-  if (context->IsOffTheRecord()) {
-    MediaRouter* router =
-        static_cast<MediaRouter*>(GetServiceForBrowserContext(context, false));
-    if (router)
-      router->OnIncognitoProfileShutdown();
-  }
-  BrowserContextKeyedServiceFactory::BrowserContextShutdown(context);
-}
-
 MediaRouterFactory::MediaRouterFactory()
     : BrowserContextKeyedServiceFactory(
           "MediaRouter",

@@ -27,10 +27,6 @@ class MediaRouterFactory : public BrowserContextKeyedServiceFactory {
   static MediaRouterFactory* GetInstance();
 
  protected:
-  // We override the shutdown method for the factory to give the Media Router a
-  // chance to remove incognito media routes.
-  void BrowserContextShutdown(content::BrowserContext* context) override;
-
   MediaRouterFactory();
   ~MediaRouterFactory() override;
 };

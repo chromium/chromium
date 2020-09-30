@@ -40,6 +40,7 @@ class ChromeMediaRouterFactory : public MediaRouterFactory {
       content::BrowserContext* context) const override;
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
+  void BrowserContextShutdown(content::BrowserContext* context) override;
 };
 
 }  // namespace media_router
