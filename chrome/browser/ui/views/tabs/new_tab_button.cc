@@ -54,8 +54,8 @@ class NewTabButton::HighlightPathGenerator
   }
 };
 
-NewTabButton::NewTabButton(TabStrip* tab_strip, views::ButtonListener* listener)
-    : views::ImageButton(listener), tab_strip_(tab_strip) {
+NewTabButton::NewTabButton(TabStrip* tab_strip, PressedCallback callback)
+    : views::ImageButton(std::move(callback)), tab_strip_(tab_strip) {
   SetAnimateOnStateChange(true);
 #if defined(OS_LINUX) && !defined(OS_CHROMEOS)
   SetTriggerableEventFlags(GetTriggerableEventFlags() |

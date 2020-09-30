@@ -29,7 +29,7 @@ class NewTabButton : public views::ImageButton,
 
   static const gfx::Size kButtonSize;
 
-  NewTabButton(TabStrip* tab_strip, views::ButtonListener* listener);
+  NewTabButton(TabStrip* tab_strip, PressedCallback callback);
   NewTabButton(const NewTabButton&) = delete;
   NewTabButton& operator=(const NewTabButton&) = delete;
   ~NewTabButton() override;

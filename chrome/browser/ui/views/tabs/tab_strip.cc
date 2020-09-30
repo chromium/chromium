@@ -2494,7 +2494,9 @@ void TabStrip::Init() {
   tab_controls_container_ =
       AddChildView(std::make_unique<TabControlsContainer>());
 
-  auto new_tab_button = std::make_unique<NewTabButton>(this, this);
+  auto new_tab_button = std::make_unique<NewTabButton>(
+      this, base::BindRepeating(&TabStrip::NewTabButtonPressed,
+                                base::Unretained(this)));
   new_tab_button->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_TOOLTIP_NEW_TAB));
   new_tab_button->SetAccessibleName(
@@ -2510,7 +2512,7 @@ void TabStrip::Init() {
   if (base::FeatureList::IsEnabled(features::kTabSearch) &&
       !base::FeatureList::IsEnabled(features::kTabSearchFixedEntrypoint) &&
       !controller_->GetProfile()->IsIncognitoProfile()) {
-    auto tab_search_button = std::make_unique<TabSearchButton>(this, this);
+    auto tab_search_button = std::make_unique<TabSearchButton>(this);
     tab_search_button->SetTooltipText(
         l10n_util::GetStringUTF16(IDS_TOOLTIP_TAB_SEARCH));
     tab_search_button->SetAccessibleName(
@@ -2547,6 +2549,37 @@ std::map<tab_groups::TabGroupId, TabGroupHeader*> TabStrip::GetGroupHeaders() {
                                         group_view_pair.second->header()));
   }
   return group_headers;
+}
+
+void TabStrip::NewTabButtonPressed(const ui::Event& event) {
+  base::RecordAction(base::UserMetricsAction("NewTab_Button"));
+  UMA_HISTOGRAM_ENUMERATION("Tab.NewTab", TabStripModel::NEW_TAB_BUTTON,
+                            TabStripModel::NEW_TAB_ENUM_COUNT);
+  if (event.IsMouseEvent()) {
+    // Prevent the hover card from popping back in immediately. This forces a
+    // normal fade-in.
+    if (hover_card_)
+      hover_card_->set_last_mouse_exit_timestamp(base::TimeTicks());
+
+    const ui::MouseEvent& mouse = static_cast<const ui::MouseEvent&>(event);
+    if (mouse.IsOnlyMiddleMouseButton()) {
+      if (ui::Clipboard::IsSupportedClipboardBuffer(
+              ui::ClipboardBuffer::kSelection)) {
+        ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
+        CHECK(clipboard);
+        base::string16 clipboard_text;
+        clipboard->ReadText(ui::ClipboardBuffer::kSelection,
+                            /* data_dst = */ nullptr, &clipboard_text);
+        if (!clipboard_text.empty())
+          controller_->CreateNewTabWithLocation(clipboard_text);
+      }
+      return;
+    }
+  }
+
+  controller_->CreateNewTab();
+  if (event.type() == ui::ET_GESTURE_TAP)
+    TouchUMA::RecordGestureAction(TouchUMA::kGestureNewTabTap);
 }
 
 void TabStrip::StartInsertTabAnimation(int model_index, TabPinned pinned) {
@@ -3631,39 +3664,6 @@ void TabStrip::UpdateTabGroupVisuals(tab_groups::TabGroupId group_id) {
   const auto group_views = group_views_.find(group_id);
   if (group_views != group_views_.end())
     group_views->second->UpdateBounds();
-}
-
-void TabStrip::ButtonPressed(views::Button* sender, const ui::Event& event) {
-  if (sender == new_tab_button_) {
-    base::RecordAction(base::UserMetricsAction("NewTab_Button"));
-    UMA_HISTOGRAM_ENUMERATION("Tab.NewTab", TabStripModel::NEW_TAB_BUTTON,
-                              TabStripModel::NEW_TAB_ENUM_COUNT);
-    if (event.IsMouseEvent()) {
-      // Prevent the hover card from popping back in immediately. This forces a
-      // normal fade-in.
-      if (hover_card_)
-        hover_card_->set_last_mouse_exit_timestamp(base::TimeTicks());
-
-      const ui::MouseEvent& mouse = static_cast<const ui::MouseEvent&>(event);
-      if (mouse.IsOnlyMiddleMouseButton()) {
-        if (ui::Clipboard::IsSupportedClipboardBuffer(
-                ui::ClipboardBuffer::kSelection)) {
-          ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
-          CHECK(clipboard);
-          base::string16 clipboard_text;
-          clipboard->ReadText(ui::ClipboardBuffer::kSelection,
-                              /* data_dst = */ nullptr, &clipboard_text);
-          if (!clipboard_text.empty())
-            controller_->CreateNewTabWithLocation(clipboard_text);
-        }
-        return;
-      }
-    }
-
-    controller_->CreateNewTab();
-    if (event.type() == ui::ET_GESTURE_TAP)
-      TouchUMA::RecordGestureAction(TouchUMA::kGestureNewTabTap);
-  }
 }
 
 // Overridden to support automation. See automation_proxy_uitest.cc.

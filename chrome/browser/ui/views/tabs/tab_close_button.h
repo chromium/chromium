@@ -24,7 +24,7 @@ class TabCloseButton : public views::ImageButton,
   // middle clicks to be handled by the parent.
   //
   // See note on SetTabColor.
-  TabCloseButton(views::ButtonListener* listener,
+  TabCloseButton(PressedCallback pressed_callback,
                  MouseEventCallback mouse_event_callback);
   TabCloseButton(const TabCloseButton&) = delete;
   TabCloseButton& operator=(const TabCloseButton&) = delete;

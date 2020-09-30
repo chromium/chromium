@@ -16,6 +16,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/accelerators/accelerator.h"
+#include "ui/views/test/button_test_api.h"
 
 namespace {
 ui::MouseEvent GetDummyEvent() {
@@ -57,7 +58,7 @@ class TabSearchButtonBrowserTest : public InProcessBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(TabSearchButtonBrowserTest, CreateAndClose) {
   ASSERT_EQ(nullptr, tab_search_button()->bubble_for_testing());
-  tab_search_button()->ButtonPressed(tab_search_button(), GetDummyEvent());
+  views::test::ButtonTestApi(tab_search_button()).NotifyClick(GetDummyEvent());
   ASSERT_NE(nullptr, tab_search_button()->bubble_for_testing());
 
   // Close the tab search bubble widget, the bubble should be cleared from the
@@ -71,7 +72,7 @@ IN_PROC_BROWSER_TEST_P(TabSearchButtonBrowserTest, TestBubbleVisible) {
   EXPECT_FALSE(tab_search_button()->IsBubbleVisible());
 
   ASSERT_EQ(nullptr, tab_search_button()->bubble_for_testing());
-  tab_search_button()->ButtonPressed(tab_search_button(), GetDummyEvent());
+  views::test::ButtonTestApi(tab_search_button()).NotifyClick(GetDummyEvent());
   ASSERT_NE(nullptr, tab_search_button()->bubble_for_testing());
 
   // The bubble should not be visible initially since the UI must notify the

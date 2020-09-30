@@ -16,29 +16,33 @@ namespace {
 TabSearchOpenAction GetActionForEvent(const ui::Event& event) {
   if (event.IsMouseEvent()) {
     return TabSearchOpenAction::kMouseClick;
-  } else if (event.IsKeyEvent()) {
-    return TabSearchOpenAction::kKeyboardNavigation;
-  } else {
-    return TabSearchOpenAction::kTouchGesture;
   }
+  return event.IsKeyEvent() ? TabSearchOpenAction::kKeyboardNavigation
+                            : TabSearchOpenAction::kTouchGesture;
 }
 
 }  // namespace
 
-TabSearchButton::TabSearchButton(TabStrip* tab_strip,
-                                 views::ButtonListener* listener)
-    : NewTabButton(tab_strip, nullptr) {
+TabSearchButton::TabSearchButton(TabStrip* tab_strip)
+    : NewTabButton(tab_strip, PressedCallback()) {
   SetImageHorizontalAlignment(HorizontalAlignment::ALIGN_CENTER);
   SetImageVerticalAlignment(VerticalAlignment::ALIGN_MIDDLE);
 
   auto menu_button_controller = std::make_unique<views::MenuButtonController>(
-      this, this,
+      this,
+      base::BindRepeating(&TabSearchButton::ButtonPressed,
+                          base::Unretained(this)),
       std::make_unique<views::Button::DefaultButtonControllerDelegate>(this));
   menu_button_controller_ = menu_button_controller.get();
   SetButtonController(std::move(menu_button_controller));
 }
 
 TabSearchButton::~TabSearchButton() = default;
+
+void TabSearchButton::NotifyClick(const ui::Event& event) {
+  // Run pressed callback via MenuButtonController, instead of directly.
+  menu_button_controller_->Activate(&event);
+}
 
 void TabSearchButton::FrameColorsChanged() {
   NewTabButton::FrameColorsChanged();
@@ -47,16 +51,6 @@ void TabSearchButton::FrameColorsChanged() {
   // foreground color of the tab controls is expected to change.
   SetImage(Button::STATE_NORMAL,
            gfx::CreateVectorIcon(kTabSearchIcon, GetForegroundColor()));
-}
-
-void TabSearchButton::ButtonPressed(views::Button* sender,
-                                    const ui::Event& event) {
-  // Only log the open action if it resulted in creating a new instance of the
-  // Tab Search bubble.
-  if (ShowTabSearchBubble()) {
-    base::UmaHistogramEnumeration("Tabs.TabSearch.OpenAction",
-                                  GetActionForEvent(event));
-  }
 }
 
 void TabSearchButton::OnWidgetClosing(views::Widget* widget) {
@@ -87,4 +81,13 @@ void TabSearchButton::PaintIcon(gfx::Canvas* canvas) {
   // Call ImageButton::PaintButtonContents() to paint the TabSearchButton's
   // VectorIcon.
   views::ImageButton::PaintButtonContents(canvas);
+}
+
+void TabSearchButton::ButtonPressed(const ui::Event& event) {
+  // Only log the open action if it resulted in creating a new instance of the
+  // Tab Search bubble.
+  if (ShowTabSearchBubble()) {
+    base::UmaHistogramEnumeration("Tabs.TabSearch.OpenAction",
+                                  GetActionForEvent(event));
+  }
 }

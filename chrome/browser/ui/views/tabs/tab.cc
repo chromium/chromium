@@ -218,8 +218,9 @@ Tab::Tab(TabController* controller)
   // Unretained is safe here because this class outlives its close button, and
   // the controller outlives this Tab.
   close_button_ = new TabCloseButton(
-      this, base::BindRepeating(&TabController::OnMouseEventInTab,
-                                base::Unretained(controller_)));
+      base::BindRepeating(&Tab::CloseButtonPressed, base::Unretained(this)),
+      base::BindRepeating(&TabController::OnMouseEventInTab,
+                          base::Unretained(controller_)));
   close_button_->SetHasInkDropActionOnClick(true);
   AddChildView(close_button_);
 
@@ -253,25 +254,6 @@ void Tab::AnimationProgressed(const gfx::Animation* animation) {
       gfx::Tween::CalculateValue(gfx::Tween::FAST_OUT_SLOW_IN,
                                  animation->GetCurrentValue()),
       start_title_bounds_, target_title_bounds_));
-}
-
-void Tab::ButtonPressed(views::Button* sender, const ui::Event& event) {
-  if (!alert_indicator_ || !alert_indicator_->GetVisible())
-    base::RecordAction(UserMetricsAction("CloseTab_NoAlertIndicator"));
-  else if (GetAlertStateToShow(data_.alert_state) ==
-           TabAlertState::AUDIO_PLAYING)
-    base::RecordAction(UserMetricsAction("CloseTab_AudioIndicator"));
-  else
-    base::RecordAction(UserMetricsAction("CloseTab_RecordingIndicator"));
-
-  const CloseTabSource source = (event.type() == ui::ET_MOUSE_RELEASED &&
-                                 !(event.flags() & ui::EF_FROM_TOUCH))
-                                    ? CLOSE_TAB_FROM_MOUSE
-                                    : CLOSE_TAB_FROM_TOUCH;
-  DCHECK_EQ(close_button_, sender);
-  controller_->CloseTab(this, source);
-  if (event.type() == ui::ET_GESTURE_TAP)
-    TouchUMA::RecordGestureAction(TouchUMA::kGestureTabCloseTap);
 }
 
 bool Tab::GetHitTestMask(SkPath* mask) const {
@@ -1042,6 +1024,23 @@ void Tab::UpdateForegroundColors() {
   }
 
   SchedulePaint();
+}
+
+void Tab::CloseButtonPressed(const ui::Event& event) {
+  if (!alert_indicator_ || !alert_indicator_->GetVisible())
+    base::RecordAction(UserMetricsAction("CloseTab_NoAlertIndicator"));
+  else if (GetAlertStateToShow(data_.alert_state) ==
+           TabAlertState::AUDIO_PLAYING)
+    base::RecordAction(UserMetricsAction("CloseTab_AudioIndicator"));
+  else
+    base::RecordAction(UserMetricsAction("CloseTab_RecordingIndicator"));
+
+  const bool from_mouse = event.type() == ui::ET_MOUSE_RELEASED &&
+                          !(event.flags() & ui::EF_FROM_TOUCH);
+  controller_->CloseTab(
+      this, from_mouse ? CLOSE_TAB_FROM_MOUSE : CLOSE_TAB_FROM_TOUCH);
+  if (event.type() == ui::ET_GESTURE_TAP)
+    TouchUMA::RecordGestureAction(TouchUMA::kGestureTabCloseTap);
 }
 
 BEGIN_METADATA(Tab, TabSlotView)

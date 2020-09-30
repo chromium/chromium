@@ -14,7 +14,6 @@ class Canvas;
 }
 
 namespace views {
-class ButtonListener;
 class Widget;
 }
 
@@ -28,19 +27,16 @@ class TabStrip;
 // TODO(tluk): Break away common code from the NewTabButton and the
 // TabSearchButton into a TabStripControlButton or similar.
 class TabSearchButton : public NewTabButton,
-                        public views::ButtonListener,
                         public views::WidgetObserver {
  public:
-  TabSearchButton(TabStrip* tab_strip, views::ButtonListener* listener);
+  explicit TabSearchButton(TabStrip* tab_strip);
   TabSearchButton(const TabSearchButton&) = delete;
   TabSearchButton& operator=(const TabSearchButton&) = delete;
   ~TabSearchButton() override;
 
   // NewTabButton:
+  void NotifyClick(const ui::Event& event) final;
   void FrameColorsChanged() override;
-
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
 
   // views::WidgetObserver:
   void OnWidgetClosing(views::Widget* widget) override;
@@ -59,6 +55,8 @@ class TabSearchButton : public NewTabButton,
   void PaintIcon(gfx::Canvas* canvas) override;
 
  private:
+  void ButtonPressed(const ui::Event& event);
+
   views::MenuButtonController* menu_button_controller_ = nullptr;
 
   // A lock to keep the TabSearchButton pressed while |bubble_| is showing or

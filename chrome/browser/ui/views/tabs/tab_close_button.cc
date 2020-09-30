@@ -39,9 +39,9 @@ constexpr int kTouchGlyphSize = 24;
 
 }  //  namespace
 
-TabCloseButton::TabCloseButton(views::ButtonListener* listener,
+TabCloseButton::TabCloseButton(PressedCallback pressed_callback,
                                MouseEventCallback mouse_event_callback)
-    : views::ImageButton(listener),
+    : views::ImageButton(std::move(pressed_callback)),
       mouse_event_callback_(std::move(mouse_event_callback)) {
   SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
   SetAccessibleName(l10n_util::GetStringUTF16(IDS_ACCNAME_CLOSE));

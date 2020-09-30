@@ -49,7 +49,6 @@ class View;
 //
 ///////////////////////////////////////////////////////////////////////////////
 class Tab : public gfx::AnimationDelegate,
-            public views::ButtonListener,
             public views::MaskedTargeterDelegate,
             public views::ViewObserver,
             public TabSlotView {
@@ -74,9 +73,6 @@ class Tab : public gfx::AnimationDelegate,
   // gfx::AnimationDelegate:
   void AnimationEnded(const gfx::Animation* animation) override;
   void AnimationProgressed(const gfx::Animation* animation) override;
-
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
 
   // views::MaskedTargeterDelegate:
   bool GetHitTestMask(SkPath* mask) const override;
@@ -217,6 +213,8 @@ class Tab : public gfx::AnimationDelegate,
   // the mouse moving over the tab. If the tab is already hovered or mouse
   // events are disabled because of touch input, this is a no-op.
   void MaybeUpdateHoverStatus(const ui::MouseEvent& event);
+
+  void CloseButtonPressed(const ui::Event& event);
 
   // The controller, never nullptr.
   TabController* const controller_;

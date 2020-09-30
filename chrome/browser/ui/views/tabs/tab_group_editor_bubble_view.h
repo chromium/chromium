@@ -10,7 +10,6 @@
 #include "chrome/browser/ui/views/tabs/tab_group_header.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
-#include "ui/views/controls/button/button.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 
@@ -63,6 +62,12 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView {
 
   void UpdateGroup();
 
+  void NewTabInGroupPressed();
+  void UngroupPressed(TabGroupHeader* header_view);
+  void CloseGroupPressed();
+  void MoveGroupToNewWindowPressed();
+  void SendFeedbackPressed();
+
   void OnBubbleClose();
 
   const Browser* const browser_;
@@ -105,23 +110,6 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView {
   };
 
   TitleField* title_field_;
-
-  class ButtonListener : public views::ButtonListener {
-   public:
-    explicit ButtonListener(const Browser* browser,
-                            tab_groups::TabGroupId group,
-                            TabGroupHeader* header_view);
-
-    // views::ButtonListener:
-    void ButtonPressed(views::Button* sender, const ui::Event& event) override;
-
-   private:
-    const Browser* const browser_;
-    const tab_groups::TabGroupId group_;
-    TabGroupHeader* header_view_;
-  };
-
-  ButtonListener button_listener_;
 
   Colors colors_;
   ColorPickerView* color_selector_;

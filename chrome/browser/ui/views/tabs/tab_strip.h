@@ -75,7 +75,6 @@ class ImageView;
 //    DraggedTab, focusing on tasks that require reshuffling other tabs
 //    in response to dragged tabs.
 class TabStrip : public views::View,
-                 public views::ButtonListener,
                  public views::MouseWatcherListener,
                  public views::ViewObserver,
                  public views::ViewTargeterDelegate,
@@ -436,6 +435,8 @@ class TabStrip : public views::View,
 
   std::map<tab_groups::TabGroupId, TabGroupHeader*> GetGroupHeaders();
 
+  void NewTabButtonPressed(const ui::Event& event);
+
   // Invoked from |AddTabAt| after the newly created tab has been inserted.
   void StartInsertTabAnimation(int model_index, TabPinned pinned);
 
@@ -649,9 +650,6 @@ class TabStrip : public views::View,
   // Called to update the visuals for a tab group when tabs in the group are
   // moved or resized.
   void UpdateTabGroupVisuals(tab_groups::TabGroupId tab_group_id);
-
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
 
   // views::View:
   const views::View* GetViewByID(int id) const override;
