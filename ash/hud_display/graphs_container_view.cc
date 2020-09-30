@@ -26,7 +26,7 @@ constexpr base::TimeDelta kGraphsDataRefreshInterval =
 ////////////////////////////////////////////////////////////////////////////////
 // GraphsContainerView, public:
 
-BEGIN_METADATA(GraphsContainerView, View)
+BEGIN_METADATA(GraphsContainerView, views::View)
 END_METADATA
 
 GraphsContainerView::GraphsContainerView() {

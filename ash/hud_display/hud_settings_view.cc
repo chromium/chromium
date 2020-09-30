@@ -130,7 +130,7 @@ class SettingsCheckbox : public views::Checkbox {
   }
 };
 
-BEGIN_METADATA(SettingsCheckbox, Checkbox);
+BEGIN_METADATA(SettingsCheckbox, views::Checkbox);
 END_METADATA
 
 class AnimationSpeedSlider : public views::Slider {
@@ -155,7 +155,7 @@ class AnimationSpeedSlider : public views::Slider {
   void OnPaint(gfx::Canvas* canvas) override;
 };
 
-BEGIN_METADATA(AnimationSpeedSlider, Slider)
+BEGIN_METADATA(AnimationSpeedSlider, views::Slider)
 END_METADATA
 
 void AnimationSpeedSlider::OnPaint(gfx::Canvas* canvas) {
@@ -216,7 +216,7 @@ class AnimationSpeedControl : public views::SliderListener, public views::View {
   SliderValuesMap slider_values_;
 };
 
-BEGIN_METADATA(AnimationSpeedControl, View)
+BEGIN_METADATA(AnimationSpeedControl, views::View)
 END_METADATA
 
 AnimationSpeedControl::AnimationSpeedControl() {
@@ -336,7 +336,7 @@ void AnimationSpeedControl::Layout() {
 
 }  // anonymous namespace
 
-BEGIN_METADATA(HUDSettingsView, View)
+BEGIN_METADATA(HUDSettingsView, views::View)
 END_METADATA
 
 HUDSettingsView::HUDSettingsView() {

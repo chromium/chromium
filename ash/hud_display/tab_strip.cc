@@ -71,7 +71,7 @@ void HUDTabStripLayout::Layout(views::View* host) {
 
 }  // namespace
 
-BEGIN_METADATA(HUDTabButton, LabelButton)
+BEGIN_METADATA(HUDTabButton, views::LabelButton)
 END_METADATA
 
 HUDTabButton::HUDTabButton(Style style,
@@ -159,7 +159,7 @@ void HUDTabButton::PaintButtonContents(gfx::Canvas* canvas) {
   canvas->DrawPath(path, flags);
 }
 
-BEGIN_METADATA(HUDTabStrip, View)
+BEGIN_METADATA(HUDTabStrip, views::View)
 END_METADATA
 
 HUDTabStrip::HUDTabStrip(HUDDisplayView* hud) : hud_(hud) {

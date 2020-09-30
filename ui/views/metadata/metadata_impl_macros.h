@@ -18,8 +18,10 @@
 
 #define BEGIN_METADATA_BASE(class_name) BEGIN_METADATA_INTERNAL(class_name)
 
-#define BEGIN_METADATA(class_name, parent_class_name) \
-  BEGIN_METADATA_INTERNAL(class_name)                 \
+#define BEGIN_METADATA(class_name, parent_class_name)                  \
+  static_assert(std::is_base_of<parent_class_name, class_name>::value, \
+                "class not child of parent");                          \
+  BEGIN_METADATA_INTERNAL(class_name)                                  \
   METADATA_PARENT_CLASS_INTERNAL(parent_class_name)
 
 #define END_METADATA }

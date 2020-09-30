@@ -100,7 +100,7 @@ class SettingsButton : public views::ImageButton {
   }
 };
 
-BEGIN_METADATA(SettingsButton, ImageButton)
+BEGIN_METADATA(SettingsButton, views::ImageButton)
 END_METADATA
 
 // Basically FillLayout that matches host size to the given data view.
@@ -150,7 +150,7 @@ void HUDHeaderLayout::Layout(views::View* host) {
 ////////////////////////////////////////////////////////////////////////////////
 // HUDHeaderView
 
-BEGIN_METADATA(HUDHeaderView, View)
+BEGIN_METADATA(HUDHeaderView, views::View)
 END_METADATA
 
 HUDHeaderView::HUDHeaderView(HUDDisplayView* hud) {

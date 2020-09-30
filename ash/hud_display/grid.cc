@@ -34,7 +34,7 @@ base::string16 GenerateLabelText(float value, const base::string16& dimention) {
 
 }  // anonymous namespace
 
-BEGIN_METADATA(Grid, View)
+BEGIN_METADATA(Grid, views::View)
 END_METADATA
 
 // Grid is not transparent.

@@ -182,7 +182,7 @@ class TransparentButton : public views::Button {
   }
 };
 
-BEGIN_METADATA(TransparentButton, Button)
+BEGIN_METADATA(TransparentButton, views::Button)
 END_METADATA
 
 bool UseNewWarnings() {

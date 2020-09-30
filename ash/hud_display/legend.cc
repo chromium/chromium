@@ -47,7 +47,7 @@ class LegendEntry : public views::View {
   views::Label* value_ = nullptr;
 };
 
-BEGIN_METADATA(LegendEntry, View)
+BEGIN_METADATA(LegendEntry, views::View)
 END_METADATA
 
 LegendEntry::LegendEntry(const Legend::Entry& data)
@@ -148,7 +148,7 @@ Legend::Entry::Entry(const Entry&) = default;
 
 Legend::Entry::~Entry() = default;
 
-BEGIN_METADATA(Legend, View)
+BEGIN_METADATA(Legend, views::View)
 END_METADATA
 
 Legend::Legend(const std::vector<Legend::Entry>& contents) {

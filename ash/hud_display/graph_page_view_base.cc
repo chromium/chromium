@@ -62,7 +62,7 @@ class MinMaxButton : public views::ImageButton {
   }
 };
 
-BEGIN_METADATA(MinMaxButton, ImageButton)
+BEGIN_METADATA(MinMaxButton, views::ImageButton)
 END_METADATA
 
 void SetMinimizeIconToButton(views::ImageButton* button) {
@@ -81,7 +81,7 @@ void SetRestoreIconToButton(views::ImageButton* button) {
 
 }  // namespace
 
-BEGIN_METADATA(GraphPageViewBase, View)
+BEGIN_METADATA(GraphPageViewBase, views::View)
 END_METADATA
 
 GraphPageViewBase::GraphPageViewBase() {
