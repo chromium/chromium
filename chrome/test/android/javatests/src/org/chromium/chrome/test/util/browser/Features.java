@@ -35,7 +35,7 @@ import java.util.Set;
  * <pre>
  * public class Test {
  *    &#64;Rule
- *    public Features.Processor processor = new Features.JUnitProcessor();
+ *    public TestRule mProcessor = new Features.JUnitProcessor();
  *
  *    &#64;Features.EnableFeatures(ChromeFeatureList.CHROME_MODERN_DESIGN)
  *    public void testFoo() { ... }
