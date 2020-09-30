@@ -80,14 +80,24 @@ bool BleMedium::StartScanning(
     const std::string& fast_advertisement_service_uuid,
     api::BleMedium::DiscoveredPeripheralCallback
         discovered_peripheral_callback) {
-  // TODO(https://crbug.com/1132108): |fast_advertisement_service_uuid| is
-  // unused.
+  auto service_uuid = device::BluetoothUUID(fast_advertisement_service_uuid);
 
-  auto service_uuid = device::BluetoothUUID(service_id);
+  // The ID-to-UUID map should always be in sync with the callbacks map, and we
+  // assume that the ID-UUID mapping is one-to-one.
+  DCHECK_EQ(base::Contains(discovered_peripheral_callbacks_map_, service_uuid),
+            base::Contains(
+                discovery_service_id_to_fast_advertisement_service_uuid_map_,
+                service_id));
+
   if (IsScanning() &&
       base::Contains(discovered_peripheral_callbacks_map_, service_uuid)) {
     return true;
   }
+
+  // The ID-to-UUID map should always be in sync with the callbacks map.
+  DCHECK_EQ(
+      discovered_peripheral_callbacks_map_.empty(),
+      discovery_service_id_to_fast_advertisement_service_uuid_map_.empty());
 
   // We only need to start discovery if no other discovery request is active.
   if (discovered_peripheral_callbacks_map_.empty()) {
@@ -115,14 +125,40 @@ bool BleMedium::StartScanning(
   }
 
   // A different DiscoveredPeripheralCallback is being passed on each call, so
-  // each must be captured and associated with its |service_id|.
+  // each must be captured and associated with its service UUID.
   discovered_peripheral_callbacks_map_.insert(
       {service_uuid, discovered_peripheral_callback});
+
+  discovery_service_id_to_fast_advertisement_service_uuid_map_.insert(
+      {service_id, service_uuid});
+  for (auto& uuid_peripheral_pair : discovered_ble_peripherals_map_) {
+    uuid_peripheral_pair.second.UpdateIdToUuidMap(
+        discovery_service_id_to_fast_advertisement_service_uuid_map_);
+  }
+
   return true;
 }
 
 bool BleMedium::StopScanning(const std::string& service_id) {
-  discovered_peripheral_callbacks_map_.erase(device::BluetoothUUID(service_id));
+  const auto it =
+      discovery_service_id_to_fast_advertisement_service_uuid_map_.find(
+          service_id);
+  if (it !=
+      discovery_service_id_to_fast_advertisement_service_uuid_map_.end()) {
+    DCHECK(base::Contains(discovered_peripheral_callbacks_map_, it->second));
+    discovered_peripheral_callbacks_map_.erase(it->second);
+    discovery_service_id_to_fast_advertisement_service_uuid_map_.erase(it);
+    for (auto& uuid_peripheral_pair : discovered_ble_peripherals_map_) {
+      uuid_peripheral_pair.second.UpdateIdToUuidMap(
+          discovery_service_id_to_fast_advertisement_service_uuid_map_);
+    }
+  }
+
+  // The ID-to-UUID map should always be in sync with the callbacks map.
+  DCHECK_EQ(
+      discovered_peripheral_callbacks_map_.empty(),
+      discovery_service_id_to_fast_advertisement_service_uuid_map_.empty());
+
   if (!discovered_peripheral_callbacks_map_.empty())
     return true;
 
@@ -202,32 +238,47 @@ void BleMedium::DeviceAdded(bluetooth::mojom::DeviceInfoPtr device) {
   if (device->service_data_map.empty())
     return;
 
-  const std::string& address = device->address;
+  // Add a new or update the existing discovered peripheral. Note: Because
+  // BlePeripherals are passed by reference to NearbyConnections, if a
+  // BlePeripheral already exists with the given address, the reference should
+  // not be invalidated, the update functions should be called instead.
+  std::string address = device->address;
   auto* ble_peripheral = GetDiscoveredBlePeripheral(address);
-  if (ble_peripheral)
+  if (ble_peripheral) {
     ble_peripheral->UpdateDeviceInfo(std::move(device));
-  else
-    discovered_ble_peripherals_map_.emplace(address, std::move(device));
+  } else {
+    discovered_ble_peripherals_map_.emplace(
+        address,
+        chrome::BlePeripheral(
+            std::move(device),
+            discovery_service_id_to_fast_advertisement_service_uuid_map_));
+  }
 
-  // Invoking one of the callbacks in |discovered_peripheral_callbacks_map_| may
-  // lead to invalidating one or all elements of
-  // |discovered_peripheral_callbacks_map_|, e.g., triggering StopScanning()
-  // while looping through it. Callbacks are copied to ensure they are not
-  // modified as we loop through them.
-  auto callbacks_map_copy = discovered_peripheral_callbacks_map_;
-  for (auto& it : callbacks_map_copy) {
-    // Must fetch |ble_peripheral| again because it may have been invalidated by
-    // a prior callback in this loop.
-    ble_peripheral = GetDiscoveredBlePeripheral(address);
-    if (!ble_peripheral)
-      break;
-
-    const auto& service_id = it.first.value();
-    if (ble_peripheral->GetAdvertisementBytes(service_id).Empty())
+  // Copy the ID-to-UUID map to ensure that elements are not invalidated while
+  // iterating--for example, if StopScanning() is triggered after invoking the
+  // callback in the body of the loop.
+  auto id_uuid_map_copy =
+      discovery_service_id_to_fast_advertisement_service_uuid_map_;
+  for (const auto& id_uuid_pair : id_uuid_map_copy) {
+    // A callback should always be found unless an element was removed while we
+    // were iterating through the IDs.
+    const auto it =
+        discovered_peripheral_callbacks_map_.find(id_uuid_pair.second);
+    if (it == discovered_peripheral_callbacks_map_.end())
       continue;
 
-    it.second.peripheral_discovered_cb(*ble_peripheral, service_id,
-                                       /*fast_advertisement=*/true);
+    // Fetch |ble_peripheral| again because it might have since been invalidated
+    // while we were iterating through IDs.
+    auto* ble_peripheral = GetDiscoveredBlePeripheral(address);
+    if (!ble_peripheral)
+      continue;
+
+    // Do not perform any filtering here, for example, by checking if the
+    // peripheral has non-empty advertisement bytes. Unconditionally inform all
+    // callbacks of the discovered device, and rely on the Nearby Connections
+    // library to perform the filtering.
+    it->second.peripheral_discovered_cb(*ble_peripheral, id_uuid_pair.first,
+                                        /*fast_advertisement=*/true);
   }
 }
 
@@ -243,21 +294,26 @@ void BleMedium::DeviceRemoved(bluetooth::mojom::DeviceInfoPtr device) {
   if (!GetDiscoveredBlePeripheral(address))
     return;
 
-  // Invoking one of the callbacks in |discovered_peripheral_callbacks_map_| may
-  // lead to invalidating one or all elements of
-  // |discovered_peripheral_callbacks_map_|, e.g., triggering StopScanning()
-  // while looping through it. Callbacks are copied to ensure they are not
-  // modified as we loop through them.
-  auto callbacks_map_copy = discovered_peripheral_callbacks_map_;
-  for (auto& it : callbacks_map_copy) {
-    // Must fetch |ble_peripheral| again because it may have been invalidated by
-    // a prior callback in this loop.
+  // Copy the ID-to-UUID map to ensure that elements are not invalidated while
+  // iterating--for example, if StopScanning() is triggered after invoking the
+  // callback in the body of the loop.
+  auto id_uuid_map_copy =
+      discovery_service_id_to_fast_advertisement_service_uuid_map_;
+  for (const auto& id_uuid_pair : id_uuid_map_copy) {
+    // A callback should always be found unless an element was removed while we
+    // were iterating through the IDs.
+    const auto it =
+        discovered_peripheral_callbacks_map_.find(id_uuid_pair.second);
+    if (it == discovered_peripheral_callbacks_map_.end())
+      continue;
+
+    // Fetch |ble_peripheral| again because it might have since been invalidated
+    // while we were iterating through IDs.
     auto* ble_peripheral = GetDiscoveredBlePeripheral(address);
     if (!ble_peripheral)
-      break;
+      continue;
 
-    it.second.peripheral_lost_cb(*ble_peripheral,
-                                 /*service_id=*/it.first.value());
+    it->second.peripheral_lost_cb(*ble_peripheral, id_uuid_pair.first);
   }
 
   discovered_ble_peripherals_map_.erase(address);
@@ -269,17 +325,25 @@ void BleMedium::AdvertisementReleased(
 }
 
 bool BleMedium::IsScanning() {
+  DCHECK_EQ(
+      discovered_peripheral_callbacks_map_.empty(),
+      discovery_service_id_to_fast_advertisement_service_uuid_map_.empty());
   return adapter_observer_.is_bound() && discovery_session_.is_bound() &&
          !discovered_peripheral_callbacks_map_.empty();
 }
 
 void BleMedium::StopScanning() {
-  // We cannot simply iterate over |discovered_peripheral_callbacks_map_|
-  // because StopScanning() will erase the provided element.
-  while (!discovered_peripheral_callbacks_map_.empty()) {
-    StopScanning(/*service_id=*/discovered_peripheral_callbacks_map_.begin()
-                     ->first.value());
+  // We cannot simply iterate over
+  // |discovery_service_id_to_fast_advertisement_service_uuid_map_| because
+  // StopScanning() will erase the provided element.
+  while (
+      !discovery_service_id_to_fast_advertisement_service_uuid_map_.empty()) {
+    StopScanning(
+        /*service_id=*/
+        discovery_service_id_to_fast_advertisement_service_uuid_map_.begin()
+            ->first);
   }
+  DCHECK(discovered_peripheral_callbacks_map_.empty());
 }
 
 chrome::BlePeripheral* BleMedium::GetDiscoveredBlePeripheral(

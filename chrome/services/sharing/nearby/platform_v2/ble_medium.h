@@ -87,6 +87,13 @@ class BleMedium : public api::BleMedium,
   std::map<device::BluetoothUUID, mojo::Remote<bluetooth::mojom::Advertisement>>
       registered_advertisements_map_;
 
+  // A map of service IDs (e.g., "NearbySharing") to their respective fast
+  // advertisement UUIDs used to filter incoming BLE advertisements during
+  // scanning. We assume that the mapping is one-to-one. Insertions and
+  // deletions mirror those of |discovered_peripheral_callbacks_map_|.
+  std::map<std::string, device::BluetoothUUID>
+      discovery_service_id_to_fast_advertisement_service_uuid_map_;
+
   // Keyed by requested service UUID. Discovery is active as long as this map is
   // non-empty.
   std::map<device::BluetoothUUID, DiscoveredPeripheralCallback>
@@ -95,7 +102,10 @@ class BleMedium : public api::BleMedium,
   // Only set while discovery is active.
   mojo::Remote<bluetooth::mojom::DiscoverySession> discovery_session_;
 
-  // Keyed by address of advertising remote device.
+  // Keyed by address of advertising remote device. Note: References to these
+  // BlePeripherals are passed to Nearby Connections. This is safe because, for
+  // std::map, insert/emplace do not invalidate references, and the erase
+  // operation only invalidates the reference to the erased element.
   std::map<std::string, chrome::BlePeripheral> discovered_ble_peripherals_map_;
 };
 

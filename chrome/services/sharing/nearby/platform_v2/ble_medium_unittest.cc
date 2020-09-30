@@ -77,14 +77,14 @@ class BleMediumTest : public testing::Test {
   }
 
  protected:
-  void StartScanning(const std::string& service_id) {
+  void StartScanning(const std::string& service_id,
+                     const std::string& fast_advertisement_service_uuid) {
     EXPECT_EQ(!scanning_service_ids_set_.empty(),
               fake_adapter_->IsDiscoverySessionActive());
     scanning_service_ids_set_.insert(service_id);
-    EXPECT_TRUE(ble_medium_->StartScanning(
-        service_id,
-        /*fast_advertisement_service_uuid=*/std::string(),
-        discovered_peripheral_callback_));
+    EXPECT_TRUE(ble_medium_->StartScanning(service_id,
+                                           fast_advertisement_service_uuid,
+                                           discovered_peripheral_callback_));
     EXPECT_TRUE(fake_adapter_->IsDiscoverySessionActive());
   }
 
@@ -272,7 +272,7 @@ TEST_F(BleMediumTest, TestAdvertising) {
 }
 
 TEST_F(BleMediumTest, TestScanning_OneService) {
-  StartScanning(kFastAdvertisementServiceId1);
+  StartScanning(kServiceId1, kFastAdvertisementServiceId1);
 
   base::flat_map<device::BluetoothUUID, std::vector<uint8_t>> service_data_map;
   service_data_map.insert_or_assign(
@@ -285,11 +285,10 @@ TEST_F(BleMediumTest, TestScanning_OneService) {
   auto& last_peripheral_discovered_args = last_peripheral_discovered_args_[0];
   const auto* first_discovered_ble_peripheral =
       last_peripheral_discovered_args.first;
-  EXPECT_EQ(kFastAdvertisementServiceId1,
-            last_peripheral_discovered_args.second);
-  VerifyByteArrayEquals(first_discovered_ble_peripheral->GetAdvertisementBytes(
-                            kFastAdvertisementServiceId1),
-                        kDeviceServiceData1Str);
+  EXPECT_EQ(kServiceId1, last_peripheral_discovered_args.second);
+  VerifyByteArrayEquals(
+      first_discovered_ble_peripheral->GetAdvertisementBytes(kServiceId1),
+      kDeviceServiceData1Str);
 
   // The same information should be returned on a DeviceChanged event, with
   // the same BlePeripheral reference.
@@ -299,11 +298,9 @@ TEST_F(BleMediumTest, TestScanning_OneService) {
   last_peripheral_discovered_args = last_peripheral_discovered_args_[0];
   EXPECT_EQ(first_discovered_ble_peripheral,
             last_peripheral_discovered_args.first);
-  EXPECT_EQ(kFastAdvertisementServiceId1,
-            last_peripheral_discovered_args.second);
+  EXPECT_EQ(kServiceId1, last_peripheral_discovered_args.second);
   VerifyByteArrayEquals(
-      last_peripheral_discovered_args.first->GetAdvertisementBytes(
-          kFastAdvertisementServiceId1),
+      last_peripheral_discovered_args.first->GetAdvertisementBytes(kServiceId1),
       kDeviceServiceData1Str);
 
   // Again, the same BlePeripheral reference should be marked as lost.
@@ -312,14 +309,14 @@ TEST_F(BleMediumTest, TestScanning_OneService) {
   const auto& last_peripheral_lost_args = last_peripheral_lost_args_[0];
   const auto* lost_ble_peripheral = last_peripheral_lost_args.first;
   EXPECT_EQ(first_discovered_ble_peripheral, lost_ble_peripheral);
-  EXPECT_EQ(kFastAdvertisementServiceId1, last_peripheral_lost_args.second);
+  EXPECT_EQ(kServiceId1, last_peripheral_lost_args.second);
 
-  StopScanning(kFastAdvertisementServiceId1);
+  StopScanning(kServiceId1);
 }
 
 TEST_F(BleMediumTest, TestScanning_MultipleServices) {
-  StartScanning(kFastAdvertisementServiceId1);
-  StartScanning(kFastAdvertisementServiceId2);
+  StartScanning(kServiceId1, kFastAdvertisementServiceId1);
+  StartScanning(kServiceId2, kFastAdvertisementServiceId2);
 
   base::flat_map<device::BluetoothUUID, std::vector<uint8_t>> service_data_map;
   service_data_map.insert_or_assign(
@@ -336,18 +333,18 @@ TEST_F(BleMediumTest, TestScanning_MultipleServices) {
   ASSERT_EQ(2u, last_peripheral_discovered_args_.size());
   VerifyByteArrayEquals(
       last_peripheral_discovered_args_[0].first->GetAdvertisementBytes(
-          kFastAdvertisementServiceId1),
+          kServiceId1),
       kDeviceServiceData1Str);
   VerifyByteArrayEquals(
       last_peripheral_discovered_args_[1].first->GetAdvertisementBytes(
-          kFastAdvertisementServiceId2),
+          kServiceId2),
       kDeviceServiceData2Str);
 
   NotifyDeviceRemoved(kDeviceAddress, /*num_expected_peripherals_lost=*/2u);
   ASSERT_EQ(2u, last_peripheral_lost_args_.size());
 
-  StopScanning(kFastAdvertisementServiceId1);
-  StopScanning(kFastAdvertisementServiceId2);
+  StopScanning(kServiceId1);
+  StopScanning(kServiceId2);
 }
 
 TEST_F(BleMediumTest, TestStartAcceptingConnections) {
@@ -357,7 +354,10 @@ TEST_F(BleMediumTest, TestStartAcceptingConnections) {
 }
 
 TEST_F(BleMediumTest, TestConnect) {
-  chrome::BlePeripheral ble_peripheral(bluetooth::mojom::DeviceInfo::New());
+  chrome::BlePeripheral ble_peripheral(
+      bluetooth::mojom::DeviceInfo::New(),
+      /*service_id_to_fast_advertisement_service_uuid_map=*/std::map<
+          std::string, device::BluetoothUUID>());
 
   // Connect() should do nothing and not return a valid api::BleSocket.
   EXPECT_FALSE(ble_medium_->Connect(ble_peripheral, kServiceId1));
