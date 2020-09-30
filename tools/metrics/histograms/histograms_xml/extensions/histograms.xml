@@ -2991,6 +2991,43 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Extensions.ServiceWorkerBackground.RegistrationStatus"
+    enum="Boolean" expires_after="2021-10-01">
+  <owner>lazyboy@chromium.org</owner>
+  <owner>dbertoni@chromium.org</owner>
+  <summary>
+    Tracks whether background service worker registration succeeded or not.
+  </summary>
+</histogram>
+
+<histogram name="Extensions.ServiceWorkerBackground.RegistrationTime"
+    units="ms" expires_after="2021-10-01">
+  <owner>lazyboy@chromium.org</owner>
+  <owner>dbertoni@chromium.org</owner>
+  <summary>
+    The amount of time it takes to register a service worker background script.
+  </summary>
+</histogram>
+
+<histogram name="Extensions.ServiceWorkerBackground.StartWorkerStatus"
+    enum="Boolean" expires_after="2021-10-01">
+  <owner>lazyboy@chromium.org</owner>
+  <owner>dbertoni@chromium.org</owner>
+  <summary>
+    Tracks whether background service worker starting succeeded or not.
+  </summary>
+</histogram>
+
+<histogram name="Extensions.ServiceWorkerBackground.StartWorkerTime" units="ms"
+    expires_after="2021-10-01">
+  <owner>lazyboy@chromium.org</owner>
+  <owner>dbertoni@chromium.org</owner>
+  <summary>
+    The amount of time it takes to start the background service worker of an
+    extension.
+  </summary>
+</histogram>
+
 <histogram
     name="Extensions.SettingsOverridden.BackToGoogleNtpOverriddenDialogResult"
     enum="SettingsOverriddenDialogResult" expires_after="2021-05-01">

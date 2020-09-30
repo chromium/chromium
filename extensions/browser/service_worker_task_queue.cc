@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/metrics/histogram_macros.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -89,6 +90,7 @@ ServiceWorkerTaskQueue* ServiceWorkerTaskQueue::Get(BrowserContext* context) {
 // static
 void ServiceWorkerTaskQueue::DidStartWorkerForScopeOnCoreThread(
     const SequencedContextId& context_id,
+    base::Time start_time,
     base::WeakPtr<ServiceWorkerTaskQueue> task_queue,
     int64_t version_id,
     int process_id,
@@ -96,15 +98,15 @@ void ServiceWorkerTaskQueue::DidStartWorkerForScopeOnCoreThread(
   DCHECK_CURRENTLY_ON(content::ServiceWorkerContext::GetCoreThreadId());
   if (content::ServiceWorkerContext::IsServiceWorkerOnUIEnabled()) {
     if (task_queue) {
-      task_queue->DidStartWorkerForScope(context_id, version_id, process_id,
-                                         thread_id);
+      task_queue->DidStartWorkerForScope(context_id, start_time, version_id,
+                                         process_id, thread_id);
     }
   } else {
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(&ServiceWorkerTaskQueue::DidStartWorkerForScope,
-                       task_queue, context_id, version_id, process_id,
-                       thread_id));
+                       task_queue, context_id, start_time, version_id,
+                       process_id, thread_id));
   }
 }
 
@@ -133,7 +135,7 @@ void ServiceWorkerTaskQueue::StartServiceWorkerOnCoreThreadToRunTasks(
       context_id.first.service_worker_scope(),
       base::BindOnce(
           &ServiceWorkerTaskQueue::DidStartWorkerForScopeOnCoreThread,
-          context_id, task_queue_weak),
+          context_id, base::Time::Now(), task_queue_weak),
       base::BindOnce(&ServiceWorkerTaskQueue::DidStartWorkerFailOnCoreThread,
                      context_id, task_queue_weak));
 }
@@ -180,6 +182,7 @@ class ServiceWorkerTaskQueue::WorkerState {
 
 void ServiceWorkerTaskQueue::DidStartWorkerForScope(
     const SequencedContextId& context_id,
+    base::Time start_time,
     int64_t version_id,
     int process_id,
     int thread_id) {
@@ -193,6 +196,11 @@ void ServiceWorkerTaskQueue::DidStartWorkerForScope(
     DCHECK(!GetWorkerState(context_id));
     return;
   }
+
+  UMA_HISTOGRAM_BOOLEAN("Extensions.ServiceWorkerBackground.StartWorkerStatus",
+                        true);
+  UMA_HISTOGRAM_TIMES("Extensions.ServiceWorkerBackground.StartWorkerTime",
+                      base::Time::Now() - start_time);
 
   WorkerState* worker_state = GetWorkerState(context_id);
   DCHECK(worker_state);
@@ -223,6 +231,9 @@ void ServiceWorkerTaskQueue::DidStartWorkerFail(
     DCHECK(!GetWorkerState(context_id));
     return;
   }
+
+  UMA_HISTOGRAM_BOOLEAN("Extensions.ServiceWorkerBackground.StartWorkerStatus",
+                        false);
 
   WorkerState* worker_state = GetWorkerState(context_id);
   DCHECK(worker_state);
@@ -397,7 +408,8 @@ void ServiceWorkerTaskQueue::ActivateExtension(const Extension* extension) {
       ->RegisterServiceWorker(
           script_url, option,
           base::BindOnce(&ServiceWorkerTaskQueue::DidRegisterServiceWorker,
-                         weak_factory_.GetWeakPtr(), context_id));
+                         weak_factory_.GetWeakPtr(), context_id,
+                         base::Time::Now()));
 }
 
 void ServiceWorkerTaskQueue::DeactivateExtension(const Extension* extension) {
@@ -462,6 +474,7 @@ void ServiceWorkerTaskQueue::RunTasksAfterStartWorker(
 
 void ServiceWorkerTaskQueue::DidRegisterServiceWorker(
     const SequencedContextId& context_id,
+    base::Time start_time,
     bool success) {
   ExtensionRegistry* registry = ExtensionRegistry::Get(browser_context_);
   const ExtensionId& extension_id = context_id.first.extension_id();
@@ -476,12 +489,16 @@ void ServiceWorkerTaskQueue::DidRegisterServiceWorker(
 
   WorkerState* worker_state = GetWorkerState(context_id);
   DCHECK(worker_state);
+  UMA_HISTOGRAM_BOOLEAN("Extensions.ServiceWorkerBackground.RegistrationStatus",
+                        success);
 
   if (!success) {
     // TODO(lazyboy): Handle failure case thoroughly.
     DCHECK(false) << "Failed to register Service Worker";
     return;
   }
+  UMA_HISTOGRAM_TIMES("Extensions.ServiceWorkerBackground.RegistrationTime",
+                      base::Time::Now() - start_time);
 
   worker_state->registration_state_ = RegistrationState::kRegistered;
   SetRegisteredServiceWorkerInfo(extension->id(), extension->version());
