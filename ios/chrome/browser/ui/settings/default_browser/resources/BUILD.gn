@@ -1,0 +1,29 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ios/asset_catalog.gni")
+
+imageset("chrome_icon") {
+  sources = [
+    "chrome_icon.imageset/Contents.json",
+    "chrome_icon.imageset/chrome_icon@2x.png",
+    "chrome_icon.imageset/chrome_icon@3x.png",
+  ]
+}
+
+imageset("default_browser_world") {
+  sources = [
+    "default_browser_world.imageset/Contents.json",
+    "default_browser_world.imageset/default_browser_world@2x.png",
+    "default_browser_world.imageset/default_browser_world@3x.png",
+  ]
+}
+
+imageset("settings") {
+  sources = [
+    "settings.imageset/Contents.json",
+    "settings.imageset/settings@2x.png",
+    "settings.imageset/settings@3x.png",
+  ]
+}

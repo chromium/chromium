@@ -20713,7 +20713,8 @@ should be able to be added at any place in this file.
   <owner>gambard@chromium.org</owner>
   <owner>thegreenfrog@chromium.org</owner>
   <description>
-    Reported when user opens DefaultBrowser screen. iOS only.
+    Reported when user taps on the button that opens the Chrome panel in
+    Settings.app. iOS only.
   </description>
 </action>
 
@@ -20866,6 +20867,14 @@ should be able to be added at any place in this file.
     A new search has been started in the chrome://settings (preferences) page. A
     search is considered complete via timeout since there is no concrete way to
     define the end of a search (the search is incremental).
+  </description>
+</action>
+
+<action name="Settings.ShowDefaultBrowser">
+  <owner>thegreenfrog@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
+  <description>
+    Reported when user opens the Default Browser Settings page. iOS only.
   </description>
 </action>
 

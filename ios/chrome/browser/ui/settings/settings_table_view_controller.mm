@@ -58,6 +58,7 @@
 #import "ios/chrome/browser/ui/settings/cells/settings_switch_cell.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_switch_item.h"
 #import "ios/chrome/browser/ui/settings/content_settings_table_view_controller.h"
+#import "ios/chrome/browser/ui/settings/default_browser/default_browser_settings_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/elements/enterprise_info_popover_view_controller.h"
 #import "ios/chrome/browser/ui/settings/google_services/accounts_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_coordinator.h"
@@ -130,6 +131,7 @@ NSString* const kSettingsAboutChromeImageName = @"settings_about_chrome";
 NSString* const kSettingsDebugImageName = @"settings_debug";
 NSString* const kSettingsArticleSuggestionsImageName =
     @"settings_article_suggestions";
+NSString* const kDefaultBrowserWorldImageName = @"default_browser_world";
 
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierSignIn = kSectionIdentifierEnumZero,
@@ -138,7 +140,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierAdvanced,
   SectionIdentifierInfo,
   SectionIdentifierDebug,
-  SectionIdentifierDefaultBrowser,
+  SectionIdentifierDefaults,
 };
 
 typedef NS_ENUM(NSInteger, ItemType) {
@@ -433,11 +435,12 @@ NSString* kDevViewSourceKey = @"DevViewSource";
   [model addItem:[self googleServicesCellItem]
       toSectionWithIdentifier:SectionIdentifierAccount];
 
+  // Defaults section.
   if (@available(iOS 14, *)) {
     if (base::FeatureList::IsEnabled(kDefaultBrowserSettings)) {
-      [model addSectionWithIdentifier:SectionIdentifierDefaultBrowser];
+      [model addSectionWithIdentifier:SectionIdentifierDefaults];
       [model addItem:[self defaultBrowserCellItem]
-          toSectionWithIdentifier:SectionIdentifierDefaultBrowser];
+          toSectionWithIdentifier:SectionIdentifierDefaults];
     }
   }
 
@@ -449,8 +452,18 @@ NSString* kDevViewSourceKey = @"DevViewSource";
     [model addItem:[self managedSearchEngineItem]
         toSectionWithIdentifier:SectionIdentifierBasics];
   } else {
-    [model addItem:[self searchEngineDetailItem]
-        toSectionWithIdentifier:SectionIdentifierBasics];
+    if (@available(iOS 14, *)) {
+      if (base::FeatureList::IsEnabled(kDefaultBrowserSettings)) {
+        [model addItem:[self searchEngineDetailItem]
+            toSectionWithIdentifier:SectionIdentifierDefaults];
+      } else {
+        [model addItem:[self searchEngineDetailItem]
+            toSectionWithIdentifier:SectionIdentifierBasics];
+      }
+    } else {
+      [model addItem:[self searchEngineDetailItem]
+          toSectionWithIdentifier:SectionIdentifierBasics];
+    }
   }
   [model addItem:[self passwordsDetailItem]
       toSectionWithIdentifier:SectionIdentifierBasics];
@@ -549,12 +562,12 @@ NSString* kDevViewSourceKey = @"DevViewSource";
 }
 
 - (TableViewItem*)defaultBrowserCellItem {
-  TableViewTextItem* defaultBrowser =
-      [[TableViewTextItem alloc] initWithType:ItemTypeDefaultBrowser];
+  TableViewDetailIconItem* defaultBrowser =
+      [[TableViewDetailIconItem alloc] initWithType:ItemTypeDefaultBrowser];
+  defaultBrowser.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
   defaultBrowser.text =
       l10n_util::GetNSString(IDS_IOS_SETTINGS_SET_DEFAULT_BROWSER);
-  defaultBrowser.accessibilityTraits |= UIAccessibilityTraitButton;
-  defaultBrowser.textColor = [UIColor colorNamed:kBlueColor];
+  defaultBrowser.iconImageName = kDefaultBrowserWorldImageName;
 
   return defaultBrowser;
 }
@@ -948,13 +961,9 @@ NSString* kDevViewSourceKey = @"DevViewSource";
       [self showSyncGoogleService];
       break;
     case ItemTypeDefaultBrowser:
-      [tableView deselectRowAtIndexPath:indexPath animated:YES];
-      base::RecordAction(base::UserMetricsAction("Settings.DefaultBrowser"));
-      [[UIApplication sharedApplication]
-                    openURL:
-                        [NSURL URLWithString:UIApplicationOpenSettingsURLString]
-                    options:{}
-          completionHandler:nil];
+      base::RecordAction(
+          base::UserMetricsAction("Settings.ShowDefaultBrowser"));
+      controller = [[DefaultBrowserSettingsTableViewController alloc] init];
       break;
     case ItemTypeSearchEngine:
       base::RecordAction(base::UserMetricsAction("EditSearchEngines"));
