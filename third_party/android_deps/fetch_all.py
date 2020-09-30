@@ -222,6 +222,15 @@ def FindInDirectory(directory, filename_filter):
     return files
 
 
+def NormalizeAndroidDepsDir(unnormalized_path):
+    normalized_path = os.path.relpath(unnormalized_path, _CHROMIUM_SRC)
+    build_gradle_dir = os.path.join(_CHROMIUM_SRC, normalized_path)
+    if not os.path.isfile(os.path.join(build_gradle_dir, _BUILD_GRADLE)):
+        raise Exception('--android-deps-path {} does not contain {}.'.format(
+            build_gradle_dir, _BUILD_GRADLE))
+    return normalized_path
+
+
 # Named tuple describing a CIPD package.
 # - path: Path to cipd.yaml file.
 # - name: cipd package name.
@@ -409,14 +418,10 @@ def main():
         format='%(levelname).1s %(relativeCreated)6d %(message)s')
     debug = args.verbose_count >= 2
 
-    if args.android_deps_dir.endswith("/"):
-        args.android_deps_dir = args.android_deps_dir[:-1]
+    args.android_deps_dir = NormalizeAndroidDepsDir(args.android_deps_dir)
 
     abs_android_deps_dir = os.path.normpath(
         os.path.join(_CHROMIUM_SRC, args.android_deps_dir))
-
-    if not os.path.isdir(abs_android_deps_dir):
-        raise Exception('Not a directory: ' + abs_android_deps_dir)
 
     # The list of files and dirs that are copied to the build directory by this
     # script. Should not include _UPDATED_ANDROID_DEPS_FILES.
