@@ -91,33 +91,28 @@ class SectionSizeKnobs(object):
 
     # File name: Source file.
     self.apk_other_files = {
-      'assets/icudtl.dat': '../../third_party/icu/android/icudtl.dat',
-      'assets/snapshot_blob_32.bin': '../../v8/snapshot_blob_32.bin',
-      'assets/snapshot_blob_64.bin': '../../v8/snapshot_blob_64.bin',
-      'assets/unwind_cfi_32': '../../base/trace_event/cfi_backtrace_android.cc',
-      'assets/webapk_dex_version.txt': (
-          '../../chrome/android/webapk/libs/runtime_library_version.gni'),
-      'lib/armeabi-v7a/libarcore_sdk_c_minimal.so': (
-          '../../third_party/arcore-android-sdk'),
-      'lib/armeabi-v7a/libarcore_sdk_c.so': (
-          '../../third_party/arcore-android-sdk'),
-      'lib/armeabi-v7a/libcrashpad_handler_trampoline.so': (
-          '../../third_party/crashpad/libcrashpad_handler_trampoline.so'),
-      'lib/arm64-v8a/libcrashpad_handler_trampoline.so': (
-          '../../third_party/crashpad/libcrashpad_handler_trampoline.so'),
-    }
-
-    self.apk_expected_other_files = {
-      # From Monochrome.apk
-      'AndroidManifest.xml',
-      'resources.arsc',
-      'assets/AndroidManifest.xml',
-      'assets/metaresources.arsc',
-      'META-INF/CERT.SF',
-      'META-INF/CERT.RSA',
-      'META-INF/CHROMIUM.SF',
-      'META-INF/CHROMIUM.RSA',
-      'META-INF/MANIFEST.MF',
+        'assets/icudtl.dat':
+        '../../third_party/icu/android/icudtl.dat',
+        'assets/snapshot_blob_32.bin':
+        '../../v8/snapshot_blob_32.bin',
+        'assets/snapshot_blob_64.bin':
+        '../../v8/snapshot_blob_64.bin',
+        'assets/unwind_cfi_32':
+        '../../base/trace_event/cfi_backtrace_android.cc',
+        'assets/webapk_dex_version.txt':
+        '../../chrome/android/webapk/libs/runtime_library_version.gni',
+        'lib/armeabi-v7a/libarcore_sdk_c_minimal.so':
+        '../../third_party/arcore-android-sdk',
+        'lib/armeabi-v7a/libarcore_sdk_c.so':
+        '../../third_party/arcore-android-sdk',
+        'lib/armeabi-v7a/libcrashpad_handler_trampoline.so':
+        '../../third_party/crashpad/libcrashpad_handler_trampoline.so',
+        'lib/armeabi-v7a/libyoga.so':
+        '../../chrome/android/feed',
+        'lib/armeabi-v7a/libelements.so':
+        '../../chrome/android/feed',
+        'lib/arm64-v8a/libcrashpad_handler_trampoline.so':
+        '../../third_party/crashpad/libcrashpad_handler_trampoline.so',
     }
 
 
@@ -419,8 +414,7 @@ def _AssignNmAliasPathsAndCreatePathAliases(raw_symbols, object_paths_by_name):
     if object_paths:
       num_found_paths += 1
     else:
-      if num_unknown_names < 10:
-        logging.warning('Symbol not found in any .o files: %r', symbol)
+      # Happens a lot with code that has LTO enabled (linker creates symbols).
       num_unknown_names += 1
       continue
 
@@ -452,6 +446,10 @@ def _AssignNmAliasPathsAndCreatePathAliases(raw_symbols, object_paths_by_name):
                 'num_aliases_created=%d',
                 num_found_paths, num_unknown_names, num_path_mismatches,
                 num_aliases_created)
+  # Currently: num_unknown_names=1246 out of 591206 (0.2%).
+  if num_unknown_names > len(raw_symbols) * 0.01:
+    logging.warning('Abnormal number of symbols not found in .o files (%d)',
+                    num_unknown_names)
   return ret
 
 
@@ -666,6 +664,7 @@ def _AddNmAliases(raw_symbols, names_by_address):
   logging.debug('Creating alias list')
   replacements = []
   num_new_symbols = 0
+  num_missing = 0
   missing_names = collections.defaultdict(list)
   for i, s in enumerate(raw_symbols):
     # Don't alias padding-only symbols (e.g. ** symbol gap)
@@ -677,9 +676,12 @@ def _AddNmAliases(raw_symbols, names_by_address):
     name_list = names_by_address.get(s.address)
     if name_list:
       if s.full_name not in name_list:
+        num_missing += 1
         missing_names[s.full_name].append(s.address)
-        logging.warning('Name missing from aliases: %08x %s %s', s.address,
-                        s.full_name, name_list)
+        # Sometimes happens for symbols from assembly files.
+        if num_missing < 10:
+          logging.debug('Name missing from aliases: %s %s (addr=%x)',
+                        s.full_name, name_list, s.address)
         continue
       replacements.append((i, name_list))
       num_new_symbols += len(name_list) - 1
@@ -1051,7 +1053,8 @@ def _ComputePakFileSymbols(
   else:
     section_name = models.SECTION_PAK_NONTRANSLATED
   overhead = (12 + 6) * compression_ratio  # Header size plus extra offset
-  symbols_by_id[hash(file_name)] = models.Symbol(
+  # Key just needs to be unique from other IDs and pak overhead symbols.
+  symbols_by_id[-len(symbols_by_id) - 1] = models.Symbol(
       section_name, overhead, full_name='Overhead: {}'.format(file_name))
   for resource_id in sorted(contents.resources):
     if resource_id in alias_map:
@@ -1112,7 +1115,6 @@ class _ResourceSourceMapper(object):
     return res_info
 
   def FindSourceForPath(self, path):
-    original_path = path
     # Sometimes android adds $ in front and __# before extension.
     path = self._pattern_dollar_underscore.sub(r'\1', path)
     ret = self._res_info.get(path)
@@ -1123,8 +1125,6 @@ class _ResourceSourceMapper(object):
     ret = self._res_info.get(path)
     if ret:
       return ret
-    if original_path not in self._knobs.apk_expected_other_files:
-      logging.warning('Unexpected file in apk: %s', original_path)
     return None
 
 
@@ -1451,8 +1451,6 @@ def _AddUnattributedSectionSymbols(raw_symbols, section_ranges):
     address, section_size = section_ranges[section_name]
     if (section_name not in unsummed_sections
         and section_name not in summed_sections):
-      logging.info('All bytes in %s are unattributed, gap=%d', section_name,
-                   overhead)
       raw_symbols.append(
           models.Symbol(
               models.SECTION_OTHER,
@@ -2126,6 +2124,12 @@ def _IterSubArgs(top_args, on_config_error):
                                               on_config_error)
   else:
     sub_args_list = [top_args]
+
+  # Do a quick first pass to ensure inputs have been built.
+  for sub_args in sub_args_list:
+    main_file = _IdentifyInputFile(sub_args, on_config_error)
+    if not os.path.exists(main_file):
+      raise Exception('Input does not exist: ' + main_file)
 
   # Each element in |sub_args_list| specifies a container.
   for sub_args in sub_args_list:
