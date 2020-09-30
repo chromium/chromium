@@ -8,7 +8,13 @@
 ## Note: This is a jinja2 template, processed at build time into the final manifest.
 ##
 
-{% block application_name %}org.chromium.chrome.browser.MonochromeApplication{% endblock %}
+{% block application_name %}
+{%- if definitions_in_split -%}
+org.chromium.chrome.browser.base.SplitMonochromeApplication
+{%- else -%}
+org.chromium.chrome.browser.MonochromeApplication
+{%- endif -%}
+{% endblock %}
 
 ##
 ## The below is same as internal version, it seems that jinja doesn't have

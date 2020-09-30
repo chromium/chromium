@@ -161,8 +161,13 @@ generate_ui_locale_resources("ui_locale_string_resources") {
 # if the enable_chrome_module gn arg is true.
 android_resources("chrome_base_module_resources") {
   sources = [
+    "java/res_base/anim/no_anim.xml",
+    "java/res_base/font/google_sans.xml",
+    "java/res_base/font/google_sans_bold.xml",
+    "java/res_base/font/google_sans_medium.xml",
     "java/res_base/values/ic_launcher_alias.xml",
     "java/res_base/values/ic_launcher_round_alias.xml",
+    "java/res_base/values/preloaded_fonts.xml",
     "java/res_base/values/values.xml",
     "java/res_base/xml/network_security_config.xml",
     "java/res_chromium_base/mipmap-hdpi/app_icon.png",
@@ -272,10 +277,10 @@ java_cpp_template("vr_build_config") {
 
 android_library("chrome_java") {
   deps = [
+    ":base_module_java",
     ":chrome_app_java_resources",
     ":chrome_public_android_manifest",
     ":chrome_public_apk_template_resources",
-    ":chrome_version_constants",
     ":partner_location_descriptor_proto_java",
     ":update_proto_java",
     ":usage_stats_proto_java",
@@ -526,7 +531,6 @@ android_library("chrome_java") {
   srcjar_deps = [
     ":chrome_android_java_enums_srcjar",
     ":chrome_android_java_google_api_keys_srcjar",
-    ":chrome_product_config",
     ":chrome_strict_mode_switch",
     ":resource_id_javagen",
     ":sync_user_settings_enums_java",
@@ -557,10 +561,7 @@ android_library("chrome_java") {
   ]
 
   # From java_sources.gni.
-  sources = chrome_java_sources + [
-              app_hooks_impl,
-              _chrome_version_java_file,
-            ]
+  sources = chrome_java_sources + [ app_hooks_impl ]
 
   # Include sources from feed_java_sources.gni.
   sources += feed_java_sources
@@ -579,10 +580,7 @@ android_library("chrome_java") {
 
   # Add the actual implementation where necessary so that downstream targets
   # can provide their own implementations.
-  jar_excluded_patterns = [
-    "*/AppHooksImpl.class",
-    "*/ProductConfig.class",
-  ]
+  jar_excluded_patterns = [ "*/AppHooksImpl.class" ]
 
   annotation_processor_deps = [
     "//base/android/jni_generator:jni_processor",
@@ -2039,6 +2037,8 @@ chrome_public_apk_or_module_tmpl("chrome_modern_public_base_bundle_module") {
 
 android_library("monochrome_java") {
   deps = [
+    ":base_module_java",
+    ":base_monochrome_module_java",
     "//android_webview:android_webview_java",
     "//base:base_java",
     "//chrome/android:chrome_java",
@@ -2046,6 +2046,50 @@ android_library("monochrome_java") {
   ]
   sources =
       [ "java/src/org/chromium/chrome/browser/MonochromeApplication.java" ]
+}
+
+# Monochrome equivalent of :base_module_java.
+android_library("base_monochrome_module_java") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/base/SplitMonochromeApplication.java",
+  ]
+  deps = [
+    ":base_module_java",
+    "//android_webview:android_webview_java",
+    "//base:base_java",
+    "//components/version_info/android:version_constants_java",
+  ]
+}
+
+# Target for classes which should be in the base module, even when
+# enable_chrome_module is true and //chrome code is in a DFM.
+android_library("base_module_java") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/base/SplitChromeApplication.java",
+    "java/src/org/chromium/chrome/browser/base/SplitCompatApplication.java",
+    _chrome_version_java_file,
+  ]
+  deps = [
+    ":chrome_base_module_resources",
+    ":chrome_version_constants",
+    "//base:base_java",
+    "//components/embedder_support/android:application_java",
+    "//components/module_installer/android:module_installer_java",
+    "//components/version_info/android:version_constants_java",
+    "//third_party/android_deps:androidx_annotation_annotation_java",
+    "//ui/android:ui_no_recycler_view_java",
+
+    # Deps needed for child processes.
+    "//components/viz/service:service_java",
+    "//content/public/android:content_java",
+  ]
+  srcjar_deps = [ ":chrome_product_config" ]
+
+  # Add the actual implementation where necessary so that downstream targets
+  # can provide their own implementations.
+  jar_excluded_patterns = [ "*/ProductConfig.class" ]
+
+  resources_package = "org.chromium.chrome.base"
 }
 
 # Defines a target that derives from the monochrome public application. This

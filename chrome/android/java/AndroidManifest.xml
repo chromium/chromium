@@ -13,6 +13,10 @@ by a child template that "extends" this file.
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="{{ manifest_package }}"
+    {% set definitions_in_split = definitions_in_split|default(0) == 'true' %}
+    {% if definitions_in_split %}
+    android:isolatedSplits="true"
+    {% endif %}
     tools:ignore="MissingVersion">
     <!-- android:versionCode and android:versionName is set through gyp. See build/common.gypi -->
 
@@ -147,7 +151,13 @@ by a child template that "extends" this file.
 
     <!-- Set android:largeHeap to "true" to allow more than the default
          Java heap limit (32Mb on Nexus S, 48Mb on Xoom). -->
-    <application android:name="{% block application_name %}org.chromium.chrome.browser.ChromeApplication{% endblock %}"
+      <application android:name="{% block application_name %}
+          {%- if definitions_in_split -%}
+          org.chromium.chrome.browser.base.SplitChromeApplication
+          {%- else -%}
+          org.chromium.chrome.browser.ChromeApplication
+          {%- endif -%}
+          {% endblock %}"
         android:icon="@drawable/ic_launcher"
         android:roundIcon="@drawable/ic_launcher_round"
         android:label="{% block application_label %}@string/app_name{% endblock %}"
@@ -206,10 +216,6 @@ by a child template that "extends" this file.
             android:name=
             "com.google.android.gms.cast.framework.OPTIONS_PROVIDER_CLASS_NAME"
             android:value="org.chromium.components.media_router.caf.CastOptionsProvider"/>
-
-        <!-- Downloads Google Sans from GMS Core -->
-        <meta-data android:name="preloaded_fonts"
-            android:resource="@array/preloaded_google_sans_fonts" />
 
         <!-- Note: All activities directly or indirectly derived from ChromeActivity
              must specify android:hardwareAccelerated="false".
@@ -1107,44 +1113,6 @@ by a child template that "extends" this file.
             android:name="org.chromium.components.payments.PaymentDetailsUpdateService"
             android:exported="true"/>
 
-        <!-- The following service entries exist in order to allow us to
-             start more than one sandboxed process. -->
-
-        <!-- NOTE: If you change the value of "android:process" for the below services,
-             you also need to update kHelperProcessExecutableName in chrome_constants.cc. -->
-        {% set num_sandboxed_services = 40 %}
-        <meta-data android:name="org.chromium.content.browser.NUM_SANDBOXED_SERVICES"
-            android:value="{{ num_sandboxed_services }}"/>
-
-        {% for i in range(num_sandboxed_services) %}
-        <service android:name="org.chromium.content.app.SandboxedProcessService{{ i }}"
-            android:process=":sandboxed_process{{ i }}"
-            android:permission="{{ manifest_package }}.permission.CHILD_SERVICE"
-            android:isolatedProcess="true"
-            android:exported="{{sandboxed_service_exported|default(false)}}"
-            {% if (i == 0) %}
-            android:useAppZygote="true"
-            {% endif %}
-            {% if (sandboxed_service_exported|default(false)) == 'true' %}
-            android:externalService="true"
-            tools:ignore="ExportedService"
-            android:visibleToInstantApps="true"
-            {% endif %} />
-        {% endfor %}
-
-        {% set num_privileged_services = 5 %}
-        <meta-data android:name="org.chromium.content.browser.NUM_PRIVILEGED_SERVICES"
-            android:value="{{ num_privileged_services }}"/>
-
-        {% for i in range(num_privileged_services) %}
-        {% set privileged_process_name = ':privileged_process%d' % i %}
-        <service android:name="org.chromium.content.app.PrivilegedProcessService{{ i }}"
-            android:process="{{ privileged_process_name }}"
-            android:permission="{{ manifest_package }}.permission.CHILD_SERVICE"
-            android:isolatedProcess="false"
-            android:exported="false" />
-        {% endfor %}
-
         <receiver android:name="org.chromium.chrome.browser.announcement.AnnouncementNotificationManager$Receiver"
             android:exported="false"/>
 
@@ -1228,9 +1196,52 @@ by a child template that "extends" this file.
             android:value="org.chromium.chrome.browser.media.remote.DefaultMediaRouteController"/>
         {% endblock %}
       {% endmacro %}
-      {% if skip_definitions is not defined or skip_definitions != 'true' %}
+      {% if not definitions_in_split %}
       {{ application_definitions() }}
       {% endif %}
+
+      <!-- The following service entries exist in order to allow us to
+           start more than one sandboxed process. -->
+
+      <!-- NOTE: If you change the value of "android:process" for the below services,
+           you also need to update kHelperProcessExecutableName in chrome_constants.cc. -->
+      {% set num_sandboxed_services = 40 %}
+      <meta-data android:name="org.chromium.content.browser.NUM_SANDBOXED_SERVICES"
+          android:value="{{ num_sandboxed_services }}"/>
+
+      {% for i in range(num_sandboxed_services) %}
+      <service android:name="org.chromium.content.app.SandboxedProcessService{{ i }}"
+          android:process=":sandboxed_process{{ i }}"
+          android:permission="{{ manifest_package }}.permission.CHILD_SERVICE"
+          android:isolatedProcess="true"
+          android:exported="{{sandboxed_service_exported|default(false)}}"
+          {% if (i == 0) %}
+          android:useAppZygote="true"
+          {% endif %}
+          {% if (sandboxed_service_exported|default(false)) == 'true' %}
+          android:externalService="true"
+          tools:ignore="ExportedService"
+          android:visibleToInstantApps="true"
+          {% endif %} />
+      {% endfor %}
+
+      {% set num_privileged_services = 5 %}
+      <meta-data android:name="org.chromium.content.browser.NUM_PRIVILEGED_SERVICES"
+          android:value="{{ num_privileged_services }}"/>
+
+      {% for i in range(num_privileged_services) %}
+      {% set privileged_process_name = ':privileged_process%d' % i %}
+      <service android:name="org.chromium.content.app.PrivilegedProcessService{{ i }}"
+          android:process="{{ privileged_process_name }}"
+          android:permission="{{ manifest_package }}.permission.CHILD_SERVICE"
+          android:isolatedProcess="false"
+          android:exported="false" />
+
+      {% endfor %}
+
+      <!-- Downloads Google Sans from GMS Core -->
+      <meta-data android:name="preloaded_fonts"
+          android:resource="@array/preloaded_google_sans_fonts" />
 
       {% block base_application_definitions %}
       {% endblock %}

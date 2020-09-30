@@ -534,10 +534,12 @@ template("monochrome_public_common_apk_or_module_tmpl") {
 
       # Add all loadable modules and shared libraries from DFMs.
       if (_enable_chrome_module) {
-        if (!defined(data_deps)) {
-          data_deps = []
+        if (is_monochrome) {
+          deps += [ "//chrome/android:base_monochrome_module_java" ]
+        } else {
+          deps += [ "//chrome/android:base_module_java" ]
         }
-        data_deps += _chrome_module_shared_lib_deps
+        deps += _chrome_module_shared_lib_deps
         _loadable_modules_32_bit = []
         _loadable_modules_64_bit = []
         foreach(_module_desc, _module_descs) {
@@ -809,7 +811,7 @@ template("monochrome_public_common_apk_or_module_tmpl") {
 #     definitions_in_split is true.
 #   split_output: Output path for |split_input|.
 #   variables: Variables to pass to the jinja templates.
-#   definitions_in_split: If true will pass skip_definitions=true in the
+#   definitions_in_split: If true will pass definitions_in_split=true in the
 #     variables passed to |input| and generate |split_output|.
 template("split_manifest_template") {
   _definitions_in_split =
@@ -823,7 +825,7 @@ template("split_manifest_template") {
                              "variables",
                            ])
     if (_definitions_in_split) {
-      variables += [ "skip_definitions=true" ]
+      variables += [ "definitions_in_split=true" ]
     }
   }
 
