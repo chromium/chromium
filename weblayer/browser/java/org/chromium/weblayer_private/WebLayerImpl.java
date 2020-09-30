@@ -8,6 +8,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
@@ -37,6 +38,7 @@ import org.chromium.base.FileUtils;
 import org.chromium.base.Log;
 import org.chromium.base.PathUtils;
 import org.chromium.base.StrictModeContext;
+import org.chromium.base.TraceEvent;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
@@ -218,23 +220,6 @@ public final class WebLayerImpl extends IWebLayer.Stub {
                 ObjectWrapper.unwrap(appContextWrapper, Context.class), remoteContext);
         PackageInfo packageInfo = WebViewFactory.getLoadedPackageInfo();
 
-        // If a remote context is not provided, the client is an older version that loads the native
-        // library on the client side.
-        if (remoteContextWrapper != null) {
-            loadNativeLibrary(packageInfo.packageName);
-        }
-
-        BuildInfo.setBrowserPackageInfo(packageInfo);
-        BuildInfo.setFirebaseAppId(
-                FirebaseConfig.getFirebaseAppIdForPackage(packageInfo.packageName));
-
-        SelectionPopupController.setMustUseWebContentsContext();
-
-        ResourceBundle.setAvailablePakLocales(new String[] {}, ProductConfig.UNCOMPRESSED_LOCALES);
-        BundleUtils.setIsBundle(ProductConfig.IS_BUNDLE);
-
-        setChildProcessCreationParams(appContext, packageInfo.packageName);
-
         if (!CommandLine.isInitialized()) {
             if (BuildInfo.isDebugAndroid()) {
                 // This disk read in the critical path is for development purposes only.
@@ -251,6 +236,33 @@ public final class WebLayerImpl extends IWebLayer.Stub {
                 CommandLine.init(null);
             }
         }
+
+        // Enable ATRace on debug OS or app builds. Requires commandline initialization.
+        int applicationFlags = appContext.getApplicationInfo().flags;
+        boolean isAppDebuggable = (applicationFlags & ApplicationInfo.FLAG_DEBUGGABLE) != 0;
+        boolean isOsDebuggable = BuildInfo.isDebugAndroid();
+        // Requires command-line flags.
+        TraceEvent.maybeEnableEarlyTracing(
+                (isAppDebuggable || isOsDebuggable) ? TraceEvent.ATRACE_TAG_APP : 0,
+                /*readCommandLine=*/true);
+        TraceEvent.begin("WebLayer init");
+
+        // If a remote context is not provided, the client is an older version that loads the native
+        // library on the client side.
+        if (remoteContextWrapper != null) {
+            loadNativeLibrary(packageInfo.packageName);
+        }
+
+        BuildInfo.setBrowserPackageInfo(packageInfo);
+        BuildInfo.setFirebaseAppId(
+                FirebaseConfig.getFirebaseAppIdForPackage(packageInfo.packageName));
+
+        SelectionPopupController.setMustUseWebContentsContext();
+
+        ResourceBundle.setAvailablePakLocales(new String[] {}, ProductConfig.UNCOMPRESSED_LOCALES);
+        BundleUtils.setIsBundle(ProductConfig.IS_BUNDLE);
+
+        setChildProcessCreationParams(appContext, packageInfo.packageName);
 
         // Creating the Android shared preferences object causes I/O.
         try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
@@ -300,6 +312,8 @@ public final class WebLayerImpl extends IWebLayer.Stub {
                 return false;
             }
         });
+
+        TraceEvent.end("WebLayer init");
     }
 
     @Override
