@@ -56,7 +56,7 @@ class WrappedSkImage : public ClearTrackingSharedImageBacking {
     context_state_->EraseCachedSkSurface(this);
 
     if (backend_texture_.isValid())
-      DeleteGrBackendTexture(context_state_, &backend_texture_);
+      DeleteGrBackendTexture(context_state_.get(), &backend_texture_);
 
     DCHECK(context_state_->context_lost() ||
            context_state_->IsCurrent(nullptr));
@@ -155,7 +155,7 @@ class WrappedSkImage : public ClearTrackingSharedImageBacking {
                  SkAlphaType alpha_type,
                  uint32_t usage,
                  size_t estimated_size,
-                 SharedContextState* context_state)
+                 scoped_refptr<SharedContextState> context_state)
       : ClearTrackingSharedImageBacking(mailbox,
                                         format,
                                         size,
@@ -165,7 +165,7 @@ class WrappedSkImage : public ClearTrackingSharedImageBacking {
                                         usage,
                                         estimated_size,
                                         false /* is_thread_safe */),
-        context_state_(context_state) {
+        context_state_(std::move(context_state)) {
     DCHECK(!!context_state_);
   }
 
@@ -283,7 +283,7 @@ class WrappedSkImage : public ClearTrackingSharedImageBacking {
     return true;
   }
 
-  SharedContextState* const context_state_;
+  scoped_refptr<SharedContextState> context_state_;
 
   GrBackendTexture backend_texture_;
   sk_sp<SkPromiseImageTexture> promise_texture_;
@@ -355,8 +355,9 @@ class WrappedSkImageRepresentation : public SharedImageRepresentationSkia {
 
 }  // namespace
 
-WrappedSkImageFactory::WrappedSkImageFactory(SharedContextState* context_state)
-    : context_state_(context_state) {}
+WrappedSkImageFactory::WrappedSkImageFactory(
+    scoped_refptr<SharedContextState> context_state)
+    : context_state_(std::move(context_state)) {}
 
 WrappedSkImageFactory::~WrappedSkImageFactory() = default;
 

@@ -242,7 +242,13 @@ class SkiaOutputDeviceBufferQueueTest : public TestOnGpu {
     output_device_ = std::move(onscreen_device);
   }
 
-  void TearDownOnGpu() override { output_device_.reset(); }
+  void TearDownOnGpu() override {
+    output_device_.reset();
+    shared_image_representation_factory_.reset();
+    shared_image_factory_.reset();
+    memory_tracker_.reset();
+    gl_surface_.reset();
+  }
 
   using Image = OutputPresenter::Image;
 

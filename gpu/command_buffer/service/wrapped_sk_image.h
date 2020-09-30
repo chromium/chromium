@@ -24,7 +24,8 @@ namespace raster {
 class GPU_GLES2_EXPORT WrappedSkImageFactory
     : public gpu::SharedImageBackingFactory {
  public:
-  explicit WrappedSkImageFactory(SharedContextState* context_state);
+  explicit WrappedSkImageFactory(
+      scoped_refptr<SharedContextState> context_state);
   ~WrappedSkImageFactory() override;
 
   // SharedImageBackingFactory implementation:
@@ -62,7 +63,7 @@ class GPU_GLES2_EXPORT WrappedSkImageFactory
       gfx::GpuMemoryBufferType memory_buffer_type) override;
 
  private:
-  SharedContextState* const context_state_;
+  scoped_refptr<SharedContextState> context_state_;
 
   DISALLOW_COPY_AND_ASSIGN(WrappedSkImageFactory);
 };
