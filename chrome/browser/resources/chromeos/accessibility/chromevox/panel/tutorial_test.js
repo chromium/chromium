@@ -33,6 +33,14 @@ ChromeVoxTutorialTest = class extends ChromeVoxNextE2ETest {
     window.doCmd = this.doCmd;
   }
 
+  assertActiveLessonIndex(expectedIndex) {
+    assertEquals(expectedIndex, this.getPanel().iTutorial.activeLessonIndex);
+  }
+
+  assertActiveScreen(expectedScreen) {
+    assertEquals(expectedScreen, this.getPanel().iTutorial.activeScreen);
+  }
+
   getPanelWindow() {
     let panelWindow = null;
     while (!panelWindow) {
@@ -271,10 +279,8 @@ TEST_F('ChromeVoxTutorialTest', 'PracticeAreaNudgesTest', function() {
 TEST_F('ChromeVoxTutorialTest', 'ExitButtonTest', function() {
   const mockFeedback = this.createMockFeedback();
   this.runWithLoadedTree(this.simpleDoc, async function(root) {
-    const Panel = this.getPanel();
-    assertTrue(Panel.iTutorialEnabled_);
-    new PanelCommand(PanelCommandType.TUTORIAL).send();
-    await this.waitForTutorial();
+    await this.launchAndWaitForTutorial();
+    const tutorial = this.getPanel().iTutorial;
     mockFeedback.expectSpeech('Choose your tutorial experience')
         .call(doCmd('previousButton'))
         .expectSpeech('Exit tutorial')
@@ -288,11 +294,8 @@ TEST_F('ChromeVoxTutorialTest', 'ExitButtonTest', function() {
 TEST_F('ChromeVoxTutorialTest', 'EscapeTest', function() {
   const mockFeedback = this.createMockFeedback();
   this.runWithLoadedTree(this.simpleDoc, async function(root) {
-    const Panel = this.getPanel();
-    assertTrue(Panel.iTutorialEnabled_);
-    new PanelCommand(PanelCommandType.TUTORIAL).send();
-    await this.waitForTutorial();
-    const tutorial = Panel.iTutorial;
+    await this.launchAndWaitForTutorial();
+    const tutorial = this.getPanel().iTutorial;
     mockFeedback.expectSpeech('Choose your tutorial experience')
         .call(() => {
           // Press Escape.
@@ -303,6 +306,92 @@ TEST_F('ChromeVoxTutorialTest', 'EscapeTest', function() {
           });
         })
         .expectSpeech('Some web content')
+        .replay();
+  });
+});
+
+// Tests that the main menu button navigates the user to the main menu screen.
+TEST_F('ChromeVoxTutorialTest', 'MainMenuButton', function() {
+  const mockFeedback = this.createMockFeedback();
+  this.runWithLoadedTree(this.simpleDoc, async function(root) {
+    await this.launchAndWaitForTutorial();
+    const tutorial = this.getPanel().iTutorial;
+    mockFeedback.expectSpeech('Choose your tutorial experience')
+        .call(this.assertActiveScreen.bind(this, 'main_menu'))
+        .call(doCmd('nextObject'))
+        .expectSpeech('Quick orientation')
+        .call(doCmd('nextObject'))
+        .expectSpeech('Essential keys')
+        .call(doCmd('forceClickOnCurrentItem'))
+        .expectSpeech(/Essential Keys Tutorial, [0-9]+ Lessons/)
+        .call(this.assertActiveScreen.bind(this, 'lesson_menu'))
+        .call(doCmd('previousButton'))
+        .expectSpeech('Exit tutorial')
+        .call(doCmd('previousButton'))
+        .expectSpeech('Main menu')
+        .call(doCmd('forceClickOnCurrentItem'))
+        .expectSpeech('Choose your tutorial experience')
+        .call(this.assertActiveScreen.bind(this, 'main_menu'))
+        .replay();
+  });
+});
+
+// Tests that the all lessons button navigates the user to the lesson menu
+// screen.
+TEST_F('ChromeVoxTutorialTest', 'AllLessonsButton', function() {
+  const mockFeedback = this.createMockFeedback();
+  this.runWithLoadedTree(this.simpleDoc, async function(root) {
+    await this.launchAndWaitForTutorial();
+    const tutorial = this.getPanel().iTutorial;
+    mockFeedback.expectSpeech('Choose your tutorial experience')
+        .call(this.assertActiveScreen.bind(this, 'main_menu'))
+        .call(doCmd('nextObject'))
+        .expectSpeech('Quick orientation')
+        .call(doCmd('nextObject'))
+        .expectSpeech('Essential keys')
+        .call(doCmd('forceClickOnCurrentItem'))
+        .expectSpeech(/Essential Keys Tutorial, [0-9]+ Lessons/)
+        .call(this.assertActiveScreen.bind(this, 'lesson_menu'))
+        .call(doCmd('nextObject'))
+        .expectSpeech('On, Off, and Stop', 'Button')
+        .call(doCmd('forceClickOnCurrentItem'))
+        .call(this.assertActiveScreen.bind(this, 'lesson'))
+        .expectSpeech('On, Off, and Stop', 'Heading 1')
+        .call(doCmd('nextButton'))
+        .expectSpeech('Next lesson')
+        .call(doCmd('nextButton'))
+        .expectSpeech('All lessons')
+        .call(doCmd('forceClickOnCurrentItem'))
+        .expectSpeech(/Essential Keys Tutorial, [0-9]+ Lessons/)
+        .call(this.assertActiveScreen.bind(this, 'lesson_menu'))
+        .replay();
+  });
+});
+
+// Tests that the next and previous lesson buttons navigate properly.
+TEST_F('ChromeVoxTutorialTest', 'NextPreviousButtons', function() {
+  const mockFeedback = this.createMockFeedback();
+  this.runWithLoadedTree(this.simpleDoc, async function(root) {
+    await this.launchAndWaitForTutorial();
+    const tutorial = this.getPanel().iTutorial;
+    mockFeedback.expectSpeech('Choose your tutorial experience')
+        .call(() => {
+          tutorial.curriculum = 'essential_keys';
+          tutorial.showLesson(0);
+          this.assertActiveLessonIndex(0);
+          this.assertActiveScreen('lesson');
+        })
+        .expectSpeech('On, Off, and Stop', 'Heading 1')
+        .call(doCmd('nextButton'))
+        .expectSpeech('Next lesson')
+        .call(doCmd('forceClickOnCurrentItem'))
+        .expectSpeech('The ChromeVox Modifier Key', 'Heading 1')
+        .call(this.assertActiveLessonIndex.bind(this, 1))
+        .call(doCmd('nextButton'))
+        .expectSpeech('Previous lesson')
+        .call(doCmd('forceClickOnCurrentItem'))
+        .expectSpeech('On, Off, and Stop', 'Heading 1')
+        .call(this.assertActiveLessonIndex.bind(this, 0))
         .replay();
   });
 });
