@@ -18,6 +18,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/font_access/font_enumeration_table.pb.h"
+#include "third_party/blink/public/mojom/frame/lifecycle.mojom-shared.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom.h"
 #include "third_party/blink/public/mojom/frame/user_activation_update_types.mojom.h"
 #include "url/gurl.h"
@@ -148,14 +149,9 @@ class FontAccessManagerImplTest : public RenderViewHostImplTestHarness {
         }));
   }
 
-  void SimulateStickyUserActivation() {
-    SimulateUserActivation();
-    // We'll consume the activation here because the sticky activation bit is
-    // set even if the transient bit is no longer set.
+  void SetFrameHidden() {
     static_cast<RenderFrameHostImpl*>(main_rfh())
-        ->UpdateUserActivationState(
-            blink::mojom::UserActivationUpdateType::kConsumeTransientActivation,
-            blink::mojom::UserActivationNotificationType::kTest);
+        ->VisibilityChanged(blink::mojom::FrameVisibility::kNotRendered);
   }
 
   void SimulateUserActivation() {
@@ -197,16 +193,17 @@ void ValidateFontEnumerationBasic(FontEnumerationStatus status,
 
 }  // namespace
 
-TEST_F(FontAccessManagerImplTest, FailsIfNoStickyUserActivation) {
+TEST_F(FontAccessManagerImplTest, FailsIfFrameNotInViewport) {
   ASSERT_TRUE(manager_remote_.is_bound() && manager_remote_.is_connected());
   AutoGrantPermission();
+  SetFrameHidden();
 
   base::RunLoop run_loop;
   manager_remote_->EnumerateLocalFonts(
       base::BindLambdaForTesting([&](FontEnumerationStatus status,
                                      base::ReadOnlySharedMemoryRegion region) {
-        EXPECT_EQ(status, FontEnumerationStatus::kNeedsUserActivation)
-            << "Sticky User Activation Required.";
+        EXPECT_EQ(status, FontEnumerationStatus::kNotVisible)
+            << "Frame needs to be rendered";
         run_loop.Quit();
       }));
   run_loop.Run();
@@ -243,7 +240,7 @@ TEST_F(FontAccessManagerImplTest, EnumerationConsumesUserActivation) {
 TEST_F(FontAccessManagerImplTest, PreviouslyGrantedValidateEnumerationBasic) {
   ASSERT_TRUE(manager_remote_.is_bound() && manager_remote_.is_connected());
   AutoGrantPermission();
-  SimulateStickyUserActivation();
+  SimulateUserActivation();
 
   base::RunLoop run_loop;
   manager_remote_->EnumerateLocalFonts(
@@ -276,7 +273,6 @@ TEST_F(FontAccessManagerImplTest, UserActivationRequiredBeforeGrant) {
 TEST_F(FontAccessManagerImplTest, EnumerationFailsIfNoActivation) {
   ASSERT_TRUE(manager_remote_.is_bound() && manager_remote_.is_connected());
   AskGrantPermission();
-  SimulateStickyUserActivation();
 
   base::RunLoop run_loop;
   manager_remote_->EnumerateLocalFonts(

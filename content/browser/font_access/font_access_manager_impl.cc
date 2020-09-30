@@ -15,6 +15,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/mojom/frame/lifecycle.mojom-shared.h"
 
 namespace content {
 
@@ -53,11 +54,10 @@ void FontAccessManagerImpl::EnumerateLocalFonts(
     return;
   }
 
-  // Sticky User Activation is required for the API to function at all.
-  if (!rfh->frame_tree_node()->HasStickyUserActivation()) {
-    std::move(callback).Run(
-        blink::mojom::FontEnumerationStatus::kNeedsUserActivation,
-        base::ReadOnlySharedMemoryRegion());
+  // Page Visibility is required for the API to function at all.
+  if (rfh->visibility() == blink::mojom::FrameVisibility::kNotRendered) {
+    std::move(callback).Run(blink::mojom::FontEnumerationStatus::kNotVisible,
+                            base::ReadOnlySharedMemoryRegion());
     return;
   }
 

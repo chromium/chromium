@@ -84,6 +84,11 @@ void FontIterator::DidGetEnumerationResponse(
           DOMExceptionCode::kSecurityError, "User activation is required."));
       pending_resolver_.Clear();
       return;
+    case FontEnumerationStatus::kNotVisible:
+      pending_resolver_->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kSecurityError, "Page needs to be visible."));
+      pending_resolver_.Clear();
+      return;
     case FontEnumerationStatus::kPermissionDenied:
       permission_status_ = PermissionStatus::DENIED;
       pending_resolver_->Reject(MakeGarbageCollected<DOMException>(
