@@ -33,10 +33,11 @@ class MemoryUsageChecker {
     size_t actual_context_count = 0;
     for (const auto& isolate : result->isolates) {
       for (const auto& entry : isolate->contexts) {
-        // Each context allocates an array of 1000000u elements, thus 4000000u
-        // is a lower bound of the memory usage on any platform. We cannot make
-        // this check more strict without making the test fragile.
-        EXPECT_LT(4000000u, entry->bytes_used);
+        // The memory usage of each context should be at least 1000000 bytes
+        // because each context allocates a byte array of that length. Since
+        // other objects are allocated during context initialization we can
+        // only check the lower bound.
+        EXPECT_LE(1000000u, entry->bytes_used);
         ++actual_context_count;
       }
     }
@@ -64,7 +65,9 @@ TEST_F(V8DetailedMemoryReporterImplTest, GetV8MemoryUsage) {
   main_resource.Complete(R"HTML(
       <script>
         window.onload = function () {
-          globalThis.array = new Array(1000000).fill(0);
+          globalThis.root = {
+            array: new Uint8Array(1000000)
+          };
           console.log("main loaded");
         }
       </script>
@@ -77,7 +80,9 @@ TEST_F(V8DetailedMemoryReporterImplTest, GetV8MemoryUsage) {
   child_frame_resource.Complete(R"HTML(
       <script>
         window.onload = function () {
-          globalThis.array = new Array(1000000).fill(0);
+          globalThis.root = {
+            array: new Uint8Array(1000000)
+          };
           console.log("iframe loaded");
         }
       </script>
@@ -107,7 +112,10 @@ TEST_F(V8DetailedMemoryReporterImplTest, GetV8MemoryUsage) {
 }
 
 TEST_F(V8DetailedMemoryReporterImplWorkerTest, GetV8MemoryUsage) {
-  const String source_code = "globalThis.array = new Array(1000000).fill(0);";
+  const String source_code = R"JS(
+    globalThis.root = {
+      array: new Uint8Array(1000000)
+    };)JS";
   StartWorker(source_code);
   WaitUntilWorkerIsRunning();
   V8DetailedMemoryReporterImpl reporter;

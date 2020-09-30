@@ -85,6 +85,7 @@ class FrameAssociatedMeasurementDelegate : public v8::MeasureMemoryDelegate {
 #endif
       isolate_memory_usage->contexts.push_back(std::move(context_memory_usage));
     }
+    isolate_memory_usage->unassociated_bytes_used = unattributed_size_in_bytes;
     std::move(callback_).Run(std::move(isolate_memory_usage));
   }
 
