@@ -82,6 +82,7 @@ void FindTabHelper::StartFinding(base::string16 search_string,
   last_search_case_sensitive_ = case_sensitive;
 
   find_op_aborted_ = false;
+  should_find_match_ = find_match;
 
   // Keep track of what the last search was across the tabs.
   if (delegate_)
@@ -111,6 +112,7 @@ void FindTabHelper::StopFinding(SelectionAction selection_action) {
   last_completed_find_text_.clear();
   find_op_aborted_ = true;
   last_search_result_ = FindNotificationDetails();
+  should_find_match_ = false;
 
   content::StopFindAction action;
   switch (selection_action) {

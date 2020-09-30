@@ -193,8 +193,11 @@ void FindBarController::OnFindResultAvailable(
   find_in_page::FindTabHelper* find_tab_helper =
       find_in_page::FindTabHelper::FromWebContents(web_contents_);
 
-  // Only "final" results may audibly alert the user.
-  if (!find_tab_helper->find_result().final_update())
+  // Only "final" results may audibly alert the user. Also don't alert when
+  // we're only highlighting results (when first opening the find bar).
+  // See https://crbug.com/1131780
+  if (!find_tab_helper->find_result().final_update() ||
+      !find_tab_helper->should_find_match())
     return;
 
   const base::string16& current_search = find_tab_helper->find_text();
@@ -203,9 +206,8 @@ void FindBarController::OnFindResultAvailable(
   // convention). Alert only once per unique search, and don't alert on
   // backspace.
   if ((find_tab_helper->find_result().number_of_matches() == 0) &&
-      (current_search != find_tab_helper->last_completed_find_text() &&
-       !base::StartsWith(find_tab_helper->previous_find_text(), current_search,
-                         base::CompareCase::SENSITIVE))) {
+      !base::StartsWith(find_tab_helper->last_completed_find_text(),
+                        current_search, base::CompareCase::SENSITIVE)) {
     find_bar_->AudibleAlert();
   }
 
