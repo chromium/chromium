@@ -125,7 +125,16 @@ class KeyPermissionsManagerImpl : public KeyPermissionsManager {
       const std::string& public_key_spki_der,
       const std::vector<platform_keys::TokenId>& key_locations) const override;
 
+  bool IsCorporateKey(
+      const std::string& public_key_spki_der,
+      const std::vector<platform_keys::TokenId>& key_locations) const override;
+
+  void SetCorporateKey(const std::string& public_key_spki_der,
+                       platform_keys::TokenId key_location) const override;
+
   // Returns true if |public_key_spki_der_b64| is a corporate usage key.
+  // TOOD(http://crbug.com/1127284): Remove this and migrate callers to
+  // IsCorporateKey().
   static bool IsCorporateKeyForProfile(
       const std::string& public_key_spki_der_b64,
       const PrefService* const profile_prefs);
@@ -136,10 +145,6 @@ class KeyPermissionsManagerImpl : public KeyPermissionsManager {
       policy::PolicyService* const profile_policies);
 
  private:
-  bool IsCorporateKey(
-      const std::string& public_key_spki_der_b64,
-      const std::vector<platform_keys::TokenId>& key_locations) const;
-
   // Creates a PermissionsForExtension object from |extension_id| and |value|
   // and passes the object to |callback|.
   void CreatePermissionObjectAndPassToCallback(

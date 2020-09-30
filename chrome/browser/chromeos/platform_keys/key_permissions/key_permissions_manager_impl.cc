@@ -219,10 +219,8 @@ bool KeyPermissionsManagerImpl::PermissionsForExtensionImpl::
 
   // Usage of corporate keys is solely determined by policy. The user must not
   // circumvent this decision.
-  if (key_permissions_->IsCorporateKey(public_key_spki_der_b64,
-                                       key_locations)) {
+  if (key_permissions_->IsCorporateKey(public_key_spki_der, key_locations))
     return PolicyAllowsCorporateKeyUsage();
-  }
 
   // Only permissions for keys that are not designated for corporate usage are
   // determined by user decisions.
@@ -279,14 +277,7 @@ void KeyPermissionsManagerImpl::PermissionsForExtensionImpl::
   if (!IsKeyOnUserSlot(key_locations))
     return;
 
-  DictionaryPrefUpdate update(profile_prefs_, prefs::kPlatformKeys);
-
-  std::unique_ptr<base::DictionaryValue> new_pref_entry(
-      new base::DictionaryValue);
-  new_pref_entry->SetKey(kPrefKeyUsage, base::Value(kPrefKeyUsageCorporate));
-
-  update->SetWithoutPathExpansion(public_key_spki_der_b64,
-                                  std::move(new_pref_entry));
+  key_permissions_->SetCorporateKey(public_key_spki_der, TokenId::kUser);
 }
 
 void KeyPermissionsManagerImpl::PermissionsForExtensionImpl::
@@ -438,12 +429,49 @@ bool KeyPermissionsManagerImpl::CanUserGrantPermissionFor(
   if (profile_is_managed_)
     return false;
 
+  // If this profile is not managed but we find a corporate key, don't allow
+  // the user to grant permissions.
+  return !IsCorporateKey(public_key_spki_der, key_locations);
+}
+
+bool KeyPermissionsManagerImpl::IsCorporateKey(
+    const std::string& public_key_spki_der,
+    const std::vector<TokenId>& key_locations) const {
   std::string public_key_spki_der_b64;
   base::Base64Encode(public_key_spki_der, &public_key_spki_der_b64);
 
-  // If this profile is not managed but we find a corporate key, don't allow
-  // the user to grant permissions.
-  return !IsCorporateKey(public_key_spki_der_b64, key_locations);
+  for (const auto key_location : key_locations) {
+    switch (key_location) {
+      case TokenId::kUser:
+        if (IsCorporateKeyForProfile(public_key_spki_der_b64, profile_prefs_))
+          return true;
+        break;
+      case TokenId::kSystem:
+        return true;
+    }
+  }
+  return false;
+}
+
+void KeyPermissionsManagerImpl::SetCorporateKey(
+    const std::string& public_key_spki_der,
+    TokenId key_location) const {
+  if (key_location == TokenId::kSystem) {
+    // Nothing to do - all system-token keys are currently implicitly corporate.
+    return;
+  }
+
+  std::string public_key_spki_der_b64;
+  base::Base64Encode(public_key_spki_der, &public_key_spki_der_b64);
+
+  DictionaryPrefUpdate update(profile_prefs_, prefs::kPlatformKeys);
+
+  std::unique_ptr<base::DictionaryValue> new_pref_entry(
+      new base::DictionaryValue);
+  new_pref_entry->SetKey(kPrefKeyUsage, base::Value(kPrefKeyUsageCorporate));
+
+  update->SetWithoutPathExpansion(public_key_spki_der_b64,
+                                  std::move(new_pref_entry));
 }
 
 // static
@@ -484,25 +512,6 @@ KeyPermissionsManagerImpl::GetCorporateKeyUsageAllowedAppIds(
       permissions.push_back(app_id);
   }
   return permissions;
-}
-
-bool KeyPermissionsManagerImpl::IsCorporateKey(
-    const std::string& public_key_spki_der_b64,
-    const std::vector<TokenId>& key_locations) const {
-  for (const auto key_location : key_locations) {
-    switch (key_location) {
-      case TokenId::kUser:
-        LOG(ERROR) << " user";
-        if (IsCorporateKeyForProfile(public_key_spki_der_b64, profile_prefs_))
-          return true;
-        break;
-      case TokenId::kSystem:
-        return true;
-      default:
-        NOTREACHED();
-    }
-  }
-  return false;
 }
 
 void KeyPermissionsManagerImpl::CreatePermissionObjectAndPassToCallback(
