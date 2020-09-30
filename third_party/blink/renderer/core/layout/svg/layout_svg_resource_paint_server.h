@@ -35,7 +35,6 @@ enum LayoutSVGResourceMode {
 };
 
 class LayoutObject;
-class LayoutSVGResourcePaintServer;
 class ComputedStyle;
 
 class SVGPaintServer {
@@ -70,35 +69,6 @@ class SVGPaintServer {
   Color color_;
 };
 
-// If |SVGPaintDescription::hasFallback| is true, |SVGPaintDescription::color|
-// is set to a fallback color.
-struct SVGPaintDescription {
-  STACK_ALLOCATED();
-
- public:
-  SVGPaintDescription()
-      : resource(nullptr), is_valid(false), has_fallback(false) {}
-  SVGPaintDescription(Color color)
-      : resource(nullptr), color(color), is_valid(true), has_fallback(false) {}
-  SVGPaintDescription(LayoutSVGResourcePaintServer* resource)
-      : resource(resource), is_valid(true), has_fallback(false) {
-    DCHECK(resource);
-  }
-  SVGPaintDescription(LayoutSVGResourcePaintServer* resource,
-                      Color fallback_color)
-      : resource(resource),
-        color(fallback_color),
-        is_valid(true),
-        has_fallback(true) {
-    DCHECK(resource);
-  }
-
-  LayoutSVGResourcePaintServer* resource;
-  Color color;
-  bool is_valid;
-  bool has_fallback;
-};
-
 class LayoutSVGResourcePaintServer : public LayoutSVGResourceContainer {
  public:
   LayoutSVGResourcePaintServer(SVGElement*);
@@ -107,11 +77,6 @@ class LayoutSVGResourcePaintServer : public LayoutSVGResourceContainer {
   virtual SVGPaintServer PreparePaintServer(
       const SVGResourceClient&,
       const FloatRect& object_bounding_box) = 0;
-
-  // Helper utilities used in to access the underlying resources for DRT.
-  static SVGPaintDescription RequestPaintDescription(const LayoutObject&,
-                                                     const ComputedStyle&,
-                                                     LayoutSVGResourceMode);
 };
 
 template <>

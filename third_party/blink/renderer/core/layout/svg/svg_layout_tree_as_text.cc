@@ -231,30 +231,64 @@ static WTF::TextStream& operator<<(WTF::TextStream& ts,
   return ts;
 }
 
-static void WriteSVGPaintingResource(
-    WTF::TextStream& ts,
-    const SVGPaintDescription& paint_description) {
-  DCHECK(paint_description.is_valid);
-  if (!paint_description.resource) {
-    ts << "[type=SOLID] [color=" << paint_description.color << "]";
-    return;
+static void WriteSVGPaintingResource(WTF::TextStream& ts,
+                                     const SVGResource& resource) {
+  const LayoutSVGResourceContainer* container = resource.ResourceContainer();
+  DCHECK(container);
+  switch (container->ResourceType()) {
+    case kPatternResourceType:
+      ts << "[type=PATTERN]";
+      break;
+    case kLinearGradientResourceType:
+      ts << "[type=LINEAR-GRADIENT]";
+      break;
+    case kRadialGradientResourceType:
+      ts << "[type=RADIAL-GRADIENT]";
+      break;
+    default:
+      NOTREACHED();
+      break;
   }
+  ts << " [id=\"" << resource.Target()->GetIdAttribute() << "\"]";
+}
 
-  LayoutSVGResourcePaintServer* paint_server_container =
-      paint_description.resource;
-  SVGElement* element = paint_server_container->GetElement();
-  DCHECK(element);
+static base::Optional<Color> ResolveColor(const ComputedStyle& style,
+                                          const SVGPaint& paint,
+                                          const SVGPaint& visited_paint) {
+  if (!paint.HasColor())
+    return base::nullopt;
+  Color color = style.ResolvedColor(paint.GetColor());
+  if (style.InsideLink() != EInsideLink::kInsideVisitedLink)
+    return color;
+  // FIXME: This code doesn't support the uri component of the visited link
+  // paint, https://bugs.webkit.org/show_bug.cgi?id=70006
+  if (!visited_paint.HasColor())
+    return color;
+  const Color& visited_color = style.ResolvedColor(visited_paint.GetColor());
+  return Color(visited_color.Red(), visited_color.Green(), visited_color.Blue(),
+               color.Alpha());
+}
 
-  if (paint_server_container->ResourceType() == kPatternResourceType)
-    ts << "[type=PATTERN]";
-  else if (paint_server_container->ResourceType() ==
-           kLinearGradientResourceType)
-    ts << "[type=LINEAR-GRADIENT]";
-  else if (paint_server_container->ResourceType() ==
-           kRadialGradientResourceType)
-    ts << "[type=RADIAL-GRADIENT]";
-
-  ts << " [id=\"" << element->GetIdAttribute() << "\"]";
+static bool WriteSVGPaint(WTF::TextStream& ts,
+                          const ComputedStyle& style,
+                          const SVGPaint& paint,
+                          const SVGPaint& visited_paint,
+                          const char* paint_name) {
+  TextStreamSeparator s(" ");
+  if (const StyleSVGResource* resource = paint.Resource()) {
+    const SVGResource* paint_resource = resource->Resource();
+    if (GetSVGResourceAsType<LayoutSVGResourcePaintServer>(paint_resource)) {
+      ts << " [" << paint_name << "={" << s;
+      WriteSVGPaintingResource(ts, *paint_resource);
+      return true;
+    }
+  }
+  if (base::Optional<Color> color = ResolveColor(style, paint, visited_paint)) {
+    ts << " [" << paint_name << "={" << s;
+    ts << "[type=SOLID] [color=" << *color << "]";
+    return true;
+  }
+  return false;
 }
 
 static void WriteStyle(WTF::TextStream& ts, const LayoutObject& object) {
@@ -269,17 +303,10 @@ static void WriteStyle(WTF::TextStream& ts, const LayoutObject& object) {
   WriteIfNotDefault(ts, "opacity", style.Opacity(),
                     ComputedStyleInitialValues::InitialOpacity());
   if (object.IsSVGShape()) {
-    const LayoutSVGShape& shape = static_cast<const LayoutSVGShape&>(object);
-    DCHECK(shape.GetElement());
-
-    SVGPaintDescription stroke_paint_description =
-        LayoutSVGResourcePaintServer::RequestPaintDescription(
-            shape, shape.StyleRef(), kApplyToStrokeMode);
-    if (stroke_paint_description.is_valid) {
-      TextStreamSeparator s(" ");
-      ts << " [stroke={" << s;
-      WriteSVGPaintingResource(ts, stroke_paint_description);
-
+    if (WriteSVGPaint(ts, style, svg_style.StrokePaint(),
+                      svg_style.InternalVisitedStrokePaint(), "stroke")) {
+      const LayoutSVGShape& shape = static_cast<const LayoutSVGShape&>(object);
+      DCHECK(shape.GetElement());
       SVGLengthContext length_context(shape.GetElement());
       double dash_offset =
           length_context.ValueForLength(svg_style.StrokeDashOffset(), style);
@@ -300,14 +327,8 @@ static void WriteStyle(WTF::TextStream& ts, const LayoutObject& object) {
       ts << "}]";
     }
 
-    SVGPaintDescription fill_paint_description =
-        LayoutSVGResourcePaintServer::RequestPaintDescription(
-            shape, shape.StyleRef(), kApplyToFillMode);
-    if (fill_paint_description.is_valid) {
-      TextStreamSeparator s(" ");
-      ts << " [fill={" << s;
-      WriteSVGPaintingResource(ts, fill_paint_description);
-
+    if (WriteSVGPaint(ts, style, svg_style.FillPaint(),
+                      svg_style.InternalVisitedFillPaint(), "fill")) {
       WriteIfNotDefault(ts, "opacity", svg_style.FillOpacity(), 1.0f);
       WriteIfNotDefault(ts, "fill rule", svg_style.FillRule(), RULE_NONZERO);
       ts << "}]";

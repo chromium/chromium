@@ -32,6 +32,37 @@
 
 namespace blink {
 
+namespace {
+
+// If |SVGPaintDescription::has_fallback| is true, |SVGPaintDescription::color|
+// is set to a fallback color.
+struct SVGPaintDescription {
+  STACK_ALLOCATED();
+
+ public:
+  SVGPaintDescription() = default;
+  explicit SVGPaintDescription(Color color) : color(color), is_valid(true) {}
+  explicit SVGPaintDescription(LayoutSVGResourcePaintServer* resource)
+      : resource(resource), is_valid(true) {
+    DCHECK(resource);
+  }
+  SVGPaintDescription(LayoutSVGResourcePaintServer* resource,
+                      Color fallback_color)
+      : resource(resource),
+        color(fallback_color),
+        is_valid(true),
+        has_fallback(true) {
+    DCHECK(resource);
+  }
+
+  LayoutSVGResourcePaintServer* resource = nullptr;
+  Color color;
+  bool is_valid = false;
+  bool has_fallback = false;
+};
+
+}  // namespace
+
 SVGPaintServer::SVGPaintServer(Color color) : color_(color) {}
 
 SVGPaintServer::SVGPaintServer(scoped_refptr<Gradient> gradient,
@@ -153,12 +184,5 @@ LayoutSVGResourcePaintServer::LayoutSVGResourcePaintServer(SVGElement* element)
     : LayoutSVGResourceContainer(element) {}
 
 LayoutSVGResourcePaintServer::~LayoutSVGResourcePaintServer() = default;
-
-SVGPaintDescription LayoutSVGResourcePaintServer::RequestPaintDescription(
-    const LayoutObject& layout_object,
-    const ComputedStyle& style,
-    LayoutSVGResourceMode resource_mode) {
-  return RequestPaint(layout_object, style, resource_mode);
-}
 
 }  // namespace blink
