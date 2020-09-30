@@ -1475,7 +1475,7 @@ Your Google account may have other forms of browsing history like searches and a
         Initial sync setup was not finished. Sync is off.
       </message>
       <message name="IDS_SYNC_SETTINGS_NOT_CONFIRMED" desc="The error message to display when sign-in was interrupted and the user didn't review the sync settings.">
-        Tap to continue sync setup
+        Tap to set up sync
       </message>
       <message name="IDS_SYNC_IS_DISABLED_BY_ADMINISTRATOR" desc="Message to show when Chrome sync is disabled by administrator">
         Sync is disabled by your administrator
