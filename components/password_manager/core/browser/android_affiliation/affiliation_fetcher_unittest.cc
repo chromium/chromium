@@ -140,10 +140,11 @@ TEST_F(AffiliationFetcherTest, BasicReqestAndResponse) {
 
   SetupSuccessfulResponse(test_response.SerializeAsString());
   testing::StrictMock<MockAffiliationFetcherDelegate> mock_delegate;
-  std::unique_ptr<AffiliationFetcherDelegate::Result> result;
-  EXPECT_CALL(mock_delegate, OnFetchSucceeded).WillOnce(MoveArg(&result));
   auto fetcher = fetcher_factory()->CreateInstance(test_shared_loader_factory(),
                                                    &mock_delegate);
+  std::unique_ptr<AffiliationFetcherDelegate::Result> result;
+  EXPECT_CALL(mock_delegate, OnFetchSucceeded(fetcher.get(), testing::_))
+      .WillOnce(MoveArg<1>(&result));
   fetcher->StartRequest(requested_uris, request_info);
   WaitForResponse();
 
@@ -181,10 +182,11 @@ TEST_F(AffiliationFetcherTest, AndroidBrandingInfoIsReturnedIfPresent) {
 
   SetupSuccessfulResponse(test_response.SerializeAsString());
   testing::StrictMock<MockAffiliationFetcherDelegate> mock_delegate;
-  std::unique_ptr<AffiliationFetcherDelegate::Result> result;
-  EXPECT_CALL(mock_delegate, OnFetchSucceeded).WillOnce(MoveArg(&result));
   auto fetcher = fetcher_factory()->CreateInstance(test_shared_loader_factory(),
                                                    &mock_delegate);
+  std::unique_ptr<AffiliationFetcherDelegate::Result> result;
+  EXPECT_CALL(mock_delegate, OnFetchSucceeded(fetcher.get(), testing::_))
+      .WillOnce(MoveArg<1>(&result));
   fetcher->StartRequest(requested_uris, request_info);
   WaitForResponse();
 
@@ -224,10 +226,11 @@ TEST_F(AffiliationFetcherTest, ChangePasswordInfoIsReturnedIfPresent) {
 
   SetupSuccessfulResponse(test_response.SerializeAsString());
   testing::StrictMock<MockAffiliationFetcherDelegate> mock_delegate;
-  std::unique_ptr<AffiliationFetcherDelegate::Result> result;
-  EXPECT_CALL(mock_delegate, OnFetchSucceeded).WillOnce(MoveArg(&result));
   auto fetcher = fetcher_factory()->CreateInstance(test_shared_loader_factory(),
                                                    &mock_delegate);
+  std::unique_ptr<AffiliationFetcherDelegate::Result> result;
+  EXPECT_CALL(mock_delegate, OnFetchSucceeded(fetcher.get(), testing::_))
+      .WillOnce(MoveArg<1>(&result));
   fetcher->StartRequest(requested_uris, request_info);
   WaitForResponse();
 
@@ -259,10 +262,11 @@ TEST_F(AffiliationFetcherTest, MissingEquivalenceClassesAreCreated) {
 
   SetupSuccessfulResponse(empty_test_response.SerializeAsString());
   testing::StrictMock<MockAffiliationFetcherDelegate> mock_delegate;
-  std::unique_ptr<AffiliationFetcherDelegate::Result> result;
-  EXPECT_CALL(mock_delegate, OnFetchSucceeded).WillOnce(MoveArg(&result));
   auto fetcher = fetcher_factory()->CreateInstance(test_shared_loader_factory(),
                                                    &mock_delegate);
+  std::unique_ptr<AffiliationFetcherDelegate::Result> result;
+  EXPECT_CALL(mock_delegate, OnFetchSucceeded(fetcher.get(), testing::_))
+      .WillOnce(MoveArg<1>(&result));
   fetcher->StartRequest(requested_uris, request_info);
   WaitForResponse();
 
@@ -291,10 +295,11 @@ TEST_F(AffiliationFetcherTest, DuplicateEquivalenceClassesAreIgnored) {
 
   SetupSuccessfulResponse(test_response.SerializeAsString());
   testing::StrictMock<MockAffiliationFetcherDelegate> mock_delegate;
-  std::unique_ptr<AffiliationFetcherDelegate::Result> result;
-  EXPECT_CALL(mock_delegate, OnFetchSucceeded).WillOnce(MoveArg(&result));
   auto fetcher = fetcher_factory()->CreateInstance(test_shared_loader_factory(),
                                                    &mock_delegate);
+  std::unique_ptr<AffiliationFetcherDelegate::Result> result;
+  EXPECT_CALL(mock_delegate, OnFetchSucceeded(fetcher.get(), testing::_))
+      .WillOnce(MoveArg<1>(&result));
   fetcher->StartRequest(requested_uris, {});
   WaitForResponse();
 
@@ -320,10 +325,11 @@ TEST_F(AffiliationFetcherTest, EmptyEquivalenceClassesAreIgnored) {
 
   SetupSuccessfulResponse(test_response.SerializeAsString());
   testing::StrictMock<MockAffiliationFetcherDelegate> mock_delegate;
-  std::unique_ptr<AffiliationFetcherDelegate::Result> result;
-  EXPECT_CALL(mock_delegate, OnFetchSucceeded).WillOnce(MoveArg(&result));
   auto fetcher = fetcher_factory()->CreateInstance(test_shared_loader_factory(),
                                                    &mock_delegate);
+  std::unique_ptr<AffiliationFetcherDelegate::Result> result;
+  EXPECT_CALL(mock_delegate, OnFetchSucceeded(fetcher.get(), testing::_))
+      .WillOnce(MoveArg<1>(&result));
   fetcher->StartRequest(requested_uris, {});
   WaitForResponse();
 
@@ -353,10 +359,11 @@ TEST_F(AffiliationFetcherTest, UnrecognizedFacetURIsAreIgnored) {
 
   SetupSuccessfulResponse(test_response.SerializeAsString());
   testing::StrictMock<MockAffiliationFetcherDelegate> mock_delegate;
-  std::unique_ptr<AffiliationFetcherDelegate::Result> result;
-  EXPECT_CALL(mock_delegate, OnFetchSucceeded).WillOnce(MoveArg(&result));
   auto fetcher = fetcher_factory()->CreateInstance(test_shared_loader_factory(),
                                                    &mock_delegate);
+  std::unique_ptr<AffiliationFetcherDelegate::Result> result;
+  EXPECT_CALL(mock_delegate, OnFetchSucceeded(fetcher.get(), testing::_))
+      .WillOnce(MoveArg<1>(&result));
   fetcher->StartRequest(requested_uris, {});
   WaitForResponse();
 
@@ -378,9 +385,9 @@ TEST_F(AffiliationFetcherTest, FailureBecauseResponseIsNotAProtobuf) {
 
   SetupSuccessfulResponse(kMalformedResponse);
   testing::StrictMock<MockAffiliationFetcherDelegate> mock_delegate;
-  EXPECT_CALL(mock_delegate, OnMalformedResponse());
   auto fetcher = fetcher_factory()->CreateInstance(test_shared_loader_factory(),
                                                    &mock_delegate);
+  EXPECT_CALL(mock_delegate, OnMalformedResponse(fetcher.get()));
   fetcher->StartRequest(uris, {});
   WaitForResponse();
 }
@@ -402,9 +409,9 @@ TEST_F(AffiliationFetcherTest,
 
   SetupSuccessfulResponse(test_response.SerializeAsString());
   testing::StrictMock<MockAffiliationFetcherDelegate> mock_delegate;
-  EXPECT_CALL(mock_delegate, OnMalformedResponse());
   auto fetcher = fetcher_factory()->CreateInstance(test_shared_loader_factory(),
                                                    &mock_delegate);
+  EXPECT_CALL(mock_delegate, OnMalformedResponse(fetcher.get()));
   fetcher->StartRequest(uris, {});
   WaitForResponse();
 }
@@ -415,9 +422,9 @@ TEST_F(AffiliationFetcherTest, FailOnServerError) {
 
   SetupServerErrorResponse();
   testing::StrictMock<MockAffiliationFetcherDelegate> mock_delegate;
-  EXPECT_CALL(mock_delegate, OnFetchFailed());
   auto fetcher = fetcher_factory()->CreateInstance(test_shared_loader_factory(),
                                                    &mock_delegate);
+  EXPECT_CALL(mock_delegate, OnFetchFailed(fetcher.get()));
   fetcher->StartRequest(uris, {});
   WaitForResponse();
 }
@@ -428,9 +435,9 @@ TEST_F(AffiliationFetcherTest, FailOnNetworkError) {
 
   SetupNetworkErrorResponse();
   testing::StrictMock<MockAffiliationFetcherDelegate> mock_delegate;
-  EXPECT_CALL(mock_delegate, OnFetchFailed());
   auto fetcher = fetcher_factory()->CreateInstance(test_shared_loader_factory(),
                                                    &mock_delegate);
+  EXPECT_CALL(mock_delegate, OnFetchFailed(fetcher.get()));
   fetcher->StartRequest(uris, {});
   WaitForResponse();
 }
@@ -443,10 +450,11 @@ TEST_F(AffiliationFetcherTest, FetchTimeMetric) {
   SetupSuccessfulResponse(
       affiliation_pb::LookupAffiliationResponse().SerializeAsString());
   testing::StrictMock<MockAffiliationFetcherDelegate> mock_delegate;
-  std::unique_ptr<AffiliationFetcherDelegate::Result> result;
-  EXPECT_CALL(mock_delegate, OnFetchSucceeded).WillOnce(MoveArg(&result));
   auto fetcher = fetcher_factory()->CreateInstance(test_shared_loader_factory(),
                                                    &mock_delegate);
+  std::unique_ptr<AffiliationFetcherDelegate::Result> result;
+  EXPECT_CALL(mock_delegate, OnFetchSucceeded(fetcher.get(), testing::_))
+      .WillOnce(MoveArg<1>(&result));
   fetcher->StartRequest(requested_uris, {});
   WaitForResponse();
 

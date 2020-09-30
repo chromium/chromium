@@ -108,6 +108,7 @@ GURL AffiliationServiceImpl::GetChangePasswordURL(const GURL& url) const {
 }
 
 void AffiliationServiceImpl::OnFetchSucceeded(
+    AffiliationFetcherInterface* fetcher,
     std::unique_ptr<AffiliationFetcherDelegate::Result> result) {
   fetcher_.reset();
   std::map<FacetURI, AffiliationServiceImpl::ChangePasswordUrlMatch>
@@ -124,13 +125,15 @@ void AffiliationServiceImpl::OnFetchSucceeded(
   std::move(result_callback_).Run();
 }
 
-void AffiliationServiceImpl::OnFetchFailed() {
+void AffiliationServiceImpl::OnFetchFailed(
+    AffiliationFetcherInterface* fetcher) {
   fetcher_.reset();
   requested_tuple_origins_.clear();
   std::move(result_callback_).Run();
 }
 
-void AffiliationServiceImpl::OnMalformedResponse() {
+void AffiliationServiceImpl::OnMalformedResponse(
+    AffiliationFetcherInterface* fetcher) {
   fetcher_.reset();
   requested_tuple_origins_.clear();
   std::move(result_callback_).Run();

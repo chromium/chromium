@@ -182,6 +182,7 @@ void AffiliationBackend::RequestNotificationAtTime(const FacetURI& facet_uri,
 }
 
 void AffiliationBackend::OnFetchSucceeded(
+    AffiliationFetcherInterface* fetcher,
     std::unique_ptr<AffiliationFetcherDelegate::Result> result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -229,7 +230,7 @@ void AffiliationBackend::OnFetchSucceeded(
   }
 }
 
-void AffiliationBackend::OnFetchFailed() {
+void AffiliationBackend::OnFetchFailed(AffiliationFetcherInterface* fetcher) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   fetcher_.reset();
@@ -244,11 +245,12 @@ void AffiliationBackend::OnFetchFailed() {
   }
 }
 
-void AffiliationBackend::OnMalformedResponse() {
+void AffiliationBackend::OnMalformedResponse(
+    AffiliationFetcherInterface* fetcher) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // TODO(engedy): Potentially handle this case differently. crbug.com/437865.
-  OnFetchFailed();
+  OnFetchFailed(fetcher);
 }
 
 bool AffiliationBackend::OnCanSendNetworkRequest() {

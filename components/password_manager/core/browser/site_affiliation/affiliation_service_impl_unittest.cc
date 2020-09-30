@@ -110,6 +110,7 @@ TEST_F(AffiliationServiceImplTest,
        OnFetchSuccededInsertsChangePasswordURLOfRequestedSiteIfFound) {
   const GURL origin(k1ExampleURL);
   auto mock_fetcher = std::make_unique<MockAffiliationFetcher>();
+  auto* raw_mock_fetcher = mock_fetcher.get();
 
   EXPECT_CALL(*mock_fetcher,
               StartRequest(ToFacetsURIs({origin}),
@@ -130,7 +131,7 @@ TEST_F(AffiliationServiceImplTest,
   auto test_result = std::make_unique<AffiliationFetcherDelegate::Result>();
   test_result->groupings.push_back(group);
   static_cast<AffiliationFetcherDelegate*>(service())->OnFetchSucceeded(
-      std::move(test_result));
+      raw_mock_fetcher, std::move(test_result));
 
   // Expect Change Password URL of requested site.
   EXPECT_EQ(GURL(k1ExampleChangePasswordURL),
@@ -141,6 +142,7 @@ TEST_F(AffiliationServiceImplTest,
        OnFetchSuccededInsertsChangePasswordURLOfAnotherSiteFromAGroup) {
   const GURL origin(kM1ExampleURL);
   auto mock_fetcher = std::make_unique<MockAffiliationFetcher>();
+  auto* raw_mock_fetcher = mock_fetcher.get();
 
   EXPECT_CALL(*mock_fetcher,
               StartRequest(ToFacetsURIs({origin}),
@@ -159,7 +161,7 @@ TEST_F(AffiliationServiceImplTest,
   auto test_result = std::make_unique<AffiliationFetcherDelegate::Result>();
   test_result->groupings.push_back(group);
   static_cast<AffiliationFetcherDelegate*>(service())->OnFetchSucceeded(
-      std::move(test_result));
+      raw_mock_fetcher, std::move(test_result));
 
   // Expect Change Password URL of another site from a grouping.
   EXPECT_EQ(GURL(k1ExampleChangePasswordURL),
@@ -170,6 +172,7 @@ TEST_F(AffiliationServiceImplTest,
        OnFetchSucceedTakesNoActionWhenNoChangePasswordURLsAvailable) {
   const GURL origin(k1ExampleURL);
   auto mock_fetcher = std::make_unique<MockAffiliationFetcher>();
+  auto* raw_mock_fetcher = mock_fetcher.get();
 
   EXPECT_CALL(*mock_fetcher,
               StartRequest(ToFacetsURIs({origin}),
@@ -190,7 +193,7 @@ TEST_F(AffiliationServiceImplTest,
   auto test_result = std::make_unique<AffiliationFetcherDelegate::Result>();
   test_result->groupings.push_back(group);
   static_cast<AffiliationFetcherDelegate*>(service())->OnFetchSucceeded(
-      std::move(test_result));
+      raw_mock_fetcher, std::move(test_result));
 
   EXPECT_EQ(GURL(), service()->GetChangePasswordURL(origin));
 }
@@ -198,6 +201,7 @@ TEST_F(AffiliationServiceImplTest,
 TEST_F(AffiliationServiceImplTest, OnFetchFailedResetsFetcher) {
   std::vector<GURL> origins = {GURL(k1ExampleURL), GURL(k2ExampleURL)};
   auto mock_fetcher = std::make_unique<MockAffiliationFetcher>();
+  auto* raw_mock_fetcher = mock_fetcher.get();
 
   EXPECT_CALL(*mock_fetcher,
               StartRequest(ToFacetsURIs(origins),
@@ -209,13 +213,15 @@ TEST_F(AffiliationServiceImplTest, OnFetchFailedResetsFetcher) {
   service()->PrefetchChangePasswordURLs(origins, base::DoNothing());
   EXPECT_NE(nullptr, service()->GetFetcherForTesting());
 
-  static_cast<AffiliationFetcherDelegate*>(service())->OnFetchFailed();
+  static_cast<AffiliationFetcherDelegate*>(service())->OnFetchFailed(
+      raw_mock_fetcher);
   EXPECT_EQ(nullptr, service()->GetFetcherForTesting());
 }
 
 TEST_F(AffiliationServiceImplTest, OnMalformedResponseResetsFetcher) {
   std::vector<GURL> origins = {GURL(k1ExampleURL), GURL(k2ExampleURL)};
   auto mock_fetcher = std::make_unique<MockAffiliationFetcher>();
+  auto* raw_mock_fetcher = mock_fetcher.get();
 
   EXPECT_CALL(*mock_fetcher,
               StartRequest(ToFacetsURIs(origins),
@@ -227,7 +233,8 @@ TEST_F(AffiliationServiceImplTest, OnMalformedResponseResetsFetcher) {
   service()->PrefetchChangePasswordURLs(origins, base::DoNothing());
   EXPECT_NE(nullptr, service()->GetFetcherForTesting());
 
-  static_cast<AffiliationFetcherDelegate*>(service())->OnMalformedResponse();
+  static_cast<AffiliationFetcherDelegate*>(service())->OnMalformedResponse(
+      raw_mock_fetcher);
   EXPECT_EQ(nullptr, service()->GetFetcherForTesting());
 }
 
@@ -329,6 +336,7 @@ TEST_F(AffiliationServiceImplTest, NoUrlOverrideAvailableMetric) {
 TEST_F(AffiliationServiceImplTest, FoundForRequestedFacetMetric) {
   const GURL origin(k1ExampleURL);
   auto mock_fetcher = std::make_unique<MockAffiliationFetcher>();
+  auto* raw_mock_fetcher = mock_fetcher.get();
 
   EXPECT_CALL(*mock_fetcher,
               StartRequest(ToFacetsURIs({origin}),
@@ -348,7 +356,7 @@ TEST_F(AffiliationServiceImplTest, FoundForRequestedFacetMetric) {
   test_result->groupings.push_back(group);
 
   static_cast<AffiliationFetcherDelegate*>(service())->OnFetchSucceeded(
-      std::move(test_result));
+      raw_mock_fetcher, std::move(test_result));
   service()->GetChangePasswordURL(origin);
 
   histogram_tester().ExpectUniqueSample(
@@ -359,6 +367,7 @@ TEST_F(AffiliationServiceImplTest, FoundForRequestedFacetMetric) {
 TEST_F(AffiliationServiceImplTest, FoundForGroupedFacetMetric) {
   const GURL origin(kM1ExampleURL);
   auto mock_fetcher = std::make_unique<MockAffiliationFetcher>();
+  auto* raw_mock_fetcher = mock_fetcher.get();
 
   EXPECT_CALL(*mock_fetcher,
               StartRequest(ToFacetsURIs({origin}),
@@ -378,7 +387,7 @@ TEST_F(AffiliationServiceImplTest, FoundForGroupedFacetMetric) {
   test_result->groupings.push_back(group);
 
   static_cast<AffiliationFetcherDelegate*>(service())->OnFetchSucceeded(
-      std::move(test_result));
+      raw_mock_fetcher, std::move(test_result));
   service()->GetChangePasswordURL(origin);
 
   histogram_tester().ExpectUniqueSample(
@@ -389,6 +398,7 @@ TEST_F(AffiliationServiceImplTest, FoundForGroupedFacetMetric) {
 TEST_F(AffiliationServiceImplTest, OnFetchSuccedeedRunsCallback) {
   const GURL origin(k1ExampleURL);
   auto mock_fetcher = std::make_unique<MockAffiliationFetcher>();
+  auto* raw_mock_fetcher = mock_fetcher.get();
 
   EXPECT_CALL(*mock_fetcher,
               StartRequest(ToFacetsURIs({origin}),
@@ -402,7 +412,7 @@ TEST_F(AffiliationServiceImplTest, OnFetchSuccedeedRunsCallback) {
 
   EXPECT_CALL(callback, Run());
   static_cast<AffiliationFetcherDelegate*>(service())->OnFetchSucceeded(
-      std::make_unique<AffiliationFetcherDelegate::Result>());
+      raw_mock_fetcher, std::make_unique<AffiliationFetcherDelegate::Result>());
 }
 
 }  // namespace password_manager

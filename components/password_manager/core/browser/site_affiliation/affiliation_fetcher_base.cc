@@ -115,10 +115,10 @@ void AffiliationFetcherBase::OnSimpleLoaderComplete(
   if (response_body) {
     if (ParseResponse(*response_body, result_data.get())) {
       LogFetchResult(AffiliationFetchResult::kSuccess);
-      delegate_->OnFetchSucceeded(std::move(result_data));
+      delegate_->OnFetchSucceeded(this, std::move(result_data));
     } else {
       LogFetchResult(AffiliationFetchResult::kMalformed);
-      delegate_->OnMalformedResponse();
+      delegate_->OnMalformedResponse(this);
     }
   } else {
     LogFetchResult(AffiliationFetchResult::kFailure);
@@ -135,7 +135,7 @@ void AffiliationFetcherBase::OnSimpleLoaderComplete(
     base::UmaHistogramSparse(
         "PasswordManager.AffiliationFetcher.FetchErrorCode",
         -simple_url_loader_->NetError());
-    delegate_->OnFetchFailed();
+    delegate_->OnFetchFailed(this);
   }
 }
 

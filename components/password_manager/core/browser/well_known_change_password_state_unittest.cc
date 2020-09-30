@@ -7,6 +7,7 @@
 #include "base/task/post_task.h"
 #include "base/test/task_environment.h"
 #include "base/timer/mock_timer.h"
+#include "components/password_manager/core/browser/android_affiliation/mock_affiliation_fetcher.h"
 #include "components/password_manager/core/browser/site_affiliation/affiliation_service_impl.h"
 #include "components/password_manager/core/browser/well_known_change_password_util.h"
 #include "components/sync/driver/test_sync_service.h"
@@ -232,6 +233,7 @@ TEST_P(WellKnownChangePasswordStateTest,
   syncer::TestSyncService test_sync_service;
   AffiliationServiceImpl affiliation_service(&test_sync_service,
                                              test_shared_loader_factory());
+
   state()->PrefetchChangePasswordURLs(&affiliation_service, {});
 
   ResponseDelayParams params = GetParam();
@@ -243,8 +245,10 @@ TEST_P(WellKnownChangePasswordStateTest,
   FastForwardBy(base::TimeDelta::FromMilliseconds(ms_to_forward));
 
   EXPECT_CALL(*delegate(), OnProcessingFinished(false));
+  auto mock_fetcher = std::make_unique<MockAffiliationFetcher>();
   static_cast<AffiliationFetcherDelegate*>(&affiliation_service)
       ->OnFetchSucceeded(
+          mock_fetcher.get(),
           std::make_unique<AffiliationFetcherDelegate::Result>());
 }
 

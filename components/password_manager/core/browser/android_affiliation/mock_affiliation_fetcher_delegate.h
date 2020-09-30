@@ -12,6 +12,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace password_manager {
+class AffiliationFetcherInterface;
 
 class MockAffiliationFetcherDelegate : public AffiliationFetcherDelegate {
  public:
@@ -20,10 +21,17 @@ class MockAffiliationFetcherDelegate : public AffiliationFetcherDelegate {
 
   MOCK_METHOD(void,
               OnFetchSucceeded,
-              (std::unique_ptr<Result> result),
+              (AffiliationFetcherInterface * fetcher,
+               std::unique_ptr<Result> result),
               (override));
-  MOCK_METHOD(void, OnFetchFailed, (), (override));
-  MOCK_METHOD(void, OnMalformedResponse, (), (override));
+  MOCK_METHOD(void,
+              OnFetchFailed,
+              (AffiliationFetcherInterface * fetcher),
+              (override));
+  MOCK_METHOD(void,
+              OnMalformedResponse,
+              (AffiliationFetcherInterface * fetcher),
+              (override));
 };
 
 }  // namespace password_manager

@@ -78,9 +78,10 @@ class AffiliationServiceImpl : public AffiliationService,
  private:
   // AffiliationFetcherDelegate:
   void OnFetchSucceeded(
+      AffiliationFetcherInterface* fetcher,
       std::unique_ptr<AffiliationFetcherDelegate::Result> result) override;
-  void OnFetchFailed() override;
-  void OnMalformedResponse() override;
+  void OnFetchFailed(AffiliationFetcherInterface* fetcher) override;
+  void OnMalformedResponse(AffiliationFetcherInterface* fetcher) override;
 
   // Converts new |urls| to facets and inserts them to the
   // |change_password_urls_|.

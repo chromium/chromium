@@ -18,11 +18,11 @@ password_manager::FakeAffiliationFetcher::~FakeAffiliationFetcher() = default;
 
 void password_manager::FakeAffiliationFetcher::SimulateSuccess(
     std::unique_ptr<AffiliationFetcherDelegate::Result> fake_result) {
-  delegate()->OnFetchSucceeded(std::move(fake_result));
+  delegate()->OnFetchSucceeded(this, std::move(fake_result));
 }
 
 void password_manager::FakeAffiliationFetcher::SimulateFailure() {
-  delegate()->OnFetchFailed();
+  delegate()->OnFetchFailed(this);
 }
 
 password_manager::FakeAffiliationFetcherFactory::
