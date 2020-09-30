@@ -10369,6 +10369,21 @@
         {}
        ]
       ]
+     },
+     "widgets": {
+      "input-date-baseline-print.html": [
+       "dda06c69fb59d0cb749af36eb8c652a5a6d34e8d",
+       [
+        null,
+        [
+         [
+          "/html/rendering/widgets/input-date-baseline-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ]
      }
     }
    },
@@ -55063,6 +55078,32 @@
         ],
         {}
        ]
+      ],
+      "content-visibility-075.html": [
+       "cecbf9bf9c5489bb6b8eb96da42f57943ee254f0",
+       [
+        null,
+        [
+         [
+          "/css/css-contain/content-visibility/content-visibility-075-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "content-visibility-076.html": [
+       "8ba2bbe82e67cd65e5fe6b773eb71abfae63f4ad",
+       [
+        null,
+        [
+         [
+          "/css/css-contain/content-visibility/content-visibility-075-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
       ]
      },
      "counter-scoping-001.html": [
@@ -86617,13 +86658,26 @@
        {}
       ]
      ],
-     "active-selection-024.html": [
-      "5668df550bb0183569d4ed913c6292ea476f77ef",
+     "active-selection-025.html": [
+      "f5f71803c4e389d0befbc2087af2b28bcdc31726",
       [
        null,
        [
         [
-         "/css/css-pseudo/reference/active-selection-024-ref.html",
+         "/css/css-pseudo/reference/active-selection-025-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "active-selection-027.html": [
+      "88b26e9f43447d4549c85858b2fea25a61320e7f",
+      [
+       null,
+       [
+        [
+         "/css/css-pseudo/reference/active-selection-027-ref.html",
          "=="
         ]
        ],
@@ -109768,7 +109822,7 @@
       ]
      ],
      "text-decoration-thickness-vertical-002.html": [
-      "70421c507b71e5e0e9775fa73ab5f8671912b80b",
+      "67457c4ec86cceda6fb4bc0241f85fcbf81cf2f7",
       [
        null,
        [
@@ -153286,6 +153340,19 @@
         ]
        ]
       },
+      "input-date-baseline.html": [
+       "0d8f46c06421d22d9d680a83785460bfa865dc81",
+       [
+        null,
+        [
+         [
+          "/html/rendering/widgets/input-date-baseline-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "the-select-element": {
        "option-add-label.html": [
         "5110164c3115a087cffadaac9b7b26d677156fb7",
@@ -176515,7 +176582,7 @@
        []
       ],
       "content-visibility-058-ref.html": [
-       "067d064ca723eb7a4a4e924d6a734ec5b46fd1fa",
+       "ee552907fd338e0ed3e790dae7ea036da75d820a",
        []
       ],
       "content-visibility-059-ref.html": [
@@ -176528,6 +176595,14 @@
       ],
       "content-visibility-074-ref.html": [
        "82a6c263fa906d70f76dc78fcd6d7b6c3b461b86",
+       []
+      ],
+      "content-visibility-075-ref.html": [
+       "05799e0ba1d3b40dabe2997cc9d2e849be35a149",
+       []
+      ],
+      "content-visibility-076-ref.html": [
+       "6ea5fcf5aef7c5f9026016c57c390956238f3ff2",
        []
       ],
       "inline-container-with-child-ref.html": [
@@ -190728,8 +190803,12 @@
        "7790a3fad8a36f1709fea6a4155ed5af0f3c49d7",
        []
       ],
-      "active-selection-024-ref.html": [
-       "e6dda1c1371b53e12f9a6601eea67ac4f5604a3b",
+      "active-selection-025-ref.html": [
+       "b09a570059c315c632748f448a59294db73b239e",
+       []
+      ],
+      "active-selection-027-ref.html": [
+       "cf5a35bed6ff4714bdaadf829c62bcdfa5066b29",
        []
       ],
       "active-selection-031-ref.html": [
@@ -215926,7 +216005,7 @@
         []
        ],
        "test-access-property.js": [
-        "1a28e593b16680b426253997dcb53d0837358007",
+        "0b804e83620e0fb07926ada534cb69e40fce5584",
         []
        ],
        "try-access.js": [
@@ -221150,6 +221229,10 @@
         []
        ]
       },
+      "input-date-baseline-ref.html": [
+       "dcef656bad00792262e05ab643195ef6804d5336",
+       []
+      ],
       "the-select-element": {
        "option-label-ref.html": [
         "3dd07b8dc2b4778d7f2f2e69202d680902c7e838",
@@ -227916,13 +227999,85 @@
        "f338045a3e3e67ead37daae3436223edfb5f3ccb",
        []
       ],
+      "operator-dictionary-largeop-001-expected.txt": [
+       "ba4d95e79aae985c36ed54ca8d8c5a59b7f68dcb",
+       []
+      ],
+      "operator-dictionary-largeop-002-expected.txt": [
+       "ba4d95e79aae985c36ed54ca8d8c5a59b7f68dcb",
+       []
+      ],
+      "operator-dictionary-largeop-003-expected.txt": [
+       "ba4d95e79aae985c36ed54ca8d8c5a59b7f68dcb",
+       []
+      ],
+      "operator-dictionary-largeop-004-expected.txt": [
+       "ba4d95e79aae985c36ed54ca8d8c5a59b7f68dcb",
+       []
+      ],
+      "operator-dictionary-largeop-005-expected.txt": [
+       "ba4d95e79aae985c36ed54ca8d8c5a59b7f68dcb",
+       []
+      ],
+      "operator-dictionary-largeop-006-expected.txt": [
+       "ba4d95e79aae985c36ed54ca8d8c5a59b7f68dcb",
+       []
+      ],
+      "operator-dictionary-stretchy-001-expected.txt": [
+       "e554aa7810dbbb96899511c8a2e1ec7cb97d99a4",
+       []
+      ],
+      "operator-dictionary-stretchy-002-expected.txt": [
+       "e554aa7810dbbb96899511c8a2e1ec7cb97d99a4",
+       []
+      ],
+      "operator-dictionary-stretchy-003-expected.txt": [
+       "e554aa7810dbbb96899511c8a2e1ec7cb97d99a4",
+       []
+      ],
+      "operator-dictionary-stretchy-004-expected.txt": [
+       "e554aa7810dbbb96899511c8a2e1ec7cb97d99a4",
+       []
+      ],
+      "operator-dictionary-stretchy-005-expected.txt": [
+       "e554aa7810dbbb96899511c8a2e1ec7cb97d99a4",
+       []
+      ],
+      "operator-dictionary-stretchy-006-expected.txt": [
+       "e554aa7810dbbb96899511c8a2e1ec7cb97d99a4",
+       []
+      ],
+      "operator-dictionary-symmetric-001-expected.txt": [
+       "f3f378102d4d27b89435a264bc010a2415fc6805",
+       []
+      ],
+      "operator-dictionary-symmetric-002-expected.txt": [
+       "f3f378102d4d27b89435a264bc010a2415fc6805",
+       []
+      ],
+      "operator-dictionary-symmetric-003-expected.txt": [
+       "f3f378102d4d27b89435a264bc010a2415fc6805",
+       []
+      ],
+      "operator-dictionary-symmetric-004-expected.txt": [
+       "f3f378102d4d27b89435a264bc010a2415fc6805",
+       []
+      ],
+      "operator-dictionary-symmetric-005-expected.txt": [
+       "f3f378102d4d27b89435a264bc010a2415fc6805",
+       []
+      ],
+      "operator-dictionary-symmetric-006-expected.txt": [
+       "f3f378102d4d27b89435a264bc010a2415fc6805",
+       []
+      ],
       "support": {
        "operator-dictionary-tests.css": [
         "4f80ad7f8dd0e28a40900b0c11ee9adaa800bd97",
         []
        ],
        "operator-dictionary-tests.js": [
-        "b92a852738ffbde90152791c0d67304064e2eafb",
+        "35efc2ecb94d0fcc2956b30bfd292eafe870423e",
         []
        ]
       }
@@ -227938,6 +228093,14 @@
       ]
      },
      "scripts": {
+      "subsup-2-expected.txt": [
+       "e966aa9a334c1f49d60eac871d9f4696a9e472db",
+       []
+      ],
+      "subsup-3-expected.txt": [
+       "d9039a4733ba75051e0ae6ba971eb2eb6efce576",
+       []
+      ],
       "subsup-legacy-scriptshift-attributes-001.tentative-ref.html": [
        "c1bf2e46954ee28d260371fb4fb981e9030e3051",
        []
@@ -228333,6 +228496,10 @@
      ],
      "box-navigation.js": [
       "f4897cfe9998a230125a095a00e669cbedc39139",
+      []
+     ],
+     "feature-detection-operators.js": [
+      "5c6ffef06b9ea58bd9a5bc7c842cba42fea22959",
       []
      ],
      "feature-detection.js": [
@@ -230184,7 +230351,7 @@
       []
      ],
      "helpers.mjs": [
-      "8bd1c8e9250071257ca1abda991e173d449fe0da",
+      "43cfffd5f26f0a3bd89367d5ec544a07e4b62a37",
       []
      ],
      "helpers.mjs.headers": [
@@ -230200,7 +230367,7 @@
       []
      ],
      "send-origin-isolation-header.py": [
-      "6a67757897660fac221491d36bde48001e6b27d6",
+      "cb37d430114693c829196c0c95fdd04dcdda4c28",
       []
      ]
     }
@@ -279923,7 +280090,7 @@
        ]
       ],
       "content-visibility-026.html": [
-       "1306493f62a32d5e2f35b36f61036c4c53574853",
+       "6b3de880fd945622aa83d74704595507df3fa702",
        [
         null,
         {}
@@ -366909,7 +367076,7 @@
        ]
       ],
       "operator-dictionary-largeop-001.html": [
-       "8a5d2089ff933864ebb2847503739de460527697",
+       "927c408ba186d23dd7df8d5b978ed852a19f694b",
        [
         null,
         {
@@ -366918,7 +367085,7 @@
        ]
       ],
       "operator-dictionary-largeop-002.html": [
-       "1650f01261f5c36f67aa6737f2941d80c9ca03cf",
+       "64070a4f3c6cb92a22ad8019b1962eb83b54fbd8",
        [
         null,
         {
@@ -366927,7 +367094,7 @@
        ]
       ],
       "operator-dictionary-largeop-003.html": [
-       "96847592044e94bb50e4ccf5d9b87fd490e4e488",
+       "1f08deb5253956cb1dc09149d532aef6bad38ce5",
        [
         null,
         {
@@ -366936,7 +367103,7 @@
        ]
       ],
       "operator-dictionary-largeop-004.html": [
-       "08f5916b479b949a742ccd58e8678e3b37fceaf2",
+       "ed345685d4c34bd7254bd5d0b9c06cda304e2fbe",
        [
         null,
         {
@@ -366945,7 +367112,7 @@
        ]
       ],
       "operator-dictionary-largeop-005.html": [
-       "9245fbcad9b63238b9bece34c7abf3a8660628b9",
+       "39c2d98adf8d2fb817079b101c649308ed2350e2",
        [
         null,
         {
@@ -366954,7 +367121,7 @@
        ]
       ],
       "operator-dictionary-largeop-006.html": [
-       "b9d4b681b66f756ffbc60870d5e6d77254288d2e",
+       "7e6d2b52afc00469e94536c97ec822fcff0bea24",
        [
         null,
         {
@@ -366963,7 +367130,7 @@
        ]
       ],
       "operator-dictionary-movablelimits-001.html": [
-       "09698a15fc78433490a08f17b6857f4ab2dce8f1",
+       "78d50ccad6d4721efb8f9fdb5eac071d14ae0469",
        [
         null,
         {
@@ -366972,7 +367139,7 @@
        ]
       ],
       "operator-dictionary-movablelimits-002.html": [
-       "f3e9deb5afd3a980367f1e1eedf185ff0380a14c",
+       "4dfe851827022c945a1643ed31a71dad2787588b",
        [
         null,
         {
@@ -366981,7 +367148,7 @@
        ]
       ],
       "operator-dictionary-movablelimits-003.html": [
-       "f4c5137b5f32c43d826ba9a618658381c74ca9c2",
+       "e0bff2173ef3e781b10ea541b27ce60254e11f26",
        [
         null,
         {
@@ -366990,7 +367157,7 @@
        ]
       ],
       "operator-dictionary-movablelimits-004.html": [
-       "9432c5dff0f6dd6aae88aa791f256fcfc8c4bf3d",
+       "6b2cec4a553b0b67fd895df38ab1f54f8cb1a731",
        [
         null,
         {
@@ -366999,7 +367166,7 @@
        ]
       ],
       "operator-dictionary-movablelimits-005.html": [
-       "fbffb440182dcea78e657ce5a8907c3d0fb79435",
+       "7c5d7890b402febbc3b6be7affecbc36f5a4aa9f",
        [
         null,
         {
@@ -367008,7 +367175,7 @@
        ]
       ],
       "operator-dictionary-movablelimits-006.html": [
-       "a6a6dfa0784fb2c98cbf728b01a229feab0e4824",
+       "f369844677c9fd010f48e0d200542efc49b9bba2",
        [
         null,
         {
@@ -367017,7 +367184,7 @@
        ]
       ],
       "operator-dictionary-spacing-001.html": [
-       "a7781fb3f78951037a66c3a4432bbf8efc133392",
+       "0bb863de0363aef11667ac1e3b3fd14689cf0ea5",
        [
         null,
         {
@@ -367026,7 +367193,7 @@
        ]
       ],
       "operator-dictionary-spacing-002.html": [
-       "5b524d9095aa66ab054c57441ea596f60edb1dad",
+       "3381521341a1e0c1190941dc1f560b80dac51ede",
        [
         null,
         {
@@ -367035,7 +367202,7 @@
        ]
       ],
       "operator-dictionary-spacing-003.html": [
-       "abd8736419bb277fc0bf4050e654bc007cb0c164",
+       "719367b7002aefa8712cab1848e011b5f432476e",
        [
         null,
         {
@@ -367044,7 +367211,7 @@
        ]
       ],
       "operator-dictionary-spacing-004.html": [
-       "09a1d8c8394fe5c54b7a60cee2e023437a78c525",
+       "a566f3fe25881bd1149b8d2f4417bcbee96e5cbf",
        [
         null,
         {
@@ -367053,7 +367220,7 @@
        ]
       ],
       "operator-dictionary-spacing-005.html": [
-       "fc56326beb41d1f9e2415261eb060c02b66adb96",
+       "f59dcffd7cbd38d3ba6bcd99d61b25df03c4ed75",
        [
         null,
         {
@@ -367062,7 +367229,7 @@
        ]
       ],
       "operator-dictionary-spacing-006.html": [
-       "2de9d66a0d383f3a77b55fe20935fe93ed33504f",
+       "17b8859874a56ee160714656aac423c9c22a6883",
        [
         null,
         {
@@ -367071,7 +367238,7 @@
        ]
       ],
       "operator-dictionary-stretchy-001.html": [
-       "672a5d3f1b3f1ebd0af216f57f4831d66c231165",
+       "33ef2abd15b6aa2869f8f10d094022847b2b98c4",
        [
         null,
         {
@@ -367080,7 +367247,7 @@
        ]
       ],
       "operator-dictionary-stretchy-002.html": [
-       "bbf5b3e48a015dbfe217b74e9359ceed5408d1f4",
+       "875374f9166bbb5b10b7b489f7b96260b46689aa",
        [
         null,
         {
@@ -367089,7 +367256,7 @@
        ]
       ],
       "operator-dictionary-stretchy-003.html": [
-       "343ac09df3219b41218d85949af92e186e372ce1",
+       "ce2708b2f17b8d0f8947d86b88bf79d9c03e0b80",
        [
         null,
         {
@@ -367098,7 +367265,7 @@
        ]
       ],
       "operator-dictionary-stretchy-004.html": [
-       "dd25c1121a5d88cfd9a12208f76736b19ea6cf9b",
+       "dbc96cae9885d2b2cf0eff425ad84cf796bc858a",
        [
         null,
         {
@@ -367107,7 +367274,7 @@
        ]
       ],
       "operator-dictionary-stretchy-005.html": [
-       "4d716497436929d0268c806a906d57450e64335c",
+       "7d9cb32143e562f20553e72a194147efe6dc4557",
        [
         null,
         {
@@ -367116,7 +367283,7 @@
        ]
       ],
       "operator-dictionary-stretchy-006.html": [
-       "2088168b07240547d449845f152304825b6589a2",
+       "49e26c571c3c4c4e6c0aeb36ecfc881d184a7851",
        [
         null,
         {
@@ -367125,7 +367292,7 @@
        ]
       ],
       "operator-dictionary-symmetric-001.html": [
-       "14b72da2833c8bec19a6c0df053cd48000eb8e64",
+       "426f045848b6f61c1066938359a32cf92fb35492",
        [
         null,
         {
@@ -367134,7 +367301,7 @@
        ]
       ],
       "operator-dictionary-symmetric-002.html": [
-       "9f18d893d6bcd870865ff14307ead2f00ac0e944",
+       "9d28fe2d91824370bd2e0018c1a60f4e4c56d2b0",
        [
         null,
         {
@@ -367143,7 +367310,7 @@
        ]
       ],
       "operator-dictionary-symmetric-003.html": [
-       "73b4b07889eaee702c4defc601899224b6d749bf",
+       "bec9d0deb2c10c1e41ea88a35be448407618956e",
        [
         null,
         {
@@ -367152,7 +367319,7 @@
        ]
       ],
       "operator-dictionary-symmetric-004.html": [
-       "6bd20562bd71f49a28394ee7261a1024597c2cdd",
+       "3d011fce11ec8958a35b6e939462bece24395346",
        [
         null,
         {
@@ -367161,7 +367328,7 @@
        ]
       ],
       "operator-dictionary-symmetric-005.html": [
-       "13f045fb95184d6ff873017cb1b01f9ddc962709",
+       "12faf7544ff3120de0582242244b39bb072a0b45",
        [
         null,
         {
@@ -367170,7 +367337,7 @@
        ]
       ],
       "operator-dictionary-symmetric-006.html": [
-       "26267a76ab96f98a7d5f6283e664f420994a0c75",
+       "2bf982bdb0760c9bbb3e0ce9475b517343d3fd82",
        [
         null,
         {
@@ -367211,21 +367378,21 @@
        ]
       ],
       "subsup-1.html": [
-       "e5321d6c4a3c3dafca68caacdb651fed5c778c9b",
+       "1c3b04dd4169de3c7a01d8e107bc6cea767b36f0",
        [
         null,
         {}
        ]
       ],
       "subsup-2.html": [
-       "1a5b80d34397962c2e7d3400c782bed8cd6f149b",
+       "d6a48b94f128be2869adb1dfadd24942662d6f71",
        [
         null,
         {}
        ]
       ],
       "subsup-3.html": [
-       "5494bb0c919cba3c02320d4f59481dc4eebed74f",
+       "37815cba78ccd589f222a4300844ac9b2822e05d",
        [
         null,
         {}
@@ -374167,6 +374334,13 @@
      ],
      "parent-no-child-yes-same.sub.https.html": [
       "39d6cf996a842c6e84d9b8bec6a74dbf5d0e4a2b",
+      [
+       null,
+       {}
+      ]
+     ],
+     "parent-no-child-yes-subdomain-with-redirect.sub.https.html": [
+      "9004500b764191493112feeb26c48d61acf54fb8",
       [
        null,
        {}
@@ -390721,6 +390895,15 @@
       {}
      ]
     ],
+    "bidi": {
+     "modify.tentative.html": [
+      "6029cf423a120c41fc6e4aa45bca728989bb8a02",
+      [
+       null,
+       {}
+      ]
+     ]
+    },
     "collapse-00.html": [
      "6adaca4002dc7b4e103e72c75e8f44b0ffeefd70",
      [

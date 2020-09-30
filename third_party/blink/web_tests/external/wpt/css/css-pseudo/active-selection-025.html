@@ -6,27 +6,38 @@
 
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/">
   <link rel="help" href="https://www.w3.org/TR/css-pseudo-4/#highlight-selectors">
-  <link rel="match" href="reference/active-selection-024-ref.html">
+  <link rel="match" href="reference/active-selection-025-ref.html">
 
   <meta content="" name="flags">
-  <meta name="assert" content="In this test, the ::selection pseudo-element must paint over the ::first-letter pseudo-element since the first letter is being selected.">
+  <meta name="assert" content="In this test, the div::selection selector has no 'color' declaration. The div::selection selector should use the 'color' declaration from the div rule and, for the first letter only, it should use the 'color' declaration from the ::first-letter pseudo-element. Therefore the first letter 'S' should be purple and the rest of the words should be green.">
+
+  <!--
+
+  More info:
+  [css-pseudo-4] Original color of highlight pseudo inside
+  ::first-letter/::first-line
+  https://github.com/w3c/csswg-drafts/issues/4625
+
+  RESOLVED: Whatever highlight being applied uses colors from before
+  even if came from pseudo element like ::first-letter/::first-line
+
+  -->
 
   <style>
   div
     {
-      color: black;
+      color: green;
       font-size: 300%;
     }
 
   div::first-letter
     {
-      color: red;
+      color: purple;
     }
 
   div::selection
     {
       background-color: yellow;
-      color: green;
     }
   </style>
 
@@ -44,6 +55,6 @@
 
   <body onload="startTest();">
 
-  <p>Test passes if background color of "Selected Text" is yellow and if each glyph of "Selected Text" is green.
+  <p>Test passes if background color of "Selected Text" is yellow, if the "S" glyph is purple and if the other glyphs are green.
 
   <div id="test">Selected Text</div>

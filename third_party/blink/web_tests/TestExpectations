@@ -2483,7 +2483,6 @@ crbug.com/1053965 external/wpt/css/css-values/ex-unit-004.html [ Failure ]
 
 crbug.com/947951 [ Win ] external/wpt/pointerevents/pointerevent_touch-action-inherit_child-auto-child-none_touch.html [ Pass Timeout ]
 crbug.com/1067277 external/wpt/css/css-content/element-replacement-on-replaced-element.tentative.html [ Failure ]
-crbug.com/1069300 external/wpt/css/css-pseudo/active-selection-024.html [ Failure ]
 crbug.com/1069300 external/wpt/css/css-pseudo/active-selection-063.html [ Failure ]
 crbug.com/1108711 external/wpt/css/css-pseudo/active-selection-057.html [ Failure ]
 crbug.com/1110393 external/wpt/css/css-pseudo/active-selection-021.html [ Failure ]
@@ -2655,6 +2654,9 @@ crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-20
 crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-206.xht [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/css/css-pseudo/active-selection-027.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-pseudo/active-selection-025.html [ Failure ]
+crbug.com/626703 [ Linux ] external/wpt/mathml/presentation-markup/operators/operator-dictionary-symmetric-005.html [ Failure Crash ]
 crbug.com/626703 external/wpt/input-events/input-events-get-target-ranges-non-collapsed-selection.tentative.html?Backspace [ Timeout ]
 crbug.com/626703 external/wpt/input-events/input-events-get-target-ranges-non-collapsed-selection.tentative.html?TypingA [ Timeout ]
 crbug.com/626703 external/wpt/input-events/input-events-get-target-ranges-non-collapsed-selection.tentative.html?Delete [ Timeout ]

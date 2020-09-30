@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+FAIL Operator dictionary chunk 1 - symmetric assert_true: symmetric is supported expected true got false
+FAIL Operator dictionary chunk 2 - symmetric assert_true: symmetric is supported expected true got false
+FAIL Operator dictionary chunk 3 - symmetric assert_true: symmetric is supported expected true got false
+FAIL Operator dictionary chunk 4 - symmetric assert_true: symmetric is supported expected true got false
+FAIL Operator dictionary chunk 5 - symmetric assert_true: symmetric is supported expected true got false
+Harness: the test ran to completion.
+
