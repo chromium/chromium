@@ -59,9 +59,12 @@ class NearbyConnections : public mojom::NearbyConnections {
   // Should only be used by objects within lifetime of NearbyConnections.
   static NearbyConnections& GetInstance();
 
-  // May return null if Nearby Connections was not provided an Adapter (likely
-  // because this device does not support Bluetooth).
-  bluetooth::mojom::Adapter* GetBluetoothAdapter();
+  // May return an unbound Remote if Nearby Connections was not provided an
+  // Adapter (likely because this device does not support Bluetooth).
+  const mojo::SharedRemote<bluetooth::mojom::Adapter>& bluetooth_adapter()
+      const {
+    return bluetooth_adapter_;
+  }
 
   network::mojom::P2PSocketManager* GetWebRtcP2PSocketManager();
   network::mojom::MdnsResponder* GetWebRtcMdnsResponder();

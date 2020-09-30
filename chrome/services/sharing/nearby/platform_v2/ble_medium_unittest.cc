@@ -60,7 +60,7 @@ class BleMediumTest : public testing::Test {
     remote_adapter_.Bind(std::move(pending_adapter),
                          /*bind_task_runner=*/nullptr);
 
-    ble_medium_ = std::make_unique<BleMedium>(remote_adapter_.get());
+    ble_medium_ = std::make_unique<BleMedium>(remote_adapter_);
 
     discovered_peripheral_callback_ = {
         .peripheral_discovered_cb =

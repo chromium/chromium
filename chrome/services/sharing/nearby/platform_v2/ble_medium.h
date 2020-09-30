@@ -11,6 +11,7 @@
 #include "device/bluetooth/public/mojom/adapter.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/shared_remote.h"
 #include "third_party/nearby/src/cpp/platform_v2/api/ble.h"
 
 namespace location {
@@ -23,7 +24,8 @@ namespace chrome {
 class BleMedium : public api::BleMedium,
                   public bluetooth::mojom::AdapterObserver {
  public:
-  explicit BleMedium(bluetooth::mojom::Adapter* adapter);
+  explicit BleMedium(
+      const mojo::SharedRemote<bluetooth::mojom::Adapter>& adapter);
   ~BleMedium() override;
 
   BleMedium(const BleMedium&) = delete;
@@ -70,9 +72,7 @@ class BleMedium : public api::BleMedium,
   // Returns nullptr if no BlePeripheral at |address| exists.
   chrome::BlePeripheral* GetDiscoveredBlePeripheral(const std::string& address);
 
-  // This reference is owned by the top-level Nearby Connections interface and
-  // will always outlive this object.
-  bluetooth::mojom::Adapter* adapter_ = nullptr;
+  mojo::SharedRemote<bluetooth::mojom::Adapter> adapter_;
 
   // |adapter_observer_| is only set and bound during active discovery so that
   // events we don't care about outside of discovery don't pile up.

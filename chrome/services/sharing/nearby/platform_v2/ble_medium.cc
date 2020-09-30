@@ -10,7 +10,11 @@ namespace location {
 namespace nearby {
 namespace chrome {
 
-BleMedium::BleMedium(bluetooth::mojom::Adapter* adapter) : adapter_(adapter) {}
+BleMedium::BleMedium(
+    const mojo::SharedRemote<bluetooth::mojom::Adapter>& adapter)
+    : adapter_(adapter) {
+  DCHECK(adapter_.is_bound());
+}
 
 BleMedium::~BleMedium() {
   for (auto& it : registered_advertisements_map_) {

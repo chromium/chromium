@@ -39,8 +39,7 @@ class BluetoothAdapterTest : public testing::Test {
     remote_adapter_.Bind(std::move(pending_adapter),
                          /*bind_task_runner=*/nullptr);
 
-    bluetooth_adapter_ =
-        std::make_unique<BluetoothAdapter>(remote_adapter_.get());
+    bluetooth_adapter_ = std::make_unique<BluetoothAdapter>(remote_adapter_);
   }
 
  protected:

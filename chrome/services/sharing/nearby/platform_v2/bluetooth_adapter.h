@@ -8,6 +8,7 @@
 #include <string>
 
 #include "device/bluetooth/public/mojom/adapter.mojom.h"
+#include "mojo/public/cpp/bindings/shared_remote.h"
 #include "third_party/nearby/src/cpp/platform_v2/api/bluetooth_adapter.h"
 
 namespace location {
@@ -19,7 +20,8 @@ namespace chrome {
 // consumes the synchronous signatures of bluetooth::mojom::Adapter methods.
 class BluetoothAdapter : public api::BluetoothAdapter {
  public:
-  explicit BluetoothAdapter(bluetooth::mojom::Adapter* adapter);
+  explicit BluetoothAdapter(
+      const mojo::SharedRemote<bluetooth::mojom::Adapter>& adapter);
   ~BluetoothAdapter() override;
 
   BluetoothAdapter(const BluetoothAdapter&) = delete;
@@ -35,9 +37,7 @@ class BluetoothAdapter : public api::BluetoothAdapter {
   std::string GetMacAddress() const override;
 
  private:
-  // This reference is owned by the top-level Nearby Connections interface and
-  // will always outlive this object.
-  bluetooth::mojom::Adapter* adapter_;
+  const mojo::SharedRemote<bluetooth::mojom::Adapter> adapter_;
 };
 
 }  // namespace chrome

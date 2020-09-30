@@ -8,8 +8,11 @@ namespace location {
 namespace nearby {
 namespace chrome {
 
-BluetoothAdapter::BluetoothAdapter(bluetooth::mojom::Adapter* adapter)
-    : adapter_(adapter) {}
+BluetoothAdapter::BluetoothAdapter(
+    const mojo::SharedRemote<bluetooth::mojom::Adapter>& adapter)
+    : adapter_(adapter) {
+  DCHECK(adapter_.is_bound());
+}
 
 BluetoothAdapter::~BluetoothAdapter() = default;
 

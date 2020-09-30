@@ -23,6 +23,7 @@
 #include "chrome/services/sharing/nearby/platform_v2/submittable_executor.h"
 #include "chrome/services/sharing/nearby/platform_v2/webrtc.h"
 #include "device/bluetooth/public/mojom/adapter.mojom.h"
+#include "mojo/public/cpp/bindings/shared_remote.h"
 #include "third_party/nearby/src/cpp/platform_v2/api/atomic_boolean.h"
 #include "third_party/nearby/src/cpp/platform_v2/api/atomic_reference.h"
 #include "third_party/nearby/src/cpp/platform_v2/api/ble.h"
@@ -80,10 +81,10 @@ std::unique_ptr<AtomicUint32> ImplementationPlatform::CreateAtomicUint32(
 std::unique_ptr<BluetoothAdapter>
 ImplementationPlatform::CreateBluetoothAdapter() {
   auto& connections = connections::NearbyConnections::GetInstance();
-  bluetooth::mojom::Adapter* bluetooth_adapter =
-      connections.GetBluetoothAdapter();
+  const mojo::SharedRemote<bluetooth::mojom::Adapter>& bluetooth_adapter =
+      connections.bluetooth_adapter();
 
-  if (!bluetooth_adapter)
+  if (!bluetooth_adapter.is_bound())
     return nullptr;
 
   return std::make_unique<chrome::BluetoothAdapter>(bluetooth_adapter);
@@ -128,10 +129,10 @@ ImplementationPlatform::CreateBluetoothClassicMedium(
   // to implement chrome::BluetoothClassicMedium.
 
   auto& connections = connections::NearbyConnections::GetInstance();
-  bluetooth::mojom::Adapter* bluetooth_adapter =
-      connections.GetBluetoothAdapter();
+  const mojo::SharedRemote<bluetooth::mojom::Adapter>& bluetooth_adapter =
+      connections.bluetooth_adapter();
 
-  if (!bluetooth_adapter)
+  if (!bluetooth_adapter.is_bound())
     return nullptr;
 
   return std::make_unique<chrome::BluetoothClassicMedium>(bluetooth_adapter);
@@ -143,10 +144,10 @@ std::unique_ptr<BleMedium> ImplementationPlatform::CreateBleMedium(
   // to implement chrome::BleMedium.
 
   auto& connections = connections::NearbyConnections::GetInstance();
-  bluetooth::mojom::Adapter* bluetooth_adapter =
-      connections.GetBluetoothAdapter();
+  const mojo::SharedRemote<bluetooth::mojom::Adapter>& bluetooth_adapter =
+      connections.bluetooth_adapter();
 
-  if (!bluetooth_adapter)
+  if (!bluetooth_adapter.is_bound())
     return nullptr;
 
   return std::make_unique<chrome::BleMedium>(bluetooth_adapter);

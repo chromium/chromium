@@ -154,13 +154,6 @@ void NearbyConnections::OnDisconnect() {
   // Note: |this| might be destroyed here.
 }
 
-bluetooth::mojom::Adapter* NearbyConnections::GetBluetoothAdapter() {
-  if (!bluetooth_adapter_.is_bound())
-    return nullptr;
-
-  return bluetooth_adapter_.get();
-}
-
 network::mojom::P2PSocketManager*
 NearbyConnections::GetWebRtcP2PSocketManager() {
   if (!socket_manager_.is_bound())

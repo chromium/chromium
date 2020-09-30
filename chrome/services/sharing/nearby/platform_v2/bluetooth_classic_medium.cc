@@ -13,8 +13,10 @@ namespace nearby {
 namespace chrome {
 
 BluetoothClassicMedium::BluetoothClassicMedium(
-    bluetooth::mojom::Adapter* adapter)
-    : adapter_(adapter) {}
+    const mojo::SharedRemote<bluetooth::mojom::Adapter>& adapter)
+    : adapter_(adapter) {
+  DCHECK(adapter_.is_bound());
+}
 
 BluetoothClassicMedium::~BluetoothClassicMedium() = default;
 

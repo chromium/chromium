@@ -52,7 +52,7 @@ class BluetoothClassicMediumTest : public testing::Test {
                          /*bind_task_runner=*/nullptr);
 
     bluetooth_classic_medium_ =
-        std::make_unique<BluetoothClassicMedium>(remote_adapter_.get());
+        std::make_unique<BluetoothClassicMedium>(remote_adapter_);
 
     discovery_callback_ = {
         .device_discovered_cb =
