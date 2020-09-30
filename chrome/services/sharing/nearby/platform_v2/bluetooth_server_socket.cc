@@ -4,6 +4,8 @@
 
 #include "chrome/services/sharing/nearby/platform_v2/bluetooth_server_socket.h"
 
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "chrome/services/sharing/nearby/platform_v2/bluetooth_socket.h"
 #include "third_party/nearby/src/cpp/platform_v2/base/exception.h"
 
@@ -13,16 +15,13 @@ namespace chrome {
 
 BluetoothServerSocket::BluetoothServerSocket(
     mojo::PendingRemote<bluetooth::mojom::ServerSocket> server_socket)
-    : pending_server_socket_(std::move(server_socket)) {}
+    : task_runner_(
+          base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})),
+      server_socket_(std::move(server_socket), task_runner_) {}
 
 BluetoothServerSocket::~BluetoothServerSocket() = default;
 
 std::unique_ptr<api::BluetoothSocket> BluetoothServerSocket::Accept() {
-  // We're now in the thread that BluetoothServerSocket primarily operates in.
-  // Bind |server_socket_| in this correct thread. See header documentation.
-  if (pending_server_socket_)
-    server_socket_.Bind(std::move(pending_server_socket_));
-
   bluetooth::mojom::AcceptConnectionResultPtr result;
   bool success = server_socket_->Accept(&result);
 
@@ -36,7 +35,6 @@ std::unique_ptr<api::BluetoothSocket> BluetoothServerSocket::Accept() {
 }
 
 Exception BluetoothServerSocket::Close() {
-  pending_server_socket_.reset();
   server_socket_.reset();
   return {Exception::kSuccess};
 }

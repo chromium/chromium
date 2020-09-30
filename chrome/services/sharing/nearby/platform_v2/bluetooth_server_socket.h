@@ -9,7 +9,7 @@
 
 #include "device/bluetooth/public/mojom/adapter.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/shared_remote.h"
 #include "third_party/nearby/src/cpp/platform_v2/api/bluetooth_classic.h"
 
 namespace location {
@@ -32,14 +32,14 @@ class BluetoothServerSocket : public api::BluetoothServerSocket {
 
  private:
   // BluetoothServerSocket is created on the main thread, but its public methods
-  // are used on a separate dedicated thread. mojo::Remote objects (namely,
-  // |server_socket_|) must be bound on the same thread they are used on, to
-  // prevent deadlock. So, we hold onto this mojo::PendingRemote
-  // |pending_server_socket_| until Accept() is called, at which point
-  // |server_socket_| is bound with it (it is acceptable to pass a
-  // mojo::PendingRemote around multiple threads).
-  mojo::PendingRemote<bluetooth::mojom::ServerSocket> pending_server_socket_;
-  mojo::Remote<bluetooth::mojom::ServerSocket> server_socket_;
+  // are used on a separate dedicated thread. A mojo::ShareRemote object
+  // |server_socket_| is used to ensure that all calls on the mojo happen on
+  // the dedicated task runner/sequence regardless of the calling thread. This
+  // is necessary because bluetooth::mojom::ServerSocket.Accept() is a [Sync]
+  // mojo method and we have previously observed deadlock in the context of
+  // Nearby Connections without a SharedRemote implementation.
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  mojo::SharedRemote<bluetooth::mojom::ServerSocket> server_socket_;
 };
 
 }  // namespace chrome
