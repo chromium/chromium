@@ -676,8 +676,13 @@ class OpenInControllerBridge
   _isOpenInMenuDisplayed = NO;
 }
 
-#pragma mark -
-#pragma mark UIGestureRecognizerDelegate Methods
+#pragma mark - UIGestureRecognizerDelegate Methods
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer*)gestureRecognizer
+    shouldRecognizeSimultaneouslyWithGestureRecognizer:
+        (UIGestureRecognizer*)otherGestureRecognizer {
+  return YES;
+}
 
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer*)gestureRecognizer {
   if ([gestureRecognizer.view isEqual:_overlayedView])
