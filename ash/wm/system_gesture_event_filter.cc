@@ -24,6 +24,11 @@ void SystemGestureEventFilter::OnMouseEvent(ui::MouseEvent* event) {
           ui::TouchScreensAvailability::ENABLED) {
     base::RecordAction(base::UserMetricsAction("Mouse_Down"));
   }
+
+  if (event->IsMouseWheelEvent() && wm_gesture_handler_ &&
+      wm_gesture_handler_->ProcessWheelEvent(*event)) {
+    event->StopPropagation();
+  }
 }
 
 void SystemGestureEventFilter::OnScrollEvent(ui::ScrollEvent* event) {

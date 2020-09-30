@@ -49,7 +49,7 @@ class ASH_EXPORT WindowCycleController {
   // to the window in the given |direction| and also scrolls the list.
   void HandleCycleWindow(Direction direction);
 
-  // Scrolls the window in the given |direction|. This does not move the focus
+  // Scrolls the windows in the given |direction|. This does not move the focus
   // ring.
   void Scroll(Direction direction);
 

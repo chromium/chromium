@@ -10,14 +10,28 @@
 #include "components/prefs/pref_registry_simple.h"
 
 namespace ui {
+class MouseEvent;
 class ScrollEvent;
 }
 
 namespace ash {
 
-// This handles 3-finger touchpad scroll events to enter/exit overview mode and
-// move the overview highlight if it is visible. This class also handles
-// 4-finger horizontal scrolls to switch desks.
+// TODO(chinsenj): Consider renaming this to WmEventHandler and moving to parent
+// directory since this now handles mouse wheel events.
+
+// This handles the following interactions:
+//   - 3-finger touchpad scroll events to enter/exit overview mode and move the
+//   overview highlight if it is visible.
+//   - 4-finger horizontal scrolls to switch desks.
+//
+// This handles the following interactions if the InteractiveWindowCycleList
+// flag is enabled. TODO(chinsenj): Merge these comments when the flag is
+// removed.
+//   - 3-finger horizontal touchpad scroll events to cycle the window cycle
+//   list.
+//   - 2-finger horizontal touchpad scroll events to cycle the window cycle
+//   list.
+//   - Mouse wheel events to cycle the window cycle list.
 class ASH_EXPORT WmGestureHandler {
  public:
   // The thresholds of performing a wm action with a touchpad three or four
@@ -30,10 +44,15 @@ class ASH_EXPORT WmGestureHandler {
   WmGestureHandler& operator=(const WmGestureHandler&) = delete;
   virtual ~WmGestureHandler();
 
-  // Processes a scroll event and may switch desks, start overview or move the
-  // overivew highlight. Returns true if the event has been handled and should
-  // not be processed further, false otherwise. Forwards events to
-  // DesksController if |is_enhanced_desk_animations_| is true.
+  // Processes a mouse wheel event and may cycle the window cycle list. Returns
+  // true if the event has been handled and should not be processed further,
+  // false otherwise.
+  bool ProcessWheelEvent(const ui::MouseEvent& event);
+
+  // Processes a scroll event and may switch desks, start overview, move the
+  // overview highlight or cycle the window cycle list. Returns true if
+  // the event has been handled and should not be processed further, false
+  // otherwise.
   bool ProcessScrollEvent(const ui::ScrollEvent& event);
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
@@ -53,6 +72,14 @@ class ASH_EXPORT WmGestureHandler {
     bool continuous_gesture_started = false;
   };
 
+  // Called by ProcessWheelEvent() and ProcessScrollEvent(). Depending on
+  // |finger_count|, may switch desks, start overview, move the overview
+  // highlight or cycle the window cycle list. Returns true if the
+  // event has been handled and should not be processed further, false
+  // otherwise. Forwards events to DesksController if
+  // |is_enhanced_desk_animations_| is true.
+  bool ProcessEventImpl(int finger_count, float delta_x, float delta_y);
+
   // Called when a scroll is ended. Returns true if the scroll is processed.
   bool EndScroll();
 
@@ -60,17 +87,15 @@ class ASH_EXPORT WmGestureHandler {
   // the middle of scrolls and when scrolls have ended.
   bool MoveOverviewSelection(int finger_count, float scroll_x, float scroll_y);
 
-  // Tries to move the window cycle list selector. Returns true if successful.
+  // Tries to cycle the window cycle list. Returns true if successful.
   // Called in the middle of scrolls and when scrolls have ended.
-  bool MoveWindowCycleListSelection(int finger_count,
-                                    float scroll_x,
-                                    float scroll_y);
+  bool CycleWindowCycleList(int finger_count, float scroll_x, float scroll_y);
 
-  // Returns whether or not the selector for a given session of overview/window
-  // cycle list should horizontally scroll.
-  bool ShouldHorizontallyScrollSelector(bool in_session,
-                                        float scroll_x,
-                                        float scroll_y);
+  // Returns whether or not a given session of overview/window cycle list should
+  // horizontally scroll.
+  bool ShouldHorizontallyScroll(bool in_session,
+                                float scroll_x,
+                                float scroll_y);
 
   // Contains the data during a scroll session. Empty is no scroll is underway.
   base::Optional<ScrollData> scroll_data_;
