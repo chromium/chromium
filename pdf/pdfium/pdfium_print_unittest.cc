@@ -74,7 +74,7 @@ void CheckPdfRendering(const std::vector<uint8_t>& pdf_data,
       /*stretch_to_bounds=*/false,
       /*keep_aspect_ratio=*/true,
       /*center_in_bounds=*/true,
-      /*autorotate=*/false, /*use_color=*/true);
+      /*autorotate=*/false, /*use_color=*/true, /*render_for_printing=*/true);
 
   PDFiumEngineExports exports;
   ASSERT_TRUE(exports.RenderPDFPageToBitmap(pdf_data, page_number, settings,

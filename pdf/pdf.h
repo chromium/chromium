@@ -127,6 +127,11 @@ base::Optional<gfx::SizeF> GetPDFPageSizeByIndex(
     base::span<const uint8_t> pdf_buffer,
     int page_number);
 
+enum class RenderDeviceType {
+  kDisplay,
+  kPrinter,
+};
+
 struct RenderOptions {
   // Whether the output should be stretched to fit the supplied bitmap.
   bool stretch_to_bounds;
@@ -137,6 +142,8 @@ struct RenderOptions {
   bool autorotate;
   // Specifies color or grayscale.
   bool use_color;
+  // What type of device to render for.
+  RenderDeviceType render_device_type;
 };
 
 // Renders PDF page into 4-byte per pixel BGRA color bitmap.

@@ -513,7 +513,8 @@ class PDFEngineExports {
                       bool keep_aspect_ratio,
                       bool center_in_bounds,
                       bool autorotate,
-                      bool use_color);
+                      bool use_color,
+                      bool render_for_printing);
     RenderingSettings(const RenderingSettings& that);
 
     gfx::Size dpi;
@@ -524,6 +525,7 @@ class PDFEngineExports {
     bool center_in_bounds;
     bool autorotate;
     bool use_color;
+    bool render_for_printing;
   };
 
   PDFEngineExports() {}

@@ -137,6 +137,16 @@ bool IsValidPrintableArea(const gfx::Size& page_size,
          printable_area.bottom() <= page_size.height();
 }
 
+int GetRenderFlagsFromSettings(
+    const PDFiumEngineExports::RenderingSettings& settings) {
+  int flags = FPDF_ANNOT;
+  if (!settings.use_color)
+    flags |= FPDF_GRAYSCALE;
+  if (settings.render_for_printing)
+    flags |= FPDF_PRINTING;
+  return flags;
+}
+
 base::Value RecursiveGetStructTree(FPDF_STRUCTELEMENT struct_elem) {
   int children_count = FPDF_StructElement_CountChildren(struct_elem);
   if (children_count <= 0)
@@ -192,7 +202,8 @@ PDFEngineExports::RenderingSettings::RenderingSettings(const gfx::Size& dpi,
                                                        bool keep_aspect_ratio,
                                                        bool center_in_bounds,
                                                        bool autorotate,
-                                                       bool use_color)
+                                                       bool use_color,
+                                                       bool render_for_printing)
     : dpi(dpi),
       bounds(bounds),
       fit_to_bounds(fit_to_bounds),
@@ -200,7 +211,8 @@ PDFEngineExports::RenderingSettings::RenderingSettings(const gfx::Size& dpi,
       keep_aspect_ratio(keep_aspect_ratio),
       center_in_bounds(center_in_bounds),
       autorotate(autorotate),
-      use_color(use_color) {}
+      use_color(use_color),
+      render_for_printing(render_for_printing) {}
 
 PDFEngineExports::RenderingSettings::RenderingSettings(
     const RenderingSettings& that) = default;
@@ -255,9 +267,7 @@ bool PDFiumEngineExports::RenderPDFPageToDC(
                     settings.bounds.x() + settings.bounds.width(),
                     settings.bounds.y() + settings.bounds.height());
 
-  int flags = FPDF_ANNOT | FPDF_PRINTING;
-  if (!settings.use_color)
-    flags |= FPDF_GRAYSCALE;
+  int flags = GetRenderFlagsFromSettings(settings);
 
   // A "temporary" hack. Some PDFs seems to render very slowly if
   // FPDF_RenderPage() is directly used on a printer DC. I suspect it is
@@ -335,12 +345,9 @@ bool PDFiumEngineExports::RenderPDFPageToBitmap(
   // Shift top-left corner of bounds to (0, 0) if it's not there.
   dest.set_origin(dest.origin() - settings.bounds.OffsetFromOrigin());
 
-  int flags = FPDF_ANNOT | FPDF_PRINTING;
-  if (!settings.use_color)
-    flags |= FPDF_GRAYSCALE;
-
   FPDF_RenderPageBitmap(bitmap.get(), page.get(), dest.x(), dest.y(),
-                        dest.width(), dest.height(), rotate, flags);
+                        dest.width(), dest.height(), rotate,
+                        GetRenderFlagsFromSettings(settings));
   return true;
 }
 

@@ -359,6 +359,7 @@ class PrintPreviewPdfGeneratedBrowserTest : public InProcessBrowserTest {
         .keep_aspect_ratio = true,
         .autorotate = false,
         .use_color = true,
+        .render_device_type = chrome_pdf::RenderDeviceType::kPrinter,
     };
     for (int i = 0; i < num_pages; ++i) {
       base::Optional<gfx::SizeF> size_in_points =

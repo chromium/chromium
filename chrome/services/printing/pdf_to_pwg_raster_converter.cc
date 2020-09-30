@@ -53,6 +53,7 @@ base::ReadOnlySharedMemoryRegion RenderPdfPagesToPwgRaster(
       .keep_aspect_ratio = true,
       .autorotate = settings.autorotate,
       .use_color = settings.use_color,
+      .render_device_type = chrome_pdf::RenderDeviceType::kPrinter,
   };
   for (int i = 0; i < total_page_count; ++i) {
     int page_number = i;

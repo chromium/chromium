@@ -68,6 +68,7 @@ void PdfThumbnailer::GetThumbnail(printing::mojom::ThumbParamsPtr params,
       .keep_aspect_ratio = params->keep_aspect,
       .autorotate = kAutorotate,
       .use_color = kUseColor,
+      .render_device_type = chrome_pdf::RenderDeviceType::kDisplay,
   };
   if (!chrome_pdf::RenderPDFPageToBitmap(pdf_buffer, 0, result.getPixels(),
                                          params->size_px, params->dpi,
