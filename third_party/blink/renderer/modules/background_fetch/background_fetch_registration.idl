@@ -14,7 +14,7 @@
     readonly attribute unsigned long long downloadTotal;
     readonly attribute unsigned long long downloaded;
     readonly attribute BackgroundFetchResult result;
-    readonly attribute BackgroundFetchFailureReason failureReason;
+    [HighEntropy, Measure] readonly attribute BackgroundFetchFailureReason failureReason;
     readonly attribute boolean recordsAvailable;
 
     attribute EventHandler onprogress;

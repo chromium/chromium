@@ -29289,7 +29289,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3496" label="IdentifiabilityStudyReserved3496"/>
   <int value="3497" label="IdentifiabilityStudyReserved3497"/>
   <int value="3498" label="IdentifiabilityStudyReserved3498"/>
-  <int value="3499" label="IdentifiabilityStudyReserved3499"/>
+  <int value="3499"
+      label="V8BackgroundFetchRegistration_FailureReason_AttributeGetter"/>
   <int value="3500" label="IdentifiabilityStudyReserved3500"/>
   <int value="3501" label="IdentifiabilityStudyReserved3501"/>
   <int value="3502" label="IdentifiabilityStudyReserved3502"/>

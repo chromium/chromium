@@ -8,6 +8,8 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "base/optional.h"
+#include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
+#include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_cache_query_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_image_resource.h"
@@ -336,6 +338,15 @@ const String BackgroundFetchRegistration::result() const {
 }
 
 const String BackgroundFetchRegistration::failureReason() const {
+  blink::IdentifiabilityMetricBuilder(GetExecutionContext()->UkmSourceID())
+      .Set(
+          blink::IdentifiableSurface::FromTypeAndToken(
+              blink::IdentifiableSurface::Type::kWebFeature,
+              WebFeature::
+                  kV8BackgroundFetchRegistration_FailureReason_AttributeGetter),
+          failure_reason_ ==
+              mojom::BackgroundFetchFailureReason::QUOTA_EXCEEDED)
+      .Record(GetExecutionContext()->UkmRecorder());
   switch (failure_reason_) {
     case mojom::BackgroundFetchFailureReason::NONE:
       return "";

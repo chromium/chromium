@@ -2824,7 +2824,7 @@ enum WebFeature {
   kIdentifiabilityStudyReserved3496 = 3496,
   kIdentifiabilityStudyReserved3497 = 3497,
   kIdentifiabilityStudyReserved3498 = 3498,
-  kIdentifiabilityStudyReserved3499 = 3499,
+  kV8BackgroundFetchRegistration_FailureReason_AttributeGetter = 3499,
   kIdentifiabilityStudyReserved3500 = 3500,
   kIdentifiabilityStudyReserved3501 = 3501,
   kIdentifiabilityStudyReserved3502 = 3502,
