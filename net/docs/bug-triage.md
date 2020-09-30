@@ -162,3 +162,7 @@ generating and modifying shifts
 * The issue tracker doesn't track any official mappings between components and
   OWNERS. This [internal document](https://goto.google.com/kojfj) enumerates
   the known owners for subcomponents.
+
+* [Web Platform Team SLOs](https://docs.google.com/document/d/18ylPve6jd43m8B7Dil6xmS4G9MHL2_DhQon72je-O9o/edit)
+
+* [(Internal) Web Platform bug triage guidelines](http://go/xnzwn)
