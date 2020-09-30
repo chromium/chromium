@@ -27,6 +27,7 @@ extern const base::Feature kInterestFeedFeedback;
 // for personalization. Also enables the feed header menu to manage the feed.
 extern const base::Feature kReportFeedUserActions;
 
+std::string GetFeedReferrerUrl();
 
 }  // namespace feed
 

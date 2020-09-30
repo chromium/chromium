@@ -17,8 +17,7 @@ public final class FeedFeatures {
      */
     public static boolean isReportingUserActions() {
         return ChromeFeatureList.isEnabled(ChromeFeatureList.INTEREST_FEED_V2)
-                || (ChromeFeatureList.isEnabled(ChromeFeatureList.INTEREST_FEED_CONTENT_SUGGESTIONS)
-                        && ChromeFeatureList.isEnabled(ChromeFeatureList.REPORT_FEED_USER_ACTIONS));
+                || ChromeFeatureList.isEnabled(ChromeFeatureList.REPORT_FEED_USER_ACTIONS);
     }
 
     /**
@@ -27,10 +26,7 @@ public final class FeedFeatures {
      */
     public static boolean cachedIsReportingUserActions() {
         return CachedFeatureFlags.isEnabled(ChromeFeatureList.INTEREST_FEED_V2)
-                || (CachedFeatureFlags.isEnabled(
-                            ChromeFeatureList.INTEREST_FEED_CONTENT_SUGGESTIONS)
-                        && CachedFeatureFlags.isEnabled(
-                                ChromeFeatureList.REPORT_FEED_USER_ACTIONS));
+                || CachedFeatureFlags.isEnabled(ChromeFeatureList.REPORT_FEED_USER_ACTIONS);
     }
 
     public static boolean isV2Enabled() {

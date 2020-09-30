@@ -17,8 +17,6 @@ import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.background_sync.BackgroundSyncBackgroundTaskScheduler;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.init.ServiceManagerStartupUtils;
-import org.chromium.chrome.browser.ntp.snippets.SnippetsBridge;
-import org.chromium.chrome.browser.ntp.snippets.SnippetsLauncher;
 import org.chromium.chrome.browser.offlinepages.BackgroundScheduler;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
@@ -51,11 +49,6 @@ public class ChromeBackgroundService extends GcmTaskService {
                     rescheduleOfflinePages();
                     break;
 
-                case SnippetsLauncher.TASK_TAG_WIFI:
-                case SnippetsLauncher.TASK_TAG_FALLBACK:
-                    handleSnippetsOnPersistentSchedulerWakeUp(context, taskTag);
-                    break;
-
                 // This is only for tests.
                 case ServiceManagerStartupUtils.TASK_TAG:
                     handleServicificationStartupTask(context, taskTag);
@@ -70,23 +63,8 @@ public class ChromeBackgroundService extends GcmTaskService {
         return GcmNetworkManager.RESULT_SUCCESS;
     }
 
-    private void handleSnippetsOnPersistentSchedulerWakeUp(Context context, String tag) {
-        if (!SnippetsLauncher.hasInstance()) launchBrowser(context, tag);
-        snippetsOnPersistentSchedulerWakeUp();
-    }
-
     private void handleServicificationStartupTask(Context context, String tag) {
         launchBrowser(context, tag);
-    }
-
-    @VisibleForTesting
-    protected void snippetsOnPersistentSchedulerWakeUp() {
-        SnippetsBridge.onPersistentSchedulerWakeUp();
-    }
-
-    @VisibleForTesting
-    protected void snippetsOnBrowserUpgraded() {
-        SnippetsBridge.onBrowserUpgraded();
     }
 
     @VisibleForTesting
@@ -98,15 +76,6 @@ public class ChromeBackgroundService extends GcmTaskService {
     @VisibleForTesting
     protected void rescheduleBackgroundSyncTasksOnUpgrade() {
         rescheduleOneShotBackgroundSyncTasks();
-    }
-
-    private void handleSnippetsOnBrowserUpgraded() {
-        if (SnippetsLauncher.shouldNotifyOnBrowserUpgraded()) {
-            if (!SnippetsLauncher.hasInstance()) {
-                launchBrowser(this, /*tag=*/""); // The |tag| doesn't matter here.
-            }
-            snippetsOnBrowserUpgraded();
-        }
     }
 
     /** Reschedules offline pages (using appropriate version of Background Task Scheduler). */
@@ -123,6 +92,5 @@ public class ChromeBackgroundService extends GcmTaskService {
     @Override
     public void onInitializeTasks() {
         rescheduleBackgroundSyncTasksOnUpgrade();
-        handleSnippetsOnBrowserUpgraded();
     }
 }

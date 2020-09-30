@@ -63,8 +63,7 @@ ChromeBrowsingDataRemoverDelegateFactory::
 #if BUILDFLAG(ENABLE_FEED_IN_CHROME)
   if (base::FeatureList::IsEnabled(feed::kInterestFeedV2)) {
     DependsOn(feed::FeedServiceFactory::GetInstance());
-  } else if (base::FeatureList::IsEnabled(
-                 feed::kInterestFeedContentSuggestions)) {
+  } else {
     DependsOn(feed::FeedHostServiceFactory::GetInstance());
   }
 #endif  // BUILDFLAG(ENABLE_FEED_IN_CHROME)

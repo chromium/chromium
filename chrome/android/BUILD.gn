@@ -552,7 +552,6 @@ android_library("chrome_java") {
     "//components/consent_auditor:consent_auditor_java",
     "//components/data_reduction_proxy/core/browser:data_reduction_proxy_savings_cleared_enum_java",
     "//components/dom_distiller/core:distiller_type_java",
-    "//components/ntp_snippets:ntp_snippets_java_enums_srcjar",
     "//components/ntp_tiles:ntp_tiles_enums_java",
     "//components/offline_pages/core:offline_page_model_enums_java",
     "//components/search_engines:search_engine_type_java",
@@ -712,7 +711,6 @@ java_cpp_enum("chrome_android_java_enums_srcjar") {
     "//chrome/browser/notifications/notification_channels_provider_android.h",
     "//chrome/browser/notifications/notification_handler.h",
     "//chrome/browser/notifications/notification_platform_bridge_android.cc",
-    "//chrome/browser/ntp_snippets/ntp_snippets_metrics.h",
     "//chrome/browser/profiles/profile_metrics.h",
   ]
 }
@@ -3184,8 +3182,6 @@ generate_jni("chrome_jni_headers") {
     "java/src/org/chromium/chrome/browser/ntp/LogoBridge.java",
     "java/src/org/chromium/chrome/browser/ntp/RecentTabsPagePrefs.java",
     "java/src/org/chromium/chrome/browser/ntp/RecentlyClosedBridge.java",
-    "java/src/org/chromium/chrome/browser/ntp/snippets/SnippetsBridge.java",
-    "java/src/org/chromium/chrome/browser/ntp/snippets/SnippetsLauncher.java",
     "java/src/org/chromium/chrome/browser/offlinepages/AutoFetchNotifier.java",
     "java/src/org/chromium/chrome/browser/offlinepages/BackgroundSchedulerBridge.java",
     "java/src/org/chromium/chrome/browser/offlinepages/CctOfflinePageModelObserver.java",

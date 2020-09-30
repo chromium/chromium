@@ -449,7 +449,6 @@ static_library("ui") {
     "//components/metrics_services_manager",
     "//components/navigation_metrics",
     "//components/net_log",
-    "//components/ntp_snippets",
     "//components/ntp_tiles",
     "//components/offline_pages/buildflags",
     "//components/omnibox/browser",

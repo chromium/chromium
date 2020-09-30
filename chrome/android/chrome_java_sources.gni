@@ -1023,8 +1023,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/ntp/search/SearchBoxViewBinder.java",
   "java/src/org/chromium/chrome/browser/ntp/snippets/SectionHeader.java",
   "java/src/org/chromium/chrome/browser/ntp/snippets/SectionHeaderView.java",
-  "java/src/org/chromium/chrome/browser/ntp/snippets/SnippetsBridge.java",
-  "java/src/org/chromium/chrome/browser/ntp/snippets/SnippetsLauncher.java",
   "java/src/org/chromium/chrome/browser/offlinepages/AutoFetchNotifier.java",
   "java/src/org/chromium/chrome/browser/offlinepages/BackgroundScheduler.java",
   "java/src/org/chromium/chrome/browser/offlinepages/BackgroundSchedulerBridge.java",

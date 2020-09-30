@@ -383,8 +383,6 @@ public final class ChromePreferenceKeys {
      * Key to cache whether immersive ui mode is enabled.
      */
     public static final String FLAGS_CACHED_IMMERSIVE_UI_MODE_ENABLED = "immersive_ui_mode_enabled";
-    public static final String FLAGS_CACHED_INTEREST_FEED_CONTENT_SUGGESTIONS =
-            "interest_feed_content_suggestions";
     /**
      * Whether warming up network service is enabled.
      * Default value is false.

@@ -112,11 +112,6 @@
 #include "components/lookalikes/core/lookalike_url_util.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/network_time/network_time_tracker.h"
-#include "components/ntp_snippets/content_suggestions_service.h"
-#include "components/ntp_snippets/remote/remote_suggestions_provider_impl.h"
-#include "components/ntp_snippets/remote/remote_suggestions_scheduler_impl.h"
-#include "components/ntp_snippets/remote/request_throttler.h"
-#include "components/ntp_snippets/user_classifier.h"
 #include "components/ntp_tiles/most_visited_sites.h"
 #include "components/offline_pages/buildflags/buildflags.h"
 #include "components/omnibox/browser/document_provider.h"
@@ -227,7 +222,6 @@
 #include "components/feed/buildflags.h"
 #include "components/feed/core/shared_prefs/pref_names.h"
 #include "components/games/core/games_prefs.h"
-#include "components/ntp_snippets/category_rankers/click_based_category_ranker.h"
 #include "components/ntp_tiles/popular_sites_impl.h"
 #include "components/permissions/contexts/geolocation_permission_context_android.h"
 #include "components/query_tiles/tile_service_prefs.h"
@@ -780,11 +774,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   MediaStorageIdSalt::RegisterProfilePrefs(registry);
   NotificationDisplayServiceImpl::RegisterProfilePrefs(registry);
   NotifierStateTracker::RegisterProfilePrefs(registry);
-  ntp_snippets::ContentSuggestionsService::RegisterProfilePrefs(registry);
-  ntp_snippets::RemoteSuggestionsProviderImpl::RegisterProfilePrefs(registry);
-  ntp_snippets::RemoteSuggestionsSchedulerImpl::RegisterProfilePrefs(registry);
-  ntp_snippets::RequestThrottler::RegisterProfilePrefs(registry);
-  ntp_snippets::UserClassifier::RegisterProfilePrefs(registry);
   ntp_tiles::MostVisitedSites::RegisterProfilePrefs(registry);
   optimization_guide::prefs::RegisterProfilePrefs(registry);
   password_bubble_experiment::RegisterPrefs(registry);
@@ -875,7 +864,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   KnownInterceptionDisclosureInfoBarDelegate::RegisterProfilePrefs(registry);
   MediaDrmOriginIdManager::RegisterProfilePrefs(registry);
   NotificationChannelsProviderAndroid::RegisterProfilePrefs(registry);
-  ntp_snippets::ClickBasedCategoryRanker::RegisterProfilePrefs(registry);
   ntp_tiles::PopularSitesImpl::RegisterProfilePrefs(registry);
   OomInterventionDecider::RegisterProfilePrefs(registry);
   PartnerBookmarksShim::RegisterProfilePrefs(registry);

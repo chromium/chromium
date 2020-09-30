@@ -123,7 +123,6 @@
 
 #if defined(OS_ANDROID)
 #include "chrome/browser/android/metrics/android_profile_session_durations_service_factory.h"
-#include "chrome/browser/ntp_snippets/content_suggestions_service_factory.h"
 #else
 #include "chrome/browser/accessibility/caption_controller.h"
 #include "chrome/browser/accessibility/caption_controller_factory.h"
@@ -1331,9 +1330,6 @@ void ProfileManager::DoFinalInitForServices(Profile* profile,
 
 #if defined(OS_ANDROID)
   AndroidProfileSessionDurationsServiceFactory::GetForProfile(profile);
-  // TODO(b/678590): create services during profile startup.
-  // Service is responsible for fetching content snippets for the NTP.
-  ContentSuggestionsServiceFactory::GetForProfile(profile);
 #else
   captions::CaptionControllerFactory::GetForProfile(profile)->Init();
 #endif

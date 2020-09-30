@@ -971,6 +971,8 @@ public class FeedStreamSurface implements SurfaceActionsHandler, FeedActionsHand
         LoadUrlParams params = new LoadUrlParams(url, PageTransition.AUTO_BOOKMARK);
         params.setReferrer(
                 new Referrer(SuggestionsConfig.getReferrerUrl(ChromeFeatureList.INTEREST_FEED_V2),
+                        // WARNING: ReferrerPolicy.ALWAYS is assumed by other Chrome code for NTP
+                        // tiles to set consider_for_ntp_most_visited.
                         ReferrerPolicy.ALWAYS));
         Tab tab = mPageNavigationDelegate.openUrl(disposition, params);
 

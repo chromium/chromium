@@ -53,7 +53,6 @@ public class CachedFeatureFlags {
             put(ChromeFeatureList.HOMEPAGE_LOCATION_POLICY, false);
             put(ChromeFeatureList.SERVICE_MANAGER_FOR_DOWNLOAD, false);
             put(ChromeFeatureList.SERVICE_MANAGER_FOR_BACKGROUND_PREFETCH, true);
-            put(ChromeFeatureList.INTEREST_FEED_CONTENT_SUGGESTIONS, true);
             put(ChromeFeatureList.COMMAND_LINE_ON_NON_ROOTED, false);
             put(ChromeFeatureList.DOWNLOADS_AUTO_RESUMPTION_NATIVE, true);
             put(ChromeFeatureList.PRIORITIZE_BOOTSTRAP_TASKS, true);
@@ -95,8 +94,6 @@ public class CachedFeatureFlags {
                     ChromePreferenceKeys.FLAGS_CACHED_SERVICE_MANAGER_FOR_DOWNLOAD_RESUMPTION);
             put(ChromeFeatureList.SERVICE_MANAGER_FOR_BACKGROUND_PREFETCH,
                     ChromePreferenceKeys.FLAGS_CACHED_SERVICE_MANAGER_FOR_BACKGROUND_PREFETCH);
-            put(ChromeFeatureList.INTEREST_FEED_CONTENT_SUGGESTIONS,
-                    ChromePreferenceKeys.FLAGS_CACHED_INTEREST_FEED_CONTENT_SUGGESTIONS);
             put(ChromeFeatureList.COMMAND_LINE_ON_NON_ROOTED,
                     ChromePreferenceKeys.FLAGS_CACHED_COMMAND_LINE_ON_NON_ROOTED_ENABLED);
             put(ChromeFeatureList.DOWNLOADS_AUTO_RESUMPTION_NATIVE,

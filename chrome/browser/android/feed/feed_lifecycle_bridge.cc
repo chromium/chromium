@@ -10,7 +10,6 @@
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_android.h"
-#include "components/feed/feed_feature_list.h"
 #include "components/history/core/browser/history_service.h"
 
 using base::android::JavaRef;
@@ -49,7 +48,6 @@ void FeedLifecycleBridge::Destroy(JNIEnv* env, const JavaRef<jobject>& j_this) {
 void FeedLifecycleBridge::OnURLsDeleted(
     history::HistoryService* history_service,
     const history::DeletionInfo& deletion_info) {
-  DCHECK(base::FeatureList::IsEnabled(feed::kInterestFeedContentSuggestions));
   // We ignore expirations since they're not user-initiated.
   if (deletion_info.is_from_expiration()) {
     return;
@@ -71,7 +69,6 @@ void FeedLifecycleBridge::OnURLsDeleted(
 
 // static
 void FeedLifecycleBridge::ClearCachedData() {
-  DCHECK(base::FeatureList::IsEnabled(feed::kInterestFeedContentSuggestions));
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_FeedLifecycleBridge_onCachedDataCleared(env);
 }

@@ -66,8 +66,7 @@ void FeedInternalsPageHandler::GetGeneralProperties(
     GetGeneralPropertiesCallback callback) {
   auto properties = feed_internals::mojom::Properties::New();
 
-  properties->is_feed_enabled =
-      base::FeatureList::IsEnabled(feed::kInterestFeedContentSuggestions);
+  properties->is_feed_enabled = true;
   properties->is_feed_visible =
       pref_service_->GetBoolean(feed::prefs::kArticlesListVisible);
   properties->is_feed_allowed = IsFeedAllowed();

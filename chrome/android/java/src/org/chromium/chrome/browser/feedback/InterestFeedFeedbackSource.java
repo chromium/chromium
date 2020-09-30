@@ -6,8 +6,6 @@ package org.chromium.chrome.browser.feedback;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,10 +21,7 @@ public class InterestFeedFeedbackSource implements FeedbackSource {
 
     InterestFeedFeedbackSource(@Nullable Map<String, String> feedContext) {
         mMap = new HashMap<>();
-        mMap.put(KEY,
-                ChromeFeatureList.isEnabled(ChromeFeatureList.INTEREST_FEED_CONTENT_SUGGESTIONS)
-                        ? ENABLED_VALUE
-                        : DISABLED_VALUE);
+        mMap.put(KEY, ENABLED_VALUE);
 
         // For each key in feedContext, add that to the feedback map too.
         if (feedContext != null) mMap.putAll(feedContext);

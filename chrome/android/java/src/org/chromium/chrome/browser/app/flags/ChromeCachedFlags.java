@@ -58,7 +58,6 @@ public class ChromeCachedFlags {
                 ChromeFeatureList.HOMEPAGE_LOCATION_POLICY,
                 ChromeFeatureList.IMMERSIVE_UI_MODE,
                 ChromeFeatureList.INSTANT_START,
-                ChromeFeatureList.INTEREST_FEED_CONTENT_SUGGESTIONS,
                 ChromeFeatureList.INTEREST_FEED_V2,
                 ChromeFeatureList.MESSAGES_FOR_ANDROID_INFRASTRUCTURE,
                 ChromeFeatureList.OMNIBOX_SUGGESTIONS_RECYCLER_VIEW,

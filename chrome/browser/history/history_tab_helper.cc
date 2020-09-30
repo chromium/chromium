@@ -15,7 +15,6 @@
 #include "components/history/content/browser/history_context_helper.h"
 #include "components/history/core/browser/history_constants.h"
 #include "components/history/core/browser/history_service.h"
-#include "components/ntp_snippets/features.h"
 #include "components/prerender/browser/prerender_manager.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
@@ -28,6 +27,7 @@
 
 #if defined(OS_ANDROID)
 #include "chrome/browser/android/background_tab_manager.h"
+#include "components/feed/feed_feature_list.h"
 #else
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -57,13 +57,17 @@ history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
     base::Time timestamp,
     int nav_entry_id,
     content::NavigationHandle* navigation_handle) {
+#if defined(OS_ANDROID)
   // Clicks on content suggestions on the NTP should not contribute to the
   // Most Visited tiles in the NTP.
   const GURL& referrer_url = navigation_handle->GetReferrer().url;
   const bool content_suggestions_navigation =
-      referrer_url == ntp_snippets::GetContentSuggestionsReferrerURL() &&
+      referrer_url == feed::GetFeedReferrerUrl() &&
       ui::PageTransitionCoreTypeIs(navigation_handle->GetPageTransition(),
                                    ui::PAGE_TRANSITION_AUTO_BOOKMARK);
+#else
+  const bool content_suggestions_navigation = false;
+#endif
 
   const bool status_code_is_error =
       navigation_handle->GetResponseHeaders() &&

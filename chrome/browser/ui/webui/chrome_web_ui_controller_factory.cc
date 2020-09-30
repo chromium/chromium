@@ -762,11 +762,9 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     return &NewWebUI<OfflineInternalsUI>;
   if (url.host_piece() == chrome::kChromeUISnippetsInternalsHost &&
       !profile->IsOffTheRecord()) {
-    if (base::FeatureList::IsEnabled(feed::kInterestFeedContentSuggestions)) {
 #if BUILDFLAG(ENABLE_FEED_IN_CHROME)
-      return &NewWebUI<FeedInternalsUI>;
+    return &NewWebUI<FeedInternalsUI>;
 #endif  // BUILDFLAG(ENABLE_FEED_IN_CHROME)
-    }
   }
   if (url.host_piece() == chrome::kChromeUIWebApksHost)
     return &NewWebUI<WebApksUI>;

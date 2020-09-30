@@ -4,6 +4,9 @@
 
 #include "components/feed/feed_feature_list.h"
 
+#include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
+
 namespace feed {
 
 const base::Feature kInterestFeedContentSuggestions{
@@ -32,6 +35,16 @@ const base::Feature kInterestFeedFeedback{"InterestFeedFeedback",
 const base::Feature kReportFeedUserActions{"ReportFeedUserActions",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
+const char kDefaultReferrerUrl[] =
+    "https://www.googleapis.com/auth/chrome-content-suggestions";
 
+std::string GetFeedReferrerUrl() {
+  const base::Feature* feature = base::FeatureList::IsEnabled(kInterestFeedV2)
+                                     ? &kInterestFeedV2
+                                     : &kInterestFeedContentSuggestions;
+  std::string referrer =
+      base::GetFieldTrialParamValueByFeature(*feature, "referrer_url");
+  return referrer.empty() ? kDefaultReferrerUrl : referrer;
+}
 
 }  // namespace feed

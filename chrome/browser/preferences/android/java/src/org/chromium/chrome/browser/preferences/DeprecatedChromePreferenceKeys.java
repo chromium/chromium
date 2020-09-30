@@ -56,6 +56,7 @@ public class DeprecatedChromePreferenceKeys {
                 "home_page_button_force_enabled",
                 "homepage_tile_enabled",
                 "inflate_toolbar_on_background_thread",
+                "interest_feed_content_suggestions",
                 "labeled_bottom_toolbar_enabled",
                 "night_mode_available",
                 "night_mode_cct_available",

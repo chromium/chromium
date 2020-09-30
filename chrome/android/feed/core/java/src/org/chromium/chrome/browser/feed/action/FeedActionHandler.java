@@ -193,6 +193,8 @@ public class FeedActionHandler implements ActionApi {
         params.setReferrer(
                 new Referrer(SuggestionsConfig.getReferrerUrl(
                                      ChromeFeatureList.INTEREST_FEED_CONTENT_SUGGESTIONS),
+                        // WARNING: ReferrerPolicy.ALWAYS is assumed by other Chrome code for NTP
+                        // tiles to set consider_for_ntp_most_visited.
                         ReferrerPolicy.ALWAYS));
         return params;
     }

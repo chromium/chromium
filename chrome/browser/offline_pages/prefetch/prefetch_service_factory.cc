@@ -63,8 +63,6 @@ void SwitchToFullBrowserImageFetcher(PrefetchServiceImpl* prefetch_service,
   if (!prefetch_service->GetImageFetcher())
     return;
 
-  DCHECK(base::FeatureList::IsEnabled(feed::kInterestFeedContentSuggestions) ||
-         base::FeatureList::IsEnabled(feed::kInterestFeedV2));
   prefetch_service->ReplaceImageFetcher(
       GetImageFetcher(key, image_fetcher::ImageFetcherConfig::kDiskCacheOnly));
 }

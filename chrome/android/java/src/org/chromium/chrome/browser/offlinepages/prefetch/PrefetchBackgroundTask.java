@@ -12,14 +12,10 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.device.DeviceConditions;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.background_task_scheduler.NativeBackgroundTask;
 import org.chromium.components.background_task_scheduler.TaskIds;
 import org.chromium.components.background_task_scheduler.TaskParameters;
 import org.chromium.net.ConnectionType;
-
-import java.util.Collections;
 
 /**
  * Handles servicing background offlining requests.
@@ -99,19 +95,6 @@ public class PrefetchBackgroundTask extends NativeBackgroundTask {
             Context context, TaskParameters taskParameters, TaskFinishedCallback callback) {
         assert taskParameters.getTaskId() == TaskIds.OFFLINE_PAGES_PREFETCH_JOB_ID;
         if (mNativeTask != 0) return;
-
-        // Only Feed is supported in reduced mode.
-        // If we launched chrome in reduced mode but it turns out that Feed is not enabled (because
-        // the cached value of the flag was stale), we should cache the new value and reschedule
-        // this task so that next time full browser is started rather than just reduced mode.
-        if (isBrowserRunningInReducedMode()
-                && !ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.INTEREST_FEED_CONTENT_SUGGESTIONS)) {
-            CachedFeatureFlags.cacheNativeFlags(
-                    Collections.singletonList(ChromeFeatureList.INTEREST_FEED_CONTENT_SUGGESTIONS));
-            mTaskFinishedCallback.taskFinished(true /* needsReschedule */);
-            return;
-        }
 
         PrefetchBackgroundTaskJni.get().startPrefetchTask(PrefetchBackgroundTask.this);
     }

@@ -54,7 +54,6 @@
 #include "chrome/browser/media/media_device_id_salt.h"
 #include "chrome/browser/media/media_engagement_service.h"
 #include "chrome/browser/media/webrtc/webrtc_event_log_manager.h"
-#include "chrome/browser/ntp_snippets/content_suggestions_service_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
@@ -96,7 +95,6 @@
 #include "components/language/core/browser/url_language_histogram.h"
 #include "components/nacl/browser/nacl_browser.h"
 #include "components/nacl/browser/pnacl_host.h"
-#include "components/ntp_snippets/content_suggestions_service.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/open_from_clipboard/clipboard_recent_content.h"
 #include "components/password_manager/core/browser/password_manager_features_util.h"
@@ -451,14 +449,6 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
     }
     if (ClipboardRecentContent::GetInstance())
       ClipboardRecentContent::GetInstance()->SuppressClipboardContent();
-
-    // Currently, ContentSuggestionService instance exists only on Android.
-    ntp_snippets::ContentSuggestionsService* content_suggestions_service =
-        ContentSuggestionsServiceFactory::GetForProfileIfExists(profile_);
-    if (content_suggestions_service) {
-      content_suggestions_service->ClearHistory(delete_begin_, delete_end_,
-                                                filter);
-    }
 
     language::UrlLanguageHistogram* language_histogram =
         UrlLanguageHistogramFactory::GetForBrowserContext(profile_);
@@ -963,11 +953,6 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
     browsing_data::RemovePrerenderCacheData(
         prerender::PrerenderManagerFactory::GetForBrowserContext(profile_));
 
-    ntp_snippets::ContentSuggestionsService* content_suggestions_service =
-        ContentSuggestionsServiceFactory::GetForProfileIfExists(profile_);
-    if (content_suggestions_service)
-      content_suggestions_service->ClearAllCachedSuggestions();
-
     if (base::FeatureList::IsEnabled(media::kUseMediaHistoryStore)) {
       media_history::MediaHistoryKeyedService* media_history_service =
           media_history::MediaHistoryKeyedServiceFactory::GetForProfile(
@@ -994,8 +979,7 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
       if (service) {
         service->ClearCachedData();
       }
-    } else if (base::FeatureList::IsEnabled(
-                   feed::kInterestFeedContentSuggestions)) {
+    } else {
       // Don't bridge through if the service isn't present, which means we're
       // probably running in a native unit test.
       if (feed::FeedHostServiceFactory::GetForBrowserContext(profile_)) {
