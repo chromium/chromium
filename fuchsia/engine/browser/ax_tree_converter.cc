@@ -8,9 +8,11 @@
 #include <fuchsia/ui/gfx/cpp/fidl.h>
 #include <fuchsia/ui/views/cpp/fidl.h>
 #include <lib/ui/scenic/cpp/commands.h>
+#include <stdint.h>
 #include <vector>
 
 #include "base/bit_cast.h"
+#include "base/numerics/safe_conversions.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -18,6 +20,14 @@
 using fuchsia::accessibility::semantics::MAX_LABEL_SIZE;
 
 namespace {
+
+// Fuchsia's default root node ID.
+constexpr uint32_t kFuchsiaRootNodeId = 0;
+
+// Remmaped value for an AxNode ID that is 0 and is not a root.
+// Value is chosen specifically to be outside the range of a 32-bit signed int,
+// so as to not conflict with other values used by Chromium.
+constexpr uint32_t kZeroIdRemappedForFuchsia = 1u + INT32_MAX;
 
 fuchsia::accessibility::semantics::Role ConvertRole(ax::mojom::Role role) {
   if (role == ax::mojom::Role::kButton)
@@ -127,7 +137,7 @@ std::vector<uint32_t> ConvertChildIds(std::vector<int32_t> ids) {
   std::vector<uint32_t> child_ids;
   child_ids.reserve(ids.size());
   for (auto i : ids) {
-    child_ids.push_back(bit_cast<uint32_t>(i));
+    child_ids.push_back(base::checked_cast<uint32_t>(i));
   }
   return child_ids;
 }
@@ -157,7 +167,7 @@ fuchsia::ui::gfx::mat4 ConvertTransform(gfx::Transform* transform) {
 fuchsia::accessibility::semantics::Node AXNodeDataToSemanticNode(
     const ui::AXNodeData& node) {
   fuchsia::accessibility::semantics::Node fuchsia_node;
-  fuchsia_node.set_node_id(bit_cast<uint32_t>(node.id));
+  fuchsia_node.set_node_id(base::checked_cast<uint32_t>(node.id));
   fuchsia_node.set_role(ConvertRole(node.role));
   fuchsia_node.set_states(ConvertStates(node));
   fuchsia_node.set_attributes(ConvertAttributes(node));
@@ -191,4 +201,17 @@ bool ConvertAction(fuchsia::accessibility::semantics::Action fuchsia_action,
           << static_cast<int>(fuchsia_action);
       return false;
   }
+}
+
+uint32_t ConvertToFuchsiaNodeId(int32_t ax_node_id, int32_t ax_root_node_id) {
+  if (ax_node_id == ax_root_node_id)
+    return kFuchsiaRootNodeId;
+
+  if (ax_node_id == kFuchsiaRootNodeId) {
+    // This AxNode is not the root, but its ID is the same as Fuchsia's root ID.
+    // We remap it to something different to not create a confflict.
+    return kZeroIdRemappedForFuchsia;
+  }
+
+  return base::checked_cast<uint32_t>(ax_node_id);
 }
