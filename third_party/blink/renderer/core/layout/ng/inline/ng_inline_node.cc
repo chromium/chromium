@@ -525,7 +525,7 @@ class NGInlineNodeDataEditor final {
         block_flow_->GetDocument().NeedsLayoutTreeUpdate() ||
         !block_flow_->GetNGInlineNodeData() ||
         block_flow_->GetNGInlineNodeData()->text_content.IsNull() ||
-        !block_flow_->GetNGInlineNodeData()->CanUseFastEditing())
+        block_flow_->GetNGInlineNodeData()->items.IsEmpty())
       return nullptr;
 
     // Because of current text content has secured text, e.g. whole text is
@@ -544,109 +544,97 @@ class NGInlineNodeDataEditor final {
     const NGOffsetMapping* const offset_mapping =
         NGInlineNode::GetOffsetMapping(block_flow_);
     DCHECK(offset_mapping);
-    const auto units =
-        offset_mapping->GetMappingUnitsForLayoutObject(layout_text_);
-    start_offset_ = ConvertDOMOffsetToTextContent(units, offset);
-    end_offset_ = ConvertDOMOffsetToTextContent(units, offset + length);
-    DCHECK_LE(start_offset_, end_offset_);
     data_.reset(block_flow_->TakeNGInlineNodeData());
     return data_.get();
   }
 
   void Run() {
     const NGInlineNodeData& new_data = *block_flow_->GetNGInlineNodeData();
-    const int diff =
-        new_data.text_content.length() - data_->text_content.length();
-    // |inserted_text_length| can be negative when white space is collapsed
-    // after text change.
+    const unsigned old_length = data_->text_content.length();
+    const unsigned new_length = new_data.text_content.length();
+    const unsigned start_offset = Mismatch(*data_, new_data);
     //  * "ab cd ef" => delete "cd" => "ab ef"
     //    We should not reuse " " before "ef"
     //  * "a bc" => delete "bc" => "a"
     //    There are no spaces after "a".
-    const int inserted_text_length = end_offset_ - start_offset_ + diff;
-    DCHECK_GE(inserted_text_length, -1);
-    const unsigned start_offset =
-        inserted_text_length < 0 && end_offset_ == data_->text_content.length()
-            ? start_offset_ - 1
-            : start_offset_;
-    const unsigned end_offset =
-        inserted_text_length < 0 && start_offset_ == start_offset
-            ? end_offset_ + 1
-            : end_offset_;
-    DCHECK_LE(end_offset, data_->text_content.length());
+    const unsigned matched_length = MismatchFromEnd(
+        *data_, new_data,
+        std::min(old_length - start_offset, new_length - start_offset));
+    DCHECK_LE(start_offset, old_length - matched_length);
+    DCHECK_LE(start_offset, new_length - matched_length);
+    const unsigned end_offset = old_length - matched_length;
     DCHECK_LE(start_offset, end_offset);
-#if DCHECK_IS_ON()
-    if (start_offset_ != start_offset) {
-      DCHECK_EQ(data_->text_content[start_offset], ' ');
-      DCHECK_EQ(end_offset, end_offset_);
-    }
-    if (end_offset_ != end_offset) {
-      DCHECK_EQ(data_->text_content[end_offset_], ' ');
-      DCHECK_EQ(start_offset, start_offset_);
-    }
-#endif
+
     Vector<NGInlineItem> items;
     // +3 for before and after replaced text.
     items.ReserveInitialCapacity(data_->items.size() + 3);
 
     // Copy items before replaced range
+    auto const* end = data_->items.end();
     auto* it = data_->items.begin();
-    while (it->end_offset_ < start_offset ||
-           it->layout_object_ != layout_text_) {
+    while (it != end && it->end_offset_ < start_offset) {
       DCHECK(it != data_->items.end());
       items.push_back(*it);
       ++it;
     }
 
-    DCHECK_EQ(it->layout_object_, layout_text_);
+    for (;;) {
+      if (it == end)
+        break;
 
-    // Copy part of item before replaced range.
-    if (it->start_offset_ < start_offset) {
-      const NGInlineItem& new_item = CopyItemBefore(*it, start_offset);
-      items.push_back(new_item);
-      if (new_item.EndOffset() < start_offset) {
-        items.push_back(
-            NGInlineItem(*it, new_item.EndOffset(), start_offset, nullptr));
+      // Copy part of item before replaced range.
+      if (it->start_offset_ < start_offset) {
+        const NGInlineItem& new_item = CopyItemBefore(*it, start_offset);
+        items.push_back(new_item);
+        if (new_item.EndOffset() < start_offset) {
+          items.push_back(
+              NGInlineItem(*it, new_item.EndOffset(), start_offset, nullptr));
+        }
       }
-    }
 
-    // Skip items in replaced range.
-    while (it->end_offset_ < end_offset)
-      ++it;
+      // Skip items in replaced range.
+      while (it != end && it->end_offset_ < end_offset)
+        ++it;
 
-    // Inserted text
-    if (it->layout_object_ == layout_text_) {
-      if (inserted_text_length > 0) {
-        const unsigned inserted_start_offset =
-            items.IsEmpty() ? 0 : items.back().end_offset_;
-        const unsigned inserted_end_offset =
-            inserted_start_offset + inserted_text_length;
-        items.push_back(NGInlineItem(*it, inserted_start_offset,
-                                     inserted_end_offset, nullptr));
-      }
-    } else {
-      DCHECK_LE(inserted_text_length, 0);
-    }
+      if (it == end)
+        break;
 
-    // Copy part of item after replaced range.
-    if (end_offset < it->end_offset_) {
-      const NGInlineItem& new_item = CopyItemAfter(*it, end_offset);
-      if (end_offset < new_item.StartOffset()) {
-        items.push_back(
-            NGInlineItem(*it, end_offset, new_item.StartOffset(), nullptr));
+      // Inserted text
+      const int diff = new_length - old_length;
+      const unsigned inserted_end = AdjustOffset(end_offset, diff);
+      if (start_offset < inserted_end)
+        items.push_back(NGInlineItem(*it, start_offset, inserted_end, nullptr));
+
+      // Copy part of item after replaced range.
+      if (end_offset < it->end_offset_) {
+        const NGInlineItem& new_item = CopyItemAfter(*it, end_offset);
+        if (end_offset < new_item.StartOffset()) {
+          items.push_back(
+              NGInlineItem(*it, end_offset, new_item.StartOffset(), nullptr));
+          ShiftItem(&items.back(), diff);
+        }
+        items.push_back(new_item);
         ShiftItem(&items.back(), diff);
       }
-      items.push_back(new_item);
-      ShiftItem(&items.back(), diff);
+
+      // Copy items after replaced range
+      ++it;
+      while (it != end) {
+        DCHECK_LE(end_offset, it->start_offset_);
+        items.push_back(*it);
+        ShiftItem(&items.back(), diff);
+        ++it;
+      }
+      break;
     }
 
-    // Copy items after replaced range
-    ++it;
-    while (it != data_->items.end()) {
-      DCHECK_LE(end_offset, it->start_offset_);
-      items.push_back(*it);
-      ShiftItem(&items.back(), diff);
-      ++it;
+    if (items.IsEmpty()) {
+      items.push_back(NGInlineItem(data_->items.front(), 0,
+                                   new_data.text_content.length(), nullptr));
+    } else if (items.back().end_offset_ < new_data.text_content.length()) {
+      items.push_back(NGInlineItem(data_->items.back(),
+                                   items.back().end_offset_,
+                                   new_data.text_content.length(), nullptr));
     }
 
     VerifyItems(items);
@@ -700,7 +688,6 @@ class NGInlineNodeDataEditor final {
                               unsigned end_offset) const {
     DCHECK_LT(item.start_offset_, end_offset);
     DCHECK_LE(end_offset, item.end_offset_);
-    DCHECK_EQ(item.layout_object_, layout_text_);
     const unsigned safe_end_offset = GetLastSafeToReuse(item, end_offset);
     const unsigned start_offset = item.start_offset_;
     if (start_offset == safe_end_offset)
@@ -717,7 +704,6 @@ class NGInlineNodeDataEditor final {
                               unsigned end_offset) const {
     DCHECK_LT(item.start_offset_, end_offset);
     DCHECK_LE(end_offset, item.end_offset_);
-    DCHECK_EQ(item.layout_object_, layout_text_);
     const unsigned start_offset = item.start_offset_;
     if (!item.shape_result_ || item.shape_result_->IsAppliedSpacing() ||
         end_offset - start_offset <= 1)
@@ -726,6 +712,65 @@ class NGInlineNodeDataEditor final {
     // Note: Because |CachedPreviousSafeToBreakOffset()| assumes |end_offset|
     // is always safe to break offset, we try to search before |end_offset|.
     return item.shape_result_->CachedPreviousSafeToBreakOffset(end_offset - 1);
+  }
+
+  template <typename Span1, typename Span2>
+  static unsigned MismatchInternal(const Span1& span1, const Span2& span2) {
+    const auto old_new =
+        std::mismatch(span1.begin(), span1.end(), span2.begin(), span2.end());
+    return static_cast<unsigned>(old_new.first - span1.begin());
+  }
+
+  static unsigned Mismatch(const NGInlineItemsData& old_data,
+                           const NGInlineItemsData& new_data) {
+    const StringImpl& old_text = *old_data.text_content.Impl();
+    const StringImpl& new_text = *new_data.text_content.Impl();
+    if (old_text.Is8Bit()) {
+      const auto old_span8 = old_text.Span8();
+      if (new_text.Is8Bit())
+        return MismatchInternal(old_span8, new_text.Span8());
+      return MismatchInternal(old_span8, new_text.Span16());
+    }
+    const auto old_span16 = old_text.Span16();
+    if (new_text.Is8Bit())
+      return MismatchInternal(old_span16, new_text.Span8());
+    return MismatchInternal(old_span16, new_text.Span16());
+  }
+
+  template <typename Span1, typename Span2>
+  static unsigned MismatchFromEnd(const Span1& span1, const Span2& span2) {
+    const auto old_new = std::mismatch(span1.rbegin(), span1.rend(),
+                                       span2.rbegin(), span2.rend());
+    return static_cast<unsigned>(old_new.first - span1.rbegin());
+  }
+
+  static unsigned MismatchFromEnd(const NGInlineItemsData& old_data,
+                                  const NGInlineItemsData& new_data,
+                                  unsigned max_length) {
+    const StringImpl& old_text = *old_data.text_content.Impl();
+    const StringImpl& new_text = *new_data.text_content.Impl();
+    const unsigned old_length = old_text.length();
+    const unsigned new_length = new_text.length();
+    DCHECK_LE(max_length, old_length);
+    DCHECK_LE(max_length, new_length);
+    const unsigned old_start = old_length - max_length;
+    const unsigned new_start = new_length - max_length;
+    if (old_text.Is8Bit()) {
+      const auto old_span8 = old_text.Span8().subspan(old_start, max_length);
+      if (new_text.Is8Bit()) {
+        return MismatchFromEnd(old_span8,
+                               new_text.Span8().subspan(new_start, max_length));
+      }
+      return MismatchFromEnd(old_span8,
+                             new_text.Span16().subspan(new_start, max_length));
+    }
+    const auto old_span16 = old_text.Span16().subspan(old_start, max_length);
+    if (new_text.Is8Bit()) {
+      return MismatchFromEnd(old_span16,
+                             new_text.Span8().subspan(new_start, max_length));
+    }
+    return MismatchFromEnd(old_span16,
+                           new_text.Span16().subspan(new_start, max_length));
   }
 
   static void ShiftItem(NGInlineItem* item, int delta) {
@@ -748,7 +793,7 @@ class NGInlineNodeDataEditor final {
       DCHECK_LE(item.start_offset_, item.end_offset_);
       DCHECK_EQ(last_offset, item.start_offset_);
       last_offset = item.end_offset_;
-      if (!item.shape_result_ || item.layout_object_ != layout_text_)
+      if (!item.shape_result_)
         continue;
       DCHECK_LT(item.start_offset_, item.end_offset_);
       DCHECK_EQ(item.shape_result_->StartIndex(), item.start_offset_);
@@ -762,8 +807,6 @@ class NGInlineNodeDataEditor final {
   std::unique_ptr<NGInlineNodeData> data_;
   LayoutBlockFlow* const block_flow_;
   const LayoutText& layout_text_;
-  unsigned start_offset_ = 0;
-  unsigned end_offset_ = 0;
 };
 
 // static

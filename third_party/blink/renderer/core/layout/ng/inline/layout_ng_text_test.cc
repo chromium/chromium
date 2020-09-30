@@ -249,8 +249,11 @@ TEST_F(LayoutNGTextTest, SetTextWithOffsetDeleteWithGeneratedBreakOpportunity) {
   Text& text = To<Text>(*GetElementById("target")->firstChild());
   text.deleteData(2, 1, ASSERT_NO_EXCEPTION);  // remove "\n"
 
-  EXPECT_EQ("LayoutText has NeedsCollectInlines",
-            GetItemsAsString(*text.GetLayoutObject()));
+  EXPECT_EQ(
+      "*{'ab', ShapeResult=0+2}\n"
+      "{''}\n"
+      "{''}\n",
+      GetItemsAsString(*text.GetLayoutObject()));
 }
 
 // http://crbug.com/1123251
