@@ -70,7 +70,7 @@ public class StatusCoordinator implements View.OnClickListener, UrlTextChangeLis
 
         Resources res = mStatusView.getResources();
         mMediator.setUrlMinWidth(res.getDimensionPixelSize(R.dimen.location_bar_min_url_width)
-                + res.getDimensionPixelSize(R.dimen.location_bar_start_icon_width)
+                + res.getDimensionPixelSize(R.dimen.location_bar_icon_width)
                 + (res.getDimensionPixelSize(R.dimen.location_bar_lateral_padding) * 2));
 
         mMediator.setSeparatorFieldMinWidth(

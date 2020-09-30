@@ -454,8 +454,8 @@ public class StatusView extends LinearLayout {
                     getResources().getDimensionPixelSize(R.dimen.location_bar_lateral_padding);
         }
         if (mTouchDelegateEndOffset == 0) {
-            mTouchDelegateEndOffset = getResources().getDimensionPixelSize(
-                    R.dimen.location_bar_start_icon_margin_end);
+            mTouchDelegateEndOffset =
+                    getResources().getDimensionPixelSize(R.dimen.location_bar_icon_margin_end);
         }
         touchDelegateBounds.left -= isRtl ? mTouchDelegateEndOffset : mTouchDelegateStartOffset;
         touchDelegateBounds.right += isRtl ? mTouchDelegateStartOffset : mTouchDelegateEndOffset;
