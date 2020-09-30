@@ -749,9 +749,21 @@ class PolicyTemplateChecker(object):
                                           optional=True,
                                           container_name='features')
 
+      # 'private' feature must be an optional boolean flag.
+      is_unlisted = self._CheckContains(features,
+                                        'unlisted',
+                                        bool,
+                                        optional=True,
+                                        container_name='features')
+
       if cloud_only and platform_only:
-        self._Error("cloud_only and platfrom_only must not be true at the same "
-                    "time.")
+        self._Error(
+            'cloud_only and platfrom_only must not be true at the same '
+            'time.', 'policy', policy.get('name'))
+
+      if is_unlisted and not cloud_only:
+        self._Error('unlisted can only be used by cloud_only policy.', 'policy',
+                    policy.get('name'))
 
 
       # Chrome OS policies may have a non-empty supported_chrome_os_management

@@ -143,13 +143,18 @@
 #   'per_profile' controls whether a user policy applies to every user logging
 #   into the browser or only one profile.
 #   'cloud_only' Set to True if the policy is forced or recommended to set from
-#   Admin console only. This hides the policy from policy templates and
-#   documentation.
+#   Admin console only. This hides the policy from policy templates and Chrome
+#   documentation in policy_templates.zip. The documentation will NOT be hidden
+#   from the https://cloud.google.com/docs/chrome-enterprise/policies/.
 #   'platform_only' Set to True if the policy can only be set from platform
 #   policy but do not support Admin console. This is only used as a hint for
 #   Admin console.
 #   'internal_only' Set to True if the policy is used for internal development
 #   or testing purposes and will never be used by any external administrator.
+#   'unlisted' Set to True if the policy is controlled by Admin Console
+#   without any user interface for administrator. It can only be used for
+#   policies with the 'cloud_only' tag. Policy with the 'unlisted' tag will be
+#   hidden from all documentations, policy templates and Admin Console UI.
 #
 #   The 'max_size' key is used to specify the maximal size of the external data
 #   that a policy can reference, in bytes. This annotation is compulsory for
@@ -23635,6 +23640,10 @@ The recommended way to configure policy on Windows is via GPO, although provisio
     'doc_feature_internal_only': {
       'desc': '''The name of the feature that indicates whether a policy is used for internal development or testing purposes.''',
       'text': '''Internal Only'''
+    },
+    'doc_feature_unlisted': {
+      'desc': '''The name of the feature that indicates whether a policy is set from cloud without any user interface.''',
+      'text': '''Private Only'''
     },
     'doc_deprecated': {
       'desc': '''Text appended in parentheses to the policy name to indicate that it has been deprecated''',
