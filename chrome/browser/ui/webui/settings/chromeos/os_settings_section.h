@@ -9,7 +9,9 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/optional.h"
 #include "base/strings/string16.h"
+#include "base/values.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/setting.mojom.h"
 #include "chrome/browser/ui/webui/settings/chromeos/search/search.mojom.h"
@@ -117,6 +119,11 @@ class OsSettingsSection {
 
   // Provides the path for this section.
   virtual std::string GetSectionPath() const = 0;
+
+  // Logs metrics for the updated |setting| with optional |value|. Returns
+  // whether the setting change was logged.
+  virtual bool LogMetric(mojom::Setting setting,
+                         const base::Optional<base::Value>& value) const = 0;
 
   // Registers the subpages and/or settings which reside in this section.
   virtual void RegisterHierarchy(HierarchyGenerator* generator) const = 0;

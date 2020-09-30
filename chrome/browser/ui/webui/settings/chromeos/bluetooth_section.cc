@@ -207,6 +207,13 @@ std::string BluetoothSection::GetSectionPath() const {
   return mojom::kBluetoothSectionPath;
 }
 
+bool BluetoothSection::LogMetric(
+    mojom::Setting setting,
+    const base::Optional<base::Value>& value) const {
+  // Unimplemented.
+  return false;
+}
+
 void BluetoothSection::RegisterHierarchy(HierarchyGenerator* generator) const {
   generator->RegisterTopLevelSubpage(IDS_SETTINGS_BLUETOOTH,
                                      mojom::Subpage::kBluetoothDevices,

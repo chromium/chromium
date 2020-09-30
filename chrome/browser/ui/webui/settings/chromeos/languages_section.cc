@@ -450,6 +450,13 @@ std::string LanguagesSection::GetSectionPath() const {
   return mojom::kLanguagesAndInputSectionPath;
 }
 
+bool LanguagesSection::LogMetric(
+    mojom::Setting setting,
+    const base::Optional<base::Value>& value) const {
+  // Unimplemented.
+  return false;
+}
+
 void LanguagesSection::RegisterHierarchy(HierarchyGenerator* generator) const {
   // Languages.
   generator->RegisterTopLevelSubpage(

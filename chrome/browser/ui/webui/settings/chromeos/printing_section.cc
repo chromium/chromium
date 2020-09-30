@@ -274,6 +274,13 @@ std::string PrintingSection::GetSectionPath() const {
   return mojom::kPrintingSectionPath;
 }
 
+bool PrintingSection::LogMetric(
+    mojom::Setting setting,
+    const base::Optional<base::Value>& value) const {
+  // Unimplemented.
+  return false;
+}
+
 void PrintingSection::RegisterHierarchy(HierarchyGenerator* generator) const {
   generator->RegisterTopLevelSetting(mojom::Setting::kPrintJobs);
 

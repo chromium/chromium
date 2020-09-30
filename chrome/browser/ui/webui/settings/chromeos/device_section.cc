@@ -840,6 +840,12 @@ std::string DeviceSection::GetSectionPath() const {
   return mojom::kDeviceSectionPath;
 }
 
+bool DeviceSection::LogMetric(mojom::Setting setting,
+                              const base::Optional<base::Value>& value) const {
+  // Unimplemented.
+  return false;
+}
+
 void DeviceSection::RegisterHierarchy(HierarchyGenerator* generator) const {
   // Pointers.
   generator->RegisterTopLevelSubpage(

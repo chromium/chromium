@@ -153,6 +153,13 @@ std::string DateTimeSection::GetSectionPath() const {
   return mojom::kDateAndTimeSectionPath;
 }
 
+bool DateTimeSection::LogMetric(
+    mojom::Setting setting,
+    const base::Optional<base::Value>& value) const {
+  // Unimplemented.
+  return false;
+}
+
 void DateTimeSection::RegisterHierarchy(HierarchyGenerator* generator) const {
   generator->RegisterTopLevelSetting(mojom::Setting::k24HourClock);
 

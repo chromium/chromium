@@ -350,6 +350,12 @@ std::string AboutSection::GetSectionPath() const {
   return mojom::kAboutChromeOsSectionPath;
 }
 
+bool AboutSection::LogMetric(mojom::Setting setting,
+                             const base::Optional<base::Value>& value) const {
+  // Unimplemented.
+  return false;
+}
+
 void AboutSection::RegisterHierarchy(HierarchyGenerator* generator) const {
   // About Chrome OS.
   generator->RegisterTopLevelSubpage(

@@ -119,6 +119,12 @@ std::string FilesSection::GetSectionPath() const {
   return mojom::kFilesSectionPath;
 }
 
+bool FilesSection::LogMetric(mojom::Setting setting,
+                             const base::Optional<base::Value>& value) const {
+  // Unimplemented.
+  return false;
+}
+
 void FilesSection::RegisterHierarchy(HierarchyGenerator* generator) const {
   generator->RegisterTopLevelSetting(mojom::Setting::kGoogleDriveConnection);
 

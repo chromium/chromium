@@ -266,6 +266,12 @@ std::string SearchSection::GetSectionPath() const {
   return mojom::kSearchAndAssistantSectionPath;
 }
 
+bool SearchSection::LogMetric(mojom::Setting setting,
+                              const base::Optional<base::Value>& value) const {
+  // Unimplemented.
+  return false;
+}
+
 void SearchSection::RegisterHierarchy(HierarchyGenerator* generator) const {
   generator->RegisterTopLevelSetting(mojom::Setting::kPreferredSearchEngine);
 

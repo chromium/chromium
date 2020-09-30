@@ -107,6 +107,12 @@ std::string ResetSection::GetSectionPath() const {
   return mojom::kResetSectionPath;
 }
 
+bool ResetSection::LogMetric(mojom::Setting setting,
+                             const base::Optional<base::Value>& value) const {
+  // Unimplemented.
+  return false;
+}
+
 void ResetSection::RegisterHierarchy(HierarchyGenerator* generator) const {
   generator->RegisterTopLevelSetting(mojom::Setting::kPowerwash);
 }

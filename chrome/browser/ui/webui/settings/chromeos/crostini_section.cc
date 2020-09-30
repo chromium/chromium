@@ -452,6 +452,13 @@ std::string CrostiniSection::GetSectionPath() const {
   return mojom::kCrostiniSectionPath;
 }
 
+bool CrostiniSection::LogMetric(
+    mojom::Setting setting,
+    const base::Optional<base::Value>& value) const {
+  // Unimplemented.
+  return false;
+}
+
 void CrostiniSection::RegisterHierarchy(HierarchyGenerator* generator) const {
   generator->RegisterTopLevelSetting(mojom::Setting::kSetUpCrostini);
 

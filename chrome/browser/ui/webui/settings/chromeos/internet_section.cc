@@ -739,6 +739,13 @@ std::string InternetSection::GetSectionPath() const {
   return mojom::kNetworkSectionPath;
 }
 
+bool InternetSection::LogMetric(
+    mojom::Setting setting,
+    const base::Optional<base::Value>& value) const {
+  // Unimplemented.
+  return false;
+}
+
 void InternetSection::RegisterHierarchy(HierarchyGenerator* generator) const {
   // Ethernet details.
   generator->RegisterTopLevelSubpage(IDS_SETTINGS_INTERNET_ETHERNET_DETAILS,

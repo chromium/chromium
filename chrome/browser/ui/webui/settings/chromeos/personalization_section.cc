@@ -274,6 +274,13 @@ std::string PersonalizationSection::GetSectionPath() const {
   return mojom::kPersonalizationSectionPath;
 }
 
+bool PersonalizationSection::LogMetric(
+    mojom::Setting setting,
+    const base::Optional<base::Value>& value) const {
+  // Unimplemented.
+  return false;
+}
+
 void PersonalizationSection::RegisterHierarchy(
     HierarchyGenerator* generator) const {
   generator->RegisterTopLevelSetting(mojom::Setting::kOpenWallpaper);

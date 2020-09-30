@@ -6,6 +6,8 @@
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_CHROMEOS_PEOPLE_SECTION_H_
 
 #include "base/memory/weak_ptr.h"
+#include "base/optional.h"
+#include "base/values.h"
 #include "chrome/browser/chromeos/kerberos/kerberos_credentials_manager.h"
 #include "chrome/browser/ui/webui/settings/chromeos/os_settings_section.h"
 #include "chromeos/components/account_manager/account_manager.h"
@@ -62,6 +64,8 @@ class PeopleSection : public OsSettingsSection,
   mojom::Section GetSection() const override;
   mojom::SearchResultIcon GetSectionIcon() const override;
   std::string GetSectionPath() const override;
+  bool LogMetric(mojom::Setting setting,
+                 const base::Optional<base::Value>& value) const override;
   void RegisterHierarchy(HierarchyGenerator* generator) const override;
 
   // AccountManager::Observer:

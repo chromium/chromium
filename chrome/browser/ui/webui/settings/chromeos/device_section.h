@@ -11,6 +11,7 @@
 #include "ash/public/mojom/cros_display_config.mojom.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
+#include "base/values.h"
 #include "chrome/browser/chromeos/system/pointer_device_observer.h"
 #include "chrome/browser/ui/webui/settings/chromeos/os_settings_section.h"
 #include "chromeos/dbus/power/power_manager_client.h"
@@ -50,6 +51,8 @@ class DeviceSection : public OsSettingsSection,
   mojom::Section GetSection() const override;
   mojom::SearchResultIcon GetSectionIcon() const override;
   std::string GetSectionPath() const override;
+  bool LogMetric(mojom::Setting setting,
+                 const base::Optional<base::Value>& value) const override;
   void RegisterHierarchy(HierarchyGenerator* generator) const override;
 
   // system::PointerDeviceObserver::Observer:

@@ -226,6 +226,12 @@ std::string MainSection::GetSectionPath() const {
   return std::string();
 }
 
+bool MainSection::LogMetric(mojom::Setting setting,
+                            const base::Optional<base::Value>& value) const {
+  NOTIMPLEMENTED();
+  return false;
+}
+
 void MainSection::RegisterHierarchy(HierarchyGenerator* generator) const {
   // MainSection is a container for common resources/functionality shared
   // between sections and does not have its own subpages/settings.

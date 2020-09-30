@@ -115,6 +115,12 @@ std::string PrivacySection::GetSectionPath() const {
   return mojom::kPrivacyAndSecuritySectionPath;
 }
 
+bool PrivacySection::LogMetric(mojom::Setting setting,
+                               const base::Optional<base::Value>& value) const {
+  // Unimplemented.
+  return false;
+}
+
 void PrivacySection::RegisterHierarchy(HierarchyGenerator* generator) const {
   generator->RegisterTopLevelSetting(mojom::Setting::kVerifiedAccess);
   generator->RegisterTopLevelSetting(

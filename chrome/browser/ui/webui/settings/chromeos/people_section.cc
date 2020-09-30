@@ -918,6 +918,12 @@ std::string PeopleSection::GetSectionPath() const {
   return mojom::kPeopleSectionPath;
 }
 
+bool PeopleSection::LogMetric(mojom::Setting setting,
+                              const base::Optional<base::Value>& value) const {
+  // Unimplemented.
+  return false;
+}
+
 void PeopleSection::RegisterHierarchy(HierarchyGenerator* generator) const {
   generator->RegisterTopLevelSetting(mojom::Setting::kSetUpParentalControls);
 
