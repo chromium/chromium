@@ -50,7 +50,10 @@
 #include "net/base/network_change_notifier.h"
 #include "weblayer/browser/android/metrics/uma_utils.h"
 #include "weblayer/browser/java/jni/MojoInterfaceRegistrar_jni.h"
+#include "weblayer/browser/media/local_presentation_manager_factory.h"
+#include "weblayer/browser/media/media_router_factory.h"
 #include "weblayer/browser/weblayer_factory_impl_android.h"
+#include "weblayer/common/features.h"
 #endif
 
 #if defined(USE_X11)
@@ -86,6 +89,12 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   TranslateRankerFactory::GetInstance();
   PrerenderLinkManagerFactory::GetInstance();
   PrerenderManagerFactory::GetInstance();
+#if defined(OS_ANDROID)
+  if (base::FeatureList::IsEnabled(features::kMediaRouter)) {
+    LocalPresentationManagerFactory::GetInstance();
+    MediaRouterFactory::GetInstance();
+  }
+#endif
 }
 
 void StopMessageLoop(base::OnceClosure quit_closure) {

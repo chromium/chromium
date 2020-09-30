@@ -74,7 +74,7 @@ public final class WebLayerFactoryImpl extends IWebLayerFactory.Stub {
     }
 
     @CalledByNative
-    static int getClientMajorVersion() {
+    public static int getClientMajorVersion() {
         if (sClientMajorVersion == 0) {
             throw new IllegalStateException(
                     "This should only be called once WebLayer is initialized");

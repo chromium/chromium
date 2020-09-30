@@ -153,7 +153,6 @@ template("chrome_public_common_apk_or_module_tmpl") {
     resource_exclusion_exceptions += [
       "*ic_file_download_white*",  # Bottom edge seems misaligned.
       "*ic_lock.*",  # Bottom edge seems misaligned.
-      "*ic_group_*",  # Appear only in xxxhdpi.
     ]
 
     if (min_sdk_version >= 21) {

@@ -76,6 +76,18 @@
         android:process=":webview_service"
         android:visibleToInstantApps="true">
     </provider>  # DIFF-ANCHOR: bfe37944
+    <receiver  # DIFF-ANCHOR: 1091f66b
+        android:exported="false"
+        android:name="com.google.android.gms.cast.framework.media.MediaIntentReceiver">
+    </receiver>  # DIFF-ANCHOR: 1091f66b
+    <service  # DIFF-ANCHOR: 41539e3c
+        android:exported="false"
+        android:name="com.google.android.gms.cast.framework.ReconnectionService">
+    </service>  # DIFF-ANCHOR: 41539e3c
+    <service  # DIFF-ANCHOR: 7dad1ec5
+        android:exported="false"
+        android:name="com.google.android.gms.cast.framework.media.MediaNotificationService">
+    </service>  # DIFF-ANCHOR: 7dad1ec5
     <service  # DIFF-ANCHOR: 3cd6d713
         android:exported="true"
         android:name="org.chromium.android_webview.services.AwMinidumpUploadJobService"

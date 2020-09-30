@@ -22,7 +22,7 @@ import org.chromium.components.browser_ui.notifications.NotificationWrapperStand
 import org.chromium.components.browser_ui.notifications.channels.ChannelsInitializer;
 
 /** A notification builder for WebLayer which has extra logic to make icons work correctly. */
-final class WebLayerNotificationWrapperBuilder extends NotificationWrapperStandardBuilder {
+public final class WebLayerNotificationWrapperBuilder extends NotificationWrapperStandardBuilder {
     /** Creates a notification builder. */
     public static WebLayerNotificationWrapperBuilder create(
             @WebLayerNotificationChannels.ChannelId String channelId,

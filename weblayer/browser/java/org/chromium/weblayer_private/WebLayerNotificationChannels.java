@@ -25,8 +25,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/** Defines notification channels for WebLayer. */
 @TargetApi(Build.VERSION_CODES.O)
-class WebLayerNotificationChannels extends ChannelDefinitions {
+public class WebLayerNotificationChannels extends ChannelDefinitions {
     /**
      * Version number identifying the current set of channels. This must be incremented whenever the
      * set of channels returned by {@link #getStartupChannelIds()} or {@link #getLegacyChannelIds()}

@@ -90,6 +90,9 @@ class ContentBrowserClientImpl : public content::ContentBrowserClient {
                        bool user_gesture,
                        bool opener_suppressed,
                        bool* no_javascript_access) override;
+  content::ControllerPresentationServiceDelegate*
+  GetControllerPresentationServiceDelegate(
+      content::WebContents* web_contents) override;
   std::vector<std::unique_ptr<content::NavigationThrottle>>
   CreateThrottlesForNavigation(content::NavigationHandle* handle) override;
   content::GeneratedCodeCacheSettings GetGeneratedCodeCacheSettings(

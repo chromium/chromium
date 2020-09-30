@@ -9,6 +9,7 @@ common_resource_exclusion_regex = "drawable[^/]*-xxxhdpi"
 common_resource_exclusion_exceptions = [
   "*shadow*",  # Combination of gradient & transparency cause pixelation.
   "*.9.*",  # Most nine-patches contain shadows.
+  "*ic_group_*",  # Appear only in xxxhdpi.
 ]
 
 # Remove WearOS resources (a couple exist in appcompat).

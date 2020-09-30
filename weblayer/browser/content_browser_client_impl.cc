@@ -114,6 +114,7 @@
 #include "components/cdm/browser/media_drm_storage_impl.h"  // nogncheck
 #include "components/crash/content/browser/crash_handler_host_linux.h"
 #include "components/embedder_support/android/metrics/android_metrics_service_client.h"
+#include "components/media_router/browser/presentation/presentation_service_delegate_impl.h"  // nogncheck
 #include "components/navigation_interception/intercept_navigation_delegate.h"
 #include "components/safe_browsing/core/realtime/policy_engine.h"  // nogncheck
 #include "components/safe_browsing/core/realtime/url_lookup_service.h"  // nogncheck
@@ -126,6 +127,7 @@
 #include "weblayer/browser/android_descriptors.h"
 #include "weblayer/browser/browser_context_impl.h"
 #include "weblayer/browser/devtools_manager_delegate_android.h"
+#include "weblayer/browser/media/media_router_factory.h"
 #include "weblayer/browser/safe_browsing/real_time_url_lookup_service_factory.h"
 #include "weblayer/browser/safe_browsing/safe_browsing_service.h"
 #include "weblayer/browser/tts_environment_android_impl.h"
@@ -629,6 +631,20 @@ bool ContentBrowserClientImpl::CanCreateWindow(
              /*open_url_params*/ nullptr, features,
              HostContentSettingsMapFactory::GetForBrowserContext(
                  web_contents->GetBrowserContext())) != nullptr;
+}
+
+content::ControllerPresentationServiceDelegate*
+ContentBrowserClientImpl::GetControllerPresentationServiceDelegate(
+    content::WebContents* web_contents) {
+#if defined(OS_ANDROID)
+  if (base::FeatureList::IsEnabled(features::kMediaRouter)) {
+    MediaRouterFactory::DoPlatformInitIfNeeded();
+    return media_router::PresentationServiceDelegateImpl::
+        GetOrCreateForWebContents(web_contents);
+  }
+#endif
+
+  return nullptr;
 }
 
 std::vector<std::unique_ptr<content::NavigationThrottle>>

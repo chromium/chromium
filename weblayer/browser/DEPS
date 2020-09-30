@@ -30,6 +30,7 @@ include_rules = [
   "+components/keyed_service/content",
   "+components/keyed_service/core",
   "+components/language/core/browser",
+  "+components/media_router",
   "+components/metrics",
   "+components/navigation_interception",
   "+components/network_session_configurator",

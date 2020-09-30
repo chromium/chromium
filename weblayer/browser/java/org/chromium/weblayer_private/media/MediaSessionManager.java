@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.weblayer_private;
+package org.chromium.weblayer_private.media;
 
 import android.app.Service;
 import android.content.Intent;
@@ -16,6 +16,10 @@ import org.chromium.components.browser_ui.notifications.ForegroundServiceUtils;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 import org.chromium.components.browser_ui.notifications.NotificationWrapperBuilder;
+import org.chromium.weblayer_private.IntentUtils;
+import org.chromium.weblayer_private.WebLayerImpl;
+import org.chromium.weblayer_private.WebLayerNotificationChannels;
+import org.chromium.weblayer_private.WebLayerNotificationWrapperBuilder;
 
 /**
  * A glue class for MediaSession.
@@ -23,10 +27,10 @@ import org.chromium.components.browser_ui.notifications.NotificationWrapperBuild
  * It also manages the lifetime of {@link MediaNotificationController} and the {@link Service}
  * associated with the notification.
  */
-class MediaSessionManager {
+public class MediaSessionManager {
     private static int sNotificationId;
 
-    static void serviceStarted(Service service, Intent intent) {
+    public static void serviceStarted(Service service, Intent intent) {
         MediaNotificationController controller = getController();
         if (controller != null && controller.processIntent(service, intent)) return;
 
@@ -41,13 +45,13 @@ class MediaSessionManager {
         service.stopSelf();
     }
 
-    static void serviceDestroyed() {
+    public static void serviceDestroyed() {
         MediaNotificationController controller = getController();
         if (controller != null) controller.onServiceDestroyed();
         MediaNotificationManager.clear(getNotificationId());
     }
 
-    static MediaSessionHelper.Delegate createMediaSessionHelperDelegate(int tabId) {
+    public static MediaSessionHelper.Delegate createMediaSessionHelperDelegate(int tabId) {
         return new MediaSessionHelper.Delegate() {
             @Override
             public Intent createBringTabToFrontIntent() {

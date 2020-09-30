@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.weblayer_private;
+package org.chromium.weblayer_private.media;
 
 import android.app.NotificationManager;
 import android.content.Context;
@@ -25,6 +25,12 @@ import org.chromium.components.browser_ui.notifications.PendingIntentProvider;
 import org.chromium.components.webrtc.MediaCaptureNotificationUtil;
 import org.chromium.components.webrtc.MediaCaptureNotificationUtil.MediaType;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.weblayer_private.IntentUtils;
+import org.chromium.weblayer_private.TabImpl;
+import org.chromium.weblayer_private.WebLayerFactoryImpl;
+import org.chromium.weblayer_private.WebLayerImpl;
+import org.chromium.weblayer_private.WebLayerNotificationChannels;
+import org.chromium.weblayer_private.WebLayerNotificationWrapperBuilder;
 import org.chromium.weblayer_private.interfaces.IMediaCaptureCallbackClient;
 import org.chromium.weblayer_private.interfaces.ObjectWrapper;
 
