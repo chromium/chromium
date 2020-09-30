@@ -74,34 +74,6 @@ base::ScopedCFTypeRef<CVImageBufferRef> CreateCVImageBuffer(
   return image_buffer;
 }
 
-base::ScopedCFTypeRef<CMFormatDescriptionRef> CreateFormatDescription(
-    CFStringRef primaries,
-    CFStringRef transfer,
-    CFStringRef matrix) {
-  base::ScopedCFTypeRef<CFMutableDictionaryRef> extensions(
-      CFDictionaryCreateMutable(kCFAllocatorDefault, 0,
-                                &kCFTypeDictionaryKeyCallBacks,
-                                &kCFTypeDictionaryValueCallBacks));
-
-  if (primaries) {
-    CFDictionarySetValue(
-        extensions, kCMFormatDescriptionExtension_ColorPrimaries, primaries);
-  }
-  if (transfer) {
-    CFDictionarySetValue(
-        extensions, kCMFormatDescriptionExtension_TransferFunction, transfer);
-  }
-  if (matrix) {
-    CFDictionarySetValue(extensions, kCMFormatDescriptionExtension_YCbCrMatrix,
-                         matrix);
-  }
-  base::ScopedCFTypeRef<CMFormatDescriptionRef> result;
-  CMFormatDescriptionCreate(nullptr, kCMMediaType_Video,
-                            kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange,
-                            extensions.get(), result.InitializeInto());
-  return result;
-}
-
 gfx::ColorSpace ToBT709_APPLE(gfx::ColorSpace cs) {
   return gfx::ColorSpace(cs.GetPrimaryID(),
                          gfx::ColorSpace::TransferID::BT709_APPLE,
@@ -390,24 +362,6 @@ TEST(VTConfigUtil, GetImageBufferColorSpace_BT2020_HLG) {
   } else {
     EXPECT_EQ(gfx::ColorSpace::CreateREC709(), image_buffer_cs);
   }
-}
-
-TEST(VTConfigUtil, FormatDescriptionInvalid) {
-  auto format_descriptor =
-      CreateFormatDescription(CFSTR("Cows"), CFSTR("Go"), CFSTR("Moo"));
-  ASSERT_TRUE(format_descriptor);
-  auto cs = GetFormatDescriptionColorSpace(format_descriptor);
-  EXPECT_EQ(gfx::ColorSpace::CreateREC709(), cs);
-}
-
-TEST(VTConfigUtil, FormatDescriptionBT709) {
-  auto format_descriptor =
-      CreateFormatDescription(kCMFormatDescriptionColorPrimaries_ITU_R_709_2,
-                              kCMFormatDescriptionTransferFunction_ITU_R_709_2,
-                              kCMFormatDescriptionYCbCrMatrix_ITU_R_709_2);
-  ASSERT_TRUE(format_descriptor);
-  auto cs = GetFormatDescriptionColorSpace(format_descriptor);
-  EXPECT_EQ(ToBT709_APPLE(gfx::ColorSpace::CreateREC709()), cs);
 }
 
 }  // namespace media
