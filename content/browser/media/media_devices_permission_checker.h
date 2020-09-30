@@ -62,21 +62,10 @@ class CONTENT_EXPORT MediaDevicesPermissionChecker {
   // movement (pan, tilt, and zoom). Otherwise, returns false.
   static bool HasPanTiltZoomPermissionGrantedOnUIThread(int render_process_id,
                                                         int render_frame_id);
-  // Returns true if the origin associated to a render frame identified by
-  // |render_process_id| and |render_frame_id| is allowed to control camera
-  // zoom. Otherwise, returns false.
-  static bool HasZoomPermissionGrantedOnUIThread(int render_process_id,
-                                                 int render_frame_id);
 
  private:
   const bool use_override_;
   const bool override_value_;
-
-  // Returns true if the origin associated to a render frame identified by
-  // |render_process_id| and |render_frame_id| is allowed to control camera
-  // movement (pan, tilt, and zoom). Otherwise, returns false.
-  static bool IsPanTiltZoomAllowedOnUIThread(int render_process_id,
-                                             int render_frame_id);
 
   DISALLOW_COPY_AND_ASSIGN(MediaDevicesPermissionChecker);
 };

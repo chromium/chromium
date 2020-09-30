@@ -227,11 +227,6 @@ class WebRtcPanTiltZoomTrackBrowserTest
     : public WebRtcTestBase,
       public testing::WithParamInterface<TrackTestConfig> {
  public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitch(
-        switches::kEnableExperimentalWebPlatformFeatures);
-  }
-
   void SetUpInProcessBrowserTestFixture() override {
     DetectErrorsInJavaScript();
   }
@@ -335,11 +330,6 @@ class WebRtcPanTiltZoomConstraintsBrowserTest
     : public WebRtcTestBase,
       public ::testing::WithParamInterface<std::string> {
  public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitch(
-        switches::kEnableExperimentalWebPlatformFeatures);
-  }
-
   const char* Constraint() { return GetParam().c_str(); }
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -568,8 +558,6 @@ IN_PROC_BROWSER_TEST_F(WebRtcPanTiltZoomCameraDevicesBrowserTest,
 class WebRtcPanTiltZoomFakeCameraDevicesBrowserTest : public WebRtcTestBase {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitch(
-        switches::kEnableExperimentalWebPlatformFeatures);
     command_line->AppendSwitch(switches::kUseFakeDeviceForMediaStream);
   }
 

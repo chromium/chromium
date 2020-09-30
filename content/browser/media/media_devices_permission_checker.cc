@@ -158,34 +158,6 @@ bool MediaDevicesPermissionChecker::HasPanTiltZoomPermissionGrantedOnUIThread(
   // supported on Android.
   return true;
 #else
-  // TODO(crbug.com/934063): Remove when MediaCapturePanTilt Blink feature is
-  // enabled by default.
-  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kEnableExperimentalWebPlatformFeatures)) {
-    return false;
-  }
-  return IsPanTiltZoomAllowedOnUIThread(render_process_id, render_frame_id);
-#endif
-}
-
-// static
-// TODO(crbug.com/934063): Remove when MediaCapturePanTilt Blink feature is
-// enabled by default.
-bool MediaDevicesPermissionChecker::HasZoomPermissionGrantedOnUIThread(
-    int render_process_id,
-    int render_frame_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-#if defined(OS_ANDROID)
-  return true;
-#else
-  return IsPanTiltZoomAllowedOnUIThread(render_process_id, render_frame_id);
-#endif
-}
-
-bool MediaDevicesPermissionChecker::IsPanTiltZoomAllowedOnUIThread(
-    int render_process_id,
-    int render_frame_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   RenderFrameHostImpl* frame_host =
       RenderFrameHostImpl::FromID(render_process_id, render_frame_id);
 
@@ -206,6 +178,6 @@ bool MediaDevicesPermissionChecker::IsPanTiltZoomAllowedOnUIThread(
           PermissionType::CAMERA_PAN_TILT_ZOOM, frame_host, origin);
 
   return status == blink::mojom::PermissionStatus::GRANTED;
+#endif
 }
-
 }  // namespace content

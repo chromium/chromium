@@ -710,11 +710,6 @@
     "args": ["--disable-features=LinkDisabledNewSpecBehavior"]
   },
   {
-    "prefix": "media-capture-image-ptz",
-    "bases": [ "external/wpt/mediacapture-image" ],
-    "args": [ "--enable-blink-features=MediaCapturePanTilt" ]
-  },
-  {
     "prefix": "out-of-blink-cspee",
     "bases": [ "external/wpt/content-security-policy/embedded-enforcement" ],
     "args": [ "--disable-features=OutOfBlinkCSPEE" ]

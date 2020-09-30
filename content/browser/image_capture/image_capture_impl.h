@@ -38,7 +38,6 @@ class ImageCaptureImpl final
                        media::mojom::PhotoStatePtr);
 
   bool HasPanTiltZoomPermissionGranted();
-  bool HasZoomPermissionGranted();
 
   base::WeakPtrFactory<ImageCaptureImpl> weak_factory_{this};
 

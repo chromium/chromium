@@ -1106,7 +1106,7 @@
     },
     {
       name: "MediaCapturePanTilt",
-      status: "experimental",
+      status: "stable",
     },
     // Set to reflect the MediaCastOverlayButton feature.
     {
