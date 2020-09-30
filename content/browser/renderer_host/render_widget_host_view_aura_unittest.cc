@@ -652,6 +652,12 @@ class RenderWidgetHostViewAuraTest : public testing::Test {
     return view_->GetMouseWheelPhaseHandler();
   }
 
+  TextInputManager* GetTextInputManager(RenderWidgetHostViewBase* view) const {
+    return static_cast<RenderWidgetHostImpl*>(view->GetRenderWidgetHost())
+        ->delegate()
+        ->GetTextInputManager();
+  }
+
   // Sets the |view| active in TextInputManager with the given |type|. |type|
   // cannot be ui::TEXT_INPUT_TYPE_NONE.
   // Must not be called in the destruction path of |view|.
@@ -664,10 +670,7 @@ class RenderWidgetHostViewAuraTest : public testing::Test {
       render_widget_host_delegate()->set_focused_widget(view->host());
     }
 
-    TextInputManager* manager =
-        static_cast<RenderWidgetHostImpl*>(view->GetRenderWidgetHost())
-            ->delegate()
-            ->GetTextInputManager();
+    TextInputManager* manager = GetTextInputManager(view);
     if (manager->GetActiveWidget()) {
       manager->active_view_for_testing()->TextInputStateChanged(
           ui::mojom::TextInputState());
@@ -6482,6 +6485,35 @@ TEST_F(RenderWidgetHostViewAuraInputMethodTest, OnCaretBoundsChanged) {
   parent_view_->SelectionBoundsChanged(
       gfx::Rect(0, 0, 10, 10), base::i18n::LEFT_TO_RIGHT,
       gfx::Rect(10, 10, 10, 10), base::i18n::LEFT_TO_RIGHT, true);
+  EXPECT_EQ(parent_view_, text_input_client_);
+
+  input_method->RemoveObserver(this);
+}
+
+// The input method should still receive caret bounds changes even if inputmode
+// is NONE. See crbug.com/1114559.
+TEST_F(RenderWidgetHostViewAuraInputMethodTest,
+       OnCaretBoundsChangedInputModeNone) {
+  ui::InputMethod* input_method = parent_view_->GetInputMethod();
+  if (input_method != input_method_) {
+    // Some platforms don't support mocking input method. In that case, ignore
+    // this test.
+    return;
+  }
+  ActivateViewForTextInputManager(parent_view_, ui::TEXT_INPUT_TYPE_TEXT);
+  input_method->SetFocusedTextInputClient(parent_view_);
+  input_method->AddObserver(this);
+
+  text_input_client_ = nullptr;
+
+  ui::mojom::TextInputState state;
+  state.type = ui::TEXT_INPUT_TYPE_TEXT;
+  state.mode = ui::TEXT_INPUT_MODE_NONE;
+  state.value = base::ASCIIToUTF16("a");
+  state.selection = gfx::Range(1, 1);
+
+  GetTextInputManager(parent_view_)->UpdateTextInputState(parent_view_, state);
+
   EXPECT_EQ(parent_view_, text_input_client_);
 
   input_method->RemoveObserver(this);

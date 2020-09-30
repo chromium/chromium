@@ -2453,6 +2453,8 @@ void RenderWidgetHostViewAura::OnUpdateTextInputStateCalled(
 
   const ui::mojom::TextInputState* state =
       text_input_manager_->GetTextInputState();
+
+  // Show the virtual keyboard if needed.
   if (state && state->type != ui::TEXT_INPUT_TYPE_NONE &&
       state->mode != ui::TEXT_INPUT_MODE_NONE) {
     bool show_virtual_keyboard = true;
@@ -2478,8 +2480,10 @@ void RenderWidgetHostViewAura::OnUpdateTextInputStateCalled(
       virtual_keyboard_controller_win_->UpdateTextInputState(state);
     }
 #endif
-    // Ensure that accessibility events are fired when the selection location
-    // moves from UI back to content.
+  }
+
+  // Ensure that selection bounds changes are sent to the IME.
+  if (state && state->type != ui::TEXT_INPUT_TYPE_NONE) {
     text_input_manager->NotifySelectionBoundsChanged(updated_view);
   }
 
