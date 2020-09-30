@@ -1,17 +1,17 @@
 This is a testharness.js-based test.
-FAIL replace_text_in_node_preserving_markers_crash resources/testharness.js:1977:25)
+FAIL replace_text_in_node_preserving_markers_crash resources/testharness.js:2001:25)
 	 expected <div contenteditable style="width: 3px;">abcd ef| hijkl</div>,
 	 but got  <div contenteditable style="width: 3px;">abcd ef|hijkl</div>,
 	 sameupto <div contenteditable style="width: 3px;">abcd ef|
-FAIL replace_text_in_node_preserving_markers_crash 1 resources/testharness.js:1977:25)
+FAIL replace_text_in_node_preserving_markers_crash 1 resources/testharness.js:2001:25)
 	 expected <div contenteditable style="width: 3px;">abcd e| hijkl</div>,
 	 but got  <div contenteditable style="width: 3px;">abcd e|hijkl</div>,
 	 sameupto <div contenteditable style="width: 3px;">abcd e|
-FAIL replace_text_in_node_preserving_markers_crash 2 resources/testharness.js:1977:25)
+FAIL replace_text_in_node_preserving_markers_crash 2 resources/testharness.js:2001:25)
 	 expected <div contenteditable style="width: 3px;">abcd | hijkl</div>,
 	 but got  <div contenteditable style="width: 3px;">abcd |hijkl</div>,
 	 sameupto <div contenteditable style="width: 3px;">abcd
-FAIL replace_text_in_node_preserving_markers_crash 3 resources/testharness.js:1977:25)
+FAIL replace_text_in_node_preserving_markers_crash 3 resources/testharness.js:2001:25)
 	 expected <div contenteditable style="width: 3px;">abcd| hijkl</div>,
 	 but got  <div contenteditable style="width: 3px;">abcd|hijkl</div>,
 	 sameupto <div contenteditable style="width: 3px;">abcd|
