@@ -14,7 +14,7 @@ ChromeVoxSmartStickyModeTest = class extends ChromeVoxNextE2ETest {
     this.ssm_ = new SmartStickyMode();
     // Deregister from actual range changes.
     ChromeVoxState.removeObserver(this.ssm_);
-    assertFalse(ssm.didTurnOffStickyMode_);
+    assertFalse(this.ssm_.didTurnOffStickyMode_);
   }
 
   assertDidTurnOffForNode(node) {
