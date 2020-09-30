@@ -51259,6 +51259,17 @@ Called by update_net_trust_anchors.py.-->
   <int value="10" label="Redirect Found"/>
 </enum>
 
+<enum name="NetworkPortalStatus">
+  <summary>
+    The portal status types from NetworkPortalDetector::CaptivePortalStatus
+  </summary>
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Offline"/>
+  <int value="2" label="Online"/>
+  <int value="3" label="Portal"/>
+  <int value="4" label="ProxyAuthRequired"/>
+</enum>
+
 <enum name="NetworkProblemType">
   <int value="0" label="Congested TCP Queue"/>
   <int value="1" label="DNS Failure"/>
@@ -51365,7 +51376,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="1" label="Ethernet"/>
   <int value="2" label="Ethernet EAP"/>
   <int value="3" label="WiFi"/>
-  <int value="4" label="WiMax"/>
+  <int value="4" label="Tether"/>
   <int value="5" label="VPN"/>
   <int value="6" label="Unknown"/>
 </enum>

@@ -918,47 +918,4 @@ TEST_F(NetworkPortalDetectorImplTest, RequestTimeouts2) {
   EXPECT_NE(State::STATE_IDLE, state());
 }
 
-// The randomized alternate hosts for captive portal detection is deployed but
-// we are curious what is the effect (crbug.com/742437).
-// Tests that UMA records correctly for the case that after shill reports portal
-// we may get blacklisted.
-TEST_F(NetworkPortalDetectorImplTest, BehindPortalAndThenBlacklisted) {
-  base::HistogramTester histograms_;
-  ASSERT_EQ(State::STATE_IDLE, state());
-  set_delay_till_next_attempt(base::TimeDelta());
-
-  // Shill reports portal network.
-  SetBehindPortal(kStubWireless1);
-  ASSERT_EQ(State::STATE_CHECKING_FOR_PORTAL, state());
-
-  // Then we get blacklisted, each URL fetch may give us no response result.
-  advance_time_ticks(NetworkPortalDetectorImpl::kDelaySinceShillPortalForUMA -
-                     base::TimeDelta::FromSeconds(1));
-  ASSERT_EQ(State::STATE_CHECKING_FOR_PORTAL, state());
-
-  CompleteURLFetch(net::ERR_CONNECTION_CLOSED, 0, nullptr);
-  ASSERT_EQ(1, no_response_result_count());
-  ASSERT_EQ(State::STATE_PORTAL_CHECK_PENDING, state());
-
-  // To run CaptivePortalDetector::DetectCaptivePortal().
-  base::RunLoop().RunUntilIdle();
-
-  histograms_.ExpectBucketCount("CaptivePortal.DetectionResultSincePortal",
-                                true, 1);
-
-  // Verifies that the offline result is not recorded after
-  // kDelaySincePortalNetworkForUMA.
-  advance_time_ticks(base::TimeDelta::FromSeconds(2));
-
-  CompleteURLFetch(net::ERR_CONNECTION_CLOSED, 0, nullptr);
-  ASSERT_EQ(2, no_response_result_count());
-  ASSERT_EQ(State::STATE_PORTAL_CHECK_PENDING, state());
-
-  // To run CaptivePortalDetector::DetectCaptivePortal().
-  base::RunLoop().RunUntilIdle();
-
-  histograms_.ExpectBucketCount("CaptivePortal.DetectionResultSincePortal",
-                                true, 1);
-}
-
 }  // namespace chromeos

@@ -53,11 +53,6 @@ class NetworkPortalDetectorImpl : public NetworkPortalDetector,
                                   public content::NotificationObserver,
                                   public PortalDetectorStrategy::Delegate {
  public:
-  // The delay since the default network shill reports a portal network, used to
-  // record UMA. Public for tests.
-  static constexpr base::TimeDelta kDelaySinceShillPortalForUMA =
-      base::TimeDelta::FromSeconds(60);
-
   explicit NetworkPortalDetectorImpl(
       network::mojom::URLLoaderFactory* loader_factory_for_testing = nullptr);
   ~NetworkPortalDetectorImpl() override;
@@ -76,22 +71,6 @@ class NetworkPortalDetectorImpl : public NetworkPortalDetector,
     STATE_PORTAL_CHECK_PENDING,
     // Portal check is in progress.
     STATE_CHECKING_FOR_PORTAL,
-  };
-
-  struct DetectionAttemptCompletedReport {
-    DetectionAttemptCompletedReport();
-
-    DetectionAttemptCompletedReport(const std::string network_id,
-                                    captive_portal::CaptivePortalResult result,
-                                    int response_code);
-
-    void Report() const;
-
-    bool Equals(const DetectionAttemptCompletedReport& o) const;
-
-    std::string network_id;
-    captive_portal::CaptivePortalResult result = captive_portal::RESULT_COUNT;
-    int response_code = -1;
   };
 
   // Starts detection process.
@@ -231,10 +210,6 @@ class NetworkPortalDetectorImpl : public NetworkPortalDetector,
   // Delay before next portal detection.
   base::TimeDelta next_attempt_delay_;
 
-  // Saves the most recent timestamp that shill reports |default_network_id_|
-  // network is portal network.
-  base::TimeTicks last_shill_reports_portal_time_;
-
   // Current detection strategy.
   std::unique_ptr<PortalDetectorStrategy> strategy_;
 
@@ -253,9 +228,6 @@ class NetworkPortalDetectorImpl : public NetworkPortalDetector,
 
   // Test time ticks used by unit tests.
   base::TimeTicks time_ticks_for_testing_;
-
-  // Contents of a last log message about completed detection attempt.
-  DetectionAttemptCompletedReport attempt_completed_report_;
 
   base::WeakPtrFactory<NetworkPortalDetectorImpl> weak_factory_{this};
 

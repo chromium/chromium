@@ -590,6 +590,25 @@ network_config::mojom::SecurityType NetworkState::GetMojoSecurity() const {
   return SecurityType::kNone;
 }
 
+NetworkState::NetworkTechnologyType NetworkState::GetNetworkTechnologyType()
+    const {
+  const std::string& network_type = type();
+  if (network_type == shill::kTypeCellular)
+    return NetworkTechnologyType::kCellular;
+  if (network_type == shill::kTypeEthernet)
+    return NetworkTechnologyType::kEthernet;
+  if (network_type == shill::kTypeEthernetEap)
+    return NetworkTechnologyType::kEthernet;
+  if (network_type == kTypeTether)
+    return NetworkTechnologyType::kTether;
+  if (network_type == shill::kTypeVPN)
+    return NetworkTechnologyType::kVPN;
+  if (network_type == shill::kTypeWifi)
+    return NetworkTechnologyType::kWiFi;
+  NOTREACHED() << "Unknown network type: " << network_type;
+  return NetworkTechnologyType::kUnknown;
+}
+
 // static
 bool NetworkState::StateIsConnected(const std::string& connection_state) {
   return (connection_state == shill::kStateReady ||

@@ -58,9 +58,6 @@ constexpr int kLongInitialDelayBetweenAttemptsMs = 30 * 1000;
 // ONLINE transition.
 constexpr int kLongMaximumDelayBetweenAttemptsMs = 5 * 60 * 1000;
 
-constexpr char kDetectionResultSinceShillPortalHistogram[] =
-    "CaptivePortal.DetectionResultSincePortal";
-
 const NetworkState* DefaultNetwork() {
   return NetworkHandler::Get()->network_state_handler()->DefaultNetwork();
 }
@@ -75,38 +72,7 @@ void SetNetworkPortalDetected(const NetworkState* network,
 }  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
-// NetworkPortalDetectorImpl::DetectionAttemptCompletedLogState
-
-NetworkPortalDetectorImpl::DetectionAttemptCompletedReport::
-    DetectionAttemptCompletedReport() = default;
-
-NetworkPortalDetectorImpl::DetectionAttemptCompletedReport::
-    DetectionAttemptCompletedReport(const std::string network_id,
-                                    captive_portal::CaptivePortalResult result,
-                                    int response_code)
-    : network_id(network_id), result(result), response_code(response_code) {}
-
-void NetworkPortalDetectorImpl::DetectionAttemptCompletedReport::Report()
-    const {
-  // To see NET_LOG output, use '--vmodule=device_event_log*=1'
-  NET_LOG(EVENT) << "Detection attempt completed: "
-                 << "id=" << NetworkGuidId(network_id) << ", "
-                 << "result="
-                 << captive_portal::CaptivePortalResultToString(result) << ", "
-                 << "response_code=" << response_code;
-}
-
-bool NetworkPortalDetectorImpl::DetectionAttemptCompletedReport::Equals(
-    const DetectionAttemptCompletedReport& o) const {
-  return network_id == o.network_id && result == o.result &&
-         response_code == o.response_code;
-}
-
-////////////////////////////////////////////////////////////////////////////////
 // NetworkPortalDetectorImpl, public:
-
-constexpr base::TimeDelta
-    NetworkPortalDetectorImpl::kDelaySinceShillPortalForUMA;
 
 NetworkPortalDetectorImpl::NetworkPortalDetectorImpl(
     network::mojom::URLLoaderFactory* loader_factory_for_testing)
@@ -265,9 +231,6 @@ void NetworkPortalDetectorImpl::DefaultNetworkChanged(
     }
   }
 
-  if (default_network->is_captive_portal())
-    last_shill_reports_portal_time_ = NowTicks();
-
   NET_LOG(EVENT) << "Default network changed:"
                  << " id=" << NetworkGuidId(default_network_id_)
                  << " state=" << default_connection_state_
@@ -401,13 +364,6 @@ void NetworkPortalDetectorImpl::OnAttemptCompleted(
     response_code = 200;
   }
 
-  DetectionAttemptCompletedReport attempt_completed_report(
-      default_network_id_, result, response_code);
-  if (!attempt_completed_report_.Equals(attempt_completed_report)) {
-    attempt_completed_report_ = attempt_completed_report;
-    attempt_completed_report_.Report();
-  }
-
   state_ = STATE_IDLE;
   attempt_timeout_.Cancel();
 
@@ -437,14 +393,20 @@ void NetworkPortalDetectorImpl::OnAttemptCompleted(
       break;
   }
 
-  // Within one minute of the default network reporting a portal network, if we
-  // see an offline detection result, it is likely the client got blacklisted.
-  // Record the boolean rate that Chrome observes offline vs non-offline
-  // detection results.
-  if (NowTicks() - last_shill_reports_portal_time_ <=
-      kDelaySinceShillPortalForUMA) {
-    UMA_HISTOGRAM_BOOLEAN(kDetectionResultSinceShillPortalHistogram,
-                          no_response_since_portal);
+  NET_LOG(EVENT) << "NetworkPortalDetector completed: id="
+                 << NetworkGuidId(default_network_id_) << ", result="
+                 << captive_portal::CaptivePortalResultToString(result)
+                 << ", status=" << state.status
+                 << ", response_code=" << response_code;
+
+  UMA_HISTOGRAM_ENUMERATION("CaptivePortal.NetworkPortalDetectorResult",
+                            state.status);
+  NetworkState::NetworkTechnologyType type =
+      NetworkState::NetworkTechnologyType::kUnknown;
+  if (state.status == CAPTIVE_PORTAL_STATUS_PORTAL) {
+    if (network)
+      type = network->GetNetworkTechnologyType();
+    UMA_HISTOGRAM_ENUMERATION("CaptivePortal.NetworkPortalDetectorType", type);
   }
 
   if (last_detection_result_ != state.status) {

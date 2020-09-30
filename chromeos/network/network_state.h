@@ -226,6 +226,20 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkState : public ManagedState {
   network_config::mojom::ActivationStateType GetMojoActivationState() const;
   network_config::mojom::SecurityType GetMojoSecurity() const;
 
+  // Helper for UMA stats. Corresponds to NetworkTechnology in enums.xml
+  // which is also used by Shill metrics.
+  enum class NetworkTechnologyType {
+    kCellular = 0,
+    kEthernet = 1,
+    kEthernetEap = 2,
+    kWiFi = 3,
+    kTether = 4,
+    kVPN = 5,
+    kUnknown = 6,
+    kMaxValue = kUnknown,
+  };
+  NetworkTechnologyType GetNetworkTechnologyType() const;
+
   // Setters for testing.
   void set_connection_state_for_testing(const std::string& connection_state) {
     connection_state_ = connection_state;
