@@ -10,6 +10,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "content/browser/accessibility/accessibility_tools_utils_mac.h"
 #include "content/browser/accessibility/accessibility_tree_formatter_blink.h"
 #include "content/browser/accessibility/accessibility_tree_formatter_utils_mac.h"
 #include "content/browser/accessibility/browser_accessibility_mac.h"
@@ -51,11 +52,6 @@ const char kConstValuePrefix[] = "_const_";
 const char kNULLValue[] = "_const_NULL";
 const char kFailedToParseArgsError[] = "_const_ERROR:FAILED_TO_PARSE_ARGS";
 
-const char kChromeTitle[] = "Google Chrome";
-const char kChromiumTitle[] = "Chromium";
-const char kFirefoxTitle[] = "Firefox";
-const char kSafariTitle[] = "Safari";
-
 }  // namespace
 
 class AccessibilityTreeFormatterMac : public AccessibilityTreeFormatterBase {
@@ -76,10 +72,6 @@ class AccessibilityTreeFormatterMac : public AccessibilityTreeFormatterBase {
  private:
   std::unique_ptr<base::DictionaryValue> BuildAccessibilityTreeForAXUIElement(
       AXUIElementRef node) const;
-
-  // Return AXElement in a tree by a given criteria
-  using FindCriteria = base::RepeatingCallback<bool(id)>;
-  id FindAXUIElement(const id node, const FindCriteria& criteria) const;
 
   void RecursiveBuildAccessibilityTree(const id node,
                                        const LineIndexer* line_indexer,
@@ -180,50 +172,8 @@ AccessibilityTreeFormatterMac::BuildAccessibilityTreeForWindow(
 std::unique_ptr<base::DictionaryValue>
 AccessibilityTreeFormatterMac::BuildAccessibilityTreeForSelector(
     const TreeSelector& selector) {
-  NSArray* windows = (NSArray*)CGWindowListCopyWindowInfo(
-      kCGWindowListOptionOnScreenOnly | kCGWindowListExcludeDesktopElements,
-      kCGNullWindowID);
-
-  std::string title;
-  if (selector.types & TreeSelector::Chrome) {
-    title = kChromeTitle;
-  } else if (selector.types & TreeSelector::Chromium) {
-    title = kChromiumTitle;
-  } else if (selector.types & TreeSelector::Firefox) {
-    title = kFirefoxTitle;
-  } else if (selector.types & TreeSelector::Safari) {
-    title = kSafariTitle;
-  }
-
-  for (NSDictionary* window_info in windows) {
-    NSNumber* pid =
-        static_cast<NSNumber*>([window_info objectForKey:@"kCGWindowOwnerPID"]);
-    std::string window_name = SysNSStringToUTF8(static_cast<NSString*>(
-        [window_info objectForKey:@"kCGWindowOwnerName"]));
-
-    if (window_name == selector.pattern) {
-      return BuildAccessibilityTreeForWindow([pid intValue]);
-    }
-
-    if (window_name == title) {
-      AXUIElementRef node = AXUIElementCreateApplication([pid intValue]);
-      if (selector.types & TreeSelector::ActiveTab) {
-        node = static_cast<AXUIElementRef>(FindAXUIElement(
-            static_cast<id>(node), base::BindRepeating([](const id node) {
-              // Only active tab in exposed in browsers, thus find first
-              // AXWebArea role.
-              NSString* role =
-                  AttributeValueOf(node, NSAccessibilityRoleAttribute);
-              return SysNSStringToUTF8(role) == "AXWebArea";
-            })));
-      }
-
-      if (node) {
-        return BuildAccessibilityTreeForAXUIElement(node);
-      }
-    }
-  }
-  return nullptr;
+  AXUIElementRef node = a11y::FindAXUIElement(selector);
+  return node != nil ? BuildAccessibilityTreeForAXUIElement(node) : nil;
 }
 
 std::unique_ptr<base::DictionaryValue>
@@ -234,24 +184,6 @@ AccessibilityTreeFormatterMac::BuildAccessibilityTreeForAXUIElement(
   RecursiveBuildAccessibilityTree(static_cast<id>(node), &line_indexer,
                                   dict.get());
   return dict;
-}
-
-id AccessibilityTreeFormatterMac::FindAXUIElement(
-    const id node,
-    const FindCriteria& criteria) const {
-  if (criteria.Run(node)) {
-    return node;
-  }
-
-  NSArray* children = ChildrenOf(node);
-  for (id child in children) {
-    id found = FindAXUIElement(child, criteria);
-    if (found != nil) {
-      return found;
-    }
-  }
-
-  return nil;
 }
 
 void AccessibilityTreeFormatterMac::RecursiveBuildAccessibilityTree(

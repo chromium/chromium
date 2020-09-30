@@ -12,38 +12,6 @@ namespace content {
 namespace a11y {
 
 /**
- * Return true if the given object is internal BrowserAccessibilityCocoa.
- */
-bool IsBrowserAccessibilityCocoa(const id node);
-
-/**
- * Returns true if the given object is AXUIElement.
- */
-bool IsAXUIElement(const id node);
-
-/**
- * Returns children of an accessible object, either AXUIElement or
- * BrowserAccessibilityCocoa.
- */
-NSArray* ChildrenOf(const id node);
-
-/**
- * Returns (parameterized) attributes of an accessible object, (either
- * AXUIElement or BrowserAccessibilityCocoa).
- */
-NSArray* AttributeNamesOf(const id node);
-NSArray* ParameterizedAttributeNamesOf(const id node);
-
-/**
- * Returns (parameterized) attribute value on a given node (either AXUIElement
- * or BrowserAccessibilityCocoa)
- */
-id AttributeValueOf(const id node, NSString* attribute);
-id ParameterizedAttributeValueOf(const id node,
-                                 NSString* attribute,
-                                 id parameter);
-
-/**
  * Converts accessible node object to a line index in the formatted
  * accessibility tree, the node is placed at, and vice versa.
  */

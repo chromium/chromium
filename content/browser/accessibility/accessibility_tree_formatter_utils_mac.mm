@@ -5,12 +5,7 @@
 #include "content/browser/accessibility/accessibility_tree_formatter_utils_mac.h"
 
 #include "base/strings/sys_string_conversions.h"
-
-// error: 'accessibilityAttributeNames' is deprecated: first deprecated in
-// macOS 10.10 - Use the NSAccessibility protocol methods instead (see
-// NSAccessibilityProtocols.h
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+#include "content/browser/accessibility/accessibility_tools_utils_mac.h"
 
 using base::SysNSStringToUTF8;
 
@@ -48,112 +43,6 @@ namespace {
   return nil;
 
 }  // namespace
-
-bool IsBrowserAccessibilityCocoa(const id node) {
-  return [node isKindOfClass:[BrowserAccessibilityCocoa class]];
-}
-
-bool IsAXUIElement(const id node) {
-  return CFGetTypeID(node) == AXUIElementGetTypeID();
-}
-
-NSArray* ChildrenOf(const id node) {
-  if (IsBrowserAccessibilityCocoa(node)) {
-    return [node children];
-  }
-
-  if (IsAXUIElement(node)) {
-    CFTypeRef children_ref;
-    if ((AXUIElementCopyAttributeValue(static_cast<AXUIElementRef>(node),
-                                       kAXChildrenAttribute, &children_ref)) ==
-        kAXErrorSuccess) {
-      return static_cast<NSArray*>(children_ref);
-    }
-    return nil;
-  }
-
-  NOTREACHED();
-  return nil;
-}
-
-NSArray* AttributeNamesOf(const id node) {
-  if (IsBrowserAccessibilityCocoa(node)) {
-    return [node accessibilityAttributeNames];
-  }
-
-  if (IsAXUIElement(node)) {
-    CFArrayRef attributes_ref;
-    if (AXUIElementCopyAttributeNames(static_cast<AXUIElementRef>(node),
-                                      &attributes_ref) == kAXErrorSuccess) {
-      return static_cast<NSArray*>(attributes_ref);
-    }
-    return nil;
-  }
-
-  NOTREACHED();
-  return nil;
-}
-
-NSArray* ParameterizedAttributeNamesOf(const id node) {
-  if (IsBrowserAccessibilityCocoa(node)) {
-    return [node accessibilityParameterizedAttributeNames];
-  }
-
-  if (IsAXUIElement(node)) {
-    CFArrayRef attributes_ref;
-    if (AXUIElementCopyParameterizedAttributeNames(
-            static_cast<AXUIElementRef>(node), &attributes_ref) ==
-        kAXErrorSuccess) {
-      return static_cast<NSArray*>(attributes_ref);
-    }
-    return nil;
-  }
-
-  NOTREACHED();
-  return nil;
-}
-
-id AttributeValueOf(const id node, NSString* attribute) {
-  if (IsBrowserAccessibilityCocoa(node)) {
-    return [node accessibilityAttributeValue:attribute];
-  }
-
-  if (IsAXUIElement(node)) {
-    CFTypeRef value_ref;
-    if ((AXUIElementCopyAttributeValue(static_cast<AXUIElementRef>(node),
-                                       static_cast<CFStringRef>(attribute),
-                                       &value_ref)) == kAXErrorSuccess) {
-      return static_cast<id>(value_ref);
-    }
-    return nil;
-  }
-
-  NOTREACHED();
-  return nil;
-}
-
-id ParameterizedAttributeValueOf(const id node,
-                                 NSString* attribute,
-                                 id parameter) {
-  if (IsBrowserAccessibilityCocoa(node)) {
-    return [node accessibilityAttributeValue:attribute forParameter:parameter];
-  }
-
-  if (IsAXUIElement(node)) {
-    CFTypeRef value_ref;
-    if ((AXUIElementCopyParameterizedAttributeValue(
-            static_cast<AXUIElementRef>(node),
-            static_cast<CFStringRef>(attribute),
-            static_cast<CFTypeRef>(parameter), &value_ref)) ==
-        kAXErrorSuccess) {
-      return static_cast<id>(value_ref);
-    }
-    return nil;
-  }
-
-  NOTREACHED();
-  return nil;
-}
 
 // Line indexers
 
@@ -409,5 +298,3 @@ id AttributeInvoker::PropertyNodeToTextMarkerRange(
 
 }  // namespace a11y
 }  // namespace content
-
-#pragma clang diagnostic pop
