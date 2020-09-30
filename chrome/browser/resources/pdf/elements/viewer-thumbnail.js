@@ -4,6 +4,7 @@
 
 import './shared-css.js';
 
+import {assert} from 'chrome://resources/js/assert.m.js';
 import {FocusOutlineManager} from 'chrome://resources/js/cr/ui/focus_outline_manager.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -26,6 +27,11 @@ export class ViewerThumbnailElement extends PolymerElement {
 
   static get properties() {
     return {
+      clockwiseRotations: {
+        type: Number,
+        observer: 'clockwiseRotationsChanged_',
+      },
+
       isActive: {
         type: Boolean,
         observer: 'isActiveChanged_',
@@ -72,6 +78,12 @@ export class ViewerThumbnailElement extends PolymerElement {
 
   setPending() {
     this.toggleAttribute('pending', true);
+  }
+
+  /** @private */
+  clockwiseRotationsChanged_() {
+    // TODO(crbug.com/652400): Respect the PDF content clockwiseRotation.
+    assert(this.clockwiseRotations >= 0 && this.clockwiseRotations < 4);
   }
 
   /** @private */

@@ -21,6 +21,8 @@ export class ViewerThumbnailBarElement extends PolymerElement {
     return {
       activePage: Number,
 
+      clockwiseRotations: Number,
+
       docLength: Number,
 
       /** @private {Array<number>} */

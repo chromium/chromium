@@ -156,7 +156,8 @@
     load-progress="[[loadProgress_]]" has-edits="[[hasEdits_]]"
     has-entered-annotation-mode="[[hasEnteredAnnotationMode_]]"
     pdf-form-save-enabled="[[pdfFormSaveEnabled_]]"
-    printing-enabled="[[printingEnabled_]]" rotated="[[rotated_]]"
+    printing-enabled="[[printingEnabled_]]"
+    rotated="[[isRotated_(clockwiseRotations_)]]"
     is-form-field-focused="[[isFormFieldFocused_]]"
     sidenav-collapsed="[[sidenavCollapsed_]]"
     two-up-view-enabled="[[twoUpViewEnabled_]]"
@@ -188,6 +189,7 @@
         hidden$="[[!toolbarEnabled_]]">
       <viewer-pdf-sidenav id="sidenav"
           active-page="[[pageNo_]]" bookmarks="[[bookmarks_]]"
+          clockwise-rotations="[[clockwiseRotations_]]"
           doc-length="[[docLength_]]" on-change-page="onChangePage_"
           on-change-page-and-xy="onChangePageAndXy_" on-navigate="onNavigate_"
           on-paint-thumbnail="onPaintThumbnail_">

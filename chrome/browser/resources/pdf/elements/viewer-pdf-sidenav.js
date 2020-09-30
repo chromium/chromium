@@ -33,6 +33,8 @@ export class ViewerPdfSidenavElement extends PolymerElement {
         value: () => [],
       },
 
+      clockwiseRotations: Number,
+
       docLength: Number,
 
       /** @private */

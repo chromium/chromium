@@ -19,7 +19,7 @@
 <div id="thumbnails">
   <template is="dom-repeat" items="[[pageNumbers_]]"
       on-dom-change="onDomChange_">
-    <viewer-thumbnail tabindex="0"
+    <viewer-thumbnail tabindex="0" clockwise-rotations="[[clockwiseRotations]]"
         is-active="[[isActivePage_(item, activePage)]]" page-number="[[item]]">
     </viewer-thumbnail>
   </template>

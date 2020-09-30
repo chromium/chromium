@@ -116,7 +116,8 @@ export class PDFViewerElement extends PDFViewerBaseElement {
       annotationAvailable_: {
         type: Boolean,
         computed: 'computeAnnotationAvailable_(' +
-            'hadPassword_, rotated_, canSerializeDocument_, twoUpViewEnabled_)',
+            'hadPassword_, clockwiseRotations_, canSerializeDocument_,' +
+            'twoUpViewEnabled_)',
       },
 
       annotationMode_: {
@@ -127,6 +128,8 @@ export class PDFViewerElement extends PDFViewerBaseElement {
       attachments_: Array,
 
       bookmarks_: Array,
+
+      clockwiseRotations_: Number,
 
       documentHasFocus_: {
         type: Boolean,
@@ -142,8 +145,6 @@ export class PDFViewerElement extends PDFViewerBaseElement {
         type: Boolean,
         value: false,
       },
-
-      rotated_: Boolean,
 
       hadPassword_: Boolean,
 
@@ -187,6 +188,9 @@ export class PDFViewerElement extends PDFViewerBaseElement {
     /** @private {!Array<!Bookmark>} */
     this.bookmarks_ = [];
 
+    /** @private {number} */
+    this.clockwiseRotations_ = 0;
+
     /** @private {boolean} */
     this.documentHasFocus_ = false;
 
@@ -195,9 +199,6 @@ export class PDFViewerElement extends PDFViewerBaseElement {
 
     /** @private {boolean} */
     this.hasEnteredAnnotationMode_ = false;
-
-    /** @private {boolean} */
-    this.rotated_ = false;
 
     /** @private {boolean} */
     this.hadPassword_ = false;
@@ -489,7 +490,7 @@ export class PDFViewerElement extends PDFViewerBaseElement {
       this.currentController.setTwoUpView(false);
       this.twoUpViewEnabled_ = false;
     }
-    if (this.rotated_) {
+    if (this.isRotated_()) {
       const rotations = this.viewport.getClockwiseRotations();
       switch (rotations) {
         case 1:
@@ -503,7 +504,7 @@ export class PDFViewerElement extends PDFViewerBaseElement {
           super.rotateClockwise();
           break;
       }
-      this.rotated_ = false;
+      this.clockwiseRotations_ = 0;
     }
   }
 
@@ -1166,16 +1167,24 @@ export class PDFViewerElement extends PDFViewerBaseElement {
     return this.canSerializeDocument_ && !this.hadPassword_;
   }
 
+  /**
+   * @return {boolean} Whether the PDF contents are rotated.
+   * @private
+   */
+  isRotated_() {
+    return this.clockwiseRotations_ !== 0;
+  }
+
   /** @override */
   rotateClockwise() {
     super.rotateClockwise();
-    this.rotated_ = this.viewport.getClockwiseRotations() !== 0;
+    this.clockwiseRotations_ = this.viewport.getClockwiseRotations();
   }
 
   /** @override */
   rotateCounterclockwise() {
     super.rotateCounterclockwise();
-    this.rotated_ = this.viewport.getClockwiseRotations() !== 0;
+    this.clockwiseRotations_ = this.viewport.getClockwiseRotations();
   }
 }
 
