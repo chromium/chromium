@@ -44,11 +44,27 @@ class QuickAnswersControllerTest : public AshTestBase {
         std::make_unique<chromeos::quick_answers::QuickAnswersClient>(
             &test_url_loader_factory_, ash::AssistantState::Get(),
             controller()->GetQuickAnswersDelegate()));
+
+    controller()->OnEligibilityChanged(true);
+    controller()->SetVisibilityForTesting(QuickAnswersVisibility::kPending);
   }
 
   QuickAnswersControllerImpl* controller() {
     return static_cast<QuickAnswersControllerImpl*>(
         QuickAnswersController::Get());
+  }
+
+  void ShowQuickAnswers(bool set_visibility = true) {
+    // To show the quick answers view, its visibility must be set to 'pending'
+    // first.
+    if (set_visibility)
+      controller()->SetPendingShowQuickAnswers();
+    controller()->MaybeShowQuickAnswers(kDefaultAnchorBoundsInScreen,
+                                        kDefaultTitle, {});
+  }
+
+  void DismissQuickAnswers() {
+    controller()->DismissQuickAnswers(/*is_active=*/true);
   }
 
   QuickAnswersUiController* ui_controller() {
@@ -66,9 +82,7 @@ class QuickAnswersControllerTest : public AshTestBase {
 
 TEST_F(QuickAnswersControllerTest, ShouldNotShowWhenFeatureNotEligible) {
   controller()->OnEligibilityChanged(false);
-  controller()->SetVisibilityForTesting(QuickAnswersVisibility::kPending);
-  controller()->MaybeShowQuickAnswers(kDefaultAnchorBoundsInScreen,
-                                      kDefaultTitle, {});
+  ShowQuickAnswers();
 
   // The feature is not eligible, nothing should be shown.
   EXPECT_FALSE(ui_controller()->is_showing_user_consent_view());
@@ -76,10 +90,8 @@ TEST_F(QuickAnswersControllerTest, ShouldNotShowWhenFeatureNotEligible) {
 }
 
 TEST_F(QuickAnswersControllerTest, ShouldNotShowWhenClosed) {
-  controller()->OnEligibilityChanged(true);
   controller()->SetVisibilityForTesting(QuickAnswersVisibility::kClosed);
-  controller()->MaybeShowQuickAnswers(kDefaultAnchorBoundsInScreen,
-                                      kDefaultTitle, {});
+  ShowQuickAnswers(/*set_visibility=*/false);
 
   // The UI is closed and session is inactive, nothing should be shown.
   EXPECT_FALSE(ui_controller()->is_showing_user_consent_view());
@@ -87,11 +99,9 @@ TEST_F(QuickAnswersControllerTest, ShouldNotShowWhenClosed) {
   EXPECT_EQ(controller()->visibility(), QuickAnswersVisibility::kClosed);
 }
 
-TEST_F(QuickAnswersControllerTest, AcceptUserConsent) {
-  controller()->OnEligibilityChanged(true);
-  controller()->SetVisibilityForTesting(QuickAnswersVisibility::kPending);
-  controller()->MaybeShowQuickAnswers(kDefaultAnchorBoundsInScreen,
-                                      kDefaultTitle, {});
+TEST_F(QuickAnswersControllerTest,
+       ShouldShowPendingQueryAfterUserAcceptsConsent) {
+  ShowQuickAnswers();
   // Without user consent, only the user consent view should show.
   EXPECT_TRUE(ui_controller()->is_showing_user_consent_view());
   EXPECT_FALSE(ui_controller()->is_showing_quick_answers_view());
@@ -105,14 +115,11 @@ TEST_F(QuickAnswersControllerTest, AcceptUserConsent) {
   EXPECT_EQ(controller()->visibility(), QuickAnswersVisibility::kVisible);
 }
 
-TEST_F(QuickAnswersControllerTest, UserConsentAlreadyAccpeted) {
+TEST_F(QuickAnswersControllerTest, UserConsentAlreadyAccepted) {
   consent_controller()->StartConsent();
-  controller()->OnEligibilityChanged(true);
-  controller()->SetVisibilityForTesting(QuickAnswersVisibility::kPending);
   consent_controller()->AcceptConsent(
       chromeos::quick_answers::ConsentInteractionType::kAccept);
-  controller()->MaybeShowQuickAnswers(kDefaultAnchorBoundsInScreen,
-                                      kDefaultTitle, {});
+  ShowQuickAnswers();
 
   // With user consent already accepted, only the quick answers view should
   // show.
@@ -121,26 +128,38 @@ TEST_F(QuickAnswersControllerTest, UserConsentAlreadyAccpeted) {
   EXPECT_EQ(controller()->visibility(), QuickAnswersVisibility::kVisible);
 }
 
+TEST_F(QuickAnswersControllerTest,
+       ShouldShowQuickAnswersIfUserIgnoresConsentViewThreeTimes) {
+  // Show and dismiss user consent window the first 3 times
+  for (int i = 0; i < 3; i++) {
+    ShowQuickAnswers();
+    EXPECT_TRUE(ui_controller()->is_showing_user_consent_view())
+        << "Consent view not shown the " << (i + 1) << " time";
+    EXPECT_FALSE(ui_controller()->is_showing_quick_answers_view());
+    DismissQuickAnswers();
+  }
+
+  // The 4th time we should simply show the quick answer.
+  ShowQuickAnswers();
+  EXPECT_FALSE(ui_controller()->is_showing_user_consent_view());
+  EXPECT_TRUE(ui_controller()->is_showing_quick_answers_view());
+}
+
 TEST_F(QuickAnswersControllerTest, DismissUserConsentView) {
-  controller()->OnEligibilityChanged(true);
-  controller()->SetVisibilityForTesting(QuickAnswersVisibility::kPending);
-  controller()->MaybeShowQuickAnswers(kDefaultAnchorBoundsInScreen,
-                                      kDefaultTitle, {});
+  ShowQuickAnswers();
   EXPECT_TRUE(ui_controller()->is_showing_user_consent_view());
 
-  controller()->DismissQuickAnswers(true);
+  DismissQuickAnswers();
+
   EXPECT_FALSE(ui_controller()->is_showing_user_consent_view());
   EXPECT_EQ(controller()->visibility(), QuickAnswersVisibility::kClosed);
 }
 
 TEST_F(QuickAnswersControllerTest, DismissQuickAnswersView) {
   consent_controller()->StartConsent();
-  controller()->OnEligibilityChanged(true);
-  controller()->SetVisibilityForTesting(QuickAnswersVisibility::kPending);
   consent_controller()->AcceptConsent(
       chromeos::quick_answers::ConsentInteractionType::kAccept);
-  controller()->MaybeShowQuickAnswers(kDefaultAnchorBoundsInScreen,
-                                      kDefaultTitle, {});
+  ShowQuickAnswers();
   EXPECT_TRUE(ui_controller()->is_showing_quick_answers_view());
 
   controller()->DismissQuickAnswers(true);

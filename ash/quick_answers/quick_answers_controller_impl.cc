@@ -45,6 +45,13 @@ base::string16 IntentTypeToString(IntentType intent_type) {
       return base::string16();
   }
 }
+
+// Returns if the request has already been processed (by the text annotator).
+bool IsProcessedRequest(const QuickAnswersRequest& request) {
+  return (request.preprocessed_output.intent_info.intent_type !=
+          chromeos::quick_answers::IntentType::kUnknown);
+}
+
 }  // namespace
 
 namespace ash {
@@ -87,13 +94,26 @@ void QuickAnswersControllerImpl::MaybeShowQuickAnswers(
     // Send the request for preprocessing. Only shows quick answers view if the
     // predicted intent is not |kUnknown| at |OnRequestPreprocessFinish|.
     quick_answers_client_->SendRequestForPreprocessing(request);
-  } else if (!MaybeShowUserConsent(base::string16(), base::string16())) {
-    // Text annotator is not enabled and consent view is not showing, shows
-    // quick answers view with placeholder and send the request.
+  } else {
+    HandleQuickAnswerRequest(request);
+  }
+}
+
+void QuickAnswersControllerImpl::HandleQuickAnswerRequest(
+    const chromeos::quick_answers::QuickAnswersRequest& request) {
+  if (ShouldShowUserConsent()) {
+    ShowUserConsent(
+        IntentTypeToString(request.preprocessed_output.intent_info.intent_type),
+        base::UTF8ToUTF16(request.preprocessed_output.intent_info.intent_text));
+  } else {
     visibility_ = QuickAnswersVisibility::kVisible;
-    quick_answers_ui_controller_->CreateQuickAnswersView(anchor_bounds, title_,
+    quick_answers_ui_controller_->CreateQuickAnswersView(anchor_bounds_, title_,
                                                          query_);
-    quick_answers_client_->SendRequest(request);
+
+    if (IsProcessedRequest(request))
+      quick_answers_client_->FetchQuickAnswers(request);
+    else
+      quick_answers_client_->SendRequest(request);
   }
 }
 
@@ -172,15 +192,7 @@ void QuickAnswersControllerImpl::OnRequestPreprocessFinished(
   query_ = processed_request.preprocessed_output.query;
   title_ = processed_request.preprocessed_output.intent_info.intent_text;
 
-  if (!MaybeShowUserConsent(IntentTypeToString(intent_type),
-                            base::UTF8ToUTF16(title_))) {
-    if (!quick_answers_ui_controller_->is_showing_quick_answers_view()) {
-      visibility_ = QuickAnswersVisibility::kVisible;
-      quick_answers_ui_controller_->CreateQuickAnswersView(anchor_bounds_,
-                                                           title_, query_);
-    }
-    quick_answers_client_->FetchQuickAnswers(processed_request);
-  }
+  HandleQuickAnswerRequest(processed_request);
 }
 
 void QuickAnswersControllerImpl::OnRetryQuickAnswersRequest() {
@@ -237,19 +249,19 @@ void QuickAnswersControllerImpl::MaybeDismissQuickAnswersConsent() {
   quick_answers_ui_controller_->CloseUserConsentView();
 }
 
-bool QuickAnswersControllerImpl::MaybeShowUserConsent(
+bool QuickAnswersControllerImpl::ShouldShowUserConsent() const {
+  return consent_controller_->ShouldShowConsent();
+}
+
+void QuickAnswersControllerImpl::ShowUserConsent(
     const base::string16& intent_type,
     const base::string16& intent_text) {
-  if (consent_controller_->ShouldShowConsent()) {
-    // Show user-consent notice informing user about the feature if required.
-    if (!quick_answers_ui_controller_->is_showing_user_consent_view()) {
-      quick_answers_ui_controller_->CreateUserConsentView(
-          anchor_bounds_, intent_type, intent_text);
-      consent_controller_->StartConsent();
-    }
-    return true;
+  // Show user-consent notice informing user about the feature if required.
+  if (!quick_answers_ui_controller_->is_showing_user_consent_view()) {
+    quick_answers_ui_controller_->CreateUserConsentView(
+        anchor_bounds_, intent_type, intent_text);
+    consent_controller_->StartConsent();
   }
-  return false;
 }
 
 QuickAnswersRequest QuickAnswersControllerImpl::BuildRequest() {
