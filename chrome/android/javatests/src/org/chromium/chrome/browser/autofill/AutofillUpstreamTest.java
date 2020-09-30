@@ -17,12 +17,11 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Restriction;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.infobar.AutofillSaveCardInfoBar;
 import org.chromium.chrome.browser.sync.SyncTestRule;
-import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.infobars.InfoBar;
 import org.chromium.components.infobars.InfoBarLayout;
 import org.chromium.content_public.browser.WebContents;
@@ -52,8 +51,7 @@ public class AutofillUpstreamTest {
     public SyncTestRule mSyncTestRule = new SyncTestRule();
 
     @Rule
-    public ChromeActivityTestRule<ChromeActivity> mActivityTestRule =
-            new ChromeActivityTestRule<>(ChromeActivity.class);
+    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     private EmbeddedTestServer mServer;
 

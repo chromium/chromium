@@ -21,8 +21,8 @@ import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.infobar.InfoBarContainer;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.InfoBarUtil;
 import org.chromium.components.browser_ui.sms.SmsReceiverInfoBar;
 import org.chromium.components.browser_ui.sms.SmsReceiverUma;
@@ -37,8 +37,7 @@ import org.chromium.ui.KeyboardVisibilityDelegate;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class SmsReceiverInfoBarTest {
     @Rule
-    public ChromeActivityTestRule<ChromeActivity> mActivityTestRule =
-            new ChromeActivityTestRule<>(ChromeActivity.class);
+    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     private ChromeActivity mActivity;
     private static final String INFOBAR_HISTOGRAM = "Blink.Sms.Receive.Infobar";

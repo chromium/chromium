@@ -24,10 +24,9 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.media_router.BrowserMediaRouter;
 import org.chromium.components.media_router.MockMediaRouteProvider;
 import org.chromium.content_public.browser.WebContents;
@@ -53,8 +52,7 @@ import java.io.StringWriter;
         ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class MediaRouterIntegrationTest {
     @Rule
-    public ChromeActivityTestRule<ChromeActivity> mActivityTestRule =
-            new ChromeActivityTestRule<>(ChromeActivity.class);
+    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     private static final String TEST_PAGE =
             "/chrome/test/media_router/resources/basic_test.html?__is_android__=true";

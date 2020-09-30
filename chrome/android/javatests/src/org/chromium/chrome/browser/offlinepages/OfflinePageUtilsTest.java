@@ -29,15 +29,14 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.MetricsUtils.HistogramDelta;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.blink.mojom.MhtmlLoadResult;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge.OfflinePageModelObserver;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge.SavePageCallback;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarController;
-import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.offlinepages.SavePageResult;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
@@ -57,8 +56,7 @@ import java.util.concurrent.atomic.AtomicReference;
 Add({"enable-features=OfflinePagesSharing", ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class OfflinePageUtilsTest {
     @Rule
-    public ChromeActivityTestRule<ChromeActivity> mActivityTestRule =
-            new ChromeActivityTestRule<>(ChromeActivity.class);
+    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     private static final String TAG = "OfflinePageUtilsTest";
     private static final String TEST_PAGE = "/chrome/test/data/android/about.html";

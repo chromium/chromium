@@ -47,8 +47,8 @@ import org.chromium.chrome.browser.login.ChromeHttpAuthHandler;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.webapps.WebappTestPage;
 import org.chromium.components.location.LocationUtils;
 import org.chromium.components.permissions.PermissionDialogController;
@@ -74,8 +74,7 @@ import java.util.concurrent.TimeoutException;
         "enable-blink-features=OverscrollCustomization"})
 public class PortalsTest {
     @Rule
-    public ChromeActivityTestRule<ChromeActivity> mActivityTestRule =
-            new ChromeActivityTestRule<>(ChromeActivity.class);
+    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     private EmbeddedTestServer mTestServer;
 
