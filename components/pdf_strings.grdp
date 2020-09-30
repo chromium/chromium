@@ -36,6 +36,9 @@
     <message name="IDS_PDF_BOOKMARKS" desc="Label for the bookmarks (table of contents) of a PDF document. Used as a heading for the bookmarks menu, and as a tooltip to open that menu">
       Bookmarks
     </message>
+    <message name="IDS_PDF_BOOKMARK_EXPAND_ICON_ARIA_LABEL" desc="aria-label describing the icon button that expands/collapses a bookmark entry that has children">
+      Section
+    </message>
 
     <message name="IDS_PDF_TOOLTIP_ROTATE_CW" desc="Button tooltip for the button which rotates a PDF document clockwise">
       Rotate clockwise

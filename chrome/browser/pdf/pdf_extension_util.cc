@@ -53,6 +53,7 @@ void AddPdfViewerStrings(base::Value* dict) {
   static constexpr webui::LocalizedString kPdfResources[] = {
     {"annotationsShowToggle", IDS_PDF_ANNOTATIONS_SHOW_TOGGLE},
     {"bookmarks", IDS_PDF_BOOKMARKS},
+    {"bookmarkExpandIconAriaLabel", IDS_PDF_BOOKMARK_EXPAND_ICON_ARIA_LABEL},
     {"downloadEdited", IDS_PDF_DOWNLOAD_EDITED},
     {"downloadOriginal", IDS_PDF_DOWNLOAD_ORIGINAL},
     {"labelPageNumber", IDS_PDF_LABEL_PAGE_NUMBER},
