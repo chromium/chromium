@@ -129,13 +129,6 @@
       'android-weblayer-pie-x86-fyi-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_google',
     },
 
-    'chromium.chromedriver': {
-      'Win7': 'release_bot_x86',
-      'Mac 10.6': 'release_bot',
-      'Linux': 'release_bot',
-      'Linux32': 'release_bot_x86',
-    },
-
     'chromium.chromiumos': {
       'Linux ChromiumOS Full': 'chromeos_with_codecs_release_bot',
 
@@ -2342,10 +2335,6 @@
 
     'release_bot_minimal_symbols': [
       'release_bot', 'minimal_symbols',
-    ],
-
-    'release_bot_x86': [
-      'release_bot', 'x86',
     ],
 
     'release_bot_x86_minimal_symbols': [
