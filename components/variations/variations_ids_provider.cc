@@ -215,8 +215,15 @@ void VariationsIdsProvider::InitVariationIDsCacheIfNeeded() {
   if (variation_ids_cache_initialized_)
     return;
 
-  // Register for additional cache updates. This is done first to avoid a race
-  // that could cause registered FieldTrials to be missed.
+  // Query the kRestrictGoogleWebVisibility feature to activate the
+  // associated field trial, if any, so that querying it in
+  // OnFieldTrialGroupFinalized() does not result in deadlock.
+  //
+  // Note: Must be done before the AddObserver() call below.
+  base::FeatureList::IsEnabled(internal::kRestrictGoogleWebVisibility);
+
+  // Register for additional cache updates. This is done before initializing the
+  // cache to avoid a race that could cause registered FieldTrials to be missed.
   bool success = base::FieldTrialList::AddObserver(this);
   DCHECK(success);
 
