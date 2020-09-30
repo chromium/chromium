@@ -100,6 +100,11 @@ public class SimpleRecyclerViewAdapter
         mListData.removeObserver(mListObserver);
     }
 
+    /** @return The ModelList describing RecyclerView children. */
+    public ModelList getModelList() {
+        return mListData;
+    }
+
     @Override
     public int getItemCount() {
         return mListData.size();

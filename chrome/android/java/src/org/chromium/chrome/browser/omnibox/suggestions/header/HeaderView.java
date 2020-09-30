@@ -60,6 +60,7 @@ public class HeaderView extends SimpleHorizontalLayoutView {
         mHeaderText.setMinHeight(context.getResources().getDimensionPixelSize(
                 R.dimen.omnibox_suggestion_header_height));
         mHeaderText.setGravity(Gravity.CENTER_VERTICAL);
+        mHeaderText.setTextAlignment(TextView.TEXT_ALIGNMENT_VIEW_START);
         mHeaderText.setPaddingRelative(context.getResources().getDimensionPixelSize(
                                                R.dimen.omnibox_suggestion_header_margin_start),
                 0, 0, 0);
@@ -99,12 +100,12 @@ public class HeaderView extends SimpleHorizontalLayoutView {
     }
 
     /** Return ImageView used to present group header chevron. */
-    ImageView getIconView() {
+    public ImageView getIconView() {
         return mHeaderIcon;
     }
 
     /** Return TextView used to present group header text. */
-    TextView getTextView() {
+    public TextView getTextView() {
         return mHeaderText;
     }
 

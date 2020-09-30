@@ -177,6 +177,8 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/omnibox/suggestions/base/BaseSuggestionViewTest.java",
   "junit/src/org/chromium/chrome/browser/omnibox/suggestions/base/SimpleHorizontalLayoutViewTest.java",
   "junit/src/org/chromium/chrome/browser/omnibox/suggestions/base/SuggestionSpannableUnitTest.java",
+  "junit/src/org/chromium/chrome/browser/omnibox/suggestions/carousel/BaseCarouselSuggestionSelectionManagerUnitTest.java",
+  "junit/src/org/chromium/chrome/browser/omnibox/suggestions/carousel/BaseCarouselSuggestionViewBinderUnitTest.java",
   "junit/src/org/chromium/chrome/browser/omnibox/suggestions/header/HeaderViewBinderUnitTest.java",
   "junit/src/org/chromium/chrome/browser/omnibox/suggestions/tail/AlignmentManagerUnitTest.java",
   "junit/src/org/chromium/chrome/browser/omnibox/voice/AssistantVoiceSearchServiceUnitTest.java",
