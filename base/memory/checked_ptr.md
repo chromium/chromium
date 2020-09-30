@@ -3,21 +3,66 @@
 `CheckedPtr<T>` is a smart pointer that triggers a crash when dereferencing a
 dangling pointer.  It is currently considered **experimental** - please don't
 use it in production code just yet.
+`CheckedPtr<T>` is part of the
+[go/miracleptr](https://docs.google.com/document/d/1pnnOAIz_DMWDI4oIOFoMAqLnf_MZ2GsrJNb_dbQ3ZBg/edit?usp=sharing)
+project.
+
+
+## Examples of using CheckedPtr instead of raw pointers
+
+`CheckedPtr<T>` can be used to replace raw pointer fields (aka member
+variables).  For example, the following struct that uses raw pointers:
+
+```cpp
+struct Example {
+  int* int_ptr;
+  void* void_ptr;
+  SomeClass* object_ptr;
+  const SomeClass* ptr_to_const;
+  SomeClass* const const_ptr;
+};
+```
+
+Would look as follows when using `CheckedPtr<T>`:
+
+```cpp
+#include "base/memory/checked_ptr.h"
+
+struct Example {
+  CheckedPtr<int> int_ptr;
+  CheckedPtr<void> void_ptr;
+  CheckedPtr<SomeClass> object_ptr;
+  CheckedPtr<const SomeClass> ptr_to_const;
+  const CheckedPtr<SomeClass> const_ptr;
+};
+```
+
+In most cases, only the type in the field declaration needs to change.
+In particular, `CheckedPtr<T>` implements
+`operator->`, `operator*` and other operators
+that one expects from a raw pointer.
+A handful of incompatible cases are described in the
+"Incompatibilities with raw pointers" section below.
+
 
 ## Benefits and costs of CheckedPtr
 
 TODO: Expand the raw notes below:
 - Benefit = making UaF bugs non-exploitable
-  - Protected
-    - dereference (null not ok): `operator*`, `operator->`
-    - extraction (null ok): `.get()`, implicit casts
-  - Not protected:
-    - comparison: `operator==`, etc.
-    - maybe middle-of-allocation-pointers
-    - stack pointers
-      (and pointers to other non-PartitionAlloc-managed allocations)
+  - Need to explain how BackupRefPtr implementation
+    poisons/zaps/quarantines the freed memory
+    as long as a dangling CheckedPtr exists
+  - Need to explain the scope of the protection
+    - non-renderer process only (e.g. browser process, NetworkService process,
+      GPU process, etc., but *not* renderer processes, utility processes, etc.)
+    - most platforms (except iOS;  and 32-bit might also be out of scope)
+    - only pointers to PartitionAlloc-managed memory (all heap
+      allocations via `malloc` or `new` in Chrome, but not
+      pointers to stack memory, etc.)
 - Cost = performance hit
-  (TODO: point to preliminary performance results)
+  - Point to preliminary performance results and A/B testing results
+  - Explain how the performance hit affects mostly construction
+    and destruction (e.g. dereferencing or comparison are not affected).
 
 
 ## Fields should use CheckedPtr rather than raw pointers
@@ -28,12 +73,14 @@ should use `CheckedPtr<SomeClass>` rather than raw pointers.
 
 TODO: Expand the raw notes below:
 - Chromium-only (V8, Skia, etc. excluded)
+- Renderer-only code excluded for performance reasons (Blink,
+  any code path with "/renderer/" substring).
 - Fields-only
   (okay to use raw pointer variables, params, container elements, etc.)
 - TODO: Explain how this will be eventually enforced (presubmit? clang plugin?).
   Explain how to opt-out (e.g. see "Incompatibilities with raw pointers"
   section below where some scenarios are inherently incompatible
-  with CheckedPtr.
+  with CheckedPtr).
 
 
 ## Incompatibilities with raw pointers
@@ -49,6 +96,9 @@ There are some corner-case scenarios however,
 where `CheckedPtr<SomeClass>` is not compatible with a raw pointer.
 Subsections below enumerate such scenarios
 and offer guidance on how to work with them.
+For a more in-depth treatment, please see the
+["Limitations of CheckedPtr/BackupRefPtr"](https://docs.google.com/document/d/1HbtenxB_LyxNOFj52Ph9A6Wzb17PhXX2NGlsCZDCfL4/edit?usp=sharing)
+document.
 
 ### Compile errors
 
@@ -124,53 +174,20 @@ values.
 If `constexpr`, non-null initialization is required, then the only solution is
 avoiding `CheckedPtr`.
 
-### Runtime crashes
+#### Unions
 
-#### Special sentinel values
-
-`CheckedPtr` cannot be assigned special sentinel values like
-`reinterpret_cast<void*>(-2)`.
-Using such values with `CheckedPtr` will lead to crashes at runtime
-(`CheckedPtr` would crash when attempting to read the memory tag from
-the "allocation" at the fake sentinel address).
-
-Example where this happens in practice:
-[reinterpret_cast here](https://source.chromium.org/chromium/chromium/src/+/master:base/threading/thread_local_storage.cc;l=153;drc=c3cffa634ce1fd84baaab5ba507e240b8abbd977)
-might try to convert `-2` (from
-[kPerfFdDisabled](https://source.chromium.org/chromium/chromium/src/+/master:base/trace_event/thread_instruction_count.cc;l=28;drc=9a7c42e7b3ce922f16b308e2b295f109b56b9fa2))
-into `void*`.
-
-Suggested solution is to use `uintptr_t` instead of `void*` for storing
-non-pointer values (e.g. `-2` sentinel value).
+If any member of a union has a non-trivial destructor, then the union
+will not have a destructor.  Because of this `CheckedPtr<T>` usually cannot be
+used to replace the type of union members, because `CheckedPtr<T>` has
+a non-trivial destructor.
 
 
-#### Dangling CheckedPtr may crash without a dereference
+### Runtime errors
 
-A dangling raw pointer can be passed as an argument
-(or assigned to other variables, etc.) without necessarily
-triggering an undefined behavior (as long as the dangling
-pointer is not actually dereferenced).
-OTOH, `CheckedPtr` safety checks will kick in whenever `CheckedPtr`
-is converted to a raw pointer (e.g. when passing `CheckedPtr`
-to a function that takes a raw pointer as a function argument).
+TODO(bartekn): Document runtime errors encountered by BackupRefPtr
+(they are more rare than for CheckedPtr2,
+but runtime errors still exist for BackupRefPtr).
 
-Example where this happens in practice:
-[WaitableEventWatcher::StopWatching](https://source.chromium.org/chromium/chromium/src/+/master:base/synchronization/waitable_event_watcher_posix.cc;l=165;drc=c3cffa634ce1fd84baaab5ba507e240b8abbd977)
-may be dealing with a dangling `waiter_` pointer.
-
-TODO:
-- What to do (avoid CheckedPtr? introduce and use `UnsafeGet()` method?)
-- Generic guidance (can we say that this is an inherently dangerous situation
-  and should be avoided in general?)
-
-
-## Other notes
-
-### Unions mixing raw pointers and CheckedPtr
-
-C++ standard [says](https://en.cppreference.com/w/cpp/language/union) that
-"it's undefined behavior to read from the member of the union that wasn't most
-recently written".
-As long as only the most recently written union member is used, it should be
-okay to use `CheckedPtr` in a union (even in a situation where a mix of raw
-pointer fields and `CheckedPtr` fields is present in the same union).
+TODO(glazunov): One example is
+accessing a class' CheckedPtr fields in its base class' constructor:
+https://source.chromium.org/chromium/chromium/src/+/master:third_party/blink/renderer/platform/wtf/doubly_linked_list.h;drc=cce44dc1cb55c77f63f2ebec5e7015b8dc851c82;l=52
