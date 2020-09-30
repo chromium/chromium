@@ -1399,10 +1399,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Memory.NativeLibrary.MappedAndResidentMemoryFootprint2"
-    units="KB" expires_after="2021-02-14">
-  <owner>msalama@google.com</owner>
+<histogram name="Memory.NativeLibrary.MappedAndResidentMemoryFootprint3"
+    units="KB" expires_after="2021-09-27">
   <owner>lizeb@chromium.org</owner>
+  <owner>pasko@chromium.org</owner>
   <summary>
     The size of the resident memory for the native library code across all
     processes. This metric is computed by parsing proc/self/pagemap and counting

@@ -929,7 +929,7 @@ void ProcessMemoryMetricsEmitter::CollateResults() {
       // Size of the native library on android is ~40MB.
       // More precision is needed in the middle buckets, hence the range.
       base::UmaHistogramCustomCounts(
-          "Memory.NativeLibrary.MappedAndResidentMemoryFootprint2",
+          "Memory.NativeLibrary.MappedAndResidentMemoryFootprint3",
           native_resident_kb, 1000, 100000, 100);
       if (native_library_not_resident_ordered_kb != metrics.kInvalid) {
         base::UmaHistogramCustomCounts(

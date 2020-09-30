@@ -146,7 +146,7 @@ mojom::AggregatedMetricsPtr ComputeGlobalNativeCodeResidentMemoryKb(
       native_library_not_resident_ordered_kb;
 
   // 0 is not a valid value, as at the very least the current page (the one
-  // containing code for the collection fucntion) should be resident.
+  // containing code for the collection function) should be resident.
   if (!native_library_resident_kb) {
     metrics->native_library_resident_kb =
         GlobalMemoryDump::AggregatedMetrics::kInvalid;

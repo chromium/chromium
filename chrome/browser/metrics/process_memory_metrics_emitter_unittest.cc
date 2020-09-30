@@ -866,7 +866,7 @@ TEST_F(ProcessMemoryMetricsEmitterTest, RendererAndTotalHistogramsAreRecorded) {
   histograms.ExpectTotalCount("Memory.Total.SharedMemoryFootprint", 0);
   histograms.ExpectTotalCount("Memory.Total.ResidentSet", 0);
   histograms.ExpectTotalCount(
-      "Memory.NativeLibrary.MappedAndResidentMemoryFootprint2", 0);
+      "Memory.NativeLibrary.MappedAndResidentMemoryFootprint3", 0);
   histograms.ExpectTotalCount(
       "Memory.NativeLibrary.NotResidentOrderedCodeMemoryFootprint", 0);
   histograms.ExpectTotalCount(
@@ -904,7 +904,7 @@ TEST_F(ProcessMemoryMetricsEmitterTest, RendererAndTotalHistogramsAreRecorded) {
                                 2 * kTestRendererResidentSet, 1);
 #endif
   histograms.ExpectUniqueSample(
-      "Memory.NativeLibrary.MappedAndResidentMemoryFootprint2",
+      "Memory.NativeLibrary.MappedAndResidentMemoryFootprint3",
       kNativeLibraryResidentMemoryFootprint, 1);
   histograms.ExpectUniqueSample(
       "Memory.NativeLibrary.NotResidentOrderedCodeMemoryFootprint",

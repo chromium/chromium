@@ -33443,6 +33443,26 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Memory.NativeLibrary.MappedAndResidentMemoryFootprint2"
+    units="KB" expires_after="2021-02-14">
+  <obsolete>
+    Removed 09/2020. Replaced by
+    Memory.NativeLibrary.MappedAndResidentMemoryFootprint3 to increase device
+    coverage.
+  </obsolete>
+  <owner>msalama@google.com</owner>
+  <owner>lizeb@chromium.org</owner>
+  <summary>
+    The size of the resident memory for the native library code across all
+    processes. This metric is computed by parsing proc/self/pagemap and counting
+    native library pages that are mapped and present in RAM for at least one
+    Chrome process.
+
+    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
+    Android and 30 minutes on other platforms.
+  </summary>
+</histogram>
+
 <histogram name="Memory.OtherProcessCount" units="processes"
     expires_after="2018-03-09">
   <obsolete>
