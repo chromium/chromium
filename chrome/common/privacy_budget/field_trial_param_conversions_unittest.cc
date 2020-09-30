@@ -10,7 +10,7 @@ TEST(FieldTrialParamConversionsTest, Surface) {
   auto original_surface = blink::IdentifiableSurface::FromMetricHash(100);
   EXPECT_EQ(std::string("100"), EncodeIdentifiabilityType(original_surface));
 
-  original_surface = blink::IdentifiableSurface::FromTypeAndInput(
+  original_surface = blink::IdentifiableSurface::FromTypeAndToken(
       blink::IdentifiableSurface::Type::kWebFeature, 1);
   std::string encoded = EncodeIdentifiabilityType(original_surface);
   EXPECT_EQ(std::string("257"), encoded);

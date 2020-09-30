@@ -681,7 +681,7 @@ ImageData* CanvasRenderingContext2D::getImageData(
     int sh,
     ExceptionState& exception_state) {
   blink::IdentifiabilityMetricBuilder(ukm_source_id_)
-      .Set(blink::IdentifiableSurface::FromTypeAndInput(
+      .Set(blink::IdentifiableSurface::FromTypeAndToken(
                blink::IdentifiableSurface::Type::kCanvasReadback,
                GetContextType()),
            0)

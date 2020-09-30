@@ -102,11 +102,10 @@ IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTest, SamplingScreenAPIs) {
         blink::mojom::WebFeature::kV8Screen_AvailTop_AttributeGetter,
         blink::mojom::WebFeature::kV8Screen_AvailWidth_AttributeGetter,
         blink::mojom::WebFeature::kV8Screen_Height_AttributeGetter}) {
-    EXPECT_TRUE(
-        metrics.contains(blink::IdentifiableSurface::FromTypeAndInput(
-                             blink::IdentifiableSurface::Type::kWebFeature,
-                             static_cast<uint64_t>(feature))
-                             .ToUkmMetricHash()));
+    EXPECT_TRUE(metrics.contains(
+        blink::IdentifiableSurface::FromTypeAndToken(
+            blink::IdentifiableSurface::Type::kWebFeature, feature)
+            .ToUkmMetricHash()));
   }
 }
 

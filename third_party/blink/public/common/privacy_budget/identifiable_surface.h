@@ -197,14 +197,6 @@ class IdentifiableSurface {
     return IdentifiableSurface(metric_hash);
   }
 
-  // Construct an IdentifiableSurface based on a surface type and an input hash.
-  //
-  // DEPRECATED: Prefer FromTypeAndToken instead.
-  static constexpr IdentifiableSurface FromTypeAndInput(Type type,
-                                                        uint64_t input) {
-    return IdentifiableSurface(KeyFromSurfaceTypeAndInput(type, input));
-  }
-
   // Construct an IdentifiableSurface based on a surface type and an input
   // token.
   static constexpr IdentifiableSurface FromTypeAndToken(
@@ -229,7 +221,7 @@ class IdentifiableSurface {
   // Returns the input hash for this IdentifiableSurface.
   //
   // The value that's returned can be different from what's used for
-  // constructing the IdentifiableSurface via FromTypeAndInput() if the input is
+  // constructing the IdentifiableSurface via FromTypeAndToken() if the input is
   // >= 2^56.
   constexpr uint64_t GetInputHash() const {
     return std::get<1>(SurfaceTypeAndInputFromMetricKey(metric_hash_));

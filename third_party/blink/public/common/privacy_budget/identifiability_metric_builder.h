@@ -85,14 +85,14 @@ namespace blink {
 //    constant. Values are defined in
 //    blink/public/mojom/web_feature/web_feature.mojom.
 //
-//        identifiable_surface = IdentifiableSurface::FromTypeAndInput(
+//        identifiable_surface = IdentifiableSurface::FromTypeAndToken(
 //            IdentifiableSurface::Type::kWebFeature,
 //            blink::mojom::WebFeature::kDeviceOrientationSecureOrigin);
 //        output = IdentifiabilityDigestOfBytes(result_as_binary_blob);
 //
 // 2. A surface that takes a non-trivial input represented as a binary blob:
 //
-//        identifiable_surface = IdentifiableSurface::FromTypeAndInput(
+//        identifiable_surface = IdentifiableSurface::FromTypeAndToken(
 //            IdentifiableSurface::Type::kFancySurface,
 //            IdentifiabilityDigestOfBytes(input_as_binary_blob));
 //        output = IdentifiabilityDigestOfBytes(result_as_binary_blob);
@@ -125,9 +125,8 @@ class BLINK_COMMON_EXPORT IdentifiabilityMetricBuilder {
   // surface with a |UseCounter|.
   IdentifiabilityMetricBuilder& SetWebfeature(mojom::WebFeature feature,
                                               IdentifiableToken sample) {
-    return Set(IdentifiableSurface::FromTypeAndInput(
-                   IdentifiableSurface::Type::kWebFeature,
-                   static_cast<uint64_t>(feature)),
+    return Set(IdentifiableSurface::FromTypeAndToken(
+                   IdentifiableSurface::Type::kWebFeature, feature),
                sample);
   }
 

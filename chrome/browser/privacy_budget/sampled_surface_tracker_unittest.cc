@@ -9,7 +9,7 @@
 
 namespace {
 uint64_t metric(int i) {
-  return blink::IdentifiableSurface::FromTypeAndInput(
+  return blink::IdentifiableSurface::FromTypeAndToken(
              blink::IdentifiableSurface::Type::kWebFeature, i)
       .ToUkmMetricHash();
 }
@@ -57,7 +57,7 @@ TEST(SampledSurfaceTrackerTest, Reset) {
 TEST(SampledSurfaceTrackerTest, InvalidMetric) {
   SampledSurfaceTracker t;
   EXPECT_FALSE(t.ShouldRecord(
-      0, blink::IdentifiableSurface::FromTypeAndInput(
+      0, blink::IdentifiableSurface::FromTypeAndToken(
              blink::IdentifiableSurface::Type::kReservedInternal, 1)
              .ToUkmMetricHash()));
 }

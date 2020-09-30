@@ -57,7 +57,7 @@ bool PrivacyBudgetUkmEntryFilter::FilterEntry(
   for (const auto& v : sampled_surfaces) {
     // Add entries marking the surfaces that were sampled by the source as
     // sampled.
-    blink::IdentifiableSurface s = blink::IdentifiableSurface::FromTypeAndInput(
+    blink::IdentifiableSurface s = blink::IdentifiableSurface::FromTypeAndToken(
         blink::IdentifiableSurface::Type::kMeasuredSurface, sample_idx++);
     entry->metrics.insert_or_assign(entry->metrics.end(), s.ToUkmMetricHash(),
                                     v.ToUkmMetricHash());

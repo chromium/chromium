@@ -46,8 +46,8 @@ extern const base::FeatureParam<int> kIdentifiabilityStudyGeneration;
 //     represents an IdentifiableSurface.
 //
 // E.g.:
-//  * "258, 257" : Matches IdentifiableSurface::FromTypeAndInput(kWebFeature, 1)
-//                 and IdentifiableSurface::FromTypeAndInput(kWebFeature, 2)
+//  * "258, 257" : Matches IdentifiableSurface::FromTypeAndToken(kWebFeature, 1)
+//                 and IdentifiableSurface::FromTypeAndToken(kWebFeature, 2)
 extern const base::FeatureParam<std::string>
     kIdentifiabilityStudyBlockedMetrics;
 
@@ -94,7 +94,7 @@ constexpr int kMaxIdentifiabilityStudyMaxSurfaces = 10;
 //
 // E.g.:
 //   * "257;800" : Sets the selection rate to 1-in-800 for
-//                 IdentifiableSurface::FromTypeAndInput(kWebFeature, 1).
+//                 IdentifiableSurface::FromTypeAndToken(kWebFeature, 1).
 extern const base::FeatureParam<std::string>
     kIdentifiabilityStudyPerSurfaceSettings;
 

@@ -29,7 +29,7 @@ TEST(IdentifiabilityMetricBuilderTest, Set) {
   constexpr int64_t kInputHash = 2;
   constexpr int64_t kValue = 3;
 
-  const auto kSurface = IdentifiableSurface::FromTypeAndInput(
+  const auto kSurface = IdentifiableSurface::FromTypeAndToken(
       IdentifiableSurface::Type::kWebFeature, kInputHash);
 
   builder.Set(kSurface, kValue);
@@ -49,7 +49,7 @@ TEST(IdentifiabilityMetricBuilderTest, BuilderOverload) {
 
   constexpr int64_t kValue = 3;
   constexpr int64_t kInputHash = 2;
-  constexpr auto kSurface = IdentifiableSurface::FromTypeAndInput(
+  constexpr auto kSurface = IdentifiableSurface::FromTypeAndToken(
       IdentifiableSurface::Type::kWebFeature, kInputHash);
 
   const auto kSource = base::UkmSourceId::New();
@@ -89,9 +89,9 @@ TEST(IdentifiabilityMetricBuilderTest, SetWebfeature) {
   collector.ClearEntries();
 
   // Only testing that using SetWebfeature(x,y) is equivalent to
-  // .Set(IdentifiableSurface::FromTypeAndInput(kWebFeature, x), y);
+  // .Set(IdentifiableSurface::FromTypeAndToken(kWebFeature, x), y);
   IdentifiabilityMetricBuilder(base::UkmSourceId{})
-      .Set(IdentifiableSurface::FromTypeAndInput(
+      .Set(IdentifiableSurface::FromTypeAndToken(
                IdentifiableSurface::Type::kWebFeature, kTestInput),
            kValue)
       .Record(&recorder);
@@ -135,7 +135,7 @@ MATCHER_P(FirstMetricIs,
 enum class Never { kGonna, kGive, kYou, kUp };
 
 constexpr IdentifiableSurface kTestSurface =
-    IdentifiableSurface::FromTypeAndInput(
+    IdentifiableSurface::FromTypeAndToken(
         IdentifiableSurface::Type::kReservedInternal,
         0);
 

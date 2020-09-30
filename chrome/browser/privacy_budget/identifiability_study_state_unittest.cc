@@ -63,7 +63,7 @@ constexpr auto kRegularSurface3 =
     blink::IdentifiableSurface::FromMetricHash(5 << 8);
 
 constexpr auto kBlockedTypeSurface1 =
-    blink::IdentifiableSurface::FromTypeAndInput(kBlockedType1, 1);  // = 258
+    blink::IdentifiableSurface::FromTypeAndToken(kBlockedType1, 1);  // = 258
 
 std::string SurfaceListString(
     std::initializer_list<blink::IdentifiableSurface> list) {

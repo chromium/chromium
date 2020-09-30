@@ -304,7 +304,7 @@ void HTMLCanvasElement::IdentifiabilityReportWithDigest(
     if (encountered_partially_digested_image)
       final_digest |= IdentifiableSurface::CanvasTaintBit::kPartiallyDigested;
     RecordIdentifiabilityMetric(
-        blink::IdentifiableSurface::FromTypeAndInput(
+        blink::IdentifiableSurface::FromTypeAndToken(
             blink::IdentifiableSurface::Type::kCanvasReadback, final_digest),
         canvas_contents_token.ToUkmMetricValue());
   }

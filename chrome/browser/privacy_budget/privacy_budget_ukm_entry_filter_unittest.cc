@@ -93,7 +93,7 @@ TEST(PrivacyBudgetUkmEntryFilterStandaloneTest, BlockListedMetrics) {
                                                {kUnblockedSurface, 2}};
   base::flat_map<uint64_t, int64_t> expected_metrics = {
       {kUnblockedSurface, 2},
-      {blink::IdentifiableSurface::FromTypeAndInput(
+      {blink::IdentifiableSurface::FromTypeAndToken(
            blink::IdentifiableSurface::Type::kMeasuredSurface, 0)
            .ToUkmMetricHash(),
        static_cast<int64_t>(kUnblockedSurface)}};

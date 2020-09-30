@@ -3311,7 +3311,7 @@ void WebGLRenderingContextBase::RecordIdentifiableGLParameterDigest(
     return;
   if (const auto& ukm_params = GetUkmParameters()) {
     blink::IdentifiabilityMetricBuilder(ukm_params->source_id)
-        .Set(blink::IdentifiableSurface::FromTypeAndInput(
+        .Set(blink::IdentifiableSurface::FromTypeAndToken(
                  blink::IdentifiableSurface::Type::kWebGLParameter, pname),
              value)
         .Record(ukm_params->ukm_recorder);
@@ -4637,7 +4637,7 @@ void WebGLRenderingContextBase::readPixels(
   if (IdentifiabilityStudySettings::Get()->IsActive()) {
     if (const auto& ukm_params = GetUkmParameters()) {
       blink::IdentifiabilityMetricBuilder(ukm_params->source_id)
-          .Set(blink::IdentifiableSurface::FromTypeAndInput(
+          .Set(blink::IdentifiableSurface::FromTypeAndToken(
                    blink::IdentifiableSurface::Type::kCanvasReadback,
                    GetContextType()),
                0)
