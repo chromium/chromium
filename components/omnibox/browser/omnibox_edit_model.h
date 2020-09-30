@@ -356,23 +356,28 @@ class OmniboxEditModel {
 
   // Called when any relevant data changes.  This rolls together several
   // separate pieces of data into one call so we can update all the UI
-  // efficiently:
-  //   |text| is either the new temporary text from the user manually selecting
-  //     a different match, or the inline autocomplete text.
-  //   |is_temporary_text| is true if |text| contains the temporary text for
-  //     a match, and is false if |text| contains the inline autocomplete text.
-  //   |prefix_autocompletion| is the prefix autocomplete text.
+  // efficiently. Specifically, it's invoked for temporary text, autocompletion,
+  // and keyword changes.
+  //   |temporary_text| is the new temporary text from the user selecting a
+  //   different match. This will be empty when selecting a suggestion
+  //   without a |fill_into_edit| (e.g. FOCUSED_BUTTON_HEADER) and when
+  //   |is_temporary_test| is false.
+  //   |is_temporary_text| is true if invoked because of a temporary text change
+  //     or false if |temporary_text| should be ignored.
+  //   |inline_autocompletion| and |prefix_autocompletion| are the autocomplete
+  //     texts.
   //   |destination_for_temporary_text_change| is NULL (if temporary text should
-  //     not change) or the pre-change destination URL (if temporary text should
-  //     change) so we can save it off to restore later.
-  //   |keyword| is the keyword to show a hint for if |is_keyword_hint| is true,
-  //     or the currently selected keyword if |is_keyword_hint| is false (see
-  //     comments on keyword_ and is_keyword_hint_).
+  //     not change) or the pre-change destination URL (if temporary text
+  //     should change) so we can save it off to restore later.
+  //   |keyword| is the keyword to show a hint for if |is_keyword_hint| is true
+  //     or the currently selected keyword if |is_keyword_hint| is false
+  //     (see comments on keyword_ and is_keyword_hint_).
   //   |additional_text| is additional omnibox text to be displayed adjacent to
-  //   the omnibox view.
+  //     the omnibox view.
   // Virtual to allow testing.
-  virtual void OnPopupDataChanged(const base::string16& text,
+  virtual void OnPopupDataChanged(const base::string16& temporary_text,
                                   bool is_temporary_text,
+                                  const base::string16& inline_autocompletion,
                                   const base::string16& prefix_autocompletion,
                                   const base::string16& keyword,
                                   bool is_keyword_hint,

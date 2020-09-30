@@ -1293,8 +1293,9 @@ bool OmniboxEditModel::MaybeStartQueryForPopup() {
 }
 
 void OmniboxEditModel::OnPopupDataChanged(
-    const base::string16& text,
+    const base::string16& temporary_text,
     bool is_temporary_text,
+    const base::string16& inline_autocompletion,
     const base::string16& prefix_autocompletion,
     const base::string16& keyword,
     bool is_keyword_hint,
@@ -1350,13 +1351,13 @@ void OmniboxEditModel::OnPopupDataChanged(
 
     const AutocompleteMatch& match = CurrentMatch(nullptr);
     view_->OnTemporaryTextMaybeChanged(
-        MaybeStripKeyword(text), match,
+        MaybeStripKeyword(temporary_text), match,
         save_original_selection && original_user_text_with_keyword_.empty(),
         true);
     return;
   }
 
-  inline_autocompletion_ = text;
+  inline_autocompletion_ = inline_autocompletion;
   prefix_autocompletion_ = prefix_autocompletion;
   if (inline_autocompletion_.empty() && prefix_autocompletion_.empty())
     view_->OnInlineAutocompleteTextCleared();
@@ -1545,9 +1546,10 @@ void OmniboxEditModel::OnCurrentMatchChanged() {
   const base::string16 prefix_autocompletion(match.prefix_autocompletion);
   const base::string16 fill_into_edit_additional_text(
       match.fill_into_edit_additional_text);
-  OnPopupDataChanged(inline_autocompletion,
-                     /*is_temporary_text=*/false, prefix_autocompletion,
-                     keyword, is_keyword_hint, fill_into_edit_additional_text);
+  OnPopupDataChanged(base::string16(),
+                     /*is_temporary_text=*/false, inline_autocompletion,
+                     prefix_autocompletion, keyword, is_keyword_hint,
+                     fill_into_edit_additional_text);
 }
 
 // static
