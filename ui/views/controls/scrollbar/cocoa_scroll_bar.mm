@@ -221,11 +221,11 @@ void CocoaScrollBar::OnPaint(gfx::Canvas* canvas) {
                           ui::NativeTheme::kNormal, GetLocalBounds(), params);
 }
 
-bool CocoaScrollBar::CanProcessEventsWithinSubtree() const {
+bool CocoaScrollBar::GetCanProcessEventsWithinSubtree() const {
   // If using overlay scrollbars, do not process events when fully hidden.
   return scroller_style_ == NSScrollerStyleOverlay
              ? !IsScrollbarFullyHidden()
-             : ScrollBar::CanProcessEventsWithinSubtree();
+             : ScrollBar::GetCanProcessEventsWithinSubtree();
 }
 
 bool CocoaScrollBar::OnMousePressed(const ui::MouseEvent& event) {

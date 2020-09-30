@@ -39,7 +39,7 @@ class VIEWS_EXPORT CocoaScrollBar : public ScrollBar,
   void OnScrollerStyleChanged() override;
 
   // View:
-  bool CanProcessEventsWithinSubtree() const override;
+  bool GetCanProcessEventsWithinSubtree() const override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
   void OnMouseReleased(const ui::MouseEvent& event) override;
   void OnMouseEntered(const ui::MouseEvent& event) override;

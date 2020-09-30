@@ -86,7 +86,7 @@ TabIcon::TabIcon()
       favicon_fade_in_animation_(base::TimeDelta::FromMilliseconds(250),
                                  gfx::LinearAnimation::kDefaultFrameRate,
                                  this) {
-  set_can_process_events_within_subtree(false);
+  SetCanProcessEventsWithinSubtree(false);
 
   // The minimum size to avoid clipping the attention indicator.
   const int preferred_width =

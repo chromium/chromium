@@ -47,7 +47,7 @@ void InkDropContainerView::RemoveInkDropLayer(ui::Layer* ink_drop_layer) {
   DestroyLayer();
 }
 
-bool InkDropContainerView::CanProcessEventsWithinSubtree() const {
+bool InkDropContainerView::GetCanProcessEventsWithinSubtree() const {
   // Ensure the container View is found as the EventTarget instead of this.
   return false;
 }

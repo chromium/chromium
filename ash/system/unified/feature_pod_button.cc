@@ -37,7 +37,7 @@ void ConfigureFeaturePodLabel(views::Label* label,
                               int font_size) {
   label->SetAutoColorReadabilityEnabled(false);
   label->SetSubpixelRenderingEnabled(false);
-  label->set_can_process_events_within_subtree(false);
+  label->SetCanProcessEventsWithinSubtree(false);
   label->SetLineHeight(line_height);
 
   gfx::Font default_font;
@@ -186,7 +186,7 @@ FeaturePodLabelButton::FeaturePodLabelButton(views::ButtonListener* listener)
                            kUnifiedFeaturePodSubLabelFontSize);
   sub_label_->SetVisible(false);
 
-  detailed_view_arrow_->set_can_process_events_within_subtree(false);
+  detailed_view_arrow_->SetCanProcessEventsWithinSubtree(false);
   detailed_view_arrow_->SetVisible(false);
 
   OnEnabledChanged();

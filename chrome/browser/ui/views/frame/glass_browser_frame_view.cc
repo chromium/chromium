@@ -102,7 +102,7 @@ GlassBrowserFrameView::GlassBrowserFrameView(BrowserFrame* frame,
     // Stop the icon from intercepting clicks intended for the HTSYSMENU region
     // of the window. Even though it does nothing on click, it will still
     // prevent us from giving the event back to Windows to handle properly.
-    window_icon_->set_can_process_events_within_subtree(false);
+    window_icon_->SetCanProcessEventsWithinSubtree(false);
     AddChildView(window_icon_);
   }
 

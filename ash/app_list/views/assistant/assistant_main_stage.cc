@@ -423,7 +423,7 @@ void AppListAssistantMainStage::OnUiVisibilityChanged(
 
   footer_->SetVisible(true);
   footer_->layer()->SetOpacity(1.f);
-  footer_->set_can_process_events_within_subtree(true);
+  footer_->SetCanProcessEventsWithinSubtree(true);
 }
 
 void AppListAssistantMainStage::MaybeHideZeroState() {

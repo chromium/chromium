@@ -27,26 +27,14 @@ class TestingView : public View, public ViewTargeterDelegate {
   ~TestingView() override = default;
 
   // Reset all test state.
-  void Reset() { can_process_events_within_subtree_ = true; }
-
-  void set_can_process_events_within_subtree(bool can_process) {
-    can_process_events_within_subtree_ = can_process;
-  }
+  void Reset() { SetCanProcessEventsWithinSubtree(true); }
 
   // A call-through function to ViewTargeterDelegate::DoesIntersectRect().
   bool TestDoesIntersectRect(const View* target, const gfx::Rect& rect) const {
     return DoesIntersectRect(target, rect);
   }
 
-  // View:
-  bool CanProcessEventsWithinSubtree() const override {
-    return can_process_events_within_subtree_;
-  }
-
  private:
-  // Value to return from CanProcessEventsWithinSubtree().
-  bool can_process_events_within_subtree_ = true;
-
   DISALLOW_COPY_AND_ASSIGN(TestingView);
 };
 

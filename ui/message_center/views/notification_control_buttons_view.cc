@@ -113,7 +113,7 @@ void NotificationControlButtonsView::ShowButtons(bool show) {
   // Manipulate the opacity instead of changing the visibility to keep the tab
   // order even when the view is invisible.
   layer()->SetOpacity(show ? 1. : 0.);
-  set_can_process_events_within_subtree(show);
+  SetCanProcessEventsWithinSubtree(show);
 }
 
 bool NotificationControlButtonsView::IsAnyButtonFocused() const {

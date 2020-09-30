@@ -100,7 +100,7 @@ class VIEWS_EXPORT InkDropContainerView : public views::View {
   void RemoveInkDropLayer(ui::Layer* ink_drop_layer);
 
   // View:
-  bool CanProcessEventsWithinSubtree() const override;
+  bool GetCanProcessEventsWithinSubtree() const override;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(InkDropContainerView);

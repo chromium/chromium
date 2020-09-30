@@ -191,14 +191,14 @@ std::unique_ptr<PaymentRequestRowView> CreatePaymentSheetRow(
   layout->AddView(std::move(name_label));
 
   if (content_view) {
-    content_view->set_can_process_events_within_subtree(false);
+    content_view->SetCanProcessEventsWithinSubtree(false);
     layout->AddView(std::move(content_view));
   } else {
     layout->SkipColumns(1);
   }
 
   if (extra_content_view) {
-    extra_content_view->set_can_process_events_within_subtree(false);
+    extra_content_view->SetCanProcessEventsWithinSubtree(false);
     layout->AddView(std::move(extra_content_view));
   } else {
     layout->SkipColumns(1);
@@ -294,7 +294,7 @@ class PaymentSheetRowBuilder {
     auto chevron = std::make_unique<views::ColorTrackingIconView>(
         views::kSubmenuArrowIcon,
         gfx::GetDefaultSizeOfVectorIcon(views::kSubmenuArrowIcon));
-    chevron->set_can_process_events_within_subtree(false);
+    chevron->SetCanProcessEventsWithinSubtree(false);
     std::unique_ptr<PaymentRequestRowView> section = CreatePaymentSheetRow(
         listener_, section_name_, accessible_content_, std::move(content_view),
         std::move(extra_content_view), std::move(chevron),

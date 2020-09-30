@@ -121,7 +121,7 @@ const char BadgedProfilePhoto::kViewClassName[] = "BadgedProfilePhoto";
 
 BadgedProfilePhoto::BadgedProfilePhoto(BadgeType badge_type,
                                        const gfx::Image& profile_photo) {
-  set_can_process_events_within_subtree(false);
+  SetCanProcessEventsWithinSubtree(false);
 
   // Create and add image view for profile icon.
   gfx::Image profile_photo_circular = profiles::GetSizedAvatarIcon(

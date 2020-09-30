@@ -68,7 +68,7 @@ class ToggleButton::ThumbView : public InkDropHostView {
 
  protected:
   // views::View:
-  bool CanProcessEventsWithinSubtree() const override {
+  bool GetCanProcessEventsWithinSubtree() const override {
     // Make the thumb behave as part of the parent for event handling.
     return false;
   }

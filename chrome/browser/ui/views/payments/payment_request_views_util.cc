@@ -236,7 +236,7 @@ std::unique_ptr<views::ImageView> CreateAppIconView(
     float opacity) {
   std::unique_ptr<views::ImageView> icon_view =
       std::make_unique<views::ImageView>();
-  icon_view->set_can_process_events_within_subtree(false);
+  icon_view->SetCanProcessEventsWithinSubtree(false);
   if (icon_bitmap || !icon_resource_id) {
     gfx::ImageSkia img = gfx::ImageSkia::CreateFrom1xBitmap(
                              (icon_bitmap ? *icon_bitmap : SkBitmap()))
@@ -279,7 +279,7 @@ std::unique_ptr<views::View> CreateProductLogoFooterView() {
   // Adds the Chrome logo image.
   std::unique_ptr<views::ImageView> chrome_logo =
       std::make_unique<views::ImageView>();
-  chrome_logo->set_can_process_events_within_subtree(false);
+  chrome_logo->SetCanProcessEventsWithinSubtree(false);
   chrome_logo->SetImage(
       ui::ResourceBundle::GetSharedInstance()
           .GetImageNamed(content_view->GetNativeTheme()->ShouldUseDarkColors()
@@ -449,7 +449,7 @@ std::unique_ptr<views::View> CreateWarningView(const base::string16& message,
 
   if (show_icon) {
     auto warning_icon = std::make_unique<views::ImageView>();
-    warning_icon->set_can_process_events_within_subtree(false);
+    warning_icon->SetCanProcessEventsWithinSubtree(false);
     warning_icon->SetImage(gfx::CreateVectorIcon(
         vector_icons::kWarningIcon, 16,
         warning_icon->GetNativeTheme()->GetSystemColor(

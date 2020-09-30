@@ -48,8 +48,8 @@ DesktopMediaSourceView::DesktopMediaSourceView(
   AddChildView(icon_view_);
   AddChildView(image_view_);
   AddChildView(label_);
-  icon_view_->set_can_process_events_within_subtree(false);
-  image_view_->set_can_process_events_within_subtree(false);
+  icon_view_->SetCanProcessEventsWithinSubtree(false);
+  image_view_->SetCanProcessEventsWithinSubtree(false);
   SetFocusBehavior(FocusBehavior::ALWAYS);
   SetStyle(style_);
   views::FocusRing::Install(this);

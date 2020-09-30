@@ -70,13 +70,13 @@ class MoreButton : public views::Button {
 
     if (!features::IsSystemTrayMicGainSettingEnabled()) {
       auto* headset = new views::ImageView();
-      headset->set_can_process_events_within_subtree(false);
+      headset->SetCanProcessEventsWithinSubtree(false);
       headset->SetImage(
           CreateVectorIcon(vector_icons::kHeadsetIcon, icon_color));
       AddChildView(headset);
     }
     auto* more = new views::ImageView();
-    more->set_can_process_events_within_subtree(false);
+    more->SetCanProcessEventsWithinSubtree(false);
     auto icon_rotation = base::i18n::IsRTL()
                              ? SkBitmapOperations::ROTATION_270_CW
                              : SkBitmapOperations::ROTATION_90_CW;

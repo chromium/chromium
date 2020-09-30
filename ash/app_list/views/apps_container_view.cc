@@ -165,7 +165,7 @@ void AppsContainerView::UpdateControlVisibility(AppListViewState app_list_state,
   if (app_list_state == AppListViewState::kClosed)
     return;
 
-  set_can_process_events_within_subtree(
+  SetCanProcessEventsWithinSubtree(
       app_list_state == AppListViewState::kFullscreenAllApps ||
       app_list_state == AppListViewState::kPeeking);
 
@@ -578,7 +578,7 @@ void AppsContainerView::SetShowState(ShowState show_state,
 
   switch (show_state_) {
     case SHOW_APPS:
-      page_switcher_->set_can_process_events_within_subtree(true);
+      page_switcher_->SetCanProcessEventsWithinSubtree(true);
       folder_background_view_->SetVisible(false);
       apps_grid_view_->ResetForShowApps();
       app_list_folder_view_->ResetItemsGridForClose();
@@ -588,12 +588,12 @@ void AppsContainerView::SetShowState(ShowState show_state,
         app_list_folder_view_->HideViewImmediately();
       break;
     case SHOW_ACTIVE_FOLDER:
-      page_switcher_->set_can_process_events_within_subtree(false);
+      page_switcher_->SetCanProcessEventsWithinSubtree(false);
       folder_background_view_->SetVisible(true);
       app_list_folder_view_->ScheduleShowHideAnimation(true, false);
       break;
     case SHOW_ITEM_REPARENT:
-      page_switcher_->set_can_process_events_within_subtree(true);
+      page_switcher_->SetCanProcessEventsWithinSubtree(true);
       folder_background_view_->SetVisible(false);
       app_list_folder_view_->ScheduleShowHideAnimation(false, true);
       break;

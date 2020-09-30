@@ -33,7 +33,7 @@ void TabGroupHighlight::OnPaint(gfx::Canvas* canvas) {
   canvas->DrawPath(path, flags);
 }
 
-bool TabGroupHighlight::CanProcessEventsWithinSubtree() const {
+bool TabGroupHighlight::GetCanProcessEventsWithinSubtree() const {
   // Don't accept any mouse events, otherwise this will prevent tabs and group
   // headers from getting clicked.
   return false;

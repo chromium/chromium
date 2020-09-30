@@ -99,7 +99,7 @@ size_t ViewStack::size() const {
   return stack_.size();
 }
 
-bool ViewStack::CanProcessEventsWithinSubtree() const {
+bool ViewStack::GetCanProcessEventsWithinSubtree() const {
   return !slide_in_animator_->IsAnimating() &&
          !slide_out_animator_->IsAnimating();
 }

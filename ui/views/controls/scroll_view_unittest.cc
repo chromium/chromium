@@ -1093,7 +1093,7 @@ TEST_F(WidgetScrollViewTest,
   ScrollBar* scroll_bar = test_api.GetScrollBar(HORIZONTAL);
 
   // Verify scroll bar is unable to process events.
-  EXPECT_FALSE(scroll_bar->CanProcessEventsWithinSubtree());
+  EXPECT_FALSE(scroll_bar->GetCanProcessEventsWithinSubtree());
 
   ui::test::EventGenerator generator(
       GetContext(), scroll_view->GetWidget()->GetNativeWindow());
@@ -1102,7 +1102,7 @@ TEST_F(WidgetScrollViewTest,
 
   // Since the scroll bar will become visible, it should now be able to process
   // events.
-  EXPECT_TRUE(scroll_bar->CanProcessEventsWithinSubtree());
+  EXPECT_TRUE(scroll_bar->GetCanProcessEventsWithinSubtree());
 }
 
 // Test overlay scrollbar behavior when just resting fingers on the trackpad.

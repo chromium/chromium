@@ -39,7 +39,7 @@ gfx::Point GetPointInside(const views::View* view) {
 bool CanProcessEvents(const views::View* view) {
   const views::View* ancestor = view;
   while (ancestor != nullptr) {
-    if (!ancestor->CanProcessEventsWithinSubtree())
+    if (!ancestor->GetCanProcessEventsWithinSubtree())
       return false;
     ancestor = ancestor->parent();
   }

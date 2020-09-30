@@ -121,7 +121,7 @@ gfx::Size OmniboxTextView::CalculatePreferredSize() const {
   return render_text_ ? render_text_->GetStringSize() : gfx::Size();
 }
 
-bool OmniboxTextView::CanProcessEventsWithinSubtree() const {
+bool OmniboxTextView::GetCanProcessEventsWithinSubtree() const {
   return false;
 }
 

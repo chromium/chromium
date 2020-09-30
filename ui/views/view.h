@@ -966,13 +966,11 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
 
   // Returns true if this view or any of its descendants are permitted to
   // be the target of an event.
-  virtual bool CanProcessEventsWithinSubtree() const;
+  virtual bool GetCanProcessEventsWithinSubtree() const;
 
   // Sets whether this view or any of its descendants are permitted to be the
   // target of an event.
-  void set_can_process_events_within_subtree(bool can_process) {
-    can_process_events_within_subtree_ = can_process;
-  }
+  void SetCanProcessEventsWithinSubtree(bool can_process);
 
   // Returns true if the mouse cursor is over |view| and mouse events are
   // enabled.
@@ -2083,6 +2081,7 @@ VIEW_BUILDER_PROPERTY(bool, Mirrored)
 VIEW_BUILDER_PROPERTY(bool, NotifyEnterExitOnChild)
 VIEW_BUILDER_PROPERTY(gfx::Transform, Transform)
 VIEW_BUILDER_PROPERTY(bool, Visible)
+VIEW_BUILDER_PROPERTY(bool, CanProcessEventsWithinSubtree)
 END_VIEW_BUILDER(VIEWS_EXPORT, View)
 
 }  // namespace views

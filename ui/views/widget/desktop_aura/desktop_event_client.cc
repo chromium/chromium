@@ -12,7 +12,7 @@ DesktopEventClient::DesktopEventClient() = default;
 
 DesktopEventClient::~DesktopEventClient() = default;
 
-bool DesktopEventClient::CanProcessEventsWithinSubtree(
+bool DesktopEventClient::GetCanProcessEventsWithinSubtree(
     const aura::Window* window) const {
   return true;
 }

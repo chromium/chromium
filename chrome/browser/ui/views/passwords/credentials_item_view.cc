@@ -77,7 +77,7 @@ CredentialsItemView::CredentialsItemView(
   // the parent can receive the events instead.
   auto image_view = std::make_unique<CircularImageView>();
   image_view_ = image_view.get();
-  image_view_->set_can_process_events_within_subtree(false);
+  image_view_->SetCanProcessEventsWithinSubtree(false);
   gfx::Image image = ui::ResourceBundle::GetSharedInstance().GetImageNamed(
       IDR_PROFILE_AVATAR_PLACEHOLDER_LARGE);
   DCHECK(image.Width() >= kAvatarImageSize &&
@@ -142,7 +142,7 @@ void CredentialsItemView::SetStoreIndicatorIcon(
       !store_indicator_icon_view_) {
     store_indicator_icon_view_ =
         AddChildView(std::make_unique<views::ImageView>());
-    store_indicator_icon_view_->set_can_process_events_within_subtree(false);
+    store_indicator_icon_view_->SetCanProcessEventsWithinSubtree(false);
     store_indicator_icon_view_->SetImage(gfx::CreateVectorIcon(
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
         kGoogleGLogoIcon,

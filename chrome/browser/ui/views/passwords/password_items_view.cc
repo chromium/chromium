@@ -201,7 +201,7 @@ std::unique_ptr<views::Separator> CreateSeparator() {
       LocationBarBubbleDelegateView::FocusBehavior::NEVER);
   separator->SetPreferredHeight(views::style::GetLineHeight(
       views::style::CONTEXT_MENU, views::style::STYLE_SECONDARY));
-  separator->set_can_process_events_within_subtree(false);
+  separator->SetCanProcessEventsWithinSubtree(false);
   return separator;
 }
 

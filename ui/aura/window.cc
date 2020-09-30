@@ -626,7 +626,7 @@ Window* Window::GetEventHandlerForPoint(const gfx::Point& local_point) {
 
     // The client may not allow events to be processed by certain subtrees.
     client::EventClient* client = client::GetEventClient(GetRootWindow());
-    if (client && !client->CanProcessEventsWithinSubtree(child))
+    if (client && !client->GetCanProcessEventsWithinSubtree(child))
       continue;
 
     if (delegate_ && !delegate_->ShouldDescendIntoChildForEventHandling(
@@ -693,7 +693,7 @@ bool Window::CanFocus() const {
   // The client may forbid certain windows from receiving focus at a given point
   // in time.
   client::EventClient* client = client::GetEventClient(GetRootWindow());
-  if (client && !client->CanProcessEventsWithinSubtree(this))
+  if (client && !client->GetCanProcessEventsWithinSubtree(this))
     return false;
 
   return parent_->CanFocus();
@@ -1358,7 +1358,7 @@ bool Window::CanAcceptEvent(const ui::Event& event) {
   // The client may forbid certain windows from receiving events at a given
   // point in time.
   client::EventClient* client = client::GetEventClient(GetRootWindow());
-  if (client && !client->CanProcessEventsWithinSubtree(this))
+  if (client && !client->GetCanProcessEventsWithinSubtree(this))
     return false;
 
   // We need to make sure that a touch cancel event and any gesture events it

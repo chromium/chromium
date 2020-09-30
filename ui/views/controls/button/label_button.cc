@@ -44,7 +44,7 @@ LabelButton::LabelButton(PressedCallback callback,
   ink_drop_container_->SetVisible(false);
 
   image_ = AddChildView(std::make_unique<ImageView>());
-  image_->set_can_process_events_within_subtree(false);
+  image_->SetCanProcessEventsWithinSubtree(false);
 
   label_ = AddChildView(
       std::make_unique<internal::LabelButtonLabel>(text, button_context));

@@ -17,7 +17,7 @@ EventClientImpl::EventClientImpl() = default;
 
 EventClientImpl::~EventClientImpl() = default;
 
-bool EventClientImpl::CanProcessEventsWithinSubtree(
+bool EventClientImpl::GetCanProcessEventsWithinSubtree(
     const aura::Window* window) const {
   if (skip_user_session_blocked_check_)
     return true;

@@ -81,7 +81,7 @@ void MicView::InitLayout() {
 
   // Logo view container.
   auto logo_view_container = std::make_unique<views::View>();
-  logo_view_container->set_can_process_events_within_subtree(false);
+  logo_view_container->SetCanProcessEventsWithinSubtree(false);
 
   views::BoxLayout* layout_manager =
       logo_view_container->SetLayoutManager(std::make_unique<views::BoxLayout>(

@@ -46,7 +46,7 @@ View* ViewTargeterDelegate::TargetForRect(View* root, const gfx::Rect& rect) {
   View::Views children = root->GetChildrenInZOrder();
   DCHECK_EQ(root->children().size(), children.size());
   for (auto* child : base::Reversed(children)) {
-    if (!child->CanProcessEventsWithinSubtree() || !child->GetEnabled())
+    if (!child->GetCanProcessEventsWithinSubtree() || !child->GetEnabled())
       continue;
 
     // Ignore any children which are invisible or do not intersect |rect|.

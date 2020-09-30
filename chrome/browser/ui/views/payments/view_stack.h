@@ -47,7 +47,7 @@ class ViewStack : public views::BoundsAnimatorObserver,
   // views::View:
   // The children of this view must not be able to process events when the views
   // are being animated so this returns false when an animation is in progress.
-  bool CanProcessEventsWithinSubtree() const override;
+  bool GetCanProcessEventsWithinSubtree() const override;
   void RequestFocus() override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
 

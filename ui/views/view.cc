@@ -1166,13 +1166,20 @@ View* View::GetEventHandlerForRect(const gfx::Rect& rect) {
   return GetEffectiveViewTargeter()->TargetForRect(this, rect);
 }
 
-bool View::CanProcessEventsWithinSubtree() const {
+bool View::GetCanProcessEventsWithinSubtree() const {
   return can_process_events_within_subtree_;
+}
+
+void View::SetCanProcessEventsWithinSubtree(bool can_process) {
+  if (can_process_events_within_subtree_ == can_process)
+    return;
+  can_process_events_within_subtree_ = can_process;
+  OnPropertyChanged(&can_process_events_within_subtree_, kPropertyEffectsNone);
 }
 
 View* View::GetTooltipHandlerForPoint(const gfx::Point& point) {
   // TODO(tdanderson): Move this implementation into ViewTargetDelegate.
-  if (!HitTestPoint(point) || !CanProcessEventsWithinSubtree())
+  if (!HitTestPoint(point) || !GetCanProcessEventsWithinSubtree())
     return nullptr;
 
   // Walk the child Views recursively looking for the View that most
@@ -3053,6 +3060,7 @@ ADD_READONLY_PROPERTY_METADATA(gfx::Size, MinimumSize)
 ADD_PROPERTY_METADATA(bool, Mirrored)
 ADD_PROPERTY_METADATA(bool, NotifyEnterExitOnChild)
 ADD_PROPERTY_METADATA(bool, Visible)
+ADD_PROPERTY_METADATA(bool, CanProcessEventsWithinSubtree)
 END_METADATA
 
 }  // namespace views

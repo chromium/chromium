@@ -25,7 +25,7 @@ class IconWrapper : public views::View {
     SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kHorizontal));
     // Make sure hovering over the icon also hovers the |HoverButton|.
-    set_can_process_events_within_subtree(false);
+    SetCanProcessEventsWithinSubtree(false);
     // Don't cover |icon| when the ink drops are being painted.
     SetPaintToLayer();
     layer()->SetFillsBoundsOpaquely(false);

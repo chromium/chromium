@@ -214,7 +214,7 @@ class AppListItemView::AppNotificationIndicatorView : public views::View {
 class AppListItemView::IconImageView : public views::ImageView {
  public:
   IconImageView() {
-    set_can_process_events_within_subtree(false);
+    SetCanProcessEventsWithinSubtree(false);
     SetVerticalAlignment(views::ImageView::Alignment::kLeading);
   }
   ~IconImageView() override = default;
@@ -328,7 +328,7 @@ AppListItemView::AppListItemView(AppsGridView* apps_grid_view,
     // To display shadow for icon while not affecting the icon's bounds, icon
     // shadow is behind the icon.
     auto icon_shadow = std::make_unique<views::ImageView>();
-    icon_shadow->set_can_process_events_within_subtree(false);
+    icon_shadow->SetCanProcessEventsWithinSubtree(false);
     icon_shadow->SetVerticalAlignment(views::ImageView::Alignment::kLeading);
     icon_shadow_ = AddChildView(std::move(icon_shadow));
   }

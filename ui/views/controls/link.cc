@@ -65,10 +65,10 @@ gfx::NativeCursor Link::GetCursor(const ui::MouseEvent& event) {
   return GetNativeHandCursor();
 }
 
-bool Link::CanProcessEventsWithinSubtree() const {
+bool Link::GetCanProcessEventsWithinSubtree() const {
   // Links need to be able to accept events (e.g., clicking) even though
   // in general Labels do not.
-  return View::CanProcessEventsWithinSubtree();
+  return View::GetCanProcessEventsWithinSubtree();
 }
 
 bool Link::OnMousePressed(const ui::MouseEvent& event) {

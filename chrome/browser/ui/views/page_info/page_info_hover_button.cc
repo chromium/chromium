@@ -46,7 +46,7 @@ PageInfoHoverButton::PageInfoHoverButton(views::ButtonListener* listener,
                      views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
 
   // Make sure hovering over the icon also hovers the |PageInfoHoverButton|.
-  icon->set_can_process_events_within_subtree(false);
+  icon->SetCanProcessEventsWithinSubtree(false);
   // Don't cover |icon_view| when the ink drops are being painted.
   icon->SetPaintToLayer();
   icon->layer()->SetFillsBoundsOpaquely(false);
@@ -73,7 +73,7 @@ PageInfoHoverButton::PageInfoHoverButton(views::ButtonListener* listener,
 
   // Hover the whole button when hovering |title_|. This is OK because |title_|
   // will never have a link in it.
-  title_wrapper->set_can_process_events_within_subtree(false);
+  title_wrapper->SetCanProcessEventsWithinSubtree(false);
   grid_layout->AddView(std::move(title_wrapper));
 
   if (!subtitle_text.empty()) {

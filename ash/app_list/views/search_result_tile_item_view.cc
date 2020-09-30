@@ -86,12 +86,12 @@ SearchResultTileItemView::SearchResultTileItemView(
 
   // Prevent the icon view from interfering with our mouse events.
   icon_ = new views::ImageView;
-  icon_->set_can_process_events_within_subtree(false);
+  icon_->SetCanProcessEventsWithinSubtree(false);
   icon_->SetVerticalAlignment(views::ImageView::Alignment::kLeading);
   AddChildView(icon_);
 
   badge_ = new views::ImageView;
-  badge_->set_can_process_events_within_subtree(false);
+  badge_->SetCanProcessEventsWithinSubtree(false);
   badge_->SetVerticalAlignment(views::ImageView::Alignment::kLeading);
   badge_->SetVisible(false);
   AddChildView(badge_);
@@ -114,7 +114,7 @@ SearchResultTileItemView::SearchResultTileItemView(
   AddChildView(rating_);
 
   rating_star_ = new views::ImageView;
-  rating_star_->set_can_process_events_within_subtree(false);
+  rating_star_->SetCanProcessEventsWithinSubtree(false);
   rating_star_->SetVerticalAlignment(views::ImageView::Alignment::kLeading);
   rating_star_->SetImage(gfx::CreateVectorIcon(
       kBadgeRatingIcon, kSearchRatingStarSize,

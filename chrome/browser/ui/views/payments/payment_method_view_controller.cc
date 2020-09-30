@@ -112,7 +112,7 @@ class PaymentMethodListItem : public PaymentRequestItemList::Item {
       base::string16* accessible_content) override {
     DCHECK(accessible_content);
     auto card_info_container = std::make_unique<views::View>();
-    card_info_container->set_can_process_events_within_subtree(false);
+    card_info_container->SetCanProcessEventsWithinSubtree(false);
 
     auto box_layout = std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kVertical,

@@ -64,7 +64,7 @@ void WindowMiniView::SetBackdropVisibility(bool visible) {
     layer->SetRoundedCornerRadius(
         gfx::RoundedCornersF(kBackdropBorderRoundingDp));
     layer->SetIsFastRoundedCorner(true);
-    backdrop_view_->set_can_process_events_within_subtree(false);
+    backdrop_view_->SetCanProcessEventsWithinSubtree(false);
     Layout();
   }
   backdrop_view_->SetVisible(visible);

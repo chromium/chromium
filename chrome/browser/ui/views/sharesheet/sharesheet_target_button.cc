@@ -48,7 +48,7 @@ SharesheetTargetButton::SharesheetTargetButton(
       views::BoxLayout::CrossAxisAlignment::kCenter);
 
   auto* image = AddChildView(std::make_unique<views::ImageView>());
-  image->set_can_process_events_within_subtree(false);
+  image->SetCanProcessEventsWithinSubtree(false);
 
   if (!icon->isNull()) {
     image->SetImage(icon);

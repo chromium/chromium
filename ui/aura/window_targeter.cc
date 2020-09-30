@@ -205,7 +205,7 @@ Window* WindowTargeter::FindTargetForKeyEvent(Window* window) {
 
   client::EventClient* event_client = client::GetEventClient(root_window);
   if (event_client &&
-      !event_client->CanProcessEventsWithinSubtree(focused_window)) {
+      !event_client->GetCanProcessEventsWithinSubtree(focused_window)) {
     focus_client->FocusWindow(nullptr);
     return nullptr;
   }
@@ -257,7 +257,7 @@ bool WindowTargeter::SubtreeCanAcceptEvent(
     return false;
   }
   client::EventClient* client = client::GetEventClient(window->GetRootWindow());
-  if (client && !client->CanProcessEventsWithinSubtree(window))
+  if (client && !client->GetCanProcessEventsWithinSubtree(window))
     return false;
 
   Window* parent = window->parent();

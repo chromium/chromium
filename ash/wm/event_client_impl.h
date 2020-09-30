@@ -22,7 +22,8 @@ class ASH_EXPORT EventClientImpl : public aura::client::EventClient {
   friend class ScopedSkipUserSessionBlockedCheck;
 
   // Overridden from aura::client::EventClient:
-  bool CanProcessEventsWithinSubtree(const aura::Window* window) const override;
+  bool GetCanProcessEventsWithinSubtree(
+      const aura::Window* window) const override;
   ui::EventTarget* GetToplevelEventTarget() override;
 
   // This should only be used by ScopedSkipUserSessionBlockedCheck for blocks of
@@ -34,7 +35,7 @@ class ASH_EXPORT EventClientImpl : public aura::client::EventClient {
   }
 
   // Flag indicating whether the user sesion checks in
-  // CanProcessEventsWithinSubtree should be skipped.
+  // GetCanProcessEventsWithinSubtree should be skipped.
   bool skip_user_session_blocked_check_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(EventClientImpl);

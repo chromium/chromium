@@ -223,7 +223,7 @@ class ShelfAppButton::AppStatusIndicatorView
  public:
   AppStatusIndicatorView() : show_attention_(false), active_(false) {
     // Make sure the events reach the parent view for handling.
-    set_can_process_events_within_subtree(false);
+    SetCanProcessEventsWithinSubtree(false);
   }
 
   ~AppStatusIndicatorView() override {
@@ -372,7 +372,7 @@ ShelfAppButton::ShelfAppButton(ShelfView* shelf_view,
   icon_view_->SetHorizontalAlignment(views::ImageView::Alignment::kCenter);
   icon_view_->SetVerticalAlignment(views::ImageView::Alignment::kLeading);
   // Do not make this interactive, so that events are sent to ShelfView.
-  icon_view_->set_can_process_events_within_subtree(false);
+  icon_view_->SetCanProcessEventsWithinSubtree(false);
 
   indicator_->SetPaintToLayer();
   indicator_->layer()->SetFillsBoundsOpaquely(false);

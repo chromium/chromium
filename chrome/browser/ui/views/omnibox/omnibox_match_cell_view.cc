@@ -78,7 +78,7 @@ class RoundedCornerImageView : public views::ImageView {
   RoundedCornerImageView() = default;
 
   // views::ImageView:
-  bool CanProcessEventsWithinSubtree() const override { return false; }
+  bool GetCanProcessEventsWithinSubtree() const override { return false; }
 
  protected:
   // views::ImageView:
@@ -285,7 +285,7 @@ void OmniboxMatchCellView::Layout() {
   }
 }
 
-bool OmniboxMatchCellView::CanProcessEventsWithinSubtree() const {
+bool OmniboxMatchCellView::GetCanProcessEventsWithinSubtree() const {
   return false;
 }
 

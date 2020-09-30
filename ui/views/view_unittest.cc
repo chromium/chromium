@@ -223,21 +223,12 @@ class TestView : public View {
     received_mouse_exit_ = false;
     did_paint_ = false;
     accelerator_count_map_.clear();
-    can_process_events_within_subtree_ = true;
   }
 
   // Exposed as public for testing.
   void DoFocus() { views::View::Focus(); }
 
   void DoBlur() { views::View::Blur(); }
-
-  void set_can_process_events_within_subtree(bool can_process) {
-    can_process_events_within_subtree_ = can_process;
-  }
-
-  bool CanProcessEventsWithinSubtree() const override {
-    return can_process_events_within_subtree_;
-  }
 
   void Layout() override {
     did_layout_ = true;
@@ -282,9 +273,6 @@ class TestView : public View {
 
   // Native theme.
   const ui::NativeTheme* native_theme_ = nullptr;
-
-  // Value to return from CanProcessEventsWithinSubtree().
-  bool can_process_events_within_subtree_ = true;
 
   // Accessibility events
   ax::mojom::Event last_a11y_event_;
@@ -1685,8 +1673,8 @@ TEST_F(ViewTest, GetEventHandlerForRect) {
 
 // Tests that GetEventHandlerForRect() and GetTooltipHandlerForPoint() behave
 // as expected when different views in the view hierarchy return false
-// when CanProcessEventsWithinSubtree() is called.
-TEST_F(ViewTest, CanProcessEventsWithinSubtree) {
+// when GetCanProcessEventsWithinSubtree() is called.
+TEST_F(ViewTest, GetCanProcessEventsWithinSubtree) {
   Widget* widget = new Widget;
   Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_POPUP);
   widget->Init(std::move(params));
@@ -1724,7 +1712,7 @@ TEST_F(ViewTest, CanProcessEventsWithinSubtree) {
   gfx::Rect rect_in_v(50, 50, 25, 30);
   gfx::Point point_in_v(rect_in_v.origin());
 
-  // When all three views return true when CanProcessEventsWithinSubtree()
+  // When all three views return true when GetCanProcessEventsWithinSubtree()
   // is called, targeting should behave as expected.
 
   View* result_view = root_view->GetEventHandlerForRect(rect_in_v_grandchild);
@@ -1748,10 +1736,10 @@ TEST_F(ViewTest, CanProcessEventsWithinSubtree) {
   EXPECT_EQ(v, result_view);
   result_view = nullptr;
 
-  // When |v_grandchild| returns false when CanProcessEventsWithinSubtree()
+  // When |v_grandchild| returns false when GetCanProcessEventsWithinSubtree()
   // is called, then |v_grandchild| cannot be returned as a target.
 
-  v_grandchild->set_can_process_events_within_subtree(false);
+  v_grandchild->SetCanProcessEventsWithinSubtree(false);
 
   result_view = root_view->GetEventHandlerForRect(rect_in_v_grandchild);
   EXPECT_EQ(v_child, result_view);
@@ -1773,7 +1761,7 @@ TEST_F(ViewTest, CanProcessEventsWithinSubtree) {
   result_view = root_view->GetTooltipHandlerForPoint(point_in_v);
   EXPECT_EQ(v, result_view);
 
-  // When |v_grandchild| returns false when CanProcessEventsWithinSubtree()
+  // When |v_grandchild| returns false when GetCanProcessEventsWithinSubtree()
   // is called, then NULL should be returned as a target if we call
   // GetTooltipHandlerForPoint() with |v_grandchild| as the root of the
   // views tree. Note that the location must be in the coordinate space
@@ -1784,12 +1772,12 @@ TEST_F(ViewTest, CanProcessEventsWithinSubtree) {
   EXPECT_EQ(nullptr, result_view);
   result_view = nullptr;
 
-  // When |v_child| returns false when CanProcessEventsWithinSubtree()
+  // When |v_child| returns false when GetCanProcessEventsWithinSubtree()
   // is called, then neither |v_child| nor |v_grandchild| can be returned
   // as a target (|v| should be returned as the target for each case).
 
   v_grandchild->Reset();
-  v_child->set_can_process_events_within_subtree(false);
+  v_child->SetCanProcessEventsWithinSubtree(false);
 
   result_view = root_view->GetEventHandlerForRect(rect_in_v_grandchild);
   EXPECT_EQ(v, result_view);
@@ -1812,12 +1800,12 @@ TEST_F(ViewTest, CanProcessEventsWithinSubtree) {
   EXPECT_EQ(v, result_view);
   result_view = nullptr;
 
-  // When |v| returns false when CanProcessEventsWithinSubtree()
+  // When |v| returns false when GetCanProcessEventsWithinSubtree()
   // is called, then none of |v|, |v_child|, and |v_grandchild| can be returned
   // as a target (|root_view| should be returned as the target for each case).
 
   v_child->Reset();
-  v->set_can_process_events_within_subtree(false);
+  v->SetCanProcessEventsWithinSubtree(false);
 
   result_view = root_view->GetEventHandlerForRect(rect_in_v_grandchild);
   EXPECT_EQ(root_view, result_view);

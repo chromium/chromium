@@ -58,9 +58,7 @@ class GestureScrollableTextfield : public views::Textfield {
     Textfield::OnGestureEvent(event);
   }
 
-  void OnEnabledChanged() {
-    set_can_process_events_within_subtree(GetEnabled());
-  }
+  void OnEnabledChanged() { SetCanProcessEventsWithinSubtree(GetEnabled()); }
 
   views::ScrollView* const scroll_parent_;
   views::PropertyChangedSubscription on_enabled_subscription_;

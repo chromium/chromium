@@ -160,7 +160,7 @@ views::View* CreateUserAvatarView(int user_index) {
                                  IDS_ASH_STATUS_TRAY_GUEST_LABEL);
   } else {
     auto* image_view = new tray::RoundedImageView(kTrayItemSize / 2);
-    image_view->set_can_process_events_within_subtree(false);
+    image_view->SetCanProcessEventsWithinSubtree(false);
     image_view->SetImage(user_session->user_info.avatar.image,
                          gfx::Size(kTrayItemSize, kTrayItemSize));
     return image_view;
@@ -214,7 +214,7 @@ UserItemButton::UserItemButton(int user_index,
   AddChildView(CreateUserAvatarView(user_index));
 
   views::View* vertical_labels = new views::View;
-  vertical_labels->set_can_process_events_within_subtree(false);
+  vertical_labels->SetCanProcessEventsWithinSubtree(false);
   auto* vertical_layout =
       vertical_labels->SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kVertical));

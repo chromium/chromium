@@ -321,7 +321,7 @@ class TestEventClient : public client::EventClient {
 
  private:
   // Overridden from client::EventClient:
-  bool CanProcessEventsWithinSubtree(const Window* window) const override {
+  bool GetCanProcessEventsWithinSubtree(const Window* window) const override {
     return lock_ ? window->Contains(GetLockWindow()) ||
                        GetLockWindow()->Contains(window)
                  : true;
@@ -337,7 +337,7 @@ class TestEventClient : public client::EventClient {
 
 }  // namespace
 
-TEST_F(WindowEventDispatcherTest, CanProcessEventsWithinSubtree) {
+TEST_F(WindowEventDispatcherTest, GetCanProcessEventsWithinSubtree) {
   TestEventClient client(root_window());
   test::TestWindowDelegate d;
 

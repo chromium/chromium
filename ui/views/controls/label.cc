@@ -572,7 +572,7 @@ View* Label::GetTooltipHandlerForPoint(const gfx::Point& point) {
   return HitTestPoint(point) ? this : nullptr;
 }
 
-bool Label::CanProcessEventsWithinSubtree() const {
+bool Label::GetCanProcessEventsWithinSubtree() const {
   return !!GetRenderTextForSelectionController();
 }
 
@@ -992,7 +992,7 @@ void Label::Init(const base::string16& text,
   SetText(text);
 
   // Only selectable labels will get requests to show the context menu, due to
-  // CanProcessEventsWithinSubtree().
+  // GetCanProcessEventsWithinSubtree().
   BuildContextMenuContents();
   set_context_menu_controller(this);
 

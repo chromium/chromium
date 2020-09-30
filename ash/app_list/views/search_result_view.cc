@@ -72,10 +72,10 @@ SearchResultView::SearchResultView(SearchResultListView* list_view,
       AddChildView(std::make_unique<SearchResultActionsView>(this));
   set_actions_view(actions_view);
 
-  icon_->set_can_process_events_within_subtree(false);
-  display_icon_->set_can_process_events_within_subtree(false);
+  icon_->SetCanProcessEventsWithinSubtree(false);
+  display_icon_->SetCanProcessEventsWithinSubtree(false);
   SetDisplayIcon(gfx::ImageSkia());
-  badge_icon_->set_can_process_events_within_subtree(false);
+  badge_icon_->SetCanProcessEventsWithinSubtree(false);
 
   set_context_menu_controller(this);
   SetNotifyEnterExitOnChild(true);

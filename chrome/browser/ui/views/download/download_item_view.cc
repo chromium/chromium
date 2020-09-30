@@ -264,7 +264,7 @@ DownloadItemView::DownloadItemView(DownloadUIModel::DownloadUIModelPtr model,
   file_name_label_->GetViewAccessibility().OverrideIsIgnored(true);
   const base::string16 filename = ElidedFilename(*file_name_label_);
   file_name_label_->SetText(filename);
-  file_name_label_->set_can_process_events_within_subtree(false);
+  file_name_label_->SetCanProcessEventsWithinSubtree(false);
   StyleFilename(*file_name_label_, 0, filename.length());
 
   status_label_ = AddChildView(std::make_unique<views::Label>(
@@ -273,11 +273,11 @@ DownloadItemView::DownloadItemView(DownloadUIModel::DownloadUIModelPtr model,
 
   warning_label_ = AddChildView(std::make_unique<views::StyledLabel>());
   warning_label_->SetTextContext(CONTEXT_DOWNLOAD_SHELF);
-  warning_label_->set_can_process_events_within_subtree(false);
+  warning_label_->SetCanProcessEventsWithinSubtree(false);
 
   deep_scanning_label_ = AddChildView(std::make_unique<views::StyledLabel>());
   deep_scanning_label_->SetTextContext(CONTEXT_DOWNLOAD_SHELF);
-  deep_scanning_label_->set_can_process_events_within_subtree(false);
+  deep_scanning_label_->SetCanProcessEventsWithinSubtree(false);
 
   open_now_button_ = AddChildView(std::make_unique<views::MdTextButton>(
       base::BindRepeating(&DownloadItemView::OpenDownloadDuringAsyncScanning,

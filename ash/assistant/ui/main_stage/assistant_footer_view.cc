@@ -78,7 +78,7 @@ void AssistantFooterView::InitLayout() {
   // Suggestion container.
   suggestion_container_ =
       AddChildView(std::make_unique<SuggestionContainerView>(delegate_));
-  suggestion_container_->set_can_process_events_within_subtree(consent_given);
+  suggestion_container_->SetCanProcessEventsWithinSubtree(consent_given);
 
   // Suggestion container will be animated on its own layer.
   suggestion_container_->SetPaintToLayer();
@@ -89,7 +89,7 @@ void AssistantFooterView::InitLayout() {
 
   // Opt in view.
   opt_in_view_ = AddChildView(std::make_unique<AssistantOptInView>(delegate_));
-  opt_in_view_->set_can_process_events_within_subtree(!consent_given);
+  opt_in_view_->SetCanProcessEventsWithinSubtree(!consent_given);
 
   // Opt in view will be animated on its own layer.
   opt_in_view_->SetPaintToLayer();
@@ -146,8 +146,8 @@ void AssistantFooterView::OnAssistantConsentStatusChanged(int consent_status) {
 void AssistantFooterView::OnAnimationStarted(
     const ui::CallbackLayerAnimationObserver& observer) {
   // Our views should not process events while animating.
-  suggestion_container_->set_can_process_events_within_subtree(false);
-  opt_in_view_->set_can_process_events_within_subtree(false);
+  suggestion_container_->SetCanProcessEventsWithinSubtree(false);
+  opt_in_view_->SetCanProcessEventsWithinSubtree(false);
 }
 
 bool AssistantFooterView::OnAnimationEnded(
@@ -158,9 +158,9 @@ bool AssistantFooterView::OnAnimationEnded(
       chromeos::assistant::prefs::ConsentStatus::kActivityControlAccepted;
 
   // Only the view relevant to our consent state should process events.
-  suggestion_container_->set_can_process_events_within_subtree(consent_given);
+  suggestion_container_->SetCanProcessEventsWithinSubtree(consent_given);
   suggestion_container_->SetVisible(consent_given);
-  opt_in_view_->set_can_process_events_within_subtree(!consent_given);
+  opt_in_view_->SetCanProcessEventsWithinSubtree(!consent_given);
   opt_in_view_->SetVisible(!consent_given);
 
   // Return false to prevent the observer from destroying itself.

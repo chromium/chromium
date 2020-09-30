@@ -24,7 +24,7 @@ constexpr gfx::Insets kQuickActionsViewPadding(16, 4);
 void ConfigureLabel(views::Label* label, bool is_primary) {
   label->SetAutoColorReadabilityEnabled(false);
   label->SetSubpixelRenderingEnabled(false);
-  label->set_can_process_events_within_subtree(false);
+  label->SetCanProcessEventsWithinSubtree(false);
 
   auto type = is_primary
                   ? AshColorProvider::ContentLayerType::kTextColorPrimary

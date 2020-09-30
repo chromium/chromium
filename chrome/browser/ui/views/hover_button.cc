@@ -46,7 +46,7 @@ class IconWrapper : public views::View {
     SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kHorizontal));
     // Make sure hovering over the icon also hovers the |HoverButton|.
-    set_can_process_events_within_subtree(false);
+    SetCanProcessEventsWithinSubtree(false);
     // Don't cover |icon| when the ink drops are being painted.
     // |MenuButton| already does this with its own image.
     SetPaintToLayer();
@@ -140,7 +140,7 @@ HoverButton::HoverButton(views::ButtonListener* button_listener,
   title_->SizeToFit(0);
   // Hover the whole button when hovering |title_|. This is OK because |title_|
   // will never have a link in it.
-  title_->set_can_process_events_within_subtree(false);
+  title_->SetCanProcessEventsWithinSubtree(false);
 
   if (!subtitle.empty()) {
     auto subtitle_label = std::make_unique<views::Label>(
@@ -157,7 +157,7 @@ HoverButton::HoverButton(views::ButtonListener* button_listener,
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
                                views::MaximumFlexSizeRule::kUnbounded));
-  label_wrapper->set_can_process_events_within_subtree(false);
+  label_wrapper->SetCanProcessEventsWithinSubtree(false);
   label_wrapper->SetProperty(views::kMarginsKey,
                              gfx::Insets(vertical_spacing, 0));
   label_wrapper_ = AddChildView(std::move(label_wrapper));
@@ -166,7 +166,7 @@ HoverButton::HoverButton(views::ButtonListener* button_listener,
   observed_label_.Add(label_wrapper_);
 
   if (secondary_view) {
-    secondary_view->set_can_process_events_within_subtree(
+    secondary_view->SetCanProcessEventsWithinSubtree(
         secondary_view_can_process_events);
     // |secondary_view| needs a layer otherwise it's obscured by the layer
     // used in drawing ink drops.

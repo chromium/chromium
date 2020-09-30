@@ -99,7 +99,7 @@ class ImageWithBadge : public views::View {
 };
 
 ImageWithBadge::ImageWithBadge(const gfx::ImageSkia& main_image) {
-  set_can_process_events_within_subtree(false);
+  SetCanProcessEventsWithinSubtree(false);
   auto main_view = std::make_unique<ImageViewWithPlaceForBadge>();
   main_view->SetImage(main_image);
   main_view->SizeToPreferredSize();
@@ -108,7 +108,7 @@ ImageWithBadge::ImageWithBadge(const gfx::ImageSkia& main_image) {
 }
 
 ImageWithBadge::ImageWithBadge(const gfx::VectorIcon& main_image) {
-  set_can_process_events_within_subtree(false);
+  SetCanProcessEventsWithinSubtree(false);
   auto main_view = std::make_unique<VectorIconView>(main_image, kImageSize);
   main_view->SizeToPreferredSize();
   AddChildView(std::move(main_view));

@@ -36,7 +36,7 @@ constexpr int kPlusIconLargestSize = 72;
 class DropTargetView::PlusIconView : public views::ImageView {
  public:
   PlusIconView() {
-    set_can_process_events_within_subtree(false);
+    SetCanProcessEventsWithinSubtree(false);
     SetVerticalAlignment(views::ImageView::Alignment::kCenter);
     SetHorizontalAlignment(views::ImageView::Alignment::kCenter);
   }

@@ -273,7 +273,7 @@ class VIEWS_EXPORT Label : public View,
   gfx::Size GetMinimumSize() const override;
   int GetHeightForWidth(int w) const override;
   View* GetTooltipHandlerForPoint(const gfx::Point& point) override;
-  bool CanProcessEventsWithinSubtree() const override;
+  bool GetCanProcessEventsWithinSubtree() const override;
   WordLookupClient* GetWordLookupClient() override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   base::string16 GetTooltipText(const gfx::Point& p) const override;

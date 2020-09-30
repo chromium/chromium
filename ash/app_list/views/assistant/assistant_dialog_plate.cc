@@ -4,6 +4,8 @@
 
 #include "ash/app_list/views/assistant/assistant_dialog_plate.h"
 
+#include <utility>
+
 #include "ash/assistant/model/assistant_interaction_model.h"
 #include "ash/assistant/model/assistant_ui_model.h"
 #include "ash/assistant/ui/assistant_ui_constants.h"
@@ -476,14 +478,14 @@ void AssistantDialogPlate::UpdateKeyboardVisibility() {
 
 void AssistantDialogPlate::OnAnimationStarted(
     const ui::CallbackLayerAnimationObserver& observer) {
-  keyboard_layout_container_->set_can_process_events_within_subtree(false);
-  voice_layout_container_->set_can_process_events_within_subtree(false);
+  keyboard_layout_container_->SetCanProcessEventsWithinSubtree(false);
+  voice_layout_container_->SetCanProcessEventsWithinSubtree(false);
 }
 
 bool AssistantDialogPlate::OnAnimationEnded(
     const ui::CallbackLayerAnimationObserver& observer) {
-  keyboard_layout_container_->set_can_process_events_within_subtree(true);
-  voice_layout_container_->set_can_process_events_within_subtree(true);
+  keyboard_layout_container_->SetCanProcessEventsWithinSubtree(true);
+  voice_layout_container_->SetCanProcessEventsWithinSubtree(true);
 
   UpdateModalityVisibility();
   RequestFocus();

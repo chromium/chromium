@@ -170,8 +170,8 @@ class BookmarkButtonBase : public views::LabelButton {
   }
 
   View* GetTooltipHandlerForPoint(const gfx::Point& point) override {
-    return HitTestPoint(point) && CanProcessEventsWithinSubtree() ? this
-                                                                  : nullptr;
+    return HitTestPoint(point) && GetCanProcessEventsWithinSubtree() ? this
+                                                                     : nullptr;
   }
 
   bool IsTriggerableEvent(const ui::Event& e) override {
