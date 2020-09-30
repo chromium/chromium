@@ -658,7 +658,7 @@ const base::Feature MEDIA_EXPORT kMediaFoundationVP8Decoding{
 // Controls whether the next version mac capturer, including power improvements,
 // zero copy operation, and other improvements, is active.
 const base::Feature MEDIA_EXPORT kAVFoundationCaptureV2{
-    "AVFoundationCaptureV2", base::FEATURE_DISABLED_BY_DEFAULT};
+    "AVFoundationCaptureV2", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Controls whether or not the V2 capturer exports IOSurfaces for zero-copy.
 // This feature only has any effect if kAVFoundationCaptureV2 is also enabled.
