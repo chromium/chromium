@@ -193,6 +193,8 @@ class PLATFORM_EXPORT FrameWidget
   // Converts from Blink coordinate (ie. Viewport/Physical pixels) space to
   // DIPs.
   virtual gfx::RectF BlinkSpaceToDIPs(const gfx::RectF&) = 0;
+  virtual gfx::Rect BlinkSpaceToEnclosedDIPs(const gfx::Rect&) = 0;
+  virtual gfx::Size BlinkSpaceToFlooredDIPs(const gfx::Size& size) = 0;
 
   // Converts from DIPs to Blink coordinate space (ie. Viewport/Physical
   // pixels).

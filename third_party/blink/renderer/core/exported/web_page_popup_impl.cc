@@ -106,12 +106,11 @@ class PagePopupChromeClient final : public EmptyChromeClient {
 
   IntRect ViewportToScreen(const IntRect& rect,
                            const LocalFrameView*) const override {
-    WebRect rect_in_screen(rect);
     gfx::Rect window_rect = popup_->WindowRectInScreen();
-    popup_->WidgetClient()->ConvertViewportToWindow(&rect_in_screen);
-    rect_in_screen.x += window_rect.x();
-    rect_in_screen.y += window_rect.y();
-    return rect_in_screen;
+    gfx::Rect rect_in_dips =
+        popup_->widget_base_->BlinkSpaceToEnclosedDIPs(gfx::Rect(rect));
+    rect_in_dips.Offset(window_rect.x(), window_rect.y());
+    return IntRect(rect_in_dips);
   }
 
   float WindowToViewportScalar(LocalFrame*,
@@ -616,17 +615,14 @@ void WebPagePopupImpl::UpdateLifecycle(WebLifecycleUpdate requested_update,
 }
 
 void WebPagePopupImpl::Resize(const WebSize& new_size_in_viewport) {
-  WebRect new_size(0, 0, new_size_in_viewport.width,
-                   new_size_in_viewport.height);
-  WidgetClient()->ConvertViewportToWindow(&new_size);
-
-  gfx::Rect window_rect = WindowRectInScreen();
+  gfx::Size new_size_in_dips =
+      widget_base_->BlinkSpaceToFlooredDIPs(gfx::Size(new_size_in_viewport));
+  gfx::Rect window_rect_in_dips = WindowRectInScreen();
 
   // TODO(bokan): We should only call into this if the bounds actually changed
   // but this reveals a bug in Aura. crbug.com/633140.
-  window_rect.set_width(new_size.width);
-  window_rect.set_height(new_size.height);
-  SetWindowRect(IntRect(window_rect));
+  window_rect_in_dips.set_size(new_size_in_dips);
+  SetWindowRect(IntRect(window_rect_in_dips));
 
   if (page_) {
     MainFrame().View()->Resize(new_size_in_viewport);
@@ -752,11 +748,10 @@ Element* WebPagePopupImpl::FocusedElement() const {
 }
 
 bool WebPagePopupImpl::IsViewportPointInWindow(int x, int y) {
-  WebRect point_in_window(x, y, 0, 0);
-  WidgetClient()->ConvertViewportToWindow(&point_in_window);
+  gfx::Point point_in_dips =
+      widget_base_->BlinkSpaceToFlooredDIPs(gfx::Point(x, y));
   gfx::Rect window_rect = WindowRectInScreen();
-  return IntRect(0, 0, window_rect.width(), window_rect.height())
-      .Contains(IntPoint(point_in_window.x, point_in_window.y));
+  return gfx::Rect(window_rect.size()).Contains(point_in_dips);
 }
 
 void WebPagePopupImpl::CheckScreenPointInOwnerWindowAndCount(

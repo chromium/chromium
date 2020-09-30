@@ -434,29 +434,15 @@ void ChromeClientImpl::ScheduleAnimation(const LocalFrameView* frame_view,
 IntRect ChromeClientImpl::ViewportToScreen(
     const IntRect& rect_in_viewport,
     const LocalFrameView* frame_view) const {
-  WebRect screen_rect(rect_in_viewport);
-
   LocalFrame& frame = frame_view->GetFrame();
 
-  WebWidgetClient* client = frame.GetWidgetForLocalRoot()->Client();
-  // TODO(dcheng): Is this null check needed?
-  if (client) {
-    client->ConvertViewportToWindow(&screen_rect);
-    gfx::Rect view_rect = frame.GetWidgetForLocalRoot()->ViewRect();
+  gfx::Rect screen_rect =
+      frame.GetWidgetForLocalRoot()->BlinkSpaceToEnclosedDIPs(
+          gfx::Rect(rect_in_viewport));
+  gfx::Rect view_rect = frame.GetWidgetForLocalRoot()->ViewRect();
 
-    base::CheckedNumeric<int> screen_rect_x = screen_rect.x;
-    base::CheckedNumeric<int> screen_rect_y = screen_rect.y;
-
-    screen_rect_x += view_rect.x();
-    screen_rect_y += view_rect.y();
-
-    screen_rect.x =
-        screen_rect_x.ValueOrDefault(std::numeric_limits<int>::max());
-    screen_rect.y =
-        screen_rect_y.ValueOrDefault(std::numeric_limits<int>::max());
-  }
-
-  return screen_rect;
+  screen_rect.Offset(view_rect.x(), view_rect.y());
+  return IntRect(screen_rect);
 }
 
 float ChromeClientImpl::WindowToViewportScalar(LocalFrame* frame,

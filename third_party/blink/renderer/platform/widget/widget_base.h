@@ -278,7 +278,7 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
   // DIPs.
   gfx::PointF BlinkSpaceToDIPs(const gfx::PointF& point);
   gfx::Point BlinkSpaceToFlooredDIPs(const gfx::Point& point);
-  gfx::Size BlinkSpaceToCeiledDIPs(const gfx::Size& size);
+  gfx::Size BlinkSpaceToFlooredDIPs(const gfx::Size& size);
   gfx::Rect BlinkSpaceToEnclosedDIPs(const gfx::Rect& rect);
   gfx::RectF BlinkSpaceToDIPs(const gfx::RectF& rectF);
 

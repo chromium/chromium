@@ -774,7 +774,7 @@ class CORE_EXPORT WebViewImpl final : public WebView,
 
   // Cache the preferred size of the page in order to prevent sending the IPC
   // when layout() recomputes but doesn't actually change sizes.
-  WebSize preferred_size_;
+  gfx::Size preferred_size_in_dips_;
 
   Persistent<EventListener> popup_mouse_wheel_event_listener_;
 

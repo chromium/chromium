@@ -1307,11 +1307,11 @@ float WidgetBase::DIPsToBlinkSpace(float scalar) {
   return client_->GetOriginalScreenInfo().device_scale_factor * scalar;
 }
 
-gfx::Size WidgetBase::BlinkSpaceToCeiledDIPs(const gfx::Size& size) {
+gfx::Size WidgetBase::BlinkSpaceToFlooredDIPs(const gfx::Size& size) {
   if (!use_zoom_for_dsf_)
     return size;
   float reverse = 1 / client_->GetOriginalScreenInfo().device_scale_factor;
-  return gfx::ScaleToCeiledSize(size, reverse);
+  return gfx::ScaleToFlooredSize(size, reverse);
 }
 
 gfx::Rect WidgetBase::BlinkSpaceToEnclosedDIPs(const gfx::Rect& rect) {

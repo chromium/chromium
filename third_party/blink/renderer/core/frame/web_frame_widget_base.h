@@ -229,6 +229,8 @@ class CORE_EXPORT WebFrameWidgetBase
   void SelectWordAroundCaret(SelectWordAroundCaretCallback callback) override;
 #endif
   gfx::RectF BlinkSpaceToDIPs(const gfx::RectF& rect) override;
+  gfx::Rect BlinkSpaceToEnclosedDIPs(const gfx::Rect& rect) override;
+  gfx::Size BlinkSpaceToFlooredDIPs(const gfx::Size& size) override;
   gfx::RectF DIPsToBlinkSpace(const gfx::RectF& rect) override;
   gfx::PointF DIPsToBlinkSpace(const gfx::PointF& point) override;
   gfx::Point DIPsToRoundedBlinkSpace(const gfx::Point& point) override;

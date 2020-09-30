@@ -218,7 +218,7 @@ WebString WebViewFrameWidget::GetLastToolTipTextForTesting() const {
 void WebViewFrameWidget::EnableDeviceEmulation(
     const DeviceEmulationParams& parameters) {
   if (!device_emulator_) {
-    gfx::Size size_in_dips = widget_base_->BlinkSpaceToCeiledDIPs(size_);
+    gfx::Size size_in_dips = widget_base_->BlinkSpaceToFlooredDIPs(size_);
 
     device_emulator_ = MakeGarbageCollected<ScreenMetricsEmulator>(
         this, widget_base_->GetScreenInfo(), size_in_dips,
@@ -305,7 +305,7 @@ void WebViewFrameWidget::SetDeviceScaleFactorForTesting(float factor) {
 
   // Stash the window size before we adjust the scale factor, as subsequent
   // calls to convert will use the new scale factor.
-  gfx::Size size_in_dips = widget_base_->BlinkSpaceToCeiledDIPs(size_);
+  gfx::Size size_in_dips = widget_base_->BlinkSpaceToFlooredDIPs(size_);
   device_scale_factor_for_testing_ = factor;
 
   // Receiving a 0 is used to reset between tests, it removes the override in
@@ -374,7 +374,7 @@ void WebViewFrameWidget::SetPageScaleStateAndLimits(
 }
 
 void WebViewFrameWidget::DidAutoResize(const gfx::Size& size) {
-  gfx::Size size_in_dips = widget_base_->BlinkSpaceToCeiledDIPs(size);
+  gfx::Size size_in_dips = widget_base_->BlinkSpaceToFlooredDIPs(size);
   size_ = size;
 
   if (synchronous_resize_mode_for_testing_) {
@@ -487,8 +487,8 @@ gfx::Size WebViewFrameWidget::DIPsToCeiledBlinkSpace(const gfx::Size& size) {
 
 void WebViewFrameWidget::ApplyVisualPropertiesSizing(
     const VisualProperties& visual_properties) {
-  if (widget_base_->BlinkSpaceToCeiledDIPs(size_) !=
-      visual_properties.new_size) {
+  if (size_ !=
+      widget_base_->DIPsToCeiledBlinkSpace(visual_properties.new_size)) {
     // Only hide popups when the size changes. Eg https://crbug.com/761908.
     web_view_->CancelPagePopup();
   }
@@ -525,7 +525,7 @@ void WebViewFrameWidget::ApplyVisualPropertiesSizing(
       visual_properties.compositor_viewport_pixel_rect;
   if (AutoResizeMode()) {
     new_compositor_viewport_pixel_rect = gfx::Rect(gfx::ScaleToCeiledSize(
-        widget_base_->BlinkSpaceToCeiledDIPs(size_),
+        widget_base_->BlinkSpaceToFlooredDIPs(size_),
         visual_properties.screen_info.device_scale_factor));
   }
 

@@ -131,14 +131,6 @@ class WebWidgetClient {
   // Returns true iff the pointer is locked to this widget.
   virtual bool IsPointerLocked() { return false; }
 
-  // Converts the |rect| from Blink's Viewport coordinates to the
-  // coordinates in the native window used to display the content, in
-  // DIP.  They're identical in tradional world, but will differ when
-  // use-zoom-for-dsf feature is eanbled, and Viewport coordinates
-  // becomes DSF times larger than window coordinates.
-  // TODO(oshima): Update the comment when the migration is completed.
-  virtual void ConvertViewportToWindow(WebRect* rect) {}
-
   // Called when a drag-and-drop operation should begin. Returns whether the
   // call has been handled.
   virtual bool InterceptStartDragging(const WebDragData&,

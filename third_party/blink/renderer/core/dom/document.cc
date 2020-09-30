@@ -5218,33 +5218,33 @@ void Document::SendFocusNotification(Element* new_focused_element,
     return;
 
   bool is_editable = false;
-  gfx::Rect element_bounds;
+  gfx::Rect element_bounds_in_dips;
   if (new_focused_element) {
     is_editable = IsEditableElement(*new_focused_element);
-    WebRect rect;
+    IntRect bounds_in_viewport;
 
     if (new_focused_element->IsSVGElement()) {
       // Convert to window coordinate system (this will be in DIPs).
-      rect = new_focused_element->BoundsInViewport();
+      bounds_in_viewport = new_focused_element->BoundsInViewport();
     } else {
       Vector<IntRect> outline_rects =
           new_focused_element->OutlineRectsInVisualViewport(
               DocumentUpdateReason::kFocus);
-      IntRect union_rect;
       for (auto& outline_rect : outline_rects)
-        union_rect.Unite(outline_rect);
-      rect = union_rect;
+        bounds_in_viewport.Unite(outline_rect);
     }
 
     if (GetFrame()->GetWidgetForLocalRoot()) {
-      GetFrame()->GetWidgetForLocalRoot()->Client()->ConvertViewportToWindow(
-          &rect);
+      element_bounds_in_dips =
+          GetFrame()->GetWidgetForLocalRoot()->BlinkSpaceToEnclosedDIPs(
+              bounds_in_viewport);
+    } else {
+      element_bounds_in_dips = bounds_in_viewport;
     }
-    element_bounds = gfx::Rect(rect);
   }
 
   GetFrame()->GetLocalFrameHostRemote().FocusedElementChanged(
-      is_editable, element_bounds, focus_type);
+      is_editable, element_bounds_in_dips, focus_type);
 }
 
 void Document::NotifyFocusedElementChanged(Element* old_focused_element,

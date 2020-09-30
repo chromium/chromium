@@ -3454,16 +3454,13 @@ void WebViewImpl::UpdatePreferredSize() {
     return;
   needs_preferred_size_update_ = false;
 
-  WebSize web_size = ContentsPreferredMinimumSize();
-  WebRect web_rect(0, 0, web_size.width, web_size.height);
-  MainFrameImpl()->LocalRootFrameWidget()->Client()->ConvertViewportToWindow(
-      &web_rect);
-  WebSize size(web_rect.width, web_rect.height);
+  gfx::Size size_in_dips =
+      MainFrameImpl()->LocalRootFrameWidget()->BlinkSpaceToFlooredDIPs(
+          gfx::Size(ContentsPreferredMinimumSize()));
 
-  if (size != preferred_size_) {
-    preferred_size_ = size;
-    local_main_frame_host_remote_->ContentsPreferredSizeChanged(
-        gfx::Size(size));
+  if (size_in_dips != preferred_size_in_dips_) {
+    preferred_size_in_dips_ = size_in_dips;
+    local_main_frame_host_remote_->ContentsPreferredSizeChanged(size_in_dips);
   }
 }
 
@@ -4238,7 +4235,7 @@ int32_t WebViewImpl::AutoplayFlagsForTest() {
 }
 
 WebSize WebViewImpl::GetPreferredSizeForTest() {
-  return preferred_size_;
+  return WebSize(preferred_size_in_dips_);
 }
 
 void WebViewImpl::StopDeferringMainFrameUpdate() {

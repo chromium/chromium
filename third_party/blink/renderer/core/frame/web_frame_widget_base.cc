@@ -468,6 +468,14 @@ gfx::RectF WebFrameWidgetBase::BlinkSpaceToDIPs(const gfx::RectF& rect) {
   return widget_base_->BlinkSpaceToDIPs(rect);
 }
 
+gfx::Rect WebFrameWidgetBase::BlinkSpaceToEnclosedDIPs(const gfx::Rect& rect) {
+  return widget_base_->BlinkSpaceToEnclosedDIPs(rect);
+}
+
+gfx::Size WebFrameWidgetBase::BlinkSpaceToFlooredDIPs(const gfx::Size& size) {
+  return widget_base_->BlinkSpaceToFlooredDIPs(size);
+}
+
 gfx::RectF WebFrameWidgetBase::DIPsToBlinkSpace(const gfx::RectF& rect) {
   return widget_base_->DIPsToBlinkSpace(rect);
 }
