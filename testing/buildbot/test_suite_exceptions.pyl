@@ -1734,10 +1734,6 @@
     ],
   },
   'net_unittests': {
-    'remove_from': [
-      'Fuchsia ARM64',  # https://crbug.com/877248
-      'fuchsia-fyi-x64-dbg',  # https://crbug.com/844416
-    ],
     'modifications': {
       'CrWinAsan': {
         # TODO(crbug.com/794372): net_unittests is slow under ASan.
