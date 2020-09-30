@@ -290,8 +290,8 @@ struct CpuInfo {
 
 // Information related to a particular physical CPU.
 struct PhysicalCpuInfo {
-  // The CPU model name.
-  string model_name;
+  // The CPU model name, if available.
+  string? model_name;
   // Logical CPUs corresponding to this physical CPU.
   array<LogicalCpuInfo> logical_cpus;
 };

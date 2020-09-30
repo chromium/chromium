@@ -44,7 +44,7 @@ void PopulateCpuInfo(const healthd::CpuInfo& cpu_info,
 
   // If there is more than one physical cpu on the device, use the name of the
   // first CPU.
-  out_system_info.cpu_model_name = physical_cpus[0]->model_name;
+  out_system_info.cpu_model_name = physical_cpus[0]->model_name.value_or("");
 }
 
 void PopulateVersionInfo(const healthd::SystemInfo& system_info,

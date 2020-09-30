@@ -1057,7 +1057,8 @@ class DeviceStatusCollectorState : public StatusCollectorState {
 
             em::CpuInfo* const cpu_info_out =
                 response_params_.device_status->add_cpu_info();
-            cpu_info_out->set_model_name(physical_cpu->model_name);
+            if (physical_cpu->model_name)
+              cpu_info_out->set_model_name(physical_cpu->model_name.value());
             cpu_info_out->set_architecture(
                 static_cast<em::CpuInfo::Architecture>(cpu_info->architecture));
 
