@@ -3097,6 +3097,11 @@
     "expiry_milestone": 95
   },
   {
+    "name": "minutes-delay-to-restore-gaia-cookies-if-deleted",
+    "owners": ["fernandex", "chrome-signin-team"],
+    "expiry_milestone": 90
+  },
+  {
     "name": "mixed-forms-disable-autofill",
     "owners": [ "carlosil" ],
     "expiry_milestone": 88

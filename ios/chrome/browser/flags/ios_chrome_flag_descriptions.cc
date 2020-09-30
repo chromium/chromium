@@ -182,6 +182,12 @@ const char kDefaultBrowserFullscreenPromoDescription[] =
     "users informing them about the default browser feature and providing a "
     "button that takes users to Settings.app to update their default browser.";
 
+const char kDelayThresholdMinutesToUpdateGaiaCookieName[] =
+    "Delay for polling (in minutes) to verify the existence of GAIA cookies.";
+const char kDelayThresholdMinutesToUpdateGaiaCookieDescription[] =
+    "Used for testing purposes to reduce the amount of delay between polling "
+    "intervals.";
+
 const char kDetectMainThreadFreezeName[] = "Detect freeze in the main thread.";
 const char kDetectMainThreadFreezeDescription[] =
     "A crash report will be uploaded if the main thread is frozen more than "

@@ -125,6 +125,13 @@ const FeatureEntry::Choice kAutofillIOSDelayBetweenFieldsChoices[] = {
     {"1000", autofill::switches::kAutofillIOSDelayBetweenFields, "1000"},
 };
 
+const FeatureEntry::Choice kDelayThresholdMinutesToUpdateGaiaCookieChoices[] = {
+    {flags_ui::kGenericExperimentChoiceDefault, "", ""},
+    {"0", signin::kDelayThresholdMinutesToUpdateGaiaCookie, "0"},
+    {"10", signin::kDelayThresholdMinutesToUpdateGaiaCookie, "10"},
+    {"60", signin::kDelayThresholdMinutesToUpdateGaiaCookie, "60"},
+};
+
 const FeatureEntry::FeatureVariation
     kOmniboxOnDeviceHeadSuggestNonIncognitoExperimentVariations[] = {
         {
@@ -682,6 +689,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kRestoreGaiaCookiesIfDeletedDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(signin::kRestoreGaiaCookiesIfDeleted)},
+    {"minutes-delay-to-restore-gaia-cookies-if-deleted",
+     flag_descriptions::kDelayThresholdMinutesToUpdateGaiaCookieName,
+     flag_descriptions::kDelayThresholdMinutesToUpdateGaiaCookieDescription,
+     flags_ui::kOsIos,
+     MULTI_VALUE_TYPE(kDelayThresholdMinutesToUpdateGaiaCookieChoices)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

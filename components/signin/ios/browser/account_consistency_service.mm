@@ -7,10 +7,12 @@
 #import <WebKit/WebKit.h>
 
 #include "base/bind.h"
+#include "base/command_line.h"
 #include "base/logging.h"
 #import "base/mac/foundation_util.h"
 #include "base/macros.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/google/core/common/google_util.h"
@@ -63,6 +65,23 @@ static std::string GetDomainFromUrl(const GURL& url) {
   }
   return net::registry_controlled_domains::GetDomainAndRegistry(
       url, net::registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES);
+}
+
+// Allows for manual testing by reducing the polling interval for verifying the
+// existence of the GAIA cookie.
+base::TimeDelta GetDelayThresholdToUpdateGaiaCookie() {
+  const base::CommandLine* command_line =
+      base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(
+          signin::kDelayThresholdMinutesToUpdateGaiaCookie)) {
+    std::string delayString = command_line->GetSwitchValueASCII(
+        signin::kDelayThresholdMinutesToUpdateGaiaCookie);
+    int commandLineDelay = 0;
+    if (base::StringToInt(delayString, &commandLineDelay)) {
+      return base::TimeDelta::FromMinutes(commandLineDelay);
+    }
+  }
+  return kDelayThresholdToUpdateGaiaCookie;
 }
 
 // WebStatePolicyDecider that monitors the HTTP headers on Gaia responses,
@@ -279,7 +298,7 @@ void AccountConsistencyService::SetGaiaCookiesIfDeleted() {
   // for signed-in users to prevent calling the expensive method
   // |GetAllCookies| in the cookie manager.
   if (base::Time::Now() - last_gaia_cookie_verification_time_ <
-          kDelayThresholdToUpdateGaiaCookie ||
+          GetDelayThresholdToUpdateGaiaCookie() ||
       !identity_manager_->HasPrimaryAccount()) {
     return;
   }

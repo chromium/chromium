@@ -16,4 +16,7 @@ bool ForceStartupSigninPromo() {
 const base::Feature kRestoreGaiaCookiesIfDeleted{
     "RestoreGAIACookiesIfDeleted", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const char kDelayThresholdMinutesToUpdateGaiaCookie[] =
+    "minutes-delay-to-restore-gaia-cookies-if-deleted";
+
 }  // namespace signin
