@@ -592,6 +592,7 @@ VISIT_PROTO_FIELDS(const sync_pb::HistoryDeleteDirectives& proto) {
 
 VISIT_PROTO_FIELDS(const sync_pb::InvalidationSpecificFields& proto) {
   VISIT(instance_id_token);
+  VISIT_REP(interested_data_type_ids);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::KeystoreEncryptionFlags& proto) {
