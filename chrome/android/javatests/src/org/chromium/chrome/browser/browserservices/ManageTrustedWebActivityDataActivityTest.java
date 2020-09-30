@@ -25,6 +25,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.webapk.lib.client.WebApkValidator;
@@ -49,6 +50,7 @@ public class ManageTrustedWebActivityDataActivityTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1131836")
     public void launchesWebApkSiteSettings() {
         Intent siteSettingsIntent =
                 createWebApkSiteSettingsIntent(TEST_PACKAGE_NAME, Uri.parse(WEBAPK_TEST_URL));
