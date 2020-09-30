@@ -770,6 +770,15 @@ TEST_F(LoggingTest, FuchsiaSystemLogging) {
 
   base::RunLoop wait_for_message_loop;
 
+  fuchsia::logger::LogPtr logger = base::ComponentContextForProcess()
+                                       ->svc()
+                                       ->Connect<fuchsia::logger::Log>();
+  logger.set_error_handler([&wait_for_message_loop](zx_status_t status) {
+    ZX_LOG(ERROR, status) << "fuchsia.logger.Log disconnected";
+    ADD_FAILURE();
+    wait_for_message_loop.Quit();
+  });
+
   // |dump_logs| checks whether the expected log line has been received yet,
   // and invokes DumpLogs() if not. It passes itself as the completion callback,
   // so that when the call completes it can check again for the expected message
@@ -783,9 +792,6 @@ TEST_F(LoggingTest, FuchsiaSystemLogging) {
     std::unique_ptr<fuchsia::logger::LogFilterOptions> options =
         std::make_unique<fuchsia::logger::LogFilterOptions>();
     options->tags = {"base_unittests__exec"};
-    fuchsia::logger::LogPtr logger = base::ComponentContextForProcess()
-                                         ->svc()
-                                         ->Connect<fuchsia::logger::Log>();
     listener.set_on_dump_logs_done(dump_logs);
     logger->DumpLogsSafe(binding.NewBinding(), std::move(options));
   });
