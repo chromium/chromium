@@ -84,6 +84,12 @@ class SharedVector
                                   std::move(predicate_cb)));
   }
 
+  void IsEmpty(base::OnceCallback<void(bool)> get_empty_cb) {
+    sequenced_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&SharedVector::OnIsEmpty, this,
+                                  std::move(get_empty_cb)));
+  }
+
  protected:
   virtual ~SharedVector() = default;
 
@@ -162,7 +168,24 @@ class SharedVector
         break;
       }
     }
-    std::move(execute_complete_cb).Run();
+    base::ThreadPool::PostTask(
+        FROM_HERE, {base::TaskPriority::BEST_EFFORT},
+        base::BindOnce(
+            [](base::OnceCallback<void()> execute_complete_cb) {
+              std::move(execute_complete_cb).Run();
+            },
+            std::move(execute_complete_cb)));
+  }
+
+  void OnIsEmpty(base::OnceCallback<void(bool)> is_empty_cb) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    base::ThreadPool::PostTask(
+        FROM_HERE, {base::TaskPriority::BEST_EFFORT},
+        base::BindOnce(
+            [](base::OnceCallback<void(bool)> is_empty_cb, bool is_empty) {
+              std::move(is_empty_cb).Run(is_empty);
+            },
+            std::move(is_empty_cb), vector_.empty()));
   }
 
   std::vector<VectorType> vector_;

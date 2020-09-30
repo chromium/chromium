@@ -12,6 +12,7 @@
 #include "base/task_runner.h"
 #include "chrome/browser/policy/messaging_layer/upload/app_install_report_handler.h"
 #include "chrome/browser/policy/messaging_layer/util/backoff_settings.h"
+#include "chrome/browser/policy/messaging_layer/util/shared_vector.h"
 #include "chrome/browser/policy/messaging_layer/util/status.h"
 #include "chrome/browser/policy/messaging_layer/util/status_macros.h"
 #include "chrome/browser/policy/messaging_layer/util/statusor.h"
@@ -39,49 +40,53 @@ DmServerUploadService::RecordHandler::~RecordHandler() = default;
 
 DmServerUploader::DmServerUploader(
     std::unique_ptr<std::vector<EncryptedRecord>> records,
-    std::vector<std::unique_ptr<RecordHandler>>* handlers,
+    scoped_refptr<SharedVector<std::unique_ptr<RecordHandler>>> handlers,
     CompletionCallback completion_cb,
-    scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner,
-    base::TimeDelta max_delay)
+    scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner)
     : TaskRunnerContext<CompletionResponse>(std::move(completion_cb),
                                             sequenced_task_runner),
       encrypted_records_(std::move(records)),
-      handlers_(handlers),
-      max_delay_(max_delay),
-      backoff_entry_(GetBackoffEntry()) {}
+      handlers_(handlers) {
+  DETACH_FROM_SEQUENCE(sequence_checker_);
+}
 
 DmServerUploader::~DmServerUploader() = default;
 
 void DmServerUploader::OnStart() {
-  // Early exit if we don't have any handlers or records.
-  if (handlers_->empty() || encrypted_records_->empty()) {
-    Complete(Status::StatusOK());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Early exit if we don't have any records.
+  if (encrypted_records_->empty()) {
+    Complete(
+        Status(error::INVALID_ARGUMENT, "No records received for upload."));
     return;
   }
-  ProcessRecords();
+  handlers_->IsEmpty(base::BindOnce(
+      &DmServerUploader::IsHandlerVectorEmptyCheck, base::Unretained(this)));
+}
+
+void DmServerUploader::IsHandlerVectorEmptyCheck(bool handlers_is_empty) {
+  // Early Exit if we don't have any handlers.
+  if (handlers_is_empty) {
+    Complete(Status(error::INTERNAL, "No handlers available for upload."));
+    return;
+  }
+  Schedule(&DmServerUploader::ProcessRecords, base::Unretained(this));
 }
 
 void DmServerUploader::ProcessRecords() {
-  Status process_status = Status::StatusOK();
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  Status process_status;
 
-  // Drops records that it cannot parse.
+  generation_id_ =
+      encrypted_records_->front().sequencing_information().generation_id();
+
+  // Will stop processing records on the first record that fails to pass.
+  // Discarding the remaining records.
   for (const EncryptedRecord& encrypted_record : *encrypted_records_) {
-    if (encrypted_record.has_encryption_info()) {
-      process_status =
-          Status(error::UNIMPLEMENTED, "Encryption is not supported yet!");
+    if (process_status = IsRecordValid(encrypted_record),
+        !process_status.ok()) {
       break;
     }
-
-    WrappedRecord wrapped_record;
-    if (!wrapped_record.ParseFromString(
-            encrypted_record.encrypted_wrapped_record())) {
-      process_status =
-          Status(error::INVALID_ARGUMENT, "Unable to parse record");
-      break;
-    }
-
-    record_infos_.emplace_back(RecordInfo{
-        wrapped_record.record(), encrypted_record.sequencing_information()});
   }
 
   if (record_infos_.empty()) {
@@ -93,110 +98,136 @@ void DmServerUploader::ProcessRecords() {
 }
 
 void DmServerUploader::HandleRecords() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   Status handle_status = Status::StatusOK();
 
-  // Records are handled iteratively since the |CloudPolicyClient| cannot handle
-  // multiple requests at one time. Any records that fail to send for any reason
-  // are simply dropped, this is similar to the current functionality (i.e.
-  // |ArcAppInstallEventLogUploader|).
-  // TODO(chromium:1078512) Consider creating a whitelist/blacklist for retry
-  // and continue.
   // TODO(chromium:1078512) Cannot verify client state on this thread. Find a
   // way to do that and restructure this loop to handle it.
-  for (auto record_info_it = record_infos_.begin();
-       record_info_it != record_infos_.end();) {
-    for (auto& handler : *handlers_) {
-      handle_status = handler->HandleRecord(record_info_it->record);
+  // Passing raw |record_infos_| pointer is safe since record_infos will not die
+  // until after handlers_ does.
+  auto execution_cb = base::BindRepeating(
+      [](std::vector<RecordInfo>* record_infos,
+         base::RepeatingCallback<void(const SequencingInformation&)>
+             add_successfull_upload_cb,
+         std::unique_ptr<RecordHandler>& record_handler) {
+        for (auto record_info_it = record_infos->begin();
+             record_info_it != record_infos->end();) {
+          auto handle_status =
+              record_handler->HandleRecord(record_info_it->record);
 
-      // Record was successfully handled - move to the next record.
-      if (handle_status.ok()) {
-        AddSuccessfulUpload(record_info_it->sequencing_information);
+          // Record was successfully handled - mark it as such and move on to
+          // the next record.
+          if (handle_status.ok()) {
+            add_successfull_upload_cb.Run(
+                record_info_it->sequencing_information);
 
-        // We don't need to handle this record again. Delete it and move on.
-        record_info_it = record_infos_.erase(record_info_it);
-        break;
-      }
-
-      // This handler doesn't know how to handle this record - move to the next
-      // handler.
-      if (handle_status.error_code() == error::INVALID_ARGUMENT) {
-        continue;
-      }
-
-      // The server is unavailable. Try again later if we haven't tried for too
-      // long. Current total delay is 127 seconds or ~2 minutes.
-      if (handle_status.error_code() == error::UNAVAILABLE) {
-        base::TimeDelta delay = GetNextDelay();
-        if (delay >= max_delay_) {
-          Complete(Status(error::DEADLINE_EXCEEDED,
-                          "Unable to upload all records in provided deadline"));
-          return;
+            // We don't need to handle this record again. Delete it.
+            record_info_it = record_infos->erase(record_info_it);
+            continue;
+          }
+          record_info_it++;
         }
+      },
+      &record_infos_,
+      base::BindRepeating(&DmServerUploader::AddSuccessfulUpload,
+                          base::Unretained(this)));
 
-        ScheduleAfter(delay, &DmServerUploader::HandleRecords,
-                      base::Unretained(this));
-        return;
-      }
-    }
+  auto predicate_cb = base::BindRepeating(
+      [](std::vector<RecordInfo>* record_infos,
+         const std::unique_ptr<RecordHandler>& record_handler) {
+        return !record_infos->empty();
+      },
+      &record_infos_);
 
-    // Some unhandled error has occurred. Cancel further upload.
-    if (!handle_status.ok()) {
-      Complete(handle_status);
-      return;
-    }
+  handlers_->ExecuteOnEachElement(
+      std::move(execution_cb),
+      base::BindOnce(&DmServerUploader::OnRecordsHandled,
+                     base::Unretained(this)),
+      std::move(predicate_cb));
+}
 
-    ResetDelay();
-  }
-
-  Complete(Status::StatusOK());
+void DmServerUploader::OnRecordsHandled() {
+  Status status = record_infos_.empty()
+                      ? Status::StatusOK()
+                      : Status(error::FAILED_PRECONDITION,
+                               "Unable to connect to the server and upload "
+                               "some or all records");
+  Complete(status);
 }
 
 void DmServerUploader::Complete(Status status) {
-  std::vector<SequencingInformation> successful_upload_list;
-  for (auto it : successful_uploads_) {
-    successful_upload_list.push_back(it.second);
-  }
-
-  // No records were uploaded - Return the error.
-  if (successful_upload_list.empty() && !status.ok()) {
-    Schedule(&DmServerUploader::Response, base::Unretained(this), status);
+  // Records were successfully uploaded - return the highest record processed.
+  // Any unprocessed record will be attempted again later.
+  if (highest_successful_sequence_.has_value()) {
+    Schedule(&DmServerUploader::Response, base::Unretained(this),
+             highest_successful_sequence_.value());
     return;
   }
 
-  // Records were successfully uploaded - return the list.
-  Schedule(&DmServerUploader::Response, base::Unretained(this),
-           successful_upload_list);
+  // No records were uploaded, return the status.
+  Schedule(&DmServerUploader::Response, base::Unretained(this), status);
+}
+
+Status DmServerUploader::IsRecordValid(
+    const EncryptedRecord& encrypted_record) {
+  // Test to ensure all records are in the same generation.
+  if (encrypted_record.sequencing_information().generation_id() !=
+      generation_id_) {
+    return Status(error::INVALID_ARGUMENT,
+                  "Record does not have the correct generation");
+  }
+
+  // Parse the WrappedRecord from the EncryptedRecord.
+  WrappedRecord wrapped_record;
+  if (!wrapped_record.ParseFromString(
+          encrypted_record.encrypted_wrapped_record())) {
+    return Status(error::INVALID_ARGUMENT, "Unable to parse record");
+  }
+
+  record_infos_.emplace_back(RecordInfo{
+      wrapped_record.record(), encrypted_record.sequencing_information()});
+  return Status::StatusOK();
 }
 
 void DmServerUploader::AddSuccessfulUpload(
+    const SequencingInformation& sequencing_information) {
+  Schedule(&DmServerUploader::ProcessSuccessfulUploadAddition,
+           base::Unretained(this), sequencing_information);
+}
+
+void DmServerUploader::ProcessSuccessfulUploadAddition(
     SequencingInformation sequencing_information) {
-  auto it = successful_uploads_.find(sequencing_information.generation_id());
-  if (it == successful_uploads_.end()) {
-    successful_uploads_.insert(
-        {sequencing_information.generation_id(), sequencing_information});
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // If this is the first successful record - set highest to this record.
+  if (!highest_successful_sequence_.has_value()) {
+    highest_successful_sequence_ = sequencing_information;
     return;
   }
 
-  if (it->second.sequencing_id() < sequencing_information.sequencing_id()) {
-    it->second = sequencing_information;
+  // If messages were processed out of order log a warning. This shouldn't
+  // happen, but there are no upload guarantees for DmServerUploadService so it
+  // isn't a big deal.
+  if (sequencing_information.sequencing_id() <
+      highest_successful_sequence_->sequencing_id()) {
+    LOG(WARNING) << "Records were processed out of order: "
+                 << "Record " << sequencing_information.sequencing_id()
+                 << " was processed after "
+                 << highest_successful_sequence_->sequencing_id();
     return;
   }
 
-  // Messages were processed out of order. This shouldn't happen, but there are
-  // no upload guarantees for DmServerUploadService so it isn't a big deal.
-  LOG(WARNING) << "Records were processed out of order: "
-               << "Record " << sequencing_information.sequencing_id()
-               << " was processed after " << it->second.sequencing_id();
-}
+  // If messages are duplicated log a warning. This shouldn't happen, but the
+  // current system already has potential for duplicated events.
+  if (sequencing_information.sequencing_id() ==
+      highest_successful_sequence_->sequencing_id()) {
+    LOG(WARNING) << "Record upload was duplicated: "
+                 << "Record " << sequencing_information.sequencing_id()
+                 << " was processed multiple times.";
+    return;
+  }
 
-base::TimeDelta DmServerUploader::GetNextDelay() {
-  base::TimeDelta delay = backoff_entry_->GetTimeUntilRelease();
-  backoff_entry_->InformOfRequest(/*succeeded=*/false);
-  return delay;
-}
-
-void DmServerUploader::ResetDelay() {
-  backoff_entry_->InformOfRequest(/*succeeded=*/true);
+  highest_successful_sequence_ = sequencing_information;
 }
 
 StatusOr<std::unique_ptr<DmServerUploadService>> DmServerUploadService::Create(
@@ -218,7 +249,9 @@ DmServerUploadService::DmServerUploadService(
     ReportSuccessfulUploadCallback upload_cb)
     : client_(std::move(client)),
       upload_cb_(upload_cb),
-      sequenced_task_runner_(base::ThreadPool::CreateSequencedTaskRunner({})) {}
+      sequenced_task_runner_(base::ThreadPool::CreateSequencedTaskRunner({})),
+      record_handlers_(SharedVector<std::unique_ptr<RecordHandler>>::Create()) {
+}
 
 DmServerUploadService::~DmServerUploadService() {
   if (client_) {
@@ -235,10 +268,10 @@ DmServerUploadService::~DmServerUploadService() {
 Status DmServerUploadService::EnqueueUpload(
     std::unique_ptr<std::vector<EncryptedRecord>> records) {
   Start<DmServerUploader>(
-      std::move(records), &record_handlers_,
+      std::move(records), record_handlers_,
       base::BindOnce(&DmServerUploadService::UploadCompletion,
                      base::Unretained(this)),
-      sequenced_task_runner_, base::TimeDelta::FromMinutes(1));
+      sequenced_task_runner_);
   return Status::StatusOK();
 }
 
@@ -248,21 +281,20 @@ Status DmServerUploadService::InitRecordHandlers() {
     return Status(error::FAILED_PRECONDITION, "Client was null");
   }
 
-  record_handlers_.push_back(std::make_unique<AppInstallReportHandler>(client));
+  record_handlers_->PushBack(std::make_unique<AppInstallReportHandler>(client),
+                             base::DoNothing());
 
   return Status::StatusOK();
 }
 
 void DmServerUploadService::UploadCompletion(
-    StatusOr<std::vector<SequencingInformation>> upload_result) const {
+    StatusOr<SequencingInformation> upload_result) const {
   if (!upload_result.ok()) {
     LOG(WARNING) << upload_result.status();
     return;
   }
 
-  for (const auto& info : upload_result.ValueOrDie()) {
-    upload_cb_.Run(info);
-  }
+  upload_cb_.Run(upload_result.ValueOrDie());
 }
 
 CloudPolicyClient* DmServerUploadService::GetClient() {
