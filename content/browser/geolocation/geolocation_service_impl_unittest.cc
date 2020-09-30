@@ -95,14 +95,16 @@ class GeolocationServiceTest : public RenderViewHostImplTestHarness {
 
   void CreateEmbeddedFrameAndGeolocationService(bool allow_via_feature_policy) {
     const GURL kEmbeddedUrl("https://embeddables.com/someframe");
+    blink::ParsedFeaturePolicy frame_policy = {};
     if (allow_via_feature_policy) {
-      RenderFrameHostTester::For(main_rfh())
-          ->SimulateFeaturePolicyHeader(
-              blink::mojom::FeaturePolicyFeature::kGeolocation,
-              std::vector<url::Origin>{url::Origin::Create(kEmbeddedUrl)});
+      frame_policy.push_back(
+          {blink::mojom::FeaturePolicyFeature::kGeolocation,
+           std::vector<url::Origin>{url::Origin::Create(kEmbeddedUrl)}, false,
+           false});
     }
     RenderFrameHost* embedded_rfh =
-        RenderFrameHostTester::For(main_rfh())->AppendChild("");
+        RenderFrameHostTester::For(main_rfh())
+            ->AppendChildWithPolicy("", frame_policy);
     RenderFrameHostTester::For(embedded_rfh)->InitializeRenderFrameIfNeeded();
     auto navigation_simulator = NavigationSimulator::CreateRendererInitiated(
         kEmbeddedUrl, embedded_rfh);

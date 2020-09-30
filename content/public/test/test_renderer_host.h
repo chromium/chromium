@@ -105,6 +105,12 @@ class RenderFrameHostTester {
   // RenderFrameHost is owned by the parent RenderFrameHost.
   virtual RenderFrameHost* AppendChild(const std::string& frame_name) = 0;
 
+  // Same as AppendChild above, but simulates a custom allow attribute being
+  // used as the container policy.
+  virtual RenderFrameHost* AppendChildWithPolicy(
+      const std::string& frame_name,
+      const blink::ParsedFeaturePolicy& allow) = 0;
+
   // Gives tests access to RenderFrameHostImpl::OnDetach. Destroys |this|.
   virtual void Detach() = 0;
 

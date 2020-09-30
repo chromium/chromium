@@ -150,13 +150,21 @@ void TestRenderFrameHost::InitializeRenderFrameIfNeeded() {
 
 TestRenderFrameHost* TestRenderFrameHost::AppendChild(
     const std::string& frame_name) {
+  return AppendChildWithPolicy(frame_name, {});
+}
+
+TestRenderFrameHost* TestRenderFrameHost::AppendChildWithPolicy(
+    const std::string& frame_name,
+    const blink::ParsedFeaturePolicy& allow) {
   std::string frame_unique_name = base::GenerateGUID();
   OnCreateChildFrame(
       GetProcess()->GetNextRoutingID(), CreateStubInterfaceProviderReceiver(),
       CreateStubBrowserInterfaceBrokerReceiver(),
       blink::mojom::TreeScopeType::kDocument, frame_name, frame_unique_name,
       false, base::UnguessableToken::Create(), base::UnguessableToken::Create(),
-      blink::FramePolicy(), blink::mojom::FrameOwnerProperties(),
+      blink::FramePolicy(
+          {network::mojom::WebSandboxFlags::kNone, allow, {}, true, false}),
+      blink::mojom::FrameOwnerProperties(),
       blink::mojom::FrameOwnerElementType::kIframe);
   return static_cast<TestRenderFrameHost*>(
       child_creation_observer_.last_created_frame());
