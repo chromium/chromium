@@ -143,6 +143,11 @@ void SafeBrowsingBlockingPage::HandleScriptCommand(
   }
 
   error_ui_->HandleCommand(static_cast<SecurityInterstitialCommand>(command));
+  if (command == security_interstitials::CMD_DONT_PROCEED) {
+    // |error_ui_| handles recording PROCEED decisions.
+    client_->metrics_helper()->RecordUserDecision(
+        security_interstitials::MetricsHelper::DONT_PROCEED);
+  }
 }
 
 bool SafeBrowsingBlockingPage::ShouldCreateNewNavigation() const {
