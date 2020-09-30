@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 619 tests; 287 PASS, 332 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 619 tests; 288 PASS, 331 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 FAIL URL: Setting <a://example.net>.protocol = '' The empty string is not a valid scheme. Setter leaves the URL unchanged. assert_equals: expected "a://example.net" but got "file:///A://example.net"
 FAIL <a>: Setting <a://example.net>.protocol = '' The empty string is not a valid scheme. Setter leaves the URL unchanged. assert_equals: expected "a://example.net" but got "file:///A://example.net"
@@ -535,15 +535,15 @@ FAIL <area>: Setting <sc://example.net>.pathname = '?' ? needs to be encoded, no
 FAIL URL: Setting <sc://example.net>.pathname = '#' # needs to be encoded, non-special scheme assert_equals: expected "sc://example.net/%23" but got "sc://example.net"
 FAIL <a>: Setting <sc://example.net>.pathname = '#' # needs to be encoded, non-special scheme assert_equals: expected "sc://example.net/%23" but got "sc://example.net"
 FAIL <area>: Setting <sc://example.net>.pathname = '#' # needs to be encoded, non-special scheme assert_equals: expected "sc://example.net/%23" but got "sc://example.net"
-FAIL URL: Setting <file://monkey/>.pathname = '\\' File URLs and (back)slashes assert_equals: expected "file://monkey/" but got "file://monkey//"
-FAIL <a>: Setting <file://monkey/>.pathname = '\\' File URLs and (back)slashes assert_equals: expected "file://monkey/" but got "file://monkey//"
-FAIL <area>: Setting <file://monkey/>.pathname = '\\' File URLs and (back)slashes assert_equals: expected "file://monkey/" but got "file://monkey//"
-FAIL URL: Setting <file:///unicorn>.pathname = '//\/' File URLs and (back)slashes assert_equals: expected "file:///" but got "file://////"
-PASS <a>: Setting <file:///unicorn>.pathname = '//\/' File URLs and (back)slashes
-PASS <area>: Setting <file:///unicorn>.pathname = '//\/' File URLs and (back)slashes
-FAIL URL: Setting <file:///unicorn>.pathname = '//monkey/..//' File URLs and (back)slashes assert_equals: expected "file:///" but got "file://///"
-PASS <a>: Setting <file:///unicorn>.pathname = '//monkey/..//' File URLs and (back)slashes
-PASS <area>: Setting <file:///unicorn>.pathname = '//monkey/..//' File URLs and (back)slashes
+PASS URL: Setting <file://monkey/>.pathname = '\\' File URLs and (back)slashes
+PASS <a>: Setting <file://monkey/>.pathname = '\\' File URLs and (back)slashes
+PASS <area>: Setting <file://monkey/>.pathname = '\\' File URLs and (back)slashes
+PASS URL: Setting <file:///unicorn>.pathname = '//\/' File URLs and (back)slashes
+FAIL <a>: Setting <file:///unicorn>.pathname = '//\/' File URLs and (back)slashes assert_equals: expected "file://////" but got "file:///"
+FAIL <area>: Setting <file:///unicorn>.pathname = '//\/' File URLs and (back)slashes assert_equals: expected "file://////" but got "file:///"
+PASS URL: Setting <file:///unicorn>.pathname = '//monkey/..//' File URLs and (back)slashes
+FAIL <a>: Setting <file:///unicorn>.pathname = '//monkey/..//' File URLs and (back)slashes assert_equals: expected "file://///" but got "file:///"
+FAIL <area>: Setting <file:///unicorn>.pathname = '//monkey/..//' File URLs and (back)slashes assert_equals: expected "file://///" but got "file:///"
 FAIL URL: Setting <non-spec:/>.pathname = '/.//p' Serialize /. in path assert_equals: expected "non-spec:/.//p" but got "non-spec:/"
 FAIL <a>: Setting <non-spec:/>.pathname = '/.//p' Serialize /. in path assert_equals: expected "non-spec:/.//p" but got "non-spec:/"
 FAIL <area>: Setting <non-spec:/>.pathname = '/.//p' Serialize /. in path assert_equals: expected "non-spec:/.//p" but got "non-spec:/"

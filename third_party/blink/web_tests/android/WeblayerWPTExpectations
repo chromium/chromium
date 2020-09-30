@@ -4291,7 +4291,6 @@ crbug.com/1050754 external/wpt/webrtc/RTCPeerConnection-createDataChannel.html [
 crbug.com/1050754 external/wpt/webrtc/RTCPeerConnection-createOffer.html [ Failure ]
 crbug.com/1050754 external/wpt/webrtc/RTCPeerConnection-explicit-rollback-iceGatheringState.html [ Timeout ]
 crbug.com/1050754 external/wpt/webrtc/RTCPeerConnection-generateCertificate.html [ Failure ]
-crbug.com/1050754 external/wpt/webrtc/RTCPeerConnection-getDefaultIceServers.html [ Failure ]
 crbug.com/1050754 external/wpt/webrtc/RTCPeerConnection-getStats.https.html [ Timeout ]
 crbug.com/1050754 external/wpt/webrtc/RTCPeerConnection-iceConnectionState-disconnected.https.html [ Timeout ]
 crbug.com/1050754 external/wpt/webrtc/RTCPeerConnection-iceConnectionState.https.html [ Timeout ]
