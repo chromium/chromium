@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/callback.h"
@@ -145,11 +146,16 @@ void AnimationHost::SetHasInlineStyleMutation(bool has_inline_style_mutation) {
 
 void AnimationHost::UpdateRegisteredElementIds(ElementListType changed_list) {
   for (auto map_entry : element_to_animations_map_) {
+    // kReservedElementId is reserved for an paint worklet element that animates
+    // a custom property. This element is assumed to always be present as no
+    // element is needed to tick this animation.
     if (mutator_host_client()->IsElementInPropertyTrees(map_entry.first,
-                                                        changed_list))
+                                                        changed_list) ||
+        map_entry.first.GetStableId() == ElementId::kReservedElementId) {
       map_entry.second->ElementIdRegistered(map_entry.first, changed_list);
-    else
+    } else {
       map_entry.second->ElementIdUnregistered(map_entry.first, changed_list);
+    }
   }
 }
 

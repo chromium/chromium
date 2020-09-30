@@ -777,8 +777,12 @@ void KeyframeEffect::PushPropertiesTo(KeyframeEffect* keyframe_effect_impl) {
     // the host as well.
     if (keyframe_effect_impl->has_attached_element())
       keyframe_effect_impl->animation_->DetachElement();
-    if (element_id_)
-      keyframe_effect_impl->animation_->AttachElement(element_id_);
+    if (element_id_) {
+      if (element_id_.GetStableId() == ElementId::kReservedElementId)
+        keyframe_effect_impl->animation_->AttachNoElement();
+      else
+        keyframe_effect_impl->animation_->AttachElement(element_id_);
+    }
   }
 
   keyframe_effect_impl->scroll_offset_animation_was_interrupted_ =

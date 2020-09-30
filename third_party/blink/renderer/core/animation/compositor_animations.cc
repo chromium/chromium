@@ -355,7 +355,8 @@ CompositorAnimations::CheckCanStartEffectOnCompositor(
 
 CompositorAnimations::FailureReasons
 CompositorAnimations::CheckCanStartElementOnCompositor(
-    const Element& target_element) {
+    const Element& target_element,
+    const EffectModel& model) {
   FailureReasons reasons = kNoFailure;
 
   // Both of these checks are required. It is legal to enable the compositor
@@ -385,8 +386,10 @@ CompositorAnimations::CheckCanStartElementOnCompositor(
           (transform && transform->HasDirectCompositingReasons()) ||
           (effect && effect->HasDirectCompositingReasons());
     }
-    if (!has_direct_compositing_reasons)
+    if (!has_direct_compositing_reasons &&
+        To<KeyframeEffectModelBase>(model).HasNonVariableProperty()) {
       reasons |= kTargetHasInvalidCompositingState;
+    }
   } else {
     reasons |= kTargetHasInvalidCompositingState;
   }
@@ -408,7 +411,7 @@ CompositorAnimations::CheckCanStartAnimationOnCompositor(
       timing, target_element, animation_to_add, effect,
       paint_artifact_compositor, animation_playback_rate,
       unsupported_properties);
-  return reasons | CheckCanStartElementOnCompositor(target_element);
+  return reasons | CheckCanStartElementOnCompositor(target_element, effect);
 }
 
 void CompositorAnimations::CancelIncompatibleAnimationsOnCompositor(
@@ -487,8 +490,9 @@ void CompositorAnimations::StartAnimationOnCompositor(
 void CompositorAnimations::CancelAnimationOnCompositor(
     const Element& element,
     CompositorAnimation* compositor_animation,
-    int id) {
-  if (CheckCanStartElementOnCompositor(element) != kNoFailure) {
+    int id,
+    const EffectModel& model) {
+  if (CheckCanStartElementOnCompositor(element, model) != kNoFailure) {
     // When an element is being detached, we cancel any associated
     // Animations for CSS animations. But by the time we get
     // here the mapping will have been removed.
@@ -504,8 +508,9 @@ void CompositorAnimations::PauseAnimationForTestingOnCompositor(
     const Element& element,
     const Animation& animation,
     int id,
-    base::TimeDelta pause_time) {
-  DCHECK_EQ(CheckCanStartElementOnCompositor(element), kNoFailure);
+    base::TimeDelta pause_time,
+    const EffectModel& model) {
+  DCHECK_EQ(CheckCanStartElementOnCompositor(element, model), kNoFailure);
   CompositorAnimation* compositor_animation =
       animation.GetCompositorAnimation();
   DCHECK(compositor_animation);

@@ -72,6 +72,14 @@ class CC_ANIMATION_EXPORT Animation : public base::RefCounted<Animation> {
   }
 
   void AttachElement(ElementId element_id);
+  // Specially designed for a custom property animation on a paint worklet
+  // element. It doesn't require an element id to run on the compositor thread.
+  // However, our compositor animation system requires the element to be on the
+  // property tree in order to keep ticking the animation. Therefore, we use a
+  // reserved element id for this animation so that the compositor animation
+  // system recognize it. We do not use 0 as the element id because 0 is
+  // kInvalidElementId.
+  void AttachNoElement();
   void DetachElement();
 
   void AddKeyframeModel(std::unique_ptr<KeyframeModel> keyframe_model);
@@ -134,6 +142,9 @@ class CC_ANIMATION_EXPORT Animation : public base::RefCounted<Animation> {
 
   // Delegates animation event
   void DelegateAnimationEvent(const AnimationEvent& event);
+
+  // Common code between AttachElement and AttachNoElement.
+  void AttachElementInternal(ElementId element_id);
 
  protected:
   explicit Animation(int id);

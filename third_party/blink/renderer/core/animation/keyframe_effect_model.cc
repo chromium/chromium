@@ -351,6 +351,17 @@ void KeyframeEffectModelBase::EnsureKeyframeGroups() const {
   }
 }
 
+bool KeyframeEffectModelBase::HasNonVariableProperty() const {
+  for (const auto& keyframe : keyframes_) {
+    for (const auto& property : keyframe->Properties()) {
+      if (!property.IsCSSProperty() ||
+          property.GetCSSProperty().PropertyID() != CSSPropertyID::kVariable)
+        return true;
+    }
+  }
+  return false;
+}
+
 void KeyframeEffectModelBase::EnsureInterpolationEffectPopulated() const {
   if (interpolation_effect_->IsPopulated())
     return;

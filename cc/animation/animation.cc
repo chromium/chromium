@@ -75,6 +75,15 @@ scoped_refptr<ElementAnimations> Animation::element_animations() const {
 }
 
 void Animation::AttachElement(ElementId element_id) {
+  DCHECK_NE(element_id.GetStableId(), ElementId::kReservedElementId);
+  AttachElementInternal(element_id);
+}
+
+void Animation::AttachNoElement() {
+  AttachElementInternal(ElementId(ElementId::kReservedElementId));
+}
+
+void Animation::AttachElementInternal(ElementId element_id) {
   keyframe_effect_->AttachElement(element_id);
   // Register animation only if layer AND host attached.
   if (animation_host_)

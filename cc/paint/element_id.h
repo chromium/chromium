@@ -11,6 +11,7 @@
 #include <functional>
 #include <iosfwd>
 #include <memory>
+#include <string>
 
 #include "base/check_op.h"
 #include "cc/paint/paint_export.h"
@@ -64,6 +65,9 @@ struct CC_PAINT_EXPORT ElementId {
   std::string ToString() const;
 
   static bool IsValid(ElementIdType id);
+  // An ElementId that is reserved for custom property animation on paint
+  // worklet element.
+  static const ElementIdType kReservedElementId;
 
  private:
   friend struct ElementIdHash;

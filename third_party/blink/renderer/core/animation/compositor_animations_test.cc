@@ -201,8 +201,10 @@ class AnimationCompositorAnimationsTest : public PaintTestConfigurations,
   }
 
   CompositorAnimations::FailureReasons CheckCanStartElementOnCompositor(
-      const Element& element) {
-    return CompositorAnimations::CheckCanStartElementOnCompositor(element);
+      const Element& element,
+      const EffectModel& model) {
+    return CompositorAnimations::CheckCanStartElementOnCompositor(element,
+                                                                  model);
   }
 
   void GetAnimationOnCompositor(
@@ -1328,6 +1330,7 @@ TEST_P(AnimationCompositorAnimationsTest, CanStartEffectOnCompositorBasic) {
       MakeGarbageCollected<StringKeyframeEffectModel>(non_css_frames_vector);
   EXPECT_TRUE(CanStartEffectOnCompositor(timing_, *non_css_frames) &
               CompositorAnimations::kAnimationAffectsNonCSSProperties);
+  EXPECT_TRUE(non_css_frames->HasNonVariableProperty());
   // NB: Important that non_css_frames_vector goes away and cleans up
   // before fake_name.
 }
@@ -1730,6 +1733,7 @@ TEST_P(AnimationCompositorAnimationsTest,
             keyframe_model->TargetProperty());
   EXPECT_EQ(keyframe_model->GetCustomPropertyNameForTesting(),
             property_name.Utf8().data());
+  EXPECT_FALSE(effect->HasNonVariableProperty());
 }
 
 TEST_P(AnimationCompositorAnimationsTest,
@@ -1905,18 +1909,21 @@ TEST_P(AnimationCompositorAnimationsTest,
   // animation.
   UpdateDummyTransformNode(properties,
                            CompositingReason::kActiveTransformAnimation);
-  EXPECT_EQ(CheckCanStartElementOnCompositor(*element),
-            CompositorAnimations::kNoFailure);
+  EXPECT_EQ(
+      CheckCanStartElementOnCompositor(*element, *keyframe_animation_effect2_),
+      CompositorAnimations::kNoFailure);
 
   // Setting to CompositingReasonNone should produce false.
   UpdateDummyTransformNode(properties, CompositingReason::kNone);
-  EXPECT_TRUE(CheckCanStartElementOnCompositor(*element) &
-              CompositorAnimations::kTargetHasInvalidCompositingState);
+  EXPECT_TRUE(
+      CheckCanStartElementOnCompositor(*element, *keyframe_animation_effect2_) &
+      CompositorAnimations::kTargetHasInvalidCompositingState);
 
   // Clearing the transform node entirely should also produce false.
   properties.ClearTransform();
-  EXPECT_TRUE(CheckCanStartElementOnCompositor(*element) &
-              CompositorAnimations::kTargetHasInvalidCompositingState);
+  EXPECT_TRUE(
+      CheckCanStartElementOnCompositor(*element, *keyframe_animation_effect2_) &
+      CompositorAnimations::kTargetHasInvalidCompositingState);
 
   element->SetLayoutObject(nullptr);
   LayoutObjectProxy::Dispose(layout_object);
@@ -1937,18 +1944,21 @@ TEST_P(AnimationCompositorAnimationsTest,
   // animation.
   UpdateDummyEffectNode(properties,
                         CompositingReason::kActiveTransformAnimation);
-  EXPECT_EQ(CheckCanStartElementOnCompositor(*element),
-            CompositorAnimations::kNoFailure);
+  EXPECT_EQ(
+      CheckCanStartElementOnCompositor(*element, *keyframe_animation_effect2_),
+      CompositorAnimations::kNoFailure);
 
   // Setting to CompositingReasonNone should produce false.
   UpdateDummyEffectNode(properties, CompositingReason::kNone);
-  EXPECT_TRUE(CheckCanStartElementOnCompositor(*element) &
-              CompositorAnimations::kTargetHasInvalidCompositingState);
+  EXPECT_TRUE(
+      CheckCanStartElementOnCompositor(*element, *keyframe_animation_effect2_) &
+      CompositorAnimations::kTargetHasInvalidCompositingState);
 
   // Clearing the effect node entirely should also produce false.
   properties.ClearEffect();
-  EXPECT_TRUE(CheckCanStartElementOnCompositor(*element) &
-              CompositorAnimations::kTargetHasInvalidCompositingState);
+  EXPECT_TRUE(
+      CheckCanStartElementOnCompositor(*element, *keyframe_animation_effect2_) &
+      CompositorAnimations::kTargetHasInvalidCompositingState);
 
   element->SetLayoutObject(nullptr);
   LayoutObjectProxy::Dispose(layout_object);
@@ -2012,6 +2022,20 @@ TEST_P(AnimationCompositorAnimationsTest, TrackRafAnimationNoneRegistered) {
   EXPECT_FALSE(host->NextFrameHasPendingRAF());
 }
 
+TEST_P(AnimationCompositorAnimationsTest, CompositedCustomProperty) {
+  RegisterProperty(GetDocument(), "--foo", "<number>", "0", false);
+  SetCustomProperty("--foo", "0");
+  StringKeyframeEffectModel* effect =
+      CreateKeyframeEffectModel(CreateReplaceOpKeyframe("--foo", "20", 0),
+                                CreateReplaceOpKeyframe("--foo", "100", 1.0));
+  LoadTestData("custom-property.html");
+  Document* document = GetFrame()->GetDocument();
+  Element* target = document->getElementById("target");
+  // Make sure the animation is started on the compositor.
+  EXPECT_EQ(CheckCanStartElementOnCompositor(*target, *effect),
+            CompositorAnimations::kNoFailure);
+}
+
 TEST_P(AnimationCompositorAnimationsTest, CompositedTransformAnimation) {
   // TODO(wangxianzhu): Fix this test for CompositeAfterPaint.
   if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
@@ -2041,8 +2065,9 @@ TEST_P(AnimationCompositorAnimationsTest, CompositedTransformAnimation) {
   EXPECT_EQ(cc::kNotScaled, cc_transform->maximum_animation_scale);
 
   // Make sure the animation is started on the compositor.
-  EXPECT_EQ(CheckCanStartElementOnCompositor(*target),
-            CompositorAnimations::kNoFailure);
+  EXPECT_EQ(
+      CheckCanStartElementOnCompositor(*target, *keyframe_animation_effect2_),
+      CompositorAnimations::kNoFailure);
   EXPECT_EQ(document->Timeline().AnimationsNeedingUpdateCount(), 1u);
 }
 
@@ -2075,8 +2100,9 @@ TEST_P(AnimationCompositorAnimationsTest, CompositedScaleAnimation) {
   EXPECT_EQ(5.f, cc_transform->maximum_animation_scale);
 
   // Make sure the animation is started on the compositor.
-  EXPECT_EQ(CheckCanStartElementOnCompositor(*target),
-            CompositorAnimations::kNoFailure);
+  EXPECT_EQ(
+      CheckCanStartElementOnCompositor(*target, *keyframe_animation_effect2_),
+      CompositorAnimations::kNoFailure);
   EXPECT_EQ(document->Timeline().AnimationsNeedingUpdateCount(), 1u);
 }
 
@@ -2097,8 +2123,9 @@ TEST_P(AnimationCompositorAnimationsTest,
   // Make sure composited animation is running on #target.
   EXPECT_TRUE(transform->HasDirectCompositingReasons());
   EXPECT_TRUE(transform->HasActiveTransformAnimation());
-  EXPECT_EQ(CheckCanStartElementOnCompositor(*target),
-            CompositorAnimations::kNoFailure);
+  EXPECT_EQ(
+      CheckCanStartElementOnCompositor(*target, *keyframe_animation_effect2_),
+      CompositorAnimations::kNoFailure);
   // Make sure the animation state is initialized in paint properties.
   auto* property_trees =
       document->View()->RootCcLayer()->layer_tree_host()->property_trees();
@@ -2152,8 +2179,9 @@ TEST_P(AnimationCompositorAnimationsTest,
   LoadTestData("transform-animation-on-svg.html");
   Document* document = GetFrame()->GetDocument();
   Element* target = document->getElementById("dots");
-  EXPECT_TRUE(CheckCanStartElementOnCompositor(*target) &
-              CompositorAnimations::kTargetHasInvalidCompositingState);
+  EXPECT_TRUE(
+      CheckCanStartElementOnCompositor(*target, *keyframe_animation_effect2_) &
+      CompositorAnimations::kTargetHasInvalidCompositingState);
   EXPECT_EQ(document->Timeline().AnimationsNeedingUpdateCount(), 4u);
 }
 
@@ -2174,8 +2202,9 @@ TEST_P(AnimationCompositorAnimationsTest,
   another_document->adoptNode(target, ASSERT_NO_EXCEPTION);
 
   // This should not crash.
-  EXPECT_NE(CheckCanStartElementOnCompositor(*target),
-            CompositorAnimations::kNoFailure);
+  EXPECT_NE(
+      CheckCanStartElementOnCompositor(*target, *keyframe_animation_effect2_),
+      CompositorAnimations::kNoFailure);
 }
 
 }  // namespace blink

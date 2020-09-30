@@ -7,6 +7,7 @@
 #include <inttypes.h>
 #include <limits>
 #include <ostream>
+#include <string>
 
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/traced_value.h"
@@ -14,6 +15,8 @@
 namespace cc {
 
 const ElementIdType ElementId::kInvalidElementId = 0;
+const ElementIdType ElementId::kReservedElementId =
+    std::numeric_limits<ElementIdType>::max();
 
 // static
 bool ElementId::IsValid(ElementIdType id) {

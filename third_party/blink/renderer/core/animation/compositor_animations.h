@@ -127,11 +127,13 @@ class CORE_EXPORT CompositorAnimations {
       double animation_playback_rate);
   static void CancelAnimationOnCompositor(const Element&,
                                           CompositorAnimation*,
-                                          int id);
+                                          int id,
+                                          const EffectModel& model);
   static void PauseAnimationForTestingOnCompositor(const Element&,
                                                    const Animation&,
                                                    int id,
-                                                   base::TimeDelta pause_time);
+                                                   base::TimeDelta pause_time,
+                                                   const EffectModel&);
 
   static void AttachCompositedLayers(Element&, CompositorAnimation*);
 
@@ -174,7 +176,9 @@ class CORE_EXPORT CompositorAnimations {
       const PaintArtifactCompositor*,
       double animation_playback_rate,
       PropertyHandleSet* unsupported_properties = nullptr);
-  static FailureReasons CheckCanStartElementOnCompositor(const Element&);
+  static FailureReasons CheckCanStartElementOnCompositor(
+      const Element& element,
+      const EffectModel& model);
 
   friend class AnimationCompositorAnimationsTest;
 };

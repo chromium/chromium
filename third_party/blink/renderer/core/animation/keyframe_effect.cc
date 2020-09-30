@@ -49,6 +49,7 @@
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
+#include "third_party/blink/renderer/platform/animation/compositor_animation.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -385,10 +386,12 @@ bool KeyframeEffect::CancelAnimationOnCompositor(
     return false;
   if (!effect_target_ || !effect_target_->GetLayoutObject())
     return false;
+  DCHECK(Model());
   for (const auto& compositor_keyframe_model_id :
        compositor_keyframe_model_ids_) {
     CompositorAnimations::CancelAnimationOnCompositor(
-        *effect_target_, compositor_animation, compositor_keyframe_model_id);
+        *effect_target_, compositor_animation, compositor_keyframe_model_id,
+        *Model());
   }
   compositor_keyframe_model_ids_.clear();
   return true;
@@ -396,6 +399,7 @@ bool KeyframeEffect::CancelAnimationOnCompositor(
 
 void KeyframeEffect::CancelIncompatibleAnimationsOnCompositor() {
   if (effect_target_ && GetAnimation() && model_->HasFrames()) {
+    DCHECK(Model());
     CompositorAnimations::CancelIncompatibleAnimationsOnCompositor(
         *effect_target_, *GetAnimation(), *Model());
   }
@@ -407,19 +411,33 @@ void KeyframeEffect::PauseAnimationForTestingOnCompositor(
   if (!effect_target_ || !effect_target_->GetLayoutObject())
     return;
   DCHECK(GetAnimation());
+  DCHECK(Model());
   for (const auto& compositor_keyframe_model_id :
        compositor_keyframe_model_ids_) {
     CompositorAnimations::PauseAnimationForTestingOnCompositor(
         *effect_target_, *GetAnimation(), compositor_keyframe_model_id,
-        pause_time);
+        pause_time, *Model());
   }
 }
 
 void KeyframeEffect::AttachCompositedLayers() {
   DCHECK(effect_target_);
   DCHECK(GetAnimation());
-  CompositorAnimations::AttachCompositedLayers(
-      *effect_target_, GetAnimation()->GetCompositorAnimation());
+  CompositorAnimation* compositor_animation =
+      GetAnimation()->GetCompositorAnimation();
+  // If this is a paint worklet element and it is animating custom property
+  // only, it doesn't require an element id to run on the compositor thread.
+  // However, our compositor animation system requires the element to be on the
+  // property tree in order to keep ticking the animation. Therefore, we give a
+  // very special element id for this animation so that the compositor animation
+  // system recognize it. We do not use 0 as the element id because 0 is
+  // kInvalidElementId.
+  if (compositor_animation && !Model()->HasNonVariableProperty()) {
+    compositor_animation->AttachNoElement();
+    return;
+  }
+  CompositorAnimations::AttachCompositedLayers(*effect_target_,
+                                               compositor_animation);
 }
 
 bool KeyframeEffect::HasAnimation() const {
