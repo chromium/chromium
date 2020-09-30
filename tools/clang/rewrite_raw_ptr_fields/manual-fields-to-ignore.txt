@@ -155,8 +155,20 @@ device::BluetoothDevice::adapter_
 vr::LocationBarState::vector_icon
 vr::OmniboxSuggestion::icon
 
+# Populated manually - assigned to |auto*| in ranged loop on an array
+# initializer literal comprising of those pointers.
+DownloadItemView::discard_button_
+DownloadItemView::open_now_button_
+DownloadItemView::save_button_
+DownloadItemView::scan_button_
+
 # Populated manually - other compile-time reasons
 logging::CheckOpResult::message_  # cyclic #include
+views::internal::ClassPropertySetter::property_  # passed to templated param T*
+
+#######
+# CheckedPtr2/MTECheckedPtr-specific sections
+#######
 
 # Populated manually - these pointers are assigned invalid address (with top
 # bits sets), which CheckedPtr is unable to handle, leading to run-time crashes.
@@ -166,8 +178,7 @@ blink::ControlKey::name_
 performance_manager::frame_priority::BoostingVoteAggregator::Edge::src_
 performance_manager::frame_priority::BoostingVoteAggregator::Edge::dst_
 
-# Populated manually - these pointers crash when converted to CheckedPtr.
-# It's mostly mismatching tag, unless otherwise specified.
+# Populated manually - these pointers crash due to a mismatching tag.
 # Under investigation.
 base::internal::UnretainedWrapper::ptr_
 blink::NGPhysicalContainerFragment::buffer_
@@ -179,4 +190,71 @@ content::RenderViewImpl::webview_
 mojo::core::WatcherDispatcher::last_watch_to_block_arming_
 net::IOBuffer::data_
 safe_browsing::RemoteSafeBrowsingDatabaseManager::ClientRequest::client_
-x11::ReadBuffer::fds  # Assigned address appears unallocated
+
+# Populated manually - this pointer crashes, because assigned address appears
+# unallocated.
+x11::ReadBuffer::fds
+
+#######
+# End of CheckedPtr2/MTECheckedPtr-specific sections
+#######
+
+#######
+# BackupRefPtr-specific sections
+#######
+
+# Populated manually - std::is_trivially_destructible static_assert failure
+blink::HTMLElementEquivalent::tag_name_
+blink::PrerendererClient::client_
+blink::weakness_marking_test::EphemeronCallbacksCounter::count_holder_
+sql::recover::InnerPageDecoder::db_reader_
+sql::recover::LeafPageDecoder::db_reader_
+WTF::ListHashSet::head_
+WTF::ListHashSet::tail_
+
+# Populated manually - exit-time destructor
+gpu::GpuControlList::Conditions::devices
+gpu::GpuControlList::Conditions::driver_info
+gpu::GpuControlList::Conditions::gl_strings
+gpu::GpuControlList::Conditions::machine_model_info
+gpu::GpuControlList::Conditions::intel_gpu_series_list
+gpu::GpuControlList::Conditions::more
+gpu::GpuControlList::Entry::features
+gpu::GpuControlList::Entry::disabled_extensions
+gpu::GpuControlList::Entry::disabled_webgl_extensions
+gpu::GpuControlList::Entry::cr_bugs
+gpu::GpuControlList::Entry::exceptions
+media::ListElementInfo::id_info_
+media::SupportedTypeInfo::codecs
+tracing::(anonymous namespace)::AllowlistEntry::arg_name_filter
+net::(anonymous namespace)::CTRequiredPolicy::roots
+net::(anonymous namespace)::CTRequiredPolicy::exceptions
+net::HttpCache::Transaction::SetRequest(const net::NetLogWithSource &)::(anonymous struct)::search
+net::TransportSecurityStateSource::Pinset::accepted_pins
+net::TransportSecurityStateSource::Pinset::rejected_pins
+net::TransportSecurityStateSource::expect_ct_report_uris
+net::TransportSecurityStateSource::pinsets
+WTF::StaticSingleton::InstanceStorage::pointer_
+
+# Populated manually - attempt to use a deleted function (union's destructor is
+# deleted, because an inner struct has CheckedPtr field)
+flags_ui::FeatureEntry::(anonymous union)::(anonymous struct)::feature
+ui::NativeTheme::MenuSeparatorExtraParams::paint_rect
+
+# Populated manually - flexible array with non-trivial destruction
+blink::ShapeResultView::(anonymous struct)::alignment
+
+# Populated manually - these pointers crash, because a base class ctor accesses
+# child class ptr fields before they're initialized.
+blink::CacheEntry::next_
+blink::CacheEntry::prev_
+WTF::LruCache::next_
+WTF::LruCache::prev_
+
+# Populated manually - these pointers crash, due to use-after-move.
+gpu::gles2::PassthroughProgramCache::ProgramCacheValue::program_cache_
+gpu::gles2::ProgramCache::ScopedCacheUse::cache_
+
+#######
+# End of BackupRefPtr-specific sections
+#######
