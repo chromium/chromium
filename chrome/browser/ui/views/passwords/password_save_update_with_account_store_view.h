@@ -104,6 +104,10 @@ class PasswordSaveUpdateWithAccountStoreView
 
   void CloseIPHBubbleIfOpen();
 
+  // Announces to the screen readers a change in the bubble between Save and
+  // Update states.
+  void AnnounceSaveUpdateChange();
+
   // Used for both the username and password editable comboboxes.
   void OnContentChanged();
 
@@ -134,6 +138,10 @@ class PasswordSaveUpdateWithAccountStoreView
   // promo is open and get called back when it closes.
   ScopedObserver<views::Widget, views::WidgetObserver>
       observed_account_storage_promo_{this};
+
+  // Hidden view that will contain status text for immediate output by
+  // screen readers when the bubble changes state between Save and Update.
+  views::View* accessibility_alert_ = nullptr;
 
   // Used to add |username_dropdown_| as an observer to the
   // AnimatingLayoutManager. This is needed such that the |username_dropdown_|

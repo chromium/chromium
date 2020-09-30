@@ -39,6 +39,7 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
@@ -467,6 +468,13 @@ PasswordSaveUpdateWithAccountStoreView::PasswordSaveUpdateWithAccountStoreView(
     // The account picker is only visible in Save bubbble, not Update bubble.
     if (destination_dropdown_)
       destination_dropdown_->SetVisible(!controller_.IsCurrentStateUpdate());
+
+    // Only non-federated credentials bubble has a username field and can
+    // change states between Save and Update. Therefore, we need to have the
+    // `accessibility_alert_` to inform screen readers about thatchange.
+    accessibility_alert_ =
+        root_view->AddChildView(std::make_unique<views::View>());
+    AddChildView(accessibility_alert_);
   }
 
   {
@@ -671,12 +679,19 @@ void PasswordSaveUpdateWithAccountStoreView::UpdateBubbleUIElements() {
       l10n_util::GetStringUTF16(
           is_update_bubble_ ? IDS_PASSWORD_MANAGER_CANCEL_BUTTON
                             : IDS_PASSWORD_MANAGER_BUBBLE_BLOCKLIST_BUTTON));
+  // If the title is going to change, we should announce it to the screen
+  // readers.
+  bool should_announce_save_update_change =
+      GetWindowTitle() != controller_.GetTitle();
 
   SetTitle(controller_.GetTitle());
 
   // Nothing to do if the bubble isn't visible yet.
   if (!GetWidget())
     return;
+
+  if (should_announce_save_update_change)
+    AnnounceSaveUpdateChange();
 
   // Nothing else to do if the account picker hasn't been created.
   if (!destination_dropdown_)
@@ -777,6 +792,27 @@ void PasswordSaveUpdateWithAccountStoreView::CloseIPHBubbleIfOpen() {
   if (!account_storage_promo_)
     return;
   account_storage_promo_->CloseBubble();
+}
+
+void PasswordSaveUpdateWithAccountStoreView::AnnounceSaveUpdateChange() {
+  // Federated credentials bubbles don't change the state between Update and
+  // Save, and hence they don't have an `accessibility_alert_` view created.
+  if (!accessibility_alert_)
+    return;
+
+  base::string16 accessibility_alert_text = GetWindowTitle();
+  if (destination_dropdown_ && !controller_.IsCurrentStateUpdate()) {
+    // For Save bubbles, if the `destination_dropdown_` exists (for account
+    // store users), we use the labels in the `destination_dropdown_` instead.
+    accessibility_alert_text = destination_dropdown_->GetTextForRow(
+        destination_dropdown_->GetSelectedIndex());
+  }
+
+  views::ViewAccessibility& ax = accessibility_alert_->GetViewAccessibility();
+  ax.OverrideRole(ax::mojom::Role::kAlert);
+  ax.OverrideName(accessibility_alert_text);
+  accessibility_alert_->NotifyAccessibilityEvent(ax::mojom::Event::kAlert,
+                                                 true);
 }
 
 void PasswordSaveUpdateWithAccountStoreView::OnContentChanged() {
