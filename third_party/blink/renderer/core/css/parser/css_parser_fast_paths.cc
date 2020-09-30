@@ -622,17 +622,6 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
              value_id == CSSValueID::kOptimizequality;
     case CSSPropertyID::kDirection:
       return value_id == CSSValueID::kLtr || value_id == CSSValueID::kRtl;
-    case CSSPropertyID::kDisplay:
-      return (value_id >= CSSValueID::kInline &&
-              value_id <= CSSValueID::kInlineFlex) ||
-             value_id == CSSValueID::kWebkitFlex ||
-             value_id == CSSValueID::kWebkitInlineFlex ||
-             value_id == CSSValueID::kNone || value_id == CSSValueID::kGrid ||
-             value_id == CSSValueID::kInlineGrid ||
-             value_id == CSSValueID::kContents ||
-             (RuntimeEnabledFeatures::MathMLCoreEnabled() &&
-              (value_id == CSSValueID::kMath ||
-               value_id == CSSValueID::kInlineMath));
     case CSSPropertyID::kDominantBaseline:
       return value_id == CSSValueID::kAuto ||
              value_id == CSSValueID::kAlphabetic ||
@@ -1034,7 +1023,6 @@ bool CSSParserFastPaths::IsKeywordPropertyID(CSSPropertyID property_id) {
     case CSSPropertyID::kColorInterpolationFilters:
     case CSSPropertyID::kColorRendering:
     case CSSPropertyID::kDirection:
-    case CSSPropertyID::kDisplay:
     case CSSPropertyID::kDominantBaseline:
     case CSSPropertyID::kEmptyCells:
     case CSSPropertyID::kFillRule:
@@ -1132,7 +1120,6 @@ bool CSSParserFastPaths::IsKeywordPropertyID(CSSPropertyID property_id) {
 
 bool CSSParserFastPaths::IsPartialKeywordPropertyID(CSSPropertyID property_id) {
   switch (property_id) {
-    case CSSPropertyID::kDisplay:
     case CSSPropertyID::kListStyleType:
       return true;
     default:

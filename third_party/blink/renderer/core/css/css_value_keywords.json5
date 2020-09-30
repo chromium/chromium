@@ -489,16 +489,19 @@
     "katakana-iroha",
     //none
     //
-    // display
-    // The order of this enum must match the order found in CSSParserFastPaths::IsValidKeywordPropertyAndValue().
-    //
+    // The order must match the order found in IsDisplayOutside().
     "inline",
     "block",
+    // The order must match the order found in IsDisplayInside().
     "flow-root",
-    "list-item",
-    "inline-block",
     "table",
-    "inline-table",
+    "flex",
+    "grid",
+    "math",
+    // The order must match the order found in IsDisplayBox().
+    "contents",
+    //none
+    // The order must match the order found in IsDisplayInternal().
     "table-row-group",
     "table-header-group",
     "table-footer-group",
@@ -507,20 +510,18 @@
     "table-column",
     "table-cell",
     "table-caption",
+    // The order must match the order found in IsDisplayLegacy().
+    "inline-block",
+    "inline-table",
+    "inline-flex",
+    "inline-grid",
     "-webkit-box",
     "-webkit-inline-box",
-    "flex",
-    "inline-flex",
-    "grid",
-    "inline-grid",
-    "math",
-    "inline-math",
-    "contents",
-    //none
     "-webkit-flex",
     "-webkit-inline-flex",
     "layout",
     "inline-layout",
+    "list-item",
     //
     // cursor
     // The order of this enum must match the order found in CSSPropertyParser::ConsumeCursor().

@@ -171,8 +171,6 @@ inline EDisplay CssValueIDToPlatformEnum(CSSValueID v) {
     return EDisplay::kInlineFlex;
   if (v == CSSValueID::kMath)
     return EDisplay::kMath;
-  if (v == CSSValueID::kInlineMath)
-    return EDisplay::kInlineMath;
 
   NOTREACHED();
   return EDisplay::kInline;
@@ -359,8 +357,6 @@ inline CSSValueID PlatformEnumToCSSValueID(EDisplay v) {
     return CSSValueID::kContents;
   if (v == EDisplay::kMath)
     return CSSValueID::kMath;
-  if (v == EDisplay::kInlineMath)
-    return CSSValueID::kInlineMath;
 
   NOTREACHED();
   return CSSValueID::kInline;

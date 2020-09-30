@@ -12,7 +12,7 @@ if (supportsEditableMathML) {
         selection => {
             const target = selection.document.getElementById('target');
             const style = selection.window.getComputedStyle(target);
-            supportsEditableMathML = style.display === 'inline-math';
+            supportsEditableMathML = style.display === 'math';
         },
         '<math id="target">a</math>',
         'Check whether we have MathML or not');

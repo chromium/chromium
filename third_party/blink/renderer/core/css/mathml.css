@@ -29,13 +29,13 @@
 
 /* Default display */
 * {
-    display: math;
+    display: block math;
     font-size: math;
 }
 
 /* By default, we only display the MathML formulas without any formatting other than the one specified by the display attribute. */
 math {
-    display: inline-math;
+    display: inline math;
     math-shift: normal;
     math-style: compact;
     font-size: inherited;
@@ -43,7 +43,7 @@ math {
 }
 
 math[display="block"] {
-    display: math;
+    display: block math;
     text-align: center;
 }
 

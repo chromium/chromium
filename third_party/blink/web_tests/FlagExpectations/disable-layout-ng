@@ -683,3 +683,4 @@ crbug.com/1128262 external/wpt/css/css-flexbox/table-as-item-fixed-min-width-3.h
 
 # math display values are only supported when MathML Core is enabled.
 crbug.com/6606 external/wpt/css/css-display/display-math-on-non-mathml-elements.html [ Failure ]
+crbug.com/6606 external/wpt/css/css-typed-om/the-stylepropertymap/properties/display.html [ Failure ]

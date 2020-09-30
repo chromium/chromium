@@ -44,7 +44,7 @@
         "table-row", "table-column-group", "table-column", "table-cell",
         "table-caption", "-webkit-box", "-webkit-inline-box", "flex",
         "inline-flex", "grid", "inline-grid", "contents", "flow-root", "none",
-        "layout-custom", "inline-layout-custom", "math", "inline-math"
+        "layout-custom", "inline-layout-custom", "math", "block math"
       ],
       default_value: "inline",
     },
@@ -74,7 +74,7 @@
         "table-row", "table-column-group", "table-column", "table-cell",
         "table-caption", "-webkit-box", "-webkit-inline-box", "flex",
         "inline-flex", "grid", "inline-grid", "contents", "flow-root", "none",
-        "layout-custom", "inline-layout-custom", "math", "inline-math"
+        "layout-custom", "inline-layout-custom", "math", "block math"
       ],
       default_value: "inline",
     },

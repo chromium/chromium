@@ -2687,7 +2687,7 @@ class ComputedStyle : public ComputedStyleBase,
   }
 
   static bool IsDisplayMathBox(EDisplay display) {
-    return display == EDisplay::kMath || display == EDisplay::kInlineMath;
+    return display == EDisplay::kMath || display == EDisplay::kBlockMath;
   }
 
   static bool IsDisplayLayoutCustomBox(EDisplay display) {
@@ -2700,8 +2700,7 @@ class ComputedStyle : public ComputedStyleBase,
            display == EDisplay::kWebkitInlineBox ||
            display == EDisplay::kInlineFlex ||
            display == EDisplay::kInlineTable ||
-           display == EDisplay::kInlineGrid ||
-           display == EDisplay::kInlineMath ||
+           display == EDisplay::kInlineGrid || display == EDisplay::kMath ||
            display == EDisplay::kInlineLayoutCustom;
   }
 

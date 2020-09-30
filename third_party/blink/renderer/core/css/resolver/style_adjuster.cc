@@ -128,7 +128,7 @@ static EDisplay EquivalentBlockDisplay(EDisplay display) {
     case EDisplay::kWebkitBox:
     case EDisplay::kFlex:
     case EDisplay::kGrid:
-    case EDisplay::kMath:
+    case EDisplay::kBlockMath:
     case EDisplay::kListItem:
     case EDisplay::kFlowRoot:
     case EDisplay::kLayoutCustom:
@@ -141,8 +141,8 @@ static EDisplay EquivalentBlockDisplay(EDisplay display) {
       return EDisplay::kFlex;
     case EDisplay::kInlineGrid:
       return EDisplay::kGrid;
-    case EDisplay::kInlineMath:
-      return EDisplay::kMath;
+    case EDisplay::kMath:
+      return EDisplay::kBlockMath;
     case EDisplay::kInlineLayoutCustom:
       return EDisplay::kLayoutCustom;
 
@@ -666,10 +666,10 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
     // math display values on non-MathML elements compute to flow display
     // values.
     if ((!element || !element->IsMathMLElement()) &&
-        (style.Display() == EDisplay::kMath ||
-         style.Display() == EDisplay::kInlineMath)) {
-      style.SetDisplay(style.Display() == EDisplay::kMath ? EDisplay::kBlock
-                                                          : EDisplay::kInline);
+        style.IsDisplayMathBox(style.Display())) {
+      style.SetDisplay(style.Display() == EDisplay::kBlockMath
+                           ? EDisplay::kBlock
+                           : EDisplay::kInline);
     }
 
     // We don't adjust the first letter style earlier because we may change the

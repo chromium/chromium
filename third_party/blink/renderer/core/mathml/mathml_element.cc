@@ -70,12 +70,12 @@ void MathMLElement::CollectStyleForPresentationAttribute(
              HasTagName(mathml_names::kMathTag)) {
     if (EqualIgnoringASCIICase(value, "inline")) {
       AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kDisplay,
-                                              CSSValueID::kInlineMath);
+                                              CSSValueID::kMath);
       AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kMathStyle,
                                               CSSValueID::kCompact);
     } else if (EqualIgnoringASCIICase(value, "block")) {
       AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kDisplay,
-                                              CSSValueID::kMath);
+                                              "block math");
       AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kMathStyle,
                                               CSSValueID::kNormal);
     }

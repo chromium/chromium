@@ -285,7 +285,7 @@ LayoutObject* LayoutObject::CreateObject(Element* element,
       UseCounter::Count(element->GetDocument(), WebFeature::kCSSGridLayout);
       return LayoutObjectFactory::CreateGrid(*element, style, legacy);
     case EDisplay::kMath:
-    case EDisplay::kInlineMath:
+    case EDisplay::kBlockMath:
       return LayoutObjectFactory::CreateMath(*element, style, legacy);
     case EDisplay::kLayoutCustom:
     case EDisplay::kInlineLayoutCustom:

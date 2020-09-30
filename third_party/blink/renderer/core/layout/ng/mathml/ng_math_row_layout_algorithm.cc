@@ -18,10 +18,10 @@ namespace blink {
 namespace {
 
 inline LayoutUnit InlineOffsetForDisplayMathCentering(
-    bool is_display_math,
+    bool is_display_block_math,
     LayoutUnit available_inline_size,
     LayoutUnit max_row_inline_size) {
-  if (is_display_math)
+  if (is_display_block_math)
     return (available_inline_size - max_row_inline_size) / 2;
   return LayoutUnit();
 }
@@ -116,8 +116,8 @@ void NGMathRowLayoutAlgorithm::LayoutRowItems(
 scoped_refptr<const NGLayoutResult> NGMathRowLayoutAlgorithm::Layout() {
   DCHECK(!BreakToken());
 
-  bool is_display_math =
-      Node().IsMathRoot() && Style().Display() == EDisplay::kMath;
+  bool is_display_block_math =
+      Node().IsMathRoot() && (Style().Display() == EDisplay::kBlockMath);
 
   LogicalSize max_row_size;
   LayoutUnit max_row_block_baseline;
@@ -130,7 +130,7 @@ scoped_refptr<const NGLayoutResult> NGMathRowLayoutAlgorithm::Layout() {
   // Add children taking into account centering, baseline and
   // border/scrollbar/padding.
   LayoutUnit center_offset = InlineOffsetForDisplayMathCentering(
-      is_display_math, container_builder_.InlineSize(),
+      is_display_block_math, container_builder_.InlineSize(),
       max_row_size.inline_size);
 
   LogicalOffset adjust_offset = BorderScrollbarPadding().StartOffset();

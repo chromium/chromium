@@ -67,10 +67,10 @@ TEST(CSSParserFastPathsTest, ParseRevert) {
 
   // Revert enabled, IsKeywordPropertyID=true
   {
-    DCHECK(CSSParserFastPaths::IsKeywordPropertyID(CSSPropertyID::kDisplay));
+    DCHECK(CSSParserFastPaths::IsKeywordPropertyID(CSSPropertyID::kDirection));
     ScopedCSSRevertForTest scoped_revert(true);
     CSSValue* value = CSSParserFastPaths::MaybeParseValue(
-        CSSPropertyID::kDisplay, "revert", kHTMLStandardMode);
+        CSSPropertyID::kDirection, "revert", kHTMLStandardMode);
     ASSERT_TRUE(value);
     EXPECT_TRUE(value->IsRevertValue());
   }
@@ -86,10 +86,10 @@ TEST(CSSParserFastPathsTest, ParseRevert) {
 
   // Revert disabled, IsKeywordPropertyID=true
   {
-    DCHECK(CSSParserFastPaths::IsKeywordPropertyID(CSSPropertyID::kDisplay));
+    DCHECK(CSSParserFastPaths::IsKeywordPropertyID(CSSPropertyID::kDirection));
     ScopedCSSRevertForTest scoped_revert(false);
     CSSValue* value = CSSParserFastPaths::MaybeParseValue(
-        CSSPropertyID::kDisplay, "revert", kHTMLStandardMode);
+        CSSPropertyID::kDirection, "revert", kHTMLStandardMode);
     EXPECT_FALSE(value);
   }
 }

@@ -2294,11 +2294,72 @@ void Direction::ApplyValue(StyleResolverState& state,
       To<CSSIdentifierValue>(value).ConvertTo<TextDirection>());
 }
 
+namespace {
+
+static bool IsDisplayOutside(CSSValueID id) {
+  return id >= CSSValueID::kInline && id <= CSSValueID::kBlock;
+}
+
+static bool IsDisplayInside(CSSValueID id) {
+  if (id >= CSSValueID::kFlowRoot && id <= CSSValueID::kGrid)
+    return true;
+  if (id == CSSValueID::kMath)
+    return RuntimeEnabledFeatures::MathMLCoreEnabled();
+  return false;
+}
+
+static bool IsDisplayBox(CSSValueID id) {
+  return css_parsing_utils::IdentMatches<CSSValueID::kNone,
+                                         CSSValueID::kContents>(id);
+}
+
+static bool IsDisplayInternal(CSSValueID id) {
+  return id >= CSSValueID::kTableRowGroup && id <= CSSValueID::kTableCaption;
+}
+
+static bool IsDisplayLegacy(CSSValueID id) {
+  return id >= CSSValueID::kInlineBlock && id <= CSSValueID::kWebkitInlineFlex;
+}
+
+}  // namespace
+
 const CSSValue* Display::ParseSingleValue(CSSParserTokenRange& range,
                                           const CSSParserContext& context,
                                           const CSSParserLocalContext&) const {
-  // NOTE: All the keyword values for the display property are handled by the
-  // CSSParserFastPaths.
+  CSSValueID id = range.Peek().Id();
+  CSSIdentifierValue* display_outside = nullptr;
+  CSSIdentifierValue* display_inside = nullptr;
+  if (IsDisplayOutside(id)) {
+    display_outside = css_parsing_utils::ConsumeIdent(range);
+    if (range.AtEnd())
+      return display_outside;
+    id = range.Peek().Id();
+    if (!IsDisplayInside(id))
+      return nullptr;
+    display_inside = css_parsing_utils::ConsumeIdent(range);
+  } else if (IsDisplayInside(id)) {
+    display_inside = css_parsing_utils::ConsumeIdent(range);
+    if (range.AtEnd())
+      return display_inside;
+    id = range.Peek().Id();
+    if (!IsDisplayOutside(id))
+      return nullptr;
+    display_outside = css_parsing_utils::ConsumeIdent(range);
+  }
+  if (display_outside && display_inside) {
+    // TODO(crbug.com/995106): should apply to more than just math.
+    if (display_inside->GetValueID() == CSSValueID::kMath) {
+      CSSValueList* parsed_values = CSSValueList::CreateSpaceSeparated();
+      parsed_values->Append(*display_outside);
+      parsed_values->Append(*display_inside);
+      return parsed_values;
+    }
+    return nullptr;
+  }
+  if (id == CSSValueID::kListItem || IsDisplayBox(id) ||
+      IsDisplayInternal(id) || IsDisplayLegacy(id))
+    return css_parsing_utils::ConsumeIdent(range);
+
   if (!RuntimeEnabledFeatures::CSSLayoutAPIEnabled())
     return nullptr;
 
@@ -2336,6 +2397,16 @@ const CSSValue* Display::CSSValueFromComputedStyleInternal(
         style.IsDisplayInlineType());
   }
 
+  if (style.Display() == EDisplay::kBlockMath) {
+    CSSValueList* values = CSSValueList::CreateSpaceSeparated();
+    if (style.Display() == EDisplay::kBlockMath)
+      values->Append(*CSSIdentifierValue::Create(CSSValueID::kBlock));
+    else
+      values->Append(*CSSIdentifierValue::Create(CSSValueID::kInline));
+    values->Append(*CSSIdentifierValue::Create(CSSValueID::kMath));
+    return values;
+  }
+
   return CSSIdentifierValue::Create(style.Display());
 }
 
@@ -2357,6 +2428,24 @@ void Display::ApplyValue(StyleResolverState& state,
     state.Style()->SetDisplay(identifier_value->ConvertTo<EDisplay>());
     state.Style()->SetDisplayLayoutCustomName(
         ComputedStyleInitialValues::InitialDisplayLayoutCustomName());
+    return;
+  }
+
+  if (value.IsValueList()) {
+    state.Style()->SetDisplayLayoutCustomName(
+        ComputedStyleInitialValues::InitialDisplayLayoutCustomName());
+    const CSSValueList& display_pair = To<CSSValueList>(value);
+    DCHECK_EQ(display_pair.length(), 2u);
+    DCHECK(display_pair.Item(0).IsIdentifierValue());
+    DCHECK(display_pair.Item(1).IsIdentifierValue());
+    const auto& outside = To<CSSIdentifierValue>(display_pair.Item(0));
+    const auto& inside = To<CSSIdentifierValue>(display_pair.Item(1));
+    // TODO(crbug.com/995106): should apply to more than just math.
+    DCHECK(inside.GetValueID() == CSSValueID::kMath);
+    if (outside.GetValueID() == CSSValueID::kBlock)
+      state.Style()->SetDisplay(EDisplay::kBlockMath);
+    else
+      state.Style()->SetDisplay(EDisplay::kMath);
     return;
   }
 
