@@ -10,6 +10,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceGroup;
@@ -29,11 +30,16 @@ import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridge;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
+import org.chromium.chrome.browser.signin.IdentityServicesProvider;
+import org.chromium.chrome.browser.signin.SignOutDialogFragment;
+import org.chromium.chrome.browser.signin.SigninManager;
 import org.chromium.chrome.browser.signin.UnifiedConsentServiceBridge;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.prefs.PrefService;
+import org.chromium.components.signin.GAIAServiceType;
+import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 
@@ -41,7 +47,12 @@ import org.chromium.content_public.browser.UiThreadTaskTraits;
  * Settings fragment to enable Sync and other services that communicate with Google.
  */
 public class GoogleServicesSettings
-        extends PreferenceFragmentCompat implements Preference.OnPreferenceChangeListener {
+        extends PreferenceFragmentCompat implements Preference.OnPreferenceChangeListener,
+                                                    SignOutDialogFragment.SignOutDialogListener {
+    private static final String SIGN_OUT_DIALOG_TAG = "sign_out_dialog_tag";
+    private static final String CLEAR_DATA_PROGRESS_DIALOG_TAG = "clear_data_progress";
+
+    private static final String PREF_ALLOW_SIGNIN = "allow_signin";
     private static final String PREF_SEARCH_SUGGESTIONS = "search_suggestions";
     private static final String PREF_NAVIGATION_ERROR = "navigation_error";
     private static final String PREF_SAFE_BROWSING = "safe_browsing";
@@ -61,6 +72,7 @@ public class GoogleServicesSettings
     private final SharedPreferencesManager mSharedPreferencesManager =
             SharedPreferencesManager.getInstance();
 
+    private ChromeSwitchPreference mAllowSignin;
     private ChromeSwitchPreference mSearchSuggestions;
     private ChromeSwitchPreference mNavigationError;
     private @Nullable ChromeSwitchPreference mSafeBrowsing;
@@ -81,6 +93,10 @@ public class GoogleServicesSettings
         setHasOptionsMenu(true);
 
         SettingsUtils.addPreferencesFromResource(this, R.xml.google_services_preferences);
+
+        mAllowSignin = (ChromeSwitchPreference) findPreference(PREF_ALLOW_SIGNIN);
+        mAllowSignin.setOnPreferenceChangeListener(this);
+        mAllowSignin.setManagedPreferenceDelegate(mManagedPreferenceDelegate);
 
         mSearchSuggestions = (ChromeSwitchPreference) findPreference(PREF_SEARCH_SUGGESTIONS);
         mSearchSuggestions.setOnPreferenceChangeListener(this);
@@ -173,7 +189,25 @@ public class GoogleServicesSettings
     @Override
     public boolean onPreferenceChange(Preference preference, Object newValue) {
         String key = preference.getKey();
-        if (PREF_SEARCH_SUGGESTIONS.equals(key)) {
+        if (PREF_ALLOW_SIGNIN.equals(key)) {
+            boolean shouldSignUserOut =
+                    IdentityServicesProvider.get()
+                                    .getIdentityManager(Profile.getLastUsedRegularProfile())
+                                    .getPrimaryAccountInfo(ConsentLevel.NOT_REQUIRED)
+                            != null
+                    && !((boolean) newValue);
+            if (shouldSignUserOut) {
+                SignOutDialogFragment signOutFragment =
+                        SignOutDialogFragment.create(GAIAServiceType.GAIA_SERVICE_TYPE_NONE);
+                signOutFragment.setTargetFragment(this, 0);
+                signOutFragment.show(getFragmentManager(), SIGN_OUT_DIALOG_TAG);
+                // Don't change the preference state yet, it will be updated by onSignOutClicked if
+                // the user actually confirms the sign-out.
+                return false;
+            } else {
+                mPrefService.setBoolean(Pref.SIGNIN_ALLOWED, (boolean) newValue);
+            }
+        } else if (PREF_SEARCH_SUGGESTIONS.equals(key)) {
             mPrefService.setBoolean(Pref.SEARCH_SUGGEST_ENABLED, (boolean) newValue);
         } else if (PREF_SAFE_BROWSING.equals(key)) {
             assert !mIsSecurityPreferenceRemoved;
@@ -207,6 +241,7 @@ public class GoogleServicesSettings
     }
 
     private void updatePreferences() {
+        mAllowSignin.setChecked(mPrefService.getBoolean(Pref.SIGNIN_ALLOWED));
         mSearchSuggestions.setChecked(mPrefService.getBoolean(Pref.SEARCH_SUGGEST_ENABLED));
         mNavigationError.setChecked(mPrefService.getBoolean(Pref.ALTERNATE_ERROR_PAGES_ENABLED));
         if (!mIsSecurityPreferenceRemoved) {
@@ -261,6 +296,9 @@ public class GoogleServicesSettings
     private ChromeManagedPreferenceDelegate createManagedPreferenceDelegate() {
         return preference -> {
             String key = preference.getKey();
+            if (PREF_ALLOW_SIGNIN.equals(key)) {
+                return mPrefService.isManagedPreference(Pref.SIGNIN_ALLOWED);
+            }
             if (PREF_NAVIGATION_ERROR.equals(key)) {
                 return mPrefService.isManagedPreference(Pref.ALTERNATE_ERROR_PAGES_ENABLED);
             }
@@ -305,5 +343,40 @@ public class GoogleServicesSettings
     public void setAutofillAssistantSwitchValue(boolean newValue) {
         mSharedPreferencesManager.writeBoolean(
                 ChromePreferenceKeys.AUTOFILL_ASSISTANT_ENABLED, newValue);
+    }
+
+    // SignOutDialogListener implementation:
+    @Override
+    public void onSignOutClicked(boolean forceWipeUserData) {
+        // In case the user reached this fragment without being signed in, we guard the sign out so
+        // we do not hit a native crash.
+        if (IdentityServicesProvider.get()
+                        .getIdentityManager(Profile.getLastUsedRegularProfile())
+                        .getPrimaryAccountInfo(ConsentLevel.NOT_REQUIRED)
+                == null) {
+            return;
+        }
+        final DialogFragment clearDataProgressDialog = new ClearDataProgressDialog();
+        IdentityServicesProvider.get()
+                .getSigninManager(Profile.getLastUsedRegularProfile())
+                .signOut(org.chromium.components.signin.metrics.SignoutReason
+                                 .USER_CLICKED_SIGNOUT_SETTINGS,
+                        new SigninManager.SignOutCallback() {
+                            @Override
+                            public void preWipeData() {
+                                clearDataProgressDialog.show(
+                                        getFragmentManager(), CLEAR_DATA_PROGRESS_DIALOG_TAG);
+                            }
+
+                            @Override
+                            public void signOutComplete() {
+                                if (clearDataProgressDialog.isAdded()) {
+                                    clearDataProgressDialog.dismissAllowingStateLoss();
+                                }
+                            }
+                        },
+                        forceWipeUserData);
+        mPrefService.setBoolean(Pref.SIGNIN_ALLOWED, false);
+        updatePreferences();
     }
 }

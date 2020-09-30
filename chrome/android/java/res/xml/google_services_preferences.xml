@@ -9,6 +9,11 @@
      updated accordingly. -->
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
+        android:key="allow_signin"
+        android:title="@string/offer_chrome_signin_title"
+        android:summary="@string/offer_chrome_signin_summary"
+        android:persistent="false"/>
+    <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
         android:key="search_suggestions"
         android:title="@string/autocomplete_searches_and_urls_title"
         android:summary="@string/autocomplete_searches_and_urls_summary"
