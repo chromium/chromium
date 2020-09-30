@@ -231,6 +231,12 @@ class CRWWebControllerTest : public WebTestWithWebController {
 // Tests that AllowCertificateError is called with correct arguments if
 // WKWebView fails to load a page with bad SSL cert.
 TEST_F(CRWWebControllerTest, SslCertError) {
+  if (base::FeatureList::IsEnabled(web::features::kSSLCommittedInterstitials)) {
+    // |AllowCertificateError| isn't called in the committed interstitials flow
+    // for SSL errors.
+    return;
+  }
+
   // Last arguments passed to AllowCertificateError must be in default state.
   ASSERT_FALSE(GetWebClient()->last_cert_error_code());
   ASSERT_FALSE(GetWebClient()->last_cert_error_ssl_info().is_valid());
