@@ -97,7 +97,7 @@ TYPED_TEST_P(FileStreamReaderTypedTest, Empty) {
   int64_t length_result = reader->GetLength(callback.callback());
   if (length_result == net::ERR_IO_PENDING)
     length_result = callback.WaitForResult();
-  ASSERT_EQ(0, result);
+  ASSERT_EQ(0, length_result);
 }
 
 TYPED_TEST_P(FileStreamReaderTypedTest, GetLengthNormal) {
