@@ -234,7 +234,9 @@ char kResponse3[] = "Test Page 3 content";
 
 - (void)longPressRecentTabWithTitle:(NSString*)title {
   // The test page may be there multiple times.
-  [[[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(title)]
+  [[[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_accessibilityLabel(title),
+                                          grey_sufficientlyVisible(), nil)]
       atIndex:0] performAction:grey_longPress()];
 }
 

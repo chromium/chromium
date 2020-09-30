@@ -17,17 +17,11 @@
 #endif
 
 // Test object that exposes the inner state for test verification.
-@interface TestGridViewController : GridViewController
+@interface GridViewController (Testing)
 @property(nonatomic, readonly) NSMutableArray<GridItem*>* items;
 @property(nonatomic, readonly) NSUInteger selectedIndex;
 @property(nonatomic, readonly) UICollectionView* collectionView;
 @property(nonatomic, assign, getter=isViewAppeared) BOOL viewAppeared;
-@end
-@implementation TestGridViewController
-@dynamic items;
-@dynamic selectedIndex;
-@dynamic collectionView;
-@dynamic viewAppeared;
 @end
 
 // Fake object that conforms to GridViewControllerDelegate.
@@ -62,7 +56,8 @@
 class GridViewControllerTest : public RootViewControllerTest {
  public:
   GridViewControllerTest() {
-    view_controller_ = [[TestGridViewController alloc] init];
+    view_controller_ = [[GridViewController alloc] init];
+    [view_controller_ loadView];
     NSArray* items = @[
       [[GridItem alloc] initWithIdentifier:@"A"],
       [[GridItem alloc] initWithIdentifier:@"B"]
@@ -74,7 +69,7 @@ class GridViewControllerTest : public RootViewControllerTest {
   }
 
  protected:
-  TestGridViewController* view_controller_;
+  GridViewController* view_controller_;
   FakeGridViewControllerDelegate* delegate_;
 };
 

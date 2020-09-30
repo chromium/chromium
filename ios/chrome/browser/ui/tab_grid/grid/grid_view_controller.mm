@@ -51,11 +51,6 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
                                   UICollectionViewDelegate,
                                   UICollectionViewDragDelegate,
                                   UICollectionViewDropDelegate>
-// There is no need to update the collection view when other view controllers
-// are obscuring the collection view. Bookkeeping is based on |-viewWillAppear:|
-// and |-viewWillDisappear methods. Note that the |Did| methods are not reliably
-// called (e.g., edge case in multitasking).
-@property(nonatomic, assign) BOOL updatesCollectionView;
 // A collection view of items in a grid format.
 @property(nonatomic, weak) UICollectionView* collectionView;
 // The local model backing the collection view.
@@ -287,7 +282,6 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 }
 
 - (void)contentWillAppearAnimated:(BOOL)animated {
-  self.updatesCollectionView = YES;
   self.defaultLayout.animatesItemUpdates = YES;
   [self.collectionView reloadData];
   // Selection is invalid if there are no items.
@@ -305,7 +299,6 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 }
 
 - (void)contentWillDisappear {
-  self.updatesCollectionView = NO;
 }
 
 #pragma mark - UICollectionViewDataSource
@@ -558,17 +551,14 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
   self.items = [items mutableCopy];
   self.selectedItemID = selectedItemID;
-  if ([self updatesCollectionView]) {
-    [self.collectionView reloadData];
-    [self.collectionView
-        selectItemAtIndexPath:CreateIndexPath(self.selectedIndex)
-                     animated:YES
-               scrollPosition:UICollectionViewScrollPositionTop];
-    if (self.items.count > 0) {
-      [self removeEmptyStateAnimated:YES];
-    } else {
-      [self animateEmptyStateIn];
-    }
+  [self.collectionView reloadData];
+  [self.collectionView selectItemAtIndexPath:CreateIndexPath(self.selectedIndex)
+                                    animated:YES
+                              scrollPosition:UICollectionViewScrollPositionTop];
+  if (self.items.count > 0) {
+    [self removeEmptyStateAnimated:YES];
+  } else {
+    [self animateEmptyStateIn];
   }
   // Whether the view is visible or not, the delegate must be updated.
   [self.delegate gridViewController:self didChangeItemCount:self.items.count];
@@ -647,9 +637,13 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 }
 
 - (void)selectItemWithID:(NSString*)selectedItemID {
-  self.selectedItemID = selectedItemID;
-  if (!([self updatesCollectionView] && self.showsSelectionUpdates))
+  if (self.selectedItemID == selectedItemID)
     return;
+
+  [self.collectionView
+      deselectItemAtIndexPath:CreateIndexPath(self.selectedIndex)
+                     animated:YES];
+  self.selectedItemID = selectedItemID;
   [self.collectionView
       selectItemAtIndexPath:CreateIndexPath(self.selectedIndex)
                    animated:YES
@@ -664,8 +658,6 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
          [self indexOfItemWithID:item.identifier] == NSNotFound);
   NSUInteger index = [self indexOfItemWithID:itemID];
   self.items[index] = item;
-  if (![self updatesCollectionView])
-    return;
   GridCell* cell = base::mac::ObjCCastStrict<GridCell>(
       [self.collectionView cellForItemAtIndexPath:CreateIndexPath(index)]);
   // |cell| may be nil if it is scrolled offscreen.
@@ -742,19 +734,11 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
 #pragma mark - Private
 
-// Performs model updates and view updates together if the view is appeared, or
-// only the model updates if the view is not appeared. |completion| is only run
-// if view is appeared.
+// Performs model updates and view updates together.
 - (void)performModelUpdates:(ProceduralBlock)modelUpdates
               collectionViewUpdates:(ProceduralBlock)collectionViewUpdates
     collectionViewUpdatesCompletion:
         (ProceduralBlockWithBool)collectionViewUpdatesCompletion {
-  // If the view isn't visible, there's no need for the collection view to
-  // update.
-  if (![self updatesCollectionView]) {
-    modelUpdates();
-    return;
-  }
   [self.collectionView performBatchUpdates:^{
     // Synchronize model and view updates.
     modelUpdates();
