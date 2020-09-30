@@ -3021,6 +3021,9 @@
   <message name="IDS_SETTINGS_KEYBOARD_SHOW_LANGUAGE_AND_INPUT" desc="The link to navigate to the language and input method settings.">
     Change language and input settings
   </message>
+  <message name="IDS_SETTINGS_KEYBOARD_SHOW_INPUT_SETTINGS" desc="The link to navigate to input method settings.">
+    Change input settings
+  </message>
   <message name="IDS_SETTINGS_KEYBOARD_KEY_LAUNCHER" desc="In Device Settings, the label and dropdown list item for the Search key on keyboard layouts of newer Chromebooks.">
     Launcher
   </message>

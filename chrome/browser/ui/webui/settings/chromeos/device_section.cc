@@ -493,6 +493,7 @@ void AddDeviceKeyboardStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_KEYBOARD_SHOW_SHORTCUT_VIEWER},
       {"keyboardShowLanguageAndInput",
        IDS_SETTINGS_KEYBOARD_SHOW_LANGUAGE_AND_INPUT},
+      {"keyboardShowInputSettings", IDS_SETTINGS_KEYBOARD_SHOW_INPUT_SETTINGS},
   };
   AddLocalizedStringsBulk(html_source, keyboard_strings);
 
@@ -793,6 +794,9 @@ void DeviceSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
 
   html_source->AddBoolean("isDemoSession",
                           chromeos::DemoSession::IsDeviceInDemoMode());
+  html_source->AddBoolean("enableLanguageSettingsV2",
+                          base::FeatureList::IsEnabled(
+                              ::chromeos::features::kLanguageSettingsUpdate));
 
   AddDevicePointersStrings(html_source);
   AddDeviceKeyboardStrings(html_source);

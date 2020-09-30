@@ -98,6 +98,17 @@ cr.define('settings', function() {
           chromeos.settings.mojom.Setting.kKeyboardShortcuts,
         ]),
       },
+
+      /**
+       * This is enabled when language settings update feature flag is enabled.
+       * @private
+       */
+      languageSettingsV2Enabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('enableLanguageSettingsV2');
+        },
+      },
     },
 
     /** @override */
@@ -176,22 +187,33 @@ cr.define('settings', function() {
       this.showAppleCommandKey_ = keyboardParams['showAppleCommandKey'];
     },
 
+    /** @private */
     onShowKeyboardShortcutViewerTap_() {
       settings.DevicePageBrowserProxyImpl.getInstance()
           .showKeyboardShortcutViewer();
     },
 
+    /** @private */
     onShowLanguageInputTap_() {
       settings.Router.getInstance().navigateTo(
           settings.routes.OS_LANGUAGES_DETAILS,
-          /* dynamicParams */ null, /* removeSearch */ true);
+          /*dynamicParams=*/ null, /*removeSearch=*/ true);
     },
 
+    /** @private */
+    onShowInputSettingsTap_() {
+      settings.Router.getInstance().navigateTo(
+          settings.routes.OS_LANGUAGES_INPUT,
+          /*dynamicParams=*/ null, /*removeSearch=*/ true);
+    },
+
+    /** @private */
     getExternalMetaKeyLabel_(hasInternalKeyboard) {
       return loadTimeData.getString(
           hasInternalKeyboard ? 'keyboardKeyExternalMeta' : 'keyboardKeyMeta');
     },
 
+    /** @private */
     getExternalCommandKeyLabel_(hasInternalKeyboard) {
       return loadTimeData.getString(
           hasInternalKeyboard ? 'keyboardKeyExternalCommand' :
