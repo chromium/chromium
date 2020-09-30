@@ -6,4 +6,9 @@ pmarko@chromium.org
 poromov@chromium.org
 rsorokin@chromium.org
 
+per-file *auto_enrollment*=amraboelkher@chromium.org
+per-file *auto_enrollment*=igorcov@chromium.org
+per-file *auto_enrollment*=mpolzer@google.com
+per-file *auto_enrollment*=vsavu@google.com
+
 # COMPONENT: Enterprise>Enrollment
