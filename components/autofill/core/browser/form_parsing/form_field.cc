@@ -53,6 +53,7 @@ const float FormField::kBaseSearchParserScore = 0.8f;
 // static
 FieldCandidatesMap FormField::ParseFormFields(
     const std::vector<std::unique_ptr<AutofillField>>& fields,
+    const std::string& page_language,
     bool is_form_tag,
     LogManager* log_manager) {
   // Set up a working copy of the fields to be processed.
@@ -75,36 +76,36 @@ FieldCandidatesMap FormField::ParseFormFields(
 
   // Email pass.
   ParseFormFieldsPass(EmailField::Parse, processed_fields, &field_candidates,
-                      log_manager);
+                      page_language, log_manager);
   const size_t email_count = field_candidates.size();
 
   // Phone pass.
   ParseFormFieldsPass(PhoneField::Parse, processed_fields, &field_candidates,
-                      log_manager);
+                      page_language, log_manager);
 
   // Travel pass.
   ParseFormFieldsPass(TravelField::Parse, processed_fields, &field_candidates,
-                      log_manager);
+                      page_language, log_manager);
 
   // Address pass.
   ParseFormFieldsPass(autofill::AddressField::Parse, processed_fields,
-                      &field_candidates, log_manager);
+                      &field_candidates, page_language, log_manager);
 
   // Credit card pass.
   ParseFormFieldsPass(CreditCardField::Parse, processed_fields,
-                      &field_candidates, log_manager);
+                      &field_candidates, page_language, log_manager);
 
   // Price pass.
   ParseFormFieldsPass(PriceField::Parse, processed_fields, &field_candidates,
-                      log_manager);
+                      page_language, log_manager);
 
   // Name pass.
   ParseFormFieldsPass(NameField::Parse, processed_fields, &field_candidates,
-                      log_manager);
+                      page_language, log_manager);
 
   // Search pass.
   ParseFormFieldsPass(SearchField::Parse, processed_fields, &field_candidates,
-                      log_manager);
+                      page_language, log_manager);
 
   size_t fillable_fields = 0;
   if (base::FeatureList::IsEnabled(features::kAutofillFixFillableFieldTypes)) {
@@ -341,10 +342,12 @@ bool FormField::Match(const AutofillField* field,
 void FormField::ParseFormFieldsPass(ParseFunction parse,
                                     const std::vector<AutofillField*>& fields,
                                     FieldCandidatesMap* field_candidates,
+                                    const std::string& page_language,
                                     LogManager* log_manager) {
   AutofillScanner scanner(fields);
   while (!scanner.IsEnd()) {
-    std::unique_ptr<FormField> form_field = parse(&scanner, log_manager);
+    std::unique_ptr<FormField> form_field =
+        parse(&scanner, page_language, log_manager);
     if (form_field == nullptr) {
       scanner.Advance();
     } else {

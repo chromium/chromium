@@ -35,6 +35,7 @@ class PhoneField : public FormField {
   PhoneField& operator=(const PhoneField&) = delete;
 
   static std::unique_ptr<FormField> Parse(AutofillScanner* scanner,
+                                          const std::string& page_language,
                                           LogManager* log_manager);
 
 #if defined(UNIT_TEST)

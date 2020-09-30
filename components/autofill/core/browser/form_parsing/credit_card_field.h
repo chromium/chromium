@@ -24,6 +24,7 @@ class CreditCardField : public FormField {
   explicit CreditCardField(LogManager* log_manager);
   ~CreditCardField() override;
   static std::unique_ptr<FormField> Parse(AutofillScanner* scanner,
+                                          const std::string& page_language,
                                           LogManager* log_manager);
 
  protected:

@@ -81,8 +81,10 @@ bool FieldCanFitDataForFieldType(int max_length, ServerFieldType type) {
 }  // namespace
 
 // static
-std::unique_ptr<FormField> CreditCardField::Parse(AutofillScanner* scanner,
-                                                  LogManager* log_manager) {
+std::unique_ptr<FormField> CreditCardField::Parse(
+    AutofillScanner* scanner,
+    const std::string& page_language,
+    LogManager* log_manager) {
   if (scanner->IsEnd())
     return nullptr;
 

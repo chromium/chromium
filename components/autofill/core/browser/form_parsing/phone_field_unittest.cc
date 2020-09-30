@@ -43,7 +43,10 @@ class PhoneFieldTest : public testing::Test {
  protected:
   // Downcast for tests.
   static std::unique_ptr<PhoneField> Parse(AutofillScanner* scanner) {
-    std::unique_ptr<FormField> field = PhoneField::Parse(scanner, nullptr);
+    // An empty page_language means the language is unknown and patterns of all
+    // languages are used.
+    std::unique_ptr<FormField> field =
+        PhoneField::Parse(scanner, /*page_language=*/"", nullptr);
     return std::unique_ptr<PhoneField>(
         static_cast<PhoneField*>(field.release()));
   }

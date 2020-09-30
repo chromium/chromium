@@ -22,6 +22,7 @@ class LogManager;
 class PriceField : public FormField {
  public:
   static std::unique_ptr<FormField> Parse(AutofillScanner* scanner,
+                                          const std::string& page_language,
                                           LogManager* log_manager);
   PriceField(const AutofillField* field);
 

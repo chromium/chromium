@@ -35,8 +35,10 @@ class CreditCardFieldTestBase {
   // |field_|.
   void Parse() {
     AutofillScanner scanner(list_);
+    // An empty page_language means the language is unknown and patterns of all
+    // languages are used.
     std::unique_ptr<FormField> field =
-        CreditCardField::Parse(&scanner, nullptr);
+        CreditCardField::Parse(&scanner, /*page_language=*/"", nullptr);
     field_ = std::unique_ptr<CreditCardField>(
         static_cast<CreditCardField*>(field.release()));
   }
@@ -46,7 +48,9 @@ class CreditCardFieldTestBase {
 
     AutofillScanner scanner(list_);
     while (!scanner.IsEnd()) {
-      field = CreditCardField::Parse(&scanner, nullptr);
+      // An empty page_language means the language is unknown and patterns of
+      // all languages are used.
+      field = CreditCardField::Parse(&scanner, /*page_language=*/"", nullptr);
       field_ = std::unique_ptr<CreditCardField>(
           static_cast<CreditCardField*>(field.release()));
       if (field_ == nullptr) {

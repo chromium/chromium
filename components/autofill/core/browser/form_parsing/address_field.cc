@@ -46,6 +46,7 @@ const int AddressField::kStateMatchType =
     MATCH_DEFAULT | MATCH_SELECT | MATCH_SEARCH;
 
 std::unique_ptr<FormField> AddressField::Parse(AutofillScanner* scanner,
+                                               const std::string& page_language,
                                                LogManager* log_manager) {
   if (scanner->IsEnd())
     return nullptr;

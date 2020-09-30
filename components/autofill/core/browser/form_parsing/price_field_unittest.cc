@@ -31,7 +31,10 @@ class PriceFieldTest : public testing::Test {
 
   // Downcast for tests.
   static std::unique_ptr<PriceField> Parse(AutofillScanner* scanner) {
-    std::unique_ptr<FormField> field = PriceField::Parse(scanner, nullptr);
+    // An empty page_language means the language is unknown and patterns of all
+    // languages are used.
+    std::unique_ptr<FormField> field =
+        PriceField::Parse(scanner, /*page_language=*/"", nullptr);
     return std::unique_ptr<PriceField>(
         static_cast<PriceField*>(field.release()));
   }

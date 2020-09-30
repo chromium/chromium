@@ -16,6 +16,7 @@ TravelField::~TravelField() = default;
 
 // static
 std::unique_ptr<FormField> TravelField::Parse(AutofillScanner* scanner,
+                                              const std::string& page_language,
                                               LogManager* log_manager) {
   if (!scanner || scanner->IsEnd()) {
     return nullptr;

@@ -18,6 +18,7 @@ class LogManager;
 class EmailField : public FormField {
  public:
   static std::unique_ptr<FormField> Parse(AutofillScanner* scanner,
+                                          const std::string& page_language,
                                           LogManager* log_manager);
   explicit EmailField(const AutofillField* field);
 

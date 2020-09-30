@@ -42,6 +42,7 @@ class FormField {
   // returned FieldCandidatesMap.
   static FieldCandidatesMap ParseFormFields(
       const std::vector<std::unique_ptr<AutofillField>>& fields,
+      const std::string& page_language,
       bool is_form_tag,
       LogManager* log_manager = nullptr);
 
@@ -123,8 +124,10 @@ class FormField {
 
   // Function pointer type for the parsing function that should be passed to the
   // ParseFormFieldsPass() helper function.
-  typedef std::unique_ptr<FormField> ParseFunction(AutofillScanner* scanner,
-                                                   LogManager* log_manager);
+  typedef std::unique_ptr<FormField> ParseFunction(
+      AutofillScanner* scanner,
+      const std::string& page_language,
+      LogManager* log_manager);
 
   // Matches |pattern| to the contents of the field at the head of the
   // |scanner|.
@@ -169,6 +172,7 @@ class FormField {
   static void ParseFormFieldsPass(ParseFunction parse,
                                   const std::vector<AutofillField*>& fields,
                                   FieldCandidatesMap* field_candidates,
+                                  const std::string& page_language,
                                   LogManager* log_manager = nullptr);
 
   DISALLOW_COPY_AND_ASSIGN(FormField);

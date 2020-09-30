@@ -93,6 +93,7 @@ class FirstLastNameField : public NameField {
 
 // static
 std::unique_ptr<FormField> NameField::Parse(AutofillScanner* scanner,
+                                            const std::string& page_language,
                                             LogManager* log_manager) {
   if (scanner->IsEnd())
     return nullptr;

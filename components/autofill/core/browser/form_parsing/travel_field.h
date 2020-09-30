@@ -19,6 +19,7 @@ class TravelField : public FormField {
   ~TravelField() override;
 
   static std::unique_ptr<FormField> Parse(AutofillScanner* scanner,
+                                          const std::string& page_language,
                                           LogManager* log_manager);
 
  protected:

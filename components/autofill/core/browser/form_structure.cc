@@ -658,8 +658,8 @@ void FormStructure::DetermineHeuristicTypes(LogManager* log_manager) {
   // proper <form> or a <form>-less checkout, run the heuristics and server
   // prediction routines.
   if (ShouldRunHeuristics()) {
-    const FieldCandidatesMap field_type_map =
-        FormField::ParseFormFields(fields_, is_form_tag_, log_manager);
+    const FieldCandidatesMap field_type_map = FormField::ParseFormFields(
+        fields_, page_language_, is_form_tag_, log_manager);
     for (const auto& field : fields_) {
       const auto iter = field_type_map.find(field->unique_name());
       if (iter != field_type_map.end()) {

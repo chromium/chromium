@@ -13,6 +13,7 @@ namespace autofill {
 
 // static
 std::unique_ptr<FormField> PriceField::Parse(AutofillScanner* scanner,
+                                             const std::string& page_language,
                                              LogManager* log_manager) {
   AutofillField* field;
   if (ParseFieldSpecifics(scanner, base::UTF8ToUTF16(kPriceRe),
