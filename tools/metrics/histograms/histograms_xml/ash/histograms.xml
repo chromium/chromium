@@ -201,8 +201,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>newcomer@chromium.org</owner>
   <summary>
     The length of the user journey of the context menu version of clipboard
-    history. Measured as time before the menu is constructed, to time of the
-    menu being closed. Recorded every time the menu is closed, regardless of
+    history. Measured as time from starting to construct the menu, to time of
+    the menu being closed. Recorded every time the menu is closed, regardless of
     whether the user selected one of the menu options.
   </summary>
 </histogram>
