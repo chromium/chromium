@@ -12,7 +12,7 @@ import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /** TileView properties. */
-final class TileViewProperties {
+public final class TileViewProperties {
     /** The title of the tile. */
     public static final WritableObjectPropertyKey<String> TITLE = new WritableObjectPropertyKey<>();
 
@@ -30,6 +30,10 @@ final class TileViewProperties {
     /** Badge visibility. */
     public static final WritableBooleanPropertyKey BADGE_VISIBLE = new WritableBooleanPropertyKey();
 
+    /** Handler receiving focus events. */
+    public static final WritableObjectPropertyKey<Runnable> ON_FOCUS_VIA_SELECTION =
+            new WritableObjectPropertyKey<>();
+
     /** Handler receiving click events. */
     public static final WritableObjectPropertyKey<View.OnClickListener> ON_CLICK =
             new WritableObjectPropertyKey<>();
@@ -42,6 +46,7 @@ final class TileViewProperties {
     public static final WritableObjectPropertyKey<View.OnCreateContextMenuListener>
             ON_CREATE_CONTEXT_MENU = new WritableObjectPropertyKey<>();
 
-    public static final PropertyKey[] ALL_KEYS = new PropertyKey[] {ICON, TITLE, TITLE_LINES,
-            BADGE_VISIBLE, SHOW_LARGE_ICON, ON_CLICK, ON_LONG_CLICK, ON_CREATE_CONTEXT_MENU};
+    public static final PropertyKey[] ALL_KEYS =
+            new PropertyKey[] {ICON, TITLE, TITLE_LINES, BADGE_VISIBLE, SHOW_LARGE_ICON,
+                    ON_FOCUS_VIA_SELECTION, ON_CLICK, ON_LONG_CLICK, ON_CREATE_CONTEXT_MENU};
 }

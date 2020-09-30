@@ -21,6 +21,7 @@ import org.chromium.chrome.R;
 public class TileView extends FrameLayout {
     private ImageView mBadgeView;
     private TextView mTitleView;
+    private Runnable mOnFocusViaSelectionListener;
     protected ImageView mIconView;
 
     /**
@@ -69,5 +70,23 @@ public class TileView extends FrameLayout {
     public void setTitle(String title, int titleLines) {
         mTitleView.setLines(titleLines);
         mTitleView.setText(title);
+    }
+
+    /** Specify the handler that will be invoked when this tile is highlighted by the user. */
+    void setOnFocusViaSelectionListener(Runnable listener) {
+        mOnFocusViaSelectionListener = listener;
+    }
+
+    @Override
+    public void setSelected(boolean isSelected) {
+        super.setSelected(isSelected);
+        if (isSelected && mOnFocusViaSelectionListener != null) {
+            mOnFocusViaSelectionListener.run();
+        }
+    }
+
+    @Override
+    public boolean isFocused() {
+        return super.isFocused() || (isSelected() && !isInTouchMode());
     }
 }

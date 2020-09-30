@@ -43,6 +43,9 @@ public class TileViewBinder {
             params.height = iconEdgeSize;
             params.topMargin = iconTopMarginSize;
             iconView.setLayoutParams(params);
+        } else if (propertyKey == TileViewProperties.ON_FOCUS_VIA_SELECTION) {
+            view.setOnFocusViaSelectionListener(
+                    model.get(TileViewProperties.ON_FOCUS_VIA_SELECTION));
         } else if (propertyKey == TileViewProperties.ON_CLICK) {
             view.setOnClickListener(model.get(TileViewProperties.ON_CLICK));
         } else if (propertyKey == TileViewProperties.ON_LONG_CLICK) {
