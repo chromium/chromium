@@ -6757,9 +6757,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="JSDialogs.OriginRelationship"
-    enum="DialogOriginRelationship" expires_after="2020-11-01">
+    enum="DialogOriginRelationship" expires_after="2021-06-01">
   <owner>avi@chromium.org</owner>
   <owner>carlosil@chromium.org</owner>
+  <owner>ericmill@google.com</owner>
   <owner>meacer@chromium.org</owner>
   <summary>
     For dialogs, the relationship of the origins of the main frame vs the
