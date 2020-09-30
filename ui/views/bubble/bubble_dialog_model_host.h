@@ -27,6 +27,7 @@ class GridLayout;
 class VIEWS_EXPORT BubbleDialogModelHost : public BubbleDialogDelegateView,
                                            public ui::DialogModelHost {
  public:
+  METADATA_HEADER(BubbleDialogModelHost);
   // Constructs a BubbleDialogModelHost, which for most purposes is to used as a
   // BubbleDialogDelegateView. The BubbleDialogDelegateView is nominally handed
   // to BubbleDialogDelegateView::CreateBubble() which returns a Widget that has
@@ -35,6 +36,10 @@ class VIEWS_EXPORT BubbleDialogModelHost : public BubbleDialogDelegateView,
                         View* anchor_view,
                         BubbleBorder::Arrow arrow);
   ~BubbleDialogModelHost() override;
+
+  static std::unique_ptr<BubbleDialogModelHost> CreateModal(
+      std::unique_ptr<ui::DialogModel> model,
+      ui::ModalType modal_type);
 
   // BubbleDialogDelegateView:
   // TODO(pbos): Populate initparams with initial view instead of overriding

@@ -5,6 +5,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
+#include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/test/dialog_test.h"
 #include "ui/views/test/widget_test.h"
@@ -16,10 +17,9 @@ using WindowNamePromptTest = BrowserWithTestWindowTest;
 namespace {
 
 views::Widget* ShowPrompt(Browser* browser, gfx::NativeWindow context) {
-  // TODO(ellyjones): Matching on "View" here is obviously silly - this needs
-  // WidgetDelegate::SetName() or something similar.
-  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
-                                       "View");
+  views::NamedWidgetShownWaiter waiter(
+      views::test::AnyWidgetTestPasskey{},
+      views::BubbleDialogModelHost::kViewClassName);
   chrome::ShowWindowNamePromptForTesting(browser, context);
   return waiter.WaitIfNeededAndGet();
 }

@@ -148,7 +148,19 @@ BubbleDialogModelHost::~BubbleDialogModelHost() {
   RemoveAllChildViews(true);
 }
 
+std::unique_ptr<BubbleDialogModelHost> BubbleDialogModelHost::CreateModal(
+    std::unique_ptr<ui::DialogModel> model,
+    ui::ModalType modal_type) {
+  DCHECK_NE(modal_type, ui::MODAL_TYPE_NONE);
+  auto dialog = std::make_unique<BubbleDialogModelHost>(
+      std::move(model), nullptr, BubbleBorder::Arrow::NONE);
+  dialog->SetModalType(modal_type);
+  return dialog;
+}
+
 View* BubbleDialogModelHost::GetInitiallyFocusedView() {
+  // TODO(pbos): Migrate this override to use
+  // WidgetDelegate::SetInitiallyFocusedView() in constructor once it exists.
   // TODO(pbos): Try to prevent uses of GetInitiallyFocusedView() after Close()
   // and turn this in to a DCHECK for |model_| existence. This should fix
   // https://crbug.com/1130181 for now.
@@ -469,5 +481,8 @@ std::unique_ptr<View> BubbleDialogModelHost::CreateViewForLabel(
   text_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   return text_label;
 }
+
+BEGIN_METADATA(BubbleDialogModelHost, BubbleDialogDelegateView)
+END_METADATA
 
 }  // namespace views
