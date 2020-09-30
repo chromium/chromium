@@ -42,6 +42,9 @@ class OnboardingUiTracker {
   // device.
   virtual void DismissSetupUi() = 0;
 
+  // Handle for when the user clicks the get started button.
+  virtual void HandleGetStarted() = 0;
+
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 

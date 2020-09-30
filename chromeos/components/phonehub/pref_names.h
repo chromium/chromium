@@ -10,6 +10,7 @@ namespace phonehub {
 namespace prefs {
 
 extern const char kNotificationAccessGranted[];
+extern const char kHasDismissedUiAfterCompletingOnboarding[];
 
 }  // namespace prefs
 }  // namespace phonehub

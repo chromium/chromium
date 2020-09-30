@@ -28,5 +28,9 @@ void FakeOnboardingUiTracker::DismissSetupUi() {
   SetShouldShowOnboardingUi(false);
 }
 
+void FakeOnboardingUiTracker::HandleGetStarted() {
+  ++handle_get_started_call_count_;
+}
+
 }  // namespace phonehub
 }  // namespace chromeos

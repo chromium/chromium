@@ -10,7 +10,9 @@
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/secure_channel/secure_channel_client_provider.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/chromeos/multidevice_setup/multidevice_setup_dialog.h"
 #include "chromeos/components/phonehub/notification_access_manager_impl.h"
+#include "chromeos/components/phonehub/onboarding_ui_tracker_impl.h"
 #include "chromeos/components/phonehub/phone_hub_manager_impl.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/multidevice_setup/public/cpp/prefs.h"
@@ -80,7 +82,8 @@ KeyedService* PhoneHubManagerFactory::BuildServiceInstanceFor(
       profile->GetPrefs(),
       device_sync::DeviceSyncClientFactory::GetForProfile(profile),
       multidevice_setup::MultiDeviceSetupClientFactory::GetForProfile(profile),
-      secure_channel::SecureChannelClientProvider::GetInstance()->GetClient());
+      secure_channel::SecureChannelClientProvider::GetInstance()->GetClient(),
+      base::BindRepeating(&multidevice_setup::MultiDeviceSetupDialog::Show));
 
   // Provide |phone_hub_manager| to the system tray so that it can be used by
   // the UI.
@@ -96,6 +99,7 @@ bool PhoneHubManagerFactory::ServiceIsCreatedWithBrowserContext() const {
 void PhoneHubManagerFactory::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   NotificationAccessManagerImpl::RegisterPrefs(registry);
+  OnboardingUiTrackerImpl::RegisterPrefs(registry);
 }
 
 }  // namespace phonehub

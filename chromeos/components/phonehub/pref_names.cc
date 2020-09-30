@@ -12,6 +12,10 @@ namespace prefs {
 const char kNotificationAccessGranted[] =
     "cros.phonehub.notification_access_granted";
 
+// Whether user has completed onboarding and dismissed the UI before.
+const char kHasDismissedUiAfterCompletingOnboarding[] =
+    "cros.phonehub.has_completed_onboarding_before";
+
 }  // namespace prefs
 }  // namespace phonehub
 }  // namespace chromeos

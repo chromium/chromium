@@ -17,12 +17,18 @@ class FakeOnboardingUiTracker : public OnboardingUiTracker {
 
   void SetShouldShowOnboardingUi(bool should_show_onboarding_ui);
 
+  size_t handle_get_started_call_count() {
+    return handle_get_started_call_count_;
+  }
+
  private:
   // OnboardingUiTracker:
   bool ShouldShowOnboardingUi() const override;
   void DismissSetupUi() override;
+  void HandleGetStarted() override;
 
   bool should_show_onboarding_ui_ = false;
+  size_t handle_get_started_call_count_ = 0;
 };
 
 }  // namespace phonehub

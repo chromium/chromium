@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/callback.h"
 #include "chromeos/components/phonehub/phone_hub_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 
@@ -39,7 +40,8 @@ class PhoneHubManagerImpl : public PhoneHubManager, public KeyedService {
       PrefService* pref_service,
       device_sync::DeviceSyncClient* device_sync_client,
       multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
-      chromeos::secure_channel::SecureChannelClient* secure_channel_client);
+      chromeos::secure_channel::SecureChannelClient* secure_channel_client,
+      const base::RepeatingClosure& show_multidevice_setup_dialog_callback);
   ~PhoneHubManagerImpl() override;
 
   // PhoneHubManager:

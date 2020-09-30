@@ -24,7 +24,8 @@ PhoneHubManagerImpl::PhoneHubManagerImpl(
     PrefService* pref_service,
     device_sync::DeviceSyncClient* device_sync_client,
     multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
-    chromeos::secure_channel::SecureChannelClient* secure_channel_client)
+    chromeos::secure_channel::SecureChannelClient* secure_channel_client,
+    const base::RepeatingClosure& show_multidevice_setup_dialog_callback)
     : do_not_disturb_controller_(
           std::make_unique<DoNotDisturbControllerImpl>()),
       connection_manager_(
@@ -47,7 +48,11 @@ PhoneHubManagerImpl::PhoneHubManagerImpl(
       notification_access_manager_(
           std::make_unique<NotificationAccessManagerImpl>(pref_service)),
       notification_manager_(std::make_unique<NotificationManagerImpl>()),
-      onboarding_ui_tracker_(std::make_unique<OnboardingUiTrackerImpl>()),
+      onboarding_ui_tracker_(std::make_unique<OnboardingUiTrackerImpl>(
+          pref_service,
+          feature_status_provider_.get(),
+          multidevice_setup_client,
+          show_multidevice_setup_dialog_callback)),
       phone_model_(std::make_unique<MutablePhoneModel>()),
       tether_controller_(
           std::make_unique<TetherControllerImpl>(multidevice_setup_client)) {}
