@@ -40,6 +40,11 @@ class WorkerMainScriptLoaderTest : public testing::Test {
     scoped_feature_list_.InitWithFeatureState(
         blink::features::kPlzDedicatedWorker, true);
   }
+  ~WorkerMainScriptLoaderTest() override {
+    // Forced GC in order to finalize objects depending on MockResourceObserver,
+    // see details https://crbug.com/1132634.
+    ThreadState::Current()->CollectAllGarbageForTesting();
+  }
 
  protected:
   class TestPlatform final : public TestingPlatformSupport {

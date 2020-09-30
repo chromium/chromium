@@ -72,6 +72,11 @@ void WorkerMainScriptLoader::Start(
   resource_response_ = response.ToResourceResponse();
   NotifyResponseReceived(std::move(response_head));
 
+  resource_load_observer_->DidReceiveResponse(
+      initial_request_.InspectorId(), initial_request_, resource_response_,
+      /*resource=*/nullptr,
+      ResourceLoadObserver::ResponseSource::kNotFromMemoryCache);
+
   if (resource_response_.IsHTTP() &&
       !cors::IsOkStatus(resource_response_.HttpStatusCode())) {
     client_->OnFailedLoadingWorkerMainScript();
@@ -85,10 +90,6 @@ void WorkerMainScriptLoader::Start(
     return;
   }
 
-  resource_load_observer_->DidReceiveResponse(
-      initial_request_.InspectorId(), initial_request_, resource_response_,
-      /*resource=*/nullptr,
-      ResourceLoadObserver::ResponseSource::kNotFromMemoryCache);
   script_encoding_ =
       resource_response_.TextEncodingName().IsEmpty()
           ? UTF8Encoding()
