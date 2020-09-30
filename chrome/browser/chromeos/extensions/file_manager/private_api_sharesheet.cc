@@ -5,6 +5,7 @@
 #include "chrome/browser/chromeos/extensions/file_manager/private_api_sharesheet.h"
 
 #include "base/bind.h"
+#include "base/bind_helpers.h"
 #include "chrome/browser/chromeos/drive/file_system_util.h"
 #include "chrome/browser/chromeos/extensions/file_manager/private_api_util.h"
 #include "chrome/browser/chromeos/file_manager/fileapi_util.h"
@@ -233,7 +234,7 @@ void FileManagerPrivateInternalInvokeSharesheetFunction::OnMimeTypesCollected(
   sharesheet_service->ShowBubble(
       GetSenderWebContents(),
       apps_util::CreateShareIntentFromFiles(urls_, *mime_types),
-      contains_hosted_document_);
+      contains_hosted_document_, base::NullCallback());
   Respond(NoArguments());
 }
 
@@ -282,7 +283,7 @@ void FileManagerPrivateInternalInvokeSharesheetFunction::OnIsDirectoryCollected(
       GetSenderWebContents(),
       apps_util::CreateShareIntentFromDriveFile(urls_[0], (*mime_types)[0],
                                                 share_url, is_directory),
-      contains_hosted_document_);
+      contains_hosted_document_, base::NullCallback());
   Respond(NoArguments());
 }
 

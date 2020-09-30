@@ -50,10 +50,12 @@ class SharesheetService : public KeyedService {
   // files/content to be shared. If the files to share contains Google
   // Drive hosted document, only drive share action will be shown.
   void ShowBubble(content::WebContents* web_contents,
-                  apps::mojom::IntentPtr intent);
+                  apps::mojom::IntentPtr intent,
+                  sharesheet::CloseCallback close_callback);
   void ShowBubble(content::WebContents* web_contents,
                   apps::mojom::IntentPtr intent,
-                  bool contains_hosted_document);
+                  bool contains_hosted_document,
+                  sharesheet::CloseCallback close_callback);
   void OnBubbleClosed(uint32_t id, const base::string16& active_action);
   void OnTargetSelected(uint32_t delegate_id,
                         const base::string16& target_name,
@@ -85,12 +87,14 @@ class SharesheetService : public KeyedService {
 
   void OnAppIconsLoaded(std::unique_ptr<SharesheetServiceDelegate> delegate,
                         apps::mojom::IntentPtr intent,
+                        sharesheet::CloseCallback close_callback,
                         std::vector<TargetInfo> targets);
 
   void ShowBubbleWithDelegate(
       std::unique_ptr<SharesheetServiceDelegate> delegate,
       apps::mojom::IntentPtr intent,
-      bool contains_hosted_document);
+      bool contains_hosted_document,
+      sharesheet::CloseCallback close_callback);
 
   uint32_t delegate_counter_ = 0;
   Profile* profile_;

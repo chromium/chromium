@@ -31,14 +31,18 @@ class SharesheetBubbleView : public views::BubbleDialogDelegateView,
  public:
   using TargetInfo = sharesheet::TargetInfo;
 
+  SharesheetBubbleView(views::View* anchor_view,
+                       sharesheet::SharesheetServiceDelegate* delegate);
   SharesheetBubbleView(content::WebContents* web_contents,
                        sharesheet::SharesheetServiceDelegate* delegate);
   SharesheetBubbleView(const SharesheetBubbleView&) = delete;
   SharesheetBubbleView& operator=(const SharesheetBubbleView&) = delete;
   ~SharesheetBubbleView() override;
 
+  // |close_callback| is run when the bubble is closed.
   void ShowBubble(std::vector<TargetInfo> targets,
-                  apps::mojom::IntentPtr intent);
+                  apps::mojom::IntentPtr intent,
+                  sharesheet::CloseCallback close_callback);
   void ShowActionView();
   void ResizeBubble(const int& width, const int& height);
   void CloseBubble();
@@ -68,6 +72,7 @@ class SharesheetBubbleView : public views::BubbleDialogDelegateView,
   std::vector<TargetInfo> targets_;
   base::string16 active_target_;
   apps::mojom::IntentPtr intent_;
+  sharesheet::CloseCallback close_callback_;
 
   int width_ = 0;
   int height_ = 0;

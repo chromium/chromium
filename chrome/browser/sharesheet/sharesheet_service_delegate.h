@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/callback.h"
 #include "base/strings/string16.h"
 #include "chrome/browser/sharesheet/sharesheet_controller.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
@@ -40,7 +41,8 @@ class SharesheetServiceDelegate : public SharesheetController {
       delete;
 
   void ShowBubble(std::vector<TargetInfo> targets,
-                  apps::mojom::IntentPtr intent);
+                  apps::mojom::IntentPtr intent,
+                  sharesheet::CloseCallback close_callback);
   void OnBubbleClosed(const base::string16& active_action);
   void OnTargetSelected(const base::string16& target_name,
                         const TargetType type,

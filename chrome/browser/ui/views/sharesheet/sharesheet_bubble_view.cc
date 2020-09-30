@@ -95,10 +95,13 @@ SharesheetBubbleView::SharesheetBubbleView(
 
 SharesheetBubbleView::~SharesheetBubbleView() = default;
 
-void SharesheetBubbleView::ShowBubble(std::vector<TargetInfo> targets,
-                                      apps::mojom::IntentPtr intent) {
+void SharesheetBubbleView::ShowBubble(
+    std::vector<TargetInfo> targets,
+    apps::mojom::IntentPtr intent,
+    sharesheet::CloseCallback close_callback) {
   targets_ = std::move(targets);
   intent_ = std::move(intent);
+  close_callback_ = std::move(close_callback);
 
   auto* main_layout =
       main_view_->SetLayoutManager(std::make_unique<views::GridLayout>());
@@ -282,6 +285,7 @@ void SharesheetBubbleView::ButtonPressed(views::Button* sender,
                                 std::move(intent_), share_action_view_);
     intent_.reset();
     user_cancelled_ = false;
+    std::move(close_callback_).Run(sharesheet::SharesheetResult::kSuccess);
   }
 }
 
@@ -305,6 +309,9 @@ void SharesheetBubbleView::OnWidgetDestroyed(views::Widget* widget) {
         sharesheet::SharesheetMetrics::UserAction::kCancelled);
   }
   delegate_->OnBubbleClosed(active_target_);
+  if (close_callback_) {
+    std::move(close_callback_).Run(sharesheet::SharesheetResult::kCancel);
+  }
 }
 
 gfx::Size SharesheetBubbleView::CalculatePreferredSize() const {

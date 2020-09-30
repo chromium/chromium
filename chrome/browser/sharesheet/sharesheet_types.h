@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_SHARESHEET_SHARESHEET_TYPES_H_
 #define CHROME_BROWSER_SHARESHEET_SHARESHEET_TYPES_H_
 
+#include "base/callback.h"
 #include "base/optional.h"
 #include "base/strings/string16.h"
 #include "ui/gfx/image/image_skia.h"
@@ -13,6 +14,11 @@ namespace sharesheet {
 
 // In DIP (Density Independent Pixel).
 constexpr int kIconSize = 40;
+
+enum class SharesheetResult {
+  kSuccess,  // Share was successful.
+  kCancel,   // Sharesheet closed without sharing complete.
+};
 
 // The type of a target.
 enum class TargetType {
@@ -62,6 +68,8 @@ struct TargetInfo {
   // is kArc.
   base::Optional<std::string> activity_name;
 };
+
+using CloseCallback = base::OnceCallback<void(SharesheetResult success)>;
 
 }  // namespace sharesheet
 

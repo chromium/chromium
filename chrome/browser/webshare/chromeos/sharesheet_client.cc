@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/bind_helpers.h"
 #include "base/files/file_path.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
@@ -165,8 +166,10 @@ blink::mojom::ShareError SharesheetClient::ShowSharesheet(
       sharesheet::SharesheetServiceFactory::GetForProfile(profile);
 
   sharesheet_service->ShowBubble(
-      web_contents, apps_util::CreateShareIntentFromFiles(
-                        std::move(file_urls), std::move(content_types)));
+      web_contents,
+      apps_util::CreateShareIntentFromFiles(std::move(file_urls),
+                                            std::move(content_types)),
+      base::NullCallback());
 
   return blink::mojom::ShareError::OK;
 }

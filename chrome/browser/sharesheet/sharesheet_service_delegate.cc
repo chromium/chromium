@@ -27,9 +27,12 @@ SharesheetServiceDelegate::SharesheetServiceDelegate(
 
 SharesheetServiceDelegate::~SharesheetServiceDelegate() = default;
 
-void SharesheetServiceDelegate::ShowBubble(std::vector<TargetInfo> targets,
-                                           apps::mojom::IntentPtr intent) {
-  sharesheet_bubble_view_->ShowBubble(std::move(targets), std::move(intent));
+void SharesheetServiceDelegate::ShowBubble(
+    std::vector<TargetInfo> targets,
+    apps::mojom::IntentPtr intent,
+    sharesheet::CloseCallback close_callback) {
+  sharesheet_bubble_view_->ShowBubble(std::move(targets), std::move(intent),
+                                      std::move(close_callback));
 }
 
 void SharesheetServiceDelegate::OnBubbleClosed(
