@@ -407,6 +407,12 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
     // hidden.
     assertFalse(creditCardDialog.$.expired.hidden);
     assertTrue(creditCardDialog.$$('#expired-error').hidden);
+    // Check a11y attributes added for correct error announcement.
+    assertEquals('alert', creditCardDialog.$.expired.getAttribute('role'));
+    for (const select of [creditCardDialog.$.month, creditCardDialog.$.year]) {
+      assertEquals('true', select.getAttribute('aria-invalid'));
+      assertEquals('expired', select.getAttribute('aria-errormessage'));
+    }
 
     // Update the expiration year to next year to avoid expired card.
     creditCardDialog.$.year.value = nextYear();
@@ -417,6 +423,12 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
     assertTrue(creditCardDialog.$.expired.hidden);
     assertTrue(creditCardDialog.$$('#expired-error').hidden);
     assertFalse(creditCardDialog.$.saveButton.disabled);
+    // Check a11y attributes for expiration error removed.
+    assertEquals(null, creditCardDialog.$.expired.getAttribute('role'));
+    for (const select of [creditCardDialog.$.month, creditCardDialog.$.year]) {
+      assertEquals('false', select.getAttribute('aria-invalid'));
+      assertEquals(null, select.getAttribute('aria-errormessage'));
+    }
   });
 
   test('expired card when nickname management is enabled', async function() {
@@ -436,8 +448,13 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
     // The new expired error message is shown, the legacy error message is still
     // hidden.
     assertEquals('visible', getComputedStyle(expiredError).visibility);
-    assertEquals('false', expiredError.getAttribute('aria-hidden'));
     assertTrue(creditCardDialog.$.expired.hidden);
+    // Check a11y attributes added for correct error announcement.
+    assertEquals('alert', expiredError.getAttribute('role'));
+    for (const select of [creditCardDialog.$.month, creditCardDialog.$.year]) {
+      assertEquals('true', select.getAttribute('aria-invalid'));
+      assertEquals('expired-error', select.getAttribute('aria-errormessage'));
+    }
 
     // Update the expiration year to next year to avoid expired card.
     creditCardDialog.$.year.value = nextYear();
@@ -446,8 +463,13 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
 
     // Expired error message is hidden for valid expiration date.
     assertEquals('hidden', getComputedStyle(expiredError).visibility);
-    assertEquals('true', expiredError.getAttribute('aria-hidden'));
     assertTrue(creditCardDialog.$.expired.hidden);
     assertFalse(creditCardDialog.$.saveButton.disabled);
+    // Check a11y attributes for expiration error removed.
+    assertEquals(null, expiredError.getAttribute('role'));
+    for (const select of [creditCardDialog.$.month, creditCardDialog.$.year]) {
+      assertEquals('false', select.getAttribute('aria-invalid'));
+      assertEquals(null, select.getAttribute('aria-errormessage'));
+    }
   });
 });

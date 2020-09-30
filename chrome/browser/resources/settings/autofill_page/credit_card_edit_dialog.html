@@ -122,22 +122,23 @@
         </label>
         <select class="md-select" id="month" value="[[expirationMonth_]]"
             on-change="onMonthChange_"
-            aria-label="$i18n{creditCardExpirationMonth}">
+            aria-label="$i18n{creditCardExpirationMonth}"
+            aria-invalid$="[[getExpirationAriaInvalid_(expired_)]]">
           <template is="dom-repeat" items="[[monthList_]]">
             <option>[[item]]</option>
           </template>
         </select>
         <select class="md-select" id="year" value="[[expirationYear_]]"
             on-change="onYearChange_"
-            aria-label="$i18n{creditCardExpirationYear}">
+            aria-label="$i18n{creditCardExpirationYear}"
+            aria-invalid$="[[getExpirationAriaInvalid_(expired_)]]">
           <template is="dom-repeat" items="[[yearList_]]">
             <option>[[item]]</option>
           </template>
         </select>
         <!-- Use new error message text under the drop down when nickname
           management is enabled.-->
-        <div id="expired-error" aria-hidden$="[[getAriaHidden_(expired_)]]"
-            hidden="[[!nicknameManagementEnabled_]]">
+        <div id="expired-error" hidden="[[!nicknameManagementEnabled_]]">
           $i18n{creditCardExpired}
         </div>
         <!-- Reuse current error message span when nickname management is
