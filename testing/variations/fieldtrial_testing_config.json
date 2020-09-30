@@ -3407,21 +3407,6 @@
             ]
         }
     ],
-    "IOSReloadSadTab": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ReloadSadTab"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSRequestDesktopByDefault": [
         {
             "platforms": [

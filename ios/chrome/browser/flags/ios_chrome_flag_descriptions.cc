@@ -402,11 +402,6 @@ const char kPointerSupportDescription[] =
     "Enables pointer support on tablets on iOS 13.4 and above.";
 #endif  // defined(__IPHONE_13_4)
 
-const char kReloadSadTabName[] = "Reload SadTab automatically";
-const char kReloadSadTabDescription[] =
-    "When enabled, the first time the renderer crashes, the page is reloaded "
-    "instead of showing the SadTab";
-
 const char kRestoreGaiaCookiesIfDeletedName[] =
     "Restore GAIA cookies if deleted";
 const char kRestoreGaiaCookiesIfDeletedDescription[] =

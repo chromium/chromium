@@ -212,9 +212,6 @@ TEST_F(SadTabTabHelperTest, AppIsInactive) {
 
 // Tests that the page is reloaded for shown web states.
 TEST_F(SadTabTabHelperTest, ReloadFirstTime) {
-  base::test::ScopedFeatureList scoped_feature;
-  scoped_feature.InitAndEnableFeature(web::kReloadSadTab);
-
   OCMStub([application_ applicationState]).andReturn(UIApplicationStateActive);
 
   web_state_.WasShown();
@@ -231,26 +228,6 @@ TEST_F(SadTabTabHelperTest, ReloadFirstTime) {
   EXPECT_TRUE(navigation_manager_->ReloadWasCalled());
 }
 
-// Tests that SadTab is presented for shown web states.
-TEST_F(SadTabTabHelperTest, Presented) {
-  if (base::FeatureList::IsEnabled(web::kReloadSadTab))
-    return;
-
-  OCMStub([application_ applicationState]).andReturn(UIApplicationStateActive);
-
-  web_state_.WasShown();
-
-  // Delegate and TabHelper should not present a SadTab.
-  EXPECT_FALSE(tab_helper()->is_showing_sad_tab());
-  EXPECT_FALSE(sad_tab_delegate_.showingSadTab);
-
-  // Helper should get notified of render process failure. And the delegate
-  // and TabHelper should present a SadTab.
-  web_state_.OnRenderProcessGone();
-  EXPECT_TRUE(tab_helper()->is_showing_sad_tab());
-  EXPECT_TRUE(sad_tab_delegate_.showingSadTab);
-}
-
 // Tests that SadTab is removed by the navigation.
 TEST_F(SadTabTabHelperTest, SadTabClearedByNavigation) {
   OCMStub([application_ applicationState]).andReturn(UIApplicationStateActive);
@@ -263,11 +240,8 @@ TEST_F(SadTabTabHelperTest, SadTabClearedByNavigation) {
   // Helper should get notified of render process failure. And the delegate
   // and TabHelper should present a SadTab.
   web_state_.OnRenderProcessGone();
-  if (base::FeatureList::IsEnabled(web::kReloadSadTab)) {
-    // If the kReloadSadTab is enabled, the renderer should be gone twice to
-    // show the sad tab.
-    web_state_.OnRenderProcessGone();
-  }
+  // The renderer should be gone twice to show the sad tab.
+  web_state_.OnRenderProcessGone();
 
   EXPECT_TRUE(tab_helper()->is_showing_sad_tab());
   ASSERT_TRUE(sad_tab_delegate_.showingSadTab);
@@ -293,11 +267,8 @@ TEST_F(SadTabTabHelperTest, HideAndShowPresented) {
   // Helper should get notified of render process failure. And the delegate
   // should present a SadTab.
   web_state_.OnRenderProcessGone();
-  if (base::FeatureList::IsEnabled(web::kReloadSadTab)) {
-    // If the kReloadSadTab is enabled, the renderer should be gone twice to
-    // show the sad tab.
-    web_state_.OnRenderProcessGone();
-  }
+  // The renderer should be gone twice to show the sad tab.
+  web_state_.OnRenderProcessGone();
   EXPECT_TRUE(sad_tab_delegate_.showingSadTab);
 
   // Delegate does not show Sad Tab anymore, because WebState was hidden. But
@@ -308,9 +279,6 @@ TEST_F(SadTabTabHelperTest, HideAndShowPresented) {
 
   web_state_.WasShown();
   EXPECT_TRUE(sad_tab_delegate_.showingSadTab);
-  if (!base::FeatureList::IsEnabled(web::kReloadSadTab)) {
-    EXPECT_FALSE(sad_tab_delegate_.repeatedFailure);
-  }
 }
 
 // Tests that SadTab is presented after web state is shown and removed when web
@@ -327,15 +295,9 @@ TEST_F(SadTabTabHelperTest, HideAndShowPresentedForRepeatedFailure) {
   // Helper should get notified of render process failure. And the delegate
   // should present a SadTab.
   web_state_.OnRenderProcessGone();
-  if (base::FeatureList::IsEnabled(web::kReloadSadTab)) {
-    // If the kReloadSadTab is enabled, the first time the renderer crashes, the
-    // page is reloaded.
-    EXPECT_FALSE(tab_helper()->is_showing_sad_tab());
-    EXPECT_FALSE(sad_tab_delegate_.showingSadTab);
-  } else {
-    EXPECT_TRUE(tab_helper()->is_showing_sad_tab());
-    EXPECT_TRUE(sad_tab_delegate_.showingSadTab);
-  }
+  // The first time the renderer crashes, the page is reloaded.
+  EXPECT_FALSE(tab_helper()->is_showing_sad_tab());
+  EXPECT_FALSE(sad_tab_delegate_.showingSadTab);
 
   // Simulate repeated failure.
   web_state_.OnRenderProcessGone();
@@ -361,15 +323,9 @@ TEST_F(SadTabTabHelperTest, RepeatedFailuresShowCorrectUI) {
   // Helper should get notified of render process failure.
   web_state_.OnRenderProcessGone();
 
-  if (base::FeatureList::IsEnabled(web::kReloadSadTab)) {
-    // SadTab shouldn't be displayed and repeatedFailure should be NO.
-    EXPECT_FALSE(tab_helper()->is_showing_sad_tab());
-    EXPECT_FALSE(sad_tab_delegate_.showingSadTab);
-  } else {
-    // SadTab should be displayed and repeatedFailure should be NO.
-    EXPECT_TRUE(tab_helper()->is_showing_sad_tab());
-    EXPECT_TRUE(sad_tab_delegate_.showingSadTab);
-  }
+  // SadTab shouldn't be displayed and repeatedFailure should be NO.
+  EXPECT_FALSE(tab_helper()->is_showing_sad_tab());
+  EXPECT_FALSE(sad_tab_delegate_.showingSadTab);
   EXPECT_FALSE(sad_tab_delegate_.repeatedFailure);
 
   // On a second render process crash, SadTab should be displayed and
@@ -411,24 +367,13 @@ TEST_F(SadTabTabHelperTest, FailureInterval) {
   // SadTab should be shown.
   web_state.OnRenderProcessGone();
 
-  if (base::FeatureList::IsEnabled(web::kReloadSadTab)) {
-    // SadTab shouldn't be displayed and repeatedFailure should be NO.
-    EXPECT_FALSE(sad_tab_delegate_.showingSadTab);
-  } else {
-    // SadTab should be displayed and repeatedFailure should be NO.
-    EXPECT_TRUE(sad_tab_delegate_.showingSadTab);
-  }
+  // SadTab shouldn't be displayed and repeatedFailure should be NO.
+  EXPECT_FALSE(sad_tab_delegate_.showingSadTab);
   EXPECT_FALSE(sad_tab_delegate_.repeatedFailure);
 
   web_state.OnRenderProcessGone();
-  if (base::FeatureList::IsEnabled(web::kReloadSadTab)) {
-    // On a second render process crash, SadTab shouldn't be displayed and
-    // repeatedFailure should still be NO due to the 0.0f interval timeout.
-    EXPECT_FALSE(sad_tab_delegate_.showingSadTab);
-  } else {
-    // On a second render process crash, SadTab should be displayed and
-    // repeatedFailure should still be NO due to the 0.0f interval timeout.
-    EXPECT_TRUE(sad_tab_delegate_.showingSadTab);
-  }
+  // On a second render process crash, SadTab shouldn't be displayed and
+  // repeatedFailure should still be NO due to the 0.0f interval timeout.
+  EXPECT_FALSE(sad_tab_delegate_.showingSadTab);
   EXPECT_FALSE(sad_tab_delegate_.repeatedFailure);
 }

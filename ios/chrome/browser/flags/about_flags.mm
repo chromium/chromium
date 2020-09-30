@@ -517,9 +517,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillSaveCardInfobarEditSupport)},
-    {"reload-sad-tab", flag_descriptions::kReloadSadTabName,
-     flag_descriptions::kReloadSadTabDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(web::kReloadSadTab)},
     {"page-info-refactoring", flag_descriptions::kPageInfoRefactoringName,
      flag_descriptions::kPageInfoRefactoringDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kPageInfoRefactoring)},

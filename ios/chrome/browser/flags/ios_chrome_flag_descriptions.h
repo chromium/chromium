@@ -356,11 +356,6 @@ extern const char kPointerSupportName[];
 extern const char kPointerSupportDescription[];
 #endif  // defined(__IPHONE_13_4)
 
-// Title and description for the flag that reload the page when the renderer
-// crashes.
-extern const char kReloadSadTabName[];
-extern const char kReloadSadTabDescription[];
-
 // Title and description for the flag that makes Safe Browsing available.
 extern const char kSafeBrowsingAvailableName[];
 extern const char kSafeBrowsingAvailableDescription[];
