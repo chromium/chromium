@@ -31,6 +31,7 @@ struct ASH_PUBLIC_EXPORT ToastData {
   int32_t duration_ms;
   base::Optional<base::string16> dismiss_text;
   bool visible_on_lock_screen;
+  bool is_managed = false;
 };
 
 }  // namespace ash

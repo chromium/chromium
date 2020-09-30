@@ -79,8 +79,8 @@ bool EnterpriseClipboardDlpController::IsDataReadAllowed(
 
 void EnterpriseClipboardDlpController::ShowBlockToast(
     const base::string16& text) const {
-  ash::ToastData toast(kToastId, text, kToastDurationMs,
-                       base::Optional<base::string16>());
+  ash::ToastData toast(kToastId, text, kToastDurationMs, base::nullopt);
+  toast.is_managed = true;
 
   ash::ToastManager::Get()->Show(toast);
 }

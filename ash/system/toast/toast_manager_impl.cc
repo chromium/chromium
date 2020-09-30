@@ -92,7 +92,8 @@ void ToastManagerImpl::ShowLatest() {
 
   overlay_ = std::make_unique<ToastOverlay>(
       this, current_toast_data_->text, current_toast_data_->dismiss_text,
-      current_toast_data_->visible_on_lock_screen && locked_);
+      current_toast_data_->visible_on_lock_screen && locked_,
+      current_toast_data_->is_managed);
   overlay_->Show(true);
 
   if (current_toast_data_->duration_ms != ToastData::kInfiniteDuration) {

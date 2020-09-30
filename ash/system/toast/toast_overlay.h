@@ -46,11 +46,12 @@ class ASH_EXPORT ToastOverlay : public ui::ImplicitAnimationObserver,
   // |dismiss_text| is the message for the button to dismiss the toast message.
   // If |dismiss_text| is null, no dismiss button will be shown. If
   // |dismiss_text| has a value but the string is empty, the default text is
-  // used.
+  // used. If |is_managed| is true, a managed icon will be added to the toast.
   ToastOverlay(Delegate* delegate,
                const base::string16& text,
                base::Optional<base::string16> dismiss_text,
-               bool show_on_lock_screen = false);
+               bool show_on_lock_screen,
+               bool is_managed);
   ~ToastOverlay() override;
 
   // Shows or hides the overlay.

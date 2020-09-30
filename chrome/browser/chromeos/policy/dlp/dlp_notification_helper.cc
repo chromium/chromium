@@ -23,6 +23,7 @@ void ShowDlpPrintDisabledToast() {
   ash::ToastData toast(
       kPrintToastId, l10n_util::GetStringUTF16(IDS_POLICY_DLP_PRINTING_BLOCKED),
       kPrintToastDurationMs, base::nullopt);
+  toast.is_managed = true;
 
   ash::ToastManager::Get()->Show(toast);
 }

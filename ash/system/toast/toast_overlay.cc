@@ -7,6 +7,7 @@
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/ash_typography.h"
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -22,6 +23,7 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/animation/ink_drop_highlight.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
@@ -153,7 +155,8 @@ class ToastOverlayView : public views::View, public views::ButtonListener {
   // This object is not owned by the views hierarchy or by the widget.
   ToastOverlayView(ToastOverlay* overlay,
                    const base::string16& text,
-                   const base::Optional<base::string16>& dismiss_text)
+                   const base::Optional<base::string16>& dismiss_text,
+                   const bool is_managed)
       : overlay_(overlay) {
     SetPaintToLayer();
     SetBackground(
@@ -166,9 +169,24 @@ class ToastOverlayView : public views::View, public views::ButtonListener {
 
     auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kHorizontal));
+
+    int icon_width = 0;
+    if (is_managed) {
+      auto* icon = new views::ImageView;
+      icon->SetImage(gfx::CreateVectorIcon(
+          kUnifiedMenuManagedIcon,
+          AshColorProvider::Get()->GetContentLayerColor(
+              AshColorProvider::ContentLayerType::kIconColorPrimary)));
+      icon->SetBorder(views::CreateEmptyBorder(
+          gfx::Insets(kToastHorizontalSpacing, kToastHorizontalSpacing,
+                      kToastHorizontalSpacing, /*right=*/0)));
+      AddChildView(icon);
+      icon_width = icon->GetPreferredSize().width() + kToastHorizontalSpacing;
+    }
+
     auto* label = new ToastOverlayLabel(text);
     AddChildView(label);
-    label->SetMaximumWidth(GetMaximumSize().width());
+    label->SetMaximumWidth(GetMaximumSize().width() - icon_width);
     layout->SetFlexForView(label, 1);
 
     if (!dismiss_text.has_value())
@@ -183,7 +201,7 @@ class ToastOverlayView : public views::View, public views::ButtonListener {
         std::min(button_->GetPreferredSize().width(), kToastButtonMaximumWidth);
     button_->SetMaxSize(gfx::Size(button_width, GetMaximumSize().height()));
     label->SetMaximumWidth(GetMaximumSize().width() - button_width -
-                           kToastHorizontalSpacing * 2 -
+                           icon_width - kToastHorizontalSpacing * 2 -
                            kToastHorizontalSpacing * 2);
     AddChildView(button_);
   }
@@ -220,12 +238,13 @@ class ToastOverlayView : public views::View, public views::ButtonListener {
 ToastOverlay::ToastOverlay(Delegate* delegate,
                            const base::string16& text,
                            base::Optional<base::string16> dismiss_text,
-                           bool show_on_lock_screen)
+                           bool show_on_lock_screen,
+                           bool is_managed)
     : delegate_(delegate),
       text_(text),
       dismiss_text_(dismiss_text),
       overlay_widget_(new views::Widget),
-      overlay_view_(new ToastOverlayView(this, text, dismiss_text)),
+      overlay_view_(new ToastOverlayView(this, text, dismiss_text, is_managed)),
       display_observer_(std::make_unique<ToastDisplayObserver>(this)),
       widget_size_(overlay_view_->GetPreferredSize()) {
   views::Widget::InitParams params;
