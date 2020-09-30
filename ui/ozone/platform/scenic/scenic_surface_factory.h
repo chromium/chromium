@@ -85,10 +85,10 @@ class ScenicSurfaceFactory : public SurfaceFactoryOzone {
   ScenicSurface* GetSurface(gfx::AcceleratedWidget widget)
       LOCKS_EXCLUDED(surface_lock_);
 
- private:
   // Creates a new scenic session on any thread.
   scenic::SessionPtrAndListenerRequest CreateScenicSession();
 
+ private:
   // Links a surface to its parent window in the host process.
   void AttachSurfaceToWindow(
       gfx::AcceleratedWidget window,

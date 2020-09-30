@@ -79,6 +79,9 @@ const char kForceProtectedVideoOutputBuffers[] =
     "force-protected-video-output-buffers";
 
 const char kDisableAudioInput[] = "disable-audio-input";
+
+// Present video content as overlays.
+const char kUseOverlaysForVideo[] = "use-overlays-for-video";
 #endif  // defined(OS_FUCHSIA)
 
 #if defined(USE_CRAS)

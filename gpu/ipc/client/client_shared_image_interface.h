@@ -35,7 +35,8 @@ class GPU_EXPORT ClientSharedImageInterface : public SharedImageInterface {
   void RegisterSysmemBufferCollection(gfx::SysmemBufferCollectionId id,
                                       zx::channel token,
                                       gfx::BufferFormat format,
-                                      gfx::BufferUsage usage) override;
+                                      gfx::BufferUsage usage,
+                                      bool register_with_image_pipe) override;
   void ReleaseSysmemBufferCollection(gfx::SysmemBufferCollectionId id) override;
 #endif  // defined(OS_FUCHSIA)
   SyncToken GenUnverifiedSyncToken() override;

@@ -138,6 +138,7 @@ fuchsia::sysmem::AllocatorHandle ConnectSysmemAllocator() {
 
 ScenicSurfaceFactory::ScenicSurfaceFactory()
     : egl_implementation_(std::make_unique<GLOzoneEGLScenic>(this)),
+      sysmem_buffer_manager_(this),
       weak_ptr_factory_(this) {}
 
 ScenicSurfaceFactory::~ScenicSurfaceFactory() {

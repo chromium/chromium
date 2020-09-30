@@ -6,23 +6,28 @@
 #define UI_OZONE_PLATFORM_SCENIC_SYSMEM_BUFFER_COLLECTION_H_
 
 #include <fuchsia/sysmem/cpp/fidl.h>
+#include <lib/ui/scenic/cpp/session.h>
 #include <vulkan/vulkan.h>
 
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "base/optional.h"
 #include "base/threading/thread_checker.h"
 #include "gpu/ipc/common/vulkan_ycbcr_info.h"
 #include "gpu/vulkan/fuchsia/vulkan_fuchsia_ext.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_pixmap_handle.h"
+#include "ui/ozone/platform/scenic/scenic_overlay_view.h"
 
 namespace gfx {
 class NativePixmap;
 }  // namespace gfx
 
 namespace ui {
+
+class ScenicSurfaceFactory;
 
 // SysmemBufferCollection keeps sysmem.BufferCollection interface along with the
 // corresponding VkBufferCollectionFUCHSIA. It allows to create either
@@ -44,14 +49,18 @@ class SysmemBufferCollection
   // collection is created. |size| may be empty. In that case |token_handle|
   // must not be null and the image size is determined by the other sysmem
   // participants.
+  // If |register_with_image_pipe| is true, new ScenicOverlayView instance is
+  // created and |token_handle| gets duplicated to be added to its ImagePipe.
   bool Initialize(fuchsia::sysmem::Allocator_Sync* allocator,
+                  ScenicSurfaceFactory* scenic_surface_factory,
                   zx::channel token_handle,
                   gfx::Size size,
                   gfx::BufferFormat format,
                   gfx::BufferUsage usage,
                   VkDevice vk_device,
                   size_t min_buffer_count,
-                  bool force_protected);
+                  bool force_protected,
+                  bool register_with_image_pipe);
 
   // Must not be called more than once.
   void SetOnDeletedCallback(base::OnceClosure on_deleted);
@@ -116,6 +125,11 @@ class SysmemBufferCollection
   // Handle for the Vulkan object that holds the same logical buffer collection
   // that is referenced by |collection_|.
   VkBufferCollectionFUCHSIA vk_buffer_collection_ = VK_NULL_HANDLE;
+
+  // If ScenicOverlayView is created and its ImagePipe is added as a participant
+  // in buffer allocation negotiations, the associated images can be displayed
+  // as overlays.
+  base::Optional<ScenicOverlayView> scenic_overlay_view_;
 
   // Thread checker used to verify that CreateVkImage() is always called from
   // the same thread. It may be unsafe to use vk_buffer_collection_ on different

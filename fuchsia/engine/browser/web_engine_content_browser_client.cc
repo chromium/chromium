@@ -168,6 +168,7 @@ void WebEngineContentBrowserClient::AppendExtraCommandLineSwitches(
       switches::kForceProtectedVideoOutputBuffers,
       switches::kMaxDecodedImageSizeMb,
       switches::kPlayreadyKeySystem,
+      switches::kUseOverlaysForVideo,
   };
 
   command_line->CopySwitchesFrom(*base::CommandLine::ForCurrentProcess(),

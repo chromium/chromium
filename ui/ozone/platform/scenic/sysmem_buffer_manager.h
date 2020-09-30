@@ -6,6 +6,7 @@
 #define UI_OZONE_PLATFORM_SCENIC_SYSMEM_BUFFER_MANAGER_H_
 
 #include <fuchsia/sysmem/cpp/fidl.h>
+#include <lib/ui/scenic/cpp/session.h>
 #include <vulkan/vulkan.h>
 
 #include <unordered_map>
@@ -23,10 +24,11 @@
 namespace ui {
 
 class SysmemBufferCollection;
+class ScenicSurfaceFactory;
 
 class SysmemBufferManager {
  public:
-  explicit SysmemBufferManager();
+  explicit SysmemBufferManager(ScenicSurfaceFactory* scenic_surface_factory);
   ~SysmemBufferManager();
 
   // Initializes the buffer manager with a connection to the sysmem service.
@@ -51,7 +53,8 @@ class SysmemBufferManager {
       gfx::BufferFormat format,
       gfx::BufferUsage usage,
       size_t min_buffer_count,
-      bool force_protected);
+      bool force_protected,
+      bool register_with_image_pipe);
 
   scoped_refptr<SysmemBufferCollection> GetCollectionById(
       gfx::SysmemBufferCollectionId id);
@@ -60,6 +63,7 @@ class SysmemBufferManager {
   void RegisterCollection(SysmemBufferCollection* collection);
   void OnCollectionDestroyed(gfx::SysmemBufferCollectionId id);
 
+  ScenicSurfaceFactory* const scenic_surface_factory_;
   fuchsia::sysmem::AllocatorSyncPtr allocator_;
 
   base::small_map<std::unordered_map<gfx::SysmemBufferCollectionId,

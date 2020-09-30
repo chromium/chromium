@@ -122,7 +122,7 @@ class TestSharedImageInterface : public gpu::SharedImageInterface {
              collection_it->second->GetNumBuffers());
 
     auto result = gpu::Mailbox::Generate();
-    mailoxes_.insert(result);
+    mailboxes_.insert(result);
     return result;
   }
 
@@ -138,7 +138,7 @@ class TestSharedImageInterface : public gpu::SharedImageInterface {
 
   void DestroySharedImage(const gpu::SyncToken& sync_token,
                           const gpu::Mailbox& mailbox) override {
-    CHECK_EQ(mailoxes_.erase(mailbox), 1U);
+    CHECK_EQ(mailboxes_.erase(mailbox), 1U);
   }
 
   SwapChainMailboxes CreateSwapChain(viz::ResourceFormat format,
@@ -158,7 +158,8 @@ class TestSharedImageInterface : public gpu::SharedImageInterface {
   void RegisterSysmemBufferCollection(gfx::SysmemBufferCollectionId id,
                                       zx::channel token,
                                       gfx::BufferFormat format,
-                                      gfx::BufferUsage usage) override {
+                                      gfx::BufferUsage usage,
+                                      bool register_with_image_pipe) override {
     EXPECT_EQ(format, gfx::BufferFormat::YUV_420_BIPLANAR);
     EXPECT_EQ(usage, gfx::BufferUsage::GPU_READ);
     std::unique_ptr<TestBufferCollection>& collection =
@@ -196,7 +197,7 @@ class TestSharedImageInterface : public gpu::SharedImageInterface {
                  std::unique_ptr<TestBufferCollection>>
       sysmem_buffer_collections_;
 
-  base::flat_set<gpu::Mailbox> mailoxes_;
+  base::flat_set<gpu::Mailbox> mailboxes_;
 };
 
 }  // namespace

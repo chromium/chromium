@@ -104,7 +104,8 @@ class GPU_IPC_SERVICE_EXPORT SharedImageStub
   void OnRegisterSysmemBufferCollection(gfx::SysmemBufferCollectionId id,
                                         zx::channel token,
                                         gfx::BufferFormat format,
-                                        gfx::BufferUsage usage);
+                                        gfx::BufferUsage usage,
+                                        bool register_with_image_pipe);
   void OnReleaseSysmemBufferCollection(gfx::SysmemBufferCollectionId id);
 #endif  // OS_FUCHSIA
 

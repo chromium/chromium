@@ -257,7 +257,8 @@ OutputPresenterFuchsia::AllocateImages(gfx::ColorSpace color_space,
                            ->GetVulkanDevice();
   buffer_collection_ = vulkan->RegisterSysmemBufferCollection(
       vk_device, buffer_collection_id, collection_token.Unbind().TakeChannel(),
-      buffer_format_, gfx::BufferUsage::SCANOUT, frame_size_, num_images);
+      buffer_format_, gfx::BufferUsage::SCANOUT, frame_size_, num_images,
+      false /* register_with_image_pipe */);
 
   if (!buffer_collection_) {
     ZX_DLOG(ERROR, status) << "Failed to allocate sysmem buffer collection";

@@ -70,7 +70,8 @@ class SharedImageInterfaceProxy {
   void RegisterSysmemBufferCollection(gfx::SysmemBufferCollectionId id,
                                       zx::channel token,
                                       gfx::BufferFormat format,
-                                      gfx::BufferUsage usage);
+                                      gfx::BufferUsage usage,
+                                      bool register_with_image_pipe);
   void ReleaseSysmemBufferCollection(gfx::SysmemBufferCollectionId id);
 #endif  // defined(OS_FUCHSIA)
 

@@ -251,6 +251,7 @@ class FuchsiaVideoDecoder : public VideoDecoder,
   gpu::SharedImageInterface* const shared_image_interface_;
   gpu::ContextSupport* const gpu_context_support_;
   const bool enable_sw_decoding_;
+  const bool use_overlays_for_video_;
 
   OutputCB output_cb_;
   WaitingCB waiting_cb_;
@@ -316,6 +317,8 @@ FuchsiaVideoDecoder::FuchsiaVideoDecoder(
     : shared_image_interface_(shared_image_interface),
       gpu_context_support_(gpu_context_support),
       enable_sw_decoding_(enable_sw_decoding),
+      use_overlays_for_video_(base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kUseOverlaysForVideo)),
       client_native_pixmap_factory_(ui::CreateClientNativePixmapFactoryOzone()),
       weak_factory_(this) {
   DCHECK(shared_image_interface_);
@@ -944,6 +947,10 @@ void FuchsiaVideoDecoder::OnOutputPacket(fuchsia::media::Packet output_packet,
   // doesn't matter because software decoders can be enabled only for tests.
   frame->metadata()->power_efficient = !enable_sw_decoding_;
 
+  // Allow this video frame to be promoted as an overlay, because it was
+  // registered with an ImagePipe.
+  frame->metadata()->allow_overlay = use_overlays_for_video_;
+
   output_cb_.Run(std::move(frame));
 }
 
@@ -1024,7 +1031,8 @@ void FuchsiaVideoDecoder::InitializeOutputBufferCollection(
   shared_image_interface_->RegisterSysmemBufferCollection(
       output_buffer_collection_id_,
       collection_token_for_gpu.Unbind().TakeChannel(),
-      gfx::BufferFormat::YUV_420_BIPLANAR, gfx::BufferUsage::GPU_READ);
+      gfx::BufferFormat::YUV_420_BIPLANAR, gfx::BufferUsage::GPU_READ,
+      true /*register_with_image_pipe*/);
 
   // Pass new output buffer settings to the codec.
   fuchsia::media::StreamBufferPartialSettings settings;

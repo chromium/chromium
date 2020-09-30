@@ -169,10 +169,15 @@ class GPU_EXPORT SharedImageInterface {
   // |buffer_collection_id| and |buffer_index| fields in NativePixmapHandle,
   // wrapping it in GpuMemoryBufferHandle and then creating GpuMemoryBuffer from
   // that handle.
-  virtual void RegisterSysmemBufferCollection(gfx::SysmemBufferCollectionId id,
-                                              zx::channel token,
-                                              gfx::BufferFormat format,
-                                              gfx::BufferUsage usage) = 0;
+  // If |register_with_image_pipe| field is set, a new ImagePipe is created and
+  // |token| is duped to collect ImagePipe constraints. SysmemBufferCollection
+  // is then available for direct presentation.
+  virtual void RegisterSysmemBufferCollection(
+      gfx::SysmemBufferCollectionId id,
+      zx::channel token,
+      gfx::BufferFormat format,
+      gfx::BufferUsage usage,
+      bool register_with_image_pipe) = 0;
 
   virtual void ReleaseSysmemBufferCollection(
       gfx::SysmemBufferCollectionId id) = 0;

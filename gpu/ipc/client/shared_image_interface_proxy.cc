@@ -435,9 +435,10 @@ void SharedImageInterfaceProxy::RegisterSysmemBufferCollection(
     gfx::SysmemBufferCollectionId id,
     zx::channel token,
     gfx::BufferFormat format,
-    gfx::BufferUsage usage) {
+    gfx::BufferUsage usage,
+    bool register_with_image_pipe) {
   host_->Send(new GpuChannelMsg_RegisterSysmemBufferCollection(
-      route_id_, id, token, format, usage));
+      route_id_, id, token, format, usage, register_with_image_pipe));
 }
 
 void SharedImageInterfaceProxy::ReleaseSysmemBufferCollection(

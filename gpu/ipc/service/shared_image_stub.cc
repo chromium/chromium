@@ -409,14 +409,15 @@ void SharedImageStub::OnRegisterSysmemBufferCollection(
     gfx::SysmemBufferCollectionId id,
     zx::channel token,
     gfx::BufferFormat format,
-    gfx::BufferUsage usage) {
+    gfx::BufferUsage usage,
+    bool register_with_image_pipe) {
   if (!id || !token) {
     OnError();
     return;
   }
 
-  if (!factory_->RegisterSysmemBufferCollection(id, std::move(token), format,
-                                                usage)) {
+  if (!factory_->RegisterSysmemBufferCollection(
+          id, std::move(token), format, usage, register_with_image_pipe)) {
     OnError();
   }
 }

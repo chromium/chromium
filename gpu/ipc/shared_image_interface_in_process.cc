@@ -376,7 +376,8 @@ void SharedImageInterfaceInProcess::RegisterSysmemBufferCollection(
     gfx::SysmemBufferCollectionId id,
     zx::channel token,
     gfx::BufferFormat format,
-    gfx::BufferUsage usage) {
+    gfx::BufferUsage usage,
+    bool register_with_image_pipe) {
   NOTREACHED();
 }
 void SharedImageInterfaceInProcess::ReleaseSysmemBufferCollection(

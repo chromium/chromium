@@ -42,8 +42,10 @@ void ClientSharedImageInterface::RegisterSysmemBufferCollection(
     gfx::SysmemBufferCollectionId id,
     zx::channel token,
     gfx::BufferFormat format,
-    gfx::BufferUsage usage) {
-  proxy_->RegisterSysmemBufferCollection(id, std::move(token), format, usage);
+    gfx::BufferUsage usage,
+    bool register_with_image_pipe) {
+  proxy_->RegisterSysmemBufferCollection(id, std::move(token), format, usage,
+                                         register_with_image_pipe);
 }
 
 void ClientSharedImageInterface::ReleaseSysmemBufferCollection(

@@ -52,6 +52,7 @@ MEDIA_EXPORT extern const char kWaveOutBuffers[];
 MEDIA_EXPORT extern const char kEnableProtectedVideoBuffers[];
 MEDIA_EXPORT extern const char kForceProtectedVideoOutputBuffers[];
 MEDIA_EXPORT extern const char kDisableAudioInput[];
+MEDIA_EXPORT extern const char kUseOverlaysForVideo[];
 #endif
 
 #if defined(OS_CHROMEOS)

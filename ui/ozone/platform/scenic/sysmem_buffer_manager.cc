@@ -12,7 +12,9 @@
 
 namespace ui {
 
-SysmemBufferManager::SysmemBufferManager() = default;
+SysmemBufferManager::SysmemBufferManager(
+    ScenicSurfaceFactory* scenic_surface_factory)
+    : scenic_surface_factory_(scenic_surface_factory) {}
 
 SysmemBufferManager::~SysmemBufferManager() {
   Shutdown();
@@ -39,9 +41,11 @@ scoped_refptr<SysmemBufferCollection> SysmemBufferManager::CreateCollection(
     gfx::BufferUsage usage,
     size_t min_buffer_count) {
   auto result = base::MakeRefCounted<SysmemBufferCollection>();
-  if (!result->Initialize(allocator_.get(), /*token_channel=*/zx::channel(),
-                          size, format, usage, vk_device, min_buffer_count,
-                          /*force_protected=*/false)) {
+  if (!result->Initialize(allocator_.get(), scenic_surface_factory_,
+                          /*token_channel=*/zx::channel(), size, format, usage,
+                          vk_device, min_buffer_count,
+                          /*force_protected=*/false,
+                          /*register_with_image_pipe=*/false)) {
     return nullptr;
   }
   RegisterCollection(result.get());
@@ -57,11 +61,13 @@ SysmemBufferManager::ImportSysmemBufferCollection(
     gfx::BufferFormat format,
     gfx::BufferUsage usage,
     size_t min_buffer_count,
-    bool force_protected) {
+    bool force_protected,
+    bool register_with_image_pipe) {
   auto result = base::MakeRefCounted<SysmemBufferCollection>(id);
-  if (!result->Initialize(allocator_.get(), std::move(token), size, format,
-                          usage, vk_device, min_buffer_count,
-                          force_protected)) {
+  if (!result->Initialize(allocator_.get(), scenic_surface_factory_,
+                          std::move(token), size, format, usage, vk_device,
+                          min_buffer_count, force_protected,
+                          register_with_image_pipe)) {
     return nullptr;
   }
   RegisterCollection(result.get());

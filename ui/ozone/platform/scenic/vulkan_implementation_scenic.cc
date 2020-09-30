@@ -302,14 +302,16 @@ VulkanImplementationScenic::RegisterSysmemBufferCollection(
     gfx::BufferFormat format,
     gfx::BufferUsage usage,
     gfx::Size size,
-    size_t min_buffer_count) {
+    size_t min_buffer_count,
+    bool register_with_image_pipe) {
   // SCANOUT images must be protected in protected mode.
   bool force_protected =
       usage == gfx::BufferUsage::SCANOUT && enforce_protected_memory();
 
+  fuchsia::images::ImagePipe2Ptr image_pipe = nullptr;
   auto buffer_collection = sysmem_buffer_manager_->ImportSysmemBufferCollection(
       device, id, std::move(token), size, format, usage, min_buffer_count,
-      force_protected);
+      force_protected, register_with_image_pipe);
   if (!buffer_collection)
     return nullptr;
 

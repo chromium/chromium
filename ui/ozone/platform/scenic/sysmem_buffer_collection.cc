@@ -10,6 +10,7 @@
 #include "gpu/vulkan/vulkan_function_pointers.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/native_pixmap.h"
+#include "ui/ozone/platform/scenic/scenic_surface_factory.h"
 
 namespace ui {
 
@@ -129,13 +130,15 @@ SysmemBufferCollection::SysmemBufferCollection(gfx::SysmemBufferCollectionId id)
 
 bool SysmemBufferCollection::Initialize(
     fuchsia::sysmem::Allocator_Sync* allocator,
+    ScenicSurfaceFactory* scenic_surface_factory,
     zx::channel token_handle,
     gfx::Size size,
     gfx::BufferFormat format,
     gfx::BufferUsage usage,
     VkDevice vk_device,
     size_t min_buffer_count,
-    bool force_protected) {
+    bool force_protected,
+    bool register_with_image_pipe) {
   DCHECK(IsNativePixmapConfigSupported(format, usage));
   DCHECK(!collection_);
   DCHECK(!vk_buffer_collection_);
@@ -164,6 +167,10 @@ bool SysmemBufferCollection::Initialize(
   usage_ = usage;
   vk_device_ = vk_device;
   is_protected_ = force_protected;
+
+  if (register_with_image_pipe) {
+    scenic_overlay_view_.emplace(scenic_surface_factory->CreateScenicSession());
+  }
 
   fuchsia::sysmem::BufferCollectionTokenSyncPtr collection_token;
   if (token_handle) {
@@ -365,10 +372,24 @@ bool SysmemBufferCollection::InitializeInternal(
       collection_token_for_vulkan;
   collection_token->Duplicate(ZX_RIGHT_SAME_RIGHTS,
                               collection_token_for_vulkan.NewRequest());
+
+  // Duplicate one more token for Scenic if this collection can be used as an
+  // overlay.
+  fidl::InterfaceHandle<fuchsia::sysmem::BufferCollectionToken>
+      collection_token_for_scenic;
+  if (scenic_overlay_view_.has_value()) {
+    collection_token->Duplicate(ZX_RIGHT_SAME_RIGHTS,
+                                collection_token_for_scenic.NewRequest());
+  }
+
   zx_status_t status = collection_token->Sync();
   if (status != ZX_OK) {
     ZX_DLOG(ERROR, status) << "fuchsia.sysmem.BufferCollectionToken.Sync()";
     return false;
+  }
+
+  if (scenic_overlay_view_.has_value()) {
+    scenic_overlay_view_->Initialize(std::move(collection_token_for_scenic));
   }
 
   status = allocator->BindSharedCollection(std::move(collection_token),

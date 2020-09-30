@@ -18,6 +18,8 @@ source_set("scenic") {
     "scenic_gpu_host.h",
     "scenic_gpu_service.cc",
     "scenic_gpu_service.h",
+    "scenic_overlay_view.cc",
+    "scenic_overlay_view.h",
     "scenic_screen.cc",
     "scenic_screen.h",
     "scenic_surface.cc",

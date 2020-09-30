@@ -138,7 +138,8 @@ class COMPONENT_EXPORT(VULKAN) VulkanImplementation {
                                  gfx::BufferFormat format,
                                  gfx::BufferUsage usage,
                                  gfx::Size size,
-                                 size_t min_buffer_count) = 0;
+                                 size_t min_buffer_count,
+                                 bool register_with_image_pipe) = 0;
 #endif  // defined(OS_FUCHSIA)
 
   bool use_swiftshader() const { return use_swiftshader_; }

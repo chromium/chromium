@@ -128,7 +128,8 @@ class GL_IN_PROCESS_CONTEXT_EXPORT SharedImageInterfaceInProcess
   void RegisterSysmemBufferCollection(gfx::SysmemBufferCollectionId id,
                                       zx::channel token,
                                       gfx::BufferFormat format,
-                                      gfx::BufferUsage usage) override;
+                                      gfx::BufferUsage usage,
+                                      bool register_with_image_pipe) override;
 
   // Not reached in this implementation.
   void ReleaseSysmemBufferCollection(gfx::SysmemBufferCollectionId id) override;
