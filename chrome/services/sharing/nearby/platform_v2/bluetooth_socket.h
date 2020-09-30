@@ -10,7 +10,7 @@
 #include "base/optional.h"
 #include "chrome/services/sharing/nearby/platform_v2/bluetooth_device.h"
 #include "device/bluetooth/public/mojom/adapter.mojom.h"
-#include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/shared_remote.h"
 #include "third_party/nearby/src/cpp/platform_v2/api/bluetooth_classic.h"
 #include "third_party/nearby/src/cpp/platform_v2/base/input_stream.h"
 #include "third_party/nearby/src/cpp/platform_v2/base/output_stream.h"
@@ -105,7 +105,7 @@ class BluetoothSocket : public api::BluetoothSocket {
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   // These properties must be created on |task_runner_|. See |task_runner_|.
-  mojo::Remote<bluetooth::mojom::Socket> socket_;
+  mojo::SharedRemote<bluetooth::mojom::Socket> socket_;
   std::unique_ptr<InputStream> input_stream_;
   std::unique_ptr<OutputStream> output_stream_;
 };

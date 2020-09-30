@@ -257,8 +257,9 @@ BluetoothSocket::BluetoothSocket(
     mojo::ScopedDataPipeProducerHandle send_stream)
     : remote_device_(std::move(device)),
       remote_device_ref_(*remote_device_),
-      task_runner_(base::ThreadPool::CreateSequencedTaskRunner({})),
-      socket_(std::move(socket)) {
+      task_runner_(
+          base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})),
+      socket_(std::move(socket), task_runner_) {
   InitializeStreams(std::move(receive_stream), std::move(send_stream));
 }
 
@@ -268,8 +269,9 @@ BluetoothSocket::BluetoothSocket(
     mojo::ScopedDataPipeConsumerHandle receive_stream,
     mojo::ScopedDataPipeProducerHandle send_stream)
     : remote_device_ref_(remote_device),
-      task_runner_(base::ThreadPool::CreateSequencedTaskRunner({})),
-      socket_(std::move(socket)) {
+      task_runner_(
+          base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})),
+      socket_(std::move(socket), task_runner_) {
   InitializeStreams(std::move(receive_stream), std::move(send_stream));
 }
 
