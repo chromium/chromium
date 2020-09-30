@@ -4,10 +4,21 @@
 
 #include "chrome/common/profiler/thread_profiler_platform_configuration.h"
 
+#include <utility>
+
+#include "base/command_line.h"
 #include "base/profiler/profiler_buildflags.h"
 #include "build/build_config.h"
+#include "chrome/common/chrome_switches.h"
 #include "components/version_info/version_info.h"
+#include "content/public/common/content_switches.h"
+#include "extensions/buildflags/buildflags.h"
+#include "sandbox/policy/switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "extensions/common/switches.h"
+#endif
 
 #if (defined(OS_WIN) && defined(ARCH_CPU_X86_64)) || \
     (defined(OS_MAC) && defined(ARCH_CPU_X86_64)) || \
@@ -40,6 +51,30 @@ class ThreadProfilerPlatformConfigurationTest : public ::testing::Test {
  private:
   const std::unique_ptr<ThreadProfilerPlatformConfiguration> config_;
 };
+
+// Utility type and function for testing various command line switches.
+struct Switch {
+  explicit Switch(const char* name, const char* value = nullptr)
+      : name(name), value(value) {}
+
+  const char* name;
+  const char* value;
+};
+
+// Second argument should be a lambda running the expectations for the given
+// switch configuration.
+template <typename Func>
+void WithSwitches(std::initializer_list<Switch> switches, const Func& func) {
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  for (const auto& switch_pair : switches) {
+    if (!switch_pair.value)
+      command_line.AppendSwitch(switch_pair.name);
+    else
+      command_line.AppendSwitchASCII(switch_pair.name, switch_pair.value);
+  }
+
+  func(command_line);
+}
 
 }  // namespace
 
@@ -174,4 +209,69 @@ MAYBE_PLATFORM_CONFIG_TEST_F(ThreadProfilerPlatformConfigurationTest,
   EXPECT_EQ((RelativePopulations{100, 0}),
             config()->GetEnableRates(/*is_chrome_branded=*/true,
                                      version_info::Channel::UNKNOWN));
+}
+
+MAYBE_PLATFORM_CONFIG_TEST_F(ThreadProfilerPlatformConfigurationTest,
+                             GetChildProcessEnableFraction) {
+#if defined(OS_ANDROID)
+  WithSwitches(
+      {Switch(switches::kProcessType, switches::kGpuProcess)},
+      [this](const base::CommandLine command_line) {
+        EXPECT_EQ(0.0, config()->GetChildProcessEnableFraction(command_line));
+      });
+  WithSwitches(
+      {Switch(switches::kProcessType, switches::kUtilityProcess),
+       Switch(sandbox::policy::switches::kServiceSandboxType,
+              sandbox::policy::switches::kNetworkSandbox)},
+      [this](const base::CommandLine command_line) {
+        EXPECT_EQ(0.0, config()->GetChildProcessEnableFraction(command_line));
+      });
+  WithSwitches(
+      {Switch(switches::kProcessType, switches::kUtilityProcess)},
+      [this](const base::CommandLine command_line) {
+        EXPECT_EQ(0.0, config()->GetChildProcessEnableFraction(command_line));
+      });
+  WithSwitches(
+      {Switch(switches::kProcessType, switches::kRendererProcess)},
+      [this](const base::CommandLine command_line) {
+        EXPECT_EQ(0.0, config()->GetChildProcessEnableFraction(command_line));
+      });
+  // Should be an unrecognized scenario.
+  WithSwitches({}, [this](const base::CommandLine command_line) {
+    EXPECT_EQ(0.0, config()->GetChildProcessEnableFraction(command_line));
+  });
+#else
+  WithSwitches(
+      {Switch(switches::kProcessType, switches::kGpuProcess)},
+      [this](const base::CommandLine command_line) {
+        EXPECT_EQ(1.0, config()->GetChildProcessEnableFraction(command_line));
+      });
+  WithSwitches(
+      {Switch(switches::kProcessType, switches::kUtilityProcess),
+       Switch(sandbox::policy::switches::kServiceSandboxType,
+              sandbox::policy::switches::kNetworkSandbox)},
+      [this](const base::CommandLine command_line) {
+        EXPECT_EQ(1.0, config()->GetChildProcessEnableFraction(command_line));
+      });
+  WithSwitches(
+      {Switch(switches::kProcessType, switches::kUtilityProcess)},
+      [this](const base::CommandLine command_line) {
+        EXPECT_EQ(0.0, config()->GetChildProcessEnableFraction(command_line));
+      });
+  WithSwitches(
+      {Switch(switches::kProcessType, switches::kRendererProcess),
+       Switch(extensions::switches::kExtensionProcess)},
+      [this](const base::CommandLine command_line) {
+        EXPECT_EQ(0.0, config()->GetChildProcessEnableFraction(command_line));
+      });
+  WithSwitches(
+      {Switch(switches::kProcessType, switches::kRendererProcess)},
+      [this](const base::CommandLine command_line) {
+        EXPECT_EQ(0.2, config()->GetChildProcessEnableFraction(command_line));
+      });
+  // Should be an unrecognized scenario.
+  WithSwitches({}, [this](const base::CommandLine command_line) {
+    EXPECT_EQ(0.0, config()->GetChildProcessEnableFraction(command_line));
+  });
+#endif
 }

@@ -42,7 +42,6 @@ class ThreadProfilerConfiguration {
   // Add a command line switch that instructs the child process to run the
   // profiler. This should only be called from the browser process.
   void AppendCommandLineSwitchForChildProcess(
-      const std::string& process_type,
       base::CommandLine* command_line) const;
 
   // Returns the ThreadProfilerConfiguration for the process.

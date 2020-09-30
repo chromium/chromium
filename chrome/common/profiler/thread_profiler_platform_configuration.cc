@@ -8,9 +8,15 @@
 #include "base/profiler/stack_sampling_profiler.h"
 #include "build/build_config.h"
 #include "content/public/common/content_switches.h"
+#include "extensions/buildflags/buildflags.h"
+#include "sandbox/policy/sandbox.h"
 
 #if defined(OS_ANDROID)
 #include "chrome/android/modules/stack_unwinder/public/module.h"
+#endif
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "extensions/common/switches.h"
 #endif
 
 namespace {
@@ -31,9 +37,15 @@ class DefaultPlatformConfiguration
       bool is_chrome_branded,
       version_info::Channel channel) const override;
 
+  double GetChildProcessEnableFraction(
+      const base::CommandLine& child_process_command_line) const override;
+
  protected:
   bool IsSupportedForChannel(bool is_chrome_branded,
                              version_info::Channel channel) const override;
+
+  // True if the command line corresponds to an extension renderer process.
+  bool IsExtensionRenderer(const base::CommandLine& command_line) const;
 
   bool browser_test_mode_enabled() const { return browser_test_mode_enabled_; }
 
@@ -72,6 +84,33 @@ DefaultPlatformConfiguration::GetEnableRates(
   }
 }
 
+double DefaultPlatformConfiguration::GetChildProcessEnableFraction(
+    const base::CommandLine& child_process_command_line) const {
+  const std::string& process_type =
+      child_process_command_line.GetSwitchValueASCII(switches::kProcessType);
+
+  if (process_type == switches::kGpuProcess)
+    return 1.0;
+
+  // The network service is the only utility process that is profiled for now.
+  if (process_type == switches::kUtilityProcess &&
+      sandbox::policy::SandboxTypeFromCommandLine(child_process_command_line) ==
+          sandbox::policy::SandboxType::kNetwork) {
+    return 1.0;
+  }
+
+  // Only start the profiler for non-extension renderer processes.
+  if (process_type == switches::kRendererProcess &&
+      !IsExtensionRenderer(child_process_command_line)) {
+    // Run the profiler in all renderer processes if the browser test mode is
+    // enabled, otherwise run in 20% of the processes to collect roughly as
+    // many profiles for renderer processes as browser processes.
+    return browser_test_mode_enabled() ? 1.0 : 0.2;
+  }
+
+  return 0.0;
+}
+
 bool DefaultPlatformConfiguration::IsSupportedForChannel(
     bool is_chrome_branded,
     version_info::Channel channel) const {
@@ -83,6 +122,16 @@ bool DefaultPlatformConfiguration::IsSupportedForChannel(
   // builds.
   return channel == version_info::Channel::CANARY ||
          channel == version_info::Channel::DEV;
+}
+
+// True if the command line corresponds to an extension renderer process.
+bool DefaultPlatformConfiguration::IsExtensionRenderer(
+    const base::CommandLine& command_line) const {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  return command_line.HasSwitch(extensions::switches::kExtensionProcess);
+#else
+  return false;
+#endif
 }
 
 #if defined(OS_ANDROID)
@@ -106,6 +155,9 @@ class AndroidPlatformConfiguration : public DefaultPlatformConfiguration {
       version_info::Channel channel) const override;
 
   void RequestRuntimeModuleInstall() const override;
+
+  double GetChildProcessEnableFraction(
+      const base::CommandLine& child_process_command_line) const override;
 
  protected:
   bool IsSupportedForChannel(bool is_chrome_branded,
@@ -154,6 +206,19 @@ void AndroidPlatformConfiguration::RequestRuntimeModuleInstall() const {
   // The install occurs asynchronously, with the module available at the first
   // run of Chrome following install.
   stack_unwinder::Module::RequestInstallation();
+}
+
+double AndroidPlatformConfiguration::GetChildProcessEnableFraction(
+    const base::CommandLine& child_process_command_line) const {
+  // Profile all processes in browser test mode since they're disabled
+  // otherwise.
+  if (browser_test_mode_enabled()) {
+    return DefaultPlatformConfiguration::GetChildProcessEnableFraction(
+        child_process_command_line);
+  }
+
+  // TODO(https://crbug.com/1004855): Enable for all the default processes.
+  return 0.0;
 }
 
 bool AndroidPlatformConfiguration::IsSupportedForChannel(

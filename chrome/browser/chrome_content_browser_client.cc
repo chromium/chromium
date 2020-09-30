@@ -2421,7 +2421,7 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
 #endif
 
   ThreadProfilerConfiguration::Get()->AppendCommandLineSwitchForChildProcess(
-      process_type, command_line);
+      command_line);
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
   // Processes may only query perf_event_open with the BPF sandbox disabled.

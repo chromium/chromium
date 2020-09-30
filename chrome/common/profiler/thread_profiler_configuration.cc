@@ -4,30 +4,17 @@
 
 #include "chrome/common/profiler/thread_profiler_configuration.h"
 
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/lazy_instance.h"
+#include "base/notreached.h"
 #include "base/rand_util.h"
 #include "build/branding_buildflags.h"
-#include "build/build_config.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/profiler/thread_profiler_platform_configuration.h"
 #include "components/version_info/version_info.h"
 #include "content/public/common/content_switches.h"
-#include "extensions/buildflags/buildflags.h"
-#include "sandbox/policy/sandbox.h"
-
-#if defined(OS_WIN)
-#include "base/win/static_constants.h"
-#endif
-
-#if defined(OS_MAC)
-#include "base/mac/mac_util.h"
-#endif
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "extensions/common/switches.h"
-#endif
 
 namespace {
 
@@ -43,15 +30,6 @@ bool IsBrowserProcess() {
   return process_type.empty();
 }
 
-// True if the command line corresponds to an extension renderer process.
-bool IsExtensionRenderer(const base::CommandLine& command_line) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  return command_line.HasSwitch(extensions::switches::kExtensionProcess);
-#else
-  return false;
-#endif
-}
-
 // Allows the profiler to be run in a special browser test mode for testing that
 // profiles are collected as expected, by providing a switch value. The test
 // mode reduces the profiling duration to ensure the startup profiles complete
@@ -61,15 +39,6 @@ bool IsBrowserTestModeEnabled() {
       base::CommandLine::ForCurrentProcess();
   return command_line->GetSwitchValueASCII(switches::kStartStackProfiler) ==
          switches::kStartStackProfilerBrowserTest;
-}
-
-bool ShouldEnableProfilerForNextRendererProcess() {
-  // Ensure deterministic behavior for testing the profiler itself.
-  if (IsBrowserTestModeEnabled())
-    return true;
-
-  // Enable for every N-th renderer process, where N = 5.
-  return base::RandInt(0, 4) == 0;
 }
 
 }  // namespace
@@ -148,32 +117,23 @@ bool ThreadProfilerConfiguration::GetSyntheticFieldTrial(
 }
 
 void ThreadProfilerConfiguration::AppendCommandLineSwitchForChildProcess(
-    const std::string& process_type,
     base::CommandLine* command_line) const {
   DCHECK(IsBrowserProcess());
 
-  bool enable =
-      configuration_ == PROFILE_ENABLED || configuration_ == PROFILE_CONTROL;
-  if (!enable)
+  if (!(configuration_ == PROFILE_ENABLED || configuration_ == PROFILE_CONTROL))
     return;
-  if (process_type == switches::kGpuProcess ||
-      (process_type == switches::kUtilityProcess &&
-       // The network service is the only utility process that is profiled for
-       // now.
-       sandbox::policy::SandboxTypeFromCommandLine(*command_line) ==
-           sandbox::policy::SandboxType::kNetwork) ||
-      (process_type == switches::kRendererProcess &&
-       // Do not start the profiler for extension processes since profiling the
-       // compositor thread in them is not useful.
-       !IsExtensionRenderer(*command_line) &&
-       ShouldEnableProfilerForNextRendererProcess())) {
-    if (IsBrowserTestModeEnabled()) {
-      // Propagate the browser test mode switch argument to the child processes.
-      command_line->AppendSwitchASCII(switches::kStartStackProfiler,
-                                      switches::kStartStackProfilerBrowserTest);
-    } else {
-      command_line->AppendSwitch(switches::kStartStackProfiler);
-    }
+
+  const double enable_fraction =
+      platform_configuration_->GetChildProcessEnableFraction(*command_line);
+  if (!(base::RandDouble() < enable_fraction))
+    return;
+
+  if (IsBrowserTestModeEnabled()) {
+    // Propagate the browser test mode switch argument to the child processes.
+    command_line->AppendSwitchASCII(switches::kStartStackProfiler,
+                                    switches::kStartStackProfilerBrowserTest);
+  } else {
+    command_line->AppendSwitch(switches::kStartStackProfiler);
   }
 }
 
