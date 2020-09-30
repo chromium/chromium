@@ -114,10 +114,9 @@ function PiexLoaderResponse(data) {
  * Returns the source data.
  *
  * If the source is an ArrayBuffer, return it. Otherwise assume the source is
- * is DOM file system URL: resolve the associated file system entry, and read
- * and return its content in an ArrayBuffer.
+ * is a File or DOM fileSystemURL and return its content in an ArrayBuffer.
  *
- * @param {string|!ArrayBuffer} source
+ * @param {!ArrayBuffer|!File|string} source
  * @return {!Promise<!ArrayBuffer>}
  */
 function readSourceData(source) {
@@ -130,11 +129,11 @@ function readSourceData(source) {
      * Reject the Promise on fileEntry URL resolve or file read failures.
      */
     function failure(error) {
-      reject(new Error('Reading file system: ' + error));
+      reject(new Error('Reading file system: ' + (error.message || error)));
     }
 
     /**
-     * Returns true if the fileEntry file size is within sensible limits.
+     * Returns true if the file size is within sensible limits.
      * @param {number} size - file size.
      * @return {boolean}
      */
@@ -143,25 +142,39 @@ function readSourceData(source) {
     }
 
     /**
-     * Reads the fileEntry's content into an ArrayBuffer: resolve Promise
-     * with the ArrayBuffer result or reject the Promise on failure.
-     * @param {!Entry} entry - file system entry of |url|.
+     * Reads the file content to an ArrayBuffer. Resolve the Promise with
+     * the ArrayBuffer result, or reject the Promise on failure.
+     * @param {!File} file - file to read.
+     */
+    function readFile(file) {
+      if (valid(file.size)) {
+        const reader = new FileReader();
+        reader.onerror = failure;
+        reader.onload = (_) => resolve(reader.result);
+        reader.readAsArrayBuffer(file);
+      } else {
+        failure('invalid file size: ' + file.size);
+      }
+    }
+
+    /**
+     * Resolve the fileEntry's file then read it with readFile, or reject
+     * the Promise on failure.
+     * @param {!Entry} entry - file system entry.
      */
     function readEntry(entry) {
       const fileEntry = /** @type {!FileEntry} */ (entry);
       fileEntry.file((file) => {
-        if (valid(file.size)) {
-          const reader = new FileReader();
-          reader.onerror = failure;
-          reader.onload = (_) => resolve(reader.result);
-          reader.readAsArrayBuffer(file);
-        } else {
-          failure('invalid file size: ' + file.size);
-        }
+        readFile(file);
       }, failure);
     }
 
-    const url = /** @type {string} */ (source);
+    if (source instanceof File) {
+      readFile(/** @type {!File} */ (source));
+      return;
+    }
+
+    const url = /** @type {string} fileSystemURL */ (source);
     globalThis.webkitResolveLocalFileSystemURL(url, readEntry, failure);
   });
 }
@@ -481,7 +494,7 @@ function PiexLoader() {}
  * to reload the page. Callback |onPiexModuleFailed| is used to indicate that
  * the caller should initiate failure recovery steps.
  *
- * @param {string|!ArrayBuffer} source
+ * @param {!ArrayBuffer|!File|string} source
  * @param {!function()} onPiexModuleFailed
  * @return {!Promise<!PiexLoaderResponse>}
  */
