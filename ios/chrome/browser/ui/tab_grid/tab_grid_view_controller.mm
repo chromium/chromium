@@ -1158,6 +1158,10 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 - (void)gridViewController:(GridViewController*)gridViewController
         didChangeItemCount:(NSUInteger)count {
+  if (count > 0) {
+    // Undo is only available when the tab grid is empty.
+    self.undoCloseAllAvailable = NO;
+  }
   [self configureButtonsForActiveAndCurrentPage];
   if (gridViewController == self.regularTabsViewController) {
     self.topToolbar.pageControl.regularTabCount = count;
@@ -1247,10 +1251,11 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
                 self.regularTabsViewController.gridEmpty);
       if (self.undoCloseAllAvailable) {
         [self.regularTabsDelegate undoCloseAllItems];
+        self.undoCloseAllAvailable = NO;
       } else {
         [self.regularTabsDelegate saveAndCloseAllItems];
+        self.undoCloseAllAvailable = YES;
       }
-      self.undoCloseAllAvailable = !self.undoCloseAllAvailable;
       [self configureCloseAllButtonForCurrentPageAndUndoAvailability];
       break;
     case TabGridPageRemoteTabs:
