@@ -97,7 +97,7 @@ bool BrowserNonClientFrameView::IsFrameCondensed() const {
 
 bool BrowserNonClientFrameView::HasVisibleBackgroundTabShapes(
     BrowserFrameActiveState active_state) const {
-  DCHECK(browser_view_->IsTabStripVisible());
+  DCHECK(browser_view_->CanSupportTabStrip());
 
   TabStrip* const tab_strip = browser_view_->tabstrip();
 

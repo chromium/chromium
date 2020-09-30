@@ -717,7 +717,8 @@ TabSearchButton* BrowserView::GetTabSearchButton() {
 }
 
 bool BrowserView::IsTabStripVisible() const {
-  // Return false if this window does not normally display a tabstrip.
+  // Return false if this window does not normally display a tabstrip or if the
+  // tabstrip is currently hidden, e.g. because we're in fullscreen.
   if (!browser_->SupportsWindowFeature(Browser::FEATURE_TABSTRIP))
     return false;
 
@@ -781,8 +782,8 @@ WebContents* BrowserView::GetActiveWebContents() const {
   return browser_->tab_strip_model()->GetActiveWebContents();
 }
 
-bool BrowserView::IsTabStripSupported() const {
-  return browser_->SupportsWindowFeature(Browser::FEATURE_TABSTRIP);
+bool BrowserView::CanSupportTabStrip() const {
+  return browser_->CanSupportWindowFeature(Browser::FEATURE_TABSTRIP);
 }
 
 bool BrowserView::IsBrowserTypeWebApp() const {
@@ -3010,12 +3011,10 @@ void BrowserView::MaybeInitializeWebUITabStrip() {
 }
 
 void BrowserView::LoadingAnimationCallback() {
-  if (browser_->is_type_normal()) {
-    // Loading animations are shown in the tab for tabbed windows.  We check the
-    // browser type instead of calling IsTabStripVisible() because the latter
-    // will return false for fullscreen windows, but we still need to update
-    // their animations (so that when they come out of fullscreen mode they'll
-    // be correct).
+  if (CanSupportTabStrip()) {
+    // Loading animations are shown in the tab for tabbed windows. Update them
+    // even if the tabstrip isn't currently visible so they're in the right
+    // state when it returns.
     tabstrip_->UpdateLoadingAnimations(base::TimeTicks::Now() -
                                        loading_animation_start_);
   }
