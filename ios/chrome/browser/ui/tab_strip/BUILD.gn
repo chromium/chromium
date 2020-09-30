@@ -23,6 +23,8 @@ source_set("tab_strip_ui") {
   sources = [
     "tab_strip_view_controller.h",
     "tab_strip_view_controller.mm",
+    "tab_strip_view_layout.h",
+    "tab_strip_view_layout.mm",
   ]
   deps = [
     "//ios/chrome/browser/browser_state",
