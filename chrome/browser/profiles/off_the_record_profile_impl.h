@@ -127,6 +127,7 @@ class OffTheRecordProfileImpl : public Profile {
   content::SharedCorsOriginAccessList* GetSharedCorsOriginAccessList() override;
   content::NativeFileSystemPermissionContext*
   GetNativeFileSystemPermissionContext() override;
+  void RecordMainFrameNavigation() override;
 
  private:
 #if !defined(OS_ANDROID)
@@ -163,6 +164,9 @@ class OffTheRecordProfileImpl : public Profile {
   std::unique_ptr<ProfileKey> key_;
 
   base::FilePath last_selected_directory_;
+
+  // Number of main frame navigations done by this profile.
+  unsigned int main_frame_navigations_ = 0;
 };
 
 #endif  // CHROME_BROWSER_PROFILES_OFF_THE_RECORD_PROFILE_IMPL_H_

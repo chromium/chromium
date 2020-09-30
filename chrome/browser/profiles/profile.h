@@ -500,6 +500,8 @@ class Profile : public content::BrowserContext {
 
   virtual void SetCreationTimeForTesting(base::Time creation_time) = 0;
 
+  virtual void RecordMainFrameNavigation() = 0;
+
  protected:
   void set_is_guest_profile(bool is_guest_profile) {
     is_guest_profile_ = is_guest_profile;

@@ -86,6 +86,7 @@ void NavigationMetricsRecorder::DidFinishNavigation(
   navigation_metrics::RecordMainFrameNavigation(
       url, navigation_handle->IsSameDocument(), profile->IsOffTheRecord(),
       ProfileMetrics::GetBrowserProfileType(profile));
+  profile->RecordMainFrameNavigation();
 
   if (url.SchemeIsHTTPOrHTTPS() && !navigation_handle->IsSameDocument() &&
       !navigation_handle->IsDownload() && !profile->IsOffTheRecord()) {

@@ -173,6 +173,7 @@ class ProfileImpl : public Profile {
 #endif  // defined(OS_CHROMEOS)
 
   void SetCreationTimeForTesting(base::Time creation_time) override;
+  void RecordMainFrameNavigation() override {}
 
  private:
 #if defined(OS_CHROMEOS)

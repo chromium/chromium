@@ -367,6 +367,8 @@ class TestingProfile : public Profile {
 
   PrefService* GetOffTheRecordPrefs() override;
 
+  void RecordMainFrameNavigation() override {}
+
   void set_profile_name(const std::string& profile_name) {
     profile_name_ = profile_name;
   }
