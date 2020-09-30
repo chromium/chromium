@@ -167,7 +167,6 @@ mojom("mojom_platform") {
     "timing/performance_mark_or_measure.mojom",
     "timing/resource_timing.mojom",
     "timing/worker_timing_container.mojom",
-    "ukm/ukm.mojom",
     "user_agent/user_agent_metadata.mojom",
     "v8_cache_options.mojom",
     "wake_lock/wake_lock.mojom",

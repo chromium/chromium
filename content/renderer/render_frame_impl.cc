@@ -142,6 +142,7 @@
 #include "net/http/http_request_headers.h"
 #include "net/http/http_util.h"
 #include "ppapi/buildflags/buildflags.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/not_implemented_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -476,6 +477,8 @@ void FillNavigationParamsRequest(
       common_params.initiator_origin_trial_features.end()};
 
   navigation_params->was_discarded = commit_params.was_discarded;
+  navigation_params->document_ukm_source_id =
+      commit_params.document_ukm_source_id;
 
   if (!commit_params.prefetched_signed_exchanges.empty()) {
     navigation_params->prefetched_signed_exchanges = WebVector<std::unique_ptr<

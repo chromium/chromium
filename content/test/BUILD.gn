@@ -427,6 +427,7 @@ static_library("test_support") {
     "//services/data_decoder/public/cpp:test_support",
     "//services/data_decoder/public/mojom",
     "//services/device/public/mojom",
+    "//services/metrics/public/cpp:metrics_cpp",
 
     # TODO(jam): remove this by adding a public header for the NetworkContext
     # public testing method.

@@ -1505,7 +1505,7 @@ TEST_F(UkmPageLoadMetricsObserverTest,
       1);
 }
 
-TEST_F(UkmPageLoadMetricsObserverTest, MHTMLNotTracked) {
+TEST_F(UkmPageLoadMetricsObserverTest, MHTMLNotTrackedOfflinePreview) {
   auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
       GURL(kTestUrl1), web_contents());
   navigation->SetContentsMimeType("multipart/related");
@@ -1514,7 +1514,10 @@ TEST_F(UkmPageLoadMetricsObserverTest, MHTMLNotTracked) {
   // Simulate closing the tab.
   DeleteContents();
 
-  EXPECT_EQ(0ul, tester()->test_ukm_recorder().entries_count());
+  std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr> merged_entries =
+      tester()->test_ukm_recorder().GetMergedEntriesByName(
+          PageLoad::kEntryName);
+  EXPECT_EQ(0ul, merged_entries.size());
 }
 
 TEST_F(UkmPageLoadMetricsObserverTest, LayoutInstabilitySubframeAggregation) {

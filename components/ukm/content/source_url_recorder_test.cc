@@ -39,7 +39,8 @@ TEST_F(SourceUrlRecorderWebContentsObserverTest, Basic) {
   NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(), url);
 
   const auto& sources = test_ukm_recorder_.GetSources();
-  EXPECT_EQ(1ul, sources.size());
+  // Expect two sources, one for navigation, one for document.
+  EXPECT_EQ(2ul, sources.size());
   for (const auto& kv : sources) {
     EXPECT_EQ(url, kv.second->url());
     EXPECT_EQ(1u, kv.second->urls().size());
@@ -54,14 +55,32 @@ TEST_F(SourceUrlRecorderWebContentsObserverTest, InitialUrl) {
   simulator->Start();
   simulator->Redirect(final_url);
   simulator->Commit();
-  const auto& sources = test_ukm_recorder_.GetSources();
-  EXPECT_EQ(1ul, sources.size());
-  for (const auto& kv : sources) {
-    EXPECT_EQ(final_url, kv.second->url());
-    EXPECT_EQ(initial_url, kv.second->urls().front());
-  }
 
   EXPECT_EQ(final_url, GetAssociatedURLForWebContentsDocument());
+
+  const auto& sources = test_ukm_recorder_.GetSources();
+
+  // Expect two sources, one for navigation, one for document.
+  EXPECT_EQ(2ul, sources.size());
+  size_t navigation_type_source_count = 0;
+  size_t document_type_source_count = 0;
+  for (const auto& kv : sources) {
+    if (ukm::GetSourceIdType(kv.first) ==
+        base::UkmSourceId::Type::NAVIGATION_ID) {
+      // The navigation source has both URLs.
+      EXPECT_EQ(initial_url, kv.second->urls().front());
+      EXPECT_EQ(final_url, kv.second->urls().back());
+      navigation_type_source_count++;
+    }
+    if (ukm::GetSourceIdType(kv.first) == base::UkmSourceId::Type::DEFAULT) {
+      // The document source has the final URL which is one set on the
+      // committed document.
+      EXPECT_EQ(final_url, kv.second->urls().front());
+      document_type_source_count++;
+    }
+  }
+  EXPECT_EQ(1u, navigation_type_source_count);
+  EXPECT_EQ(1u, document_type_source_count);
 }
 
 TEST_F(SourceUrlRecorderWebContentsObserverTest, IgnoreUrlInSubframe) {
@@ -74,7 +93,10 @@ TEST_F(SourceUrlRecorderWebContentsObserverTest, IgnoreUrlInSubframe) {
       content::RenderFrameHostTester::For(main_rfh())->AppendChild("subframe"));
 
   const auto& sources = test_ukm_recorder_.GetSources();
-  EXPECT_EQ(1ul, sources.size());
+
+  // Expect two sources created, one for navigation and one for document, both
+  // should have the URL of the main frame .
+  EXPECT_EQ(2ul, sources.size());
   for (const auto& kv : sources) {
     EXPECT_EQ(main_frame_url, kv.second->url());
     EXPECT_EQ(1u, kv.second->urls().size());
@@ -84,9 +106,9 @@ TEST_F(SourceUrlRecorderWebContentsObserverTest, IgnoreUrlInSubframe) {
 }
 
 TEST_F(SourceUrlRecorderWebContentsObserverTest, SameDocumentNavigation) {
-  GURL url1("https://www.example.com/");
+  GURL url1("https://www.example.com/1");
   GURL url2("https://www.example.com/2");
-  GURL same_document_url1("https://www.example.com/#samedocument");
+  GURL same_document_url1("https://www.example.com/#samedocument1");
   GURL same_document_url2("https://www.example.com/#samedocument2");
   NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(), url1);
   NavigationSimulator::CreateRendererInitiated(same_document_url1, main_rfh())
@@ -100,8 +122,17 @@ TEST_F(SourceUrlRecorderWebContentsObserverTest, SameDocumentNavigation) {
   // Serialize each source so we can verify expectations below.
   ukm::Source full_nav_source1, full_nav_source2, same_doc_source1,
       same_doc_source2;
-  EXPECT_EQ(4ul, test_ukm_recorder_.GetSources().size());
+
+  // We expect 6 sources to be created, 4 of which are from the 4 committed
+  // navigations, and 2 of which are from the 2 created Document instance.
+  EXPECT_EQ(6ul, test_ukm_recorder_.GetSources().size());
+
   for (auto& kv : test_ukm_recorder_.GetSources()) {
+    // Populate protos from the navigation sources.
+    if (ukm::GetSourceIdType(kv.first) !=
+        base::UkmSourceId::Type::NAVIGATION_ID)
+      continue;
+
     if (kv.second->url() == url1) {
       kv.second->PopulateProto(&full_nav_source1);
     } else if (kv.second->url() == url2) {
@@ -182,7 +213,8 @@ TEST_F(SourceUrlRecorderWebContentsObserverTest,
   EXPECT_EQ(same_document_url, web_contents()->GetLastCommittedURL());
 
   const auto& sources = test_ukm_recorder_.GetSources();
-  EXPECT_EQ(1ul, sources.size());
+  // Expect two sources, one for navigation, one for document.
+  EXPECT_EQ(2ul, sources.size());
   for (auto& kv : sources) {
     EXPECT_EQ(url, kv.second->url());
     EXPECT_EQ(1u, kv.second->urls().size());

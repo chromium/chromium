@@ -158,7 +158,7 @@ class CONTENT_EXPORT NavigationRequest
     SPECULATIVE,
   };
 
-  // Creates a request for a browser-intiated navigation.
+  // Creates a request for a browser-initiated navigation.
   // Note: this is sometimes called for renderer-initiated navigations going
   // through the OpenURL path. |browser_initiated| should be false in that case.
   // TODO(clamy): Rename this function and consider merging it with
@@ -176,7 +176,7 @@ class CONTENT_EXPORT NavigationRequest
       std::unique_ptr<NavigationUIData> navigation_ui_data,
       const base::Optional<Impression>& impression);
 
-  // Creates a request for a renderer-intiated navigation.
+  // Creates a request for a renderer-initiated navigation.
   // Note: |body| is sent to the IO thread when calling BeginNavigation, and
   // should no longer be manipulated afterwards on the UI thread.
   // TODO(clamy): see if ResourceRequestBody could be un-refcounted to avoid

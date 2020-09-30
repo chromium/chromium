@@ -82,6 +82,8 @@
 #include "net/http/http_response_headers.h"
 #include "services/device/public/mojom/sensor_provider.mojom.h"
 #include "services/device/public/mojom/wake_lock_context.mojom.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/content_security_policy/csp_context.h"
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
 #include "services/network/public/cpp/cross_origin_opener_policy.h"
@@ -1894,6 +1896,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
                            CheckIsCurrentBeforeAndAfterUnload);
   FRIEND_TEST_ALL_PREFIXES(RenderFrameHostImplBrowserTest,
                            HasCommittedAnyNavigation);
+  FRIEND_TEST_ALL_PREFIXES(RenderFrameHostImplBrowserTest, GetUkmSourceIds);
   FRIEND_TEST_ALL_PREFIXES(RenderFrameHostManagerTest,
                            CreateRenderViewAfterProcessKillAndClosedProxy);
   FRIEND_TEST_ALL_PREFIXES(RenderFrameHostManagerTest, DontSelectInvalidFiles);
@@ -2530,6 +2533,12 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Sets the embedding token corresponding to the document in this
   // RenderFrameHost.
   void SetEmbeddingToken(const base::UnguessableToken& embedding_token);
+
+  // Records a DocumentCreated UKM event. Called when a Document is committed in
+  // this frame.
+  void RecordDocumentCreatedUkmEvent(const url::Origin& origin,
+                                     const ukm::SourceId document_ukm_source_id,
+                                     ukm::UkmRecorder* ukm_recorder);
 
   // The RenderViewHost that this RenderFrameHost is associated with.
   //

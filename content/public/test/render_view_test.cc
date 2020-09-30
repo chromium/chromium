@@ -756,7 +756,8 @@ void RenderViewTest::Reload(const GURL& url) {
       false /* started_from_context_menu */, false /* has_user_gesture */,
       false /* has_text_fragment_token */, CreateInitiatorCSPInfo(),
       std::vector<int>(), std::string(),
-      false /* is_history_navigation_in_new_child_frame */, base::TimeTicks());
+      false /* is_history_navigation_in_new_child_frame */,
+      base::TimeTicks() /* input_start */);
   RenderViewImpl* view = static_cast<RenderViewImpl*>(view_);
   TestRenderFrame* frame =
       static_cast<TestRenderFrame*>(view->GetMainRenderFrame());
@@ -911,7 +912,8 @@ void RenderViewTest::GoToOffset(int offset,
       false /* started_from_context_menu */, false /* has_user_gesture */,
       false /* has_text_fragment_token */, CreateInitiatorCSPInfo(),
       std::vector<int>(), std::string(),
-      false /* is_history_navigation_in_new_child_frame */, base::TimeTicks());
+      false /* is_history_navigation_in_new_child_frame */,
+      base::TimeTicks() /* input_start */);
   auto commit_params = CreateCommitNavigationParams();
   commit_params->page_state = state;
   commit_params->nav_entry_id = pending_offset + 1;

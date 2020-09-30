@@ -20,16 +20,13 @@
 class PermissionUmaUtil;
 class WebApkUkmRecorder;
 
-namespace blink {
-class Document;
-}  // namespace blink
-
 namespace metrics {
 class UkmRecorderInterface;
 }  // namespace metrics
 
 namespace content {
 class PaymentAppProviderUtil;
+class RenderFrameHostImpl;
 }  // namespace content
 
 namespace web_app {
@@ -102,10 +99,10 @@ class METRICS_EXPORT UkmRecorder {
   friend DelegatingUkmRecorder;
   friend TestRecordingHelper;
   friend UkmBackgroundRecorderService;
-  friend blink::Document;
   friend metrics::UkmRecorderInterface;
   friend PermissionUmaUtil;
   friend content::PaymentAppProviderUtil;
+  friend content::RenderFrameHostImpl;
 
   // WebApkUkmRecorder and DesktopWebAppUkmRecorder record metrics about
   // installed web apps. Instead of using

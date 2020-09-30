@@ -86,6 +86,7 @@
 #include "net/http/http_status_code.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "skia/ext/platform_canvas.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
@@ -3349,6 +3350,7 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
           network::mojom::IPAddressSpace::kUnknown,
           GURL() /* web_bundle_physical_url */,
           GURL() /* base_url_override_for_web_bundle */,
+          ukm::kInvalidSourceId /* document_ukm_source_id */,
           node->pending_frame_policy(),
           std::vector<std::string>() /* force_enabled_origin_trials */,
           false /* origin_isolated */,

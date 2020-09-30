@@ -609,7 +609,7 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // DidChangeLifecycleState.
   virtual bool IsInBackForwardCache() = 0;
 
-  // Return the UKM source id for the page load (last committed cross-document
+  // Returns the UKM source id for the page load (last committed cross-document
   // non-bfcache navigation in the main frame).
   // This id typically has an associated PageLoad UKM event.
   // Note: this can be called on any frame, but this id for all subframes is the

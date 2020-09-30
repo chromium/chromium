@@ -28,6 +28,7 @@
 #include "content/public/browser/reload_type.h"
 #include "content/public/common/content_constants.h"
 #include "content/public/common/url_constants.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom.h"
 #include "ui/gfx/text_elider.h"
 
@@ -783,7 +784,8 @@ NavigationEntryImpl::ConstructCommitNavigationParams(
 #endif
           false, network::mojom::IPAddressSpace::kUnknown,
           GURL() /* web_bundle_physical_url */,
-          GURL() /* base_url_override_for_web_bundle */, frame_policy,
+          GURL() /* base_url_override_for_web_bundle */,
+          ukm::kInvalidSourceId /* document_ukm_source_id */, frame_policy,
           std::vector<std::string>() /* force_enabled_origin_trials */,
           false /* origin_isolated */,
           std::vector<

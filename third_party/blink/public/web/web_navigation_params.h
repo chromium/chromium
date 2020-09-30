@@ -11,6 +11,7 @@
 #include "base/optional.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/ip_address_space.mojom-shared.h"
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-shared.h"
@@ -387,6 +388,10 @@ struct BLINK_EXPORT WebNavigationParams {
   // This URL is used for window.location and document.URL and relative path
   // computation in the document.
   WebURL web_bundle_claimed_url;
+
+  // UKM source id to be associated with the Document that will be installed
+  // in the current frame.
+  ukm::SourceId document_ukm_source_id = ukm::kInvalidSourceId;
 
   // The frame policy specified by the frame owner element.
   // Should be base::nullopt for top level navigations

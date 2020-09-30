@@ -52,11 +52,9 @@
 #include "services/metrics/public/cpp/mojo_ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
-#include "services/metrics/public/mojom/ukm_interface.mojom-blink.h"
 #include "services/network/public/mojom/ip_address_space.mojom-blink.h"
 #include "services/network/public/mojom/trust_tokens.mojom-blink.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
-#include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/css/preferred_color_scheme.h"
 #include "third_party/blink/public/common/feature_policy/document_policy_features.h"
@@ -67,7 +65,6 @@
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
 #include "third_party/blink/public/mojom/insecure_input/insecure_input_service.mojom-blink.h"
 #include "third_party/blink/public/mojom/page_state/page_state.mojom-blink.h"
-#include "third_party/blink/public/mojom/ukm/ukm.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/platform/web_battery_savings.h"
@@ -786,7 +783,15 @@ Document::Document(const DocumentInit& initializer,
               : kAllowAsynchronousParsing),
       node_count_(0),
       logged_field_edit_(false),
-      ukm_source_id_(ukm::UkmRecorder::GetNewSourceID()),
+      // Use the source id from the document initializer if it is available.
+      // Otherwise, generate a new source id to cover any cases that don't
+      // receive a valid source id, this for example includes but is not limited
+      // to SVGImage which does not have an associated RenderFrameHost. No URLs
+      // will be associated to this source id. No DocumentCreated events will be
+      // created either.
+      ukm_source_id_(initializer.UkmSourceId() == ukm::kInvalidSourceId
+                         ? ukm::UkmRecorder::GetNewSourceID()
+                         : initializer.UkmSourceId()),
       needs_to_record_ukm_outlive_time_(false),
       viewport_data_(MakeGarbageCollected<ViewportData>(*this)),
       is_for_external_handler_(initializer.IsForExternalHandler()),
@@ -3935,17 +3940,6 @@ bool Document::CheckCompletedInternal() {
     if (!GetFrame())
       return false;
 
-    // Send the source ID of the document to the browser.
-    if (GetFrame()->Client()->GetRemoteNavigationAssociatedInterfaces()) {
-      mojo::AssociatedRemote<mojom::blink::UkmSourceIdFrameHost> ukm_binding;
-      GetFrame()
-          ->Client()
-          ->GetRemoteNavigationAssociatedInterfaces()
-          ->GetInterface(&ukm_binding);
-      DCHECK(ukm_binding.is_bound());
-      ukm_binding->SetDocumentSourceId(ukm_source_id_);
-    }
-
     GetFrame()->GetFrameScheduler()->RegisterStickyFeature(
         SchedulingPolicy::Feature::kDocumentLoaded,
         {SchedulingPolicy::RecordMetricsForBackForwardCache()});
@@ -4419,11 +4413,6 @@ void Document::SetURL(const KURL& url) {
   access_entry_from_url_ = nullptr;
   UpdateBaseURL();
   GetContextFeatures().UrlDidChange(this);
-
-  // TODO(crbug/795354): Move handling of URL recording out of the renderer.
-  // URL must only be recorded from the main frame.
-  if (ukm_recorder_ && IsInMainFrame())
-    ukm_recorder_->UpdateSourceURL(ukm_source_id_, url_);
 
   if (GetFrame()) {
     if (FrameScheduler* frame_scheduler = GetFrame()->GetFrameScheduler())
@@ -7215,10 +7204,6 @@ ukm::UkmRecorder* Document::UkmRecorder() {
       recorder.InitWithNewPipeAndPassReceiver());
   ukm_recorder_ = std::make_unique<ukm::MojoUkmRecorder>(std::move(recorder));
 
-  // TODO(crbug/795354): Move handling of URL recording out of the renderer.
-  // URL must only be recorded from the main frame.
-  if (IsInMainFrame())
-    ukm_recorder_->UpdateSourceURL(ukm_source_id_, url_);
   return ukm_recorder_.get();
 }
 

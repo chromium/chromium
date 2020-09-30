@@ -29,6 +29,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/load_flags.h"
 #include "net/url_request/redirect_info.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 
 namespace content {
 

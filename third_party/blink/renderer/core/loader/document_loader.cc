@@ -240,6 +240,7 @@ DocumentLoader::DocumentLoader(
                                      WillLoadUrlAsEmpty(url_)),
       web_bundle_physical_url_(params_->web_bundle_physical_url),
       web_bundle_claimed_url_(params_->web_bundle_claimed_url),
+      ukm_source_id_(params_->document_ukm_source_id),
       clock_(params_->tick_clock ? params_->tick_clock
                                  : base::DefaultTickClock::GetInstance()),
       initiator_origin_trial_features_(
@@ -1738,7 +1739,8 @@ void DocumentLoader::CommitNavigation() {
           .WithTypeFrom(MimeType())
           .WithSrcdocDocument(loading_srcdoc_)
           .WithNewRegistrationContext()
-          .WithWebBundleClaimedUrl(web_bundle_claimed_url_));
+          .WithWebBundleClaimedUrl(web_bundle_claimed_url_)
+          .WithUkmSourceId(ukm_source_id_));
 
   RecordUseCountersForCommit();
   RecordConsoleMessagesForCommit();

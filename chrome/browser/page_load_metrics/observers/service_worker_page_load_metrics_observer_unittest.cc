@@ -163,7 +163,12 @@ TEST_F(ServiceWorkerPageLoadMetricsObserverTest, NoServiceWorker) {
   AssertNoInboxHistogramsLogged();
   AssertNoSearchHistogramsLogged();
   AssertNoSearchNoSWHistogramsLogged();
-  EXPECT_EQ(0ul, tester()->test_ukm_recorder().entries_count());
+  // Only a DocumentCreated entry is logged for creation of a blink::Document
+  // when the navigation committed;
+  EXPECT_EQ(1ul, tester()->test_ukm_recorder().entries_count());
+  EXPECT_EQ(
+      1ul,
+      tester()->test_ukm_recorder().GetEntriesByName("DocumentCreated").size());
 }
 
 TEST_F(ServiceWorkerPageLoadMetricsObserverTest, WithServiceWorker) {

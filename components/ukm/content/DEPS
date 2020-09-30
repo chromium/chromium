@@ -5,5 +5,4 @@ include_rules = [
   "+content/public/test",
   "+content/shell",
   "+third_party/blink/public/common/features.h",
-  "+third_party/blink/public/mojom/ukm/ukm.mojom.h",
 ]

@@ -22,6 +22,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/renderer_host/input/timeout_monitor.h"
 #include "content/browser/renderer_host/navigation_request.h"
@@ -1348,6 +1349,39 @@ class NavigationHandleGrabber : public WebContentsObserver {
  private:
   bool committed_title2_ = false;
   base::RunLoop run_loop_;
+};
+
+class DocumentUkmSourceIdObserver : public WebContentsObserver {
+ public:
+  explicit DocumentUkmSourceIdObserver(WebContents* web_contents)
+      : WebContentsObserver(web_contents) {}
+
+  ukm::SourceId GetMainFrameDocumentUkmSourceId() {
+    return main_frame_document_ukm_source_id_;
+  }
+  ukm::SourceId GetSubFrameDocumentUkmSourceId() {
+    return sub_frame_document_ukm_source_id_;
+  }
+
+ protected:
+  // WebContentsObserver:
+  void DidFinishNavigation(NavigationHandle* navigation_handle) override {
+    bool is_main_frame_navigation = navigation_handle->IsInMainFrame();
+    // Track the source ids from NavigationRequests for access by browser tests.
+    NavigationRequest* request = NavigationRequest::From(navigation_handle);
+    ukm::SourceId document_ukm_source_id =
+        request->commit_params().document_ukm_source_id;
+
+    if (is_main_frame_navigation)
+      main_frame_document_ukm_source_id_ = document_ukm_source_id;
+    else
+      sub_frame_document_ukm_source_id_ = document_ukm_source_id;
+  }
+
+ private:
+  ukm::SourceId main_frame_document_ukm_source_id_ = ukm::kInvalidSourceId;
+  ukm::SourceId sub_frame_document_ukm_source_id_ = ukm::kInvalidSourceId;
+  DISALLOW_COPY_AND_ASSIGN(DocumentUkmSourceIdObserver);
 };
 }  // namespace
 
@@ -4558,6 +4592,78 @@ IN_PROC_BROWSER_TEST_F(ContentBrowserTest,
 
   EXPECT_TRUE(rfhi->IsDOMContentLoaded());
   EXPECT_TRUE(web_contents->IsDocumentOnLoadCompletedInMainFrame());
+}
+
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest, GetUkmSourceIds) {
+  ukm::TestAutoSetUkmRecorder recorder;
+  // This test site has one cross-site iframe.
+  GURL main_frame_url(
+      embedded_test_server()->GetURL("/frame_tree/page_with_one_frame.html"));
+  WebContents* web_contents = shell()->web_contents();
+  DocumentUkmSourceIdObserver observer(web_contents);
+
+  ASSERT_TRUE(NavigateToURL(shell(), main_frame_url));
+  ASSERT_EQ(2u, web_contents->GetAllFrames().size());
+
+  RenderFrameHostImpl* main_frame_host =
+      static_cast<RenderFrameHostImpl*>(web_contents->GetMainFrame());
+  ukm::SourceId page_ukm_source_id = main_frame_host->GetPageUkmSourceId();
+  ukm::SourceId main_frame_doc_ukm_source_id =
+      observer.GetMainFrameDocumentUkmSourceId();
+
+  RenderFrameHostImpl* sub_frame_host = static_cast<RenderFrameHostImpl*>(
+      main_frame_host->child_at(0)->current_frame_host());
+  ukm::SourceId subframe_doc_ukm_source_id =
+      observer.GetSubFrameDocumentUkmSourceId();
+
+  // Navigation-level source id should be the same for all frames on the page.
+  ASSERT_EQ(page_ukm_source_id, sub_frame_host->GetPageUkmSourceId());
+
+  // The two document source ids and the navigation source id should be all
+  // distinct.
+  EXPECT_NE(page_ukm_source_id, main_frame_doc_ukm_source_id);
+  EXPECT_NE(page_ukm_source_id, subframe_doc_ukm_source_id);
+  EXPECT_NE(main_frame_doc_ukm_source_id, subframe_doc_ukm_source_id);
+
+  const auto& document_created_entries =
+      recorder.GetEntriesByName("DocumentCreated");
+  // There should one DocumentCreated entry for each of the two frames.
+  ASSERT_EQ(2u, document_created_entries.size());
+
+  auto* main_frame_document_created_entry =
+      recorder.GetDocumentCreatedEntryForSourceId(main_frame_doc_ukm_source_id);
+  auto* sub_frame_document_created_entry =
+      recorder.GetDocumentCreatedEntryForSourceId(subframe_doc_ukm_source_id);
+
+  // Verify the recorded values on the DocumentCreated entries.
+  EXPECT_EQ(page_ukm_source_id,
+            *recorder.GetEntryMetric(main_frame_document_created_entry,
+                                     "NavigationSourceId"));
+  EXPECT_TRUE(*recorder.GetEntryMetric(main_frame_document_created_entry,
+                                       "IsMainFrame"));
+  EXPECT_FALSE(*recorder.GetEntryMetric(main_frame_document_created_entry,
+                                        "IsCrossOriginFrame"));
+
+  EXPECT_EQ(page_ukm_source_id,
+            *recorder.GetEntryMetric(sub_frame_document_created_entry,
+                                     "NavigationSourceId"));
+  EXPECT_FALSE(*recorder.GetEntryMetric(sub_frame_document_created_entry,
+                                        "IsMainFrame"));
+  EXPECT_TRUE(*recorder.GetEntryMetric(sub_frame_document_created_entry,
+                                       "IsCrossOriginFrame"));
+
+  // Verify source creations. Main frame document source should have the URL;
+  // no source should have been created for the sub-frame document.
+  recorder.ExpectEntrySourceHasUrl(main_frame_document_created_entry,
+                                   main_frame_url);
+  EXPECT_EQ(nullptr, recorder.GetSourceForSourceId(subframe_doc_ukm_source_id));
+
+  // Spot-check that an example entry recorded from the renderer uses the
+  // correct document source id set by the RFH.
+  const auto& blink_entries = recorder.GetEntriesByName("Blink.PageLoad");
+  for (const auto* entry : blink_entries) {
+    EXPECT_EQ(main_frame_doc_ukm_source_id, entry->source_id);
+  }
 }
 
 // TODO(https://crbug.com/794320): the code below is temporary and will be

@@ -113,6 +113,8 @@ IN_PROC_BROWSER_TEST_F(SourceUrlRecorderWebContentsObserverBrowserTest, Basic) {
   EXPECT_NE(source->id(), ukm_entries[0]->source_id);
 }
 
+// Test correctness of sources and DocumentCreated entries when a navigation
+// leads to creation of main frame and embedded subframe documents.
 IN_PROC_BROWSER_TEST_F(SourceUrlRecorderWebContentsObserverBrowserTest,
                        IgnoreUrlInSubframe) {
   using Entry = ukm::builders::DocumentCreated;
@@ -130,29 +132,37 @@ IN_PROC_BROWSER_TEST_F(SourceUrlRecorderWebContentsObserverBrowserTest,
   EXPECT_TRUE(subframe_observer.has_committed());
   EXPECT_FALSE(subframe_observer.is_main_frame());
 
-  const ukm::UkmSource* source =
+  const ukm::UkmSource* navigation_source =
       GetSourceForNavigationId(main_observer.navigation_id());
-  EXPECT_NE(nullptr, source);
-  EXPECT_EQ(main_url, source->url());
+  EXPECT_NE(nullptr, navigation_source);
+  EXPECT_EQ(main_url, navigation_source->url());
   EXPECT_EQ(nullptr,
             GetSourceForNavigationId(subframe_observer.navigation_id()));
 
   EXPECT_EQ(main_url, GetAssociatedURLForWebContentsDocument());
 
-  // Check we have created a DocumentCreated event for both frames.
+  // Check we have created one DocumentCreated event for each of the frames.
   auto ukm_entries = test_ukm_recorder().GetEntriesByName(Entry::kEntryName);
   EXPECT_EQ(2u, ukm_entries.size());
-  EXPECT_EQ(source->id(), *test_ukm_recorder().GetEntryMetric(
-                              ukm_entries[0], Entry::kNavigationSourceIdName));
-  EXPECT_EQ(0, *test_ukm_recorder().GetEntryMetric(ukm_entries[0],
-                                                   Entry::kIsMainFrameName));
-  EXPECT_EQ(source->id(), *test_ukm_recorder().GetEntryMetric(
-                              ukm_entries[1], Entry::kNavigationSourceIdName));
-  EXPECT_EQ(1, *test_ukm_recorder().GetEntryMetric(ukm_entries[1],
-                                                   Entry::kIsMainFrameName));
+  // Both events have the same navigation source id, and have different values
+  // for the kIsMainFrameName metric.
+  EXPECT_EQ(navigation_source->id(),
+            *test_ukm_recorder().GetEntryMetric(
+                ukm_entries[0], Entry::kNavigationSourceIdName));
+  EXPECT_EQ(navigation_source->id(),
+            *test_ukm_recorder().GetEntryMetric(
+                ukm_entries[1], Entry::kNavigationSourceIdName));
+  EXPECT_NE(*test_ukm_recorder().GetEntryMetric(ukm_entries[0],
+                                                Entry::kIsMainFrameName),
+            *test_ukm_recorder().GetEntryMetric(ukm_entries[1],
+                                                Entry::kIsMainFrameName));
+
+  // The two DocumentCreated entries have source ids corresponding to the
+  // document source ids, which are different from the id of the navigation
+  // source.
   EXPECT_NE(ukm_entries[0]->source_id, ukm_entries[1]->source_id);
-  EXPECT_NE(source->id(), ukm_entries[0]->source_id);
-  EXPECT_NE(source->id(), ukm_entries[1]->source_id);
+  EXPECT_NE(navigation_source->id(), ukm_entries[0]->source_id);
+  EXPECT_NE(navigation_source->id(), ukm_entries[1]->source_id);
 }
 
 IN_PROC_BROWSER_TEST_F(SourceUrlRecorderWebContentsObserverDownloadBrowserTest,

@@ -431,6 +431,11 @@ struct CommitNavigationParams {
   // The claimed URL inside Web Bundle from which the document is loaded.
   url.mojom.Url web_bundle_claimed_url;
 
+  // UKM source id to be associated with the Document that will be installed
+  // in the current frame. This could be an invalid id for empty Document. Only
+  // Documents that will emit UKM events need valid ids.
+  int64 document_ukm_source_id;
+
   // A snapshot value of frame policy(both sandbox flags and container policy)
   // of the frame that is being navigated. The snapshot value is captured at the
   // start of navigation.

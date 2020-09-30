@@ -36,6 +36,7 @@
 #include "base/optional.h"
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/base/big_buffer.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/common/feature_policy/document_policy.h"
 #include "third_party/blink/public/common/loader/loading_behavior_flag.h"
 #include "third_party/blink/public/mojom/loader/content_security_notifier.mojom-blink.h"
@@ -537,6 +538,7 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   Member<PrefetchedSignedExchangeManager> prefetched_signed_exchange_manager_;
   const KURL web_bundle_physical_url_;
   const KURL web_bundle_claimed_url_;
+  ukm::SourceId ukm_source_id_;
 
   // This UseCounterHelper tracks feature usage associated with the lifetime of
   // the document load. Features recorded prior to commit will be recorded

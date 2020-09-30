@@ -196,6 +196,7 @@
 #include "services/device/public/mojom/sensor_provider.mojom.h"
 #include "services/device/public/mojom/wake_lock.mojom.h"
 #include "services/device/public/mojom/wake_lock_context.mojom.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
@@ -6566,6 +6567,9 @@ void RenderFrameHostImpl::FailedNavigation(
       commit_params.Clone(), has_stale_copy_in_cache, error_code,
       error_page_content, std::move(subresource_loader_factories));
 
+  // TODO(crbug/1129537): support UKM source creation for failed navigations
+  // too.
+
   // An error page is expected to commit, hence why is_loading_ is set to true.
   is_loading_ = true;
   dom_content_loaded_ = false;
@@ -8496,6 +8500,7 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
   if (navigated_to_new_document) {
     TRACE_EVENT1("content", "DidCommitProvisionalLoad_StateResetForNewDocument",
                  "render_frame_host", this);
+
     if (navigation_request->IsInMainFrame()) {
       render_view_host_->ResetPerPageState();
     }
@@ -8520,6 +8525,20 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
     // Resets when navigating to a new document. This is needed because
     // RenderFrameHost might be reused for a new document
     document_used_web_otp_ = false;
+
+    // Get the UKM source id sent to the renderer.
+    const ukm::SourceId document_ukm_source_id =
+        navigation_request->commit_params().document_ukm_source_id;
+
+    ukm::UkmRecorder* ukm_recorder = ukm::UkmRecorder::Get();
+
+    // Associate the blink::Document source id to the URL. Only URLs on main
+    // frames can be recorded.
+    if (is_main_frame() && document_ukm_source_id != ukm::kInvalidSourceId)
+      ukm_recorder->UpdateSourceURL(document_ukm_source_id, params->url);
+
+    RecordDocumentCreatedUkmEvent(params->origin, document_ukm_source_id,
+                                  ukm_recorder);
   }
 
   // If we still have a PeakGpuMemoryTracker, then the loading it was observing
@@ -9508,6 +9527,29 @@ void RenderFrameHostImpl::SetLifecycleState(LifecycleState state) {
   lifecycle_state_ = state;
   // Notify the delegate about change in |lifecycle_state_|.
   delegate_->RenderFrameHostStateChanged(this, old_state, lifecycle_state_);
+}
+
+void RenderFrameHostImpl::RecordDocumentCreatedUkmEvent(
+    const url::Origin& origin,
+    const ukm::SourceId document_ukm_source_id,
+    ukm::UkmRecorder* ukm_recorder) {
+  DCHECK(ukm_recorder);
+  if (document_ukm_source_id == ukm::kInvalidSourceId)
+    return;
+
+  // Compares the subframe origin with the main frame origin. In the case of
+  // nested subframes such as A(B(A)), the bottom-most frame A is expected to
+  // have |is_cross_origin_frame| set to false, even though this frame is cross-
+  // origin from its parent frame B. This value is only used in manual analysis.
+  bool is_cross_origin_frame =
+      !is_main_frame() &&
+      !GetMainFrame()->GetLastCommittedOrigin().IsSameOriginWith(origin);
+
+  ukm::builders::DocumentCreated(document_ukm_source_id)
+      .SetNavigationSourceId(GetPageUkmSourceId())
+      .SetIsMainFrame(is_main_frame())
+      .SetIsCrossOriginFrame(is_cross_origin_frame)
+      .Record(ukm_recorder);
 }
 
 void RenderFrameHostImpl::BindReportingObserver(

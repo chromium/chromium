@@ -880,6 +880,7 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
           network::mojom::IPAddressSpace::kUnknown,
           /*web_bundle_physical_url=*/GURL(),
           /*base_url_override_for_web_bundle=*/GURL(),
+          /*document_ukm_source_id=*/ukm::kInvalidSourceId,
           frame_tree_node->pending_frame_policy(),
           /*force_enabled_origin_trials=*/std::vector<std::string>(),
           /*origin_isolated=*/false,
@@ -949,7 +950,7 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateForCommit(
           std::vector<int>() /* initiator_origin_trial_features */,
           std::string() /* href_translate */,
           false /* is_history_navigation_in_new_child_frame */,
-          base::TimeTicks::Now());
+          base::TimeTicks::Now() /* input_start */);
   mojom::CommitNavigationParamsPtr commit_params =
       mojom::CommitNavigationParams::New(
           params.origin, params.is_overriding_user_agent, params.redirects,
@@ -974,6 +975,7 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateForCommit(
           network::mojom::IPAddressSpace::kUnknown,
           GURL() /* web_bundle_physical_url */,
           GURL() /* base_url_override_for_web_bundle */,
+          ukm::kInvalidSourceId /* document_ukm_source_id */,
           frame_tree_node->pending_frame_policy(),
           std::vector<std::string>() /* force_enabled_origin_trials */,
           false /* origin_isolated */,
@@ -3257,6 +3259,11 @@ void NavigationRequest::CommitNavigation() {
         !render_frame_host_->GetSiteInstance()->IsRelatedSiteInstance(
             GetStartingSiteInstance());
   }
+
+  // Generate a UKM source and track it on NavigationRequest. This will be
+  // passed down to the blink::Document to be created, if any, and used for UKM
+  // source creation when navigation has successfully committed.
+  commit_params_->document_ukm_source_id = ukm::UkmRecorder::GetNewSourceID();
 
   auto common_params = common_params_->Clone();
   auto commit_params = commit_params_.Clone();

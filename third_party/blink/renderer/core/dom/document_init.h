@@ -30,6 +30,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_DOCUMENT_INIT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_DOCUMENT_INIT_H_
 
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/html/custom/v0_custom_element_registration_context.h"
@@ -141,6 +142,9 @@ class CORE_EXPORT DocumentInit final {
   DocumentInit& WithWebBundleClaimedUrl(const KURL& web_bundle_claimed_url);
   const KURL& GetWebBundleClaimedUrl() const { return web_bundle_claimed_url_; }
 
+  DocumentInit& WithUkmSourceId(ukm::SourceId ukm_source_id);
+  ukm::SourceId UkmSourceId() const { return ukm_source_id_; }
+
  private:
   DocumentInit() = default;
 
@@ -166,6 +170,9 @@ class CORE_EXPORT DocumentInit final {
   // This URL is used for window.location and document.URL and relative path
   // computation in the document.
   KURL web_bundle_claimed_url_;
+
+  // Source id to set on the Document to be created.
+  ukm::SourceId ukm_source_id_ = ukm::kInvalidSourceId;
 
   bool is_for_external_handler_ = false;
 
