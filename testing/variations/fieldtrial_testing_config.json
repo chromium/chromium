@@ -1584,9 +1584,9 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledWithVisualModel",
+                    "name": "EnabledWithVisualModel2",
                     "params": {
-                        "ModelNum": "5"
+                        "ModelNum": "6"
                     },
                     "enable_features": [
                         "ClientSideDetectionModel"
