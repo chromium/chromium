@@ -172,7 +172,8 @@ AccessibilityTreeFormatterMac::BuildAccessibilityTreeForWindow(
 std::unique_ptr<base::DictionaryValue>
 AccessibilityTreeFormatterMac::BuildAccessibilityTreeForSelector(
     const TreeSelector& selector) {
-  AXUIElementRef node = a11y::FindAXUIElement(selector);
+  AXUIElementRef node = nil;
+  std::tie(node, std::ignore) = a11y::FindAXUIElement(selector);
   return node != nil ? BuildAccessibilityTreeForAXUIElement(node) : nil;
 }
 

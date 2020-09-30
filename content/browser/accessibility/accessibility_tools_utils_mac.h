@@ -53,9 +53,10 @@ AXUIElementRef FindAXUIElement(const AXUIElementRef node,
                                const FindCriteria& criteria);
 
 /**
- * Returns AXUIElement by a given tree selector.
+ * Returns AXUIElement and its application process id by a given tree selector.
  */
-AXUIElementRef FindAXUIElement(const AccessibilityTreeFormatter::TreeSelector&);
+std::pair<AXUIElementRef, int> FindAXUIElement(
+    const AccessibilityTreeFormatter::TreeSelector&);
 
 }  // namespace a11y
 }  // namespace content

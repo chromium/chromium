@@ -13,6 +13,7 @@
 #include "base/mac/scoped_cftyperef.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
+#include "content/browser/accessibility/accessibility_tools_utils_mac.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
 
 namespace content {
@@ -22,7 +23,8 @@ namespace content {
 class AccessibilityEventRecorderMac : public AccessibilityEventRecorder {
  public:
   AccessibilityEventRecorderMac(BrowserAccessibilityManager* manager,
-                                base::ProcessId pid);
+                                base::ProcessId pid,
+                                AXUIElementRef node);
   ~AccessibilityEventRecorderMac() override;
 
   // Callback executed every time we receive an event notification.
@@ -63,13 +65,20 @@ std::unique_ptr<AccessibilityEventRecorder> AccessibilityEventRecorder::Create(
     BrowserAccessibilityManager* manager,
     base::ProcessId pid,
     const AccessibilityTreeFormatter::TreeSelector& selector) {
-  if (!selector.empty()) {
-    LOG(ERROR) << "Recording accessibility events by an application selector "
-                  "is not supported on this platform yet.";
-    NOTREACHED();
+  AXUIElementRef node = nil;
+  if (pid) {
+    node = AXUIElementCreateApplication(pid);
+    if (!node) {
+      LOG(FATAL) << "Failed to get AXUIElement for pid " << pid;
+    }
+  } else {
+    std::tie(node, pid) = a11y::FindAXUIElement(selector);
+    if (!node) {
+      LOG(FATAL) << "Failed to get AXUIElement for selector";
+    }
   }
 
-  return std::make_unique<AccessibilityEventRecorderMac>(manager, pid);
+  return std::make_unique<AccessibilityEventRecorderMac>(manager, pid, node);
 }
 
 std::vector<AccessibilityEventRecorder::TestPass>
@@ -83,7 +92,8 @@ AccessibilityEventRecorder::GetTestPasses() {
 
 AccessibilityEventRecorderMac::AccessibilityEventRecorderMac(
     BrowserAccessibilityManager* manager,
-    base::ProcessId pid)
+    base::ProcessId pid,
+    AXUIElementRef node)
     : AccessibilityEventRecorder(manager), observer_run_loop_source_(NULL) {
   if (kAXErrorSuccess != AXObserverCreate(pid, EventReceivedThunk,
                                           observer_ref_.InitializeInto())) {
@@ -91,7 +101,7 @@ AccessibilityEventRecorderMac::AccessibilityEventRecorderMac(
   }
 
   // Get an AXUIElement for the Chrome application.
-  application_.reset(AXUIElementCreateApplication(pid));
+  application_.reset(node);
   if (!application_.get())
     LOG(FATAL) << "Failed to create AXUIElement for application.";
 

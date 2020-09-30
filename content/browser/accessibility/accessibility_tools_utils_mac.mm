@@ -148,7 +148,7 @@ AXUIElementRef FindAXUIElement(const AXUIElementRef node,
   return nil;
 }
 
-AXUIElementRef FindAXUIElement(
+std::pair<AXUIElementRef, int> FindAXUIElement(
     const AccessibilityTreeFormatter::TreeSelector& selector) {
   NSArray* windows = static_cast<NSArray*>(CGWindowListCopyWindowInfo(
       kCGWindowListOptionOnScreenOnly | kCGWindowListExcludeDesktopElements,
@@ -166,17 +166,18 @@ AXUIElementRef FindAXUIElement(
   }
 
   for (NSDictionary* window_info in windows) {
-    NSNumber* pid =
-        static_cast<NSNumber*>([window_info objectForKey:@"kCGWindowOwnerPID"]);
+    int pid =
+        [static_cast<NSNumber*>([window_info objectForKey:@"kCGWindowOwnerPID"])
+            intValue];
     std::string window_name = SysNSStringToUTF8(static_cast<NSString*>(
         [window_info objectForKey:@"kCGWindowOwnerName"]));
 
     if (window_name == selector.pattern) {
-      return AXUIElementCreateApplication([pid intValue]);
+      return {AXUIElementCreateApplication(pid), pid};
     }
 
     if (window_name == title) {
-      AXUIElementRef node = AXUIElementCreateApplication([pid intValue]);
+      AXUIElementRef node = AXUIElementCreateApplication(pid);
       if (selector.types & TreeSelector::ActiveTab) {
         node = FindAXUIElement(
             node, base::BindRepeating([](const AXUIElementRef node) {
@@ -189,11 +190,11 @@ AXUIElementRef FindAXUIElement(
       }
 
       if (node) {
-        return node;
+        return {node, pid};
       }
     }
   }
-  return nil;
+  return {nil, 0};
 }
 
 }  // namespace a11y
