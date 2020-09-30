@@ -360,8 +360,6 @@ void Database::Close() {
 
 void Database::Preload() {
   TRACE_EVENT0("sql", "Database::Preload");
-  if (base::FeatureList::IsEnabled(features::kSqlSkipPreload))
-    return;
 
   if (!db_) {
     DCHECK(poisoned_) << "Cannot preload null db";

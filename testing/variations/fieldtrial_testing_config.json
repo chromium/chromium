@@ -6440,27 +6440,6 @@
             ]
         }
     ],
-    "SqlSkipPreload": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "chromeos",
-                "linux",
-                "mac",
-                "ios",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SqlSkipPreload"
-                    ]
-                }
-            ]
-        }
-    ],
     "StorageServiceOutOfProcess": [
         {
             "platforms": [
