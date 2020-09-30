@@ -321,7 +321,7 @@ CanvasPixelFormat CanvasRenderingContext2D::PixelFormat() const {
 
 void CanvasRenderingContext2D::Reset() {
   // This is a multiple inheritance bootstrap
-  BaseRenderingContext2D::Reset();
+  BaseRenderingContext2D::reset();
 }
 
 void CanvasRenderingContext2D::RestoreCanvasMatrixClipStack(

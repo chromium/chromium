@@ -1031,6 +1031,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method putImageData
 [Worker]     method quadraticCurveTo
 [Worker]     method rect
+[Worker]     method reset
 [Worker]     method resetTransform
 [Worker]     method restore
 [Worker]     method rotate

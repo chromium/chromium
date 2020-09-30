@@ -177,7 +177,7 @@ OffscreenCanvasRenderingContext2D::GetCanvasResourceProvider() const {
 }
 void OffscreenCanvasRenderingContext2D::Reset() {
   Host()->DiscardResourceProvider();
-  BaseRenderingContext2D::Reset();
+  BaseRenderingContext2D::reset();
   // Because the host may have changed to a zero size
   is_valid_size_ = IsValidImageSize(Host()->Size());
 }

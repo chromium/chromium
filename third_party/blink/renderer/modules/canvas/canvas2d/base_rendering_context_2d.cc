@@ -138,7 +138,7 @@ void BaseRenderingContext2D::UnwindStateStack() {
   }
 }
 
-void BaseRenderingContext2D::Reset() {
+void BaseRenderingContext2D::reset() {
   ValidateStateStack();
   UnwindStateStack();
   state_stack_.resize(1);

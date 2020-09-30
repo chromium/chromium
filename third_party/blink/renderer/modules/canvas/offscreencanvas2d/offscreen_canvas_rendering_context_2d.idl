@@ -16,6 +16,8 @@
     // state
     void save(); // push state on state stack
     void restore(); // pop state stack and restore state
+    // Clear the canvas and reset the path
+    [RuntimeEnabled=NewCanvas2DAPI] void reset();
 
     // transformations (default transform is the identity matrix)
     void scale(unrestricted double x, unrestricted double y);

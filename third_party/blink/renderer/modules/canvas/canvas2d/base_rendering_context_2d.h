@@ -32,8 +32,6 @@ class MODULES_EXPORT BaseRenderingContext2D : public GarbageCollectedMixin,
  public:
   ~BaseRenderingContext2D() override;
 
-  void Reset();
-
   void strokeStyle(StringOrCanvasGradientOrCanvasPattern&) const;
   void setStrokeStyle(const StringOrCanvasGradientOrCanvasPattern&);
 
@@ -81,6 +79,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public GarbageCollectedMixin,
 
   void save();
   void restore();
+  void reset();
 
   void scale(double sx, double sy);
   void rotate(double angle_in_radians);
