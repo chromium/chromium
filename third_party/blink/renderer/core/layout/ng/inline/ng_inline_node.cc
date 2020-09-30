@@ -701,22 +701,31 @@ class NGInlineNodeDataEditor final {
     DCHECK_LT(item.start_offset_, end_offset);
     DCHECK_LE(end_offset, item.end_offset_);
     DCHECK_EQ(item.layout_object_, layout_text_);
+    const unsigned safe_end_offset = GetLastSafeToReuse(item, end_offset);
     const unsigned start_offset = item.start_offset_;
-    if (!item.shape_result_ || item.shape_result_->IsAppliedSpacing())
-      return NGInlineItem(item, start_offset, end_offset, nullptr);
-    if (item.end_offset_ == end_offset)
-      return item;
-    // TODO(yosin): We should handle |shape_result| doesn't have safe-to-break
-    // at start and end, because of |ShapeText()| splits |ShapeResult| ignoring
-    // safe-to-break offset.
-    item.shape_result_->EnsurePositionData();
-    const unsigned safe_end_offset =
-        item.shape_result_->CachedPreviousSafeToBreakOffset(end_offset);
     if (start_offset == safe_end_offset)
       return NGInlineItem(item, start_offset, end_offset, nullptr);
+    // To handle kerning, e.g. "AV", we should not reuse last glyph.
+    // See http://crbug.com/1129710
+    DCHECK_LT(safe_end_offset, item.end_offset_);
     return NGInlineItem(
         item, start_offset, safe_end_offset,
         item.shape_result_->SubRange(start_offset, safe_end_offset));
+  }
+
+  unsigned GetLastSafeToReuse(const NGInlineItem& item,
+                              unsigned end_offset) const {
+    DCHECK_LT(item.start_offset_, end_offset);
+    DCHECK_LE(end_offset, item.end_offset_);
+    DCHECK_EQ(item.layout_object_, layout_text_);
+    const unsigned start_offset = item.start_offset_;
+    if (!item.shape_result_ || item.shape_result_->IsAppliedSpacing() ||
+        end_offset - start_offset <= 1)
+      return start_offset;
+    item.shape_result_->EnsurePositionData();
+    // Note: Because |CachedPreviousSafeToBreakOffset()| assumes |end_offset|
+    // is always safe to break offset, we try to search before |end_offset|.
+    return item.shape_result_->CachedPreviousSafeToBreakOffset(end_offset - 1);
   }
 
   static void ShiftItem(NGInlineItem* item, int delta) {
