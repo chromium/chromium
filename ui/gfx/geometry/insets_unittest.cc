@@ -164,13 +164,61 @@ TEST(InsetsTest, Offset) {
 }
 
 TEST(InsetsTest, Scale) {
-  gfx::Insets test(10, 5);
-  test = test.Scale(2.f, 3.f);
-  EXPECT_EQ(gfx::Insets(30, 10), test);
+  gfx::Insets in(7, 5);
 
-  test = gfx::Insets(7, 3);
-  test = test.Scale(-2.f, -3.f);
-  EXPECT_EQ(gfx::Insets(-21, -6), test);
+  gfx::InsetsF testf = gfx::ScaleInsets(in, 2.5f, 3.5f);
+  EXPECT_EQ(gfx::InsetsF(24.5f, 12.5f), testf);
+  testf = gfx::ScaleInsets(in, 2.5f);
+  EXPECT_EQ(gfx::InsetsF(17.5f, 12.5f), testf);
+
+  gfx::Insets test = gfx::ScaleToFlooredInsets(in, 2.5f, 3.5f);
+  EXPECT_EQ(gfx::Insets(24, 12), test);
+  test = gfx::ScaleToFlooredInsets(in, 2.5f);
+  EXPECT_EQ(gfx::Insets(17, 12), test);
+
+  test = gfx::ScaleToCeiledInsets(in, 2.5f, 3.5f);
+  EXPECT_EQ(gfx::Insets(25, 13), test);
+  test = gfx::ScaleToCeiledInsets(in, 2.5f);
+  EXPECT_EQ(gfx::Insets(18, 13), test);
+
+  test = gfx::ScaleToRoundedInsets(in, 2.49f, 3.49f);
+  EXPECT_EQ(gfx::Insets(24, 12), test);
+  test = gfx::ScaleToRoundedInsets(in, 2.49f);
+  EXPECT_EQ(gfx::Insets(17, 12), test);
+
+  test = gfx::ScaleToRoundedInsets(in, 2.5f, 3.5f);
+  EXPECT_EQ(gfx::Insets(25, 13), test);
+  test = gfx::ScaleToRoundedInsets(in, 2.5f);
+  EXPECT_EQ(gfx::Insets(18, 13), test);
+}
+
+TEST(InsetsTest, ScaleNegative) {
+  gfx::Insets in(-7, -5);
+
+  gfx::InsetsF testf = gfx::ScaleInsets(in, 2.5f, 3.5f);
+  EXPECT_EQ(gfx::InsetsF(-24.5f, -12.5f), testf);
+  testf = gfx::ScaleInsets(in, 2.5f);
+  EXPECT_EQ(gfx::InsetsF(-17.5f, -12.5f), testf);
+
+  gfx::Insets test = gfx::ScaleToFlooredInsets(in, 2.5f, 3.5f);
+  EXPECT_EQ(gfx::Insets(-25, -13), test);
+  test = gfx::ScaleToFlooredInsets(in, 2.5f);
+  EXPECT_EQ(gfx::Insets(-18, -13), test);
+
+  test = gfx::ScaleToCeiledInsets(in, 2.5f, 3.5f);
+  EXPECT_EQ(gfx::Insets(-24, -12), test);
+  test = gfx::ScaleToCeiledInsets(in, 2.5f);
+  EXPECT_EQ(gfx::Insets(-17, -12), test);
+
+  test = gfx::ScaleToRoundedInsets(in, 2.49f, 3.49f);
+  EXPECT_EQ(gfx::Insets(-24, -12), test);
+  test = gfx::ScaleToRoundedInsets(in, 2.49f);
+  EXPECT_EQ(gfx::Insets(-17, -12), test);
+
+  test = gfx::ScaleToRoundedInsets(in, 2.5f, 3.5f);
+  EXPECT_EQ(gfx::Insets(-25, -13), test);
+  test = gfx::ScaleToRoundedInsets(in, 2.5f);
+  EXPECT_EQ(gfx::Insets(-18, -13), test);
 }
 
 TEST(InsetsTest, IntegerOverflow) {
@@ -189,7 +237,7 @@ TEST(InsetsTest, IntegerOverflow) {
   EXPECT_EQ(gfx::Insets(int_max), negation_test);
 
   gfx::Insets scale_test(int_max);
-  scale_test = scale_test.Scale(2.f, 2.f);
+  scale_test = gfx::ScaleToRoundedInsets(scale_test, 2.f);
   EXPECT_EQ(gfx::Insets(int_max), scale_test);
 }
 
@@ -206,7 +254,7 @@ TEST(InsetsTest, IntegerUnderflow) {
   EXPECT_EQ(gfx::Insets(int_min), minus_test);
 
   gfx::Insets scale_test = gfx::Insets(int_min);
-  scale_test = scale_test.Scale(2.f, 2.f);
+  scale_test = gfx::ScaleToRoundedInsets(scale_test, 2.f);
   EXPECT_EQ(gfx::Insets(int_min), scale_test);
 }
 

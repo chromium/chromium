@@ -94,7 +94,8 @@ gfx::Insets ConvertToDisplay(const display::Display& display,
       ash::Shell::Get()->display_manager()->GetDisplayInfo(display.id());
   return RotateInsets(
       display.rotation(),
-      insets.Scale(info.device_scale_factor() / display.device_scale_factor()));
+      gfx::ScaleToFlooredInsets(
+          insets, info.device_scale_factor() / display.device_scale_factor()));
 }
 
 gfx::Insets ConvertToHost(const display::Display& display,
@@ -106,7 +107,8 @@ gfx::Insets ConvertToHost(const display::Display& display,
           (4 - static_cast<int>(display.rotation())) % 4);
   return RotateInsets(
       inverted_rotation,
-      insets.Scale(display.device_scale_factor() / info.device_scale_factor()));
+      gfx::ScaleToFlooredInsets(
+          insets, display.device_scale_factor() / info.device_scale_factor()));
 }
 
 }  // namespace

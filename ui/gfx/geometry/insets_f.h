@@ -90,6 +90,21 @@ class GEOMETRY_EXPORT InsetsF {
   float right_;
 };
 
+// This is declared here for use in gtest-based unit tests but is defined in
+// the //ui/gfx:test_support target. Depend on that to use this in your unit
+// test. This should not be used in production code - call ToString() instead.
+void PrintTo(const InsetsF& point, ::std::ostream* os);
+
+inline InsetsF ScaleInsets(const InsetsF& i, float scale) {
+  return InsetsF(i.top() * scale, i.left() * scale, i.bottom() * scale,
+                 i.right() * scale);
+}
+
+inline InsetsF ScaleInsets(const InsetsF& i, float x_scale, float y_scale) {
+  return InsetsF(i.top() * y_scale, i.left() * x_scale, i.bottom() * y_scale,
+                 i.right() * x_scale);
+}
+
 inline InsetsF operator+(InsetsF lhs, const InsetsF& rhs) {
   lhs += rhs;
   return lhs;

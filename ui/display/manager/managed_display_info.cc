@@ -20,6 +20,8 @@
 #include "ui/display/display_features.h"
 #include "ui/display/display_switches.h"
 #include "ui/display/manager/display_manager_utilities.h"
+#include "ui/gfx/geometry/dip_util.h"
+#include "ui/gfx/geometry/insets_conversions.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/size_f.h"
 
@@ -434,7 +436,8 @@ void ManagedDisplayInfo::SetOverscanInsets(const gfx::Insets& insets_in_dip) {
 }
 
 gfx::Insets ManagedDisplayInfo::GetOverscanInsetsInPixel() const {
-  return overscan_insets_in_dip_.Scale(device_scale_factor_);
+  return gfx::ToFlooredInsets(gfx::ConvertInsetsToPixels(
+      overscan_insets_in_dip_, device_scale_factor_));
 }
 
 void ManagedDisplayInfo::SetManagedDisplayModes(

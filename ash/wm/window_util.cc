@@ -190,8 +190,8 @@ void SetChildrenUseExtendedHitRegionForWindow(aura::Window* window) {
   gfx::Insets mouse_extend(
       -chromeos::kResizeOutsideBoundsSize, -chromeos::kResizeOutsideBoundsSize,
       -chromeos::kResizeOutsideBoundsSize, -chromeos::kResizeOutsideBoundsSize);
-  gfx::Insets touch_extend =
-      mouse_extend.Scale(chromeos::kResizeOutsideBoundsScaleForTouch);
+  gfx::Insets touch_extend = gfx::ScaleToFlooredInsets(
+      mouse_extend, chromeos::kResizeOutsideBoundsScaleForTouch);
   window->SetEventTargeter(std::make_unique<::wm::EasyResizeWindowTargeter>(
       mouse_extend, touch_extend));
 }

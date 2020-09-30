@@ -7,6 +7,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/insets_f.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
@@ -129,26 +130,40 @@ RectF ConvertRectToPixels(const RectF& rect_in_dips,
   return ScaleRect(rect_in_dips, device_scale_factor);
 }
 
-Insets ConvertInsetsToDIP(float scale_factor,
-                          const gfx::Insets& insets_in_pixel) {
+InsetsF ConvertInsetsToDips(const gfx::Insets& insets_in_pixels,
+                            float device_scale_factor) {
 #if defined(OS_MAC)
   // Device scale factor on MacOSX is always an integer.
-  DCHECK(IsIntegerInFloat(scale_factor));
+  DCHECK(IsIntegerInFloat(device_scale_factor));
 #endif
-  if (scale_factor == 1.f)
-    return insets_in_pixel;
-  return insets_in_pixel.Scale(1.f / scale_factor);
+  return ScaleInsets(InsetsF(insets_in_pixels), 1.f / device_scale_factor);
 }
 
-Insets ConvertInsetsToPixel(float scale_factor,
-                            const gfx::Insets& insets_in_dip) {
+InsetsF ConvertInsetsToDips(const gfx::InsetsF& insets_in_pixels,
+                            float device_scale_factor) {
 #if defined(OS_MAC)
   // Device scale factor on MacOSX is always an integer.
-  DCHECK(IsIntegerInFloat(scale_factor));
+  DCHECK(IsIntegerInFloat(device_scale_factor));
 #endif
-  if (scale_factor == 1.f)
-    return insets_in_dip;
-  return insets_in_dip.Scale(scale_factor);
+  return ScaleInsets(insets_in_pixels, 1.f / device_scale_factor);
+}
+
+InsetsF ConvertInsetsToPixels(const gfx::Insets& insets_in_dips,
+                              float device_scale_factor) {
+#if defined(OS_MAC)
+  // Device scale factor on MacOSX is always an integer.
+  DCHECK(IsIntegerInFloat(device_scale_factor));
+#endif
+  return ScaleInsets(InsetsF(insets_in_dips), device_scale_factor);
+}
+
+InsetsF ConvertInsetsToPixels(const gfx::InsetsF& insets_in_dips,
+                              float device_scale_factor) {
+#if defined(OS_MAC)
+  // Device scale factor on MacOSX is always an integer.
+  DCHECK(IsIntegerInFloat(device_scale_factor));
+#endif
+  return ScaleInsets(insets_in_dips, device_scale_factor);
 }
 
 }  // namespace gfx

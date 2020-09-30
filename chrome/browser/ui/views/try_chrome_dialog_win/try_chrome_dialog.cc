@@ -37,7 +37,9 @@
 #include "ui/display/win/screen_win.h"
 #include "ui/events/event.h"
 #include "ui/events/types/event_type.h"
+#include "ui/gfx/geometry/dip_util.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/insets_conversions.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
@@ -735,9 +737,11 @@ void TryChromeDialog::Context::TaskbarCalculator::OnWidgetBoundsChanged(
 
   // Compute the bounding rectangle of the dialog (the visible rect including
   // the border without the arrow).
-  gfx::Insets scaled_insets =
-      popup->GetContentsView()->border()->GetInsets().Scale(dsf);
-  scaled_insets -= gfx::Insets(kTryChromeBorderThickness).Scale(dsf);
+  const gfx::Insets border_insets_in_pixels = gfx::ToFlooredInsets(
+      gfx::ConvertInsetsToPixels(gfx::Insets(kTryChromeBorderThickness), dsf));
+  gfx::Insets scaled_insets = gfx::ToFlooredInsets(gfx::ConvertInsetsToPixels(
+      popup->GetContentsView()->border()->GetInsets(), dsf));
+  scaled_insets -= border_insets_in_pixels;
   gfx::Rect dialog_bounds(window_size);
   dialog_bounds.Inset(scaled_insets);
 
@@ -746,8 +750,9 @@ void TryChromeDialog::Context::TaskbarCalculator::OnWidgetBoundsChanged(
 
   // Scale the insets into the arrow's bounding rectangle that the border
   // extends into it.
-  gfx::Insets arrow_border_insets(
-      properties_->border_properties.arrow_border_insets.Scale(dsf));
+  gfx::Insets arrow_border_insets =
+      gfx::ToFlooredInsets(gfx::ConvertInsetsToPixels(
+          properties_->border_properties.arrow_border_insets, dsf));
 
   POINT polygon[7];
   properties_->region_creator(window_size, dialog_bounds, arrow_bounds,

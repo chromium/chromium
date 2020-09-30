@@ -87,8 +87,9 @@ class ScrollContentsView : public views::View {
       gfx::Rect clip_rect = gfx::Rect(paint_info.paint_recording_size()) -
                             paint_info.offset_from_parent();
       gfx::Insets clip_insets(sticky_header_height, 0, 0, 0);
-      clip_rect.Inset(clip_insets.Scale(paint_info.paint_recording_scale_x(),
-                                        paint_info.paint_recording_scale_y()));
+      clip_rect.Inset(gfx::ScaleToFlooredInsets(
+          clip_insets, paint_info.paint_recording_scale_x(),
+          paint_info.paint_recording_scale_y()));
       clip_recorder.ClipRect(clip_rect);
       for (auto* child : children()) {
         if (child->GetID() != VIEW_ID_STICKY_HEADER && !child->layer())

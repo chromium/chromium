@@ -10,6 +10,7 @@
 namespace gfx {
 
 class Insets;
+class InsetsF;
 class Point;
 class PointF;
 class Rect;
@@ -63,13 +64,19 @@ GEOMETRY_EXPORT gfx::RectF ConvertRectToPixels(const gfx::Rect& rect_in_dips,
 GEOMETRY_EXPORT gfx::RectF ConvertRectToPixels(const gfx::RectF& rect_in_dips,
                                                float device_scale_factor);
 
-GEOMETRY_EXPORT gfx::Insets ConvertInsetsToDIP(
-    float scale_factor,
-    const gfx::Insets& insets_in_pixel);
+GEOMETRY_EXPORT gfx::InsetsF ConvertInsetsToDips(
+    const gfx::Insets& insets_in_pixels,
+    float device_scale_factor);
+GEOMETRY_EXPORT gfx::InsetsF ConvertInsetsToDips(
+    const gfx::InsetsF& insets_in_pixels,
+    float device_scale_factor);
 
-GEOMETRY_EXPORT gfx::Insets ConvertInsetsToPixel(
-    float scale_factor,
-    const gfx::Insets& insets_in_dip);
+GEOMETRY_EXPORT gfx::InsetsF ConvertInsetsToPixels(
+    const gfx::Insets& insets_in_dips,
+    float device_scale_factor);
+GEOMETRY_EXPORT gfx::InsetsF ConvertInsetsToPixels(
+    const gfx::InsetsF& insets_in_dips,
+    float device_scale_factor);
 
 }  // namespace gfx
 

@@ -13,6 +13,7 @@
 #include "cc/paint/paint_flags.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/dip_util.h"
+#include "ui/gfx/geometry/insets_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/views/painter.h"
@@ -57,8 +58,9 @@ void SolidSidedBorder::Paint(const View& view, gfx::Canvas* canvas) {
     scaled_bounds.Scale(dsf);
   }
 
-  // This scaling operation floors the inset values.
-  scaled_bounds.Inset(insets_.Scale(dsf));
+  gfx::Insets insets_in_pixels =
+      gfx::ToFlooredInsets(gfx::ConvertInsetsToPixels(insets_, dsf));
+  scaled_bounds.Inset(insets_in_pixels);
   canvas->sk_canvas()->clipRect(gfx::RectFToSkRect(scaled_bounds),
                                 SkClipOp::kDifference, true);
   canvas->DrawColor(color());

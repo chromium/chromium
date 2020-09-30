@@ -109,15 +109,6 @@ class GEOMETRY_EXPORT Insets {
                   -base::MakeClampedNum(right_));
   }
 
-  Insets Scale(float scale) const { return Scale(scale, scale); }
-
-  Insets Scale(float x_scale, float y_scale) const {
-    return Insets(static_cast<int>(base::ClampMul(top(), y_scale)),
-                  static_cast<int>(base::ClampMul(left(), x_scale)),
-                  static_cast<int>(base::ClampMul(bottom(), y_scale)),
-                  static_cast<int>(base::ClampMul(right(), x_scale)));
-  }
-
   // Adjusts the vertical and horizontal dimensions by the values described in
   // |vector|. Offsetting insets before applying to a rectangle would be
   // equivalent to offseting the rectangle then applying the insets.
@@ -174,6 +165,11 @@ class GEOMETRY_EXPORT Insets {
   }
 };
 
+// This is declared here for use in gtest-based unit tests but is defined in
+// the //ui/gfx:test_support target. Depend on that to use this in your unit
+// test. This should not be used in production code - call ToString() instead.
+void PrintTo(const Insets& point, ::std::ostream* os);
+
 inline Insets operator+(Insets lhs, const Insets& rhs) {
   lhs += rhs;
   return lhs;
@@ -183,6 +179,20 @@ inline Insets operator-(Insets lhs, const Insets& rhs) {
   lhs -= rhs;
   return lhs;
 }
+
+// Helper methods to scale a gfx::Insets to a new gfx::Insets.
+GEOMETRY_EXPORT Insets ScaleToCeiledInsets(const Insets& insets,
+                                           float x_scale,
+                                           float y_scale);
+GEOMETRY_EXPORT Insets ScaleToCeiledInsets(const Insets& insets, float scale);
+GEOMETRY_EXPORT Insets ScaleToFlooredInsets(const Insets& insets,
+                                            float x_scale,
+                                            float y_scale);
+GEOMETRY_EXPORT Insets ScaleToFlooredInsets(const Insets& insets, float scale);
+GEOMETRY_EXPORT Insets ScaleToRoundedInsets(const Insets& insets,
+                                            float x_scale,
+                                            float y_scale);
+GEOMETRY_EXPORT Insets ScaleToRoundedInsets(const Insets& insets, float scale);
 
 }  // namespace gfx
 

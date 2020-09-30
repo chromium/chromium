@@ -17,6 +17,8 @@ component("geometry") {
     "geometry_export.h",
     "insets.cc",
     "insets.h",
+    "insets_conversions.cc",
+    "insets_conversions.h",
     "insets_f.cc",
     "insets_f.h",
     "matrix3_f.cc",
