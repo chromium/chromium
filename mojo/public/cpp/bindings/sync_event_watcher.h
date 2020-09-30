@@ -53,12 +53,14 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) SyncEventWatcher {
   base::WaitableEvent* const event_;
   const base::RepeatingClosure callback_;
 
+  // Must outlive (and thus be declared before) |subscription_|, since
+  // it subscribes to a callback list stored in the registry.
+  scoped_refptr<SyncHandleRegistry> registry_;
+
   SyncHandleRegistry::EventCallbackSubscription subscription_;
 
   // If non-zero, |event_| should be registered with SyncHandleRegistry.
   size_t register_request_count_ = 0;
-
-  scoped_refptr<SyncHandleRegistry> registry_;
 
   scoped_refptr<base::RefCountedData<bool>> destroyed_;
 
