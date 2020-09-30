@@ -17,7 +17,6 @@
 #include "ash/system/tray/tray_bubble_wrapper.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_container.h"
-#include "ash/system/tray/tray_popup_item_style.h"
 #include "ash/system/tray/tray_utils.h"
 #include "base/strings/string_util.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -36,6 +35,9 @@
 namespace ash {
 
 namespace {
+
+constexpr int kTitleFontSizeIncrease = 4;
+constexpr int kTitleViewHeight = 56;
 
 constexpr gfx::Insets kTitleViewInsets = gfx::Insets(0, 16, 0, 16);
 
@@ -82,7 +84,7 @@ class GlobalMediaControlsTitleView : public views::View {
 
     auto* box_layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kHorizontal, kTitleViewInsets));
-    box_layout->set_minimum_cross_axis_size(kTrayPopupItemMinHeight);
+    box_layout->set_minimum_cross_axis_size(kTitleViewHeight);
     box_layout->set_cross_axis_alignment(
         views::BoxLayout::CrossAxisAlignment::kCenter);
 
@@ -90,9 +92,11 @@ class GlobalMediaControlsTitleView : public views::View {
     title_label->SetText(
         l10n_util::GetStringUTF16(IDS_ASH_GLOBAL_MEDIA_CONTROLS_TITLE));
     title_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    TrayPopupItemStyle style(TrayPopupItemStyle::FontStyle::SMALL_TITLE,
-                             true /* use_unified_theme */);
-    style.SetupLabel(title_label);
+    title_label->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kTextColorPrimary));
+    title_label->SetAutoColorReadabilityEnabled(false);
+    title_label->SetFontList(views::Label::GetDefaultFontList().Derive(
+        kTitleFontSizeIncrease, gfx::Font::NORMAL, gfx::Font::Weight::MEDIUM));
 
     // Media tray should always be pinned to shelf when we are opening the
     // dialog.

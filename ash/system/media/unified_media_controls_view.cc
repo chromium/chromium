@@ -4,16 +4,22 @@
 
 #include "ash/system/media/unified_media_controls_view.h"
 
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/media/unified_media_controls_controller.h"
 #include "ash/system/tray/tray_constants.h"
+#include "ash/system/tray/tray_popup_utils.h"
 #include "components/media_message_center/media_notification_util.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/animation/flood_fill_ink_drop_ripple.h"
+#include "ui/views/animation/ink_drop_highlight.h"
+#include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
+#include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
@@ -25,16 +31,18 @@ using media_session::mojom::MediaSessionAction;
 namespace {
 
 constexpr int kMediaControlsCornerRadius = 8;
-constexpr int kMediaControlsViewPadding = 8;
-constexpr int kMediaButtonsPadding = 4;
-constexpr int kMediaButtonIconSize = 18;
+constexpr int kMediaControlsViewPadding = 16;
+constexpr int kMediaButtonsPadding = 8;
+constexpr int kMediaButtonIconSize = 20;
 constexpr int kArtworkCornerRadius = 4;
+constexpr int kTitleRowHeight = 20;
+constexpr int kTrackTitleFontSizeIncrease = 1;
 
-constexpr gfx::Insets kTrackColumnInsets = gfx::Insets(0, 8, 0, 0);
-constexpr gfx::Insets kMediaControlsViewInsets = gfx::Insets(8, 8, 8, 8);
+constexpr gfx::Insets kTrackColumnInsets = gfx::Insets(1, 0, 1, 0);
+constexpr gfx::Insets kMediaControlsViewInsets = gfx::Insets(8, 8, 8, 12);
 
-constexpr gfx::Size kArtworkSize = gfx::Size(48, 48);
-constexpr gfx::Size kMediaButtonSize = gfx::Size(36, 36);
+constexpr gfx::Size kArtworkSize = gfx::Size(40, 40);
+constexpr gfx::Size kMediaButtonSize = gfx::Size(32, 32);
 
 gfx::Size ScaleSizeToFitView(const gfx::Size& size,
                              const gfx::Size& view_size) {
@@ -93,6 +101,9 @@ UnifiedMediaControlsView::MediaActionButton::MediaActionButton(
   SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
   SetPreferredSize(kMediaButtonSize);
   SetAction(action, accessible_name);
+
+  TrayPopupUtils::ConfigureTrayPopupButton(this);
+  views::InstallCircleHighlightPathGenerator(this);
 }
 
 void UnifiedMediaControlsView::MediaActionButton::SetAction(
@@ -105,6 +116,25 @@ void UnifiedMediaControlsView::MediaActionButton::SetAction(
                GetVectorIconForMediaAction(action), kMediaButtonIconSize,
                AshColorProvider::Get()->GetContentLayerColor(
                    AshColorProvider::ContentLayerType::kIconColorPrimary)));
+}
+
+std::unique_ptr<views::InkDrop>
+UnifiedMediaControlsView::MediaActionButton::CreateInkDrop() {
+  auto ink_drop = TrayPopupUtils::CreateInkDrop(this);
+  ink_drop->SetShowHighlightOnHover(true);
+  return ink_drop;
+}
+
+std::unique_ptr<views::InkDropHighlight>
+UnifiedMediaControlsView::MediaActionButton::CreateInkDropHighlight() const {
+  return TrayPopupUtils::CreateInkDropHighlight(this);
+}
+
+std::unique_ptr<views::InkDropRipple>
+UnifiedMediaControlsView::MediaActionButton::CreateInkDropRipple() const {
+  return TrayPopupUtils::CreateInkDropRipple(
+      TrayPopupInkDropStyle::FILL_BOUNDS, this,
+      GetInkDropCenterBasedOnLastEvent());
 }
 
 UnifiedMediaControlsView::UnifiedMediaControlsView(
@@ -129,6 +159,12 @@ UnifiedMediaControlsView::UnifiedMediaControlsView(
   track_column->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, kTrackColumnInsets));
 
+  auto title_row = std::make_unique<views::View>();
+  auto* title_row_layout =
+      title_row->SetLayoutManager(std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kHorizontal, gfx::Insets()));
+  title_row_layout->set_minimum_cross_axis_size(kTitleRowHeight);
+
   auto config_label = [](views::Label* label) {
     label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
     label->SetAutoColorReadabilityEnabled(false);
@@ -139,7 +175,21 @@ UnifiedMediaControlsView::UnifiedMediaControlsView(
   config_label(title_label.get());
   title_label->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kTextColorPrimary));
-  title_label_ = track_column->AddChildView(std::move(title_label));
+  title_label->SetFontList(
+      views::Label::GetDefaultFontList().DeriveWithSizeDelta(
+          kTrackTitleFontSizeIncrease));
+  title_label_ = title_row->AddChildView(std::move(title_label));
+
+  auto drop_down_icon = std::make_unique<views::ImageView>();
+  drop_down_icon->SetPreferredSize(gfx::Size(kTitleRowHeight, kTitleRowHeight));
+  drop_down_icon->SetImage(CreateVectorIcon(
+      kUnifiedMenuMoreIcon,
+      AshColorProvider::Get()->GetContentLayerColor(
+          AshColorProvider::ContentLayerType::kIconColorPrimary)));
+  title_row->AddChildView(std::move(drop_down_icon));
+
+  title_row_layout->SetFlexForView(title_label_, 1);
+  track_column->AddChildView(std::move(title_row));
 
   auto artist_label = std::make_unique<views::Label>();
   config_label(artist_label.get());

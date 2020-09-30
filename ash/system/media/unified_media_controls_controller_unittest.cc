@@ -27,7 +27,7 @@ namespace {
 constexpr int kHideControlsDelay = 2000; /* in milliseconds */
 constexpr int kHideArtworkDelay = 2000;  /* in milliseconds */
 constexpr int kArtworkCornerRadius = 4;
-constexpr int kArtworkHeight = 48;
+constexpr int kArtworkHeight = 40;
 
 class MockMediaControlsDelegate
     : public UnifiedMediaControlsController::Delegate {
@@ -266,7 +266,7 @@ TEST_F(UnifiedMediaControlsControllerTest, UpdateArtwork) {
   controller()->MediaControllerImageChanged(
       media_session::mojom::MediaSessionImageType::kArtwork, artwork);
   {
-    gfx::Rect expect_bounds(0, 12, 48, 24);
+    gfx::Rect expect_bounds(0, 10, 40, 20);
     gfx::Rect artwork_bounds = artwork_view()->GetImageBounds();
     EXPECT_EQ(artwork_bounds, expect_bounds);
 
@@ -281,7 +281,7 @@ TEST_F(UnifiedMediaControlsControllerTest, UpdateArtwork) {
   controller()->MediaControllerImageChanged(
       media_session::mojom::MediaSessionImageType::kArtwork, artwork);
   {
-    gfx::Rect expect_bounds(12, 0, 24, 48);
+    gfx::Rect expect_bounds(10, 0, 20, 40);
     gfx::Rect artwork_bounds = artwork_view()->GetImageBounds();
     EXPECT_EQ(artwork_bounds, expect_bounds);
 
@@ -296,7 +296,7 @@ TEST_F(UnifiedMediaControlsControllerTest, UpdateArtwork) {
   controller()->MediaControllerImageChanged(
       media_session::mojom::MediaSessionImageType::kArtwork, artwork);
   {
-    gfx::Rect expect_bounds(14, 0, 20, kArtworkHeight);
+    gfx::Rect expect_bounds(10, 0, 20, kArtworkHeight);
     gfx::Rect artwork_bounds = artwork_view()->GetImageBounds();
     EXPECT_EQ(artwork_bounds, expect_bounds);
 

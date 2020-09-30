@@ -10,7 +10,7 @@
 namespace ash {
 
 namespace {
-constexpr int kContainerHeight = 80;
+constexpr int kContainerHeight = 72;
 constexpr gfx::Insets kContainerInsets = gfx::Insets(0, 16, 16, 16);
 }  // namespace
 

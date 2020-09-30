@@ -57,6 +57,12 @@ class ASH_EXPORT UnifiedMediaControlsView : public views::Button,
 
     void SetAction(media_session::mojom::MediaSessionAction action,
                    const base::string16& accessible_name);
+
+    // views::ImageButton:
+    std::unique_ptr<views::InkDrop> CreateInkDrop() override;
+    std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight()
+        const override;
+    std::unique_ptr<views::InkDropRipple> CreateInkDropRipple() const override;
   };
 
   SkPath GetArtworkClipPath();
