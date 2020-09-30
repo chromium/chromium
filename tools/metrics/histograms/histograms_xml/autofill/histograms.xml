@@ -1514,25 +1514,15 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Autofill.StrikeDatabase.NthStrikeAdded.CreditCardSave"
-    units="strikes" expires_after="2021-01-31">
-  <owner>jsaul@google.com</owner>
-  <owner>annelim@google.com</owner>
-  <summary>
-    Records the number of &quot;strikes&quot; a given card has, when a user
-    dismisses a prompt to save a new credit card. The strike count is
-    incremented each time the user dismisses the prompt.
-  </summary>
-</histogram>
+<histogram name="Autofill.StrikeDatabase.NthStrikeAdded" units="strikes"
+    expires_after="2021-01-31">
+<!-- Name completed by histogram_suffixes name="AutofillStrikeDatabaseProjectType" -->
 
-<histogram name="Autofill.StrikeDatabase.NthStrikeAdded.LocalCardMigration"
-    units="strikes" expires_after="2021-01-31">
   <owner>jsaul@google.com</owner>
   <owner>annelim@google.com</owner>
   <summary>
-    Records the number of &quot;strikes&quot; a user has, when a prompt for
-    local card migration is dismissed. The strike count is incremented each time
-    the user dismisses the prompt.
+    Records the number of &quot;strikes&quot; a particular feature has when a
+    new strike is added for that feature.
   </summary>
 </histogram>
 
@@ -1579,6 +1569,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Autofill.StrikeDatabase.StrikesPresentWhenStrikeExpired"
     units="strikes" expires_after="2021-01-31">
+<!-- Name completed by histogram_suffixes name="AutofillStrikeDatabaseProjectType" -->
+
   <owner>jsaul@google.com</owner>
   <owner>annelim@google.com</owner>
   <summary>
