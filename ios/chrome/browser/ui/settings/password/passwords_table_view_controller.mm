@@ -524,7 +524,7 @@ std::vector<std::unique_ptr<autofill::PasswordForm>> CopyOf(
       [[SettingsSwitchItem alloc] initWithType:ItemTypeSavePasswordsSwitch];
   savePasswordsItem.text = l10n_util::GetNSString(IDS_IOS_SAVE_PASSWORDS);
   savePasswordsItem.on = [_passwordManagerEnabled value];
-  savePasswordsItem.accessibilityIdentifier = @"savePasswordsItem_switch";
+  savePasswordsItem.accessibilityIdentifier = kSavePasswordSwitchTableViewId;
   return savePasswordsItem;
 }
 
@@ -540,7 +540,7 @@ std::vector<std::unique_ptr<autofill::PasswordForm>> CopyOf(
   managedSavePasswordItem.accessibilityHint =
       l10n_util::GetNSString(IDS_IOS_TOGGLE_SETTING_MANAGED_ACCESSIBILITY_HINT);
   managedSavePasswordItem.accessibilityIdentifier =
-      @"savePasswordsItem_managed";
+      kSavePasswordManagedTableViewId;
   return managedSavePasswordItem;
 }
 

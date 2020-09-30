@@ -15,8 +15,10 @@
 #import "ios/chrome/browser/translate/translate_app_interface.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #import "ios/chrome/browser/ui/settings/elements/elements_constants.h"
+#import "ios/chrome/browser/ui/settings/password/passwords_table_view_constants.h"
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
+#include "ios/chrome/grit/ios_strings.h"
 #include "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -97,6 +99,30 @@ id<GREYMatcher> ToolsMenuTranslateButton() {
                     grey_interactable(), nil);
 }
 
+// Verifies that a managed setting item is shown and react properly.
+void VerifyManagedSettingItem(NSString* accessibilityID,
+                              NSString* accessibilityValue,
+                              id<GREYMatcher> goBackMatcher) {
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(accessibilityID)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  // Click the info button.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityValue(accessibilityValue)]
+      performAction:grey_tap()];
+  // Check if the contextual bubble is shown.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kEnterpriseInfoBubbleViewId)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Tap outside of the bubble.
+  [[EarlGrey selectElementWithMatcher:goBackMatcher] performAction:grey_tap()];
+
+  // Check if the contextual bubble is hidden.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kEnterpriseInfoBubbleViewId)]
+      assertWithMatcher:grey_notVisible()];
+}
+
 }  // namespace
 
 // Test case to verify that enterprise policies are set and respected.
@@ -133,31 +159,40 @@ id<GREYMatcher> ToolsMenuTranslateButton() {
   [ChromeEarlGrey loadURL:GURL("chrome://policy")];
   [EarlGrey dismissKeyboardWithError:nil];
 
-  // Open settings menu and check if the settings UI is a managed UI.
+  // Open settings menu.
   [ChromeEarlGreyUI openSettingsMenu];
 
-  // Click on the info button of the managed item.
-  [ChromeEarlGreyUI tapSettingsMenuButton:grey_accessibilityID(
-                                              kTableViewCellInfoButtonViewId)];
-
-  // Check if the contextual bubble is shown.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kEnterpriseInfoBubbleViewId)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-
-  // Tap outside of the bubble.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsDoneButton()]
-      performAction:grey_tap()];
-  // Check if the contextual bubble is hidden.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kEnterpriseInfoBubbleViewId)]
-      assertWithMatcher:grey_notVisible()];
+  VerifyManagedSettingItem(
+      kSettingsManagedSearchEngineCellId,
+      l10n_util::GetNSString(IDS_IOS_SEARCH_ENGINE_SETTING_DISABLED_STATUS),
+      chrome_test_util::SettingsDoneButton());
 }
 
 // Tests for the PasswordManagerEnabled policy.
 - (void)testPasswordManagerEnabled {
   VerifyBoolPolicy(policy::key::kPasswordManagerEnabled,
                    password_manager::prefs::kCredentialsEnableService);
+}
+
+// Tests for the PasswordManagerEnabled policy Settings UI.
+- (void)testPasswordManagerEnabledSettingsUI {
+  // Force the preference off via policy.
+  SetPolicy(false, policy::key::kPasswordManagerEnabled);
+  GREYAssertFalse(
+      [ChromeEarlGrey
+          userBooleanPref:password_manager::prefs::kCredentialsEnableService],
+      @"Preference was unexpectedly true");
+  // Open settings menu and tap password settings.
+  [ChromeEarlGreyUI openSettingsMenu];
+  [[[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kSettingsPasswordsCellId)]
+         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 200)
+      onElementWithMatcher:grey_accessibilityID(kSettingsTableViewId)]
+      performAction:grey_tap()];
+
+  VerifyManagedSettingItem(kSavePasswordManagedTableViewId,
+                           l10n_util::GetNSString(IDS_IOS_SETTING_OFF),
+                           chrome_test_util::SettingsMenuBackButton());
 }
 
 // Tests for the SavingBrowserHistoryDisabled policy.

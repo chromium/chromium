@@ -724,8 +724,8 @@ void TapEdit() {
 
   // Check that the "Save Passwords" switch is disabled.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsSwitchCell(
-                                          @"savePasswordsItem_switch", YES, NO)]
-      assertWithMatcher:grey_notNil()];
+                                          kSavePasswordSwitchTableViewId, YES,
+                                          NO)] assertWithMatcher:grey_notNil()];
 
   [GetInteractionForPasswordEntry(@"example.com, concrete username")
       performAction:grey_tap()];
@@ -1122,14 +1122,14 @@ void TapEdit() {
   for (BOOL expected_state : kExpectedState) {
     // Toggle the switch. It is located near the top, so if not interactable,
     // try scrolling up.
-    [GetInteractionForListItem(chrome_test_util::SettingsSwitchCell(
-                                   @"savePasswordsItem_switch", expected_state),
-                               kGREYDirectionUp)
-        performAction:TurnSettingsSwitchOn(!expected_state)];
+    [GetInteractionForListItem(
+        chrome_test_util::SettingsSwitchCell(kSavePasswordSwitchTableViewId,
+                                             expected_state),
+        kGREYDirectionUp) performAction:TurnSettingsSwitchOn(!expected_state)];
 
     // Check that the switch has been modified.
     [GetInteractionForListItem(
-        chrome_test_util::SettingsSwitchCell(@"savePasswordsItem_switch",
+        chrome_test_util::SettingsSwitchCell(kSavePasswordSwitchTableViewId,
                                              !expected_state),
         kGREYDirectionUp) assertWithMatcher:grey_sufficientlyVisible()];
 
@@ -1156,7 +1156,7 @@ void TapEdit() {
   constexpr BOOL kExpectedState[] = {YES, NO};
   for (BOOL expected_initial_state : kExpectedState) {
     [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsSwitchCell(
-                                            @"savePasswordsItem_switch",
+                                            kSavePasswordSwitchTableViewId,
                                             expected_initial_state)]
         performAction:TurnSettingsSwitchOn(!expected_initial_state)];
     const bool expected_final_state = !expected_initial_state;
@@ -1458,7 +1458,7 @@ void TapEdit() {
 
   // Check that the "Save Passwords" switch is hidden.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsSwitchCell(
-                                          @"savePasswordsItem_switch", YES)]
+                                          kSavePasswordSwitchTableViewId, YES)]
       assertWithMatcher:grey_nil()];
 
   [GetInteractionForPasswordEntry(@"example11.com, user1")

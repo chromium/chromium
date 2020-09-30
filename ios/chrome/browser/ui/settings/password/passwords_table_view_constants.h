@@ -17,4 +17,8 @@ extern NSString* const kPasswordsScrimViewId;
 extern NSString* const kPasswordDetailsTableViewId;
 extern NSString* const kPasswordDetailsDeletionAlertViewId;
 
+// The accessibility identifier of the save password item.
+extern NSString* const kSavePasswordSwitchTableViewId;
+extern NSString* const kSavePasswordManagedTableViewId;
+
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORDS_TABLE_VIEW_CONSTANTS_H_
