@@ -7,6 +7,7 @@
 <translation id="1124772482545689468">Корисник</translation>
 <translation id="1178581264944972037">Пауза</translation>
 <translation id="1181037720776840403">Отстрани</translation>
+<translation id="1195941046451948919">Дали сигурно сакате да ги ресетирате сите дозволи за веб-сајтов?</translation>
 <translation id="1201402288615127009">Следно</translation>
 <translation id="1242008676835033345">Вметнато во <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">Запри</translation>
@@ -47,6 +48,7 @@
 <translation id="2187243482123994665">Присуство на корисник</translation>
 <translation id="2212565012507486665">Дозволи колачиња</translation>
 <translation id="2228071138934252756">За да овозможите <ph name="APP_NAME" /> да пристапува до вашата камера, вклучете ја дозволата за камерата и во <ph name="BEGIN_LINK" />Поставки за Android<ph name="END_LINK" />.</translation>
+<translation id="2241634353105152135">Само еднаш</translation>
 <translation id="2289270750774289114">Прашај кога некој сајт сака да открива уреди со Bluetooth во близина (се препорачува)</translation>
 <translation id="2315043854645842844">Оперативниот систем не поддржува избор на сертификат од страна на клиентот.</translation>
 <translation id="2359808026110333948">Продолжи</translation>
@@ -230,6 +232,7 @@
 <translation id="7423538860840206698">Блокирано читање на привремената меморија</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7554752735887601236">Сајтот го користи микрофонот</translation>
+<translation id="7561196759112975576">Секогаш</translation>
 <translation id="7572498721684305250">Блокирај ги испраќањето и примањето информации при допир на NFC-уреди</translation>
 <translation id="757524316907819857">Блокирај го пуштањето заштитени содржини од страна на сајтовите</translation>
 <translation id="7589445247086920869">Блокирај за тековниот пребарувач</translation>

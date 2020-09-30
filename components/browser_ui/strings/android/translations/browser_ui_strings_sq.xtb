@@ -47,6 +47,7 @@
 <translation id="2187243482123994665">Prania e përdoruesit</translation>
 <translation id="2212565012507486665">Lejo kukit</translation>
 <translation id="2228071138934252756">Për të lejuar që <ph name="APP_NAME" /> të ketë qasje te kamera jote, aktivizo gjithashtu kamerën në <ph name="BEGIN_LINK" />Cilësimet e Android<ph name="END_LINK" />.</translation>
+<translation id="2241634353105152135">Vetëm një herë</translation>
 <translation id="2289270750774289114">Pyet kur një sajt dëshiron të zbulojë pajisjet Bluetooth në afërsi (rekomandohet)</translation>
 <translation id="2315043854645842844">Përzgjedhja e certifikatës nga ana e klientit nuk mbështetet nga sistemi operativ.</translation>
 <translation id="2359808026110333948">Vazhdo</translation>
@@ -124,6 +125,7 @@
 <translation id="4570913071927164677">Detajet</translation>
 <translation id="4645575059429386691">Menaxhohet nga prindi yt</translation>
 <translation id="4670064810192446073">Realiteti virtual</translation>
+<translation id="4708011789095599544">E konfirmon se dëshiron të fshish kukit dhe të dhënat e tjera të sajtit për këtë faqe interneti?</translation>
 <translation id="4751476147751820511">Sensorët e lëvizjes ose të dritës</translation>
 <translation id="4883854917563148705">Cilësimet e menaxhuara nuk mund të rivendosen</translation>
 <translation id="4887024562049524730">Pyet përpara se sajtet të lejohen të përdorin pajisjen e realitetit virtual dhe të dhënat e tua (rekomandohet)</translation>
@@ -229,6 +231,7 @@
 <translation id="7423538860840206698">Bllokuar për leximin e kujtesës së fragmenteve</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7554752735887601236">Një sajt po përdor mikrofonin tënd</translation>
+<translation id="7561196759112975576">Gjithmonë</translation>
 <translation id="7572498721684305250">Blloko sajtet që të mos dërgojnë dhe marrin informacione kur troket pajisjet me NFC</translation>
 <translation id="757524316907819857">Blloko sajtet që të mos luajnë përmbajtje të mbrojtura</translation>
 <translation id="7589445247086920869">Blloko për motorin aktual të kërkimit</translation>

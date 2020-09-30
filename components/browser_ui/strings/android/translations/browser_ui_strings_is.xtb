@@ -7,6 +7,7 @@
 <translation id="1124772482545689468">Notandi</translation>
 <translation id="1178581264944972037">Gera hlé</translation>
 <translation id="1181037720776840403">Fjarlægja</translation>
+<translation id="1195941046451948919">Viltu örugglega endurstilla allar heimildir fyrir þetta vefsvæði?</translation>
 <translation id="1201402288615127009">Áfram</translation>
 <translation id="1242008676835033345">Fellt inn á <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">Stöðva</translation>
@@ -47,6 +48,7 @@
 <translation id="2187243482123994665">Viðvera notanda</translation>
 <translation id="2212565012507486665">Leyfa fótspor</translation>
 <translation id="2228071138934252756">Til að veita <ph name="APP_NAME" /> aðgang að myndavélinni þarftu einnig að kveikja á henni í <ph name="BEGIN_LINK" />stillingum Android<ph name="END_LINK" />.</translation>
+<translation id="2241634353105152135">Bara einu sinni</translation>
 <translation id="2289270750774289114">Spyrja þegar vefsvæði vill finna nálæg Bluetooth-tæki (ráðlagt)</translation>
 <translation id="2315043854645842844">Stýrikerfið styður ekki vottorðsval hjá biðlara.</translation>
 <translation id="2359808026110333948">Halda áfram</translation>
@@ -230,6 +232,7 @@
 <translation id="7423538860840206698">Lokað fyrir lestur klippiborðs</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7554752735887601236">Vefsvæði er að nota hljóðnemann</translation>
+<translation id="7561196759112975576">Alltaf</translation>
 <translation id="7572498721684305250">Loka fyrir að vefsvæði geti sent og tekið við upplýsingum þegar þú ýtir á NFC-tæki</translation>
 <translation id="757524316907819857">Banna síðum að spila varið efni</translation>
 <translation id="7589445247086920869">Setja á bannlista á núverandi leitarvél</translation>

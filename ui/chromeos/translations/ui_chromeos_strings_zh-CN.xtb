@@ -112,7 +112,6 @@
 <translation id="2163152940313951844">字符无效：<ph name="CHARACTER_NAME" /></translation>
 <translation id="2164862903024139959">越南语键盘(TCVN)</translation>
 <translation id="2168214441502403371">波斯语键盘</translation>
-<translation id="2197363559908958454">已移动 <ph name="NUMBER_OF_ITEMS" />。</translation>
 <translation id="2198315389084035571">简体中文</translation>
 <translation id="2208158072373999562">Zip 归档</translation>
 <translation id="2225536596944493418">确定要删除这 <ph name="NUMBER_OF_ITEMS" /> 项吗？</translation>
@@ -755,7 +754,6 @@
 <translation id="943972244133411984">修改者</translation>
 <translation id="945522503751344254">发送反馈</translation>
 <translation id="947144732524271678">已选择从<ph name="FROM_ENTRY_NAME" />到<ph name="TO_ENTRY_NAME" />的 <ph name="ENTRY_COUNT" /> 个条目。</translation>
-<translation id="949308258121608615">已复制 <ph name="NUMBER_OF_ITEMS" />。</translation>
 <translation id="981121421437150478">离线</translation>
 <translation id="988685240266037636">已有名为“<ph name="FILE_NAME" />”的文件。要覆盖它吗？</translation>
 <translation id="996903396648773764"><ph name="NUMBER_OF_MB" /> MB</translation>

@@ -5,6 +5,7 @@
 <translation id="1195447618553298278">Error desconocido.</translation>
 <translation id="1413240736185167732">No se ha podido imprimir - Error de filtro</translation>
 <translation id="1468664791493211953">Ofertas</translation>
+<translation id="1478594628797167447">Escáner</translation>
 <translation id="1482734542997480527"><ph name="ENROLLMENT_DOMAIN" /> gestiona este dispositivo y es posible que supervise tu actividad.</translation>
 <translation id="150962533380566081">El PUK no es válido.</translation>
 <translation id="1510238584712386396">Menú de aplicaciones</translation>
@@ -24,6 +25,7 @@
 <translation id="2872961005593481000">Apagar</translation>
 <translation id="3008341117444806826">ACTUALIZAR</translation>
 <translation id="3091839911843451378">No se ha podido imprimir - Se ha detenido</translation>
+<translation id="3246869037381808805">Los trabajos de impresión con más de 1 día de antigüedad se eliminarán</translation>
 <translation id="3268178239013324452">No se ha podido imprimir - Cierra la cubierta</translation>
 <translation id="3369013195428705271">¿Seguro que quieres borrar todo el historial de impresión? Los trabajos de impresión en curso no se borrarán.</translation>
 <translation id="3456078764689556234">Se ha impreso la página <ph name="PRINTED_PAGES" /> de <ph name="TOTAL_PAGES" />.</translation>
@@ -34,6 +36,7 @@
 <translation id="38114475217616659">Borrar todo el historial</translation>
 <translation id="3820172043799983114">PIN no válido.</translation>
 <translation id="3838338534323494292">Contraseña nueva</translation>
+<translation id="39823212440917567">Los trabajos de impresión con más de <ph name="NUMBER_OF_DAYS" /> días de antigüedad se eliminarán</translation>
 <translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> gestiona este dispositivo y tiene acceso a toda la actividad del usuario, incluidas las páginas web visitadas, sus contraseñas y su correo electrónico.</translation>
 <translation id="4003384961948020559">No se ha podido imprimir - Salida llena</translation>
 <translation id="4027485274696301677">El administrador de este <ph name="DEVICE_TYPE" /> es <ph name="ENROLLMENT_DOMAIN" />. Los administradores pueden configurar de forma remota el dispositivo.</translation>
@@ -52,6 +55,7 @@
 <translation id="4890353053343094602">Selecciona otra inmediatamente</translation>
 <translation id="4917889632206600977">Detenido: sin papel</translation>
 <translation id="4932733599132424254">Fecha</translation>
+<translation id="520299634122159966">No hay escáneres disponibles</translation>
 <translation id="5212543919916444558">No encuentro nada en la pantalla con lo que pueda ayudarte. Toca el micrófono para pedirme algo.</translation>
 <translation id="5222676887888702881">Cerrar sesión</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
@@ -70,6 +74,7 @@
 <translation id="649050271426829538">Detenido: atasco de papel</translation>
 <translation id="6517239166834772319">Explorar</translation>
 <translation id="6564646048574748301">No se ha podido imprimir - Impresora inaccesible</translation>
+<translation id="6620487321149975369">Los trabajos de impresión aparecerán en el historial a menos que se quiten de forma manual</translation>
 <translation id="6643016212128521049">Eliminar</translation>
 <translation id="6747215703636344499">Detenido: bandeja de salida llena</translation>
 <translation id="7162487448488904999">Galería</translation>
@@ -80,6 +85,7 @@
 <translation id="7805768142964895445">Estado</translation>
 <translation id="808894953321890993">Cambiar contraseña</translation>
 <translation id="8208861521865154048">Ventajas</translation>
+<translation id="8294431847097064396">Origen</translation>
 <translation id="8347227221149377169">Trabajos de impresión</translation>
 <translation id="8352772353338965963">Se puede añadir una cuenta al inicio de sesión múltiple y acceder a todas las cuentas en las que se haya iniciado sesión sin una contraseña, por lo que esta función solo se debe utilizar con cuentas de confianza.</translation>
 <translation id="8701136875688985581"><ph name="ENROLLMENT_DOMAIN" /> gestiona este usuario. Puede gestionar ajustes y supervisar la actividad del usuario de forma remota.</translation>

@@ -5,6 +5,7 @@
 <translation id="1195447618553298278">Tuntematon virhe.</translation>
 <translation id="1413240736185167732">Epäonnistui – Suodatin epäkunnossa</translation>
 <translation id="1468664791493211953">Tarjoukset</translation>
+<translation id="1478594628797167447">Skanneri</translation>
 <translation id="1482734542997480527"><ph name="ENROLLMENT_DOMAIN" /> ylläpitää tätä laitetta ja voi ehkä seurata toimintaasi.</translation>
 <translation id="150962533380566081">Virheellinen PUK-koodi</translation>
 <translation id="1510238584712386396">Käynnistysohjelma</translation>
@@ -24,6 +25,7 @@
 <translation id="2872961005593481000">Sammuta</translation>
 <translation id="3008341117444806826">PÄIVITÄ</translation>
 <translation id="3091839911843451378">Epäonnistui – Pysäytetty</translation>
+<translation id="3246869037381808805">Yli päivän vanhat tulostustyöt poistetaan</translation>
 <translation id="3268178239013324452">Epäonnistui – Luukku auki</translation>
 <translation id="3369013195428705271">Haluatko varmasti poistaa tulostushistorian? Käynnissä olevia tulostustöitä ei poisteta.</translation>
 <translation id="3456078764689556234">Tulostettu <ph name="PRINTED_PAGES" />/<ph name="TOTAL_PAGES" /> sivua.</translation>
@@ -34,6 +36,7 @@
 <translation id="38114475217616659">Tyhjennä koko historia</translation>
 <translation id="3820172043799983114">Virheellinen PIN-koodi</translation>
 <translation id="3838338534323494292">Uusi salasana</translation>
+<translation id="39823212440917567">Yli <ph name="NUMBER_OF_DAYS" /> päivää vanhat tulostustyöt poistetaan</translation>
 <translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> ylläpitää tätä laitetta ja pääsee näkemään kaiken käyttäjätoiminnan, kuten avatut verkkosivustot, salasanat ja sähköpostit.</translation>
 <translation id="4003384961948020559">Epäonnistui – Syöte täynnä</translation>
 <translation id="4027485274696301677">Laitetta (<ph name="DEVICE_TYPE" />) ylläpitää <ph name="ENROLLMENT_DOMAIN" />. Järjestelmänvalvojat voivat määrittää laitteen etänä.</translation>
@@ -71,6 +74,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="649050271426829538">Pysähtynyt – Paperitukos</translation>
 <translation id="6517239166834772319">Explore</translation>
 <translation id="6564646048574748301">Epäonnistui – Ei yhteyttä tulostimeen</translation>
+<translation id="6620487321149975369">Tulostustyöt näkyvät historiassa, ellei niitä poisteta manuaalisesti</translation>
 <translation id="6643016212128521049">Tyhjennä</translation>
 <translation id="6747215703636344499">Pysähtynyt – Syöte täynnä</translation>
 <translation id="7162487448488904999">Galleria</translation>
@@ -81,6 +85,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="7805768142964895445">Tila</translation>
 <translation id="808894953321890993">Vaihda salasana</translation>
 <translation id="8208861521865154048">Edut</translation>
+<translation id="8294431847097064396">Lähde</translation>
 <translation id="8347227221149377169">Tulostustyöt</translation>
 <translation id="8352772353338965963">Lisää tili useaan tiliin kirjautumiseen. Kaikkia tilejä, joihin on kirjauduttu sisään, voi käyttää ilman salasanaa. Käytä siis ominaisuutta vain luotetuilla tileillä.</translation>
 <translation id="8701136875688985581"><ph name="ENROLLMENT_DOMAIN" /> on tämän käyttäjän ylläpitäjä. Se voi muuttaa asetuksia ja seurata käyttäjän toimia etänä.</translation>

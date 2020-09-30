@@ -47,6 +47,7 @@
 <translation id="2187243482123994665">Kehadiran pengguna</translation>
 <translation id="2212565012507486665">Izinkan cookie</translation>
 <translation id="2228071138934252756">Untuk mengizinkan <ph name="APP_NAME" /> mengakses kamera Anda, aktifkan juga kamera di <ph name="BEGIN_LINK" />Setelan Android<ph name="END_LINK" />.</translation>
+<translation id="2241634353105152135">Sekali ini saja</translation>
 <translation id="2289270750774289114">Tanyakan saat situs ingin menemukan perangkat Bluetooth di sekitar (direkomendasikan)</translation>
 <translation id="2315043854645842844">Pilihan sertifikat sisi klien tidak didukung oleh sistem operasi.</translation>
 <translation id="2359808026110333948">Lanjutkan</translation>
@@ -124,6 +125,7 @@
 <translation id="4570913071927164677">Detail</translation>
 <translation id="4645575059429386691">Dikelola oleh orang tua Anda</translation>
 <translation id="4670064810192446073">Virtual reality</translation>
+<translation id="4708011789095599544">Yakin ingin menghapus cookie dan data situs lainnya untuk situs ini?</translation>
 <translation id="4751476147751820511">Sensor gerakan atau cahaya</translation>
 <translation id="4883854917563148705">Setelan yang dikelola tidak dapat direset</translation>
 <translation id="4887024562049524730">Tanyakan sebelum mengizinkan situs untuk menggunakan perangkat dan data virtual reality Anda (direkomendasikan)</translation>
@@ -229,6 +231,7 @@
 <translation id="7423538860840206698">Diblokir agar tidak membaca papan klip</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7554752735887601236">Situs menggunakan mikrofon Anda</translation>
+<translation id="7561196759112975576">Selalu</translation>
 <translation id="7572498721684305250">Blokir situs agar tidak mengirim dan menerima info saat Anda mengetuk perangkat NFC</translation>
 <translation id="757524316907819857">Blokir situs agar tidak memutar konten yang dilindungi</translation>
 <translation id="7589445247086920869">Blokir mesin telusur saat ini</translation>

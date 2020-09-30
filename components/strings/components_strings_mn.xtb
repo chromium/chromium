@@ -108,6 +108,7 @@
 <translation id="1348779747280417563">Нэрийг баталгаажуулах</translation>
 <translation id="1357195169723583938">Энэ төхөөрөмжийг саяхан хэн, хэзээ ашигласан бэ?</translation>
 <translation id="1360955481084547712">Нууцлалтайгаар үзэхийн тулд Нууцлалтай цонх шинээр нээгээрэй</translation>
+<translation id="1363819917331173092"><ph name="SOURCE_LANGUAGE" /> хэлээр буй хуудаснуудыг орчуулахыг бүү санал болго</translation>
 <translation id="1364822246244961190">Энэ удирдамжийг хориглосон тул үүний утгыг үл хэрэгсэнэ.</translation>
 <translation id="1374468813861204354">Зөвлөмж</translation>
 <translation id="1374692235857187091">Индекс-4x6 (Ил захидал)</translation>
@@ -233,6 +234,7 @@
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, олон үйлдэл хийх боломжтой, үйлдэл хооронд шилжихийн тулд Таб дээр дарна уу</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1803264062614276815">Карт эзэмшигчийн нэр</translation>
+<translation id="1807246157184219062">Гэрэлтүүлэг</translation>
 <translation id="1807528111851433570">Эхлэлийн хүснэгт</translation>
 <translation id="1821930232296380041">Хүчин төгөлдөр бус хүсэлт болон хүсэлтийн параметрууд</translation>
 <translation id="1822540298136254167">Таны зочилсон вэб сайтууд болон тэдгээрт зарцуулсан хугацаа</translation>
@@ -289,6 +291,7 @@
 <translation id="2099652385553570808">Зүүн ирмэг дагуу гурван удаа үдэх</translation>
 <translation id="2101225219012730419">Хувилбар:</translation>
 <translation id="2102134110707549001">Хүчтэй нууц үг санал болгох...</translation>
+<translation id="2102495993840063010">Андройд апп</translation>
 <translation id="2107021941795971877">Хэвлэлийн дэмжлэг</translation>
 <translation id="2108755909498034140">Компьютероо дахин эхлүүлэх</translation>
 <translation id="2111256659903765347">Супер-A</translation>
@@ -367,6 +370,7 @@
 <translation id="2396249848217231973">Устгах үйлдлийг буцаах</translation>
 <translation id="2410754574180102685">Government-Legal</translation>
 <translation id="2413528052993050574">Энэ сервер нь <ph name="DOMAIN" />-аа баталж чадсангүй; хамгаалалтын сертификат хүчингүй болсон байж болзошгүй. Энэ нь тохиргоо буруу хийгдсэнээс эсвэл халдагч таны холболтон саад учруулж байж болох юм.</translation>
+<translation id="2414886740292270097">Хар</translation>
 <translation id="2438874542388153331">Баруун ирмэг дагуу дөрвөн нүх цоолох</translation>
 <translation id="245044156129055925">Та дөнгөж сая сэжигтэй сайтад нууц үгээ орууллаа. Нууц үгээ өөрчлөхийг Chromium зөвлөж байна.</translation>
 <translation id="2463739503403862330">Бөглөх</translation>
@@ -445,6 +449,7 @@
 <translation id="2738330467931008676">Авах хаяг сонгох</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2742870351467570537">Сонгосон зүйлсийг устга</translation>
+<translation id="2765217105034171413">Жижиг</translation>
 <translation id="277133753123645258">Хүргэлтийн арга</translation>
 <translation id="277499241957683684">Орхигдсон төхөөрөмж нь бичлэг</translation>
 <translation id="2775884851269838147">Эхний хуудсыг хэвлэх</translation>
@@ -499,6 +504,7 @@
 <translation id="2996674880327704673">Google-н зөвлөмж</translation>
 <translation id="3002501248619246229">Оролтын цаасны медиаг хянах</translation>
 <translation id="3005723025932146533">Хадгалагдсан хуулбарыг харуулах</translation>
+<translation id="3007719053326478567">Таны администратор энэ контентыг хэвлэхийг блоклосон</translation>
 <translation id="3008447029300691911"><ph name="CREDIT_CARD" />-н карт баталгаажуулалтын кодыг оруулна уу. Баталгаажуулсны дараагаар таны картын дэлгэрэнгүйг энэ сайтад хуваалцах болно.</translation>
 <translation id="3010559122411665027">Оруулалтын жагсаалт "<ph name="ENTRY_INDEX" />": <ph name="ERROR" /></translation>
 <translation id="301521992641321250">Автоматаар блок хийсэн</translation>
@@ -739,6 +745,7 @@
 <translation id="4014128326099193693">{COUNT,plural, =1{{COUNT} хуудастай PDF форматтай документ}other{{COUNT} хуудастай PDF форматтай документ}}</translation>
 <translation id="4030383055268325496">&amp; Нэмэх үйлдлийг буцаах</translation>
 <translation id="4032320456957708163">Таны хөтчийг <ph name="ENROLLMENT_DOMAIN" />-с удирдаж байна</translation>
+<translation id="4056223980640387499">Сепиа</translation>
 <translation id="4058922952496707368">Түлхүүр "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (Дугтуй)</translation>
 <translation id="4067947977115446013">Хүчинтэй хаяг нэмэх</translation>
@@ -779,6 +786,7 @@
 <translation id="4194250254487269611">Таны картыг яг одоо хадгалах боломжгүй байна</translation>
 <translation id="4196861286325780578">&amp; Зөөвөрлөх үйлдлийг дахин хийх</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Галт хана болон вирусын эсрэг оновчилгоог шалгаж байна<ph name="END_LINK" /></translation>
+<translation id="4209092469652827314">Том</translation>
 <translation id="4209166701302774460">Таны очих гэж буй <ph name="ORIGIN" /> сервер нь үндсэн удирдамжийг бүх хүсэлтдээ хэрэгжүүлэх
     хүсэлт тавьсан байна. Гэсэн хэдий ч, энэ нь
     <ph name="SITE" />-д зочлох таны хүсэлтийг гүйцэтгэхэд хөтчид саад болох
@@ -1506,7 +1514,6 @@
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> нь аюулгүй байдлын стандартыг дагахгүй байна.</translation>
 <translation id="7210993021468939304">Контейнер дахь Linux-н үйл ажиллагаа болон Linux аппуудыг контейнерт суулгах болон ажиллуулах боломжтой</translation>
 <translation id="721197778055552897">Үүссэн асуудлын талаарх <ph name="BEGIN_LINK" />дэлгэрэнгүй<ph name="END_LINK" /> мэдээллийг эндээс авна уу.</translation>
-<translation id="7214062855724067749">Компьютерт тань суусан фонтыг ашигласнаар та дэвшилтэт түвшний хэвлэл үүсгэх боломжтой болно</translation>
 <translation id="7217745192097460130">Худалдан авалтаа баталгаажуулж, дуусгахын тулд Touch ID-г ашиглах уу?</translation>
 <translation id="7219179957768738017">Холболт нь <ph name="SSL_VERSION" />-ыг ашигладаг.</translation>
 <translation id="7220786058474068424">Боловсруулж байна</translation>
@@ -1786,6 +1793,7 @@
 <translation id="8267698848189296333"><ph name="USERNAME" />-р нэвтэрч байна</translation>
 <translation id="8269242089528251720">Тусдаа документ/Зэрэгцүүлсэн хувь</translation>
 <translation id="8269981117540303696">Ta одоо хувийн хайлт хийх боломжтой бөгөөд энэ төхөөрөмжийг ашигладаг бусад хүн таны ажиллагааг харахгүй. Гэсэн хэдий ч татаж авсан файл болон хавчуургыг хадгалах болно.</translation>
+<translation id="8275952078857499577">Энэ сайтыг орчуулахыг бүү санал болго</translation>
 <translation id="8277900682056760511">Төлбөр хариуцагчийн хүснэгт нээлттэй байна</translation>
 <translation id="8281084378435768645">Том-Зураг</translation>
 <translation id="8282947398454257691">Төхөөрөмжийнхөө тусгай дугаарыг мэдэж аваарай</translation>

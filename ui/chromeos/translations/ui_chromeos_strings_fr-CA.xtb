@@ -112,7 +112,6 @@
 <translation id="2163152940313951844">Caractère incorrect : <ph name="CHARACTER_NAME" /></translation>
 <translation id="2164862903024139959">Clavier vietnamien (TCVN)</translation>
 <translation id="2168214441502403371">Clavier perse</translation>
-<translation id="2197363559908958454"><ph name="NUMBER_OF_ITEMS" /> éléments déplacés.</translation>
 <translation id="2198315389084035571">Chinois simplifié</translation>
 <translation id="2208158072373999562">Archive ZIP</translation>
 <translation id="2225536596944493418">Voulez-vous vraiment supprimer <ph name="NUMBER_OF_ITEMS" /> éléments?</translation>
@@ -761,7 +760,6 @@
 <translation id="943972244133411984">Modifié par</translation>
 <translation id="945522503751344254">Envoyer un commentaire à Google</translation>
 <translation id="947144732524271678">Vous avez sélectionné une plage de <ph name="ENTRY_COUNT" /> entrées, de <ph name="FROM_ENTRY_NAME" /> à <ph name="TO_ENTRY_NAME" />.</translation>
-<translation id="949308258121608615"><ph name="NUMBER_OF_ITEMS" /> éléments copiés.</translation>
 <translation id="981121421437150478">Hors ligne</translation>
 <translation id="988685240266037636">Un fichier nommé « <ph name="FILE_NAME" /> » existe déjà. Voulez-vous le remplacer?</translation>
 <translation id="996903396648773764"><ph name="NUMBER_OF_MB" /> Mo</translation>

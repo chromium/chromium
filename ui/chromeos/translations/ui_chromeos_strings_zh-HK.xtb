@@ -30,6 +30,7 @@
 <translation id="1208421848177517699">音譯 (namaste → નમસ્તે)</translation>
 <translation id="1243314992276662751">上載</translation>
 <translation id="1249250836236328755">類型</translation>
+<translation id="1276362640455948667">葡萄牙文，美國國際鍵盤</translation>
 <translation id="1278813325885878377">匈牙利文 QWERTY 鍵盤</translation>
 <translation id="1293556467332435079">檔案</translation>
 <translation id="1297922636971898492">「Google 雲端硬碟」目前無法提供服務。一旦「Google 雲端硬碟」恢復正常，上載操作將會自動重新啟動。</translation>
@@ -112,13 +113,14 @@
 <translation id="2163152940313951844">無效的字元：<ph name="CHARACTER_NAME" /></translation>
 <translation id="2164862903024139959">越南文鍵盤 (TCVN)</translation>
 <translation id="2168214441502403371">波斯文鍵盤</translation>
-<translation id="2197363559908958454">已移動 <ph name="NUMBER_OF_ITEMS" />。</translation>
 <translation id="2198315389084035571">簡體中文</translation>
 <translation id="2208158072373999562">Zip 封存檔案</translation>
 <translation id="2225536596944493418">您確定要刪除<ph name="NUMBER_OF_ITEMS" /> 個項目嗎？</translation>
 <translation id="2230062665678605299">無法建立資料夾「<ph name="FOLDER_NAME" />」。<ph name="ERROR_MESSAGE" /></translation>
+<translation id="2270413998793223379">梵文</translation>
 <translation id="2275059641601412272">已移動。</translation>
 <translation id="2278988676849463018">坎那達文鍵盤 (拼音)</translation>
+<translation id="2287742181953707290">葡萄牙文，美國國際 (PC) 鍵盤</translation>
 <translation id="2288278176040912387">唱機</translation>
 <translation id="2291538123825441971">開緊 <ph name="NUMBER_OF_FILES" /> 個檔案。</translation>
 <translation id="2303301624314357662">開緊「<ph name="FILE_NAME" />」。</translation>
@@ -222,6 +224,7 @@
 <translation id="3473378059788601120">已複製到「<ph name="FOLDER_NAME" />」。</translation>
 <translation id="3475447146579922140">Google 試算表</translation>
 <translation id="3495304270784461826">發生 <ph name="COUNT" /> 個錯誤。</translation>
+<translation id="349603508045926994">波斯文 (音譯)</translation>
 <translation id="3519867315646775981">音譯 (shalom ← שלום)</translation>
 <translation id="3522708245912499433">葡萄牙文</translation>
 <translation id="3524311639100184459">注意：系統可能會自動刪除這些暫存檔案，以釋放磁碟空間。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
@@ -293,6 +296,7 @@
 <translation id="4298972503445160211">丹麥文鍵盤</translation>
 <translation id="4299729908419173967">巴西文</translation>
 <translation id="4309915981827077375">一般資料</translation>
+<translation id="4315949787858895817">荷蘭文 (比利時)</translation>
 <translation id="4326192123064055915">咖啡</translation>
 <translation id="4336032328163998280">複製操作失敗。<ph name="ERROR_MESSAGE" /></translation>
 <translation id="4364327530094270451">蜜瓜</translation>
@@ -339,6 +343,7 @@
 <translation id="4804827417948292437">牛油果</translation>
 <translation id="4823651846660089135">裝置處於唯讀模式</translation>
 <translation id="4839847978919684242">已選取 <ph name="SELCTED_FILES_COUNT" /> 個項目</translation>
+<translation id="4849981557599196363">德文 (比利時)</translation>
 <translation id="4850886885716139402">檢視</translation>
 <translation id="485316830061041779">德文</translation>
 <translation id="4867079195717347957">按一下即可遞減排序欄位。</translation>
@@ -402,6 +407,7 @@
     方便共用、建立內容並與他人協同合作。<ph name="MARKUP_9" /></translation>
 <translation id="5274350207900771082">已複製。</translation>
 <translation id="5275973617553375938">從 Google 雲端硬碟復原檔案</translation>
+<translation id="5283140566205748520">法文 (比利時)</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">儲存</translation>
 <translation id="5318819489018851358">與 Linux 分享</translation>
@@ -688,6 +694,7 @@
 <translation id="8329978297633540474">純文字</translation>
 <translation id="8335587457941836791">從檔案櫃中取消固定</translation>
 <translation id="8336153091935557858">昨天<ph name="YESTERDAY_DAYTIME" /></translation>
+<translation id="8336524887811696057">尼泊爾文 (音譯)</translation>
 <translation id="8336579025507394412">冰島文鍵盤配置</translation>
 <translation id="8342318071240498787">已存在名稱相同的檔案或目錄。</translation>
 <translation id="8382450452152102026">移至：<ph name="FOLDER_NAME" /></translation>
@@ -713,12 +720,14 @@
 <translation id="8600173386174225982">檔案清單改咗做縮圖檢視模式。</translation>
 <translation id="8601932370724196034">Crostini 圖像檔案</translation>
 <translation id="8669949407341943408">正在移動…</translation>
+<translation id="8694836330346852143">烏都文</translation>
 <translation id="8698464937041809063">Google 繪圖</translation>
 <translation id="8714406895390098252">單車</translation>
 <translation id="8719721339511222681">揀咗 <ph name="ENTRY_NAME" />。</translation>
 <translation id="8722421161699219904">美式國際鍵盤</translation>
 <translation id="872537912056138402">克羅地亞文</translation>
 <translation id="874420130893181774">拼音輸入法 (繁體中文)</translation>
+<translation id="8770002329960263418">荷蘭文 (荷蘭)，美國國際 (PC) 鍵盤</translation>
 <translation id="8775404590947523323">您的編輯已自動儲存。<ph name="BREAKS" />如要保留原始圖片複本，請取消勾選 [覆寫原始檔案]</translation>
 <translation id="8803496343472038847">俄文拼音鍵盤</translation>
 <translation id="8808686172382650546">Cat</translation>
@@ -760,7 +769,6 @@
 <translation id="943972244133411984">修改者</translation>
 <translation id="945522503751344254">提供意見反映</translation>
 <translation id="947144732524271678">揀咗 <ph name="FROM_ENTRY_NAME" /> 至 <ph name="TO_ENTRY_NAME" /> 範圍入面嘅 <ph name="ENTRY_COUNT" /> 個項目。</translation>
-<translation id="949308258121608615">已複製 <ph name="NUMBER_OF_ITEMS" />。</translation>
 <translation id="981121421437150478">離線</translation>
 <translation id="988685240266037636">名稱為「<ph name="FILE_NAME" />」的檔案已經存在。您要取代此檔案嗎？</translation>
 <translation id="996903396648773764"><ph name="NUMBER_OF_MB" /> MB</translation>

@@ -30,6 +30,7 @@
 <translation id="1208421848177517699">အက္ခရာဖလှယ်မှု (namaste → નમસ્તે)</translation>
 <translation id="1243314992276662751">အာပ်လုဒ် လုပ်ရန်</translation>
 <translation id="1249250836236328755">သီချင်းအမျိုးအစား</translation>
+<translation id="1276362640455948667">ယူအက်စ်နိုင်ငံတကာ လက်ကွက်ဖြင့် ပေါ်တူဂီ</translation>
 <translation id="1278813325885878377">ဟန်ဂေရီ QWERTY ကီးဘုတ်</translation>
 <translation id="1293556467332435079">ဖိုင်များ</translation>
 <translation id="1297922636971898492">Google Drive ယခုမရသေးပါ။ Google Drive ပြန်လာသည်နှင့် တင်ခြင်း အလိုအလျောက် ပြန်စပါမည်။</translation>
@@ -112,13 +113,14 @@
 <translation id="2163152940313951844">အက္ခရာ မမှန်ကန်ပါ- <ph name="CHARACTER_NAME" /></translation>
 <translation id="2164862903024139959">ဗီယက်နမ် ကီးဘုတ် (TCVN)</translation>
 <translation id="2168214441502403371">ပါရှား ကီးဘုတ်</translation>
-<translation id="2197363559908958454"><ph name="NUMBER_OF_ITEMS" /> ခု ရွှေ့ထားသည်။</translation>
 <translation id="2198315389084035571">ရိုးရှင်း တရုတ်</translation>
 <translation id="2208158072373999562">Zip မှတ်တမ်း</translation>
 <translation id="2225536596944493418">အကြောင်းအရာ <ph name="NUMBER_OF_ITEMS" />ခုကို ဖျက်လိုသည်မှာ သေချာသလား။</translation>
 <translation id="2230062665678605299">ဖိုလ်ဒါ  "<ph name="FOLDER_NAME" />"ကို ဖန်တီး မရခဲ့ပါ။ <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2270413998793223379">သင်္သကရိုက်</translation>
 <translation id="2275059641601412272">ရွှေ့ထားသည်။</translation>
 <translation id="2278988676849463018">ကန္နာဒါ ကီးဘုတ်(Phonetic)</translation>
+<translation id="2287742181953707290">ယူအက်စ်နိုင်ငံတကာ ပီစီလက်ကွက်ဖြင့် ပေါ်တူဂီ</translation>
 <translation id="2288278176040912387">ကစားသူ မှတ်တမ်းတင်</translation>
 <translation id="2291538123825441971">ဖိုင် <ph name="NUMBER_OF_FILES" /> ခု ဖွင့်နေသည်။</translation>
 <translation id="2303301624314357662"><ph name="FILE_NAME" />ဖိုင် ကို ဖွင့်နေသည်။</translation>
@@ -222,6 +224,7 @@
 <translation id="3473378059788601120"><ph name="FOLDER_NAME" /> သို့ မိတ္တူကူးထားသည်။</translation>
 <translation id="3475447146579922140">Google spreadsheet</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> အမှားများ။</translation>
+<translation id="349603508045926994">ပါရှား အက္ခရာဖလှယ်ခြင်း</translation>
 <translation id="3519867315646775981">အက္ခရာဖလှယ်မှု (shalom ← שלום)</translation>
 <translation id="3522708245912499433">ပေါ်တူဂီ</translation>
 <translation id="3524311639100184459">သတိ- ဤဖိုင်များသည် ယာယီဖြစ်ပြီး ဒစ်ခ်နေရာလွတ်ပြုလုပ်ရန် အလိုအလျောက် ဖျက်နိုင်ပါသည်။  <ph name="BEGIN_LINK" />ပိုမိုလေ့လာရန်<ph name="END_LINK" /></translation>
@@ -293,6 +296,7 @@
 <translation id="4298972503445160211">ဒိန်းမတ် ကီးဘုတ်</translation>
 <translation id="4299729908419173967">ဘရာဇီးလ်</translation>
 <translation id="4309915981827077375">အထွေထွေ အချက်အလက်</translation>
+<translation id="4315949787858895817">ဒတ်ချ် (ဘယ်လ်ဂျီယံ)</translation>
 <translation id="4326192123064055915">ကော်ဖီ</translation>
 <translation id="4336032328163998280">ကူးယူရန် လုပ်ကိုင်မှု မအောင်မြင်ခဲ့ပါ။ <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4364327530094270451">ဖရဲသီး</translation>
@@ -339,6 +343,7 @@
 <translation id="4804827417948292437">ထောပတ်သီး</translation>
 <translation id="4823651846660089135">စက်ပစ္စည်းကို ဖတ်ခွင့်သာရှိသည်</translation>
 <translation id="4839847978919684242">အရာ <ph name="SELCTED_FILES_COUNT" />ခု ရွေးထား</translation>
+<translation id="4849981557599196363">ဂျာမန် (ဘယ်လ်ဂျီယမ်)</translation>
 <translation id="4850886885716139402">မြင်ကွင်း</translation>
 <translation id="485316830061041779">ဂျာမန်</translation>
 <translation id="4867079195717347957">ကော်လံကို ကြီးစဉ်ငယ်လိုက်စီရန် နှိပ်ပါ။</translation>
@@ -402,6 +407,7 @@
     တို့ကို တစ်နေရာတည်းတွင်လုပ်ဆောင်နိုင်သည်<ph name="MARKUP_9" /></translation>
 <translation id="5274350207900771082">မိတ္ထူကူးထားသည်။</translation>
 <translation id="5275973617553375938">Google Drive မှရှာဖွေထားသည့် ဖိုင်များ</translation>
+<translation id="5283140566205748520">ပြင်သစ် (ဘယ်လ်ဂျီယမ်)</translation>
 <translation id="5317780077021120954">သိမ်းရန်</translation>
 <translation id="5318819489018851358">Linux ဖြင့် မျှဝေရန်</translation>
 <translation id="5319782540886810524">လာတ်ဗီယား ကီးဘုတ်</translation>
@@ -687,6 +693,7 @@
 <translation id="8329978297633540474">ရိုးရိုး စာသား</translation>
 <translation id="8335587457941836791">စင် ပေါ်မှ ထုတ်ပစ်ရန်</translation>
 <translation id="8336153091935557858">မနေ့က <ph name="YESTERDAY_DAYTIME" /></translation>
+<translation id="8336524887811696057">နီပေါ အက္ခရာဖလှယ်ခြင်း</translation>
 <translation id="8336579025507394412">အိုက်စလန် ကီးဘုတ်</translation>
 <translation id="8342318071240498787">တူညီသည့် အမည်ဖြင့် ဖိုင်တစ်ဖိုင် သို့မဟုတ် လမ်းကြောင်းတစ်ခု ရှိပြီးဖြစ်သည်။</translation>
 <translation id="8382450452152102026"><ph name="FOLDER_NAME" /> သို့</translation>
@@ -712,12 +719,14 @@
 <translation id="8600173386174225982">ဖိုင်စာရင်းကို ပုံသေးမြင်ကွင်းအဖြစ် ပြောင်းထားသည်။</translation>
 <translation id="8601932370724196034">Crostini ပုံပါဝင်သော ဖိုင်</translation>
 <translation id="8669949407341943408">ရွှေ့ပေးနေ...</translation>
+<translation id="8694836330346852143">အူရဒူ</translation>
 <translation id="8698464937041809063">Google ရေးဆွဲခြင်း</translation>
 <translation id="8714406895390098252">စက်ဘီး</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> ကို ရွေးချယ်ထားသည်။</translation>
 <translation id="8722421161699219904">US နိုင်ငံတကာ ကီးဘုတ်</translation>
 <translation id="872537912056138402">ခရိုအေးရှန်း</translation>
 <translation id="874420130893181774">အစဉ်အလာ Pinyin ရိုက်သွင်းမှု နည်း</translation>
+<translation id="8770002329960263418">ယူအက်စ်နိုင်ငံတကာ ပီစီလက်ကွက်ဖြင့် ဒတ်ချ် (နယ်သာလန်)</translation>
 <translation id="8775404590947523323">သင်၏ တည်းဖြတ်မှုများကို အလိုလို သိမ်းဆည်းပေးသည်။ <ph name="BREAKS" />မူရင်း ပုံ၏ ကော်ပီကို ထားရှိရန်၊ "မူရင်းကို ဖျက်ရေးရန်"ကို ခြစ်ထားမှု ဖျက်ပေးပါ။</translation>
 <translation id="8803496343472038847">ရုရှား Phonetic ကီးဘုတ်</translation>
 <translation id="8808686172382650546">ကြောင်</translation>
@@ -759,7 +768,6 @@
 <translation id="943972244133411984">ပြုပြင်ထားသူ</translation>
 <translation id="945522503751344254">အကြံပြုချက် ပေးပို့မည်</translation>
 <translation id="947144732524271678"><ph name="FROM_ENTRY_NAME" /> မှ<ph name="TO_ENTRY_NAME" /> သို့ ထည့်သွင်းမှု အပိုင်းအခြား <ph name="ENTRY_COUNT" /> ခု ကို ရွေးထားသည်။</translation>
-<translation id="949308258121608615"><ph name="NUMBER_OF_ITEMS" /> ခု မိတ္တူကူးထားသည်။</translation>
 <translation id="981121421437150478">အော့ဖ်လိုင်း</translation>
 <translation id="988685240266037636">"<ph name="FILE_NAME" />" အမည်ဖြင့် ဖိုင်ရှိပြီးဖြစ်ပါသည်။ ၎င်းကို အစားထိုးလိုပါသလား။</translation>
 <translation id="996903396648773764"><ph name="NUMBER_OF_MB" /> MB</translation>

@@ -7,6 +7,7 @@
 <translation id="1124772482545689468">පරිශීලක</translation>
 <translation id="1178581264944972037">විරාමය</translation>
 <translation id="1181037720776840403">ඉවත් කරන්න</translation>
+<translation id="1195941046451948919">ඔබට මෙම වෙබ් අඩවිය සඳහා සියලු අවසර යළි සැකසීමට අවශ්‍ය බව විශ්වාසද?</translation>
 <translation id="1201402288615127009">ඊළඟ</translation>
 <translation id="1242008676835033345"><ph name="WEBSITE_URL" /> මත කාවද්දන්න</translation>
 <translation id="1272079795634619415">නවතන්න</translation>
@@ -47,6 +48,7 @@
 <translation id="2187243482123994665">පරිශීලකයාගේ සිටීම</translation>
 <translation id="2212565012507486665">කුකීවලට ඉඩ දෙන්න</translation>
 <translation id="2228071138934252756"><ph name="APP_NAME" /> හට ඔබේ කැමරාවට ප්‍රවේශ වීමට ඉඩ දීමට, <ph name="BEGIN_LINK" />Android සැකසීම්<ph name="END_LINK" /> තුළද කැමරාව ක්‍රියාත්මක කරන්න.</translation>
+<translation id="2241634353105152135">හුදෙක් එක් වරක්</translation>
 <translation id="2289270750774289114">වෙබ් අඩවියකට අවට බ්ලූටූත් උපාංග සොයා ගැනීමට අවශ්‍ය වූ විට අසන්න (නිර්දේශිතයි)</translation>
 <translation id="2315043854645842844">මෙහෙයුම් පද්ධතිය සේවාලාභී පැත්තේ සහතික තේරීමට සහාය නොදක්වයි.</translation>
 <translation id="2359808026110333948">කරගෙන යන්න</translation>
@@ -124,6 +126,7 @@
 <translation id="4570913071927164677">විස්තර</translation>
 <translation id="4645575059429386691">ඔබේ දෙමව්පියන් පාලනය කරයි</translation>
 <translation id="4670064810192446073">අතත්‍ය යථාර්ථය</translation>
+<translation id="4708011789095599544">මෙම වෙබ් අඩවිය සඳහා කුකි සහ වෙනත් අඩවි දත්ත ඉවත් කිරීමට ඔබට අවශ්‍ය බව ඔබට විශ්වාසද?</translation>
 <translation id="4751476147751820511">චලිත හෝ ආලෝක සංවේදක</translation>
 <translation id="4883854917563148705">කළමනා කෙරෙන සැකසීම් යළි සැකසිය නොහැක</translation>
 <translation id="4887024562049524730">වෙබ් අඩවිවලට ඔබේ අතත්‍ය යථාර්ථ උපාංගය සහ දත්ත භාවිත කිරීමට ඉඩ දීමට පෙර අසන්න (නිර්දේශිතයි)</translation>
@@ -229,6 +232,7 @@
 <translation id="7423538860840206698">පසුරු පුවරුව කියවීමෙන් අවහිරයි</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7554752735887601236">වෙබ් අඩවියක් ඔබේ මයික්‍රොෆෝනය භාවිත කරයි</translation>
+<translation id="7561196759112975576">සැමවිටම</translation>
 <translation id="7572498721684305250">ඔබ NFC උපාංග තට්ටු කරන විට වෙබ් අඩවිවලින් තොරතුරු යැවීම හෝ ලැබීම අවහිර කරන්න</translation>
 <translation id="757524316907819857">ආරක්ෂිත අන්තර්ගත වාදනය කරමින් තිබෙන අඩවි තහනම් කිරීම</translation>
 <translation id="7589445247086920869">වත්මන් සෙවුම් යන්ත්‍රය සඳහා අවහිර කරන්න</translation>

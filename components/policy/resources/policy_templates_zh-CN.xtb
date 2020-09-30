@@ -48,10 +48,6 @@
 
       如果此政策未设置，默认情况下，系统会对受企业管理的用户停用身份验证，并对不受管理的用户启用身份验证。</translation>
 <translation id="1040446814317236570">启用 PAC 网址剔除功能（适用于 https:// 类网址）</translation>
-<translation id="1044878202534415707">报告硬件统计数据，例如 CPU/RAM 使用情况。
-
-      如果此政策设为 false，系统将不会报告硬件统计数据。
-      如果此政策设为 true 或未设置，系统将报告硬件统计数据。</translation>
 <translation id="1046484220783400299">让已弃用的网络平台功能在限定的时间内发挥功效</translation>
 <translation id="1047128214168693844">不允许任何网站跟踪用户的地理位置</translation>
 <translation id="1049138910114524876">配置强制在 <ph name="PRODUCT_OS_NAME" />登录屏幕上使用的语言区域。
@@ -118,9 +114,6 @@
       应以毫秒为单位指定此政策的值。</translation>
 <translation id="1145702698069317184">禁止上传和下载不受支持的文件类型</translation>
 <translation id="1151353063931113432">在这些网站上允许图片</translation>
-<translation id="1152117524387175066">报告设备启动时的dev开关状态。
-
-      如果此政策设为False，则不报告dev开关的状态。</translation>
 <translation id="1160479894929412407">允许使用 QUIC 协议</translation>
 <translation id="1160939557934457296">禁止从安全浏览警告页面继续访问</translation>
 <translation id="1163080558183062209">禁用拒绝列表中的打印机类型</translation>
@@ -146,9 +139,6 @@
 <translation id="1197437816436565375">您无法强制 Android 应用使用代理。一小部分代理设置已可供 Android 应用使用，此类应用可能会主动选择使用这些设置。有关详情，请参阅 <ph name="PROXY_MODE_POLICY_NAME" /> 政策。</translation>
 <translation id="1198183996903759302">如果此政策设为 True（或者 <ph name="HARDWARE_ACCELERATION_MODE_ENABLED_POLICY_NAME" /> 设为 False），网页会无法访问 WebGL API，而且插件会无法使用 Pepper 3D API。
       如果此政策设为 False 或未设置，网页可以使用 WebGL API，而且插件可以使用 Pepper 3D API，但浏览器的默认设置可能仍然要求在使用这些 API 前先传递命令行参数。</translation>
-<translation id="1198465924256827162">发送设备状态上传内容的频率（以毫秒为单位）。
-
-      如果此政策未设置，默认频率为 3 小时。允许的最低频率为 60 秒。</translation>
 <translation id="1204263402976895730">已启用企业打印机</translation>
 <translation id="120937472976628837">报告风扇信息</translation>
 <translation id="1216919699175573511">启用 Signed HTTP Exchange (SXG) 支持</translation>
@@ -534,13 +524,6 @@
       如果此政策设为 False 或未设置，<ph name="PRODUCT_NAME" /> 不会在 <ph name="PRODUCT_NAME" /> 19 和更高版本中执行在线撤消检查。
 
       请注意：<ph name="OCSP_CRL_LABEL" /> 检查并不能有效增强安全性。</translation>
-<translation id="1906888171268104594">控制是否要将使用情况指标和诊断数据（包括崩溃报告）反馈给 Google。
-
-      如果此政策设为 true，<ph name="PRODUCT_OS_NAME" />将会报告使用情况指标和诊断数据。
-
-      如果此政策设为 false，指标和诊断数据报告功能便会被停用。
-
-      如果未配置此政策，指标和诊断数据报告功能将会在非托管设备上停用，但会在托管设备上启用。</translation>
 <translation id="1910704279188129272">让您能够设置应用级使用限制。
         使用限制可以针对给定用户应用于 <ph name="PRODUCT_OS_NAME" />上安装的应用。
         使用限制应在 |app_limits| 列表中传递。只能为每个应用添加 1 个限制条目。未包含在此列表中的应用没有任何限制。
@@ -948,10 +931,6 @@
       如果此政策处于启用状态，当 Chrome 清理功能检测到垃圾软件时，它可能会按照 SafeBrowsingExtendedReportingEnabled 设置的政策向 Google 报告与此项扫描相关的元数据。Chrome 清理功能会询问用户是否要清理垃圾软件。它会向 Google 报告清理结果，但不会为用户提供用于禁止向 Google 报告清理结果的选项。
 
       在 <ph name="MS_WIN_NAME" /> 上，此功能仅适用于已加入 <ph name="MS_AD_NAME" /> 网域的实例、在 Windows 10 专业版上运行的实例，或已注册 Chrome 浏览器云管理的实例。</translation>
-<translation id="2440773021691931148">报告与电源相关的硬件统计信息和标识符。
-
-      如果此政策设为 false 或未设置，系统将不会报告这些统计信息。
-      如果此政策设为 true，系统将会报告这些统计信息。</translation>
 <translation id="2454228136871844693">针对稳定性进行优化。</translation>
 <translation id="2463034609187171371">在 TLS 中启用 DHE 加密套件</translation>
 <translation id="2463365186486772703">应用语言区域</translation>
@@ -1879,9 +1858,6 @@
 <translation id="3838094946886335701">通过设置此政策（仅为建议性政策），您可以注册一个协议处理程序列表以与用户注册的协议处理程序列表合并，从而同时使用这两组协议处理程序。“protocol”属性应设为“mailto”之类的协议，“URL”属性应设为处理相应协议（“protocol”字段中指定的协议）的应用所采用的网址格式。该格式可以包含一个“%s”占位符（将会替换为被处理的网址）。
 
       用户无法卸载由政策注册的协议处理程序，但可通过安装新的默认处理程序来更改由政策安装的协议处理程序。</translation>
-<translation id="3851039766298741586">报告有关当前自助服务终端会话的信息，例如应用 ID 和版本。
-
-      如果此政策设为 false，则系统不会报告自助服务终端会话信息。如果此政策设为 true 或未设置，则系统会报告自助服务终端会话信息。</translation>
 <translation id="3858128774616573616">如果此政策已启用，系统会在工具栏或溢出菜单中显示 Cast 工具栏图标，而且用户无法移除该图标。
 
       如果此政策已停用或未设置，用户便可通过该图标的上下文菜单来固定或移除它。
@@ -1991,10 +1967,6 @@
           如果您设置了此政策，用户便无法更改或覆盖它。
 
           如果您未设置此政策，粘滞键在登录屏幕上最初会处于停用状态，但用户可随时启用它。</translation>
-<translation id="3939893074578116847">将网络数据包发送到管理服务器以监控联网状态，从而使得服务器能够判断设备有没有联网。
-
-      如果此政策设为 true，系统将发送监控网络数据包（所谓的“<ph name="HEARTBEATS_TERM" />”）。
-      如果此政策设为 false 或未设置，系统将不会发送任何网络数据包。</translation>
 <translation id="3942041691320538491">如果此政策设为 0（默认值），您可以访问开发者工具和 JavaScript 控制台，但无法在由企业政策安装的扩展程序中访问。如果此政策设为 1，无论在什么情境下（包括在由企业政策安装的扩展程序中），您都可以访问开发者工具和 JavaScript 控制台。如果此政策设为 2，您既无法访问开发者工具，也无法检查网站元素。
 
       此设置还可关闭用于打开开发者工具或 JavaScript 控制台的键盘快捷键及菜单（或上下文菜单）条目。</translation>
@@ -2012,10 +1984,6 @@
 
       如果设备壁纸政策未设置，则由用户的壁纸政策（如果已设置用户的壁纸政策）来决定要显示的图片。</translation>
 <translation id="3964298692570794635">允许在这些网站上显示不安全内容</translation>
-<translation id="3964606652985594895">报告存储设备的硬件统计信息和标识符。
-
-      如果此政策设为 false 或未设置，系统将不会报告这些统计信息。
-      如果此政策设为 true，系统将会报告这些统计信息。</translation>
 <translation id="3965339130942650562">对待机用户执行退出操作前的超时时间</translation>
 <translation id="3973371701361892765">一律不自动隐藏任务栏</translation>
 <translation id="3979738908158213640">有权在 SAML 身份验证过程中执行设备认证的网址</translation>
@@ -2533,10 +2501,6 @@
 <translation id="4816674326202173458">允许企业用户以主用户或次要用户的身份登录多个人资料会话（非托管用户的默认行为）</translation>
 <translation id="4826326557828204741">当闲置延迟时间已过且使用电池供电时应执行的操作</translation>
 <translation id="482803100714220060">显示完整网址</translation>
-<translation id="4830531683854509779">报告 SoC 组件的硬件统计信息。
-
-      如果此政策设为 false 或未设置，系统将不会报告这些统计信息。
-      如果此政策设为 true，系统将会报告这些统计信息。</translation>
 <translation id="4832852360828533362">用户和设备报告</translation>
 <translation id="4834526953114077364">删除最近3个月内未登录且使用最少的用户，直到有足够的可用空间</translation>
 <translation id="4835470005923546373">默认停用背景图片打印模式</translation>
@@ -2726,9 +2690,6 @@
       从 <ph name="PRODUCT_NAME" /> 73 版开始，您可以屏蔽 javascript://* 网址。不过，这仅会影响在地址栏（或小书签等）中输入的 JavaScript 网址。凡是能动态加载数据的页内 JavaScript 网址都不会受此政策影响。例如，即使您屏蔽了 example.com/abc，example.com 仍可以使用 XMLHTTPRequest 加载 example.com/abc。
 
       注意：屏蔽内部 chrome://* 网址可能会导致意外的错误。</translation>
-<translation id="5159469559091666409">发送监控网络数据包的频率（以毫秒为单位）。
-
-      如果此政策未设置，则默认间隔为 3 分钟。系统所允许的最短间隔为 30 秒，最长间隔为 24 小时（低于 30 秒的值将被视为 30 秒，高于 24 小时的值将被视为 24 小时）。</translation>
 <translation id="5163002264923337812">启用旧的网页版登录流程</translation>
 <translation id="516520353995300280">如果您设置了此政策，对于附带指定 <ph name="SUBJECT_PUBLIC_KEY_INFO" /> 哈希的证书链所对应的一系列旧版证书授权机构 (CA)，系统将不会强制执行证书透明度披露要求。因没有恰当公开披露相关信息而不受信任的证书，企业主机也可以继续使用。但是，被识别为旧版 CA 的 CA 证书中必须包含 <ph name="SUBJECT_PUBLIC_KEY_INFO" /> 哈希，才能关闭强制执行。旧版 CA 是受 <ph name="PRODUCT_NAME" /> 所支持的一种或多种操作系统公开信任但不受 Android 开源项目或 <ph name="PRODUCT_OS_NAME" />信任的 CA。
 
@@ -2923,12 +2884,6 @@
           管理员需负责在他们关注的所有平台中设置相应政策。建议在所有平台中将此政策设为同一个值。</translation>
 <translation id="5390083518957894426">启用在锁定屏幕上在线重新验证 SAML 用户的身份</translation>
 <translation id="5391388690191341203">用于自动登录的设备本地帐号</translation>
-<translation id="5392172595902933844">系统会将有关 Android 状态的信息发送回服务器。
-
-      如果此政策设为 false 或未设置，系统便不会报告状态信息。
-      如果此政策设为 true，系统则会报告状态信息。
-
-      仅当 Android 应用处于已启用状态时，此政策才适用。</translation>
 <translation id="5393009997533871906">仅向用户显示许可名单中的打印机</translation>
 <translation id="5395271912574071439">在进行连接时启用远程访问主机的屏蔽设置。
 
@@ -3151,15 +3106,6 @@
 
           如果您启用了此政策或未设置此政策，用户将可以在密码管理器中查看以明文形式显示的密码。</translation>
 <translation id="5620392548325769024">在操作系统升级后，允许该浏览器首次启动时显示欢迎页面</translation>
-<translation id="5622775268870572080">控制是否在 <ph name="PRODUCT_NAME" /> 中使用内置 DNS 客户端。
-
-      此政策不会影响使用的 DNS 服务器，只会影响与相应服务器通信时使用的软件堆栈。例如，如果操作系统已配置为使用一台企业 DNS 服务器，那么内置 DNS 客户端也会使用这台服务器。不过，内置 DNS 客户端可能会使用更新型的 DNS 相关协议（例如 DNS-over-TLS），以不同的方式对各台服务器进行寻址。
-
-      如果此政策设为 True，系统将会使用内置 DNS 客户端（如果可用）。
-
-      如果此政策设为 False，系统将一律不会使用内置 DNS 客户端。
-
-      如果此政策未设置，那么在 macOS、Android（当专用 DNS 和 VPN 均未启用时）和 ChromeOS 中，内置 DNS 客户端将会默认处于启用状态，而且用户将能够通过修改 chrome://flags 或指定命令行标记来更改是否使用内置 DNS 客户端。</translation>
 <translation id="5628811596950455942">此政策旨在以列表形式控制用户可配置和使用哪些快速解锁模式来解锁屏幕。
 
           此政策的值是一个字符串列表；有效的列表项包括“all”、“PIN”和“FINGERPRINT”。如果您向该列表中添加“all”，用户将能够使用所有快速解锁模式（包括日后会实施的那些模式）。如果您未向该列表中添加“all”，用户将仅能使用该列表中指定的快速解锁模式。
@@ -3520,9 +3466,6 @@
       如果您停用了或未配置此设置，密码保护服务将仅在 https://accounts.google.com 上捕获密码的加盐哈希值。
 
       在 <ph name="MS_WIN_NAME" /> 上，此功能仅适用于已加入 <ph name="MS_AD_NAME" /> 网域的实例、在 Windows 10 专业版上运行的实例，或已注册 <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />的实例。在 <ph name="MAC_OS_NAME" /> 上，此功能仅适用于通过 MDM 进行管理或通过 MCX 加入网域的实例。</translation>
-<translation id="6211428344788340116">报告设备活动时间。
-
-      如果此政策未设置或设为True，已注册的设备将报告用户在设备上处于活跃状态的时间段。如果此政策设为False，则不记录或报告设备活动时间。</translation>
 <translation id="6212868225782276239">系统会显示除黑名单中所列打印机之外的所有打印机。</translation>
 <translation id="6220835555850906733">如果此政策已启用或未设置，用户将能在其设备上使用所有受支持的音频输出。
 
@@ -3650,9 +3593,6 @@
 <translation id="6378393933102834628">如果此政策设为 True，系统会显示应用快捷方式。如果此政策设为 False，系统一律不会显示此类快捷方式。
 
       如果您设置了此政策，用户便无法更改它。如果您不设置此政策，用户可从书签栏上下文菜单中选择显示/隐藏应用快捷方式。</translation>
-<translation id="637934607141010488">报告最近登录过的设备用户列表。
-
-      如果此政策设为False，则不报告这些用户。</translation>
 <translation id="638668187106406971">检查上传内容是否违反敏感数据保护规则</translation>
 <translation id="6394350458541421998">此政策从 <ph name="PRODUCT_OS_NAME" />版本 29 起开始弃用。请改用 PresentationScreenDimDelayScale 政策。</translation>
 <translation id="6401669939808766804">使用户退出</translation>
@@ -4482,9 +4422,6 @@
 <translation id="7477231245051133709">启用“单声道音频”无障碍功能</translation>
 <translation id="7477239290070847560">基于 Zeroconf (mDNS + DNS-SD) 的协议目的地</translation>
 <translation id="7485481791539008776">默认打印机选择规则</translation>
-<translation id="749556411189861380">报告已注册的设备使用的操作系统和固件版本。
-
-      如果此政策未设置或设为True，已注册的设备将定期报告操作系统和固件版本。如果此政策设为False，则不报告版本信息。</translation>
 <translation id="7504111874944876852">配置打印机列表。
 
       此政策让管理员能够为用户提供打印机配置。
@@ -4906,9 +4843,6 @@
 <translation id="8133152694354699657">如果此政策设为 True 或未设置，用户将能够使用“触摸搜索”功能，并能够开启或关闭该功能。
 
       如果此政策设为 False，系统会彻底关闭“触摸搜索”功能。</translation>
-<translation id="8140204717286305802">向服务器报告网络接口列表（其中包括网络接口的类型和硬件地址）。
-
-      如果此政策设为False，则不报告接口列表。</translation>
 <translation id="8141795997560411818">此政策不会阻止用户使用 Android 版“Google 云端硬盘”应用。如果您想阻止对 Google 云端硬盘的访问，则也应禁止安装 Android 版“Google 云端硬盘”应用。</translation>
 <translation id="8142894094385450823">为受管理自助服务终端设置建议的语言区域</translation>
 <translation id="8146727383888924340">允许用户通过注册 Chrome 操作系统来兑换优惠</translation>
@@ -5656,9 +5590,6 @@
 <translation id="913195841488580904">阻止访问网址列表</translation>
 <translation id="9135033364005346124">启用“<ph name="CLOUD_PRINT_NAME" />”代理</translation>
 <translation id="9136399279941091445">发布指定设备政策后的非工作时间的间隔</translation>
-<translation id="9147029539363974059">将系统日志发送到管理服务器，以便管理员监测系统日志。
-
-      如果此政策设为 true，将发送系统日志。如果此政策设为 false 或未设置，将不发送任何系统日志。</translation>
 <translation id="9150416707757015439">此政策已弃用，请改用 IncognitoModeAvailability。在 <ph name="PRODUCT_NAME" />中启用隐身模式。如果已启用或未配置此设置，用户就可以在隐身模式下打开网页。如果停用此设置，用户就无法在隐身模式下打开网页。如果未设置此政策，将会启用此设置，用户便能使用隐身模式。</translation>
 <translation id="915194831143859291">如果此政策设为 false 或未配置，<ph name="PRODUCT_OS_NAME" />将允许用户关闭设备。
       如果此政策设为 true，<ph name="PRODUCT_OS_NAME" />会在用户关闭设备时触发重新启动操作。<ph name="PRODUCT_OS_NAME" />会将界面中的所有关机按钮替换为重新启动按钮。如果用户通过电源按钮关闭设备，设备将不会自动重新启动，即使启用了此政策也是如此。</translation>

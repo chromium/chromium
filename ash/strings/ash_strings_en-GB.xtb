@@ -113,6 +113,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2049240716062114887">Desk name was changed to <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Portrait</translation>
 <translation id="2067602449040652523">Keyboard brightness</translation>
+<translation id="2074759828767813253">Recent screenshots and downloads</translation>
 <translation id="2083190527011054446">Good night <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">Not connected to network</translation>
 <translation id="2126242104232412123">New desk</translation>
@@ -251,6 +252,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="3430396595145920809">Swipe from the right to go back</translation>
 <translation id="343571671045587506">Edit reminder</translation>
 <translation id="3435967511775410570">Fingerprint recognised</translation>
+<translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">USB-C device</translation>
 <translation id="3454224730401036106">Your connection has switched to a more secure network</translation>
 <translation id="3465223694362104965">Another keyboard has connected to this device since you last signed in. Make sure that you trust this keyboard before you use it.</translation>
@@ -454,6 +456,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="5691772641933328258">Fingerprint not recognised</translation>
 <translation id="5710450975648804523">Do Not Disturb is on</translation>
 <translation id="573413375004481890">This device couldn't support all of your displays, so one has been disconnected</translation>
+<translation id="5740328398383587084">Nearby Share</translation>
 <translation id="574392208103952083">Medium</translation>
 <translation id="5744083938413354016">Tap dragging</translation>
 <translation id="5745612484876805746">Night Light turns on automatically at sunset</translation>

@@ -47,6 +47,7 @@
 <translation id="2187243482123994665">استخدام الجهاز</translation>
 <translation id="2212565012507486665">السماح بملفات تعريف الارتباط</translation>
 <translation id="2228071138934252756">‏للسماح لتطبيق <ph name="APP_NAME" /> بالوصول إلى الكاميرا، يُرجى أيضًا تفعيل الكاميرا في <ph name="BEGIN_LINK" />إعدادات Android<ph name="END_LINK" />.</translation>
+<translation id="2241634353105152135">مرة واحدة فقط</translation>
 <translation id="2289270750774289114">طلب الإذن عند محاولة موقع إلكتروني العثور على أجهزة البلوتوث المجاورة (إجراء موصَى به)</translation>
 <translation id="2315043854645842844">لا يدعم نظام التشغيل تحديد الشهادة من جانب العميل.</translation>
 <translation id="2359808026110333948">متابعة</translation>
@@ -124,6 +125,7 @@
 <translation id="4570913071927164677">التفاصيل</translation>
 <translation id="4645575059429386691">يديره والداك</translation>
 <translation id="4670064810192446073">الواقع الافتراضي</translation>
+<translation id="4708011789095599544">هل أنت متأكّد أنك تريد محو ملفات تعريف الارتباط والبيانات الأخرى لهذا الموقع الإلكتروني؟</translation>
 <translation id="4751476147751820511">أجهزة استشعار الإضاءة أو الحركة</translation>
 <translation id="4883854917563148705">يتعذّر إعادة ضبط الإعدادات التي تمت إدارتها</translation>
 <translation id="4887024562049524730">طلب الإذن قبل السماح للمواقع الإلكترونية باستخدام جهاز الواقع الافتراضي وبياناته (إعداد مقترَح)</translation>
@@ -229,6 +231,7 @@
 <translation id="7423538860840206698">تم الحظر من قراءة الحافظة</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7554752735887601236">هناك موقع إلكتروني يستخدم الميكروفون.</translation>
+<translation id="7561196759112975576">دومًا</translation>
 <translation id="7572498721684305250">‏حظر المواقع الإلكترونية من إرسال المعلومات وتلقّيها عند النقر على أجهزة NFC.</translation>
 <translation id="757524316907819857">منع المواقع الإلكترونية من تشغيل المحتوى المحمي</translation>
 <translation id="7589445247086920869">حظر محرّك البحث الحالي</translation>

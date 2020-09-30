@@ -5,6 +5,7 @@
 <translation id="1195447618553298278">알 수 없는 오류</translation>
 <translation id="1413240736185167732">실패 - 필터링 실패</translation>
 <translation id="1468664791493211953">혜택</translation>
+<translation id="1478594628797167447">스캐너</translation>
 <translation id="1482734542997480527"><ph name="ENROLLMENT_DOMAIN" />에서 이 기기를 관리하며 내 활동을 모니터링할 수도 있습니다.</translation>
 <translation id="150962533380566081">잘못된 PUK입니다.</translation>
 <translation id="1510238584712386396">런처</translation>
@@ -24,6 +25,7 @@
 <translation id="2872961005593481000">종료</translation>
 <translation id="3008341117444806826">새로고침</translation>
 <translation id="3091839911843451378">실패 - 중지됨</translation>
+<translation id="3246869037381808805">1일 이상 경과한 인쇄 작업은 삭제됩니다.</translation>
 <translation id="3268178239013324452">실패 - 덮개 열림</translation>
 <translation id="3369013195428705271">모든 인쇄 기록을 삭제하시겠습니까? 진행 중인 인쇄 작업은 삭제되지 않습니다.</translation>
 <translation id="3456078764689556234">인쇄된 페이지 <ph name="PRINTED_PAGES" />/<ph name="TOTAL_PAGES" /></translation>
@@ -34,6 +36,7 @@
 <translation id="38114475217616659">모든 기록 삭제</translation>
 <translation id="3820172043799983114">잘못된 PIN입니다.</translation>
 <translation id="3838338534323494292">새 비밀번호</translation>
+<translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" />일 이상 경과한 인쇄 작업은 삭제됩니다.</translation>
 <translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" />에서 이 기기를 관리하고 방문한 웹페이지, 비밀번호, 이메일을 비롯한 모든 사용자 활동에 액세스합니다.</translation>
 <translation id="4003384961948020559">실패 - 출력 가득 참</translation>
 <translation id="4027485274696301677">이 <ph name="DEVICE_TYPE" /> 기기는 <ph name="ENROLLMENT_DOMAIN" />에서 관리합니다. 관리자가 기기를 원격으로 구성할 수 있습니다.</translation>
@@ -71,6 +74,7 @@
 <translation id="649050271426829538">중지됨 - 용지 걸림</translation>
 <translation id="6517239166834772319">살펴보기</translation>
 <translation id="6564646048574748301">실패 - 프린터에 연결할 수 없음</translation>
+<translation id="6620487321149975369">수동으로 삭제하지 않으면 인쇄 작업이 방문 기록에 나타납니다.</translation>
 <translation id="6643016212128521049">삭제</translation>
 <translation id="6747215703636344499">중지됨 - 배지대 가득 참</translation>
 <translation id="7162487448488904999">갤러리</translation>
@@ -81,6 +85,7 @@
 <translation id="7805768142964895445">상태</translation>
 <translation id="808894953321890993">비밀번호 변경</translation>
 <translation id="8208861521865154048">혜택</translation>
+<translation id="8294431847097064396">출처</translation>
 <translation id="8347227221149377169">인쇄 작업</translation>
 <translation id="8352772353338965963">멀티 로그인에 계정을 추가하세요. 비밀번호를 입력하지 않고 모든 로그인 계정에 액세스할 수 있으므로 이 기능은 신뢰할 수 있는 계정에만 사용해야 합니다.</translation>
 <translation id="8701136875688985581"><ph name="ENROLLMENT_DOMAIN" />에서 이 사용자를 관리합니다. 원격으로 설정을 관리하고 사용자 활동을 모니터링할 수 있습니다.</translation>

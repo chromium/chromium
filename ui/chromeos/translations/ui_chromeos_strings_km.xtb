@@ -30,6 +30,7 @@
 <translation id="1208421848177517699">ការសរសេរតាមសូរស័ព្ទ (namaste → નમસ્તે)</translation>
 <translation id="1243314992276662751">ទាញឡើង</translation>
 <translation id="1249250836236328755">ប្រភេទ</translation>
+<translation id="1276362640455948667">ភាសាព័រទុយហ្គាល់ជាមួយក្ដារចុចកុំព្យូទ័រអាមេរិកអន្តរជាតិ</translation>
 <translation id="1278813325885878377">ក្តារចុចហុងគ្រី</translation>
 <translation id="1293556467332435079">ឯកសារ</translation>
 <translation id="1297922636971898492">Google Drive មិនមានទេឥឡូវនេះ។ ការទាញឡើងនឹងចាប់ផ្តើមឡើងវិញដោយស្វ័យប្រវត្តិនៅពេល Google Drive ត្រលប់មកវិញ។</translation>
@@ -112,13 +113,14 @@
 <translation id="2163152940313951844">តួអក្សរ​មិនត្រឹមត្រូវ៖ <ph name="CHARACTER_NAME" /></translation>
 <translation id="2164862903024139959">ក្តារចុចវៀតណាម (TCVN)</translation>
 <translation id="2168214441502403371">ក្តារចុចពែក</translation>
-<translation id="2197363559908958454">បានផ្លាស់ទី <ph name="NUMBER_OF_ITEMS" />។</translation>
 <translation id="2198315389084035571">ភាសាចិនសាមញ្ញ</translation>
 <translation id="2208158072373999562">បណ្ណាសារឯកសារបង្រួម</translation>
 <translation id="2225536596944493418">តើអ្នកប្រាកដថា​ចង់លុបធាតុ <ph name="NUMBER_OF_ITEMS" /> ដែរទេ?</translation>
 <translation id="2230062665678605299">មិនអាចបង្កើតថតឯកសារ "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2270413998793223379">សំស្ក្រឹត</translation>
 <translation id="2275059641601412272">បានផ្លាស់ទី។</translation>
 <translation id="2278988676849463018">ក្តារចុចកាណាដា (Phonetic)</translation>
+<translation id="2287742181953707290">ភាសាព័រទុយហ្គាល់ជាមួយក្ដារចុចកុំព្យូទ័រអាមេរិកអន្តរជាតិ</translation>
 <translation id="2288278176040912387">ឧបករណ៍ចាក់ថាស</translation>
 <translation id="2291538123825441971">កំពុងបើក​ឯកសារ <ph name="NUMBER_OF_FILES" />។</translation>
 <translation id="2303301624314357662">កំពុងបើក​ឯកសារ <ph name="FILE_NAME" /> ។</translation>
@@ -222,6 +224,7 @@
 <translation id="3473378059788601120">បានចម្លងទៅ <ph name="FOLDER_NAME" /> ។</translation>
 <translation id="3475447146579922140">Google សៀវភៅបញ្ជី</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> កំហុសឆ្គង។</translation>
+<translation id="349603508045926994">ការ​សរសេរ​តាម​សូរសព្ទជាភាសាពែក្ស</translation>
 <translation id="3519867315646775981">ការសរសេរតាមសូរស័ព្ទ (shalom ← שלום)</translation>
 <translation id="3522708245912499433">ភាសាប៉ទុយកាល់</translation>
 <translation id="3524311639100184459">ប្រុងប្រយ័ត្ន៖ ឯកសារទាំងនេះ​គឺជាឯកសារ​បណ្ដោះអាសន្ន និងអាចត្រូវបានលុប​ដោយស្វ័យប្រវត្តិ ដើម្បីបង្កើន​ទំហំផ្ទុកថាស។  <ph name="BEGIN_LINK" />ស្វែងយល់បន្ថែម<ph name="END_LINK" /></translation>
@@ -293,6 +296,7 @@
 <translation id="4298972503445160211">ក្តារចុចដាណឺម៉ាក</translation>
 <translation id="4299729908419173967">ភាសាប្រេស៊ីល</translation>
 <translation id="4309915981827077375">ព័ត៌​មាន​ទូទៅ</translation>
+<translation id="4315949787858895817">ហូឡង់ (បែលហ្សិក​)</translation>
 <translation id="4326192123064055915">កាហ្វេ</translation>
 <translation id="4336032328163998280">ប្រតិបត្តិការចម្លងបានបរាជ័យ។ <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4364327530094270451">ត្រសក់​ផ្អែម</translation>
@@ -339,6 +343,7 @@
 <translation id="4804827417948292437">ផ្លែបឺរ</translation>
 <translation id="4823651846660089135">ឧបករណ៍គឺសម្រាប់តែអានប៉ុណ្ណោះ</translation>
 <translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> ធាតុត្រូវបានជ្រើសរើស</translation>
+<translation id="4849981557599196363">អាល្លឺម៉ង់ (បែលហ្ស៊ិក)</translation>
 <translation id="4850886885716139402">មើល</translation>
 <translation id="485316830061041779">ភាសាអាល្លឺម៉ង់</translation>
 <translation id="4867079195717347957">ចុចដើម្បី​តម្រៀបជួរឈរ​តាមលំដាប់ចុះ។</translation>
@@ -402,6 +407,7 @@
     នៅលើឯកសារជាមួយអ្នកដ៏ទៃនៅក្នុងកន្លែងតែមួយ។<ph name="MARKUP_9" /></translation>
 <translation id="5274350207900771082">បានចម្លង។</translation>
 <translation id="5275973617553375938">ឯកសារដែលបានសង្គ្រោះពី Google Drive</translation>
+<translation id="5283140566205748520">បារាំង (បែលហ្ស៊ិក)</translation>
 <translation id="5317780077021120954">រក្សាទុក</translation>
 <translation id="5318819489018851358">ចែករំលែកជាមួយ Linux</translation>
 <translation id="5319782540886810524">ក្តារចុចឡាត់វី</translation>
@@ -687,6 +693,7 @@
 <translation id="8329978297633540474">អត្ថបទធម្មតា</translation>
 <translation id="8335587457941836791">ដកការដៅចេញពីធ្នើ</translation>
 <translation id="8336153091935557858">ម្សិលមិញ <ph name="YESTERDAY_DAYTIME" /></translation>
+<translation id="8336524887811696057">ការ​សរសេរ​តាម​សូរសព្ទជាភាសានេប៉ាល់</translation>
 <translation id="8336579025507394412">ក្តារចុចអាយឡេន៍</translation>
 <translation id="8342318071240498787">មានឯកសារ ឬថតឯកសារដែលមានឈ្មោះដូចនេះមានរួចទៅហើយ។</translation>
 <translation id="8382450452152102026">ទៅ <ph name="FOLDER_NAME" /></translation>
@@ -712,12 +719,14 @@
 <translation id="8600173386174225982">បញ្ជីឯកសារ​បានប្ដូរទៅទិដ្ឋភាព​រូបភាពតូចៗ។</translation>
 <translation id="8601932370724196034">ឯកសារ​រូបភាព Crostini</translation>
 <translation id="8669949407341943408">កំពុងផ្លាស់ទី...</translation>
+<translation id="8694836330346852143">អួរដួ</translation>
 <translation id="8698464937041809063">គំនូរ Google</translation>
 <translation id="8714406895390098252">កង់</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> ដែលបានជ្រើសរើស។</translation>
 <translation id="8722421161699219904">ក្តារចុចអាមេរិកអន្តរជាតិ</translation>
 <translation id="872537912056138402">ភាសាក្រូអាត</translation>
 <translation id="874420130893181774">វិធីសាស្ត្របញ្ចូលភីងអ៊ីញប្រពៃណី</translation>
+<translation id="8770002329960263418">ភាសាហូឡង់ (ហូឡង់) ជាមួយក្ដារចុចកុំព្យូទ័រអាមេរិកអន្តរជាតិ</translation>
 <translation id="8775404590947523323">ការកែប្រែរបស់អ្នកត្រូវបានរក្សាទុកដោយស្វ័យប្រវត្តិ។<ph name="BREAKS" />ដើម្បីរក្សាច្បាប់ចម្លងនៃរូបភាពដើម។ ដកការធីក "បដិសេធច្បាប់ដើម"</translation>
 <translation id="8803496343472038847">ក្តារចុចសូរស័ព្ទរុស្ស៊ី</translation>
 <translation id="8808686172382650546">ឆ្មា</translation>
@@ -759,7 +768,6 @@
 <translation id="943972244133411984">កែសម្រួល​ដោយ</translation>
 <translation id="945522503751344254">ផ្ញើមតិ</translation>
 <translation id="947144732524271678">បានជ្រើសរើសធាតុ <ph name="ENTRY_COUNT" /> ជួរចាប់ពី <ph name="FROM_ENTRY_NAME" /> ដល់ <ph name="TO_ENTRY_NAME" /> ។</translation>
-<translation id="949308258121608615">បានចម្លង <ph name="NUMBER_OF_ITEMS" />។</translation>
 <translation id="981121421437150478">ក្រៅបណ្តាញ</translation>
 <translation id="988685240266037636">ឯកសារដែលដាក់​ឈ្មោះ "<ph name="FILE_NAME" />" មានរួចហើយ។ តើអ្នកចង់​ជំនួសវា​ដែរទេ?</translation>
 <translation id="996903396648773764"><ph name="NUMBER_OF_MB" /> MB</translation>

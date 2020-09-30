@@ -5,6 +5,7 @@
 <translation id="1195447618553298278">ข้อผิดพลาดที่ไม่รู้จัก</translation>
 <translation id="1413240736185167732">ไม่สำเร็จ - ตัวกรองล้มเหลว</translation>
 <translation id="1468664791493211953">ข้อเสนอ</translation>
+<translation id="1478594628797167447">เครื่องสแกน</translation>
 <translation id="1482734542997480527"><ph name="ENROLLMENT_DOMAIN" /> จัดการอุปกรณ์นี้และอาจตรวจสอบกิจกรรมของคุณได้</translation>
 <translation id="150962533380566081">PUK ไม่ถูกต้อง</translation>
 <translation id="1510238584712386396">ตัวเรียกใช้งาน</translation>
@@ -24,6 +25,7 @@
 <translation id="2872961005593481000">ปิด</translation>
 <translation id="3008341117444806826">รีเฟรช</translation>
 <translation id="3091839911843451378">ไม่สำเร็จ - หยุดทำงาน</translation>
+<translation id="3246869037381808805">ระบบจะนำงานพิมพ์ที่เก่ากว่า 1 วันออก</translation>
 <translation id="3268178239013324452">ไม่สำเร็จ - ฝาเครื่องเปิดอยู่</translation>
 <translation id="3369013195428705271">คุณแน่ใจไหมว่าต้องการล้างประวัติการพิมพ์ทั้งหมด ทั้งนี้ ระบบจะไม่ล้างงานพิมพ์ที่กำลังดำเนินอยู่</translation>
 <translation id="3456078764689556234">พิมพ์แล้ว <ph name="PRINTED_PAGES" /> จาก <ph name="TOTAL_PAGES" /> หน้า</translation>
@@ -34,6 +36,7 @@
 <translation id="38114475217616659">ล้างประวัติทั้งหมด</translation>
 <translation id="3820172043799983114">PIN ไม่ถูกต้อง</translation>
 <translation id="3838338534323494292">รหัสผ่านใหม่</translation>
+<translation id="39823212440917567">ระบบจะนำงานพิมพ์ที่เก่ากว่า <ph name="NUMBER_OF_DAYS" /> วันออก</translation>
 <translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> จัดการอุปกรณ์นี้และมีสิทธิ์เข้าถึงกิจกรรมทั้งหมดของผู้ใช้ ซึ่งรวมถึงหน้าเว็บที่เข้าชม รหัสผ่าน และอีเมล</translation>
 <translation id="4003384961948020559">ไม่สำเร็จ - ถาดกระดาษขาออกเต็ม</translation>
 <translation id="4027485274696301677"><ph name="DEVICE_TYPE" /> นี้ได้รับการจัดการโดย <ph name="ENROLLMENT_DOMAIN" /> ผู้ดูแลระบบอาจกำหนดค่าอุปกรณ์จากระยะไกล</translation>
@@ -71,6 +74,7 @@
 <translation id="649050271426829538">หยุดพิมพ์ - กระดาษติด</translation>
 <translation id="6517239166834772319">สำรวจ</translation>
 <translation id="6564646048574748301">ไม่สำเร็จ - เข้าถึงเครื่องพิมพ์ไม่ได้</translation>
+<translation id="6620487321149975369">งานพิมพ์จะปรากฏในประวัติการพิมพ์ เว้นแต่จะมีผู้ใช้นำออกไปด้วยตนเอง</translation>
 <translation id="6643016212128521049">ล้าง</translation>
 <translation id="6747215703636344499">หยุดพิมพ์ - ถาดกระดาษออกเต็ม</translation>
 <translation id="7162487448488904999">แกลเลอรี</translation>
@@ -81,6 +85,7 @@
 <translation id="7805768142964895445">สถานะ</translation>
 <translation id="808894953321890993">เปลี่ยนรหัสผ่าน</translation>
 <translation id="8208861521865154048">สิทธิประโยชน์</translation>
+<translation id="8294431847097064396">แหล่งที่มา</translation>
 <translation id="8347227221149377169">งานพิมพ์</translation>
 <translation id="8352772353338965963">เพิ่มบัญชีเพื่อลงชื่อเข้าสู่ระบบพร้อมกันหลายบัญชี บัญชีที่ลงชื่อเข้าใช้แล้วทั้งหมดสามารถเข้าถึงได้โดยไม่ต้องใช้รหัสผ่าน คุณจึงควรใช้ฟีเจอร์นี้กับบัญชีที่เชื่อถือเท่านั้น</translation>
 <translation id="8701136875688985581"><ph name="ENROLLMENT_DOMAIN" /> จัดการผู้ใช้รายนี้ โดยอาจจัดการการตั้งค่าและตรวจสอบกิจกรรมของผู้ใช้จากระยะไกล</translation>

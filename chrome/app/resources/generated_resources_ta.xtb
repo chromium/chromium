@@ -1053,7 +1053,6 @@
 <translation id="2218019600945559112">மவுஸ் மற்றும் டச்பேட்</translation>
 <translation id="2218320521449013367">தீங்கிழைக்கும் மென்பொருளை Chrome அகற்றும் போது, பிழை ஏற்பட்டது</translation>
 <translation id="2218515861914035131">எளிய உரையாக ஒட்டு</translation>
-<translation id="221872881068107022">பின்னோக்கிய ஸ்க்ரோலிங்</translation>
 <translation id="2220409419896228519">உங்களுக்குப் பிடித்த Google ஆப்ஸில் புக்மார்க்குகளைச் சேர்க்கலாம்</translation>
 <translation id="2220529011494928058">சிக்கல் குறித்துப் புகார் செய்</translation>
 <translation id="2220572644011485463">பின் அல்லது கடவுச்சொல்</translation>
@@ -1238,7 +1237,6 @@
 <translation id="2435248616906486374">நெட்வொர்க் துண்டிக்கப்பட்டது</translation>
 <translation id="2435457462613246316">கடவுச்சொல்லைக் காண்பி</translation>
 <translation id="2436186046335138073">எல்லா <ph name="PROTOCOL" /> இணைப்புகளையும் திறக்க, <ph name="HANDLER_HOSTNAME" /> ஐ அனுமதிக்கவா?</translation>
-<translation id="2436707352762155834">குறைந்தபட்சம்</translation>
 <translation id="2439545803278355377">புதிய பின்னை உள்ளிடவும். குறைந்தபட்சம் 4 எழுத்துருக்கள் இருக்க வேண்டும். எழுத்துகள், எண்கள் மற்றும் பிற எழுத்துருக்கள் அதில் இருக்கலாம்.</translation>
 <translation id="2440604414813129000">ஆ&amp;தாரத்தைக் காண்பி</translation>
 <translation id="244231003699905658">தவறான முகவரி. முகவரியைச் சரிபார்த்துவிட்டு மீண்டும் முயலவும்.</translation>
@@ -3079,6 +3077,7 @@
 <translation id="4617270414136722281">நீட்டிப்பு விருப்பங்கள்</translation>
 <translation id="4619615317237390068">பிற சாதனங்களின் தாவல்கள்</translation>
 <translation id="4620809267248568679">இந்த அமைப்பு நீட்டிப்பால் செயல்படுத்தப்படுகிறது.</translation>
+<translation id="4623167406982293031">கணக்கைச் சரிபார்க்கவும்</translation>
 <translation id="4623189117674524348">இந்தச் சாதனத்திற்கான API அணுகலை சிஸ்டத்தால் அங்கீகரிக்க முடியவில்லை.</translation>
 <translation id="4625078469366263107">ஆப்ஸை இயக்கு</translation>
 <translation id="4627427111733173920">குக்கீகள் தடுக்கப்பட்டன</translation>
@@ -3251,7 +3250,6 @@
 <translation id="4848518990323155912">சிம் கார்டு பூட்டுதலை இயக்கு (மொபைல் டேட்டாவைப் பயன்படுத்த, பின் தேவை)</translation>
 <translation id="4849286518551984791">ஒருங்கிணைக்கப்பட்ட பொதுவான நேரம் (UTC/GMT)</translation>
 <translation id="4849517651082200438">நிறுவ வேண்டாம்</translation>
-<translation id="4850669014075537160">ஸ்க்ரோலிங்</translation>
 <translation id="4850886885716139402">காட்சி</translation>
 <translation id="485088796993065002">இசை, வீடியோ மற்றும் பிற மீடியாவிற்கு ஆடியோவை வழங்குவதற்காக ஒலியைத் தளங்கள் இயக்கக்கூடும்</translation>
 <translation id="4853020600495124913">&amp;புதிய சாளரத்தில் திற</translation>
@@ -4842,7 +4840,6 @@
 <translation id="6781978626986383437">Linux காப்புப் பிரதி ரத்துசெய்யப்பட்டது</translation>
 <translation id="6782067259631821405">தவறான பின்</translation>
 <translation id="6785518634832172390">பின்னில் 12 இலக்கங்களோ அதற்கும் குறைவாகவோ இருக்க வேண்டும்</translation>
-<translation id="6785915470941880363">பின்னோக்கிய ஸ்க்ரோலிங் <ph name="LINK_BEGIN" />மேலும் அறிக<ph name="LINK_END" /></translation>
 <translation id="6786747875388722282">நீட்டிப்புகள்</translation>
 <translation id="6787839852456839824">கீபோர்டு ஷார்ட்கட்கள்</translation>
 <translation id="6788210894632713004">தொகுக்கப்படாத நீட்டிப்பு</translation>

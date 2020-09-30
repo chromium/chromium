@@ -113,7 +113,6 @@
 <translation id="2163152940313951844">ልክ ያልሆነ ቁምፊ፦ <ph name="CHARACTER_NAME" /></translation>
 <translation id="2164862903024139959">የቪዬትናምኛ ቁልፍ ሰሌዳ (ቲሲቪኤን)</translation>
 <translation id="2168214441502403371">የፋርስ ቁልፍ ሰሌዳ</translation>
-<translation id="2197363559908958454"><ph name="NUMBER_OF_ITEMS" /> ተወስደዋል።</translation>
 <translation id="2198315389084035571">ቀላል ቻይንኛ</translation>
 <translation id="2208158072373999562">የZip ማህደር</translation>
 <translation id="2225536596944493418">እርግጠኛ ነዎት <ph name="NUMBER_OF_ITEMS" /> ንጥሎችን መሰረዝ ይፈልጋሉ?</translation>
@@ -769,7 +768,6 @@
 <translation id="943972244133411984">የተቀየረው በ</translation>
 <translation id="945522503751344254">ግብረመልስ ላክ</translation>
 <translation id="947144732524271678">ከ<ph name="FROM_ENTRY_NAME" /> እስከ <ph name="TO_ENTRY_NAME" /> ያሉ የ<ph name="ENTRY_COUNT" /> ግቤቶች ክልል ተመርጧል።</translation>
-<translation id="949308258121608615"><ph name="NUMBER_OF_ITEMS" /> ተቀድቷል።</translation>
 <translation id="981121421437150478">ከመስመር ውጪ</translation>
 <translation id="988685240266037636">«<ph name="FILE_NAME" />» ፋይል አስቀድሞ አለ። ሊተኩት ይፈልጋሉ?</translation>
 <translation id="996903396648773764"><ph name="NUMBER_OF_MB" /> ሜባ</translation>

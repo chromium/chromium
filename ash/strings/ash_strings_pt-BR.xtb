@@ -113,6 +113,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="2049240716062114887">O nome do espaço de trabalho foi mudado para <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Retrato</translation>
 <translation id="2067602449040652523">Brilho do teclado</translation>
+<translation id="2074759828767813253">Capturas de tela e downloads recentes</translation>
 <translation id="2083190527011054446">Boa noite, <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">Sem conexão com a rede</translation>
 <translation id="2126242104232412123">Novo espaço</translation>
@@ -197,6 +198,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="2996462380875591307">Lupa em área fixa ativada. Pressione Ctrl+Pesquisa+D novamente para desativá-la.</translation>
 <translation id="3000461861112256445">Áudio mono</translation>
 <translation id="3009178788565917040">Saída</translation>
+<translation id="3025081209054535615">Liberar os controles de mídia globais da estante</translation>
 <translation id="3033545621352269033">Ativada</translation>
 <translation id="3038571455154067151">Para fazer login, insira seu código de acesso de pai/mãe do Family Link</translation>
 <translation id="3045488863354895414">Boa tarde,</translation>
@@ -250,6 +252,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="3430396595145920809">Deslize da direita para voltar</translation>
 <translation id="343571671045587506">Editar lembrete</translation>
 <translation id="3435967511775410570">Impressão digital reconhecida</translation>
+<translation id="3445288400492335833"><ph name="MINUTES" /> minutos</translation>
 <translation id="3445925074670675829">Dispositivo USB-C</translation>
 <translation id="3454224730401036106">Sua conexão foi alterada para uma rede mais segura</translation>
 <translation id="3465223694362104965">Outro teclado foi conectado a este dispositivo desde seu último acesso. Verifique se esse teclado é confiável antes de usá-lo.</translation>
@@ -383,6 +386,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="4804818685124855865">Desconectar</translation>
 <translation id="4814539958450445987">Tela de login</translation>
 <translation id="4831034276697007977">Tem certeza de que você quer desativar os cliques automáticos?</translation>
+<translation id="4836108105469522644">Ativar as Notificações no smartphone Android</translation>
 <translation id="4849058404725798627">Destacar objeto com o foco de teclado</translation>
 <translation id="485592688953820832">Nenhuma ação (pausar)</translation>
 <translation id="4868492592575313542">ativado</translation>
@@ -452,6 +456,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="5691772641933328258">Impressão digital não reconhecida</translation>
 <translation id="5710450975648804523">O "Não perturbe" está ativado</translation>
 <translation id="573413375004481890">Este dispositivo não é compatível com essa quantidade de telas. Por isso, uma delas foi desconectada</translation>
+<translation id="5740328398383587084">Compartilhar por proximidade</translation>
 <translation id="574392208103952083">Médio</translation>
 <translation id="5744083938413354016">Arrastar com toque</translation>
 <translation id="5745612484876805746">O Modo noturno será ativado automaticamente ao pôr do sol</translation>
@@ -485,7 +490,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="6018164090099858612">Saindo do modo espelhado</translation>
 <translation id="602001110135236999">Rolar para a esquerda</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, intensidade do sinal em <ph name="SIGNAL_STRENGTH" />, gerenciada pelo seu administrador</translation>
-<translation id="6029337736376922061">O gesto no touchpad para alternar para o próximo espaço de trabalho mudou. Deslize para a direita com quatro dedos para alternar para o próximo espaço de trabalho.</translation>
+<translation id="6029337736376922061">O gesto no touchpad para trocar de espaço de trabalho mudou. Deslize para a direita com quatro dedos para mudar para o próximo espaço de trabalho.</translation>
 <translation id="6030495522958826102">O menu foi movido para o canto inferior esquerdo da tela.</translation>
 <translation id="6040143037577758943">Fechar</translation>
 <translation id="6043212731627905357">Este monitor não está funcionando bem com seu <ph name="DEVICE_TYPE" /> (o monitor não é compatível).</translation>
@@ -697,6 +702,7 @@ permanentemente excluídos assim que esse usuário for removido. Os websites vis
 <translation id="8297006494302853456">Fraco</translation>
 <translation id="8308637677604853869">Menu anterior</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
+<translation id="8349293353728876872">Fixar os controles de mídia globais na estante</translation>
 <translation id="8351131234907093545">Criar nota</translation>
 <translation id="8371779926711439835">Avançar por letra</translation>
 <translation id="8375916635258623388">Este <ph name="DEVICE_NAME" /> e seu smartphone serão conectados automaticamente</translation>

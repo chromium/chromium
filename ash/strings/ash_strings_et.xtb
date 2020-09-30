@@ -197,6 +197,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="2996462380875591307">Dokitud luup on lubatud. Vajutage selle väljalülitamiseks klahvikombinatsiooni Ctrl + otsinguklahv + D.</translation>
 <translation id="3000461861112256445">Monoheli</translation>
 <translation id="3009178788565917040">Väljund</translation>
+<translation id="3025081209054535615">Meedia üldiste juhtelementide riiulilt vabastamine</translation>
 <translation id="3033545621352269033">Sees</translation>
 <translation id="3038571455154067151">Sisselogimiseks sisestage oma Family Linki vanema pääsukood</translation>
 <translation id="3045488863354895414">Tere päevast!</translation>
@@ -250,6 +251,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="3430396595145920809">Tagasiliikumiseks pühkige paremalt vasakule</translation>
 <translation id="343571671045587506">Meeldetuletuse muutmine</translation>
 <translation id="3435967511775410570">Sõrmejälg tunti ära</translation>
+<translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">C-tüüpi USB-seade</translation>
 <translation id="3454224730401036106">Teie ühendus on lülitatud turvalisemale võrgule</translation>
 <translation id="3465223694362104965">Pärast teie viimast sisselogimist lõi muu klaviatuur seadmega ühenduse. Enne klaviatuuri kasutamist veenduge, et see oleks usaldusväärne.</translation>
@@ -384,6 +386,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="4804818685124855865">Katkesta ühendus</translation>
 <translation id="4814539958450445987">Sisselogimiskuva</translation>
 <translation id="4831034276697007977">Kas soovite automaatsed klikid kindlasti välja lülitada?</translation>
+<translation id="4836108105469522644">Lülitage märguanded oma Android-telefonis sisse</translation>
 <translation id="4849058404725798627">Klaviatuuri fookusega objekti esiletõstmine</translation>
 <translation id="485592688953820832">Toiming puudub (peatamine)</translation>
 <translation id="4868492592575313542">aktiveeritud</translation>
@@ -453,6 +456,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="5691772641933328258">Sõrmejälge ei tuntud ära</translation>
 <translation id="5710450975648804523">Režiim Mitte segada on sees</translation>
 <translation id="573413375004481890">See seade ei saanud kõiki teie ekraane toetada, seetõttu ühe ühendus katkestati</translation>
+<translation id="5740328398383587084">Läheduses jagamine</translation>
 <translation id="574392208103952083">Keskmine</translation>
 <translation id="5744083938413354016">Puudutusega lohistamine</translation>
 <translation id="5745612484876805746">Öövalgus lülitub päikeseloojangul automaatselt sisse</translation>
@@ -697,6 +701,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="8297006494302853456">Nõrk</translation>
 <translation id="8308637677604853869">Eelmine menüü</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" /> <ph name="GET_STARTED" /></translation>
+<translation id="8349293353728876872">Meedia üldiste juhtelementide riiulile kinnitamine</translation>
 <translation id="8351131234907093545">Märkme loomine</translation>
 <translation id="8371779926711439835">Tähe võrra edasi</translation>
 <translation id="8375916635258623388">See <ph name="DEVICE_NAME" /> ja teie telefon ühendatakse automaatselt</translation>

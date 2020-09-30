@@ -112,7 +112,6 @@
 <translation id="2163152940313951844">ਅਵੈਧ ਅੱਖਰ-ਚਿੰਨ੍ਹ: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2164862903024139959">ਵੀਅਤਨਾਮੀ ਕੀ-ਬੋਰਡ (TCVN)</translation>
 <translation id="2168214441502403371">ਫ਼ਾਰਸੀ ਕੀ-ਬੋਰਡ</translation>
-<translation id="2197363559908958454"><ph name="NUMBER_OF_ITEMS" /> ਨੂੰ ਲਿਜਾਇਆ ਗਿਆ।</translation>
 <translation id="2198315389084035571">ਸਰਲੀਕ੍ਰਿਤ ਚੀਨੀ</translation>
 <translation id="2208158072373999562">ਜ਼ਿਪ ਪੁਰਾਲੇਖ</translation>
 <translation id="2225536596944493418">ਕੀ ਤੁਸੀਂ ਪੱਕਾ <ph name="NUMBER_OF_ITEMS" /> ਆਈਟਮਾਂ ਨੂੰ ਮਿਟਾਉਣਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
@@ -375,6 +374,7 @@
 <translation id="5098629044894065541">Hebrew</translation>
 <translation id="5123433949759960244">ਬਾਸਕਟਬਾਲ</translation>
 <translation id="5129662217315786329">Polish</translation>
+<translation id="5132435854979302863">ਫਿਲੀਪੀਨੋ</translation>
 <translation id="5144820558584035333">Hangul 3 ਸੈਟ (390)</translation>
 <translation id="5145331109270917438">ਤਾਰੀਖ ਸੰਸ਼ੋਧਿਤ ਕੀਤੀ</translation>
 <translation id="515594325917491223">ਸ਼ਤਰੰਜ</translation>
@@ -420,6 +420,7 @@
 <translation id="5464696796438641524">ਪੋਲੈਂਡੀ ਕੀ-ਬੋਰਡ</translation>
 <translation id="5465122519792752163">ਨੇਪਾਲੀ ਕੀ-ਬੋਰਡ (InScript)</translation>
 <translation id="5469868506864199649">ਇਤਾਲਵੀ</translation>
+<translation id="5484429245813572665">ਇੰਡੋਨੇਸ਼ੀਆਈ</translation>
 <translation id="5494920125229734069">ਸਾਰੇ ਚੁਣੋ</translation>
 <translation id="5500122897333236901">Icelandic</translation>
 <translation id="5508696409934741614">ਬਿੰਦੀਆਂ</translation>
@@ -606,6 +607,7 @@
 <translation id="7649070708921625228">ਸਹਾਇਤਾ</translation>
 <translation id="7654209398114106148"><ph name="NUMBER_OF_ITEMS" /> ਆਈਟਮਾਂ ਦੀ ਜਗ੍ਹਾ ਬਦਲੀ ਜਾ ਰਹੀ ਹੈ...</translation>
 <translation id="7658239707568436148">ਰੱਦ ਕਰੋ</translation>
+<translation id="7693909743393669729">ਕਿਸੇ ਡਰਾਈਵ ਨੂੰ ਫਾਰਮੈਟ ਕਰਨ ਨਾਲ ਇਸ 'ਤੇ ਸਟੋਰ ਕੀਤਾ ਸਾਰਾ ਡਾਟਾ ਮਿਟ ਜਾਵੇਗਾ ਅਤੇ ਸਾਰੇ ਮੌਜੂਦਾ ਭਾਗ ਹਟ ਜਾਣਗੇ ਜਿਸ ਵਿੱਚ ਉਹ ਭਾਗ ਵੀ ਸ਼ਾਮਲ ਹਨ ਜੋ ਸ਼ਾਇਦ ਦਿਸਦੇ ਨਾ ਹੋਣ। ਇਸ ਕਾਰਵਾਈ ਨੂੰ ਅਣਕੀਤਾ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ।</translation>
 <translation id="7695430100978772476"><ph name="DRIVE_NAME" /> ਨੂੰ ਫਾਰਮੈਟ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ</translation>
 <translation id="770015031906360009">Greek</translation>
 <translation id="7706319470528945664">ਪੁਰਤਗਾਲੀ ਕੀ-ਬੋਰਡ</translation>
@@ -637,6 +639,7 @@
 <translation id="78946041517601018">ਸਾਂਝੇ ਡਰਾਈਵ</translation>
 <translation id="7896906914454843592">US Extended ਕੀ-ਬੋਰਡ</translation>
 <translation id="7898607018410277265">ਗੁਜਰਾਤੀ ਕੀ-ਬੋਰਡ (ਨਵਾਂ ਧੁਨੀਆਤਮਕ)</translation>
+<translation id="7908793776359722643">ਕਿਸੇ ਭਾਗ ਨੂੰ ਫਾਰਮੈਟ ਕਰਨ ਨਾਲ ਇਸ 'ਤੇ ਸਟੋਰ ਕੀਤਾ ਸਾਰਾ ਡਾਟਾ ਮਿਟ ਜਾਵੇਗਾ। ਇਸ ਕਾਰਵਾਈ ਨੂੰ ਅਣਕੀਤਾ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ।</translation>
 <translation id="7917972308273378936">ਲਿਥੁਆਨੀਅਨ ਕੀ-ਬੋਰਡ</translation>
 <translation id="7925686952655276919">ਸਿੰਕ ਕਰਨ ਲਈ ਮੋਬਾਈਲ ਡਾਟਾ ਨਾ ਵਰਤੋ</translation>
 <translation id="7928710562641958568">ਡੀਵਾਈਸ ਹਟਾਓ</translation>
@@ -724,6 +727,7 @@
 <translation id="8900820606136623064">Hungarian</translation>
 <translation id="8901822611024316615">ਚੈਕ QWERTY ਕੀ-ਬੋਰਡ</translation>
 <translation id="8919081441417203123">ਡੈਨਿਸ਼</translation>
+<translation id="8941776146379310519">ਮਲਾਏ</translation>
 <translation id="8960999352790021682">ਬੰਗਾਲੀ ਕੀ-ਬੋਰਡ (ਧੁਨੀਆਤਮਿਕ)</translation>
 <translation id="8965697826696209160">ਕਾਫ਼ੀ ਸਪੇਸ ਨਹੀਂ ਹੈ।</translation>
 <translation id="9017798300203431059">ਰੂਸੀ ਧੁਨੀਆਤਮਿਕ</translation>
@@ -754,7 +758,6 @@
 <translation id="943972244133411984">ਇਸ ਵੱਲੋਂ ਸੋਧੀ ਗਈ</translation>
 <translation id="945522503751344254">ਪ੍ਰਤੀਕਰਮ ਭੇਜੋ</translation>
 <translation id="947144732524271678"><ph name="FROM_ENTRY_NAME" /> ਤੋਂ <ph name="TO_ENTRY_NAME" /> ਤੱਕ <ph name="ENTRY_COUNT" /> ਇੰਦਰਾਜਾਂ ਦੀ ਰੇਂਜ ਚੁਣੀ ਗਈ ਹੈ।</translation>
-<translation id="949308258121608615"><ph name="NUMBER_OF_ITEMS" /> ਨੂੰ ਕਾਪੀ ਕੀਤਾ ਗਿਆ।</translation>
 <translation id="981121421437150478">ਆਫ਼ਲਾਈਨ</translation>
 <translation id="988685240266037636">"<ph name="FILE_NAME" />" ਨਾਮਕ ਫ਼ਾਈਲ ਪਹਿਲਾਂ ਹੀ ਮੌਜੂਦ ਹੈ। ਕੀ ਤੁਸੀਂ ਇਸਨੂੰ ਬਦਲਣਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
 <translation id="996903396648773764"><ph name="NUMBER_OF_MB" /> MB</translation>

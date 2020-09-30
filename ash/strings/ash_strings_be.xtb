@@ -197,6 +197,7 @@
 <translation id="2996462380875591307">Прыстыкаваная лупа ўключана. Каб выключыць яе, зноў націсніце Ctrl + Пошук + D.</translation>
 <translation id="3000461861112256445">Монафанія</translation>
 <translation id="3009178788565917040">Выхад</translation>
+<translation id="3025081209054535615">Адмацаваць агульныя элементы кіравання мультымедыйным змесцівам ад паліцы</translation>
 <translation id="3033545621352269033">Уключана</translation>
 <translation id="3038571455154067151">Каб увайсці, увядзіце бацькоўскі код доступу Family Link</translation>
 <translation id="3045488863354895414">Добры дзень,</translation>
@@ -250,6 +251,7 @@
 <translation id="3430396595145920809">Каб вярнуцца назад, правядзіце пальцам з правага краю</translation>
 <translation id="343571671045587506">Рэдагаваць напамін</translation>
 <translation id="3435967511775410570">Адбітак пальца распазнаны</translation>
+<translation id="3445288400492335833"><ph name="MINUTES" /> хв</translation>
 <translation id="3445925074670675829">Прылада USB-C</translation>
 <translation id="3454224730401036106">Вы пераключыліся на больш бяспечную сетку</translation>
 <translation id="3465223694362104965">З моманту вашага апошняга ўваходу ў сістэму да прылады была падключана іншая клавіятура. Выкарыстоўвайце гэту клавіятуру, толькі калі вы ёй давяраеце.</translation>
@@ -383,6 +385,7 @@
 <translation id="4804818685124855865">Адключыцца</translation>
 <translation id="4814539958450445987">Экран уваходу</translation>
 <translation id="4831034276697007977">Сапраўды выключыць аўтаматычныя націсканні?</translation>
+<translation id="4836108105469522644">Уключыць апавяшчэнні з тэлефона Android</translation>
 <translation id="4849058404725798627">Вылучаць аб'ект з дапамогай клавіятурнага фокуса</translation>
 <translation id="485592688953820832">Нічога не рабіць (паўза)</translation>
 <translation id="4868492592575313542">уключыла</translation>
@@ -452,6 +455,7 @@
 <translation id="5691772641933328258">Адбітак пальца не распазнаны</translation>
 <translation id="5710450975648804523">Рэжым "Не турбаваць" уключаны</translation>
 <translation id="573413375004481890">Гэта прылада не можа падтрымліваць усе вашы дысплэі, таму адзін з іх быў адключаны</translation>
+<translation id="5740328398383587084">Абагульванне паблізу</translation>
 <translation id="574392208103952083">Сярэдні</translation>
 <translation id="5744083938413354016">Перацягванне дотыкам</translation>
 <translation id="5745612484876805746">Начная падсветка ўключаецца аўтаматычна пасля захаду сонца</translation>
@@ -696,6 +700,7 @@
 <translation id="8297006494302853456">Слабы</translation>
 <translation id="8308637677604853869">Папярэдняе меню</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
+<translation id="8349293353728876872">Замацаваць агульныя элементы кіравання мультымедыйным змесцівам на паліцы</translation>
 <translation id="8351131234907093545">Стварыць нататку</translation>
 <translation id="8371779926711439835">Уперад на адну літару</translation>
 <translation id="8375916635258623388">Гэта прылада <ph name="DEVICE_NAME" /> і ваш тэлефон будуць падключацца аўтаматычна</translation>

@@ -233,6 +233,7 @@
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ஒன்றுக்கும் மேற்பட்ட செயல்கள் உள்ளன, அவற்றில் ஒன்றைத் தேர்ந்தெடுக்க Tab விசையை அழுத்துங்கள்</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1803264062614276815">கார்டு உரிமையாளரின் பெயர்</translation>
+<translation id="1807246157184219062">வெளிச்சம்</translation>
 <translation id="1807528111851433570">முதல் தாள்</translation>
 <translation id="1821930232296380041">தவறான கோரிக்கை அல்லது கோரிக்கை அளவுருக்கள்</translation>
 <translation id="1822540298136254167">நீங்கள் பார்வையிட்ட இணையதளங்களும் அவற்றில் செலவழித்த நேரமும்</translation>
@@ -289,6 +290,7 @@
 <translation id="2099652385553570808">டிரிப்பில் ஸ்டேப்பில் லெஃப்ட்</translation>
 <translation id="2101225219012730419">பதிப்பு:</translation>
 <translation id="2102134110707549001">வலுவான கடவுச்சொல்லைப் பரிந்துரைசெய்…</translation>
+<translation id="2102495993840063010">Android ஆப்ஸ்</translation>
 <translation id="2107021941795971877">உதவித் தோற்றமைப்புகளை அச்சிடுதல்</translation>
 <translation id="2108755909498034140">கம்ப்யூட்டரை மீண்டும் தொடங்கவும்</translation>
 <translation id="2111256659903765347">Super-A</translation>
@@ -367,6 +369,7 @@
 <translation id="2396249848217231973">&amp;நீக்குதலைச் செயல்தவிர்</translation>
 <translation id="2410754574180102685">Government-Legal</translation>
 <translation id="2413528052993050574">இது <ph name="DOMAIN" /> தான் என்பதை இந்தச் சேவையகம் உறுதிப்படுத்தவில்லை; இதன் பாதுகாப்புச் சான்றிதழ் திரும்பப்பெறப்பட்டிருக்கலாம். இது தவறான உள்ளமைவால் ஏற்பட்டிருக்கலாம் அல்லது தீங்கிழைப்பவர் உங்கள் இணைப்பில் குறுக்கிட்டிருக்கலாம்.</translation>
+<translation id="2414886740292270097">அடர்</translation>
 <translation id="2438874542388153331">குவாட் பஞ்ச் ரைட்</translation>
 <translation id="245044156129055925">மோசடிசெய்யும் இணையதளத்தில் உங்கள் கடவுச்சொல்லை உள்ளிட்டுள்ளீர்கள். கடவுச்சொல்லை இப்போதே மாற்றுமாறு Chromium பரிந்துரைக்கிறது.</translation>
 <translation id="2463739503403862330">நிரப்பு</translation>
@@ -443,6 +446,7 @@
 <translation id="2738330467931008676">பிக்அப் முகவரியைத் தேர்வு செய்</translation>
 <translation id="2740531572673183784">சரி</translation>
 <translation id="2742870351467570537">தேர்ந்தெடுத்த உருப்படிகளை அகற்றுக</translation>
+<translation id="2765217105034171413">சிறிய</translation>
 <translation id="277133753123645258">ஷிப்பிங் முறை</translation>
 <translation id="277499241957683684">சாதனப் பதிவு இல்லை</translation>
 <translation id="2775884851269838147">முதலில் அச்சிடும் பக்கம்</translation>
@@ -732,6 +736,7 @@
 <translation id="4014128326099193693">{COUNT,plural, =1{{COUNT} பக்கத்தைக் கொண்ட PDF ஆவணம்}other{{COUNT} பக்கங்களைக் கொண்ட PDF ஆவணம்}}</translation>
 <translation id="4030383055268325496">&amp;சேர்த்தலைச் செயல்தவிர்</translation>
 <translation id="4032320456957708163">உங்கள் உலாவியை <ph name="ENROLLMENT_DOMAIN" /> நிர்வகிக்கிறது</translation>
+<translation id="4056223980640387499">செபியா</translation>
 <translation id="4058922952496707368">விசை "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (என்வலப்)</translation>
 <translation id="4067947977115446013">சரியான முகவரியைச் சேர்க்கவும்</translation>
@@ -772,6 +777,7 @@
 <translation id="4194250254487269611">உங்கள் கார்டு விவரங்களைத் தற்போது சேமிக்க இயலாது</translation>
 <translation id="4196861286325780578">&amp;நகர்த்தலை மீண்டும் செய்</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />ஃபயர்வால் மற்றும் வைரஸ் எதிர்ப்பு உள்ளமைவைச் சரிபார்த்தல்<ph name="END_LINK" /></translation>
+<translation id="4209092469652827314">பெரிய</translation>
 <translation id="4209166701302774460">நீங்கள் செல்லும் சேவையகமான <ph name="ORIGIN" />,
     அதற்கான அனைத்துக் கோரிக்கைகளுக்கும் அசல் கொள்கையைப் பயன்படுத்த வேண்டுமெனக் கோரிக்கை விடுத்துள்ளது. ஆனால் இப்போது
     அது எந்தவொரு கொள்கையையும் வழங்கவில்லை என்பதால் <ph name="SITE" /> தளத்திற்கான உங்கள் கோரிக்கையை
@@ -1380,6 +1386,7 @@
 <translation id="6645291930348198241">குக்கீகளையும் தளத்தின் தரவையும் அணுக விரும்புகிறது.</translation>
 <translation id="6646269444027925224">{COUNT,plural, =0{எதுவுமில்லை}=1{1 தளத்திலிருந்து (உங்கள் Google கணக்கிலிருந்து வெளியேறமாட்டீர்கள்)}other{# தளங்களிலிருந்து (உங்கள் Google கணக்கிலிருந்து வெளியேறமாட்டீர்கள்)}}</translation>
 <translation id="6648459603387803038">உலாவியின் அமைவை உங்கள் நிர்வாகியால் தொலைநிலையிலிருந்தே மாற்ற முடியும். இந்தச் சாதனத்தின் செயல்பாடுகளை Chromeமுக்கு வெளியிலிருந்தும் நிர்வகிக்கலாம்.</translation>
+<translation id="6648524591329069940">Serif எழுத்துரு</translation>
 <translation id="6652101503459149953">Windows Helloவைப் பயன்படுத்து</translation>
 <translation id="6657585470893396449">கடவுச்சொல்</translation>
 <translation id="666259744093848177">(x86_64க்கு ஏற்றவாறு மாற்றியமைக்கப்பட்டது)</translation>
@@ -1499,7 +1506,6 @@
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> பாதுகாப்புத் தரநிலைகளுக்கு இணங்கவில்லை.</translation>
 <translation id="7210993021468939304">கண்டெய்னருக்குள் நடக்கும் Linux செயல்பாட்டினைப் பார்க்க முடியும், மற்றும் கண்டெய்னருக்குள் Linux ஆப்ஸை நிறுவி இயக்க முடியும்</translation>
 <translation id="721197778055552897">இந்த சிக்கல் குறித்து <ph name="BEGIN_LINK" />மேலும் அறிக<ph name="END_LINK" />.</translation>
-<translation id="7214062855724067749">மேம்பட்ட டைப்போகிராஃபியை உருவாக்க உங்கள் கம்ப்யூட்டரில் நிறுவப்பட்டுள்ள எழுத்துருக்களைப் பயன்படுத்துவதற்குத் தளம் அனுமதி கோருகிறது</translation>
 <translation id="7217745192097460130">பேமெண்ட் விவரங்களைச் சரிபார்த்து, வாங்குவதை நிறைவுசெய்வதற்கு Touch IDயைப் பயன்படுத்தவா?</translation>
 <translation id="7219179957768738017">இணைப்பு <ph name="SSL_VERSION" /> ஐப் பயன்படுத்துகிறது.</translation>
 <translation id="7220786058474068424">செயல்படுத்துகிறது</translation>
@@ -1946,7 +1952,7 @@
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9049981332609050619">நீங்கள் <ph name="DOMAIN" /> ஐ அடைய முயற்சி செய்தீர்கள், ஆனால் சேவையகம் ஒரு செல்லாத சான்றிதழை வழங்கியது.</translation>
 <translation id="9050666287014529139">கடவுச்சொற்றொடர்</translation>
-<translation id="9056953843249698117">அங்காடி</translation>
+<translation id="9056953843249698117">ஸ்டோர்</translation>
 <translation id="9062620674789239642">அது நகர்த்தப்பட்டிருக்கலாம், திருத்தப்பட்டிருக்கலாம் அல்லது நீக்கப்பட்டிருக்கலாம்.</translation>
 <translation id="9065203028668620118">திருத்து</translation>
 <translation id="9065745800631924235">வரலாற்றிலிருந்து <ph name="TEXT" /> பற்றிய தேடல்கள்</translation>

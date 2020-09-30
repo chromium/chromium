@@ -233,6 +233,7 @@
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, एकभन्दा बढी कार्य गर्न सकिन्छ, एक एक गरी प्रत्येक कार्य गर्न Tab थिच्नुहोस्</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1803264062614276815">कार्डवालाको नाम</translation>
+<translation id="1807246157184219062">हल्का</translation>
 <translation id="1807528111851433570">सुरुवाती पाना</translation>
 <translation id="1821930232296380041">अवैध अनुरोध या अनुरोध मापदण्डहरु</translation>
 <translation id="1822540298136254167">तपाईंले भ्रमण गर्नुभएका वेबसाइट र बिताउनुभएको समय</translation>
@@ -289,6 +290,7 @@
 <translation id="2099652385553570808">बायाँपट्टि तीन स्टिच</translation>
 <translation id="2101225219012730419">संस्करण:</translation>
 <translation id="2102134110707549001">भरपर्दो पासवर्ड सिफारिस गर्नुहोस्…</translation>
+<translation id="2102495993840063010">Android एपहरू</translation>
 <translation id="2107021941795971877">मुद्रणसम्बन्धी सहायता प्रदान गर्ने सेवा</translation>
 <translation id="2108755909498034140">आफ्नो कम्प्युटर पुनः सुरु गर्नुहोस्</translation>
 <translation id="2111256659903765347">Super-A</translation>
@@ -367,6 +369,7 @@
 <translation id="2396249848217231973">मेटाइलाई &amp;पूर्ववत गर्नुहोस्</translation>
 <translation id="2410754574180102685">Government-Legal</translation>
 <translation id="2413528052993050574">यो सर्भरले यो <ph name="DOMAIN" /> को भनि प्रमाणित गर्न सकेन; यसको सुरक्षा प्रमाणपत्रलाई रद्द गरिएको हुन सक्छ। यो कुनै एउटा मिसकन्फिगरेसन वा कुनै आक्रमणकारीले तपाईंको जडानमा गरेको हस्तक्षेपको कारणले गर्दा भएको हुन सक्छ।</translation>
+<translation id="2414886740292270097">अँध्यारो</translation>
 <translation id="2438874542388153331">दायाँतिर चार प्वाल</translation>
 <translation id="245044156129055925">तपाईंले भर्खरै कुनै भ्रामक साइटमा आफ्नो पासवर्ड प्रविष्टि गर्नुभएको छ। Chromium तपाईंलाई अहिले नै आफ्नो पासवर्ड परिवर्तन गर्न सिफारिस गर्दछ।</translation>
 <translation id="2463739503403862330">पूर्ण जानकारी भर्नुहोस्</translation>
@@ -445,6 +448,7 @@
 <translation id="2738330467931008676">पिकअप गर्ने ठेगाना छनौट गर्नुहोस्</translation>
 <translation id="2740531572673183784">ठिक छ</translation>
 <translation id="2742870351467570537">चयन गरिएका वस्तुहरू हटाउनुहोस्</translation>
+<translation id="2765217105034171413">सानो</translation>
 <translation id="277133753123645258">ढुवानीको विधि</translation>
 <translation id="277499241957683684">हराइएको यन्त्रको रेकर्ड</translation>
 <translation id="2775884851269838147">प्रिन्ट गरिनु पर्ने पहिलो पृष्ठ</translation>
@@ -735,6 +739,7 @@
 <translation id="4014128326099193693">{COUNT,plural, =1{{COUNT} पृष्ठ भएको PDF कागजात}other{{COUNT} पृष्ठहरू भएको PDF कागजात}}</translation>
 <translation id="4030383055268325496">थप्ने कार्यलाई &amp;पूर्ववत गर्नुहोस्</translation>
 <translation id="4032320456957708163"><ph name="ENROLLMENT_DOMAIN" /> ले तपाईंको ब्राउजरको व्यवस्थापन गर्छ</translation>
+<translation id="4056223980640387499">सेपिया</translation>
 <translation id="4058922952496707368">कुञ्जी "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (Envelope)</translation>
 <translation id="4067947977115446013">मान्य ठेगाना थप्नुहोस्</translation>
@@ -775,6 +780,7 @@
 <translation id="4194250254487269611">तपाईंको कार्ड अहिले नै सुरक्षित गर्न मिल्दैन</translation>
 <translation id="4196861286325780578">सार्ने कार्य &amp;पुन: गर्नुहोस्</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />फायरवाल र एन्टिभाइरसका कन्फिगरेसनलाई जाँच गर्नुहोस्<ph name="END_LINK" /></translation>
+<translation id="4209092469652827314">विशाल</translation>
 <translation id="4209166701302774460">तपाईंले प्रयोग गर्न आँट्नुभएको सर्भर <ph name="ORIGIN" /> ले यसलाई गरिने सबै अनुरोधहरूमा मूल नीति लागू गरिनु पर्ने कुरा अनुरोध गरेको छ। तर यसले अहिले नीति डेलिभर गर्न
     नसकेकोले ब्राउजरलाई तपाईंले
     <ph name="SITE" /> का सन्दर्भमा गर्नुभएको अनुरोध पूरा हुन दिँदैन। साइटका सञ्चालकहरू कुनै साइटको सुरक्षा र
@@ -1502,7 +1508,6 @@
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> ले सुरक्षा मानहरूको पालना गर्दैन।</translation>
 <translation id="7210993021468939304">कन्टेनर भित्र Linux का क्रियाकलाप हेर्न र कन्टेनरभित्र Linux एपहरू स्थापना गर्न र चलाउन सक्छ</translation>
 <translation id="721197778055552897">यो समस्याको बारे <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" />।</translation>
-<translation id="7214062855724067749">आफ्नो कम्प्युटरमा इन्स्टल गरिएका फन्ट प्रयोग गरी उन्नत टाइपोग्राफी बनाउनुहोस्</translation>
 <translation id="7217745192097460130">आफ्नो खरिद पुष्टि तथा पूरा गर्न Touch ID प्रयोग गर्ने हो?</translation>
 <translation id="7219179957768738017">जडानले <ph name="SSL_VERSION" /> प्रयोग गर्छ।</translation>
 <translation id="7220786058474068424">प्रशोधन गर्दै</translation>

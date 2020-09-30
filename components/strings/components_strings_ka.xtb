@@ -15,6 +15,7 @@
 <translation id="1038106730571050514">შეთავაზებების ჩვენება</translation>
 <translation id="1038842779957582377">უცნობი სახელი</translation>
 <translation id="1041998700806130099">დავალებათა ფურცლის შეტყობინება</translation>
+<translation id="1048785276086539861">ანოტაციების რედაქტირებისას ეს დოკუმენტი დაბრუნდება ერთგვერდიან ხედზე</translation>
 <translation id="1050038467049342496">სხვა აპების დახურვა</translation>
 <translation id="1055184225775184556">და დაბრუნება-დამატება</translation>
 <translation id="1056898198331236512">გაფრთხილება</translation>
@@ -230,6 +231,7 @@
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, შესაძლებელია რამდენიმე მოქმედება, დააჭირეთ Tab-ს მათ სანახავად</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1803264062614276815">ბარათის მფლობელის სახელი</translation>
+<translation id="1807246157184219062">ნათელი</translation>
 <translation id="1807528111851433570">საწყისი ფურცელი</translation>
 <translation id="1821930232296380041">მოთხოვნა ან მოთხოვნის პარამეტრები არასწორია</translation>
 <translation id="1822540298136254167">თქვენ მიერ მონახულებული ვებსაიტები და მათ დათვალიერებაზე დახარჯული დრო</translation>
@@ -286,6 +288,7 @@
 <translation id="2099652385553570808">სამმაგად დასტეპლერება მარცხნივ</translation>
 <translation id="2101225219012730419">ვერსია:</translation>
 <translation id="2102134110707549001">ძლიერი პაროლის შემოთავაზება…</translation>
+<translation id="2102495993840063010">Android-ის აპები</translation>
 <translation id="2107021941795971877">ბეჭდვის დამხმარე საშუალებები</translation>
 <translation id="2108755909498034140">თქვენი კომპიუტერის გადატვირთვა</translation>
 <translation id="2111256659903765347">Super-A</translation>
@@ -364,6 +367,7 @@
 <translation id="2396249848217231973">წაშლის &amp;მოქმედების გაუქმება</translation>
 <translation id="2410754574180102685">Government-Legal</translation>
 <translation id="2413528052993050574">ეს სერვერი ვერ ამტკიცებს რომ ის არის <ph name="DOMAIN" />; მისი უსაფრთხოების სერთიფიკატი შესაძლოა გაუქმებულია. ეს შეიძლება იყოს გამოწვეული არასწორი კონფიგურაციით ან თავდამსხმელის მიერ თქვენი კავშირის გადაჭრით.</translation>
+<translation id="2414886740292270097">მუქი</translation>
 <translation id="2438874542388153331">ოთხმაგად გახვრეტა მარჯვნივ</translation>
 <translation id="245044156129055925">თქვენ ეს-ესაა შეიყვანეთ პაროლი შეცდომაში შემყვან საიტზე. Chromium გირჩევთ, ახლავე შეცვალოთ პაროლი.</translation>
 <translation id="2463739503403862330">შევსება</translation>
@@ -372,6 +376,7 @@
 <translation id="2465688316154986572">დასტეპლერება</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />ქსელის დიაგნოსტიკის ხელსაწყოს გაშვება<ph name="END_LINK" /></translation>
 <translation id="2469153820345007638">მიმდევრობა 1-დან N-მდე</translation>
+<translation id="2470767536994572628">ანოტაციების რედაქტირებისას ეს დოკუმენტი დაბრუნდება ერთგვერდიან ხედზე და შეტრიალდება თავდაპირველი ვერსიის მიხედვით</translation>
 <translation id="2479410451996844060">ძიების არასწორი URL.</translation>
 <translation id="2482878487686419369">შეტყობინებები</translation>
 <translation id="248348093745724435">მოწყობილობის წესები</translation>
@@ -440,6 +445,7 @@
 <translation id="2738330467931008676">წამოღების მისამართის არჩევა</translation>
 <translation id="2740531572673183784">კარგი</translation>
 <translation id="2742870351467570537">არჩეული ელემენტების წაშლა</translation>
+<translation id="2765217105034171413">პატარა</translation>
 <translation id="277133753123645258">გაგზავნის მეთოდი</translation>
 <translation id="277499241957683684">ჩანაწერი გამოტოვებული მოწყობილობის შესახებ</translation>
 <translation id="2775884851269838147">პირველი საბეჭდი გვერდი</translation>
@@ -597,7 +603,6 @@
 <translation id="3443726618221119081">Juuro-Ku-Kai</translation>
 <translation id="3447661539832366887">ამ მოწყობილობის მფლობელმა გამორთო დინოზავრის თამაში.</translation>
 <translation id="3447884698081792621">სერტიფიკატის ჩვენება (გამომცემელი: <ph name="ISSUER" />)</translation>
-<translation id="3451824941663424536">აქ ჩასმა დაბლოკილია თქვენი ადმინისტრატორის მიერ</translation>
 <translation id="3452404311384756672">შერჩევის ინტერვალი:</translation>
 <translation id="3453962258458347894">ხელახლა მცდელობების რაოდენობა</translation>
 <translation id="3456231139987291353">Number-11 (კონვერტი)</translation>
@@ -734,6 +739,7 @@
 <translation id="4014128326099193693">{COUNT,plural, =1{PDF დოკუმენტი, რომელიც შეიცავს {COUNT} გვერდს}other{PDF დოკუმენტი, რომელიც შეიცავს {COUNT} გვერდს}}</translation>
 <translation id="4030383055268325496">დამატების &amp;მოქმედების გაუქმება</translation>
 <translation id="4032320456957708163">თქვენს ბრაუზერს მართავს <ph name="ENROLLMENT_DOMAIN" /></translation>
+<translation id="4056223980640387499">სეპია</translation>
 <translation id="4058922952496707368">გასაღები „<ph name="SUBKEY" />“ <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (კონვერტი)</translation>
 <translation id="4067947977115446013">მიუთითეთ სწორი მისამართი</translation>
@@ -774,6 +780,7 @@
 <translation id="4194250254487269611">თქვენი ბარათის შენახვა ამჟამად ვერ მოხერდა</translation>
 <translation id="4196861286325780578">გადატანის &amp;გამეორება</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />ქსელის დაცვისა და ანტივირუსის კონფიგურაციების შემოწმება<ph name="END_LINK" /></translation>
+<translation id="4209092469652827314">დიდი</translation>
 <translation id="4209166701302774460">სერვერმა, რომელზე გადასვლასაც ცდილობთ (<ph name="ORIGIN" />), მოითხოვა წყაროს წესების მისადაგება მის მიმართ ყველა მოთხოვნისთვის. თუმცა მან ვერ უზრუნველყო წესები, რაც ხელს უშლის ბრაუზერს <ph name="SITE" />-თან დაკავშირებული თქვენი მოთხოვნის შესრულებაში. წყაროს წესების მეშვეობით საიტების ოპერატორებს შეუძლიათ ამა თუ იმ საიტის უსაფრთხოებისა და სხვა მახასიათებლების კონფიგურაცია.</translation>
 <translation id="421066178035138955">ვირტუალური რეალობის მოწყობილობებისა და მონაცემების გამოყენება</translation>
 <translation id="4214357935346142455">შესვლის ეკრანის პროფილი</translation>
@@ -1386,7 +1393,6 @@
 <translation id="6671697161687535275">ამოიშალოს ფორმებისთვის განკუთვნილი შემოთავაზება Chromium-იდან?</translation>
 <translation id="6685834062052613830">გამოდით სისტემიდან და დაასრულეთ მოწყობილობის დაყენება</translation>
 <translation id="6687335167692595844">შრიფტის ზომა მოთხოვნილია</translation>
-<translation id="6688998199862661005">თქვენმა ადმინისტრატორმა დაბლოკა ამ კონტენტის გაზიარება <ph name="VM_NAME" />-თან</translation>
 <translation id="6689249931105087298">ფარდობითი, შავი წერტილის შეკუმშვით</translation>
 <translation id="6689271823431384964">თქვენს Google ანგარიშში ბარათების შენახვას Chrome გთავაზობთ, ვინაიდან შესული ხართ სისტემაში. ამ ქცევის შეცვლა შეგიძლიათ პარამეტრებიდან. ბარათის მფლობელის სახელი მიღებულია თქვენი ანგარიშიდან.</translation>
 <translation id="6710213216561001401">წინა</translation>
@@ -1411,7 +1417,6 @@
 <translation id="6810899417690483278">მორგების ID</translation>
 <translation id="6825578344716086703">თქვენ ცადეთ <ph name="DOMAIN" />-თან დაკავშირება, თუმცა სერვერის მიერ წარმოდგენილი სერტიფიკატი ხელმოწერილია სუსტი ალგორითმის მეშვეობით (მაგ. SHA-1). ეს ნიშნავს, რომ დაცვის მტკიცებულებათა ნაკრები, რომელიც სერვერმა წარმოადგინა, შეიძლება გაყალბებული იყოს, ხოლო სერვერი არ იყოს ის, რომელსაც მოელით (შეიძლება საქმე თავდამსხმელთან გქონდეთ).</translation>
 <translation id="6826993739343257035">გსურთ AR-ის დაშვება?</translation>
-<translation id="6829611662493319648">თქვენმა ადმინისტრატორმა დაბლოკა ამ კონტენტის გაზიარება <ph name="VM_NAME_1" />-სა და <ph name="VM_NAME_2" />-თან</translation>
 <translation id="6831043979455480757">თარგმნა</translation>
 <translation id="6839929833149231406">რეგიონი</translation>
 <translation id="6846340164947227603">ვირტუალური ბარათის ნომრის გამოყენება…</translation>
@@ -1500,7 +1505,6 @@
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> არ აკმაყოფილებს უსაფრთხოების სტანდარტებს.</translation>
 <translation id="7210993021468939304">შეუძლია კონტეინერის შიგნით Linux-ის აქტივობის ნახვა და Linux აპების ინსტალაცია/გაშვება</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />გაიგეთ მეტი<ph name="END_LINK" /> ამ პრობლემის შესახებ.</translation>
-<translation id="7214062855724067749">თქვენს კომპიუტერზე დაინსტალირებული შრიფტების გამოყენება, გაფართოებული ტიპოგრაფიის შექმნის ხელშეწყობის მიზნით</translation>
 <translation id="7217745192097460130">გსურთ, გამოიყენოთ Touch ID შენაძენების დასადასტურებლად და განსახორციელებლად?</translation>
 <translation id="7219179957768738017">კავშირი იყენებს <ph name="SSL_VERSION" />-ს.</translation>
 <translation id="7220786058474068424">მუშავდება</translation>
@@ -1625,6 +1629,7 @@
 <translation id="7647206758853451655">ბეჭდვის ხარისხი</translation>
 <translation id="7648992873808071793">ამ მოწყობილობაში ფაილების შენახვა</translation>
 <translation id="7653957176542370971">გადახდების დამმუშავებლის გვერდი დახურულია</translation>
+<translation id="7654909834015434372">ანოტაციების რედაქტირებისას ეს დოკუმენტი შეტრიალდება თავდაპირველი ვერსიის მიხედვით</translation>
 <translation id="765676359832457558">დამალეთ გაფართოებული პარამეტრები…</translation>
 <translation id="7658239707568436148">გაუქმება</translation>
 <translation id="7662298039739062396">პარამეტრს აკონტროლებს გაფართოება</translation>

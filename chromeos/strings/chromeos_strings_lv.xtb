@@ -5,6 +5,7 @@
 <translation id="1195447618553298278">Nezināma kļūda.</translation>
 <translation id="1413240736185167732">Neizdevās — filtra kļūme</translation>
 <translation id="1468664791493211953">Piedāvājumi</translation>
+<translation id="1478594628797167447">Skeneris</translation>
 <translation id="1482734542997480527"><ph name="ENROLLMENT_DOMAIN" /> pārvalda šo ierīci un, iespējams, var pārraudzīt jūsu darbību.</translation>
 <translation id="150962533380566081">PUK nav derīgs.</translation>
 <translation id="1510238584712386396">Lietojumprogrammu palaidējs</translation>
@@ -24,6 +25,7 @@
 <translation id="2872961005593481000">Beidzēt</translation>
 <translation id="3008341117444806826">ATSVAIDZINĀT</translation>
 <translation id="3091839911843451378">Neizdevās — darbība apturēta</translation>
+<translation id="3246869037381808805">Drukas uzdevumi, kas ir vecāki par vienu dienu, tiks noņemti</translation>
 <translation id="3268178239013324452">Neizdevās — durtiņas ir atvērtas</translation>
 <translation id="3369013195428705271">Vai tiešām vēlaties notīrīt visu drukāšanas vēsturi? Netiks notīrīti drukas uzdevumi, kas tiek izpildīti.</translation>
 <translation id="3456078764689556234">Izdrukāto lapu skaits: <ph name="PRINTED_PAGES" /> no<ph name="TOTAL_PAGES" />.</translation>
@@ -34,6 +36,7 @@
 <translation id="38114475217616659">Notīrīt visu vēsturi</translation>
 <translation id="3820172043799983114">PIN nav derīgs.</translation>
 <translation id="3838338534323494292">Jaunā parole</translation>
+<translation id="39823212440917567">Drukas uzdevumi, kas ir vecāki par <ph name="NUMBER_OF_DAYS" /> dienām, tiks noņemti</translation>
 <translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> pārvalda šo ierīci un tam ir piekļuve visām lietotāja darbībām, tostarp tīmekļa lapām, kuras apmeklējāt, parolēm un e-pastam.</translation>
 <translation id="4003384961948020559">Neizdevās — izvades paliktnis pilns</translation>
 <translation id="4027485274696301677">Šī <ph name="DEVICE_TYPE" /> ierīce tiek pārvaldīta domēnā <ph name="ENROLLMENT_DOMAIN" />. Administratori var attālināti konfigurēt ierīci.</translation>
@@ -71,6 +74,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="649050271426829538">Apturēts — iestrēdzis papīrs</translation>
 <translation id="6517239166834772319">Izpēte</translation>
 <translation id="6564646048574748301">Neizdevās — printeris nav sasniedzams</translation>
+<translation id="6620487321149975369">Drukas uzdevumi būs redzami vēsturē, ja vien tie netiks noņemti manuāli</translation>
 <translation id="6643016212128521049">Notīrīt</translation>
 <translation id="6747215703636344499">Apturēts — izvades paliktnis ir pilns</translation>
 <translation id="7162487448488904999">Galerija</translation>
@@ -81,6 +85,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="7805768142964895445">Statuss</translation>
 <translation id="808894953321890993">Mainīt paroli</translation>
 <translation id="8208861521865154048">Priekšrocības</translation>
+<translation id="8294431847097064396">Avots</translation>
 <translation id="8347227221149377169">Drukas uzdevumi</translation>
 <translation id="8352772353338965963">Pievienojiet kontu vairākkārtējās pierakstīšanās funkcijai. Visiem kontiem, kuros esat pierakstījies, varēs piekļūt, neievadot paroli, tāpēc šī funkcija ir jāizmanto tikai uzticamiem kontiem.</translation>
 <translation id="8701136875688985581">Šis lietotājs tiek pārvaldīts domēnā<ph name="ENROLLMENT_DOMAIN" />. Šajā domēnā var tikt attālināti pārvaldīti iestatījumi un uzraudzītas lietotāja darbības.</translation>

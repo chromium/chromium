@@ -113,6 +113,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="2049240716062114887">Nama meja telah ditukar kepada <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Potret</translation>
 <translation id="2067602449040652523">Kecerahan papan kekunci</translation>
+<translation id="2074759828767813253">Tangkapan skrin dan muat turun baru-baru ini</translation>
 <translation id="2083190527011054446">Selamat malam <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">Tidak bersambung ke rangkaian</translation>
 <translation id="2126242104232412123">Meja baharu</translation>
@@ -197,6 +198,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="2996462380875591307">Penggadang Didok didayakan. Tekan Ctrl+Cari+D semula untuk mematikannya.</translation>
 <translation id="3000461861112256445">Audio mono</translation>
 <translation id="3009178788565917040">Output</translation>
+<translation id="3025081209054535615">Nyahsemat kawalan media global daripada rak</translation>
 <translation id="3033545621352269033">Dihidupkan</translation>
 <translation id="3038571455154067151">Untuk log masuk, masukkan kod akses ibu bapa Family Link anda</translation>
 <translation id="3045488863354895414">Selamat tengah hari,</translation>
@@ -250,6 +252,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="3430396595145920809">Leret dari kanan untuk kembali</translation>
 <translation id="343571671045587506">Edit peringatan</translation>
 <translation id="3435967511775410570">Cap jari dikenali</translation>
+<translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">Peranti USB-C</translation>
 <translation id="3454224730401036106">Sambungan anda telah beralih kepada rangkaian yang lebih selamat</translation>
 <translation id="3465223694362104965">Papan kekunci lain telah disambungkan ke peranti ini sejak kali terakhir anda log masuk. Pastikan anda mempercayai papan kekunci ini sebelum anda menggunakannya.</translation>
@@ -384,6 +387,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4804818685124855865">Putuskan sambungan</translation>
 <translation id="4814539958450445987">Skrin Log Masuk</translation>
 <translation id="4831034276697007977">Adakah anda pasti mahu mematikan klik automatik?</translation>
+<translation id="4836108105469522644">Hidupkan Pemberitahuan daripada telefon Android anda</translation>
 <translation id="4849058404725798627">Serlahkan objek dengan fokus papan kekunci</translation>
 <translation id="485592688953820832">Tiada tindakan (jeda)</translation>
 <translation id="4868492592575313542">diaktifkan</translation>
@@ -453,6 +457,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="5691772641933328258">Cap jari tidak dikenali</translation>
 <translation id="5710450975648804523">Jangan Ganggu dihidupkan</translation>
 <translation id="573413375004481890">Peranti ini tidak dapat menyokong semua paparan anda, oleh itu, satu paparan telah diputuskan sambungan</translation>
+<translation id="5740328398383587084">Kongsi Berdekatan</translation>
 <translation id="574392208103952083">Sederhana</translation>
 <translation id="5744083938413354016">Penyeretan ketik</translation>
 <translation id="5745612484876805746">Cahaya Malam akan dihidupkan secara automatik pada waktu matahari terbenam</translation>
@@ -697,6 +702,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="8297006494302853456">Lemah</translation>
 <translation id="8308637677604853869">Menu sebelumnya</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
+<translation id="8349293353728876872">Sematkan kawalan media global pada rak</translation>
 <translation id="8351131234907093545">Buat nota</translation>
 <translation id="8371779926711439835">Maju satu huruf</translation>
 <translation id="8375916635258623388"><ph name="DEVICE_NAME" /> ini dan telefon anda akan disambungkan secara automatik</translation>

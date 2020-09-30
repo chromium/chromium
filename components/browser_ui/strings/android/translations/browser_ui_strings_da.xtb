@@ -47,6 +47,7 @@
 <translation id="2187243482123994665">Brugertilstedeværelse</translation>
 <translation id="2212565012507486665">Tillad cookies</translation>
 <translation id="2228071138934252756">Aktivér også dit kamera i <ph name="BEGIN_LINK" />Android-indstillingerne<ph name="END_LINK" /> for at give <ph name="APP_NAME" /> adgang til kameraet.</translation>
+<translation id="2241634353105152135">Kun én gang</translation>
 <translation id="2289270750774289114">Spørg, når et website vil søge efter Bluetooth-enheder i nærheden (anbefalet)</translation>
 <translation id="2315043854645842844">Klientens certifikatvalg understøttes ikke af operativsystemet.</translation>
 <translation id="2359808026110333948">Fortsæt</translation>
@@ -230,6 +231,7 @@
 <translation id="7423538860840206698">Blokeret fra at læse udklipsholderen</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7554752735887601236">Et website anvender din mikrofon</translation>
+<translation id="7561196759112975576">Altid</translation>
 <translation id="7572498721684305250">Bloker websites, så de ikke kan sende og modtage oplysninger, når du parrer NFC-enheder</translation>
 <translation id="757524316907819857">Bloker afspilning af beskyttet indhold på websites</translation>
 <translation id="7589445247086920869">Bloker for den aktuelle søgemaskine</translation>

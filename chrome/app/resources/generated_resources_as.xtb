@@ -1052,7 +1052,6 @@
 <translation id="2218019600945559112">মাউচ আৰু টাচ্চ্‌পেড</translation>
 <translation id="2218320521449013367">Chromeএ ক্ষতিকাৰক ছফৱেট আঁতৰাই থাকোঁতে কিবা আসোঁৱাহ হৈছে</translation>
 <translation id="2218515861914035131">নিকা পাঠ হিচাপে পে’ষ্ট কৰক</translation>
-<translation id="221872881068107022">ওলোটাকৈ স্ক্র’ল কৰাৰ সুবিধা</translation>
 <translation id="2220409419896228519">আপোনাৰ প্ৰিয় Google Appsত বুকমাৰ্ক যোগ কৰক</translation>
 <translation id="2220529011494928058">কোনো সমস্যাৰ অভিযোগ দিয়ক</translation>
 <translation id="2220572644011485463">পিন বা পাছৱৰ্ড</translation>
@@ -1238,7 +1237,6 @@
 <translation id="2435457462613246316">পাছৱৰ্ড দেখুৱাওক</translation>
 <translation id="2435579801172349831">আটাইবোৰ (<ph name="URL_COUNT" /> টা) ইনক’গনিট’ ৱিণ্ড’ত খোলক</translation>
 <translation id="2436186046335138073"><ph name="HANDLER_HOSTNAME" />ক সকলো <ph name="PROTOCOL" />ৰ লিংক খুলিবলৈ অনুমতি দিবনে?</translation>
-<translation id="2436707352762155834">ন্যূনতম</translation>
 <translation id="2439545803278355377">আপোনাৰ নতুন PINটো দিয়ক। এটা পিনত অতি কমেও চাৰিটা বৰ্ণ থাকিবই লাগিব যিকেইটা আখৰ, সংখ্যা আৰু অন্য বৰ্ণ হ'ব পাৰে।</translation>
 <translation id="2440604414813129000">উ&amp;ৎস চাওক</translation>
 <translation id="244231003699905658">অমান্য ঠিকনা। অনুগ্ৰহ কৰি ঠিকনাটো পৰীক্ষা কৰক আৰু পুনৰ চেষ্টা কৰক।</translation>
@@ -3079,6 +3077,7 @@
 <translation id="4617270414136722281">এক্সটেনশ্বন বিকল্প</translation>
 <translation id="4619615317237390068">অন্য ডিভাইচৰ টেব</translation>
 <translation id="4620809267248568679">এই ছেটিংটো কোনো এক্সটেনশ্বনৰ জৰিয়তে বলৱৎ কৰা হৈছে৷</translation>
+<translation id="4623167406982293031">একাউণ্টটোৰ সত্যাপন কৰক</translation>
 <translation id="4623189117674524348">ছিষ্টেমটোৱে এই ডিভাইচটোৰ বাবে API এক্সেছৰ কর্তৃত্ব প্ৰদান কৰিব নোৱাৰিলে।</translation>
 <translation id="4625078469366263107">এপ্ সক্ষম কৰক</translation>
 <translation id="4627427111733173920">কুকি অৱৰোধ কৰা হ’ল</translation>
@@ -3252,7 +3251,6 @@
 <translation id="4848518990323155912">ছিম কার্ড লক কৰা সুবিধাটো সক্ষম কৰক (ম'বাইল ডেটা ব্যৱহাৰ কৰিবলৈ পিনৰ আৱশ্যক)</translation>
 <translation id="4849286518551984791">Coordinated Universal Time (UTC/GMT)</translation>
 <translation id="4849517651082200438">ইনষ্টল নকৰিব</translation>
-<translation id="4850669014075537160">স্ক্ৰ’লিং</translation>
 <translation id="4850886885716139402">চাওক</translation>
 <translation id="485088796993065002">ছাইটসমূহে সংগীত, ভিডিঅ' আৰু অন্য মিডিয়াত অডিঅ' প্ৰদান কৰিবলৈ ধ্বনি প্লে' কৰিব পাৰে</translation>
 <translation id="4853020600495124913">&amp;নতুন ৱিণ্ড'ত খোলক</translation>
@@ -4840,7 +4838,6 @@
 <translation id="6781978626986383437">Linux বেক আপ বাতিল কৰা হৈছে</translation>
 <translation id="6782067259631821405">অমান্য পিন</translation>
 <translation id="6785518634832172390">পিনটোত ১২ টা অথবা তাতকৈ কম অংক থাকিব লাগিব</translation>
-<translation id="6785915470941880363">ওলোটা স্ক্ৰলিং <ph name="LINK_BEGIN" />অধিক জানক<ph name="LINK_END" /></translation>
 <translation id="6786747875388722282">এক্সটেনশ্বনসমূহ</translation>
 <translation id="6787839852456839824">কীব’ৰ্ডৰ শ্বৰ্টকাটসমূহ</translation>
 <translation id="6788210894632713004">আনপেক কৰি থোৱা এক্সটেনশ্বন</translation>

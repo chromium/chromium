@@ -19,6 +19,7 @@
 <translation id="1126809382673880764">Չի պաշտպանում վտանգավոր կայքերից, ընդլայնումներից և ներբեռնումներից։ Անվտանգ դիտարկումը նախկինի պես կաշխատի Google-ի այլ ծառայություններում (եթե հասանելի է), օրինակ՝ Gmail-ում կամ Որոնման էջերում։</translation>
 <translation id="1129510026454351943">Մանրամասներ՝ <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1141800923049248244">{FILE_COUNT,plural, =1{Կնեռբեռնվի 1 ֆայլ:}one{Կներբեռնվի # ֆայլ:}other{Կներբեռնվի # ֆայլ:}}</translation>
+<translation id="1142732900304639782">Չառաջարկել թարգմանել այս կայքերը</translation>
 <translation id="1145536944570833626">Առկա տվյալների ջնջում։</translation>
 <translation id="1146678959555564648">Մուտքագրել VR-ը</translation>
 <translation id="1154704303112745282">Էջն անցանց ռեժիմում հասանելի չէ՝ <ph name="VIOLATED_URL" /></translation>
@@ -41,6 +42,7 @@
 <translation id="1263231323834454256">Ընթերցանության ցանկ</translation>
 <translation id="1266864766717917324">Չհաջողվեց ուղարկել բովանդակությունը (<ph name="CONTENT_TYPE" />)</translation>
 <translation id="1283039547216852943">Հպեք՝ ընդարձակելու համար</translation>
+<translation id="1285310382777185058">Փոխել լեզուն</translation>
 <translation id="1291207594882862231">Մաքրել պատմությունը, քուքիները, կայքի տվյալները, քեշը…</translation>
 <translation id="129553762522093515">Վերջերս փակված</translation>
 <translation id="1298077576058087471">Տնտեսեք թրաֆիկի մինչև 60%-ը, կարդացեք այսօրվա նորությունները</translation>
@@ -52,6 +54,7 @@
 <translation id="1327257854815634930">Նավարկման պատմության թերթն ամբողջությամբ բացված է</translation>
 <translation id="1331212799747679585">Չհաջողվեց թարմացնել Chrome-ը։ Այլ կարգավորումներ</translation>
 <translation id="1332501820983677155">Google Chrome-ի գործառույթների դյուրանցումներ</translation>
+<translation id="133857033449832692"><ph name="LANG" /> լեզուն ներբեռնվում է…</translation>
 <translation id="1347468774581902829">Կառավարել պատմությունը</translation>
 <translation id="1360432990279830238">Դուրս գրվե՞լ և անջատել համաժամացումը</translation>
 <translation id="1373696734384179344">Ընտրված բովանդակությունը ներբեռնելու համար բավարար հիշողություն չկա:</translation>
@@ -110,6 +113,7 @@
 <translation id="1877026089748256423">Chrome-ը հնացած է</translation>
 <translation id="1883903952484604915">Իմ ֆայլերը</translation>
 <translation id="189358972401248634">Այլ լեզուներ</translation>
+<translation id="1922362554271624559">Առաջարկվող լեզուներ</translation>
 <translation id="1925021887439448749">Մուտքագրեք այլ հասցե</translation>
 <translation id="1928696683969751773">Թարմացումներ</translation>
 <translation id="19288952978244135">Նորից բացեք Chrome-ը:</translation>
@@ -198,6 +202,7 @@
 <translation id="2496180316473517155">Դիտարկումների պատմություն</translation>
 <translation id="2497852260688568942">Ձեր ադմինիստրատորն անջատել է համաժամացումը</translation>
 <translation id="250020030759455918">Դուք կտեսնեք ձեր <ph name="SITE_NAME" /> հաշվի մուտքի կարգավիճակը, այցելությունների պատմությունը և կայքի տվյալները Chrome-ում</translation>
+<translation id="2512164632052122970">Բովանդակության լեզուները</translation>
 <translation id="2513403576141822879"><ph name="BEGIN_LINK" />Համաժամացում և Google-ի ծառայություններ<ph name="END_LINK" /> բաժնում դուք կարող եք գտնել գաղտնիության, անվտանգության և տվյալների հավաքման հետ կապված լրացուցիչ կարգավորումներ։</translation>
 <translation id="2517472476991765520">Որոնել</translation>
 <translation id="2518590038762162553">Lite ռեժիմում Chrome-ն ավելի արագ է բեռնում էջերը և օգտագործում է մինչև 60% պակաս թրաֆիկ: Ձեր այցելած էջերն օպտիմալացնելու համար Chrome-ը ձեր վեբ թրաֆիկն ուղարկում է Google-ին։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
@@ -208,6 +213,7 @@
 <translation id="2537178555904266562">Չհաջողվեց համաժամացնել գաղտնաբառերը</translation>
 <translation id="2546283357679194313">Cookie ֆայլեր և կայքի տվյալներ</translation>
 <translation id="2567385386134582609">ՊԱՏԿԵՐ</translation>
+<translation id="2571711316400087311">Առաջարկել այլ լեզուներով էջերն ուղարկել Google Translate ծառայությանը</translation>
 <translation id="2581165646603367611">Բոլոր քուքիները, քեշը և այլ տվյալները, որոնք Chrome-ին անհրաժեշտ չեն, կջնջվեն:</translation>
 <translation id="2587052924345400782">Հասանելի է նոր տարբերակ</translation>
 <translation id="2593272815202181319">Միալայն</translation>
@@ -221,6 +227,8 @@
 <translation id="2689830683995595741">Օգտվելով Chrome-ից՝ դուք ընդունում եք <ph name="BEGIN_LINK1" />Google-ի օգտագործման պայմանները<ph name="END_LINK1" /> և <ph name="BEGIN_LINK2" />Google Chrome-ի և Chrome OS-ի օգտագործման լրացուցիչ պայմանները<ph name="END_LINK2" />։ Գործում է նաև <ph name="BEGIN_LINK3" />Family Link-ի միջոցով կառավարվող Google հաշիվների գաղտնիության ծանուցագիրը<ph name="END_LINK3" />։</translation>
 <translation id="2707726405694321444">Թարմացնել էջը</translation>
 <translation id="2709516037105925701">Ինքնալցում</translation>
+<translation id="2718352093833049315">Միայն Wi-Fi-ով</translation>
+<translation id="2718846868787000099">Ձեր նախընտրած լեզուներով բովանդակություն ցուցադրելու համար կայքերը, որոնք այցելում եք, կարող են տեսնել ձեր կարգավորումները</translation>
 <translation id="2723001399770238859">audio</translation>
 <translation id="2728754400939377704">Դասավորել ըստ կայքի</translation>
 <translation id="2744248271121720757">Հպեք բառին՝ ակնթարթորեն որոնելու կամ առնչվող գործողությունները տեսնելու համար</translation>
@@ -283,7 +291,6 @@
 <translation id="3211426585530211793">Տարրը (<ph name="ITEM_TITLE" />) ջնջվեց</translation>
 <translation id="3211503082155944789"><ph name="READING_LIST_COUNT" /> չկարդացված էջ</translation>
 <translation id="321773570071367578">Եթե մոռացել եք ձեր անցաբառը կամ ուզում եք փոխել այս կարգավորումը, <ph name="BEGIN_LINK" />վերակայեք համաժամացումը<ph name="END_LINK" /></translation>
-<translation id="3223655207402797071">Մուտք գործեք այս կայքում, ձեր Google հաշիվ և Chrome։ Համաժամացումը կարող եք ավելի ուշ միացնել։</translation>
 <translation id="3232754137068452469">Վեբ ծրագիր</translation>
 <translation id="3236059992281584593">Մնացել է 1 րոպե</translation>
 <translation id="3244271242291266297">ամիս</translation>
@@ -347,6 +354,7 @@
 <translation id="3714981814255182093">Բացել «Փնտրել» գոտին</translation>
 <translation id="3716182511346448902">Այս էջն օգտագործում էր չափազանց մեծ հիշողություն։ Chrome-ը դադարեցրեց այն։</translation>
 <translation id="3721119614952978349">Դուք և Google-ը</translation>
+<translation id="3737319253362202215">Թարգմանության կարգավորումներ</translation>
 <translation id="3738139272394829648">Հպեք` որոնելու համար</translation>
 <translation id="3739899004075612870">Էջանշվեց <ph name="PRODUCT_NAME" />-ում</translation>
 <translation id="3749259744154402564">Չի աջակցվում</translation>
@@ -494,6 +502,7 @@
 <translation id="4842092870884894799">Ցուցադրվում է գաղտնաբառի ստեղծման ելնող պատուհանը</translation>
 <translation id="4860895144060829044">Զանգեք</translation>
 <translation id="4864369630010738180">Մուտք...</translation>
+<translation id="4865987431642283918">Սարքի կանխադրված լեզուն</translation>
 <translation id="4866368707455379617">Չհաջողվեց տեղադրել «<ph name="MODULE" />» բաղադրիչը Chrome-ի համար</translation>
 <translation id="4875775213178255010">Բովանդակության առաջարկներ</translation>
 <translation id="4878404682131129617">Չհաջողվեց կապ հաստատել միջնորդ սերվերի միջոցով</translation>
@@ -567,6 +576,7 @@
 <translation id="543338862236136125">Փոխել գաղտնաբառը</translation>
 <translation id="5433691172869980887">Օգտանունը պատճենվեց</translation>
 <translation id="543509235395288790">Ներբեռնվում է <ph name="COUNT" /> ֆայլ (<ph name="MEGABYTES" />)։</translation>
+<translation id="5441466871879044658">Թարգմանել այս լեզվով</translation>
 <translation id="5441522332038954058">Անցնել հասցեագոտի</translation>
 <translation id="544776284582297024">Ներդիրներ բացելու և միաժամանակ մի քանի էջեր այցելելու համար սեղմեք «բաց ներդիրներ» կոճակը</translation>
 <translation id="545042621069398927">Ներբեռնումն արագացվում է։</translation>
@@ -645,6 +655,7 @@
 <translation id="5937580074298050696">Խնայվել է <ph name="AMOUNT" /></translation>
 <translation id="5939518447894949180">Վերակայել</translation>
 <translation id="5942872142862698679">Օգտագործվում է Google որոնման համակարգը</translation>
+<translation id="5951615825629292797">Լեզուն պատրաստ է։ Վերագործարկեք <ph name="APP_NAME" /> հավելվածը։</translation>
 <translation id="5952764234151283551">Google-ին է ուղարկում այն էջի URL-ը, որը փորձում եք բացել</translation>
 <translation id="5956665950594638604">Բացել Chrome-ի օգնության կենտրոնը նոր ներդիրում</translation>
 <translation id="5957442310066583693">Ձեր թոփ կայքերը դիտելու համար սեղմեք գլխավոր էկրանի կոճակը</translation>
@@ -670,6 +681,7 @@
 <translation id="6112702117600201073">Էջի թարմացում</translation>
 <translation id="6122831415929794347">Անջատե՞լ ապահով դիտարկումը</translation>
 <translation id="6127379762771434464">Տարրը հեռացվեց</translation>
+<translation id="6137022273846704445"><ph name="APP_NAME" /> հավելվածի լեզուն</translation>
 <translation id="6140709049082532940">Լրացուցիչ պաշտպանություն՝</translation>
 <translation id="6140912465461743537">Երկիր/տարածաշրջան</translation>
 <translation id="614940544461990577">Փորձեք՝</translation>
@@ -829,6 +841,7 @@
 <translation id="7290209999329137901">Հնարավոր չէ վերանվանել</translation>
 <translation id="7291387454912369099">Վճարում Օգնականի միջոցով</translation>
 <translation id="7293171162284876153">Սկսելու համար միացրեք «Համաժամացնել Chrome-ի տվյալները» կարգավորումը:</translation>
+<translation id="7293429513719260019">Ընտրել լեզուն</translation>
 <translation id="729975465115245577">Ձեր սարքը գաղտնաբառերի ֆայլ պահելու հավելված չունի:</translation>
 <translation id="7302081693174882195">Տեղեկություններ․ տեսակավորված է ըստ պահված տվյալների ծավալի</translation>
 <translation id="7304873321153398381">Կապ չկա։ Chrome-ը չի կարող ստուգել ձեր գաղտնաբառերը։</translation>
@@ -918,6 +931,7 @@
 <translation id="7882131421121961860">Պատմությունը դատարկ է</translation>
 <translation id="7886917304091689118">Այս էջն արդեն բացված է Chrome-ում</translation>
 <translation id="789763218334337857">Ինչպես օգտագործել Chrome-ը</translation>
+<translation id="7919123827536834358">Ավտոմատ թարգմանել այս լեզուները</translation>
 <translation id="7925590027513907933">{FILE_COUNT,plural, =1{Ֆայլը ներբեռնվում է:}one{Ներբեռնվում է # ֆայլ:}other{Ներբեռնվում է # ֆայլ:}}</translation>
 <translation id="7926975587469166629">Քարտի այլանունը</translation>
 <translation id="7929962904089429003">Բացել ընտրացանկը</translation>
@@ -984,6 +998,7 @@
 <translation id="8349013245300336738">Դասավորել ըստ օգտագործված տվյալների ծավալի</translation>
 <translation id="8364299278605033898">Դիտեք թոփ կայքերը</translation>
 <translation id="8368027906805972958">Անհայտ կամ չաջակցվող սարք (<ph name="DEVICE_ID" />)</translation>
+<translation id="8372925856448695381"><ph name="LANG" /> լեզուն պատրաստ է։</translation>
 <translation id="8393700583063109961">Ուղարկել հաղորդագրություն</translation>
 <translation id="8407396331882458341">1. Ընտրեք <ph name="APP_NAME" /> հավելվածը\n2. Հպեք «Միշտ»</translation>
 <translation id="8413126021676339697">Ցույց տալ ամբողջ պատմությունը</translation>
@@ -1031,6 +1046,7 @@
 <translation id="8683039184091909753">պատկեր</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{Ազդանշանի ուժգնությունը՝ # գծիկ}one{Signal Strength Level: # bars}other{Ազդանշանի ուժգնությունը՝ # գծիկ}}</translation>
 <translation id="869891660844655955">Սպառման ժամկետ</translation>
+<translation id="8699120352855309748">Չառաջարկել թարգմանել այս լեզուները</translation>
 <translation id="8712637175834984815">Պատրաստ է</translation>
 <translation id="8725066075913043281">Փորձել կրկին</translation>
 <translation id="8748850008226585750">Բովանդակությունը թաքցված է</translation>

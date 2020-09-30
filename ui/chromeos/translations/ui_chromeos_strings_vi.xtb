@@ -30,6 +30,7 @@
 <translation id="1208421848177517699">Chuyển ngữ (namaste → નમસ્તે)</translation>
 <translation id="1243314992276662751">Tải lên</translation>
 <translation id="1249250836236328755">Thể loại</translation>
+<translation id="1276362640455948667">Nhập tiếng Bồ Đào Nha bằng bàn phím quốc tế Hoa Kỳ</translation>
 <translation id="1278813325885878377">Bàn phím QWERTY dành cho tiếng Hungary</translation>
 <translation id="1293556467332435079">Tệp</translation>
 <translation id="1297922636971898492">Google Drive hiện không khả dụng. Quá trình tải lên sẽ tự động khởi động lại khi Google Drive hoạt động trở lại.</translation>
@@ -112,13 +113,14 @@
 <translation id="2163152940313951844">Ký tự không hợp lệ: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2164862903024139959">Bàn phím tiếng Việt (TCVN)</translation>
 <translation id="2168214441502403371">Bàn phím tiếng Ba Tư</translation>
-<translation id="2197363559908958454">Đã di chuyển <ph name="NUMBER_OF_ITEMS" />.</translation>
 <translation id="2198315389084035571">Tiếng Trung giản thể</translation>
 <translation id="2208158072373999562">Nén zip</translation>
 <translation id="2225536596944493418">Bạn có chắc chắn muốn xóa <ph name="NUMBER_OF_ITEMS" /> mục không?</translation>
 <translation id="2230062665678605299">Không thể tạo thư mục "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2270413998793223379">Tiếng Phạn</translation>
 <translation id="2275059641601412272">Đã di chuyển.</translation>
 <translation id="2278988676849463018">Bàn phím tiếng Kannada (Ngữ âm)</translation>
+<translation id="2287742181953707290">Nhập tiếng Bồ Đào Nha bằng bàn phím quốc tế Hoa Kỳ cho máy tính để bàn</translation>
 <translation id="2288278176040912387">Máy quay đĩa hát</translation>
 <translation id="2291538123825441971">Đang mở <ph name="NUMBER_OF_FILES" /> tệp.</translation>
 <translation id="2303301624314357662">Đang mở tệp <ph name="FILE_NAME" />.</translation>
@@ -222,6 +224,7 @@
 <translation id="3473378059788601120">Đã sao chép vào <ph name="FOLDER_NAME" />.</translation>
 <translation id="3475447146579922140">Bảng tính Google</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> lỗi.</translation>
+<translation id="349603508045926994">Chuyển tự tiếng Ba Tư</translation>
 <translation id="3519867315646775981">Chuyển ngữ (shalom ← שלום)</translation>
 <translation id="3522708245912499433">Tiếng Bồ Đào Nha</translation>
 <translation id="3524311639100184459">Lưu ý: Các tệp này chỉ được lưu trữ tạm thời và có thể tự động bị xóa để giải phóng dung lượng ổ đĩa.  <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
@@ -293,6 +296,7 @@
 <translation id="4298972503445160211">Bàn phím tiếng Đan Mạch</translation>
 <translation id="4299729908419173967">Tiếng Braxin</translation>
 <translation id="4309915981827077375">Thông tin chung</translation>
+<translation id="4315949787858895817">Tiếng Hà Lan (Bỉ)</translation>
 <translation id="4326192123064055915">Cà phê</translation>
 <translation id="4336032328163998280">Thao tác sao chép không thành công. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4364327530094270451">Quả dưa</translation>
@@ -339,6 +343,7 @@
 <translation id="4804827417948292437">Quả bơ</translation>
 <translation id="4823651846660089135">Thiết bị chỉ đọc</translation>
 <translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> mục được chọn</translation>
+<translation id="4849981557599196363">Tiếng Đức (Bỉ)</translation>
 <translation id="4850886885716139402">Xem</translation>
 <translation id="485316830061041779">Tiếng Đức</translation>
 <translation id="4867079195717347957">Nhấp để sắp xếp cột theo thứ tự giảm dần.</translation>
@@ -402,6 +407,7 @@
     trên các tệp với những người khác, tất cả tại cùng một địa điểm.<ph name="MARKUP_9" /></translation>
 <translation id="5274350207900771082">Đã sao chép.</translation>
 <translation id="5275973617553375938">Tệp được khôi phục từ Google Drive</translation>
+<translation id="5283140566205748520">Tiếng Pháp (Bỉ)</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">Lưu</translation>
 <translation id="5318819489018851358">Chia sẻ với Linux</translation>
@@ -688,6 +694,7 @@
 <translation id="8329978297633540474">Văn bản thuần túy</translation>
 <translation id="8335587457941836791">Bỏ ghim khỏi giá</translation>
 <translation id="8336153091935557858">Hôm qua <ph name="YESTERDAY_DAYTIME" /></translation>
+<translation id="8336524887811696057">Chuyển tự tiếng Nepal</translation>
 <translation id="8336579025507394412">Bàn phím Iceland</translation>
 <translation id="8342318071240498787">Tệp hoặc thư mục có cùng tên đã tồn tại.</translation>
 <translation id="8382450452152102026">Đến <ph name="FOLDER_NAME" /></translation>
@@ -713,12 +720,14 @@
 <translation id="8600173386174225982">Danh sách tệp đã thay đổi thành chế độ xem hình thu nhỏ.</translation>
 <translation id="8601932370724196034">Tệp hình ảnh Crostini</translation>
 <translation id="8669949407341943408">Đang di chuyển...</translation>
+<translation id="8694836330346852143">Tiếng Urdu</translation>
 <translation id="8698464937041809063">Bản vẽ Google</translation>
 <translation id="8714406895390098252">Xe đạp</translation>
 <translation id="8719721339511222681">Đã chọn <ph name="ENTRY_NAME" />.</translation>
 <translation id="8722421161699219904">Bàn phím quốc tế Hoa Kỳ</translation>
 <translation id="872537912056138402">Tiếng Croatia</translation>
 <translation id="874420130893181774">Phương thức nhập Bính âm truyền thống</translation>
+<translation id="8770002329960263418">Nhập tiếng Hà Lan (Hà Lan) bằng bàn phím quốc tế Hoa Kỳ cho máy tính để bàn</translation>
 <translation id="8775404590947523323">Chỉnh sửa của bạn đã được lưu tự động.<ph name="BREAKS" />Để giữ bản sao của ảnh gốc, hãy bỏ chọn "Ghi đè tệp gốc"</translation>
 <translation id="8803496343472038847">Bàn phím ngữ âm tiếng Nga</translation>
 <translation id="8808686172382650546">Mèo</translation>
@@ -760,7 +769,6 @@
 <translation id="943972244133411984">Người sửa đổi:</translation>
 <translation id="945522503751344254">Gửi phản hồi</translation>
 <translation id="947144732524271678">Đã chọn một loạt <ph name="ENTRY_COUNT" /> mục từ <ph name="FROM_ENTRY_NAME" /> đến <ph name="TO_ENTRY_NAME" />.</translation>
-<translation id="949308258121608615">Đã sao chép <ph name="NUMBER_OF_ITEMS" />.</translation>
 <translation id="981121421437150478">Ngoại tuyến</translation>
 <translation id="988685240266037636">Một tệp có tên <ph name="FILE_NAME" /> đã tồn tại. Bạn có muốn thay thế tệp đó không?</translation>
 <translation id="996903396648773764"><ph name="NUMBER_OF_MB" /> MB</translation>

@@ -5,6 +5,7 @@
 <translation id="1195447618553298278">Белгисиз ката.</translation>
 <translation id="1413240736185167732">Басылып чыгарылган жок - Чыпка иштебей калды</translation>
 <translation id="1468664791493211953">Сунуштар</translation>
+<translation id="1478594628797167447">Сканер</translation>
 <translation id="1482734542997480527"><ph name="ENROLLMENT_DOMAIN" /> бул түзмөктү башкарат жана аракеттериңизди да көзөмөлдөшү мүмкүн.</translation>
 <translation id="150962533380566081">Жараксыз PUK.</translation>
 <translation id="1510238584712386396">Жүргүзгүч</translation>
@@ -24,6 +25,7 @@
 <translation id="2872961005593481000">Жабуу</translation>
 <translation id="3008341117444806826">ЖАҢЫРТУУ</translation>
 <translation id="3091839911843451378">Басылып чыгарылган жок - Принтер токтоп калды</translation>
+<translation id="3246869037381808805">1 күндөн мурунку басып чыгаруу тапшырмалары өчүрүлөт</translation>
 <translation id="3268178239013324452">Басылып чыгарылган жок - Принтердин эшиги ачык</translation>
 <translation id="3369013195428705271">Басып чыгаруу тарыхын өчүрөсүзбү? Учурда басылып жаткан документтериңиз өчүрүлбөйт.</translation>
 <translation id="3456078764689556234"><ph name="TOTAL_PAGES" /> ичинен <ph name="PRINTED_PAGES" /> барак басылып чыгарылды.</translation>
@@ -34,6 +36,7 @@
 <translation id="38114475217616659">Таржымалды толук тазалоо</translation>
 <translation id="3820172043799983114">PIN код жараксыз.</translation>
 <translation id="3838338534323494292">Жаңы сырсөз</translation>
+<translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> күндөн мурунку басып чыгаруу тапшырмалары өчүрүлөт</translation>
 <translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> бул түзмөктү башкарып, андагы колдонуучунун бардык аракеттерине, анын ичинде баш баккан веб-барактарга, сырсөздөргө жана электрондук каттарга кирүү мүмкүнчүлүгү бар.</translation>
 <translation id="4003384961948020559">Басылып чыгарылган жок - Барактар тактасы толук</translation>
 <translation id="4027485274696301677"><ph name="DEVICE_TYPE" /> түзмөгүн <ph name="ENROLLMENT_DOMAIN" /> башкарат. Администраторлор түзмөктү алыстан конфигурациялай алышат.</translation>
@@ -71,6 +74,7 @@
 <translation id="649050271426829538">Токтоду – Кагаз чайналып калды</translation>
 <translation id="6517239166834772319">Изилдөө</translation>
 <translation id="6564646048574748301">Басылып чыгарылган жок - Принтер жеткиликсиз</translation>
+<translation id="6620487321149975369">Басып чыгаруу тапшырмаларын кол менен өчүрмөйүнчө, алар таржымалда сакталат</translation>
 <translation id="6643016212128521049">Тазалоо</translation>
 <translation id="6747215703636344499">Токтоду – Түпкүч толуп калды</translation>
 <translation id="7162487448488904999">Gallery</translation>
@@ -81,6 +85,7 @@
 <translation id="7805768142964895445">Статусу</translation>
 <translation id="808894953321890993">Сызсөздү өзгөртүү</translation>
 <translation id="8208861521865154048">Бонустар</translation>
+<translation id="8294431847097064396">Булак</translation>
 <translation id="8347227221149377169">Басып чыгаруу тапшырмалары</translation>
 <translation id="8352772353338965963">Бир нече профиль менен кирүү үчүн каттоо эсебин кошуңуз. Катталган бардык аккаунттарына кирүүдө сырсөз талап кылынбагандыктан, бул мүмкүнчүлүктү ишенимдүү каттоо эсептери гана колдонушу керек.</translation>
 <translation id="8701136875688985581"><ph name="ENROLLMENT_DOMAIN" /> бул колдонуучуну башкарат. Ал алыстан жөндөөлөрдү башкарып, колдонуучунун аракеттерин көзөмөлдөй алат.</translation>

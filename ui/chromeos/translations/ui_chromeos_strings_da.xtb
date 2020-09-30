@@ -113,7 +113,6 @@
 <translation id="2163152940313951844">Ugyldigt tegn: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2164862903024139959">Vietnamesisk tastatur (TCVN)</translation>
 <translation id="2168214441502403371">Persisk tastatur</translation>
-<translation id="2197363559908958454"><ph name="NUMBER_OF_ITEMS" /> blev flyttet.</translation>
 <translation id="2198315389084035571">Kinesisk (forenklet)</translation>
 <translation id="2208158072373999562">Zip-arkiv</translation>
 <translation id="2225536596944493418">Er du sikker på, at du vil slette <ph name="NUMBER_OF_ITEMS" /> elementer?</translation>
@@ -770,7 +769,6 @@
 <translation id="943972244133411984">Ændret af</translation>
 <translation id="945522503751344254">Send feedback</translation>
 <translation id="947144732524271678">Valgte et interval med <ph name="ENTRY_COUNT" /> elementer fra <ph name="FROM_ENTRY_NAME" /> til <ph name="TO_ENTRY_NAME" />.</translation>
-<translation id="949308258121608615"><ph name="NUMBER_OF_ITEMS" /> blev kopieret.</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="988685240266037636">Der findes allerede en fil med navnet "<ph name="FILE_NAME" />". Vil du erstatte den?</translation>
 <translation id="996903396648773764"><ph name="NUMBER_OF_MB" /> MB</translation>

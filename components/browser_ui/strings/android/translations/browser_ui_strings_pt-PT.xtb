@@ -7,6 +7,7 @@
 <translation id="1124772482545689468">Utilizador</translation>
 <translation id="1178581264944972037">Pausa</translation>
 <translation id="1181037720776840403">Remover</translation>
+<translation id="1195941046451948919">Tem a certeza de que pretende repor todas as autorizações para este Website?</translation>
 <translation id="1201402288615127009">Seguinte</translation>
 <translation id="1242008676835033345">Incorporada em <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">Parar</translation>
@@ -47,6 +48,7 @@
 <translation id="2187243482123994665">Presença do utilizador</translation>
 <translation id="2212565012507486665">Permitir cookies</translation>
 <translation id="2228071138934252756">Para permitir que a app <ph name="APP_NAME" /> aceda à câmara, ative também a câmara nas <ph name="BEGIN_LINK" />Definições do Android<ph name="END_LINK" />.</translation>
+<translation id="2241634353105152135">Apenas uma vez</translation>
 <translation id="2289270750774289114">Perguntar quando um site pretende detetar dispositivos Bluetooth próximos (recomendado)</translation>
 <translation id="2315043854645842844">O sistema operativo não suporta a seleção do certificado do lado do cliente.</translation>
 <translation id="2359808026110333948">Continuar</translation>
@@ -230,6 +232,7 @@
 <translation id="7423538860840206698">Leitura da área de transferência bloqueada</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7554752735887601236">Um site está a utilizar o seu microfone.</translation>
+<translation id="7561196759112975576">Sempre</translation>
 <translation id="7572498721684305250">Impedir que os sites enviem e recebam informações quando toca em dispositivos NFC</translation>
 <translation id="757524316907819857">Impedir que os sites reproduzam conteúdos protegidos</translation>
 <translation id="7589445247086920869">Bloquear o motor de pesquisa atual</translation>

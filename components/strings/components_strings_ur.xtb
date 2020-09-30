@@ -234,6 +234,7 @@
 <translation id="1798447301915465742">‏<ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />، متعدد کارروائیاں دستیاب ہیں، ہر ایک پر جانے کیلئے Tab دبائیں</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1803264062614276815">کارڈ کے حامل کا نام</translation>
+<translation id="1807246157184219062">روشنی</translation>
 <translation id="1807528111851433570">ابتدائی شیٹ</translation>
 <translation id="1821930232296380041">غلط درخواست یا درخواست کے پیرامیٹرز</translation>
 <translation id="1822540298136254167">آپ کی ملاحظہ کردہ ویب سائٹس اور ان پر گزارا گیا وقت</translation>
@@ -290,6 +291,7 @@
 <translation id="2099652385553570808">بائیں طرف تین سٹیپل</translation>
 <translation id="2101225219012730419">ورژن:</translation>
 <translation id="2102134110707549001">مضبوط پاس ورڈ تجویز کریں…</translation>
+<translation id="2102495993840063010">‏Android ایپس</translation>
 <translation id="2107021941795971877">پرنٹ سپورٹس</translation>
 <translation id="2108755909498034140">اپنے کمپیوٹر کو دوبارہ شروع کریں</translation>
 <translation id="2111256659903765347">Super-A</translation>
@@ -368,6 +370,7 @@
 <translation id="2396249848217231973">حذف کردہ کو &amp;کالعدم کریں</translation>
 <translation id="2410754574180102685">Government-Legal</translation>
 <translation id="2413528052993050574">یہ سرور یہ ثابت نہیں کر سکا کہ یہ <ph name="DOMAIN" /> ہے؛ ممکن ہے کہ اس کا سیکیورٹی سرٹیفکیٹ کالعدم قرار دے دیا گیا ہو۔ یہ غلط کنفیگریشن یا آپ کے کنکشن کو قطع کرنے والے کسی حملہ آور کی وجہ سے ہو سکتا ہے۔</translation>
+<translation id="2414886740292270097">گہری</translation>
 <translation id="2438874542388153331">دائیں طرف مستطیل سوراخ</translation>
 <translation id="245044156129055925">‏آپ نے ابھی ایک پُرفریب سائٹ پر اپنا پاس ورڈ درج کیا ہے۔ Chromium آپ کو ابھی اپنا پاس ورڈ تبدیل کرنے کی تجویز دیتا ہے۔</translation>
 <translation id="2463739503403862330">پُر کریں</translation>
@@ -447,6 +450,7 @@
 <translation id="2738330467931008676">پک اپ کا پتہ منتخب کریں</translation>
 <translation id="2740531572673183784">ٹھیک ہے</translation>
 <translation id="2742870351467570537">منتخب کردہ آئٹمز ہٹائیں</translation>
+<translation id="2765217105034171413">چھوٹا</translation>
 <translation id="277133753123645258">ترسیل کا طریقہ</translation>
 <translation id="277499241957683684">آلہ کا غائب ریکارڈ</translation>
 <translation id="2775884851269838147">پہلا پرنٹ صفحہ</translation>
@@ -741,6 +745,7 @@
 <translation id="4014128326099193693">{COUNT,plural, =1{‏{COUNT} صفحہ پر مشتمل PDF دستاویز}other{‏{COUNT} صفحات پر مشتمل PDF دستاویز}}</translation>
 <translation id="4030383055268325496">شامل کریں کو &amp;کالعدم کریں</translation>
 <translation id="4032320456957708163">آپ کا براؤزر <ph name="ENROLLMENT_DOMAIN" /> کے زیر انتظام ہے</translation>
+<translation id="4056223980640387499">سیپیا</translation>
 <translation id="4058922952496707368">کلید "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 ‎(Envelope‎)‎</translation>
 <translation id="4067947977115446013">درست پتہ شامل کریں</translation>
@@ -781,6 +786,7 @@
 <translation id="4194250254487269611">آپ کا کارڈ ابھی محفوظ نہیں کیا جا سکا</translation>
 <translation id="4196861286325780578">منتقلی &amp;واپس لائیں</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />فائروال اور اینٹی وائرس کنفیگریشنز کو چیک کیا جا رہا ہے<ph name="END_LINK" /></translation>
+<translation id="4209092469652827314">بڑا</translation>
 <translation id="4209166701302774460">آپ جس سرور پر جا رہے ہیں، <ph name="ORIGIN" />، اس نے درخواست کی ہے کہ
     ایک ماخذ پالیسی اس سے کی جانے والی تمام درخواستوں پر لاگو کی جائے۔ لیکن اب یہ
     ایک ایسی پالیسی ڈیلیور کرنے میں ناکام ہو گئی ہے جو براؤزر کو
@@ -1510,7 +1516,6 @@
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> سیکیورٹی کے معیارات کی پابندی نہیں کرتا ہے۔</translation>
 <translation id="7210993021468939304">‏کنٹینر کے اندر Linux کی سرگرمی اور کنٹینر کے اندر Linux ایپ کو انسٹال کرکے چلا سکتا ہے</translation>
 <translation id="721197778055552897">اس مسئلہ کے بارے میں <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" />۔</translation>
-<translation id="7214062855724067749">اپنے کمپیوٹر پر انسٹال کردہ فونٹس کا استعمال کریں تاکہ آپ جدید ترین ٹائپوگرافی تخلیق کر سکیں</translation>
 <translation id="7217745192097460130">‏اپنی خریداری کی توثیق اور اسے مکمل کرنے کے لئے Touch ID کا استعمال کریں؟</translation>
 <translation id="7219179957768738017">کنکشن <ph name="SSL_VERSION" /> کا استعمال کرتا ہے۔</translation>
 <translation id="7220786058474068424">کارروائی ہورہی ہے</translation>

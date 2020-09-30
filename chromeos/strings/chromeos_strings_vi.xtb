@@ -5,6 +5,7 @@
 <translation id="1195447618553298278">Lỗi chưa biết.</translation>
 <translation id="1413240736185167732">Không thành công – Không lọc được</translation>
 <translation id="1468664791493211953">Ưu đãi</translation>
+<translation id="1478594628797167447">Máy quét</translation>
 <translation id="1482734542997480527"><ph name="ENROLLMENT_DOMAIN" /> quản lý thiết bị này và có thể giám sát hoạt động của bạn.</translation>
 <translation id="150962533380566081">PUK không hợp lệ.</translation>
 <translation id="1510238584712386396">Trình chạy</translation>
@@ -24,6 +25,7 @@
 <translation id="2872961005593481000">Tắt</translation>
 <translation id="3008341117444806826">LÀM MỚI</translation>
 <translation id="3091839911843451378">Không thành công – Đã dừng</translation>
+<translation id="3246869037381808805">Các lệnh in quá 1 ngày sẽ bị xóa</translation>
 <translation id="3268178239013324452">Không thành công – Cửa máy in đang mở</translation>
 <translation id="3369013195428705271">Bạn có chắc chắn muốn xóa toàn bộ lịch sử in không? Các lệnh in đang thực hiện sẽ không bị xóa.</translation>
 <translation id="3456078764689556234">Đã in trang <ph name="PRINTED_PAGES" />/<ph name="TOTAL_PAGES" />.</translation>
@@ -34,6 +36,7 @@
 <translation id="38114475217616659">Xóa toàn bộ lịch sử</translation>
 <translation id="3820172043799983114">Mã PIN không hợp lệ.</translation>
 <translation id="3838338534323494292">Mật khẩu mới</translation>
+<translation id="39823212440917567">Các lệnh in quá <ph name="NUMBER_OF_DAYS" /> ngày sẽ bị xóa</translation>
 <translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> quản lý thiết bị này và có quyền truy cập vào tất cả hoạt động của người dùng, bao gồm cả các trang web đã truy cập, mật khẩu và email.</translation>
 <translation id="4003384961948020559">Không thành công – Khay đầu ra đã đầy</translation>
 <translation id="4027485274696301677"><ph name="DEVICE_TYPE" /> này do <ph name="ENROLLMENT_DOMAIN" /> quản lý. Quản trị viên có thể định cấu hình từ xa thiết bị này.</translation>
@@ -71,6 +74,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="649050271426829538">Đã dừng – Kẹt giấy</translation>
 <translation id="6517239166834772319">Khám phá</translation>
 <translation id="6564646048574748301">Không thành công – Không thể kết nối với máy in</translation>
+<translation id="6620487321149975369">Lệnh in sẽ xuất hiện trong lịch sử in trừ phi bạn tự xóa</translation>
 <translation id="6643016212128521049">Xóa</translation>
 <translation id="6747215703636344499">Đã dừng – Khay giấy ra đã đầy</translation>
 <translation id="7162487448488904999">Thư viện</translation>
@@ -81,6 +85,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="7805768142964895445">Trạng thái</translation>
 <translation id="808894953321890993">Đổi mật khẩu</translation>
 <translation id="8208861521865154048">Đặc quyền</translation>
+<translation id="8294431847097064396">Nguồn</translation>
 <translation id="8347227221149377169">Lệnh in</translation>
 <translation id="8352772353338965963">Thêm một tài khoản để đăng nhập nhiều lần. Tất cả các tài khoản đã đăng nhập đều có thể truy cập được mà không cần mật khẩu, do đó bạn chỉ nên sử dụng tính năng này với các tài khoản đáng tin cậy.</translation>
 <translation id="8701136875688985581"><ph name="ENROLLMENT_DOMAIN" /> quản lý người dùng này. Miền này có thể quản lý từ xa các tùy chọn cài đặt và giám sát hoạt động của người dùng.</translation>

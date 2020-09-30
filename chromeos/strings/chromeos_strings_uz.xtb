@@ -5,6 +5,7 @@
 <translation id="1195447618553298278">Noma’lum xatolik.</translation>
 <translation id="1413240736185167732">Bajarilmadi - Filtr ishlamadi</translation>
 <translation id="1468664791493211953">Takliflar</translation>
+<translation id="1478594628797167447">Skaner</translation>
 <translation id="1482734542997480527">Bu qurilma <ph name="ENROLLMENT_DOMAIN" /> domenida boshqariladi va faoliyatingiz kuzatilishi mumkin.</translation>
 <translation id="150962533380566081">PUK kod xato.</translation>
 <translation id="1510238584712386396">Ishga tushirish paneli</translation>
@@ -24,6 +25,7 @@
 <translation id="2872961005593481000">Ishni tamomlash</translation>
 <translation id="3008341117444806826">YANGILASH</translation>
 <translation id="3091839911843451378">Bajarilmadi - Toʻxtatildi</translation>
+<translation id="3246869037381808805">1 kundan eski chop etish vazifalari avtomatik tozalanadi</translation>
 <translation id="3268178239013324452">Bajarilmadi - Eshikchasi ochiq</translation>
 <translation id="3369013195428705271">Chop etish tarixi tozalansinmi? Joriy chop etish vazifalari oʻchirib tashlanmaydi.</translation>
 <translation id="3456078764689556234">Sahifa chop etildi: <ph name="PRINTED_PAGES" /> / <ph name="TOTAL_PAGES" />.</translation>
@@ -34,6 +36,7 @@
 <translation id="38114475217616659">Tarixni tozalash</translation>
 <translation id="3820172043799983114">PIN kod xato.</translation>
 <translation id="3838338534323494292">Yangi parol</translation>
+<translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> kundan eski chop etish vazifalari avtomatik tozalanadi</translation>
 <translation id="4003259559679196451">Bu qurilma va uning foydalanuvchilari harakatlari, ochilgan sahifalar, parollar va emaillar <ph name="ENROLLMENT_DOMAIN" /> domenida boshqariladi.</translation>
 <translation id="4003384961948020559">Bajarilmadi - Boʻsh joy qolmadi</translation>
 <translation id="4027485274696301677">Bu <ph name="DEVICE_TYPE" /> qurilmasi <ph name="ENROLLMENT_DOMAIN" /> domenida boshqariladi. Administratorlar qurilmani masofadan sozlashi mumkin.</translation>
@@ -52,6 +55,7 @@
 <translation id="4890353053343094602">Tezda yangi parol tanlang</translation>
 <translation id="4917889632206600977">Toʻxtatildi – Qogʻoz tugadi</translation>
 <translation id="4932733599132424254">Sana</translation>
+<translation id="520299634122159966">Skanerlar topilmadi</translation>
 <translation id="5212543919916444558">Ekranda men yordam bera oladigan hech narsa topilmadi.
 Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="5222676887888702881">Tizimdan chiqish</translation>
@@ -71,6 +75,7 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="649050271426829538">Toʻxtatildi – Qogʻoz tiqilib qoldi</translation>
 <translation id="6517239166834772319">Tanishuv</translation>
 <translation id="6564646048574748301">Bajarilmadi - Printer ulanmagan</translation>
+<translation id="6620487321149975369">Chop etish vazifalari mustaqil olib tashlanmagucha tarix sahifasida chiqadi</translation>
 <translation id="6643016212128521049">Tozalash</translation>
 <translation id="6747215703636344499">Toʻxtatildi – Boʻsh joy qolmadi</translation>
 <translation id="7162487448488904999">Galereya</translation>
@@ -81,6 +86,7 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="7805768142964895445">Holat</translation>
 <translation id="808894953321890993">Parolni almashtirish</translation>
 <translation id="8208861521865154048">Imtiyozlar</translation>
+<translation id="8294431847097064396">Manba</translation>
 <translation id="8347227221149377169">Chop etish vazifalari</translation>
 <translation id="8352772353338965963">Bir nechta hisobga kirish tizimiga hisob qo‘shish. Kirish bajarilgan hisoblarni ko‘rish uchun parol so‘ralmaydi, shuning uchun bu funksiyadan faqat ishonchli hisoblarda foydalanish kerak.</translation>
 <translation id="8701136875688985581">Bu hisob <ph name="ENROLLMENT_DOMAIN" /> domenida boshqariladi. Bu domenda foydalanuvchilar faoliyati masofadan kuzatilishi va boshqarilishi mumkin.</translation>

@@ -7,6 +7,7 @@
 <translation id="1124772482545689468">Používateľ</translation>
 <translation id="1178581264944972037">Pozastaviť</translation>
 <translation id="1181037720776840403">Odstrániť</translation>
+<translation id="1195941046451948919">Naozaj chcete resetovať všetky povolenia pre tento web?</translation>
 <translation id="1201402288615127009">Ďalej</translation>
 <translation id="1242008676835033345">Vložené na webe <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">Zastaviť</translation>
@@ -47,6 +48,7 @@
 <translation id="2187243482123994665">Prítomnosť používateľa</translation>
 <translation id="2212565012507486665">Povoliť súbory cookie</translation>
 <translation id="2228071138934252756">Ak chcete povoliť aplikácii <ph name="APP_NAME" /> používať váš fotoaparát, zapnite ho aj v <ph name="BEGIN_LINK" />nastaveniach Androidu<ph name="END_LINK" />.</translation>
+<translation id="2241634353105152135">Iba raz</translation>
 <translation id="2289270750774289114">Opýtať sa, keď chce web objavovať zariadenia Bluetooth v okolí (odporúčané)</translation>
 <translation id="2315043854645842844">Operačný systém nepodporuje výber certifikátu na strane klienta.</translation>
 <translation id="2359808026110333948">Pokračovať</translation>
@@ -124,6 +126,7 @@
 <translation id="4570913071927164677">Podrobnosti</translation>
 <translation id="4645575059429386691">Spravované vaším rodičom</translation>
 <translation id="4670064810192446073">Virtuálna realita</translation>
+<translation id="4708011789095599544">Naozaj chcete vymazať súbory cookie a ďalšie údaje tohto webu?</translation>
 <translation id="4751476147751820511">Senzory pohybu alebo svetla</translation>
 <translation id="4883854917563148705">Spravované nastavenia sa nedajú resetovať</translation>
 <translation id="4887024562049524730">Opýtať sa, či chcete povoliť webom používať vaše zariadenie a údaje virtuálnej reality (odporúčané)</translation>
@@ -229,6 +232,7 @@
 <translation id="7423538860840206698">Blokovať čítanie schránky</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7554752735887601236">Váš mikrofón používa nejaký web</translation>
+<translation id="7561196759112975576">Vždy</translation>
 <translation id="7572498721684305250">Blokovať odosielanie a prijímanie informácií webmi, keď priložíte zariadenia NFC</translation>
 <translation id="757524316907819857">Zakázať webom prehrávať chránený obsah</translation>
 <translation id="7589445247086920869">Blokovať pre aktuálny vyhľadávač</translation>

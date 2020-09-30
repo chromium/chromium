@@ -7,6 +7,7 @@
 <translation id="1124772482545689468">Usuario</translation>
 <translation id="1178581264944972037">Pausar</translation>
 <translation id="1181037720776840403">Eliminar</translation>
+<translation id="1195941046451948919">Seguro que queres restablecer todos os permisos deste sitio web?</translation>
 <translation id="1201402288615127009">Seguinte</translation>
 <translation id="1242008676835033345">Cookie inserida en <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">Deter</translation>
@@ -47,6 +48,7 @@
 <translation id="2187243482123994665">Estado de actividade do usuario</translation>
 <translation id="2212565012507486665">Permitir uso de cookies</translation>
 <translation id="2228071138934252756">Para permitir que <ph name="APP_NAME" /> acceda á cámara, actívaa tamén en <ph name="BEGIN_LINK" />Configuración de Android<ph name="END_LINK" />.</translation>
+<translation id="2241634353105152135">Só unha vez</translation>
 <translation id="2289270750774289114">Preguntar cando un sitio web queira detectar dispositivos Bluetooth próximos (recomendado)</translation>
 <translation id="2315043854645842844">A selección do certificado do cliente non é compatible co sistema operativo.</translation>
 <translation id="2359808026110333948">Continuar</translation>
@@ -124,6 +126,7 @@
 <translation id="4570913071927164677">Detalles</translation>
 <translation id="4645575059429386691">Xestionado por teus pais</translation>
 <translation id="4670064810192446073">Realidade virtual</translation>
+<translation id="4708011789095599544">Seguro que queres borrar as cookies e outros datos deste sitio web?</translation>
 <translation id="4751476147751820511">Sensores de movemento ou de luz</translation>
 <translation id="4883854917563148705">Non se pode restablecer a configuración xestionada</translation>
 <translation id="4887024562049524730">Pregunta antes de permitir que os sitios utilicen os teus datos e dispositivos de realidade virtual (recomendado)</translation>
@@ -229,6 +232,7 @@
 <translation id="7423538860840206698">Bloqueouse a lectura do portapapeis</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7554752735887601236">Un sitio está utilizando o micrófono</translation>
+<translation id="7561196759112975576">Sempre</translation>
 <translation id="7572498721684305250">Bloquea o envío e a recepción de información dos sitios cando toques dispositivos con NFC</translation>
 <translation id="757524316907819857">Non permite que os sitios reproduzan o contido protexido</translation>
 <translation id="7589445247086920869">Bloquea o acceso para o motor de busca actual</translation>

@@ -113,7 +113,6 @@
 <translation id="2163152940313951844">Érvénytelen karakter: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2164862903024139959">Vietnami billentyűzet (TCVN)</translation>
 <translation id="2168214441502403371">Perzsa billentyűzet</translation>
-<translation id="2197363559908958454"><ph name="NUMBER_OF_ITEMS" /> áthelyezve.</translation>
 <translation id="2198315389084035571">Egyszerűsített kínai</translation>
 <translation id="2208158072373999562">Zip-archívum</translation>
 <translation id="2225536596944493418">Biztosan törli ezt a(z) <ph name="NUMBER_OF_ITEMS" /> elemet?</translation>
@@ -770,7 +769,6 @@
 <translation id="943972244133411984">Módosította</translation>
 <translation id="945522503751344254">Visszajelzés küldése</translation>
 <translation id="947144732524271678"><ph name="ENTRY_COUNT" /> bejegyzést tartalmazó tartomány kijelölve <ph name="FROM_ENTRY_NAME" />–<ph name="TO_ENTRY_NAME" /> között.</translation>
-<translation id="949308258121608615"><ph name="NUMBER_OF_ITEMS" /> a vágólapra másolva.</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="988685240266037636">Már van „<ph name="FILE_NAME" />” nevű fájl. Lecseréli?</translation>
 <translation id="996903396648773764"><ph name="NUMBER_OF_MB" /> MB</translation>

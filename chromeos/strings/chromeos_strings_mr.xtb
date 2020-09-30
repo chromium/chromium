@@ -5,6 +5,7 @@
 <translation id="1195447618553298278">अज्ञात एरर.</translation>
 <translation id="1413240736185167732">अयशस्वी झाले - फिल्टर अयशस्वी झाले</translation>
 <translation id="1468664791493211953">ऑफर</translation>
+<translation id="1478594628797167447">स्कॅनर</translation>
 <translation id="1482734542997480527"><ph name="ENROLLMENT_DOMAIN" /> हे डिव्हाइस व्यवस्थापित करते आणि तुमची ॲक्टिव्हिटी पाहू शकेल.</translation>
 <translation id="150962533380566081">चुकीची PUK.</translation>
 <translation id="1510238584712386396">लाँचर</translation>
@@ -24,6 +25,7 @@
 <translation id="2872961005593481000">बंद करा</translation>
 <translation id="3008341117444806826">रिफ्रेश करा</translation>
 <translation id="3091839911843451378">अयशस्वी झाले - थांबले आहे</translation>
+<translation id="3246869037381808805">एक दिवसापेक्षा जुने प्रिंट जॉब काढून टाकले जातील</translation>
 <translation id="3268178239013324452">अयशस्वी झाले - दार उघडे आहे</translation>
 <translation id="3369013195428705271">तुम्हाला तुमचा सर्व प्रिंट इतिहास नक्की साफ करायचा आहे का? तुमची सुरू असलेली प्रिंट कार्ये साफ केली जाणार नाहीत.</translation>
 <translation id="3456078764689556234"><ph name="TOTAL_PAGES" /> पैकी <ph name="PRINTED_PAGES" /> पेज प्रिंट केली.</translation>
@@ -34,6 +36,7 @@
 <translation id="38114475217616659">सर्व इतिहास साफ करा</translation>
 <translation id="3820172043799983114">चुकीचे पिन.</translation>
 <translation id="3838338534323494292">नवीन पासवर्ड</translation>
+<translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> दिवसांपेक्षा जुने प्रिंट जॉब काढून टाकले जातील</translation>
 <translation id="4003259559679196451">हे डिव्हाइस <ph name="ENROLLMENT_DOMAIN" />व्यवस्थापित करते आणि भेट दिलेली वेबपेज पासवर्ड आणि ईमेलसह सर्व वापरकर्ता ॲक्टिव्हिटीचा त्यांना ॲक्सेस आहे.</translation>
 <translation id="4003384961948020559">अयशस्वी झाले - आउटपुट भरले आहे</translation>
 <translation id="4027485274696301677">हे <ph name="DEVICE_TYPE" /> <ph name="ENROLLMENT_DOMAIN" /> द्वारे व्यवस्थापित केले जाते. अ‍ॅडमिनिस्ट्रेटर रिमोट पद्धतीने डिव्हाइस काँफिगर करू शकतात.</translation>
@@ -71,6 +74,7 @@
 <translation id="649050271426829538">थांबले - कागद अडकला</translation>
 <translation id="6517239166834772319">एक्सप्लोर करा</translation>
 <translation id="6564646048574748301">अयशस्वी झाले - प्रिंटरशी कनेक्ट करता आले नाही</translation>
+<translation id="6620487321149975369">प्रिंट जॉब मॅन्‍युअली काढून टाकेपर्यंत इतिहासामध्ये दिसतील</translation>
 <translation id="6643016212128521049">साफ करा</translation>
 <translation id="6747215703636344499">थांबले - आउटपुट भरले आहे</translation>
 <translation id="7162487448488904999">गॅलरी</translation>
@@ -81,6 +85,7 @@
 <translation id="7805768142964895445">स्थिती</translation>
 <translation id="808894953321890993">पासवर्ड बदला</translation>
 <translation id="8208861521865154048">लाभ</translation>
+<translation id="8294431847097064396">स्रोत</translation>
 <translation id="8347227221149377169">प्रिंट कार्ये</translation>
 <translation id="8352772353338965963">मल्टिपल साइन-इन वर खाते जोडा. सर्व साइन इन केलेल्या खात्यांवर पासवर्डशिवाय प्रवेश केला जाऊ शकतो, म्हणून हे वैशिष्ट्य केवळ विश्वसनीय खात्यांसह वापरले जावे.</translation>
 <translation id="8701136875688985581"><ph name="ENROLLMENT_DOMAIN" /> हा वापरकर्ता व्यवस्थापित करते. ते रिमोट पद्धतीने सेटिंग्ज व्यवस्थापित करू शकते आणि वापरकर्ता अ‍ॅक्टिव्हिटीचे परीक्षण करू शकते.</translation>

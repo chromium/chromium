@@ -197,6 +197,7 @@
 <translation id="2996462380875591307">បានបើក​កែវ​ពង្រីក​ដាក់​ខាង​លើ​បំផុត។ សូមចុច Ctrl+Search+D ម្តងទៀត​ដើម្បី​បិទវា។</translation>
 <translation id="3000461861112256445">សំឡេង​ម៉ូណូ</translation>
 <translation id="3009178788565917040">ទិន្នផល</translation>
+<translation id="3025081209054535615">ដកការដៅការគ្រប់គ្រងមេឌៀសកលពីធ្នើរ</translation>
 <translation id="3033545621352269033">បើក</translation>
 <translation id="3038571455154067151">ដើម្បីចូលគណនី សូម​បញ្ចូល​លេខ​កូដ​ចូលប្រើប្រាស់​របស់​មាតាបិតារបស់ Family Link អ្នក</translation>
 <translation id="3045488863354895414">ទិវា​សួស្ដី</translation>
@@ -250,6 +251,7 @@
 <translation id="3430396595145920809">អូសពីស្ដាំ ដើម្បីថយក្រោយ</translation>
 <translation id="343571671045587506">កែ​​ការ​រំលឹក</translation>
 <translation id="3435967511775410570">ស្គាល់ស្នាម​ម្រាមដៃហើយ</translation>
+<translation id="3445288400492335833"><ph name="MINUTES" /> នាទី</translation>
 <translation id="3445925074670675829">ឧបករណ៍ USB-C</translation>
 <translation id="3454224730401036106">ការ​តភ្ជាប់​របស់​អ្នក​ត្រូវ​បាន​ប្តូរ​ទៅ​បណ្តាញ​ដែល​មាន​សុវត្ថិភាព​ជាងមុន</translation>
 <translation id="3465223694362104965">ចាប់តាំងពី​អ្នកបានចូល​លើកចុងក្រោយ ក្ដារចុច​ផ្សេងទៀត​បានភ្ជាប់ទៅ​ឧបករណ៍នេះ។ សូមប្រាកដថា អ្នកជឿទុកចិត្ត​ក្ដារចុចនេះ មុនពេលដែល​អ្នកប្រើវា។</translation>
@@ -383,6 +385,7 @@
 <translation id="4804818685124855865">ផ្តាច់</translation>
 <translation id="4814539958450445987">អេក្រង់ចូល</translation>
 <translation id="4831034276697007977">តើអ្នកពិតជាចង់​បិទការចុច​ដោយស្វ័យប្រវត្តិ​មែនឬ?</translation>
+<translation id="4836108105469522644">បើកការជូនដំណឹងពីទូរសព្ទ Android របស់អ្នក</translation>
 <translation id="4849058404725798627">រំលេច​របស់​ដោយប្រើ​ការផ្តោត​ក្តារចុច</translation>
 <translation id="485592688953820832">គ្មាន​សកម្មភាព (ផ្អាក)</translation>
 <translation id="4868492592575313542">បាន​បើកដំណើរការ</translation>
@@ -452,6 +455,7 @@
 <translation id="5691772641933328258">មិន​ស្គាល់​ស្នាម​ម្រាមដៃ​ទេ</translation>
 <translation id="5710450975648804523">មុខងារ​កុំ​រំខាន​បាន​បើក</translation>
 <translation id="573413375004481890">ឧបករណ៍នេះមិន​អាចប្រើផ្ទាំងអេក្រង់​របស់អ្នកទាំងអស់​បានទេ ដូច្នេះសូមផ្ដាច់ផ្ទាំង​អេក្រង់មួយចេញ</translation>
+<translation id="5740328398383587084">ការ​ចែករំលែក​នៅជិត</translation>
 <translation id="574392208103952083">មធ្យម</translation>
 <translation id="5744083938413354016">ចុចអូស</translation>
 <translation id="5745612484876805746">ពន្លឺពេលយប់​បើក​ដោយស្វ័យប្រវត្តិ​នៅពេល​ថ្ងៃលិច</translation>
@@ -696,6 +700,7 @@
 <translation id="8297006494302853456">ខ្សោយ</translation>
 <translation id="8308637677604853869">ម៉ឺនុយពីមុន</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
+<translation id="8349293353728876872">ដៅការគ្រប់គ្រងមេឌៀសកលទៅធ្នើរ</translation>
 <translation id="8351131234907093545">បង្កើត​កំណត់​ចំណាំ</translation>
 <translation id="8371779926711439835">ទៅមុខមួយតួអក្សរ</translation>
 <translation id="8375916635258623388"><ph name="DEVICE_NAME" /> នេះ និងទូរសព្ទរបស់អ្នក​នឹងភ្ជាប់ដោយស្វ័យប្រវត្តិ</translation>

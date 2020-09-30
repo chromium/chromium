@@ -5,6 +5,7 @@
 <translation id="1195447618553298278">Errore sconosciuto.</translation>
 <translation id="1413240736185167732">Operazione non riuscita - Errore del filtro</translation>
 <translation id="1468664791493211953">Offerte</translation>
+<translation id="1478594628797167447">Scanner</translation>
 <translation id="1482734542997480527"><ph name="ENROLLMENT_DOMAIN" /> gestisce questo dispositivo e potrebbe essere in grado di monitorare le tue attività.</translation>
 <translation id="150962533380566081">PUK non valido.</translation>
 <translation id="1510238584712386396">Avvio app</translation>
@@ -24,6 +25,7 @@
 <translation id="2872961005593481000">Spegni</translation>
 <translation id="3008341117444806826">AGGIORNA</translation>
 <translation id="3091839911843451378">Operazione non riuscita - Interruzione</translation>
+<translation id="3246869037381808805">I processi di stampa risalenti a oltre 1 giorno fa verranno rimossi</translation>
 <translation id="3268178239013324452">Operazione non riuscita - Sportello aperto</translation>
 <translation id="3369013195428705271">Vuoi cancellare l'intera cronologia di stampa? I processi di stampa in corso non verranno cancellati.</translation>
 <translation id="3456078764689556234"><ph name="PRINTED_PAGES" /> pagina stampata su <ph name="TOTAL_PAGES" />.</translation>
@@ -34,6 +36,7 @@
 <translation id="38114475217616659">Cancella tutta la cronologia</translation>
 <translation id="3820172043799983114">PIN non valido.</translation>
 <translation id="3838338534323494292">Nuova password</translation>
+<translation id="39823212440917567">I processi di stampa risalenti a oltre <ph name="NUMBER_OF_DAYS" /> giorni fa verranno rimossi</translation>
 <translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> gestisce questo dispositivo e ha accesso a tutta l'attività utente, tra cui le pagine web visitate, le password e le email.</translation>
 <translation id="4003384961948020559">Operazione non riuscita - Vassoio di uscita pieno</translation>
 <translation id="4027485274696301677">Questo dispositivo <ph name="DEVICE_TYPE" /> è gestito da <ph name="ENROLLMENT_DOMAIN" />. Gli amministratori possono configurarlo da remoto.</translation>
@@ -52,6 +55,7 @@
 <translation id="4890353053343094602">Scegline subito una nuova</translation>
 <translation id="4917889632206600977">Operazione interrotta - Carta esaurita</translation>
 <translation id="4932733599132424254">Data</translation>
+<translation id="520299634122159966">Nessuno scanner disponibile</translation>
 <translation id="5212543919916444558">Non riesco a trovare nulla sullo schermo per cui poterti essere utile.
 Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="5222676887888702881">Esci</translation>
@@ -71,6 +75,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="649050271426829538">Operazione interrotta - Fogli bloccati nella stampante</translation>
 <translation id="6517239166834772319">Esplora</translation>
 <translation id="6564646048574748301">Operazione non riuscita - Stampante non raggiungibile</translation>
+<translation id="6620487321149975369">I processi di stampa verranno mostrati nella cronologia a meno che non li rimuovi manualmente</translation>
 <translation id="6643016212128521049">Cancella</translation>
 <translation id="6747215703636344499">Operazione interrotta - Vassoio di uscita pieno</translation>
 <translation id="7162487448488904999">Galleria</translation>
@@ -81,6 +86,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="7805768142964895445">Stato</translation>
 <translation id="808894953321890993">Cambia password</translation>
 <translation id="8208861521865154048">Vantaggi</translation>
+<translation id="8294431847097064396">Origine</translation>
 <translation id="8347227221149377169">Processi di stampa</translation>
 <translation id="8352772353338965963">Aggiungi un account per l'accesso simultaneo. Poiché gli account che hanno effettuato l'accesso sono tutti accessibili senza password, devi utilizzare questa funzione solo con gli account attendibili.</translation>
 <translation id="8701136875688985581"><ph name="ENROLLMENT_DOMAIN" /> gestisce questo utente. Può gestire in remoto le impostazioni e monitorare l'attività utente.</translation>

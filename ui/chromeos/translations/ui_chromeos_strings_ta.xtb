@@ -112,7 +112,6 @@
 <translation id="2163152940313951844">செல்லாத எழுத்து: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2164862903024139959">வியட்நாமிய விசைப்பலகை (TCVN)</translation>
 <translation id="2168214441502403371">பெர்சியன் விசைப்பலகை</translation>
-<translation id="2197363559908958454"><ph name="NUMBER_OF_ITEMS" /> கோப்புகள்/கோப்பகங்கள் நகர்த்தப்பட்டன.</translation>
 <translation id="2198315389084035571">எளிய சீன மொழி</translation>
 <translation id="2208158072373999562">ஜிப் காப்பகம்</translation>
 <translation id="2225536596944493418"><ph name="NUMBER_OF_ITEMS" /> உள்ளடக்கங்களை நிச்சயமாக நீக்க விரும்புகிறீர்களா?</translation>
@@ -760,7 +759,6 @@
 <translation id="943972244133411984">மாற்றியவர்</translation>
 <translation id="945522503751344254">கருத்தை அனுப்பு</translation>
 <translation id="947144732524271678"><ph name="FROM_ENTRY_NAME" /> முதல் <ph name="TO_ENTRY_NAME" /> வரை <ph name="ENTRY_COUNT" /> உள்ளீடுகள் தேர்ந்தெடுக்கப்பட்டுள்ளன.</translation>
-<translation id="949308258121608615"><ph name="NUMBER_OF_ITEMS" /> கோப்புகள்/கோப்பகங்கள் நகலெடுக்கப்பட்டன.</translation>
 <translation id="981121421437150478">ஆஃப்லைன்</translation>
 <translation id="988685240266037636">"<ph name="FILE_NAME" />" என்ற பெயருள்ள கோப்பு ஏற்கனவே உள்ளது. அதை இடமாற்றவா?</translation>
 <translation id="996903396648773764"><ph name="NUMBER_OF_MB" /> மெ.பை.</translation>

@@ -113,7 +113,6 @@
 <translation id="2163152940313951844">Ógildur stafur: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2164862903024139959">Víetnamskt lyklaborð (TCVN)</translation>
 <translation id="2168214441502403371">Persneskt lyklaborð</translation>
-<translation id="2197363559908958454"><ph name="NUMBER_OF_ITEMS" /> flutt.</translation>
 <translation id="2198315389084035571">Kínverska (einfölduð)</translation>
 <translation id="2208158072373999562">ZIP-safnskrá</translation>
 <translation id="2225536596944493418">Ertu viss um að þú viljir eyða <ph name="NUMBER_OF_ITEMS" /> atriðum?</translation>
@@ -769,7 +768,6 @@
 <translation id="943972244133411984">Breytt af</translation>
 <translation id="945522503751344254">Senda ábendingu</translation>
 <translation id="947144732524271678">Valdi <ph name="ENTRY_COUNT" /> færslur, <ph name="FROM_ENTRY_NAME" />–<ph name="TO_ENTRY_NAME" />.</translation>
-<translation id="949308258121608615"><ph name="NUMBER_OF_ITEMS" /> afritað.</translation>
 <translation id="981121421437150478">Ónettengt</translation>
 <translation id="988685240266037636">Skrá með heitið „<ph name="FILE_NAME" />“ er þegar fyrir hendi. Viltu skipta henni út?</translation>
 <translation id="996903396648773764"><ph name="NUMBER_OF_MB" /> MB</translation>

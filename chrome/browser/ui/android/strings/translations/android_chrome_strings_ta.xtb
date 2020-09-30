@@ -221,6 +221,7 @@
 <translation id="2689830683995595741">Chromeமைப் பயன்படுத்துவதன் மூலம் <ph name="BEGIN_LINK1" />Google சேவை விதிமுறைகளையும்<ph name="END_LINK1" /> <ph name="BEGIN_LINK2" />Google Chrome மற்றும் Chrome OS தொடர்பான கூடுதல் சேவை விதிமுறைகளையும்<ph name="END_LINK2" /> ஏற்கிறீர்கள். இவற்றோடு <ph name="BEGIN_LINK3" />Family Link நிர்வகிக்கும் Google கணக்குகளுக்கான தனியுரிமை அறிக்கையும்<ph name="END_LINK3" /> பொருந்தும்.</translation>
 <translation id="2707726405694321444">பக்கத்தைப் புதுப்பி</translation>
 <translation id="2709516037105925701">தானாகநிரப்பு</translation>
+<translation id="2718352093833049315">வைஃபையில் மட்டும்</translation>
 <translation id="2723001399770238859">ஆடியோ</translation>
 <translation id="2728754400939377704">தளத்தின்படி வரிசைப்படுத்தும்</translation>
 <translation id="2744248271121720757">உடனடியாகத் தேட அல்லது தொடர்புடைய செயல்களைப் பார்க்க, சொல்லைத் தட்டவும்</translation>
@@ -283,7 +284,6 @@
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> நீக்கப்பட்டது</translation>
 <translation id="3211503082155944789">படிக்காத பக்கங்கள்: <ph name="READING_LIST_COUNT" /></translation>
 <translation id="321773570071367578">கடவுச்சொற்றொடரை மறந்துவிட்டால் அல்லது இந்த அமைப்பை மாற்ற விரும்பினால், <ph name="BEGIN_LINK" />ஒத்திசைவை மீட்டமைக்கவும்<ph name="END_LINK" /></translation>
-<translation id="3223655207402797071">இந்தத் தளம், உங்கள் Google கணக்கு, Chrome ஆகியவற்றில் உள்நுழையுங்கள். ஒத்திசைவைப் பின்னர் இயக்கலாம்.</translation>
 <translation id="3232754137068452469">இணைய ஆப்ஸ்</translation>
 <translation id="3236059992281584593">1 நிமிடம் மீதமுள்ளது</translation>
 <translation id="3244271242291266297">MM</translation>

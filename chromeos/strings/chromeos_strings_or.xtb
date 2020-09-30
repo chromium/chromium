@@ -5,6 +5,7 @@
 <translation id="1195447618553298278">ଅଜ୍ଞାତ ତୃଟି ।</translation>
 <translation id="1413240736185167732">ବିଫଳ ହୋଇଛି - ଫିଲ୍ଟର୍ ବିଫଳ ହୋଇଛି</translation>
 <translation id="1468664791493211953">ଅଫରଗୁଡ଼ିକ</translation>
+<translation id="1478594628797167447">ସ୍କାନର୍</translation>
 <translation id="1482734542997480527">ଏହି ଡିଭାଇସ୍‌କୁ <ph name="ENROLLMENT_DOMAIN" /> ପରିଚାଳନା କରିଥାଏ ଏବଂ ଆପଣଙ୍କର କାର୍ଯ୍ୟକଳାପ ନିରୀକ୍ଷଣ କରିବାକୁ ସକ୍ଷମ ହୋଇପାରନ୍ତି।</translation>
 <translation id="150962533380566081">ଅବୈଧ PUK।</translation>
 <translation id="1510238584712386396">ଲଞ୍ଚର୍</translation>
@@ -24,6 +25,7 @@
 <translation id="2872961005593481000">ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="3008341117444806826">ରିଫ୍ରେଶ୍ କରନ୍ତୁ</translation>
 <translation id="3091839911843451378">ବିଫଳ ହୋଇଛି - ପ୍ରିଣ୍ଟର୍ ବନ୍ଦ ହୋଇଯାଇଛି</translation>
+<translation id="3246869037381808805">1ଦିନରୁ ଅଧିକ ପୁରୁଣା ପ୍ରିଣ୍ଟ କାର୍ଯ୍ୟଗୁଡ଼ିକୁ କାଢ଼ି ଦିଆଯିବ</translation>
 <translation id="3268178239013324452">ବିଫଳ ହୋଇଛି - ପ୍ରିଣ୍ଟରର କଭର୍ ଖୋଲା ଅଛି</translation>
 <translation id="3369013195428705271">ଆପଣ ସମସ୍ତ ପ୍ରିଣ୍ଟ ଇତିହାସ ଖାଲି କରିବାକୁ ଚାହୁଁଥିବା ନିଶ୍ଚିତ କି? ଆପଣଙ୍କ ଚାଲୁଥିବା ପ୍ରିଣ୍ଟ କାର୍ଯ୍ୟଗୁଡ଼ିକ ଖାଲି ହେବ ନାହିଁ।</translation>
 <translation id="3456078764689556234"><ph name="TOTAL_PAGES" />ଟି ପୃଷ୍ଠା ମଧ୍ୟରୁ <ph name="PRINTED_PAGES" /> ନମ୍ବର ପୃଷ୍ଠା ପ୍ରିଣ୍ଟ କରାଯାଇଛି।</translation>
@@ -34,6 +36,7 @@
 <translation id="38114475217616659">ସମସ୍ତ ଇତିହାସ ଖାଲି କରନ୍ତୁ</translation>
 <translation id="3820172043799983114">ଅବୈଧ PIN।</translation>
 <translation id="3838338534323494292">ନୂଆ ପାସ୍‌ୱାର୍ଡ</translation>
+<translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> ଦିନରୁ ଅଧିକ ପୁରୁଣା ପ୍ରିଣ୍ଟ କାର୍ଯ୍ୟଗୁଡ଼ିକୁ କାଢ଼ି ଦିଆଯିବ</translation>
 <translation id="4003259559679196451">ଏହି ଡିଭାଇସ୍‍କୁ <ph name="ENROLLMENT_DOMAIN" /> ପରିଚାଳନା କରିଥାଏ ଏବଂ ଏହା ପାଖରେ ଯାଇଥିବା ୱେବ୍‍ପୃଷ୍ଠାଗୁଡ଼ିକ, ପାସ୍‌ୱାର୍ଡଗୁଡ଼ିକ ଏବଂ ଇମେଲ୍ ସହ ସମସ୍ତ ଉପଯୋଗକର୍ତ୍ତା କାର୍ଯ୍ୟକଳାପକୁ ଆକ୍ସେସ୍ ଅଛି।</translation>
 <translation id="4003384961948020559">ବିଫଳ ହୋଇଛି - ଆଉଟପୁଟ୍ ଟ୍ରେ ପୂର୍ଣ୍ଣ ଅଛି</translation>
 <translation id="4027485274696301677"><ph name="ENROLLMENT_DOMAIN" /> ଦ୍ୱାରା ଏହି <ph name="DEVICE_TYPE" />ପରିଚାଳିତ ହେଉଛି। ଆଡମିନିଷ୍ଟ୍ରେଟରମାନେ ଡିଭାଇସଟିକୁ ରିମୋଟ୍ ଭାବେ କନଫିଗର୍ କରିପାରନ୍ତି।</translation>
@@ -71,6 +74,7 @@
 <translation id="649050271426829538">ବନ୍ଦ ହୋଇଯାଇଛି - ପେପର୍ ଜାମ୍</translation>
 <translation id="6517239166834772319">ଏକ୍ସପ୍ଲୋର୍</translation>
 <translation id="6564646048574748301">ବିଫଳ ହୋଇଛି - ପ୍ରିଣ୍ଟର୍ ସହ ସଂଯୋଗ କରି ହେଉନାହିଁ</translation>
+<translation id="6620487321149975369">ପ୍ରିଣ୍ଟ କାର୍ଯ୍ୟଗୁଡ଼ିକୁ ମାନୁଆଲୀ କାଢ଼ି ନଦିଆଯିବା ପର୍ଯ୍ୟନ୍ତ ସେଗୁଡ଼ିକ ଇତିହାସରେ ଦେଖାଯିବ</translation>
 <translation id="6643016212128521049">ଖାଲି କରନ୍ତୁ</translation>
 <translation id="6747215703636344499">ବନ୍ଦ ହୋଇଯାଇଛି - ଆଉଟପୁଟ୍ ପୂର୍ଣ୍ଣ ହୋଇଯାଇଛି</translation>
 <translation id="7162487448488904999">ଗ୍ୟାଲେରୀ</translation>
@@ -81,6 +85,7 @@
 <translation id="7805768142964895445">ସ୍ଥିତି</translation>
 <translation id="808894953321890993">ପାସ୍‌ୱାର୍ଡ ବଦଳାନ୍ତୁ</translation>
 <translation id="8208861521865154048">ପର୍କଗୁଡ଼ିକ</translation>
+<translation id="8294431847097064396">ଉତ୍ସ</translation>
 <translation id="8347227221149377169">ପ୍ରିଣ୍ଟ ଜବ୍</translation>
 <translation id="8352772353338965963">ଏକାଧିକ ସାଇନ୍-ଇନ୍ କରିବାକୁ ଏକ ଆକାଉଣ୍ଟ ଯୋଗ କରନ୍ତୁ। ସାଇନ୍-ଇନ୍ ହୋଇଥିବା ସମସ୍ତ ଆକାଉଣ୍ଟ ବିନା ପାସ୍‌ୱର୍ଡରେ ଆକ୍ସେସ୍ କରାଯାଇପାରିବ, ତେଣୁ ଏହି ସୁବିଧା କେବଳ ବିଶ୍ୱସ୍ତ ଆକାଉଣ୍ଟ ସହ ବ୍ୟବହାର କରାଯିବା ଉଚିତ୍।</translation>
 <translation id="8701136875688985581"><ph name="ENROLLMENT_DOMAIN" /> ଏହି ଉପଯୋଗକର୍ତ୍ତାଙ୍କୁ ପରିଚାଳନା କରେ। ଏହା ରିମୋଟ୍ ଭାବେ ସେଟିଂସ୍ ପରିଚାଳନା ଏବଂ ଉପଯୋଗକର୍ତ୍ତା କାର୍ଯ୍ୟକଳାପ ମନିଟର୍ କରିପାରେ।</translation>

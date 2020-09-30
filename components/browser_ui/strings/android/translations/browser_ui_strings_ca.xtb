@@ -7,6 +7,7 @@
 <translation id="1124772482545689468">Usuari</translation>
 <translation id="1178581264944972037">Posa en pausa</translation>
 <translation id="1181037720776840403">Suprimeix</translation>
+<translation id="1195941046451948919">Confirmes que vols restablir tots els permisos per a aquest lloc web?</translation>
 <translation id="1201402288615127009">Següent</translation>
 <translation id="1242008676835033345">Incrustada a <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">Atura</translation>
@@ -47,6 +48,7 @@
 <translation id="2187243482123994665">Presència de l'usuari</translation>
 <translation id="2212565012507486665">Permet les galetes</translation>
 <translation id="2228071138934252756">Perquè <ph name="APP_NAME" /> pugui accedir a la càmera, també has d'activar-la a la <ph name="BEGIN_LINK" />configuració d'Android<ph name="END_LINK" />.</translation>
+<translation id="2241634353105152135">Només una vegada</translation>
 <translation id="2289270750774289114">Pregunta'm quan un lloc web vulgui descobrir dispositius Bluetooth propers (opció recomanada)</translation>
 <translation id="2315043854645842844">El sistema operatiu no permet seleccionar el certificat del client.</translation>
 <translation id="2359808026110333948">Continua</translation>
@@ -230,6 +232,7 @@
 <translation id="7423538860840206698">L'accés de lectura al porta-retalls està bloquejat</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7554752735887601236">Un lloc web està utilitzant el micròfon</translation>
+<translation id="7561196759112975576">Sempre</translation>
 <translation id="7572498721684305250">Evita que els llocs web enviïn i rebin informació quan toquis dispositius amb NFC</translation>
 <translation id="757524316907819857">Impedeix que els llocs web reprodueixin contingut protegit</translation>
 <translation id="7589445247086920869">Bloqueja al motor de cerca actual</translation>

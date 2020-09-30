@@ -15,6 +15,7 @@
 <translation id="1038106730571050514">Показувати пропозиції</translation>
 <translation id="1038842779957582377">Невідоме ім’я</translation>
 <translation id="1041998700806130099">Повідомлення на аркуші вихідних даних</translation>
+<translation id="1048785276086539861">Коли ви редагуєте примітки, документ переходить у режим перегляду по одній сторінці</translation>
 <translation id="1050038467049342496">Закрийте інші додатки</translation>
 <translation id="1055184225775184556">&amp;Відмінити додавання</translation>
 <translation id="1056898198331236512">Застереження</translation>
@@ -234,6 +235,7 @@
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />; доступно кілька дій, натискайте Tab, щоб переходити між ними</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1803264062614276815">Ім’я та прізвище власника картки</translation>
+<translation id="1807246157184219062">Світла</translation>
 <translation id="1807528111851433570">Перший аркуш</translation>
 <translation id="1821930232296380041">Недійсний запит або параметри запиту</translation>
 <translation id="1822540298136254167">Відвідані веб-сайти й час перебування на них</translation>
@@ -290,6 +292,7 @@
 <translation id="2099652385553570808">Скріпити тричі ліворуч</translation>
 <translation id="2101225219012730419">Версія:</translation>
 <translation id="2102134110707549001">Запропонувати надійний пароль…</translation>
+<translation id="2102495993840063010">Додатки Android</translation>
 <translation id="2107021941795971877">Підтримка друку</translation>
 <translation id="2108755909498034140">Перезавантажте комп’ютер</translation>
 <translation id="2111256659903765347">Super-A</translation>
@@ -368,6 +371,7 @@
 <translation id="2396249848217231973">&amp;Відмінити видалення</translation>
 <translation id="2410754574180102685">Government-Legal</translation>
 <translation id="2413528052993050574">Цей сервер не зміг довести, що він – домен <ph name="DOMAIN" />. Можливо, його сертифікат безпеки відкликано. Імовірні причини: неправильна конфігурація або хтось намагається перехопити ваше з’єднання.</translation>
+<translation id="2414886740292270097">Темна</translation>
 <translation id="2438874542388153331">Пробити чотири отвори праворуч</translation>
 <translation id="245044156129055925">Щойно ви ввели пароль на оманливому сайті. Chromium радить змінити пароль.</translation>
 <translation id="2463739503403862330">Заповнити</translation>
@@ -376,6 +380,7 @@
 <translation id="2465688316154986572">Скріпити</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />провести діагностику мережі<ph name="END_LINK" /></translation>
 <translation id="2469153820345007638">Порядок від 1 до N</translation>
+<translation id="2470767536994572628">Коли ви редагуєте примітки, документ переходить у режим перегляду по одній сторінці, а також відновлюється його початкова орієнтація</translation>
 <translation id="2479410451996844060">Недійсна URL-адреса для пошуку.</translation>
 <translation id="2482878487686419369">Сповіщення</translation>
 <translation id="248348093745724435">Правила пристрою</translation>
@@ -444,6 +449,7 @@
 <translation id="2738330467931008676">Вибрати адресу отримання</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2742870351467570537">Видалити вибрані елементи</translation>
+<translation id="2765217105034171413">Малий</translation>
 <translation id="277133753123645258">Спосіб відправлення</translation>
 <translation id="277499241957683684">Відсутній запис пристрою</translation>
 <translation id="2775884851269838147">Перша сторінка для друку</translation>
@@ -601,7 +607,6 @@
 <translation id="3443726618221119081">Juuro-Ku-Kai</translation>
 <translation id="3447661539832366887">Власник цього пристрою вимкнув гру з динозавром.</translation>
 <translation id="3447884698081792621">Показати сертифікат (видавець: <ph name="ISSUER" />)</translation>
-<translation id="3451824941663424536">Адміністратор заблокував можливість вставляти сюди дані</translation>
 <translation id="3452404311384756672">Інтервал отримання:</translation>
 <translation id="3453962258458347894">Кількість повторних спроб</translation>
 <translation id="3456231139987291353">Number-11 (конверт)</translation>
@@ -739,6 +744,7 @@
 <translation id="4014128326099193693">{COUNT,plural, =1{Документ PDF містить {COUNT} сторінку}one{Документ PDF містить {COUNT} сторінку}few{Документ PDF містить {COUNT} сторінки}many{Документ PDF містить {COUNT} сторінок}other{Документ PDF містить {COUNT} сторінки}}</translation>
 <translation id="4030383055268325496">&amp;Відмінити додавання</translation>
 <translation id="4032320456957708163">Вашим веб-переглядачем керує домен <ph name="ENROLLMENT_DOMAIN" /></translation>
+<translation id="4056223980640387499">Сепія</translation>
 <translation id="4058922952496707368">Ключ "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (конверт)</translation>
 <translation id="4067947977115446013">Додайте дійсну адресу</translation>
@@ -779,6 +785,7 @@
 <translation id="4194250254487269611">Не вдається зберегти картку</translation>
 <translation id="4196861286325780578">&amp;Повторити переміщення</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />перевірити конфігурацію брандмауера й антивірусної програми<ph name="END_LINK" /></translation>
+<translation id="4209092469652827314">Великий</translation>
 <translation id="4209166701302774460">Сервер, на який ви переходите (<ph name="ORIGIN" />), просить
     застосовувати правило джерела до всіх запитів, які йому надсилаються. Однак зараз він
     не надав правило, що перешкоджає веб-переглядачу виконати ваш запит
@@ -1388,6 +1395,7 @@
 <translation id="6645291930348198241">Отримати доступ до файлів cookie й даних сайту.</translation>
 <translation id="6646269444027925224">{COUNT,plural, =0{Немає}=1{З 1 сайту (ви не вийдете з облікового запису Google)}one{З # сайту (ви не вийдете з облікового запису Google)}few{З # сайтів (ви не вийдете з облікового запису Google)}many{З # сайтів (ви не вийдете з облікового запису Google)}other{З # сайту (ви не вийдете з облікового запису Google)}}</translation>
 <translation id="6648459603387803038">Адміністратор може змінити налаштування веб-переглядача віддалено. Діями на цьому пристрої можна керувати за межами Chrome.</translation>
+<translation id="6648524591329069940">Шрифт Serif</translation>
 <translation id="6652101503459149953">Використовувати Windows Hello</translation>
 <translation id="6657585470893396449">Пароль</translation>
 <translation id="666259744093848177">(x86_64 перекладено)</translation>
@@ -1395,7 +1403,6 @@
 <translation id="6671697161687535275">Видалити пропозицію автозаповнення форм із Chromium?</translation>
 <translation id="6685834062052613830">Вийдіть з облікового запису та завершіть процедуру налаштування</translation>
 <translation id="6687335167692595844">Запит на розмір шрифту</translation>
-<translation id="6688998199862661005">Адміністратор заблокував можливість надавати доступ до цього контенту машині <ph name="VM_NAME" /></translation>
 <translation id="6689249931105087298">Відносно стиснення чорної точки</translation>
 <translation id="6689271823431384964">Chrome пропонує вам зберегти картки в обліковому записі Google, оскільки ви ввійшли в нього. Це можна змінити в налаштуваннях. Ім'я власника картки взято з вашого облікового запису.</translation>
 <translation id="6710213216561001401">Назад</translation>
@@ -1420,7 +1427,6 @@
 <translation id="6810899417690483278">Ідентифікатор налаштування</translation>
 <translation id="6825578344716086703">Ви спробували зв’язатися з доменом <ph name="DOMAIN" />, проте сервер надав сертифікат, підписаний із використанням слабкого алгоритму підпису (як-от SHA-1). Це означає, що облікові дані безпеки, надані сервером, можуть бути сфальсифікованими, а сервер – не тим, який вам потрібен (ви можете передавати свої дані зловмиснику).</translation>
 <translation id="6826993739343257035">Дозволити доповнену реальність?</translation>
-<translation id="6829611662493319648">Адміністратор заблокував можливість надавати доступ до цього контенту машинам <ph name="VM_NAME_1" /> і <ph name="VM_NAME_2" /></translation>
 <translation id="6831043979455480757">Перекласти</translation>
 <translation id="6839929833149231406">Область</translation>
 <translation id="6846340164947227603">Скористатися номером віртуальної картки…</translation>
@@ -1509,7 +1515,6 @@
 <translation id="7210863904660874423">Хост <ph name="HOST_NAME" /> не відповідає стандартам безпеки.</translation>
 <translation id="7210993021468939304">Активність Linux у межах контейнера. Може встановлювати та запускати додатки Linux у межах контейнера</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /> про цю проблему.</translation>
-<translation id="7214062855724067749">Використовувати встановлені на вашому комп'ютері шрифти, щоб ви могли створювати кращі написи</translation>
 <translation id="7217745192097460130">Підтвердити й завершити покупку за допомогою Touch ID?</translation>
 <translation id="7219179957768738017">З'єднання використовує версію <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Обробка</translation>
@@ -1634,6 +1639,7 @@
 <translation id="7647206758853451655">Якість друку</translation>
 <translation id="7648992873808071793">Зберігати файли на цьому пристрої</translation>
 <translation id="7653957176542370971">Аркуш обробника платежу закрито</translation>
+<translation id="7654909834015434372">Коли ви редагуєте примітки, відновлюється початкова орієнтація документа</translation>
 <translation id="765676359832457558">Сховати розширені налаштування...</translation>
 <translation id="7658239707568436148">Скасувати</translation>
 <translation id="7662298039739062396">Налаштуванням керує розширення</translation>

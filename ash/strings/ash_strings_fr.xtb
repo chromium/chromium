@@ -113,6 +113,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2049240716062114887">Le nom du bureau a été remplacé par <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Portrait</translation>
 <translation id="2067602449040652523">Luminosité du clavier</translation>
+<translation id="2074759828767813253">Captures d'écran et téléchargements récents</translation>
 <translation id="2083190527011054446">Bonsoir <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">Aucune connexion réseau</translation>
 <translation id="2126242104232412123">Nouveau bureau</translation>
@@ -197,6 +198,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2996462380875591307">Le mode Loupe ancrée est activé. Appuyez de nouveau sur Ctrl+Recherche+D pour le désactiver.</translation>
 <translation id="3000461861112256445">Audio mono</translation>
 <translation id="3009178788565917040">Sortie</translation>
+<translation id="3025081209054535615">Retirer les commandes multimédias générales de l'étagère</translation>
 <translation id="3033545621352269033">Activé</translation>
 <translation id="3038571455154067151">Pour vous connecter, saisissez le code d'accès parental Family Link</translation>
 <translation id="3045488863354895414">Bonjour,</translation>
@@ -250,6 +252,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="3430396595145920809">Faites glisser votre doigt de droite à gauche pour revenir en arrière</translation>
 <translation id="343571671045587506">Modifier le rappel</translation>
 <translation id="3435967511775410570">Empreinte digitale reconnue</translation>
+<translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">Appareil USB de type C</translation>
 <translation id="3454224730401036106">La connexion a été établie sur un réseau plus sûr</translation>
 <translation id="3465223694362104965">Un autre clavier a été connecté à cet appareil depuis votre dernière connexion. Avant d'utiliser ce clavier, assurez-vous qu'il s'agit d'un clavier de confiance.</translation>
@@ -383,6 +386,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="4804818685124855865">Se déconnecter</translation>
 <translation id="4814539958450445987">Écran de connexion</translation>
 <translation id="4831034276697007977">Voulez-vous vraiment désactiver les clics automatiques ?</translation>
+<translation id="4836108105469522644">Activer les notifications provenant du téléphone Android</translation>
 <translation id="4849058404725798627">Mettre l'objet sélectionné au clavier en surbrillance</translation>
 <translation id="485592688953820832">Aucune action (pause)</translation>
 <translation id="4868492592575313542">a activé</translation>
@@ -452,6 +456,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="5691772641933328258">Empreinte digitale non reconnue</translation>
 <translation id="5710450975648804523">Mode "Ne pas déranger" activé</translation>
 <translation id="573413375004481890">Cet appareil ne peut pas prendre en charge tous vos écrans. L'un d'eux a été déconnecté</translation>
+<translation id="5740328398383587084">Partage à proximité</translation>
 <translation id="574392208103952083">Moyen</translation>
 <translation id="5744083938413354016">Déplacement tactile</translation>
 <translation id="5745612484876805746">La fonctionnalité Éclairage nocturne est activée automatiquement au coucher du soleil</translation>
@@ -696,6 +701,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="8297006494302853456">Faible</translation>
 <translation id="8308637677604853869">Menu précédent</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
+<translation id="8349293353728876872">Épingler les commandes multimédias générales à l'étagère</translation>
 <translation id="8351131234907093545">Créer une note</translation>
 <translation id="8371779926711439835">Avancer par lettre</translation>
 <translation id="8375916635258623388">L'appareil <ph name="DEVICE_NAME" /> et votre téléphone seront associés automatiquement</translation>

@@ -7,6 +7,7 @@
 <translation id="1124772482545689468">Gebruiker</translation>
 <translation id="1178581264944972037">Onderbreken</translation>
 <translation id="1181037720776840403">Verwijderen</translation>
+<translation id="1195941046451948919">Weet je zeker dat je alle rechten voor deze website wilt resetten?</translation>
 <translation id="1201402288615127009">Volgende</translation>
 <translation id="1242008676835033345">Ingesloten in <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">Stop</translation>
@@ -47,6 +48,7 @@
 <translation id="2187243482123994665">Aanwezigheid van gebruiker</translation>
 <translation id="2212565012507486665">Cookies toestaan</translation>
 <translation id="2228071138934252756">Als je <ph name="APP_NAME" /> toegang wilt geven tot je camera, moet je de camera ook inschakelen via de <ph name="BEGIN_LINK" />Android-instellingen<ph name="END_LINK" />.</translation>
+<translation id="2241634353105152135">Slechts één keer</translation>
 <translation id="2289270750774289114">Vragen wanneer een site Bluetooth-apparaten in de buurt wilt detecteren (aanbevolen)</translation>
 <translation id="2315043854645842844">Certificaatselectie aan clientzijde wordt niet ondersteund door het besturingssysteem.</translation>
 <translation id="2359808026110333948">Doorgaan</translation>
@@ -124,6 +126,7 @@
 <translation id="4570913071927164677">Details</translation>
 <translation id="4645575059429386691">Beheerd door je ouder</translation>
 <translation id="4670064810192446073">Virtual reality</translation>
+<translation id="4708011789095599544">Weet je zeker dat je de cookies en andere sitegegevens wilt wissen voor deze website?</translation>
 <translation id="4751476147751820511">Bewegings- of lichtsensoren</translation>
 <translation id="4883854917563148705">Beheerde instellingen kunnen niet worden gereset</translation>
 <translation id="4887024562049524730">Vragen voordat sites je virtualreality-apparaat en -gegevens mogen gebruiken (aanbevolen)</translation>
@@ -229,6 +232,7 @@
 <translation id="7423538860840206698">Lezen van het klembord geblokkeerd</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7554752735887601236">Een site gebruikt de microfoon</translation>
+<translation id="7561196759112975576">Altijd</translation>
 <translation id="7572498721684305250">Voorkomen dat sites informatie sturen en ontvangen als je NFC-apparaten tegen elkaar houdt</translation>
 <translation id="757524316907819857">Blokkeren dat sites beschermde content kunnen afspelen</translation>
 <translation id="7589445247086920869">Blokkeren voor huidige zoekmachine</translation>

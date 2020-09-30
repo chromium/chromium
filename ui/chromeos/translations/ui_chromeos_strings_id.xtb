@@ -30,6 +30,7 @@
 <translation id="1208421848177517699">Transliterasi (namaste → નમસ્તે)</translation>
 <translation id="1243314992276662751">Upload</translation>
 <translation id="1249250836236328755">Genre</translation>
+<translation id="1276362640455948667">Portugis dengan keyboard Internasional AS</translation>
 <translation id="1278813325885878377">Keyboard QWERTY Magyar</translation>
 <translation id="1293556467332435079">File</translation>
 <translation id="1297922636971898492">Saat ini Google Drive tidak tersedia. Upload akan dimulai ulang secara otomatis setelah Google Drive aktif kembali.</translation>
@@ -112,13 +113,14 @@
 <translation id="2163152940313951844">Karakter tidak valid: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2164862903024139959">Keyboard Vietnam (TCVN)</translation>
 <translation id="2168214441502403371">Keyboard Persia</translation>
-<translation id="2197363559908958454"><ph name="NUMBER_OF_ITEMS" /> dipindahkan.</translation>
 <translation id="2198315389084035571">China Aksara Sederhana</translation>
 <translation id="2208158072373999562">Arsip Zip</translation>
 <translation id="2225536596944493418">Yakin ingin menghapus <ph name="NUMBER_OF_ITEMS" /> item?</translation>
 <translation id="2230062665678605299">Tidak dapat membuat folder "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2270413998793223379">Sanskerta</translation>
 <translation id="2275059641601412272">Dipindahkan.</translation>
 <translation id="2278988676849463018">Keyboard Kannada (Fonetik)</translation>
+<translation id="2287742181953707290">Portugis dengan keyboard PC Internasional AS</translation>
 <translation id="2288278176040912387">Pemutar piringan hitam</translation>
 <translation id="2291538123825441971">Membuka <ph name="NUMBER_OF_FILES" /> file.</translation>
 <translation id="2303301624314357662">Membuka file <ph name="FILE_NAME" />.</translation>
@@ -222,6 +224,7 @@
 <translation id="3473378059788601120">Disalin ke <ph name="FOLDER_NAME" />.</translation>
 <translation id="3475447146579922140">Spreadsheet Google</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> kesalahan.</translation>
+<translation id="349603508045926994">Transliterasi Parsi</translation>
 <translation id="3519867315646775981">Transliterasi (shalom ← שלום)</translation>
 <translation id="3522708245912499433">Portugis</translation>
 <translation id="3524311639100184459">Perhatian: File ini bersifat sementara dan dapat dihapus secara otomatis untuk mengosongkan ruang disk.  <ph name="BEGIN_LINK" />Pelajari Lebih Lanjut<ph name="END_LINK" /></translation>
@@ -293,6 +296,7 @@
 <translation id="4298972503445160211">Keyboard untuk bahasa Denmark</translation>
 <translation id="4299729908419173967">Brasil</translation>
 <translation id="4309915981827077375">Info umum</translation>
+<translation id="4315949787858895817">Belanda (Belgia)</translation>
 <translation id="4326192123064055915">Kopi</translation>
 <translation id="4336032328163998280">Operasi penyalinan gagal. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4364327530094270451">Melon</translation>
@@ -339,6 +343,7 @@
 <translation id="4804827417948292437">Avokad</translation>
 <translation id="4823651846660089135">Perangkat berstatus hanya-baca</translation>
 <translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> item dipilih</translation>
+<translation id="4849981557599196363">Jerman (Belgia)</translation>
 <translation id="4850886885716139402">Lihat</translation>
 <translation id="485316830061041779">Jerman</translation>
 <translation id="4867079195717347957">Klik untuk mengurutkan kolom dari atas ke bawah.</translation>
@@ -402,6 +407,7 @@
     dalam file bersama orang lain, semuanya di satu tempat.<ph name="MARKUP_9" /></translation>
 <translation id="5274350207900771082">Disalin.</translation>
 <translation id="5275973617553375938">File yang dipulihkan dari Google Drive</translation>
+<translation id="5283140566205748520">Prancis (Belgia)</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">Simpan</translation>
 <translation id="5318819489018851358">Bagikan dengan Linux</translation>
@@ -688,6 +694,7 @@
 <translation id="8329978297633540474">Teks biasa</translation>
 <translation id="8335587457941836791">Lepaskan pin dari rak</translation>
 <translation id="8336153091935557858"><ph name="YESTERDAY_DAYTIME" /> kemarin</translation>
+<translation id="8336524887811696057">Transliterasi Nepal</translation>
 <translation id="8336579025507394412">Keyboard Islandia</translation>
 <translation id="8342318071240498787">Sudah ada file atau direktori dengan nama yang sama.</translation>
 <translation id="8382450452152102026">Ke <ph name="FOLDER_NAME" /></translation>
@@ -713,12 +720,14 @@
 <translation id="8600173386174225982">Daftar file telah diubah menjadi tampilan thumbnail.</translation>
 <translation id="8601932370724196034">File gambar Crostini</translation>
 <translation id="8669949407341943408">Memindahkan...</translation>
+<translation id="8694836330346852143">Urdu</translation>
 <translation id="8698464937041809063">Gambar Google</translation>
 <translation id="8714406895390098252">Sepeda</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> dipilih.</translation>
 <translation id="8722421161699219904">Keyboard Internasional AS</translation>
 <translation id="872537912056138402">Kroat</translation>
 <translation id="874420130893181774">Metode masukan Pinyin Tradisional</translation>
+<translation id="8770002329960263418">Belanda (Belanda) dengan keyboard PC Internasional AS</translation>
 <translation id="8775404590947523323">Editan Anda disimpan secara otomatis.<ph name="BREAKS" />Untuk menyimpan salinan dari gambar asli, hapus centang "Timpa yang asli"</translation>
 <translation id="8803496343472038847">Keyboard Fonetik Rusia</translation>
 <translation id="8808686172382650546">Kucing</translation>
@@ -760,7 +769,6 @@
 <translation id="943972244133411984">Diubah oleh</translation>
 <translation id="945522503751344254">Kirim masukan</translation>
 <translation id="947144732524271678">Rentang <ph name="ENTRY_COUNT" /> entri dari <ph name="FROM_ENTRY_NAME" /> ke <ph name="TO_ENTRY_NAME" /> dipilih.</translation>
-<translation id="949308258121608615"><ph name="NUMBER_OF_ITEMS" /> disalin.</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="988685240266037636">File bernama "<ph name="FILE_NAME" />" sudah ada. Ingin menggantinya?</translation>
 <translation id="996903396648773764"><ph name="NUMBER_OF_MB" /> MB</translation>

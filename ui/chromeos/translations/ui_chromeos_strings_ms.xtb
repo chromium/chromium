@@ -30,6 +30,7 @@
 <translation id="1208421848177517699">Pengalihan huruf (namaste → નમસ્તે)</translation>
 <translation id="1243314992276662751">Muat naik</translation>
 <translation id="1249250836236328755">Genre</translation>
+<translation id="1276362640455948667">Portugis dengan papan kekunci Antarabangsa AS</translation>
 <translation id="1278813325885878377">Papan kekunci QWERTY Hungary</translation>
 <translation id="1293556467332435079">Fail</translation>
 <translation id="1297922636971898492">Google Drive tidak tersedia pada masa ini. Memuat naik akan dimulakan semula secara automatik sebaik sahaja Google Drive kembali.</translation>
@@ -112,13 +113,14 @@
 <translation id="2163152940313951844">Aksara tidak sah: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2164862903024139959">Papan kekunci bahasa Vietnam (TCVN)</translation>
 <translation id="2168214441502403371">Papan kekunci bahasa Parsi</translation>
-<translation id="2197363559908958454"><ph name="NUMBER_OF_ITEMS" /> dialihkan.</translation>
 <translation id="2198315389084035571">Bahasa Cina Mudah</translation>
 <translation id="2208158072373999562">Arkib zip</translation>
 <translation id="2225536596944493418">Adakah anda pasti anda mahu memadamkan <ph name="NUMBER_OF_ITEMS" /> item?</translation>
 <translation id="2230062665678605299">Tidak dapat membuat folder "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2270413998793223379">Sankrit</translation>
 <translation id="2275059641601412272">Dialihkan.</translation>
 <translation id="2278988676849463018">Papan kekunci bahasa Kannada (Fonetik)</translation>
+<translation id="2287742181953707290">Portugis dengan papan kekunci PC Antarabangsa AS</translation>
 <translation id="2288278176040912387">Pemain Piring Hitam</translation>
 <translation id="2291538123825441971">Membuka <ph name="NUMBER_OF_FILES" /> fail.</translation>
 <translation id="2303301624314357662">Membuka fail <ph name="FILE_NAME" />.</translation>
@@ -222,6 +224,7 @@
 <translation id="3473378059788601120">Disalin ke <ph name="FOLDER_NAME" />.</translation>
 <translation id="3475447146579922140">Hamparan Google</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> ralat.</translation>
+<translation id="349603508045926994">Alih Huruf Bahasa Parsi</translation>
 <translation id="3519867315646775981">Pengalihan huruf (shalom ← שלום)</translation>
 <translation id="3522708245912499433">Bahasa Portugis</translation>
 <translation id="3524311639100184459">Awas: Fail ini bersifat sementara dan mungkin dipadamkan secara automatik untuk mengosongkan ruang cakera.  <ph name="BEGIN_LINK" />Ketahui Lebih Lanjut<ph name="END_LINK" /></translation>
@@ -293,6 +296,7 @@
 <translation id="4298972503445160211">Papan kekunci Denmark</translation>
 <translation id="4299729908419173967">Bahasa Brazil</translation>
 <translation id="4309915981827077375">Maklumat umum</translation>
+<translation id="4315949787858895817">Belanda (Belgium)</translation>
 <translation id="4326192123064055915">Kopi</translation>
 <translation id="4336032328163998280">Operasi menyalin gagal. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4364327530094270451">Tembikai</translation>
@@ -339,6 +343,7 @@
 <translation id="4804827417948292437">Avokado</translation>
 <translation id="4823651846660089135">Peranti dalam mod baca sahaja</translation>
 <translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> item dipilih</translation>
+<translation id="4849981557599196363">Jerman (Belgium)</translation>
 <translation id="4850886885716139402">Lihat</translation>
 <translation id="485316830061041779">Bahasa Jerman</translation>
 <translation id="4867079195717347957">Klik untuk mengisih lajur dalam tertib menurun.</translation>
@@ -402,6 +407,7 @@
     pada fail dengan orang lain, semuanya pada satu tempat.<ph name="MARKUP_9" /></translation>
 <translation id="5274350207900771082">Disalin.</translation>
 <translation id="5275973617553375938">Fail yang diperoleh semula dari Google Drive</translation>
+<translation id="5283140566205748520">Perancis (Belgium)</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">Simpan</translation>
 <translation id="5318819489018851358">Kongsi dengan Linux</translation>
@@ -688,6 +694,7 @@
 <translation id="8329978297633540474">Teks biasa</translation>
 <translation id="8335587457941836791">Nyahsemat dari rak</translation>
 <translation id="8336153091935557858">Semalam <ph name="YESTERDAY_DAYTIME" /></translation>
+<translation id="8336524887811696057">Alih Huruf Bahasa Nepal</translation>
 <translation id="8336579025507394412">Papan kekunci Iceland</translation>
 <translation id="8342318071240498787">Fail atau direktori dengan nama yang sama telah wujud.</translation>
 <translation id="8382450452152102026">Kepada <ph name="FOLDER_NAME" /></translation>
@@ -713,12 +720,14 @@
 <translation id="8600173386174225982">Senarai fail telah berubah kepada paparan lakaran kecil.</translation>
 <translation id="8601932370724196034">Fail imej Crostini</translation>
 <translation id="8669949407341943408">Bergerak...</translation>
+<translation id="8694836330346852143">Urdu</translation>
 <translation id="8698464937041809063">Lukisan Google</translation>
 <translation id="8714406895390098252">Basikal</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> dipilih.</translation>
 <translation id="8722421161699219904">Papan kekunci Antarabangsa AS</translation>
 <translation id="872537912056138402">Bahasa Croatia</translation>
 <translation id="874420130893181774">Kaedah input Pinyin Tradisional</translation>
+<translation id="8770002329960263418">Belanda (Belanda) dengan papan kekunci PC Antarabangsa AS</translation>
 <translation id="8775404590947523323">Suntingan anda disimpan secara automatik.<ph name="BREAKS" />Untuk menyimpan salinan imej asal, nyahtandakan "Tulis ganti yang asal"</translation>
 <translation id="8803496343472038847">Papan kekunci Fonetik Rusia</translation>
 <translation id="8808686172382650546">Kucing</translation>
@@ -760,7 +769,6 @@
 <translation id="943972244133411984">Diubah suai oleh</translation>
 <translation id="945522503751344254">Hantar maklum balas</translation>
 <translation id="947144732524271678">Memilih <ph name="ENTRY_COUNT" /> masukan daripada <ph name="FROM_ENTRY_NAME" /> hingga <ph name="TO_ENTRY_NAME" />.</translation>
-<translation id="949308258121608615"><ph name="NUMBER_OF_ITEMS" /> disalin.</translation>
 <translation id="981121421437150478">Luar talian</translation>
 <translation id="988685240266037636">Fail bernama "<ph name="FILE_NAME" />" sudah wujud. Adakah anda mahu menggantikannya?</translation>
 <translation id="996903396648773764"><ph name="NUMBER_OF_MB" /> MB</translation>

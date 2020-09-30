@@ -7,6 +7,7 @@
 <translation id="1124772482545689468">User</translation>
 <translation id="1178581264944972037">Pause</translation>
 <translation id="1181037720776840403">Remove</translation>
+<translation id="1195941046451948919">Are you sure that you want to reset all permissions for this website?</translation>
 <translation id="1201402288615127009">Next</translation>
 <translation id="1242008676835033345">Embedded on <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">Stop</translation>
@@ -47,6 +48,7 @@
 <translation id="2187243482123994665">User presence</translation>
 <translation id="2212565012507486665">Allow cookies</translation>
 <translation id="2228071138934252756">To let <ph name="APP_NAME" /> access your camera, also turn on camera in <ph name="BEGIN_LINK" />Android settings<ph name="END_LINK" />.</translation>
+<translation id="2241634353105152135">Just once</translation>
 <translation id="2289270750774289114">Ask when a site wants to discover nearby Bluetooth devices (recommended)</translation>
 <translation id="2315043854645842844">Client side certificate selection is not supported by the operating system.</translation>
 <translation id="2359808026110333948">Continue</translation>
@@ -230,6 +232,7 @@
 <translation id="7423538860840206698">Blocked from reading clipboard</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7554752735887601236">A site is using your microphone</translation>
+<translation id="7561196759112975576">Always</translation>
 <translation id="7572498721684305250">Block sites from sending and receiving info when you tap NFC devices</translation>
 <translation id="757524316907819857">Block sites from playing protected content</translation>
 <translation id="7589445247086920869">Block for current search engine</translation>

@@ -501,6 +501,7 @@
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (convidado)</translation>
 <translation id="1572266655485775982">Ativar Wi-Fi</translation>
 <translation id="1572876035008611720">Introduza o seu email</translation>
+<translation id="1575741822946219011">Idiomas e métodos de introdução</translation>
 <translation id="1576594961618857597">Avatar branco predefinido</translation>
 <translation id="1578558981922970608">Forçar fecho</translation>
 <translation id="1578784163189013834">Escolher fundo da proteção de ecrã</translation>
@@ -858,6 +859,7 @@
 <translation id="1974821797477522211">Ligar à rede</translation>
 <translation id="1975841812214822307">Remover...</translation>
 <translation id="1976150099241323601">Iniciar sessão no Dispositivo de segurança</translation>
+<translation id="1976307821760494606">O domínio <ph name="DOMAIN" /> desativou a depuração do ADB. Esta ação vai repor o seu dispositivo <ph name="DEVICE_TYPE" /> dentro de 24 horas. Faça uma cópia de segurança dos ficheiros que pretende manter.</translation>
 <translation id="1977965994116744507">Aproxime o telemóvel para desbloquear o <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1978006917103730774">As atualizações de software e segurança futuras serão instaladas automaticamente.</translation>
 <translation id="1979095679518582070">A desativação desta funcionalidade não afeta a capacidade de o dispositivo enviar as informações necessárias para serviços essenciais, como atualizações do sistema e segurança.</translation>
@@ -1055,7 +1057,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2218019600945559112">Rato e touchpad</translation>
 <translation id="2218320521449013367">Ocorreu um erro enquanto o Chrome removia software prejudicial.</translation>
 <translation id="2218515861914035131">Colar como texto simples</translation>
-<translation id="221872881068107022">Deslocamento inverso</translation>
 <translation id="2220409419896228519">Adicione marcadores às suas aplicações Google favoritas.</translation>
 <translation id="2220529011494928058">Comunicar um problema</translation>
 <translation id="2220572644011485463">PIN ou palavra-passe</translation>
@@ -1240,7 +1241,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2435457462613246316">Mostrar palavra-passe</translation>
 <translation id="2435579801172349831">Abra todos (<ph name="URL_COUNT" />) numa janela de navegação anónima.</translation>
 <translation id="2436186046335138073">Permitir que <ph name="HANDLER_HOSTNAME" /> abra todos os links <ph name="PROTOCOL" />?</translation>
-<translation id="2436707352762155834">Mínimo</translation>
 <translation id="2439545803278355377">Introduza o novo PIN Um PIN tem de ter pelo menos quatro carateres e pode incluir letras, números e outros carateres.</translation>
 <translation id="2440604414813129000">Ver fonte</translation>
 <translation id="244231003699905658">Endereço inválido. Verifique o endereço e tente novamente.</translation>
@@ -2040,6 +2040,7 @@ Pretende pará-lo?</translation>
 <translation id="3404249063913988450">Ativar proteção de ecrã</translation>
 <translation id="3405664148539009465">Personalizar tipos de letra</translation>
 <translation id="3405763860805964263">...</translation>
+<translation id="3406396172897554194">Pesquise por idioma ou nome do método de introdução.</translation>
 <translation id="3406605057700382950">&amp;Mostrar barra de marcadores</translation>
 <translation id="340671561090997290">{NUM_EXTENSIONS,plural, =1{Esta extensão pode ser perigosa}other{Estas extensões podem ser perigosas}}</translation>
 <translation id="3409785640040772790">Maps</translation>
@@ -2615,6 +2616,7 @@ Pretende pará-lo?</translation>
 <translation id="4025039777635956441">Desativar o som do site selecionado</translation>
 <translation id="4027804175521224372">(Está a perder - <ph name="IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_LINK" />)</translation>
 <translation id="4027951648498485763">As definições do Flash são mantidas até sair do Chrome.</translation>
+<translation id="4028467762035011525">Adicionar métodos de introdução</translation>
 <translation id="4031179711345676612">Microfone permitido</translation>
 <translation id="4031527940632463547">Sensores bloqueados</translation>
 <translation id="4033471457476425443">Adicionar nova pasta</translation>
@@ -3086,6 +3088,7 @@ Pretende pará-lo?</translation>
 <translation id="4617270414136722281">Opções de extensão</translation>
 <translation id="4619615317237390068">Separadores de outros dispositivos</translation>
 <translation id="4620809267248568679">Esta definição é gerida por uma extensão.</translation>
+<translation id="4623167406982293031">Validar conta</translation>
 <translation id="4623189117674524348">O sistema não conseguiu autorizar o acesso da API para este dispositivo.</translation>
 <translation id="4625078469366263107">Ativar aplicação</translation>
 <translation id="4627427111733173920">Cookies bloqueados</translation>
@@ -3259,7 +3262,6 @@ Pretende pará-lo?</translation>
 <translation id="4848518990323155912">Ativar o bloqueio do cartão SIM (requer o PIN para utilizar dados móveis)</translation>
 <translation id="4849286518551984791">Tempo universal coordenado (UTC/GMT)</translation>
 <translation id="4849517651082200438">Não instalar</translation>
-<translation id="4850669014075537160">Deslocamento</translation>
 <translation id="4850886885716139402">Ver</translation>
 <translation id="485088796993065002">Os sites podem reproduzir som para fornecer áudio para músicas, vídeos e outros conteúdos multimédia.</translation>
 <translation id="4853020600495124913">Abrir numa &amp;nova janela</translation>
@@ -4066,6 +4068,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5833726373896279253">Estas definições só podem ser modificadas pelo proprietário:</translation>
 <translation id="5834581999798853053">Faltam cerca de <ph name="TIME" /> minutos</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> – câmara ou microfone a gravar</translation>
+<translation id="5839574759884227787">O domínio <ph name="DOMAIN" /> desativou a depuração do ADB, o que irá repor o seu dispositivo <ph name="DEVICE_TYPE" />. Faça uma cópia de segurança dos ficheiros antes de reiniciar.</translation>
 <translation id="5840680448799937675">Os ficheiros serão sempre partilhados offline</translation>
 <translation id="5841270259333717135">Configurar Ethernet</translation>
 <translation id="5842497610951477805">Ativar o Bluetooth</translation>
@@ -4479,6 +4482,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6308077700132376815">Bloquear imagens</translation>
 <translation id="6308493641021088955">Início de sessão fornecido por <ph name="EXTENSION_NAME" /></translation>
 <translation id="6308937455967653460">Guardar lin&amp;k como...</translation>
+<translation id="6309443618838462258">O seu administrador não permite este método de introdução.</translation>
 <translation id="6309510305002439352">O microfone está desligado</translation>
 <translation id="6311220991371174222">Não é possível iniciar o Chrome porque ocorreu um erro ao abrir o seu perfil. Experimente reiniciar o Chrome.</translation>
 <translation id="6312403991423642364">Erro de rede desconhecido</translation>
@@ -4853,7 +4857,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6781978626986383437">Cópia de segurança do Linux cancelada</translation>
 <translation id="6782067259631821405">PIN inválido</translation>
 <translation id="6785518634832172390">O PIN pode ter, no máximo, 12 dígitos.</translation>
-<translation id="6785915470941880363">Deslocamento invertido <ph name="LINK_BEGIN" />Saber mais<ph name="LINK_END" /></translation>
 <translation id="6786747875388722282">Extensões</translation>
 <translation id="6787839852456839824">Atalhos de teclado</translation>
 <translation id="6788210894632713004">Extensão expandida</translation>
@@ -5854,6 +5857,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="7952708427581814389">Os sites podem solicitar a visualização de texto e imagens na sua área de transferência</translation>
 <translation id="795282463722894016">Restauro concluído</translation>
 <translation id="7952904276017482715">O ID esperado era "<ph name="EXPECTED_ID" />", mas o ID apresentado foi "<ph name="NEW_ID" />".</translation>
+<translation id="7953669802889559161">Métodos de introdução</translation>
 <translation id="7953955868932471628">Gerir atalhos</translation>
 <translation id="7956373551960864128">As suas impressoras guardadas</translation>
 <translation id="7957074856830851026">Ver informações do dispositivo, como o respetivo número de série ou ID do recurso</translation>
@@ -5877,6 +5881,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="7973962044839454485">Falha na autenticação PPP devido a um nome de utilizador ou palavra-passe incorretos</translation>
 <translation id="7974566588408714340">Tente novamente com <ph name="EXTENSIONNAME" /></translation>
 <translation id="7974936243149753750">Overscan</translation>
+<translation id="7977404132325989121">&amp;Nome da janela…</translation>
 <translation id="7978412674231730200">Chave privada</translation>
 <translation id="7978450511781612192">Deste modo, termina sessão nas suas Contas Google. Os marcadores, o histórico, as palavras-passe e muito mais deixam de ser sincronizados.</translation>
 <translation id="7980084013673500153">ID do recurso: <ph name="ASSET_ID" /></translation>
@@ -6428,6 +6433,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8648408795949963811">Temperatura da cor da Luz noturna</translation>
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> pretende: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> e mais</translation>
 <translation id="8650543407998814195">Embora já não possa aceder ao seu perfil antigo, pode removê-lo.</translation>
+<translation id="865118751078059229">&amp;Nome da janela…</translation>
 <translation id="8651585100578802546">Forçar o recarregamento desta página</translation>
 <translation id="8652400352452647993">Erro de extensão do pacote</translation>
 <translation id="8654151524613148204">O ficheiro é demasiado grande para o seu computador processar. Lamentamos.</translation>
@@ -6580,6 +6586,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8813872945700551674">Pede ao teu Pai ou Mãe para aprovar "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="8813969267212093033">O texto do sistema é apresentado neste idioma.</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
+<translation id="8814319344131658221">Os idiomas para a verificação ortográfica são baseados na sua preferência de idioma.</translation>
 <translation id="8814644416678422095">Disco rígido</translation>
 <translation id="8814687660896548945">Aguarde enquanto o arquivo está a ser analisado...</translation>
 <translation id="881782782501875829">Adicione o número da porta</translation>
@@ -6675,6 +6682,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8912810933860534797">Ativar análise automática</translation>
 <translation id="8915370057835397490">A carregar sugestão</translation>
 <translation id="8916476537757519021">Subestrutura da navegação anónima: <ph name="SUBFRAME_SITE" /></translation>
+<translation id="8916749157829986308">Defina o nome da janela</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> de <ph name="GIVEN_NAME" /></translation>
 <translation id="8922013791253848639">Permitir sempre anúncios neste site</translation>
 <translation id="8923880975836399332">Azul esverdeado escuro</translation>
@@ -6850,6 +6858,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="9124003689441359348">As palavras-passe guardadas aparecem aqui</translation>
 <translation id="9126149354162942022">Cor do cursor</translation>
 <translation id="9128317794749765148">Não foi possível concluir a configuração</translation>
+<translation id="9128335130883257666">Abrir página de definições para <ph name="INPUT_METHOD_NAME" /></translation>
 <translation id="9128870381267983090">Ligar à rede</translation>
 <translation id="9130015405878219958">Introduzido modo inválido.</translation>
 <translation id="9131487537093447019">Envie mensagens para e receba mensagens de dispositivos Bluetooth.</translation>

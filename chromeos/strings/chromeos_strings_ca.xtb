@@ -55,6 +55,7 @@
 <translation id="4890353053343094602">Tria'n una de nova immediatament</translation>
 <translation id="4917889632206600977">S'ha aturat: no hi ha paper</translation>
 <translation id="4932733599132424254">Data</translation>
+<translation id="520299634122159966">No hi ha cap escàner disponible</translation>
 <translation id="5212543919916444558">No he trobat res a la pantalla amb què et pugui ajudar.
 Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="5222676887888702881">Tanca la sessió</translation>
@@ -85,6 +86,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="7805768142964895445">Estat</translation>
 <translation id="808894953321890993">Canvia la contrasenya</translation>
 <translation id="8208861521865154048">Avantatges</translation>
+<translation id="8294431847097064396">Font</translation>
 <translation id="8347227221149377169">Tasques d'impressió</translation>
 <translation id="8352772353338965963">Afegiu un compte per a l'inici de sessió múltiple. Es pot accedir a tots el comptes registrats sense contrasenya, de manera que només hauríeu d'utilitzar aquesta funció en comptes de confiança.</translation>
 <translation id="8701136875688985581"><ph name="ENROLLMENT_DOMAIN" /> gestiona aquest usuari. És possible que gestioni la configuració i monitori l'activitat de l'usuari de manera remota.</translation>

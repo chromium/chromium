@@ -47,6 +47,7 @@
 <translation id="2187243482123994665">Presencia del usuario</translation>
 <translation id="2212565012507486665">Permitir cookies</translation>
 <translation id="2228071138934252756">Para permitir que <ph name="APP_NAME" /> acceda a tu cámara, actívala también en la <ph name="BEGIN_LINK" />Configuración de Android<ph name="END_LINK" />.</translation>
+<translation id="2241634353105152135">Solo esta vez</translation>
 <translation id="2289270750774289114">Preguntarme cuando un sitio intente conectarse a dispositivos Bluetooth cercanos (recomendado)</translation>
 <translation id="2315043854645842844">El sistema operativo no admite la selección de certificados del lado del cliente.</translation>
 <translation id="2359808026110333948">Continuar</translation>
@@ -229,6 +230,7 @@
 <translation id="7423538860840206698">Se impidió la lectura del portapapeles</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7554752735887601236">Un sitio está utilizando el micrófono</translation>
+<translation id="7561196759112975576">Siempre</translation>
 <translation id="7572498721684305250">Impide que los sitios envíen y reciban información cuando presionas dispositivos NFC</translation>
 <translation id="757524316907819857">Impedir que los sitios reproduzcan contenido protegido</translation>
 <translation id="7589445247086920869">Bloquear el motor de búsqueda actual</translation>

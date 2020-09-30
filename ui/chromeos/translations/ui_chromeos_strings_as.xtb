@@ -113,7 +113,6 @@
 <translation id="2163152940313951844">অমান্য বৰ্ণ: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2164862903024139959">ভিয়েটনামীজ কীব’ৰ্ড (TCVN)</translation>
 <translation id="2168214441502403371">পার্চীয়ান কীব’র্ড</translation>
-<translation id="2197363559908958454"><ph name="NUMBER_OF_ITEMS" /> স্থানান্তৰ কৰা হ'ল।</translation>
 <translation id="2198315389084035571">সৰলীকৰণ কৰা চীনা</translation>
 <translation id="2208158072373999562">জিপ আৰ্কাইভ</translation>
 <translation id="2225536596944493418">আপুনি <ph name="NUMBER_OF_ITEMS" />টা বস্তু মচি পেলাবলৈ নিশ্চিতনে?</translation>
@@ -761,7 +760,6 @@
 <translation id="943972244133411984">সংশোধন কৰোঁতা</translation>
 <translation id="945522503751344254">মতামত পঠিয়াওক</translation>
 <translation id="947144732524271678"><ph name="FROM_ENTRY_NAME" />ৰ পৰা <ph name="TO_ENTRY_NAME" />লৈ পৰিসৰৰ বাছনি কৰা <ph name="ENTRY_COUNT" />টা প্ৰবিষ্টি</translation>
-<translation id="949308258121608615"><ph name="NUMBER_OF_ITEMS" />ৰ প্ৰতিলিপি কৰা হ'ল।</translation>
 <translation id="981121421437150478">অফলাইন</translation>
 <translation id="988685240266037636">"<ph name="FILE_NAME" />" নামৰ এটা ফাইল ইতিমধ্যে আছেই। আপুনি এইটো সলনি কৰিব বিচাৰে নেকি?</translation>
 <translation id="996903396648773764"><ph name="NUMBER_OF_MB" /> এম. বি.</translation>

@@ -113,7 +113,6 @@
 <translation id="2163152940313951844">Inhlamvu engavumelekile: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2164862903024139959">Ikhibhodi ye-Vietnamese (TCVN)</translation>
 <translation id="2168214441502403371">Ikhibhodi ye-Persian</translation>
-<translation id="2197363559908958454">kuhanjiswe okungu-<ph name="NUMBER_OF_ITEMS" />.</translation>
 <translation id="2198315389084035571">isi-Sipmlified Chinese</translation>
 <translation id="2208158072373999562">Ingobo yomlando yeziphu</translation>
 <translation id="2225536596944493418">Ingabe ufuna ukususa izinto ze-<ph name="NUMBER_OF_ITEMS" />?</translation>
@@ -769,7 +768,6 @@
 <translation id="943972244133411984">Kushintshwe ngu-</translation>
 <translation id="945522503751344254">Thumela impendulo</translation>
 <translation id="947144732524271678">Ibanga elikhethiwe lokungenayo kwe-<ph name="ENTRY_COUNT" /> kusuka ku-<ph name="FROM_ENTRY_NAME" /> kuya ku-<ph name="TO_ENTRY_NAME" />.</translation>
-<translation id="949308258121608615">kukopishwe okungu-<ph name="NUMBER_OF_ITEMS" />.</translation>
 <translation id="981121421437150478">Ayixhunyiwe ku-inthanethi</translation>
 <translation id="988685240266037636">Ifayela elinegama "<ph name="FILE_NAME" />" selivele likhona. Ingabe ufuna ukuyimiselela?</translation>
 <translation id="996903396648773764"><ph name="NUMBER_OF_MB" /> MB</translation>

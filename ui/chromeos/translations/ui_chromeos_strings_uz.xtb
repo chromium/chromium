@@ -30,6 +30,7 @@
 <translation id="1208421848177517699">Transliteratsiya (namaste → નમસ્તે)</translation>
 <translation id="1243314992276662751">Yuklash</translation>
 <translation id="1249250836236328755">Janri</translation>
+<translation id="1276362640455948667">Portugal va AQSH klaviaturasi (xalqaro)</translation>
 <translation id="1278813325885878377">Venger QWERTY klaviaturasi</translation>
 <translation id="1293556467332435079">Fayllar</translation>
 <translation id="1297922636971898492">Google Disk hozir ish faoliyatida emas. Xizmat ish faoliyatiga qaytishi bilan yuklash amali avtomatik davom ettiriladi.</translation>
@@ -112,13 +113,14 @@
 <translation id="2163152940313951844">Yaroqsiz belgi: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2164862903024139959">Vyetnam klaviaturasi (TCVN)</translation>
 <translation id="2168214441502403371">Fors klaviaturasi</translation>
-<translation id="2197363559908958454">Boshqa joyga olindi: <ph name="NUMBER_OF_ITEMS" />.</translation>
 <translation id="2198315389084035571">Xitoy (soddalashtirilgan) klaviaturasi</translation>
 <translation id="2208158072373999562">Zip-arxiv</translation>
 <translation id="2225536596944493418"><ph name="NUMBER_OF_ITEMS" /> ta element oʻchirib tashlansinmi?</translation>
 <translation id="2230062665678605299">“<ph name="FOLDER_NAME" />” jildini yaratib bo‘lmadi. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2270413998793223379">Sanskrit</translation>
 <translation id="2275059641601412272">Boshqa joyga olindi.</translation>
 <translation id="2278988676849463018">Kannada klaviaturasi (Fonetik)</translation>
+<translation id="2287742181953707290">Portugal va kompyuter uchun AQSH klaviaturasi (xalqaro)</translation>
 <translation id="2288278176040912387">Patefon</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> ta fayl ochilmoqda.</translation>
 <translation id="2303301624314357662"><ph name="FILE_NAME" /> fayli ochilmoqda.</translation>
@@ -222,6 +224,7 @@
 <translation id="3473378059788601120"><ph name="FOLDER_NAME" /> jildiga nusxalandi.</translation>
 <translation id="3475447146579922140">Google elektron jadvali</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> ta xatolik.</translation>
+<translation id="349603508045926994">Fors tili transliteratsiyasi</translation>
 <translation id="3519867315646775981">Transliteratsiya (shalom ← שלום)</translation>
 <translation id="3522708245912499433">Portugal tili</translation>
 <translation id="3524311639100184459">Diqqat! Bu vaqtinchalik fayllar diskda joy boʻshatish uchun avtomatik oʻchirib yuborilishi mumkin.  <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
@@ -293,6 +296,7 @@
 <translation id="4298972503445160211">Dat klaviaturasi</translation>
 <translation id="4299729908419173967">Brazil</translation>
 <translation id="4309915981827077375">Umumiy tafsilotlar</translation>
+<translation id="4315949787858895817">Golland (Belgiya)</translation>
 <translation id="4326192123064055915">Kofe</translation>
 <translation id="4336032328163998280">Nusxalash amali bajarilmadi. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4364327530094270451">Qovun</translation>
@@ -339,6 +343,7 @@
 <translation id="4804827417948292437">Avokado</translation>
 <translation id="4823651846660089135">Qurilma faqat o‘qish rejimida</translation>
 <translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> ta element tanlandi</translation>
+<translation id="4849981557599196363">Nemis (Belgiya)</translation>
 <translation id="4850886885716139402">Ko‘rish</translation>
 <translation id="485316830061041779">Nemis</translation>
 <translation id="4867079195717347957">Ustundagi fayllar roʻyxatini kamayish boʻyicha tartiblash.</translation>
@@ -402,6 +407,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
     bir joyda joylashgan fayllaringiz ustida hamkorlikda ishlang. <ph name="MARKUP_9" /></translation>
 <translation id="5274350207900771082">Nusxa olindi.</translation>
 <translation id="5275973617553375938">Google Disk‘dan tiklangan fayllar</translation>
+<translation id="5283140566205748520">Fransuz (Belgiya)</translation>
 <translation id="5317780077021120954">Saqlash</translation>
 <translation id="5318819489018851358">Linux bilan ulashish</translation>
 <translation id="5319782540886810524">Latish klaviaturasi</translation>
@@ -687,6 +693,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="8329978297633540474">Oddiy matn</translation>
 <translation id="8335587457941836791">Javondan olib tashlash</translation>
 <translation id="8336153091935557858">Kecha <ph name="YESTERDAY_DAYTIME" /></translation>
+<translation id="8336524887811696057">Nepal tili transliteratsiyasi</translation>
 <translation id="8336579025507394412">Island klaviaturasi</translation>
 <translation id="8342318071240498787">Shu nomli fayl yoki katalog avvaldan mavjud.</translation>
 <translation id="8382450452152102026">Kimga: <ph name="FOLDER_NAME" /></translation>
@@ -712,12 +719,14 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="8600173386174225982">Fayllar roʻyxati uchun saralash shakli eskizlarga almashdi.</translation>
 <translation id="8601932370724196034">Crostini tasvir fayli</translation>
 <translation id="8669949407341943408">Ko‘chirilmoqda...</translation>
+<translation id="8694836330346852143">Urdu</translation>
 <translation id="8698464937041809063">Google-chizmasi</translation>
 <translation id="8714406895390098252">Velosiped</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> tanlandi.</translation>
 <translation id="8722421161699219904">AQSH klaviaturasi (xalqaro)</translation>
 <translation id="872537912056138402">Xorvat</translation>
 <translation id="874420130893181774">Pinyin</translation>
+<translation id="8770002329960263418">Golland (Niderlandiya) va kompyuter uchun AQSH klaviaturasi (xalqaro)</translation>
 <translation id="8775404590947523323">Siz kiritgan tahrirlar avtomatik ravishda saqlandi.<ph name="BREAKS" />Original tasvirning nusxasini saqlab qolish uchun "Originalning ustidan yozilsin" parametridan belgini olib tashlang</translation>
 <translation id="8803496343472038847">Rus Fonetik klaviaturasi</translation>
 <translation id="8808686172382650546">Mushuk</translation>
@@ -759,7 +768,6 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="943972244133411984">Tahrirlovchi</translation>
 <translation id="945522503751344254">Fikr-mulohaza</translation>
 <translation id="947144732524271678"><ph name="ENTRY_COUNT" /> ta element (<ph name="FROM_ENTRY_NAME" /> — <ph name="TO_ENTRY_NAME" />) tanlandi.</translation>
-<translation id="949308258121608615">Nusxa olindi: <ph name="NUMBER_OF_ITEMS" />.</translation>
 <translation id="981121421437150478">Oflayn</translation>
 <translation id="988685240266037636">“<ph name="FILE_NAME" />” nomli fayl allaqachon mavjud. Almashtirilsinmi?</translation>
 <translation id="996903396648773764"><ph name="NUMBER_OF_MB" /> MB</translation>

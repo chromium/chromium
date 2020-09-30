@@ -25,7 +25,7 @@
 <translation id="2872961005593481000">Isključi</translation>
 <translation id="3008341117444806826">OSVJEŽI</translation>
 <translation id="3091839911843451378">Nije uspjelo – zaustavljeno</translation>
-<translation id="3246869037381808805">Uklonit će se zadaci ispisa stariji od jednog dana</translation>
+<translation id="3246869037381808805">Zadaci za štampanje stariji od 1 dana će se ukloniti</translation>
 <translation id="3268178239013324452">Nije uspjelo – poklopac je otvoren</translation>
 <translation id="3369013195428705271">Jeste li sigurni da želite obrisati svu historiju štampanja? Vaši trenutni zadaci štampanja se neće izbrisati.</translation>
 <translation id="3456078764689556234">Odštampanih stanica: <ph name="PRINTED_PAGES" /> od <ph name="TOTAL_PAGES" />.</translation>
@@ -36,7 +36,7 @@
 <translation id="38114475217616659">Obriši svu historiju</translation>
 <translation id="3820172043799983114">Nevažeći PIN.</translation>
 <translation id="3838338534323494292">Nova lozinka</translation>
-<translation id="39823212440917567">Uklonit će se zadaci ispisa stariji od <ph name="NUMBER_OF_DAYS" /> dana</translation>
+<translation id="39823212440917567">Zadaci za štampanje stariji od <ph name="NUMBER_OF_DAYS" /> dana će se ukloniti</translation>
 <translation id="4003259559679196451">Web lokacija <ph name="ENROLLMENT_DOMAIN" /> upravlja ovim uređajem i ima pristup svim aktivnostima korisnika, uključujući posjećene web stranice, lozinke i e-poštu.</translation>
 <translation id="4003384961948020559">Nije uspjelo – izlaz je pun</translation>
 <translation id="4027485274696301677">Ovim uređajem <ph name="DEVICE_TYPE" /> upravlja domena <ph name="ENROLLMENT_DOMAIN" />. Administratori mogu daljinski konfigurirati uređaj.</translation>
@@ -55,6 +55,7 @@
 <translation id="4890353053343094602">Odmah odaberite novu lozinku</translation>
 <translation id="4917889632206600977">Zaustavljeno – nestalo je papira</translation>
 <translation id="4932733599132424254">Datum</translation>
+<translation id="520299634122159966">Nije dostupan nijedan skener</translation>
 <translation id="5212543919916444558">Ne mogu pronaći ništa na ekranu u vezi s čim mogu pomoći.
 Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="5222676887888702881">Odjava</translation>
@@ -74,7 +75,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="649050271426829538">Zaustavljeno – papir je zaglavljen</translation>
 <translation id="6517239166834772319">Istražite</translation>
 <translation id="6564646048574748301">Nije uspjelo – štampač je nedostupan</translation>
-<translation id="6620487321149975369">Zadaci ispisa prikazivat će se u povijesti ako se ne uklone ručno</translation>
+<translation id="6620487321149975369">Zadaci za štampanje će se pojaviti u historiji osim ako ih ne uklonite ručno</translation>
 <translation id="6643016212128521049">Obriši</translation>
 <translation id="6747215703636344499">Zaustavljeno – izlaz je pun</translation>
 <translation id="7162487448488904999">Galerija</translation>
@@ -85,6 +86,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="808894953321890993">Promijenite lozinku</translation>
 <translation id="8208861521865154048">Privilegije</translation>
+<translation id="8294431847097064396">Izvor</translation>
 <translation id="8347227221149377169">Zadaci štampanja</translation>
 <translation id="8352772353338965963">Dodajte račun za višestruku prijavu. Svim računima na kojima je izvršena prijava je moguće pristupiti bez lozinke. Ovu funkciju treba koristiti isključivo s pouzdanim računima.</translation>
 <translation id="8701136875688985581"><ph name="ENROLLMENT_DOMAIN" /> upravlja ovim korisnikom. Može udaljeno upravljati postavkama i pratiti aktivnost korisnika.</translation>

@@ -5,6 +5,7 @@
 <translation id="1195447618553298278">Неизвестная ошибка.</translation>
 <translation id="1413240736185167732">Сбой: ошибка в работе фильтра</translation>
 <translation id="1468664791493211953">Предложения</translation>
+<translation id="1478594628797167447">Сканер</translation>
 <translation id="1482734542997480527">Это управляемое устройство. Администратор домена <ph name="ENROLLMENT_DOMAIN" /> может отслеживать ваши действия.</translation>
 <translation id="150962533380566081">Неверный PUK-код.</translation>
 <translation id="1510238584712386396">Панель запуска</translation>
@@ -24,6 +25,7 @@
 <translation id="2872961005593481000">Завершить работу</translation>
 <translation id="3008341117444806826">ОБНОВИТЬ</translation>
 <translation id="3091839911843451378">Сбой: остановка работы</translation>
+<translation id="3246869037381808805">Задания печати, хранящиеся дольше 1 дня, будут удалены</translation>
 <translation id="3268178239013324452">Сбой: крышка открыта</translation>
 <translation id="3369013195428705271">Очистить историю печати? Текущие задания печати не будут удалены.</translation>
 <translation id="3456078764689556234">Напечатано страниц: <ph name="PRINTED_PAGES" /> из <ph name="TOTAL_PAGES" />.</translation>
@@ -34,6 +36,7 @@
 <translation id="38114475217616659">Очистить всю историю</translation>
 <translation id="3820172043799983114">Неверный PIN-код.</translation>
 <translation id="3838338534323494292">Новый пароль</translation>
+<translation id="39823212440917567">Задания печати, хранящиеся дольше <ph name="NUMBER_OF_DAYS" /> дней (дня), будут удалены</translation>
 <translation id="4003259559679196451">Это управляемое устройство. Администратору домена <ph name="ENROLLMENT_DOMAIN" /> доступна информация обо всех действиях пользователя, в том числе о посещенных сайтах, используемом адресе электронной почты и введенных паролях.</translation>
 <translation id="4003384961948020559">Сбой: выходной лоток заполнен</translation>
 <translation id="4027485274696301677">Это устройство <ph name="DEVICE_TYPE" /> зарегистрировано в домене <ph name="ENROLLMENT_DOMAIN" />. Администраторы могут настраивать устройство удаленно.</translation>
@@ -52,6 +55,7 @@
 <translation id="4890353053343094602">Смените пароль как можно скорее.</translation>
 <translation id="4917889632206600977">Печать прервана: нет бумаги</translation>
 <translation id="4932733599132424254">Дата</translation>
+<translation id="520299634122159966">Нет доступных сканеров.</translation>
 <translation id="5212543919916444558">Я не нашла на экране ничего подходящего.
 Попробуйте озвучить запрос, нажав на значок микрофона.</translation>
 <translation id="5222676887888702881">Выйти</translation>
@@ -71,6 +75,7 @@
 <translation id="649050271426829538">Печать прервана: застряла бумага</translation>
 <translation id="6517239166834772319">Возможности</translation>
 <translation id="6564646048574748301">Сбой: принтер недоступен</translation>
+<translation id="6620487321149975369">Задания печати показываются в истории до тех пор, пока вы их не удалите</translation>
 <translation id="6643016212128521049">Удалить</translation>
 <translation id="6747215703636344499">Печать прервана: выходной лоток заполнен</translation>
 <translation id="7162487448488904999">Галерея</translation>
@@ -81,6 +86,7 @@
 <translation id="7805768142964895445">Состояние</translation>
 <translation id="808894953321890993">Сменить пароль</translation>
 <translation id="8208861521865154048">Преимущества</translation>
+<translation id="8294431847097064396">Источник</translation>
 <translation id="8347227221149377169">Задания печати</translation>
 <translation id="8352772353338965963">Добавить аккаунт в систему множественного входа. Для доступа к аккаунтам, в которые выполнен вход, пароль не требуется, поэтому эту функцию следует использовать только для надежных аккаунтов.</translation>
 <translation id="8701136875688985581">Этот аккаунт находится под управлением домена <ph name="ENROLLMENT_DOMAIN" />, из которого можно отслеживать действия пользователя и удаленно изменять настройки.</translation>

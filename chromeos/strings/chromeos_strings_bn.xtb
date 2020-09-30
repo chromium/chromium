@@ -5,6 +5,7 @@
 <translation id="1195447618553298278">অজানা ত্রুটি৷</translation>
 <translation id="1413240736185167732">প্রিন্ট করা যায়নি - ফিল্টার কাজ করছে না</translation>
 <translation id="1468664791493211953">অফার</translation>
+<translation id="1478594628797167447">স্ক্যানার</translation>
 <translation id="1482734542997480527"><ph name="ENROLLMENT_DOMAIN" /> এই ডিভাইস ম্যানেজ করে এবং এটি আপনার অ্যাক্টিভিটি মনিটর করতে পারে।</translation>
 <translation id="150962533380566081">ভুল PUK।</translation>
 <translation id="1510238584712386396">লঞ্চার</translation>
@@ -24,6 +25,7 @@
 <translation id="2872961005593481000">বন্ধ করুন</translation>
 <translation id="3008341117444806826">রিফ্রেশ করুন</translation>
 <translation id="3091839911843451378">প্রিন্ট করা যায়নি - প্রিন্টার বন্ধ হয়ে গেছে</translation>
+<translation id="3246869037381808805">১ দিনের বেশি পুরনো প্রিন্ট জব সরিয়ে দেওয়া হবে</translation>
 <translation id="3268178239013324452">প্রিন্ট করা যায়নি - প্রিন্টারের ঢাকনা ভাল করে বন্ধ করা হয়নি</translation>
 <translation id="3369013195428705271">আপনি কি সব প্রিন্ট ইতিহাস মুছে ফেলতে চান? এখন যে প্রিন্ট করার কাজগুলি চলছে সেগুলি মোছা হবে না।</translation>
 <translation id="3456078764689556234"><ph name="TOTAL_PAGES" />টি পৃষ্ঠার মধ্যে <ph name="PRINTED_PAGES" /> নম্বর পৃষ্ঠা প্রিন্ট করা হয়েছে।</translation>
@@ -34,6 +36,7 @@
 <translation id="38114475217616659">সব ইতিহাস মুছে ফেলুন</translation>
 <translation id="3820172043799983114">ভুল পিন।</translation>
 <translation id="3838338534323494292">নতুন পাসওয়ার্ড</translation>
+<translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> দিনের বেশি পুরনো প্রিন্ট জব সরিয়ে দেওয়া হবে</translation>
 <translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> এই ডিভাইস ম্যানেজ করে এবং ব্যবহারকারী দেখেছেন এমন ওয়েবসাইট, পাসওয়ার্ড ও ইমেলে সহ তার সব অ্যাক্টিভিটি সংক্রান্ত ডেটা অ্যাক্সেস করতে পারে।</translation>
 <translation id="4003384961948020559">প্রিন্ট করা যায়নি - আউটপুট বিন ভর্তি হয়ে গেছে</translation>
 <translation id="4027485274696301677"><ph name="ENROLLMENT_DOMAIN" /> এই <ph name="DEVICE_TYPE" /> ম্যানেজ করে। অ্যাডমিনিস্ট্রেটররা অন্য জায়গা থেকে ডিভাইসটি কনফিগার করতে পারেন।</translation>
@@ -70,6 +73,7 @@
 <translation id="649050271426829538">বন্ধ হয়ে গেছে - প্রিন্টারে কাগজ আটকে গেছে</translation>
 <translation id="6517239166834772319">ঘুরে দেখুন</translation>
 <translation id="6564646048574748301">প্রিন্ট করা যায়নি - প্রিন্টারের সাথে কানেক্ট করা যাচ্ছে না</translation>
+<translation id="6620487321149975369">ম্যানুয়ালি সরিয়ে না দেওয়া পর্যন্ত প্রিন্ট হওয়া কাজগুলি ইতিহাসে দেখা যাবে</translation>
 <translation id="6643016212128521049">সাফ করুন</translation>
 <translation id="6747215703636344499">বন্ধ হয়ে গেছে - আউটপুট ট্রে ভর্তি হয়ে গেছে</translation>
 <translation id="7162487448488904999">গ্যালারি</translation>
@@ -80,6 +84,7 @@
 <translation id="7805768142964895445">স্থিতি</translation>
 <translation id="808894953321890993">পাসওয়ার্ড পরিবর্তন করুন</translation>
 <translation id="8208861521865154048">বিশেষ সুবিধা</translation>
+<translation id="8294431847097064396">উৎস</translation>
 <translation id="8347227221149377169">প্রিন্ট করার কাজগুলি</translation>
 <translation id="8352772353338965963">একাধিক সাইন-ইন-এ একটি অ্যাকাউন্ট যোগ করুন৷ সমস্ত সাইন-ইন থাকা অ্যাকাউন্টগুলি কোনো পাসওয়ার্ড ছাড়াই অ্যাক্সেস করা যাবে, তাই এই বৈশিষ্ট্যটি শুধুমাত্র বিশ্বস্ত অ্যাকাউন্টগুলির সাথে ব্যবহার করা উচিৎ৷</translation>
 <translation id="8701136875688985581"><ph name="ENROLLMENT_DOMAIN" /> এই ব্যবহারকারীকে ম্যানেজ করে। এটি দূর থেকে সেটিংস ম্যানেজ করতে পারে এবং ব্যবহারকারীর গতিবিধির উপর নজর রাখতে পারে।</translation>

@@ -229,6 +229,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />: hay varias acciones disponibles; presiona Tab para elegir una</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1803264062614276815">Nombre del titular de la tarjeta</translation>
+<translation id="1807246157184219062">Claro</translation>
 <translation id="1807528111851433570">Hoja de inicio</translation>
 <translation id="1821930232296380041">Solicitud o parámetros de solicitud no válidos</translation>
 <translation id="1822540298136254167">Los sitios web que visitas y el tiempo que pasas en ellos</translation>
@@ -285,6 +286,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2099652385553570808">Grapas triples a la izquierda</translation>
 <translation id="2101225219012730419">Versión:</translation>
 <translation id="2102134110707549001">Sugerir contraseña segura…</translation>
+<translation id="2102495993840063010">Apps de Android</translation>
 <translation id="2107021941795971877">Compatibilidades de la impresora</translation>
 <translation id="2108755909498034140">Reinicia la computadora.</translation>
 <translation id="2111256659903765347">Super-A</translation>
@@ -363,6 +365,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2396249848217231973">&amp;Deshacer Eliminar</translation>
 <translation id="2410754574180102685">Government-Legal</translation>
 <translation id="2413528052993050574">Este servidor no pudo probar que su dominio es <ph name="DOMAIN" /> y se podría revocar el certificado de seguridad. Es posible que esto se deba a una configuración incorrecta o a que un atacante interceptó la conexión.</translation>
+<translation id="2414886740292270097">Oscuro</translation>
 <translation id="2438874542388153331">Perforación cuádruple a la derecha</translation>
 <translation id="245044156129055925">Ingresaste tu contraseña en un sitio engañoso. Chromium recomienda que la cambies ahora.</translation>
 <translation id="2463739503403862330">Llenar</translation>
@@ -439,6 +442,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2738330467931008676">Elegir dirección de retiro</translation>
 <translation id="2740531572673183784">Aceptar</translation>
 <translation id="2742870351467570537">Eliminar elementos seleccionados</translation>
+<translation id="2765217105034171413">Pequeño</translation>
 <translation id="277133753123645258">Método de envío</translation>
 <translation id="277499241957683684">Falta un registro de dispositivo.</translation>
 <translation id="2775884851269838147">Primera página de impresión</translation>
@@ -732,6 +736,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4014128326099193693">{COUNT,plural, =1{Documento PDF con {COUNT} página}other{Documento PDF con {COUNT} páginas}}</translation>
 <translation id="4030383055268325496">&amp;Deshacer Agregar</translation>
 <translation id="4032320456957708163"><ph name="ENROLLMENT_DOMAIN" /> administra tu navegador</translation>
+<translation id="4056223980640387499">Sepia</translation>
 <translation id="4058922952496707368">Clave "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (Envelope)</translation>
 <translation id="4067947977115446013">Agregar una dirección válida</translation>
@@ -740,7 +745,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4075941231477579656">Touch ID</translation>
 <translation id="4079302484614802869">El proxy está configurado para usar una URL de script .pac, no servidores proxy fijos.</translation>
 <translation id="4082393374666368382">Configuración - Administración</translation>
-<translation id="4084120443451129199">Modo búsqueda: presiona Intro para buscar <ph name="KEYWORD_SUFFIX" /></translation>
+<translation id="4084120443451129199">Modo de búsqueda: presiona Intro para buscar <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="4088981014127559358">Cambio en el eje Y del lado 1 de la imagen</translation>
 <translation id="4098354747657067197">Sitio engañoso</translation>
 <translation id="4101413244023615925">Texto y gráficos</translation>
@@ -772,6 +777,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4194250254487269611">No se puede guardar tu tarjeta en este momento</translation>
 <translation id="4196861286325780578">&amp;Rehacer Mover</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Comprobar las configuraciones de firewall y antivirus<ph name="END_LINK" />.</translation>
+<translation id="4209092469652827314">Grande</translation>
 <translation id="4209166701302774460">El servidor <ph name="ORIGIN" /> al que te diriges solicitó que se aplique una política de origen a todas las solicitudes. Sin embargo, no pudo entregar ninguna política, lo que impide al navegador procesar tu solicitud para <ph name="SITE" />. Los operadores de sitios pueden usar políticas de origen para configurar la seguridad y otras propiedades de un sitio.</translation>
 <translation id="421066178035138955">Usar datos y dispositivos de realidad virtual</translation>
 <translation id="4214357935346142455">perfil de la pantalla de acceso</translation>
@@ -1377,6 +1383,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6645291930348198241">Acceder a las cookies y los datos de sitios</translation>
 <translation id="6646269444027925224">{COUNT,plural, =0{Ninguno}=1{De 1 sitio (no saldrás de tu cuenta de Google)}other{De # sitios (no saldrás de tu cuenta de Google)}}</translation>
 <translation id="6648459603387803038">El administrador puede cambiar la configuración de tu navegador de forma remota. Es posible que la actividad en este dispositivo también se administre fuera de Chrome.</translation>
+<translation id="6648524591329069940">Fuente Serif</translation>
 <translation id="6652101503459149953">Usar Windows Hello</translation>
 <translation id="6657585470893396449">Contraseña</translation>
 <translation id="666259744093848177">(x86_64 translated)</translation>
@@ -1496,7 +1503,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> no cumple con las normas de seguridad.</translation>
 <translation id="7210993021468939304">La actividad de Linux en el contenedor; también pueden instalar y ejecutar apps de Linux en el contenedor</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /> acerca de este problema.</translation>
-<translation id="7214062855724067749">Usa las fuentes instaladas en la computadora para crear tipografías avanzadas</translation>
 <translation id="7217745192097460130">¿Deseas usar Touch ID para verificar y completar tu compra?</translation>
 <translation id="7219179957768738017">La conexión usa <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Procesando</translation>

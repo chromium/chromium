@@ -113,6 +113,7 @@
 <translation id="2049240716062114887">デスクの名前を <ph name="DESK_NAME" /> に変更しました</translation>
 <translation id="2050339315714019657">縦</translation>
 <translation id="2067602449040652523">キーボードの明るさ</translation>
+<translation id="2074759828767813253">最近のスクリーンショットとダウンロード</translation>
 <translation id="2083190527011054446">おやすみなさい、<ph name="GIVEN_NAME" /> さん</translation>
 <translation id="209965399369889474">ネットワークに接続されていません</translation>
 <translation id="2126242104232412123">新しいデスク</translation>
@@ -197,6 +198,7 @@
 <translation id="2996462380875591307">ドッキング拡大鏡がオンになっています。オフにするには Ctrl+検索+D キーをもう一度押します。</translation>
 <translation id="3000461861112256445">モノラル音声</translation>
 <translation id="3009178788565917040">出力</translation>
+<translation id="3025081209054535615">シェルフからグローバル メディア コントロールの固定を解除</translation>
 <translation id="3033545621352269033">オン</translation>
 <translation id="3038571455154067151">ログインするには、ファミリー リンクの保護者のアクセスコードを入力してください</translation>
 <translation id="3045488863354895414">こんにちは</translation>
@@ -250,6 +252,7 @@
 <translation id="3430396595145920809">右側からスワイプすると前の画面に戻ります</translation>
 <translation id="343571671045587506">リマインダーの編集</translation>
 <translation id="3435967511775410570">指紋を認識しました</translation>
+<translation id="3445288400492335833"><ph name="MINUTES" />分</translation>
 <translation id="3445925074670675829">USB-C デバイス</translation>
 <translation id="3454224730401036106">より安全なネットワークに接続が切り替えられました</translation>
 <translation id="3465223694362104965">前回のログイン後に、別のキーボードがこのデバイスに接続されました。このキーボードを使用する前に信頼できるものかどうか確認してください。</translation>
@@ -383,6 +386,7 @@
 <translation id="4804818685124855865">切断</translation>
 <translation id="4814539958450445987">ログイン画面</translation>
 <translation id="4831034276697007977">自動クリックをオフにしてもよろしいですか？</translation>
+<translation id="4836108105469522644">Android スマートフォンで通知をオンにする</translation>
 <translation id="4849058404725798627">キーボードのフォーカスがある項目をハイライト表示する</translation>
 <translation id="485592688953820832">なし（一時停止）</translation>
 <translation id="4868492592575313542">有効</translation>
@@ -452,6 +456,7 @@
 <translation id="5691772641933328258">指紋を認識できません</translation>
 <translation id="5710450975648804523">サイレント モードがオンになっています</translation>
 <translation id="573413375004481890">このデバイスでサポートできるディスプレイの上限数を超えたため、ディスプレイが 1 台切断されました</translation>
+<translation id="5740328398383587084">ニアバイシェア</translation>
 <translation id="574392208103952083">中</translation>
 <translation id="5744083938413354016">タップによるドラッグ</translation>
 <translation id="5745612484876805746">夜間モードは日の入り時刻に自動的にオンになります</translation>
@@ -697,6 +702,7 @@
 <translation id="8297006494302853456">弱い</translation>
 <translation id="8308637677604853869">前のメニュー</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
+<translation id="8349293353728876872">シェルフにグローバル メディア コントロールを固定</translation>
 <translation id="8351131234907093545">メモを作成</translation>
 <translation id="8371779926711439835">1 字進む</translation>
 <translation id="8375916635258623388">この <ph name="DEVICE_NAME" /> とお使いのスマートフォンは自動的に接続されます</translation>

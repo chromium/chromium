@@ -113,6 +113,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2049240716062114887">El nom de l'escriptori s'ha canviat a <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Vertical</translation>
 <translation id="2067602449040652523">Brillantor del teclat</translation>
+<translation id="2074759828767813253">Baixades i captures de pantalla recents</translation>
 <translation id="2083190527011054446">Bona nit, <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">No hi ha connexió a la xarxa</translation>
 <translation id="2126242104232412123">Escriptori nou</translation>
@@ -251,6 +252,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="3430396595145920809">Llisca des de la dreta per tornar enrere</translation>
 <translation id="343571671045587506">Edita el recordatori</translation>
 <translation id="3435967511775410570">S'ha reconegut l'empremta digital</translation>
+<translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">Dispositiu USB-C</translation>
 <translation id="3454224730401036106">La connexió ha canviat a una xarxa més segura</translation>
 <translation id="3465223694362104965">Des del darrer inici de sessió, s'ha connectat un altre teclat a aquest dispositiu. Abans d'utilitzar-lo, assegura't que hi confiïs.</translation>
@@ -454,6 +456,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="5691772641933328258">L'empremta digital no s'ha reconegut</translation>
 <translation id="5710450975648804523">Mode No molestis activat</translation>
 <translation id="573413375004481890">Com que aquest dispositiu no ha pogut admetre totes les pantalles, se n'ha desconnectat una</translation>
+<translation id="5740328398383587084">Compartició Nearby</translation>
 <translation id="574392208103952083">Mitja</translation>
 <translation id="5744083938413354016">Tocar i arrossegar</translation>
 <translation id="5745612484876805746">La funció Llum nocturna s'activa automàticament al vespre</translation>

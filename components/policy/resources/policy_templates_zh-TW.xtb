@@ -48,10 +48,6 @@
 
       如未設定政策，在預設情況下，系統會為受企業管理的使用者停用驗證，並為未受管理的使用者啟用驗證。</translation>
 <translation id="1040446814317236570">啟用 PAC 網址分解功能 (適用於 https://)</translation>
-<translation id="1044878202534415707">回報硬體統計資料，例如 CPU/RAM 使用量。
-
-      如果將這項政策設為 False，系統將不會回報統計資料。
-      如果設為 True 或未設定，則會回報統計資料。</translation>
 <translation id="1046484220783400299">暫時啟用已淘汰網路平台功能</translation>
 <translation id="1047128214168693844">不允許任何網站追蹤使用者的實際位置</translation>
 <translation id="1049138910114524876">設定 <ph name="PRODUCT_OS_NAME" /> 登入畫面上執行的語言代碼。
@@ -118,9 +114,6 @@
       應以毫秒數指定政策值。</translation>
 <translation id="1145702698069317184">禁止上傳及下載不支援的檔案類型</translation>
 <translation id="1151353063931113432">允許這些網站的圖片</translation>
-<translation id="1152117524387175066">回報裝置的開發人員模式切換設定在開機時的狀態。
-
-      如果這項政策設為 False，則不會回報開發人員模式切換設定的狀態。</translation>
 <translation id="1160479894929412407">允許 QUIC 通訊協定</translation>
 <translation id="1160939557934457296">停用略過安全瀏覽警告網頁繼續進行</translation>
 <translation id="1163080558183062209">停用拒絕清單上的印表機類型</translation>
@@ -147,10 +140,6 @@
 <translation id="1198183996903759302">如果將這項政策設為 True (或將 <ph name="HARDWARE_ACCELERATION_MODE_ENABLED_POLICY_NAME" /> 設為 False)，網頁將無法存取 WebGL API，且外掛程式將無法使用 Pepper 3D API。
 
       如果將這項政策設為 False 或不設定，網頁將可使用 WebGL API，且外掛程式將可使用 Pepper 3D API，但瀏覽器在預設設定下，仍可能需要指令列引數，才能使用這些 API。</translation>
-<translation id="1198465924256827162">裝置狀態上傳的傳送頻率 (以毫秒數為單位)。
-
-      如未設定這項政策，預設頻率為 3 小時一次。可用頻率下限
-      是 60 秒。</translation>
 <translation id="1204263402976895730">啟用的企業印表機</translation>
 <translation id="120937472976628837">回報風扇資訊</translation>
 <translation id="1216919699175573511">啟用 Signed HTTP Exchange (SXG) 支援</translation>
@@ -534,13 +523,6 @@
       如果將這項政策設為 False 或不設定，<ph name="PRODUCT_NAME" /> 不會在 <ph name="PRODUCT_NAME" /> 19 以上版本中執行線上撤銷檢查。
 
       注意：<ph name="OCSP_CRL_LABEL" /> 檢查無法提供實際的安全性效益。</translation>
-<translation id="1906888171268104594">控制是否要將使用指標和診斷資料 (含當機報告) 回報給 Google。
-
-      如果設為 true，<ph name="PRODUCT_OS_NAME" />會回報使用指標和診斷資料。
-
-      如果設為 false，指標和診斷資料回報功能就會停用。
-
-      如果未設定，指標和診斷資料回報功能會在未受管理的裝置上停用，並且在受管理的裝置上啟用。</translation>
 <translation id="1910704279188129272">可讓你設定個別應用程式的使用限制。
         使用限制可套用到指定使用者在 <ph name="PRODUCT_OS_NAME" />上安裝的應用程式。
         你必須透過 |app_limits| 清單指定限制。每個應用程式只能設定一個項目。不在清單中的應用程式不會受到限制。
@@ -948,10 +930,6 @@
 
 
       在 <ph name="MS_WIN_NAME" /> 上，這項功能僅適用於已加入 <ph name="MS_AD_NAME" /> 網域的執行個體、在 Windows 10 專業版上執行的執行個體，或是已註冊 Chrome 瀏覽器雲端管理服務的執行個體。</translation>
-<translation id="2440773021691931148">回報與電源相關的硬體統計資料和 ID。
-
-      如果將這項政策設為 False 或不予設定，系統將不會回報統計資料。
-      如果設為 True，則系統會回報統計資料。</translation>
 <translation id="2454228136871844693">穩定性最佳化。</translation>
 <translation id="2463034609187171371">在傳輸層安全標準 (TLS) 中啟用 DHE 加密套件</translation>
 <translation id="2463365186486772703">應用程式語言代碼</translation>
@@ -1870,11 +1848,6 @@
 <translation id="3838094946886335701">你可以透過這項政策 (只能設為「建議」) 註冊通訊協定處理常式的清單，其中的通訊協定處理常式會與使用者所註冊的合併，二種皆可供使用。請將「protocol」(通訊協定) 屬性設為「mailto」等類型的網路通訊協定配置，並將「URL」(網址) 屬性設為處理該網路通訊協定的應用程式所使用的網址模式 (這裡的網路通訊協定指的是「通訊協定」欄位中所指定的網路通訊協定配置)。模式可包含「%s」預留位置，將替換為受處理的網址。
 
       使用者無法移除透過政策註冊的通訊協定處理常式，但可透過安裝新的預設處理常式，變更透過政策安裝的通訊協定處理常式。</translation>
-<translation id="3851039766298741586">回報執行中資訊站工作階段的相關資訊，例如
-      應用程式 ID 和版本。
-
-      如果將政策設為 false，系統將不會回報資訊站工作階段資訊。
-      如果設為 true 或不予設定，則會回報資訊站工作階段資訊。</translation>
 <translation id="3858128774616573616">如果將這項政策設為啟用，系統會在工具列或溢位選單上顯示 Cast 工具列圖示，且使用者無法將其移除。
 
       如果將這項政策設為停用或不設定，使用者可以透過內容選單來固定或移除該圖示。
@@ -1984,11 +1957,6 @@
           設好這項政策後，使用者即無法變更或覆寫設定。
 
           如果不設定這項政策，系統會在初次顯示登入畫面時停用相黏鍵功能，但使用者隨時可以啟用。</translation>
-<translation id="3939893074578116847">將監控線上狀態所需的網路封包傳送到管理伺服器，
-      讓伺服器偵測裝置是否處於離線狀態。
-
-      如果將這項政策設為 true，系統會傳送網路封包 (所謂的「<ph name="HEARTBEATS_TERM" />」)。
-      如果設為 false 或未設定，系統就不會傳送任何封包。</translation>
 <translation id="3942041691320538491">如果將這項政策設為 0 (預設值)，你將可存取開發人員工具和 JavaScript 控制台，但無法在由企業政策安裝的擴充功能中進行存取。如果將這項政策設為 1，你將可在所有情況下存取開發人員工具和 JavaScript 控制台，在由企業政策安裝的擴充功能中也能進行存取。如果將這項政策設為 2，你將無法存取開發人員工具，也無法檢查網站元素。
 
       此外，用來開啟開發人員工具或 JavaScript 控制台的鍵盤快速鍵、選單項目或內容選單項目也會停用。</translation>
@@ -2006,10 +1974,6 @@
 
       如果未設定這項裝置桌布政策，則會由使用者的桌布政策 (如有設定) 決定要顯示的圖片。</translation>
 <translation id="3964298692570794635">允許這些網站的不安全內容</translation>
-<translation id="3964606652985594895">回報儲存裝置的硬體統計資料和 ID。
-
-      如果將這項政策設為 False 或不予設定，系統將不會回報統計資料。
-      如果設為 True，則系統會回報統計資料。</translation>
 <translation id="3965339130942650562">逾時直到閒置使用者登出</translation>
 <translation id="3973371701361892765">永不自動隱藏檔案櫃</translation>
 <translation id="3979738908158213640">可在 SAML 驗證期間取得執行裝置認證存取權的網址</translation>
@@ -2530,10 +2494,6 @@
 <translation id="4816674326202173458">允許企業使用者成為主要或次要使用者 (非管理化環境中使用者的預設行為)</translation>
 <translation id="4826326557828204741">使用電池電源的情況下，系統在達到閒置延遲時間時所採取的動作</translation>
 <translation id="482803100714220060">顯示完整網址</translation>
-<translation id="4830531683854509779">回報 SoC 元件的硬體統計資料。
-
-      如果將這項政策設為 False 或不予設定，系統將不會回報統計資料。
-      如果設為 True，則系統會回報統計資料。</translation>
 <translation id="4832852360828533362">使用者與裝置回報功能</translation>
 <translation id="4834526953114077364">移除近期登入次數最少的使用者 (3 個月都未曾登入)，直到有足夠的可用空間</translation>
 <translation id="4835470005923546373">預設停用背景圖形列印模式</translation>
@@ -2728,11 +2688,6 @@
       自 <ph name="PRODUCT_NAME" /> 73 版開始，你可以封鎖 javascript://* 網址。不過，這項設定只適用於在網址列 (或書籤小程式等) 輸入的 JavaScript。動態載入資料的網頁內 JavaScript 網址不會受到這項政策影響。舉例來說，即使你封鎖了 example.com/abc，example.com 仍可透過 XMLHTTPRequest 載入 example.com/abc。
 
       注意：封鎖內部的 chrome://* 網址可能會導致非預期的錯誤。</translation>
-<translation id="5159469559091666409">監控網路封包的傳送頻率 (以毫秒為單位)。
-
-      如果未設定這項政策，預設間隔為 3 分鐘。
-      最短間隔為 30 秒，最長間隔為 24 小時。
-      超過範圍的間隔值會被限制在範圍內。</translation>
 <translation id="5163002264923337812">啟用舊版網頁式登入流程</translation>
 <translation id="516520353995300280">設定這項政策後，系統不會強制要求列出的舊版憑證授權單位 (CA) (由包含指定 <ph name="SUBJECT_PUBLIC_KEY_INFO" /> 雜湊的憑證鏈所組成) 依憑證透明化規定公開憑證。此外，因為未依規定對外公開而不受信任的憑證，企業主機也可以繼續使用。不過，視為舊版 CA 的 CA 憑證必須包含 <ph name="SUBJECT_PUBLIC_KEY_INFO" /> 雜湊，才不會遭強制要求公開憑證。舊版 CA 是受到一或多個 <ph name="PRODUCT_NAME" /> 支援的作業系統公開信任、但不受 Android 開放原始碼計畫或 <ph name="PRODUCT_OS_NAME" />信任的 CA。
 
@@ -2925,13 +2880,6 @@
           管理員可以自行選擇在任何平台上設定政策。建議作法是在所有平台上將這項政策設為相同的值。</translation>
 <translation id="5390083518957894426">在螢幕鎖定畫面上啟用 SAML 使用者的線上重新驗證功能</translation>
 <translation id="5391388690191341203">用於自動登入的裝置本機帳戶</translation>
-<translation id="5392172595902933844">將 Android 狀態的相關資訊傳回
-      伺服器。
-
-      如果將這項政策設為 false 或不予設定，系統將不會回報狀態資訊。
-      如果設為 true，則會回報狀態資訊。
-
-      必須啟用 Android 應用程式才適用這項政策。</translation>
 <translation id="5393009997533871906">僅對使用者顯示許可清單中的印表機</translation>
 <translation id="5395271912574071439">連線狀態下啟用遠端存取主機遮幕。
 
@@ -3154,15 +3102,6 @@
 
           如果啟用這項政策或不設定，使用者即可在密碼管理員中看到實際的密碼內容。</translation>
 <translation id="5620392548325769024">這會啟用歡迎頁面，並在作業系統升級後第一次啟動瀏覽器時顯示。</translation>
-<translation id="5622775268870572080">控管是否要在 <ph name="PRODUCT_NAME" /> 中使用內建的 DNS 用戶端。
-
-      這項政策不會影響系統使用的 DNS 伺服器，只會影響與 DNS 伺服器建立連線的軟體堆疊。比方說，如果作業系統設為使用企業的 DNS 伺服器，內建 DNS 用戶端也會使用相同的伺服器。不過，內建的 DNS 用戶端可能會採用新版 DNS 相關通訊協定 (例如 DNS-over-TLS)，透過其他方式與伺服器互動。
-
-      如果將這項政策設為 True，系統將使用內建的 DNS 用戶端 (如果可用)。
-
-      如果將這項政策設為 False，系統一律不會使用內建的 DNS 用戶端。
-
-      如果不設定這項政策，macOS、Android (當不公開 DNS 和 VPN 皆未啟用時) 和 Chrome 作業系統在預設狀態下會啟用內建的 DNS 用戶端；使用者可以透過編輯 chrome://flags 或指定指令列旗標，來決定系統是否要使用內建的 DNS 用戶端。</translation>
 <translation id="5628811596950455942">這項政策控管快速解鎖模式的清單，可供使用者進行設定並用來解鎖螢幕畫面。
 
           這項政策的值是字串清單；有效的清單項目為：「all」、「PIN」、「FINGERPRINT」。如果將「all」加入清單，則所有快速解鎖模式都可供使用，包括日後導入的模式。否則，只有清單中顯示的快速解鎖模式可供使用。
@@ -3525,9 +3464,6 @@
       如果關閉這項設定或不設定，密碼保護服務只會在 https://accounts.google.com 上擷取密碼的加料式雜湊值。
 
       在 <ph name="MS_WIN_NAME" /> 上，這項功能僅適用於已加入 <ph name="MS_AD_NAME" /> 網域的執行個體、在 Windows 10 專業版上執行的執行個體，或是已註冊 <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />服務的執行個體。在 <ph name="MAC_OS_NAME" /> 上，這項功能僅適用於透過行動裝置管理 (MDM) 進行管理或透過 MCX 加入網域的執行個體。</translation>
-<translation id="6211428344788340116">回報裝置活動時間。
-
-      如果這項政策未設定或設為 True，註冊的裝置會回報使用者在裝置上活動的時段。如果設為 False，則不會記錄或回報裝置活動時間。</translation>
 <translation id="6212868225782276239">顯示所有印表機 (黑名單中的印表機除外)。</translation>
 <translation id="6220835555850906733">如果將這項政策設為啟用或不設定，系統會在使用者的裝置上允許所有支援的音訊輸出。
 
@@ -3654,9 +3590,6 @@
 <translation id="6378393933102834628">如果將這項政策設為 True，系統會顯示應用程式捷徑。如果將這項政策設為 False，系統一律不會顯示應用程式捷徑。
 
       如果設定這項政策，使用者將無法變更。如果未設定，使用者可以從書籤列內容選單中設定要顯示或隱藏應用程式捷徑。</translation>
-<translation id="637934607141010488">回報最近登入的裝置使用者清單。
-
-      如果這項政策設為 False，則不會回報這些使用者。</translation>
 <translation id="638668187106406971">檢查上傳內容是否違反機密資料保護規則</translation>
 <translation id="6394350458541421998">我們已於 <ph name="PRODUCT_OS_NAME" />版本 29 中移除這項政策。請改用 PresentationScreenDimDelayScale 政策。</translation>
 <translation id="6401669939808766804">登出使用者</translation>
@@ -4487,9 +4420,6 @@
 <translation id="7477231245051133709">啟用單聲道音訊無障礙功能</translation>
 <translation id="7477239290070847560">可支援無須調整設定 (mDNS 和 DNS-SD) 的通訊協定目的地</translation>
 <translation id="7485481791539008776">預設印表機選取規則</translation>
-<translation id="749556411189861380">回報註冊裝置的作業系統和韌體版本。
-
-      如果這項政策未設定或設為 True，註冊的裝置會定期回報作業系統和韌體版本。如果設為 False，則不會回報版本資訊。</translation>
 <translation id="7504111874944876852">設定印表機清單。
 
       這項政策可讓系統管理員為使用者提供印表機設定。
@@ -4904,9 +4834,6 @@
 <translation id="8133152694354699657">如果將這項政策設為 True 或不設定，使用者將可使用「輕觸搜尋」功能，並且可以啟用或停用這項功能。
 
       如果將這項政策設為 False，系統會完全停用「輕觸搜尋」功能。</translation>
-<translation id="8140204717286305802">將網路介面清單及其類型和硬體位址回報給伺服器。
-
-      如果這項政策設為 False，則不會回報介面清單。</translation>
 <translation id="8141795997560411818">這項政策不會禁止使用者使用 Android Google 雲端硬碟應用程式。如要禁止存取 Google 雲端硬碟，則必須一併禁止安裝 Android Google 雲端硬碟應用程式。</translation>
 <translation id="8142894094385450823">針對受管理工作階段設定建議語言代碼</translation>
 <translation id="8146727383888924340">允許使用者透過 Chrome OS Registration 兌換優惠</translation>
@@ -5659,11 +5586,6 @@
 <translation id="913195841488580904">禁止存取清單中的網址</translation>
 <translation id="9135033364005346124">啟用 <ph name="CLOUD_PRINT_NAME" /> Proxy</translation>
 <translation id="9136399279941091445">發布指定裝置政策時的停機時間間隔</translation>
-<translation id="9147029539363974059">將系統記錄傳送到管理伺服器，
-      讓管理員監控系統記錄。
-
-      如果將這項政策設為 True，系統會傳送系統記錄。
-      如果設為 False 或未設定，則不會傳送系統記錄。</translation>
 <translation id="9150416707757015439">這項政策已被取代，請改用 IncognitoModeAvailability。在「<ph name="PRODUCT_NAME" />」中啟用無痕模式。如果這項設定已啟用或尚未設定，使用者皆可在無痕模式中開啟網頁。如果這項設定已停用，使用者就無法在無痕模式中開啟網頁。如果未設定這項政策，系統會啟用這項設定，且使用者可以使用無痕模式。</translation>
 <translation id="915194831143859291">如果將這項政策設為 False 或不予設定，<ph name="PRODUCT_OS_NAME" /> 會允許使用者關閉裝置。
       如果將這項政策設為 True，<ph name="PRODUCT_OS_NAME" /> 會在使用者關閉裝置時觸發重新啟動程序。此外，<ph name="PRODUCT_OS_NAME" /> 會將使用者介面中的所有關機按鈕改成重新啟動按鈕。如果使用者使用電源按鈕關閉裝置，即使您已啟用這項政策，裝置仍然不會自動重新啟動。</translation>

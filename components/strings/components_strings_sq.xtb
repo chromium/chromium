@@ -108,6 +108,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1348779747280417563">Konfirmo emrin</translation>
 <translation id="1357195169723583938">Kush e ka përdorur pajisjen së fundi dhe kur</translation>
 <translation id="1360955481084547712">Hap një dritare të re të fshehtë për të shfletuar në mënyrë private</translation>
+<translation id="1363819917331173092">Mos ofro t'i përkthesh faqet në <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1364822246244961190">Kjo politikë është bllokuar, vlera do të shpërfillet.</translation>
 <translation id="1374468813861204354">sugjerime</translation>
 <translation id="1374692235857187091">Index-4x6 (Kartolinë)</translation>
@@ -232,6 +233,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ofrohen shumë veprime, shtyp "Tab" për të kaluar në cikël mes tyre</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1803264062614276815">Emri i mbajtësit të kartës</translation>
+<translation id="1807246157184219062">I lehtë</translation>
 <translation id="1807528111851433570">Fleta e fillimit</translation>
 <translation id="1821930232296380041">Kërkesë e pavlefshme ose parametra të pavlefshme të kërkesës</translation>
 <translation id="1822540298136254167">Sajtet e uebit që viziton dhe koha që kalon në to</translation>
@@ -288,6 +290,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2099652385553570808">Tri kapje me tel majtas</translation>
 <translation id="2101225219012730419">Versioni:</translation>
 <translation id="2102134110707549001">Sugjero fjalëkalim të fortë…</translation>
+<translation id="2102495993840063010">Aplikacionet e Android</translation>
 <translation id="2107021941795971877">Mbështetjet e printimit</translation>
 <translation id="2108755909498034140">Rinis kompjuterin</translation>
 <translation id="2111256659903765347">Super-A</translation>
@@ -366,6 +369,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2396249848217231973">&amp;Zhbëje fshirjen</translation>
 <translation id="2410754574180102685">Government-Legal</translation>
 <translation id="2413528052993050574">Ky server nuk mund të dëshmonte se është  <ph name="DOMAIN" />; certifikata e tij e sigurisë mund të jetë e revokuar. Kjo mund të shkaktohet nga një konfigurim i pasaktë ose nga ndërhyrja e një sulmuesi në lidhjen tënde.</translation>
+<translation id="2414886740292270097">E errët</translation>
 <translation id="2438874542388153331">Katër shpime djathtas</translation>
 <translation id="245044156129055925">Sapo fute fjalëkalimin tënd në një sajt mashtrues. Chromium rekomandon që ta ndryshosh fjalëkalimin tani.</translation>
 <translation id="2463739503403862330">Plotëso</translation>
@@ -442,6 +446,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2738330467931008676">Zgjidh adresën e marrjes</translation>
 <translation id="2740531572673183784">Në rregull</translation>
 <translation id="2742870351467570537">Hiq artikujt e zgjedhur</translation>
+<translation id="2765217105034171413">E vogël</translation>
 <translation id="277133753123645258">Mënyra e dërgimit</translation>
 <translation id="277499241957683684">Mungon një regjistrim i pajisjes</translation>
 <translation id="2775884851269838147">Faqja e parë e printimit</translation>
@@ -496,6 +501,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2996674880327704673">Sugjerime nga Google</translation>
 <translation id="3002501248619246229">Kontrollo median e tabakasë së hyrjes</translation>
 <translation id="3005723025932146533">Shfaq një kopje të ruajtur</translation>
+<translation id="3007719053326478567">Printimi i kësaj përmbajtjeje është bllokuar nga administratori yt</translation>
 <translation id="3008447029300691911">Shkruaj kodin CVC për <ph name="CREDIT_CARD" />. Pasi të konfirmohet, të dhënat e kartës do të ndahen me këtë sajt.</translation>
 <translation id="3010559122411665027">Hyrja e listës "<ph name="ENTRY_INDEX" />": <ph name="ERROR" /></translation>
 <translation id="301521992641321250">Bllokuar automatikisht</translation>
@@ -735,6 +741,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4014128326099193693">{COUNT,plural, =1{Dokumenti PDF me {COUNT} faqe}other{Dokumenti PDF me {COUNT} faqe}}</translation>
 <translation id="4030383055268325496">&amp;Zhbëje shtimin</translation>
 <translation id="4032320456957708163">Shfletuesi yt menaxhohet nga <ph name="ENROLLMENT_DOMAIN" /></translation>
+<translation id="4056223980640387499">Sepia</translation>
 <translation id="4058922952496707368">Çelësi "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (Zarf)</translation>
 <translation id="4067947977115446013">Shto adresë të vlefshme</translation>
@@ -775,6 +782,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4194250254487269611">Karta jote nuk mund të ruhet për momentin</translation>
 <translation id="4196861286325780578">&amp;Bëje përsëri zhvendosjen</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Të kontrollosh konfigurimet e murit mbrojtës dhe antivirusit<ph name="END_LINK" /></translation>
+<translation id="4209092469652827314">E madhe</translation>
 <translation id="4209166701302774460">Serveri ku po shkon, <ph name="ORIGIN" />, ka kërkuar që të zbatohet një politikë e origjinës për të gjitha kërkesat drejtuar atij Por tani nuk ka arritur
     të dorëzojë një politikë, gjë që parandalon që shfletuesi të përmbushë kërkesën tënde për <ph name="SITE" />. Politikat e origjinës mund të përdoren nga operatorët
     e sajtit për të konfiguruar karakteristikat e sigurisë dhe karakteristika të tjera për një sajt.</translation>
@@ -1500,7 +1508,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> nuk i respekton standardet e sigurisë.</translation>
 <translation id="7210993021468939304">Aktiviteti i Linux brenda kontejnerit dhe mund të instalojë dhe të ekzekutojë aplikacione të Linux brenda kontejnerit</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /> rreth këtij problemi.</translation>
-<translation id="7214062855724067749">Përdor fontet e instaluara në kompjuterin tënd që të mund të krijosh një tipografi të përparuar</translation>
 <translation id="7217745192097460130">Dëshiron të përdorësh Touch ID për të verifikuar dhe përfunduar blerjen?</translation>
 <translation id="7219179957768738017">Lidhja përdor <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Po përpunohet</translation>
@@ -1780,6 +1787,7 @@ Detaje shtesë:
 <translation id="8267698848189296333">Po identifikohet si <ph name="USERNAME" /></translation>
 <translation id="8269242089528251720">Dokumente të ndara/kopje të renditura</translation>
 <translation id="8269981117540303696">Tani mund të shfletosh në mënyrë private dhe personat e tjerë që përdorin këtë pajisje nuk do ta shikojnë aktivitetin tënd. Sidoqoftë, shkarkimet dhe faqeshënuesit do të ruhen.</translation>
+<translation id="8275952078857499577">Mos ofro ta përkthesh këtë sajt</translation>
 <translation id="8277900682056760511">Fleta e përpunuesit të pagesës është hapur</translation>
 <translation id="8281084378435768645">Large-Photo</translation>
 <translation id="8282947398454257691">Njihu me identifikuesin unik të pajisjes tënde</translation>

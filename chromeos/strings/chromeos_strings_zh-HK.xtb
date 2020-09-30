@@ -5,6 +5,7 @@
 <translation id="1195447618553298278">未知的錯誤。</translation>
 <translation id="1413240736185167732">失敗 - 篩選器發生錯誤</translation>
 <translation id="1468664791493211953">優惠</translation>
+<translation id="1478594628797167447">掃瞄器</translation>
 <translation id="1482734542997480527"><ph name="ENROLLMENT_DOMAIN" /> 會管理此裝置，並可能監察您的活動。</translation>
 <translation id="150962533380566081">PUK 無效。</translation>
 <translation id="1510238584712386396">啟動器</translation>
@@ -24,6 +25,7 @@
 <translation id="2872961005593481000">關閉</translation>
 <translation id="3008341117444806826">更新</translation>
 <translation id="3091839911843451378">失敗 - 已停止</translation>
+<translation id="3246869037381808805">超過 1 天前的列印工作將被移除</translation>
 <translation id="3268178239013324452">失敗 - 機蓋未關</translation>
 <translation id="3369013195428705271">您確定要清除所有列印記錄嗎？系統不會清除進行中的列印工作。</translation>
 <translation id="3456078764689556234">印咗 <ph name="PRINTED_PAGES" /> 頁，總共有 <ph name="TOTAL_PAGES" /> 頁。</translation>
@@ -34,6 +36,7 @@
 <translation id="38114475217616659">清除所有記錄</translation>
 <translation id="3820172043799983114">PIN 無效。</translation>
 <translation id="3838338534323494292">新密碼</translation>
+<translation id="39823212440917567">超過 <ph name="NUMBER_OF_DAYS" /> 天前的列印工作將被移除</translation>
 <translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> 會管理此裝置並可存取所有使用者活動，包括網頁瀏覽記錄、密碼和電郵。</translation>
 <translation id="4003384961948020559">失敗 - 輸出紙匣已滿</translation>
 <translation id="4027485274696301677">此 <ph name="DEVICE_TYPE" /> 由 <ph name="ENROLLMENT_DOMAIN" /> 管理。管理員可能會遠端設定裝置。</translation>
@@ -71,6 +74,7 @@
 <translation id="649050271426829538">已停止 - 卡紙</translation>
 <translation id="6517239166834772319">探索</translation>
 <translation id="6564646048574748301">失敗 - 無法連接打印機</translation>
+<translation id="6620487321149975369">除非您手動移除列印工作，否則列印工作會顯示在記錄中</translation>
 <translation id="6643016212128521049">清除</translation>
 <translation id="6747215703636344499">已停止 - 輸出紙匣已滿</translation>
 <translation id="7162487448488904999">媒體庫</translation>
@@ -81,6 +85,7 @@
 <translation id="7805768142964895445">狀態</translation>
 <translation id="808894953321890993">變更密碼</translation>
 <translation id="8208861521865154048">獎賞</translation>
+<translation id="8294431847097064396">來源</translation>
 <translation id="8347227221149377169">列印工作</translation>
 <translation id="8352772353338965963">新增可多重登入的帳戶。這些帳戶的使用者不需提供密碼即可存取所有已登入的帳戶。因此，建議您只讓信任的帳戶使用這項功能。</translation>
 <translation id="8701136875688985581">由 <ph name="ENROLLMENT_DOMAIN" /> 管理這位使用者，因此可能會從遠端管理設定並監察用戶活動。</translation>

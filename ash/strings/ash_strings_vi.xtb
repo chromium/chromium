@@ -197,6 +197,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2996462380875591307">Đã bật tính năng Phóng to ở vị trí cố định. Hãy nhấn lại tổ hợp phím Ctrl+Search+D để tắt tính năng này.</translation>
 <translation id="3000461861112256445">Đơn âm</translation>
 <translation id="3009178788565917040">Thiết bị ra</translation>
+<translation id="3025081209054535615">Bỏ ghim các tùy chọn điều khiển nội dung nghe nhìn chung khỏi giá</translation>
 <translation id="3033545621352269033">Đang bật</translation>
 <translation id="3038571455154067151">Để đăng nhập, hãy nhập mã truy cập dành cho cha mẹ của Family Link</translation>
 <translation id="3045488863354895414">Xin chào!</translation>
@@ -250,6 +251,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="3430396595145920809">Vuốt từ phải sang để quay lại</translation>
 <translation id="343571671045587506">Chỉnh sửa lời nhắc</translation>
 <translation id="3435967511775410570">Đã nhận dạng được vân tay</translation>
+<translation id="3445288400492335833"><ph name="MINUTES" /> phút</translation>
 <translation id="3445925074670675829">Thiết bị USB-C</translation>
 <translation id="3454224730401036106">Kết nối của bạn đã chuyển sang một mạng an toàn hơn</translation>
 <translation id="3465223694362104965">Một bàn phím khác đã kết nối với thiết bị này kể từ lần đăng nhập cuối của bạn. Hãy đảm bảo rằng bạn tin tưởng bàn phím này trước khi sử dụng.</translation>
@@ -383,6 +385,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="4804818685124855865">Ngắt kết nối</translation>
 <translation id="4814539958450445987">Màn hình đăng nhập</translation>
 <translation id="4831034276697007977">Bạn có chắc chắn muốn tắt tính năng tự động nhấp không?</translation>
+<translation id="4836108105469522644">Bật Thông báo trên điện thoại Android</translation>
 <translation id="4849058404725798627">Đánh dấu đối tượng bằng tiêu điểm bàn phím</translation>
 <translation id="485592688953820832">Không có hành động nào (tạm dừng)</translation>
 <translation id="4868492592575313542">đã bật</translation>
@@ -452,6 +455,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="5691772641933328258">Không nhận dạng được vân tay</translation>
 <translation id="5710450975648804523">Chế độ Không làm phiền đang bật</translation>
 <translation id="573413375004481890">Thiết bị này không thể hỗ trợ tất cả màn hình của bạn nên một màn hình đã bị ngắt kết nối</translation>
+<translation id="5740328398383587084">Chia sẻ lân cận</translation>
 <translation id="574392208103952083">Trung bình</translation>
 <translation id="5744083938413354016">Kéo nhấn</translation>
 <translation id="5745612484876805746">Chế độ Ánh sáng đêm sẽ tự động bật khi trời tối</translation>
@@ -696,6 +700,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="8297006494302853456">Yếu</translation>
 <translation id="8308637677604853869">Menu trước</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
+<translation id="8349293353728876872">Ghim các tùy chọn điều khiển nội dung nghe nhìn chung vào giá</translation>
 <translation id="8351131234907093545">Tạo ghi chú</translation>
 <translation id="8371779926711439835">Tiến một ký tự</translation>
 <translation id="8375916635258623388"><ph name="DEVICE_NAME" /> này và điện thoại của bạn sẽ tự động kết nối</translation>

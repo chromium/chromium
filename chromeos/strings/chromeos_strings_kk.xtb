@@ -5,6 +5,7 @@
 <translation id="1195447618553298278">Белгісіз қате.</translation>
 <translation id="1413240736185167732">Сәтсіз: сүзгі қатесі шықты</translation>
 <translation id="1468664791493211953">Ұсыныстар</translation>
+<translation id="1478594628797167447">Сканер</translation>
 <translation id="1482734542997480527"><ph name="ENROLLMENT_DOMAIN" /> құрылғыңызды басқарады және әрекетіңізді де бақылауы мүмкін.</translation>
 <translation id="150962533380566081">PUK коды жарамсыз.</translation>
 <translation id="1510238584712386396">Іске қосу құрылғысы</translation>
@@ -24,6 +25,7 @@
 <translation id="2872961005593481000">Өшіру</translation>
 <translation id="3008341117444806826">ЖАҢАРТУ</translation>
 <translation id="3091839911843451378">Сәтсіз: тоқтатылды</translation>
+<translation id="3246869037381808805">1 күннен асқан баспа жұмыстары өшіріледі.</translation>
 <translation id="3268178239013324452">Сәтсіз: есігі ашық</translation>
 <translation id="3369013195428705271">Басып шығару тарихын шынымен толығымен тазалағыңыз келе ме? Қазір орындалып жатқан басып шығару жұмысының деректері сақталады.</translation>
 <translation id="3456078764689556234"><ph name="PRINTED_PAGES" /> бет (жалпы саны: <ph name="TOTAL_PAGES" />) басып шығарылды.</translation>
@@ -34,6 +36,7 @@
 <translation id="38114475217616659">Тарихты толығымен тазалау</translation>
 <translation id="3820172043799983114">PIN коды жарамсыз.</translation>
 <translation id="3838338534323494292">Жаңа құпия сөз</translation>
+<translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> күннен асқан баспа жұмыстары өшіріледі.</translation>
 <translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> осы құрылғыны басқарады және пайдаланушының барлық әрекетін (мысалы, кірген веб-сайттары, құпия сөздері және электрондық поштасы) көре алады.</translation>
 <translation id="4003384961948020559">Сәтсіз: шығыс науа толып кеткен</translation>
 <translation id="4027485274696301677"><ph name="DEVICE_TYPE" /> құрылғысын <ph name="ENROLLMENT_DOMAIN" /> басқарады. Әкімшілер құрылғыны қашықтан конфигурациялай алады.</translation>
@@ -70,6 +73,7 @@
 <translation id="649050271426829538">Тоқтатылды: қағаз кептелісі</translation>
 <translation id="6517239166834772319">Шолу</translation>
 <translation id="6564646048574748301">Сәтсіз: принтер қолжетімді емес</translation>
+<translation id="6620487321149975369">Қолмен өшірмесеңіз, баспа жұмыстары тарихта сақтала береді.</translation>
 <translation id="6643016212128521049">Тазалау</translation>
 <translation id="6747215703636344499">Тоқтатылды: шығыс науа толып кетті</translation>
 <translation id="7162487448488904999">Галерея</translation>
@@ -80,6 +84,7 @@
 <translation id="7805768142964895445">Күйі</translation>
 <translation id="808894953321890993">Кұпия сөзді өзгерту</translation>
 <translation id="8208861521865154048">Бонустар</translation>
+<translation id="8294431847097064396">Дереккөз</translation>
 <translation id="8347227221149377169">Баспа жұмыстары</translation>
 <translation id="8352772353338965963">Бірнеше есептік жазбаға кіру үшін есептік жазба қосыңыз. Барлық кірілген есептік жазбаларға құпия сөзсіз кіруге болады, сондықтан бұл мүмкіндікті тек сенімді есептік жазбалар пайдалануы тиіс.</translation>
 <translation id="8701136875688985581"><ph name="ENROLLMENT_DOMAIN" /> пайдаланушыны басқарады. Сонымен қатар қашықтан параметрлерді басқарады және пайдаланушының әрекетін қадағалайды.</translation>

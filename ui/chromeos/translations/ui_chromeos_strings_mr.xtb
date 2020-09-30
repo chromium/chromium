@@ -30,6 +30,7 @@
 <translation id="1208421848177517699">लिप्यंतरण (namaste → નમસ્તે)</translation>
 <translation id="1243314992276662751">अपलोड करा</translation>
 <translation id="1249250836236328755">शैली</translation>
+<translation id="1276362640455948667">यू.एस. आंतरराष्ट्रीय पीसी कीबोर्डसह पोर्तुगीज</translation>
 <translation id="1278813325885878377">हंगेरियन क्वर्टी कीबोर्ड</translation>
 <translation id="1293556467332435079">Files</translation>
 <translation id="1297922636971898492">Google ड्राइव्ह आत्ता उपलब्ध नाही. Google ड्राइव्ह एकदा परत आल्यानंतर अपलोड करणे आपोआप रीस्टार्ट होईल.</translation>
@@ -112,13 +113,14 @@
 <translation id="2163152940313951844">चुकीचा वर्ण: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2164862903024139959">व्हिएतनामी कीबोर्ड (TCVN)</translation>
 <translation id="2168214441502403371">पर्शियन कीबोर्ड</translation>
-<translation id="2197363559908958454"><ph name="NUMBER_OF_ITEMS" /> हलवले.</translation>
 <translation id="2198315389084035571">सरलीकृत चीनी</translation>
 <translation id="2208158072373999562">झीप संग्रहण करा</translation>
 <translation id="2225536596944493418">तुम्हाला नक्की <ph name="NUMBER_OF_ITEMS" /> आयटम हटवायचे आहेत का?</translation>
 <translation id="2230062665678605299">फोल्डर "<ph name="FOLDER_NAME" />" तयार करण्‍यात अक्षम. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2270413998793223379">संस्कृत</translation>
 <translation id="2275059641601412272">हलवले.</translation>
 <translation id="2278988676849463018">कन्नड कीबोर्ड (Phonetic)</translation>
+<translation id="2287742181953707290">यू.एस. इंटरनॅशनल PC कीबोर्डसह पोर्तुगीज</translation>
 <translation id="2288278176040912387">रेकॉर्ड प्लेयर</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> फाइल उघडत आहे</translation>
 <translation id="2303301624314357662">फाइल <ph name="FILE_NAME" /> उघडत आहे.</translation>
@@ -222,6 +224,7 @@
 <translation id="3473378059788601120"><ph name="FOLDER_NAME" /> मध्ये कॉपी केले.</translation>
 <translation id="3475447146579922140">Google स्प्रेडशीट</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> एरर.</translation>
+<translation id="349603508045926994">पर्शियन लिप्यंतरण</translation>
 <translation id="3519867315646775981">लिप्यंतरण (shalom ← שלום)</translation>
 <translation id="3522708245912499433">पोर्तुगीज</translation>
 <translation id="3524311639100184459">सावधान: या फाइल तात्पुरत्या आहेत आणि डिस्कवरील जागा मोकळी करण्यासाठी त्या आपोआप हटवल्या जाऊ शकतात.  <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
@@ -293,6 +296,7 @@
 <translation id="4298972503445160211">डॅनिश कीबोर्ड</translation>
 <translation id="4299729908419173967">ब्राझिलियन</translation>
 <translation id="4309915981827077375">सामान्य माहिती</translation>
+<translation id="4315949787858895817">डच (बेल्जियम)</translation>
 <translation id="4326192123064055915">कॉफी</translation>
 <translation id="4336032328163998280">कॉपी ऑपरेशन अयशस्वी. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4364327530094270451">खरबूज</translation>
@@ -339,6 +343,7 @@
 <translation id="4804827417948292437">ॲव्होकॅडो</translation>
 <translation id="4823651846660089135">डिव्हाइस केवळ वाचनीय आहे</translation>
 <translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> आयटम निवडले</translation>
+<translation id="4849981557599196363">जर्मन (बेल्जियम)</translation>
 <translation id="4850886885716139402">पहा</translation>
 <translation id="485316830061041779">जर्मन</translation>
 <translation id="4867079195717347957">स्तंभाची उतरत्या क्रमाने क्रमवारी लावण्यासाठी क्लिक करा.</translation>
@@ -402,6 +407,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 शेअर करा, तयार करा आणि सहयोग करा.<ph name="MARKUP_9" /></translation>
 <translation id="5274350207900771082">कॉपी केले.</translation>
 <translation id="5275973617553375938">Google ड्राइव्ह वरून पुनर्प्राप्त केलेल्‍या फाइल</translation>
+<translation id="5283140566205748520">फ्रेंच (बेल्जियम)</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">सेव्ह करा</translation>
 <translation id="5318819489018851358">Linux वापरून शेअर करा</translation>
@@ -688,6 +694,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="8329978297633540474">साधा मजकूर</translation>
 <translation id="8335587457941836791">शेल्फपासून अनपिन करा</translation>
 <translation id="8336153091935557858">काल <ph name="YESTERDAY_DAYTIME" /></translation>
+<translation id="8336524887811696057">नेपाळी लिप्यंतरण</translation>
 <translation id="8336579025507394412">आइसलँडिक कीबोर्ड</translation>
 <translation id="8342318071240498787">समान नावाची एखादी फाइल किंवा डिरेक्टरी आधीपासूनच अस्तित्वात आहे.</translation>
 <translation id="8382450452152102026"><ph name="FOLDER_NAME" /> वर</translation>
@@ -713,12 +720,14 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="8600173386174225982">फाइल सूची थंबनेल व्ह्यूमध्ये बदलली गेली आहे.</translation>
 <translation id="8601932370724196034">Crostini इमेज फाइल</translation>
 <translation id="8669949407341943408">हलवत आहे...</translation>
+<translation id="8694836330346852143">उर्दू</translation>
 <translation id="8698464937041809063">Google रेखांकन</translation>
 <translation id="8714406895390098252">सायकल</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> निवडले.</translation>
 <translation id="8722421161699219904">यूएस आंतरराष्ट्रीय कीबोर्ड</translation>
 <translation id="872537912056138402">क्रोएशियन</translation>
 <translation id="874420130893181774">पारंपारिक पिनयिन इनपुट पद्धत</translation>
+<translation id="8770002329960263418">यू.एस. आंतरराष्ट्रीय पीसी कीबोर्डसह डच (नेदरलँड)</translation>
 <translation id="8775404590947523323">तुमची संपादने ऑटोमॅटिकली सेव्ह केली जातात.<ph name="BREAKS" /> मूळ प्रतिमेची प्रत ठेवण्यासाठी मूळवर खाडाखोड करा अनचेक करा</translation>
 <translation id="8803496343472038847">रशियन Phonetic कीबोर्ड</translation>
 <translation id="8808686172382650546">मांजर</translation>
@@ -760,7 +769,6 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="943972244133411984">ने सुधारित केली</translation>
 <translation id="945522503751344254">अभिप्राय पाठवा</translation>
 <translation id="947144732524271678"><ph name="FROM_ENTRY_NAME" /> ते <ph name="TO_ENTRY_NAME" /> मधील <ph name="ENTRY_COUNT" /> नोंदींची रेंज निवडली आहे.</translation>
-<translation id="949308258121608615"><ph name="NUMBER_OF_ITEMS" /> कॉपी केला.</translation>
 <translation id="981121421437150478">ऑफलाइन</translation>
 <translation id="988685240266037636">"<ph name="FILE_NAME" />" नावाची फाइल आधीच अस्तित्वात आहे. तुम्हाला ती बदलायची आहे का?</translation>
 <translation id="996903396648773764"><ph name="NUMBER_OF_MB" /> MB</translation>

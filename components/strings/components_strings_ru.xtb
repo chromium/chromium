@@ -15,6 +15,7 @@
 <translation id="1038106730571050514">Показать подсказки</translation>
 <translation id="1038842779957582377">неизвестное имя</translation>
 <translation id="1041998700806130099">Сообщение на листе задания</translation>
+<translation id="1048785276086539861">При редактировании аннотаций будет возвращен одностраничный режим просмотра.</translation>
 <translation id="1050038467049342496">Закройте другие приложения.</translation>
 <translation id="1055184225775184556">&amp;Отменить добавление</translation>
 <translation id="1056898198331236512">Внимание</translation>
@@ -108,6 +109,7 @@
 <translation id="1348779747280417563">Подтверждение</translation>
 <translation id="1357195169723583938">кто и когда использовал устройство;</translation>
 <translation id="1360955481084547712">Открыть новое окно в режиме инкогнито</translation>
+<translation id="1363819917331173092">Не предлагать перевести страницы на языке: <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1364822246244961190">Правило заблокировано. Его значение не будет учтено.</translation>
 <translation id="1374468813861204354">подсказки</translation>
 <translation id="1374692235857187091">Index-4x6 (открытка)</translation>
@@ -229,6 +231,7 @@
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Возможны разные действия. Нажимайте Tab для переключения между ними.</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1803264062614276815">Владелец карты</translation>
+<translation id="1807246157184219062">Светлый</translation>
 <translation id="1807528111851433570">Первый лист</translation>
 <translation id="1821930232296380041">Недопустимый запрос или неверные параметры запроса</translation>
 <translation id="1822540298136254167">Сайты, которые вы посещали, и время пребывания на них</translation>
@@ -285,6 +288,7 @@
 <translation id="2099652385553570808">Три скобы слева</translation>
 <translation id="2101225219012730419">Версия:</translation>
 <translation id="2102134110707549001">Сгенерировать надежный пароль</translation>
+<translation id="2102495993840063010">Приложения для Android</translation>
 <translation id="2107021941795971877">Поддержка печати</translation>
 <translation id="2108755909498034140">Перезагрузите компьютер.</translation>
 <translation id="2111256659903765347">Super-A</translation>
@@ -363,6 +367,7 @@
 <translation id="2396249848217231973">&amp;Отменить удаление</translation>
 <translation id="2410754574180102685">Government-Legal</translation>
 <translation id="2413528052993050574">Не удалось подтвердить, что это сервер <ph name="DOMAIN" />. Его сертификат безопасности может быть отозван. Возможно, сервер настроен неправильно или кто-то пытается перехватить ваши данные.</translation>
+<translation id="2414886740292270097">Темный</translation>
 <translation id="2438874542388153331">Четыре отверстия справа</translation>
 <translation id="245044156129055925">Вы только что ввели пароль на поддельном сайте. Браузер Chromium рекомендует сменить пароль прямо сейчас.</translation>
 <translation id="2463739503403862330">Заполнить</translation>
@@ -371,6 +376,7 @@
 <translation id="2465688316154986572">Скоба</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />Выполните диагностику сети<ph name="END_LINK" /></translation>
 <translation id="2469153820345007638">В порядке от 1 до N</translation>
+<translation id="2470767536994572628">При редактировании аннотаций будут возвращены исходная ориентация документа и одностраничный режим просмотра.</translation>
 <translation id="2479410451996844060">Недействительный URL поисковой системы.</translation>
 <translation id="2482878487686419369">Уведомления</translation>
 <translation id="248348093745724435">Правила для компьютера</translation>
@@ -439,6 +445,7 @@
 <translation id="2738330467931008676">Выбрать адрес получения</translation>
 <translation id="2740531572673183784">ОК</translation>
 <translation id="2742870351467570537">Удалить выбранные элементы</translation>
+<translation id="2765217105034171413">Мелкий</translation>
 <translation id="277133753123645258">Способ доставки</translation>
 <translation id="277499241957683684">Устройство не зарегистрировано</translation>
 <translation id="2775884851269838147">Первая страница печати</translation>
@@ -493,6 +500,7 @@
 <translation id="2996674880327704673">Рекомендации от Google</translation>
 <translation id="3002501248619246229">Проверить данные входного лотка</translation>
 <translation id="3005723025932146533">Открыть сохраненную копию</translation>
+<translation id="3007719053326478567">Печать этого контента заблокирована администратором.</translation>
 <translation id="3008447029300691911">Введите CVC-код карты <ph name="CREDIT_CARD" />. После этого ее данные будут переданы сайту.</translation>
 <translation id="3010559122411665027">Элемент списка "<ph name="ENTRY_INDEX" />": <ph name="ERROR" /></translation>
 <translation id="301521992641321250">Заблокировано автоматически</translation>
@@ -730,6 +738,7 @@
 <translation id="4014128326099193693">{COUNT,plural, =1{PDF-документ, состоящий из {COUNT} страницы}one{PDF-документ, состоящий из {COUNT} страницы}few{PDF-документ, состоящий из {COUNT} страниц}many{PDF-документ, состоящий из {COUNT} страниц}other{PDF-документ, состоящий из {COUNT} страницы}}</translation>
 <translation id="4030383055268325496">&amp;Отменить добавление</translation>
 <translation id="4032320456957708163">Этим браузером управляет администратор <ph name="ENROLLMENT_DOMAIN" /></translation>
+<translation id="4056223980640387499">Сепия</translation>
 <translation id="4058922952496707368">Ключ "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (конверт)</translation>
 <translation id="4067947977115446013">Введите действительный адрес</translation>
@@ -770,6 +779,7 @@
 <translation id="4194250254487269611">Сейчас сохранить эту карту нельзя.</translation>
 <translation id="4196861286325780578">&amp;Повторить перемещение</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Проверьте настройки брандмауэра и антивирусного ПО<ph name="END_LINK" />.</translation>
+<translation id="4209092469652827314">Крупный</translation>
 <translation id="4209166701302774460">Сервер <ph name="ORIGIN" />, на который вы переходите, требует применять правило источника ко всем запросам. Однако серверу не удалось отправить правило, поэтому браузер не может выполнить ваш запрос для сайта <ph name="SITE" />. Правила в отношении источников позволяют операторам настраивать параметры безопасности и другие свойства сайтов.</translation>
 <translation id="421066178035138955">Использование устройств и данных виртуальной реальности.</translation>
 <translation id="4214357935346142455">профиль экрана входа</translation>
@@ -1375,6 +1385,7 @@
 <translation id="6645291930348198241">доступ к файлам cookie и данным сайта.</translation>
 <translation id="6646269444027925224">{COUNT,plural, =0{Нет}=1{С 1 сайта (вы останетесь в аккаунте Google)}one{С # сайта (вы останетесь в аккаунте Google)}few{С # сайтов (вы останетесь в аккаунте Google)}many{С # сайтов (вы останетесь в аккаунте Google)}other{С # сайта (вы останетесь в аккаунте Google)}}</translation>
 <translation id="6648459603387803038">Администратор может удаленно менять настройки браузера и управлять действиями вне браузера Chrome на этом устройстве.</translation>
+<translation id="6648524591329069940">Шрифты с засечками</translation>
 <translation id="6652101503459149953">Использовать Windows Hello</translation>
 <translation id="6657585470893396449">Пароль</translation>
 <translation id="666259744093848177">(код конвертирован с языка для архитектуры x86_64)</translation>
@@ -1494,7 +1505,6 @@
 <translation id="7210863904660874423">Сайт <ph name="HOST_NAME" /> не соответствует стандартам безопасности.</translation>
 <translation id="7210993021468939304">Действия Linux в контейнере (также он может устанавливать и запускать приложения Linux из контейнера).</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Подробнее <ph name="END_LINK" /> об этой неполадке.</translation>
-<translation id="7214062855724067749">Использование шрифтов, установленных на компьютере, для расширенной типографики.</translation>
 <translation id="7217745192097460130">Использовать Touch ID для подтверждения покупки?</translation>
 <translation id="7219179957768738017">В этом подключении используется протокол <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Подождите…</translation>
@@ -1619,6 +1629,7 @@
 <translation id="7647206758853451655">Качество печати</translation>
 <translation id="7648992873808071793">сохранение файлов на этом устройстве</translation>
 <translation id="7653957176542370971">Лист с обработчиком платежа закрыт</translation>
+<translation id="7654909834015434372">При редактировании аннотаций будет возвращена исходная ориентация документа.</translation>
 <translation id="765676359832457558">Скрыть дополнительные настройки</translation>
 <translation id="7658239707568436148">Отмена</translation>
 <translation id="7662298039739062396">Эта настройка управляется расширением</translation>
@@ -1774,6 +1785,7 @@
 <translation id="8267698848189296333">Вход в аккаунт <ph name="USERNAME" /></translation>
 <translation id="8269242089528251720">Отдельные документы/печать по копиям</translation>
 <translation id="8269981117540303696">Ваши действия в режиме инкогнито будут недоступны другим пользователям этого устройства. Однако закладки и скачанные файлы сохранятся.</translation>
+<translation id="8275952078857499577">Не предлагать переводить этот сайт</translation>
 <translation id="8277900682056760511">Лист с обработчиком платежа открыт</translation>
 <translation id="8281084378435768645">Large-Photo</translation>
 <translation id="8282947398454257691">доступ к уникальному идентификатору устройства</translation>

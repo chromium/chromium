@@ -30,6 +30,7 @@
 <translation id="1208421848177517699">Хөрвүүлэлт (namaste → નમસ્તે)</translation>
 <translation id="1243314992276662751">Байршуул</translation>
 <translation id="1249250836236328755">Төрөл</translation>
+<translation id="1276362640455948667">АНУ-ын олон улсын гартай португал хэл</translation>
 <translation id="1278813325885878377">Унгарын QWERTY гар</translation>
 <translation id="1293556467332435079">Файлууд</translation>
 <translation id="1297922636971898492">Google Drive одоогоор боломжгүй байна. Google Drive ажиллаж эхлэхэд байршуулалт автоматиар эхэлнэ.</translation>
@@ -112,13 +113,14 @@
 <translation id="2163152940313951844">Хүчингүй тэмдэгт: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2164862903024139959">Вьетнам хэлний гар (TCVN)</translation>
 <translation id="2168214441502403371">Перс хэлний гар</translation>
-<translation id="2197363559908958454"><ph name="NUMBER_OF_ITEMS" />-г зөөсөн.</translation>
 <translation id="2198315389084035571">Хялбаршуулсан Хятад хэл</translation>
 <translation id="2208158072373999562">Зип архив</translation>
 <translation id="2225536596944493418">Та <ph name="NUMBER_OF_ITEMS" /> зүйлийг устгахдаа итгэлтэй байна уу?</translation>
 <translation id="2230062665678605299">"<ph name="FOLDER_NAME" /> ". <ph name="ERROR_MESSAGE" /> хавтас үүсгэх боломжгүй байна</translation>
+<translation id="2270413998793223379">Самгарди</translation>
 <translation id="2275059641601412272">Зөөсөн.</translation>
 <translation id="2278988676849463018">Каннада хэлний гар (дуудлагын)</translation>
+<translation id="2287742181953707290">АНУ-ын олон улсын компьютерын гартай португал хэл</translation>
 <translation id="2288278176040912387">Бичлэг тоглуулагч</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> файлыг нээж байна.</translation>
 <translation id="2303301624314357662"><ph name="FILE_NAME" /> файлыг нээж байна.</translation>
@@ -222,6 +224,7 @@
 <translation id="3473378059788601120"><ph name="FOLDER_NAME" /> руу хуулсан.</translation>
 <translation id="3475447146579922140">Google-ийн хүснэгт</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> алдаа.</translation>
+<translation id="349603508045926994">Перс галиг</translation>
 <translation id="3519867315646775981">Хөрвүүлэлт (Шалом ← שלום)</translation>
 <translation id="3522708245912499433">Португал</translation>
 <translation id="3524311639100184459">Анхааруулга: Эдгээр файл нь түр зуурын файлууд бөгөөд дискийн зайг чөлөөлөхийн тулд автоматаар устгаж болно.  <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
@@ -293,6 +296,7 @@
 <translation id="4298972503445160211">Дани хэлний гар</translation>
 <translation id="4299729908419173967">Бразил хэл</translation>
 <translation id="4309915981827077375">Ерөнхий мэдээлэл</translation>
+<translation id="4315949787858895817">Голланд (Бельги)</translation>
 <translation id="4326192123064055915">Кофе</translation>
 <translation id="4336032328163998280">Хуулах үйл ажиллагаа амжилтгүй боллоо. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4364327530094270451">Амтат гуа</translation>
@@ -339,6 +343,7 @@
 <translation id="4804827417948292437">Авокадо</translation>
 <translation id="4823651846660089135">Төхөөрөмжийг зөвхөн унших боломжтой</translation>
 <translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> сонгогдсон зүйлс</translation>
+<translation id="4849981557599196363">Герман (Бельги)</translation>
 <translation id="4850886885716139402">Харах</translation>
 <translation id="485316830061041779">Герман</translation>
 <translation id="4867079195717347957">Баганыг буурах дарааллаар эрэмбэлэхийн тулд товшино уу.</translation>
@@ -400,6 +405,7 @@
     нэг газар үүсгэж, хуваалцаж, ажиллаарай.<ph name="MARKUP_9" /></translation>
 <translation id="5274350207900771082">Хуулсан.</translation>
 <translation id="5275973617553375938">Google Drive-аас файлуудыг сэргээлээ</translation>
+<translation id="5283140566205748520">Франц (Бельги)</translation>
 <translation id="5317780077021120954">Хадгалах</translation>
 <translation id="5318819489018851358">Linux-р хуваалцах</translation>
 <translation id="5319782540886810524">Латви хэлний гар</translation>
@@ -685,6 +691,7 @@
 <translation id="8329978297633540474">Энгийн текст</translation>
 <translation id="8335587457941836791">Програмын жагсаалтын эхэнд байрлуулахыг болих</translation>
 <translation id="8336153091935557858">Өчигдөр <ph name="YESTERDAY_DAYTIME" /></translation>
+<translation id="8336524887811696057">Балба галиг</translation>
 <translation id="8336579025507394412">Исланд хэлний гар</translation>
 <translation id="8342318071240498787">Ийм нэртэй файл болон файлын хадгалалтын сан байна.</translation>
 <translation id="8382450452152102026"><ph name="FOLDER_NAME" /> руу</translation>
@@ -710,12 +717,14 @@
 <translation id="8600173386174225982">Файлын жагсаалтыг өнгөц зургаар харах горимд шилжүүлэв.</translation>
 <translation id="8601932370724196034">Crostini зургийн файл</translation>
 <translation id="8669949407341943408">Зөөж байна...</translation>
+<translation id="8694836330346852143">Урду</translation>
 <translation id="8698464937041809063">Google-ийн зураг</translation>
 <translation id="8714406895390098252">Унадаг дугуй</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> сонгогдсон.</translation>
 <translation id="8722421161699219904">АНУ-ын олон улсын гар</translation>
 <translation id="872537912056138402">Хорват</translation>
 <translation id="874420130893181774">Уламжлалт пиньин оролтын арга</translation>
+<translation id="8770002329960263418">АНУ-ын олон улсын компьютерын гартай голланд (Нидерланд)</translation>
 <translation id="8775404590947523323">Таны хийсэн өөрчлөлт автоматиар хадгалагдсан.<ph name="BREAKS" />Анхны зургийг хадгалахын тулд "Overwrite original" сонголтыг идэвхгүй болго</translation>
 <translation id="8803496343472038847">Орос дуудлагын гар</translation>
 <translation id="8808686172382650546">Муур</translation>
@@ -757,7 +766,6 @@
 <translation id="943972244133411984">Өөрчилсөн</translation>
 <translation id="945522503751344254">Санал хүсэлт илгээх</translation>
 <translation id="947144732524271678"><ph name="FROM_ENTRY_NAME" />-с <ph name="TO_ENTRY_NAME" /> хүртэлх <ph name="ENTRY_COUNT" /> оролтын мужийг сонгосон.</translation>
-<translation id="949308258121608615"><ph name="NUMBER_OF_ITEMS" />-г хуулсан.</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="988685240266037636">"<ph name="FILE_NAME" />" нэртэй файл аль хэдийн байна. Та үүнийг солих уу?</translation>
 <translation id="996903396648773764"><ph name="NUMBER_OF_MB" /> МБ</translation>

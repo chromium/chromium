@@ -1050,7 +1050,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2218019600945559112">Mouse y panel táctil</translation>
 <translation id="2218320521449013367">Se produjo un error cuando Chrome intentaba quitar software dañino</translation>
 <translation id="2218515861914035131">Pegar como texto simple</translation>
-<translation id="221872881068107022">Invertir desplazamiento</translation>
 <translation id="2220409419896228519">Agrega tus apps de Google preferidas como favoritos</translation>
 <translation id="2220529011494928058">Informar un problema</translation>
 <translation id="2220572644011485463">PIN o contraseña</translation>
@@ -1235,7 +1234,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2435248616906486374">Red desconectada</translation>
 <translation id="2435457462613246316">Mostrar contraseña</translation>
 <translation id="2436186046335138073">¿Deseas permitir que <ph name="HANDLER_HOSTNAME" /> abra todos los vínculos de <ph name="PROTOCOL" />?</translation>
-<translation id="2436707352762155834">Mínimo</translation>
 <translation id="2439545803278355377">Ingresa el PIN nuevo. Un PIN debe tener al menos cuatro caracteres y puede incluir letras, números y otros caracteres.</translation>
 <translation id="2440604414813129000">Ver códig&amp;o fuente</translation>
 <translation id="244231003699905658">La dirección no es válida. Verifica la dirección y vuelve a intentarlo.</translation>
@@ -3076,6 +3074,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4617270414136722281">Opciones de las extensiones</translation>
 <translation id="4619615317237390068">Pestañas de otros dispositivos</translation>
 <translation id="4620809267248568679">Una extensión administra esta configuración.</translation>
+<translation id="4623167406982293031">Verificar cuenta</translation>
 <translation id="4623189117674524348">El sistema no pudo autorizar el acceso a la API para este dispositivo.</translation>
 <translation id="4625078469366263107">Habilitar app</translation>
 <translation id="4627427111733173920">Se bloquearon cookies</translation>
@@ -3248,7 +3247,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4848518990323155912">Habilitar el bloqueo de la tarjeta SIM (se requiere el PIN para usar los datos móviles)</translation>
 <translation id="4849286518551984791">Tiempo universal coordinado (UTC/GMT)</translation>
 <translation id="4849517651082200438">No instalar</translation>
-<translation id="4850669014075537160">Desplazamiento</translation>
 <translation id="4850886885716139402">Ver</translation>
 <translation id="485088796993065002">Es posible que los sitios reproduzcan sonido para que la música, los videos y demás contenido multimedia tenga audio.</translation>
 <translation id="4853020600495124913">Abrir en una ventana &amp;nueva</translation>
@@ -4838,7 +4836,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="6781978626986383437">Se canceló la copia de seguridad de Linux</translation>
 <translation id="6782067259631821405">El PIN no es válido</translation>
 <translation id="6785518634832172390">El PIN debe tener 12 dígitos o menos</translation>
-<translation id="6785915470941880363">Desplazamiento inverso <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="6786747875388722282">Extensiones</translation>
 <translation id="6787839852456839824">Combinaciones de teclas para acceso directo</translation>
 <translation id="6788210894632713004">Extensión sin empaquetar</translation>
@@ -5306,7 +5303,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="7352651011704765696">Se produjo un error</translation>
 <translation id="735361434055555355">Instalando Linux…</translation>
 <translation id="7354341762311560488">El sensor de huellas digitales se encuentra en la esquina inferior izquierda del teclado. Tócalo suavemente con un dedo.</translation>
-<translation id="7356908624372060336">Registros de la red</translation>
+<translation id="7356908624372060336">Registros de red</translation>
 <translation id="735745346212279324">VPN desconectada</translation>
 <translation id="7359588939039777303">Se bloquearon anuncios.</translation>
 <translation id="7360183604634508679">Menú de favoritos</translation>
@@ -5661,7 +5658,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="7772773261844472235">Comprueba el estado de tu Chromebook</translation>
 <translation id="7773726648746946405">Almacenamiento de sesión</translation>
 <translation id="7774365994322694683">Pájaro</translation>
-<translation id="7774792847912242537">Hay demasiadas solicitudes.</translation>
+<translation id="7774792847912242537">Demasiadas solicitudes.</translation>
 <translation id="7776156998370251340"><ph name="ORIGIN" /> verá los archivos de <ph name="FOLDERNAME" /> hasta que cierres todas las pestañas de este sitio</translation>
 <translation id="7776701556330691704">No se encontraron voces</translation>
 <translation id="7780252971640011240">Hay problemas de conexión. Para solicitar asistencia, comunícate con tu proveedor.</translation>
@@ -5968,7 +5965,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="80974698889265265">Los PIN no coinciden</translation>
 <translation id="809792523045608178"><ph name="IDS_SHORT_PRODUCT_NAME" /> usa la configuración de proxy de una extensión</translation>
 <translation id="8097959162767603171">Tu administrador primero debe aceptar las condiciones del servicio de la lista de dispositivos de Chrome que se muestran en la Consola del administrador.</translation>
-<translation id="810068641062493918">Se seleccionó <ph name="LANGUAGE" />. Presiona la tecla Búsqueda más Espacio para anular la selección del idioma.</translation>
+<translation id="810068641062493918">Se seleccionó <ph name="LANGUAGE" />. Presiona la tecla de búsqueda+barra espaciadora para anular la selección del idioma.</translation>
 <translation id="8101987792947961127">Se requiere Powerwash en el siguiente reinicio</translation>
 <translation id="8102139037507939978">Quita la información de identificación personal del archivo system_logs.txt.</translation>
 <translation id="8102159139658438129">Para ver las opciones para tu teléfono conectado, accede a la <ph name="LINK_BEGIN" />Configuración<ph name="LINK_END" /></translation>
@@ -6794,7 +6791,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="9078316009970372699">Inhabilitar la Conexión instantánea mediante dispositivo móvil</translation>
 <translation id="9084064520949870008">Abrir como ventana</translation>
 <translation id="9085256200913095638">Duplicar la pestaña seleccionada</translation>
-<translation id="9085776959277692427">No se seleccionó <ph name="LANGUAGE" />. Presiona la tecla Búsqueda más Espacio para seleccionar el idioma.</translation>
+<translation id="9085776959277692427">No se seleccionó <ph name="LANGUAGE" />. Presiona la tecla de búsqueda+barra espaciadora para seleccionar el idioma.</translation>
 <translation id="9087949559523851360">Agregar un usuario restringido</translation>
 <translation id="9088234649737575428">La política empresarial bloqueó <ph name="PLUGIN_NAME" /></translation>
 <translation id="9088446193279799727">No se pudo configurar Linux. Conéctate a Internet y vuelve a intentarlo.</translation>

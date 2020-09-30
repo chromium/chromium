@@ -47,6 +47,7 @@
 <translation id="2187243482123994665">사용자 접속 상태</translation>
 <translation id="2212565012507486665">쿠키 허용</translation>
 <translation id="2228071138934252756"><ph name="APP_NAME" />에서 카메라에 액세스하도록 허용하려면 <ph name="BEGIN_LINK" />Android 설정<ph name="END_LINK" />에서도 카메라를 사용 설정하세요.</translation>
+<translation id="2241634353105152135">한 번만</translation>
 <translation id="2289270750774289114">사이트가 주변 블루투스 기기를 조회하려고 할 때 확인(권장)</translation>
 <translation id="2315043854645842844">클라이언트측 인증서 선택이 운영체제에서 지원되지 않습니다.</translation>
 <translation id="2359808026110333948">계속</translation>
@@ -124,6 +125,7 @@
 <translation id="4570913071927164677">세부정보</translation>
 <translation id="4645575059429386691">부모님이 관리합니다.</translation>
 <translation id="4670064810192446073">가상 현실</translation>
+<translation id="4708011789095599544">이 웹사이트의 쿠키 및 기타 사이트 데이터를 삭제하시겠습니까?</translation>
 <translation id="4751476147751820511">모션 또는 조도 센서</translation>
 <translation id="4883854917563148705">관리 설정은 재설정할 수 없습니다.</translation>
 <translation id="4887024562049524730">사이트에서 내 가상 현실 기기 및 데이터를 사용하도록 허용하기 전에 확인(권장)</translation>
@@ -229,6 +231,7 @@
 <translation id="7423538860840206698">클립보드 액세스가 차단됨</translation>
 <translation id="7521387064766892559">자바스크립트</translation>
 <translation id="7554752735887601236">사이트에서 마이크를 사용 중입니다.</translation>
+<translation id="7561196759112975576">항상</translation>
 <translation id="7572498721684305250">NFC 기기를 탭할 때 사이트가 정보를 주고받지 못하도록 차단</translation>
 <translation id="757524316907819857">사이트에서 보호된 콘텐츠를 재생하지 못하도록 차단</translation>
 <translation id="7589445247086920869">현재 검색엔진에 허용 안함</translation>

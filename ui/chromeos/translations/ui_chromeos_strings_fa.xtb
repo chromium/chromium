@@ -30,6 +30,7 @@
 <translation id="1208421848177517699">‏نویسه‌گردانی (namaste ← ‏નમસ્તે)</translation>
 <translation id="1243314992276662751">بارگذاری</translation>
 <translation id="1249250836236328755">ژانر</translation>
+<translation id="1276362640455948667">پرتغالی با صفحه‌کلید بین‌المللی آمریکایی</translation>
 <translation id="1278813325885878377">‏صفحه‌کلید QWERTY مجارستانی</translation>
 <translation id="1293556467332435079">Files</translation>
 <translation id="1297922636971898492">‏Google Drive در حال حاضر در دسترس نیست. به محض در دسترس قرار گرفتن Google Drive بارگذاری کردن به صورت خودکار دوباره شروع می‌شود.</translation>
@@ -112,13 +113,14 @@
 <translation id="2163152940313951844">نویسه نامعتبر: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2164862903024139959">‏صفحه‌کلید ویتنامی (TCVN)</translation>
 <translation id="2168214441502403371">صفحه‌کلید فارسی</translation>
-<translation id="2197363559908958454"><ph name="NUMBER_OF_ITEMS" /> مورد منتقل شد.</translation>
 <translation id="2198315389084035571">چینی ساده</translation>
 <translation id="2208158072373999562">فایل بایگانی زیپ</translation>
 <translation id="2225536596944493418">مطمئنید می‌خواهید <ph name="NUMBER_OF_ITEMS" /> مورد را حذف کنید؟</translation>
 <translation id="2230062665678605299">پوشه «<ph name="FOLDER_NAME" />» را نمی‌توان ایجاد کرد.<ph name="ERROR_MESSAGE" /></translation>
+<translation id="2270413998793223379">سانسکریت</translation>
 <translation id="2275059641601412272">منتقل شد.</translation>
 <translation id="2278988676849463018">صفحه‌کلید کانارا (آوایی)</translation>
+<translation id="2287742181953707290">پرتغالی با صفحه‌کلید بین‌المللی آمریکایی رایانه</translation>
 <translation id="2288278176040912387">ضبط صوت</translation>
 <translation id="2291538123825441971">درحال باز کردن <ph name="NUMBER_OF_FILES" /> فایل.</translation>
 <translation id="2303301624314357662">درحال باز کردن فایل <ph name="FILE_NAME" />.</translation>
@@ -222,6 +224,7 @@
 <translation id="3473378059788601120">در <ph name="FOLDER_NAME" /> کپی شد.</translation>
 <translation id="3475447146579922140">‏صفحه‌گسترده Google</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> خطا.</translation>
+<translation id="349603508045926994">نویسه‌گردانی فارسی</translation>
 <translation id="3519867315646775981">‏نویسه‌گردانی (shalom ← ‏שלום)</translation>
 <translation id="3522708245912499433">پرتغالی</translation>
 <translation id="3524311639100184459">احتیاط: این فایل‌ها موقتی هستند و ممکن است برای آزادسازی فضای دیسک به‌طور خودکار حذف شوند.  <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
@@ -293,6 +296,7 @@
 <translation id="4298972503445160211">صفحه‌کلید دانمارکی</translation>
 <translation id="4299729908419173967">برزیلی</translation>
 <translation id="4309915981827077375">اطلاعات عمومی</translation>
+<translation id="4315949787858895817">هلندی (بلژیک)</translation>
 <translation id="4326192123064055915">قهوه</translation>
 <translation id="4336032328163998280">فرایند رونوشت‌برداری انجام نشد. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4364327530094270451">خربزه</translation>
@@ -339,6 +343,7 @@
 <translation id="4804827417948292437">آووکادو</translation>
 <translation id="4823651846660089135">دستگاه فقط خواندنی است</translation>
 <translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> مورد انتخاب شد</translation>
+<translation id="4849981557599196363">آلمانی (بلژیک)</translation>
 <translation id="4850886885716139402">نما</translation>
 <translation id="485316830061041779">آلمانی</translation>
 <translation id="4867079195717347957">کلیک کنید تا ستون به‌صورت نزولی مرتب شود.</translation>
@@ -402,6 +407,7 @@
        کنید، همه این کارها را در یک مکان انجام دهید.<ph name="MARKUP_9" /></translation>
 <translation id="5274350207900771082">کپی شد.</translation>
 <translation id="5275973617553375938">‏فایل‌های بازیابی‌شده از Google Drive</translation>
+<translation id="5283140566205748520">فرانسوی (بلژیک)</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">ذخیره</translation>
 <translation id="5318819489018851358">‏هم‌رسانی با Linux</translation>
@@ -688,6 +694,7 @@
 <translation id="8329978297633540474">نوشتار ساده</translation>
 <translation id="8335587457941836791">جدا کردن از راه‌انداز</translation>
 <translation id="8336153091935557858">دیروز <ph name="YESTERDAY_DAYTIME" /></translation>
+<translation id="8336524887811696057">نویسه‌گردانی نپالی</translation>
 <translation id="8336579025507394412">صفحه‌کلید ایسلندی</translation>
 <translation id="8342318071240498787">یک فایل یا یک پوشه با همین نام از قبل وجود دارد.</translation>
 <translation id="8382450452152102026">به <ph name="FOLDER_NAME" /></translation>
@@ -713,12 +720,14 @@
 <translation id="8600173386174225982">فهرست فایل به نمای تصویر کوچک تغییر کرده است.</translation>
 <translation id="8601932370724196034">‏فایل تصویری Crostini</translation>
 <translation id="8669949407341943408">در حال انتقال...</translation>
+<translation id="8694836330346852143">اردو</translation>
 <translation id="8698464937041809063">‏طراحی Google </translation>
 <translation id="8714406895390098252">دوچرخه</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> انتخاب شد.</translation>
 <translation id="8722421161699219904">صفحه‌کلید بین‌المللی آمریکایی</translation>
 <translation id="872537912056138402">کرواسی</translation>
 <translation id="874420130893181774">روش ورودی پین‌یین سنتی</translation>
+<translation id="8770002329960263418">هلندی (هلند) با صفحه‌کلید بین‌المللی آمریکایی رایانه</translation>
 <translation id="8775404590947523323">ویرایش‌های شما به‌طور خودکار ذخیره می‌شوند.<ph name="BREAKS" />برای داشتن یک نسخه از تصویر اصلی٬ علامت «رونویسی نسخهٔ اصلی» را بردارید.</translation>
 <translation id="8803496343472038847">صفحه‌کلید آوایی روسی</translation>
 <translation id="8808686172382650546">گربه</translation>
@@ -760,7 +769,6 @@
 <translation id="943972244133411984">اصلاح‌شده توسط</translation>
 <translation id="945522503751344254">ارسال بازخورد</translation>
 <translation id="947144732524271678">مجموعه‌ای از <ph name="ENTRY_COUNT" /> ورودی، از <ph name="FROM_ENTRY_NAME" /> تا <ph name="TO_ENTRY_NAME" /> انتخاب شد.</translation>
-<translation id="949308258121608615"><ph name="NUMBER_OF_ITEMS" /> کپی شد.</translation>
 <translation id="981121421437150478">آفلاین</translation>
 <translation id="988685240266037636">فایلی با نام «<ph name="FILE_NAME" />» ازقبل وجود دارد. می‌خواهید آن را جایگزین کنید؟</translation>
 <translation id="996903396648773764"><ph name="NUMBER_OF_MB" /> مگابایت</translation>

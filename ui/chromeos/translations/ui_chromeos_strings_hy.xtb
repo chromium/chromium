@@ -30,6 +30,7 @@
 <translation id="1208421848177517699">Տառադարձություն (namaste → નમસ્તે)</translation>
 <translation id="1243314992276662751">Վերբեռնել</translation>
 <translation id="1249250836236328755">Ժանրը</translation>
+<translation id="1276362640455948667">պորտուգալերեն՝ ԱՄՆ միջազգային ստեղնաշարի հետ</translation>
 <translation id="1278813325885878377">Հունգարական QWERTY ստեղնաշար</translation>
 <translation id="1293556467332435079">Ֆայլեր</translation>
 <translation id="1297922636971898492">Այս պահին Google Drive-ը մատչելի չէ: Վերբեռնումը ավտոմատ կվերագործարկվի, երբ Google Drive-ը մատչելի լինի:</translation>
@@ -112,13 +113,14 @@
 <translation id="2163152940313951844">Անվավեր գրանշան՝ <ph name="CHARACTER_NAME" /></translation>
 <translation id="2164862903024139959">Վիետնամերենի ստեղնաշար (TCVN)</translation>
 <translation id="2168214441502403371">Պարսկերենի ստեղնաշար</translation>
-<translation id="2197363559908958454">Տեղափոխվեց <ph name="NUMBER_OF_ITEMS" /> տարր։</translation>
 <translation id="2198315389084035571">Պարզեցված չինարեն</translation>
 <translation id="2208158072373999562">Zip արխիվ</translation>
 <translation id="2225536596944493418">Իսկապե՞ս ուզում եք ջնջել <ph name="NUMBER_OF_ITEMS" /> տարրերը։</translation>
 <translation id="2230062665678605299">Հնարավոր չէ ստեղծել «<ph name="FOLDER_NAME" />» պանակը: <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2270413998793223379">սանսկրիտ</translation>
 <translation id="2275059641601412272">Տեղափոխվեց։</translation>
 <translation id="2278988676849463018">Կաննադայի ստեղնաշար (հնչյունաբանական)</translation>
+<translation id="2287742181953707290">պորտուգալերեն՝ ԱՄՆ միջազգային համակարգչային ստեղնաշարի հետ</translation>
 <translation id="2288278176040912387">Գրամոֆոն</translation>
 <translation id="2291538123825441971">Բացվում է <ph name="NUMBER_OF_FILES" /> ֆայլ։</translation>
 <translation id="2303301624314357662">Բացվում է <ph name="FILE_NAME" /> ֆայլը։</translation>
@@ -222,6 +224,7 @@
 <translation id="3473378059788601120">Պատճենվեց «<ph name="FOLDER_NAME" />» պանակում</translation>
 <translation id="3475447146579922140">Google աղյուսակ</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> սխալ:</translation>
+<translation id="349603508045926994">Պարսկերեն տառադարձություն</translation>
 <translation id="3519867315646775981">Տառադարձություն (shalom ← שלום)</translation>
 <translation id="3522708245912499433">պորտուգալերեն</translation>
 <translation id="3524311639100184459">Ուշադրություն. այս ֆայլերը ժամանակավոր են և կարող են ավտոմատ ջնջվել՝ սկավառակի վրա տարածք ազատելու համար։  <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
@@ -293,6 +296,7 @@
 <translation id="4298972503445160211">Դանիերենի ստեղնաշար</translation>
 <translation id="4299729908419173967">Բրազիլական</translation>
 <translation id="4309915981827077375">Ընդհանուր տեղեկություններ</translation>
+<translation id="4315949787858895817">հոլանդերեն (Բելգիա)</translation>
 <translation id="4326192123064055915">Սուրճ</translation>
 <translation id="4336032328163998280">Պատճենումը չհաջողվեց: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4364327530094270451">Սեխ</translation>
@@ -339,6 +343,7 @@
 <translation id="4804827417948292437">Ավոկադո</translation>
 <translation id="4823651846660089135">Սարքում կարելի է միայն կարդալու գործողություններ կատարել</translation>
 <translation id="4839847978919684242">Ընտրված է <ph name="SELCTED_FILES_COUNT" /> տարր</translation>
+<translation id="4849981557599196363">գերմաներեն (Բելգիա)</translation>
 <translation id="4850886885716139402">Տեսք</translation>
 <translation id="485316830061041779">Գերմանական</translation>
 <translation id="4867079195717347957">Սեղմեք՝ սյունակներն ըստ նվազման կարգի տեսակավորելու համար։</translation>
@@ -402,6 +407,7 @@
     ուրիշների հետ մեկ վայրում:<ph name="MARKUP_9" /></translation>
 <translation id="5274350207900771082">Պատճենվեց։</translation>
 <translation id="5275973617553375938">Վերականգնված ֆայլեր Google Drive-ից</translation>
+<translation id="5283140566205748520">ֆրանսերեն (Բելգիա)</translation>
 <translation id="5317780077021120954">Պահել</translation>
 <translation id="5318819489018851358">Հասանելի դարձնել Լինուքսին</translation>
 <translation id="5319782540886810524">Լատվիերենի ստեղնաշար</translation>
@@ -687,6 +693,7 @@
 <translation id="8329978297633540474">Պարզ տեքստ</translation>
 <translation id="8335587457941836791">Ապամրացնել դարակից</translation>
 <translation id="8336153091935557858">Երեկ <ph name="YESTERDAY_DAYTIME" /></translation>
+<translation id="8336524887811696057">Նեպալերեն տառադարձություն</translation>
 <translation id="8336579025507394412">Իսլանդերենի ստեղնաշար</translation>
 <translation id="8342318071240498787">Այս անունով ֆայլ կամ գրացուցակ արդեն առկա է:</translation>
 <translation id="8382450452152102026">«<ph name="FOLDER_NAME" />» պանակ</translation>
@@ -712,12 +719,14 @@
 <translation id="8600173386174225982">Ֆայլերի ցանկն այժմ ցուցադրված է մանրապատկերների տեսքով:</translation>
 <translation id="8601932370724196034">Crostini գրաֆիկական ֆայլ</translation>
 <translation id="8669949407341943408">Տեղափոխում...</translation>
+<translation id="8694836330346852143">ուրդու</translation>
 <translation id="8698464937041809063">Google գծագիր</translation>
 <translation id="8714406895390098252">Հեծանիվ</translation>
 <translation id="8719721339511222681">Ընտրվեց «<ph name="ENTRY_NAME" />» գրառումը:</translation>
 <translation id="8722421161699219904">ԱՄՆ միջազգային ստեղնաշար</translation>
 <translation id="872537912056138402">Խորվաթական</translation>
 <translation id="874420130893181774">Ավանդական փինյինի ներածման եղանակ</translation>
+<translation id="8770002329960263418">հոլանդերեն (Նիդեռլանդներ)՝ ԱՄՆ միջազգային համակարգչային ստեղնաշարի հետ</translation>
 <translation id="8775404590947523323">Ձեր փոփոխություններն ավտոմատ պահվել են:<ph name="BREAKS" />Սկզբնական պատկերի պատճենը պահպանելու համար ապանշեք «Վրագրել սկզբնականը» նշավանդակը</translation>
 <translation id="8803496343472038847">Ռուսերենի հնչյունային ստեղնաշար</translation>
 <translation id="8808686172382650546">Կատու</translation>
@@ -759,7 +768,6 @@
 <translation id="943972244133411984">Ով է փոփոխել</translation>
 <translation id="945522503751344254">Կարծիք հայտնել</translation>
 <translation id="947144732524271678">Դուք ընտրեցիք <ph name="ENTRY_COUNT" /> գրառում՝ «<ph name="FROM_ENTRY_NAME" />»-ից «<ph name="TO_ENTRY_NAME" />»:</translation>
-<translation id="949308258121608615">Պատճենվեց <ph name="NUMBER_OF_ITEMS" /> տարր։</translation>
 <translation id="981121421437150478">Անցանց</translation>
 <translation id="988685240266037636">«<ph name="FILE_NAME" />» անունով ֆայլ արդեն գոյություն ունի: Ուզո՞ւմ եք փոխարինել այն:</translation>
 <translation id="996903396648773764"><ph name="NUMBER_OF_MB" /> ՄԲ</translation>

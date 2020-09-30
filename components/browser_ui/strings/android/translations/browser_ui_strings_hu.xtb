@@ -47,6 +47,7 @@
 <translation id="2187243482123994665">Felhasználói jelenlét</translation>
 <translation id="2212565012507486665">Cookie-k engedélyezése</translation>
 <translation id="2228071138934252756">Ahhoz, hogy a(z) <ph name="APP_NAME" /> hozzáférhessen a kamerához, a kamerát az <ph name="BEGIN_LINK" />Android-beállítások<ph name="END_LINK" /> között is be kell kapcsolni.</translation>
+<translation id="2241634353105152135">Csak egyszer</translation>
 <translation id="2289270750774289114">Kérdezzen rá, ha valamelyik webhely szeretné felfedezni a közeli Bluetooth-eszközöket (ajánlott)</translation>
 <translation id="2315043854645842844">Az ügyféloldali tanúsítványválasztást az operációs rendszer nem támogatja.</translation>
 <translation id="2359808026110333948">Tovább</translation>
@@ -230,6 +231,7 @@
 <translation id="7423538860840206698">Le van tiltva a vágólap megtekintése</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7554752735887601236">Egy webhely használja az Ön mikrofonját</translation>
+<translation id="7561196759112975576">Mindig</translation>
 <translation id="7572498721684305250">Adatok küldésének és fogadásának letiltása a webhelyek számára, amikor NFC-eszközökre koppint</translation>
 <translation id="757524316907819857">Védett tartalom lejátszásának letiltása a webhelyeken</translation>
 <translation id="7589445247086920869">Tiltja a jelenlegi keresőmotor számára</translation>

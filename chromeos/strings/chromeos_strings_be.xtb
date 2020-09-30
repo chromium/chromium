@@ -5,6 +5,7 @@
 <translation id="1195447618553298278">Невядомая памылка.</translation>
 <translation id="1413240736185167732">Збой: фільтр не працуе</translation>
 <translation id="1468664791493211953">Прапановы</translation>
+<translation id="1478594628797167447">Сканер</translation>
 <translation id="1482734542997480527">Дамен "<ph name="ENROLLMENT_DOMAIN" />" кіруе гэтай прыладай і можа адсочваць вашы дзеянні.</translation>
 <translation id="150962533380566081">Няправільны PUK-код.</translation>
 <translation id="1510238584712386396">Панэль запуску</translation>
@@ -24,6 +25,7 @@
 <translation id="2872961005593481000">Завяршыць працу</translation>
 <translation id="3008341117444806826">АБНАВІЦЬ</translation>
 <translation id="3091839911843451378">Збой: работа спынена</translation>
+<translation id="3246869037381808805">Заданні друку, старэйшыя за 1 дзень, будуць выдалены</translation>
 <translation id="3268178239013324452">Збой: дзверцы прынтара адкрыты</translation>
 <translation id="3369013195428705271">Сапраўды выдаліць гісторыю друку? Бягучыя заданні друку выдалены не будуць.</translation>
 <translation id="3456078764689556234">Надрукавана старонка <ph name="PRINTED_PAGES" /> з <ph name="TOTAL_PAGES" />.</translation>
@@ -34,6 +36,7 @@
 <translation id="38114475217616659">Ачысціць усю гісторыю</translation>
 <translation id="3820172043799983114">Несапраўдны PIN-код.</translation>
 <translation id="3838338534323494292">Новы пароль</translation>
+<translation id="39823212440917567">Заданні друку, старэйшыя за <ph name="NUMBER_OF_DAYS" /> сут, будуць выдалены</translation>
 <translation id="4003259559679196451">Дамен "<ph name="ENROLLMENT_DOMAIN" />" кіруе гэтай прыладай і мае доступ да ўсіх дзеянняў карыстальніка, у тым ліку да гісторыі наведаных вэб-старонак, да пароляў і электроннай пошты.</translation>
 <translation id="4003384961948020559">Збой: выхадны латок запоўнены</translation>
 <translation id="4027485274696301677"><ph name="DEVICE_TYPE" /> знаходзіцца пад кіраваннем дамена <ph name="ENROLLMENT_DOMAIN" />. Адміністратары могуць аддалена задаваць налады прылады.</translation>
@@ -71,6 +74,7 @@
 <translation id="649050271426829538">Спынена: захрасла папера</translation>
 <translation id="6517239166834772319">Агляд</translation>
 <translation id="6564646048574748301">Збой: прынтар недаступны</translation>
+<translation id="6620487321149975369">Заданні друку будуць паказвацца ў гісторыі, пакуль яны не будуць выдалены ўручную</translation>
 <translation id="6643016212128521049">Ачысціць</translation>
 <translation id="6747215703636344499">Спынена: выхадны латок запоўнены</translation>
 <translation id="7162487448488904999">Галерэя</translation>
@@ -81,6 +85,7 @@
 <translation id="7805768142964895445">Стан</translation>
 <translation id="808894953321890993">Змяніць пароль</translation>
 <translation id="8208861521865154048">Бонусы</translation>
+<translation id="8294431847097064396">Крыніца</translation>
 <translation id="8347227221149377169">Заданні друку</translation>
 <translation id="8352772353338965963">Дадайце ўліковы запіс для функцыі ўваходу ў некалькі ўліковых запісаў. Гэта функцыя дае магчымасць пераключацца паміж уліковымі запісамі, у якія выкананы ўваход, без уводу пароля. Таму выкарыстоўвайце яе толькі для ўліковых запісаў, якім давяраеце.</translation>
 <translation id="8701136875688985581">Гэты карыстальнік знаходзіцца пад кіраваннем дамена <ph name="ENROLLMENT_DOMAIN" />. Дамен можа кіраваць наладамі карыстальніка і адсочваць яго дзеянні.</translation>

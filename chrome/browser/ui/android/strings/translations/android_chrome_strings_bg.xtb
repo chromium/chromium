@@ -227,6 +227,7 @@
 <translation id="2689830683995595741">С използването на Chrome приемате <ph name="BEGIN_LINK1" />Общите условия на Google<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />Допълнителните общи условия на Chrome и Chrome OS<ph name="END_LINK2" />. В сила е и <ph name="BEGIN_LINK3" />Съобщението за поверителност за профилите в Google, управлявани чрез Family Link<ph name="END_LINK3" />.</translation>
 <translation id="2707726405694321444">Опресняване на страницата</translation>
 <translation id="2709516037105925701">Автоматично попълване</translation>
+<translation id="2718352093833049315">Само при Wi-Fi</translation>
 <translation id="2718846868787000099">Сайтовете, които посещавате, могат да виждат предпочитанията ви, за да ви показват съдържание на предпочитаните от вас езици</translation>
 <translation id="2723001399770238859">звук</translation>
 <translation id="2728754400939377704">Сортиране по сайт</translation>
@@ -290,7 +291,6 @@
 <translation id="3211426585530211793">Изтрихте „<ph name="ITEM_TITLE" />“</translation>
 <translation id="3211503082155944789"><ph name="READING_LIST_COUNT" /> непрочетени страници</translation>
 <translation id="321773570071367578">Ако забравите пропуска си или искате да промените тази настройка, <ph name="BEGIN_LINK" />нулирайте синхронизирането<ph name="END_LINK" /></translation>
-<translation id="3223655207402797071">Влезте в този сайт, профила си в Google и Chrome. Може да включите синхронизирането по-късно.</translation>
 <translation id="3232754137068452469">Уеб приложение</translation>
 <translation id="3236059992281584593">Остава 1 мин</translation>
 <translation id="3244271242291266297">ММ</translation>
@@ -347,6 +347,7 @@
 <translation id="3631987586758005671">Споделя се с(ъс) <ph name="DEVICE_NAME" /></translation>
 <translation id="3632295766818638029">Показване на паролата</translation>
 <translation id="363596933471559332">Автоматично влизане в уебсайтове посредством съхранявани идентификационни данни. Когато функцията е изключена, ще трябва да потвърждавате всяко влизане в профил в уебсайт.</translation>
+<translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3658159451045945436">Така ще изтриете историята на спестените данни, включително списъка с посетени сайтове.</translation>
 <translation id="3692944402865947621">Изтеглянето на <ph name="FILE_NAME" /> не бе успешно, тъй като няма достъп до местоположението за съхранение.</translation>
 <translation id="3701167022068948696">Коригиране сега</translation>
@@ -707,6 +708,7 @@
 <translation id="6301525844455696527">Не забравяйте списъка си за четене</translation>
 <translation id="6303969859164067831">Изход от профила и изключване на синхронизирането</translation>
 <translation id="6312687380483398334">Уеб приложения (без прекъсвания)</translation>
+<translation id="6313752143992575395">Показва се предложение за <ph name="WEBSITE_TITLE" /></translation>
 <translation id="6316139424528454185">Неподдържана версия на Android</translation>
 <translation id="6324034347079777476">Системното синхронизиране под Android е деактивирано</translation>
 <translation id="6333140779060797560">Споделяне чрез <ph name="APPLICATION" /></translation>
@@ -838,6 +840,7 @@
 <translation id="7233236755231902816">За да виждате съдържанието в мрежата на своя език, изтеглете най-новата версия на Chrome</translation>
 <translation id="7248069434667874558">Уверете се, че синхронизирането в Chrome е включено за <ph name="TARGET_DEVICE_NAME" /></translation>
 <translation id="7274013316676448362">Блокиран сайт</translation>
+<translation id="7286572596625053347">Да се промени ли <ph name="LANGUAGE" />?</translation>
 <translation id="7290209999329137901">Преименуването не е възможно</translation>
 <translation id="7291387454912369099">Плащане с помощта на Асистент</translation>
 <translation id="7293171162284876153">За да стартирате синхронизирането, включете „Синхронизиране на данните ви в Chrome“.</translation>

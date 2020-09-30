@@ -47,6 +47,7 @@
 <translation id="2187243482123994665">使用者狀態</translation>
 <translation id="2212565012507486665">允許 Cookie</translation>
 <translation id="2228071138934252756">如要讓 <ph name="APP_NAME" /> 存取您的相機，請一併在 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />中開啟相機。</translation>
+<translation id="2241634353105152135">只有這一次</translation>
 <translation id="2289270750774289114">在網站要探索附近的藍牙裝置時詢問您 (建議)</translation>
 <translation id="2315043854645842844">作業系統不支援由客戶端選取憑證。</translation>
 <translation id="2359808026110333948">繼續</translation>
@@ -124,6 +125,7 @@
 <translation id="4570913071927164677">詳細資料</translation>
 <translation id="4645575059429386691">由您的家長管理</translation>
 <translation id="4670064810192446073">虛擬實境</translation>
+<translation id="4708011789095599544">確定要清除此網站的 Cookie 和其他網站資料嗎？</translation>
 <translation id="4751476147751820511">動態或光線感應器</translation>
 <translation id="4883854917563148705">無法重設受管理的設定</translation>
 <translation id="4887024562049524730">在允許網站使用您的虛擬實境裝置和資料前先詢問您 (建議)</translation>
@@ -229,6 +231,7 @@
 <translation id="7423538860840206698">禁止讀取剪貼簿</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7554752735887601236">有網站正在使用您的麥克風</translation>
+<translation id="7561196759112975576">永遠使用</translation>
 <translation id="7572498721684305250">禁止網站在您輕按 NFC 裝置時傳送及接收資料</translation>
 <translation id="757524316907819857">禁止網站播放受保護內容</translation>
 <translation id="7589445247086920869">目前的搜尋引擎無法使用</translation>

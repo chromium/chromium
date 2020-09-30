@@ -15,6 +15,7 @@
 <translation id="1038106730571050514">Mostrar suxestións</translation>
 <translation id="1038842779957582377">nome descoñecido</translation>
 <translation id="1041998700806130099">Mensaxe da folla do traballo</translation>
+<translation id="1048785276086539861">Ao editar as anotacións, este documento volverá á vista dunha soa páxina</translation>
 <translation id="1050038467049342496">Pecha outras aplicacións</translation>
 <translation id="1055184225775184556">&amp;Desfacer adición</translation>
 <translation id="1056898198331236512">Advertencia</translation>
@@ -108,6 +109,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1348779747280417563">Confirmar nome</translation>
 <translation id="1357195169723583938">Quen utilizou o dispositivo recentemente e cando o fixo</translation>
 <translation id="1360955481084547712">Abre unha nova ventá do modo de incógnito para navegar de forma privada</translation>
+<translation id="1363819917331173092">Non ofrecer opción de traducir páxinas escritas en <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1364822246244961190">Esta política está bloqueada, polo cal se ignorará o seu valor.</translation>
 <translation id="1374468813861204354">suxestións</translation>
 <translation id="1374692235857187091">Index-4x6 (postal)</translation>
@@ -232,6 +234,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Hai varias accións dispoñibles; para desprazarte por elas, preme Tab</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1803264062614276815">Nome do titular da tarxeta</translation>
+<translation id="1807246157184219062">Claro</translation>
 <translation id="1807528111851433570">Folla de inicio</translation>
 <translation id="1821930232296380041">Solicitude ou parámetros de solicitude non válidos</translation>
 <translation id="1822540298136254167">Sitios web que visitas e tempo que pasas neles</translation>
@@ -288,6 +291,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2099652385553570808">Tres grampas na parte esquerda</translation>
 <translation id="2101225219012730419">Versión:</translation>
 <translation id="2102134110707549001">Suxerir contrasinal seguro…</translation>
+<translation id="2102495993840063010">Aplicacións de Android</translation>
 <translation id="2107021941795971877">Soportes de impresión</translation>
 <translation id="2108755909498034140">Reinicia o ordenador</translation>
 <translation id="2111256659903765347">Super-A</translation>
@@ -366,6 +370,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2396249848217231973">&amp;Desfacer eliminación</translation>
 <translation id="2410754574180102685">Government-Legal</translation>
 <translation id="2413528052993050574">Este servidor non puido demostrar que é <ph name="DOMAIN" /> porque quizais se revogase o certificado de seguranza. É posible que isto se deba a un erro de configuración ou a que un atacante interceptase a túa conexión.</translation>
+<translation id="2414886740292270097">Escuro</translation>
 <translation id="2438874542388153331">Catro perforacións na parte dereita</translation>
 <translation id="245044156129055925">Acabas de introducir o teu contrasinal nun sitio enganoso. Chromium recoméndache que cambies o contrasinal agora.</translation>
 <translation id="2463739503403862330">Completar</translation>
@@ -374,6 +379,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2465688316154986572">Grampa</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />Executar diagnóstico de rede<ph name="END_LINK" /></translation>
 <translation id="2469153820345007638">Orde de 1 a N</translation>
+<translation id="2470767536994572628">Ao editar as anotacións, este documento volverá á vista dunha soa páxina e á orientación orixinal</translation>
 <translation id="2479410451996844060">URL de busca non válido.</translation>
 <translation id="2482878487686419369">Notificacións</translation>
 <translation id="248348093745724435">Políticas do equipo</translation>
@@ -442,6 +448,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2738330467931008676">Escoller enderezo de recollida</translation>
 <translation id="2740531572673183784">Aceptar</translation>
 <translation id="2742870351467570537">Eliminar elementos seleccionados</translation>
+<translation id="2765217105034171413">Pequeno</translation>
 <translation id="277133753123645258">Método de envío</translation>
 <translation id="277499241957683684">Non se atopa o rexistro do dispositivo</translation>
 <translation id="2775884851269838147">Primeira páxina de impresión</translation>
@@ -496,6 +503,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2996674880327704673">Suxestións de Google</translation>
 <translation id="3002501248619246229">Comproba o soporte da bandexa de entrada</translation>
 <translation id="3005723025932146533">Mostrar copia gardada</translation>
+<translation id="3007719053326478567">O teu administrador bloqueou a opción de imprimir este contido</translation>
 <translation id="3008447029300691911">Introduce o código CVC da tarxeta <ph name="CREDIT_CARD" />. Unha vez que confirmes os datos, os detalles da tarxeta compartiranse con este sitio.</translation>
 <translation id="3010559122411665027">Entrada da lista "<ph name="ENTRY_INDEX" />": <ph name="ERROR" /></translation>
 <translation id="301521992641321250">Bloqueado automaticamente</translation>
@@ -735,6 +743,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4014128326099193693">{COUNT,plural, =1{Documento PDF con {COUNT} páxina}other{Documento PDF con {COUNT} páxinas}}</translation>
 <translation id="4030383055268325496">&amp;Desfacer a acción de engadir</translation>
 <translation id="4032320456957708163"><ph name="ENROLLMENT_DOMAIN" /> xestiona o teu navegador</translation>
+<translation id="4056223980640387499">Sepia</translation>
 <translation id="4058922952496707368">Clave "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (sobre)</translation>
 <translation id="4067947977115446013">Engade un enderezo válido</translation>
@@ -775,6 +784,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4194250254487269611">A túa tarxeta non se puido gardar neste momento</translation>
 <translation id="4196861286325780578">&amp;Refacer movemento</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Comprobar a configuración do firewall e do antivirus<ph name="END_LINK" /></translation>
+<translation id="4209092469652827314">Grande</translation>
 <translation id="4209166701302774460">O servidor que vas visitar, <ph name="ORIGIN" />, solicitou que se aplicase
     unha política de orixe a todas as solicitudes que reciba. Non obstante, agora non se emitiu
      ningunha política, o que impide que o navegador complete a solicitude
@@ -1503,7 +1513,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> non cumpre cos estándares de seguranza.</translation>
 <translation id="7210993021468939304">Actividade de Linux no contedor, e pode instalar e executar aplicacións de Linux no contedor.</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /> acerca deste problema.</translation>
-<translation id="7214062855724067749">Usar os tipos de letra que tes instalados no teu ordenador para que poidas crear tipografías avanzadas</translation>
 <translation id="7217745192097460130">Queres usar Touch ID para verificar e completar a compra?</translation>
 <translation id="7219179957768738017">A conexión utiliza <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Procesando</translation>
@@ -1628,6 +1637,7 @@ Detalles adicionais:
 <translation id="7647206758853451655">Calidade de impresión</translation>
 <translation id="7648992873808071793">Almacenar ficheiros neste dispositivo</translation>
 <translation id="7653957176542370971">A folla do controlador de pagos está pechada</translation>
+<translation id="7654909834015434372">Ao editar as anotacións, este documento volverá á orientación orixinal</translation>
 <translation id="765676359832457558">Ocultar configuración avanzada...</translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7662298039739062396">Opción de configuración controlada por unha extensión</translation>
@@ -1783,6 +1793,7 @@ Detalles adicionais:
 <translation id="8267698848189296333">Iniciando sesión como <ph name="USERNAME" /></translation>
 <translation id="8269242089528251720">Documentos independentes/copias intercaladas</translation>
 <translation id="8269981117540303696">Agora podes navegar de forma privada sen que os outros usuarios deste dispositivo vexan a túa actividade. Non obstante, gardaranse as descargas e os marcadores.</translation>
+<translation id="8275952078857499577">Non ofrecer opción de traducir este sitio</translation>
 <translation id="8277900682056760511">A folla do controlador de pagos está aberta</translation>
 <translation id="8281084378435768645">Large-Photo</translation>
 <translation id="8282947398454257691">Coñece o teu identificador de dispositivo único</translation>

@@ -112,7 +112,6 @@
 <translation id="2163152940313951844">अमान्य वर्ण: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2164862903024139959">भियतनामी किबोर्ड (TCVN)</translation>
 <translation id="2168214441502403371">फारसी किबोर्ड</translation>
-<translation id="2197363559908958454"><ph name="NUMBER_OF_ITEMS" /> वस्तु सारियो।</translation>
 <translation id="2198315389084035571">सरल गरिएको चिनीया</translation>
 <translation id="2208158072373999562">जिप सङ्ग्रह</translation>
 <translation id="2225536596944493418">तपाईंले <ph name="NUMBER_OF_ITEMS" /> वस्तुहरू मेटाउन खोज्नुभएकै हो?</translation>
@@ -375,6 +374,7 @@
 <translation id="5098629044894065541">हिब्रु</translation>
 <translation id="5123433949759960244">बास्केटबल</translation>
 <translation id="5129662217315786329">पोलिस</translation>
+<translation id="5132435854979302863">फिलिपिनो</translation>
 <translation id="5144820558584035333">हंगुल 3 सेट (390)</translation>
 <translation id="5145331109270917438">मिति परिमार्जित</translation>
 <translation id="515594325917491223">चेस</translation>
@@ -420,6 +420,7 @@
 <translation id="5464696796438641524">पोलिस किबोर्ड</translation>
 <translation id="5465122519792752163">नेपाली किबोर्ड (Inscript)</translation>
 <translation id="5469868506864199649">इटालियन</translation>
+<translation id="5484429245813572665">इन्डोनेसियाली</translation>
 <translation id="5494920125229734069">सबै चयन गर्नुहोस्</translation>
 <translation id="5500122897333236901">आइसलैंडको</translation>
 <translation id="5508696409934741614">डटहरू</translation>
@@ -606,6 +607,7 @@
 <translation id="7649070708921625228">मद्दत</translation>
 <translation id="7654209398114106148"><ph name="NUMBER_OF_ITEMS" /> वस्तुहरू सार्दै...</translation>
 <translation id="7658239707568436148">रद्द गर्नुहोस्</translation>
+<translation id="7693909743393669729">तपाईंले कुनै यन्त्र फर्म्याट गर्नुभयो भने उक्त यन्त्रमा भण्डारण भरिएको सम्पूर्ण डेटा मेटाइने छ। यसका साथै सम्भवतः नदेखिएका पार्टिसनलगायतका सम्पूर्ण विद्यमान पार्टिसनहरू हटाइने छन्। यो कार्य अन्डू गर्न सकिँदैन।</translation>
 <translation id="7695430100978772476"><ph name="DRIVE_NAME" /> फर्म्याट गर्न सकिएन</translation>
 <translation id="770015031906360009">ग्रिक</translation>
 <translation id="7706319470528945664">पोर्तुगाली किबोर्ड</translation>
@@ -637,6 +639,7 @@
 <translation id="78946041517601018">साझा ड्राइभहरू</translation>
 <translation id="7896906914454843592">अमेरिकी विस्तारित किबोर्ड</translation>
 <translation id="7898607018410277265">गुजराती किबोर्ड (नयाँ फोनेटिक)</translation>
+<translation id="7908793776359722643">तपाईंले कुनै पार्टिसन फर्म्याट गर्नुभयो भने उक्त पार्टिसनमा भण्डारण गरिएको सम्पूर्ण डेटा मेटिने छ। यो कार्य अन्डू गर्न सकिँदैन।</translation>
 <translation id="7917972308273378936">लिथुएनियन किबोर्ड</translation>
 <translation id="7925686952655276919">समक्रमणको लागि मोबाइल डाटा प्रयोग नगर्नुहोस्</translation>
 <translation id="7928710562641958568">यन्त्र निकाल्नुहोस्</translation>
@@ -724,6 +727,7 @@
 <translation id="8900820606136623064">हङ्गेरियन</translation>
 <translation id="8901822611024316615">चेक QWERTY किबोर्ड</translation>
 <translation id="8919081441417203123">ड्यानिस</translation>
+<translation id="8941776146379310519">मले</translation>
 <translation id="8960999352790021682">बङ्गाली किबोर्ड (ध्वन्यात्मक)</translation>
 <translation id="8965697826696209160">त्यहाँ उपयुक्त ठाउँ छैन।</translation>
 <translation id="9017798300203431059">रसियन फोनेटिक</translation>
@@ -754,7 +758,6 @@
 <translation id="943972244133411984">निम्नद्वारा परिमार्जित</translation>
 <translation id="945522503751344254">पृष्ठपोषण पठाउनुहोस्</translation>
 <translation id="947144732524271678"><ph name="FROM_ENTRY_NAME" /> देखि <ph name="TO_ENTRY_NAME" /> सम्मका <ph name="ENTRY_COUNT" /> प्रविष्टिहरू चयन गरिए।</translation>
-<translation id="949308258121608615"><ph name="NUMBER_OF_ITEMS" /> वस्तु कपी गरियो।</translation>
 <translation id="981121421437150478">अफलाइन</translation>
 <translation id="988685240266037636">"<ph name="FILE_NAME" />" नाम गरेको फाइल पहिलेदेखि नै अवस्थित छ। तपाईं यसलाई प्रतिस्थापन गर्न चाहनुहुन्छ?</translation>
 <translation id="996903396648773764"><ph name="NUMBER_OF_MB" /> एम.बि.</translation>

@@ -165,7 +165,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="2595239820337756193">5 km en millas</translation>
 <translation id="2617342710774726426">La tarjeta SIM está bloqueada</translation>
 <translation id="2621713457727696555">Segura</translation>
-<translation id="2640255526076764619">Se cambió el gesto del panel táctil para cambiar al escritorio anterior. Para realizar esta acción, desliza cuatro dedos hacia la izquierda.</translation>
+<translation id="2640255526076764619">Se cambió el gesto del panel táctil para ir al escritorio anterior. Para realizar esta acción, desliza cuatro dedos hacia la izquierda.</translation>
 <translation id="2653659639078652383">Enviar</translation>
 <translation id="2658778018866295321">Hacer clic y arrastrar</translation>
 <translation id="2700493154570097719">Establecer el teclado</translation>
@@ -250,6 +250,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="3430396595145920809">Para volver, desliza el dedo desde la derecha</translation>
 <translation id="343571671045587506">Editar recordatorio</translation>
 <translation id="3435967511775410570">Se reconoció la huella digital</translation>
+<translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">Dispositivo USB-C</translation>
 <translation id="3454224730401036106">Tu conexión se cambió a una red más segura</translation>
 <translation id="3465223694362104965">Se conectó otro teclado a este dispositivo desde la última vez que accediste. Asegúrate de que este teclado sea de confianza antes de usarlo.</translation>
@@ -453,6 +454,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="5691772641933328258">No se reconoció la huella digital</translation>
 <translation id="5710450975648804523">"No interrumpir" activado</translation>
 <translation id="573413375004481890">Este dispositivo no admite tantas pantallas, por lo que se desconectó una de ellas</translation>
+<translation id="5740328398383587084">Compartir con Nearby</translation>
 <translation id="574392208103952083">Media</translation>
 <translation id="5744083938413354016">Función tocar y arrastrar</translation>
 <translation id="5745612484876805746">Se activa la Luz nocturna automáticamente al atardecer</translation>
@@ -486,7 +488,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="6018164090099858612">Saliendo del modo de espejo</translation>
 <translation id="602001110135236999">Desplazar hacia la izquierda</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" />, administrada por tu administrador</translation>
-<translation id="6029337736376922061">Se cambió el gesto del panel táctil para cambiar al escritorio siguiente. Para realizar esta acción, desliza cuatro dedos hacia la derecha.</translation>
+<translation id="6029337736376922061">Se cambió el gesto del panel táctil para ir al escritorio siguiente. Para realizar esta acción, desliza cuatro dedos hacia la derecha.</translation>
 <translation id="6030495522958826102">El menú se movió a la esquina inferior izquierda de la pantalla.</translation>
 <translation id="6040143037577758943">Cerrar</translation>
 <translation id="6043212731627905357">Este monitor no es compatible con tu dispositivo <ph name="DEVICE_TYPE" />.</translation>

@@ -5,6 +5,7 @@
 <translation id="1195447618553298278">Onbekende fout</translation>
 <translation id="1413240736185167732">Mislukt - Filter mislukt</translation>
 <translation id="1468664791493211953">Aanbiedingen</translation>
+<translation id="1478594628797167447">Scanner</translation>
 <translation id="1482734542997480527"><ph name="ENROLLMENT_DOMAIN" /> beheert dit apparaat en kan je activiteit mogelijk bekijken.</translation>
 <translation id="150962533380566081">Ongeldige pukcode.</translation>
 <translation id="1510238584712386396">Launcher</translation>
@@ -24,6 +25,7 @@
 <translation id="2872961005593481000">Afsluiten</translation>
 <translation id="3008341117444806826">VERNIEUWEN</translation>
 <translation id="3091839911843451378">Mislukt - Gestopt</translation>
+<translation id="3246869037381808805">Afdruktaken ouder dan 1 dag worden verwijderd</translation>
 <translation id="3268178239013324452">Mislukt - Klep geopend</translation>
 <translation id="3369013195428705271">Weet je zeker dat je je hele afdrukgeschiedenis wilt verwijderen? Je actieve afdruktaken worden niet verwijderd.</translation>
 <translation id="3456078764689556234">Pagina <ph name="PRINTED_PAGES" /> van <ph name="TOTAL_PAGES" /> afgedrukt.</translation>
@@ -34,6 +36,7 @@
 <translation id="38114475217616659">Alle geschiedenis wissen</translation>
 <translation id="3820172043799983114">Ongeldige pincode.</translation>
 <translation id="3838338534323494292">Nieuw wachtwoord</translation>
+<translation id="39823212440917567">Afdruktaken ouder dan <ph name="NUMBER_OF_DAYS" /> dagen worden verwijderd</translation>
 <translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> beheert dit apparaat en heeft toegang tot alle gebruikersactiviteit, waaronder bezochte webpagina's, wachtwoorden en e-mails.</translation>
 <translation id="4003384961948020559">Mislukt - Uitvoer is vol</translation>
 <translation id="4027485274696301677">Dit <ph name="DEVICE_TYPE" /> wordt beheerd door <ph name="ENROLLMENT_DOMAIN" />. Beheerders kunnen het apparaat op afstand configureren.</translation>
@@ -52,6 +55,7 @@
 <translation id="4890353053343094602">Kies onmiddellijk een nieuw wachtwoord</translation>
 <translation id="4917889632206600977">Gestopt: geen papier meer</translation>
 <translation id="4932733599132424254">Datum</translation>
+<translation id="520299634122159966">Geen beschikbare scanners</translation>
 <translation id="5212543919916444558">Ik heb niets gevonden op je scherm waarmee ik kan helpen.
 Tik op de microfoon om me iets te vragen.</translation>
 <translation id="5222676887888702881">Uitloggen</translation>
@@ -71,6 +75,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="649050271426829538">Gestopt: papierstoring</translation>
 <translation id="6517239166834772319">Ontdekken</translation>
 <translation id="6564646048574748301">Mislukt - Printer is niet bereikbaar</translation>
+<translation id="6620487321149975369">Afdruktaken worden in de geschiedenis weergegeven, tenzij ze handmatig worden verwijderd</translation>
 <translation id="6643016212128521049">Wissen</translation>
 <translation id="6747215703636344499">Gestopt: uitvoer is vol</translation>
 <translation id="7162487448488904999">Galerij</translation>
@@ -81,6 +86,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="808894953321890993">Wachtwoord wijzigen</translation>
 <translation id="8208861521865154048">Speciale voordelen</translation>
+<translation id="8294431847097064396">Bron</translation>
 <translation id="8347227221149377169">Afdruktaken</translation>
 <translation id="8352772353338965963">Een account toevoegen aan Toegang tot meerdere accounts. Alle ingelogde accounts zijn toegankelijk zonder wachtwoord, dus deze functie moet alleen worden gebruikt voor vertrouwde accounts.</translation>
 <translation id="8701136875688985581"><ph name="ENROLLMENT_DOMAIN" /> beheert deze gebruiker. Dit domein kan op afstand instellingen beheren en gebruikersactiviteit in de gaten houden.</translation>

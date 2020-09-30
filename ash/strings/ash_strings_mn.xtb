@@ -197,6 +197,7 @@
 <translation id="2996462380875591307">Суурилуулсан томруулагчийг идэвхжүүлсэн. Үүнийг унтраах/асаахын тулд Ctrl+Search+D-г дахин дарна уу.</translation>
 <translation id="3000461861112256445">Моно аудио</translation>
 <translation id="3009178788565917040">Гаралт</translation>
+<translation id="3025081209054535615">Тавиурын глобал медиа хяналтыг тогтоосныг болиулах</translation>
 <translation id="3033545621352269033">Асаалттай</translation>
 <translation id="3038571455154067151">Нэвтрэхийн тулд Family Link-н эцэг эхийн хандалтын кодоо оруулна уу</translation>
 <translation id="3045488863354895414">Өдрийн мэнд,</translation>
@@ -250,6 +251,7 @@
 <translation id="3430396595145920809">Буцахын тулд баруун талаас шударна уу</translation>
 <translation id="343571671045587506">Сануулагчийг засах</translation>
 <translation id="3435967511775410570">Хурууны хээг таньсан</translation>
+<translation id="3445288400492335833"><ph name="MINUTES" /> мин</translation>
 <translation id="3445925074670675829">USB-C төхөөрөмж</translation>
 <translation id="3454224730401036106">Таны холболтыг илүү аюулгүй сүлжээнд сэлгэсэн</translation>
 <translation id="3465223694362104965">Таныг сүүлд нэвтэрснээс хойш энэ төхөөрөмжид өөр гар холбогдсон байна. Энэ гарыг ашиглахаасаа өмнө та итгэж болох эсэхээ шалгана уу.</translation>
@@ -384,6 +386,7 @@
 <translation id="4804818685124855865">Таслах</translation>
 <translation id="4814539958450445987">Нэвтрэх дэлгэц</translation>
 <translation id="4831034276697007977">Автомат даралтыг унтраахдаа итгэлтэй байна уу?</translation>
+<translation id="4836108105469522644">Android утаснаасаа Мэдэгдлийг асаана уу</translation>
 <translation id="4849058404725798627">Объектыг гарын фокусаар тодруулах</translation>
 <translation id="485592688953820832">Үйлдэл алга (түр зогсоох)</translation>
 <translation id="4868492592575313542">идэвхжүүлсэн байна</translation>
@@ -453,6 +456,7 @@
 <translation id="5691772641933328258">Хурууны хээг таньсангүй</translation>
 <translation id="5710450975648804523">Бүү саад бол горим асаалттай байна</translation>
 <translation id="573413375004481890">Энэ төхөөрөмж нь таны бүх дэлгэцийг дэмжих боломжгүй байсан тул тэдний нэгийг нь салгасан</translation>
+<translation id="5740328398383587084">Ойролцоо хуваалцах</translation>
 <translation id="574392208103952083">Дунд зэрэг</translation>
 <translation id="5744083938413354016">Чирэлтийг товших</translation>
 <translation id="5745612484876805746">Шөнийн гэрэл нь нар жаргахад автоматаар асдаг</translation>
@@ -697,6 +701,7 @@
 <translation id="8297006494302853456">Сул</translation>
 <translation id="8308637677604853869">Өмнөх цэс</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
+<translation id="8349293353728876872">Глобал медиа хяналтыг тавиурт тогтоох</translation>
 <translation id="8351131234907093545">Тэмдэглэл үүсгэх</translation>
 <translation id="8371779926711439835">Нэг үсгээр урагшлуулах</translation>
 <translation id="8375916635258623388">Энэ <ph name="DEVICE_NAME" /> болон таны утас автоматаар холбогдоно</translation>

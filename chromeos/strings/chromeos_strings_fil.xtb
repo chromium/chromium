@@ -5,6 +5,7 @@
 <translation id="1195447618553298278">Hindi kilalang error.</translation>
 <translation id="1413240736185167732">Hindi na-print - Hindi gumana ang filter</translation>
 <translation id="1468664791493211953">Mga Alok</translation>
+<translation id="1478594628797167447">Scanner</translation>
 <translation id="1482734542997480527">Pinapamahalaan ng <ph name="ENROLLMENT_DOMAIN" /> ang device na ito at puwedeng masubaybayan ang iyong aktibidad.</translation>
 <translation id="150962533380566081">Di-wasto ang PUK.</translation>
 <translation id="1510238584712386396">Launcher</translation>
@@ -24,6 +25,7 @@
 <translation id="2872961005593481000">Shut down</translation>
 <translation id="3008341117444806826">I-REFRESH</translation>
 <translation id="3091839911843451378">Hindi na-print - Huminto</translation>
+<translation id="3246869037381808805">Aalisin ang mga pag-print na lampas 1 araw na</translation>
 <translation id="3268178239013324452">Hindi na-print - Nakabukas ang takip</translation>
 <translation id="3369013195428705271">Sigurado ka bang gusto mong i-clear ang lahat ng history ng pag-print? Hindi maki-clear ang iyong mga kasalukuyang pag-print.</translation>
 <translation id="3456078764689556234">Na-print ang page <ph name="PRINTED_PAGES" /> sa <ph name="TOTAL_PAGES" />.</translation>
@@ -34,6 +36,7 @@
 <translation id="38114475217616659">I-clear ang lahat ng history</translation>
 <translation id="3820172043799983114">Di-wasto ang PIN.</translation>
 <translation id="3838338534323494292">Bagong password</translation>
+<translation id="39823212440917567">Aalisin ang mga pag-print na lampas <ph name="NUMBER_OF_DAYS" /> (na) araw na</translation>
 <translation id="4003259559679196451">Pinapamahalaan ng <ph name="ENROLLMENT_DOMAIN" /> ang device na ito at mayroon itong access sa lahat ng aktibidad ng user, kabilang ang mga webpage na binisita, mga password, at email.</translation>
 <translation id="4003384961948020559">Hindi na-print - Puno ang output</translation>
 <translation id="4027485274696301677">Pinapamahalaan ng <ph name="ENROLLMENT_DOMAIN" /> ang <ph name="DEVICE_TYPE" /> na ito. Puwedeng i-configure ng mga administrator ang device sa remote na paraan.</translation>
@@ -71,6 +74,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="649050271426829538">Huminto - Nagka-paper jam</translation>
 <translation id="6517239166834772319">Explore</translation>
 <translation id="6564646048574748301">Hindi na-print - Hindi makakonekta sa printer</translation>
+<translation id="6620487321149975369">Lalabas sa history ang mga pag-print maliban na lang kung manual na aalisin ang mga ito</translation>
 <translation id="6643016212128521049">I-clear</translation>
 <translation id="6747215703636344499">Huminto - Puno na ang output</translation>
 <translation id="7162487448488904999">Gallery</translation>
@@ -81,6 +85,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="7805768142964895445">Katayuan</translation>
 <translation id="808894953321890993">Palitan ang password</translation>
 <translation id="8208861521865154048">Mga Perk</translation>
+<translation id="8294431847097064396">Pinagmulan</translation>
 <translation id="8347227221149377169">Mga pag-print</translation>
 <translation id="8352772353338965963">Magdagdag ng account sa multiple na pag-sign in. Maa-access ang lahat ng naka-sign in na account nang walang password, kaya dapat na gamitin lang ang feature na ito sa mga pinagkakatiwalaang account.</translation>
 <translation id="8701136875688985581">Pinapamahalaan ng <ph name="ENROLLMENT_DOMAIN" /> ang user na ito. Posible nitong pamahalaan ang mga setting at subaybayan ang aktibidad ng user sa remote na paraan.</translation>

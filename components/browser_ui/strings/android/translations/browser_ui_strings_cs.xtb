@@ -47,6 +47,7 @@
 <translation id="2187243482123994665">Aktivita uživatele</translation>
 <translation id="2212565012507486665">Povolit cookies</translation>
 <translation id="2228071138934252756">Pokud aplikaci <ph name="APP_NAME" /> chcete umožnit přístup k fotoaparátu, zapněte fotoaparát také v <ph name="BEGIN_LINK" />Nastavení Android<ph name="END_LINK" />.</translation>
+<translation id="2241634353105152135">Pouze jednou</translation>
 <translation id="2289270750774289114">Zeptat se, když chce web objevit zařízení Bluetooth v okolí (doporučeno)</translation>
 <translation id="2315043854645842844">Volbu certifikátu na straně klienta operační systém nepodporuje.</translation>
 <translation id="2359808026110333948">Pokračovat</translation>
@@ -124,6 +125,7 @@
 <translation id="4570913071927164677">Podrobnosti</translation>
 <translation id="4645575059429386691">Spravováno vaším rodičem</translation>
 <translation id="4670064810192446073">Virtuální realita</translation>
+<translation id="4708011789095599544">Opravdu chcete vymazat soubory cookie a ostatní data tohoto webu?</translation>
 <translation id="4751476147751820511">Senzory pohybu nebo světla</translation>
 <translation id="4883854917563148705">Spravovaná nastavení nelze resetovat</translation>
 <translation id="4887024562049524730">Předtím, než webům bude povoleno použít zařízení a data pro virtuální realitu, se zeptat (doporučeno)</translation>
@@ -229,6 +231,7 @@
 <translation id="7423538860840206698">Čtení schránky je blokováno</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7554752735887601236">Webové stránky používají váš mikrofon</translation>
+<translation id="7561196759112975576">Vždy</translation>
 <translation id="7572498721684305250">Blokovat webům odesílání a příjem informací, když se dotknete zařízení NFC</translation>
 <translation id="757524316907819857">Bránit webům v přehrávání chráněného obsahu</translation>
 <translation id="7589445247086920869">Blokovat pro aktuální vyhledávač</translation>

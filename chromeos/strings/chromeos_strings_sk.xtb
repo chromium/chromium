@@ -5,6 +5,7 @@
 <translation id="1195447618553298278">Neznáma chyba.</translation>
 <translation id="1413240736185167732">Nepodarilo sa – zlyhal filter</translation>
 <translation id="1468664791493211953">Ponuky</translation>
+<translation id="1478594628797167447">Skener</translation>
 <translation id="1482734542997480527"><ph name="ENROLLMENT_DOMAIN" /> spravuje toto zariadenie a môže monitorovať vašu aktivitu.</translation>
 <translation id="150962533380566081">Neplatný kód PUK.</translation>
 <translation id="1510238584712386396">Spúšťač</translation>
@@ -24,6 +25,7 @@
 <translation id="2872961005593481000">Vypnúť</translation>
 <translation id="3008341117444806826">OBNOVIŤ</translation>
 <translation id="3091839911843451378">Nepodarilo sa – zastavené</translation>
+<translation id="3246869037381808805">Tlačové úlohy staršie ako deň budú odstránené</translation>
 <translation id="3268178239013324452">Nepodarilo sa – dvierka sú otvorené</translation>
 <translation id="3369013195428705271">Naozaj chcete vymazať celú históriu tlače? Prebiehajúce tlačové úlohy nebudú vymazané.</translation>
 <translation id="3456078764689556234">Bola vytlačená <ph name="PRINTED_PAGES" />. strana z <ph name="TOTAL_PAGES" />.</translation>
@@ -34,6 +36,7 @@
 <translation id="38114475217616659">Vymazať celú históriu</translation>
 <translation id="3820172043799983114">Neplatný kód PIN.</translation>
 <translation id="3838338534323494292">Nové heslo</translation>
+<translation id="39823212440917567">Tlačové úlohy staršie ako <ph name="NUMBER_OF_DAYS" /> d. budú odstránené</translation>
 <translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> spravuje toto zariadenie a má prístup k všetkým aktivitám používateľa vrátane navštívených webových stránok, hesiel a pošty.</translation>
 <translation id="4003384961948020559">Nepodarilo sa – výstup je plný</translation>
 <translation id="4027485274696301677">Toto zariadenie <ph name="DEVICE_TYPE" /> je spravované doménou <ph name="ENROLLMENT_DOMAIN" />. Správcovia ho môžu vzdialene konfigurovať.</translation>
@@ -52,6 +55,7 @@
 <translation id="4890353053343094602">Okamžite si zvoľte nové heslo</translation>
 <translation id="4917889632206600977">Zastavené – minul sa papier</translation>
 <translation id="4932733599132424254">Dátum</translation>
+<translation id="520299634122159966">K dispozícii nie sú žiadne skenery</translation>
 <translation id="5212543919916444558">Na obrazovke nie je nič, s čím by som mohol pomôcť.
 Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="5222676887888702881">Odhlásiť sa</translation>
@@ -71,6 +75,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="649050271426829538">Zastavené – zaseknutý papier</translation>
 <translation id="6517239166834772319">Preskúmať</translation>
 <translation id="6564646048574748301">Nepodarilo sa – nedostupné</translation>
+<translation id="6620487321149975369">Tlačové úlohy sa budú zobrazovať v histórii, dokým ich neodstránite ručne</translation>
 <translation id="6643016212128521049">Vymazať</translation>
 <translation id="6747215703636344499">Zastavené – výstup je plný</translation>
 <translation id="7162487448488904999">Galéria</translation>
@@ -81,6 +86,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="7805768142964895445">Stav</translation>
 <translation id="808894953321890993">Zmeniť heslo</translation>
 <translation id="8208861521865154048">Výhody</translation>
+<translation id="8294431847097064396">Zdroj</translation>
 <translation id="8347227221149377169">Tlačové úlohy</translation>
 <translation id="8352772353338965963">Pridanie účtu pre viacnásobné prihlásenie. Ku všetkým prihláseným účtom môžete pristupovať bez hesla, takže táto funkcia by mala byť použitá iba s dôveryhodnými účtami.</translation>
 <translation id="8701136875688985581">Tohto používateľa spravuje doména <ph name="ENROLLMENT_DOMAIN" />. Môže vzdialene spravovať nastavenia a monitorovať aktivitu používateľa.</translation>

@@ -5,6 +5,7 @@
 <translation id="1195447618553298278">Eroare necunoscută.</translation>
 <translation id="1413240736185167732">Nereușită – Filtru defect</translation>
 <translation id="1468664791493211953">Oferte</translation>
+<translation id="1478594628797167447">Scaner</translation>
 <translation id="1482734542997480527"><ph name="ENROLLMENT_DOMAIN" /> gestionează acest dispozitiv și poate să îți monitorizeze activitatea.</translation>
 <translation id="150962533380566081">PUK nevalid.</translation>
 <translation id="1510238584712386396">Lansator</translation>
@@ -24,6 +25,7 @@
 <translation id="2872961005593481000">Închide</translation>
 <translation id="3008341117444806826">ACTUALIZEAZĂ</translation>
 <translation id="3091839911843451378">Nereușită – Oprită</translation>
+<translation id="3246869037381808805">Sarcinile de printare mai vechi de o zi vor fi eliminate</translation>
 <translation id="3268178239013324452">Nereușită – Ușă deschisă</translation>
 <translation id="3369013195428705271">Sigur vrei să ștergi tot istoricul printărilor? Sarcinile de printare în curs nu vor fi șterse.</translation>
 <translation id="3456078764689556234">S-a printat pagina <ph name="PRINTED_PAGES" /> din <ph name="TOTAL_PAGES" />.</translation>
@@ -34,6 +36,7 @@
 <translation id="38114475217616659">Șterge tot istoricul</translation>
 <translation id="3820172043799983114">PIN nevalid.</translation>
 <translation id="3838338534323494292">Parolă nouă</translation>
+<translation id="39823212440917567">Sarcinile de printare mai vechi de <ph name="NUMBER_OF_DAYS" /> zile vor fi eliminate</translation>
 <translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> gestionează acest dispozitiv și are acces la toată activitatea utilizatorului, inclusiv la paginile web accesate, parole și e-mail.</translation>
 <translation id="4003384961948020559">Nereușită – Tavă de ieșire plină</translation>
 <translation id="4027485274696301677">Acest <ph name="DEVICE_TYPE" /> este gestionat de <ph name="ENROLLMENT_DOMAIN" />. Administratorii pot să configureze dispozitivul de la distanță.</translation>
@@ -71,6 +74,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="649050271426829538">Oprită – Blocaj de hârtie</translation>
 <translation id="6517239166834772319">Explorare</translation>
 <translation id="6564646048574748301">Nereușită – Imprimanta nu poate fi accesată</translation>
+<translation id="6620487321149975369">Sarcinile de printare vor apărea în istoric dacă nu sunt eliminate manual</translation>
 <translation id="6643016212128521049">Șterge</translation>
 <translation id="6747215703636344499">Oprită – Tavă de ieșire plină</translation>
 <translation id="7162487448488904999">Galerie</translation>
@@ -81,6 +85,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="7805768142964895445">Stare</translation>
 <translation id="808894953321890993">Schimbă parola</translation>
 <translation id="8208861521865154048">Avantaje</translation>
+<translation id="8294431847097064396">Sursă</translation>
 <translation id="8347227221149377169">Sarcini de printare</translation>
 <translation id="8352772353338965963">Adăugați un cont pentru conectarea multiplă. Conturile conectate pot fi accesate fără parolă, prin urmare, această funcție trebuie folosită numai cu conturile de încredere.</translation>
 <translation id="8701136875688985581"><ph name="ENROLLMENT_DOMAIN" /> gestionează acest utilizator. Poate să gestioneze de la distanță setările și să monitorizeze activitatea utilizatorului.</translation>

@@ -30,6 +30,7 @@
 <translation id="1208421848177517699">Транслитерация (namaste → નમસ્તે)</translation>
 <translation id="1243314992276662751">Жүктеп салу</translation>
 <translation id="1249250836236328755">Жанр</translation>
+<translation id="1276362640455948667">Португал (АҚШ халықаралық пернетақтасымен)</translation>
 <translation id="1278813325885878377">Венгр QWERTY пернетақтасы</translation>
 <translation id="1293556467332435079">Файлдар</translation>
 <translation id="1297922636971898492">Google Drive қазір қолжетімді емес. Google Drive қосылғаннан кейін, жүктеп салу процесі автоматты түрде басталады.</translation>
@@ -112,13 +113,14 @@
 <translation id="2163152940313951844">Жарамсыз таңба: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2164862903024139959">Вьетнам пернетақтасы (TCVN)</translation>
 <translation id="2168214441502403371">Парсы пернетақтасы</translation>
-<translation id="2197363559908958454"><ph name="NUMBER_OF_ITEMS" /> жылжытылды.</translation>
 <translation id="2198315389084035571">Жеңілдетілген қытай тілі</translation>
 <translation id="2208158072373999562">ZIP мұрағаты</translation>
 <translation id="2225536596944493418"><ph name="NUMBER_OF_ITEMS" /> элементті жойғыңыз келе ме?</translation>
 <translation id="2230062665678605299">"<ph name="FOLDER_NAME" />" қалтасын жасау мүмкін емес. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2270413998793223379">Санскрит</translation>
 <translation id="2275059641601412272">Жылжытылған.</translation>
 <translation id="2278988676849463018">Каннада пернетақтасы (фонетикалық)</translation>
+<translation id="2287742181953707290">Португал (АҚШ халықаралық дербес компьютер пернетақтасымен)</translation>
 <translation id="2288278176040912387">Пластина ойнатқыш</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> файл ашылуда.</translation>
 <translation id="2303301624314357662"><ph name="FILE_NAME" /> файлы ашылуда.</translation>
@@ -222,6 +224,7 @@
 <translation id="3473378059788601120"><ph name="FOLDER_NAME" /> қалтасына көшірілді.</translation>
 <translation id="3475447146579922140">Google электрондық кестесі</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> қате.</translation>
+<translation id="349603508045926994">Парсы транслитерациясы</translation>
 <translation id="3519867315646775981">Транслитерация (шалом ← שלום)</translation>
 <translation id="3522708245912499433">португал</translation>
 <translation id="3524311639100184459">Абайлаңыз: бұл файлдар уақытша және дискідегі орынды босату үшін автоматты түрде жойылуы мүмкін.  <ph name="BEGIN_LINK" />Толығырақ<ph name="END_LINK" /></translation>
@@ -293,6 +296,7 @@
 <translation id="4298972503445160211">Дат пернетақтасы</translation>
 <translation id="4299729908419173967">Бразилиялық</translation>
 <translation id="4309915981827077375">Жалпы ақпарат</translation>
+<translation id="4315949787858895817">Нидерланд (Бельгия)</translation>
 <translation id="4326192123064055915">Кофе</translation>
 <translation id="4336032328163998280">Көшіру операциясы сәтсіз аяқталды. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4364327530094270451">Қауын</translation>
@@ -339,6 +343,7 @@
 <translation id="4804827417948292437">Авокадо</translation>
 <translation id="4823651846660089135">Құрылғы тек оқуға арналған</translation>
 <translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> элемент таңдалды</translation>
+<translation id="4849981557599196363">Неміс (Бельгия)</translation>
 <translation id="4850886885716139402">Көрініс</translation>
 <translation id="485316830061041779">неміс</translation>
 <translation id="4867079195717347957">Бағанды кему ретімен сұрыптау үшін басыңыз.</translation>
@@ -402,6 +407,7 @@
     басқалармен бірлесіп жұмыс істеңіз.<ph name="MARKUP_9" /></translation>
 <translation id="5274350207900771082">Көшірілген.</translation>
 <translation id="5275973617553375938">Google Drive жүйесінен қалпына келтірілген файлдар</translation>
+<translation id="5283140566205748520">Француз (Бельгия)</translation>
 <translation id="5317780077021120954">Сақтау</translation>
 <translation id="5318819489018851358">Linux арқылы бөлісу</translation>
 <translation id="5319782540886810524">Латыш пернетақтасы</translation>
@@ -687,6 +693,7 @@
 <translation id="8329978297633540474">Қарапайым мәтін</translation>
 <translation id="8335587457941836791">Сөреден босату</translation>
 <translation id="8336153091935557858">Кеше <ph name="YESTERDAY_DAYTIME" /></translation>
+<translation id="8336524887811696057">Непал транслитерациясы</translation>
 <translation id="8336579025507394412">Исланд пернетақтасы</translation>
 <translation id="8342318071240498787">Бұндай атауы бар файл немесе каталог бұрыннан бар.</translation>
 <translation id="8382450452152102026"><ph name="FOLDER_NAME" /> қалтасына</translation>
@@ -712,12 +719,14 @@
 <translation id="8600173386174225982">Файлдар нобай ретінде көрсетілді.</translation>
 <translation id="8601932370724196034">Crostini кескін файлы</translation>
 <translation id="8669949407341943408">Жылжытылуда…</translation>
+<translation id="8694836330346852143">Урду</translation>
 <translation id="8698464937041809063">Google суреті</translation>
 <translation id="8714406895390098252">Велосипед</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> таңдалды.</translation>
 <translation id="8722421161699219904">АҚШ халықаралық пернетақтасы</translation>
 <translation id="872537912056138402">хорват</translation>
 <translation id="874420130893181774">Дәстүрлі пиньинь енгізу әдісі</translation>
+<translation id="8770002329960263418">Нидерланд (Нидерланд) (АҚШ халықаралық дербес компьютер пернетақтасымен)</translation>
 <translation id="8775404590947523323">Сіздің өңдеулеріңіз автоматты түрде сақталады.<ph name="BREAKS" />Түпнұсқалы кескіннің көшірмесін сақтау үшін "Түпнұсқаның үстінен жазу" құсбелгісін алып тастаңыз.</translation>
 <translation id="8803496343472038847">Орыс фонетикалық пернетақтасы</translation>
 <translation id="8808686172382650546">Мысық</translation>
@@ -759,7 +768,6 @@
 <translation id="943972244133411984">Өзгерткен:</translation>
 <translation id="945522503751344254">Пікір жіберу</translation>
 <translation id="947144732524271678"><ph name="FROM_ENTRY_NAME" />—<ph name="TO_ENTRY_NAME" /> аралығынан <ph name="ENTRY_COUNT" /> жазба таңдалды.</translation>
-<translation id="949308258121608615"><ph name="NUMBER_OF_ITEMS" /> көшірілді.</translation>
 <translation id="981121421437150478">Желіден тыс</translation>
 <translation id="988685240266037636">"<ph name="FILE_NAME" />" файлы бұрыннан бар. Оны ауыстырғыңыз келе ме?</translation>
 <translation id="996903396648773764"><ph name="NUMBER_OF_MB" /> МБ</translation>

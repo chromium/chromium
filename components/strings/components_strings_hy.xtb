@@ -108,6 +108,7 @@
 <translation id="1348779747280417563">Անվան հաստատում</translation>
 <translation id="1357195169723583938">Ով է վերջերս օգտագործել սարքը և երբ</translation>
 <translation id="1360955481084547712">Բացեք նոր ինկոգնիտո պատուհան, որպեսզի այցելությունների պատմությունը չպահվի</translation>
+<translation id="1363819917331173092">Չառաջարկել թարգմանել էջերը <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1364822246244961190">Այս կանոնն արգելափակված է: Դրա արժեքը կանտեսվի:</translation>
 <translation id="1374468813861204354">առաջարկներ</translation>
 <translation id="1374692235857187091">Index-4x6 (բացիկ)</translation>
@@ -233,6 +234,7 @@
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Հասանելի են բազմաթիվ գործողություններ։ Դրանք ընտրելու համար սեղմեք Tab:</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1803264062614276815">Քարտատիրոջ անունը</translation>
+<translation id="1807246157184219062">Բաց</translation>
 <translation id="1807528111851433570">Առաջին թերթ</translation>
 <translation id="1821930232296380041">Հարցումը կամ հարցման հարաչափերը սխալ են</translation>
 <translation id="1822540298136254167">Ձեր այցելած կայքերը և դրանց վրա ծախսած ժամանակը</translation>
@@ -289,6 +291,7 @@
 <translation id="2099652385553570808">Երեք ամրակ ձախ կողմում</translation>
 <translation id="2101225219012730419">Տարբերակ՝</translation>
 <translation id="2102134110707549001">Ստեղծել հուսալի գաղտնաբառ…</translation>
+<translation id="2102495993840063010">Android հավելվածներ</translation>
 <translation id="2107021941795971877">Տպման աջակցում</translation>
 <translation id="2108755909498034140">Վերագործարկեք համակարգիչը</translation>
 <translation id="2111256659903765347">Super-A</translation>
@@ -367,6 +370,7 @@
 <translation id="2396249848217231973">&amp;Հետարկել ջնջումը</translation>
 <translation id="2410754574180102685">Government-Legal</translation>
 <translation id="2413528052993050574">Այս սերվերը չի կարող ապացուցել, որ <ph name="DOMAIN" /> է: Դրա անվտանգության վկայականը, հավանաբար, հետ է կանչվել: Պատճառը կարող է լինել սխալ կազմաձևումը կամ կապակցման խափանումը հարձակվողի կողմից:</translation>
+<translation id="2414886740292270097">Մուգ</translation>
 <translation id="2438874542388153331">Չորս անցք աջ կողմում</translation>
 <translation id="245044156129055925">Դուք հենց նոր մուտքագրեցիք ձեր գաղտնաբառը կասկածելի կայքում: Խորհուրդ ենք տալիս փոխել գաղտնաբառը։</translation>
 <translation id="2463739503403862330">Լրացնել</translation>
@@ -445,6 +449,7 @@
 <translation id="2738330467931008676">Ընտրեք ստացման հասցեն</translation>
 <translation id="2740531572673183784">Եղավ</translation>
 <translation id="2742870351467570537">Հեռացնել ընտրված կետերը</translation>
+<translation id="2765217105034171413">Փոքր</translation>
 <translation id="277133753123645258">Ուղարկման եղանակ</translation>
 <translation id="277499241957683684">Սարքի գրանցված չէ</translation>
 <translation id="2775884851269838147">Տպման առաջին էջ</translation>
@@ -499,6 +504,7 @@
 <translation id="2996674880327704673">Առաջարկներ Google-ից</translation>
 <translation id="3002501248619246229">Ստուգել մուտքային դարակի տվյալները</translation>
 <translation id="3005723025932146533">Ցուցադրել պահված պատճենը</translation>
+<translation id="3007719053326478567">Ձեր ադմինիստրատորը չի թույլատրել այս բովանդակության տպումը</translation>
 <translation id="3008447029300691911">Մուտքագրեք <ph name="CREDIT_CARD" /> քարտի CVC կոդը: Հենց որ հաստատեք, ձեր քարտի տվյալները կտրամադրվեն այս կայքին:</translation>
 <translation id="3010559122411665027">Ցանկի միավոր «<ph name="ENTRY_INDEX" />»՝ <ph name="ERROR" /></translation>
 <translation id="301521992641321250">Ավտոմատ արգելափակված է</translation>
@@ -738,6 +744,7 @@
 <translation id="4014128326099193693">{COUNT,plural, =1{{COUNT}-էջանոց PDF փաստաթուղթ}one{{COUNT}-էջանոց PDF փաստաթուղթ}other{{COUNT}-էջանոց PDF փաստաթուղթ}}</translation>
 <translation id="4030383055268325496">&amp;Հետարկել հավելումը</translation>
 <translation id="4032320456957708163">Ձեր դիտարկիչը կառավարվում է <ph name="ENROLLMENT_DOMAIN" /> կայքի կողմից</translation>
+<translation id="4056223980640387499">Սեպիա</translation>
 <translation id="4058922952496707368">Բանալու «<ph name="SUBKEY" />»՝ <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (ծրար)</translation>
 <translation id="4067947977115446013">Ավելացրեք վավեր հասցե</translation>
@@ -778,6 +785,7 @@
 <translation id="4194250254487269611">Չհաջողվեց պահել քարտը</translation>
 <translation id="4196861286325780578">&amp;Վերարկել տեղափոխումը</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Ստուգել հրապատի և հակավիրուսային ծրագրի կազմաձևումը<ph name="END_LINK" /></translation>
+<translation id="4209092469652827314">Մեծ</translation>
 <translation id="4209166701302774460">Սերվերը, որին պատրաստվում եք անցնել (<ph name="ORIGIN" />), պահանջում է, որ
     սկզբնական կանոնը կիրառվի իրեն ուղարկված բոլոր հարցումների նկատմամբ։ Սակայն այժմ սերվերին
     չի հաջողվում տրամադրել կանոն, ինչը թույլ չի տալիս դիտարկիչին
@@ -1506,7 +1514,6 @@
 <translation id="7210863904660874423"><ph name="HOST_NAME" />-ը չի հետևում անվտանգության չափորոշիչներին:</translation>
 <translation id="7210993021468939304">Տեսնում է Լինուքսի գործողությունները կոնտեյներում և կարող է տեղադրել ու գործարկել Լինուքսի հավելվածներ կոնտեյներից</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /> այս խնդրի մասին:</translation>
-<translation id="7214062855724067749">Օգտագործել ձեր համակարգչում տեղադրված տառատեսակները, որպեսզի կարողանաք բարդ գրվածքներ ստեղծել</translation>
 <translation id="7217745192097460130">Հաստատե՞լ և ավարտել ձեր գնումը Touch ID-ի միջոցով</translation>
 <translation id="7219179957768738017">Կապակցումն օգտագործում է <ph name="SSL_VERSION" />:</translation>
 <translation id="7220786058474068424">Մշակվում է</translation>
@@ -1786,6 +1793,7 @@
 <translation id="8267698848189296333">Մուտք եք գործում <ph name="USERNAME" /> հաշվով</translation>
 <translation id="8269242089528251720">Մի քանի փաստաթուղթ/առանձնացված պատճեններ</translation>
 <translation id="8269981117540303696">Ինկոգնիտո ռեժիմում ձեր գործողությունները տեսանելի չեն լինի այս սարքի մյուս օգտատերերին: Սակայն ներբեռնումներն ու էջանիշները կպահվեն։</translation>
+<translation id="8275952078857499577">Չառաջարկել թարգմանել այս կայքը</translation>
 <translation id="8277900682056760511">Վճարման մշակման թերթը բացված է</translation>
 <translation id="8281084378435768645">Large-Photo</translation>
 <translation id="8282947398454257691">Իմանալ ձեր հատուկ սարքի նույնացուցիչը</translation>

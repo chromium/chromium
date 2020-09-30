@@ -5,6 +5,7 @@
 <translation id="1195447618553298278">خطأ  غير محدّد.</translation>
 <translation id="1413240736185167732">تعذَّرت الطباعة - خلل في عامل تصفية الطباعة</translation>
 <translation id="1468664791493211953">العروض</translation>
+<translation id="1478594628797167447">الماسح الضوئي</translation>
 <translation id="1482734542997480527">يدير النطاق <ph name="ENROLLMENT_DOMAIN" /> هذا الجهاز وقد يتمكن من مراقبة نشاطك.</translation>
 <translation id="150962533380566081">‏PUK غير صالح.</translation>
 <translation id="1510238584712386396">مشغِّل التطبيقات</translation>
@@ -24,6 +25,7 @@
 <translation id="2872961005593481000">إيقاف التشغيل</translation>
 <translation id="3008341117444806826">إعادة التحميل</translation>
 <translation id="3091839911843451378">تعذَّرت الطباعة - توقّفت الطابعة</translation>
+<translation id="3246869037381808805">ستتم إزالة طلبات الطباعة التي مرَّ عليها أكثر من يوم.</translation>
 <translation id="3268178239013324452">تعذَّرت الطباعة - باب الطابعة مفتوح</translation>
 <translation id="3369013195428705271">هل تريد فعلاً محو سجلّ الطباعة بالكامل؟ لن يتم محو مهام الطباعة الجارية.</translation>
 <translation id="3456078764689556234">عدد الصفحات التي تمت طباعتها: <ph name="PRINTED_PAGES" /> من أصل <ph name="TOTAL_PAGES" />.</translation>
@@ -34,6 +36,7 @@
 <translation id="38114475217616659">محو السجلّ بأكمله</translation>
 <translation id="3820172043799983114">رقم التعريف الشخصي غير صالح.</translation>
 <translation id="3838338534323494292">كلمة المرور الجديدة</translation>
+<translation id="39823212440917567">ستتم إزالة طلبات الطباعة التي مرَّ عليها أكثر من <ph name="NUMBER_OF_DAYS" /> يوم.</translation>
 <translation id="4003259559679196451">يُدير <ph name="ENROLLMENT_DOMAIN" /> هذا الجهاز ويحصل على إذن الوصول إلى جميع أنشطة المستخدم، بما في ذلك صفحات الويب التي تمت زيارتها وكلمات المرور والبريد الإلكتروني.</translation>
 <translation id="4003384961948020559">تعذّرت الطباعة - المخرجات ممتلئة</translation>
 <translation id="4027485274696301677">تتم إدارة جهاز <ph name="DEVICE_TYPE" /> هذا من خلال <ph name="ENROLLMENT_DOMAIN" />. ويمكن للمشرفين إعداد هذا الجهاز عن بُعد.</translation>
@@ -71,6 +74,7 @@
 <translation id="649050271426829538">توقّفت الطابعة - الورق مكدّس</translation>
 <translation id="6517239166834772319">استكشاف</translation>
 <translation id="6564646048574748301">تعذَّرت الطباعة - لا يمكن الوصول إلى الطابعة</translation>
+<translation id="6620487321149975369">ستظهر طلبات الطباعة في السجلّ إلّا إذا تمت إزالتها يدويًا.</translation>
 <translation id="6643016212128521049">محو</translation>
 <translation id="6747215703636344499">توقّفت الطابعة - دُرج الإخراج ممتلئ</translation>
 <translation id="7162487448488904999">معرض الصور</translation>
@@ -81,6 +85,7 @@
 <translation id="7805768142964895445">الحالة</translation>
 <translation id="808894953321890993">تغيير كلمة المرور</translation>
 <translation id="8208861521865154048">المزايا</translation>
+<translation id="8294431847097064396">المصدر</translation>
 <translation id="8347227221149377169">مهام الطباعة</translation>
 <translation id="8352772353338965963">يمكنك إضافة حساب إلى الدخول المتعدد. يمكن الدخول إلى جميع الحسابات التي تم تسجيل الدخول إليها بدون كلمة مرور، لذا فإن هذه الميزة لا يجب استخدامها إلا مع الحسابات الموثوق بها.</translation>
 <translation id="8701136875688985581">يُدير <ph name="ENROLLMENT_DOMAIN" /> هذا المستخدِم. وقد يعمل على إدارة الإعدادات ورصد نشاط المستخدِم.</translation>

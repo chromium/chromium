@@ -30,6 +30,7 @@
 <translation id="1208421848177517699">लिप्यंतरण (namaste → નમસ્તે)</translation>
 <translation id="1243314992276662751">अपलोड करें</translation>
 <translation id="1249250836236328755">शैली</translation>
+<translation id="1276362640455948667">यूएस इंटरनैशनल कीबोर्ड के साथ पॉर्चुगीज़</translation>
 <translation id="1278813325885878377">हंगेरियाई QWERTY कीबोर्ड</translation>
 <translation id="1293556467332435079">फ़ाइल</translation>
 <translation id="1297922636971898492">Google डिस्क इस समय उपलब्ध नहीं है. Google डिस्क के वापस आ जाने पर अपलोडिंग अपने आप फिर से प्रारंभ हो जाएगी.</translation>
@@ -112,13 +113,14 @@
 <translation id="2163152940313951844">अमान्य वर्ण : <ph name="CHARACTER_NAME" /></translation>
 <translation id="2164862903024139959">वियतनामी कीबोर्ड (TCVN)</translation>
 <translation id="2168214441502403371">पारसी कीबोर्ड</translation>
-<translation id="2197363559908958454"><ph name="NUMBER_OF_ITEMS" /> को भेज दिया गया.</translation>
 <translation id="2198315389084035571">सरलीकृत चीनी</translation>
 <translation id="2208158072373999562">ज़िप संग्रह</translation>
 <translation id="2225536596944493418">क्या आप वाकई <ph name="NUMBER_OF_ITEMS" /> आइटम मिटाना चाहते हैं?</translation>
 <translation id="2230062665678605299">"<ph name="FOLDER_NAME" />" फ़ोल्डर बनाने में असमर्थ. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2270413998793223379">संस्कृत</translation>
 <translation id="2275059641601412272">भेज दिया गया.</translation>
 <translation id="2278988676849463018">कन्नड़ कीबोर्ड (फ़ोनेटिक)</translation>
+<translation id="2287742181953707290">यूएस इंटरनैशनल पीसी कीबोर्ड के साथ पॉर्चुगीज़</translation>
 <translation id="2288278176040912387">रिकॉर्ड प्‍लेयर</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> फ़ाइलें खुल रही हैं.</translation>
 <translation id="2303301624314357662"><ph name="FILE_NAME" /> फ़ाइल खुल रही है.</translation>
@@ -222,6 +224,7 @@
 <translation id="3473378059788601120"><ph name="FOLDER_NAME" /> में कॉपी की गई.</translation>
 <translation id="3475447146579922140">Google spreadsheet</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> त्रुटियां.</translation>
+<translation id="349603508045926994">फ़ारसी ट्रांसलिट्रेशन</translation>
 <translation id="3519867315646775981">लिप्यंतरण (shalom ← שלום)</translation>
 <translation id="3522708245912499433">पुर्तगाली</translation>
 <translation id="3524311639100184459">चेतावनी: ये फ़ाइलें अस्थायी हैं और डिस्क की जगह खाली करने के लिए अपने-आप मिटाई जा सकती हैं.  <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
@@ -293,6 +296,7 @@
 <translation id="4298972503445160211">डेनिश कीबोर्ड</translation>
 <translation id="4299729908419173967">ब्राज़ीलियाई</translation>
 <translation id="4309915981827077375">सामान्य जानकारी</translation>
+<translation id="4315949787858895817">डच (बेल्जियम)</translation>
 <translation id="4326192123064055915">कॉफ़ी</translation>
 <translation id="4336032328163998280">कॉपी बनाने का काम विफल रहा. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4364327530094270451">खरबूजा</translation>
@@ -339,6 +343,7 @@
 <translation id="4804827417948292437">एवोकैडो</translation>
 <translation id="4823651846660089135">डिवाइस केवल-पढ़ने के लिए है</translation>
 <translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> आइटम चयनित</translation>
+<translation id="4849981557599196363">जर्मन (बेल्जियम)</translation>
 <translation id="4850886885716139402">देखें</translation>
 <translation id="485316830061041779">जर्मन</translation>
 <translation id="4867079195717347957">स्तंभ को घटते क्रम में लगाने के लिए क्लिक करें.</translation>
@@ -375,6 +380,7 @@
 <translation id="5098629044894065541">हिब्रू</translation>
 <translation id="5123433949759960244">बास्केटबॉल</translation>
 <translation id="5129662217315786329">पोलिश</translation>
+<translation id="5132435854979302863">फ़िलिपीनो</translation>
 <translation id="5144820558584035333">हंगुल 3 सेट (390)</translation>
 <translation id="5145331109270917438">बदलाव की तारीख</translation>
 <translation id="515594325917491223">शतरंज</translation>
@@ -401,6 +407,7 @@
 <ph name="MARKUP_7" />शेयर करें, बनाएं और सहयोग करें<ph name="MARKUP_8" />.<ph name="MARKUP_9" /></translation>
 <translation id="5274350207900771082">कॉपी किया गया.</translation>
 <translation id="5275973617553375938">Google डिस्क से पुनर्प्राप्त की गई फ़ाइलें</translation>
+<translation id="5283140566205748520">फ़्रेंच (बेल्जियम)</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">सेव करें</translation>
 <translation id="5318819489018851358">Linux के साथ शेयर करें</translation>
@@ -421,6 +428,7 @@
 <translation id="5464696796438641524">पोलिश कीबोर्ड</translation>
 <translation id="5465122519792752163">नेपाली कीबोर्ड (इंस्क्रिप्ट)</translation>
 <translation id="5469868506864199649">इतालवी</translation>
+<translation id="5484429245813572665">इंडोनेशियन</translation>
 <translation id="5494920125229734069">सभी को चुनें</translation>
 <translation id="5500122897333236901">आइसलैंडिक</translation>
 <translation id="5508696409934741614">बिंदु</translation>
@@ -607,6 +615,7 @@
 <translation id="7649070708921625228">सहायता</translation>
 <translation id="7654209398114106148"><ph name="NUMBER_OF_ITEMS" /> आइटम ले जाए रहे हैं...</translation>
 <translation id="7658239707568436148">अभी नहीं</translation>
+<translation id="7693909743393669729">ड्राइव को फ़ॉर्मैट करने से, उस पर सेव सभी डेटा मिट जाएगा और सारे मौजूदा पार्टीशन हट जाएंगे. इसमें वे पार्टीशन भी शामिल होंगे जो शायद दिख न रहे हों. मिटने के बाद यह सब वापस नहीं पाया जा सकता.</translation>
 <translation id="7695430100978772476"><ph name="DRIVE_NAME" /> को फ़ॉर्मैट नहीं किया जा सका</translation>
 <translation id="770015031906360009">ग्रीक</translation>
 <translation id="7706319470528945664">पुर्तगाली कीबोर्ड</translation>
@@ -638,6 +647,7 @@
 <translation id="78946041517601018">शेयर की गईं डिस्क</translation>
 <translation id="7896906914454843592">यूएस विस्‍तारित कीबोर्ड</translation>
 <translation id="7898607018410277265">गुजराती कीबोर्ड (नया फ़ोनेटिक)</translation>
+<translation id="7908793776359722643">किसी पार्टीशन को फ़ॉर्मैट करने से उस पर सेव किया गया पूरा डेटा मिट जाएगा. मिटने के बाद यह सब वापस नहीं पाया जा सकता.</translation>
 <translation id="7917972308273378936">लिथुआनियाई कीबोर्ड</translation>
 <translation id="7925686952655276919">समन्‍वयन के लिए मोबाइल डेटा का उपयोग न करें</translation>
 <translation id="7928710562641958568">डिवाइस निकालें</translation>
@@ -684,6 +694,7 @@
 <translation id="8329978297633540474">सादा लेख</translation>
 <translation id="8335587457941836791">अलमारी से टैब बड़ी करें</translation>
 <translation id="8336153091935557858">कल <ph name="YESTERDAY_DAYTIME" /></translation>
+<translation id="8336524887811696057">नेपाली ट्रांसलिट्रेशन</translation>
 <translation id="8336579025507394412">आइसलैंडिक कीबोर्ड</translation>
 <translation id="8342318071240498787">समान नाम वाली फ़ाइल या निर्देशिका पहले से ही मौजूद है.</translation>
 <translation id="8382450452152102026"><ph name="FOLDER_NAME" /> पर</translation>
@@ -709,12 +720,14 @@
 <translation id="8600173386174225982">फ़ाइल की सूची अब थंबनेल की तरह दिखाई जा रही है.</translation>
 <translation id="8601932370724196034">Crostini इमेज फ़ाइल</translation>
 <translation id="8669949407341943408">चल रहे...</translation>
+<translation id="8694836330346852143">उर्दू</translation>
 <translation id="8698464937041809063">Google ड्रॉइंग</translation>
 <translation id="8714406895390098252">साइकिल</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> को चुना गया.</translation>
 <translation id="8722421161699219904">यूएस अंतर्राष्‍ट्रीय कीबोर्ड</translation>
 <translation id="872537912056138402">क्रोएशियाई</translation>
 <translation id="874420130893181774">पारंपरिक पिनयिन इनपुट पद्धति</translation>
+<translation id="8770002329960263418">यूएस इंटरनैशनल पीसी कीबोर्ड के साथ डच (नीदरलैंड्स)</translation>
 <translation id="8775404590947523323">आपके किए गए बदलाव अपने आप सेव हो जाते हैं.<ph name="BREAKS" />मूल इमेज की एक कॉपी रखने के लिए, "मूल को ओवरराइट करें" पर से सही का निशान हटाएं</translation>
 <translation id="8803496343472038847">रूसी फ़ोनेटिक कीबोर्ड</translation>
 <translation id="8808686172382650546">बिल्ली</translation>
@@ -725,6 +738,7 @@
 <translation id="8900820606136623064">हंगेरियन</translation>
 <translation id="8901822611024316615">चेक QWERTY कीबोर्ड</translation>
 <translation id="8919081441417203123">डैनिश</translation>
+<translation id="8941776146379310519">मलय</translation>
 <translation id="8960999352790021682">बंगाली कीबोर्ड (फ़ोनेटिक)</translation>
 <translation id="8965697826696209160">काफ़ी स्थान नहीं है.</translation>
 <translation id="9017798300203431059">रूसी फ़ोनेटिक</translation>
@@ -755,7 +769,6 @@
 <translation id="943972244133411984">बदलाव करने वाले</translation>
 <translation id="945522503751344254">फ़ीडबैक भेजें</translation>
 <translation id="947144732524271678"><ph name="FROM_ENTRY_NAME" /> से <ph name="TO_ENTRY_NAME" /> तक की <ph name="ENTRY_COUNT" /> एंट्री को चुना गया.</translation>
-<translation id="949308258121608615"><ph name="NUMBER_OF_ITEMS" /> को कॉपी किया गया.</translation>
 <translation id="981121421437150478">ऑफ़लाइन</translation>
 <translation id="988685240266037636">"<ph name="FILE_NAME" />" की एक फ़ाइल पहले से मौजूद है. क्या आप उसे बदलना चाहते हैं?</translation>
 <translation id="996903396648773764"><ph name="NUMBER_OF_MB" /> एमबी</translation>

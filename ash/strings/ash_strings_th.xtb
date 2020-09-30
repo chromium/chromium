@@ -197,6 +197,7 @@
 <translation id="2996462380875591307">เปิดใช้แว่นขยายหน้าจอบางส่วนแล้ว กด Ctrl+Search+D อีกครั้งเพื่อสลับเป็นปิด</translation>
 <translation id="3000461861112256445">เสียงแบบโมโน</translation>
 <translation id="3009178788565917040">เอาต์พุต</translation>
+<translation id="3025081209054535615">เลิกตรึงตัวควบคุมสื่อส่วนกลางจากชั้นวาง</translation>
 <translation id="3033545621352269033">เปิด</translation>
 <translation id="3038571455154067151">โปรดป้อนรหัสการเข้าถึง Family Link ของผู้ปกครองเพื่อลงชื่อเข้าใช้</translation>
 <translation id="3045488863354895414">สวัสดียามบ่าย</translation>
@@ -250,6 +251,7 @@
 <translation id="3430396595145920809">เลื่อนจากด้านขวาเพื่อย้อนกลับ</translation>
 <translation id="343571671045587506">แก้ไขการช่วยเตือน</translation>
 <translation id="3435967511775410570">จำลายนิ้วมือได้</translation>
+<translation id="3445288400492335833"><ph name="MINUTES" /> นาที</translation>
 <translation id="3445925074670675829">อุปกรณ์ USB-C</translation>
 <translation id="3454224730401036106">ระบบเปลี่ยนไปเชื่อมต่อกับเครือข่ายที่ปลอดภัยกว่าเดิมแล้ว</translation>
 <translation id="3465223694362104965">แป้นพิมพ์อีกรายการหนึ่งเชื่อมต่อกับอุปกรณ์นี้นับจากที่คุณลงชื่อเข้าใช้ครั้งล่าสุด โปรดตรวจสอบว่าแป้นพิมพ์นี้เชื่อถือได้ก่อนใช้งาน</translation>
@@ -383,6 +385,7 @@
 <translation id="4804818685124855865">ตัดการเชื่อมต่อ</translation>
 <translation id="4814539958450445987">หน้าจอการเข้าสู่ระบบ</translation>
 <translation id="4831034276697007977">แน่ใจไหมว่าต้องการปิดการคลิกอัตโนมัติ</translation>
+<translation id="4836108105469522644">เปิดการแจ้งเตือนจากโทรศัพท์ Android</translation>
 <translation id="4849058404725798627">ไฮไลต์วัตถุที่มีโฟกัสแป้นพิมพ์</translation>
 <translation id="485592688953820832">ไม่มีการดำเนินการ (หยุดชั่วคราว)</translation>
 <translation id="4868492592575313542">เปิดใช้งานอยู่</translation>
@@ -452,6 +455,7 @@
 <translation id="5691772641933328258">ระบบไม่รู้จักลายนิ้วมือนี้</translation>
 <translation id="5710450975648804523">โหมดห้ามรบกวนเปิดอยู่</translation>
 <translation id="573413375004481890">อุปกรณ์นี้รองรับจอแสดงผลทั้งหมดไม่ได้ ระบบจึงยกเลิกการเชื่อมต่อจอแสดงผลจอหนึ่ง</translation>
+<translation id="5740328398383587084">การแชร์ใกล้เคียง</translation>
 <translation id="574392208103952083">ปานกลาง</translation>
 <translation id="5744083938413354016">การแตะลาก</translation>
 <translation id="5745612484876805746">แสงตอนกลางคืนจะเปิดโดยอัตโนมัติเมื่อพระอาทิตย์ตก</translation>
@@ -696,6 +700,7 @@
 <translation id="8297006494302853456">อ่อน</translation>
 <translation id="8308637677604853869">เมนูก่อนหน้า</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
+<translation id="8349293353728876872">ตรึงตัวควบคุมสื่อส่วนกลางกับชั้นวาง</translation>
 <translation id="8351131234907093545">สร้างโน้ต</translation>
 <translation id="8371779926711439835">ไปข้างหน้าทีละตัวอักษร</translation>
 <translation id="8375916635258623388"><ph name="DEVICE_NAME" /> นี้และโทรศัพท์จะเชื่อมต่อกันโดยอัตโนมัติ</translation>

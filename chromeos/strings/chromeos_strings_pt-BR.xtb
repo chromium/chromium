@@ -5,6 +5,7 @@
 <translation id="1195447618553298278">Erro desconhecido.</translation>
 <translation id="1413240736185167732">Falha - Falha no filtro</translation>
 <translation id="1468664791493211953">Ofertas</translation>
+<translation id="1478594628797167447">Scanner</translation>
 <translation id="1482734542997480527">O domínio <ph name="ENROLLMENT_DOMAIN" /> gerencia este dispositivo e pode monitorar sua atividade.</translation>
 <translation id="150962533380566081">PUK inválida.</translation>
 <translation id="1510238584712386396">Iniciador</translation>
@@ -24,6 +25,7 @@
 <translation id="2872961005593481000">Desligar</translation>
 <translation id="3008341117444806826">ATUALIZAR</translation>
 <translation id="3091839911843451378">Falha - Ação interrompida</translation>
+<translation id="3246869037381808805">Trabalhos de impressão com mais de 1 dia serão removidos</translation>
 <translation id="3268178239013324452">Falha - Porta aberta</translation>
 <translation id="3369013195428705271">Tem certeza de que quer limpar todo o histórico? Os trabalhos de impressão atuais não serão apagados.</translation>
 <translation id="3456078764689556234"><ph name="PRINTED_PAGES" /> página impressa de <ph name="TOTAL_PAGES" />.</translation>
@@ -34,6 +36,7 @@
 <translation id="38114475217616659">Limpar todo o histórico</translation>
 <translation id="3820172043799983114">PIN inválido.</translation>
 <translation id="3838338534323494292">Nova senha</translation>
+<translation id="39823212440917567">Trabalhos de impressão com mais de <ph name="NUMBER_OF_DAYS" /> dias serão removidos</translation>
 <translation id="4003259559679196451">O domínio <ph name="ENROLLMENT_DOMAIN" /> gerencia este dispositivo e tem acesso a todas as atividades do usuário, incluindo páginas visitadas, senhas e e-mail.</translation>
 <translation id="4003384961948020559">Falha - Saída cheia</translation>
 <translation id="4027485274696301677">Este <ph name="DEVICE_TYPE" /> é gerenciado por <ph name="ENROLLMENT_DOMAIN" />. Os administradores podem configurar o dispositivo remotamente.</translation>
@@ -52,6 +55,7 @@
 <translation id="4890353053343094602">Escolha uma nova imediatamente</translation>
 <translation id="4917889632206600977">Parado (sem papel)</translation>
 <translation id="4932733599132424254">Data</translation>
+<translation id="520299634122159966">Não há scanners disponíveis</translation>
 <translation id="5212543919916444558">Não foi possível encontrar na sua tela nada com o que eu possa ajudar.
 Tente tocar no microfone para me pedir algo.</translation>
 <translation id="5222676887888702881">Sair</translation>
@@ -71,6 +75,7 @@ Tente tocar no microfone para me pedir algo.</translation>
 <translation id="649050271426829538">Parado (atolamento de papel)</translation>
 <translation id="6517239166834772319">Explorar</translation>
 <translation id="6564646048574748301">Falha - Impressora inacessível</translation>
+<translation id="6620487321149975369">Os trabalhos de impressão aparecerão no histórico, a menos que sejam removidos manualmente</translation>
 <translation id="6643016212128521049">Limpar</translation>
 <translation id="6747215703636344499">Parado (saída cheia)</translation>
 <translation id="7162487448488904999">Galeria</translation>
@@ -81,6 +86,7 @@ Tente tocar no microfone para me pedir algo.</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="808894953321890993">Alterar senha</translation>
 <translation id="8208861521865154048">Benefícios</translation>
+<translation id="8294431847097064396">Origem</translation>
 <translation id="8347227221149377169">Trabalhos de impressão</translation>
 <translation id="8352772353338965963">Adicione uma conta de login múltiplo. Todas as contas conectadas podem ser acessadas sem uma senha; portanto esse recurso só deve ser usado com contas confiáveis.</translation>
 <translation id="8701136875688985581">O domínio <ph name="ENROLLMENT_DOMAIN" /> gerencia esta conta. Ele pode gerenciar configurações e monitorar a atividade do usuário remotamente.</translation>

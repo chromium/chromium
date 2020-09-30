@@ -30,6 +30,7 @@
 <translation id="1208421848177517699">Transliterasiya (namaste → નમસ્તે)</translation>
 <translation id="1243314992276662751">Yükləyin</translation>
 <translation id="1249250836236328755">Janr</translation>
+<translation id="1276362640455948667">ABŞ Beynəlxalq klaviaturası ilə Portuqal dili</translation>
 <translation id="1278813325885878377">Macar QWERTY klaviaturası</translation>
 <translation id="1293556467332435079">Fayllar</translation>
 <translation id="1297922636971898492">Google Disk hazırda əlçatmazdır. Google Disk əlçatan olan kimi yükləmə avtomatik yenidən başlayacaq.</translation>
@@ -112,13 +113,14 @@
 <translation id="2163152940313951844">Yanlış simvol: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2164862903024139959">Vyetnam klaviaturası (TCVN)</translation>
 <translation id="2168214441502403371">Fars klaviaturası</translation>
-<translation id="2197363559908958454"><ph name="NUMBER_OF_ITEMS" /> köçürülüb.</translation>
 <translation id="2198315389084035571">Sadələşmiş Çin</translation>
 <translation id="2208158072373999562">Zip arxivi</translation>
 <translation id="2225536596944493418"><ph name="NUMBER_OF_ITEMS" /> elementi silmək istədiyinizə əminsiniz?</translation>
 <translation id="2230062665678605299">Qovluq yaratmaq alınmadı "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2270413998793223379">Sanskrit</translation>
 <translation id="2275059641601412272">Köçürülüb.</translation>
 <translation id="2278988676849463018">Kannada klaviaturası (fonetik)</translation>
+<translation id="2287742181953707290">ABŞ Beynəlxalq kompüter klaviaturası ilə Portuqal dili</translation>
 <translation id="2288278176040912387">Rekord oyunçu</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> fayl açılır.</translation>
 <translation id="2303301624314357662"><ph name="FILE_NAME" /> faylı açılır.</translation>
@@ -222,6 +224,7 @@
 <translation id="3473378059788601120"><ph name="FOLDER_NAME" /> qovluğuna kopyalandı.</translation>
 <translation id="3475447146579922140">Google cədvəl</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> xətalar.</translation>
+<translation id="349603508045926994">Fars dilinin Transliterasiyası</translation>
 <translation id="3519867315646775981">Transliterasiya (shalom ← שלום)</translation>
 <translation id="3522708245912499433">Portuqal</translation>
 <translation id="3524311639100184459">Xəbərdarlıq: Bu fayllar müvəqqətidir və diskdə yer boşaltmaq üçün avtomatik silinə bilər.  <ph name="BEGIN_LINK" />Ətraflı Məlumat<ph name="END_LINK" /></translation>
@@ -293,6 +296,7 @@
 <translation id="4298972503445160211">Danimarka klaviaturası</translation>
 <translation id="4299729908419173967">Braziliya</translation>
 <translation id="4309915981827077375">Ümumi məlumat</translation>
+<translation id="4315949787858895817">Niderland dili (Belçika)</translation>
 <translation id="4326192123064055915">Qəhvə</translation>
 <translation id="4336032328163998280">Kopyalama əməliyyatı uğursuz oldu. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4364327530094270451">Yemiş</translation>
@@ -339,6 +343,7 @@
 <translation id="4804827417948292437">Avokado</translation>
 <translation id="4823651846660089135">Cihaz yalnız oxu rejimindədir</translation>
 <translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> element seçilib</translation>
+<translation id="4849981557599196363">Alman dili (Belçika)</translation>
 <translation id="4850886885716139402">Görünüş</translation>
 <translation id="485316830061041779">Alman</translation>
 <translation id="4867079195717347957">Sütunu artan sıra ilə çeşidləmək üçün klikləyin.</translation>
@@ -402,6 +407,7 @@
     paylaşın, yaradın əməkdaşlıq edin.<ph name="MARKUP_9" /></translation>
 <translation id="5274350207900771082">Kopyalanıb.</translation>
 <translation id="5275973617553375938">Google Diskdən bərpa edilmiş fayllar</translation>
+<translation id="5283140566205748520">Fransız dili (Belçika)</translation>
 <translation id="5317780077021120954">Yadda saxlayın</translation>
 <translation id="5318819489018851358">Linux ilə paylaşın</translation>
 <translation id="5319782540886810524">Latış klaviaturası</translation>
@@ -685,6 +691,7 @@
 <translation id="8329978297633540474">Tam mətn</translation>
 <translation id="8335587457941836791">Buferdən çıxarın</translation>
 <translation id="8336153091935557858">Dünən <ph name="YESTERDAY_DAYTIME" /></translation>
+<translation id="8336524887811696057">Nepal dilinin Transliterasiyası</translation>
 <translation id="8336579025507394412">İsland klaviaturası</translation>
 <translation id="8342318071240498787">Eyni adlı fayl və ya kataloq var.</translation>
 <translation id="8382450452152102026"><ph name="FOLDER_NAME" /> qovluğuna</translation>
@@ -710,12 +717,14 @@
 <translation id="8600173386174225982">Fayl siyahısı miniatür görünüşünə dəyişdirilib.</translation>
 <translation id="8601932370724196034">Crostini şəkil faylı</translation>
 <translation id="8669949407341943408">Daşınır...</translation>
+<translation id="8694836330346852143">Urdu dili</translation>
 <translation id="8698464937041809063">Google çertyoj</translation>
 <translation id="8714406895390098252">Velosiped</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> seçildi.</translation>
 <translation id="8722421161699219904">Beynəlxalq ABŞ klaviaturası</translation>
 <translation id="872537912056138402">Xorvat</translation>
 <translation id="874420130893181774">Ənənəvi Pinyin daxiletmə metodu</translation>
+<translation id="8770002329960263418">ABŞ Beynəlxalq kompüter klaviaturası ilə Niderland dili (Niderland)</translation>
 <translation id="8775404590947523323">Düzəlişləriniz avtomatik olaraq saxlandı.<ph name="BREAKS" />Original şəklin nüsxəsini saxlamaq üçün "Originalı əvəz edin" üzərindən seçimi qaldırın</translation>
 <translation id="8803496343472038847">Rusca Fonetik klaviatura</translation>
 <translation id="8808686172382650546">Pişik</translation>
@@ -757,7 +766,6 @@
 <translation id="943972244133411984">Düzəliş edib:</translation>
 <translation id="945522503751344254">Geri əlaqə göndərin</translation>
 <translation id="947144732524271678"><ph name="FROM_ENTRY_NAME" /> - <ph name="TO_ENTRY_NAME" /> aralığında <ph name="ENTRY_COUNT" /> fayl seçildi.</translation>
-<translation id="949308258121608615"><ph name="NUMBER_OF_ITEMS" /> kopyalanıb.</translation>
 <translation id="981121421437150478">Oflayn</translation>
 <translation id="988685240266037636">"<ph name="FILE_NAME" />" adlı qovluq artıq mövcuddur. Onu əvəz etmək istəyirsiniz?</translation>
 <translation id="996903396648773764"><ph name="NUMBER_OF_MB" /> MB</translation>

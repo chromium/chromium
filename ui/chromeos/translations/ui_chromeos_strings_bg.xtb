@@ -113,7 +113,6 @@
 <translation id="2163152940313951844">Невалиден знак: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2164862903024139959">Виетнамска клавиатура (TCVN)</translation>
 <translation id="2168214441502403371">Персийска клавиатура</translation>
-<translation id="2197363559908958454">Преместихте <ph name="NUMBER_OF_ITEMS" />.</translation>
 <translation id="2198315389084035571">опростен китайски</translation>
 <translation id="2208158072373999562">Компресиран архивен файл</translation>
 <translation id="2225536596944493418">Наистина ли искате да изтриете <ph name="NUMBER_OF_ITEMS" /> елемента?</translation>
@@ -770,7 +769,6 @@
 <translation id="943972244133411984">Променено от</translation>
 <translation id="945522503751344254">Изпращане на отзиви</translation>
 <translation id="947144732524271678">Избрахте <ph name="ENTRY_COUNT" /> елемента – от <ph name="FROM_ENTRY_NAME" /> до <ph name="TO_ENTRY_NAME" />.</translation>
-<translation id="949308258121608615">Копирахте <ph name="NUMBER_OF_ITEMS" />.</translation>
 <translation id="981121421437150478">Офлайн</translation>
 <translation id="988685240266037636">Вече съществува файл с име „<ph name="FILE_NAME" />“. Искате ли да го замените?</translation>
 <translation id="996903396648773764"><ph name="NUMBER_OF_MB" /> МБ</translation>

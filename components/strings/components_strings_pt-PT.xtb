@@ -15,6 +15,7 @@
 <translation id="1038106730571050514">Mostre as sugestões</translation>
 <translation id="1038842779957582377">nome desconhecido</translation>
 <translation id="1041998700806130099">Mensagem da folha da tarefa</translation>
+<translation id="1048785276086539861">Quando edita anotações, este documento volta à vista de página única.</translation>
 <translation id="1050038467049342496">Fechar outras aplicações</translation>
 <translation id="1055184225775184556">&amp;Anular adição</translation>
 <translation id="1056898198331236512">Aviso</translation>
@@ -234,6 +235,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, estão disponíveis várias ações, prima Tab para as percorrer.</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1803264062614276815">Nome do titular do cartão</translation>
+<translation id="1807246157184219062">Claro</translation>
 <translation id="1807528111851433570">Folha inicial</translation>
 <translation id="1821930232296380041">Pedido ou parâmetros do pedido inválidos</translation>
 <translation id="1822540298136254167">Os Websites que visita e o tempo despendido nos mesmos.</translation>
@@ -290,6 +292,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2099652385553570808">Agrafo triplo à esquerda</translation>
 <translation id="2101225219012730419">Versão:</translation>
 <translation id="2102134110707549001">Sugerir palavra-passe forte…</translation>
+<translation id="2102495993840063010">Apps Android</translation>
 <translation id="2107021941795971877">Suportes de impressão</translation>
 <translation id="2108755909498034140">Reiniciar o computador</translation>
 <translation id="2111256659903765347">Super-A</translation>
@@ -368,6 +371,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2396249848217231973">&amp;Anular eliminação</translation>
 <translation id="2410754574180102685">Government-Legal</translation>
 <translation id="2413528052993050574">Este servidor não conseguiu provar que é o domínio <ph name="DOMAIN" />; o respetivo certificado de segurança poderá ser revogado. Isto pode ser o resultado de uma configuração incorreta ou de um invasor a intercetar a sua ligação.</translation>
+<translation id="2414886740292270097">Escuro</translation>
 <translation id="2438874542388153331">Perfuração quádrupla à direita</translation>
 <translation id="245044156129055925">Acabou de introduzir a sua palavra-passe num site fraudulento. O Chromium recomenda a alteração da palavra-passe agora.</translation>
 <translation id="2463739503403862330">Preencher</translation>
@@ -376,6 +380,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2465688316154986572">Agrafar</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />Executar o Diagnóstico de rede<ph name="END_LINK" /></translation>
 <translation id="2469153820345007638">Ordem de 1 para N</translation>
+<translation id="2470767536994572628">Quando edita anotações, este documento volta à vista de página única e à respetiva rotação original.</translation>
 <translation id="2479410451996844060">URL de pesquisa inválido.</translation>
 <translation id="2482878487686419369">Notificações</translation>
 <translation id="248348093745724435">Políticas do computador</translation>
@@ -446,6 +451,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2738330467931008676">Escolher endereço de levantamento</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2742870351467570537">Remover itens seleccionados</translation>
+<translation id="2765217105034171413">Pequeno</translation>
 <translation id="277133753123645258">Método de envio</translation>
 <translation id="277499241957683684">Registo do dispositivo em falta</translation>
 <translation id="2775884851269838147">Primeira página de impressão</translation>
@@ -603,7 +609,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3443726618221119081">Juuro-Ku-Kai</translation>
 <translation id="3447661539832366887">O proprietário deste dispositivo desativou o jogo do dinossauro.</translation>
 <translation id="3447884698081792621">Mostrar certificado (emitido por <ph name="ISSUER" />)</translation>
-<translation id="3451824941663424536">A ação de colar nesta localização está bloqueada pelo seu administrador.</translation>
 <translation id="3452404311384756672">Intervalo de obtenção:</translation>
 <translation id="3453962258458347894">Número de tentativas</translation>
 <translation id="3456231139987291353">Number-11 (Envelope)</translation>
@@ -741,6 +746,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4014128326099193693">{COUNT,plural, =1{Documento PDF com {COUNT} página}other{Documento PDF com {COUNT} páginas}}</translation>
 <translation id="4030383055268325496">&amp;Anular adição</translation>
 <translation id="4032320456957708163">O navegador é gerido por <ph name="ENROLLMENT_DOMAIN" /></translation>
+<translation id="4056223980640387499">Sépia</translation>
 <translation id="4058922952496707368">Chave "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (Envelope)</translation>
 <translation id="4067947977115446013">Adicionar endereço válido</translation>
@@ -781,6 +787,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4194250254487269611">Não é possível guardar o seu cartão neste momento.</translation>
 <translation id="4196861286325780578">&amp;Refazer movimentação</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Verificar as configurações da firewall e de antivírus<ph name="END_LINK" /></translation>
+<translation id="4209092469652827314">Grande</translation>
 <translation id="4209166701302774460">O servidor ao qual irá aceder, <ph name="ORIGIN" />, solicitou que seja aplicada uma
     política de origem a todos os pedidos. Contudo, não
     conseguiu devolver uma política, o que impede o navegador de satisfazer
@@ -1390,6 +1397,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6645291930348198241">Aceder aos cookies e dados de sites.</translation>
 <translation id="6646269444027925224">{COUNT,plural, =0{Nenhum}=1{De 1 site (a sessão na sua Conta Google não é terminada).}other{De # sites (a sessão na sua Conta Google não é terminada).}}</translation>
 <translation id="6648459603387803038">O administrador pode alterar a configuração do navegador remotamente. A atividade neste dispositivo também pode ser gerida fora do Chrome.</translation>
+<translation id="6648524591329069940">Tipo de letra Serif</translation>
 <translation id="6652101503459149953">Utilizar o Windows Hello</translation>
 <translation id="6657585470893396449">Palavra-passe</translation>
 <translation id="666259744093848177">(x86_64 traduzido)</translation>
@@ -1397,7 +1405,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6671697161687535275">Remover a sugestão do formulário do Chromium?</translation>
 <translation id="6685834062052613830">Termine sessão e conclua a configuração</translation>
 <translation id="6687335167692595844">Tamanho do tipo de letra solicitado</translation>
-<translation id="6688998199862661005">O seu administrador bloqueou a partilha deste conteúdo com a VM <ph name="VM_NAME" />.</translation>
 <translation id="6689249931105087298">Relativa com compressão do ponto preto</translation>
 <translation id="6689271823431384964">O Chrome está a disponibilizar a opção de guardar os seus cartões na sua Conta Google porque tem sessão iniciada. Pode alterar este comportamento nas definições. O nome do titular do cartão vem da sua conta.</translation>
 <translation id="6710213216561001401">Anterior</translation>
@@ -1422,7 +1429,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6810899417690483278">ID de personalização</translation>
 <translation id="6825578344716086703">Tentou aceder a <ph name="DOMAIN" />, mas o servidor apresentou um certificado assinado utilizando um algoritmo de assinatura fraco (como SHA-1). Isto significa que as credenciais de segurança apresentadas pelo servidor podem ter sido falsificadas e que o servidor pode não ser aquele que pretende (pode estar a comunicar com um utilizador mal intencionado).</translation>
 <translation id="6826993739343257035">Pretende permitir a realidade aumentada?</translation>
-<translation id="6829611662493319648">O seu administrador bloqueou a partilha deste conteúdo com a VM <ph name="VM_NAME_1" /> e <ph name="VM_NAME_2" />.</translation>
 <translation id="6831043979455480757">Traduzir</translation>
 <translation id="6839929833149231406">Área</translation>
 <translation id="6846340164947227603">Utilizar um número de cartão virtual…</translation>
@@ -1511,7 +1517,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> não respeita os padrões de segurança.</translation>
 <translation id="7210993021468939304">A atividade do Linux dentro do contentor, podendo instalar e executar apps para Linux no contentor.</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /> sobre este problema.</translation>
-<translation id="7214062855724067749">Utilizar os tipos de letra instalados no computador para que possa criar tipografia avançada</translation>
 <translation id="7217745192097460130">Pretende utilizar o Touch ID para validar e concluir a sua compra?</translation>
 <translation id="7219179957768738017">A ligação utiliza <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">A processar</translation>
@@ -1635,6 +1640,7 @@ Detalhes adicionais:
 <translation id="7647206758853451655">Qualidade de impressão</translation>
 <translation id="7648992873808071793">Armazenar ficheiros neste dispositivo</translation>
 <translation id="7653957176542370971">A página do controlador do pagamento está fechada.</translation>
+<translation id="7654909834015434372">Quando edita anotações, este documento volta à respetiva rotação original.</translation>
 <translation id="765676359832457558">Ocultar definições avançadas...</translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7662298039739062396">Definição controlada por uma extensão</translation>

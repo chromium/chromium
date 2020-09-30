@@ -19,6 +19,7 @@
 <translation id="1126809382673880764">အန္တရာယ်ရှိသော ဝဘ်ဆိုက်၊ ဒေါင်းလုဒ်နှင့် နောက်ဆက်တွဲများ၏ ရန်မှ ကာကွယ်မပေးပါ။ ရနိုင်သည့်အခါ Gmail နှင့် Search ကဲ့သို့ အခြား Google ဝန်ဆောင်မှုများတွင် 'ဘေးကင်းစွာ အင်တာနက်အသုံးပြုခြင်းစနစ်' ကာကွယ်မှုဆက်လက်ရရှိနေပါမည်။</translation>
 <translation id="1129510026454351943">အသေးစိတ်များ− <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1141800923049248244">{FILE_COUNT,plural, =1{ဒေါင်းလုဒ် ၁ ခုကို စောင့်နေသည်။}other{ဒေါင်းလုဒ် # ခုကို စောင့်နေသည်။}}</translation>
+<translation id="1142732900304639782">ဤဝဘ်ဆိုက်များကို ပြန်ဆိုရန် မကမ်းလှမ်းပါနှင့်</translation>
 <translation id="1145536944570833626">လက်ရှိဒေတာများကို ဖျက်ပါ</translation>
 <translation id="1146678959555564648">VR သို့ ဝင်ပါ</translation>
 <translation id="1154704303112745282">အော့ဖ်လိုင်းတွင် စာမျက်နှာကိုမရနိုင်ပါ - <ph name="VIOLATED_URL" /></translation>
@@ -41,6 +42,7 @@
 <translation id="1263231323834454256">ဖတ်ရန် စာရင်း</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> ကို မျှဝေ၍မရပါ။</translation>
 <translation id="1283039547216852943">ချဲ့ရန် တို့ပါ</translation>
+<translation id="1285310382777185058">ဘာသာစကား ပြောင်းခြင်း</translation>
 <translation id="1291207594882862231">မှတ်တမ်း၊ ကွတ်ကီး၊ ဆိုက်ဒေတာ၊ ကက်ရှ်များကို ရှင်းလင်းပါ...</translation>
 <translation id="129553762522093515">မကြာသေးခင်က ပိတ်ထားခဲ့သည်</translation>
 <translation id="1298077576058087471">ဒေတာ ၆၀ ရာခိုင်နှုန်းအထိ ချွေတာပါ၊ ယနေ့သတင်းများကို ဖတ်ပါ</translation>
@@ -52,6 +54,7 @@
 <translation id="1327257854815634930">လမ်းညွှန်မှု မှတ်တမ်း ဖွင့်ထားသည်</translation>
 <translation id="1331212799747679585">Chrome ကို အပ်ဒိတ်လုပ်၍မရပါ။ နောက်ထပ်ရွေးချယ်စရာများ</translation>
 <translation id="1332501820983677155">Google Chrome ဝန်ဆောင်မှု ဖြတ်လမ်းလင့်ခ်များ</translation>
+<translation id="133857033449832692"><ph name="LANG" /> ကို ဒေါင်းလုဒ်လုပ်နေသည်…</translation>
 <translation id="1347468774581902829">လုပ်ဆောင်ချက်ကို စီမံခန့်ခွဲရန်</translation>
 <translation id="1360432990279830238">ထွက်ပြီး စင့်ခ်လုပ်ခြင်းကို ပိတ်လိုသလား။</translation>
 <translation id="1373696734384179344">ရွေးချယ်ထားသည့် အကြောင်းအရာအား ဒေါင်းလုပ်လုပ်ရန် မှတ်ဉာဏ် မလုံလောက်ပါ။</translation>
@@ -110,6 +113,7 @@
 <translation id="1877026089748256423">Chrome မှာ ဟောင်းသွားပြီ</translation>
 <translation id="1883903952484604915">ကျွန်ုပ်၏ဖိုင်များ</translation>
 <translation id="189358972401248634">အခြား ဘာသာစကားများ</translation>
+<translation id="1922362554271624559">အကြံပြုထားသည့် ဘာသာစကားများ</translation>
 <translation id="1925021887439448749">စိတ်ကြိုက်ဝဘ်လိပ်စာကို ထည့်ရန်</translation>
 <translation id="1928696683969751773">အဆင့်မြှင့်မှုများ</translation>
 <translation id="19288952978244135">Chrome ပြန်ဖွင့်ပါ။</translation>
@@ -198,6 +202,7 @@
 <translation id="2496180316473517155">အသုံးပြုခြင်း မှတ်တမ်း</translation>
 <translation id="2497852260688568942">စင့်ခ်ပြုလုပ်ခြင်းကို သင့်စီမံခန့်ခွဲသူက ပိတ်ဆို့ထားပါသည်</translation>
 <translation id="250020030759455918">သင်၏ <ph name="SITE_NAME" /> လက်မှတ်ထိုးဝင်မှု အခြေအနေ၊ ဖွင့်ကြည့်ထားသည့်မှတ်တမ်းဒေတာနှင့် ဝဘ်ဆိုက်ဒေတာများကို Chrome တွင် မြင်ရပါမည်</translation>
+<translation id="2512164632052122970">အကြောင်းအရာ၏ ဘာသာစကားများ</translation>
 <translation id="2513403576141822879">ပုဂ္ဂိုလ်ရေးရာ၊ လုံခြုံမှုနှင့် ဒေတာစုဆောင်းမှုတို့နှင့် ဆက်စပ်နေသည့် နောက်ထပ် ဆက်တင်များအတွက် <ph name="BEGIN_LINK" />စင့်ခ်လုပ်ခြင်းနှင့် Google ဝန်ဆောင်မှုများ<ph name="END_LINK" /> ကို ကြည့်ပါ</translation>
 <translation id="2517472476991765520">ရှာဖွေရန်</translation>
 <translation id="2518590038762162553">'အပေါ့စားမုဒ်' တွင် Chrome သည် စာမျက်နှာများကို ပိုမိုမြန်ဆန်စွာဖွင့်ပြီး ဒေတာကို ၆၀ ရာခိုင်နှုန်းအထိ လျှော့သုံးပါသည်။ သင်ဝင်ကြည့်သည့် စာမျက်နှာများကို အကောင်းဆုံးချိန်ညှိရန် Chrome သည် သင့်ဝဘ် ဒေတာအသွားအလာများကို Google သို့ ပို့ပါသည်။ <ph name="BEGIN_LINK" />ပိုမိုလေ့လာရန်<ph name="END_LINK" /></translation>
@@ -208,6 +213,7 @@
 <translation id="2537178555904266562">စကားဝှက်များကို စင့်ခ်လုပ်ရာတွင် အမှားအယွင်းရှိနေသည်</translation>
 <translation id="2546283357679194313">ကူကီးများ နှင့် ဆိုက် ဒေတာ</translation>
 <translation id="2567385386134582609">ဓာတ်ပုံ</translation>
+<translation id="2571711316400087311">အခြားဘာသာစကားများဖြင့် စာမျက်နှာများကို Google Translate သို့ပို့ရန် ကမ်းလှမ်းသည်</translation>
 <translation id="2581165646603367611">၎င်းသည် Chrome က အရေးကြီးသည်ဟု မယူဆသည့် ကွတ်ကီးများ၊ ယာယီမှတ်ဉာဏ်များနှင့် ဆိုက်များ၏ အခြားဒေတာများကို ရှင်းလင်းလိုက်ပါမည်။</translation>
 <translation id="2587052924345400782">ပိုသစ်သော ဗားရှင်း ရှိပါသည်</translation>
 <translation id="2593272815202181319">Monospace</translation>
@@ -221,6 +227,8 @@
 <translation id="2689830683995595741">Chrome ကို အသုံးပြုခြင်းဖြင့် သင်သည် <ph name="BEGIN_LINK1" />Google ဝန်ဆောင်မှုဆိုင်ရာ စည်းမျဉ်းများ<ph name="END_LINK1" /> နှင့် <ph name="BEGIN_LINK2" />Google Chrome နှင့် Chrome OS ထပ်တိုးဝန်ဆောင်မှု စည်းမျဉ်းများ<ph name="END_LINK2" /> ကို သဘောတူရာရောက်သည်။ <ph name="BEGIN_LINK3" />Family Link ဖြင့် ကြီးကြပ်ထားသည့် Google Account များအတွက် ပုဂ္ဂိုလ်ရေးဆိုင်ရာ ကြေညာချက်<ph name="END_LINK3" /> လည်း အကျုံးဝင်သည်။</translation>
 <translation id="2707726405694321444">စာမျက်နှာကို ဆန်းသစ်ယူရန်</translation>
 <translation id="2709516037105925701">အလိုလျောက် ဖြည့်စွက်</translation>
+<translation id="2718352093833049315">ဝိုင်ဖိုင်တွင်သာ</translation>
+<translation id="2718846868787000099">အကြောင်းအရာများကို သင်၏ဦးစားပေး ဘာသာစကားများဖြင့် ပြရန်အတွက် သင်ဝင်ကြည့်သော ဝဘ်ဆိုက်များက သင်၏ဦးစားပေးချက်များကို ကြည့်နိုင်သည်</translation>
 <translation id="2723001399770238859">အသံ</translation>
 <translation id="2728754400939377704">ဝဘ်ဆိုက်အလိုက် စီရန်</translation>
 <translation id="2744248271121720757">ချက်ချင်းရှာဖွေရန် သို့မဟုတ် သက်ဆိုင်သည့် လုပ်ဆောင်ချက်များကို ကြည့်ရန် စာလုံးတစ်လုံးကို တို့ပါ</translation>
@@ -283,7 +291,6 @@
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> ကို ဖျက်လိုက်ပါပြီ</translation>
 <translation id="3211503082155944789">မဖတ်ရသေးသော <ph name="READING_LIST_COUNT" /> မျက်နှာ</translation>
 <translation id="321773570071367578">သင့်စကားဝှက်ကိုမေ့သွားလျှင် သို့မဟုတ် ဤဆက်တင်ကိုပြောင်းလဲလိုလျှင်၊ <ph name="BEGIN_LINK" />စင့်ခ်ပြုလုပ်ခြင်းကို ပြန်လည်သတ်မှတ်ပါ<ph name="END_LINK" /></translation>
-<translation id="3223655207402797071">ဤဝဘ်ဆိုက်၊ သင်၏ Google Account နှင့် Chrome သို့ လက်မှတ်ထိုးဝင်ပါ။ စင့်ခ်လုပ်ခြင်းကို နောင်တွင် ဖွင့်နိုင်သည်။</translation>
 <translation id="3232754137068452469">ဝဘ် အက်ပ်</translation>
 <translation id="3236059992281584593">၁ မိနစ် ကျန်သည်</translation>
 <translation id="3244271242291266297">MM</translation>
@@ -347,6 +354,7 @@
 <translation id="3714981814255182093">ရှာဖွေမှုဘားတန်းကို ဖွင့်ရန်</translation>
 <translation id="3716182511346448902">ဤစာမျက်နှာက မှတ်ဉာဏ်အများအပြား အသုံးပြုနေသောကြောင့် Chrome က ၎င်းကို ခေတ္တရပ်ထားပါသည်။</translation>
 <translation id="3721119614952978349">သင်နှင့် Google</translation>
+<translation id="3737319253362202215">ဘာသာပြန်ဆက်တင်များ</translation>
 <translation id="3738139272394829648">ရှာရန် ထိပါ</translation>
 <translation id="3739899004075612870"><ph name="PRODUCT_NAME" /> တွင် လိပ်စာအဖြစ် သိမ်းဆည်းပါ</translation>
 <translation id="3749259744154402564">ပံ့ပိုးမထားပါ</translation>
@@ -494,6 +502,7 @@
 <translation id="4842092870884894799">စကားဝှက် ထုတ်လုပ်ခြင်း ပေါ့ပ်အပ် ပြနေစဉ်</translation>
 <translation id="4860895144060829044">ဖုန်းခေါ်ရန်</translation>
 <translation id="4864369630010738180">လက်မှတ်ထိုးဝင်နေသည်...</translation>
+<translation id="4865987431642283918">စက်၏ မူရင်းဘာသာစကား</translation>
 <translation id="4866368707455379617">Chrome အတွက် <ph name="MODULE" /> ကို စနစ်ထည့်သွင်း၍ မရပါ</translation>
 <translation id="4875775213178255010">အကြောင်းအရာ အကြံပြုချက်များ</translation>
 <translation id="4878404682131129617">ပရောက်စီဆာဗာမှ လမ်းကြောင်းတစ်ခု စတင်မှု မအောင်မြင်ပါ</translation>
@@ -567,6 +576,7 @@
 <translation id="543338862236136125">စကားဝှက်ကို တည်းဖြတ်ခြင်း</translation>
 <translation id="5433691172869980887">အသုံးပြုသူအမည်ကို ကူးပြီးပါပြီ</translation>
 <translation id="543509235395288790">ဖိုင် <ph name="COUNT" /> ခုကို ဒေါင်းလုဒ်လုပ်နေသည် (<ph name="MEGABYTES" />)။</translation>
+<translation id="5441466871879044658">ဤဘာသာစကားသို့ ပြန်ဆိုပါ</translation>
 <translation id="5441522332038954058">လိပ်စာဘားတန်းသို့ ပြန်သွားရန်</translation>
 <translation id="544776284582297024">တဘ်များဖွင့်ပြီး စာမျက်နှာအမျိုးမျိုးကို တစ်ချိန်တည်းဝင်ကြည့်ရန်အတွက် တဘ်ဖွင့်ရန်ခလုတ်ကို တို့ပါ</translation>
 <translation id="545042621069398927">သင်၏ ဒေါင်းလုဒ်ကို အရှိန်မြှင့်တင်ခြင်း။</translation>
@@ -645,6 +655,7 @@
 <translation id="5937580074298050696"><ph name="AMOUNT" /> ကို သိမ်းပြီးပါပြီ</translation>
 <translation id="5939518447894949180">ပြန်ညှိ</translation>
 <translation id="5942872142862698679">ရှာဖွေမှုအတွက် Google ကို အသုံးပြုသည်</translation>
+<translation id="5951615825629292797">ဘာသာစကား အသင့်ဖြစ်ပြီ၊ <ph name="APP_NAME" /> ပြန်စပါ</translation>
 <translation id="5952764234151283551">သင်ဖွင့်နေသည့် စာမျက်နှာ၏ URL ကို Google သို့ ပို့သည်</translation>
 <translation id="5956665950594638604">Chrome ကူညီရေးရာဌာနကို တဘ်အသစ်တွင် ဖွင့်ရန်</translation>
 <translation id="5957442310066583693">သင်၏ ထိပ်တန်းဝဘ်ဆိုက်များကိုကြည့်ရန် 'ပင်မခလုတ်' ကို တို့ပါ</translation>
@@ -670,6 +681,7 @@
 <translation id="6112702117600201073">စာမျက်နှာအား ပြန်လည်စတင်ရန်</translation>
 <translation id="6122831415929794347">'ဘေးကင်းစွာ အသုံးပြုခြင်း' ကို ပိတ်လိုသလား။</translation>
 <translation id="6127379762771434464">အကြောင်းအရာကို ဖယ်ရှားလိုက်ပါပြီ</translation>
+<translation id="6137022273846704445"><ph name="APP_NAME" /> ၏ ဘာသာစကား</translation>
 <translation id="6140709049082532940">အရည်အသွေးမြှင့်တင်ထားသည့် ကာကွယ်မှု -</translation>
 <translation id="6140912465461743537">နိုင်ငံ/ဒေသ</translation>
 <translation id="614940544461990577">စမ်းကြည့်ပါ −</translation>
@@ -828,6 +840,7 @@
 <translation id="7290209999329137901">အမည်ပြောင်း၍ မရပါ</translation>
 <translation id="7291387454912369099">Assistant ဖြင့် ငွေရှင်းခြင်း</translation>
 <translation id="7293171162284876153">စင့်ခ် စတင်ရန်အတွက် "သင်၏ Chrome ဒေတာ စင့်ခ်လုပ်ပါ" ကို ဖွင့်ပါ။</translation>
+<translation id="7293429513719260019">ဘာသာစကားရွေးချယ်ရန်</translation>
 <translation id="729975465115245577">သင့်စက်ပစ္စည်းတွင် စကားဝှက်ဖိုင်ကို သိမ်းရန် အက်ပ်မရှိပါ။</translation>
 <translation id="7302081693174882195">အသေးစိတ်များ− သိမ်းဆည်းထားသည့် ဒေတာပမာဏအလိုက် စီထားသည်</translation>
 <translation id="7304873321153398381">အော့ဖ်လိုင်း။ Chrome က သင့်စကားဝှက်များကို စစ်ဆေး၍မရပါ။</translation>
@@ -917,6 +930,7 @@
 <translation id="7882131421121961860">မည်သည့် မှတ်တမ်းမျှ မတွေ့ပါ</translation>
 <translation id="7886917304091689118">Chrome တွင် ဖွင့်ထားသည်</translation>
 <translation id="789763218334337857">Chrome အသုံးပြုနည်း</translation>
+<translation id="7919123827536834358">ဤဘာသာစကားများကို အလိုအလျောက် ပြန်ဆိုပါ</translation>
 <translation id="7925590027513907933">{FILE_COUNT,plural, =1{ဖိုင်ကို ဒေါင်းလုဒ်လုပ်နေသည်။}other{ဖိုင် # ခုဒေါင်းလုဒ်လုပ်နေသည်။}}</translation>
 <translation id="7926975587469166629">ကတ်နာမည်ပြောင်</translation>
 <translation id="7929962904089429003">မီနူးကို ဖွင့်ရန်</translation>
@@ -983,6 +997,7 @@
 <translation id="8349013245300336738">အသုံးပြုသည့် ဒေတာပမာဏအလိုက် စီရန်</translation>
 <translation id="8364299278605033898">လူကြိုက်များသော ဝဘ်ဆိုက်များ ကြည့်ရန်</translation>
 <translation id="8368027906805972958">အမျိုးအမည်မသိ သို့မဟုတ် ပံ့ပိုးမထားသည့် ကိရိယာ ( <ph name="DEVICE_ID" /> )</translation>
+<translation id="8372925856448695381"><ph name="LANG" /> အသင့်ဖြစ်ပြီ။</translation>
 <translation id="8393700583063109961">စာပို့ရန်</translation>
 <translation id="8407396331882458341">၁။ <ph name="APP_NAME" /> ကို ရွေးပါ\n၂။ “အမြဲတန်း” ကို တို့ပါ</translation>
 <translation id="8413126021676339697">မှတ်တမ်း အပြည့် ပြရန်</translation>
@@ -1030,6 +1045,7 @@
 <translation id="8683039184091909753">ပုံ</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{လိုင်းဆွဲအားအဆင့်- # ဘား}other{လိုင်းဆွဲအားအဆင့်- # ဘား}}</translation>
 <translation id="869891660844655955">သက်တမ်း ကုန်ဆုံးရက်</translation>
+<translation id="8699120352855309748">ဤဘာသာစကားများကို ပြန်ဆိုရန် မကမ်းလှမ်းပါနှင့်</translation>
 <translation id="8712637175834984815">ရပါပြီ!</translation>
 <translation id="8725066075913043281">ထပ် စမ်းကြည့်ရန်</translation>
 <translation id="8748850008226585750">အကြောင်းအရာများကို ဝှက်ထားသည်</translation>

@@ -5,6 +5,7 @@
 <translation id="1195447618553298278">Erro descoñecido.</translation>
 <translation id="1413240736185167732">Produciuse un erro: fallo no filtro</translation>
 <translation id="1468664791493211953">Ofertas</translation>
+<translation id="1478594628797167447">Escáner</translation>
 <translation id="1482734542997480527"><ph name="ENROLLMENT_DOMAIN" /> xestiona este dispositivo e pode supervisar a túa actividade.</translation>
 <translation id="150962533380566081">O PUK non é válido.</translation>
 <translation id="1510238584712386396">Menú de aplicacións</translation>
@@ -24,6 +25,7 @@
 <translation id="2872961005593481000">Pechar</translation>
 <translation id="3008341117444806826">ACTUALIZAR</translation>
 <translation id="3091839911843451378">Produciuse un erro: a impresora está detida</translation>
+<translation id="3246869037381808805">Quitaranse os traballos de impresión de máis de 1 día</translation>
 <translation id="3268178239013324452">Produciuse un erro: a tapa da impresora está aberta</translation>
 <translation id="3369013195428705271">Seguro que queres borrar todo o historial de impresión? Non se borrarán os traballos de impresión en curso.</translation>
 <translation id="3456078764689556234">Páxina <ph name="PRINTED_PAGES" /> de <ph name="TOTAL_PAGES" /> impresa.</translation>
@@ -34,6 +36,7 @@
 <translation id="38114475217616659">Borrar todo o historial</translation>
 <translation id="3820172043799983114">O PIN non é válido.</translation>
 <translation id="3838338534323494292">Novo contrasinal</translation>
+<translation id="39823212440917567">Quitaranse os traballos de impresión de máis de <ph name="NUMBER_OF_DAYS" /> días</translation>
 <translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> xestiona este dispositivo e ten acceso a toda a actividade dos usuarios, como as páxinas web visitadas, os contrasinais e o correo electrónico.</translation>
 <translation id="4003384961948020559">Produciuse un erro: a saída da impresora está chea</translation>
 <translation id="4027485274696301677">Este dispositivo (<ph name="DEVICE_TYPE" />) está xestionado por <ph name="ENROLLMENT_DOMAIN" />. Os administradores poden configuralo de forma remota.</translation>
@@ -52,6 +55,7 @@
 <translation id="4890353053343094602">Escolle un novo inmediatamente</translation>
 <translation id="4917889632206600977">Detívose (esgotouse o papel)</translation>
 <translation id="4932733599132424254">Data</translation>
+<translation id="520299634122159966">Non hai ningún escáner dispoñible</translation>
 <translation id="5212543919916444558">Non atopo nada na pantalla co que che poida axudar.
 Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="5222676887888702881">Pechar sesión</translation>
@@ -71,6 +75,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="649050271426829538">Detívose (atasco de papel)</translation>
 <translation id="6517239166834772319">Explorar</translation>
 <translation id="6564646048574748301">Produciuse un erro: non se puido acceder á impresora</translation>
+<translation id="6620487321149975369">Os traballos de impresión aparecerán no historial a menos que os quites de xeito manual</translation>
 <translation id="6643016212128521049">Borrar</translation>
 <translation id="6747215703636344499">Detívose (a saída está chea)</translation>
 <translation id="7162487448488904999">Galería</translation>
@@ -81,6 +86,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="7805768142964895445">Estado</translation>
 <translation id="808894953321890993">Cambiar contrasinal</translation>
 <translation id="8208861521865154048">Vantaxes</translation>
+<translation id="8294431847097064396">Fonte</translation>
 <translation id="8347227221149377169">Traballos de impresión</translation>
 <translation id="8352772353338965963">Engade unha conta ao inicio de sesión múltiple. É posible acceder a todas as contas en que iniciaches sesión sen necesidade de inserir un contrasinal, polo que esta función só se debe utilizar coas contas de confianza.</translation>
 <translation id="8701136875688985581"><ph name="ENROLLMENT_DOMAIN" /> xestiona este usuario. Pode xestionar a súa configuración e controlar a súa actividade de forma remota.</translation>

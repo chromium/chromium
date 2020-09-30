@@ -7,6 +7,7 @@
 <translation id="1124772482545689468">Foydalanuvchi</translation>
 <translation id="1178581264944972037">Pauza</translation>
 <translation id="1181037720776840403">Olib tashlash</translation>
+<translation id="1195941046451948919">Bu sayt uchun barcha ruxsatnomalar asliga qaytarilsinmi?</translation>
 <translation id="1201402288615127009">Keyingisi</translation>
 <translation id="1242008676835033345"><ph name="WEBSITE_URL" /> saytiga joylangan</translation>
 <translation id="1272079795634619415">To‘xtatish</translation>
@@ -47,6 +48,7 @@
 <translation id="2187243482123994665">Foydalanuvchining faolligi</translation>
 <translation id="2212565012507486665">Cookie fayllariga ruxsat berish</translation>
 <translation id="2228071138934252756"><ph name="APP_NAME" /> kameradan foydalanishiga ruxsat berish uchun <ph name="BEGIN_LINK" />Android sozlamalari<ph name="END_LINK" /> orqali kamerani yoqing.</translation>
+<translation id="2241634353105152135">Bir marta</translation>
 <translation id="2289270750774289114">Sayt atrofdagi Bluetooth qurilmalarni tekshirmoqchi boʻlsa, xabar berilsin (tavsiya etiladi)</translation>
 <translation id="2315043854645842844">Tanlangan mijoz sertifikati eskirgan va operatsion tizim tomonidan qo‘llab-quvvatlanmaydi.</translation>
 <translation id="2359808026110333948">Davom etish</translation>
@@ -124,6 +126,7 @@
 <translation id="4570913071927164677">Tafsilotlar</translation>
 <translation id="4645575059429386691">Ota-onangiz tomonidan boshqariladi</translation>
 <translation id="4670064810192446073">Virtual reallik</translation>
+<translation id="4708011789095599544">Bu sayt uchun cookie fayllar va boshqa sayt maʼlumotlari tozalansinmi?</translation>
 <translation id="4751476147751820511">Harakat va yorug‘lik sensorlari</translation>
 <translation id="4883854917563148705">Boshqariladigan sozlamalarni oʻzgartirish imkonsiz</translation>
 <translation id="4887024562049524730">Saytlar virtual reallik qurilmalari yoki maʼlumotlaridan foydalanishi oldidan ruxsat olsin (tavsiya etiladi)</translation>
@@ -229,6 +232,7 @@
 <translation id="7423538860840206698">Klipborddan o‘qish taqiqlangan</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7554752735887601236">Sayt mikrofondan foydalanmoqda</translation>
+<translation id="7561196759112975576">Har doim</translation>
 <translation id="7572498721684305250">NFC qurilmalar ustiga bosilganda saytlarda axborot almashinuvi taqiqlansin</translation>
 <translation id="757524316907819857">Saytlarga himoyalangan kontent ijrosini taqiqlash</translation>
 <translation id="7589445247086920869">Joriy qidiruv tizimiga taqiqlash</translation>

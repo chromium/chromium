@@ -7,6 +7,7 @@
 <translation id="1124772482545689468">Erabiltzailea</translation>
 <translation id="1178581264944972037">Pausatu</translation>
 <translation id="1181037720776840403">Kendu</translation>
+<translation id="1195941046451948919">Ziur webgune honen baimen guztiak berrezarri nahi dituzula?</translation>
 <translation id="1201402288615127009">Hurrengoa</translation>
 <translation id="1242008676835033345"><ph name="WEBSITE_URL" /> helbidean kapsulatua</translation>
 <translation id="1272079795634619415">Gelditu</translation>
@@ -47,6 +48,7 @@
 <translation id="2187243482123994665">Erabiltzailearen presentzia</translation>
 <translation id="2212565012507486665">Onartu cookieak</translation>
 <translation id="2228071138934252756"><ph name="APP_NAME" /> aplikazioari kamera atzitzeko baimena emateko, kamera atzitzeko baimena aktibatu behar duzu <ph name="BEGIN_LINK" />Android-en ezarpenetan<ph name="END_LINK" />.</translation>
+<translation id="2241634353105152135">Behin soilik</translation>
 <translation id="2289270750774289114">Eskatu nire baimena webgune batek inguruko Bluetooth bidezko gailuak bilatu nahi dituenean (gomendatua)</translation>
 <translation id="2315043854645842844">Sistema eragileak ez du onartzen bezeroarentzako ziurtagiria hautatzea.</translation>
 <translation id="2359808026110333948">Jarraitu</translation>
@@ -230,6 +232,7 @@
 <translation id="7423538860840206698">Blokeatuta dago arbeleko edukia irakurtzeko aukera</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7554752735887601236">Webgune bat mikrofonoa erabiltzen ari da</translation>
+<translation id="7561196759112975576">Beti</translation>
 <translation id="7572498721684305250">Blokeatu webguneak, ez dezaten bidali eta jaso informaziorik NFC darabilten gailuak ukitzen dituzunean.</translation>
 <translation id="757524316907819857">Ez utzi webguneei eduki babestua erreproduzitzen</translation>
 <translation id="7589445247086920869">Blokeatu bilatzaile honetan</translation>

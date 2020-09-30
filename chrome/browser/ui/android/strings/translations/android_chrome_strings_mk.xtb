@@ -227,6 +227,7 @@
 <translation id="2689830683995595741">Ако користите Chrome, се согласувате со <ph name="BEGIN_LINK1" />Условите за користење на Google<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />Дополнителните услови за користење на Google Chrome и Chrome OS<ph name="END_LINK2" />. <ph name="BEGIN_LINK3" />Известувањето за приватност за сметките на Google управувани со Family Link<ph name="END_LINK3" /> исто така важи.</translation>
 <translation id="2707726405694321444">Освежи ја страницата</translation>
 <translation id="2709516037105925701">Автоматско пополнување</translation>
+<translation id="2718352093833049315">Само преку Wi-Fi</translation>
 <translation id="2718846868787000099">За да се прикажат содржини за вашите претпочитани јазици, сајтовите што ги посетувате можат да ги видат вашите претпочитања</translation>
 <translation id="2723001399770238859">аудио</translation>
 <translation id="2728754400939377704">Подреди според сајт</translation>
@@ -290,7 +291,6 @@
 <translation id="3211426585530211793">Избришана е ставката <ph name="ITEM_TITLE" /></translation>
 <translation id="3211503082155944789"><ph name="READING_LIST_COUNT" /> непрочитани страници</translation>
 <translation id="321773570071367578">Ако сте ја заборавиле лозинката или сакате да ја измените поставкава, <ph name="BEGIN_LINK" />ресетирајте ја синхронизацијата<ph name="END_LINK" /></translation>
-<translation id="3223655207402797071">Најавете се на сајтов, вашата сметка на Google и Chrome. Синхронизацијата може да ја вклучите подоцна.</translation>
 <translation id="3232754137068452469">Веб-апликација</translation>
 <translation id="3236059992281584593">Остана 1 минута</translation>
 <translation id="3244271242291266297">MM</translation>
@@ -347,6 +347,7 @@
 <translation id="3631987586758005671">Се споделува на <ph name="DEVICE_NAME" /></translation>
 <translation id="3632295766818638029">Прикажи ја лозинката</translation>
 <translation id="363596933471559332">Автоматски најавувајте се на веб-сајтови со складирани акредитиви. Кога функцијата е исклучена, ќе се бара проверка од вас секогаш пред најавување на веб-сајт.</translation>
+<translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3658159451045945436">Ако се ресетира, ќе се избрише историјата на заштеден интернет, заедно со списокот со посетени сајтови.</translation>
 <translation id="3692944402865947621">Преземањето на <ph name="FILE_NAME" /> не успеа бидејќи локацијата за складирање не е достапна.</translation>
 <translation id="3701167022068948696">Поправи сега</translation>
@@ -707,6 +708,7 @@
 <translation id="6301525844455696527">Надоместете за пропуштеното од списокот за читање</translation>
 <translation id="6303969859164067831">Одјавете се и исклучете ја синхронизацијата</translation>
 <translation id="6312687380483398334">Веб-апликации (тивки)</translation>
+<translation id="6313752143992575395">Се прикажуваат предлози за <ph name="WEBSITE_TITLE" /></translation>
 <translation id="6316139424528454185">Верзијата на Android не е поддржана</translation>
 <translation id="6324034347079777476">Синхронизацијата на системот Android е оневозможена</translation>
 <translation id="6333140779060797560">Сподели преку <ph name="APPLICATION" /></translation>
@@ -838,6 +840,7 @@
 <translation id="7233236755231902816">За да го гледате интернетот на вашиот јазик, преземете ја најновата верзија на Chrome</translation>
 <translation id="7248069434667874558">Проверете дали синхронизацијата во Chrome е вклучена за <ph name="TARGET_DEVICE_NAME" /></translation>
 <translation id="7274013316676448362">Блокиран сајт</translation>
+<translation id="7286572596625053347">Да се промени <ph name="LANGUAGE" />?</translation>
 <translation id="7290209999329137901">Преименување не е достапно</translation>
 <translation id="7291387454912369099">Наплата активирана од Помошникот</translation>
 <translation id="7293171162284876153">За да започне синхронизацијата, вклучете „Синхронизирајте ги податоците од Chrome“.</translation>

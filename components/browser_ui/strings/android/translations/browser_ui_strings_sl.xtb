@@ -7,6 +7,7 @@
 <translation id="1124772482545689468">Uporabnik</translation>
 <translation id="1178581264944972037">Prekini</translation>
 <translation id="1181037720776840403">Odstrani</translation>
+<translation id="1195941046451948919">Ali ste prepričani, da želite ponastaviti vsa dovoljenja za to spletno mesto?</translation>
 <translation id="1201402288615127009">Naprej</translation>
 <translation id="1242008676835033345">Vdelano v <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">Ustavi</translation>
@@ -47,6 +48,7 @@
 <translation id="2187243482123994665">Prisotnost uporabnika</translation>
 <translation id="2212565012507486665">Dovoli piškotke</translation>
 <translation id="2228071138934252756">Če želite aplikaciji <ph name="APP_NAME" /> omogočiti dostop do fotoaparata, fotoaparat vklopite tudi v <ph name="BEGIN_LINK" />nastavitvah za Android<ph name="END_LINK" />.</translation>
+<translation id="2241634353105152135">Samo enkrat</translation>
 <translation id="2289270750774289114">Vprašaj, ko želi spletno mesto odkrivati naprave Bluetooth v bližini (priporočljivo)</translation>
 <translation id="2315043854645842844">Operacijski sistem ne podpira izbire potrdila pri odjemalcu.</translation>
 <translation id="2359808026110333948">Naprej</translation>
@@ -230,6 +232,7 @@
 <translation id="7423538860840206698">Blokirano branje vsebine odložišča</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7554752735887601236">Spletno mesto uporablja mikrofon</translation>
+<translation id="7561196759112975576">Vedno</translation>
 <translation id="7572498721684305250">Blokiranje, da spletna mesta pošiljajo in prejemajo podatke, ko se dotaknete naprav s tehnologijo NFC</translation>
 <translation id="757524316907819857">Prepreči spletnim mestom predvajanje zaščitene vsebine</translation>
 <translation id="7589445247086920869">Blokiraj za trenutni iskalnik</translation>

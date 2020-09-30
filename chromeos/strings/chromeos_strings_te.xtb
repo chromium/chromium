@@ -5,6 +5,7 @@
 <translation id="1195447618553298278">తెలియని ఎర్రర్.</translation>
 <translation id="1413240736185167732">విఫలమైంది - ఫిల్టర్ విఫలమైంది</translation>
 <translation id="1468664791493211953">ఆఫర్‌లు</translation>
+<translation id="1478594628797167447">స్కానర్</translation>
 <translation id="1482734542997480527"><ph name="ENROLLMENT_DOMAIN" /> ఈ పరికరాన్ని నిర్వహిస్తుంది. అలాగే మీ కార్యకలాపాన్ని కూడా పర్యవేక్షించే అవకాశం ఉంటుంది.</translation>
 <translation id="150962533380566081">PUK చెల్లదు.</translation>
 <translation id="1510238584712386396">లాంచర్</translation>
@@ -24,6 +25,7 @@
 <translation id="2872961005593481000">షట్ డౌన్ చెయ్యండి</translation>
 <translation id="3008341117444806826">రిఫ్రెష్ చేయి</translation>
 <translation id="3091839911843451378">విఫలమైంది - ఆగిపోయింది</translation>
+<translation id="3246869037381808805">1 రోజుకు పైగా ఉన్న ప్రింట్ టాస్క్‌లు తీసివేయబడతాయి</translation>
 <translation id="3268178239013324452">విఫలమైంది - తలుపు తెరుచుకుని ఉంది</translation>
 <translation id="3369013195428705271">మీరు ఖచ్చితంగా ప్రింట్ చరిత్ర మొత్తాన్ని క్లియర్ చేయాలనుకుంటున్నారా? మీ కొనసాగుతున్న ప్రింట్ టాస్క్‌లు క్లియర్ చేయబడవు.</translation>
 <translation id="3456078764689556234"><ph name="TOTAL_PAGES" /> పేజీలలో <ph name="PRINTED_PAGES" />వ పేజీ ప్రింట్ చేయబడింది.</translation>
@@ -34,6 +36,7 @@
 <translation id="38114475217616659">చరిత్ర మొత్తాన్ని క్లియర్ చేయి</translation>
 <translation id="3820172043799983114">PIN చెల్లదు.</translation>
 <translation id="3838338534323494292">కొత్త పాస్‌వర్డ్</translation>
+<translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> రోజులకు పైగా ఉన్న ప్రింట్ టాస్క్‌లు తీసివేయబడతాయి</translation>
 <translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> ఈ పరికరాన్ని నిర్వహిస్తుంది, అలాగే సందర్శించిన వెబ్ పేజీలు, పాస్‌వర్డ్‌లు, ఇమెయిల్‌లతో సహా వినియోగదారు యొక్క అన్ని కార్యకలాపాలకు యాక్సెస్‌ను కలిగి ఉంటుంది.</translation>
 <translation id="4003384961948020559">విఫలమైంది - అవుట్‌పుట్, ప్రింటింగ్ జాబ్‌లతో నిండి ఉంది</translation>
 <translation id="4027485274696301677"><ph name="ENROLLMENT_DOMAIN" /> ద్వారా ఈ <ph name="DEVICE_TYPE" /> మేనేజ్ చేయబడుతోంది. అడ్మినిస్ట్రేట‌ర్‌లు పరికరాన్ని రిమోట్‌గా కాన్ఫిగర్ చేయవచ్చు.</translation>
@@ -70,6 +73,7 @@
 <translation id="649050271426829538">ఆగిపోయింది - కాగితం జామ్ అయింది</translation>
 <translation id="6517239166834772319">అన్వేషణ</translation>
 <translation id="6564646048574748301">విఫలమైంది - ప్రింటర్‌ను చేరుకోవడం సాధ్యపడలేదు</translation>
+<translation id="6620487321149975369">ప్రింట్ టాస్క్‌లను మాన్యువల్‌గా తీసివేసేంత వరకు అవి హిస్టరీలో అలాగే ఉంటాయి</translation>
 <translation id="6643016212128521049">క్లియర్ చేయి</translation>
 <translation id="6747215703636344499">ఆగిపోయింది - అవుట్‌పుట్ నిండిపోయింది</translation>
 <translation id="7162487448488904999">Gallery</translation>
@@ -80,6 +84,7 @@
 <translation id="7805768142964895445">స్థితి</translation>
 <translation id="808894953321890993">పాస్‌వర్డ్‌ను మార్చు</translation>
 <translation id="8208861521865154048">పెర్క్‌లు</translation>
+<translation id="8294431847097064396">మూలం</translation>
 <translation id="8347227221149377169">ప్రింట్ టాస్క్‌లు</translation>
 <translation id="8352772353338965963">బహుళ సైన్ ఇన్ కోసం ఖాతాను జోడించండి. అన్ని సైన్ ఇన్ చేసిన ఖాతాలను పాస్‌వర్డ్ లేకుండానే యాక్సెస్‌ చేయవచ్చు. కాబ‌ట్టి ఈ ఫీచ‌ర్‌ను విశ్వసనీయ ఖాతాలతో మాత్రమే ఉపయోగించాలి.</translation>
 <translation id="8701136875688985581">ఈ యూజర్‌ను <ph name="ENROLLMENT_DOMAIN" /> మేనేజ్ చేస్తుంది. అది సెట్టింగ్‌లను రిమోట్‌గా మేనేజ్ చేయవచ్చు, యూజర్ యాక్టివిటీని మానిటర్ చేయవచ్చు.</translation>

@@ -30,6 +30,7 @@
 <translation id="1208421848177517699">‏תעתוק (namaste → નમસ્તે)</translation>
 <translation id="1243314992276662751">העלה</translation>
 <translation id="1249250836236328755">ז'אנר</translation>
+<translation id="1276362640455948667">פורטוגזית עם מקלדת בינלאומית של ארה"ב</translation>
 <translation id="1278813325885878377">‏מקלדת הונגרית בפריסת QWERTY</translation>
 <translation id="1293556467332435079">קבצים</translation>
 <translation id="1297922636971898492">‏Google Drive אינו זמין כעת. ההעלאה תופעל מחדש באופן אוטומטי לאחר ש-Google Drive יחזור לפעול.</translation>
@@ -112,13 +113,14 @@
 <translation id="2163152940313951844">תו לא חוקי: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2164862903024139959">‏מקלדת וייטנאמית (TCVN)</translation>
 <translation id="2168214441502403371">מקלדת פרסית</translation>
-<translation id="2197363559908958454">ההעברה של <ph name="NUMBER_OF_ITEMS" /> הסתיימה.</translation>
 <translation id="2198315389084035571">סינית פשוטה</translation>
 <translation id="2208158072373999562">‏ארכיון Zip</translation>
 <translation id="2225536596944493418"><ph name="NUMBER_OF_ITEMS" /> פריטים יימחקו. להמשיך?</translation>
 <translation id="2230062665678605299">לא ניתן ליצור את התיקיה "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2270413998793223379">סנסקריט</translation>
 <translation id="2275059641601412272">ההעברה הסתיימה.</translation>
 <translation id="2278988676849463018">מקלדת קנאדה (פונטית)</translation>
+<translation id="2287742181953707290">‏פורטוגזית עם מקלדת בינלאומית של ארה"ב ל-PC</translation>
 <translation id="2288278176040912387">פטיפון</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> קבצים נפתחים.</translation>
 <translation id="2303301624314357662">הקובץ <ph name="FILE_NAME" /> נפתח.</translation>
@@ -222,6 +224,7 @@
 <translation id="3473378059788601120">הועתק אל <ph name="FOLDER_NAME" />.</translation>
 <translation id="3475447146579922140">‏גיליון אלקטרוני של Google</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> שגיאות.</translation>
+<translation id="349603508045926994">תעתיק פרסית</translation>
 <translation id="3519867315646775981">‏תעתוק (שלום ← shalom)</translation>
 <translation id="3522708245912499433">פורטוגזית</translation>
 <translation id="3524311639100184459">זהירות: הקבצים האלה זמניים, וייתכן שהם יימחקו באופן אוטומטי כדי לפנות מקום בכונן.  <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
@@ -293,6 +296,7 @@
 <translation id="4298972503445160211">מקלדת דנית</translation>
 <translation id="4299729908419173967">פורטוגזית (ברזיל)</translation>
 <translation id="4309915981827077375">מידע כללי</translation>
+<translation id="4315949787858895817">הולנדית (בלגיה)</translation>
 <translation id="4326192123064055915">קפה</translation>
 <translation id="4336032328163998280">פעולת ההעתקה נכשלה. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4364327530094270451">מלון</translation>
@@ -339,6 +343,7 @@
 <translation id="4804827417948292437">אבוקדו</translation>
 <translation id="4823651846660089135">המכשיר מוגדר לקריאה בלבד</translation>
 <translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> פריטים נבחרו</translation>
+<translation id="4849981557599196363">גרמנית (בלגיה)</translation>
 <translation id="4850886885716139402">הצגה</translation>
 <translation id="485316830061041779">גרמנית</translation>
 <translation id="4867079195717347957">יש ללחוץ כדי למיין את העמודה בסדר יורד.</translation>
@@ -403,6 +408,7 @@
     על קבצים עם אנשים נוספים - הכל במקום אחד.<ph name="MARKUP_9" /></translation>
 <translation id="5274350207900771082">ההעתקה הסתיימה.</translation>
 <translation id="5275973617553375938">‏קבצים ששוחזרו מ-Google Drive</translation>
+<translation id="5283140566205748520">צרפתית (בלגיה)</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">שמור</translation>
 <translation id="5318819489018851358">‏שיתוף עם Linux</translation>
@@ -689,6 +695,7 @@
 <translation id="8329978297633540474">טקסט רגיל</translation>
 <translation id="8335587457941836791">ביטול הצמדה למדף</translation>
 <translation id="8336153091935557858">אתמול <ph name="YESTERDAY_DAYTIME" /></translation>
+<translation id="8336524887811696057">תעתיק נפאלית</translation>
 <translation id="8336579025507394412">מקלדת איסלנדית</translation>
 <translation id="8342318071240498787">קובץ או ספריה עם אותו שם כבר קיימים.</translation>
 <translation id="8382450452152102026">בתיקייה <ph name="FOLDER_NAME" /></translation>
@@ -714,12 +721,14 @@
 <translation id="8600173386174225982">רשימת הקבצים מוצגת עכשיו בתצוגת תמונות ממוזערות.</translation>
 <translation id="8601932370724196034">‏קובץ תמונה Crostini</translation>
 <translation id="8669949407341943408">מעביר...</translation>
+<translation id="8694836330346852143">אורדו</translation>
 <translation id="8698464937041809063">‏איור של Google</translation>
 <translation id="8714406895390098252">אופניים</translation>
 <translation id="8719721339511222681">בחרת את <ph name="ENTRY_NAME" />.</translation>
 <translation id="8722421161699219904">מקלדת בינ"ל של ארה"ב</translation>
 <translation id="872537912056138402">קרואטית</translation>
 <translation id="874420130893181774">‏שיטת קלט Traditional Pinyin</translation>
+<translation id="8770002329960263418">‏הולנדית (הולנד) עם מקלדת בינלאומית של ארה"ב ל-PC</translation>
 <translation id="8775404590947523323">שינויי העריכה שלך נשמרים אוטומטית.<ph name="BREAKS" />כדי לשמור עותק של התמונה המקורית, בטל את הסימון של "החלף קובץ מקורי"</translation>
 <translation id="8803496343472038847">מקלדת רוסית פונטית</translation>
 <translation id="8808686172382650546">חתול</translation>
@@ -761,7 +770,6 @@
 <translation id="943972244133411984">שונה על ידי</translation>
 <translation id="945522503751344254"> שליחת משוב</translation>
 <translation id="947144732524271678">בחרת טווח של <ph name="ENTRY_COUNT" /> פריטים, מ-<ph name="FROM_ENTRY_NAME" /> עד <ph name="TO_ENTRY_NAME" />.</translation>
-<translation id="949308258121608615">ההעתקה של <ph name="NUMBER_OF_ITEMS" /> הסתיימה.</translation>
 <translation id="981121421437150478">לא מקוון</translation>
 <translation id="988685240266037636">כבר קיים קובץ בשם "<ph name="FILE_NAME" />". רוצה להחליף אותו?</translation>
 <translation id="996903396648773764">‎<ph name="NUMBER_OF_MB" /> MB</translation>

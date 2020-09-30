@@ -5,6 +5,7 @@
 <translation id="1195447618553298278">خطای ناشناس.</translation>
 <translation id="1413240736185167732">انجام نشد - فیلتر کار نکرد</translation>
 <translation id="1468664791493211953">پیشنهادها</translation>
+<translation id="1478594628797167447">اسکنر</translation>
 <translation id="1482734542997480527"><ph name="ENROLLMENT_DOMAIN" /> ، این دستگاه را مدیریت می‌کند و ممکن است بتواند بر فعالیتتان نظارت داشته باشد.</translation>
 <translation id="150962533380566081">‏PUK نامعتبر.</translation>
 <translation id="1510238584712386396">راه‌انداز</translation>
@@ -24,6 +25,7 @@
 <translation id="2872961005593481000">خاموش کردن</translation>
 <translation id="3008341117444806826">بازخوانی</translation>
 <translation id="3091839911843451378">انجام نشد - متوقف شده است</translation>
+<translation id="3246869037381808805">کارهای چاپ قدیمی‌تر از ۱ روز برداشته می‌شوند</translation>
 <translation id="3268178239013324452">انجام نشد - در باز است</translation>
 <translation id="3369013195428705271">مطمئن هستید که می‌خواهید همه سابقه‌های چاپ را حذف کنید؟ کارهای چاپ شما که درحال انجام هستند حذف نخواهند شد.</translation>
 <translation id="3456078764689556234">صفحه <ph name="PRINTED_PAGES" /> از مجموع <ph name="TOTAL_PAGES" /> صفحه چاپ شده است.</translation>
@@ -34,6 +36,7 @@
 <translation id="38114475217616659">پاک کردن همه سابقه</translation>
 <translation id="3820172043799983114">پین نامعتبر است.</translation>
 <translation id="3838338534323494292">گذرواژه جدید</translation>
+<translation id="39823212440917567">کارهای چاپ قدیمی‌تر از <ph name="NUMBER_OF_DAYS" /> روز برداشته می‌شوند</translation>
 <translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> این دستگاه را مدیریت می‌کند و به همه فعالیت‌های کاربر، ازجمله صفحه‌های وب بازدیدشده، گذرواژه‌ها، و ایمیل دسترسی دارد.</translation>
 <translation id="4003384961948020559">انجام نشد - خروجی پُر است</translation>
 <translation id="4027485274696301677"><ph name="ENROLLMENT_DOMAIN" /> این <ph name="DEVICE_TYPE" /> را مدیریت می‌کند. سرپرست‌ها می‌توانند این دستگاه را ازراه‌دور پیکربندی کنند.</translation>
@@ -71,6 +74,7 @@
 <translation id="649050271426829538">متوقف شد - کاغذ گیر کرده است</translation>
 <translation id="6517239166834772319">کاوش</translation>
 <translation id="6564646048574748301">انجام نشد - دسترسی به چاپگر ممکن نیست</translation>
+<translation id="6620487321149975369">کارهای چاپ تا زمانی‌که به‌طور دستی برداشته نشوند در سابقه نشان داده می‌شوند</translation>
 <translation id="6643016212128521049">پاک کردن</translation>
 <translation id="6747215703636344499">متوقف شد - خروجی پُر است</translation>
 <translation id="7162487448488904999">گالری</translation>
@@ -81,6 +85,7 @@
 <translation id="7805768142964895445">وضعیت</translation>
 <translation id="808894953321890993">تغییر گذرواژه</translation>
 <translation id="8208861521865154048">هدیه‌ها</translation>
+<translation id="8294431847097064396">منبع</translation>
 <translation id="8347227221149377169">کارهای چاپی</translation>
 <translation id="8352772353338965963">افزودن یک حساب برای ورود چندگانه به سیستم. کلیه حساب‌هایی که به سیستم وارد شده‌اند بدون گذرواژه قابل دسترسی هستند، بنابراین این قابلیت فقط باید با حساب‌های مورداعتماد استفاده شود.</translation>
 <translation id="8701136875688985581"><ph name="ENROLLMENT_DOMAIN" /> این کاربر را مدیریت می‌کند. می‌تواند تنظیمات را ازراه‌دور مدیریت کند و بر فعالیت کاربر نظارت کند.</translation>

@@ -7,6 +7,7 @@
 <translation id="1124772482545689468">Użytkownik</translation>
 <translation id="1178581264944972037">Wstrzymaj</translation>
 <translation id="1181037720776840403">Usuń</translation>
+<translation id="1195941046451948919">Czy na pewno chcesz zresetować wszystkie uprawnienia tej witryny?</translation>
 <translation id="1201402288615127009">Dalej</translation>
 <translation id="1242008676835033345">Umieszczono na <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">Zatrzymaj</translation>
@@ -47,6 +48,7 @@
 <translation id="2187243482123994665">Obecność użytkownika</translation>
 <translation id="2212565012507486665">Zezwalaj na pliki cookie</translation>
 <translation id="2228071138934252756">Aby zezwolić aplikacji <ph name="APP_NAME" /> na dostęp do aparatu, musisz go też włączyć w <ph name="BEGIN_LINK" />Ustawieniach Androida<ph name="END_LINK" />.</translation>
+<translation id="2241634353105152135">Tylko raz</translation>
 <translation id="2289270750774289114">Pytaj, gdy strona chce wykryć urządzenia Bluetooth w pobliżu (zalecane)</translation>
 <translation id="2315043854645842844">Wybieranie certyfikatu klienta nie jest obsługiwane przez ten system operacyjny.</translation>
 <translation id="2359808026110333948">Dalej</translation>
@@ -230,6 +232,7 @@
 <translation id="7423538860840206698">Zablokowano odczytywanie schowka</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7554752735887601236">Strona używa mikrofonu</translation>
+<translation id="7561196759112975576">Zawsze</translation>
 <translation id="7572498721684305250">Nie zezwalaj stronom na wysyłanie i odbieranie informacji po dotknięciu urządzeń z funkcją NFC</translation>
 <translation id="757524316907819857">Blokuj odtwarzanie treści chronionej na stronach</translation>
 <translation id="7589445247086920869">Blokuj dostęp obecnej wyszukiwarce</translation>

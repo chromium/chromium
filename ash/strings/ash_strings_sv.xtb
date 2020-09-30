@@ -113,6 +113,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2049240716062114887">Skrivbordsnamnet ändrades till <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Stående</translation>
 <translation id="2067602449040652523">Ljusstyrka för tangentbordet</translation>
+<translation id="2074759828767813253">Senaste skärmdumpar och nedladdningar</translation>
 <translation id="2083190527011054446">Hej <ph name="GIVEN_NAME" />!</translation>
 <translation id="209965399369889474">Ingen nätverksanslutning</translation>
 <translation id="2126242104232412123">Ny arbetsyta</translation>
@@ -251,6 +252,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3430396595145920809">Återgå genom att svepa från höger</translation>
 <translation id="343571671045587506">Redigera påminnelse</translation>
 <translation id="3435967511775410570">Fingeravtrycket känns igen</translation>
+<translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">USB-C-enhet</translation>
 <translation id="3454224730401036106">Anslutningen har flyttats till ett säkrare nätverk</translation>
 <translation id="3465223694362104965">Ett annat tangentbord har anslutits till den här enheten sedan du loggade in senast. Försäkra dig om att det är ett tangentbord du litar på innan du använder det.</translation>
@@ -454,6 +456,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="5691772641933328258">Fingeravtrycket känns inte igen</translation>
 <translation id="5710450975648804523">Stör ej har aktiverats</translation>
 <translation id="573413375004481890">Enheten har inte stöd för alla skärmar. Därför är en av skärmarna frånkopplad.</translation>
+<translation id="5740328398383587084">Närdelning</translation>
 <translation id="574392208103952083">Medelstark</translation>
 <translation id="5744083938413354016">Tryck snabbt två gånger och dra</translation>
 <translation id="5745612484876805746">Nattljus aktiveras automatiskt när solen går ned</translation>

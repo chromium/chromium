@@ -30,6 +30,7 @@
 <translation id="1208421848177517699">Transliteration (namaste → નમસ્તે)</translation>
 <translation id="1243314992276662751">I-upload</translation>
 <translation id="1249250836236328755">Genre</translation>
+<translation id="1276362640455948667">Portuguese na may US International keyboard</translation>
 <translation id="1278813325885878377">Hungarian na QWERTY keyboard</translation>
 <translation id="1293556467332435079">Mga File</translation>
 <translation id="1297922636971898492">Hindi available sa ngayon ang Google Drive. Awtomatikong magre-restart ang pag-a-upload sa sandaling bumalik na ang Google Drive.</translation>
@@ -112,13 +113,14 @@
 <translation id="2163152940313951844">Invalid na character: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2164862903024139959">Vietnamese keyboard (TCVN)</translation>
 <translation id="2168214441502403371">Persian keyboard</translation>
-<translation id="2197363559908958454">Inilipat ang <ph name="NUMBER_OF_ITEMS" />.</translation>
 <translation id="2198315389084035571">Simplified Chinese</translation>
 <translation id="2208158072373999562">Zip archive</translation>
 <translation id="2225536596944493418">Sigurado ka bang gusto mong i-delete ang <ph name="NUMBER_OF_ITEMS" /> (na) item?</translation>
 <translation id="2230062665678605299">Hindi malikha ang folder na "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2270413998793223379">Sanskrit</translation>
 <translation id="2275059641601412272">Nailipat.</translation>
 <translation id="2278988676849463018">Kannada keyboard (Phonetic)</translation>
+<translation id="2287742181953707290">Portuguese na may US International PC keyboard</translation>
 <translation id="2288278176040912387">Record player</translation>
 <translation id="2291538123825441971">Binubuksan ang <ph name="NUMBER_OF_FILES" /> (na) file.</translation>
 <translation id="2303301624314357662">Binubuksan ang file na <ph name="FILE_NAME" />.</translation>
@@ -222,6 +224,7 @@
 <translation id="3473378059788601120">Kinopya sa <ph name="FOLDER_NAME" />.</translation>
 <translation id="3475447146579922140">Spreadsheet ng Google</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> (na) error.</translation>
+<translation id="349603508045926994">Persian Transliteration</translation>
 <translation id="3519867315646775981">Transliteration (shalom ← שלום)</translation>
 <translation id="3522708245912499433">Portuguese</translation>
 <translation id="3524311639100184459">Mag-ingat: Ang mga file na ito ay pansamantala lang at puwedeng awtomatikong ma-delete para magbakante ng espasyo sa disk.  <ph name="BEGIN_LINK" />Matuto Pa<ph name="END_LINK" /></translation>
@@ -293,6 +296,7 @@
 <translation id="4298972503445160211">Danish na keyboard</translation>
 <translation id="4299729908419173967">Brazilian</translation>
 <translation id="4309915981827077375">Pangkalahatang impormasyon</translation>
+<translation id="4315949787858895817">Dutch (Belgium)</translation>
 <translation id="4326192123064055915">Kape</translation>
 <translation id="4336032328163998280">Nabigo ang pagkopya. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4364327530094270451">Melon</translation>
@@ -339,6 +343,7 @@
 <translation id="4804827417948292437">Abukado</translation>
 <translation id="4823651846660089135">Read-only ang device</translation>
 <translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> (na) item ang pinili</translation>
+<translation id="4849981557599196363">German (Belgium)</translation>
 <translation id="4850886885716139402">View</translation>
 <translation id="485316830061041779">German</translation>
 <translation id="4867079195717347957">I-click para pagbukud-bukurin ang column sa pababang pagkakasunud-sunod.</translation>
@@ -402,6 +407,7 @@
     sa mga file kasama ng iba pa, lahat sa iisang lugar.<ph name="MARKUP_9" /></translation>
 <translation id="5274350207900771082">Nakopya.</translation>
 <translation id="5275973617553375938">Mga nabawing file mula sa Google Drive</translation>
+<translation id="5283140566205748520">French (Belgium)</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">I-save</translation>
 <translation id="5318819489018851358">Ibahagi sa Linux</translation>
@@ -688,6 +694,7 @@
 <translation id="8329978297633540474">Plain text</translation>
 <translation id="8335587457941836791">I-unpin mula sa shelf</translation>
 <translation id="8336153091935557858">Kahapon <ph name="YESTERDAY_DAYTIME" /></translation>
+<translation id="8336524887811696057">Nepali Transliteration</translation>
 <translation id="8336579025507394412">Icelandic keyboard</translation>
 <translation id="8342318071240498787">Umiiral na ang isang file o direktoryong may parehong pangalan.</translation>
 <translation id="8382450452152102026">Sa <ph name="FOLDER_NAME" /></translation>
@@ -713,12 +720,14 @@
 <translation id="8600173386174225982">Naging thumbnail view ang listahan ng file.</translation>
 <translation id="8601932370724196034">Crostini image file</translation>
 <translation id="8669949407341943408">Inililipat...</translation>
+<translation id="8694836330346852143">Urdu</translation>
 <translation id="8698464937041809063">Drawing ng Google</translation>
 <translation id="8714406895390098252">Bisikleta</translation>
 <translation id="8719721339511222681">Pinili ang <ph name="ENTRY_NAME" />.</translation>
 <translation id="8722421161699219904">US International keyboard</translation>
 <translation id="872537912056138402">Croatian</translation>
 <translation id="874420130893181774">Tradisyonal na Pinyin na paraan ng pag-input</translation>
+<translation id="8770002329960263418">Dutch (Netherlands) na may US International PC keyboard</translation>
 <translation id="8775404590947523323">Awtomatikong na-save ang iyong mga pag-edit.<ph name="BREAKS" />Upang maitago ang kopya ng orihinal na larawan, tanggalan ng check ang "Patungan ang orihinal"</translation>
 <translation id="8803496343472038847">Russian Phonetic keyboard</translation>
 <translation id="8808686172382650546">Pusa</translation>
@@ -760,7 +769,6 @@
 <translation id="943972244133411984">Binago ni</translation>
 <translation id="945522503751344254">Magpadala ng feedback</translation>
 <translation id="947144732524271678">Pumili ng hanay ng <ph name="ENTRY_COUNT" /> (na) entry mula sa <ph name="FROM_ENTRY_NAME" /> hanggang <ph name="TO_ENTRY_NAME" />.</translation>
-<translation id="949308258121608615">Nakopya ang <ph name="NUMBER_OF_ITEMS" />.</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="988685240266037636">Mayroon nang file na may pangalang "<ph name="FILE_NAME" />." Gusto mo ba itong palitan?</translation>
 <translation id="996903396648773764"><ph name="NUMBER_OF_MB" /> MB</translation>

@@ -108,6 +108,7 @@
 <translation id="1348779747280417563">Пацвердзіць імя</translation>
 <translation id="1357195169723583938">Хто і калі нядаўна выкарыстоўваў прыладу</translation>
 <translation id="1360955481084547712">Для прыватнага прагляду вэб-старонак адкрыйце акно ў рэжыме інкогніта</translation>
+<translation id="1363819917331173092">Не прапаноўваць перакладаць старонкі на наступнай мове: <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1364822246244961190">Гэта палітыка заблакіравана, яе значэнне будзе ігнаравацца.</translation>
 <translation id="1374468813861204354">прапановы</translation>
 <translation id="1374692235857187091">Index-4x6 (паштоўка)</translation>
@@ -233,6 +234,7 @@
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, даступна некалькі дзеянняў. Для іх прагляду націскайце Tab</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1803264062614276815">Імя ўладальніка карткі</translation>
+<translation id="1807246157184219062">Светлая</translation>
 <translation id="1807528111851433570">Пачатковы аркуш</translation>
 <translation id="1821930232296380041">Няправільны запыт або параметры запыту</translation>
 <translation id="1822540298136254167">Вэб-сайты, якія вы наведваеце, і праведзены на іх час</translation>
@@ -367,6 +369,7 @@
 <translation id="2396249848217231973">&amp;Адрабіць выдаленне</translation>
 <translation id="2410754574180102685">Government-Legal</translation>
 <translation id="2413528052993050574">Серверу не ўдалося даказаць, што гэта <ph name="DOMAIN" />; магчыма, яго сертыфікат бяспекі адкліканы. Прычынай могуць быць няправільныя налады або зламыснік, які спрабуе перахапіць падключэнне.</translation>
+<translation id="2414886740292270097">Цёмная</translation>
 <translation id="2438874542388153331">Чатыры дзіркі справа</translation>
 <translation id="245044156129055925">Вы толькі што ўвялі свой пароль на сайце, вядомым падманнымі паводзінамі. Chromium рэкамендуе змяніць пароль.</translation>
 <translation id="2463739503403862330">Запоўніць</translation>
@@ -445,6 +448,7 @@
 <translation id="2738330467931008676">Выбраць адрас прыняцця</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2742870351467570537">Выдаліць выбраныя элементы</translation>
+<translation id="2765217105034171413">Малы</translation>
 <translation id="277133753123645258">Спосаб дастаўкі</translation>
 <translation id="277499241957683684">Адсутнічае запіс прылады</translation>
 <translation id="2775884851269838147">Першая старонка для друку</translation>
@@ -499,6 +503,7 @@
 <translation id="2996674880327704673">Прапановы ад Google</translation>
 <translation id="3002501248619246229">Праверыць носьбіт уваходнага латка</translation>
 <translation id="3005723025932146533">Паказаць захаваную копію</translation>
+<translation id="3007719053326478567">Магчымасць друкавання гэтага змесціва заблакіравана адміністратарам</translation>
 <translation id="3008447029300691911">Увядзіце CVC-код карткі <ph name="CREDIT_CARD" />. Пасля вашага пацвярджэння даныя вашай карткі будуць абагулены з гэтым сайтам.</translation>
 <translation id="3010559122411665027">Пункт спіса "<ph name="ENTRY_INDEX" />": <ph name="ERROR" /></translation>
 <translation id="301521992641321250">Заблакіравана аўтаматычна</translation>
@@ -737,6 +742,7 @@
 <translation id="4014128326099193693">{COUNT,plural, =1{Дакумент PDF з {COUNT} старонкай}one{Дакумент PDF з {COUNT} старонкай}few{Дакумент PDF з {COUNT} старонкамі}many{Дакумент PDF з {COUNT} старонкамі}other{Дакумент PDF з {COUNT} старонкі}}</translation>
 <translation id="4030383055268325496">&amp;Адрабіць дадаванне</translation>
 <translation id="4032320456957708163">Браўзер знаходзіцца пад кіраваннем <ph name="ENROLLMENT_DOMAIN" />.</translation>
+<translation id="4056223980640387499">Сепія</translation>
 <translation id="4058922952496707368">Ключ "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (канверт)</translation>
 <translation id="4067947977115446013">Дадайце сапраўдны адрас</translation>
@@ -777,6 +783,7 @@
 <translation id="4194250254487269611">Не ўдаецца захаваць даныя вашай крэдытнай карткі</translation>
 <translation id="4196861286325780578">&amp;Узнавіць перамяшчэнне</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Праверыць канфігурацыю брандмаўэра і антывіруса.<ph name="END_LINK" /></translation>
+<translation id="4209092469652827314">Вялікі</translation>
 <translation id="4209166701302774460">Сервер, на які вы пераходзіце (<ph name="ORIGIN" />), патрабуе, каб
     на ўсе запыты да яго распаўсюджвалася палітыка крыніцы. Аднак ён не змог
     даставіць палітыку, што не дазваляе браўзеру выканаць запыт
@@ -1505,7 +1512,6 @@
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> не адпавядае стандартам бяспекі.</translation>
 <translation id="7210993021468939304">Дзеянні Linux у кантэйнеры, а таксама ўсталёўка і запуск праграм Linux у кантэйнеры</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /> пра гэту праблему.</translation>
-<translation id="7214062855724067749">Выкарыстоўваць усталяваныя на камп'ютары шрыфты для лепшага афармлення тэксту</translation>
 <translation id="7217745192097460130">Пацвердзіць і завяршыць куплю з дапамогай Touch ID?</translation>
 <translation id="7219179957768738017">На падключэнні выкарыстоўваецца <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Ідзе апрацоўка</translation>
@@ -1786,6 +1792,7 @@
 <translation id="8267698848189296333">Уваход ва ўліковы запіс <ph name="USERNAME" /></translation>
 <translation id="8269242089528251720">Асобныя дакументы, разабраныя копіі</translation>
 <translation id="8269981117540303696">Цяпер вы можаце праглядаць вэб-старонкі ў прыватным рэжыме, іншыя карыстальнікі гэтай прылады не будуць бачыць вашы дзеянні. Аднак спампоўкі і закладкі будуць захоўвацца.</translation>
+<translation id="8275952078857499577">Не прапаноўваць перакладаць гэты сайт</translation>
 <translation id="8277900682056760511">Аркуш апрацоўшчыка плацяжоў адкрыты</translation>
 <translation id="8281084378435768645">Large-Photo</translation>
 <translation id="8282947398454257691">Атрымаць доступ да ўнікальнага ідэнтыфікатара прылады</translation>

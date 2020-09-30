@@ -108,6 +108,7 @@
 <translation id="1348779747280417563">確認名稱</translation>
 <translation id="1357195169723583938">最近使用過裝置的使用者及其使用時間</translation>
 <translation id="1360955481084547712">開啟新的無痕式視窗以私下瀏覽內容</translation>
+<translation id="1363819917331173092">不要詢問是否翻譯<ph name="SOURCE_LANGUAGE" />的網頁</translation>
 <translation id="1364822246244961190">此政策被封鎖，系統會忽略其設定值。</translation>
 <translation id="1374468813861204354">建議</translation>
 <translation id="1374692235857187091">Index-4x6 (明信片)</translation>
@@ -229,6 +230,7 @@
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />，可以進行幾種動作，㩒 Tab 鍵就可以跟次序轉換唔同嘅動作</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1803264062614276815">持卡人姓名</translation>
+<translation id="1807246157184219062">淺色</translation>
 <translation id="1807528111851433570">起始工作表</translation>
 <translation id="1821930232296380041">要求或要求參數無效</translation>
 <translation id="1822540298136254167">您瀏覽的網站和瀏覽時間</translation>
@@ -285,6 +287,7 @@
 <translation id="2099652385553570808">三釘 (左側)</translation>
 <translation id="2101225219012730419">版本：</translation>
 <translation id="2102134110707549001">建議安全性強的密碼…</translation>
+<translation id="2102495993840063010">Android 應用程式</translation>
 <translation id="2107021941795971877">列印支援</translation>
 <translation id="2108755909498034140">重新啟動您的電腦</translation>
 <translation id="2111256659903765347">Super-A</translation>
@@ -363,6 +366,7 @@
 <translation id="2396249848217231973">復原刪除(&amp;U)</translation>
 <translation id="2410754574180102685">Government-Legal</translation>
 <translation id="2413528052993050574">伺服器無法證明其屬於 <ph name="DOMAIN" /> 網域；其安全性憑證已被撤銷。這可能是因為設定錯誤，或有攻擊者攔截您的連線。</translation>
+<translation id="2414886740292270097">灰暗</translation>
 <translation id="2438874542388153331">四孔 (右側)</translation>
 <translation id="245044156129055925">您剛才在欺詐網站上輸入了密碼。Chromium 建議您立即變更密碼。</translation>
 <translation id="2463739503403862330">填寫</translation>
@@ -439,6 +443,7 @@
 <translation id="2738330467931008676">選擇取貨地址</translation>
 <translation id="2740531572673183784">確定</translation>
 <translation id="2742870351467570537">移除選取的項目</translation>
+<translation id="2765217105034171413">小</translation>
 <translation id="277133753123645258">運送方式</translation>
 <translation id="277499241957683684">沒有裝置記錄</translation>
 <translation id="2775884851269838147">第一列印頁</translation>
@@ -493,6 +498,7 @@
 <translation id="2996674880327704673">Google 提供的建議</translation>
 <translation id="3002501248619246229">檢查輸入紙匣媒體</translation>
 <translation id="3005723025932146533">顯示儲存的複本</translation>
+<translation id="3007719053326478567">管理員已禁止列印此內容</translation>
 <translation id="3008447029300691911">請輸入 <ph name="CREDIT_CARD" /> 的信用卡驗證碼 (CVC)。完成驗證後，系統會與這個網站共用您的信用卡資料。</translation>
 <translation id="3010559122411665027">清單項目「<ph name="ENTRY_INDEX" />」：<ph name="ERROR" /></translation>
 <translation id="301521992641321250">已自動封鎖</translation>
@@ -730,6 +736,7 @@
 <translation id="4014128326099193693">{COUNT,plural, =1{PDF 文件入面有 {COUNT} 頁}other{PDF 文件入面有 {COUNT} 頁}}</translation>
 <translation id="4030383055268325496">復原新增(&amp;U)</translation>
 <translation id="4032320456957708163">您的瀏覽器由 <ph name="ENROLLMENT_DOMAIN" /> 管理</translation>
+<translation id="4056223980640387499">棕褐色</translation>
 <translation id="4058922952496707368">金鑰「<ph name="SUBKEY" />」：<ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (信封)</translation>
 <translation id="4067947977115446013">新增有效的地址</translation>
@@ -770,6 +777,7 @@
 <translation id="4194250254487269611">目前無法儲存您的信用卡</translation>
 <translation id="4196861286325780578">重做移動(&amp;R)</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />檢查防火牆和防毒軟件設定<ph name="END_LINK" /></translation>
+<translation id="4209092469652827314">大</translation>
 <translation id="4209166701302774460">您的目標伺服器「<ph name="ORIGIN" />」要求為收到的所有要求套用來源政策。不過，由於該伺服器目前並未提供政策，因此瀏覽器無法完成您向 <ph name="SITE" /> 提出的要求。網站網絡供應商可使用來源政策設定網站的安全性及其他屬性。</translation>
 <translation id="421066178035138955">使用虛擬實境裝置和資料</translation>
 <translation id="4214357935346142455">登入畫面個人檔案</translation>
@@ -1375,6 +1383,7 @@
 <translation id="6645291930348198241">存取 Cookie 和網站資料。</translation>
 <translation id="6646269444027925224">{COUNT,plural, =0{無}=1{1 個網站 (您不會登出 Google 帳戶)}other{# 個網站 (您不會登出 Google 帳戶)}}</translation>
 <translation id="6648459603387803038">您的管理員可遠端變更瀏覽器設定。此裝置上的活動也可透過 Chrome 以外的服務管理。</translation>
+<translation id="6648524591329069940">Serif 字型</translation>
 <translation id="6652101503459149953">使用 Windows Hello</translation>
 <translation id="6657585470893396449">密碼</translation>
 <translation id="666259744093848177">(x86_64 已翻譯)</translation>
@@ -1494,7 +1503,6 @@
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> 沒有依循安全標準。</translation>
 <translation id="7210993021468939304">可查看容器中的 Linux 活動，並可在容器內安裝及執行 Linux 應用程式</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />進一步瞭解<ph name="END_LINK" />這個問題。</translation>
-<translation id="7214062855724067749">使用安裝在電腦上的字型，以便建立進階排版</translation>
 <translation id="7217745192097460130">要使用 Touch ID 驗證並完成購買嗎？</translation>
 <translation id="7219179957768738017">這個連線使用 <ph name="SSL_VERSION" />。</translation>
 <translation id="7220786058474068424">正在處理</translation>
@@ -1774,6 +1782,7 @@
 <translation id="8267698848189296333">正在以 <ph name="USERNAME" /> 登入</translation>
 <translation id="8269242089528251720">個別文件/已自動分頁的副本</translation>
 <translation id="8269981117540303696">現在您可私下瀏覽內容，而使用這部電腦的其他使用者將無法看到您的活動。不過，您的下載檔案和新增的書籤仍會保留在裝置上。</translation>
+<translation id="8275952078857499577">不要詢問是否翻譯此網站</translation>
 <translation id="8277900682056760511">付款處理常式工作表開咗</translation>
 <translation id="8281084378435768645">Large-Photo</translation>
 <translation id="8282947398454257691">掌握您的專屬裝置識別碼</translation>

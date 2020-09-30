@@ -30,6 +30,7 @@
 <translation id="1208421848177517699">Translitterointi (namaste → નમસ્તે)</translation>
 <translation id="1243314992276662751">Lähetä</translation>
 <translation id="1249250836236328755">Lajityyppi</translation>
+<translation id="1276362640455948667">portugali ja näppäimistö: US, kansainvälinen (PC)</translation>
 <translation id="1278813325885878377">Unkarilainen QWERTY-näppäimistö</translation>
 <translation id="1293556467332435079">Tiedostot</translation>
 <translation id="1297922636971898492">Google Drive ei ole juuri nyt käytettävissä. Lähetys käynnistyy automaattisesti, kun Google Drive on taas käytettävissä.</translation>
@@ -112,13 +113,14 @@
 <translation id="2163152940313951844">Virheellinen merkki: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2164862903024139959">Vietnamilainen näppäimistö (TCVN)</translation>
 <translation id="2168214441502403371">Persialainen näppäimistö</translation>
-<translation id="2197363559908958454"><ph name="NUMBER_OF_ITEMS" /> siirretty</translation>
 <translation id="2198315389084035571">yksinkertaistettu kiina</translation>
 <translation id="2208158072373999562">Zip-arkisto</translation>
 <translation id="2225536596944493418">Haluatko varmasti poistaa <ph name="NUMBER_OF_ITEMS" /> kohdetta?</translation>
 <translation id="2230062665678605299">Kansiota <ph name="FOLDER_NAME" /> ei voi luoda. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2270413998793223379">sankrit</translation>
 <translation id="2275059641601412272">Siirretty</translation>
 <translation id="2278988676849463018">Kannadankielinen näppäimistö (foneettinen)</translation>
+<translation id="2287742181953707290">portugali ja näppäimistö: US, kansainvälinen (PC)</translation>
 <translation id="2288278176040912387">Levysoitin</translation>
 <translation id="2291538123825441971">Avataan <ph name="NUMBER_OF_FILES" /> tiedostoa.</translation>
 <translation id="2303301624314357662">Avataan tiedostoa <ph name="FILE_NAME" />.</translation>
@@ -222,6 +224,7 @@
 <translation id="3473378059788601120">Kopioitu kansioon <ph name="FOLDER_NAME" /></translation>
 <translation id="3475447146579922140">Google-laskentataulukko</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> virhettä.</translation>
+<translation id="349603508045926994">translitteroitu persia</translation>
 <translation id="3519867315646775981">Translitterointi (shalom ← שלום)</translation>
 <translation id="3522708245912499433">portugali</translation>
 <translation id="3524311639100184459">Varoitus: Nämä tiedostot ovat tilapäisiä ja ne voidaan poistaa automaattisesti levytilan vapauttamiseksi.  <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
@@ -293,6 +296,7 @@
 <translation id="4298972503445160211">Näppäimistö: tanska</translation>
 <translation id="4299729908419173967">brasilianportugali</translation>
 <translation id="4309915981827077375">Yleistiedot</translation>
+<translation id="4315949787858895817">hollanti (Belgia)</translation>
 <translation id="4326192123064055915">Kahvi</translation>
 <translation id="4336032328163998280">Kopiointi epäonnistui. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4364327530094270451">Meloni</translation>
@@ -339,6 +343,7 @@
 <translation id="4804827417948292437">Avokado</translation>
 <translation id="4823651846660089135">Laite on vain luku ‑tilassa.</translation>
 <translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> kohdetta on valittu</translation>
+<translation id="4849981557599196363">saksa (Belgia)</translation>
 <translation id="4850886885716139402">Näytä</translation>
 <translation id="485316830061041779">saksa</translation>
 <translation id="4867079195717347957">Klikkaa, jos haluat lajitella laskevaan järjestykseen.</translation>
@@ -402,6 +407,7 @@
         tiedostoja yhdessä muiden käyttäjien kanssa.<ph name="MARKUP_9" /></translation>
 <translation id="5274350207900771082">Kopioitu</translation>
 <translation id="5275973617553375938">Google Drivesta palautetut tiedostot</translation>
+<translation id="5283140566205748520">ranska (Belgia)</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">Tallenna</translation>
 <translation id="5318819489018851358">Jaa Linuxilla</translation>
@@ -688,6 +694,7 @@
 <translation id="8329978297633540474">Vain teksti</translation>
 <translation id="8335587457941836791">Poista kiinnitys hyllystä</translation>
 <translation id="8336153091935557858">eilen <ph name="YESTERDAY_DAYTIME" /></translation>
+<translation id="8336524887811696057">translitteroitu nepali</translation>
 <translation id="8336579025507394412">Islantilainen näppäimistö</translation>
 <translation id="8342318071240498787">Samanniminen tiedosto tai hakemisto on jo olemassa.</translation>
 <translation id="8382450452152102026">Kohde: <ph name="FOLDER_NAME" /></translation>
@@ -713,12 +720,14 @@
 <translation id="8600173386174225982">Tiedostot näkyvät nyt pikkukuvina.</translation>
 <translation id="8601932370724196034">Crostini-kuvatiedosto</translation>
 <translation id="8669949407341943408">Siirretään…</translation>
+<translation id="8694836330346852143">urdu</translation>
 <translation id="8698464937041809063">Google-piirros</translation>
 <translation id="8714406895390098252">Polkupyörä</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> valittiin.</translation>
 <translation id="8722421161699219904">Yhdysvaltain kansainvälinen näppäimistö</translation>
 <translation id="872537912056138402">kroaatti</translation>
 <translation id="874420130893181774">Perinteinen pinyin-syöttötapa</translation>
+<translation id="8770002329960263418">hollanti (Alankomaat) ja näppäimistö: US, kansainvälinen (PC)</translation>
 <translation id="8775404590947523323">Tekemäsi muutokset tallentuvat automaattisesti.<ph name="BREAKS" />Säilytä alkuperäisen kuvan kopio poistamalla valinta kohdasta Korvaa alkuperäinen.</translation>
 <translation id="8803496343472038847">Venäjän foneettinen näppäimistö</translation>
 <translation id="8808686172382650546">Kissa</translation>
@@ -760,7 +769,6 @@
 <translation id="943972244133411984">Muokkaaja</translation>
 <translation id="945522503751344254">Lähetä palautetta</translation>
 <translation id="947144732524271678">Valittiin <ph name="ENTRY_COUNT" /> kohdetta välillä <ph name="FROM_ENTRY_NAME" /> ja <ph name="TO_ENTRY_NAME" />.</translation>
-<translation id="949308258121608615"><ph name="NUMBER_OF_ITEMS" /> kopioitu</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="988685240266037636">Tiedosto nimeltä <ph name="FILE_NAME" /> on jo olemassa. Haluatko korvata sen?</translation>
 <translation id="996903396648773764"><ph name="NUMBER_OF_MB" /> Mt</translation>

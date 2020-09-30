@@ -7,6 +7,7 @@
 <translation id="1124772482545689468">Χρήστης</translation>
 <translation id="1178581264944972037">Παύση</translation>
 <translation id="1181037720776840403">Κατάργηση</translation>
+<translation id="1195941046451948919">Είστε βέβαιοι ότι θέλετε να κάνετε επαναφορά όλων των αδειών για αυτόν τον ιστότοπο;</translation>
 <translation id="1201402288615127009">Επόμενο</translation>
 <translation id="1242008676835033345">Ενσωματωμένο σε <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">Διακοπή</translation>
@@ -47,6 +48,7 @@
 <translation id="2187243482123994665">Παρουσία χρήστη</translation>
 <translation id="2212565012507486665">Αποδοχή cookie</translation>
 <translation id="2228071138934252756">Για να επιτρέψετε στην εφαρμογή <ph name="APP_NAME" /> να αποκτήσει πρόσβαση στην κάμερά σας, ενεργοποιήστε επίσης την κάμερα στις <ph name="BEGIN_LINK" />Ρυθμίσεις Android<ph name="END_LINK" />.</translation>
+<translation id="2241634353105152135">Μόνο μία φορά</translation>
 <translation id="2289270750774289114">Να γίνεται ερώτηση όταν ένας ιστότοπος επιθυμεί να εντοπίσει κοντινές συσκευες Bluetooth (συνιστάται)</translation>
 <translation id="2315043854645842844">Η επιλογή πιστοποιητικού από τον πελάτη δεν υποστηρίζεται από το λειτουργικό σύστημα.</translation>
 <translation id="2359808026110333948">Συνέχεια</translation>
@@ -230,6 +232,7 @@
 <translation id="7423538860840206698">Αποκλεισμός από ανάγνωση πρόχειρου</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7554752735887601236">Ένας ιστότοπος χρησιμοποιεί το μικρόφωνό σας.</translation>
+<translation id="7561196759112975576">Πάντα</translation>
 <translation id="7572498721684305250">Αποκλεισμός ιστοτόπων από την αποστολή ή τη λήψη πληροφοριών κατά το πάτημα συσκευών NFC.</translation>
 <translation id="757524316907819857">Αποκλεισμός αναπαραγωγής προστατευόμενου περιεχομένου από ιστοτόπους</translation>
 <translation id="7589445247086920869">Αποκλεισμός για την τρέχουσα μηχανή αναζήτησης</translation>

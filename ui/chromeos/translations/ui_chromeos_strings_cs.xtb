@@ -30,6 +30,7 @@
 <translation id="1208421848177517699">Přepis (namaste → નમસ્તે)</translation>
 <translation id="1243314992276662751">Nahrát</translation>
 <translation id="1249250836236328755">Žánr</translation>
+<translation id="1276362640455948667">portugalština s klávesnicí USA – mezinárodní</translation>
 <translation id="1278813325885878377">Maďarská klávesnice QUERTY</translation>
 <translation id="1293556467332435079">Soubory</translation>
 <translation id="1297922636971898492">Disk Google aktuálně není k dispozici. Jakmile bude Disk Google opět dostupný, nahrávání se automaticky obnoví.</translation>
@@ -112,13 +113,14 @@
 <translation id="2163152940313951844">Neplatný znak: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2164862903024139959">Vietnamská klávesnice (TCVN)</translation>
 <translation id="2168214441502403371">Perská klávesnice</translation>
-<translation id="2197363559908958454">Přesunutá položka: <ph name="NUMBER_OF_ITEMS" />.</translation>
 <translation id="2198315389084035571">Zjednodušená čínština</translation>
 <translation id="2208158072373999562">Archiv ZIP</translation>
 <translation id="2225536596944493418">Opravdu chcete tyto položky (<ph name="NUMBER_OF_ITEMS" />) smazat?</translation>
 <translation id="2230062665678605299">Složku „<ph name="FOLDER_NAME" />“ se nepodařilo vytvořit. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2270413998793223379">sanskrt</translation>
 <translation id="2275059641601412272">Přesunuto.</translation>
 <translation id="2278988676849463018">Kannadská klávesnice (fonetická)</translation>
+<translation id="2287742181953707290">portugalština s klávesnicí USA – mezinárodní (PC)</translation>
 <translation id="2288278176040912387">Gramofon</translation>
 <translation id="2291538123825441971">Otevírání <ph name="NUMBER_OF_FILES" /> souborů.</translation>
 <translation id="2303301624314357662">Otevírání souboru <ph name="FILE_NAME" />.</translation>
@@ -222,6 +224,7 @@
 <translation id="3473378059788601120">Zkopírováno do složky <ph name="FOLDER_NAME" />.</translation>
 <translation id="3475447146579922140">Tabulka Google</translation>
 <translation id="3495304270784461826">Chyby: <ph name="COUNT" />.</translation>
+<translation id="349603508045926994">perština (přepis)</translation>
 <translation id="3519867315646775981">Přepis (shalom ← שלום)</translation>
 <translation id="3522708245912499433">portugalština</translation>
 <translation id="3524311639100184459">Upozornění: Tyto soubory jsou dočasné a mohou být automaticky smazány kvůli uvolnění místa na disku.  <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
@@ -293,6 +296,7 @@
 <translation id="4298972503445160211">Dánská klávesnice</translation>
 <translation id="4299729908419173967">portugalština (Brazílie)</translation>
 <translation id="4309915981827077375">Obecné informace</translation>
+<translation id="4315949787858895817">nizozemština (Belgie)</translation>
 <translation id="4326192123064055915">Káva</translation>
 <translation id="4336032328163998280">Kopírování se nezdařilo. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4364327530094270451">Meloun</translation>
@@ -339,6 +343,7 @@
 <translation id="4804827417948292437">Avokádo</translation>
 <translation id="4823651846660089135">Zařízení je pouze pro čtení</translation>
 <translation id="4839847978919684242">Vybrané položky: <ph name="SELCTED_FILES_COUNT" /></translation>
+<translation id="4849981557599196363">němčina (Belgie)</translation>
 <translation id="4850886885716139402">Zobrazit</translation>
 <translation id="485316830061041779">němčina</translation>
 <translation id="4867079195717347957">Kliknutím sloupec seřadíte sestupně.</translation>
@@ -401,6 +406,7 @@
     <ph name="MARKUP_7" />Sdílejte, vytvářejte a spolupracujte<ph name="MARKUP_8" /> na souborech s ostatními, a to vše na jednom místě.<ph name="MARKUP_9" /></translation>
 <translation id="5274350207900771082">Zkopírováno.</translation>
 <translation id="5275973617553375938">Obnovené soubory z Disku Google</translation>
+<translation id="5283140566205748520">francouzština (Belgie)</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">Uložit</translation>
 <translation id="5318819489018851358">Sdílet s Linuxem</translation>
@@ -687,6 +693,7 @@
 <translation id="8329978297633540474">Prostý text</translation>
 <translation id="8335587457941836791">Uvolnit z poličky</translation>
 <translation id="8336153091935557858">Včera <ph name="YESTERDAY_DAYTIME" /></translation>
+<translation id="8336524887811696057">nepálština (přepis)</translation>
 <translation id="8336579025507394412">Islandská klávesnice</translation>
 <translation id="8342318071240498787">Soubor nebo složka s daným názvem již existuje.</translation>
 <translation id="8382450452152102026">Do složky <ph name="FOLDER_NAME" /></translation>
@@ -712,12 +719,14 @@
 <translation id="8600173386174225982">Seznam souborů se změnil na zobrazení miniatur.</translation>
 <translation id="8601932370724196034">Soubor obrazu Crostini</translation>
 <translation id="8669949407341943408">Přesouvání...</translation>
+<translation id="8694836330346852143">urdština</translation>
 <translation id="8698464937041809063">Nákres Google</translation>
 <translation id="8714406895390098252">Kolo</translation>
 <translation id="8719721339511222681">Vybrali jste položku <ph name="ENTRY_NAME" />.</translation>
 <translation id="8722421161699219904">Mezinárodní americká klávesnice</translation>
 <translation id="872537912056138402">chorvatština</translation>
 <translation id="874420130893181774">Metoda zadávání textu tradiční Pchin-jin</translation>
+<translation id="8770002329960263418">nizozemština (Nizozemsko) s klávesnicí USA – mezinárodní (PC)</translation>
 <translation id="8775404590947523323">Úpravy se ukládají automaticky.<ph name="BREAKS" />Chcete-li zachovat kopii původního obrázku, zrušte zaškrtnutí políčka Přepsat originál.</translation>
 <translation id="8803496343472038847">Ruská fonetická klávesnice</translation>
 <translation id="8808686172382650546">Kočka</translation>
@@ -759,7 +768,6 @@
 <translation id="943972244133411984">Upravil(a)</translation>
 <translation id="945522503751344254">Odeslat zpětnou vazbu</translation>
 <translation id="947144732524271678">Vybrali jste položky <ph name="FROM_ENTRY_NAME" /> až <ph name="TO_ENTRY_NAME" /> (celkem <ph name="ENTRY_COUNT" />).</translation>
-<translation id="949308258121608615">Zkopírovaná položka: <ph name="NUMBER_OF_ITEMS" />.</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="988685240266037636">Soubor s názvem „<ph name="FILE_NAME" />“ již existuje. Chcete jej nahradit?</translation>
 <translation id="996903396648773764"><ph name="NUMBER_OF_MB" /> MB</translation>

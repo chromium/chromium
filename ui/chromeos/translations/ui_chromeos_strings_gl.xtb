@@ -30,6 +30,7 @@
 <translation id="1208421848177517699">Transliteración (namaste → નમસ્તે)</translation>
 <translation id="1243314992276662751">Cargar</translation>
 <translation id="1249250836236328755">Xénero</translation>
+<translation id="1276362640455948667">Portugués con teclado internacional estadounidense</translation>
 <translation id="1278813325885878377">Teclado QWERTY húngaro</translation>
 <translation id="1293556467332435079">Ficheiros</translation>
 <translation id="1297922636971898492">Google Drive non está dispoñible nestes momentos. A carga reiniciarase automaticamente cando volva estar dispoñible.</translation>
@@ -112,13 +113,14 @@
 <translation id="2163152940313951844">Carácter non válido: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2164862903024139959">Teclado vietnamita (TCVN)</translation>
 <translation id="2168214441502403371">Teclado persa</translation>
-<translation id="2197363559908958454">Artigos movidos: <ph name="NUMBER_OF_ITEMS" />.</translation>
 <translation id="2198315389084035571">Chinés simplificado</translation>
 <translation id="2208158072373999562">Arquivo zip</translation>
 <translation id="2225536596944493418">Seguro que queres eliminar <ph name="NUMBER_OF_ITEMS" /> elementos?</translation>
 <translation id="2230062665678605299">Non se puido crear o cartafol "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2270413998793223379">Sánscrito</translation>
 <translation id="2275059641601412272">Moveuse.</translation>
 <translation id="2278988676849463018">Teclado kannada (fonético)</translation>
+<translation id="2287742181953707290">Portugués con teclado internacional estadounidense (PC)</translation>
 <translation id="2288278176040912387">Tocadiscos</translation>
 <translation id="2291538123825441971">Abrindo <ph name="NUMBER_OF_FILES" /> ficheiros.</translation>
 <translation id="2303301624314357662">Abrindo o ficheiro <ph name="FILE_NAME" />.</translation>
@@ -222,6 +224,7 @@
 <translation id="3473378059788601120">Copiouse en <ph name="FOLDER_NAME" />.</translation>
 <translation id="3475447146579922140">Folla de cálculo de Google</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> erros.</translation>
+<translation id="349603508045926994">Transliteración persa</translation>
 <translation id="3519867315646775981">Transliteración (shalom ← שלום)</translation>
 <translation id="3522708245912499433">Portugués</translation>
 <translation id="3524311639100184459">Precaución: Estes ficheiros son temporais e pódense eliminar automaticamente para liberar espazo no disco.  <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
@@ -293,6 +296,7 @@
 <translation id="4298972503445160211">Teclado dinamarqués</translation>
 <translation id="4299729908419173967">Brasileiro</translation>
 <translation id="4309915981827077375">Información xeral</translation>
+<translation id="4315949787858895817">Neerlandés (Bélxica)</translation>
 <translation id="4326192123064055915">Café</translation>
 <translation id="4336032328163998280">Produciuse un erro na operación de copia. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4364327530094270451">Melón</translation>
@@ -339,6 +343,7 @@
 <translation id="4804827417948292437">Aguacate</translation>
 <translation id="4823651846660089135">O dispositivo é de só lectura</translation>
 <translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> elementos seleccionados</translation>
+<translation id="4849981557599196363">Alemán (Bélxica)</translation>
 <translation id="4850886885716139402">Vista</translation>
 <translation id="485316830061041779">Alemán</translation>
 <translation id="4867079195717347957">Fai clic para organizar a columna en orde descendente.</translation>
@@ -402,6 +407,7 @@
     desde un único lugar.<ph name="MARKUP_9" /></translation>
 <translation id="5274350207900771082">Copiouse.</translation>
 <translation id="5275973617553375938">Ficheiros recuperados de Google Drive</translation>
+<translation id="5283140566205748520">Francés (Bélxica)</translation>
 <translation id="5317780077021120954">Gardar</translation>
 <translation id="5318819489018851358">Compartir con Linux</translation>
 <translation id="5319782540886810524">Teclado letón</translation>
@@ -687,6 +693,7 @@
 <translation id="8329978297633540474">Texto sen formato</translation>
 <translation id="8335587457941836791">Deixar de fixar no estante</translation>
 <translation id="8336153091935557858">Onte ás <ph name="YESTERDAY_DAYTIME" /></translation>
+<translation id="8336524887811696057">Transliteración nepalí</translation>
 <translation id="8336579025507394412">Teclado islandés</translation>
 <translation id="8342318071240498787">Xa existe un ficheiro ou un directorio co mesmo nome.</translation>
 <translation id="8382450452152102026">Para <ph name="FOLDER_NAME" /></translation>
@@ -712,12 +719,14 @@
 <translation id="8600173386174225982">A lista de ficheiros cambiou á vista de miniatura.</translation>
 <translation id="8601932370724196034">Ficheiro de imaxe de Crostini</translation>
 <translation id="8669949407341943408">Movendo...</translation>
+<translation id="8694836330346852143">Urdú</translation>
 <translation id="8698464937041809063">Debuxo de Google</translation>
 <translation id="8714406895390098252">Bicicleta</translation>
 <translation id="8719721339511222681">Seleccionouse <ph name="ENTRY_NAME" />.</translation>
 <translation id="8722421161699219904">Teclado estadounidense internacional</translation>
 <translation id="872537912056138402">Croata</translation>
 <translation id="874420130893181774">Método de introdución de pinyin tradicional</translation>
+<translation id="8770002329960263418">Neerlandés (Países Baixos) con teclado internacional estadounidense (PC)</translation>
 <translation id="8775404590947523323">As túas edicións gárdanse automaticamente.<ph name="BREAKS" />Para conservar unha copia da imaxe orixinal, desmarca "Sobrescribir orixinal"</translation>
 <translation id="8803496343472038847">Teclado fonético ruso</translation>
 <translation id="8808686172382650546">Gato</translation>
@@ -759,7 +768,6 @@
 <translation id="943972244133411984">Modificado por</translation>
 <translation id="945522503751344254">Enviar comentarios</translation>
 <translation id="947144732524271678">Seleccionouse un intervalo de <ph name="ENTRY_COUNT" /> entradas desde <ph name="FROM_ENTRY_NAME" /> ata <ph name="TO_ENTRY_NAME" />.</translation>
-<translation id="949308258121608615">Artigos copiados: <ph name="NUMBER_OF_ITEMS" />.</translation>
 <translation id="981121421437150478">Sen conexión</translation>
 <translation id="988685240266037636">Xa existe un ficheiro co nome "<ph name="FILE_NAME" />". Queres substituílo?</translation>
 <translation id="996903396648773764"><ph name="NUMBER_OF_MB" /> MB</translation>

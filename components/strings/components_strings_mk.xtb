@@ -15,6 +15,7 @@
 <translation id="1038106730571050514">Прикажувај предлози</translation>
 <translation id="1038842779957582377">непознато име</translation>
 <translation id="1041998700806130099">Порака на работниот лист</translation>
+<translation id="1048785276086539861">Кога ќе ги изменувате прибелешките, документов ќе се врати на приказ на една страница</translation>
 <translation id="1050038467049342496">Затворете ги другите апликации</translation>
 <translation id="1055184225775184556">&amp;Врати додавање</translation>
 <translation id="1056898198331236512">Предупредување</translation>
@@ -234,6 +235,7 @@
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, достапни се повеќе дејства, притискајте Tab за да ги менувате</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1803264062614276815">Име на сопственикот на картичката</translation>
+<translation id="1807246157184219062">Светла</translation>
 <translation id="1807528111851433570">Почетен лист</translation>
 <translation id="1821930232296380041">Неважечко барање или параметри на барање</translation>
 <translation id="1822540298136254167">Веб-сајтовите што ги посетувате и времето што го поминувате на нив</translation>
@@ -290,6 +292,7 @@
 <translation id="2099652385553570808">Тројно спојување лево</translation>
 <translation id="2101225219012730419">Верзија:</translation>
 <translation id="2102134110707549001">Предложи силна лозинка…</translation>
+<translation id="2102495993840063010">Апликации за Android</translation>
 <translation id="2107021941795971877">Поддршка на печатењето</translation>
 <translation id="2108755909498034140">Рестартирајте го компјутерот</translation>
 <translation id="2111256659903765347">Super-A</translation>
@@ -368,6 +371,7 @@
 <translation id="2396249848217231973">&amp;Врати бришење</translation>
 <translation id="2410754574180102685">Government-Legal</translation>
 <translation id="2413528052993050574">Серверот не можеше да докаже дека е <ph name="DOMAIN" />; можеби неговиот безбедносен сертификат е повлечен. Тоа може да се должи на погрешна конфигурација или на напаѓач што го пресретнува поврзувањето.</translation>
+<translation id="2414886740292270097">Темна</translation>
 <translation id="2438874542388153331">Четири дупки десно</translation>
 <translation id="245044156129055925">Тукушто ја внесовте лозинката на сајт што може да ве измами. Chromium ви препорачува да ја промените лозинката веднаш.</translation>
 <translation id="2463739503403862330">Пополни</translation>
@@ -376,6 +380,7 @@
 <translation id="2465688316154986572">Спојување</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />да извршите дијагностика на мрежата<ph name="END_LINK" /></translation>
 <translation id="2469153820345007638">Редослед 1-до-N</translation>
+<translation id="2470767536994572628">Кога ќе ги изменувате прибелешките, документов ќе се врати на приказ на една страница и на својата оригинална ротација</translation>
 <translation id="2479410451996844060">Невалидна URL-адреса за пребарување.</translation>
 <translation id="2482878487686419369">Известувања</translation>
 <translation id="248348093745724435">Правила на уредот</translation>
@@ -446,6 +451,7 @@
 <translation id="2738330467931008676">Изберете адреса за подигнување</translation>
 <translation id="2740531572673183784">Во ред</translation>
 <translation id="2742870351467570537">Отстрани избрани ставки</translation>
+<translation id="2765217105034171413">Мало</translation>
 <translation id="277133753123645258">Метод на испорака</translation>
 <translation id="277499241957683684">Недостасува снимка од уред</translation>
 <translation id="2775884851269838147">Прво испечати ја страницата</translation>
@@ -603,7 +609,6 @@
 <translation id="3443726618221119081">Juuro-Ku-Kai</translation>
 <translation id="3447661539832366887">Сопственикот на уредов ја исклучил играта со диносауруси.</translation>
 <translation id="3447884698081792621">Прикажи сертификат (издаден од <ph name="ISSUER" />)</translation>
-<translation id="3451824941663424536">Администраторот блокирал лепење на локацијава</translation>
 <translation id="3452404311384756672">Интервал на освежување:</translation>
 <translation id="3453962258458347894">Број на повторни обиди</translation>
 <translation id="3456231139987291353">Number-11 (плик)</translation>
@@ -741,6 +746,7 @@
 <translation id="4014128326099193693">{COUNT,plural, =1{PDF-документ со {COUNT} страница}one{PDF-документ со {COUNT} страница}other{PDF-документ со {COUNT} страници}}</translation>
 <translation id="4030383055268325496">&amp;Врати додавање</translation>
 <translation id="4032320456957708163">Прелистувачот е управуван од <ph name="ENROLLMENT_DOMAIN" /></translation>
+<translation id="4056223980640387499">Sepia</translation>
 <translation id="4058922952496707368">Клуч „<ph name="SUBKEY" />“: <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (плик)</translation>
 <translation id="4067947977115446013">Додајте важечка адреса</translation>
@@ -781,6 +787,7 @@
 <translation id="4194250254487269611">Вашата картичка не може да се зачува во моментов</translation>
 <translation id="4196861286325780578">&amp;Повтори преместување</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Да ги проверите заштитниот ѕид и антивирусните конфигурации<ph name="END_LINK" /></translation>
+<translation id="4209092469652827314">Голем</translation>
 <translation id="4209166701302774460">Серверот каде што сте упатени, <ph name="ORIGIN" />, побарал
     да се применува правило за потекло за сите барања до него. Но, сега не успеа
     да испорача правило, што го спречува прелистувачот да го исполни вашето барање
@@ -1397,7 +1404,6 @@
 <translation id="6671697161687535275">Да се отстранат предлозите за формулари од Chromium?</translation>
 <translation id="6685834062052613830">Одјавете се и завршете го поставувањето</translation>
 <translation id="6687335167692595844">Побарана е големина на фонтот</translation>
-<translation id="6688998199862661005">Администраторот го блокирал споделувањето на содржиниве со <ph name="VM_NAME" /></translation>
 <translation id="6689249931105087298">Релативна, со компресија на црни точки</translation>
 <translation id="6689271823431384964">Chrome нуди да ви ги зачува картичките во вашата сметка на Google бидејќи сте најавени. Ваквото однесување може да го смените во поставки. Името на сопственикот на картичката доаѓа од сметката.</translation>
 <translation id="6710213216561001401">Претходно</translation>
@@ -1422,7 +1428,6 @@
 <translation id="6810899417690483278">Приспособен ID</translation>
 <translation id="6825578344716086703">Се обидовте да контактирате со <ph name="DOMAIN" />, но серверот прикажа сертификат потпишан со слаб алгоритам за потпис (како што е SHA-1). Тоа значи дека акредитивите за безбедност што ги прикажа серверот можеби се фалсификувани и дека можеби тоа не е серверот што го очекувавте (можеби комуницирате со напаѓач).</translation>
 <translation id="6826993739343257035">Да се дозволи AR?</translation>
-<translation id="6829611662493319648">Администраторот го блокирал споделувањето на содржиниве со <ph name="VM_NAME_1" /> и <ph name="VM_NAME_2" /></translation>
 <translation id="6831043979455480757">Преведи</translation>
 <translation id="6839929833149231406">Област</translation>
 <translation id="6846340164947227603">Користете број на виртуелна картичка…</translation>
@@ -1511,7 +1516,6 @@
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> не се придржува до стандардите за безбедност.</translation>
 <translation id="7210993021468939304">Активноста на Linux во рамките на контејнерот и може да инсталира и извршува апликации на Linux во рамките на контејнерот</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Дознај повеќе<ph name="END_LINK" /> за овој проблем.</translation>
-<translation id="7214062855724067749">да ги користи фонтовите инсталирани на вашиот компјутер за да може да создадете напредна типографија</translation>
 <translation id="7217745192097460130">Да се користи ID на допир за потврда и завршување на купувањето?</translation>
 <translation id="7219179957768738017">Оваа врска користи <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Се обработува</translation>
@@ -1636,6 +1640,7 @@
 <translation id="7647206758853451655">Квалитет на печатењето</translation>
 <translation id="7648992873808071793">Складирај датотеки на уредов</translation>
 <translation id="7653957176542370971">Листот на ракувачот со плаќања е затворен</translation>
+<translation id="7654909834015434372">Кога ќе ги изменувате прибелешките, документов ќе се врати на својата оригинална ротација</translation>
 <translation id="765676359832457558">Сокриј напредни поставки...</translation>
 <translation id="7658239707568436148">Откажи</translation>
 <translation id="7662298039739062396">Поставка контролирана од екстензија</translation>

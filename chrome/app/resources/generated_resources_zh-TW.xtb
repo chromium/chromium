@@ -1053,7 +1053,6 @@
 <translation id="2218019600945559112">滑鼠和觸控板</translation>
 <translation id="2218320521449013367">Chrome 移除有害的軟體時發生錯誤</translation>
 <translation id="2218515861914035131">以純文字貼上</translation>
-<translation id="221872881068107022">反向捲動</translation>
 <translation id="2220409419896228519">針對你喜愛的 Google 應用程式新增書籤</translation>
 <translation id="2220529011494928058">回報問題</translation>
 <translation id="2220572644011485463">PIN 或密碼</translation>
@@ -1237,7 +1236,6 @@
 <translation id="2435248616906486374">網路已中斷連線</translation>
 <translation id="2435457462613246316">顯示密碼</translation>
 <translation id="2436186046335138073">要允許 <ph name="HANDLER_HOSTNAME" /> 開啟所有<ph name="PROTOCOL" />連結嗎？</translation>
-<translation id="2436707352762155834">最小值</translation>
 <translation id="2439545803278355377">請輸入新的 PIN 碼。PIN 碼必須至少包含四個字元，可以使用字母、數字和其他字元。</translation>
 <translation id="2440604414813129000">檢視原始碼(&amp;O)</translation>
 <translation id="244231003699905658">位址無效。請檢查位址是否正確，然後再試一次。</translation>
@@ -3077,6 +3075,7 @@
 <translation id="4617270414136722281">擴充功能選項</translation>
 <translation id="4619615317237390068">在其他裝置上開啟的分頁</translation>
 <translation id="4620809267248568679">這項設定是由擴充功能執行。</translation>
+<translation id="4623167406982293031">驗證帳戶</translation>
 <translation id="4623189117674524348">系統無法對這個裝置授予 API 存取權。</translation>
 <translation id="4625078469366263107">啟用應用程式</translation>
 <translation id="4627427111733173920">已封鎖 Cookie</translation>
@@ -3249,7 +3248,6 @@
 <translation id="4848518990323155912">啟用 SIM 卡鎖定功能 (輸入 PIN 碼才能使用行動數據)</translation>
 <translation id="4849286518551984791">世界標準時間 (UTC/GMT)</translation>
 <translation id="4849517651082200438">不要安裝</translation>
-<translation id="4850669014075537160">捲動</translation>
 <translation id="4850886885716139402">檢視</translation>
 <translation id="485088796993065002">網站可能會播放音效以提供音樂、影片和其他媒體的音訊</translation>
 <translation id="4853020600495124913">在新視窗中開啟(&amp;N)</translation>
@@ -4839,7 +4837,6 @@
 <translation id="6781978626986383437">已取消 Linux 備份作業</translation>
 <translation id="6782067259631821405">PIN 碼無效</translation>
 <translation id="6785518634832172390">PIN 碼不能超過 12 個數字</translation>
-<translation id="6785915470941880363">反向捲動。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="6786747875388722282">擴充功能</translation>
 <translation id="6787839852456839824">鍵盤快速鍵</translation>
 <translation id="6788210894632713004">未封裝擴充功能</translation>

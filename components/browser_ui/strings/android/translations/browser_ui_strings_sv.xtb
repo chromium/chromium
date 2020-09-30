@@ -7,6 +7,7 @@
 <translation id="1124772482545689468">Användare</translation>
 <translation id="1178581264944972037">Paus</translation>
 <translation id="1181037720776840403">Ta bort</translation>
+<translation id="1195941046451948919">Vill du återställa alla behörigheter för den här webbplatsen?</translation>
 <translation id="1201402288615127009">Nästa</translation>
 <translation id="1242008676835033345">Inbäddad på <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">Stopp</translation>
@@ -47,6 +48,7 @@
 <translation id="2187243482123994665">Användarens närvaro</translation>
 <translation id="2212565012507486665">Tillåt cookies</translation>
 <translation id="2228071138934252756">Om du vill ge <ph name="APP_NAME" /> åtkomst till kameran måste du även aktivera kameran i <ph name="BEGIN_LINK" />Android-inställningarna<ph name="END_LINK" />.</translation>
+<translation id="2241634353105152135">Bara en gång</translation>
 <translation id="2289270750774289114">Fråga när en webbplats försöker söka efter Bluetooth-enheter i närheten (rekommenderas)</translation>
 <translation id="2315043854645842844">Val av certifikat på klienten stöds inte av operativsystemet.</translation>
 <translation id="2359808026110333948">Fortsätt</translation>
@@ -230,6 +232,7 @@
 <translation id="7423538860840206698">Läsbehörighet till Urklipp har nekats</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7554752735887601236">En webbplats använder mikrofonen</translation>
+<translation id="7561196759112975576">Alltid</translation>
 <translation id="7572498721684305250">Blockera webbplatser från att skicka och ta emot uppgifter när du snuddar vid NFC-enheter.</translation>
 <translation id="757524316907819857">Blockera webbplatser från att spela upp skyddat innehåll</translation>
 <translation id="7589445247086920869">Blockera för den nuvarande sökmotorn</translation>

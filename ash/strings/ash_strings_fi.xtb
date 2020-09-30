@@ -197,6 +197,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2996462380875591307">Kiinnitetty suurennus on käytössä. Poista se käytöstä painamalla uudelleen Ctrl + haku + D.</translation>
 <translation id="3000461861112256445">Monoääni</translation>
 <translation id="3009178788565917040">Äänentoisto</translation>
+<translation id="3025081209054535615">Irrota yleiset mediaohjaimet hyllystä</translation>
 <translation id="3033545621352269033">Päällä</translation>
 <translation id="3038571455154067151">Voit kirjautua sisään vanhemman Family Link ‑käyttökoodilla</translation>
 <translation id="3045488863354895414">Hyvää päivää</translation>
@@ -250,6 +251,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="3430396595145920809">Palaa takaisin pyyhkäisemällä oikeasta reunasta</translation>
 <translation id="343571671045587506">Muokkaa muistutusta</translation>
 <translation id="3435967511775410570">Sormenjälki tunnistettu</translation>
+<translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">C-tyypin USB-laite</translation>
 <translation id="3454224730401036106">Olet nyt yhteydessä turvallisempaan verkkoon.</translation>
 <translation id="3465223694362104965">Laitteeseen yhdistettiin uusi näppäimistö viimeisimmän kirjautumisen jälkeen. Varmista ennen käyttöä, että näppäimistö on luotettava.</translation>
@@ -383,6 +385,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="4804818685124855865">Katkaise yhteys</translation>
 <translation id="4814539958450445987">Kirjautumisnäyttö</translation>
 <translation id="4831034276697007977">Haluatko varmasti lopettaa automaattisen klikkaamisen?</translation>
+<translation id="4836108105469522644">Laita ilmoitukset päälle Android-puhelimesta</translation>
 <translation id="4849058404725798627">Korosta tekstin syöttökohde</translation>
 <translation id="485592688953820832">Ei toimenpiteitä (keskeytä)</translation>
 <translation id="4868492592575313542">otettu käyttöön</translation>
@@ -452,6 +455,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="5691772641933328258">Sormenjälkeä ei tunnistettu</translation>
 <translation id="5710450975648804523">Älä häiritse -tila on päällä</translation>
 <translation id="573413375004481890">Tämä laite ei voinut tukea kaikkia näyttöjäsi, joten yhden yhteys on katkaistu</translation>
+<translation id="5740328398383587084">Lähijakaminen</translation>
 <translation id="574392208103952083">Keskivahva</translation>
 <translation id="5744083938413354016">Napauttamalla vetäminen</translation>
 <translation id="5745612484876805746">Yövalo käynnistyy automaattisesti, kun aurinko laskee</translation>
@@ -698,6 +702,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="8297006494302853456">Heikko</translation>
 <translation id="8308637677604853869">Edellinen valikko</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" /> <ph name="GET_STARTED" /></translation>
+<translation id="8349293353728876872">Kiinnitä yleiset mediaohjaimet hyllyyn</translation>
 <translation id="8351131234907093545">Luo muistiinpano</translation>
 <translation id="8371779926711439835">Yksi kirjain eteenpäin</translation>
 <translation id="8375916635258623388"><ph name="DEVICE_NAME" /> muodostaa yhteyden puhelimeesi automaattisesti</translation>

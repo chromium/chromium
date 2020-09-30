@@ -1050,7 +1050,6 @@
 <translation id="2218019600945559112">鼠标和触控板</translation>
 <translation id="2218320521449013367">Chrome 移除有害软件时出现错误</translation>
 <translation id="2218515861914035131">粘贴为纯文本</translation>
-<translation id="221872881068107022">反向滚动</translation>
 <translation id="2220409419896228519">为您最喜爱的 Google 应用添加书签</translation>
 <translation id="2220529011494928058">报告问题</translation>
 <translation id="2220572644011485463">PIN 码或密码</translation>
@@ -1234,7 +1233,6 @@
 <translation id="2435248616906486374">网络连接已断开</translation>
 <translation id="2435457462613246316">显示密码</translation>
 <translation id="2436186046335138073">允许<ph name="HANDLER_HOSTNAME" />打开所有<ph name="PROTOCOL" />链接？</translation>
-<translation id="2436707352762155834">最小值</translation>
 <translation id="2439545803278355377">输入您的新 PIN 码。PIN 码必须包含至少 4 个字符，且可以包含字母、数字和其他字符。</translation>
 <translation id="2440604414813129000">查看源代码(&amp;O)</translation>
 <translation id="244231003699905658">地址无效。请检查该地址，然后重试。</translation>
@@ -3074,6 +3072,7 @@
 <translation id="4617270414136722281">扩展程序选项</translation>
 <translation id="4619615317237390068">从其他设备打开的标签页</translation>
 <translation id="4620809267248568679">此设置是由扩展程序强制设置的。</translation>
+<translation id="4623167406982293031">验证帐号</translation>
 <translation id="4623189117674524348">系统未能向此设备授予 API 访问权限。</translation>
 <translation id="4625078469366263107">启用应用</translation>
 <translation id="4627427111733173920">已拦截 Cookie</translation>
@@ -3246,7 +3245,6 @@
 <translation id="4848518990323155912">启用 SIM 卡锁定功能（需要输入 PIN 码才能使用移动数据网络）</translation>
 <translation id="4849286518551984791">协调世界时 (UTC/GMT)</translation>
 <translation id="4849517651082200438">不安装</translation>
-<translation id="4850669014075537160">滚动</translation>
 <translation id="4850886885716139402">视图</translation>
 <translation id="485088796993065002">网站可能会播放声音来为音乐、视频和其他媒体提供音频</translation>
 <translation id="4853020600495124913">在新窗口中打开(&amp;O)</translation>
@@ -4836,7 +4834,6 @@
 <translation id="6781978626986383437">已取消 Linux 备份</translation>
 <translation id="6782067259631821405">PIN 码无效</translation>
 <translation id="6785518634832172390">PIN 码不得超过 12 位数</translation>
-<translation id="6785915470941880363">反向滚动 <ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="6786747875388722282">扩展程序</translation>
 <translation id="6787839852456839824">键盘快捷键</translation>
 <translation id="6788210894632713004">未封装的扩展程序</translation>

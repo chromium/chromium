@@ -47,6 +47,7 @@
 <translation id="2187243482123994665">Lietotāja aktivitāte</translation>
 <translation id="2212565012507486665">Atļaut sīkfailus</translation>
 <translation id="2228071138934252756">Lai atļautu lietotnei <ph name="APP_NAME" /> piekļūt jūsu kamerai, ieslēdziet kameru arī <ph name="BEGIN_LINK" />Android iestatījumos<ph name="END_LINK" />.</translation>
+<translation id="2241634353105152135">Tikai vienreiz</translation>
 <translation id="2289270750774289114">Vaicāt, ja vietne vēlas redzēt tuvumā esošās Bluetooth ierīces (ieteicams)</translation>
 <translation id="2315043854645842844">Operētājsistēma neatbalsta klienta puses sertifikāta atlasi.</translation>
 <translation id="2359808026110333948">Turpināt</translation>
@@ -124,6 +125,7 @@
 <translation id="4570913071927164677">Detalizēta informācija</translation>
 <translation id="4645575059429386691">Pārvalda viens no jūsu vecākiem</translation>
 <translation id="4670064810192446073">Virtuālā realitāte</translation>
+<translation id="4708011789095599544">Vai tiešām vēlaties notīrīt šīs vietnes sīkfailus un citus datus?</translation>
 <translation id="4751476147751820511">Kustību vai gaismas sensori</translation>
 <translation id="4883854917563148705">Pārvaldītos iestatījumus nevar atiestatīt</translation>
 <translation id="4887024562049524730">Vaicāt, pirms atļaut vietnēm piekļūt jūsu virtuālās realitātes ierīcei un datiem (ieteicams)</translation>
@@ -229,6 +231,7 @@
 <translation id="7423538860840206698">Bloķēta starpliktuves satura lasīšana</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7554752735887601236">Kāda vietne izmanto jūsu mikrofonu</translation>
+<translation id="7561196759112975576">Vienmēr</translation>
 <translation id="7572498721684305250">Bloķēt informācijas sūtīšanu uz vietnēm un saņemšanu no vietnēm, kad ar ierīci pieskaraties citai NFC ierīcei</translation>
 <translation id="757524316907819857">Neļaut vietnēm atskaņot aizsargātu saturu</translation>
 <translation id="7589445247086920869">Aizliegšana pašreizējai meklētājprogrammai</translation>
