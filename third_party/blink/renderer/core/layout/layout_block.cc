@@ -2202,35 +2202,29 @@ LayoutBlock* LayoutBlock::CreateAnonymousWithParentAndDisplay(
   return layout_block;
 }
 
-bool LayoutBlock::RecalcNormalFlowChildLayoutOverflowIfNeeded(
-    LayoutObject* layout_object) {
-  NOT_DESTROYED();
-  if (layout_object->IsOutOfFlowPositioned())
-    return false;
-  return layout_object->RecalcLayoutOverflow();
-}
-
-bool LayoutBlock::RecalcChildLayoutOverflow() {
+RecalcLayoutOverflowResult LayoutBlock::RecalcChildLayoutOverflow() {
   NOT_DESTROYED();
   DCHECK(!IsTable());
   DCHECK(ChildNeedsLayoutOverflowRecalc());
   ClearChildNeedsLayoutOverflowRecalc();
 
-  bool children_layout_overflow_changed = false;
+  RecalcLayoutOverflowResult result;
 
   if (ChildrenInline()) {
     SECURITY_DCHECK(IsLayoutBlockFlow());
-    children_layout_overflow_changed =
-        To<LayoutBlockFlow>(this)->RecalcInlineChildrenLayoutOverflow();
+    result.Unite(
+        To<LayoutBlockFlow>(this)->RecalcInlineChildrenLayoutOverflow());
   } else {
     for (LayoutBox* box = FirstChildBox(); box; box = box->NextSiblingBox()) {
-      if (RecalcNormalFlowChildLayoutOverflowIfNeeded(box))
-        children_layout_overflow_changed = true;
+      if (box->IsOutOfFlowPositioned())
+        continue;
+
+      result.Unite(box->RecalcLayoutOverflow());
     }
   }
 
-  return RecalcPositionedDescendantsLayoutOverflow() ||
-         children_layout_overflow_changed;
+  result.Unite(RecalcPositionedDescendantsLayoutOverflow());
+  return result;
 }
 
 void LayoutBlock::RecalcChildVisualOverflow() {
@@ -2254,19 +2248,19 @@ void LayoutBlock::RecalcChildVisualOverflow() {
   RecalcPositionedDescendantsVisualOverflow();
 }
 
-bool LayoutBlock::RecalcPositionedDescendantsLayoutOverflow() {
+RecalcLayoutOverflowResult
+LayoutBlock::RecalcPositionedDescendantsLayoutOverflow() {
   NOT_DESTROYED();
-  bool children_layout_overflow_changed = false;
+  RecalcLayoutOverflowResult result;
 
   TrackedLayoutBoxListHashSet* positioned_descendants = PositionedObjects();
   if (!positioned_descendants)
-    return children_layout_overflow_changed;
+    return result;
 
-  for (auto* box : *positioned_descendants) {
-    if (box->RecalcLayoutOverflow())
-      children_layout_overflow_changed = true;
-  }
-  return children_layout_overflow_changed;
+  for (auto* box : *positioned_descendants)
+    result.Unite(box->RecalcLayoutOverflow());
+
+  return result;
 }
 
 void LayoutBlock::RecalcPositionedDescendantsVisualOverflow() {
@@ -2282,17 +2276,20 @@ void LayoutBlock::RecalcPositionedDescendantsVisualOverflow() {
   }
 }
 
-bool LayoutBlock::RecalcLayoutOverflow() {
+RecalcLayoutOverflowResult LayoutBlock::RecalcLayoutOverflow() {
   NOT_DESTROYED();
   bool children_layout_overflow_changed = false;
-  if (ChildNeedsLayoutOverflowRecalc())
-    children_layout_overflow_changed = RecalcChildLayoutOverflow();
+  if (ChildNeedsLayoutOverflowRecalc()) {
+    children_layout_overflow_changed =
+        RecalcChildLayoutOverflow().layout_overflow_changed;
+  }
 
   bool self_needs_overflow_recalc = SelfNeedsLayoutOverflowRecalc();
   if (!self_needs_overflow_recalc && !children_layout_overflow_changed)
-    return false;
+    return RecalcLayoutOverflowResult();
 
-  return RecalcSelfLayoutOverflow();
+  // rebuild_fragment_tree can be false here as it is a legacy root.
+  return {RecalcSelfLayoutOverflow(), /* rebuild_fragment_tree */ false};
 }
 
 void LayoutBlock::RecalcVisualOverflow() {

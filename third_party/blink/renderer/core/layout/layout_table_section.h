@@ -122,7 +122,7 @@ class CORE_EXPORT LayoutTableSection final
   int16_t VBorderSpacingBeforeFirstRow() const;
   int CalcRowLogicalHeight();
   void LayoutRows();
-  bool RecalcLayoutOverflow() final;
+  RecalcLayoutOverflowResult RecalcLayoutOverflow() final;
   void RecalcVisualOverflow() final;
 
   void MarkAllCellsWidthsDirtyAndOrNeedsLayout(LayoutTable::WhatToMarkAllCells);

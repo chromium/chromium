@@ -646,27 +646,31 @@ void LayoutTable::SimplifiedNormalFlowLayout() {
   }
 }
 
-bool LayoutTable::RecalcLayoutOverflow() {
+RecalcLayoutOverflowResult LayoutTable::RecalcLayoutOverflow() {
   NOT_DESTROYED();
   RecalcSelfLayoutOverflow();
 
   if (!ChildNeedsLayoutOverflowRecalc())
-    return false;
+    return RecalcLayoutOverflowResult();
+
   ClearChildNeedsLayoutOverflowRecalc();
 
   // If the table sections we keep pointers to have gone away then the table
   // will be rebuilt and overflow will get recalculated anyway so return early.
   if (NeedsSectionRecalc())
-    return false;
+    return RecalcLayoutOverflowResult();
 
   bool children_layout_overflow_changed = false;
   for (LayoutTableSection* section = TopSection(); section;
        section = SectionBelow(section)) {
-    children_layout_overflow_changed =
-        section->RecalcLayoutOverflow() || children_layout_overflow_changed;
+    children_layout_overflow_changed |=
+        section->RecalcLayoutOverflow().layout_overflow_changed;
   }
-  return RecalcPositionedDescendantsLayoutOverflow() ||
-         children_layout_overflow_changed;
+
+  children_layout_overflow_changed |=
+      RecalcPositionedDescendantsLayoutOverflow().layout_overflow_changed;
+
+  return {children_layout_overflow_changed, /* rebuild_fragment_tree */ false};
 }
 
 void LayoutTable::RecalcVisualOverflow() {

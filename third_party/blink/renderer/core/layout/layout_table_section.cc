@@ -1475,10 +1475,11 @@ const LayoutNGTableCellInterface* LayoutTableSection::PrimaryCellInterfaceAt(
   return PrimaryCellAt(row, effective_column);
 }
 
-bool LayoutTableSection::RecalcLayoutOverflow() {
+RecalcLayoutOverflowResult LayoutTableSection::RecalcLayoutOverflow() {
   NOT_DESTROYED();
   if (!ChildNeedsLayoutOverflowRecalc())
-    return false;
+    return RecalcLayoutOverflowResult();
+
   ClearChildNeedsLayoutOverflowRecalc();
   unsigned total_rows = grid_.size();
   bool children_layout_overflow_changed = false;
@@ -1493,7 +1494,8 @@ bool LayoutTableSection::RecalcLayoutOverflow() {
       auto* cell = OriginatingCellAt(r, c);
       if (!cell)
         continue;
-      row_children_layout_overflow_changed |= cell->RecalcLayoutOverflow();
+      row_children_layout_overflow_changed |=
+          cell->RecalcLayoutOverflow().layout_overflow_changed;
     }
     if (row_children_layout_overflow_changed)
       row_layouter->ComputeLayoutOverflow();
@@ -1502,7 +1504,7 @@ bool LayoutTableSection::RecalcLayoutOverflow() {
   if (children_layout_overflow_changed)
     ComputeLayoutOverflowFromDescendants();
 
-  return children_layout_overflow_changed;
+  return {children_layout_overflow_changed, /* rebuild_fragment_tree */ false};
 }
 
 void LayoutTableSection::RecalcVisualOverflow() {

@@ -4590,24 +4590,26 @@ void LayoutBlockFlow::SimplifiedNormalFlowInlineLayout() {
   }
 }
 
-bool LayoutBlockFlow::RecalcInlineChildrenLayoutOverflow() {
+RecalcLayoutOverflowResult
+LayoutBlockFlow::RecalcInlineChildrenLayoutOverflow() {
   NOT_DESTROYED();
   DCHECK(ChildrenInline());
-  bool children_layout_overflow_changed = false;
+  RecalcLayoutOverflowResult result;
   HashSet<RootInlineBox*> line_boxes;
   for (InlineWalker walker(LineLayoutBlockFlow(this)); !walker.AtEnd();
        walker.Advance()) {
     LayoutObject* layout_object = walker.Current().GetLayoutObject();
-    if (RecalcNormalFlowChildLayoutOverflowIfNeeded(layout_object)) {
-      children_layout_overflow_changed = true;
-      // TODO(chrishtr): should this be IsBox()? Non-blocks can be
-      // inline and have line box wrappers.
-      auto* layout_block_object = DynamicTo<LayoutBlock>(layout_object);
-      if (layout_block_object) {
-        if (InlineBox* inline_box_wrapper =
-                layout_block_object->InlineBoxWrapper())
-          line_boxes.insert(&inline_box_wrapper->Root());
-      }
+    if (layout_object->IsOutOfFlowPositioned())
+      continue;
+
+    result.Unite(layout_object->RecalcLayoutOverflow());
+
+    // TODO(chrishtr): should this be IsBox()? Non-blocks can be inline and
+    // have line box wrappers.
+    if (auto* layout_block_object = DynamicTo<LayoutBlock>(layout_object)) {
+      if (InlineBox* inline_box_wrapper =
+              layout_block_object->InlineBoxWrapper())
+        line_boxes.insert(&inline_box_wrapper->Root());
     }
   }
 
@@ -4618,7 +4620,7 @@ bool LayoutBlockFlow::RecalcInlineChildrenLayoutOverflow() {
     box->ClearKnownToHaveNoOverflow();
     box->ComputeOverflow(box->LineTop(), box->LineBottom(), text_box_data_map);
   }
-  return children_layout_overflow_changed;
+  return result;
 }
 
 void LayoutBlockFlow::RecalcInlineChildrenVisualOverflow() {

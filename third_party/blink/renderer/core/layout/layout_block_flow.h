@@ -477,7 +477,7 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
   void SetShouldDoFullPaintInvalidationForFirstLine();
 
   void SimplifiedNormalFlowInlineLayout();
-  bool RecalcInlineChildrenLayoutOverflow();
+  RecalcLayoutOverflowResult RecalcInlineChildrenLayoutOverflow();
   void RecalcInlineChildrenVisualOverflow();
 
   PositionWithAffinity PositionForPoint(const PhysicalOffset&) const override;

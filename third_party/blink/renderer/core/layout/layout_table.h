@@ -453,7 +453,7 @@ class CORE_EXPORT LayoutTable final : public LayoutBlock,
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
   void SimplifiedNormalFlowLayout() override;
 
-  bool RecalcLayoutOverflow() final;
+  RecalcLayoutOverflowResult RecalcLayoutOverflow() final;
   void RecalcVisualOverflow() final;
 
   void EnsureIsReadyForPaintInvalidation() override;

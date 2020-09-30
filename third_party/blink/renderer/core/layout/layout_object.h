@@ -146,6 +146,25 @@ class AllowDestroyingLayoutObjectInFinalizerScope {
   ~AllowDestroyingLayoutObjectInFinalizerScope();
 };
 
+// The result of |LayoutObject::RecalcLayoutOverflow|.
+struct RecalcLayoutOverflowResult {
+  STACK_ALLOCATED();
+
+ public:
+  // True if the layout-overflow (from the viewpoint of the parent) changed,
+  // indicating that the parent should also recalculate its layout-overflow.
+  bool layout_overflow_changed = false;
+
+  // True if parents should rebuild their fragments to ensure fragment tree
+  // consistency. This may be true even if |layout_overflow_changed| is false.
+  bool rebuild_fragment_tree = false;
+
+  void Unite(const RecalcLayoutOverflowResult& other) {
+    layout_overflow_changed |= other.layout_overflow_changed;
+    rebuild_fragment_tree |= other.rebuild_fragment_tree;
+  }
+};
+
 // LayoutObject is the base class for all layout tree objects.
 //
 // LayoutObjects form a tree structure that is a close mapping of the DOM tree.
@@ -2020,7 +2039,8 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
 
   virtual void Paint(const PaintInfo&) const;
 
-  virtual bool RecalcLayoutOverflow();
+  virtual RecalcLayoutOverflowResult RecalcLayoutOverflow();
+
   // Recalculates visual overflow for this object and non-self-painting
   // PaintLayer descendants.
   virtual void RecalcVisualOverflow();

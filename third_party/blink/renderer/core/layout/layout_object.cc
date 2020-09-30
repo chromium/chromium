@@ -1605,18 +1605,19 @@ LayoutObject::EnclosingDirectlyCompositableContainer() const {
   return container;
 }
 
-bool LayoutObject::RecalcLayoutOverflow() {
+RecalcLayoutOverflowResult LayoutObject::RecalcLayoutOverflow() {
   NOT_DESTROYED();
   if (!ChildNeedsLayoutOverflowRecalc())
-    return false;
+    return RecalcLayoutOverflowResult();
+
   ClearChildNeedsLayoutOverflowRecalc();
   bool children_layout_overflow_changed = false;
   for (LayoutObject* current = SlowFirstChild(); current;
        current = current->NextSibling()) {
-    if (current->RecalcLayoutOverflow())
-      children_layout_overflow_changed = true;
+    children_layout_overflow_changed |=
+        current->RecalcLayoutOverflow().layout_overflow_changed;
   }
-  return children_layout_overflow_changed;
+  return {children_layout_overflow_changed, /* rebuild_fragment_tree */ false};
 }
 
 void LayoutObject::RecalcVisualOverflow() {
