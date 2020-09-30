@@ -5256,6 +5256,24 @@
             ]
         }
     ],
+    "PdfViewerUpdate": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PdfViewerUpdate"
+                    ]
+                }
+            ]
+        }
+    ],
     "PerProcessReclaim": [
         {
             "platforms": [
