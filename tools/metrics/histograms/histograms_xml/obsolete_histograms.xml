@@ -81412,6 +81412,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Sync.ModelTypeRedundantPut" enum="SyncModelTypes"
+    expires_after="2020-11-01">
+  <obsolete>
+    Removed as of 10/2020.
+  </obsolete>
+  <owner>mastiz@chromium.org</owner>
+  <owner>jkrcal@chromium.org</owner>
+  <summary>
+    Records the model type when a local change is made and sync optimized it
+    away because nothing actually changed.
+  </summary>
+</histogram>
+
 <histogram name="Sync.ModelTypeStoreCommitCount" enum="SyncModelTypes"
     expires_after="2019-07-19">
   <obsolete>

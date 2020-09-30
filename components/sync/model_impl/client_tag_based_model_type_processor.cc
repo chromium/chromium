@@ -390,8 +390,6 @@ void ClientTagBasedModelTypeProcessor::Put(
     }
   } else if (entity->MatchesData(*data)) {
     // Ignore changes that don't actually change anything.
-    UMA_HISTOGRAM_ENUMERATION("Sync.ModelTypeRedundantPut",
-                              ModelTypeHistogramValue(type_));
     return;
   }
 
