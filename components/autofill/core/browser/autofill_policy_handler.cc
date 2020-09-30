@@ -37,7 +37,7 @@ void AutofillPolicyHandler::ApplyPolicySettings(
   bool autofill_enabled;
   if (value && value->GetAsBoolean(&autofill_enabled) && !autofill_enabled) {
     prefs->SetBoolean(autofill::prefs::kAutofillEnabledDeprecated, false);
-    // Disable the fine-grained prefs if the master pref is disabled by policy.
+    // Disable the fine-grained prefs if the main pref is disabled by policy.
     prefs->SetBoolean(autofill::prefs::kAutofillCreditCardEnabled, false);
     prefs->SetBoolean(autofill::prefs::kAutofillProfileEnabled, false);
   }
