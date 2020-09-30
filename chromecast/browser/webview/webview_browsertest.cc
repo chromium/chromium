@@ -69,7 +69,6 @@ class WebviewTest : public content::BrowserTestBase {
     context_.reset();
   }
   void SetUpCommandLine(base::CommandLine* command_line) final {
-    command_line->AppendSwitch(switches::kNoWifi);
     command_line->AppendSwitchASCII(switches::kTestType, "browser");
   }
   void RunTestOnMainThread() override {}

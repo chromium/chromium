@@ -266,7 +266,6 @@ class BindingsManagerCastBrowserTest : public content::BrowserTestBase {
     BrowserTestBase::SetUp();
   }
   void SetUpCommandLine(base::CommandLine* command_line) final {
-    command_line->AppendSwitch(switches::kNoWifi);
     command_line->AppendSwitchASCII(switches::kTestType, "browser");
   }
 

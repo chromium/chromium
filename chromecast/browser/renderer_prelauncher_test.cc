@@ -39,7 +39,6 @@ class RendererPrelauncherTest : public content::BrowserTestBase {
 
 void RendererPrelauncherTest::SetUp() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  command_line->AppendSwitch(switches::kNoWifi);
   command_line->AppendSwitchASCII(switches::kTestType, "browser");
 
   BrowserTestBase::SetUp();

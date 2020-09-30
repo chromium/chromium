@@ -36,7 +36,6 @@ void CastBrowserTest::SetUp() {
 }
 
 void CastBrowserTest::SetUpCommandLine(base::CommandLine* command_line) {
-  command_line->AppendSwitch(switches::kNoWifi);
   command_line->AppendSwitchASCII(switches::kTestType, "browser");
 }
 
