@@ -14,7 +14,6 @@
 #include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "chrome/browser/chromeos/drive/drive_integration_service.h"
-#include "chrome/browser/chromeos/file_manager/file_tasks_notifier.h"
 #include "chrome/browser/ui/app_list/search/files/file_result.h"
 #include "chrome/browser/ui/app_list/search/files/item_suggest_cache.h"
 #include "chrome/browser/ui/app_list/search/search_provider.h"
@@ -57,7 +56,6 @@ class DriveZeroStateProvider : public SearchProvider,
 
   Profile* const profile_;
   drive::DriveIntegrationService* const drive_service_;
-  file_manager::file_tasks::FileTasksNotifier* const file_tasks_notifier_;
 
   ItemSuggestCache item_suggest_cache_;
 

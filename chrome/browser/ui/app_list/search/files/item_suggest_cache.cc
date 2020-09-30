@@ -69,7 +69,8 @@ constexpr char kRequestBody[] = R"({
         'platform_type': 'CHROME_OS',
         'scenario_type': 'CHROME_OS_ZSS_FILES'
       },
-      'max_suggestions': 10
+      'max_suggestions': 10,
+      'type_detail_fields': 'drive_item.title,justification.display_text'
     })";
 
 bool IsDisabledByPolicy(const Profile* profile) {

@@ -24,6 +24,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace app_list {
 namespace {
@@ -50,8 +51,6 @@ DriveZeroStateProvider::DriveZeroStateProvider(
     : profile_(profile),
       drive_service_(
           drive::DriveIntegrationServiceFactory::GetForProfile(profile)),
-      file_tasks_notifier_(
-          file_manager::file_tasks::FileTasksNotifier::GetForProfile(profile)),
       item_suggest_cache_(profile, std::move(url_loader_factory)),
       suggested_files_enabled_(app_list_features::IsSuggestedFilesEnabled()) {
   DCHECK(profile_);
@@ -109,9 +108,8 @@ void DriveZeroStateProvider::Start(const base::string16& query) {
   // Exit in three cases:
   //  - this search has a non-empty query, we only handle zero-state.
   //  - drive fs isn't mounted, as we launch results via drive fs.
-  //  - the |file_tasks_notifier_| is unavailable, as we stat files using it.
   const bool drive_fs_mounted = drive_service_ && drive_service_->IsMounted();
-  if (!query.empty() || !drive_fs_mounted || !file_tasks_notifier_) {
+  if (!query.empty() || !drive_fs_mounted) {
     // TODO(crbug.com/1034842): Log error metrics.
     return;
   }
