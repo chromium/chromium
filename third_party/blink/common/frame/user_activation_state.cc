@@ -47,15 +47,6 @@ bool UserActivationState::ConsumeIfActive() {
   return true;
 }
 
-void UserActivationState::TransferFrom(UserActivationState& other) {
-  if (other.has_been_active_)
-    has_been_active_ = true;
-  if (transient_state_expiry_time_ < other.transient_state_expiry_time_)
-    transient_state_expiry_time_ = other.transient_state_expiry_time_;
-
-  other.Clear();
-}
-
 void UserActivationState::ActivateTransientState() {
   transient_state_expiry_time_ = base::TimeTicks::Now() + kActivationLifespan;
 }

@@ -110,13 +110,6 @@ class BLINK_COMMON_EXPORT UserActivationState {
   // successfully consumed.
   bool ConsumeIfActive();
 
-  // Transfers user activation state from |other| into |this|:
-  // - The sticky bit in |this| gets set if the bit in |other| is set.
-  // - The transient expiry time in |this| becomes the max of the expiry times
-  //   in |this| and |other|.
-  // - The state in |other| is cleared.
-  void TransferFrom(UserActivationState& other);
-
  private:
   void ActivateTransientState();
   void DeactivateTransientState();
