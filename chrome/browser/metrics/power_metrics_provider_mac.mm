@@ -435,7 +435,7 @@ class PowerMetricsProvider::Impl : public base::RefCountedThreadSafe<Impl> {
     bool is_on_battery = false;
     if (base::PowerMonitor::IsInitialized())
       is_on_battery = base::PowerMonitor::IsOnBatteryPower();
-    UMA_HISTOGRAM_BOOLEAN("Power.Mac.IsOnBattery", is_on_battery);
+    UMA_HISTOGRAM_BOOLEAN("Power.Mac.IsOnBattery2", is_on_battery);
   }
 
   void RecordThermal() API_AVAILABLE(macos(10.10.3)) {

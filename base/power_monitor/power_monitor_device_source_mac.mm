@@ -25,9 +25,14 @@ void ProcessPowerEventHelper(PowerMonitorSource::PowerEvent event) {
 
 bool PowerMonitorDeviceSource::IsOnBatteryPowerImpl() {
   base::ScopedCFTypeRef<CFTypeRef> info(IOPSCopyPowerSourcesInfo());
+  if (!info)
+    return false;
   base::ScopedCFTypeRef<CFArrayRef> power_sources_list(
       IOPSCopyPowerSourcesList(info));
+  if (!power_sources_list)
+    return false;
 
+  bool found_battery = false;
   const CFIndex count = CFArrayGetCount(power_sources_list);
   for (CFIndex i = 0; i < count; ++i) {
     const CFDictionaryRef description = IOPSGetPowerSourceDescription(
@@ -37,18 +42,29 @@ bool PowerMonitorDeviceSource::IsOnBatteryPowerImpl() {
 
     CFStringRef current_state = base::mac::GetValueFromDictionary<CFStringRef>(
         description, CFSTR(kIOPSPowerSourceStateKey));
-
     if (!current_state)
       continue;
 
     // We only report "on battery power" if no source is on AC power.
-    if (CFStringCompare(current_state, CFSTR(kIOPSBatteryPowerValue), 0) !=
+    if (CFStringCompare(current_state, CFSTR(kIOPSOffLineValue), 0) ==
         kCFCompareEqualTo) {
+      continue;
+    } else if (CFStringCompare(current_state, CFSTR(kIOPSACPowerValue), 0) ==
+               kCFCompareEqualTo) {
       return false;
     }
+
+    DCHECK_EQ(CFStringCompare(current_state, CFSTR(kIOPSBatteryPowerValue), 0),
+              kCFCompareEqualTo)
+        << "Power source state is not one of 3 documented values";
+
+    found_battery = true;
   }
 
-  return true;
+  // At this point, either there were no readable batteries found, in which case
+  // this Mac is not on battery power, or all the readable batteries were on
+  // battery power, in which case, count this as being on battery power.
+  return found_battery;
 }
 
 PowerObserver::DeviceThermalState

@@ -708,9 +708,25 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Power.Mac.IsOnBattery" enum="BooleanOnBattery"
     expires_after="2021-02-21">
+  <obsolete>
+    Replaced with Power.Mac.IsOnBattery2 09/2020 as it was broken.
+  </obsolete>
   <owner>lgrey@chromium.org</owner>
   <summary>
     Whether the user's machine is on battery power. Sampled once per minute.
+    Warning: This incorrectly logs desktop Macs as being on battery power.
+    Replaced by Power.Mac.IsOnBattery2.
+  </summary>
+</histogram>
+
+<histogram name="Power.Mac.IsOnBattery2" enum="BooleanOnBattery"
+    expires_after="2021-02-21">
+  <owner>avi@chromium.org</owner>
+  <owner>lgrey@chromium.org</owner>
+  <summary>
+    Whether the user's machine is on battery power. Sampled once per minute.
+    Unlike Power.Mac.IsOnBattery, this correctly logs desktop Macs as not being
+    on battery.
   </summary>
 </histogram>
 
