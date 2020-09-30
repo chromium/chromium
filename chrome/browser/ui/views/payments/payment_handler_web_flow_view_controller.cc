@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/check_op.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/payments/ssl_validity_checker.h"
@@ -237,6 +238,11 @@ void PaymentHandlerWebFlowViewController::FillContentView(
       content_view->AddChildView(std::make_unique<views::WebView>(profile_));
   Observe(web_view->GetWebContents());
   web_contents()->SetDelegate(this);
+  DCHECK_NE(log_.web_contents(), web_contents());
+  content::PaymentAppProvider::GetOrCreateForWebContents(
+      /*payment_request_web_contents=*/log_.web_contents())
+      ->SetOpenedWindow(
+          /*payment_handler_web_contents=*/web_contents());
   web_view->LoadInitialURL(target_);
 
   // Enable modal dialogs for web-based payment handlers.
