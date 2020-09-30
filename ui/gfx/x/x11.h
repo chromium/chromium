@@ -47,11 +47,6 @@ using XErrorEvent = struct _XErrorEvent {
   unsigned char minor_code;
 };
 
-using XModifierKeymap = struct {
-  int max_keypermod;
-  KeyCode* modifiermap;
-};
-
 using XErrorHandler = int (*)(Display*, XErrorEvent*);
 using XIOErrorHandler = int (*)(Display*);
 
@@ -72,26 +67,7 @@ int XGetErrorDatabaseText(Display*,
 int XGetErrorText(Display*, int, char*, int);
 XErrorHandler XSetErrorHandler(XErrorHandler);
 XIOErrorHandler XSetIOErrorHandler(XIOErrorHandler);
-KeyCode XKeysymToKeycode(Display*, KeySym);
-char* XKeysymToString(KeySym);
-XModifierKeymap* XGetModifierMapping(Display*);
-int XFreeModifiermap(XModifierKeymap*);
 int XStoreName(Display*, Window, const char*);
-int XDisplayKeycodes(Display*, int*, int*);
-KeySym* XGetKeyboardMapping(Display*, KeyCode, int, int*);
-KeySym XStringToKeysym(const char*);
-int XChangeKeyboardMapping(Display*, int, int, KeySym*, int);
-Bool XkbLookupKeySym(Display*, KeyCode, unsigned int, unsigned int*, KeySym*);
-Bool XkbLockModifiers(Display*, unsigned int, unsigned int, unsigned int);
-unsigned int XkbKeysymToModifiers(Display*, KeySym);
-}
-
-inline int XkbGroupForCoreState(int s) {
-  return (s >> 13) & 0x3;
-}
-
-inline int XkbBuildCoreState(int m, int g) {
-  return ((g & 0x3) << 13) | (m & 0xff);
 }
 
 #endif  // UI_GFX_X_X11_H_

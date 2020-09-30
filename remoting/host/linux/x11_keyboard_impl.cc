@@ -15,11 +15,12 @@
 
 namespace {
 
-bool FindKeycodeForKeySym(Display* display,
-                          KeySym key_sym,
+bool FindKeycodeForKeySym(x11::Connection* connection,
+                          x11::KeySym key_sym,
                           uint32_t* keycode,
                           uint32_t* modifiers) {
-  uint32_t found_keycode = XKeysymToKeycode(display, key_sym);
+  auto found_keycode =
+      static_cast<uint32_t>(connection->KeysymToKeycode(key_sym));
 
   const x11::KeyButMask kModifiersToTry[] = {
       {},
@@ -34,11 +35,8 @@ bool FindKeycodeForKeySym(Display* display,
 
   // TODO(sergeyu): Is there a better way to find modifiers state?
   for (auto i : kModifiersToTry) {
-    int mods = static_cast<int>(i);
-    unsigned long key_sym_with_mods;
-    if (XkbLookupKeySym(display, found_keycode, mods, nullptr,
-                        &key_sym_with_mods) &&
-        key_sym_with_mods == key_sym) {
+    auto mods = static_cast<uint32_t>(i);
+    if (connection->KeycodeToKeysym(found_keycode, mods) == key_sym) {
       *modifiers = mods;
       *keycode = found_keycode;
       return true;
@@ -58,46 +56,49 @@ X11KeyboardImpl::~X11KeyboardImpl() = default;
 
 std::vector<uint32_t> X11KeyboardImpl::GetUnusedKeycodes() {
   std::vector<uint32_t> unused_keycodes_;
-  int min_keycode;
-  int max_keycode;
-  XDisplayKeycodes(display_, &min_keycode, &max_keycode);
-  uint32_t keycode_count = max_keycode - min_keycode + 1;
+  uint8_t min_keycode = static_cast<uint8_t>(connection_->setup().min_keycode);
+  uint8_t max_keycode = static_cast<uint8_t>(connection_->setup().max_keycode);
+  uint8_t keycode_count = max_keycode - min_keycode + 1;
 
-  int sym_per_key;
-  gfx::XScopedPtr<KeySym> mapping(
-      XGetKeyboardMapping(display_, min_keycode, keycode_count, &sym_per_key));
-  for (int keycode = max_keycode; keycode >= min_keycode; keycode--) {
-    bool used = false;
-    int offset = (keycode - min_keycode) * sym_per_key;
-    for (int level = 0; level < sym_per_key; level++) {
-      if (mapping.get()[offset + level]) {
-        used = true;
-        break;
+  auto req = connection_->GetKeyboardMapping(
+      {connection_->setup().min_keycode, keycode_count});
+  if (auto reply = req.Sync()) {
+    for (int keycode = max_keycode; keycode >= min_keycode; keycode--) {
+      bool used = false;
+      int offset = (keycode - min_keycode) * reply->keysyms_per_keycode;
+      for (int level = 0; level < reply->keysyms_per_keycode; level++) {
+        if (reply->keysyms[offset + level] != x11::KeySym{}) {
+          used = true;
+          break;
+        }
       }
-    }
-    if (!used) {
-      unused_keycodes_.push_back(keycode);
+      if (!used)
+        unused_keycodes_.push_back(keycode);
     }
   }
   return unused_keycodes_;
 }
 
 void X11KeyboardImpl::PressKey(uint32_t keycode, uint32_t modifiers) {
-  XkbLockModifiers(display_, static_cast<unsigned>(x11::Xkb::Id::UseCoreKbd),
-                   modifiers, modifiers);
+  connection_->xkb().LatchLockState(
+      {static_cast<x11::Xkb::DeviceSpec>(x11::Xkb::Id::UseCoreKbd),
+       static_cast<x11::ModMask>(modifiers),
+       static_cast<x11::ModMask>(modifiers)});
 
   connection_->xtest().FakeInput({x11::KeyEvent::Press, keycode});
   connection_->xtest().FakeInput({x11::KeyEvent::Release, keycode});
 
-  XkbLockModifiers(display_, static_cast<unsigned>(x11::Xkb::Id::UseCoreKbd),
-                   modifiers, 0);
+  connection_->xkb().LatchLockState(
+      {static_cast<x11::Xkb::DeviceSpec>(x11::Xkb::Id::UseCoreKbd),
+       static_cast<x11::ModMask>(modifiers), x11::ModMask{}});
 }
 
 bool X11KeyboardImpl::FindKeycode(uint32_t code_point,
                                   uint32_t* keycode,
                                   uint32_t* modifiers) {
   for (uint32_t keysym : GetKeySymsForUnicode(code_point)) {
-    if (FindKeycodeForKeySym(display_, keysym, keycode, modifiers)) {
+    if (FindKeycodeForKeySym(connection_, static_cast<x11::KeySym>(keysym),
+                             keycode, modifiers)) {
       return true;
     }
   }
@@ -105,20 +106,22 @@ bool X11KeyboardImpl::FindKeycode(uint32_t code_point,
 }
 
 bool X11KeyboardImpl::ChangeKeyMapping(uint32_t keycode, uint32_t code_point) {
-  x11::KeySym sym{};
+  bool res = false;
   if (code_point > 0) {
-    std::string sym_hex = base::StringPrintf("U%x", code_point);
-    sym = static_cast<x11::KeySym>(XStringToKeysym(sym_hex.c_str()));
-    if (sym == x11::KeySym{}) {
-      // The server may not support Unicode-to-KeySym translation.
-      return false;
+    for (auto keysym : GetKeySymsForUnicode(code_point)) {
+      if (keysym > 0xffff)
+        continue;
+      connection_->ChangeKeyboardMapping({
+          .keycode_count = 1,
+          .first_keycode = static_cast<x11::KeyCode>(keycode),
+          .keysyms_per_keycode = 2,
+          .keysyms = {static_cast<x11::KeySym>(keysym) /* lower-case */,
+                      static_cast<x11::KeySym>(keysym) /* upper-case */},
+      });
+      res = true;
     }
   }
-
-  KeySym syms[2]{static_cast<KeySym>(sym) /* lower-case */,
-                 static_cast<KeySym>(sym) /* upper-case */};
-  XChangeKeyboardMapping(display_, keycode, 2, syms, 1);
-  return true;
+  return res;
 }
 
 void X11KeyboardImpl::Flush() {

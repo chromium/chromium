@@ -57,8 +57,9 @@ enum class ScrollDirection {
 };
 
 ScrollDirection WheelDeltaToScrollDirection(float num) {
-  return (num > 0) ? ScrollDirection::UP
-                   : (num < 0) ? ScrollDirection::DOWN : ScrollDirection::NONE;
+  return (num > 0)   ? ScrollDirection::UP
+         : (num < 0) ? ScrollDirection::DOWN
+                     : ScrollDirection::NONE;
 }
 
 bool IsDomModifierKey(ui::DomCode dom_code) {
@@ -384,20 +385,19 @@ bool InputInjectorX11::Core::IsLockKey(KeyCode keycode) {
   if (!state)
     return false;
   auto mods = state->baseMods | state->latchedMods | state->lockedMods;
-  KeySym keysym;
-  if (state && XkbLookupKeySym(display_, keycode, static_cast<unsigned>(mods),
-                               nullptr, &keysym)) {
+  auto keysym = static_cast<uint32_t>(
+      connection_.KeycodeToKeysym(keycode, static_cast<unsigned>(mods)));
+  if (state && keysym)
     return keysym == XK_Caps_Lock || keysym == XK_Num_Lock;
-  } else {
+  else
     return false;
-  }
 }
 
 void InputInjectorX11::Core::SetLockStates(base::Optional<bool> caps_lock,
                                            base::Optional<bool> num_lock) {
   // The lock bits associated with each lock key.
-  unsigned int caps_lock_mask = XkbKeysymToModifiers(display_, XK_Caps_Lock);
-  unsigned int num_lock_mask = XkbKeysymToModifiers(display_, XK_Num_Lock);
+  auto caps_lock_mask = static_cast<unsigned int>(x11::ModMask::Lock);
+  auto num_lock_mask = static_cast<unsigned int>(x11::ModMask::c_2);
 
   unsigned int update_mask = 0;  // The lock bits we want to update
   unsigned int lock_values = 0;  // The value of those bits
@@ -417,8 +417,10 @@ void InputInjectorX11::Core::SetLockStates(base::Optional<bool> caps_lock,
   }
 
   if (update_mask) {
-    XkbLockModifiers(display_, static_cast<unsigned>(x11::Xkb::Id::UseCoreKbd),
-                     update_mask, lock_values);
+    connection_.xkb().LatchLockState(
+        {static_cast<x11::Xkb::DeviceSpec>(x11::Xkb::Id::UseCoreKbd),
+         static_cast<x11::ModMask>(update_mask),
+         static_cast<x11::ModMask>(lock_values)});
   }
 }
 

@@ -102,15 +102,18 @@ int KeyboardCodeToXKeyCode(ui::KeyboardCode key_code) {
 // Gets the X modifier mask (Mod1Mask through Mod5Mask) for the given
 // modifier. Only checks the alt, meta, and num lock keys currently.
 // Returns true on success.
-bool GetXModifierMask(Display* display,
+bool GetXModifierMask(x11::Connection* connection,
                       int modifier,
                       x11::KeyButMask* x_modifier) {
-  XModifierKeymap* mod_map = XGetModifierMapping(display);
+  auto mod_map = connection->GetModifierMapping({}).Sync();
+  if (!mod_map)
+    return false;
   bool found = false;
-  int max_mod_keys = mod_map->max_keypermod;
+  int max_mod_keys = mod_map->keycodes_per_modifier;
   for (int mod_index = 0; mod_index <= 8; ++mod_index) {
     for (int key_index = 0; key_index < max_mod_keys; ++key_index) {
-      int key = mod_map->modifiermap[mod_index * max_mod_keys + key_index];
+      auto key = static_cast<uint8_t>(
+          mod_map->keycodes[mod_index * max_mod_keys + key_index]);
       int keysym =
           static_cast<int>(x11::Connection::Get()->KeycodeToKeysym(key, 0));
       if (modifier == kAltKeyModifierMask)
@@ -127,7 +130,6 @@ bool GetXModifierMask(Display* display,
     if (found)
       break;
   }
-  XFreeModifiermap(mod_map);
   return found;
 }
 
@@ -137,8 +139,8 @@ bool ConvertKeyCodeToText(ui::KeyboardCode key_code,
                           int modifiers,
                           std::string* text,
                           std::string* error_msg) {
-  XDisplay* display = gfx::GetXDisplay();
-  if (!display) {
+  auto* connection = x11::Connection::Get();
+  if (!connection || !connection->Ready()) {
     return ConvertKeyCodeToTextOzone(key_code, modifiers, text, error_msg);
   }
 
@@ -160,15 +162,15 @@ bool ConvertKeyCodeToText(ui::KeyboardCode key_code,
   // Make a best attempt for non-standard modifiers.
   x11::KeyButMask x_modifier;
   if (modifiers & kAltKeyModifierMask &&
-      GetXModifierMask(display, kAltKeyModifierMask, &x_modifier)) {
+      GetXModifierMask(connection, kAltKeyModifierMask, &x_modifier)) {
     state = state | x_modifier;
   }
   if (modifiers & kMetaKeyModifierMask &&
-      GetXModifierMask(display, kMetaKeyModifierMask, &x_modifier)) {
+      GetXModifierMask(connection, kMetaKeyModifierMask, &x_modifier)) {
     state = state | x_modifier;
   }
   if (modifiers & kNumLockKeyModifierMask &&
-      GetXModifierMask(display, kNumLockKeyModifierMask, &x_modifier)) {
+      GetXModifierMask(connection, kNumLockKeyModifierMask, &x_modifier)) {
     state = state | x_modifier;
   }
   key_event.state = state;

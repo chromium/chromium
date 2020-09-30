@@ -28,6 +28,10 @@ namespace ui {
 
 namespace {
 
+int XkbGroupForCoreState(int state) {
+  return (state >> 13) & 0x3;
+}
+
 // In X11 touch events, a new tracking_id/slot mapping is set up for each new
 // event (see |ui::GetTouchIdFromXEvent| function), which needs to be cleared
 // at destruction time for corresponding release/cancel events. In this

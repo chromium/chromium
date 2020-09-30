@@ -7,13 +7,15 @@
 
 #include <stdint.h>
 
+#include "ui/events/keycodes/keycodes_x_export.h"
+
 namespace ui {
 
 // Returns a Unicode character corresponding to the given |keysym|.  If the
 // |keysym| doesn't represent a printable character, returns zero.  We don't
 // support characters outside the Basic Plane, and this function returns zero
 // in that case.
-uint16_t GetUnicodeCharacterFromXKeySym(unsigned long keysym);
+KEYCODES_X_EXPORT uint16_t GetUnicodeCharacterFromXKeySym(unsigned long keysym);
 
 }  // namespace ui
 

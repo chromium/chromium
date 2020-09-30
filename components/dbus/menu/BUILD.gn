@@ -24,7 +24,10 @@ component("menu") {
     "//ui/gfx",
   ]
   if (use_x11) {
-    deps += [ "//ui/gfx/x" ]
+    deps += [
+      "//ui/events/keycodes:x11",
+      "//ui/gfx/x",
+    ]
   }
 }
 
