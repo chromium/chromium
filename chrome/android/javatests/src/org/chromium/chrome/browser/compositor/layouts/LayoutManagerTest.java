@@ -156,6 +156,9 @@ public class LayoutManagerTest implements MockTabModelDelegate {
             TabModelUtils.setIndex(mTabModelSelector.getModel(true), incognitoIndexSelected);
         }
         mTabModelSelector.selectModel(incognitoSelected);
+        Assert.assertNotNull(
+                mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter());
+
         LayoutManagerHost layoutManagerHost = new MockLayoutHost(context);
         TabContentManager tabContentManager = new TabContentManager(context, null, false, null);
         tabContentManager.initWithNative();

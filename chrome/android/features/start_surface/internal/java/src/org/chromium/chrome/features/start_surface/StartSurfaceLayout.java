@@ -108,7 +108,7 @@ public class StartSurfaceLayout extends Layout implements StartSurface.OverviewM
 
         mIsInitialized = true;
         mStartSurface.initWithNative();
-        mSceneLayer = new TabListSceneLayer();
+        ensureSceneLayerCreated();
         mSceneLayer.setTabModelSelector(mTabModelSelector);
     }
 
@@ -214,6 +214,7 @@ public class StartSurfaceLayout extends Layout implements StartSurface.OverviewM
 
     @Override
     protected void updateLayout(long time, long dt) {
+        ensureSceneLayerCreated();
         super.updateLayout(time, dt);
         if (mLayoutTabs == null) return;
 
@@ -272,6 +273,11 @@ public class StartSurfaceLayout extends Layout implements StartSurface.OverviewM
     @Override
     protected SceneLayer getSceneLayer() {
         return mSceneLayer;
+    }
+
+    private void ensureSceneLayerCreated() {
+        if (mSceneLayer != null) return;
+        mSceneLayer = new TabListSceneLayer();
     }
 
     @Override
@@ -478,6 +484,7 @@ public class StartSurfaceLayout extends Layout implements StartSurface.OverviewM
     protected void updateSceneLayer(RectF viewport, RectF contentViewport,
             LayerTitleCache layerTitleCache, TabContentManager tabContentManager,
             ResourceManager resourceManager, BrowserControlsStateProvider browserControls) {
+        ensureSceneLayerCreated();
         super.updateSceneLayer(viewport, contentViewport, layerTitleCache, tabContentManager,
                 resourceManager, browserControls);
         assert mSceneLayer != null;

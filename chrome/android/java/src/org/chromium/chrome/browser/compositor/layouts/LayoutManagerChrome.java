@@ -198,8 +198,8 @@ public class LayoutManagerChrome
         mToolbarSwipeLayout.setTabModelSelector(selector, content);
         mOverviewListLayout.setTabModelSelector(selector, content);
         if (mOverviewLayout != null) {
-            mOverviewLayout.onFinishNativeInitialization();
             mOverviewLayout.setTabModelSelector(selector, content);
+            mOverviewLayout.onFinishNativeInitialization();
         }
     }
 
