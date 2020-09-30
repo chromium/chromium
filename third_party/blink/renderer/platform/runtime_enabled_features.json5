@@ -1907,7 +1907,7 @@
     },
     {
       name: "UnderlineOffsetThickness",
-      status: "test",
+      status: "stable",
     },
     {
       name: "UnoptimizedImagePolicies",

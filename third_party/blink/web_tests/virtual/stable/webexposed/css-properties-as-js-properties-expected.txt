@@ -362,6 +362,7 @@ textDecorationColor
 textDecorationLine
 textDecorationSkipInk
 textDecorationStyle
+textDecorationThickness
 textIndent
 textOrientation
 textOverflow
@@ -369,6 +370,7 @@ textRendering
 textShadow
 textSizeAdjust
 textTransform
+textUnderlineOffset
 textUnderlinePosition
 top
 touchAction

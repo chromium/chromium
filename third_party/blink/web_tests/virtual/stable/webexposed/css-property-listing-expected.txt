@@ -327,6 +327,7 @@ All changes to this list should go through Blink's feature review process: http:
     text-decoration-line
     text-decoration-skip-ink
     text-decoration-style
+    text-decoration-thickness
     text-indent
     text-orientation
     text-overflow
@@ -334,6 +335,7 @@ All changes to this list should go through Blink's feature review process: http:
     text-shadow
     text-size-adjust
     text-transform
+    text-underline-offset
     text-underline-position
     top
     touch-action
@@ -691,6 +693,7 @@ All changes to this list should go through Blink's feature review process: http:
         text-decoration-color
         text-decoration-line
         text-decoration-style
+        text-decoration-thickness
     transition
         transition-delay
         transition-duration
