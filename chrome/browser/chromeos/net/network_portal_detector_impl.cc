@@ -125,8 +125,6 @@ NetworkPortalDetectorImpl::NetworkPortalDetectorImpl(
   }
   captive_portal_detector_.reset(new CaptivePortalDetector(loader_factory));
 
-  portal_test_url_ = GURL(CaptivePortalDetector::kDefaultURL);
-
   registrar_.Add(this, chrome::NOTIFICATION_AUTH_SUPPLIED,
                  content::NotificationService::AllSources());
   registrar_.Add(this, chrome::NOTIFICATION_AUTH_CANCELLED,
@@ -356,11 +354,9 @@ void NetworkPortalDetectorImpl::StartAttempt() {
   state_ = STATE_CHECKING_FOR_PORTAL;
   attempt_start_time_ = NowTicks();
 
-  DCHECK(portal_test_url_.is_valid());
-  NET_LOG(EVENT) << "Starting captive portal detection with URL: "
-                 << portal_test_url_;
+  NET_LOG(EVENT) << "Starting captive portal detection.";
   captive_portal_detector_->DetectCaptivePortal(
-      portal_test_url_,
+      GURL(CaptivePortalDetector::kDefaultURL),
       base::BindOnce(&NetworkPortalDetectorImpl::OnAttemptCompleted,
                      weak_factory_.GetWeakPtr()),
       NO_TRAFFIC_ANNOTATION_YET);

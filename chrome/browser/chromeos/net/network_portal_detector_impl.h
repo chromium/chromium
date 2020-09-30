@@ -62,11 +62,6 @@ class NetworkPortalDetectorImpl : public NetworkPortalDetector,
       network::mojom::URLLoaderFactory* loader_factory_for_testing = nullptr);
   ~NetworkPortalDetectorImpl() override;
 
-  // Set the URL to be tested for portal state.
-  void set_portal_test_url(const GURL& portal_test_url) {
-    portal_test_url_ = portal_test_url;
-  }
-
  private:
   friend class ::NetworkingConfigTest;
   friend class NetworkPortalDetectorImplTest;
@@ -219,10 +214,6 @@ class NetworkPortalDetectorImpl : public NetworkPortalDetector,
 
   // Reference to a SharedURLLoaderFactory used to detect portals.
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
-
-  // URL that returns a 204 response code when connected to the Internet. Used
-  // by tests.
-  GURL portal_test_url_;
 
   // Detector for checking default network for a portal state.
   std::unique_ptr<captive_portal::CaptivePortalDetector>

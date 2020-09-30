@@ -19,7 +19,6 @@
 #include "chrome/browser/ui/webui/chromeos/login/network_state_informer.h"
 #include "chrome/browser/ui/webui/chromeos/login/saml_challenge_key_handler.h"
 #include "chromeos/components/security_token_pin/constants.h"
-#include "chromeos/network/portal_detector/network_portal_detector.h"
 #include "components/user_manager/user_type.h"
 #include "net/base/net_errors.h"
 #include "net/cookies/canonical_cookie.h"
@@ -412,7 +411,6 @@ class GaiaScreenHandler : public BaseScreenHandler,
   NetworkPortalDetector::CaptivePortalStatus captive_portal_status_ =
       NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE;
 
-  std::unique_ptr<NetworkPortalDetector> network_portal_detector_;
   bool disable_restrictive_proxy_check_for_test_ = false;
 
   // Non-owning ptr to SigninScreenHandler instance. Should not be used
