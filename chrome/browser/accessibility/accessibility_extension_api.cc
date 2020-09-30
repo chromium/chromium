@@ -343,6 +343,7 @@ AccessibilityPrivateSendSyntheticMouseEventFunction::Run() {
 
   int changed_button_flags = flags;
 
+  flags |= ui::EF_IS_SYNTHESIZED;
   if (mouse_data->touch_accessibility && *(mouse_data->touch_accessibility))
     flags |= ui::EF_TOUCH_ACCESSIBILITY;
 
