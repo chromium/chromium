@@ -7,45 +7,52 @@
 
 namespace keyboard {
 
-TEST(NotificationManagerTest, DoesItConsolidate) {
+TEST(NotificationManagerTest, DoesNotSendIfSameAsInitialState) {
   NotificationManager manager;
 
-  ASSERT_TRUE(manager.ShouldSendVisibilityNotification(false));
-  ASSERT_FALSE(manager.ShouldSendVisibilityNotification(false));
-  ASSERT_TRUE(manager.ShouldSendVisibilityNotification(true));
-  ASSERT_TRUE(manager.ShouldSendVisibilityNotification(false));
-  ASSERT_FALSE(manager.ShouldSendVisibilityNotification(false));
+  EXPECT_FALSE(manager.ShouldSendVisibilityNotification(false));
+  EXPECT_FALSE(manager.ShouldSendVisualBoundsNotification(gfx::Rect()));
+  EXPECT_FALSE(manager.ShouldSendOccludedBoundsNotification(gfx::Rect()));
+  EXPECT_FALSE(
+      manager.ShouldSendWorkspaceDisplacementBoundsNotification(gfx::Rect()));
+}
 
-  ASSERT_TRUE(
+TEST(NotificationManagerTest, ConsolidatesVisibilityChanges) {
+  NotificationManager manager;
+
+  EXPECT_TRUE(manager.ShouldSendVisibilityNotification(true));
+  EXPECT_FALSE(manager.ShouldSendVisibilityNotification(true));
+  EXPECT_TRUE(manager.ShouldSendVisibilityNotification(false));
+}
+
+TEST(NotificationManagerTest, ConsolidatesVisualBoundsChanges) {
+  NotificationManager manager;
+
+  EXPECT_TRUE(
       manager.ShouldSendVisualBoundsNotification(gfx::Rect(10, 10, 10, 10)));
-  ASSERT_FALSE(
+  EXPECT_FALSE(
       manager.ShouldSendVisualBoundsNotification(gfx::Rect(10, 10, 10, 10)));
-  ASSERT_TRUE(
+  EXPECT_TRUE(
       manager.ShouldSendVisualBoundsNotification(gfx::Rect(10, 10, 20, 20)));
-
   // This is technically empty
-  ASSERT_TRUE(
+  EXPECT_TRUE(
       manager.ShouldSendVisualBoundsNotification(gfx::Rect(0, 0, 0, 100)));
-
   // This is still empty
-  ASSERT_FALSE(
+  EXPECT_FALSE(
       manager.ShouldSendVisualBoundsNotification(gfx::Rect(0, 0, 100, 0)));
+}
 
-  // Occluded bounds...
-
-  // Start the field with an empty value
-  ASSERT_TRUE(
-      manager.ShouldSendOccludedBoundsNotification(gfx::Rect(0, 0, 0, 0)));
+TEST(NotificationManagerTest, ConsolidatesOccludedBoundsChanges) {
+  NotificationManager manager;
 
   // Still empty
-  ASSERT_FALSE(
+  EXPECT_FALSE(
       manager.ShouldSendOccludedBoundsNotification(gfx::Rect(0, 0, 10, 0)));
 
-  ASSERT_TRUE(
+  EXPECT_TRUE(
       manager.ShouldSendOccludedBoundsNotification(gfx::Rect(0, 0, 10, 10)));
-
   // Different bounds, same size
-  ASSERT_TRUE(
+  EXPECT_TRUE(
       manager.ShouldSendOccludedBoundsNotification(gfx::Rect(30, 30, 10, 10)));
 }
 

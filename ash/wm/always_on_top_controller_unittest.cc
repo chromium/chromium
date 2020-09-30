@@ -41,19 +41,22 @@ class AlwaysOnTopControllerTest : public AshTestBase {
 class TestLayoutManager : public WorkspaceLayoutManager {
  public:
   explicit TestLayoutManager(aura::Window* window)
-      : WorkspaceLayoutManager(window), keyboard_bounds_changed_(false) {}
+      : WorkspaceLayoutManager(window),
+        keyboard_displacing_bounds_changed_(false) {}
 
   ~TestLayoutManager() override = default;
 
   void OnKeyboardDisplacingBoundsChanged(const gfx::Rect& bounds) override {
-    keyboard_bounds_changed_ = true;
+    keyboard_displacing_bounds_changed_ = true;
     WorkspaceLayoutManager::OnKeyboardDisplacingBoundsChanged(bounds);
   }
 
-  bool keyboard_bounds_changed() const { return keyboard_bounds_changed_; }
+  bool keyboard_displacing_bounds_changed() const {
+    return keyboard_displacing_bounds_changed_;
+  }
 
  private:
-  bool keyboard_bounds_changed_;
+  bool keyboard_displacing_bounds_changed_;
   DISALLOW_COPY_AND_ASSIGN(TestLayoutManager);
 };
 
@@ -70,13 +73,16 @@ TEST_F(AlwaysOnTopControllerTest, NotifyKeyboardBoundsChanging) {
       controller->always_on_top_controller();
   always_on_top_controller->SetLayoutManagerForTest(base::WrapUnique(manager));
 
-  // Show the keyboard.
+  // Show the keyboard to change the displacing bounds.
   auto* keyboard_controller = keyboard::KeyboardUIController::Get();
-  keyboard_controller->ShowKeyboard(false /* locked */);
+  keyboard_controller->SetKeyboardWindowBounds(gfx::Rect(0, 0, 100, 100));
+  EXPECT_FALSE(manager->keyboard_displacing_bounds_changed());
+
+  keyboard_controller->ShowKeyboard(true /* locked */);
   ASSERT_TRUE(keyboard::WaitUntilShown());
 
   // Verify that test manager was notified of bounds change.
-  ASSERT_TRUE(manager->keyboard_bounds_changed());
+  EXPECT_TRUE(manager->keyboard_displacing_bounds_changed());
 }
 
 TEST_F(AlwaysOnTopControllerTest,
