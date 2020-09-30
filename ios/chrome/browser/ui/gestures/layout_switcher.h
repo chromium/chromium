@@ -17,8 +17,11 @@ enum class LayoutSwitcherState {
 
 // Notifies of a transition of layout to the specified state. Called when the
 // view revealing vertical pan handler starts a transition of layout. The
-// conformer should prepare its layout for a transition to |nextState|.
-- (void)willTransitionToLayout:(LayoutSwitcherState)nextState;
+// conformer should prepare its layout for a transition to |nextState|, that
+// should execute the specified completion block on completion.
+- (void)willTransitionToLayout:(LayoutSwitcherState)nextState
+                    completion:
+                        (void (^)(BOOL completed, BOOL finished))completion;
 
 // Notifies of a change in the progress of the transition of layout currently in
 // progress.

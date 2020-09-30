@@ -15,12 +15,6 @@
 // TODO(crbug.com/1123512): Add support for going straight from a Hidden state
 // to a revealed state (and vice-versa) if the gesture's translation and
 // velocity are enough to trigger such transition.
-// TODO(crbug.com/1130037): When the currentState is Peeked and a transition
-// starts, if the user switches direction (from Revealed to Hidden and from
-// Hidden to Revealed again), the layout switcher's collection view starts a new
-// transition when one already exists: `'NSInternalInconsistencyException',
-// reason: 'the collection is already in the middle of an interactive
-// transition'`
 @interface ViewRevealingVerticalPanHandler : NSObject
 
 // |peekedHeight| is the height of the view when peeked (partially revealed).

@@ -8,6 +8,8 @@
 
 #include "base/check_op.h"
 #import "base/test/ios/wait_util.h"
+#import "ios/chrome/browser/ui/gestures/layout_switcher.h"
+#import "ios/chrome/browser/ui/gestures/layout_switcher_provider.h"
 #import "ios/chrome/browser/ui/gestures/view_revealing_animatee.h"
 #include "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -22,12 +24,70 @@
 @end
 
 @implementation FakeAnimatee
+- (instancetype)init {
+  self = [super init];
+  if (self) {
+    self.state = ViewRevealState::Hidden;
+  }
+  return self;
+}
 - (void)willAnimateViewReveal:(ViewRevealState)viewRevealState {
 }
 - (void)animateViewReveal:(ViewRevealState)viewRevealState {
   self.state = viewRevealState;
 }
 - (void)didAnimateViewReveal:(ViewRevealState)viewRevealState {
+}
+@end
+
+// A fake layout switcher provider.
+@interface FakeLayoutSwitcherProvider : NSObject <LayoutSwitcherProvider>
+@end
+
+@implementation FakeLayoutSwitcherProvider
+@synthesize layoutSwitcher = _layoutSwitcher;
+
+- (instancetype)initWithLayoutSwitcher:(id<LayoutSwitcher>)layoutSwitcher {
+  self = [super init];
+  if (self) {
+    _layoutSwitcher = layoutSwitcher;
+  }
+  return self;
+}
+@end
+
+// A fake layout switcher with observable layout properties.
+@interface FakeLayoutSwitcher : NSObject <LayoutSwitcher>
+@property(nonatomic, assign) LayoutSwitcherState state;
+@property(nonatomic, assign) LayoutSwitcherState nextState;
+@property(nonatomic, copy) void (^transitionCompletionBlock)
+    (BOOL completed, BOOL finished);
+@end
+
+@implementation FakeLayoutSwitcher
+- (instancetype)init {
+  self = [super init];
+  if (self) {
+    self.state = LayoutSwitcherState::Horizontal;
+  }
+  return self;
+}
+
+- (void)willTransitionToLayout:(LayoutSwitcherState)nextState
+                    completion:
+                        (void (^)(BOOL completed, BOOL finished))completion {
+  self.nextState = nextState;
+  self.transitionCompletionBlock = completion;
+}
+
+- (void)didUpdateTransitionLayoutProgress:(CGFloat)progress {
+}
+
+- (void)didTransitionToLayoutSuccessfully:(BOOL)success {
+  if (success) {
+    self.state = self.nextState;
+  }
+  self.transitionCompletionBlock(YES, success);
 }
 @end
 
@@ -105,6 +165,14 @@ TEST_F(ViewRevealingVerticalPanHandlerTest, DetectPan) {
            revealedCoverHeight:kBVCHeightTabGrid
                 baseViewHeight:kBaseViewHeight];
 
+  // Create a fake layout switcher and a provider.
+  FakeLayoutSwitcher* fake_layout_switcher = [[FakeLayoutSwitcher alloc] init];
+  FakeLayoutSwitcherProvider* fake_layout_switcher_provider =
+      [[FakeLayoutSwitcherProvider alloc]
+          initWithLayoutSwitcher:fake_layout_switcher];
+  pan_handler.layoutSwitcherProvider = fake_layout_switcher_provider;
+  EXPECT_EQ(LayoutSwitcherState::Horizontal, fake_layout_switcher.state);
+
   // Create a fake animatee.
   FakeAnimatee* fake_animatee = [[FakeAnimatee alloc] init];
   [pan_handler addAnimatee:fake_animatee];
@@ -114,13 +182,17 @@ TEST_F(ViewRevealingVerticalPanHandlerTest, DetectPan) {
   SimulatePanGesture(pan_handler, kThumbStripHeight * kRevealThreshold);
   EXPECT_EQ(ViewRevealState::Peeked, fake_animatee.state);
 
-  // Simulate a pan gesture from Peeked state to Revealed state.
+  // Simulate a pan gesture from Peeked state to Revealed state. The layout
+  // should transition to full state.
   SimulatePanGesture(pan_handler, remaining_height * kRevealThreshold);
   EXPECT_EQ(ViewRevealState::Revealed, fake_animatee.state);
+  EXPECT_EQ(LayoutSwitcherState::Full, fake_layout_switcher.state);
 
-  // Simulate a pan gesture from Revealed state to Peeked state.
+  // Simulate a pan gesture from Revealed state to Peeked state. The layout
+  // should transition back to horizontal state.
   SimulatePanGesture(pan_handler, -(remaining_height * kRevealThreshold));
   EXPECT_EQ(ViewRevealState::Peeked, fake_animatee.state);
+  EXPECT_EQ(LayoutSwitcherState::Horizontal, fake_layout_switcher.state);
 
   // Simulate a pan gesture from Peeked state to Hidden state.
   SimulatePanGesture(pan_handler, -(kThumbStripHeight * kRevealThreshold));

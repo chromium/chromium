@@ -692,8 +692,11 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
 #pragma mark - LayoutSwitcher
 
-- (void)willTransitionToLayout:(LayoutSwitcherState)nextState {
+- (void)willTransitionToLayout:(LayoutSwitcherState)nextState
+                    completion:
+                        (void (^)(BOOL completed, BOOL finished))completion {
   auto completionBlock = ^(BOOL completed, BOOL finished) {
+    completion(completed, finished);
     self.collectionView.scrollEnabled = YES;
   };
   switch (nextState) {
