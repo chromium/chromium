@@ -3,6 +3,11 @@
     cursor: pointer;
   }
 
+  :host([row-clickable]) #managedIcon {
+    /* Make the managed icon and the row clickable indicator closer. */
+    padding-inline-end: 0;
+  }
+
   iron-icon {
     display: flex;
     flex-shrink: 0;
@@ -49,15 +54,15 @@
       [[buttonLabel]]
     </cr-button>
   </template>
+  <template is="dom-if" if="[[showManagedIcon_(managedIcon)]]">
+    <iron-icon id="managedIcon" icon="[[managedIcon]]" aria-hidden="true">
+    </iron-icon>
+  </template>
   <template is="dom-if" if="[[rowClickable]]">
     <cr-icon-button id="rowClickableIndicator"
         iron-icon="[[getRowClickableIcon_(external)]]"
         aria-describedby="subLabel"
         aria-labelledby="label">
     </cr-icon-button>
-  </template>
-  <template is="dom-if" if="[[showManagedIcon_(managedIcon)]]" restamp>
-    <iron-icon id="managedIcon" icon="[[managedIcon]]" aria-hidden="true">
-    </iron-icon>
   </template>
 </div>

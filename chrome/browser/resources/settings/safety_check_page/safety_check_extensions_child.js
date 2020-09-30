@@ -64,6 +64,7 @@ Polymer({
         SafetyCheckExtensionsStatus.NO_BLOCKLISTED_EXTENSIONS,
         SafetyCheckExtensionsStatus.ERROR,
         SafetyCheckExtensionsStatus.BLOCKLISTED_ALL_DISABLED,
+        SafetyCheckExtensionsStatus.BLOCKLISTED_REENABLED_ALL_BY_ADMIN,
       ]),
     },
   },

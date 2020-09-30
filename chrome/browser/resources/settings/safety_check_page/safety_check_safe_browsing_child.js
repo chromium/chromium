@@ -65,6 +65,8 @@ Polymer({
         SafetyCheckSafeBrowsingStatus.ENABLED_STANDARD,
         SafetyCheckSafeBrowsingStatus.ENABLED_ENHANCED,
         SafetyCheckSafeBrowsingStatus.ENABLED_STANDARD_AVAILABLE_ENHANCED,
+        SafetyCheckSafeBrowsingStatus.DISABLED_BY_ADMIN,
+        SafetyCheckSafeBrowsingStatus.DISABLED_BY_EXTENSION,
       ]),
     },
   },

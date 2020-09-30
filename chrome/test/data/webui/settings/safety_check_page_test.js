@@ -772,6 +772,7 @@ suite('SafetyCheckSafeBrowsingChildUiTests', function() {
       iconStatus: SafetyCheckIconStatus.INFO,
       label: 'Safe Browsing',
       managedIcon: true,
+      rowClickable: true,
     });
   });
 
@@ -784,6 +785,7 @@ suite('SafetyCheckSafeBrowsingChildUiTests', function() {
       iconStatus: SafetyCheckIconStatus.INFO,
       label: 'Safe Browsing',
       managedIcon: true,
+      rowClickable: true,
     });
   });
 });
@@ -938,6 +940,7 @@ suite('SafetyCheckExtensionsChildUiTests', function() {
       iconStatus: SafetyCheckIconStatus.INFO,
       label: 'Extensions',
       managedIcon: true,
+      rowClickable: true,
     });
   });
 });
