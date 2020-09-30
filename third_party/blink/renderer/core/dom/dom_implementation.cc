@@ -73,11 +73,8 @@ XMLDocument* DOMImplementation::createDocument(
     const AtomicString& qualified_name,
     DocumentType* doctype,
     ExceptionState& exception_state) {
-  ExecutionContext* context = document_->GetExecutionContext();
-  if (!context)
-    return nullptr;
-
   XMLDocument* doc = nullptr;
+  ExecutionContext* context = document_->GetExecutionContext();
   DocumentInit init = DocumentInit::Create().WithExecutionContext(context);
   if (namespace_uri == svg_names::kNamespaceURI) {
     doc = XMLDocument::CreateSVG(init);
@@ -107,8 +104,6 @@ XMLDocument* DOMImplementation::createDocument(
 }
 
 Document* DOMImplementation::createHTMLDocument(const String& title) {
-  if (!document_->GetExecutionContext())
-    return nullptr;
   DocumentInit init =
       DocumentInit::Create()
           .WithExecutionContext(document_->GetExecutionContext())
