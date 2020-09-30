@@ -629,18 +629,18 @@ showUnmaskPromptForCard:(const autofill::CreditCard&)creditCard
   CWVPassword* password =
       [[CWVPassword alloc] initWithPasswordForm:credentials];
 
-  [self.delegate
-               autofillController:self
-      decideSavePolicyForPassword:password
-                  decisionHandler:^(CWVPasswordUserDecision decision) {
-                    // Marking a password update as "never" makes no sense as
-                    // the password has already been saved.
-                    DCHECK_NE(decision, CWVPasswordUserDecisionNever)
-                        << "A password update can only be accepted or ignored.";
-                    if (decision == CWVPasswordUserDecisionYes) {
-                      formPtr->Update(credentials);
-                    }
-                  }];
+  [self.delegate autofillController:self
+      decideUpdatePolicyForPassword:password
+                    decisionHandler:^(CWVPasswordUserDecision decision) {
+                      // Marking a password update as "never" makes no sense as
+                      // the password has already been saved.
+                      DCHECK_NE(decision, CWVPasswordUserDecisionNever)
+                          << "A password update can only be accepted or "
+                             "ignored.";
+                      if (decision == CWVPasswordUserDecisionYes) {
+                        formPtr->Update(credentials);
+                      }
+                    }];
 }
 
 - (void)removePasswordInfoBarManualFallback:(BOOL)manual {
