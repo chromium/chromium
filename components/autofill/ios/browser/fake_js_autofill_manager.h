@@ -13,15 +13,29 @@
 @interface FakeJSAutofillManager : JsAutofillManager
 
 // The name of the form that was most recently passed to
-// |clearAutofilledFieldsForFormName:fieldIdentifier:inFrame:completionHandler:|
+// |clearAutofilledFieldsForFormName:formUniqueID:fieldIdentifier:
+// fieldUniqueID:inFrame:completionHandler:|
 @property(nonatomic, copy, readonly) NSString* lastClearedFormName;
 
-// The field identifier that was most recently passed to
-// |clearAutofilledFieldsForFormName:fieldIdentifier:inFrame:completionHandler:|
-@property(nonatomic, copy, readonly) NSString* lastClearedFieldIdentifier;
+// The renderer ID of the form that was most recently passed to
+// |clearAutofilledFieldsForFormName:formUniqueID:fieldIdentifier:
+// fieldUniqueID:inFrame:completionHandler:|
+@property(nonatomic, readonly) autofill::FormRendererId lastClearedFormUniqueID;
 
 // The field identifier that was most recently passed to
-// |clearAutofilledFieldsForFormName:fieldIdentifier:inFrame:completionHandler:|
+// |clearAutofilledFieldsForFormName:formUniqueID:fieldIdentifier:
+// fieldUniqueID:inFrame:completionHandler:|
+@property(nonatomic, copy, readonly) NSString* lastClearedFieldIdentifier;
+
+// The renderer ID of the field that was most recently passed to
+// |clearAutofilledFieldsForFormName:formUniqueID:fieldIdentifier:
+// fieldUniqueID:inFrame:completionHandler:|
+@property(nonatomic, readonly)
+    autofill::FieldRendererId lastClearedFieldUniqueID;
+
+// The field identifier that was most recently passed to
+// |clearAutofilledFieldsForFormName:formUniqueID:fieldIdentifier:
+// fieldUniqueID:inFrame:completionHandler:|
 @property(nonatomic, copy, readonly) NSString* lastClearedFrameIdentifier;
 
 @end

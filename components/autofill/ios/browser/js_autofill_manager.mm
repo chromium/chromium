@@ -25,6 +25,7 @@
 #endif
 
 using autofill::FieldRendererId;
+using autofill::FormRendererId;
 
 @implementation JsAutofillManager
 
@@ -128,14 +129,27 @@ using autofill::FieldRendererId;
 }
 
 - (void)clearAutofilledFieldsForFormName:(NSString*)formName
+                            formUniqueID:(FormRendererId)formRendererID
                          fieldIdentifier:(NSString*)fieldIdentifier
+                           fieldUniqueID:(FieldRendererId)fieldRendererID
                                  inFrame:(web::WebFrame*)frame
                        completionHandler:
                            (void (^)(NSString*))completionHandler {
   DCHECK(completionHandler);
+
+  bool useRendererIDs = base::FeatureList::IsEnabled(
+      autofill::features::kAutofillUseUniqueRendererIDsOnIOS);
+  int formNumericID =
+      formRendererID ? formRendererID.value() : autofill::kNotSetRendererID;
+  int fieldNumericID =
+      fieldRendererID ? fieldRendererID.value() : autofill::kNotSetRendererID;
+
   std::vector<base::Value> parameters;
   parameters.push_back(base::Value(base::SysNSStringToUTF8(formName)));
+  parameters.push_back(base::Value(formNumericID));
   parameters.push_back(base::Value(base::SysNSStringToUTF8(fieldIdentifier)));
+  parameters.push_back(base::Value(fieldNumericID));
+  parameters.push_back(base::Value(useRendererIDs));
   autofill::ExecuteJavaScriptFunction(
       "autofill.clearAutofilledFields", parameters, frame,
       autofill::CreateStringCallback(completionHandler));

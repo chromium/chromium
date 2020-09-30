@@ -455,7 +455,9 @@ autofillManagerFromWebState:(web::WebState*)webState
     __weak AutofillAgent* weakSelf = self;
     [_jsAutofillManager
         clearAutofilledFieldsForFormName:formName
+                            formUniqueID:uniqueFormID
                          fieldIdentifier:fieldIdentifier
+                           fieldUniqueID:uniqueFieldID
                                  inFrame:frame
                        completionHandler:^(NSString* jsonString) {
                          AutofillAgent* strongSelf = weakSelf;

@@ -329,9 +329,13 @@ __gCrWeb.autofill['fillForm'] = function(
  * @return {string} JSON encoded list of renderer IDs of cleared elements.
  */
 __gCrWeb.autofill['clearAutofilledFields'] = function(
-    formName, fieldIdentifier) {
+    formName, formUniqueID, fieldIdentifier, fieldUniqueID, useRendererIDs) {
   const clearedElements = [];
-  const form = __gCrWeb.form.getFormElementFromIdentifier(formName);
+
+  const form = useRendererIDs ?
+      __gCrWeb.form.getFormElementFromUniqueFormId(formUniqueID) :
+      __gCrWeb.form.getFormElementFromIdentifier(formName);
+
   const controlElements = form ?
       __gCrWeb.form.getFormControlElements(form) :
       __gCrWeb.fill.getUnownedAutofillableFormFieldElements(
@@ -340,8 +344,12 @@ __gCrWeb.autofill['clearAutofilledFields'] = function(
 
   let formField = null;
   for (let i = 0; i < controlElements.length; ++i) {
-    if (__gCrWeb.form.getFieldIdentifier(controlElements[i]) ==
-        fieldIdentifier) {
+    if ((useRendererIDs &&
+         __gCrWeb.fill.getUniqueID(controlElements[i]) ==
+             fieldUniqueID.toString()) ||
+        (!useRendererIDs &&
+         __gCrWeb.form.getFieldIdentifier(controlElements[i]) ==
+             fieldIdentifier)) {
       formField = controlElements[i];
       break;
     }

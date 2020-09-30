@@ -181,14 +181,17 @@ using autofill::FieldRendererId;
         completionHandler:(nullable void (^)(void))completionHandler {
   web::WebFrame* frame =
       web::GetWebFrameWithId(_webState, base::SysNSStringToUTF8(frameID));
-  [_JSAutofillManager clearAutofilledFieldsForFormName:formName
-                                       fieldIdentifier:fieldIdentifier
-                                               inFrame:frame
-                                     completionHandler:^(NSString*) {
-                                       if (completionHandler) {
-                                         completionHandler();
-                                       }
-                                     }];
+  [_JSAutofillManager
+      clearAutofilledFieldsForFormName:formName
+                          formUniqueID:_lastFormActivityUniqueFormID
+                       fieldIdentifier:fieldIdentifier
+                         fieldUniqueID:_lastFormActivityUniqueFieldID
+                               inFrame:frame
+                     completionHandler:^(NSString*) {
+                       if (completionHandler) {
+                         completionHandler();
+                       }
+                     }];
 }
 
 - (void)fetchSuggestionsForFormWithName:(NSString*)formName

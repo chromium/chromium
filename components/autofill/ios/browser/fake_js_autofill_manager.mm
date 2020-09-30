@@ -18,17 +18,23 @@
 @implementation FakeJSAutofillManager
 
 @synthesize lastClearedFormName = _lastClearedFormName;
+@synthesize lastClearedFormUniqueID = _lastClearedFormUniqueID;
 @synthesize lastClearedFieldIdentifier = _lastClearedFieldIdentifier;
+@synthesize lastClearedFieldUniqueID = _lastClearedFieldUniqueID;
 @synthesize lastClearedFrameIdentifier = _lastClearedFrameIdentifier;
 
-- (void)clearAutofilledFieldsForFormName:(NSString*)formName
-                         fieldIdentifier:(NSString*)fieldIdentifier
-                                 inFrame:(web::WebFrame*)frame
-                       completionHandler:
-                           (void (^)(NSString*))completionHandler {
+- (void)
+    clearAutofilledFieldsForFormName:(NSString*)formName
+                        formUniqueID:(autofill::FormRendererId)formUniqueID
+                     fieldIdentifier:(NSString*)fieldIdentifier
+                       fieldUniqueID:(autofill::FieldRendererId)fieldUniqueID
+                             inFrame:(web::WebFrame*)frame
+                   completionHandler:(void (^)(NSString*))completionHandler {
   base::PostTask(FROM_HERE, {web::WebThread::UI}, base::BindOnce(^{
                    _lastClearedFormName = [formName copy];
+                   _lastClearedFormUniqueID = formUniqueID;
                    _lastClearedFieldIdentifier = [fieldIdentifier copy];
+                   _lastClearedFieldUniqueID = fieldUniqueID;
                    _lastClearedFrameIdentifier =
                        frame ? base::SysUTF8ToNSString(frame->GetFrameId())
                              : nil;
