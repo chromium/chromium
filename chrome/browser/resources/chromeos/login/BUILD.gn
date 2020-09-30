@@ -104,6 +104,7 @@ js_library("arc_terms_of_service") {
 
 js_library("demo_preferences") {
   deps = [
+    "components:login_screen_behavior",
     "components:oobe_dialog_host_behavior",
     "components:oobe_i18n_behavior",
   ]

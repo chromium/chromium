@@ -121,7 +121,7 @@ std::string DialogToStringId(DemoSetupDialog dialog) {
 // string if the |screen| is not a part of Demo Mode setup flow.
 std::string ScreenToContentQuery(OobeScreenId screen) {
   if (screen == DemoPreferencesScreenView::kScreenId)
-    return "$('demo-preferences-content')";
+    return "$('demo-preferences')";
   if (screen == NetworkScreenView::kScreenId)
     return "$('network-selection')";
   if (screen == EulaView::kScreenId)

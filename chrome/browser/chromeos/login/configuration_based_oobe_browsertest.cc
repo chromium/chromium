@@ -258,9 +258,7 @@ IN_PROC_BROWSER_TEST_F(OobeConfigurationTest, TestDemoModeAcceptArcTos) {
   test::OobeJS().Evaluate(
       "login.ArcTermsOfServiceScreen.setTosForTesting('Test "
       "Play Store Terms of Service');");
-  test::OobeJS().Evaluate(
-      "$('demo-preferences-content').$$('oobe-dialog')."
-      "querySelector('oobe-text-button').click();");
+  test::OobeJS().ClickOnPath({"demo-preferences", "nextButton"});
 
   OobeScreenWaiter(DemoSetupScreenView::kScreenId).Wait();
 }

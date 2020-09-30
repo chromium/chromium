@@ -39,8 +39,7 @@ void DemoPreferencesScreenHandler::Bind(DemoPreferencesScreen* screen) {
 
 void DemoPreferencesScreenHandler::SetInputMethodId(
     const std::string& input_method) {
-  CallJS("login.DemoPreferencesScreen.setInputMethodIdFromBackend",
-         input_method);
+  CallJS("login.DemoPreferencesScreen.setSelectedKeyboard", input_method);
 }
 
 void DemoPreferencesScreenHandler::Initialize() {}
@@ -59,7 +58,8 @@ void DemoPreferencesScreenHandler::DeclareLocalizedValues(
   builder->Add("countryDropdownLabel", IDS_COUNTRY_DROPDOWN_LABEL);
 }
 
-void DemoPreferencesScreenHandler::DeclareJSCallbacks() {
+void DemoPreferencesScreenHandler::RegisterMessages() {
+  BaseScreenHandler::RegisterMessages();
   AddCallback("DemoPreferencesScreen.setLocaleId",
               &DemoPreferencesScreenHandler::HandleSetLocaleId);
   AddCallback("DemoPreferencesScreen.setInputMethodId",

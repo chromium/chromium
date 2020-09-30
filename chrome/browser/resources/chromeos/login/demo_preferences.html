@@ -2,11 +2,11 @@
 <link rel="import" href="chrome://resources/polymer/v1_0/paper-styles/color.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
 
-<dom-module id="demo-preferences-md">
+<dom-module id="demo-preferences">
   <template>
     <style include="oobe-dialog-host"></style>
     <link rel="stylesheet" href="demo_preferences.css">
-    <oobe-dialog role="dialog" has-buttons
+    <oobe-dialog id="demoPreferencesDialog" role="dialog" has-buttons
         aria-label$="[[i18nDynamic(locale, 'demoPreferencesScreenTitle')]]"
         title-key="demoPreferencesScreenTitle">
       <hd-iron-icon slot="oobe-icon"
@@ -49,7 +49,7 @@
       </div>
       <div slot="bottom-buttons" class="layout horizontal justified">
         <oobe-back-button on-click="onBackClicked_"></oobe-back-button>
-        <oobe-text-button inverse on-tap="onNextClicked_"
+        <oobe-text-button id="nextButton" inverse on-tap="onNextClicked_"
             text-key="demoPreferencesNextButtonLabel"></oobe-text-button>
       </div>
     </oobe-dialog>

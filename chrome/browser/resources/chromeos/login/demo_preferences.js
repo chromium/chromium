@@ -3,9 +3,11 @@
 // found in the LICENSE file.
 
 Polymer({
-  is: 'demo-preferences-md',
+  is: 'demo-preferences',
 
-  behaviors: [OobeI18nBehavior, OobeDialogHostBehavior],
+  behaviors: [OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior],
+
+  EXTERNAL_API: ['setSelectedKeyboard'],
 
   properties: {
     /**
@@ -32,17 +34,6 @@ Polymer({
       type: Array,
     },
 
-    /**
-     * Reference to OOBE screen object.
-     * @type {!{
-     *     onCountrySelected_: function(string),
-     *     onKeyboardSelected_: function(string),
-     *     onLanguageSelected_: function(string),
-     * }}
-     */
-    screen: {
-      type: Object,
-    },
   },
 
   /**
@@ -50,6 +41,18 @@ Polymer({
    * @private {boolean}
    */
   configuration_applied_: false,
+
+  ready() {
+    this.initializeLoginScreen('DemoPreferencesScreen', {
+      resetAllowed: false,
+    });
+    this.updateLocalizedContent();
+  },
+
+  /** Returns a control which should receive an initial focus. */
+  get defaultControl() {
+    return this.$.demoPreferencesDialog;
+  },
 
   /** Called when dialog is shown */
   onBeforeShow() {
@@ -144,7 +147,7 @@ Polymer({
   onLanguageSelected_(event) {
     var item = event.detail;
     var languageId = item.value;
-    this.screen.onLanguageSelected_(languageId);
+    chrome.send('DemoPreferencesScreen.setLocaleId', [languageId]);
   },
 
   /**
@@ -155,7 +158,7 @@ Polymer({
   onKeyboardSelected_(event) {
     var item = event.detail;
     var inputMethodId = item.value;
-    this.screen.onKeyboardSelected_(inputMethodId);
+    chrome.send('DemoPreferencesScreen.setInputMethodId', [inputMethodId]);
   },
 
   /**
@@ -164,7 +167,8 @@ Polymer({
    * @private
    */
   onCountrySelected_(event) {
-    this.screen.onCountrySelected_(event.detail.value);
+    chrome.send(
+        'DemoPreferencesScreen.setDemoModeCountry', [event.detail.value]);
   },
 
   /**
@@ -172,7 +176,7 @@ Polymer({
    * @private
    */
   onBackClicked_() {
-    chrome.send('login.DemoPreferencesScreen.userActed', ['close-setup']);
+    this.userActed('close-setup');
   },
 
   /**
@@ -180,7 +184,7 @@ Polymer({
    * @private
    */
   onNextClicked_() {
-    chrome.send('login.DemoPreferencesScreen.userActed', ['continue-setup']);
+    this.userActed('continue-setup');
   },
 
 });

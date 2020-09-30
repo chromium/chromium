@@ -52,7 +52,9 @@ class DemoPreferencesScreenHandler : public BaseScreenHandler,
   void Initialize() override;
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
-  void DeclareJSCallbacks() override;
+
+  // content::WebUIMessageHandler:
+  void RegisterMessages() override;
 
  private:
   void HandleSetLocaleId(const std::string& language_id);
