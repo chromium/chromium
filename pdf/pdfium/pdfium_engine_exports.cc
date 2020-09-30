@@ -37,7 +37,9 @@ int CalculatePosition(FPDF_PAGE page,
                       const PDFiumEngineExports::RenderingSettings& settings,
                       gfx::Rect* dest) {
   // settings.bounds is in terms of the max DPI. Convert page sizes to match.
-  int dpi = std::max(settings.dpi_x, settings.dpi_y);
+  const int dpi_x = settings.dpi.width();
+  const int dpi_y = settings.dpi.height();
+  const int dpi = std::max(dpi_x, dpi_y);
   int page_width = static_cast<int>(
       ConvertUnitDouble(FPDF_GetPageWidthF(page), kPointsPerInch, dpi));
   int page_height = static_cast<int>(
@@ -89,15 +91,15 @@ int CalculatePosition(FPDF_PAGE page,
   }
 
   // Scale the bounds to device units if DPI is rectangular.
-  if (settings.dpi_x != settings.dpi_y) {
-    dest->set_width(dest->width() * settings.dpi_x / dpi);
-    dest->set_height(dest->height() * settings.dpi_y / dpi);
+  if (dpi_x != dpi_y) {
+    dest->set_width(dest->width() * dpi_x / dpi);
+    dest->set_height(dest->height() * dpi_y / dpi);
   }
 
   if (settings.center_in_bounds) {
     gfx::Vector2d offset(
-        (settings.bounds.width() * settings.dpi_x / dpi - dest->width()) / 2,
-        (settings.bounds.height() * settings.dpi_y / dpi - dest->height()) / 2);
+        (settings.bounds.width() * dpi_x / dpi - dest->width()) / 2,
+        (settings.bounds.height() * dpi_y / dpi - dest->height()) / 2);
     dest->Offset(offset);
   }
   return rotate;
@@ -183,8 +185,7 @@ base::Value RecursiveGetStructTree(FPDF_STRUCTELEMENT struct_elem) {
 
 }  // namespace
 
-PDFEngineExports::RenderingSettings::RenderingSettings(int dpi_x,
-                                                       int dpi_y,
+PDFEngineExports::RenderingSettings::RenderingSettings(const gfx::Size& dpi,
                                                        const gfx::Rect& bounds,
                                                        bool fit_to_bounds,
                                                        bool stretch_to_bounds,
@@ -192,8 +193,7 @@ PDFEngineExports::RenderingSettings::RenderingSettings(int dpi_x,
                                                        bool center_in_bounds,
                                                        bool autorotate,
                                                        bool use_color)
-    : dpi_x(dpi_x),
-      dpi_y(dpi_y),
+    : dpi(dpi),
       bounds(bounds),
       fit_to_bounds(fit_to_bounds),
       stretch_to_bounds(stretch_to_bounds),
@@ -239,10 +239,10 @@ bool PDFiumEngineExports::RenderPDFPageToDC(
 
   RenderingSettings new_settings = settings;
   // calculate the page size
-  if (new_settings.dpi_x == -1)
-    new_settings.dpi_x = GetDeviceCaps(dc, LOGPIXELSX);
-  if (new_settings.dpi_y == -1)
-    new_settings.dpi_y = GetDeviceCaps(dc, LOGPIXELSY);
+  if (new_settings.dpi.width() == -1)
+    new_settings.dpi.set_width(GetDeviceCaps(dc, LOGPIXELSX));
+  if (new_settings.dpi.height() == -1)
+    new_settings.dpi.set_height(GetDeviceCaps(dc, LOGPIXELSY));
 
   gfx::Rect dest;
   int rotate = CalculatePosition(page.get(), new_settings, &dest);

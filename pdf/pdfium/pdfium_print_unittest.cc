@@ -69,7 +69,7 @@ void CheckPdfRendering(const std::vector<uint8_t>& pdf_data,
                                         page_rect.height());
 
   PDFEngineExports::RenderingSettings settings(
-      printing::kDefaultPdfDpi, printing::kDefaultPdfDpi, page_rect,
+      gfx::Size(printing::kDefaultPdfDpi, printing::kDefaultPdfDpi), page_rect,
       /*fit_to_bounds=*/true,
       /*stretch_to_bounds=*/false,
       /*keep_aspect_ratio=*/true,

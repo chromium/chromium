@@ -55,9 +55,9 @@ base::ReadOnlySharedMemoryRegion RenderPdfPagesToPwgRaster(
       page_number = total_page_count - 1 - page_number;
 
     if (!chrome_pdf::RenderPDFPageToBitmap(
-            pdf_data, page_number, image.pixel_data(), image.size().width(),
-            image.size().height(), settings.dpi.width(), settings.dpi.height(),
-            false, true, settings.autorotate, settings.use_color)) {
+            pdf_data, page_number, image.pixel_data(), image.size(),
+            settings.dpi, false, true, settings.autorotate,
+            settings.use_color)) {
       return invalid_pwg_region;
     }
 

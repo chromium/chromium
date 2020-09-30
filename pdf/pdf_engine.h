@@ -506,8 +506,7 @@ class PDFEngine {
 class PDFEngineExports {
  public:
   struct RenderingSettings {
-    RenderingSettings(int dpi_x,
-                      int dpi_y,
+    RenderingSettings(const gfx::Size& dpi,
                       const gfx::Rect& bounds,
                       bool fit_to_bounds,
                       bool stretch_to_bounds,
@@ -517,8 +516,7 @@ class PDFEngineExports {
                       bool use_color);
     RenderingSettings(const RenderingSettings& that);
 
-    int dpi_x;
-    int dpi_y;
+    gfx::Size dpi;
     gfx::Rect bounds;
     bool fit_to_bounds;
     bool stretch_to_bounds;

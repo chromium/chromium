@@ -62,7 +62,7 @@ bool RenderPDFPageToDC(base::span<const uint8_t> pdf_buffer,
   ScopedSdkInitializer scoped_sdk_initializer(/*enable_v8=*/true);
   PDFEngineExports* engine_exports = PDFEngineExports::Get();
   PDFEngineExports::RenderingSettings settings(
-      dpi_x, dpi_y,
+      gfx::Size(dpi_x, dpi_y),
       gfx::Rect(bounds_origin_x, bounds_origin_y, bounds_width, bounds_height),
       fit_to_bounds, stretch_to_bounds, keep_aspect_ratio, center_in_bounds,
       autorotate, use_color);
@@ -117,10 +117,8 @@ base::Optional<gfx::SizeF> GetPDFPageSizeByIndex(
 bool RenderPDFPageToBitmap(base::span<const uint8_t> pdf_buffer,
                            int page_number,
                            void* bitmap_buffer,
-                           int bitmap_width,
-                           int bitmap_height,
-                           int dpi_x,
-                           int dpi_y,
+                           const gfx::Size& bitmap_size,
+                           const gfx::Size& dpi,
                            bool stretch_to_bounds,
                            bool keep_aspect_ratio,
                            bool autorotate,
@@ -128,7 +126,7 @@ bool RenderPDFPageToBitmap(base::span<const uint8_t> pdf_buffer,
   ScopedSdkInitializer scoped_sdk_initializer(/*enable_v8=*/true);
   PDFEngineExports* engine_exports = PDFEngineExports::Get();
   PDFEngineExports::RenderingSettings settings(
-      dpi_x, dpi_y, gfx::Rect(bitmap_width, bitmap_height),
+      dpi, gfx::Rect(bitmap_size),
       /*fit_to_bounds=*/true, stretch_to_bounds, keep_aspect_ratio,
       /*center_in_bounds=*/true, autorotate, use_color);
   return engine_exports->RenderPDFPageToBitmap(pdf_buffer, page_number,

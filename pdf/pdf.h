@@ -132,11 +132,10 @@ base::Optional<gfx::SizeF> GetPDFPageSizeByIndex(
 //     rendered.
 // |page_number| is the 0-based index of the page to be rendered.
 // |bitmap_buffer| is the output buffer for bitmap.
-// |bitmap_width| is the width of the output bitmap.
-// |bitmap_height| is the height of the output bitmap.
-// |dpi_x| and |dpi_y| is the resolution.
+// |bitmap_size| is the size of the output bitmap.
+// |dpi| is the 2D resolution.
 // |stretch_to_bounds| specifies whether the output should be stretched to fit
-//     the supplied |bitmap_width| and |bitmap_height|.
+//     the supplied |bitmap_size|.
 // |keep_aspect_ratio| If any scaling is needed, this parameter specifies
 //     whether the original aspect ratio of the page is preserved while scaling.
 // |autorotate| specifies whether the final image should be rotated to match
@@ -146,10 +145,8 @@ base::Optional<gfx::SizeF> GetPDFPageSizeByIndex(
 bool RenderPDFPageToBitmap(base::span<const uint8_t> pdf_buffer,
                            int page_number,
                            void* bitmap_buffer,
-                           int bitmap_width,
-                           int bitmap_height,
-                           int dpi_x,
-                           int dpi_y,
+                           const gfx::Size& bitmap_size,
+                           const gfx::Size& dpi,
                            bool stretch_to_bounds,
                            bool keep_aspect_ratio,
                            bool autorotate,
