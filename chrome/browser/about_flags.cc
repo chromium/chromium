@@ -6455,6 +6455,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kEnableEphemeralGuestProfilesOnDesktop)},
 #endif  // defined(OS_WIN) || defined(OS_LINUX) || defined(OS_MAC)
 
+#if defined(OS_ANDROID)
+    {"decouple-sync-from-android-auto-sync",
+     flag_descriptions::kDecoupleSyncFromAndroidAutoSyncName,
+     flag_descriptions::kDecoupleSyncFromAndroidAutoSyncDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(switches::kDecoupleSyncFromAndroidMasterSync)},
+#endif  // defined(OS_ANDROID)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

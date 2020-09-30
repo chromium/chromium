@@ -1567,6 +1567,9 @@ extern const char kContextualSearchTranslationsDescription[];
 extern const char kCpuAffinityRestrictToLittleCoresName[];
 extern const char kCpuAffinityRestrictToLittleCoresDescription[];
 
+extern const char kDecoupleSyncFromAndroidAutoSyncName[];
+extern const char kDecoupleSyncFromAndroidAutoSyncDescription[];
+
 extern const char kDirectActionsName[];
 extern const char kDirectActionsDescription[];
 
