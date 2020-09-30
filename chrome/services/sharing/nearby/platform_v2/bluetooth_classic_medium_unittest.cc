@@ -124,7 +124,6 @@ class BluetoothClassicMediumTest : public testing::Test {
   base::OnceClosure on_device_name_changed_callback_;
   base::OnceClosure on_device_lost_callback_;
 
- private:
   bluetooth::mojom::DeviceInfoPtr CreateDeviceInfo(const std::string& address,
                                                    const std::string& name) {
     auto device_info = bluetooth::mojom::DeviceInfo::New();
@@ -134,6 +133,7 @@ class BluetoothClassicMediumTest : public testing::Test {
     return device_info;
   }
 
+ private:
   base::test::TaskEnvironment task_environment_;
 };
 
@@ -216,6 +216,18 @@ TEST_F(BluetoothClassicMediumTest, TestDiscovery_DeviceNameChanged) {
   EXPECT_EQ(kDeviceName2, last_device_name_changed_->GetName());
 
   EXPECT_EQ(last_device_name_changed_, last_device_discovered_);
+
+  // It is possible for DeviceChanged to trigger without a name change. This
+  // previously caused a name change event. Here we verify if the name
+  // does not change then we do not see the name change event.
+  last_device_name_changed_ = nullptr;
+  // We have to call NotifyDeviceChanged directly since we don't expect the
+  // callback to be invoked.
+  base::RunLoop run_loop;
+  fake_adapter_->NotifyDeviceChanged(
+      CreateDeviceInfo(kDeviceAddress1, kDeviceName2));
+  run_loop.RunUntilIdle();
+  EXPECT_EQ(nullptr, last_device_name_changed_);
 
   StopDiscovery();
 }

@@ -167,8 +167,12 @@ void BluetoothClassicMedium::DeviceAdded(
   const std::string& address = device->address;
   if (base::Contains(discovered_bluetooth_devices_map_, address)) {
     auto& bluetooth_device = discovered_bluetooth_devices_map_.at(address);
+    bool name_changed = device->name.has_value() &&
+                        device->name.value() != bluetooth_device.GetName();
     bluetooth_device.UpdateDeviceInfo(std::move(device));
-    discovery_callback_->device_name_changed_cb(bluetooth_device);
+    if (name_changed) {
+      discovery_callback_->device_name_changed_cb(bluetooth_device);
+    }
   } else {
     discovered_bluetooth_devices_map_.emplace(address, std::move(device));
     discovery_callback_->device_discovered_cb(
