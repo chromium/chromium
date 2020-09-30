@@ -403,7 +403,7 @@ LayoutUnit ComputeInlineSizeFromAspectRatio(const NGConstraintSpace& space,
                                             const ComputedStyle& style,
                                             const NGBoxStrut& border_padding,
                                             LayoutUnit block_size) {
-  if (LIKELY(!style.AspectRatio()))
+  if (LIKELY(style.AspectRatio().IsAuto()))
     return kIndefiniteSize;
 
   if (!style.LogicalHeight().IsAuto() && block_size == kIndefiniteSize) {
@@ -414,7 +414,7 @@ LayoutUnit ComputeInlineSizeFromAspectRatio(const NGConstraintSpace& space,
   if (block_size == kIndefiniteSize)
     return kIndefiniteSize;
   // Check if we can get an inline size using the aspect ratio.
-  return InlineSizeFromAspectRatio(border_padding, *style.LogicalAspectRatio(),
+  return InlineSizeFromAspectRatio(border_padding, style.LogicalAspectRatio(),
                                    style.BoxSizing(), block_size);
 }
 
@@ -441,7 +441,7 @@ LayoutUnit ComputeInlineSizeForFragment(
   // whether they need to respect aspect ratio and consider adding a helper
   // function for that.
   LayoutUnit extent = kIndefiniteSize;
-  if (style.AspectRatio() && logical_width.IsAuto())
+  if (!style.AspectRatio().IsAuto() && logical_width.IsAuto())
     extent = ComputeInlineSizeFromAspectRatio(space, style, border_padding);
   if (UNLIKELY(extent != kIndefiniteSize)) {
     // This means we successfully applied aspect-ratio and now need to check
@@ -460,7 +460,7 @@ LayoutUnit ComputeInlineSizeForFragment(
 
   // This implements the transferred min/max sizes per
   // https://drafts.csswg.org/css-sizing-4/#aspect-ratio
-  if (style.AspectRatio() &&
+  if (!style.AspectRatio().IsAuto() &&
       BlockLengthUnresolvable(space, style.LogicalHeight(),
                               LengthResolvePhase::kLayout)) {
     MinMaxSizes transferred_min_max = ComputeMinMaxInlineSizesFromAspectRatio(
@@ -520,7 +520,7 @@ MinMaxSizes ComputeMinMaxInlineSizesFromAspectRatio(
     const ComputedStyle& style,
     const NGBoxStrut& border_padding,
     LengthResolvePhase phase) {
-  DCHECK(style.LogicalAspectRatio());
+  DCHECK(!style.AspectRatio().IsAuto());
 
   // The spec requires us to clamp these by the specified size (it calls it the
   // preferred size). However, we actually don't need to worry about that,
@@ -530,7 +530,7 @@ MinMaxSizes ComputeMinMaxInlineSizesFromAspectRatio(
   // apply the transferred min/max size before the explicit min/max size, the
   // result will be identical.
 
-  LogicalSize ratio = *style.LogicalAspectRatio();
+  LogicalSize ratio = style.LogicalAspectRatio();
   MinMaxSizes block_min_max =
       ComputeMinMaxBlockSize(constraint_space, style, border_padding,
                              /* content_size */ kIndefiniteSize);
@@ -578,9 +578,9 @@ LayoutUnit ComputeBlockSizeForFragmentInternal(
       LengthResolvePhase::kLayout,
       opt_percentage_resolution_block_size_for_min_max);
   if (UNLIKELY((extent == kIndefiniteSize || logical_height.IsAuto()) &&
-               style.LogicalAspectRatio() && inline_size)) {
+               !style.AspectRatio().IsAuto() && inline_size)) {
     extent =
-        BlockSizeFromAspectRatio(border_padding, *style.LogicalAspectRatio(),
+        BlockSizeFromAspectRatio(border_padding, style.LogicalAspectRatio(),
                                  style.BoxSizing(), *inline_size);
     // Apply the automatic minimum size for aspect ratio:
     // https://drafts.csswg.org/css-sizing-4/#aspect-ratio-minimum

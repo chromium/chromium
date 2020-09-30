@@ -1093,10 +1093,10 @@
       field_group: "box",
       field_template: "external",
       keywords: ["auto"],
-      default_value: "base::nullopt",
-      type_name: "base::Optional<IntSize>",
+      default_value: "StyleAspectRatio(EAspectRatioType::kAuto, FloatSize())",
+      type_name: "StyleAspectRatio",
       converter: "ConvertAspectRatio",
-      include_paths: ["third_party/blink/renderer/platform/geometry/length_size.h"],
+      include_paths: ["third_party/blink/renderer/core/style/style_aspect_ratio.h"],
       runtime_flag: "CSSAspectRatioProperty"
     },
     {

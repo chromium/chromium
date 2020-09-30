@@ -63,6 +63,7 @@ blink_core_sources("rendering") {
     "shadow_list.h",
     "shape_clip_path_operation.h",
     "shape_value.h",
+    "style_aspect_ratio.h",
     "style_content_alignment_data.h",
     "style_difference.cc",
     "style_difference.h",

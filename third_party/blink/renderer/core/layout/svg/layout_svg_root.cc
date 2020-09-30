@@ -87,10 +87,7 @@ void LayoutSVGRoot::UnscaledIntrinsicSizingInfo(
   intrinsic_sizing_info.has_width = svg->HasIntrinsicWidth();
   intrinsic_sizing_info.has_height = svg->HasIntrinsicHeight();
 
-  if (const base::Optional<IntSize>& aspect_ratio = StyleRef().AspectRatio()) {
-    intrinsic_sizing_info.aspect_ratio.SetWidth(aspect_ratio->Width());
-    intrinsic_sizing_info.aspect_ratio.SetHeight(aspect_ratio->Height());
-  } else if (!intrinsic_sizing_info.size.IsEmpty()) {
+  if (!intrinsic_sizing_info.size.IsEmpty()) {
     intrinsic_sizing_info.aspect_ratio = intrinsic_sizing_info.size;
   } else {
     FloatSize view_box_size = svg->viewBox()->CurrentValue()->Value().Size();
@@ -98,6 +95,14 @@ void LayoutSVGRoot::UnscaledIntrinsicSizingInfo(
       // The viewBox can only yield an intrinsic ratio, not an intrinsic size.
       intrinsic_sizing_info.aspect_ratio = view_box_size;
     }
+  }
+  EAspectRatioType ar_type = StyleRef().AspectRatio().GetType();
+  if (ar_type == EAspectRatioType::kRatio ||
+      (ar_type == EAspectRatioType::kAutoAndRatio &&
+       intrinsic_sizing_info.aspect_ratio.IsEmpty())) {
+    FloatSize aspect_ratio = StyleRef().AspectRatio().GetRatio();
+    intrinsic_sizing_info.aspect_ratio.SetWidth(aspect_ratio.Width());
+    intrinsic_sizing_info.aspect_ratio.SetHeight(aspect_ratio.Height());
   }
 
   if (!IsHorizontalWritingMode())

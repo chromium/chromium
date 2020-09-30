@@ -389,7 +389,8 @@ TEST_F(NGLengthUtilsTestWithNode, testComputeBlockSizeForFragment) {
   // Now check aspect-ratio.
   style_ = ComputedStyle::Create();
   style_->SetLogicalWidth(Length::Fixed(100));
-  style_->SetAspectRatio(IntSize(2, 1));
+  style_->SetAspectRatio(
+      StyleAspectRatio(EAspectRatioType::kRatio, FloatSize(2, 1)));
   EXPECT_EQ(LayoutUnit(50),
             ComputeBlockSizeForFragment(ConstructConstraintSpace(200, 300),
                                         LayoutUnit(), LayoutUnit(100)));

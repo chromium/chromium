@@ -2005,17 +2005,56 @@ LengthSize StyleBuilderConverter::ConvertIntrinsicSize(
   return LengthSize(width, height);
 }
 
-base::Optional<IntSize> StyleBuilderConverter::ConvertAspectRatio(
+namespace {
+FloatSize GetRatioFromList(const CSSValueList& list) {
+  auto* ratio_list = DynamicTo<CSSValueList>(list.Item(0));
+  if (!ratio_list) {
+    DCHECK_EQ(list.length(), 2u);
+    ratio_list = DynamicTo<CSSValueList>(list.Item(1));
+  }
+  DCHECK(ratio_list);
+  DCHECK_GE(ratio_list->length(), 1u);
+  DCHECK_LE(ratio_list->length(), 2u);
+  float width = To<CSSPrimitiveValue>(ratio_list->Item(0)).GetFloatValue();
+  float height = 1;
+  if (ratio_list->length() == 2u)
+    height = To<CSSPrimitiveValue>(ratio_list->Item(1)).GetFloatValue();
+  if (width == 0 && height == 0)
+    width = 1;
+  return FloatSize(width, height);
+}
+
+bool ListHasAuto(const CSSValueList& list) {
+  // If there's only one entry, it needs to be a ratio.
+  // (A single auto is handled separately)
+  if (list.length() == 1u)
+    return false;
+  auto* auto_value = DynamicTo<CSSIdentifierValue>(list.Item(0));
+  if (!auto_value)
+    auto_value = DynamicTo<CSSIdentifierValue>(list.Item(1));
+  DCHECK(auto_value) << "If we have two items, one of them must be auto";
+  DCHECK_EQ(auto_value->GetValueID(), CSSValueID::kAuto);
+  return true;
+}
+}  // namespace
+
+StyleAspectRatio StyleBuilderConverter::ConvertAspectRatio(
     StyleResolverState& state,
     const CSSValue& value) {
   auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
   if (identifier_value && identifier_value->GetValueID() == CSSValueID::kAuto)
-    return base::nullopt;
+    return StyleAspectRatio(EAspectRatioType::kAuto, FloatSize());
+
+  // (auto, (1, 2)) or ((1, 2), auto) or ((1, 2))
   const CSSValueList& list = To<CSSValueList>(value);
-  DCHECK_EQ(list.length(), 2u);
-  int width = To<CSSPrimitiveValue>(list.Item(0)).GetIntValue();
-  int height = To<CSSPrimitiveValue>(list.Item(1)).GetIntValue();
-  return IntSize(width, height);
+  DCHECK_GE(list.length(), 1u);
+  DCHECK_LE(list.length(), 2u);
+
+  bool has_auto = ListHasAuto(list);
+  EAspectRatioType type =
+      has_auto ? EAspectRatioType::kAutoAndRatio : EAspectRatioType::kRatio;
+  FloatSize ratio = GetRatioFromList(list);
+  return StyleAspectRatio(type, ratio);
 }
 
 bool StyleBuilderConverter::ConvertInternalEmptyLineHeight(

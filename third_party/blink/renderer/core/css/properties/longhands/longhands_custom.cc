@@ -401,19 +401,41 @@ const CSSValue* AspectRatio::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
+  // Syntax: auto | auto 1/2 | 1/2 auto
+  CSSValue* auto_value = nullptr;
   if (range.Peek().Id() == CSSValueID::kAuto)
-    return css_parsing_utils::ConsumeIdent(range);
-  CSSValue* width = css_parsing_utils::ConsumePositiveInteger(range, context);
+    auto_value = css_parsing_utils::ConsumeIdent(range);
+
+  if (range.AtEnd())
+    return auto_value;
+
+  CSSValue* width =
+      css_parsing_utils::ConsumeNumber(range, context, kValueRangeNonNegative);
   if (!width)
     return nullptr;
-  if (!css_parsing_utils::ConsumeSlashIncludingWhitespace(range))
-    return nullptr;
-  CSSValue* height = css_parsing_utils::ConsumePositiveInteger(range, context);
-  if (!height)
-    return nullptr;
-  CSSValueList* list = CSSValueList::CreateSlashSeparated();
-  list->Append(*width);
-  list->Append(*height);
+  CSSValue* height = nullptr;
+  if (css_parsing_utils::ConsumeSlashIncludingWhitespace(range)) {
+    height = css_parsing_utils::ConsumeNumber(range, context,
+                                              kValueRangeNonNegative);
+  }
+  // missing height is legal (treated as 1)
+
+  CSSValueList* ratio_list = CSSValueList::CreateSlashSeparated();
+  ratio_list->Append(*width);
+  if (height)
+    ratio_list->Append(*height);
+  if (!range.AtEnd()) {
+    if (auto_value)
+      return nullptr;
+    if (range.Peek().Id() != CSSValueID::kAuto)
+      return nullptr;
+    auto_value = css_parsing_utils::ConsumeIdent(range);
+  }
+
+  CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+  if (auto_value)
+    list->Append(*auto_value);
+  list->Append(*ratio_list);
   return list;
 }
 
@@ -423,14 +445,23 @@ const CSSValue* AspectRatio::CSSValueFromComputedStyleInternal(
     const LayoutObject* layout_object,
     bool allow_visited_style) const {
   auto& ratio = style.AspectRatio();
-  if (!ratio.has_value())
+  if (ratio.GetTypeForComputedStyle() == EAspectRatioType::kAuto)
     return CSSIdentifierValue::Create(CSSValueID::kAuto);
 
-  CSSValueList* list = CSSValueList::CreateSlashSeparated();
-  list->Append(*CSSNumericLiteralValue::Create(
-      ratio->Width(), CSSPrimitiveValue::UnitType::kInteger));
-  list->Append(*CSSNumericLiteralValue::Create(
-      ratio->Height(), CSSPrimitiveValue::UnitType::kInteger));
+  CSSValueList* ratio_list = CSSValueList::CreateSlashSeparated();
+  ratio_list->Append(*CSSNumericLiteralValue::Create(
+      ratio.GetRatio().Width(), CSSPrimitiveValue::UnitType::kNumber));
+  if (ratio.GetRatio().Height() != 1.0f) {
+    ratio_list->Append(*CSSNumericLiteralValue::Create(
+        ratio.GetRatio().Height(), CSSPrimitiveValue::UnitType::kNumber));
+  }
+  if (ratio.GetTypeForComputedStyle() == EAspectRatioType::kRatio)
+    return ratio_list;
+
+  DCHECK_EQ(ratio.GetTypeForComputedStyle(), EAspectRatioType::kAutoAndRatio);
+  CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+  list->Append(*CSSIdentifierValue::Create(CSSValueID::kAuto));
+  list->Append(*ratio_list);
   return list;
 }
 

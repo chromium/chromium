@@ -800,7 +800,7 @@ scoped_refptr<const NGLayoutResult> NGOutOfFlowLayoutPart::Layout(
     // https://www.w3.org/TR/CSS22/visudet.html#inline-replaced-width
     if (has_aspect_ratio_without_intrinsic_size)
       min_max_sizes = MinMaxSizes{LayoutUnit(), LayoutUnit::NearlyMax()};
-  } else if (candidate_style.AspectRatio()) {
+  } else if (!candidate_style.AspectRatio().IsAuto()) {
     has_aspect_ratio_without_intrinsic_size = true;
     aspect_ratio = node.GetAspectRatio();
   } else if (should_be_considered_as_replaced) {
@@ -827,9 +827,12 @@ scoped_refptr<const NGLayoutResult> NGOutOfFlowLayoutPart::Layout(
   if (has_aspect_ratio_without_intrinsic_size) {
     // If this came from an aspect-ratio property, we need to respect
     // box-sizing.
-    EBoxSizing sizing = candidate_style.AspectRatio()
-                            ? candidate_style.BoxSizing()
-                            : EBoxSizing::kContentBox;
+    EAspectRatioType ar_type = candidate_style.AspectRatio().GetType();
+    EBoxSizing sizing =
+        (ar_type == EAspectRatioType::kRatio ||
+         (ar_type == EAspectRatioType::kAutoAndRatio && !is_replaced))
+            ? candidate_style.BoxSizing()
+            : EBoxSizing::kContentBox;
     replaced_size = LogicalSize(
         node_dimensions.size.inline_size,
         BlockSizeFromAspectRatio(border_padding, *aspect_ratio, sizing,

@@ -274,8 +274,6 @@ crbug.com/1007229 external/wpt/intersection-observer/same-origin-grand-child-ifr
 
 # Not supported yet
 crbug.com/1045668 external/wpt/css/css-sizing/aspect-ratio/flex-aspect-ratio-014.tentative.html [ Failure ]
-crbug.com/1045668 external/wpt/css/css-sizing/aspect-ratio/replaced-element-016.tentative.html [ Failure ]
-crbug.com/1045668 external/wpt/css/css-sizing/aspect-ratio/replaced-element-021.tentative.html [ Failure ]
 
 crbug.com/936084 external/wpt/css/css-sizing/max-content-input-001.html [ Failure ]
 

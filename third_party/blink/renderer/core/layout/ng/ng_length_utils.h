@@ -338,6 +338,7 @@ MinMaxSizes ComputeMinMaxInlineSizesFromAspectRatio(
 // Tries to compute the inline size of a node from its block size and
 // aspect ratio. If there is no aspect ratio or the block size is indefinite,
 // returns kIndefiniteSize.
+// This function will not do the right thing when used on a replaced element.
 // block_size can be specified to base the calculation off of that size
 // instead of calculating it.
 LayoutUnit ComputeInlineSizeFromAspectRatio(

@@ -353,7 +353,7 @@ bool AbsoluteNeedsChildBlockSize(const ComputedStyle& style) {
 
 bool IsInlineSizeComputableFromBlockSize(const ComputedStyle& style) {
   DCHECK(style.HasOutOfFlowPosition());
-  if (!style.AspectRatio())
+  if (style.AspectRatio().IsAuto())
     return false;
   // An explicit block size should take precedence over specified insets.
   bool have_inline_size =
@@ -450,7 +450,8 @@ void ComputeOutOfFlowInlineDimensions(
 
   // This implements the transferred min/max sizes per
   // https://drafts.csswg.org/css-sizing-4/#aspect-ratio
-  if (style.AspectRatio() && dimensions->size.block_size == kIndefiniteSize) {
+  if (!style.AspectRatio().IsAuto() &&
+      dimensions->size.block_size == kIndefiniteSize) {
     MinMaxSizes sizes = ComputeMinMaxInlineSizesFromAspectRatio(
         space, style, border_padding, LengthResolvePhase::kLayout);
     min_inline_size = std::max(sizes.min_size, min_inline_size);

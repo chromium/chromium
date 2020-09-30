@@ -1149,8 +1149,8 @@ LayoutUnit LayoutBox::ConstrainLogicalWidthByMinMax(
 
   // If we have an aspect-ratio, check if we need to apply min-width: auto.
   Length min_length = style_to_use.LogicalMinWidth();
-  if (style_to_use.AspectRatio() && style_to_use.LogicalWidth().IsAuto() &&
-      min_length.IsAuto() &&
+  if (!style_to_use.AspectRatio().IsAuto() &&
+      style_to_use.LogicalWidth().IsAuto() && min_length.IsAuto() &&
       style_to_use.OverflowInlineDirection() == EOverflow::kVisible) {
     // Make sure we actually used the aspect ratio.
     if (ShouldComputeLogicalWidthFromAspectRatio())
@@ -1355,7 +1355,7 @@ bool LayoutBox::CanResize() const {
 
 MinMaxSizes LayoutBox::ComputeMinMaxLogicalWidthFromAspectRatio() const {
   NOT_DESTROYED();
-  DCHECK(StyleRef().LogicalAspectRatio());
+  DCHECK_NE(StyleRef().AspectRatio().GetType(), EAspectRatioType::kAuto);
 
   // The spec requires us to clamp these by the specified size (it calls it the
   // preferred size). However, we actually don't need to worry about that,
@@ -1365,7 +1365,7 @@ MinMaxSizes LayoutBox::ComputeMinMaxLogicalWidthFromAspectRatio() const {
   // apply the transferred min/max size before the explicit min/max size, the
   // result will be identical.
 
-  LogicalSize ratio = *StyleRef().LogicalAspectRatio();
+  LogicalSize ratio = StyleRef().LogicalAspectRatio();
   MinMaxSizes block_min_max{
       ConstrainLogicalHeightByMinMax(LayoutUnit(), kIndefiniteSize),
       ConstrainLogicalHeightByMinMax(LayoutUnit::Max(), kIndefiniteSize)};
@@ -1834,7 +1834,7 @@ MinMaxSizes LayoutBox::PreferredLogicalWidths() const {
 
 MinMaxSizes LayoutBox::IntrinsicLogicalWidths(MinMaxSizesType type) const {
   NOT_DESTROYED();
-  if (type == MinMaxSizesType::kContent && StyleRef().AspectRatio()) {
+  if (type == MinMaxSizesType::kContent && !StyleRef().AspectRatio().IsAuto()) {
     MinMaxSizes sizes;
     if (ComputeLogicalWidthFromAspectRatio(&sizes.min_size)) {
       sizes.max_size = sizes.min_size;
@@ -3823,7 +3823,7 @@ LayoutUnit LayoutBox::ContainerWidthInInlineDirection() const {
 bool LayoutBox::ShouldComputeLogicalWidthFromAspectRatio(
     LayoutUnit* out_logical_height) const {
   NOT_DESTROYED();
-  if (!StyleRef().AspectRatio() ||
+  if (StyleRef().AspectRatio().IsAuto() ||
       (!StyleRef().LogicalHeight().IsFixed() &&
        !StyleRef().LogicalHeight().IsPercentOrCalc())) {
     return false;
@@ -3854,9 +3854,9 @@ bool LayoutBox::ComputeLogicalWidthFromAspectRatio(
                             BorderEnd() + ComputedCSSPaddingEnd(),
                             BorderBefore() + ComputedCSSPaddingBefore(),
                             BorderAfter() + ComputedCSSPaddingAfter());
-  LayoutUnit logical_width = InlineSizeFromAspectRatio(
-      border_padding, *StyleRef().LogicalAspectRatio(), StyleRef().BoxSizing(),
-      logical_height_for_ar);
+  LayoutUnit logical_width =
+      InlineSizeFromAspectRatio(border_padding, StyleRef().LogicalAspectRatio(),
+                                StyleRef().BoxSizing(), logical_height_for_ar);
   *out_logical_width = ConstrainLogicalWidthByMinMax(
       logical_width, container_width_in_inline_direction, ContainingBlock());
   return true;
@@ -4453,7 +4453,7 @@ void LayoutBox::ComputeLogicalHeight(
                                   BorderBefore() + ComputedCSSPaddingBefore(),
                                   BorderAfter() + ComputedCSSPaddingAfter());
         height_result = BlockSizeFromAspectRatio(
-            border_padding, *StyleRef().LogicalAspectRatio(),
+            border_padding, StyleRef().LogicalAspectRatio(),
             StyleRef().BoxSizing(), LogicalWidth());
       } else {
         height_result = ComputeLogicalHeightUsing(
@@ -6100,7 +6100,7 @@ void LayoutBox::ComputePositionedLogicalHeightUsing(
                                 BorderBefore() + ComputedCSSPaddingBefore(),
                                 BorderAfter() + ComputedCSSPaddingAfter());
       resolved_logical_height = BlockSizeFromAspectRatio(
-          border_padding, *StyleRef().LogicalAspectRatio(),
+          border_padding, StyleRef().LogicalAspectRatio(),
           StyleRef().BoxSizing(), LogicalWidth());
       resolved_logical_height = std::max(
           LayoutUnit(), resolved_logical_height - borders_plus_padding);

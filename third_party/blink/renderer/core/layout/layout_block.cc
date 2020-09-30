@@ -2425,8 +2425,8 @@ LayoutUnit LayoutBlock::AvailableLogicalHeightForPercentageComputation() const {
                               BorderBefore() + ComputedCSSPaddingBefore(),
                               BorderAfter() + ComputedCSSPaddingAfter());
     available_height = BlockSizeFromAspectRatio(
-        border_padding, *StyleRef().LogicalAspectRatio(),
-        StyleRef().BoxSizing(), LogicalWidth());
+        border_padding, StyleRef().LogicalAspectRatio(), StyleRef().BoxSizing(),
+        LogicalWidth());
   } else if (style.LogicalHeight().IsPercentOrCalc() &&
              !is_out_of_flow_positioned_with_specified_height) {
     LayoutUnit height_with_scrollbar =

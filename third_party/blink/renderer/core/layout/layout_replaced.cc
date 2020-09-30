@@ -698,11 +698,16 @@ void LayoutReplaced::ComputeIntrinsicSizingInfo(
   intrinsic_sizing_info.size = FloatSize(IntrinsicLogicalWidth().ToFloat(),
                                          IntrinsicLogicalHeight().ToFloat());
 
-  if (const base::Optional<IntSize>& aspect_ratio = StyleRef().AspectRatio()) {
-    intrinsic_sizing_info.aspect_ratio.SetWidth(aspect_ratio->Width());
-    intrinsic_sizing_info.aspect_ratio.SetHeight(aspect_ratio->Height());
-    return;
+  const StyleAspectRatio& aspect_ratio = StyleRef().AspectRatio();
+  if (!aspect_ratio.IsAuto()) {
+    intrinsic_sizing_info.aspect_ratio.SetWidth(
+        aspect_ratio.GetRatio().Width());
+    intrinsic_sizing_info.aspect_ratio.SetHeight(
+        aspect_ratio.GetRatio().Height());
   }
+  if (aspect_ratio.GetType() == EAspectRatioType::kRatio)
+    return;
+  // Otherwise, let the intrinsic aspect ratio take precedence, below.
 
   // Figure out if we need to compute an intrinsic ratio.
   if (!LayoutObjectHasIntrinsicAspectRatio(this))

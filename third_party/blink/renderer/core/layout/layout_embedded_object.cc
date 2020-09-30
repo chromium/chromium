@@ -122,10 +122,14 @@ void LayoutEmbeddedObject::ComputeIntrinsicSizingInfo(
     intrinsic_sizing_info.size.Scale(StyleRef().EffectiveZoom());
 
     // Handle an overridden aspect ratio
-    if (const base::Optional<IntSize>& aspect_ratio =
-            StyleRef().AspectRatio()) {
-      intrinsic_sizing_info.aspect_ratio.SetWidth(aspect_ratio->Width());
-      intrinsic_sizing_info.aspect_ratio.SetHeight(aspect_ratio->Height());
+    const StyleAspectRatio& aspect_ratio = StyleRef().AspectRatio();
+    if (aspect_ratio.GetType() == EAspectRatioType::kRatio ||
+        (aspect_ratio.GetType() == EAspectRatioType::kAutoAndRatio &&
+         intrinsic_sizing_info.aspect_ratio.IsEmpty())) {
+      intrinsic_sizing_info.aspect_ratio.SetWidth(
+          aspect_ratio.GetRatio().Width());
+      intrinsic_sizing_info.aspect_ratio.SetHeight(
+          aspect_ratio.GetRatio().Height());
     }
 
     if (!IsHorizontalWritingMode())

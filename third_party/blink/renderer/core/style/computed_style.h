@@ -2616,10 +2616,9 @@ class ComputedStyle : public ComputedStyleBase,
            !ListStyleImage()->ErrorOccurred();
   }
 
-  base::Optional<LogicalSize> LogicalAspectRatio() const {
-    if (!AspectRatio())
-      return base::nullopt;
-    IntSize ratio = *AspectRatio();
+  LogicalSize LogicalAspectRatio() const {
+    DCHECK_NE(AspectRatio().GetType(), EAspectRatioType::kAuto);
+    FloatSize ratio = AspectRatio().GetRatio();
     if (!IsHorizontalWritingMode())
       ratio = ratio.TransposedSize();
     return LogicalSize(LayoutUnit(ratio.Width()), LayoutUnit(ratio.Height()));

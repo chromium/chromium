@@ -375,7 +375,7 @@ bool CanUseCachedIntrinsicInlineSizes(const MinMaxSizesInput& input,
                                  style.PaddingEnd().IsPercentOrCalc()))
     return false;
 
-  if (style.AspectRatio() &&
+  if (!style.AspectRatio().IsAuto() &&
       (style.LogicalMinHeight().IsPercentOrCalc() ||
        style.LogicalMaxHeight().IsPercentOrCalc()) &&
       input.percentage_resolution_block_size !=
@@ -775,7 +775,8 @@ MinMaxSizesResult NGBlockNode::ComputeMinMaxSizes(
   if (!constraint_space)
     constraint_space = &zero_constraint_space;
 
-  if (Style().AspectRatio() && input.type == MinMaxSizesType::kContent) {
+  if (!Style().AspectRatio().IsAuto() && !IsReplaced() &&
+      input.type == MinMaxSizesType::kContent) {
     LayoutUnit block_size(kIndefiniteSize);
     if (IsOutOfFlowPositioned()) {
       // For out-of-flow, the input percentage block size is actually our
@@ -873,7 +874,7 @@ MinMaxSizesResult NGBlockNode::ComputeMinMaxSizes(
       uses_input_percentage_block_size &&
       result.depends_on_percentage_block_size;
 
-  if (Style().AspectRatio() &&
+  if (!Style().AspectRatio().IsAuto() &&
       BlockLengthUnresolvable(*constraint_space, Style().LogicalHeight(),
                               LengthResolvePhase::kLayout)) {
     // If the block size will be computed from the aspect ratio, we need
@@ -1364,7 +1365,7 @@ bool NGBlockNode::IsAtomicInlineLevel() const {
 }
 
 bool NGBlockNode::HasAspectRatio() const {
-  if (Style().AspectRatio().has_value())
+  if (!Style().AspectRatio().IsAuto())
     return true;
   LayoutBox* layout_object = GetLayoutBox();
   if (!layout_object->IsImage() && !IsA<LayoutVideo>(layout_object) &&
@@ -1380,9 +1381,9 @@ bool NGBlockNode::HasAspectRatio() const {
 LogicalSize NGBlockNode::GetAspectRatio() const {
   // The CSS parser will ensure that this will only be set if the feature
   // is enabled.
-  const base::Optional<LogicalSize>& ratio = Style().LogicalAspectRatio();
-  if (ratio.has_value())
-    return *ratio;
+  const StyleAspectRatio& ratio = Style().AspectRatio();
+  if (ratio.GetType() == EAspectRatioType::kRatio)
+    return Style().LogicalAspectRatio();
 
   base::Optional<LayoutUnit> computed_inline_size;
   base::Optional<LayoutUnit> computed_block_size;
@@ -1392,8 +1393,14 @@ LogicalSize NGBlockNode::GetAspectRatio() const {
 
   IntrinsicSizingInfo legacy_sizing_info;
   ToLayoutReplaced(box_)->ComputeIntrinsicSizingInfo(legacy_sizing_info);
-  return LogicalSize(LayoutUnit(legacy_sizing_info.aspect_ratio.Width()),
-                     LayoutUnit(legacy_sizing_info.aspect_ratio.Height()));
+  LogicalSize intrinsic_ar{
+      LayoutUnit(legacy_sizing_info.aspect_ratio.Width()),
+      LayoutUnit(legacy_sizing_info.aspect_ratio.Height())};
+  if (!intrinsic_ar.IsEmpty())
+    return intrinsic_ar;
+  if (ratio.GetType() == EAspectRatioType::kAutoAndRatio)
+    return Style().LogicalAspectRatio();
+  return LogicalSize();
 }
 
 bool NGBlockNode::IsCustomLayoutLoaded() const {

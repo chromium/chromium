@@ -654,7 +654,7 @@ void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems() {
       // AspectRatio(), but to avoid introducing a behavior change we only
       // do this for the aspect-ratio property for now until FlexNG ships.
       bool use_container_cross_size_for_aspect_ratio =
-          (child.Style().AspectRatio() ||
+          (!child.Style().AspectRatio().IsAuto() ||
            (child.HasAspectRatio() &&
             RuntimeEnabledFeatures::FlexAspectRatioEnabled())) &&
           WillChildCrossSizeBeContainerCrossSize(child);
