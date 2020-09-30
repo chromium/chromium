@@ -5,9 +5,9 @@
 #include "chrome/browser/ui/ash/holding_space/holding_space_downloads_delegate.h"
 
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
+#include "ash/public/cpp/holding_space/holding_space_prefs.h"
 #include "base/barrier_closure.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_util.h"
 #include "content/public/browser/browser_context.h"
 
@@ -17,7 +17,25 @@ namespace {
 
 content::DownloadManager* download_manager_for_testing = nullptr;
 
+// Helpers ---------------------------------------------------------------------
+
+// Returns true if `download` is sufficiently recent, false otherwise.
+bool IsRecentEnough(Profile* profile, const download::DownloadItem* download) {
+  const base::Time end_time = download->GetEndTime();
+
+  // A `download` must be more recent than the time of the holding space feature
+  // first becoming available.
+  PrefService* prefs = profile->GetPrefs();
+  if (end_time < holding_space_prefs::GetTimeOfFirstAvailability(prefs).value())
+    return false;
+
+  // A `download` must be more recent that `kMaxFileAge`.
+  return end_time >= base::Time::Now() - kMaxFileAge;
+}
+
 }  // namespace
+
+// HoldingSpaceDownloadsDelegate -----------------------------------------------
 
 HoldingSpaceDownloadsDelegate::HoldingSpaceDownloadsDelegate(
     Profile* profile,
@@ -77,10 +95,7 @@ void HoldingSpaceDownloadsDelegate::OnManagerInitialized() {
   for (auto* download : downloads) {
     switch (download->GetState()) {
       case download::DownloadItem::COMPLETE: {
-        base::Time download_end_time = download->GetEndTime();
-        if (download_end_time >=
-                HoldingSpaceKeyedService::GetFirstEnabledTime(profile()) &&
-            download_end_time >= base::Time::Now() - kMaxFileAge) {
+        if (IsRecentEnough(profile(), download)) {
           holding_space_util::FilePathValid(
               profile(), {download->GetFullPath(), /*requirements=*/{}},
               base::BindOnce(

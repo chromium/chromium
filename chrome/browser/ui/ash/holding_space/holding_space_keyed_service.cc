@@ -8,6 +8,7 @@
 #include "ash/public/cpp/holding_space/holding_space_image.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/holding_space/holding_space_metrics.h"
+#include "ash/public/cpp/holding_space/holding_space_prefs.h"
 #include "base/barrier_closure.h"
 #include "base/files/file_path.h"
 #include "base/guid.h"
@@ -20,7 +21,6 @@
 #include "chrome/browser/ui/ash/holding_space/holding_space_persistence_delegate.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_util.h"
 #include "components/account_id/account_id.h"
-#include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "storage/browser/file_system/file_system_url.h"
 
@@ -28,15 +28,29 @@ namespace ash {
 
 namespace {
 
-// Preference path at which we store when holding space was enabled for the
-// first time.
-constexpr char kPrefPathFirstEnabledTime[] = "ash.holding_space.first_enabled";
+// Helpers ---------------------------------------------------------------------
 
+// Returns the singleton profile manager for the browser process.
 ProfileManager* GetProfileManager() {
   return g_browser_process->profile_manager();
 }
 
+// Records the time from the first entry to the first pin into holding space.
+// Note that this time may be zero if the user pinned their first file before
+// having ever entered holding space.
+void RecordTimeFromFirstEntryToFirstPin(Profile* profile) {
+  base::Time time_of_first_pin =
+      holding_space_prefs::GetTimeOfFirstPin(profile->GetPrefs()).value();
+  base::Time time_of_first_entry =
+      holding_space_prefs::GetTimeOfFirstEntry(profile->GetPrefs())
+          .value_or(time_of_first_pin);
+  holding_space_metrics::RecordTimeFromFirstEntryToFirstPin(
+      time_of_first_pin - time_of_first_entry);
+}
+
 }  // namespace
+
+// HoldingSpaceKeyedService ----------------------------------------------------
 
 HoldingSpaceKeyedService::HoldingSpaceKeyedService(Profile* profile,
                                                    const AccountId& account_id)
@@ -44,10 +58,9 @@ HoldingSpaceKeyedService::HoldingSpaceKeyedService(Profile* profile,
       account_id_(account_id),
       holding_space_client_(profile),
       thumbnail_loader_(profile) {
-  // If true, store this as the first time holding space has been enabled.
-  PrefService* const prefs = profile_->GetPrefs();
-  if (prefs->FindPreference(kPrefPathFirstEnabledTime)->IsDefaultValue())
-    prefs->SetTime(kPrefPathFirstEnabledTime, base::Time::Now());
+  // Mark when the holding space feature first became available. If this is not
+  // the first time that holding space became available, this will no-op.
+  holding_space_prefs::MarkTimeOfFirstAvailability(profile_->GetPrefs());
 
   // Model restoration is a multi-step process, currently consisting of a
   // restoration from persistence followed by a restoration of downloads. Once
@@ -74,17 +87,25 @@ HoldingSpaceKeyedService::~HoldingSpaceKeyedService() = default;
 // static
 void HoldingSpaceKeyedService::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
-  registry->RegisterTimePref(kPrefPathFirstEnabledTime, base::Time::Now());
-  HoldingSpacePersistenceDelegate::RegisterProfilePrefs(registry);
-}
+  holding_space_prefs::RegisterProfilePrefs(registry);
 
-// static
-base::Time HoldingSpaceKeyedService::GetFirstEnabledTime(Profile* profile) {
-  return profile->GetPrefs()->GetTime(kPrefPathFirstEnabledTime);
+  // TODO(crbug.com/1131266): Move to `ash::holding_space_prefs`.
+  HoldingSpacePersistenceDelegate::RegisterProfilePrefs(registry);
 }
 
 void HoldingSpaceKeyedService::AddPinnedFile(
     const storage::FileSystemURL& file_system_url) {
+  if (holding_space_model_.GetItem(HoldingSpaceItem::GetFileBackedItemId(
+          HoldingSpaceItem::Type::kPinnedFile, file_system_url.path()))) {
+    return;
+  }
+
+  // Mark when the first pin to holding space occurred. If this is not the first
+  // pin to holding space, this will no-op. If this is the first pin, record the
+  // amount of time from first entry to first pin into holding space.
+  if (holding_space_prefs::MarkTimeOfFirstPin(profile_->GetPrefs()))
+    RecordTimeFromFirstEntryToFirstPin(profile_);
+
   std::unique_ptr<HoldingSpaceItem> holding_space_item =
       HoldingSpaceItem::CreateFileBackedItem(
           HoldingSpaceItem::Type::kPinnedFile, file_system_url.path(),

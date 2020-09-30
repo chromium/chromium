@@ -9,8 +9,11 @@
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/holding_space/holding_space_metrics.h"
+#include "ash/public/cpp/holding_space/holding_space_prefs.h"
 #include "ash/public/cpp/shelf_config.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
+#include "ash/shell.h"
 #include "ash/system/holding_space/holding_space_item_view.h"
 #include "ash/system/holding_space/holding_space_tray.h"
 #include "ash/system/holding_space/pinned_files_container.h"
@@ -37,6 +40,16 @@ void FindVisibleHoldingSpaceItems(
       result->push_back(HoldingSpaceItemView::Cast(view)->item());
     FindVisibleHoldingSpaceItems(view, result);
   }
+}
+
+// Records the time from first availability to first entry into holding space.
+void RecordTimeFromFirstAvailabilityToFirstEntry(PrefService* prefs) {
+  base::Time time_of_first_availability =
+      holding_space_prefs::GetTimeOfFirstAvailability(prefs).value();
+  base::Time time_of_first_entry =
+      holding_space_prefs::GetTimeOfFirstEntry(prefs).value();
+  holding_space_metrics::RecordTimeFromFirstAvailabilityToFirstEntry(
+      time_of_first_entry - time_of_first_availability);
 }
 
 // Sets up the layer for the specified `view`.
@@ -125,6 +138,15 @@ HoldingSpaceTrayBubble::HoldingSpaceTrayBubble(
       ->non_client_view()
       ->frame_view()
       ->SetVisible(false);
+
+  PrefService* const prefs =
+      Shell::Get()->session_controller()->GetLastActiveUserPrefService();
+
+  // Mark when holding space was first entered. If this is not the first entry
+  // into holding space, this will no-op. If this is the first entry, record the
+  // amount of time from first availability to first entry into holding space.
+  if (holding_space_prefs::MarkTimeOfFirstEntry(prefs))
+    RecordTimeFromFirstAvailabilityToFirstEntry(prefs);
 
   // Record visible holding space items.
   std::vector<const HoldingSpaceItem*> visible_items;

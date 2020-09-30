@@ -75,6 +75,27 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="HoldingSpace.TimeFromFirstAvailabilityToFirstEntry" units="ms"
+    expires_after="2021-09-24">
+  <owner>dmblack@google.com</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    Records the time from when the holding space feature first became available
+    to when the user first entered holding space.
+  </summary>
+</histogram>
+
+<histogram name="HoldingSpace.TimeFromFirstEntryToFirstPin" units="ms"
+    expires_after="2021-09-24">
+  <owner>dmblack@google.com</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    Records the time from when the user first entered holding space to when the
+    user first pinned a file. Note that this may be zero if the user pinned
+    their first file prior to having entered holding space.
+  </summary>
+</histogram>
+
 </histograms>
 
 <histogram_suffixes_list>

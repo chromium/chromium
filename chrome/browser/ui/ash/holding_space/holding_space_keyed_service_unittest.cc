@@ -886,7 +886,8 @@ TEST_F(HoldingSpaceKeyedServiceTest, RemoveOlderDownloads) {
             holding_space_start_time.ToDeltaSinceWindowsEpoch()
                 .InMicroseconds()));
         pref_store->SetValueSilently(
-            "ash.holding_space.first_enabled", std::move(time_value),
+            "ash.holding_space.time_of_first_availability",
+            std::move(time_value),
             PersistentPrefStore::DEFAULT_PREF_WRITE_FLAGS);
       }));
   ActivateSecondaryProfile();
@@ -915,7 +916,7 @@ TEST_F(HoldingSpaceKeyedServiceTest,
   EXPECT_CALL(*item, GetEndTime())
       .WillOnce(
           testing::Return(base::Time::Now() - base::TimeDelta::FromHours(1)));
-          
+
   content::DownloadManager::DownloadVector download_items_mock;
   download_items_mock.push_back(item.get());
 

@@ -9,6 +9,10 @@
 
 #include "ash/public/cpp/ash_public_export.h"
 
+namespace base {
+class TimeDelta;
+}  // namespace base
+
 namespace ash {
 
 class HoldingSpaceItem;
@@ -58,6 +62,14 @@ ASH_PUBLIC_EXPORT void RecordItemAction(
 // Records counts for the specified holding space `items`.
 ASH_PUBLIC_EXPORT void RecordItemCounts(
     const std::vector<const HoldingSpaceItem*>& items);
+
+// Records time from first availability to the first entry into holding space.
+ASH_PUBLIC_EXPORT void RecordTimeFromFirstAvailabilityToFirstEntry(
+    base::TimeDelta time_delta);
+
+// Records time from first entry to the first pin into holding space.
+ASH_PUBLIC_EXPORT void RecordTimeFromFirstEntryToFirstPin(
+    base::TimeDelta time_delta);
 
 }  // namespace holding_space_metrics
 }  // namespace ash

@@ -10,6 +10,7 @@
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/time/time.h"
 
 namespace ash {
 namespace holding_space_metrics {
@@ -90,6 +91,23 @@ void RecordItemCounts(const std::vector<const HoldingSpaceItem*>& items) {
         "HoldingSpace.Item.Count." + ItemTypeToString(count_by_type.first),
         count_by_type.second);
   }
+}
+
+void RecordTimeFromFirstAvailabilityToFirstEntry(base::TimeDelta time_delta) {
+  // NOTE: 24 days appears to be the max supported number of days.
+  base::UmaHistogramCustomTimes(
+      "HoldingSpace.TimeFromFirstAvailabilityToFirstEntry", time_delta,
+      /*min=*/base::TimeDelta(), /*max=*/base::TimeDelta::FromDays(24),
+      /*buckets=*/50);
+}
+
+void RecordTimeFromFirstEntryToFirstPin(base::TimeDelta time_delta) {
+  // NOTE: 24 days appears to be the max supported number of days.
+  base::UmaHistogramCustomTimes("HoldingSpace.TimeFromFirstEntryToFirstPin",
+                                time_delta,
+                                /*min=*/base::TimeDelta(),
+                                /*max=*/base::TimeDelta::FromDays(24),
+                                /*buckets=*/50);
 }
 
 }  // namespace holding_space_metrics
