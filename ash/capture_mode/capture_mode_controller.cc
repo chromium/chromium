@@ -26,6 +26,7 @@
 #include "base/files/file_util.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/current_thread.h"
 #include "base/task/task_traits.h"
@@ -206,6 +207,20 @@ CaptureModeController::CaptureModeController(
     : delegate_(std::move(delegate)) {
   DCHECK_EQ(g_instance, nullptr);
   g_instance = this;
+
+  // Schedule recording of the number of screenshots taken per day.
+  num_screenshots_taken_in_last_day_scheduler_.Start(
+      FROM_HERE, base::TimeDelta::FromDays(1),
+      base::BindRepeating(
+          &CaptureModeController::RecordNumberOfScreenshotsTakenInLastDay,
+          weak_ptr_factory_.GetWeakPtr()));
+
+  // Schedule recording of the number of screenshots taken per week.
+  num_screenshots_taken_in_last_week_scheduler_.Start(
+      FROM_HERE, base::TimeDelta::FromDays(7),
+      base::BindRepeating(
+          &CaptureModeController::RecordNumberOfScreenshotsTakenInLastWeek,
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
 CaptureModeController::~CaptureModeController() {
@@ -354,6 +369,9 @@ void CaptureModeController::CaptureImage() {
       capture_params->window, capture_params->bounds,
       base::BindOnce(&CaptureModeController::OnImageCaptured,
                      weak_ptr_factory_.GetWeakPtr(), base::Time::Now()));
+
+  ++num_screenshots_taken_in_last_day_;
+  ++num_screenshots_taken_in_last_week_;
 }
 
 void CaptureModeController::CaptureVideo() {
@@ -487,6 +505,18 @@ base::FilePath CaptureModeController::BuildPath(const char* const format_string,
   return path.AppendASCII(base::StringPrintf(
       format_string, GetDateStr(exploded_time).c_str(),
       GetTimeStr(exploded_time, delegate_->Uses24HourFormat()).c_str()));
+}
+
+void CaptureModeController::RecordNumberOfScreenshotsTakenInLastDay() {
+  base::UmaHistogramCounts100("Ash.CaptureModeController.ScreenshotsPerDay",
+                              num_screenshots_taken_in_last_day_);
+  num_screenshots_taken_in_last_day_ = 0;
+}
+
+void CaptureModeController::RecordNumberOfScreenshotsTakenInLastWeek() {
+  base::UmaHistogramCounts1000("Ash.CaptureModeController.ScreenshotsPerWeek",
+                               num_screenshots_taken_in_last_week_);
+  num_screenshots_taken_in_last_week_ = 0;
 }
 
 }  // namespace ash

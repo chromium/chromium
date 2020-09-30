@@ -13,6 +13,7 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
+#include "base/timer/timer.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image.h"
 
@@ -131,6 +132,10 @@ class ASH_EXPORT CaptureModeController {
   base::FilePath BuildPath(const char* const format_string,
                            base::Time timestamp) const;
 
+  // Records the number of screenshots taken.
+  void RecordNumberOfScreenshotsTakenInLastDay();
+  void RecordNumberOfScreenshotsTakenInLastWeek();
+
   std::unique_ptr<CaptureModeDelegate> delegate_;
 
   CaptureModeType type_ = CaptureModeType::kImage;
@@ -145,6 +150,14 @@ class ASH_EXPORT CaptureModeController {
 
   // True when video recording is in progress.
   bool is_recording_in_progress_ = false;
+
+  // Timers used to schedule recording of the number of screenshots taken.
+  base::RepeatingTimer num_screenshots_taken_in_last_day_scheduler_;
+  base::RepeatingTimer num_screenshots_taken_in_last_week_scheduler_;
+
+  // Counters used to track the number of screenshots taken.
+  int num_screenshots_taken_in_last_day_ = 0;
+  int num_screenshots_taken_in_last_week_ = 0;
 
   base::WeakPtrFactory<CaptureModeController> weak_ptr_factory_{this};
 };
