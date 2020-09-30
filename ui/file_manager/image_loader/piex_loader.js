@@ -250,8 +250,8 @@ class ImageBuffer {
   /**
    * Calls Module.image() to process |this.source| and return the result.
    *
+   * @throws {!Error} Memory allocation error.
    * @return {!PiexWasmImageResult}
-   * @throws {!Error}
    */
   process() {
     this.memory = PiexModule._malloc(this.length);
@@ -474,14 +474,17 @@ class ImageBuffer {
    * Release resources.
    */
   close() {
-    PiexModule._free(this.memory);
+    const memory = this.memory;
+    if (memory) {
+      PiexModule._free(memory);
+      this.memory = 0;
+    }
   }
 }
 
 /**
  * Creates a PiexLoader.
  * @constructor
- * @struct
  */
 function PiexLoader() {}
 
