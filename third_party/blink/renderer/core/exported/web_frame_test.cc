@@ -8745,7 +8745,7 @@ TEST_F(WebFrameTest, PrintingBasic)
   print_params.print_content_area.width = 500;
   print_params.print_content_area.height = 500;
 
-  uint32_t page_count = frame->PrintBegin(print_params);
+  uint32_t page_count = frame->PrintBegin(print_params, WebNode());
   EXPECT_EQ(1u, page_count);
   frame->PrintEnd();
 }

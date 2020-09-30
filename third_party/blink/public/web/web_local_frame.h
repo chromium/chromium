@@ -673,8 +673,8 @@ class WebLocalFrame : public WebFrame {
   // node is printed (for now only plugins are supported), instead of the entire
   // frame.
   // Returns the number of pages that can be printed at the given page size.
-  virtual uint32_t PrintBegin(const WebPrintParams&,
-                              const WebNode& constrain_to_node = WebNode()) = 0;
+  virtual uint32_t PrintBegin(const WebPrintParams& print_params,
+                              const WebNode& constrain_to_node) = 0;
 
   // Returns the page shrinking factor calculated by webkit (usually
   // between 1/1.33 and 1/2). Returns 0 if the page number is invalid or

@@ -736,7 +736,7 @@ void PrintRenderFrameHelper::PrintHeaderAndFooter(
   blink::WebPrintParams webkit_params(page_size);
   webkit_params.printer_dpi = GetDPI(params);
 
-  frame->PrintBegin(webkit_params);
+  frame->PrintBegin(webkit_params, blink::WebNode());
   frame->PrintPage(0, canvas);
   frame->PrintEnd();
 

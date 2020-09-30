@@ -72,7 +72,7 @@ void WebViewTestProxy::PrintPage(blink::WebLocalFrame* frame) {
   if (page_size_in_pixels.IsEmpty())
     return;
   blink::WebPrintParams print_params(page_size_in_pixels);
-  frame->PrintBegin(print_params);
+  frame->PrintBegin(print_params, blink::WebNode());
   frame->PrintEnd();
 }
 
