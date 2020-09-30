@@ -1323,10 +1323,6 @@ body._10sec .description span[i18n-content=label_timer_10s],
   transition: border-width 100ms ease-in;
 }
 
-.menu-item input:checked + span {
-  color: var(--toggled-color);
-}
-
 body.tab-navigation button.menu-item:focus::after {
   left: 2px;
   right: 2px;
