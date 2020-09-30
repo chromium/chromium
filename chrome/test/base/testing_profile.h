@@ -54,7 +54,11 @@ namespace policy {
 class PolicyService;
 class ProfilePolicyConnector;
 class SchemaRegistryService;
+#if defined(OS_CHROMEOS)
+class UserCloudPolicyManagerChromeOS;
+#else
 class UserCloudPolicyManager;
+#endif  // defined(OS_CHROMEOS)
 }  // namespace policy
 
 namespace storage {
@@ -139,9 +143,15 @@ class TestingProfile : public Profile {
     // a non-empty string, the profile is supervised.
     void SetSupervisedUserId(const std::string& supervised_user_id);
 
+#if defined(OS_CHROMEOS)
+    void SetUserCloudPolicyManagerChromeOS(
+        std::unique_ptr<policy::UserCloudPolicyManagerChromeOS>
+            user_cloud_policy_manager);
+#else
     void SetUserCloudPolicyManager(
         std::unique_ptr<policy::UserCloudPolicyManager>
             user_cloud_policy_manager);
+#endif  // defined(OS_CHROMEOS)
 
     // Sets the PolicyService to be used by this profile.
     void SetPolicyService(
@@ -178,7 +188,12 @@ class TestingProfile : public Profile {
     bool allows_browser_windows_;
     base::Optional<bool> is_new_profile_;
     std::string supervised_user_id_;
+#if defined(OS_CHROMEOS)
+    std::unique_ptr<policy::UserCloudPolicyManagerChromeOS>
+        user_cloud_policy_manager_;
+#else
     std::unique_ptr<policy::UserCloudPolicyManager> user_cloud_policy_manager_;
+#endif
     std::unique_ptr<policy::PolicyService> policy_service_;
     TestingFactories testing_factories_;
     std::string profile_name_;
@@ -200,23 +215,28 @@ class TestingProfile : public Profile {
 
   // Full constructor allowing the setting of all possible instance data.
   // Callers should use Builder::Build() instead of invoking this constructor.
-  TestingProfile(const base::FilePath& path,
-                 Delegate* delegate,
+  TestingProfile(
+      const base::FilePath& path,
+      Delegate* delegate,
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-                 scoped_refptr<ExtensionSpecialStoragePolicy> extension_policy,
+      scoped_refptr<ExtensionSpecialStoragePolicy> extension_policy,
 #endif
-                 std::unique_ptr<sync_preferences::PrefServiceSyncable> prefs,
-                 TestingProfile* parent,
-                 bool guest_session,
-                 bool allows_browser_windows,
-                 base::Optional<bool> is_new_profile,
-                 const std::string& supervised_user_id,
-                 std::unique_ptr<policy::UserCloudPolicyManager> policy_manager,
-                 std::unique_ptr<policy::PolicyService> policy_service,
-                 TestingFactories testing_factories,
-                 const std::string& profile_name,
-                 base::Optional<bool> override_policy_connector_is_managed,
-                 base::Optional<OTRProfileID> otr_profile_id);
+      std::unique_ptr<sync_preferences::PrefServiceSyncable> prefs,
+      TestingProfile* parent,
+      bool guest_session,
+      bool allows_browser_windows,
+      base::Optional<bool> is_new_profile,
+      const std::string& supervised_user_id,
+#if defined(OS_CHROMEOS)
+      std::unique_ptr<policy::UserCloudPolicyManagerChromeOS> policy_manager,
+#else
+      std::unique_ptr<policy::UserCloudPolicyManager> policy_manager,
+#endif  // defined(OS_CHROMEOS)
+      std::unique_ptr<policy::PolicyService> policy_service,
+      TestingFactories testing_factories,
+      const std::string& profile_name,
+      base::Optional<bool> override_policy_connector_is_managed,
+      base::Optional<OTRProfileID> otr_profile_id);
 
   ~TestingProfile() override;
 
@@ -459,7 +479,12 @@ class TestingProfile : public Profile {
   content::MockResourceContext* resource_context_;
 
   std::unique_ptr<policy::SchemaRegistryService> schema_registry_service_;
+#if defined(OS_CHROMEOS)
+  std::unique_ptr<policy::UserCloudPolicyManagerChromeOS>
+      user_cloud_policy_manager_;
+#else
   std::unique_ptr<policy::UserCloudPolicyManager> user_cloud_policy_manager_;
+#endif  // defined(OS_CHROMEOS)
   std::unique_ptr<policy::ProfilePolicyConnector> profile_policy_connector_;
 
   // Weak pointer to a delegate for indicating that a profile was created.

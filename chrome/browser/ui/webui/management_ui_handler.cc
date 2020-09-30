@@ -51,6 +51,7 @@
 #include "chrome/browser/chromeos/policy/status_collector/status_collector.h"
 #include "chrome/browser/chromeos/policy/status_uploader.h"
 #include "chrome/browser/chromeos/policy/system_log_uploader.h"
+#include "chrome/browser/chromeos/policy/user_cloud_policy_manager_chromeos.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/settings/cros_settings.h"
 #include "chrome/browser/ui/webui/management_ui_handler_chromeos.h"
@@ -64,6 +65,8 @@
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
 #include "ui/chromeos/devicetype_utils.h"
+#else
+#include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #endif  // defined(OS_CHROMEOS)
 
 #include "chrome/browser/extensions/extension_util.h"
@@ -72,6 +75,7 @@
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/core/common/policy_service.h"
 #include "components/policy/policy_constants.h"
+#include "components/policy/proto/device_management_backend.pb.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_set.h"
@@ -338,6 +342,29 @@ std::string ManagementUIHandler::GetAccountDomain(Profile* profile) {
 
   return (domain == "gmail.com" || domain == "googlemail.com") ? std::string()
                                                                : domain;
+}
+
+std::string ManagementUIHandler::GetAccountManager(Profile* profile) {
+  if (!IsProfileManaged(profile))
+    return std::string();
+
+#if defined(OS_CHROMEOS)
+  const policy::UserCloudPolicyManagerChromeOS* user_cloud_policy_manager =
+      profile->GetUserCloudPolicyManagerChromeOS();
+#else
+  const policy::UserCloudPolicyManager* user_cloud_policy_manager =
+      profile->GetUserCloudPolicyManager();
+#endif  // defined(OS_CHROMEOS)
+
+  if (user_cloud_policy_manager) {
+    const enterprise_management::PolicyData* policy =
+        user_cloud_policy_manager->core()->store()->policy();
+    if (policy && policy->has_managed_by()) {
+      return policy->managed_by();
+    }
+  }
+
+  return GetAccountDomain(profile);
 }
 
 ManagementUIHandler::ManagementUIHandler() {
