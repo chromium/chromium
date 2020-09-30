@@ -68,6 +68,7 @@ using FillingSource = ManualFillingController::FillingSource;
 using IsPslMatch = autofill::UserInfo::IsPslMatch;
 
 constexpr char kExampleSite[] = "https://example.com";
+constexpr char kExampleHttpSite[] = "http://example.com";
 constexpr char kExampleSiteMobile[] = "https://m.example.com";
 constexpr char kExampleSignonRealm[] = "https://example.com/";
 constexpr char kExampleDomain[] = "example.com";
@@ -672,6 +673,27 @@ TEST_F(PasswordAccessoryControllerTest, AddsShowOtherUsername) {
 
   controller()->RefreshSuggestionsForField(
       FocusedFieldType::kFillableUsernameField,
+      /*is_manual_generation_available=*/false);
+}
+
+TEST_F(PasswordAccessoryControllerTest,
+       AddsShowOtherPasswordForOnlySecuredSites) {
+  // `Setup` method sets the URL to https but http is required for this method.
+  NavigateAndCommit(GURL(kExampleHttpSite));
+  FocusWebContentsOnMainFrame();
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      password_manager::features::kFillingPasswordsFromAnyOrigin);
+  AccessorySheetData::Builder data_builder(
+      AccessoryTabType::PASSWORDS, passwords_empty_str(kExampleHttpSite));
+  data_builder.AppendFooterCommand(manage_passwords_str(),
+                                   autofill::AccessoryAction::MANAGE_PASSWORDS);
+  EXPECT_CALL(mock_manual_filling_controller_,
+              RefreshSuggestions(std::move(data_builder).Build()));
+
+  controller()->RefreshSuggestionsForField(
+      FocusedFieldType::kFillablePasswordField,
       /*is_manual_generation_available=*/false);
 }
 

@@ -271,7 +271,8 @@ void PasswordAccessoryControllerImpl::RefreshSuggestionsForField(
     }
   }
 
-  if (base::FeatureList::IsEnabled(
+  if (origin.GetURL().SchemeIsCryptographic() &&
+      base::FeatureList::IsEnabled(
           password_manager::features::kFillingPasswordsFromAnyOrigin)) {
     // TODO(crbug.com/1104132): Disable the feature in insecure websites.
     base::string16 button_title =
