@@ -28,8 +28,10 @@
 #include "chrome/browser/history/history_test_utils.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service_factory.h"
+#include "chrome/browser/net/prediction_options.h"
 #include "chrome/browser/net/profile_network_context_service.h"
 #include "chrome/browser/net/profile_network_context_service_factory.h"
+#include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/prerender/isolated/isolated_prerender_features.h"
 #include "chrome/browser/prerender/isolated/isolated_prerender_origin_prober.h"
 #include "chrome/browser/prerender/isolated/isolated_prerender_params.h"
@@ -58,6 +60,7 @@
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_switches.h"
 #include "components/data_reduction_proxy/proto/client_config.pb.h"
 #include "components/language/core/browser/pref_names.h"
+#include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/prerender/browser/prerender_handle.h"
 #include "components/prerender/browser/prerender_manager.h"
@@ -1726,6 +1729,70 @@ IN_PROC_BROWSER_TEST_F(IsolatedPrerenderBrowserTest,
   // This run loop will quit when the prefetch response have been
   // successfully done and processed with the expected error.
   run_loop.Run();
+}
+
+class PolicyTestIsolatedPrerenderBrowserTest : public policy::PolicyTest {
+ public:
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(features::kIsolatePrerenders);
+    policy::PolicyTest::SetUp();
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    PolicyTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch("enable-spdy-proxy-auth");
+  }
+
+  content::WebContents* GetWebContents() const {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+  void MakeNavigationPrediction(const GURL& doc_url,
+                                const std::vector<GURL>& predicted_urls) {
+    NavigationPredictorKeyedServiceFactory::GetForProfile(browser()->profile())
+        ->OnPredictionUpdated(
+            GetWebContents(), doc_url,
+            NavigationPredictorKeyedService::PredictionSource::
+                kAnchorElementsParsedFromWebPage,
+            predicted_urls);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Predictions should be ignored when the preload setting is disabled by policy.
+IN_PROC_BROWSER_TEST_F(PolicyTestIsolatedPrerenderBrowserTest,
+                       DISABLE_ON_WIN_MAC_CHROMEOS(NoPrefetching)) {
+  policy::PolicyMap policies;
+  policies.Set(
+      policy::key::kNetworkPredictionOptions, policy::POLICY_LEVEL_MANDATORY,
+      policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
+      base::Value(chrome_browser_net::NETWORK_PREDICTION_NEVER), nullptr);
+  UpdateProviderPolicy(policies);
+
+  IsolatedPrerenderTabHelper* tab_helper =
+      IsolatedPrerenderTabHelper::FromWebContents(GetWebContents());
+
+  GURL doc_url("https://www.google.com/search?q=test");
+  MakeNavigationPrediction(doc_url, {GURL("https://test.com/")});
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(tab_helper->srp_metrics().predicted_urls_count_, 0U);
+}
+
+// A negative test where the only thing missing is the policy change from
+// default, ensure that predictions are getting used.
+IN_PROC_BROWSER_TEST_F(PolicyTestIsolatedPrerenderBrowserTest,
+                       DISABLE_ON_WIN_MAC_CHROMEOS(PrefetchingWithDefault)) {
+  IsolatedPrerenderTabHelper* tab_helper =
+      IsolatedPrerenderTabHelper::FromWebContents(GetWebContents());
+
+  GURL doc_url("https://www.google.com/search?q=test");
+  MakeNavigationPrediction(doc_url, {GURL("https://test.com/")});
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(tab_helper->srp_metrics().predicted_urls_count_, 1U);
 }
 
 class SSLReportingIsolatedPrerenderBrowserTest
