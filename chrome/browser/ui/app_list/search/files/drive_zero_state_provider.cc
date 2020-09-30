@@ -33,6 +33,23 @@ namespace {
 constexpr char kListSchema[] = "drive_zero_state://";
 constexpr char kChipSchema[] = "drive_zero_state_chip://";
 
+// Outcome of a call to DriverZeroStateProvider::Start. These values persist to
+// logs. Entries should not be renumbered and numeric values should never be
+// reused.
+enum class Status {
+  kOk = 0,
+  kDriveFSNotMounted = 1,
+  kNoResults = 2,
+  kPathLocationFailed = 3,
+  kAllFilesErrored = 4,
+  kMaxValue = kAllFilesErrored,
+};
+
+void LogStatus(Status status) {
+  UMA_HISTOGRAM_ENUMERATION("Apps.AppList.DriveZeroStateProvider.Status",
+                            status);
+}
+
 // Given an absolute path representing a file in the user's Drive, returns a
 // reparented version of the path within the user's drive fs mount.
 base::FilePath ReparentToDriveMount(
@@ -109,10 +126,14 @@ void DriveZeroStateProvider::Start(const base::string16& query) {
   //  - this search has a non-empty query, we only handle zero-state.
   //  - drive fs isn't mounted, as we launch results via drive fs.
   const bool drive_fs_mounted = drive_service_ && drive_service_->IsMounted();
-  if (!query.empty() || !drive_fs_mounted) {
-    // TODO(crbug.com/1034842): Log error metrics.
+  if (!query.empty()) {
+    return;
+  } else if (!drive_fs_mounted) {
+    LogStatus(Status::kDriveFSNotMounted);
     return;
   }
+
+  query_start_time_ = base::TimeTicks::Now();
 
   // Cancel any in-flight queries for this provider.
   weak_factory_.InvalidateWeakPtrs();
@@ -120,7 +141,7 @@ void DriveZeroStateProvider::Start(const base::string16& query) {
   // Get the most recent results from the cache.
   cache_results_ = item_suggest_cache_.GetResults();
   if (!cache_results_) {
-    // TODO(crbug.com/1034842): Log error metrics.
+    LogStatus(Status::kNoResults);
     return;
   }
 
@@ -137,9 +158,10 @@ void DriveZeroStateProvider::Start(const base::string16& query) {
 void DriveZeroStateProvider::OnFilePathsLocated(
     base::Optional<std::vector<drivefs::mojom::FilePathOrErrorPtr>> paths) {
   if (!paths) {
-    // TODO(crbug.com/1034842): Log error metrics.
+    LogStatus(Status::kPathLocationFailed);
     return;
   }
+
   DCHECK(cache_results_);
   DCHECK_EQ(cache_results_->results.size(), paths->size());
 
@@ -148,12 +170,14 @@ void DriveZeroStateProvider::OnFilePathsLocated(
   // the first is better than the second, etc. Resulting scores are in [0, 1].
   const double total_items = static_cast<double>(paths->size());
   int item_index = 0;
+  bool all_files_errored = true;
   SearchProvider::Results provider_results;
   for (int i = 0; i < static_cast<int>(paths->size()); ++i) {
     const auto& path_or_error = paths.value()[i];
     if (path_or_error->is_error()) {
-      // TODO(crbug.com/1034842): Log error metrics.
       continue;
+    } else {
+      all_files_errored = false;
     }
 
     const double score = 1.0 - (item_index / total_items);
@@ -170,8 +194,20 @@ void DriveZeroStateProvider::OnFilePathsLocated(
     }
   }
 
+  // We expect some files to error sometimes, but we're mainly interested in
+  // when all of the files error at once. This also keeps the bucket proportion
+  // of the status metric meaningful.
+  if (all_files_errored) {
+    LogStatus(Status::kAllFilesErrored);
+    return;
+  }
+
   cache_results_.reset();
   SwapResults(&provider_results);
+
+  LogStatus(Status::kOk);
+  UMA_HISTOGRAM_TIMES("Apps.AppList.DriveZeroStateProvider.Latency",
+                      base::TimeTicks::Now() - query_start_time_);
 }
 
 std::unique_ptr<FileResult> DriveZeroStateProvider::MakeListResult(

@@ -64,6 +64,8 @@ class DriveZeroStateProvider : public SearchProvider,
   // OnFilePathsLocated has finished.
   base::Optional<ItemSuggestCache::Results> cache_results_;
 
+  base::TimeTicks query_start_time_;
+
   // Whether the suggested files experiment is enabled.
   const bool suggested_files_enabled_;
 

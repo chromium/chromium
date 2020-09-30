@@ -19190,6 +19190,14 @@ Called by update_document_policy_enum.py.-->
   <int value="2" label="Batch"/>
 </enum>
 
+<enum name="DriveZeroStateProviderStatus">
+  <int value="0" label="Ok"/>
+  <int value="1" label="Drive FS not mounted"/>
+  <int value="2" label="No results"/>
+  <int value="3" label="Path location failed"/>
+  <int value="4" label="File error"/>
+</enum>
+
 <enum name="DspHotwordDetectionStatus">
   <int value="0" label="HARDWARE_ACCEPTED"/>
   <int value="1" label="SOFTWARE_REJECTED"/>
