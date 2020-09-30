@@ -13,6 +13,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind_test_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_restrictions.h"
@@ -3786,6 +3787,48 @@ IN_PROC_BROWSER_TEST_F(DocumentPolicyBrowserTest,
   const cc::RenderFrameMetadata& last_metadata =
       RenderFrameSubmissionObserver(main_contents).LastRenderFrameMetadata();
   EXPECT_FALSE(last_metadata.is_scroll_offset_at_top);
+}
+
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, RecordInitiatorRfh) {
+  base::HistogramTester histograms;
+  GURL url(embedded_test_server()->GetURL("/empty.html"));
+
+  // First navigation with no initiator.
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  ShellAddedObserver new_shell_observer;
+  {
+    std::vector<base::Bucket> samples =
+        histograms.GetAllSamples("Navigation.InitiatorRFH");
+    EXPECT_EQ(1u, samples.size());
+    EXPECT_EQ(1, samples[0].count);  // InitiatorRFH::NONE
+  }
+
+  // Second navigation with an initiator and a matching RenderFrameHost.
+  EXPECT_TRUE(ExecJs(shell(), JsReplace("window.open($1);", url)));
+  Shell* openee_shell = new_shell_observer.GetShell();
+  {
+    std::vector<base::Bucket> samples =
+        histograms.GetAllSamples("Navigation.InitiatorRFH");
+    EXPECT_EQ(1, samples[0].count);  // InitiatorRFH::NONE
+    EXPECT_EQ(1, samples[1].count);  // InitiatorRFH::EXISTING_RFH
+  }
+
+  // Third navigation with an initiator and no matching RenderFrameHost.
+  TestNavigationObserver observer(shell()->web_contents());
+  EXPECT_TRUE(ExecJs(openee_shell, R"(
+    onunload = () => opener.location.href = "about:blank";
+  )"));
+  openee_shell->Close();
+  observer.Wait();
+
+  {
+    std::vector<base::Bucket> samples =
+        histograms.GetAllSamples("Navigation.InitiatorRFH");
+    EXPECT_EQ(3u, samples.size());
+    EXPECT_EQ(1, samples[0].count);  // InitiatorRFH::NONE
+    EXPECT_EQ(1, samples[1].count);  // InitiatorRFH::EXISTING_RFH
+    EXPECT_EQ(1, samples[2].count);  // InitiatorRFH::DELETED_RFH
+  }
 }
 
 }  // namespace content

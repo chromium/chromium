@@ -728,6 +728,28 @@ url::Origin GetOriginForURLLoaderFactoryUnchecked(
       common_params.initiator_origin.value_or(url::Origin()));
 }
 
+void RecordInitiatorRFH(GlobalFrameRoutingId id) {
+  // Corresponds to the "InitiatorRFH" histogram enumeration type in
+  // tools/metrics/histograms/enums.xml.
+  //
+  // DO NOT REORDER OR CHANGE THE MEANING OF THESE VALUES.
+  enum InitiatorRFH {
+    NONE = 0,
+    EXISTING_RFH = 1,
+    DELETED_RFH = 2,
+
+    kMaxValue = DELETED_RFH,
+  } value;
+
+  if (!id)
+    value = NONE;
+  else if (RenderFrameHost::FromID(id))
+    value = EXISTING_RFH;
+  else
+    value = DELETED_RFH;
+  UMA_HISTOGRAM_ENUMERATION("Navigation.InitiatorRFH", value);
+}
+
 }  // namespace
 
 // static
@@ -1076,6 +1098,8 @@ NavigationRequest::NavigationRequest(
                                     base::trace_event::ToTracedValue(this));
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("navigation", "Initializing",
                                     navigation_id_);
+  RecordInitiatorRFH(GetInitiatorRoutingId());
+
   NavigationControllerImpl* controller = GetNavigationController();
 
   if (frame_entry) {
