@@ -256,18 +256,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Navigation.InitiatorRFH" enum="InitiatorRFH"
-    expires_after="M89">
-  <owner>arthursonzogni@chromium.org</owner>
-  <owner>pmeuleman@chromium.org</owner>
-  <owner>antoniosartori@chromium.org</owner>
-  <owner>clamy@chromium.org</owner>
-  <summary>
-    Count how many NavigationRequests can find their associated initiator's
-    RenderFrameHost.
-  </summary>
-</histogram>
-
 <histogram name="Navigation.IOSNullContextInDidFailProvisionalNavigation"
     enum="Boolean" expires_after="M85">
   <owner>ajuma@chromium.org</owner>

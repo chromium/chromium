@@ -36821,16 +36821,6 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="3" label="Has access"/>
 </enum>
 
-<enum name="InitiatorRFH">
-  <int value="0" label="No initiator"/>
-  <int value="1"
-      label="Initiator RenderFrameHost existed when the NavigationRequest was
-             created"/>
-  <int value="2"
-      label="Initiator RenderFrameHost did not exist anymore when the
-             NavigationRequest was created"/>
-</enum>
-
 <enum name="InjectedAdType">
   <int value="0" label="Invalid"/>
   <int value="1" label="IFrame"/>
