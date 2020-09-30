@@ -56,8 +56,10 @@
         android:title="@string/sync_settings"
         android:persistent="false"/>
 
-    <org.chromium.chrome.browser.sync.settings.SyncOffPreference
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:key="turn_off_sync"
+        android:title="@string/turn_off_sync"
+        android:icon="@drawable/ic_signout_40dp"
         app:isPreferenceVisible="false"/>
 
     <PreferenceCategory

@@ -146,10 +146,10 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
     private CheckBoxPreference mSyncPasswords;
     private CheckBoxPreference mSyncRecentTabs;
     private CheckBoxPreference mSyncSettings;
-    private SyncOffPreference mTurnOffSync;
     // Contains preferences for all sync data types.
     private CheckBoxPreference[] mSyncTypePreferences;
 
+    private Preference mTurnOffSync;
     private Preference mGoogleActivityControls;
     private Preference mSyncEncryption;
     private Preference mManageSyncData;
@@ -198,7 +198,9 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
         mSyncRecentTabs = (CheckBoxPreference) findPreference(PREF_SYNC_RECENT_TABS);
         mSyncSettings = (CheckBoxPreference) findPreference(PREF_SYNC_SETTINGS);
 
-        mTurnOffSync = (SyncOffPreference) findPreference(PREF_TURN_OFF_SYNC);
+        mTurnOffSync = findPreference(PREF_TURN_OFF_SYNC);
+        mTurnOffSync.setOnPreferenceClickListener(
+                SyncSettingsUtils.toOnClickListener(this, this::onTurnOffSyncClicked));
 
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
                 && !mIsFromSigninScreen) {
@@ -324,27 +326,6 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
         // updateSyncStateFromSelectedModelTypes so it gets the updated state from isChecked().
         PostTask.postTask(UiThreadTaskTraits.DEFAULT, this::updateSyncStateFromSelectedModelTypes);
         return true;
-    }
-
-    @Override
-    public void onDisplayPreferenceDialog(Preference preference) {
-        if (preference instanceof SyncOffPreference) {
-            if (!IdentityServicesProvider.get()
-                            .getIdentityManager(Profile.getLastUsedRegularProfile())
-                            .hasPrimaryAccount()) {
-                return;
-            }
-            SigninUtils.logEvent(ProfileAccountManagementMetrics.TOGGLE_SIGNOUT,
-                    GAIAServiceType.GAIA_SERVICE_TYPE_NONE);
-
-            SignOutDialogFragment signOutFragment =
-                    SignOutDialogFragment.create(GAIAServiceType.GAIA_SERVICE_TYPE_NONE);
-            signOutFragment.setTargetFragment(this, 0);
-            signOutFragment.show(getParentFragmentManager(), SIGN_OUT_DIALOG_TAG);
-            return;
-        }
-
-        super.onDisplayPreferenceDialog(preference);
     }
 
     /**
@@ -570,6 +551,21 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
         AppHooks.get().createGoogleActivityController().openWebAndAppActivitySettings(
                 getActivity(), signedInAccountName);
         RecordUserAction.record("Signin_AccountSettings_GoogleActivityControlsClicked");
+    }
+
+    private void onTurnOffSyncClicked() {
+        if (!IdentityServicesProvider.get()
+                        .getIdentityManager(Profile.getLastUsedRegularProfile())
+                        .hasPrimaryAccount()) {
+            return;
+        }
+        SigninUtils.logEvent(ProfileAccountManagementMetrics.TOGGLE_SIGNOUT,
+                GAIAServiceType.GAIA_SERVICE_TYPE_NONE);
+
+        SignOutDialogFragment signOutFragment =
+                SignOutDialogFragment.create(GAIAServiceType.GAIA_SERVICE_TYPE_NONE);
+        signOutFragment.setTargetFragment(this, 0);
+        signOutFragment.show(getParentFragmentManager(), SIGN_OUT_DIALOG_TAG);
     }
 
     private void onSyncEncryptionClicked() {
