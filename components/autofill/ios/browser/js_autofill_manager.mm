@@ -69,10 +69,17 @@ using autofill::FieldRendererId;
                     inFrame:(web::WebFrame*)frame
           completionHandler:(void (^)(BOOL))completionHandler {
   DCHECK(data);
+
+  bool useRendererIDs = base::FeatureList::IsEnabled(
+      autofill::features::kAutofillUseUniqueRendererIDsOnIOS);
+  std::string fillingFunction =
+      useRendererIDs ? "autofill.fillActiveFormFieldUsingRendererIDs"
+                     : "autofill.fillActiveFormField";
+
   std::vector<base::Value> parameters;
   parameters.push_back(std::move(*data));
   autofill::ExecuteJavaScriptFunction(
-      "autofill.fillActiveFormField", parameters, frame,
+      fillingFunction, parameters, frame,
       autofill::CreateBoolCallback(completionHandler));
 }
 

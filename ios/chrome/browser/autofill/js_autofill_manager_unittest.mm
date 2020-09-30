@@ -371,6 +371,7 @@ TEST_F(JsAutofillManagerTest, FillActiveFormField) {
       @"<html><body><form name='testform' method='post'>"
        "<input type='email' id='email' name='email'/>"
        "</form></body></html>");
+  RunFormsSearch();
 
   NSString* get_element_javascript = @"document.getElementsByName('email')[0]";
   NSString* focus_element_javascript =
@@ -379,6 +380,7 @@ TEST_F(JsAutofillManagerTest, FillActiveFormField) {
   auto data = std::make_unique<base::DictionaryValue>();
   data->SetString("name", "email");
   data->SetString("identifier", "email");
+  data->SetInteger("unique_renderer_id", 1);
   data->SetString("value", "newemail@com");
   __block BOOL success = NO;
   [manager_ fillActiveFormField:std::move(data)
@@ -620,16 +622,20 @@ TEST_F(JsAutofillManagerTest, ClearForm) {
             "</form></body></html>");
   RunFormsSearch();
 
+  std::vector<std::pair<NSString*, int>> field_ids = {{@"firstname", 1},
+                                                      {@"email", 2}};
   // Fill form fields.
-  for (NSString* field : {@"firstname", @"email"}) {
-    NSString* getFieldScript = [NSString
-        stringWithFormat:@"document.getElementsByName('%@')[0]", field];
+  for (auto& field_data : field_ids) {
+    NSString* getFieldScript =
+        [NSString stringWithFormat:@"document.getElementsByName('%@')[0]",
+                                   field_data.first];
     NSString* focusScript =
         [NSString stringWithFormat:@"%@.focus()", getFieldScript];
     ExecuteJavaScript(focusScript);
     auto data = std::make_unique<base::DictionaryValue>();
-    data->SetString("name", SysNSStringToUTF8(field));
-    data->SetString("identifier", SysNSStringToUTF8(field));
+    data->SetString("name", SysNSStringToUTF8(field_data.first));
+    data->SetString("identifier", SysNSStringToUTF8(field_data.first));
+    data->SetInteger("unique_renderer_id", field_data.second);
     data->SetString("value", "testvalue");
     __block BOOL success = NO;
     [manager_ fillActiveFormField:std::move(data)

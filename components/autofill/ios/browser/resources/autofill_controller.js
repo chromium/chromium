@@ -160,14 +160,32 @@ __gCrWeb.autofill['extractForms'] = function(
 };
 
 /**
- * Fills data into the active form field.
+ * Fills data into the active form field. Logic uses string identifiers.
  *
  * @param {AutofillFormFieldData} data The data to fill in.
  * @return {boolean} Whether the field was filled successfully.
+ * TODO(crbug/1131038): Remove once using renderer IDs is launched.
  */
 __gCrWeb.autofill['fillActiveFormField'] = function(data) {
   const activeElement = document.activeElement;
   if (data['identifier'] !== __gCrWeb.form.getFieldIdentifier(activeElement)) {
+    return false;
+  }
+  __gCrWeb.autofill.lastAutoFilledElement = activeElement;
+  return __gCrWeb.autofill.fillFormField(data, activeElement);
+};
+
+/**
+ * Fills data into the active form field. Logic uses unique renderer IDs.
+ *
+ * @param {AutofillFormFieldData} data The data to fill in.
+ * @return {boolean} Whether the field was filled successfully.
+ */
+__gCrWeb.autofill['fillActiveFormFieldUsingRendererIDs'] = function(data) {
+  const activeElement = document.activeElement;
+  const fieldID = data['unique_renderer_id'];
+  if (typeof fieldID === 'undefined' ||
+      fieldID.toString() !== __gCrWeb.fill.getUniqueID(activeElement)) {
     return false;
   }
   __gCrWeb.autofill.lastAutoFilledElement = activeElement;
