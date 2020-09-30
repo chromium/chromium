@@ -2825,10 +2825,10 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, Events) {
   // both window and document.
   MatchEventList(
       rfh_a,
-      ListValueOf("document.visibilitychange", "window.visibilitychange",
-                  "window.pagehide.persisted", "document.freeze",
-                  "document.resume", "window.pageshow.persisted",
-                  "document.visibilitychange", "window.visibilitychange"));
+      ListValueOf("window.pagehide.persisted", "document.visibilitychange",
+                  "window.visibilitychange", "document.freeze",
+                  "document.resume", "document.visibilitychange",
+                  "window.visibilitychange", "window.pageshow.persisted"));
 }
 
 // Tests the events are fired for subframes when going back from the cache.
@@ -2874,16 +2874,16 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, EventsForSubframes) {
   // both window and document.
   MatchEventList(
       rfh_a,
-      ListValueOf("document.visibilitychange", "window.visibilitychange",
-                  "window.pagehide.persisted", "document.freeze",
-                  "document.resume", "window.pageshow.persisted",
-                  "document.visibilitychange", "window.visibilitychange"));
+      ListValueOf("window.pagehide.persisted", "document.visibilitychange",
+                  "window.visibilitychange", "document.freeze",
+                  "document.resume", "document.visibilitychange",
+                  "window.visibilitychange", "window.pageshow.persisted"));
   MatchEventList(
       rfh_b,
-      ListValueOf("document.visibilitychange", "window.visibilitychange",
-                  "window.pagehide.persisted", "document.freeze",
-                  "document.resume", "window.pageshow.persisted",
-                  "document.visibilitychange", "window.visibilitychange"));
+      ListValueOf("window.pagehide.persisted", "document.visibilitychange",
+                  "window.visibilitychange", "document.freeze",
+                  "document.resume", "document.visibilitychange",
+                  "window.visibilitychange", "window.pageshow.persisted"));
 }
 
 // Tests the events are fired when going back from the cache.
@@ -2924,10 +2924,10 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // both window and document.
   MatchEventList(
       rfh_a,
-      ListValueOf("document.visibilitychange", "window.visibilitychange",
-                  "window.pagehide.persisted", "document.freeze",
-                  "document.resume", "window.pageshow.persisted",
-                  "document.visibilitychange", "window.visibilitychange"));
+      ListValueOf("window.pagehide.persisted", "document.visibilitychange",
+                  "window.visibilitychange", "document.freeze",
+                  "document.resume", "document.visibilitychange",
+                  "window.visibilitychange", "window.pageshow.persisted"));
 }
 
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, EvictPageWithInfiniteLoop) {

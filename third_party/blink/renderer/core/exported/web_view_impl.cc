@@ -3055,9 +3055,6 @@ void WebViewImpl::SetPageLifecycleStateInternal(
   if (dispatching_pagehide) {
     RemoveFocusAndTextInputState();
   }
-  if (hiding_page) {
-    SetVisibilityState(new_state->visibility, /*is_initial_state=*/false);
-  }
   if (dispatching_pagehide) {
     // Note that |dispatching_pagehide| is different than |hiding_page|.
     // |dispatching_pagehide| will only be true when we're navigating away from
@@ -3065,6 +3062,9 @@ void WebViewImpl::SetPageLifecycleStateInternal(
     // the tab containing a page is backgrounded, and might be false even when
     // we're navigating away from a page, if the page is already hidden.
     DispatchPagehide(new_state->pagehide_dispatch);
+  }
+  if (hiding_page) {
+    SetVisibilityState(new_state->visibility, /*is_initial_state=*/false);
   }
   if (storing_in_bfcache) {
     Scheduler()->SetPageBackForwardCached(new_state->is_in_back_forward_cache);
@@ -3085,6 +3085,9 @@ void WebViewImpl::SetPageLifecycleStateInternal(
   }
   if (resuming_page)
     SetPageFrozen(false);
+  if (showing_page) {
+    SetVisibilityState(new_state->visibility, /*is_initial_state=*/false);
+  }
   if (dispatching_pageshow) {
     DCHECK(restoring_from_bfcache);
     DispatchPageshow(page_restore_params->navigation_start);
@@ -3093,9 +3096,6 @@ void WebViewImpl::SetPageLifecycleStateInternal(
     DCHECK(dispatching_pageshow);
     DCHECK(page_restore_params);
     Scheduler()->SetPageBackForwardCached(new_state->is_in_back_forward_cache);
-  }
-  if (showing_page) {
-    SetVisibilityState(new_state->visibility, /*is_initial_state=*/false);
   }
 
   // Make sure no TrackedFeaturesUpdate message is sent after the ACK
