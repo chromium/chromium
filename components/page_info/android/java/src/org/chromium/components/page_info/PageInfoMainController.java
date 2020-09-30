@@ -29,6 +29,11 @@ public interface PageInfoMainController {
     void recordAction(@PageInfoAction int action);
 
     /**
+     * Refreshes the permissions of the page info.
+     */
+    void refreshPermissions();
+
+    /**
      * @return A BrowserContext for this dialog.
      */
     BrowserContextHandle getBrowserContext();

@@ -20,7 +20,8 @@ import java.util.List;
 /**
  * Class for controlling the page info permissions section.
  */
-public class PageInfoPermissionsController implements PageInfoSubpageController {
+public class PageInfoPermissionsController
+        implements PageInfoSubpageController, SingleWebsiteSettings.Observer {
     private PageInfoMainController mMainController;
     private PageInfoRowView mRowView;
     private PageInfoControllerDelegate mDelegate;
@@ -54,15 +55,10 @@ public class PageInfoPermissionsController implements PageInfoSubpageController 
                 mRowView.getContext(), SingleWebsiteSettings.class.getName(), fragmentArgs);
         mSubpageFragment.setSiteSettingsClient(mDelegate.getSiteSettingsClient());
         mSubpageFragment.setHideNonPermissionPreferences(true);
-        mSubpageFragment.setWebsiteResetCallback(this::onPermissionsDeleted);
+        mSubpageFragment.setWebsiteSettingsObserver(this);
         AppCompatActivity host = (AppCompatActivity) mRowView.getContext();
         host.getSupportFragmentManager().beginTransaction().add(mSubpageFragment, null).commitNow();
         return mSubpageFragment.requireView();
-    }
-
-    private void onPermissionsDeleted() {
-        mMainController.recordAction(PageInfoAction.PAGE_INFO_PERMISSIONS_CLEARED);
-        mMainController.exitSubpage();
     }
 
     @Override
@@ -138,5 +134,19 @@ public class PageInfoPermissionsController implements PageInfoSubpageController 
         int resId = R.plurals.page_info_permissions_summary_more_mixed;
         return resources.getQuantityString(resId, numPermissions - 2, perm1.name.toString(),
                 perm2.name.toString(), numPermissions - 2);
+    }
+
+    // SingleWebsiteSettings.Observer methods
+
+    @Override
+    public void onPermissionsReset() {
+        mMainController.recordAction(PageInfoAction.PAGE_INFO_PERMISSIONS_CLEARED);
+        mMainController.refreshPermissions();
+        mMainController.exitSubpage();
+    }
+
+    @Override
+    public void onPermissionChanged() {
+        mMainController.recordAction(PageInfoAction.PAGE_INFO_PERMISSIONS_CHANGED);
     }
 }

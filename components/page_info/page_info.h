@@ -139,6 +139,7 @@ class PageInfo : public content::WebContentsObserver {
     PAGE_INFO_COOKIES_CLEARED = 13,
     PAGE_INFO_PERMISSION_DIALOG_OPENED = 14,
     PAGE_INFO_PERMISSIONS_CLEARED = 15,
+    PAGE_INFO_PERMISSIONS_CHANGED = 16,
     PAGE_INFO_COUNT
   };
 
@@ -199,6 +200,8 @@ class PageInfo : public content::WebContentsObserver {
   void UpdateSecurityState();
 
   void RecordPageInfoAction(PageInfoAction action);
+
+  void UpdatePermissions();
 
   // This method is called when ever a permission setting is changed.
   void OnSitePermissionChanged(ContentSettingsType type, ContentSetting value);

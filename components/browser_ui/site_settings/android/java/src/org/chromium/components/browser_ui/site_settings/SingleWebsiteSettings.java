@@ -43,6 +43,21 @@ import java.util.Map;
  */
 public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
         implements Preference.OnPreferenceChangeListener, Preference.OnPreferenceClickListener {
+    /**
+     * Interface for a class that wants to receive updates from SingleWebsiteSettings.
+     */
+    public interface Observer {
+        /**
+         * Notifies the observer that the website was reset.
+         */
+        void onPermissionsReset();
+
+        /**
+         * Notifies the observer that a permission was changed.
+         */
+        void onPermissionChanged();
+    }
+
     // SingleWebsiteSettings expects either EXTRA_SITE (a Website) or
     // EXTRA_SITE_ADDRESS (a WebsiteAddress) to be present (but not both). If
     // EXTRA_SITE is present, the fragment will display the permissions in that
@@ -131,7 +146,7 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
     };
 
     // The callback to be run after this site is reset.
-    private Runnable mWebsiteResetCallback;
+    private Observer mWebsiteSettingsObserver;
 
     private static final int REQUEST_CODE_NOTIFICATION_CHANNEL_SETTINGS = 1;
 
@@ -260,8 +275,8 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
         mHideNonPermissionPreferences = hide;
     }
 
-    public void setWebsiteResetCallback(Runnable callback) {
-        mWebsiteResetCallback = callback;
+    public void setWebsiteSettingsObserver(Observer observer) {
+        mWebsiteSettingsObserver = observer;
     }
 
     /**
@@ -1010,6 +1025,9 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
             } else {
                 mSite.setPermission(browserContextHandle, type, permission);
             }
+            if (mWebsiteSettingsObserver != null) {
+                mWebsiteSettingsObserver.onPermissionChanged();
+            }
         }
 
         return true;
@@ -1035,8 +1053,8 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
                             } else {
                                 resetSite();
                             }
-                            if (mWebsiteResetCallback != null) {
-                                mWebsiteResetCallback.run();
+                            if (mWebsiteSettingsObserver != null) {
+                                mWebsiteSettingsObserver.onPermissionsReset();
                             }
                         })
                 .setNegativeButton(R.string.cancel, null)

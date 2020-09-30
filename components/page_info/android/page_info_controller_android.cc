@@ -80,6 +80,12 @@ void PageInfoControllerAndroid::RecordPageInfoAction(
       static_cast<PageInfo::PageInfoAction>(action));
 }
 
+void PageInfoControllerAndroid::UpdatePermissions(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj) {
+  presenter_->UpdatePermissions();
+}
+
 void PageInfoControllerAndroid::SetIdentityInfo(
     const IdentityInfo& identity_info) {
   JNIEnv* env = base::android::AttachCurrentThread();

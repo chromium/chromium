@@ -77,6 +77,10 @@ public class PermissionParamsListBuilder {
         mEntries.add(new PageInfoPermissionEntry(name, type, value));
     }
 
+    public void clearPermissionEntries() {
+        mEntries.clear();
+    }
+
     public PageInfoView.PermissionParams build() {
         List<PageInfoView.PermissionRowParams> rowParams = new ArrayList<>();
         for (PermissionParamsListBuilder.PageInfoPermissionEntry permission : mEntries) {

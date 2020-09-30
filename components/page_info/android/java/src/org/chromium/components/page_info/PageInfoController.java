@@ -496,6 +496,15 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
         }
     }
 
+    @Override
+    public void refreshPermissions() {
+        mPermissionParamsListBuilder.clearPermissionEntries();
+        if (mNativePageInfoController != 0) {
+            PageInfoControllerJni.get().updatePermissions(
+                    mNativePageInfoController, PageInfoController.this);
+        }
+    }
+
     private boolean isSheet(Context context) {
         return !DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
                 && (mDelegate.getVrHandler() == null || !mDelegate.getVrHandler().isInVr());
@@ -569,6 +578,7 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
         void destroy(long nativePageInfoControllerAndroid, PageInfoController caller);
         void recordPageInfoAction(
                 long nativePageInfoControllerAndroid, PageInfoController caller, int action);
+        void updatePermissions(long nativePageInfoControllerAndroid, PageInfoController caller);
     }
 
     @Override

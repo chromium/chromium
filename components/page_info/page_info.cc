@@ -513,6 +513,11 @@ void PageInfo::RecordPageInfoAction(PageInfoAction action) {
   }
 }
 
+void PageInfo::UpdatePermissions() {
+  // Refresh the UI to reflect the new setting.
+  PresentSitePermissions();
+}
+
 void PageInfo::OnSitePermissionChanged(ContentSettingsType type,
                                        ContentSetting setting) {
   ContentSettingChangedViaPageInfo(type);
