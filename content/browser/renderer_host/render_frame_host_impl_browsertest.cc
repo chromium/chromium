@@ -223,6 +223,62 @@ class RenderFrameHostImplBrowserTest : public ContentBrowserTest {
   net::EmbeddedTestServer https_server_;
 };
 
+std::string ExecuteJavaScriptMethodAndGetResult(
+    RenderFrameHostImpl* render_frame,
+    const std::string& object,
+    const std::string& method,
+    base::Value arguments) {
+  bool executing = true;
+  std::string result;
+  base::OnceCallback<void(base::Value)> call_back = base::BindOnce(
+      [](bool* flag, std::string* reason, base::Value value) {
+        *flag = false;
+        DCHECK(value.is_string());
+        *reason = value.GetString();
+      },
+      base::Unretained(&executing), base::Unretained(&result));
+
+  render_frame->ExecuteJavaScriptMethod(
+      base::UTF8ToUTF16(object), base::UTF8ToUTF16(method),
+      std::move(arguments), std::move(call_back));
+
+  while (executing) {
+    base::RunLoop loop;
+    loop.RunUntilIdle();
+  }
+
+  return result;
+}
+
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
+                       ExecuteJavaScriptMethodWorksWithArguments) {
+  EXPECT_TRUE(NavigateToURL(
+      shell(), GetTestUrl("render_frame_host", "jsMethodTest.html")));
+
+  RenderFrameHostImpl* render_frame = web_contents()->GetMainFrame();
+  render_frame->AllowInjectingJavaScript();
+
+  base::Value empty_arguments(base::Value::Type::LIST);
+  std::string result = ExecuteJavaScriptMethodAndGetResult(
+      render_frame, "window", "someMethod", std::move(empty_arguments));
+  EXPECT_EQ(result, "called someMethod()");
+
+  base::Value single_arguments(base::Value::Type::LIST);
+  single_arguments.Append("arg1");
+  result = ExecuteJavaScriptMethodAndGetResult(
+      render_frame, "window", "someMethod", std::move(single_arguments));
+  EXPECT_EQ(result, "called someMethod(arg1)");
+
+  base::Value four_arguments(base::Value::Type::LIST);
+  four_arguments.Append("arg1");
+  four_arguments.Append("arg2");
+  four_arguments.Append("arg3");
+  four_arguments.Append("arg4");
+  result = ExecuteJavaScriptMethodAndGetResult(
+      render_frame, "window", "someMethod", std::move(four_arguments));
+  EXPECT_EQ(result, "called someMethod(arg1,arg2,arg3,arg4)");
+}
+
 // Test that when creating a new window, the main frame is correctly focused.
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest, IsFocused_AtLoad) {
   EXPECT_TRUE(

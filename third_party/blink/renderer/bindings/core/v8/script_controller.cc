@@ -295,19 +295,16 @@ v8::Local<v8::Value> ScriptController::EvaluateScriptInMainWorld(
     SanitizeScriptErrors sanitize_script_errors,
     const ScriptFetchOptions& fetch_options,
     ExecuteScriptPolicy policy) {
-  if (policy == kDoNotExecuteScriptWhenScriptsDisabled &&
-      !window_->CanExecuteScripts(kAboutToExecuteScript))
+  if (!CanExecuteScript(policy)) {
     return v8::Local<v8::Value>();
+  }
 
-  // |context| should be initialized already due to the MainWorldProxy() call.
+  // |context| should be initialized already due to the
+  // MainWorldProxy() call.
   v8::Local<v8::Context> context =
       window_proxy_manager_->MainWorldProxy()->ContextIfInitialized();
-
   v8::Context::Scope scope(context);
   v8::EscapableHandleScope handle_scope(GetIsolate());
-
-  if (window_->document()->IsInitialEmptyDocument())
-    window_->GetFrame()->Loader().DidAccessInitialDocument();
 
   v8::Local<v8::Value> object = ExecuteScriptAndReturnValue(
       context, source_code, base_url, sanitize_script_errors, fetch_options);
@@ -316,6 +313,50 @@ v8::Local<v8::Value> ScriptController::EvaluateScriptInMainWorld(
     return v8::Local<v8::Value>();
 
   return handle_scope.Escape(object);
+}
+
+v8::Local<v8::Value> ScriptController::EvaluateMethodInMainWorld(
+    v8::Local<v8::Function> function,
+    v8::Local<v8::Value> receiver,
+    int argc,
+    v8::Local<v8::Value> argv[],
+    ExecuteScriptPolicy policy) {
+  if (!CanExecuteScript(policy)) {
+    return v8::Local<v8::Value>();
+  }
+
+  // |context| should be initialized already due to the
+  // MainWorldProxy() call.
+  v8::Local<v8::Context> context =
+      window_proxy_manager_->MainWorldProxy()->ContextIfInitialized();
+  v8::Context::Scope scope(context);
+  v8::EscapableHandleScope handle_scope(GetIsolate());
+
+  v8::TryCatch try_catch(GetIsolate());
+  try_catch.SetVerbose(true);
+
+  ExecutionContext* executionContext =
+      ExecutionContext::From(ScriptState::From(context));
+
+  v8::MaybeLocal<v8::Value> resultObj = V8ScriptRunner::CallFunction(
+      function, executionContext, receiver, argc,
+      static_cast<v8::Local<v8::Value>*>(argv), ToIsolate(window_->GetFrame()));
+
+  if (resultObj.IsEmpty())
+    return v8::Local<v8::Value>();
+
+  return handle_scope.Escape(resultObj.ToLocalChecked());
+}
+
+bool ScriptController::CanExecuteScript(ExecuteScriptPolicy policy) {
+  if (policy == kDoNotExecuteScriptWhenScriptsDisabled &&
+      !window_->CanExecuteScripts(kAboutToExecuteScript))
+    return false;
+
+  if (window_->document()->IsInitialEmptyDocument())
+    window_->GetFrame()->Loader().DidAccessInitialDocument();
+
+  return true;
 }
 
 v8::Local<v8::Value> ScriptController::ExecuteScriptInIsolatedWorld(

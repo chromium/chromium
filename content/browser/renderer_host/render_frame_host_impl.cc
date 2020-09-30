@@ -1620,6 +1620,21 @@ void RenderFrameHostImpl::AddMessageToConsole(
   AddMessageToConsoleImpl(level, message, false /* discard_duplicates */);
 }
 
+void RenderFrameHostImpl::ExecuteJavaScriptMethod(
+    const base::string16& object_name,
+    const base::string16& method_name,
+    base::Value arguments,
+    JavaScriptResultCallback callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK(arguments.is_list());
+  CHECK(CanExecuteJavaScript());
+
+  const bool wants_result = !callback.is_null();
+  GetNavigationControl()->JavaScriptMethodExecuteRequest(
+      object_name, method_name, std::move(arguments), wants_result,
+      std::move(callback));
+}
+
 void RenderFrameHostImpl::ExecuteJavaScript(const base::string16& javascript,
                                             JavaScriptResultCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);

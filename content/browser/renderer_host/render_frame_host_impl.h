@@ -308,6 +308,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
   gfx::NativeView GetNativeView() override;
   void AddMessageToConsole(blink::mojom::ConsoleMessageLevel level,
                            const std::string& message) override;
+  void ExecuteJavaScriptMethod(const base::string16& object_name,
+                               const base::string16& method_name,
+                               base::Value arguments,
+                               JavaScriptResultCallback callback) override;
   void ExecuteJavaScript(const base::string16& javascript,
                          JavaScriptResultCallback callback) override;
   void ExecuteJavaScriptInIsolatedWorld(const base::string16& javascript,

@@ -155,6 +155,24 @@ interface FrameNavigationControl {
       pending_associated_remote<blink.mojom.DevToolsAgentHost> agent_host,
       pending_associated_receiver<blink.mojom.DevToolsAgent> agent);
 
+  // Request for the renderer to execute a given JavaScript method on a given
+  // object (both identified by name) in the frame's context.
+  //
+  // |object_name| is the global name of the object.
+  //
+  // |method_name| is the name of the method on the object.
+  //
+  // |arguments| is the list of arguments to pass to the method invocation.
+  //
+  // |wants_result| is true if the result of this execution is required by the
+  // caller. If it is false, a reply is still required by Mojo, but a null value
+  // should be returned to avoid issues serializing a large, unwanted reply.
+  JavaScriptMethodExecuteRequest(
+      mojo_base.mojom.String16 object_name,
+      mojo_base.mojom.String16 method_name,
+      mojo_base.mojom.ListValue arguments,
+      bool wants_result) => (mojo_base.mojom.Value result);
+
   // Request for the renderer to execute JavaScript in the frame's context.
   //
   // |javascript| is the string containing the JavaScript to be executed in the

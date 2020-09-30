@@ -155,6 +155,12 @@ class CORE_EXPORT WebLocalFrameImpl final
   void ClearIsolatedWorldCSPForTesting(int32_t world_id) override;
   v8::Local<v8::Value> ExecuteScriptAndReturnValue(
       const WebScriptSource&) override;
+  // Call the function with the given receiver and arguments
+  v8::MaybeLocal<v8::Value> ExecuteMethodAndReturnValue(
+      v8::Local<v8::Function>,
+      v8::Local<v8::Value>,
+      int argc,
+      v8::Local<v8::Value> argv[]) override;
   v8::MaybeLocal<v8::Value> CallFunctionEvenIfScriptDisabled(
       v8::Local<v8::Function>,
       v8::Local<v8::Value>,

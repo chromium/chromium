@@ -562,6 +562,12 @@ class CONTENT_EXPORT RenderFrameImpl
       mojo::PendingAssociatedRemote<blink::mojom::DevToolsAgentHost> host,
       mojo::PendingAssociatedReceiver<blink::mojom::DevToolsAgent> receiver)
       override;
+  void JavaScriptMethodExecuteRequest(
+      const base::string16& object_name,
+      const base::string16& method_name,
+      base::Value arguments,
+      bool wants_result,
+      JavaScriptMethodExecuteRequestCallback callback) override;
   void JavaScriptExecuteRequest(
       const base::string16& javascript,
       bool wants_result,

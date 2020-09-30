@@ -84,6 +84,14 @@ class CORE_EXPORT ScriptController final
       SanitizeScriptErrors,
       const ScriptFetchOptions& = ScriptFetchOptions());
 
+  v8::Local<v8::Value> EvaluateMethodInMainWorld(
+      v8::Local<v8::Function> function,
+      v8::Local<v8::Value> receiver,
+      int argc,
+      v8::Local<v8::Value> argv[],
+      ScriptController::ExecuteScriptPolicy = ScriptController::
+          ExecuteScriptPolicy::kDoNotExecuteScriptWhenScriptsDisabled);
+
   // Evaluate JavaScript in the main world.
   v8::Local<v8::Value> EvaluateScriptInMainWorld(const ScriptSourceCode&,
                                                  const KURL& base_url,
@@ -134,6 +142,7 @@ class CORE_EXPORT ScriptController final
   static v8::ExtensionConfiguration ExtensionsFor(const ExecutionContext*);
 
  private:
+  bool CanExecuteScript(ExecuteScriptPolicy policy);
   v8::Isolate* GetIsolate() const {
     return window_proxy_manager_->GetIsolate();
   }

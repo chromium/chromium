@@ -267,6 +267,23 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // will be invoked on the UI thread.
   using JavaScriptResultCallback = base::OnceCallback<void(base::Value)>;
 
+  // This API allows to execute JavaScript methods in this frame, without
+  // having to serialize the arguments into a single string, and is a lot
+  // cheaper than ExecuteJavaScript below since it avoids the need to compile
+  // and evaluate new scripts all the time.
+  //
+  // Calling
+  //
+  //   ExecuteJavaScriptMethod("obj", "foo", [1, true], callback)
+  //
+  // is semantically equivalent to
+  //
+  //   ExecuteJavaScript("obj.foo(1, true)", callback)
+  virtual void ExecuteJavaScriptMethod(const base::string16& object_name,
+                                       const base::string16& method_name,
+                                       base::Value arguments,
+                                       JavaScriptResultCallback callback) = 0;
+
   // This is the default API to run JavaScript in this frame. This API can only
   // be called on chrome:// or devtools:// URLs.
   virtual void ExecuteJavaScript(const base::string16& javascript,

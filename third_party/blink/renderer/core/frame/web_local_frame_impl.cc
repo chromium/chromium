@@ -891,6 +891,19 @@ void WebLocalFrameImpl::CollectGarbageForTesting() {
   ThreadState::Current()->CollectAllGarbageForTesting();
 }
 
+v8::MaybeLocal<v8::Value> WebLocalFrameImpl::ExecuteMethodAndReturnValue(
+    v8::Local<v8::Function> function,
+    v8::Local<v8::Value> receiver,
+    int argc,
+    v8::Local<v8::Value> argv[]) {
+  DCHECK(GetFrame());
+
+  return GetFrame()
+      ->DomWindow()
+      ->GetScriptController()
+      .EvaluateMethodInMainWorld(function, receiver, argc, argv);
+}
+
 v8::Local<v8::Value> WebLocalFrameImpl::ExecuteScriptAndReturnValue(
     const WebScriptSource& source) {
   DCHECK(GetFrame());

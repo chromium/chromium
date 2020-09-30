@@ -23,6 +23,7 @@
 #include "base/guid.h"
 #include "base/i18n/char_iterator.h"
 #include "base/json/json_reader.h"
+#include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
@@ -1095,6 +1096,46 @@ scoped_refptr<ChildURLLoaderFactoryBundle>
 CreateDefaultURLLoaderFactoryBundle() {
   return base::MakeRefCounted<ChildURLLoaderFactoryBundle>(
       base::BindOnce(&CreateDefaultURLLoaderFactory));
+}
+
+v8::MaybeLocal<v8::Value> GetProperty(v8::Local<v8::Context> context,
+                                      v8::Local<v8::Value> object,
+                                      const base::string16& name) {
+  v8::Isolate* isolate = context->GetIsolate();
+  v8::Local<v8::String> name_str =
+      gin::ConvertToV8(isolate, name).As<v8::String>();
+  v8::Local<v8::Object> object_obj;
+  if (!object->ToObject(context).ToLocal(&object_obj)) {
+    return v8::MaybeLocal<v8::Value>();
+  }
+  return object_obj->Get(context, name_str);
+}
+
+v8::MaybeLocal<v8::Value> CallMethodOnFrame(blink::WebNavigationControl* frame,
+                                            const base::string16& object_name,
+                                            const base::string16& method_name,
+                                            base::Value arguments) {
+  v8::Local<v8::Context> context = frame->MainWorldScriptContext();
+
+  v8::Context::Scope context_scope(context);
+  std::vector<v8::Local<v8::Value>> args;
+  V8ValueConverterImpl converter;
+  converter.SetDateAllowed(true);
+  converter.SetRegExpAllowed(true);
+  for (auto const& argument : arguments.GetList()) {
+    args.push_back(converter.ToV8Value(&argument, context));
+  }
+
+  v8::Local<v8::Value> object;
+  v8::Local<v8::Value> method;
+  if (!GetProperty(context, context->Global(), object_name).ToLocal(&object) ||
+      !GetProperty(context, object, method_name).ToLocal(&method)) {
+    return v8::MaybeLocal<v8::Value>();
+  }
+
+  return frame->ExecuteMethodAndReturnValue(
+      v8::Local<v8::Function>::Cast(method), object,
+      static_cast<int>(args.size()), args.data());
 }
 
 }  // namespace
@@ -2551,6 +2592,35 @@ void RenderFrameImpl::OnCustomContextMenuAction(
     // Internal request, forward to WebKit.
     render_view_->GetWebView()->PerformCustomContextMenuAction(action);
   }
+}
+
+void RenderFrameImpl::JavaScriptMethodExecuteRequest(
+    const base::string16& object_name,
+    const base::string16& method_name,
+    base::Value arguments,
+    bool wants_result,
+    JavaScriptMethodExecuteRequestCallback callback) {
+  TRACE_EVENT_INSTANT0("test_tracing", "JavaScriptMethodExecuteRequest",
+                       TRACE_EVENT_SCOPE_THREAD);
+
+  // Note that CallMethodOnFrame may end up killing this object.
+  base::WeakPtr<RenderFrameImpl> weak_this = weak_factory_.GetWeakPtr();
+
+  v8::HandleScope handle_scope(v8::Isolate::GetCurrent());
+  v8::Local<v8::Value> result;
+  if (!CallMethodOnFrame(frame_, object_name, method_name, std::move(arguments))
+           .ToLocal(&result)) {
+    std::move(callback).Run({});
+    return;
+  }
+
+  if (!weak_this)
+    return;
+
+  if (wants_result)
+    std::move(callback).Run(GetJavaScriptExecutionResult(result));
+  else
+    std::move(callback).Run({});
 }
 
 void RenderFrameImpl::JavaScriptExecuteRequest(

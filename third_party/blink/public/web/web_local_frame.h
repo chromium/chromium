@@ -340,6 +340,13 @@ class WebLocalFrame : public WebFrame {
   virtual v8::Local<v8::Value> ExecuteScriptAndReturnValue(
       const WebScriptSource&) = 0;
 
+  // Call the function with the given receiver and arguments
+  virtual v8::MaybeLocal<v8::Value> ExecuteMethodAndReturnValue(
+      v8::Local<v8::Function>,
+      v8::Local<v8::Value>,
+      int argc,
+      v8::Local<v8::Value> argv[]) = 0;
+
   // Call the function with the given receiver and arguments, bypassing
   // canExecute().
   virtual v8::MaybeLocal<v8::Value> CallFunctionEvenIfScriptDisabled(
