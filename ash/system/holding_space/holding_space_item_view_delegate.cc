@@ -8,6 +8,7 @@
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
+#include "ash/public/cpp/holding_space/holding_space_metrics.h"
 #include "ash/public/cpp/holding_space/holding_space_model.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -34,15 +35,15 @@ HoldingSpaceItemViewDelegate* instance = nullptr;
 
 // Returns the holding space items associated with the specified `views`.
 std::vector<const HoldingSpaceItem*> GetItems(
-    const std::vector<HoldingSpaceItemView*>& views) {
+    const std::vector<const HoldingSpaceItemView*>& views) {
   std::vector<const HoldingSpaceItem*> items;
-  for (HoldingSpaceItemView* view : views)
+  for (const HoldingSpaceItemView* view : views)
     items.push_back(view->item());
   return items;
 }
 
 // Attempts to open the holding space items associated with the given `views`.
-void OpenItems(const std::vector<HoldingSpaceItemView*>& views) {
+void OpenItems(const std::vector<const HoldingSpaceItemView*>& views) {
   DCHECK_GE(views.size(), 1u);
   HoldingSpaceController::Get()->client()->OpenItems(GetItems(views),
                                                      base::DoNothing());
@@ -206,18 +207,23 @@ void HoldingSpaceItemViewDelegate::WriteDragDataForView(
     views::View* sender,
     const gfx::Point& press_pt,
     ui::OSExchangeData* data) {
+  std::vector<const HoldingSpaceItemView*> selection = GetSelection();
+  DCHECK_GE(selection.size(), 1u);
+
+  holding_space_metrics::RecordItemAction(
+      GetItems(selection), holding_space_metrics::ItemAction::kDrag);
+
   std::vector<ui::FileInfo> filenames;
-  for (const HoldingSpaceItemView* view : GetSelection()) {
+  for (const HoldingSpaceItemView* view : selection) {
     filenames.push_back(ui::FileInfo(view->item()->file_path(),
                                      view->item()->file_path().BaseName()));
   }
-  DCHECK_GE(filenames.size(), 1u);
   data->SetFilenames(filenames);
 }
 
 void HoldingSpaceItemViewDelegate::ExecuteCommand(int command_id,
                                                   int event_flags) {
-  std::vector<HoldingSpaceItemView*> selection = GetSelection();
+  std::vector<const HoldingSpaceItemView*> selection = GetSelection();
   DCHECK_GE(selection.size(), 1u);
 
   switch (command_id) {
@@ -243,7 +249,7 @@ void HoldingSpaceItemViewDelegate::ExecuteCommand(int command_id,
 ui::SimpleMenuModel* HoldingSpaceItemViewDelegate::BuildMenuModel() {
   context_menu_model_ = std::make_unique<ui::SimpleMenuModel>(this);
 
-  std::vector<HoldingSpaceItemView*> selection = GetSelection();
+  std::vector<const HoldingSpaceItemView*> selection = GetSelection();
   DCHECK_GE(selection.size(), 1u);
 
   if (selection.size() == 1u) {
@@ -273,7 +279,7 @@ ui::SimpleMenuModel* HoldingSpaceItemViewDelegate::BuildMenuModel() {
   }
 
   const bool is_any_unpinned = std::any_of(
-      selection.begin(), selection.end(), [](HoldingSpaceItemView* view) {
+      selection.begin(), selection.end(), [](const HoldingSpaceItemView* view) {
         return !HoldingSpaceController::Get()->model()->GetItem(
             HoldingSpaceItem::GetFileBackedItemId(
                 HoldingSpaceItem::Type::kPinnedFile,
@@ -300,10 +306,10 @@ ui::SimpleMenuModel* HoldingSpaceItemViewDelegate::BuildMenuModel() {
   return context_menu_model_.get();
 }
 
-std::vector<HoldingSpaceItemView*>
+std::vector<const HoldingSpaceItemView*>
 HoldingSpaceItemViewDelegate::GetSelection() {
-  std::vector<HoldingSpaceItemView*> selection;
-  for (HoldingSpaceItemView* view : views_) {
+  std::vector<const HoldingSpaceItemView*> selection;
+  for (const HoldingSpaceItemView* view : views_) {
     if (view->selected())
       selection.push_back(view);
   }

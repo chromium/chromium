@@ -27,8 +27,9 @@ class HoldingSpaceImage;
 class ASH_PUBLIC_EXPORT HoldingSpaceItem {
  public:
   // Items types supported by the holding space.
-  // NOTE: These values are persisted in preferences so append new values to the
-  // end and do not change the meaning of existing values.
+  // NOTE: These values are recorded in histograms and persisted in preferences
+  // so append new values to the end and do not change the meaning of existing
+  // values.
   enum class Type {
     kPinnedFile = 0,
     kScreenshot = 1,

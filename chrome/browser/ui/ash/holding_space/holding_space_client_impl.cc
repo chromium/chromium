@@ -8,6 +8,7 @@
 
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
+#include "ash/public/cpp/holding_space/holding_space_metrics.h"
 #include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/notreached.h"
@@ -49,6 +50,9 @@ void HoldingSpaceClientImpl::AddScreenshot(const base::FilePath& file_path) {
 
 void HoldingSpaceClientImpl::CopyImageToClipboard(const HoldingSpaceItem& item,
                                                   SuccessCallback callback) {
+  holding_space_metrics::RecordItemAction(
+      {&item}, holding_space_metrics::ItemAction::kCopy);
+
   std::string mime_type;
   if (item.file_path().empty() ||
       !net::GetMimeTypeFromFile(item.file_path(), &mime_type) ||
@@ -56,6 +60,7 @@ void HoldingSpaceClientImpl::CopyImageToClipboard(const HoldingSpaceItem& item,
     std::move(callback).Run(/*success=*/false);
     return;
   }
+
   // Reading and decoding of the image file needs to be done on an I/O thread.
   base::ThreadPool::PostTaskAndReply(
       FROM_HERE,
@@ -93,6 +98,9 @@ void HoldingSpaceClientImpl::OpenDownloads(SuccessCallback callback) {
 void HoldingSpaceClientImpl::OpenItems(
     const std::vector<const HoldingSpaceItem*>& items,
     SuccessCallback callback) {
+  holding_space_metrics::RecordItemAction(
+      items, holding_space_metrics::ItemAction::kLaunch);
+
   if (items.empty()) {
     std::move(callback).Run(/*success=*/false);
     return;
@@ -130,10 +138,14 @@ void HoldingSpaceClientImpl::OpenItems(
 
 void HoldingSpaceClientImpl::ShowItemInFolder(const HoldingSpaceItem& item,
                                               SuccessCallback callback) {
+  holding_space_metrics::RecordItemAction(
+      {&item}, holding_space_metrics::ItemAction::kShowInFolder);
+
   if (item.file_path().empty()) {
     std::move(callback).Run(/*success=*/false);
     return;
   }
+
   file_manager::util::ShowItemInFolder(
       profile_, item.file_path(),
       base::BindOnce(

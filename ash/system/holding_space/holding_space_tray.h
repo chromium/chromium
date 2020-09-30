@@ -15,7 +15,7 @@
 
 namespace views {
 class ImageView;
-}
+}  // namespace views
 
 namespace ash {
 // The HoldingSpaceTray shows the tray button in the bottom area of the screen.

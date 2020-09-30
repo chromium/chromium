@@ -7,6 +7,7 @@
 
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
+#include "ash/public/cpp/holding_space/holding_space_metrics.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -74,6 +75,9 @@ void HoldingSpaceTray::AnchorUpdated() {
 }
 
 bool HoldingSpaceTray::PerformAction(const ui::Event& event) {
+  holding_space_metrics::RecordPodAction(
+      holding_space_metrics::PodAction::kClick);
+
   if (bubble_) {
     CloseBubble();
     return true;

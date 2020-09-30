@@ -35414,6 +35414,29 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="2" label="Different from baseUrl"/>
 </enum>
 
+<enum name="HoldingSpaceDownloadsAction">
+  <int value="0" label="kClick"/>
+</enum>
+
+<enum name="HoldingSpaceItemAction">
+  <int value="0" label="kCopy"/>
+  <int value="1" label="kDrag"/>
+  <int value="2" label="kLaunch"/>
+  <int value="3" label="kPin"/>
+  <int value="4" label="kShowInFolder"/>
+  <int value="5" label="kUnpin"/>
+</enum>
+
+<enum name="HoldingSpaceItemType">
+  <int value="0" label="kPinnedFile"/>
+  <int value="1" label="kScreenshot"/>
+  <int value="2" label="kDownload"/>
+</enum>
+
+<enum name="HoldingSpacePodAction">
+  <int value="0" label="kClick"/>
+</enum>
+
 <enum name="HomeButtonPreferenceStateType">
   <int value="0" label="User Disabled"/>
   <int value="1" label="User Enabled"/>

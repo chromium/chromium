@@ -126,8 +126,13 @@ HoldingSpaceItemView::~HoldingSpaceItemView() {
 
 // static
 HoldingSpaceItemView* HoldingSpaceItemView::Cast(views::View* view) {
-  DCHECK(view->GetProperty(kIsHoldingSpaceItemViewProperty));
+  DCHECK(HoldingSpaceItemView::IsInstance(view));
   return static_cast<HoldingSpaceItemView*>(view);
+}
+
+// static
+bool HoldingSpaceItemView::IsInstance(views::View* view) {
+  return view->GetProperty(kIsHoldingSpaceItemViewProperty);
 }
 
 SkColor HoldingSpaceItemView::GetInkDropBaseColor() const {

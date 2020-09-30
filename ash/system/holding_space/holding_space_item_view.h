@@ -34,6 +34,9 @@ class ASH_EXPORT HoldingSpaceItemView : public views::InkDropHostView {
   // DCHECK to assert that `view` is in fact a `HoldingSpaceItemView` instance.
   static HoldingSpaceItemView* Cast(views::View* view);
 
+  // Returns if `view` is an instance of `HoldingSpaceItemView`.
+  static bool IsInstance(views::View* view);
+
   // views::InkDropHostView:
   SkColor GetInkDropBaseColor() const override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;

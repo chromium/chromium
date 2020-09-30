@@ -1,0 +1,102 @@
+<!--
+Copyright 2020 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of Holding Space histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please send CLs to chromium-metrics-reviews@google.com rather than to specific
+individuals. These CLs will be automatically reassigned to a reviewer within
+about 5 minutes. This approach helps the metrics team to load-balance incoming
+reviews. Googlers can read more about this at go/gwsq-gerrit.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="HoldingSpace.Downloads.Action.All"
+    enum="HoldingSpaceDownloadsAction" expires_after="2021-09-24">
+  <owner>dmblack@google.com</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    Records an action taken on the downloads header in holding space UI at the
+    moment the action is performed.
+  </summary>
+</histogram>
+
+<histogram base="true" name="HoldingSpace.Item.Action"
+    enum="HoldingSpaceItemType" expires_after="2021-09-24">
+<!-- Name completed by histogram_suffixes name="HoldingSpaceActionType" -->
+
+  <owner>dmblack@google.com</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    Records the type of item in holding space UI for which an action was taken
+    at the moment the action is performed.
+  </summary>
+</histogram>
+
+<histogram name="HoldingSpace.Item.Action.All" enum="HoldingSpaceItemAction"
+    expires_after="2021-09-24">
+  <owner>dmblack@google.com</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    Records an action taken on an item in holding space UI at the moment the
+    action is performed.
+  </summary>
+</histogram>
+
+<histogram base="true" name="HoldingSpace.Item.Count" units="count"
+    expires_after="2021-09-24">
+<!-- Name completed by histogram_suffixes name="HoldingSpaceItemType" -->
+
+  <owner>dmblack@google.com</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    Records the count of all visible items of a specific type in holding space
+    at the moment holding space UI is shown.
+  </summary>
+</histogram>
+
+<histogram name="HoldingSpace.Pod.Action.All" enum="HoldingSpacePodAction"
+    expires_after="2021-09-24">
+  <owner>dmblack@google.com</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    Records an action taken on the holding space pod in the shelf at the moment
+    the action is performed.
+  </summary>
+</histogram>
+
+</histograms>
+
+<histogram_suffixes_list>
+
+<histogram_suffixes name="HoldingSpaceItemAction" separator=".">
+  <suffix name="Copy" label="The user copied the item."/>
+  <suffix name="Drag" label="The user dragged the item."/>
+  <suffix name="Launch" label="The user launched the item."/>
+  <suffix name="Pin" label="The user pinned the item."/>
+  <suffix name="ShowInFolder" label="The user showed the item in its folder."/>
+  <suffix name="Unpin" label="The user unpinned the item."/>
+  <affected-histogram name="HoldingSpace.Item.Action"/>
+</histogram_suffixes>
+
+<histogram_suffixes name="HoldingSpaceItemType" separator=".">
+  <suffix name="All" label="Includes all item types."/>
+  <suffix name="Download" label="Items backed by a download file."/>
+  <suffix name="PinnedFile" label="Items pinned explicitly by the user."/>
+  <suffix name="Screenshot" label="Items backed by a screenshot file."/>
+  <affected-histogram name="HoldingSpace.Item.Count"/>
+</histogram_suffixes>
+
+</histogram_suffixes_list>
+
+</histogram-configuration>

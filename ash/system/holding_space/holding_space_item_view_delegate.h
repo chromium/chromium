@@ -88,7 +88,7 @@ class ASH_EXPORT HoldingSpaceItemViewDelegate
   ui::SimpleMenuModel* BuildMenuModel();
 
   // Returns the subset of `views_` which are currently selected.
-  std::vector<HoldingSpaceItemView*> GetSelection();
+  std::vector<const HoldingSpaceItemView*> GetSelection();
 
   // Marks `view` as selected. All other `views_` are marked unselected.
   void SetSelection(views::View* view);

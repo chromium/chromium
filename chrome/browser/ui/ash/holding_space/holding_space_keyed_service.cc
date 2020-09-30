@@ -7,6 +7,7 @@
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_image.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
+#include "ash/public/cpp/holding_space/holding_space_metrics.h"
 #include "base/barrier_closure.h"
 #include "base/files/file_path.h"
 #include "base/guid.h"
@@ -84,18 +85,32 @@ base::Time HoldingSpaceKeyedService::GetFirstEnabledTime(Profile* profile) {
 
 void HoldingSpaceKeyedService::AddPinnedFile(
     const storage::FileSystemURL& file_system_url) {
-  AddItem(HoldingSpaceItem::CreateFileBackedItem(
-      HoldingSpaceItem::Type::kPinnedFile, file_system_url.path(),
-      file_system_url.ToGURL(),
-      holding_space_util::ResolveImage(&thumbnail_loader_,
-                                       HoldingSpaceItem::Type::kPinnedFile,
-                                       file_system_url.path())));
+  std::unique_ptr<HoldingSpaceItem> holding_space_item =
+      HoldingSpaceItem::CreateFileBackedItem(
+          HoldingSpaceItem::Type::kPinnedFile, file_system_url.path(),
+          file_system_url.ToGURL(),
+          holding_space_util::ResolveImage(&thumbnail_loader_,
+                                           HoldingSpaceItem::Type::kPinnedFile,
+                                           file_system_url.path()));
+
+  holding_space_metrics::RecordItemAction(
+      {holding_space_item.get()}, holding_space_metrics::ItemAction::kPin);
+
+  AddItem(std::move(holding_space_item));
 }
 
 void HoldingSpaceKeyedService::RemovePinnedFile(
     const storage::FileSystemURL& file_system_url) {
-  holding_space_model_.RemoveItem(HoldingSpaceItem::GetFileBackedItemId(
-      HoldingSpaceItem::Type::kPinnedFile, file_system_url.path()));
+  const HoldingSpaceItem* holding_space_item =
+      holding_space_model_.GetItem(HoldingSpaceItem::GetFileBackedItemId(
+          HoldingSpaceItem::Type::kPinnedFile, file_system_url.path()));
+  if (!holding_space_item)
+    return;
+
+  holding_space_metrics::RecordItemAction(
+      {holding_space_item}, holding_space_metrics::ItemAction::kUnpin);
+
+  holding_space_model_.RemoveItem(holding_space_item->id());
 }
 
 bool HoldingSpaceKeyedService::ContainsPinnedFile(

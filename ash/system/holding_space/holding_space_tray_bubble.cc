@@ -4,9 +4,14 @@
 
 #include "ash/system/holding_space/holding_space_tray_bubble.h"
 
+#include <vector>
+
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
+#include "ash/public/cpp/holding_space/holding_space_item.h"
+#include "ash/public/cpp/holding_space/holding_space_metrics.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/shelf/shelf.h"
+#include "ash/system/holding_space/holding_space_item_view.h"
 #include "ash/system/holding_space/holding_space_tray.h"
 #include "ash/system/holding_space/pinned_files_container.h"
 #include "ash/system/holding_space/recent_files_container.h"
@@ -20,6 +25,21 @@
 namespace ash {
 
 namespace {
+
+// Helpers ---------------------------------------------------------------------
+
+// Finds all visible `HoldingSpaceItem`s in `parent`'s view hierarchy.
+void FindVisibleHoldingSpaceItems(
+    views::View* parent,
+    std::vector<const HoldingSpaceItem*>* result) {
+  for (views::View* view : parent->children()) {
+    if (view->GetVisible() && HoldingSpaceItemView::IsInstance(view))
+      result->push_back(HoldingSpaceItemView::Cast(view)->item());
+    FindVisibleHoldingSpaceItems(view, result);
+  }
+}
+
+// Sets up the layer for the specified `view`.
 void SetupViewLayer(views::View* view) {
   view->SetPaintToLayer(ui::LAYER_SOLID_COLOR);
 
@@ -31,6 +51,8 @@ void SetupViewLayer(views::View* view) {
   layer->SetFillsBoundsOpaquely(false);
   layer->SetIsFastRoundedCorner(true);
 }
+
+// HoldingSpaceBubbleContainerView ---------------------------------------------
 
 class HoldingSpaceBubbleContainerView : public views::View {
  public:
@@ -51,7 +73,10 @@ class HoldingSpaceBubbleContainerView : public views::View {
  private:
   views::BoxLayout* layout_ = nullptr;
 };
+
 }  // namespace
+
+// HoldingSpaceTrayBubble ------------------------------------------------------
 
 HoldingSpaceTrayBubble::HoldingSpaceTrayBubble(
     HoldingSpaceTray* holding_space_tray,
@@ -100,6 +125,11 @@ HoldingSpaceTrayBubble::HoldingSpaceTrayBubble(
       ->non_client_view()
       ->frame_view()
       ->SetVisible(false);
+
+  // Record visible holding space items.
+  std::vector<const HoldingSpaceItem*> visible_items;
+  FindVisibleHoldingSpaceItems(bubble_view, &visible_items);
+  holding_space_metrics::RecordItemCounts(visible_items);
 }
 
 HoldingSpaceTrayBubble::~HoldingSpaceTrayBubble() {
