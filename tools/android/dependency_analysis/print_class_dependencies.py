@@ -6,7 +6,7 @@
 
 import argparse
 from dataclasses import dataclass
-from typing import List
+from typing import List, Set, Tuple
 
 import chrome_names
 import class_dependency
@@ -23,6 +23,43 @@ class PrintMode:
     outbound: bool
     ignore_modularized: bool
     fully_qualified: bool
+
+
+class TargetDependencies:
+    """Build target dependencies that the set of classes depends on."""
+
+    def __init__(self):
+        # Build targets usable by modularized code that need to be depended on.
+        self.cleared: Set[str] = set()
+
+        # Build targets usable by modularized code that might need to be
+        # depended on. This happens rarely, when a class dependency is in
+        # multiple build targets (Android resource .R classes, or due to
+        # bytecode rewriting).
+        self.dubious: Set[str] = set()
+
+    def update_with_class_node(self, class_node: class_dependency.JavaClass):
+        if len(class_node.build_targets) == 1:
+            self.cleared.update(class_node.build_targets)
+        else:
+            self.dubious.update(class_node.build_targets)
+
+    def merge(self, other: 'TargetDependencies'):
+        self.cleared.update(other.cleared)
+        self.dubious.update(other.dubious)
+
+    def print(self):
+        if self.cleared:
+            print()
+            print('Cleared dependencies:')
+            for dep in sorted(self.cleared):
+                print(dep)
+        if self.dubious:
+            print()
+            print('Dubious dependencies due to classes with multiple build '
+                  'targets. Only some of these are required:')
+            for dep in sorted(self.dubious):
+                print(dep)
 
 
 INBOUND = 'inbound'
@@ -64,7 +101,15 @@ def is_ignored_class_dependency(class_name: str) -> bool:
 
 
 def print_class_nodes(class_nodes: List[class_dependency.JavaClass],
-                      print_mode: PrintMode, class_name: str, direction: str):
+                      print_mode: PrintMode, class_name: str,
+                      direction: str) -> TargetDependencies:
+    """Prints the class dependencies to or from a class, grouped by target.
+
+    If direction is OUTBOUND and print_mode.ignore_modularized is True, omits
+    modularized outbound dependencies and returns the build targets that need
+    to be added for those dependencies. In other cases, returns an empty
+    TargetDependencies.
+    """
     ignore_modularized = direction == OUTBOUND and print_mode.ignore_modularized
     bullet_point = '<-' if direction == INBOUND else '->'
 
@@ -74,15 +119,18 @@ def print_class_nodes(class_nodes: List[class_dependency.JavaClass],
     # sets considered equal can be converted to different strings. Fix this by
     # making JavaClass.build_targets return a List instead of a Set.
     suspect_dependencies = 0
+
+    target_dependencies = TargetDependencies()
     class_nodes = sorted(class_nodes, key=lambda c: str(c.build_targets))
     last_build_target = None
     for class_node in class_nodes:
+        if is_ignored_class_dependency(class_node.name):
+            continue
         if ignore_modularized:
             if all(
                     is_allowed_target_dependency(target)
                     for target in class_node.build_targets):
-                continue
-            if is_ignored_class_dependency(class_node.name):
+                target_dependencies.update_with_class_node(class_node)
                 continue
             else:
                 suspect_dependencies += 1
@@ -116,11 +164,14 @@ def print_class_nodes(class_nodes: List[class_dependency.JavaClass],
         indents = ' ' * indent
         print(f'{indents}{message}')
 
+    return target_dependencies
+
 
 def print_class_dependencies_for_key(
         class_graph: class_dependency.JavaClassDependencyGraph, key: str,
-        print_mode: PrintMode):
+        print_mode: PrintMode) -> TargetDependencies:
     """Prints dependencies for a valid key into the class graph."""
+    target_dependencies = TargetDependencies()
     node: class_dependency.JavaClass = class_graph.get_node_by_key(key)
     class_name = get_class_name_to_display(node.name, print_mode)
 
@@ -129,8 +180,10 @@ def print_class_dependencies_for_key(
                           class_name, INBOUND)
 
     if print_mode.outbound:
-        print_class_nodes(graph.sorted_nodes_by_name(node.outbound),
-                          print_mode, class_name, OUTBOUND)
+        target_dependencies = print_class_nodes(
+            graph.sorted_nodes_by_name(node.outbound), print_mode, class_name,
+            OUTBOUND)
+    return target_dependencies
 
 
 def get_valid_classes_from_class_input(
@@ -267,13 +320,16 @@ def main():
             get_valid_classes_from_package_input(package_graph,
                                                  arguments.package_names))
 
+    target_dependencies = TargetDependencies()
     for i, fully_qualified_class_name in enumerate(valid_class_names):
         if i > 0:
             print()
 
-        print_class_dependencies_for_key(class_graph,
-                                         fully_qualified_class_name,
-                                         print_mode)
+        new_target_deps = print_class_dependencies_for_key(
+            class_graph, fully_qualified_class_name, print_mode)
+        target_dependencies.merge(new_target_deps)
+
+    target_dependencies.print()
 
 
 if __name__ == '__main__':
