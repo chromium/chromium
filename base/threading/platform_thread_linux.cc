@@ -160,14 +160,14 @@ void SetThreadLatencySensitivity(ProcessId process_id,
   // FieldTrial API can be called only once features were parsed.
   if (g_feature_checked.load()) {
     uclamp_min_urgent =
-      GetFieldTrialParamByFeatureAsInt(kSchedUtilHints, "MinUrgent", 0);
+      GetFieldTrialParamByFeatureAsInt(kSchedUtilHints, "MinUrgent", 20);
     uclamp_max_non_urgent = GetFieldTrialParamByFeatureAsInt(
         kSchedUtilHints, "MaxNonUrgent", 100);
     latency_sensitive_urgent = GetFieldTrialParamByFeatureAsBool(
         kSchedUtilHints, "LatencySensitive", true);
   } else {
     // Use defaults if features were not parsed yet...
-    uclamp_min_urgent = 0;
+    uclamp_min_urgent = 20;
     uclamp_max_non_urgent = 100;
     latency_sensitive_urgent = true;
   }
