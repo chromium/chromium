@@ -62,6 +62,16 @@ PhoneConnectedView::PhoneConnectedView(
 
 PhoneConnectedView::~PhoneConnectedView() = default;
 
+void PhoneConnectedView::ChildPreferredSizeChanged(View* child) {
+  // Resize the bubble when the child change its size.
+  PreferredSizeChanged();
+}
+
+void PhoneConnectedView::ChildVisibilityChanged(View* child) {
+  // Resize the bubble when the child change its visibility.
+  PreferredSizeChanged();
+}
+
 const char* PhoneConnectedView::GetClassName() const {
   return "PhoneConnectedView";
 }

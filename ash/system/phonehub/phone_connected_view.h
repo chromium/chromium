@@ -27,6 +27,8 @@ class PhoneConnectedView : public views::View {
   ~PhoneConnectedView() override;
 
   // views::View:
+  void ChildPreferredSizeChanged(View* child) override;
+  void ChildVisibilityChanged(View* child) override;
   const char* GetClassName() const override;
 
  private:

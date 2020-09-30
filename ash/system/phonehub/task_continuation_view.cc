@@ -142,6 +142,8 @@ void TaskContinuationView::TaskChipsView::CalculateIdealBounds() {
 }
 
 void TaskContinuationView::Update() {
+  chips_view_->Reset();
+
   if (!phone_model_->browser_tabs_model()) {
     SetVisible(false);
     return;
@@ -156,12 +158,12 @@ void TaskContinuationView::Update() {
     return;
   }
 
-  chips_view_->Reset();
   for (const BrowserTabsModel::BrowserTabMetadata& metadata :
        browser_tabs.most_recent_tabs()) {
     chips_view_->AddTaskChip(new ContinueBrowsingChip(metadata));
   }
 
+  PreferredSizeChanged();
   SetVisible(true);
 }
 
