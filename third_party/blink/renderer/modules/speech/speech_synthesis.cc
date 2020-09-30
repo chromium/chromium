@@ -27,6 +27,10 @@
 
 #include "build/build_config.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
+#include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
+#include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
+#include "third_party/blink/public/common/privacy_budget/identifiable_token_builder.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_speech_synthesis_error_event_init.h"
@@ -35,12 +39,15 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/deprecation.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/media/autoplay_policy.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/performance.h"
 #include "third_party/blink/renderer/modules/speech/speech_synthesis_error_event.h"
 #include "third_party/blink/renderer/modules/speech/speech_synthesis_event.h"
+#include "third_party/blink/renderer/modules/speech/speech_synthesis_voice.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/privacy_budget/identifiability_digest_helpers.h"
 
 namespace blink {
 
@@ -91,7 +98,30 @@ void SpeechSynthesis::OnSetVoiceList(
 const HeapVector<Member<SpeechSynthesisVoice>>& SpeechSynthesis::getVoices() {
   // Kick off initialization here to ensure voice list gets populated.
   ignore_result(TryEnsureMojomSynthesis());
+  RecordVoicesForIdentifiability();
   return voice_list_;
+}
+
+void SpeechSynthesis::RecordVoicesForIdentifiability() const {
+  constexpr IdentifiableSurface surface = IdentifiableSurface::FromTypeAndToken(
+      IdentifiableSurface::Type::kWebFeature,
+      WebFeature::kSpeechSynthesis_GetVoices_Method);
+  if (!IdentifiabilityStudySettings::Get()->IsSurfaceAllowed(surface))
+    return;
+  ExecutionContext* context = GetExecutionContext();
+  if (!context)
+    return;
+
+  IdentifiableTokenBuilder builder;
+  for (const auto& voice : voice_list_) {
+    builder.AddToken(IdentifiabilityBenignStringToken(voice->voiceURI()));
+    builder.AddToken(IdentifiabilityBenignStringToken(voice->lang()));
+    builder.AddToken(IdentifiabilityBenignStringToken(voice->name()));
+    builder.AddToken(voice->localService());
+  }
+  IdentifiabilityMetricBuilder(context->UkmSourceID())
+      .Set(surface, builder.GetToken())
+      .Record(context->UkmRecorder());
 }
 
 bool SpeechSynthesis::speaking() const {

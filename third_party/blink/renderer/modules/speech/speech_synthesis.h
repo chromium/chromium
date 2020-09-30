@@ -122,6 +122,8 @@ class MODULES_EXPORT SpeechSynthesis final
 
   bool IsAllowedToStartByAutoplay() const;
 
+  void RecordVoicesForIdentifiability() const;
+
   void SetMojomSynthesisForTesting(
       mojo::PendingRemote<mojom::blink::SpeechSynthesis>);
   mojom::blink::SpeechSynthesis* TryEnsureMojomSynthesis();

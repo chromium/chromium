@@ -2804,7 +2804,7 @@ enum WebFeature {
   kWebkitPrerenderDOMContentLoadedEventFired = 3476,
   kIdleDetectionPermissionRequested = 3477,
   kIdentifiabilityStudyReserved3478 = 3478,
-  kIdentifiabilityStudyReserved3479 = 3479,
+  kSpeechSynthesis_GetVoices_Method = 3479,
   kIdentifiabilityStudyReserved3480 = 3480,
   kV8Navigator_JavaEnabled_Method = 3481,
   kIdentifiabilityStudyReserved3482 = 3482,
