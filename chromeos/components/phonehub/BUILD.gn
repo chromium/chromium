@@ -8,6 +8,7 @@ assert(is_chromeos, "Phone Hub is Chrome OS only")
 
 static_library("phonehub") {
   sources = [
+    "browser_tabs_metadata_fetcher.h",
     "browser_tabs_model.cc",
     "browser_tabs_model.h",
     "connection_manager.cc",
@@ -121,6 +122,8 @@ static_library("test_support") {
   testonly = true
 
   sources = [
+    "fake_browser_tabs_metadata_fetcher.cc",
+    "fake_browser_tabs_metadata_fetcher.h",
     "fake_connection_manager.cc",
     "fake_connection_manager.h",
     "fake_message_receiver.h",

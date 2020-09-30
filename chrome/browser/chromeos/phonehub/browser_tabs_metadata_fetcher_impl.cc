@@ -1,0 +1,107 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/chromeos/phonehub/browser_tabs_metadata_fetcher_impl.h"
+
+#include "base/barrier_closure.h"
+#include "components/favicon/core/favicon_service.h"
+#include "components/sync_sessions/synced_session.h"
+
+namespace chromeos {
+namespace phonehub {
+namespace {
+
+std::vector<BrowserTabsModel::BrowserTabMetadata>
+GetSortedMetadataWithoutFavicons(const sync_sessions::SyncedSession* session) {
+  std::vector<BrowserTabsModel::BrowserTabMetadata> browser_tab_metadata;
+
+  using WindowPair =
+      std::pair<const SessionID,
+                std::unique_ptr<sync_sessions::SyncedSessionWindow>>;
+  for (const WindowPair& window_pair : session->windows) {
+    const sessions::SessionWindow& window = window_pair.second->wrapped_window;
+    for (const std::unique_ptr<sessions::SessionTab>& tab : window.tabs) {
+      int selected_index = tab->normalized_navigation_index();
+      const sessions::SerializedNavigationEntry& current_navigation =
+          tab->navigations.at(selected_index);
+
+      GURL tab_url = current_navigation.virtual_url();
+
+      // If the url is incorrectly formatted, or is empty, do not proceed with
+      // storing its metadata.
+      if (!tab_url.is_valid())
+        continue;
+
+      const base::string16& title = current_navigation.title();
+      const base::Time last_accessed_timestamp = tab->timestamp;
+      browser_tab_metadata.emplace_back(tab_url, title, last_accessed_timestamp,
+                                        gfx::Image());
+    }
+  }
+
+  // Sorts the |browser_tab_metadata| from most recently visited to least
+  // recently visited.
+  std::sort(browser_tab_metadata.begin(), browser_tab_metadata.end());
+
+  // At most |kMaxMostRecentTabs| tab metadata can be displayed.
+  size_t num_tabs_to_display = std::min(browser_tab_metadata.size(),
+                                        BrowserTabsModel::kMaxMostRecentTabs);
+  return std::vector<BrowserTabsModel::BrowserTabMetadata>(
+      browser_tab_metadata.begin(),
+      browser_tab_metadata.begin() + num_tabs_to_display);
+}
+
+}  // namespace
+
+BrowserTabsMetadataFetcherImpl::BrowserTabsMetadataFetcherImpl(
+    favicon::FaviconService* favicon_service)
+    : favicon_service_(favicon_service) {}
+
+BrowserTabsMetadataFetcherImpl::~BrowserTabsMetadataFetcherImpl() = default;
+
+void BrowserTabsMetadataFetcherImpl::Fetch(
+    const sync_sessions::SyncedSession* session,
+    base::OnceCallback<void(BrowserTabsMetadataResponse)> callback) {
+  // A new fetch was made, return a base::nullopt to the previous |callback_|.
+  if (!callback_.is_null()) {
+    weak_ptr_factory_.InvalidateWeakPtrs();
+    favicon_tracker_.TryCancelAll();
+    std::move(callback_).Run(base::nullopt);
+  }
+
+  results_ = GetSortedMetadataWithoutFavicons(session);
+  callback_ = std::move(callback);
+
+  // When |barrier| is run |num_tabs_to_display| times, it will run
+  // |OnAllFaviconsFetched|.
+  base::RepeatingClosure barrier = base::BarrierClosure(
+      results_.size(),
+      base::BindOnce(&BrowserTabsMetadataFetcherImpl::OnAllFaviconsFetched,
+                     weak_ptr_factory_.GetWeakPtr()));
+
+  for (size_t i = 0; i < results_.size(); ++i) {
+    favicon_service_->GetFaviconImageForPageURL(
+        results_[i].url,
+        base::BindOnce(&BrowserTabsMetadataFetcherImpl::OnFaviconReady,
+                       weak_ptr_factory_.GetWeakPtr(), i, barrier),
+        &favicon_tracker_);
+  }
+}
+
+void BrowserTabsMetadataFetcherImpl::OnAllFaviconsFetched() {
+  std::move(callback_).Run(std::move(results_));
+}
+
+void BrowserTabsMetadataFetcherImpl::OnFaviconReady(
+    size_t index_in_results,
+    base::OnceClosure done_closure,
+    const favicon_base::FaviconImageResult& favicon_image_result) {
+  DCHECK(index_in_results < results_.size());
+
+  results_[index_in_results].favicon = std::move(favicon_image_result.image);
+  std::move(done_closure).Run();
+}
+
+}  // namespace phonehub
+}  // namespace chromeos

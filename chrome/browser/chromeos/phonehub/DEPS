@@ -1,0 +1,6 @@
+include_rules = [
+  "+components/favicon",
+  "+components/sessions/core",
+  "+components/sync_sessions",
+  "+third_party/skia/include/core",
+]

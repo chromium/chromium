@@ -26,9 +26,10 @@ BrowserTabsModel::BrowserTabMetadata::BrowserTabMetadata(
 
 bool BrowserTabsModel::BrowserTabMetadata::operator==(
     const BrowserTabMetadata& other) const {
+  // The favicon is not compared because equality of gfx::Image is defined
+  // by the same storage space rather than the image itself.
   return url == other.url && title == other.title &&
-         last_accessed_timestamp == other.last_accessed_timestamp &&
-         favicon == other.favicon;
+         last_accessed_timestamp == other.last_accessed_timestamp;
 }
 
 bool BrowserTabsModel::BrowserTabMetadata::operator!=(
