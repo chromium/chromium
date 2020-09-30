@@ -17,7 +17,6 @@
 #include "third_party/blink/public/common/widget/visual_properties.h"
 #include "third_party/blink/public/mojom/page/record_content_to_visible_time_request.mojom-forward.h"
 #include "third_party/blink/public/platform/viewport_intersection_state.h"
-#include "third_party/blink/public/platform/web_float_rect.h"
 #include "ui/base/ime/text_input_action.h"
 #include "ui/base/ime/text_input_mode.h"
 #include "ui/base/ui_base_types.h"
