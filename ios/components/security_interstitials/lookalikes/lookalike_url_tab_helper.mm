@@ -114,7 +114,7 @@ void LookalikeUrlTabHelper::ShouldAllowResponse(
 
   RecordUMAFromMatchType(match_type);
 
-  if (ShouldBlockLookalikeUrlNavigation(match_type, navigated_domain)) {
+  if (ShouldBlockLookalikeUrlNavigation(match_type)) {
     const std::string suggested_domain = GetETLDPlusOne(matched_domain);
     DCHECK(!suggested_domain.empty());
     GURL::Replacements replace_host;

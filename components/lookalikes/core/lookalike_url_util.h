@@ -152,8 +152,7 @@ bool IsTopDomain(const DomainInfo& domain_info);
 std::string GetETLDPlusOne(const std::string& hostname);
 
 // Returns true if a lookalike interstitial should be shown.
-bool ShouldBlockLookalikeUrlNavigation(LookalikeUrlMatchType match_type,
-                                       const DomainInfo& navigated_domain);
+bool ShouldBlockLookalikeUrlNavigation(LookalikeUrlMatchType match_type);
 
 // Returns true if a domain is visually similar to the hostname of |url|. The
 // matching domain can be a top domain or an engaged site. Similarity

@@ -69,7 +69,7 @@ bool ShouldTriggerSafetyTipFromLookalike(
   }
 
   // If we're already displaying an interstitial, don't warn again.
-  if (ShouldBlockLookalikeUrlNavigation(match_type, navigated_domain)) {
+  if (ShouldBlockLookalikeUrlNavigation(match_type)) {
     return false;
   }
 

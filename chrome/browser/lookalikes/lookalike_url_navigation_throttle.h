@@ -45,7 +45,6 @@ class LookalikeUrlNavigationThrottle : public content::NavigationThrottle {
 
   // content::NavigationThrottle:
   ThrottleCheckResult WillProcessResponse() override;
-  ThrottleCheckResult WillRedirectRequest() override;
   const char* GetNameForLogging() override;
 
   static std::unique_ptr<LookalikeUrlNavigationThrottle>
@@ -56,24 +55,20 @@ class LookalikeUrlNavigationThrottle : public content::NavigationThrottle {
   void SetUseTestProfileForTesting() { use_test_profile_ = true; }
 
  private:
-  // Checks whether the navigation to |url| can proceed. If
-  // |check_safe_redirect| is true, will check if a safe redirect led to |url|.
-  ThrottleCheckResult HandleThrottleRequest(const GURL& url,
-                                            bool check_safe_redirect);
-
   // Performs synchronous top domain and engaged site checks on the navigated
-  // |url|. Uses |engaged_sites| for the engaged site checks.
+  // and redirected urls. Uses |engaged_sites| for the engaged site checks.
   ThrottleCheckResult PerformChecks(
-      const GURL& url,
-      const DomainInfo& navigated_domain,
-      bool check_safe_redirect,
       const std::vector<DomainInfo>& engaged_sites);
 
   // A void-returning variant, only used with deferred throttle results.
-  void PerformChecksDeferred(const GURL& url,
-                             const DomainInfo& navigated_domain,
-                             bool check_safe_redirect,
-                             const std::vector<DomainInfo>& engaged_sites);
+  void PerformChecksDeferred(const std::vector<DomainInfo>& engaged_sites);
+
+  // Returns whether |url| is a lookalike, setting |match_type| and
+  // |suggested_url| appropriately. Used in PerformChecks() on a per-URL basis.
+  bool IsLookalikeUrl(const GURL& url,
+                      const std::vector<DomainInfo>& engaged_sites,
+                      LookalikeUrlMatchType* match_type,
+                      GURL* suggested_url);
 
   ThrottleCheckResult ShowInterstitial(const GURL& safe_domain,
                                        const GURL& url,

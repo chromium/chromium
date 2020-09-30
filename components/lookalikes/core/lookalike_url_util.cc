@@ -452,14 +452,18 @@ bool IsTopDomain(const DomainInfo& domain_info) {
   return false;
 }
 
-bool ShouldBlockLookalikeUrlNavigation(LookalikeUrlMatchType match_type,
-                                       const DomainInfo& navigated_domain) {
+bool ShouldBlockLookalikeUrlNavigation(LookalikeUrlMatchType match_type) {
   if (match_type == LookalikeUrlMatchType::kSiteEngagement) {
     return true;
   }
   if (match_type == LookalikeUrlMatchType::kTargetEmbedding &&
       base::FeatureList::IsEnabled(
           lookalikes::features::kDetectTargetEmbeddingLookalikes)) {
+    return true;
+  }
+  if (match_type == LookalikeUrlMatchType::kFailedSpoofChecks &&
+      base::FeatureList::IsEnabled(
+          lookalikes::features::kLookalikeInterstitialForPunycode)) {
     return true;
   }
   return match_type == LookalikeUrlMatchType::kSkeletonMatchTop500;

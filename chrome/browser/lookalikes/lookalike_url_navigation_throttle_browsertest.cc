@@ -579,14 +579,13 @@ IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
 
   if (!punycode_interstitial_enabled()) {
     TestInterstitialNotShown(browser(), kNavigatedUrl);
-    CheckNoUkm();
   } else {
     TestPunycodeInterstitialShown(
         browser(), kNavigatedUrl,
         NavigationSuggestionEvent::kFailedSpoofChecks);
-    CheckUkm({kNavigatedUrl}, "MatchType",
-             LookalikeUrlMatchType::kFailedSpoofChecks);
   }
+  CheckUkm({kNavigatedUrl}, "MatchType",
+           LookalikeUrlMatchType::kFailedSpoofChecks);
 }
 
 // The navigated domain will fall back to punycode because it fails spoof checks
@@ -890,20 +889,18 @@ IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
 
 // The site redirects to the matched site, but the redirect chain has more than
 // two redirects.
-// TODO(meacer): Consider allowing this case.
 IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
-                       Idn_SiteEngagement_UnsafeRedirect) {
-  const GURL kExpectedSuggestedUrl = GetURLWithoutPath("site1.com");
+                       Idn_SiteEngagement_MidRedirectSpoofsIgnored) {
+  const GURL kFinalUrl = GetURLWithoutPath("site1.com");
   const GURL kMidUrl = embedded_test_server()->GetURL(
-      "sité1.com", "/server-redirect?" + kExpectedSuggestedUrl.spec());
+      "sité1.com", "/server-redirect?" + kFinalUrl.spec());
   const GURL kNavigatedUrl = embedded_test_server()->GetURL(
       "other-site.test", "/server-redirect?" + kMidUrl.spec());
 
   SetEngagementScore(browser(), kNavigatedUrl, kLowEngagement);
-  SetEngagementScore(browser(), kExpectedSuggestedUrl, kHighEngagement);
-  TestMetricsRecordedAndInterstitialShown(
-      browser(), kNavigatedUrl, kExpectedSuggestedUrl,
-      NavigationSuggestionEvent::kMatchSiteEngagement);
+  SetEngagementScore(browser(), kFinalUrl, kHighEngagement);
+  TestInterstitialNotShown(browser(), kNavigatedUrl);
+  CheckNoUkm();
 }
 
 // The site is allowed by the component updater.
@@ -1126,17 +1123,17 @@ IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
   NavigateToURLSync(browser(), GetURL("example.com"));
 
   {
-    // ...or when it's later in the chain
+    // ...but not when it's in the middle of the chain
     const GURL kNavigatedUrl =
         GetLongRedirect("example.net", "googlé.com", "example.com");
     SetEngagementScore(browser(), kNavigatedUrl, kLowEngagement);
-    LoadAndCheckInterstitialAt(browser(), kNavigatedUrl);
+    TestInterstitialNotShown(browser(), kNavigatedUrl);
   }
 
   NavigateToURLSync(browser(), GetURL("example.com"));
 
   {
-    // ...or when it's last in the chain
+    // ...but definitely when it's last in the chain.
     const GURL kNavigatedUrl =
         GetLongRedirect("example.net", "example.com", "googlé.com");
     SetEngagementScore(browser(), kNavigatedUrl, kLowEngagement);
