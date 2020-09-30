@@ -2060,7 +2060,8 @@ void AutofillTable::SetCreditCardOffers(
                                   "merchant_domain) "  // 1
                                   "VALUES (?,?)"));
       insert_offer_merchant_domains.BindInt64(0, data.offer_id);
-      insert_offer_merchant_domains.BindString(1, merchant_domain.spec());
+      insert_offer_merchant_domains.BindString(
+          1, merchant_domain.GetOrigin().spec());
       insert_offer_merchant_domains.Run();
       insert_offer_merchant_domains.Reset(true);
     }
@@ -2115,7 +2116,7 @@ bool AutofillTable::GetCreditCardOffers(
       const std::string merchant_domain =
           s_offer_merchant_domain.ColumnString(1);
       if (!merchant_domain.empty()) {
-        data->merchant_domain.emplace_back(GURL(merchant_domain));
+        data->merchant_domain.emplace_back(merchant_domain);
       }
     }
 

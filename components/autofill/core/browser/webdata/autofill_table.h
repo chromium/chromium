@@ -397,7 +397,7 @@ struct PaymentsCustomerData;
 //
 //   offer_id           Int 64 to identify the relevant offer. Matches the
 //                      offer_id in the offer_data table.
-//   merchant_domain    List of domain names for merchant websites on which
+//   merchant_domain    List of full origins for merchant websites on which
 //                      this offer would apply.
 
 class AutofillTable : public WebDatabaseTable,

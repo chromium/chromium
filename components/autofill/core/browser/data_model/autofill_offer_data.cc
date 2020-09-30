@@ -48,13 +48,20 @@ int AutofillOfferData::Compare(
   if (comparison != 0)
     return comparison;
 
-  // TODO(crbug.com/1112095): Change merchant domain in AutofillOfferData to
-  // string (now it is GURL) and handle its comparison in a separate CL.
+  std::vector<GURL> merchant_domain_copy = merchant_domain;
+  std::vector<GURL> other_merchant_domain_copy =
+      other_offer_data.merchant_domain;
+  std::sort(merchant_domain_copy.begin(), merchant_domain_copy.end());
+  std::sort(other_merchant_domain_copy.begin(),
+            other_merchant_domain_copy.end());
+  if (merchant_domain_copy < other_merchant_domain_copy)
+    return -1;
+  if (merchant_domain_copy > other_merchant_domain_copy)
+    return 1;
 
   std::vector<int64_t> eligible_instrument_id_copy = eligible_instrument_id;
   std::vector<int64_t> other_eligible_instrument_id_copy =
       other_offer_data.eligible_instrument_id;
-
   std::sort(eligible_instrument_id_copy.begin(),
             eligible_instrument_id_copy.end());
   std::sort(other_eligible_instrument_id_copy.begin(),

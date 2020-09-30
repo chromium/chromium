@@ -44,7 +44,7 @@ struct AutofillOfferData {
   // The URL that contains the offer details.
   GURL offer_details_url;
 
-  // The merchant URLs where this offer can be redeemed.
+  // The merchants' URLs where this offer can be redeemed.
   std::vector<GURL> merchant_domain;
 
   // The ids of the cards this offer can be applied to.

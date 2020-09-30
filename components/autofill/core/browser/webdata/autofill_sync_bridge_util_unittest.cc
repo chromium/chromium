@@ -258,7 +258,7 @@ TEST_F(AutofillSyncBridgeUtilTest, OfferSpecificsFromOfferData) {
             (int)offer_data.merchant_domain.size());
   for (int i = 0; i < offer_specifics.merchant_domain().size(); i++) {
     EXPECT_EQ(offer_specifics.merchant_domain(i),
-              offer_data.merchant_domain[i].spec());
+              offer_data.merchant_domain[i].GetOrigin().spec());
   }
   EXPECT_EQ(offer_specifics.card_linked_offer_data().instrument_id().size(),
             (int)offer_data.eligible_instrument_id.size());
@@ -320,6 +320,9 @@ TEST_F(AutofillSyncBridgeUtilTest, IsOfferSpecificsValid) {
                                          &specifics);
   specifics.clear_merchant_domain();
   // Expects specifics without merchant domain to be invalid.
+  EXPECT_FALSE(IsOfferSpecificsValid(specifics));
+  specifics.add_merchant_domain("invalid url");
+  // Expects specifics with an invalid merchant_domain to be invalid.
   EXPECT_FALSE(IsOfferSpecificsValid(specifics));
 
   SetAutofillOfferSpecificsFromOfferData(test::GetCardLinkedOfferData1(),

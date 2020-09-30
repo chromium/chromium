@@ -294,7 +294,7 @@ void SetAutofillOfferSpecificsFromOfferData(
   offer_specifics->set_id(offer_data.offer_id);
   offer_specifics->set_offer_details_url(offer_data.offer_details_url.spec());
   for (const GURL& domain : offer_data.merchant_domain) {
-    offer_specifics->add_merchant_domain(domain.spec());
+    offer_specifics->add_merchant_domain(domain.GetOrigin().spec());
   }
   offer_specifics->set_offer_expiry_date(
       (offer_data.expiry - base::Time::UnixEpoch()).InSeconds());
@@ -328,7 +328,8 @@ AutofillOfferData AutofillOfferDataFromOfferSpecifics(
       base::TimeDelta::FromSeconds(offer_specifics.offer_expiry_date());
   offer_data.offer_details_url = GURL(offer_specifics.offer_details_url());
   for (const std::string& domain : offer_specifics.merchant_domain()) {
-    offer_data.merchant_domain.emplace_back(domain);
+    if (GURL(domain).is_valid())
+      offer_data.merchant_domain.emplace_back(domain);
   }
   for (int64_t instrument_id :
        offer_specifics.card_linked_offer_data().instrument_id()) {
@@ -499,8 +500,18 @@ bool IsOfferSpecificsValid(const sync_pb::AutofillOfferSpecifics specifics) {
   if (!specifics.has_id())
     return false;
 
-  // A valid offer has at least one merchant domain.
+  // A valid offer must have at least one valid merchant domain URL.
   if (specifics.merchant_domain().size() == 0) {
+    return false;
+  }
+  bool has_valid_domain = false;
+  for (const std::string& domain : specifics.merchant_domain()) {
+    if (GURL(domain).is_valid()) {
+      has_valid_domain = true;
+      break;
+    }
+  }
+  if (!has_valid_domain) {
     return false;
   }
 

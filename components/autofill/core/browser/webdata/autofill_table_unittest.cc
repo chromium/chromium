@@ -3708,19 +3708,19 @@ TEST_F(AutofillTableTest, SetAndGetCreditCardOfferData) {
 
   // Set merchant domains for offer 1.
   credit_card_offer_1.merchant_domain.emplace_back(
-      GURL("https://www.merchant_domain_1_1.com/"));
+      "http://www.merchant_domain_1_1.com/");
   credit_card_offer_1.merchant_domain.emplace_back(
-      GURL("https://www.merchant_domain_1_2.com/"));
+      "http://www.merchant_domain_1_2.com/");
   credit_card_offer_1.merchant_domain.emplace_back(
-      GURL("https://www.merchant_domain_1_3.com/"));
+      "http://www.merchant_domain_1_3.com/");
   // Set merchant domains for offer 2.
   credit_card_offer_2.merchant_domain.emplace_back(
-      GURL("https://www.merchant_domain_2_1.com/"));
+      "http://www.merchant_domain_2_1.com/");
   // Set merchant domains for offer 3.
   credit_card_offer_3.merchant_domain.emplace_back(
-      GURL("https://www.merchant_domain_3_1.com/"));
+      "http://www.merchant_domain_3_1.com/");
   credit_card_offer_3.merchant_domain.emplace_back(
-      GURL("https://www.merchant_domain_3_2.com/"));
+      "http://www.merchant_domain_3_2.com/");
 
   // Set eligible instrument ID for offer 1.
   credit_card_offer_1.eligible_instrument_id.push_back(10);
