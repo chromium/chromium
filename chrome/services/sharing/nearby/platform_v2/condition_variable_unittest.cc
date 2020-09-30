@@ -87,7 +87,7 @@ TEST_F(ConditionVariableTest, SingleSequence_BlocksOnWaitAndUnblocksOnNotify) {
 }
 
 TEST_F(ConditionVariableTest,
-       MultipleSequences_BlocksOnWaitAndUnblocksOnNotify) {
+       DISABLED_MultipleSequences_BlocksOnWaitAndUnblocksOnNotify) {
   base::RunLoop run_loop_1;
   base::UnguessableToken attempt_id_1 = base::UnguessableToken::Create();
   WaitOnConditionVariableFromParallelSequence(run_loop_1, attempt_id_1);
