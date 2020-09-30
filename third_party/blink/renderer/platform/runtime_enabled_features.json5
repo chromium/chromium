@@ -1002,10 +1002,6 @@
       status: "stable",
     },
     {
-      name: "LayoutNGFlexBox",
-      status: "stable",
-    },
-    {
       name: "LayoutNGForControls",
       depends_on: ["LayoutNG"],
       status: "experimental",

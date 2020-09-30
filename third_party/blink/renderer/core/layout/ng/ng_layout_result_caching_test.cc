@@ -1503,8 +1503,6 @@ TEST_F(NGLayoutResultCachingTest, MissIsFixedBlockSizeIndefinite) {
 }
 
 TEST_F(NGLayoutResultCachingTest, HitColumnFlexBoxMeasureAndLayout) {
-  ScopedLayoutNGFlexBoxForTest layout_ng_flex_box(true);
-
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
     <style>
@@ -1557,8 +1555,6 @@ TEST_F(NGLayoutResultCachingTest, HitColumnFlexBoxMeasureAndLayout) {
 }
 
 TEST_F(NGLayoutResultCachingTest, HitRowFlexBoxMeasureAndLayout) {
-  ScopedLayoutNGFlexBoxForTest layout_ng_flex_box(true);
-
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
     <style>

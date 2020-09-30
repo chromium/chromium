@@ -356,7 +356,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {"LangClientHintHeader", features::kLangClientHintHeader},
           {"LayoutNG", blink::features::kLayoutNG},
           {"LayoutNGFieldset", blink::features::kLayoutNGFieldset},
-          {"LayoutNGFlexBox", blink::features::kFlexNG},
           {"LayoutNGFragmentItem", blink::features::kFragmentItem},
           {"LayoutNGRuby", blink::features::kLayoutNGRuby},
           {"LegacyWindowsDWriteFontFallback",

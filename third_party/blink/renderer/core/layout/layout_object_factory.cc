@@ -120,11 +120,8 @@ LayoutBlock* LayoutObjectFactory::CreateBlockForLineClamp(
 LayoutBlock* LayoutObjectFactory::CreateFlexibleBox(Node& node,
                                                     const ComputedStyle& style,
                                                     LegacyLayout legacy) {
-  bool disable_ng_for_type = !RuntimeEnabledFeatures::LayoutNGFlexBoxEnabled();
-  if (disable_ng_for_type)
-    UseCounter::Count(node.GetDocument(), WebFeature::kLegacyLayoutByFlexBox);
   return CreateObject<LayoutBlock, LayoutNGFlexibleBox, LayoutFlexibleBox>(
-      node, style, legacy, disable_ng_for_type);
+      node, style, legacy);
 }
 
 LayoutBlock* LayoutObjectFactory::CreateGrid(Node& node,
@@ -240,11 +237,8 @@ LayoutBox* LayoutObjectFactory::CreateTableSection(Node& node,
 LayoutObject* LayoutObjectFactory::CreateButton(Node& node,
                                                 const ComputedStyle& style,
                                                 LegacyLayout legacy) {
-  bool disable_ng_for_type = !RuntimeEnabledFeatures::LayoutNGFlexBoxEnabled();
-  if (disable_ng_for_type)
-    UseCounter::Count(node.GetDocument(), WebFeature::kLegacyLayoutByFlexBox);
-  return CreateObject<LayoutBlock, LayoutNGButton, LayoutButton>(
-      node, style, legacy, disable_ng_for_type);
+  return CreateObject<LayoutBlock, LayoutNGButton, LayoutButton>(node, style,
+                                                                 legacy);
 }
 
 LayoutBlock* LayoutObjectFactory::CreateFieldset(Node& node,
