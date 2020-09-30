@@ -40,7 +40,7 @@
     readonly attribute float radiusX;
     readonly attribute float radiusY;
     readonly attribute float rotationAngle;
-    readonly attribute float force;
+    [HighEntropy=Direct, Measure] readonly attribute float force;
 
     // Canvas Hit Regions
     // https://html.spec.whatwg.org/C/#Touch-partial
