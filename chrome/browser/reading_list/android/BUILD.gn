@@ -14,8 +14,9 @@ source_set("reading_list") {
   sources = [
     "empty_reading_list_manager.cc",
     "empty_reading_list_manager.h",
-    "reading_list_manager.cc",
     "reading_list_manager.h",
+    "reading_list_manager_impl.cc",
+    "reading_list_manager_impl.h",
   ]
 
   # This target should not depend on anything in //chrome/* except the proto library.
@@ -30,7 +31,7 @@ source_set("reading_list") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "reading_list_manager_unittest.cc" ]
+  sources = [ "reading_list_manager_impl_unittest.cc" ]
   deps = [
     ":android",
     "//base/test:test_support",

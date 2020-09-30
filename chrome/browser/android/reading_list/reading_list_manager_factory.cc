@@ -9,7 +9,7 @@
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/reading_list/android/empty_reading_list_manager.h"
-#include "chrome/browser/reading_list/android/reading_list_manager.h"
+#include "chrome/browser/reading_list/android/reading_list_manager_impl.h"
 #include "chrome/browser/ui/read_later/reading_list_model_factory.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "components/keyed_service/core/simple_dependency_manager.h"
@@ -44,5 +44,5 @@ ReadingListManagerFactory::BuildServiceInstanceFor(
       ProfileKey::FromSimpleFactoryKey(key));
   auto* reading_list_model =
       ReadingListModelFactory::GetForBrowserContext(profile);
-  return ReadingListManager::Create(reading_list_model);
+  return std::make_unique<ReadingListManagerImpl>(reading_list_model);
 }

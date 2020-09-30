@@ -5,25 +5,20 @@
 #ifndef CHROME_BROWSER_READING_LIST_ANDROID_READING_LIST_MANAGER_H_
 #define CHROME_BROWSER_READING_LIST_ANDROID_READING_LIST_MANAGER_H_
 
-#include "components/keyed_service/core/keyed_service.h"
-
-#include <memory>
 #include <string>
+
+#include "components/keyed_service/core/keyed_service.h"
 
 namespace bookmarks {
 class BookmarkNode;
 }  // namespace bookmarks
 
 class GURL;
-class ReadingListModel;
 
 // Owns a reading list model and converts reading list data to bookmark nodes.
 // The bookmark nodes won't be persisted across sessions.
 class ReadingListManager : public KeyedService {
  public:
-  static std::unique_ptr<ReadingListManager> Create(
-      ReadingListModel* reading_list_model);
-
   ReadingListManager() = default;
   ~ReadingListManager() override = default;
 

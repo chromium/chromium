@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/reading_list/android/reading_list_manager.h"
+#include "chrome/browser/reading_list/android/reading_list_manager_impl.h"
 
 #include <memory>
 #include <string>
@@ -28,15 +28,16 @@ constexpr char kReadStatusKey[] = "read_status";
 constexpr char kReadStatusRead[] = "true";
 constexpr char kReadStatusUnread[] = "false";
 
-class ReadingListManagerTest : public testing::Test {
+class ReadingListManagerImplTest : public testing::Test {
  public:
-  ReadingListManagerTest() = default;
-  ~ReadingListManagerTest() override = default;
+  ReadingListManagerImplTest() = default;
+  ~ReadingListManagerImplTest() override = default;
 
   void SetUp() override {
     reading_list_model_ = std::make_unique<ReadingListModelImpl>(
         /*storage_layer=*/nullptr, /*pref_service=*/nullptr, &clock_);
-    manager_ = ReadingListManager::Create(reading_list_model_.get());
+    manager_ =
+        std::make_unique<ReadingListManagerImpl>(reading_list_model_.get());
   }
 
  protected:
@@ -53,7 +54,7 @@ class ReadingListManagerTest : public testing::Test {
 };
 
 // Verifies the states without any reading list data.
-TEST_F(ReadingListManagerTest, RootWithEmptyReadingList) {
+TEST_F(ReadingListManagerImplTest, RootWithEmptyReadingList) {
   const auto* root = manager()->GetRoot();
   ASSERT_TRUE(root);
   EXPECT_TRUE(root->is_folder());
@@ -61,7 +62,7 @@ TEST_F(ReadingListManagerTest, RootWithEmptyReadingList) {
 }
 
 // Verifies load data into reading list model will update |manager_| as well.
-TEST_F(ReadingListManagerTest, Load) {
+TEST_F(ReadingListManagerImplTest, Load) {
   // Load data into reading list model.
   auto entries = std::make_unique<ReadingListEntries>();
   GURL url(kURL);
@@ -76,7 +77,7 @@ TEST_F(ReadingListManagerTest, Load) {
 }
 
 // Verifes Add(), Get(), Delete() API in reading list manager.
-TEST_F(ReadingListManagerTest, AddGetDelete) {
+TEST_F(ReadingListManagerImplTest, AddGetDelete) {
   // Adds a node.
   GURL url(kURL);
   manager()->Add(url, kTitle);
@@ -104,7 +105,7 @@ TEST_F(ReadingListManagerTest, AddGetDelete) {
 
 // Verifies Add() the same URL twice will not invalidate returned pointers, and
 // the content is updated.
-TEST_F(ReadingListManagerTest, AddTwice) {
+TEST_F(ReadingListManagerImplTest, AddTwice) {
   // Adds a node.
   GURL url(kURL);
   const auto* node = manager()->Add(url, kTitle);
@@ -114,7 +115,7 @@ TEST_F(ReadingListManagerTest, AddTwice) {
 }
 
 // Verifes SetReadStatus() API.
-TEST_F(ReadingListManagerTest, SetReadStatus) {
+TEST_F(ReadingListManagerImplTest, SetReadStatus) {
   GURL url(kURL);
   manager()->SetReadStatus(url, true);
   EXPECT_EQ(0u, manager()->size());
