@@ -73,4 +73,9 @@ public class TabContextMenuPopulator implements ContextMenuPopulator {
     public void onMenuClosed() {
         mPopulator.onMenuClosed();
     }
+
+    @Override
+    public boolean isIncognito() {
+        return mPopulator.isIncognito();
+    }
 }

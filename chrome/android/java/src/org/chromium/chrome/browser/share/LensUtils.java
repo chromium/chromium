@@ -387,9 +387,14 @@ public class LensUtils {
     /**
      * Whether to display the lens shop image with google lens chip.
      */
-    public static boolean enableImageChip() {
-        // TODO(benwgold: Add option to disable for incognito mode.
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXT_MENU_GOOGLE_LENS_CHIP);
+    public static boolean enableImageChip(boolean isIncognito) {
+        // TODO(benwgold): Consider adding isSdkAvailable() check if it gains any utility.
+        //                 Currently it is not necessary and should always evaluate to true.
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXT_MENU_GOOGLE_LENS_CHIP)
+                && !(isIncognito
+                        && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                                ChromeFeatureList.CONTEXT_MENU_GOOGLE_LENS_CHIP,
+                                DISABLE_ON_INCOGNITO_PARAM_NAME, true));
     }
 
     /**

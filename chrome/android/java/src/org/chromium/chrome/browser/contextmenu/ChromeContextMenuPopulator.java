@@ -602,6 +602,11 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
     }
 
     @Override
+    public boolean isIncognito() {
+        return mDelegate.isIncognito();
+    }
+
+    @Override
     public boolean onItemSelected(int itemId) {
         if (itemId == R.id.contextmenu_open_in_new_tab) {
             recordContextMenuSelection(ContextMenuUma.Action.OPEN_IN_NEW_TAB);

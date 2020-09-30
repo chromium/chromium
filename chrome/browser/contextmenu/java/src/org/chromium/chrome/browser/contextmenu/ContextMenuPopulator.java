@@ -59,4 +59,9 @@ public interface ContextMenuPopulator {
      * Called when the context menu is closed.
      */
     void onMenuClosed();
+
+    /**
+     * Determines whether the the containing browser is switched to incognito mode.
+     */
+    boolean isIncognito();
 }

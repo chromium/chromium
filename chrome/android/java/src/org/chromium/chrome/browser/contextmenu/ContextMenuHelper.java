@@ -113,13 +113,14 @@ public class ContextMenuHelper {
         mOnMenuClosed = (notAbandoned) -> {
             recordTimeToTakeActionHistogram(mSelectedItemBeforeDismiss || notAbandoned);
             mCurrentPopulator.onMenuClosed();
-            mCurrentPopulator.onDestroy();
-            mCurrentPopulator = null;
-            if (LensUtils.enableShoppyImageMenuItem() || LensUtils.enableImageChip()) {
+            if (LensUtils.enableShoppyImageMenuItem()
+                    || LensUtils.enableImageChip(mCurrentPopulator.isIncognito())) {
                 // If the image was being classified terminate the classification
                 // Has no effect if the classification already succeeded.
                 LensController.getInstance().terminateClassification();
             }
+            mCurrentPopulator.onDestroy();
+            mCurrentPopulator = null;
 
             if (mNativeContextMenuHelper == 0) return;
             ContextMenuHelperJni.get().onContextMenuClosed(
@@ -129,8 +130,7 @@ public class ContextMenuHelper {
         // NOTE: This is a temporary implementation to enable experimentation and should not
         // not be enabled under any circumstances on Stable Chrome builds due to potential
         // latency impact.
-        if (LensUtils.enableShoppyImageMenuItem()
-                && LensController.getInstance().isSdkAvailable()) {
+        if (LensUtils.enableShoppyImageMenuItem()) {
             mCurrentPopulator.retrieveImage(ContextMenuImageFormat.ORIGINAL, (Uri uri) -> {
                 LensController.getInstance().classifyImage(uri, (Boolean isShoppyImage) -> {
                     displayRevampedContextMenu(topContentOffsetPx, isShoppyImage);
@@ -152,7 +152,7 @@ public class ContextMenuHelper {
         final RevampedContextMenuCoordinator menuCoordinator = new RevampedContextMenuCoordinator(
                 topContentOffsetPx, () -> shareImageWithLastShareComponent());
 
-        if (LensUtils.enableImageChip()) {
+        if (LensUtils.enableImageChip(mCurrentPopulator.isIncognito())) {
             LensAsyncManager lensAsyncManager =
                     new LensAsyncManager(mCurrentContextMenuParams, mCurrentPopulator);
             menuCoordinator.displayMenuWithLensChip(mWindow, mWebContents,
