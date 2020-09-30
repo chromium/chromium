@@ -20,6 +20,3 @@ per-file whitespace_file.txt=*
 per-file OWNERS.status=*
 per-file OWNERS.setnoparent=set noparent
 per-file OWNERS.setnoparent=file://ENG_REVIEW_OWNERS
-
-# TEAM: build@chromium.org
-# COMPONENT: Build

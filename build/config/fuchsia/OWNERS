@@ -2,7 +2,3 @@ file://build/fuchsia/OWNERS
 
 per-file *.cmx=set noparent
 per-file *.cmx=file://fuchsia/SECURITY_OWNERS
-
-# COMPONENT: Fuchsia
-# OS: Fuchsia
-# TEAM: cr-fuchsia@chromium.org
