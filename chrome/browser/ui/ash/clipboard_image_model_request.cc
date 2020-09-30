@@ -73,11 +73,19 @@ void ClipboardImageModelRequest::Start(Params&& params) {
 
   timeout_timer_.Start(FROM_HERE, base::TimeDelta::FromSeconds(5), this,
                        &ClipboardImageModelRequest::OnTimeout);
-  std::string encoded_html;
+
+  // Begin the document with the proper charset, this should prevent strange
+  // looking characters from showing up in the render in some cases.
+  std::string html_document(
+      "<html><head><meta charset=\"UTF-8\"></meta></head><body>");
   // Hide overflow to prevent scroll bars from showing up, which occurs when the
   // rendered HTML takes up more space than 'kWebContentsBounds'.
-  params.html_markup.append("<style>body{overflow:hidden;}</style>");
-  base::Base64Encode(params.html_markup, &encoded_html);
+  html_document.append("<style>body{overflow:hidden;}</style>");
+  html_document.append(params.html_markup);
+  html_document.append("</body></html>");
+
+  std::string encoded_html;
+  base::Base64Encode(html_document, &encoded_html);
   constexpr char kDataURIPrefix[] = "data:text/html;base64,";
   web_view_->GetWebContents()->GetController().LoadURLWithParams(
       content::NavigationController::LoadURLParams(
