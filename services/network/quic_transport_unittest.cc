@@ -518,7 +518,8 @@ TEST_F(QuicTransportTest, EchoOnUnidirectionalStreams) {
   EXPECT_EQ(0u, resets_sent.size());
 }
 
-TEST_F(QuicTransportTest, EchoOnBidirectionalStream) {
+// crbug.com/1129847: disabled because it is flaky.
+TEST_F(QuicTransportTest, DISABLED_EchoOnBidirectionalStream) {
   base::RunLoop run_loop_for_handshake;
   mojo::PendingRemote<mojom::QuicTransportHandshakeClient> handshake_client;
   TestHandshakeClient test_handshake_client(
