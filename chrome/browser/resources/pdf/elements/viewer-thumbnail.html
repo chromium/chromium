@@ -15,13 +15,18 @@
     margin-inline-start: auto;
   }
 
-  :host(:focus) #thumbnail {
-    box-shadow: 0 0 0 2px var(--focus-border-color);
-  }
-
   :host([is-active]) #thumbnail {
     --active-background-color: white;
     background-color: var(--active-background-color);
+    box-shadow: 0 0 0 6px var(--focus-border-color);
+  }
+
+  :host-context(.focus-outline-visible):host(:focus) #thumbnail {
+    box-shadow: 0 0 0 2px var(--focus-border-color);
+  }
+
+  :host-context(.focus-outline-visible):host([is-active]:focus) #thumbnail {
+    box-shadow: 0 0 0 8px var(--focus-border-color);
   }
 
   canvas {

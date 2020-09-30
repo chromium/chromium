@@ -4,6 +4,7 @@
 
 import './shared-css.js';
 
+import {FocusOutlineManager} from 'chrome://resources/js/cr/ui/focus_outline_manager.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 // The maximum widths of thumbnails for each layout (px).
@@ -39,6 +40,8 @@ export class ViewerThumbnailElement extends PolymerElement {
     super();
 
     this.addEventListener('keydown', this.onKeydown_);
+
+    FocusOutlineManager.forDocument(document);
   }
 
   /** @param {!ImageData} imageData */
