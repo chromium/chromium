@@ -47,6 +47,7 @@ bool IsVoiceEntryPoint(AssistantEntryPoint entry_point, bool prefer_voice) {
     case AssistantEntryPoint::kProactiveSuggestions:
     case AssistantEntryPoint::kSetup:
     case AssistantEntryPoint::kStylus:
+    case AssistantEntryPoint::kBloom:
       return false;
   }
 }

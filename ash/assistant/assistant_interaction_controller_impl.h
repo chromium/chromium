@@ -70,6 +70,7 @@ class AssistantInteractionControllerImpl
                             bool allow_tts,
                             AssistantQuerySource query_source) override;
   void StartBloomInteraction() override;
+  void ShowBloomResult(const std::string& html) override;
 
   // AssistantControllerObserver:
   void OnAssistantControllerConstructed() override;

@@ -23,6 +23,8 @@
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/assistant/assistant_controller_impl.h"
 #include "ash/autoclick/autoclick_controller.h"
+#include "ash/bloom/bloom_ui_controller_impl.h"
+#include "ash/bloom/bloom_ui_delegate_impl.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/child_accounts/parent_access_controller_impl.h"
 #include "ash/clipboard/clipboard_history_controller_impl.h"
@@ -174,10 +176,12 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
+#include "chromeos/components/bloom/public/cpp/bloom_controller.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/dbus/initialize_dbus_client.h"
 #include "chromeos/dbus/power/power_policy_controller.h"
 #include "chromeos/dbus/usb/usbguard_client.h"
+#include "chromeos/services/assistant/public/cpp/features.h"
 #include "chromeos/system/devicemode.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -1108,6 +1112,9 @@ void Shell::Init(
   // used by the latter.
   if (chromeos::features::IsAmbientModeEnabled())
     ambient_controller_ = std::make_unique<AmbientController>();
+
+  if (chromeos::assistant::features::IsBloomEnabled())
+    bloom_ui_controller_ = std::make_unique<BloomUiControllerImpl>();
 
   home_screen_controller_ = std::make_unique<HomeScreenController>();
 

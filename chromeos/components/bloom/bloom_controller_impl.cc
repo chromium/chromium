@@ -7,6 +7,7 @@
 #include "base/logging.h"
 #include "chromeos/components/bloom/bloom_interaction.h"
 #include "chromeos/components/bloom/public/cpp/bloom_screenshot_delegate.h"
+#include "chromeos/components/bloom/public/cpp/bloom_ui_delegate.h"
 #include "chromeos/components/bloom/server/bloom_server_proxy.h"
 
 namespace chromeos {
@@ -14,19 +15,32 @@ namespace bloom {
 
 BloomControllerImpl::BloomControllerImpl(
     signin::IdentityManager* identity_manager,
-    std::unique_ptr<BloomScreenshotDelegate> screenshot_delegate,
     std::unique_ptr<BloomServerProxy> server_proxy)
     : identity_manager_(identity_manager),
-      screenshot_delegate_(std::move(screenshot_delegate)),
+      screenshot_delegate_(nullptr),
+      ui_delegate_(nullptr),
       server_proxy_(std::move(server_proxy)) {
   DCHECK(identity_manager_);
-  DCHECK(screenshot_delegate_);
   DCHECK(server_proxy_);
 }
 
 BloomControllerImpl::~BloomControllerImpl() = default;
 
+void BloomControllerImpl::SetScreenshotDelegate(
+    std::unique_ptr<BloomScreenshotDelegate> value) {
+  DCHECK(value);
+  screenshot_delegate_ = std::move(value);
+}
+
+void BloomControllerImpl::SetUiDelegate(
+    std::unique_ptr<BloomUiDelegate> value) {
+  DCHECK(value);
+  ui_delegate_ = std::move(value);
+}
+
 void BloomControllerImpl::StartInteraction() {
+  DCHECK(screenshot_delegate_);
+  DCHECK(ui_delegate_);
   DCHECK(!current_interaction_);
 
   DVLOG(1) << "Starting Bloom interaction";
@@ -34,8 +48,7 @@ void BloomControllerImpl::StartInteraction() {
   current_interaction_ = std::make_unique<BloomInteraction>(this);
   current_interaction_->Start();
 
-  for (auto& observer : interaction_observers_)
-    observer.OnInteractionStarted();
+  ui_delegate_->OnInteractionStarted();
 }
 
 bool BloomControllerImpl::HasInteraction() const {
@@ -43,13 +56,11 @@ bool BloomControllerImpl::HasInteraction() const {
 }
 
 void BloomControllerImpl::ShowUI() {
-  for (auto& observer : interaction_observers_)
-    observer.OnShowUI();
+  ui_delegate_->OnShowUI();
 }
 
 void BloomControllerImpl::ShowResult(const std::string& result) {
-  for (auto& observer : interaction_observers_)
-    observer.OnShowResult(result);
+  ui_delegate_->OnShowResult(result);
 }
 
 void BloomControllerImpl::StopInteraction(
@@ -61,25 +72,7 @@ void BloomControllerImpl::StopInteraction(
 
   current_interaction_ = nullptr;
 
-  for (auto& observer : interaction_observers_)
-    observer.OnInteractionFinished(resolution);
-}
-
-void BloomControllerImpl::AddObserver(BloomInteractionObserver* observer) {
-  DCHECK(observer);
-  interaction_observers_.AddObserver(observer);
-}
-
-void BloomControllerImpl::AddObserver(
-    std::unique_ptr<BloomInteractionObserver> observer) {
-  AddObserver(observer.get());
-  owned_interaction_observers_.push_back(std::move(observer));
-}
-
-void BloomControllerImpl::SetScreenshotDelegateForTesting(
-    std::unique_ptr<BloomScreenshotDelegate> screenshot_delegate) {
-  DCHECK(screenshot_delegate);
-  screenshot_delegate_ = std::move(screenshot_delegate);
+  ui_delegate_->OnInteractionFinished(resolution);
 }
 
 }  // namespace bloom

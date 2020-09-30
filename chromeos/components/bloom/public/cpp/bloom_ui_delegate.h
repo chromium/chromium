@@ -2,19 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_COMPONENTS_BLOOM_BLOOM_INTERACTION_OBSERVER_H_
-#define CHROMEOS_COMPONENTS_BLOOM_BLOOM_INTERACTION_OBSERVER_H_
+#ifndef CHROMEOS_COMPONENTS_BLOOM_PUBLIC_CPP_BLOOM_UI_DELEGATE_H_
+#define CHROMEOS_COMPONENTS_BLOOM_PUBLIC_CPP_BLOOM_UI_DELEGATE_H_
 
-#include "base/observer_list_types.h"
 #include "chromeos/components/bloom/public/cpp/bloom_interaction_resolution.h"
 
 namespace chromeos {
 namespace bloom {
 
-// Observer of the Bloom interaction events.
-class BloomInteractionObserver : public base::CheckedObserver {
+class BloomUiDelegate {
  public:
-  ~BloomInteractionObserver() override = default;
+  virtual ~BloomUiDelegate() = default;
 
   virtual void OnInteractionStarted() = 0;
 
@@ -30,4 +28,4 @@ class BloomInteractionObserver : public base::CheckedObserver {
 }  // namespace bloom
 }  // namespace chromeos
 
-#endif  // CHROMEOS_COMPONENTS_BLOOM_BLOOM_INTERACTION_OBSERVER_H_
+#endif  // CHROMEOS_COMPONENTS_BLOOM_PUBLIC_CPP_BLOOM_UI_DELEGATE_H_

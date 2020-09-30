@@ -44,15 +44,6 @@ class ScopedBloomController : public BloomController {
     return resolution_;
   }
 
-  void AddObserver(
-      chromeos::bloom::BloomInteractionObserver* observer) override {
-    NOTIMPLEMENTED();
-  }
-  void AddObserver(std::unique_ptr<chromeos::bloom::BloomInteractionObserver>
-                       observer) override {
-    NOTIMPLEMENTED();
-  }
-
  private:
   bool has_interaction_ = false;
   BloomInteractionResolution resolution_;

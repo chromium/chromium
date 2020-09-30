@@ -150,7 +150,21 @@ void AssistantInteractionControllerImpl::StartTextInteraction(
 }
 
 void AssistantInteractionControllerImpl::StartBloomInteraction() {
-  // TODO(jeroendh): Implement.
+  // TODO(jeroendh): Test.
+  StopActiveInteraction(false);
+
+  AssistantUiController::Get()->ShowUi(AssistantEntryPoint::kBloom);
+
+  OnInteractionStarted(AssistantInteractionMetadata(
+      AssistantInteractionType::kText, AssistantQuerySource::kBloom,
+      /*query=*/"processing query"));
+}
+
+void AssistantInteractionControllerImpl::ShowBloomResult(
+    const std::string& html) {
+  // TODO(jeroendh) ensure we're in a bloom interaction
+
+  OnHtmlResponse(html, /*fallback=*/"");
 }
 
 void AssistantInteractionControllerImpl::OnAssistantControllerConstructed() {

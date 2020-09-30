@@ -13,8 +13,6 @@
 namespace chromeos {
 namespace bloom {
 
-class BloomInteractionObserver;
-
 // Main controller for the Bloom integration.
 class COMPONENT_EXPORT(BLOOM) BloomController {
  public:
@@ -31,10 +29,6 @@ class COMPONENT_EXPORT(BLOOM) BloomController {
   virtual void StartInteraction() = 0;
   virtual bool HasInteraction() const = 0;
   virtual void StopInteraction(BloomInteractionResolution resolution) = 0;
-
-  virtual void AddObserver(BloomInteractionObserver* observer) = 0;
-  virtual void AddObserver(
-      std::unique_ptr<BloomInteractionObserver> observer) = 0;
 };
 
 }  // namespace bloom

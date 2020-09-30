@@ -11,6 +11,9 @@ component("cpp") {
     "bloom_interaction_resolution.cc",
     "bloom_interaction_resolution.h",
     "bloom_screenshot_delegate.h",
+    "bloom_ui_controller.cc",
+    "bloom_ui_controller.h",
+    "bloom_ui_delegate.h",
   ]
 
   deps = [ "//base" ]

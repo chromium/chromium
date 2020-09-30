@@ -43,6 +43,7 @@ class ASH_PUBLIC_EXPORT AssistantInteractionController {
 
   // Start Bloom interaction.
   virtual void StartBloomInteraction() = 0;
+  virtual void ShowBloomResult(const std::string& html) = 0;
 
  protected:
   AssistantInteractionController();

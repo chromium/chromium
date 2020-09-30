@@ -22,7 +22,6 @@ namespace chromeos {
 namespace bloom {
 
 class BloomController;
-class BloomScreenshotDelegate;
 
 class COMPONENT_EXPORT(BLOOM) BloomControllerFactory {
  public:
@@ -30,8 +29,7 @@ class COMPONENT_EXPORT(BLOOM) BloomControllerFactory {
   static std::unique_ptr<BloomController> Create(
       std::unique_ptr<network::PendingSharedURLLoaderFactory>
           url_loader_factory,
-      signin::IdentityManager* identity_manager,
-      std::unique_ptr<BloomScreenshotDelegate> screenshot_delegate);
+      signin::IdentityManager* identity_manager);
 };
 
 }  // namespace bloom

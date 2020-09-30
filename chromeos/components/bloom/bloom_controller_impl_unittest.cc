@@ -4,9 +4,9 @@
 
 #include "chromeos/components/bloom/bloom_controller_impl.h"
 #include "base/test/task_environment.h"
-#include "chromeos/components/bloom/bloom_interaction_observer.h"
 #include "chromeos/components/bloom/public/cpp/bloom_interaction_resolution.h"
 #include "chromeos/components/bloom/public/cpp/bloom_screenshot_delegate.h"
+#include "chromeos/components/bloom/public/cpp/bloom_ui_delegate.h"
 #include "chromeos/components/bloom/server/bloom_server_proxy.h"
 #include "chromeos/services/assistant/public/shared/constants.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -59,7 +59,7 @@ class ScreenshotDelegateMock : public BloomScreenshotDelegate {
   Callback callback_;
 };
 
-class BloomInteractionObserverMock : public BloomInteractionObserver {
+class BloomUiDelegateMock : public BloomUiDelegate {
  public:
   MOCK_METHOD(void, OnInteractionStarted, ());
   MOCK_METHOD(void, OnShowUI, ());
@@ -71,7 +71,7 @@ class BloomInteractionObserverMock : public BloomInteractionObserver {
 
 // Helper class that will track the state of the Bloom interaction,
 // So we can easily test if interactions are started/stopped correctly.
-class BloomInteractionTracker : public BloomInteractionObserver {
+class BloomInteractionTracker : public BloomUiDelegate {
  public:
   void OnInteractionStarted() override {
     EXPECT_FALSE(has_interaction_);
@@ -152,6 +152,11 @@ void PrintTo(const BloomInteractionResolution& value, std::ostream* output) {
 class BloomControllerImplTest : public testing::Test {
  public:
   void SetUp() override {
+    controller_.SetScreenshotDelegate(
+        std::make_unique<NiceMock<ScreenshotDelegateMock>>());
+    controller_.SetUiDelegate(
+        std::make_unique<NiceMock<BloomUiDelegateMock>>());
+
     identity_test_env_.MakePrimaryAccountAvailable(kEmail);
   }
 
@@ -185,17 +190,17 @@ class BloomControllerImplTest : public testing::Test {
         controller_.screenshot_delegate());
   }
 
-  BloomInteractionObserverMock* AddInteractionObserverMock() {
-    auto observer = std::make_unique<NiceMock<BloomInteractionObserverMock>>();
-    auto* raw_ptr = observer.get();
-    controller().AddObserver(std::move(observer));
+  BloomUiDelegateMock* AddUiDelegateMock() {
+    auto delegate = std::make_unique<NiceMock<BloomUiDelegateMock>>();
+    auto* raw_ptr = delegate.get();
+    controller().SetUiDelegate(std::move(delegate));
     return raw_ptr;
   }
 
   BloomInteractionTracker* AddInteractionTracker() {
-    auto observer = std::make_unique<BloomInteractionTracker>();
-    auto* raw_ptr = observer.get();
-    controller().AddObserver(std::move(observer));
+    auto delegate = std::make_unique<BloomInteractionTracker>();
+    auto* raw_ptr = delegate.get();
+    controller().SetUiDelegate(std::move(delegate));
     return raw_ptr;
   }
 
@@ -219,7 +224,6 @@ class BloomControllerImplTest : public testing::Test {
 
   BloomControllerImpl controller_{
       identity_test_env_.identity_manager(),
-      std::make_unique<NiceMock<ScreenshotDelegateMock>>(),
       std::make_unique<NiceMock<BloomServerProxyMock>>()};
 };
 
@@ -292,56 +296,54 @@ TEST_F(BloomControllerImplTest, ShouldAbortWhenBloomServerFails) {
 
 ////////////////////////////////////////////////////////////////////////////////
 ///
-/// Below are the tests to ensure the BloomInteractionObserver is invoked.
+/// Below are the tests to ensure the BloomUiDelegate is invoked.
 ///
 ////////////////////////////////////////////////////////////////////////////////
 
-using BloomInteractionObserverTest = BloomControllerImplTest;
+using BloomUiDelegateTest = BloomControllerImplTest;
 
-TEST_F(BloomInteractionObserverTest,
+TEST_F(BloomUiDelegateTest,
        ShouldCallOnInteractionStartedWhenBloomInteractionStarts) {
-  auto* observer = AddInteractionObserverMock();
-  EXPECT_CALL(*observer, OnInteractionStarted);
+  auto* delegate = AddUiDelegateMock();
+  EXPECT_CALL(*delegate, OnInteractionStarted);
 
   controller().StartInteraction();
 }
 
-TEST_F(BloomInteractionObserverTest,
+TEST_F(BloomUiDelegateTest,
        ShouldCallOnShowUIWhenAccessTokenAndScreenshotAreReady) {
-  auto* observer = AddInteractionObserverMock();
+  auto* delegate = AddUiDelegateMock();
 
-  EXPECT_CALL(*observer, OnShowUI);
+  EXPECT_CALL(*delegate, OnShowUI);
 
   controller().StartInteraction();
   IssueAccessToken();
   screenshot_delegate_mock().SendScreenshot();
 }
 
-TEST_F(BloomInteractionObserverTest,
-       ShouldNotCallOnShowUIBeforeAccessTokenArrives) {
-  auto* observer = AddInteractionObserverMock();
+TEST_F(BloomUiDelegateTest, ShouldNotCallOnShowUIBeforeAccessTokenArrives) {
+  auto* delegate = AddUiDelegateMock();
 
-  EXPECT_NO_CALLS(*observer, OnShowUI);
+  EXPECT_NO_CALLS(*delegate, OnShowUI);
 
   controller().StartInteraction();
   screenshot_delegate_mock().SendScreenshot();
 }
 
-TEST_F(BloomInteractionObserverTest,
-       ShouldNotCallOnShowUIBeforeScreenshotArrives) {
-  auto* observer = AddInteractionObserverMock();
+TEST_F(BloomUiDelegateTest, ShouldNotCallOnShowUIBeforeScreenshotArrives) {
+  auto* delegate = AddUiDelegateMock();
 
-  EXPECT_NO_CALLS(*observer, OnShowUI);
+  EXPECT_NO_CALLS(*delegate, OnShowUI);
 
   controller().StartInteraction();
   IssueAccessToken();
 }
 
-TEST_F(BloomInteractionObserverTest, ShouldForwardServerResponse) {
-  auto* observer = AddInteractionObserverMock();
+TEST_F(BloomUiDelegateTest, ShouldForwardServerResponse) {
+  auto* delegate = AddUiDelegateMock();
   StartInteractionAndSendAccessTokenAndScreenshot();
 
-  EXPECT_CALL(*observer, OnShowResult("<html>response</html>"));
+  EXPECT_CALL(*delegate, OnShowResult("<html>response</html>"));
 
   bloom_server().SendResponse("<html>response</html>");
 }

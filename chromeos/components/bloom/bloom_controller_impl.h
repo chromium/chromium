@@ -6,10 +6,7 @@
 #define CHROMEOS_COMPONENTS_BLOOM_BLOOM_CONTROLLER_IMPL_H_
 
 #include <memory>
-#include <vector>
 
-#include "base/observer_list.h"
-#include "chromeos/components/bloom/bloom_interaction_observer.h"
 #include "chromeos/components/bloom/public/cpp/bloom_controller.h"
 
 namespace signin {
@@ -22,13 +19,12 @@ namespace bloom {
 class BloomInteraction;
 class BloomScreenshotDelegate;
 class BloomServerProxy;
+class BloomUiDelegate;
 
 class BloomControllerImpl : public BloomController {
  public:
-  BloomControllerImpl(
-      signin::IdentityManager* identity_manager,
-      std::unique_ptr<BloomScreenshotDelegate> screenshot_delegate,
-      std::unique_ptr<BloomServerProxy> server_proxy);
+  BloomControllerImpl(signin::IdentityManager* identity_manager,
+                      std::unique_ptr<BloomServerProxy> server_proxy);
   BloomControllerImpl(const BloomControllerImpl&) = delete;
   BloomControllerImpl& operator=(const BloomControllerImpl&) = delete;
   ~BloomControllerImpl() override;
@@ -38,11 +34,12 @@ class BloomControllerImpl : public BloomController {
   bool HasInteraction() const override;
   void StopInteraction(BloomInteractionResolution resolution) override;
 
-  void AddObserver(BloomInteractionObserver* observer) override;
-  void AddObserver(std::unique_ptr<BloomInteractionObserver> observer) override;
-
   void ShowUI();
   void ShowResult(const std::string& result);
+
+  void SetScreenshotDelegate(
+      std::unique_ptr<BloomScreenshotDelegate> delegate);
+  void SetUiDelegate(std::unique_ptr<BloomUiDelegate> delegate);
 
   BloomScreenshotDelegate* screenshot_delegate() {
     return screenshot_delegate_.get();
@@ -50,17 +47,11 @@ class BloomControllerImpl : public BloomController {
   BloomServerProxy* server_proxy() { return server_proxy_.get(); }
   signin::IdentityManager* identity_manager() { return identity_manager_; }
 
-  void SetScreenshotDelegateForTesting(
-      std::unique_ptr<BloomScreenshotDelegate>);
-
  private:
   signin::IdentityManager* const identity_manager_;
   std::unique_ptr<BloomScreenshotDelegate> screenshot_delegate_;
+  std::unique_ptr<BloomUiDelegate> ui_delegate_;
   std::unique_ptr<BloomServerProxy> server_proxy_;
-
-  base::ObserverList<BloomInteractionObserver> interaction_observers_;
-  std::vector<std::unique_ptr<BloomInteractionObserver>>
-      owned_interaction_observers_;
 
   std::unique_ptr<BloomInteraction> current_interaction_;
 };
