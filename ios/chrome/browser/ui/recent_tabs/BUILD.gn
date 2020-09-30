@@ -154,6 +154,7 @@ source_set("app_support+eg2") {
     "//base/test:test_support",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/ui/list_model",
+    "//ios/chrome/browser/ui/util:multiwindow_util",
     "//ios/chrome/test/app:test_support",
   ]
 }

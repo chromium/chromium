@@ -308,11 +308,13 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
       level > SceneActivationLevelBackground && !self.hasInitializedUI;
   if (initializingUIInColdStart) {
     [self initializeUI];
-    if (@available(iOS 13, *)) {
-      // Add the scene to the list of connected scene, to restore in case of
-      // crashes.
-      [[PreviousSessionInfo sharedInstance]
-          addSceneSessionID:sceneState.scene.session.persistentIdentifier];
+    if (IsMultiwindowSupported()) {
+      if (@available(iOS 13, *)) {
+        // Add the scene to the list of connected scene, to restore in case of
+        // crashes.
+        [[PreviousSessionInfo sharedInstance]
+            addSceneSessionID:sceneState.scene.session.persistentIdentifier];
+      }
     }
   }
 
@@ -359,9 +361,11 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   }
 
   if (self.hasInitializedUI && level == SceneActivationLevelUnattached) {
-    if (@available(iOS 13, *)) {
-      [[PreviousSessionInfo sharedInstance]
-          removeSceneSessionID:sceneState.scene.session.persistentIdentifier];
+    if (IsMultiwindowSupported()) {
+      if (@available(iOS 13, *)) {
+        [[PreviousSessionInfo sharedInstance]
+            removeSceneSessionID:sceneState.scene.session.persistentIdentifier];
+      }
     }
     [self teardownUI];
   }
@@ -1585,14 +1589,17 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 - (BOOL)shouldOpenNTPTabOnActivationOfBrowser:(Browser*)browser {
   // Check if there are pending actions that would result in opening a new tab.
   // In that case, it is not useful to open another tab.
-  if (@available(iOS 13, *)) {
-    for (NSUserActivity* activity in self.sceneState.connectionOptions
-             .userActivities) {
-      if (ActivityIsURLLoad(activity)) {
-        return NO;
+  if (IsSceneStartupSupported()) {
+    if (@available(iOS 13, *)) {
+      for (NSUserActivity* activity in self.sceneState.connectionOptions
+               .userActivities) {
+        if (ActivityIsURLLoad(activity)) {
+          return NO;
+        }
       }
     }
   }
+
   if (self.startupParameters) {
     return NO;
   }

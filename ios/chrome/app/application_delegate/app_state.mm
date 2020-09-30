@@ -171,13 +171,18 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
     _mainApplicationDelegate = applicationDelegate;
     _appCommandDispatcher = [[CommandDispatcher alloc] init];
 
-    if (@available(iOS 13, *)) {
-      // Subscribe to scene connection notifications.
-      [[NSNotificationCenter defaultCenter]
-          addObserver:self
-             selector:@selector(sceneWillConnect:)
-                 name:UISceneWillConnectNotification
-               object:nil];
+    // Subscribe to scene-related notifications when using scenes.
+    // Note these are also sent when not using scenes, so avoid subscribing to
+    // them unless necessary.
+    if (IsSceneStartupSupported()) {
+      if (@available(iOS 13, *)) {
+        // Subscribe to scene connection notifications.
+        [[NSNotificationCenter defaultCenter]
+            addObserver:self
+               selector:@selector(sceneWillConnect:)
+                   name:UISceneWillConnectNotification
+                 object:nil];
+      }
     }
   }
   return self;
@@ -696,6 +701,7 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
 }
 
 - (void)sceneWillConnect:(NSNotification*)notification {
+  DCHECK(IsSceneStartupSupported());
   if (@available(iOS 13, *)) {
     UIWindowScene* scene =
         base::mac::ObjCCastStrict<UIWindowScene>(notification.object);
