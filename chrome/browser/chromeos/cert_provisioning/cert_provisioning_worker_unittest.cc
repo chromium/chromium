@@ -4,6 +4,9 @@
 
 #include "chrome/browser/chromeos/cert_provisioning/cert_provisioning_worker.h"
 
+#include <memory>
+#include <string>
+
 #include "base/base64.h"
 #include "base/callback.h"
 #include "base/json/json_string_value_serializer.h"
@@ -19,6 +22,9 @@
 #include "chrome/browser/chromeos/cert_provisioning/cert_provisioning_metrics.h"
 #include "chrome/browser/chromeos/cert_provisioning/cert_provisioning_test_helpers.h"
 #include "chrome/browser/chromeos/cert_provisioning/mock_cert_provisioning_invalidator.h"
+#include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_manager.h"
+#include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_manager_user_service.h"
+#include "chrome/browser/chromeos/platform_keys/key_permissions/mock_key_permissions_manager.h"
 #include "chrome/browser/chromeos/platform_keys/mock_platform_keys_service.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys_service.h"
@@ -307,6 +313,32 @@ const std::string& GetPublicKey() {
         .WillOnce(RunOnceCallback<2>(platform_keys::Status::kSuccess)); \
   }
 
+// A fake KeyPermissionsManagerUserService which returns a KeyPermissionsManager
+// pointer passed to its constructor.
+class FakeKeyPermissionsManagerUserService
+    : public platform_keys::KeyPermissionsManagerUserService {
+ public:
+  FakeKeyPermissionsManagerUserService(
+      platform_keys::KeyPermissionsManager* key_permissions_manager)
+      : key_permissions_manager_(key_permissions_manager) {}
+  ~FakeKeyPermissionsManagerUserService() override = default;
+
+  platform_keys::KeyPermissionsManager* key_permissions_manager() override {
+    return key_permissions_manager_;
+  }
+
+  static std::unique_ptr<KeyedService> Build(
+      platform_keys::KeyPermissionsManager* key_permissions_manager,
+      content::BrowserContext* browser_context) {
+    return std::make_unique<FakeKeyPermissionsManagerUserService>(
+        key_permissions_manager);
+  }
+
+ private:
+  platform_keys::KeyPermissionsManager* key_permissions_manager_;
+};
+
+// A mock for observing the result callback of the worker.
 class CallbackObserver {
  public:
   MOCK_METHOD(void,
@@ -348,6 +380,12 @@ class CertProvisioningWorkerTest : public ::testing::Test {
     ASSERT_TRUE(platform_keys_service_);
     platform_keys::PlatformKeysServiceFactory::GetInstance()
         ->SetDeviceWideServiceForTesting(platform_keys_service_);
+
+    platform_keys::KeyPermissionsManagerUserServiceFactory::GetInstance()
+        ->SetTestingFactory(
+            GetProfile(),
+            base::BindRepeating(&FakeKeyPermissionsManagerUserService::Build,
+                                &key_permissions_manager_));
 
     // Only explicitly expected removals are allowed.
     EXPECT_CALL(*platform_keys_service_, RemoveCertificate).Times(0);
@@ -404,6 +442,7 @@ class CertProvisioningWorkerTest : public ::testing::Test {
 
   policy::MockCloudPolicyClient cloud_policy_client_;
   platform_keys::MockPlatformKeysService* platform_keys_service_ = nullptr;
+  StrictMock<platform_keys::MockKeyPermissionsManager> key_permissions_manager_;
 };
 
 // Checks that the worker makes all necessary requests to other modules during
@@ -442,6 +481,9 @@ TEST_F(CertProvisioningWorkerTest, Success) {
                                                     /*callback=*/_));
 
     EXPECT_REGISTER_KEY_OK(*mock_tpm_challenge_key, StartRegisterKeyStep);
+
+    EXPECT_CALL(key_permissions_manager_,
+                SetCorporateKey(GetPublicKey(), platform_keys::TokenId::kUser));
 
     EXPECT_SET_ATTRIBUTE_FOR_KEY_OK(SetAttributeForKey(
         platform_keys::TokenId::kUser, GetPublicKey(),
@@ -508,6 +550,9 @@ TEST_F(CertProvisioningWorkerTest, NoVaSuccess) {
     EXPECT_START_CSR_OK_WITHOUT_VA(ClientCertProvisioningStartCsr(
         kCertScopeStrUser, kCertProfileId, kCertProfileVersion, GetPublicKey(),
         /*callback=*/_));
+
+    EXPECT_CALL(key_permissions_manager_,
+                SetCorporateKey(GetPublicKey(), platform_keys::TokenId::kUser));
 
     EXPECT_SET_ATTRIBUTE_FOR_KEY_OK(SetAttributeForKey(
         platform_keys::TokenId::kUser, GetPublicKey(),
@@ -584,6 +629,10 @@ TEST_F(CertProvisioningWorkerTest, TryLaterManualRetry) {
                                                     /*callback=*/_));
 
     EXPECT_REGISTER_KEY_OK(*mock_tpm_challenge_key, StartRegisterKeyStep);
+
+    // Note: No call to KeyPermissionsManager::SetCorporateKey, because it is
+    // only performed for platform_keys::TokenId::kUser, but this test works
+    // with the system token.
 
     EXPECT_SET_ATTRIBUTE_FOR_KEY_OK(SetAttributeForKey(
         platform_keys::TokenId::kSystem, GetPublicKey(),
@@ -691,6 +740,9 @@ TEST_F(CertProvisioningWorkerTest, TryLaterWait) {
                                                     /*callback=*/_));
 
     EXPECT_REGISTER_KEY_OK(*mock_tpm_challenge_key, StartRegisterKeyStep);
+
+    EXPECT_CALL(key_permissions_manager_,
+                SetCorporateKey(GetPublicKey(), platform_keys::TokenId::kUser));
 
     EXPECT_SET_ATTRIBUTE_FOR_KEY_OK(SetAttributeForKey(
         platform_keys::TokenId::kUser, GetPublicKey(),
@@ -976,6 +1028,9 @@ TEST_F(CertProvisioningWorkerTest, RemoveRegisteredKey) {
 
     EXPECT_REGISTER_KEY_OK(*mock_tpm_challenge_key, StartRegisterKeyStep);
 
+    EXPECT_CALL(key_permissions_manager_,
+                SetCorporateKey(GetPublicKey(), platform_keys::TokenId::kUser));
+
     EXPECT_SET_ATTRIBUTE_FOR_KEY_FAIL(SetAttributeForKey(
         platform_keys::TokenId::kUser, GetPublicKey(),
         platform_keys::KeyAttributeType::kCertificateProvisioningId,
@@ -1126,6 +1181,9 @@ TEST_F(CertProvisioningWorkerTest, SerializationSuccess) {
                                                     /*callback=*/_));
 
     EXPECT_REGISTER_KEY_OK(*mock_tpm_challenge_key, StartRegisterKeyStep);
+
+    EXPECT_CALL(key_permissions_manager_,
+                SetCorporateKey(GetPublicKey(), platform_keys::TokenId::kUser));
 
     EXPECT_SET_ATTRIBUTE_FOR_KEY_OK(SetAttributeForKey(
         platform_keys::TokenId::kUser, GetPublicKey(),

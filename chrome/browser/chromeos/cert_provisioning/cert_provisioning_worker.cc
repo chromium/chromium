@@ -15,6 +15,8 @@
 #include "chrome/browser/chromeos/cert_provisioning/cert_provisioning_invalidator.h"
 #include "chrome/browser/chromeos/cert_provisioning/cert_provisioning_metrics.h"
 #include "chrome/browser/chromeos/cert_provisioning/cert_provisioning_serializer.h"
+#include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_manager.h"
+#include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_manager_user_service.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys_service.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys_service_factory.h"
@@ -109,6 +111,26 @@ int GetStateOrderedIndex(CertProvisioningWorkerState state) {
       res -= 1;
   }
   return res;
+}
+
+// Marks the key |public_key_spki_der| as corporate. |profile| can be nullptr if
+// |scope| is CertScope::kDevice.
+void MarkKeyAsCorporate(CertScope scope,
+                        Profile* profile,
+                        const std::string& public_key_spki_der) {
+  // Device-wide keys are implicitly corporate, and there is currently no
+  // device-wide KeyPermissionsManager.
+  // TODO(https://crbug.com/1127284): Use the device-wide KeyPermissionsManager
+  // when it exists.
+  if (scope == CertScope::kDevice) {
+    return;
+  }
+  DCHECK(profile);
+
+  platform_keys::KeyPermissionsManagerUserServiceFactory::GetForBrowserContext(
+      profile)
+      ->key_permissions_manager()
+      ->SetCorporateKey(public_key_spki_der, GetPlatformKeysTokenId(scope));
 }
 
 }  // namespace
@@ -504,6 +526,8 @@ void CertProvisioningWorkerImpl::OnRegisterKeyDone(
 
 void CertProvisioningWorkerImpl::MarkKey() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  MarkKeyAsCorporate(cert_scope_, profile_, public_key_);
 
   platform_keys_service_->SetAttributeForKey(
       GetPlatformKeysTokenId(cert_scope_), public_key_,
