@@ -4,26 +4,83 @@
 
 #include "ash/system/holding_space/recent_files_container.h"
 
+#include <memory>
+
+#include "ash/public/cpp/holding_space/holding_space_client.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/holding_space/holding_space_model.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_provider.h"
 #include "ash/system/holding_space/holding_space_item_chip_view.h"
 #include "ash/system/holding_space/holding_space_item_chips_container.h"
 #include "ash/system/holding_space/holding_space_item_screenshot_view.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_popup_item_style.h"
+#include "base/bind.h"
 #include "base/containers/adapters.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
+#include "ui/views/controls/button/button.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/controls/separator.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/view_class_properties.h"
 
 namespace ash {
+namespace {
+
+void SetupLabel(views::Label* label) {
+  TrayPopupItemStyle(TrayPopupItemStyle::FontStyle::SUB_HEADER)
+      .SetupLabel(label);
+
+  label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
+}
+
+class DownloadsHeader : public views::Button {
+ public:
+  explicit DownloadsHeader() {
+    auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
+        views::BoxLayout::Orientation::kHorizontal));
+
+    SetPaintToLayer();
+    layer()->SetFillsBoundsOpaquely(false);
+
+    // Accessiblity
+    GetViewAccessibility().OverrideName(
+        l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_DOWNLOADS_TITLE));
+    GetViewAccessibility().OverrideRole(ax::mojom::Role::kButton);
+
+    auto* label = AddChildView(std::make_unique<views::Label>(
+        l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_DOWNLOADS_TITLE)));
+    SetupLabel(label);
+
+    layout->SetFlexForView(label, 1);
+
+    auto* chevron = AddChildView(std::make_unique<views::ImageView>());
+    chevron->EnableCanvasFlippingForRTLUI(true);
+
+    const SkColor icon_color = AshColorProvider::Get()->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kIconColorPrimary);
+    chevron->SetImage(CreateVectorIcon(
+        kChevronRightIcon, kHoldingSpaceDownloadsChevronIconSize, icon_color));
+
+    set_callback(base::BindRepeating(&DownloadsHeader::OpenDownloadsFolder,
+                                     base::Unretained(this)));
+  }
+
+ private:
+  void OpenDownloadsFolder() {
+    HoldingSpaceController::Get()->client()->OpenDownloads(base::DoNothing());
+  }
+};
+
+}  // namespace
 
 RecentFilesContainer::RecentFilesContainer(
     HoldingSpaceItemViewDelegate* delegate)
@@ -34,18 +91,11 @@ RecentFilesContainer::RecentFilesContainer(
       views::BoxLayout::Orientation::kVertical, kHoldingSpaceContainerPadding,
       kHoldingSpaceContainerChildSpacing));
 
-  auto setup_label = [](views::Label* label) {
-    TrayPopupItemStyle(TrayPopupItemStyle::FontStyle::SUB_HEADER)
-        .SetupLabel(label);
-
-    label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
-    label->SetPaintToLayer();
-    label->layer()->SetFillsBoundsOpaquely(false);
-  };
-
   auto* screenshots_label = AddChildView(std::make_unique<views::Label>(
       l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_SCREENSHOTS_TITLE)));
-  setup_label(screenshots_label);
+  SetupLabel(screenshots_label);
+  screenshots_label->SetPaintToLayer();
+  screenshots_label->layer()->SetFillsBoundsOpaquely(false);
 
   screenshots_container_ = AddChildView(std::make_unique<views::View>());
   screenshots_container_
@@ -56,9 +106,7 @@ RecentFilesContainer::RecentFilesContainer(
                   gfx::Insets(/*top=*/0, /*left=*/0, /*bottom=*/0,
                               /*right=*/kHoldingSpaceScreenshotSpacing));
 
-  auto* downloads_label = AddChildView(std::make_unique<views::Label>(
-      l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_DOWNLOADS_TITLE)));
-  setup_label(downloads_label);
+  AddChildView(std::make_unique<DownloadsHeader>());
 
   downloads_container_ =
       AddChildView(std::make_unique<HoldingSpaceItemChipsContainer>());

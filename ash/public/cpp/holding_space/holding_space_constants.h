@@ -25,6 +25,7 @@ constexpr int kHoldingSpaceChipsPerRow = 2;
 constexpr int kHoldingSpaceColumnSpacing = 8;
 constexpr int kHoldingSpaceColumnWidth = 160;
 constexpr int kHoldingSpaceCornerRadius = 8;
+constexpr int kHoldingSpaceDownloadsChevronIconSize = 16;
 constexpr int kHoldingSpacePinIconSize = 20;
 constexpr int kHoldingSpaceRowSpacing = 8;
 constexpr gfx::Insets kHoldingSpaceScreenshotPadding(8);
