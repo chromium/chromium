@@ -24,14 +24,22 @@ suite('CrComponentsEsimFlowUiTest', function() {
   });
 
   test('Forward navigation goes to final page', function() {
+    const qrCodePage = eSimPage.$$('#qr-code-page');
+    const finalPage = eSimPage.$$('#final-page');
+
+    assertTrue(!!qrCodePage);
+    assertTrue(!!finalPage);
+
     assertTrue(
-        eSimPage.selectedESimPageName_ === cellular_setup.ESimPageName.ESIM);
+        eSimPage.selectedESimPageName_ === cellular_setup.ESimPageName.ESIM &&
+        eSimPage.selectedESimPageName_ === qrCodePage.id);
 
     eSimPage.navigateForward();
     Polymer.dom.flush();
 
     assertTrue(
-        eSimPage.selectedESimPageName_ === cellular_setup.ESimPageName.FINAL);
+        eSimPage.selectedESimPageName_ === cellular_setup.ESimPageName.FINAL &&
+        eSimPage.selectedESimPageName_ === finalPage.id);
   });
 
 

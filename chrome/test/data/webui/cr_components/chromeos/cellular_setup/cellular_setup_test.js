@@ -36,7 +36,7 @@ suite('CrComponentsCellularSetupTest', function() {
     const selectionFlow = cellularSetupPage.$$('setup-selection-flow');
     assertTrue(!!selectionFlow);
 
-    const psimBtn = selectionFlow.$$('#psim-flow-ui-btn');
+    const psimBtn = selectionFlow.$$('#psimFlowUiBtn');
     assertTrue(!!psimBtn);
 
     psimBtn.click();

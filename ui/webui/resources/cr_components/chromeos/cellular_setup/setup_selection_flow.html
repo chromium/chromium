@@ -13,26 +13,73 @@
         --cr-card-radio-button-width: 224px
       }
 
-      #setup-flow-select-radio {
+      @media (min-width: 640px){
+        /* At above 640px card radio buttons should be aligned in a row  */
+        #setupFlowSelectRadio {
+          flex-direction: row;
+        }
+
+        .sim-icon-container {
+          height: 128px;
+        }
+
+        .sim-flow-ui-btn {
+         margin-bottom: 32px;
+        }
+      }
+
+      @media (max-width: 640px){
+        /* At below 640px card radio buttons should be aligned in a column  */
+        #setupFlowSelectRadio {
+          flex-direction: column;
+        }
+
+        .sim-flow-ui-btn {
+          margin-inline-end: 0;
+          margin-inline-start: 0;
+          width: 278px;
+        }
+
+        #psimFlowUiBtn {
+          margin-bottom: 8px;
+          margin-top: 16px;
+        }
+
+        #esimFlowUiBtn {
+          margin-bottom: 32px;
+          margin-top: 8px;
+        }
+
+        .flex-container {
+          display: flex;
+          flex-direction: row;
+        }
+
+        .sim-icon-container {
+          height: 64px;
+          margin: auto;
+          width: 128px;
+        }
+      }
+
+      #setupFlowSelectRadio {
         display: flex;
-        flex-direction: row;
         justify-content: center;
       }
 
       .sim-icon-container {
         background-position: center center;
         background-repeat: no-repeat;
-        background-size: cover;
-        height: 60px;
+        background-size: contain;
       }
 
-      #psim-icon-container {
+      #psimIconContainer {
         background-image: -webkit-image-set(
             url(psim_1x.png) 1x,
             url(psim_2x.png) 2x);
       }
 
-      #esim-icon-container {
+      #esimIconContainer {
         background-image: -webkit-image-set(
             url(esim_1x.png) 1x,
             url(esim_2x.png) 2x);
@@ -43,51 +90,61 @@
       }
       .sim-btn-title {
         font-weight: 600;  /* semibold */
-        margin-top: 15px;
+        margin-top: 16px;
       }
 
       .sim-btn-description {
-        margin-top: 10px;
+        margin-top: 8px;
       }
 
     </style>
     <cr-radio-group
         name="setup-flow-selection"
-        id="setup-flow-select-radio"
+        id="setupFlowSelectRadio"
         selected="{{setupFlowSelection_}}"
         on-selected-changed="onSetupFlowRadioSelectedChange_">
       <cr-card-radio-button
-          id="psim-flow-ui-btn"
+          id="psimFlowUiBtn"
           name="psim-flow-ui"
-          aria-labeledby="psim-btn-title"
-          aria-describedby="psim-btn-descritpion">
-        <div id="psim-icon-container" class="sim-icon-container"></div>
-        <div id="psim-btn-title"
-            class="sim-btn-title sim-btn-text"
-            aria-hidden="true">
-          [[i18n('pSimFlowSetup')]]
-        </div>
-        <div id="psim-btn-descritpion"
-            class="sim-btn-description sim-btn-text"
-            aria-hidden="true">
-          [[i18n('pSimFlowSetupMessage')]]
+          class="sim-flow-ui-btn"
+          aria-labeledby="psimBtnTitle"
+          aria-describedby="psimBtnDescritpion">
+        <div class="flex-container">
+          <div id="psimIconContainer" class="sim-icon-container"></div>
+          <div>
+            <div id="psimBtnTitle"
+                class="sim-btn-title sim-btn-text"
+                aria-hidden="true">
+              [[i18n('pSimFlowSetup')]]
+            </div>
+            <div id="psimBtnDescritpion"
+                class="sim-btn-description sim-btn-text"
+                aria-hidden="true">
+              [[i18n('pSimFlowSetupMessage')]]
+            </div>
+          </div>
         </div>
       </cr-card-radio-button>
       <cr-card-radio-button
-          id="esim-flow-ui-btn"
+          id="esimFlowUiBtn"
+          class="sim-flow-ui-btn"
           name="esim-flow-ui"
-          aria-labeledby="esim-btn-title"
-          aria-describedby="esim-btn-descritpion">
-        <div id="esim-icon-container" class="sim-icon-container"></div>
-        <div id="esim-btn-title"
-            class="sim-btn-title sim-btn-text"
-            aria-hidden="true">
-          [[i18n('eSimFlowSetup')]]
-        </div>
-        <div id="esim-btn-descrition"
-            class="sim-btn-description sim-btn-text"
-            aria-hidden="true">
-          [[i18n('eSimFlowSetupMessage')]]
+          aria-labeledby="esimBtnTitle"
+          aria-describedby="esimBtnDescrition">
+        <div class="flex-container">
+          <div id="esimIconContainer" class="sim-icon-container"></div>
+          <div>
+            <div id="esimBtnTitle"
+                class="sim-btn-title sim-btn-text"
+                aria-hidden="true">
+              [[i18n('eSimFlowSetup')]]
+            </div>
+            <div id="esimBtnDescrition"
+                class="sim-btn-description sim-btn-text"
+                aria-hidden="true">
+              [[i18n('eSimFlowSetupMessage')]]
+            </div>
+          </div>
         </div>
       </cr-card-radio-button>
     </cr-radio-group>

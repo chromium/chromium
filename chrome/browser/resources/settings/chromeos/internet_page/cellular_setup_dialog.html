@@ -11,6 +11,17 @@
 <dom-module id="os-settings-cellular-setup-dialog">
   <template>
     <style include="settings-shared">
+      @media (min-width: 640px){
+        :host {
+          --cr-dialog-width: 512px;
+        }
+      }
+
+      @media (max-width: 640px){
+        :host {
+          --cr-dialog-width: 320px;
+        }
+      }
     </style>
     <!-- TODO(crbug/1093185): Change close logic when CellularSetup embedded -->
     <cr-dialog id="dialog">
