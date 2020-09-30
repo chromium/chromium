@@ -230,8 +230,19 @@ void MediaNotificationDeviceSelectorView::ButtonPressed(
       ShowDevices();
 
     delegate_->OnDeviceSelectorViewSizeChanged();
-  } else if (GetDeviceEntryUI(sender)->GetType() == DeviceEntryUIType::kAudio) {
-    delegate_->OnAudioSinkChosen(GetDeviceEntryUI(sender)->raw_device_id());
+  } else {
+    auto* device_entry = GetDeviceEntryUI(sender);
+    switch (device_entry->GetType()) {
+      case DeviceEntryUIType::kAudio:
+        delegate_->OnAudioSinkChosen(device_entry->raw_device_id());
+        break;
+      case DeviceEntryUIType::kCast:
+        StartCastSession(static_cast<CastDeviceEntryView*>(device_entry));
+        break;
+      default:
+        NOTREACHED();
+        break;
+    }
   }
 }
 
@@ -296,8 +307,8 @@ void MediaNotificationDeviceSelectorView::UpdateVisibility() {
   delegate_->OnDeviceSelectorViewSizeChanged();
 }
 
-// TODO(muyaoxu@):Change the logic to work with Cast devices
-bool MediaNotificationDeviceSelectorView::ShouldBeVisible() {
+// TODO(muyaoxu):Change the logic to work with Cast devices.
+bool MediaNotificationDeviceSelectorView::ShouldBeVisible() const {
   if (!is_audio_device_switching_enabled_)
     return false;
   // The UI should be visible if there are more than one unique devices. That is
@@ -343,7 +354,7 @@ void MediaNotificationDeviceSelectorView::RemoveDevicesOfType(
 }
 
 DeviceEntryUI* MediaNotificationDeviceSelectorView::GetDeviceEntryUI(
-    views::View* view) {
+    views::View* view) const {
   auto it = device_entry_ui_map_.find(static_cast<views::Button*>(view)->tag());
   DCHECK(it != device_entry_ui_map_.end());
   return it->second;
@@ -366,4 +377,28 @@ void MediaNotificationDeviceSelectorView::OnModelUpdated(
 
 void MediaNotificationDeviceSelectorView::OnControllerInvalidated() {
   cast_controller_.reset();
+}
+
+void MediaNotificationDeviceSelectorView::StartCastSession(
+    CastDeviceEntryView* entry) {
+  if (!cast_controller_)
+    return;
+  const media_router::UIMediaSink& sink = entry->sink();
+  // Clicking on the device entry with an issue will clear the issue without
+  // starting casting.
+  if (sink.issue) {
+    cast_controller_->ClearIssue(sink.issue->id());
+    return;
+  }
+  // If users try to cast to a connected sink, a new cast session will get
+  // started and override the existing cast session.
+  if (sink.state == media_router::UIMediaSinkState::AVAILABLE ||
+      sink.state == media_router::UIMediaSinkState::CONNECTED) {
+    DCHECK(base::Contains(sink.cast_modes,
+                          media_router::MediaCastMode::PRESENTATION));
+    cast_controller_->StartCasting(sink.id,
+                                   media_router::MediaCastMode::PRESENTATION);
+
+    // TODO(muyaoxu):Add metrics to record start casting usage.
+  }
 }

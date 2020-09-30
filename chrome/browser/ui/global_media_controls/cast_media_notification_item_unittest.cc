@@ -101,7 +101,6 @@ class MockSessionController : public CastMediaSessionController {
 class CastMediaNotificationItemTest : public testing::Test {
  public:
   void SetUp() override {
-    EXPECT_CALL(notification_controller_, ShowNotification(kRouteId));
     auto session_controller = std::make_unique<MockSessionController>(
         mojo::Remote<media_router::mojom::MediaController>());
     session_controller_ = session_controller.get();

@@ -24,8 +24,10 @@ void ChangeEntryColor(views::ImageView* image_view,
                       const gfx::VectorIcon* icon,
                       SkColor foreground_color,
                       SkColor background_color) {
-  image_view->SetImage(
-      gfx::CreateVectorIcon(*icon, kDeviceIconSize, foreground_color));
+  if (image_view) {
+    image_view->SetImage(
+        gfx::CreateVectorIcon(*icon, kDeviceIconSize, foreground_color));
+  }
 
   title_view->SetDisplayedOnBackgroundColor(background_color);
   if (!title_view->GetText().empty()) {
@@ -122,12 +124,24 @@ CastDeviceEntryView::CastDeviceEntryView(views::ButtonListener* button_listener,
     : DeviceEntryUI(sink.id,
                     base::UTF16ToUTF8(sink.friendly_name),
                     CastDialogSinkButton::GetVectorIcon(sink.icon_type)),
-      CastDialogSinkButton(button_listener,
-                           sink,
-                           /* TODO(muyaoxu): button tag */ -1) {
-  // TODO(muyaoxu): change the sink's style based on its UIMediaSinkState
-  ChangeEntryColor(static_cast<views::ImageView*>(icon_view()), title(),
-                   subtitle(), icon_, foreground_color, background_color);
+      CastDialogSinkButton(button_listener, sink) {
+  switch (sink.state) {
+    // If the sink state is CONNECTING or DISCONNECTING, a throbber icon will
+    // show up. The icon's color remains unchanged.
+    case media_router::UIMediaSinkState::CONNECTING:
+    case media_router::UIMediaSinkState::DISCONNECTING:
+      ChangeEntryColor(nullptr, title(), subtitle(), nullptr, foreground_color,
+                       background_color);
+      break;
+    case media_router::UIMediaSinkState::CONNECTED:
+    case media_router::UIMediaSinkState::AVAILABLE:
+    case media_router::UIMediaSinkState::UNAVAILABLE:
+      ChangeEntryColor(static_cast<views::ImageView*>(icon_view()), title(),
+                       subtitle(), icon_, foreground_color, background_color);
+      break;
+    default:
+      NOTREACHED();
+  }
 
   SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
   SetInkDropMode(Button::InkDropMode::ON);

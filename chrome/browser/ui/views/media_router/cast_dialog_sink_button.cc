@@ -93,17 +93,23 @@ base::string16 GetStatusTextForSink(const UIMediaSink& sink) {
 
 CastDialogSinkButton::CastDialogSinkButton(
     views::ButtonListener* button_listener,
-    const UIMediaSink& sink,
-    int button_tag)
+    const UIMediaSink& sink)
     : HoverButton(button_listener,
                   CreatePrimaryIconForSink(sink),
                   sink.friendly_name,
                   GetStatusTextForSink(sink),
                   /** secondary_icon_view */ nullptr),
       sink_(sink) {
-  set_tag(button_tag);
   SetEnabled(sink.state == UIMediaSinkState::AVAILABLE ||
              sink.state == UIMediaSinkState::CONNECTED);
+}
+
+CastDialogSinkButton::CastDialogSinkButton(
+    views::ButtonListener* button_listener,
+    const UIMediaSink& sink,
+    int button_tag)
+    : CastDialogSinkButton(button_listener, sink) {
+  set_tag(button_tag);
 }
 
 CastDialogSinkButton::~CastDialogSinkButton() = default;

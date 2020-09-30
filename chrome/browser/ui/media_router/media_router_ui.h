@@ -71,22 +71,26 @@ class MediaRouterUI
   void ClearIssue(const Issue::Id& issue_id) override;
 
   // Initializes internal state (e.g. starts listening for MediaSinks) for
-  // targeting the default MediaSource (if any) of |initiator_|, as well as
-  // mirroring sources of that tab. The contents of the UI will change as the
-  // default MediaSource changes. If there is a default MediaSource, then
-  // PRESENTATION MediaCastMode will be added to |cast_modes_|. Init* methods
-  // can only be called once.
+  // targeting the default MediaSource (if any) of |initiator_|. The contents of
+  // the UI will change as the default MediaSource changes. If there is a
+  // default MediaSource, then PRESENTATION MediaCastMode will be added to
+  // |cast_modes_|. Init* methods can only be called once.
   void InitWithDefaultMediaSource();
+  // Initializes mirroring sources of the tab in addition to what is done by
+  // |InitWithDefaultMediaSource()|.
+  void InitWithDefaultMediaSourceAndMirroring();
 
   // Initializes internal state targeting the presentation specified in
-  // |context|. Also sets up mirroring sources based on |initiator_|.
-  // This is different from InitWithDefaultMediaSource() in that it does not
-  // listen for default media source changes, as the UI is fixed to the source
-  // in |context|.
-  // Init* methods can only be called once.
+  // |context|. This is different from InitWithDefaultMediaSource*() in that it
+  // does not listen for default media source changes, as the UI is fixed to the
+  // source in |context|. Init* methods can only be called once.
   // |context|: Context object for the PresentationRequest. This instance will
-  //            take ownership of it. Must not be null.
+  // take ownership of it. Must not be null.
   void InitWithStartPresentationContext(
+      std::unique_ptr<StartPresentationContext> context);
+  // Initializes mirroring sources of the tab in addition to what is done by
+  // |InitWithStartPresentationContext()|.
+  void InitWithStartPresentationContextAndMirroring(
       std::unique_ptr<StartPresentationContext> context);
 
   // Requests a route be created from the source mapped to
@@ -220,6 +224,7 @@ class MediaRouterUI
 
   // Initializes the dialog with mirroring sources derived from |initiator_|.
   virtual void InitCommon();
+  void InitMirroring();
 
   // WebContentsPresentationManager::Observer
   void OnDefaultPresentationChanged(
@@ -376,8 +381,8 @@ class MediaRouterUI
   // This contains a value only when tracking a pending route request.
   base::Optional<RouteRequest> current_route_request_;
 
-  // Used for locale-aware sorting of sinks by name. Set during InitCommon()
-  // using the current locale.
+  // Used for locale-aware sorting of sinks by name. Set during
+  // InitCommon() using the current locale.
   std::unique_ptr<icu::Collator> collator_;
 
   std::vector<MediaSinkWithCastModes> sinks_;

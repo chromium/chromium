@@ -23,16 +23,22 @@ using media_router::CastDialogController;
 using media_router::CastDialogModel;
 using media_router::UIMediaSink;
 using media_router::UIMediaSinkState;
+using testing::_;
 
 class MediaNotificationContainerObserver;
 
 namespace {
 
-UIMediaSink CreateAvailableSink() {
+constexpr char kSinkId[] = "sink_id";
+constexpr char kSinkFriendlyName[] = "Nest Hub";
+
+UIMediaSink CreateMediaSink(
+    UIMediaSinkState state = UIMediaSinkState::AVAILABLE) {
   UIMediaSink sink;
-  sink.friendly_name = base::UTF8ToUTF16("Nest Hub");
-  sink.id = "sink_available";
-  sink.state = UIMediaSinkState::AVAILABLE;
+  sink.friendly_name = base::UTF8ToUTF16(kSinkFriendlyName);
+  sink.id = kSinkId;
+  sink.state = state;
+  sink.cast_modes = {media_router::MediaCastMode::PRESENTATION};
   return sink;
 }
 
@@ -187,7 +193,7 @@ TEST_F(MediaNotificationDeviceSelectorViewTest, DeviceButtonsCreated) {
   view_ = std::make_unique<MediaNotificationDeviceSelectorView>(
       &delegate, std::make_unique<MockCastDialogController>(), "1",
       gfx::kPlaceholderColor, gfx::kPlaceholderColor);
-  view_->OnModelUpdated(CreateModelWithSinks({CreateAvailableSink()}));
+  view_->OnModelUpdated(CreateModelWithSinks({CreateMediaSink()}));
 
   ASSERT_TRUE(view_->device_entry_views_container_ != nullptr);
 
@@ -197,7 +203,7 @@ TEST_F(MediaNotificationDeviceSelectorViewTest, DeviceButtonsCreated) {
   EXPECT_EQ(EntryLabelText(container_children.at(0)), "Speaker");
   EXPECT_EQ(EntryLabelText(container_children.at(1)), "Headphones");
   EXPECT_EQ(EntryLabelText(container_children.at(2)), "Earbuds");
-  EXPECT_EQ(EntryLabelText(container_children.at(3)), "Nest Hub");
+  EXPECT_EQ(EntryLabelText(container_children.at(3)), kSinkFriendlyName);
 }
 
 TEST_F(MediaNotificationDeviceSelectorViewTest,
@@ -228,6 +234,35 @@ TEST_F(MediaNotificationDeviceSelectorViewTest,
   EXPECT_CALL(delegate, OnAudioSinkChosen("2")).Times(1);
   EXPECT_CALL(delegate, OnAudioSinkChosen("3")).Times(1);
 
+  for (views::View* child : view_->device_entry_views_container_->children()) {
+    SimulateButtonClick(child);
+  }
+}
+
+TEST_F(MediaNotificationDeviceSelectorViewTest,
+       CastDeviceButtonClickStartsCasting) {
+  MockMediaNotificationDeviceSelectorViewDelegate delegate;
+  auto cast_controller = std::make_unique<MockCastDialogController>();
+  auto* cast_controller_ptr = cast_controller.get();
+  view_ = std::make_unique<MediaNotificationDeviceSelectorView>(
+      &delegate, std::move(cast_controller), "1", gfx::kPlaceholderColor,
+      gfx::kPlaceholderColor);
+
+  // Clicking on connecting or disconnecting sinks will not start casting.
+  view_->OnModelUpdated(
+      CreateModelWithSinks({CreateMediaSink(UIMediaSinkState::CONNECTING),
+                            CreateMediaSink(UIMediaSinkState::DISCONNECTING)}));
+  EXPECT_CALL(*cast_controller_ptr, StartCasting(_, _)).Times(0);
+  for (views::View* child : view_->device_entry_views_container_->children()) {
+    SimulateButtonClick(child);
+  }
+
+  // Clicking on available or connected sinks will start casting.
+  view_->OnModelUpdated(CreateModelWithSinks(
+      {CreateMediaSink(), CreateMediaSink(UIMediaSinkState::CONNECTED)}));
+  EXPECT_CALL(*cast_controller_ptr,
+              StartCasting(_, media_router::MediaCastMode::PRESENTATION))
+      .Times(2);
   for (views::View* child : view_->device_entry_views_container_->children()) {
     SimulateButtonClick(child);
   }
@@ -373,6 +408,32 @@ TEST_F(MediaNotificationDeviceSelectorViewTest,
   delegate.supports_switching = true;
   delegate.RunSupportsDeviceSwitchingCallback();
   EXPECT_TRUE(view_->GetVisible());
+}
+
+TEST_F(MediaNotificationDeviceSelectorViewTest,
+       CastDeviceButtonClickClearsIssue) {
+  MockMediaNotificationDeviceSelectorViewDelegate delegate;
+  auto cast_controller = std::make_unique<MockCastDialogController>();
+  auto* cast_controller_ptr = cast_controller.get();
+  view_ = std::make_unique<MediaNotificationDeviceSelectorView>(
+      &delegate, std::move(cast_controller), "1", gfx::kPlaceholderColor,
+      gfx::kPlaceholderColor);
+
+  // Clicking on sinks with issue will clear up the issue instead of starting a
+  // cast session.
+  auto sink = CreateMediaSink();
+  media_router::IssueInfo issue_info(
+      "Issue Title", media_router::IssueInfo::Action::DISMISS,
+      media_router::IssueInfo::Severity::WARNING);
+  media_router::Issue issue(issue_info);
+  sink.issue = issue;
+
+  view_->OnModelUpdated(CreateModelWithSinks({sink}));
+  EXPECT_CALL(*cast_controller_ptr, StartCasting(_, _)).Times(0);
+  EXPECT_CALL(*cast_controller_ptr, ClearIssue(issue.id()));
+  for (views::View* child : view_->device_entry_views_container_->children()) {
+    SimulateButtonClick(child);
+  }
 }
 
 TEST_F(MediaNotificationDeviceSelectorViewTest,

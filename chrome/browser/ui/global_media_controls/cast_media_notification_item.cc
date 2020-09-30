@@ -156,7 +156,6 @@ CastMediaNotificationItem::CastMediaNotificationItem(
                               base::Unretained(this))),
       session_info_(CreateSessionInfo()) {
   metadata_.source_title = GetSourceTitle(route);
-  notification_controller_->ShowNotification(media_route_id_);
   base::UmaHistogramEnumeration(
       kSourceHistogramName, route.is_local() ? Source::kLocalCastSession
                                              : Source::kNonLocalCastSession);

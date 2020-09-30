@@ -81,15 +81,18 @@ class MediaNotificationDeviceSelectorView
                            AudioDevicesCountHistogramRecorded);
   FRIEND_TEST_ALL_PREFIXES(MediaNotificationDeviceSelectorViewTest,
                            DeviceSelectorOpenedHistogramRecorded);
+  FRIEND_TEST_ALL_PREFIXES(MediaNotificationDeviceSelectorViewTest,
+                           CastDeviceButtonClickStartsCasting);
+  FRIEND_TEST_ALL_PREFIXES(MediaNotificationDeviceSelectorViewTest,
+                           CastDeviceButtonClickClearsIssue);
 
   void UpdateVisibility();
-
-  bool ShouldBeVisible();
-
+  bool ShouldBeVisible() const;
   void ShowDevices();
   void HideDevices();
   void RemoveDevicesOfType(DeviceEntryUIType type);
-  DeviceEntryUI* GetDeviceEntryUI(views::View* view);
+  void StartCastSession(CastDeviceEntryView* entry);
+  DeviceEntryUI* GetDeviceEntryUI(views::View* view) const;
 
   bool has_expand_button_been_shown_ = false;
   bool have_devices_been_shown_ = false;

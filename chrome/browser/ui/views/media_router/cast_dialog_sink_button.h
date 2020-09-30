@@ -20,6 +20,8 @@ namespace media_router {
 class CastDialogSinkButton : public HoverButton {
  public:
   CastDialogSinkButton(views::ButtonListener* button_listener,
+                       const UIMediaSink& sink);
+  CastDialogSinkButton(views::ButtonListener* button_listener,
                        const UIMediaSink& sink,
                        int button_tag);
   ~CastDialogSinkButton() override;

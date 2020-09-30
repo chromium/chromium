@@ -87,6 +87,7 @@ void CastMediaNotificationProvider::OnRoutesUpdated(
       router_->GetMediaController(
           route.media_route_id(), std::move(controller_receiver),
           it_pair.first->second.GetObserverPendingRemote());
+      notification_controller_->ShowNotification(route.media_route_id());
     } else {
       item_it->second.OnRouteUpdated(route);
     }

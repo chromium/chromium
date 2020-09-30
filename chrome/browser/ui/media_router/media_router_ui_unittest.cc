@@ -155,7 +155,7 @@ class MediaRouterViewsUITest : public ChromeRenderViewHostTestHarness {
 
     CreateSessionServiceTabHelper(web_contents());
     ui_ = std::make_unique<MediaRouterUI>(web_contents());
-    ui_->InitWithDefaultMediaSource();
+    ui_->InitWithDefaultMediaSourceAndMirroring();
   }
 
   void TearDown() override {
@@ -175,7 +175,7 @@ class MediaRouterViewsUITest : public ChromeRenderViewHostTestHarness {
         &web_contents()->GetController());
     CreateSessionServiceTabHelper(web_contents());
     ui_ = std::make_unique<MediaRouterUI>(web_contents());
-    ui_->InitWithDefaultMediaSource();
+    ui_->InitWithDefaultMediaSourceAndMirroring();
   }
 
   // These methods are used so that we don't have to friend each test case that

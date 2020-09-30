@@ -352,6 +352,11 @@ void MediaRouterUI::InitWithDefaultMediaSource() {
   }
 }
 
+void MediaRouterUI::InitWithDefaultMediaSourceAndMirroring() {
+  InitWithDefaultMediaSource();
+  InitMirroring();
+}
+
 void MediaRouterUI::InitWithStartPresentationContext(
     std::unique_ptr<StartPresentationContext> context) {
   DCHECK(context);
@@ -363,6 +368,12 @@ void MediaRouterUI::InitWithStartPresentationContext(
   InitCommon();
   OnDefaultPresentationChanged(
       &start_presentation_context_->presentation_request());
+}
+
+void MediaRouterUI::InitWithStartPresentationContextAndMirroring(
+    std::unique_ptr<StartPresentationContext> context) {
+  InitWithStartPresentationContext(std::move(context));
+  InitMirroring();
 }
 
 bool MediaRouterUI::CreateRoute(const MediaSink::Id& sink_id,
@@ -607,6 +618,18 @@ void MediaRouterUI::InitCommon() {
       std::make_unique<QueryResultManager>(GetMediaRouter());
   query_result_manager_->AddObserver(this);
 
+  // Get the current list of media routes, so that the WebUI will have routes
+  // information at initialization.
+  OnRoutesUpdated(GetMediaRouter()->GetCurrentRoutes(),
+                  std::vector<MediaRoute::Id>());
+  display_observer_ = WebContentsDisplayObserver::Create(
+      initiator_,
+      base::BindRepeating(&MediaRouterUI::UpdateSinks, base::Unretained(this)));
+
+  StartObservingIssues();
+}
+
+void MediaRouterUI::InitMirroring() {
   // Use a placeholder URL as origin for mirroring.
   url::Origin origin = url::Origin::Create(GURL());
 
@@ -626,16 +649,6 @@ void MediaRouterUI::InitCommon() {
     query_result_manager_->SetSourcesForCastMode(MediaCastMode::TAB_MIRROR,
                                                  {mirroring_source}, origin);
   }
-
-  // Get the current list of media routes, so that the WebUI will have routes
-  // information at initialization.
-  OnRoutesUpdated(GetMediaRouter()->GetCurrentRoutes(),
-                  std::vector<MediaRoute::Id>());
-  display_observer_ = WebContentsDisplayObserver::Create(
-      initiator_,
-      base::BindRepeating(&MediaRouterUI::UpdateSinks, base::Unretained(this)));
-
-  StartObservingIssues();
 }
 
 void MediaRouterUI::OnDefaultPresentationChanged(
@@ -965,6 +978,7 @@ UIMediaSink MediaRouterUI::ConvertToUISink(const MediaSinkWithCastModes& sink,
   ui_sink.id = sink.sink.id();
   ui_sink.friendly_name = GetSinkFriendlyName(sink.sink);
   ui_sink.icon_type = sink.sink.icon_type();
+  ui_sink.cast_modes = sink.cast_modes;
 
   if (route) {
     ui_sink.status_text = base::UTF8ToUTF16(route->description());
@@ -978,7 +992,6 @@ UIMediaSink MediaRouterUI::ConvertToUISink(const MediaSinkWithCastModes& sink,
                             sink.sink.id() == current_route_request()->sink_id
                         ? UIMediaSinkState::CONNECTING
                         : UIMediaSinkState::AVAILABLE;
-    ui_sink.cast_modes = sink.cast_modes;
   }
   if (ui_sink.icon_type == SinkIconType::HANGOUT &&
       ui_sink.state == UIMediaSinkState::AVAILABLE && sink.sink.domain()) {
