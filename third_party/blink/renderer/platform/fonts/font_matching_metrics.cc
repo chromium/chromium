@@ -18,8 +18,6 @@ namespace {
 
 constexpr double kUkmFontLoadCountBucketSpacing = 1.3;
 
-enum FontLoadContext { kTopLevel = 0, kSubFrame };
-
 template <typename T>
 HashSet<T> SetIntersection(const HashSet<T>& a, const HashSet<T>& b) {
   HashSet<T> result;
@@ -39,7 +37,7 @@ FontMatchingMetrics::FontMatchingMetrics(
     ukm::UkmRecorder* ukm_recorder,
     ukm::SourceId source_id,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-    : top_level_(top_level),
+    : load_context_(top_level ? kTopLevelFrame : kSubframe),
       ukm_recorder_(ukm_recorder),
       source_id_(source_id),
       identifiability_metrics_timer_(
@@ -48,6 +46,26 @@ FontMatchingMetrics::FontMatchingMetrics(
           &FontMatchingMetrics::IdentifiabilityMetricsTimerFired),
       identifiability_study_enabled_(
           IdentifiabilityStudySettings::Get()->IsActive()) {
+  Initialize();
+}
+
+FontMatchingMetrics::FontMatchingMetrics(
+    ukm::UkmRecorder* ukm_recorder,
+    ukm::SourceId source_id,
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner)
+    : load_context_(kWorker),
+      ukm_recorder_(ukm_recorder),
+      source_id_(source_id),
+      identifiability_metrics_timer_(
+          task_runner,
+          this,
+          &FontMatchingMetrics::IdentifiabilityMetricsTimerFired),
+      identifiability_study_enabled_(
+          IdentifiabilityStudySettings::Get()->IsActive()) {
+  Initialize();
+}
+
+void FontMatchingMetrics::Initialize() {
   // Estimate of average page font use from anecdotal browsing session.
   constexpr unsigned kEstimatedFontCount = 7;
   local_fonts_succeeded_.ReserveCapacityForSize(kEstimatedFontCount);
@@ -245,7 +263,7 @@ void FontMatchingMetrics::PublishIdentifiabilityMetrics() {
 
 void FontMatchingMetrics::PublishUkmMetrics() {
   ukm::builders::FontMatchAttempts(source_id_)
-      .SetLoadContext(top_level_ ? kTopLevel : kSubFrame)
+      .SetLoadContext(load_context_)
       .SetSystemFontFamilySuccesses(ukm::GetExponentialBucketMin(
           SetIntersection(successful_font_families_, system_font_families_)
               .size(),

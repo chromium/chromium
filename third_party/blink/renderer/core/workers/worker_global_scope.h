@@ -54,6 +54,7 @@ struct BlinkTransferableMessage;
 class ConsoleMessage;
 class FetchClientSettingsObjectSnapshot;
 class FontFaceSet;
+class FontMatchingMetrics;
 class InstalledScriptsManager;
 class OffscreenFontSelector;
 class WorkerResourceTimingNotifier;
@@ -217,6 +218,10 @@ class CORE_EXPORT WorkerGlobalScope
   // match the actual worker type.
   virtual WorkerToken GetWorkerToken() const = 0;
 
+  // Tracks and reports metrics of attempted font match attempts (both
+  // successful and not successful) by the worker.
+  FontMatchingMetrics* GetFontMatchingMetrics();
+
  protected:
   WorkerGlobalScope(std::unique_ptr<GlobalScopeCreationParams>,
                     WorkerThread*,
@@ -280,6 +285,10 @@ class CORE_EXPORT WorkerGlobalScope
   int last_pending_error_event_id_ = 0;
 
   Member<OffscreenFontSelector> font_selector_;
+
+  // Tracks and reports UKM metrics of the number of attempted font family match
+  // attempts (both successful and not successful) by the worker.
+  std::unique_ptr<FontMatchingMetrics> font_matching_metrics_;
 
   blink::BrowserInterfaceBrokerProxy browser_interface_broker_proxy_;
 

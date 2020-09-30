@@ -4059,7 +4059,8 @@ be describing additional metrics about the same event.
   </summary>
   <metric name="LoadContext" enum="FontLoadContext">
     <summary>
-      If the font family name was matched in the top-level frame or a sub-frame.
+      If the font family name was matched in a top-level frame, a sub-frame or a
+      worker.
     </summary>
   </metric>
   <metric name="LocalFontFailures">

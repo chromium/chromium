@@ -91,8 +91,17 @@ struct IdentifiableTokenKeyHashTraits
 // regularly.
 class PLATFORM_EXPORT FontMatchingMetrics {
  public:
+  enum FontLoadContext { kTopLevelFrame = 0, kSubframe, kWorker };
+
+  // Create a FontMatchingMetrics objects for a frame, with |top_level|
+  // indicating whether it is a mainframe.
   FontMatchingMetrics(bool top_level,
                       ukm::UkmRecorder* ukm_recorder,
+                      ukm::SourceId source_id,
+                      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+
+  // Create a FontMatchingMetrics objects for a worker.
+  FontMatchingMetrics(ukm::UkmRecorder* ukm_recorder,
                       ukm::SourceId source_id,
                       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
@@ -162,8 +171,8 @@ class PLATFORM_EXPORT FontMatchingMetrics {
   // |user_font_preference_mapping| occurs.
   void OnFontLookup();
 
-  // Publishes the font lookup events. Recorded on page unload and every minute,
-  // as long as additional lookups are occurring.
+  // Publishes the font lookup events. Recorded on document shutdown/worker
+  // destruction and every minute, as long as additional lookups are occurring.
   void PublishIdentifiabilityMetrics();
 
   // Publishes the number of font family matches attempted (both successful
@@ -197,6 +206,8 @@ class PLATFORM_EXPORT FontMatchingMetrics {
   // is nullptr.
   int64_t GetHashForFontData(SimpleFontData* font_data);
 
+  void Initialize();
+
   // Font family names successfully matched.
   HashSet<AtomicString> successful_font_families_;
 
@@ -215,9 +226,9 @@ class PLATFORM_EXPORT FontMatchingMetrics {
   // @font-face src:local fonts that didn't successfully match.
   HashSet<AtomicString> local_fonts_failed_;
 
-  // True if this FontMatchingMetrics instance is for a top-level frame, false
-  // otherwise.
-  const bool top_level_ = false;
+  // Indicates whether this FontMatchingMetrics instance is for a top-level
+  // frame, a subframe or a worker.
+  const FontLoadContext load_context_;
 
   TokenToTokenHashMap font_lookups_by_unique_or_family_name_;
   TokenToTokenHashMap font_lookups_by_unique_name_only_;

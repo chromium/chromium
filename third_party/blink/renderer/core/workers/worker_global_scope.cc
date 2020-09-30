@@ -67,6 +67,7 @@
 #include "third_party/blink/renderer/core/workers/worker_thread.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/microtask.h"
+#include "third_party/blink/renderer/platform/fonts/font_matching_metrics.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/instrumentation/instance_counters.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_client_settings_object_snapshot.h"
@@ -147,6 +148,8 @@ FontFaceSet* WorkerGlobalScope::fonts() {
 }
 
 WorkerGlobalScope::~WorkerGlobalScope() {
+  if (font_matching_metrics_)
+    font_matching_metrics_->PublishAllMetrics();
   DCHECK(!ScriptController());
   InstanceCounters::DecrementCounter(
       InstanceCounters::kWorkerGlobalScopeCounter);
@@ -663,6 +666,15 @@ void WorkerGlobalScope::Trace(Visitor* visitor) const {
   visitor->Trace(worker_script_);
   WorkerOrWorkletGlobalScope::Trace(visitor);
   Supplementable<WorkerGlobalScope>::Trace(visitor);
+}
+
+FontMatchingMetrics* WorkerGlobalScope::GetFontMatchingMetrics() {
+  if (!font_matching_metrics_) {
+    font_matching_metrics_ = std::make_unique<FontMatchingMetrics>(
+        UkmRecorder(), UkmSourceID(),
+        GetTaskRunner(TaskType::kInternalDefault));
+  }
+  return font_matching_metrics_.get();
 }
 
 }  // namespace blink
