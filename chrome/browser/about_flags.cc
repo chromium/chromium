@@ -2287,6 +2287,22 @@ constexpr char kAssistantTimersV2InternalName[] = "enable-assistant-timers-v2";
 constexpr char kAmbientModeInternalName[] = "enable-ambient-mode";
 #endif  // OS_CHROMEOS
 
+#if defined(OS_ANDROID)
+// The variations of --metrics-settings-android.
+const FeatureEntry::FeatureParam kMetricsSettingsAndroidAlternativeOne[] = {
+    {"fre", "1"}};
+
+const FeatureEntry::FeatureParam kMetricsSettingsAndroidAlternativeTwo[] = {
+    {"fre", "2"}};
+
+const FeatureEntry::FeatureVariation kMetricsSettingsAndroidVariations[] = {
+    {"Alternative FRE 1", kMetricsSettingsAndroidAlternativeOne,
+     base::size(kMetricsSettingsAndroidAlternativeOne), nullptr},
+    {"Alternative FRE 2", kMetricsSettingsAndroidAlternativeTwo,
+     base::size(kMetricsSettingsAndroidAlternativeTwo), nullptr},
+};
+#endif  // defined(OS_ANDROID)
+
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
 // The first line of the entry is the internal name.
@@ -5396,6 +5412,14 @@ const FeatureEntry kFeatureEntries[] = {
     {"safety-check-android", flag_descriptions::kSafetyCheckAndroidName,
      flag_descriptions::kSafetyCheckAndroidDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(features::kSafetyCheckAndroid)},
+#endif
+
+#if defined(OS_ANDROID)
+    {"metrics-settings-android", flag_descriptions::kMetricsSettingsAndroidName,
+     flag_descriptions::kMetricsSettingsAndroidDescription, kOsAndroid,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kSafetyCheckAndroid,
+                                    kMetricsSettingsAndroidVariations,
+                                    "MetricsSettingsAndroid")},
 #endif
 
 #if defined(OS_ANDROID)

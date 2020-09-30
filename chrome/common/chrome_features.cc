@@ -549,6 +549,12 @@ const base::Feature kMeteredShowToggle{"MeteredShowToggle",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
+#if defined(OS_ANDROID)
+// Enables the new design of metrics settings.
+const base::Feature kMetricsSettingsAndroid{"MetricsSettingsAndroid",
+                                            base::FEATURE_DISABLED_BY_DEFAULT};
+#endif
+
 // Enables the use of native notification centers instead of using the Message
 // Center for displaying the toasts. The feature is hardcoded to enabled for
 // Chrome OS.

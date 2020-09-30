@@ -85,6 +85,7 @@ const base::Feature* kFeaturesExposedToJava[] = {
     &features::kDownloadsLocationChange,
     &features::kGenericSensorExtraClasses,
     &features::kInstallableAmbientBadgeInfoBar,
+    &features::kMetricsSettingsAndroid,
     &features::kNetworkServiceInProcess,
     &features::kOverscrollHistoryNavigation,
     &features::kPredictivePrefetchingAllowedOnAllConnectionTypes,

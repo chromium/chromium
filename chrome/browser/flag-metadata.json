@@ -3088,6 +3088,15 @@
     "expiry_milestone": 83
   },
   {
+    "name": "metrics-settings-android",
+    "owners": [
+      "andzaytsev",
+      "msramek",
+      "chrome-friendly-settings@google.com"
+    ],
+    "expiry_milestone": 95
+  },
+  {
     "name": "mixed-forms-disable-autofill",
     "owners": [ "carlosil" ],
     "expiry_milestone": 88

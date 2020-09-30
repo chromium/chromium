@@ -806,6 +806,9 @@ extern const char kMediaHistoryDescription[];
 extern const char kMediaRouterCastAllowAllIPsName[];
 extern const char kMediaRouterCastAllowAllIPsDescription[];
 
+extern const char kMetricsSettingsAndroidName[];
+extern const char kMetricsSettingsAndroidDescription[];
+
 extern const char kMixedFormsDisableAutofillName[];
 extern const char kMixedFormsDisableAutofillDescription[];
 
