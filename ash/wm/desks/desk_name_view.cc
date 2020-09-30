@@ -22,6 +22,8 @@
 namespace ash {
 
 constexpr int kDeskNameViewBorderRadius = 4;
+constexpr int kDeskNameViewMinHeight = 24;
+constexpr int kDeskNameViewHorizontalPadding = 6;
 
 namespace {
 
@@ -45,7 +47,8 @@ bool IsDesksBarWidget(const views::Widget* widget) {
 }  // namespace
 
 DeskNameView::DeskNameView() {
-  auto border = std::make_unique<WmHighlightItemBorder>(/*corner_radius=*/4);
+  auto border = std::make_unique<WmHighlightItemBorder>(
+      /*corner_radius=*/4, gfx::Insets(0, kDeskNameViewHorizontalPadding));
   border_ptr_ = border.get();
   SetBorder(std::move(border));
 
@@ -104,6 +107,7 @@ gfx::Size DeskNameView::CalculatePreferredSize() const {
   gfx::Size size{width + GetCaretBounds().width(), height};
   const auto insets = GetInsets();
   size.Enlarge(insets.width(), insets.height());
+  size.SetToMax(gfx::Size(0, kDeskNameViewMinHeight));
   return size;
 }
 

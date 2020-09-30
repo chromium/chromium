@@ -19,7 +19,10 @@ namespace ash {
 // paint nothing.
 class WmHighlightItemBorder : public views::Border {
  public:
-  explicit WmHighlightItemBorder(int corner_radius);
+
+  explicit WmHighlightItemBorder(
+      int corner_radius,
+      gfx::Insets padding = gfx::Insets(0));
   ~WmHighlightItemBorder() override = default;
 
   // This highlight meant to indicate focus. No border will be painted if
@@ -33,6 +36,8 @@ class WmHighlightItemBorder : public views::Border {
 
  private:
   const int corner_radius_;
+
+  gfx::Insets border_insets_;
 
   DISALLOW_COPY_AND_ASSIGN(WmHighlightItemBorder);
 };
