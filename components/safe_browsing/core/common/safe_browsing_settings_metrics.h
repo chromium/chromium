@@ -19,7 +19,9 @@ enum class SettingsAccessPoint : int {
   kParentSettings = 1,
   // From Settings > Safety check.
   kSafetyCheck = 2,
-  kMaxValue = kSafetyCheck
+  // From PromoSlinger on Surface Explorer on Android.
+  kSurfaceExplorerPromoSlinger = 3,
+  kMaxValue = kSurfaceExplorerPromoSlinger
 };
 
 // Enum representing actions taken by users visiting the

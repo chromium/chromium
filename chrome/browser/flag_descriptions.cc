@@ -3070,6 +3070,12 @@ const char kSafeBrowsingEnhancedProtectionAndroidDescription[] =
     "protection from the settings page, please enable "
     "safe-browsing-security-section-ui-android and this flag together.";
 
+const char kEnhancedProtectionPromoAndroidName[] =
+    "Enable enhanced protection promo card on Android on the New Tab Page";
+const char kEnhancedProtectionPromoAndroidDescription[] =
+    "Enable enhanced protection promo card for users that have not signed up "
+    "for enhanced protection.";
+
 const char kSafeBrowsingSecuritySectionUiAndroidName[] =
     "Security Section on Android";
 const char kSafeBrowsingSecuritySectionUiAndroidDescription[] =

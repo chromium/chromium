@@ -3986,6 +3986,11 @@
     "expiry_milestone": 88
   },
   {
+    "name": "safe-browsing-enhanced-protection-promo-android",
+    "owners": [ "bdea", "chrome-safebrowsing-core@google.com" ],
+    "expiry_milestone": 90
+  },
+  {
     "name": "safe-browsing-real-time",
     "owners": [ "//ios/chrome/browser/safe_browsing/OWNERS", "bling-flags" ],
     "expiry_milestone": 88

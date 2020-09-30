@@ -152,6 +152,7 @@ const base::Feature* kFeaturesExposedToJava[] = {
     &kDownloadProgressInfoBar,
     &kDownloadRename,
     &kDuetTabStripIntegrationAndroid,
+    &kEnhancedProtectionPromoCard,
     &kEphemeralTabUsingBottomSheet,
     &kExploreSites,
     &kFocusOmniboxInIncognitoTabIntents,
@@ -443,6 +444,9 @@ const base::Feature kDownloadRename{"DownloadRename",
 
 const base::Feature kDuetTabStripIntegrationAndroid{
     "DuetTabStripIntegrationAndroid", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kEnhancedProtectionPromoCard{
+    "EnhancedProtectionPromoCard", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kEphemeralTabUsingBottomSheet{
     "EphemeralTabUsingBottomSheet", base::FEATURE_DISABLED_BY_DEFAULT};

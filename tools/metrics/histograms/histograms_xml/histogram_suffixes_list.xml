@@ -15898,6 +15898,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="SafetyCheck"
       label="The user enters the Safe Browsing settings page from the
              SafetyCheck page."/>
+  <suffix name="SurfaceExplorerPromoSlinger"
+      label="The user enters the Safe Browsing settings page from the Surface
+             Explorer page."/>
   <affected-histogram name="SafeBrowsing.Settings.UserAction"/>
 </histogram_suffixes>
 
