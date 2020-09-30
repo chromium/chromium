@@ -3232,6 +3232,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="DefaultBrowser.InteractionResult"
     enum="MakeChromeDefaultResult" expires_after="M85">
+  <obsolete>
+    Removed in Chrome 78.
+  </obsolete>
   <owner>gab@chromium.org</owner>
   <summary>
     Results of interaction with set-as-default dialog in Win8+ first run flow.
