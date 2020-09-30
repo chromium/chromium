@@ -217,6 +217,7 @@ class Cache::BarrierCallbackForPutResponse final
                                      property_name_, interface_name_);
       cache_->PutImpl(resolver_, method_name_, request_list_, response_list_,
                       blob_list_, exception_state, trace_id_);
+      blob_list_.clear();
     }
   }
 
