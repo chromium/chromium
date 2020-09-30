@@ -4432,6 +4432,11 @@ Unknown properties are collapsed to zero. -->
   <int value="2" label="Already accepted"/>
 </enum>
 
+<enum name="AutofillAssistantLiteScriptShownToUser">
+  <int value="0" label="Running"/>
+  <int value="1" label="Ui shown"/>
+</enum>
+
 <enum name="AutofillAssistantLiteScriptStarted">
   <int value="0" label="DFM unavailable"/>
   <int value="1" label="Canceled &gt;= 2 times"/>

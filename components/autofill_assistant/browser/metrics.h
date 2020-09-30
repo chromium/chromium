@@ -142,6 +142,27 @@ class Metrics {
     kMaxValue = DFM_ALREADY_INSTALLED
   };
 
+  // Whether a lite script was running invisibly or visible to the user.
+  //
+  // GENERATED_JAVA_ENUM_PACKAGE: (
+  // org.chromium.chrome.browser.autofill_assistant.metrics)
+  // GENERATED_JAVA_CLASS_NAME_OVERRIDE: LiteScriptShownToUser
+  //
+  // This enum is used in UKM metrics, do not remove/renumber entries. Only add
+  // at the end and update kMaxValue. Also remember to update the
+  // AutofillAssistantLiteScriptShownToUser enum listing in
+  // tools/metrics/histograms/enums.xml and the description in
+  // tools/metrics/ukm/ukm.xml as necessary.
+  enum class LiteScriptShownToUser {
+    // The number of times a lite script was successfully fetched and started.
+    LITE_SCRIPT_RUNNING = 0,
+    // The subset of |LITE_SCRIPT_RUNNING| where the lite script prompt was
+    // shown.
+    LITE_SCRIPT_SHOWN_TO_USER = 1,
+
+    kMaxValue = LITE_SCRIPT_SHOWN_TO_USER
+  };
+
   // The different ways a user might have opted out of the lite script
   // experience.
   //

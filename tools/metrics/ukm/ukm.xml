@@ -1608,6 +1608,30 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="AutofillAssistant.LiteScriptShownToUser">
+  <owner>arbesser@google.com</owner>
+  <owner>mcarlen@google.com</owner>
+  <owner>marianfe@google.com</owner>
+  <summary>
+    Recorded when a lite script starts and when the UI is shown to the user.
+  </summary>
+  <metric name="LiteScriptShownToUser"
+      enum="AutofillAssistantLiteScriptShownToUser">
+    <summary>
+      An enum that captures the number of times a lite script was displayed,
+      versus the number of times that the lite script was run in total. See
+      components/autofill_assistant/browser/metrics.h.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
 <event name="AutofillAssistant.LiteScriptStarted">
   <owner>arbesser@google.com</owner>
   <owner>mcarlen@google.com</owner>

@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import org.chromium.base.Callback;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.autofill_assistant.metrics.LiteScriptFinishedState;
+import org.chromium.chrome.browser.autofill_assistant.metrics.LiteScriptShownToUser;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -54,6 +55,9 @@ class AutofillAssistantLiteScriptCoordinator {
 
                     @Override
                     public void onScriptRunning(boolean uiShown) {
+                        AutofillAssistantMetrics.recordLiteScriptShownToUser(mWebContents,
+                                uiShown ? LiteScriptShownToUser.LITE_SCRIPT_SHOWN_TO_USER
+                                        : LiteScriptShownToUser.LITE_SCRIPT_RUNNING);
                         if (uiShown) {
                             // The prompt was displayed on screen, hence we mark them as returning
                             // user from now on.

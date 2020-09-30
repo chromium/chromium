@@ -11,6 +11,7 @@ import org.chromium.chrome.browser.autofill_assistant.metrics.DropOutReason;
 import org.chromium.chrome.browser.autofill_assistant.metrics.FeatureModuleInstallation;
 import org.chromium.chrome.browser.autofill_assistant.metrics.LiteScriptFinishedState;
 import org.chromium.chrome.browser.autofill_assistant.metrics.LiteScriptOnboarding;
+import org.chromium.chrome.browser.autofill_assistant.metrics.LiteScriptShownToUser;
 import org.chromium.chrome.browser.autofill_assistant.metrics.LiteScriptStarted;
 import org.chromium.chrome.browser.autofill_assistant.metrics.OnBoarding;
 import org.chromium.chrome.browser.metrics.UkmRecorder;
@@ -89,6 +90,20 @@ import org.chromium.content_public.browser.WebContents;
                 /* eventName = */ "AutofillAssistant.LiteScriptOnboarding",
                 /* metricName = */ "LiteScriptOnboarding",
                 /* metricValue = */ onboarding);
+    }
+
+    /**
+     * UKM metric. Records whether the lite script prompt was shown to the user or not.
+     */
+    /* package */ static void recordLiteScriptShownToUser(
+            WebContents webContents, @LiteScriptShownToUser int shownToUser) {
+        if (!areWebContentsValid(webContents)) {
+            return;
+        }
+        new UkmRecorder.Bridge().recordEventWithIntegerMetric(webContents,
+                /* eventName = */ "AutofillAssistant.LiteScriptShownToUser",
+                /* metricName = */ "LiteScriptShownToUser",
+                /* metricValue = */ shownToUser);
     }
 
     /**
