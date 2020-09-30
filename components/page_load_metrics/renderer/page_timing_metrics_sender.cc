@@ -246,6 +246,11 @@ void PageTimingMetricsSender::UpdateResourceMetadata(
   it->second->SetIsMainFrameResource(is_main_frame_resource);
 }
 
+void PageTimingMetricsSender::SetUpSmoothnessReporting(
+    base::ReadOnlySharedMemoryRegion shared_memory) {
+  sender_->SetUpSmoothnessReporting(std::move(shared_memory));
+}
+
 void PageTimingMetricsSender::Update(
     mojom::PageLoadTimingPtr timing,
     const PageTimingMetadataRecorder::MonotonicTiming& monotonic_timing) {

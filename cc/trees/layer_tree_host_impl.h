@@ -774,6 +774,9 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
 
   void SetActiveURL(const GURL& url, ukm::SourceId source_id);
 
+  void SetUkmSmoothnessDestination(
+      UkmSmoothnessDataShared* ukm_smoothness_data);
+
   CompositorFrameReportingController* compositor_frame_reporting_controller()
       const {
     return compositor_frame_reporting_controller_.get();

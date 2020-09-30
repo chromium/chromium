@@ -10,6 +10,7 @@
 
 #include "base/feature_list.h"
 #include "base/trace_event/common/trace_event_common.h"
+#include "cc/metrics/ukm_smoothness_data.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/engagement/site_engagement_service.h"
@@ -226,6 +227,7 @@ UkmPageLoadMetricsObserver::FlushMetricsOnAppEnterBackground(
     RecordInputTimingMetrics();
   }
   ReportLayoutStability();
+  RecordSmoothnessMetrics();
   // Assume that page ends on this method, as the app could be evicted right
   // after.
   RecordPageEndMetrics(&timing, current_time);
@@ -297,6 +299,7 @@ void UkmPageLoadMetricsObserver::OnComplete(
     RecordInputTimingMetrics();
   }
   ReportLayoutStability();
+  RecordSmoothnessMetrics();
   ReportPerfectHeuristicsMetrics();
   RecordPageEndMetrics(&timing, current_time);
 }
@@ -873,6 +876,17 @@ void UkmPageLoadMetricsObserver::RecordInputTimingMetrics() {
       .Record(ukm::UkmRecorder::Get());
 }
 
+void UkmPageLoadMetricsObserver::RecordSmoothnessMetrics() {
+  auto* smoothness =
+      ukm_smoothness_data_.GetMemoryAs<cc::UkmSmoothnessDataShared>();
+  if (!smoothness) {
+    return;
+  }
+
+  // TODO(sad): Use atomic memcpy here before reading from the shared memory.
+  // https://chromium-review.googlesource.com/c/chromium/src/+/1572369
+}
+
 void UkmPageLoadMetricsObserver::RecordPageEndMetrics(
     const page_load_metrics::mojom::PageLoadTiming* timing,
     base::TimeTicks page_end_time) {
@@ -992,6 +1006,11 @@ void UkmPageLoadMetricsObserver::OnTimingUpdate(
                              .GetExperimentalLargestContentfulPaintHandler()
                              .MainFrameTreeNodeId());
   }
+}
+
+void UkmPageLoadMetricsObserver::SetUpSharedMemoryForSmoothness(
+    const base::ReadOnlySharedMemoryRegion& shared_memory) {
+  ukm_smoothness_data_ = shared_memory.Map();
 }
 
 void UkmPageLoadMetricsObserver::OnCpuTimingUpdate(

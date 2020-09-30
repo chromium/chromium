@@ -65,6 +65,13 @@ class MojoPageTimingSender : public PageTimingSender {
         std::move(new_deferred_resource_data), std::move(input_timing_delta));
   }
 
+  void SetUpSmoothnessReporting(
+      base::ReadOnlySharedMemoryRegion shared_memory) override {
+    DCHECK(page_load_metrics_);
+    page_load_metrics_->SetUpSharedMemoryForSmoothness(
+        std::move(shared_memory));
+  }
+
  private:
   // Indicates that this sender should not send timing updates or frame render
   // data updates.
@@ -297,6 +304,10 @@ void MetricsRenderFrameObserver::DidCreateDocumentElement() {
       CreatePageTimingSender(true /* limited_sending_mode */), CreateTimer(),
       std::move(timing.relative_timing), timing.monotonic_timing,
       std::make_unique<PageResourceDataUse>());
+  if (ukm_smoothness_data_.IsValid()) {
+    page_timing_metrics_sender_->SetUpSmoothnessReporting(
+        std::move(ukm_smoothness_data_));
+  }
 }
 
 void MetricsRenderFrameObserver::DidCommitProvisionalLoad(
@@ -321,6 +332,10 @@ void MetricsRenderFrameObserver::DidCommitProvisionalLoad(
       CreatePageTimingSender(false /* limited_sending_mode*/), CreateTimer(),
       std::move(timing.relative_timing), timing.monotonic_timing,
       std::move(provisional_frame_resource_data_use_));
+  if (ukm_smoothness_data_.IsValid()) {
+    page_timing_metrics_sender_->SetUpSmoothnessReporting(
+        std::move(ukm_smoothness_data_));
+  }
 }
 
 void MetricsRenderFrameObserver::SetAdResourceTracker(
@@ -343,6 +358,17 @@ void MetricsRenderFrameObserver::OnMainFrameIntersectionChanged(
   if (page_timing_metrics_sender_)
     page_timing_metrics_sender_->OnMainFrameIntersectionChanged(
         main_frame_intersection);
+}
+
+bool MetricsRenderFrameObserver::SetUpSmoothnessReporting(
+    base::ReadOnlySharedMemoryRegion& shared_memory) {
+  if (page_timing_metrics_sender_) {
+    page_timing_metrics_sender_->SetUpSmoothnessReporting(
+        std::move(shared_memory));
+  } else {
+    ukm_smoothness_data_ = std::move(shared_memory);
+  }
+  return true;
 }
 
 void MetricsRenderFrameObserver::MaybeSetCompletedBeforeFCP(int request_id) {

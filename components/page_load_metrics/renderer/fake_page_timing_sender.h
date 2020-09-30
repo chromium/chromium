@@ -131,6 +131,8 @@ class FakePageTimingSender : public PageTimingSender {
                   const mojom::CpuTimingPtr& cpu_timing,
                   mojom::DeferredResourceCountsPtr new_deferred_resource_data,
                   mojom::InputTimingPtr new_input_timing) override;
+  void SetUpSmoothnessReporting(
+      base::ReadOnlySharedMemoryRegion shared_memory) override;
 
  private:
   PageTimingValidator* const validator_;

@@ -21,6 +21,7 @@
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -751,6 +752,9 @@ class CONTENT_EXPORT RenderFrameImpl
   void DidCommitAndDrawCompositorFrame() override;
   void WasHidden() override;
   void WasShown() override;
+
+  void SetUpSharedMemoryForSmoothness(
+      base::ReadOnlySharedMemoryRegion shared_memory);
 
   // Binds to the fullscreen service in the browser.
   void BindFullscreen(
