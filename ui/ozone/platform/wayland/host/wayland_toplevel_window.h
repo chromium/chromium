@@ -76,6 +76,7 @@ class WaylandToplevelWindow : public WaylandWindow,
   void OnDragLeave() override;
   void OnDragSessionClose(uint32_t dnd_action) override;
   bool OnInitialize(PlatformWindowInitProperties properties) override;
+  bool IsActive() const override;
 
   // WmMoveLoopHandler:
   bool RunMoveLoop(const gfx::Vector2d& drag_offset) override;

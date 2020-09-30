@@ -102,13 +102,16 @@ void WaylandAuxiliaryWindow::CreateSubsurface() {
 
 bool WaylandAuxiliaryWindow::OnInitialize(
     PlatformWindowInitProperties properties) {
+  DCHECK(!parent_window());
+
   // If we do not have parent window provided, we must always use a focused
   // window or a window that entered drag whenever the subsurface is created.
-  if (properties.parent_widget == gfx::kNullAcceleratedWidget) {
-    DCHECK(!parent_window());
+  if (properties.parent_widget == gfx::kNullAcceleratedWidget)
     return true;
-  }
-  set_parent_window(GetParentWindow(properties.parent_widget));
+
+  set_parent_window(
+      connection()->wayland_window_manager()->FindParentForNewWindow(
+          properties.parent_widget));
   return true;
 }
 
