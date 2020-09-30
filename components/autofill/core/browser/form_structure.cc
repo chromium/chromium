@@ -1873,15 +1873,17 @@ void FormStructure::RationalizeAddressStateCountry(
 
 void FormStructure::OverrideServerPredictionsWithHeuristics() {
   if (!base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForMoreStructureInNames)) {
+          features::kAutofillEnableSupportForMoreStructureInNames) &&
+      !base::FeatureList::IsEnabled(
+          features::kAutofillEnableSupportForMoreStructureInAddresses)) {
     return;
   }
   for (const auto& field : fields_) {
-    // If the heuristic type is |LAST_NAME_SECOND| or |LAST_NAME_FIRST|
-    // unconditionally use this prediction.
     switch (field->heuristic_type()) {
       case NAME_LAST_SECOND:
       case NAME_LAST_FIRST:
+      case ADDRESS_HOME_STREET_NAME:
+      case ADDRESS_HOME_HOUSE_NUMBER:
         field->SetTypeTo(AutofillType(field->heuristic_type()));
         break;
       default: {
