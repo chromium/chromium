@@ -40,7 +40,7 @@ class TestableInputMethodUtil : public InputMethodUtil {
   }
   // Change access rights.
   using InputMethodUtil::GetInputMethodIdsFromLanguageCodeInternal;
-  using InputMethodUtil::GetKeyboardLayoutName;
+  using InputMethodUtil::GetIdToDescriptorMapForTesting;
 };
 
 }  // namespace
@@ -239,27 +239,6 @@ TEST_F(InputMethodUtilTest, TestIsKeyboardLayout) {
   EXPECT_FALSE(InputMethodUtil::IsKeyboardLayout(Id(pinyin_ime_id)));
 }
 
-TEST_F(InputMethodUtilTest, TestGetKeyboardLayoutName) {
-  // Unsupported case.
-  EXPECT_EQ("", util_.GetKeyboardLayoutName("UNSUPPORTED_ID"));
-
-  // Supported cases (samples).
-  EXPECT_EQ("us", util_.GetKeyboardLayoutName(Id(pinyin_ime_id)));
-  EXPECT_EQ("es", util_.GetKeyboardLayoutName(Id("xkb:es::spa")));
-  EXPECT_EQ("es(cat)", util_.GetKeyboardLayoutName(Id("xkb:es:cat:cat")));
-  EXPECT_EQ("gb(extd)", util_.GetKeyboardLayoutName(Id("xkb:gb:extd:eng")));
-  EXPECT_EQ("us", util_.GetKeyboardLayoutName(Id("xkb:us::eng")));
-  EXPECT_EQ("us(dvorak)", util_.GetKeyboardLayoutName(Id("xkb:us:dvorak:eng")));
-  EXPECT_EQ("us(colemak)",
-            util_.GetKeyboardLayoutName(Id("xkb:us:colemak:eng")));
-  EXPECT_EQ("de(neo)", util_.GetKeyboardLayoutName(Id("xkb:de:neo:ger")));
-}
-
-TEST_F(InputMethodUtilTest, TestGetInputMethodDisplayNameFromId) {
-  EXPECT_EQ("US", util_.GetInputMethodDisplayNameFromId("xkb:us::eng"));
-  EXPECT_EQ("", util_.GetInputMethodDisplayNameFromId("nonexistent"));
-}
-
 TEST_F(InputMethodUtilTest, TestGetInputMethodDescriptorFromId) {
   EXPECT_EQ(nullptr, util_.GetInputMethodDescriptorFromId("non_existent"));
 
@@ -429,7 +408,7 @@ TEST_F(InputMethodUtilTest, TestGetLanguageCodesFromInputMethodIds) {
 // Test all supported descriptors to detect a typo in input_methods.txt.
 TEST_F(InputMethodUtilTest, TestIBusInputMethodText) {
   const std::map<std::string, InputMethodDescriptor>& id_to_descriptor =
-      util_.GetIdToDesciptorMapForTesting();
+      util_.GetIdToDescriptorMapForTesting();
   for (const auto& it : id_to_descriptor) {
     const std::string language_code = it.second.language_codes().at(0);
     const base::string16 display_name =

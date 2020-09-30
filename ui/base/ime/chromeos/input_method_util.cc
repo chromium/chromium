@@ -474,28 +474,6 @@ bool InputMethodUtil::IsKeyboardLayout(const std::string& input_method_id) {
          extension_ime_util::IsKeyboardLayoutExtension(input_method_id);
 }
 
-std::string InputMethodUtil::GetKeyboardLayoutName(
-    const std::string& input_method_id) const {
-  auto iter = id_to_descriptor_.find(input_method_id);
-  return (iter == id_to_descriptor_.end()) ?
-      "" : iter->second.GetPreferredKeyboardLayout();
-}
-
-std::string InputMethodUtil::GetInputMethodDisplayNameFromId(
-    const std::string& input_method_id) const {
-  base::string16 display_name;
-  if (!extension_ime_util::IsExtensionIME(input_method_id) &&
-      TranslateStringInternal(input_method_id, &display_name)) {
-    return base::UTF16ToUTF8(display_name);
-  }
-  const InputMethodDescriptor* descriptor =
-      GetInputMethodDescriptorFromId(input_method_id);
-  if (descriptor)
-    return GetLocalizedDisplayName(*descriptor);
-  // Return an empty string if the input method is not found.
-  return "";
-}
-
 base::string16 InputMethodUtil::GetInputMethodShortName(
     const InputMethodDescriptor& input_method) const {
   // TODO(shuchen): remove this method, as the client can directly use
@@ -806,7 +784,7 @@ void InputMethodUtil::InitXkbInputMethodsForTesting(
 }
 
 const InputMethodUtil::InputMethodIdToDescriptorMap&
-InputMethodUtil::GetIdToDesciptorMapForTesting() {
+InputMethodUtil::GetIdToDescriptorMapForTesting() {
   return id_to_descriptor_;
 }
 
