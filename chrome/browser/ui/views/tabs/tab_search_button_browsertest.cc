@@ -91,6 +91,15 @@ IN_PROC_BROWSER_TEST_P(TabSearchButtonBrowserTest, TestBubbleVisible) {
   ASSERT_EQ(nullptr, tab_search_button()->bubble_for_testing());
 }
 
+IN_PROC_BROWSER_TEST_P(TabSearchButtonBrowserTest, BubbleNotVisibleIncognito) {
+  Browser* incognito_browser = CreateIncognitoBrowser();
+  BrowserView* incognito_browser_view =
+      BrowserView::GetBrowserViewForBrowser(incognito_browser);
+
+  // The Tab Search button should not be available on incognito browsers.
+  EXPECT_EQ(nullptr, incognito_browser_view->GetTabSearchButton());
+}
+
 // On macOS, most accelerators are handled by CommandDispatcher.
 #if !defined(OS_MAC)
 IN_PROC_BROWSER_TEST_P(TabSearchButtonBrowserTest, TestBubbleKeyboardShortcut) {
