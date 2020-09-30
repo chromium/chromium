@@ -15,6 +15,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
@@ -63,6 +64,7 @@ public class InfoBarAppearanceTest {
     @Test
     @MediumTest
     @Feature({"InfoBars", "UiCatalogue"})
+    @DisabledTest(message = "https://crbug.com/1133772")
     public void testFramebustBlockInfoBar() throws Exception {
         FramebustBlockInfoBar infobar = new FramebustBlockInfoBar("http://very.evil.biz");
         captureMiniAndRegularInfobar(infobar);
