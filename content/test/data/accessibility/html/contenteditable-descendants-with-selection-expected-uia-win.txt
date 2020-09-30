@@ -15,6 +15,5 @@ Document
 ++++++++++Text Name='Always expose editable tables as tables.' IsControlElement=false
 ++++List
 ++++++ListItem
-++++++++Group
-++++++++++Text Name='1. ' IsControlElement=false
+++++++++Text Name='1. ' IsControlElement=false
 ++++++++Text Name='Editable list item.' IsControlElement=false
