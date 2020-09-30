@@ -92,17 +92,12 @@ group("bindings_modules_v8_generated") {
 
 idl_compiler("generate_bindings_modules_v8_interfaces") {
   if (use_blink_v8_binding_new_idl_interface) {
-    # modules_idl_files = interfaces + callback interfaces
-    # modules_non_callback_idl_files = interfaces only
-    set_sources_assignment_filter([ "*_callback.idl" ])
-    sources = modules_idl_files
-    modules_interface_idl_files = sources
-    if (use_blink_v8_binding_new_idl_callback_interface) {
-      modules_callback_interface_idl_files =
-          modules_idl_files - modules_interface_idl_files
-    }
-    set_sources_assignment_filter([])
-    sources = []
+    modules_interface_idl_files =
+        filter_exclude(modules_idl_files, [ "*_callback.idl" ])
+  }
+  if (use_blink_v8_binding_new_idl_callback_interface) {
+    modules_callback_interface_idl_files =
+        filter_include(modules_idl_files, [ "*_callback.idl" ])
   }
 
   sources = modules_definition_idl_files
