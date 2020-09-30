@@ -802,6 +802,8 @@ component("net") {
       "nqe/observation_buffer.cc",
       "nqe/observation_buffer.h",
       "nqe/peer_to_peer_connections_count_observer.h",
+      "nqe/pref_names.cc",
+      "nqe/pref_names.h",
       "nqe/rtt_throughput_estimates_observer.h",
       "nqe/socket_watcher.cc",
       "nqe/socket_watcher.h",

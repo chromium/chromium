@@ -44,6 +44,7 @@
 #include "components/variations/service/safe_seed_manager.h"
 #include "components/variations/service/variations_service.h"
 #include "content/public/common/content_switch_dependent_feature_overrides.h"
+#include "net/nqe/pref_names.h"
 #include "services/preferences/tracked/segregated_pref_store.h"
 
 namespace android_webview {
@@ -80,6 +81,7 @@ const char* const kPersistentPrefsAllowlist[] = {
     // Unsent logs metadata.
     metrics::prefs::kMetricsInitialLogsMetadata,
     metrics::prefs::kMetricsOngoingLogsMetadata,
+    net::nqe::kNetworkQualities,
     // Current and past country codes, to filter variations studies by country.
     variations::prefs::kVariationsCountry,
     variations::prefs::kVariationsPermanentConsistencyCountry,
