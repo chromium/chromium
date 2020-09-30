@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/metrics/field_trial.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -100,7 +101,15 @@ void MoveSkippedLanguagesToEndIfNecessary(
 
 }  // namespace
 
-TranslateManager::~TranslateManager() {}
+const base::Feature kOverrideLanguagePrefsForHrefTranslate{
+    "OverrideLanguagePrefsForHrefTranslate", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kOverrideSitePrefsForHrefTranslate{
+    "OverrideSitePrefsForHrefTranslate", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const char kForceAutoTranslateKey[] = "force-auto-translate";
+
+TranslateManager::~TranslateManager() = default;
 
 // static
 std::unique_ptr<TranslateManager::TranslateErrorCallbackList::Subscription>
@@ -827,7 +836,24 @@ void TranslateManager::FilterForUserPrefs(
   // Don't translate any user black-listed languages.
   if (!translate_prefs->CanTranslateLanguage(accept_languages,
                                              page_language_code)) {
-    decision->PreventAllTriggering();
+    decision->PreventAutoTranslate();
+    decision->PreventShowingUI();
+    decision->PreventShowingPredefinedLanguageTranslateUI();
+
+    // Disable showing the translate UI for hrefTranslate unless hrefTranslate
+    // is supposed to override the language blocklist.
+    if (!base::FeatureList::IsEnabled(kOverrideLanguagePrefsForHrefTranslate)) {
+      decision->PreventShowingHrefTranslateUI();
+    }
+    // Disable auto-translating the page for hrefTranslate unless hrefTranslate
+    // is supposed to override the language blocklist for auto-translation as
+    // well.
+    if (!base::GetFieldTrialParamByFeatureAsBool(
+            kOverrideLanguagePrefsForHrefTranslate, kForceAutoTranslateKey,
+            false)) {
+      decision->PreventAutoHrefTranslate();
+    }
+
     decision->initiation_statuses.push_back(
         TranslateBrowserMetrics::INITIATION_STATUS_DISABLED_BY_CONFIG);
     decision->ranker_events.push_back(
@@ -837,7 +863,23 @@ void TranslateManager::FilterForUserPrefs(
   // Don't translate any user black-listed URLs.
   const GURL& page_url = translate_driver_->GetVisibleURL();
   if (translate_prefs->IsSiteBlacklisted(page_url.HostNoBrackets())) {
-    decision->PreventAllTriggering();
+    decision->PreventAutoTranslate();
+    decision->PreventShowingUI();
+    decision->PreventShowingPredefinedLanguageTranslateUI();
+
+    // Disable showing the translate UI for hrefTranslate unless hrefTranslate
+    // is supposed to override the site blocklist.
+    if (!base::FeatureList::IsEnabled(kOverrideSitePrefsForHrefTranslate)) {
+      decision->PreventShowingHrefTranslateUI();
+    }
+    // Disable auto-translating the page for hrefTranslate unless hrefTranslate
+    // is supposed to override the site blocklist for auto-translation as well.
+    if (!base::GetFieldTrialParamByFeatureAsBool(
+            kOverrideSitePrefsForHrefTranslate, kForceAutoTranslateKey,
+            false)) {
+      decision->PreventAutoHrefTranslate();
+    }
+
     decision->initiation_statuses.push_back(
         TranslateBrowserMetrics::INITIATION_STATUS_DISABLED_BY_CONFIG);
     decision->ranker_events.push_back(

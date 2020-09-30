@@ -43,6 +43,10 @@ class TranslateManagerTest;
 struct TranslateErrorDetails;
 struct TranslateInitDetails;
 
+extern const base::Feature kOverrideLanguagePrefsForHrefTranslate;
+extern const base::Feature kOverrideSitePrefsForHrefTranslate;
+extern const char kForceAutoTranslateKey[];
+
 // The TranslateManager class is responsible for showing an info-bar when a page
 // in a language different than the user language is loaded.  It triggers the
 // page translation the user requests.

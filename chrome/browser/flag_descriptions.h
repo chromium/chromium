@@ -1021,6 +1021,11 @@ extern const char kOverlayStrategiesUnoccludedFullscreen[];
 extern const char kOverlayStrategiesUnoccluded[];
 extern const char kOverlayStrategiesOccludedAndUnoccluded[];
 
+extern const char kOverrideLanguagePrefsForHrefTranslateName[];
+extern const char kOverrideLanguagePrefsForHrefTranslateDescription[];
+extern const char kOverrideSitePrefsForHrefTranslateName[];
+extern const char kOverrideSitePrefsForHrefTranslateDescription[];
+
 extern const char kUpdateHoverAtBeginFrameName[];
 extern const char kUpdateHoverAtBeginFrameDescription[];
 

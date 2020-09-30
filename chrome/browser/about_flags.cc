@@ -125,6 +125,7 @@
 #include "components/sync/base/sync_base_switches.h"
 #include "components/sync/driver/sync_driver_switches.h"
 #include "components/tracing/common/tracing_switches.h"
+#include "components/translate/core/browser/translate_manager.h"
 #include "components/translate/core/browser/translate_prefs.h"
 #include "components/translate/core/browser/translate_ranker_impl.h"
 #include "components/translate/core/common/translate_util.h"
@@ -1504,6 +1505,21 @@ const FeatureEntry::FeatureVariation
         {"(Zero threshold)", kTranslateForceTriggerOnEnglishBackoff,
          base::size(kTranslateForceTriggerOnEnglishBackoff), nullptr}};
 #endif  // defined(OS_ANDROID)
+
+const FeatureEntry::FeatureParam kOverridePrefsForHrefTranslateForceAuto[] = {
+    {translate::kForceAutoTranslateKey, "true"}};
+
+const FeatureEntry::FeatureVariation
+    kOverrideLanguagePrefsForHrefTranslateVariations[] = {
+        {"(Force automatic translation of blocked languages for hrefTranslate)",
+         kOverridePrefsForHrefTranslateForceAuto,
+         base::size(kOverridePrefsForHrefTranslateForceAuto), nullptr}};
+
+const FeatureEntry::FeatureVariation
+    kOverrideSitePrefsForHrefTranslateVariations[] = {
+        {"(Force automatic translation of blocked sites for hrefTranslate)",
+         kOverridePrefsForHrefTranslateForceAuto,
+         base::size(kOverridePrefsForHrefTranslateForceAuto), nullptr}};
 
 #if defined(OS_ANDROID)
 const FeatureEntry::FeatureParam kExploreSitesExperimental = {
@@ -2896,6 +2912,22 @@ const FeatureEntry kFeatureEntries[] = {
                                     kTranslateForceTriggerOnEnglishVariations,
                                     "OverrideTranslateTriggerInIndia")},
 #endif  // OS_ANDROID
+
+    {"override-language-prefs-for-href-translate",
+     flag_descriptions::kOverrideLanguagePrefsForHrefTranslateName,
+     flag_descriptions::kOverrideLanguagePrefsForHrefTranslateDescription,
+     kOsAll,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         translate::kOverrideLanguagePrefsForHrefTranslate,
+         kOverrideLanguagePrefsForHrefTranslateVariations,
+         "OverrideLanguagePrefsForHrefTranslate")},
+    {"override-site-prefs-for-href-translate",
+     flag_descriptions::kOverrideSitePrefsForHrefTranslateName,
+     flag_descriptions::kOverrideSitePrefsForHrefTranslateDescription, kOsAll,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         translate::kOverrideSitePrefsForHrefTranslate,
+         kOverrideSitePrefsForHrefTranslateVariations,
+         "OverrideSitePrefsForHrefTranslate")},
 
 #if BUILDFLAG(ENABLE_NATIVE_NOTIFICATIONS) && !defined(OS_CHROMEOS)
     {"enable-native-notifications",

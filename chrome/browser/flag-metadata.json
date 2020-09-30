@@ -3578,6 +3578,16 @@
     "expiry_milestone": -1
   },
   {
+    "name": "override-language-prefs-for-href-translate",
+    "owners": [ "sclittle", "chrome-language" ],
+    "expiry_milestone": 91
+  },
+  {
+    "name": "override-site-prefs-for-href-translate",
+    "owners": [ "sclittle", "chrome-language" ],
+    "expiry_milestone": 91
+  },
+  {
     "name": "overscroll-history-navigation",
     "owners": [ "mohsen", "jinsukkim" ],
     "expiry_milestone": 88
