@@ -15,13 +15,12 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.payments.MethodStrings;
 import org.chromium.components.payments.PaymentFeatureList;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -36,8 +35,7 @@ import java.util.concurrent.TimeoutException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public final class SkipToGPayHelperTest {
     @Rule
-    public ChromeActivityTestRule<ChromeActivity> mRule =
-            new ChromeActivityTestRule<>(ChromeActivity.class);
+    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     // A test PaymentMethodData[] shared by all test instances.
     private PaymentMethodData[] mTestMethodData;
@@ -45,7 +43,7 @@ public final class SkipToGPayHelperTest {
 
     @Before
     public void setUp() {
-        mRule.startMainActivityOnBlankPage();
+        mActivityTestRule.startMainActivityOnBlankPage();
         mHelper = new AutofillTestHelper();
 
         // Set up a test PaymentMethodData that requests "basic-card".
@@ -74,7 +72,7 @@ public final class SkipToGPayHelperTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             Assert.assertEquals(expected,
                     SkipToGPayHelperUtil.canActivateExperiment(
-                            mRule.getWebContents(), mTestMethodData));
+                            mActivityTestRule.getWebContents(), mTestMethodData));
         });
     }
 

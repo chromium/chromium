@@ -19,13 +19,12 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.ScalableTimeout;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -42,8 +41,8 @@ public class PaintPreviewTabServiceTest {
     private static final long POLLING_INTERVAL_MS = ScalableTimeout.scaleTimeout(500);
 
     @Rule
-    public final ChromeActivityTestRule<ChromeActivity> mActivityTestRule =
-            new ChromeActivityTestRule<>(ChromeActivity.class);
+    public final ChromeTabbedActivityTestRule mActivityTestRule =
+            new ChromeTabbedActivityTestRule();
 
     @Rule
     public TemporaryFolder mTemporaryFolder = new TemporaryFolder();

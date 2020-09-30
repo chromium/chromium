@@ -33,15 +33,14 @@ import org.mockito.Mock;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileAccountManagementMetrics;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.browser.sync.settings.AccountManagementFragment;
-import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ActivityUtils;
 import org.chromium.chrome.test.util.BookmarkTestUtil;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
@@ -65,8 +64,8 @@ public class SigninSignoutIntegrationTest {
     public final SettingsActivityTestRule<AccountManagementFragment> mSettingsActivityTestRule =
             new SettingsActivityTestRule<>(AccountManagementFragment.class);
 
-    private final ChromeActivityTestRule<ChromeActivity> mActivityTestRule =
-            new ChromeActivityTestRule<>(ChromeActivity.class);
+    private final ChromeTabbedActivityTestRule mActivityTestRule =
+            new ChromeTabbedActivityTestRule();
 
     private final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
 

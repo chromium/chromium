@@ -18,10 +18,9 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.payments.PaymentApp;
 import org.chromium.components.payments.PaymentAppFactoryParams;
@@ -57,8 +56,7 @@ import java.util.Set;
 public class AndroidPaymentAppFinderTest
         implements PaymentAppFactoryDelegate, PaymentAppFactoryParams {
     @Rule
-    public ChromeActivityTestRule<ChromeActivity> mRule =
-            new ChromeActivityTestRule<>(ChromeActivity.class);
+    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     /** Simulates a package manager in memory. */
     private final MockPackageManagerDelegate mPackageManager = new MockPackageManagerDelegate();
@@ -143,7 +141,7 @@ public class AndroidPaymentAppFinderTest
     // PaymentAppFactoryParams implementation.
     @Override
     public WebContents getWebContents() {
-        return mRule.getActivity().getCurrentWebContents();
+        return mActivityTestRule.getActivity().getCurrentWebContents();
     }
 
     // PaymentAppFactoryParams implementation.
@@ -203,12 +201,12 @@ public class AndroidPaymentAppFinderTest
     @Override
     @Nullable
     public String getTwaPackageName() {
-        return mTwaPackageManager.getTwaPackageName(mRule.getActivity());
+        return mTwaPackageManager.getTwaPackageName(mActivityTestRule.getActivity());
     }
 
     @Before
     public void setUp() throws Throwable {
-        mRule.startMainActivityOnBlankPage();
+        mActivityTestRule.startMainActivityOnBlankPage();
         mPackageManager.reset();
         mServer = EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
         mDownloader.setTestServerUrl(new GURL(mServer.getURL("/components/test/data/payments/")));
@@ -1548,7 +1546,7 @@ public class AndroidPaymentAppFinderTest
     private void addAppStoreMethodAndFindApps(String appStorePackageName,
             GURL appStorePaymentMethod, Set<String> methodNames) throws Throwable {
         mMethodData = buildMethodData(methodNames);
-        mRule.runOnUiThread(() -> {
+        mActivityTestRule.runOnUiThread(() -> {
             AndroidPaymentAppFinder finder =
                     new AndroidPaymentAppFinder(new PaymentManifestWebDataService(), mDownloader,
                             new PaymentManifestParser(), mPackageManager, mTwaPackageManager,

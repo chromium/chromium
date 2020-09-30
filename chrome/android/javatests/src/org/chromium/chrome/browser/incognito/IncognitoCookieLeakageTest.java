@@ -24,15 +24,14 @@ import org.chromium.base.test.params.ParameterProvider;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.incognito.IncognitoDataTestUtils.ActivityType;
 import org.chromium.chrome.browser.incognito.IncognitoDataTestUtils.TestParams;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
+import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.content_public.browser.test.util.Criteria;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
@@ -60,8 +59,8 @@ public class IncognitoCookieLeakageTest {
     private static final String COOKIES_SETTING_PATH = "/chrome/test/data/android/cookie.html";
 
     @Rule
-    public ChromeActivityTestRule<ChromeTabbedActivity> mChromeActivityTestRule =
-            new ChromeActivityTestRule<>(ChromeTabbedActivity.class);
+    public ChromeTabbedActivityTestRule mChromeActivityTestRule =
+            new ChromeTabbedActivityTestRule();
 
     @Rule
     public CustomTabActivityTestRule mCustomTabActivityTestRule = new CustomTabActivityTestRule();

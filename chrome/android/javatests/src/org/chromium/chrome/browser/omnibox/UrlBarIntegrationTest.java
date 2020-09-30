@@ -26,11 +26,10 @@ import org.chromium.base.test.util.CloseableOnMainThread;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.content_public.browser.test.util.Criteria;
@@ -58,8 +57,7 @@ public class UrlBarIntegrationTest {
             "data:text/plain,H" + new String(new char[9000]).replace('\0', 'u') + "ge!";
 
     @Rule
-    public ChromeActivityTestRule<ChromeTabbedActivity> mActivityTestRule =
-            new ChromeActivityTestRule<>(ChromeTabbedActivity.class);
+    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     private UrlBar getUrlBar() {
         return (UrlBar) mActivityTestRule.getActivity().findViewById(R.id.url_bar);

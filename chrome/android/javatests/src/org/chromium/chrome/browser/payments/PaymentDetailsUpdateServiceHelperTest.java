@@ -24,10 +24,9 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.payments.Address;
 import org.chromium.components.payments.ErrorStrings;
@@ -58,8 +57,7 @@ public class PaymentDetailsUpdateServiceHelperTest {
     private static final int DECODER_STARTUP_TIMEOUT_IN_MS = 10000;
 
     @Rule
-    public ChromeActivityTestRule<ChromeActivity> mRule =
-            new ChromeActivityTestRule<>(ChromeActivity.class);
+    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
@@ -108,8 +106,8 @@ public class PaymentDetailsUpdateServiceHelperTest {
 
     @Before
     public void setUp() throws Throwable {
-        mRule.startMainActivityOnBlankPage();
-        mContext = mRule.getActivity();
+        mActivityTestRule.startMainActivityOnBlankPage();
+        mContext = mActivityTestRule.getActivity();
     }
 
     private void installPaymentApp() {
@@ -121,7 +119,7 @@ public class PaymentDetailsUpdateServiceHelperTest {
 
     private void installAndInvokePaymentApp() throws Throwable {
         installPaymentApp();
-        mRule.runOnUiThread(() -> {
+        mActivityTestRule.runOnUiThread(() -> {
             PaymentDetailsUpdateServiceHelper.getInstance().initialize(
                     mPackageManager, /*packageName=*/"com.bobpay", mUpdateListener);
         });

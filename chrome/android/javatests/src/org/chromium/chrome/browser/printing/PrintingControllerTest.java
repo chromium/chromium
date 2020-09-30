@@ -26,12 +26,11 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.TestFileUtil;
 import org.chromium.base.test.util.UrlUtils;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
-import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.printing.PrintDocumentAdapterWrapper.LayoutResultCallbackWrapper;
 import org.chromium.printing.PrintDocumentAdapterWrapper.WriteResultCallbackWrapper;
@@ -55,8 +54,8 @@ import java.util.concurrent.TimeoutException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class PrintingControllerTest {
     @Rule
-    public final ChromeActivityTestRule<ChromeActivity> mActivityTestRule =
-            new ChromeActivityTestRule<>(ChromeActivity.class);
+    public final ChromeTabbedActivityTestRule mActivityTestRule =
+            new ChromeTabbedActivityTestRule();
 
     private static final String TEMP_FILE_NAME = "temp_print";
     private static final String TEMP_FILE_EXTENSION = ".pdf";

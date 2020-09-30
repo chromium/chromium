@@ -34,15 +34,14 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.incognito.IncognitoDataTestUtils.ActivityType;
 import org.chromium.chrome.browser.incognito.IncognitoDataTestUtils.TestParams;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
+import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.LocationSettingsTestUtil;
 import org.chromium.content_public.browser.test.util.Criteria;
@@ -75,8 +74,8 @@ public class IncognitoPermissionLeakageTest {
             "/content/test/data/android/geolocation.html";
 
     @Rule
-    public ChromeActivityTestRule<ChromeTabbedActivity> mChromeActivityTestRule =
-            new ChromeActivityTestRule<>(ChromeTabbedActivity.class);
+    public ChromeTabbedActivityTestRule mChromeActivityTestRule =
+            new ChromeTabbedActivityTestRule();
 
     @Rule
     public CustomTabActivityTestRule mCustomTabActivityTestRule = new CustomTabActivityTestRule();

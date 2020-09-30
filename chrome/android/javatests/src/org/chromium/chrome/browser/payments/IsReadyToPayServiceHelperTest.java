@@ -30,10 +30,9 @@ import org.chromium.IsReadyToPayService;
 import org.chromium.IsReadyToPayServiceCallback;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.payments.intent.IsReadyToPayServiceHelper;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
 
@@ -44,8 +43,7 @@ import org.chromium.content_public.browser.test.util.CriteriaHelper;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class IsReadyToPayServiceHelperTest {
     @Rule
-    public ChromeActivityTestRule<ChromeActivity> mRule =
-            new ChromeActivityTestRule<>(ChromeActivity.class);
+    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
@@ -196,7 +194,7 @@ public class IsReadyToPayServiceHelperTest {
     @Feature({"Payments"})
     public void onResponseTest() throws Throwable {
         mResponseReceived = false;
-        mRule.runOnUiThread(() -> {
+        mActivityTestRule.runOnUiThread(() -> {
             Intent intent = new Intent();
             intent.setClassName("mock.package.name", "mock.service.name");
             Context context = createContext(createAlwaysReadyService());
@@ -221,7 +219,7 @@ public class IsReadyToPayServiceHelperTest {
     @Feature({"Payments"})
     public void unresponsiveServiceTest() throws Throwable {
         mErrorReceived = false;
-        mRule.runOnUiThread(() -> {
+        mActivityTestRule.runOnUiThread(() -> {
             Intent intent = new Intent();
             intent.setClassName("mock.package.name", "mock.service.name");
             Context context = createContext(createUnresponsiveService());
@@ -246,7 +244,7 @@ public class IsReadyToPayServiceHelperTest {
     @Feature({"Payments"})
     public void noServiceTest() throws Throwable {
         mErrorReceived = false;
-        mRule.runOnUiThread(() -> {
+        mActivityTestRule.runOnUiThread(() -> {
             Intent intent = new Intent();
             intent.setClassName("mock.package.name", "mock.service.name");
             Context context = createContext(/*serviceBinder=*/null);
@@ -271,7 +269,7 @@ public class IsReadyToPayServiceHelperTest {
     @Feature({"Payments"})
     public void serviceConnectionTimeoutTest() throws Throwable {
         mErrorReceived = false;
-        mRule.runOnUiThread(() -> {
+        mActivityTestRule.runOnUiThread(() -> {
             Intent intent = new Intent();
             intent.setClassName("mock.package.name", "mock.service.name");
             Context context = createContextThatNeverConnectToService();

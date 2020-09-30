@@ -67,8 +67,8 @@ import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.searchwidget.SearchActivity.SearchActivityDelegate;
 import org.chromium.chrome.browser.share.clipboard.ClipboardImageFileProvider;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
+import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.MultiActivityTestRule;
 import org.chromium.chrome.test.util.ActivityUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
@@ -181,8 +181,7 @@ public class SearchActivityTest {
     public MultiActivityTestRule mTestRule = new MultiActivityTestRule();
 
     @Rule
-    public ChromeActivityTestRule<ChromeTabbedActivity> mActivityTestRule =
-            new ChromeActivityTestRule<>(ChromeTabbedActivity.class);
+    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     @Mock
     VoiceRecognitionHandler mHandler;

@@ -24,14 +24,13 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.CollectionUtil;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataFragment.DialogOption;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.browser.sync.AndroidSyncSettings;
 import org.chromium.chrome.browser.sync.ProfileSyncService;
-import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.sync.ModelType;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -46,8 +45,8 @@ import java.util.Set;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class ClearBrowsingDataFragmentBasicTest {
     @Rule
-    public final ChromeActivityTestRule<ChromeActivity> mActivityTestRule =
-            new ChromeActivityTestRule<>(ChromeActivity.class);
+    public final ChromeTabbedActivityTestRule mActivityTestRule =
+            new ChromeTabbedActivityTestRule();
     @Rule
     public final SettingsActivityTestRule<ClearBrowsingDataFragmentBasic>
             mSettingsActivityTestRule =
