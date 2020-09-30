@@ -133,6 +133,7 @@ source_set("unit_tests") {
   sources = [
     "browser_dm_token_storage_ios_unittest.mm",
     "policy_unittest.mm",
+    "reporting/browser_report_generator_ios_unittest.mm",
   ]
   deps = [
     ":policy",
@@ -146,6 +147,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser:utils",
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/prefs",
+    "//ios/chrome/test:test_support",
     "//testing/gtest",
   ]
 }
