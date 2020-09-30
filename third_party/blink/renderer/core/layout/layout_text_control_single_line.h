@@ -86,13 +86,6 @@ class LayoutTextControlSingleLine : public LayoutTextControl {
   HTMLElement* InnerSpinButtonElement() const;
 };
 
-template <>
-struct DowncastTraits<LayoutTextControlSingleLine> {
-  static bool AllowFrom(const LayoutObject& object) {
-    return object.IsTextField();
-  }
-};
-
 // ----------------------------
 
 class LayoutTextControlInnerEditor : public LayoutBlockFlow {

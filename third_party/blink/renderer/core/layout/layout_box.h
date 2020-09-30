@@ -2335,6 +2335,11 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   NGLayoutResultList layout_results_;
 };
 
+template <>
+struct DowncastTraits<LayoutBox> {
+  static bool AllowFrom(const LayoutObject& object) { return object.IsBox(); }
+};
+
 DEFINE_LAYOUT_OBJECT_TYPE_CASTS(LayoutBox, IsBox());
 
 inline LayoutBox* LayoutBox::PreviousSiblingBox() const {
