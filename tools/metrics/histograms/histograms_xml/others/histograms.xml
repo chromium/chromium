@@ -9833,8 +9833,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PerformanceMonitor.AverageCPU" units="PercentCPUUsage"
-    expires_after="M85">
+    expires_after="M88">
+  <owner>fdoray@chromium.org</owner>
   <owner>oysteine@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
   <summary>
     Average CPU utilization of a process, read out at each two-minute interval.
     The utilization is in the 0-100% range per CPU, which is then summed up.
