@@ -4915,6 +4915,9 @@ if (enable_java_templates) {
               "${_rebased_base_module_build_config}:deps_info:r_text_path)",
         ]
       }
+      if (defined(invoker.validate_services) && invoker.validate_services) {
+        args += [ "--validate-services" ]
+      }
 
       foreach(_module, _modules) {
         _rebased_build_config =

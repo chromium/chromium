@@ -15,10 +15,14 @@ import sys
 import tempfile
 import zipfile
 
-# NOTE: Keep this consistent with the _create_app_bundle_py_imports definition
-#       in build/config/android/rules.py
+sys.path.append(
+    os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir)))
+from pylib.utils import dexdump
+
 from util import build_utils
+from util import manifest_utils
 from util import resource_utils
+from xml.etree import ElementTree
 
 import bundletool
 
@@ -105,6 +109,10 @@ def _ParseArgs(args):
   parser.add_argument('--keystore-path', help='Keystore path')
   parser.add_argument('--keystore-password', help='Keystore password')
   parser.add_argument('--key-name', help='Keystore key name')
+  parser.add_argument(
+      '--validate-services',
+      action='store_true',
+      help='Check if services are in base module if isolatedSplits is enabled.')
 
   options = parser.parse_args(args)
   options.module_zips = build_utils.ParseGnList(options.module_zips)
@@ -385,6 +393,58 @@ def _WriteBundlePathmap(module_pathmap_paths, module_names,
         bundle_pathmap_file.write(line)
 
 
+def _GetManifestForModule(bundle_path, module_name):
+  return ElementTree.fromstring(
+      bundletool.RunBundleTool([
+          'dump', 'manifest', '--bundle', bundle_path, '--module', module_name
+      ]))
+
+
+def _GetServiceNames(manifest):
+  android_name = '{%s}name' % manifest_utils.ANDROID_NAMESPACE
+  return [s.attrib.get(android_name) for s in manifest.iter('service')]
+
+
+def _MaybeCheckServicesPresentInBase(bundle_path, module_zips):
+  """Checks bundles with isolated splits define all services in the base module.
+
+  Due to b/169196314, service classes are not found if they are not present in
+  the base module.
+  """
+  base_manifest = _GetManifestForModule(bundle_path, 'base')
+  isolated_splits = base_manifest.get('{%s}isolatedSplits' %
+                                      manifest_utils.ANDROID_NAMESPACE)
+  if isolated_splits != 'true':
+    return
+
+  # Collect service names from all split manifests.
+  base_zip = None
+  service_names = _GetServiceNames(base_manifest)
+  for module_zip in module_zips:
+    name = os.path.basename(module_zip)[:-len('.zip')]
+    if name == 'base':
+      base_zip = module_zip
+    else:
+      service_names.extend(
+          _GetServiceNames(_GetManifestForModule(bundle_path, name)))
+
+  # Extract classes from the base module's dex.
+  classes = set()
+  base_package_name = manifest_utils.GetPackage(base_manifest)
+  for package in dexdump.Dump(base_zip):
+    for name, package_dict in package.items():
+      if not name:
+        name = base_package_name
+      classes.update('%s.%s' % (name, c)
+                     for c in package_dict['classes'].keys())
+
+  # Ensure all services are present in base module.
+  for service_name in service_names:
+    if service_name not in classes:
+      raise Exception("Service %s should be present in the base module's dex."
+                      " See b/169196314 for more details." % service_name)
+
+
 def main(args):
   args = build_utils.ExpandFileArgs(args)
   options = _ParseArgs(args)
@@ -436,6 +496,13 @@ def main(args):
         print_stderr=True,
         stderr_filter=build_utils.FilterReflectiveAccessJavaWarnings,
         fail_on_output=options.warnings_as_errors)
+
+    if options.validate_services:
+      # TODO(crbug.com/1126301): This step takes 0.4s locally for bundles with
+      # isolated splits disabled and 2s for bundles with isolated splits
+      # enabled.  Consider making this run in parallel or move into a separate
+      # step before enabling isolated splits by default.
+      _MaybeCheckServicesPresentInBase(tmp_unsigned_bundle, module_zips)
 
     if options.keystore_path:
       # NOTE: As stated by the public documentation, apksigner cannot be used

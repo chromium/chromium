@@ -389,7 +389,7 @@ def _GetTestsFromProguard(jar_path):
 
 
 def _GetTestsFromDexdump(test_apk):
-  dump = dexdump.Dump(test_apk)
+  dex_dumps = dexdump.Dump(test_apk)
   tests = []
 
   def get_test_methods(methods):
@@ -401,15 +401,16 @@ def _GetTestsFromDexdump(test_apk):
           'annotations': {'MediumTest': None},
         } for m in methods if m.startswith('test')]
 
-  for package_name, package_info in dump.iteritems():
-    for class_name, class_info in package_info['classes'].iteritems():
-      if class_name.endswith('Test'):
-        tests.append({
-            'class': '%s.%s' % (package_name, class_name),
-            'annotations': {},
-            'methods': get_test_methods(class_info['methods']),
-            'superclass': class_info['superclass'],
-        })
+  for dump in dex_dumps:
+    for package_name, package_info in dump.iteritems():
+      for class_name, class_info in package_info['classes'].iteritems():
+        if class_name.endswith('Test'):
+          tests.append({
+              'class': '%s.%s' % (package_name, class_name),
+              'annotations': {},
+              'methods': get_test_methods(class_info['methods']),
+              'superclass': class_info['superclass'],
+          })
   return tests
 
 def SaveTestsToPickle(pickle_path, tests):
