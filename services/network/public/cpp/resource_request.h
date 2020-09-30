@@ -72,7 +72,11 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
   net::SiteForCookies site_for_cookies;
   bool force_ignore_site_for_cookies = false;
   bool update_first_party_url_on_redirect = false;
+
+  // SECURITY NOTE: |request_initiator| is a security-sensitive field.  Please
+  // consult the doc comment for |request_initiator| in url_loader.mojom.
   base::Optional<url::Origin> request_initiator;
+
   base::Optional<url::Origin> isolated_world_origin;
   GURL referrer;
   net::ReferrerPolicy referrer_policy = net::ReferrerPolicy::NEVER_CLEAR;

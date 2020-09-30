@@ -138,23 +138,27 @@ struct URLRequest {
 
   // |request_initiator| indicates the origin initiating the resource request.
   //
-  // |request_initiator| is null for browser-initiated requests (e.g.
+  // |request_initiator| can be null for browser-initiated requests (e.g.
   // navigations initiated via omnibox or bookmarks, internal subresource
   // requests like fetching the SafeBrowsing data, etc.).
   //
   // For all requests initiated via web (both subresource requests and
-  // navigations), |request_initiator| is always set to the origin of the frame
-  // that has initiated the request.  This is true even if the request might
-  // have been initiated by an isolated world (e.g. from a content script of an
-  // extension, with its own, separate origin).  This needs to be true even if
-  // the request might be "proxied" in the browser process on behalf of a web
-  // origin (e.g. as is the case for PaymentRequest API).
+  // navigations), |request_initiator| should always be set to the origin of
+  // the frame (or worker) that has initiated the request.  This is true even
+  // if the request might have been initiated by an isolated world (e.g. from a
+  // content script of an extension, with its own, separate origin).  This
+  // needs to be true even if the request might be "proxied" in the browser
+  // process on behalf of a web origin (e.g. as is the case for PaymentRequest
+  // API).
   //
-  // |request_initiator| is consulted in a variety of security features,
-  // including: calculating Sec-Fetch-Site request header, determining if the
-  // request should be subject to CORS, determining if CORB and/or CORP should
-  // block the response, determining if SameSite=strict cookies should be sent,
-  // etc.
+  // SECURITY NOTE: Factories with |process_id| set to |kBrowserProcessId| do
+  // not enforce |request_initiator_origin_lock| and instead rely on the
+  // factory user to ensure that a valid, non-nullopt |request_initiator| is
+  // provided.  Failure to provide a correct, verified |request_initiator| may
+  // lead to bypasses of CORS, CORB, SameSite cookies and other HTTP security
+  // features.  An untrustworthy process (e.g. a renderer or a utility process)
+  // should not be able to trigger or influence requests with a base::nullopt
+  // |request_initiator|).
   //
   // See also:
   // - |isolated_world_origin|
