@@ -1219,7 +1219,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.DNS_Resolution_And_TCP_Connection_Latency2" units="ms"
-    expires_after="M85">
+    expires_after="never">
+<!-- expires-never: Core network stack health metric -->
+
   <owner>mmenke@chromium.org</owner>
   <summary>
     The time measured before starting DNS lookup until after the connection is
