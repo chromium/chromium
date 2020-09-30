@@ -19,7 +19,7 @@ using testing::_;
 
 namespace media {
 
-TEST(VideoCaptureDeviceAVFoundationMacTest, DISABLED_TakePhoto) {
+TEST(VideoCaptureDeviceAVFoundationMacTest, TakePhoto) {
   RunTestCase(base::BindOnce([] {
     NSString* deviceId = GetFirstDeviceId();
     if (!deviceId) {
@@ -46,8 +46,7 @@ TEST(VideoCaptureDeviceAVFoundationMacTest, DISABLED_TakePhoto) {
   }));
 }
 
-TEST(VideoCaptureDeviceAVFoundationMacTest,
-     DISABLED_StopCaptureWhileTakingPhoto) {
+TEST(VideoCaptureDeviceAVFoundationMacTest, StopCaptureWhileTakingPhoto) {
   RunTestCase(base::BindOnce([] {
     NSString* deviceId = GetFirstDeviceId();
     if (!deviceId) {
@@ -78,8 +77,7 @@ TEST(VideoCaptureDeviceAVFoundationMacTest,
   }));
 }
 
-TEST(VideoCaptureDeviceAVFoundationMacTest,
-     DISABLED_MultiplePendingTakePhotos) {
+TEST(VideoCaptureDeviceAVFoundationMacTest, MultiplePendingTakePhotos) {
   RunTestCase(base::BindOnce([] {
     NSString* deviceId = GetFirstDeviceId();
     if (!deviceId) {
@@ -115,7 +113,7 @@ TEST(VideoCaptureDeviceAVFoundationMacTest,
 }
 
 TEST(VideoCaptureDeviceAVFoundationMacTest,
-     DISABLED_StopCaptureWhileMultiplePendingTakePhotos) {
+     StopCaptureWhileMultiplePendingTakePhotos) {
   RunTestCase(base::BindOnce([] {
     NSString* deviceId = GetFirstDeviceId();
     if (!deviceId) {
@@ -155,7 +153,7 @@ TEST(VideoCaptureDeviceAVFoundationMacTest,
 }
 
 TEST(VideoCaptureDeviceAVFoundationMacTest,
-     DISABLED_StopStillImageOutputWhenNoLongerTakingPhotos) {
+     StopStillImageOutputWhenNoLongerTakingPhotos) {
   RunTestCase(base::BindOnce([] {
     NSString* deviceId = GetFirstDeviceId();
     if (!deviceId) {
@@ -192,7 +190,7 @@ TEST(VideoCaptureDeviceAVFoundationMacTest,
 
 // This test ensures we don't crash even if we leave operations pending.
 TEST(VideoCaptureDeviceAVFoundationMacTest,
-     DISABLED_TakePhotoAndShutDownWithoutWaiting) {
+     TakePhotoAndShutDownWithoutWaiting) {
   RunTestCase(base::BindOnce([] {
     NSString* deviceId = GetFirstDeviceId();
     if (!deviceId) {
