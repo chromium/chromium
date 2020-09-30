@@ -176,7 +176,7 @@ def GetCommitDescription(commit):
 
   Needs to be called from inside the git repository dir."""
   return subprocess.check_output(
-      ['git', 'describe', '--long', '--abbrev=8', commit], shell=True).rstrip()
+      ['git', 'describe', '--long', '--abbrev=8', commit]).rstrip()
 
 
 def DeleteChromeToolsShim():
