@@ -164,7 +164,7 @@ IN_PROC_BROWSER_TEST_F(MediaCanPlayTypeTest, CodecSupportTest_Mpeg2Ts) {
 // See more complete codec string testing in media/base/video_codecs_unittest.cc
 IN_PROC_BROWSER_TEST_F(MediaCanPlayTypeTest, CodecSupportTest_NewVp9Variants) {
 // Profile 2 and 3 support is currently disabled on Android prior to P and MIPS.
-#if (defined(ARCH_CPU_ARM_FAMILY) && !defined(OS_WIN)) || \
+#if (defined(ARCH_CPU_ARM_FAMILY) && !defined(OS_WIN) && !defined(OS_MAC)) || \
     defined(ARCH_CPU_MIPS_FAMILY)
 #if defined(OS_ANDROID)
   if (base::android::BuildInfo::GetInstance()->sdk_int() >=
