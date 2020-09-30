@@ -182,11 +182,11 @@ void RecordEvent(NavigationSuggestionEvent event) {
 // Returns the parts of the domain that are separated by "." or "-", not
 // including the eTLD.
 //
-// |host_without_etld| must outlive the return value since the vector contains
+// |hostname| must outlive the return value since the vector contains
 // StringPieces.
-std::vector<base::StringPiece> SplitDomainWithouteTLDIntoTokens(
-    const std::string& host_without_etld) {
-  return base::SplitStringPiece(host_without_etld, kTargetEmbeddingSeparators,
+std::vector<base::StringPiece> SplitDomainIntoTokens(
+    const std::string& hostname) {
+  return base::SplitStringPiece(hostname, kTargetEmbeddingSeparators,
                                 base::TRIM_WHITESPACE,
                                 base::SPLIT_WANT_NONEMPTY);
 }
@@ -275,14 +275,37 @@ bool UsesCommonWord(const DomainInfo& domain) {
   return false;
 }
 
-// A domain is allowed to be embedded if its e2LD is a common word or any
-// valid partial subdomain is allowlisted.
+// Returns whether |domain_labels| is in the same domain as embedding_domain.
+// e.g. IsEmbeddingItself(["foo", "example", "com"], "example.com") -> true
+//  since foo.example.com is in the same domain as example.com.
+bool IsEmbeddingItself(const base::span<const base::StringPiece>& domain_labels,
+                       const std::string& embedding_domain) {
+  DCHECK(domain_labels.size() >= 2);
+  std::string potential_hostname =
+      domain_labels[domain_labels.size() - 1].as_string();
+  // Attach each token from the end to the embedded target to check if that
+  // subdomain is the embedding domain. (e.g. using the earlier example, check
+  // each ["com", "example.com", "foo.example.com"] against "example.com".
+  for (int i = domain_labels.size() - 2; i >= 0; i--) {
+    potential_hostname =
+        domain_labels[i].as_string() + "." + potential_hostname;
+    if (embedding_domain == potential_hostname) {
+      return true;
+    }
+  }
+  return false;
+}
+
+// A domain is allowed to be embedded if is embedding itself, if its e2LD is a
+// common word or any valid partial subdomain is allowlisted.
 bool IsAllowedToBeEmbedded(
     const DomainInfo& embedded_target,
     const base::span<const base::StringPiece>& subdomain_span,
-    const LookalikeTargetAllowlistChecker& in_target_allowlist) {
+    const LookalikeTargetAllowlistChecker& in_target_allowlist,
+    const std::string& embedding_domain) {
   return UsesCommonWord(embedded_target) ||
-         ASubdomainIsAllowlisted(subdomain_span, in_target_allowlist);
+         ASubdomainIsAllowlisted(subdomain_span, in_target_allowlist) ||
+         IsEmbeddingItself(subdomain_span, embedding_domain);
 }
 
 }  // namespace
@@ -583,10 +606,9 @@ TargetEmbeddingType GetTargetEmbeddingType(
     const std::vector<DomainInfo>& engaged_sites,
     const LookalikeTargetAllowlistChecker& in_target_allowlist,
     std::string* safe_hostname) {
-  const std::string host_without_etld =
-      url_formatter::top_domains::HostnameWithoutRegistry(hostname);
-  const std::vector<base::StringPiece> hostname_tokens_without_etld =
-      SplitDomainWithouteTLDIntoTokens(host_without_etld);
+  const std::string embedding_domain = GetETLDPlusOne(hostname);
+  const std::vector<base::StringPiece> hostname_tokens =
+      SplitDomainIntoTokens(hostname);
 
   // There are O(n^2) potential target embeddings in a domain name. We want to
   // be comprehensive, but optimize so that usually we needn't check all of
@@ -594,24 +616,23 @@ TargetEmbeddingType GetTargetEmbeddingType(
   // the front, checking for a valid eTLD. If we find one, then we consider the
   // possible embedded domains that end in that eTLD (i.e. all possible start
   // points from the beginning of the string onward).
-  for (int end = hostname_tokens_without_etld.size(); end > 0; --end) {
-    base::span<const base::StringPiece> etld_check_span(
-        hostname_tokens_without_etld.data(), end);
+  for (int end = hostname_tokens.size(); end > 0; --end) {
+    base::span<const base::StringPiece> etld_check_span(hostname_tokens.data(),
+                                                        end);
     std::string etld_check_host = base::JoinString(etld_check_span, ".");
     auto etld_check_dominfo = GetDomainInfo(etld_check_host);
 
     // Check if the final token is a no-separator target (e.g. "googlecom").
     // This check happens first so that we can exclude invalid eTLD+1s next.
-    std::string embedded_target = GetMatchingTopDomainWithoutSeparators(
-        hostname_tokens_without_etld[end - 1]);
+    std::string embedded_target =
+        GetMatchingTopDomainWithoutSeparators(hostname_tokens[end - 1]);
     if (!embedded_target.empty()) {
       // Extract the full possibly-spoofed domain. To get this, we take the
       // hostname up until this point, strip off the no-separator bit (e.g.
       // googlecom) and then re-add the the separated version (e.g. google.com).
       auto spoofed_domain =
           etld_check_host.substr(
-              0, etld_check_host.length() -
-                     hostname_tokens_without_etld[end - 1].length()) +
+              0, etld_check_host.length() - hostname_tokens[end - 1].length()) +
           embedded_target;
       const auto no_separator_tokens = base::SplitStringPiece(
           spoofed_domain, kTargetEmbeddingSeparators, base::TRIM_WHITESPACE,
@@ -623,7 +644,7 @@ TargetEmbeddingType GetTargetEmbeddingType(
       if (no_separator_dominfo.domain_without_registry.length() >
               kMinE2LDLengthForTargetEmbedding &&
           !IsAllowedToBeEmbedded(no_separator_dominfo, no_separator_tokens,
-                                 in_target_allowlist)) {
+                                 in_target_allowlist, embedding_domain)) {
         *safe_hostname = embedded_target;
         return TargetEmbeddingType::kInterstitial;
       }
@@ -645,14 +666,14 @@ TargetEmbeddingType GetTargetEmbeddingType(
     // subdomains ending at |end|.
     for (int start = 0; start < end - 1; ++start) {
       const base::span<const base::StringPiece> span(
-          (hostname_tokens_without_etld.data() + start), end - start);
+          hostname_tokens.data() + start, end - start);
       auto embedded_hostname = base::JoinString(span, ".");
       auto embedded_dominfo = GetDomainInfo(embedded_hostname);
 
       for (auto& engaged_site : engaged_sites) {
         if (engaged_site.hostname == embedded_dominfo.hostname &&
-            !IsAllowedToBeEmbedded(embedded_dominfo, span,
-                                   in_target_allowlist)) {
+            !IsAllowedToBeEmbedded(embedded_dominfo, span, in_target_allowlist,
+                                   embedding_domain)) {
           *safe_hostname = engaged_site.hostname;
           return TargetEmbeddingType::kInterstitial;
         }
@@ -664,7 +685,7 @@ TargetEmbeddingType GetTargetEmbeddingType(
     if (DoesETLDPlus1MatchTopDomainOrEngagedSite(
             etld_check_dominfo, engaged_sites, safe_hostname) &&
         !IsAllowedToBeEmbedded(etld_check_dominfo, etld_check_span,
-                               in_target_allowlist)) {
+                               in_target_allowlist, embedding_domain)) {
       return TargetEmbeddingType::kInterstitial;
     }
   }

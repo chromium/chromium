@@ -246,6 +246,28 @@ TEST(LookalikeUrlUtilTest, TargetEmbeddingTest) {
       // Skeleton matching should work against engaged sites at the eTLD level.
       {"subdomain.highéngagement.com-foo.com", "highengagement.com",
        TargetEmbeddingType::kInterstitial},
+
+      // Domains should be allowed to embed themselves.
+      {"highengagement.com.highengagement.com", "", TargetEmbeddingType::kNone},
+      {"subdomain.highengagement.com.highengagement.com", "",
+       TargetEmbeddingType::kNone},
+      {"nothighengagement.highengagement.com.highengagement.com", "",
+       TargetEmbeddingType::kNone},
+      {"google.com.google.com", "", TargetEmbeddingType::kNone},
+      {"www.google.com.google.com", "", TargetEmbeddingType::kNone},
+
+      // Detect embeddings at the end of the domain, too.
+      {"www-google.com", "google.com", TargetEmbeddingType::kInterstitial},
+      {"www-highengagement.com", "highengagement.com",
+       TargetEmbeddingType::kInterstitial},
+      {"subdomain-highengagement.com", "subdomain.highengagement.com",
+       TargetEmbeddingType::kInterstitial},
+      {"google-com.google-com.com", "google.com",
+       TargetEmbeddingType::kInterstitial},
+      {"subdomain.google-com.google-com.com", "google.com",
+       TargetEmbeddingType::kInterstitial},
+      {"google.com-google.com-google.com", "google.com",
+       TargetEmbeddingType::kInterstitial},
   };
 
   for (auto& test_case : kTestCases) {
