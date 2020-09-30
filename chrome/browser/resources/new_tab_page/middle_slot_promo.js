@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/hidden_style_css.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
@@ -26,6 +25,12 @@ class MiddleSlotPromoElement extends PolymerElement {
 
   static get properties() {
     return {
+      /** @type {boolean} */
+      hidden: {
+        type: Boolean,
+        reflectToAttribute: true,
+      },
+
       /** @private */
       modulesEnabled_: {
         type: Boolean,
@@ -77,11 +82,11 @@ class MiddleSlotPromoElement extends PolymerElement {
           this.$.container.appendChild(el);
         }
       });
-      this.$.container.hidden = false;
       this.pageHandler_.onPromoRendered(
           BrowserProxy.getInstance().now(), promo.logUrl || null);
       this.dispatchEvent(new Event(
           'ntp-middle-slot-promo-loaded', {bubbles: true, composed: true}));
+      this.hidden = false;
     });
   }
 

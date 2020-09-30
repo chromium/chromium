@@ -103,9 +103,9 @@
     --tile-hover-color: rgba(255, 255, 255, .1);
   }
 
-  ntp-middle-slot-promo + ntp-module-wrapper,
+  ntp-middle-slot-promo:not([hidden]) + ntp-module-wrapper,
   ntp-module-wrapper + ntp-module-wrapper {
-    margin-top: 24px;
+    margin-top: 16px;
   }
 
   #customizeButtonSpacer {
@@ -282,7 +282,7 @@
   <dom-if if="[[lazyRender_]]" on-dom-change="onLazyRendered_">
     <template>
       <ntp-middle-slot-promo
-          on-ntp-middle-slot-promo-loaded="onMiddleSlotPromoLoaded_">
+          on-ntp-middle-slot-promo-loaded="onMiddleSlotPromoLoaded_" hidden>
       </ntp-middle-slot-promo>
       <template is="dom-repeat" items="[[moduleDescriptors_]]" id="modules"
           on-dom-change="onModulesRendered_">

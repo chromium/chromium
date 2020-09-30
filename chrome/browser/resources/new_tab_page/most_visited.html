@@ -2,7 +2,6 @@
   :host {
     --icon-size: 48px;
     --tile-size: 112px;
-    --tile-margin: 16px;
     --icon-button-color: var(--google-grey-600);
     --icon-button-color-active: var(--google-grey-refresh-700);
     --tile-hover-color: rgba(var(--google-grey-900-rgb), .1);
@@ -19,7 +18,6 @@
     justify-content: center;
     opacity: 0;
     overflow: hidden;
-    padding-top: 3px;
     transition: opacity 300ms ease-in-out;
     width: calc(var(--content-width) + 12px);
   }
@@ -51,10 +49,11 @@
     display: flex;
     flex-direction: column;
     height: var(--tile-size);
-    margin-bottom: var(--tile-margin);
+    margin-bottom: 13px;
+    margin-top: 3px;
     opacity: 1;
     outline: none;
-    padding-top: var(--tile-margin);
+    padding-top: 16px;
     position: relative;
     text-decoration: none;
     transition-duration: 300ms;
