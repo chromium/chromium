@@ -90,9 +90,9 @@ if (is_chromeos) {
 
   js_library("viewer-ink-host") {
     deps = [
-      "//chrome/browser/resources/pdf:metrics",
-      "//chrome/browser/resources/pdf:viewport",
-      "//chrome/browser/resources/pdf/ink:ink_api",
+      "..:metrics",
+      "..:viewport",
+      "../ink:ink_api",
     ]
   }
 }
@@ -118,6 +118,7 @@ js_library("viewer-pdf-sidenav") {
   deps = [
     ":viewer-document-outline",
     ":viewer-thumbnail-bar",
+    "..:metrics",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button.m",
   ]
@@ -143,6 +144,7 @@ js_library("viewer-pdf-toolbar-new") {
   deps = [
     ":viewer-annotations-mode-dialog",
     ":viewer-download-controls",
+    "..:metrics",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }

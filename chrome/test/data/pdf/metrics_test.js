@@ -177,12 +177,18 @@ chrome.test.runTests(function() {
       chrome.test.succeed();
     },
 
-    function testMetricsThumbnail() {
+    function testMetricsSideNav() {
       PDFMetrics.resetForTesting();
 
       chrome.metricsPrivate = new MockMetricsPrivate();
       PDFMetrics.record(UserAction.DOCUMENT_OPENED);
 
+      PDFMetrics.record(UserAction.TOGGLE_SIDENAV);
+      PDFMetrics.record(UserAction.TOGGLE_SIDENAV);
+      PDFMetrics.record(UserAction.TOGGLE_SIDENAV);
+      PDFMetrics.record(UserAction.SELECT_SIDENAV_OUTLINE);
+      PDFMetrics.record(UserAction.SELECT_SIDENAV_THUMBNAILS);
+      PDFMetrics.record(UserAction.SELECT_SIDENAV_THUMBNAILS);
       PDFMetrics.record(UserAction.THUMBNAIL_NAVIGATE);
       PDFMetrics.record(UserAction.THUMBNAIL_NAVIGATE);
 
@@ -190,7 +196,13 @@ chrome.test.runTests(function() {
           {
             [UserAction.DOCUMENT_OPENED]: 1,
             [UserAction.THUMBNAIL_NAVIGATE_FIRST]: 1,
-            [UserAction.THUMBNAIL_NAVIGATE]: 2
+            [UserAction.THUMBNAIL_NAVIGATE]: 2,
+            [UserAction.TOGGLE_SIDENAV_FIRST]: 1,
+            [UserAction.TOGGLE_SIDENAV]: 3,
+            [UserAction.SELECT_SIDENAV_THUMBNAILS_FIRST]: 1,
+            [UserAction.SELECT_SIDENAV_THUMBNAILS]: 2,
+            [UserAction.SELECT_SIDENAV_OUTLINE_FIRST]: 1,
+            [UserAction.SELECT_SIDENAV_OUTLINE]: 1
           },
           chrome.metricsPrivate.actionCounter);
       chrome.test.succeed();

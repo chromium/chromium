@@ -197,7 +197,23 @@ export const UserAction = {
   SAVE_EDITED_FIRST: 51,
   SAVE_EDITED: 52,
 
-  NUMBER_OF_ACTIONS: 53,
+  // Recorded when the sidenav menu button is clicked.
+  TOGGLE_SIDENAV_FIRST: 53,
+  TOGGLE_SIDENAV: 54,
+
+  // Recorded when the thumbnails button in the sidenav is clicked.
+  SELECT_SIDENAV_THUMBNAILS_FIRST: 55,
+  SELECT_SIDENAV_THUMBNAILS: 56,
+
+  // Recorded when the outline button in the sidenav is clicked.
+  SELECT_SIDENAV_OUTLINE_FIRST: 57,
+  SELECT_SIDENAV_OUTLINE: 58,
+
+  // Recorded when the show/hide annotations overflow menu item is clicked.
+  TOGGLE_DISPLAY_ANNOTATIONS_FIRST: 59,
+  TOGGLE_DISPLAY_ANNOTATIONS: 60,
+
+  NUMBER_OF_ACTIONS: 61,
 };
 
 // Map from UserAction to the 'FIRST' action. These metrics are recorded
@@ -307,5 +323,21 @@ PDFMetrics.firstMap_ = new Map([
   [
     UserAction.SAVE_EDITED,
     UserAction.SAVE_EDITED_FIRST,
+  ],
+  [
+    UserAction.TOGGLE_SIDENAV,
+    UserAction.TOGGLE_SIDENAV_FIRST,
+  ],
+  [
+    UserAction.SELECT_SIDENAV_THUMBNAILS,
+    UserAction.SELECT_SIDENAV_THUMBNAILS_FIRST,
+  ],
+  [
+    UserAction.SELECT_SIDENAV_OUTLINE,
+    UserAction.SELECT_SIDENAV_OUTLINE_FIRST,
+  ],
+  [
+    UserAction.TOGGLE_DISPLAY_ANNOTATIONS,
+    UserAction.TOGGLE_DISPLAY_ANNOTATIONS_FIRST,
   ],
 ]);

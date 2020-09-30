@@ -9833,6 +9833,14 @@ histogram as enum -->
   <int value="50" label="SaveOriginal"/>
   <int value="51" label="SaveEditedFirst"/>
   <int value="52" label="SaveEdited"/>
+  <int value="53" label="ToggleSidenavFirst"/>
+  <int value="54" label="ToggleSidenav"/>
+  <int value="55" label="SelectSidenavThumbnailsFirst"/>
+  <int value="56" label="SelectSidenavThumbnails"/>
+  <int value="57" label="SelectSidenavOutlineFirst"/>
+  <int value="58" label="SelectSidenavOutline"/>
+  <int value="59" label="ToggleDisplayAnnotationsFirst"/>
+  <int value="60" label="ToggleDisplayAnnotations"/>
 </enum>
 
 <enum name="ChromePDFViewerAnnotationType">
