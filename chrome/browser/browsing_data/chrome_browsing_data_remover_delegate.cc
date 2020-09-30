@@ -970,8 +970,8 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
     }
 
 #if defined(OS_ANDROID)
-#if BUILDFLAG(ENABLE_FEED_IN_CHROME)
-    if (base::FeatureList::IsEnabled(feed::kInterestFeedV2)) {
+#if BUILDFLAG(ENABLE_FEED_V2)
+    if (feed::IsV2Enabled()) {
       // Don't bridge through if the service isn't present, which means we're
       // probably running in a native unit test.
       feed::FeedService* service =
@@ -979,15 +979,18 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
       if (service) {
         service->ClearCachedData();
       }
-    } else {
+    }
+#endif  // BUILDFLAG(ENABLE_FEED_V2)
+
+#if BUILDFLAG(ENABLE_FEED_V1)
+    if (feed::IsV1Enabled()) {
       // Don't bridge through if the service isn't present, which means we're
       // probably running in a native unit test.
       if (feed::FeedHostServiceFactory::GetForBrowserContext(profile_)) {
         feed::FeedLifecycleBridge::ClearCachedData();
       }
     }
-
-#endif  // BUILDFLAG(ENABLE_FEED_IN_CHROME)
+#endif  // BUILDFLAG(ENABLE_FEED_V1)
 #endif  // defined(OS_ANDROID)
 
 #if defined(OS_ANDROID)

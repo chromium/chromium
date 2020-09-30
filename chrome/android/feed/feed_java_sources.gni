@@ -4,54 +4,63 @@
 
 import("//components/feed/features.gni")
 
-if (enable_feed_in_chrome) {
-  feed_deps = [
-    "//base:base_java",
-    "//chrome/android/feed:chrome_feed_java_resources",
-    "//components/feed/core/proto:proto_java",
-    "//third_party/android_deps:android_support_v7_appcompat_java",
-    "//third_party/android_deps:androidx_annotation_annotation_java",
-    "//third_party/android_deps:androidx_cardview_cardview_java",
-    "//third_party/android_deps:androidx_collection_collection_java",
-    "//third_party/android_deps:androidx_interpolator_interpolator_java",
-    "//third_party/android_deps:androidx_recyclerview_recyclerview_java",
-    "//third_party/android_deps:androidx_swiperefreshlayout_swiperefreshlayout_java",
-    "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
-    "//third_party/android_deps:javax_inject_javax_inject_java",
-    "//third_party/android_deps:protobuf_lite_runtime_java",
-  ]
+feed_deps = [
+  "//base:base_java",
+  "//chrome/android/feed:chrome_feed_java_resources",
+  "//third_party/android_deps:android_support_v7_appcompat_java",
+  "//third_party/android_deps:androidx_annotation_annotation_java",
+  "//third_party/android_deps:androidx_cardview_cardview_java",
+  "//third_party/android_deps:androidx_collection_collection_java",
+  "//third_party/android_deps:androidx_interpolator_interpolator_java",
+  "//third_party/android_deps:androidx_recyclerview_recyclerview_java",
+  "//third_party/android_deps:androidx_swiperefreshlayout_swiperefreshlayout_java",
+  "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
+  "//third_party/android_deps:javax_inject_javax_inject_java",
+  "//third_party/android_deps:protobuf_lite_runtime_java",
+]
 
-  feed_java_sources = [
-    "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/FeedAppLifecycle.java",
-    "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/FeedApplicationInfo.java",
-    "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/FeedConfiguration.java",
-    "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/FeedContentBridge.java",
-    "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/FeedContentStorage.java",
-    "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/FeedContentStorageDirect.java",
-    "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/FeedDebuggingBridge.java",
-    "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/FeedImageLoader.java",
-    "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/FeedJournalBridge.java",
-    "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/FeedJournalStorage.java",
-    "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/FeedJournalStorageDirect.java",
-    "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/FeedLifecycleBridge.java",
-    "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/FeedLoggingBridge.java",
-    "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/FeedNetworkBridge.java",
-    "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/FeedOfflineBridge.java",
-    "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/FeedOfflineIndicator.java",
-    "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/FeedProcessScopeFactory.java",
-    "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/FeedRefreshTask.java",
-    "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/FeedScheduler.java",
-    "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/FeedSchedulerBridge.java",
-    "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/FeedSurfaceCoordinator.java",
-    "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/FeedSurfaceMediator.java",
-    "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/FeedUma.java",
-    "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/FeedV1StreamCreator.java",
-    "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/FutureTaskConsumer.java",
-    "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/HeaderIphScrollListener.java",
-    "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/NtpStreamLifecycleManager.java",
-    "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/StreamLifecycleManager.java",
-    "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/TestNetworkClient.java",
-    "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/action/FeedActionHandler.java",
+if (enable_feed_v1) {
+  feed_deps += [ "//components/feed/core/proto:proto_java" ]
+}
+
+feed_java_sources = [
+  "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/FeedSurfaceCoordinator.java",
+  "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/FeedSurfaceMediator.java",
+  "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/FeedUma.java",
+  "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/FeedV1ActionOptions.java",
+  "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/FeedV2.java",
+  "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/HeaderIphScrollListener.java",
+  "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/NtpStreamLifecycleManager.java",
+  "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/StreamLifecycleManager.java",
+  "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/library/common/locale/LocaleUtils.java",
+  "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/shared/FeedFeatures.java",
+  "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/shared/FeedSurfaceDelegate.java",
+  "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/shared/FeedSurfaceProvider.java",
+  "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/shared/ScrollTracker.java",
+  "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/shared/stream/Header.java",
+  "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/shared/stream/NonDismissibleHeader.java",
+  "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/shared/stream/Stream.java",
+  "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/shared/ui/MaterialSpinnerView.java",
+  "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/v2/CardMenuBottomSheetContent.java",
+  "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/v2/FeedImageFetchClient.java",
+  "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/v2/FeedListContentManager.java",
+  "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/v2/FeedServiceBridge.java",
+  "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/v2/FeedSliceViewTracker.java",
+  "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/v2/FeedStream.java",
+  "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/v2/FeedStreamSurface.java",
+  "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/v2/FeedStreamWrapper.java",
+  "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/v2/NativeViewListRenderer.java",
+]
+
+if (enable_feed_v2) {
+  feed_java_sources += [ "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/FeedV2BuildFlag.java" ]
+} else {
+  feed_java_sources += [ "//chrome/android/feed/dummy/java/src/org/chromium/chrome/browser/feed/FeedV2BuildFlag.java" ]
+}
+
+if (enable_feed_v1) {
+  feed_java_sources += [
+    "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/FeedV1.java",
     "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/library/api/client/knowncontent/ContentMetadata.java",
     "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/library/api/client/knowncontent/ContentRemoval.java",
     "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/library/api/client/knowncontent/KnownContent.java",
@@ -208,7 +217,6 @@ if (enable_feed_in_chrome) {
     "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/library/common/intern/PoolInternerBase.java",
     "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/library/common/intern/ProtoStringInternerBase.java",
     "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/library/common/intern/WeakPoolInterner.java",
-    "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/library/common/locale/LocaleUtils.java",
     "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/library/common/logging/Dumpable.java",
     "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/library/common/logging/Dumper.java",
     "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/library/common/logging/Logger.java",
@@ -374,30 +382,59 @@ if (enable_feed_in_chrome) {
     "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/library/sharedstream/scroll/ScrollListenerNotifier.java",
     "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/library/sharedstream/scroll/ScrollLogger.java",
     "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/library/sharedstream/scroll/ScrollRestoreHelper.java",
-    "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/shared/FeedFeatures.java",
-    "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/shared/FeedSurfaceDelegate.java",
-    "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/shared/FeedSurfaceProvider.java",
-    "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/shared/ScrollTracker.java",
-    "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/shared/stream/Header.java",
-    "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/shared/stream/NonDismissibleHeader.java",
-    "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/shared/stream/Stream.java",
-    "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/shared/ui/MaterialSpinnerView.java",
-    "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/tooltip/BasicTooltipApi.java",
-    "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/tooltip/BasicTooltipSupportedApi.java",
-    "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/tooltip/FeedTooltipUtils.java",
-    "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/v2/CardMenuBottomSheetContent.java",
-    "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/v2/FeedImageFetchClient.java",
-    "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/v2/FeedListContentManager.java",
-    "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/v2/FeedServiceBridge.java",
-    "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/v2/FeedSliceViewTracker.java",
-    "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/v2/FeedStream.java",
-    "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/v2/FeedStreamSurface.java",
-    "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/v2/NativeViewListRenderer.java",
+    "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/v1/FeedActionHandler.java",
+    "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/v1/FeedAppLifecycle.java",
+    "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/v1/FeedApplicationInfo.java",
+    "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/v1/FeedConfiguration.java",
+    "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/v1/FeedContentBridge.java",
+    "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/v1/FeedContentStorage.java",
+    "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/v1/FeedContentStorageDirect.java",
+    "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/v1/FeedDebuggingBridge.java",
+    "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/v1/FeedImageLoader.java",
+    "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/v1/FeedJournalBridge.java",
+    "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/v1/FeedJournalStorage.java",
+    "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/v1/FeedJournalStorageDirect.java",
+    "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/v1/FeedLifecycleBridge.java",
+    "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/v1/FeedLoggingBridge.java",
+    "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/v1/FeedNetworkBridge.java",
+    "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/v1/FeedOfflineBridge.java",
+    "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/v1/FeedOfflineIndicator.java",
+    "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/v1/FeedProcessScopeFactory.java",
+    "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/v1/FeedRefreshTask.java",
+    "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/v1/FeedScheduler.java",
+    "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/v1/FeedSchedulerBridge.java",
+    "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/v1/FeedStreamWrapper.java",
+    "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/v1/FeedV1StreamCreator.java",
+    "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/v1/FutureTaskConsumer.java",
+    "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/v1/TestNetworkClient.java",
+    "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/v1/tooltip/BasicTooltipApi.java",
+    "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/v1/tooltip/BasicTooltipSupportedApi.java",
+    "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/v1/tooltip/FeedTooltipUtils.java",
   ]
+} else {  # !enable_feed_v1
+  feed_java_sources += [ "//chrome/android/feed/dummy/java/src/org/chromium/chrome/browser/feed/FeedV1.java" ]
+}
 
-  feed_srcjar_deps = [ "//components/feed/core:feed_core_java_enums_srcjar" ]
+feed_srcjar_deps = []
+if (enable_feed_v1) {
+  feed_srcjar_deps += [ "//components/feed/core:feed_core_java_enums_srcjar" ]
+}
 
-  feed_junit_test_java_sources = [
+feed_junit_test_java_sources = []
+
+if (enable_feed_v2) {
+  feed_junit_test_java_sources += [
+    "junit/src/org/chromium/chrome/browser/feed/v2/FakeLinearLayoutManager.java",
+    "junit/src/org/chromium/chrome/browser/feed/v2/FeedListContentManagerTest.java",
+    "junit/src/org/chromium/chrome/browser/feed/v2/FeedSliceViewTrackerTest.java",
+    "junit/src/org/chromium/chrome/browser/feed/v2/FeedStreamSurfaceTest.java",
+    "junit/src/org/chromium/chrome/browser/feed/v2/FeedStreamTest.java",
+    "junit/src/org/chromium/chrome/browser/feed/v2/NativeViewListRendererTest.java",
+  ]
+}
+
+if (enable_feed_v1) {
+  feed_junit_test_java_sources += [
     "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/library/api/internal/common/testing/ContentIdGenerators.java",
     "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/library/api/internal/common/testing/InternalProtocolBuilder.java",
     "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/library/basicstream/internal/drivers/testing/FakeFeatureDriver.java",
@@ -641,25 +678,23 @@ if (enable_feed_in_chrome) {
     "//chrome/android/feed/core/javatests/src/org/chromium/chrome/browser/feed/library/sharedstream/scroll/ScrollLoggerTest.java",
     "//chrome/android/feed/core/javatests/src/org/chromium/chrome/browser/feed/library/sharedstream/scroll/ScrollRestoreHelperTest.java",
     "//chrome/android/feed/core/javatests/src/org/chromium/chrome/browser/feed/shared/ui/MaterialSpinnerViewTest.java",
-    "junit/src/org/chromium/chrome/browser/feed/FeedApplicationInfoTest.java",
-    "junit/src/org/chromium/chrome/browser/feed/FeedContentStorageTest.java",
-    "junit/src/org/chromium/chrome/browser/feed/FeedImageLoaderTest.java",
-    "junit/src/org/chromium/chrome/browser/feed/FeedJournalStorageTest.java",
-    "junit/src/org/chromium/chrome/browser/feed/FeedLoggingBridgeTest.java",
-    "junit/src/org/chromium/chrome/browser/feed/FeedOfflineBridgeTest.java",
-    "junit/src/org/chromium/chrome/browser/feed/FutureTaskConsumerTest.java",
     "junit/src/org/chromium/chrome/browser/feed/NtpStreamLifecycleManagerTest.java",
-    "junit/src/org/chromium/chrome/browser/feed/action/FeedActionHandlerTest.java",
     "junit/src/org/chromium/chrome/browser/feed/shared/ScrollTrackerTest.java",
-    "junit/src/org/chromium/chrome/browser/feed/v2/FakeLinearLayoutManager.java",
-    "junit/src/org/chromium/chrome/browser/feed/v2/FeedListContentManagerTest.java",
-    "junit/src/org/chromium/chrome/browser/feed/v2/FeedSliceViewTrackerTest.java",
-    "junit/src/org/chromium/chrome/browser/feed/v2/FeedStreamSurfaceTest.java",
-    "junit/src/org/chromium/chrome/browser/feed/v2/FeedStreamTest.java",
-    "junit/src/org/chromium/chrome/browser/feed/v2/NativeViewListRendererTest.java",
+    "junit/src/org/chromium/chrome/browser/feed/v1/FeedActionHandlerTest.java",
+    "junit/src/org/chromium/chrome/browser/feed/v1/FeedApplicationInfoTest.java",
+    "junit/src/org/chromium/chrome/browser/feed/v1/FeedContentStorageTest.java",
+    "junit/src/org/chromium/chrome/browser/feed/v1/FeedImageLoaderTest.java",
+    "junit/src/org/chromium/chrome/browser/feed/v1/FeedJournalStorageTest.java",
+    "junit/src/org/chromium/chrome/browser/feed/v1/FeedLoggingBridgeTest.java",
+    "junit/src/org/chromium/chrome/browser/feed/v1/FeedOfflineBridgeTest.java",
+    "junit/src/org/chromium/chrome/browser/feed/v1/FutureTaskConsumerTest.java",
   ]
+}
 
-  feed_test_java_sources = [
+feed_test_java_sources = [ "//chrome/android/feed/core/javatests/src/org/chromium/chrome/browser/feed/HeaderIphScrollListenerTest.java" ]
+
+if (enable_feed_v1) {
+  feed_test_java_sources += [
     "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/library/common/concurrent/testing/FakeDirectExecutor.java",
     "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/library/common/concurrent/testing/FakeMainThreadRunner.java",
     "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/library/common/concurrent/testing/FakeTaskQueue.java",
@@ -676,36 +711,27 @@ if (enable_feed_in_chrome) {
     "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/library/testing/conformance/storage/JournalStorageDirectConformanceTest.java",
     "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/library/testing/host/logging/FakeBasicLoggingApi.java",
     "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/library/testing/store/FakeStore.java",
-    "//chrome/android/feed/core/javatests/src/org/chromium/chrome/browser/feed/ConsumerSyncWrapper.java",
-    "//chrome/android/feed/core/javatests/src/org/chromium/chrome/browser/feed/DataFilePath.java",
-    "//chrome/android/feed/core/javatests/src/org/chromium/chrome/browser/feed/FeedAppLifecycleTest.java",
-    "//chrome/android/feed/core/javatests/src/org/chromium/chrome/browser/feed/FeedConfigurationTest.java",
-    "//chrome/android/feed/core/javatests/src/org/chromium/chrome/browser/feed/FeedContentStorageConformanceTest.java",
-    "//chrome/android/feed/core/javatests/src/org/chromium/chrome/browser/feed/FeedDataInjectRule.java",
-    "//chrome/android/feed/core/javatests/src/org/chromium/chrome/browser/feed/FeedJournalStorageConformanceTest.java",
-    "//chrome/android/feed/core/javatests/src/org/chromium/chrome/browser/feed/FeedNetworkBridgeConformanceTest.java",
-    "//chrome/android/feed/core/javatests/src/org/chromium/chrome/browser/feed/FeedNewTabPageCardRenderTest.java",
-    "//chrome/android/feed/core/javatests/src/org/chromium/chrome/browser/feed/FeedNewTabPageTest.java",
-    "//chrome/android/feed/core/javatests/src/org/chromium/chrome/browser/feed/FeedRefreshTaskTest.java",
-    "//chrome/android/feed/core/javatests/src/org/chromium/chrome/browser/feed/FeedSchedulerBridgeConformanceTest.java",
-    "//chrome/android/feed/core/javatests/src/org/chromium/chrome/browser/feed/HeaderIphScrollListenerTest.java",
-    "//chrome/android/feed/core/javatests/src/org/chromium/chrome/browser/feed/tooltip/FeedTooltipTest.java",
+    "//chrome/android/feed/core/javatests/src/org/chromium/chrome/browser/feed/v1/ConsumerSyncWrapper.java",
+    "//chrome/android/feed/core/javatests/src/org/chromium/chrome/browser/feed/v1/DataFilePath.java",
+    "//chrome/android/feed/core/javatests/src/org/chromium/chrome/browser/feed/v1/FeedAppLifecycleTest.java",
+    "//chrome/android/feed/core/javatests/src/org/chromium/chrome/browser/feed/v1/FeedConfigurationTest.java",
+    "//chrome/android/feed/core/javatests/src/org/chromium/chrome/browser/feed/v1/FeedContentStorageConformanceTest.java",
+    "//chrome/android/feed/core/javatests/src/org/chromium/chrome/browser/feed/v1/FeedDataInjectRule.java",
+    "//chrome/android/feed/core/javatests/src/org/chromium/chrome/browser/feed/v1/FeedJournalStorageConformanceTest.java",
+    "//chrome/android/feed/core/javatests/src/org/chromium/chrome/browser/feed/v1/FeedNetworkBridgeConformanceTest.java",
+    "//chrome/android/feed/core/javatests/src/org/chromium/chrome/browser/feed/v1/FeedNewTabPageCardRenderTest.java",
+    "//chrome/android/feed/core/javatests/src/org/chromium/chrome/browser/feed/v1/FeedNewTabPageTest.java",
+    "//chrome/android/feed/core/javatests/src/org/chromium/chrome/browser/feed/v1/FeedRefreshTaskTest.java",
+    "//chrome/android/feed/core/javatests/src/org/chromium/chrome/browser/feed/v1/FeedSchedulerBridgeConformanceTest.java",
+    "//chrome/android/feed/core/javatests/src/org/chromium/chrome/browser/feed/v1/tooltip/FeedTooltipTest.java",
   ]
+}
 
-  feed_test_deps = feed_deps + [
-                     "//third_party/google-truth:google_truth_java",
-                     "//chrome/browser/user_education:java",
-                     "//components/feed/core/proto:proto_java",
-                     "//third_party/guava:guava_android_java",
-                   ]
-} else {
-  feed_deps = []
-  feed_java_sources = [
-    "//chrome/android/feed/dummy/java/src/org/chromium/chrome/browser/feed/FeedAppLifecycle.java",
-    "//chrome/android/feed/dummy/java/src/org/chromium/chrome/browser/feed/FeedProcessScopeFactory.java",
-    "//chrome/android/feed/dummy/java/src/org/chromium/chrome/browser/feed/FeedRefreshTask.java",
-    "//chrome/android/feed/dummy/java/src/org/chromium/chrome/browser/feed/FeedSurfaceCoordinator.java",
-    "//chrome/android/feed/dummy/java/src/org/chromium/chrome/browser/feed/TestNetworkClient.java",
-  ]
-  feed_srcjar_deps = []
+feed_test_deps = []
+if (enable_feed_v1 || enable_feed_v2) {
+  feed_test_deps += feed_deps + [
+                      "//chrome/browser/user_education:java",
+                      "//third_party/google-truth:google_truth_java",
+                      "//third_party/guava:guava_android_java",
+                    ]
 }

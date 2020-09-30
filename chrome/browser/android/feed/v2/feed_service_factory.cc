@@ -22,6 +22,7 @@
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_version.h"
 #include "components/background_task_scheduler/background_task_scheduler_factory.h"
+#include "components/feed/buildflags.h"
 #include "components/feed/core/proto/v2/store.pb.h"
 #include "components/feed/core/v2/public/feed_service.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -52,8 +53,17 @@ class FeedServiceDelegateImpl : public FeedService::Delegate {
 // static
 FeedService* FeedServiceFactory::GetForBrowserContext(
     content::BrowserContext* context) {
-  return static_cast<FeedService*>(
-      GetInstance()->GetServiceForBrowserContext(context, /*create=*/true));
+// Note that if both v1 and v2 are disabled in the build, feed::IsV2Enabled()
+// returns true. In that case, this function will return null. This prevents
+// creation of the Feed surface from triggering any other Feed behavior.
+#if BUILDFLAG(ENABLE_FEED_V2)
+  if (context)
+    return static_cast<FeedService*>(
+        GetInstance()->GetServiceForBrowserContext(context, /*create=*/true));
+  return nullptr;
+#else
+  return nullptr;
+#endif
 }
 
 // static

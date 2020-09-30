@@ -44,6 +44,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeState;
 import org.chromium.chrome.browser.feed.FeedSurfaceCoordinator;
+import org.chromium.chrome.browser.feed.shared.FeedFeatures;
 import org.chromium.chrome.browser.feed.shared.stream.Stream;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -700,7 +701,7 @@ class StartSurfaceMediator
         return mSurfaceMode == SurfaceMode.SINGLE_PANE
                 && CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START)
                 && StartSurfaceConfiguration.getFeedArticlesVisibility()
-                && !CachedFeatureFlags.isEnabled(ChromeFeatureList.INTEREST_FEED_V2);
+                && !FeedFeatures.cachedIsV2Enabled();
     }
 
     /** This interface builds the feed surface coordinator when showing if needed. */

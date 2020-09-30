@@ -11,8 +11,8 @@ import android.view.ViewGroup;
 
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.feed.FeedSurfaceCoordinator;
+import org.chromium.chrome.browser.feed.FeedV1ActionOptions;
 import org.chromium.chrome.browser.feed.StreamLifecycleManager;
-import org.chromium.chrome.browser.feed.action.FeedActionHandler;
 import org.chromium.chrome.browser.feed.shared.FeedFeatures;
 import org.chromium.chrome.browser.feed.shared.FeedSurfaceDelegate;
 import org.chromium.chrome.browser.feed.shared.stream.Stream;
@@ -102,7 +102,7 @@ class ExploreSurfaceCoordinator implements FeedSurfaceDelegate {
             }
         }
 
-        FeedActionHandler.Options feedActionOptions = new FeedActionHandler.Options();
+        FeedV1ActionOptions feedActionOptions = new FeedV1ActionOptions();
         feedActionOptions.inhibitDownload = true;
         feedActionOptions.inhibitOpenInIncognito = true;
         feedActionOptions.inhibitOpenInNewTab = true;

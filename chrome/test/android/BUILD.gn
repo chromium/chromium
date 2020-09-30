@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/android/rules.gni")
+import("//components/feed/features.gni")
 
 android_library("chrome_java_test_pagecontroller") {
   testonly = true
@@ -14,7 +15,6 @@ android_library("chrome_java_test_pagecontroller") {
     "javatests/src/org/chromium/chrome/test/pagecontroller/controllers/first_run/SyncController.java",
     "javatests/src/org/chromium/chrome/test/pagecontroller/controllers/first_run/TOSController.java",
     "javatests/src/org/chromium/chrome/test/pagecontroller/controllers/notifications/DownloadNotificationController.java",
-    "javatests/src/org/chromium/chrome/test/pagecontroller/controllers/ntp/ArticleActionsMenu.java",
     "javatests/src/org/chromium/chrome/test/pagecontroller/controllers/ntp/ChromeMenu.java",
     "javatests/src/org/chromium/chrome/test/pagecontroller/controllers/ntp/IncognitoNewTabPageController.java",
     "javatests/src/org/chromium/chrome/test/pagecontroller/controllers/ntp/NewTabPageController.java",
@@ -257,6 +257,7 @@ android_library("chrome_java_test_support") {
     "javatests/src/org/chromium/chrome/test/util/browser/webapps/WebappTestHelper.java",
     "javatests/src/org/chromium/chrome/test/util/browser/webapps/WebappTestPage.java",
   ]
+
   deps = [
     "$google_play_services_package:google_play_services_base_java",
     "$google_play_services_package:google_play_services_basement_java",

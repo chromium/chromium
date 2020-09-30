@@ -1193,9 +1193,7 @@ android_library("chrome_test_java") {
     "//url/mojom:url_mojom_gurl_java",
   ]
 
-  if (enable_feed_in_chrome) {
-    deps += feed_test_deps
-  }
+  deps += feed_test_deps
 
   data = [
     "//chrome/test/data/android/",
@@ -3017,6 +3015,9 @@ generate_jni("chrome_jni_headers") {
   sources = [
     # Files under a feature's public/ dir are included in chrome_java's source
     # files, so include these files in chrome_jni_headers.
+    "feed/core/java/src/org/chromium/chrome/browser/feed/v2/FeedImageFetchClient.java",
+    "feed/core/java/src/org/chromium/chrome/browser/feed/v2/FeedServiceBridge.java",
+    "feed/core/java/src/org/chromium/chrome/browser/feed/v2/FeedStreamSurface.java",
     "java/src/org/chromium/chrome/browser/AfterStartupTaskUtils.java",
     "java/src/org/chromium/chrome/browser/AppHooks.java",
     "java/src/org/chromium/chrome/browser/ApplicationLifetime.java",
@@ -3282,19 +3283,16 @@ generate_jni("chrome_jni_headers") {
     sources += [ "java/src/org/chromium/chrome/browser/offlinepages/evaluation/OfflinePageEvaluationBridge.java" ]
   }
 
-  if (enable_feed_in_chrome) {
+  if (enable_feed_v1) {
     sources += [
-      "feed/core/java/src/org/chromium/chrome/browser/feed/FeedContentBridge.java",
-      "feed/core/java/src/org/chromium/chrome/browser/feed/FeedDebuggingBridge.java",
-      "feed/core/java/src/org/chromium/chrome/browser/feed/FeedJournalBridge.java",
-      "feed/core/java/src/org/chromium/chrome/browser/feed/FeedLifecycleBridge.java",
-      "feed/core/java/src/org/chromium/chrome/browser/feed/FeedLoggingBridge.java",
-      "feed/core/java/src/org/chromium/chrome/browser/feed/FeedNetworkBridge.java",
-      "feed/core/java/src/org/chromium/chrome/browser/feed/FeedOfflineBridge.java",
-      "feed/core/java/src/org/chromium/chrome/browser/feed/FeedSchedulerBridge.java",
-      "feed/core/java/src/org/chromium/chrome/browser/feed/v2/FeedImageFetchClient.java",
-      "feed/core/java/src/org/chromium/chrome/browser/feed/v2/FeedServiceBridge.java",
-      "feed/core/java/src/org/chromium/chrome/browser/feed/v2/FeedStreamSurface.java",
+      "feed/core/java/src/org/chromium/chrome/browser/feed/v1/FeedContentBridge.java",
+      "feed/core/java/src/org/chromium/chrome/browser/feed/v1/FeedDebuggingBridge.java",
+      "feed/core/java/src/org/chromium/chrome/browser/feed/v1/FeedJournalBridge.java",
+      "feed/core/java/src/org/chromium/chrome/browser/feed/v1/FeedLifecycleBridge.java",
+      "feed/core/java/src/org/chromium/chrome/browser/feed/v1/FeedLoggingBridge.java",
+      "feed/core/java/src/org/chromium/chrome/browser/feed/v1/FeedNetworkBridge.java",
+      "feed/core/java/src/org/chromium/chrome/browser/feed/v1/FeedOfflineBridge.java",
+      "feed/core/java/src/org/chromium/chrome/browser/feed/v1/FeedSchedulerBridge.java",
     ]
   }
 

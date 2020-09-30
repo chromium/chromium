@@ -22,19 +22,16 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApiCompatibilityUtils;
-import org.chromium.base.FeatureList;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.feed.action.FeedActionHandler;
-import org.chromium.chrome.browser.feed.library.api.host.action.ActionApi;
+import org.chromium.chrome.browser.feed.shared.FeedFeatures;
 import org.chromium.chrome.browser.feed.shared.FeedSurfaceDelegate;
 import org.chromium.chrome.browser.feed.shared.FeedSurfaceProvider;
 import org.chromium.chrome.browser.feed.shared.stream.Header;
 import org.chromium.chrome.browser.feed.shared.stream.NonDismissibleHeader;
 import org.chromium.chrome.browser.feed.shared.stream.Stream;
-import org.chromium.chrome.browser.feed.v2.FeedStream;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.native_page.NativePageNavigationDelegate;
@@ -50,7 +47,6 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.browser_ui.util.GlobalDiscardableReferencePool;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.browser_ui.widget.displaystyle.ViewResizer;
 import org.chromium.components.feature_engagement.Tracker;
@@ -68,20 +64,45 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
     @VisibleForTesting
     public static final String FEED_STREAM_CREATED_TIME_MS_UMA = "FeedStreamCreatedTime";
 
-    private final Activity mActivity;
+    /**
+     * Provides an interface that can be implemented by both Feed v1 and v2, allowing us to compile
+     * without Feed v1. Once v1 is removed, this interface should be removed.
+     */
+    public interface StreamWrapper {
+        int defaultMarginPixels(Activity activity);
+        int wideMarginPixels(Activity activity);
+
+        /**
+         * Creates the stream. Only called once unless doneWithStream is called.
+         */
+        Stream createStream(Profile profile, Activity activity, boolean showDarkBackground,
+                SnackbarManager snackbarManager,
+                NativePageNavigationDelegate pageNavigationDelegate, UiConfig uiConfig,
+                boolean placeholderShown, BottomSheetController bottomSheetController,
+                FeedV1ActionOptions v1ActionOptions);
+
+        /**
+         * Called after the stream returned by createStream() is no longer needed.
+         */
+        void doneWithStream();
+        boolean isPlaceholderShown();
+        void addScrollListener();
+    }
+
+    StreamWrapper mStreamWrapper;
+
+    protected final Activity mActivity;
     private final SnackbarManager mSnackbarManager;
     @Nullable
     private final View mNtpHeader;
     private final boolean mShowDarkBackground;
-    private final boolean mIsPlaceholderShown;
-    private final boolean mIsPlaceholderShownInV1;
-    private final boolean mV2Enabled;
+    private final boolean mIsPlaceholderRequested;
     private final FeedSurfaceDelegate mDelegate;
-    private final int mDefaultMargin;
-    private final int mWideMargin;
+    private final int mDefaultMarginPixels;
+    private final int mWideMarginPixels;
     private final FeedSurfaceMediator mMediator;
     private final BottomSheetController mBottomSheetController;
-    private final FeedActionHandler.Options mActionOptions;
+    private final FeedV1ActionOptions mV1ActionOptions;
 
     private UiConfig mUiConfig;
     private FrameLayout mRootView;
@@ -95,7 +116,6 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
 
     // Used when Feed is enabled.
     private @Nullable Stream mStream;
-    private @Nullable FeedImageLoader mImageLoader;
     private @Nullable StreamLifecycleManager mStreamLifecycleManager;
     private @Nullable SectionHeaderView mSectionHeaderView;
     private @Nullable PersonalizedSigninPromoView mSigninPromoView;
@@ -199,43 +219,43 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
      * @param snapScrollHelper The {@link SnapScrollHelper} for the New Tab Page.
      * @param ntpHeader The extra header on top of the feeds for the New Tab Page.
      * @param sectionHeaderView The {@link SectionHeaderView} for the feed.
-     * @param actionOptions Configures feed actions.
+     * @param actionOptions Configures feed v1 actions.
      * @param showDarkBackground Whether is shown on dark background.
      * @param delegate The constructing {@link FeedSurfaceDelegate}.
      * @param pageNavigationDelegate The {@link NativePageNavigationDelegate}
      *                               that handles page navigation.
      * @param profile The current user profile.
-     * @param isPlaceholderShown Whether the placeholder should be shown.
+     * @param isPlaceholderRequested Whether the placeholder should be shown.
+     * @param bottomSheetController The bottom sheet controller, used in v2.
      */
     public FeedSurfaceCoordinator(Activity activity, SnackbarManager snackbarManager,
             TabModelSelector tabModelSelector, Supplier<Tab> tabProvider,
             @Nullable SnapScrollHelper snapScrollHelper, @Nullable View ntpHeader,
-            @Nullable SectionHeaderView sectionHeaderView, FeedActionHandler.Options actionOptions,
+            @Nullable SectionHeaderView sectionHeaderView, FeedV1ActionOptions actionOptions,
             boolean showDarkBackground, FeedSurfaceDelegate delegate,
             @Nullable NativePageNavigationDelegate pageNavigationDelegate, Profile profile,
-            boolean isPlaceholderShown, BottomSheetController bottomSheetController) {
+            boolean isPlaceholderRequested, BottomSheetController bottomSheetController) {
+        if (FeedFeatures.isV2Enabled()) {
+            mStreamWrapper = FeedV2.createStreamWrapper();
+        } else {
+            mStreamWrapper = FeedV1.createStreamWrapper();
+        }
+
         mActivity = activity;
         mSnackbarManager = snackbarManager;
         mNtpHeader = ntpHeader;
         mSectionHeaderView = sectionHeaderView;
         mShowDarkBackground = showDarkBackground;
-        mIsPlaceholderShown = isPlaceholderShown;
-        mV2Enabled = FeatureList.isInitialized()
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.INTEREST_FEED_V2);
-        mIsPlaceholderShownInV1 = mIsPlaceholderShown && !mV2Enabled;
+        mIsPlaceholderRequested = isPlaceholderRequested;
         mDelegate = delegate;
         mPageNavigationDelegate = pageNavigationDelegate;
         mBottomSheetController = bottomSheetController;
         mProfile = profile;
-        mActionOptions = actionOptions;
+        mV1ActionOptions = actionOptions;
 
         Resources resources = mActivity.getResources();
-        mDefaultMargin = resources.getDimensionPixelSize(mV2Enabled
-                        ? R.dimen.content_suggestions_card_modern_margin_v2
-                        : R.dimen.content_suggestions_card_modern_margin);
-        mWideMargin = resources.getDimensionPixelSize(mV2Enabled
-                        ? R.dimen.ntp_wide_card_lateral_margins_v2
-                        : R.dimen.ntp_wide_card_lateral_margins);
+        mDefaultMarginPixels = mStreamWrapper.defaultMarginPixels(activity);
+        mWideMarginPixels = mStreamWrapper.wideMarginPixels(activity);
 
         mRootView = new RootView(mActivity);
         mRootView.setPadding(0, resources.getDimensionPixelOffset(R.dimen.tab_strip_height), 0, 0);
@@ -260,8 +280,7 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
         mMediator.destroy();
         if (mStreamLifecycleManager != null) mStreamLifecycleManager.destroy();
         mStreamLifecycleManager = null;
-        if (mImageLoader != null) mImageLoader.destroy();
-        mImageLoader = null;
+        mStreamWrapper.doneWithStream();
         if (mHomepagePromoController != null) mHomepagePromoController.destroy();
     }
 
@@ -308,9 +327,9 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
         return mStream;
     }
 
-    /** @return Whether the placeholder shows in V1. */
-    public boolean isPlaceholderShownInV1() {
-        return mIsPlaceholderShownInV1;
+    /** @return Whether the placeholder is shown. */
+    public boolean isPlaceholderShown() {
+        return mStreamWrapper.isPlaceholderShown();
     }
 
     /**
@@ -325,35 +344,22 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
         }
 
         mStreamCreatedTimeMs = SystemClock.elapsedRealtime();
-        if (mV2Enabled) {
-            mStream = new FeedStream(mActivity, mShowDarkBackground, mSnackbarManager,
-                    mPageNavigationDelegate, mBottomSheetController);
-        } else {
-            FeedAppLifecycle appLifecycle = FeedProcessScopeFactory.getFeedAppLifecycle();
-            appLifecycle.onNTPOpened();
-
-            mImageLoader = new FeedImageLoader(
-                    mActivity, GlobalDiscardableReferencePool.getReferencePool());
-
-            ActionApi actionApi = new FeedActionHandler(mActionOptions, mPageNavigationDelegate,
-                    FeedProcessScopeFactory.getFeedConsumptionObserver(),
-                    FeedProcessScopeFactory.getFeedLoggingBridge(), mActivity, mProfile);
-            mStream = FeedV1StreamCreator.createStream(mActivity, mImageLoader, actionApi,
-                    mUiConfig, mSnackbarManager, mShowDarkBackground, mIsPlaceholderShownInV1);
-        }
+        mStream = mStreamWrapper.createStream(mProfile, mActivity, mShowDarkBackground,
+                mSnackbarManager, mPageNavigationDelegate, mUiConfig, mIsPlaceholderRequested,
+                mBottomSheetController, mV1ActionOptions);
 
         mStreamLifecycleManager = mDelegate.createStreamLifecycleManager(mStream, mActivity);
 
         View view = mStream.getView();
         view.setBackgroundResource(R.color.default_bg_color);
-        if (mIsPlaceholderShownInV1) {
+        if (isPlaceholderShown()) {
             // Set recyclerView as transparent until first patch of articles are loaded. Before
             // that, the placeholder is shown.
             view.getBackground().setAlpha(0);
         }
         mRootView.addView(view);
-        mStreamViewResizer =
-                ViewResizer.createAndAttach(view, mUiConfig, mDefaultMargin, mWideMargin);
+        mStreamViewResizer = ViewResizer.createAndAttach(
+                view, mUiConfig, mDefaultMarginPixels, mWideMarginPixels);
 
         if (mNtpHeader != null) UiUtils.removeViewFromParent(mNtpHeader);
         if (mSectionHeaderView != null) UiUtils.removeViewFromParent(mSectionHeaderView);
@@ -367,10 +373,7 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
             mStream.setHeaderViews(Arrays.asList(new NonDismissibleHeader(mSectionHeaderView)));
         }
 
-        if (!mV2Enabled) {
-            mStream.addScrollListener(new FeedLoggingBridge.ScrollEventReporter(
-                    FeedProcessScopeFactory.getFeedLoggingBridge()));
-        }
+        mStreamWrapper.addScrollListener();
 
         // Work around https://crbug.com/943873 where default focus highlight shows up after
         // toggling dark mode.
@@ -387,7 +390,8 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
      * @return The {@link ScrollView} for displaying content for supervised user or enterprise
      *         policy.
      */
-    ScrollView getScrollViewForPolicy() {
+    @VisibleForTesting
+    public ScrollView getScrollViewForPolicy() {
         return mScrollViewForPolicy;
     }
 
@@ -414,10 +418,7 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
                 mHomepagePromoController.destroy();
                 mHomepagePromoController = null;
             }
-            if (mImageLoader != null) {
-                mImageLoader.destroy();
-                mImageLoader = null;
-            }
+            mStreamWrapper.doneWithStream();
         }
 
         mScrollViewForPolicy = new PolicyScrollView(mActivity);
@@ -438,7 +439,7 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
         }
         mRootView.addView(mScrollViewForPolicy);
         mScrollViewResizer = ViewResizer.createAndAttach(
-                mScrollViewForPolicy, mUiConfig, mDefaultMargin, mWideMargin);
+                mScrollViewForPolicy, mUiConfig, mDefaultMarginPixels, mWideMarginPixels);
         mScrollViewForPolicy.requestFocus();
     }
 
@@ -456,7 +457,7 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
                     false);
             // If the placeholder is shown in V1, delay to show the sign-in view until the articles
             // are shown.
-            if (mIsPlaceholderShownInV1) {
+            if (mStreamWrapper.isPlaceholderShown()) {
                 mSigninPromoView.setVisibility(View.INVISIBLE);
             }
         }
@@ -518,9 +519,9 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
     }
 
     public void onOverviewShownAtLaunch(long activityCreationTimeMs) {
-        mMediator.onOverviewShownAtLaunch(activityCreationTimeMs, mIsPlaceholderShown);
+        mMediator.onOverviewShownAtLaunch(activityCreationTimeMs, mIsPlaceholderRequested);
         StartSurfaceConfiguration.recordHistogram(FEED_STREAM_CREATED_TIME_MS_UMA,
-                mStreamCreatedTimeMs - activityCreationTimeMs, mIsPlaceholderShown);
+                mStreamCreatedTimeMs - activityCreationTimeMs, mIsPlaceholderRequested);
     }
 
     Tracker getFeatureEngagementTracker() {
@@ -536,7 +537,7 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
     }
 
     @VisibleForTesting
-    FeedSurfaceMediator getMediatorForTesting() {
+    public FeedSurfaceMediator getMediatorForTesting() {
         return mMediator;
     }
 

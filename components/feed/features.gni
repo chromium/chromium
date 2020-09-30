@@ -2,7 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+# Chrome can be built with any combination of v1/v2 enabled.
+# When both are enabled, we use the InterestFeedV2 feature to select which
+# one is used at runtime.
+# If both are false, some of the Feed V2 UI classes are still used to display
+# the NTP.
 declare_args() {
-  enable_feed_in_chrome = is_android
+  enable_feed_v1 = is_android
   enable_feed_v2 = is_android
 }

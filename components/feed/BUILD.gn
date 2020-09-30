@@ -10,7 +10,10 @@ import("//components/feed/features.gni")
 # any of the feed targets.
 buildflag_header("buildflags") {
   header = "buildflags.h"
-  flags = [ "ENABLE_FEED_IN_CHROME=$enable_feed_in_chrome" ]
+  flags = [
+    "ENABLE_FEED_V1=$enable_feed_v1",
+    "ENABLE_FEED_V2=$enable_feed_v2",
+  ]
 }
 
 static_library("feature_list") {
@@ -19,7 +22,10 @@ static_library("feature_list") {
     "feed_feature_list.h",
   ]
 
-  deps = [ "//base" ]
+  deps = [
+    ":buildflags",
+    "//base",
+  ]
 }
 
 source_set("unit_tests") {

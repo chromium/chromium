@@ -8,9 +8,13 @@
 #include <utility>
 
 #include "chrome/android/chrome_jni_headers/ChromeBackgroundTaskFactory_jni.h"
-#include "chrome/browser/android/feed/v2/background_refresh_task.h"
 #include "chrome/browser/query_tiles/tile_background_task.h"
 #include "components/background_task_scheduler/task_ids.h"
+#include "components/feed/buildflags.h"
+
+#if BUILDFLAG(ENABLE_FEED_V2)
+#include "chrome/browser/android/feed/v2/background_refresh_task.h"
+#endif
 
 // static
 void ChromeBackgroundTaskFactory::SetAsDefault() {
@@ -24,8 +28,10 @@ ChromeBackgroundTaskFactory::GetNativeBackgroundTaskFromTaskId(int task_id) {
   switch (task_id) {
     case static_cast<int>(background_task::TaskIds::QUERY_TILE_JOB_ID):
       return std::make_unique<query_tiles::TileBackgroundTask>();
+#if BUILDFLAG(ENABLE_FEED_V2)
     case static_cast<int>(background_task::TaskIds::FEEDV2_REFRESH_JOB_ID):
       return std::make_unique<feed::BackgroundRefreshTask>();
+#endif
     default:
       break;
   }

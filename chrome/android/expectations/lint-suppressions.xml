@@ -122,7 +122,7 @@ Still reading?
   <issue id="LongLogTag" severity="ignore"/>
   <issue id="MergeRootFrame">
     <!-- TODO(crbug.com/1039415): Remove suppression after fixing bug. -->
-    <ignore regexp="chrome/android/feed/core/java/res/layout/feed_more_button.xml"/>
+    <ignore regexp="chrome/android/feed/core/java/resv1/layout/feed_more_button.xml"/>
   </issue>
   <issue id="MissingClass" severity="ignore"/>
   <issue id="MissingDefaultResource">

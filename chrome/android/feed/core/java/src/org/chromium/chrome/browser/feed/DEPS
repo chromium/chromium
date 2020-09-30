@@ -1,0 +1,15 @@
+include_rules = [
+  "-chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/v1",
+  "-chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/v2",
+  "-chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/library",
+]
+
+specific_include_rules = {
+    "FeedV1\.java": [
+        "+chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/v1",
+        "+chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/library",
+    ],
+    "FeedV2\.java": [
+        "+chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/v2",
+    ],
+}

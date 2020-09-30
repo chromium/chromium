@@ -45,7 +45,6 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.feed.FeedProcessScopeFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
@@ -145,7 +144,6 @@ public class NewTabPageTest {
     @After
     public void tearDown() {
         mTestServer.stopAndDestroyServer();
-        FeedProcessScopeFactory.setTestNetworkClient(null);
     }
 
     @Test

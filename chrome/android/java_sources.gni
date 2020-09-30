@@ -31,11 +31,8 @@ if (enable_offline_pages_harness) {
   chrome_test_java_sources += [ "javatests/src/org/chromium/chrome/browser/offlinepages/OfflinePageSavePageLaterEvaluationTest.java" ]
 }
 
-if (enable_feed_in_chrome) {
-  chrome_junit_test_java_sources += feed_junit_test_java_sources
-  chrome_test_java_sources += feed_test_java_sources
-}
-
+chrome_junit_test_java_sources += feed_junit_test_java_sources
+chrome_test_java_sources += feed_test_java_sources
 chrome_test_java_sources += start_surface_test_java_sources
 chrome_junit_test_java_sources += start_surface_junit_java_sources
 chrome_junit_test_java_sources += tab_management_junit_java_sources

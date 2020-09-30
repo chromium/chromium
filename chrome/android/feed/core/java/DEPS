@@ -1,0 +1,5 @@
+include_rules = [
+  "-mojo", # See crbug.com/1108983
+  "-content",
+  "+content/public/android/java/src/org/chromium/content_public",
+]

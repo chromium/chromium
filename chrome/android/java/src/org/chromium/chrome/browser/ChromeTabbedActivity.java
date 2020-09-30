@@ -75,8 +75,9 @@ import org.chromium.chrome.browser.dom_distiller.ReaderModeManager;
 import org.chromium.chrome.browser.download.DownloadOpenSource;
 import org.chromium.chrome.browser.download.DownloadUtils;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.feed.FeedProcessScopeFactory;
-import org.chromium.chrome.browser.feed.v2.FeedStreamSurface;
+import org.chromium.chrome.browser.feed.FeedV1;
+import org.chromium.chrome.browser.feed.FeedV2;
+import org.chromium.chrome.browser.feed.shared.FeedFeatures;
 import org.chromium.chrome.browser.firstrun.FirstRunSignInProcessor;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -687,13 +688,10 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     private void maybeGetFeedAppLifecycleAndMaybeCreatePageViewObserver() {
         try (TraceEvent e = TraceEvent.scoped("ChromeTabbedActivity."
                      + "maybeGetFeedAppLifecycleAndMaybeCreatePageViewObserver")) {
-            if (ChromeFeatureList.isEnabled(ChromeFeatureList.INTEREST_FEED_V2)) {
-                FeedStreamSurface.startup();
-            } else if (ChromeFeatureList.isEnabled(
-                               ChromeFeatureList.INTEREST_FEED_CONTENT_SUGGESTIONS)) {
-                // We call getFeedAppLifecycle() here to ensure the app lifecycle is created so
-                // that it can start listening for state changes.
-                FeedProcessScopeFactory.getFeedAppLifecycle();
+            if (FeedFeatures.isV2Enabled()) {
+                FeedV2.startup();
+            } else {
+                FeedV1.startup();
             }
 
             if (UsageStatsService.isEnabled()) {

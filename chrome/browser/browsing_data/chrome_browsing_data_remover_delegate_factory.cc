@@ -60,13 +60,16 @@ ChromeBrowsingDataRemoverDelegateFactory::
   DependsOn(autofill::PersonalDataManagerFactory::GetInstance());
   DependsOn(DataReductionProxyChromeSettingsFactory::GetInstance());
 #if defined(OS_ANDROID)
-#if BUILDFLAG(ENABLE_FEED_IN_CHROME)
-  if (base::FeatureList::IsEnabled(feed::kInterestFeedV2)) {
+#if BUILDFLAG(ENABLE_FEED_V2)
+  if (feed::IsV2Enabled()) {
     DependsOn(feed::FeedServiceFactory::GetInstance());
-  } else {
+  }
+#endif  // BUILDFLAG(ENABLE_FEED_V2)
+#if BUILDFLAG(ENABLE_FEED_V1)
+  if (feed::IsV1Enabled()) {
     DependsOn(feed::FeedHostServiceFactory::GetInstance());
   }
-#endif  // BUILDFLAG(ENABLE_FEED_IN_CHROME)
+#endif  // BUILDFLAG(ENABLE_FEED_V1)
 #endif  // defined(OS_ANDROID)
   DependsOn(HistoryServiceFactory::GetInstance());
   DependsOn(HostContentSettingsMapFactory::GetInstance());

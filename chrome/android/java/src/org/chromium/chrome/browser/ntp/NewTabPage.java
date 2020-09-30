@@ -33,9 +33,9 @@ import org.chromium.chrome.browser.compositor.layouts.content.InvalidationAwareT
 import org.chromium.chrome.browser.download.DownloadManagerService;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.feed.FeedSurfaceCoordinator;
+import org.chromium.chrome.browser.feed.FeedV1ActionOptions;
 import org.chromium.chrome.browser.feed.NtpStreamLifecycleManager;
 import org.chromium.chrome.browser.feed.StreamLifecycleManager;
-import org.chromium.chrome.browser.feed.action.FeedActionHandler;
 import org.chromium.chrome.browser.feed.shared.FeedFeatures;
 import org.chromium.chrome.browser.feed.shared.FeedSurfaceDelegate;
 import org.chromium.chrome.browser.feed.shared.FeedSurfaceProvider;
@@ -430,9 +430,9 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
         mFeedSurfaceProvider =
                 new FeedSurfaceCoordinator(activity, snackbarManager, tabModelSelector, tabProvider,
                         new SnapScrollHelper(mNewTabPageManager, mNewTabPageLayout),
-                        mNewTabPageLayout, sectionHeaderView, new FeedActionHandler.Options(),
+                        mNewTabPageLayout, sectionHeaderView, new FeedV1ActionOptions(),
                         isInNightMode, this, mNewTabPageManager.getNavigationDelegate(), profile,
-                        /* isPlaceholderShown= */ false, bottomSheetController);
+                        /* isPlaceholderRequested= */ false, bottomSheetController);
 
         // Record the timestamp at which the new tab page's construction started.
         uma.trackTimeToFirstDraw(mFeedSurfaceProvider.getView(), mConstructedTimeNs);

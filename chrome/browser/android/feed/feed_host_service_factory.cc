@@ -74,7 +74,7 @@ FeedHostServiceFactory::~FeedHostServiceFactory() = default;
 KeyedService* FeedHostServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   // Code here is not compatible with V2.
-  DCHECK(!base::FeatureList::IsEnabled(feed::kInterestFeedV2));
+  DCHECK(!feed::IsV2Enabled());
 
   Profile* profile = Profile::FromBrowserContext(context);
 

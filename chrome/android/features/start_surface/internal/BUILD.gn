@@ -17,6 +17,7 @@ java_strings_grd("java_strings_grd") {
 
 android_resources("java_resources") {
   sources = [
+    "java/explore_res/layout/ss_feed_header.xml",
     "java/res/drawable-hdpi/ic_explore.png",
     "java/res/drawable-hdpi/ic_home.png",
     "java/res/drawable-mdpi/ic_explore.png",
@@ -36,9 +37,6 @@ android_resources("java_resources") {
     "java/res/values/dimens.xml",
     "java/res/values/ids.xml",
   ]
-  if (enable_feed_in_chrome) {
-    sources += [ "java/explore_res/layout/ss_feed_header.xml" ]
-  }
   deps = [
     ":java_strings_grd",
     "//chrome/android:chrome_app_java_resources",
@@ -50,6 +48,12 @@ android_library("java") {
     "java/src/org/chromium/chrome/features/start_surface/BottomBarCoordinator.java",
     "java/src/org/chromium/chrome/features/start_surface/BottomBarView.java",
     "java/src/org/chromium/chrome/features/start_surface/BottomBarViewBinder.java",
+    "java/src/org/chromium/chrome/features/start_surface/ExploreSurfaceCoordinator.java",
+    "java/src/org/chromium/chrome/features/start_surface/ExploreSurfaceNavigationDelegate.java",
+    "java/src/org/chromium/chrome/features/start_surface/ExploreSurfaceStreamLifecycleManager.java",
+    "java/src/org/chromium/chrome/features/start_surface/ExploreSurfaceViewBinder.java",
+    "java/src/org/chromium/chrome/features/start_surface/FeedLoadingCoordinator.java",
+    "java/src/org/chromium/chrome/features/start_surface/FeedLoadingLayout.java",
     "java/src/org/chromium/chrome/features/start_surface/ReturnToStartSurfaceUtil.java",
     "java/src/org/chromium/chrome/features/start_surface/SecondaryTasksSurfaceViewBinder.java",
     "java/src/org/chromium/chrome/features/start_surface/StartSurfaceCoordinator.java",
@@ -65,10 +69,12 @@ android_library("java") {
     ":java_resources",
     "//base:base_java",
     "//chrome/android:chrome_java",
+    "//chrome/android/feed:chrome_feed_java_resources",
     "//chrome/android/third_party/compositor_animator:compositor_animator_java",
     "//chrome/browser/browser_controls/android:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/preferences:java",
+    "//chrome/browser/profiles/android:java",
     "//chrome/browser/tab:java",
     "//chrome/browser/tabmodel:java",
     "//chrome/browser/ui/messages/android:java",
@@ -77,33 +83,15 @@ android_library("java") {
     "//components/browser_ui/widget/android:java",
     "//components/prefs/android:java",
     "//components/user_prefs/android:java",
+    "//content/public/android:content_java",
     "//third_party/android_deps:android_support_v7_appcompat_java",
     "//third_party/android_deps:androidx_annotation_annotation_java",
     "//third_party/android_deps:material_design_java",
+    "//third_party/android_sdk/androidx_browser:androidx_browser_java",
     "//ui/android:ui_full_java",
+    "//ui/android:ui_utils_java",
+    "//ui/base/mojom:mojom_java",
   ]
-
-  if (enable_feed_in_chrome) {
-    sources += [
-      "java/src/org/chromium/chrome/features/start_surface/ExploreSurfaceCoordinator.java",
-      "java/src/org/chromium/chrome/features/start_surface/ExploreSurfaceNavigationDelegate.java",
-      "java/src/org/chromium/chrome/features/start_surface/ExploreSurfaceStreamLifecycleManager.java",
-      "java/src/org/chromium/chrome/features/start_surface/ExploreSurfaceViewBinder.java",
-      "java/src/org/chromium/chrome/features/start_surface/FeedLoadingCoordinator.java",
-      "java/src/org/chromium/chrome/features/start_surface/FeedLoadingLayout.java",
-    ]
-
-    deps += [
-      "//chrome/android/feed:chrome_feed_java_resources",
-      "//chrome/browser/profiles/android:java",
-      "//content/public/android:content_java",
-      "//third_party/android_sdk/androidx_browser:androidx_browser_java",
-      "//ui/android:ui_utils_java",
-      "//ui/base/mojom:mojom_java",
-    ]
-  } else {
-    sources += [ "dummy/java/src/org/chromium/chrome/features/start_surface/ExploreSurfaceCoordinator.java" ]
-  }
 
   if (!is_java_debug) {
     if (!defined(proguard_configs)) {

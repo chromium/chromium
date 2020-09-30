@@ -32,7 +32,6 @@ import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Consumer;
-import org.chromium.chrome.browser.feed.FeedLoggingBridge;
 import org.chromium.chrome.browser.feed.library.api.common.MutationContext;
 import org.chromium.chrome.browser.feed.library.api.internal.common.Model;
 import org.chromium.chrome.browser.feed.library.api.internal.sessionmanager.FeedSessionManager;
@@ -45,6 +44,7 @@ import org.chromium.chrome.browser.feed.library.common.concurrent.testing.FakeMa
 import org.chromium.chrome.browser.feed.library.common.concurrent.testing.FakeTaskQueue;
 import org.chromium.chrome.browser.feed.library.common.concurrent.testing.FakeThreadUtils;
 import org.chromium.chrome.browser.feed.library.common.time.testing.FakeClock;
+import org.chromium.chrome.browser.feed.v1.FeedLoggingBridge;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.feed.core.proto.libraries.api.internal.StreamDataProto.StreamDataOperation;

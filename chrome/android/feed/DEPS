@@ -1,5 +1,6 @@
 include_rules = [
   "+chrome/browser/android/lifecycle",
+  "+chrome/browser/image_fetcher",
   "+chrome/browser/profiles/android/java",
   "+chrome/browser/tab/java",
   "+chrome/browser/ui/messages/android/java",
@@ -7,8 +8,5 @@ include_rules = [
   "+components/background_task_scheduler",
   "+components/feature_engagement",
   "+components/feed",
-
-  "-mojo", # See crbug.com/1108983
-  "-content",
-  "+content/public/android/java/src/org/chromium/content_public",
+  "+content/public/android/java/src/org/chromium/content_public/browser",
 ]

@@ -4152,7 +4152,7 @@ test("unit_tests") {
     ]
   }
 
-  if (enable_feed_in_chrome) {
+  if (enable_feed_v1) {
     sources +=
         [ "../browser/android/feed/history/feed_history_helper_unittest.cc" ]
   }

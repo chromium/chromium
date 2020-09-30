@@ -225,9 +225,7 @@
 #include "components/ntp_tiles/popular_sites_impl.h"
 #include "components/permissions/contexts/geolocation_permission_context_android.h"
 #include "components/query_tiles/tile_service_prefs.h"
-#if BUILDFLAG(ENABLE_FEED_IN_CHROME)
 #include "components/feed/core/common/pref_names.h"
-#endif  // BUILDFLAG(ENABLE_FEED_IN_CHROME)
 #else   // defined(OS_ANDROID)
 #include "chrome/browser/accessibility/caption_controller.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -873,9 +871,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   variations::VariationsService::RegisterProfilePrefs(registry);
   video_tutorials::RegisterPrefs(registry);
   feed::prefs::RegisterFeedSharedProfilePrefs(registry);
-#if BUILDFLAG(ENABLE_FEED_IN_CHROME)
   feed::RegisterProfilePrefs(registry);
-#endif  // BUILDFLAG(ENABLE_FEED_IN_CHROME)
 #else   // defined(OS_ANDROID)
   apps::AppServiceProxy::RegisterProfilePrefs(registry);
   AppShortcutManager::RegisterProfilePrefs(registry);

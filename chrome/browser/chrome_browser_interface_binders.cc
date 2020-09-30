@@ -73,11 +73,6 @@
 #include "third_party/blink/public/public_buildflags.h"
 #include "ui/webui/resources/cr_components/customize_themes/customize_themes.mojom.h"
 
-#if BUILDFLAG(ENABLE_FEED_IN_CHROME)
-#include "chrome/browser/ui/webui/feed_internals/feed_internals.mojom.h"
-#include "chrome/browser/ui/webui/feed_internals/feed_internals_ui.h"
-#endif  // BUILDFLAG(ENABLE_FEED_IN_CHROME)
-
 #if BUILDFLAG(ENABLE_UNHANDLED_TAP)
 #include "chrome/browser/android/contextualsearch/unhandled_tap_notifier_impl.h"
 #include "chrome/browser/android/contextualsearch/unhandled_tap_web_contents_observer.h"
@@ -95,6 +90,8 @@
 #include "chrome/browser/offline_pages/android/offline_page_auto_fetcher.h"
 #include "chrome/browser/ui/webui/explore_sites_internals/explore_sites_internals.mojom.h"
 #include "chrome/browser/ui/webui/explore_sites_internals/explore_sites_internals_ui.h"
+#include "chrome/browser/ui/webui/feed_internals/feed_internals.mojom.h"
+#include "chrome/browser/ui/webui/feed_internals/feed_internals_ui.h"
 #include "chrome/common/offline_page_auto_fetcher.mojom.h"
 #include "components/contextual_search/content/browser/contextual_search_js_api_service_impl.h"
 #include "components/contextual_search/content/common/mojom/contextual_search_js_api_service.mojom.h"
@@ -744,7 +741,7 @@ void PopulateChromeWebUIFrameBinders(
                                          DiscardsUI>(map);
 #endif
 
-#if BUILDFLAG(ENABLE_FEED_IN_CHROME)
+#if BUILDFLAG(ENABLE_FEED_V1) || BUILDFLAG(ENABLE_FEED_V2)
   RegisterWebUIControllerInterfaceBinder<feed_internals::mojom::PageHandler,
                                          FeedInternalsUI>(map);
 #endif
