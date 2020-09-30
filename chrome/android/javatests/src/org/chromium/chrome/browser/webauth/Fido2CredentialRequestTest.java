@@ -44,8 +44,8 @@ import org.chromium.blink.mojom.PublicKeyCredentialRequestOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialType;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
+import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.test.mock.MockRenderFrameHost;
@@ -75,8 +75,8 @@ import java.util.List;
 @Batch(Batch.PER_CLASS)
 public class Fido2CredentialRequestTest {
     @ClassRule
-    public static final ChromeActivityTestRule<ChromeActivity> sActivityTestRule =
-            new ChromeActivityTestRule(ChromeActivity.class);
+    public static final ChromeTabbedActivityTestRule sActivityTestRule =
+            new ChromeTabbedActivityTestRule();
     @Rule
     public final BlankCTATabInitialStateRule mInitialStateRule =
             new BlankCTATabInitialStateRule(sActivityTestRule, false);

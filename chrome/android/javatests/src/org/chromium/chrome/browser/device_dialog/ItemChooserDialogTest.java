@@ -30,10 +30,9 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.content_public.browser.test.util.Criteria;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
@@ -49,8 +48,8 @@ import org.chromium.ui.widget.TextViewWithClickableSpans;
 @Batch(BluetoothChooserDialogTest.DEVICE_DIALOG_BATCH_NAME)
 public class ItemChooserDialogTest implements ItemChooserDialog.ItemSelectedCallback {
     @ClassRule
-    public static final ChromeActivityTestRule<ChromeActivity> sActivityTestRule =
-            new ChromeActivityTestRule<>(ChromeActivity.class);
+    public static final ChromeTabbedActivityTestRule sActivityTestRule =
+            new ChromeTabbedActivityTestRule();
 
     @Rule
     public final BlankCTATabInitialStateRule mInitialStateRule =

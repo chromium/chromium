@@ -46,14 +46,13 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.incognito.interstitial.IncognitoInterstitialDelegate;
 import org.chromium.chrome.browser.signin.account_picker.AccountPickerBottomSheetCoordinator;
 import org.chromium.chrome.browser.signin.account_picker.AccountPickerDelegate;
-import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
@@ -98,8 +97,8 @@ public class AccountPickerBottomSheetTest {
             new DisableAnimationsTestRule();
 
     @ClassRule
-    public static final ChromeActivityTestRule<ChromeActivity> sActivityTestRule =
-            new ChromeActivityTestRule<>(ChromeActivity.class);
+    public static final ChromeTabbedActivityTestRule sActivityTestRule =
+            new ChromeTabbedActivityTestRule();
 
     @Rule
     public final BlankCTATabInitialStateRule mInitialStateRule =
