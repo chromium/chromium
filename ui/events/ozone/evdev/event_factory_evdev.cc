@@ -104,12 +104,14 @@ class ProxyDeviceEventDispatcher : public DeviceEventDispatcherEvdev {
         base::BindOnce(&EventFactoryEvdev::DispatchTouchscreenDevicesUpdated,
                        event_factory_evdev_, devices));
   }
-  void DispatchMouseDevicesUpdated(
-      const std::vector<InputDevice>& devices) override {
+  void DispatchMouseDevicesUpdated(const std::vector<InputDevice>& devices,
+                                   bool has_mouse,
+                                   bool has_pointing_stick) override {
     ui_thread_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&EventFactoryEvdev::DispatchMouseDevicesUpdated,
-                       event_factory_evdev_, devices));
+                       event_factory_evdev_, devices, has_mouse,
+                       has_pointing_stick));
   }
   void DispatchTouchpadDevicesUpdated(
       const std::vector<InputDevice>& devices) override {
@@ -390,11 +392,14 @@ void EventFactoryEvdev::DispatchTouchscreenDevicesUpdated(
 }
 
 void EventFactoryEvdev::DispatchMouseDevicesUpdated(
-    const std::vector<InputDevice>& devices) {
+    const std::vector<InputDevice>& devices,
+    bool has_mouse,
+    bool has_pointing_stick) {
   TRACE_EVENT0("evdev", "EventFactoryEvdev::DispatchMouseDevicesUpdated");
 
   // There's no list of mice in DeviceDataManager.
-  input_controller_.set_has_mouse(devices.size() != 0);
+  input_controller_.set_has_mouse(has_mouse);
+  input_controller_.set_has_pointing_stick(has_pointing_stick);
   DeviceHotplugEventObserver* observer = DeviceDataManager::GetInstance();
   observer->OnMouseDevicesUpdated(devices);
 }

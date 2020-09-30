@@ -74,8 +74,13 @@ class COMPONENT_EXPORT(EVDEV) EventConverterEvdev
   // Returns true if the converter is used for a keyboard device.
   virtual bool HasKeyboard() const;
 
-  // Returns true if the converter is used for a mouse device;
+  // Returns true if the converter is used for a mouse device (that isn't a
+  // pointing stick);
   virtual bool HasMouse() const;
+
+  // Returns true if the converter is used for a pointing stick device (such as
+  // a TrackPoint);
+  virtual bool HasPointingStick() const;
 
   // Returns true if the converter is used for a touchpad device.
   virtual bool HasTouchpad() const;

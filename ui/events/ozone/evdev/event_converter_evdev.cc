@@ -104,6 +104,10 @@ bool EventConverterEvdev::HasMouse() const {
   return false;
 }
 
+bool EventConverterEvdev::HasPointingStick() const {
+  return false;
+}
+
 bool EventConverterEvdev::HasTouchpad() const {
   return false;
 }

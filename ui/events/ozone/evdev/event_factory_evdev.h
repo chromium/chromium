@@ -79,7 +79,9 @@ class COMPONENT_EXPORT(EVDEV) EventFactoryEvdev : public DeviceEventObserver,
   void DispatchKeyboardDevicesUpdated(const std::vector<InputDevice>& devices);
   void DispatchTouchscreenDevicesUpdated(
       const std::vector<TouchscreenDevice>& devices);
-  void DispatchMouseDevicesUpdated(const std::vector<InputDevice>& devices);
+  void DispatchMouseDevicesUpdated(const std::vector<InputDevice>& devices,
+                                   bool has_mouse,
+                                   bool has_pointing_stick);
   void DispatchTouchpadDevicesUpdated(const std::vector<InputDevice>& devices);
   void DispatchUncategorizedDevicesUpdated(
       const std::vector<InputDevice>& devices);
@@ -110,6 +112,8 @@ class COMPONENT_EXPORT(EVDEV) EventFactoryEvdev : public DeviceEventObserver,
   void StartThread();
   void OnThreadStarted(
       std::unique_ptr<InputDeviceFactoryEvdevProxy> input_device_factory);
+
+  void NotifyMiceAndPointingSticksUpdated();
 
   // Used to uniquely identify input devices.
   int last_device_id_ = 0;

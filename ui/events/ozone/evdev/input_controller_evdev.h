@@ -33,6 +33,7 @@ class COMPONENT_EXPORT(EVDEV) InputControllerEvdev : public InputController {
       InputDeviceFactoryEvdevProxy* input_device_factory);
 
   void set_has_mouse(bool has_mouse);
+  void set_has_pointing_stick(bool has_pointing_stick);
   void set_has_touchpad(bool has_touchpad);
 
   void SetInputDevicesEnabled(bool enabled);
@@ -118,6 +119,7 @@ class COMPONENT_EXPORT(EVDEV) InputControllerEvdev : public InputController {
 
   // Device presence.
   bool has_mouse_ = false;
+  bool has_pointing_stick_ = false;
   bool has_touchpad_ = false;
 
   // LED state.

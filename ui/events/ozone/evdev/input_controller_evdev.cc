@@ -38,6 +38,10 @@ void InputControllerEvdev::set_has_mouse(bool has_mouse) {
   has_mouse_ = has_mouse;
 }
 
+void InputControllerEvdev::set_has_pointing_stick(bool has_pointing_stick) {
+  has_pointing_stick_ = has_pointing_stick;
+}
+
 void InputControllerEvdev::set_has_touchpad(bool has_touchpad) {
   has_touchpad_ = has_touchpad;
 }
@@ -48,7 +52,8 @@ void InputControllerEvdev::SetInputDevicesEnabled(bool enabled) {
 }
 
 bool InputControllerEvdev::HasMouse() {
-  return has_mouse_;
+  // TODO(crbug.com/1114828): add a separate HasPointingStick method.
+  return has_mouse_ || has_pointing_stick_;
 }
 
 bool InputControllerEvdev::HasTouchpad() {

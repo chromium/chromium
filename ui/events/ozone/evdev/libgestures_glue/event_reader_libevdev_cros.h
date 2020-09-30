@@ -53,6 +53,7 @@ class EventReaderLibevdevCros : public EventConverterEvdev {
   void OnFileCanReadWithoutBlocking(int fd) override;
   bool HasKeyboard() const override;
   bool HasMouse() const override;
+  bool HasPointingStick() const override;
   bool HasTouchpad() const override;
   bool HasCapsLockLed() const override;
   void OnDisabled() override;
@@ -66,6 +67,7 @@ class EventReaderLibevdevCros : public EventConverterEvdev {
   // Input modalities for this device.
   bool has_keyboard_;
   bool has_mouse_;
+  bool has_pointing_stick_;
   bool has_touchpad_;
 
   // LEDs for this device.

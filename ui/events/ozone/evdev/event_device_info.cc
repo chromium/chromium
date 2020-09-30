@@ -520,7 +520,11 @@ bool EventDeviceInfo::HasKeyboard() const {
 }
 
 bool EventDeviceInfo::HasMouse() const {
-  return HasRelXY();
+  return HasRelXY() && !HasProp(INPUT_PROP_POINTING_STICK);
+}
+
+bool EventDeviceInfo::HasPointingStick() const {
+  return HasRelXY() && HasProp(INPUT_PROP_POINTING_STICK);
 }
 
 bool EventDeviceInfo::HasTouchpad() const {

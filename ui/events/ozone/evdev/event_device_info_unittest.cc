@@ -21,6 +21,7 @@ TEST(EventDeviceInfoTest, BasicUsbGamepad) {
 
   EXPECT_FALSE(devinfo.HasKeyboard());
   EXPECT_FALSE(devinfo.HasMouse());
+  EXPECT_FALSE(devinfo.HasPointingStick());
   EXPECT_FALSE(devinfo.HasTouchpad());
   EXPECT_FALSE(devinfo.HasTouchscreen());
   EXPECT_FALSE(devinfo.HasTablet());
@@ -35,6 +36,7 @@ TEST(EventDeviceInfoTest, BasicCrosKeyboard) {
 
   EXPECT_TRUE(devinfo.HasKeyboard());
   EXPECT_FALSE(devinfo.HasMouse());
+  EXPECT_FALSE(devinfo.HasPointingStick());
   EXPECT_FALSE(devinfo.HasTouchpad());
   EXPECT_FALSE(devinfo.HasTouchscreen());
   EXPECT_FALSE(devinfo.HasTablet());
@@ -49,6 +51,7 @@ TEST(EventDeviceInfoTest, SideVolumeButton) {
 
   EXPECT_FALSE(devinfo.HasKeyboard());
   EXPECT_FALSE(devinfo.HasMouse());
+  EXPECT_FALSE(devinfo.HasPointingStick());
   EXPECT_FALSE(devinfo.HasTouchpad());
   EXPECT_FALSE(devinfo.HasTouchscreen());
   EXPECT_FALSE(devinfo.HasTablet());
@@ -61,6 +64,7 @@ TEST(EventDeviceInfoTest, BasicCrosTouchscreen) {
 
   EXPECT_FALSE(devinfo.HasKeyboard());
   EXPECT_FALSE(devinfo.HasMouse());
+  EXPECT_FALSE(devinfo.HasPointingStick());
   EXPECT_FALSE(devinfo.HasTouchpad());
   EXPECT_TRUE(devinfo.HasTouchscreen());
   EXPECT_FALSE(devinfo.HasTablet());
@@ -75,7 +79,23 @@ TEST(EventDeviceInfoTest, BasicCrosTouchpad) {
 
   EXPECT_FALSE(devinfo.HasKeyboard());
   EXPECT_FALSE(devinfo.HasMouse());
+  EXPECT_FALSE(devinfo.HasPointingStick());
   EXPECT_TRUE(devinfo.HasTouchpad());
+  EXPECT_FALSE(devinfo.HasTouchscreen());
+  EXPECT_FALSE(devinfo.HasTablet());
+  EXPECT_FALSE(devinfo.HasGamepad());
+
+  EXPECT_EQ(ui::InputDeviceType::INPUT_DEVICE_INTERNAL, devinfo.device_type());
+}
+
+TEST(EventDeviceInfoTest, BasicCrosPointingStick) {
+  EventDeviceInfo devinfo;
+  EXPECT_TRUE(CapabilitiesToDeviceInfo(kMorphiusPointingStick, &devinfo));
+
+  EXPECT_FALSE(devinfo.HasKeyboard());
+  EXPECT_FALSE(devinfo.HasMouse());
+  EXPECT_TRUE(devinfo.HasPointingStick());
+  EXPECT_FALSE(devinfo.HasTouchpad());
   EXPECT_FALSE(devinfo.HasTouchscreen());
   EXPECT_FALSE(devinfo.HasTablet());
   EXPECT_FALSE(devinfo.HasGamepad());
@@ -89,6 +109,7 @@ TEST(EventDeviceInfoTest, BasicUsbKeyboard) {
 
   EXPECT_TRUE(devinfo.HasKeyboard());
   EXPECT_FALSE(devinfo.HasMouse());
+  EXPECT_FALSE(devinfo.HasPointingStick());
   EXPECT_FALSE(devinfo.HasTouchpad());
   EXPECT_FALSE(devinfo.HasTouchscreen());
   EXPECT_FALSE(devinfo.HasTablet());
@@ -103,6 +124,7 @@ TEST(EventDeviceInfoTest, BasicUsbKeyboard_Extra) {
 
   EXPECT_FALSE(devinfo.HasKeyboard());  // Has keys, but not a full keyboard.
   EXPECT_FALSE(devinfo.HasMouse());
+  EXPECT_FALSE(devinfo.HasPointingStick());
   EXPECT_FALSE(devinfo.HasTouchpad());
   EXPECT_FALSE(devinfo.HasTouchscreen());
   EXPECT_FALSE(devinfo.HasTablet());
@@ -117,6 +139,7 @@ TEST(EventDeviceInfoTest, BasicUsbMouse) {
 
   EXPECT_FALSE(devinfo.HasKeyboard());
   EXPECT_TRUE(devinfo.HasMouse());
+  EXPECT_FALSE(devinfo.HasPointingStick());
   EXPECT_FALSE(devinfo.HasTouchpad());
   EXPECT_FALSE(devinfo.HasTouchscreen());
   EXPECT_FALSE(devinfo.HasTablet());
@@ -131,6 +154,7 @@ TEST(EventDeviceInfoTest, BasicUsbTouchscreen) {
 
   EXPECT_FALSE(devinfo.HasKeyboard());
   EXPECT_FALSE(devinfo.HasMouse());
+  EXPECT_FALSE(devinfo.HasPointingStick());
   EXPECT_FALSE(devinfo.HasTouchpad());
   EXPECT_TRUE(devinfo.HasTouchscreen());
   EXPECT_FALSE(devinfo.HasTablet());
@@ -145,6 +169,7 @@ TEST(EventDeviceInfoTest, BasicUsbTablet) {
 
   EXPECT_FALSE(devinfo.HasKeyboard());
   EXPECT_FALSE(devinfo.HasMouse());
+  EXPECT_FALSE(devinfo.HasPointingStick());
   EXPECT_FALSE(devinfo.HasTouchpad());
   EXPECT_FALSE(devinfo.HasTouchscreen());
   EXPECT_TRUE(devinfo.HasTablet());
@@ -159,6 +184,7 @@ TEST(EventDeviceInfoTest, BasicUsbTouchpad) {
 
   EXPECT_FALSE(devinfo.HasKeyboard());
   EXPECT_FALSE(devinfo.HasMouse());
+  EXPECT_FALSE(devinfo.HasPointingStick());
   EXPECT_TRUE(devinfo.HasTouchpad());
   EXPECT_FALSE(devinfo.HasTouchscreen());
   EXPECT_FALSE(devinfo.HasTablet());
@@ -174,6 +200,7 @@ TEST(EventDeviceInfoTest, HybridKeyboardWithMouse) {
   // The touchpad actually exposes mouse (relative) Events.
   EXPECT_TRUE(devinfo.HasKeyboard());
   EXPECT_TRUE(devinfo.HasMouse());
+  EXPECT_FALSE(devinfo.HasPointingStick());
   EXPECT_FALSE(devinfo.HasTouchpad());
   EXPECT_FALSE(devinfo.HasTouchscreen());
   EXPECT_FALSE(devinfo.HasTablet());
@@ -187,6 +214,7 @@ TEST(EventDeviceInfoTest, AbsoluteMouseTouchscreen) {
   // This touchscreen uses BTN_LEFT for touch contact.
   EXPECT_FALSE(devinfo.HasKeyboard());
   EXPECT_FALSE(devinfo.HasMouse());
+  EXPECT_FALSE(devinfo.HasPointingStick());
   EXPECT_FALSE(devinfo.HasTouchpad());
   EXPECT_TRUE(devinfo.HasTouchscreen());
   EXPECT_FALSE(devinfo.HasTablet());
@@ -201,6 +229,7 @@ TEST(EventDeviceInfoTest, OnScreenStylus) {
 
   EXPECT_FALSE(devinfo.HasKeyboard());
   EXPECT_FALSE(devinfo.HasMouse());
+  EXPECT_FALSE(devinfo.HasPointingStick());
   EXPECT_FALSE(devinfo.HasTouchpad());
   EXPECT_TRUE(devinfo.HasTouchscreen());
   EXPECT_FALSE(devinfo.HasTablet());
@@ -215,6 +244,7 @@ TEST(EventDeviceInfoTest, HammerKeyboard) {
 
   EXPECT_TRUE(devinfo.HasKeyboard());
   EXPECT_FALSE(devinfo.HasMouse());
+  EXPECT_FALSE(devinfo.HasPointingStick());
   EXPECT_FALSE(devinfo.HasTouchpad());
   EXPECT_FALSE(devinfo.HasTouchscreen());
   EXPECT_FALSE(devinfo.HasTablet());
@@ -229,6 +259,7 @@ TEST(EventDeviceInfoTest, HammerTouchpad) {
 
   EXPECT_FALSE(devinfo.HasKeyboard());
   EXPECT_FALSE(devinfo.HasMouse());
+  EXPECT_FALSE(devinfo.HasPointingStick());
   EXPECT_TRUE(devinfo.HasTouchpad());
   EXPECT_FALSE(devinfo.HasTouchscreen());
   EXPECT_FALSE(devinfo.HasTablet());
@@ -243,6 +274,7 @@ TEST(EventDeviceInfoTest, IllitekTP_Mouse) {
 
   EXPECT_FALSE(devinfo.HasKeyboard());
   EXPECT_FALSE(devinfo.HasMouse());
+  EXPECT_FALSE(devinfo.HasPointingStick());
   EXPECT_FALSE(devinfo.HasTouchpad());
   EXPECT_FALSE(devinfo.HasTouchscreen());
   EXPECT_FALSE(devinfo.HasTablet());
@@ -257,6 +289,7 @@ TEST(EventDeviceInfoTest, IllitekTP) {
 
   EXPECT_FALSE(devinfo.HasKeyboard());
   EXPECT_FALSE(devinfo.HasMouse());
+  EXPECT_FALSE(devinfo.HasPointingStick());
   EXPECT_FALSE(devinfo.HasTouchpad());
   EXPECT_TRUE(devinfo.HasTouchscreen());
   EXPECT_FALSE(devinfo.HasTablet());
@@ -278,6 +311,7 @@ TEST(EventDeviceInfoTest, XboxElite) {
 
   EXPECT_FALSE(devinfo.HasKeyboard());
   EXPECT_FALSE(devinfo.HasMouse());
+  EXPECT_FALSE(devinfo.HasPointingStick());
   EXPECT_FALSE(devinfo.HasTouchpad());
   EXPECT_FALSE(devinfo.HasTouchscreen());
   EXPECT_FALSE(devinfo.HasTablet());
@@ -292,6 +326,7 @@ TEST(EventDeviceInfoTest, DellActivePen_Button) {
 
   EXPECT_FALSE(devinfo.HasKeyboard());
   EXPECT_FALSE(devinfo.HasMouse());
+  EXPECT_FALSE(devinfo.HasPointingStick());
   EXPECT_FALSE(devinfo.HasTouchpad());
   EXPECT_FALSE(devinfo.HasTouchscreen());
   EXPECT_FALSE(devinfo.HasTablet());
