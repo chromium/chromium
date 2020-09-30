@@ -68,6 +68,12 @@ void PromoBrowserCommandHandler::ExecuteCommandWithDisposition(
       base::RecordAction(
           base::UserMetricsAction("NewTabPage_Promos_SafetyCheck"));
       break;
+    case Command::kOpenSafeBrowsingSettings:
+      NavigateToURL(GURL(chrome::GetSettingsUrl(chrome::kSafeBrowsingSubPage)),
+                    disposition);
+      base::RecordAction(
+          base::UserMetricsAction("NewTabPage_Promos_EnhancedProtection"));
+      break;
     default:
       NOTREACHED() << "Unspecified behavior for command " << id;
       break;
@@ -80,6 +86,8 @@ void PromoBrowserCommandHandler::EnableCommands() {
       static_cast<int>(Command::kUnknownCommand), true);
   GetCommandUpdater()->UpdateCommandEnabled(
       static_cast<int>(Command::kOpenSafetyCheck), true);
+  GetCommandUpdater()->UpdateCommandEnabled(
+      static_cast<int>(Command::kOpenSafeBrowsingSettings), true);
 }
 
 CommandUpdater* PromoBrowserCommandHandler::GetCommandUpdater() {

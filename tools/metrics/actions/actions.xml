@@ -16089,6 +16089,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="NewTabPage_Promos_EnhancedProtection">
+  <owner>bdea@chromium.org</owner>
+  <owner>chrome-safebrowsing-core@google.com</owner>
+  <description>
+    Recorded when the user clicks a Enhanced Protection promotion on the New Tab
+    Page on desktop.
+  </description>
+</action>
+
 <action name="NewTabPage_Promos_SafetyCheck">
   <owner>msramek@chromium.org</owner>
   <description>

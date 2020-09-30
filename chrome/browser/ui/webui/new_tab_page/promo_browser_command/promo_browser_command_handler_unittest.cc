@@ -192,3 +192,17 @@ TEST_F(PromoBrowserCommandHandlerTest, OpenSafetyCheckCommand) {
                     DispositionFromClick(*info)));
   EXPECT_TRUE(ExecuteCommand(Command::kOpenSafetyCheck, std::move(info)));
 }
+
+TEST_F(PromoBrowserCommandHandlerTest, OpenSafeBrowsingCommand) {
+  // The OpenSafeBRowsing command opens a new settings window with the Safe
+  // Browsing settings, and the correct disposition.
+  ClickInfoPtr info = ClickInfo::New();
+  info->middle_button = true;
+  info->meta_key = true;
+  EXPECT_CALL(
+      *command_handler_,
+      NavigateToURL(GURL(chrome::GetSettingsUrl(chrome::kSafeBrowsingSubPage)),
+                    DispositionFromClick(*info)));
+  EXPECT_TRUE(
+      ExecuteCommand(Command::kOpenSafeBrowsingSettings, std::move(info)));
+}
