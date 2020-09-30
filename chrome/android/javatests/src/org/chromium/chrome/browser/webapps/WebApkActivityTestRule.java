@@ -52,8 +52,26 @@ public class WebApkActivityTestRule extends ChromeActivityTestRule<WebappActivit
             BrowserServicesIntentDataProvider webApkIntentDataProvider) {
         WebappInfo webApkInfo = WebappInfo.create(webApkIntentDataProvider);
         Intent intent = createIntent(webApkInfo);
-
         WebappActivity.setIntentDataProviderForTesting(webApkIntentDataProvider);
+
+        return startWebApkActivity(intent, webApkInfo.url());
+    }
+
+    /**
+     * Launches a WebAPK Activity and waits for the page to have finished loading and for the splash
+     * screen to be hidden.
+     */
+    public WebappActivity startWebApkActivity(final String startUrl) {
+        Intent intent =
+                new Intent(InstrumentationRegistry.getTargetContext(), WebappActivity.class);
+        intent.putExtra(WebApkConstants.EXTRA_WEBAPK_PACKAGE_NAME, "org.chromium.webapk.test");
+        intent.putExtra(ShortcutHelper.EXTRA_URL, startUrl);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        return startWebApkActivity(intent, startUrl);
+    }
+
+    private WebappActivity startWebApkActivity(final Intent intent, final String startUrl) {
         final WebappActivity webApkActivity =
                 (WebappActivity) InstrumentationRegistry.getInstrumentation().startActivitySync(
                         intent);
@@ -64,9 +82,8 @@ public class WebApkActivityTestRule extends ChromeActivityTestRule<WebappActivit
             Criteria.checkThat(webApkActivity.getActivityTab(), Matchers.notNullValue());
         }, STARTUP_TIMEOUT, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
 
-        ChromeTabUtils.waitForTabPageLoaded(webApkActivity.getActivityTab(), webApkInfo.url());
+        ChromeTabUtils.waitForTabPageLoaded(webApkActivity.getActivityTab(), startUrl);
         WebappActivityTestRule.waitUntilSplashHides(webApkActivity);
-
         return webApkActivity;
     }
 
