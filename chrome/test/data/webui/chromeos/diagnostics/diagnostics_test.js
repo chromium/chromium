@@ -150,7 +150,7 @@ suite('BatteryStatusCardTest', () => {
           const dataPoints =
             diagnostics_test_utils.getDataPointElements(batteryStatusElement);
           assertEquals(
-              fakeBatteryInfo.manufacturer,
+              fakeBatteryChargeStatus[0].current_now_milliamps,
               dataPoints[0].value);
           assertEquals(
               fakeBatteryHealth[0].charge_full_design_milliamp_hours,
@@ -168,6 +168,7 @@ suite('BatteryStatusCardTest', () => {
           assertEquals(
               fakeBatteryChargeStatus[0].power_adapter_status,
               dataPoints[5].value);
+          assertEquals(fakeBatteryHealth[0].cycle_count, dataPoints[6].value);
         });
   });
 });
