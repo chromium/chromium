@@ -419,13 +419,9 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
                     setUpLocationPreference(preference);
                 } else if (type == ContentSettingsType.NOTIFICATIONS) {
                     setUpNotificationsPreference(preference, isPermissionEmbargoed(type));
-                } else if (mSite.getContentSettingException(type) != null) {
-                    // ContentSettingException can not be embargoed.
-                    setUpListPreference(preference, mSite.getContentSettingPermission(type),
-                            false /* isEmbargoed */);
                 } else {
                     setUpListPreference(preference,
-                            mSite.getPermission(
+                            mSite.getContentSetting(
                                     getSiteSettingsClient().getBrowserContextHandle(), type),
                             isPermissionEmbargoed(type));
                 }
@@ -544,7 +540,7 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
         }
 
         final @ContentSettingValues @Nullable Integer value =
-                mSite.getPermission(getSiteSettingsClient().getBrowserContextHandle(),
+                mSite.getContentSetting(getSiteSettingsClient().getBrowserContextHandle(),
                         ContentSettingsType.NOTIFICATIONS);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             if (value == null
@@ -590,7 +586,7 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
         // There is no notification channel if the origin is merely embargoed. Create it
         // just-in-time if the user tries to change to setting.
         if (isPermissionEmbargoed(ContentSettingsType.NOTIFICATIONS)) {
-            mSite.setPermission(getSiteSettingsClient().getBrowserContextHandle(),
+            mSite.setContentSetting(getSiteSettingsClient().getBrowserContextHandle(),
                     ContentSettingsType.NOTIFICATIONS, ContentSettingValues.BLOCK);
         }
 
@@ -608,7 +604,7 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
     private void launchOsChannelSettings(Context context, String channelId) {
         // Store current value of permission to allow comparison against new value at return.
         mPreviousNotificationPermission =
-                mSite.getPermission(getSiteSettingsClient().getBrowserContextHandle(),
+                mSite.getContentSetting(getSiteSettingsClient().getBrowserContextHandle(),
                         ContentSettingsType.NOTIFICATIONS);
 
         Intent intent = new Intent(Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS);
@@ -646,7 +642,7 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
             // for changes each time Chrome becomes active.
             @ContentSettingValues
             int newPermission =
-                    mSite.getPermission(getSiteSettingsClient().getBrowserContextHandle(),
+                    mSite.getContentSetting(getSiteSettingsClient().getBrowserContextHandle(),
                             ContentSettingsType.NOTIFICATIONS);
             if (mPreviousNotificationPermission == ContentSettingValues.ALLOW
                     && newPermission != ContentSettingValues.ALLOW) {
@@ -784,7 +780,7 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
         BrowserContextHandle browserContextHandle =
                 getSiteSettingsClient().getBrowserContextHandle();
         @ContentSettingValues
-        Integer permission = mSite.getPermission(
+        Integer permission = mSite.getContentSetting(
                 browserContextHandle, SiteSettingsCategory.contentSettingsType(type));
         return permission != null
                 && SiteSettingsCategory.createFromType(browserContextHandle, type)
@@ -875,7 +871,7 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
 
         @ContentSettingValues
         @Nullable
-        Integer permission = mSite.getPermission(
+        Integer permission = mSite.getContentSetting(
                 getSiteSettingsClient().getBrowserContextHandle(), ContentSettingsType.GEOLOCATION);
         setUpListPreference(
                 preference, permission, isPermissionEmbargoed(ContentSettingsType.GEOLOCATION));
@@ -885,15 +881,17 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
     }
 
     private void setUpSoundPreference(Preference preference) {
+        BrowserContextHandle browserContextHandle =
+                getSiteSettingsClient().getBrowserContextHandle();
         @ContentSettingValues
         @Nullable
-        Integer currentValue = mSite.getContentSettingPermission(ContentSettingsType.SOUND);
+        Integer currentValue =
+                mSite.getContentSetting(browserContextHandle, ContentSettingsType.SOUND);
         // In order to always show the sound permission, set it up with the default value if it
         // doesn't have a current value.
         if (currentValue == null) {
             currentValue = WebsitePreferenceBridge.isCategoryEnabled(
-                                   getSiteSettingsClient().getBrowserContextHandle(),
-                                   ContentSettingsType.SOUND)
+                                   browserContextHandle, ContentSettingsType.SOUND)
                     ? ContentSettingValues.ALLOW
                     : ContentSettingValues.BLOCK;
         }
@@ -902,15 +900,17 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
     }
 
     private void setUpJavascriptPreference(Preference preference) {
+        BrowserContextHandle browserContextHandle =
+                getSiteSettingsClient().getBrowserContextHandle();
         @ContentSettingValues
         @Nullable
-        Integer currentValue = mSite.getContentSettingPermission(ContentSettingsType.JAVASCRIPT);
+        Integer currentValue =
+                mSite.getContentSetting(browserContextHandle, ContentSettingsType.JAVASCRIPT);
         // If Javascript is blocked by default, then always show a Javascript permission.
         // To do this, set it to the default value (blocked).
         if ((currentValue == null)
                 && !WebsitePreferenceBridge.isCategoryEnabled(
-                        getSiteSettingsClient().getBrowserContextHandle(),
-                        ContentSettingsType.JAVASCRIPT)) {
+                        browserContextHandle, ContentSettingsType.JAVASCRIPT)) {
             currentValue = ContentSettingValues.BLOCK;
         }
         // Not possible to embargo JAVASCRIPT.
@@ -925,6 +925,8 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
      * 2. The BLOCK string is custom.
      */
     private void setUpAdsPreference(Preference preference) {
+        BrowserContextHandle browserContextHandle =
+                getSiteSettingsClient().getBrowserContextHandle();
         // Do not show the setting if the category is not enabled.
         if (!SiteSettingsCategory.adsCategoryEnabled()) {
             setUpListPreference(preference, null, false);
@@ -933,10 +935,10 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
         // If the ad blocker is activated, then this site will have ads blocked unless there is an
         // explicit permission disallowing the blocking.
         boolean activated = WebsitePreferenceBridge.getAdBlockingActivated(
-                getSiteSettingsClient().getBrowserContextHandle(), mSite.getAddress().getOrigin());
+                browserContextHandle, mSite.getAddress().getOrigin());
         @ContentSettingValues
         @Nullable
-        Integer permission = mSite.getContentSettingPermission(ContentSettingsType.ADS);
+        Integer permission = mSite.getContentSetting(browserContextHandle, ContentSettingsType.ADS);
 
         // If |permission| is null, there is no explicit (non-default) permission set for this site.
         // If the site is not considered a candidate for blocking, do the standard thing and remove
@@ -950,8 +952,7 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
         // is in the default state.
         if (permission == null) {
             permission = WebsitePreferenceBridge.isCategoryEnabled(
-                                 getSiteSettingsClient().getBrowserContextHandle(),
-                                 ContentSettingsType.ADS)
+                                 browserContextHandle, ContentSettingsType.ADS)
                     ? ContentSettingValues.ALLOW
                     : ContentSettingValues.BLOCK;
         }
@@ -1020,11 +1021,8 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
                 getSiteSettingsClient().getBrowserContextHandle();
         int type = getContentSettingsTypeFromPreferenceKey(preference.getKey());
         if (type != ContentSettingsType.DEFAULT) {
-            if (mSite.getContentSettingException(type) != null) {
-                mSite.setContentSettingPermission(browserContextHandle, type, permission);
-            } else {
-                mSite.setPermission(browserContextHandle, type, permission);
-            }
+            mSite.setContentSetting(browserContextHandle, type, permission);
+
             if (mWebsiteSettingsObserver != null) {
                 mWebsiteSettingsObserver.onPermissionChanged();
             }

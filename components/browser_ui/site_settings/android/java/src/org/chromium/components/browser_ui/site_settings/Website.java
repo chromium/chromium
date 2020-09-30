@@ -119,7 +119,7 @@ public final class Website implements Serializable {
     }
 
     /**
-     * @return Collection of PermissionInfos stored for the site.
+     * @return Collection of PermissionInfos stored for the site
      */
     public Collection<PermissionInfo> getPermissionInfos() {
         return mPermissionInfos.values();
@@ -139,28 +139,6 @@ public final class Website implements Serializable {
      */
     public void setPermissionInfo(PermissionInfo info) {
         mPermissionInfos.put(info.getContentSettingsType(), info);
-    }
-
-    /**
-     * @return permission value for permission of specified type.
-     *         (Camera, Clipboard, etc.).
-     */
-    public @ContentSettingValues @Nullable Integer getPermission(
-            BrowserContextHandle browserContextHandle, @ContentSettingsType int type) {
-        return getPermissionInfo(type) != null
-                ? getPermissionInfo(type).getContentSetting(browserContextHandle)
-                : null;
-    }
-
-    /**
-     * Set permission value for permission of specified type
-     * (Camera, Clipboard, etc.).
-     */
-    public void setPermission(BrowserContextHandle browserContextHandle,
-            @ContentSettingsType int type, @ContentSettingValues int value) {
-        if (getPermissionInfo(type) != null) {
-            getPermissionInfo(type).setContentSetting(browserContextHandle, value);
-        }
     }
 
     public Collection<ContentSettingException> getContentSettingExceptions() {
@@ -183,24 +161,30 @@ public final class Website implements Serializable {
     }
 
     /**
-     * Returns what ContentSettingException governs the setting of specified type.
+     * @return ContentSettingValue for specified ContentSettingsType.
+     *         (Camera, Clipboard, etc.).
      */
-    public @ContentSettingValues @Nullable Integer getContentSettingPermission(
-            @ContentSettingsType int type) {
-        // TODO(crbug.com/1103597): Merge with getPermission() when both are keyed by
-        // ContentSettingsType.
-        return getContentSettingException(type) != null
-                ? getContentSettingException(type).getContentSetting()
-                : null;
+    public @ContentSettingValues @Nullable Integer getContentSetting(
+            BrowserContextHandle browserContextHandle, @ContentSettingsType int type) {
+        if (getPermissionInfo(type) != null) {
+            return getPermissionInfo(type).getContentSetting(browserContextHandle);
+        } else if (getContentSettingException(type) != null) {
+            return getContentSettingException(type).getContentSetting();
+        }
+
+        return null;
     }
 
     /**
-     * Sets the permission.
+     * Sets the ContentSettingValue on the appropriate PermissionInfo or ContentSettingException
      */
-    public void setContentSettingPermission(BrowserContextHandle browserContextHandle,
+    public void setContentSetting(BrowserContextHandle browserContextHandle,
             @ContentSettingsType int type, @ContentSettingValues int value) {
-        // TODO(crbug.com/1103597): Merge with setPermission() when both are keyed by
-        // ContentSettingsType.
+        if (getPermissionInfo(type) != null) {
+            getPermissionInfo(type).setContentSetting(browserContextHandle, value);
+            return;
+        }
+
         ContentSettingException exception = getContentSettingException(type);
         if (type == ContentSettingsType.ADS) {
             // It is possible to set the permission without having an existing exception,

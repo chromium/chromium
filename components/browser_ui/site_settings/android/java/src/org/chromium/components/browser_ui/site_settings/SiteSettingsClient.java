@@ -87,4 +87,9 @@ public interface SiteSettingsClient {
      */
     @Nullable
     String getDelegatePackageNameForOrigin(Origin origin, @ContentSettingsType int type);
+
+    /**
+     * @return true if PageInfo V2 is enabled.
+     */
+    boolean isPageInfoV2Enabled();
 }

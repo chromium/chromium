@@ -25,6 +25,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceGroup;
 import androidx.preference.PreferenceManager;
@@ -195,18 +196,10 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
         for (@SiteSettingsCategory.Type int i = 0; i < SiteSettingsCategory.Type.NUM_ENTRIES; i++) {
             if (!mCategory.showSites(i)) continue;
             @ContentSettingValues
-            Integer contentSettingPermission = website.site().getContentSettingPermission(
-                    SiteSettingsCategory.contentSettingsType(i));
-            if (contentSettingPermission != null) {
-                return ContentSettingValues.BLOCK == contentSettingPermission;
-            }
-
-            PermissionInfo permissionInfo =
-                    website.site().getPermissionInfo(SiteSettingsCategory.contentSettingsType(i));
-            if (permissionInfo != null) {
-                return permissionInfo.getContentSettingsType() != ContentSettingsType.MIDI_SYSEX
-                        && ContentSettingValues.BLOCK
-                        == permissionInfo.getContentSetting(browserContextHandle);
+            Integer contentSetting = website.site().getContentSetting(
+                    browserContextHandle, SiteSettingsCategory.contentSettingsType(i));
+            if (contentSetting != null) {
+                return ContentSettingValues.BLOCK == contentSetting;
             }
         }
         return false;
@@ -407,14 +400,21 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
         }
 
         if (preference instanceof WebsitePreference) {
-            WebsitePreference website = (WebsitePreference) preference;
-            website.setFragment(SingleWebsiteSettings.class.getName());
+            WebsitePreference website_pref = (WebsitePreference) preference;
 
-            website.putSiteAddressIntoExtras(SingleWebsiteSettings.EXTRA_SITE_ADDRESS);
+            if (getSiteSettingsClient().isPageInfoV2Enabled()
+                    && !website_pref.getParent().getKey().equals(MANAGED_GROUP)) {
+                buildPreferenceDialog(website_pref.site()).show();
+            } else {
+                website_pref.setFragment(SingleWebsiteSettings.class.getName());
 
-            int navigationSource = getArguments().getInt(
-                    SettingsNavigationSource.EXTRA_KEY, SettingsNavigationSource.OTHER);
-            website.getExtras().putInt(SettingsNavigationSource.EXTRA_KEY, navigationSource);
+                website_pref.putSiteAddressIntoExtras(SingleWebsiteSettings.EXTRA_SITE_ADDRESS);
+
+                int navigationSource = getArguments().getInt(
+                        SettingsNavigationSource.EXTRA_KEY, SettingsNavigationSource.OTHER);
+                website_pref.getExtras().putInt(
+                        SettingsNavigationSource.EXTRA_KEY, navigationSource);
+            }
         }
 
         return super.onPreferenceTreeClick(preference);
@@ -1040,5 +1040,48 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
         } else {
             ManagedPreferencesUtils.showManagedByAdministratorToast(getActivity());
         }
+    }
+
+    /**
+     * Builds an alert dialog which can be used to change the preference value  or remove
+     * for the exception for the current categories ContentSettingType on a Website.
+     */
+    private AlertDialog.Builder buildPreferenceDialog(Website site) {
+        BrowserContextHandle browserContextHandle =
+                getSiteSettingsClient().getBrowserContextHandle();
+        @ContentSettingsType
+        int contentSettingsType = mCategory.getContentSettingsType();
+
+        @ContentSettingValues
+        Integer value = site.getContentSetting(browserContextHandle, contentSettingsType);
+
+        CharSequence[] descriptions = new String[2];
+        descriptions[0] =
+                getString(ContentSettingsResources.getSiteSummary(ContentSettingValues.ALLOW));
+        descriptions[1] =
+                getString(ContentSettingsResources.getSiteSummary(ContentSettingValues.BLOCK));
+
+        return new AlertDialog.Builder(getActivity(), R.style.Theme_Chromium_AlertDialog)
+                .setPositiveButton(R.string.cancel, null)
+                .setNegativeButton(R.string.remove,
+                        (dialog, which) -> {
+                            site.setContentSetting(browserContextHandle, contentSettingsType,
+                                    ContentSettingValues.DEFAULT);
+
+                            getInfoForOrigins();
+                            dialog.dismiss();
+                        })
+                .setSingleChoiceItems(descriptions, value == ContentSettingValues.ALLOW ? 0 : 1,
+                        (dialog, which) -> {
+                            @ContentSettingValues
+                            int permission = which == 0 ? ContentSettingValues.ALLOW
+                                                        : ContentSettingValues.BLOCK;
+
+                            site.setContentSetting(
+                                    browserContextHandle, contentSettingsType, permission);
+
+                            getInfoForOrigins();
+                            dialog.dismiss();
+                        });
     }
 }

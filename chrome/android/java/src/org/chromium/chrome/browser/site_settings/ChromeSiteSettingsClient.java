@@ -30,6 +30,7 @@ import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.browser_context.BrowserContextHandle;
 import org.chromium.components.embedder_support.util.Origin;
+import org.chromium.components.page_info.PageInfoFeatureList;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.common.ContentSwitches;
 
@@ -198,5 +199,10 @@ public class ChromeSiteSettingsClient implements SiteSettingsClient {
         }
 
         return null;
+    }
+
+    @Override
+    public boolean isPageInfoV2Enabled() {
+        return PageInfoFeatureList.isEnabled(PageInfoFeatureList.PAGE_INFO_V2);
     }
 }

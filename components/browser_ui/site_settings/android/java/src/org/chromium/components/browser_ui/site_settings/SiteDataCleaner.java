@@ -31,11 +31,11 @@ public class SiteDataCleaner {
     public void resetPermissions(BrowserContextHandle browserContextHandle, Website site) {
         // Clear the permissions.
         for (ContentSettingException exception : site.getContentSettingExceptions()) {
-            site.setContentSettingPermission(browserContextHandle,
-                    exception.getContentSettingType(), ContentSettingValues.DEFAULT);
+            site.setContentSetting(browserContextHandle, exception.getContentSettingType(),
+                    ContentSettingValues.DEFAULT);
         }
         for (PermissionInfo info : site.getPermissionInfos()) {
-            site.setPermission(browserContextHandle, info.getContentSettingsType(),
+            site.setContentSetting(browserContextHandle, info.getContentSettingsType(),
                     ContentSettingValues.DEFAULT);
         }
 

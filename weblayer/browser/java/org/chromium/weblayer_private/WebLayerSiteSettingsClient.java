@@ -20,6 +20,7 @@ import org.chromium.components.browser_ui.site_settings.WebappSettingsClient;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.browser_context.BrowserContextHandle;
 import org.chromium.components.embedder_support.util.Origin;
+import org.chromium.components.page_info.PageInfoFeatureList;
 
 import java.util.Collections;
 import java.util.Set;
@@ -106,6 +107,12 @@ public class WebLayerSiteSettingsClient implements SiteSettingsClient, ManagedPr
         }
 
         return null;
+    }
+
+    // TODO(crbug.com/1133798): Remove this when the feature flag is no longer used.
+    @Override
+    public boolean isPageInfoV2Enabled() {
+        return PageInfoFeatureList.isEnabled(PageInfoFeatureList.PAGE_INFO_V2);
     }
 
     // ManagedPrefrenceDelegate implementation:
