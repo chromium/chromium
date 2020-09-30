@@ -19,7 +19,8 @@ class FindMyDeviceControllerImpl : public FindMyDeviceController {
  private:
   // FindMyDeviceController:
   bool IsPhoneRinging() const override;
-  void SetPhoneRingingState(bool ringing) override;
+  void SetIsPhoneRingingInternal(bool is_phone_ringing) override;
+  void RequestNewPhoneRingingState(bool ringing) override;
 
   bool is_phone_ringing_ = false;
 };

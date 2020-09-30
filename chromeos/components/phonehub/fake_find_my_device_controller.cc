@@ -15,12 +15,17 @@ bool FakeFindMyDeviceController::IsPhoneRinging() const {
   return is_phone_ringing_;
 }
 
-void FakeFindMyDeviceController::SetPhoneRingingState(bool ringing) {
-  if (is_phone_ringing_ == ringing)
+void FakeFindMyDeviceController::SetIsPhoneRingingInternal(
+    bool is_phone_ringing) {
+  if (is_phone_ringing_ == is_phone_ringing)
     return;
 
-  is_phone_ringing_ = ringing;
+  is_phone_ringing_ = is_phone_ringing;
   NotifyPhoneRingingStateChanged();
+}
+
+void FakeFindMyDeviceController::RequestNewPhoneRingingState(bool ringing) {
+  SetIsPhoneRingingInternal(ringing);
 }
 
 }  // namespace phonehub

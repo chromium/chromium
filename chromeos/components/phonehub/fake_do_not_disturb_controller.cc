@@ -15,12 +15,17 @@ bool FakeDoNotDisturbController::IsDndEnabled() const {
   return is_dnd_enabled_;
 }
 
-void FakeDoNotDisturbController::SetDoNotDisturbState(bool enabled) {
-  if (is_dnd_enabled_ == enabled)
+void FakeDoNotDisturbController::SetDoNotDisturbStateInternal(
+    bool is_dnd_enabled) {
+  if (is_dnd_enabled_ == is_dnd_enabled)
     return;
 
-  is_dnd_enabled_ = enabled;
+  is_dnd_enabled_ = is_dnd_enabled;
   NotifyDndStateChanged();
+}
+
+void FakeDoNotDisturbController::RequestNewDoNotDisturbState(bool enabled) {
+  SetDoNotDisturbStateInternal(enabled);
 }
 
 }  // namespace phonehub

@@ -13,7 +13,7 @@ FakeNotificationAccessManager::FakeNotificationAccessManager(
 
 FakeNotificationAccessManager::~FakeNotificationAccessManager() = default;
 
-void FakeNotificationAccessManager::SetHasAccessBeenGranted(
+void FakeNotificationAccessManager::SetHasAccessBeenGrantedInternal(
     bool has_access_been_granted) {
   if (has_access_been_granted_ == has_access_been_granted)
     return;
@@ -30,7 +30,7 @@ void FakeNotificationAccessManager::SetNotificationSetupOperationStatus(
     NotificationAccessSetupOperation::Status new_status) {
   if (new_status ==
       NotificationAccessSetupOperation::Status::kCompletedSuccessfully) {
-    SetHasAccessBeenGranted(true);
+    SetHasAccessBeenGrantedInternal(true);
   }
 
   NotificationAccessManager::SetNotificationSetupOperationStatus(new_status);

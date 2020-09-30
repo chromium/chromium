@@ -17,7 +17,8 @@ class FakeDoNotDisturbController : public DoNotDisturbController {
 
   // DoNotDisturbController:
   bool IsDndEnabled() const override;
-  void SetDoNotDisturbState(bool enabled) override;
+  void SetDoNotDisturbStateInternal(bool is_dnd_enabled) override;
+  void RequestNewDoNotDisturbState(bool enabled) override;
 
  private:
   bool is_dnd_enabled_ = false;

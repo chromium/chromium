@@ -28,6 +28,13 @@ bool NotificationAccessManagerImpl::HasAccessBeenGranted() const {
   return pref_service_->GetBoolean(prefs::kNotificationAccessGranted);
 }
 
+void NotificationAccessManagerImpl::SetHasAccessBeenGrantedInternal(
+    bool has_access_been_granted) {
+  PA_LOG(INFO) << "Notification access state has been set to: "
+               << has_access_been_granted;
+  // TODO(jimmyxgong): Implement this stub function.
+}
+
 void NotificationAccessManagerImpl::OnSetupAttemptStarted() {
   PA_LOG(INFO) << "Notification access setup flow started.";
   // TODO(khorimoto): Attempt notification setup flow.
