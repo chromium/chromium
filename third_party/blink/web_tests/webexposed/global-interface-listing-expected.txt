@@ -11209,11 +11209,11 @@ interface WebSocketStream
 interface WebTransport
     attribute @@toStringTag
     getter closed
+    getter datagramReadable
+    getter datagramWritable
     getter incomingBidirectionalStreams
     getter incomingUnidirectionalStreams
-    getter readableDatagrams
     getter ready
-    getter writableDatagrams
     method close
     method constructor
     method createBidirectionalStream

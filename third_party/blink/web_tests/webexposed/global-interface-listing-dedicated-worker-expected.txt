@@ -3900,11 +3900,11 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker] interface WebTransport
 [Worker]     attribute @@toStringTag
 [Worker]     getter closed
+[Worker]     getter datagramReadable
+[Worker]     getter datagramWritable
 [Worker]     getter incomingBidirectionalStreams
 [Worker]     getter incomingUnidirectionalStreams
-[Worker]     getter readableDatagrams
 [Worker]     getter ready
-[Worker]     getter writableDatagrams
 [Worker]     method close
 [Worker]     method constructor
 [Worker]     method createBidirectionalStream

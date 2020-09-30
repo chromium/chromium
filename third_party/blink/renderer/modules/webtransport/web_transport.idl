@@ -17,8 +17,8 @@
       createBidirectionalStream();
   readonly attribute ReadableStream incomingBidirectionalStreams;
 
-  readonly attribute WritableStream writableDatagrams;
-  readonly attribute ReadableStream readableDatagrams;
+  readonly attribute WritableStream datagramWritable;
+  readonly attribute ReadableStream datagramReadable;
 
   void close(optional WebTransportCloseInfo closeInfo = {});
   readonly attribute Promise<void> ready;

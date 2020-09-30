@@ -49,10 +49,10 @@ class MODULES_EXPORT WebTransport final
   ReadableStream* incomingBidirectionalStreams() {
     return quic_transport_->receiveBidirectionalStreams();
   }
-  WritableStream* writableDatagrams() {
+  WritableStream* datagramWritable() {
     return quic_transport_->sendDatagrams();
   }
-  ReadableStream* readableDatagrams() {
+  ReadableStream* datagramReadable() {
     return quic_transport_->receiveDatagrams();
   }
   void close(const WebTransportCloseInfo* close_info) {

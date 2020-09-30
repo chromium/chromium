@@ -188,8 +188,8 @@ IN_PROC_BROWSER_TEST_F(QuicTransportBrowserTest, EchoViaWebTransport) {
     async function run() {
       const transport = new WebTransport('quic-transport://localhost:%d/echo');
 
-      const writer = transport.writableDatagrams.getWriter();
-      const reader = transport.readableDatagrams.getReader();
+      const writer = transport.datagramWritable.getWriter();
+      const reader = transport.datagramReadable.getReader();
 
       const data = new Uint8Array([65, 66, 67]);
       const id = setInterval(() => {
