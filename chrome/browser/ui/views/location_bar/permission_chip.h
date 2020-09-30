@@ -17,10 +17,6 @@
 class Browser;
 class PermissionPromptBubbleView;
 
-namespace ui {
-class Event;
-}
-
 namespace views {
 class Widget;
 }  // namespace views
@@ -34,7 +30,6 @@ class BubbleOwnerDelegate {
 // request. Shows a permission bubble on click.
 class PermissionChip : public views::View,
                        public views::AnimationDelegateViews,
-                       public views::ButtonListener,
                        public views::WidgetObserver,
                        public BubbleOwnerDelegate {
  public:
@@ -58,9 +53,6 @@ class PermissionChip : public views::View,
   void OnMouseEntered(const ui::MouseEvent& event) override;
   void OnThemeChanged() override;
 
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
-
   // views::WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;
 
@@ -68,6 +60,7 @@ class PermissionChip : public views::View,
   bool IsBubbleShowing() const override;
 
  private:
+  void ChipButtonPressed();
   void Collapse();
   void StartCollapseTimer();
   int GetIconSize() const;

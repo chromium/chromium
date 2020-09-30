@@ -15,7 +15,6 @@
 #include "content/public/browser/notification_registrar.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "extensions/browser/extension_icon_image.h"
-#include "ui/views/controls/button/button.h"
 #include "ui/views/controls/label.h"
 
 namespace content {
@@ -24,12 +23,12 @@ class WebContents;
 
 namespace views {
 class AXVirtualView;
+class Button;
 class ImageButton;
 }  // namespace views
 
 // View used to display the zoom percentage when it has changed.
 class ZoomBubbleView : public LocationBarBubbleDelegateView,
-                       public views::ButtonListener,
                        public ImmersiveModeController::Observer,
                        public extensions::IconImage::Observer {
  public:
@@ -104,9 +103,6 @@ class ZoomBubbleView : public LocationBarBubbleDelegateView,
   void WindowClosing() override;
   void CloseBubble() override;
 
-  // views::ButtonListener
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
-
   // ImmersiveModeController::Observer
   void OnImmersiveRevealStarted() override;
   void OnImmersiveModeControllerDestroyed() override;
@@ -131,6 +127,12 @@ class ZoomBubbleView : public LocationBarBubbleDelegateView,
   // Stops the auto-close timer.
   void StopTimer();
 
+  // Called when any button is pressed; does common logic, then runs |closure|.
+  void ButtonPressed(base::RepeatingClosure closure);
+
+  // Called by ButtonPressed() when |image_button_| is pressed.
+  void ImageButtonPressed();
+
   ZoomBubbleExtensionInfo extension_info_;
 
   // Singleton instance of the zoom bubble. The zoom bubble can only be shown on
@@ -147,18 +149,18 @@ class ZoomBubbleView : public LocationBarBubbleDelegateView,
   // Image button in the zoom bubble that will show the |extension_icon_| image
   // if an extension initiated the zoom change, and links to that extension at
   // "chrome://extensions".
-  views::ImageButton* image_button_{nullptr};
+  views::ImageButton* image_button_ = nullptr;
 
   // Label displaying the zoom percentage.
-  views::Label* label_{nullptr};
+  views::Label* label_ = nullptr;
 
   // Action buttons that can change zoom.
-  views::Button* zoom_out_button_{nullptr};
-  views::Button* zoom_in_button_{nullptr};
-  views::Button* reset_button_{nullptr};
+  views::Button* zoom_out_button_ = nullptr;
+  views::Button* zoom_in_button_ = nullptr;
+  views::Button* reset_button_ = nullptr;
 
   // Virtual view used to announce zoom level changes.
-  views::AXVirtualView* zoom_level_alert_{nullptr};
+  views::AXVirtualView* zoom_level_alert_ = nullptr;
 
   // Whether the currently displayed bubble will automatically close.
   bool auto_close_;
@@ -166,7 +168,7 @@ class ZoomBubbleView : public LocationBarBubbleDelegateView,
   // Used to ignore close requests generated automatically in response to
   // button presses, since pressing a button in the bubble should not trigger
   // closing.
-  bool ignore_close_bubble_{false};
+  bool ignore_close_bubble_ = false;
 
   // The immersive mode controller for the BrowserView containing
   // |web_contents_|.

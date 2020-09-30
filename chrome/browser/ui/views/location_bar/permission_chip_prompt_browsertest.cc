@@ -16,6 +16,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/views/test/button_test_api.h"
 
 class PermissionChipPromptBrowserTest : public DialogBrowserTest {
  public:
@@ -44,10 +45,10 @@ class PermissionChipPromptBrowserTest : public DialogBrowserTest {
         browser_view->toolbar()->location_bar()->permission_chip();
     ASSERT_TRUE(permission_chip);
 
-    permission_chip->ButtonPressed(
-        permission_chip->button(),
-        ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
-                       ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
+    views::test::ButtonTestApi(permission_chip->button())
+        .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(),
+                                    gfx::Point(), ui::EventTimeForNow(),
+                                    ui::EF_LEFT_MOUSE_BUTTON, 0));
   }
 
   content::RenderFrameHost* GetActiveMainFrame() {

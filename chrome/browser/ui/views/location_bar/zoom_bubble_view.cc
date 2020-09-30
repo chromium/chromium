@@ -77,11 +77,11 @@ class ZoomButtonHighlightPathGenerator : public views::HighlightPathGenerator {
 };
 
 std::unique_ptr<views::ImageButton> CreateZoomButton(
-    views::ButtonListener* listener,
+    views::Button::PressedCallback callback,
     const gfx::VectorIcon& icon,
     int tooltip_id) {
   auto zoom_button =
-      views::CreateVectorImageButtonWithNativeTheme(listener, icon);
+      views::CreateVectorImageButtonWithNativeTheme(std::move(callback), icon);
   zoom_button->SetFocusForPlatform();
   zoom_button->SetTooltipText(l10n_util::GetStringUTF16(tooltip_id));
   views::HighlightPathGenerator::Install(
@@ -393,10 +393,17 @@ void ZoomBubbleView::Init() {
       control_vertical_margin -
       provider->GetInsetsMetric(views::INSETS_VECTOR_IMAGE_BUTTON));
 
+  const auto button_pressed_callback = [this](base::RepeatingClosure closure) {
+    return base::BindRepeating(&ZoomBubbleView::ButtonPressed,
+                               base::Unretained(this), std::move(closure));
+  };
+
   // If this zoom change was initiated by an extension, that extension will be
   // attributed by showing its icon in the zoom bubble.
   if (extension_info_.icon_image) {
-    auto image_button = std::make_unique<views::ImageButton>(this);
+    auto image_button = std::make_unique<views::ImageButton>(
+        button_pressed_callback(base::BindRepeating(
+            &ZoomBubbleView::ImageButtonPressed, base::Unretained(this))));
     image_button->SetTooltipText(
         l10n_util::GetStringFUTF16(IDS_TOOLTIP_ZOOM_EXTENSION_ICON,
                                    base::UTF8ToUTF16(extension_info_.name)));
@@ -411,21 +418,30 @@ void ZoomBubbleView::Init() {
   label_ = label.get();
   AddChildView(std::move(label));
 
+  const auto zoom_callback = [button_pressed_callback,
+                              web_contents =
+                                  web_contents()](content::PageZoom zoom) {
+    return button_pressed_callback(base::BindRepeating(
+        &zoom::PageZoom::Zoom, base::Unretained(web_contents), zoom));
+  };
+
   // Add Zoom Out ("-") button.
-  zoom_out_button_ = AddChildView(
-      CreateZoomButton(this, kRemoveIcon, IDS_ACCNAME_ZOOM_MINUS2));
+  zoom_out_button_ =
+      AddChildView(CreateZoomButton(zoom_callback(content::PAGE_ZOOM_OUT),
+                                    kRemoveIcon, IDS_ACCNAME_ZOOM_MINUS2));
   zoom_out_button_->SetProperty(views::kMarginsKey,
                                 gfx::Insets(vector_button_margin));
 
   // Add Zoom In ("+") button.
-  zoom_in_button_ =
-      AddChildView(CreateZoomButton(this, kAddIcon, IDS_ACCNAME_ZOOM_PLUS2));
+  zoom_in_button_ = AddChildView(CreateZoomButton(
+      zoom_callback(content::PAGE_ZOOM_IN), kAddIcon, IDS_ACCNAME_ZOOM_PLUS2));
   zoom_in_button_->SetProperty(views::kMarginsKey,
                                gfx::Insets(vector_button_margin));
 
   // Add "Reset" button.
   auto reset_button = std::make_unique<views::MdTextButton>(
-      this, l10n_util::GetStringUTF16(IDS_ZOOM_SET_DEFAULT));
+      zoom_callback(content::PAGE_ZOOM_RESET),
+      l10n_util::GetStringUTF16(IDS_ZOOM_SET_DEFAULT));
   reset_button->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_ACCNAME_ZOOM_SET_DEFAULT));
   reset_button_ = AddChildView(std::move(reset_button));
@@ -460,36 +476,6 @@ void ZoomBubbleView::CloseBubble() {
   // this. Additionally web_contents() may have been destroyed.
   zoom_bubble_ = nullptr;
   LocationBarBubbleDelegateView::CloseBubble();
-}
-
-void ZoomBubbleView::ButtonPressed(views::Button* sender,
-                                   const ui::Event& event) {
-  // No button presses in this dialog should cause the dialog to close,
-  // including when the zoom level is set to 100% as a result of a button press.
-  base::AutoReset<bool> auto_ignore_close_bubble(&ignore_close_bubble_, true);
-
-  // Extend the timer to give a user more time after any button is pressed.
-  auto_close_duration_ = kBubbleCloseDelayLong;
-  StartTimerIfNecessary();
-
-  if (sender == image_button_) {
-    DCHECK(extension_info_.icon_image) << "Invalid button press.";
-    Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
-    DCHECK(browser);
-    chrome::AddSelectedTabWithURL(
-        browser,
-        GURL(base::StringPrintf("chrome://extensions?id=%s",
-                                extension_info_.id.c_str())),
-        ui::PAGE_TRANSITION_FROM_API);
-  } else if (sender == zoom_out_button_) {
-    zoom::PageZoom::Zoom(web_contents(), content::PAGE_ZOOM_OUT);
-  } else if (sender == zoom_in_button_) {
-    zoom::PageZoom::Zoom(web_contents(), content::PAGE_ZOOM_IN);
-  } else if (sender == reset_button_) {
-    zoom::PageZoom::Zoom(web_contents(), content::PAGE_ZOOM_RESET);
-  } else {
-    NOTREACHED();
-  }
 }
 
 void ZoomBubbleView::OnImmersiveRevealStarted() {
@@ -579,6 +565,29 @@ void ZoomBubbleView::StartTimerIfNecessary() {
 
 void ZoomBubbleView::StopTimer() {
   auto_close_timer_.Stop();
+}
+
+void ZoomBubbleView::ButtonPressed(base::RepeatingClosure closure) {
+  // No button presses in this dialog should cause the dialog to close,
+  // including when the zoom level is set to 100% as a result of a button press.
+  base::AutoReset<bool> auto_ignore_close_bubble(&ignore_close_bubble_, true);
+
+  // Extend the timer to give a user more time after any button is pressed.
+  auto_close_duration_ = kBubbleCloseDelayLong;
+  StartTimerIfNecessary();
+
+  closure.Run();
+}
+
+void ZoomBubbleView::ImageButtonPressed() {
+  DCHECK(extension_info_.icon_image) << "Invalid button press.";
+  Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
+  DCHECK(browser);
+  chrome::AddSelectedTabWithURL(
+      browser,
+      GURL(base::StringPrintf("chrome://extensions?id=%s",
+                              extension_info_.id.c_str())),
+      ui::PAGE_TRANSITION_FROM_API);
 }
 
 ZoomBubbleView::ZoomBubbleExtensionInfo::ZoomBubbleExtensionInfo() {}

@@ -30,7 +30,7 @@ class Label;
 // couldn't bring myself to use such a long name.
 class KeywordHintView : public views::Button {
  public:
-  KeywordHintView(LocationBarView* parent, Profile* profile);
+  KeywordHintView(PressedCallback callback, Profile* profile);
   ~KeywordHintView() override;
 
   void SetKeyword(const base::string16& keyword);

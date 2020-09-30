@@ -54,19 +54,6 @@
 
 namespace {
 
-std::unique_ptr<views::ImageButton> CreateCloseButton(
-    views::ButtonListener* listener) {
-  auto close_button = CreateVectorImageButton(listener);
-  close_button->SetTooltipText(l10n_util::GetStringUTF16(IDS_APP_CLOSE));
-  close_button->SetBorder(views::CreateEmptyBorder(
-      gfx::Insets(GetLayoutConstant(LOCATION_BAR_CHILD_INTERIOR_PADDING))));
-  close_button->SizeToPreferredSize();
-
-  views::InstallCircleHighlightPathGenerator(close_button.get());
-
-  return close_button;
-}
-
 bool ShouldDisplayUrl(content::WebContents* contents) {
   auto* tab_helper =
       security_interstitials::SecurityInterstitialTabHelper::FromWebContents(
@@ -213,7 +200,14 @@ CustomTabBarView::CustomTabBarView(BrowserView* browser_view,
   const gfx::FontList& font_list = views::style::GetFont(
       CONTEXT_OMNIBOX_PRIMARY, views::style::STYLE_PRIMARY);
 
-  close_button_ = AddChildView(CreateCloseButton(this));
+  close_button_ =
+      AddChildView(views::CreateVectorImageButton(base::BindRepeating(
+          &CustomTabBarView::GoBackToApp, base::Unretained(this))));
+  close_button_->SetTooltipText(l10n_util::GetStringUTF16(IDS_APP_CLOSE));
+  close_button_->SetBorder(views::CreateEmptyBorder(
+      gfx::Insets(GetLayoutConstant(LOCATION_BAR_CHILD_INTERIOR_PADDING))));
+  close_button_->SizeToPreferredSize();
+  views::InstallCircleHighlightPathGenerator(close_button_);
 
   location_icon_view_ =
       AddChildView(std::make_unique<LocationIconView>(font_list, this, this));
@@ -439,11 +433,6 @@ ui::ImageModel CustomTabBarView::GetLocationIcon(
       delegate_->GetLocationBarModel()->GetVectorIcon(),
       GetSecurityChipColor(GetLocationBarModel()->GetSecurityLevel()),
       GetLayoutConstant(LOCATION_BAR_ICON_SIZE));
-}
-
-void CustomTabBarView::ButtonPressed(views::Button* sender,
-                                     const ui::Event& event) {
-  GoBackToApp();
 }
 
 void CustomTabBarView::GoBackToAppForTesting() {

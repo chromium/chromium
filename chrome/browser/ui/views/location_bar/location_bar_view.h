@@ -34,7 +34,6 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image.h"
 #include "ui/views/animation/animation_delegate_views.h"
-#include "ui/views/controls/button/button.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/drag_controller.h"
 
@@ -70,7 +69,6 @@ class LocationBarView : public LocationBar,
                         public views::AnimationDelegateViews,
                         public ChromeOmniboxEditController,
                         public DropdownBarHostDelegate,
-                        public views::ButtonListener,
                         public IconLabelBubbleView::Delegate,
                         public LocationIconView::Delegate,
                         public ContentSettingImageView::Delegate,
@@ -202,9 +200,6 @@ class LocationBarView : public LocationBar,
   ContentSettingBubbleModelDelegate* GetContentSettingBubbleModelDelegate()
       override;
 
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
-
   static bool IsVirtualKeyboardVisible(views::Widget* widget);
 
   // Returns the height available for user-entered text in the location bar.
@@ -275,6 +270,8 @@ class LocationBarView : public LocationBar,
 
   // Gets the OmniboxPopupView associated with the model in |omnibox_view_|.
   OmniboxPopupView* GetOmniboxPopupView();
+
+  void KeywordHintViewPressed(const ui::Event& event);
 
   // Called when the page info bubble is closed.
   void OnPageInfoBubbleClosed(views::Widget::ClosedReason closed_reason,

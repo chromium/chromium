@@ -55,8 +55,8 @@ class ChipLabel : public views::Label {
 
 }  // namespace
 
-KeywordHintView::KeywordHintView(LocationBarView* parent, Profile* profile)
-    : Button(parent), profile_(profile) {
+KeywordHintView::KeywordHintView(PressedCallback callback, Profile* profile)
+    : Button(std::move(callback)), profile_(profile) {
   auto chip_container = std::make_unique<views::View>();
 
   chip_label_ = chip_container->AddChildView(std::make_unique<ChipLabel>(

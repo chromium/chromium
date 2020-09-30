@@ -233,8 +233,10 @@ void LocationBarView::Init() {
   selected_keyword_view_ =
       AddChildView(std::make_unique<SelectedKeywordView>(this, font_list));
 
-  keyword_hint_view_ =
-      AddChildView(std::make_unique<KeywordHintView>(this, profile_));
+  keyword_hint_view_ = AddChildView(std::make_unique<KeywordHintView>(
+      base::BindRepeating(&LocationBarView::KeywordHintViewPressed,
+                          base::Unretained(this)),
+      profile_));
 
   SkColor icon_color = GetColor(OmniboxPart::RESULTS_ICON);
 
@@ -298,7 +300,10 @@ void LocationBarView::Init() {
       AddChildView(std::make_unique<PageActionIconContainerView>(params));
   page_action_icon_controller_ = page_action_icon_container_->controller();
 
-  auto clear_all_button = views::CreateVectorImageButton(this);
+  auto clear_all_button = views::CreateVectorImageButton(base::BindRepeating(
+      static_cast<void (OmniboxView::*)(const base::string16&)>(
+          &OmniboxView::SetUserText),
+      base::Unretained(omnibox_view_), base::string16()));
   clear_all_button->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_OMNIBOX_CLEAR_ALL));
   clear_all_button_ = AddChildView(std::move(clear_all_button));
@@ -917,19 +922,6 @@ void LocationBarView::RefreshPageActionIconViews() {
   page_action_icon_controller_->UpdateAll();
 }
 
-void LocationBarView::ButtonPressed(views::Button* sender,
-                                    const ui::Event& event) {
-  DCHECK(event.IsMouseEvent() || event.IsGestureEvent());
-  if (keyword_hint_view_ == sender) {
-    omnibox_view_->model()->AcceptKeyword(
-        event.IsMouseEvent() ? OmniboxEventProto::CLICK_HINT_VIEW
-                             : OmniboxEventProto::TAP_HINT_VIEW);
-  } else {
-    DCHECK_EQ(clear_all_button_, sender);
-    omnibox_view_->SetUserText(base::string16());
-  }
-}
-
 void LocationBarView::RefreshClearAllButtonIcon() {
   const bool touch_ui = ui::TouchUiController::Get()->touch_ui();
   const gfx::VectorIcon& icon =
@@ -947,6 +939,13 @@ bool LocationBarView::ShouldShowKeywordBubble() const {
 OmniboxPopupView* LocationBarView::GetOmniboxPopupView() {
   DCHECK(IsInitialized());
   return omnibox_view_->model()->popup_model()->view();
+}
+
+void LocationBarView::KeywordHintViewPressed(const ui::Event& event) {
+  DCHECK(event.IsMouseEvent() || event.IsGestureEvent());
+  omnibox_view_->model()->AcceptKeyword(event.IsMouseEvent()
+                                            ? OmniboxEventProto::CLICK_HINT_VIEW
+                                            : OmniboxEventProto::TAP_HINT_VIEW);
 }
 
 void LocationBarView::OnPageInfoBubbleClosed(

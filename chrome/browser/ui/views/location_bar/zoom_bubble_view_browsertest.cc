@@ -30,6 +30,7 @@
 #if defined(OS_MAC)
 #include "chrome/browser/ui/browser_commands_mac.h"
 #include "ui/base/test/scoped_fake_nswindow_fullscreen.h"
+#include "ui/views/test/button_test_api.h"
 #endif
 
 using ZoomBubbleBrowserTest = InProcessBrowserTest;
@@ -145,7 +146,7 @@ IN_PROC_BROWSER_TEST_F(ZoomBubbleBrowserTest, AnchorPositionsInFullscreen) {
     // position.
     const ui::MouseEvent event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
                                ui::EventTimeForNow(), 0, 0);
-    zoom_bubble->ButtonPressed(zoom_bubble->zoom_in_button_, event);
+    views::test::ButtonTestApi(zoom_bubble->zoom_in_button_).NotifyClick(event);
     zoom_bubble = ZoomBubbleView::GetZoomBubble();
     EXPECT_NE(org_zoom_bubble, zoom_bubble);
     EXPECT_FALSE(zoom_bubble->GetAnchorView());
