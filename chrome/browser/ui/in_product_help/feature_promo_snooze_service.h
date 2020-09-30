@@ -24,6 +24,10 @@ class PrefRegistrySimple;
 // If an IPH is dismissed, this service will reject controller's request.
 class FeaturePromoSnoozeService {
  public:
+  // Maximum count of snoozes to track in UMA histogram.
+  // Snooze counts that are equal or larger than this value will be conflated.
+  static const int kUmaMaxSnoozeCount;
+
   explicit FeaturePromoSnoozeService(Profile* profile);
 
   // Disallow copy and assign.
@@ -48,10 +52,13 @@ class FeaturePromoSnoozeService {
   // snoozing period has timed out.
   bool IsBlocked(const base::Feature& iph_feature);
 
-  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
-
   // Reset the state of |iph_feature|.
   void Reset(const base::Feature& iph_feature);
+
+  // Read the count of previous snoozes for |iph_feature| from profile.
+  int GetSnoozeCount(const base::Feature& iph_feature);
+
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
  private:
   // Snooze information dictionary saved under path

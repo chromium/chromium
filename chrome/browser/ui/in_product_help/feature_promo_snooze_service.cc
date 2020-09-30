@@ -7,11 +7,14 @@
 #include <ostream>
 
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/optional.h"
 #include "base/time/time.h"
 #include "base/util/values/values_util.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/scoped_user_pref_update.h"
 
@@ -33,7 +36,25 @@ constexpr char kIPHSnoozedFeatureDuration[] = "last_snooze_duration";
 // Path to the count of how many times this IPH has been snoozed.
 // in_product_help.snoozed_feature.[iph_name].snooze_count
 constexpr char kIPHSnoozedFeatureCount[] = "snooze_count";
+
+// Finch parameter to control the snooze duration.
+// If this parameter is not specified or is zero, the default duration at the
+// client side will be used.
+constexpr base::FeatureParam<base::TimeDelta> kOverriddenDuration{
+    &feature_engagement::kIPHDesktopSnoozeFeature,
+    "x_iph_snooze_overridden_duration ", base::TimeDelta::FromHours(0)};
+
+// Used in UMA histogram to track if the user snoozes for once or more.
+enum class SnoozeType {
+  // The user snoozes the IPH for the first time.
+  kFirstTimeSnooze = 0,
+  // The user snoozes the IPH for the second time or more.
+  kRepeatingSnooze = 1,
+  kMaxValue = kRepeatingSnooze
+};
 }  // namespace
+
+const int FeaturePromoSnoozeService::kUmaMaxSnoozeCount = 10;
 
 FeaturePromoSnoozeService::FeaturePromoSnoozeService(Profile* profile)
     : profile_(profile) {}
@@ -45,6 +66,14 @@ void FeaturePromoSnoozeService::OnUserSnooze(const base::Feature& iph_feature,
 
   if (!snooze_data)
     snooze_data = SnoozeData();
+
+  if (!kOverriddenDuration.Get().is_zero())
+    snooze_duration = kOverriddenDuration.Get();
+
+  base::UmaHistogramEnumeration(
+      "InProductHelp.Promos.Snooze." + std::string(iph_feature.name),
+      snooze_data->snooze_count == 0 ? SnoozeType::kFirstTimeSnooze
+                                     : SnoozeType::kRepeatingSnooze);
 
   snooze_data->last_snooze_time = base::Time::Now();
   snooze_data->last_snooze_duration = snooze_duration;
@@ -63,6 +92,13 @@ void FeaturePromoSnoozeService::OnUserDismiss(
   snooze_data->is_dismissed = true;
 
   SaveSnoozeData(iph_feature, *snooze_data);
+
+  // Record count of previous snoozes when the IPH gets dismissed by "Got It"
+  // button.
+  base::UmaHistogramExactLinear(
+      "InProductHelp.Promos.SnoozeCountAtAcknowledge." +
+          std::string(iph_feature.name),
+      snooze_data->snooze_count, kUmaMaxSnoozeCount);
 }
 
 bool FeaturePromoSnoozeService::IsBlocked(const base::Feature& iph_feature) {
@@ -98,6 +134,12 @@ void FeaturePromoSnoozeService::Reset(const base::Feature& iph_feature) {
   DictionaryPrefUpdate update(profile_->GetPrefs(), kIPHSnoozeDataPath);
   base::DictionaryValue* pref_data = update.Get();
   pref_data->RemovePath(iph_feature.name);
+}
+
+int FeaturePromoSnoozeService::GetSnoozeCount(
+    const base::Feature& iph_feature) {
+  base::Optional<SnoozeData> snooze_data = ReadSnoozeData(iph_feature);
+  return snooze_data ? snooze_data->snooze_count : 0;
 }
 
 base::Optional<FeaturePromoSnoozeService::SnoozeData>

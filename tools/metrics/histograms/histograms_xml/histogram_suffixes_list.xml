@@ -7857,6 +7857,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="IPH_WebUITabStrip"
       label="In product help for opening the WebUI tab strip."/>
   <affected-histogram name="InProductHelp.NotifyEventReadyState"/>
+  <affected-histogram name="InProductHelp.Promos.Snooze"/>
+  <affected-histogram name="InProductHelp.Promos.SnoozeCountAtAcknowledge"/>
+  <affected-histogram name="InProductHelp.Promos.SnoozeCountAtFollow"/>
+  <affected-histogram name="InProductHelp.Promos.SnoozeCountAtTrigger"/>
   <affected-histogram name="InProductHelp.ShouldTriggerHelpUI"/>
 </histogram_suffixes>
 

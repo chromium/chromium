@@ -8,6 +8,7 @@
 
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/optional.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -75,6 +76,13 @@ bool FeaturePromoControllerViews::MaybeShowPromoWithParams(
                           base::Unretained(this), iph_feature));
   widget_observer_.Add(promo_bubble_->GetWidget());
 
+  // Record count of previous snoozes when an IPH triggers.
+  int snooze_count = snooze_service_->GetSnoozeCount(iph_feature);
+  base::UmaHistogramExactLinear("InProductHelp.Promos.SnoozeCountAtTrigger." +
+                                    std::string(iph_feature.name),
+                                snooze_count,
+                                snooze_service_->kUmaMaxSnoozeCount);
+
   return true;
 }
 
@@ -129,6 +137,14 @@ FeaturePromoControllerViews::CloseBubbleAndContinuePromo(
 
   if (anchor_view_tracker_.view())
     anchor_view_tracker_.view()->SetProperty(kHasInProductHelpPromoKey, false);
+
+  // Record count of previous snoozes when the IPH gets dismissed by user
+  // following the promo. e.g. clicking on relevant controls.
+  int snooze_count = snooze_service_->GetSnoozeCount(iph_feature);
+  base::UmaHistogramExactLinear("InProductHelp.Promos.SnoozeCountAtFollow." +
+                                    std::string(iph_feature.name),
+                                snooze_count,
+                                snooze_service_->kUmaMaxSnoozeCount);
 
   return PromoHandle(weak_ptr_factory_.GetWeakPtr());
 }
