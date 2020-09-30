@@ -59,6 +59,7 @@ class DriveFsHost::MountState : public DriveFsSession,
   ~MountState() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(host_->sequence_checker_);
     if (team_drives_fetched_) {
+      host_->delegate_->GetDriveNotificationManager().ClearTeamDriveIds();
       host_->delegate_->GetDriveNotificationManager().RemoveObserver(this);
     }
     if (is_mounted()) {

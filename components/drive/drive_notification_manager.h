@@ -60,6 +60,9 @@ class DriveNotificationManager : public KeyedService,
   void UpdateTeamDriveIds(const std::set<std::string>& added_team_drive_ids,
                           const std::set<std::string>& removed_team_drive_ids);
 
+  // Unsubscribe from invalidations from all team drives.
+  void ClearTeamDriveIds();
+
   // True when XMPP notification is currently enabled.
   bool push_notification_enabled() const {
     return push_notification_enabled_;
