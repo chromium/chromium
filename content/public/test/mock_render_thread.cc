@@ -171,7 +171,8 @@ void MockRenderThread::RemoveObserver(RenderThreadObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 
-mojom::RouteProvider* MockRenderThread::GetRemoteRouteProvider() {
+mojom::RouteProvider* MockRenderThread::GetRemoteRouteProvider(
+    util::PassKey<AgentSchedulingGroup>) {
   return GetStaticRemoteRouteProvider();
 }
 

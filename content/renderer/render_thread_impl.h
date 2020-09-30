@@ -431,7 +431,8 @@ class CONTENT_EXPORT RenderThreadImpl
     video_frame_compositor_task_runner_ = task_runner;
   }
 
-  mojom::RouteProvider* GetRemoteRouteProvider() override;
+  mojom::RouteProvider* GetRemoteRouteProvider(
+      util::PassKey<AgentSchedulingGroup>) override;
 
  private:
   friend class RenderThreadImplBrowserTest;

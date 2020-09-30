@@ -61,6 +61,8 @@ class CONTENT_EXPORT AgentSchedulingGroup
   void AddRoute(int32_t routing_id, IPC::Listener* listener);
   void RemoveRoute(int32_t routing_id);
 
+  mojom::RouteProvider* GetRemoteRouteProvider();
+
  private:
   // `MaybeAssociatedReceiver` and `MaybeAssociatedRemote` are temporary helper
   // classes that allow us to switch between using associated and non-associated

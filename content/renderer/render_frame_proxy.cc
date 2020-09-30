@@ -752,7 +752,7 @@ RenderFrameProxy::GetRemoteAssociatedInterfaces() {
   if (!remote_associated_interfaces_) {
     mojo::PendingAssociatedRemote<blink::mojom::AssociatedInterfaceProvider>
         remote_interfaces;
-    RenderThread::Get()->GetRemoteRouteProvider()->GetRoute(
+    agent_scheduling_group_.GetRemoteRouteProvider()->GetRoute(
         routing_id_, remote_interfaces.InitWithNewEndpointAndPassReceiver());
     remote_associated_interfaces_ =
         std::make_unique<blink::AssociatedInterfaceProvider>(

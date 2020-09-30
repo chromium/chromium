@@ -139,6 +139,10 @@ void AgentSchedulingGroup::RemoveRoute(int32_t routing_id) {
   RenderThread::Get()->RemoveRoute(routing_id);
 }
 
+mojom::RouteProvider* AgentSchedulingGroup::GetRemoteRouteProvider() {
+  return render_thread_.GetRemoteRouteProvider(PassKey());
+}
+
 void AgentSchedulingGroup::CreateView(mojom::CreateViewParamsPtr params) {
   ToImpl(render_thread_).CreateView(std::move(params), PassKey());
 }

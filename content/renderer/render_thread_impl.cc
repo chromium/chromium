@@ -959,7 +959,8 @@ RenderThreadImpl::CreateVideoFrameCompositorTaskRunner() {
   return video_frame_compositor_task_runner_;
 }
 
-mojom::RouteProvider* RenderThreadImpl::GetRemoteRouteProvider() {
+mojom::RouteProvider* RenderThreadImpl::GetRemoteRouteProvider(
+    util::PassKey<AgentSchedulingGroup>) {
   if (!remote_route_provider_) {
     DCHECK(GetChannel());
     GetChannel()->GetRemoteAssociatedInterface(&remote_route_provider_);
