@@ -1084,14 +1084,13 @@ export class PDFViewerElement extends PDFViewerBaseElement {
    * @private
    */
   async save_(requestType) {
-    PDFMetrics.record(UserAction.SAVE);
+    this.recordSaveMetrics_(requestType);
+
     // If we have entered annotation mode we must require the local
     // contents to ensure annotations are saved, unless the user specifically
     // requested the original document. Otherwise we would save the cached
     // remote copy without annotations.
-    if (requestType === SaveRequestType.ANNOTATION) {
-      PDFMetrics.record(UserAction.SAVE_WITH_ANNOTATION);
-    }
+    //
     // Always send requests of type ORIGINAL to the plugin controller, not the
     // ink controller. The ink controller always saves the edited document.
     // TODO(dstockwell): Report an error to user if this fails.
@@ -1146,6 +1145,28 @@ export class PDFViewerElement extends PDFViewerBaseElement {
     // Saving in Annotation mode is destructive: crbug.com/919364
     this.exitAnnotationMode_();
     // </if>
+  }
+
+  /**
+   * Records metrics for saving PDFs.
+   * @param {SaveRequestType} requestType The type of save request.
+   * @private
+   */
+  recordSaveMetrics_(requestType) {
+    PDFMetrics.record(UserAction.SAVE);
+    switch (requestType) {
+      case SaveRequestType.ANNOTATION:
+        PDFMetrics.record(UserAction.SAVE_WITH_ANNOTATION);
+        break;
+      case SaveRequestType.ORIGINAL:
+        PDFMetrics.record(
+            this.hasEdits_ ? UserAction.SAVE_ORIGINAL :
+                             UserAction.SAVE_ORIGINAL_ONLY);
+        break;
+      case SaveRequestType.EDITED:
+        PDFMetrics.record(UserAction.SAVE_EDITED);
+        break;
+    }
   }
 
   /** @private */

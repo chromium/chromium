@@ -183,7 +183,21 @@ export const UserAction = {
   THUMBNAIL_NAVIGATE_FIRST: 45,
   THUMBNAIL_NAVIGATE: 46,
 
-  NUMBER_OF_ACTIONS: 47,
+  // Recorded when the user triggers a save of the document and the document
+  // has never been modified.
+  SAVE_ORIGINAL_ONLY_FIRST: 47,
+  SAVE_ORIGINAL_ONLY: 48,
+
+  // Recorded when the user triggers a save of the original document, even
+  // though the document has been modified.
+  SAVE_ORIGINAL_FIRST: 49,
+  SAVE_ORIGINAL: 50,
+
+  // Recorded when the user triggers a save of the edited document.
+  SAVE_EDITED_FIRST: 51,
+  SAVE_EDITED: 52,
+
+  NUMBER_OF_ACTIONS: 53,
 };
 
 // Map from UserAction to the 'FIRST' action. These metrics are recorded
@@ -281,5 +295,17 @@ PDFMetrics.firstMap_ = new Map([
   [
     UserAction.THUMBNAIL_NAVIGATE,
     UserAction.THUMBNAIL_NAVIGATE_FIRST,
+  ],
+  [
+    UserAction.SAVE_ORIGINAL_ONLY,
+    UserAction.SAVE_ORIGINAL_ONLY_FIRST,
+  ],
+  [
+    UserAction.SAVE_ORIGINAL,
+    UserAction.SAVE_ORIGINAL_FIRST,
+  ],
+  [
+    UserAction.SAVE_EDITED,
+    UserAction.SAVE_EDITED_FIRST,
   ],
 ]);
