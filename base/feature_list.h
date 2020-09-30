@@ -130,12 +130,12 @@ class BASE_EXPORT FeatureList {
   using FeatureOverrideInfo =
       std::pair<const std::reference_wrapper<const Feature>, OverrideState>;
 
-  // Initializes feature overrides via command-line flags |enable_features| and
-  // |disable_features|, each of which is a comma-separated list of features to
-  // enable or disable, respectively. This function also allows users to set
-  // feature's field trial params via |enable_features|. Must only be invoked
-  // during the initialization phase (before FinalizeInitialization() has been
-  // called).
+  // Initializes feature overrides via command-line flags `--enable-features=`
+  // and `--disable-features=`, each of which is a comma-separated list of
+  // features to enable or disable, respectively. This function also allows
+  // users to set a feature's field trial params via `--enable-features=`. Must
+  // only be invoked during the initialization phase (before
+  // FinalizeInitialization() has been called).
   //
   // If a feature appears on both lists, then it will be disabled. If
   // a list entry has the format "FeatureName<TrialName" then this
