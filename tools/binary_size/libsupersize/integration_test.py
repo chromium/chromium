@@ -357,6 +357,26 @@ class IntegrationTest(unittest.TestCase):
                                use_aux_elf=True,
                                include_padding=True)
 
+  def test_SaveDeltaSizeInfo(self):
+    # Check that saving & loading is the same as directly parsing.
+    orig_info1 = self._CloneSizeInfo(use_apk=True, use_aux_elf=True)
+    orig_info2 = self._CloneSizeInfo(use_elf=True)
+    orig_delta = diff.Diff(orig_info1, orig_info2)
+
+    with tempfile.NamedTemporaryFile(suffix='.sizediff') as sizediff_file:
+      file_format.SaveDeltaSizeInfo(orig_delta, sizediff_file.name)
+      new_info1, new_info2 = archive.LoadAndPostProcessDeltaSizeInfo(
+          sizediff_file.name)
+    new_delta = diff.Diff(new_info1, new_info2)
+
+    # File format discards unchanged symbols.
+    orig_delta.raw_symbols = orig_delta.raw_symbols.WhereDiffStatusIs(
+        models.DIFF_STATUS_UNCHANGED).Inverted()
+
+    self.assertEqual(
+        '\n'.join(describe.GenerateLines(orig_delta, verbose=True)),
+        '\n'.join(describe.GenerateLines(new_delta, verbose=True)))
+
   @_CompareWithGolden()
   def test_Console(self):
     with tempfile.NamedTemporaryFile(suffix='.size') as size_file, \

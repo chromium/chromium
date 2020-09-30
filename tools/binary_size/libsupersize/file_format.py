@@ -166,9 +166,18 @@ def SortSymbols(raw_symbols):
   #   detecting duplicate symbols.
   # (s.full_name, s.object_path) are important for sort stability when called by
   #   _ExpandSparseSymbols().
-  raw_symbols.sort(
-      key=lambda s: (s.IsPak(), s.IsBss(), s.section_name, s.address, s.
-                     size_without_padding > 0, s.full_name, s.object_path))
+  def sort_key(s):
+    return (s.IsPak(), s.IsBss(), s.section_name, s.address,
+            s.size_without_padding > 0, s.full_name, s.object_path)
+
+  raw_symbols.sort(key=sort_key)
+  seen_aliases = set()
+  for s in raw_symbols:
+    if s.aliases:
+      if s.aliases[0] not in seen_aliases:
+        s.aliases.sort(key=sort_key)
+        seen_aliases.add(s.aliases[0])
+
   logging.info('Processed %d symbols', len(raw_symbols))
 
 
@@ -187,8 +196,11 @@ def CalculatePadding(raw_symbols):
     if (prev_symbol.container.name != symbol.container.name
         or prev_symbol.section_name != symbol.section_name):
       container_and_section = (symbol.container.name, symbol.section_name)
-      assert container_and_section not in seen_container_and_sections, (
-          'Input symbols must be sorted by container, section, then address.')
+      assert container_and_section not in seen_container_and_sections, """\
+Input symbols must be sorted by container, section, then address.
+Found: {}
+Then: {}
+""".format(prev_symbol, symbol)
       seen_container_and_sections.add(container_and_section)
       continue
     if (symbol.address <= 0 or prev_symbol.address <= 0
@@ -219,19 +231,19 @@ def _ExpandSparseSymbols(sparse_symbols):
     sparse_symbols: A list or SymbolGroup to expand.
   """
   representative_symbols = set()
-  raw_symbols = set()
+  raw_symbols = []
   logging.debug('Expanding sparse_symbols with aliases of included symbols')
   for sym in sparse_symbols:
     if sym.aliases:
+      num_syms = len(representative_symbols)
       representative_symbols.add(sym.aliases[0])
+      if num_syms < len(representative_symbols):
+        raw_symbols.extend(sym.aliases)
     else:
-      raw_symbols.add(sym)
-  for sym in representative_symbols:
-    raw_symbols.update(set(sym.aliases))
-  raw_symbols = list(raw_symbols)
-  SortSymbols(raw_symbols)
+      raw_symbols.append(sym)
   logging.debug('Done expanding sparse_symbols')
   return models.SymbolGroup(raw_symbols)
+
 
 def _SaveSizeInfoToFile(size_info,
                         file_obj,
@@ -464,6 +476,10 @@ def _LoadSizeInfoFromFile(file_obj, size_path):
   path_tuples = [
       _ReadValuesFromLine(lines, split='\t') for _ in range(num_path_tuples)
   ]
+
+  if num_path_tuples == 0:
+    logging.warning('File contains no symbols: %s', size_path)
+    return models.SizeInfo(build_config, containers, [], size_path=size_path)
 
   # Component list.
   if has_components:

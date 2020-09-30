@@ -10,6 +10,8 @@ Description of common properties:
         May be 0 (e.g. for .bss or for SymbolGroups).
   * size: The number of bytes this symbol takes up, including padding that comes
         before |address|.
+  * aliases: List of symbols that represent the same bytes. The |aliases| of
+        each symbol in this list points to the same list instance.
   * num_aliases: The number of symbols with the same address (including self).
   * pss: size / num_aliases.
   * padding: The number of bytes of padding before |address| due to this symbol.
