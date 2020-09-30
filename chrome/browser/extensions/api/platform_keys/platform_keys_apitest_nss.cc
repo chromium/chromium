@@ -14,10 +14,11 @@
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/chromeos/platform_keys/extension_platform_keys_service.h"
 #include "chrome/browser/chromeos/platform_keys/extension_platform_keys_service_factory.h"
+#include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_manager.h"
+#include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_manager_user_service.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys.h"
 #include "chrome/browser/extensions/api/platform_keys/platform_keys_test_base.h"
 #include "chrome/browser/net/nss_context.h"
-#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/policy/policy_constants.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -132,18 +133,16 @@ class PlatformKeysTest : public PlatformKeysTestBase {
     const extensions::Extension* const fake_gen_extension =
         LoadExtension(test_data_dir_.AppendASCII("platform_keys_genkey"));
 
-    policy::ProfilePolicyConnector* const policy_connector =
-        profile()->GetProfilePolicyConnector();
+    chromeos::platform_keys::KeyPermissionsManager* const
+        key_permissions_manager =
+            chromeos::platform_keys::KeyPermissionsManagerUserServiceFactory::
+                GetForBrowserContext(profile())
+                    ->key_permissions_manager();
 
-    extensions::StateStore* const state_store =
-        extensions::ExtensionSystem::Get(profile())->state_store();
-
-    chromeos::platform_keys::KeyPermissions permissions(
-        policy_connector->IsManaged(), profile()->GetPrefs(),
-        policy_connector->policy_service(), state_store);
+    ASSERT_TRUE(key_permissions_manager);
 
     base::RunLoop run_loop;
-    permissions.GetPermissionsForExtension(
+    key_permissions_manager->GetPermissionsForExtension(
         fake_gen_extension->id(),
         base::Bind(&PlatformKeysTest::GotPermissionsForExtension,
                    base::Unretained(this), run_loop.QuitClosure()));
@@ -169,9 +168,8 @@ class PlatformKeysTest : public PlatformKeysTestBase {
 
   void GotPermissionsForExtension(
       const base::Closure& done_callback,
-      std::unique_ptr<
-          chromeos::platform_keys::KeyPermissions::PermissionsForExtension>
-          permissions_for_ext) {
+      std::unique_ptr<chromeos::platform_keys::KeyPermissionsManager::
+                          PermissionsForExtension> permissions_for_ext) {
     std::string client_cert1_spki =
         chromeos::platform_keys::GetSubjectPublicKeyInfo(client_cert1_);
     permissions_for_ext->RegisterKeyForCorporateUsage(

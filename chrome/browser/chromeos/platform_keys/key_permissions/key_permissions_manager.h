@@ -1,9 +1,9 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_PLATFORM_KEYS_KEY_PERMISSIONS_KEY_PERMISSIONS_H_
-#define CHROME_BROWSER_CHROMEOS_PLATFORM_KEYS_KEY_PERMISSIONS_KEY_PERMISSIONS_H_
+#ifndef CHROME_BROWSER_CHROMEOS_PLATFORM_KEYS_KEY_PERMISSIONS_KEY_PERMISSIONS_MANAGER_H_
+#define CHROME_BROWSER_CHROMEOS_PLATFORM_KEYS_KEY_PERMISSIONS_KEY_PERMISSIONS_MANAGER_H_
 
 #include <memory>
 #include <string>
@@ -26,10 +26,6 @@ class StateStore;
 
 namespace policy {
 class PolicyService;
-}
-
-namespace user_prefs {
-class PrefRegistrySyncable;
 }
 
 namespace chromeos {
@@ -72,7 +68,10 @@ namespace platform_keys {
 // certificate authority creates the certificate of the generated key, the
 // generating extension isn't able to use the key anymore except if explicitly
 // permitted by the administrator.
-class KeyPermissions {
+//
+// For retrieving a profile-specific KeyPermissionsManager, use
+// KeyPermissionsManagerUserServiceFactory.
+class KeyPermissionsManager {
  public:
   // Allows querying and modifying permissions and registering keys for a
   // specific extension.
@@ -81,12 +80,12 @@ class KeyPermissions {
     // |key_permissions| must not be null and outlive this object.
     // Methods of this object refer implicitly to the extension with the id
     // |extension_id|. Don't use this constructor directly. Call
-    // |KeyPermissions::GetPermissionsForExtension| instead.
+    // |KeyPermissionsManager::GetPermissionsForExtension| instead.
     PermissionsForExtension(const std::string& extension_id,
                             std::unique_ptr<base::Value> state_store_value,
                             PrefService* profile_prefs,
                             policy::PolicyService* profile_policies,
-                            KeyPermissions* key_permissions);
+                            KeyPermissionsManager* key_permissions);
 
     ~PermissionsForExtension();
 
@@ -144,8 +143,8 @@ class KeyPermissions {
     // returns a new entry.
     // |public_key_spki_der| must be the base64 encoding of the DER of a Subject
     // Public Key Info.
-    KeyPermissions::PermissionsForExtension::KeyEntry* GetStateStoreEntry(
-        const std::string& public_key_spki_der_b64);
+    KeyPermissionsManager::PermissionsForExtension::KeyEntry*
+    GetStateStoreEntry(const std::string& public_key_spki_der_b64);
 
     bool PolicyAllowsCorporateKeyUsage() const;
 
@@ -153,7 +152,7 @@ class KeyPermissions {
     std::vector<KeyEntry> state_store_entries_;
     PrefService* const profile_prefs_;
     policy::PolicyService* const profile_policies_;
-    KeyPermissions* const key_permissions_;
+    KeyPermissionsManager* const key_permissions_;
 
     DISALLOW_COPY_AND_ASSIGN(PermissionsForExtension);
   };
@@ -164,12 +163,12 @@ class KeyPermissions {
   // |profile_policies| must not be null and must outlive this object.
   // |profile_is_managed| determines the default usage and permissions for
   // keys without explicitly assigned usage.
-  KeyPermissions(bool profile_is_managed,
-                 PrefService* profile_prefs,
-                 policy::PolicyService* profile_policies,
-                 extensions::StateStore* extensions_state_store);
+  KeyPermissionsManager(bool profile_is_managed,
+                        PrefService* profile_prefs,
+                        policy::PolicyService* profile_policies,
+                        extensions::StateStore* extensions_state_store);
 
-  ~KeyPermissions();
+  ~KeyPermissionsManager();
 
   using PermissionsCallback =
       base::Callback<void(std::unique_ptr<PermissionsForExtension>)>;
@@ -186,8 +185,6 @@ class KeyPermissions {
   bool CanUserGrantPermissionFor(
       const std::string& public_key_spki_der,
       const std::vector<platform_keys::TokenId>& key_locations) const;
-
-  static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
   // Returns true if |public_key_spki_der_b64| is a corporate usage key.
   static bool IsCorporateKeyForProfile(
@@ -219,12 +216,12 @@ class KeyPermissions {
   PrefService* const profile_prefs_;
   policy::PolicyService* const profile_policies_;
   extensions::StateStore* const extensions_state_store_;
-  base::WeakPtrFactory<KeyPermissions> weak_factory_{this};
+  base::WeakPtrFactory<KeyPermissionsManager> weak_factory_{this};
 
-  DISALLOW_COPY_AND_ASSIGN(KeyPermissions);
+  DISALLOW_COPY_AND_ASSIGN(KeyPermissionsManager);
 };
 
 }  // namespace platform_keys
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_CHROMEOS_PLATFORM_KEYS_KEY_PERMISSIONS_KEY_PERMISSIONS_H_
+#endif  // CHROME_BROWSER_CHROMEOS_PLATFORM_KEYS_KEY_PERMISSIONS_KEY_PERMISSIONS_MANAGER_H_

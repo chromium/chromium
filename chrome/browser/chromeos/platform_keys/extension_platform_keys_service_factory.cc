@@ -14,6 +14,7 @@
 #include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/chromeos/platform_keys/extension_platform_keys_service.h"
+#include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_manager_user_service.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys_service_factory.h"
 #include "chrome/browser/extensions/extension_system_factory.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
@@ -91,6 +92,8 @@ ExtensionPlatformKeysServiceFactory::ExtensionPlatformKeysServiceFactory()
           BrowserContextDependencyManager::GetInstance()) {
   DependsOn(extensions::ExtensionSystemFactory::GetInstance());
   DependsOn(chromeos::platform_keys::PlatformKeysServiceFactory::GetInstance());
+  DependsOn(chromeos::platform_keys::KeyPermissionsManagerUserServiceFactory::
+                GetInstance());
 }
 
 ExtensionPlatformKeysServiceFactory::~ExtensionPlatformKeysServiceFactory() {}
