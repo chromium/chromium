@@ -1360,8 +1360,17 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest,
 
 // Verifies that corrupted non-webstore policy-based extension is automatically
 // repaired (reinstalled) even if hashes file is damaged too.
-IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest,
-                       CorruptedNonWebstoreExtensionWithDamagedHashesRepaired) {
+// crbug.com/1131634: flaky on win
+#if defined(OS_WIN)
+#define MAYBE_CorruptedNonWebstoreExtensionWithDamagedHashesRepaired \
+  DISABLED_CorruptedNonWebstoreExtensionWithDamagedHashesRepaired
+#else
+#define MAYBE_CorruptedNonWebstoreExtensionWithDamagedHashesRepaired \
+  CorruptedNonWebstoreExtensionWithDamagedHashesRepaired
+#endif
+IN_PROC_BROWSER_TEST_F(
+    ExtensionPolicyTest,
+    MAYBE_CorruptedNonWebstoreExtensionWithDamagedHashesRepaired) {
   ignore_content_verifier_.reset();
   ExtensionRequestInterceptor interceptor;
   ASSERT_TRUE(embedded_test_server()->Start());
