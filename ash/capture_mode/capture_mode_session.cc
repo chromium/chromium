@@ -28,6 +28,7 @@
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/gfx/shadow_value.h"
 #include "ui/gfx/skia_paint_util.h"
+#include "ui/views/background.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/label.h"
 
@@ -35,7 +36,7 @@ namespace ash {
 
 namespace {
 
-constexpr int kBorderStrokePx = 1;
+constexpr int kCaptureRegionBorderStrokePx = 1;
 
 // The visual radius of the drag affordance circles which are shown while
 // resizing a drag region.
@@ -44,7 +45,9 @@ constexpr int kAffordanceCircleRadiusDp = 5;
 // The hit radius of the drag affordance circles touch events.
 constexpr int kAffordanceCircleTouchHitRadiusDp = 16;
 
-constexpr int kSizeLabelYDistanceFromRegionDp = 8;
+constexpr int kSizeLabelBorderRadius = 4;
+
+constexpr int kSizeLabelHorizontalPadding = 8;
 
 constexpr SkColor kRegionBorderColor = SK_ColorWHITE;
 
@@ -286,14 +289,14 @@ void CaptureModeSession::PaintCaptureRegion(gfx::Canvas* canvas) {
     return;
   }
 
-  region.Inset(-kBorderStrokePx, -kBorderStrokePx);
+  region.Inset(-kCaptureRegionBorderStrokePx, -kCaptureRegionBorderStrokePx);
   canvas->FillRect(region, SK_ColorTRANSPARENT, SkBlendMode::kClear);
 
   // Draw the region border.
   cc::PaintFlags border_flags;
   border_flags.setColor(kRegionBorderColor);
   border_flags.setStyle(cc::PaintFlags::kStroke_Style);
-  border_flags.setStrokeWidth(kBorderStrokePx);
+  border_flags.setStrokeWidth(kCaptureRegionBorderStrokePx);
   border_flags.setLooper(gfx::CreateShadowDrawLooper({kRegionOutlineShadow}));
   canvas->DrawRect(gfx::RectF(region), border_flags);
 
@@ -460,7 +463,7 @@ void CaptureModeSession::OnLocatedEventReleased(
   // how damage is calculated.
   gfx::Rect damage_region = controller_->user_capture_region();
   damage_region.Inset(
-      gfx::Insets(-kAffordanceCircleRadiusDp - kBorderStrokePx));
+      gfx::Insets(-kAffordanceCircleRadiusDp - kCaptureRegionBorderStrokePx));
   layer()->SchedulePaint(damage_region);
 
   if (!is_select_phase_)
@@ -483,7 +486,7 @@ void CaptureModeSession::UpdateCaptureRegion(
   gfx::Rect damage_region = old_capture_region;
   damage_region.Union(new_capture_region);
   damage_region.Inset(
-      gfx::Insets(-kAffordanceCircleRadiusDp - kBorderStrokePx));
+      gfx::Insets(-kAffordanceCircleRadiusDp - kCaptureRegionBorderStrokePx));
   layer()->SchedulePaint(damage_region);
 
   controller_->set_user_capture_region(new_capture_region);
@@ -491,7 +494,7 @@ void CaptureModeSession::UpdateCaptureRegion(
 }
 
 void CaptureModeSession::UpdateCaptureRegionWidgets() {
-  // TODO(sammiequon): The dimensons label is always shown and the capture
+  // TODO(chinsenj): The dimensons label is always shown and the capture
   // button label is always shown in the fine tune stage. Update this to match
   // the specs.
   const bool show = controller_->source() == CaptureModeSource::kRegion;
@@ -501,62 +504,109 @@ void CaptureModeSession::UpdateCaptureRegionWidgets() {
     return;
   }
 
-  // TODO(sammiequon): Add styling to the two widget content views. Also, the
-  // widgets should be repositioned if the region is too small or too close to
-  // the edge.
-  const gfx::Rect capture_region = controller_->user_capture_region();
+  MaybeCreateAndUpdateDimensionsLabelWidget();
+  UpdateDimensionsLabelBounds();
+
+  if (!is_select_phase_)
+    CreateCaptureButtonWidget();
+
+  UpdateCaptureButtonBounds();
+}
+
+void CaptureModeSession::MaybeCreateAndUpdateDimensionsLabelWidget() {
   if (!dimensions_label_widget_) {
     auto* parent = GetParentContainer(current_root_);
     dimensions_label_widget_ = std::make_unique<views::Widget>();
     dimensions_label_widget_->Init(
-        CreateWidgetParams(parent, gfx::Rect(), "CaptureModeSizeLabel"));
-    dimensions_label_widget_->SetContentsView(std::make_unique<views::Label>());
+        CreateWidgetParams(parent, gfx::Rect(), "CaptureModeDimensionsLabel"));
+
+    auto size_label = std::make_unique<views::Label>();
+    auto* color_provider = AshColorProvider::Get();
+    size_label->SetEnabledColor(color_provider->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kTextColorPrimary));
+    size_label->SetBackground(views::CreateRoundedRectBackground(
+        color_provider->GetBaseLayerColor(
+            AshColorProvider::BaseLayerType::kTransparent80),
+        kSizeLabelBorderRadius));
+    size_label->SetAutoColorReadabilityEnabled(false);
+    dimensions_label_widget_->SetContentsView(std::move(size_label));
+
     dimensions_label_widget_->Show();
     parent->StackChildBelow(dimensions_label_widget_->GetNativeWindow(),
                             capture_mode_bar_widget_.GetNativeWindow());
   }
 
-  // Update the location of the size label. It is in the center of the region
-  // horizontally and slightly below the region vertically.
   views::Label* size_label =
       static_cast<views::Label*>(dimensions_label_widget_->GetContentsView());
+
+  const gfx::Rect capture_region = controller_->user_capture_region();
   size_label->SetText(base::UTF8ToUTF16(base::StringPrintf(
       "%d x %d", capture_region.width(), capture_region.height())));
-  gfx::Rect dimensions_label_widget_bounds(size_label->GetPreferredSize());
-  dimensions_label_widget_bounds.set_x(capture_region.CenterPoint().x() -
-                                       dimensions_label_widget_bounds.width() /
-                                           2);
-  dimensions_label_widget_bounds.set_y(capture_region.bottom() +
-                                       kSizeLabelYDistanceFromRegionDp);
-  dimensions_label_widget_->SetBounds(dimensions_label_widget_bounds);
+}
 
-  if (!capture_button_widget_ && !is_select_phase_) {
-    auto* parent = GetParentContainer(current_root_);
-    capture_button_widget_ = std::make_unique<views::Widget>();
-    capture_button_widget_->Init(
-        CreateWidgetParams(parent, gfx::Rect(), "CaptureModeButton"));
-    // TODO(sammiequon): Add the localized label.
-    auto label_button =
-        std::make_unique<views::LabelButton>(this, base::string16());
-    label_button->SetImage(
-        views::Button::STATE_NORMAL,
-        gfx::CreateVectorIcon(controller_->type() == CaptureModeType::kImage
-                                  ? kCaptureModeImageIcon
-                                  : kCaptureModeVideoIcon,
-                              SK_ColorBLACK));
-    capture_button_widget_->SetContentsView(std::move(label_button));
-    capture_button_widget_->Show();
-    parent->StackChildBelow(capture_button_widget_->GetNativeWindow(),
-                            capture_mode_bar_widget_.GetNativeWindow());
-  }
+void CaptureModeSession::UpdateDimensionsLabelBounds() {
+  DCHECK(dimensions_label_widget_ &&
+         dimensions_label_widget_->GetContentsView());
 
+  gfx::Rect bounds(
+      dimensions_label_widget_->GetContentsView()->GetPreferredSize());
+  const gfx::Rect capture_region = controller_->user_capture_region();
+  gfx::Rect screen_region = current_root_->bounds();
+
+  bounds.set_width(bounds.width() + 2 * kSizeLabelHorizontalPadding);
+  bounds.set_x(capture_region.CenterPoint().x() - bounds.width() / 2);
+  bounds.set_y(capture_region.bottom() + kSizeLabelYDistanceFromRegionDp);
+
+  // The dimension label should always be within the screen and at the bottom of
+  // the capture region. If it does not fit below the bottom edge fo the region,
+  // move it above the bottom edge into the capture region.
+  screen_region.Inset(0, 0, 0, kSizeLabelYDistanceFromRegionDp);
+  bounds.AdjustToFit(screen_region);
+
+  dimensions_label_widget_->SetBounds(bounds);
+}
+
+void CaptureModeSession::CreateCaptureButtonWidget() {
+  if (capture_button_widget_)
+    return;
+
+  // TODO(sammiequon): Add styling to this widget's content views.
+  auto* parent = GetParentContainer(current_root_);
+  capture_button_widget_ = std::make_unique<views::Widget>();
+  capture_button_widget_->Init(
+      CreateWidgetParams(parent, gfx::Rect(), "CaptureModeButton"));
+
+  UpdateCaptureButtonContents();
+
+  capture_button_widget_->Show();
+  parent->StackChildBelow(capture_button_widget_->GetNativeWindow(),
+                          capture_mode_bar_widget_.GetNativeWindow());
+}
+
+void CaptureModeSession::UpdateCaptureButtonContents() {
+  DCHECK(capture_button_widget_);
+
+  // TODO(sammiequon): Add the localized label.
+  auto label_button =
+      std::make_unique<views::LabelButton>(this, base::string16());
+  label_button->SetImage(
+      views::Button::STATE_NORMAL,
+      gfx::CreateVectorIcon(controller_->type() == CaptureModeType::kImage
+                                ? kCaptureModeImageIcon
+                                : kCaptureModeVideoIcon,
+                            SK_ColorBLACK));
+  capture_button_widget_->SetContentsView(std::move(label_button));
+}
+
+void CaptureModeSession::UpdateCaptureButtonBounds() {
   if (!capture_button_widget_)
     return;
 
-  // Update the location of the capture button.
+  // TODO(sammiequon): The widget should be repositioned if the region is too
+  // small or too close to the edge.
   views::LabelButton* capture_button = static_cast<views::LabelButton*>(
       capture_button_widget_->GetContentsView());
-  gfx::Rect capture_button_widget_bounds = capture_region;
+  gfx::Rect capture_button_widget_bounds = controller_->user_capture_region();
   capture_button_widget_bounds.ClampToCenteredSize(
       capture_button->GetPreferredSize());
   capture_button_widget_->SetBounds(capture_button_widget_bounds);

@@ -43,6 +43,9 @@ class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
   CaptureModeSession& operator=(const CaptureModeSession&) = delete;
   ~CaptureModeSession() override;
 
+  // The vertical distance from the size label to the custom capture region.
+  static constexpr int kSizeLabelYDistanceFromRegionDp = 8;
+
   aura::Window* current_root() const { return current_root_; }
   CaptureModeBarView* capture_mode_bar_view() const {
     return capture_mode_bar_view_;
@@ -68,6 +71,10 @@ class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
 
   // views::ButtonListener:
   void ButtonPressed(views::Button* sender, const ui::Event& event) override;
+
+  views::Widget* dimensions_label_widget() {
+    return dimensions_label_widget_.get();
+  }
 
  private:
   // Gets the bounds of current window selected for |kWindow| capture source.
@@ -101,6 +108,27 @@ class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
   // and some are only visible during certain phases of region capture. This
   // will create or destroy the widgets as needed.
   void UpdateCaptureRegionWidgets();
+
+  // Creates |dimensions_label_widget_| if it does not exist and then set its
+  // content view to the size label view.
+  void MaybeCreateAndUpdateDimensionsLabelWidget();
+
+  // Updates the bounds of |dimensions_label_widget_| relative to the current
+  // capture region. Both |dimensions_label_widget_| and its content view must
+  // exist.
+  void UpdateDimensionsLabelBounds();
+
+  // Creates |capture_button_widget_| if it does not exist and then set its
+  // content view to the capture button view.
+  void CreateCaptureButtonWidget();
+
+  // Populates |capture_button_widget_| with its content view which displays the
+  // capture button. |capture_button_widget_| must exist.
+  void UpdateCaptureButtonContents();
+
+  // Updates the bounds of |capture_button_widget_| relative to the current
+  // capture region. Does nothing if |capture_button_widget_| does not exist.
+  void UpdateCaptureButtonBounds();
 
   // Retrieves the anchor points on the current selected region associated with
   // |position|. The anchor points are described as the points that do not

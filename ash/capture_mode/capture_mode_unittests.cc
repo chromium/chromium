@@ -142,6 +142,14 @@ class CaptureModeTest : public AshTestBase {
     EXPECT_EQ(region, controller->user_capture_region());
   }
 
+  aura::Window* GetDimensionsLabelWindow() const {
+    auto* controller = CaptureModeController::Get();
+    DCHECK(controller->IsActive());
+    return controller->capture_mode_session()
+        ->dimensions_label_widget()
+        ->GetNativeWindow();
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -445,6 +453,48 @@ TEST_F(CaptureModeTest, CaptureRegionCoversCaptureModeBar) {
 
   ClickOnView(GetCloseButton(), event_generator);
   EXPECT_FALSE(controller->IsActive());
+}
+
+TEST_F(CaptureModeTest, DimensionsLabelLocation) {
+  UpdateDisplay("800x800");
+
+  // Start Capture Mode in a region in image mode.
+  StartImageRegionCapture();
+
+  // Press down and drag to select a large region. Verify that the dimensions
+  // label is centered and that the label is below the capture region.
+  gfx::Rect capture_region{100, 100, 600, 200};
+  SelectRegion(capture_region);
+
+  aura::Window* dimensions_label_window = GetDimensionsLabelWindow();
+  EXPECT_EQ(capture_region.CenterPoint().x(),
+            dimensions_label_window->bounds().CenterPoint().x());
+  EXPECT_EQ(capture_region.bottom() +
+                CaptureModeSession::kSizeLabelYDistanceFromRegionDp,
+            dimensions_label_window->bounds().y());
+
+  // Create a new capture region close to the left side of the screen such that
+  // if the label was centered it would extend out of the screen.
+  // The x value of the label should be the left edge of the screen (0).
+  capture_region.SetRect(2, 100, 2, 100);
+  SelectRegion(capture_region);
+  EXPECT_EQ(0, dimensions_label_window->bounds().x());
+
+  // Create a new capture region close to the right side of the screen such that
+  // if the label was centered it would extend out of the screen.
+  // The right (x + width) of the label should be the right edge of the screen
+  // (800).
+  capture_region.SetRect(796, 100, 2, 100);
+  SelectRegion(capture_region);
+  EXPECT_EQ(800, dimensions_label_window->bounds().right());
+
+  // Create a new capture region close to the bottom side of the screen.
+  // The label should now appear inside the capture region, just above the
+  // bottom edge. It should be above the bottom of the screen as well.
+  capture_region.SetRect(100, 700, 600, 790);
+  SelectRegion(capture_region);
+  EXPECT_EQ(800 - CaptureModeSession::kSizeLabelYDistanceFromRegionDp,
+            dimensions_label_window->bounds().bottom());
 }
 
 }  // namespace ash
