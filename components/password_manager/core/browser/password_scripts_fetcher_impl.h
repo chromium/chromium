@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
@@ -23,6 +24,10 @@ class Origin;
 
 namespace network {
 class SharedURLLoaderFactory;
+}
+
+namespace base {
+class Version;
 }
 
 namespace password_manager {
@@ -73,8 +78,10 @@ class PasswordScriptsFetcherImpl
   void RefreshScriptsIfNecessary(
       base::OnceClosure fetch_finished_callback) override;
   void FetchScriptAvailability(const url::Origin& origin,
+                               const base::Version& version,
                                ResponseCallback callback) override;
-  bool IsScriptAvailable(const url::Origin& origin) const override;
+  bool IsScriptAvailable(const url::Origin& origin,
+                         const base::Version& version) const override;
 
 #if defined(UNIT_TEST)
   void make_cache_stale_for_testing() {
@@ -99,19 +106,23 @@ class PasswordScriptsFetcherImpl
   // Returns whether a re-fetch is needed.
   bool IsCacheStale() const;
   // Runs |callback| immediately with the script availability for |origin|.
-  void RunResponseCallback(url::Origin origin, ResponseCallback callback);
+  void RunResponseCallback(url::Origin origin,
+                           base::Version version,
+                           ResponseCallback callback);
 
   // URL to fetch a list of scripts from.
   const std::string scripts_list_url_;
 
   // Parsed set of domains from gstatic.
-  base::flat_set<url::Origin> password_change_domains_;
+  base::flat_map<url::Origin, base::Version> password_change_domains_;
   // Timestamp of the last finished request.
   base::TimeTicks last_fetch_timestamp_;
   // Stores the callbacks that are waiting for the request to finish.
   std::vector<base::OnceClosure> fetch_finished_callbacks_;
   // Stores the per-origin callbacks that are waiting for the request to finish.
-  std::vector<std::pair<url::Origin, ResponseCallback>> pending_callbacks_;
+  std::vector<
+      std::pair<std::pair<url::Origin, base::Version>, ResponseCallback>>
+      pending_callbacks_;
   // URL loader object for the gstatic request. If |url_loader_| is not null, a
   // request is currently in flight.
   std::unique_ptr<network::SimpleURLLoader> url_loader_;

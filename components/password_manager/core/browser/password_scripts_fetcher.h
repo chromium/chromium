@@ -12,6 +12,10 @@ namespace url {
 class Origin;
 }
 
+namespace base {
+class Version;
+}
+
 namespace password_manager {
 
 // Abstract interface to fetch the list of password scripts.
@@ -29,20 +33,23 @@ class PasswordScriptsFetcher : public KeyedService {
   // another.
   virtual void RefreshScriptsIfNecessary(
       base::OnceClosure fetch_finished_callback) = 0;
-  // Returns whether there is a password change script for |origin| via
-  // |callback|. If the cache was never set or is stale, it triggers a re-fetch.
-  // In case of a network error, the verdict will default to no script being
-  // available.
+  // Returns whether there is a password change script for |origin| and
+  // Chrome's |version| via |callback|. If the cache was never set or is stale,
+  // it triggers a re-fetch. In case of a network error, the verdict will
+  // default to no script being available.
   virtual void FetchScriptAvailability(const url::Origin& origin,
+                                       const base::Version& version,
                                        ResponseCallback callback) = 0;
-  // Immediately returns whether there is a password change script for |origin|.
-  // The method does NOT trigger any network requests if the cache is not ready
-  // or stale but reads the current state of the cache. In case of a network
-  // error while fetching the scripts, the result will always be false.
+  // Immediately returns whether there is a password change script for |origin|
+  // and Chrome's |version|. The method does NOT trigger any network requests if
+  // the cache is not ready or stale but reads the current state of the cache.
+  // In case of a network error while fetching the scripts, the result will
+  // always be false.
   // TODO(crbug.com/1086114): It is better to deprecate this method and always
   // use |FetchScriptAvailability| instead because |IsScriptAvailable| may
   // return stale data.
-  virtual bool IsScriptAvailable(const url::Origin& origin) const = 0;
+  virtual bool IsScriptAvailable(const url::Origin& origin,
+                                 const base::Version& version) const = 0;
 };
 
 }  // namespace password_manager

@@ -6,6 +6,7 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "base/version.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -21,6 +22,7 @@ constexpr char kOriginWithScript1[] = "https://example.com";
 constexpr char kOriginWithScript2[] = "https://mobile.example.com";
 constexpr char kOriginWithScript3[] = "https://test.com";
 constexpr char kOriginWithoutScript[] = "https://no-script.com";
+constexpr char kVersion[] = "87";
 
 constexpr char kTestResponseContent[] =
     R"json(
@@ -29,10 +31,12 @@ constexpr char kTestResponseContent[] =
           "domains": [
             "https://example.com",
             "https://mobile.example.com"
-          ]
+          ],
+          "min_version": "86"
         },
         "test.com": {
-          "domains": ["https://test.com"]
+          "domains": ["https://test.com"],
+          "min_version": "87"
         }
       }
     )json";
@@ -52,6 +56,11 @@ url::Origin GetOriginWithScript3() {
 url::Origin GetOriginWithoutScript() {
   return url::Origin::Create(GURL(kOriginWithoutScript));
 }
+
+base::Version GetVersion() {
+  return base::Version(kVersion);
+}
+
 }  // namespace
 
 namespace password_manager {
@@ -109,7 +118,8 @@ class PasswordScriptsFetcherImplTest : public ::testing::Test {
 
  private:
   void RequestSingleScriptAvailability(const url::Origin& origin) {
-    fetcher_->FetchScriptAvailability(origin, GenerateResponseCallback(origin));
+    fetcher_->FetchScriptAvailability(origin, GetVersion(),
+                                      GenerateResponseCallback(origin));
   }
 
   void RecordResponse(url::Origin origin, bool has_script) {
@@ -235,8 +245,10 @@ TEST_F(PasswordScriptsFetcherImplTest, InvalidResponseBody) {
        PasswordScriptsFetcherImpl::ParsingResult::kInvalidJson},
       {R"({"no-domains-attribute.com" : {}})",
        PasswordScriptsFetcherImpl::ParsingResult::kInvalidJson},
-      {R"({"not-url.com" : {"domains": ["scheme-forgotten.com"]}})",
-       PasswordScriptsFetcherImpl::ParsingResult::kInvalidUrl}};
+      {R"({"not-url.com" : {"domains": ["scheme-forgotten.com"], "min_version": "2"}})",
+       PasswordScriptsFetcherImpl::ParsingResult::kInvalidUrl},
+      {R"({"not-url.com" : {"domains": ["https://no-min-version.com"]}})",
+       PasswordScriptsFetcherImpl::ParsingResult::kInvalidJson}};
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(testing::Message() << "test_case=" << test_case.response);
     base::HistogramTester histogram_tester;
@@ -283,10 +295,14 @@ TEST_F(PasswordScriptsFetcherImplTest, ServerError) {
 TEST_F(PasswordScriptsFetcherImplTest, IsScriptAvailable) {
   // |IsScriptAvailable| does not trigger any network requests and returns the
   // default value (false).
-  EXPECT_FALSE(fetcher()->IsScriptAvailable(GetOriginWithScript1()));
-  EXPECT_FALSE(fetcher()->IsScriptAvailable(GetOriginWithScript2()));
-  EXPECT_FALSE(fetcher()->IsScriptAvailable(GetOriginWithScript3()));
-  EXPECT_FALSE(fetcher()->IsScriptAvailable(GetOriginWithoutScript()));
+  EXPECT_FALSE(
+      fetcher()->IsScriptAvailable(GetOriginWithScript1(), GetVersion()));
+  EXPECT_FALSE(
+      fetcher()->IsScriptAvailable(GetOriginWithScript2(), GetVersion()));
+  EXPECT_FALSE(
+      fetcher()->IsScriptAvailable(GetOriginWithScript3(), GetVersion()));
+  EXPECT_FALSE(
+      fetcher()->IsScriptAvailable(GetOriginWithoutScript(), GetVersion()));
   EXPECT_EQ(0, GetNumberOfPendingRequests());
 
   StartBulkCheck();
@@ -298,17 +314,25 @@ TEST_F(PasswordScriptsFetcherImplTest, IsScriptAvailable) {
   SimulateResponse();
   base::RunLoop().RunUntilIdle();
   // Cache is ready.
-  EXPECT_TRUE(fetcher()->IsScriptAvailable(GetOriginWithScript1()));
-  EXPECT_TRUE(fetcher()->IsScriptAvailable(GetOriginWithScript2()));
-  EXPECT_TRUE(fetcher()->IsScriptAvailable(GetOriginWithScript3()));
-  EXPECT_FALSE(fetcher()->IsScriptAvailable(GetOriginWithoutScript()));
+  EXPECT_TRUE(
+      fetcher()->IsScriptAvailable(GetOriginWithScript1(), GetVersion()));
+  EXPECT_TRUE(
+      fetcher()->IsScriptAvailable(GetOriginWithScript2(), GetVersion()));
+  EXPECT_TRUE(
+      fetcher()->IsScriptAvailable(GetOriginWithScript3(), GetVersion()));
+  EXPECT_FALSE(
+      fetcher()->IsScriptAvailable(GetOriginWithoutScript(), GetVersion()));
 
   // |IsScriptAvailable| does not trigger refetching and returns stale values.
   fetcher()->make_cache_stale_for_testing();
-  EXPECT_TRUE(fetcher()->IsScriptAvailable(GetOriginWithScript1()));
-  EXPECT_TRUE(fetcher()->IsScriptAvailable(GetOriginWithScript2()));
-  EXPECT_TRUE(fetcher()->IsScriptAvailable(GetOriginWithScript3()));
-  EXPECT_FALSE(fetcher()->IsScriptAvailable(GetOriginWithoutScript()));
+  EXPECT_TRUE(
+      fetcher()->IsScriptAvailable(GetOriginWithScript1(), GetVersion()));
+  EXPECT_TRUE(
+      fetcher()->IsScriptAvailable(GetOriginWithScript2(), GetVersion()));
+  EXPECT_TRUE(
+      fetcher()->IsScriptAvailable(GetOriginWithScript3(), GetVersion()));
+  EXPECT_FALSE(
+      fetcher()->IsScriptAvailable(GetOriginWithoutScript(), GetVersion()));
   EXPECT_EQ(0, GetNumberOfPendingRequests());
 }
 
@@ -328,7 +352,8 @@ TEST_F(PasswordScriptsFetcherImplTest, AnotherScriptsListUrl) {
       R"json(
       {
         "experiment.com": {
-          "domains": ["https://experiment.com"]
+          "domains": ["https://experiment.com"],
+          "min_version" : "86"
         }
       }
     )json";
@@ -339,8 +364,21 @@ TEST_F(PasswordScriptsFetcherImplTest, AnotherScriptsListUrl) {
   // Use |IsScriptAvailable(origin)| instead of |FetchScriptAvailability(origin,
   // callback)| to simplify the test.
   EXPECT_TRUE(fetcher.IsScriptAvailable(
-      url::Origin::Create(GURL(kExperimentalDomain))));
-  EXPECT_FALSE(fetcher.IsScriptAvailable(GetOriginWithScript3()));
+      url::Origin::Create(GURL(kExperimentalDomain)), GetVersion()));
+  EXPECT_FALSE(fetcher.IsScriptAvailable(GetOriginWithScript3(), GetVersion()));
+}
+
+TEST_F(PasswordScriptsFetcherImplTest, DifferentVersions) {
+  StartBulkCheck();
+  EXPECT_EQ(1, GetNumberOfPendingRequests());
+  SimulateResponse();
+  base::RunLoop().RunUntilIdle();
+
+  const char kOlderVersion[] = "86";
+  EXPECT_FALSE(fetcher()->IsScriptAvailable(GetOriginWithScript3(),
+                                            base::Version(kOlderVersion)));
+  EXPECT_TRUE(
+      fetcher()->IsScriptAvailable(GetOriginWithScript3(), GetVersion()));
 }
 
 }  // namespace password_manager

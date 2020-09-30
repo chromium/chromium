@@ -22,6 +22,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/driver/profile_sync_service.h"
 #include "components/url_formatter/url_formatter.h"
+#include "components/version_info/version_info.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace {
@@ -228,7 +229,8 @@ CompromisedCredentialForUI PasswordCheckManager::MakeUICredential(
   ui_credential.has_startable_script =
       !credential.username.empty() && ShouldFetchPasswordScripts() &&
       password_script_fetcher_->IsScriptAvailable(
-          url::Origin::Create(credential.url.GetOrigin()));
+          url::Origin::Create(credential.url.GetOrigin()),
+          version_info::GetVersion());
   ui_credential.has_auto_change_button =
       ui_credential.has_startable_script &&
       base::FeatureList::IsEnabled(

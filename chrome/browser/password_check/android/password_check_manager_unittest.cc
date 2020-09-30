@@ -14,6 +14,7 @@
 #include "base/test/bind_test_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "base/version.h"
 #include "chrome/browser/password_check/android/password_check_ui_status.h"
 #include "chrome/browser/password_manager/bulk_leak_check_service_factory.h"
 #include "chrome/browser/password_manager/password_manager_test_util.h"
@@ -91,10 +92,15 @@ class MockPasswordScriptsFetcher
 
   MOCK_METHOD(void,
               FetchScriptAvailability,
-              (const url::Origin&, base::OnceCallback<void(bool)>),
+              (const url::Origin&,
+               const base::Version&,
+               base::OnceCallback<void(bool)>),
               (override));
 
-  MOCK_METHOD(bool, IsScriptAvailable, (const url::Origin&), (const override));
+  MOCK_METHOD(bool,
+              IsScriptAvailable,
+              (const url::Origin&, const base::Version&),
+              (const override));
 };
 
 BulkLeakCheckService* CreateAndUseBulkLeakCheckService(

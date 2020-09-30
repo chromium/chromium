@@ -10,6 +10,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
+#include "base/version.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
@@ -25,14 +26,15 @@ constexpr int kMaxDownloadSizeInBytes = 10 * 1024;
 using ParsingResult =
     password_manager::PasswordScriptsFetcherImpl::ParsingResult;
 
-// Extracts the domains for which password changes are supported and adds them
-// to |supported_domains|.
+// Extracts the domains and min Chrome's version for which password changes are
+// supported and adds them to |supported_domains|.
 // |script_config| is the dictionary passed for a domain, representig the
-// configuration data of one password change script.
-// For example, the fetched JSON might look like this:
+// configuration data of one password change script. For example, the fetched
+// JSON might look like this:
 // {
 //   'example.com': {
-//     'domains': [ 'https://www.example.com', 'https://m.example.com' ]
+//     'domains': [ 'https://www.example.com', 'https://m.example.com' ],
+//     'min_version': '86'
 //   }
 // }
 // In this case |script_config| would represent the dictionary value
@@ -41,9 +43,9 @@ using ParsingResult =
 // The function tries to be lax about errors and prefers to skip them
 // with warnings rather than bail the parsing. This is for forward
 // compatibility.
-base::flat_set<ParsingResult> ExtractPasswordDomains(
+base::flat_set<ParsingResult> ParseDomainSpecificParamaters(
     const base::Value& script_config,
-    base::flat_set<url::Origin>& supported_domains) {
+    base::flat_map<url::Origin, base::Version>& supported_domains) {
   if (!script_config.is_dict())
     return {ParsingResult::kInvalidJson};
 
@@ -53,6 +55,21 @@ base::flat_set<ParsingResult> ExtractPasswordDomains(
     return {ParsingResult::kInvalidJson};
 
   base::flat_set<ParsingResult> warnings;
+
+  const std::string* min_version = script_config.FindStringKey("min_version");
+  base::Version version;
+  if (!min_version) {
+    warnings.insert(ParsingResult::kInvalidJson);
+    // TODO(crbug.com/1132942): remove this when server side change is in place
+    // and return error.
+    version = base::Version("0");
+  } else {
+    version = base::Version(*min_version);
+    if (!version.IsValid()) {
+      return {ParsingResult::kInvalidJson};
+    }
+  }
+
   for (const base::Value& domain : supported_domains_list->GetList()) {
     if (!domain.is_string()) {
       warnings.insert(ParsingResult::kInvalidJson);
@@ -64,7 +81,7 @@ base::flat_set<ParsingResult> ExtractPasswordDomains(
       warnings.insert(ParsingResult::kInvalidUrl);
       continue;
     }
-    supported_domains.insert(url::Origin::Create(url));
+    supported_domains.insert(std::make_pair(url::Origin::Create(url), version));
   }
 
   return warnings;
@@ -128,21 +145,26 @@ void PasswordScriptsFetcherImpl::RefreshScriptsIfNecessary(
 
 void PasswordScriptsFetcherImpl::FetchScriptAvailability(
     const url::Origin& origin,
+    const base::Version& version,
     ResponseCallback callback) {
   if (IsCacheStale()) {
     pending_callbacks_.emplace_back(
-        std::make_pair(origin, std::move(callback)));
+        std::make_pair(std::make_pair(origin, version), std::move(callback)));
     StartFetch();
     return;
   }
 
-  RunResponseCallback(origin, std::move(callback));
+  RunResponseCallback(origin, version, std::move(callback));
 }
 
 bool PasswordScriptsFetcherImpl::IsScriptAvailable(
-    const url::Origin& origin) const {
-  return password_change_domains_.find(origin) !=
-         password_change_domains_.end();
+    const url::Origin& origin,
+    const base::Version& version) const {
+  const auto& it = password_change_domains_.find(origin);
+  if (it == password_change_domains_.end()) {
+    return false;
+  }
+  return version >= it->second;
 }
 
 void PasswordScriptsFetcherImpl::StartFetch() {
@@ -213,7 +235,9 @@ void PasswordScriptsFetcherImpl::OnFetchComplete(
   for (auto& callback : std::exchange(fetch_finished_callbacks_, {}))
     std::move(callback).Run();
   for (auto& callback : std::exchange(pending_callbacks_, {}))
-    RunResponseCallback(std::move(callback.first), std::move(callback.second));
+    RunResponseCallback(std::move(callback.first.first),
+                        std::move(callback.first.second),
+                        std::move(callback.second));
 }
 
 base::flat_set<ParsingResult> PasswordScriptsFetcherImpl::ParseResponse(
@@ -235,10 +259,12 @@ base::flat_set<ParsingResult> PasswordScriptsFetcherImpl::ParseResponse(
 
   base::flat_set<ParsingResult> warnings;
   for (const auto& script_it : data.value->DictItems()) {
-    // |script_it.first| is an identifier that we don't care about.
-    // |script_it.second| provides domain-sepcific parameters.
+    // |script_it.first| is an identifier (normally, a domain name, e.g.
+    // example.com) that we don't care about.
+    // |script_it.second| provides domain-specific parameters.
     base::flat_set<ParsingResult> warnings_for_script =
-        ExtractPasswordDomains(script_it.second, password_change_domains_);
+        ParseDomainSpecificParamaters(script_it.second,
+                                      password_change_domains_);
     warnings.insert(warnings_for_script.begin(), warnings_for_script.end());
   }
   return warnings;
@@ -253,11 +279,11 @@ bool PasswordScriptsFetcherImpl::IsCacheStale() const {
 
 void PasswordScriptsFetcherImpl::RunResponseCallback(
     url::Origin origin,
+    base::Version version,
     ResponseCallback callback) {
   DCHECK(!url_loader_);     // Fetching is not running.
   DCHECK(!IsCacheStale());  // Cache is ready.
-  bool has_script =
-      password_change_domains_.find(origin) != password_change_domains_.end();
+  bool has_script = IsScriptAvailable(origin, version);
   std::move(callback).Run(has_script);
 }
 
