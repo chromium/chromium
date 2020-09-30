@@ -34,6 +34,10 @@ class DefaultPlatformConfiguration
   double GetChildProcessEnableFraction(
       metrics::CallStackProfileParams::Process process) const override;
 
+  bool IsEnabledForThread(
+      metrics::CallStackProfileParams::Process process,
+      metrics::CallStackProfileParams::Thread thread) const override;
+
  protected:
   bool IsSupportedForChannel(bool is_chrome_branded,
                              version_info::Channel channel) const override;
@@ -97,6 +101,13 @@ double DefaultPlatformConfiguration::GetChildProcessEnableFraction(
   }
 }
 
+bool DefaultPlatformConfiguration::IsEnabledForThread(
+    metrics::CallStackProfileParams::Process process,
+    metrics::CallStackProfileParams::Thread thread) const {
+  // Enable for all supported threads.
+  return true;
+}
+
 bool DefaultPlatformConfiguration::IsSupportedForChannel(
     bool is_chrome_branded,
     version_info::Channel channel) const {
@@ -128,6 +139,10 @@ class AndroidPlatformConfiguration : public DefaultPlatformConfiguration {
 
   double GetChildProcessEnableFraction(
       metrics::CallStackProfileParams::Process process) const override;
+
+  bool IsEnabledForThread(
+      metrics::CallStackProfileParams::Process process,
+      metrics::CallStackProfileParams::Thread thread) const override;
 
  protected:
   bool IsSupportedForChannel(bool is_chrome_branded,
@@ -188,6 +203,14 @@ double AndroidPlatformConfiguration::GetChildProcessEnableFraction(
 
   // TODO(https://crbug.com/1004855): Enable for all the default processes.
   return 0.0;
+}
+
+bool AndroidPlatformConfiguration::IsEnabledForThread(
+    metrics::CallStackProfileParams::Process process,
+    metrics::CallStackProfileParams::Thread thread) const {
+  // Disable for all supported threads pending launch. Enable only for browser
+  // tests.
+  return browser_test_mode_enabled();
 }
 
 bool AndroidPlatformConfiguration::IsSupportedForChannel(

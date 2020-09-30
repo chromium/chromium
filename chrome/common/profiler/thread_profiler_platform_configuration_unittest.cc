@@ -204,3 +204,55 @@ MAYBE_PLATFORM_CONFIG_TEST_F(ThreadProfilerPlatformConfigurationTest,
                      metrics::CallStackProfileParams::UNKNOWN_PROCESS));
 #endif
 }
+
+MAYBE_PLATFORM_CONFIG_TEST_F(ThreadProfilerPlatformConfigurationTest,
+                             IsEnabledForThread) {
+#if defined(OS_ANDROID)
+  EXPECT_FALSE(config()->IsEnabledForThread(
+      metrics::CallStackProfileParams::BROWSER_PROCESS,
+      metrics::CallStackProfileParams::MAIN_THREAD));
+  EXPECT_FALSE(config()->IsEnabledForThread(
+      metrics::CallStackProfileParams::BROWSER_PROCESS,
+      metrics::CallStackProfileParams::IO_THREAD));
+
+  EXPECT_FALSE(config()->IsEnabledForThread(
+      metrics::CallStackProfileParams::GPU_PROCESS,
+      metrics::CallStackProfileParams::MAIN_THREAD));
+  EXPECT_FALSE(
+      config()->IsEnabledForThread(metrics::CallStackProfileParams::GPU_PROCESS,
+                                   metrics::CallStackProfileParams::IO_THREAD));
+  EXPECT_FALSE(config()->IsEnabledForThread(
+      metrics::CallStackProfileParams::GPU_PROCESS,
+      metrics::CallStackProfileParams::COMPOSITOR_THREAD));
+
+  EXPECT_FALSE(config()->IsEnabledForThread(
+      metrics::CallStackProfileParams::RENDERER_PROCESS,
+      metrics::CallStackProfileParams::MAIN_THREAD));
+  EXPECT_FALSE(config()->IsEnabledForThread(
+      metrics::CallStackProfileParams::RENDERER_PROCESS,
+      metrics::CallStackProfileParams::IO_THREAD));
+  EXPECT_FALSE(config()->IsEnabledForThread(
+      metrics::CallStackProfileParams::RENDERER_PROCESS,
+      metrics::CallStackProfileParams::COMPOSITOR_THREAD));
+  EXPECT_FALSE(config()->IsEnabledForThread(
+      metrics::CallStackProfileParams::RENDERER_PROCESS,
+      metrics::CallStackProfileParams::SERVICE_WORKER_THREAD));
+
+  EXPECT_FALSE(config()->IsEnabledForThread(
+      metrics::CallStackProfileParams::NETWORK_SERVICE_PROCESS,
+      metrics::CallStackProfileParams::IO_THREAD));
+#else
+  // Profiling should be enabled without restriction across all threads. Not all
+  // these combinations actually make sense or are implemented in the code, but
+  // iterating over all combinations is the simplest way to test.
+  for (int i = 0; i <= metrics::CallStackProfileParams::MAX_PROCESS; ++i) {
+    const auto process =
+        static_cast<metrics::CallStackProfileParams::Process>(i);
+    for (int j = 0; j <= metrics::CallStackProfileParams::MAX_THREAD; ++j) {
+      const auto thread =
+          static_cast<metrics::CallStackProfileParams::Thread>(j);
+      EXPECT_TRUE(config()->IsEnabledForThread(process, thread));
+    }
+  }
+#endif
+}

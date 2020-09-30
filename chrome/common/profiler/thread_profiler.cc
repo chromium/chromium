@@ -276,8 +276,10 @@ void ThreadProfiler::SetMainThreadTaskRunner(
 
 void ThreadProfiler::SetAuxUnwinderFactory(
     const base::RepeatingCallback<std::unique_ptr<base::Unwinder>()>& factory) {
-  if (!ThreadProfilerConfiguration::Get()->IsProfilerEnabledForCurrentProcess())
+  if (!ThreadProfilerConfiguration::Get()
+           ->IsProfilerEnabledForCurrentProcessAndThread(thread_)) {
     return;
+  }
 
   aux_unwinder_factory_ = factory;
   startup_profiler_->AddAuxUnwinder(aux_unwinder_factory_.Run());
@@ -293,8 +295,10 @@ void ThreadProfiler::StartOnChildThread(CallStackProfileParams::Thread thread) {
       base::SequenceLocalStorageSlot<std::unique_ptr<ThreadProfiler>>>
       child_thread_profiler_sequence_local_storage;
 
-  if (!ThreadProfilerConfiguration::Get()->IsProfilerEnabledForCurrentProcess())
+  if (!ThreadProfilerConfiguration::Get()
+           ->IsProfilerEnabledForCurrentProcessAndThread(thread)) {
     return;
+  }
 
   child_thread_profiler_sequence_local_storage->emplace(
       new ThreadProfiler(thread, base::ThreadTaskRunnerHandle::Get()));
@@ -346,8 +350,10 @@ ThreadProfiler::ThreadProfiler(
       owning_thread_task_runner_(owning_thread_task_runner),
       work_id_recorder_(std::make_unique<WorkIdRecorder>(
           base::WorkIdProvider::GetForCurrentThread())) {
-  if (!ThreadProfilerConfiguration::Get()->IsProfilerEnabledForCurrentProcess())
+  if (!ThreadProfilerConfiguration::Get()
+           ->IsProfilerEnabledForCurrentProcessAndThread(thread_)) {
     return;
+  }
 
   const base::StackSamplingProfiler::SamplingParams sampling_params =
       ThreadProfilerConfiguration::Get()->GetSamplingParams();
@@ -390,8 +396,10 @@ void ThreadProfiler::OnPeriodicCollectionCompleted(
 
 void ThreadProfiler::SetMainThreadTaskRunnerImpl(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
-  if (!ThreadProfilerConfiguration::Get()->IsProfilerEnabledForCurrentProcess())
+  if (!ThreadProfilerConfiguration::Get()
+           ->IsProfilerEnabledForCurrentProcessAndThread(thread_)) {
     return;
+  }
 
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 

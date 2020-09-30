@@ -23,6 +23,8 @@ struct CallStackProfileParams {
     PPAPI_PLUGIN_PROCESS,
     PPAPI_BROKER_PROCESS,
     NETWORK_SERVICE_PROCESS,
+
+    MAX_PROCESS = NETWORK_SERVICE_PROCESS,
   };
 
   // The thread from which the collection occurred.
@@ -39,6 +41,8 @@ struct CallStackProfileParams {
 
     // Service worker thread.
     SERVICE_WORKER_THREAD,
+
+    MAX_THREAD = SERVICE_WORKER_THREAD,
   };
 
   // The event that triggered the profile collection.

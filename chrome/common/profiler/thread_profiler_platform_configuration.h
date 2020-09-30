@@ -81,6 +81,11 @@ class ThreadProfilerPlatformConfiguration {
   virtual double GetChildProcessEnableFraction(
       metrics::CallStackProfileParams::Process process) const = 0;
 
+  // Returns whether the profiler is enabled for |thread| in |process|.
+  virtual bool IsEnabledForThread(
+      metrics::CallStackProfileParams::Process process,
+      metrics::CallStackProfileParams::Thread thread) const = 0;
+
  protected:
   // True if the profiler is to be run for the channel/chrome branding on the
   // platform. Does not need to check whether the StackSamplingProfiler is

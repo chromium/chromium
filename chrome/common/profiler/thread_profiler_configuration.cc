@@ -73,6 +73,12 @@ bool ThreadProfilerConfiguration::IsProfilerEnabledForCurrentProcess() const {
       switches::kStartStackProfiler);
 }
 
+bool ThreadProfilerConfiguration::IsProfilerEnabledForCurrentProcessAndThread(
+    metrics::CallStackProfileParams::Thread thread) const {
+  return IsProfilerEnabledForCurrentProcess() &&
+         platform_configuration_->IsEnabledForThread(current_process_, thread);
+}
+
 bool ThreadProfilerConfiguration::GetSyntheticFieldTrial(
     std::string* trial_name,
     std::string* group_name) const {
