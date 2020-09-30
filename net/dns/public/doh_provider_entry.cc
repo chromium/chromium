@@ -172,6 +172,22 @@ const DohProviderEntry::List& DohProviderEntry::GetList() {
           "https://www.quad9.net/home/privacy/" /* privacy_policy */,
           true /* display_globally */, {} /* display_countries */),
       new DohProviderEntry(
+          "Spectrum1", base::nullopt /* provider_id_for_histogram */,
+          {"209.18.47.61", "209.18.47.62", "2001:1998:0f00:0001::1",
+           "2001:1998:0f00:0002::1"},
+          {""} /* dns_over_tls_hostnames */,
+          "https://doh-01.spectrum.com/dns-query{?dns}", "" /* ui_name */,
+          "" /* privacy_policy */, false /* display_globally */,
+          {} /* display_countries */),
+      new DohProviderEntry(
+          "Spectrum2", base::nullopt /* provider_id_for_histogram */,
+          {"209.18.47.61", "209.18.47.62", "2001:1998:0f00:0001::1",
+           "2001:1998:0f00:0002::1"},
+          {""} /* dns_over_tls_hostnames */,
+          "https://doh-02.spectrum.com/dns-query{?dns}", "" /* ui_name */,
+          "" /* privacy_policy */, false /* display_globally */,
+          {} /* display_countries */),
+      new DohProviderEntry(
           "Switch", base::nullopt /* provider_id_for_histogram */,
           {"130.59.31.251", "130.59.31.248", "2001:620:0:ff::2",
            "2001:620:0:ff::3"},

@@ -5317,6 +5317,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="Quad9Cdn" label="Quad9 cdn service."/>
   <suffix name="Quad9Insecure" label="Quad9 insecure service."/>
   <suffix name="Quad9Secure" label="Quad9 secure service."/>
+  <suffix name="Spectrum1"
+      label="Charter Communications/Spectrum DoH endpoint1."/>
+  <suffix name="Spectrum2"
+      label="Charter Communications/Spectrum DoH endpoint2."/>
   <suffix name="Switch" label="SWITCH Public DNS."/>
   <affected-histogram name="Net.DNS.DnsTransaction.Insecure.FailureTime"/>
   <affected-histogram name="Net.DNS.DnsTransaction.Insecure.SuccessTime"/>
