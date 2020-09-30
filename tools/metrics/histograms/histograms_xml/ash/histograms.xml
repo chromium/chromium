@@ -1041,6 +1041,31 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Ash.ScreenshotController.ScreenshotsPerDay" units="int"
+    expires_after="2021-09-29">
+  <owner>xiyuan@chromium.org</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    Records the number of screenshots that have been taken via the
+    ScreenshotController every 24 hours. Note that counts are not persisted
+    across crashes, restarts, or sessions so this is only intended to give a
+    rough approximation.
+  </summary>
+</histogram>
+
+<histogram name="Ash.ScreenshotController.ScreenshotsPerWeek" units="int"
+    expires_after="2021-09-29">
+  <owner>xiyuan@chromium.org</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    Records the number of screenshots that have been taken via the
+    ScreenshotController every 7 days. Note that counts are not persisted across
+    crashes, restarts, or sessions so this is only intended to give a rough
+    approximation. This means that this metric will only be recorded in sessions
+    spanning at least 7 days.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Shelf.Menu.NumItemsEnabledUponSelection" units="Count"
     expires_after="2021-01-26">
   <owner>anasalazar@google.com</owner>

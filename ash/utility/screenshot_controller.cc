@@ -15,6 +15,7 @@
 #include "ash/screenshot_delegate.h"
 #include "ash/shell.h"
 #include "ash/wm/window_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/optional.h"
 #include "ui/aura/client/capture_client.h"
 #include "ui/aura/client/screen_position_client.h"
@@ -655,6 +656,20 @@ ScreenshotController::ScreenshotController(
   // Keep this here and don't move it to StartPartialScreenshotSession(), as it
   // needs to be pre-pended by MouseCursorEventFilter in Shell::Init().
   Shell::Get()->AddPreTargetHandler(this, ui::EventTarget::Priority::kSystem);
+
+  // Schedule recording of the number of screenshots taken per day.
+  num_screenshots_taken_in_last_day_scheduler_.Start(
+      FROM_HERE, base::TimeDelta::FromDays(1),
+      base::BindRepeating(
+          &ScreenshotController::RecordNumberOfScreenshotsTakenInLastDay,
+          weak_factory_.GetWeakPtr()));
+
+  // Schedule recording of the number of screenshots taken per week.
+  num_screenshots_taken_in_last_week_scheduler_.Start(
+      FROM_HERE, base::TimeDelta::FromDays(7),
+      base::BindRepeating(
+          &ScreenshotController::RecordNumberOfScreenshotsTakenInLastWeek,
+          weak_factory_.GetWeakPtr()));
 }
 
 ScreenshotController::~ScreenshotController() {
@@ -665,8 +680,11 @@ ScreenshotController::~ScreenshotController() {
 
 void ScreenshotController::TakeScreenshotForAllRootWindows() {
   DCHECK(screenshot_delegate_);
-  if (screenshot_delegate_->CanTakeScreenshot())
+  if (screenshot_delegate_->CanTakeScreenshot()) {
     screenshot_delegate_->HandleTakeScreenshotForAllRootWindows();
+    ++num_screenshots_taken_in_last_day_;
+    ++num_screenshots_taken_in_last_week_;
+  }
 }
 
 void ScreenshotController::StartWindowScreenshotSession() {
@@ -747,8 +765,11 @@ void ScreenshotController::CancelScreenshotSession() {
 }
 
 void ScreenshotController::CompleteWindowScreenshot() {
-  if (selected_)
+  if (selected_) {
     screenshot_delegate_->HandleTakeWindowScreenshot(selected_);
+    ++num_screenshots_taken_in_last_day_;
+    ++num_screenshots_taken_in_last_week_;
+  }
   CancelScreenshotSession();
 }
 
@@ -769,6 +790,8 @@ void ScreenshotController::CompletePartialScreenshot() {
   if (!region.IsEmpty()) {
     screenshot_delegate_->HandleTakePartialScreenshot(
         root_window_, gfx::IntersectRects(root_window_->bounds(), region));
+    ++num_screenshots_taken_in_last_day_;
+    ++num_screenshots_taken_in_last_week_;
   }
   CancelScreenshotSession();
 }
@@ -955,6 +978,18 @@ void ScreenshotController::OnDisplayMetricsChanged(
 
 void ScreenshotController::OnWindowDestroying(aura::Window* window) {
   SetSelectedWindow(nullptr);
+}
+
+void ScreenshotController::RecordNumberOfScreenshotsTakenInLastDay() {
+  base::UmaHistogramCounts100("Ash.ScreenshotController.ScreenshotsPerDay",
+                              num_screenshots_taken_in_last_day_);
+  num_screenshots_taken_in_last_day_ = 0;
+}
+
+void ScreenshotController::RecordNumberOfScreenshotsTakenInLastWeek() {
+  base::UmaHistogramCounts1000("Ash.ScreenshotController.ScreenshotsPerWeek",
+                               num_screenshots_taken_in_last_week_);
+  num_screenshots_taken_in_last_week_ = 0;
 }
 
 gfx::Point ScreenshotController::GetStartPositionForTest() const {
