@@ -58,6 +58,24 @@ class CallbackTest : public ::testing::Test {
   RepeatingCallback<void()> null_callback_;
 };
 
+TEST_F(CallbackTest, Types) {
+  static_assert(std::is_same<void, OnceClosure::ResultType>::value, "");
+  static_assert(std::is_same<void(), OnceClosure::RunType>::value, "");
+
+  using OnceCallbackT = OnceCallback<double(int, char)>;
+  static_assert(std::is_same<double, OnceCallbackT::ResultType>::value, "");
+  static_assert(std::is_same<double(int, char), OnceCallbackT::RunType>::value,
+                "");
+
+  static_assert(std::is_same<void, RepeatingClosure::ResultType>::value, "");
+  static_assert(std::is_same<void(), RepeatingClosure::RunType>::value, "");
+
+  using RepeatingCallbackT = RepeatingCallback<bool(float, short)>;
+  static_assert(std::is_same<bool, RepeatingCallbackT::ResultType>::value, "");
+  static_assert(
+      std::is_same<bool(float, short), RepeatingCallbackT::RunType>::value, "");
+}
+
 // Ensure we can create unbound callbacks. We need this to be able to store
 // them in class members that can be initialized later.
 TEST_F(CallbackTest, DefaultConstruction) {

@@ -57,6 +57,7 @@ namespace base {
 template <typename R, typename... Args>
 class OnceCallback<R(Args...)> : public internal::CallbackBase {
  public:
+  using ResultType = R;
   using RunType = R(Args...);
   using PolymorphicInvoke = R (*)(internal::BindStateBase*,
                                   internal::PassingType<Args>...);
@@ -103,6 +104,7 @@ class OnceCallback<R(Args...)> : public internal::CallbackBase {
 template <typename R, typename... Args>
 class RepeatingCallback<R(Args...)> : public internal::CallbackBaseCopyable {
  public:
+  using ResultType = R;
   using RunType = R(Args...);
   using PolymorphicInvoke = R (*)(internal::BindStateBase*,
                                   internal::PassingType<Args>...);
