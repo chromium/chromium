@@ -169,6 +169,16 @@ UseCounterPageLoadMetricsObserver::GetAllowedUkmFeatures() {
           WebFeature::kSchemelesslySameSitePostMessageSecureToInsecure,
           WebFeature::kSchemelesslySameSitePostMessageInsecureToSecure,
           WebFeature::kElementAttachInternalsBeforeConstructor,
+          WebFeature::kAddressSpaceLocalEmbeddedInPrivateSecureContext,
+          WebFeature::kAddressSpaceLocalEmbeddedInPrivateNonSecureContext,
+          WebFeature::kAddressSpaceLocalEmbeddedInPublicSecureContext,
+          WebFeature::kAddressSpaceLocalEmbeddedInPublicNonSecureContext,
+          WebFeature::kAddressSpaceLocalEmbeddedInUnknownSecureContext,
+          WebFeature::kAddressSpaceLocalEmbeddedInUnknownNonSecureContext,
+          WebFeature::kAddressSpacePrivateEmbeddedInPublicSecureContext,
+          WebFeature::kAddressSpacePrivateEmbeddedInPublicNonSecureContext,
+          WebFeature::kAddressSpacePrivateEmbeddedInUnknownSecureContext,
+          WebFeature::kAddressSpacePrivateEmbeddedInUnknownNonSecureContext,
       }));
   return *opt_in_features;
 }
