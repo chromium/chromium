@@ -187,6 +187,10 @@
          file="${root_gen_dir}/ui/webui/resources/cr_elements/md_select_css.m.js"
          use_base_dir="false"
          type="BINDATA" />
+  <include name="IDR_CR_ELEMENTS_MWB_SHARED_ICONS_JS"
+         file="${root_gen_dir}/ui/webui/resources/cr_elements/mwb_shared_icons.js"
+         use_base_dir="false"
+         type="BINDATA" />
   <include name="IDR_CR_ELEMENTS_MWB_SHARED_STYLE_JS"
          file="${root_gen_dir}/ui/webui/resources/cr_elements/mwb_shared_style.js"
          use_base_dir="false"

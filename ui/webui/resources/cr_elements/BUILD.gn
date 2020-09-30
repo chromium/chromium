@@ -253,6 +253,7 @@ js_library("find_shortcut_behavior.m") {
 
 html_to_js("web_components") {
   js_files = [
+    "mwb_shared_icons.js",
     "mwb_shared_style.js",
     "mwb_shared_vars.js",
   ]
