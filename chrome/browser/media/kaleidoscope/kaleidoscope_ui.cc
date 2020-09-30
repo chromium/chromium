@@ -10,7 +10,6 @@
 #include "base/memory/ref_counted_memory.h"
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/media/kaleidoscope/constants.h"
-#include "chrome/browser/media/kaleidoscope/grit/kaleidoscope_resources.h"
 #include "chrome/browser/media/kaleidoscope/kaleidoscope_data_provider_impl.h"
 #include "chrome/browser/media/kaleidoscope/kaleidoscope_metrics_recorder.h"
 #include "chrome/browser/media/kaleidoscope/kaleidoscope_switches.h"
@@ -23,6 +22,10 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
+
+#if BUILDFLAG(ENABLE_KALEIDOSCOPE)
+#include "chrome/browser/media/kaleidoscope/grit/kaleidoscope_resources.h"
+#endif  // BUILDFLAG(ENABLE_KALEIDOSCOPE)
 
 namespace {
 
@@ -261,13 +264,12 @@ content::WebUIDataSource* KaleidoscopeUI::CreateWebUIDataSource() {
   html_source->AddResourcePath(
       "chrome/browser/media/feeds/media_feeds_store.mojom-lite.js",
       IDR_MEDIA_FEEDS_STORE_MOJOM_LITE_JS);
+  html_source->AddResourcePath("module.js", IDR_KALEIDOSCOPE_NTP_MODULE_JS);
   html_source->AddResourcePath("content.js", IDR_KALEIDOSCOPE_CONTENT_JS);
   html_source->AddResourcePath("shared.css", IDR_KALEIDOSCOPE_SHARED_CSS);
 
   html_source->SetDefaultResource(IDR_KALEIDOSCOPE_HTML);
 #endif  // BUILDFLAG(ENABLE_KALEIDOSCOPE)
-
-  html_source->AddResourcePath("module.js", IDR_KALEIDOSCOPE_NTP_MODULE_JS);
 
   return html_source;
 }
