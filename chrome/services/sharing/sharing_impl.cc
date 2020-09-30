@@ -13,8 +13,11 @@
 
 namespace sharing {
 
-SharingImpl::SharingImpl(mojo::PendingReceiver<mojom::Sharing> receiver)
-    : receiver_(this, std::move(receiver)) {}
+SharingImpl::SharingImpl(
+    mojo::PendingReceiver<mojom::Sharing> receiver,
+    scoped_refptr<base::SequencedTaskRunner> io_task_runner)
+    : receiver_(this, std::move(receiver)),
+      io_task_runner_(std::move(io_task_runner)) {}
 
 SharingImpl::~SharingImpl() = default;
 
@@ -27,6 +30,7 @@ void SharingImpl::CreateNearbyConnections(
   mojo::PendingRemote<NearbyConnectionsMojom> remote;
   nearby_connections_ = std::make_unique<NearbyConnections>(
       remote.InitWithNewPipeAndPassReceiver(), std::move(dependencies),
+      io_task_runner_,
       base::BindOnce(&SharingImpl::NearbyConnectionsDisconnected,
                      weak_ptr_factory_.GetWeakPtr()));
   std::move(callback).Run(std::move(remote));

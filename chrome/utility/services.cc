@@ -231,7 +231,8 @@ auto RunImeService(
 }
 
 auto RunSharing(mojo::PendingReceiver<sharing::mojom::Sharing> receiver) {
-  return std::make_unique<sharing::SharingImpl>(std::move(receiver));
+  return std::make_unique<sharing::SharingImpl>(
+      std::move(receiver), content::UtilityThread::Get()->GetIOTaskRunner());
 }
 
 auto RunTtsService(

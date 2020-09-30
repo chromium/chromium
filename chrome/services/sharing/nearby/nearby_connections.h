@@ -11,8 +11,10 @@
 #include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
+#include "base/sequenced_task_runner.h"
 #include "base/single_thread_task_runner.h"
 #include "base/synchronization/lock.h"
 #include "base/task/post_task.h"
@@ -46,6 +48,7 @@ class NearbyConnections : public mojom::NearbyConnections {
   NearbyConnections(
       mojo::PendingReceiver<mojom::NearbyConnections> nearby_connections,
       mojom::NearbyConnectionsDependenciesPtr dependencies,
+      scoped_refptr<base::SequencedTaskRunner> io_task_runner,
       base::OnceClosure on_disconnect,
       std::unique_ptr<Core> core = std::make_unique<Core>());
 

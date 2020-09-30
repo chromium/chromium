@@ -11,6 +11,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequenced_task_runner.h"
 #include "chrome/services/sharing/public/mojom/nearby_connections.mojom-forward.h"
 #include "chrome/services/sharing/public/mojom/sharing.mojom.h"
 #include "chrome/services/sharing/public/mojom/webrtc.mojom-forward.h"
@@ -40,7 +41,8 @@ class SharingImpl : public mojom::Sharing {
   using NearbyConnectionsDependenciesPtr =
       location::nearby::connections::mojom::NearbyConnectionsDependenciesPtr;
 
-  explicit SharingImpl(mojo::PendingReceiver<mojom::Sharing> receiver);
+  SharingImpl(mojo::PendingReceiver<mojom::Sharing> receiver,
+              scoped_refptr<base::SequencedTaskRunner> io_task_runner);
   SharingImpl(const SharingImpl&) = delete;
   SharingImpl& operator=(const SharingImpl&) = delete;
   ~SharingImpl() override;
@@ -56,6 +58,7 @@ class SharingImpl : public mojom::Sharing {
   void NearbyConnectionsDisconnected();
 
   mojo::Receiver<mojom::Sharing> receiver_;
+  const scoped_refptr<base::SequencedTaskRunner> io_task_runner_;
 
   std::unique_ptr<NearbyConnections> nearby_connections_;
 

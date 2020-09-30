@@ -88,6 +88,7 @@ NearbyConnections& NearbyConnections::GetInstance() {
 NearbyConnections::NearbyConnections(
     mojo::PendingReceiver<mojom::NearbyConnections> nearby_connections,
     mojom::NearbyConnectionsDependenciesPtr dependencies,
+    scoped_refptr<base::SequencedTaskRunner> io_task_runner,
     base::OnceClosure on_disconnect,
     std::unique_ptr<Core> core)
     : nearby_connections_(this, std::move(nearby_connections)),
@@ -99,7 +100,7 @@ NearbyConnections::NearbyConnections(
 
   if (dependencies->bluetooth_adapter) {
     bluetooth_adapter_.Bind(std::move(dependencies->bluetooth_adapter),
-                            /*bind_task_runner=*/nullptr);
+                            io_task_runner);
     bluetooth_adapter_.set_disconnect_handler(
         base::BindOnce(&NearbyConnections::OnDisconnect,
                        weak_ptr_factory_.GetWeakPtr()),
@@ -108,7 +109,7 @@ NearbyConnections::NearbyConnections(
 
   socket_manager_.Bind(
       std::move(dependencies->webrtc_dependencies->socket_manager),
-      /*bind_task_runner=*/nullptr);
+      io_task_runner);
   socket_manager_.set_disconnect_handler(
       base::BindOnce(&NearbyConnections::OnDisconnect,
                      weak_ptr_factory_.GetWeakPtr()),
@@ -116,7 +117,7 @@ NearbyConnections::NearbyConnections(
 
   mdns_responder_.Bind(
       std::move(dependencies->webrtc_dependencies->mdns_responder),
-      /*bind_task_runner=*/nullptr);
+      io_task_runner);
   mdns_responder_.set_disconnect_handler(
       base::BindOnce(&NearbyConnections::OnDisconnect,
                      weak_ptr_factory_.GetWeakPtr()),
@@ -124,15 +125,14 @@ NearbyConnections::NearbyConnections(
 
   ice_config_fetcher_.Bind(
       std::move(dependencies->webrtc_dependencies->ice_config_fetcher),
-      /*bind_task_runner=*/nullptr);
+      io_task_runner);
   ice_config_fetcher_.set_disconnect_handler(
       base::BindOnce(&NearbyConnections::OnDisconnect,
                      weak_ptr_factory_.GetWeakPtr()),
       base::SequencedTaskRunnerHandle::Get());
 
   webrtc_signaling_messenger_.Bind(
-      std::move(dependencies->webrtc_dependencies->messenger),
-      /*bind_task_runner=*/nullptr);
+      std::move(dependencies->webrtc_dependencies->messenger), io_task_runner);
   webrtc_signaling_messenger_.set_disconnect_handler(
       base::BindOnce(&NearbyConnections::OnDisconnect,
                      weak_ptr_factory_.GetWeakPtr()),

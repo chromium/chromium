@@ -27,7 +27,8 @@ class SharingImplTest : public testing::Test {
 
   SharingImplTest() {
     service_ =
-        std::make_unique<SharingImpl>(remote_.BindNewPipeAndPassReceiver());
+        std::make_unique<SharingImpl>(remote_.BindNewPipeAndPassReceiver(),
+                                      /*io_task_runner=*/nullptr);
   }
 
   ~SharingImplTest() override {

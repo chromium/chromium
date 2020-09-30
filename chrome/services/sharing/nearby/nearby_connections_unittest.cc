@@ -191,6 +191,7 @@ class NearbyConnectionsTest : public testing::Test {
     service_controller_ptr_ = service_controller_.get();
     nearby_connections_ = std::make_unique<NearbyConnections>(
         remote_.BindNewPipeAndPassReceiver(), std::move(dependencies),
+        /*io_task_runner=*/nullptr,
         base::BindOnce(&NearbyConnectionsTest::OnDisconnect,
                        base::Unretained(this)),
         std::make_unique<Core>(
