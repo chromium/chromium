@@ -84,6 +84,8 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.gesturenav.NavigationSheet;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.incognito.IncognitoNotificationManager;
+import org.chromium.chrome.browser.incognito.IncognitoNotificationPresenceController;
+import org.chromium.chrome.browser.incognito.IncognitoProfileDestroyer;
 import org.chromium.chrome.browser.incognito.IncognitoTabLauncher;
 import org.chromium.chrome.browser.incognito.IncognitoTabSnapshotController;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
@@ -1442,6 +1444,10 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     @Override
     public void performPostInflationStartup() {
         super.performPostInflationStartup();
+
+        TabModelSelector tabModelSelector = getTabModelSelector();
+        IncognitoProfileDestroyer.observeTabModelSelector(tabModelSelector);
+        IncognitoNotificationPresenceController.observeTabModelSelector(tabModelSelector);
 
         // Critical path for startup. Create the minimum objects needed
         // to allow a blank screen draw (without depending on any native code)

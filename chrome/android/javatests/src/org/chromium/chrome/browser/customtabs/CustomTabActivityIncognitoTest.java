@@ -11,6 +11,8 @@ import static org.junit.Assert.assertTrue;
 import static org.chromium.chrome.browser.customtabs.CustomTabsTestUtils.addActionButtonToIntent;
 import static org.chromium.chrome.browser.customtabs.CustomTabsTestUtils.createTestBitmap;
 
+import android.annotation.SuppressLint;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -37,19 +39,17 @@ import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils.OnFinishedForTest;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.incognito.IncognitoDataTestUtils;
-import org.chromium.chrome.browser.incognito.IncognitoNotificationService;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.styles.ChromeColors;
-import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServerRule;
 
@@ -194,16 +194,21 @@ public class CustomTabActivityIncognitoTest {
     @Test
     @MediumTest
     @Features.EnableFeatures({ChromeFeatureList.CCT_INCOGNITO})
-    @DisabledTest
-    // TODO(crbug.com/1023759) : The test is flaky on marshmallow.
-    // Need to investigate.
-    public void incognitoNotificationClosesIncognitoCustomTab() throws Exception {
+    @SuppressLint("NewApi")
+    public void closeAllIncognitoNotificationIsNotDisplayed() throws Exception {
+        // It may happen that some previous incognito notification from tabbed activity may be
+        // already be lying around. So, we test the delta instead to be 0.
+        Context context = ContextUtils.getApplicationContext();
+        NotificationManager nm =
+                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        int startCount = nm.getActiveNotifications().length;
+
+        // Launch incognito CCT
         Intent intent = createMinimalIncognitoCustomTabIntent();
         CustomTabActivity activity = launchIncognitoCustomTab(intent);
-        IncognitoNotificationService.getRemoveAllIncognitoTabsIntent(activity)
-                .getPendingIntent()
-                .send();
-        CriteriaHelper.pollUiThread(activity::isFinishing);
+
+        int endCount = nm.getActiveNotifications().length;
+        assertEquals(0, endCount - startCount);
     }
 
     @Test
