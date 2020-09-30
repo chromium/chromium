@@ -56,6 +56,8 @@ class TabSearchBubbleView : public views::BubbleDialogDelegateView,
 
   void OnWebViewSizeChanged();
 
+  views::WebView* web_view_for_testing() { return web_view_; }
+
  private:
   views::WebView* web_view_;
 
