@@ -54,6 +54,11 @@ const char kAccountsPrefTransferSAMLCookies[] =
 const char kAccountsPrefLoginScreenDomainAutoComplete[] =
     "cros.accounts.login_screen_domain_auto_complete";
 
+// A boolean pref indicating whether all Family Link accounts are allowed on the
+// device additionally to the accounts listed in |kAccountsPrefUsers| pref.
+const char kAccountsPrefFamilyLinkAccountsAllowed[] =
+    "cros.accounts.family_link_allowed";
+
 // All cros.signed.* settings are stored in SignedSettings.
 const char kSignedDataRoamingEnabled[] = "cros.signed.data_roaming_enabled";
 

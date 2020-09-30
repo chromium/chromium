@@ -57,6 +57,8 @@ COMPONENT_EXPORT(CHROMEOS_SETTINGS)
 extern const char kAccountsPrefTransferSAMLCookies[];
 COMPONENT_EXPORT(CHROMEOS_SETTINGS)
 extern const char kAccountsPrefLoginScreenDomainAutoComplete[];
+COMPONENT_EXPORT(CHROMEOS_SETTINGS)
+extern const char kAccountsPrefFamilyLinkAccountsAllowed[];
 
 COMPONENT_EXPORT(CHROMEOS_SETTINGS)
 extern const char kSignedDataRoamingEnabled[];

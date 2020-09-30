@@ -247,6 +247,17 @@ void DecodeLoginPolicies(const em::ChromeDeviceSettingsProto& policy,
                           policies);
   }
 
+  if (policy.has_family_link_accounts_allowed()) {
+    const em::DeviceFamilyLinkAccountsAllowedProto& container(
+        policy.family_link_accounts_allowed());
+    if (container.has_family_link_accounts_allowed()) {
+      policies->Set(
+          key::kDeviceFamilyLinkAccountsAllowed, POLICY_LEVEL_MANDATORY,
+          POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
+          base::Value(container.family_link_accounts_allowed()), nullptr);
+    }
+  }
+
   if (policy.has_ephemeral_users_enabled()) {
     const em::EphemeralUsersEnabledProto& container(
         policy.ephemeral_users_enabled());

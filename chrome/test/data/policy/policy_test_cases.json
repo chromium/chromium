@@ -5530,6 +5530,8 @@
 
   "DeviceShowUserNamesOnSignin": {},
 
+  "DeviceFamilyLinkAccountsAllowed": {},
+
   "DeviceDataRoamingEnabled": {},
 
   "DeviceMetricsReportingEnabled": {

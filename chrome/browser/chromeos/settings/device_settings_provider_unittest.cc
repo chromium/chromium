@@ -414,6 +414,13 @@ class DeviceSettingsProviderTest : public DeviceSettingsTestBase {
     BuildAndInstallDevicePolicy();
   }
 
+  void SetDeviceFamilyLinkAccountsAllowed(bool allow) {
+    em::DeviceFamilyLinkAccountsAllowedProto* proto =
+        device_policy_->payload().mutable_family_link_accounts_allowed();
+    proto->set_family_link_accounts_allowed(allow);
+    BuildAndInstallDevicePolicy();
+  }
+
   void VerifyDeviceShowLowDiskSpaceNotification(bool expected) {
     const base::Value expected_value(expected);
     EXPECT_EQ(expected_value,
@@ -1168,6 +1175,19 @@ TEST_F(DeviceSettingsProviderTestEnterprise,
 
   SetDeviceShowLowDiskSpaceNotification(false);
   VerifyDeviceShowLowDiskSpaceNotification(false);
+}
+
+TEST_F(DeviceSettingsProviderTest, DeviceFamilyLinkAccountsAllowed) {
+  base::Value default_value(false);
+  VerifyPolicyValue(kAccountsPrefFamilyLinkAccountsAllowed, &default_value);
+
+  SetDeviceFamilyLinkAccountsAllowed(true);
+  EXPECT_EQ(base::Value(true),
+            *provider_->Get(kAccountsPrefFamilyLinkAccountsAllowed));
+
+  SetDeviceFamilyLinkAccountsAllowed(false);
+  EXPECT_EQ(base::Value(false),
+            *provider_->Get(kAccountsPrefFamilyLinkAccountsAllowed));
 }
 
 }  // namespace chromeos

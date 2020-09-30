@@ -1717,6 +1717,12 @@ message DeviceShowLowDiskSpaceNotificationProto {
   optional bool device_show_low_disk_space_notification = 1;
 }
 
+// Setting that controls whether all Family Link accounts are allowed on the
+// device additionally to the accounts listed in UserAllowlistProto.
+message DeviceFamilyLinkAccountsAllowedProto {
+  optional bool family_link_accounts_allowed = 1 [default = false];
+}
+
 message ChromeDeviceSettingsProto {
   reserved 61, 90;
   optional DevicePolicyRefreshRateProto device_policy_refresh_rate = 1;
@@ -1860,4 +1866,6 @@ message ChromeDeviceSettingsProto {
       device_show_low_disk_space_notification = 111;
   optional UserAllowlistProto user_allowlist = 112;
   optional UsbDetachableAllowlistProto usb_detachable_allowlist = 113;
+  optional DeviceFamilyLinkAccountsAllowedProto family_link_accounts_allowed =
+      114;
 }

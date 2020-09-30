@@ -56,6 +56,7 @@ namespace {
 const char* const kKnownSettings[] = {
     kAccountsPrefAllowGuest,
     kAccountsPrefAllowNewUser,
+    kAccountsPrefFamilyLinkAccountsAllowed,
     kAccountsPrefDeviceLocalAccountAutoLoginBailoutEnabled,
     kAccountsPrefDeviceLocalAccountAutoLoginDelay,
     kAccountsPrefDeviceLocalAccountAutoLoginId,
@@ -194,6 +195,7 @@ void DecodeLoginPolicies(const em::ChromeDeviceSettingsProto& policy,
   //   kAccountsPrefSupervisedUsersEnabled has a default value of false
   //     for enterprise devices and true for consumer devices.
   //   kAccountsPrefTransferSAMLCookies has a default value of false.
+  //   kAccountsPrefFamilyLinkAccountsAllowed has a default value of false.
   if (policy.has_allow_new_users() &&
       policy.allow_new_users().has_allow_new_users()) {
     if (policy.allow_new_users().allow_new_users()) {
@@ -212,6 +214,17 @@ void DecodeLoginPolicies(const em::ChromeDeviceSettingsProto& policy,
         policy.user_whitelist().user_whitelist_size() == 0 &&
             policy.user_allowlist().user_allowlist_size() == 0);
   }
+
+  // Value of DeviceFamilyLinkAccountsAllowed policy does not affect
+  // |kAccountsPrefAllowNewUser| setting. Family Link accounts will be only
+  // allowed if both |kAccountsPrefAllowNewUser| and
+  // |kAccountsPrefFamilyLinkAccountsAllowed| are true.
+  new_values_cache->SetBoolean(
+      kAccountsPrefFamilyLinkAccountsAllowed,
+      policy.has_family_link_accounts_allowed() &&
+          policy.family_link_accounts_allowed()
+              .has_family_link_accounts_allowed() &&
+          policy.family_link_accounts_allowed().family_link_accounts_allowed());
 
   new_values_cache->SetBoolean(
       kRebootOnShutdown,
