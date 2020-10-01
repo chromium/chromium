@@ -11,12 +11,12 @@
 
 #include "ash/app_list/views/search_result_actions_view_delegate.h"
 #include "ash/app_list/views/search_result_view.h"
+#include "ash/public/cpp/app_list/app_list_color_provider.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "base/numerics/ranges.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/canvas.h"
-#include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/views/animation/flood_fill_ink_drop_ripple.h"
@@ -34,8 +34,6 @@ namespace {
 // Image buttons.
 constexpr int kImageButtonSizeDip = 40;
 constexpr int kActionButtonBetweenSpacing = 8;
-// Button hover color, Google Grey 8%.
-constexpr SkColor kButtonHoverColor = SkColorSetA(gfx::kGoogleGrey900, 0x14);
 
 }  // namespace
 
@@ -128,8 +126,8 @@ SearchResultImageButton::CreateInkDropRipple() const {
   const int ripple_radius = GetInkDropRadius();
   gfx::Rect bounds(center.x() - ripple_radius, center.y() - ripple_radius,
                    2 * ripple_radius, 2 * ripple_radius);
-  constexpr SkColor ripple_color = SkColorSetA(gfx::kGoogleGrey900, 0x17);
-
+  SkColor ripple_color =
+      AppListColorProvider::Get()->GetSearchResultViewInkDropColor();
   return std::make_unique<views::FloodFillInkDropRipple>(
       size(), GetLocalBounds().InsetsFrom(bounds),
       GetInkDropCenterBasedOnLastEvent(), ripple_color, 1.0f);
@@ -137,9 +135,8 @@ SearchResultImageButton::CreateInkDropRipple() const {
 
 std::unique_ptr<views::InkDropHighlight>
 SearchResultImageButton::CreateInkDropHighlight() const {
-  // TODO(crbug.com/1051167): Grab ink drop related colors and opacities from a
-  // theme.
-  constexpr SkColor ripple_color = SkColorSetA(gfx::kGoogleGrey900, 0x12);
+  SkColor ripple_color =
+      AppListColorProvider::Get()->GetSearchResultViewHighlightColor();
   auto highlight = std::make_unique<views::InkDropHighlight>(gfx::SizeF(size()),
                                                              ripple_color);
   highlight->set_visible_opacity(1.f);
@@ -157,7 +154,8 @@ void SearchResultImageButton::OnPaintBackground(gfx::Canvas* canvas) {
   if (HasFocus() || parent_->GetSelectedAction() == tag()) {
     cc::PaintFlags circle_flags;
     circle_flags.setAntiAlias(true);
-    circle_flags.setColor(kButtonHoverColor);
+    circle_flags.setColor(
+        AppListColorProvider::Get()->GetSearchResultViewHighlightColor());
     circle_flags.setStyle(cc::PaintFlags::kFill_Style);
     canvas->DrawCircle(GetLocalBounds().CenterPoint(), GetInkDropRadius(),
                        circle_flags);

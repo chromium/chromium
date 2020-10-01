@@ -135,6 +135,22 @@ SkColor AppListColorProviderImpl::GetSeparatorColor() const {
       AshColorProvider::ContentLayerType::kSeparatorColor);
 }
 
+SkColor AppListColorProviderImpl::GetSearchResultViewInkDropColor() const {
+  AshColorProvider::RippleAttributes ripple_attributes =
+      ash_color_provider_->GetRippleAttributes(
+          GetSearchBoxCardBackgroundColor());
+  return SkColorSetA(ripple_attributes.base_color,
+                     ripple_attributes.inkdrop_opacity * 255);
+}
+
+SkColor AppListColorProviderImpl::GetSearchResultViewHighlightColor() const {
+  AshColorProvider::RippleAttributes ripple_attributes =
+      ash_color_provider_->GetRippleAttributes(
+          GetSearchBoxCardBackgroundColor());
+  return SkColorSetA(ripple_attributes.base_color,
+                     ripple_attributes.highlight_opacity * 255);
+}
+
 float AppListColorProviderImpl::GetFolderBackgrounBlurSigma() const {
   return static_cast<float>(AshColorProvider::LayerBlurSigma::kBlurDefault);
 }

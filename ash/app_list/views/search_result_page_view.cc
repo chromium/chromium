@@ -69,8 +69,6 @@ constexpr int kSearchBoxBottomSpacing = 1;
 // Minimum spacing between shelf and bottom of search box.
 constexpr int kSearchResultPageMinimumBottomMargin = 24;
 
-constexpr SkColor kSeparatorColor = SkColorSetA(gfx::kGoogleGrey900, 0x24);
-
 // The shadow elevation value for the shadow of the expanded search box.
 constexpr int kSearchBoxSearchResultShadowElevation = 12;
 
@@ -134,7 +132,7 @@ class SearchResultPageBackground : public views::Background {
     // Draw a separator between SearchBoxView and SearchResultPageView.
     bounds.set_y(kSearchBoxHeight + kSearchBoxBottomSpacing);
     bounds.set_height(kSeparatorThickness);
-    canvas->FillRect(bounds, kSeparatorColor);
+    canvas->FillRect(bounds, AppListColorProvider::Get()->GetSeparatorColor());
   }
 };
 
@@ -159,7 +157,7 @@ class SearchResultPageView::HorizontalSeparator : public views::View {
 
   void OnPaint(gfx::Canvas* canvas) override {
     gfx::Rect rect = GetContentsBounds();
-    canvas->FillRect(rect, kSeparatorColor);
+    canvas->FillRect(rect, AppListColorProvider::Get()->GetSeparatorColor());
     View::OnPaint(canvas);
   }
 

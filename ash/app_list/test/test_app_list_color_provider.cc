@@ -100,6 +100,14 @@ SkColor TestAppListColorProvider::GetSeparatorColor() const {
   return SkColorSetA(SK_ColorWHITE, 0x24);
 }
 
+SkColor TestAppListColorProvider::GetSearchResultViewHighlightColor() const {
+  return SkColorSetA(SK_ColorWHITE, 0x12);
+}
+
+SkColor TestAppListColorProvider::GetSearchResultViewInkDropColor() const {
+  return SkColorSetA(SK_ColorWHITE, 0x17);
+}
+
 float TestAppListColorProvider::GetFolderBackgrounBlurSigma() const {
   return 30.0f;
 }

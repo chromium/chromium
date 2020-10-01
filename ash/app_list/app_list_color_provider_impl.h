@@ -38,6 +38,8 @@ class AppListColorProviderImpl : public AppListColorProvider {
   SkColor GetFolderNameBackgroundColor(bool active) const override;
   SkColor GetContentsBackgroundColor() const override;
   SkColor GetSeparatorColor() const override;
+  SkColor GetSearchResultViewHighlightColor() const override;
+  SkColor GetSearchResultViewInkDropColor() const override;
   float GetFolderBackgrounBlurSigma() const override;
 
  private:

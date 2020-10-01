@@ -57,8 +57,6 @@ constexpr int kSearchResultTileTitleTextSizeDelta = 1;
 
 constexpr int kIconSelectedSize = 56;
 constexpr int kIconSelectedCornerRadius = 4;
-// Icon selected color, Google Grey 900 8%.
-constexpr int kIconSelectedColor = SkColorSetA(gfx::kGoogleGrey900, 0x14);
 
 // Offset for centering star rating when there is no price.
 constexpr int kSearchRatingCenteringOffset =
@@ -308,7 +306,8 @@ void SearchResultTileItemView::PaintButtonContents(gfx::Canvas* canvas) {
   flags.setStyle(cc::PaintFlags::kFill_Style);
   if (IsSuggestedAppTileShownInAppPage()) {
     rect.ClampToCenteredSize(AppListConfig::instance().grid_focus_size());
-    flags.setColor(AppListConfig::instance().grid_selected_color());
+    flags.setColor(
+        AppListColorProvider::Get()->GetSearchResultViewInkDropColor());
     canvas->DrawRoundRect(gfx::RectF(rect),
                           AppListConfig::instance().grid_focus_corner_radius(),
                           flags);
@@ -316,7 +315,8 @@ void SearchResultTileItemView::PaintButtonContents(gfx::Canvas* canvas) {
     const int kLeftRightPadding = (rect.width() - kIconSelectedSize) / 2;
     rect.Inset(kLeftRightPadding, 0);
     rect.set_height(kIconSelectedSize);
-    flags.setColor(kIconSelectedColor);
+    flags.setColor(
+        AppListColorProvider::Get()->GetSearchResultViewInkDropColor());
     canvas->DrawRoundRect(gfx::RectF(rect), kIconSelectedCornerRadius, flags);
   }
 }

@@ -47,8 +47,6 @@ constexpr int kDetailsLineHeight = 16;
 
 // URL color.
 constexpr SkColor kUrlColor = gfx::kGoogleBlue600;
-// Row selected color, Google Grey 8%.
-constexpr SkColor kRowHighlightedColor = SkColorSetA(gfx::kGoogleGrey900, 0x14);
 // Search result border color.
 constexpr SkColor kResultBorderColor = SkColorSetARGB(0xFF, 0xE5, 0xE5, 0xE5);
 
@@ -272,7 +270,9 @@ void SearchResultView::PaintButtonContents(gfx::Canvas* canvas) {
   // Possibly call FillRect a second time (these colours are partially
   // transparent, so the previous FillRect is not redundant).
   if (selected() && !actions_view()->HasSelectedAction()) {
-    canvas->FillRect(content_rect, kRowHighlightedColor);
+    canvas->FillRect(
+        content_rect,
+        AppListColorProvider::Get()->GetSearchResultViewHighlightColor());
   }
 
   gfx::Rect border_bottom = gfx::SubtractRects(rect, content_rect);
