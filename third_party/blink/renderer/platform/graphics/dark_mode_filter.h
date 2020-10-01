@@ -30,8 +30,6 @@ class PLATFORM_EXPORT DarkModeFilter {
   DarkModeFilter();
   ~DarkModeFilter();
 
-  bool IsDarkModeActive() const;
-
   const DarkModeSettings& settings() const { return settings_; }
   void UpdateSettings(const DarkModeSettings& new_settings);
 

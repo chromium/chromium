@@ -152,44 +152,34 @@ class GraphicsContextDarkModeTest : public testing::Test {
     bitmap_.eraseColor(0);
     canvas_ = std::make_unique<SkiaPaintCanvas>(bitmap_);
     paint_controller_ = std::make_unique<PaintController>();
-    context_ = std::make_unique<GraphicsContext>(*paint_controller_);
-    context_->BeginRecording(FloatRect(0, 0, 4, 1));
   }
 
-  void DrawColorsToContext() {
-    context_->FillRect(FloatRect(0, 0, 1, 1), Color(SK_ColorBLACK));
-    context_->FillRect(FloatRect(1, 0, 1, 1), Color(SK_ColorWHITE));
-    context_->FillRect(FloatRect(2, 0, 1, 1), Color(SK_ColorRED));
-    context_->FillRect(FloatRect(3, 0, 1, 1), Color(SK_ColorGRAY));
+  void DrawColorsToContext(bool is_dark_mode_on,
+                           const DarkModeSettings& settings) {
+    GraphicsContext context(*paint_controller_);
+    context.SetDarkModeEnabled(is_dark_mode_on);
+    if (is_dark_mode_on)
+      context.UpdateDarkModeSettingsForTest(settings);
+    context.BeginRecording(FloatRect(0, 0, 4, 1));
+    context.FillRect(FloatRect(0, 0, 1, 1), Color(SK_ColorBLACK));
+    context.FillRect(FloatRect(1, 0, 1, 1), Color(SK_ColorWHITE));
+    context.FillRect(FloatRect(2, 0, 1, 1), Color(SK_ColorRED));
+    context.FillRect(FloatRect(3, 0, 1, 1), Color(SK_ColorGRAY));
     // Capture the result in the bitmap.
-    canvas_->drawPicture(context_->EndRecording());
+    canvas_->drawPicture(context.EndRecording());
   }
 
   SkBitmap bitmap_;
   std::unique_ptr<SkiaPaintCanvas> canvas_;
   std::unique_ptr<PaintController> paint_controller_;
-  std::unique_ptr<GraphicsContext> context_;
 };
 
-// This is just a baseline test, compare against the other variants
-// of the test below, where dark mode is enabled.
-TEST_F(GraphicsContextDarkModeTest, NoDarkMode) {
-  DrawColorsToContext();
-
-  EXPECT_EQ(SK_ColorBLACK, bitmap_.getColor(0, 0));
-  EXPECT_EQ(SK_ColorWHITE, bitmap_.getColor(1, 0));
-  EXPECT_EQ(SK_ColorRED, bitmap_.getColor(2, 0));
-  EXPECT_EQ(SK_ColorGRAY, bitmap_.getColor(3, 0));
-}
-
+// This is a baseline test where dark mode is turned off. Compare other variants
+// of the test where dark mode is enabled.
 TEST_F(GraphicsContextDarkModeTest, DarkModeOff) {
   DarkModeSettings settings;
-  settings.mode = DarkModeInversionAlgorithm::kOff;
-  settings.grayscale = false;
-  settings.contrast = 0;
-  context_->SetDarkMode(settings);
 
-  DrawColorsToContext();
+  DrawColorsToContext(false, settings);
 
   EXPECT_EQ(SK_ColorBLACK, bitmap_.getColor(0, 0));
   EXPECT_EQ(SK_ColorWHITE, bitmap_.getColor(1, 0));
@@ -204,9 +194,8 @@ TEST_F(GraphicsContextDarkModeTest, SimpleInvertForTesting) {
   settings.mode = DarkModeInversionAlgorithm::kSimpleInvertForTesting;
   settings.grayscale = false;
   settings.contrast = 0;
-  context_->SetDarkMode(settings);
 
-  DrawColorsToContext();
+  DrawColorsToContext(true, settings);
 
   EXPECT_EQ(SK_ColorWHITE, bitmap_.getColor(0, 0));
   EXPECT_EQ(SK_ColorBLACK, bitmap_.getColor(1, 0));
@@ -220,9 +209,8 @@ TEST_F(GraphicsContextDarkModeTest, InvertBrightness) {
   settings.mode = DarkModeInversionAlgorithm::kInvertBrightness;
   settings.grayscale = false;
   settings.contrast = 0;
-  context_->SetDarkMode(settings);
 
-  DrawColorsToContext();
+  DrawColorsToContext(true, settings);
 
   EXPECT_EQ(SK_ColorWHITE, bitmap_.getColor(0, 0));
   EXPECT_EQ(SK_ColorBLACK, bitmap_.getColor(1, 0));
@@ -236,9 +224,8 @@ TEST_F(GraphicsContextDarkModeTest, InvertLightness) {
   settings.mode = DarkModeInversionAlgorithm::kInvertLightness;
   settings.grayscale = false;
   settings.contrast = 0;
-  context_->SetDarkMode(settings);
 
-  DrawColorsToContext();
+  DrawColorsToContext(true, settings);
 
   EXPECT_EQ(SK_ColorWHITE, bitmap_.getColor(0, 0));
   EXPECT_EQ(SK_ColorBLACK, bitmap_.getColor(1, 0));
@@ -252,9 +239,8 @@ TEST_F(GraphicsContextDarkModeTest, InvertLightnessPlusGrayscale) {
   settings.mode = DarkModeInversionAlgorithm::kInvertLightness;
   settings.grayscale = true;
   settings.contrast = 0;
-  context_->SetDarkMode(settings);
 
-  DrawColorsToContext();
+  DrawColorsToContext(true, settings);
 
   EXPECT_EQ(SK_ColorWHITE, bitmap_.getColor(0, 0));
   EXPECT_EQ(SK_ColorBLACK, bitmap_.getColor(1, 0));
@@ -267,9 +253,8 @@ TEST_F(GraphicsContextDarkModeTest, InvertLightnessPlusContrast) {
   settings.mode = DarkModeInversionAlgorithm::kInvertLightness;
   settings.grayscale = false;
   settings.contrast = 0.2;
-  context_->SetDarkMode(settings);
 
-  DrawColorsToContext();
+  DrawColorsToContext(true, settings);
 
   EXPECT_EQ(SK_ColorWHITE, bitmap_.getColor(0, 0));
   EXPECT_EQ(SK_ColorBLACK, bitmap_.getColor(1, 0));

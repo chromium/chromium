@@ -32,7 +32,6 @@
 #include "base/memory/ptr_util.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/renderer/platform/graphics/dark_mode_settings.h"
 
 namespace blink {
 

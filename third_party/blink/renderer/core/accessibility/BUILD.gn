@@ -6,8 +6,6 @@ import("//third_party/blink/renderer/core/core.gni")
 
 blink_core_sources("accessibility") {
   sources = [
-    "apply_dark_mode.cc",
-    "apply_dark_mode.h",
     "ax_context.cc",
     "ax_context.h",
     "ax_object_cache.cc",

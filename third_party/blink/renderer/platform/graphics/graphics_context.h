@@ -85,9 +85,12 @@ class PLATFORM_EXPORT GraphicsContext {
     return paint_controller_;
   }
 
-  const DarkModeSettings& dark_mode_settings() const {
-    return dark_mode_filter_.settings();
-  }
+  bool IsDarkModeEnabled() const { return is_dark_mode_enabled_; }
+  void SetDarkModeEnabled(bool enabled) { is_dark_mode_enabled_ = enabled; }
+
+  DarkModeFilter* GetDarkModeFilter() { return dark_mode_filter_.get(); }
+
+  void UpdateDarkModeSettingsForTest(const DarkModeSettings&);
 
   // ---------- State management methods -----------------
   void Save();
@@ -96,8 +99,6 @@ class PLATFORM_EXPORT GraphicsContext {
 #if DCHECK_IS_ON()
   unsigned SaveCount() const;
 #endif
-
-  void SetDarkMode(const DarkModeSettings&);
 
   float StrokeThickness() const {
     return ImmutableState()->GetStrokeData().Thickness();
@@ -545,12 +546,12 @@ class PLATFORM_EXPORT GraphicsContext {
 
   float device_scale_factor_;
 
-  // TODO(gilmanmh): Investigate making this base::Optional<DarkModeFilter>
-  DarkModeFilter dark_mode_filter_;
+  std::unique_ptr<DarkModeFilter> dark_mode_filter_;
 
   unsigned printing_ : 1;
   unsigned is_painting_preview_ : 1;
   unsigned in_drawing_recorder_ : 1;
+  unsigned is_dark_mode_enabled_ : 1;
 
   // The current node ID, which is used for marked content in a tagged PDF.
   DOMNodeId dom_node_id_ = kInvalidDOMNodeId;

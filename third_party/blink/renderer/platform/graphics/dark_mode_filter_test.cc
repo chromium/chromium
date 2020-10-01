@@ -13,25 +13,6 @@
 namespace blink {
 namespace {
 
-TEST(DarkModeFilterTest, DoNotApplyFilterWhenDarkModeIsOff) {
-  DarkModeFilter filter;
-
-  DarkModeSettings settings;
-  settings.mode = DarkModeInversionAlgorithm::kOff;
-  filter.UpdateSettings(settings);
-
-  EXPECT_EQ(SK_ColorWHITE,
-            filter.InvertColorIfNeeded(
-                SK_ColorWHITE, DarkModeFilter::ElementRole::kBackground));
-  EXPECT_EQ(SK_ColorBLACK,
-            filter.InvertColorIfNeeded(
-                SK_ColorBLACK, DarkModeFilter::ElementRole::kBackground));
-
-  EXPECT_EQ(base::nullopt,
-            filter.ApplyToFlagsIfNeeded(
-                cc::PaintFlags(), DarkModeFilter::ElementRole::kBackground));
-}
-
 TEST(DarkModeFilterTest, ApplyDarkModeToColorsAndFlags) {
   DarkModeFilter filter;
 

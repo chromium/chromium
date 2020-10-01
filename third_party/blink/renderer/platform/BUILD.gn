@@ -886,6 +886,8 @@ component("platform") {
     "graphics/dark_mode_image_classifier.h",
     "graphics/dark_mode_lab_color_space.h",
     "graphics/dark_mode_settings.h",
+    "graphics/dark_mode_settings_builder.cc",
+    "graphics/dark_mode_settings_builder.h",
     "graphics/dark_mode_types.h",
     "graphics/darkmode/darkmode_classifier.cc",
     "graphics/darkmode/darkmode_classifier.h",

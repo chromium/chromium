@@ -28,7 +28,6 @@
 #include <memory>
 
 #include "cc/layers/picture_layer.h"
-#include "third_party/blink/renderer/core/accessibility/apply_dark_mode.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/exported/web_plugin_container_impl.h"
@@ -1635,8 +1634,9 @@ void CompositedLayerMapping::DoPaintTask(
       paint_info.paint_layer->GetLayoutObject().GetFrame());
   context.SetDeviceScaleFactor(device_scale_factor);
   Settings* settings = GetLayoutObject().GetFrame()->GetSettings();
-  context.SetDarkMode(BuildDarkModeSettings(
-      *settings, GetLayoutObject().View()->StyleRef().DarkColorScheme()));
+  context.SetDarkModeEnabled(
+      settings->GetForceDarkModeEnabled() &&
+      !GetLayoutObject().View()->StyleRef().DarkColorScheme());
 
   // As a composited layer may be painted directly, we need to traverse the
   // effect tree starting from the current node all the way up through the

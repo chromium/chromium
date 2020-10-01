@@ -36,8 +36,8 @@
 #include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/geometry/float_rounded_rect.h"
 #include "third_party/blink/renderer/platform/geometry/int_rect.h"
-#include "third_party/blink/renderer/platform/graphics/dark_mode_filter.h"
 #include "third_party/blink/renderer/platform/graphics/dark_mode_filter_helper.h"
+#include "third_party/blink/renderer/platform/graphics/dark_mode_settings_builder.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context_state_saver.h"
 #include "third_party/blink/renderer/platform/graphics/interpolation_space.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"
@@ -95,13 +95,16 @@ class GraphicsContext::DarkModeFlags final {
 
  public:
   // This helper's lifetime should never exceed |flags|'.
-  DarkModeFlags(GraphicsContext* gc,
+  DarkModeFlags(GraphicsContext* context,
                 const PaintFlags& flags,
                 DarkModeFilter::ElementRole role) {
-    dark_mode_flags_ = gc->dark_mode_filter_.ApplyToFlagsIfNeeded(flags, role);
-    if (dark_mode_flags_) {
-      flags_ = &dark_mode_flags_.value();
-      return;
+    if (context->IsDarkModeEnabled()) {
+      dark_mode_flags_ =
+          context->GetDarkModeFilter()->ApplyToFlagsIfNeeded(flags, role);
+      if (dark_mode_flags_) {
+        flags_ = &dark_mode_flags_.value();
+        return;
+      }
     }
     flags_ = &flags;
   }
@@ -129,11 +132,15 @@ GraphicsContext::GraphicsContext(PaintController& paint_controller,
       device_scale_factor_(1.0f),
       printing_(false),
       is_painting_preview_(false),
-      in_drawing_recorder_(false) {
+      in_drawing_recorder_(false),
+      is_dark_mode_enabled_(false) {
   // FIXME: Do some tests to determine how many states are typically used, and
   // allocate several here.
   paint_state_stack_.push_back(std::make_unique<GraphicsContextState>());
   paint_state_ = paint_state_stack_.back().get();
+
+  dark_mode_filter_ = std::make_unique<DarkModeFilter>();
+  dark_mode_filter_->UpdateSettings(GetCurrentDarkModeSettings());
 }
 
 GraphicsContext::~GraphicsContext() {
@@ -145,6 +152,11 @@ GraphicsContext::~GraphicsContext() {
     DCHECK(!SaveCount());
   }
 #endif
+}
+
+void GraphicsContext::UpdateDarkModeSettingsForTest(
+    const DarkModeSettings& settings) {
+  GetDarkModeFilter()->UpdateSettings(settings);
 }
 
 void GraphicsContext::Save() {
@@ -183,10 +195,6 @@ unsigned GraphicsContext::SaveCount() const {
   return count;
 }
 #endif
-
-void GraphicsContext::SetDarkMode(const DarkModeSettings& settings) {
-  dark_mode_filter_.UpdateSettings(settings);
-}
 
 void GraphicsContext::SaveLayer(const SkRect* bounds, const PaintFlags* flags) {
   DCHECK(canvas_);
@@ -378,8 +386,8 @@ void GraphicsContext::DrawFocusRingPath(const SkPath& path,
                                         float border_radius) {
   DrawPlatformFocusRing(
       path, canvas_,
-      dark_mode_filter_.InvertColorIfNeeded(
-          color.Rgb(), DarkModeFilter::ElementRole::kBackground),
+      DarkModeFilterHelper::ApplyToColorIfNeeded(
+          this, color.Rgb(), DarkModeFilter::ElementRole::kBackground),
       width, border_radius);
 }
 
@@ -389,8 +397,8 @@ void GraphicsContext::DrawFocusRingRect(const SkRect& rect,
                                         float border_radius) {
   DrawPlatformFocusRing(
       rect, canvas_,
-      dark_mode_filter_.InvertColorIfNeeded(
-          color.Rgb(), DarkModeFilter::ElementRole::kBackground),
+      DarkModeFilterHelper::ApplyToColorIfNeeded(
+          this, color.Rgb(), DarkModeFilter::ElementRole::kBackground),
       width, border_radius);
 }
 
@@ -501,8 +509,8 @@ void GraphicsContext::DrawInnerShadow(const FloatRoundedRect& rect,
                                       float shadow_blur,
                                       float shadow_spread,
                                       Edges clipped_edges) {
-  SkColor shadow_color = dark_mode_filter_.InvertColorIfNeeded(
-      orig_shadow_color.Rgb(), DarkModeFilter::ElementRole::kBackground);
+  SkColor shadow_color = DarkModeFilterHelper::ApplyToColorIfNeeded(
+      this, orig_shadow_color.Rgb(), DarkModeFilter::ElementRole::kBackground);
 
   FloatRect hole_rect(rect.Rect());
   hole_rect.Inflate(-shadow_spread);
@@ -878,9 +886,9 @@ void GraphicsContext::DrawImage(
   image_flags.setFilterQuality(ComputeFilterQuality(image, dest, src));
 
   // Do not classify the image if the element has any CSS filters.
-  if (!has_filter_property && dark_mode_filter_.IsDarkModeActive()) {
-    DarkModeFilterHelper::ApplyToImageIfNeeded(&dark_mode_filter_, image,
-                                               &image_flags, src, dest);
+  if (!has_filter_property) {
+    DarkModeFilterHelper::ApplyToImageIfNeeded(this, image, &image_flags, src,
+                                               dest);
   }
 
   image->Draw(canvas_, image_flags, dest, src, should_respect_image_orientation,
@@ -918,10 +926,8 @@ void GraphicsContext::DrawImageRRect(
   image_flags.setFilterQuality(
       ComputeFilterQuality(image, dest.Rect(), src_rect));
 
-  if (dark_mode_filter_.IsDarkModeActive()) {
-    DarkModeFilterHelper::ApplyToImageIfNeeded(
-        &dark_mode_filter_, image, &image_flags, src_rect, dest.Rect());
-  }
+  DarkModeFilterHelper::ApplyToImageIfNeeded(this, image, &image_flags,
+                                             src_rect, dest.Rect());
 
   bool use_shader = (visible_src == src_rect) &&
                     (respect_orientation == kDoNotRespectImageOrientation ||
@@ -1126,8 +1132,8 @@ void GraphicsContext::FillDRRect(const FloatRoundedRect& outer,
       canvas_->drawDRRect(outer, inner, ImmutableState()->FillFlags());
     } else {
       PaintFlags flags(ImmutableState()->FillFlags());
-      flags.setColor(dark_mode_filter_.InvertColorIfNeeded(
-          color.Rgb(), DarkModeFilter::ElementRole::kBackground));
+      flags.setColor(DarkModeFilterHelper::ApplyToColorIfNeeded(
+          this, color.Rgb(), DarkModeFilter::ElementRole::kBackground));
       canvas_->drawDRRect(outer, inner, flags);
     }
 
@@ -1140,8 +1146,8 @@ void GraphicsContext::FillDRRect(const FloatRoundedRect& outer,
   stroke_r_rect.inset(stroke_width / 2, stroke_width / 2);
 
   PaintFlags stroke_flags(ImmutableState()->FillFlags());
-  stroke_flags.setColor(dark_mode_filter_.InvertColorIfNeeded(
-      color.Rgb(), DarkModeFilter::ElementRole::kBackground));
+  stroke_flags.setColor(DarkModeFilterHelper::ApplyToColorIfNeeded(
+      this, color.Rgb(), DarkModeFilter::ElementRole::kBackground));
   stroke_flags.setStyle(PaintFlags::kStroke_Style);
   stroke_flags.setStrokeWidth(stroke_width);
 
@@ -1296,8 +1302,8 @@ void GraphicsContext::FillRectWithRoundedHole(
     const FloatRoundedRect& rounded_hole_rect,
     const Color& color) {
   PaintFlags flags(ImmutableState()->FillFlags());
-  flags.setColor(dark_mode_filter_.InvertColorIfNeeded(
-      color.Rgb(), DarkModeFilter::ElementRole::kBackground));
+  flags.setColor(DarkModeFilterHelper::ApplyToColorIfNeeded(
+      this, color.Rgb(), DarkModeFilter::ElementRole::kBackground));
   canvas_->drawDRRect(SkRRect::MakeRect(rect), rounded_hole_rect, flags);
 }
 

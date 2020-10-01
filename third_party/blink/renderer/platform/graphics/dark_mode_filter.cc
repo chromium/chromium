@@ -21,29 +21,6 @@
 namespace blink {
 namespace {
 
-#if DCHECK_IS_ON()
-
-// Floats that differ by this amount or less are considered to be equal.
-const float kFloatEqualityEpsilon = 0.0001;
-
-bool AreFloatsEqual(float a, float b) {
-  return std::fabs(a - b) <= kFloatEqualityEpsilon;
-}
-
-void VerifySettingsAreUnchanged(const DarkModeSettings& a,
-                                const DarkModeSettings& b) {
-  if (a.mode == DarkModeInversionAlgorithm::kOff)
-    return;
-
-  DCHECK_EQ(a.image_policy, b.image_policy);
-  DCHECK_EQ(a.text_brightness_threshold, b.text_brightness_threshold);
-  DCHECK_EQ(a.grayscale, b.grayscale);
-  DCHECK(AreFloatsEqual(a.contrast, b.contrast));
-  DCHECK(AreFloatsEqual(a.image_grayscale_percent, b.image_grayscale_percent));
-}
-
-#endif  // DCHECK_IS_ON()
-
 const size_t kMaxCacheSize = 1024u;
 const int kMinImageLength = 8;
 const int kMaxImageLength = 100;
@@ -94,24 +71,12 @@ DarkModeFilter::DarkModeFilter()
       image_filter_(nullptr),
       inverted_color_cache_(new DarkModeInvertedColorCache()) {
   DarkModeSettings default_settings;
-  default_settings.mode = DarkModeInversionAlgorithm::kOff;
   UpdateSettings(default_settings);
 }
 
 DarkModeFilter::~DarkModeFilter() {}
 
 void DarkModeFilter::UpdateSettings(const DarkModeSettings& new_settings) {
-  // Dark mode can be activated or deactivated on a per-page basis, depending on
-  // whether the original page theme is already dark. However, there is
-  // currently no mechanism to change the other settings after starting Chrome.
-  // As such, if the mode doesn't change, we don't need to do anything.
-  if (settings_.mode == new_settings.mode) {
-#if DCHECK_IS_ON()
-    VerifySettingsAreUnchanged(settings_, new_settings);
-#endif
-    return;
-  }
-
   inverted_color_cache_->Clear();
 
   settings_ = new_settings;
@@ -134,7 +99,7 @@ void DarkModeFilter::UpdateSettings(const DarkModeSettings& new_settings) {
 }
 
 SkColor DarkModeFilter::InvertColorIfNeeded(SkColor color, ElementRole role) {
-  if (!IsDarkModeActive())
+  if (!color_filter_)
     return color;
 
   if (role_override_.has_value())
@@ -193,7 +158,7 @@ sk_sp<SkColorFilter> DarkModeFilter::GetImageFilter() {
 base::Optional<cc::PaintFlags> DarkModeFilter::ApplyToFlagsIfNeeded(
     const cc::PaintFlags& flags,
     ElementRole role) {
-  if (!IsDarkModeActive())
+  if (!color_filter_)
     return base::nullopt;
 
   if (role_override_.has_value())
@@ -210,14 +175,6 @@ base::Optional<cc::PaintFlags> DarkModeFilter::ApplyToFlagsIfNeeded(
   return base::make_optional<cc::PaintFlags>(std::move(dark_mode_flags));
 }
 
-bool DarkModeFilter::IsDarkModeActive() const {
-  return !!color_filter_;
-}
-
-// We don't check IsDarkModeActive() because the caller is expected to have
-// already done so. This allows the caller to exit earlier if it needs to
-// perform some other logic in between confirming dark mode is active and
-// checking the color classifiers.
 bool DarkModeFilter::ShouldApplyToColor(SkColor color, ElementRole role) {
   switch (role) {
     case ElementRole::kText:
@@ -259,14 +216,14 @@ ScopedDarkModeElementRoleOverride::ScopedDarkModeElementRoleOverride(
     GraphicsContext* graphics_context,
     DarkModeFilter::ElementRole role)
     : graphics_context_(graphics_context) {
-  DarkModeFilter& dark_mode_filter = graphics_context->dark_mode_filter_;
-  previous_role_override_ = dark_mode_filter.role_override_;
-  dark_mode_filter.role_override_ = role;
+  previous_role_override_ =
+      graphics_context_->GetDarkModeFilter()->role_override_;
+  graphics_context_->GetDarkModeFilter()->role_override_ = role;
 }
 
 ScopedDarkModeElementRoleOverride::~ScopedDarkModeElementRoleOverride() {
-  DarkModeFilter& dark_mode_filter = graphics_context_->dark_mode_filter_;
-  dark_mode_filter.role_override_ = previous_role_override_;
+  graphics_context_->GetDarkModeFilter()->role_override_ =
+      previous_role_override_;
 }
 
 }  // namespace blink

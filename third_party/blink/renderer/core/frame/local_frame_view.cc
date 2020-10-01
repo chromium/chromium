@@ -46,7 +46,6 @@
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/platform/web_rect.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_scroll_into_view_options.h"
-#include "third_party/blink/renderer/core/accessibility/apply_dark_mode.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/animation/document_animations.h"
 #include "third_party/blink/renderer/core/css/font_face_set_document.h"
@@ -2936,8 +2935,9 @@ void LocalFrameView::PaintTree(
     } else {
       GraphicsContext graphics_context(*paint_controller_);
       if (Settings* settings = frame_->GetSettings()) {
-        graphics_context.SetDarkMode(BuildDarkModeSettings(
-            *settings, GetLayoutView()->StyleRef().DarkColorScheme()));
+        graphics_context.SetDarkModeEnabled(
+            settings->GetForceDarkModeEnabled() &&
+            !GetLayoutView()->StyleRef().DarkColorScheme());
       }
 
       bool painted_full_screen_overlay = false;

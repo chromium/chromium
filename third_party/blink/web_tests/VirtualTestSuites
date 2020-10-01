@@ -269,17 +269,20 @@
   {
     "prefix": "dark-mode-images-filter-all",
     "bases": ["dark-mode/images"],
-    "args": ["--blink-settings=forceDarkModeEnabled=true,forceDarkModeImagePolicy=0"]
+    "args": ["--blink-settings=forceDarkModeEnabled=true",
+             "--dark-mode-settings=ImagePolicy=0"]
   },
   {
     "prefix": "dark-mode-images-filter-none",
     "bases": ["dark-mode/images"],
-    "args": ["--blink-settings=forceDarkModeEnabled=true,forceDarkModeImagePolicy=1,"]
+    "args": ["--blink-settings=forceDarkModeEnabled=true",
+             "--dark-mode-settings=ImagePolicy=1"]
   },
   {
     "prefix": "dark-mode-images-grayscale",
     "bases": ["dark-mode/images"],
-    "args": ["--blink-settings=forceDarkModeEnabled=true,forceDarkModeImagePolicy=0,forceDarkModeImageGrayscale=1.0"]
+    "args": ["--blink-settings=forceDarkModeEnabled=true",
+             "--dark-mode-settings=ImagePolicy=0,ImageGrayScalePercent=1.0"]
   },
   {
     "prefix": "presentation",

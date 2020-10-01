@@ -108,9 +108,6 @@ class LABColorFilter : public DarkModeColorFilter {
 std::unique_ptr<DarkModeColorFilter> DarkModeColorFilter::FromSettings(
     const DarkModeSettings& settings) {
   switch (settings.mode) {
-    case DarkModeInversionAlgorithm::kOff:
-      return nullptr;
-
     case DarkModeInversionAlgorithm::kSimpleInvertForTesting:
       uint8_t identity[256], invert[256];
       for (int i = 0; i < 256; ++i) {

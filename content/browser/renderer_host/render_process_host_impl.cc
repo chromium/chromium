@@ -3423,6 +3423,7 @@ void RenderProcessHostImpl::PropagateBrowserCommandLineToRenderer(
     // Please keep these in alphabetical order.
     blink::switches::kAllowPreCommitInput,
     blink::switches::kBlinkSettings,
+    blink::switches::kDarkModeSettings,
     blink::switches::kDefaultTileWidth,
     blink::switches::kDefaultTileHeight,
     blink::switches::kDisableImageAnimationResync,

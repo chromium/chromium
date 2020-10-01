@@ -8,31 +8,30 @@
 namespace blink {
 
 enum class DarkModeInversionAlgorithm {
-  // Default, drawing is unfiltered.
-  // TODO(https://crbug.com/1002664): This value is deprecated and in the
-  // process of being removed.
-  kOff,
   // For testing only, does a simple 8-bit invert of every RGB pixel component.
   kSimpleInvertForTesting,
   kInvertBrightness,
   kInvertLightness,
   kInvertLightnessLAB,
+
+  kFirst = kSimpleInvertForTesting,  // First enum value.
+  kLast = kInvertLightnessLAB,       // Last enum value.
 };
 
 enum class DarkModeImagePolicy {
-  // Apply dark-mode filter to all images.
-  kFilterAll,
-  // Never apply dark-mode filter to any images.
-  kFilterNone,
-  // Apply dark-mode based on image content.
-  kFilterSmart,
+  kFilterAll,    // Apply dark-mode filter to all images.
+  kFilterNone,   // Never apply dark-mode filter to any images.
+  kFilterSmart,  // Apply dark-mode based on image content.
+
+  kFirst = kFilterAll,   // First enum value.
+  kLast = kFilterSmart,  // Last enum value.
 };
 
-// New variables added to this struct should also be added to
-// BuildDarkModeSettings() in
-//   //src/third_party/blink/renderer/core/accessibility/apply_dark_mode.h
+// New variables added to this struct should be considered in
+// third_party/blink/renderer/platform/graphics/dark_mode_settings_builder.h
 struct DarkModeSettings {
-  DarkModeInversionAlgorithm mode = DarkModeInversionAlgorithm::kOff;
+  DarkModeInversionAlgorithm mode =
+      DarkModeInversionAlgorithm::kInvertLightnessLAB;
   bool grayscale = false;
   float image_grayscale_percent = 0.0;  // Valid range from 0.0 to 1.0
   float contrast = 0.0;                 // Valid range from -1.0 to 1.0

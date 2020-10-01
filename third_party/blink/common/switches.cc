@@ -18,6 +18,20 @@ const char kAllowPreCommitInput[] = "allow-pre-commit-input";
 // value of the enum value. Applied after other command line flags and prefs.
 const char kBlinkSettings[] = "blink-settings";
 
+// Sets dark mode settings. Format is [<param>=<value>],[<param>=<value>],...
+// The params take either int or float values. If params are not specified,
+// the default dark mode settings is used. Valid params are given below.
+// "InversionAlgorithm" takes int value of DarkModeInversionAlgorithm enum.
+// "ImagePolicy" takes int value of DarkModeImagePolicy enum.
+// "IsGrayScale" takes 1 or 0, 1 means grayscale is true, false otherwise.
+// "TextBrightnessThreshold" takes 0 to 255 int value.
+// "BackgroundBrightnessThreshold" takes 0 to 255 int value.
+// "ContrastPercent" takes -1.0 to 1.0 float value. Higher the value, more
+// the contrast.
+// "ImageGrayScalePercent" takes 0.0 to 1.0 float value. Higher the value,
+// image would be more grayish.
+const char kDarkModeSettings[] = "dark-mode-settings";
+
 // Sets the tile size used by composited layers.
 const char kDefaultTileWidth[] = "default-tile-width";
 const char kDefaultTileHeight[] = "default-tile-height";

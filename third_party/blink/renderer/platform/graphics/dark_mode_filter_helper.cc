@@ -5,37 +5,49 @@
 #include "third_party/blink/renderer/platform/graphics/dark_mode_filter_helper.h"
 
 #include "base/hash/hash.h"
-#include "third_party/blink/renderer/platform/graphics/dark_mode_filter.h"
 #include "third_party/blink/renderer/platform/graphics/dark_mode_image_cache.h"
+#include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
 
 namespace blink {
 
 // static
-void DarkModeFilterHelper::ApplyToImageIfNeeded(
-    DarkModeFilter* dark_mode_filter,
-    Image* image,
-    cc::PaintFlags* flags,
-    const SkRect& src,
-    const SkRect& dst) {
-  DCHECK(dark_mode_filter);
+SkColor DarkModeFilterHelper::ApplyToColorIfNeeded(
+    GraphicsContext* context,
+    SkColor color,
+    DarkModeFilter::ElementRole role) {
+  DCHECK(context);
+  return context->IsDarkModeEnabled()
+             ? context->GetDarkModeFilter()->InvertColorIfNeeded(color, role)
+             : color;
+}
+
+// static
+void DarkModeFilterHelper::ApplyToImageIfNeeded(GraphicsContext* context,
+                                                Image* image,
+                                                cc::PaintFlags* flags,
+                                                const SkRect& src,
+                                                const SkRect& dst) {
+  DCHECK(context && context->GetDarkModeFilter());
   DCHECK(image);
   DCHECK(flags);
 
-  // The Image::AsSkBitmapForCurrentFrame() is expensive due creation of paint
-  // image and bitmap, so ensure IsDarkModeActive() is checked prior to calling
-  // this function. See: https://crbug.com/1094781.
-  DCHECK(dark_mode_filter->IsDarkModeActive());
+  // The Image::AsSkBitmapForCurrentFrame() is expensive due paint image and
+  // bitmap creation, so return if dark mode is not enabled. For details see:
+  // https://crbug.com/1094781.
+  if (!context->IsDarkModeEnabled())
+    return;
 
   SkIRect rounded_src = src.roundOut();
   SkIRect rounded_dst = dst.roundOut();
 
   sk_sp<SkColorFilter> filter;
   DarkModeResult result =
-      dark_mode_filter->AnalyzeShouldApplyToImage(rounded_src, rounded_dst);
+      context->GetDarkModeFilter()->AnalyzeShouldApplyToImage(rounded_src,
+                                                              rounded_dst);
 
   if (result == DarkModeResult::kApplyFilter) {
-    filter = dark_mode_filter->GetImageFilter();
+    filter = context->GetDarkModeFilter()->GetImageFilter();
   } else if (result == DarkModeResult::kNotClassified) {
     DarkModeImageCache* cache = image->GetDarkModeImageCache();
     DCHECK(cache);
@@ -48,7 +60,8 @@ void DarkModeFilterHelper::ApplyToImageIfNeeded(
           image->AsSkBitmapForCurrentFrame(kDoNotRespectImageOrientation);
       SkPixmap pixmap;
       bitmap.peekPixels(&pixmap);
-      filter = dark_mode_filter->ApplyToImage(pixmap, rounded_src, rounded_dst);
+      filter = context->GetDarkModeFilter()->ApplyToImage(pixmap, rounded_src,
+                                                          rounded_dst);
 
       // Using blink side dark mode for images, it is hard to implement caching
       // mechanism for partially loaded bitmap image content, as content id for

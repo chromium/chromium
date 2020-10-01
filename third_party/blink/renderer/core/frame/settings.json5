@@ -887,47 +887,7 @@
       initial: false,
       invalidate: "ForceDark",
     },
-    {
-      name: "forceDarkModeInversionAlgorithm",
-      initial: "DarkModeInversionAlgorithm::kInvertLightnessLAB",
-      type: "DarkModeInversionAlgorithm",
-      invalidate: "ForceDark",
-    },
-    {
-      name: "forceDarkModeGrayscale",
-      initial: false,
-      invalidate: "ForceDark",
-    },
-    {
-      name: "forceDarkModeContrast",
-      initial: 0,
-      type: "double",
-      invalidate: "ForceDark",
-    },
-    {
-      name: "forceDarkModeImagePolicy",
-      initial: "DarkModeImagePolicy::kFilterNone",
-      type: "DarkModeImagePolicy",
-      invalidate: "ForceDark",
-    },
-    {
-      name: "forceDarkModeTextBrightnessThreshold",
-      initial: "150",
-      type: "int",
-      invalidate: "ForceDark",
-    },
-    {
-      name: "forceDarkModeBackgroundBrightnessThreshold",
-      initial: "205",
-      type: "int",
-      invalidate: "ForceDark",
-    },
-    {
-      name: "forceDarkModeImageGrayscale",
-      initial: "0.0",
-      type: "float",
-      invalidate: "ForceDark",
-    },
+
     {
       name: "navigatorPlatformOverride",
       type: "String",
