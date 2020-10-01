@@ -1524,9 +1524,11 @@ error::Error GLES2DecoderPassthroughImpl::DoGetActiveAttrib(GLuint program,
   }
 
   std::vector<char> name_buffer(active_attribute_max_length, 0);
-  api()->glGetActiveAttribFn(service_id, index, name_buffer.size(), nullptr,
+  GLsizei length = 0;
+  api()->glGetActiveAttribFn(service_id, index, name_buffer.size(), &length,
                              size, type, name_buffer.data());
-  *name = std::string(name_buffer.data());
+  DCHECK(length <= active_attribute_max_length);
+  *name = length > 0 ? std::string(name_buffer.data(), length) : std::string();
   *success = CheckErrorCallbackState() ? 0 : 1;
   return error::kNoError;
 }
@@ -1549,9 +1551,11 @@ error::Error GLES2DecoderPassthroughImpl::DoGetActiveUniform(GLuint program,
   }
 
   std::vector<char> name_buffer(active_uniform_max_length, 0);
-  api()->glGetActiveUniformFn(service_id, index, name_buffer.size(), nullptr,
+  GLsizei length = 0;
+  api()->glGetActiveUniformFn(service_id, index, name_buffer.size(), &length,
                               size, type, name_buffer.data());
-  *name = std::string(name_buffer.data());
+  DCHECK(length <= active_uniform_max_length);
+  *name = length > 0 ? std::string(name_buffer.data(), length) : std::string();
   *success = CheckErrorCallbackState() ? 0 : 1;
   return error::kNoError;
 }
@@ -2086,10 +2090,12 @@ error::Error GLES2DecoderPassthroughImpl::DoGetTransformFeedbackVarying(
   }
 
   std::vector<char> name_buffer(transform_feedback_varying_max_length, 0);
+  GLsizei length = 0;
   api()->glGetTransformFeedbackVaryingFn(service_id, index, name_buffer.size(),
-                                         nullptr, size, type,
+                                         &length, size, type,
                                          name_buffer.data());
-  *name = std::string(name_buffer.data());
+  DCHECK(length <= transform_feedback_varying_max_length);
+  *name = length > 0 ? std::string(name_buffer.data(), length) : std::string();
   *success = CheckErrorCallbackState() ? 0 : 1;
   return error::kNoError;
 }
@@ -4394,9 +4400,13 @@ error::Error GLES2DecoderPassthroughImpl::DoGetTranslatedShaderSourceANGLE(
 
   if (translated_source_length > 0) {
     std::vector<char> buffer(translated_source_length, 0);
+    GLsizei length = 0;
     api()->glGetTranslatedShaderSourceANGLEFn(
-        service_id, translated_source_length, nullptr, buffer.data());
-    *source = std::string(buffer.data());
+        service_id, translated_source_length, &length, buffer.data());
+    DCHECK(length <= translated_source_length);
+    *source = length > 0 ? std::string(buffer.data(), length) : std::string();
+  } else {
+    *source = std::string();
   }
   return error::kNoError;
 }
