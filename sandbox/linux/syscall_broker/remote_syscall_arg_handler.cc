@@ -4,6 +4,7 @@
 
 #include "sandbox/linux/syscall_broker/remote_syscall_arg_handler.h"
 
+#include <string.h>
 #include <sys/ioctl.h>
 #include <sys/syscall.h>
 #include <sys/types.h>
