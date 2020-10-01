@@ -54,7 +54,16 @@ std::string DangerTypeToThreatType(download::DownloadDangerType danger_type) {
   }
 }
 
-void ReportDangerousDownloadWarning(download::DownloadItem* download) {
+void MaybeReportDangerousDownloadWarning(download::DownloadItem* download) {
+  // If |download| has a deep scanning malware verdict, then it means the
+  // dangerous file has already been reported.
+  auto* scan_result = static_cast<enterprise_connectors::ScanResult*>(
+      download->GetUserData(enterprise_connectors::ScanResult::kKey));
+  if (scan_result &&
+      enterprise_connectors::ContainsMalwareVerdict(scan_result->response)) {
+    return;
+  }
+
   content::BrowserContext* browser_context =
       content::DownloadItemUtils::GetBrowserContext(download);
   Profile* profile = Profile::FromBrowserContext(browser_context);
@@ -160,9 +169,8 @@ void DownloadReporter::OnDownloadUpdated(download::DownloadItem* download) {
   download::DownloadDangerType current_danger_type = download->GetDangerType();
 
   if (!DangerTypeIsDangerous(old_danger_type) &&
-      old_danger_type != download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING &&
       DangerTypeIsDangerous(current_danger_type)) {
-    ReportDangerousDownloadWarning(download);
+    MaybeReportDangerousDownloadWarning(download);
   }
 
   if (DangerTypeIsDangerous(old_danger_type) &&

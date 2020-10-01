@@ -87,4 +87,11 @@ ScanResult::ScanResult(const ContentAnalysisResponse& response)
     : response(response) {}
 ScanResult::~ScanResult() = default;
 
+bool ContainsMalwareVerdict(const ContentAnalysisResponse& response) {
+  const auto& results = response.results();
+  return std::any_of(results.begin(), results.end(), [](const auto& result) {
+    return result.tag() == "malware" && !result.triggered_rules().empty();
+  });
+}
+
 }  // namespace enterprise_connectors

@@ -67,6 +67,18 @@ class EventReportValidator {
       int expected_content_size,
       const std::string& expected_result);
 
+  void ExpectSensitiveDataEventAndDangerousDeepScanningResult(
+      const std::string& expected_url,
+      const std::string& expected_filename,
+      const std::string& expected_sha256,
+      const std::string& expected_threat_type,
+      const std::string& expected_trigger,
+      const enterprise_connectors::ContentAnalysisResponse::Result&
+          expected_dlp_verdict,
+      const std::set<std::string>* expected_mimetypes,
+      int expected_content_size,
+      const std::string& expected_result);
+
   void ExpectUnscannedFileEvent(const std::string& expected_url,
                                 const std::string& expected_filename,
                                 const std::string& expected_sha256,

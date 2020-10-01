@@ -90,6 +90,9 @@ struct ScanResult : public base::SupportsUserData::Data {
   ContentAnalysisResponse response;
 };
 
+// Checks if |response| contains a negative malware verdict.
+bool ContainsMalwareVerdict(const ContentAnalysisResponse& response);
+
 }  // namespace enterprise_connectors
 
 #endif  // CHROME_BROWSER_ENTERPRISE_CONNECTORS_COMMON_H_

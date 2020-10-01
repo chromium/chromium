@@ -253,6 +253,44 @@ void EventReportValidator::
           });
 }
 
+void EventReportValidator::
+    ExpectSensitiveDataEventAndDangerousDeepScanningResult(
+        const std::string& expected_url,
+        const std::string& expected_filename,
+        const std::string& expected_sha256,
+        const std::string& expected_threat_type,
+        const std::string& expected_trigger,
+        const enterprise_connectors::ContentAnalysisResponse::Result&
+            expected_dlp_verdict,
+        const std::set<std::string>* expected_mimetypes,
+        int expected_content_size,
+        const std::string& expected_result) {
+  event_key_ = SafeBrowsingPrivateEventRouter::kKeySensitiveDataEvent;
+  url_ = expected_url;
+  filename_ = expected_filename;
+  sha256_ = expected_sha256;
+  trigger_ = expected_trigger;
+  mimetypes_ = expected_mimetypes;
+  content_size_ = expected_content_size;
+  result_ = expected_result;
+  dlp_verdict_ = expected_dlp_verdict;
+  EXPECT_CALL(*client_, UploadRealtimeReport_(_, _))
+      .WillOnce([this](base::Value& report,
+                       base::OnceCallback<void(bool)>& callback) {
+        ValidateReport(&report);
+      })
+      .WillOnce([this, expected_threat_type](
+                    base::Value& report,
+                    base::OnceCallback<void(bool)>& callback) {
+        event_key_ = SafeBrowsingPrivateEventRouter::kKeyDangerousDownloadEvent;
+        threat_type_ = expected_threat_type;
+        dlp_verdict_ = base::nullopt;
+        ValidateReport(&report);
+        if (!done_closure_.is_null())
+          done_closure_.Run();
+      });
+}
+
 void EventReportValidator::ExpectDangerousDownloadEvent(
     const std::string& expected_url,
     const std::string& expected_filename,

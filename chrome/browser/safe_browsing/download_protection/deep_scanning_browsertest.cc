@@ -688,6 +688,75 @@ IN_PROC_BROWSER_TEST_F(DownloadDeepScanningBrowserTest, MultipleFCMResponses) {
                                 true, 1);
 }
 
+IN_PROC_BROWSER_TEST_F(DownloadDeepScanningBrowserTest,
+                       DlpAndMalwareViolations) {
+  SetUpReporting();
+  base::HistogramTester histograms;
+
+  // The file is DANGEROUS_HOST according to the metadata check
+  ClientDownloadResponse metadata_response;
+  metadata_response.set_verdict(ClientDownloadResponse::DANGEROUS_HOST);
+  ExpectMetadataResponse(metadata_response);
+
+  GURL url = embedded_test_server()->GetURL(
+      "/safe_browsing/download_protection/zipfile_two_archives.zip");
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), url, WindowOpenDisposition::CURRENT_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  // The DLP scan finishes synchronously and find a violation.
+  enterprise_connectors::ContentAnalysisResponse sync_response;
+  auto* result = sync_response.add_results();
+  result->set_tag("dlp");
+  result->set_status(
+      enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
+  auto* dlp_rule = result->add_triggered_rules();
+  dlp_rule->set_action(enterprise_connectors::TriggeredRule::WARN);
+  dlp_rule->set_rule_name("dlp_rule_name");
+  ExpectContentAnalysisSynchronousResponse(/*is_advanced_protection=*/false,
+                                           sync_response, {"dlp"});
+
+  WaitForMetadataCheck();
+  WaitForDeepScanRequest(/*is_advanced_protection=*/false);
+
+  // Both the DLP and malware violations generate an event.
+  std::set<std::string> zip_types = {"application/zip",
+                                     "application/x-zip-compressed"};
+  EventReportValidator validator(client());
+  validator.ExpectSensitiveDataEventAndDangerousDeepScanningResult(
+      /*url*/ url.spec(),
+      /*filename*/
+      (*download_items().begin())->GetTargetFilePath().AsUTF8Unsafe(),
+      // sha256sum chrome/test/data/safe_browsing/download_protection/\
+      // zipfile_two_archives.zip |  tr '[:lower:]' '[:upper:]'
+      /*sha*/
+      "339C8FFDAE735C4F1846D0E6FF07FBD85CAEE6D96045AAEF5B30F3220836643C",
+      /*threat_type*/ "DANGEROUS_HOST",
+      /*trigger*/
+      extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
+      /*dlp_verdict*/ *result,
+      /*mimetypes*/ &zip_types,
+      /*size*/ 276,
+      /*result*/ EventResultToString(EventResult::WARNED));
+  WaitForDownloadToFinish();
+
+  // The file should be blocked.
+  ASSERT_EQ(download_items().size(), 1u);
+  download::DownloadItem* item = *download_items().begin();
+  EXPECT_EQ(item->GetDangerType(),
+            download::DownloadDangerType::DOWNLOAD_DANGER_TYPE_DANGEROUS_HOST);
+  EXPECT_EQ(item->GetState(), download::DownloadItem::IN_PROGRESS);
+
+  // UMAs for this request should only be recorded once. The malware metric
+  // should not be recorded since no deep malware scan occurred.
+  histograms.ExpectUniqueSample("SafeBrowsingBinaryUploadRequest.Result",
+                                BinaryUploadService::Result::SUCCESS, 1);
+  histograms.ExpectUniqueSample("SafeBrowsingBinaryUploadRequest.DlpResult",
+                                true, 1);
+  histograms.ExpectUniqueSample("SafeBrowsingBinaryUploadRequest.MalwareResult",
+                                true, 0);
+}
+
 class DownloadRestrictionsDeepScanningBrowserTest
     : public DownloadDeepScanningBrowserTest {
  public:
