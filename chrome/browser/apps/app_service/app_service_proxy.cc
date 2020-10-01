@@ -113,11 +113,6 @@ AppServiceProxy::~AppServiceProxy() {
 #endif
 }
 
-// static
-void AppServiceProxy::RegisterProfilePrefs(PrefRegistrySimple* registry) {
-  AppServiceImpl::RegisterProfilePrefs(registry);
-}
-
 void AppServiceProxy::ReInitializeForTesting(Profile* profile) {
   // Some test code creates a profile and profile-linked services, like the App
   // Service, before the profile is fully initialized. Such tests can call this
@@ -153,7 +148,7 @@ void AppServiceProxy::Initialize() {
   browser_app_launcher_ = std::make_unique<apps::BrowserAppLauncher>(profile_);
 
   app_service_impl_ = std::make_unique<apps::AppServiceImpl>(
-      profile_->GetPrefs(), profile_->GetPath(),
+      profile_->GetPath(),
       base::FeatureList::IsEnabled(features::kIntentHandlingSharing));
   app_service_impl_->BindReceiver(app_service_.BindNewPipeAndPassReceiver());
 

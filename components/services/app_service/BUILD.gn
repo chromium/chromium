@@ -10,7 +10,6 @@ source_set("lib") {
 
   deps = [
     "//base",
-    "//components/prefs",
     "//content/public/browser",
     "//mojo/public/cpp/bindings",
   ]

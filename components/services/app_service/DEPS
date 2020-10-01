@@ -1,5 +1,4 @@
 include_rules = [
-  "+components/prefs",
   "+components/services/app_service/public/cpp",
   "+content/public",
 ]

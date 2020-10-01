@@ -12,7 +12,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
-#include "components/prefs/testing_pref_service.h"
 #include "components/services/app_service/app_service_impl.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
@@ -164,16 +163,14 @@ class AppServiceImplTest : public testing::Test {
  protected:
   // base::test::TaskEnvironment task_environment_;
   content::BrowserTaskEnvironment task_environment_;
-  TestingPrefServiceSimple pref_service_;
   base::ScopedTempDir temp_dir_;
 };
 
 TEST_F(AppServiceImplTest, PubSub) {
   const int size_hint_in_dip = 64;
 
-  AppServiceImpl::RegisterProfilePrefs(pref_service_.registry());
   ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-  AppServiceImpl impl(&pref_service_, temp_dir_.GetPath(),
+  AppServiceImpl impl(temp_dir_.GetPath(),
                       /*is_share_intents_supported=*/false);
 
   // Start with one subscriber.
@@ -267,9 +264,8 @@ TEST_F(AppServiceImplTest, PubSub) {
 // is not fixed, please update to the same bug.
 TEST_F(AppServiceImplTest, PreferredApps) {
   // Test Initialize.
-  AppServiceImpl::RegisterProfilePrefs(pref_service_.registry());
   ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-  AppServiceImpl impl(&pref_service_, temp_dir_.GetPath(),
+  AppServiceImpl impl(temp_dir_.GetPath(),
                       /*is_share_intents_supported=*/false);
   impl.GetPreferredAppsForTesting().Init();
 
@@ -371,7 +367,6 @@ TEST_F(AppServiceImplTest, PreferredApps) {
 }
 
 TEST_F(AppServiceImplTest, PreferredAppsPersistency) {
-  AppServiceImpl::RegisterProfilePrefs(pref_service_.registry());
   ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
 
   const char kAppId1[] = "abcdefg";
@@ -380,7 +375,7 @@ TEST_F(AppServiceImplTest, PreferredAppsPersistency) {
   {
     base::RunLoop run_loop_read;
     base::RunLoop run_loop_write;
-    AppServiceImpl impl(&pref_service_, temp_dir_.GetPath(),
+    AppServiceImpl impl(temp_dir_.GetPath(),
                         /*is_share_intents_supported=*/false,
                         run_loop_read.QuitClosure(),
                         run_loop_write.QuitClosure());
@@ -396,7 +391,7 @@ TEST_F(AppServiceImplTest, PreferredAppsPersistency) {
   // Create a new impl to initialize preferred apps from the disk.
   {
     base::RunLoop run_loop_read;
-    AppServiceImpl impl(&pref_service_, temp_dir_.GetPath(),
+    AppServiceImpl impl(temp_dir_.GetPath(),
                         /*is_share_intents_supported=*/false,
                         run_loop_read.QuitClosure());
     impl.FlushMojoCallsForTesting();
@@ -407,7 +402,6 @@ TEST_F(AppServiceImplTest, PreferredAppsPersistency) {
 }
 
 TEST_F(AppServiceImplTest, PreferredAppsUpgrade) {
-  AppServiceImpl::RegisterProfilePrefs(pref_service_.registry());
   ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
 
   const char kAppId1[] = "abcdefg";
@@ -422,7 +416,7 @@ TEST_F(AppServiceImplTest, PreferredAppsUpgrade) {
   {
     base::RunLoop run_loop_read;
     base::RunLoop run_loop_write;
-    AppServiceImpl impl(&pref_service_, temp_dir_.GetPath(),
+    AppServiceImpl impl(temp_dir_.GetPath(),
                         /*is_share_intents_supported=*/false,
                         run_loop_read.QuitClosure(),
                         run_loop_write.QuitClosure());
@@ -455,7 +449,7 @@ TEST_F(AppServiceImplTest, PreferredAppsUpgrade) {
   {
     base::RunLoop run_loop_read;
     base::RunLoop run_loop_write;
-    AppServiceImpl impl(&pref_service_, temp_dir_.GetPath(),
+    AppServiceImpl impl(temp_dir_.GetPath(),
                         /*is_share_intents_supported=*/true,
                         run_loop_read.QuitClosure(),
                         run_loop_write.QuitClosure());
@@ -473,7 +467,7 @@ TEST_F(AppServiceImplTest, PreferredAppsUpgrade) {
   // by trying to delete the entry using new filter.
   {
     base::RunLoop run_loop_read;
-    AppServiceImpl impl(&pref_service_, temp_dir_.GetPath(),
+    AppServiceImpl impl(temp_dir_.GetPath(),
                         /*is_share_intents_supported=*/false,
                         run_loop_read.QuitClosure());
     impl.FlushMojoCallsForTesting();

@@ -16,15 +16,12 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/token.h"
-#include "components/prefs/pref_registry_simple.h"
-#include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/preferred_apps_converter.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace {
 
-const char kAppServicePreferredApps[] = "app_service.preferred_apps";
 const base::FilePath::CharType kPreferredAppsDirname[] =
     FILE_PATH_LITERAL("PreferredApps");
 
@@ -99,13 +96,11 @@ std::string ReadDataBlocking(const base::FilePath& preferred_apps_file) {
 
 namespace apps {
 
-AppServiceImpl::AppServiceImpl(PrefService* profile_prefs,
-                               const base::FilePath& profile_dir,
+AppServiceImpl::AppServiceImpl(const base::FilePath& profile_dir,
                                bool is_share_intents_supported,
                                base::OnceClosure read_completed_for_testing,
                                base::OnceClosure write_completed_for_testing)
-    : pref_service_(profile_prefs),
-      profile_dir_(profile_dir),
+    : profile_dir_(profile_dir),
       is_share_intents_supported_(is_share_intents_supported),
       should_write_preferred_apps_to_file_(false),
       writing_preferred_apps_(false),
@@ -115,16 +110,10 @@ AppServiceImpl::AppServiceImpl(PrefService* profile_prefs,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})),
       read_completed_for_testing_(std::move(read_completed_for_testing)),
       write_completed_for_testing_(std::move(write_completed_for_testing)) {
-  DCHECK(pref_service_);
   InitializePreferredApps();
 }
 
 AppServiceImpl::~AppServiceImpl() = default;
-
-// static
-void AppServiceImpl::RegisterProfilePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterDictionaryPref(kAppServicePreferredApps);
-}
 
 void AppServiceImpl::BindReceiver(
     mojo::PendingReceiver<apps::mojom::AppService> receiver) {
@@ -409,11 +398,6 @@ void AppServiceImpl::OnPublisherDisconnected(apps::mojom::AppType app_type) {
 
 void AppServiceImpl::InitializePreferredApps() {
   ReadFromJSON(profile_dir_);
-
-  // Remove "app_service.preferred_apps" from perf if exists.
-  // TODO(crbug.com/853604): Remove this in M86.
-  DCHECK(pref_service_);
-  pref_service_->ClearPref(kAppServicePreferredApps);
 }
 
 void AppServiceImpl::WriteToJSON(
