@@ -1,0 +1,52 @@
+<!DOCTYPE HTML>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../../resources/gesture-util.js"></script>
+<script src="../../resources/compositor-controls.js"></script>
+<style>
+  body {
+    margin: 0px;
+    height: 1000px;
+    width: 1000px;
+  }
+  #scrollable {
+    background-color: #FF7F7F;
+    height: 600px;
+    width: 600px;
+    overflow: scroll;
+  }
+  #content {
+    height: 700px;
+    width: 700px;
+  }
+</style>
+
+<div id="scrollable">
+  <div id="content"> </div>
+</div>
+
+<script>
+setAnimationRequiresRaster();
+var scrollable = document.getElementById('scrollable');
+async function autoScroll(start_x, start_y, end_x, end_y) {
+  const MIDDLE_BUTTON = 1;
+  await mouseMoveTo(start_x, start_y);
+  await mouseClickOn(start_x, start_y, MIDDLE_BUTTON);
+  await mouseMoveTo(end_x, end_y);
+}
+
+promise_test(async t => {
+  const MIDDLE_CLICK_AUTOSCROLL_RADIUS = 15; // from blink::kNoMiddleClickAutoscrollRadius
+  var rect = scrollable.getBoundingClientRect();
+  var startX = rect.right - 5;
+  var startY = rect.top + 20;
+  var endX = startX;
+  var endY = startY + 2 * MIDDLE_CLICK_AUTOSCROLL_RADIUS;
+  assert_equals(scrollable.scrollTop, 0);
+  await autoScroll(startX, startY, endX, endY);
+  await waitUntil(() => {return scrollable.scrollTop > 0;});
+
+  assert_greater_than(scrollable.scrollTop, 0);
+});
+
+</script>
