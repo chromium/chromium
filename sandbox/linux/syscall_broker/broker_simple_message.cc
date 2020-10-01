@@ -10,6 +10,7 @@
 #include <unistd.h>
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/files/scoped_file.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_math.h"
@@ -22,19 +23,22 @@ namespace sandbox {
 
 namespace syscall_broker {
 
-BrokerSimpleMessage::BrokerSimpleMessage()
-    : read_only_(false),
-      write_only_(false),
-      broken_(false),
-      length_(0),
-      read_next_(message_),
-      write_next_(message_) {}
-
 ssize_t BrokerSimpleMessage::SendRecvMsgWithFlags(int fd,
                                                   int recvmsg_flags,
-                                                  int* result_fd,
+                                                  base::ScopedFD* result_fd,
                                                   BrokerSimpleMessage* reply) {
+  return SendRecvMsgWithFlagsMultipleFds(fd, recvmsg_flags, {}, {result_fd, 1},
+                                         reply);
+}
+
+ssize_t BrokerSimpleMessage::SendRecvMsgWithFlagsMultipleFds(
+    int fd,
+    int recvmsg_flags,
+    base::span<const int> send_fds,
+    base::span<base::ScopedFD> result_fds,
+    BrokerSimpleMessage* reply) {
   RAW_CHECK(reply);
+  RAW_CHECK(send_fds.size() + 1 <= base::UnixDomainSocket::kMaxFileDescriptors);
 
   // This socketpair is only used for the IPC and is cleaned up before
   // returning.
@@ -43,30 +47,41 @@ ssize_t BrokerSimpleMessage::SendRecvMsgWithFlags(int fd,
   if (!base::CreateSocketPair(&recv_sock, &send_sock))
     return -1;
 
-  if (!SendMsg(fd, send_sock.get()))
+  int send_fds_with_reply_socket[base::UnixDomainSocket::kMaxFileDescriptors];
+  send_fds_with_reply_socket[0] = send_sock.get();
+  for (size_t i = 0; i < send_fds.size(); i++) {
+    send_fds_with_reply_socket[i + 1] = send_fds[i];
+  }
+  if (!SendMsgMultipleFds(fd,
+                          {send_fds_with_reply_socket, send_fds.size() + 1})) {
     return -1;
+  }
 
   // Close the sending end of the socket right away so that if our peer closes
   // it before sending a response (e.g., from exiting), RecvMsgWithFlags() will
   // return EOF instead of hanging.
   send_sock.reset();
 
-  base::ScopedFD recv_fd;
-  const ssize_t reply_len =
-      reply->RecvMsgWithFlags(recv_sock.get(), recvmsg_flags, &recv_fd);
+  const ssize_t reply_len = reply->RecvMsgWithFlagsMultipleFds(
+      recv_sock.get(), recvmsg_flags, result_fds);
   recv_sock.reset();
   if (reply_len == -1)
     return -1;
-
-  if (result_fd)
-    *result_fd = (recv_fd == -1) ? -1 : recv_fd.release();
 
   return reply_len;
 }
 
 bool BrokerSimpleMessage::SendMsg(int fd, int send_fd) {
+  return SendMsgMultipleFds(
+      fd, send_fd == -1 ? base::span<int>() : base::span<int>(&send_fd, 1));
+}
+
+bool BrokerSimpleMessage::SendMsgMultipleFds(int fd,
+                                             base::span<const int> send_fds) {
   if (broken_)
     return false;
+
+  RAW_CHECK(send_fds.size() <= base::UnixDomainSocket::kMaxFileDescriptors);
 
   struct msghdr msg = {};
   const void* buf = reinterpret_cast<const void*>(message_);
@@ -74,17 +89,26 @@ bool BrokerSimpleMessage::SendMsg(int fd, int send_fd) {
   msg.msg_iov = &iov;
   msg.msg_iovlen = 1;
 
-  const unsigned control_len = CMSG_SPACE(sizeof(send_fd));
+  const unsigned control_len = CMSG_SPACE(send_fds.size() * sizeof(int));
   char control_buffer[control_len];
-  if (send_fd >= 0) {
+  if (send_fds.size() >= 1) {
     struct cmsghdr* cmsg;
     msg.msg_control = control_buffer;
     msg.msg_controllen = control_len;
     cmsg = CMSG_FIRSTHDR(&msg);
     cmsg->cmsg_level = SOL_SOCKET;
     cmsg->cmsg_type = SCM_RIGHTS;
-    cmsg->cmsg_len = CMSG_LEN(sizeof(send_fd));
-    memcpy(CMSG_DATA(cmsg), &send_fd, sizeof(send_fd));
+    int len = 0;
+
+    for (size_t i = 0; i < send_fds.size(); i++) {
+      if (send_fds[i] < 0)
+        return false;
+
+      // CMSG_DATA() not guaranteed to be aligned so this must use memcpy.
+      memcpy(CMSG_DATA(cmsg) + (sizeof(int) * i), &send_fds[i], sizeof(int));
+      len += sizeof(int);
+    }
+    cmsg->cmsg_len = CMSG_LEN(len);
     msg.msg_controllen = cmsg->cmsg_len;
   }
 
@@ -100,8 +124,18 @@ bool BrokerSimpleMessage::SendMsg(int fd, int send_fd) {
 ssize_t BrokerSimpleMessage::RecvMsgWithFlags(int fd,
                                               int flags,
                                               base::ScopedFD* return_fd) {
+  ssize_t ret = RecvMsgWithFlagsMultipleFds(
+      fd, flags, base::span<base::ScopedFD>(return_fd, 1));
+  return ret;
+}
+
+ssize_t BrokerSimpleMessage::RecvMsgWithFlagsMultipleFds(
+    int fd,
+    int flags,
+    base::span<base::ScopedFD> return_fds) {
   // The message must be fresh and unused.
   RAW_CHECK(!read_only_ && !write_only_);
+  RAW_CHECK(return_fds.size() <= base::UnixDomainSocket::kMaxFileDescriptors);
   read_only_ = true;  // The message should not be written to again.
   struct msghdr msg = {};
   struct iovec iov = {message_, kMaxMessageLength};
@@ -126,7 +160,7 @@ ssize_t BrokerSimpleMessage::RecvMsgWithFlags(int fd,
   if (r == -1)
     return -1;
 
-  int* wire_fds = NULL;
+  int* wire_fds = nullptr;
   size_t wire_fds_len = 0;
   base::ProcessId pid = -1;
 
@@ -136,7 +170,7 @@ ssize_t BrokerSimpleMessage::RecvMsgWithFlags(int fd,
       const size_t payload_len = cmsg->cmsg_len - CMSG_LEN(0);
       if (cmsg->cmsg_level == SOL_SOCKET && cmsg->cmsg_type == SCM_RIGHTS) {
         DCHECK_EQ(payload_len % sizeof(fd), 0u);
-        DCHECK_EQ(wire_fds, static_cast<void*>(nullptr));
+        DCHECK_EQ(wire_fds, nullptr);
         wire_fds = reinterpret_cast<int*>(CMSG_DATA(cmsg));
         wire_fds_len = payload_len / sizeof(fd);
       }
@@ -162,9 +196,10 @@ ssize_t BrokerSimpleMessage::RecvMsgWithFlags(int fd,
   }
 
   if (wire_fds) {
-    if (wire_fds_len > 1) {
-      // Only one FD is accepted by this receive.
-      for (unsigned i = 0; i < wire_fds_len; ++i) {
+    if (wire_fds_len > return_fds.size()) {
+      // The number of fds received is limited to return_fds.size(). If there
+      // are more in the message than expected, close them and return an error.
+      for (size_t i = 0; i < wire_fds_len; ++i) {
         close(wire_fds[i]);
       }
       errno = EMSGSIZE;
@@ -172,7 +207,9 @@ ssize_t BrokerSimpleMessage::RecvMsgWithFlags(int fd,
       return -1;
     }
 
-    *return_fd = base::ScopedFD(wire_fds[0]);
+    for (size_t i = 0; i < wire_fds_len; ++i) {
+      return_fds[i] = base::ScopedFD(wire_fds[i]);
+    }
   }
 
   // At this point, |r| is guaranteed to be >= 0.

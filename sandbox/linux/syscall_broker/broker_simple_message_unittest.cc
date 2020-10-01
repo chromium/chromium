@@ -4,14 +4,25 @@
 
 #include "sandbox/linux/syscall_broker/broker_simple_message.h"
 
+#include <linux/kcmp.h>
+#include <unistd.h>
+
 #include "base/bind.h"
 #include "base/bind_helpers.h"
+#include "base/callback_forward.h"
+#include "base/files/scoped_file.h"
+#include "base/logging.h"
 #include "base/macros.h"
-#include "base/single_thread_task_runner.h"
+#include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/thread_pool.h"
+#include "base/test/bind_test_util.h"
+#include "base/test/task_environment.h"
+#include "base/test/test_timeouts.h"
 #include "base/threading/thread.h"
 #include "sandbox/linux/syscall_broker/broker_channel.h"
 #include "sandbox/linux/syscall_broker/broker_simple_message.h"
+#include "sandbox/linux/system_headers/linux_syscalls.h"
 #include "sandbox/linux/tests/test_utils.h"
 #include "sandbox/linux/tests/unit_tests.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -549,7 +560,7 @@ TEST(BrokerSimpleMessage, SendRecvMsgSynchronous) {
     BrokerSimpleMessage send_message;
     send_message.AddDataToMessage(data1, strlen(data1) + 1);
     BrokerSimpleMessage reply_message;
-    int returned_fd;
+    base::ScopedFD returned_fd;
     ssize_t len = send_message.SendRecvMsgWithFlags(
         ipc_writer.get(), 0, &returned_fd, &reply_message);
 
@@ -582,7 +593,7 @@ TEST(BrokerSimpleMessage, SendRecvMsgSynchronous) {
     BrokerSimpleMessage send_message;
     send_message.AddIntToMessage(int1);
     BrokerSimpleMessage reply_message;
-    int returned_fd;
+    base::ScopedFD returned_fd;
     ssize_t len = send_message.SendRecvMsgWithFlags(
         ipc_writer.get(), 0, &returned_fd, &reply_message);
 
@@ -617,7 +628,7 @@ TEST(BrokerSimpleMessage, SendRecvMsgSynchronous) {
     send_message.AddDataToMessage(data1, strlen(data1) + 1);
     send_message.AddIntToMessage(int1);
     BrokerSimpleMessage reply_message;
-    int returned_fd;
+    base::ScopedFD returned_fd;
     ssize_t len = send_message.SendRecvMsgWithFlags(
         ipc_writer.get(), 0, &returned_fd, &reply_message);
 
@@ -657,7 +668,7 @@ TEST(BrokerSimpleMessage, SendRecvMsgSynchronous) {
     send_message.AddIntToMessage(int2);
     send_message.AddDataToMessage(data2, strlen(data2) + 1);
     BrokerSimpleMessage reply_message;
-    int returned_fd;
+    base::ScopedFD returned_fd;
     ssize_t len = send_message.SendRecvMsgWithFlags(
         ipc_writer.get(), 0, &returned_fd, &reply_message);
 
@@ -688,7 +699,7 @@ TEST(BrokerSimpleMessage, SendRecvMsgSynchronous) {
     EXPECT_TRUE(send_message.AddIntToMessage(5));
     EXPECT_TRUE(send_message.AddStringToMessage("test"));
     BrokerSimpleMessage reply_message;
-    int returned_fd;
+    base::ScopedFD returned_fd;
     ssize_t len = send_message.SendRecvMsgWithFlags(
         ipc_writer.get(), 0, &returned_fd, &reply_message);
 
@@ -696,6 +707,182 @@ TEST(BrokerSimpleMessage, SendRecvMsgSynchronous) {
 
     wait_event.Wait();
   }
+}
+
+namespace {
+// Adds a gtest failure and returns false iff any of the following conditions
+// are true:
+// 1. |fd1| or |fd2| are invalid fds
+// 2. Kcmp fails
+// 3. fd1 and fd2 do not compare equal under kcmp.
+bool CheckKcmpResult(int fd1, int fd2) {
+  if (fd1 < 0) {
+    ADD_FAILURE() << "fd1 invalid";
+    return false;
+  }
+  if (fd2 < 0) {
+    ADD_FAILURE() << "fd2 invalid";
+    return false;
+  }
+  pid_t pid = getpid();
+  int ret = syscall(__NR_kcmp, pid, pid, KCMP_FILE, fd1, fd2);
+  if (ret < 0) {
+    ADD_FAILURE() << "Kcmp failed, errno = " << errno;
+    return false;
+  }
+  if (ret != 0) {
+    ADD_FAILURE() << "File description did not compare equal to stdout. Kcmp("
+                  << fd1 << ", " << fd2 << ") = " << ret;
+    return false;
+  }
+
+  return true;
+}
+
+// Receives an fd over |ipc_reader|, and if it does not point to the same
+// description as stdout, prints a message and returns false.
+// On any other error, also prints a message and returns false.
+void ReceiveStdoutDupFd(BrokerChannel::EndPoint* ipc_reader) {
+  // Receive an fd from |ipc_reader|.
+  base::ScopedFD recv_fd;
+
+  BrokerSimpleMessage msg;
+  ssize_t len = msg.RecvMsgWithFlags(ipc_reader->get(), 0, &recv_fd);
+  ASSERT_GE(len, 0) << "Error on RecvMsgWithFlags, errno = " << errno;
+
+  CheckKcmpResult(STDOUT_FILENO, recv_fd.get());
+}
+
+void ReceiveTwoDupFds(BrokerChannel::EndPoint* ipc_reader) {
+  // Receive two fds from |ipc_reader|.
+  BrokerSimpleMessage msg;
+  base::ScopedFD recv_fds[2];
+  ssize_t len =
+      msg.RecvMsgWithFlagsMultipleFds(ipc_reader->get(), 0, {recv_fds});
+  ASSERT_GE(len, 0) << "Error on RecvMsgWithFlags, errno = " << errno;
+
+  CheckKcmpResult(STDOUT_FILENO, recv_fds[0].get());
+  CheckKcmpResult(STDIN_FILENO, recv_fds[1].get());
+}
+
+void ReceiveThreeFdsSendTwoBack(BrokerChannel::EndPoint* ipc_reader) {
+  // Receive two fds from |ipc_reader|.
+  BrokerSimpleMessage msg;
+  base::ScopedFD recv_fds[3];
+  ssize_t len =
+      msg.RecvMsgWithFlagsMultipleFds(ipc_reader->get(), 0, {recv_fds});
+  ASSERT_GE(len, 0) << "Error on RecvMsgWithFlags, errno = " << errno;
+  ASSERT_TRUE(recv_fds[0].is_valid());
+
+  if (!CheckKcmpResult(STDOUT_FILENO, recv_fds[1].get()) ||
+      !CheckKcmpResult(STDIN_FILENO, recv_fds[2].get())) {
+    return;
+  }
+
+  BrokerSimpleMessage resp;
+  int send_fds[2];
+  send_fds[0] = recv_fds[1].get();
+  send_fds[1] = recv_fds[2].get();
+  resp.AddIntToMessage(0);  // Dummy int to send message
+  ASSERT_TRUE(resp.SendMsgMultipleFds(recv_fds[0].get(), {send_fds}));
+}
+}  // namespace
+
+class BrokerSimpleMessageFdTest : public testing::Test {
+ public:
+  void SetUp() override {
+#if !defined(SANDBOX_USES_BASE_TEST_SUITE)
+    // TaskEnvironment requires initialized TestTimeouts, which are already
+    // enabled if using the base test suite.
+    TestTimeouts::Initialize();
+#endif
+    task_environment_ = std::make_unique<base::test::TaskEnvironment>();
+  }
+
+  bool SkipIfKcmpNotSupported() {
+    pid_t pid = getpid();
+    if (syscall(__NR_kcmp, pid, pid, KCMP_FILE, STDOUT_FILENO, STDOUT_FILENO) <
+        0) {
+      LOG(INFO) << "Skipping test, kcmp not supported.";
+      return false;
+    }
+    return true;
+  }
+
+ private:
+  std::unique_ptr<base::test::TaskEnvironment> task_environment_;
+};
+
+// Passes one fd with RecvMsg, SendMsg.
+TEST_F(BrokerSimpleMessageFdTest, PassOneFd) {
+  if (!SkipIfKcmpNotSupported())
+    return;
+
+  BrokerChannel::EndPoint ipc_reader;
+  BrokerChannel::EndPoint ipc_writer;
+  BrokerChannel::CreatePair(&ipc_reader, &ipc_writer);
+  base::RunLoop run_loop;
+
+  base::ThreadPool::PostTaskAndReply(
+      FROM_HERE, base::BindOnce(&ReceiveStdoutDupFd, &ipc_reader),
+      run_loop.QuitClosure());
+
+  BrokerSimpleMessage msg;
+  msg.AddIntToMessage(0);  // Must add a dummy value to send the message.
+  ASSERT_TRUE(msg.SendMsg(ipc_writer.get(), STDOUT_FILENO));
+
+  run_loop.Run();
+}
+
+TEST_F(BrokerSimpleMessageFdTest, PassTwoFds) {
+  if (!SkipIfKcmpNotSupported())
+    return;
+
+  BrokerChannel::EndPoint ipc_reader;
+  BrokerChannel::EndPoint ipc_writer;
+  BrokerChannel::CreatePair(&ipc_reader, &ipc_writer);
+  base::RunLoop run_loop;
+
+  base::ThreadPool::PostTaskAndReply(
+      FROM_HERE, base::BindOnce(&ReceiveTwoDupFds, &ipc_reader),
+      run_loop.QuitClosure());
+
+  BrokerSimpleMessage msg;
+  msg.AddIntToMessage(0);  // Must add a dummy value to send the message.
+  int send_fds[2];
+  send_fds[0] = STDOUT_FILENO;
+  send_fds[1] = STDIN_FILENO;
+  ASSERT_TRUE(msg.SendMsgMultipleFds(ipc_writer.get(), {send_fds}));
+
+  run_loop.Run();
+}
+
+TEST_F(BrokerSimpleMessageFdTest, SynchronousPassTwoFds) {
+  if (!SkipIfKcmpNotSupported())
+    return;
+
+  BrokerChannel::EndPoint ipc_reader;
+  BrokerChannel::EndPoint ipc_writer;
+  BrokerChannel::CreatePair(&ipc_reader, &ipc_writer);
+  base::RunLoop run_loop;
+
+  base::ThreadPool::PostTaskAndReply(
+      FROM_HERE, base::BindOnce(&ReceiveThreeFdsSendTwoBack, &ipc_reader),
+      run_loop.QuitClosure());
+
+  BrokerSimpleMessage msg, reply;
+  msg.AddIntToMessage(0);  // Must add a dummy value to send the message.
+  int send_fds[2];
+  send_fds[0] = STDOUT_FILENO;
+  send_fds[1] = STDIN_FILENO;
+  base::ScopedFD result_fds[2];
+  msg.SendRecvMsgWithFlagsMultipleFds(ipc_writer.get(), 0, {send_fds},
+                                      {result_fds}, &reply);
+
+  run_loop.Run();
+
+  ASSERT_TRUE(CheckKcmpResult(STDOUT_FILENO, result_fds[0].get()));
+  ASSERT_TRUE(CheckKcmpResult(STDIN_FILENO, result_fds[1].get()));
 }
 
 }  // namespace syscall_broker
