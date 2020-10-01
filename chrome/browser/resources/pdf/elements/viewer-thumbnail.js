@@ -69,6 +69,12 @@ export class ViewerThumbnailElement extends PolymerElement {
     this.removeAttribute('pending');
   }
 
+  /** @return {!HTMLElement} */
+  getClickTarget() {
+    return /** @type {!HTMLElement} */ (
+        this.shadowRoot.querySelector('#thumbnail'));
+  }
+
   /**
    * @return {!HTMLCanvasElement}
    * @private
@@ -164,13 +170,11 @@ export class ViewerThumbnailElement extends PolymerElement {
     const keyboardEvent = /** @type {!KeyboardEvent} */ (e);
     switch (keyboardEvent.key) {
       case 'ArrowDown':
-      case 'ArrowRight':
         // Prevent default arrow scroll behavior.
         keyboardEvent.preventDefault();
         this.focusThumbnailNext_();
         break;
       case 'ArrowUp':
-      case 'ArrowLeft':
         // Prevent default arrow scroll behavior.
         keyboardEvent.preventDefault();
         this.focusThumbnailPrev_();

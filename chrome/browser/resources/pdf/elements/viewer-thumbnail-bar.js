@@ -20,7 +20,10 @@ export class ViewerThumbnailBarElement extends PolymerElement {
 
   static get properties() {
     return {
-      activePage: Number,
+      activePage: {
+        type: Number,
+        observer: 'activePageChanged_',
+      },
 
       clockwiseRotations: Number,
 
@@ -72,6 +75,29 @@ export class ViewerThumbnailBarElement extends PolymerElement {
   }
 
   /**
+   * Changes the focus to the thumbnail of the new active page if the focus was
+   * already on a thumbnail.
+   * @private
+   */
+  activePageChanged_() {
+    if (this.shadowRoot.activeElement) {
+      this.getThumbnailForPage_(this.activePage).focusAndScroll();
+    }
+  }
+
+  /**
+   * @param {number} pageNumber
+   * @private
+   */
+  clickThumbnailForPage(pageNumber) {
+    if (pageNumber < 1 || pageNumber > this.docLength) {
+      return;
+    }
+
+    this.getThumbnailForPage_(pageNumber).getClickTarget().click();
+  }
+
+  /**
    * @return {!Array<number>} The array of page numbers.
    * @private
    */
@@ -86,6 +112,16 @@ export class ViewerThumbnailBarElement extends PolymerElement {
    */
   getAriaLabel_(pageNumber) {
     return loadTimeData.getStringF('thumbnailPageAriaLabel', pageNumber);
+  }
+
+  /**
+   * @param {number} pageNumber
+   * @return {ViewerThumbnailElement}
+   * @private
+   */
+  getThumbnailForPage_(pageNumber) {
+    return /** @type {ViewerThumbnailElement} */ (this.shadowRoot.querySelector(
+        `viewer-thumbnail:nth-child(${pageNumber})`));
   }
 
   /**
@@ -152,6 +188,14 @@ export class ViewerThumbnailBarElement extends PolymerElement {
       this.shadowRoot.querySelector('viewer-thumbnail:last-of-type').focus({
         preventScroll: true
       });
+    } else if (keyboardEvent.key === 'ArrowRight') {
+      // Prevent default arrow scroll behavior.
+      keyboardEvent.preventDefault();
+      this.clickThumbnailForPage(this.activePage + 1);
+    } else if (keyboardEvent.key === 'ArrowLeft') {
+      // Prevent default arrow scroll behavior.
+      keyboardEvent.preventDefault();
+      this.clickThumbnailForPage(this.activePage - 1);
     }
   }
 }
