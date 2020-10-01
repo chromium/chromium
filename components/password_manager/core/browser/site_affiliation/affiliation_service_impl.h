@@ -48,18 +48,17 @@ class AffiliationServiceImpl : public AffiliationService,
 
   // Prefetches change password URLs and saves them to |change_password_urls_|
   // map. The verification if affiliation based matching is enabled must be
-  // performed. Assigns the callback to |result_callback_|.
+  // performed. Creates a unique fetcher and appends it to |pending_fetches_|
+  // along with |urls| and |callback|.
   void PrefetchChangePasswordURLs(const std::vector<GURL>& urls,
                                   base::OnceClosure callback) override;
 
-  // Clears the |change_password_urls_| map and cancels prefetch if still
-  // running.
+  // Clears the |change_password_urls_| map and cancels prefetch requests if
+  // still running.
   void Clear() override;
 
   // In case no valid URL was found, a method returns an empty URL.
   GURL GetChangePasswordURL(const GURL& url) const override;
-
-  AffiliationFetcherInterface* GetFetcherForTesting() { return fetcher_.get(); }
 
   void SetURLLoaderFactoryForTesting(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
@@ -76,6 +75,8 @@ class AffiliationServiceImpl : public AffiliationService,
   }
 
  private:
+  struct FetchInfo;
+
   // AffiliationFetcherDelegate:
   void OnFetchSucceeded(
       AffiliationFetcherInterface* fetcher,
@@ -83,27 +84,20 @@ class AffiliationServiceImpl : public AffiliationService,
   void OnFetchFailed(AffiliationFetcherInterface* fetcher) override;
   void OnMalformedResponse(AffiliationFetcherInterface* fetcher) override;
 
-  // Converts new |urls| to facets and inserts them to the
-  // |change_password_urls_|.
-  std::vector<FacetURI> ConvertMissingURLsToFacets(
-      const std::vector<GURL>& urls);
-
-  // Calls Affiliation Fetcher and starts a request for |facets| affiliations.
+  // Creates AffiliationFetcher and starts a request to retrieve affiliations
+  // for given |urls|. |Request_info| defines what info should be requested.
+  // When prefetch is finished or a fetcher gets destroyed as a result of
+  // Clear() a callback is run.
   void RequestFacetsAffiliations(
-      const std::vector<FacetURI>& facets,
-      const AffiliationFetcherInterface::RequestInfo request_info);
+      const std::vector<GURL>& urls,
+      const AffiliationFetcherInterface::RequestInfo request_info,
+      base::OnceClosure callback);
 
   syncer::SyncService* sync_service_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  std::vector<url::SchemeHostPort> requested_tuple_origins_;
   std::map<url::SchemeHostPort, ChangePasswordUrlMatch> change_password_urls_;
-  // TODO(crbug.com/1117045): A vector of pending fetchers to be created.
-  std::unique_ptr<AffiliationFetcherInterface> fetcher_;
+  std::vector<FetchInfo> pending_fetches_;
   std::unique_ptr<AffiliationFetcherFactory> fetcher_factory_;
-  // Callback is passed in PrefetchChangePasswordURLs and is run in
-  // OnFetchSucceeded, OnFetchMalformed, OnFetchFailed to indicate the prefetch
-  // has finished.
-  base::OnceClosure result_callback_;
 };
 
 }  // namespace password_manager

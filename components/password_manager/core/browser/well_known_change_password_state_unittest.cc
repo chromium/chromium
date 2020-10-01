@@ -9,6 +9,7 @@
 #include "base/timer/mock_timer.h"
 #include "components/password_manager/core/browser/android_affiliation/mock_affiliation_fetcher.h"
 #include "components/password_manager/core/browser/site_affiliation/affiliation_service_impl.h"
+#include "components/password_manager/core/browser/site_affiliation/mock_affiliation_fetcher_factory.h"
 #include "components/password_manager/core/browser/well_known_change_password_util.h"
 #include "components/sync/driver/test_sync_service.h"
 #include "net/base/isolation_info.h"
@@ -230,11 +231,22 @@ TEST_P(WellKnownChangePasswordStateTest, TimeoutTriggersOnProcessingFinished) {
 
 TEST_P(WellKnownChangePasswordStateTest,
        PrefetchCallbackTriggersOnProcessingFinished) {
+  auto mock_fetcher = std::make_unique<MockAffiliationFetcher>();
+  auto* raw_mock_fetcher = mock_fetcher.get();
+  auto mock_fetcher_factory = std::make_unique<MockAffiliationFetcherFactory>();
+  EXPECT_CALL(*(mock_fetcher_factory.get()), CreateInstance)
+      .WillOnce(testing::Return(testing::ByMove(std::move(mock_fetcher))));
+
   syncer::TestSyncService test_sync_service;
+  test_sync_service.SetFirstSetupComplete(true);
+  test_sync_service.SetIsUsingSecondaryPassphrase(false);
   AffiliationServiceImpl affiliation_service(&test_sync_service,
                                              test_shared_loader_factory());
+  affiliation_service.SetFetcherFactoryForTesting(
+      std::move(mock_fetcher_factory));
 
-  state()->PrefetchChangePasswordURLs(&affiliation_service, {});
+  state()->PrefetchChangePasswordURLs(&affiliation_service,
+                                      {GURL("https://example.com")});
 
   ResponseDelayParams params = GetParam();
   RespondeToChangePasswordRequest(net::HTTP_NOT_FOUND,
@@ -245,10 +257,9 @@ TEST_P(WellKnownChangePasswordStateTest,
   FastForwardBy(base::TimeDelta::FromMilliseconds(ms_to_forward));
 
   EXPECT_CALL(*delegate(), OnProcessingFinished(false));
-  auto mock_fetcher = std::make_unique<MockAffiliationFetcher>();
   static_cast<AffiliationFetcherDelegate*>(&affiliation_service)
       ->OnFetchSucceeded(
-          mock_fetcher.get(),
+          raw_mock_fetcher,
           std::make_unique<AffiliationFetcherDelegate::Result>());
 }
 

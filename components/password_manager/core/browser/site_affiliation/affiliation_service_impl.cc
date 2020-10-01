@@ -7,6 +7,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "components/password_manager/core/browser/android_affiliation/affiliation_fetcher.h"
 #include "components/password_manager/core/browser/password_store_factory_util.h"
 #include "components/sync/driver/sync_service.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -16,6 +17,10 @@
 namespace password_manager {
 
 namespace {
+
+void LogFetchResult(metrics_util::GetChangePasswordUrlMetric result) {
+  base::UmaHistogramEnumeration(kGetChangePasswordURLMetricName, result);
+}
 
 // Creates a look-up (Facet URI : change password URL) map for facets from
 // requested |groupings|. If a facet does not have change password URL it gets
@@ -54,6 +59,33 @@ CreateFacetUriToChangePasswordUrlMap(
 const char kGetChangePasswordURLMetricName[] =
     "PasswordManager.AffiliationService.GetChangePasswordUsage";
 
+struct AffiliationServiceImpl::FetchInfo {
+  FetchInfo(std::unique_ptr<AffiliationFetcherInterface> pending_fetcher,
+            std::vector<url::SchemeHostPort> tuple_origins,
+            base::OnceClosure result_callback)
+      : fetcher(std::move(pending_fetcher)),
+        requested_tuple_origins(std::move(tuple_origins)),
+        callback(std::move(result_callback)) {}
+
+  FetchInfo(FetchInfo&& other) = default;
+
+  FetchInfo& operator=(FetchInfo&& other) = default;
+
+  ~FetchInfo() {
+    // The check is essential here, because emplace_back calls move constructor
+    // and destructor, respectively. Therefore, the check is necessary to
+    // prevent accessing already moved object.
+    if (callback)
+      std::move(callback).Run();
+  }
+
+  std::unique_ptr<AffiliationFetcherInterface> fetcher;
+  std::vector<url::SchemeHostPort> requested_tuple_origins;
+  // Callback is passed in PrefetchChangePasswordURLs and is run to indicate the
+  // prefetch has finished or got canceled.
+  base::OnceClosure callback;
+};
+
 AffiliationServiceImpl::AffiliationServiceImpl(
     syncer::SyncService* sync_service,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
@@ -66,18 +98,17 @@ AffiliationServiceImpl::~AffiliationServiceImpl() = default;
 void AffiliationServiceImpl::PrefetchChangePasswordURLs(
     const std::vector<GURL>& urls,
     base::OnceClosure callback) {
-  result_callback_ = std::move(callback);
   if (ShouldAffiliationBasedMatchingBeActive(sync_service_)) {
-    RequestFacetsAffiliations(ConvertMissingURLsToFacets(urls),
-                              {.change_password_info = true});
+    RequestFacetsAffiliations(urls, {.change_password_info = true},
+                              std::move(callback));
   } else {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, std::move(result_callback_));
+    base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                     std::move(callback));
   }
 }
 
 void AffiliationServiceImpl::Clear() {
-  fetcher_.reset();
+  pending_fetches_.clear();
   change_password_urls_.clear();
 }
 
@@ -85,23 +116,22 @@ GURL AffiliationServiceImpl::GetChangePasswordURL(const GURL& url) const {
   auto it = change_password_urls_.find(url::SchemeHostPort(url));
   if (it != change_password_urls_.end()) {
     if (it->second.group_url_override) {
-      base::UmaHistogramEnumeration(
-          kGetChangePasswordURLMetricName,
+      LogFetchResult(
           metrics_util::GetChangePasswordUrlMetric::kGroupUrlOverrideUsed);
     } else {
-      base::UmaHistogramEnumeration(
-          kGetChangePasswordURLMetricName,
+      LogFetchResult(
           metrics_util::GetChangePasswordUrlMetric::kUrlOverrideUsed);
     }
     return it->second.change_password_url;
   }
-  if (base::Contains(requested_tuple_origins_, url::SchemeHostPort(url))) {
-    base::UmaHistogramEnumeration(
-        kGetChangePasswordURLMetricName,
-        metrics_util::GetChangePasswordUrlMetric::kNotFetchedYet);
+
+  url::SchemeHostPort tuple(url);
+  if (base::ranges::any_of(pending_fetches_, [&tuple](const auto& info) {
+        return base::Contains(info.requested_tuple_origins, tuple);
+      })) {
+    LogFetchResult(metrics_util::GetChangePasswordUrlMetric::kNotFetchedYet);
   } else {
-    base::UmaHistogramEnumeration(
-        kGetChangePasswordURLMetricName,
+    LogFetchResult(
         metrics_util::GetChangePasswordUrlMetric::kNoUrlOverrideAvailable);
   }
   return GURL();
@@ -110,10 +140,15 @@ GURL AffiliationServiceImpl::GetChangePasswordURL(const GURL& url) const {
 void AffiliationServiceImpl::OnFetchSucceeded(
     AffiliationFetcherInterface* fetcher,
     std::unique_ptr<AffiliationFetcherDelegate::Result> result) {
-  fetcher_.reset();
+  auto processed_fetch =
+      base::ranges::find(pending_fetches_, fetcher,
+                         [](const auto& info) { return info.fetcher.get(); });
+  if (processed_fetch == pending_fetches_.end())
+    return;
+
   std::map<FacetURI, AffiliationServiceImpl::ChangePasswordUrlMatch>
       uri_to_url = CreateFacetUriToChangePasswordUrlMap(result->groupings);
-  for (const url::SchemeHostPort& requested_tuple : requested_tuple_origins_) {
+  for (const auto& requested_tuple : processed_fetch->requested_tuple_origins) {
     auto it = uri_to_url.find(
         FacetURI::FromPotentiallyInvalidSpec(requested_tuple.Serialize()));
     if (it != uri_to_url.end()) {
@@ -121,48 +156,44 @@ void AffiliationServiceImpl::OnFetchSucceeded(
     }
   }
 
-  requested_tuple_origins_.clear();
-  std::move(result_callback_).Run();
+  pending_fetches_.erase(processed_fetch);
 }
 
 void AffiliationServiceImpl::OnFetchFailed(
     AffiliationFetcherInterface* fetcher) {
-  fetcher_.reset();
-  requested_tuple_origins_.clear();
-  std::move(result_callback_).Run();
+  base::EraseIf(pending_fetches_, [fetcher](const auto& info) {
+    return info.fetcher.get() == fetcher;
+  });
 }
 
 void AffiliationServiceImpl::OnMalformedResponse(
     AffiliationFetcherInterface* fetcher) {
-  fetcher_.reset();
-  requested_tuple_origins_.clear();
-  std::move(result_callback_).Run();
+  base::EraseIf(pending_fetches_, [fetcher](const auto& info) {
+    return info.fetcher.get() == fetcher;
+  });
 }
 
-std::vector<FacetURI> AffiliationServiceImpl::ConvertMissingURLsToFacets(
-    const std::vector<GURL>& urls) {
+void AffiliationServiceImpl::RequestFacetsAffiliations(
+    const std::vector<GURL>& urls,
+    const AffiliationFetcherInterface::RequestInfo request_info,
+    base::OnceClosure callback) {
   std::vector<FacetURI> facets;
+  std::vector<url::SchemeHostPort> tuple_origins;
   for (const auto& url : urls) {
     if (url.is_valid()) {
       url::SchemeHostPort scheme_host_port(url);
       if (!base::Contains(change_password_urls_, scheme_host_port)) {
         facets.push_back(
             FacetURI::FromCanonicalSpec(scheme_host_port.Serialize()));
-        requested_tuple_origins_.push_back(std::move(scheme_host_port));
+        tuple_origins.push_back(std::move(scheme_host_port));
       }
     }
   }
-  return facets;
-}
-
-// TODO(crbug.com/1117045): New request resets the pointer to
-// AffiliationFetcher, therefore the previous request gets canceled.
-void AffiliationServiceImpl::RequestFacetsAffiliations(
-    const std::vector<FacetURI>& facets,
-    const AffiliationFetcherInterface::RequestInfo request_info) {
   if (!facets.empty()) {
-    fetcher_ = fetcher_factory_->CreateInstance(url_loader_factory_, this);
-    fetcher_->StartRequest(facets, request_info);
+    auto fetcher = fetcher_factory_->CreateInstance(url_loader_factory_, this);
+    fetcher->StartRequest(facets, request_info);
+    pending_fetches_.emplace_back(std::move(fetcher), tuple_origins,
+                                  std::move(callback));
   }
 }
 
