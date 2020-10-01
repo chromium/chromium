@@ -10,4 +10,26 @@ MediaSourceAttachmentSupplement::MediaSourceAttachmentSupplement() = default;
 
 MediaSourceAttachmentSupplement::~MediaSourceAttachmentSupplement() = default;
 
+void MediaSourceAttachmentSupplement::AddMainThreadAudioTrackToMediaElement(
+    String /* id */,
+    String /* kind */,
+    String /* label */,
+    String /* language */,
+    bool /* enabled */) {
+  // TODO(https::/crbug.com/878133): Remove this once cross-thread
+  // implementation supports creation of worker-thread tracks.
+  NOTIMPLEMENTED();
+}
+
+void MediaSourceAttachmentSupplement::AddMainThreadVideoTrackToMediaElement(
+    String /* id */,
+    String /* kind */,
+    String /* label */,
+    String /* language */,
+    bool /* selected */) {
+  // TODO(https::/crbug.com/878133): Remove this once cross-thread
+  // implementation supports creation of worker-thread tracks.
+  NOTIMPLEMENTED();
+}
+
 }  // namespace blink

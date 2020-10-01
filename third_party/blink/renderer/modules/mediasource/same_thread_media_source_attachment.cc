@@ -95,6 +95,87 @@ bool SameThreadMediaSourceAttachment::GetElementError(
   return current_element_error_state;
 }
 
+void SameThreadMediaSourceAttachment::AddAudioTrackToMediaElement(
+    MediaSourceTracer* tracer,
+    AudioTrack* track) {
+  DVLOG(3) << __func__ << " this=" << this;
+
+  VerifyCalledWhileContextsAliveForDebugging();
+
+  HTMLMediaElement* element = GetMediaElement(tracer);
+  element->audioTracks().Add(track);
+}
+
+void SameThreadMediaSourceAttachment::AddVideoTrackToMediaElement(
+    MediaSourceTracer* tracer,
+    VideoTrack* track) {
+  DVLOG(3) << __func__ << " this=" << this;
+
+  VerifyCalledWhileContextsAliveForDebugging();
+
+  HTMLMediaElement* element = GetMediaElement(tracer);
+  element->videoTracks().Add(track);
+}
+
+void SameThreadMediaSourceAttachment::RemoveAudioTracksFromMediaElement(
+    MediaSourceTracer* tracer,
+    Vector<String> audio_ids,
+    bool enqueue_change_event) {
+  DVLOG(3) << __func__ << " this=" << this << ", ids size=" << audio_ids.size()
+           << ", enqueue_change_event=" << enqueue_change_event;
+
+  if (element_context_destroyed_ || media_source_context_destroyed_) {
+    DVLOG(3) << __func__ << " this=" << this
+             << " -> skipping due to context(s) destroyed";
+    return;
+  }
+
+  HTMLMediaElement* element = GetMediaElement(tracer);
+  for (auto& audio_id : audio_ids) {
+    element->audioTracks().Remove(audio_id);
+  }
+
+  if (enqueue_change_event) {
+    Event* event = Event::Create(event_type_names::kChange);
+    event->SetTarget(&element->audioTracks());
+    element->ScheduleEvent(event);
+  }
+}
+
+void SameThreadMediaSourceAttachment::RemoveVideoTracksFromMediaElement(
+    MediaSourceTracer* tracer,
+    Vector<String> video_ids,
+    bool enqueue_change_event) {
+  DVLOG(3) << __func__ << " this=" << this << ", ids size=" << video_ids.size()
+           << ", enqueue_change_event=" << enqueue_change_event;
+
+  if (element_context_destroyed_ || media_source_context_destroyed_) {
+    DVLOG(3) << __func__ << " this=" << this
+             << " -> skipping due to context(s) destroyed";
+    return;
+  }
+
+  HTMLMediaElement* element = GetMediaElement(tracer);
+  for (auto& video_id : video_ids) {
+    element->videoTracks().Remove(video_id);
+  }
+
+  if (enqueue_change_event) {
+    Event* event = Event::Create(event_type_names::kChange);
+    event->SetTarget(&element->videoTracks());
+    element->ScheduleEvent(event);
+  }
+}
+
+void SameThreadMediaSourceAttachment::OnMediaSourceContextDestroyed() {
+  DVLOG(3) << __func__ << " this=" << this;
+
+  // We should only be notified once.
+  DCHECK(!media_source_context_destroyed_);
+
+  media_source_context_destroyed_ = true;
+}
+
 void SameThreadMediaSourceAttachment::Unregister() {
   DVLOG(1) << __func__ << " this=" << this;
 
@@ -200,15 +281,6 @@ void SameThreadMediaSourceAttachment::OnElementContextDestroyed() {
   DCHECK(!element_context_destroyed_);
 
   element_context_destroyed_ = true;
-}
-
-void SameThreadMediaSourceAttachment::OnMediaSourceContextDestroyed() {
-  DVLOG(3) << __func__ << " this=" << this;
-
-  // We should only be notified once.
-  DCHECK(!element_context_destroyed_);
-
-  media_source_context_destroyed_ = true;
 }
 
 void SameThreadMediaSourceAttachment::

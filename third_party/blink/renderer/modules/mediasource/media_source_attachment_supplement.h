@@ -7,6 +7,8 @@
 
 #include "third_party/blink/renderer/core/html/media/media_source_attachment.h"
 #include "third_party/blink/renderer/core/html/media/media_source_tracer.h"
+#include "third_party/blink/renderer/core/html/track/audio_track.h"
+#include "third_party/blink/renderer/core/html/track/video_track.h"
 #include "third_party/blink/renderer/modules/mediasource/media_source.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -44,6 +46,38 @@ class MediaSourceAttachmentSupplement : public MediaSourceAttachment {
   // rely on the element to correctly pump when it has an error to this
   // attachment (in a cross-thread implementation).
   virtual bool GetElementError(MediaSourceTracer* tracer) = 0;
+
+  // Add/Remove tracks to/from the media Element's audioTracks() or
+  // videoTracks() list. Note that this is synchronous in
+  // SameThreadMediaSourceAttachment, but the CrossThreadMediaSourceAttachment
+  // does a cross-thread task post and performs the operations on the main
+  // thread to enable correct context ownership of created tracks and correct
+  // context for track list operations.
+  virtual void AddAudioTrackToMediaElement(MediaSourceTracer* tracer,
+                                           AudioTrack* track) = 0;
+  virtual void AddVideoTrackToMediaElement(MediaSourceTracer* tracer,
+                                           VideoTrack* track) = 0;
+  virtual void RemoveAudioTracksFromMediaElement(MediaSourceTracer* tracer,
+                                                 Vector<String> audio_ids,
+                                                 bool enqueue_change_event) = 0;
+  virtual void RemoveVideoTracksFromMediaElement(MediaSourceTracer* tracer,
+                                                 Vector<String> video_ids,
+                                                 bool enqueue_change_event) = 0;
+  // TODO(https://crbug.com/878133): Update the implementations to remove these
+  // short-term cross-thread helpers and instead use the methods, above, once
+  // track creation outside of main thread is supported. These helpers create
+  // the tracks on the main thread from parameters (not from a currently-
+  // uncreatable worker thread track).
+  virtual void AddMainThreadAudioTrackToMediaElement(String id,
+                                                     String kind,
+                                                     String label,
+                                                     String language,
+                                                     bool enabled);
+  virtual void AddMainThreadVideoTrackToMediaElement(String id,
+                                                     String kind,
+                                                     String label,
+                                                     String language,
+                                                     bool selected);
 
   virtual void OnMediaSourceContextDestroyed() = 0;
 

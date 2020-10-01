@@ -9,6 +9,10 @@
 
 #include "base/util/type_safety/pass_key.h"
 #include "third_party/blink/public/platform/web_time_range.h"
+#include "third_party/blink/renderer/core/html/track/audio_track.h"
+#include "third_party/blink/renderer/core/html/track/audio_track_list.h"
+#include "third_party/blink/renderer/core/html/track/video_track.h"
+#include "third_party/blink/renderer/core/html/track/video_track_list.h"
 #include "third_party/blink/renderer/modules/mediasource/media_source.h"
 #include "third_party/blink/renderer/modules/mediasource/media_source_attachment_supplement.h"
 #include "third_party/blink/renderer/modules/mediasource/url_media_source.h"
@@ -31,6 +35,16 @@ class SameThreadMediaSourceAttachment final
   void NotifyDurationChanged(MediaSourceTracer* tracer, double duration) final;
   double GetRecentMediaTime(MediaSourceTracer* tracer) final;
   bool GetElementError(MediaSourceTracer* tracer) final;
+  void AddAudioTrackToMediaElement(MediaSourceTracer* tracer,
+                                   AudioTrack* track) final;
+  void AddVideoTrackToMediaElement(MediaSourceTracer* tracer,
+                                   VideoTrack* track) final;
+  void RemoveAudioTracksFromMediaElement(MediaSourceTracer* tracer,
+                                         Vector<String> audio_ids,
+                                         bool enqueue_change_event) final;
+  void RemoveVideoTracksFromMediaElement(MediaSourceTracer* tracer,
+                                         Vector<String> video_ids,
+                                         bool enqueue_change_event) final;
   void OnMediaSourceContextDestroyed() final;
 
   // MediaSourceAttachment

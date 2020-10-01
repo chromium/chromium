@@ -33,6 +33,7 @@
 #include <limits>
 #include <memory>
 #include <sstream>
+#include <utility>
 
 #include "media/base/logging_override_if_enabled.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -51,6 +52,7 @@
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_view.h"
 #include "third_party/blink/renderer/modules/mediasource/media_source.h"
+#include "third_party/blink/renderer/modules/mediasource/media_source_attachment_supplement.h"
 #include "third_party/blink/renderer/modules/mediasource/source_buffer_track_base_supplement.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -126,13 +128,26 @@ SourceBuffer::SourceBuffer(std::unique_ptr<WebSourceBuffer> web_source_buffer,
   DCHECK(web_source_buffer_);
   DCHECK(source_);
   DCHECK(source_->MediaElement());
-  // TODO(https://crbug.com/878133): Enable construction of media tracks that
-  // don't reference the media element if, for instance, they are owned by a
-  // different execution context.
-  audio_tracks_ =
-      MakeGarbageCollected<AudioTrackList>(*source_->MediaElement());
-  video_tracks_ =
-      MakeGarbageCollected<VideoTrackList>(*source_->MediaElement());
+  if (GetExecutionContext()->IsWindow()) {
+    DCHECK(IsMainThread());
+
+    audio_tracks_ =
+        MakeGarbageCollected<AudioTrackList>(*source_->MediaElement());
+    video_tracks_ =
+        MakeGarbageCollected<VideoTrackList>(*source_->MediaElement());
+  } else {
+    DCHECK(RuntimeEnabledFeatures::MediaSourceInWorkersEnabled() &&
+           GetExecutionContext()->IsDedicatedWorkerGlobalScope());
+    DCHECK(!IsMainThread());
+
+    // TODO(https://crbug.com/878133): Enable construction of media tracks that
+    // don't reference the media element if, for instance, they are owned by a
+    // different execution context. For now, AudioVideoTracks experimental
+    // feature implementation is not complete when MediaSource is in worker.
+    DCHECK(!audio_tracks_);
+    DCHECK(!video_tracks_);
+  }
+
   web_source_buffer_->SetClient(this);
 }
 
@@ -274,11 +289,25 @@ void SourceBuffer::setTimestampOffset(double offset,
 
 AudioTrackList& SourceBuffer::audioTracks() {
   DCHECK(HTMLMediaElement::MediaTracksEnabledInternally());
+
+  // TODO(https://crbug.com/878133): Complete the AudioVideoTracks function
+  // necessary to enable successful experimental usage of it when MSE is in
+  // worker. Note that if this is consulted as part of parent |source_|'s
+  // context destruction, then we cannot consult GetExecutionContext() here.
+  CHECK(IsMainThread());
+
   return *audio_tracks_;
 }
 
 VideoTrackList& SourceBuffer::videoTracks() {
   DCHECK(HTMLMediaElement::MediaTracksEnabledInternally());
+
+  // TODO(https://crbug.com/878133): Complete the AudioVideoTracks function
+  // necessary to enable successful experimental usage of it when MSE is in
+  // worker. Note that if this is consulted as part of parent |source_|'s
+  // context destruction, then we cannot consult GetExecutionContext() here.
+  CHECK(IsMainThread());
+
   return *video_tracks_;
 }
 
@@ -658,10 +687,7 @@ void SourceBuffer::RemovedFromMediaSource() {
 
   if (HTMLMediaElement::MediaTracksEnabledInternally()) {
     DCHECK(source_);
-    if (source_->MediaElement()->audioTracks().length() > 0 ||
-        source_->MediaElement()->videoTracks().length() > 0) {
-      RemoveMediaTracks();
-    }
+    RemoveMediaTracks();
   }
 
   web_source_buffer_->RemovedFromMediaSource();
@@ -679,13 +705,30 @@ double SourceBuffer::HighestPresentationTimestamp() {
 }
 
 void SourceBuffer::RemoveMediaTracks() {
-  DCHECK(HTMLMediaElement::MediaTracksEnabledInternally());
   // Spec:
   // http://w3c.github.io/media-source/#widl-MediaSource-removeSourceBuffer-void-SourceBuffer-sourceBuffer
+  DCHECK(HTMLMediaElement::MediaTracksEnabledInternally());
   DCHECK(source_);
 
-  HTMLMediaElement* media_element = source_->MediaElement();
-  DCHECK(media_element);
+  scoped_refptr<MediaSourceAttachmentSupplement> attachment;
+  MediaSourceTracer* tracer;
+  std::tie(attachment, tracer) = source_->AttachmentAndTracer();
+  DCHECK(attachment);
+
+  // One path leading to here is from |source_|'s ContextDestroyed(), so we
+  // cannot consult GetExecutionContext() here to determine if this is a
+  // worker-thread-owned or main-thread-owned SourceBuffer. Rather, we will rely
+  // on IsMainThread().
+  if (!IsMainThread()) {
+    RemovePlaceholderCrossThreadTracks(attachment, tracer);
+    return;
+  }
+
+  // For safety, ensure we are using SameThreadAttachment behavior. This is just
+  // in case we somehow are incorrectly running on the main thread, but are a
+  // worker-thread-owned SourceBuffer with a cross-thread attachment.
+  CHECK(tracer);  // Only same-thread attachments have a tracer.
+
   // 3. Let SourceBuffer audioTracks list equal the AudioTrackList object
   //    returned by sourceBuffer.audioTracks.
   // 4. If the SourceBuffer audioTracks list is not empty, then run the
@@ -694,6 +737,7 @@ void SourceBuffer::RemoveMediaTracks() {
   //     returned by the audioTracks attribute on the HTMLMediaElement.
   // 4.2 Let the removed enabled audio track flag equal false.
   bool removed_enabled_audio_track = false;
+  Vector<String> audio_track_removal_ids;
   // 4.3 For each AudioTrack object in the SourceBuffer audioTracks list, run
   //     the following steps:
   while (audioTracks().length() > 0) {
@@ -709,7 +753,9 @@ void SourceBuffer::RemoveMediaTracks() {
     // 4.3.4 Queue a task to fire a trusted event named removetrack, that does
     //       not bubble and is not cancelable, and that uses the TrackEvent
     //       interface, at the HTMLMediaElement audioTracks list.
-    media_element->audioTracks().Remove(audio_track->id());
+    // We compile the list of audio tracks to remove from the media element here
+    // and tell the element to remove them, below, with step 4.4.
+    audio_track_removal_ids.push_back(audio_track->id());
     // 4.3.5 Remove the AudioTrack object from the SourceBuffer audioTracks
     //       list.
     // 4.3.6 Queue a task to fire a trusted event named removetrack, that does
@@ -720,10 +766,12 @@ void SourceBuffer::RemoveMediaTracks() {
   // 4.4 If the removed enabled audio track flag equals true, then queue a task
   //     to fire a simple event named change at the HTMLMediaElement audioTracks
   //     list.
-  if (removed_enabled_audio_track) {
-    Event* event = Event::Create(event_type_names::kChange);
-    event->SetTarget(&media_element->audioTracks());
-    media_element->ScheduleEvent(event);
+  // Here, we perform batch removal of audio tracks, compiled in step 4.3.4,
+  // above, along with conditional enqueueing of change event.
+  if (!audio_track_removal_ids.IsEmpty()) {
+    attachment->RemoveAudioTracksFromMediaElement(
+        tracer, audio_track_removal_ids,
+        removed_enabled_audio_track /* enqueue_change_event */);
   }
 
   // 5. Let SourceBuffer videoTracks list equal the VideoTrackList object
@@ -734,6 +782,7 @@ void SourceBuffer::RemoveMediaTracks() {
   //     returned by the videoTracks attribute on the HTMLMediaElement.
   // 6.2 Let the removed selected video track flag equal false.
   bool removed_selected_video_track = false;
+  Vector<String> video_track_removal_ids;
   // 6.3 For each VideoTrack object in the SourceBuffer videoTracks list, run
   //     the following steps:
   while (videoTracks().length() > 0) {
@@ -749,7 +798,9 @@ void SourceBuffer::RemoveMediaTracks() {
     // 6.3.4 Queue a task to fire a trusted event named removetrack, that does
     //       not bubble and is not cancelable, and that uses the TrackEvent
     //       interface, at the HTMLMediaElement videoTracks list.
-    media_element->videoTracks().Remove(video_track->id());
+    // We compile the list of video tracks to remove from the media element here
+    // and tell the element to remove them, below, with step 6.4.
+    video_track_removal_ids.push_back(video_track->id());
     // 6.3.5 Remove the VideoTrack object from the SourceBuffer videoTracks
     //       list.
     // 6.3.6 Queue a task to fire a trusted event named removetrack, that does
@@ -760,10 +811,12 @@ void SourceBuffer::RemoveMediaTracks() {
   // 6.4 If the removed selected video track flag equals true, then queue a task
   //     to fire a simple event named change at the HTMLMediaElement videoTracks
   //     list.
-  if (removed_selected_video_track) {
-    Event* event = Event::Create(event_type_names::kChange);
-    event->SetTarget(&media_element->videoTracks());
-    media_element->ScheduleEvent(event);
+  // Here, we perform batch removal of video tracks, compiled in step 6.3.4,
+  // above, along with conditional enqueueing of change event.
+  if (!video_track_removal_ids.IsEmpty()) {
+    attachment->RemoveVideoTracksFromMediaElement(
+        tracer, video_track_removal_ids,
+        removed_selected_video_track /* enqueue_change_event */);
   }
 
   // 7-8. TODO(servolk): Remove text tracks once SourceBuffer has text tracks.
@@ -848,20 +901,141 @@ AtomicString SourceBuffer::DefaultTrackLanguage(
   return track_default ? AtomicString(track_default->language()) : "";
 }
 
+void SourceBuffer::AddPlaceholderCrossThreadTracks(
+    const WebVector<MediaTrackInfo>& new_tracks,
+    scoped_refptr<MediaSourceAttachmentSupplement> attachment) {
+  // TODO(https://crbug.com/878133): Complete the MSE-in-Workers function
+  // necessary to enable successful experimental usage of AudioVideoTracks
+  // feature when MSE is in worker. Meanwhile, at least notify the attachment
+  // to tell the media element to populate appropriately identified tracks so
+  // that the BackgroundVideoOptimization feature functions for MSE-in-Workers
+  // playbacks.
+  DCHECK(RuntimeEnabledFeatures::MediaSourceInWorkersEnabled());
+  DCHECK(!IsMainThread());
+  DCHECK(!first_initialization_segment_received_);
+
+  // Perform placeholder track additions on the main thread for each audio
+  // and video track in the initialization segment. Note that this depends
+  // on the caller already verifying correctness of the track metadata (see
+  // SourceBufferState::OnNewConfigs()).
+  bool enable_next_audio_track = true;
+  bool select_next_video_track = true;
+  DCHECK(audio_track_ids_for_crossthread_removal_.IsEmpty());
+  DCHECK(video_track_ids_for_crossthread_removal_.IsEmpty());
+  for (const MediaTrackInfo& track_info : new_tracks) {
+    if (track_info.track_type == WebMediaPlayer::kAudioTrack) {
+      WebString label = track_info.label;
+      if (label.IsEmpty()) {
+        label = DefaultTrackLabel(TrackDefault::AudioKeyword(),
+                                  track_info.byte_stream_track_id);
+      }
+
+      WebString language = track_info.language;
+      if (language.IsEmpty()) {
+        language = DefaultTrackLanguage(TrackDefault::AudioKeyword(),
+                                        track_info.byte_stream_track_id);
+      }
+
+      attachment->AddMainThreadAudioTrackToMediaElement(
+          track_info.id, track_info.kind, std::move(label), std::move(language),
+          enable_next_audio_track);
+
+      // Only enable the first audio track for this SourceBuffer.
+      enable_next_audio_track = false;
+
+      // Remember to remove this track from the element later.
+      audio_track_ids_for_crossthread_removal_.push_back(track_info.id);
+    } else if (track_info.track_type == WebMediaPlayer::kVideoTrack) {
+      WebString label = track_info.label;
+      if (label.IsEmpty()) {
+        label = DefaultTrackLabel(TrackDefault::VideoKeyword(),
+                                  track_info.byte_stream_track_id);
+      }
+
+      WebString language = track_info.language;
+      if (language.IsEmpty()) {
+        language = DefaultTrackLanguage(TrackDefault::VideoKeyword(),
+                                        track_info.byte_stream_track_id);
+      }
+      attachment->AddMainThreadVideoTrackToMediaElement(
+          track_info.id, track_info.kind, std::move(label), std::move(language),
+          select_next_video_track);
+
+      // Only select the first video track for this SourceBuffer.
+      select_next_video_track = false;
+
+      // Remember to remove this track from the element later.
+      video_track_ids_for_crossthread_removal_.push_back(track_info.id);
+    }
+  }
+}
+
+void SourceBuffer::RemovePlaceholderCrossThreadTracks(
+    scoped_refptr<MediaSourceAttachmentSupplement> attachment,
+    MediaSourceTracer* tracer) {
+  // TODO(https://crbug.com/878133): Remove this special-casing once worker
+  // thread track creation and tracklist modifications are supported.
+  DCHECK(RuntimeEnabledFeatures::MediaSourceInWorkersEnabled());
+  DCHECK(!IsMainThread());
+  DCHECK(!tracer);  // Cross-thread attachments don't use a tracer.
+
+  // Remove all of this SourceBuffer's cross-thread media element audio and
+  // video tracks, and enqueue a change event against the appropriate track
+  // lists on the media element. The event(s) may be extra, but likely unseen by
+  // application unless it is attempting experimental AudioVideoTracks usage,
+  // too.
+  if (!audio_track_ids_for_crossthread_removal_.IsEmpty()) {
+    attachment->RemoveAudioTracksFromMediaElement(
+        tracer, std::move(audio_track_ids_for_crossthread_removal_),
+        true /* enqueue_change_event */);
+  }
+
+  if (!video_track_ids_for_crossthread_removal_.IsEmpty()) {
+    attachment->RemoveVideoTracksFromMediaElement(
+        tracer, std::move(video_track_ids_for_crossthread_removal_),
+        true /* enqueue_change_event */);
+  }
+}
+
 bool SourceBuffer::InitializationSegmentReceived(
     const WebVector<MediaTrackInfo>& new_tracks) {
   DVLOG(3) << __func__ << " this=" << this << " tracks=" << new_tracks.size();
   DCHECK(source_);
   DCHECK(source_->MediaElement());
+
+  scoped_refptr<MediaSourceAttachmentSupplement> attachment;
+  MediaSourceTracer* tracer;
+  std::tie(attachment, tracer) = source_->AttachmentAndTracer();
+  DCHECK(attachment);
+  DCHECK_EQ(!tracer, !IsMainThread());
+
   DCHECK(updating_);
 
+  // Feature and execution-context conditioning may disable full population of
+  // tracks in SourceBuffer (and maybe even in media element).
+  bool finish_early = false;
+
   if (!HTMLMediaElement::MediaTracksEnabledInternally()) {
+    // Don't populate SourceBuffer tracks. Let the media element figure out
+    // internally any tracks it wants to populate (it may do placeholders).
+    finish_early = true;
+  } else if (GetExecutionContext()->IsDedicatedWorkerGlobalScope()) {
+    finish_early = true;
+    if (!first_initialization_segment_received_) {
+      AddPlaceholderCrossThreadTracks(new_tracks, attachment);
+    }
+  }
+
+  if (finish_early) {
     if (!first_initialization_segment_received_) {
       source_->SetSourceBufferActive(this, true);
       first_initialization_segment_received_ = true;
     }
     return true;
   }
+
+  DCHECK(GetExecutionContext()->IsWindow());
+  DCHECK(IsMainThread());
 
   // Implementation of Initialization Segment Received, see
   // https://w3c.github.io/media-source/#sourcebuffer-init-segment-received
@@ -1023,7 +1197,7 @@ bool SourceBuffer::InitializationSegmentReceived(
       // 5.2.7 TODO(servolk): Implement track kind processing.
       // 5.2.8.2 Let new audio track be a new AudioTrack object.
       auto* audio_track = MakeGarbageCollected<AudioTrack>(
-          track_info.id, kind, label, language, false);
+          track_info.id, kind, std::move(label), std::move(language), false);
       SourceBufferTrackBaseSupplement::SetSourceBuffer(*audio_track, this);
       // 5.2.8.7 If audioTracks.length equals 0, then run the following steps:
       if (audioTracks().length() == 0) {
@@ -1045,7 +1219,7 @@ bool SourceBuffer::InitializationSegmentReceived(
       //          not bubble and is not cancelable, and that uses the TrackEvent
       //          interface, at the AudioTrackList object referenced by the
       //          audioTracks attribute on the HTMLMediaElement.
-      source_->MediaElement()->audioTracks().Add(audio_track);
+      attachment->AddAudioTrackToMediaElement(tracer, audio_track);
     }
 
     // 5.3. For each video track in the initialization segment, run following
@@ -1084,7 +1258,7 @@ bool SourceBuffer::InitializationSegmentReceived(
       // 5.3.7 TODO(servolk): Implement track kind processing.
       // 5.3.8.2 Let new video track be a new VideoTrack object.
       auto* video_track = MakeGarbageCollected<VideoTrack>(
-          track_info.id, kind, label, language, false);
+          track_info.id, kind, std::move(label), std::move(language), false);
       SourceBufferTrackBaseSupplement::SetSourceBuffer(*video_track, this);
       // 5.3.8.7 If videoTracks.length equals 0, then run the following steps:
       if (videoTracks().length() == 0) {
@@ -1106,7 +1280,7 @@ bool SourceBuffer::InitializationSegmentReceived(
       //          not bubble and is not cancelable, and that uses the TrackEvent
       //          interface, at the VideoTrackList object referenced by the
       //          videoTracks attribute on the HTMLMediaElement.
-      source_->MediaElement()->videoTracks().Add(video_track);
+      attachment->AddVideoTrackToMediaElement(tracer, video_track);
     }
 
     // 5.4 TODO(servolk): Add text track processing here.
@@ -1220,7 +1394,7 @@ bool SourceBuffer::PrepareAppend(double media_time,
   MediaSourceTracer* tracer;
   std::tie(attachment, tracer) = source_->AttachmentAndTracer();
   DCHECK(attachment);
-  DCHECK(tracer);
+  DCHECK_EQ(!tracer, !IsMainThread());
   if (attachment->GetElementError(tracer)) {
     MediaSource::LogAndThrowDOMException(
         exception_state, DOMExceptionCode::kInvalidStateError,

@@ -64,6 +64,67 @@ bool CrossThreadMediaSourceAttachment::GetElementError(
   return true;
 }
 
+void CrossThreadMediaSourceAttachment::AddAudioTrackToMediaElement(
+    MediaSourceTracer* /* tracer */,
+    AudioTrack* /* track */) {
+  // TODO(https://crbug.com/878133): Implement this once worker thread can
+  // create tracks.
+  NOTIMPLEMENTED();
+}
+
+void CrossThreadMediaSourceAttachment::AddVideoTrackToMediaElement(
+    MediaSourceTracer* /* tracer */,
+    VideoTrack* /* track */) {
+  // TODO(https://crbug.com/878133): Implement this once worker thread can
+  // create tracks.
+  NOTIMPLEMENTED();
+}
+
+void CrossThreadMediaSourceAttachment::RemoveAudioTracksFromMediaElement(
+    MediaSourceTracer* tracer,
+    Vector<String> audio_ids,
+    bool enqueue_change_event) {
+  // TODO(https://crbug.com/878133): Implement cross-thread behavior for this.
+  NOTIMPLEMENTED();
+}
+
+void CrossThreadMediaSourceAttachment::RemoveVideoTracksFromMediaElement(
+    MediaSourceTracer* tracer,
+    Vector<String> video_ids,
+    bool enqueue_change_event) {
+  // TODO(https://crbug.com/878133): Implement cross-thread behavior for this.
+  NOTIMPLEMENTED();
+}
+
+void CrossThreadMediaSourceAttachment::AddMainThreadAudioTrackToMediaElement(
+    String id,
+    String kind,
+    String label,
+    String language,
+    bool enabled) {
+  // TODO(https://crbug.com/878133): Implement cross-thread behavior for this.
+  NOTIMPLEMENTED();
+}
+
+void CrossThreadMediaSourceAttachment::AddMainThreadVideoTrackToMediaElement(
+    String id,
+    String kind,
+    String label,
+    String language,
+    bool selected) {
+  // TODO(https://crbug.com/878133): Implement cross-thread behavior for this.
+  NOTIMPLEMENTED();
+}
+
+void CrossThreadMediaSourceAttachment::OnMediaSourceContextDestroyed() {
+  // Called only by the MSE API on worker thread.
+  DCHECK(!IsMainThread());
+
+  DVLOG(3) << __func__ << " this=" << this;
+  // TODO(https://crbug.com/878133): Implement cross-thread behavior for this.
+  NOTIMPLEMENTED();
+}
+
 void CrossThreadMediaSourceAttachment::Unregister() {
   DVLOG(1) << __func__ << " this=" << this
            << ", IsMainThread=" << IsMainThread();
@@ -172,15 +233,6 @@ void CrossThreadMediaSourceAttachment::OnElementError() {
 void CrossThreadMediaSourceAttachment::OnElementContextDestroyed() {
   // Called only by the media element on main thread.
   DCHECK(IsMainThread());
-
-  DVLOG(3) << __func__ << " this=" << this;
-  // TODO(https://crbug.com/878133): Implement cross-thread behavior for this.
-  NOTIMPLEMENTED();
-}
-
-void CrossThreadMediaSourceAttachment::OnMediaSourceContextDestroyed() {
-  // Called only by the MSE API on worker thread.
-  DCHECK(!IsMainThread());
 
   DVLOG(3) << __func__ << " this=" << this;
   // TODO(https://crbug.com/878133): Implement cross-thread behavior for this.

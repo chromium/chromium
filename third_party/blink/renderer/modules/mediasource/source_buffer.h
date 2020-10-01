@@ -32,6 +32,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASOURCE_SOURCE_BUFFER_H_
 
 #include <memory>
+
+#include "base/memory/scoped_refptr.h"
 #include "third_party/blink/public/platform/web_source_buffer_client.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
@@ -50,6 +52,8 @@ class DOMArrayBufferView;
 class EventQueue;
 class ExceptionState;
 class MediaSource;
+class MediaSourceTracer;
+class MediaSourceAttachmentSupplement;
 class TimeRanges;
 class VideoTrackList;
 class WebSourceBuffer;
@@ -151,6 +155,17 @@ class SourceBuffer final : public EventTargetWithInlineData,
       const AtomicString& track_type,
       const AtomicString& byte_stream_track_id) const;
 
+  // TODO(https://crbug.com/878133): Remove these once worker thread track
+  // creation and tracklist modifications are supported. These are needed for
+  // now to retain stable BackgroundVideoOptimization support with experimental
+  // MSE-in-Workers.
+  void AddPlaceholderCrossThreadTracks(
+      const WebVector<MediaTrackInfo>& new_tracks,
+      scoped_refptr<MediaSourceAttachmentSupplement> attachment);
+  void RemovePlaceholderCrossThreadTracks(
+      scoped_refptr<MediaSourceAttachmentSupplement> attachment,
+      MediaSourceTracer* tracer);
+
   std::unique_ptr<WebSourceBuffer> web_source_buffer_;
 
   // If any portion of an attached HTMLMediaElement (HTMLME) and the MediaSource
@@ -180,6 +195,14 @@ class SourceBuffer final : public EventTargetWithInlineData,
   double pending_remove_start_;
   double pending_remove_end_;
   TaskHandle remove_async_task_handle_;
+
+  // Temporary vectors used for MSE-in-Workers removal of the audio and video
+  // tracks from the media element when needed by this SourceBuffer.
+  // TODO(https://crbug.com/878133): Refactor to remove these once
+  // CrossThreadMediaSourceAttachments, TrackBase and TrackListBase support
+  // track creation off-the-main thread.
+  Vector<String> audio_track_ids_for_crossthread_removal_;
+  Vector<String> video_track_ids_for_crossthread_removal_;
 };
 
 }  // namespace blink
