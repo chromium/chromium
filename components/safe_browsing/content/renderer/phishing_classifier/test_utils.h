@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_RENDERER_SAFE_BROWSING_TEST_UTILS_H_
-#define CHROME_RENDERER_SAFE_BROWSING_TEST_UTILS_H_
+#ifndef COMPONENTS_SAFE_BROWSING_CONTENT_RENDERER_PHISHING_CLASSIFIER_TEST_UTILS_H_
+#define COMPONENTS_SAFE_BROWSING_CONTENT_RENDERER_PHISHING_CLASSIFIER_TEST_UTILS_H_
 
 namespace safe_browsing {
 class FeatureMap;
@@ -16,4 +16,4 @@ void ExpectFeatureMapsAreEqual(const FeatureMap& first,
 
 }  // namespace safe_browsing
 
-#endif  // CHROME_RENDERER_SAFE_BROWSING_TEST_UTILS_H_
+#endif  // COMPONENTS_SAFE_BROWSING_CONTENT_RENDERER_PHISHING_CLASSIFIER_TEST_UTILS_H_

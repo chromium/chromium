@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/renderer/safe_browsing/features.h"
+#include "components/safe_browsing/content/renderer/phishing_classifier/features.h"
 
 #include "base/metrics/histogram_macros.h"
 

@@ -8,8 +8,8 @@
 #include <vector>
 #include "base/format_macros.h"
 #include "base/strings/stringprintf.h"
-#include "chrome/renderer/safe_browsing/features.h"
-#include "chrome/renderer/safe_browsing/test_utils.h"
+#include "components/safe_browsing/content/renderer/phishing_classifier/features.h"
+#include "components/safe_browsing/content/renderer/phishing_classifier/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"

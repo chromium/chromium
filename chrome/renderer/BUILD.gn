@@ -260,8 +260,6 @@ static_library("renderer") {
 
   if (safe_browsing_mode != 0) {
     sources += [
-      "safe_browsing/features.cc",
-      "safe_browsing/features.h",
       "safe_browsing/murmurhash3_util.cc",
       "safe_browsing/murmurhash3_util.h",
       "safe_browsing/phishing_classifier.cc",
@@ -280,6 +278,7 @@ static_library("renderer") {
     deps += [
       "//chrome/common/safe_browsing:proto",
       "//components/safe_browsing/content/renderer",
+      "//components/safe_browsing/content/renderer/phishing_classifier",
       "//components/safe_browsing/core:client_model_proto",
       "//components/safe_browsing/core:csd_proto",
       "//components/safe_browsing/core/common",
@@ -431,13 +430,12 @@ static_library("test_support") {
   sources = [
     "chrome_mock_render_thread.cc",
     "chrome_mock_render_thread.h",
-    "safe_browsing/test_utils.cc",
-    "safe_browsing/test_utils.h",
   ]
 
   deps = [
     ":renderer",
     "//chrome/common/search:mojo_bindings",
+    "//components/safe_browsing/content/renderer/phishing_classifier:unit_tests_support",
     "//content/test:test_support",
     "//extensions/buildflags",
     "//testing/gmock",

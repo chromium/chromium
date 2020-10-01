@@ -12,7 +12,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/timer/elapsed_timer.h"
-#include "chrome/renderer/safe_browsing/features.h"
+#include "components/safe_browsing/content/renderer/phishing_classifier/features.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "url/gurl.h"
 

@@ -21,8 +21,8 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
-#include "chrome/renderer/safe_browsing/features.h"
 #include "chrome/renderer/safe_browsing/murmurhash3_util.h"
+#include "components/safe_browsing/content/renderer/phishing_classifier/features.h"
 #include "crypto/sha2.h"
 
 namespace safe_browsing {

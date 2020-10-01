@@ -1,0 +1,42 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/features.gni")
+import("//components/safe_browsing/buildflags.gni")
+
+source_set("phishing_classifier") {
+  if (safe_browsing_mode != 0) {
+    sources = [
+      "features.cc",
+      "features.h",
+    ]
+    deps = [
+      "//components/safe_browsing/content/renderer",
+      "//components/safe_browsing/core/common",
+    ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "features_unittest.cc" ]
+  deps = [
+    ":phishing_classifier",
+    "//base:base",
+    "//components/safe_browsing/content/renderer/phishing_classifier:unit_tests_support",
+    "//testing/gtest",
+  ]
+}
+
+source_set("unit_tests_support") {
+  testonly = true
+  sources = [
+    "test_utils.cc",
+    "test_utils.h",
+  ]
+  deps = [
+    ":phishing_classifier",
+    "//testing/gmock",
+  ]
+}

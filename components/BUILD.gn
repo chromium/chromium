@@ -440,6 +440,10 @@ test("components_unittests") {
     deps += [ "//components/safe_browsing/android:unit_tests_mobile" ]
   }
 
+  if (safe_browsing_mode == 1) {
+    deps += [ "//components/safe_browsing/content/renderer/phishing_classifier:unit_tests" ]
+  }
+
   if (!is_ios) {
     deps += [
       "//components/safe_browsing/core/realtime:unit_tests",

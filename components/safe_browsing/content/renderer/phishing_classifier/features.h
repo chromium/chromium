@@ -22,8 +22,8 @@
 // just a thin wrapper around a map of feature name to value.  The entire set
 // of features for a URL is extracted before we do any scoring.
 
-#ifndef CHROME_RENDERER_SAFE_BROWSING_FEATURES_H_
-#define CHROME_RENDERER_SAFE_BROWSING_FEATURES_H_
+#ifndef COMPONENTS_SAFE_BROWSING_CONTENT_RENDERER_PHISHING_CLASSIFIER_FEATURES_H_
+#define COMPONENTS_SAFE_BROWSING_CONTENT_RENDERER_PHISHING_CLASSIFIER_FEATURES_H_
 
 #include <stddef.h>
 #include <string>
@@ -178,4 +178,4 @@ extern const char kPageTerm[];
 }  // namespace features
 }  // namespace safe_browsing
 
-#endif  // CHROME_RENDERER_SAFE_BROWSING_FEATURES_H_
+#endif  // COMPONENTS_SAFE_BROWSING_CONTENT_RENDERER_PHISHING_CLASSIFIER_FEATURES_H_
