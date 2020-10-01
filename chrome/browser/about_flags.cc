@@ -3732,6 +3732,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDisableCameraFrameRotationAtSourceName,
      flag_descriptions::kDisableCameraFrameRotationAtSourceDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(media::features::kDisableCameraFrameRotationAtSource)},
+    {"drive-fs-bidirectional-native-messaging",
+     flag_descriptions::kDriveFsBidirectionalNativeMessagingName,
+     flag_descriptions::kDriveFsBidirectionalNativeMessagingDescription,
+     kOsCrOS,
+     FEATURE_VALUE_TYPE(
+         chromeos::features::kDriveFsBidirectionalNativeMessaging)},
     {"files-app-copy-image", flag_descriptions::kFilesAppCopyImageName,
      flag_descriptions::kFilesAppCopyImageDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kEnableFilesAppCopyImage)},

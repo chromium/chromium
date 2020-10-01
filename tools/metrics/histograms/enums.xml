@@ -43168,6 +43168,7 @@ from previous Chrome versions.
   <int value="116287989"
       label="ignore-litepage-redirect-optimization-blacklist"/>
   <int value="116697601" label="OmniboxSuggestionButtonRow:disabled"/>
+  <int value="117076190" label="DriveFsBidirectionalNativeMessaging:disabled"/>
   <int value="118991027" label="enable-accelerated-fixed-root-background"/>
   <int value="119185738"
       label="OmniboxUIExperimentMaxAutocompleteMatches:disabled"/>
@@ -44545,6 +44546,7 @@ from previous Chrome versions.
   <int value="1552753678" label="DnsHttpssvc:disabled"/>
   <int value="1553310752" label="AccessibilityCursorColor:enabled"/>
   <int value="1553422694" label="EnablePalmOnMaxTouchMajor:enabled"/>
+  <int value="1556554961" label="DriveFsBidirectionalNativeMessaging:enabled"/>
   <int value="1558410842" label="FilesZipNoNaCl:disabled"/>
   <int value="1559034872" label="AutofillPrefilledFields:enabled"/>
   <int value="1560188739" label="reader-mode-heuristics"/>

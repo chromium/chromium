@@ -3788,6 +3788,11 @@ const char kDoubleTapToZoomInTabletModeDescription[] =
     "If Enabled, double tapping in webpages while in tablet mode will zoom the "
     "page.";
 
+const char kDriveFsBidirectionalNativeMessagingName[] =
+    "Enable bidirectional native messaging for DriveFS";
+const char kDriveFsBidirectionalNativeMessagingDescription[] =
+    "Enable enhanced native messaging host to communicate with DriveFS.";
+
 const char kMovablePartialScreenshotName[] =
     "Movable/resizable partial screenshot region";
 const char kMovablePartialScreenshotDescription[] =

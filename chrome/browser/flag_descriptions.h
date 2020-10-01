@@ -2180,6 +2180,9 @@ extern const char kDisableOfficeEditingComponentAppDescription[];
 extern const char kDoubleTapToZoomInTabletModeName[];
 extern const char kDoubleTapToZoomInTabletModeDescription[];
 
+extern const char kDriveFsBidirectionalNativeMessagingName[];
+extern const char kDriveFsBidirectionalNativeMessagingDescription[];
+
 extern const char kMovablePartialScreenshotName[];
 extern const char kMovablePartialScreenshotDescription[];
 

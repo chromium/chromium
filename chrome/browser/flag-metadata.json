@@ -1003,6 +1003,11 @@
     "expiry_milestone": 86
   },
   {
+    "name": "drive-fs-bidirectional-native-messaging",
+    "owners": [ "austinct@chromium.org", "dats@chromium.org" ],
+    "expiry_milestone": 90
+  },
+  {
     "name": "dynamic-color-gamut",
     "owners": [ "cblume", "khushalsagar", "ccameron" ],
     "expiry_milestone": 90
