@@ -13,6 +13,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.view.View;
 
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.app.ChromeActivity;
@@ -65,6 +66,8 @@ public class ChromeActivityCommonsModule {
     private final StatusBarColorController mStatusBarColorController;
     private final ScreenOrientationProvider mScreenOrientationProvider;
     private final Supplier<NotificationManagerProxy> mNotificationManagerProxySupplier;
+    private final ObservableSupplier<TabContentManager> mTabContentManagerSupplier;
+    private final CompositorViewHolder.Initializer mCompositorViewHolderInitializer;
 
     /** See {@link ModuleFactoryOverrides} */
     public interface Factory {
@@ -84,7 +87,9 @@ public class ChromeActivityCommonsModule {
                 Supplier<Boolean> isPromotableToTabSupplier,
                 StatusBarColorController statusBarColorController,
                 ScreenOrientationProvider screenOrientationProvider,
-                Supplier<NotificationManagerProxy> notificationManagerProxySupplier);
+                Supplier<NotificationManagerProxy> notificationManagerProxySupplier,
+                ObservableSupplier<TabContentManager> tabContentManagerSupplier,
+                CompositorViewHolder.Initializer compositorViewHolderInitializer);
     }
 
     public ChromeActivityCommonsModule(ChromeActivity activity,
@@ -103,7 +108,9 @@ public class ChromeActivityCommonsModule {
             Supplier<Boolean> isPromotableToTabSupplier,
             StatusBarColorController statusBarColorController,
             ScreenOrientationProvider screenOrientationProvider,
-            Supplier<NotificationManagerProxy> notificationManagerProxySupplier) {
+            Supplier<NotificationManagerProxy> notificationManagerProxySupplier,
+            ObservableSupplier<TabContentManager> tabContentManagerSupplier,
+            CompositorViewHolder.Initializer compositorViewHolderInitializer) {
         mActivity = activity;
         mBottomSheetControllerSupplier = bottomSheetControllerSupplier;
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
@@ -124,6 +131,8 @@ public class ChromeActivityCommonsModule {
         mStatusBarColorController = statusBarColorController;
         mScreenOrientationProvider = screenOrientationProvider;
         mNotificationManagerProxySupplier = notificationManagerProxySupplier;
+        mTabContentManagerSupplier = tabContentManagerSupplier;
+        mCompositorViewHolderInitializer = compositorViewHolderInitializer;
     }
 
     @Provides
@@ -254,5 +263,15 @@ public class ChromeActivityCommonsModule {
     @Provides
     public NotificationManagerProxy provideNotificationManagerProxy() {
         return mNotificationManagerProxySupplier.get();
+    }
+
+    @Provides
+    public ObservableSupplier<TabContentManager> provideTabContentManagerSupplier() {
+        return mTabContentManagerSupplier;
+    }
+
+    @Provides
+    public CompositorViewHolder.Initializer provideCompositorViewHolderInitializer() {
+        return mCompositorViewHolderInitializer;
     }
 }

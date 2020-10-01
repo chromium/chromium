@@ -92,7 +92,8 @@ public class WebApkInitializationTest {
                     snackbarManagerSupplier, activityTabProvider, tabContentManager,
                     activityWindowAndroid, compositorViewHolderSupplier, tabCreatorManager,
                     tabCreatorSupplier, isPromotableToTabSupplier, statusBarColorController,
-                    screenOrientationProvider, notificationManagerProxySupplier) -> {
+                    screenOrientationProvider, notificationManagerProxySupplier,
+                    tabContentManagerSupplier, compositorViewHolderInitializer) -> {
                 mTrackingActivityLifecycleDispatcher.init(lifecycleDispatcher);
                 return new ChromeActivityCommonsModule(activity, bottomSheetControllerSupplier,
                         tabModelSelectorSupplier, browserControlsManager,
@@ -101,7 +102,8 @@ public class WebApkInitializationTest {
                         snackbarManagerSupplier, activityTabProvider, tabContentManager,
                         activityWindowAndroid, compositorViewHolderSupplier, tabCreatorManager,
                         tabCreatorSupplier, isPromotableToTabSupplier, statusBarColorController,
-                        screenOrientationProvider, notificationManagerProxySupplier);
+                        screenOrientationProvider, notificationManagerProxySupplier,
+                        tabContentManagerSupplier, compositorViewHolderInitializer);
             });
 
     private final WebApkActivityTestRule mActivityRule = new WebApkActivityTestRule();

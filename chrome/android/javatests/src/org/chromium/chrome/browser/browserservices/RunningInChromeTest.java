@@ -79,21 +79,25 @@ public class RunningInChromeTest {
 
     private final TestRule mModuleOverridesRule = new ModuleOverridesRule().setOverride(
             ChromeActivityCommonsModule.Factory.class,
-            (activity, bottomSheetControllerSupplier, tabModelSelectorSupplier,
-                    browserControlsManager, browserControlsVisibilityManager, browserControlsSizer,
-                    fullscreenManager, layoutManagerSupplier, lifecycleDispatcher,
-                    snackbarManagerSupplier, activityTabProvider, tabContentManager,
-                    activityWindowAndroid, compositorViewHolderSupplier, tabCreatorManager,
-                    tabCreatorSupplier, isPromotableToTabSupplier, statusBarColorController,
-                    screenOrientationProvider, notificationManagerProxySupplier) -> {
-                return new ChromeActivityCommonsModule(activity, bottomSheetControllerSupplier,
+            (activity, bottomSheetController, tabModelSelectorSupplier, browserControlsManager,
+                    browserControlsVisibilityManager, browserControlsSizer, fullscreenManager,
+                    layoutManagerSupplier, lifecycleDispatcher, snackbarManagerSupplier,
+                    activityTabProvider, tabContentManager, activityWindowAndroid,
+                    compositorViewHolderSupplier, tabCreatorManager, tabCreatorSupplier,
+                    isPromotableToTabSupplier, statusBarColorController, screenOrientationProvider,
+                    notificationManagerProxySupplier, tabContentManagerSupplier,
+                    compositorViewHolderInitializer) -> {
+                return new ChromeActivityCommonsModule(activity, bottomSheetController,
                         tabModelSelectorSupplier, browserControlsManager,
                         browserControlsVisibilityManager, browserControlsSizer, fullscreenManager,
                         layoutManagerSupplier, lifecycleDispatcher, snackbarManagerSupplier,
                         activityTabProvider, tabContentManager, activityWindowAndroid,
                         compositorViewHolderSupplier, tabCreatorManager, tabCreatorSupplier,
                         isPromotableToTabSupplier, statusBarColorController,
-                        screenOrientationProvider, () -> mMockNotificationManager);
+                        screenOrientationProvider,
+                        ()
+                                -> mMockNotificationManager,
+                        tabContentManagerSupplier, compositorViewHolderInitializer);
             });
 
     @Rule

@@ -4,12 +4,14 @@
 
 package org.chromium.chrome.browser.customtabs;
 
+import android.app.Activity;
 import android.view.ViewGroup;
 
 import org.chromium.base.Callback;
-import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManager;
+import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
@@ -26,20 +28,26 @@ import dagger.Lazy;
  */
 @ActivityScope
 public class CustomTabCompositorContentInitializer implements NativeInitObserver {
-    private final ActivityLifecycleDispatcher mLifecycleDispatcher;
-
-    private final ChromeActivity<?> mActivity;
-    private final Lazy<CompositorViewHolder> mCompositorViewHolder;
-
     private final List<Callback<LayoutManager>> mListeners = new ArrayList<>();
+
+    private final ActivityLifecycleDispatcher mLifecycleDispatcher;
+    private final Activity mActivity;
+    private final Lazy<CompositorViewHolder> mCompositorViewHolder;
+    private final ObservableSupplier<TabContentManager> mTabContentManagerSupplier;
+    private final CompositorViewHolder.Initializer mCompositorViewHolderInitializer;
+
     private boolean mInitialized;
 
     @Inject
     public CustomTabCompositorContentInitializer(ActivityLifecycleDispatcher lifecycleDispatcher,
-            ChromeActivity<?> activity, Lazy<CompositorViewHolder> compositorViewHolder) {
+            Activity activity, Lazy<CompositorViewHolder> compositorViewHolder,
+            ObservableSupplier<TabContentManager> tabContentManagerSupplier,
+            CompositorViewHolder.Initializer compositorViewHolderInitializer) {
         mLifecycleDispatcher = lifecycleDispatcher;
         mActivity = activity;
         mCompositorViewHolder = compositorViewHolder;
+        mTabContentManagerSupplier = tabContentManagerSupplier;
+        mCompositorViewHolderInitializer = compositorViewHolderInitializer;
 
         lifecycleDispatcher.register(this);
     }
@@ -49,7 +57,6 @@ public class CustomTabCompositorContentInitializer implements NativeInitObserver
      * initialized, or immediately (synchronously) if it is already initialized.
      */
     public void addCallback(Callback<LayoutManager> callback) {
-
         if (mInitialized) {
             callback.onResult(mCompositorViewHolder.get().getLayoutManager());
         } else {
@@ -60,10 +67,10 @@ public class CustomTabCompositorContentInitializer implements NativeInitObserver
     @Override
     public void onFinishNativeInitialization() {
         ViewGroup contentContainer = mActivity.findViewById(android.R.id.content);
-        LayoutManager layoutDriver = new LayoutManager(mCompositorViewHolder.get(),
-                contentContainer, mActivity.getTabContentManagerSupplier());
+        LayoutManager layoutDriver = new LayoutManager(
+                mCompositorViewHolder.get(), contentContainer, mTabContentManagerSupplier);
 
-        mActivity.initializeCompositorContent(layoutDriver,
+        mCompositorViewHolderInitializer.initializeCompositorContent(layoutDriver,
                 mActivity.findViewById(org.chromium.chrome.R.id.url_bar), contentContainer,
                 mActivity.findViewById(org.chromium.chrome.R.id.control_container));
 

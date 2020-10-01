@@ -220,7 +220,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         implements TabCreatorManager, PolicyChangeListener, ContextualSearchTabPromotionDelegate,
                    SnackbarManageable, SceneChangeObserver,
                    StatusBarColorController.StatusBarColorProvider, AppMenuDelegate, AppMenuBlocker,
-                   MenuOrKeyboardActionController {
+                   MenuOrKeyboardActionController, CompositorViewHolder.Initializer {
     /**
      * No control container to inflate during initialization.
      */
@@ -411,7 +411,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                         getWindowAndroid(), this::getCompositorViewHolder, this,
                         this::getCurrentTabCreator, this::isCustomTab,
                         getStatusBarColorController(), ScreenOrientationProvider.getInstance(),
-                        this::getNotificationManagerProxy)
+                        this::getNotificationManagerProxy, getTabContentManagerSupplier(),
+                        /* CompositorViewHolder.Initializer */ this)
                 : overridenCommonsFactory.create(this, mRootUiCoordinator::getBottomSheetController,
                         mTabModelSelectorSupplier, getBrowserControlsManager(),
                         getBrowserControlsManager(), getBrowserControlsManager(),
@@ -420,7 +421,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                         getTabContentManager(), getWindowAndroid(), this::getCompositorViewHolder,
                         this, this::getCurrentTabCreator, this::isCustomTab,
                         getStatusBarColorController(), ScreenOrientationProvider.getInstance(),
-                        this::getNotificationManagerProxy);
+                        this::getNotificationManagerProxy, getTabContentManagerSupplier(),
+                        /* CompositorViewHolder.Initializer */ this);
 
         return createComponent(commonsModule);
     }
@@ -1718,18 +1720,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         return false;
     }
 
-    /**
-     * Initializes the {@link CompositorViewHolder} with the relevant content it needs to properly
-     * show content on the screen.
-     * @param layoutManager             A {@link LayoutManager} instance.  This class is
-     *                                  responsible for driving all high level screen content and
-     *                                  determines which {@link Layout} is shown when.
-     * @param urlBar                    The {@link View} representing the URL bar (must be
-     *                                  focusable) or {@code null} if none exists.
-     * @param contentContainer          A {@link ViewGroup} that can have content attached by
-     *                                  {@link Layout}s.
-     * @param controlContainer          A {@link ControlContainer} instance to draw.
-     */
+    @Override
     public void initializeCompositorContent(LayoutManager layoutManager, View urlBar,
             ViewGroup contentContainer, ControlContainer controlContainer) {
         if (mContextualSearchManager != null) {

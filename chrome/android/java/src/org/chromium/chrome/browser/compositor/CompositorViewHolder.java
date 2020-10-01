@@ -103,6 +103,27 @@ public class CompositorViewHolder extends FrameLayout
     private static final long SYSTEM_UI_VIEWPORT_UPDATE_DELAY_MS = 500;
 
     /**
+     * Initializer interface used to decouple initialization from the class that owns
+     * the CompositorViewHolder.
+     */
+    public interface Initializer {
+        /**
+         * Initializes the {@link CompositorViewHolder} with the relevant content it needs to
+         * properly show content on the screen.
+         * @param layoutManager             A {@link LayoutManager} instance.  This class is
+         *                                  responsible for driving all high level screen content
+         * and determines which {@link Layout} is shown when.
+         * @param urlBar                    The {@link View} representing the URL bar (must be
+         *                                  focusable) or {@code null} if none exists.
+         * @param contentContainer          A {@link ViewGroup} that can have content attached by
+         *                                  {@link Layout}s.
+         * @param controlContainer          A {@link ControlContainer} instance to draw.
+         */
+        void initializeCompositorContent(LayoutManager layoutManager, View urlBar,
+                ViewGroup contentContainer, ControlContainer controlContainer);
+    }
+
+    /**
      * Observer interface for any object that needs to process touch events.
      */
     public interface TouchEventObserver {
