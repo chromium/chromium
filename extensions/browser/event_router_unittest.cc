@@ -20,6 +20,7 @@
 #include "extensions/browser/extensions_test.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_messages.h"
+#include "extensions/common/scoped_worker_based_extensions_channel.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::DictionaryValue;
@@ -124,6 +125,17 @@ scoped_refptr<const Extension> CreateExtension(bool component,
   return builder.Build();
 }
 
+scoped_refptr<const Extension> CreateServiceWorkerExtension() {
+  ExtensionBuilder builder;
+  auto manifest = std::make_unique<base::DictionaryValue>();
+  manifest->SetString("name", "foo");
+  manifest->SetString("version", "1.0.0");
+  manifest->SetInteger("manifest_version", 2);
+  manifest->SetString("background.service_worker", "worker.js");
+  builder.SetManifest(std::move(manifest));
+  return builder.Build();
+}
+
 std::unique_ptr<DictionaryValue> CreateHostSuffixFilter(
     const std::string& suffix) {
   auto filter_dict = std::make_unique<DictionaryValue>();
@@ -153,32 +165,26 @@ class EventRouterTest : public ExtensionsTest {
                              int component_count,
                              int persistent_count,
                              int suspended_count,
-                             int running_count) {
-    if (dispatch_count) {
-      histogram_tester_.ExpectBucketCount("Extensions.Events.Dispatch",
-                                          events::HistogramValue::FOR_TEST,
-                                          dispatch_count);
-    }
-    if (component_count) {
-      histogram_tester_.ExpectBucketCount(
-          "Extensions.Events.DispatchToComponent",
-          events::HistogramValue::FOR_TEST, component_count);
-    }
-    if (persistent_count) {
-      histogram_tester_.ExpectBucketCount(
-          "Extensions.Events.DispatchWithPersistentBackgroundPage",
-          events::HistogramValue::FOR_TEST, persistent_count);
-    }
-    if (suspended_count) {
-      histogram_tester_.ExpectBucketCount(
-          "Extensions.Events.DispatchWithSuspendedEventPage",
-          events::HistogramValue::FOR_TEST, suspended_count);
-    }
-    if (running_count) {
-      histogram_tester_.ExpectBucketCount(
-          "Extensions.Events.DispatchWithRunningEventPage",
-          events::HistogramValue::FOR_TEST, running_count);
-    }
+                             int running_count,
+                             int service_worker_count) {
+    histogram_tester_.ExpectBucketCount("Extensions.Events.Dispatch",
+                                        events::HistogramValue::FOR_TEST,
+                                        dispatch_count);
+    histogram_tester_.ExpectBucketCount("Extensions.Events.DispatchToComponent",
+                                        events::HistogramValue::FOR_TEST,
+                                        component_count);
+    histogram_tester_.ExpectBucketCount(
+        "Extensions.Events.DispatchWithPersistentBackgroundPage",
+        events::HistogramValue::FOR_TEST, persistent_count);
+    histogram_tester_.ExpectBucketCount(
+        "Extensions.Events.DispatchWithSuspendedEventPage",
+        events::HistogramValue::FOR_TEST, suspended_count);
+    histogram_tester_.ExpectBucketCount(
+        "Extensions.Events.DispatchWithRunningEventPage",
+        events::HistogramValue::FOR_TEST, running_count);
+    histogram_tester_.ExpectBucketCount(
+        "Extensions.Events.DispatchWithServiceWorkerBackground",
+        events::HistogramValue::FOR_TEST, service_worker_count);
   }
 
  private:
@@ -347,34 +353,42 @@ TEST_F(EventRouterTest, TestReportEvent) {
   ExpectHistogramCounts(1 /** Dispatch */, 0 /** DispatchToComponent */,
                         0 /** DispatchWithPersistentBackgroundPage */,
                         0 /** DispatchWithSuspendedEventPage */,
-                        0 /** DispatchWithRunningEventPage */);
+                        0 /** DispatchWithRunningEventPage */,
+                        0 /** DispatchWithServiceWorkerBackground */);
 
   scoped_refptr<const Extension> component =
       CreateExtension(true /** component */, true /** persistent */);
   router.ReportEvent(events::HistogramValue::FOR_TEST, component.get(),
                      false /** did_enqueue */);
-  ExpectHistogramCounts(2, 1, 1, 0, 0);
+  ExpectHistogramCounts(2, 1, 1, 0, 0, 0);
 
   scoped_refptr<const Extension> persistent = CreateExtension(false, true);
   router.ReportEvent(events::HistogramValue::FOR_TEST, persistent.get(),
                      false /** did_enqueue */);
-  ExpectHistogramCounts(3, 1, 2, 0, 0);
+  ExpectHistogramCounts(3, 1, 2, 0, 0, 0);
 
   scoped_refptr<const Extension> event = CreateExtension(false, false);
   router.ReportEvent(events::HistogramValue::FOR_TEST, event.get(),
                      false /** did_enqueue */);
-  ExpectHistogramCounts(4, 1, 2, 0, 0);
+  ExpectHistogramCounts(4, 1, 2, 0, 1, 0);
   router.ReportEvent(events::HistogramValue::FOR_TEST, event.get(),
                      true /** did_enqueue */);
-  ExpectHistogramCounts(5, 1, 2, 1, 1);
+  ExpectHistogramCounts(5, 1, 2, 1, 1, 0);
 
   scoped_refptr<const Extension> component_event = CreateExtension(true, false);
   router.ReportEvent(events::HistogramValue::FOR_TEST, component_event.get(),
                      false /** did_enqueue */);
-  ExpectHistogramCounts(6, 2, 2, 1, 2);
+  ExpectHistogramCounts(6, 2, 2, 1, 2, 0);
   router.ReportEvent(events::HistogramValue::FOR_TEST, component_event.get(),
                      true /** did_enqueue */);
-  ExpectHistogramCounts(7, 3, 2, 2, 2);
+  ExpectHistogramCounts(7, 3, 2, 2, 2, 0);
+
+  ScopedWorkerBasedExtensionsChannel current_channel_override;
+  scoped_refptr<const Extension> service_worker_extension =
+      CreateServiceWorkerExtension();
+  router.ReportEvent(events::HistogramValue::FOR_TEST,
+                     service_worker_extension.get(), true /** did_enqueue */);
+  ExpectHistogramCounts(8, 3, 2, 2, 2, 1);
 }
 
 // Tests adding and removing events with filters.
