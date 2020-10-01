@@ -10,6 +10,7 @@
 #include "base/optional.h"
 #include "base/task/post_task.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "components/safe_browsing/core/common/thread_utils.h"
 #include "components/signin/public/identity_manager/access_token_fetcher.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
@@ -24,7 +25,11 @@ namespace {
 
 const char kAPIScope[] = "https://www.googleapis.com/auth/chrome-safe-browsing";
 
-const int kTimeoutDelaySeconds = 1;
+#if defined(OS_ANDROID)
+const int kTimeoutDelayFromMilliseconds = 50;
+#else
+const int kTimeoutDelayFromMilliseconds = 1000;
+#endif
 
 }  // namespace
 
@@ -60,7 +65,7 @@ void SafeBrowsingTokenFetcher::Start(signin::ConsentLevel consent_level,
       FROM_HERE, CreateTaskTraits(ThreadID::UI),
       base::BindOnce(&SafeBrowsingTokenFetcher::OnTokenTimeout,
                      weak_ptr_factory_.GetWeakPtr(), request_id),
-      base::TimeDelta::FromSeconds(kTimeoutDelaySeconds));
+      base::TimeDelta::FromMilliseconds(kTimeoutDelayFromMilliseconds));
 }
 
 void SafeBrowsingTokenFetcher::OnTokenFetched(
