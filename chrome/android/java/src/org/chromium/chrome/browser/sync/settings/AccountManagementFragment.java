@@ -12,6 +12,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.UserManager;
 
+import androidx.annotation.LayoutRes;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.preference.Preference;
@@ -290,23 +291,58 @@ public class AccountManagementFragment extends PreferenceFragmentCompat
 
         accountsCategory.removeAll();
 
+        accountsCategory.addPreference(
+                createAccountPreference(AccountUtils.createAccountFromName(mSignedInAccountName)));
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)) {
+            accountsCategory.addPreference(
+                    createDividerPreference(R.layout.account_divider_preference));
+            accountsCategory.addPreference(createManageYourGoogleAccountPreference());
+            accountsCategory.addPreference(createDividerPreference(R.layout.divider_preference));
+        }
+
         List<Account> accounts = AccountManagerFacadeProvider.getInstance().tryGetGoogleAccounts();
-        for (int i = 0; i < accounts.size(); i++) {
-            Account account = accounts.get(i);
-            Preference pref = new Preference(getStyledContext());
-            pref.setLayoutResource(R.layout.account_management_account_row);
-            pref.setTitle(account.name);
-            pref.setIcon(mProfileDataCache.getProfileDataOrDefault(account.name).getImage());
-
-            pref.setOnPreferenceClickListener(
-                    preference -> SigninUtils.openSettingsForAccount(getActivity(), account));
-
-            accountsCategory.addPreference(pref);
+        for (Account account : accounts) {
+            if (!mSignedInAccountName.equals(account.name)) {
+                accountsCategory.addPreference(createAccountPreference(account));
+            }
         }
 
         if (!mProfile.isChild()) {
             accountsCategory.addPreference(createAddAccountPreference());
         }
+    }
+
+    private Preference createAccountPreference(Account account) {
+        Preference accountPreference = new Preference(getStyledContext());
+        accountPreference.setLayoutResource(R.layout.account_management_account_row);
+        accountPreference.setTitle(account.name);
+        accountPreference.setIcon(
+                mProfileDataCache.getProfileDataOrDefault(account.name).getImage());
+
+        accountPreference.setOnPreferenceClickListener(SyncSettingsUtils.toOnClickListener(
+                this, () -> SigninUtils.openSettingsForAccount(getActivity(), account)));
+
+        return accountPreference;
+    }
+
+    private Preference createManageYourGoogleAccountPreference() {
+        Preference manageYourGoogleAccountPreference = new Preference(getStyledContext());
+        manageYourGoogleAccountPreference.setLayoutResource(
+                R.layout.account_management_account_row);
+        manageYourGoogleAccountPreference.setTitle(R.string.manage_your_google_account);
+        manageYourGoogleAccountPreference.setIcon(R.drawable.ic_google_services_48dp);
+        manageYourGoogleAccountPreference.setOnPreferenceClickListener(
+                SyncSettingsUtils.toOnClickListener(
+                        this, () -> SyncSettingsUtils.openGoogleMyAccount(getActivity())));
+
+        return manageYourGoogleAccountPreference;
+    }
+
+    private Preference createDividerPreference(@LayoutRes int layoutResId) {
+        Preference dividerPreference = new Preference(getStyledContext());
+        dividerPreference.setLayoutResource(layoutResId);
+
+        return dividerPreference;
     }
 
     private ChromeBasePreference createAddAccountPreference() {
