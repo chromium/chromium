@@ -57,6 +57,7 @@ source_set("common") {
     "file_transfer_message_handler.h",
     "ipc_file_operations.h",
     "local_file_operations.h",
+    "rtc_log_file_operations.h",
     "session_file_operations_handler.h",
   ]
 
@@ -68,6 +69,7 @@ source_set("common") {
     "file_transfer_message_handler.cc",
     "ipc_file_operations.cc",
     "local_file_operations.cc",
+    "rtc_log_file_operations.cc",
     "session_file_operations_handler.cc",
   ]
 
@@ -103,6 +105,7 @@ source_set("unit_tests") {
     "file_transfer_message_handler_unittest.cc",
     "ipc_file_operations_unittest.cc",
     "local_file_operations_unittest.cc",
+    "rtc_log_file_operations_unittest.cc",
   ]
 
   deps = [
