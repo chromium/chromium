@@ -68,6 +68,7 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.weblayer_private.interfaces.APICallException;
 import org.chromium.weblayer_private.interfaces.IBrowserFragment;
 import org.chromium.weblayer_private.interfaces.ICrashReporterController;
+import org.chromium.weblayer_private.interfaces.IMediaRouteDialogFragment;
 import org.chromium.weblayer_private.interfaces.IObjectWrapper;
 import org.chromium.weblayer_private.interfaces.IProfile;
 import org.chromium.weblayer_private.interfaces.IRemoteFragmentClient;
@@ -76,6 +77,7 @@ import org.chromium.weblayer_private.interfaces.IWebLayer;
 import org.chromium.weblayer_private.interfaces.IWebLayerClient;
 import org.chromium.weblayer_private.interfaces.ObjectWrapper;
 import org.chromium.weblayer_private.interfaces.StrictModeWorkaround;
+import org.chromium.weblayer_private.media.MediaRouteDialogFragmentImpl;
 import org.chromium.weblayer_private.media.MediaSessionManager;
 import org.chromium.weblayer_private.media.MediaStreamManager;
 import org.chromium.weblayer_private.metrics.MetricsServiceClient;
@@ -334,6 +336,15 @@ public final class WebLayerImpl extends IWebLayer.Stub {
         SiteSettingsFragmentImpl fragment =
                 new SiteSettingsFragmentImpl(mProfileManager, remoteFragmentClient, unwrappedArgs);
         return fragment.asISiteSettingsFragment();
+    }
+
+    @Override
+    public IMediaRouteDialogFragment createMediaRouteDialogFragmentImpl(
+            IRemoteFragmentClient remoteFragmentClient) {
+        StrictModeWorkaround.apply();
+        MediaRouteDialogFragmentImpl fragment =
+                new MediaRouteDialogFragmentImpl(remoteFragmentClient);
+        return fragment.asIMediaRouteDialogFragment();
     }
 
     @Override

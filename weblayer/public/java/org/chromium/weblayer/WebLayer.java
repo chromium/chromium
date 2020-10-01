@@ -26,6 +26,7 @@ import androidx.fragment.app.Fragment;
 import org.chromium.weblayer_private.interfaces.APICallException;
 import org.chromium.weblayer_private.interfaces.BrowserFragmentArgs;
 import org.chromium.weblayer_private.interfaces.IBrowserFragment;
+import org.chromium.weblayer_private.interfaces.IMediaRouteDialogFragment;
 import org.chromium.weblayer_private.interfaces.IProfile;
 import org.chromium.weblayer_private.interfaces.IRemoteFragmentClient;
 import org.chromium.weblayer_private.interfaces.ISiteSettingsFragment;
@@ -554,6 +555,21 @@ public class WebLayer {
         try {
             return mImpl.createSiteSettingsFragmentImpl(
                     remoteFragmentClient, ObjectWrapper.wrap(fragmentArgs));
+        } catch (RemoteException e) {
+            throw new APICallException(e);
+        }
+    }
+
+    /**
+     * Returns the remote counterpart of MediaRouteDialogFragment.
+     */
+    /* package */ IMediaRouteDialogFragment connectMediaRouteDialogFragment(
+            IRemoteFragmentClient remoteFragmentClient) {
+        if (getSupportedMajorVersionInternal() < 87) {
+            throw new UnsupportedOperationException();
+        }
+        try {
+            return mImpl.createMediaRouteDialogFragmentImpl(remoteFragmentClient);
         } catch (RemoteException e) {
             throw new APICallException(e);
         }

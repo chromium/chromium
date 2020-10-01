@@ -84,7 +84,7 @@ public final class BrowserFragment extends RemoteFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         try {
-            mBrowser = new Browser(mImpl.getBrowser());
+            mBrowser = new Browser(mImpl.getBrowser(), this);
         } catch (RemoteException e) {
             throw new APICallException(e);
         }

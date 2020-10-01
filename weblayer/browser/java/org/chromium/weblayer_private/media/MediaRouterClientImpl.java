@@ -39,7 +39,10 @@ public class MediaRouterClientImpl extends MediaRouterClient {
 
     @Override
     public FragmentManager getSupportFragmentManager(WebContents initiator) {
-        return null;
+        return TabImpl.fromWebContents(initiator)
+                .getBrowser()
+                .createMediaRouteDialogFragment()
+                .getSupportFragmentManager();
     }
 
     @CalledByNative

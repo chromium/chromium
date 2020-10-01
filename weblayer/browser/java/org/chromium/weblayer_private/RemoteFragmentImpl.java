@@ -60,6 +60,17 @@ public abstract class RemoteFragmentImpl extends IRemoteFragment.Stub {
         }
     }
 
+    public void removeFragmentFromFragmentManager() {
+        if (WebLayerFactoryImpl.getClientMajorVersion() < 87) {
+            return;
+        }
+        try {
+            mClient.removeFragmentFromFragmentManager();
+        } catch (RemoteException e) {
+            throw new APICallException(e);
+        }
+    }
+
     // TODO(pshmakov): add dependency to androidx.annotation and put @CallSuper here.
     public void onCreate(Bundle savedInstanceState) {
         try {

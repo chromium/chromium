@@ -12,6 +12,7 @@ import org.chromium.weblayer_private.interfaces.ICrashReporterController;
 import org.chromium.weblayer_private.interfaces.IObjectWrapper;
 import org.chromium.weblayer_private.interfaces.IProfile;
 import org.chromium.weblayer_private.interfaces.IRemoteFragmentClient;
+import org.chromium.weblayer_private.interfaces.IMediaRouteDialogFragment;
 import org.chromium.weblayer_private.interfaces.ISiteSettingsFragment;
 import org.chromium.weblayer_private.interfaces.IWebLayerClient;
 
@@ -101,4 +102,6 @@ interface IWebLayer {
 
   // Added in Version 87.
   IObjectWrapper getApplicationContext() = 20;
+  IMediaRouteDialogFragment createMediaRouteDialogFragmentImpl(
+      in IRemoteFragmentClient remoteFragmentClient) = 21;
 }

@@ -35,7 +35,6 @@ public abstract class MediaRouterClient {
      * @param webContents a {@link WebContents} in a tab.
      * @return a unique integer identifier for the associated tab.
      */
-
     public abstract int getTabId(WebContents webContents);
 
     /**

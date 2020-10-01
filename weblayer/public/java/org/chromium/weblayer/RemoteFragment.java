@@ -150,6 +150,14 @@ abstract class RemoteFragment extends Fragment {
             StrictModeWorkaround.apply();
             RemoteFragment.this.requestPermissions(permissions, requestCode);
         }
+
+        @Override
+        public void removeFragmentFromFragmentManager() {
+            StrictModeWorkaround.apply();
+            Fragment fragment = RemoteFragment.this;
+            if (fragment.getParentFragmentManager() == null) return;
+            fragment.getParentFragmentManager().beginTransaction().remove(fragment).commit();
+        }
     };
 
     // Nonnull after first onAttach().
@@ -335,5 +343,9 @@ abstract class RemoteFragment extends Fragment {
         } catch (RemoteException e) {
             throw new APICallException(e);
         }
+    }
+
+    protected IRemoteFragment getRemoteFragment() {
+        return mRemoteFragment;
     }
 }

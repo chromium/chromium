@@ -15,6 +15,7 @@ import androidx.fragment.app.Fragment;
 import org.chromium.weblayer_private.interfaces.APICallException;
 import org.chromium.weblayer_private.interfaces.IBrowser;
 import org.chromium.weblayer_private.interfaces.IBrowserClient;
+import org.chromium.weblayer_private.interfaces.IRemoteFragment;
 import org.chromium.weblayer_private.interfaces.ITab;
 import org.chromium.weblayer_private.interfaces.ObjectWrapper;
 import org.chromium.weblayer_private.interfaces.StrictModeWorkaround;
@@ -30,6 +31,7 @@ import java.util.Set;
 public class Browser {
     // Set to null once destroyed (or for tests).
     private IBrowser mImpl;
+    private BrowserFragment mFragment;
     private final ObserverList<TabListCallback> mTabListCallbacks;
     private final UrlBarController mUrlBarController;
 
@@ -40,8 +42,9 @@ public class Browser {
         mUrlBarController = null;
     }
 
-    Browser(IBrowser impl) {
+    Browser(IBrowser impl, BrowserFragment fragment) {
         mImpl = impl;
+        mFragment = fragment;
         mTabListCallbacks = new ObserverList<TabListCallback>();
 
         try {
@@ -72,6 +75,7 @@ public class Browser {
 
     // Called prior to notifying IBrowser of destroy().
     void prepareForDestroy() {
+        mFragment = null;
         for (TabListCallback callback : mTabListCallbacks) {
             callback.onWillDestroyBrowserAndAllTabs();
         }
@@ -384,6 +388,12 @@ public class Browser {
             for (TabListCallback callback : mTabListCallbacks) {
                 callback.onTabRemoved(tab);
             }
+        }
+
+        @Override
+        public IRemoteFragment createMediaRouteDialogFragment() {
+            StrictModeWorkaround.apply();
+            return MediaRouteDialogFragment.create(mFragment);
         }
     }
 }

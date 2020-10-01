@@ -66,6 +66,7 @@ android_library("java") {
     "org/chromium/weblayer/LoadError.java",
     "org/chromium/weblayer/MediaCaptureCallback.java",
     "org/chromium/weblayer/MediaCaptureController.java",
+    "org/chromium/weblayer/MediaRouteDialogFragment.java",
     "org/chromium/weblayer/MediaSessionService.java",
     "org/chromium/weblayer/NavigateParams.java",
     "org/chromium/weblayer/Navigation.java",

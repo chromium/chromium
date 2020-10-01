@@ -131,6 +131,7 @@
 #include "weblayer/browser/safe_browsing/real_time_url_lookup_service_factory.h"
 #include "weblayer/browser/safe_browsing/safe_browsing_service.h"
 #include "weblayer/browser/tts_environment_android_impl.h"
+#include "weblayer/browser/weblayer_factory_impl_android.h"
 #endif
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
@@ -637,6 +638,9 @@ content::ControllerPresentationServiceDelegate*
 ContentBrowserClientImpl::GetControllerPresentationServiceDelegate(
     content::WebContents* web_contents) {
 #if defined(OS_ANDROID)
+  if (WebLayerFactoryImplAndroid::GetClientMajorVersion() < 87)
+    return nullptr;
+
   if (base::FeatureList::IsEnabled(features::kMediaRouter)) {
     MediaRouterFactory::DoPlatformInitIfNeeded();
     return media_router::PresentationServiceDelegateImpl::

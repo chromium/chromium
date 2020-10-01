@@ -32,6 +32,7 @@ import org.chromium.weblayer_private.interfaces.ITab;
 import org.chromium.weblayer_private.interfaces.IUrlBarController;
 import org.chromium.weblayer_private.interfaces.ObjectWrapper;
 import org.chromium.weblayer_private.interfaces.StrictModeWorkaround;
+import org.chromium.weblayer_private.media.MediaRouteDialogFragmentImpl;
 
 import java.util.Arrays;
 import java.util.List;
@@ -546,6 +547,15 @@ public class BrowserImpl extends IBrowser.Stub implements View.OnAttachStateChan
         // still returns true inside this call.
         mViewAttachedToWindow = false;
         updateAllTabsViewAttachedState();
+    }
+
+    public MediaRouteDialogFragmentImpl createMediaRouteDialogFragment() {
+        try {
+            return MediaRouteDialogFragmentImpl.fromRemoteFragment(
+                    mClient.createMediaRouteDialogFragment());
+        } catch (RemoteException e) {
+            throw new APICallException(e);
+        }
     }
 
     private void updateAllTabsViewAttachedState() {
