@@ -486,6 +486,14 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                 hasSaveImage = true;
             }
 
+            // If set, show 'Share Image' before 'Search with Google Lens'.
+            // IMPORTANT: Must stay consistent with logic after the below Lens block.
+            boolean addedShareImageAboveLens = false;
+            if (LensUtils.orderShareImageBeforeLens()) {
+                addedShareImageAboveLens = true;
+                imageGroup.add(createShareListItem(Item.SHARE_IMAGE));
+            }
+
             if (mMode == ContextMenuMode.CUSTOM_TAB || mMode == ContextMenuMode.NORMAL) {
                 if (checkSupportsGoogleSearchByImage(isSrcDownloadableScheme)) {
                     // All behavior relating to Lens integration is gated by Feature Flag.
@@ -515,7 +523,12 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                             ContextMenuUma.LensSupportStatus.SEARCH_BY_IMAGE_UNAVAILABLE);
                 }
             }
-            imageGroup.add(createShareListItem(Item.SHARE_IMAGE));
+
+            // By default show 'Share Image' after 'Search with Google Lens'.
+            // IMPORTANT: Must stay consistent with logic before the above Lens block.
+            if (!addedShareImageAboveLens) {
+                imageGroup.add(createShareListItem(Item.SHARE_IMAGE));
+            }
 
             // Show Lens Shopping Menu Item when the Lens Shopping feature is supported.
             if (showLensShoppingMenuItem) {

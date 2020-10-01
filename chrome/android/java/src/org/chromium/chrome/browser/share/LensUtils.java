@@ -57,6 +57,8 @@ public class LensUtils {
     private static final String SEND_ALT_PARAM_NAME = "sendAlt";
     private static final String USE_DIRECT_INTENT_FEATURE_PARAM_NAME = "useDirectIntent";
     private static final String DISABLE_ON_INCOGNITO_PARAM_NAME = "disableOnIncognito";
+    private static final String ORDER_SHARE_IMAGE_BEFORE_LENS_PARAM_NAME =
+            "orderShareImageBeforeLens";
     private static final String MIN_AGSA_VERSION_NAME_FOR_LENS_POSTCAPTURE = "10.65";
     private static final String MIN_AGSA_VERSION_NAME_FOR_LENS_CHROME_SHOPPING_INTENT = "11.16";
     private static final String LENS_INTENT_TYPE_LENS_CHROME_SHOPPING = "18";
@@ -395,6 +397,17 @@ public class LensUtils {
                         && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                                 ChromeFeatureList.CONTEXT_MENU_GOOGLE_LENS_CHIP,
                                 DISABLE_ON_INCOGNITO_PARAM_NAME, true));
+    }
+
+    /**
+     * Adjust chip ordering slightly. The image chip feature changes the context menu height
+     * which can result  in the final image menu items being hidden in certain contexts.
+     * @return Whether to list 'Share Image' above 'Search with Google Lens'.
+     */
+    public static boolean orderShareImageBeforeLens() {
+        return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                ChromeFeatureList.CONTEXT_MENU_GOOGLE_LENS_CHIP,
+                ORDER_SHARE_IMAGE_BEFORE_LENS_PARAM_NAME, false);
     }
 
     /**

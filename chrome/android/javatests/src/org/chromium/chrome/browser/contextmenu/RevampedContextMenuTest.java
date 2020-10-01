@@ -937,6 +937,34 @@ public class RevampedContextMenuTest implements DownloadTestRule.CustomMainActiv
     @Test
     @SmallTest
     @Feature({"Browser", "ContextMenu"})
+    @CommandLineFlags.
+    Add({"enable-features=" + ChromeFeatureList.CONTEXT_MENU_GOOGLE_LENS_CHIP + "<FakeStudyName",
+            "force-fieldtrials=FakeStudyName/Enabled",
+            "force-fieldtrial-params=FakeStudyName.Enabled:orderShareImageBeforeLens/true"})
+    public void
+    testContextMenuShareImageStillAddedWhenReordered() throws TimeoutException {
+        LensUtils.setFakePassableLensEnvironmentForTesting(true);
+
+        Tab tab = mDownloadTestRule.getActivity().getActivityTab();
+        RevampedContextMenuCoordinator menu =
+                RevampedContextMenuUtils.openContextMenu(tab, "testImageLink");
+
+        Integer[] expectedItems = {R.id.contextmenu_open_in_new_tab,
+                R.id.contextmenu_open_in_incognito_tab, R.id.contextmenu_copy_link_address,
+                R.id.contextmenu_save_link_as, R.id.contextmenu_save_image,
+                R.id.contextmenu_open_image_in_new_tab, R.id.contextmenu_share_image,
+                R.id.contextmenu_search_with_google_lens, R.id.contextmenu_share_link,
+                R.id.contextmenu_copy_image};
+        Integer[] featureItems = {R.id.contextmenu_open_in_ephemeral_tab,
+                R.id.contextmenu_open_image_in_ephemeral_tab};
+        expectedItems =
+                addItemsIf(EphemeralTabCoordinator.isSupported(), expectedItems, featureItems);
+        assertMenuItemsAreEqual(menu, expectedItems);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Browser", "ContextMenu"})
     @DisabledTest(message = "https://crbug.com/947695")
     public void testContextMenuRetrievesVideoOptions() throws TimeoutException {
         Tab tab = mDownloadTestRule.getActivity().getActivityTab();
