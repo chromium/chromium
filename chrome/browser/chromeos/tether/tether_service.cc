@@ -38,9 +38,6 @@ constexpr int64_t kMetricFalsePositiveSeconds = 2;
 
 // static
 TetherService* TetherService::Get(Profile* profile) {
-  if (!IsFeatureFlagEnabled())
-    return nullptr;
-
   // Tether networks are only available for the primary user; thus, no
   // TetherService object should be created for secondary users. If multiple
   // instances were created for each user, inconsistencies could lead to browser
@@ -55,11 +52,6 @@ TetherService* TetherService::Get(Profile* profile) {
 void TetherService::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   chromeos::tether::TetherComponentImpl::RegisterProfilePrefs(registry);
-}
-
-// static
-bool TetherService::IsFeatureFlagEnabled() {
-  return base::FeatureList::IsEnabled(chromeos::features::kInstantTethering);
 }
 
 // static.
