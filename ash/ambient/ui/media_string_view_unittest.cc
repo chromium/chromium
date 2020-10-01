@@ -6,6 +6,7 @@
 
 #include "ash/ambient/ambient_constants.h"
 #include "ash/ambient/test/ambient_ash_test_base.h"
+#include "ash/ambient/ui/ambient_container_view.h"
 #include "ash/public/cpp/ash_pref_names.h"
 #include "ash/shell.h"
 #include "base/strings/string16.h"
@@ -260,8 +261,8 @@ TEST_F(MediaStringViewTest, HasNoMaskLayerWithShortText) {
   metadata.artist = base::ASCIIToUTF16("artist");
 
   SimulateMediaMetadataChanged(metadata);
-  // Wait for layout.
-  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(100));
+  // Force re-layout.
+  container_view()->Layout();
 
   EXPECT_LT(GetMediaStringViewTextLabel()->GetPreferredSize().width(),
             kMediaStringMaxWidthDip);
@@ -277,8 +278,8 @@ TEST_F(MediaStringViewTest, HasMaskLayerWithLongText) {
   metadata.artist = base::ASCIIToUTF16("A super duper long artist name");
 
   SimulateMediaMetadataChanged(metadata);
-  // Wait for layout.
-  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(100));
+  // Force re-layout.
+  container_view()->Layout();
 
   EXPECT_GT(GetMediaStringViewTextLabel()->GetPreferredSize().width(),
             kMediaStringMaxWidthDip);
@@ -294,8 +295,8 @@ TEST_F(MediaStringViewTest, MaskLayerShouldUpdate) {
   metadata.artist = base::ASCIIToUTF16("artist");
 
   SimulateMediaMetadataChanged(metadata);
-  // Wait for layout.
-  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(100));
+  // Force re-layout.
+  container_view()->Layout();
 
   EXPECT_LT(GetMediaStringViewTextLabel()->GetPreferredSize().width(),
             kMediaStringMaxWidthDip);
@@ -306,8 +307,8 @@ TEST_F(MediaStringViewTest, MaskLayerShouldUpdate) {
   metadata.artist = base::ASCIIToUTF16("A super duper long artist name");
 
   SimulateMediaMetadataChanged(metadata);
-  // Wait for layout.
-  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(100));
+  // Force re-layout.
+  container_view()->Layout();
 
   EXPECT_GT(GetMediaStringViewTextLabel()->GetPreferredSize().width(),
             kMediaStringMaxWidthDip);
@@ -318,8 +319,8 @@ TEST_F(MediaStringViewTest, MaskLayerShouldUpdate) {
   metadata.artist = base::ASCIIToUTF16("artist");
 
   SimulateMediaMetadataChanged(metadata);
-  // Wait for layout.
-  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(100));
+  // Force re-layout.
+  container_view()->Layout();
 
   EXPECT_LT(GetMediaStringViewTextLabel()->GetPreferredSize().width(),
             kMediaStringMaxWidthDip);
