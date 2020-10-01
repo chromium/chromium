@@ -63,6 +63,11 @@ Polymer({
       observer: 'applyTabIndex_',
     },
 
+    disableRipple: {
+      type: Boolean,
+      value: false,
+    },
+
     ironIcon: {
       type: String,
       observer: 'onIronIconChanged_',
@@ -115,7 +120,7 @@ Polymer({
 
   /** @private */
   showRipple_() {
-    if (!this.noink && !this.disabled) {
+    if (!this.noink && !this.disabled && !this.disableRipple) {
       this.getRipple().showAndHoldDown();
       this.rippleShowing_ = true;
     }
