@@ -146,7 +146,7 @@ CrossOriginOpenerPolicyStatus::EnforceCOOP(
                                             ->GetProcess()
                                             ->GetStoragePartition();
   auto response_reporter = std::make_unique<CrossOriginOpenerPolicyReporter>(
-      storage_partition, response_url, response_coop);
+      storage_partition, response_url, response_referrer_url, response_coop);
   CrossOriginOpenerPolicyReporter* previous_reporter =
       use_current_document_coop_reporter_
           ? frame_tree_node_->current_frame_host()->coop_reporter()
@@ -188,8 +188,7 @@ CrossOriginOpenerPolicyStatus::EnforceCOOP(
     // would not emit a report when the opener of a window has a bcg switch.
     if (had_opener_) {
       response_reporter->QueueNavigationToCOOPReport(
-          current_url_, response_referrer_url,
-          current_origin_.IsSameOriginWith(response_origin),
+          current_url_, current_origin_.IsSameOriginWith(response_origin),
           false /* is_report_only */);
 
       if (previous_reporter) {
@@ -214,8 +213,7 @@ CrossOriginOpenerPolicyStatus::EnforceCOOP(
     // would not emit a report when the opener of a window has a bcg switch.
     if (had_opener_) {
       response_reporter->QueueNavigationToCOOPReport(
-          current_url_, response_referrer_url,
-          current_origin_.IsSameOriginWith(response_origin),
+          current_url_, current_origin_.IsSameOriginWith(response_origin),
           true /* is_report_only */);
 
       if (previous_reporter) {

@@ -34,6 +34,7 @@ class CONTENT_EXPORT CrossOriginOpenerPolicyReporter final
  public:
   CrossOriginOpenerPolicyReporter(StoragePartition* storage_partition,
                                   const GURL& context_url,
+                                  const GURL& context_referrer_url,
                                   const network::CrossOriginOpenerPolicy& coop);
   ~CrossOriginOpenerPolicyReporter() override;
   CrossOriginOpenerPolicyReporter(const CrossOriginOpenerPolicyReporter&) =
@@ -54,7 +55,6 @@ class CONTENT_EXPORT CrossOriginOpenerPolicyReporter final
   // Sends reports when COOP causing a browsing context group switch that
   // breaks opener relationships.
   void QueueNavigationToCOOPReport(const GURL& previous_url,
-                                   const GURL& referrer_url,
                                    bool same_origin_with_previous,
                                    bool is_report_only);
   void QueueNavigationAwayFromCOOPReport(const GURL& next_url,
@@ -89,6 +89,7 @@ class CONTENT_EXPORT CrossOriginOpenerPolicyReporter final
   GURL source_url_;
   GlobalFrameRoutingId source_routing_id_;
   const GURL context_url_;
+  const std::string context_referrer_url_;
   const network::CrossOriginOpenerPolicy coop_;
 
   mojo::ReceiverSet<network::mojom::CrossOriginOpenerPolicyReporter>

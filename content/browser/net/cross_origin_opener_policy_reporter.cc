@@ -132,17 +132,17 @@ std::string SanitizedURL(const GURL& url) {
 CrossOriginOpenerPolicyReporter::CrossOriginOpenerPolicyReporter(
     StoragePartition* storage_partition,
     const GURL& context_url,
+    const GURL& context_referrer_url,
     const network::CrossOriginOpenerPolicy& coop)
     : storage_partition_(storage_partition),
       context_url_(context_url),
-      coop_(coop) {
-}
+      context_referrer_url_(SanitizedURL(context_referrer_url)),
+      coop_(coop) {}
 
 CrossOriginOpenerPolicyReporter::~CrossOriginOpenerPolicyReporter() = default;
 
 void CrossOriginOpenerPolicyReporter::QueueNavigationToCOOPReport(
     const GURL& previous_url,
-    const GURL& referrer_url,
     bool same_origin_with_previous,
     bool is_report_only) {
   const base::Optional<std::string>& endpoint =
@@ -156,7 +156,7 @@ void CrossOriginOpenerPolicyReporter::QueueNavigationToCOOPReport(
                  is_report_only ? kDispositionReporting : kDispositionEnforce);
   body.SetString(kPreviousURL,
                  same_origin_with_previous ? SanitizedURL(previous_url) : "");
-  body.SetString(kReferrer, SanitizedURL(referrer_url));
+  body.SetString(kReferrer, context_referrer_url_);
   body.SetString(kViolationType, kTypeToResponse);
   QueueNavigationReport(std::move(body), *endpoint, is_report_only);
 }
@@ -214,7 +214,7 @@ void CrossOriginOpenerPolicyReporter::QueueAccessReport(
     case network::mojom::CoopAccessReportType::kAccessFromCoopPageToOpener:
     case network::mojom::CoopAccessReportType::kAccessToCoopPageFromOpener:
       body.SetStringPath(kOpenerURL, reported_window_url);
-      // TODO(arthursonzogni): Fill body.referrer.
+      body.SetStringPath(kReferrer, context_referrer_url_);
       break;
 
     // Reporter is the opener:

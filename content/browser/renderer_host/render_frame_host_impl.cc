@@ -5043,7 +5043,7 @@ void RenderFrameHostImpl::CreateNewWindow(
     main_frame->set_coop_reporter(
         std::make_unique<CrossOriginOpenerPolicyReporter>(
             GetProcess()->GetStoragePartition(), GetLastCommittedURL(),
-            popup_coop));
+            params->referrer->url, popup_coop));
   }
 
   if (main_frame->waiting_for_init_) {
