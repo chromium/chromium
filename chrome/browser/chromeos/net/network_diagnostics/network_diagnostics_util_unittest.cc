@@ -14,7 +14,7 @@ namespace network_diagnostics {
 
 TEST(NetworkDiagnosticsUtilTest, TestGetRandomString) {
   int length = 8;
-  auto random_string = GetRandomString(length);
+  auto random_string = util::GetRandomString(length);
   // Ensure that the length equals |length| and all characters are in between
   // 'a'-'z', inclusive.
   ASSERT_EQ(length, random_string.size());
@@ -27,7 +27,7 @@ TEST(NetworkDiagnosticsUtilTest, TestGetRandomHosts) {
   int num_hosts = 10;
   int prefix_length = 8;
   std::vector<std::string> random_hosts =
-      GetRandomHosts(num_hosts, prefix_length);
+      util::GetRandomHosts(num_hosts, prefix_length);
   // Ensure |random_hosts| has unique entries.
   std::sort(random_hosts.begin(), random_hosts.end());
   ASSERT_TRUE(std::adjacent_find(random_hosts.begin(), random_hosts.end()) ==

@@ -13,6 +13,8 @@ class Profile;
 namespace chromeos {
 namespace network_diagnostics {
 
+namespace util {
+
 // Returns the Gstatic host suffix. Network diagnostic routines attach a random
 // prefix to |kGstaticHostSuffix| to get a complete hostname.
 const char* GetGstaticHostSuffix();
@@ -35,6 +37,8 @@ std::vector<std::string> GetRandomHostsWithFixedHosts(int num_random_hosts,
 
 // Returns the profile associated with this account.
 Profile* GetUserProfile();
+
+}  // namespace util
 
 }  // namespace network_diagnostics
 }  // namespace chromeos

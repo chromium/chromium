@@ -16,6 +16,8 @@
 namespace chromeos {
 namespace network_diagnostics {
 
+namespace util {
+
 namespace {
 
 // Returns |num_prefixes| prefixes of size |length|, where no two entries are
@@ -79,6 +81,8 @@ std::vector<std::string> GetRandomHostsWithFixedHosts(int num_random_hosts,
 Profile* GetUserProfile() {
   return ProfileManager::GetPrimaryUserProfile();
 }
+
+}  // namespace util
 
 }  // namespace network_diagnostics
 }  // namespace chromeos
