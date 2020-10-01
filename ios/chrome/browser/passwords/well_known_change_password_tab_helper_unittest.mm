@@ -53,6 +53,18 @@ struct ServerResponse {
 
 constexpr char kMockChangePasswordPath[] = "/change-password-override";
 
+// Re-implementation of web::LoadUrl() that allows specifying a custom page
+// transition.
+void LoadUrlWithTransition(web::WebState* web_state,
+                           const GURL& url,
+                           ui::PageTransition transition) {
+  web::NavigationManager* navigation_manager =
+      web_state->GetNavigationManager();
+  web::NavigationManager::WebLoadParams params(url);
+  params.transition_type = transition;
+  navigation_manager->LoadURLWithParams(params);
+}
+
 }  // namespace
 
 class TestChangePasswordUrlService
@@ -270,4 +282,18 @@ TEST_F(WellKnownChangePasswordTabHelperTest,
   ASSERT_TRUE(WaitUntilLoaded());
   EXPECT_EQ(GetNavigatedUrl().path(), kMockChangePasswordPath);
   ExpectUkmMetric(WellKnownChangePasswordResult::kFallbackToOverrideUrl);
+}
+
+TEST_F(WellKnownChangePasswordTabHelperTest,
+       NoSupportForChangePasswordForLinks) {
+  path_response_map_[kWellKnownChangePasswordPath] = {net::HTTP_OK, {}};
+  LoadUrlWithTransition(web_state(),
+                        test_server_->GetURL(kWellKnownChangePasswordPath),
+                        ui::PAGE_TRANSITION_LINK);
+  ASSERT_TRUE(WaitUntilLoaded());
+  EXPECT_EQ(GetNavigatedUrl().path(), kWellKnownChangePasswordPath);
+
+  // In the case of PAGE_TRANSITION_LINK the tab helper should not be active and
+  // no metrics should be recorded.
+  EXPECT_TRUE(test_recorder_->GetEntriesByName(UkmBuilder::kEntryName).empty());
 }

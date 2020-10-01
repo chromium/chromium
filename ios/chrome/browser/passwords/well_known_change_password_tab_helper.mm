@@ -16,6 +16,7 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "ui/base/page_transition_types.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -59,6 +60,8 @@ WellKnownChangePasswordTabHelper::ShouldAllowRequest(
     // Boolean order important, feature flag last. Otherwise it messes
     // with usage statistics of control and experimental group (UMA).
     if (request_info.target_frame_is_main &&
+        ui::PageTransitionCoreTypeIs(request_info.transition_type,
+                                     ui::PAGE_TRANSITION_TYPED) &&
         web_state_->GetLastCommittedURL().is_empty() &&  // empty tab history
         IsWellKnownChangePasswordUrl(request_url) &&
         base::FeatureList::IsEnabled(
