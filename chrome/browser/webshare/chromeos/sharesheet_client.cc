@@ -12,6 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
+#include "chrome/browser/apps/app_service/intent_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sharesheet/sharesheet_service.h"
 #include "chrome/browser/sharesheet/sharesheet_service_factory.h"
@@ -127,20 +128,17 @@ void SharesheetClient::OnPrepareDirectory(blink::mojom::ShareError error) {
     return;
   }
 
-  std::vector<base::FilePath> filenames;
   for (const auto& file : current_share_->files) {
-    base::FilePath filename =
-        GenerateFileName(current_share_->directory, file->name);
     current_share_->content_types.push_back(file->blob->content_type);
-    current_share_->file_urls.push_back(net::FilePathToFileURL(filename));
-    filenames.push_back(std::move(filename));
+    current_share_->file_paths.push_back(
+        GenerateFileName(current_share_->directory, file->name));
   }
 
   BrowserContext* const browser_context = web_contents()->GetBrowserContext();
   std::unique_ptr<StoreFilesTask> store_files_task =
       std::make_unique<StoreFilesTask>(
           BrowserContext::GetBlobStorageContext(browser_context),
-          std::move(filenames), std::move(current_share_->files),
+          current_share_->file_paths, std::move(current_share_->files),
           base::BindOnce(&SharesheetClient::OnStoreFiles,
                          weak_ptr_factory_.GetWeakPtr()));
 
@@ -158,7 +156,7 @@ void SharesheetClient::OnStoreFiles(blink::mojom::ShareError error) {
   }
 
   GetSharesheetCallback().Run(
-      web_contents(), std::move(current_share_->file_urls),
+      web_contents(), std::move(current_share_->file_paths),
       std::move(current_share_->content_types),
       base::BindOnce(&SharesheetClient::OnShowSharesheet,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -171,7 +169,7 @@ void SharesheetClient::OnShowSharesheet(sharesheet::SharesheetResult result) {
 
 // static
 void SharesheetClient::ShowSharesheet(content::WebContents* web_contents,
-                                      std::vector<GURL> file_urls,
+                                      std::vector<base::FilePath> file_paths,
                                       std::vector<std::string> content_types,
                                       CloseCallback close_callback) {
   if (!base::FeatureList::IsEnabled(features::kSharesheet)) {
@@ -188,7 +186,7 @@ void SharesheetClient::ShowSharesheet(content::WebContents* web_contents,
 
   sharesheet_service->ShowBubble(
       web_contents,
-      apps_util::CreateShareIntentFromFiles(std::move(file_urls),
+      apps_util::CreateShareIntentFromFiles(profile, std::move(file_paths),
                                             std::move(content_types)),
       std::move(close_callback));
 }

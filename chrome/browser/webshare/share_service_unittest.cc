@@ -116,7 +116,7 @@ class ShareServiceUnitTest : public ChromeRenderViewHostTestHarness {
 
 #if defined(OS_CHROMEOS)
   static void AcceptShareRequest(content::WebContents* web_contents,
-                                 std::vector<GURL> file_urls,
+                                 std::vector<base::FilePath> file_paths,
                                  std::vector<std::string> content_types,
                                  sharesheet::CloseCallback close_callback) {
     std::move(close_callback).Run(sharesheet::SharesheetResult::kSuccess);

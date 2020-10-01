@@ -30,7 +30,7 @@ class SharesheetClient : public content::WebContentsObserver {
   using CloseCallback = sharesheet::CloseCallback;
   using SharesheetCallback =
       base::RepeatingCallback<void(content::WebContents* web_contents,
-                                   std::vector<GURL> file_urls,
+                                   std::vector<base::FilePath> file_paths,
                                    std::vector<std::string> content_types,
                                    CloseCallback close_callback)>;
 
@@ -55,7 +55,7 @@ class SharesheetClient : public content::WebContentsObserver {
   void OnShowSharesheet(sharesheet::SharesheetResult result);
 
   static void ShowSharesheet(content::WebContents* web_contents,
-                             std::vector<GURL> file_urls,
+                             std::vector<base::FilePath> file_paths,
                              std::vector<std::string> content_types,
                              CloseCallback close_callback);
 
@@ -74,7 +74,7 @@ class SharesheetClient : public content::WebContentsObserver {
 
     std::vector<blink::mojom::SharedFilePtr> files;
     base::FilePath directory;
-    std::vector<GURL> file_urls;
+    std::vector<base::FilePath> file_paths;
     std::vector<std::string> content_types;
     blink::mojom::ShareService::ShareCallback callback;
 

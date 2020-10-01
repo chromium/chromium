@@ -68,19 +68,16 @@ IN_PROC_BROWSER_TEST_F(SharesheetClientBrowserTest, ShareTwoFiles) {
   ui_test_utils::NavigateToURL(browser(), GetAppUrl());
   content::WebContents* const contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  base::FilePath first_file_path;
-  base::FilePath second_file_path;
+  std::vector<base::FilePath> file_paths;
 
   SharesheetClient::SetSharesheetCallbackForTesting(base::BindLambdaForTesting(
-      [contents, &first_file_path, &second_file_path](
-          content::WebContents* web_contents, std::vector<GURL> file_urls,
-          std::vector<std::string> content_types,
-          SharesheetClient::CloseCallback close_callback) {
-        EXPECT_EQ(contents, web_contents);
+      [contents, &file_paths](content::WebContents* in_contents,
+                              std::vector<base::FilePath> in_file_paths,
+                              std::vector<std::string> content_types,
+                              SharesheetClient::CloseCallback close_callback) {
+        EXPECT_EQ(contents, in_contents);
 
-        EXPECT_EQ(file_urls.size(), 2U);
-        EXPECT_TRUE(net::FileURLToFilePath(file_urls[0], &first_file_path));
-        EXPECT_TRUE(net::FileURLToFilePath(file_urls[1], &second_file_path));
+        file_paths = std::move(in_file_paths);
 
         EXPECT_EQ(content_types.size(), 2U);
         EXPECT_EQ(content_types[0], "audio/mp3");
@@ -90,8 +87,9 @@ IN_PROC_BROWSER_TEST_F(SharesheetClientBrowserTest, ShareTwoFiles) {
       }));
 
   EXPECT_EQ("share succeeded", content::EvalJs(contents, script));
-  CheckSize(first_file_path, /*expected_size=*/345);
-  CheckSize(second_file_path, /*expected_size=*/67890);
+  EXPECT_EQ(file_paths.size(), 2U);
+  CheckSize(file_paths[0], /*expected_size=*/345);
+  CheckSize(file_paths[1], /*expected_size=*/67890);
 }
 
 IN_PROC_BROWSER_TEST_F(SharesheetClientBrowserTest, RepeatedShare) {
@@ -103,18 +101,18 @@ IN_PROC_BROWSER_TEST_F(SharesheetClientBrowserTest, RepeatedShare) {
       browser()->tab_strip_model()->GetActiveWebContents();
 
   for (int count = 0; count < kRepeats; ++count) {
-    base::FilePath file_path;
+    std::vector<base::FilePath> file_paths;
 
     SharesheetClient::SetSharesheetCallbackForTesting(
         base::BindLambdaForTesting(
-            [contents, &file_path](
-                content::WebContents* web_contents, std::vector<GURL> file_urls,
+            [contents, &file_paths](
+                content::WebContents* in_contents,
+                std::vector<base::FilePath> in_file_paths,
                 std::vector<std::string> content_types,
                 SharesheetClient::CloseCallback close_callback) {
-              EXPECT_EQ(contents, web_contents);
+              EXPECT_EQ(contents, in_contents);
 
-              EXPECT_EQ(file_urls.size(), 1U);
-              EXPECT_TRUE(net::FileURLToFilePath(file_urls[0], &file_path));
+              file_paths = std::move(in_file_paths);
 
               EXPECT_EQ(content_types.size(), 1U);
               EXPECT_EQ(content_types[0], "image/webp");
@@ -124,7 +122,8 @@ IN_PROC_BROWSER_TEST_F(SharesheetClientBrowserTest, RepeatedShare) {
             }));
 
     EXPECT_EQ("share succeeded", content::EvalJs(contents, script));
-    CheckSize(file_path, /*expected_size=*/12);
+    EXPECT_EQ(file_paths.size(), 1U);
+    CheckSize(file_paths[0], /*expected_size=*/12);
   }
 }
 
@@ -136,7 +135,8 @@ IN_PROC_BROWSER_TEST_F(SharesheetClientBrowserTest, CancelledShare) {
 
   ui_test_utils::NavigateToURL(browser(), GetAppUrl());
   SharesheetClient::SetSharesheetCallbackForTesting(base::BindLambdaForTesting(
-      [](content::WebContents* web_contents, std::vector<GURL> file_urls,
+      [](content::WebContents* in_contents,
+         std::vector<base::FilePath> file_paths,
          std::vector<std::string> content_types,
          SharesheetClient::CloseCallback close_callback) {
         std::move(close_callback).Run(sharesheet::SharesheetResult::kCancel);
