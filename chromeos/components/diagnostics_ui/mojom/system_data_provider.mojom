@@ -4,6 +4,8 @@
 
 module chromeos.diagnostics.mojom;
 
+import "mojo/public/mojom/base/string16.mojom";
+
 // Contains the capabilities of the device.
 struct DeviceCapabilities {
   bool has_battery;
@@ -40,6 +42,17 @@ enum BatteryState {
   kCharging,
   kDischarging,
   kFull,
+};
+
+// Contains information about the charging state of the battery.
+struct BatteryChargeStatus {
+  // String containing a localized time duration. If the time is unreliable
+  // the string will be empty.
+  mojo_base.mojom.String16 power_time;
+  int32 current_now_milliamps;
+  uint32 charge_now_milliamp_hours;
+  BatteryState battery_state;
+  ExternalPowerSource power_adapter_status;
 };
 
 // Provides telemetric information about the system. This API is exposed to the

@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "chromeos/dbus/cros_healthd/cros_healthd_client.h"
 #include "chromeos/dbus/cros_healthd/fake_cros_healthd_client.h"
+#include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -144,12 +145,15 @@ void SetCrosHealthdBatteryInfoResponse(const std::string& vendor,
 class SystemDataProviderTest : public testing::Test {
  public:
   SystemDataProviderTest() {
+    chromeos::PowerManagerClient::InitializeFake();
     chromeos::CrosHealthdClient::InitializeFake();
     system_data_provider_ = std::make_unique<SystemDataProvider>();
   }
 
   ~SystemDataProviderTest() override {
+    system_data_provider_.reset();
     chromeos::CrosHealthdClient::Shutdown();
+    chromeos::PowerManagerClient::Shutdown();
     base::RunLoop().RunUntilIdle();
   }
 
