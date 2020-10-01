@@ -26,9 +26,9 @@ Sanitizer* Sanitizer::Create(const SanitizerConfig* config,
 Sanitizer::Sanitizer(const SanitizerConfig* config)
     : config_(const_cast<SanitizerConfig*>(config)) {
   // Format dropElements to uppercases.
-  if (config->hasDropElements()) {
+  if (config->hasDropElementsNonNull()) {
     Vector<String> l;
-    for (const String& s : config->dropElements()) {
+    for (const String& s : config->dropElementsNonNull()) {
       l.push_back(s.UpperASCII());
     }
     config_->setDropElements(l);
@@ -59,7 +59,7 @@ DocumentFragment* Sanitizer::sanitize(ScriptState* script_state,
   fragment->ParseHTML(input, document->QuerySelector("body"));
 
   // Remove all the elements in the dropElements list.
-  if (config_->hasDropElements()) {
+  if (config_->hasDropElementsNonNull()) {
     Node* node = fragment->firstChild();
 
     while (node) {
@@ -73,7 +73,7 @@ DocumentFragment* Sanitizer::sanitize(ScriptState* script_state,
       String node_name = node->nodeName();
       // If the current element is dropped, remove current element entirely and
       // proceed to its next sibling.
-      if (config_->dropElements().Contains(node_name.UpperASCII())) {
+      if (config_->dropElementsNonNull().Contains(node_name.UpperASCII())) {
         Node* tmp = node;
         node = NodeTraversal::NextSkippingChildren(*node, fragment);
         tmp->remove();
