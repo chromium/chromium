@@ -11,44 +11,50 @@
 </style>
 
 <script>
-function reset() {
+async function reset() {
     document.scrollingElement.scrollTop = 0;
     document.scrollingElement.scrollLeft = 0;
+    await waitForCompositorCommit();
 }
 
 var position = {x: 20, y: 20};
 promise_test(async () => {
+    await reset();
     await wheelTick(0, 1, position);
-    await waitFor( () => {
-        return document.scrollingElement.scrollTop == pixelsPerTick() &&
-               document.scrollingElement.scrollLeft == 0;
+    await waitForAnimationEndTimeBased( () => {
+        return document.scrollingElement.scrollTop;
     });
+    assert_equals(document.scrollingElement.scrollLeft, 0);
+    assert_equals(document.scrollingElement.scrollTop, pixelsPerTick());
 }, "One vertical wheel tick scrolls the right number of pixels in high dpi mode.");
 
 promise_test(async () => {
-    reset();
+    await reset();
     await wheelTick(1, 0, position);
-    await waitFor( () => {
-        return document.scrollingElement.scrollTop == 0 &&
-               document.scrollingElement.scrollLeft == pixelsPerTick();
+    await waitForAnimationEndTimeBased( () => {
+        return document.scrollingElement.scrollLeft;
     });
+    assert_equals(document.scrollingElement.scrollLeft, pixelsPerTick());
+    assert_equals(document.scrollingElement.scrollTop, 0);
 }, "One horizontal wheel tick scrolls the right number of pixels in high dpi mode.");
 
 promise_test(async () => {
-    reset();
+    await reset();
     await wheelTick(0, 2, position);
-    await waitFor( () => {
-        return document.scrollingElement.scrollTop == 2 * pixelsPerTick() &&
-               document.scrollingElement.scrollLeft == 0;
+    await waitForAnimationEndTimeBased( () => {
+        return document.scrollingElement.scrollTop;
     });
+    assert_equals(document.scrollingElement.scrollLeft, 0);
+    assert_equals(document.scrollingElement.scrollTop, 2 * pixelsPerTick());
 }, "Two vertical wheel ticks scroll the right number of pixels in high dpi mode.");
 
 promise_test(async () => {
-    reset();
+    await reset();
     await wheelTick(2, 0, position);
-    await waitFor( () => {
-        return document.scrollingElement.scrollTop == 0 &&
-               document.scrollingElement.scrollLeft == 2 * pixelsPerTick();
+    await waitForAnimationEndTimeBased( () => {
+        return document.scrollingElement.scrollLeft;
     });
+    assert_equals(document.scrollingElement.scrollLeft, 2 * pixelsPerTick());
+    assert_equals(document.scrollingElement.scrollTop, 0);
 }, "Two horizontal wheel ticks scroll the right number of pixels in high dpi mode.");
 </script>
