@@ -204,6 +204,8 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
   void OnFrameIntersectionUpdate(
       content::RenderFrameHost* rfh,
       const mojom::FrameIntersectionUpdate& frame_intersection_update) override;
+  void SetUpSharedMemoryForSmoothness(
+      base::ReadOnlySharedMemoryRegion shared_memory) override;
 
   // PageLoadMetricsObserverDelegate implementation:
   content::WebContents* GetWebContents() const override;

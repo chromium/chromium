@@ -9,6 +9,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/read_only_shared_memory_region.h"
 #include "base/optional.h"
 #include "base/strings/string16.h"
 #include "content/common/content_export.h"
@@ -273,6 +274,12 @@ class CONTENT_EXPORT RenderFrameObserver : public IPC::Listener,
   virtual bool OnAssociatedInterfaceRequestForFrame(
       const std::string& interface_name,
       mojo::ScopedInterfaceEndpointHandle* handle);
+
+  // The smoothness metrics is shared over shared-memory. The interested
+  // observer should invalidate |shared_memory| (by std::move()'ing it), and
+  // return true. All other observers should return false (default).
+  virtual bool SetUpSmoothnessReporting(
+      base::ReadOnlySharedMemoryRegion& shared_memory);
 
   // IPC::Listener implementation.
   bool OnMessageReceived(const IPC::Message& message) override;

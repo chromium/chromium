@@ -20,6 +20,7 @@
 #include "base/cancelable_callback.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
@@ -693,6 +694,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   float recording_scale_factor() const { return recording_scale_factor_; }
 
   void SetSourceURL(ukm::SourceId source_id, const GURL& url);
+  base::ReadOnlySharedMemoryRegion CreateSharedMemoryForSmoothnessUkm();
 
   void SetRenderFrameObserver(
       std::unique_ptr<RenderFrameMetadataObserver> observer);
@@ -956,6 +958,8 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   // as it is forwarded along the pipeline to avoid old information incorrectly
   // sticking around and potentially being reused.
   std::unique_ptr<viz::DelegatedInkMetadata> delegated_ink_metadata_;
+
+  base::MappedReadOnlyRegion ukm_smoothness_mapping_;
 
   // Used to vend weak pointers to LayerTreeHost to ScopedDeferMainFrameUpdate
   // objects.

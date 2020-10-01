@@ -691,6 +691,15 @@ void ProxyMain::SetSourceURL(ukm::SourceId source_id, const GURL& url) {
                                 source_id, url));
 }
 
+void ProxyMain::SetUkmSmoothnessDestination(
+    UkmSmoothnessDataShared* ukm_smoothness_data) {
+  DCHECK(IsMainThread());
+  ImplThreadTaskRunner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&ProxyImpl::SetUkmSmoothnessDestination,
+                     base::Unretained(proxy_impl_.get()), ukm_smoothness_data));
+}
+
 void ProxyMain::ClearHistory() {
   // Must only be called from the impl thread during commit.
   DCHECK(task_runner_provider_->IsImplThread());

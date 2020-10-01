@@ -46,6 +46,8 @@ class FakeProxy : public Proxy {
                                   bool animate) override {}
   void RequestBeginMainFrameNotExpected(bool new_state) override {}
   void SetSourceURL(ukm::SourceId source_id, const GURL& url) override {}
+  void SetUkmSmoothnessDestination(
+      UkmSmoothnessDataShared* ukm_smoothness_data) override {}
   void ClearHistory() override {}
   void SetRenderFrameObserver(
       std::unique_ptr<RenderFrameMetadataObserver> observer) override {}

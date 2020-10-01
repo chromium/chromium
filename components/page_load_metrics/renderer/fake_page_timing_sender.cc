@@ -29,6 +29,9 @@ void FakePageTimingSender::SendTiming(
                            new_input_timing);
 }
 
+void FakePageTimingSender::SetUpSmoothnessReporting(
+    base::ReadOnlySharedMemoryRegion shared_memory) {}
+
 FakePageTimingSender::PageTimingValidator::PageTimingValidator()
     : expected_input_timing(mojom::InputTiming::New()),
       actual_input_timing(mojom::InputTiming::New()) {}

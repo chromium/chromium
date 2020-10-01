@@ -4793,6 +4793,11 @@ void LayerTreeHostImpl::SetActiveURL(const GURL& url, ukm::SourceId source_id) {
   is_measuring_smoothness_ = false;
 }
 
+void LayerTreeHostImpl::SetUkmSmoothnessDestination(
+    UkmSmoothnessDataShared* ukm_smoothness_data) {
+  dropped_frame_counter_.SetUkmSmoothnessDestination(ukm_smoothness_data);
+}
+
 void LayerTreeHostImpl::AllocateLocalSurfaceId() {
   child_local_surface_id_allocator_.GenerateId();
 }

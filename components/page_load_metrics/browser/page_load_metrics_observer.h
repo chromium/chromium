@@ -391,6 +391,12 @@ class PageLoadMetricsObserver {
       content::RenderFrameHost* rfh,
       const mojom::PageLoadFeatures& features) {}
 
+  // The smoothness metrics is shared over shared-memory. The observer should
+  // create a mapping (by calling |shared_memory.Map()|) so that they are able
+  // to read from the shared memory.
+  virtual void SetUpSharedMemoryForSmoothness(
+      const base::ReadOnlySharedMemoryRegion& shared_memory) {}
+
   // Invoked when there is data use for loading a resource on the page
   // for a given render frame host. This only contains resources that have had
   // new data use since the last callback. Resources loaded from the cache only

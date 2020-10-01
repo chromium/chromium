@@ -91,6 +91,7 @@ class PageTimingMetricsSender {
                               bool is_ad_resource,
                               bool is_main_frame_resource,
                               bool completed_before_fcp);
+  void SetUpSmoothnessReporting(base::ReadOnlySharedMemoryRegion shared_memory);
 
  protected:
   base::OneShotTimer* timer() const { return timer_.get(); }

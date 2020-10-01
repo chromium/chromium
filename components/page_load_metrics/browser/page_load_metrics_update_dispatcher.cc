@@ -55,6 +55,10 @@ bool EventsInOrder(const base::Optional<base::TimeDelta>& first,
   return first && first <= second;
 }
 
+bool IsMainFrame(content::RenderFrameHost* render_frame_host) {
+  return render_frame_host->GetParent() == nullptr;
+}
+
 internal::PageLoadTimingStatus IsValidPageLoadTiming(
     const mojom::PageLoadTiming& timing) {
   if (page_load_metrics::IsEmpty(timing))
@@ -476,7 +480,7 @@ void PageLoadMetricsUpdateDispatcher::UpdateMetrics(
   // Report new deferral info.
   client_->OnNewDeferredResourceCounts(*new_deferred_resource_data);
 
-  bool is_main_frame = render_frame_host->GetParent() == nullptr;
+  bool is_main_frame = IsMainFrame(render_frame_host);
   if (is_main_frame) {
     UpdateMainFrameMetadata(render_frame_host, std::move(new_metadata));
     UpdateMainFrameTiming(std::move(new_timing));
@@ -505,6 +509,17 @@ void PageLoadMetricsUpdateDispatcher::UpdateFeatures(
     return;
   }
   client_->UpdateFeaturesUsage(render_frame_host, new_features);
+}
+
+void PageLoadMetricsUpdateDispatcher::SetUpSharedMemoryForSmoothness(
+    content::RenderFrameHost* render_frame_host,
+    base::ReadOnlySharedMemoryRegion shared_memory) {
+  const bool is_main_frame = IsMainFrame(render_frame_host);
+  if (is_main_frame) {
+    client_->SetUpSharedMemoryForSmoothness(std::move(shared_memory));
+  } else {
+    // TODO(1115136): Merge smoothness metrics from OOPIFs with the main-frame.
+  }
 }
 
 void PageLoadMetricsUpdateDispatcher::DidFinishSubFrameNavigation(
@@ -593,7 +608,7 @@ void PageLoadMetricsUpdateDispatcher::MaybeUpdateFrameIntersection(
   // TODO(crbug/1061091): Document definition of untracked loads in page load
   // metrics.
   const int frame_tree_node_id = render_frame_host->GetFrameTreeNodeId();
-  bool is_main_frame = render_frame_host->GetParent() == nullptr;
+  bool is_main_frame = IsMainFrame(render_frame_host);
   if (!is_main_frame &&
       subframe_navigation_start_offset_.find(frame_tree_node_id) ==
           subframe_navigation_start_offset_.end()) {

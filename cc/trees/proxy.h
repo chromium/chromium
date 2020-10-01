@@ -29,6 +29,7 @@ class LayerTreeFrameSink;
 class LayerTreeMutator;
 class PaintWorkletLayerPainter;
 class RenderFrameMetadataObserver;
+struct UkmSmoothnessDataShared;
 
 // Abstract interface responsible for proxying commands from the main-thread
 // side of the compositor over to the compositor implementation.
@@ -91,6 +92,9 @@ class CC_EXPORT Proxy {
   virtual bool MainFrameWillHappenForTesting() = 0;
 
   virtual void SetSourceURL(ukm::SourceId source_id, const GURL& url) = 0;
+
+  virtual void SetUkmSmoothnessDestination(
+      UkmSmoothnessDataShared* ukm_smoothness_data) = 0;
 
   virtual void ClearHistory() = 0;
 

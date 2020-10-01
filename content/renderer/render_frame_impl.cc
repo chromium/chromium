@@ -2363,6 +2363,16 @@ void RenderFrameImpl::OnAssociatedInterfaceRequest(
   }
 }
 
+void RenderFrameImpl::SetUpSharedMemoryForSmoothness(
+    base::ReadOnlySharedMemoryRegion shared_memory) {
+  DCHECK(shared_memory.IsValid());
+  for (auto& observer : observers_) {
+    DCHECK(shared_memory.IsValid());
+    if (observer.SetUpSmoothnessReporting(shared_memory))
+      break;
+  }
+}
+
 void RenderFrameImpl::BindFullscreen(
     mojo::PendingAssociatedReceiver<mojom::FullscreenVideoElementHandler>
         receiver) {
