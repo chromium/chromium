@@ -21,6 +21,8 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/safe_browsing/core/db/database_manager.h"
+#include "components/safe_browsing/core/db/test_database_manager.h"
 #include "components/subresource_filter/content/browser/async_document_subresource_filter.h"
 #include "components/subresource_filter/content/browser/subframe_navigation_test_utils.h"
 #include "components/subresource_filter/content/browser/subresource_filter_client.h"
@@ -102,6 +104,17 @@ class FakeSubresourceFilterAgent : public mojom::SubresourceFilterAgent {
   mojom::ActivationStatePtr last_activation_;
   bool is_ad_subframe_ = false;
   mojo::AssociatedReceiver<mojom::SubresourceFilterAgent> receiver_{this};
+};
+
+// Overrides the TestSafeBrowsingDatabaseManager methods that are
+// expected to be called to eliminate error logs.
+class CustomTestSafeBrowsingDatabaseManager
+    : public safe_browsing::TestSafeBrowsingDatabaseManager {
+ public:
+  bool IsSupported() const override { return false; }
+
+ private:
+  ~CustomTestSafeBrowsingDatabaseManager() override = default;
 };
 
 // Simple throttle that sends page-level activation to the manager for a
@@ -286,7 +299,14 @@ class ContentSubresourceFilterThrottleManagerTest
         navigation_handle, state));
     throttle_manager_->MaybeAppendNavigationThrottles(navigation_handle,
                                                       &throttles);
+
+    created_safe_browsing_throttle_for_last_navigation_ = false;
     for (auto& it : throttles) {
+      if (strcmp(it->GetNameForLogging(),
+                 "SubresourceFilterSafeBrowsingActivationThrottle") == 0) {
+        created_safe_browsing_throttle_for_last_navigation_ = true;
+      }
+
       navigation_handle->RegisterThrottleForTesting(std::move(it));
     }
   }
@@ -313,13 +333,28 @@ class ContentSubresourceFilterThrottleManagerTest
       content::RenderFrameHost* rfh,
       mojom::AdsViolation triggered_violation) override {}
 
+  const scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
+  GetSafeBrowsingDatabaseManager() override {
+    return database_manager_;
+  }
+
   ContentSubresourceFilterThrottleManager* throttle_manager() {
     return throttle_manager_.get();
+  }
+
+  bool created_safe_browsing_throttle_for_current_navigation() const {
+    return created_safe_browsing_throttle_for_last_navigation_;
+  }
+
+  void CreateSafeBrowsingDatabaseManager() {
+    database_manager_ =
+        base::MakeRefCounted<CustomTestSafeBrowsingDatabaseManager>();
   }
 
  private:
   testing::TestRulesetCreator test_ruleset_creator_;
   testing::TestRulesetPair test_ruleset_pair_;
+  scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager> database_manager_;
 
   std::unique_ptr<VerifiedRulesetDealer::Handle> dealer_handle_;
 
@@ -330,6 +365,8 @@ class ContentSubresourceFilterThrottleManagerTest
       agent_map_;
 
   std::unique_ptr<content::NavigationSimulator> navigation_simulator_;
+
+  bool created_safe_browsing_throttle_for_last_navigation_ = false;
 
   // Incremented on every OnFirstSubresourceLoadDisallowed call.
   int disallowed_notification_count_ = 0;
@@ -775,6 +812,29 @@ TEST_P(ContentSubresourceFilterThrottleManagerTest,
   ExpectActivationSignalForFrame(child, false /* expect_activation */);
 
   EXPECT_EQ(0, disallowed_notification_count());
+}
+
+TEST_F(ContentSubresourceFilterThrottleManagerTest,
+       SafeBrowsingThrottleCreation) {
+  // If no safe browsing database is present, the throttle should not be
+  // created on a navigation.
+  NavigateAndCommitMainFrame(GURL(kTestURLWithNoActivation));
+  EXPECT_FALSE(created_safe_browsing_throttle_for_current_navigation());
+
+  CreateSafeBrowsingDatabaseManager();
+
+  // With a safe browsing database present, the throttle should be created on
+  // a main frame navigation.
+  NavigateAndCommitMainFrame(GURL(kTestURLWithNoActivation));
+  EXPECT_TRUE(created_safe_browsing_throttle_for_current_navigation());
+
+  // However, it still should not be created on a subframe navigation.
+  CreateSubframeWithTestNavigation(
+      GURL("https://www.example.com/disallowed.html"), main_rfh());
+  EXPECT_EQ(content::NavigationThrottle::PROCEED,
+            SimulateStartAndGetResult(navigation_simulator()));
+
+  EXPECT_FALSE(created_safe_browsing_throttle_for_current_navigation());
 }
 
 TEST_F(ContentSubresourceFilterThrottleManagerTest, LogActivation) {

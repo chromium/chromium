@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_SUBRESOURCE_FILTER_CLIENT_H_
 #define COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_SUBRESOURCE_FILTER_CLIENT_H_
 
+#include "base/memory/scoped_refptr.h"
 #include "components/subresource_filter/content/browser/verified_ruleset_dealer.h"
 #include "components/subresource_filter/core/common/activation_decision.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
@@ -14,6 +15,10 @@
 namespace content {
 class NavigationHandle;
 }  // namespace content
+
+namespace safe_browsing {
+class SafeBrowsingDatabaseManager;
+}
 
 namespace subresource_filter {
 
@@ -43,6 +48,11 @@ class SubresourceFilterClient {
   virtual void OnAdsViolationTriggered(
       content::RenderFrameHost* rfh,
       mojom::AdsViolation triggered_violation) = 0;
+
+  // Returns the SafeBrowsingDatabaseManager instance associated with this
+  // client, or null if there is no such instance.
+  virtual const scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
+  GetSafeBrowsingDatabaseManager() = 0;
 };
 
 }  // namespace subresource_filter

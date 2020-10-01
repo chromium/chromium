@@ -67,6 +67,10 @@ class SafeBrowsingTriggeredPopupBlockerTest
   void OnAdsViolationTriggered(
       content::RenderFrameHost*,
       subresource_filter::mojom::AdsViolation) override {}
+  const scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
+  GetSafeBrowsingDatabaseManager() override {
+    return nullptr;
+  }
 
   // content::RenderViewHostTestHarness:
   void SetUp() override {

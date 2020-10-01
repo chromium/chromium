@@ -24,13 +24,10 @@
 #include "components/safe_browsing/core/db/database_manager.h"
 #include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
 #include "components/subresource_filter/content/browser/ruleset_service.h"
-#include "components/subresource_filter/content/browser/subresource_filter_safe_browsing_activation_throttle.h"
 #include "components/subresource_filter/core/browser/subresource_filter_features.h"
 #include "components/subresource_filter/core/common/activation_decision.h"
 #include "components/subresource_filter/core/common/activation_scope.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
-#include "content/public/browser/browser_task_traits.h"
-#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -65,23 +62,6 @@ void ChromeSubresourceFilterClient::DidStartNavigation(
     // navigation start.
     did_show_ui_for_navigation_ = false;
   }
-}
-
-void ChromeSubresourceFilterClient::MaybeAppendNavigationThrottles(
-    content::NavigationHandle* navigation_handle,
-    std::vector<std::unique_ptr<content::NavigationThrottle>>* throttles) {
-  safe_browsing::SafeBrowsingService* safe_browsing_service =
-      g_browser_process->safe_browsing_service();
-  if (navigation_handle->IsInMainFrame() && safe_browsing_service) {
-    throttles->push_back(
-        std::make_unique<subresource_filter::
-                             SubresourceFilterSafeBrowsingActivationThrottle>(
-            navigation_handle, this, content::GetIOThreadTaskRunner({}),
-            safe_browsing_service->database_manager()));
-  }
-
-  throttle_manager_->MaybeAppendNavigationThrottles(navigation_handle,
-                                                    throttles);
 }
 
 void ChromeSubresourceFilterClient::OnReloadRequested() {
@@ -185,6 +165,14 @@ void ChromeSubresourceFilterClient::AllowlistByContentSettings(
   profile_context_->settings_manager()->AllowlistSite(top_level_url);
 }
 
+const scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
+ChromeSubresourceFilterClient::GetSafeBrowsingDatabaseManager() {
+  safe_browsing::SafeBrowsingService* safe_browsing_service =
+      g_browser_process->safe_browsing_service();
+  return safe_browsing_service ? safe_browsing_service->database_manager()
+                               : nullptr;
+}
+
 void ChromeSubresourceFilterClient::ToggleForceActivationInCurrentWebContents(
     bool force_activation) {
   if (!activated_via_devtools_ && force_activation)
@@ -192,7 +180,7 @@ void ChromeSubresourceFilterClient::ToggleForceActivationInCurrentWebContents(
   activated_via_devtools_ = force_activation;
 }
 
-const subresource_filter::ContentSubresourceFilterThrottleManager*
+subresource_filter::ContentSubresourceFilterThrottleManager*
 ChromeSubresourceFilterClient::GetThrottleManager() const {
   return throttle_manager_.get();
 }

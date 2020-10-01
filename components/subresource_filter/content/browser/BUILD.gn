@@ -107,6 +107,7 @@ source_set("unit_tests") {
     ":test_support",
     "//base/test:test_support",
     "//components/prefs:test_support",
+    "//components/safe_browsing/core/db:database_manager",
     "//components/safe_browsing/core/db:util",
     "//components/subresource_filter/content/common",
     "//components/subresource_filter/core/browser",

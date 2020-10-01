@@ -19,6 +19,7 @@
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
+#include "components/safe_browsing/core/db/database_manager.h"
 #include "components/safe_browsing/core/db/test_database_manager.h"
 #include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
 #include "components/subresource_filter/content/browser/fake_safe_browsing_database_manager.h"
@@ -90,6 +91,9 @@ class MockSubresourceFilterClient : public SubresourceFilterClient {
   MOCK_METHOD2(OnAdsViolationTriggered,
                void(content::RenderFrameHost*,
                     subresource_filter::mojom::AdsViolation));
+  MOCK_METHOD0(
+      GetSafeBrowsingDatabaseManager,
+      const scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>());
 
   void AllowlistInCurrentWebContents(const GURL& url) {
     ASSERT_TRUE(url.SchemeIsHTTPOrHTTPS());

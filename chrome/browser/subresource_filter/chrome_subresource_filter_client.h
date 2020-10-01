@@ -19,7 +19,6 @@ class SubresourceFilterProfileContext;
 
 namespace content {
 class NavigationHandle;
-class NavigationThrottle;
 class WebContents;
 }  // namespace content
 
@@ -64,10 +63,6 @@ class ChromeSubresourceFilterClient
   explicit ChromeSubresourceFilterClient(content::WebContents* web_contents);
   ~ChromeSubresourceFilterClient() override;
 
-  void MaybeAppendNavigationThrottles(
-      content::NavigationHandle* navigation_handle,
-      std::vector<std::unique_ptr<content::NavigationThrottle>>* throttles);
-
   void OnReloadRequested();
 
   // content::WebContentsObserver:
@@ -83,6 +78,8 @@ class ChromeSubresourceFilterClient
   void OnAdsViolationTriggered(
       content::RenderFrameHost* rfh,
       subresource_filter::mojom::AdsViolation triggered_violation) override;
+  const scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
+  GetSafeBrowsingDatabaseManager() override;
 
   // Should be called by devtools in response to a protocol command to enable ad
   // blocking in this WebContents. Should only persist while devtools is
@@ -93,7 +90,7 @@ class ChromeSubresourceFilterClient
     return did_show_ui_for_navigation_;
   }
 
-  const subresource_filter::ContentSubresourceFilterThrottleManager*
+  subresource_filter::ContentSubresourceFilterThrottleManager*
   GetThrottleManager() const;
 
   static void LogAction(SubresourceFilterAction action);
