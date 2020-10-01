@@ -10,9 +10,11 @@ template file. The template file must be specified in the GN target.
 
 ## Usage
 
-1. Create a template file (ex. `FooSwitches.java.tmpl`)
+1. Create a template file (ex. `FooSwitches.java.tmpl`). Change "Copyright
+   2020" to be whatever the year is at the time of writing (as you would for any
+   other file).
    ```java
-    // Copyright $YEAR The Chromium Authors. All rights reserved.
+    // Copyright 2020 The Chromium Authors. All rights reserved.
     // Use of this source code is governed by a BSD-style license that can be
     // found in the LICENSE file.
 
@@ -92,6 +94,10 @@ template file. The template file must be specified in the GN target.
         private FooSwitches() {}
     }
     ```
+
+## See also
+* [Accessing C++ Enums In Java](android_accessing_cpp_enums_in_java.md)
+* [Accessing C++ Features In Java](android_accessing_cpp_features_in_java.md)
 
 ## Code
 * [Generator

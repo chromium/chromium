@@ -607,6 +607,81 @@ if (enable_java_templates) {
     }
   }
 
+  # Declare a target for generating Java classes with string constants matching
+  # those found in C++ base::Feature declarations, using a python script.
+  #
+  # This target will create a single .srcjar. Adding this target to an
+  # android_library target's srcjar_deps will make the generated java files be
+  # included in that library's final outputs.
+  #
+  # Variables
+  #   sources: list of files to be processed by the script. For each
+  #            base::Feature in the source files, the script will add a
+  #            corresponding Java string for that feature's name to the
+  #            specified template file.
+  # Example
+  #   java_cpp_features("foo_features") {
+  #     sources = [
+  #       "src/foo_features.cc",
+  #     ]
+  #     template = "src/templates/FooFeatures.java.tmpl
+  #   }
+  #
+  # foo_features.cc:
+  #
+  # // A feature.
+  # const base::Feature kSomeFeature{"SomeFeature",
+  #                                  base::FEATURE_DISABLED_BY_DEFAULT};
+  #
+  # FooFeatures.java.tmpl
+  #
+  # // Copyright $YEAR The Chromium Authors. All rights reserved.
+  # // Use of this source code is governed by a BSD-style license that can be
+  # // found in the LICENSE file.
+  #
+  # package my.java.package;
+  #
+  # public final class FooFeatures {{
+  #     // ...snip...
+  # {NATIVE_STRINGS}
+  #     // ...snip...
+  #     // Do not instantiate this class.
+  #     private FooFeatures() {{}}
+  # }}
+  #
+  # result:
+  #   A FooFeatures.java file, defining a class named FooFeatures in the package
+  #   my.java.package.
+  template("java_cpp_features") {
+    set_sources_assignment_filter([])
+    action_with_pydeps(target_name) {
+      forward_variables_from(invoker,
+                             [
+                               "sources",
+                               "testonly",
+                               "visibility",
+                             ])
+
+      # The sources aren't compiled so don't check their dependencies.
+      check_includes = false
+      script = "//build/android/gyp/java_cpp_features.py"
+
+      _srcjar_path = "${target_gen_dir}/${target_name}.srcjar"
+      _rebased_srcjar_path = rebase_path(_srcjar_path, root_build_dir)
+      _rebased_sources = rebase_path(invoker.sources, root_build_dir)
+      _rebased_template = rebase_path(invoker.template, root_build_dir)
+
+      args = [
+        "--srcjar=$_rebased_srcjar_path",
+        "--template=$_rebased_template",
+      ]
+      args += _rebased_sources
+      sources += [ invoker.template ]
+
+      outputs = [ _srcjar_path ]
+    }
+  }
+
   # Declare a target for processing a Jinja template.
   #
   # Variables

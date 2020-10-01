@@ -1,6 +1,6 @@
 #!/user/bin/env python
 #
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -14,23 +14,27 @@ from util import build_utils
 from util import java_cpp_utils
 
 
-class StringParserDelegate(java_cpp_utils.CppConstantParser.Delegate):
-  STRING_RE = re.compile(r'\s*const char k(.*)\[\]\s*=')
-  VALUE_RE = re.compile(r'\s*("(?:\"|[^"])*")\s*;')
+class FeatureParserDelegate(java_cpp_utils.CppConstantParser.Delegate):
+  # Ex. 'const base::Feature kConstantName{"StringNameOfTheFeature", ...};'
+  # would parse as:
+  #   ExtractConstantName() -> 'ConstantName'
+  #   ExtractValue() -> '"StringNameOfTheFeature"'
+  FEATURE_RE = re.compile(r'\s*const (?:base::)?Feature\s+k(\w+)\s*(?:=\s*)?{')
+  VALUE_RE = re.compile(r'\s*("(?:\"|[^"])*")\s*,')
 
   def ExtractConstantName(self, line):
-    match = StringParserDelegate.STRING_RE.match(line)
+    match = FeatureParserDelegate.FEATURE_RE.match(line)
     return match.group(1) if match else None
 
   def ExtractValue(self, line):
-    match = StringParserDelegate.VALUE_RE.search(line)
+    match = FeatureParserDelegate.VALUE_RE.search(line)
     return match.group(1) if match else None
 
   def CreateJavaConstant(self, name, value, comments):
     return java_cpp_utils.JavaString(name, value, comments)
 
 
-def _GenerateOutput(template, source_paths, template_path, strings):
+def _GenerateOutput(template, source_paths, template_path, features):
   description_template = """
     // This following string constants were inserted by
     //     {SCRIPT_NAME}
@@ -46,19 +50,19 @@ def _GenerateOutput(template, source_paths, template_path, strings):
       'TEMPLATE_PATH': template_path,
   }
   description = description_template.format(**values)
-  native_strings = '\n\n'.join(x.Format() for x in strings)
+  native_features = '\n\n'.join(x.Format() for x in features)
 
   values = {
-      'NATIVE_STRINGS': description + native_strings,
+      'NATIVE_FEATURES': description + native_features,
   }
   return template.format(**values)
 
 
-def _ParseStringFile(path):
+def _ParseFeatureFile(path):
   with open(path) as f:
-    string_file_parser = java_cpp_utils.CppConstantParser(
-        StringParserDelegate(), f.readlines())
-  return string_file_parser.Parse()
+    feature_file_parser = java_cpp_utils.CppConstantParser(
+        FeatureParserDelegate(), f.readlines())
+  return feature_file_parser.Parse()
 
 
 def _Generate(source_paths, template_path):
@@ -68,11 +72,12 @@ def _Generate(source_paths, template_path):
   template = ''.join(lines)
   package, class_name = java_cpp_utils.ParseTemplateFile(lines)
   output_path = java_cpp_utils.GetJavaFilePath(package, class_name)
-  strings = []
-  for source_path in source_paths:
-    strings.extend(_ParseStringFile(source_path))
 
-  output = _GenerateOutput(template, source_paths, template_path, strings)
+  features = []
+  for source_path in source_paths:
+    features.extend(_ParseFeatureFile(source_path))
+
+  output = _GenerateOutput(template, source_paths, template_path, features)
   return output, output_path
 
 
@@ -86,11 +91,13 @@ def _Main(argv):
   parser.add_argument('--template',
                       required=True,
                       help='The template file with which to generate the Java '
-                      'class. Must have "{NATIVE_STRINGS}" somewhere in '
+                      'class. Must have "{NATIVE_FEATURES}" somewhere in '
                       'the template.')
 
-  parser.add_argument(
-      'inputs', nargs='+', help='Input file(s)', metavar='INPUTFILE')
+  parser.add_argument('inputs',
+                      nargs='+',
+                      help='Input file(s)',
+                      metavar='INPUTFILE')
   args = parser.parse_args(argv)
 
   with build_utils.AtomicOutput(args.srcjar) as f:

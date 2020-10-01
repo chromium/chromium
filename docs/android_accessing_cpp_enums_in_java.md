@@ -146,6 +146,10 @@ class
     }
     ```
 
+## See also
+* [Accessing C++ Switches In Java](android_accessing_cpp_switches_in_java.md)
+* [Accessing C++ Features In Java](android_accessing_cpp_features_in_java.md)
+
 ## Code
 * [Generator
 code](https://cs.chromium.org/chromium/src/build/android/gyp/java_cpp_enum.py?dr=C&sq=package:chromium)
