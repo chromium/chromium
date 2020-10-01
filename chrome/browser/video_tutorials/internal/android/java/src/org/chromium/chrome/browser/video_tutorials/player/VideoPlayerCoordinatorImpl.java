@@ -70,6 +70,12 @@ public class VideoPlayerCoordinatorImpl implements VideoPlayerCoordinator {
     }
 
     @Override
+    public boolean onBackPressed() {
+        if (mMediator.handleBackPressed()) return true;
+        return false;
+    }
+
+    @Override
     public void destroy() {
         mMediaSessionObserver.stopObserving();
         mView.destroy();

@@ -20,6 +20,9 @@ public interface VideoPlayerCoordinator {
     /** @return The Android {@link View} representing this widget. */
     View getView();
 
+    /** To be called when the back button is pressed. */
+    boolean onBackPressed();
+
     /** Tears down this coordinator. */
     void destroy();
 }

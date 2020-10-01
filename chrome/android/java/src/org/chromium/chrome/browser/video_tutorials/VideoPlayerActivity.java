@@ -59,6 +59,12 @@ public class VideoPlayerActivity extends Activity {
     }
 
     @Override
+    public void onBackPressed() {
+        if (mCoordinator.onBackPressed()) return;
+        super.onBackPressed();
+    }
+
+    @Override
     protected void onDestroy() {
         mCoordinator.destroy();
         super.onDestroy();
