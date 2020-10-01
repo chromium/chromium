@@ -82,6 +82,8 @@ void SwitchAccessMenuButton::ButtonPressed(views::Button* sender,
 
 void SwitchAccessMenuButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   views::Button::GetAccessibleNodeData(node_data);
+  node_data->AddStringAttribute(ax::mojom::StringAttribute::kName,
+                                base::UTF16ToUTF8(label_->GetText()));
   node_data->AddStringAttribute(ax::mojom::StringAttribute::kValue,
                                 action_name_);
 }

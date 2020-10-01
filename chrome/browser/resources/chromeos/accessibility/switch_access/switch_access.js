@@ -55,18 +55,10 @@ class SwitchAccess {
    */
   static findNodeMatching(findParams, foundCallback) {
     const desktop = NavigationManager.desktopNode;
-    // First, check if the node is currently in the tree.
-    let node = desktop.find(findParams);
-    if (node) {
-      foundCallback(node);
-      return;
-    }
-    // If it's not currently in the tree, listen for changes to the desktop
-    // tree.
+    // Listen for changes to the desktop tree, in case it's not currently there.
     const eventHandler = new EventHandler(
         desktop, chrome.automation.EventType.CHILDREN_CHANGED,
         null /** callback */);
-
     const onEvent = (event) => {
       if (event.target.matches(findParams)) {
         // If the event target is the node we're looking for, we've found it.
@@ -81,9 +73,16 @@ class SwitchAccess {
         }
       }
     };
-
     eventHandler.setCallback(onEvent);
     eventHandler.start();
+
+    // Check if the node is already in the tree.
+    let node = desktop.find(findParams);
+    if (node) {
+      eventHandler.stop();
+      foundCallback(node);
+      return;
+    }
   }
 
   /*
