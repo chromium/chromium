@@ -20,7 +20,6 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observer.h"
-#include "base/timer/timer.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
@@ -75,11 +74,11 @@ class ASH_EXPORT AmbientController
   void AddAmbientViewDelegateObserver(AmbientViewDelegateObserver* observer);
   void RemoveAmbientViewDelegateObserver(AmbientViewDelegateObserver* observer);
 
-  void ShowUi();
-  // Ui will be enabled but not shown immediately. If there is no user activity
-  // Ui will be shown after a short delay.
-  void ShowHiddenUi();
+  // Invoked to show/close ambient UI in |mode|.
+  void ShowUi(AmbientUiMode mode);
   void CloseUi();
+
+  void HideLockScreenUi();
 
   void ToggleInSessionUi();
 
@@ -88,6 +87,8 @@ class ASH_EXPORT AmbientController
 
   // Handles events on the background photo.
   void OnBackgroundPhotoEvents();
+
+  void UpdateUiMode(AmbientUiMode ui_mode);
 
   void RequestAccessToken(
       AmbientAccessTokenController::AccessTokenCallback callback,
@@ -188,8 +189,6 @@ class ASH_EXPORT AmbientController
 
   // Used to record Ambient mode engagement metrics.
   base::Optional<base::Time> start_time_ = base::nullopt;
-
-  base::OneShotTimer delayed_lock_timer_;
 
   base::WeakPtrFactory<AmbientController> weak_ptr_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(AmbientController);

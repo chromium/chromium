@@ -96,6 +96,10 @@ bool IsUiHidden(AmbientUiVisibility visibility) {
   return visibility == AmbientUiVisibility::kHidden;
 }
 
+bool IsLockScreenUi(AmbientUiMode mode) {
+  return mode == AmbientUiMode::kLockScreenUi;
+}
+
 bool IsAmbientModeEnabled() {
   if (!AmbientClient::Get()->IsAmbientModeAllowed())
     return false;
@@ -200,8 +204,7 @@ void AmbientController::OnAmbientUiVisibilityChanged(
 
       // Record metrics on ambient mode usage.
       ambient::RecordAmbientModeActivation(
-          /*ui_mode=*/LockScreen::HasInstance() ? AmbientUiMode::kLockScreenUi
-                                                : AmbientUiMode::kInSessionUi,
+          /*ui_mode=*/ambient_ui_model_.ui_mode(),
           /*tablet_mode=*/Shell::Get()->IsInTabletMode());
 
       DCHECK(!start_time_);
@@ -316,11 +319,7 @@ void AmbientController::OnLockStateChanged(bool locked) {
     //        wait.
     RequestAccessToken(base::DoNothing(), /*may_refresh_token_on_lock=*/true);
 
-    if (!IsShown()) {
-      // When lock screen starts, we don't immediately show the UI. The Ui is
-      // hidden and will show after a delay.
-      ShowHiddenUi();
-    }
+    ShowUi(AmbientUiMode::kLockScreenUi);
   } else {
     // Ambient screen will be destroyed along with the lock screen when user
     // logs in.
@@ -375,7 +374,7 @@ void AmbientController::ScreenBrightnessChanged(
   is_screen_off_ = false;
   // If screen is back on, turn on ambient mode for lock screen.
   if (LockScreen::HasInstance())
-    ShowHiddenUi();
+    ShowUi(AmbientUiMode::kLockScreenUi);
 }
 
 void AmbientController::ScreenIdleStateChanged(
@@ -393,7 +392,16 @@ void AmbientController::ScreenIdleStateChanged(
   if (!idle_state.dimmed())
     return;
 
-  ShowUi();
+  auto* session_controller = Shell::Get()->session_controller();
+  if (session_controller->CanLockScreen() &&
+      session_controller->ShouldLockScreenAutomatically()) {
+    if (!session_controller->IsScreenLocked()) {
+      // TODO(b/161469136): revise this behavior after further discussion.
+      Shell::Get()->session_controller()->LockScreen();
+    }
+  } else {
+    ShowUi(AmbientUiMode::kInSessionUi);
+  }
 }
 
 void AmbientController::AddAmbientViewDelegateObserver(
@@ -406,8 +414,8 @@ void AmbientController::RemoveAmbientViewDelegateObserver(
   delegate_.RemoveObserver(observer);
 }
 
-void AmbientController::ShowUi() {
-  DVLOG(1) << __func__;
+void AmbientController::ShowUi(AmbientUiMode mode) {
+  DVLOG(1) << "ShowUi: " << mode;
 
   // TODO(meilinw): move the eligibility check to the idle entry point once
   // implemented: b/149246117.
@@ -416,24 +424,30 @@ void AmbientController::ShowUi() {
     return;
   }
 
-  ambient_ui_model_.SetUiVisibility(AmbientUiVisibility::kShown);
+  ambient_ui_model_.SetUiMode(mode);
+  switch (mode) {
+    case AmbientUiMode::kInSessionUi:
+      ambient_ui_model_.SetUiVisibility(AmbientUiVisibility::kShown);
+      break;
+    case AmbientUiMode::kLockScreenUi:
+      ambient_ui_model_.SetUiVisibility(AmbientUiVisibility::kHidden);
+      break;
+  }
 }
 
-void AmbientController::ShowHiddenUi() {
-  DVLOG(1) << __func__;
+void AmbientController::CloseUi() {
+  ambient_ui_model_.SetUiVisibility(AmbientUiVisibility::kClosed);
+}
+
+void AmbientController::HideLockScreenUi() {
+  DCHECK(IsLockScreenUi(ambient_ui_model_.ui_mode()));
 
   ambient_ui_model_.SetUiVisibility(AmbientUiVisibility::kHidden);
 }
 
-void AmbientController::CloseUi() {
-  DVLOG(1) << __func__;
-
-  ambient_ui_model_.SetUiVisibility(AmbientUiVisibility::kClosed);
-}
-
 void AmbientController::ToggleInSessionUi() {
-  if (ambient_ui_model_.ui_visibility() == AmbientUiVisibility::kClosed)
-    ShowUi();
+  if (!container_view_)
+    ShowUi(AmbientUiMode::kInSessionUi);
   else
     CloseUi();
 }
@@ -444,10 +458,14 @@ bool AmbientController::IsShown() const {
 
 void AmbientController::OnBackgroundPhotoEvents() {
   // Dismisses the ambient screen when user interacts with the background photo.
-  if (LockScreen::HasInstance())
-    ShowHiddenUi();
+  if (IsLockScreenUi(ambient_ui_model_.ui_mode()))
+    HideLockScreenUi();
   else
     CloseUi();
+}
+
+void AmbientController::UpdateUiMode(AmbientUiMode ui_mode) {
+  ambient_ui_model_.SetUiMode(ui_mode);
 }
 
 void AmbientController::AcquireWakeLock() {
@@ -464,17 +482,6 @@ void AmbientController::AcquireWakeLock() {
   DCHECK(wake_lock_);
   wake_lock_->RequestWakeLock();
   VLOG(1) << "Acquired wake lock";
-
-  auto* session_controller = Shell::Get()->session_controller();
-  if (session_controller->CanLockScreen() &&
-      session_controller->ShouldLockScreenAutomatically()) {
-    if (!session_controller->IsScreenLocked()) {
-      delayed_lock_timer_.Start(
-          FROM_HERE, kLockScreenDelay, base::BindOnce([]() {
-            Shell::Get()->session_controller()->LockScreen();
-          }));
-    }
-  }
 }
 
 void AmbientController::ReleaseWakeLock() {
@@ -483,8 +490,6 @@ void AmbientController::ReleaseWakeLock() {
 
   wake_lock_->CancelWakeLock();
   VLOG(1) << "Released wake lock";
-
-  delayed_lock_timer_.Stop();
 }
 
 void AmbientController::CloseWidget(bool immediately) {

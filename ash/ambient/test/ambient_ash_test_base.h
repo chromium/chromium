@@ -96,19 +96,8 @@ class AmbientAshTestBase : public AshTestBase {
   // Advance the task environment timer to load the next photo.
   void FastForwardToNextImage();
 
-  // Advance the task environment timer a tiny amount. This is intended to
-  // trigger any pending async operations.
-  void FastForwardTiny();
-
   // Advance the task environment timer to load the weather info.
   void FastForwardToRefreshWeather();
-
-  // Advance the task environment timer to ambient mode lock screen delay.
-  void FastForwardToLockScreen();
-
-  void SetPowerStateCharging();
-  void SetPowerStateDischarging();
-  void SetPowerStateFull();
 
   // Returns the number of active wake locks of type |type|.
   int GetNumOfActiveWakeLocks(device::mojom::WakeLockType type);
