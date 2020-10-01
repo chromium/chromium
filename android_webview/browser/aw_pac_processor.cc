@@ -108,6 +108,9 @@ proxy_resolver::ProxyResolverV8TracingFactory* GetProxyResolverFactory() {
 // blocking DNS queries, to get better performance.
 class HostResolver : public proxy_resolver::ProxyHostResolver {
  public:
+  HostResolver(net_handle_t net_handle) : net_handle_(net_handle) {}
+  ~HostResolver() override {}
+
   std::unique_ptr<proxy_resolver::ProxyHostResolver::Request> CreateRequest(
       const std::string& hostname,
       net::ProxyResolveDnsOperation operation,
@@ -116,11 +119,9 @@ class HostResolver : public proxy_resolver::ProxyHostResolver {
                                          link_addresses_);
   }
 
-  void SetNetworkAndLinkAddresses(
-      const net_handle_t net_handle,
+  void SetNetworkLinkAddresses(
       const std::vector<net::IPAddress>& link_addresses) {
     link_addresses_ = link_addresses;
-    net_handle_ = net_handle;
   }
 
  private:
@@ -168,7 +169,7 @@ class HostResolver : public proxy_resolver::ProxyHostResolver {
     bool MyIpAddressImpl() {
       // For network-aware queries the results are set from Java on
       // NetworkCallback#onLinkPropertiesChanged.
-      // See SetNetworkAndLinkAddresses.
+      // See SetNetworkLinkAddresses.
       if (IsNetworkSpecified()) {
         results_.push_back(link_addresses_.front());
         return true;
@@ -379,8 +380,9 @@ class MakeProxyRequestJob : public Job {
   std::unique_ptr<net::ProxyResolver::Request> request_;
 };
 
-AwPacProcessor::AwPacProcessor() {
-  host_resolver_ = std::make_unique<HostResolver>();
+AwPacProcessor::AwPacProcessor(net_handle_t net_handle)
+    : net_handle_(net_handle) {
+  host_resolver_ = std::make_unique<HostResolver>(net_handle_);
 }
 
 AwPacProcessor::~AwPacProcessor() {
@@ -465,26 +467,30 @@ ScopedJavaLocalRef<jstring> AwPacProcessor::MakeProxyRequest(
   return ConvertUTF8ToJavaString(env, MakeProxyRequest(url));
 }
 
-void AwPacProcessor::SetNetworkAndLinkAddresses(
+// ProxyResolverV8Tracing posts DNS resolution queries back to the thread
+// it is called from. Post update of link addresses to the same thread to
+// prevent concurrent access and modification of the same vector.
+void AwPacProcessor::SetNetworkLinkAddresses(
     JNIEnv* env,
-    net_handle_t net_handle,
     const base::android::JavaParamRef<jobjectArray>& jlink_addresses) {
   std::vector<std::string> string_link_addresses;
   base::android::AppendJavaStringArrayToStringVector(env, jlink_addresses,
                                                      &string_link_addresses);
+
   std::vector<net::IPAddress> link_addresses;
   for (std::string const& address : string_link_addresses) {
     link_addresses.push_back(StringToIPAddress(address));
   }
 
   GetTaskRunner()->PostTask(
-      FROM_HERE, base::BindOnce(&HostResolver::SetNetworkAndLinkAddresses,
+      FROM_HERE, base::BindOnce(&HostResolver::SetNetworkLinkAddresses,
                                 base::Unretained(host_resolver_.get()),
-                                net_handle, std::move(link_addresses)));
+                                std::move(link_addresses)));
 }
 
-static jlong JNI_AwPacProcessor_CreateNativePacProcessor(JNIEnv* env) {
-  AwPacProcessor* processor = new AwPacProcessor();
+static jlong JNI_AwPacProcessor_CreateNativePacProcessor(JNIEnv* env,
+                                                         jlong net_handle) {
+  AwPacProcessor* processor = new AwPacProcessor(net_handle);
   return reinterpret_cast<intptr_t>(processor);
 }
 
