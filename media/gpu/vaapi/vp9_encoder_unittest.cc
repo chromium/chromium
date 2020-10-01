@@ -139,19 +139,17 @@ MATCHER_P4(MatchRtcConfigWithRates,
            framerate,
            num_temporal_layers,
            "") {
-  if (arg.target_bandwidth !=
-      static_cast<int64_t>(bitrate_allocation.GetSumBps() / 1000.0)) {
+  if (arg.target_bandwidth != bitrate_allocation.GetSumBps() / 1000)
     return false;
-  }
 
   if (arg.framerate != static_cast<double>(framerate))
     return false;
 
+  int bitrate_sum = 0;
   for (size_t i = 0; i < num_temporal_layers; i++) {
-    if (arg.layer_target_bitrate[i] !=
-        static_cast<int>(bitrate_allocation.GetBitrateBps(0, i) / 1000.0)) {
+    bitrate_sum += bitrate_allocation.GetBitrateBps(0, i);
+    if (arg.layer_target_bitrate[i] != bitrate_sum / 1000)
       return false;
-    }
     if (arg.ts_rate_decimator[i] != (1 << (num_temporal_layers - i - 1)))
       return false;
   }

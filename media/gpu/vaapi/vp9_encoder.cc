@@ -127,8 +127,7 @@ libvpx::VP9RateControlRtcConfig CreateRateControlConfig(
   rc_cfg.min_quantizer =
       QindexToQuantizer(encode_params.scaling_settings.min_qp);
   // libvpx::VP9RateControlRtcConfig is kbps.
-  rc_cfg.target_bandwidth = base::checked_cast<int64_t>(
-      encode_params.bitrate_allocation.GetSumBps() / 1000.0);
+  rc_cfg.target_bandwidth = encode_params.bitrate_allocation.GetSumBps() / 1000;
   // These default values come from
   // //third_party/webrtc/modules/video_coding/codecs/vp9/vp9_impl.cc.
   rc_cfg.buf_initial_sz = 500;
@@ -146,11 +145,12 @@ libvpx::VP9RateControlRtcConfig CreateRateControlConfig(
   rc_cfg.scaling_factor_den[0] = 1;
   // Fill temporal layers variables.
   rc_cfg.ts_number_layers = num_temporal_layers;
+  int bitrate_sum = 0;
   for (size_t ti = 0; ti < num_temporal_layers; ti++) {
     rc_cfg.max_quantizers[ti] = rc_cfg.max_quantizer;
     rc_cfg.min_quantizers[ti] = rc_cfg.min_quantizer;
-    rc_cfg.layer_target_bitrate[ti] = base::checked_cast<int>(
-        bitrate_allocation.GetBitrateBps(0, ti) / 1000.0);
+    bitrate_sum += bitrate_allocation.GetBitrateBps(0, ti);
+    rc_cfg.layer_target_bitrate[ti] = bitrate_sum / 1000;
     rc_cfg.ts_rate_decimator[ti] = 1u << (num_temporal_layers - ti - 1);
   }
   return rc_cfg;
