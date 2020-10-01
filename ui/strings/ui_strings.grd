@@ -896,7 +896,7 @@ need to be translated for each locale.-->
         ALL APPS
       </message>
       <message name="IDS_APP_LIST_APP_FOCUS_NOTIFICATION_BADGE" desc="The spoken feedback text for when an app icon is focused and has a notification badge shown on the icon.">
-        <ph name="FOCUSED_APP_NAME">$1<ex>App Name</ex></ph> has new updates.
+        <ph name="FOCUSED_APP_NAME">$1<ex>App Name</ex></ph> requests your attention.
       </message>
       <message name="IDS_APP_LIST_APP_DRAG_LOCATION_ACCESSIBILE_NAME" desc="The spoken feedback which tells the location that a dragged app has dropped to.">
         Moved to Page <ph name="PAGE_NUMBER">$1<ex>1</ex></ph>, row <ph name="ROW_NUMBER">$2<ex>4</ex></ph>, column <ph name="COLUMN_NUMBER">$3<ex>2</ex></ph>.
@@ -981,6 +981,9 @@ need to be translated for each locale.-->
       </message>
       <message name="IDS_SHELF_ITEMS_WERE_SWAPPED" desc="Accessibility announcement notifying users that two shelf items have been swapped">
         <ph name="FIRST_ITEM_TITLE">$1<ex>Files</ex></ph> swapped with <ph name="SECOND_ITEM_TITLE">$2<ex>Settings</ex></ph>
+      </message>
+      <message name="IDS_SHELF_ITEM_HAS_NOTIFICATION_BADGE" desc="Accessibility announcement notifying users that the currently focused shelf app button has a notification badge shown on the app button's icon.">
+        <ph name="APP_ITEM_TITLE">$1<ex>App Name</ex></ph> requests your attention.
       </message>
       <message name="IDS_SHELF_NEXT" desc="Tooltip for the shelf arrow button that scrolls the shelf forward">
         Next

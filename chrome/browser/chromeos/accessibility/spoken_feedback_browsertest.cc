@@ -43,6 +43,7 @@
 #include "extensions/browser/browsertest_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/test/ui_controls.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
@@ -450,6 +451,58 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, SpeakingTextUnderMouseForShelfItem) {
 
   sm_.ExpectSpeechPattern("MockApp*");
   sm_.ExpectSpeech("Button");
+
+  sm_.Replay();
+}
+
+class ShelfNotificationBadgeSpokenFeedbackTest : public SpokenFeedbackTest {
+ protected:
+  ShelfNotificationBadgeSpokenFeedbackTest() {
+    scoped_features_.InitWithFeatures({::features::kNotificationIndicator}, {});
+  }
+  ~ShelfNotificationBadgeSpokenFeedbackTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_features_;
+};
+
+INSTANTIATE_TEST_SUITE_P(TestAsNormalAndGuestUser,
+                         ShelfNotificationBadgeSpokenFeedbackTest,
+                         ::testing::Values(kTestAsNormalUser,
+                                           kTestAsGuestUser));
+
+// Verifies that an announcement is triggered when focusing a ShelfItem with a
+// notification badge shown.
+IN_PROC_BROWSER_TEST_P(ShelfNotificationBadgeSpokenFeedbackTest,
+                       ShelfNotificationBadgeAnnouncement) {
+  EnableChromeVox();
+
+  // Create and add a test app to the shelf model.
+  ash::ShelfItem item;
+  item.id = ash::ShelfID("TestApp");
+  item.title = base::ASCIIToUTF16("TestAppTitle");
+  item.type = ash::ShelfItemType::TYPE_APP;
+  ash::ShelfModel::Get()->Add(item);
+
+  // Set the notification badge to be shown for the test app.
+  ash::ShelfModel::Get()->UpdateItemNotification("TestApp", /*has_badge=*/true);
+
+  // Focus on the shelf.
+  sm_.Call([this]() { PerformAcceleratorAction(ash::FOCUS_SHELF); });
+  sm_.ExpectSpeech("Launcher");
+  sm_.ExpectSpeech("Button");
+  sm_.ExpectSpeech("Shelf");
+  sm_.ExpectSpeech("Tool bar");
+
+  // Press right key twice to focus the test app.
+  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
+  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
+  sm_.ExpectSpeech("TestAppTitle");
+  sm_.ExpectSpeech("Button");
+
+  // Check that when a shelf app button with a notification badge is focused,
+  // the correct announcement occurs.
+  sm_.ExpectSpeech("TestAppTitle requests your attention.");
 
   sm_.Replay();
 }

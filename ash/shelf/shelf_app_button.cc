@@ -872,6 +872,9 @@ std::unique_ptr<views::InkDropRipple> ShelfAppButton::CreateInkDropRipple()
 
 bool ShelfAppButton::HandleAccessibleAction(
     const ui::AXActionData& action_data) {
+  if (notification_indicator_ && notification_indicator_->GetVisible())
+    shelf_view_->AnnounceShelfItemNotificationBadge(this);
+
   if (action_data.action == ax::mojom::Action::kScrollToMakeVisible)
     shelf_button_delegate()->HandleAccessibleActionScrollToMakeVisible(this);
 

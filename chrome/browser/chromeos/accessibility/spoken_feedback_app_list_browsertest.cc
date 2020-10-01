@@ -168,7 +168,7 @@ INSTANTIATE_TEST_SUITE_P(TestAsNormalAndGuestUser,
                                            kTestAsGuestUser));
 
 // Checks that when an app list item with a notification badge is focused, an
-// announcement is made that the item has new updates.
+// announcement is made that the item requests your attention.
 IN_PROC_BROWSER_TEST_P(NotificationSpokenFeedbackAppListTest,
                        AppListItemNotificationBadgeAnnounced) {
   PopulateApps(1);
@@ -194,7 +194,7 @@ IN_PROC_BROWSER_TEST_P(NotificationSpokenFeedbackAppListTest,
   sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
 
   // Check that the announcmenet for items with a notification badge occurs.
-  sm_.ExpectSpeech("Item 0 has new updates.");
+  sm_.ExpectSpeech("Item 0 requests your attention.");
   sm_.Replay();
 }
 

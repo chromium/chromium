@@ -514,6 +514,14 @@ ShelfAppButton* ShelfView::GetShelfItemViewWithContextMenu() {
   return static_cast<ShelfAppButton*>(view_model_->view_at(item_index));
 }
 
+void ShelfView::AnnounceShelfItemNotificationBadge(views::View* button) {
+  announcement_view_->GetViewAccessibility().OverrideName(
+      l10n_util::GetStringFUTF16(IDS_SHELF_ITEM_HAS_NOTIFICATION_BADGE,
+                                 GetTitleForView(button)));
+  announcement_view_->NotifyAccessibilityEvent(ax::mojom::Event::kAlert,
+                                               /*send_native_event=*/true);
+}
+
 bool ShelfView::ShouldHideTooltip(const gfx::Point& cursor_location) const {
   // There are thin gaps between launcher buttons but the tooltip shouldn't hide
   // in the gaps, but the tooltip should hide if the mouse moved totally outside
