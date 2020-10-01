@@ -94,6 +94,7 @@ class ConsumerHost : public perfetto::Consumer, public mojom::ConsumerHost {
     mojo::Remote<mojom::TracingSessionClient> tracing_session_client_;
     mojo::Receiver<mojom::TracingSessionHost> receiver_;
     bool privacy_filtering_enabled_ = false;
+    bool convert_to_legacy_json_ = false;
     base::SequenceBound<StreamWriter> read_buffers_stream_writer_;
     RequestBufferUsageCallback request_buffer_usage_callback_;
     std::unique_ptr<perfetto::trace_processor::TraceProcessorStorage>

@@ -85,6 +85,10 @@ struct ChromeConfig {
   // When enabled the data source is supposed to only emit fields in the output
   // proto that are guaranteed to not contain any sensitive data.
   bool privacy_filtering_enabled;
+
+  // Whether the final tracing result will be converted to the legacy JSON
+  // format.
+  bool convert_to_legacy_json;
 };
 
 struct DataSourceConfig {

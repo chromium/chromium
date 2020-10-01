@@ -171,6 +171,7 @@ void TraceEventMetadataSource::AddGeneratorFunction(
 
 std::unique_ptr<base::DictionaryValue>
 TraceEventMetadataSource::GenerateTraceConfigMetadataDict() {
+  AutoLockWithDeferredTaskPosting lock(lock_);
   if (chrome_config_.empty()) {
     return nullptr;
   }

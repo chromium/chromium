@@ -27,6 +27,10 @@ class StructTraits<tracing::mojom::ChromeConfigDataView,
     return src.privacy_filtering_enabled();
   }
 
+  static bool convert_to_legacy_json(const perfetto::ChromeConfig& src) {
+    return src.convert_to_legacy_json();
+  }
+
   static bool Read(tracing::mojom::ChromeConfigDataView data,
                    perfetto::ChromeConfig* out);
 };

@@ -18,6 +18,7 @@ bool StructTraits<
   }
   out->set_trace_config(std::move(config));
   out->set_privacy_filtering_enabled(data.privacy_filtering_enabled());
+  out->set_convert_to_legacy_json(data.convert_to_legacy_json());
   return true;
 }
 }  // namespace mojo

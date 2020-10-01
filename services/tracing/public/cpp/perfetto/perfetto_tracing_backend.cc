@@ -444,7 +444,7 @@ class ConsumerEndpoint : public perfetto::ConsumerEndpoint,
           data_source.config().chrome_config().convert_to_legacy_json()) {
         tracing_session_host_->DisableTracingAndEmitJson(
             /*agent_label_filter=*/"", std::move(producer_handle),
-            /*privacy_filter_enabled=*/false,
+            data_source.config().chrome_config().privacy_filtering_enabled(),
             base::BindOnce(&ConsumerEndpoint::OnReadBuffersComplete,
                            base::Unretained(this)));
         return;

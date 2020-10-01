@@ -167,6 +167,9 @@ ConsumerHost::TracingSession::TracingSession(
     if (data_source.config().chrome_config().privacy_filtering_enabled()) {
       privacy_filtering_enabled_ = true;
     }
+    if (data_source.config().chrome_config().convert_to_legacy_json()) {
+      convert_to_legacy_json_ = true;
+    }
   }
 #if DCHECK_IS_ON()
   if (privacy_filtering_enabled_) {
@@ -194,7 +197,25 @@ ConsumerHost::TracingSession::TracingSession(
   base::EraseIf(*pending_enable_tracing_ack_pids_,
                 [this](base::ProcessId pid) { return !IsExpectedPid(pid); });
 
-  host_->consumer_endpoint()->EnableTracing(trace_config);
+  perfetto::TraceConfig effective_config(trace_config);
+  // If we're going to convert the data to JSON, don't enable privacy filtering
+  // at the data source level since it will be performed at conversion time
+  // (otherwise there's nothing to pass through the allowlist).
+  if (convert_to_legacy_json_ && privacy_filtering_enabled_) {
+    for (auto& data_source : *effective_config.mutable_data_sources()) {
+      auto* chrome_config =
+          data_source.mutable_config()->mutable_chrome_config();
+      chrome_config->set_privacy_filtering_enabled(false);
+      // Argument filtering should still be enabled together with privacy
+      // filtering to ensure, for example, that only the expected metadata gets
+      // written.
+      base::trace_event::TraceConfig base_config(chrome_config->trace_config());
+      base_config.EnableArgumentFilter();
+      chrome_config->set_trace_config(base_config.ToString());
+    }
+  }
+
+  host_->consumer_endpoint()->EnableTracing(effective_config);
   MaybeSendEnableTracingAck();
 
   if (pending_enable_tracing_ack_pids_) {
@@ -356,6 +377,7 @@ void ConsumerHost::TracingSession::OnConsumerClientDisconnected() {
 void ConsumerHost::TracingSession::ReadBuffers(
     mojo::ScopedDataPipeProducerHandle stream,
     ReadBuffersCallback callback) {
+  DCHECK(!convert_to_legacy_json_);
   read_buffers_stream_writer_ = base::SequenceBound<StreamWriter>(
       StreamWriter::CreateTaskRunner(), std::move(stream), std::move(callback),
       base::BindOnce(&TracingSession::OnConsumerClientDisconnected,
@@ -393,7 +415,7 @@ void ConsumerHost::TracingSession::DisableTracingAndEmitJson(
     // For filtering/allowlisting to be possible at JSON export time,
     // filtering must not have been enabled during proto emission time
     // (or there's nothing to pass through the allowlist).
-    DCHECK(!privacy_filtering_enabled_);
+    DCHECK(!privacy_filtering_enabled_ || convert_to_legacy_json_);
     privacy_filtering_enabled_ = true;
   }
 

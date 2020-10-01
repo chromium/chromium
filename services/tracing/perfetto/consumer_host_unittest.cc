@@ -392,13 +392,21 @@ class TracingConsumerTest : public testing::Test,
   }
 
   void EnableTracingWithDataSourceName(const std::string& data_source_name,
-                                       bool enable_privacy_filtering = false) {
+                                       bool enable_privacy_filtering = false,
+                                       bool convert_to_legacy_json = false) {
     perfetto::TraceConfig config = GetDefaultTraceConfig(data_source_name);
     if (enable_privacy_filtering) {
       for (auto& source : *config.mutable_data_sources()) {
         source.mutable_config()
             ->mutable_chrome_config()
             ->set_privacy_filtering_enabled(true);
+      }
+    }
+    if (convert_to_legacy_json) {
+      for (auto& source : *config.mutable_data_sources()) {
+        source.mutable_config()
+            ->mutable_chrome_config()
+            ->set_convert_to_legacy_json(true);
       }
     }
     threaded_service_->EnableTracingWithConfig(config);
@@ -623,7 +631,8 @@ TEST_F(TracingConsumerTest,
 
 TEST_F(TracingConsumerTest, PrivacyFilterConfig) {
   EnableTracingWithDataSourceName(mojom::kTraceEventDataSourceName,
-                                  /* enable_privacy_filtering =*/true);
+                                  /* enable_privacy_filtering =*/true,
+                                  /* convert_to_legacy_json =*/false);
 
   base::RunLoop wait_for_tracing_start;
   threaded_perfetto_service()->CreateProducer(
@@ -635,11 +644,17 @@ TEST_F(TracingConsumerTest, PrivacyFilterConfig) {
                   ->GetProducerClientConfig()
                   .chrome_config()
                   .privacy_filtering_enabled());
+  base::trace_event::TraceConfig base_config(threaded_perfetto_service()
+                                                 ->GetProducerClientConfig()
+                                                 .chrome_config()
+                                                 .trace_config());
+  EXPECT_FALSE(base_config.IsArgumentFilterEnabled());
 }
 
-TEST_F(TracingConsumerTest, PrivacyFilterConfigInJson) {
+TEST_F(TracingConsumerTest, NoPrivacyFilterWithJsonConversion) {
   EnableTracingWithDataSourceName(mojom::kTraceEventDataSourceName,
-                                  /* enable_privacy_filtering =*/false);
+                                  /* enable_privacy_filtering =*/false,
+                                  /* convert_to_legacy_json =*/true);
 
   base::RunLoop wait_for_tracing_start;
   threaded_perfetto_service()->CreateProducer(
@@ -652,6 +667,34 @@ TEST_F(TracingConsumerTest, PrivacyFilterConfigInJson) {
                    ->GetProducerClientConfig()
                    .chrome_config()
                    .privacy_filtering_enabled());
+  base::trace_event::TraceConfig base_config(threaded_perfetto_service()
+                                                 ->GetProducerClientConfig()
+                                                 .chrome_config()
+                                                 .trace_config());
+  EXPECT_FALSE(base_config.IsArgumentFilterEnabled());
+}
+
+TEST_F(TracingConsumerTest, PrivacyFilterConfigInJson) {
+  EnableTracingWithDataSourceName(mojom::kTraceEventDataSourceName,
+                                  /* enable_privacy_filtering =*/true,
+                                  /* convert_to_legacy_json =*/true);
+
+  base::RunLoop wait_for_tracing_start;
+  threaded_perfetto_service()->CreateProducer(
+      mojom::kTraceEventDataSourceName, 10u,
+      wait_for_tracing_start.QuitClosure());
+
+  wait_for_tracing_start.Run();
+
+  EXPECT_FALSE(threaded_perfetto_service()
+                   ->GetProducerClientConfig()
+                   .chrome_config()
+                   .privacy_filtering_enabled());
+  base::trace_event::TraceConfig base_config(threaded_perfetto_service()
+                                                 ->GetProducerClientConfig()
+                                                 .chrome_config()
+                                                 .trace_config());
+  EXPECT_TRUE(base_config.IsArgumentFilterEnabled());
 
   base::RunLoop no_more_data;
   ExpectPackets("\"trace_processor_stats\":\"__stripped__\"",
@@ -721,7 +764,6 @@ class MockConsumerHost : public mojom::TracingSessionClient {
 };
 
 TEST_F(TracingConsumerTest, TestConsumerPriority) {
-  // auto perfetto_service = std::make_unique<PerfettoService>(nullptr);
   PerfettoService::GetInstance()->SetActiveServicePidsInitialized();
   auto trace_config = GetDefaultTraceConfig(mojom::kTraceEventDataSourceName);
 

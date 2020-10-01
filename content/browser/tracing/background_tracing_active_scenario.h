@@ -14,7 +14,6 @@
 #include "content/browser/tracing/tracing_controller_impl.h"
 #include "content/public/browser/background_tracing_manager.h"
 #include "services/tracing/public/cpp/perfetto/trace_event_data_source.h"
-#include "services/tracing/public/mojom/perfetto_service.mojom.h"
 
 namespace content {
 
@@ -49,9 +48,9 @@ class BackgroundTracingActiveScenario {
       const BackgroundTracingRule* triggered_rule,
       BackgroundTracingManager::StartedFinalizingCallback callback);
 
-  // Called by LegacyTracingSession when the final trace data is ready.
+  // Called by TracingSession when the final trace data is ready.
   void OnJSONDataComplete(std::unique_ptr<std::string>);
-  // Called by the PerfettoTracingSession when the proto trace is ready.
+  // Called by TracingSession when the proto trace is ready.
   void OnProtoDataComplete(std::unique_ptr<std::string> proto_trace);
 
   // Called when the finalized trace data has been uploaded/transferred away
