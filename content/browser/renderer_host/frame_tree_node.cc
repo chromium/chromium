@@ -763,4 +763,16 @@ void FrameTreeNode::SetAdFrameType(blink::mojom::AdFrameType ad_frame_type) {
   }
 }
 
+void FrameTreeNode::SetInitialPopupURL(const GURL& initial_popup_url) {
+  DCHECK(initial_popup_url_.is_empty());
+  DCHECK(!has_committed_real_load_);
+  initial_popup_url_ = initial_popup_url;
+}
+
+void FrameTreeNode::SetPopupCreatorOrigin(
+    const url::Origin& popup_creator_origin) {
+  DCHECK(!has_committed_real_load_);
+  popup_creator_origin_ = popup_creator_origin;
+}
+
 }  // namespace content

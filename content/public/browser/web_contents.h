@@ -151,6 +151,12 @@ class WebContents : public PageNavigator,
     // window.open('', 'bar')).
     std::string main_frame_name;
 
+    // New window starts from the initial empty document. When created by an
+    // opener, the latter can request an initial navigation attempt to be made.
+    // This is the url specified in: `window.open(initial_popup_url, ...)`.
+    // This is empty otherwise.
+    GURL initial_popup_url;
+
     // True if the contents should be initially hidden.
     bool initially_hidden;
 

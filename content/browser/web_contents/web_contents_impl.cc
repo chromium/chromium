@@ -1028,6 +1028,9 @@ std::unique_ptr<WebContentsImpl> WebContentsImpl::CreateWithOpener(
       new_root->SetOpenerFeaturePolicyState(
           opener_rfh->feature_policy()->GetFeatureState());
     }
+
+    new_root->SetInitialPopupURL(params.initial_popup_url);
+    new_root->SetPopupCreatorOrigin(opener_rfh->GetLastCommittedOrigin());
   }
 
   // Apply starting sandbox flags.
@@ -3632,6 +3635,7 @@ RenderFrameHostDelegate* WebContentsImpl::CreateNewWindow(
   create_params.opener_render_frame_id = opener->GetRoutingID();
   create_params.opener_suppressed = params.opener_suppressed;
   create_params.initially_hidden = renderer_started_hidden;
+  create_params.initial_popup_url = params.target_url;
 
   // Even though all codepaths leading here are in response to a renderer
   // tryng to open a new window, if the new window ends up in a different

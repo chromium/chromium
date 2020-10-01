@@ -136,31 +136,4 @@ TEST_F(CrossOriginOpenerPolicyReporterTest, UserAndPassSanitization) {
             "https://www2.example.com/x");
 }
 
-TEST_F(CrossOriginOpenerPolicyReporterTest, Clone) {
-  auto reporter = GetReporter();
-  std::string url1 = "https://www1.example.com/y?bar=baz#foo";
-  std::string url1_sanitized = "https://www1.example.com/y?bar=baz";
-
-  mojo::Remote<network::mojom::CrossOriginOpenerPolicyReporter> remote;
-  reporter->Clone(remote.BindNewPipeAndPassReceiver());
-
-  reporter->QueueNavigationToCOOPReport(GURL(url1), true, false);
-
-  remote.FlushForTesting();
-
-  ASSERT_EQ(1u, network_context().reports().size());
-  const Report& r1 = network_context().reports()[0];
-
-  EXPECT_EQ(r1.type, "coop");
-  EXPECT_EQ(r1.url, context_url());
-  EXPECT_EQ(r1.body.FindKey("disposition")->GetString(), "enforce");
-  EXPECT_EQ(r1.body.FindKey("previousResponseURL")->GetString(),
-            url1_sanitized);
-  EXPECT_EQ(r1.body.FindKey("referrer")->GetString(),
-            "https://referrer.com/?a");
-  EXPECT_EQ(r1.body.FindKey("type")->GetString(), "navigation-to-response");
-  EXPECT_EQ(r1.body.FindKey("effectivePolicy")->GetString(),
-            "same-origin-plus-coep");
-}
-
 }  // namespace content

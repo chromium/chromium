@@ -24,6 +24,7 @@ namespace {
 constexpr char kColumnNumber[] = "columnNumber";
 constexpr char kDisposition[] = "disposition";
 constexpr char kEffectivePolicy[] = "effectivePolicy";
+constexpr char kInitialPopupURL[] = "initialPopupURL";
 constexpr char kLineNumber[] = "lineNumber";
 constexpr char kNextURL[] = "nextResponseURL";
 constexpr char kOpeneeURL[] = "openeeURL";
@@ -127,6 +128,30 @@ std::string SanitizedURL(const GURL& url) {
   return url.GetAsReferrer().spec();
 }
 
+class Receiver : public network::mojom::CrossOriginOpenerPolicyReporter {
+ public:
+  Receiver(content::CrossOriginOpenerPolicyReporter* reporter,
+           std::string initial_popup_url)
+      : reporter_(reporter), initial_popup_url_(initial_popup_url) {}
+  ~Receiver() final = default;
+  Receiver(const Receiver&) = delete;
+  Receiver& operator=(const Receiver&) = delete;
+
+ private:
+  void QueueAccessReport(network::mojom::CoopAccessReportType report_type,
+                         const std::string& property,
+                         network::mojom::SourceLocationPtr source_location,
+                         const std::string& reported_window_url) final {
+    reporter_->QueueAccessReport(report_type, property,
+                                 std::move(source_location),
+                                 reported_window_url, initial_popup_url_);
+  }
+
+  // |reporter_| is always valid, because it owns |this|.
+  const content::CrossOriginOpenerPolicyReporter* reporter_;
+  const std::string initial_popup_url_;
+};
+
 }  // namespace
 
 CrossOriginOpenerPolicyReporter::CrossOriginOpenerPolicyReporter(
@@ -185,7 +210,8 @@ void CrossOriginOpenerPolicyReporter::QueueAccessReport(
     network::mojom::CoopAccessReportType report_type,
     const std::string& property,
     network::mojom::SourceLocationPtr source_location,
-    const std::string& reported_window_url) {
+    const std::string& reported_window_url,
+    const std::string& initial_popup_url) const {
   // Cross-Origin-Opener-Policy-Report-Only is not required to provide
   // endpoints.
   if (!coop_.report_only_reporting_endpoint)
@@ -221,7 +247,7 @@ void CrossOriginOpenerPolicyReporter::QueueAccessReport(
     case network::mojom::CoopAccessReportType::kAccessFromCoopPageToOpenee:
     case network::mojom::CoopAccessReportType::kAccessToCoopPageFromOpenee:
       body.SetStringPath(kOpeneeURL, reported_window_url);
-      // TODO(arthursonzogni): Fill body.initial_popup_url.
+      body.SetStringPath(kInitialPopupURL, initial_popup_url);
       break;
 
     // Other:
@@ -233,12 +259,6 @@ void CrossOriginOpenerPolicyReporter::QueueAccessReport(
 
   storage_partition_->GetNetworkContext()->QueueReport(
       "coop", endpoint, context_url_, base::nullopt, std::move(body));
-}
-
-void CrossOriginOpenerPolicyReporter::Clone(
-    mojo::PendingReceiver<network::mojom::CrossOriginOpenerPolicyReporter>
-        receiver) {
-  receiver_set_.Add(this, std::move(receiver));
 }
 
 // static
@@ -312,10 +332,6 @@ void CrossOriginOpenerPolicyReporter::MonitorAccesses(
   if (!accessed_window_token)
     return;
 
-  mojo::PendingRemote<network::mojom::CrossOriginOpenerPolicyReporter>
-      remote_reporter;
-  Clone(remote_reporter.InitWithNewPipeAndPassReceiver());
-
   bool access_from_coop_page =
       this == accessing_node->current_frame_host()->coop_reporter();
 
@@ -341,11 +357,32 @@ void CrossOriginOpenerPolicyReporter::MonitorAccesses(
       accessed_rfh->GetLastCommittedOrigin());
   RenderFrameHostImpl* reported_rfh =
       access_from_coop_page ? accessed_rfh : accessing_rfh;
+  RenderFrameHostImpl* reporting_rfh =
+      access_from_coop_page ? accessing_rfh : accessed_rfh;
   std::string reported_window_url =
       same_origin ? SanitizedURL(reported_rfh->GetLastCommittedURL()) : "";
 
   bool endpoint_defined =
       coop_.report_only_reporting_endpoint || coop_.reporting_endpoint;
+
+  // If the COOP window is the opener, and the other window's popup creator is
+  // same-origin with the COOP document, the openee' initial popup URL is
+  // reported.
+  std::string reported_initial_popup_url;
+  if (report_type == CoopAccessReportType::kAccessFromCoopPageToOpenee ||
+      report_type == CoopAccessReportType::kAccessToCoopPageFromOpenee) {
+    if (reporting_rfh->GetLastCommittedOrigin().IsSameOriginWith(
+            reported_rfh->frame_tree_node()->popup_creator_origin())) {
+      reported_initial_popup_url =
+          SanitizedURL(reported_rfh->frame_tree_node()->initial_popup_url());
+    }
+  }
+
+  mojo::PendingRemote<network::mojom::CrossOriginOpenerPolicyReporter>
+      remote_reporter;
+  receiver_set_.Add(
+      std::make_unique<Receiver>(this, reported_initial_popup_url),
+      remote_reporter.InitWithNewPipeAndPassReceiver());
 
   // Warning: Do not send cross-origin sensitive data. They will be read from:
   // 1) A potentially compromised renderer (the accessing window).

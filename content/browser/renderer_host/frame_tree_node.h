@@ -427,6 +427,25 @@ class CONTENT_EXPORT FrameTreeNode {
 
   void SetAdFrameType(blink::mojom::AdFrameType ad_frame_type);
 
+  // The initial popup URL for new window opened using:
+  // `window.open(initial_popup_url)`.
+  // An empty GURL otherwise.
+  //
+  // [WARNING] There is no guarantee the FrameTreeNode will ever host a
+  // document served from this URL. The FrameTreeNode always starts hosting the
+  // initial empty document and attempts a navigation toward this URL. However
+  // the navigation might be delayed, redirected and even cancelled.
+  void SetInitialPopupURL(const GURL& initial_popup_url);
+  const GURL& initial_popup_url() const { return initial_popup_url_; }
+
+  // The origin of the document that used window.open() to create this frame.
+  // Otherwise, an opaque Origin with a nonce different from all previously
+  // existing Origins.
+  void SetPopupCreatorOrigin(const url::Origin& popup_creator_origin);
+  const url::Origin& popup_creator_origin() const {
+    return popup_creator_origin_;
+  }
+
  private:
   FRIEND_TEST_ALL_PREFIXES(SitePerProcessFeaturePolicyBrowserTest,
                            ContainerPolicyDynamic);
@@ -495,6 +514,14 @@ class CONTENT_EXPORT FrameTreeNode {
   // An observer that clears this node's |original_opener_| if the opener is
   // destroyed.
   std::unique_ptr<OpenerDestroyedObserver> original_opener_observer_;
+
+  // When created by an opener, the URL specified in window.open(url)
+  // Please refer to {Get,Set}InitialPopupURL() documentation.
+  GURL initial_popup_url_;
+
+  // When created using window.open, the origin of the creator.
+  // Please refer to {Get,Set}PopupCreatorOrigin() documentation.
+  url::Origin popup_creator_origin_;
 
   // Whether this frame has committed any real load, replacing its initial
   // about:blank page.
