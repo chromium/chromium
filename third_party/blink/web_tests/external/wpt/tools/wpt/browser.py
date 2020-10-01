@@ -570,19 +570,21 @@ class Chrome(Browser):
             chrome_version = chrome_version.split(' ')[0]
             url = "https://storage.googleapis.com/chrome-wpt-mojom/%s/linux64/mojojs.zip" % chrome_version
 
-        last_url_file = os.path.join(dest, "mojojs", "gen", "DOWNLOADED_FROM")
+        extracted = os.path.join(dest, "mojojs", "gen")
+        last_url_file = os.path.join(extracted, "DOWNLOADED_FROM")
         if os.path.exists(last_url_file):
             with open(last_url_file, "rt") as f:
                 last_url = f.read().strip()
             if last_url == url:
                 self.logger.info("Mojo bindings already up to date")
-                return
-            rmtree(os.path.join(dest, "mojojs", "gen"))
+                return extracted
+            rmtree(extracted)
 
         self.logger.info("Downloading Mojo bindings from %s" % url)
         unzip(get(url).raw, dest)
         with open(last_url_file, "wt") as f:
             f.write(url)
+        return extracted
 
     def _chromedriver_platform_string(self):
         platform = self.platforms.get(uname[0])

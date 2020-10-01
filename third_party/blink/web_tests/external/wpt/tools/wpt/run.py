@@ -322,16 +322,21 @@ class Chrome(BrowserSetup):
                 kwargs["binary"] = binary
             else:
                 raise WptrunError("Unable to locate Chrome binary")
+
+        if kwargs["mojojs_path"]:
+            kwargs["enable_mojojs"] = True
+            logger.info("--mojojs-path is provided, enabling MojoJS")
         # TODO(Hexcles): Enable this everywhere when Chrome 86 becomes stable.
-        if browser_channel in self.experimental_channels:
+        elif browser_channel in self.experimental_channels:
             try:
-                self.browser.install_mojojs(
+                path = self.browser.install_mojojs(
                     dest=self.venv.path,
                     channel=browser_channel,
                     browser_binary=kwargs["binary"],
                 )
+                kwargs["mojojs_path"] = path
                 kwargs["enable_mojojs"] = True
-                logger.info("MojoJS enabled")
+                logger.info("MojoJS enabled automatically (mojojs_path: %s)" % path)
             except Exception as e:
                 logger.error("Cannot enable MojoJS: %s" % e)
 

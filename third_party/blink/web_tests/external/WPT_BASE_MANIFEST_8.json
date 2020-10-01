@@ -95640,6 +95640,45 @@
        {}
       ]
      ],
+     "absolute-tables-013.html": [
+      "2eff1c976f7456e73b77d2742d06689fd00c5868",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "absolute-tables-014.html": [
+      "60dfc1f59daa80a0140a44141e6732489fdd721b",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "absolute-tables-015.html": [
+      "f0f19e2d66dea93c3cd56ea3bfba83a035903f3f",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "anonymous-table-cell-margin-collapsing.html": [
       "23b467ebacc983122a632f4d5971c8daca569420",
       [
@@ -192337,12 +192376,8 @@
      ],
      "aspect-ratio": {
       "parsing": {
-       "contain-intrinsic-size-computed-expected.txt": [
-        "aaf4d1c772bb0f21eb3f87bb6b2354f68aacffbd",
-        []
-       ],
        "contain-intrinsic-size-valid-expected.txt": [
-        "529491e4f59c46df5e8d78c9e196811231cfc507",
+        "c8550803b6fdce57e3977abb71f3771e32fd465f",
         []
        ]
       },
@@ -245038,7 +245073,7 @@
       []
      ],
      "browser.py": [
-      "44e19fe649817bc8c6a414e7eb4f5aedf6a5fcb3",
+      "13ffa3f08b34d981ac574c76bfa6e17b972ee1fc",
       []
      ],
      "commands.json": [
@@ -245074,7 +245109,7 @@
       []
      ],
      "run.py": [
-      "89f0336ecfee4c04810af947c7e3caf97c6ec268",
+      "dc130a16d117085c72e047edbfa49be506987e24",
       []
      ],
      "testfiles.py": [
@@ -245279,7 +245314,7 @@
        []
       ],
       "environment.py": [
-       "e1812b8740a8c077db1101aedf292ba6ec3c488d",
+       "2527d26d391d99683779392c035ceffa30fe5bc2",
        []
       ],
       "executors": {
@@ -245529,7 +245564,7 @@
        []
       ],
       "wptcommandline.py": [
-       "532c795cd3c5f5bc1e2f8b43bfca38152b79d4ab",
+       "9d1d4048095435de35f00d65e6d4d7de3f427e95",
        []
       ],
       "wptlogging.py": [
@@ -245599,7 +245634,7 @@
        }
       },
       "wptrunner.py": [
-       "897b4a9f815486d9e651de9ddd3cfae7d7872949",
+       "e1d9ef8b1a91dd2d44458c8c9d027537991f4cc9",
        []
       ],
       "wpttest.py": [
@@ -282141,6 +282176,13 @@
        {}
       ]
      ],
+     "scrollbars-auto-min-content-sizing.html": [
+      "45a1296240411fc369f5e399f6b28af31d72a14a",
+      [
+       null,
+       {}
+      ]
+     ],
      "shrinking-column-flexbox.html": [
       "680dc7eb7f36e508437fab444660d58d03f00bfe",
       [
@@ -282199,8 +282241,8 @@
        {}
       ]
      ],
-     "fontface-override-descriptor-getter-setter.html": [
-      "a674c22285af20e24a26cfcd3fb590d9663b8c25",
+     "fontface-override-descriptor-getter-setter.sub.html": [
+      "a3d8ccec3681d9124458106da9ff85be03fccdb0",
       [
        null,
        {}
