@@ -14,6 +14,7 @@
       :host {
         display: flex;
         user-select: none;
+        --cr-search-field-clear-icon-fill: var(--google-grey-refresh-700);
         --cr-search-field-input-border-bottom: 1px solid var(--cr-secondary-text-color);
       }
 
@@ -56,8 +57,8 @@
       }
 
       #clearSearch {
+        --cr-icon-button-fill-color: var(--cr-search-field-clear-icon-fill);
         /* A 16px icon that fits on the input line. */
-        --cr-icon-button-fill-color: var(--cr-search-field-clear-icon-fill, inherit);
         --cr-icon-button-icon-size: var(--cr-search-field-clear-icon-size, 16px);
         --cr-icon-button-size: 24px;
         margin-inline-end: var(--cr-search-field-clear-icon-margin-end, -4px);
