@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/common/url_constants.h"
+#include "chrome/grit/chromium_strings.h"
 #include "components/sync_device_info/device_info.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -112,11 +113,6 @@ void SharingUiController::OnDialogClosed(SharingDialog* dialog) {
   UpdateIcon();
 }
 
-void SharingUiController::OnHelpTextClicked(SharingDialogType dialog_type) {
-  ShowSingletonTab(chrome::FindBrowserWithWebContents(web_contents()),
-                   GURL(chrome::kSyncLearnMoreURL));
-}
-
 void SharingUiController::OnDialogShown(bool has_devices, bool has_apps) {
   if (on_dialog_shown_closure_for_testing_)
     std::move(on_dialog_shown_closure_for_testing_).Run();
@@ -161,8 +157,6 @@ SharingDialogData SharingUiController::CreateDialogData(
   data.error_text = GetErrorDialogText();
 
   auto weak_ptr = weak_ptr_factory_.GetWeakPtr();
-  data.help_callback =
-      base::BindOnce(&SharingUiController::OnHelpTextClicked, weak_ptr);
   data.device_callback =
       base::BindOnce(&SharingUiController::OnDeviceChosen, weak_ptr);
   data.app_callback =

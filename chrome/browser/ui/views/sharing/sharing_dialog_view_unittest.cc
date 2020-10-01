@@ -14,6 +14,7 @@
 #include "chrome/browser/sharing/sharing_app.h"
 #include "chrome/browser/sharing/sharing_metrics.h"
 #include "chrome/browser/ui/views/hover_button.h"
+#include "chrome/grit/chromium_strings.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/url_formatter/elide_url.h"
@@ -115,13 +116,9 @@ class SharingDialogViewTest : public BrowserWithTestWindowTest {
         IDS_BROWSER_SHARING_CLICK_TO_CALL_DIALOG_HELP_TEXT_NO_DEVICES;
     data.help_text_origin_id =
         IDS_BROWSER_SHARING_CLICK_TO_CALL_DIALOG_HELP_TEXT_NO_DEVICES_ORIGIN;
-    data.help_link_text_id =
-        IDS_BROWSER_SHARING_CLICK_TO_CALL_DIALOG_TROUBLESHOOT_LINK;
     data.origin_text_id =
         IDS_BROWSER_SHARING_CLICK_TO_CALL_DIALOG_INITIATING_ORIGIN;
 
-    data.help_callback = base::BindLambdaForTesting(
-        [&](SharingDialogType type) { help_callback_.Call(type); });
     data.device_callback =
         base::BindLambdaForTesting([&](const syncer::DeviceInfo& device) {
           device_callback_.Call(device);
@@ -132,7 +129,6 @@ class SharingDialogViewTest : public BrowserWithTestWindowTest {
     return data;
   }
 
-  testing::MockFunction<void(SharingDialogType)> help_callback_;
   testing::MockFunction<void(const syncer::DeviceInfo&)> device_callback_;
   testing::MockFunction<void(const SharingApp&)> app_callback_;
   content::WebContents* web_contents_ = nullptr;
@@ -175,25 +171,6 @@ TEST_F(SharingDialogViewTest, AppPressed) {
   dialog->ButtonPressed(dialog->dialog_buttons_[3], event);
 }
 
-TEST_F(SharingDialogViewTest, HelpTextClickedEmpty) {
-  EXPECT_CALL(help_callback_, Call(SharingDialogType::kEducationalDialog));
-
-  auto dialog_data = CreateDialogData(/*devices=*/0, /*apps=*/0);
-  auto dialog = CreateDialogView(std::move(dialog_data));
-
-  dialog->HelpLinkClicked();
-}
-
-TEST_F(SharingDialogViewTest, HelpTextClickedOnlyApps) {
-  EXPECT_CALL(help_callback_,
-              Call(SharingDialogType::kDialogWithoutDevicesWithApp));
-
-  auto dialog_data = CreateDialogData(/*devices=*/0, /*apps=*/1);
-  auto dialog = CreateDialogView(std::move(dialog_data));
-
-  dialog->HelpLinkClicked();
-}
-
 TEST_F(SharingDialogViewTest, ThemeChangedEmptyList) {
   auto dialog_data = CreateDialogData(/*devices=*/1, /*apps=*/1);
   dialog_data.type = SharingDialogType::kErrorDialog;
@@ -231,15 +208,13 @@ TEST_F(SharingDialogViewTest, OriginView) {
 TEST_F(SharingDialogViewTest, HelpTextContent) {
   url::Origin current_origin = url::Origin::Create(GURL("https://google.com"));
   url::Origin other_origin = url::Origin::Create(GURL("https://example.com"));
-  base::string16 link_text = l10n_util::GetStringUTF16(
-      IDS_BROWSER_SHARING_CLICK_TO_CALL_DIALOG_TROUBLESHOOT_LINK);
   base::string16 origin_text = url_formatter::FormatOriginForSecurityDisplay(
       other_origin, url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS);
-  base::string16 expected_default = l10n_util::GetStringFUTF16(
-      IDS_BROWSER_SHARING_CLICK_TO_CALL_DIALOG_HELP_TEXT_NO_DEVICES, link_text);
+  base::string16 expected_default = l10n_util::GetStringUTF16(
+      IDS_BROWSER_SHARING_CLICK_TO_CALL_DIALOG_HELP_TEXT_NO_DEVICES);
   base::string16 expected_origin = l10n_util::GetStringFUTF16(
       IDS_BROWSER_SHARING_CLICK_TO_CALL_DIALOG_HELP_TEXT_NO_DEVICES_ORIGIN,
-      origin_text, link_text);
+      origin_text);
 
   // Expect default help text if no initiating origin is set.
   auto dialog_data = CreateDialogData(/*devices=*/0, /*apps=*/1);

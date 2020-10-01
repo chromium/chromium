@@ -82,25 +82,18 @@ bool ShouldShowOrigin(const SharingDialogData& data,
              web_contents->GetMainFrame()->GetLastCommittedOrigin());
 }
 
-base::string16 PrepareHelpTextWithoutOrigin(const SharingDialogData& data,
-                                            const base::string16& link,
-                                            size_t* link_offset) {
+base::string16 PrepareHelpTextWithoutOrigin(const SharingDialogData& data) {
   DCHECK_NE(0, data.help_text_id);
-  return l10n_util::GetStringFUTF16(data.help_text_id, link, link_offset);
+  return l10n_util::GetStringUTF16(data.help_text_id);
 }
 
-base::string16 PrepareHelpTextWithOrigin(const SharingDialogData& data,
-                                         const base::string16& link,
-                                         size_t* link_offset) {
+base::string16 PrepareHelpTextWithOrigin(const SharingDialogData& data) {
   DCHECK_NE(0, data.help_text_origin_id);
   base::string16 origin = url_formatter::FormatOriginForSecurityDisplay(
       *data.initiating_origin,
       url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS);
-  std::vector<size_t> offsets;
-  base::string16 text = l10n_util::GetStringFUTF16(data.help_text_origin_id,
-                                                   {origin, link}, &offsets);
-  *link_offset = offsets[1];
-  return text;
+
+  return l10n_util::GetStringFUTF16(data.help_text_origin_id, origin);
 }
 
 std::unique_ptr<views::View> CreateOriginView(const SharingDialogData& data) {
@@ -342,22 +335,11 @@ void SharingDialogView::InitErrorView() {
 }
 
 std::unique_ptr<views::StyledLabel> SharingDialogView::CreateHelpText() {
-  DCHECK_NE(0, data_.help_link_text_id);
-  const base::string16 link =
-      l10n_util::GetStringUTF16(data_.help_link_text_id);
-  size_t offset;
   auto label = std::make_unique<views::StyledLabel>();
-  label->SetText(ShouldShowOrigin(data_, web_contents())
-                     ? PrepareHelpTextWithOrigin(data_, link, &offset)
-                     : PrepareHelpTextWithoutOrigin(data_, link, &offset));
-  views::StyledLabel::RangeStyleInfo link_style =
-      views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
-          &SharingDialogView::HelpLinkClicked, base::Unretained(this)));
-  label->AddStyleRange(gfx::Range(offset, offset + link.length()), link_style);
-  return label;
-}
 
-void SharingDialogView::HelpLinkClicked() {
-  std::move(data_.help_callback).Run(GetDialogType());
-  CloseBubble();
+  label->SetText(ShouldShowOrigin(data_, web_contents())
+                     ? PrepareHelpTextWithOrigin(data_)
+                     : PrepareHelpTextWithoutOrigin(data_));
+
+  return label;
 }

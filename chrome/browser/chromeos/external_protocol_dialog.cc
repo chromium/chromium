@@ -96,10 +96,8 @@ base::string16 ExternalProtocolDialog::GetWindowTitle() const {
   // own dialog with more information in the future.
   if (scheme_ == url::kTelScheme &&
       base::FeatureList::IsEnabled(kClickToCallUI)) {
-    return l10n_util::GetStringFUTF16(
-        IDS_BROWSER_SHARING_CLICK_TO_CALL_DIALOG_HELP_TEXT_NO_DEVICES,
-        l10n_util::GetStringUTF16(
-            IDS_BROWSER_SHARING_CLICK_TO_CALL_DIALOG_TROUBLESHOOT_LINK));
+    return l10n_util::GetStringUTF16(
+        IDS_BROWSER_SHARING_CLICK_TO_CALL_DIALOG_HELP_TEXT_NO_DEVICES);
   }
   return l10n_util::GetStringUTF16(IDS_EXTERNAL_PROTOCOL_TITLE);
 }

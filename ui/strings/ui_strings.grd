@@ -1111,15 +1111,6 @@ need to be translated for each locale.-->
       <message name="IDS_BROWSER_SHARING_CLICK_TO_CALL_DIALOG_TITLE_NO_DEVICES" desc="The label to be shown as the title of the dialog when user click on a phone number, if there are no phones or apps to choose from.">
         Call this number from your phone?
       </message>
-      <message name="IDS_BROWSER_SHARING_CLICK_TO_CALL_DIALOG_HELP_TEXT_NO_DEVICES" desc="The label to be shown as a help text of the dialog when user click on a phone number, if there are no phones to choose from.">
-        To send a number from here to your Android phone, <ph name="TROUBLESHOOT_LINK">$1<ex>turn on sync</ex></ph> for both devices in settings.
-      </message>
-      <message name="IDS_BROWSER_SHARING_CLICK_TO_CALL_DIALOG_HELP_TEXT_NO_DEVICES_ORIGIN" desc="The label to be shown as a help text of the dialog when user click on a phone number, if there are no phones to choose from.">
-        To send a number from <ph name="ORIGIN">$1<ex>www.google.com</ex></ph> to your Android phone, <ph name="TROUBLESHOOT_LINK">$2<ex>turn on sync</ex></ph> for both devices in settings.
-      </message>
-      <message name="IDS_BROWSER_SHARING_CLICK_TO_CALL_DIALOG_TROUBLESHOOT_LINK" desc="The label to be shown on the dialog when user click on a phone number for the link to a help page to turn on sync.">
-        turn on sync
-      </message>
       <message name="IDS_BROWSER_SHARING_CLICK_TO_CALL_DIALOG_CALL_BUTTON_LABEL" desc="The button label to make a call, shown in the Click to Call dialog.">
         Make call
       </message>
@@ -1149,9 +1140,6 @@ need to be translated for each locale.-->
         Couldn't share <ph name="CONTENT_TYPE">$1<ex>video</ex></ph>
       </message>
 
-      <message name="IDS_BROWSER_SHARING_ERROR_DIALOG_TEXT_DEVICE_NOT_FOUND" desc="The text to be shown on the dialog when an error occurred because the device is not synced.">
-        Make sure <ph name="TARGET_DEVICE_NAME">$1<ex>Pixel XL</ex></ph> has sync turned on in Chrome, and then try sending again.
-      </message>
       <message name="IDS_BROWSER_SHARING_ERROR_DIALOG_TEXT_NETWORK_ERROR" desc="The text to be shown on the dialog when the sender device has network issues.">
         Make sure this device is connected to the internet.
       </message>

@@ -47,12 +47,10 @@ struct SharingDialogData {
   base::string16 error_text;
   int help_text_id = 0;
   int help_text_origin_id = 0;
-  int help_link_text_id = 0;
   base::Optional<HeaderIcons> header_icons;
   int origin_text_id = 0;
   base::Optional<url::Origin> initiating_origin;
 
-  base::OnceCallback<void(SharingDialogType)> help_callback;
   base::OnceCallback<void(const syncer::DeviceInfo&)> device_callback;
   base::OnceCallback<void(const SharingApp&)> app_callback;
   base::OnceCallback<void(SharingDialog*)> close_callback;

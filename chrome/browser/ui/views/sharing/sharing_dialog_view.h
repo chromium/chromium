@@ -74,9 +74,6 @@ class SharingDialogView : public SharingDialog,
 
   std::unique_ptr<views::StyledLabel> CreateHelpText();
 
-  // Called when the "help" link is clicked.
-  void HelpLinkClicked();
-
   SharingDialogData data_;
 
   // References to device and app buttons views.
