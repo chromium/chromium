@@ -195,20 +195,31 @@ void TextFragmentSelectorGenerator::CompleteSelection() {
   int selection_start_pos =
       ephemeral_range.StartPosition().ComputeOffsetInContainerNode();
   start_text.Ensure16Bit();
-  int word_start = FindWordStartBoundary(
+  int first_word_start = FindWordStartBoundary(
       start_text.Characters16(), start_text.length(), selection_start_pos);
 
   String end_text = end_container->textContent();
   int selection_end_pos =
       ephemeral_range.EndPosition().ComputeOffsetInContainerNode();
   end_text.Ensure16Bit();
-  int word_end = FindWordEndBoundary(end_text.Characters16(), end_text.length(),
-                                     selection_end_pos);
-  if (word_start != selection_start_pos || word_end != selection_end_pos) {
+
+  // If |selection_end_pos| is at the beginning of a new word then don't search
+  // for the word end as it will be the end of the next word, which was not
+  // included in the selection.
+  int last_word_end = selection_end_pos;
+  if (selection_end_pos != FindWordStartBoundary(end_text.Characters16(),
+                                                 end_text.length(),
+                                                 selection_end_pos)) {
+    last_word_end = FindWordEndBoundary(end_text.Characters16(),
+                                        end_text.length(), selection_end_pos);
+  }
+
+  if (first_word_start != selection_start_pos ||
+      last_word_end != selection_end_pos) {
     selection_range_ =
         MakeGarbageCollected<Range>(selection_range_->OwnerDocument(),
-                                    Position(start_container, word_start),
-                                    Position(end_container, word_end));
+                                    Position(start_container, first_word_start),
+                                    Position(end_container, last_word_end));
   }
 }
 

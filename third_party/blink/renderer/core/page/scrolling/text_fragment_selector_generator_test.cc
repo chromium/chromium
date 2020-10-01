@@ -588,6 +588,27 @@ TEST_F(TextFragmentSelectorGeneratorTest, WordLimit_ExtraSpaces) {
                             "paragraph%20text%20that%20is%20longer");
 }
 
+// When selection starts at the end of a word, selection shouldn't be
+// autocompleted to contain extra words.
+TEST_F(TextFragmentSelectorGeneratorTest,
+       WordLimit_SelectionStartsAndEndsAtWordLimit) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <div>Test page</div>
+    <p id='first'>First paragraph text that is longer  than 20 chars</p>
+  )HTML");
+  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  const auto& selected_start = Position(first_paragraph, 5);
+  const auto& selected_end = Position(first_paragraph, 37);
+  ASSERT_EQ(" paragraph text that is longer ",
+            PlainText(EphemeralRange(selected_start, selected_end)));
+
+  GenerateAndVerifySelector(selected_start, selected_end,
+                            "paragraph%20text%20that%20is%20longer");
+}
+
 // Basic test case for |GetNextTextBlock|.
 TEST_F(TextFragmentSelectorGeneratorTest, GetPreviousTextBlock) {
   SimRequest request("https://example.com/test.html", "text/html");
