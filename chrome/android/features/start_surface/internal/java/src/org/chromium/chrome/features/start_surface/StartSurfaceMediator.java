@@ -619,6 +619,11 @@ class StartSurfaceMediator
         }
     }
 
+    @Override
+    public boolean isHomePageShowing() {
+        return mOverviewModeState == OverviewModeState.SHOWN_HOMEPAGE;
+    }
+
     // Implements TabSwitcher.OverviewModeObserver.
     @Override
     public void startedShowing() {

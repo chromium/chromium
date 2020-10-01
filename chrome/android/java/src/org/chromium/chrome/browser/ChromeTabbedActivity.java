@@ -256,8 +256,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
     private Runnable mShowHistoryRunnable;
 
-    private StartSurface mStartSurface;
-
     private CompositorViewHolder mCompositorViewHolder;
     private OverviewListLayout mOverviewListLayout;
     /**
@@ -294,6 +292,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
     private ObservableSupplierImpl<EphemeralTabCoordinator> mEphemeralTabCoordinatorSupplier =
             new ObservableSupplierImpl<>();
+    private final OneshotSupplierImpl<StartSurface> mStartSurfaceSupplier =
+            new OneshotSupplierImpl<>();
 
     private CallbackController mCallbackController = new CallbackController();
 
@@ -558,13 +558,15 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 TabManagementDelegate tabManagementDelegate =
                         TabManagementModuleProvider.getDelegate();
                 if (tabManagementDelegate != null) {
-                    mStartSurface = tabManagementDelegate.createStartSurface(this,
+                    StartSurface startSurface = tabManagementDelegate.createStartSurface(this,
                             mRootUiCoordinator.getScrimCoordinator(),
                             mRootUiCoordinator.getBottomSheetController());
+                    mStartSurfaceSupplier.set(startSurface);
                 }
             }
             mLayoutManager = new LayoutManagerChromePhone(compositorViewHolder, mContentContainer,
-                    mStartSurface, getTabContentManagerSupplier(), mOverviewModeBehaviorSupplier);
+                    mStartSurfaceSupplier.get(), getTabContentManagerSupplier(),
+                    mOverviewModeBehaviorSupplier);
             mOverviewModeController = mLayoutManager;
         }
     }
@@ -924,7 +926,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                         TAB_COUNT_ON_RETURN, getCurrentTabModel().getCount());
             }
             if (TabUiFeatureUtilities.isGridTabSwitcherEnabled() && !isTablet()) {
-                mStartSurface.getController().enableRecordingFirstMeaningfulPaint(
+                mStartSurfaceSupplier.get().getController().enableRecordingFirstMeaningfulPaint(
                         getOnCreateTimestampMs());
             }
             mOverviewShownOnStart = true;
@@ -1421,7 +1423,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 mIntentWithEffectSupplier, getShareDelegateSupplier(), getActivityTabProvider(),
                 mEphemeralTabCoordinatorSupplier, mTabModelProfileSupplier, mBookmarkBridgeSupplier,
                 getOverviewModeBehaviorSupplier(), this::getContextualSearchManager,
-                mTabModelSelectorSupplier);
+                mTabModelSelectorSupplier, mStartSurfaceSupplier);
     }
 
     @Override
@@ -1462,7 +1464,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         Supplier<Boolean> dialogVisibilitySupplier = null;
         if (TabUiFeatureUtilities.isTabGroupsAndroidEnabled()) {
             dialogVisibilitySupplier = () -> {
-                assert mStartSurface != null;
+                assert mStartSurfaceSupplier.get() != null;
                 assert getToolbarManager().getBottomControlsCoordinator() != null;
                 // Return true if dialog from either tab switcher or tab strip is visible.
                 Supplier<Boolean> tabGroupUiDialogVisibilitySupplier =
@@ -1470,7 +1472,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                                 .getBottomControlsCoordinator()
                                 .getTabGridDialogVisibilitySupplier();
                 Supplier<Boolean> tabSwitcherDialogVisibilitySupplier =
-                        mStartSurface.getTabGridDialogVisibilitySupplier();
+                        mStartSurfaceSupplier.get().getTabGridDialogVisibilitySupplier();
                 boolean isDialogVisible = false;
                 if (tabGroupUiDialogVisibilitySupplier != null) {
                     isDialogVisible = tabGroupUiDialogVisibilitySupplier.get();
@@ -1622,8 +1624,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
             DefaultBrowserPromoUtils.maybeRecordOutcomeOnStart();
 
-            if (mStartSurface != null && mOverviewShownOnStart) {
-                mStartSurface.onOverviewShownAtLaunch(getOnCreateTimestampMs());
+            if (mStartSurfaceSupplier.get() != null && mOverviewShownOnStart) {
+                mStartSurfaceSupplier.get().onOverviewShownAtLaunch(getOnCreateTimestampMs());
             }
         });
     }
@@ -1979,7 +1981,9 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 || state == OverviewModeState.SHOWING_HOMEPAGE
                 || state == OverviewModeState.SHOWING_PREVIOUS
                 || state == OverviewModeState.SHOWING_START);
-        if (mStartSurface != null) mStartSurface.getController().setOverviewState(state);
+        if (mStartSurfaceSupplier.get() != null) {
+            mStartSurfaceSupplier.get().getController().setOverviewState(state);
+        }
 
         if (mOverviewModeController == null || mOverviewModeController.overviewVisible()) return;
 
@@ -2162,7 +2166,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
     @VisibleForTesting
     public StartSurface getStartSurface() {
-        return mStartSurface;
+        return mStartSurfaceSupplier.get();
     }
 
     private ComposedBrowserControlsVisibilityDelegate getAppBrowserControlsVisibilityDelegate() {

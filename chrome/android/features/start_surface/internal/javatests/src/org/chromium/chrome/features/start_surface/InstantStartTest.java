@@ -103,6 +103,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Integration tests of Instant Start which requires 2-stage initialization for Clank startup.
@@ -243,6 +244,15 @@ public class InstantStartTest {
         Assert.assertTrue(LibraryLoader.getInstance().isInitialized());
     }
 
+    private StartSurfaceCoordinator getStartSurfaceFromUIThread() {
+        AtomicReference<StartSurface> startSurface = new AtomicReference<>();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            startSurface.set(
+                    ((ChromeTabbedActivity) mActivityTestRule.getActivity()).getStartSurface());
+        });
+        return (StartSurfaceCoordinator) startSurface.get();
+    }
+
     /**
      * Test TabContentManager is able to fetch thumbnail jpeg files before native is initialized.
      */
@@ -339,9 +349,7 @@ public class InstantStartTest {
         assertThat(mActivityTestRule.getActivity().getLayoutManager().getOverviewLayout())
                 .isInstanceOf(StartSurfaceLayout.class);
 
-        StartSurfaceCoordinator startSurfaceCoordinator =
-                (StartSurfaceCoordinator) ((ChromeTabbedActivity) mActivityTestRule.getActivity())
-                        .getStartSurface();
+        StartSurfaceCoordinator startSurfaceCoordinator = getStartSurfaceFromUIThread();
         Assert.assertTrue(startSurfaceCoordinator.isInitPendingForTesting());
         Assert.assertFalse(startSurfaceCoordinator.isInitializedWithNativeForTesting());
         Assert.assertFalse(startSurfaceCoordinator.isSecondaryTaskInitPendingForTesting());
