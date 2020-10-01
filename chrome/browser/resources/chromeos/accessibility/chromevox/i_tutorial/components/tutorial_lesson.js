@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+/**
+ * @fileoverview Defines a custom Polymer component for a lesson in the
+ * ChromeVox interactive tutorial.
+ */
+
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 
@@ -232,11 +237,12 @@ export const TutorialLesson = Polymer({
   },
 
   /**
-   * Requests speech from the Panel.
    * @param {string} text
    * @private
    */
   requestSpeech(text) {
+    // TODO (akihiroota): Migrate this to i_tutorial.js so that the tutorial
+    // engine controls all speech requests.
     this.dispatchEvent(
         new CustomEvent('requestspeech', {composed: true, detail: {text}}));
   },

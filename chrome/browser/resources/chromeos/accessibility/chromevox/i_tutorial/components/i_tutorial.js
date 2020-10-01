@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+/**
+ * @fileoverview Defines a custom Polymer component for the ChromeVox
+ * interactive tutorial engine.
+ */
+
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -570,9 +575,15 @@ Polymer({
     // update their visibility.
     this.activeLessonNum = this.includedLessons[index].lessonNum;
 
-    const lesson = this.includedLessons[this.activeLessonIndex];
+    const lesson = this.getCurrentLesson();
     if (lesson.autoInteractive) {
       this.startInteractiveMode(lesson.actions);
+      // Read the title since initial focus gets placed on the first piece of
+      // text content.
+      this.readCurrentLessonTitle();
+    } else {
+      // Otherwise, automatically read current lesson content.
+      setTimeout(this.readCurrentLessonContent.bind(this), 1000);
     }
   },
 
@@ -830,6 +841,8 @@ Polymer({
   /**
    * @param {NudgeType} type
    * @private
+   * @suppress {undefinedVars|missingProperties} For referencing QueueMode,
+   * which is defined on the Panel window.
    */
   initializeNudges(type) {
     const maybeGiveNudge = (msg) => {
@@ -839,7 +852,7 @@ Polymer({
         return;
       }
 
-      this.requestSpeech(msg);
+      this.requestSpeech(msg, QueueMode.INTERJECT);
     };
 
     this.nudgeArray = [];
@@ -848,7 +861,8 @@ Polymer({
       // strings.
       const hints = this.lessonData[this.activeLessonNum].hints;
       for (const hint of hints) {
-        this.nudgeArray.push(this.requestSpeech.bind(this, hint));
+        this.nudgeArray.push(
+            this.requestSpeech.bind(this, hint, QueueMode.INTERJECT));
       }
     } else if (type === NudgeType.GENERAL) {
       this.nudgeArray = [
@@ -860,7 +874,8 @@ Polymer({
         maybeGiveNudge.bind(
             this, 'Hint: Press Search + Space to activate the current item.'),
         this.requestSpeech.bind(
-            this, 'Hint: Press Escape if you would like to exit this tutorial.')
+            this, 'Hint: Press Escape if you would like to exit this tutorial.',
+            QueueMode.INTERJECT)
       ];
     } else {
       throw new Error('Invalid NudgeType: ' + type);
@@ -894,11 +909,16 @@ Polymer({
 
   /**
    * @param {string} text
+   * @param {number} queueMode
+   * @param {{doNotInterrupt: boolean}=} properties
    * @private
+   * @suppress {undefinedVars|missingProperties} For referencing QueueMode,
+   * which is defined on the Panel window.
    */
-  requestSpeech(text) {
-    this.dispatchEvent(
-        new CustomEvent('requestspeech', {composed: true, detail: {text}}));
+  requestSpeech(text, queueMode, properties) {
+    this.dispatchEvent(new CustomEvent(
+        'requestspeech',
+        {composed: true, detail: {text, queueMode, properties}}));
   },
 
   /** @private */
@@ -919,5 +939,34 @@ Polymer({
     }
 
     this.restartNudges();
+  },
+
+  /** @return {!TutorialLesson} */
+  getCurrentLesson() {
+    return this.includedLessons[this.activeLessonIndex];
+  },
+
+  /**
+   * @private
+   * @suppress {undefinedVars|missingProperties} For referencing QueueMode,
+   * which is defined on the Panel window.
+   */
+  readCurrentLessonTitle() {
+    const lesson = this.getCurrentLesson();
+    this.requestSpeech(
+        lesson.title, QueueMode.INTERJECT, {doNotInterrupt: true});
+  },
+
+  /**
+   * @private
+   * @suppress {undefinedVars|missingProperties} For referencing QueueMode,
+   * which is defined on the Panel window.
+   */
+  readCurrentLessonContent() {
+    const lesson = this.getCurrentLesson();
+    for (const text of lesson.content) {
+      // Queue lesson content so it is read after the lesson title.
+      this.requestSpeech(text, QueueMode.QUEUE);
+    }
   }
 });

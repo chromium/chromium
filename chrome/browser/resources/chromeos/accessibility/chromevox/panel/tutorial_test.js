@@ -395,3 +395,53 @@ TEST_F('ChromeVoxTutorialTest', 'NextPreviousButtons', function() {
         .replay();
   });
 });
+
+// Tests that the title of an interactive lesson is read when shown.
+TEST_F('ChromeVoxTutorialTest', 'AutoReadTitle', function() {
+  const mockFeedback = this.createMockFeedback();
+  this.runWithLoadedTree(this.simpleDoc, async function(root) {
+    await this.launchAndWaitForTutorial();
+    const tutorial = this.getPanel().iTutorial;
+    mockFeedback.expectSpeech('Choose your tutorial experience')
+        .call(doCmd('nextObject'))
+        .expectSpeech('Quick orientation', 'Button')
+        .call(doCmd('forceClickOnCurrentItem'))
+        .expectSpeech(/Quick Orientation Tutorial, [0-9]+ Lessons/)
+        .call(doCmd('nextObject'))
+        .expectSpeech('Welcome to ChromeVox!', 'Button')
+        .call(doCmd('forceClickOnCurrentItem'))
+        .expectSpeech('Welcome to ChromeVox!')
+        .expectSpeech(
+            'Welcome to the ChromeVox tutorial. To exit this tutorial at any ' +
+            'time, press the Escape key on the top left corner of the ' +
+            'keyboard. To turn off ChromeVox, hold Control and Alt, and ' +
+            `press Z. When you're ready, use the spacebar to move to the ` +
+            'next lesson.')
+        .replay();
+  });
+});
+
+// Tests that the content of a non-interactive lesson is read when shown.
+TEST_F('ChromeVoxTutorialTest', 'AutoReadLesson', function() {
+  const mockFeedback = this.createMockFeedback();
+  this.runWithLoadedTree(this.simpleDoc, async function(root) {
+    await this.launchAndWaitForTutorial();
+    const tutorial = this.getPanel().iTutorial;
+    mockFeedback.expectSpeech('Choose your tutorial experience')
+        .call(doCmd('nextObject'))
+        .expectSpeech('Quick orientation', 'Button')
+        .call(doCmd('nextObject'))
+        .expectSpeech('Essential keys', 'Button')
+        .call(doCmd('forceClickOnCurrentItem'))
+        .expectSpeech(/Essential Keys Tutorial, [0-9]+ Lessons/)
+        .call(() => {
+          tutorial.showLesson(0);
+        })
+        .expectSpeech('On, Off, and Stop', 'Heading 1')
+        .expectSpeech(
+            'To temporarily stop ChromeVox from speaking, ' +
+            'press the Control key.')
+        .expectSpeech('To turn ChromeVox on or off, use Control+Alt+Z.')
+        .replay();
+  });
+});

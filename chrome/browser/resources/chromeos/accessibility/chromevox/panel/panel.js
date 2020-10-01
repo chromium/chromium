@@ -24,6 +24,7 @@ goog.require('Msgs');
 goog.require('PanelCommand');
 goog.require('PanelMenu');
 goog.require('PanelMenuItem');
+goog.require('QueueMode');
 goog.require('Tutorial');
 goog.require('UserAnnotationHandler');
 
@@ -1191,11 +1192,24 @@ Panel = class {
       Panel.onCloseTutorial();
     });
     $('i-tutorial').addEventListener('requestspeech', (evt) => {
-      const text = evt.detail.text;
       const background = chrome.extension.getBackgroundPage();
+      /**
+       * @type {{
+       * text: string,
+       * queueMode: QueueMode,
+       * properties: ({doNotInterrupt: boolean}|undefined)}}
+       */
+      const detail = evt.detail;
+      const text = detail.text;
+      const queueMode = detail.queueMode;
+      const properties = detail.properties || {};
+      if (!text || queueMode === undefined) {
+        throw new Error(
+            `Must specify text and queueMode when requesting speech from the
+                tutorial`);
+      }
       const cvox = background['ChromeVox'];
-      cvox.tts.speak(
-          text, background.QueueMode.INTERJECT, {'doNotInterrupt': true});
+      cvox.tts.speak(text, queueMode, properties);
     });
     $('i-tutorial').addEventListener('startinteractivemode', (evt) => {
       const actions = evt.detail.actions;
