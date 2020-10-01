@@ -285,6 +285,8 @@ class V4L2BuffersList : public base::RefCountedThreadSafe<V4L2BuffersList> {
   void ReturnBuffer(size_t buffer_id);
   // Get any of the buffers in the list. There is no order guarantee whatsoever.
   base::Optional<size_t> GetFreeBuffer();
+  // Get the buffer with specified index.
+  base::Optional<size_t> GetFreeBuffer(size_t requested_buffer_id);
   // Number of buffers currently in this list.
   size_t size() const;
 
@@ -317,6 +319,15 @@ base::Optional<size_t> V4L2BuffersList::GetFreeBuffer() {
   free_buffers_.erase(iter);
 
   return buffer_id;
+}
+
+base::Optional<size_t> V4L2BuffersList::GetFreeBuffer(
+    size_t requested_buffer_id) {
+  base::AutoLock auto_lock(lock_);
+
+  return (free_buffers_.erase(requested_buffer_id) > 0)
+             ? base::make_optional(requested_buffer_id)
+             : base::nullopt;
 }
 
 size_t V4L2BuffersList::size() const {
@@ -1148,6 +1159,23 @@ base::Optional<V4L2WritableBufferRef> V4L2Queue::GetFreeBuffer() {
     return base::nullopt;
 
   auto buffer_id = free_buffers_->GetFreeBuffer();
+  if (!buffer_id.has_value())
+    return base::nullopt;
+
+  return V4L2BufferRefFactory::CreateWritableRef(
+      buffers_[buffer_id.value()]->v4l2_buffer(),
+      weak_this_factory_.GetWeakPtr());
+}
+
+base::Optional<V4L2WritableBufferRef> V4L2Queue::GetFreeBuffer(
+    size_t requested_buffer_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // No buffers allocated at the moment?
+  if (!free_buffers_)
+    return base::nullopt;
+
+  auto buffer_id = free_buffers_->GetFreeBuffer(requested_buffer_id);
   if (!buffer_id.has_value())
     return base::nullopt;
 

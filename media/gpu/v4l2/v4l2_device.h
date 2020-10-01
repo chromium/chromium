@@ -367,6 +367,13 @@ class MEDIA_GPU_EXPORT V4L2Queue
   // If the caller discards the returned reference, the underlying buffer is
   // made available to clients again.
   base::Optional<V4L2WritableBufferRef> GetFreeBuffer();
+  // Return the buffer at index |requested_buffer_id|, if it is available at
+  // this time.
+  //
+  // If the buffer is currently in use or the provided index is invalid,
+  // return |base::nullopt|.
+  base::Optional<V4L2WritableBufferRef> GetFreeBuffer(
+      size_t requested_buffer_id);
 
   // Attempt to dequeue a buffer, and return a reference to it if one was
   // available.
