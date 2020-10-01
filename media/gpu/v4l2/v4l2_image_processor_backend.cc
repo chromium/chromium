@@ -146,6 +146,7 @@ V4L2ImageProcessorBackend::V4L2ImageProcessorBackend(
           base::SingleThreadTaskRunnerThreadMode::DEDICATED)) {
   DVLOGF(2);
   DETACH_FROM_SEQUENCE(poll_sequence_checker_);
+  DCHECK_NE(output_memory_type_, V4L2_MEMORY_USERPTR);
 
   backend_weak_this_ = backend_weak_this_factory_.GetWeakPtr();
   poll_weak_this_ = poll_weak_this_factory_.GetWeakPtr();
@@ -284,7 +285,7 @@ V4L2ImageProcessorBackend::CreateWithOutputMode(
   VideoFrame::StorageType output_storage_type = VideoFrame::STORAGE_UNKNOWN;
   for (auto output_type : output_config.preferred_storage_types) {
     v4l2_memory v4l2_memory_type = InputStorageTypeToV4L2Memory(output_type);
-    if (v4l2_memory_type == V4L2_MEMORY_USERPTR ||
+    if (v4l2_memory_type == V4L2_MEMORY_MMAP ||
         v4l2_memory_type == V4L2_MEMORY_DMABUF) {
       output_storage_type = output_type;
       break;
