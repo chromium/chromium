@@ -15,7 +15,6 @@ import com.google.android.play.core.splitinstall.SplitInstallRequest;
 
 import org.chromium.base.BundleUtils;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.Log;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 
@@ -27,8 +26,6 @@ import java.util.Locale;
  */
 public class AppLocaleUtils {
     private AppLocaleUtils(){};
-
-    private static final String TAG = "AppLocale";
 
     /**
      * Return true if languageName is the same as the current application override
@@ -78,13 +75,9 @@ public class AppLocaleUtils {
      * @param context Activity context to enable downloaded language splits on.
      */
     public static void maybeInstallActivitySplitCompat(Context context) {
-        Log.i(TAG, "maybeInstallActivitySplit isOverridden: %s  isBundle: %s",
-                GlobalAppLocaleController.getInstance().isOverridden(), BundleUtils.isBundle());
         if (GlobalAppLocaleController.getInstance().isOverridden() && BundleUtils.isBundle()) {
             SplitCompat.installActivity(context);
-            Log.i(TAG, "Override Locale: %s", getAppLanguagePref());
         }
-        logInstalledLanguages();
     }
 
     /**
@@ -101,22 +94,6 @@ public class AppLocaleUtils {
                             .addLanguage(Locale.forLanguageTag(languageName))
                             .build();
             splitInstallManager.startInstall(installRequest);
-        }
-        logInstalledLanguages();
-    }
-
-    /**
-     * Log list of installed languages
-     */
-    private static void logInstalledLanguages() {
-        if (BundleUtils.isBundle()) {
-            SplitInstallManager splitInstallManager =
-                    SplitInstallManagerFactory.create(ContextUtils.getApplicationContext());
-
-            Log.i(TAG, "Installed Languages: %s",
-                    TextUtils.join(", ", splitInstallManager.getInstalledLanguages()));
-        } else {
-            Log.i(TAG, "Installed Languages: None - not a bundle");
         }
     }
 }
