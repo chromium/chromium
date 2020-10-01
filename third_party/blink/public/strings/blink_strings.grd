@@ -793,12 +793,6 @@ below:
         <message name="IDS_AX_CHECKBOX_PARTIALLY_CHECKED" desc="Accessibility state description for a checkbox that is in the partially checked state">
           Partially Checked
         </message>
-        <message name="IDS_AX_LIST_BOX_STATE_DESCRIPTION" desc="Accessibility state description for a list box of items">
-          <ph name="COUNT">$1<ex>3</ex></ph> items
-        </message>
-        <message name="IDS_AX_LIST_BOX_ITEM_STATE_DESCRIPTION" desc="Accessibility state description for an item that is part of a list box">
-          in list, item <ph name="INDEX">$1<ex>1</ex></ph> of <ph name="COUNT">$2<ex>3</ex></ph>
-        </message>
       </if>
 
       <!-- Automatic image annotations for accessibility -->
