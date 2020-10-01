@@ -83,7 +83,8 @@ public class EditUrlSuggestionProcessor extends BaseSuggestionViewProcessor {
         if (position != 0) return false;
 
         Tab activeTab = mTabSupplier.get();
-        if (activeTab == null || activeTab.isNativePage() || SadTab.isShowing(activeTab)) {
+        if (activeTab == null || !activeTab.isInitialized() || activeTab.isNativePage()
+                || SadTab.isShowing(activeTab)) {
             return false;
         }
 
