@@ -21,6 +21,7 @@
 #include "base/barrier_closure.h"
 #include "base/base64.h"
 #include "base/guid.h"
+#include "base/logging.h"
 #include "base/optional.h"
 #include "base/time/time.h"
 #include "chromeos/assistant/internal/proto/google3/backdrop/backdrop.pb.h"
@@ -181,8 +182,11 @@ ScreenUpdate ToScreenUpdate(
       DCHECK(backdrop_topic.has_url());
 
       auto topic_type = ToAmbientModeTopicType(backdrop_topic);
-      if (!ambient::util::IsAmbientModeTopicTypeAllowed(topic_type))
+      if (!ambient::util::IsAmbientModeTopicTypeAllowed(topic_type)) {
+        DVLOG(3) << "Filtering topic_type: "
+                 << backdrop::TopicSource_Name(backdrop_topic.topic_type());
         continue;
+      }
 
       AmbientModeTopic ambient_topic;
       ambient_topic.topic_type = topic_type;

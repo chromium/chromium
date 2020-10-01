@@ -310,8 +310,10 @@ void AmbientPhotoController::ScheduleRefreshImage() {
 const AmbientModeTopic* AmbientPhotoController::GetNextTopic() {
   const auto& topics = ambient_backend_model_.topics();
   // If no more topics, will read from cache.
-  if (topic_index_ == topics.size())
+  if (topic_index_ == topics.size()) {
+    DVLOG(3) << "No more topics";
     return nullptr;
+  }
 
   return &topics[topic_index_++];
 }
@@ -385,6 +387,7 @@ void AmbientPhotoController::FetchPhotoRawData() {
 void AmbientPhotoController::TryReadPhotoRawData() {
   // Stop reading from cache after the max number of retries.
   if (retries_to_read_from_cache_ == 0) {
+    LOG(WARNING) << "Failed to read image from cache";
     if (topic_index_ == ambient_backend_model_.topics().size()) {
       image_refresh_started_ = false;
       return;
@@ -456,15 +459,13 @@ void AmbientPhotoController::OnAllPhotoRawDataAvailable(bool from_downloading) {
     if (from_downloading) {
       LOG(ERROR) << "Failed to download image";
       resume_fetch_image_backoff_.InformOfRequest(/*succeeded=*/false);
-    } else {
-      LOG(WARNING) << "Failed to read image";
     }
-
     // Try to read from cache when failure happens.
     TryReadPhotoRawData();
     return;
   }
-
+  DVLOG_IF(3, from_downloading)
+      << "Save photo to cache index: " << cache_index_for_store_;
   const std::string file_name = base::NumberToString(cache_index_for_store_);
   // If the data is fetched from downloading, write to disk.
   // Note: WriteFile() could fail. The saved file name may not be continuous.
@@ -528,7 +529,7 @@ void AmbientPhotoController::OnPhotoDecoded(bool from_downloading,
 
 void AmbientPhotoController::OnAllPhotoDecoded(bool from_downloading) {
   if (image_.isNull()) {
-    LOG(WARNING) << "Image is null";
+    LOG(WARNING) << "Image decoding failed";
     if (from_downloading)
       resume_fetch_image_backoff_.InformOfRequest(/*succeeded=*/false);
 
