@@ -123,6 +123,7 @@ crbug.com/1045668 external/wpt/css/css-sizing/aspect-ratio/abspos-013.tentative.
 crbug.com/1045668 external/wpt/css/css-sizing/aspect-ratio/block-aspect-ratio-024.tentative.html [ Failure ]
 crbug.com/1045668 external/wpt/css/css-sizing/aspect-ratio/block-aspect-ratio-028.tentative.html [ Failure ]
 crbug.com/1045668 external/wpt/css/css-sizing/aspect-ratio/flex-aspect-ratio-009.tentative.html [ Failure ]
+crbug.com/1045668 external/wpt/css/css-sizing/aspect-ratio/flex-aspect-ratio-014.tentative.html [ Failure ]
 crbug.com/1045668 external/wpt/css/css-sizing/aspect-ratio/percentage-resolution-002.tentative.html [ Failure ]
 crbug.com/1045668 external/wpt/css/css-sizing/aspect-ratio/quirks-mode-001.tentative.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-sizing/clone-nowrap-intrinsic-size-bidi.html [ Failure ]

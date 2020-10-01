@@ -406,13 +406,18 @@ LayoutUnit ComputeInlineSizeFromAspectRatio(const NGConstraintSpace& space,
   if (LIKELY(style.AspectRatio().IsAuto()))
     return kIndefiniteSize;
 
-  if (!style.LogicalHeight().IsAuto() && block_size == kIndefiniteSize) {
-    DCHECK(!style.HasOutOfFlowPosition()) << "OOF should pass in a block size";
-    block_size = ComputeBlockSizeForFragment(space, style, border_padding,
-                                             kIndefiniteSize, base::nullopt);
+  if (block_size == kIndefiniteSize) {
+    if (space.IsFixedBlockSize()) {
+      block_size = space.AvailableSize().block_size;
+    } else if (!style.LogicalHeight().IsAuto()) {
+      DCHECK(!style.HasOutOfFlowPosition())
+          << "OOF should pass in a block size";
+      block_size = ComputeBlockSizeForFragment(space, style, border_padding,
+                                               kIndefiniteSize, base::nullopt);
+    }
+    if (block_size == kIndefiniteSize)
+      return kIndefiniteSize;
   }
-  if (block_size == kIndefiniteSize)
-    return kIndefiniteSize;
   // Check if we can get an inline size using the aspect ratio.
   return InlineSizeFromAspectRatio(border_padding, style.LogicalAspectRatio(),
                                    style.BoxSizing(), block_size);
