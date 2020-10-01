@@ -48,8 +48,9 @@ const CGFloat kTopBorderHeight = 0.5f;
 // https://crbug.com/857371.
 @property(nonatomic, strong) UIView* bottomMargin;
 
-// Constraint to have the open in toolbar be displayed above the bottom toolbar.
-@property(nonatomic, strong) NSLayoutConstraint* bottomMarginConstraint;
+// Constraint to have the open in toolbar be displayed above the bottom
+// toolbar.
+@property(nonatomic, strong) NSLayoutConstraint* bottomMarginTopConstraint;
 
 // Relayout the frame of the Open In toolbar, based on its superview and the
 // bottom margin.
@@ -85,7 +86,8 @@ const CGFloat kTopBorderHeight = 0.5f;
 @implementation OpenInToolbar
 
 @synthesize bottomMargin = _bottomMargin;
-@synthesize bottomMarginConstraint = _bottomMarginConstraint;
+@synthesize bottomMarginTopConstraint = _bottomMarginTopConstraint;
+
 @synthesize openButton = _openButton;
 @synthesize topBorder = _topBorder;
 
@@ -130,6 +132,7 @@ const CGFloat kTopBorderHeight = 0.5f;
     bottom.translatesAutoresizingMaskIntoConstraints = NO;
     [self addSubview:bottom];
     self.bottomMargin = bottom;
+    [self.bottomMargin.heightAnchor constraintEqualToConstant:0].active = YES;
   }
   return self;
 }
@@ -156,24 +159,32 @@ const CGFloat kTopBorderHeight = 0.5f;
   return _topBorder;
 }
 
-- (void)setBottomMarginConstraint:(NSLayoutConstraint*)bottomMarginConstraint {
-  if (_bottomMarginConstraint == bottomMarginConstraint)
+- (void)setBottomMarginTopConstraint:
+    (NSLayoutConstraint*)bottomMarginTopConstraint {
+  if (_bottomMarginTopConstraint == bottomMarginTopConstraint)
     return;
 
-  _bottomMarginConstraint.active = NO;
-  _bottomMarginConstraint = bottomMarginConstraint;
-  _bottomMarginConstraint.active = YES;
+  _bottomMarginTopConstraint.active = NO;
+  _bottomMarginTopConstraint = bottomMarginTopConstraint;
+  _bottomMarginTopConstraint.active = YES;
 }
 
 #pragma mark Public
 
 - (void)updateBottomMarginHeight {
-  NSLayoutDimension* marginHeightAnchor = self.bottomMargin.heightAnchor;
+  if (!self.superview) {
+    self.bottomMarginTopConstraint = nil;
+    return;
+  }
+
+  NSLayoutAnchor* marginTopAnchor = self.bottomMargin.topAnchor;
   NamedGuide* guide = [NamedGuide guideWithName:kSecondaryToolbarGuide
                                            view:self];
-  self.bottomMarginConstraint =
-      guide ? [marginHeightAnchor constraintEqualToAnchor:guide.heightAnchor]
-            : [marginHeightAnchor constraintEqualToConstant:0];
+  self.bottomMarginTopConstraint =
+      guide ? [marginTopAnchor constraintEqualToAnchor:guide.topAnchor]
+            : [marginTopAnchor
+                  constraintEqualToAnchor:self.superview.bottomAnchor];
+
   [self relayout];
 }
 
@@ -191,10 +202,16 @@ const CGFloat kTopBorderHeight = 0.5f;
 }
 
 - (void)relayout {
-  CGRect frame = self.superview.frame;
+  [self layoutIfNeeded];
+  CGRect frame = self.superview.bounds;
+  CGRect frameFromSuperview =
+      [self.bottomMargin convertRect:self.bottomMargin.bounds
+                              toView:self.superview];
+
   CGSize sizeThatFits = [self sizeThatFits:frame.size];
-  CGFloat toolbarHeight =
-      sizeThatFits.height + self.bottomMargin.frame.size.height;
+  CGFloat toolbarHeight = sizeThatFits.height + frame.size.height -
+                          CGRectGetMinY(frameFromSuperview);
+
   frame.origin.y = frame.size.height - toolbarHeight;
   frame.size.height = toolbarHeight;
 
