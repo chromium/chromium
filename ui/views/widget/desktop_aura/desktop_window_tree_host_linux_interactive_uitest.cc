@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/gfx/x/xproto.h"
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host_linux.h"
 
 #include "ui/aura/client/aura_constants.h"
@@ -24,6 +23,7 @@
 #include "ui/events/platform/x11/x11_event_source.h"
 #include "ui/gfx/x/x11.h"
 #include "ui/gfx/x/x11_atom_cache.h"
+#include "ui/gfx/x/xproto.h"
 #include "ui/views/controls/textfield/textfield.h"
 #endif  // defined(USE_X11)
 

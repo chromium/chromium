@@ -40,6 +40,12 @@
 #include "ui/ozone/platform/wayland/host/wayland_zwp_linux_dmabuf.h"
 #include "ui/ozone/platform/wayland/host/xdg_foreign_wrapper.h"
 
+#if defined(USE_LIBWAYLAND_STUBS)
+#include <dlfcn.h>
+
+#include "third_party/wayland/libwayland_stubs.h"  // nogncheck
+#endif
+
 namespace ui {
 
 namespace {
@@ -66,6 +72,21 @@ WaylandConnection::WaylandConnection() = default;
 WaylandConnection::~WaylandConnection() = default;
 
 bool WaylandConnection::Initialize() {
+#if defined(USE_LIBWAYLAND_STUBS)
+  // Use RTLD_NOW to load all symbols, since the stubs will try to load all of
+  // them anyway.  Use RTLD_GLOBAL to add the symbols to the global namespace.
+  auto dlopen_flags = RTLD_NOW | RTLD_GLOBAL;
+  if (void* libwayland_client =
+          dlopen("libwayland-client.so.0", dlopen_flags)) {
+    third_party_wayland::InitializeLibwaylandclient(libwayland_client);
+  } else {
+    LOG(ERROR) << "Failed to load wayland client libraries.";
+    return false;
+  }
+  if (void* libwayland_egl = dlopen("libwayland-egl.so.1", dlopen_flags))
+    third_party_wayland::InitializeLibwaylandegl(libwayland_egl);
+#endif
+
   static const wl_registry_listener registry_listener = {
       &WaylandConnection::Global,
       &WaylandConnection::GlobalRemove,

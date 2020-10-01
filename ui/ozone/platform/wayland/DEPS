@@ -4,6 +4,7 @@ include_rules = [
   "+ui/base/ui_base_features.h",
   "+ui/gtk/gtk_ui_delegate.h",
   "+mojo/public",
+  "+third_party/wayland",
   "+ui/base/clipboard/clipboard_constants.h",
   "+ui/base/dragdrop/drag_drop_types.h",
   "+ui/base/dragdrop/file_info/file_info.h",

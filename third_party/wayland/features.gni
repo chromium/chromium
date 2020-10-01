@@ -2,12 +2,21 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromecast_build.gni")
+import("//build/config/chromeos/ui_mode.gni")
+
 declare_args() {
   # Controls whether the build should use the version of Wayland
   # library shipped with the system or Chromium third_party.
-  use_system_libwayland = false
+  use_system_libwayland =
+      is_desktop_linux && !is_chromecast && !chromeos_is_browser_only &&
+      default_toolchain != "//build/toolchain/cros:target"
 
   # Path to wayland-scanner. Has effect only when the system libwayland is used.
   assert(host_os == "linux")
   system_wayland_scanner_path = "/usr/bin/wayland-scanner"
+
+  # This may be set by Chromium packagers who do not wish to use the bundled
+  # wayland scanner.
+  use_system_wayland_scanner = false
 }
