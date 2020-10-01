@@ -251,7 +251,8 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest
       base::UmaHistogramBoolean("SBClientPhishing.RequestSatisfiedFromCache",
                                 true);
       // Since we are already on the UI thread, this is safe.
-      host_->MaybeShowPhishingWarning(url_, is_phishing);
+      host_->MaybeShowPhishingWarning(/*is_from_cache=*/true, url_,
+                                      is_phishing);
       DontClassifyForPhishing(NO_CLASSIFY_RESULT_FROM_CACHE);
     }
 
@@ -522,11 +523,18 @@ void ClientSideDetectionHost::PhishingDetectionDone(
   }
 }
 
-void ClientSideDetectionHost::MaybeShowPhishingWarning(GURL phishing_url,
+void ClientSideDetectionHost::MaybeShowPhishingWarning(bool is_from_cache,
+                                                       GURL phishing_url,
                                                        bool is_phishing) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  base::UmaHistogramBoolean("SBClientPhishing.ServerModelDetectsPhishing",
-                            is_phishing);
+  if (is_from_cache) {
+    base::UmaHistogramBoolean("SBClientPhishing.CacheDetectsPhishing",
+                              is_phishing);
+  } else {
+    base::UmaHistogramBoolean("SBClientPhishing.ServerModelDetectsPhishing",
+                              is_phishing);
+  }
+
   if (is_phishing) {
     DCHECK(web_contents());
     if (ui_manager_.get()) {
@@ -563,7 +571,7 @@ void ClientSideDetectionHost::FeatureExtractionDone(
   // response because we aren't going to display a warning.
   if (request->is_phishing()) {
     callback = base::Bind(&ClientSideDetectionHost::MaybeShowPhishingWarning,
-                          weak_factory_.GetWeakPtr());
+                          weak_factory_.GetWeakPtr(), /*is_from_cache=*/false);
   }
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());

@@ -91,8 +91,12 @@ class ClientSideDetectionHost : public content::WebContentsObserver,
 
   // Callback that is called when the server ping back is
   // done. Display an interstitial if |is_phishing| is true.
-  // Otherwise, we do nothing.  Called in UI thread.
-  void MaybeShowPhishingWarning(GURL phishing_url, bool is_phishing);
+  // Otherwise, we do nothing. Called in UI thread. |is_from_cache| indicates
+  // whether the warning is being shown due to a cached verdict or from an
+  // actual server ping.
+  void MaybeShowPhishingWarning(bool is_from_cache,
+                                GURL phishing_url,
+                                bool is_phishing);
 
   // Callback that is called when the browser feature extractor is done.
   // This method is responsible for deleting the request object.  Called on
