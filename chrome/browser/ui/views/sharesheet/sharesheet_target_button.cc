@@ -76,10 +76,11 @@ SharesheetTargetButton::SharesheetTargetButton(
     SetLabelProperties(secondary_label);
     accessible_name = base::StrCat(
         {display_name, base::ASCIIToUTF16(" "), secondary_display_name});
-  } else {
-    // If there is no secondary label, let the initial label stretch across
+    // As there is a secondary label, don't let the initial label stretch across
     // multiple lines.
-    label->SetMultiLine(true);
+    label->SetMultiLine(false);
+    secondary_label->SetMultiLine(false);
+  } else {
     label->SetMaxLines(kButtonMaxLines);
   }
 
@@ -91,11 +92,11 @@ SharesheetTargetButton::SharesheetTargetButton(
 
 void SharesheetTargetButton::SetLabelProperties(views::Label* label) {
   label->SetLineHeight(kButtonLineHeight);
+  label->SetMultiLine(true);
   label->SetMaximumWidth(kButtonTextMaxWidth);
   label->SetBackgroundColor(SK_ColorTRANSPARENT);
   label->SetHandlesTooltips(true);
   label->SetTooltipText(label->GetText());
-  label->SetMultiLine(false);
   label->SetAutoColorReadabilityEnabled(false);
   label->SetHorizontalAlignment(gfx::ALIGN_CENTER);
 }
