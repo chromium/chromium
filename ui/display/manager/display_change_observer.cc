@@ -429,11 +429,14 @@ float DisplayChangeObserver::FindDeviceScaleFactor(
     float dpi,
     const gfx::Size& size_in_pixels) {
   // Nocturne has special scale factor 3000/1332=2.252.. for the panel 3kx2k.
-  constexpr gfx::Size k225DisplaySizeHack(3000, 2000);
+  constexpr gfx::Size k225DisplaySizeHackNocturne(3000, 2000);
+  // Keep the Chell's scale factor 2.252 until we make decision.
+  constexpr gfx::Size k225DisplaySizeHackChell(3200, 1800);
 
-  if (size_in_pixels == k225DisplaySizeHack)
+  if (size_in_pixels == k225DisplaySizeHackNocturne ||
+      size_in_pixels == k225DisplaySizeHackChell) {
     return kDsf_2_252;
-  else {
+  } else {
     for (size_t i = 0; i < base::size(kThresholdTableForInternal); ++i) {
       if (dpi >= kThresholdTableForInternal[i].dpi)
         return kThresholdTableForInternal[i].device_scale_factor;

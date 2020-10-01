@@ -21,17 +21,20 @@
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/range/range_f.h"
 
 namespace display {
 
 namespace {
 
-float ComputeDeviceScaleFactor(float diagonal_inch,
-                               const gfx::Size& resolution) {
+float ComputeDpi(float diagonal_inch, const gfx::Size& resolution) {
   // We assume that displays have square pixel.
   float diagonal_pixel = std::sqrt(std::pow(resolution.width(), 2) +
                                    std::pow(resolution.height(), 2));
-  float dpi = diagonal_pixel / diagonal_inch;
+  return diagonal_pixel / diagonal_inch;
+}
+
+float ComputeDeviceScaleFactor(float dpi, const gfx::Size& resolution) {
   return DisplayChangeObserver::FindDeviceScaleFactor(dpi, resolution);
 }
 
@@ -194,8 +197,23 @@ TEST_P(DisplayChangeObserverTest, GetEmptyExternalManagedDisplayModeList) {
   EXPECT_EQ(0u, display_modes.size());
 }
 
+bool IsDpiOutOfRange(float dpi) {
+  // http://go/cros-ppi-spectrum
+  constexpr gfx::RangeF good_ranges[] = {
+      {125.f, 165.f},
+      {180.f, 210.f},
+      {220.f, 265.f},
+      {270.f, 350.f},
+  };
+  for (auto& range : good_ranges) {
+    if (range.start() <= dpi && range.end() > dpi)
+      return true;
+  }
+  return false;
+}
+
 TEST_P(DisplayChangeObserverTest, FindDeviceScaleFactor) {
-  // sanity check
+  // Validation check
   EXPECT_EQ(1.25f,
             DisplayChangeObserver::FindDeviceScaleFactor(150, gfx::Size()));
   EXPECT_EQ(1.6f,
@@ -210,31 +228,74 @@ TEST_P(DisplayChangeObserverTest, FindDeviceScaleFactor) {
                             0, gfx::Size(3000, 2000)));
   EXPECT_EQ(kDsf_2_666,
             DisplayChangeObserver::FindDeviceScaleFactor(310, gfx::Size()));
+
+  // Valid Displays
+  constexpr gfx::Size kWXGA_768{1366, 768};
+  constexpr gfx::Size kWXGA_800{1280, 800};
+  constexpr gfx::Size kHD_PLUS{1600, 900};
+  constexpr gfx::Size kFHD{1920, 1080};
+  constexpr gfx::Size kWUXGA{1920, 1200};
+  // Dru
+  constexpr gfx::Size kQXGA_P{1536, 2048};
+  constexpr gfx::Size kQHD{2560, 1440};
+  // Chell
+  constexpr gfx::Size kQHD_PLUS{3200, 1800};
+  constexpr gfx::Size kUHD{3840, 2160};
+
+  // Chromebook special panels
+  constexpr gfx::Size kLux{2160, 1440};
+  constexpr gfx::Size kAkaliQHD{2256, 1504};
+  constexpr gfx::Size kLink{2560, 1700};
+  constexpr gfx::Size kEve{2400, 1600};
+  constexpr gfx::Size kNocturne{3000, 2000};
+
+  enum SizeErrorCheckType {
+    kExact,    // Exact match.
+    kEpsilon,  // Matches within epsilon.
+    kSkip,     // Skip testing the error.
+  };
   constexpr struct Data {
     const float diagonal_size;
     const gfx::Size resolution;
     const float expected_dsf;
     const gfx::Size expected_dp_size;
-    const bool screenshot_size_error;
+    const bool bad_range;
+    const SizeErrorCheckType screenshot_size_error;
   } display_configs[] = {
       // clang-format off
-      // inch,  resolution,  DSF,        size in DP,   screenshot size error
-      {19.5,   {1600, 900},  1.f,        {1600, 900},  false},
-      {21.5f,  {1920, 1080}, 1.f,        {1920, 1080}, false},
-      {10.0f,  {1920, 1200}, kDsf_1_777, {1080, 675},  false},
-      {12.1f,  {1280, 800},  1.0f,       {1280, 800},  false},
-      {13.3f,  {1920, 1080}, 1.25f,      {1536, 864},  false},
-      {14.0f,  {1920, 1080}, 1.25f,      {1536, 864},  false},
-      {11.6f,  {1920, 1080}, 1.6f,       {1200, 675},  false},
-      {12.02f, {2160, 1440}, 1.6f,       {1350, 900},  false},
-      {9.7f,   {1536, 2048}, 2.0f,       {768, 1024},  false},
-      {12.85f, {2560, 1700}, 2.0f,       {1280, 850},  false},
-      {12.3f,  {2400, 1600}, 2.0f,       {1200, 800},  false},
-      {10.1f,  {1920, 1200}, kDsf_1_777, {1080, 675},  false},
-      {11.0f,  {2160, 1440}, 2.f,        {1080, 720},  false},
-      {12.3f,  {3000, 2000}, kDsf_2_252, {1332, 888},  true},
-      {15.6f,  {3840, 2160}, 2.4f,       {1600, 900},  true},
-      {13.1f,  {3840, 2160}, kDsf_2_666, {1440, 810},  false},
+      // inch, resolution, DSF,        size in DP,  Bad range, size error
+      {10.1f,  kWXGA_800,  1.f,        kWXGA_800,   false,     kExact},
+      {12.1f,  kWXGA_800,  1.0f,       kWXGA_800,   true,      kExact},
+      {11.6f,  kWXGA_768,  1.f,        kWXGA_768,   false,     kExact},
+      {13.3f,  kWXGA_768,  1.f,        kWXGA_768,   true,      kExact},
+      {14.f,   kWXGA_768,  1.f,        kWXGA_768,   true,      kExact},
+      {15.6f,  kWXGA_768,  1.f,        kWXGA_768,   true,      kExact},
+      {9.7f,   kQXGA_P,    2.0f,       {768, 1024}, false,     kExact},
+      {11.6f,  kFHD,       1.6f,       {1200, 675}, false,     kExact},
+      {13.0f,  kFHD,       1.25f,      {1536, 864}, true,      kExact},
+      {13.3f,  kFHD,       1.25f,      {1536, 864}, true,      kExact},
+      {14.f,   kFHD,       1.25f,      {1536, 864}, false,     kExact},
+      {10.1f,  kWUXGA,     kDsf_1_777, {1080, 675}, false,     kExact},
+      {12.2f,  kWUXGA,     1.6f,       {1200, 750}, false,     kExact},
+      {15.6f,  kWUXGA,     1.f,        kWUXGA,      false,     kExact},
+      {12.3f,  kQHD,       2.f,        {1280, 720}, false,     kExact},
+
+      // Non standard panels
+      {11.0f,  kLux,       2.f,        {1080, 720}, false,     kExact},
+      {12.02f, kLux,       1.6f,       {1350, 900}, true,      kExact},
+      {13.3f,  kQHD_PLUS,  kDsf_2_252, {1421, 800}, false,     kSkip},
+      {13.3f,  kAkaliQHD,  1.6f,       {1410, 940}, false,     kExact},
+      {12.3f,  kEve,       2.0f,       {1200, 800}, false,     kExact},
+      {12.85f, kLink,      2.0f,       {1280, 850}, false,     kExact},
+      {12.3f,  kNocturne,  kDsf_2_252, {1332, 888}, false,     kEpsilon},
+      {13.1f,  kUHD,       kDsf_2_666, {1440, 810}, false,     kExact},
+      {15.6f,  kUHD,       2.4f,       {1600, 900}, false,     kEpsilon},
+
+      // Chromebase
+      {19.5,   kHD_PLUS,   1.f,        kHD_PLUS,    true,      kExact},
+      {21.5f,  kFHD,       1.f,        kFHD,        true,      kExact},
+      {23.8f,  kFHD,       1.f,        kFHD,        true,      kExact},
+
       // clang-format on
   };
 
@@ -242,12 +303,16 @@ TEST_P(DisplayChangeObserverTest, FindDeviceScaleFactor) {
     SCOPED_TRACE(base::StringPrintf(
         "%dx%d, diag=%1.3f inch, expected=%1.10f", entry.resolution.width(),
         entry.resolution.height(), entry.diagonal_size, entry.expected_dsf));
+    float dpi = ComputeDpi(entry.diagonal_size, entry.resolution);
     // Check ScaleFactor.
-    float scale_factor =
-        ComputeDeviceScaleFactor(entry.diagonal_size, entry.resolution);
+    float scale_factor = ComputeDeviceScaleFactor(dpi, entry.resolution);
     EXPECT_EQ(entry.expected_dsf, scale_factor);
+    bool bad_range = !IsDpiOutOfRange(dpi);
+    EXPECT_EQ(bad_range, entry.bad_range);
 
     // Check DP size.
+    gfx::ScaleToCeiledSize(entry.resolution, 1.f / scale_factor);
+
     const gfx::Size dp_size =
         gfx::ScaleToCeiledSize(entry.resolution, 1.f / scale_factor);
 
@@ -258,15 +323,21 @@ TEST_P(DisplayChangeObserverTest, FindDeviceScaleFactor) {
     const gfx::Size screenshot_size =
         cc::MathUtil::MapEnclosingClippedRect(transform, gfx::Rect(dp_size))
             .size();
-    if (entry.screenshot_size_error) {
-      EXPECT_NE(entry.resolution, screenshot_size);
-      constexpr float kEpsilon = 0.001f;
-      EXPECT_EQ(entry.resolution,
-                cc::MathUtil::MapEnclosingClippedRectIgnoringError(
-                    transform, gfx::Rect(dp_size), kEpsilon)
-                    .size());
-    } else {
-      EXPECT_EQ(entry.resolution, screenshot_size);
+    switch (entry.screenshot_size_error) {
+      case kEpsilon: {
+        EXPECT_NE(entry.resolution, screenshot_size);
+        constexpr float kEpsilon = 0.001f;
+        EXPECT_EQ(entry.resolution,
+                  cc::MathUtil::MapEnclosingClippedRectIgnoringError(
+                      transform, gfx::Rect(dp_size), kEpsilon)
+                      .size());
+        break;
+      }
+      case kExact:
+        EXPECT_EQ(entry.resolution, screenshot_size);
+        break;
+      case kSkip:
+        break;
     }
   }
 
