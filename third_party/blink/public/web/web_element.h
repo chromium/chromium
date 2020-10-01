@@ -35,6 +35,7 @@
 
 #include "third_party/blink/public/web/web_node.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "v8/include/v8.h"
 
 namespace gfx {
 class Size;
@@ -51,6 +52,9 @@ class BLINK_EXPORT WebElement : public WebNode {
  public:
   WebElement() : WebNode() {}
   WebElement(const WebElement& e) = default;
+
+  // Returns the empty WebElement if the argument doesn't represent an Element.
+  static WebElement FromV8Value(v8::Local<v8::Value>);
 
   WebElement& operator=(const WebElement& e) {
     WebNode::Assign(e);
@@ -84,6 +88,9 @@ class BLINK_EXPORT WebElement : public WebNode {
   // of V0, V1 open, or V1 closed.  This returns null WebNode if this
   // element has no ShadowRoot or has a UA ShadowRoot.
   WebNode ShadowRoot() const;
+
+  // Returns the open shadow root or the closed shadow root.
+  WebNode OpenOrClosedShadowRoot();
 
   // Returns the bounds of the element in Visual Viewport. The bounds
   // have been adjusted to include any transformations, including page scale.

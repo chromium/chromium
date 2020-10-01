@@ -321,6 +321,10 @@
     "dependencies": ["permission:documentScan"],
     "contexts": ["blessed_extension"]
   },
+  "dom": {
+    "channel": "dev",
+    "contexts": ["blessed_extension", "content_script"]
+  },
   "downloads": {
     "dependencies": ["permission:downloads"],
     "contexts": ["blessed_extension"]

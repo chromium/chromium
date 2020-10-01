@@ -31,6 +31,7 @@
 #include "third_party/blink/public/web/web_element.h"
 
 #include "third_party/blink/public/platform/web_rect.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_element.h"
 #include "third_party/blink/renderer/core/css/css_computed_style_declaration.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -49,6 +50,12 @@
 #include "ui/gfx/geometry/size.h"
 
 namespace blink {
+
+WebElement WebElement::FromV8Value(v8::Local<v8::Value> value) {
+  Element* element =
+      V8Element::ToImplWithTypeCheck(v8::Isolate::GetCurrent(), value);
+  return WebElement(element);
+}
 
 bool WebElement::IsFormControlElement() const {
   return ConstUnwrap<Element>()->IsFormControlElement();
@@ -144,6 +151,14 @@ WebNode WebElement::ShadowRoot() const {
   auto* root = ConstUnwrap<Element>()->GetShadowRoot();
   if (!root || root->IsUserAgent())
     return WebNode();
+  return WebNode(root);
+}
+
+WebNode WebElement::OpenOrClosedShadowRoot() {
+  if (IsNull())
+    return WebNode();
+
+  auto* root = ConstUnwrap<Element>()->AuthorShadowRoot();
   return WebNode(root);
 }
 

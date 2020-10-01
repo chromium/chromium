@@ -151,6 +151,16 @@ bool WebNode::IsInsideFocusableElementOrARIAWidget() const {
       *this->ConstUnwrap<Node>());
 }
 
+v8::Local<v8::Value> WebNode::ToV8Value(v8::Local<v8::Object> creation_context,
+                                        v8::Isolate* isolate) {
+  // We no longer use |creation_context| because it's often misused and points
+  // to a context faked by user script.
+  DCHECK(creation_context->CreationContext() == isolate->GetCurrentContext());
+  if (!private_.Get())
+    return v8::Local<v8::Value>();
+  return ToV8(private_.Get(), isolate->GetCurrentContext()->Global(), isolate);
+}
+
 bool WebNode::IsElementNode() const {
   return private_->IsElementNode();
 }
