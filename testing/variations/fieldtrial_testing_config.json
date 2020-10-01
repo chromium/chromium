@@ -7236,26 +7236,6 @@
             ]
         }
     ],
-    "V8SiteIsolatedCodeCache": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "IsolatedCodeCache"
-                    ]
-                }
-            ]
-        }
-    ],
     "VideoCaptureService": [
         {
             "platforms": [
