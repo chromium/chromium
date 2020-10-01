@@ -2184,6 +2184,8 @@ crbug.com/893480 external/wpt/infrastructure/testdriver/actions/elementTiming.ht
 crbug.com/893480 external/wpt/infrastructure/testdriver/actions/multiDevice.html [ Failure Timeout ]
 crbug.com/893480 external/wpt/pointerevents/pointerevent_touch-action-keyboard.html [ Failure Timeout ]
 crbug.com/893480 external/wpt/infrastructure/testdriver/actions/actionsWithKeyPressed.html [ Failure Timeout ]
+crbug.com/1040611 external/wpt/uievents/order-of-events/mouse-events/wheel-basic.html [ Failure Timeout ]
+crbug.com/1040611 external/wpt/uievents/order-of-events/mouse-events/wheel-scrolling.html [ Failure Timeout ]
 crbug.com/893480 external/wpt/css/css-scroll-snap/input/keyboard.html [ Failure Timeout ]
 
 # isInputPending requires threaded compositing and layerized iframes
