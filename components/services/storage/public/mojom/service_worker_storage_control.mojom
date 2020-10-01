@@ -55,6 +55,9 @@ interface ServiceWorkerDataPipeStateNotifier {
 };
 
 // An interface that reads a service worker script (resource) to storage.
+// A valid use of this interface is that exactly one call to
+// ReadResponseHead(), followed by possibly multiple ReadData() calls. Each call
+// must not be overlapped.
 interface ServiceWorkerResourceReader {
   // Reads the response head of the resource associated with this reader.
   // |status| is the number of bytes read, or a //net error.
@@ -70,6 +73,9 @@ interface ServiceWorkerResourceReader {
 };
 
 // An interface that writes a service worker script (resource) to storage.
+// A valid use of this interface is that exactly one call to
+// WriteResponseHead(), followed by at most one call to WriteData(). These calls
+// must not be overlapped.
 interface ServiceWorkerResourceWriter {
   // Writes the response head to storage. Returns the number of bytes written,
   // or a //net error.
@@ -81,7 +87,7 @@ interface ServiceWorkerResourceWriter {
 };
 
 // An interface that writes a metadata (script cache) of a service worker script
-// to storage.
+// to storage. WriteMetadata() should be called at most once.
 interface ServiceWorkerResourceMetadataWriter {
   // Writes the metadata of the resource associated with this writer. Returns
   // the number of bytes written, or a //net error.
