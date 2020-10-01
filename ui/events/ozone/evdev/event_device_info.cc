@@ -42,7 +42,6 @@ constexpr struct {
     {0x046d, 0xb016},  // Logitech M535
     {0x046d, 0xb019},  // Logitech MX Master 2S (Bluetooth)
     {0x046d, 0xc093},  // Logitech M500s
-    {0x046d, 0xc534},  // Logitech M185/M187
     {0x056e, 0x0134},  // Elecom Enelo IR LED Mouse 350
     {0x056e, 0x0141},  // Elecom EPRIM Blue LED 5 button mouse 228
     {0x056e, 0x0159},  // Elecom Blue LED Mouse 203
