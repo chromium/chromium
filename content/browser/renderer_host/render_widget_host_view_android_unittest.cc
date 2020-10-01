@@ -18,6 +18,7 @@
 #include "content/test/test_view_android_delegate.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/android/view_android.h"
+#include "ui/android/window_android.h"
 
 namespace content {
 
@@ -41,6 +42,8 @@ class RenderWidgetHostViewAndroidTest : public testing::Test {
   // testing::Test:
   void SetUp() override;
   void TearDown() override;
+
+  ui::ViewAndroid* parent_view() { return &parent_view_; }
 
   std::unique_ptr<TestViewAndroidDelegate> test_view_android_delegate_;
 
@@ -160,6 +163,37 @@ TEST_F(RenderWidgetHostViewAndroidTest, InsetVisualViewport) {
   rwhva->OnViewportInsetBottomChanged(env, nullptr);
   EXPECT_EQ(0, GetViewAndroid()->GetViewportInsetBottom());
   EXPECT_TRUE(rwhva->GetLocalSurfaceId().IsNewerThan(inset_surface));
+}
+
+TEST_F(RenderWidgetHostViewAndroidTest, HideWindowRemoveViewAddViewShowWindow) {
+  std::unique_ptr<ui::WindowAndroid> window(
+      ui::WindowAndroid::CreateForTesting());
+  window->AddChild(parent_view());
+  EXPECT_TRUE(render_widget_host_view_android()->IsShowing());
+  // The layer should be visible once attached to a window.
+  EXPECT_FALSE(render_widget_host_view_android()
+                   ->GetNativeView()
+                   ->GetLayer()
+                   ->hide_layer_and_subtree());
+
+  // Hiding the window should and removing the view should hide the layer.
+  window->OnVisibilityChanged(nullptr, nullptr, false);
+  parent_view()->RemoveFromParent();
+  EXPECT_TRUE(render_widget_host_view_android()->IsShowing());
+  EXPECT_TRUE(render_widget_host_view_android()
+                  ->GetNativeView()
+                  ->GetLayer()
+                  ->hide_layer_and_subtree());
+
+  // Adding the view back to a window and notifying the window is visible should
+  // make the layer visible again.
+  window->AddChild(parent_view());
+  window->OnVisibilityChanged(nullptr, nullptr, true);
+  EXPECT_TRUE(render_widget_host_view_android()->IsShowing());
+  EXPECT_FALSE(render_widget_host_view_android()
+                   ->GetNativeView()
+                   ->GetLayer()
+                   ->hide_layer_and_subtree());
 }
 
 }  // namespace content

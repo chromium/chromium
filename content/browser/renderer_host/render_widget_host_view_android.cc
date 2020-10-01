@@ -1477,7 +1477,7 @@ void RenderWidgetHostViewAndroid::HideInternal() {
       << "Hide called when the widget should be shown.";
 
   // Only preserve the frontbuffer if the activity was stopped while the
-  // window is still visible. This avoids visual artificts when transitioning
+  // window is still visible. This avoids visual artifacts when transitioning
   // between activities.
   bool hide_frontbuffer = is_window_activity_started_ || !is_window_visible_;
 
@@ -2095,7 +2095,11 @@ void RenderWidgetHostViewAndroid::OnRootWindowVisibilityChanged(bool visible) {
                "RenderWidgetHostViewAndroid::OnRootWindowVisibilityChanged",
                "visible", visible);
   DCHECK(observing_root_window_);
-  if (is_window_visible_ == visible)
+
+  // Don't early out if visibility hasn't changed and visible. This is necessary
+  // as OnDetachedFromWindow() sets |is_window_visible_| to true, so that this
+  // may be called when ShowInternal() needs to be called.
+  if (is_window_visible_ == visible && !visible)
     return;
 
   is_window_visible_ = visible;
