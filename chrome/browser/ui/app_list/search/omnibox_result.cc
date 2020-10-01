@@ -160,10 +160,12 @@ OmniboxResult::OmniboxResult(Profile* profile,
   set_result_subtype(static_cast<int>(match_.type));
   SetMetricsType(GetSearchResultType());
 
-  if (ShouldDisplayAsAnswer()) {
+  if (app_list_features::IsOmniboxRichEntitiesEnabled()) {
     SetIsAnswer(match_.answer.has_value());
-    // The answer subtype overrides the match subtype.
-    set_result_subtype(static_cast<int>(match_.answer->type()));
+    if (is_answer()) {
+      // The answer subtype overrides the match subtype.
+      set_result_subtype(static_cast<int>(match_.answer->type()));
+    }
   }
 
   // Derive relevance from omnibox relevance and normalize it to [0, 1].
