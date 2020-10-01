@@ -3492,6 +3492,7 @@
       'features': {
         'dynamic_refresh': False,
         'per_profile': False,
+        'platform_only': True,
       },
       'example_value': '${users}/${user_name}/Chrome',
       'id': 63,
@@ -16680,6 +16681,7 @@
       'features': {
         'dynamic_refresh': False,
         'per_profile': False,
+        'platform_only': True,
       },
       'example_value': False,
       'id': 381,
@@ -17666,6 +17668,7 @@
       'features': {
         'dynamic_refresh': False,
         'per_profile': False,
+        'platform_only': True,
       },
       'example_value': '37185d02-e055-11e7-80c1-9a214cf093ae',
       'id': 428,
@@ -17686,6 +17689,7 @@
       'features': {
         'dynamic_refresh': False,
         'per_profile': False,
+        'platform_only': True,
       },
       'example_value': '37185d02-e055-11e7-80c1-9a214cf093ae',
       'id': 510,
@@ -17705,6 +17709,7 @@
       'features': {
         'dynamic_refresh': False,
         'per_profile': False,
+        'platform_only': True,
       },
       'example_value': True,
       'id': 505,
@@ -23207,6 +23212,7 @@ If you disable this policy, web page scrolling to specific text fragments via UR
       'features': {
         'dynamic_refresh': False,
         'per_profile': False,
+        'platform_only': True,
       },
       'example_value': True,
       'id': 760,
