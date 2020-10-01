@@ -163,11 +163,15 @@ if (is_android) {
   android_library("javatests") {
     testonly = true
 
-    sources = [ "android/java/src/org/chromium/chrome/browser/video_tutorials/languages/LanguagePickerTest.java" ]
+    sources = [
+      "android/java/src/org/chromium/chrome/browser/video_tutorials/iph/VideoIPHTest.java",
+      "android/java/src/org/chromium/chrome/browser/video_tutorials/languages/LanguagePickerTest.java",
+    ]
     deps = [
       ":java",
       "//base:base_java",
       "//base:base_java_test_support",
+      "//chrome/browser/image_fetcher:java",
       "//chrome/browser/video_tutorials:java",
       "//chrome/browser/video_tutorials:test_support_java",
       "//chrome/test/android:chrome_java_test_support",
@@ -176,6 +180,7 @@ if (is_android) {
       "//third_party/android_deps:androidx_test_runner_java",
       "//third_party/android_deps:espresso_java",
       "//third_party/android_support_test_runner:rules_java",
+      "//third_party/gif_player:gif_player_java",
       "//third_party/hamcrest:hamcrest_core_java",
       "//third_party/junit",
       "//third_party/mockito:mockito_java",
