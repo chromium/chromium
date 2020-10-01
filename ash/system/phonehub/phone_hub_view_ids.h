@@ -17,6 +17,11 @@ enum PhoneHubViewID {
   kNotificationOptInView,
   kQuickActionsView,
   kTaskContinuationView,
+
+  // Onboarding view and its components.
+  kOnboardingView,
+  kOnboardingGetStartedButton,
+  kOnboardingDismissButton,
 };
 
 }  // namespace ash

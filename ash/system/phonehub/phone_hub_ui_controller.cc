@@ -4,6 +4,8 @@
 
 #include "ash/system/phonehub/phone_hub_ui_controller.h"
 
+#include <memory>
+
 #include "ash/system/phonehub/bluetooth_disabled_view.h"
 #include "ash/system/phonehub/connection_error_view.h"
 #include "ash/system/phonehub/initial_connecting_view.h"
@@ -51,10 +53,9 @@ std::unique_ptr<views::View> PhoneHubUiController::CreateContentView(
     case UiState::kHidden:
       return nullptr;
     case UiState::kOnboardingWithoutPhone:
-      // TODO(tengs): distinguish this onboarding with phone state.
-      FALLTHROUGH;
     case UiState::kOnboardingWithPhone:
-      return std::make_unique<OnboardingView>();
+      return std::make_unique<OnboardingView>(
+          phone_hub_manager_->GetOnboardingUiTracker());
     case UiState::kBluetoothDisabled:
       return std::make_unique<BluetoothDisabledView>();
     case UiState::kInitialConnecting:

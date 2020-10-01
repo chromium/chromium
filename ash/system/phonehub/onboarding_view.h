@@ -10,6 +10,12 @@
 #include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
+namespace chromeos {
+namespace phonehub {
+class OnboardingUiTracker;
+}  // namespace phonehub
+}  // namespace chromeos
+
 namespace ash {
 
 class PhoneHubInterstitialView;
@@ -21,7 +27,8 @@ class ASH_EXPORT OnboardingView : public views::View,
  public:
   METADATA_HEADER(OnboardingView);
 
-  OnboardingView();
+  explicit OnboardingView(
+      chromeos::phonehub::OnboardingUiTracker* onboarding_ui_tracker);
   OnboardingView(const OnboardingView&) = delete;
   OnboardingView& operator=(const OnboardingView&) = delete;
   ~OnboardingView() override;
@@ -30,6 +37,8 @@ class ASH_EXPORT OnboardingView : public views::View,
   void ButtonPressed(views::Button* sender, const ui::Event& event) override;
 
  private:
+  chromeos::phonehub::OnboardingUiTracker* onboarding_ui_tracker_ = nullptr;
+
   // The view responsible for displaying the onboarding UI contents.
   // Owned by view hierarchy.
   PhoneHubInterstitialView* content_view_ = nullptr;

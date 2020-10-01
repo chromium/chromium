@@ -4,6 +4,7 @@
 
 #include "ash/system/phonehub/phone_hub_ui_controller.h"
 
+#include "ash/system/phonehub/phone_hub_view_ids.h"
 #include "ash/test/ash_test_base.h"
 #include "chromeos/components/phonehub/fake_phone_hub_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -78,8 +79,7 @@ TEST_F(PhoneHubUiControllerTest, ShowOnboardingUi_WithoutPhone) {
             controller_.ui_state());
 
   auto content_view = controller_.CreateContentView(/*bubble_view=*/nullptr);
-  // TODO(tengs): Test the actual view id.
-  EXPECT_EQ(0, content_view->GetID());
+  EXPECT_EQ(PhoneHubViewID::kOnboardingView, content_view->GetID());
 }
 
 TEST_F(PhoneHubUiControllerTest, ShowOnboardingUi_WithPhone) {
@@ -94,8 +94,7 @@ TEST_F(PhoneHubUiControllerTest, ShowOnboardingUi_WithPhone) {
             controller_.ui_state());
 
   auto content_view = controller_.CreateContentView(/*bubble_view=*/nullptr);
-  // TODO(tengs): Test the actual view id.
-  EXPECT_EQ(0, content_view->GetID());
+  EXPECT_EQ(PhoneHubViewID::kOnboardingView, content_view->GetID());
 }
 
 TEST_F(PhoneHubUiControllerTest, PhoneConnectingForOnboarding) {
