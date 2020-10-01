@@ -181,6 +181,10 @@ class CORE_EXPORT NGLayoutInputNode {
     return box_->GetNGPaginationBreakability() == LayoutBox::kForbidBreaks;
   }
 
+  bool IsScrollContainer() const {
+    return IsBlock() && box_->IsScrollContainer();
+  }
+
   bool CreatesNewFormattingContext() const {
     return IsBlock() && box_->CreatesNewFormattingContext();
   }

@@ -194,36 +194,87 @@ void NGBoxFragmentBuilder::AddResult(const NGLayoutResult& child_layout_result,
       // maybe OOF objects. Investigate how to handle them.
     }
   }
-  AddChild(fragment, offset);
+
+  NGMarginStrut end_margin_strut = child_layout_result.EndMarginStrut();
+  // No margins should pierce outside formatting-context roots.
+  DCHECK(!fragment.IsFormattingContextRoot() || end_margin_strut.IsEmpty());
+
+  AddChild(fragment, offset, /* inline_container */ nullptr, &end_margin_strut);
   if (fragment.IsBox())
     PropagateBreak(child_layout_result);
 }
 
 void NGBoxFragmentBuilder::AddChild(const NGPhysicalContainerFragment& child,
                                     const LogicalOffset& child_offset,
-                                    const LayoutInline* inline_container) {
+                                    const LayoutInline* inline_container,
+                                    const NGMarginStrut* margin_strut) {
   LogicalOffset adjusted_offset = child_offset;
 
-  if (child.IsCSSBox() &&
-      box_type_ != NGPhysicalBoxFragment::NGBoxType::kInlineBox) {
-    // Apply the relative position offset.
-    const auto& box_child = To<NGPhysicalBoxFragment>(child);
-    if (box_child.Style().GetPosition() == EPosition::kRelative) {
-      adjusted_offset += ComputeRelativeOffsetForBoxFragment(
-          box_child, GetWritingDirection(), child_available_size_);
+  if (box_type_ != NGPhysicalBoxFragment::NGBoxType::kInlineBox) {
+    if (child.IsCSSBox()) {
+      // Apply the relative position offset.
+      const auto& box_child = To<NGPhysicalBoxFragment>(child);
+      if (box_child.Style().GetPosition() == EPosition::kRelative) {
+        adjusted_offset += ComputeRelativeOffsetForBoxFragment(
+            box_child, GetWritingDirection(), child_available_size_);
+      }
+
+      // The |may_have_descendant_above_block_start_| flag is used to determine
+      // if a fragment can be re-used when preceding floats are present. This
+      // is relatively rare, and is true if:
+      //  - An inflow child is positioned above our block-start edge.
+      //  - Any inflow descendants (within the same formatting-context) which
+      //    *may* have a child positioned above our block-start edge.
+      if ((child_offset.block_offset < LayoutUnit() &&
+           !box_child.IsOutOfFlowPositioned()) ||
+          (!box_child.IsFormattingContextRoot() &&
+           box_child.MayHaveDescendantAboveBlockStart()))
+        may_have_descendant_above_block_start_ = true;
     }
 
-    // The |may_have_descendant_above_block_start_| flag is used to determine
-    // if a fragment can be re-used when preceding floats are present. This is
-    // relatively rare, and is true if:
-    //  - An inflow child is positioned above our block-start edge.
-    //  - Any inflow descendants (within the same formatting-context) which
-    //    *may* have a child positioned above our block-start edge.
-    if ((child_offset.block_offset < LayoutUnit() &&
-         !box_child.IsOutOfFlowPositioned()) ||
-        (!box_child.IsFormattingContextRoot() &&
-         box_child.MayHaveDescendantAboveBlockStart()))
-      may_have_descendant_above_block_start_ = true;
+    // If we are a scroll container, we need to track the maximum bounds of any
+    // inflow children (including line-boxes) to calculate the layout-overflow.
+    //
+    // This is used for determining the "padding-box" of the scroll container
+    // which is *sometimes* considered as part of the scrollable area. Inflow
+    // children contribute to this area, out-of-flow positioned children don't.
+    //
+    // Out-of-flow positioned children still contribute to the layout-overflow,
+    // but just don't influence where this padding is.
+    if (Node().IsScrollContainer() && !child.IsOutOfFlowPositioned()) {
+      NGBoxStrut margins;
+      if (child.IsCSSBox()) {
+        margins =
+            ComputeMarginsFor(child.Style(), child_available_size_.inline_size,
+                              GetWritingMode(), Direction());
+      }
+
+      // If we are in block-flow layout we use the end *margin-strut* as the
+      // block-end "margin" (instead of just the block-end margin).
+      if (margin_strut) {
+        NGMarginStrut end_margin_strut = *margin_strut;
+        end_margin_strut.Append(margins.block_end, /* is_quirky */ false);
+        margins.block_end = end_margin_strut.Sum();
+      }
+
+      NGFragment fragment(GetWritingMode(), child);
+
+      // Use the original offset (*without* relative-positioning applied), and
+      // clamp any negative margins to zero.
+      margins.ClampNegativeToZero();
+      LogicalRect bounds = {
+          LogicalOffset(child_offset.inline_offset - margins.inline_start,
+                        child_offset.block_offset - margins.block_start),
+          LogicalSize(
+              margins.inline_start + fragment.InlineSize() + margins.inline_end,
+              margins.block_start + fragment.BlockSize() + margins.block_end)};
+
+      // Even an empty (0x0) fragment contributes to the inflow-bounds.
+      if (!inflow_bounds_)
+        inflow_bounds_ = bounds;
+      else
+        inflow_bounds_->UniteEvenIfEmpty(bounds);
+    }
   }
 
   PropagateChildData(child, adjusted_offset, inline_container);

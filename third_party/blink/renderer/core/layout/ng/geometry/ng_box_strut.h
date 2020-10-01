@@ -47,6 +47,13 @@ struct CORE_EXPORT NGBoxStrut {
 
   bool IsEmpty() const { return *this == NGBoxStrut(); }
 
+  void ClampNegativeToZero() {
+    inline_start = inline_start.ClampNegativeToZero();
+    inline_end = inline_end.ClampNegativeToZero();
+    block_start = block_start.ClampNegativeToZero();
+    block_end = block_end.ClampNegativeToZero();
+  }
+
   inline NGPhysicalBoxStrut ConvertToPhysical(WritingMode, TextDirection) const;
 
   // The following two operators exist primarily to have an easy way to access

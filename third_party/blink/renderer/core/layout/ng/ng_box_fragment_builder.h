@@ -207,7 +207,8 @@ class CORE_EXPORT NGBoxFragmentBuilder final
 
   void AddChild(const NGPhysicalContainerFragment&,
                 const LogicalOffset&,
-                const LayoutInline* inline_container = nullptr);
+                const LayoutInline* inline_container = nullptr,
+                const NGMarginStrut* margin_strut = nullptr);
 
   // Manually add a break token to the builder. Note that we're assuming that
   // this break token is for content in the same flow as this parent.
@@ -546,6 +547,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   LogicalSize child_available_size_;
   LayoutUnit overflow_block_size_ = kIndefiniteSize;
   LayoutUnit intrinsic_block_size_;
+  base::Optional<LogicalRect> inflow_bounds_;
 
   NGFragmentItemsBuilder* items_builder_ = nullptr;
 

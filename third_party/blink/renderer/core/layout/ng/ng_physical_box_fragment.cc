@@ -50,7 +50,15 @@ scoped_refptr<const NGPhysicalBoxFragment> NGPhysicalBoxFragment::Create(
       builder->initial_fragment_geometry_->padding.ConvertToPhysical(
           builder->GetWritingMode(), builder->Direction());
   bool has_padding = !padding.IsZero();
+
+  const PhysicalSize physical_size =
+      ToPhysicalSize(builder->Size(), builder->GetWritingMode());
+  WritingModeConverter converter(builder->GetWritingDirection(), physical_size);
+
   base::Optional<PhysicalRect> inflow_bounds;
+  if (builder->inflow_bounds_)
+    inflow_bounds = converter.ToPhysical(*builder->inflow_bounds_);
+
   const PhysicalRect layout_overflow;
   bool has_layout_overflow = false;
   bool has_rare_data =

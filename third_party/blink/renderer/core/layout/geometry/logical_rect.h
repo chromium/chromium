@@ -65,6 +65,7 @@ struct CORE_EXPORT LogicalRect {
   }
 
   void Unite(const LogicalRect&);
+  void UniteEvenIfEmpty(const LogicalRect&);
 
   String ToString() const;
 };
