@@ -30,6 +30,18 @@ struct BatteryInfo {
   uint32 charge_full_design_milliamp_hours;
 };
 
+enum ExternalPowerSource {
+  kAc,
+  kUsb,
+  kDisconnected,
+};
+
+enum BatteryState {
+  kCharging,
+  kDischarging,
+  kFull,
+};
+
 // Provides telemetric information about the system. This API is exposed to the
 // Diagnostics SWA.
 interface SystemDataProvider {
