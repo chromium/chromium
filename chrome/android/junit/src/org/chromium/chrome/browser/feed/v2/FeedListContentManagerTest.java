@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.feed.v2;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -215,12 +216,12 @@ public class FeedListContentManagerTest implements ListContentManagerObserver {
         ViewParent p = v.getParent();
 
         // Remove and re-add the same view, but with a new NativeViewContent.
-        // This time, getNativeView() does not need to create the enclosing parent view.
+        // This time, getNativeView() creates a new enclosing parent view.
         removeContents(0, 1);
         c = createNativeViewContent(v);
         addContents(0, ImmutableList.of(c));
         assertEquals(v, getNativeView(mManager.getViewType(0)));
-        assertEquals(p, v.getParent());
+        assertNotEquals(p, v.getParent());
     }
 
     @Test

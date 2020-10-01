@@ -9,7 +9,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
-import android.view.ViewParent;
 import android.widget.FrameLayout;
 
 import androidx.annotation.Nullable;
@@ -19,6 +18,7 @@ import org.chromium.chrome.browser.xsurface.FeedActionsHandler;
 import org.chromium.chrome.browser.xsurface.ListContentManager;
 import org.chromium.chrome.browser.xsurface.ListContentManagerObserver;
 import org.chromium.chrome.browser.xsurface.SurfaceActionsHandler;
+import org.chromium.ui.UiUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -114,11 +114,9 @@ public class FeedListContentManager implements ListContentManager {
 
             // If there's already a parent, we have already enclosed this view previously.
             // This can happen if a native view is added, removed, and added again.
-            ViewParent nativeViewParent = mNativeView.getParent();
-            if (nativeViewParent != null) {
-                assert nativeViewParent instanceof View;
-                return (View) nativeViewParent;
-            }
+            // In this case, it is important to make a new view because the RecyclerView
+            // may still have a reference to the old one. See crbug.com/1131975.
+            UiUtils.removeViewFromParent(mNativeView);
 
             FrameLayout enclosingLayout = new FrameLayout(parent.getContext());
             // Set the left and right margins.
