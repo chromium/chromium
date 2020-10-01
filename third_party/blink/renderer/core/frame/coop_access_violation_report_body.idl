@@ -10,6 +10,7 @@
   readonly attribute DOMString? sourceFile;
   readonly attribute unsigned long? lineNumber;
   readonly attribute unsigned long? columnNumber;
+  readonly attribute DOMString type;
   readonly attribute DOMString property;
   [CallWith=ScriptState] object toJSON();
 };

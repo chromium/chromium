@@ -547,7 +547,8 @@ void DOMWindow::ReportCoopAccess(const char* property_name) {
                 ReportType::kCoopAccessViolation,
                 accessing_main_frame.GetDocument()->Url().GetString(),
                 MakeGarbageCollected<CoopAccessViolationReportBody>(
-                    std::move(location), String(property_name))));
+                    std::move(location), it->report_type,
+                    String(property_name))));
       }
     }
 

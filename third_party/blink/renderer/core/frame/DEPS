@@ -2,6 +2,9 @@ specific_include_rules = {
   "ad_tracker_test.cc": [
     "+base/run_loop.h",
   ],
+  "coop_access_violation_report_body.cc": [
+    "+services/network/public/cpp/cross_origin_opener_policy.h"
+  ],
   "frame_view.cc": [
     "+ui/gfx/transform.h"
   ],

@@ -38,4 +38,21 @@ bool IsAccessFromCoopPage(mojom::CoopAccessReportType type) {
   }
 }
 
+const char* CoopAccessReportTypeToString(mojom::CoopAccessReportType type) {
+  switch (type) {
+    case network::mojom::CoopAccessReportType::kAccessFromCoopPageToOpener:
+      return "access-from-coop-page-to-opener";
+    case network::mojom::CoopAccessReportType::kAccessFromCoopPageToOpenee:
+      return "access-from-coop-page-to-openee";
+    case network::mojom::CoopAccessReportType::kAccessFromCoopPageToOther:
+      return "access-from-coop-page-to-other";
+    case network::mojom::CoopAccessReportType::kAccessToCoopPageFromOpener:
+      return "access-to-coop-page-from-opener";
+    case network::mojom::CoopAccessReportType::kAccessToCoopPageFromOpenee:
+      return "access-to-coop-page-from-openee";
+    case network::mojom::CoopAccessReportType::kAccessToCoopPageFromOther:
+      return "access-to-coop-page-from-other";
+  }
+}
+
 }  // namespace network
