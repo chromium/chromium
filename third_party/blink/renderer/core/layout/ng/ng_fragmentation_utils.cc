@@ -379,7 +379,12 @@ bool FinishFragmentation(NGBlockNode node,
       // IsNodeFullyGrown() will return true now), we know that we're at the
       // end. If block-size is unconstrained (or at least allowed to grow a bit
       // more), we're only at the end if no in-flow content inside broke.
-      if (!builder->HasInflowChildBreakInside() ||
+
+      bool was_broken_by_child = builder->HasInflowChildBreakInside();
+      if (!was_broken_by_child && space.IsNewFormattingContext())
+        was_broken_by_child = builder->HasFloatBreakInside();
+
+      if (!was_broken_by_child ||
           IsNodeFullyGrown(node, space, fragments_total_block_size,
                            builder->BorderPadding(),
                            builder->InitialBorderBoxSize().inline_size))

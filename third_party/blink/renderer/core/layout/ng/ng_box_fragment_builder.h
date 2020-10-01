@@ -275,6 +275,11 @@ class CORE_EXPORT NGBoxFragmentBuilder final
     return has_inflow_child_break_inside_;
   }
 
+  // Return true if we need to break before or inside any floated child. Floats
+  // are encapsulated by their container if the container establishes a new
+  // block formatting context.
+  bool HasFloatBreakInside() const { return has_float_break_inside_; }
+
   // Report space shortage, i.e. how much more space would have been sufficient
   // to prevent some piece of content from breaking. This information may be
   // used by the column balancer to stretch columns.
@@ -554,6 +559,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   bool is_first_for_node_ = true;
   bool did_break_self_ = false;
   bool has_inflow_child_break_inside_ = false;
+  bool has_float_break_inside_ = false;
   bool has_forced_break_ = false;
   bool is_new_fc_ = false;
   bool subtree_modified_margin_strut_ = false;

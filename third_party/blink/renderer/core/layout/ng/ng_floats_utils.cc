@@ -351,7 +351,8 @@ NGPositionedFloat PositionFloat(NGUnpositionedFloat* unpositioned_float,
     // fragmentainer means that the in-flow block also needs to be pushed, while
     // if the in-flow block has clear:right, it may still be allowed in the
     // current fragmentainer).
-    NGBfcOffset past_everything(LayoutUnit(), LayoutUnit::Max());
+    NGBfcOffset past_everything(LayoutUnit(),
+                                FragmentainerSpaceAtBfcStart(parent_space));
     scoped_refptr<const NGExclusion> exclusion =
         NGExclusion::Create(NGBfcRect(past_everything, past_everything),
                             node.Style().Floating(parent_space.Direction()));

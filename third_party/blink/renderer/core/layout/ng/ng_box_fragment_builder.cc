@@ -163,6 +163,8 @@ void NGBoxFragmentBuilder::AddBreakBeforeChild(
 
   if (!has_inflow_child_break_inside_)
     has_inflow_child_break_inside_ = !child.IsFloatingOrOutOfFlowPositioned();
+  if (!has_float_break_inside_)
+    has_float_break_inside_ = child.IsFloating();
 
   if (auto* child_inline_node = DynamicTo<NGInlineNode>(child)) {
     if (inline_break_tokens_.IsEmpty()) {
@@ -282,17 +284,19 @@ void NGBoxFragmentBuilder::PropagateBreak(
     const NGLayoutResult& child_layout_result) {
   if (LIKELY(!has_block_fragmentation_))
     return;
-  if (!has_inflow_child_break_inside_) {
+  if (!has_inflow_child_break_inside_ || !has_float_break_inside_) {
     // Figure out if this child break is in the same flow as this parent. If
     // it's an out-of-flow positioned box, it's not. If it's in a parallel flow,
     // it's also not.
     const auto& child_fragment =
         To<NGPhysicalBoxFragment>(child_layout_result.PhysicalFragment());
-    if (!child_fragment.IsFloatingOrOutOfFlowPositioned()) {
-      if (const auto* token = child_fragment.BreakToken()) {
-        if (!token->IsFinished() &&
-            (!token->IsBlockType() ||
-             !To<NGBlockBreakToken>(token)->IsAtBlockEnd()))
+    if (const auto* token = child_fragment.BreakToken()) {
+      if (!token->IsFinished() &&
+          (!token->IsBlockType() ||
+           !To<NGBlockBreakToken>(token)->IsAtBlockEnd())) {
+        if (child_fragment.IsFloating())
+          has_float_break_inside_ = true;
+        else if (!child_fragment.IsOutOfFlowPositioned())
           has_inflow_child_break_inside_ = true;
       }
     }
