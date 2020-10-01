@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+
 #include "base/run_loop.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/extensions/extension_apitest.h"
@@ -13,9 +15,11 @@
 #include "extensions/browser/api/runtime/runtime_api.h"
 #include "extensions/browser/blocklist_state.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
+#include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/test_extension_registry_observer.h"
+#include "extensions/common/scoped_worker_based_extensions_channel.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
@@ -24,13 +28,57 @@
 
 namespace extensions {
 
+using ContextType = ExtensionBrowserTest::ContextType;
+
+class RuntimeApiTest : public ExtensionApiTest,
+                       public testing::WithParamInterface<ContextType> {
+ public:
+  RuntimeApiTest() {
+    // Service Workers are currently only available on certain channels, so set
+    // the channel for those tests.
+    if (GetParam() == ContextType::kServiceWorker)
+      current_channel_ = std::make_unique<ScopedWorkerBasedExtensionsChannel>();
+  }
+
+  RuntimeApiTest(const RuntimeApiTest&) = delete;
+  RuntimeApiTest& operator=(const RuntimeApiTest&) = delete;
+
+  const Extension* LoadExtensionWithParamFlag(const base::FilePath& path) {
+    int flags = kFlagEnableFileAccess;
+    if (GetParam() == ContextType::kServiceWorker)
+      flags |= ExtensionBrowserTest::kFlagRunAsServiceWorkerBasedExtension;
+
+    return LoadExtensionWithFlags(path, flags);
+  }
+
+  bool RunTestWithParamFlag(const std::string& extension_name) {
+    int flags = kFlagEnableFileAccess;
+    if (GetParam() == ContextType::kServiceWorker)
+      flags |= ExtensionBrowserTest::kFlagRunAsServiceWorkerBasedExtension;
+
+    return RunExtensionTestWithFlags(extension_name, flags, kFlagNone);
+  }
+
+ private:
+  std::unique_ptr<extensions::ScopedWorkerBasedExtensionsChannel>
+      current_channel_;
+};
+
+INSTANTIATE_TEST_SUITE_P(PersistentBackground,
+                         RuntimeApiTest,
+                         ::testing::Values(ContextType::kPersistentBackground));
+
+INSTANTIATE_TEST_SUITE_P(ServiceWorker,
+                         RuntimeApiTest,
+                         ::testing::Values(ContextType::kServiceWorker));
+
 // Tests the privileged components of chrome.runtime.
-IN_PROC_BROWSER_TEST_F(ExtensionApiTest, ChromeRuntimePrivileged) {
-  ASSERT_TRUE(RunExtensionTest("runtime/privileged")) << message_;
+IN_PROC_BROWSER_TEST_P(RuntimeApiTest, ChromeRuntimePrivileged) {
+  ASSERT_TRUE(RunTestWithParamFlag("runtime/privileged")) << message_;
 }
 
 // Tests the unprivileged components of chrome.runtime.
-IN_PROC_BROWSER_TEST_F(ExtensionApiTest, ChromeRuntimeUnprivileged) {
+IN_PROC_BROWSER_TEST_P(RuntimeApiTest, ChromeRuntimeUnprivileged) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(
       LoadExtension(test_data_dir_.AppendASCII("runtime/content_script")));
@@ -42,14 +90,29 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, ChromeRuntimeUnprivileged) {
   EXPECT_TRUE(catcher.GetNextResult()) << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionApiTest, ChromeRuntimeUninstallURL) {
+IN_PROC_BROWSER_TEST_P(RuntimeApiTest, ChromeRuntimeUninstallURL) {
+  // TODO(https://crbug.com/977629): Currently, chrome.test.runWithUserGesture()
+  // doesn't support Service Worker-based extensions, so this is a workaround.
+  using ScopedUserGestureForTests =
+      ExtensionFunction::ScopedUserGestureForTests;
+  std::unique_ptr<ScopedUserGestureForTests> scoped_user_gesture;
+  if (GetParam() == ContextType::kServiceWorker)
+    scoped_user_gesture = std::make_unique<ScopedUserGestureForTests>();
+
   // Auto-confirm the uninstall dialog.
   extensions::ScopedTestDialogAutoConfirm auto_confirm(
       extensions::ScopedTestDialogAutoConfirm::ACCEPT);
-  ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII("runtime")
-                                .AppendASCII("uninstall_url")
-                                .AppendASCII("sets_uninstall_url")));
-  ASSERT_TRUE(RunExtensionTest("runtime/uninstall_url")) << message_;
+  ExtensionTestMessageListener ready_listener("ready", false);
+  ASSERT_TRUE(
+      LoadExtensionWithParamFlag(test_data_dir_.AppendASCII("runtime")
+                                     .AppendASCII("uninstall_url")
+                                     .AppendASCII("sets_uninstall_url")));
+  EXPECT_TRUE(ready_listener.WaitUntilSatisfied());
+  ASSERT_TRUE(RunTestWithParamFlag("runtime/uninstall_url")) << message_;
+}
+
+IN_PROC_BROWSER_TEST_P(RuntimeApiTest, GetPlatformInfo) {
+  ASSERT_TRUE(RunTestWithParamFlag("runtime/get_platform_info")) << message_;
 }
 
 namespace {
@@ -283,14 +346,15 @@ IN_PROC_BROWSER_TEST_F(RuntimeAPIUpdateTest,
 
 // Tests that when a blocklisted extension with a set uninstall url is
 // uninstalled, its uninstall url does not open.
-IN_PROC_BROWSER_TEST_F(ExtensionApiTest,
+IN_PROC_BROWSER_TEST_P(RuntimeApiTest,
                        DoNotOpenUninstallUrlForBlocklistedExtensions) {
+  ExtensionTestMessageListener ready_listener("ready", false);
   // Load an extension that has set an uninstall url.
   scoped_refptr<const extensions::Extension> extension =
-      LoadExtension(test_data_dir_.AppendASCII("runtime")
-                        .AppendASCII("uninstall_url")
-                        .AppendASCII("sets_uninstall_url"));
-
+      LoadExtensionWithParamFlag(test_data_dir_.AppendASCII("runtime")
+                                     .AppendASCII("uninstall_url")
+                                     .AppendASCII("sets_uninstall_url"));
+  EXPECT_TRUE(ready_listener.WaitUntilSatisfied());
   ASSERT_TRUE(extension.get());
   extension_service()->AddExtension(extension.get());
   ASSERT_TRUE(extension_service()->IsExtensionEnabled(extension->id()));
@@ -311,9 +375,12 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest,
   EXPECT_EQ("about:blank", GetActiveUrl(browser()));
 
   // Load the same extension again, except blocklist it after installation.
-  extension = LoadExtension(test_data_dir_.AppendASCII("runtime")
-                                .AppendASCII("uninstall_url")
-                                .AppendASCII("sets_uninstall_url"));
+  ExtensionTestMessageListener ready_listener_reload("ready", false);
+  extension =
+      LoadExtensionWithParamFlag(test_data_dir_.AppendASCII("runtime")
+                                     .AppendASCII("uninstall_url")
+                                     .AppendASCII("sets_uninstall_url"));
+  EXPECT_TRUE(ready_listener_reload.WaitUntilSatisfied());
   extension_service()->AddExtension(extension.get());
   ASSERT_TRUE(extension_service()->IsExtensionEnabled(extension->id()));
 

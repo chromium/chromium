@@ -3,3 +3,5 @@
 // found in the LICENSE file.
 
 chrome.runtime.setUninstallURL("http://www.google.com");
+
+chrome.test.sendMessage('ready');

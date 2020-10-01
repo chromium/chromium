@@ -1,0 +1,9 @@
+{
+  "name": "chrome.runtime.getPlatformInfo API Test",
+  "version": "1",
+  "manifest_version": 2,
+  "background": {
+    "scripts": ["test.js"],
+    "persistent": true
+  }
+}

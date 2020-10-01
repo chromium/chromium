@@ -9,6 +9,7 @@
     "<all_urls>"
   ],
   "background": {
-    "scripts": ["test.js"]
+    "scripts": ["test.js"],
+    "persistent": true
   }
 }
