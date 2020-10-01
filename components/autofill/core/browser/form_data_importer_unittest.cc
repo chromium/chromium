@@ -415,9 +415,9 @@ TEST_P(FormDataImporterTest,
 
 TEST_P(FormDataImporterTest,
        ImportStructuredAddressProfile_GermanStreetNameAndHouseNumber) {
-  base::test::ScopedFeatureList structured_addresses_feature;
-  structured_addresses_feature.InitAndEnableFeature(
-      features::kAutofillEnableSupportForMoreStructureInAddresses);
+  // This test is only applicable if structured addresses are enabled.
+  if (!StructuredAddresses())
+    return;
 
   FormData form;
   form.url = GURL("https://wwww.foo.com");

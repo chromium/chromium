@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/data_model/autofill_structured_address.h"
 
+#include <iostream>
 #include <utility>
 #include "base/i18n/case_conversion.h"
 #include "base/strings/strcat.h"
@@ -364,12 +365,24 @@ Address::Address(AddressComponent* parent)
 Address::~Address() = default;
 
 void Address::MigrateLegacyStructure(bool is_verified_profile) {
-  VerificationStatus status = is_verified_profile
-                                  ? VerificationStatus::kUserVerified
-                                  : VerificationStatus::kObserved;
-  if (GetVerificationStatus() == VerificationStatus::kNoStatus &&
-      !GetValue().empty()) {
-    SetValue(GetValue(), status);
+  // If this component already has a verification status, no profile is regarded
+  // as already verified.
+  std::cout << "APply migration" << std::endl;
+  if (GetVerificationStatus() != VerificationStatus::kNoStatus)
+    return;
+
+  // Otherwise set the status of the subcomponents either to observed or
+  // verified depending on |is_verified_profile| if they already have a value
+  // assigned. Note, those are all the tokens that are already present in the
+  // unstructured address representation.
+  for (auto* component : Subcomponents()) {
+    if (!component->GetValue().empty() &&
+        component->GetVerificationStatus() == VerificationStatus::kNoStatus) {
+      component->SetValue(component->GetValue(),
+                          is_verified_profile
+                              ? VerificationStatus::kUserVerified
+                              : VerificationStatus::kObserved);
+    }
   }
 }
 
