@@ -332,8 +332,7 @@ ImageRequestTask.prototype.downloadOriginal_ = function(onSuccess, onFailure) {
 
   // Load RAW image source thumbnail.
   if (fileType.type === 'raw') {
-    const piexLoader = ImageRequestTask.getPiexLoaderInstance();
-    piexLoader.load(this.request_.url, chrome.runtime.reload)
+    PiexLoader.load(this.request_.url, chrome.runtime.reload)
         .then(
             function(data) {
               this.request_.orientation =
@@ -629,15 +628,4 @@ ImageRequestTask.prototype.cleanup_ = function() {
   // Dispose memory allocated by Canvas.
   this.canvas_.width = 0;
   this.canvas_.height = 0;
-};
-
-/**
- * Returns the singleton instance of the PiexLoader RAW image loader.
- * @return {!PiexLoader} PiexLoader object.
- */
-ImageRequestTask.getPiexLoaderInstance = function() {
-  if (!ImageRequestTask.piexLoaderInstance_) {
-    ImageRequestTask.piexLoaderInstance_ = new PiexLoader();
-  }
-  return ImageRequestTask.piexLoaderInstance_;
 };

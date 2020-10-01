@@ -492,10 +492,9 @@ class ImageBuffer {
 }
 
 /**
- * Creates a PiexLoader.
- * @constructor
+ * PiexLoader: is a namespace.
  */
-function PiexLoader() {}
+const PiexLoader = {};
 
 /**
  * Loads a RAW image. Returns the image metadata and the image thumbnail in a
@@ -510,7 +509,7 @@ function PiexLoader() {}
  * @param {function()} onPiexModuleFailed
  * @return {!Promise<!PiexLoaderResponse>}
  */
-PiexLoader.prototype.load = function(source, onPiexModuleFailed) {
+PiexLoader.load = function(source, onPiexModuleFailed) {
   /** @type {?ImageBuffer} */
   let imageBuffer;
 
