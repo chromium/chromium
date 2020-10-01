@@ -142,6 +142,8 @@ struct Capabilities {
 
   bool android_use_running_app;
 
+  int android_devtools_port = 0;
+
   base::FilePath binary;
 
   // If provided, the remote debugging address to connect to.

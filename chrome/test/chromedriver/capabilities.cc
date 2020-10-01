@@ -403,6 +403,23 @@ Status ParseExcludeSwitches(const base::Value& option,
   return Status(kOk);
 }
 
+Status ParsePortNumber(int* to_set,
+                     const base::Value& option,
+                     Capabilities* capabilities) {
+  int max_port_number = 65535;
+  int parsed_int = 0;
+  if (!option.GetAsInteger(&parsed_int))
+    return Status(kInvalidArgument, "must be an integer");
+  if (parsed_int <= 0)
+    return Status(kInvalidArgument, "must be positive");
+  if (parsed_int > max_port_number)
+    return Status(kInvalidArgument, "must be less than or equal to " +
+                                    base::NumberToString(max_port_number));
+  *to_set = parsed_int;
+  return Status(kOk);
+}
+
+
 Status ParseNetAddress(NetAddress* to_set,
                        const base::Value& option,
                        Capabilities* capabilities) {
@@ -575,6 +592,8 @@ Status ParseChromeOptions(
         base::BindRepeating(&ParseString, &capabilities->android_device_socket);
     parser_map["androidUseRunningApp"] = base::BindRepeating(
         &ParseBoolean, &capabilities->android_use_running_app);
+    parser_map["androidDevToolsPort"] = base::BindRepeating(
+        &ParsePortNumber, &capabilities->android_devtools_port);
     parser_map["args"] = base::BindRepeating(&ParseSwitches);
     parser_map["excludeSwitches"] = base::BindRepeating(&ParseExcludeSwitches);
     parser_map["loadAsync"] =

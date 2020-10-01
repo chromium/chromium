@@ -684,7 +684,7 @@ Status LaunchAndroidChrome(network::mojom::URLLoaderFactory* factory,
                            std::unique_ptr<Chrome>* chrome) {
   Status status(kOk);
   std::unique_ptr<Device> device;
-  int devtools_port;
+  int devtools_port = capabilities.android_devtools_port;
   if (capabilities.android_device_serial.empty()) {
     status = device_manager->AcquireDevice(&device);
   } else {

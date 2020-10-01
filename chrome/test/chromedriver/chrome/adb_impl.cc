@@ -143,18 +143,20 @@ Status AdbImpl::GetDevices(std::vector<std::string>* devices) {
 
 Status AdbImpl::ForwardPort(const std::string& device_serial,
                             const std::string& remote_abstract,
-                            int* local_port_output) {
+                            int* local_port) {
   std::string response;
   Status adb_command_status = ExecuteHostCommand(
-      device_serial, "forward:tcp:0;localabstract:" + remote_abstract,
+      device_serial, "forward:tcp:" + base::NumberToString(*local_port) +
+          ";localabstract:" + remote_abstract,
       &response);
   // response should be the port number like "39025".
   if (!adb_command_status.IsOk())
     return Status(kUnknownError, "Failed to forward ports to device " +
                                      device_serial + ": " + response + ". " +
                                      adb_command_status.message());
-  base::StringToInt(response, local_port_output);
-  if (*local_port_output == 0) {
+  int local_port_output;
+  base::StringToInt(response, &local_port_output);
+  if (local_port_output == 0) {
     return Status(
         kUnknownError,
         base::StringPrintf(
@@ -164,8 +166,13 @@ Status AdbImpl::ForwardPort(const std::string& device_serial,
             "the host device to find your version of adb.",
             device_serial.c_str(), response.c_str(),
             kChromeDriverProductFullName));
+  } else if (*local_port != 0 && local_port_output != *local_port) {
+    return Status(
+        kUnknownError,
+        base::StringPrintf("Failed to forward ports to device %s with the"
+            "specified port: %d.", device_serial.c_str(), *local_port));
   }
-
+  *local_port = local_port_output;
   return Status(kOk);
 }
 
