@@ -120,9 +120,7 @@ HoldingSpaceItemView::HoldingSpaceItemView(
   delegate_->OnHoldingSpaceItemViewCreated(this);
 }
 
-HoldingSpaceItemView::~HoldingSpaceItemView() {
-  delegate_->OnHoldingSpaceItemViewDestroyed(this);
-}
+HoldingSpaceItemView::~HoldingSpaceItemView() = default;
 
 // static
 HoldingSpaceItemView* HoldingSpaceItemView::Cast(views::View* view) {

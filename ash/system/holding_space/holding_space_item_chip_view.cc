@@ -34,6 +34,7 @@ HoldingSpaceItemChipView::HoldingSpaceItemChipView(
 
   label_ = AddChildView(std::make_unique<views::Label>(item->text()));
   label_->SetElideBehavior(gfx::ELIDE_MIDDLE);
+  label_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
   layout->SetFlexForView(label_, 1);
 
   TrayPopupItemStyle(TrayPopupItemStyle::FontStyle::DETAILED_VIEW_LABEL)

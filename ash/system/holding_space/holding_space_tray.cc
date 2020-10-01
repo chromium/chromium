@@ -64,6 +64,16 @@ void HoldingSpaceTray::HideBubble(const TrayBubbleView* bubble_view) {
   CloseBubble();
 }
 
+void HoldingSpaceTray::OnWidgetDragWillStart(views::Widget* widget) {
+  // The holding space bubble should be closed while dragging holding space
+  // items so as not to obstruct drop targets. Post the task to close the bubble
+  // so that we don't attempt to destroy the bubble widget before the associated
+  // drag event has been fully initialized.
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(&HoldingSpaceTray::CloseBubble,
+                                weak_factory_.GetWeakPtr()));
+}
+
 void HoldingSpaceTray::OnWidgetDestroying(views::Widget* widget) {
   widget->RemoveObserver(this);
   CloseBubble();

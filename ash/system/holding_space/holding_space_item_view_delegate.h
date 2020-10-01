@@ -10,9 +10,12 @@
 #include <vector>
 
 #include "ash/ash_export.h"
+#include "base/scoped_observer.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/drag_controller.h"
+#include "ui/views/view.h"
+#include "ui/views/view_observer.h"
 
 namespace ui {
 class GestureEvent;
@@ -35,6 +38,7 @@ class HoldingSpaceItemView;
 class ASH_EXPORT HoldingSpaceItemViewDelegate
     : public views::ContextMenuController,
       public views::DragController,
+      public views::ViewObserver,
       public ui::SimpleMenuModel::Delegate {
  public:
   HoldingSpaceItemViewDelegate();
@@ -45,9 +49,6 @@ class ASH_EXPORT HoldingSpaceItemViewDelegate
 
   // Invoked when `view` has been created.
   void OnHoldingSpaceItemViewCreated(HoldingSpaceItemView* view);
-
-  // Invoked when `view` has been destroyed.
-  void OnHoldingSpaceItemViewDestroyed(HoldingSpaceItemView* view);
 
   // Invoked when `view` receives the specified gesture `event`.
   void OnHoldingSpaceItemViewGestureEvent(HoldingSpaceItemView* view,
@@ -81,6 +82,9 @@ class ASH_EXPORT HoldingSpaceItemViewDelegate
                             const gfx::Point& press_pt,
                             ui::OSExchangeData* data) override;
 
+  // views::ViewObserver:
+  void OnViewIsDeleting(views::View* view) override;
+
   // SimpleMenuModel::Delegate:
   void ExecuteCommand(int command_id, int event_flags) override;
 
@@ -102,6 +106,9 @@ class ASH_EXPORT HoldingSpaceItemViewDelegate
   // ignored. This is to prevent us from selecting a view on mouse pressed but
   // then unselecting that same view on mouse released.
   HoldingSpaceItemView* ignore_mouse_released_ = nullptr;
+
+  // We observe `views_` for their lifetime so we can track selected state.
+  ScopedObserver<views::View, views::ViewObserver> view_observer_{this};
 };
 
 }  // namespace ash
