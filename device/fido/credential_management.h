@@ -8,6 +8,7 @@
 #include "base/component_export.h"
 #include "base/optional.h"
 #include "device/fido/fido_constants.h"
+#include "device/fido/pin.h"
 #include "device/fido/public_key_credential_descriptor.h"
 #include "device/fido/public_key_credential_rp_entity.h"
 #include "device/fido/public_key_credential_user_entity.h"
@@ -96,40 +97,36 @@ struct CredentialManagementRequest {
 
   static CredentialManagementRequest ForGetCredsMetadata(
       Version version,
-      base::span<const uint8_t> pin_token);
+      const pin::TokenResponse& token);
   static CredentialManagementRequest ForEnumerateRPsBegin(
       Version version,
-      base::span<const uint8_t> pin_token);
+      const pin::TokenResponse& token);
   static CredentialManagementRequest ForEnumerateRPsGetNext(Version version);
   static CredentialManagementRequest ForEnumerateCredentialsBegin(
       Version version,
-      base::span<const uint8_t> pin_token,
+      const pin::TokenResponse& token,
       std::array<uint8_t, kRpIdHashLength> rp_id_hash);
   static CredentialManagementRequest ForEnumerateCredentialsGetNext(
       Version version);
   static CredentialManagementRequest ForDeleteCredential(
       Version version,
-      base::span<const uint8_t> pin_token,
+      const pin::TokenResponse& token,
       const PublicKeyCredentialDescriptor& credential_id);
 
+  CredentialManagementRequest(Version version,
+                              CredentialManagementSubCommand subcommand,
+                              base::Optional<cbor::Value::MapValue> params);
   CredentialManagementRequest(CredentialManagementRequest&&);
   CredentialManagementRequest& operator=(CredentialManagementRequest&&);
+  CredentialManagementRequest(const CredentialManagementRequest&) = delete;
+  CredentialManagementRequest& operator=(const CredentialManagementRequest&) =
+      delete;
   ~CredentialManagementRequest();
 
   Version version;
   CredentialManagementSubCommand subcommand;
   base::Optional<cbor::Value::MapValue> params;
-  base::Optional<std::array<uint8_t, 16>> pin_auth;
-
- private:
-  CredentialManagementRequest() = delete;
-  CredentialManagementRequest(Version version,
-                              CredentialManagementSubCommand subcommand,
-                              base::Optional<cbor::Value::MapValue> params,
-                              base::Optional<std::array<uint8_t, 16>> pin_auth);
-  CredentialManagementRequest(const CredentialManagementRequest&) = delete;
-  CredentialManagementRequest& operator=(const CredentialManagementRequest&) =
-      delete;
+  base::Optional<std::vector<uint8_t>> pin_auth;
 };
 
 struct CredentialsMetadataResponse {

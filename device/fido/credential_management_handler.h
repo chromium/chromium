@@ -127,7 +127,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) CredentialManagementHandler
 
   State state_ = State::kWaitingForTouch;
   FidoAuthenticator* authenticator_ = nullptr;
-  base::Optional<std::vector<uint8_t>> pin_token_;
+  base::Optional<pin::TokenResponse> pin_token_;
 
   ReadyCallback ready_callback_;
   GetPINCallback get_pin_callback_;

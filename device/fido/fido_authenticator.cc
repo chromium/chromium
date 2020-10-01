@@ -73,19 +73,19 @@ FidoAuthenticator::WillNeedPINToGetAssertion(
 }
 
 void FidoAuthenticator::GetCredentialsMetadata(
-    base::span<const uint8_t> pin_token,
+    const pin::TokenResponse& pin_token,
     GetCredentialsMetadataCallback callback) {
   NOTREACHED();
 }
 
 void FidoAuthenticator::EnumerateCredentials(
-    base::span<const uint8_t> pin_token,
+    const pin::TokenResponse& pin_token,
     EnumerateCredentialsCallback callback) {
   NOTREACHED();
 }
 
 void FidoAuthenticator::DeleteCredential(
-    base::span<const uint8_t> pin_token,
+    const pin::TokenResponse& pin_token,
     const PublicKeyCredentialDescriptor& credential_id,
     DeleteCredentialCallback callback) {
   NOTREACHED();

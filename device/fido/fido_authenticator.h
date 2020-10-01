@@ -182,12 +182,12 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoAuthenticator {
       const CtapGetAssertionRequest& request,
       const FidoRequestHandlerBase::Observer* observer);
 
-  virtual void GetCredentialsMetadata(base::span<const uint8_t> pin_token,
+  virtual void GetCredentialsMetadata(const pin::TokenResponse& pin_token,
                                       GetCredentialsMetadataCallback callback);
-  virtual void EnumerateCredentials(base::span<const uint8_t> pin_token,
+  virtual void EnumerateCredentials(const pin::TokenResponse& pin_token,
                                     EnumerateCredentialsCallback callback);
   virtual void DeleteCredential(
-      base::span<const uint8_t> pin_token,
+      const pin::TokenResponse& pin_token,
       const PublicKeyCredentialDescriptor& credential_id,
       DeleteCredentialCallback callback);
 

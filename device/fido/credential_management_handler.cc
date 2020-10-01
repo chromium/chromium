@@ -157,7 +157,7 @@ void CredentialManagementHandler::OnHavePINToken(
   }
 
   state_ = State::kReady;
-  pin_token_ = response->token();
+  pin_token_ = response;
   std::move(ready_callback_).Run();
 }
 

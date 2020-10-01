@@ -341,7 +341,6 @@ FidoDeviceAuthenticator::WillNeedPINToMakeCredential(
                : MakeCredentialPINDisposition::kNoPIN;
   }
 
-
   // CTAP 2.0 requires a PIN for credential creation once a PIN has been set.
   // Thus, if fallback to U2F isn't possible, a PIN will be needed if set.
   const bool u2f_fallback_possible =
@@ -439,7 +438,7 @@ FidoDeviceAuthenticator::WillNeedPINToGetAssertion(
 }
 
 void FidoDeviceAuthenticator::GetCredentialsMetadata(
-    base::span<const uint8_t> pin_token,
+    const pin::TokenResponse& pin_token,
     GetCredentialsMetadataCallback callback) {
   DCHECK(Options()->supports_credential_management ||
          Options()->supports_credential_management_preview);
@@ -451,11 +450,12 @@ void FidoDeviceAuthenticator::GetCredentialsMetadata(
 }
 
 struct FidoDeviceAuthenticator::EnumerateCredentialsState {
-  EnumerateCredentialsState() = default;
+  explicit EnumerateCredentialsState(pin::TokenResponse pin_token_)
+      : pin_token(pin_token_) {}
   EnumerateCredentialsState(EnumerateCredentialsState&&) = default;
   EnumerateCredentialsState& operator=(EnumerateCredentialsState&&) = default;
 
-  std::vector<uint8_t> pin_token;
+  pin::TokenResponse pin_token;
   bool is_first_rp = true;
   bool is_first_credential = true;
   size_t rp_count;
@@ -466,13 +466,12 @@ struct FidoDeviceAuthenticator::EnumerateCredentialsState {
 };
 
 void FidoDeviceAuthenticator::EnumerateCredentials(
-    base::span<const uint8_t> pin_token,
+    const pin::TokenResponse& pin_token,
     EnumerateCredentialsCallback callback) {
   DCHECK(Options()->supports_credential_management ||
          Options()->supports_credential_management_preview);
 
-  EnumerateCredentialsState state;
-  state.pin_token = fido_parsing_utils::Materialize(pin_token);
+  EnumerateCredentialsState state(pin_token);
   state.callback = std::move(callback);
   RunOperation<CredentialManagementRequest, EnumerateRPsResponse>(
       CredentialManagementRequest::ForEnumerateRPsBegin(
@@ -629,7 +628,7 @@ void FidoDeviceAuthenticator::OnEnumerateCredentialsDone(
 }
 
 void FidoDeviceAuthenticator::DeleteCredential(
-    base::span<const uint8_t> pin_token,
+    const pin::TokenResponse& pin_token,
     const PublicKeyCredentialDescriptor& credential_id,
     DeleteCredentialCallback callback) {
   DCHECK(Options()->supports_credential_management ||
@@ -702,11 +701,11 @@ void FidoDeviceAuthenticator::BioEnrollCancel(BioEnrollmentCallback callback) {
 }
 
 void FidoDeviceAuthenticator::BioEnrollEnumerate(
-    const pin::TokenResponse& response,
+    const pin::TokenResponse& pin_token,
     BioEnrollmentCallback callback) {
   RunOperation<BioEnrollmentRequest, BioEnrollmentResponse>(
       BioEnrollmentRequest::ForEnumerate(
-          GetBioEnrollmentRequestVersion(*Options()), std::move(response)),
+          GetBioEnrollmentRequestVersion(*Options()), std::move(pin_token)),
       std::move(callback), base::BindOnce(&BioEnrollmentResponse::Parse));
 }
 

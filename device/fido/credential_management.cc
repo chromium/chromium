@@ -15,31 +15,11 @@
 
 namespace device {
 
-namespace {
-std::array<uint8_t, 16> MakePINAuth(base::span<const uint8_t> pin_token,
-                                    base::span<const uint8_t> pin_auth_bytes) {
-  DCHECK(!pin_token.empty() && !pin_auth_bytes.empty());
-  std::array<uint8_t, SHA256_DIGEST_LENGTH> hmac;
-  unsigned hmac_len;
-  CHECK(HMAC(EVP_sha256(), pin_token.data(), pin_token.size(),
-             pin_auth_bytes.data(), pin_auth_bytes.size(), hmac.data(),
-             &hmac_len));
-  DCHECK_EQ(hmac.size(), static_cast<size_t>(hmac_len));
-  std::array<uint8_t, 16> pin_auth;
-  std::copy(hmac.begin(), hmac.begin() + 16, pin_auth.begin());
-  return pin_auth;
-}
-}  // namespace
-
 CredentialManagementRequest::CredentialManagementRequest(
     Version version_,
     CredentialManagementSubCommand subcommand_,
-    base::Optional<cbor::Value::MapValue> params_,
-    base::Optional<std::array<uint8_t, 16>> pin_auth_)
-    : version(version_),
-      subcommand(subcommand_),
-      params(std::move(params_)),
-      pin_auth(std::move(pin_auth_)) {}
+    base::Optional<cbor::Value::MapValue> params_)
+    : version(version_), subcommand(subcommand_), params(std::move(params_)) {}
 CredentialManagementRequest::CredentialManagementRequest(
     CredentialManagementRequest&&) = default;
 CredentialManagementRequest& CredentialManagementRequest::operator=(
@@ -49,25 +29,25 @@ CredentialManagementRequest::~CredentialManagementRequest() = default;
 // static
 CredentialManagementRequest CredentialManagementRequest::ForGetCredsMetadata(
     Version version,
-    base::span<const uint8_t> pin_token) {
-  return CredentialManagementRequest(
+    const pin::TokenResponse& token) {
+  CredentialManagementRequest request(
       version, CredentialManagementSubCommand::kGetCredsMetadata,
-      /*params=*/base::nullopt,
-      MakePINAuth(pin_token,
-                  {{static_cast<uint8_t>(
-                      CredentialManagementSubCommand::kGetCredsMetadata)}}));
+      /*params=*/base::nullopt);
+  request.pin_auth = token.PinAuth({{static_cast<uint8_t>(
+      CredentialManagementSubCommand::kGetCredsMetadata)}});
+  return request;
 }
 
 // static
 CredentialManagementRequest CredentialManagementRequest::ForEnumerateRPsBegin(
     Version version,
-    base::span<const uint8_t> pin_token) {
-  return CredentialManagementRequest(
+    const pin::TokenResponse& token) {
+  CredentialManagementRequest request(
       version, CredentialManagementSubCommand::kEnumerateRPsBegin,
-      /*params=*/base::nullopt,
-      MakePINAuth(pin_token,
-                  {{static_cast<uint8_t>(
-                      CredentialManagementSubCommand::kEnumerateRPsBegin)}}));
+      /*params=*/base::nullopt);
+  request.pin_auth = token.PinAuth({{static_cast<uint8_t>(
+      CredentialManagementSubCommand::kEnumerateRPsBegin)}});
+  return request;
 }
 
 // static
@@ -75,30 +55,30 @@ CredentialManagementRequest CredentialManagementRequest::ForEnumerateRPsGetNext(
     Version version) {
   return CredentialManagementRequest(
       version, CredentialManagementSubCommand::kEnumerateRPsGetNextRP,
-      /*params=*/base::nullopt,
-      /*pin_auth=*/base::nullopt);
+      /*params=*/base::nullopt);
 }
 
 // static
 CredentialManagementRequest
 CredentialManagementRequest::ForEnumerateCredentialsBegin(
     Version version,
-    base::span<const uint8_t> pin_token,
+    const pin::TokenResponse& token,
     std::array<uint8_t, kRpIdHashLength> rp_id_hash) {
   cbor::Value::MapValue params_map;
   params_map.emplace(
       static_cast<int>(CredentialManagementRequestParamKey::kRPIDHash),
       std::move(rp_id_hash));
-  base::Optional<std::vector<uint8_t>> pin_auth_bytes =
-      cbor::Writer::Write(cbor::Value(params_map));
-  DCHECK(pin_auth_bytes);
-  pin_auth_bytes->insert(
-      pin_auth_bytes->begin(),
+  std::vector<uint8_t> pin_auth_bytes =
+      *cbor::Writer::Write(cbor::Value(params_map));
+  CredentialManagementRequest request(
+      version, CredentialManagementSubCommand::kEnumerateCredentialsBegin,
+      std::move(params_map));
+  pin_auth_bytes.insert(
+      pin_auth_bytes.begin(),
       static_cast<uint8_t>(
           CredentialManagementSubCommand::kEnumerateCredentialsBegin));
-  return CredentialManagementRequest(
-      version, CredentialManagementSubCommand::kEnumerateCredentialsBegin,
-      std::move(params_map), MakePINAuth(pin_token, *pin_auth_bytes));
+  request.pin_auth = token.PinAuth(pin_auth_bytes);
+  return request;
 }
 
 // static
@@ -107,27 +87,28 @@ CredentialManagementRequest::ForEnumerateCredentialsGetNext(Version version) {
   return CredentialManagementRequest(
       version,
       CredentialManagementSubCommand::kEnumerateCredentialsGetNextCredential,
-      /*params=*/base::nullopt, /*pin_auth=*/base::nullopt);
+      /*params=*/base::nullopt);
 }
 
 // static
 CredentialManagementRequest CredentialManagementRequest::ForDeleteCredential(
     Version version,
-    base::span<const uint8_t> pin_token,
+    const pin::TokenResponse& token,
     const PublicKeyCredentialDescriptor& credential_id) {
   cbor::Value::MapValue params_map;
   params_map.emplace(
       static_cast<int>(CredentialManagementRequestParamKey::kCredentialID),
       AsCBOR(credential_id));
-  base::Optional<std::vector<uint8_t>> pin_auth_bytes =
-      cbor::Writer::Write(cbor::Value(params_map));
-  DCHECK(pin_auth_bytes);
-  pin_auth_bytes->insert(
-      pin_auth_bytes->begin(),
-      static_cast<uint8_t>(CredentialManagementSubCommand::kDeleteCredential));
-  return CredentialManagementRequest(
+  std::vector<uint8_t> pin_auth_bytes =
+      *cbor::Writer::Write(cbor::Value(params_map));
+  CredentialManagementRequest request(
       version, CredentialManagementSubCommand::kDeleteCredential,
-      std::move(params_map), MakePINAuth(pin_token, *pin_auth_bytes));
+      std::move(params_map));
+  pin_auth_bytes.insert(
+      pin_auth_bytes.begin(),
+      static_cast<uint8_t>(CredentialManagementSubCommand::kDeleteCredential));
+  request.pin_auth = token.PinAuth(pin_auth_bytes);
+  return request;
 }
 
 // static
@@ -349,8 +330,9 @@ AggregatedEnumerateCredentialsResponse::AggregatedEnumerateCredentialsResponse(
     : rp(std::move(rp_)), credentials() {}
 AggregatedEnumerateCredentialsResponse::AggregatedEnumerateCredentialsResponse(
     AggregatedEnumerateCredentialsResponse&&) = default;
-AggregatedEnumerateCredentialsResponse& AggregatedEnumerateCredentialsResponse::
-operator=(AggregatedEnumerateCredentialsResponse&&) = default;
+AggregatedEnumerateCredentialsResponse&
+AggregatedEnumerateCredentialsResponse::operator=(
+    AggregatedEnumerateCredentialsResponse&&) = default;
 AggregatedEnumerateCredentialsResponse::
     ~AggregatedEnumerateCredentialsResponse() = default;
 

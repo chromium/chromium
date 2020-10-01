@@ -73,11 +73,11 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDeviceAuthenticator
       const CtapGetAssertionRequest& request,
       const FidoRequestHandlerBase::Observer* observer) override;
 
-  void GetCredentialsMetadata(base::span<const uint8_t> pin_token,
+  void GetCredentialsMetadata(const pin::TokenResponse& pin_token,
                               GetCredentialsMetadataCallback callback) override;
-  void EnumerateCredentials(base::span<const uint8_t> pin_token,
+  void EnumerateCredentials(const pin::TokenResponse& pin_token,
                             EnumerateCredentialsCallback callback) override;
-  void DeleteCredential(base::span<const uint8_t> pin_token,
+  void DeleteCredential(const pin::TokenResponse& pin_token,
                         const PublicKeyCredentialDescriptor& credential_id,
                         DeleteCredentialCallback callback) override;
 
