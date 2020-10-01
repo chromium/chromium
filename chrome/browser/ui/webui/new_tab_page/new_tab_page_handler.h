@@ -67,6 +67,10 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
                     const base::Time& ntp_navigation_start_time);
   ~NewTabPageHandler() override;
 
+  // Histograms being recorded when a module is dismissed or restored.
+  static const char kModuleDismissedHistogram[];
+  static const char kModuleRestoredHistogram[];
+
   // new_tab_page::mojom::PageHandler:
   void AddMostVisitedTile(const GURL& url,
                           const std::string& title,

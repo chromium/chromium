@@ -335,6 +335,12 @@ new_tab_page::mojom::PromoPtr MakePromo(const PromoData& data) {
 
 }  // namespace
 
+// static
+const char NewTabPageHandler::kModuleDismissedHistogram[] =
+    "NewTabPage.Modules.Dismissed";
+const char NewTabPageHandler::kModuleRestoredHistogram[] =
+    "NewTabPage.Modules.Restored";
+
 NewTabPageHandler::NewTabPageHandler(
     mojo::PendingReceiver<new_tab_page::mojom::PageHandler>
         pending_page_handler,
@@ -648,11 +654,15 @@ void NewTabPageHandler::GetPromo(GetPromoCallback callback) {
 }
 
 void NewTabPageHandler::OnDismissModule(const std::string& module_id) {
-  // TODO(crbug.com/1130864): Record histograms.
+  const std::string histogram_prefix(kModuleDismissedHistogram);
+  base::UmaHistogramExactLinear(histogram_prefix, 1, 1);
+  base::UmaHistogramExactLinear(histogram_prefix + "." + module_id, 1, 1);
 }
 
 void NewTabPageHandler::OnRestoreModule(const std::string& module_id) {
-  // TODO(crbug.com/1130864): Record histograms.
+  const std::string histogram_prefix(kModuleRestoredHistogram);
+  base::UmaHistogramExactLinear(histogram_prefix, 1, 1);
+  base::UmaHistogramExactLinear(histogram_prefix + "." + module_id, 1, 1);
 }
 
 void NewTabPageHandler::OnPromoDataUpdated() {
