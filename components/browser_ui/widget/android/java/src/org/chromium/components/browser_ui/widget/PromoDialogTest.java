@@ -23,7 +23,6 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.components.browser_ui.widget.PromoDialog.DialogParams;
 import org.chromium.components.browser_ui.widget.test.R;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -298,7 +297,6 @@ public class PromoDialogTest extends DummyUiActivityTestCase {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "https://crbug.com/1131684")
     public void testBasic_HeaderBehavior_NoIllustration() throws Exception {
         // Without an illustration, the header View becomes locked to the top of the layout if
         // there is enough height.
@@ -318,7 +316,7 @@ public class PromoDialogTest extends DummyUiActivityTestCase {
         ViewGroup scrollableLayout =
                 (ViewGroup) promoDialogLayout.findViewById(R.id.scrollable_promo_content);
 
-        wrapper.triggerDialogLayoutMeasure(400, 1000);
+        wrapper.triggerDialogLayoutMeasure(400, 2000);
         Assert.assertEquals(promoDialogLayout.getChildAt(0), header);
         assertHasStartAndEndPadding(header, true);
 
@@ -328,7 +326,7 @@ public class PromoDialogTest extends DummyUiActivityTestCase {
         assertHasStartAndEndPadding(header, false);
 
         // Increase again and ensure the header is moved back to the top of the layout.
-        wrapper.triggerDialogLayoutMeasure(400, 1000);
+        wrapper.triggerDialogLayoutMeasure(400, 2000);
         Assert.assertEquals(promoDialogLayout.getChildAt(0), header);
         assertHasStartAndEndPadding(header, true);
     }
