@@ -57,6 +57,9 @@ class NTPUserDataLogger
   // the user (scrolled into view).
   void LogModuleImpression(const std::string& id, base::TimeDelta time);
 
+  // Logs a module is loaded on the NTP.
+  void LogModuleLoaded(const std::string& id, base::TimeDelta time);
+
   // Logs when a user interacts with a module which will result in a navigation.
   void LogModuleUsage(const std::string& id);
 

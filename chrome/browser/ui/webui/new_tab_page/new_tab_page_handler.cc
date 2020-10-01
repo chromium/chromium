@@ -936,6 +936,12 @@ void NewTabPageHandler::OnModuleImpression(const std::string& module_id,
       module_id, base::Time::FromJsTime(time) - ntp_navigation_start_time_);
 }
 
+void NewTabPageHandler::OnModuleLoaded(const std::string& module_id,
+                                       double time) {
+  logger_->LogModuleLoaded(
+      module_id, base::Time::FromJsTime(time) - ntp_navigation_start_time_);
+}
+
 void NewTabPageHandler::OnModuleUsage(const std::string& module_id) {
   logger_->LogModuleUsage(module_id);
 }

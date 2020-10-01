@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {BrowserProxy} from '../browser_proxy.js';
+
 /**
  * @fileoverview Provides the module descriptor. Each module must create a
  * module descriptor and register it at the NTP.
@@ -79,5 +81,7 @@ export class ModuleDescriptor {
     this.title_ = info.title;
     this.element_ = info.element;
     this.actions_ = info.actions || null;
+    BrowserProxy.getInstance().handler.onModuleLoaded(
+        this.id_, BrowserProxy.getInstance().now());
   }
 }

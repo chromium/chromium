@@ -601,6 +601,14 @@ void NTPUserDataLogger::LogModuleImpression(const std::string& id,
                                 base::TimeDelta::FromSeconds(60), 100);
 }
 
+void NTPUserDataLogger::LogModuleLoaded(const std::string& id,
+                                        base::TimeDelta time) {
+  UMA_HISTOGRAM_LOAD_TIME("NewTabPage.Modules.Loaded", time);
+  base::UmaHistogramCustomTimes("NewTabPage.Modules.Loaded." + id, time,
+                                base::TimeDelta::FromMilliseconds(1),
+                                base::TimeDelta::FromSeconds(60), 100);
+}
+
 void NTPUserDataLogger::LogModuleUsage(const std::string& id) {
   UMA_HISTOGRAM_EXACT_LINEAR("NewTabPage.Modules.Usage", 1, 1);
   base::UmaHistogramExactLinear("NewTabPage.Modules.Usage." + id, 1, 1);
