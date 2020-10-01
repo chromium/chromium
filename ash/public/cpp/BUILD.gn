@@ -251,6 +251,8 @@ component("cpp") {
     "quick_answers/controller/quick_answers_controller.h",
     "rounded_corner_decorator.cc",
     "rounded_corner_decorator.h",
+    "rounded_image_view.cc",
+    "rounded_image_view.h",
     "scale_utility.cc",
     "scale_utility.h",
     "scoped_guest_button_blocker.h",

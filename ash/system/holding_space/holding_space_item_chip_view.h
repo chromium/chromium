@@ -20,10 +20,7 @@ namespace ash {
 
 class HoldingSpaceItem;
 class HoldingSpaceItemViewDelegate;
-
-namespace tray {
 class RoundedImageView;
-}  // namespace tray
 
 // A button with an image derived from a file's thumbnail and file's name as the
 // label.
@@ -40,7 +37,7 @@ class ASH_EXPORT HoldingSpaceItemChipView : public HoldingSpaceItemView {
  private:
   void UpdateImage();
 
-  tray::RoundedImageView* image_ = nullptr;
+  RoundedImageView* image_ = nullptr;
   views::Label* label_ = nullptr;
 
   std::unique_ptr<HoldingSpaceImage::Subscription> image_subscription_;

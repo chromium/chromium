@@ -9,12 +9,9 @@
 #include "ash/clipboard/views/clipboard_history_item_view.h"
 #include "ui/base/clipboard/clipboard_data.h"
 
-namespace views {
-class ImageView;
-}  // namespace views
-
 namespace ash {
 class ClipboardHistoryResourceManager;
+class RoundedImageView;
 
 // The menu item showing a bitmap.
 class ClipboardHistoryBitmapItemView : public ClipboardHistoryItemView {
@@ -41,10 +38,10 @@ class ClipboardHistoryBitmapItemView : public ClipboardHistoryItemView {
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
 
   // Builds `image_view_`.
-  std::unique_ptr<views::ImageView> BuildImageView();
+  std::unique_ptr<RoundedImageView> BuildImageView();
 
   // Owned by view hierarchy.
-  views::ImageView* image_view_ = nullptr;
+  RoundedImageView* image_view_ = nullptr;
 
   // Owned by ClipboardHistoryController.
   const ClipboardHistoryResourceManager* const resource_manager_;

@@ -1346,8 +1346,6 @@ component("ash") {
     "system/update/update_notification_controller.h",
     "system/user/login_status.cc",
     "system/user/login_status.h",
-    "system/user/rounded_image_view.cc",
-    "system/user/rounded_image_view.h",
     "system/virtual_keyboard/virtual_keyboard_observer.h",
     "system/virtual_keyboard/virtual_keyboard_tray.cc",
     "system/virtual_keyboard/virtual_keyboard_tray.h",

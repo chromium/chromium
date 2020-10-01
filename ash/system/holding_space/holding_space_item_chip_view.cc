@@ -6,11 +6,11 @@
 
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
+#include "ash/public/cpp/rounded_image_view.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/holding_space/holding_space_item_view.h"
 #include "ash/system/tray/tray_popup_item_style.h"
 #include "ash/system/tray/tray_popup_utils.h"
-#include "ash/system/user/rounded_image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
@@ -28,7 +28,7 @@ HoldingSpaceItemChipView::HoldingSpaceItemChipView(
   SetPreferredSize(gfx::Size(kHoldingSpaceChipWidth, kHoldingSpaceChipHeight));
 
   image_ = AddChildView(
-      std::make_unique<tray::RoundedImageView>(kHoldingSpaceChipIconSize / 2));
+      std::make_unique<RoundedImageView>(kHoldingSpaceChipIconSize / 2));
 
   label_ = AddChildView(std::make_unique<views::Label>(item->text()));
   label_->SetElideBehavior(gfx::ELIDE_MIDDLE);

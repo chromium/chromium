@@ -7,8 +7,8 @@
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_image.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
+#include "ash/public/cpp/rounded_image_view.h"
 #include "ash/system/tray/tray_constants.h"
-#include "ash/system/user/rounded_image_view.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
@@ -24,7 +24,7 @@ HoldingSpaceItemScreenshotView::HoldingSpaceItemScreenshotView(
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
   image_ = AddChildView(
-      std::make_unique<tray::RoundedImageView>(kHoldingSpaceCornerRadius));
+      std::make_unique<RoundedImageView>(kHoldingSpaceCornerRadius));
 
   // Subscribe to be notified of changes to `item_`'s image.
   image_subscription_ = item->image().AddImageSkiaChangedCallback(

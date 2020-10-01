@@ -1,20 +1,20 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_SYSTEM_USER_ROUNDED_IMAGE_VIEW_H_
-#define ASH_SYSTEM_USER_ROUNDED_IMAGE_VIEW_H_
+#ifndef ASH_PUBLIC_CPP_ROUNDED_IMAGE_VIEW_H_
+#define ASH_PUBLIC_CPP_ROUNDED_IMAGE_VIEW_H_
 
+#include "ash/public/cpp/ash_public_export.h"
 #include "base/macros.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/view.h"
 
 namespace ash {
-namespace tray {
 
 // A custom image view with rounded edges.
-class RoundedImageView : public views::View {
+class ASH_PUBLIC_EXPORT RoundedImageView : public views::View {
  public:
   // Constructs a new rounded image view with rounded corners of radius
   // |corner_radius|.
@@ -23,6 +23,9 @@ class RoundedImageView : public views::View {
 
   // Set the image that should be displayed. The image contents is copied to the
   // receiver's image.
+  void SetImage(const gfx::ImageSkia& image);
+
+  // Similar with the method above but the preferred image size is `size`.
   void SetImage(const gfx::ImageSkia& image, const gfx::Size& size);
 
   // Set the radii of the corners independently.
@@ -36,18 +39,19 @@ class RoundedImageView : public views::View {
   void OnPaint(gfx::Canvas* canvas) override;
   const char* GetClassName() const override;
 
-  // Gets the image painted by RoundedImageView for test.
-  const gfx::ImageSkia& image_for_test() const { return resized_image_; }
+  const gfx::ImageSkia& original_image() const { return original_image_; }
 
  private:
+  // Returns the preferred image size.
+  gfx::Size GetImageSize() const;
+
+  gfx::ImageSkia original_image_;
   gfx::ImageSkia resized_image_;
-  gfx::Size image_size_;
   int corner_radius_[4];
 
   DISALLOW_COPY_AND_ASSIGN(RoundedImageView);
 };
 
-}  // namespace tray
 }  // namespace ash
 
-#endif  // ASH_SYSTEM_USER_ROUNDED_IMAGE_VIEW_H_
+#endif  // ASH_PUBLIC_CPP_ROUNDED_IMAGE_VIEW_H_

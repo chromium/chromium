@@ -8,6 +8,7 @@
 #include <string>
 
 #include "ash/public/cpp/ash_view_ids.h"
+#include "ash/public/cpp/rounded_image_view.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
@@ -22,7 +23,6 @@
 #include "ash/system/unified/top_shortcut_button.h"
 #include "ash/system/unified/top_shortcuts_view.h"
 #include "ash/system/unified/user_chooser_detailed_view_controller.h"
-#include "ash/system/user/rounded_image_view.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -159,7 +159,7 @@ views::View* CreateUserAvatarView(int user_index) {
     return new TopShortcutButton(kSystemMenuGuestIcon,
                                  IDS_ASH_STATUS_TRAY_GUEST_LABEL);
   } else {
-    auto* image_view = new tray::RoundedImageView(kTrayItemSize / 2);
+    auto* image_view = new RoundedImageView(kTrayItemSize / 2);
     image_view->SetCanProcessEventsWithinSubtree(false);
     image_view->SetImage(user_session->user_info.avatar.image,
                          gfx::Size(kTrayItemSize, kTrayItemSize));

@@ -14,10 +14,7 @@ namespace ash {
 
 class HoldingSpaceItem;
 class HoldingSpaceItemViewDelegate;
-
-namespace tray {
 class RoundedImageView;
-}  // namespace tray
 
 class ASH_EXPORT HoldingSpaceItemScreenshotView : public HoldingSpaceItemView {
  public:
@@ -34,7 +31,7 @@ class ASH_EXPORT HoldingSpaceItemScreenshotView : public HoldingSpaceItemView {
  private:
   void UpdateImage();
 
-  tray::RoundedImageView* image_ = nullptr;
+  RoundedImageView* image_ = nullptr;
 
   std::unique_ptr<HoldingSpaceImage::Subscription> image_subscription_;
 };
