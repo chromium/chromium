@@ -5315,7 +5315,6 @@ crbug.com/1044137 [ Mac ] fast/scrolling/no-hover-during-smooth-keyboard-scroll.
 crbug.com/862589 virtual/threaded/fast/idle-callback/long_idle_periods.html [ Timeout Pass ]
 
 # fast/events/middleClickAutoscroll-* are failing on Mac
-crbug.com/874162 [ Mac ] fast/events/autoscroll-iframe-no-scrolling.html [ Skip ]
 crbug.com/874162 [ Mac ] fast/events/middleClickAutoscroll-click-hyperlink.html [ Skip ]
 crbug.com/874162 [ Mac ] fast/events/middleClickAutoscroll-click.html [ Skip ]
 crbug.com/874162 [ Mac ] fast/events/middleClickAutoscroll-drag.html [ Skip ]
@@ -5327,6 +5326,9 @@ crbug.com/874162 [ Mac ] fast/events/middleClickAutoscroll-nested-divs-forbidden
 # The next also fails due to crbug.com/891427, thus disabled on all platforms.
 crbug.com/874162 [ Mac ] fast/events/middleClickAutoscroll-nested-divs.html [ Skip ]
 crbug.com/874162 [ Mac ] fast/events/selection-autoscroll-borderbelt.html [ Skip ]
+
+# Passes in threaded mode, fails without it. This is a real bug.
+crbug.com/1112183 fast/scrolling/autoscroll-iframe-no-scrolling.html [ Failure ]
 
 # Sheriff 2018-09-10
 crbug.com/881207 fast/js/regress/splice-to-remove.html [ Timeout Pass ]

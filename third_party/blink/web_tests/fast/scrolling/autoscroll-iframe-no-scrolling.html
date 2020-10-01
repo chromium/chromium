@@ -1,4 +1,5 @@
 <!DOCTYPE HTML>
+<script src="../../resources/gesture-util.js"></script>
 <script src="../../resources/testharness.js"></script>
 <script src="../../resources/testharnessreport.js"></script>
 <script src="../../resources/compositor-controls.js"></script>
@@ -21,9 +22,8 @@
   This test ensures that autoscrolling doesn't scroll an iframe that's marked
   as unscrollable via `scrolling="no"`. To test manually, fully scroll the blue
   inner scroller and use middle click autoscroll (Windows feature) from the
-  inner blue scroller to scroll downwards until the main window begins to
-  scroll. This test passes if the iframe that contains the blue scroller
-  doesn't scroll.
+  inner blue scroller or the rest of the iframe to scroll downwards. This test
+  passes if the iframe that contains the blue scroller doesn't scroll.
 </p>
 <iframe id="scrollable" scrolling="no" srcdoc="
   <!DOCTYPE html>
@@ -67,41 +67,35 @@ function autoScroll(start_x, start_y, end_x, end_y) {
   });
 }
 
-function waitForScrollAndCheck() {
-  return new Promise((resolve, reject) => {
-    function tick(frames) {
-      // Wait until the scroll bubbles up to the main window or the iframe scrolls.
-      if (window.scrollY > 0 || scrollable.contentWindow.scrollY > 0)
-        resolve();
-      else
-        requestAnimationFrame(tick.bind(this, frames + 1));
-    }
-    tick(0);
-  });
-}
-
 window.addEventListener('load', () => {
     var inner_scroller = frames[0].document.getElementById('scroller');
     inner_scroller.scrollTop = 1000;
-    promise_test(t => {
+    promise_test(async t => {
       const MIDDLE_CLICK_AUTOSCROLL_RADIUS = 15; // from blink::kNoMiddleClickAutoscrollRadius
       var rect = scrollable.getBoundingClientRect();
       var startX = rect.left + 50;
       var startY = rect.top + 50;
       var endX = startX;
-      var endY = startY + 5 * MIDDLE_CLICK_AUTOSCROLL_RADIUS;
+      var endY = startY + 30 * MIDDLE_CLICK_AUTOSCROLL_RADIUS;
       assert_equals(inner_scroller.scrollTop,
                     inner_scroller.scrollHeight - inner_scroller.clientHeight,
                     "Inner scroller starts fully scrolled.");
       assert_equals(window.scrollY, 0, "Main window starts unscrolled.");
       assert_equals(frames[0].window.scrollY, 0, "IFrame starts unscrolled.");
 
-      return autoScroll(startX, startY, endX, endY)
-      .then(waitForScrollAndCheck)
-      .then(() => {
-          assert_greater_than(window.scrollY, 0, "Main window must be scrolled.");
-          assert_equals(frames[0].window.scrollY, 0, "IFrame must NOT scroll.");
-      });
+      // Autoscroll over the inner scroller.
+      await autoScroll(startX, startY, endX, endY);
+      await waitForAnimationEndTimeBased( () => { return window.scrollY; } );
+      assert_equals(window.scrollY, 0, "Main frame should not scroll");
+
+      // Autoscroll over the iframe.
+      startX = rect.right - 20;
+      endX = startX;
+      await autoScroll(startX, startY, endX, endY);
+      await waitForAnimationEndTimeBased( () => { return window.scrollY; } );
+      assert_equals(window.scrollY, 0, "Main frame should not scroll");
+
+      assert_equals(frames[0].window.scrollY, 0, "IFrame must NOT scroll.");
     });
 });
 

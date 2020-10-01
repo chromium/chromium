@@ -134,7 +134,7 @@ function waitForAnimationEndTimeBased(getValue) {
       }
 
       if (cur_time - START_TIME > TIMEOUT_MS) {
-        reject();
+        reject(new Error("Timeout waiting for animation to end"));
         return;
       }
 
