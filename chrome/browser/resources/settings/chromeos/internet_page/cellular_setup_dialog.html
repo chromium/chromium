@@ -22,12 +22,49 @@
           --cr-dialog-width: 320px;
         }
       }
+
+      :host {
+        --cr-dialog-title-slot-padding-bottom: 0;
+        --cr-dialog-title-slot-padding-end: 0;
+        --cr-dialog-title-slot-padding-start: 0;
+        --cr-dialog-title-slot-padding-top: 0;
+      }
+
+      #header {
+        padding-bottom: 16px;
+        padding-inline-end:  20px;
+        padding-inline-start: 20px;
+        padding-top: 20px;
+      }
+
+      #title {
+        align-items: center;
+        background-color: var(--google-grey-200);
+        display: flex;
+        font-size: x-small;
+        height: 32px;
+        justify-content: center;
+      }
+
     </style>
     <!-- TODO(crbug/1093185): Change close logic when CellularSetup embedded -->
     <cr-dialog id="dialog">
-      <div slot="title">$i18n{cellularSetupDialogTitle}</div>
+      <div slot="title">
+        <template is="dom-if"
+            if="[[shouldShowDialogTitle_(dialogTitle_)]]" restamp>
+          <div id="title">
+            [[dialogTitle_]]
+          </div>
+        </template>
+        <div id="header">
+          $i18n{cellularSetupDialogTitle}
+        </div>
+      </div>
       <div slot="body">
-        <cellular-setup delegate="[[delegate_]]"></cellular-setup>
+        <cellular-setup
+            flow-title="{{dialogTitle_}}"
+            delegate="[[delegate_]]">
+        </cellular-setup>
       </div>
     </cr-dialog>
   </template>

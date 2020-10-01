@@ -70,10 +70,10 @@
         flex: 1;
         font-size: calc(15 / 13 * 100%);
         line-height: 1;
-        padding-bottom: 16px;
-        padding-inline-end: 20px;
-        padding-inline-start: 20px;
-        padding-top: 20px;
+        padding-bottom: var(--cr-dialog-title-slot-padding-bottom, 16px);
+        padding-inline-end:  var(--cr-dialog-title-slot-padding-end, 20px);
+        padding-inline-start: var(--cr-dialog-title-slot-padding-start, 20px);
+        padding-top: var(--cr-dialog-title-slot-padding-top, 20px);
       }
 
       :host ::slotted([slot=button-container]) {

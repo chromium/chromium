@@ -23,6 +23,7 @@
           if="[[isPSimSelected_(currentPageName_)]]" restamp>
         <psim-flow-ui
             button-state="{{buttonState_}}"
+            name-of-carrier-pending-setup="{{flowTitle}}"
             delegate="[[delegate]]"
             id="psim-flow-ui">
         </psim-flow-ui>
@@ -31,7 +32,7 @@
           if="[[isESimSelected_(currentPageName_)]]" restamp>
         <esim-flow-ui
             button-state="{{buttonState_}}"
-            delegate="[[delegate]]" 
+            delegate="[[delegate]]"
             id="esim-flow-ui">
         </esim-flow-ui>
       </template>

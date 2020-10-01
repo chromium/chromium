@@ -14,7 +14,13 @@ Polymer({
     /**
      * @private {!cellular_setup.CellularSetupDelegate}
      */
-    delegate_: Object
+    delegate_: Object,
+
+    /*** @private */
+    dialogTitle_: {
+      type: String,
+      notify: true,
+    },
   },
 
   /** @override */
@@ -31,8 +37,17 @@ Polymer({
     this.$.dialog.showModal();
   },
 
+  /** @private*/
   onExitCellularSetup_() {
     this.$.dialog.close();
-  }
+  },
 
+  /**
+   * @param {string} title
+   * @returns {boolean}
+   * @private
+   */
+  shouldShowDialogTitle_(title) {
+    return !!this.dialogTitle_;
+  },
 });

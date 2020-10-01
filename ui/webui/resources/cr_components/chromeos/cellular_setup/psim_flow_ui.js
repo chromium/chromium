@@ -71,6 +71,16 @@ cr.define('cellularSetup', function() {
       delegate: Object,
 
       /**
+       * Carrier name; used in dialog title to show the current carrier
+       * name being setup
+       * @type {string}
+       */
+      nameOfCarrierPendingSetup: {
+        type: String,
+        notify: true,
+      },
+
+      /**
        * @type {!cellularSetup.PSimUIState}
        * @private
        */
@@ -112,25 +122,6 @@ cr.define('cellularSetup', function() {
         type: Object,
         value: null,
       },
-
-      /**
-       * Whether try again should be shown in the button bar.
-       * @private {boolean}
-       */
-      showTryAgainButton_: {type: Boolean, value: false},
-
-      /**
-       * Whether finish button should be shown in the button bar.
-       * @private {boolean}
-       */
-      showFinishButton_: {type: Boolean, value: false},
-
-      /**
-       * Whether cancel button should be shown in the button bar.
-       * @private {boolean}
-       */
-      showCancelButton_: {type: Boolean, value: false},
-
     },
 
     observers: [
@@ -302,6 +293,7 @@ cr.define('cellularSetup', function() {
         case PSimUIState.WAITING_FOR_USER_PAYMENT:
         case PSimUIState.ACTIVATION_SUCCESS:
           this.selectedPSimPageName_ = PSimPageName.PROVISIONING;
+          this.nameOfCarrierPendingSetup = 'TODO: network title';
           return;
         case PSimUIState.WAITING_FOR_ACTIVATION_TO_FINISH:
         case PSimUIState.TIMEOUT_FINISH_ACTIVATION:
