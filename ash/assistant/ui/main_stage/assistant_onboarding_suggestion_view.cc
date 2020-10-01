@@ -216,6 +216,10 @@ void AssistantOnboardingSuggestionView::InitLayout(
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
                                views::MaximumFlexSizeRule::kUnbounded));
   label_->SetText(base::UTF8ToUTF16(suggestion.text));
+
+  // Workaround issue where multiline label is not allocated enough height.
+  label_->SetPreferredSize(
+      gfx::Size(label_->GetPreferredSize().width(), 2 * kLabelLineHeight));
 }
 
 void AssistantOnboardingSuggestionView::UpdateIcon(const gfx::ImageSkia& icon) {
