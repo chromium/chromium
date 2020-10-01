@@ -911,6 +911,8 @@ static_library("ui") {
       "chrome_web_modal_dialog_manager_delegate.h",
       "collected_cookies_infobar_delegate.cc",
       "collected_cookies_infobar_delegate.h",
+      "commander/apps_command_source.cc",
+      "commander/apps_command_source.h",
       "commander/command_source.cc",
       "commander/command_source.h",
       "commander/commander_backend.h",

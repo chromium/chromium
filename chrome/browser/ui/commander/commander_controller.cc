@@ -5,15 +5,23 @@
 #include "chrome/browser/ui/commander/commander_controller.h"
 
 #include "base/memory/ptr_util.h"
+#include "build/branding_buildflags.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/commander/apps_command_source.h"
 #include "chrome/browser/ui/commander/commander_view_model.h"
+#include "chrome/browser/ui/commander/simple_command_source.h"
 
 namespace commander {
 
 namespace {
 
 CommanderController::CommandSources CreateDefaultSources() {
-  return {};
+  CommanderController::CommandSources sources;
+  sources.push_back(std::make_unique<SimpleCommandSource>());
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  sources.push_back(std::make_unique<AppsCommandSource>());
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  return sources;
 }
 
 }  // namespace
