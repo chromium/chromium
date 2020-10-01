@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/sharesheet/sharesheet_target_button.h"
 
+#include "base/strings/strcat.h"
+#include "base/strings/utf_string_conversions.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/font_list.h"
 #include "ui/views/controls/image_view.h"
@@ -64,6 +66,7 @@ SharesheetTargetButton::SharesheetTargetButton(
   label->SetEnabledColor(kShareTargetTitleColor);
   SetLabelProperties(label);
 
+  base::string16 accessible_name = display_name;
   if (secondary_display_name != base::string16() &&
       secondary_display_name != display_name) {
     auto* secondary_label = label_view->AddChildView(
@@ -71,6 +74,8 @@ SharesheetTargetButton::SharesheetTargetButton(
     secondary_label->SetFontList(gfx::FontList(kButtonSecondaryLabelFont));
     secondary_label->SetEnabledColor(kShareTargetSecondaryTitleColor);
     SetLabelProperties(secondary_label);
+    accessible_name = base::StrCat(
+        {display_name, base::ASCIIToUTF16(" "), secondary_display_name});
   } else {
     // If there is no secondary label, let the initial label stretch across
     // multiple lines.
@@ -79,7 +84,7 @@ SharesheetTargetButton::SharesheetTargetButton(
   }
 
   AddChildView(std::move(label_view));
-  SetAccessibleName(display_name);
+  SetAccessibleName(accessible_name);
 
   SetFocusForPlatform();
 }
