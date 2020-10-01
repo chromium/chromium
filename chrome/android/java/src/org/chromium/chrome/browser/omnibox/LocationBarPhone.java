@@ -58,7 +58,7 @@ public class LocationBarPhone extends LocationBarLayout {
     }
 
     @Override
-    public void updateSearchEngineStatusIcon(boolean shouldShowSearchEngineLogo,
+    protected void updateSearchEngineStatusIcon(boolean shouldShowSearchEngineLogo,
             boolean isSearchEngineGoogle, String searchEngineUrl) {
         super.updateSearchEngineStatusIcon(
                 shouldShowSearchEngineLogo, isSearchEngineGoogle, searchEngineUrl);
