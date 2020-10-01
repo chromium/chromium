@@ -29347,7 +29347,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3501" label="V8Document_ElementsFromPoint_Method"/>
   <int value="3502" label="V8ShadowRoot_ElementFromPoint_Method"/>
   <int value="3503" label="V8ShadowRoot_ElementsFromPoint_Method"/>
-  <int value="3504" label="IdentifiabilityStudyReserved3504"/>
+  <int value="3504" label="WindowScreenTouchSupport"/>
   <int value="3505" label="IdentifiabilityStudyReserved3505"/>
   <int value="3506" label="IdentifiabilityStudyReserved3506"/>
   <int value="3507" label="IdentifiabilityStudyReserved3507"/>

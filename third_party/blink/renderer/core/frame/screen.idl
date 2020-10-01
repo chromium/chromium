@@ -52,5 +52,5 @@
     [HighEntropy=Direct, MeasureAs=WindowScreenPrimary, RuntimeEnabled=WindowPlacement] readonly attribute boolean primary;
     [RuntimeEnabled=WindowPlacement] readonly attribute float scaleFactor;
     [HighEntropy=Direct, MeasureAs=WindowScreenId, RuntimeEnabled=WindowPlacement] readonly attribute DOMString id;
-    [RuntimeEnabled=WindowPlacement] readonly attribute boolean touchSupport;
+    [HighEntropy=Direct, MeasureAs=WindowScreenTouchSupport, RuntimeEnabled=WindowPlacement] readonly attribute boolean touchSupport;
 };

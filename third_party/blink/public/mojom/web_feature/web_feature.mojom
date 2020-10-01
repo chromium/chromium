@@ -2829,7 +2829,7 @@ enum WebFeature {
   kV8Document_ElementsFromPoint_Method = 3501,
   kV8ShadowRoot_ElementFromPoint_Method = 3502,
   kV8ShadowRoot_ElementsFromPoint_Method = 3503,
-  kIdentifiabilityStudyReserved3504 = 3504,
+  kWindowScreenTouchSupport = 3504,
   kIdentifiabilityStudyReserved3505 = 3505,
   kIdentifiabilityStudyReserved3506 = 3506,
   kIdentifiabilityStudyReserved3507 = 3507,
