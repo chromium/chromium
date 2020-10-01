@@ -78,7 +78,7 @@ constexpr char kSafetyCheckInteractions[] = "Settings.SafetyCheck.Interactions";
 
 typedef NSArray<TableViewItem*>* ItemArray;
 
-typedef NS_ENUM(NSInteger, ItemType) {
+typedef NS_ENUM(NSInteger, SafteyCheckItemType) {
   // CheckTypes section.
   UpdateItemType = kItemTypeEnumZero,
   PasswordItemType,
@@ -87,64 +87,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   // CheckStart section.
   CheckStartItemType,
   TimestampFooterItem,
-};
-
-// Enum with all possible states of the update check.
-typedef NS_ENUM(NSInteger, UpdateCheckRowStates) {
-  // When the user is up to date.
-  UpdateCheckRowStateUpToDate,
-  // When the check has not been run yet.
-  UpdateCheckRowStateDefault,
-  // When the user is out of date.
-  UpdateCheckRowStateOutOfDate,
-  // When the user is managed.
-  UpdateCheckRowStateManaged,
-  // When the check is running.
-  UpdateCheckRowStateRunning,
-  // When Omaha encountered an error.
-  UpdateCheckRowStateOmahaError,
-  // When there is a connectivity issue.
-  UpdateCheckRowStateNetError,
-  // When the device is on a non-supported channel.
-  UpdateCheckRowStateChannel,
-};
-
-// Enum with all possible states of the password check.
-typedef NS_ENUM(NSInteger, PasswordCheckRowStates) {
-  // When no compromised passwords were detected.
-  PasswordCheckRowStateSafe,
-  // When user has compromised passwords.
-  PasswordCheckRowStateUnSafe,
-  // When check has not been run yet.
-  PasswordCheckRowStateDefault,
-  // When password check is running.
-  PasswordCheckRowStateRunning,
-  // When user has no passwords and check can't be performed.
-  PasswordCheckRowStateDisabled,
-  // When password check failed due to network issues, quota limit or others.
-  PasswordCheckRowStateError,
-};
-
-// Enum with all possible states of the Safe Browsing check.
-typedef NS_ENUM(NSInteger, SafeBrowsingCheckRowStates) {
-  // When check was not run yet.
-  SafeBrowsingCheckRowStateDefault,
-  // When Safe Browsing is managed by admin.
-  SafeBrowsingCheckRowStateManaged,
-  // When the Safe Browsing check is running.
-  SafeBrowsingCheckRowStateRunning,
-  // When Safe Browsing is enabled.
-  SafeBrowsingCheckRowStateSafe,
-  // When Safe Browsing is disabled.
-  SafeBrowsingCheckRowStateUnsafe,
-};
-
-// Enum with all possible states of the button to start the check.
-typedef NS_ENUM(NSInteger, CheckStartStates) {
-  // When the check is not running.
-  CheckStartStateDefault,
-  // When the check is running.
-  CheckStartStateCancel,
 };
 
 }  // namespace
@@ -376,7 +318,7 @@ typedef NS_ENUM(NSInteger, CheckStartStates) {
 #pragma mark - SafetyCheckServiceDelegate
 
 - (void)didSelectItem:(TableViewItem*)item {
-  ItemType type = static_cast<ItemType>(item.type);
+  SafteyCheckItemType type = static_cast<SafteyCheckItemType>(item.type);
   switch (type) {
     // Few selections are handled here explicitly, but all states are laid out
     // to have one location that shows all actions that are taken from the
@@ -449,7 +391,7 @@ typedef NS_ENUM(NSInteger, CheckStartStates) {
 }
 
 - (BOOL)isItemWithErrorInfo:(TableViewItem*)item {
-  ItemType type = static_cast<ItemType>(item.type);
+  SafteyCheckItemType type = static_cast<SafteyCheckItemType>(item.type);
   return (type != CheckStartItemType);
 }
 
@@ -490,7 +432,7 @@ typedef NS_ENUM(NSInteger, CheckStartStates) {
 
 // Computes the text needed for a popover on |itemType| if available.
 - (NSAttributedString*)getPopoverInfoForType:(NSInteger)itemType {
-  ItemType type = static_cast<ItemType>(itemType);
+  SafteyCheckItemType type = static_cast<SafteyCheckItemType>(itemType);
   switch (type) {
     case PasswordItemType:
       return [self passwordCheckErrorInfo];
@@ -552,7 +494,7 @@ typedef NS_ENUM(NSInteger, CheckStartStates) {
                                     : PasswordCheckRowStateUnSafe;
     case PasswordCheckState::kCanceled:
     case PasswordCheckState::kIdle: {
-      if (noCompromisedPasswords) {
+      if (!noCompromisedPasswords) {
         base::UmaHistogramEnumeration(
             kSafetyCheckMetricsPasswords,
             safety_check::SafetyCheck::PasswordsStatus::kCompromisedExist);
