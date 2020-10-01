@@ -12,7 +12,6 @@ declare_args() {
 static_library("base") {
   sources = [
     "bind_to_task_runner.h",
-    "cancelation_observer.cc",
     "cancelation_observer.h",
     "cancelation_signal.cc",
     "cancelation_signal.h",

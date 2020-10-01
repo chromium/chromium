@@ -21,8 +21,8 @@ struct DataTypeActivationResponse;
 // model type side for non-blocking types.
 class ModelTypeConnector {
  public:
-  ModelTypeConnector();
-  virtual ~ModelTypeConnector();
+  ModelTypeConnector() = default;
+  virtual ~ModelTypeConnector() = default;
 
   // Connect a worker on the sync thread and |type|'s processor on the model
   // thread. Note that in production |activation_response| actually

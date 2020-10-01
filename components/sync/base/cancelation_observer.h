@@ -10,8 +10,8 @@ namespace syncer {
 // Interface for classes that handle signals from the CancelationSignal.
 class CancelationObserver {
  public:
-  CancelationObserver();
-  virtual ~CancelationObserver() = 0;
+  CancelationObserver() = default;
+  virtual ~CancelationObserver() = default;
 
   // This may be called from a foreign thread while the CancelationSignal's lock
   // is held.  The callee should avoid performing slow or blocking operations.

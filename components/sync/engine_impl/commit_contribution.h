@@ -22,8 +22,8 @@ class StatusController;
 // This class handles the bookkeeping related to the commit of these items.
 class CommitContribution {
  public:
-  CommitContribution();
-  virtual ~CommitContribution() = 0;
+  CommitContribution() = default;
+  virtual ~CommitContribution() = default;
 
   // Serialize this contribution's entries to the given commit request |msg|.
   //

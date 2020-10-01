@@ -42,8 +42,8 @@ class TrustedVaultClient;
 // to handle these scenarios gracefully.
 class SyncClient {
  public:
-  SyncClient();
-  virtual ~SyncClient();
+  SyncClient() = default;
+  virtual ~SyncClient() = default;
 
   // Returns the current profile's preference service.
   virtual PrefService* GetPrefService() = 0;

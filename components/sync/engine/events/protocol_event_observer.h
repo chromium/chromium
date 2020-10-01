@@ -11,8 +11,8 @@ class ProtocolEvent;
 
 class ProtocolEventObserver {
  public:
-  ProtocolEventObserver();
-  virtual ~ProtocolEventObserver();
+  ProtocolEventObserver() = default;
+  virtual ~ProtocolEventObserver() = default;
 
   virtual void OnProtocolEvent(const ProtocolEvent& event) = 0;
 };

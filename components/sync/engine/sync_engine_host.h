@@ -27,8 +27,8 @@ struct UpdateCounters;
 // SyncEngine always has exactly one.
 class SyncEngineHost {
  public:
-  SyncEngineHost();
-  virtual ~SyncEngineHost();
+  SyncEngineHost() = default;
+  virtual ~SyncEngineHost() = default;
 
   // The engine has completed initialization and it is now ready to accept and
   // process changes. If success is false, initialization wasn't able to be

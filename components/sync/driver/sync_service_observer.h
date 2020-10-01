@@ -37,7 +37,8 @@ class SyncServiceObserver {
   virtual void OnSyncShutdown(SyncService* sync) {}
 
  protected:
-  virtual ~SyncServiceObserver() {}
+  SyncServiceObserver() = default;
+  virtual ~SyncServiceObserver() = default;
 };
 
 }  // namespace syncer

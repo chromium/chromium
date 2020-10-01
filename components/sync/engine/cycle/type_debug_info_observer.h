@@ -16,8 +16,8 @@ struct UpdateCounters;
 // Interface for classes that observe per-type sync debug counters.
 class TypeDebugInfoObserver {
  public:
-  TypeDebugInfoObserver();
-  virtual ~TypeDebugInfoObserver();
+  TypeDebugInfoObserver() = default;
+  virtual ~TypeDebugInfoObserver() = default;
 
   virtual void OnCommitCountersUpdated(ModelType type,
                                        const CommitCounters& counters) = 0;

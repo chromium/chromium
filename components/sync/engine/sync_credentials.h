@@ -13,9 +13,9 @@ namespace syncer {
 
 // Contains everything needed to talk to and identify a user account.
 struct SyncCredentials {
-  SyncCredentials();
-  SyncCredentials(const SyncCredentials& other);
-  ~SyncCredentials();
+  SyncCredentials() = default;
+  SyncCredentials(const SyncCredentials& other) = default;
+  ~SyncCredentials() = default;
 
   // Account_id of signed in account.
   CoreAccountId account_id;

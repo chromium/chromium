@@ -11,8 +11,8 @@ namespace syncer {
 
 class SyncStatusObserver {
  public:
-  SyncStatusObserver();
-  virtual ~SyncStatusObserver();
+  SyncStatusObserver() = default;
+  virtual ~SyncStatusObserver() = default;
 
   // This event is sent when SyncStatus changes.
   virtual void OnSyncStatusChanged(const SyncStatus& status) = 0;

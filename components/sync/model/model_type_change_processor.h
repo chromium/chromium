@@ -27,8 +27,8 @@ class ModelTypeSyncBridge;
 // Interface used by the ModelTypeSyncBridge to inform sync of local changes.
 class ModelTypeChangeProcessor {
  public:
-  ModelTypeChangeProcessor();
-  virtual ~ModelTypeChangeProcessor();
+  ModelTypeChangeProcessor() = default;
+  virtual ~ModelTypeChangeProcessor() = default;
 
   // Inform the processor of a new or updated entity. The |entity_data| param
   // does not need to be fully set, but it should at least have specifics and

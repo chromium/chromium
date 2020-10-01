@@ -16,7 +16,7 @@ class ProtocolEvent;
 
 class SyncEngineEventListener {
  public:
-  SyncEngineEventListener();
+  SyncEngineEventListener() = default;
 
   // Generated at various points during the sync cycle.
   virtual void OnSyncCycleEvent(const SyncCycleEvent& event) = 0;
@@ -43,7 +43,7 @@ class SyncEngineEventListener {
   virtual void OnProtocolEvent(const ProtocolEvent& event) = 0;
 
  protected:
-  virtual ~SyncEngineEventListener();
+  virtual ~SyncEngineEventListener() = default;
 };
 
 }  // namespace syncer

@@ -58,8 +58,8 @@ class SyncScheduler : public SyncCycle::Delegate {
   // All methods of SyncScheduler must be called on the same thread
   // (except for RequestEarlyExit()).
 
-  SyncScheduler();
-  ~SyncScheduler() override;
+  SyncScheduler() = default;
+  ~SyncScheduler() override = default;
 
   // Start the scheduler with the given mode.  If the scheduler is
   // already started, switch to the given mode, although some

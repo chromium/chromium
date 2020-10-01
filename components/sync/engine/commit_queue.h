@@ -12,8 +12,8 @@ namespace syncer {
 // Interface used by a synced data type to issue requests to the sync backend.
 class CommitQueue {
  public:
-  CommitQueue();
-  virtual ~CommitQueue();
+  CommitQueue() = default;
+  virtual ~CommitQueue() = default;
 
   // Nudge sync engine to indicate the datatype has local changes to commit.
   virtual void NudgeForCommit() = 0;

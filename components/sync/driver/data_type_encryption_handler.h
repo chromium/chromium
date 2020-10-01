@@ -12,8 +12,8 @@ namespace syncer {
 // The DataTypeEncryptionHandler provides the status of datatype encryption.
 class DataTypeEncryptionHandler {
  public:
-  DataTypeEncryptionHandler();
-  virtual ~DataTypeEncryptionHandler();
+  DataTypeEncryptionHandler() = default;
+  virtual ~DataTypeEncryptionHandler() = default;
 
   // Returns whether there is an error that prevents encryption or decryption
   // from proceeding. This does not necessarily mean that the UI will display an

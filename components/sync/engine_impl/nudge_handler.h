@@ -12,8 +12,8 @@ namespace syncer {
 
 class NudgeHandler {
  public:
-  NudgeHandler();
-  virtual ~NudgeHandler();
+  NudgeHandler() = default;
+  virtual ~NudgeHandler() = default;
 
   virtual void NudgeForInitialDownload(ModelType type) = 0;
   virtual void NudgeForCommit(ModelType type) = 0;

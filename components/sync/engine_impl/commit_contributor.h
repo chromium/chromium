@@ -19,8 +19,8 @@ class CommitContribution;
 // items to be committed from this source.
 class CommitContributor {
  public:
-  CommitContributor();
-  virtual ~CommitContributor() = 0;
+  CommitContributor() = default;
+  virtual ~CommitContributor() = default;
 
   // Gathers up to |max_entries| unsynced items from this contributor into a
   // CommitContribution.  Returns null when the contributor has nothing to
