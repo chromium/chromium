@@ -22,6 +22,8 @@ header("Document-Policy: oversized-images=2.0");
 </head>
 
 <body onload=loaded()>
+  <!-- Note: give each image a unique URL so that the violation report is
+    actually sent, instead of being ignored as a duplicate. -->
   <div style="display: inline-block;">
     <p style="width: 100%;">
       Following cases are for device pixel ratio = 1.0.<br>
@@ -36,9 +38,9 @@ header("Document-Policy: oversized-images=2.0");
       </tr>
       <tr>
         <td></td>
-        <td><img src="resources/green-256x256.jpg" width="127" height="127"></td>
-        <td><img src="resources/green-256x256.jpg" width="128" height="128"></td>
-        <td><img src="resources/green-256x256.jpg" width="129" height="129"></td>
+        <td><img src="resources/green-256x256.jpg?id=1" width="127" height="127"></td>
+        <td><img src="resources/green-256x256.jpg?id=2" width="128" height="128"></td>
+        <td><img src="resources/green-256x256.jpg?id=3" width="129" height="129"></td>
       </tr>
     </table>
   </div>
@@ -56,9 +58,9 @@ header("Document-Policy: oversized-images=2.0");
       </tr>
       <tr>
         <td></td>
-        <td><img src="resources/green-256x256.jpg" width="63" height="63"></td>
-        <td><img src="resources/green-256x256.jpg" width="64" height="64"></td>
-        <td><img src="resources/green-256x256.jpg" width="65" height="65"></td>
+        <td><img src="resources/green-256x256.jpg?id=4" width="63" height="63"></td>
+        <td><img src="resources/green-256x256.jpg?id=5" width="64" height="64"></td>
+        <td><img src="resources/green-256x256.jpg?id=6" width="65" height="65"></td>
       </tr>
     </table>
   </div>

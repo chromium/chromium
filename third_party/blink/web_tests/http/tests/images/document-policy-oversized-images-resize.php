@@ -19,15 +19,18 @@ header("Document-Policy: oversized-images=2.0");
     After the resize, there should not be any violations triggered.
     It is expected that non of images on page are replaced by placeholders
     after resize. (content in -expected.png)
--->
+  -->
 
-  <img src="resources/green-256x256.jpg" width="100" height="128">
-  <img src="resources/green-256x256.jpg" style="height: 100px; width: 128px">
-  <img src="resources/green-256x256.jpg" width="100" height="100">
-  <img src="resources/green-256x256.jpg" style="height: 100px; width: 100px">
+  <!-- Note: give each image a unique URL so that the violation report is
+    actually sent, instead of being ignored as a duplicate. -->
+
+  <img src="resources/green-256x256.jpg?id=1" width="100" height="128">
+  <img src="resources/green-256x256.jpg?id=2" style="height: 100px; width: 128px">
+  <img src="resources/green-256x256.jpg?id=3" width="100" height="100">
+  <img src="resources/green-256x256.jpg?id=4" style="height: 100px; width: 100px">
 
   <script>
-    runAfterLayoutAndPaint(function() {
+    function changeImageSize() {
       var images = document.getElementsByTagName('img');
       for (var i = 0; i < images.length; i++) {
         var image = images[i];
@@ -39,7 +42,19 @@ header("Document-Policy: oversized-images=2.0");
           image.style.height = "150px";
         }
       }
-    }, true);
+    }
+
+    const imgs = document.getElementsByTagName('img');
+    let unloaded_image_count = imgs.length;
+    for (const img of imgs) {
+      img.onload = () => {
+        unloaded_image_count--;
+        // Change image size after all images are loaded and painted.
+        if (unloaded_image_count === 0) {
+          runAfterLayoutAndPaint(changeImageSize, true);
+        }
+      };
+    }
   </script>
 </body>
 

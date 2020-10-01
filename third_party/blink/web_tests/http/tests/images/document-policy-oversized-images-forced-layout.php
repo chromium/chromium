@@ -20,8 +20,11 @@ header("Document-Policy: oversized-images=2.0");
 </head>
 
 <body onload=loaded()>
-  <img src="resources/green-256x256.jpg" width="100" height="100">
-  <img src="resources/green-256x256.jpg" style="width: 100px; height: 100px">
+  <!-- Note: give each image a unique URL so that the violation report is actually
+    sent, instead of being ignored as a duplicate. -->
+  <img src="resources/green-256x256.jpg?id=1" width="100" height="100">
+  <img src="resources/green-256x256.jpg?id=2" style="width: 100px; height: 100px">
+
   <script>
     document.body.offsetTop;
   </script>
