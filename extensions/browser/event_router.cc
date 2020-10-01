@@ -11,6 +11,7 @@
 
 #include "base/atomic_sequence_num.h"
 #include "base/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/stl_util.h"
 #include "base/task/post_task.h"
@@ -831,6 +832,10 @@ void EventRouter::ReportEvent(events::HistogramValue histogram_value,
           "Extensions.Events.DispatchWithRunningEventPage", histogram_value,
           events::ENUM_BOUNDARY);
     }
+  } else if (BackgroundInfo::IsServiceWorkerBased(extension)) {
+    base::UmaHistogramEnumeration(
+        "Extensions.Events.DispatchWithServiceWorkerBackground",
+        histogram_value, events::ENUM_BOUNDARY);
   }
 }
 
