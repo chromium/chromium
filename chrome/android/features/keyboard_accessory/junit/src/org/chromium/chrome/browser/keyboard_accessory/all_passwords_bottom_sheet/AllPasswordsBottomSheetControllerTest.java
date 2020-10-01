@@ -12,6 +12,11 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.keyboard_accessory.all_passwords_bottom_sheet.AllPasswordsBottomSheetMetricsRecorder.AllPasswordsBottomSheetActions.CREDENTIAL_SELECTED;
+import static org.chromium.chrome.browser.keyboard_accessory.all_passwords_bottom_sheet.AllPasswordsBottomSheetMetricsRecorder.AllPasswordsBottomSheetActions.SEARCH_USED;
+import static org.chromium.chrome.browser.keyboard_accessory.all_passwords_bottom_sheet.AllPasswordsBottomSheetMetricsRecorder.AllPasswordsBottomSheetActions.SHEET_DISMISSED;
+import static org.chromium.chrome.browser.keyboard_accessory.all_passwords_bottom_sheet.AllPasswordsBottomSheetMetricsRecorder.UMA_ALL_PASSWORDS_BOTTOM_SHEET_ACTIONS;
+import static org.chromium.chrome.browser.keyboard_accessory.all_passwords_bottom_sheet.AllPasswordsBottomSheetMetricsRecorder.UMA_WARNING_ACTIONS;
 import static org.chromium.chrome.browser.keyboard_accessory.all_passwords_bottom_sheet.AllPasswordsBottomSheetProperties.CredentialProperties.CREDENTIAL;
 import static org.chromium.chrome.browser.keyboard_accessory.all_passwords_bottom_sheet.AllPasswordsBottomSheetProperties.DISMISS_HANDLER;
 import static org.chromium.chrome.browser.keyboard_accessory.all_passwords_bottom_sheet.AllPasswordsBottomSheetProperties.SHEET_ITEMS;
@@ -26,14 +31,17 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.metrics.test.ShadowRecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.keyboard_accessory.all_passwords_bottom_sheet.AllPasswordsBottomSheetMetricsRecorder.AllPasswordsWarningActions;
 import org.chromium.chrome.browser.keyboard_accessory.all_passwords_bottom_sheet.AllPasswordsBottomSheetProperties.ItemType;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
+import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonType;
@@ -45,7 +53,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  * Controller tests for the all passwords bottom sheet.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
+@Config(manifest = Config.NONE, shadows = {ShadowRecordHistogram.class})
 @Features.EnableFeatures(ChromeFeatureList.FILLING_PASSWORDS_FROM_ANY_ORIGIN)
 public class AllPasswordsBottomSheetControllerTest {
     private static final Credential ANA =
@@ -65,7 +73,6 @@ public class AllPasswordsBottomSheetControllerTest {
     private UrlUtilities.Natives mUrlUtilitiesJniMock;
     @Mock
     private AllPasswordsBottomSheetCoordinator.Delegate mMockDelegate;
-
     @Mock
     private ModalDialogManager mModalDialogManager;
 
@@ -75,6 +82,7 @@ public class AllPasswordsBottomSheetControllerTest {
 
     @Before
     public void setUp() {
+        ShadowRecordHistogram.reset();
         MockitoAnnotations.initMocks(this);
         mJniMocker.mock(UrlUtilitiesJni.TEST_HOOKS, mUrlUtilitiesJniMock);
         mMediator = new AllPasswordsBottomSheetMediator();
@@ -100,6 +108,9 @@ public class AllPasswordsBottomSheetControllerTest {
         mMediator.warnAndShow();
         verify(mModalDialogManager)
                 .showDialog(mModalDialogModel, ModalDialogManager.ModalDialogType.APP);
+        assertThat(ShadowRecordHistogram.getHistogramValueCountForTesting(
+                           UMA_WARNING_ACTIONS, AllPasswordsWarningActions.WARNING_DIALOG_SHOWN),
+                is(1));
     }
 
     @Test
@@ -107,13 +118,20 @@ public class AllPasswordsBottomSheetControllerTest {
         mMediator.setCredentials(TEST_CREDENTIALS, IS_PASSWORD_FIELD);
         mMediator.onClick(mModalDialogModel, ModalDialogProperties.ButtonType.POSITIVE);
         assertThat(mModel.get(VISIBLE), is(true));
+        assertThat(ShadowRecordHistogram.getHistogramValueCountForTesting(
+                           UMA_WARNING_ACTIONS, AllPasswordsWarningActions.WARNING_ACCEPTED),
+                is(1));
     }
 
     @Test
     public void testBottomSheetNotShowingIfWarningDismissed() {
         mMediator.setCredentials(TEST_CREDENTIALS, IS_PASSWORD_FIELD);
         mMediator.onClick(mModalDialogModel, ButtonType.NEGATIVE);
+        mMediator.onDismiss(mModalDialogModel, DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
         assertThat(mModel.get(VISIBLE), is(false));
+        assertThat(ShadowRecordHistogram.getHistogramValueCountForTesting(
+                           UMA_WARNING_ACTIONS, AllPasswordsWarningActions.WARNING_CANCELED),
+                is(1));
     }
 
     @Test
@@ -139,6 +157,20 @@ public class AllPasswordsBottomSheetControllerTest {
         mMediator.onCredentialSelected(TEST_CREDENTIALS[1]);
         assertThat(mModel.get(VISIBLE), is(false));
         verify(mMockDelegate).onCredentialSelected(TEST_CREDENTIALS[1]);
+        assertThat(ShadowRecordHistogram.getHistogramValueCountForTesting(
+                           UMA_ALL_PASSWORDS_BOTTOM_SHEET_ACTIONS, CREDENTIAL_SELECTED),
+                is(1));
+    }
+
+    @Test
+    public void testRecordingSearchMetrics() {
+        mMediator.setCredentials(TEST_CREDENTIALS, IS_PASSWORD_FIELD);
+        mMediator.onClick(mModalDialogModel, ModalDialogProperties.ButtonType.POSITIVE);
+        mMediator.onQueryTextChange("Bob");
+        mMediator.onCredentialSelected(TEST_CREDENTIALS[1]);
+        assertThat(ShadowRecordHistogram.getHistogramValueCountForTesting(
+                           UMA_ALL_PASSWORDS_BOTTOM_SHEET_ACTIONS, SEARCH_USED),
+                is(1));
     }
 
     @Test
@@ -148,6 +180,9 @@ public class AllPasswordsBottomSheetControllerTest {
         mMediator.onDismissed(BottomSheetController.StateChangeReason.BACK_PRESS);
         assertThat(mModel.get(VISIBLE), is(false));
         verify(mMockDelegate).onDismissed();
+        assertThat(ShadowRecordHistogram.getHistogramValueCountForTesting(
+                           UMA_ALL_PASSWORDS_BOTTOM_SHEET_ACTIONS, SHEET_DISMISSED),
+                is(1));
     }
 
     @Test

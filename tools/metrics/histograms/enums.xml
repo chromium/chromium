@@ -1262,6 +1262,18 @@ Unknown properties are collapsed to zero. -->
   <int value="5" label="InferenceExecutionFailed"/>
 </enum>
 
+<enum name="AllPasswordsBottomSheetActions">
+  <int value="0" label="Credential selected"/>
+  <int value="1" label="Sheet dismissed"/>
+  <int value="2" label="Search is used before selecting a credential"/>
+</enum>
+
+<enum name="AllPasswordsWarningActions">
+  <int value="0" label="Warning shown"/>
+  <int value="1" label="Warning accepted"/>
+  <int value="2" label="Warning canceled"/>
+</enum>
+
 <enum name="AlsaSampleFormatType">
   <int value="-1" label="SND_PCM_FORMAT_UNKNOWN"/>
   <int value="0" label="SND_PCM_FORMAT_S8"/>

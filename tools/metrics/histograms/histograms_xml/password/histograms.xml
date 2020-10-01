@@ -518,6 +518,25 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.AllPasswordsBottomSheet.UserAction"
+    enum="AllPasswordsBottomSheetActions" expires_after="M90">
+  <owner>redatawfik@google.com</owner>
+  <owner>fhorschig@chromium.org</owner>
+  <summary>
+    Android only. Records the user action on the all passwords bottom sheet.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.AllPasswordsBottomSheet.WarningActions"
+    enum="AllPasswordsWarningActions" expires_after="M90">
+  <owner>redatawfik@google.com</owner>
+  <owner>fhorschig@chromium.org</owner>
+  <summary>
+    Android only. Records the number of times the all passwords warning dialog
+    is shown and user action on it.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.Android.PasswordCredentialEntry"
     enum="PasswordManagerAndroidPasswordEntryActions" expires_after="M88">
   <owner>fhorschig@chromium.org</owner>
