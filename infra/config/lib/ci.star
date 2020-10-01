@@ -682,6 +682,11 @@ def fyi_builder(
         builder_group = "chromium.fyi",
         execution_timeout = execution_timeout,
         goma_backend = goma_backend,
+        # TODO(crbug.com/1108016): Move this kwarg to ci.builder(), after
+        # ResultSink and result_adapter is confirmed to work.
+        experiments = {
+            "chromium.resultdb.result_sink": 30,
+        },
         **kwargs
     )
 
