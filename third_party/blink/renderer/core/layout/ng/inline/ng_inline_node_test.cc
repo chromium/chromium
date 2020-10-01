@@ -607,7 +607,9 @@ struct StyleChangeData {
     // require layout, only ink overflow, but they currently do.
     {"#parent.after { text-decoration-line: underline; }",
      StyleChangeData::kNone, true, true},
-    {"#parent.after { outline: auto; }", StyleChangeData::kNone, true},
+    {"#parent { background: orange; }"  // Make sure it's not culled.
+     "#parent.after { outline: auto; }",
+     StyleChangeData::kNone, true},
     // Changing fonts should re-run |CollectInlines()|.
     {"#parent.after { font-size: 200%; }", StyleChangeData::kAll, true},
     // Changing from/to out-of-flow should re-rerun |CollectInlines()|.
