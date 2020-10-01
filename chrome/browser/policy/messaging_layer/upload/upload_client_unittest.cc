@@ -19,6 +19,12 @@
 #include "content/public/test/browser_task_environment.h"
 #include "services/network/test/test_network_connection_tracker.h"
 
+#ifdef OS_CHROMEOS
+#include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
+#include "chrome/test/base/testing_profile.h"
+#include "components/user_manager/scoped_user_manager.h"
+#endif  // OS_CHROMEOS
+
 namespace reporting {
 namespace {
 
@@ -59,6 +65,23 @@ class TestCallbackWaiterWithCounter : public TestCallbackWaiter {
 TEST(UploadClientTest, CreateUploadClient) {
   content::BrowserTaskEnvironment task_envrionment_;
 
+#ifdef OS_CHROMEOS
+  // Set up fake primary profile.
+  auto mock_user_manager =
+      std::make_unique<testing::NiceMock<chromeos::FakeChromeUserManager>>();
+  auto profile = std::make_unique<TestingProfile>(
+      base::FilePath(FILE_PATH_LITERAL("/home/chronos/u-0123456789abcdef")));
+  const AccountId account_id(
+      AccountId::FromUserEmailGaiaId(profile->GetProfileUserName(), "12345"));
+  const user_manager::User* user =
+      mock_user_manager->AddPublicAccountUser(account_id);
+  mock_user_manager->UserLoggedIn(account_id, user->username_hash(),
+                                  /*browser_restart=*/false,
+                                  /*is_child=*/false);
+  auto user_manager = std::make_unique<user_manager::ScopedUserManager>(
+      std::move(mock_user_manager));
+#endif  // OS_CHROMEOS
+
   const int kExpectedCallTimes = 10;
   const uint64_t kGenerationId = 1234;
 
@@ -78,7 +101,7 @@ TEST(UploadClientTest, CreateUploadClient) {
   auto upload_client_result =
       UploadClient::Create(std::move(client), base::DoNothing());
 
-  ASSERT_TRUE(upload_client_result.ok());
+  ASSERT_OK(upload_client_result) << upload_client_result.status();
 
   base::Value data{base::Value::Type::DICTIONARY};
   data.SetKey("TEST_KEY", base::Value("TEST_VALUE"));

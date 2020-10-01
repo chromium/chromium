@@ -53,10 +53,10 @@ class DmServerUploadService {
     virtual Status HandleRecord(Record record) = 0;
 
    protected:
-    policy::CloudPolicyClient* GetClient() { return client_; }
+    policy::CloudPolicyClient* GetClient() const { return client_; }
 
    private:
-    policy::CloudPolicyClient* client_;
+    policy::CloudPolicyClient* const client_;
   };
 
   // Context runner for handling the upload of events passed to the

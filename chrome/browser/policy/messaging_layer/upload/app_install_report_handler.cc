@@ -145,7 +145,8 @@ AppInstallReportHandler::AppInstallReportHandler(
 AppInstallReportHandler::~AppInstallReportHandler() = default;
 
 Status AppInstallReportHandler::HandleRecord(Record record) {
-  ASSIGN_OR_RETURN(base::Value report, ValidateRecord(record));
+  RETURN_IF_ERROR(ValidateRecord(record));
+  ASSIGN_OR_RETURN(base::Value report, ConvertRecord(record));
 
   ClientCallback client_cb = base::BindOnce([](bool finished_running) {
     VLOG(1) << "Finished Running AppInstallReportUploader";
@@ -160,14 +161,25 @@ Status AppInstallReportHandler::HandleRecord(Record record) {
   return Status::StatusOK();
 }
 
-StatusOr<base::Value> AppInstallReportHandler::ValidateRecord(
-    const Record& record) const {
-  if (record.destination() != Destination::APP_INSTALL_EVENT) {
-    return Status(error::INVALID_ARGUMENT,
-                  base::StrCat({"Record destination mismatch, encountered=",
-                                Destination_Name(record.destination())}));
-  }
+Status AppInstallReportHandler::ValidateRecord(const Record& record) const {
+  return ValidateDestination(record, Destination::APP_INSTALL_EVENT);
+}
 
+Status AppInstallReportHandler::ValidateDestination(
+    const Record& record,
+    Destination expected_destination) const {
+  if (record.destination() != expected_destination) {
+    return Status(
+        error::INVALID_ARGUMENT,
+        base::StrCat({"Record destination mismatch, expected=",
+                      Destination_Name(expected_destination), ", encountered=",
+                      Destination_Name(record.destination())}));
+  }
+  return Status::StatusOK();
+}
+
+StatusOr<base::Value> AppInstallReportHandler::ConvertRecord(
+    const Record& record) const {
   base::Optional<base::Value> report_result =
       base::JSONReader::Read(record.data());
   if (!report_result.has_value()) {
@@ -177,7 +189,7 @@ StatusOr<base::Value> AppInstallReportHandler::ValidateRecord(
   return std::move(report_result.value());
 }
 
-Status AppInstallReportHandler::ValidateClientState() {
+Status AppInstallReportHandler::ValidateClientState() const {
   if (!GetClient()->is_registered()) {
     return Status(error::UNAVAILABLE, "DmServer is currently unavailable");
   }

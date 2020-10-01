@@ -11,12 +11,14 @@
 #include "base/task/post_task.h"
 #include "base/task_runner.h"
 #include "chrome/browser/policy/messaging_layer/upload/app_install_report_handler.h"
+#include "chrome/browser/policy/messaging_layer/upload/meet_device_telemetry_report_handler.h"
 #include "chrome/browser/policy/messaging_layer/util/backoff_settings.h"
 #include "chrome/browser/policy/messaging_layer/util/shared_vector.h"
 #include "chrome/browser/policy/messaging_layer/util/status.h"
 #include "chrome/browser/policy/messaging_layer/util/status_macros.h"
 #include "chrome/browser/policy/messaging_layer/util/statusor.h"
 #include "chrome/browser/policy/messaging_layer/util/task_runner_context.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #include "components/policy/proto/record.pb.h"
@@ -26,6 +28,24 @@
 
 #if defined(OS_CHROMEOS)
 #include "chrome/browser/chromeos/policy/user_cloud_policy_manager_chromeos.h"
+#include "chrome/browser/chromeos/profiles/profile_helper.h"
+
+namespace reporting {
+namespace {
+
+StatusOr<Profile*> GetPrimaryProfile() {
+  if (!user_manager::UserManager::IsInitialized()) {
+    return Status(error::FAILED_PRECONDITION, "User manager not initialized");
+  }
+  const auto* primary_user = user_manager::UserManager::Get()->GetPrimaryUser();
+  if (!primary_user) {
+    return Status(error::FAILED_PRECONDITION, "Primary user not found");
+  }
+  return chromeos::ProfileHelper::Get()->GetProfileByUser(primary_user);
+}
+
+}  // namespace
+}  // namespace reporting
 #endif
 
 namespace reporting {
@@ -283,6 +303,14 @@ Status DmServerUploadService::InitRecordHandlers() {
 
   record_handlers_->PushBack(std::make_unique<AppInstallReportHandler>(client),
                              base::DoNothing());
+
+  // Temporary wrapper for MeetDeviceTelementry
+#ifdef OS_CHROMEOS
+  ASSIGN_OR_RETURN(Profile* const primary_profile, GetPrimaryProfile());
+  record_handlers_->PushBack(std::make_unique<MeetDeviceTelemetryReportHandler>(
+                                 primary_profile, client),
+                             base::DoNothing());
+#endif  // OS_CHROMEOS
 
   return Status::StatusOK();
 }

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/policy/messaging_layer/upload/app_install_report_handler.h"
+#include "chrome/browser/policy/messaging_layer/upload/meet_device_telemetry_report_handler.h"
 
 #include "base/json/json_writer.h"
 #include "base/optional.h"
@@ -21,6 +21,7 @@
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/policy/proto/record.pb.h"
 #include "components/policy/proto/record_constants.pb.h"
+#include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -33,9 +34,26 @@ namespace reporting {
 namespace {
 
 MATCHER_P(MatchValue, expected, "matches base::Value") {
-  std::string arg_string;
-  if (!base::JSONWriter::Write(arg, &arg_string)) {
-    LOG(INFO) << "Unable to serialize the arg";
+  base::Value* const events = arg.FindListKey("events");
+  if (!events) {
+    LOG(ERROR) << "Arg does not have 'events' or 'events' is not a list";
+    return false;
+  }
+  base::Value::ListView events_list = events->GetList();
+  if (events_list.size() != 1) {
+    LOG(ERROR) << "'events' is empty or has more than one element in the list";
+    return false;
+  }
+  const base::Value& event = *events_list.begin();
+  const auto destination = event.FindIntKey("destination");
+  if (!destination.has_value() ||
+      destination.value() != Destination::MEET_DEVICE_TELEMETRY) {
+    LOG(ERROR) << "'destination' is wrong or missing";
+    return false;
+  }
+  const std::string* const data = event.FindStringKey("data");
+  if (!data) {
+    LOG(ERROR) << "'data' is missing";
     return false;
   }
 
@@ -46,7 +64,7 @@ MATCHER_P(MatchValue, expected, "matches base::Value") {
     return false;
   }
 
-  return arg_string == expected_string;
+  return *data == expected_string;
 }
 
 class TestCallbackWaiter {
@@ -61,11 +79,12 @@ class TestCallbackWaiter {
   std::unique_ptr<base::RunLoop> run_loop_;
 };
 
-class AppInstallReportHandlerTest : public testing::Test {
+class MeetDeviceTelemetryReportHandlerTest : public testing::Test {
  public:
-  AppInstallReportHandlerTest() = default;
+  MeetDeviceTelemetryReportHandlerTest() = default;
 
   void SetUp() override {
+    // Set up client.
     client_.SetDMToken(
         policy::DMToken::CreateValidTokenForTesting("FAKE_DM_TOKEN").value());
   }
@@ -85,7 +104,7 @@ class TestRecord : public Record {
     base::JSONWriter::Write(data_, &json_data);
 
     set_data(json_data);
-    set_destination(Destination::APP_INSTALL_EVENT);
+    set_destination(Destination::MEET_DEVICE_TELEMETRY);
   }
 
   const base::Value* data() const { return &data_; }
@@ -94,26 +113,27 @@ class TestRecord : public Record {
   base::Value data_{base::Value::Type::DICTIONARY};
 };
 
-TEST_F(AppInstallReportHandlerTest, AcceptsValidRecord) {
+TEST_F(MeetDeviceTelemetryReportHandlerTest, AcceptsValidRecord) {
   TestCallbackWaiter waiter;
   TestRecord test_record;
   EXPECT_CALL(client_,
               UploadExtensionInstallReport_(MatchValue(test_record.data()), _))
-      .WillOnce(WithArgs<1>(
-          Invoke([&waiter](AppInstallReportHandler::ClientCallback& callback) {
+      .WillOnce(WithArgs<1>(Invoke(
+          [&waiter](
+              MeetDeviceTelemetryReportHandler::ClientCallback& callback) {
             std::move(callback).Run(true);
             waiter.Signal();
           })));
 
-  AppInstallReportHandler handler(&client_);
+  MeetDeviceTelemetryReportHandler handler(/*profile=*/nullptr, &client_);
   Status handle_status = handler.HandleRecord(test_record);
   EXPECT_OK(handle_status);
   waiter.Wait();
 }
 
-TEST_F(AppInstallReportHandlerTest, DeniesInvalidDestination) {
+TEST_F(MeetDeviceTelemetryReportHandlerTest, DeniesInvalidDestination) {
   EXPECT_CALL(client_, UploadExtensionInstallReport_(_, _)).Times(0);
-  AppInstallReportHandler handler(&client_);
+  MeetDeviceTelemetryReportHandler handler(/*profile=*/nullptr, &client_);
 
   TestRecord test_record;
   test_record.set_destination(Destination::UPLOAD_EVENTS);
@@ -123,30 +143,31 @@ TEST_F(AppInstallReportHandlerTest, DeniesInvalidDestination) {
   EXPECT_EQ(handle_status.error_code(), error::INVALID_ARGUMENT);
 }
 
-TEST_F(AppInstallReportHandlerTest, DeniesInvalidData) {
+TEST_F(MeetDeviceTelemetryReportHandlerTest, DeniesInvalidData) {
   EXPECT_CALL(client_, UploadExtensionInstallReport_(_, _)).Times(0);
-  AppInstallReportHandler handler(&client_);
+  MeetDeviceTelemetryReportHandler handler(/*profile=*/nullptr, &client_);
 
   TestRecord test_record;
-  test_record.set_data("BAD_DATA");
+  test_record.clear_data();
   Status handle_status = handler.HandleRecord(test_record);
   EXPECT_FALSE(handle_status.ok());
   EXPECT_EQ(handle_status.error_code(), error::INVALID_ARGUMENT);
 }
 
-TEST_F(AppInstallReportHandlerTest, ReportsUnsuccessfulCall) {
+TEST_F(MeetDeviceTelemetryReportHandlerTest, ReportsUnsuccessfulCall) {
   TestCallbackWaiter waiter;
 
   TestRecord test_record;
   EXPECT_CALL(client_,
               UploadExtensionInstallReport_(MatchValue(test_record.data()), _))
-      .WillOnce(WithArgs<1>(
-          Invoke([&waiter](AppInstallReportHandler::ClientCallback& callback) {
+      .WillOnce(WithArgs<1>(Invoke(
+          [&waiter](
+              MeetDeviceTelemetryReportHandler::ClientCallback& callback) {
             std::move(callback).Run(false);
             waiter.Signal();
           })));
 
-  AppInstallReportHandler handler(&client_);
+  MeetDeviceTelemetryReportHandler handler(/*profile=*/nullptr, &client_);
   Status handle_status = handler.HandleRecord(test_record);
   EXPECT_OK(handle_status);
   waiter.Wait();
@@ -168,20 +189,21 @@ class TestCallbackWaiterWithCounter : public TestCallbackWaiter {
   std::atomic<int> counter_limit_;
 };
 
-TEST_F(AppInstallReportHandlerTest, AcceptsMultipleValidRecords) {
+TEST_F(MeetDeviceTelemetryReportHandlerTest, AcceptsMultipleValidRecords) {
   const int kExpectedCallTimes = 10;
   TestCallbackWaiterWithCounter waiter{kExpectedCallTimes};
 
   TestRecord test_record;
   EXPECT_CALL(client_,
               UploadExtensionInstallReport_(MatchValue(test_record.data()), _))
-      .WillRepeatedly(WithArgs<1>(
-          Invoke([&waiter](AppInstallReportHandler::ClientCallback& callback) {
+      .WillRepeatedly(WithArgs<1>(Invoke(
+          [&waiter](
+              MeetDeviceTelemetryReportHandler::ClientCallback& callback) {
             std::move(callback).Run(true);
             waiter.Signal();
           })));
 
-  AppInstallReportHandler handler(&client_);
+  MeetDeviceTelemetryReportHandler handler(/*profile=*/nullptr, &client_);
 
   for (int i = 0; i < kExpectedCallTimes; i++) {
     Status handle_status = handler.HandleRecord(test_record);

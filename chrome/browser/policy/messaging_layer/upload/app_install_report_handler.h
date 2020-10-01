@@ -135,11 +135,23 @@ class AppInstallReportHandler : public DmServerUploadService::RecordHandler {
   explicit AppInstallReportHandler(policy::CloudPolicyClient* client);
   ~AppInstallReportHandler() override;
 
+  // Base class RecordHandler method implementation.
   Status HandleRecord(Record record) override;
 
+ protected:
+  // Helper method for |ValidateRecord|. Validates destination.
+  Status ValidateDestination(const Record& record,
+                             Destination expected_destination) const;
+
  private:
-  StatusOr<base::Value> ValidateRecord(const Record& record) const;
-  Status ValidateClientState();
+  // Validate record (override for subclass).
+  virtual Status ValidateRecord(const Record& record) const;
+
+  // Convert record into base::Value for upload (override for subclass).
+  virtual StatusOr<base::Value> ConvertRecord(const Record& record) const;
+
+  // Helper method. Validates CloudPolicyClient state.
+  Status ValidateClientState() const;
 
   scoped_refptr<SharedQueue<base::Value>> report_queue_;
   scoped_refptr<UploaderLeaderTracker> leader_tracker_;
