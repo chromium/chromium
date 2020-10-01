@@ -33,6 +33,7 @@
 
 #include "third_party/blink/renderer/platform/transforms/transform_operation.h"
 #include "third_party/blink/renderer/platform/transforms/transform_operations.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
@@ -99,6 +100,13 @@ class PLATFORM_EXPORT InterpolatedTransformOperation final
   // start of the list and matrix interpolation for the remainder.
   int starting_index_;
   double progress_;
+};
+
+template <>
+struct DowncastTraits<InterpolatedTransformOperation> {
+  static bool AllowFrom(const TransformOperation& transform) {
+    return transform.GetType() == TransformOperation::kInterpolated;
+  }
 };
 
 }  // namespace blink
