@@ -255,8 +255,13 @@ bool FinishFragmentation(NGBlockNode node,
 
   LayoutUnit final_block_size = desired_block_size;
 
-  if (builder->FoundColumnSpanner())
+  if (builder->FoundColumnSpanner()) {
     builder->SetDidBreakSelf();
+
+    // A break before a spanner is a forced break, and is thus "perfect". It
+    // need not be weighed against other possible break points.
+    builder->SetBreakAppeal(kBreakAppealPerfect);
+  }
 
   if (is_past_end) {
     final_block_size = intrinsic_block_size = LayoutUnit();
