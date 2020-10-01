@@ -60,13 +60,13 @@ chrome.test.runTests([
   },
 
   function addRulesEmpty() {
-    updateDynamicRules([], currentRules, verifyCurrentRulesCallback);
+    updateDynamicRules({}, verifyCurrentRulesCallback);
   },
 
   function addRules() {
     currentRules =
         [createRuleWithID(1), createRuleWithID(2), createRuleWithID(3)];
-    updateDynamicRules([], currentRules, verifyCurrentRulesCallback);
+    updateDynamicRules({addRules: currentRules}, verifyCurrentRulesCallback);
     nextId = 4;
   },
 
@@ -74,13 +74,15 @@ chrome.test.runTests([
     // Remove rule with id 1, 2.
     // Also ensure rule ids which are not present are ignored.
     currentRules = currentRules.filter(rule => rule.id === 3);
-    updateDynamicRules([4, 5, 2, 1], [], verifyCurrentRulesCallback);
+    updateDynamicRules(
+        {addRules: [], removeRuleIds: [4, 5, 2, 1]},
+        verifyCurrentRulesCallback);
   },
 
   // Ensure we fail on adding a rule with a duplicate ID.
   function duplicateID() {
     updateDynamicRules(
-        [], [createRegexRuleWithID(3)],
+        {addRules: [createRegexRuleWithID(3)]},
         chrome.test.callbackFail('Rule with id 3 does not have a unique ID.'));
   },
 
@@ -88,7 +90,7 @@ chrome.test.runTests([
   // limit.
   function largeRegexError() {
     updateDynamicRules(
-        [], [createLargeRegexRuleWithID(5)],
+        {addRules: [createLargeRegexRuleWithID(5)]},
         chrome.test.callbackFail(
             'Rule with id 5 specified a more complex regex than allowed as ' +
             'part of the "regexFilter" key.'));
@@ -104,15 +106,15 @@ chrome.test.runTests([
 
     currentRules = newRules.concat(currentRules);
     chrome.test.assertEq(regexRuleLimit + 1, currentRules.length);
-    updateDynamicRules([], newRules, verifyCurrentRulesCallback);
+    updateDynamicRules({addRules: newRules}, verifyCurrentRulesCallback);
   },
 
   // Ensure that adding more regex rules than |regexRuleLimit| causes an error.
   function regexRuleLimitError() {
     updateDynamicRules(
-        [], [createRegexRuleWithID(nextId++)],
+        {addRules: [createRegexRuleWithID(nextId++)]},
         chrome.test.callbackFail(
-          'Dynamic rule count for regex rules exceeded.'));
+            'Dynamic rule count for regex rules exceeded.'));
   },
 
   // Ensure we can add up to |ruleLimit| no. of rules.
@@ -124,13 +126,14 @@ chrome.test.runTests([
 
     currentRules = newRules.concat(currentRules);
     chrome.test.assertEq(ruleLimit, currentRules.length);
-    updateDynamicRules([], newRules, verifyCurrentRulesCallback);
+    updateDynamicRules(
+        {addRules: newRules, removeRuleIds: []}, verifyCurrentRulesCallback);
   },
 
   // Ensure we can't add more than |ruleLimit| rules.
   function ruleLimitError() {
     updateDynamicRules(
-        [], [createRuleWithID(nextId++)],
+        {addRules: [createRuleWithID(nextId++)]},
         chrome.test.callbackFail('Dynamic rule count exceeded.'));
   }
 ]);

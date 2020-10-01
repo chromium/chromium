@@ -57,7 +57,6 @@ var tests = [
   function testDynamicRule() {
     resetMatchedRules();
 
-    const ruleIdsToRemove = [];
     const rule = {
       id: 1,
       priority: 1,
@@ -66,7 +65,7 @@ var tests = [
     };
 
     chrome.declarativeNetRequest.updateDynamicRules(
-        ruleIdsToRemove, [rule], function() {
+        {addRules: [rule]}, function() {
           chrome.test.assertNoLastError();
           const url = getServerURL('def.com');
           navigateTab(url, url, (tab) => {

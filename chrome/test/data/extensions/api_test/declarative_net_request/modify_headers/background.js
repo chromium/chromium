@@ -238,10 +238,11 @@ function checkAddWebRequestSetCookie(expectRemoved) {
 // Clears the current state by removing rules specified in |ruleIds| and
 // clearing all cookies.
 function clearState(ruleIds, callback) {
-  chrome.declarativeNetRequest.updateDynamicRules(ruleIds, [], function() {
-    chrome.test.assertNoLastError();
-    checkAndResetCookies().then(callback);
-  });
+  chrome.declarativeNetRequest.updateDynamicRules(
+      {removeRuleIds: ruleIds}, function() {
+        chrome.test.assertNoLastError();
+        checkAndResetCookies().then(callback);
+      });
 }
 
 var removeCookieRule = {
@@ -287,10 +288,11 @@ var tests = [
 
   function addRulesAndTestCookieRemoval() {
     var rules = [removeCookieRule];
-    chrome.declarativeNetRequest.updateDynamicRules([], rules, function() {
-      chrome.test.assertNoLastError();
-      checkCookieHeaderRemoved(true);
-    });
+    chrome.declarativeNetRequest.updateDynamicRules(
+        {addRules: rules}, function() {
+          chrome.test.assertNoLastError();
+          checkCookieHeaderRemoved(true);
+        });
   },
 
   function testSetCookieWithoutRules() {
@@ -299,10 +301,11 @@ var tests = [
 
   function addRulesAndTestSetCookieRemoval() {
     var rules = [removeSetCookieRule];
-    chrome.declarativeNetRequest.updateDynamicRules([], rules, function() {
-      chrome.test.assertNoLastError();
-      checkSetCookieHeaderRemoved(true);
-    });
+    chrome.declarativeNetRequest.updateDynamicRules(
+        {addRules: rules}, function() {
+          chrome.test.assertNoLastError();
+          checkSetCookieHeaderRemoved(true);
+        });
   },
 
   function testAddWebRequestCookie() {
@@ -317,10 +320,11 @@ var tests = [
   // actions have higher priority than web request actions.
   function testAddWebRequestCookieWithRules() {
     var rules = [removeCookieRule];
-    chrome.declarativeNetRequest.updateDynamicRules([], rules, function() {
-      chrome.test.assertNoLastError();
-      checkAddWebRequestCookie(true);
-    });
+    chrome.declarativeNetRequest.updateDynamicRules(
+        {addRules: rules}, function() {
+          chrome.test.assertNoLastError();
+          checkAddWebRequestCookie(true);
+        });
   },
 
   function testAddWebRequestSetCookie() {
@@ -332,22 +336,24 @@ var tests = [
   // actions have higher priority than web request actions.
   function testAddWebRequestSetCookieWithRules() {
     var rules = [removeSetCookieRule];
-    chrome.declarativeNetRequest.updateDynamicRules([], rules, function() {
-      chrome.test.assertNoLastError();
-      checkAddWebRequestSetCookie(true);
-    });
+    chrome.declarativeNetRequest.updateDynamicRules(
+        {addRules: rules}, function() {
+          chrome.test.assertNoLastError();
+          checkAddWebRequestSetCookie(true);
+        });
   },
 
   function testAddWebRequestCookieWithAllowRule() {
-    chrome.declarativeNetRequest.updateDynamicRules([], [allowRule], () => {
-      checkAddWebRequestSetCookie(false);
-    });
+    chrome.declarativeNetRequest.updateDynamicRules(
+        {addRules: [allowRule]}, () => {
+          checkAddWebRequestSetCookie(false);
+        });
   },
 
   function testSetCustomRequestHeaderRule() {
     var rules = [setCustomRequestHeaderRule];
     chrome.declarativeNetRequest.updateDynamicRules(
-        [allowRule.id], rules, function() {
+        {removeRuleIds: [allowRule.id], addRules: rules}, function() {
           chrome.test.assertNoLastError();
           checkCustomRequestHeaderValue('header1', 'value-1');
         });
@@ -403,7 +409,8 @@ var tests = [
     };
 
     chrome.declarativeNetRequest.updateDynamicRules(
-        [setCustomRequestHeaderRule.id], rules, function() {
+        {removeRuleIds: [setCustomRequestHeaderRule.id], addRules: rules},
+        function() {
           chrome.test.assertNoLastError();
           checkCustomResponseHeaders(
               'header1: original&header3: original', expectedResponseHeaders);

@@ -30,6 +30,7 @@
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/load_error_reporter.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/api/declarative_net_request/composite_matcher.h"
 #include "extensions/browser/api/declarative_net_request/constants.h"
@@ -199,15 +200,17 @@ class DeclarativeNetRequestUnittest : public DNRTestBase {
         ListBuilder()
             .Append(rule_ids_to_remove.begin(), rule_ids_to_remove.end())
             .Build();
+    std::unique_ptr<base::Value> rules_to_add_value = ToListValue(rules_to_add);
 
-    std::unique_ptr<base::Value> args =
-        ListBuilder()
-            .Append(std::move(ids_to_remove_value))
-            .Append(ToListValue(rules_to_add))
-            .Build();
-    std::string json_args;
-    base::JSONWriter::WriteWithOptions(
-        *args, base::JSONWriter::OPTIONS_PRETTY_PRINT, &json_args);
+    constexpr const char kParams[] = R"(
+      [{
+        "addRules": $1,
+        "removeRuleIds": $2
+      }]
+    )";
+    const std::string json_args =
+        content::JsReplace(kParams, std::move(*rules_to_add_value),
+                           std::move(*ids_to_remove_value));
 
     auto update_function =
         base::MakeRefCounted<DeclarativeNetRequestUpdateDynamicRulesFunction>();

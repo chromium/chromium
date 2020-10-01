@@ -77,6 +77,18 @@ DeclarativeNetRequestUpdateDynamicRulesFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
   EXTENSION_FUNCTION_VALIDATE(error.empty());
 
+  std::vector<int> rule_ids_to_remove;
+  if (params->options.remove_rule_ids)
+    rule_ids_to_remove = std::move(*params->options.remove_rule_ids);
+
+  std::vector<api::declarative_net_request::Rule> rules_to_add;
+  if (params->options.add_rules)
+    rules_to_add = std::move(*params->options.add_rules);
+
+  // Early return if there is nothing to do.
+  if (rule_ids_to_remove.empty() && rules_to_add.empty())
+    return RespondNow(NoArguments());
+
   auto* rules_monitor_service =
       declarative_net_request::RulesMonitorService::Get(browser_context());
   DCHECK(rules_monitor_service);
@@ -85,10 +97,9 @@ DeclarativeNetRequestUpdateDynamicRulesFunction::Run() {
   auto callback = base::BindOnce(
       &DeclarativeNetRequestUpdateDynamicRulesFunction::OnDynamicRulesUpdated,
       this);
-
   rules_monitor_service->UpdateDynamicRules(
-      *extension(), std::move(params->rule_ids_to_remove),
-      std::move(params->rules_to_add), std::move(callback));
+      *extension(), std::move(rule_ids_to_remove), std::move(rules_to_add),
+      std::move(callback));
   return RespondLater();
 }
 

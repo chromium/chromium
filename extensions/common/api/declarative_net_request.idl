@@ -385,6 +385,7 @@ namespace declarativeNetRequest {
     Ruleset[] rule_resources;
   };
 
+  [nodoc]
   dictionary ManifestKeys {
     DNRInfo declarative_net_request;
   };
@@ -411,6 +412,13 @@ namespace declarativeNetRequest {
     UnsupportedRegexReason? reason;
   };
 
+  dictionary UpdateRuleOptions {
+    // IDs of the rules to remove. Any invalid IDs will be ignored.
+    long[]? removeRuleIds;
+    // Rules to add.
+    Rule[]? addRules;
+  };
+
   callback EmptyCallback = void();
   callback GetAllowedPagesCallback = void(DOMString[] result);
   callback GetRulesCallback = void(Rule[] rules);
@@ -420,27 +428,26 @@ namespace declarativeNetRequest {
 
   interface Functions {
 
-    // Modify the current set of dynamic rules for the extension. The rules
-    // with IDs listed in <code>ruleIdsToRemove</code> are first removed,
-    // and then the rules given in <code>rulesToAdd</code> are added. This
-    // update happens as a single atomic operation: either all specified rules
-    // are added and removed, or an error is returned.
-    // These rules are persisted across browser sessions and across extension
-    // updates.
-    // Any ids in <code>ruleIdsToRemove</code> that are not present will be
-    // ignored.
-    // Note that static rules specified as part of the extension package can
-    // not be removed using this function.
-    // Note: $(ref:MAX_NUMBER_OF_DYNAMIC_RULES) is the maximum number of dynamic
-    // rules an extension can add.
-    // |ruleIdsToRemove|: The IDs of rules to remove.
-    // |rulesToAdd|: The rules to add.
+    // Modifies the current set of dynamic rules for the extension.
+    // The rules with IDs listed in <code>options.removeRuleIds</code> are first
+    // removed, and then the rules given in <code>options.addRules</code> are
+    // added. Notes:
+    // <ul>
+    // <li>This update happens as a single atomic operation: either all
+    // specified rules are added and removed, or an error is returned.</li>
+    // <li>These rules are persisted across browser sessions and across
+    // extension updates.</li>
+    // <li>Static rules specified as part of the extension package can not be
+    // removed using this function.</li>
+    // <li>$(ref:MAX_NUMBER_OF_DYNAMIC_RULES) is the maximum number of dynamic
+    // rules an extension can add.</li>
+    // </ul>
     // |callback|: Called once the update is complete or has failed. In case of
     // an error, $(ref:runtime.lastError) will be set and no change will be made
     // to the rule set. This can happen for multiple reasons, such as invalid
     // rule format, duplicate rule ID, rule count limit exceeded, internal
     // errors, and others.
-    static void updateDynamicRules(long[] ruleIdsToRemove, Rule[] rulesToAdd,
+    static void updateDynamicRules(UpdateRuleOptions options,
                                    optional EmptyCallback callback);
 
     // Returns the current set of dynamic rules for the extension.

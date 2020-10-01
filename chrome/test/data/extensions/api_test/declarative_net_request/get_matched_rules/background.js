@@ -32,18 +32,16 @@ var testData = [
 ];
 
 function addDynamicRule() {
-  const ruleIdsToRemove = [];
   const rule = {
     id: 1,
     priority: 1,
     condition: {urlFilter: 'def', resourceTypes: ['main_frame']},
     action: {type: 'block'},
   };
-  chrome.declarativeNetRequest.updateDynamicRules(
-      ruleIdsToRemove, [rule], () => {
-        chrome.test.assertNoLastError();
-        chrome.test.succeed();
-      });
+  chrome.declarativeNetRequest.updateDynamicRules({addRules: [rule]}, () => {
+    chrome.test.assertNoLastError();
+    chrome.test.succeed();
+  });
 }
 
 function checkTimeStamp(timeStamp) {
