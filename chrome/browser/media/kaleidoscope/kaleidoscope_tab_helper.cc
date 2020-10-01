@@ -14,6 +14,12 @@ namespace {
 
 const url::Origin& KaleidoscopeOrigin() {
   static base::NoDestructor<url::Origin> origin(
+      url::Origin::Create(GURL(kKaleidoscopeUIURL)));
+  return *origin;
+}
+
+const url::Origin& KaleidoscopeUntrustedOrigin() {
+  static base::NoDestructor<url::Origin> origin(
       url::Origin::Create(GURL(kKaleidoscopeUntrustedContentUIURL)));
   return *origin;
 }
@@ -28,6 +34,27 @@ enum class KaleidoscopeNavigation {
   kMaxValue = kNormal,
 };
 
+bool IsOpenedFromKaleidoscope(content::NavigationHandle* handle) {
+  return (handle->GetInitiatorOrigin() &&
+          handle->GetInitiatorOrigin()->IsSameOriginWith(
+              KaleidoscopeUntrustedOrigin()));
+}
+
+bool ShouldAllowAutoplay(content::NavigationHandle* handle) {
+  // If the initiating origin is Kaleidoscope then we should allow autoplay.
+  if (IsOpenedFromKaleidoscope(handle))
+    return true;
+
+  // If the tab is Kaleidoscope then we should allow autoplay.
+  auto parent_origin =
+      url::Origin::Create(handle->GetWebContents()->GetLastCommittedURL());
+  if (parent_origin.IsSameOriginWith(KaleidoscopeOrigin())) {
+    return true;
+  }
+
+  return false;
+}
+
 }  // namespace
 
 KaleidoscopeTabHelper::KaleidoscopeTabHelper(content::WebContents* web_contents)
@@ -37,15 +64,11 @@ KaleidoscopeTabHelper::~KaleidoscopeTabHelper() = default;
 
 void KaleidoscopeTabHelper::ReadyToCommitNavigation(
     content::NavigationHandle* handle) {
-  if (!handle->IsInMainFrame() || handle->IsSameDocument() ||
-      handle->IsErrorPage()) {
+  if (handle->IsSameDocument() || handle->IsErrorPage())
     return;
-  }
 
-  if (!handle->GetInitiatorOrigin() ||
-      !handle->GetInitiatorOrigin()->IsSameOriginWith(KaleidoscopeOrigin())) {
+  if (!ShouldAllowAutoplay(handle))
     return;
-  }
 
   mojo::AssociatedRemote<blink::mojom::AutoplayConfigurationClient> client;
   handle->GetRenderFrameHost()->GetRemoteAssociatedInterfaces()->GetInterface(
@@ -53,8 +76,11 @@ void KaleidoscopeTabHelper::ReadyToCommitNavigation(
   client->AddAutoplayFlags(url::Origin::Create(handle->GetURL()),
                            blink::mojom::kAutoplayFlagUserException);
 
-  base::UmaHistogramEnumeration(kKaleidoscopeNavigationHistogramName,
-                                KaleidoscopeNavigation::kNormal);
+  // Only record metrics if this page was opened by Kaleidoscope.
+  if (IsOpenedFromKaleidoscope(handle)) {
+    base::UmaHistogramEnumeration(kKaleidoscopeNavigationHistogramName,
+                                  KaleidoscopeNavigation::kNormal);
+  }
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(KaleidoscopeTabHelper)
