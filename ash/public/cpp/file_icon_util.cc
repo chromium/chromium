@@ -14,7 +14,6 @@
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/resource/resource_bundle.h"
-#include "ui/gfx/color_palette.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
@@ -180,14 +179,16 @@ IconType GetIconTypeFromString(const std::string& icon_type_string) {
   return IconType::kGeneric;
 }
 
-gfx::ImageSkia GetVectorIconFromIconType(IconType icon, bool is_chip_icon) {
+gfx::ImageSkia GetVectorIconFromIconType(IconType icon,
+                                         SkColor color,
+                                         bool is_chip_icon) {
   // Changes to this map should be reflected in
   // ui/file_manager/file_manager/common/js/file_type.js.
   static const base::NoDestructor<std::map<IconType, gfx::IconDescription>>
       icon_type_to_icon_description(
           {{IconType::kArchive,
             gfx::IconDescription(chromeos::kFiletypeArchiveIcon, kIconDipSize,
-                                 gfx::kGoogleGrey700)},
+                                 color)},
            {IconType::kAudio,
             gfx::IconDescription(chromeos::kFiletypeAudioIcon, kIconDipSize,
                                  gfx::kGoogleRed500)},
@@ -196,16 +197,16 @@ gfx::ImageSkia GetVectorIconFromIconType(IconType icon, bool is_chip_icon) {
                                  gfx::kGoogleGreen500)},
            {IconType::kDrive,
             gfx::IconDescription(chromeos::kFiletypeTeamDriveIcon, kIconDipSize,
-                                 gfx::kGoogleGrey700)},
+                                 color)},
            {IconType::kExcel,
             gfx::IconDescription(chromeos::kFiletypeExcelIcon, kIconDipSize,
                                  gfx::kGoogleGreen500)},
            {IconType::kFolder,
             gfx::IconDescription(chromeos::kFiletypeFolderIcon, kIconDipSize,
-                                 gfx::kGoogleGrey700)},
+                                 color)},
            {IconType::kFolderShared,
             gfx::IconDescription(chromeos::kFiletypeSharedIcon, kIconDipSize,
-                                 gfx::kGoogleGrey700)},
+                                 color)},
            {IconType::kGdoc,
             gfx::IconDescription(chromeos::kFiletypeGdocIcon, kIconDipSize,
                                  gfx::kGoogleBlue500)},
@@ -214,7 +215,7 @@ gfx::ImageSkia GetVectorIconFromIconType(IconType icon, bool is_chip_icon) {
                                  gfx::kGoogleRed500)},
            {IconType::kGeneric,
             gfx::IconDescription(chromeos::kFiletypeGenericIcon, kIconDipSize,
-                                 gfx::kGoogleGrey700)},
+                                 color)},
            {IconType::kGform,
             gfx::IconDescription(chromeos::kFiletypeGformIcon, kIconDipSize,
                                  gfx::kGoogleGreen500)},
@@ -236,9 +237,8 @@ gfx::ImageSkia GetVectorIconFromIconType(IconType icon, bool is_chip_icon) {
            {IconType::kImage,
             gfx::IconDescription(chromeos::kFiletypeImageIcon, kIconDipSize,
                                  gfx::kGoogleRed500)},
-           {IconType::kLinux,
-            gfx::IconDescription(chromeos::kFiletypeLinuxIcon, kIconDipSize,
-                                 gfx::kGoogleGrey700)},
+           {IconType::kLinux, gfx::IconDescription(chromeos::kFiletypeLinuxIcon,
+                                                   kIconDipSize, color)},
            {IconType::kPdf,
             gfx::IconDescription(chromeos::kFiletypePdfIcon, kIconDipSize,
                                  gfx::kGoogleRed500)},
@@ -277,18 +277,20 @@ gfx::ImageSkia GetVectorIconFromIconType(IconType icon, bool is_chip_icon) {
 
 }  // namespace internal
 
-gfx::ImageSkia GetIconForPath(const base::FilePath& filepath) {
+gfx::ImageSkia GetIconForPath(const base::FilePath& filepath, SkColor color) {
   return internal::GetVectorIconFromIconType(
-      internal::GetIconTypeForPath(filepath));
+      internal::GetIconTypeForPath(filepath), color);
 }
 
-gfx::ImageSkia GetChipIconForPath(const base::FilePath& filepath) {
+gfx::ImageSkia GetChipIconForPath(const base::FilePath& filepath,
+                                  SkColor color) {
   return internal::GetVectorIconFromIconType(
-      internal::GetIconTypeForPath(filepath), /*is_chip_icon=*/true);
+      internal::GetIconTypeForPath(filepath), color, /*is_chip_icon=*/true);
 }
 
-gfx::ImageSkia GetIconFromType(const std::string& icon_type) {
-  return GetVectorIconFromIconType(internal::GetIconTypeFromString(icon_type));
+gfx::ImageSkia GetIconFromType(const std::string& icon_type, SkColor color) {
+  return GetVectorIconFromIconType(internal::GetIconTypeFromString(icon_type),
+                                   color);
 }
 
 }  // namespace ash
