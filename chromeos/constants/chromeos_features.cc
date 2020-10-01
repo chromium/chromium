@@ -302,6 +302,11 @@ const base::Feature kMojoDBusRelay{"MojoDBusRelay",
 const base::Feature kClipboardHistory{"ClipboardHistory",
                                       base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables rendering html in Clipboard History only if an img or table tag is
+// present.
+const base::Feature kClipboardHistorySimpleRender{
+    "ClipboardHistorySimpleRender", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables copying an image to the system clipboard to support pasting onto
 // different surfaces
 const base::Feature kEnableFilesAppCopyImage{"EnableFilesAppCopyImage",
@@ -670,7 +675,12 @@ bool IsMinimumChromeVersionEnabled() {
 }
 
 bool IsClipboardHistoryEnabled() {
-  return base::FeatureList::IsEnabled(kClipboardHistory);
+  return base::FeatureList::IsEnabled(kClipboardHistory) ||
+         base::FeatureList::IsEnabled(kClipboardHistorySimpleRender);
+}
+
+bool IsClipboardHistorySimpleRenderEnabled() {
+  return base::FeatureList::IsEnabled(kClipboardHistorySimpleRender);
 }
 
 bool IsParentalControlsSettingsEnabled() {

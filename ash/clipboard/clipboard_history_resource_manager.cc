@@ -228,8 +228,10 @@ void ClipboardHistoryResourceManager::OnClipboardHistoryItemAdded(
     const ClipboardHistoryItem& item) {
   // For items that will be represented by their rendered HTML, we need to do
   // some prep work to pre-render and cache an image model.
-  if (!item.data().bitmap().isNull() || item.data().markup_data().empty())
+  if (ClipboardHistoryUtil::CalculateMainFormat(item.data()) !=
+      ui::ClipboardInternalFormat::kHtml) {
     return;
+  }
 
   const auto& items = clipboard_history_->GetItems();
 
