@@ -22,12 +22,16 @@ source_set("common") {
     "gcpw_files.h",
     "setup_lib.cc",
     "setup_lib.h",
+    "setup_utils.cc",
+    "setup_utils.h",
   ]
   public_deps = [ "//base" ]
   deps = [
     "../extension:common",
     "../gaiacp:common",
     "../gaiacp:util",
+    "//chrome/common:version_header",
+    "//chrome/credential_provider/gaiacp:string_resources",
     "//chrome/installer/util:with_no_strings",
   ]
 }

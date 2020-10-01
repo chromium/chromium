@@ -296,6 +296,41 @@ HRESULT SetGlobalFlagForTesting(const base::string16& name, DWORD value) {
   return SetMachineRegDWORD(kGcpRootKeyName, name, value);
 }
 
+HRESULT SetUpdaterClientsAppPathFlag(const base::string16& name, DWORD value) {
+  base::win::RegKey key;
+  LONG sts = key.Create(HKEY_LOCAL_MACHINE, kRegUpdaterClientsAppPath,
+                        KEY_WRITE | KEY_WOW64_32KEY);
+  if (sts != ERROR_SUCCESS)
+    return HRESULT_FROM_WIN32(sts);
+
+  sts = key.WriteValue(name.c_str(), value);
+  if (sts != ERROR_SUCCESS)
+    return HRESULT_FROM_WIN32(sts);
+
+  return S_OK;
+}
+
+HRESULT GetUpdaterClientsAppPathFlag(const base::string16& name, DWORD* value) {
+  base::win::RegKey key;
+  LONG sts = key.Open(HKEY_LOCAL_MACHINE, kRegUpdaterClientsAppPath,
+                      KEY_READ | KEY_WOW64_32KEY);
+  if (sts != ERROR_SUCCESS)
+    return HRESULT_FROM_WIN32(sts);
+
+  sts = key.ReadValueDW(name.c_str(), value);
+  if (sts != ERROR_SUCCESS)
+    return HRESULT_FROM_WIN32(sts);
+
+  return S_OK;
+}
+
+DWORD GetUpdaterClientsAppPathFlagOrDefault(const base::string16& reg_key,
+                                            const DWORD& default_value) {
+  DWORD value;
+  HRESULT hr = GetUpdaterClientsAppPathFlag(reg_key, &value);
+  return SUCCEEDED(hr) ? value : default_value;
+}
+
 HRESULT GetUserProperty(const base::string16& sid,
                         const base::string16& name,
                         DWORD* value) {

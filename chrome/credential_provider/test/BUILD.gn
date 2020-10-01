@@ -44,6 +44,7 @@ test("gcp_unittests") {
     "../setup:common",
     "//base",
     "//chrome/common:non_code_constants",
+    "//chrome/common:version_header",
     "//chrome/test:credential_provider_test_utils",
     "//content/public/browser",
     "//google_apis",
