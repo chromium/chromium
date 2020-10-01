@@ -2473,6 +2473,8 @@ crbug.com/1108711 external/wpt/css/css-pseudo/active-selection-057.html [ Failur
 crbug.com/1110393 external/wpt/css/css-pseudo/active-selection-021.html [ Failure ]
 crbug.com/1110399 external/wpt/css/css-pseudo/active-selection-031.html [ Failure ]
 crbug.com/1110401 external/wpt/css/css-pseudo/active-selection-045.html [ Failure ]
+crbug.com/1024156 external/wpt/css/css-pseudo/active-selection-027.html [ Failure ]
+crbug.com/1024156 external/wpt/css/css-pseudo/active-selection-025.html [ Failure ]
 
 crbug.com/27659 external/wpt/css/css-ruby/abs-in-ruby-base-container.html [ Failure ]
 crbug.com/27659 external/wpt/css/css-ruby/abs-in-ruby-base.html [ Failure ]
@@ -2645,8 +2647,6 @@ crbug.com/626703 external/wpt/css/css-backgrounds/border-image-slice-005.htm [ F
 crbug.com/626703 [ Mac11.0 ] external/wpt/scroll-to-text-fragment/redirects.html [ Timeout ]
 crbug.com/626703 external/wpt/css/css-sizing/aspect-ratio/replaced-element-025.tentative.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-sizing/aspect-ratio/replaced-element-023.tentative.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-pseudo/active-selection-027.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-pseudo/active-selection-025.html [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/mathml/presentation-markup/operators/operator-dictionary-symmetric-005.html [ Failure Crash ]
 crbug.com/626703 external/wpt/input-events/input-events-get-target-ranges-non-collapsed-selection.tentative.html?Backspace [ Timeout ]
 crbug.com/626703 external/wpt/input-events/input-events-get-target-ranges-non-collapsed-selection.tentative.html?TypingA [ Timeout ]
