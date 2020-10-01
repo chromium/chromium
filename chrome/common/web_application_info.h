@@ -15,6 +15,7 @@
 #include "base/containers/flat_set.h"
 #include "base/optional.h"
 #include "base/strings/string16.h"
+#include "components/services/app_service/public/cpp/share_target.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -161,7 +162,7 @@ struct WebApplicationInfo {
   std::vector<blink::Manifest::FileHandler> file_handlers;
 
   // File types the app accepts as a Web Share Target.
-  base::Optional<blink::Manifest::ShareTarget> share_target;
+  base::Optional<apps::ShareTarget> share_target;
 
   // Additional search terms that users can use to find the app.
   std::vector<std::string> additional_search_terms;

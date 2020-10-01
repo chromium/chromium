@@ -20,6 +20,34 @@
 
 namespace web_app {
 
+TEST(WebAppInstallationUtils, SetWebAppManifestFields_Summary) {
+  WebApplicationInfo web_app_info;
+  web_app_info.start_url = GURL("https://www.chromium.org/index.html");
+  web_app_info.scope = web_app_info.start_url.GetWithoutFilename();
+  web_app_info.title = base::ASCIIToUTF16("App Name");
+  web_app_info.description = base::ASCIIToUTF16("App Description");
+  web_app_info.theme_color = SK_ColorCYAN;
+  web_app_info.background_color = SK_ColorMAGENTA;
+
+  const AppId app_id = GenerateAppIdFromURL(web_app_info.start_url);
+  auto web_app = std::make_unique<WebApp>(app_id);
+  SetWebAppManifestFields(web_app_info, *web_app);
+
+  EXPECT_EQ(web_app->scope(), GURL("https://www.chromium.org/"));
+  EXPECT_EQ(web_app->name(), "App Name");
+  EXPECT_EQ(web_app->description(), "App Description");
+  EXPECT_TRUE(web_app->theme_color().has_value());
+  EXPECT_EQ(*web_app->theme_color(), SK_ColorCYAN);
+  EXPECT_TRUE(web_app->background_color().has_value());
+  EXPECT_EQ(*web_app->background_color(), SK_ColorMAGENTA);
+
+  web_app_info.theme_color = base::nullopt;
+  web_app_info.background_color = base::nullopt;
+  SetWebAppManifestFields(web_app_info, *web_app);
+  EXPECT_FALSE(web_app->theme_color().has_value());
+  EXPECT_FALSE(web_app->background_color().has_value());
+}
+
 TEST(WebAppInstallationUtils, SetWebAppManifestFields_ShareTarget) {
   WebApplicationInfo web_app_info;
   web_app_info.start_url = GURL("https://www.chromium.org/index.html");
@@ -30,20 +58,18 @@ TEST(WebAppInstallationUtils, SetWebAppManifestFields_ShareTarget) {
   auto web_app = std::make_unique<WebApp>(app_id);
 
   {
-    blink::Manifest::ShareTarget share_target;
+    apps::ShareTarget share_target;
     share_target.action = GURL("http://example.com/share1");
-    share_target.method = blink::Manifest::ShareTarget::Method::kPost;
-    share_target.enctype =
-        blink::Manifest::ShareTarget::Enctype::kMultipartFormData;
-    share_target.params.title = base::ASCIIToUTF16("kTitle");
-    share_target.params.text = base::ASCIIToUTF16("kText");
+    share_target.method = apps::ShareTarget::Method::kPost;
+    share_target.enctype = apps::ShareTarget::Enctype::kMultipartFormData;
+    share_target.params.title = "kTitle";
+    share_target.params.text = "kText";
 
-    blink::Manifest::FileFilter file_filter;
-    file_filter.name = base::ASCIIToUTF16("kImages");
-    file_filter.accept.push_back(base::ASCIIToUTF16(".png"));
-    file_filter.accept.push_back(base::ASCIIToUTF16("image/png"));
+    apps::ShareTarget::Files file_filter;
+    file_filter.name = "kImages";
+    file_filter.accept.push_back(".png");
+    file_filter.accept.push_back("image/png");
     share_target.params.files.push_back(std::move(file_filter));
-
     web_app_info.share_target = std::move(share_target);
   }
 
@@ -67,13 +93,12 @@ TEST(WebAppInstallationUtils, SetWebAppManifestFields_ShareTarget) {
   }
 
   {
-    blink::Manifest::ShareTarget share_target;
+    apps::ShareTarget share_target;
     share_target.action = GURL("http://example.com/share2");
-    share_target.method = blink::Manifest::ShareTarget::Method::kGet;
-    share_target.enctype =
-        blink::Manifest::ShareTarget::Enctype::kFormUrlEncoded;
-    share_target.params.text = base::ASCIIToUTF16("kText");
-    share_target.params.url = base::ASCIIToUTF16("kUrl");
+    share_target.method = apps::ShareTarget::Method::kGet;
+    share_target.enctype = apps::ShareTarget::Enctype::kFormUrlEncoded;
+    share_target.params.text = "kText";
+    share_target.params.url = "kUrl";
     web_app_info.share_target = std::move(share_target);
   }
 

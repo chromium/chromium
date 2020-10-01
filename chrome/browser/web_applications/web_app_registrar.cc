@@ -98,6 +98,14 @@ const std::string* WebAppRegistrar::GetAppLaunchQueryParams(
   return web_app ? web_app->launch_query_params() : nullptr;
 }
 
+const apps::ShareTarget* WebAppRegistrar::GetAppShareTarget(
+    const AppId& app_id) const {
+  auto* web_app = GetAppById(app_id);
+  return (web_app && web_app->share_target().has_value())
+             ? &web_app->share_target().value()
+             : nullptr;
+}
+
 base::Optional<GURL> WebAppRegistrar::GetAppScopeInternal(
     const AppId& app_id) const {
   auto* web_app = GetAppById(app_id);

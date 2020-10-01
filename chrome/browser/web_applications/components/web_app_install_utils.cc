@@ -23,6 +23,7 @@
 #include "chrome/browser/web_applications/components/web_app_icon_generator.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/web_application_info.h"
+#include "components/services/app_service/public/cpp/share_target.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
@@ -125,6 +126,65 @@ UpdateShortcutsMenuItemInfosFromManifest(
   return web_app_shortcut_infos;
 }
 
+apps::ShareTarget::Method ToAppsShareTargetMethod(
+    blink::Manifest::ShareTarget::Method method) {
+  switch (method) {
+    case blink::Manifest::ShareTarget::Method::kGet:
+      return apps::ShareTarget::Method::kGet;
+    case blink::Manifest::ShareTarget::Method::kPost:
+      return apps::ShareTarget::Method::kPost;
+  }
+  NOTREACHED();
+}
+
+apps::ShareTarget::Enctype ToAppsShareTargetEnctype(
+    blink::Manifest::ShareTarget::Enctype enctype) {
+  switch (enctype) {
+    case blink::Manifest::ShareTarget::Enctype::kFormUrlEncoded:
+      return apps::ShareTarget::Enctype::kFormUrlEncoded;
+    case blink::Manifest::ShareTarget::Enctype::kMultipartFormData:
+      return apps::ShareTarget::Enctype::kMultipartFormData;
+  }
+  NOTREACHED();
+}
+
+base::Optional<apps::ShareTarget> ToWebAppShareTarget(
+    const base::Optional<blink::Manifest::ShareTarget>& share_target) {
+  if (!share_target) {
+    return base::nullopt;
+  }
+  apps::ShareTarget apps_share_target;
+  apps_share_target.action = share_target->action;
+  apps_share_target.method = ToAppsShareTargetMethod(share_target->method);
+  apps_share_target.enctype = ToAppsShareTargetEnctype(share_target->enctype);
+
+  if (share_target->params.title.has_value()) {
+    apps_share_target.params.title =
+        base::UTF16ToUTF8(*share_target->params.title);
+  }
+  if (share_target->params.text.has_value()) {
+    apps_share_target.params.text =
+        base::UTF16ToUTF8(*share_target->params.text);
+  }
+  if (share_target->params.url.has_value()) {
+    apps_share_target.params.url = base::UTF16ToUTF8(*share_target->params.url);
+  }
+
+  for (const auto& file_filter : share_target->params.files) {
+    apps::ShareTarget::Files apps_share_target_files;
+    apps_share_target_files.name = base::UTF16ToUTF8(file_filter.name);
+
+    for (const auto& file_type : file_filter.accept) {
+      apps_share_target_files.accept.push_back(base::UTF16ToUTF8(file_type));
+    }
+
+    apps_share_target.params.files.push_back(
+        std::move(apps_share_target_files));
+  }
+
+  return std::move(apps_share_target);
+}
+
 }  // namespace
 
 void UpdateWebAppInfoFromManifest(const blink::Manifest& manifest,
@@ -211,7 +271,7 @@ void UpdateWebAppInfoFromManifest(const blink::Manifest& manifest,
 
   web_app_info->file_handlers = manifest.file_handlers;
 
-  web_app_info->share_target = manifest.share_target;
+  web_app_info->share_target = ToWebAppShareTarget(manifest.share_target);
 
   web_app_info->protocol_handlers = manifest.protocol_handlers;
 

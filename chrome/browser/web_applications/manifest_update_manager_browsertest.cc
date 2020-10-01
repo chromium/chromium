@@ -34,6 +34,8 @@
 #include "chrome/browser/web_applications/test/test_system_web_app_installation.h"
 #include "chrome/browser/web_applications/test/web_app_install_observer.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
+#include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -1211,6 +1213,127 @@ IN_PROC_BROWSER_TEST_P(ManifestUpdateManagerWebAppsBrowserTest,
   EXPECT_EQ(extension->id(), app_id);
   EXPECT_EQ(bookmark_app_registrar.GetAppThemeColor(app_id).value(),
             SK_ColorRED);
+}
+
+IN_PROC_BROWSER_TEST_P(ManifestUpdateManagerWebAppsBrowserTest,
+                       CheckFindsAddedShareTarget) {
+  constexpr char kManifestTemplate[] = R"(
+    {
+      "name": "Test app name",
+      "start_url": ".",
+      "scope": "/",
+      "display": "minimal-ui",
+      "icons": $1
+    }
+  )";
+
+  constexpr char kShareTargetManifestTemplate[] = R"(
+    {
+      "name": "Test app name",
+      "start_url": ".",
+      "scope": "/",
+      "display": "minimal-ui",
+      "share_target": {
+        "action": "/web_share_target/share.html",
+        "method": "GET",
+        "params": {
+          "url": "link"
+        }
+      },
+      "icons": $1
+    }
+  )";
+
+  OverrideManifest(kManifestTemplate, {kInstallableIconList});
+  AppId app_id = InstallWebApp();
+
+  OverrideManifest(kShareTargetManifestTemplate, {kInstallableIconList});
+  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL(), &app_id),
+            ManifestUpdateResult::kAppUpdated);
+  histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
+                                      ManifestUpdateResult::kAppUpdated, 1);
+
+  const WebApp* web_app =
+      GetProvider().registrar().AsWebAppRegistrar()->GetAppById(app_id);
+  EXPECT_TRUE(web_app->share_target().has_value());
+  EXPECT_EQ(web_app->share_target()->method, apps::ShareTarget::Method::kGet);
+}
+
+IN_PROC_BROWSER_TEST_P(ManifestUpdateManagerWebAppsBrowserTest,
+                       CheckFindsShareTargetChange) {
+  constexpr char kShareTargetManifestTemplate[] = R"(
+    {
+      "name": "Test app name",
+      "start_url": ".",
+      "scope": "/",
+      "display": "minimal-ui",
+      "share_target": {
+        "action": "/web_share_target/share.html",
+        "method": "$1",
+        "params": {
+          "url": "link"
+        }
+      },
+      "icons": $2
+    }
+  )";
+  OverrideManifest(kShareTargetManifestTemplate, {"GET", kInstallableIconList});
+  AppId app_id = InstallWebApp();
+
+  OverrideManifest(kShareTargetManifestTemplate,
+                   {"POST", kInstallableIconList});
+  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL(), &app_id),
+            ManifestUpdateResult::kAppUpdated);
+  histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
+                                      ManifestUpdateResult::kAppUpdated, 1);
+
+  const WebApp* web_app =
+      GetProvider().registrar().AsWebAppRegistrar()->GetAppById(app_id);
+  EXPECT_TRUE(web_app->share_target().has_value());
+  EXPECT_EQ(web_app->share_target()->method, apps::ShareTarget::Method::kPost);
+}
+
+IN_PROC_BROWSER_TEST_P(ManifestUpdateManagerWebAppsBrowserTest,
+                       CheckFindsDeletedShareTarget) {
+  constexpr char kShareTargetManifestTemplate[] = R"(
+    {
+      "name": "Test app name",
+      "start_url": ".",
+      "scope": "/",
+      "display": "minimal-ui",
+      "share_target": {
+        "action": "/web_share_target/share.html",
+        "method": "GET",
+        "params": {
+          "url": "link"
+        }
+      },
+      "icons": $1
+    }
+  )";
+
+  constexpr char kManifestTemplate[] = R"(
+    {
+      "name": "Test app name",
+      "start_url": ".",
+      "scope": "/",
+      "display": "minimal-ui",
+      "icons": $1
+    }
+  )";
+
+  OverrideManifest(kShareTargetManifestTemplate, {kInstallableIconList});
+  AppId app_id = InstallWebApp();
+
+  OverrideManifest(kManifestTemplate, {kInstallableIconList});
+  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL(), &app_id),
+            ManifestUpdateResult::kAppUpdated);
+  histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
+                                      ManifestUpdateResult::kAppUpdated, 1);
+
+  const WebApp* web_app =
+      GetProvider().registrar().AsWebAppRegistrar()->GetAppById(app_id);
+  EXPECT_FALSE(web_app->share_target().has_value());
 }
 
 class ManifestUpdateManagerBrowserTestWithShortcutsMenu

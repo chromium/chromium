@@ -48,6 +48,8 @@ class BookmarkAppRegistrar : public web_app::AppRegistrar,
   const GURL& GetAppStartUrl(const web_app::AppId& app_id) const override;
   const std::string* GetAppLaunchQueryParams(
       const web_app::AppId& app_id) const override;
+  const apps::ShareTarget* GetAppShareTarget(
+      const web_app::AppId& app_id) const override;
   base::Optional<GURL> GetAppScopeInternal(
       const web_app::AppId& app_id) const override;
   web_app::DisplayMode GetAppDisplayMode(

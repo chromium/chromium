@@ -39,7 +39,7 @@ include_rules = [
   "+components/safe_browsing/buildflags.h",
   "+components/safe_browsing/core/proto/csd.pb.h",
   "+components/safe_browsing/core/web_ui/constants.h",
-  "+components/services/app_service/public",
+  "+components/services/app_service/public/cpp/share_target.h",
   "+components/strings/grit/components_strings.h",
   "+components/translate/core/common",
   "+components/url_formatter",

@@ -18,6 +18,9 @@
 
 class GURL;
 class Profile;
+namespace apps {
+struct ShareTarget;
+}
 namespace base {
 class Time;
 }
@@ -91,6 +94,8 @@ class AppRegistrar {
       const AppId& app_id) const = 0;
   virtual const GURL& GetAppStartUrl(const AppId& app_id) const = 0;
   virtual const std::string* GetAppLaunchQueryParams(
+      const AppId& app_id) const = 0;
+  virtual const apps::ShareTarget* GetAppShareTarget(
       const AppId& app_id) const = 0;
 
   // Returns the start_url with launch_query_params appended to the end if any.

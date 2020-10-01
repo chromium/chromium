@@ -47,28 +47,6 @@ std::vector<std::vector<SquareSizePx>> GetDownloadedShortcutsMenuIconsSizes(
   return shortcuts_menu_icons_sizes;
 }
 
-apps::ShareTarget::Method ToAppsShareTargetMethod(
-    blink::Manifest::ShareTarget::Method method) {
-  switch (method) {
-    case blink::Manifest::ShareTarget::Method::kGet:
-      return apps::ShareTarget::Method::kGet;
-    case blink::Manifest::ShareTarget::Method::kPost:
-      return apps::ShareTarget::Method::kPost;
-  }
-  NOTREACHED();
-}
-
-apps::ShareTarget::Enctype ToAppsShareTargetEnctype(
-    blink::Manifest::ShareTarget::Enctype enctype) {
-  switch (enctype) {
-    case blink::Manifest::ShareTarget::Enctype::kFormUrlEncoded:
-      return apps::ShareTarget::Enctype::kFormUrlEncoded;
-    case blink::Manifest::ShareTarget::Enctype::kMultipartFormData:
-      return apps::ShareTarget::Enctype::kMultipartFormData;
-  }
-  NOTREACHED();
-}
-
 void SetWebAppFileHandlers(
     const std::vector<blink::Manifest::FileHandler>& manifest_file_handlers,
     WebApp& web_app) {
@@ -91,45 +69,6 @@ void SetWebAppFileHandlers(
   }
 
   web_app.SetFileHandlers(std::move(web_app_file_handlers));
-}
-
-void SetWebAppShareTarget(
-    const base::Optional<blink::Manifest::ShareTarget>& share_target,
-    WebApp& web_app) {
-  if (!share_target) {
-    web_app.SetShareTarget(base::nullopt);
-    return;
-  }
-  apps::ShareTarget apps_share_target;
-  apps_share_target.action = share_target->action;
-  apps_share_target.method = ToAppsShareTargetMethod(share_target->method);
-  apps_share_target.enctype = ToAppsShareTargetEnctype(share_target->enctype);
-
-  if (share_target->params.title.has_value()) {
-    apps_share_target.params.title =
-        base::UTF16ToUTF8(*share_target->params.title);
-  }
-  if (share_target->params.text.has_value()) {
-    apps_share_target.params.text =
-        base::UTF16ToUTF8(*share_target->params.text);
-  }
-  if (share_target->params.url.has_value()) {
-    apps_share_target.params.url = base::UTF16ToUTF8(*share_target->params.url);
-  }
-
-  for (const auto& file_filter : share_target->params.files) {
-    apps::ShareTarget::Files apps_share_target_files;
-    apps_share_target_files.name = base::UTF16ToUTF8(file_filter.name);
-
-    for (const auto& file_type : file_filter.accept) {
-      apps_share_target_files.accept.push_back(base::UTF16ToUTF8(file_type));
-    }
-
-    apps_share_target.params.files.push_back(
-        std::move(apps_share_target_files));
-  }
-
-  web_app.SetShareTarget(std::move(apps_share_target));
 }
 
 void SetWebAppProtocolHandlers(
@@ -188,7 +127,7 @@ void SetWebAppManifestFields(const WebApplicationInfo& web_app_info,
           web_app_info.shortcuts_menu_icons_bitmaps));
 
   SetWebAppFileHandlers(web_app_info.file_handlers, web_app);
-  SetWebAppShareTarget(web_app_info.share_target, web_app);
+  web_app.SetShareTarget(web_app_info.share_target);
   SetWebAppProtocolHandlers(web_app_info.protocol_handlers, web_app);
 
   if (base::FeatureList::IsEnabled(features::kDesktopPWAsRunOnOsLogin) &&

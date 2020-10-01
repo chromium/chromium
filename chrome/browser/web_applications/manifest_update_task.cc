@@ -177,6 +177,17 @@ bool ManifestUpdateTask::IsUpdateNeededForManifest() const {
     return true;
   }
 
+  const apps::ShareTarget* app_share_target =
+      registrar_.GetAppShareTarget(app_id_);
+  if (app_share_target) {
+    if (!web_application_info_->share_target ||
+        *web_application_info_->share_target != *app_share_target) {
+      return true;
+    }
+  } else if (web_application_info_->share_target) {
+    return true;
+  }
+
   // TODO(crbug.com/926083): Check more manifest fields.
   return false;
 }
