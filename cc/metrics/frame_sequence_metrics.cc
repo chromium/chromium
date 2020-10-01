@@ -354,13 +354,37 @@ void FrameSequenceMetrics::ReportMetrics() {
 
 void FrameSequenceMetrics::ComputeJank(
     FrameSequenceMetrics::ThreadType thread_type,
+    uint32_t frame_token,
     base::TimeTicks presentation_time,
     base::TimeDelta frame_interval) {
   if (!jank_reporter_)
     return;
 
   if (thread_type == jank_reporter_->thread_type())
-    jank_reporter_->AddPresentedFrame(presentation_time, frame_interval);
+    jank_reporter_->AddPresentedFrame(frame_token, presentation_time,
+                                      frame_interval);
+}
+
+void FrameSequenceMetrics::NotifySubmitForJankReporter(
+    FrameSequenceMetrics::ThreadType thread_type,
+    uint32_t frame_token,
+    uint32_t sequence_number) {
+  if (!jank_reporter_)
+    return;
+
+  if (thread_type == jank_reporter_->thread_type())
+    jank_reporter_->AddSubmitFrame(frame_token, sequence_number);
+}
+
+void FrameSequenceMetrics::NotifyNoUpdateForJankReporter(
+    FrameSequenceMetrics::ThreadType thread_type,
+    uint32_t sequence_number,
+    base::TimeDelta frame_interval) {
+  if (!jank_reporter_)
+    return;
+
+  if (thread_type == jank_reporter_->thread_type())
+    jank_reporter_->AddFrameWithNoUpdate(sequence_number, frame_interval);
 }
 
 bool FrameSequenceMetrics::ThroughputData::CanReportHistogram(

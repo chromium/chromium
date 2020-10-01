@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -19,6 +20,16 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace {
+const base::TimeDelta kDefaultFrameInterval =
+    base::TimeDelta::FromMillisecondsD(16.67);
+
+// All sequence numbers for simulated frame events will start at this number.
+// This makes it easier to numerically distinguish sequence numbers versus
+// frame tokens, which always start at 1.
+const uint32_t kSequenceNumberStartsAt = 100u;
+}  // namespace
+
 namespace cc {
 
 class JankMetricsTest : public testing::Test {
@@ -26,42 +37,99 @@ class JankMetricsTest : public testing::Test {
   JankMetricsTest() = default;
   ~JankMetricsTest() override = default;
 
-  // Create a sequence of PresentationFeedback for testing based on the provided
-  // sequence of actual frame intervals and the expected frame interval. The
-  // size of the returned sequence is |actual_intervals_ms|.size() + 1
-  static std::vector<gfx::PresentationFeedback> CreateFeedbackSequence(
-      const std::vector<double>& actual_intervals_ms,
-      double expected_interval_ms) {
-    std::vector<gfx::PresentationFeedback> feedbacks;
-
-    // The timestamp of the first presentation.
-    base::TimeTicks start_time = base::TimeTicks::Now();
-    double accum_interval = 0.0;
-    base::TimeDelta expected_interval =
-        base::TimeDelta::FromMillisecondsD(expected_interval_ms);
-
-    feedbacks.emplace_back(
-        gfx::PresentationFeedback(start_time, expected_interval, 0));
-    for (auto interval : actual_intervals_ms) {
-      accum_interval += interval;
-      feedbacks.emplace_back(gfx::PresentationFeedback{
-          start_time + base::TimeDelta::FromMillisecondsD(accum_interval),
-          expected_interval, 0});
-    }
-    return feedbacks;
-  }
-
-  // Notify |jank_reporter| of all presentations in |feedbacks|.
-  void AddPresentedFramesToJankReporter(
+  // Simulate a series of Submit, NoUpdate, and Presentation events and notify
+  // |jank_reporter|, as specified by |frame_sequences|. The exact presentation
+  // time of frames can be slightly manipulated by |presentation_time_shifts|.
+  void SimulateFrameSequence(
       JankMetrics* jank_reporter,
-      const std::vector<gfx::PresentationFeedback>& feedbacks) {
-    for (auto feedback : feedbacks) {
-      jank_reporter->AddPresentedFrame(feedback.timestamp, feedback.interval);
+      const std::array<std::string, 3>& frame_sequences,
+      const std::unordered_map<char, double>& presentation_time_shifts = {}) {
+    // |frame_sequences| is an array of 3 strings of EQUAL LENGTH, representing
+    // the (S)UBMIT, (N)O-UPDATE, (P)RESENTATION events, respectively. In all 3
+    // strings:
+    //   any char == a vsync interval (16.67ms) with a unique sequence number.
+    //   '-' == no event in this vsync interval.
+    // In SUBMIT string:
+    //   [a-zA-Z] == A SUBMIT occurs at this vsync interval. Each symbol in this
+    //   string must be unique.
+    // In NO-UPDATE string:
+    //   Any non '-' letter == A NO-UPDATE frame is reported at this vsync
+    //   interval.
+    // In PRESENTATION string:
+    //   [a-zA-Z] == A PRESENTATION occurs at this vsync interval. Each
+    //   symbol must be unique and MUST HAVE APPEARED in the SUBMIT string.
+    //
+    // NOTE this test file stylistically denotes the frames that should jank
+    // with uppercases (although this is not a strict).
+    //
+    // Each item in |presentation_time_shifts| maps a presentation frame letter
+    // (must have appeared in string P) to how much time (in ms) this
+    // presentation deviates from expected. For example: {'a': -3.2} means frame
+    // 'a' is presented 3.2ms before expected.
+    //
+    // e.g.
+    // S = "a-b--c--D--"
+    // N = "---**------"
+    // P = "-a-b---c-D-"
+    // presentation_time_shifts = {'c':-8.4, 'D':8.4}
+    //
+    // means submit at vsync 0, 2, 5, 8, presentation at 1, 3, 7, 9. Due to the
+    // no-update frames 3 and 4, no janks will be reported for 'c'. However, the
+    // large fluctuation of presentation time of 'c' and 'D', there is a jank
+    // at 'D'.
+    //
+    // Without the no-update frames and presentation_time_shifts, one jank would
+    // have been reported at 'c'.
+    auto& submits = frame_sequences[0];
+    auto& ignores = frame_sequences[1];
+    auto& presnts = frame_sequences[2];
+
+    // All three sequences must have the same size.
+    EXPECT_EQ(submits.size(), ignores.size());
+    EXPECT_EQ(submits.size(), presnts.size());
+
+    // Map submitted frame to their tokens
+    std::unordered_map<char, uint32_t> submit_to_token;
+
+    base::TimeTicks start_time = base::TimeTicks::Now();
+
+    // Scan S to collect all symbols
+    for (uint32_t frame_token = 1, i = 0; i < submits.size(); ++i) {
+      uint32_t sequence_number = kSequenceNumberStartsAt + i;
+      if (submits[i] != '-') {
+        submit_to_token[submits[i]] = frame_token;
+        jank_reporter->AddSubmitFrame(/*frame_token=*/frame_token,
+                                      /*sequence_number=*/sequence_number);
+        frame_token++;
+      }
+
+      if (ignores[i] != '-') {
+        jank_reporter->AddFrameWithNoUpdate(
+            /*sequence_number=*/sequence_number,
+            /*frame_interval=*/kDefaultFrameInterval);
+      }
+
+      if (presnts[i] != '-') {
+        // The present frame must have been previously submitted
+        EXPECT_EQ(submit_to_token.count(presnts[i]), 1u);
+
+        double presentation_offset = 0.0;  // ms
+        if (presentation_time_shifts.count(presnts[i]))
+          presentation_offset = presentation_time_shifts.at(presnts[i]);
+
+        jank_reporter->AddPresentedFrame(
+            /*presented_frame_token=*/submit_to_token[presnts[i]],
+            /*current_presentation_timestamp=*/start_time +
+                i * kDefaultFrameInterval +
+                base::TimeDelta::FromMillisecondsD(presentation_offset),
+            /*frame_interval=*/kDefaultFrameInterval);
+        submit_to_token.erase(presnts[i]);
+      }
     }
   }
 };
 
-TEST_F(JankMetricsTest, CompositorAnimationMildFluctuationNoJank) {
+TEST_F(JankMetricsTest, CompositorAnimationOneJankWithMildFluctuation) {
   base::HistogramTester histogram_tester;
   FrameSequenceTrackerType tracker_type =
       FrameSequenceTrackerType::kCompositorAnimation;
@@ -69,14 +137,18 @@ TEST_F(JankMetricsTest, CompositorAnimationMildFluctuationNoJank) {
       FrameSequenceMetrics::ThreadType::kCompositor;
   JankMetrics jank_reporter{tracker_type, thread_type};
 
-  // No jank. Small upticks such as 15->17 or 14->18 do not qualify as janks.
-  auto feedbacks =
-      CreateFeedbackSequence({16.67, 16.67, 15, 17, 14, 18, 15, 16.67}, 16.67);
-
-  AddPresentedFramesToJankReporter(&jank_reporter, feedbacks);
+  // One Jank; there are no no-update frames. The fluctuation in presentation of
+  // 'd' is not big enough to cause another jank.
+  SimulateFrameSequence(&jank_reporter,
+                        {
+                            /*submit   */ "ab-C-d",
+                            /*noupdate */ "------",
+                            /*present  */ "ab-C-d",
+                        },
+                        {{'d', +8.0 /*ms*/}});
   jank_reporter.ReportJankMetrics(100u);
 
-  // One sample of 0 janks reported for "Compositor".
+  // One sample of 1 janks reported for "Compositor".
   const char* metric =
       "Graphics.Smoothness.Jank.Compositor.CompositorAnimation";
   const char* invalid_metric =
@@ -84,13 +156,13 @@ TEST_F(JankMetricsTest, CompositorAnimationMildFluctuationNoJank) {
 
   histogram_tester.ExpectTotalCount(metric, 1u);
   EXPECT_THAT(histogram_tester.GetAllSamples(metric),
-              testing::ElementsAre(base::Bucket(0, 1)));
+              testing::ElementsAre(base::Bucket(1, 1)));
 
   // No reporting for "Main".
   histogram_tester.ExpectTotalCount(invalid_metric, 0u);
 }
 
-TEST_F(JankMetricsTest, MainThreadAnimationOneJank) {
+TEST_F(JankMetricsTest, MainThreadAnimationOneJankWithNoUpdate) {
   base::HistogramTester histogram_tester;
   FrameSequenceTrackerType tracker_type =
       FrameSequenceTrackerType::kMainThreadAnimation;
@@ -98,13 +170,13 @@ TEST_F(JankMetricsTest, MainThreadAnimationOneJank) {
       FrameSequenceMetrics::ThreadType::kMain;
   JankMetrics jank_reporter{tracker_type, thread_type};
 
-  // One Main thread jank from 15 to 24, since 24 - 15 = 9, which is greater
-  // then 0.5 * frame_interval = 8.33. The jank occurrence is visually marked
-  // with a "+" sign.
-  auto feedbacks =
-      CreateFeedbackSequence({48, 15, +24, 14, 18, 15, 16.67}, 16.67);
+  // There are only 1 jank because of a no-update frame.
 
-  AddPresentedFramesToJankReporter(&jank_reporter, feedbacks);
+  SimulateFrameSequence(&jank_reporter, {
+                                            /*submit   */ "ab-c--D",
+                                            /*noupdate */ "--*----",
+                                            /*present  */ "ab-c--D",
+                                        });
   jank_reporter.ReportJankMetrics(100u);
 
   // One jank is reported for "Main".
@@ -128,10 +200,13 @@ TEST_F(JankMetricsTest, VideoManyJanksOver300ExpectedFrames) {
   JankMetrics jank_reporter{tracker_type, thread_type};
 
   // 7 janks.
-  auto feedbacks = CreateFeedbackSequence(
-      {15, +33, +50, 33, 16, +33, +50, +100, +120, +180}, 16.67);
+  SimulateFrameSequence(&jank_reporter,
+                        {
+                            /*submit   */ "ab-C--DeFGh-IJk---L---------",
+                            /*noupdate */ "----------------------------",
+                            /*present  */ "---ab-C--De-F--Gh-I---Jk---L",
+                        });
 
-  AddPresentedFramesToJankReporter(&jank_reporter, feedbacks);
   jank_reporter.ReportJankMetrics(300u);
 
   // Report in the 7/300 ~= 2% bucket for "Compositor"
@@ -146,17 +221,20 @@ TEST_F(JankMetricsTest, VideoManyJanksOver300ExpectedFrames) {
   histogram_tester.ExpectTotalCount(invalid_metric, 0u);
 }
 
-TEST_F(JankMetricsTest, WheelScrollMainThreadTwoJanks) {
+TEST_F(JankMetricsTest, WheelScrollMainThreadNoJanksWithNoUpdates) {
   base::HistogramTester histogram_tester;
   FrameSequenceTrackerType tracker_type =
       FrameSequenceTrackerType::kWheelScroll;
   FrameSequenceMetrics::ThreadType thread_type =
       FrameSequenceMetrics::ThreadType::kMain;
-
   JankMetrics jank_reporter{tracker_type, thread_type};
 
-  auto feedbacks = CreateFeedbackSequence({33, 16, +33, +48, 33}, 16.67);
-  AddPresentedFramesToJankReporter(&jank_reporter, feedbacks);
+  SimulateFrameSequence(&jank_reporter,
+                        {
+                            /*submit   */ "ab-c--d------e---------f-",
+                            /*noupdate */ "--*-**-******-*********--",
+                            /*present  */ "---ab-c-d-----e---------f",
+                        });
   jank_reporter.ReportJankMetrics(100u);
 
   // Expect 2 janks for "Main" and no jank for "Compositor"
@@ -166,12 +244,43 @@ TEST_F(JankMetricsTest, WheelScrollMainThreadTwoJanks) {
 
   histogram_tester.ExpectTotalCount(metric, 1u);
   EXPECT_THAT(histogram_tester.GetAllSamples(metric),
-              testing::ElementsAre(base::Bucket(2, 1)));
+              testing::ElementsAre(base::Bucket(0, 1)));
 
   histogram_tester.ExpectTotalCount(invalid_metric, 0u);
 }
 
-TEST_F(JankMetricsTest, TouchScrollCompositorThreadManyJanks) {
+TEST_F(JankMetricsTest, WheelScrollCompositorTwoJanksWithLargeFluctuation) {
+  base::HistogramTester histogram_tester;
+  FrameSequenceTrackerType tracker_type =
+      FrameSequenceTrackerType::kWheelScroll;
+  FrameSequenceMetrics::ThreadType thread_type =
+      FrameSequenceMetrics::ThreadType::kCompositor;
+  JankMetrics jank_reporter{tracker_type, thread_type};
+
+  // Two janks; there are no no-update frames. The fluctuations in presentation
+  // of 'C' and 'D' are just big enough to cause another jank.
+  SimulateFrameSequence(&jank_reporter,
+                        {
+                            /*submit   */ "ab-C-D",
+                            /*noupdate */ "------",
+                            /*present  */ "ab-C-D",
+                        },
+                        {{'C', -2.0 /*ms*/}, {'D', +7.0 /*ms*/}});
+  jank_reporter.ReportJankMetrics(100u);
+
+  // One sample of 2 janks reported for "Compositor".
+  const char* metric = "Graphics.Smoothness.Jank.Compositor.WheelScroll";
+  const char* invalid_metric = "Graphics.Smoothness.Jank.Main.WheelScroll";
+
+  histogram_tester.ExpectTotalCount(metric, 1u);
+  EXPECT_THAT(histogram_tester.GetAllSamples(metric),
+              testing::ElementsAre(base::Bucket(2, 1)));
+
+  // No reporting for "Main".
+  histogram_tester.ExpectTotalCount(invalid_metric, 0u);
+}
+
+TEST_F(JankMetricsTest, TouchScrollCompositorThreadManyJanksLongLatency) {
   base::HistogramTester histogram_tester;
   FrameSequenceTrackerType tracker_type =
       FrameSequenceTrackerType::kTouchScroll;
@@ -180,14 +289,17 @@ TEST_F(JankMetricsTest, TouchScrollCompositorThreadManyJanks) {
 
   JankMetrics jank_reporter{tracker_type, thread_type};
 
-  auto feedbacks =
-      CreateFeedbackSequence({33, 16, +33, +48, +100, 16, +48, +100}, 16.67);
-
-  AddPresentedFramesToJankReporter(&jank_reporter, feedbacks);
+  // There are long delays from submit to presentations.
+  SimulateFrameSequence(
+      &jank_reporter, {
+                          /*submit   */ "abB-c--D--EFgH----------------------",
+                          /*noupdate */ "---*--------------------------------",
+                          /*present  */ "----------ab-B--c---D----E-----Fg--H",
+                      });
   jank_reporter.ReportJankMetrics(120u);
 
-  // Expect janks in the 5/120 ~= 4% bucket for "Compositor", and no jank for
-  // "Main"
+  // Expect janks in the 5/120 ~= 4% bucket for "Compositor", and no jank
+  // for "Main"
   const char* metric = "Graphics.Smoothness.Jank.Compositor.TouchScroll";
   const char* invalid_metric = "Graphics.Smoothness.Jank.Main.TouchScroll";
 
@@ -210,9 +322,13 @@ TEST_F(JankMetricsTest, RAFMergeJanks) {
   std::unique_ptr<JankMetrics> other_reporter =
       std::make_unique<JankMetrics>(tracker_type, thread_type);
 
-  auto feedbacks = CreateFeedbackSequence({33, +50, 16, +33, 33, +48}, 16.67);
-  AddPresentedFramesToJankReporter(other_reporter.get(), feedbacks);
-  AddPresentedFramesToJankReporter(&jank_reporter, feedbacks);
+  std::array<std::string, 3> seqs = {
+      /*submit   */ "a-b-Cd-e-F--D-",
+      /*noupdate */ "-*----*-------",
+      /*present  */ "-a-b-Cd-e-F--D",
+  };
+  SimulateFrameSequence(&jank_reporter, seqs);
+  SimulateFrameSequence(other_reporter.get(), seqs);
 
   jank_reporter.Merge(std::move(other_reporter));
   jank_reporter.ReportJankMetrics(100u);
@@ -238,9 +354,11 @@ TEST_F(JankMetricsTest, CustomNotReported) {
 
   // There should be 4 janks, but the jank reporter does not track or report
   // them.
-  auto feedbacks = CreateFeedbackSequence({16, +33, +48, 16, +33, +48}, 16.67);
-
-  AddPresentedFramesToJankReporter(&jank_reporter, feedbacks);
+  SimulateFrameSequence(&jank_reporter, {
+                                            /*submit   */ "ab-C--D---E----F",
+                                            /*noupdate */ "----------------",
+                                            /*present  */ "ab-C--D---E----F",
+                                        });
   jank_reporter.ReportJankMetrics(100u);
 
   // Expect no jank reports even though the sequence contains jank

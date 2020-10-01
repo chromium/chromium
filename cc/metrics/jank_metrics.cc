@@ -67,19 +67,90 @@ JankMetrics::JankMetrics(FrameSequenceTrackerType tracker_type,
 }
 JankMetrics::~JankMetrics() = default;
 
+void JankMetrics::AddSubmitFrame(uint32_t frame_token,
+                                 uint32_t sequence_number) {
+  // When a frame is submitted, record its |frame_token| and its associated
+  // |sequence_number|. This pushed item will be removed when this frame is
+  // presented.
+  queue_frame_token_and_id_.push({frame_token, sequence_number});
+}
+
+void JankMetrics::AddFrameWithNoUpdate(uint32_t sequence_number,
+                                       base::TimeDelta frame_interval) {
+  // If a frame does not cause an increase in expected frames, it will be
+  // recorded here and later subtracted from the presentation interval that
+  // includes this frame.
+  queue_frame_id_and_interval_.push({sequence_number, frame_interval});
+}
+
 void JankMetrics::AddPresentedFrame(
+    uint32_t presented_frame_token,
     base::TimeTicks current_presentation_timestamp,
     base::TimeDelta frame_interval) {
-  base::TimeDelta current_frame_delta =
-      current_presentation_timestamp - last_presentation_timestamp_;
+  uint32_t presented_frame_id = 0;
 
-  // Only start tracking jank if this function has been called (so that
-  // |last_presentation_timestamp_| and |prev_frame_delta_| have been set).
+  // Find the main_sequence_number of the presented_frame_token
+  while (!queue_frame_token_and_id_.empty()) {
+    auto token_and_id = queue_frame_token_and_id_.front();
+
+    if (token_and_id.first > presented_frame_token) {
+      // The submitting of this presented frame was not recorded (e.g. the
+      // submitting might have occurred before JankMetrics starts recording).
+      // In that case, do not use this frame presentation for jank detection.
+      return;
+    }
+    queue_frame_token_and_id_.pop();
+
+    if (token_and_id.first == presented_frame_token) {
+      // Found information about the submit of this presented frame;
+      // retrieve the frame's sequence number.
+      presented_frame_id = token_and_id.second;
+      break;
+    }
+  }
+  // If for any reason the sequence number associated with the
+  // presented_frame_token cannot be identified, then ignore this frame
+  // presentation.
+  if (presented_frame_id == 0)
+    return;
+
+  base::TimeDelta no_update_time;  // The frame time spanned by the frames that
+                                   // have no updates
+
+  // Compute the presentation delay contributed by no-update frames that began
+  // BEFORE (i.e. have smaller sequence number than) the current presented
+  // frame.
+  while (!queue_frame_id_and_interval_.empty() &&
+         queue_frame_id_and_interval_.front().first < presented_frame_id) {
+    auto id_and_interval = queue_frame_id_and_interval_.front();
+    if (id_and_interval.first >= last_presentation_frame_id_) {
+      // Only count no-update frames that began SINCE (i.e. have a greater [or
+      // equal] sequence number than) the beginning of previous presented frame.
+      // If, in rare cases, there are still no-update frames that began BEFORE
+      // the beginning of previous presented frame left in the queue, those
+      // frames will simply be discarded and not counted into |no_update_time|.
+      no_update_time += id_and_interval.second;
+    }
+    queue_frame_id_and_interval_.pop();
+  }
+
+  // Exclude the presentation delay introduced by no-update frames. If this
+  // exclusion results in negative frame delta, treat the frame delta as 0.
+  base::TimeDelta current_frame_delta = current_presentation_timestamp -
+                                        last_presentation_timestamp_ -
+                                        no_update_time;
+  if (current_frame_delta < base::TimeDelta::FromMilliseconds(0))
+    current_frame_delta = base::TimeDelta::FromMilliseconds(0);
+
+  // Only start tracking jank if this function has already been
+  // called at least once (so that |last_presentation_timestamp_|
+  // and |prev_frame_delta_| have been set).
   //
-  // The presentation interval is typically a multiple of VSync intervals (i.e.
-  // 16.67ms, 33.33ms, 50ms ... on a 60Hz display) with small fluctuations. The
-  // 0.5 * |frame_interval| criterion is chosen so that the jank detection is
-  // robust to those fluctuations.
+  // The presentation interval is typically a multiple of VSync
+  // intervals (i.e. 16.67ms, 33.33ms, 50ms ... on a 60Hz display)
+  // with small fluctuations. The 0.5 * |frame_interval| criterion
+  // is chosen so that the jank detection is robust to those
+  // fluctuations.
   if (!last_presentation_timestamp_.is_null() && !prev_frame_delta_.is_zero() &&
       current_frame_delta > prev_frame_delta_ + 0.5 * frame_interval) {
     jank_count_++;
@@ -94,7 +165,7 @@ void JankMetrics::AddPresentedFrame(
         FrameSequenceTracker::GetFrameSequenceTrackerTypeName(tracker_type_));
   }
   last_presentation_timestamp_ = current_presentation_timestamp;
-
+  last_presentation_frame_id_ = presented_frame_id;
   prev_frame_delta_ = current_frame_delta;
 }
 
