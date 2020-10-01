@@ -19,6 +19,7 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/window/non_client_view.h"
 
 namespace ash {
 
@@ -50,7 +51,8 @@ class HeaderView::HeaderContentView : public views::View {
   DISALLOW_COPY_AND_ASSIGN(HeaderContentView);
 };
 
-HeaderView::HeaderView(views::Widget* target_widget)
+HeaderView::HeaderView(views::Widget* target_widget,
+                       views::NonClientFrameView* frame_view)
     : target_widget_(target_widget) {
   header_content_view_ =
       AddChildView(std::make_unique<HeaderContentView>(this));
@@ -61,7 +63,9 @@ HeaderView::HeaderView(views::Widget* target_widget)
 
   aura::Window* window = target_widget->GetNativeWindow();
   frame_header_ = std::make_unique<DefaultFrameHeader>(
-      target_widget, this, caption_button_container_);
+      target_widget,
+      (frame_view ? static_cast<views::View*>(frame_view) : this),
+      caption_button_container_);
 
   UpdateBackButton();
 

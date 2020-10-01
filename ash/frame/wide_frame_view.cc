@@ -91,7 +91,9 @@ WideFrameView::WideFrameView(views::Widget* target)
 
   aura::Window* target_window = target->GetNativeWindow();
   target_window->AddObserver(this);
-  header_view_ = new HeaderView(target);
+  // Use the HeaderView itself as a frame view because WideFrameView is
+  // is the frame only.
+  header_view_ = new HeaderView(target, /*frame view=*/nullptr);
   AddChildView(header_view_);
   GetTargetHeaderView()->SetShouldPaintHeader(false);
 

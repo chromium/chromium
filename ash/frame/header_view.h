@@ -28,6 +28,7 @@ namespace views {
 class FrameCaptionButton;
 class ImageView;
 class Widget;
+class NonClientFrameView;
 }
 
 namespace ash {
@@ -48,7 +49,8 @@ class ASH_EXPORT HeaderView : public views::View,
   // placed in. For example, in immersive fullscreen this view may be painted in
   // a widget that slides in and out on top of the main app or browser window.
   // However, clicking a caption button should act on the target widget.
-  explicit HeaderView(views::Widget* target_widget);
+  HeaderView(views::Widget* target_widget,
+             views::NonClientFrameView* frame_view);
   ~HeaderView() override;
 
   METADATA_HEADER(HeaderView);

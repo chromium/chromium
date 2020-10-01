@@ -184,9 +184,8 @@ TEST_F(DefaultFrameHeaderTest, DeleteDuringAnimation) {
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   wm::ActivateWindow(win0.get());
 
-  auto* header_view = NonClientFrameViewAsh::Get(win0.get())->GetHeaderView();
-  ASSERT_TRUE(header_view);
-  auto* animating_layer_holding_view = header_view->children()[0];
+  auto* frame_view = NonClientFrameViewAsh::Get(win0.get());
+  auto* animating_layer_holding_view = frame_view->children()[0];
   EXPECT_TRUE(!std::strcmp(animating_layer_holding_view->GetClassName(),
                            "FrameAnimatorView"));
   ASSERT_TRUE(animating_layer_holding_view->layer());
@@ -220,17 +219,18 @@ TEST_F(DefaultFrameHeaderTest, ResizeAndReorderDuringAnimation) {
   ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
-  auto* header_view_0 =
-      NonClientFrameViewAsh::Get(win_0.get())->GetHeaderView();
-  auto* animating_layer_holding_view_0 = header_view_0->children()[0];
+  auto* frame_view_0 = NonClientFrameViewAsh::Get(win_0.get());
+  auto* animating_layer_holding_view_0 = frame_view_0->children()[0];
   EXPECT_TRUE(!std::strcmp(animating_layer_holding_view_0->GetClassName(),
                            "FrameAnimatorView"));
   size_t original_layers_count_0 =
       animating_layer_holding_view_0->layer()->parent()->children().size();
 
-  auto* header_view_1 =
-      NonClientFrameViewAsh::Get(win_1.get())->GetHeaderView();
-  auto* animating_layer_holding_view_1 = header_view_1->children()[0];
+  auto* frame_view_1 = NonClientFrameViewAsh::Get(win_1.get());
+  auto* extra_view_1 =
+      frame_view_1->AddChildView(std::make_unique<views::View>());
+
+  auto* animating_layer_holding_view_1 = frame_view_1->children()[0];
   EXPECT_TRUE(!std::strcmp(animating_layer_holding_view_1->GetClassName(),
                            "FrameAnimatorView"));
   size_t original_layers_count_1 =
@@ -259,7 +259,7 @@ TEST_F(DefaultFrameHeaderTest, ResizeAndReorderDuringAnimation) {
   }
 
   {
-    // wind_1 should still be animating.
+    // win_1 should still be animating.
     EXPECT_EQ(
         animating_layer_holding_view_1->layer()->parent()->children().size(),
         original_layers_count_1 + 1);
@@ -269,8 +269,8 @@ TEST_F(DefaultFrameHeaderTest, ResizeAndReorderDuringAnimation) {
     LayerDestroyedChecker checker(animating_layer);
 
     // Change the view's stacking order should stop the animation.
-    ASSERT_EQ(3u, header_view_1->children().size());
-    header_view_1->ReorderChildView(header_view_1->children()[2], 0);
+    ASSERT_EQ(2u, frame_view_1->children().size());
+    frame_view_1->ReorderChildView(extra_view_1, 0);
 
     EXPECT_EQ(
         animating_layer_holding_view_1->layer()->parent()->children().size(),
