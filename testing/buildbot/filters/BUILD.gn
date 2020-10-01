@@ -191,7 +191,6 @@ source_set("unit_tests_filters") {
 
   data = [
     "//testing/buildbot/filters/android.asan.unit_tests.filter",
-    "//testing/buildbot/filters/android.emulator_m.unit_tests.filter",
     "//testing/buildbot/filters/bfcache.unit_tests.filter",
     "//testing/buildbot/filters/lacros.unit_tests.filter",
   ]
