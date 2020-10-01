@@ -1140,6 +1140,19 @@ TEST_P(SaveCardBubbleLoggingTest, Metrics_LostFocus) {
       AutofillMetrics::SAVE_CARD_PROMPT_LOST_FOCUS, 1);
 }
 
+TEST_P(SaveCardBubbleLoggingTest, Metrics_Unknown) {
+  if (!metrics_revamp_experiment_enabled_)
+    return;
+
+  base::HistogramTester histogram_tester;
+  TriggerFlow();
+  CloseBubble(PaymentsBubbleClosedReason::kUnknown);
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.SaveCreditCardPromptResult" + GetHistogramNameSuffix(),
+      AutofillMetrics::SAVE_CARD_PROMPT_RESULT_UNKNOWN, 1);
+}
+
 TEST_P(SaveCardBubbleLoggingTest, Metrics_SecurityLevel) {
   base::HistogramTester histogram_tester;
   controller()->set_security_level(security_state::SecurityLevel::SECURE);

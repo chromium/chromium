@@ -387,6 +387,21 @@ TEST_P(LocalCardMigrationBubbleLoggingTest, FirstShow_BubbleLostFocus) {
   }
 }
 
+TEST_P(LocalCardMigrationBubbleLoggingTest, FirstShow_Unknown) {
+  base::HistogramTester histogram_tester;
+  ShowBubble();
+  CloseBubble(PaymentsBubbleClosedReason::kUnknown);
+
+  if (GetParam()) {
+    histogram_tester.ExpectUniqueSample(
+        "Autofill.LocalCardMigrationBubbleResult.FirstShow",
+        AutofillMetrics::LOCAL_CARD_MIGRATION_BUBBLE_RESULT_UNKNOWN, 1);
+  } else {
+    histogram_tester.ExpectTotalCount(
+        "Autofill.LocalCardMigrationBubbleResult.FirstShow", 0);
+  }
+}
+
 TEST_P(LocalCardMigrationBubbleLoggingTest, Reshows_BubbleAccepted) {
   base::HistogramTester histogram_tester;
   ShowBubble();
@@ -463,6 +478,27 @@ TEST_P(LocalCardMigrationBubbleLoggingTest, Reshows_BubbleLostFocus) {
     histogram_tester.ExpectUniqueSample(
         "Autofill.LocalCardMigrationBubbleResult.Reshows",
         AutofillMetrics::LOCAL_CARD_MIGRATION_BUBBLE_LOST_FOCUS, 1);
+  } else {
+    histogram_tester.ExpectTotalCount(
+        "Autofill.LocalCardMigrationBubbleResult.FirstShow", 0);
+    histogram_tester.ExpectTotalCount(
+        "Autofill.LocalCardMigrationBubbleResult.Reshows", 0);
+  }
+}
+
+TEST_P(LocalCardMigrationBubbleLoggingTest, Reshows_Unknown) {
+  base::HistogramTester histogram_tester;
+  ShowBubble();
+  CloseAndReshowBubble();
+  CloseBubble(PaymentsBubbleClosedReason::kUnknown);
+
+  if (GetParam()) {
+    histogram_tester.ExpectUniqueSample(
+        "Autofill.LocalCardMigrationBubbleResult.FirstShow",
+        AutofillMetrics::LOCAL_CARD_MIGRATION_BUBBLE_NOT_INTERACTED, 1);
+    histogram_tester.ExpectUniqueSample(
+        "Autofill.LocalCardMigrationBubbleResult.Reshows",
+        AutofillMetrics::LOCAL_CARD_MIGRATION_BUBBLE_RESULT_UNKNOWN, 1);
   } else {
     histogram_tester.ExpectTotalCount(
         "Autofill.LocalCardMigrationBubbleResult.FirstShow", 0);

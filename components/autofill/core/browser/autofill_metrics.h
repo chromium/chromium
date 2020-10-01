@@ -255,6 +255,9 @@ class AutofillMetrics {
     SAVE_CARD_PROMPT_NOT_INTERACTED,
     // The prompt lost focus and was deactivated.
     SAVE_CARD_PROMPT_LOST_FOCUS,
+    // The reason why the prompt is closed is not clear. Possible reason is the
+    // logging function is invoked before the closed reason is correctly set.
+    SAVE_CARD_PROMPT_RESULT_UNKNOWN,
     NUM_SAVE_CARD_PROMPT_RESULT_METRICS,
   };
 
@@ -568,6 +571,9 @@ class AutofillMetrics {
     LOCAL_CARD_MIGRATION_BUBBLE_NOT_INTERACTED = 2,
     // The bubble lost its focus and was deactivated.
     LOCAL_CARD_MIGRATION_BUBBLE_LOST_FOCUS = 3,
+    // The reason why the prompt is closed is not clear. Possible reason is the
+    // logging function is invoked before the closed reason is correctly set.
+    LOCAL_CARD_MIGRATION_BUBBLE_RESULT_UNKNOWN = 4,
     NUM_LOCAL_CARD_MIGRATION_BUBBLE_RESULT_METRICS,
   };
 

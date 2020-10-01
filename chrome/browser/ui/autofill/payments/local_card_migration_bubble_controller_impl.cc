@@ -112,30 +112,29 @@ void LocalCardMigrationBubbleControllerImpl::OnBubbleClosed(
   // Log local card migration bubble result according to the closed reason.
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnableFixedPaymentsBubbleLogging)) {
+    AutofillMetrics::LocalCardMigrationBubbleResultMetric metric;
     switch (closed_reason) {
       case PaymentsBubbleClosedReason::kAccepted:
-        AutofillMetrics::LogLocalCardMigrationBubbleResultMetric(
-            AutofillMetrics::LOCAL_CARD_MIGRATION_BUBBLE_ACCEPTED, is_reshow_);
-        return;
+        metric = AutofillMetrics::LOCAL_CARD_MIGRATION_BUBBLE_ACCEPTED;
+        break;
       case PaymentsBubbleClosedReason::kClosed:
-        AutofillMetrics::LogLocalCardMigrationBubbleResultMetric(
-            AutofillMetrics::LOCAL_CARD_MIGRATION_BUBBLE_CLOSED, is_reshow_);
-        return;
+        metric = AutofillMetrics::LOCAL_CARD_MIGRATION_BUBBLE_CLOSED;
+        break;
       case PaymentsBubbleClosedReason::kNotInteracted:
-        AutofillMetrics::LogLocalCardMigrationBubbleResultMetric(
-            AutofillMetrics::LOCAL_CARD_MIGRATION_BUBBLE_NOT_INTERACTED,
-            is_reshow_);
-        return;
+        metric = AutofillMetrics::LOCAL_CARD_MIGRATION_BUBBLE_NOT_INTERACTED;
+        break;
       case PaymentsBubbleClosedReason::kLostFocus:
-        AutofillMetrics::LogLocalCardMigrationBubbleResultMetric(
-            AutofillMetrics::LOCAL_CARD_MIGRATION_BUBBLE_LOST_FOCUS,
-            is_reshow_);
-        return;
+        metric = AutofillMetrics::LOCAL_CARD_MIGRATION_BUBBLE_LOST_FOCUS;
+        break;
       case PaymentsBubbleClosedReason::kUnknown:
+        metric = AutofillMetrics::LOCAL_CARD_MIGRATION_BUBBLE_RESULT_UNKNOWN;
+        break;
       case PaymentsBubbleClosedReason::kCancelled:
         NOTREACHED();
         return;
     }
+    AutofillMetrics::LogLocalCardMigrationBubbleResultMetric(metric,
+                                                             is_reshow_);
   }
 }
 
