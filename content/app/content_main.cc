@@ -42,7 +42,6 @@
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/system/dynamic_library_support.h"
 #include "sandbox/policy/sandbox_type.h"
-#include "services/service_manager/embedder/switches.h"
 #include "ui/base/ui_base_paths.h"
 #include "ui/base/ui_base_switches.h"
 
@@ -88,7 +87,7 @@ void SetupSignalHandlers() {
   CHECK_NE(SIG_ERR, signal(SIGPIPE, SIG_IGN));
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          service_manager::switches::kDisableInProcessStackTraces)) {
+          switches::kDisableInProcessStackTraces)) {
     // Don't interfere with sanitizer signal handlers.
     return;
   }
@@ -112,7 +111,7 @@ void SetupSignalHandlers() {
 void PopulateFDsFromCommandLine() {
   const std::string& shared_file_param =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          service_manager::switches::kSharedFiles);
+          switches::kSharedFiles);
   if (shared_file_param.empty())
     return;
 
@@ -139,8 +138,7 @@ bool IsSubprocess() {
          type == switches::kPpapiBrokerProcess ||
          type == switches::kPpapiPluginProcess ||
          type == switches::kRendererProcess ||
-         type == switches::kUtilityProcess ||
-         type == service_manager::switches::kZygoteProcess;
+         type == switches::kUtilityProcess || type == switches::kZygoteProcess;
 }
 
 void CommonSubprocessInit() {

@@ -4,15 +4,6 @@
 
 import("//testing/test.gni")
 
-component("embedder_switches") {
-  sources = [
-    "switches.cc",
-    "switches.h",
-  ]
-  deps = [ "//base" ]
-  defines = [ "IS_SERVICE_MANAGER_EMBEDDER_SWITCHES_IMPL" ]
-}
-
 source_set("embedder_result_codes") {
   sources = [ "result_codes.h" ]
 }

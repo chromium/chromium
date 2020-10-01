@@ -77,7 +77,7 @@ TEST_F(ThreadProfilerProcessTypeTest, GetProfileParamsProcess_Utility) {
 
 TEST_F(ThreadProfilerProcessTypeTest, GetProfileParamsProcess_Zygote) {
   command_line().AppendSwitchASCII(switches::kProcessType,
-                                   service_manager::switches::kZygoteProcess);
+                                   switches::kZygoteProcess);
   EXPECT_EQ(metrics::CallStackProfileParams::ZYGOTE_PROCESS,
             GetProfileParamsProcess(command_line()));
 }

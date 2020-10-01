@@ -7,7 +7,6 @@
 #include "content/public/common/content_switches.h"
 #include "extensions/buildflags/buildflags.h"
 #include "sandbox/policy/sandbox.h"
-#include "services/service_manager/embedder/switches.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/common/switches.h"
@@ -50,7 +49,7 @@ metrics::CallStackProfileParams::Process GetProfileParamsProcess(
     return metrics::CallStackProfileParams::UTILITY_PROCESS;
   }
 
-  if (process_type == service_manager::switches::kZygoteProcess)
+  if (process_type == switches::kZygoteProcess)
     return metrics::CallStackProfileParams::ZYGOTE_PROCESS;
 
   if (process_type == switches::kPpapiPluginProcess)

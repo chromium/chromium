@@ -29,7 +29,6 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/common/service_names.mojom.h"
 #include "sandbox/policy/sandbox.h"
-#include "services/service_manager/embedder/switches.h"
 
 #if defined(OS_ANDROID) && BUILDFLAG(ENABLE_ARM_CFI_TABLE)
 #include <sys/types.h>

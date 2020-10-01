@@ -29,7 +29,6 @@
 #include "mojo/public/cpp/system/invitation.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "sandbox/win/src/sandbox_policy.h"
-#include "services/service_manager/embedder/switches.h"
 
 namespace {
 

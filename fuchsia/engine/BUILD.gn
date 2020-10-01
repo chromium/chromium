@@ -235,7 +235,6 @@ executable("web_engine_exe") {
     ":web_engine_core",
     "//base",
     "//content/public/app",
-    "//services/service_manager/embedder:embedder_switches",
   ]
   sources = [ "web_engine_main.cc" ]
   visibility = [ ":*" ]

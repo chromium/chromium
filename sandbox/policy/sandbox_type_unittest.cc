@@ -36,7 +36,7 @@ TEST(SandboxTypeTest, Empty) {
 
 TEST(SandboxTypeTest, Renderer) {
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
-  command_line.AppendSwitchASCII(service_manager::switches::kProcessType,
+  command_line.AppendSwitchASCII(switches::kProcessType,
                                  switches::kRendererProcess);
   EXPECT_EQ(SandboxType::kRenderer, SandboxTypeFromCommandLine(command_line));
 
@@ -51,7 +51,7 @@ TEST(SandboxTypeTest, Renderer) {
 
 TEST(SandboxTypeTest, Utility) {
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
-  command_line.AppendSwitchASCII(service_manager::switches::kProcessType,
+  command_line.AppendSwitchASCII(switches::kProcessType,
                                  switches::kUtilityProcess);
   EXPECT_EQ(SandboxType::kUtility, SandboxTypeFromCommandLine(command_line));
 
@@ -123,8 +123,7 @@ TEST(SandboxTypeTest, Utility) {
 
 TEST(SandboxTypeTest, GPU) {
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
-  command_line.AppendSwitchASCII(service_manager::switches::kProcessType,
-                                 switches::kGpuProcess);
+  command_line.AppendSwitchASCII(switches::kProcessType, switches::kGpuProcess);
   SetCommandLineFlagsForSandboxType(&command_line, SandboxType::kGpu);
   EXPECT_EQ(SandboxType::kGpu, SandboxTypeFromCommandLine(command_line));
 
@@ -137,7 +136,7 @@ TEST(SandboxTypeTest, GPU) {
 
 TEST(SandboxTypeTest, PPAPIBroker) {
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
-  command_line.AppendSwitchASCII(service_manager::switches::kProcessType,
+  command_line.AppendSwitchASCII(switches::kProcessType,
                                  switches::kPpapiBrokerProcess);
   EXPECT_EQ(SandboxType::kNoSandbox, SandboxTypeFromCommandLine(command_line));
 
@@ -150,7 +149,7 @@ TEST(SandboxTypeTest, PPAPIBroker) {
 
 TEST(SandboxTypeTest, PPAPIPlugin) {
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
-  command_line.AppendSwitchASCII(service_manager::switches::kProcessType,
+  command_line.AppendSwitchASCII(switches::kProcessType,
                                  switches::kPpapiPluginProcess);
   SetCommandLineFlagsForSandboxType(&command_line, SandboxType::kPpapi);
   EXPECT_EQ(SandboxType::kPpapi, SandboxTypeFromCommandLine(command_line));
@@ -164,8 +163,7 @@ TEST(SandboxTypeTest, PPAPIPlugin) {
 
 TEST(SandboxTypeTest, Nonesuch) {
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
-  command_line.AppendSwitchASCII(service_manager::switches::kProcessType,
-                                 "nonesuch");
+  command_line.AppendSwitchASCII(switches::kProcessType, "nonesuch");
   // If tested here would CHECK.
 
   command_line.AppendSwitchASCII(switches::kServiceSandboxType, "network");

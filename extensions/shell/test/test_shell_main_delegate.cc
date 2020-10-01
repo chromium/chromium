@@ -10,7 +10,6 @@
 #include "content/public/test/network_service_test_helper.h"
 #include "content/public/utility/content_utility_client.h"
 #include "content/shell/common/shell_switches.h"
-#include "services/service_manager/embedder/switches.h"
 
 namespace {
 

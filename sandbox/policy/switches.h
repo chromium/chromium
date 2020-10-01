@@ -7,7 +7,6 @@
 
 #include "build/build_config.h"
 #include "sandbox/policy/export.h"
-#include "services/service_manager/embedder/switches.h"
 
 namespace sandbox {
 namespace policy {
@@ -68,6 +67,7 @@ SANDBOX_POLICY_EXPORT extern const char kEnableSandboxLogging[];
 #endif
 
 // Flags spied upon from other layers.
+SANDBOX_POLICY_EXPORT extern const char kProcessType[];
 SANDBOX_POLICY_EXPORT extern const char kGpuProcess[];
 SANDBOX_POLICY_EXPORT extern const char kNaClBrokerProcess[];
 SANDBOX_POLICY_EXPORT extern const char kNaClLoaderProcess[];

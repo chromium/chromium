@@ -112,6 +112,9 @@ const char kDisableDatabases[]              = "disable-databases";
 const char kDisableDomainBlockingFor3DAPIs[] =
     "disable-domain-blocking-for-3d-apis";
 
+// Disables the in-process stack traces.
+const char kDisableInProcessStackTraces[] = "disable-in-process-stack-traces";
+
 // Disable all versions of WebGL.
 const char kDisableWebGL[] = "disable-webgl";
 
@@ -678,6 +681,17 @@ const char kRunManualTestsFlag[] = "run-manual";
 // Causes the process to run as a sandbox IPC subprocess.
 const char kSandboxIPCProcess[]             = "sandbox-ipc";
 
+// Describes the file descriptors passed to a child process in the following
+// list format:
+//
+//     <file_id>:<descriptor_id>,<file_id>:<descriptor_id>,...
+//
+// where <file_id> is an ID string from the manifest of the service being
+// launched and <descriptor_id> is the numeric identifier of the descriptor for
+// the child process can use to retrieve the file descriptor from the
+// global descriptor table.
+const char kSharedFiles[] = "shared-files";
+
 // Runs the renderer and plugins in the same process as the browser
 const char kSingleProcess[]                 = "single-process";
 
@@ -802,6 +816,9 @@ const char kWebglMSAASampleCount[] = "webgl-msaa-sample-count";
 
 // The prefix used when starting the zygote process. (i.e. 'gdb --args')
 const char kZygoteCmdPrefix[] = "zygote-cmd-prefix";
+
+// Causes the process to run as a zygote.
+const char kZygoteProcess[] = "zygote";
 
 // Enables specified backend for the Web OTP API.
 const char kWebOtpBackend[] = "web-otp-backend";

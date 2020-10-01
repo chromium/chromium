@@ -35,10 +35,10 @@
 #include "components/metrics/persistent_histograms.h"
 #include "components/prefs/json_pref_store.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/base/filename_util.h"
-#include "services/service_manager/embedder/switches.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/window_open_disposition.h"
@@ -261,7 +261,7 @@ IN_PROC_BROWSER_TEST_F(MetricsServiceBrowserTest, OOMRenderers) {
   // Disable stack traces during this test since DbgHelp is unreliable in
   // low-memory conditions (see crbug.com/692564).
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      service_manager::switches::kDisableInProcessStackTraces);
+      switches::kDisableInProcessStackTraces);
 
   base::HistogramTester histogram_tester;
 

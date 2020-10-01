@@ -13,7 +13,7 @@ namespace media {
 TEST(SandboxTypeTest, Utility) {
   // Setup to have '--type=utility' first.
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
-  command_line.AppendSwitchASCII(service_manager::switches::kProcessType,
+  command_line.AppendSwitchASCII(sandbox::policy::switches::kProcessType,
                                  sandbox::policy::switches::kUtilityProcess);
   EXPECT_EQ(sandbox::policy::SandboxType::kUtility,
             sandbox::policy::SandboxTypeFromCommandLine(command_line));
