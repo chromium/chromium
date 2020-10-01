@@ -64,9 +64,6 @@ public final class ProductionSupportedFlagList {
             Flag.commandLine(GpuSwitches.IGNORE_GPU_BLOCKLIST,
                     "Overrides the built-in software rendering list and enables "
                             + "GPU acceleration on unsupported device configurations."),
-            Flag.baseFeature("OutOfBlinkCors",
-                    "Moves CORS logic into the Network Service (rather than inside the blink "
-                            + "rendering engine)."),
             Flag.baseFeature("EnableSharedImageForWebview", "Enables shared images for WebView."),
             Flag.baseFeature("VizForWebView", "Enables Viz for WebView."),
             Flag.baseFeature(AwFeatures.WEBVIEW_CONNECTIONLESS_SAFE_BROWSING,
