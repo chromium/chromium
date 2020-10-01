@@ -76,10 +76,7 @@ base::Optional<QuotaSettings> CalculateNominalDynamicSettings(
 
   // The fraction of the device's storage the browser is willing to use for
   // temporary storage.
-  const double kTemporaryPoolSizeRatio =
-      base::FeatureList::IsEnabled(features::kQuotaUnlimitedPoolSize)
-          ? 1.0
-          : kDefaultPoolSizeRatio;
+  const double kTemporaryPoolSizeRatio = kDefaultPoolSizeRatio;
 
   // The amount of the device's storage the browser attempts to
   // keep free. If there is less than this amount of storage free
@@ -113,10 +110,7 @@ base::Optional<QuotaSettings> CalculateNominalDynamicSettings(
   const double kMustRemainAvailableRatio = 0.01;             // 1%
 
   // The fraction of the temporary pool that can be utilized by a single host.
-  const double kPerHostTemporaryRatio =
-      base::FeatureList::IsEnabled(features::kQuotaUnlimitedPoolSize)
-          ? 1.0
-          : kDefaultPerHostRatio;
+  const double kPerHostTemporaryRatio = kDefaultPerHostRatio;
 
   // SessionOnly (or ephemeral) origins are allotted a fraction of what
   // normal origins are provided, and the amount is capped to a hard limit.

@@ -8,13 +8,6 @@ namespace storage {
 
 namespace features {
 
-// QuotaUnlimitedPoolSize removes limitations around disk space consumption with
-// respect to client-side storage web platform APIs. When enabled, quota will
-// set no limit on how much space a single origin can consume, as well as
-// removing limits on how much disk space the temporary pool can consume.
-const base::Feature kQuotaUnlimitedPoolSize{"QuotaUnlimitedPoolSize",
-                                            base::FEATURE_DISABLED_BY_DEFAULT};
-
 // IncognitoDynamicQuota enables dynamic assignment of quota to incognito mode
 // based on the physical memory size and removes the fixed upper cap for it.
 const base::Feature kIncognitoDynamicQuota{"IncognitoDynamicQuota",
