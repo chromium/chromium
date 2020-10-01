@@ -1289,7 +1289,13 @@ error::Error GLES2DecoderPassthroughImpl::DoFenceSync(GLenum condition,
 }
 
 error::Error GLES2DecoderPassthroughImpl::DoFinish() {
+  // Finish can take a long time, make sure the watchdog gives it the most
+  // amount of time to complete.
+  group_->ReportProgress();
+
   api()->glFinishFn();
+
+  group_->ReportProgress();
 
   error::Error error = ProcessReadPixels(true);
   if (error != error::kNoError) {
