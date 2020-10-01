@@ -426,6 +426,44 @@ TEST(CSSSelectorParserTest, InvalidPseudoIsArguments) {
   }
 }
 
+TEST(CSSSelectorParserTest, ShadowDomV0WithIsAndWhere) {
+  // To reduce complexity, ShadowDOM v0 features are not supported in
+  // combination with :is/:where.
+  const char* test_cases[] = {
+      // clang-format off
+      ":is(.a) ::content",
+      ":is(.a /deep/ .b)",
+      ":is(::content)",
+      ":is(::shadow)",
+      ":is(::content .a)",
+      ":is(::shadow .b)",
+      ":is(.a)::shadow",
+      ":is(.a) ::content",
+      ":is(.a) ::shadow",
+      "::content :is(.a)",
+      "::shadow :is(.a)",
+      ":is(.a) /deep/ .b",
+      ":.a /deep/ :is(.b)",
+      ":where(.a /deep/ .b)",
+      ":where(.a) ::shadow",
+      // clang-format on
+  };
+
+  auto* context = MakeGarbageCollected<CSSParserContext>(
+      kHTMLStandardMode, SecureContextMode::kInsecureContext);
+  auto* sheet = MakeGarbageCollected<StyleSheetContents>(context);
+
+  for (auto* test_case : test_cases) {
+    SCOPED_TRACE(test_case);
+    CSSTokenizer tokenizer(test_case);
+    const auto tokens = tokenizer.TokenizeToEOF();
+    CSSParserTokenRange range(tokens);
+    CSSSelectorList list =
+        CSSSelectorParser::ParseSelector(range, context, sheet);
+    EXPECT_FALSE(list.IsValid());
+  }
+}
+
 namespace {
 
 const auto TagLocalName = [](const CSSSelector* selector) {

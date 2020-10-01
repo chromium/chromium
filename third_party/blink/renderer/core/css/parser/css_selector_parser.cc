@@ -554,7 +554,14 @@ std::unique_ptr<CSSParserSelector> CSSSelectorParser::ConsumePseudo(
             return nullptr;
         }
         break;
-      default:;
+      case CSSSelector::kPseudoShadow:
+      case CSSSelector::kPseudoContent:
+        if (disallow_shadow_dom_v0_)
+          return nullptr;
+        disallow_nested_complex_ = true;
+        break;
+      default:
+        break;
     }
   }
 
@@ -578,6 +585,9 @@ std::unique_ptr<CSSParserSelector> CSSSelectorParser::ConsumePseudo(
     case CSSSelector::kPseudoIs: {
       if (!RuntimeEnabledFeatures::CSSPseudoIsEnabled())
         break;
+      if (disallow_nested_complex_)
+        return nullptr;
+      disallow_shadow_dom_v0_ = true;
 
       DisallowPseudoElementsScope scope(this);
 
@@ -592,6 +602,9 @@ std::unique_ptr<CSSParserSelector> CSSSelectorParser::ConsumePseudo(
     case CSSSelector::kPseudoWhere: {
       if (!RuntimeEnabledFeatures::CSSPseudoWhereEnabled())
         break;
+      if (disallow_nested_complex_)
+        return nullptr;
+      disallow_shadow_dom_v0_ = true;
 
       DisallowPseudoElementsScope scope(this);
 
@@ -723,6 +736,10 @@ CSSSelector::RelationType CSSSelectorParser::ConsumeCombinator(
       const CSSParserToken& slash = range.ConsumeIncludingWhitespace();
       if (slash.GetType() != kDelimiterToken || slash.Delimiter() != '/')
         failed_parsing_ = true;
+      if (disallow_shadow_dom_v0_)
+        failed_parsing_ = true;
+      else
+        disallow_nested_complex_ = true;
       return context_->IsLiveProfile() ? CSSSelector::kShadowDeepAsDescendant
                                        : CSSSelector::kShadowDeep;
     }

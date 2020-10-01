@@ -90,6 +90,12 @@ class CORE_EXPORT CSSSelectorParser {
 
   bool failed_parsing_ = false;
   bool disallow_pseudo_elements_ = false;
+  // We don't allow mixing ShadowDOMv0 features and nested complex selectors,
+  // such as :is(). When :is() or :where() is encountered, ShadowDOM V0 features
+  // are disallowed, and whenever /deep/, ::content or ::shadow is encountered
+  // we disallow :is()/:where().
+  bool disallow_shadow_dom_v0_ = false;
+  bool disallow_nested_complex_ = false;
 
   class DisallowPseudoElementsScope {
     STACK_ALLOCATED();
