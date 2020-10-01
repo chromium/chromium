@@ -3282,7 +3282,10 @@ ScriptValue WebGLRenderingContextBase::getFramebufferAttachmentParameter(
 namespace {
 
 // WebGL parameters which can be used to identify users.
+// These parameters should each be uniquely defined,
+// see third_party/khronos/GLES2/gl2.h for their definitions.
 static const GLenum kIdentifiableGLParams[] = {
+    // getParameter()
     GL_ALIASED_LINE_WIDTH_RANGE,          // GetWebGLFloatArrayParameter
     GL_ALIASED_POINT_SIZE_RANGE,          // GetWebGLFloatArrayParameter
     GL_ALPHA_BITS,                        // GetIntParameter
@@ -3307,6 +3310,15 @@ static const GLenum kIdentifiableGLParams[] = {
     GL_VERSION,
     WebGLDebugRendererInfo::kUnmaskedRendererWebgl,
     WebGLDebugRendererInfo::kUnmaskedVendorWebgl,
+
+    // getRenderBufferParameter()
+    GL_RENDERBUFFER_GREEN_SIZE,
+    GL_RENDERBUFFER_BLUE_SIZE,
+    GL_RENDERBUFFER_RED_SIZE,
+    GL_RENDERBUFFER_ALPHA_SIZE,
+    GL_RENDERBUFFER_DEPTH_SIZE,
+    GL_RENDERBUFFER_STENCIL_SIZE,
+    GL_RENDERBUFFER_SAMPLES,
 };
 
 bool ShouldMeasureGLParam(GLenum pname) {
@@ -3783,10 +3795,9 @@ ScriptValue WebGLRenderingContextBase::getRenderbufferParameter(
     case GL_RENDERBUFFER_BLUE_SIZE:
     case GL_RENDERBUFFER_ALPHA_SIZE:
     case GL_RENDERBUFFER_DEPTH_SIZE:
-      ContextGL()->GetRenderbufferParameteriv(target, pname, &value);
-      return WebGLAny(script_state, value);
     case GL_RENDERBUFFER_STENCIL_SIZE:
       ContextGL()->GetRenderbufferParameteriv(target, pname, &value);
+      RecordIdentifiableGLParameterDigest(pname, value);
       return WebGLAny(script_state, value);
     case GL_RENDERBUFFER_INTERNAL_FORMAT:
       return WebGLAny(script_state, renderbuffer_binding_->InternalFormat());
