@@ -92,12 +92,12 @@ class BASE_EXPORT ThreadGroup {
   void InvalidateAndHandoffAllTaskSourcesToOtherThreadGroup(
       ThreadGroup* destination_thread_group);
 
-  // Returns true if a task with |priority| running in this thread group should
-  // return ASAP, either because this priority is not allowed to run or because
+  // Returns true if a task with |sort_key| running in this thread group should
+  // return ASAP, either because its priority is not allowed to run or because
   // work of higher priority is pending. Thread-safe but may return an outdated
   // result (if a task unnecessarily yields due to this, it will simply be
   // re-scheduled).
-  bool ShouldYield(TaskPriority priority) const;
+  bool ShouldYield(TaskSourceSortKey sort_key) const;
 
   // Prevents new tasks from starting to run and waits for currently running
   // tasks to complete their execution. It is guaranteed that no thread will do
@@ -224,13 +224,21 @@ class BASE_EXPORT ThreadGroup {
   // PriorityQueue from which all threads of this ThreadGroup get work.
   PriorityQueue priority_queue_ GUARDED_BY(lock_);
 
-  // Minimum priority allowed to run below which tasks should yield. This is
-  // expected to be always kept up-to-date by derived classes when |lock_| is
-  // released. It is annotated as GUARDED_BY(lock_) because it is always updated
-  // under the lock (to avoid races with other state during the update) but it
-  // is nonetheless always safe to read it without the lock (since it's atomic).
-  std::atomic<TaskPriority> min_allowed_priority_ GUARDED_BY(lock_){
-      TaskPriority::BEST_EFFORT};
+  struct YieldSortKey {
+    TaskPriority priority;
+    uint8_t worker_count;
+  };
+
+  // When the thread group is at or above capacity and has pending work, this
+  // contains the priority and worker count of the next TaskSource to schedule.
+  // Otherwise, it contains |priority| = BEST_EFFORT and |worker_count| = 0.
+  // This is used to decide whether a TaskSource should yield. This is expected
+  // to be always kept up-to-date by derived classes when |lock_| is released.
+  // It is annotated as GUARDED_BY(lock_) because it is always updated under the
+  // lock (to avoid races with other state during the update) but it is
+  // nonetheless always safe to read it without the lock (since it's atomic).
+  std::atomic<YieldSortKey> max_allowed_sort_key_ GUARDED_BY(lock_){
+      {TaskPriority::BEST_EFFORT, 0U}};
 
   // If |replacement_thread_group_| is non-null, this ThreadGroup is invalid and
   // all task sources should be scheduled on |replacement_thread_group_|. Used

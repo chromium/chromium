@@ -102,10 +102,14 @@ void ThreadGroupNative::RunNextTaskSourceImpl() {
 void ThreadGroupNative::UpdateMinAllowedPriorityLockRequired() {
   // Tasks should yield as soon as there is work of higher priority in
   // |priority_queue_|.
-  min_allowed_priority_.store(priority_queue_.IsEmpty()
-                                  ? TaskPriority::BEST_EFFORT
-                                  : priority_queue_.PeekSortKey().priority(),
-                              std::memory_order_relaxed);
+  if (priority_queue_.IsEmpty()) {
+    max_allowed_sort_key_.store({TaskPriority::BEST_EFFORT, 0},
+                                std::memory_order_relaxed);
+  } else {
+    max_allowed_sort_key_.store({priority_queue_.PeekSortKey().priority(),
+                                 priority_queue_.PeekSortKey().worker_count()},
+                                std::memory_order_relaxed);
+  }
 }
 
 RegisteredTaskSource ThreadGroupNative::GetWork() {

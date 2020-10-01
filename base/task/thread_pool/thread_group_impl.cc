@@ -1139,10 +1139,11 @@ bool ThreadGroupImpl::ShouldPeriodicallyAdjustMaxTasksLockRequired() {
 
 void ThreadGroupImpl::UpdateMinAllowedPriorityLockRequired() {
   if (priority_queue_.IsEmpty() || num_running_tasks_ < max_tasks_) {
-    min_allowed_priority_.store(TaskPriority::BEST_EFFORT,
+    max_allowed_sort_key_.store({TaskPriority::BEST_EFFORT, 0},
                                 std::memory_order_relaxed);
   } else {
-    min_allowed_priority_.store(priority_queue_.PeekSortKey().priority(),
+    max_allowed_sort_key_.store({priority_queue_.PeekSortKey().priority(),
+                                 priority_queue_.PeekSortKey().worker_count()},
                                 std::memory_order_relaxed);
   }
 }

@@ -404,18 +404,24 @@ TEST_P(ThreadGroupTest, CanRunPolicyShouldYield) {
 
   task_tracker_.SetCanRunPolicy(CanRunPolicy::kNone);
   thread_group_->DidUpdateCanRunPolicy();
-  EXPECT_TRUE(thread_group_->ShouldYield(TaskPriority::BEST_EFFORT));
-  EXPECT_TRUE(thread_group_->ShouldYield(TaskPriority::USER_VISIBLE));
+  EXPECT_TRUE(
+      thread_group_->ShouldYield({TaskPriority::BEST_EFFORT, TimeTicks()}));
+  EXPECT_TRUE(
+      thread_group_->ShouldYield({TaskPriority::USER_VISIBLE, TimeTicks()}));
 
   task_tracker_.SetCanRunPolicy(CanRunPolicy::kForegroundOnly);
   thread_group_->DidUpdateCanRunPolicy();
-  EXPECT_TRUE(thread_group_->ShouldYield(TaskPriority::BEST_EFFORT));
-  EXPECT_FALSE(thread_group_->ShouldYield(TaskPriority::USER_VISIBLE));
+  EXPECT_TRUE(
+      thread_group_->ShouldYield({TaskPriority::BEST_EFFORT, TimeTicks()}));
+  EXPECT_FALSE(
+      thread_group_->ShouldYield({TaskPriority::USER_VISIBLE, TimeTicks()}));
 
   task_tracker_.SetCanRunPolicy(CanRunPolicy::kAll);
   thread_group_->DidUpdateCanRunPolicy();
-  EXPECT_FALSE(thread_group_->ShouldYield(TaskPriority::BEST_EFFORT));
-  EXPECT_FALSE(thread_group_->ShouldYield(TaskPriority::USER_VISIBLE));
+  EXPECT_FALSE(
+      thread_group_->ShouldYield({TaskPriority::BEST_EFFORT, TimeTicks()}));
+  EXPECT_FALSE(
+      thread_group_->ShouldYield({TaskPriority::USER_VISIBLE, TimeTicks()}));
 }
 
 // Verify that the maximum number of BEST_EFFORT tasks that can run concurrently
@@ -565,14 +571,14 @@ TEST_P(ThreadGroupTest, ShouldYieldSingleTask) {
 
   test::CreatePooledTaskRunner({TaskPriority::USER_BLOCKING},
                                &mock_pooled_task_runner_delegate_)
-      ->PostTask(
-          FROM_HERE, BindLambdaForTesting([&]() {
-            EXPECT_FALSE(thread_group_->ShouldYield(TaskPriority::BEST_EFFORT));
-            EXPECT_FALSE(
-                thread_group_->ShouldYield(TaskPriority::USER_VISIBLE));
-            EXPECT_FALSE(
-                thread_group_->ShouldYield(TaskPriority::USER_VISIBLE));
-          }));
+      ->PostTask(FROM_HERE, BindLambdaForTesting([&]() {
+                   EXPECT_FALSE(thread_group_->ShouldYield(
+                       {TaskPriority::BEST_EFFORT, TimeTicks::Now()}));
+                   EXPECT_FALSE(thread_group_->ShouldYield(
+                       {TaskPriority::USER_VISIBLE, TimeTicks::Now()}));
+                   EXPECT_FALSE(thread_group_->ShouldYield(
+                       {TaskPriority::USER_VISIBLE, TimeTicks::Now()}));
+                 }));
 
   task_tracker_.FlushForTesting();
 }

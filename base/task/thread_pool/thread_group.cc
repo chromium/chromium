@@ -245,13 +245,26 @@ void ThreadGroup::InvalidateAndHandoffAllTaskSourcesToOtherThreadGroup(
   replacement_thread_group_ = destination_thread_group;
 }
 
-bool ThreadGroup::ShouldYield(TaskPriority priority) const {
-  // It is safe to read |min_allowed_priority_| without a lock since this
+bool ThreadGroup::ShouldYield(TaskSourceSortKey sort_key) const {
+  if (!task_tracker_->CanRunPriority(sort_key.priority()))
+    return true;
+  // It is safe to read |max_allowed_sort_key_| without a lock since this
   // variable is atomic, keeping in mind that threads may not immediately see
   // the new value when it is updated.
-  return !task_tracker_->CanRunPriority(priority) ||
-         priority < TS_UNCHECKED_READ(min_allowed_priority_)
-                        .load(std::memory_order_relaxed);
+  auto max_allowed_sort_key =
+      TS_UNCHECKED_READ(max_allowed_sort_key_).load(std::memory_order_relaxed);
+  if (sort_key.priority() < max_allowed_sort_key.priority)
+    return true;
+  // To reduce unnecessary yielding, a task will never yield to a BEST_EFFORT
+  // task regardless of its worker_count.
+  if (sort_key.priority() > max_allowed_sort_key.priority ||
+      max_allowed_sort_key.priority == TaskPriority::BEST_EFFORT) {
+    return false;
+  }
+  // Otherwise, a task only yields to a task of equal priority if its
+  // worker_count would be greater still after yielding, e.g. a job with 1
+  // worker doesn't yield to a job with 0 workers.
+  return sort_key.worker_count() > max_allowed_sort_key.worker_count + 1;
 }
 
 #if defined(OS_WIN)

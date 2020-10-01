@@ -296,8 +296,7 @@ TEST_F(ThreadGroupImplImplTest, ShouldYieldFloodedUserVisible) {
   TestWaitableEvent threads_continue;
 
   // Saturate workers with USER_VISIBLE tasks to ensure ShouldYield() returns
-  // true when a tasks of higher priority
-  // is posted.
+  // true when a tasks of higher priority is posted.
   RepeatingClosure threads_running_barrier = BarrierClosure(
       kMaxTasks,
       BindOnce(&TestWaitableEvent::Signal, Unretained(&threads_running)));
@@ -331,35 +330,57 @@ TEST_F(ThreadGroupImplImplTest, ShouldYieldFloodedUserVisible) {
                                &mock_pooled_task_runner_delegate_)
       ->PostTask(
           FROM_HERE, BindLambdaForTesting([&]() {
-            EXPECT_FALSE(thread_group_->ShouldYield(TaskPriority::BEST_EFFORT));
+            EXPECT_FALSE(thread_group_->ShouldYield(
+                {TaskPriority::BEST_EFFORT, TimeTicks(), /* worker_count=*/1}));
           }));
-  EXPECT_FALSE(thread_group_->ShouldYield(TaskPriority::BEST_EFFORT));
-  EXPECT_FALSE(thread_group_->ShouldYield(TaskPriority::USER_VISIBLE));
-  EXPECT_FALSE(thread_group_->ShouldYield(TaskPriority::USER_BLOCKING));
+  // A BEST_EFFORT task with more workers shouldn't have to yield.
+  EXPECT_FALSE(thread_group_->ShouldYield(
+      {TaskPriority::BEST_EFFORT, TimeTicks(), /* worker_count=*/2}));
+  EXPECT_FALSE(thread_group_->ShouldYield(
+      {TaskPriority::BEST_EFFORT, TimeTicks(), /* worker_count=*/0}));
+  EXPECT_FALSE(thread_group_->ShouldYield(
+      {TaskPriority::USER_VISIBLE, TimeTicks(), /* worker_count=*/0}));
+  EXPECT_FALSE(thread_group_->ShouldYield(
+      {TaskPriority::USER_BLOCKING, TimeTicks(), /* worker_count=*/0}));
 
-  // Posting a USER_VISIBLE task should cause BEST_EFFORT tasks to yield.
+  // Posting a USER_VISIBLE task should cause BEST_EFFORT and USER_VISIBLE with
+  // higher worker_count tasks to yield.
   test::CreatePooledTaskRunner({TaskPriority::USER_VISIBLE},
                                &mock_pooled_task_runner_delegate_)
       ->PostTask(FROM_HERE, BindLambdaForTesting([&]() {
-                   EXPECT_FALSE(
-                       thread_group_->ShouldYield(TaskPriority::USER_VISIBLE));
+                   EXPECT_FALSE(thread_group_->ShouldYield(
+                       {TaskPriority::USER_VISIBLE, TimeTicks(),
+                        /* worker_count=*/1}));
                  }));
-  EXPECT_TRUE(thread_group_->ShouldYield(TaskPriority::BEST_EFFORT));
-  EXPECT_FALSE(thread_group_->ShouldYield(TaskPriority::USER_VISIBLE));
-  EXPECT_FALSE(thread_group_->ShouldYield(TaskPriority::USER_BLOCKING));
+  // A USER_VISIBLE task with too many workers should yield.
+  EXPECT_TRUE(thread_group_->ShouldYield(
+      {TaskPriority::USER_VISIBLE, TimeTicks(), /* worker_count=*/2}));
+  EXPECT_TRUE(thread_group_->ShouldYield(
+      {TaskPriority::BEST_EFFORT, TimeTicks(), /* worker_count=*/0}));
+  EXPECT_FALSE(thread_group_->ShouldYield(
+      {TaskPriority::USER_VISIBLE, TimeTicks(), /* worker_count=*/1}));
+  EXPECT_FALSE(thread_group_->ShouldYield(
+      {TaskPriority::USER_BLOCKING, TimeTicks(), /* worker_count=*/0}));
 
-  // Posting a USER_BLOCKING task should cause BEST_EFFORT and USER_VISIBLE
-  // tasks to yield.
+  // Posting a USER_BLOCKING task should cause BEST_EFFORT, USER_VISIBLE and
+  // USER_BLOCKING with higher worker_count tasks to yield.
   test::CreatePooledTaskRunner({TaskPriority::USER_BLOCKING},
                                &mock_pooled_task_runner_delegate_)
       ->PostTask(FROM_HERE, BindLambdaForTesting([&]() {
                    // Once this task got to start, no other task needs to yield.
-                   EXPECT_FALSE(
-                       thread_group_->ShouldYield(TaskPriority::USER_BLOCKING));
+                   EXPECT_FALSE(thread_group_->ShouldYield(
+                       {TaskPriority::USER_BLOCKING, TimeTicks(),
+                        /* worker_count=*/1}));
                  }));
-  EXPECT_TRUE(thread_group_->ShouldYield(TaskPriority::BEST_EFFORT));
-  EXPECT_TRUE(thread_group_->ShouldYield(TaskPriority::USER_VISIBLE));
-  EXPECT_FALSE(thread_group_->ShouldYield(TaskPriority::USER_BLOCKING));
+  // A USER_BLOCKING task with too many workers should have to yield.
+  EXPECT_TRUE(thread_group_->ShouldYield(
+      {TaskPriority::USER_BLOCKING, TimeTicks(), /* worker_count=*/2}));
+  EXPECT_TRUE(thread_group_->ShouldYield(
+      {TaskPriority::BEST_EFFORT, TimeTicks(), /* worker_count=*/0}));
+  EXPECT_TRUE(thread_group_->ShouldYield(
+      {TaskPriority::USER_VISIBLE, TimeTicks(), /* worker_count=*/0}));
+  EXPECT_FALSE(thread_group_->ShouldYield(
+      {TaskPriority::USER_BLOCKING, TimeTicks(), /* worker_count=*/1}));
 
   threads_continue.Signal();
   task_tracker_.FlushForTesting();
@@ -1239,36 +1260,41 @@ TEST_P(ThreadGroupImplBlockingTest, ThreadBlockedUnblockedShouldYield) {
 
   ASSERT_EQ(thread_group_->GetMaxTasksForTesting(), kMaxTasks);
 
-  EXPECT_FALSE(thread_group_->ShouldYield(TaskPriority::BEST_EFFORT));
+  EXPECT_FALSE(
+      thread_group_->ShouldYield({TaskPriority::BEST_EFFORT, TimeTicks()}));
   SaturateWithBlockingTasks(GetParam());
-  EXPECT_FALSE(thread_group_->ShouldYield(TaskPriority::BEST_EFFORT));
+  EXPECT_FALSE(
+      thread_group_->ShouldYield({TaskPriority::BEST_EFFORT, TimeTicks()}));
 
   // Forces |kMaxTasks| extra workers to be instantiated by posting tasks. This
   // should not block forever.
   SaturateWithBusyTasks();
 
   // All tasks can run, hence ShouldYield returns false.
-  EXPECT_FALSE(thread_group_->ShouldYield(TaskPriority::BEST_EFFORT));
+  EXPECT_FALSE(
+      thread_group_->ShouldYield({TaskPriority::BEST_EFFORT, TimeTicks()}));
 
   // Post a USER_VISIBLE task that can't run since workers are saturated. This
   // should cause BEST_EFFORT tasks to yield.
   test::CreatePooledTaskRunner({TaskPriority::USER_VISIBLE},
                                &mock_pooled_task_runner_delegate_)
-      ->PostTask(
-          FROM_HERE, BindLambdaForTesting([&]() {
-            EXPECT_FALSE(thread_group_->ShouldYield(TaskPriority::BEST_EFFORT));
-          }));
-  EXPECT_TRUE(thread_group_->ShouldYield(TaskPriority::BEST_EFFORT));
+      ->PostTask(FROM_HERE, BindLambdaForTesting([&]() {
+                   EXPECT_FALSE(thread_group_->ShouldYield(
+                       {TaskPriority::BEST_EFFORT, TimeTicks()}));
+                 }));
+  EXPECT_TRUE(
+      thread_group_->ShouldYield({TaskPriority::BEST_EFFORT, TimeTicks()}));
 
   // Post a USER_BLOCKING task that can't run since workers are saturated. This
   // should cause USER_VISIBLE tasks to yield.
   test::CreatePooledTaskRunner({TaskPriority::USER_BLOCKING},
                                &mock_pooled_task_runner_delegate_)
       ->PostTask(FROM_HERE, BindLambdaForTesting([&]() {
-                   EXPECT_FALSE(
-                       thread_group_->ShouldYield(TaskPriority::USER_VISIBLE));
+                   EXPECT_FALSE(thread_group_->ShouldYield(
+                       {TaskPriority::USER_VISIBLE, TimeTicks()}));
                  }));
-  EXPECT_TRUE(thread_group_->ShouldYield(TaskPriority::USER_VISIBLE));
+  EXPECT_TRUE(
+      thread_group_->ShouldYield({TaskPriority::USER_VISIBLE, TimeTicks()}));
 
   UnblockBusyTasks();
   UnblockBlockingTasks();

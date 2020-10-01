@@ -438,7 +438,7 @@ bool ThreadPoolImpl::ShouldYield(const TaskSource* task_source) const {
   if (!thread_group->IsBoundToCurrentThread())
     return true;
   return GetThreadGroupForTraits({priority, task_source->thread_policy()})
-      ->ShouldYield(priority);
+      ->ShouldYield(task_source->GetSortKey());
 }
 
 bool ThreadPoolImpl::EnqueueJobTaskSource(
