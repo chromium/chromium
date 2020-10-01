@@ -1400,7 +1400,7 @@ void NavigationRequest::BeginNavigation() {
     render_frame_host_ =
         frame_tree_node_->render_manager()->GetFrameHostForNavigation(this);
     if (!Navigator::CheckWebUIRendererDoesNotDisplayNormalURL(
-            render_frame_host_, common_params_->url,
+            render_frame_host_, GetUrlInfo(),
             /* is_renderer_initiated_check */ false)) {
       // TODO(nasko): Convert this to CHECK once it is confirmed that it does
       // not happen in reality.
@@ -1986,8 +1986,10 @@ void NavigationRequest::DetermineOriginIsolationEndResult(
   const url::Origin origin = url::Origin::Create(common_params_->url);
   const IsolationContext& isolation_context =
       render_frame_host_->GetSiteInstance()->GetIsolationContext();
-  const bool got_isolated =
-      policy->ShouldOriginGetOptInIsolation(isolation_context, origin);
+  const bool got_isolated = policy->ShouldOriginGetOptInIsolation(
+      isolation_context, origin,
+      check_result !=
+          OptInIsolationCheckResult::NONE /* origin_requests_isolation */);
 
   switch (check_result) {
     case OptInIsolationCheckResult::NONE:
@@ -2072,6 +2074,11 @@ void NavigationRequest::ProcessOriginIsolationEndResult() {
                            origin.Serialize().c_str()));
 }
 
+UrlInfo NavigationRequest::GetUrlInfo() {
+  return UrlInfo(GetURL(), IsOptInIsolationRequested(GetURL()) !=
+                               OptInIsolationCheckResult::NONE);
+}
+
 void NavigationRequest::OnResponseStarted(
     network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,
     network::mojom::URLResponseHeadPtr response_head,
@@ -2101,31 +2108,6 @@ void NavigationRequest::OnResponseStarted(
   response_body_ = std::move(response_body);
   ssl_info_ = response_head_->ssl_info;
   auth_challenge_info_ = response_head_->auth_challenge_info;
-
-  // If origin isolation opt-in is being requested, set temporary state on
-  // ChildProcessSecurityPolicy that allows it to know the origin is requesting
-  // isolation without having to plumb it through all the calls that might get
-  // to ShouldOriginGetOptInIsolation. This is set in OnResponseStarted when
-  // headers are available to detect isolation requests, and early in the method
-  // to ensure all relevant calls will have the state available.
-  using ScopedOriginIsolationOptInRequest =
-      ChildProcessSecurityPolicyImpl::ScopedOriginIsolationOptInRequest;
-  std::unique_ptr<ScopedOriginIsolationOptInRequest>
-      scoped_origin_isolation_opt_in_request;
-  OptInIsolationCheckResult opt_in_isolation =
-      IsOptInIsolationRequested(GetURL());
-  if (opt_in_isolation != OptInIsolationCheckResult::NONE) {
-    // This origin conversion won't be correct for about:blank, but origin
-    // isolation shouldn't need to care about that case because a previous
-    // instance of the origin would already have determined its isolation status
-    // in that BrowsingInstance.
-    // TODO(https://crbug.com/888079): Use the computed origin here just to be
-    // safe.
-    url::Origin origin_to_isolate(url::Origin::Create(GetURL()));
-    scoped_origin_isolation_opt_in_request =
-        ScopedOriginIsolationOptInRequest::GetScopedOriginIsolationOptInRequest(
-            origin_to_isolate);
-  }
 
   // The navigation may have encountered an origin policy or Origin-Isolation
   // header that requests isolation for the url's origin. Before we pick the
@@ -2307,7 +2289,7 @@ void NavigationRequest::OnResponseStarted(
         frame_tree_node_->render_manager()->GetFrameHostForNavigation(this);
 
     if (!Navigator::CheckWebUIRendererDoesNotDisplayNormalURL(
-            render_frame_host_, common_params_->url,
+            render_frame_host_, GetUrlInfo(),
             /* is_renderer_initiated_check */ false)) {
       // TODO(nasko): Convert this to CHECK once it is confirmed that it does
       // not happen in reality.
@@ -2319,7 +2301,7 @@ void NavigationRequest::OnResponseStarted(
   DCHECK(render_frame_host_ || !response_should_be_rendered_);
 
   if (render_frame_host_) {
-    DetermineOriginIsolationEndResult(opt_in_isolation);
+    DetermineOriginIsolationEndResult(IsOptInIsolationRequested(GetURL()));
 
     // TODO(pmeuleman, ahemery): Only set COEP values on RenderFrameHost when
     // the navigation commits. In the meantime, keep them in NavigationRequest.
@@ -2383,13 +2365,13 @@ void NavigationRequest::OnResponseStarted(
     SiteInstanceImpl* instance = render_frame_host_->GetSiteInstance();
     const IsolationContext& isolation_context = instance->GetIsolationContext();
     auto site_info = SiteInstanceImpl::ComputeSiteInfo(
-        isolation_context, common_params_->url,
+        isolation_context, GetUrlInfo(),
         instance->IsCoopCoepCrossOriginIsolated(),
         instance->CoopCoepCrossOriginIsolatedOrigin());
     if (!instance->HasSite() &&
         SiteInstanceImpl::DoesSiteInfoRequireDedicatedProcess(isolation_context,
                                                               site_info)) {
-      instance->ConvertToDefaultOrSetSite(common_params_->url);
+      instance->ConvertToDefaultOrSetSite(GetUrlInfo());
     }
 
     // If this navigation request didn't opt-in to origin isolation, we need
@@ -2571,7 +2553,7 @@ void NavigationRequest::OnRequestFailedInternal(
   if (SiteIsolationPolicy::IsErrorPageIsolationEnabled(
           frame_tree_node_->IsMainFrame())) {
     if (!Navigator::CheckWebUIRendererDoesNotDisplayNormalURL(
-            render_frame_host_, common_params_->url,
+            render_frame_host_, GetUrlInfo(),
             /* is_renderer_initiated_check */ false)) {
       // TODO(nasko): Convert this to CHECK once it is confirmed that it does
       // not happen in reality.
@@ -3091,7 +3073,7 @@ void NavigationRequest::AddOldPageInfoToCommitParamsIfNeeded() {
       frame_tree_node_->render_manager()->current_frame_host();
   if (!GetRenderFrameHost()
            ->ShouldDispatchPagehideAndVisibilitychangeDuringCommit(
-               old_frame_host, GetURL())) {
+               old_frame_host, GetUrlInfo())) {
     return;
   }
   DCHECK(!IsSameDocument());
@@ -4150,12 +4132,11 @@ void NavigationRequest::DidCommitNavigation(
 
 SiteInfo NavigationRequest::GetSiteInfoForCommonParamsURL(
     bool is_coop_coep_cross_origin_isolated,
-    const base::Optional<url::Origin>& coop_coep_cross_origin_isolated_origin)
-    const {
+    const base::Optional<url::Origin>& coop_coep_cross_origin_isolated_origin) {
   // TODO(alexmos): Using |starting_site_instance_|'s IsolationContext may not
   // be correct for cross-BrowsingInstance redirects.
   return SiteInstanceImpl::ComputeSiteInfo(
-      starting_site_instance_->GetIsolationContext(), common_params_->url,
+      starting_site_instance_->GetIsolationContext(), GetUrlInfo(),
       is_coop_coep_cross_origin_isolated,
       coop_coep_cross_origin_isolated_origin);
 }

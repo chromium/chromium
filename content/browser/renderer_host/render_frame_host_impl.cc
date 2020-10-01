@@ -5505,9 +5505,10 @@ CanCommitStatus RenderFrameHostImpl::CanCommitOriginAndUrl(
   }
 
   // Verify that if this RenderFrameHost is for a WebUI it is not committing a
-  // URL which is not allowed in a WebUI process.
+  // URL which is not allowed in a WebUI process. As we are at the commit stage,
+  // set |origin_requests_isolation| = false.
   if (!Navigator::CheckWebUIRendererDoesNotDisplayNormalURL(
-          this, url,
+          this, UrlInfo(url, false /* origin_requests_isolation */),
           /* is_renderer_initiated_check */ true)) {
     return CanCommitStatus::CANNOT_COMMIT_URL;
   }
@@ -5545,7 +5546,8 @@ CanCommitStatus RenderFrameHostImpl::CanCommitOriginAndUrl(
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
   const CanCommitStatus can_commit_status = policy->CanCommitOriginAndUrl(
       GetProcess()->GetID(), GetSiteInstance()->GetIsolationContext(), origin,
-      url, GetSiteInstance()->IsCoopCoepCrossOriginIsolated(),
+      UrlInfo(url, false /* origin_requests_isolation */),
+      GetSiteInstance()->IsCoopCoepCrossOriginIsolated(),
       GetSiteInstance()->CoopCoepCrossOriginIsolatedOrigin());
   if (can_commit_status != CanCommitStatus::CAN_COMMIT_ORIGIN_AND_URL) {
     LogCanCommitOriginAndUrlFailureReason("cpspi_disallowed_commit");
@@ -5912,7 +5914,7 @@ void RenderFrameHostImpl::JavaScriptDialogClosed(
 
 bool RenderFrameHostImpl::ShouldDispatchPagehideAndVisibilitychangeDuringCommit(
     RenderFrameHostImpl* old_frame_host,
-    const GURL& dest_url) {
+    const UrlInfo& dest_url_info) {
   // Only return true if this is a same-site navigation and we did a proactive
   // BrowsingInstance swap but we're reusing the old page's renderer process.
   DCHECK(old_frame_host);
@@ -5924,7 +5926,7 @@ bool RenderFrameHostImpl::ShouldDispatchPagehideAndVisibilitychangeDuringCommit(
     return false;
   }
   if (!old_frame_host->IsNavigationSameSite(
-          dest_url, GetSiteInstance()->IsCoopCoepCrossOriginIsolated(),
+          dest_url_info, GetSiteInstance()->IsCoopCoepCrossOriginIsolated(),
           GetSiteInstance()->CoopCoepCrossOriginIsolatedOrigin())) {
     return false;
   }
@@ -8046,11 +8048,14 @@ void RenderFrameHostImpl::BeforeUnloadTimeout() {
 }
 
 void RenderFrameHostImpl::SetLastCommittedSiteInfo(const GURL& url) {
+  // Since |url| has already committed, |origin_requests_isolation| below should
+  // be set to false.
   SiteInfo site_info =
       url.is_empty()
           ? SiteInfo()
           : SiteInstanceImpl::ComputeSiteInfo(
-                GetSiteInstance()->GetIsolationContext(), url,
+                GetSiteInstance()->GetIsolationContext(),
+                UrlInfo(url, false /* origin_requests_isolation */),
                 GetSiteInstance()->IsCoopCoepCrossOriginIsolated(),
                 GetSiteInstance()->CoopCoepCrossOriginIsolatedOrigin());
 
@@ -8217,7 +8222,7 @@ RenderFrameHostImpl::CreateMessageFilterForAssociatedReceiver(
 }
 
 bool RenderFrameHostImpl::IsNavigationSameSite(
-    const GURL& dest_url,
+    const UrlInfo& dest_url_info,
     bool is_coop_coep_cross_origin_isolated,
     base::Optional<url::Origin> coop_coep_cross_origin_isolated_origin) {
   if (GetSiteInstance()->IsCoopCoepCrossOriginIsolated() !=
@@ -8228,7 +8233,7 @@ bool RenderFrameHostImpl::IsNavigationSameSite(
   }
   return GetSiteInstance()->IsNavigationSameSite(
       last_successful_url(), GetLastCommittedOrigin(),
-      frame_tree_node()->IsMainFrame(), dest_url);
+      frame_tree_node()->IsMainFrame(), dest_url_info);
 }
 
 bool RenderFrameHostImpl::ValidateDidCommitParams(

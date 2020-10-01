@@ -721,6 +721,10 @@ class CONTENT_EXPORT NavigationRequest
     return frame_entry_document_sequence_number_;
   }
 
+  // Returns the current url from GetURL() packaged with other state required to
+  // properly determine SiteInstances and process allocation.
+  UrlInfo GetUrlInfo();
+
  private:
   friend class NavigationRequestTest;
 
@@ -979,8 +983,8 @@ class CONTENT_EXPORT NavigationRequest
   // Note: |site_info_| should only be updated with the result of this function.
   SiteInfo GetSiteInfoForCommonParamsURL(
       bool is_coop_coep_cross_origin_isolated,
-      const base::Optional<url::Origin>& coop_coep_cross_origin_isolated_origin)
-      const;
+      const base::Optional<url::Origin>&
+          coop_coep_cross_origin_isolated_origin);
 
   // Updates the state of the navigation handle after encountering a server
   // redirect.

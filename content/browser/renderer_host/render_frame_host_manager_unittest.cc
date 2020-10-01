@@ -915,7 +915,7 @@ TEST_P(RenderFrameHostManagerTest, Navigate) {
   EXPECT_TRUE(host == manager->current_frame_host());
   ASSERT_TRUE(host);
   EXPECT_FALSE(host->GetSiteInstance()->HasSite());
-  host->GetSiteInstance()->SetSite(kUrl1);
+  host->GetSiteInstance()->SetSite(UrlInfo::CreateForTesting(kUrl1));
 
   manager->GetRenderWidgetHostView()->SetBackgroundColor(SK_ColorRED);
 
@@ -1540,7 +1540,7 @@ TEST_P(RenderFrameHostManagerTest, NavigateWithEarlyClose) {
   // Commit to SiteInstance should be delayed until RenderFrame commits.
   EXPECT_EQ(host, manager->current_frame_host());
   EXPECT_FALSE(host->GetSiteInstance()->HasSite());
-  host->GetSiteInstance()->SetSite(kUrl1);
+  host->GetSiteInstance()->SetSite(UrlInfo::CreateForTesting(kUrl1));
 
   // 2) Cross-site navigate to next site. -------------------------
   const GURL kUrl2("http://www.example.com");
@@ -2537,7 +2537,7 @@ TEST_P(RenderFrameHostManagerTest, RestoreNavigationToWebUI) {
   const GURL kInitUrl(GetWebUIURL("foo"));
   scoped_refptr<SiteInstanceImpl> initial_instance =
       SiteInstanceImpl::Create(browser_context());
-  initial_instance->SetSite(kInitUrl);
+  initial_instance->SetSite(UrlInfo::CreateForTesting(kInitUrl));
   std::unique_ptr<TestWebContents> web_contents(
       TestWebContents::Create(browser_context(), initial_instance));
   RenderFrameHostManager* manager = web_contents->GetRenderManagerForTesting();

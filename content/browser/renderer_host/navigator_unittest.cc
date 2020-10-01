@@ -1074,7 +1074,8 @@ TEST_F(NavigatorTest, SiteInstanceDescriptionConversion) {
   GURL kUrlSameSiteAs1("http://www.a.com/foo");
   {
     SiteInstanceDescriptor descriptor(
-        kUrlSameSiteAs1, SiteInstanceRelation::RELATED,
+        UrlInfo::CreateForTesting(kUrlSameSiteAs1),
+        SiteInstanceRelation::RELATED,
         false /* is_coop_coep_cross_origin_isolated */);
     scoped_refptr<SiteInstance> converted_instance =
         ConvertToSiteInstance(rfhm, descriptor, nullptr);
@@ -1087,7 +1088,8 @@ TEST_F(NavigatorTest, SiteInstanceDescriptionConversion) {
   scoped_refptr<SiteInstance> related_instance;
   {
     SiteInstanceDescriptor descriptor(
-        kUrlSameSiteAs2, SiteInstanceRelation::RELATED,
+        UrlInfo::CreateForTesting(kUrlSameSiteAs2),
+        SiteInstanceRelation::RELATED,
         false /* is_coop_coep_cross_origin_isolated */);
     related_instance = ConvertToSiteInstance(rfhm, descriptor, nullptr);
     // If kUrlSameSiteAs2 requires a dedicated process on this platform, this
@@ -1112,7 +1114,8 @@ TEST_F(NavigatorTest, SiteInstanceDescriptionConversion) {
   // current one, several times, with and without candidate sites.
   {
     SiteInstanceDescriptor descriptor(
-        kUrlSameSiteAs1, SiteInstanceRelation::UNRELATED,
+        UrlInfo::CreateForTesting(kUrlSameSiteAs1),
+        SiteInstanceRelation::UNRELATED,
         false /* is_coop_coep_cross_origin_isolated */);
     scoped_refptr<SiteInstance> converted_instance_1 =
         ConvertToSiteInstance(rfhm, descriptor, nullptr);
@@ -1151,7 +1154,8 @@ TEST_F(NavigatorTest, SiteInstanceDescriptionConversion) {
   // related_instance and using it as a candidate.
   {
     SiteInstanceDescriptor descriptor(
-        kUrlSameSiteAs2, SiteInstanceRelation::UNRELATED,
+        UrlInfo::CreateForTesting(kUrlSameSiteAs2),
+        SiteInstanceRelation::UNRELATED,
         false /* is_coop_coep_cross_origin_isolated */);
     scoped_refptr<SiteInstance> converted_instance_1 =
         ConvertToSiteInstance(rfhm, descriptor, related_instance.get());

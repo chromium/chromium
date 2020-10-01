@@ -45,6 +45,7 @@ class PrefetchedSignedExchangeCache;
 class RenderFrameHostImpl;
 class WebBundleHandleTracker;
 struct LoadCommittedDetails;
+struct UrlInfo;
 
 // Navigator is responsible for performing navigations in nodes of the
 // FrameTree. Its lifetime is bound to the FrameTree.
@@ -66,7 +67,7 @@ class CONTENT_EXPORT Navigator {
   // of this method are migrated to use CHECK instead of DumpWithoutCrashing.
   static WARN_UNUSED_RESULT bool CheckWebUIRendererDoesNotDisplayNormalURL(
       RenderFrameHostImpl* render_frame_host,
-      const GURL& url,
+      const UrlInfo& url_info,
       bool is_renderer_initiated_check);
 
   static bool ShouldIgnoreIncomingRendererRequest(

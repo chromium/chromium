@@ -256,35 +256,6 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
     int child_id_;
   };
 
-  // This scoped class is used to temporarily store an origin requesting
-  // opt-in isolation in scoped_isolation_request_origin_, while the request is
-  // being processed. This is only necessary because it is difficult to plumb
-  // the parameter through the site URL computations that need it, and it is
-  // safe because overlapping and nested occurrences cannot occur. Callers
-  // should stack allocate the result so that the temporary result is
-  // automatically cleared when the result goes out of scope. The stored
-  // scoped_isolation_request_origin_ value is only safe to access from the UI
-  // thread, where this object must be created.
-  class CONTENT_EXPORT ScopedOriginIsolationOptInRequest {
-   public:
-    // This returns a new unique_ptr to ScopedOriginIsolationOptInRequest if
-    // no origin is already scoped for an isolation request, or a null
-    // unique_ptr if |origin_to_isolate| has already been scoped. If
-    // a second call occurs while this is set, this will fail on a CHECK.
-    static std::unique_ptr<ScopedOriginIsolationOptInRequest>
-    GetScopedOriginIsolationOptInRequest(const url::Origin& origin_to_isolate);
-
-    ~ScopedOriginIsolationOptInRequest();
-
-   private:
-    explicit ScopedOriginIsolationOptInRequest(
-        const url::Origin& origin_to_isolate);
-
-    friend class ChildProcessSecurityPolicyImpl;
-
-    DISALLOW_COPY_AND_ASSIGN(ScopedOriginIsolationOptInRequest);
-  };
-
   // Object can only be created through GetInstance() so the constructor is
   // private.
   ~ChildProcessSecurityPolicyImpl() override;
@@ -367,7 +338,7 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
       int child_id,
       const IsolationContext& isolation_context,
       const url::Origin& origin,
-      const GURL& url,
+      const UrlInfo& url_info,
       bool is_coop_coep_cross_origin_isolated,
       const base::Optional<url::Origin>&
           coop_coep_cross_origin_isolated_origin);
@@ -400,6 +371,7 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   // will only affect future BrowsingInstances.
   bool GetMatchingIsolatedOrigin(const IsolationContext& isolation_context,
                                  const url::Origin& origin,
+                                 bool origin_requests_isolation,
                                  url::Origin* result);
 
   // Removes any origin isolation opt-in entries associated with the
@@ -426,10 +398,10 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   //    |origin_isolation_by_browsing_instance_|, in which case we follow the
   //    same policy, or
   // 2) if it's not currently tracked as described above, whether |origin| is
-  //    currently requesting isolation via |scoped_isolation_request_origin_|,
-  //    as part of an in-progress navigation.
+  //    currently requesting isolation via |origin_requests_isolation|.
   bool ShouldOriginGetOptInIsolation(const IsolationContext& isolation_context,
-                                     const url::Origin& origin);
+                                     const url::Origin& origin,
+                                     bool origin_requests_isolation);
 
   // This function adds |origin| to the master list of origins that have
   // ever requested opt-in isolation, either via an OriginPolicy or opt-in
@@ -443,6 +415,7 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   // already known to avoid recomputing it internally.
   bool GetMatchingIsolatedOrigin(const IsolationContext& isolation_context,
                                  const url::Origin& origin,
+                                 bool origin_requests_isolation,
                                  const GURL& site_url,
                                  url::Origin* result);
 
@@ -590,9 +563,13 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   //
   // |isolation_context| is used to determine which origins are isolated in
   // this context.  For example, isolated origins that are dynamically added
-  // will only affect future BrowsingInstances.
+  // will only affect future BrowsingInstances. |origin_requests_isolation| may
+  // be true during navigation requests, and allows us to correctly determine
+  // isolation status for an origin that may not have had its isolation status
+  // recorded in the BrowsingInstance yet.
   bool IsIsolatedOrigin(const IsolationContext& isolation_context,
-                        const url::Origin& origin);
+                        const url::Origin& origin,
+                        bool origin_requests_isolation);
 
   // Removes a previously added isolated origin, currently only used in tests.
   //
@@ -914,7 +891,7 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   // tracked so we know which origins need to be tracked when non-isolated in
   // any given BrowsingInstance. Origins requesting isolation, if successful,
   // are marked as isolated via ShouldOriginGetOptInIsolation's checking
-  // |scoped_isolation_request_origin_|.
+  // |origin_requests_isolation|.
   base::flat_set<url::Origin> origin_isolation_opt_ins_
       GUARDED_BY(origins_isolation_opt_in_lock_);
   // A map to track origins that have been isolated within a given
@@ -930,13 +907,6 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   base::flat_map<BrowsingInstanceId, std::vector<url::Origin>>
       origin_isolation_non_isolated_by_browsing_instance_
           GUARDED_BY(origins_isolation_opt_in_lock_);
-
-  // This origin is set during a call to NavigationRequest::OnResponseStarted
-  // that requests isolation for an origin, via the creation of a
-  // ScopedOriginIsolationOptInRequest object. This value's state is read by
-  // ShouldOriginGetOptInIsolation(), and it is only safe to access on the UI
-  // thread.
-  base::Optional<url::Origin> scoped_isolation_request_origin_;
 
   DISALLOW_COPY_AND_ASSIGN(ChildProcessSecurityPolicyImpl);
 };

@@ -5893,7 +5893,9 @@ IN_PROC_BROWSER_TEST_P(
 
   // Create a new process and set it as the sole process host for B.
   scoped_refptr<SiteInstanceImpl> placeholder_b_site_instance =
-      SiteInstanceImpl::CreateForURL(web_contents->GetBrowserContext(), b_url);
+      SiteInstanceImpl::CreateForUrlInfo(
+          web_contents->GetBrowserContext(), UrlInfo::CreateForTesting(b_url),
+          false /* is_coop_coep_cross_origin_isolated */);
   RenderProcessHost* process_for_b =
       RenderProcessHostImpl::CreateRenderProcessHost(
           web_contents->GetBrowserContext(), placeholder_b_site_instance.get());
@@ -8510,17 +8512,20 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   EXPECT_FALSE(instance1->HasProcess());
   if (AreAllSitesIsolatedForTesting()) {
     // In site-per-process, we cannot use foo.com's SiteInstance for a.com.
-    EXPECT_FALSE(instance1->IsSuitableForURL(url1));
+    EXPECT_FALSE(
+        instance1->IsSuitableForUrlInfo(UrlInfo::CreateForTesting(url1)));
   } else if (AreDefaultSiteInstancesEnabled()) {
     // Since |instance1| is a default SiteInstance AND this test explicitly
     // ensures that ShouldAssignSiteForURL(url1) will return false, |url1|
     // cannot be placed in the default SiteInstance. This also means that |url1|
     // cannot be placed in the same process as the default SiteInstance.
-    EXPECT_FALSE(instance1->IsSuitableForURL(url1));
+    EXPECT_FALSE(
+        instance1->IsSuitableForUrlInfo(UrlInfo::CreateForTesting(url1)));
   } else {
     // If neither foo.com nor a.com require dedicated processes, then we can use
     // the same process.
-    EXPECT_TRUE(instance1->IsSuitableForURL(url1));
+    EXPECT_TRUE(
+        instance1->IsSuitableForUrlInfo(UrlInfo::CreateForTesting(url1)));
   }
 
   // Go back to url1's entry, which should swap to a new SiteInstance with an

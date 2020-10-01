@@ -111,8 +111,9 @@ Navigator::~Navigator() = default;
 // static
 bool Navigator::CheckWebUIRendererDoesNotDisplayNormalURL(
     RenderFrameHostImpl* render_frame_host,
-    const GURL& url,
+    const UrlInfo& url_info,
     bool is_renderer_initiated_check) {
+  const GURL& url = url_info.url;
   // In single process mode, everything runs in the same process, so the checks
   // below are irrelevant.
   if (RenderProcessHost::run_renderer_in_process())
@@ -137,7 +138,7 @@ bool Navigator::CheckWebUIRendererDoesNotDisplayNormalURL(
   // this method should take this into account.
   SiteInstanceImpl* site_instance = render_frame_host->GetSiteInstance();
   SiteInfo site_info = SiteInstanceImpl::ComputeSiteInfo(
-      site_instance->GetIsolationContext(), url,
+      site_instance->GetIsolationContext(), url_info,
       site_instance->IsCoopCoepCrossOriginIsolated(),
       site_instance->CoopCoepCrossOriginIsolatedOrigin());
   bool should_lock_process =
@@ -248,10 +249,13 @@ void Navigator::DidNavigate(
                                     bad_message::NI_IN_PAGE_NAVIGATION);
     is_same_document_navigation = false;
   }
+  // At this point we have already chosen a SiteInstance for this navigation, so
+  // set |origin_requests_isolation| = false in the conversion to UrlInfo below.
+  const UrlInfo url_info(params.url, false /* origin_requests_isolation */);
   bool is_cross_document_same_site_navigation =
       !is_same_document_navigation &&
       old_frame_host->IsNavigationSameSite(
-          params.url,
+          url_info,
           render_frame_host->GetSiteInstance()->IsCoopCoepCrossOriginIsolated(),
           render_frame_host->GetSiteInstance()
               ->CoopCoepCrossOriginIsolatedOrigin());
@@ -346,8 +350,8 @@ void Navigator::DidNavigate(
   // page.
   SiteInstanceImpl* site_instance = render_frame_host->GetSiteInstance();
   if (!site_instance->HasSite() &&
-      SiteInstanceImpl::ShouldAssignSiteForURL(params.url)) {
-    site_instance->ConvertToDefaultOrSetSite(params.url);
+      SiteInstanceImpl::ShouldAssignSiteForURL(url_info.url)) {
+    site_instance->ConvertToDefaultOrSetSite(url_info);
   }
 
   // Need to update MIME type here because it's referred to in

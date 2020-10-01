@@ -235,9 +235,11 @@ void IsolateOriginsForTesting(
       new_site_instance->IsRelatedSiteInstance(old_site_instance.get()));
   for (const url::Origin& origin : origins_to_isolate) {
     EXPECT_FALSE(policy->IsIsolatedOrigin(
-        old_site_instance->GetIsolationContext(), origin));
+        old_site_instance->GetIsolationContext(), origin,
+        false /* origin_requests_isolation */));
     EXPECT_TRUE(policy->IsIsolatedOrigin(
-        new_site_instance->GetIsolationContext(), origin));
+        new_site_instance->GetIsolationContext(), origin,
+        false /* origin_requests_isolation */));
   }
 }
 

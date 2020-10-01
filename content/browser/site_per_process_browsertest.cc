@@ -14778,11 +14778,11 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   int process_id = root->current_frame_host()->GetProcess()->GetID();
   IsolationContext isolation_context(controller.GetBrowserContext());
   auto start_url_lock = SiteInstanceImpl::DetermineProcessLock(
-      isolation_context, start_url,
+      isolation_context, UrlInfo::CreateForTesting(start_url),
       false /* is_coop_coep_cross_origin_isolated */,
       base::nullopt /* coop_coep_cross_origin_isolated_origin */);
   auto another_url_lock = SiteInstanceImpl::DetermineProcessLock(
-      isolation_context, another_url,
+      isolation_context, UrlInfo::CreateForTesting(another_url),
       false /* is_coop_coep_cross_origin_isolated */,
       base::nullopt /* coop_coep_cross_origin_isolated_origin */);
   EXPECT_EQ(start_url_lock, policy->GetProcessLock(process_id));

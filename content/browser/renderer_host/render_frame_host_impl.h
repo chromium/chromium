@@ -572,9 +572,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Return the http status code of the last committed navigation.
   int last_http_status_code() { return last_http_status_code_; }
 
-  // Returns true if |dest_url| should be considered the same site as the
+  // Returns true if |dest_url_info| should be considered the same site as the
   // current contents of this frame. This is the primary entry point for
-  // determining if a navigation to |dest_url| should stay in this
+  // determining if a navigation to |dest_url_info| should stay in this
   // RenderFrameHost's SiteInstance.
   //
   // |is_coop_coep_cross_origin_isolated| should be true if the response for
@@ -584,7 +584,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // |coop_coep_cross_origin_isolated_origin| indicates the top level origin
   // of the page.
   bool IsNavigationSameSite(
-      const GURL& dest_url,
+      const UrlInfo& dest_url_info,
       bool is_coop_coep_cross_origin_isolated,
       base::Optional<url::Origin> coop_coep_cross_origin_isolated_origin);
 
@@ -1777,7 +1777,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // TODO(crbug.com/1110744): Support unload-in-commit.
   bool ShouldDispatchPagehideAndVisibilitychangeDuringCommit(
       RenderFrameHostImpl* old_frame_host,
-      const GURL& dest_url);
+      const UrlInfo& dest_url_info);
 
   mojo::PendingRemote<network::mojom::CookieAccessObserver>
   CreateCookieAccessObserver();

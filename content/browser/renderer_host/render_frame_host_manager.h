@@ -558,16 +558,16 @@ class CONTENT_EXPORT RenderFrameHostManager
     ATTACHED
   };
 
-  // Stores information regarding a SiteInstance targeted at a specific URL to
-  // allow for comparisons without having to actually create new instances. It
-  // can point to an existing one or store the details needed to create a new
+  // Stores information regarding a SiteInstance targeted at a specific UrlInfo
+  // to allow for comparisons without having to actually create new instances.
+  // It can point to an existing one or store the details needed to create a new
   // one.
   struct CONTENT_EXPORT SiteInstanceDescriptor {
     explicit SiteInstanceDescriptor(content::SiteInstance* site_instance)
         : existing_site_instance(site_instance),
           relation(SiteInstanceRelation::PREEXISTING) {}
 
-    SiteInstanceDescriptor(GURL dest_url,
+    SiteInstanceDescriptor(UrlInfo dest_url_info,
                            SiteInstanceRelation relation_to_current,
                            bool is_coop_coep_cross_origin_isolated);
 
@@ -575,7 +575,7 @@ class CONTENT_EXPORT RenderFrameHostManager
     content::SiteInstance* existing_site_instance;
 
     // In case |existing_site_instance| is null, specify a destination URL.
-    GURL dest_url;
+    UrlInfo dest_url_info;
 
     // Specifies how the new site is related to the current BrowsingInstance.
     // This is PREEXISTING iff |existing_site_instance| is defined.
@@ -599,7 +599,7 @@ class CONTENT_EXPORT RenderFrameHostManager
   void DeleteRenderFrameProxyHost(SiteInstance* site_instance);
 
   // Returns true if for the navigation from |current_effective_url| to
-  // |destination_url|, a new SiteInstance and BrowsingInstance should be
+  // |destination_url_info|, a new SiteInstance and BrowsingInstance should be
   // created (even if we are in a process model that doesn't usually swap).
   // This forces a process swap and severs script connections with existing
   // tabs.  Cases where this can happen include transitions between WebUI and
@@ -615,7 +615,7 @@ class CONTENT_EXPORT RenderFrameHostManager
   // If there is no current NavigationEntry, then |current_is_view_source_mode|
   // should be the same as |dest_is_view_source_mode|.
   //
-  // We use the effective URL here, since that's what is used in the
+  // UrlInfo uses the effective URL here, since that's what is used in the
   // SiteInstance's site and when we later call IsSameSite.  If there is no
   // current NavigationEntry, check the current SiteInstance's site, which might
   // already be committed to a Web UI URL (such as the NTP). Note that we don't
@@ -628,7 +628,7 @@ class CONTENT_EXPORT RenderFrameHostManager
       SiteInstanceImpl* source_instance,
       SiteInstanceImpl* current_instance,
       SiteInstance* destination_instance,
-      const GURL& destination_url,
+      const UrlInfo& destination_url_info,
       bool is_coop_coep_cross_origin_isolated,
       const base::Optional<url::Origin>& coop_coep_cross_origin_isolated_origin,
       bool destination_is_view_source_mode,
@@ -642,7 +642,7 @@ class CONTENT_EXPORT RenderFrameHostManager
       bool is_speculative);
 
   ShouldSwapBrowsingInstance ShouldProactivelySwapBrowsingInstance(
-      const GURL& destination_url,
+      const UrlInfo& destination_url_info,
       bool is_coop_coep_cross_origin_isolated,
       const base::Optional<url::Origin>& coop_coep_cross_origin_isolated_origin,
       bool is_reload,
@@ -650,7 +650,7 @@ class CONTENT_EXPORT RenderFrameHostManager
 
   // Returns the SiteInstance to use for the navigation.
   scoped_refptr<SiteInstance> GetSiteInstanceForNavigation(
-      const GURL& dest_url,
+      const UrlInfo& dest_url_info,
       bool is_coop_coep_cross_origin_isolated,
       const base::Optional<url::Origin>& coop_coep_cross_origin_isolated_origin,
       SiteInstanceImpl* source_instance,
@@ -669,7 +669,7 @@ class CONTENT_EXPORT RenderFrameHostManager
       bool* did_same_site_proactive_browsing_instance_swap);
 
   // Returns a descriptor of the appropriate SiteInstance object for the given
-  // |dest_url|, possibly reusing the current, source or destination
+  // |dest_url_info|, possibly reusing the current, source or destination
   // SiteInstance. The actual SiteInstance can then be obtained calling
   // ConvertToSiteInstance with the descriptor.
   //
@@ -695,7 +695,7 @@ class CONTENT_EXPORT RenderFrameHostManager
   //
   // This is a helper function for GetSiteInstanceForNavigation.
   SiteInstanceDescriptor DetermineSiteInstanceForURL(
-      const GURL& dest_url,
+      const UrlInfo& dest_url_info,
       bool is_coop_coep_cross_origin_isolated,
       const base::Optional<url::Origin>& coop_coep_cross_origin_isolated_origin,
       SiteInstance* source_instance,
@@ -749,12 +749,12 @@ class CONTENT_EXPORT RenderFrameHostManager
       bool is_speculative);
 
   // Returns true if |candidate| is currently on the same web site as
-  // |dest_url|. This method is a special case for handling hosted apps in
+  // |dest_url_info|. This method is a special case for handling hosted apps in
   // this object. Most code should call IsNavigationSameSite() on
   // |candidate| instead of this method.
   bool IsCandidateSameSite(
       RenderFrameHostImpl* candidate,
-      const GURL& dest_url,
+      const UrlInfo& dest_url_info,
       bool is_coop_coep_cross_origin_isolated,
       base::Optional<url::Origin> coop_coep_cross_origin_isolated_origin);
 
