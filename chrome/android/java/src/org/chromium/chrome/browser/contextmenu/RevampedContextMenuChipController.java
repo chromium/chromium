@@ -52,12 +52,31 @@ class RevampedContextMenuChipController implements View.OnClickListener {
      * below.
      */
     int getVerticalPxNeededForChip() {
-        // TODO(benwgold): Come up with way to make height dynamic if wrapping or large text is
-        // activated.
         return 2
                 * mContext.getResources().getDimensionPixelSize(
                         R.dimen.context_menu_chip_vertical_margin)
                 + mContext.getResources().getDimensionPixelSize(R.dimen.chip_default_height);
+    }
+
+    /**
+     * Derive max text view width by subtracting the width of other elements from the max chip
+     * width.
+     */
+    @VisibleForTesting
+    int getChipTextMaxWidthPx() {
+        return mContext.getResources().getDimensionPixelSize(R.dimen.context_menu_chip_max_width)
+                // Leading and trailing padding (start and end of chip and
+                // start / end of text).
+                - (3
+                        * mContext.getResources().getDimensionPixelSize(
+                                R.dimen.context_menu_chip_lateral_padding))
+                - (1
+                        * mContext.getResources().getDimensionPixelSize(
+                                R.dimen.chip_element_leading_padding))
+                // Primary and close icon width.
+                - (2
+                        * mContext.getResources().getDimensionPixelSize(
+                                R.dimen.context_menu_chip_icon_size));
     }
 
     @VisibleForTesting
@@ -114,10 +133,13 @@ class RevampedContextMenuChipController implements View.OnClickListener {
         mPopupWindow.setMaxWidth(
                 mContext.getResources().getDimensionPixelSize(R.dimen.context_menu_chip_max_width));
 
-        // TODO(benwgold): Support wrapping text for longer strings.
         mChipView.getPrimaryTextView().setText(SpanApplier.removeSpanText(
                 mContext.getString(R.string.contextmenu_shop_image_with_google_lens),
                 new SpanInfo("<new>", "</new>")));
+        // TODO(benwgold): Consult with Chrome UX owners to see if Chip UI hierarchy should be
+        // refactored.
+        mChipView.getPrimaryTextView().setMaxWidth(getChipTextMaxWidthPx());
+
         mChipView.setIcon(R.drawable.lens_icon, false);
         mChipView.addRemoveIcon();
 

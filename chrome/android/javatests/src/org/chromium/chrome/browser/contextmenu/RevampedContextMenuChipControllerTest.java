@@ -33,6 +33,14 @@ import org.chromium.ui.test.util.DummyUiActivityTestCase;
 public class RevampedContextMenuChipControllerTest extends DummyUiActivityTestCase {
     // This is the combination of the expected vertical margins and the chip height.
     private static final int EXPECTED_VERTICAL_DP = 80;
+    // Computed by taking the 338dp max width and subtracting:
+    // 16 (chip start padding)
+    // 24 (main icon width)
+    // 8 (text start padding)
+    // 16 (close button start padding)
+    // 24 (close button icon width)
+    // 16 (close button end padding)
+    private static final int EXPECTEED_CHIP_WIDTH_DP = 234;
 
     private float mMeasuredDeviceDensity;
     private View mAnchorView;
@@ -122,5 +130,15 @@ public class RevampedContextMenuChipControllerTest extends DummyUiActivityTestCa
         assertEquals("Vertical px is not matching the expectation",
                 (int) (EXPECTED_VERTICAL_DP * mMeasuredDeviceDensity),
                 chipController.getVerticalPxNeededForChip());
+    }
+
+    @Test
+    @SmallTest
+    public void testExpectedChipTextMaxWidthPx() {
+        RevampedContextMenuChipController chipController = new RevampedContextMenuChipController(
+                getActivity(), mAnchorView, mLensAsyncManager, () -> {});
+        assertEquals("Vertical px is not matching the expectation",
+                (int) (EXPECTEED_CHIP_WIDTH_DP * mMeasuredDeviceDensity),
+                chipController.getChipTextMaxWidthPx());
     }
 }

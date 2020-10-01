@@ -642,7 +642,13 @@
         <item name="chipColor">@color/popup_bg_color</item>
         <item name="solidColorChip">true</item>
         <item name="allowMultipleLines">true</item>
+        <item name="textAlignStart">true</item>
+        <item name="leadingPadding">@dimen/context_menu_chip_lateral_padding</item>
+        <item name="endIconStartPadding">@dimen/context_menu_chip_lateral_padding</item>
+        <item name="endIconEndPadding">@dimen/context_menu_chip_lateral_padding</item>
         <item name="verticalInset">@dimen/context_menu_chip_vertical_inset</item>
+        <item name="endIconWidth">@dimen/context_menu_chip_icon_size</item>
+        <item name="endIconHeight">@dimen/context_menu_chip_icon_size</item>
     </style>
 
     <!-- Scrolling -->
