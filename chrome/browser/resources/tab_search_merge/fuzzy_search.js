@@ -29,7 +29,7 @@ export function fuzzySearch(input, records, options) {
   // To address these shortcomings we use the exactSearch implementation below
   // if the options indicate an exact matching algorithm should be used.
   if (options.threshold === 0.0) {
-    return exactSearch(input, records);
+    return exactSearch(input, records, options);
   } else {
     return new Fuse(records, options).search(input).map(result => {
       const titleMatch = result.matches.find(e => e.key === 'title');
@@ -73,12 +73,23 @@ function convertToRanges(matches) {
  * @suppress {checkTypes}
  * @param {string} searchText
  * @param {!Array<!tabSearch.mojom.Tab>} records
+ * @param {!Object} options
  * @return {!Array<!tabSearch.mojom.Tab>}
  */
-function exactSearch(searchText, records) {
+function exactSearch(searchText, records, options) {
   if (searchText.length === 0) {
     return records;
   }
+
+  // Controls how heavily weighted the tab's title is relative to the hostname
+  // in the scoring function.
+  const key =
+      options.keys ? options.keys.find(e => e.name === 'title') : undefined;
+  const titleToHostnameWeightRatio = key ? key.weight : 1;
+  // Default distance to calculate score for title/hostname based on match
+  // position.
+  const defaultDistance = 200;
+  const distance = options.distance || defaultDistance;
 
   // Perform an exact match search with range discovery.
   const exactMatches = [];
@@ -95,15 +106,21 @@ function exactSearch(searchText, records) {
     if (hostnameHighlightRanges.length) {
       matchedTab.hostnameHighlightRanges = hostnameHighlightRanges;
     }
-    exactMatches.push(matchedTab);
+    exactMatches.push({
+      tab: matchedTab,
+      score: scoringFunction(matchedTab, distance, titleToHostnameWeightRatio)
+    });
   }
+
+  // Sort by score.
+  exactMatches.sort((a, b) => (b.score - a.score));
 
   // Prioritize items.
   const itemsMatchingStringStart = [];
   const itemsMatchingWordStart = [];
   const others = [];
   const wordStartRegexp = new RegExp(`\\b${quoteString(searchText)}`, 'i');
-  for (let tab of exactMatches) {
+  for (let {tab} of exactMatches) {
     // Find matches that occur at the beginning of the string.
     if (hasMatchStringStart(tab)) {
       itemsMatchingStringStart.push(tab);
@@ -162,4 +179,32 @@ function getRanges(target, searchText) {
     });
   }
   return ranges;
+}
+
+/**
+ * A scoring function based on match indices of title and hostname.
+ * Matches near the beginning of the string will have a higher score than
+ * matches near the end of the string. Multiple matches will have a higher score
+ * than single matches.
+ * @suppress {checkTypes}
+ * @param {!tabSearch.mojom.Tab} tab
+ * @param {number} distance
+ * @param {number} titleToHostnameWeightRatio
+ */
+function scoringFunction(tab, distance, titleToHostnameWeightRatio) {
+  let score = 0;
+  // For every match, map the match index in [0, distance] to a scalar value in
+  // [1, 0].
+  if (tab.titleHighlightRanges) {
+    for (const {start} of tab.titleHighlightRanges) {
+      score += Math.max((distance - start) / distance, 0) *
+          titleToHostnameWeightRatio;
+    }
+  }
+  if (tab.hostnameHighlightRanges) {
+    for (const {start} of tab.hostnameHighlightRanges) {
+      score += Math.max((distance - start) / distance, 0);
+    }
+  }
+  return score;
 }

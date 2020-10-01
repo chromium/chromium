@@ -6,6 +6,25 @@ import {fuzzySearch} from 'chrome://tab-search/fuzzy_search.js'
 
 import {assertDeepEquals, assertEquals} from '../../chai_assert.js';
 
+/**
+ * Assert search results return in specific order.
+ * TODO(tluk): Fix the typing for tabSearch.mojom.Tab here given we are updating
+ * the fields on this object ( https://crbug.com/1133558 ).
+ * @suppress {checkTypes}
+ * @param {string} input
+ * @param {!Array<!tabSearch.mojom.Tab>} items
+ * @param {!Object} options
+ * @param {!Array<number>} expectedIndices
+ */
+function assertSearchOrders(input, items, options, expectedIndices) {
+  const results = fuzzySearch(input, items, options);
+  assertEquals(results.length, expectedIndices.length);
+  for (let i = 0; i < results.length; ++i) {
+    assertEquals(items[expectedIndices[i]].title, results[i].title);
+    assertEquals(items[expectedIndices[i]].hostname, results[i].hostname);
+  }
+}
+
 suite('FuzzySearchTest', () => {
   test('fuzzySearch', () => {
     const records = [
@@ -93,38 +112,37 @@ suite('FuzzySearchTest', () => {
       {
         title: 'Arch Linux',
         hostname: 'www.archlinux.org',
-        titleHighlightRanges: [ {start: 0, length: 4} ],
-        hostnameHighlightRanges: [ {start: 4, length: 4} ],
+        titleHighlightRanges: [{start: 0, length: 4}],
+        hostnameHighlightRanges: [{start: 4, length: 4}],
       },
       {
         title: 'Arches National Park',
         hostname: 'www.nps.gov',
-        titleHighlightRanges: [ {start: 0, length: 4} ],
+        titleHighlightRanges: [{start: 0, length: 4}],
       },
       {
         title: 'Chrome Desktop Architecture',
         hostname: 'drive.google.com',
-        titleHighlightRanges: [ {start: 15, length: 4} ],
+        titleHighlightRanges: [{start: 15, length: 4}],
       },
       {
         title: 'Code Search',
         hostname: 'search.chromium.search',
-        titleHighlightRanges: [ {start: 7, length: 4} ],
+        titleHighlightRanges: [{start: 7, length: 4}],
         hostnameHighlightRanges:
-            [ {start: 2, length: 4}, {start: 18, length: 4} ],
-      },
-      {
-        title: 'Marching band',
-        hostname: 'en.marching.band.com',
-        titleHighlightRanges: [ {start: 1, length: 4} ],
-        hostnameHighlightRanges: [ {start: 4, length: 4} ]
+            [{start: 2, length: 4}, {start: 18, length: 4}],
       },
       {
         title: 'Search Engine Land - Search Engines',
         hostname: 'searchengineland.com',
-        titleHighlightRanges:
-            [ {start: 2, length: 4}, {start: 23, length: 4} ],
-        hostnameHighlightRanges: [ {start: 2, length: 4} ]
+        titleHighlightRanges: [{start: 2, length: 4}, {start: 23, length: 4}],
+        hostnameHighlightRanges: [{start: 2, length: 4}]
+      },
+      {
+        title: 'Marching band',
+        hostname: 'en.marching.band.com',
+        titleHighlightRanges: [{start: 1, length: 4}],
+        hostnameHighlightRanges: [{start: 4, length: 4}]
       },
     ];
 
@@ -133,16 +151,15 @@ suite('FuzzySearchTest', () => {
       {
         title: 'Code Search',
         hostname: 'search.chromium.search',
-        titleHighlightRanges: [ {start: 5, length: 6} ],
+        titleHighlightRanges: [{start: 5, length: 6}],
         hostnameHighlightRanges:
-            [ {start: 0, length: 6}, {start: 16, length: 6} ],
+            [{start: 0, length: 6}, {start: 16, length: 6}],
       },
       {
         title: 'Search Engine Land - Search Engines',
         hostname: 'searchengineland.com',
-        titleHighlightRanges:
-            [ {start: 0, length: 6}, {start: 21, length: 6} ],
-        hostnameHighlightRanges: [ {start: 0, length: 6} ]
+        titleHighlightRanges: [{start: 0, length: 6}, {start: 21, length: 6}],
+        hostnameHighlightRanges: [{start: 0, length: 6}]
       },
     ];
 
@@ -193,5 +210,58 @@ suite('FuzzySearchTest', () => {
     assertDeepEquals(quoteMatchedRecords,
                      fuzzySearch('\"end', records, options));
   });
+
+  test('Test exact match result scoring accounts for match position.', () => {
+    const options = {
+      threshold: 0.0,
+    };
+    assertSearchOrders(
+        'two',
+        [
+          {title: 'three one two'}, {title: 'three two one'},
+          {title: 'one two three'}
+        ],
+        options, [2, 1, 0]);
+  });
+
+  test(
+      'Test exact match result scoring takes into account the number of matches per item.',
+      () => {
+        const options = {
+          threshold: 0.0,
+        };
+        assertSearchOrders(
+            'one',
+            [
+              {title: 'one two three'}, {title: 'one one three'},
+              {title: 'one one one'}
+            ],
+            options, [2, 1, 0]);
+      });
+
+  test(
+      'Test exact match result scoring abides by the titleToHostnameWeightRatio.',
+      () => {
+        const options = {
+          threshold: 0.0,
+          keys: [
+            {
+              name: 'title',
+              weight: 2,
+            },
+            {
+              name: 'hostname',
+              weight: 1,
+            }
+          ]
+        };
+        assertSearchOrders(
+            'search',
+            [
+              {hostname: 'chrome://tab-search'}, {title: 'chrome://tab-search'},
+              {title: 'chrome://tab-search', hostname: 'chrome://tab-search'}
+            ],
+            options, [2, 1, 0]);
+      });
 
 });
