@@ -10,7 +10,7 @@ import static org.chromium.chrome.features.start_surface.StartSurfaceProperties.
 import static org.chromium.chrome.features.start_surface.StartSurfaceProperties.TOP_MARGIN;
 
 import android.view.View;
-import android.view.ViewGroup.MarginLayoutParams;
+import android.view.ViewGroup;
 
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -37,20 +37,17 @@ class SecondaryTasksSurfaceViewBinder {
                 && !model.get(IS_SHOWING_STACK_TAB_SWITCHER);
         if (isShowing && viewHolder.tasksSurfaceView.getParent() == null) {
             viewHolder.parentView.addView(viewHolder.tasksSurfaceView);
-            MarginLayoutParams layoutParams =
-                    (MarginLayoutParams) viewHolder.tasksSurfaceView.getLayoutParams();
-            layoutParams.topMargin = model.get(TOP_MARGIN);
+            setTopBarHeight(viewHolder, model.get(TOP_MARGIN));
         }
 
         viewHolder.tasksSurfaceView.setVisibility(isShowing ? View.VISIBLE : View.GONE);
     }
 
     private static void setTopBarHeight(TasksSurfaceViewBinder.ViewHolder viewHolder, int height) {
-        MarginLayoutParams layoutParams =
-                (MarginLayoutParams) viewHolder.tasksSurfaceView.getLayoutParams();
-        if (layoutParams == null) return;
+        ViewGroup.LayoutParams lp = viewHolder.topToolbarPlaceholderView.getLayoutParams();
+        if (lp == null) return;
 
-        layoutParams.topMargin = height;
-        viewHolder.tasksSurfaceView.setLayoutParams(layoutParams);
+        lp.height = height;
+        viewHolder.topToolbarPlaceholderView.setLayoutParams(lp);
     }
 }

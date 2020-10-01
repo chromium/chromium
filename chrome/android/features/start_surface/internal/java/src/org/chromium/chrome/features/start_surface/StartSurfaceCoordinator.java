@@ -320,11 +320,11 @@ public class StartSurfaceCoordinator implements StartSurface {
                 hasTrendyTerms);
         mTasksSurface.getView().setId(R.id.primary_tasks_surface_view);
 
-        mTasksSurfacePropertyModelChangeProcessor =
-                PropertyModelChangeProcessor.create(mPropertyModel,
-                        new TasksSurfaceViewBinder.ViewHolder(
-                                mActivity.getCompositorViewHolder(), mTasksSurface.getView()),
-                        TasksSurfaceViewBinder::bind);
+        mTasksSurfacePropertyModelChangeProcessor = PropertyModelChangeProcessor.create(
+                mPropertyModel,
+                new TasksSurfaceViewBinder.ViewHolder(mActivity.getCompositorViewHolder(),
+                        mTasksSurface.getView(), mTasksSurface.getTopToolbarPlaceholderView()),
+                TasksSurfaceViewBinder::bind);
 
         // There is nothing else to do for SurfaceMode.TASKS_ONLY, SurfaceMode.OMNIBOX_ONLY and
         // SurfaceMode.TRENDY_TERMS.
@@ -363,7 +363,8 @@ public class StartSurfaceCoordinator implements StartSurface {
         mSecondaryTasksSurfacePropertyModelChangeProcessor =
                 PropertyModelChangeProcessor.create(mPropertyModel,
                         new TasksSurfaceViewBinder.ViewHolder(mActivity.getCompositorViewHolder(),
-                                mSecondaryTasksSurface.getView()),
+                                mSecondaryTasksSurface.getView(),
+                                mSecondaryTasksSurface.getTopToolbarPlaceholderView()),
                         SecondaryTasksSurfaceViewBinder::bind);
         if (mOnTabSelectingListener != null) {
             mSecondaryTasksSurface.setOnTabSelectingListener(mOnTabSelectingListener);
