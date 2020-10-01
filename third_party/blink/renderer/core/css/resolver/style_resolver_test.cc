@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/animation/document_timeline.h"
 #include "third_party/blink/renderer/core/animation/element_animations.h"
 #include "third_party/blink/renderer/core/css/css_image_value.h"
+#include "third_party/blink/renderer/core/css/css_test_helpers.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/properties/computed_style_utils.h"
 #include "third_party/blink/renderer/core/css/properties/css_property_ref.h"
@@ -810,6 +811,57 @@ TEST_F(StyleResolverTest, EnsureComputedStyleSlotFallback) {
   ASSERT_TRUE(fallback_style);
   EXPECT_EQ(Color::kBlack,
             fallback_style->VisitedDependentColor(GetCSSPropertyColor()));
+}
+
+TEST_F(StyleResolverTest, ComputeValueStandardProperty) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      #target { --color: green }
+    </style>
+    <div id="target"></div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* target = GetDocument().getElementById("target");
+  ASSERT_TRUE(target);
+
+  // Unable to parse a variable reference with css_test_helpers::ParseLonghand.
+  CSSPropertyID property_id = CSSPropertyID::kColor;
+  auto* set =
+      MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLStandardMode);
+  MutableCSSPropertyValueSet::SetResult result = set->SetProperty(
+      property_id, "var(--color)", false, SecureContextMode::kInsecureContext,
+      /*style_sheet_contents=*/nullptr);
+  ASSERT_TRUE(result.did_parse);
+  const CSSValue* parsed_value = set->GetPropertyCSSValue(property_id);
+  ASSERT_TRUE(parsed_value);
+  const CSSValue* computed_value = StyleResolver::ComputeValue(
+      target, CSSPropertyName(property_id), *parsed_value);
+  ASSERT_TRUE(computed_value);
+  EXPECT_EQ("rgb(0, 128, 0)", computed_value->CssText());
+}
+
+TEST_F(StyleResolverTest, ComputeValueCustomProperty) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      #target { --color: green }
+    </style>
+    <div id="target"></div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* target = GetDocument().getElementById("target");
+  ASSERT_TRUE(target);
+
+  AtomicString custom_property_name = "--color";
+  const CSSValue* parsed_value = css_test_helpers::ParseLonghand(
+      GetDocument(), CustomProperty(custom_property_name, GetDocument()),
+      "blue");
+  ASSERT_TRUE(parsed_value);
+  const CSSValue* computed_value = StyleResolver::ComputeValue(
+      target, CSSPropertyName(custom_property_name), *parsed_value);
+  ASSERT_TRUE(computed_value);
+  EXPECT_EQ("blue", computed_value->CssText());
 }
 
 }  // namespace blink

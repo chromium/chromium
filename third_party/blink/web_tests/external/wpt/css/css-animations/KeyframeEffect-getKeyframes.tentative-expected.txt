@@ -15,13 +15,13 @@ PASS KeyframeEffect.getKeyframes() returns expected frames for an animation with
 PASS KeyframeEffect.getKeyframes() returns expected frames for an animation with multiple keyframes for the same time and with different easing functions
 PASS KeyframeEffect.getKeyframes() returns expected frames for an animation with multiple keyframes for the same time and with different but equivalent easing functions
 PASS KeyframeEffect.getKeyframes() returns expected frames for overlapping keyframes
-PASS KeyframeEffect.getKeyframes() returns expected values for animations with filter properties and missing keyframes
+FAIL KeyframeEffect.getKeyframes() returns expected values for animations with filter properties and missing keyframes assert_equals: value for 'filter' on Keyframe #1 should match expected "blur(5px) sepia(60%) saturate(30%)" but got "blur(5px) sepia(0.6) saturate(0.3)"
 PASS KeyframeEffect.getKeyframes() returns expected values for animation with drop-shadow of filter property
 PASS KeyframeEffect.getKeyframes() returns expected values for animations with text-shadow properties and missing keyframes
 PASS KeyframeEffect.getKeyframes() returns expected values for animations with background-size properties and missing keyframes
-FAIL KeyframeEffect.getKeyframes() returns expected values for animations with CSS variables as keyframe values assert_equals: value for 'transform' on Keyframe #1 should match expected "translate(100px)" but got "translate(var(--var-100px), 0) "
-FAIL KeyframeEffect.getKeyframes() returns expected values for animations with CSS variables as keyframe values in a shorthand property assert_equals: value for 'marginBottom' on Keyframe #1 should match expected "100px" but got ""
-FAIL KeyframeEffect.getKeyframes() returns expected values for animations with a CSS variable which is overriden by the value in keyframe assert_array_equals: properties on Keyframe #0 should match lengths differ, expected array ["color", "composite", "computedOffset", "easing", "offset"] length 5, got ["--end-color", "color", "composite", "computedOffset", "easing", "offset"] length 6
+FAIL KeyframeEffect.getKeyframes() returns expected values for animations with CSS variables as keyframe values assert_equals: value for 'transform' on Keyframe #1 should match expected "translate(100px)" but got "translate(100px, 0px)"
+PASS KeyframeEffect.getKeyframes() returns expected values for animations with CSS variables as keyframe values in a shorthand property
+PASS KeyframeEffect.getKeyframes() returns expected values for animations with a CSS variable which is overriden by the value in keyframe
 FAIL KeyframeEffect.getKeyframes() returns expected values for animations with only custom property in a keyframe assert_equals: value for 'transform' on Keyframe #0 should match expected "translate(100px)" but got "translate(100px, 0px)"
 PASS KeyframeEffect.getKeyframes() reflects changes to @keyframes rules
 Harness: the test ran to completion.

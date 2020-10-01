@@ -42,6 +42,7 @@ class CORE_EXPORT StringKeyframe : public Keyframe {
       SecureContextMode,
       StyleSheetContents*);
   void SetCSSPropertyValue(const CSSProperty&, const CSSValue&);
+  void RemoveCustomCSSProperty(const PropertyHandle& property);
 
   void SetPresentationAttributeValue(const CSSProperty&,
                                      const String& value,

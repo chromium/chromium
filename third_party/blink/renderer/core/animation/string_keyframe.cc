@@ -145,6 +145,13 @@ void StringKeyframe::SetCSSPropertyValue(const CSSProperty& property,
   InvalidateCssPropertyMap();
 }
 
+void StringKeyframe::RemoveCustomCSSProperty(const PropertyHandle& property) {
+  DCHECK(property.IsCSSCustomProperty());
+  if (css_property_map_)
+    css_property_map_->RemoveProperty(property.CustomPropertyName());
+  input_properties_.erase(property);
+}
+
 void StringKeyframe::SetPresentationAttributeValue(
     const CSSProperty& property,
     const String& value,

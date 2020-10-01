@@ -50,6 +50,7 @@
 #include "third_party/blink/renderer/core/css/font_face.h"
 #include "third_party/blink/renderer/core/css/page_rule_collector.h"
 #include "third_party/blink/renderer/core/css/part_names.h"
+#include "third_party/blink/renderer/core/css/properties/computed_style_utils.h"
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
 #include "third_party/blink/renderer/core/css/properties/css_property_ref.h"
 #include "third_party/blink/renderer/core/css/resolver/match_result.h"
@@ -1612,6 +1613,31 @@ bool StyleResolver::CanReuseBaseComputedStyle(const StyleResolverState& state) {
   }
 
   return true;
+}
+
+const CSSValue* StyleResolver::ComputeValue(
+    Element* element,
+    const CSSPropertyName& property_name,
+    const CSSValue& value) {
+  const ComputedStyle* base_style = element->GetComputedStyle();
+  StyleResolverState state(element->GetDocument(), *element);
+  STACK_UNINITIALIZED StyleCascade cascade(state);
+  state.SetStyle(ComputedStyle::Clone(*base_style));
+  auto* set =
+      MakeGarbageCollected<MutableCSSPropertyValueSet>(state.GetParserMode());
+  if (property_name.IsCustomProperty()) {
+    set->SetProperty(CSSPropertyValue(property_name, value));
+  } else {
+    set->SetProperty(property_name.Id(), value);
+  }
+  cascade.MutableMatchResult().FinishAddingUARules();
+  cascade.MutableMatchResult().FinishAddingUserRules();
+  cascade.MutableMatchResult().AddMatchedProperties(set);
+  cascade.Apply();
+
+  CSSPropertyRef property_ref(property_name, element->GetDocument());
+  return ComputedStyleUtils::ComputedPropertyValue(property_ref.GetProperty(),
+                                                   *state.Style());
 }
 
 scoped_refptr<ComputedStyle> StyleResolver::StyleForInterpolations(

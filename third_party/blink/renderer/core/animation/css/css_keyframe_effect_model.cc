@@ -8,7 +8,10 @@
 #include "third_party/blink/renderer/core/animation/animation_utils.h"
 #include "third_party/blink/renderer/core/animation/property_handle.h"
 #include "third_party/blink/renderer/core/animation/string_keyframe.h"
+#include "third_party/blink/renderer/core/css/properties/computed_style_utils.h"
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
+#include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
+#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 
 namespace blink {
 
@@ -41,6 +44,11 @@ void AddMissingProperties(const MissingPropertyValueMap& property_map,
                           const PropertyHandleSet& keyframe_properties,
                           StringKeyframe* keyframe) {
   for (const auto& property : all_properties) {
+    // At present, custom properties are to be excluded from the keyframes.
+    // https://github.com/w3c/csswg-drafts/issues/5126.
+    if (property.IsCSSCustomProperty())
+      continue;
+
     if (keyframe_properties.Contains(property))
       continue;
 
@@ -48,15 +56,35 @@ void AddMissingProperties(const MissingPropertyValueMap& property_map,
         AnimationInputHelpers::PropertyHandleToKeyframeAttribute(property);
     if (property_map.Contains(property_name)) {
       const String& value = property_map.at(property_name);
-      if (property.IsCSSCustomProperty()) {
-        keyframe->SetCSSPropertyValue(property.CustomPropertyName(), value,
-                                      SecureContextMode::kInsecureContext,
-                                      nullptr);
-      } else {
-        keyframe->SetCSSPropertyValue(
-            property.GetCSSProperty().PropertyID(), value,
-            SecureContextMode::kInsecureContext, nullptr);
-      }
+      keyframe->SetCSSPropertyValue(property.GetCSSProperty().PropertyID(),
+                                    value, SecureContextMode::kInsecureContext,
+                                    nullptr);
+    }
+  }
+}
+
+void ResolveComputedValues(Element* element, StringKeyframe* keyframe) {
+  DCHECK(element);
+  // Styles are flushed when getKeyframes is called on a CSS animation.
+  DCHECK(element->GetComputedStyle());
+  for (const auto& property : keyframe->Properties()) {
+    if (property.IsCSSCustomProperty()) {
+      // At present, custom properties are to be excluded from the keyframes.
+      // https://github.com/w3c/csswg-drafts/issues/5126.
+      // TODO(csswg/issues/5126): Revisit once issue regarding inclusion of
+      // custom properties is resolved. Perhaps registered should likely be
+      // included since they can be animated in Blink. Pruning unregistered
+      // variables seems justifiable.
+      keyframe->RemoveCustomCSSProperty(property);
+    } else if (property.IsCSSProperty()) {
+      const CSSValue& value = keyframe->CssPropertyValue(property);
+      const CSSPropertyName property_name =
+          property.IsCSSCustomProperty()
+              ? CSSPropertyName(property.CustomPropertyName())
+              : CSSPropertyName(property.GetCSSProperty().PropertyID());
+      const CSSValue* computed_value =
+          StyleResolver::ComputeValue(element, property_name, value);
+      keyframe->SetCSSPropertyValue(property.GetCSSProperty(), *computed_value);
     }
   }
 }
@@ -83,14 +111,16 @@ CssKeyframeEffectModel::GetComputedKeyframes(Element* element) {
     Keyframe* keyframe = keyframes[i];
     // TODO(crbug.com/1070627): Use computed values, prune variable references,
     // and convert logical properties to physical properties.
-    computed_keyframes.push_back(keyframe->Clone());
+    StringKeyframe* computed_keyframe = To<StringKeyframe>(keyframe->Clone());
+    ResolveComputedValues(element, computed_keyframe);
+    computed_keyframes.push_back(computed_keyframe);
     double offset = computed_offsets[i];
     if (offset == 0) {
-      for (const auto& property : keyframe->Properties()) {
+      for (const auto& property : computed_keyframe->Properties()) {
         from_properties.insert(property);
       }
     } else if (offset == 1) {
-      for (const auto& property : keyframe->Properties()) {
+      for (const auto& property : computed_keyframe->Properties()) {
         to_properties.insert(property);
       }
     }

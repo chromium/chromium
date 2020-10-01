@@ -139,6 +139,10 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
 
   static bool CanReuseBaseComputedStyle(const StyleResolverState& state);
 
+  static const CSSValue* ComputeValue(Element* element,
+                                      const CSSPropertyName&,
+                                      const CSSValue&);
+
   scoped_refptr<ComputedStyle> StyleForInterpolations(
       Element& element,
       ActiveInterpolationsMap& animations);
