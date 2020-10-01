@@ -93,6 +93,12 @@ void WebSocketAdapter::OnConnectionEstablished(
   write_pipe_ = std::move(writable);
   client_receiver_.Bind(std::move(client_receiver));
 
+  // |handshake_receiver_| will disconnect soon. In order to catch network
+  // process crashes, we switch to watching |client_receiver_|.
+  handshake_receiver_.set_disconnect_handler(base::DoNothing());
+  client_receiver_.set_disconnect_handler(base::BindOnce(
+      &WebSocketAdapter::OnMojoPipeDisconnect, base::Unretained(this)));
+
   socket_remote_->StartReceiving();
 
   std::move(on_tunnel_ready_).Run(true, routing_id);

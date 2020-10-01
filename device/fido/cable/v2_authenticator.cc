@@ -372,6 +372,7 @@ class TunnelTransport : public Transport {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     if (!msg) {
+      FIDO_LOG(DEBUG) << "WebSocket tunnel closed";
       read_callback_.Run(base::nullopt);
       return;
     }
@@ -482,6 +483,7 @@ class CTAP2Processor : public Transaction {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     if (!msg) {
+      FIDO_LOG(ERROR) << "Closing transaction due to transport EOF";
       std::move(complete_callback_).Run();
       return;
     }
