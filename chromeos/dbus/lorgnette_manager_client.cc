@@ -66,7 +66,7 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
   }
 
   // LorgnetteManagerClient override.
-  void StartScan(std::string device_name,
+  void StartScan(const std::string& device_name,
                  const lorgnette::ScanSettings& settings,
                  VoidDBusMethodCallback completion_callback,
                  base::RepeatingCallback<void(std::string)> page_callback,
@@ -266,7 +266,7 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
   }
 
   // Called when scan data read is completed.
-  void OnScanDataCompleted(std::string uuid,
+  void OnScanDataCompleted(const std::string& uuid,
                            bool more_pages,
                            base::Optional<std::string> data) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

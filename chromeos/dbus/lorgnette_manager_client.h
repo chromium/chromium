@@ -50,7 +50,7 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) LorgnetteManagerClient
   // If |progress_callback| is provided, it will be called as scan progress
   // increases. The progress will be passed as a value from 0-100.
   virtual void StartScan(
-      std::string device_name,
+      const std::string& device_name,
       const lorgnette::ScanSettings& settings,
       VoidDBusMethodCallback completion_callback,
       base::RepeatingCallback<void(std::string)> page_callback,

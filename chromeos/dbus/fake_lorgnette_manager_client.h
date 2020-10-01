@@ -30,7 +30,7 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeLorgnetteManagerClient
   void GetScannerCapabilities(
       const std::string& device_name,
       DBusMethodCallback<lorgnette::ScannerCapabilities> callback) override;
-  void StartScan(std::string device_name,
+  void StartScan(const std::string& device_name,
                  const lorgnette::ScanSettings& settings,
                  VoidDBusMethodCallback completion_callback,
                  base::RepeatingCallback<void(std::string)> page_callback,
