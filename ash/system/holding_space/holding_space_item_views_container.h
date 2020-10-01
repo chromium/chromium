@@ -34,6 +34,7 @@ class HoldingSpaceItemViewsContainer : public views::View,
 
   // views::View:
   void ChildPreferredSizeChanged(views::View* child) override;
+  void ChildVisibilityChanged(views::View* child) override;
 
   // HoldingSpaceControllerObserver:
   void OnHoldingSpaceModelAttached(HoldingSpaceModel* model) override;

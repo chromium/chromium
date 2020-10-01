@@ -27,7 +27,6 @@ class PinnedFilesContainer : public HoldingSpaceItemViewsContainer {
   ~PinnedFilesContainer() override;
 
   // HoldingSpaceItemViewsContainer:
-  void ChildVisibilityChanged(views::View* child) override;
   void ViewHierarchyChanged(const views::ViewHierarchyChangedDetails&) override;
   void AddHoldingSpaceItemView(const HoldingSpaceItem* item) override;
   void RemoveAllHoldingSpaceItemViews() override;

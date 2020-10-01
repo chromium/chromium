@@ -19,6 +19,11 @@ void HoldingSpaceItemViewsContainer::ChildPreferredSizeChanged(
   PreferredSizeChanged();
 }
 
+void HoldingSpaceItemViewsContainer::ChildVisibilityChanged(
+    views::View* child) {
+  PreferredSizeChanged();
+}
+
 void HoldingSpaceItemViewsContainer::OnHoldingSpaceModelAttached(
     HoldingSpaceModel* model) {
   model_observer_.Add(model);

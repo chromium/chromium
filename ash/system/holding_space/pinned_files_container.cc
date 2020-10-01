@@ -113,10 +113,6 @@ PinnedFilesContainer::PinnedFilesContainer(
 
 PinnedFilesContainer::~PinnedFilesContainer() = default;
 
-void PinnedFilesContainer::ChildVisibilityChanged(views::View* child) {
-  PreferredSizeChanged();
-}
-
 void PinnedFilesContainer::ViewHierarchyChanged(
     const views::ViewHierarchyChangedDetails& details) {
   // We only care about `item_chips_container_` becoming empty and non-empty.

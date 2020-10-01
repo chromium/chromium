@@ -66,11 +66,11 @@ void SetupViewLayer(views::View* view) {
   layer->SetIsFastRoundedCorner(true);
 }
 
-// HoldingSpaceBubbleContainerView ---------------------------------------------
+// HoldingSpaceBubbleContainer -------------------------------------------------
 
-class HoldingSpaceBubbleContainerView : public views::View {
+class HoldingSpaceBubbleContainer : public views::View {
  public:
-  HoldingSpaceBubbleContainerView() {
+  HoldingSpaceBubbleContainer() {
     layout_ = SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kVertical, gfx::Insets(),
         kHoldingSpaceContainerSpacing));
@@ -80,11 +80,16 @@ class HoldingSpaceBubbleContainerView : public views::View {
     layout_->SetFlexForView(child, flex);
   }
 
+ private:
+  // views::View:
   void ChildPreferredSizeChanged(views::View* child) override {
     PreferredSizeChanged();
   }
 
- private:
+  void ChildVisibilityChanged(views::View* child) override {
+    PreferredSizeChanged();
+  }
+
   views::BoxLayout* layout_ = nullptr;
 };
 
@@ -112,22 +117,19 @@ HoldingSpaceTrayBubble::HoldingSpaceTrayBubble(
 
   // Create and customize bubble view.
   TrayBubbleView* bubble_view = new TrayBubbleView(init_params);
-
   bubble_view->SetMaxHeight(CalculateMaxHeight());
 
-  HoldingSpaceBubbleContainerView* bubble_container_view =
-      bubble_view->AddChildView(
-          std::make_unique<HoldingSpaceBubbleContainerView>());
+  HoldingSpaceBubbleContainer* bubble_container = bubble_view->AddChildView(
+      std::make_unique<HoldingSpaceBubbleContainer>());
 
   // Add pinned files container.
-  pinned_files_container_ = bubble_container_view->AddChildView(
+  pinned_files_container_ = bubble_container->AddChildView(
       std::make_unique<PinnedFilesContainer>(&delegate_));
-  bubble_container_view->SetFlexForChild(pinned_files_container_, 1);
-
+  bubble_container->SetFlexForChild(pinned_files_container_, 1);
   SetupViewLayer(pinned_files_container_);
 
   // Add recent files container.
-  recent_files_container_ = bubble_container_view->AddChildView(
+  recent_files_container_ = bubble_container->AddChildView(
       std::make_unique<RecentFilesContainer>(&delegate_));
   SetupViewLayer(recent_files_container_);
 
@@ -174,17 +176,19 @@ views::Widget* HoldingSpaceTrayBubble::GetBubbleWidget() {
 }
 
 int HoldingSpaceTrayBubble::CalculateMaxHeight() const {
-  WorkAreaInsets* work_area = WorkAreaInsets::ForWindow(
+  const WorkAreaInsets* work_area = WorkAreaInsets::ForWindow(
       holding_space_tray_->shelf()->GetWindow()->GetRootWindow());
 
-  int bottom = holding_space_tray_->shelf()->IsHorizontalAlignment()
-                   ? holding_space_tray_->shelf()->GetShelfBoundsInScreen().y()
-                   : work_area->user_work_area_bounds().bottom();
-  int free_space_height_above_anchor =
+  const int bottom =
+      holding_space_tray_->shelf()->IsHorizontalAlignment()
+          ? holding_space_tray_->shelf()->GetShelfBoundsInScreen().y()
+          : work_area->user_work_area_bounds().bottom();
+
+  const int free_space_height_above_anchor =
       bottom - work_area->user_work_area_bounds().y();
 
   const gfx::Insets insets = GetTrayBubbleInsets();
-  int bubble_vertical_margin = insets.top() + insets.bottom();
+  const int bubble_vertical_margin = insets.top() + insets.bottom();
 
   return free_space_height_above_anchor - bubble_vertical_margin;
 }

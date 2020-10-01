@@ -33,7 +33,7 @@ HoldingSpaceTray::HoldingSpaceTray(Shelf* shelf) : TrayBackgroundView(shelf) {
   icon_->SetImage(CreateVectorIcon(kHoldingSpaceIcon,
                                    ShelfConfig::Get()->shelf_icon_color()));
 
-  tray_container()->SetMargin(kHoldingSpaceTrayIconMainAxisMargin, 0);
+  tray_container()->SetMargin(kHoldingSpaceTrayMainAxisMargin, 0);
 }
 
 HoldingSpaceTray::~HoldingSpaceTray() = default;

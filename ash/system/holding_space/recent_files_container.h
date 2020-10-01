@@ -9,6 +9,10 @@
 
 #include "ash/system/holding_space/holding_space_item_views_container.h"
 
+namespace views {
+class Label;
+}  // namespace views
+
 namespace ash {
 
 class HoldingSpaceItemChipsContainer;
@@ -23,6 +27,8 @@ class RecentFilesContainer : public HoldingSpaceItemViewsContainer {
   ~RecentFilesContainer() override;
 
   // HoldingSpaceItemViewsContainer:
+  void ChildVisibilityChanged(views::View* child) override;
+  void ViewHierarchyChanged(const views::ViewHierarchyChangedDetails&) override;
   void AddHoldingSpaceItemView(const HoldingSpaceItem* item) override;
   void RemoveAllHoldingSpaceItemViews() override;
   void RemoveHoldingSpaceItemView(const HoldingSpaceItem* item) override;
@@ -32,10 +38,17 @@ class RecentFilesContainer : public HoldingSpaceItemViewsContainer {
   void RemoveHoldingSpaceScreenshotView(const HoldingSpaceItem* item);
   void AddHoldingSpaceDownloadView(const HoldingSpaceItem* item);
   void RemoveHoldingSpaceDownloadView(const HoldingSpaceItem* item);
+  void OnScreenshotsContainerViewHierarchyChanged(
+      const views::ViewHierarchyChangedDetails& details);
+  void OnDownloadsContainerViewHierarchyChanged(
+      const views::ViewHierarchyChangedDetails& details);
 
   HoldingSpaceItemViewDelegate* const delegate_;
+
   views::View* screenshots_container_ = nullptr;
+  views::Label* screenshots_label_ = nullptr;
   HoldingSpaceItemChipsContainer* downloads_container_ = nullptr;
+  views::View* downloads_header_ = nullptr;
 
   std::map<std::string, views::View*> views_by_item_id_;
 };

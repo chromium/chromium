@@ -10,6 +10,7 @@
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
+#include "ash/public/cpp/holding_space/holding_space_metrics.h"
 #include "ash/public/cpp/holding_space/holding_space_model.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -33,34 +34,34 @@
 #include "ui/views/view_class_properties.h"
 
 namespace ash {
+
 namespace {
 
+// Helpers ---------------------------------------------------------------------
+
+// Sets up the specified `label`.
 void SetupLabel(views::Label* label) {
   TrayPopupItemStyle(TrayPopupItemStyle::FontStyle::SUB_HEADER)
       .SetupLabel(label);
-
   label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
 }
+
+// DownloadsHeader--------------------------------------------------------------
 
 class DownloadsHeader : public views::Button {
  public:
   explicit DownloadsHeader() {
-    auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
-        views::BoxLayout::Orientation::kHorizontal));
-
-    SetPaintToLayer();
-    layer()->SetFillsBoundsOpaquely(false);
-
-    // Accessiblity
-    GetViewAccessibility().OverrideName(
+    SetAccessibleName(
         l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_DOWNLOADS_TITLE));
-    GetViewAccessibility().OverrideRole(ax::mojom::Role::kButton);
+
+    auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
+        views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
+        kHoldingSpaceDownloadsHeaderSpacing));
 
     auto* label = AddChildView(std::make_unique<views::Label>(
         l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_DOWNLOADS_TITLE)));
-    SetupLabel(label);
-
     layout->SetFlexForView(label, 1);
+    SetupLabel(label);
 
     auto* chevron = AddChildView(std::make_unique<views::ImageView>());
     chevron->EnableCanvasFlippingForRTLUI(true);
@@ -70,52 +71,83 @@ class DownloadsHeader : public views::Button {
     chevron->SetImage(CreateVectorIcon(
         kChevronRightIcon, kHoldingSpaceDownloadsChevronIconSize, icon_color));
 
-    set_callback(base::BindRepeating(&DownloadsHeader::OpenDownloadsFolder,
+    set_callback(base::BindRepeating(&DownloadsHeader::OnPressed,
                                      base::Unretained(this)));
   }
 
  private:
-  void OpenDownloadsFolder() {
+  void OnPressed() {
+    holding_space_metrics::RecordDownloadsAction(
+        holding_space_metrics::DownloadsAction::kClick);
+
     HoldingSpaceController::Get()->client()->OpenDownloads(base::DoNothing());
   }
 };
 
 }  // namespace
 
+// RecentFilesContainer --------------------------------------------------------
+
 RecentFilesContainer::RecentFilesContainer(
     HoldingSpaceItemViewDelegate* delegate)
     : delegate_(delegate) {
   SetID(kHoldingSpaceRecentFilesContainerId);
+  SetVisible(false);
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, kHoldingSpaceContainerPadding,
       kHoldingSpaceContainerChildSpacing));
 
-  auto* screenshots_label = AddChildView(std::make_unique<views::Label>(
+  screenshots_label_ = AddChildView(std::make_unique<views::Label>(
       l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_SCREENSHOTS_TITLE)));
-  SetupLabel(screenshots_label);
-  screenshots_label->SetPaintToLayer();
-  screenshots_label->layer()->SetFillsBoundsOpaquely(false);
+  screenshots_label_->SetPaintToLayer();
+  screenshots_label_->layer()->SetFillsBoundsOpaquely(false);
+  screenshots_label_->SetVisible(false);
+  SetupLabel(screenshots_label_);
 
   screenshots_container_ = AddChildView(std::make_unique<views::View>());
+  screenshots_container_->SetVisible(false);
   screenshots_container_
       ->SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kHorizontal)
-      .SetInteriorMargin(kHoldingSpaceScreenshotsContainerPadding)
       .SetDefault(views::kMarginsKey,
                   gfx::Insets(/*top=*/0, /*left=*/0, /*bottom=*/0,
                               /*right=*/kHoldingSpaceScreenshotSpacing));
 
-  AddChildView(std::make_unique<DownloadsHeader>());
+  downloads_header_ = AddChildView(std::make_unique<DownloadsHeader>());
+  downloads_header_->SetPaintToLayer();
+  downloads_header_->layer()->SetFillsBoundsOpaquely(false);
+  downloads_header_->SetVisible(false);
 
   downloads_container_ =
       AddChildView(std::make_unique<HoldingSpaceItemChipsContainer>());
+  downloads_container_->SetVisible(false);
 
   if (HoldingSpaceController::Get()->model())
     OnHoldingSpaceModelAttached(HoldingSpaceController::Get()->model());
 }
 
 RecentFilesContainer::~RecentFilesContainer() = default;
+
+void RecentFilesContainer::ChildVisibilityChanged(views::View* child) {
+  // The recent files container should be visible iff it has visible children.
+  bool visible = false;
+  for (const views::View* c : children())
+    visible |= c->GetVisible();
+
+  if (visible != GetVisible())
+    SetVisible(visible);
+
+  HoldingSpaceItemViewsContainer::ChildVisibilityChanged(child);
+}
+
+void RecentFilesContainer::ViewHierarchyChanged(
+    const views::ViewHierarchyChangedDetails& details) {
+  if (details.parent == screenshots_container_)
+    OnScreenshotsContainerViewHierarchyChanged(details);
+  else if (details.parent == downloads_container_)
+    OnDownloadsContainerViewHierarchyChanged(details);
+}
 
 void RecentFilesContainer::AddHoldingSpaceItemView(
     const HoldingSpaceItem* item) {
@@ -234,6 +266,24 @@ void RecentFilesContainer::RemoveHoldingSpaceDownloadView(
                                                      candidate.get()));
       return;
     }
+  }
+}
+
+void RecentFilesContainer::OnScreenshotsContainerViewHierarchyChanged(
+    const views::ViewHierarchyChangedDetails& details) {
+  // Update screenshots visibility when becoming empty or non-empty.
+  if (screenshots_container_->children().size() == 1u) {
+    screenshots_label_->SetVisible(details.is_add);
+    screenshots_container_->SetVisible(details.is_add);
+  }
+}
+
+void RecentFilesContainer::OnDownloadsContainerViewHierarchyChanged(
+    const views::ViewHierarchyChangedDetails& details) {
+  // Update downloads visibility when becoming empty or non-empty.
+  if (downloads_container_->children().size() == 1u) {
+    downloads_header_->SetVisible(details.is_add);
+    downloads_container_->SetVisible(details.is_add);
   }
 }
 
