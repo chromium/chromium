@@ -34,13 +34,6 @@ class ShoppingTasksModuleElement extends PolymerElement {
     };
   }
 
-  /** @override */
-  ready() {
-    super.ready();
-    /** @type {IntersectionObserver} */
-    this.intersectionObserver_ = null;
-  }
-
   /** @private */
   onClick_() {
     this.dispatchEvent(new Event('usage', {bubbles: true, composed: true}));
@@ -49,22 +42,6 @@ class ShoppingTasksModuleElement extends PolymerElement {
   /** @private */
   onCloseClick_() {
     this.showInfoDialog = false;
-  }
-
-  /** @private */
-  onDomChange_() {
-    if (!this.intersectionObserver_) {
-      this.intersectionObserver_ = new IntersectionObserver(entries => {
-        entries.forEach(({intersectionRatio, target}) => {
-          target.style.visibility =
-              intersectionRatio < 1 ? 'hidden' : 'visible';
-        });
-      }, {root: this, threshold: 1});
-    } else {
-      this.intersectionObserver_.disconnect();
-    }
-    this.shadowRoot.querySelectorAll('.product, .pill')
-        .forEach(el => this.intersectionObserver_.observe(el));
   }
 }
 
