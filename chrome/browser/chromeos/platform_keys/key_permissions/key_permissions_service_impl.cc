@@ -17,6 +17,7 @@
 #include "base/logging.h"
 #include "base/stl_util.h"
 #include "base/values.h"
+#include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_pref_util.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys_service.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
@@ -31,47 +32,6 @@
 
 namespace chromeos {
 namespace platform_keys {
-
-namespace {
-// The profile pref prefs::kPlatformKeys stores a dictionary mapping from
-// public key (base64 encoding of an DER-encoded SPKI) to key properties. The
-// currently only key property is the key usage, which can either be undefined
-// or "corporate". If a key is not present in the pref, the default for the key
-// usage is undefined, which in particular means "not for corporate usage".
-// E.g. the entry in the profile pref might look like:
-// "platform_keys" : {
-//   "ABCDEF123" : {
-//     "keyUsage" : "corporate"
-//   },
-//   "abcdef567" : {
-//     "keyUsage" : "corporate"
-//   }
-// }
-const char kPrefKeyUsage[] = "keyUsage";
-const char kPrefKeyUsageCorporate[] = "corporate";
-
-const base::DictionaryValue* GetPrefsEntry(
-    const std::string& public_key_spki_der_b64,
-    const PrefService* const profile_prefs) {
-  if (!profile_prefs)
-    return nullptr;
-
-  const base::DictionaryValue* platform_keys =
-      profile_prefs->GetDictionary(prefs::kPlatformKeys);
-  if (!platform_keys)
-    return nullptr;
-
-  const base::Value* key_entry_value =
-      platform_keys->FindKey(public_key_spki_der_b64);
-  if (!key_entry_value)
-    return nullptr;
-
-  const base::DictionaryValue* key_entry = nullptr;
-  key_entry_value->GetAsDictionary(&key_entry);
-  return key_entry;
-}
-
-}  // namespace
 
 KeyPermissionsServiceImpl::KeyPermissionsServiceImpl(
     bool profile_is_managed,
@@ -166,13 +126,11 @@ void KeyPermissionsServiceImpl::IsCorporateKeyWithLocations(
     std::move(callback).Run(/*corporate=*/false);
   }
 
-  std::string public_key_spki_der_b64;
-  base::Base64Encode(public_key_spki_der, &public_key_spki_der_b64);
-
   for (const auto key_location : key_locations) {
     switch (key_location) {
       case TokenId::kUser:
-        if (IsUserKeyCorporate(public_key_spki_der_b64)) {
+        if (internal::IsUserKeyMarkedCorporateInPref(public_key_spki_der,
+                                                     profile_prefs_)) {
           std::move(callback).Run(/*corporate=*/true);
           return;
         }
@@ -221,35 +179,11 @@ void KeyPermissionsServiceImpl::SetCorporateKeyWithLocations(
       std::move(callback).Run(Status::kSuccess);
       return;
     case TokenId::kUser: {
-      std::string public_key_spki_der_b64;
-      base::Base64Encode(public_key_spki_der, &public_key_spki_der_b64);
-
-      DictionaryPrefUpdate update(profile_prefs_, prefs::kPlatformKeys);
-
-      std::unique_ptr<base::DictionaryValue> new_pref_entry(
-          new base::DictionaryValue);
-      new_pref_entry->SetKey(kPrefKeyUsage,
-                             base::Value(kPrefKeyUsageCorporate));
-
-      update->SetWithoutPathExpansion(public_key_spki_der_b64,
-                                      std::move(new_pref_entry));
+      internal::MarkUserKeyCorporateInPref(public_key_spki_der, profile_prefs_);
       std::move(callback).Run(Status::kSuccess);
       return;
     }
   }
-}
-
-bool KeyPermissionsServiceImpl::IsUserKeyCorporate(
-    const std::string& public_key_spki_der_b64) const {
-  const base::DictionaryValue* prefs_entry =
-      GetPrefsEntry(public_key_spki_der_b64, profile_prefs_);
-  if (prefs_entry) {
-    const base::Value* key_usage = prefs_entry->FindKey(kPrefKeyUsage);
-    if (!key_usage || !key_usage->is_string())
-      return false;
-    return key_usage->GetString() == kPrefKeyUsageCorporate;
-  }
-  return false;
 }
 
 }  // namespace platform_keys

@@ -1952,6 +1952,8 @@ source_set("chromeos") {
     "platform_keys/key_permissions/extension_key_permissions_service_factory.h",
     "platform_keys/key_permissions/key_permissions_policy_handler.cc",
     "platform_keys/key_permissions/key_permissions_policy_handler.h",
+    "platform_keys/key_permissions/key_permissions_pref_util.cc",
+    "platform_keys/key_permissions/key_permissions_pref_util.h",
     "platform_keys/key_permissions/key_permissions_service.cc",
     "platform_keys/key_permissions/key_permissions_service.h",
     "platform_keys/key_permissions/key_permissions_service_factory.cc",
