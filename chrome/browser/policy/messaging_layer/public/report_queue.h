@@ -46,7 +46,7 @@ class ReportQueue {
       std::unique_ptr<ReportQueueConfiguration> config,
       scoped_refptr<StorageModule> storage);
 
-  ~ReportQueue();
+  virtual ~ReportQueue();
   ReportQueue(const ReportQueue& other) = delete;
   ReportQueue& operator=(const ReportQueue& other) = delete;
 
@@ -60,25 +60,29 @@ class ReportQueue {
   // UPLOAD_EVENTS : UploadEventsRequest
   //
   // |record| will be sent as a string with no conversion.
-  Status Enqueue(base::StringPiece record, EnqueueCallback callback);
+  virtual Status Enqueue(base::StringPiece record,
+                         EnqueueCallback callback) const;
 
   // |record| will be converted to a JSON string with base::JsonWriter::Write.
-  Status Enqueue(const base::Value& record, EnqueueCallback callback);
+  virtual Status Enqueue(const base::Value& record,
+                         EnqueueCallback callback) const;
 
   // |record| will be converted to a string with SerializeToString(). The
   // handler is responsible for converting the record back to a proto with a
   // ParseFromString() call.
-  Status Enqueue(google::protobuf::MessageLite* record,
-                 EnqueueCallback callback);
+  virtual Status Enqueue(google::protobuf::MessageLite* record,
+                         EnqueueCallback callback) const;
 
- private:
+ protected:
   ReportQueue(std::unique_ptr<ReportQueueConfiguration> config,
               scoped_refptr<StorageModule> storage);
 
-  Status AddRecord(base::StringPiece record, EnqueueCallback callback);
-  void SendRecordToStorage(base::StringPiece record, EnqueueCallback callback);
+ private:
+  Status AddRecord(base::StringPiece record, EnqueueCallback callback) const;
+  void SendRecordToStorage(base::StringPiece record,
+                           EnqueueCallback callback) const;
 
-  reporting::Record AugmentRecord(base::StringPiece record_data);
+  reporting::Record AugmentRecord(base::StringPiece record_data) const;
 
   std::unique_ptr<ReportQueueConfiguration> config_;
   scoped_refptr<StorageModule> storage_;

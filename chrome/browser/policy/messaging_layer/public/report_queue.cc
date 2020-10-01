@@ -51,12 +51,12 @@ ReportQueue::ReportQueue(std::unique_ptr<ReportQueueConfiguration> config,
 }
 
 Status ReportQueue::Enqueue(base::StringPiece record,
-                            EnqueueCallback callback) {
+                            EnqueueCallback callback) const {
   return AddRecord(record, std::move(callback));
 }
 
 Status ReportQueue::Enqueue(const base::Value& record,
-                            EnqueueCallback callback) {
+                            EnqueueCallback callback) const {
   std::string json_record;
   if (!base::JSONWriter::Write(record, &json_record)) {
     return Status(error::INVALID_ARGUMENT,
@@ -66,7 +66,7 @@ Status ReportQueue::Enqueue(const base::Value& record,
 }
 
 Status ReportQueue::Enqueue(google::protobuf::MessageLite* record,
-                            EnqueueCallback callback) {
+                            EnqueueCallback callback) const {
   std::string protobuf_record;
   if (!record->SerializeToString(&protobuf_record)) {
     return Status(error::INVALID_ARGUMENT,
@@ -77,7 +77,7 @@ Status ReportQueue::Enqueue(google::protobuf::MessageLite* record,
 }
 
 Status ReportQueue::AddRecord(base::StringPiece record,
-                              EnqueueCallback callback) {
+                              EnqueueCallback callback) const {
   RETURN_IF_ERROR(config_->CheckPolicy());
   if (!sequenced_task_runner_->PostTask(
           FROM_HERE, base::BindOnce(&ReportQueue::SendRecordToStorage,
@@ -89,12 +89,12 @@ Status ReportQueue::AddRecord(base::StringPiece record,
 }
 
 void ReportQueue::SendRecordToStorage(base::StringPiece record_data,
-                                      EnqueueCallback callback) {
+                                      EnqueueCallback callback) const {
   storage_->AddRecord(config_->priority(), AugmentRecord(record_data),
                       std::move(callback));
 }
 
-Record ReportQueue::AugmentRecord(base::StringPiece record_data) {
+Record ReportQueue::AugmentRecord(base::StringPiece record_data) const {
   Record record;
   record.set_data(std::string(record_data));
   record.set_destination(config_->destination());

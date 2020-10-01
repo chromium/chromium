@@ -6418,6 +6418,8 @@ static_library("test_support") {
     "notifications/stub_notification_display_service.h",
     "plugins/plugin_test_utils.cc",
     "plugins/plugin_test_utils.h",
+    "policy/messaging_layer/public/mock_report_queue.cc",
+    "policy/messaging_layer/public/mock_report_queue.h",
     "predictors/loading_test_util.cc",
     "predictors/loading_test_util.h",
     "reputation/safety_tip_test_utils.cc",
