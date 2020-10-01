@@ -12,16 +12,13 @@ cr.define('gpu', function() {
   /**
    * Provides information on the GPU process and underlying graphics hardware.
    * @constructor
-   * @extends {cr.ui.TabPanel}
    */
-  const InfoView = cr.ui.define(cr.ui.TabPanel);
+  const InfoView = cr.ui.define('div');
 
   InfoView.prototype = {
-    __proto__: cr.ui.TabPanel.prototype,
+    __proto__: HTMLDivElement.prototype,
 
     decorate: function() {
-      cr.ui.TabPanel.prototype.decorate.apply(this);
-
       browserBridge.addEventListener('gpuInfoUpdate', this.refresh.bind(this));
       browserBridge.addEventListener(
           'logMessagesChange', this.refresh.bind(this));
