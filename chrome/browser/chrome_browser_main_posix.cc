@@ -140,7 +140,7 @@ ChromeBrowserMainPartsPosix::ChromeBrowserMainPartsPosix(
 
 int ChromeBrowserMainPartsPosix::PreEarlyInitialization() {
   const int result = ChromeBrowserMainParts::PreEarlyInitialization();
-  if (result != service_manager::RESULT_CODE_NORMAL_EXIT)
+  if (result != content::RESULT_CODE_NORMAL_EXIT)
     return result;
 
   // We need to accept SIGCHLD, even though our handler is a no-op because
@@ -150,7 +150,7 @@ int ChromeBrowserMainPartsPosix::PreEarlyInitialization() {
   action.sa_handler = SIGCHLDHandler;
   CHECK_EQ(0, sigaction(SIGCHLD, &action, NULL));
 
-  return service_manager::RESULT_CODE_NORMAL_EXIT;
+  return content::RESULT_CODE_NORMAL_EXIT;
 }
 
 void ChromeBrowserMainPartsPosix::PostMainMessageLoopStart() {

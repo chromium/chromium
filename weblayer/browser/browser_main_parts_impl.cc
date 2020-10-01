@@ -20,8 +20,8 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/main_function_params.h"
 #include "content/public/common/page_visibility_state.h"
+#include "content/public/common/result_codes.h"
 #include "content/public/common/url_constants.h"
-#include "services/service_manager/embedder/result_codes.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "weblayer/browser/browser_process.h"
 #include "weblayer/browser/cookie_settings_factory.h"
@@ -140,7 +140,7 @@ int BrowserMainPartsImpl::PreCreateThreads() {
   }
 #endif
 
-  return service_manager::RESULT_CODE_NORMAL_EXIT;
+  return content::RESULT_CODE_NORMAL_EXIT;
 }
 
 void BrowserMainPartsImpl::PreMainMessageLoopStart() {
@@ -171,7 +171,7 @@ int BrowserMainPartsImpl::PreEarlyInitialization() {
       BrowserProcess::GetInstance()->GetSharedURLLoaderFactory());
   download_manager->set_application_locale(i18n::GetApplicationLocale());
 
-  return service_manager::RESULT_CODE_NORMAL_EXIT;
+  return content::RESULT_CODE_NORMAL_EXIT;
 }
 
 void BrowserMainPartsImpl::PreMainMessageLoopRun() {

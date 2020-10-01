@@ -463,7 +463,6 @@ source_set("weblayer_lib_base") {
     "//services/network/public/cpp",
     "//services/network/public/mojom",
     "//services/preferences/tracked",
-    "//services/service_manager/embedder:embedder_result_codes",
     "//skia",
     "//third_party/blink/public:blink_headers",
     "//third_party/blink/public/common",

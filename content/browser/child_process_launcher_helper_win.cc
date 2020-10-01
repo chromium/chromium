@@ -18,7 +18,6 @@
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "sandbox/policy/win/sandbox_win.h"
 #include "sandbox/win/src/sandbox_types.h"
-#include "services/service_manager/embedder/result_codes.h"
 
 namespace content {
 namespace internal {
@@ -107,7 +106,7 @@ void ChildProcessLauncherHelper::ForceNormalProcessTerminationSync(
   DCHECK(CurrentlyOnProcessLauncherTaskRunner());
   // Client has gone away, so just kill the process.  Using exit code 0 means
   // that UMA won't treat this as a crash.
-  process.process.Terminate(service_manager::RESULT_CODE_NORMAL_EXIT, false);
+  process.process.Terminate(RESULT_CODE_NORMAL_EXIT, false);
 }
 
 void ChildProcessLauncherHelper::SetProcessPriorityOnLauncherThread(

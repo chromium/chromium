@@ -32,8 +32,6 @@ group("common") {
 # header-only dependency, without bringing in all of content.
 source_set("result_codes") {
   sources = [ "result_codes.h" ]
-
-  deps = [ "//services/service_manager/embedder:embedder_result_codes" ]
 }
 
 # This target allows other targets to depend on content_descriptors.h which is
@@ -226,7 +224,6 @@ source_set("common_sources") {
     "//ppapi/buildflags",
     "//ppapi/c",
     "//services/network/public/cpp",
-    "//services/service_manager/embedder:embedder_result_codes",
     "//services/service_manager/public/cpp",
     "//skia",
     "//storage/common",

@@ -511,7 +511,7 @@ BrowserMainLoop::BrowserMainLoop(
         scoped_execution_fence)
     : parameters_(parameters),
       parsed_command_line_(parameters.command_line),
-      result_code_(service_manager::RESULT_CODE_NORMAL_EXIT),
+      result_code_(RESULT_CODE_NORMAL_EXIT),
       created_threads_(false),
       scoped_execution_fence_(std::move(scoped_execution_fence))
 #if !defined(OS_ANDROID)
@@ -605,7 +605,7 @@ int BrowserMainLoop::EarlyInitialization() {
 
   if (parts_) {
     const int pre_early_init_error_code = parts_->PreEarlyInitialization();
-    if (pre_early_init_error_code != service_manager::RESULT_CODE_NORMAL_EXIT)
+    if (pre_early_init_error_code != RESULT_CODE_NORMAL_EXIT)
       return pre_early_init_error_code;
   }
 
@@ -674,7 +674,7 @@ int BrowserMainLoop::EarlyInitialization() {
   if (parts_)
     parts_->PostEarlyInitialization();
 
-  return service_manager::RESULT_CODE_NORMAL_EXIT;
+  return RESULT_CODE_NORMAL_EXIT;
 }
 
 void BrowserMainLoop::PreMainMessageLoopStart() {

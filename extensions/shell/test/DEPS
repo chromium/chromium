@@ -3,7 +3,6 @@ include_rules = [
   "+content/shell/common",
   "+content/shell/browser/shell_application_mac.h",
   "+content/public/utility",
-  "+services/service_manager/embedder",
 
   # Testing utilities can access anything in extensions/shell.
   "+extensions/shell",

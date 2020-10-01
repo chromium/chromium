@@ -19,8 +19,8 @@
 #include "base/stl_util.h"
 #include "content/common/zygote/zygote_commands_linux.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/common/result_codes.h"
 #include "sandbox/policy/switches.h"
-#include "services/service_manager/embedder/result_codes.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 
 namespace content {
@@ -279,7 +279,7 @@ base::TerminationStatus ZygoteCommunication::GetTerminationStatus(
 
   // Set this now to handle the error cases.
   if (exit_code)
-    *exit_code = service_manager::RESULT_CODE_NORMAL_EXIT;
+    *exit_code = RESULT_CODE_NORMAL_EXIT;
   int status = base::TERMINATION_STATUS_NORMAL_TERMINATION;
 
   if (len == -1) {

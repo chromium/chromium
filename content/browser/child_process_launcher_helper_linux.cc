@@ -139,7 +139,7 @@ bool ChildProcessLauncherHelper::TerminateProcess(const base::Process& process,
 void ChildProcessLauncherHelper::ForceNormalProcessTerminationSync(
     ChildProcessLauncherHelper::Process process) {
   DCHECK(CurrentlyOnProcessLauncherTaskRunner());
-  process.process.Terminate(service_manager::RESULT_CODE_NORMAL_EXIT, false);
+  process.process.Terminate(RESULT_CODE_NORMAL_EXIT, false);
   // On POSIX, we must additionally reap the child.
   if (process.zygote) {
     // If the renderer was created via a zygote, we have to proxy the reaping

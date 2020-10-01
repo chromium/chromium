@@ -21,7 +21,6 @@ if (is_linux || is_chromeos) {
       "//ipc",
       "//sandbox",
       "//sandbox/policy",
-      "//services/service_manager/embedder:embedder_result_codes",
       "//third_party/icu",
     ]
 

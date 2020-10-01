@@ -7,7 +7,6 @@
 #include "base/bind_helpers.h"
 #include "chrome/common/chrome_result_codes.h"
 #include "chrome/test/views/chrome_views_test_base.h"
-#include "services/service_manager/embedder/result_codes.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using UninstallViewTest = ChromeViewsTestBase;
@@ -16,7 +15,7 @@ TEST_F(UninstallViewTest, Accept) {
   int result = -1;
   UninstallView view(&result, base::DoNothing());
   view.Accept();
-  EXPECT_EQ(result, service_manager::RESULT_CODE_NORMAL_EXIT);
+  EXPECT_EQ(result, content::RESULT_CODE_NORMAL_EXIT);
 }
 
 TEST_F(UninstallViewTest, Cancel) {

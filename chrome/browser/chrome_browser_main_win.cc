@@ -789,7 +789,7 @@ int ChromeBrowserMainPartsWin::HandleIconsCommands(
       ShellExecute(NULL, NULL, L"appwiz.cpl", NULL, NULL, SW_SHOWNORMAL);
 
     // Exit as we are not launching the browser.
-    return service_manager::RESULT_CODE_NORMAL_EXIT;
+    return content::RESULT_CODE_NORMAL_EXIT;
   }
   // We don't hide icons so we shouldn't do anything special to show them
   return chrome::RESULT_CODE_UNSUPPORTED_PARAM;

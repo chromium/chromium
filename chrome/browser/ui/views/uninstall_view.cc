@@ -136,7 +136,7 @@ void UninstallView::SetupControls() {
 }
 
 void UninstallView::OnDialogAccepted() {
-  user_selection_ = service_manager::RESULT_CODE_NORMAL_EXIT;
+  user_selection_ = content::RESULT_CODE_NORMAL_EXIT;
   if (delete_profile_->GetChecked())
     user_selection_ = chrome::RESULT_CODE_UNINSTALL_DELETE_PROFILE;
   if (change_default_browser_ && change_default_browser_->GetChecked()) {
@@ -177,7 +177,7 @@ namespace chrome {
 
 int ShowUninstallBrowserPrompt() {
   DCHECK(base::CurrentUIThread::IsSet());
-  int result = service_manager::RESULT_CODE_NORMAL_EXIT;
+  int result = content::RESULT_CODE_NORMAL_EXIT;
 
   base::RunLoop run_loop;
   UninstallView* view = new UninstallView(&result,

@@ -8,7 +8,6 @@ include_rules = [
   "+content/public/browser",
   "+content/public/utility",
   "+sandbox",
-  "+services/service_manager/embedder",
 
   # Pieces of content_shell reused in app_shell.
   # TODO(jamescook): Eliminate these. http://crbug.com/438283

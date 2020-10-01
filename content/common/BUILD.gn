@@ -265,7 +265,6 @@ source_set("common") {
     "//services/network/public/cpp",
     "//services/network/public/mojom",
     "//services/resource_coordinator/public/cpp/memory_instrumentation",
-    "//services/service_manager/embedder:embedder_result_codes",
     "//services/service_manager/public/mojom",
     "//services/video_capture/public/mojom",
     "//services/viz/public/mojom",

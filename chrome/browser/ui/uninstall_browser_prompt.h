@@ -8,7 +8,7 @@
 namespace chrome {
 
 // Asks user for uninstall confirmation and returns one of these values:
-// service_manager::RESULT_CODE_NORMAL_EXIT,
+// content::RESULT_CODE_NORMAL_EXIT,
 // chrome::RESULT_CODE_UNINSTALL_DELETE_PROFILE or
 // chrome::RESULT_CODE_UNINSTALL_USER_CANCEL.
 int ShowUninstallBrowserPrompt();

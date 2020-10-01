@@ -82,7 +82,7 @@ int AwBrowserMainParts::PreEarlyInitialization() {
 
   browser_process_ = std::make_unique<AwBrowserProcess>(
       browser_client_->aw_feature_list_creator());
-  return service_manager::RESULT_CODE_NORMAL_EXIT;
+  return content::RESULT_CODE_NORMAL_EXIT;
 }
 
 int AwBrowserMainParts::PreCreateThreads() {
@@ -118,7 +118,7 @@ int AwBrowserMainParts::PreCreateThreads() {
   crash_reporter::InitializeCrashKeys();
   variations::InitCrashKeys();
 
-  return service_manager::RESULT_CODE_NORMAL_EXIT;
+  return content::RESULT_CODE_NORMAL_EXIT;
 }
 
 void AwBrowserMainParts::PreMainMessageLoopRun() {

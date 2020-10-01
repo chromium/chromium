@@ -40,9 +40,6 @@ include_rules = [
   "+components/viz/common/switches.h",
   "+services/test/echo",
 
-  # Access to the process specific switches.
-  "+services/service_manager/embedder",
-
   # Separating content shell and web test code. Only narrow parts of content
   # shell may access and inject web test code at runtime.
   "-content/web_test/browser",

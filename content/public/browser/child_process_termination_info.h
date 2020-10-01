@@ -27,7 +27,7 @@ struct CONTENT_EXPORT ChildProcessTerminationInfo {
   // contain a platform specific launch failure error code. Otherwise, it will
   // contain the exit code for the process (e.g. status from waitpid if on
   // posix, from GetExitCodeProcess on Windows).
-  int exit_code = service_manager::RESULT_CODE_NORMAL_EXIT;
+  int exit_code = RESULT_CODE_NORMAL_EXIT;
 
   // Populated only for renderer process. True if there are any visible
   // clients at the time of process death.

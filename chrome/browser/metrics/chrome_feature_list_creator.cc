@@ -42,7 +42,6 @@
 #include "components/variations/service/variations_service.h"
 #include "components/variations/variations_crash_keys.h"
 #include "content/public/common/content_switch_dependent_feature_overrides.h"
-#include "services/service_manager/embedder/result_codes.h"
 #include "ui/base/resource/resource_bundle.h"
 
 #if defined(OS_CHROMEOS)

@@ -232,7 +232,7 @@ ServiceUtilityProcessHost::ServiceUtilityProcessHost(
 
 ServiceUtilityProcessHost::~ServiceUtilityProcessHost() {
   // We need to kill the child process when the host dies.
-  process_.Terminate(service_manager::RESULT_CODE_NORMAL_EXIT, false);
+  process_.Terminate(content::RESULT_CODE_NORMAL_EXIT, false);
 }
 
 bool ServiceUtilityProcessHost::StartRenderPDFPagesToMetafile(
