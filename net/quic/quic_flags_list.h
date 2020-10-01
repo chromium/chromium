@@ -282,22 +282,6 @@ QUIC_FLAG(bool,
           FLAGS_quic_reloadable_flag_quic_disable_server_blackhole_detection,
           false)
 
-// If true, gQUIC will only consult stream_map in
-// QuicSession::GetNumActiveStreams().
-QUIC_FLAG(
-    bool,
-    FLAGS_quic_reloadable_flag_quic_get_stream_information_from_stream_map,
-    true)
-
-// If true, QuicSession does not keep a separate zombie_streams. Instead, all
-// streams are stored in stream_map_.
-QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_remove_zombie_streams, true)
-
-// If true, always send connection close for idle timeout if NSLC is received.
-QUIC_FLAG(bool,
-          FLAGS_quic_reloadable_flag_quic_no_silent_close_for_idle_timeout,
-          true)
-
 // If true, when server is silently closing connections due to idle timeout,
 // serialize the connection close packets which will be added to time wait list.
 QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_add_silent_idle_timeout, true)
@@ -352,7 +336,7 @@ QUIC_FLAG(
 QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_send_path_response, false)
 
 // If true, when switching from BBR to BBR2, use BBR's CWND as the initial CWND.
-QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_copy_bbr_cwnd_to_bbr2, false)
+QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_copy_bbr_cwnd_to_bbr2, true)
 
 // If true, send the lowest stream ID that can be retried by the client in a
 // GOAWAY frame.
@@ -375,7 +359,7 @@ QUIC_FLAG(bool,
 // If true, use IETF QUIC application error codes in STOP_SENDING frames.
 QUIC_FLAG(bool,
           FLAGS_quic_reloadable_flag_quic_stop_sending_uses_ietf_error_code,
-          false)
+          true)
 
 // If true, QuicSpdySession's destructor won't need to do cleanup.
 QUIC_FLAG(bool,
@@ -402,7 +386,7 @@ QUIC_FLAG(bool,
 QUIC_FLAG(
     bool,
     FLAGS_quic_reloadable_flag_quic_give_sent_packet_to_debug_visitor_after_sent,
-    false)
+    true)
 
 // If true, abort async QPACK header decompression in QuicSpdyStream::OnClose().
 QUIC_FLAG(bool,
