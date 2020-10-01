@@ -177,5 +177,23 @@ extern const base::FeatureParam<int> kLimitOpenUDPSocketsMax(
     "LimitOpenUDPSocketsMax",
     6000);
 
+const base::Feature kTimeoutTcpConnectAttempt{
+    "TimeoutTcpConnectAttempt", base::FEATURE_DISABLED_BY_DEFAULT};
+
+extern const base::FeatureParam<double> kTimeoutTcpConnectAttemptRTTMultiplier(
+    &kTimeoutTcpConnectAttempt,
+    "TimeoutTcpConnectAttemptRTTMultiplier",
+    5.0);
+
+extern const base::FeatureParam<base::TimeDelta> kTimeoutTcpConnectAttemptMin(
+    &kTimeoutTcpConnectAttempt,
+    "TimeoutTcpConnectAttemptMin",
+    base::TimeDelta::FromSeconds(8));
+
+extern const base::FeatureParam<base::TimeDelta> kTimeoutTcpConnectAttemptMax(
+    &kTimeoutTcpConnectAttempt,
+    "TimeoutTcpConnectAttemptMax",
+    base::TimeDelta::FromSeconds(30));
+
 }  // namespace features
 }  // namespace net

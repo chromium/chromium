@@ -266,6 +266,28 @@ NET_EXPORT extern const base::Feature kLimitOpenUDPSockets;
 // this will result in a failure (ERR_INSUFFICIENT_RESOURCES).
 NET_EXPORT extern const base::FeatureParam<int> kLimitOpenUDPSocketsMax;
 
+// Enables a timeout on individual TCP connect attempts, based on
+// the parameter values.
+NET_EXPORT extern const base::Feature kTimeoutTcpConnectAttempt;
+
+// FeatureParams associated with kTimeoutTcpConnectAttempt.
+
+// When there is an estimated RTT available, the experimental TCP connect
+// attempt timeout is calculated as:
+//
+//  clamp(kTimeoutTcpConnectAttemptMin,
+//        kTimeoutTcpConnectAttemptMax,
+//        <Estimated RTT> * kTimeoutTcpConnectAttemptRTTMultiplier);
+//
+// Otherwise the TCP connect attempt timeout is set to
+// kTimeoutTcpConnectAttemptMax.
+NET_EXPORT extern const base::FeatureParam<double>
+    kTimeoutTcpConnectAttemptRTTMultiplier;
+NET_EXPORT extern const base::FeatureParam<base::TimeDelta>
+    kTimeoutTcpConnectAttemptMin;
+NET_EXPORT extern const base::FeatureParam<base::TimeDelta>
+    kTimeoutTcpConnectAttemptMax;
+
 }  // namespace features
 }  // namespace net
 

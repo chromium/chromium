@@ -12,14 +12,18 @@
 
 #include "base/power_monitor/power_monitor.h"
 #include "base/power_monitor/power_monitor_source.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/bind_test_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "net/base/features.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
 #include "net/base/test_completion_callback.h"
 #include "net/log/net_log_source.h"
+#include "net/nqe/network_quality_estimator_test_util.h"
 #include "net/socket/socket_performance_watcher.h"
 #include "net/socket/socket_test_util.h"
 #include "net/socket/tcp_server_socket.h"
@@ -417,6 +421,33 @@ TEST_F(TCPClientSocketTest, TagAfterConnect) {
 }
 #endif  // defined(OS_ANDROID)
 
+// TCP socket that hangs indefinitely when establishing a connection.
+class NeverConnectingTCPClientSocket : public TCPClientSocket {
+ public:
+  NeverConnectingTCPClientSocket(
+      const AddressList& addresses,
+      std::unique_ptr<SocketPerformanceWatcher> socket_performance_watcher,
+      NetworkQualityEstimator* network_quality_estimator,
+      net::NetLog* net_log,
+      const net::NetLogSource& source)
+      : TCPClientSocket(addresses,
+                        std::move(socket_performance_watcher),
+                        network_quality_estimator,
+                        net_log,
+                        source) {}
+
+  // Returns the number of times that ConnectInternal() was called.
+  int connect_internal_counter() const { return connect_internal_counter_; }
+
+ private:
+  int ConnectInternal(const IPEndPoint& endpoint) override {
+    connect_internal_counter_++;
+    return ERR_IO_PENDING;
+  }
+
+  int connect_internal_counter_ = 0;
+};
+
 // Tests for closing sockets on suspend mode.
 #if defined(TCP_CLIENT_SOCKET_OBSERVES_SUSPEND)
 
@@ -460,27 +491,6 @@ TEST_F(TCPClientSocketTest, SuspendBeforeConnect) {
   EXPECT_TRUE(accepted_socket->IsConnected());
 }
 
-// TCP socket that hangs when establishing a connection. This is needed to make
-// sure establishing a connection doesn't succeed synchronously.
-class NeverConnectingTCPClientSocket : public TCPClientSocket {
- public:
-  NeverConnectingTCPClientSocket(
-      const AddressList& addresses,
-      std::unique_ptr<SocketPerformanceWatcher> socket_performance_watcher,
-      net::NetLog* net_log,
-      const net::NetLogSource& source)
-      : TCPClientSocket(addresses,
-                        std::move(socket_performance_watcher),
-                        nullptr,
-                        net_log,
-                        source) {}
-
- private:
-  int ConnectInternal(const IPEndPoint& endpoint) override {
-    return ERR_IO_PENDING;
-  }
-};
-
 TEST_F(TCPClientSocketTest, SuspendDuringConnect) {
   IPAddress lo_address = IPAddress::IPv4Localhost();
 
@@ -490,7 +500,7 @@ TEST_F(TCPClientSocketTest, SuspendDuringConnect) {
   ASSERT_THAT(server.GetLocalAddress(&server_address), IsOk());
 
   NeverConnectingTCPClientSocket socket(AddressList(server_address), nullptr,
-                                        nullptr, NetLogSource());
+                                        nullptr, nullptr, NetLogSource());
 
   EXPECT_THAT(socket.Bind(IPEndPoint(lo_address, 0)), IsOk());
 
@@ -519,7 +529,7 @@ TEST_F(TCPClientSocketTest, SuspendDuringConnectMultipleAddresses) {
       IPEndPoint(IPAddress(127, 0, 0, 1), server_address.port()));
   address_list.push_back(
       IPEndPoint(IPAddress(127, 0, 0, 2), server_address.port()));
-  NeverConnectingTCPClientSocket socket(address_list, nullptr, nullptr,
+  NeverConnectingTCPClientSocket socket(address_list, nullptr, nullptr, nullptr,
                                         NetLogSource());
 
   EXPECT_THAT(socket.Bind(IPEndPoint(lo_address, 0)), IsOk());
@@ -748,6 +758,252 @@ TEST_F(TCPClientSocketTest, SuspendDuringReadAndWrite) {
 }
 
 #endif  // defined(TCP_CLIENT_SOCKET_OBSERVES_SUSPEND)
+
+// Scoped helper to override the TCP connect attempt policy.
+class OverrideTcpConnectAttemptTimeout {
+ public:
+  OverrideTcpConnectAttemptTimeout(double rtt_multipilier,
+                                   base::TimeDelta min_timeout,
+                                   base::TimeDelta max_timeout) {
+    base::FieldTrialParams params;
+    params[features::kTimeoutTcpConnectAttemptRTTMultiplier.name] =
+        base::NumberToString(rtt_multipilier);
+    params[features::kTimeoutTcpConnectAttemptMin.name] =
+        base::NumberToString(min_timeout.InMilliseconds()) + "ms";
+    params[features::kTimeoutTcpConnectAttemptMax.name] =
+        base::NumberToString(max_timeout.InMilliseconds()) + "ms";
+
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kTimeoutTcpConnectAttempt, params);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Test fixture that uses a MOCK_TIME test environment, so time can
+// be advanced programmatically.
+class TCPClientSocketMockTimeTest : public testing::Test {
+ public:
+  TCPClientSocketMockTimeTest()
+      : task_environment_(base::test::TaskEnvironment::MainThreadType::IO,
+                          base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
+ protected:
+  base::test::TaskEnvironment task_environment_;
+};
+
+// Tests that no TCP connect timeout is enforced by default (i.e.
+// when the feature is disabled).
+TEST_F(TCPClientSocketMockTimeTest, NoConnectAttemptTimeoutByDefault) {
+  IPEndPoint server_address(IPAddress::IPv4Localhost(), 80);
+  NeverConnectingTCPClientSocket socket(AddressList(server_address), nullptr,
+                                        nullptr, nullptr, NetLogSource());
+
+  TestCompletionCallback connect_callback;
+  int rv = socket.Connect(connect_callback.callback());
+  ASSERT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  // After 4 minutes, the socket should still be connecting.
+  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(4));
+  EXPECT_FALSE(connect_callback.have_result());
+  EXPECT_FALSE(socket.IsConnected());
+
+  // 1 attempt was made.
+  EXPECT_EQ(1, socket.connect_internal_counter());
+}
+
+// Tests that the maximum timeout is used when there is no estimated
+// RTT.
+TEST_F(TCPClientSocketMockTimeTest, ConnectAttemptTimeoutUsesMaxWhenNoRTT) {
+  OverrideTcpConnectAttemptTimeout override_timeout(
+      1, base::TimeDelta::FromSeconds(4), base::TimeDelta::FromSeconds(10));
+
+  IPEndPoint server_address(IPAddress::IPv4Localhost(), 80);
+
+  // Pass a null NetworkQualityEstimator, so the TCPClientSocket is unable to
+  // estimate the RTT.
+  NeverConnectingTCPClientSocket socket(AddressList(server_address), nullptr,
+                                        nullptr, nullptr, NetLogSource());
+
+  // Start connecting.
+  TestCompletionCallback connect_callback;
+  int rv = socket.Connect(connect_callback.callback());
+  ASSERT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  // Advance to t=3.1s
+  // Should still be pending, as this is before the minimum timeout.
+  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(3100));
+  EXPECT_FALSE(connect_callback.have_result());
+  EXPECT_FALSE(socket.IsConnected());
+
+  // Advance to t=4.1s
+  // Should still be pending. This is after the minimum timeout, but before the
+  // maximum.
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  EXPECT_FALSE(connect_callback.have_result());
+  EXPECT_FALSE(socket.IsConnected());
+
+  // Advance to t=10.1s
+  // Should now be timed out, as this is after the maximum timeout.
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(6));
+  rv = connect_callback.GetResult(rv);
+  ASSERT_THAT(rv, IsError(ERR_TIMED_OUT));
+
+  // 1 attempt was made.
+  EXPECT_EQ(1, socket.connect_internal_counter());
+}
+
+// Tests that the minimum timeout is used when the adaptive timeout using RTT
+// ends up being too low.
+TEST_F(TCPClientSocketMockTimeTest, ConnectAttemptTimeoutUsesMinWhenRTTLow) {
+  OverrideTcpConnectAttemptTimeout override_timeout(
+      5, base::TimeDelta::FromSeconds(4), base::TimeDelta::FromSeconds(10));
+
+  // Set the estimated RTT to 1 millisecond.
+  TestNetworkQualityEstimator network_quality_estimator;
+  network_quality_estimator.SetStartTimeNullTransportRtt(
+      base::TimeDelta::FromMilliseconds(1));
+
+  IPEndPoint server_address(IPAddress::IPv4Localhost(), 80);
+
+  NeverConnectingTCPClientSocket socket(AddressList(server_address), nullptr,
+                                        &network_quality_estimator, nullptr,
+                                        NetLogSource());
+
+  // Start connecting.
+  TestCompletionCallback connect_callback;
+  int rv = socket.Connect(connect_callback.callback());
+  ASSERT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  // Advance to t=1.1s
+  // Should be pending, since although the adaptive timeout has been reached, it
+  // is lower than the minimum timeout.
+  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(1100));
+  EXPECT_FALSE(connect_callback.have_result());
+  EXPECT_FALSE(socket.IsConnected());
+
+  // Advance to t=4.1s
+  // Should have timed out due to hitting the minimum timeout.
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(3));
+  rv = connect_callback.GetResult(rv);
+  ASSERT_THAT(rv, IsError(ERR_TIMED_OUT));
+
+  // 1 attempt was made.
+  EXPECT_EQ(1, socket.connect_internal_counter());
+}
+
+// Tests that the maximum timeout is used when the adaptive timeout from RTT is
+// too high.
+TEST_F(TCPClientSocketMockTimeTest, ConnectAttemptTimeoutUsesMinWhenRTTHigh) {
+  OverrideTcpConnectAttemptTimeout override_timeout(
+      5, base::TimeDelta::FromSeconds(4), base::TimeDelta::FromSeconds(10));
+
+  // Set the estimated RTT to 5 seconds.
+  TestNetworkQualityEstimator network_quality_estimator;
+  network_quality_estimator.SetStartTimeNullTransportRtt(
+      base::TimeDelta::FromSeconds(5));
+
+  IPEndPoint server_address(IPAddress::IPv4Localhost(), 80);
+
+  NeverConnectingTCPClientSocket socket(AddressList(server_address), nullptr,
+                                        &network_quality_estimator, nullptr,
+                                        NetLogSource());
+
+  // Start connecting.
+  TestCompletionCallback connect_callback;
+  int rv = socket.Connect(connect_callback.callback());
+  ASSERT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  // Advance to t=10.1s
+  // The socket should have timed out due to hitting the maximum timeout. Had
+  // the adaptive timeout been used, the socket would instead be timing out at
+  // t=25s.
+  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(10100));
+  rv = connect_callback.GetResult(rv);
+  ASSERT_THAT(rv, IsError(ERR_TIMED_OUT));
+
+  // 1 attempt was made.
+  EXPECT_EQ(1, socket.connect_internal_counter());
+}
+
+// Tests that an adaptive timeout is used for TCP connection attempts based on
+// the estimated RTT.
+TEST_F(TCPClientSocketMockTimeTest, ConnectAttemptTimeoutUsesRTT) {
+  OverrideTcpConnectAttemptTimeout override_timeout(
+      5, base::TimeDelta::FromSeconds(4), base::TimeDelta::FromSeconds(10));
+
+  // Set the estimated RTT to 1 second. Since the multiplier is set to 5, the
+  // total adaptive timeout will be 5 seconds.
+  TestNetworkQualityEstimator network_quality_estimator;
+  network_quality_estimator.SetStartTimeNullTransportRtt(
+      base::TimeDelta::FromSeconds(1));
+
+  IPEndPoint server_address(IPAddress::IPv4Localhost(), 80);
+
+  NeverConnectingTCPClientSocket socket(AddressList(server_address), nullptr,
+                                        &network_quality_estimator, nullptr,
+                                        NetLogSource());
+
+  // Start connecting.
+  TestCompletionCallback connect_callback;
+  int rv = socket.Connect(connect_callback.callback());
+  ASSERT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  // Advance to t=4.1s
+  // The socket should still be pending. Had the minimum timeout been enforced,
+  // it would instead have timed out now.
+  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(4100));
+  EXPECT_FALSE(connect_callback.have_result());
+  EXPECT_FALSE(socket.IsConnected());
+
+  // Advance to t=5.1s
+  // The adaptive timeout was at t=5s, so it should now be timed out.
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  rv = connect_callback.GetResult(rv);
+  ASSERT_THAT(rv, IsError(ERR_TIMED_OUT));
+
+  // 1 attempt was made.
+  EXPECT_EQ(1, socket.connect_internal_counter());
+}
+
+// Tests that when multiple TCP connect attempts are made, the timeout for each
+// one is applied independently.
+TEST_F(TCPClientSocketMockTimeTest, ConnectAttemptTimeoutIndependent) {
+  OverrideTcpConnectAttemptTimeout override_timeout(
+      5, base::TimeDelta::FromSeconds(4), base::TimeDelta::FromSeconds(10));
+
+  // This test will attempt connecting to 5 endpoints.
+  const size_t kNumIps = 5;
+
+  AddressList addresses;
+  for (size_t i = 0; i < kNumIps; ++i)
+    addresses.push_back(IPEndPoint(IPAddress::IPv4Localhost(), 80 + i));
+
+  NeverConnectingTCPClientSocket socket(addresses, nullptr, nullptr, nullptr,
+                                        NetLogSource());
+
+  // Start connecting.
+  TestCompletionCallback connect_callback;
+  int rv = socket.Connect(connect_callback.callback());
+  ASSERT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  // Advance to t=49s
+  // Should still be pending.
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(49));
+  EXPECT_FALSE(connect_callback.have_result());
+  EXPECT_FALSE(socket.IsConnected());
+
+  // Advance to t=50.1s
+  // All attempts should take 50 seconds to complete (5 attempts, 10 seconds
+  // each). So by this point the overall connect attempt will have timed out.
+  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(1100));
+  rv = connect_callback.GetResult(rv);
+  ASSERT_THAT(rv, IsError(ERR_TIMED_OUT));
+
+  // 5 attempts were made.
+  EXPECT_EQ(5, socket.connect_internal_counter());
+}
 
 }  // namespace
 
