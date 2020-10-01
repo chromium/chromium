@@ -173,7 +173,7 @@ public class AccountPickerDelegate implements WebSigninBridge.Listener {
      */
     public static void recordAccountConsistencyPromoAction(
             @AccountConsistencyPromoAction int promoAction) {
-        RecordHistogram.recordEnumeratedHistogram("Signin.AndroidAccountConsistencyPromoAction",
+        RecordHistogram.recordEnumeratedHistogram("Signin.AccountConsistencyPromoAction",
                 promoAction, AccountConsistencyPromoAction.MAX);
     }
 
