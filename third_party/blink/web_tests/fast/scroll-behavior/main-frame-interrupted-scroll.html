@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    #content {
+      width: 1000px;
+      height: 10000px;
+      background-color: blue;
+    }
+  </style>
+  <script src="../../resources/testharness.js"></script>
+  <script src="../../resources/testharnessreport.js"></script>
+  <script src="resources/scroll-interruption-test.js"></script>
+  <script type="text/javascript">
+    function jsScroll(y) {
+      window.scrollTo({top: y, behavior: 'smooth'});
+    }
+
+    function doTest() {
+      const targets = {y_min: 40, y_mid: 3500, y_max: 7000};
+      const innerPoint = {x: 100, y: 100};
+      var scrollInterruptionTest = new SmoothScrollInterruptionTest(document.scrollingElement,
+                                                                    innerPoint,
+                                                                    targets,
+                                                                    jsScroll);
+      scrollInterruptionTest.run();
+    }
+
+    window.addEventListener('load', doTest, false);
+  </script>
+</head>
+
+<body>
+  <p>Test that interrupting a smooth scroll on the main frame works with both scroll behaviors and with input</p>
+  <div id="content"></div>
+</body>
+</html>
