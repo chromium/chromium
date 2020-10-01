@@ -24,12 +24,14 @@ public class VideoTutorialUtils {
     }
 
     private static Tutorial getNextTutorial(List<Tutorial> tutorials, Tutorial currentTutorial) {
-        int currentTutorialIndex = 0;
+        int currentIndex = 0;
         for (int i = 0; i < tutorials.size(); i++) {
-            if (tutorials.get(i).featureType == currentTutorial.featureType) break;
+            if (tutorials.get(i).featureType == currentTutorial.featureType) {
+                currentIndex = i;
+                break;
+            }
         }
 
-        return currentTutorialIndex < tutorials.size() - 1 ? tutorials.get(currentTutorialIndex + 1)
-                                                           : null;
+        return currentIndex < tutorials.size() - 1 ? tutorials.get(currentIndex + 1) : null;
     }
 }

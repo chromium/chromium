@@ -110,8 +110,8 @@ class VideoPlayerMediator implements PlaybackStateObserver.Observer {
     public void onEnded() {
         VideoTutorialMetrics.recordWatchStateUpdate(mTutorial.featureType, WatchState.COMPLETED);
         mModel.set(VideoPlayerProperties.SHOW_MEDIA_CONTROLS, true);
-        mModel.set(VideoPlayerProperties.SHOW_WATCH_NEXT, true);
         mModel.set(VideoPlayerProperties.SHOW_CHANGE_LANGUAGE, true);
+        maybeShowWatchNextVideoButton();
         updateChangeLanguageButtonText();
 
         VideoTutorialUtils.getNextTutorial(mVideoTutorialService, mTutorial, nextTutorial -> {
@@ -158,12 +158,19 @@ class VideoPlayerMediator implements PlaybackStateObserver.Observer {
     private void startVideo(Tutorial tutorial) {
         VideoTutorialMetrics.recordWatchStateUpdate(mTutorial.featureType, WatchState.STARTED);
         mVideoStartTime = System.currentTimeMillis();
+        mTutorial = tutorial;
         LoadUrlParams loadUrlParams =
                 new LoadUrlParams(VideoPlayerURLBuilder.buildFromTutorial(tutorial));
         loadUrlParams.setHasUserGesture(true);
         mWebContents.getNavigationController().loadUrl(loadUrlParams);
-        mModel.set(VideoPlayerProperties.SHOW_LOADING_SCREEN, false);
+        mModel.set(VideoPlayerProperties.SHOW_LOADING_SCREEN, true);
         mModel.set(VideoPlayerProperties.SHOW_MEDIA_CONTROLS, false);
+    }
+
+    private void maybeShowWatchNextVideoButton() {
+        VideoTutorialUtils.getNextTutorial(mVideoTutorialService, mTutorial, nextTutorial -> {
+            mModel.set(VideoPlayerProperties.SHOW_WATCH_NEXT, nextTutorial != null);
+        });
     }
 
     private void onWatchNextClicked() {

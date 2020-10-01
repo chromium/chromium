@@ -140,13 +140,18 @@ if (is_android) {
     # Skip platform checks since Robolectric depends on requires_android targets.
     bypass_platform_checks = true
     testonly = true
-    sources = [ "android/java/src/org/chromium/chrome/browser/video_tutorials/languages/LanguagePickerMediatorUnitTest.java" ]
+    sources = [
+      "android/java/src/org/chromium/chrome/browser/video_tutorials/languages/LanguagePickerMediatorUnitTest.java",
+      "android/java/src/org/chromium/chrome/browser/video_tutorials/player/VideoPlayerMediatorUnitTest.java",
+    ]
+
     deps = [
       ":java",
       "//base:base_java",
       "//base:base_junit_test_support",
       "//chrome/browser/video_tutorials:java",
       "//chrome/browser/video_tutorials:test_support_java",
+      "//content/public/android:content_java",
       "//third_party/android_deps:robolectric_all_java",
       "//third_party/hamcrest:hamcrest_core_java",
       "//third_party/junit",
