@@ -46,7 +46,7 @@ constexpr base::FeatureParam<bool> kAmbientModeDefaultFeedEnabled{
     &kAmbientModeFeature, "DefaultFeedEnabled", false};
 
 constexpr base::FeatureParam<bool> kAmbientModePersonalPhotosEnabled{
-    &kAmbientModeFeature, "PersonalPhotosEnabled", false};
+    &kAmbientModeFeature, "PersonalPhotosEnabled", true};
 
 constexpr base::FeatureParam<bool> kAmbientModeFeaturedPhotosEnabled{
     &kAmbientModeFeature, "FeaturedPhotosEnabled", false};
