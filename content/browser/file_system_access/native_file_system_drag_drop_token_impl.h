@@ -26,6 +26,7 @@ class CONTENT_EXPORT NativeFileSystemDragDropTokenImpl
  public:
   NativeFileSystemDragDropTokenImpl(
       NativeFileSystemManagerImpl* manager,
+      NativeFileSystemManagerImpl::PathType path_type,
       const base::FilePath& file_path,
       int renderer_process_id,
       mojo::PendingReceiver<blink::mojom::NativeFileSystemDragDropToken>
@@ -40,6 +41,8 @@ class CONTENT_EXPORT NativeFileSystemDragDropTokenImpl
       const NativeFileSystemDragDropTokenImpl&) = delete;
 
   int renderer_process_id() const { return renderer_process_id_; }
+
+  NativeFileSystemManagerImpl::PathType path_type() const { return path_type_; }
 
   const base::FilePath& file_path() const { return file_path_; }
 
@@ -56,6 +59,7 @@ class CONTENT_EXPORT NativeFileSystemDragDropTokenImpl
 
   // Raw pointer since NativeFileSystemManagerImpl owns `this`.
   NativeFileSystemManagerImpl* const manager_;
+  const NativeFileSystemManagerImpl::PathType path_type_;
   const base::FilePath file_path_;
   const int renderer_process_id_;
   const base::UnguessableToken token_;

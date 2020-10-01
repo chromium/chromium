@@ -171,6 +171,7 @@ class CONTENT_EXPORT NativeFileSystemManagerImpl
   // associated remote can be redeemed for a NativeFileSystemEntry object by a
   // process with ID matching `renderer_id`.
   void CreateNativeFileSystemDragDropToken(
+      PathType path_type,
       const base::FilePath& file_path,
       int renderer_id,
       mojo::PendingReceiver<blink::mojom::NativeFileSystemDragDropToken>
@@ -307,6 +308,7 @@ class CONTENT_EXPORT NativeFileSystemManagerImpl
   void ResolveDragDropTokenWithFileType(
       const BindingContext& binding_context,
       const base::FilePath& file_path,
+      FileSystemURLAndFSHandle url,
       GetEntryFromDragDropTokenCallback token_resolved_callback,
       NativeFileSystemPermissionContext::HandleType file_type);
 

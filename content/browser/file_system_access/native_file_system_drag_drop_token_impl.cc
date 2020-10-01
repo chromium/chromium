@@ -15,10 +15,12 @@ namespace content {
 
 NativeFileSystemDragDropTokenImpl::NativeFileSystemDragDropTokenImpl(
     NativeFileSystemManagerImpl* manager,
+    NativeFileSystemManagerImpl::PathType path_type,
     const base::FilePath& file_path,
     int renderer_process_id,
     mojo::PendingReceiver<blink::mojom::NativeFileSystemDragDropToken> receiver)
     : manager_(manager),
+      path_type_(path_type),
       file_path_(file_path),
       renderer_process_id_(renderer_process_id),
       token_(base::UnguessableToken::Create()) {

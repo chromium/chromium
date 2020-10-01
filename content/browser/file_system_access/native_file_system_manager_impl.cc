@@ -151,10 +151,30 @@ bool IsValidTransferToken(NativeFileSystemTransferTokenImpl* token,
   return true;
 }
 
-HandleType GetFileType(const base::FilePath& file_path) {
-  base::File::Info file_info;
-  base::GetFileInfo(file_path, &file_info);
-  return file_info.is_directory ? HandleType::kDirectory : HandleType::kFile;
+void GetHandleTypeFromUrl(
+    storage::FileSystemURL url,
+    base::OnceCallback<void(HandleType)> callback,
+    scoped_refptr<base::SequencedTaskRunner> reply_runner,
+    storage::FileSystemOperationRunner* operation_runner) {
+  operation_runner->GetMetadata(
+      url, storage::FileSystemOperation::GET_METADATA_FIELD_IS_DIRECTORY,
+      base::BindOnce(
+          [](scoped_refptr<base::SequencedTaskRunner> reply_runner,
+             base::OnceCallback<void(HandleType)> callback,
+             base::File::Error result, const base::File::Info& file_info) {
+            // If we couldn't determine if the url is a directory, it is treated
+            // as a file. If the web-exposed API is ever changed to allow
+            // reporting errors when getting a dropped file as a
+            // FileSystemHandle, this would be one place such errors could be
+            // triggered.
+            HandleType type = HandleType::kFile;
+            if (result == base::File::FILE_OK && file_info.is_directory) {
+              type = HandleType::kDirectory;
+            }
+            reply_runner->PostTask(FROM_HERE,
+                                   base::BindOnce(std::move(callback), type));
+          },
+          std::move(reply_runner), std::move(callback)));
 }
 
 }  // namespace
@@ -300,13 +320,14 @@ void NativeFileSystemManagerImpl::ChooseEntries(
 }
 
 void NativeFileSystemManagerImpl::CreateNativeFileSystemDragDropToken(
+    PathType path_type,
     const base::FilePath& file_path,
     int renderer_id,
     mojo::PendingReceiver<blink::mojom::NativeFileSystemDragDropToken>
         receiver) {
   auto drag_drop_token_impl =
       std::make_unique<NativeFileSystemDragDropTokenImpl>(
-          this, file_path, renderer_id, std::move(receiver));
+          this, path_type, file_path, renderer_id, std::move(receiver));
   auto token = drag_drop_token_impl->token();
   drag_drop_tokens_.emplace(token, std::move(drag_drop_token_impl));
 }
@@ -360,30 +381,44 @@ void NativeFileSystemManagerImpl::ResolveDragDropToken(
 
   // Look up whether the file path that's associated with the token is a file or
   // directory and call ResolveDragDropTokenWithFileType with the result.
-  const base::FilePath& drag_drop_token_path =
-      drag_token_impl->second->file_path();
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
-      base::BindOnce(&GetFileType, drag_drop_token_path),
+  FileSystemURLAndFSHandle url = CreateFileSystemURLFromPath(
+      binding_context.origin, drag_token_impl->second->path_type(),
+      drag_token_impl->second->file_path());
+  auto fs_url = url.url;
+  operation_runner().PostTaskWithThisObject(
+      FROM_HERE,
       base::BindOnce(
-          &NativeFileSystemManagerImpl::ResolveDragDropTokenWithFileType,
-          weak_factory_.GetWeakPtr(), binding_context, drag_drop_token_path,
-          std::move(token_resolved_callback)));
+          &GetHandleTypeFromUrl, fs_url,
+          base::BindOnce(
+              &NativeFileSystemManagerImpl::ResolveDragDropTokenWithFileType,
+              weak_factory_.GetWeakPtr(), binding_context,
+              drag_token_impl->second->file_path(), std::move(url),
+              std::move(token_resolved_callback)),
+          base::SequencedTaskRunnerHandle::Get()));
 }
 
 void NativeFileSystemManagerImpl::ResolveDragDropTokenWithFileType(
     const BindingContext& binding_context,
     const base::FilePath& file_path,
+    FileSystemURLAndFSHandle url,
     GetEntryFromDragDropTokenCallback token_resolved_callback,
     HandleType file_type) {
+  SharedHandleState shared_handle_state = GetSharedHandleStateForPath(
+      file_path, binding_context.origin, std::move(url.file_system), file_type,
+      UserAction::kDragAndDrop);
+
   blink::mojom::NativeFileSystemEntryPtr entry;
-  // TODO(mek): Support Drag&Drop of non-local paths.
   if (file_type == HandleType::kDirectory) {
-    entry = CreateDirectoryEntryFromPath(binding_context, PathType::kLocal,
-                                         file_path, UserAction::kDragAndDrop);
+    entry = blink::mojom::NativeFileSystemEntry::New(
+        blink::mojom::NativeFileSystemHandle::NewDirectory(
+            CreateDirectoryHandle(binding_context, url.url,
+                                  shared_handle_state)),
+        url.base_name);
   } else {
-    entry = CreateFileEntryFromPath(binding_context, PathType::kLocal,
-                                    file_path, UserAction::kDragAndDrop);
+    entry = blink::mojom::NativeFileSystemEntry::New(
+        blink::mojom::NativeFileSystemHandle::NewFile(
+            CreateFileHandle(binding_context, url.url, shared_handle_state)),
+        url.base_name);
   }
 
   std::move(token_resolved_callback).Run(std::move(entry));
