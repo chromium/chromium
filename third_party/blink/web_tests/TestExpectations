@@ -1114,7 +1114,6 @@ crbug.com/1079031 virtual/layout_ng_block_frag/fast/multicol/out-of-flow/abspos-
 crbug.com/1079031 virtual/layout_ng_block_frag/fast/multicol/out-of-flow/abspos-auto-position-on-line.html [ Failure ]
 crbug.com/1079031 virtual/layout_ng_block_frag/fast/multicol/out-of-flow/abspos-auto-position-on-line-rtl.html [ Failure ]
 crbug.com/1079031 virtual/layout_ng_block_frag/fast/multicol/out-of-flow/nested-multicol.html [ Failure ]
-crbug.com/1066616 virtual/layout_ng_block_frag/fast/multicol/overflow-content.html [ Failure ]
 crbug.com/1079031 virtual/layout_ng_block_frag/fast/multicol/positioned-outside-of-columns.html [ Crash Failure ]
 crbug.com/1079031 virtual/layout_ng_block_frag/fast/multicol/positioned-split.html [ Failure ]
 crbug.com/829028 virtual/layout_ng_block_frag/fast/multicol/shadow-breaking.html [ Failure ]

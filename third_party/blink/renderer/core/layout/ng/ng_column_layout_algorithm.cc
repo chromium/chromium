@@ -923,6 +923,7 @@ LayoutUnit NGColumnLayoutAlgorithm::CalculateBalancedColumnBlockSize(
   do {
     NGBlockLayoutAlgorithm balancing_algorithm(
         {Node(), fragment_geometry, space, break_token.get()});
+    balancing_algorithm.SetBoxType(NGPhysicalFragment::kColumnBox);
     scoped_refptr<const NGLayoutResult> result = balancing_algorithm.Layout();
 
     // This algorithm should never abort.
