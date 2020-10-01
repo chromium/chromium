@@ -5756,6 +5756,7 @@
     'machines': {
       'soda-linux': {
         'additional_compile_targets': [
+          'browser_tests',
           'unit_tests',
         ],
         'test_suites': {

@@ -3966,6 +3966,9 @@
       },
     },
     'soda_gtests': {
+      'browser_tests': {
+        'args': ['--gtest_filter=SpeechRecognitionService*'],
+      },
       'unit_tests': {
         'args': ['--gtest_filter=SodaClient*'],
       },

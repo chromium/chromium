@@ -3,9 +3,31 @@
   "AAAAA2 See generate_buildbot_json.py to make changes": {},
   "soda-linux": {
     "additional_compile_targets": [
+      "browser_tests",
       "unit_tests"
     ],
     "gtest_tests": [
+      {
+        "args": [
+          "--gtest_filter=SpeechRecognitionService*"
+        ],
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "os": "Linux",
+              "pool": "chrome.tests"
+            }
+          ],
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "browser_tests",
+        "test_id_prefix": "ninja://chrome/test:browser_tests/"
+      },
       {
         "args": [
           "--gtest_filter=SodaClient*"
