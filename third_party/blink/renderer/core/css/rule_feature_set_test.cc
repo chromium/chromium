@@ -736,28 +736,6 @@ TEST_F(RuleFeatureSetTest, nonUniversalSiblingInvalidationNot) {
   ExpectNoInvalidation(invalidation_lists.siblings);
 }
 
-TEST_F(RuleFeatureSetTest, universalSiblingInvalidationAny) {
-  EXPECT_EQ(RuleFeatureSet::kSelectorMayMatch,
-            CollectFeatures(":-webkit-any(.a) + .b"));
-
-  InvalidationLists invalidation_lists;
-  CollectUniversalSiblingInvalidationSet(invalidation_lists);
-
-  ExpectSiblingClassInvalidation(1, "b", invalidation_lists.siblings);
-  ExpectSelfInvalidation(invalidation_lists.siblings);
-}
-
-TEST_F(RuleFeatureSetTest, universalSiblingIdInvalidationAny) {
-  EXPECT_EQ(RuleFeatureSet::kSelectorMayMatch,
-            CollectFeatures(":-webkit-any(.a) + #b"));
-
-  InvalidationLists invalidation_lists;
-  CollectUniversalSiblingInvalidationSet(invalidation_lists);
-
-  ExpectSiblingIdInvalidation(1, "b", invalidation_lists.siblings);
-  ExpectSelfInvalidation(invalidation_lists.siblings);
-}
-
 TEST_F(RuleFeatureSetTest, nonUniversalSiblingInvalidationAny) {
   EXPECT_EQ(RuleFeatureSet::kSelectorMayMatch,
             CollectFeatures("#x:-webkit-any(.a) + .b"));
@@ -1528,15 +1506,12 @@ RefTestData ref_equal_test_data[] = {
     {":is(.a + .b, .c + .d) .e", ".a + .b .e, .c + .d .e"},
     {":is(.a ~ .b, .c + .e + .f) :is(.c .d, .e)",
      ".a ~ .b .d, .a ~ .b .e, .c + .e + .f .d, .c + .e + .f .e, .c .d"},
-    // TODO(andruud): Don't treat :is() as a universal sibling.
-    // The following tests add "div + <foo>" selectors in the refs
-    // to populate the universal sibling set with the expected data.
-    {":is(.a) + .b", ".a + .b, div + .b"},
-    {":is(.a, .b) + .c", ".a + .c, .b + .c, div + .c"},
-    {":is(.a + .b, .c + .d) + .e", ".a + .b + .e, .c + .d + .e, div + .e"},
+    {":is(.a) + .b", ".a + .b"},
+    {":is(.a, .b) + .c", ".a + .c, .b + .c"},
+    {":is(.a + .b, .c + .d) + .e", ".a + .b + .e, .c + .d + .e"},
     {":is(.a + .b, .c + .d) + :is(.e + .f, .g + .h)",
      ".a + .b + .f, .a + .b + .h, .c + .d + .f, .c + .d + .h,"
-     ".e + .f, .g + .h, div + .f, div + .h"},
+     ".e + .f, .g + .h"},
     // clang-format on
 };
 

@@ -895,6 +895,9 @@ void RuleFeatureSet::AddFeaturesToInvalidationSetsForSimpleSelector(
     const CSSSelector& simple_selector,
     InvalidationSetFeatures* sibling_features,
     InvalidationSetFeatures& descendant_features) {
+  if (simple_selector.IsIdClassOrAttributeSelector())
+    descendant_features.has_features_for_rule_set_invalidation = true;
+
   if (InvalidationSet* invalidation_set = InvalidationSetForSimpleSelector(
           simple_selector,
           sibling_features ? InvalidationType::kInvalidateSiblings
@@ -947,20 +950,22 @@ RuleFeatureSet::AddFeaturesToInvalidationSetsForCompoundSelector(
     const CSSSelector& compound,
     InvalidationSetFeatures* sibling_features,
     InvalidationSetFeatures& descendant_features) {
-  bool compound_has_id_class_or_attribute = false;
+  bool compound_has_features_for_rule_set_invalidation = false;
   const CSSSelector* simple_selector = &compound;
   for (; simple_selector; simple_selector = simple_selector->TagHistory()) {
+    base::AutoReset<bool> reset_has_features(
+        &descendant_features.has_features_for_rule_set_invalidation, false);
     AddFeaturesToInvalidationSetsForSimpleSelector(
         *simple_selector, sibling_features, descendant_features);
-    if (simple_selector->IsIdClassOrAttributeSelector())
-      compound_has_id_class_or_attribute = true;
+    if (descendant_features.has_features_for_rule_set_invalidation)
+      compound_has_features_for_rule_set_invalidation = true;
     if (simple_selector->Relation() != CSSSelector::kSubSelector)
       break;
     if (!simple_selector->TagHistory())
       break;
   }
 
-  if (compound_has_id_class_or_attribute) {
+  if (compound_has_features_for_rule_set_invalidation) {
     descendant_features.has_features_for_rule_set_invalidation = true;
   } else if (sibling_features) {
     AddFeaturesToUniversalSiblingInvalidationSet(*sibling_features,
