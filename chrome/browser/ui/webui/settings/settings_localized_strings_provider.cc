@@ -1047,6 +1047,11 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
                          l10n_util::GetStringFUTF16(
                              IDS_SETTINGS_SIGNED_OUT_USER_LABEL,
                              base::ASCIIToUTF16(chrome::kSyncLearnMoreURL)));
+  html_source->AddString(
+      "signedOutUserHasCompromisedCredentialsLabel",
+      l10n_util::GetStringFUTF16(
+          IDS_SETTINGS_SIGNED_OUT_USER_HAS_COMPROMISED_CREDENTIALS_LABEL,
+          base::ASCIIToUTF16(chrome::kSyncLearnMoreURL)));
   // The warning message that will be shown if there is a content setting
   // pattern with a wildcard in it. The check for wildcards is done on the js
   // side.
