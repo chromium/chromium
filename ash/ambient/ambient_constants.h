@@ -29,8 +29,7 @@ constexpr base::TimeDelta kWeatherRefreshInterval =
     base::TimeDelta::FromMinutes(5);
 
 // The batch size of topics to fetch in one request.
-// Magic number 2 is based on experiments that no curation on Google Photos.
-constexpr int kTopicsBatchSize = 2;
+constexpr int kTopicsBatchSize = 100;
 
 // Max cached images.
 constexpr int kMaxNumberOfCachedImages = 100;
