@@ -3287,7 +3287,7 @@ class ViewportHistogramsTest : public SimTest {
 
     WebView().GetSettings()->SetViewportEnabled(true);
     WebView().GetSettings()->SetViewportMetaEnabled(true);
-    WebView().MainFrameWidget()->Resize(WebSize(500, 600));
+    WebView().MainFrameViewWidget()->Resize(gfx::Size(500, 600));
   }
 
   void UseMetaTag(const String& metaTag) {

@@ -308,7 +308,7 @@ WebLocalFrameImpl* CreateProvisional(WebRemoteFrame& old_frame,
         widget_client->GetInitialScreenInfo(),
         std::make_unique<cc::TestUkmRecorderFactory>(), &layer_tree_settings));
     frame_widget->SetCompositorVisible(true);
-    frame_widget->Resize(WebSize());
+    frame_widget->Resize(gfx::Size());
   }
   if (widget_client)
     client->BindWidgetClient(std::move(widget_client));
@@ -376,7 +376,7 @@ WebLocalFrameImpl* CreateLocalChild(WebRemoteFrame& parent,
   frame_widget->SetCompositorVisible(true);
   // Set an initial size for subframes.
   if (frame->Parent())
-    frame_widget->Resize(WebSize());
+    frame_widget->Resize(gfx::Size());
   client->BindWidgetClient(std::move(owned_widget_client));
   return frame;
 }
@@ -474,7 +474,7 @@ WebViewImpl* WebViewHelper::InitializeWithOpener(
 
   // Set an initial size for subframes.
   if (frame->Parent())
-    frame->FrameWidget()->Resize(WebSize());
+    frame->FrameWidget()->Resize(gfx::Size());
 
   return web_view_;
 }

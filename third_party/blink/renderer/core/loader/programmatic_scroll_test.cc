@@ -50,7 +50,7 @@ TEST_F(ProgrammaticScrollTest, RestoreScrollPositionAndViewStateWithScale) {
   frame_test_helpers::WebViewHelper web_view_helper;
   WebViewImpl* web_view =
       web_view_helper.InitializeAndLoad(base_url_.Utf8() + "long_scroll.html");
-  web_view->MainFrameWidget()->Resize(WebSize(1000, 1000));
+  web_view->MainFrameViewWidget()->Resize(gfx::Size(1000, 1000));
   web_view->MainFrameWidget()->UpdateAllLifecyclePhases(
       DocumentUpdateReason::kTest);
 
@@ -85,7 +85,7 @@ TEST_F(ProgrammaticScrollTest, RestoreScrollPositionAndViewStateWithoutScale) {
   frame_test_helpers::WebViewHelper web_view_helper;
   WebViewImpl* web_view =
       web_view_helper.InitializeAndLoad(base_url_.Utf8() + "long_scroll.html");
-  web_view->MainFrameWidget()->Resize(WebSize(1000, 1000));
+  web_view->MainFrameViewWidget()->Resize(gfx::Size(1000, 1000));
   web_view->MainFrameWidget()->UpdateAllLifecyclePhases(
       DocumentUpdateReason::kTest);
 
@@ -117,7 +117,7 @@ TEST_F(ProgrammaticScrollTest, SaveScrollStateClearsAnchor) {
   frame_test_helpers::WebViewHelper web_view_helper;
   WebViewImpl* web_view =
       web_view_helper.InitializeAndLoad(base_url_.Utf8() + "long_scroll.html");
-  web_view->MainFrameWidget()->Resize(WebSize(1000, 1000));
+  web_view->MainFrameViewWidget()->Resize(gfx::Size(1000, 1000));
   web_view->MainFrameWidget()->UpdateAllLifecyclePhases(
       DocumentUpdateReason::kTest);
 
@@ -143,7 +143,7 @@ TEST_F(ProgrammaticScrollTest, SaveScrollStateClearsAnchor) {
 class ProgrammaticScrollSimTest : public SimTest {};
 
 TEST_F(ProgrammaticScrollSimTest, NavigateToHash) {
-  WebView().MainFrameWidget()->Resize(WebSize(800, 600));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   SimRequest main_resource("https://example.com/test.html#target", "text/html");
   SimSubresourceRequest css_resource("https://example.com/test.css",
                                      "text/css");

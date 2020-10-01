@@ -862,7 +862,7 @@ class ImplicitRootScrollerSimTest : public SimTest {
 // correctly when the Document is the effective root scroller. It becomes the
 // root scroller before Document has a LayoutView.
 TEST_F(ImplicitRootScrollerSimTest, DocumentEffectiveSetsCachedBit) {
-  WebView().MainFrameWidget()->Resize(WebSize(800, 600));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -876,7 +876,7 @@ TEST_F(ImplicitRootScrollerSimTest, DocumentEffectiveSetsCachedBit) {
 // Test that layout from outside a lifecycle wont select a new effective root
 // scroller.
 TEST_F(ImplicitRootScrollerSimTest, NonLifecycleLayoutDoesntCauseReselection) {
-  WebView().MainFrameWidget()->Resize(WebSize(800, 600));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -933,7 +933,7 @@ TEST_F(ImplicitRootScrollerSimTest, NonLifecycleLayoutDoesntCauseReselection) {
 // the current one is valid in all ways except that it no longer has a content
 // frame. This test passes if it doesn't crash. https://crbug.com/805317.
 TEST_F(ImplicitRootScrollerSimTest, RecomputeEffectiveWithNoContentFrame) {
-  WebView().MainFrameWidget()->Resize(WebSize(800, 600));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   SimRequest request("https://example.com/test.html", "text/html");
   SimRequest first_request("https://example.com/first.html", "text/html");
   SimRequest second_request("https://example.com/second.html", "text/html");
@@ -1012,7 +1012,7 @@ TEST_F(ImplicitRootScrollerSimTest, RecomputeEffectiveWithNoContentFrame) {
 // Test that the element is considered to be viewport filling only if its
 // padding box fills the viewport. That means it must have no border.
 TEST_F(ImplicitRootScrollerSimTest, UsePaddingBoxForViewportFillingCondition) {
-  WebView().MainFrameWidget()->Resize(WebSize(800, 600));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -1057,7 +1057,7 @@ TEST_F(ImplicitRootScrollerSimTest, UsePaddingBoxForViewportFillingCondition) {
 // Tests that the root scroller doesn't affect visualViewport pageLeft and
 // pageTop.
 TEST_F(ImplicitRootScrollerSimTest, RootScrollerDoesntAffectVisualViewport) {
-  WebView().MainFrameWidget()->Resize(WebSize(800, 600));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Write(R"HTML(
@@ -1114,7 +1114,7 @@ TEST_F(ImplicitRootScrollerSimTest, ResizeFromResizeAfterLayout) {
   WebView().GetSettings()->SetShrinksViewportContentToFit(true);
   WebView().SetDefaultPageScaleLimits(0.25f, 5);
 
-  WebView().MainFrameWidget()->Resize(WebSize(800, 600));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Write(R"HTML(
@@ -1156,7 +1156,7 @@ TEST_F(ImplicitRootScrollerSimTest, ResizeFromResizeAfterLayout) {
 
 // Tests basic implicit root scroller mode with a <div>.
 TEST_F(ImplicitRootScrollerSimTest, ImplicitRootScroller) {
-  WebView().MainFrameWidget()->Resize(WebSize(800, 600));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -1267,7 +1267,7 @@ TEST_F(ImplicitRootScrollerSimTest, ImplicitRootScroller) {
 // Test that adding overflow to an element that would otherwise be eligable to
 // be implicitly pomoted causes promotion.
 TEST_F(ImplicitRootScrollerSimTest, ImplicitRootScrollerAddOverflow) {
-  WebView().MainFrameWidget()->Resize(WebSize(800, 600));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -1313,7 +1313,7 @@ TEST_F(ImplicitRootScrollerSimTest, ImplicitRootScrollerAddOverflow) {
 // Tests that we don't crash if an implicit candidate is no longer a box. This
 // test passes if it doesn't crash.
 TEST_F(ImplicitRootScrollerSimTest, CandidateLosesLayoutBoxDontCrash) {
-  WebView().MainFrameWidget()->Resize(WebSize(800, 600));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -1354,7 +1354,7 @@ TEST_F(ImplicitRootScrollerSimTest, CandidateLosesLayoutBoxDontCrash) {
 // Ensure that a plugin view being considered for implicit promotion doesn't
 // cause a crash. https://crbug.com/903440.
 TEST_F(ImplicitRootScrollerSimTest, ConsiderEmbedCrash) {
-  WebView().MainFrameWidget()->Resize(WebSize(800, 600));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -1374,7 +1374,7 @@ TEST_F(ImplicitRootScrollerSimTest, ConsiderEmbedCrash) {
 // the main document has overflow.
 TEST_F(ImplicitRootScrollerSimTest,
        ImplicitRootScrollerDocumentScrollsOverflow) {
-  WebView().MainFrameWidget()->Resize(WebSize(800, 600));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -1429,7 +1429,7 @@ TEST_F(ImplicitRootScrollerSimTest,
 
 // Test that we'll only implicitly promote an element if its visible.
 TEST_F(ImplicitRootScrollerSimTest, ImplicitRootScrollerVisibilityCondition) {
-  WebView().MainFrameWidget()->Resize(WebSize(800, 600));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -1506,7 +1506,7 @@ TEST_F(ImplicitRootScrollerSimTest, ImplicitRootScrollerVisibilityCondition) {
 
 // Tests implicit root scroller mode for iframes.
 TEST_F(ImplicitRootScrollerSimTest, ImplicitRootScrollerIframe) {
-  WebView().MainFrameWidget()->Resize(WebSize(800, 600));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -1550,7 +1550,7 @@ TEST_F(ImplicitRootScrollerSimTest, ImplicitRootScrollerIframe) {
 // Tests use counter for implicit root scroller. Ensure it's not counted on a
 // page without an implicit root scroller.
 TEST_F(ImplicitRootScrollerSimTest, UseCounterNegative) {
-  WebView().MainFrameWidget()->Resize(WebSize(800, 600));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -1592,7 +1592,7 @@ TEST_F(ImplicitRootScrollerSimTest, UseCounterNegative) {
 // Tests use counter for implicit root scroller. Ensure it's counted on a
 // page that loads with an implicit root scroller.
 TEST_F(ImplicitRootScrollerSimTest, UseCounterPositive) {
-  WebView().MainFrameWidget()->Resize(WebSize(800, 600));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -1643,7 +1643,7 @@ TEST_F(ImplicitRootScrollerSimTest, UseCounterPositive) {
 // Tests use counter for implicit root scroller. Ensure it's counted on a
 // page that loads without an implicit root scroller but later gets one.
 TEST_F(ImplicitRootScrollerSimTest, UseCounterPositiveAfterLoad) {
-  WebView().MainFrameWidget()->Resize(WebSize(800, 600));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -1695,7 +1695,7 @@ TEST_F(ImplicitRootScrollerSimTest, UseCounterPositiveAfterLoad) {
 // properties in the event of a layout tree reattachment which causes the
 // LayoutObject to be disposed and replaced with a new one.
 TEST_F(ImplicitRootScrollerSimTest, LayoutTreeReplaced) {
-  WebView().MainFrameWidget()->Resize(WebSize(800, 600));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -1740,7 +1740,7 @@ TEST_F(ImplicitRootScrollerSimTest, LayoutTreeReplaced) {
 // Tests that if we have multiple valid candidates for implicit promotion, we
 // don't promote either.
 TEST_F(ImplicitRootScrollerSimTest, DontPromoteWhenMultipleAreValid) {
-  WebView().MainFrameWidget()->Resize(WebSize(800, 600));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -1795,7 +1795,7 @@ TEST_F(ImplicitRootScrollerSimTest, DontPromoteWhenMultipleAreValid) {
 // Test that when a valid iframe becomes loaded and thus should be promoted, it
 // becomes the root scroller, without needing an intervening layout.
 TEST_F(ImplicitRootScrollerSimTest, IframeLoadedWithoutLayout) {
-  WebView().MainFrameWidget()->Resize(WebSize(800, 600));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   SimRequest main_request("https://example.com/test.html", "text/html");
   SimRequest child_request("https://example.com/child.html", "text/html");
   LoadURL("https://example.com/test.html");
@@ -1846,7 +1846,7 @@ TEST_F(ImplicitRootScrollerSimTest, IframeLoadedWithoutLayout) {
 // causes it to remain the effective root scroller after the navigation (to a
 // page where it remains valid) is finished.
 TEST_F(ImplicitRootScrollerSimTest, NavigateToValidRemainsRootScroller) {
-  WebView().MainFrameWidget()->Resize(WebSize(800, 600));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   SimRequest main_request("https://example.com/test.html", "text/html");
   SimRequest child_request("https://example.com/child.html", "text/html");
   LoadURL("https://example.com/test.html");
@@ -1919,7 +1919,7 @@ TEST_F(ImplicitRootScrollerSimTest, NavigateToValidRemainsRootScroller) {
 // Ensure that scroll restoration logic in the document does not apply
 // to the implicit root scroller, but rather to the document's LayoutViewport.
 TEST_F(ImplicitRootScrollerSimTest, ScrollRestorationIgnoresImplicit) {
-  WebView().MainFrameWidget()->Resize(WebSize(800, 600));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   SimRequest main_request("https://example.com/test.html", "text/html");
   SimRequest child_request("https://example.com/child.html", "text/html");
   LoadURL("https://example.com/test.html");
@@ -2069,7 +2069,7 @@ TEST_F(ImplicitRootScrollerSimTest,
 // Tests that implicit is continually reevaluating whether to promote or demote
 // a scroller.
 TEST_F(ImplicitRootScrollerSimTest, ContinuallyReevaluateImplicitPromotion) {
-  WebView().MainFrameWidget()->Resize(WebSize(800, 600));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -2155,7 +2155,7 @@ TEST_F(ImplicitRootScrollerSimTest, ContinuallyReevaluateImplicitPromotion) {
 // Tests that implicit mode correctly recognizes when an iframe becomes
 // scrollable.
 TEST_F(ImplicitRootScrollerSimTest, IframeScrollingAffectsPromotion) {
-  WebView().MainFrameWidget()->Resize(WebSize(800, 600));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -2761,7 +2761,7 @@ TEST_F(ImplicitRootScrollerSimTest, FieldsetNGCantBeRootScroller) {
   if (!RuntimeEnabledFeatures::LayoutNGEnabled())
     return;
 
-  WebView().MainFrameWidget()->Resize(WebSize(800, 600));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(

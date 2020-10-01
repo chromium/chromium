@@ -25,7 +25,7 @@ class AutoscrollControllerTest : public SimTest {
 // Ensure Autoscroll not crash by layout called in UpdateSelectionForMouseDrag.
 TEST_F(AutoscrollControllerTest,
        CrashWhenLayoutStopAnimationBeforeScheduleAnimation) {
-  WebView().MainFrameWidget()->Resize(WebSize(800, 600));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   WebView().SetBaseBackgroundColorOverride(SK_ColorTRANSPARENT);
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
@@ -83,7 +83,7 @@ TEST_F(AutoscrollControllerTest,
 
 // Ensure that autoscrolling continues when the MouseLeave event is fired.
 TEST_F(AutoscrollControllerTest, ContinueAutoscrollAfterMouseLeaveEvent) {
-  WebView().MainFrameWidget()->Resize(WebSize(800, 600));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -123,7 +123,7 @@ TEST_F(AutoscrollControllerTest, ContinueAutoscrollAfterMouseLeaveEvent) {
 
 // Ensure that autoscrolling stops when scrolling is no longer available.
 TEST_F(AutoscrollControllerTest, StopAutoscrollOnResize) {
-  WebView().MainFrameWidget()->Resize(WebSize(800, 600));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -151,7 +151,7 @@ TEST_F(AutoscrollControllerTest, StopAutoscrollOnResize) {
 
   // Confirm that it correctly stops autoscrolling when scrolling is no longer
   // possible
-  WebView().MainFrameWidget()->Resize(WebSize(840, 640));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(840, 640));
 
   WebMouseEvent mouse_move_event(WebInputEvent::Type::kMouseMove,
                                  WebInputEvent::kNoModifiers,
@@ -164,7 +164,7 @@ TEST_F(AutoscrollControllerTest, StopAutoscrollOnResize) {
 
   // Confirm that autoscrolling doesn't restart when scrolling is available
   // again
-  WebView().MainFrameWidget()->Resize(WebSize(800, 600));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
 
   WebMouseEvent mouse_move_event2(WebInputEvent::Type::kMouseMove,
                                   WebInputEvent::kNoModifiers,

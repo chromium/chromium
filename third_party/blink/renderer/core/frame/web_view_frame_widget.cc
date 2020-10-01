@@ -55,13 +55,13 @@ void WebViewFrameWidget::Close(
   self_keep_alive_.Clear();
 }
 
-WebSize WebViewFrameWidget::Size() {
-  return web_view_->Size();
+gfx::Size WebViewFrameWidget::Size() {
+  return gfx::Size(web_view_->Size());
 }
 
-void WebViewFrameWidget::Resize(const WebSize& size) {
-  size_ = gfx::Size(size);
-  web_view_->Resize(size);
+void WebViewFrameWidget::Resize(const gfx::Size& size) {
+  size_ = size;
+  web_view_->Resize(WebSize(size));
 }
 
 void WebViewFrameWidget::SetSuppressFrameRequestsWorkaroundFor704763Only(
@@ -325,7 +325,7 @@ void WebViewFrameWidget::SetDeviceScaleFactorForTesting(float factor) {
   if (!AutoResizeMode()) {
     // This picks up the new device scale factor as
     // UpdateCompositorViewportAndScreenInfo has applied a new value.
-    Resize(WebSize(widget_base_->DIPsToCeiledBlinkSpace(size_in_dips)));
+    Resize(widget_base_->DIPsToCeiledBlinkSpace(size_in_dips));
   }
 }
 
@@ -444,7 +444,7 @@ void WebViewFrameWidget::SetScreenInfoAndSize(
 
   UpdateScreenInfo(screen_info);
   widget_base_->SetVisibleViewportSizeInDIPs(visible_viewport_size_in_dips);
-  Resize(WebSize(widget_base_->DIPsToCeiledBlinkSpace(widget_size_in_dips)));
+  Resize(widget_base_->DIPsToCeiledBlinkSpace(widget_size_in_dips));
 }
 
 void WebViewFrameWidget::SetWindowRectSynchronouslyForTesting(
@@ -473,7 +473,7 @@ void WebViewFrameWidget::SetWindowRectSynchronously(
       widget_base_->local_surface_id_from_parent(),
       compositor_viewport_pixel_rect, widget_base_->GetScreenInfo());
 
-  Resize(WebSize(new_window_rect.size()));
+  Resize(new_window_rect.size());
   widget_base_->SetScreenRects(new_window_rect, new_window_rect);
 }
 

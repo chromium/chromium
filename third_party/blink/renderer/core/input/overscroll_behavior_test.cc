@@ -30,7 +30,7 @@ class OverscrollBehaviorTest : public SimTest {
 void OverscrollBehaviorTest::SetUp() {
   SimTest::SetUp();
   v8::HandleScope HandleScope(v8::Isolate::GetCurrent());
-  WebView().MainFrameWidget()->Resize(WebSize(400, 400));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(400, 400));
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(

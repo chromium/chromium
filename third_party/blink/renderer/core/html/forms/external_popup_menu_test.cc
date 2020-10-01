@@ -153,7 +153,7 @@ class ExternalPopupMenuTest : public testing::Test {
 
   void LoadFrame(const std::string& file_name) {
     frame_test_helpers::LoadFrame(MainFrame(), base_url_ + file_name);
-    WebView()->MainFrameWidget()->Resize(WebSize(800, 600));
+    WebView()->MainFrameViewWidget()->Resize(gfx::Size(800, 600));
     WebView()->MainFrameWidget()->UpdateAllLifecyclePhases(
         DocumentUpdateReason::kTest);
   }
@@ -189,7 +189,7 @@ TEST_F(ExternalPopupMenuTest, PopupAccountsForVisualViewportTransform) {
   RegisterMockedURLLoad("select_mid_screen.html");
   LoadFrame("select_mid_screen.html");
 
-  WebView()->MainFrameWidget()->Resize(WebSize(100, 100));
+  WebView()->MainFrameViewWidget()->Resize(gfx::Size(100, 100));
   WebView()->MainFrameWidget()->UpdateAllLifecyclePhases(
       DocumentUpdateReason::kTest);
 

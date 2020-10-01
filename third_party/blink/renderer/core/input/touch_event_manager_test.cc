@@ -48,7 +48,7 @@ class CheckEventListenerCallback final : public NativeEventListener {
 };
 
 TEST_F(TouchEventManagerTest, LostTouchDueToInnerIframeRemove) {
-  WebView().MainFrameWidget()->Resize(WebSize(400, 400));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(400, 400));
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -81,7 +81,7 @@ TEST_F(TouchEventManagerTest, LostTouchDueToInnerIframeRemove) {
 }
 
 TEST_F(TouchEventManagerTest, AbosolutePosWithScrollAndZoom) {
-  WebView().MainFrameWidget()->Resize(WebSize(400, 400));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(400, 400));
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(

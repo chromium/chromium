@@ -613,9 +613,9 @@ void WebPagePopupImpl::UpdateLifecycle(WebLifecycleUpdate requested_update,
                                       DocumentUpdateReason::kPagePopup);
 }
 
-void WebPagePopupImpl::Resize(const WebSize& new_size_in_viewport) {
+void WebPagePopupImpl::Resize(const gfx::Size& new_size_in_viewport) {
   gfx::Size new_size_in_dips =
-      widget_base_->BlinkSpaceToFlooredDIPs(gfx::Size(new_size_in_viewport));
+      widget_base_->BlinkSpaceToFlooredDIPs(new_size_in_viewport);
   gfx::Rect window_rect_in_dips = WindowRectInScreen();
 
   // TODO(bokan): We should only call into this if the bounds actually changed
@@ -624,8 +624,8 @@ void WebPagePopupImpl::Resize(const WebSize& new_size_in_viewport) {
   SetWindowRect(IntRect(window_rect_in_dips));
 
   if (page_) {
-    MainFrame().View()->Resize(new_size_in_viewport);
-    page_->GetVisualViewport().SetSize(new_size_in_viewport);
+    MainFrame().View()->Resize(WebSize(new_size_in_viewport));
+    page_->GetVisualViewport().SetSize(WebSize(new_size_in_viewport));
   }
 }
 
@@ -814,8 +814,7 @@ void WebPagePopupImpl::UpdateVisualProperties(
   widget_base_->SetVisibleViewportSizeInDIPs(
       visual_properties.visible_viewport_size);
 
-  Resize(WebSize(
-      widget_base_->DIPsToCeiledBlinkSpace(visual_properties.new_size)));
+  Resize(widget_base_->DIPsToCeiledBlinkSpace(visual_properties.new_size));
 }
 
 const ScreenInfo& WebPagePopupImpl::GetOriginalScreenInfo() {

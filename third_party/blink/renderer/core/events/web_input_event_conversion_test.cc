@@ -124,8 +124,8 @@ TEST(WebInputEventConversionTest, InputEventsScaling) {
   web_view->GetSettings()->SetViewportEnabled(true);
   int page_width = 640;
   int page_height = 480;
-  web_view->MainFrameWidget()->Resize(WebSize(page_width, page_height));
-  web_view->MainFrameWidget()->UpdateAllLifecyclePhases(
+  web_view->MainFrameViewWidget()->Resize(gfx::Size(page_width, page_height));
+  web_view->MainFrameViewWidget()->UpdateAllLifecyclePhases(
       DocumentUpdateReason::kTest);
 
   web_view->SetPageScaleFactor(3);
@@ -346,8 +346,8 @@ TEST(WebInputEventConversionTest, InputEventsTransform) {
   web_view->GetSettings()->SetViewportEnabled(true);
   int page_width = 640;
   int page_height = 480;
-  web_view->MainFrameWidget()->Resize(WebSize(page_width, page_height));
-  web_view->MainFrameWidget()->UpdateAllLifecyclePhases(
+  web_view->MainFrameViewWidget()->Resize(gfx::Size(page_width, page_height));
+  web_view->MainFrameViewWidget()->UpdateAllLifecyclePhases(
       DocumentUpdateReason::kTest);
 
   web_view->SetPageScaleFactor(2);
@@ -610,8 +610,8 @@ TEST(WebInputEventConversionTest, InputEventsConversions) {
       web_view_helper.InitializeAndLoad(base_url + file_name);
   int page_width = 640;
   int page_height = 480;
-  web_view->MainFrameWidget()->Resize(WebSize(page_width, page_height));
-  web_view->MainFrameWidget()->UpdateAllLifecyclePhases(
+  web_view->MainFrameViewWidget()->Resize(gfx::Size(page_width, page_height));
+  web_view->MainFrameViewWidget()->UpdateAllLifecyclePhases(
       DocumentUpdateReason::kTest);
 
   LocalFrameView* view =
@@ -649,8 +649,8 @@ TEST(WebInputEventConversionTest, VisualViewportOffset) {
       web_view_helper.InitializeAndLoad(base_url + file_name);
   int page_width = 640;
   int page_height = 480;
-  web_view->MainFrameWidget()->Resize(WebSize(page_width, page_height));
-  web_view->MainFrameWidget()->UpdateAllLifecyclePhases(
+  web_view->MainFrameViewWidget()->Resize(gfx::Size(page_width, page_height));
+  web_view->MainFrameViewWidget()->UpdateAllLifecyclePhases(
       DocumentUpdateReason::kTest);
 
   web_view->SetPageScaleFactor(2);
@@ -749,15 +749,15 @@ TEST(WebInputEventConversionTest, ElasticOverscroll) {
       web_view_helper.InitializeAndLoad(base_url + file_name);
   int page_width = 640;
   int page_height = 480;
-  web_view->MainFrameWidget()->Resize(WebSize(page_width, page_height));
-  web_view->MainFrameWidget()->UpdateAllLifecyclePhases(
+  web_view->MainFrameViewWidget()->Resize(gfx::Size(page_width, page_height));
+  web_view->MainFrameViewWidget()->UpdateAllLifecyclePhases(
       DocumentUpdateReason::kTest);
 
   LocalFrameView* view =
       To<LocalFrame>(web_view->GetPage()->MainFrame())->View();
 
   gfx::Vector2dF elastic_overscroll(10, -20);
-  web_view->MainFrameWidget()->ApplyViewportChangesForTesting(
+  web_view->MainFrameViewWidget()->ApplyViewportChangesForTesting(
       {gfx::ScrollOffset(), elastic_overscroll, 1.0f, false, 0.0f});
 
   // Just elastic overscroll.
@@ -826,12 +826,12 @@ TEST(WebInputEventConversionTest, ElasticOverscrollWithPageReload) {
       web_view_helper.InitializeAndLoad(base_url + file_name);
   int page_width = 640;
   int page_height = 480;
-  web_view->MainFrameWidget()->Resize(WebSize(page_width, page_height));
-  web_view->MainFrameWidget()->UpdateAllLifecyclePhases(
+  web_view->MainFrameViewWidget()->Resize(gfx::Size(page_width, page_height));
+  web_view->MainFrameViewWidget()->UpdateAllLifecyclePhases(
       DocumentUpdateReason::kTest);
 
   gfx::Vector2dF elastic_overscroll(10, -20);
-  web_view->MainFrameWidget()->ApplyViewportChangesForTesting(
+  web_view->MainFrameViewWidget()->ApplyViewportChangesForTesting(
       {gfx::ScrollOffset(), elastic_overscroll, 1.0f, false, 0.0f});
   frame_test_helpers::ReloadFrame(
       web_view_helper.GetWebView()->MainFrameImpl());

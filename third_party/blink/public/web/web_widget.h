@@ -50,7 +50,6 @@
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_input_event_result.h"
 #include "third_party/blink/public/platform/web_rect.h"
-#include "third_party/blink/public/platform/web_size.h"
 #include "third_party/blink/public/platform/web_text_input_info.h"
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_hit_test_result.h"
@@ -107,10 +106,10 @@ class WebWidget {
   virtual void SetCompositorVisible(bool visible) = 0;
 
   // Returns the current size of the WebWidget.
-  virtual WebSize Size() { return WebSize(); }
+  virtual gfx::Size Size() { return gfx::Size(); }
 
   // Called to resize the WebWidget.
-  virtual void Resize(const WebSize&) {}
+  virtual void Resize(const gfx::Size&) {}
 
   // Called to run through the entire set of document lifecycle phases needed
   // to render a frame of the web widget. This MUST be called before Paint,

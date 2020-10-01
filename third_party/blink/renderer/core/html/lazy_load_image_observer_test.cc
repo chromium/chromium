@@ -329,7 +329,7 @@ TEST_P(LazyLoadImagesSimTest, ImgSrcset) {
   EXPECT_FALSE(ConsoleMessages().Contains("deferred_image onload"));
 
   // Resizing should not load the image.
-  WebView().MainFrameWidget()->Resize(WebSize(200, 1));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(200, 1));
   Compositor().BeginFrame();
   test::RunPendingTasks();
   EXPECT_FALSE(ConsoleMessages().Contains("deferred_image onload"));
@@ -419,8 +419,8 @@ class LazyLoadImagesParamsTest : public SimTest,
         1000 /*http_rtt_msec*/, 100 /*max_bandwidth_mbps*/);
 
     SimTest::SetUp();
-    WebView().MainFrameWidget()->Resize(
-        WebSize(kViewportWidth, kViewportHeight));
+    WebView().MainFrameViewWidget()->Resize(
+        gfx::Size(kViewportWidth, kViewportHeight));
 
     Settings& settings = WebView().GetPage()->GetSettings();
 
@@ -749,8 +749,8 @@ class LazyLoadAutomaticImagesTest : public SimTest {
         WebEffectiveConnectionType::kType4G, 1000 /*http_rtt_msec*/,
         100 /*max_bandwidth_mbps*/);
     SimTest::SetUp();
-    WebView().MainFrameWidget()->Resize(
-        WebSize(kViewportWidth, kViewportHeight));
+    WebView().MainFrameViewWidget()->Resize(
+        gfx::Size(kViewportWidth, kViewportHeight));
 
     Settings& settings = WebView().GetPage()->GetSettings();
     settings.SetLazyImageLoadingDistanceThresholdPx4G(

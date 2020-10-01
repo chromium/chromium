@@ -46,7 +46,7 @@ class FrameThrottlingTest : public PaintTestConfigurations, public SimTest {
  protected:
   void SetUp() override {
     SimTest::SetUp();
-    WebView().MainFrameWidget()->Resize(WebSize(640, 480));
+    WebView().MainFrameViewWidget()->Resize(gfx::Size(640, 480));
   }
 
   SimCanvas::Commands CompositeFrame() {
@@ -1659,7 +1659,7 @@ TEST_P(FrameThrottlingTest, NestedFramesInRemoteFrameHiddenAndShown) {
   intersection.main_frame_intersection = WebRect(0, 0, 100, 100);
   intersection.main_frame_viewport_size = WebSize(100, 100);
   intersection.viewport_intersection = WebRect(0, 0, 100, 100);
-  LocalFrameRoot().FrameWidget()->Resize(WebSize(300, 200));
+  LocalFrameRoot().FrameWidget()->Resize(gfx::Size(300, 200));
   LocalFrameRoot().FrameWidget()->SetRemoteViewportIntersection(intersection);
 
   auto* root_frame = LocalFrameRoot().GetFrame();

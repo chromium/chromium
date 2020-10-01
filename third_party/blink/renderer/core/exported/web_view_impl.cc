@@ -3239,8 +3239,7 @@ void WebViewImpl::DisableAutoResizeForTesting(
   // The |new_size| is empty when resetting auto resize in between tests. In
   // this case the current size should just be preserved.
   if (!new_window_size.IsEmpty()) {
-    web_widget_->Resize(
-        WebSize(web_widget_->DIPsToCeiledBlinkSpace(new_window_size)));
+    web_widget_->Resize(web_widget_->DIPsToCeiledBlinkSpace(new_window_size));
   }
 }
 

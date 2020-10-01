@@ -75,11 +75,11 @@ WebURL WebExternalWidgetImpl::GetURLForDebugTrace() {
   return debug_url_;
 }
 
-WebSize WebExternalWidgetImpl::Size() {
+gfx::Size WebExternalWidgetImpl::Size() {
   return size_;
 }
 
-void WebExternalWidgetImpl::Resize(const WebSize& size) {
+void WebExternalWidgetImpl::Resize(const gfx::Size& size) {
   if (size_ == size)
     return;
   size_ = size;
@@ -180,8 +180,7 @@ void WebExternalWidgetImpl::UpdateVisualProperties(
       visual_properties.screen_info);
   widget_base_->SetVisibleViewportSizeInDIPs(
       visual_properties.visible_viewport_size);
-  Resize(WebSize(
-      widget_base_->DIPsToCeiledBlinkSpace(visual_properties.new_size)));
+  Resize(widget_base_->DIPsToCeiledBlinkSpace(visual_properties.new_size));
   client_->DidUpdateVisualProperties();
 }
 

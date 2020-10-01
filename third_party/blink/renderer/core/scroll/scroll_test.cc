@@ -41,7 +41,7 @@ class FractionalScrollSimTest : public SimTest {
 };
 
 TEST_F(FractionalScrollSimTest, GetBoundingClientRectAtFractional) {
-  WebView().MainFrameWidget()->Resize(WebSize(800, 600));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -81,7 +81,7 @@ TEST_F(FractionalScrollSimTest, GetBoundingClientRectAtFractional) {
 }
 
 TEST_F(FractionalScrollSimTest, NoRepaintOnScrollFromSubpixel) {
-  WebView().MainFrameWidget()->Resize(WebSize(800, 600));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -148,7 +148,7 @@ class ScrollAnimatorSimTest : public SimTest {};
 // layout viewport.
 TEST_F(ScrollAnimatorSimTest, TestRootFrameLayoutViewportUserScrollCallBack) {
   GetDocument().GetFrame()->GetSettings()->SetScrollAnimatorEnabled(true);
-  WebView().MainFrameWidget()->Resize(WebSize(800, 500));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 500));
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -189,7 +189,7 @@ TEST_F(ScrollAnimatorSimTest, TestRootFrameLayoutViewportUserScrollCallBack) {
 // visual viewport.
 TEST_F(ScrollAnimatorSimTest, TestRootFrameVisualViewporUserScrollCallBack) {
   GetDocument().GetFrame()->GetSettings()->SetScrollAnimatorEnabled(true);
-  WebView().MainFrameWidget()->Resize(WebSize(800, 500));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 500));
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -231,7 +231,7 @@ TEST_F(ScrollAnimatorSimTest, TestRootFrameVisualViewporUserScrollCallBack) {
 // the layout and visual viewport.
 TEST_F(ScrollAnimatorSimTest, TestRootFrameBothViewportsUserScrollCallBack) {
   GetDocument().GetFrame()->GetSettings()->SetScrollAnimatorEnabled(true);
-  WebView().MainFrameWidget()->Resize(WebSize(800, 500));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 500));
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -278,7 +278,7 @@ TEST_F(ScrollAnimatorSimTest, TestRootFrameBothViewportsUserScrollCallBack) {
 #endif
 TEST_F(ScrollAnimatorSimTest, MAYBE_TestDivUserScrollCallBack) {
   GetDocument().GetSettings()->SetScrollAnimatorEnabled(true);
-  WebView().MainFrameWidget()->Resize(WebSize(800, 500));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 500));
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -326,7 +326,7 @@ TEST_F(ScrollAnimatorSimTest, MAYBE_TestDivUserScrollCallBack) {
 // ScrollAnimatorBase::UserScroll when animation is disabled.
 TEST_F(ScrollAnimatorSimTest, TestUserScrollCallBackAnimatorDisabled) {
   GetDocument().GetFrame()->GetSettings()->SetScrollAnimatorEnabled(false);
-  WebView().MainFrameWidget()->Resize(WebSize(800, 500));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 500));
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -359,7 +359,7 @@ TEST_F(ScrollAnimatorSimTest, TestUserScrollCallBackAnimatorDisabled) {
 // scroll will cancel the animation.
 TEST_F(ScrollAnimatorSimTest, TestRootFrameUserScrollCallBackCancelAnimation) {
   GetDocument().GetFrame()->GetSettings()->SetScrollAnimatorEnabled(true);
-  WebView().MainFrameWidget()->Resize(WebSize(800, 500));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 500));
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -508,7 +508,7 @@ struct TestCase {
 
 TEST_F(ScrollInfacesUseCounterSimTest, ScrollTestAll) {
   v8::HandleScope handle_scope(v8::Isolate::GetCurrent());
-  WebView().MainFrameWidget()->Resize(WebSize(800, 600));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   const Vector<TestCase> test_cases = {
       {"ltr", "horizontal-tb", false, false},
       {"rtl", "horizontal-tb", true, false},

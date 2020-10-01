@@ -516,7 +516,7 @@ class RenderViewImplTest : public RenderViewTest {
 
   int GetScrollbarWidth() {
     blink::WebView* webview = view()->GetWebView();
-    return webview->MainFrameWidget()->Size().width -
+    return webview->MainFrameWidget()->Size().width() -
            webview->MainFrame()->ToWebLocalFrame()->VisibleContentRect().width;
   }
 
@@ -1314,7 +1314,7 @@ TEST_F(RenderViewImplEnableZoomForDSFTest,
   base::string16 get_width =
       base::ASCIIToUTF16("Number(document.documentElement.clientWidth)");
   EXPECT_TRUE(ExecuteJavaScriptAndReturnIntValue(get_width, &width));
-  EXPECT_EQ(view()->GetWebView()->MainFrameWidget()->Size().width,
+  EXPECT_EQ(view()->GetWebView()->MainFrameWidget()->Size().width(),
             width * device_scale);
 }
 

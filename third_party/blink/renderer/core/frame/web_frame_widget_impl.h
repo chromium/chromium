@@ -88,8 +88,8 @@ class WebFrameWidgetImpl final : public WebFrameWidgetBase,
   // WebWidget functions:
   void Close(
       scoped_refptr<base::SingleThreadTaskRunner> cleanup_runner) override;
-  WebSize Size() override;
-  void Resize(const WebSize&) override;
+  gfx::Size Size() override;
+  void Resize(const gfx::Size&) override;
   void UpdateLifecycle(WebLifecycleUpdate requested_update,
                        DocumentUpdateReason reason) override;
   void ThemeChanged() override;
@@ -202,7 +202,7 @@ class WebFrameWidgetImpl final : public WebFrameWidgetBase,
       PhysicalRect& rect_to_scroll,
       mojom::blink::ScrollIntoViewParamsPtr& params);
 
-  base::Optional<WebSize> size_;
+  base::Optional<gfx::Size> size_;
 
   // If set, the (plugin) element which has mouse capture.
   Member<HTMLPlugInElement> mouse_capture_element_;

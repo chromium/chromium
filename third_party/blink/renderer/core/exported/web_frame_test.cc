@@ -2971,7 +2971,7 @@ class WebFrameResizeTest : public WebFrameTest {
           WebSize(viewport_size.width, viewport_size.height));
       web_view_helper.GetWebView()->SetPageScaleFactor(
           initial_page_scale_factor);
-      ASSERT_EQ(viewport_size,
+      ASSERT_EQ(gfx::Size(viewport_size),
                 web_view_helper.GetWebView()->MainFrameWidget()->Size());
       ASSERT_EQ(initial_page_scale_factor,
                 web_view_helper.GetWebView()->PageScaleFactor());
@@ -4932,7 +4932,8 @@ TEST_F(WebFrameTest, FindInPageActiveIndex) {
   frame_test_helpers::WebViewHelper web_view_helper;
   web_view_helper.InitializeAndLoad(base_url_ + "find_match_count.html",
                                     &frame_client);
-  web_view_helper.GetWebView()->MainFrameWidget()->Resize(WebSize(640, 480));
+  web_view_helper.GetWebView()->MainFrameViewWidget()->Resize(
+      gfx::Size(640, 480));
   RunPendingTasks();
 
   const char* kFindString = "a";
@@ -11230,7 +11231,7 @@ TEST_F(WebFrameTest, SaveImageAt) {
 
   WebViewImpl* web_view =
       web_view_helper.InitializeAndLoad(url, &web_frame_client);
-  web_view->MainFrameWidget()->Resize(WebSize(400, 400));
+  web_view->MainFrameViewWidget()->Resize(gfx::Size(400, 400));
   UpdateAllLifecyclePhases(web_view);
 
   LocalFrame* local_frame = To<LocalFrame>(web_view->GetPage()->MainFrame());
@@ -11279,7 +11280,7 @@ TEST_F(WebFrameTest, SaveImageWithImageMap) {
   frame_test_helpers::TestWebFrameClient client;
   frame_host.Init(client.GetRemoteNavigationAssociatedInterfaces());
   WebViewImpl* web_view = helper.InitializeAndLoad(url, &client);
-  web_view->MainFrameWidget()->Resize(WebSize(400, 400));
+  web_view->MainFrameViewWidget()->Resize(gfx::Size(400, 400));
   RunPendingTasks();
 
   LocalFrame* local_frame = To<LocalFrame>(web_view->GetPage()->MainFrame());
@@ -11320,7 +11321,7 @@ TEST_F(WebFrameTest, CopyImageWithImageMap) {
   frame_test_helpers::TestWebFrameClient client;
   frame_host.Init(client.GetRemoteNavigationAssociatedInterfaces());
   WebViewImpl* web_view = helper.InitializeAndLoad(url, &client);
-  web_view->MainFrameWidget()->Resize(WebSize(400, 400));
+  web_view->MainFrameViewWidget()->Resize(gfx::Size(400, 400));
   RunPendingTasks();
 
   frame_host.Reset();
@@ -11717,7 +11718,7 @@ class WebFrameSimTest : public SimTest {
 };
 
 TEST_F(WebFrameSimTest, HitTestWithIgnoreClippingAtNegativeOffset) {
-  WebView().MainFrameWidget()->Resize(WebSize(500, 300));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(500, 300));
   WebView().GetPage()->GetSettings().SetTextAutosizingEnabled(false);
 
   SimRequest r("https://example.com/test.html", "text/html");
@@ -11768,7 +11769,7 @@ TEST_F(WebFrameSimTest, HitTestWithIgnoreClippingAtNegativeOffset) {
 }
 
 TEST_F(WebFrameSimTest, TickmarksDocumentRelative) {
-  WebView().MainFrameWidget()->Resize(WebSize(500, 300));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(500, 300));
   WebView().GetPage()->GetSettings().SetTextAutosizingEnabled(false);
 
   SimRequest request("https://example.com/test.html", "text/html");
@@ -11817,7 +11818,7 @@ TEST_F(WebFrameSimTest, TickmarksDocumentRelative) {
 }
 
 TEST_F(WebFrameSimTest, FindInPageSelectNextMatch) {
-  WebView().MainFrameWidget()->Resize(WebSize(500, 300));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(500, 300));
   WebView().GetPage()->GetSettings().SetTextAutosizingEnabled(false);
 
   SimRequest request("https://example.com/test.html", "text/html");
@@ -11895,7 +11896,7 @@ TEST_F(WebFrameSimTest, FindInPageSelectNextMatch) {
 // Test bubbling a document (End key) scroll from an inner iframe. This test
 // passes if it does not crash. https://crbug.com/904247.
 TEST_F(WebFrameSimTest, ScrollToEndBubblingCrash) {
-  WebView().MainFrameWidget()->Resize(WebSize(500, 300));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(500, 300));
   WebView().GetPage()->GetSettings().SetScrollAnimatorEnabled(false);
 
   SimRequest request("https://example.com/test.html", "text/html");
@@ -11951,7 +11952,7 @@ TEST_F(WebFrameSimTest, ScrollToEndBubblingCrash) {
 }
 
 TEST_F(WebFrameSimTest, TestScrollFocusedEditableElementIntoView) {
-  WebView().MainFrameWidget()->Resize(WebSize(500, 300));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(500, 300));
   WebView().SetDefaultPageScaleLimits(1.f, 4);
   WebView().EnableFakePageScaleAnimationForTesting(true);
   WebView().GetPage()->GetSettings().SetTextAutosizingEnabled(false);
@@ -12056,7 +12057,7 @@ TEST_F(WebFrameSimTest, TestScrollFocusedEditableElementIntoView) {
 TEST_F(WebFrameSimTest, TestScrollFocusedEditableInRootScroller) {
   ScopedImplicitRootScrollerForTest implicit_root_scroller(true);
 
-  WebView().MainFrameWidget()->Resize(WebSize(500, 300));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(500, 300));
   WebView().SetDefaultPageScaleLimits(1.f, 4);
   WebView().EnableFakePageScaleAnimationForTesting(true);
   WebView().GetPage()->GetSettings().SetTextAutosizingEnabled(false);
@@ -12149,7 +12150,7 @@ TEST_F(WebFrameSimTest, ScrollFocusedIntoViewClipped) {
   // input visible, we need to also scroll those clip/scroller elements  This
   // test ensures we do so. https://crbug.com/270018.
   UseAndroidSettings();
-  WebView().MainFrameWidget()->Resize(WebSize(400, 600));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(400, 600));
   WebView().EnableFakePageScaleAnimationForTesting(true);
   WebView().GetPage()->GetSettings().SetTextAutosizingEnabled(false);
 
@@ -12203,7 +12204,7 @@ TEST_F(WebFrameSimTest, ScrollFocusedIntoViewClipped) {
 
   // Simulate the keyboard being shown and resizing the widget. Cause a scroll
   // into view after.
-  WebView().MainFrameWidget()->Resize(WebSize(400, 300));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(400, 300));
 
   float scale_before = visual_viewport.Scale();
   WebView()
@@ -12242,7 +12243,7 @@ TEST_F(WebFrameSimTest, ScrollFocusedIntoViewClipped) {
 //  element has a selection rather than a carret.
 TEST_F(WebFrameSimTest, ScrollFocusedSelectionIntoView) {
   UseAndroidSettings();
-  WebView().MainFrameWidget()->Resize(WebSize(400, 600));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(400, 600));
   WebView().EnableFakePageScaleAnimationForTesting(true);
   WebView().GetPage()->GetSettings().SetTextAutosizingEnabled(false);
 
@@ -12291,7 +12292,7 @@ TEST_F(WebFrameSimTest, ScrollFocusedSelectionIntoView) {
 
 TEST_F(WebFrameSimTest, DoubleTapZoomWhileScrolled) {
   UseAndroidSettings();
-  WebView().MainFrameWidget()->Resize(WebSize(490, 500));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(490, 500));
   WebView().EnableFakePageScaleAnimationForTesting(true);
   WebView().GetSettings()->SetTextAutosizingEnabled(false);
   WebView().SetDefaultPageScaleLimits(0.5f, 4);
@@ -12401,7 +12402,7 @@ TEST_F(WebFrameSimTest, ChangeBackgroundColor) {
 // Ensure we don't crash if we try to scroll into view the focused editable
 // element which doesn't have a LayoutObject.
 TEST_F(WebFrameSimTest, ScrollFocusedEditableIntoViewNoLayoutObject) {
-  WebView().MainFrameWidget()->Resize(WebSize(500, 600));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(500, 600));
   WebView().GetPage()->GetSettings().SetTextAutosizingEnabled(false);
 
   SimRequest r("https://example.com/test.html", "text/html");
@@ -12440,7 +12441,7 @@ TEST_F(WebFrameSimTest, ScrollFocusedEditableIntoViewNoLayoutObject) {
   // The resize should cause the focused element to lose its LayoutObject. If
   // this resize came from the Android on-screen keyboard, this would be
   // followed by a ScrollFocusedEditableElementIntoView. Ensure we don't crash.
-  WebView().MainFrameWidget()->Resize(WebSize(500, 300));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(500, 300));
 
   ASSERT_FALSE(input->GetLayoutObject());
   ASSERT_EQ(input, WebView().FocusedElement());
@@ -12540,7 +12541,7 @@ TEST_F(WebFrameSimTest, NormalIFrameHasLayoutObjects) {
 TEST_F(WebFrameSimTest, RtlInitialScrollOffsetWithViewport) {
   UseAndroidSettings();
 
-  WebView().MainFrameWidget()->Resize(WebSize(400, 400));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(400, 400));
   WebView().SetDefaultPageScaleLimits(0.25f, 2);
 
   SimRequest main_resource("https://example.com/test.html", "text/html");
@@ -12586,7 +12587,7 @@ TEST_F(WebFrameSimTest, LayoutViewportExceedsLayoutOverflow) {
 TEST_F(WebFrameSimTest, LayoutViewLocalVisualRect) {
   UseAndroidSettings();
 
-  WebView().MainFrameWidget()->Resize(WebSize(600, 400));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(600, 400));
   WebView().SetDefaultPageScaleLimits(0.5f, 2);
 
   SimRequest main_resource("https://example.com/test.html", "text/html");
@@ -12790,7 +12791,7 @@ bool TestSelectAll(const std::string& html) {
   WebViewImpl* web_view = web_view_helper.Initialize(&frame);
   frame_test_helpers::LoadHTMLString(web_view->MainFrameImpl(), html,
                                      ToKURL("about:blank"));
-  web_view->MainFrameWidget()->Resize(WebSize(500, 300));
+  web_view->MainFrameViewWidget()->Resize(gfx::Size(500, 300));
   web_view->MainFrameWidget()->UpdateAllLifecyclePhases(
       DocumentUpdateReason::kTest);
   RunPendingTasks();
@@ -12829,7 +12830,7 @@ TEST_F(WebFrameTest, ContextMenuDataSelectedText) {
   const std::string& html = "<input value=' '>";
   frame_test_helpers::LoadHTMLString(web_view->MainFrameImpl(), html,
                                      ToKURL("about:blank"));
-  web_view->MainFrameWidget()->Resize(WebSize(500, 300));
+  web_view->MainFrameViewWidget()->Resize(gfx::Size(500, 300));
   UpdateAllLifecyclePhases(web_view);
   RunPendingTasks();
   web_view->MainFrameImpl()->GetFrame()->SetInitialFocus(false);
@@ -12858,7 +12859,7 @@ TEST_F(WebFrameTest, ContextMenuDataPasswordSelectedText) {
   const std::string& html = "<input type='password' value='password'>";
   frame_test_helpers::LoadHTMLString(web_view->MainFrameImpl(), html,
                                      ToKURL("about:blank"));
-  web_view->MainFrameWidget()->Resize(WebSize(500, 300));
+  web_view->MainFrameViewWidget()->Resize(gfx::Size(500, 300));
   UpdateAllLifecyclePhases(web_view);
   RunPendingTasks();
   web_view->MainFrameImpl()->GetFrame()->SetInitialFocus(false);
@@ -12892,7 +12893,7 @@ TEST_F(WebFrameTest, ContextMenuDataNonLocatedMenu) {
       "Next line</div>";
   frame_test_helpers::LoadHTMLString(web_view->MainFrameImpl(), html,
                                      ToKURL("about:blank"));
-  web_view->MainFrameWidget()->Resize(WebSize(500, 300));
+  web_view->MainFrameViewWidget()->Resize(gfx::Size(500, 300));
   UpdateAllLifecyclePhases(web_view);
   RunPendingTasks();
   web_view->MainFrameImpl()->GetFrame()->SetInitialFocus(false);
@@ -13286,7 +13287,7 @@ TEST_F(WebFrameTest, NavigationTimingInfo) {
 
 TEST_F(WebFrameSimTest, EnterFullscreenResetScrollAndScaleState) {
   UseAndroidSettings();
-  WebView().MainFrameWidget()->Resize(WebSize(490, 500));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(490, 500));
   WebView().EnableFakePageScaleAnimationForTesting(true);
   WebView().GetSettings()->SetTextAutosizingEnabled(false);
   WebView().SetDefaultPageScaleLimits(0.5f, 4);
@@ -13341,7 +13342,7 @@ TEST_F(WebFrameSimTest, EnterFullscreenResetScrollAndScaleState) {
 }
 
 TEST_F(WebFrameSimTest, GetPageSizeType) {
-  WebView().MainFrameWidget()->Resize(WebSize(500, 500));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(500, 500));
 
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
@@ -13388,7 +13389,7 @@ TEST_F(WebFrameSimTest, GetPageSizeType) {
 
 TEST_F(WebFrameSimTest, PageOrientation) {
   ScopedNamedPagesForTest named_pages_enabler(true);
-  WebSize page_size(500, 500);
+  gfx::Size page_size(500, 500);
   WebView().MainFrameWidget()->Resize(page_size);
 
   SimRequest request("https://example.com/test.html", "text/html");
@@ -13417,8 +13418,8 @@ TEST_F(WebFrameSimTest, PageOrientation) {
 
   auto* frame = WebView().MainFrame()->ToWebLocalFrame();
   WebPrintParams print_params;
-  print_params.print_content_area.width = page_size.width;
-  print_params.print_content_area.height = page_size.height;
+  print_params.print_content_area.width = page_size.width();
+  print_params.print_content_area.height = page_size.height();
   EXPECT_EQ(4u, frame->PrintBegin(print_params, WebNode()));
 
   WebPrintPageDescription description;

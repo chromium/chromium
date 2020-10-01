@@ -39,8 +39,8 @@ class MainThreadScrollingReasonsTest : public testing::Test {
  public:
   MainThreadScrollingReasonsTest() : base_url_("http://www.test.com/") {
     helper_.InitializeWithSettings(&ConfigureSettings);
-    GetWebView()->MainFrameWidget()->Resize(IntSize(320, 240));
-    GetWebView()->MainFrameWidget()->UpdateAllLifecyclePhases(
+    GetWebView()->MainFrameViewWidget()->Resize(gfx::Size(320, 240));
+    GetWebView()->MainFrameViewWidget()->UpdateAllLifecyclePhases(
         DocumentUpdateReason::kTest);
   }
 
@@ -59,7 +59,7 @@ class MainThreadScrollingReasonsTest : public testing::Test {
   }
 
   void ForceFullCompositingUpdate() {
-    GetWebView()->MainFrameWidget()->UpdateAllLifecyclePhases(
+    GetWebView()->MainFrameViewWidget()->UpdateAllLifecyclePhases(
         DocumentUpdateReason::kTest);
   }
 
@@ -222,7 +222,7 @@ TEST_F(MainThreadScrollingReasonsTest,
 }
 
 TEST_F(MainThreadScrollingReasonsTest, FastScrollingCanBeDisabledWithSetting) {
-  GetWebView()->MainFrameWidget()->Resize(WebSize(800, 600));
+  GetWebView()->MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   LoadHTML("<div id='spacer' style='height: 1000px'></div>");
   GetWebView()->GetSettings()->SetThreadedScrollingEnabled(false);
   GetFrame()->View()->SetNeedsPaintPropertyUpdate();
@@ -257,7 +257,7 @@ TEST_F(MainThreadScrollingReasonsTest, FastScrollingForStickyPosition) {
 }
 
 TEST_F(MainThreadScrollingReasonsTest, FastScrollingByDefault) {
-  GetWebView()->MainFrameWidget()->Resize(WebSize(800, 600));
+  GetWebView()->MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   LoadHTML("<div id='spacer' style='height: 1000px'></div>");
   ForceFullCompositingUpdate();
 

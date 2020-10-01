@@ -718,7 +718,7 @@ class ContentCaptureSimTest : public SimTest {
     SimRequest main_resource("https://example.com/test.html", "text/html");
     SimRequest frame_resource("https://example.com/frame.html", "text/html");
     LoadURL("https://example.com/test.html");
-    WebView().MainFrameWidget()->Resize(WebSize(800, 6000));
+    WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 6000));
     main_resource.Complete(R"HTML(
       <!DOCTYPE html>
       <body style='background: white'>

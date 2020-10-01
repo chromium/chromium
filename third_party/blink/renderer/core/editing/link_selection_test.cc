@@ -64,7 +64,7 @@ void LinkSelectionTestBase::EmulateMouseDrag(const IntPoint& down_point,
     const auto& down_event = frame_test_helpers::CreateMouseEvent(
         WebMouseEvent::Type::kMouseDown, WebMouseEvent::Button::kLeft,
         down_point, modifiers);
-    web_view_->MainFrameWidget()->HandleInputEvent(
+    web_view_->MainFrameViewWidget()->HandleInputEvent(
         WebCoalescedInputEvent(down_event, ui::LatencyInfo()));
   }
 
@@ -77,7 +77,7 @@ void LinkSelectionTestBase::EmulateMouseDrag(const IntPoint& down_point,
     const auto& move_event = frame_test_helpers::CreateMouseEvent(
         WebMouseEvent::Type::kMouseMove, WebMouseEvent::Button::kLeft,
         move_point, modifiers);
-    web_view_->MainFrameWidget()->HandleInputEvent(
+    web_view_->MainFrameViewWidget()->HandleInputEvent(
         WebCoalescedInputEvent(move_event, ui::LatencyInfo()));
   }
 
@@ -85,7 +85,7 @@ void LinkSelectionTestBase::EmulateMouseDrag(const IntPoint& down_point,
     const auto& up_event = frame_test_helpers::CreateMouseEvent(
         WebMouseEvent::Type::kMouseUp, WebMouseEvent::Button::kLeft, up_point,
         modifiers);
-    web_view_->MainFrameWidget()->HandleInputEvent(
+    web_view_->MainFrameViewWidget()->HandleInputEvent(
         WebCoalescedInputEvent(up_event, ui::LatencyInfo()));
   }
 }
@@ -97,10 +97,10 @@ void LinkSelectionTestBase::EmulateMouseClick(const IntPoint& click_point,
   auto event = frame_test_helpers::CreateMouseEvent(
       WebMouseEvent::Type::kMouseDown, button, click_point, modifiers);
   event.click_count = count;
-  web_view_->MainFrameWidget()->HandleInputEvent(
+  web_view_->MainFrameViewWidget()->HandleInputEvent(
       WebCoalescedInputEvent(event, ui::LatencyInfo()));
   event.SetType(WebMouseEvent::Type::kMouseUp);
-  web_view_->MainFrameWidget()->HandleInputEvent(
+  web_view_->MainFrameViewWidget()->HandleInputEvent(
       WebCoalescedInputEvent(event, ui::LatencyInfo()));
 }
 
@@ -111,7 +111,7 @@ void LinkSelectionTestBase::EmulateMouseDown(const IntPoint& click_point,
   auto event = frame_test_helpers::CreateMouseEvent(
       WebMouseEvent::Type::kMouseDown, button, click_point, modifiers);
   event.click_count = count;
-  web_view_->MainFrameWidget()->HandleInputEvent(
+  web_view_->MainFrameViewWidget()->HandleInputEvent(
       WebCoalescedInputEvent(event, ui::LatencyInfo()));
 }
 
@@ -145,7 +145,7 @@ class LinkSelectionTest : public LinkSelectionTestBase {
     frame_test_helpers::LoadHTMLString(
         main_frame_, kHTMLString,
         url_test_helpers::ToKURL("http://foobar.com"));
-    web_view_->MainFrameWidget()->Resize(WebSize(800, 600));
+    web_view_->MainFrameViewWidget()->Resize(gfx::Size(800, 600));
     web_view_->GetPage()->GetFocusController().SetActive(true);
 
     auto* document = main_frame_->GetFrame()->GetDocument();
@@ -288,7 +288,7 @@ class LinkSelectionClickEventsTest : public LinkSelectionTestBase {
     frame_test_helpers::LoadHTMLString(
         main_frame_, kHTMLString,
         url_test_helpers::ToKURL("http://foobar.com"));
-    web_view_->MainFrameWidget()->Resize(WebSize(800, 600));
+    web_view_->MainFrameViewWidget()->Resize(gfx::Size(800, 600));
     web_view_->GetPage()->GetFocusController().SetActive(true);
 
     auto* document = main_frame_->GetFrame()->GetDocument();

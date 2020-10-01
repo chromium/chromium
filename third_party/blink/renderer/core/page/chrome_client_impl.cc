@@ -834,11 +834,11 @@ void ChromeClientImpl::SetBrowserControlsState(float top_height,
                                                float bottom_height,
                                                bool shrinks_layout) {
   DCHECK(web_view_->MainFrameWidget());
-  WebSize size = web_view_->MainFrameWidget()->Size();
+  gfx::Size size = web_view_->MainFrameWidget()->Size();
   if (shrinks_layout)
-    size.height -= top_height + bottom_height;
+    size -= gfx::Size(0, top_height + bottom_height);
 
-  web_view_->ResizeWithBrowserControls(size, top_height, bottom_height,
+  web_view_->ResizeWithBrowserControls(WebSize(size), top_height, bottom_height,
                                        shrinks_layout);
 }
 

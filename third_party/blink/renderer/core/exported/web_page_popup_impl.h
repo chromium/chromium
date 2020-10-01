@@ -149,7 +149,7 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
   void SetCompositorVisible(bool visible) override;
   void UpdateLifecycle(WebLifecycleUpdate requested_update,
                        DocumentUpdateReason reason) override;
-  void Resize(const WebSize&) override;
+  void Resize(const gfx::Size&) override;
   void Close(
       scoped_refptr<base::SingleThreadTaskRunner> cleanup_runner) override;
   WebInputEventResult HandleInputEvent(const WebCoalescedInputEvent&) override;

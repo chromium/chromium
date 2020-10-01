@@ -33,7 +33,7 @@ class TextPaintTimingDetectorTest : public testing::Test {
         .SetAcceleratedCompositingEnabled(true);
 
     WebLocalFrameImpl& frame_impl = *web_view_helper_.LocalMainFrame();
-    frame_impl.ViewImpl()->MainFrameWidget()->Resize(WebSize(640, 480));
+    frame_impl.ViewImpl()->MainFrameViewWidget()->Resize(gfx::Size(640, 480));
 
     frame_test_helpers::LoadFrame(
         web_view_helper_.GetWebView()->MainFrameImpl(), "about:blank");

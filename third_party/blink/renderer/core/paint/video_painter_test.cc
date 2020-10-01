@@ -125,7 +125,8 @@ class VideoPaintPreviewTest : public testing::Test,
     web_view_helper_.Initialize();
 
     WebLocalFrameImpl& frame_impl = GetLocalMainFrame();
-    frame_impl.ViewImpl()->MainFrameWidget()->Resize(WebSize(bounds().size()));
+    frame_impl.ViewImpl()->MainFrameViewWidget()->Resize(
+        gfx::Size(bounds().size()));
 
     frame_test_helpers::LoadFrame(&GetLocalMainFrame(), "about:blank");
     GetDocument().View()->SetParentVisible(true);

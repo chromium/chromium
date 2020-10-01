@@ -359,7 +359,7 @@ TEST_F(ImageDocumentViewportTest, ZoomForDSFScaleImage) {
   HTMLImageElement* img = GetDocument().ImageElement();
 
   // no zoom
-  WebView().MainFrameWidget()->Resize(IntSize(100, 100));
+  WebView().MainFrameWidget()->Resize(gfx::Size(100, 100));
   WebView().SetZoomFactorForDeviceScaleFactor(1.f);
   Compositor().BeginFrame();
   EXPECT_EQ(50u, img->width());
@@ -373,7 +373,7 @@ TEST_F(ImageDocumentViewportTest, ZoomForDSFScaleImage) {
   // visual viewport should be same in CSS pixel, as no dsf applied.
   // This simulates running on two phones with different screen densities but
   // same (physical) screen size, image document should displayed the same.
-  WebView().MainFrameWidget()->Resize(IntSize(400, 400));
+  WebView().MainFrameWidget()->Resize(gfx::Size(400, 400));
   WebView().SetZoomFactorForDeviceScaleFactor(4.f);
   Compositor().BeginFrame();
   EXPECT_EQ(50u, img->width());
@@ -402,7 +402,7 @@ TEST_F(ImageDocumentViewportTest, DivWidthWithZoomForDSF) {
 
   // Image smaller then webview size, visual viewport is not zoomed, and image
   // will be centered in the viewport.
-  WebView().MainFrameWidget()->Resize(IntSize(200, 200));
+  WebView().MainFrameWidget()->Resize(gfx::Size(200, 200));
   Compositor().BeginFrame();
   EXPECT_EQ(50u, img->width());
   EXPECT_EQ(50u, img->height());
@@ -416,7 +416,7 @@ TEST_F(ImageDocumentViewportTest, DivWidthWithZoomForDSF) {
 
   // Image wider than webview size, image should fill the visual viewport, and
   // visual viewport zoom out to 0.5.
-  WebView().MainFrameWidget()->Resize(IntSize(50, 50));
+  WebView().MainFrameWidget()->Resize(gfx::Size(50, 50));
   Compositor().BeginFrame();
   EXPECT_EQ(50u, img->width());
   EXPECT_EQ(50u, img->height());
@@ -427,7 +427,7 @@ TEST_F(ImageDocumentViewportTest, DivWidthWithZoomForDSF) {
 
   // When image is more than 10X wider than webview, shrink the image to fit the
   // width of the screen.
-  WebView().MainFrameWidget()->Resize(IntSize(4, 20));
+  WebView().MainFrameWidget()->Resize(gfx::Size(4, 20));
   Compositor().BeginFrame();
   EXPECT_EQ(20u, img->width());
   EXPECT_EQ(20u, img->height());

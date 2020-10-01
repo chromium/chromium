@@ -109,7 +109,7 @@ class PointerEventManagerTest : public SimTest {
 };
 
 TEST_F(PointerEventManagerTest, HasPointerCapture) {
-  WebView().MainFrameWidget()->Resize(WebSize(400, 400));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(400, 400));
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(
@@ -151,7 +151,7 @@ TEST_F(PointerEventManagerTest, HasPointerCapture) {
 }
 
 TEST_F(PointerEventManagerTest, PointerCancelsOfAllTypes) {
-  WebView().MainFrameWidget()->Resize(WebSize(400, 400));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(400, 400));
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(
@@ -206,7 +206,7 @@ TEST_F(PointerEventManagerTest, PointerCancelsOfAllTypes) {
 }
 
 TEST_F(PointerEventManagerTest, PointerEventCoordinates) {
-  WebView().MainFrameWidget()->Resize(WebSize(400, 400));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(400, 400));
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(
@@ -238,7 +238,7 @@ TEST_F(PointerEventManagerTest, PointerEventCoordinates) {
 }
 
 TEST_F(PointerEventManagerTest, PointerEventMovements) {
-  WebView().MainFrameWidget()->Resize(WebSize(400, 400));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(400, 400));
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(
@@ -310,7 +310,7 @@ TEST_F(PointerEventManagerTest, PointerEventMovements) {
 
 // Test that we are not losing fractions when truncating movements.
 TEST_F(PointerEventManagerTest, PointerEventSmallFractionMovements) {
-  WebView().MainFrameWidget()->Resize(WebSize(400, 400));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(400, 400));
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(
@@ -354,7 +354,7 @@ TEST_F(PointerEventManagerTest, PointerEventSmallFractionMovements) {
 }
 
 TEST_F(PointerEventManagerTest, PointerRawUpdateMovements) {
-  WebView().MainFrameWidget()->Resize(WebSize(400, 400));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(400, 400));
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(
@@ -420,7 +420,7 @@ TEST_F(PointerEventManagerTest, PointerRawUpdateMovements) {
 }
 
 TEST_F(PointerEventManagerTest, PointerUnadjustedMovement) {
-  WebView().MainFrameWidget()->Resize(WebSize(400, 400));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(400, 400));
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(

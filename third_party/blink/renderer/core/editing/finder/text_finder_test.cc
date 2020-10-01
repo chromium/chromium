@@ -41,7 +41,7 @@ class TextFinderTest : public testing::Test {
   TextFinderTest() {
     web_view_helper_.Initialize();
     WebLocalFrameImpl& frame_impl = *web_view_helper_.LocalMainFrame();
-    frame_impl.ViewImpl()->MainFrameWidget()->Resize(WebSize(640, 480));
+    frame_impl.ViewImpl()->MainFrameViewWidget()->Resize(gfx::Size(640, 480));
     frame_impl.ViewImpl()->MainFrameWidget()->UpdateAllLifecyclePhases(
         DocumentUpdateReason::kTest);
     document_ = static_cast<Document*>(frame_impl.GetDocument());

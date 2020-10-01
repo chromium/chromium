@@ -23,7 +23,7 @@ class TextFragmentSelectorGeneratorTest : public SimTest {
  public:
   void SetUp() override {
     SimTest::SetUp();
-    WebView().MainFrameWidget()->Resize(WebSize(800, 600));
+    WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   }
 
   void GenerateAndVerifySelector(Position selected_start,

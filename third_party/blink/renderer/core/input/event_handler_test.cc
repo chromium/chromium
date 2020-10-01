@@ -1182,7 +1182,7 @@ TEST_F(EventHandlerLatencyTest, NeedsUnbufferedInput) {
 }
 
 TEST_F(EventHandlerSimTest, MouseUpOffScrollbarGeneratesScrollEnd) {
-  WebView().MainFrameWidget()->Resize(WebSize(800, 600));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -1256,7 +1256,7 @@ TEST_F(EventHandlerSimTest, MouseUpOffScrollbarGeneratesScrollEnd) {
 }
 
 TEST_F(EventHandlerSimTest, MouseUpOnlyOnScrollbar) {
-  WebView().MainFrameWidget()->Resize(WebSize(800, 600));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -1308,7 +1308,7 @@ TEST_F(EventHandlerSimTest, MouseUpOnlyOnScrollbar) {
 }
 
 TEST_F(EventHandlerSimTest, RightClickNoGestures) {
-  WebView().MainFrameWidget()->Resize(WebSize(800, 600));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -1366,7 +1366,7 @@ TEST_F(EventHandlerSimTest, MAYBE_GestureTapWithScrollSnaps) {
   // ScrollingCoordinator is initialized.
   GetDocument().GetSettings()->SetAcceleratedCompositingEnabled(true);
 
-  WebView().MainFrameWidget()->Resize(WebSize(800, 600));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -1484,7 +1484,7 @@ TEST_F(EventHandlerTest, MouseLeaveResetsUnknownState) {
 // Test that leaving an iframe sets the mouse position to unknown on that
 // iframe.
 TEST_F(EventHandlerSimTest, MouseLeaveIFrameResets) {
-  WebView().MainFrameWidget()->Resize(WebSize(800, 600));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
 
   SimRequest main_resource("https://example.com/test.html", "text/html");
   SimRequest frame_resource("https://example.com/frame.html", "text/html");
@@ -1549,7 +1549,7 @@ TEST_F(EventHandlerSimTest, MouseLeaveIFrameResets) {
 // Test that mouse down and move a small distance on a draggable element will
 // not change cursor style.
 TEST_F(EventHandlerSimTest, CursorStyleBeforeStartDragging) {
-  WebView().MainFrameWidget()->Resize(WebSize(800, 600));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -1591,7 +1591,7 @@ TEST_F(EventHandlerSimTest, CursorStyleBeforeStartDragging) {
 
 // Ensure that tap on element in iframe should apply active state.
 TEST_F(EventHandlerSimTest, TapActiveInFrame) {
-  WebView().MainFrameWidget()->Resize(WebSize(800, 600));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
 
   SimRequest main_resource("https://example.com/test.html", "text/html");
   SimRequest frame_resource("https://example.com/iframe.html", "text/html");
@@ -1656,7 +1656,7 @@ TEST_F(EventHandlerSimTest, TapActiveInFrame) {
 // Test that the hover is updated at the next begin frame after the compositor
 // scroll ends.
 TEST_F(EventHandlerSimTest, TestUpdateHoverAfterCompositorScrollAtBeginFrame) {
-  WebView().MainFrameWidget()->Resize(WebSize(800, 600));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -1723,7 +1723,7 @@ TEST_F(EventHandlerSimTest, TestUpdateHoverAfterCompositorScrollAtBeginFrame) {
 // Test that the hover is updated at the next begin frame after the main thread
 // scroll ends.
 TEST_F(EventHandlerSimTest, TestUpdateHoverAfterMainThreadScrollAtBeginFrame) {
-  WebView().MainFrameWidget()->Resize(WebSize(800, 600));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -1791,7 +1791,7 @@ TEST_F(EventHandlerSimTest, TestUpdateHoverAfterMainThreadScrollAtBeginFrame) {
 // scroll ends in an iframe.
 TEST_F(EventHandlerSimTest,
        TestUpdateHoverAfterMainThreadScrollInIFrameAtBeginFrame) {
-  WebView().MainFrameWidget()->Resize(WebSize(800, 600));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   SimRequest main_resource("https://example.com/test.html", "text/html");
   SimRequest frame_resource("https://example.com/iframe.html", "text/html");
   LoadURL("https://example.com/test.html");
@@ -1861,7 +1861,7 @@ TEST_F(EventHandlerSimTest,
 // Test that the hover is updated at the next begin frame after the smooth JS
 // scroll ends.
 TEST_F(EventHandlerSimTest, TestUpdateHoverAfterJSScrollAtBeginFrame) {
-  WebView().MainFrameWidget()->Resize(WebSize(800, 500));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 500));
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -1924,7 +1924,7 @@ TEST_F(EventHandlerSimTest, TestUpdateHoverAfterJSScrollAtBeginFrame) {
 // thread scroll snap animation finishes.
 TEST_F(EventHandlerSimTest,
        TestUpdateHoverAfterMainThreadScrollSnapAtBeginFrame) {
-  WebView().MainFrameWidget()->Resize(WebSize(800, 600));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -2006,7 +2006,7 @@ TEST_F(EventHandlerSimTest,
 
 TEST_F(EventHandlerSimTest,
        TestUpdateHoverAfterMainThreadScrollAtSnapPointAtBeginFrame) {
-  WebView().MainFrameWidget()->Resize(WebSize(800, 600));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -2073,7 +2073,7 @@ TEST_F(EventHandlerSimTest,
 }
 
 TEST_F(EventHandlerSimTest, LargeCustomCursorIntersectsViewport) {
-  WebView().MainFrameWidget()->Resize(WebSize(800, 600));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   SimRequest request("https://example.com/test.html", "text/html");
   SimSubresourceRequest cursor_request("https://example.com/100x100.png",
                                        "image/png");
@@ -2132,7 +2132,7 @@ TEST_F(EventHandlerSimTest, LargeCustomCursorIntersectsViewport) {
 }
 
 TEST_F(EventHandlerSimTest, SmallCustomCursorIntersectsViewport) {
-  WebView().MainFrameWidget()->Resize(WebSize(800, 600));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   SimRequest request("https://example.com/test.html", "text/html");
   SimSubresourceRequest cursor_request("https://example.com/48x48.png",
                                        "image/png");
@@ -2192,7 +2192,7 @@ TEST_F(EventHandlerSimTest, SmallCustomCursorIntersectsViewport) {
 }
 
 TEST_F(EventHandlerSimTest, NeverExposeKeyboardEvent) {
-  WebView().MainFrameWidget()->Resize(WebSize(800, 600));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   GetDocument().GetSettings()->SetDontSendKeyEventsToJavascript(true);
@@ -2267,7 +2267,7 @@ TEST_F(EventHandlerSimTest, NeverExposeKeyboardEvent) {
 TEST_F(EventHandlerSimTest, NotExposeKeyboardEvent) {
   GetDocument().GetSettings()->SetDontSendKeyEventsToJavascript(true);
   GetDocument().GetSettings()->SetScrollAnimatorEnabled(false);
-  WebView().MainFrameWidget()->Resize(WebSize(800, 600));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -2344,7 +2344,7 @@ TEST_F(EventHandlerSimTest, NotExposeKeyboardEvent) {
 }
 
 TEST_F(EventHandlerSimTest, DoNotScrollWithTouchpadIfOverflowIsHidden) {
-  WebView().MainFrameWidget()->Resize(WebSize(400, 400));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(400, 400));
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -2405,7 +2405,7 @@ TEST_F(EventHandlerSimTest, DoNotScrollWithTouchpadIfOverflowIsHidden) {
 }
 
 TEST_F(EventHandlerSimTest, GestureScrollUpdateModifiedScrollChain) {
-  WebView().MainFrameWidget()->Resize(WebSize(400, 400));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(400, 400));
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -2478,7 +2478,7 @@ TEST_F(EventHandlerSimTest, GestureScrollUpdateModifiedScrollChain) {
 }
 
 TEST_F(EventHandlerSimTest, ElementTargetedGestureScroll) {
-  WebView().MainFrameWidget()->Resize(WebSize(800, 600));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -2565,7 +2565,7 @@ TEST_F(EventHandlerSimTest, ElementTargetedGestureScroll) {
 }
 
 TEST_F(EventHandlerSimTest, ElementTargetedGestureScrollIFrame) {
-  WebView().MainFrameWidget()->Resize(WebSize(800, 600));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   SimRequest request_outer("https://example.com/test-outer.html", "text/html");
   SimRequest request_inner("https://example.com/test-inner.html", "text/html");
   LoadURL("https://example.com/test-outer.html");
@@ -2625,7 +2625,7 @@ TEST_F(EventHandlerSimTest, ElementTargetedGestureScrollIFrame) {
 }
 
 TEST_F(EventHandlerSimTest, ElementTargetedGestureScrollViewport) {
-  WebView().MainFrameWidget()->Resize(WebSize(800, 600));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   // Set a page scale factor so that the VisualViewport will also scroll.
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
@@ -2677,7 +2677,7 @@ TEST_F(EventHandlerSimTest, ElementTargetedGestureScrollViewport) {
 }
 
 TEST_F(EventHandlerSimTest, SelecteTransformedTextWhenCapturing) {
-  WebView().MainFrameWidget()->Resize(WebSize(800, 600));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -2738,7 +2738,7 @@ TEST_F(EventHandlerSimTest, SelecteTransformedTextWhenCapturing) {
 // frame and move to outer frame does not capture mouse to inner frame.
 TEST_F(EventHandlerSimTest, MouseDragWithNoSubframeImplicitCapture) {
   ScopedMouseSubframeNoImplicitCaptureForTest scoped_feature(true);
-  WebView().MainFrameWidget()->Resize(WebSize(800, 600));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
 
   SimRequest main_resource("https://example.com/test.html", "text/html");
   SimRequest frame_resource("https://example.com/frame.html", "text/html");
@@ -2830,7 +2830,7 @@ TEST_F(EventHandlerSimTest,
        MouseDragWithPointerCaptureAndNoSubframeImplicitCapture) {
   ScopedMouseSubframeNoImplicitCaptureForTest scoped_feature(true);
 
-  WebView().MainFrameWidget()->Resize(WebSize(800, 600));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
 
   SimRequest main_resource("https://example.com/test.html", "text/html");
   SimRequest frame_resource("https://example.com/frame.html", "text/html");
@@ -2920,7 +2920,7 @@ TEST_F(EventHandlerSimTest,
 // Test that mouse right button down and move to an iframe will route the events
 // to iframe correctly.
 TEST_F(EventHandlerSimTest, MouseRightButtonDownMoveToIFrame) {
-  WebView().MainFrameWidget()->Resize(WebSize(800, 600));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
 
   SimRequest main_resource("https://example.com/test.html", "text/html");
   SimRequest frame_resource("https://example.com/frame.html", "text/html");
@@ -2980,7 +2980,7 @@ TEST_F(EventHandlerSimTest, MouseRightButtonDownMoveToIFrame) {
 
 // Tests that pen dragging on an element and moves will keep the element active.
 TEST_F(EventHandlerSimTest, PenDraggingOnElementActive) {
-  WebView().MainFrameWidget()->Resize(WebSize(800, 600));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
 
   SimRequest main_resource("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
@@ -3028,7 +3028,7 @@ TEST_F(EventHandlerSimTest, PenDraggingOnElementActive) {
 }
 
 TEST_F(EventHandlerSimTest, TestNoCrashOnMouseWheelZeroDelta) {
-  WebView().MainFrameWidget()->Resize(WebSize(800, 600));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -3072,7 +3072,7 @@ TEST_F(EventHandlerSimTest, TestNoCrashOnMouseWheelZeroDelta) {
 // The mouse wheel events which have the phases of "MayBegin" or "Cancel"
 // should fire wheel events to the DOM.
 TEST_F(EventHandlerSimTest, TestNoWheelEventWithPhaseMayBeginAndCancel) {
-  WebView().MainFrameWidget()->Resize(WebSize(800, 600));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -3116,7 +3116,7 @@ TEST_F(EventHandlerSimTest, TestNoWheelEventWithPhaseMayBeginAndCancel) {
 // events to the DOM, but for other phases like "Begin", "Change" and
 // "Stationary", there should be wheels evnets fired to the DOM.
 TEST_F(EventHandlerSimTest, TestWheelEventsWithDifferentPhases) {
-  WebView().MainFrameWidget()->Resize(WebSize(800, 600));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(

@@ -78,7 +78,7 @@ class ScrollingTest : public testing::Test, public PaintTestConfigurations {
  public:
   ScrollingTest() : base_url_("http://www.test.com/") {
     helper_.Initialize(nullptr, nullptr, nullptr, &ConfigureSettings);
-    GetWebView()->MainFrameViewWidget()->Resize(IntSize(320, 240));
+    GetWebView()->MainFrameViewWidget()->Resize(gfx::Size(320, 240));
     GetWebView()->MainFrameViewWidget()->UpdateAllLifecyclePhases(
         DocumentUpdateReason::kTest);
   }
@@ -202,7 +202,7 @@ class ScrollingTest : public testing::Test, public PaintTestConfigurations {
 INSTANTIATE_PAINT_TEST_SUITE_P(ScrollingTest);
 
 TEST_P(ScrollingTest, fastScrollingByDefault) {
-  GetWebView()->MainFrameViewWidget()->Resize(WebSize(800, 600));
+  GetWebView()->MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   LoadHTML("<div id='spacer' style='height: 1000px'></div>");
   ForceFullCompositingUpdate();
 
@@ -1686,7 +1686,7 @@ class UnifiedScrollingSimTest : public SimTest, public PaintTestConfigurations {
   void SetUp() override {
     SimTest::SetUp();
     WebView().GetSettings()->SetPreferCompositingToLCDTextEnabled(false);
-    WebView().MainFrameViewWidget()->Resize(IntSize(1000, 1000));
+    WebView().MainFrameViewWidget()->Resize(gfx::Size(1000, 1000));
     WebView().MainFrameViewWidget()->UpdateAllLifecyclePhases(
         DocumentUpdateReason::kTest);
   }
@@ -2123,7 +2123,7 @@ class ScrollingSimTest : public SimTest,
   void SetUp() override {
     SimTest::SetUp();
     WebView().GetSettings()->SetPreferCompositingToLCDTextEnabled(true);
-    WebView().MainFrameViewWidget()->Resize(IntSize(1000, 1000));
+    WebView().MainFrameViewWidget()->Resize(gfx::Size(1000, 1000));
     WebView().MainFrameViewWidget()->UpdateAllLifecyclePhases(
         DocumentUpdateReason::kTest);
   }

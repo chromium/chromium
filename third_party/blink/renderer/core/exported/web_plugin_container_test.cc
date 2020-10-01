@@ -244,7 +244,7 @@ void TestPlugin::PrintPage(int page_number, cc::PaintCanvas* canvas) {
   test_client_->OnPrintPage();
 }
 
-void EnablePlugins(WebView* web_view, const WebSize& size) {
+void EnablePlugins(WebView* web_view, const gfx::Size& size) {
   DCHECK(web_view);
   web_view->GetSettings()->SetPluginsEnabled(true);
   web_view->MainFrameWidget()->Resize(size);
@@ -307,7 +307,7 @@ TEST_F(WebPluginContainerTest, WindowToLocalPointTest) {
   frame_test_helpers::WebViewHelper web_view_helper;
   WebViewImpl* web_view = web_view_helper.InitializeAndLoad(
       base_url_ + "plugin_container.html", &plugin_web_frame_client);
-  EnablePlugins(web_view, WebSize(300, 300));
+  EnablePlugins(web_view, gfx::Size(300, 300));
 
   WebPluginContainer* plugin_container_one =
       GetWebPluginContainer(web_view, WebString::FromUTF8("translated-plugin"));
@@ -341,7 +341,7 @@ TEST_F(WebPluginContainerTest, LocalToWindowPointTest) {
   frame_test_helpers::WebViewHelper web_view_helper;
   WebViewImpl* web_view = web_view_helper.InitializeAndLoad(
       base_url_ + "plugin_container.html", &plugin_web_frame_client);
-  EnablePlugins(web_view, WebSize(300, 300));
+  EnablePlugins(web_view, gfx::Size(300, 300));
 
   WebPluginContainer* plugin_container_one =
       GetWebPluginContainer(web_view, WebString::FromUTF8("translated-plugin"));
@@ -376,7 +376,7 @@ TEST_F(WebPluginContainerTest, Copy) {
   frame_test_helpers::WebViewHelper web_view_helper;
   WebViewImpl* web_view = web_view_helper.InitializeAndLoad(
       base_url_ + "plugin_container.html", &plugin_web_frame_client);
-  EnablePlugins(web_view, WebSize(300, 300));
+  EnablePlugins(web_view, gfx::Size(300, 300));
 
   web_view->MainFrameImpl()
       ->GetDocument()
@@ -398,7 +398,7 @@ TEST_F(WebPluginContainerTest, CopyFromContextMenu) {
   frame_test_helpers::WebViewHelper web_view_helper;
   WebViewImpl* web_view = web_view_helper.InitializeAndLoad(
       base_url_ + "plugin_container.html", &plugin_web_frame_client);
-  EnablePlugins(web_view, WebSize(300, 300));
+  EnablePlugins(web_view, gfx::Size(300, 300));
 
   // Make sure the right-click + command works in common scenario.
   ExecuteContextMenuCommand(web_view, "Copy");
@@ -435,7 +435,7 @@ TEST_F(WebPluginContainerTest, CopyInsertKeyboardEventsTest) {
   frame_test_helpers::WebViewHelper web_view_helper;
   WebViewImpl* web_view = web_view_helper.InitializeAndLoad(
       base_url_ + "plugin_container.html", &plugin_web_frame_client);
-  EnablePlugins(web_view, WebSize(300, 300));
+  EnablePlugins(web_view, gfx::Size(300, 300));
 
   WebElement plugin_container_one_element =
       web_view->MainFrameImpl()->GetDocument().GetElementById(
@@ -467,7 +467,7 @@ TEST_F(WebPluginContainerTest, CutDeleteKeyboardEventsTest) {
 
   WebViewImpl* web_view = web_view_helper.InitializeAndLoad(
       base_url_ + "plugin_container.html", &plugin_web_frame_client);
-  EnablePlugins(web_view, WebSize(300, 300));
+  EnablePlugins(web_view, gfx::Size(300, 300));
 
   WebElement plugin_container_one_element =
       web_view->MainFrameImpl()->GetDocument().GetElementById(
@@ -510,7 +510,7 @@ TEST_F(WebPluginContainerTest, PasteInsertKeyboardEventsTest) {
 
   WebViewImpl* web_view = web_view_helper.InitializeAndLoad(
       base_url_ + "plugin_container.html", &plugin_web_frame_client);
-  EnablePlugins(web_view, WebSize(300, 300));
+  EnablePlugins(web_view, gfx::Size(300, 300));
 
   WebElement plugin_container_one_element =
       web_view->MainFrameImpl()->GetDocument().GetElementById(
@@ -553,7 +553,7 @@ TEST_F(WebPluginContainerTest, PasteAndMatchStyleKeyboardEventsTest) {
 
   WebViewImpl* web_view = web_view_helper.InitializeAndLoad(
       base_url_ + "plugin_container.html", &plugin_web_frame_client);
-  EnablePlugins(web_view, WebSize(300, 300));
+  EnablePlugins(web_view, gfx::Size(300, 300));
 
   WebElement plugin_container_one_element =
       web_view->MainFrameImpl()->GetDocument().GetElementById(
@@ -582,7 +582,7 @@ TEST_F(WebPluginContainerTest, CutFromContextMenu) {
 
   WebViewImpl* web_view = web_view_helper.InitializeAndLoad(
       base_url_ + "plugin_container.html", &plugin_web_frame_client);
-  EnablePlugins(web_view, WebSize(300, 300));
+  EnablePlugins(web_view, gfx::Size(300, 300));
 
   WebElement plugin_container_one_element =
       web_view->MainFrameImpl()->GetDocument().GetElementById(
@@ -605,7 +605,7 @@ TEST_F(WebPluginContainerTest, PasteFromContextMenu) {
 
   WebViewImpl* web_view = web_view_helper.InitializeAndLoad(
       base_url_ + "plugin_container.html", &plugin_web_frame_client);
-  EnablePlugins(web_view, WebSize(300, 300));
+  EnablePlugins(web_view, gfx::Size(300, 300));
 
   WebElement plugin_container_one_element =
       web_view->MainFrameImpl()->GetDocument().GetElementById(
@@ -628,7 +628,7 @@ TEST_F(WebPluginContainerTest, PasteAndMatchStyleFromContextMenu) {
 
   WebViewImpl* web_view = web_view_helper.InitializeAndLoad(
       base_url_ + "plugin_container.html", &plugin_web_frame_client);
-  EnablePlugins(web_view, WebSize(300, 300));
+  EnablePlugins(web_view, gfx::Size(300, 300));
 
   WebElement plugin_container_one_element =
       web_view->MainFrameImpl()->GetDocument().GetElementById(
@@ -703,7 +703,7 @@ TEST_F(WebPluginContainerTest, GestureLongPressReachesPlugin) {
   frame_test_helpers::WebViewHelper web_view_helper;
   WebViewImpl* web_view = web_view_helper.InitializeAndLoad(
       base_url_ + "plugin_container.html", &plugin_web_frame_client);
-  EnablePlugins(web_view, WebSize(300, 300));
+  EnablePlugins(web_view, gfx::Size(300, 300));
 
   WebElement plugin_container_one_element =
       web_view->MainFrameImpl()->GetDocument().GetElementById(
@@ -750,7 +750,7 @@ TEST_F(WebPluginContainerTest, MouseEventButtons) {
   frame_test_helpers::WebViewHelper web_view_helper;
   WebViewImpl* web_view = web_view_helper.InitializeAndLoad(
       base_url_ + "plugin_container.html", &plugin_web_frame_client);
-  EnablePlugins(web_view, WebSize(300, 300));
+  EnablePlugins(web_view, gfx::Size(300, 300));
 
   WebElement plugin_container_one_element =
       web_view->MainFrameImpl()->GetDocument().GetElementById(
@@ -785,7 +785,7 @@ TEST_F(WebPluginContainerTest, MouseWheelEventTranslated) {
   frame_test_helpers::WebViewHelper web_view_helper;
   WebViewImpl* web_view = web_view_helper.InitializeAndLoad(
       base_url_ + "plugin_container.html", &plugin_web_frame_client);
-  EnablePlugins(web_view, WebSize(300, 300));
+  EnablePlugins(web_view, gfx::Size(300, 300));
 
   WebElement plugin_container_one_element =
       web_view->MainFrameImpl()->GetDocument().GetElementById(
@@ -819,7 +819,7 @@ TEST_F(WebPluginContainerTest, TouchEventScrolled) {
   frame_test_helpers::WebViewHelper web_view_helper;
   WebViewImpl* web_view = web_view_helper.InitializeAndLoad(
       base_url_ + "plugin_scroll.html", &plugin_web_frame_client);
-  EnablePlugins(web_view, WebSize(300, 300));
+  EnablePlugins(web_view, gfx::Size(300, 300));
   web_view->SmoothScroll(0, 200, base::TimeDelta());
   UpdateAllLifecyclePhases(web_view);
   RunPendingTasks();
@@ -862,7 +862,7 @@ TEST_F(WebPluginContainerTest, TouchEventScrolledWithCoalescedTouches) {
   frame_test_helpers::WebViewHelper web_view_helper;
   WebViewImpl* web_view = web_view_helper.InitializeAndLoad(
       base_url_ + "plugin_scroll.html", &plugin_web_frame_client);
-  EnablePlugins(web_view, WebSize(300, 300));
+  EnablePlugins(web_view, gfx::Size(300, 300));
   web_view->SmoothScroll(0, 200, base::TimeDelta());
   UpdateAllLifecyclePhases(web_view);
   RunPendingTasks();
@@ -958,7 +958,7 @@ TEST_F(WebPluginContainerTest, MouseWheelEventScrolled) {
   frame_test_helpers::WebViewHelper web_view_helper;
   WebViewImpl* web_view = web_view_helper.InitializeAndLoad(
       base_url_ + "plugin_scroll.html", &plugin_web_frame_client);
-  EnablePlugins(web_view, WebSize(300, 300));
+  EnablePlugins(web_view, gfx::Size(300, 300));
   web_view->SmoothScroll(0, 200, base::TimeDelta());
   UpdateAllLifecyclePhases(web_view);
   RunPendingTasks();
@@ -997,7 +997,7 @@ TEST_F(WebPluginContainerTest, MouseEventScrolled) {
   frame_test_helpers::WebViewHelper web_view_helper;
   WebViewImpl* web_view = web_view_helper.InitializeAndLoad(
       base_url_ + "plugin_scroll.html", &plugin_web_frame_client);
-  EnablePlugins(web_view, WebSize(300, 300));
+  EnablePlugins(web_view, gfx::Size(300, 300));
   web_view->SmoothScroll(0, 200, base::TimeDelta());
   UpdateAllLifecyclePhases(web_view);
   RunPendingTasks();
@@ -1038,7 +1038,7 @@ TEST_F(WebPluginContainerTest, MouseEventZoomed) {
       base_url_ + "plugin_scroll.html", &plugin_web_frame_client);
   DCHECK(web_view);
   web_view->GetSettings()->SetPluginsEnabled(true);
-  web_view->MainFrameWidget()->Resize(WebSize(300, 300));
+  web_view->MainFrameViewWidget()->Resize(gfx::Size(300, 300));
   web_view->SetPageScaleFactor(2);
   web_view->SmoothScroll(0, 300, base::TimeDelta());
   UpdateAllLifecyclePhases(web_view);
@@ -1082,7 +1082,7 @@ TEST_F(WebPluginContainerTest, MouseWheelEventZoomed) {
       base_url_ + "plugin_scroll.html", &plugin_web_frame_client);
   DCHECK(web_view);
   web_view->GetSettings()->SetPluginsEnabled(true);
-  web_view->MainFrameWidget()->Resize(WebSize(300, 300));
+  web_view->MainFrameViewWidget()->Resize(gfx::Size(300, 300));
   web_view->SetPageScaleFactor(2);
   web_view->SmoothScroll(0, 300, base::TimeDelta());
   UpdateAllLifecyclePhases(web_view);
@@ -1126,7 +1126,7 @@ TEST_F(WebPluginContainerTest, TouchEventZoomed) {
       base_url_ + "plugin_scroll.html", &plugin_web_frame_client);
   DCHECK(web_view);
   web_view->GetSettings()->SetPluginsEnabled(true);
-  web_view->MainFrameWidget()->Resize(WebSize(300, 300));
+  web_view->MainFrameViewWidget()->Resize(gfx::Size(300, 300));
   web_view->SetPageScaleFactor(2);
   web_view->SmoothScroll(0, 300, base::TimeDelta());
   UpdateAllLifecyclePhases(web_view);
@@ -1173,7 +1173,7 @@ TEST_F(WebPluginContainerTest, IsRectTopmostTest) {
   frame_test_helpers::WebViewHelper web_view_helper;
   WebViewImpl* web_view = web_view_helper.InitializeAndLoad(
       base_url_ + "plugin_container.html", &plugin_web_frame_client);
-  EnablePlugins(web_view, WebSize(300, 300));
+  EnablePlugins(web_view, gfx::Size(300, 300));
 
   auto* plugin_container_impl =
       To<WebPluginContainerImpl>(GetWebPluginContainer(
@@ -1197,7 +1197,7 @@ TEST_F(WebPluginContainerTest, IsRectTopmostTestWithOddAndEvenDimensions) {
   frame_test_helpers::WebViewHelper web_view_helper;
   WebViewImpl* web_view = web_view_helper.InitializeAndLoad(
       base_url_ + "plugin_container.html", &plugin_web_frame_client);
-  EnablePlugins(web_view, WebSize(300, 300));
+  EnablePlugins(web_view, gfx::Size(300, 300));
 
   auto* even_plugin_container_impl =
       To<WebPluginContainerImpl>(GetWebPluginContainer(
@@ -1223,7 +1223,7 @@ TEST_F(WebPluginContainerTest, ClippedRectsForIframedElement) {
   frame_test_helpers::WebViewHelper web_view_helper;
   WebView* web_view = web_view_helper.InitializeAndLoad(
       base_url_ + "plugin_containing_page.html", &plugin_web_frame_client);
-  EnablePlugins(web_view, WebSize(300, 300));
+  EnablePlugins(web_view, gfx::Size(300, 300));
 
   WebElement plugin_element = web_view->MainFrame()
                                   ->FirstChild()
@@ -1256,7 +1256,7 @@ TEST_F(WebPluginContainerTest, ClippedRectsForShiftedIframedElement) {
   WebViewImpl* web_view = web_view_helper.InitializeAndLoad(
       base_url_ + "shifted_plugin_containing_page.html",
       &plugin_web_frame_client);
-  EnablePlugins(web_view, WebSize(300, 300));
+  EnablePlugins(web_view, gfx::Size(300, 300));
   UpdateAllLifecyclePhases(web_view);
   WebLocalFrame* iframe =
       web_view->MainFrame()->FirstChild()->ToWebLocalFrame();
@@ -1351,7 +1351,7 @@ TEST_F(WebPluginContainerTest, ClippedRectsForSubpixelPositionedPlugin) {
   frame_test_helpers::WebViewHelper web_view_helper;
   WebViewImpl* web_view = web_view_helper.InitializeAndLoad(
       base_url_ + "plugin_container.html", &plugin_web_frame_client);
-  EnablePlugins(web_view, WebSize(300, 300));
+  EnablePlugins(web_view, gfx::Size(300, 300));
 
   WebElement plugin_element =
       web_view->MainFrameImpl()->GetDocument().GetElementById(
@@ -1399,7 +1399,7 @@ TEST_F(WebPluginContainerTest, TopmostAfterDetachTest) {
   frame_test_helpers::WebViewHelper web_view_helper;
   WebViewImpl* web_view = web_view_helper.InitializeAndLoad(
       base_url_ + "plugin_container.html", &plugin_web_frame_client);
-  EnablePlugins(web_view, WebSize(300, 300));
+  EnablePlugins(web_view, gfx::Size(300, 300));
 
   auto* plugin_container_impl =
       To<WebPluginContainerImpl>(GetWebPluginContainer(
@@ -1457,7 +1457,7 @@ TEST_F(WebPluginContainerTest, CompositedPluginCAP) {
   frame_test_helpers::WebViewHelper web_view_helper;
   WebViewImpl* web_view = web_view_helper.InitializeAndLoad(
       base_url_ + "plugin.html", &web_frame_client);
-  EnablePlugins(web_view, WebSize(800, 600));
+  EnablePlugins(web_view, gfx::Size(800, 600));
 
   WebPluginContainerImpl* container = static_cast<WebPluginContainerImpl*>(
       GetWebPluginContainer(web_view, WebString::FromUTF8("plugin")));
@@ -1490,7 +1490,7 @@ TEST_F(WebPluginContainerTest, NeedsWheelEvents) {
   frame_test_helpers::WebViewHelper web_view_helper;
   WebViewImpl* web_view = web_view_helper.InitializeAndLoad(
       base_url_ + "plugin_container.html", &plugin_web_frame_client);
-  EnablePlugins(web_view, WebSize(300, 300));
+  EnablePlugins(web_view, gfx::Size(300, 300));
 
   WebElement plugin_container_one_element =
       web_view->MainFrameImpl()->GetDocument().GetElementById(

@@ -67,7 +67,7 @@ DelegatedInkTrailPresenter* CreatePresenter(Element* element,
 class DelegatedInkTrailPresenterUnitTest : public SimTest {
  public:
   void SetWebViewSize(float width, float height) {
-    WebView().MainFrameWidget()->Resize(WebSize(width, height));
+    WebView().MainFrameViewWidget()->Resize(gfx::Size(width, height));
   }
 
   void SetWebViewSizeGreaterThanCanvas(float width, float height) {

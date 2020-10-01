@@ -276,7 +276,7 @@ TEST_F(WebFrameSerializerSanitizationTest, ImageLoadedFromSrcForNormalDPI) {
 }
 
 TEST_F(WebFrameSerializerSanitizationTest, RemovePopupOverlayIfRequested) {
-  WebView()->MainFrameWidget()->Resize(WebSize(500, 500));
+  WebView()->MainFrameViewWidget()->Resize(gfx::Size(500, 500));
   LoadFrame("http://www.test.com", "popup.html", "text/html");
   String mhtml =
       WebFrameSerializerTestHelper::GenerateMHTMLWithPopupOverlayRemoved(
@@ -286,14 +286,14 @@ TEST_F(WebFrameSerializerSanitizationTest, RemovePopupOverlayIfRequested) {
 }
 
 TEST_F(WebFrameSerializerSanitizationTest, PopupOverlayNotFound) {
-  WebView()->MainFrameWidget()->Resize(WebSize(500, 500));
+  WebView()->MainFrameViewWidget()->Resize(gfx::Size(500, 500));
   LoadFrame("http://www.test.com", "text_only_page.html", "text/html");
   WebFrameSerializerTestHelper::GenerateMHTMLWithPopupOverlayRemoved(
       MainFrameImpl());
 }
 
 TEST_F(WebFrameSerializerSanitizationTest, KeepPopupOverlayIfNotRequested) {
-  WebView()->MainFrameWidget()->Resize(WebSize(500, 500));
+  WebView()->MainFrameViewWidget()->Resize(gfx::Size(500, 500));
   String mhtml = GenerateMHTMLFromHtml("http://www.test.com", "popup.html");
   EXPECT_NE(WTF::kNotFound, mhtml.Find("class=3D\"overlay"));
   EXPECT_NE(WTF::kNotFound, mhtml.Find("class=3D\"modal"));
@@ -372,7 +372,7 @@ TEST_F(WebFrameSerializerSanitizationTest, PictureElement) {
   RegisterMockedFileURLLoad(KURL("http://www.test.com/2x.png"),
                             "frameserialization/2x.png");
 
-  WebView()->MainFrameWidget()->Resize(WebSize(500, 500));
+  WebView()->MainFrameViewWidget()->Resize(gfx::Size(500, 500));
 
   String mhtml = GenerateMHTMLFromHtml("http://www.test.com", "picture.html");
 

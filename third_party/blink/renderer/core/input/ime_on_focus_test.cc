@@ -52,7 +52,7 @@ class ImeOnFocusTest : public testing::Test {
   }
 
  protected:
-  void SendGestureTap(WebView*, IntPoint);
+  void SendGestureTap(WebViewImpl*, IntPoint);
   void Focus(const AtomicString& element);
   void RunImeOnFocusTest(String file_name,
                          int,
@@ -65,7 +65,8 @@ class ImeOnFocusTest : public testing::Test {
   Persistent<Document> document_;
 };
 
-void ImeOnFocusTest::SendGestureTap(WebView* web_view, IntPoint client_point) {
+void ImeOnFocusTest::SendGestureTap(WebViewImpl* web_view,
+                                    IntPoint client_point) {
   WebGestureEvent web_gesture_event(WebInputEvent::Type::kGestureTap,
                                     WebInputEvent::kNoModifiers,
                                     WebInputEvent::GetStaticTimeStampForTests(),
@@ -77,7 +78,7 @@ void ImeOnFocusTest::SendGestureTap(WebView* web_view, IntPoint client_point) {
   web_gesture_event.data.tap.width = 10;
   web_gesture_event.data.tap.height = 10;
 
-  web_view->MainFrameWidget()->HandleInputEvent(
+  web_view->MainFrameViewWidget()->HandleInputEvent(
       WebCoalescedInputEvent(web_gesture_event, ui::LatencyInfo()));
   RunPendingTasks();
 }
@@ -97,7 +98,7 @@ void ImeOnFocusTest::RunImeOnFocusTest(
                                 WebString(file_name));
   WebViewImpl* web_view =
       web_view_helper_.Initialize(nullptr, nullptr, &client);
-  web_view->MainFrameWidget()->Resize(WebSize(800, 1200));
+  web_view->MainFrameViewWidget()->Resize(gfx::Size(800, 1200));
   LoadFrame(web_view->MainFrameImpl(), base_url_.Utf8() + file_name.Utf8());
   document_ = web_view_helper_.GetWebView()
                   ->MainFrameImpl()

@@ -46,7 +46,7 @@ class AnchorElementMetricsTest : public SimTest {
   void SetUp() override {
     SimTest::SetUp();
     WebView().MainFrameWidget()->Resize(
-        WebSize(kViewportWidth, kViewportHeight));
+        gfx::Size(kViewportWidth, kViewportHeight));
     feature_list_.InitAndEnableFeature(features::kNavigationPredictor);
   }
 

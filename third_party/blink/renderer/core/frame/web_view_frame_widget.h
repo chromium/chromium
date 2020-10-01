@@ -59,8 +59,8 @@ class CORE_EXPORT WebViewFrameWidget : public WebFrameWidgetBase {
   // WebWidget overrides:
   void Close(
       scoped_refptr<base::SingleThreadTaskRunner> cleanup_runner) override;
-  WebSize Size() override;
-  void Resize(const WebSize& size_with_dsf) override;
+  gfx::Size Size() override;
+  void Resize(const gfx::Size& size_with_dsf) override;
   void UpdateLifecycle(WebLifecycleUpdate requested_update,
                        DocumentUpdateReason reason) override;
   void ThemeChanged() override;

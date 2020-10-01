@@ -21,7 +21,7 @@ class VideoFillingViewportTest : public SimTest {
 
   void SetUp() override {
     SimTest::SetUp();
-    WebView().MainFrameWidget()->Resize(WebSize(640, 480));
+    WebView().MainFrameViewWidget()->Resize(gfx::Size(640, 480));
   }
 
   bool IsMostlyFillingViewport(HTMLVideoElement* element) {

@@ -104,7 +104,7 @@ class LayoutShiftTrackerSimTest : public SimTest {
  protected:
   void SetUp() override {
     SimTest::SetUp();
-    WebView().MainFrameWidget()->Resize(WebSize(800, 600));
+    WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   }
 };
 
@@ -184,7 +184,7 @@ TEST_F(LayoutShiftTrackerSimTest, ViewportSizeChange) {
   // Resize the viewport, making it 400px wide. This should cause the second div
   // to change position during block layout flow. Since it was the result of a
   // viewport size change, this position change should not affect the score.
-  WebView().MainFrameWidget()->Resize(WebSize(400, 600));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(400, 600));
 
   Compositor().BeginFrame();
   test::RunPendingTasks();

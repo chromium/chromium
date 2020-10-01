@@ -61,9 +61,9 @@ class FrameOverlayTest : public testing::Test, public PaintTestConfigurations {
 
   FrameOverlayTest() {
     helper_.Initialize(nullptr, nullptr, nullptr);
-    GetWebView()->MainFrameWidget()->Resize(
-        WebSize(kViewportWidth, kViewportHeight));
-    GetWebView()->MainFrameWidget()->UpdateAllLifecyclePhases(
+    GetWebView()->MainFrameViewWidget()->Resize(
+        gfx::Size(kViewportWidth, kViewportHeight));
+    GetWebView()->MainFrameViewWidget()->UpdateAllLifecyclePhases(
         DocumentUpdateReason::kTest);
   }
 
@@ -123,7 +123,7 @@ TEST_P(FrameOverlayTest, DeviceEmulationScale) {
   params.scale = 1.5;
   params.view_size = gfx::Size(800, 600);
   GetWebView()->EnableDeviceEmulation(params);
-  GetWebView()->MainFrameWidget()->UpdateAllLifecyclePhases(
+  GetWebView()->MainFrameViewWidget()->UpdateAllLifecyclePhases(
       DocumentUpdateReason::kTest);
 
   std::unique_ptr<FrameOverlay> frame_overlay = CreateSolidYellowOverlay();

@@ -43,8 +43,8 @@ class WebExternalWidgetImpl : public WebExternalWidget,
       scoped_refptr<base::SingleThreadTaskRunner> cleanup_runner) override;
   WebHitTestResult HitTestResultAt(const gfx::PointF&) override;
   WebURL GetURLForDebugTrace() override;
-  WebSize Size() override;
-  void Resize(const WebSize& size) override;
+  gfx::Size Size() override;
+  void Resize(const gfx::Size& size) override;
   WebInputEventResult HandleInputEvent(
       const WebCoalescedInputEvent& coalesced_event) override;
   WebInputEventResult DispatchBufferedTouchEvents() override;
@@ -116,7 +116,7 @@ class WebExternalWidgetImpl : public WebExternalWidget,
  private:
   WebExternalWidgetClient* const client_;
   const WebURL debug_url_;
-  WebSize size_;
+  gfx::Size size_;
   std::unique_ptr<WidgetBase> widget_base_;
 };
 

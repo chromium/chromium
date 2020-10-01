@@ -215,11 +215,11 @@ void WebFrameWidgetImpl::Close(
   self_keep_alive_.Clear();
 }
 
-WebSize WebFrameWidgetImpl::Size() {
-  return size_ ? *size_ : WebSize();
+gfx::Size WebFrameWidgetImpl::Size() {
+  return size_.value_or(gfx::Size());
 }
 
-void WebFrameWidgetImpl::Resize(const WebSize& new_size) {
+void WebFrameWidgetImpl::Resize(const gfx::Size& new_size) {
   if (size_ && *size_ == new_size)
     return;
 
@@ -236,7 +236,7 @@ void WebFrameWidgetImpl::Resize(const WebSize& new_size) {
 
   UpdateMainFrameLayoutSize();
 
-  view->Resize(*size_);
+  view->Resize(WebSize(*size_));
 
   // FIXME: In WebViewImpl this layout was a precursor to setting the minimum
   // scale limit.  It is not clear if this is necessary for frame-level widget
@@ -281,9 +281,9 @@ void WebFrameWidgetImpl::UpdateMainFrameLayoutSize() {
   if (!view)
     return;
 
-  WebSize layout_size = *size_;
+  gfx::Size layout_size = *size_;
 
-  view->SetLayoutSize(layout_size);
+  view->SetLayoutSize(WebSize(layout_size));
 }
 
 void WebFrameWidgetImpl::SetSuppressFrameRequestsWorkaroundFor704763Only(
@@ -424,7 +424,7 @@ void WebFrameWidgetImpl::UpdateLifecycle(WebLifecycleUpdate requested_update,
 void WebFrameWidgetImpl::ThemeChanged() {
   LocalFrameView* view = LocalRootImpl()->GetFrameView();
 
-  WebRect damaged_rect(0, 0, size_->width, size_->height);
+  WebRect damaged_rect(0, 0, size_->width(), size_->height());
   view->InvalidateRect(damaged_rect);
 }
 
@@ -1210,8 +1210,7 @@ void WebFrameWidgetImpl::ApplyVisualPropertiesSizing(
         widget_base_->VisibleViewportSizeInDIPs())));
   }
 
-  Resize(WebSize(
-      widget_base_->DIPsToCeiledBlinkSpace(visual_properties.new_size)));
+  Resize(widget_base_->DIPsToCeiledBlinkSpace(visual_properties.new_size));
 }
 
 }  // namespace blink

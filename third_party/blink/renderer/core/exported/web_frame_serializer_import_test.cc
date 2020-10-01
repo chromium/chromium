@@ -17,7 +17,7 @@ class WebFrameSerializerImportTest : public SimTest {
 
   void SetUp() override {
     SimTest::SetUp();
-    WebView().MainFrameWidget()->Resize(WebSize(500, 500));
+    WebView().MainFrameViewWidget()->Resize(gfx::Size(500, 500));
   }
 };
 

@@ -67,7 +67,7 @@ TEST_F(WebNodeSimTest, IsFocused) {
                                      "text/css");
 
   LoadURL("https://example.com/test.html");
-  WebView().MainFrameWidget()->Resize(WebSize(800, 600));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
 
   main_resource.Write(R"HTML(
     <!DOCTYPE html>

@@ -33,7 +33,7 @@ class AgentMetricsCollectorUnitTest : public SimTest {
 
     WebView().GetPage()->GetAgentMetricsCollector()->SetTickClockForTesting(
         &tick_clock_);
-    WebView().MainFrameWidget()->Resize(WebSize(800, 600));
+    WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   }
 
   void TearDown() override {

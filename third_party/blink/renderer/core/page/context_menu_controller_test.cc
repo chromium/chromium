@@ -79,7 +79,8 @@ class ContextMenuControllerTest : public testing::Test {
     web_view_helper_.Initialize(&web_frame_client_);
 
     WebLocalFrameImpl* local_main_frame = web_view_helper_.LocalMainFrame();
-    local_main_frame->ViewImpl()->MainFrameWidget()->Resize(WebSize(640, 480));
+    local_main_frame->ViewImpl()->MainFrameViewWidget()->Resize(
+        gfx::Size(640, 480));
     local_main_frame->ViewImpl()->MainFrameWidget()->UpdateAllLifecyclePhases(
         DocumentUpdateReason::kTest);
   }

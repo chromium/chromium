@@ -110,7 +110,7 @@ class LazyLoadFramesParamsTest
 
     SimTest::SetUp();
     WebView().MainFrameWidget()->Resize(
-        WebSize(kViewportWidth, kViewportHeight));
+        gfx::Size(kViewportWidth, kViewportHeight));
 
     Settings& settings = WebView().GetPage()->GetSettings();
 
@@ -1167,7 +1167,7 @@ class LazyLoadFramesTest : public SimTest {
 
     SimTest::SetUp();
     WebView().MainFrameWidget()->Resize(
-        WebSize(kViewportWidth, kViewportHeight));
+        gfx::Size(kViewportWidth, kViewportHeight));
 
     Settings& settings = WebView().GetPage()->GetSettings();
     settings.SetLazyFrameLoadingDistanceThresholdPx4G(

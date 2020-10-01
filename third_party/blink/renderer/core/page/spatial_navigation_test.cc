@@ -1230,7 +1230,7 @@ TEST_F(FocuslessSpatialNavigationSimTest, OpenSelectPopup) {
   if (!RuntimeEnabledFeatures::PagePopupEnabled())
     return;
 
-  WebView().MainFrameWidget()->Resize(WebSize(800, 600));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   WebView().MainFrameWidget()->SetFocus(true);
   WebView().SetIsActive(true);
 

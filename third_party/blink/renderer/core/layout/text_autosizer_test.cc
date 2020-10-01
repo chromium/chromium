@@ -1083,7 +1083,7 @@ class TextAutosizerSimTest : public SimTest {
 };
 
 TEST_F(TextAutosizerSimTest, CrossSiteUseCounter) {
-  WebView().MainFrameWidget()->Resize(WebSize(800, 800));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 800));
 
   SimRequest main_resource("https://example.com/", "text/html");
   SimRequest child_resource("https://crosssite.com/", "text/html");
