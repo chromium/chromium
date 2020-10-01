@@ -58,11 +58,6 @@ class ModuleWrapperElement extends PolymerElement {
       BrowserProxy.getInstance().handler.onModuleUsage(this.descriptor.id);
     }, {once: true});
   }
-
-  /** @private */
-  onInfoButtonClick_() {
-    this.descriptor.actions.info();
-  }
 }
 
 customElements.define(ModuleWrapperElement.is, ModuleWrapperElement);

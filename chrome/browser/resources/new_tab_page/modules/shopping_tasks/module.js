@@ -27,20 +27,12 @@ class ShoppingTasksModuleElement extends PolymerElement {
     return {
       /** @type {shoppingTasks.mojom.ShoppingTask} */
       shoppingTask: Object,
-
-      /** @type {boolean} */
-      showInfoDialog: Boolean,
     };
   }
 
   /** @private */
   onClick_() {
     this.dispatchEvent(new Event('usage', {bubbles: true, composed: true}));
-  }
-
-  /** @private */
-  onCloseClick_() {
-    this.showInfoDialog = false;
   }
 }
 
@@ -59,11 +51,6 @@ async function createModule() {
   return {
     element: element,
     title: shoppingTask.title,
-    actions: {
-      info: () => {
-        element.showInfoDialog = true;
-      },
-    },
   };
 }
 
