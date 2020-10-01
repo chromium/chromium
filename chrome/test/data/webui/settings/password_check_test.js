@@ -929,7 +929,7 @@ suite('PasswordsCheckSection', function() {
     assertTrue(isElementVisible(section.$.compromisedCredentialsBody));
     assertTrue(isElementVisible(section.$.signedOutUserLabel));
     expectEquals(
-        section.i18n('signedOutUserLabel'),
+        section.i18n('signedOutUserHasCompromisedCredentialsLabel'),
         section.$.signedOutUserLabel.textContent.trim());
     assertTrue(isElementVisible(section.$.compromisedPasswordsDescription));
     expectEquals(

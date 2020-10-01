@@ -668,6 +668,22 @@ Polymer({
   },
 
   /**
+   * Returns the label that should be shown in the compromised password section
+   * if a user is signed out. This label depends on whether the user already had
+   * compromised credentials that were found in the past.
+   * @return {string}
+   * @private
+   */
+  getSignedOutUserLabel_() {
+    // This label contains the link, thus we need to use i18nAdvanced() here as
+    // well as the `inner-h-t-m-l` attribute in the DOM.
+    return this.i18nAdvanced(
+        this.hasLeakedCredentials_() ?
+            'signedOutUserHasCompromisedCredentialsLabel' :
+            'signedOutUserLabel');
+  },
+
+  /**
    * Returns true iff the leak check was performed at least once before.
    * @return {boolean}
    * @private
