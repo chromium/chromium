@@ -87,6 +87,7 @@ class PublicURLManager;
 class ResourceFetcher;
 class SecurityOrigin;
 class ScriptState;
+class ScriptWrappable;
 class TrustedTypePolicyFactory;
 
 enum class TaskType : unsigned char;
@@ -392,6 +393,14 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
   virtual base::Optional<ExecutionContextToken> GetParentExecutionContextToken()
       const {
     return base::nullopt;
+  }
+
+  // ExecutionContext subclasses are usually the V8 global object, which means
+  // they are also a ScriptWrappable. This casts the ExecutionContext to a
+  // ScriptWrappable if possible.
+  virtual ScriptWrappable* ToScriptWrappable() {
+    NOTREACHED();
+    return nullptr;
   }
 
  protected:

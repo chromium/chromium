@@ -163,6 +163,7 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   TrustedTypePolicyFactory* GetTrustedTypes() const final {
     return trustedTypes();
   }
+  ScriptWrappable* ToScriptWrappable() final { return this; }
   void CountPotentialFeaturePolicyViolation(
       mojom::blink::FeaturePolicyFeature) const final;
   void ReportFeaturePolicyViolation(
