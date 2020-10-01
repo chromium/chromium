@@ -15,6 +15,7 @@
 #include "ash/public/cpp/ambient/ambient_metrics.h"
 #include "ash/public/cpp/ambient/ambient_prefs.h"
 #include "ash/public/cpp/ambient/common/ambient_settings.h"
+#include "ash/public/cpp/shell_window_ids.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "base/barrier_closure.h"
@@ -28,11 +29,14 @@
 #include "components/user_manager/user_manager.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
+#include "net/base/url_util.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "ui/display/display.h"
+#include "ui/display/screen.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -244,6 +248,14 @@ bool IsArtSettingVisible(const ArtSetting& art_setting) {
   return false;
 }
 
+gfx::Size GetDisplaySizeInPixel() {
+  auto* ambient_container = Shell::GetContainer(
+      Shell::GetPrimaryRootWindow(), kShellWindowId_AmbientModeContainer);
+  return display::Screen::GetScreen()
+      ->GetDisplayNearestView(ambient_container)
+      .GetSizeInPixel();
+}
+
 }  // namespace
 
 // Helper class for handling Backdrop service requests.
@@ -425,6 +437,15 @@ void AmbientBackendControllerImpl::FetchScreenUpdateInfoInternal(
       backdrop_client_config_.CreateFetchScreenUpdateRequest(
           num_topics, gaia_id, access_token, client_id);
   auto resource_request = CreateResourceRequest(request);
+
+  // Request photo with display size in pixel.
+  gfx::Size display_size_px = GetDisplaySizeInPixel();
+  resource_request->url =
+      net::AppendQueryParameter(resource_request->url, "device-screen-width",
+                                base::NumberToString(display_size_px.width()));
+  resource_request->url =
+      net::AppendQueryParameter(resource_request->url, "device-screen-height",
+                                base::NumberToString(display_size_px.height()));
 
   auto backdrop_url_loader = std::make_unique<BackdropURLLoader>();
   auto* loader_ptr = backdrop_url_loader.get();
