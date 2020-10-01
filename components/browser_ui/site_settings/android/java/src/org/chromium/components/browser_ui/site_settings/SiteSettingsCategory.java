@@ -287,25 +287,6 @@ public class SiteSettingsCategory {
     }
 
     /**
-     * Returns whether the Category type is correlated with PermissionInfo
-     */
-    public boolean isPermissionInfo() {
-        switch (mCategory) {
-            case Type.AUGMENTED_REALITY:
-            case Type.CAMERA:
-            case Type.CLIPBOARD:
-            case Type.DEVICE_LOCATION:
-            case Type.NFC:
-            case Type.NOTIFICATIONS:
-            case Type.PROTECTED_MEDIA:
-            case Type.VIRTUAL_REALITY:
-                return true;
-            default:
-                return false;
-        }
-    }
-
-    /**
      * Returns whether this category is the specified type.
      */
     public boolean showSites(@Type int type) {
