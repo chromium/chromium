@@ -8,6 +8,7 @@
 #include <fuchsia/accessibility/semantics/cpp/fidl.h>
 #include <fuchsia/accessibility/semantics/cpp/fidl_test_base.h>
 #include <lib/fidl/cpp/binding.h>
+#include <unordered_map>
 
 #include "base/callback.h"
 
@@ -35,9 +36,16 @@ class FakeSemanticTree
   void Disconnect();
 
   void RunUntilNodeCountAtLeast(size_t count);
+  void SetNodeUpdatedCallback(uint32_t node_id,
+                              base::OnceClosure node_updated_callback);
   fuchsia::accessibility::semantics::Node* GetNodeWithId(uint32_t id);
+
+  // For both functions below, it is possible there are multiple nodes with the
+  // same identifier.
   fuchsia::accessibility::semantics::Node* GetNodeFromLabel(
       base::StringPiece label);
+  fuchsia::accessibility::semantics::Node* GetNodeFromRole(
+      fuchsia::accessibility::semantics::Role role);
 
   // fuchsia::accessibility::semantics::SemanticTree implementation.
   void UpdateSemanticNodes(
@@ -50,8 +58,11 @@ class FakeSemanticTree
  private:
   fidl::Binding<fuchsia::accessibility::semantics::SemanticTree>
       semantic_tree_binding_;
-  std::vector<fuchsia::accessibility::semantics::Node> nodes_;
+  std::unordered_map<uint32_t, fuchsia::accessibility::semantics::Node> nodes_;
   base::RepeatingClosure on_commit_updates_;
+
+  uint32_t node_wait_id_;
+  base::OnceClosure on_node_updated_callback_;
 };
 
 #endif  // FUCHSIA_ENGINE_BROWSER_FAKE_SEMANTIC_TREE_H_

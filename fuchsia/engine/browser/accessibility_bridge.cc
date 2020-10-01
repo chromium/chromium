@@ -148,7 +148,8 @@ void AccessibilityBridge::AccessibilityEventReceived(
       // Run the pending callback with the hit.
       pending_hit_test_callbacks_[event.action_request_id](std::move(hit));
       pending_hit_test_callbacks_.erase(event.action_request_id);
-    } else if (event_received_callback_for_test_) {
+    } else if (event_received_callback_for_test_ &&
+               event.event_type == ax::mojom::Event::kEndOfTest) {
       std::move(event_received_callback_for_test_).Run();
     }
   }
@@ -185,6 +186,13 @@ void AccessibilityBridge::OnAccessibilityActionRequested(
 
   web_contents_->GetMainFrame()->AccessibilityPerformAction(action_data);
   callback(true);
+
+  if (event_received_callback_for_test_) {
+    // Perform an action with a corresponding event to signal the action has
+    // been pumped through.
+    action_data.action = ax::mojom::Action::kSignalEndOfTest;
+    web_contents_->GetMainFrame()->AccessibilityPerformAction(action_data);
+  }
 }
 
 void AccessibilityBridge::HitTest(fuchsia::math::PointF local_point,
