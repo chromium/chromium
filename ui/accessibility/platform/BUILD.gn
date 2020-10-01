@@ -15,13 +15,6 @@ if (is_win) {
   import("//build/toolchain/win/midl.gni")
 }
 
-# This file depends on the legacy global sources assignment filter. It should
-# be converted to check target platform before assigning source files to the
-# sources variable. Remove this import and set_sources_assignment_filter call
-# when the file has been converted. See https://crbug.com/1018739 for details.
-import("//build/config/deprecated_default_sources_assignment_filter.gni")
-set_sources_assignment_filter(deprecated_default_sources_assignment_filter)
-
 if (is_win) {
   midl("ichromeaccessible") {
     sources = [ "ichromeaccessible.idl" ]
@@ -73,30 +66,33 @@ source_set("platform") {
 
   if (has_native_accessibility) {
     sources += [
-      "ax_fragment_root_delegate_win.h",
-      "ax_fragment_root_win.cc",
-      "ax_fragment_root_win.h",
-      "ax_platform_node_delegate_utils_win.cc",
-      "ax_platform_node_delegate_utils_win.h",
-      "ax_platform_node_textchildprovider_win.cc",
-      "ax_platform_node_textchildprovider_win.h",
-      "ax_platform_node_textprovider_win.cc",
-      "ax_platform_node_textprovider_win.h",
-      "ax_platform_node_textrangeprovider_win.cc",
-      "ax_platform_node_textrangeprovider_win.h",
-      "ax_platform_node_win.cc",
-      "ax_platform_node_win.h",
-      "ax_platform_relation_win.cc",
-      "ax_platform_relation_win.h",
       "ax_platform_text_boundary.cc",
       "ax_platform_text_boundary.h",
-      "ax_system_caret_win.cc",
-      "ax_system_caret_win.h",
-      "uia_registrar_win.cc",
-      "uia_registrar_win.h",
     ]
 
     if (is_win) {
+      sources += [
+        "ax_fragment_root_delegate_win.h",
+        "ax_fragment_root_win.cc",
+        "ax_fragment_root_win.h",
+        "ax_platform_node_delegate_utils_win.cc",
+        "ax_platform_node_delegate_utils_win.h",
+        "ax_platform_node_textchildprovider_win.cc",
+        "ax_platform_node_textchildprovider_win.h",
+        "ax_platform_node_textprovider_win.cc",
+        "ax_platform_node_textprovider_win.h",
+        "ax_platform_node_textrangeprovider_win.cc",
+        "ax_platform_node_textrangeprovider_win.h",
+        "ax_platform_node_win.cc",
+        "ax_platform_node_win.h",
+        "ax_platform_relation_win.cc",
+        "ax_platform_relation_win.h",
+        "ax_system_caret_win.cc",
+        "ax_system_caret_win.h",
+        "uia_registrar_win.cc",
+        "uia_registrar_win.h",
+      ]
+
       public_deps += [
         "//third_party/iaccessible2",
         "//ui/accessibility/platform:ichromeaccessible",
