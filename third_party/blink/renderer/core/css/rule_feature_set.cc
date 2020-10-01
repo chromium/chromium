@@ -717,8 +717,7 @@ void RuleFeatureSet::UpdateRuleSetInvalidation(
     type_rule_invalidation_set_->AddTagName(tag_name);
 }
 
-RuleFeatureSet::FeatureInvalidationType
-RuleFeatureSet::ExtractInvalidationSetFeaturesFromSelectorList(
+void RuleFeatureSet::ExtractInvalidationSetFeaturesFromSelectorList(
     const CSSSelector& simple_selector,
     InvalidationSetFeatures& features,
     PositionType position) {
@@ -726,7 +725,7 @@ RuleFeatureSet::ExtractInvalidationSetFeaturesFromSelectorList(
 
   const CSSSelectorList* selector_list = simple_selector.SelectorList();
   if (!selector_list)
-    return kNormalInvalidation;
+    return;
   DCHECK(SupportsInvalidationWithSelectorList(simple_selector.GetPseudoType()));
 
   const CSSSelector* sub_selector = selector_list->First();
@@ -741,7 +740,7 @@ RuleFeatureSet::ExtractInvalidationSetFeaturesFromSelectorList(
             *sub_selector, complex_features, position,
             simple_selector.GetPseudoType()) == kRequiresSubtreeInvalidation) {
       features.invalidation_flags.SetWholeSubtreeInvalid(true);
-      return kRequiresSubtreeInvalidation;
+      continue;
     }
     all_sub_selectors_have_features_for_ruleset_invalidation &=
         complex_features.has_features_for_rule_set_invalidation;
@@ -760,7 +759,6 @@ RuleFeatureSet::ExtractInvalidationSetFeaturesFromSelectorList(
     features.NarrowToFeatures(any_features);
   features.has_features_for_rule_set_invalidation |=
       all_sub_selectors_have_features_for_ruleset_invalidation;
-  return kNormalInvalidation;
 }
 
 const CSSSelector* RuleFeatureSet::ExtractInvalidationSetFeaturesFromCompound(
@@ -806,12 +804,8 @@ const CSSSelector* RuleFeatureSet::ExtractInvalidationSetFeaturesFromCompound(
         invalidation_set->SetInvalidatesSelf();
     }
 
-    if (ExtractInvalidationSetFeaturesFromSelectorList(*simple_selector,
-                                                       features, position) ==
-        kRequiresSubtreeInvalidation) {
-      DCHECK(features.invalidation_flags.WholeSubtreeInvalid());
-      return nullptr;
-    }
+    ExtractInvalidationSetFeaturesFromSelectorList(*simple_selector, features,
+                                                   position);
 
     if (features.invalidation_flags.InvalidatesParts())
       metadata_.invalidates_parts = true;
@@ -886,9 +880,13 @@ void RuleFeatureSet::AddFeaturesToInvalidationSetsForSelectorList(
     AutoRestoreMaxDirectAdjacentSelectors restore_max(sibling_features);
     AutoRestoreTreeBoundaryCrossingFlag restore_tree_boundary(
         descendant_features);
+    AutoRestoreInsertionPointCrossingFlag restore_insertion_point(
+        descendant_features);
 
     if (simple_selector.IsHostPseudoClass())
       descendant_features.invalidation_flags.SetTreeBoundaryCrossing(true);
+    if (simple_selector.IsV0InsertionPointCrossing())
+      descendant_features.invalidation_flags.SetInsertionPointCrossing(true);
 
     descendant_features.has_features_for_rule_set_invalidation = false;
 
@@ -947,8 +945,6 @@ void RuleFeatureSet::AddFeaturesToInvalidationSetsForSimpleSelector(
     return;
   }
 
-  if (simple_selector.IsV0InsertionPointCrossing())
-    descendant_features.invalidation_flags.SetInsertionPointCrossing(true);
   if (simple_selector.GetPseudoType() == CSSSelector::kPseudoPart)
     descendant_features.invalidation_flags.SetInvalidatesParts(true);
 

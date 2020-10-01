@@ -1533,6 +1533,36 @@ RefTestData ref_equal_test_data[] = {
     {":is(.a, .b) :is(.c, .d)::part(foo)",
      ".a .c::part(foo), .a .d ::part(foo),"
      ".b .c::part(foo), .b .d ::part(foo)"},
+    {":is(.a, .b)::first-letter", ".a::first-letter, .b::first-letter"},
+    {":is(.a, .b .c)::first-line", ".a::first-line, .b .c::first-line"},
+    // TODO(andruud): Here we would normally expect a ref:
+    // '.a::first-line, .b + .c::first-line', however the latter selector
+    // currently marks the sibling invalidation set for .b as whole subtree
+    // invalid, whereas the :is() version does not. This could be improved.
+    {":is(.a, .b + .c)::first-line", ".a::first-line, .b + .c, .b + .c *"},
+    {":is(.a, .b ~ .c > .d)::first-line",
+     ".a::first-line, .b ~ .c > .d::first-line"},
+    {":is(.a, :host-context(.b), .c)", ".a, :host-context(.b), .c"},
+    {":is(.a, :host-context(.b), .c) .d", ".a .d, :host-context(.b) .d, .c .d"},
+    {":is(.a, :host-context(.b), .c) + .d",
+     ".a + .d, :host-context(.b) + .d, .c + .d"},
+    {":host-context(.a) :is(.b, .c)",
+     ":host-context(.a) .b, :host-context(.a) .c"},
+    {":host-context(:is(.a))", ":host-context(.a)"},
+    {":host-context(:is(.a, .b))", ":host-context(.a), :host-context(.b)"},
+    {":is(.a, .b + .c).d", ".a.d, .b + .c.d"},
+    {".a :is(.b .c .d).e", ".a .d.e, .b .c .d.e"},
+    {":is(*)", "*"},
+    {".a :is(*)", ".a *"},
+    {":is(*) .a", "* .a"},
+    {".a + :is(*)", ".a + *"},
+    {":is(*) + .a", "* + .a"},
+    {".a + :is(.b, *)", ".a + .b, .a + *"},
+    {":is(.a, *) + .b", ".a + .b, * + .b"},
+    {".a :is(.b, *)", ".a .b, .a *"},
+    {":is(.a, *) .b", ".a .b, * .b"},
+    {":is(.a + .b, .c) *", ".a + .b *, .c *"},
+    {":is(.a + *, .c) *", ".a + * *, .c *"},
 
     // clang-format on
 };

@@ -343,6 +343,26 @@ class CORE_EXPORT RuleFeatureSet {
     bool original_value_;
   };
 
+  // For :is(.a, :host-context(.b), .c) .d, the invalidation set for .c should
+  // not be marked as insertion point crossing.
+  class AutoRestoreInsertionPointCrossingFlag {
+    STACK_ALLOCATED();
+
+   public:
+    explicit AutoRestoreInsertionPointCrossingFlag(
+        InvalidationSetFeatures& features)
+        : features_(features),
+          original_value_(
+              features.invalidation_flags.InsertionPointCrossing()) {}
+    ~AutoRestoreInsertionPointCrossingFlag() {
+      features_.invalidation_flags.SetInsertionPointCrossing(original_value_);
+    }
+
+   private:
+    InvalidationSetFeatures& features_;
+    bool original_value_;
+  };
+
   static void ExtractInvalidationSetFeature(const CSSSelector&,
                                             InvalidationSetFeatures&);
 
@@ -381,10 +401,9 @@ class CORE_EXPORT RuleFeatureSet {
       InvalidationSetFeatures&,
       PositionType,
       CSSSelector::PseudoType = CSSSelector::kPseudoUnknown);
-  FeatureInvalidationType ExtractInvalidationSetFeaturesFromSelectorList(
-      const CSSSelector&,
-      InvalidationSetFeatures&,
-      PositionType);
+  void ExtractInvalidationSetFeaturesFromSelectorList(const CSSSelector&,
+                                                      InvalidationSetFeatures&,
+                                                      PositionType);
   void UpdateFeaturesFromCombinator(
       const CSSSelector&,
       const CSSSelector* last_compound_selector_in_adjacent_chain,
