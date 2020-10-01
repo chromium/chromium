@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/strings/sys_string_conversions.h"
+#import "ios/chrome/app/application_delegate/app_state.h"
 #include "ios/chrome/browser/application_context.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/crash_report/crash_report_helper.h"
@@ -167,10 +168,19 @@
   std::string sessionID = base::SysNSStringToUTF8(self.sessionID);
   SnapshotBrowserAgent::FromBrowser(_mainBrowser.get())
       ->SetSessionID(sessionID);
-  SessionRestorationBrowserAgent::FromBrowser(_mainBrowser.get())
-      ->SetSessionID(sessionID);
-  SessionRestorationBrowserAgent::FromBrowser(_mainBrowser.get())
-      ->RestoreSession();
+
+  // If the OS doesn't support multiple scenes, use the previous run scene ID
+  // for the session restoration.
+  NSString* restoreSessionID = self.sessionID;
+  if (_sceneState.appState.previousSingleWindowSessionID) {
+    restoreSessionID = _sceneState.appState.previousSingleWindowSessionID;
+  }
+  SessionRestorationBrowserAgent* restorationAgent =
+      SessionRestorationBrowserAgent::FromBrowser(_mainBrowser.get());
+  restorationAgent->SetSessionID(base::SysNSStringToUTF8(restoreSessionID));
+  restorationAgent->RestoreSession();
+  restorationAgent->SetSessionID(sessionID);
+
   breakpad::MonitorTabStateForWebStateList(_mainBrowser->GetWebStateList());
   // Follow loaded URLs in the main tab model to send those in case of
   // crashes.

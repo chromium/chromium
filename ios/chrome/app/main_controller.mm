@@ -480,6 +480,12 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
           moveAsideSessionInformationForBrowserState:chromeBrowserState];
     }
   }
+  if (!IsMultipleScenesSupported() && IsMultiwindowSupported()) {
+    NSSet<NSString*>* previousSessions =
+        [PreviousSessionInfo sharedInstance].connectedSceneSessionsIDs;
+    DCHECK(previousSessions.count <= 1);
+    self.appState.previousSingleWindowSessionID = [previousSessions anyObject];
+  }
   [[PreviousSessionInfo sharedInstance] resetConnectedSceneSessionIDs];
 
   // Initialize and set the main browser state.

@@ -90,6 +90,10 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
 // The last window which received a tap.
 @property(nonatomic, weak) UIWindow* lastTappedWindow;
 
+// The SceneSession ID for the last session, where the Device doesn't support
+// multiple windows.
+@property(nonatomic, strong) NSString* previousSingleWindowSessionID;
+
 // Saves the launchOptions to be used from -newTabFromLaunchOptions. If the
 // application is in background, initialize the browser to basic. If not, launch
 // the browser.

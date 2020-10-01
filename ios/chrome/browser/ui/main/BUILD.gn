@@ -145,6 +145,7 @@ source_set("main") {
     "//base",
     "//components/translate/core/browser",
     "//ios/chrome/app:mode",
+    "//ios/chrome/app/application_delegate:app_state_header",
     "//ios/chrome/app/resources:launchscreen_xib",
     "//ios/chrome/browser",
     "//ios/chrome/browser/app_launcher",

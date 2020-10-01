@@ -363,8 +363,13 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   if (self.hasInitializedUI && level == SceneActivationLevelUnattached) {
     if (IsMultiwindowSupported()) {
       if (@available(iOS 13, *)) {
-        [[PreviousSessionInfo sharedInstance]
-            removeSceneSessionID:sceneState.scene.session.persistentIdentifier];
+        if (IsMultipleScenesSupported()) {
+          // If Multiple scenes are not supported, the session shouldn't be
+          // removed as it can be used for normal restoration.
+          [[PreviousSessionInfo sharedInstance]
+              removeSceneSessionID:sceneState.scene.session
+                                       .persistentIdentifier];
+        }
       }
     }
     [self teardownUI];

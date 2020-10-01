@@ -71,9 +71,6 @@ SessionRestorationBrowserAgent::~SessionRestorationBrowserAgent() {
 
 void SessionRestorationBrowserAgent::SetSessionID(
     const std::string& session_identifier) {
-  // It's probably incorrect to set this more than once.
-  DCHECK(session_identifier_.empty() ||
-         session_identifier_ == session_identifier);
   session_identifier_ = session_identifier;
 }
 
