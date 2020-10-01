@@ -124,6 +124,7 @@ class DeviceEmulatorMessageHandler :
   // system::PointerDeviceObserver::Observer:
   void TouchpadExists(bool exists) override;
   void MouseExists(bool exists) override;
+  void PointingStickExists(bool exists) override;
 
   bluez::FakeBluetoothDeviceClient* fake_bluetooth_device_client_;
   std::unique_ptr<BluetoothObserver> bluetooth_observer_;

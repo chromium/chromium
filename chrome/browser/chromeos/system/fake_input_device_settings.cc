@@ -106,6 +106,11 @@ void FakeInputDeviceSettings::SetMouseScrollAcceleration(bool enabled) {
   UpdateMouseSettings(settings);
 }
 
+void FakeInputDeviceSettings::PointingStickExists(
+    DeviceExistsCallback callback) {
+  std::move(callback).Run(pointing_stick_exists_);
+}
+
 void FakeInputDeviceSettings::SetTouchpadAcceleration(bool enabled) {
   TouchpadSettings settings;
   settings.SetAcceleration(enabled);
@@ -135,6 +140,10 @@ void FakeInputDeviceSettings::set_touchpad_exists(bool exists) {
 
 void FakeInputDeviceSettings::set_mouse_exists(bool exists) {
   mouse_exists_ = exists;
+}
+
+void FakeInputDeviceSettings::set_pointing_stick_exists(bool exists) {
+  pointing_stick_exists_ = exists;
 }
 
 const TouchpadSettings& FakeInputDeviceSettings::current_touchpad_settings()

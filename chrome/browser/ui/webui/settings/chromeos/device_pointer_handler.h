@@ -35,6 +35,7 @@ class PointerHandler
   // PointerDeviceObserver implementation.
   void TouchpadExists(bool exists) override;
   void MouseExists(bool exists) override;
+  void PointingStickExists(bool exists) override;
 
   // Initializes the page with the current pointer information.
   void HandleInitialize(const base::ListValue* args);

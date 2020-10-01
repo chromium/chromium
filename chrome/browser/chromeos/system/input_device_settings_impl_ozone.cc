@@ -46,6 +46,7 @@ class InputDeviceSettingsImplOzone : public InputDeviceSettings {
   void SetMouseReverseScroll(bool enabled) override;
   void SetMouseAcceleration(bool enabled) override;
   void SetMouseScrollAcceleration(bool enabled) override;
+  void PointingStickExists(DeviceExistsCallback callback) override;
   void SetTouchpadAcceleration(bool enabled) override;
   void SetTouchpadScrollAcceleration(bool enabled) override;
   void ReapplyTouchpadSettings() override;
@@ -157,6 +158,12 @@ void InputDeviceSettingsImplOzone::SetMouseAcceleration(bool enabled) {
 void InputDeviceSettingsImplOzone::SetMouseScrollAcceleration(bool enabled) {
   current_mouse_settings_.SetScrollAcceleration(enabled);
   input_controller()->SetMouseScrollAcceleration(enabled);
+}
+
+void InputDeviceSettingsImplOzone::PointingStickExists(
+    DeviceExistsCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  std::move(callback).Run(input_controller()->HasPointingStick());
 }
 
 void InputDeviceSettingsImplOzone::SetTouchpadAcceleration(bool enabled) {

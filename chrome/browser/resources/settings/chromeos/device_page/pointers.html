@@ -34,10 +34,10 @@
         padding-inline-end: 0;
       }
     </style>
-    <div id="mouse" hidden$="[[!hasMouse]]">
+    <div id="mouse" hidden$="[[!showMouseSection_]]">
       <!-- Subsection title only appears if both mouse and touchpad exist. -->
       <h2 hidden$="[[!hasTouchpad]]">$i18n{mouseTitle}</h2>
-      <div class$="[[getSubsectionClass_(hasMouse, hasTouchpad)]]">
+      <div class$="[[getSubsectionClass_(showMouseSection_, hasTouchpad)]]">
         <!-- Do not change the mouse button pref before the mouse is released.
              See crbug.com/686949 -->
         <settings-toggle-button id="mouseSwapButton"
@@ -107,8 +107,8 @@
     </div>
     <div id="touchpad" hidden$="[[!hasTouchpad]]">
       <!-- Subsection title only appears if both mouse and touchpad exist. -->
-      <h2 hidden$="[[!hasMouse]]">$i18n{touchpadTitle}</h2>
-      <div class$="[[getSubsectionClass_(hasMouse, hasTouchpad)]]">
+      <h2 hidden$="[[!showMouseSection_]]">$i18n{touchpadTitle}</h2>
+      <div class$="[[getSubsectionClass_(showMouseSection_, hasTouchpad)]]">
         <settings-toggle-button id="enableTapToClick"
             pref="{{prefs.settings.touchpad.enable_tap_to_click}}"
             label="$i18n{touchpadTapToClickEnabledLabel}"

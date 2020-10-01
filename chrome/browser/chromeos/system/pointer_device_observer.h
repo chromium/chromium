@@ -28,6 +28,7 @@ class PointerDeviceObserver : public ui::InputDeviceEventObserver {
    public:
     virtual void TouchpadExists(bool exists) = 0;
     virtual void MouseExists(bool exists) = 0;
+    virtual void PointingStickExists(bool exists) = 0;
 
    protected:
     Observer() {}
@@ -43,10 +44,12 @@ class PointerDeviceObserver : public ui::InputDeviceEventObserver {
   // Check for pointer devices.
   void CheckTouchpadExists();
   void CheckMouseExists();
+  void CheckPointingStickExists();
 
   // Callback for pointer device checks.
   void OnTouchpadExists(bool exists);
   void OnMouseExists(bool exists);
+  void OnPointingStickExists(bool exists);
 
   base::ObserverList<Observer>::Unchecked observers_;
 

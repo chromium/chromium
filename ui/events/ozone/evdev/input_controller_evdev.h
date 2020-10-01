@@ -40,6 +40,7 @@ class COMPONENT_EXPORT(EVDEV) InputControllerEvdev : public InputController {
 
   // InputController:
   bool HasMouse() override;
+  bool HasPointingStick() override;
   bool HasTouchpad() override;
   bool IsCapsLockEnabled() override;
   void SetCapsLockEnabled(bool enabled) override;

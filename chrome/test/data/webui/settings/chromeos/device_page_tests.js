@@ -39,6 +39,7 @@ cr.define('device_page_tests', function() {
     initializePointers: function() {
       // Enable mouse and touchpad.
       cr.webUIListenerCallback('has-mouse-changed', true);
+      cr.webUIListenerCallback('has-pointing-stick-changed', true);
       cr.webUIListenerCallback('has-touchpad-changed', true);
     },
 
@@ -591,6 +592,8 @@ cr.define('device_page_tests', function() {
 
       cr.webUIListenerCallback('has-mouse-changed', false);
       expectLT(0, devicePage.$$('#pointersRow').offsetHeight);
+      cr.webUIListenerCallback('has-pointing-stick-changed', false);
+      expectLT(0, devicePage.$$('#pointersRow').offsetHeight);
       cr.webUIListenerCallback('has-touchpad-changed', false);
       expectEquals(0, devicePage.$$('#pointersRow').offsetHeight);
       cr.webUIListenerCallback('has-mouse-changed', true);
@@ -617,6 +620,15 @@ cr.define('device_page_tests', function() {
         assertLT(0, pointersPage.$$('#touchpad h2').offsetHeight);
 
         cr.webUIListenerCallback('has-touchpad-changed', false);
+        assertEquals(
+            settings.routes.POINTERS,
+            settings.Router.getInstance().getCurrentRoute());
+        assertLT(0, pointersPage.$$('#mouse').offsetHeight);
+        assertEquals(0, pointersPage.$$('#touchpad').offsetHeight);
+        assertEquals(0, pointersPage.$$('#mouse h2').offsetHeight);
+        assertEquals(0, pointersPage.$$('#touchpad h2').offsetHeight);
+
+        cr.webUIListenerCallback('has-pointing-stick-changed', false);
         assertEquals(
             settings.routes.POINTERS,
             settings.Router.getInstance().getCurrentRoute());

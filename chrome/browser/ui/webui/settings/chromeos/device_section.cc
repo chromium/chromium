@@ -963,6 +963,10 @@ void DeviceSection::MouseExists(bool exists) {
     updater.RemoveSearchTags(GetMouseSearchConcepts());
 }
 
+void DeviceSection::PointingStickExists(bool exists) {
+  // TODO(crbug.com/1114828): manage search tags when the UI is implemented.
+}
+
 void DeviceSection::OnDeviceListsComplete() {
   UpdateStylusSearchTags();
 }

@@ -57,6 +57,7 @@ class DeviceSection : public OsSettingsSection,
   // system::PointerDeviceObserver::Observer:
   void TouchpadExists(bool exists) override;
   void MouseExists(bool exists) override;
+  void PointingStickExists(bool exists) override;
 
   // ui::InputDeviceObserver:
   void OnDeviceListsComplete() override;

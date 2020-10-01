@@ -21,6 +21,7 @@ class StubInputController : public InputController {
 
   // InputController:
   bool HasMouse() override { return false; }
+  bool HasPointingStick() override { return false; }
   bool HasTouchpad() override { return false; }
   bool IsCapsLockEnabled() override { return false; }
   void SetCapsLockEnabled(bool enabled) override {}

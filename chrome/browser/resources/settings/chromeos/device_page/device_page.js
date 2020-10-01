@@ -24,11 +24,17 @@ Polymer({
     showCrostini: Boolean,
 
     /**
-     * |hasMouse_| and |hasTouchpad_| start undefined so observers don't trigger
-     * until they have been populated.
+     * |hasMouse_|, |hasPointingStick_|, and |hasTouchpad_| start undefined so
+     * observers don't trigger until they have been populated.
      * @private
      */
     hasMouse_: Boolean,
+
+    /**
+     * Whether a pointing stick (such as a TrackPoint) is connected.
+     * @private
+     */
+    hasPointingStick_: Boolean,
 
     /** @private */
     hasTouchpad_: Boolean,
@@ -98,13 +104,15 @@ Polymer({
   },
 
   observers: [
-    'pointersChanged_(hasMouse_, hasTouchpad_)',
+    'pointersChanged_(hasMouse_, hasPointingStick_, hasTouchpad_)',
   ],
 
   /** @override */
   attached() {
     this.addWebUIListener(
         'has-mouse-changed', this.set.bind(this, 'hasMouse_'));
+    this.addWebUIListener(
+        'has-pointing-stick-changed', this.set.bind(this, 'hasPointingStick_'));
     this.addWebUIListener(
         'has-touchpad-changed', this.set.bind(this, 'hasTouchpad_'));
     settings.DevicePageBrowserProxyImpl.getInstance().initializePointers();
@@ -124,10 +132,13 @@ Polymer({
    * @private
    */
   getPointersTitle_() {
-    if (this.hasMouse_ && this.hasTouchpad_) {
+    // For the purposes of the title, we call pointing sticks mice. The user
+    // will know what we mean, and otherwise we'd get too many possible titles.
+    const hasMouseOrPointingStick = this.hasMouse_ || this.hasPointingStick_;
+    if (hasMouseOrPointingStick && this.hasTouchpad_) {
       return this.i18n('mouseAndTouchpadTitle');
     }
-    if (this.hasMouse_) {
+    if (hasMouseOrPointingStick) {
       return this.i18n('mouseTitle');
     }
     if (this.hasTouchpad_) {
@@ -191,11 +202,12 @@ Polymer({
 
   /**
    * @param {boolean} hasMouse
+   * @param {boolean} hasPointingStick
    * @param {boolean} hasTouchpad
    * @private
    */
-  pointersChanged_(hasMouse, hasTouchpad) {
-    this.$.pointersRow.hidden = !hasMouse && !hasTouchpad;
+  pointersChanged_(hasMouse, hasPointingStick, hasTouchpad) {
+    this.$.pointersRow.hidden = !hasMouse && !hasPointingStick && !hasTouchpad;
     this.checkPointerSubpage_();
   },
 
@@ -205,7 +217,8 @@ Polymer({
    */
   checkPointerSubpage_() {
     // Check that the properties have explicitly been set to false.
-    if (this.hasMouse_ === false && this.hasTouchpad_ === false &&
+    if (this.hasMouse_ === false && this.hasPointingStick_ === false &&
+        this.hasTouchpad_ === false &&
         settings.Router.getInstance().getCurrentRoute() ==
             settings.routes.POINTERS) {
       settings.Router.getInstance().navigateTo(settings.routes.DEVICE);

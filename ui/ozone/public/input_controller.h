@@ -43,6 +43,7 @@ class COMPONENT_EXPORT(OZONE_BASE) InputController {
 
   // Functions for checking devices existence.
   virtual bool HasMouse() = 0;
+  virtual bool HasPointingStick() = 0;
   virtual bool HasTouchpad() = 0;
 
   // Keyboard settings.

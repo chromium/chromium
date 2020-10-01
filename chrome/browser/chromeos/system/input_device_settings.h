@@ -151,6 +151,7 @@ class InputDeviceSettings {
    public:
     virtual void set_touchpad_exists(bool exists) = 0;
     virtual void set_mouse_exists(bool exists) = 0;
+    virtual void set_pointing_stick_exists(bool exists) = 0;
     virtual const TouchpadSettings& current_touchpad_settings() const = 0;
     virtual const MouseSettings& current_mouse_settings() const = 0;
   };
@@ -221,6 +222,10 @@ class InputDeviceSettings {
 
   // Turns mouse scroll acceleration on/off.
   virtual void SetMouseScrollAcceleration(bool enabled) = 0;
+
+  // Calls |callback|, possibly asynchronously, after determining if a pointing
+  // stick is connected.
+  virtual void PointingStickExists(DeviceExistsCallback callback) = 0;
 
   // Turns touchpad acceleration on/off.
   virtual void SetTouchpadAcceleration(bool enabled) = 0;

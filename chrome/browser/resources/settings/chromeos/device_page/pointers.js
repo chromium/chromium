@@ -23,7 +23,19 @@ Polymer({
 
     hasMouse: Boolean,
 
+    hasPointingStick: Boolean,
+
     hasTouchpad: Boolean,
+
+    /**
+     * Interim property for use until we have a separate subsection for pointing
+     * sticks. (See crbug.com/1114828)
+     * @private
+     */
+    showMouseSection_: {
+      type: Boolean,
+      computed: 'computeShowMouseSection_(hasMouse, hasPointingStick)',
+    },
 
     /**
      * TODO(michaelpg): settings-slider should optionally take a min and max so
@@ -81,6 +93,14 @@ Polymer({
     },
   },
 
+  /**
+   * @param {boolean} hasMouse
+   * @param {boolean} hasPointingStick
+   */
+  computeShowMouseSection_(hasMouse, hasPointingStick) {
+    return hasMouse || hasPointingStick;
+  },
+
   // Used to correctly identify when the mouse button has been released.
   // crbug.com/686949.
   receivedMouseSwapButtonsDown_: false,
@@ -100,13 +120,13 @@ Polymer({
 
   /**
    * Mouse and touchpad sections are only subsections if they are both present.
-   * @param {boolean} hasMouse
+   * @param {boolean} showMouseSection
    * @param {boolean} hasTouchpad
    * @return {string}
    * @private
    */
-  getSubsectionClass_(hasMouse, hasTouchpad) {
-    return hasMouse && hasTouchpad ? 'subsection' : '';
+  getSubsectionClass_(showMouseSection, hasTouchpad) {
+    return showMouseSection && hasTouchpad ? 'subsection' : '';
   },
 
   /** @private */

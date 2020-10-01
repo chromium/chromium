@@ -24,7 +24,8 @@
         focus-config="[[focusConfig_]]">
       <div id="main" route-path="default">
         <cr-link-row id="pointersRow"
-            label="[[getPointersTitle_(hasMouse_, hasTouchpad_)]]"
+            label="[[getPointersTitle_(hasMouse_, hasPointingStick_,
+                                       hasTouchpad_)]]"
             on-click="onPointersTap_"
             role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
         <cr-link-row class="hr" id="keyboardRow" label="$i18n{keyboardTitle}"
@@ -50,9 +51,12 @@
       <template is="dom-if" route-path="/pointer-overlay">
         <settings-subpage
             associated-control="[[$$('#pointersRow')]]"
-            page-title="[[getPointersTitle_(hasMouse_, hasTouchpad_)]]">
+            page-title="[[getPointersTitle_(hasMouse_, hasPointingStick_,
+                                            hasTouchpad_)]]">
           <settings-pointers prefs="{{prefs}}"
-              has-mouse="[[hasMouse_]]" has-touchpad="[[hasTouchpad_]]">
+              has-mouse="[[hasMouse_]]"
+              has-pointing-stick="[[hasPointingStick_]]"
+              has-touchpad="[[hasTouchpad_]]">
           </settings-pointers>
         </settings-subpage>
       </template>

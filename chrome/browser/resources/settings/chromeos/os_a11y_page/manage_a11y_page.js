@@ -197,14 +197,18 @@ Polymer({
     },
 
     /**
-     * |hasKeyboard_|, |hasMouse_|, and |hasTouchpad_| start undefined so
-     * observers don't trigger until they have been populated.
+     * |hasKeyboard_|, |hasMouse_|, |hasPointingStick_|, and |hasTouchpad_|
+     * start undefined so observers don't trigger until they have been
+     * populated.
      * @private
      */
     hasKeyboard_: Boolean,
 
     /** @private */
     hasMouse_: Boolean,
+
+    /** @private */
+    hasPointingStick_: Boolean,
 
     /** @private */
     hasTouchpad_: Boolean,
@@ -268,7 +272,8 @@ Polymer({
   },
 
   observers: [
-    'pointersChanged_(hasMouse_, hasTouchpad_, isKioskModeActive_)',
+    'pointersChanged_(hasMouse_, hasPointingStick_, hasTouchpad_, ' +
+        'isKioskModeActive_)',
   ],
 
   /** settings.RouteOriginBehavior override */
@@ -291,6 +296,8 @@ Polymer({
   attached() {
     this.addWebUIListener(
         'has-mouse-changed', this.set.bind(this, 'hasMouse_'));
+    this.addWebUIListener(
+        'has-pointing-stick-changed', this.set.bind(this, 'hasPointingStick_'));
     this.addWebUIListener(
         'has-touchpad-changed', this.set.bind(this, 'hasTouchpad_'));
     this.deviceBrowserProxy_.initializePointers();
@@ -331,12 +338,13 @@ Polymer({
 
   /**
    * @param {boolean} hasMouse
+   * @param {boolean} hasPointingStick
    * @param {boolean} hasTouchpad
    * @private
    */
-  pointersChanged_(hasMouse, hasTouchpad, isKioskModeActive) {
+  pointersChanged_(hasMouse, hasTouchpad, hasPointingStick, isKioskModeActive) {
     this.$.pointerSubpageButton.hidden =
-        (!hasMouse && !hasTouchpad) || isKioskModeActive;
+        (!hasMouse && !hasPointingStick && !hasTouchpad) || isKioskModeActive;
   },
 
   /**

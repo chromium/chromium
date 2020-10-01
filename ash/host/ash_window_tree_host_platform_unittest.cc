@@ -30,6 +30,7 @@ class TestInputController : public ui::InputController {
 
   // these are all stubs that are not used yet in these tests
   bool HasMouse() override { return false; }
+  bool HasPointingStick() override { return false; }
   bool HasTouchpad() override { return false; }
   bool IsCapsLockEnabled() override { return false; }
   void SetCapsLockEnabled(bool enabled) override {}

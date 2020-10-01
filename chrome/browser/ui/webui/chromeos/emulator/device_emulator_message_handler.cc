@@ -645,4 +645,8 @@ void DeviceEmulatorMessageHandler::MouseExists(bool exists) {
   FireWebUIListener("mouse-exists-changed", base::Value(exists));
 }
 
+void DeviceEmulatorMessageHandler::PointingStickExists(bool exists) {
+  // TODO(crbug.com/1114828): support fake pointing sticks.
+}
+
 }  // namespace chromeos

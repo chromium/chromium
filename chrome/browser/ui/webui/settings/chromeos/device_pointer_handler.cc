@@ -44,6 +44,10 @@ void PointerHandler::MouseExists(bool exists) {
   FireWebUIListener("has-mouse-changed", base::Value(exists));
 }
 
+void PointerHandler::PointingStickExists(bool exists) {
+  FireWebUIListener("has-pointing-stick-changed", base::Value(exists));
+}
+
 void PointerHandler::HandleInitialize(const base::ListValue* args) {
   AllowJavascript();
 
