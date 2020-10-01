@@ -33,5 +33,13 @@ base::StringPiece TrustTokenOperationTypeToString(
   }
 }
 
+std::string ProtocolVersionToString(
+    mojom::TrustTokenProtocolVersion my_version) {
+  switch (my_version) {
+    case mojom::TrustTokenProtocolVersion::kTrustTokenV1:
+      return "TrustTokenV1";
+  }
+}
+
 }  // namespace internal
 }  // namespace network

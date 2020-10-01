@@ -64,7 +64,8 @@ void RegisterTrustTokenTestHandlers(net::EmbeddedTestServer* test_server,
         if (request.relative_url != kIssuanceRelativePath)
           return nullptr;
 
-        if (!base::Contains(request.headers, "Sec-Trust-Token"))
+        if (!base::Contains(request.headers, "Sec-Trust-Token") ||
+            !base::Contains(request.headers, "Sec-Trust-Token-Version"))
           return MakeTrustTokenFailureResponse();
 
         base::Optional<std::string> operation_result =
@@ -82,7 +83,8 @@ void RegisterTrustTokenTestHandlers(net::EmbeddedTestServer* test_server,
         if (request.relative_url != kRedemptionRelativePath)
           return nullptr;
 
-        if (!base::Contains(request.headers, "Sec-Trust-Token"))
+        if (!base::Contains(request.headers, "Sec-Trust-Token") ||
+            !base::Contains(request.headers, "Sec-Trust-Token-Version"))
           return MakeTrustTokenFailureResponse();
 
         base::Optional<std::string> operation_result =

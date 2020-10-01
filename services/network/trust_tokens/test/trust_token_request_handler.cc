@@ -67,6 +67,12 @@ bool HasKeyPairExpired(const IssuanceKeyPair& p) {
 }  // namespace
 
 struct TrustTokenRequestHandler::Rep {
+  // The protocol version to use.
+  std::string protocol_version;
+
+  // The commitment ID to use.
+  int id;
+
   // Issue at most this many tokens per issuance.
   int batch_size;
 
@@ -222,6 +228,8 @@ std::string TrustTokenRequestHandler::GetKeyCommitmentRecord() const {
   base::Value value(base::Value::Type::DICTIONARY);
   value.SetStringKey(
       "srrkey", base::Base64Encode(base::make_span(rep_->srr_verification)));
+  value.SetStringKey("protocol_version", rep_->protocol_version);
+  value.SetIntKey("id", rep_->id);
   value.SetIntKey("batchsize", rep_->batch_size);
 
   for (size_t i = 0; i < rep_->issuance_keys.size(); ++i) {
@@ -449,6 +457,8 @@ void TrustTokenRequestHandler::UpdateOptions(Options options) {
 
   rep_ = std::make_unique<Rep>();
 
+  rep_->protocol_version = options.protocol_version;
+  rep_->id = options.id;
   rep_->batch_size = options.batch_size;
   rep_->client_signing_outcome = options.client_signing_outcome;
   rep_->issuance_outcome = options.issuance_outcome;

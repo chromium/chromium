@@ -20,6 +20,7 @@ class BoringsslTrustTokenRedemptionCryptographer
 
   // TrustTokenRequestRedemptionHelper::Cryptographer implementation:
   bool Initialize(
+      mojom::TrustTokenProtocolVersion issuer_configured_version,
       int issuer_configured_batch_size,
       base::StringPiece signed_redemption_record_verification_key) override;
   base::Optional<std::string> BeginRedemption(

@@ -59,6 +59,12 @@ class TrustTokenRequestHandler {
     // the expected request.
     SigningOutcome client_signing_outcome = SigningOutcome::kSuccess;
 
+    // The protocol version to use.
+    std::string protocol_version = "TrustTokenV1";
+
+    // The commitment ID to use.
+    int id = 1;
+
     // The number of tokens to sign per issuance operation; this value is also
     // provided to the client as part of key commitment results.
     int batch_size = 10;
@@ -78,8 +84,9 @@ class TrustTokenRequestHandler {
   // Returns a key commitment record suitable for inserting into a {issuer:
   // commitment} dictionary passed to the network service via
   // NetworkService::SetTrustTokenKeyCommitments. This comprises |num_keys|
-  // token verification keys and a batch size of |batch_size| (or none if
-  // |batch_size| is nullopt).
+  // token verification keys, a protocol version of |protocol_version|, an ID of
+  // |id| and  a batch size of |batch_size| (or none if |batch_size| is
+  // nullopt).
   std::string GetKeyCommitmentRecord() const;
 
   // Given a base64-encoded issuance request, processes the

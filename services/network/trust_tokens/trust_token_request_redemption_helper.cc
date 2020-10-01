@@ -135,7 +135,7 @@ void TrustTokenRequestRedemptionHelper::OnGotKeyCommitment(
 
   if (!commitment_result->batch_size ||
       !cryptographer_->Initialize(
-          commitment_result->batch_size,
+          commitment_result->protocol_version, commitment_result->batch_size,
           commitment_result->signed_redemption_record_verification_key)) {
     LogOutcome(net_log_, kBegin,
                "Internal error initializing BoringSSL redemption state "
@@ -164,6 +164,12 @@ void TrustTokenRequestRedemptionHelper::OnGotKeyCommitment(
 
   request->SetExtraRequestHeaderByName(kTrustTokensSecTrustTokenHeader,
                                        std::move(*maybe_redemption_header),
+                                       /*overwrite=*/true);
+
+  std::string protocol_string_version =
+      internal::ProtocolVersionToString(commitment_result->protocol_version);
+  request->SetExtraRequestHeaderByName(kTrustTokensSecTrustTokenVersionHeader,
+                                       protocol_string_version,
                                        /*overwrite=*/true);
 
   // We don't want cache reads, because the highest priority is to execute the

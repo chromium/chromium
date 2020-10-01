@@ -64,6 +64,9 @@ TEST(TrustTokenKeyCommitments, CanRetrieveRecordForSuitableOrigin) {
   TrustTokenKeyCommitments commitments;
 
   auto expectation = mojom::TrustTokenKeyCommitmentResult::New();
+  expectation->protocol_version =
+      mojom::TrustTokenProtocolVersion::kTrustTokenV1;
+  expectation->id = 1;
   expectation->batch_size = 5;
 
   auto suitable_origin = *SuitableTrustTokenOrigin::Create(
@@ -88,6 +91,9 @@ TEST(TrustTokenKeyCommitments, CantRetrieveRecordForOriginNotPresent) {
   auto an_origin =
       *SuitableTrustTokenOrigin::Create(GURL("https://an-origin.example"));
   auto an_expectation = mojom::TrustTokenKeyCommitmentResult::New();
+  an_expectation->protocol_version =
+      mojom::TrustTokenProtocolVersion::kTrustTokenV1;
+  an_expectation->id = 1;
   an_expectation->batch_size = 5;
 
   base::flat_map<url::Origin, mojom::TrustTokenKeyCommitmentResultPtr> to_set;
@@ -114,7 +120,13 @@ TEST(TrustTokenKeyCommitments, MultipleOrigins) {
       mojom::TrustTokenKeyCommitmentResult::New(),
   };
 
+  expectations[0]->protocol_version =
+      mojom::TrustTokenProtocolVersion::kTrustTokenV1;
+  expectations[0]->id = 1;
   expectations[0]->batch_size = 0;
+  expectations[1]->protocol_version =
+      mojom::TrustTokenProtocolVersion::kTrustTokenV1;
+  expectations[1]->id = 1;
   expectations[1]->batch_size = 1;
 
   base::flat_map<url::Origin, mojom::TrustTokenKeyCommitmentResultPtr> to_set;
@@ -132,7 +144,7 @@ TEST(TrustTokenKeyCommitments, MultipleOrigins) {
 TEST(TrustTokenKeyCommitments, ParseAndSet) {
   TrustTokenKeyCommitments commitments;
   commitments.ParseAndSet(
-      R"( { "https://issuer.example": { "batchsize": 5, "srrkey": "aaaa" } } )");
+      R"( { "https://issuer.example": { "protocol_version": "TrustTokenV1", "id": 1, "batchsize": 5, "srrkey": "aaaa" } } )");
 
   EXPECT_TRUE(GetCommitmentForOrigin(
       commitments,
@@ -143,7 +155,7 @@ TEST(TrustTokenKeyCommitments, KeysFromCommandLine) {
   base::test::ScopedCommandLine command_line;
   command_line.GetProcessCommandLine()->AppendSwitchASCII(
       switches::kAdditionalTrustTokenKeyCommitments,
-      R"( { "https://issuer.example": { "batchsize": 5, "srrkey": "aaaa" } } )");
+      R"( { "https://issuer.example": { "protocol_version": "TrustTokenV1", "id": 1, "batchsize": 5, "srrkey": "aaaa" } } )");
 
   TrustTokenKeyCommitments commitments;
 
@@ -152,7 +164,7 @@ TEST(TrustTokenKeyCommitments, KeysFromCommandLine) {
       *SuitableTrustTokenOrigin::Create(GURL("https://issuer.example"))));
 
   commitments.ParseAndSet(
-      R"( { "https://issuer.example": { "batchsize": 10, "srrkey": "bbbb" } } )");
+      R"( { "https://issuer.example": { "protocol_version": "TrustTokenV1", "id": 1, "batchsize": 10, "srrkey": "bbbb" } } )");
 
   // A commitment provided through |Set| should defer to the one passed
   // through the command line.
@@ -164,6 +176,9 @@ TEST(TrustTokenKeyCommitments, KeysFromCommandLine) {
       *SuitableTrustTokenOrigin::Create(GURL("https://issuer.example")));
   ASSERT_TRUE(result);
   EXPECT_EQ(result->signed_redemption_record_verification_key, expected_srrkey);
+  EXPECT_EQ(result->protocol_version,
+            mojom::TrustTokenProtocolVersion::kTrustTokenV1);
+  EXPECT_EQ(result->id, 1);
   EXPECT_EQ(result->batch_size, 5);
 }
 
@@ -216,6 +231,9 @@ TEST(TrustTokenKeyCommitments, GetSync) {
   TrustTokenKeyCommitments commitments;
 
   auto expectation = mojom::TrustTokenKeyCommitmentResult::New();
+  expectation->protocol_version =
+      mojom::TrustTokenProtocolVersion::kTrustTokenV1;
+  expectation->id = 1;
   expectation->batch_size = 5;
 
   auto suitable_origin = *SuitableTrustTokenOrigin::Create(

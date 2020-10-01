@@ -7,6 +7,17 @@ module network.mojom;
 import "url/mojom/origin.mojom";
 import "mojo/public/mojom/base/time.mojom";
 
+// TrustTokenProtocolVersion enumerates the versions of Trust Token that the
+// client knows about. Different versions represent different configuration
+// flows, data structure meanings, etc and may require clearing the database
+// due to incompatibilities.
+// TODO(crbug/1133969): Schema versioning needs to be implemented for future
+// versions that need to clear the database on schema changes.
+enum TrustTokenProtocolVersion {
+  kTrustTokenV1,
+};
+
+
 // TrustTokenOperationStatus enumerates (an incomplete collection of) outcomes
 // for a Trust Tokens protocol operation.
 //
@@ -160,6 +171,13 @@ struct TrustTokenVerificationKey {
 };
 
 struct TrustTokenKeyCommitmentResult {
+  // |protocol_version| is the Trust Token version that this key commitment is
+  // for.
+  TrustTokenProtocolVersion protocol_version;
+
+  // |id| is the ID for this key commitment.
+  int32 id;
+
   // |batch_size| is the issuer's number of tokens it wishes the client
   // to request per Trust Tokens issuance operation.
   int32 batch_size;

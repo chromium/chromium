@@ -29,6 +29,9 @@ std::string TimeToString(base::Time my_time);
 base::StringPiece TrustTokenOperationTypeToString(
     mojom::TrustTokenOperationType type);
 
+// Serializes a mojom::TrustTokenProtocolVersion.
+std::string ProtocolVersionToString(mojom::TrustTokenProtocolVersion);
+
 }  // namespace internal
 }  // namespace network
 

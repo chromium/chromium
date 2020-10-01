@@ -25,6 +25,11 @@ namespace network {
 // Record.
 constexpr char kTrustTokensSecTrustTokenHeader[] = "Sec-Trust-Token";
 
+// As a request header, provides the version of Trust Token being used in the
+// Sec-Trust-Token header.
+constexpr char kTrustTokensSecTrustTokenVersionHeader[] =
+    "Sec-Trust-Token-Version";
+
 // As a request header, provides a timestamp associated with a
 // particular Trust Tokens signature-bearing request.
 constexpr char kTrustTokensRequestHeaderSecTime[] = "Sec-Time";

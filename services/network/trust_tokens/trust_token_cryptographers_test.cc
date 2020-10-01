@@ -48,6 +48,9 @@ struct ProtocolKeys {
   std::vector<uint8_t> srr_verification;
 };
 
+const mojom::TrustTokenProtocolVersion kProtocolVersion =
+    mojom::TrustTokenProtocolVersion::kTrustTokenV1;
+
 // Choose this number to be > 1 but fairly small: setting it to 10
 // led to the test running for 2.5 sec on a debug build.
 constexpr size_t kNumTokensToRequest = 3;
@@ -112,7 +115,8 @@ void RequestManyTokensAndRetainOneArbitrarily(
     TRUST_TOKEN_ISSUER* issuer_ctx,
     TrustToken* out_token) {
   BoringsslTrustTokenIssuanceCryptographer issuance_cryptographer;
-  ASSERT_TRUE(issuance_cryptographer.Initialize(kNumTokensToRequest));
+  ASSERT_TRUE(
+      issuance_cryptographer.Initialize(kProtocolVersion, kNumTokensToRequest));
 
   for (const TokenKeyPair& token_keys : keys.token_keys) {
     ASSERT_TRUE(issuance_cryptographer.AddKey(std::string(
@@ -165,7 +169,7 @@ void RedeemSingleToken(const ProtocolKeys& keys,
       url::Origin::Create(GURL("https://topframe.example"));
 
   ASSERT_TRUE(redemption_cryptographer.Initialize(
-      kNumTokensToRequest, as_string(keys.srr_verification)));
+      kProtocolVersion, kNumTokensToRequest, as_string(keys.srr_verification)));
 
   base::Optional<std::string> maybe_base64_encoded_redemption_request =
       redemption_cryptographer.BeginRedemption(

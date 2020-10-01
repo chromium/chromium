@@ -17,6 +17,10 @@ namespace network {
 // Field names from the key commitment JSON format specified in the Trust Tokens
 // design doc
 // (https://docs.google.com/document/d/1TNnya6B8pyomDK2F1R9CL3dY10OAmqWlnCxsWyOBDVQ/edit#bookmark=id.6wh9crbxdizi):
+// - "protocol_version" (version of Trust Token used for this commitment)
+extern const char kTrustTokenKeyCommitmentProtocolVersionField[];
+// - "id" (ID for this key commitment)
+extern const char kTrustTokenKeyCommitmentIDField[];
 // - "batch size" (number of blinded tokens to provide per issuance request)
 extern const char kTrustTokenKeyCommitmentBatchsizeField[];
 // - verification key for the signatures the issuer provides over its Signed

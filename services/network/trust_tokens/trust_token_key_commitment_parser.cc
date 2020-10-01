@@ -78,6 +78,24 @@ mojom::TrustTokenKeyCommitmentResultPtr ParseSingleIssuer(
 
   auto result = mojom::TrustTokenKeyCommitmentResult::New();
 
+  // Confirm that the protocol_version field is present.
+  const std::string* maybe_version =
+      value.FindStringKey(kTrustTokenKeyCommitmentProtocolVersionField);
+  if (!maybe_version)
+    return nullptr;
+  if (*maybe_version == "TrustTokenV1") {
+    result->protocol_version = mojom::TrustTokenProtocolVersion::kTrustTokenV1;
+  } else {
+    return nullptr;
+  }
+
+  // Confirm that the id field is present and type-safe.
+  base::Optional<int> maybe_id =
+      value.FindIntKey(kTrustTokenKeyCommitmentIDField);
+  if (!maybe_id || *maybe_id <= 0)
+    return nullptr;
+  result->id = *maybe_id;
+
   // Confirm that the batchsize field is present and type-safe.
   base::Optional<int> maybe_batch_size =
       value.FindIntKey(kTrustTokenKeyCommitmentBatchsizeField);
@@ -137,6 +155,8 @@ mojom::TrustTokenKeyCommitmentResultPtr& commitment(Entry& e) {
 
 }  // namespace
 
+const char kTrustTokenKeyCommitmentProtocolVersionField[] = "protocol_version";
+const char kTrustTokenKeyCommitmentIDField[] = "id";
 const char kTrustTokenKeyCommitmentBatchsizeField[] = "batchsize";
 const char kTrustTokenKeyCommitmentSrrkeyField[] = "srrkey";
 const char kTrustTokenKeyCommitmentExpiryField[] = "expiry";
@@ -144,18 +164,21 @@ const char kTrustTokenKeyCommitmentKeyField[] = "Y";
 
 // https://docs.google.com/document/d/1TNnya6B8pyomDK2F1R9CL3dY10OAmqWlnCxsWyOBDVQ/edit#bookmark=id.6wh9crbxdizi
 // {
-//   "batchsize" : ..., // Batch size; value of type int.
-//   "srrkey" : ...,    // Required Signed Redemption Record (SRR)
-//                      // verification key, in base64.
+//   "protocol_version" : ..., // Protocol Version; value of type string.
+//   "id" : ...,               // ID; value of type int.
+//   "batchsize" : ...,        // Batch size; value of type int.
+//   "srrkey" : ...,           // Required Signed Redemption Record (SRR)
+//                             // verification key, in base64.
 //
-//   "1" : {            // Key label, a number in uint32_t range; ignored except
-//                      // for checking that it is present and type-safe.
-//     "Y" : ...,       // Required token issuance verification key, in
-//                      // base64.
-//     "expiry" : ...,  // Required token issuance key expiry time, in
-//                      // microseconds since the Unix epoch.
+//   "1" : {                   // Key label, a number in uint32_t range; ignored
+//                             // except for checking that it is present and
+//                             // type-safe.
+//     "Y" : ...,              // Required token issuance verification key, in
+//                             // base64.
+//     "expiry" : ...,         // Required token issuance key expiry time, in
+//                             // microseconds since the Unix epoch.
 //   },
-//   "17" : {           // No guarantee that key labels (1, 17) are dense.
+//   "17" : {                  // No guarantee that key labels (1, 7) are dense.
 //     "Y" : ...,
 //     "expiry" : ...,
 //   }

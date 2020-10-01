@@ -144,8 +144,10 @@ void TrustTokenRequestIssuanceHelper::OnGotKeyCommitment(
     return;
   }
 
+  protocol_version_ = commitment_result->protocol_version;
   if (!commitment_result->batch_size ||
-      !cryptographer_->Initialize(commitment_result->batch_size)) {
+      !cryptographer_->Initialize(protocol_version_,
+                                  commitment_result->batch_size)) {
     LogOutcome(net_log_, kBegin,
                "Internal error initializing cryptography delegate");
     std::move(done).Run(mojom::TrustTokenOperationStatus::kInternalError);
@@ -196,6 +198,12 @@ void TrustTokenRequestIssuanceHelper::OnDelegateBeginIssuanceCallComplete(
   }
   request->SetExtraRequestHeaderByName(kTrustTokensSecTrustTokenHeader,
                                        std::move(*maybe_blinded_tokens),
+                                       /*overwrite=*/true);
+
+  std::string protocol_string_version =
+      internal::ProtocolVersionToString(protocol_version_);
+  request->SetExtraRequestHeaderByName(kTrustTokensSecTrustTokenVersionHeader,
+                                       protocol_string_version,
                                        /*overwrite=*/true);
 
   // We don't want cache reads, because the highest priority is to execute the
