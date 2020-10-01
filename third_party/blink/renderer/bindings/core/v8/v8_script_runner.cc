@@ -31,11 +31,13 @@
 #include "third_party/blink/public/mojom/v8_cache_options.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/binding_security.h"
 #include "third_party/blink/renderer/bindings/core/v8/referrer_script_info.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_evaluation_result.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_source_code.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_streamer.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_code_cache.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_initializer.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -364,7 +366,7 @@ v8::MaybeLocal<v8::Value> V8ScriptRunner::RunCompiledScript(
   return result;
 }
 
-v8::MaybeLocal<v8::Value> V8ScriptRunner::CompileAndRunScript(
+ScriptEvaluationResult V8ScriptRunner::CompileAndRunScript(
     v8::Isolate* isolate,
     ScriptState* script_state,
     ExecutionContext* execution_context,
@@ -372,55 +374,131 @@ v8::MaybeLocal<v8::Value> V8ScriptRunner::CompileAndRunScript(
     const KURL& base_url,
     SanitizeScriptErrors sanitize_script_errors,
     const ScriptFetchOptions& fetch_options,
-    mojom::blink::V8CacheOptions v8_cache_options) {
+    mojom::blink::V8CacheOptions v8_cache_options,
+    RethrowErrorsOption rethrow_errors) {
   DCHECK_EQ(isolate, script_state->GetIsolate());
 
-  // Omit storing base URL if it is same as source URL.
-  // Note: This improves chance of getting into a fast path in
-  //       ReferrerScriptInfo::ToV8HostDefinedOptions.
-  KURL stored_base_url = (base_url == source.Url()) ? KURL() : base_url;
+  LocalDOMWindow* window = DynamicTo<LocalDOMWindow>(execution_context);
+  LocalFrame* frame = window ? window->GetFrame() : nullptr;
+  TRACE_EVENT1("devtools.timeline", "EvaluateScript", "data",
+               inspector_evaluate_script_event::Data(
+                   frame, source.Url().GetString(), source.StartPosition()));
 
-  // TODO(hiroshige): Remove this code and related use counters once the
-  // measurement is done.
-  ReferrerScriptInfo::BaseUrlSource base_url_source =
-      ReferrerScriptInfo::BaseUrlSource::kOther;
-  if (source.SourceLocationType() == ScriptSourceLocationType::kExternalFile &&
-      !base_url.IsNull()) {
-    switch (sanitize_script_errors) {
-      case SanitizeScriptErrors::kDoNotSanitize:
-        base_url_source =
-            ReferrerScriptInfo::BaseUrlSource::kClassicScriptCORSSameOrigin;
-        break;
-      case SanitizeScriptErrors::kSanitize:
-        base_url_source =
-            ReferrerScriptInfo::BaseUrlSource::kClassicScriptCORSCrossOrigin;
-        break;
+  // Scope for |v8::TryCatch|.
+  {
+    v8::TryCatch try_catch(isolate);
+    // Step 8.3. Otherwise, rethrow errors is false. Perform the following
+    // steps: [spec text]
+    // Step 8.3.1. Report the exception given by evaluationStatus.[[Value]]
+    // for script. [spec text]
+    //
+    // This will be done inside V8 by setting TryCatch::SetVerbose(true) here.
+    if (!rethrow_errors.ShouldRethrow()) {
+      try_catch.SetVerbose(true);
+    }
+
+    // Omit storing base URL if it is same as source URL.
+    // Note: This improves chance of getting into a fast path in
+    //       ReferrerScriptInfo::ToV8HostDefinedOptions.
+    KURL stored_base_url = (base_url == source.Url()) ? KURL() : base_url;
+
+    // TODO(hiroshige): Remove this code and related use counters once the
+    // measurement is done.
+    ReferrerScriptInfo::BaseUrlSource base_url_source =
+        ReferrerScriptInfo::BaseUrlSource::kOther;
+    if (source.SourceLocationType() ==
+            ScriptSourceLocationType::kExternalFile &&
+        !base_url.IsNull()) {
+      switch (sanitize_script_errors) {
+        case SanitizeScriptErrors::kDoNotSanitize:
+          base_url_source =
+              ReferrerScriptInfo::BaseUrlSource::kClassicScriptCORSSameOrigin;
+          break;
+        case SanitizeScriptErrors::kSanitize:
+          base_url_source =
+              ReferrerScriptInfo::BaseUrlSource::kClassicScriptCORSCrossOrigin;
+          break;
+      }
+    }
+    const ReferrerScriptInfo referrer_info(stored_base_url, fetch_options,
+                                           base_url_source);
+
+    v8::Local<v8::Script> script;
+
+    v8::ScriptCompiler::CompileOptions compile_options;
+    V8CodeCache::ProduceCacheOptions produce_cache_options;
+    v8::ScriptCompiler::NoCacheReason no_cache_reason;
+    std::tie(compile_options, produce_cache_options, no_cache_reason) =
+        V8CodeCache::GetCompileOptions(v8_cache_options, source);
+
+    v8::MaybeLocal<v8::Value> maybe_result;
+    if (V8ScriptRunner::CompileScript(script_state, source,
+                                      sanitize_script_errors, compile_options,
+                                      no_cache_reason, referrer_info)
+            .ToLocal(&script)) {
+      maybe_result =
+          V8ScriptRunner::RunCompiledScript(isolate, script, execution_context);
+      probe::ProduceCompilationCache(probe::ToCoreProbeSink(execution_context),
+                                     source, script);
+      V8CodeCache::ProduceCache(isolate, script, source, produce_cache_options);
+    }
+
+    // TODO(crbug/1114601): Investigate whether to check CanContinue() in other
+    // script evaluation code paths.
+    if (!try_catch.CanContinue()) {
+      return ScriptEvaluationResult::FromClassicAborted();
+    }
+
+    if (!try_catch.HasCaught()) {
+      // Step 10. If evaluationStatus is a normal completion, then return
+      // evaluationStatus. [spec text]
+      v8::Local<v8::Value> result;
+      bool success = maybe_result.ToLocal(&result);
+      DCHECK(success);
+      return ScriptEvaluationResult::FromClassicSuccess(result);
+    }
+
+    DCHECK(maybe_result.IsEmpty());
+
+    if (rethrow_errors.ShouldRethrow() &&
+        sanitize_script_errors == SanitizeScriptErrors::kDoNotSanitize) {
+      // Step 8.1. If rethrow errors is true and script's muted errors is
+      // false, then: [spec text]
+      //
+      // Step 8.1.2. Rethrow evaluationStatus.[[Value]]. [spec text]
+      //
+      // We rethrow exceptions reported from importScripts() here. The
+      // original filename/lineno/colno information (which points inside of
+      // imported scripts) is kept through ReThrow(), and will be eventually
+      // reported to WorkerGlobalScope.onerror via `TryCatch::SetVerbose(true)`
+      // called at top-level worker script evaluation.
+      try_catch.ReThrow();
+      return ScriptEvaluationResult::FromClassicException();
     }
   }
-  const ReferrerScriptInfo referrer_info(stored_base_url, fetch_options,
-                                         base_url_source);
+  // |v8::TryCatch| is (and should be) exited, before ThrowException() below.
 
-  v8::Local<v8::Script> script;
+  if (rethrow_errors.ShouldRethrow()) {
+    // kDoNotSanitize case is processed and early-exited above.
+    DCHECK_EQ(sanitize_script_errors, SanitizeScriptErrors::kSanitize);
 
-  v8::ScriptCompiler::CompileOptions compile_options;
-  V8CodeCache::ProduceCacheOptions produce_cache_options;
-  v8::ScriptCompiler::NoCacheReason no_cache_reason;
-  std::tie(compile_options, produce_cache_options, no_cache_reason) =
-      V8CodeCache::GetCompileOptions(v8_cache_options, source);
+    // Step 8.2. If rethrow errors is true and script's muted errors is
+    // true, then: [spec text]
+    //
+    // Step 8.2.2. Throw a "NetworkError" DOMException. [spec text]
+    //
+    // We don't supply any message here to avoid leaking details of muted
+    // errors.
+    V8ThrowException::ThrowException(
+        isolate, V8ThrowDOMException::CreateOrEmpty(
+                     isolate, DOMExceptionCode::kNetworkError,
+                     rethrow_errors.Message()));
+    return ScriptEvaluationResult::FromClassicException();
+  }
 
-  if (!V8ScriptRunner::CompileScript(script_state, source,
-                                     sanitize_script_errors, compile_options,
-                                     no_cache_reason, referrer_info)
-           .ToLocal(&script))
-    return v8::MaybeLocal<v8::Value>();
-
-  v8::MaybeLocal<v8::Value> maybe_result =
-      V8ScriptRunner::RunCompiledScript(isolate, script, execution_context);
-  probe::ProduceCompilationCache(probe::ToCoreProbeSink(execution_context),
-                                 source, script);
-  V8CodeCache::ProduceCache(isolate, script, source, produce_cache_options);
-
-  return maybe_result;
+  // #report-the-error for rethrow errors == true is already handled via
+  // |TryCatch::SetVerbose(true)| above.
+  return ScriptEvaluationResult::FromClassicException();
 }
 
 v8::MaybeLocal<v8::Value> V8ScriptRunner::CompileAndRunInternalScript(

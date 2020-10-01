@@ -339,8 +339,7 @@ void WorkerGlobalScope::ImportScriptsInternal(const Vector<String>& urls) {
                          ScriptSourceCode::UsePostRedirectURL() ? response_url
                                                                 : complete_url),
         sanitize_script_errors, GetV8CacheOptions(),
-        WorkerOrWorkletScriptController::RethrowErrorsOption::Rethrow(
-            error_message));
+        V8ScriptRunner::RethrowErrorsOption::Rethrow(error_message));
 
     // Step 5.2: "If an exception was thrown or if the script was prematurely
     // aborted, then abort all these steps, letting the exception or aborting

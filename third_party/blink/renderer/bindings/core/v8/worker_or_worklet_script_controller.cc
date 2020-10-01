@@ -316,114 +316,41 @@ ScriptEvaluationResult WorkerOrWorkletScriptController::EvaluateAndReturnValue(
     const ScriptSourceCode& source_code,
     SanitizeScriptErrors sanitize_script_errors,
     mojom::blink::V8CacheOptions v8_cache_options,
-    RethrowErrorsOption rethrow_errors) {
-  if (IsExecutionForbidden()) {
+    V8ScriptRunner::RethrowErrorsOption rethrow_errors) {
+  if (IsExecutionForbidden())
     return ScriptEvaluationResult::FromClassicNotRun();
-  }
 
-  // Scope for |TRACE_EVENT1| and |v8::TryCatch| below.
-  {
-    DCHECK(IsContextInitialized());
-    DCHECK(is_ready_to_evaluate_);
+  DCHECK(IsContextInitialized());
+  DCHECK(is_ready_to_evaluate_);
 
-    TRACE_EVENT1("devtools.timeline", "EvaluateScript", "data",
-                 inspector_evaluate_script_event::Data(
-                     nullptr, source_code.Url(), source_code.StartPosition()));
+  // TODO(crbug/1114994): Plumb this from ClassicScript.
+  const KURL base_url = source_code.Url();
 
-    v8::TryCatch block(isolate_);
+  // Use default ReferrerScriptInfo here, as
+  // - A work{er,let} script doesn't have a nonce, and
+  // - a work{er,let} script is always "not parser inserted".
+  // TODO(crbug/1114988): After crbug/1114988 is fixed, this can be the
+  // default ScriptFetchOptions(). Currently the default ScriptFetchOptions()
+  // is not used because it has CredentialsMode::kOmit.
+  // TODO(crbug/1114989): Plumb this from ClassicScript.
+  ScriptFetchOptions script_fetch_options(
+      String(), IntegrityMetadataSet(), String(),
+      ParserDisposition::kNotParserInserted,
+      network::mojom::CredentialsMode::kSameOrigin,
+      network::mojom::ReferrerPolicy::kDefault,
+      mojom::blink::FetchImportanceMode::kImportanceAuto);
 
-    // Step 8.3. Otherwise, rethrow errors is false. Perform the following
-    // steps: [spec text]
-    // Step 8.3.1. Report the exception given by evaluationStatus.[[Value]]
-    // for script. [spec text]
-    //
-    // This will be done inside V8 (inside V8ScriptRunner::CompileAndRunScript()
-    // below) by setting TryCatch::SetVerbose(true) here.
-    if (!rethrow_errors.ShouldRethrow()) {
-      block.SetVerbose(true);
-    }
+  ScriptEvaluationResult result = V8ScriptRunner::CompileAndRunScript(
+      isolate_, script_state_, global_scope_, source_code, base_url,
+      sanitize_script_errors, script_fetch_options, v8_cache_options,
+      std::move(rethrow_errors));
 
-    // TODO(crbug/1114994): Plumb this from ClassicScript.
-    const KURL base_url = source_code.Url();
-
-    // Use default ReferrerScriptInfo here, as
-    // - A work{er,let} script doesn't have a nonce, and
-    // - a work{er,let} script is always "not parser inserted".
-    // TODO(crbug/1114988): After crbug/1114988 is fixed, this can be the
-    // default ScriptFetchOptions(). Currently the default ScriptFetchOptions()
-    // is not used because it has CredentialsMode::kOmit.
-    // TODO(crbug/1114989): Plumb this from ClassicScript.
-    ScriptFetchOptions script_fetch_options(
-        String(), IntegrityMetadataSet(), String(),
-        ParserDisposition::kNotParserInserted,
-        network::mojom::CredentialsMode::kSameOrigin,
-        network::mojom::ReferrerPolicy::kDefault,
-        mojom::blink::FetchImportanceMode::kImportanceAuto);
-
-    v8::MaybeLocal<v8::Value> maybe_result =
-        V8ScriptRunner::CompileAndRunScript(
-            isolate_, script_state_, global_scope_, source_code, base_url,
-            sanitize_script_errors, script_fetch_options, v8_cache_options);
-
-    // TODO(crbug/1114601): Investigate whether to check CanContinue() in other
-    // script evaluation code paths.
-    if (!block.CanContinue()) {
-      ForbidExecution();
-      return ScriptEvaluationResult::FromClassicAborted();
-    }
-
+  if (result.GetResultType() == ScriptEvaluationResult::ResultType::kAborted)
+    ForbidExecution();
+  else
     CHECK(!IsExecutionForbidden());
 
-    if (!block.HasCaught()) {
-      // Step 10. If evaluationStatus is a normal completion, then return
-      // evaluationStatus. [spec text]
-      v8::Local<v8::Value> result;
-      bool success = maybe_result.ToLocal(&result);
-      DCHECK(success);
-      return ScriptEvaluationResult::FromClassicSuccess(result);
-    }
-
-    DCHECK(maybe_result.IsEmpty());
-
-    if (rethrow_errors.ShouldRethrow() &&
-        sanitize_script_errors == SanitizeScriptErrors::kDoNotSanitize) {
-      // Step 8.1. If rethrow errors is true and script's muted errors is
-      // false, then: [spec text]
-      //
-      // Step 8.1.2. Rethrow evaluationStatus.[[Value]]. [spec text]
-      //
-      // We rethrow exceptions reported from importScripts() here. The
-      // original filename/lineno/colno information (which points inside of
-      // imported scripts) is kept through ReThrow(), and will be eventually
-      // reported to WorkerGlobalScope.onerror via `TryCatch::SetVerbose(true)`
-      // called at top-level worker script evaluation.
-      block.ReThrow();
-      return ScriptEvaluationResult::FromClassicException();
-    }
-  }
-  // |v8::TryCatch| is (and should be) exited, before ThrowException() below.
-
-  if (rethrow_errors.ShouldRethrow()) {
-    // kDoNotSanitize case is processed and early-exited above.
-    DCHECK_EQ(sanitize_script_errors, SanitizeScriptErrors::kSanitize);
-
-    // Step 8.2. If rethrow errors is true and script's muted errors is
-    // true, then: [spec text]
-    //
-    // Step 8.2.2. Throw a "NetworkError" DOMException. [spec text]
-    //
-    // We don't supply any message here to avoid leaking details of muted
-    // errors.
-    V8ThrowException::ThrowException(
-        isolate_, V8ThrowDOMException::CreateOrEmpty(
-                      isolate_, DOMExceptionCode::kNetworkError,
-                      rethrow_errors.Message()));
-    return ScriptEvaluationResult::FromClassicException();
-  }
-
-  // #report-the-error for rethrow errors == true is already handled via
-  // |TryCatch::SetVerbose(true)| above.
-  return ScriptEvaluationResult::FromClassicException();
+  return result;
 }
 
 void WorkerOrWorkletScriptController::ForbidExecution() {

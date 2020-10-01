@@ -38,6 +38,7 @@
 #include "base/bind_helpers.h"
 #include "third_party/blink/public/mojom/v8_cache_options.mojom-blink.h"
 #include "third_party/blink/public/web/web_settings.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_evaluation_result.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_source_code.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_gc_controller.h"
@@ -83,40 +84,29 @@ void ScriptController::UpdateSecurityOrigin(
   window_proxy_manager_->UpdateSecurityOrigin(security_origin);
 }
 
+// TODO(crbug/1129743): Use ScriptEvaluationResult instead of
+// v8::Local<v8::Value> as the return type.
 v8::Local<v8::Value> ScriptController::ExecuteScriptAndReturnValue(
     v8::Local<v8::Context> context,
     const ScriptSourceCode& source,
     const KURL& base_url,
     SanitizeScriptErrors sanitize_script_errors,
     const ScriptFetchOptions& fetch_options) {
-  TRACE_EVENT1("devtools.timeline", "EvaluateScript", "data",
-               inspector_evaluate_script_event::Data(window_->GetFrame(),
-                                                     source.Url().GetString(),
-                                                     source.StartPosition()));
-  v8::Local<v8::Value> result;
-  {
     mojom::blink::V8CacheOptions v8_cache_options =
         mojom::blink::V8CacheOptions::kDefault;
     if (const Settings* settings = window_->GetFrame()->GetSettings())
       v8_cache_options = settings->GetV8CacheOptions();
 
-    // Isolate exceptions that occur when compiling and executing
-    // the code. These exceptions should not interfere with
-    // javascript code we might evaluate from C++ when returning
-    // from here.
-    v8::TryCatch try_catch(GetIsolate());
-    try_catch.SetVerbose(true);
+    ScriptEvaluationResult result = V8ScriptRunner::CompileAndRunScript(
+        GetIsolate(), ScriptState::From(context), window_.Get(), source,
+        base_url, sanitize_script_errors, fetch_options,
+        std::move(v8_cache_options),
+        V8ScriptRunner::RethrowErrorsOption::DoNotRethrow());
 
-    if (!V8ScriptRunner::CompileAndRunScript(
-             GetIsolate(), ScriptState::From(context), window_.Get(), source,
-             base_url, sanitize_script_errors, fetch_options,
-             std::move(v8_cache_options))
-             .ToLocal(&result)) {
-      return result;
-    }
-  }
+    if (result.GetResultType() == ScriptEvaluationResult::ResultType::kSuccess)
+      return result.GetSuccessValue();
 
-  return result;
+    return v8::Local<v8::Value>();
 }
 
 TextPosition ScriptController::EventHandlerPosition() const {

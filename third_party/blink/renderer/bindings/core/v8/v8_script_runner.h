@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "v8/include/v8.h"
 
 namespace WTF {
@@ -39,6 +40,7 @@ class TextPosition;
 
 namespace blink {
 
+class ScriptEvaluationResult;
 class ExecutionContext;
 class KURL;
 class ReferrerScriptInfo;
@@ -51,6 +53,43 @@ class CORE_EXPORT V8ScriptRunner final {
   STATIC_ONLY(V8ScriptRunner);
 
  public:
+  // Rethrow errors flag in
+  // https://html.spec.whatwg.org/C/#run-a-classic-script
+  class RethrowErrorsOption final {
+    STACK_ALLOCATED();
+
+   public:
+    RethrowErrorsOption(RethrowErrorsOption&&) = default;
+    RethrowErrorsOption& operator=(RethrowErrorsOption&&) = default;
+
+    RethrowErrorsOption(const RethrowErrorsOption&) = delete;
+    RethrowErrorsOption& operator=(const RethrowErrorsOption&) = delete;
+
+    // Rethrow errors flag is false.
+    static RethrowErrorsOption DoNotRethrow() {
+      return RethrowErrorsOption(base::nullopt);
+    }
+
+    // Rethrow errors flag is true. When rethrowing, a NetworkError with
+    // `message` is thrown. This is used only for importScripts(), and
+    // `message` is used to throw NetworkErrors with the same message text,
+    // no matter whether the NetworkError is thrown inside or outside
+    // EvaluateAndReturnValue().
+    static RethrowErrorsOption Rethrow(const String& message) {
+      return RethrowErrorsOption(message);
+    }
+
+    bool ShouldRethrow() const { return static_cast<bool>(message_); }
+    String Message() const { return *message_; }
+
+   private:
+    explicit RethrowErrorsOption(base::Optional<String> message)
+        : message_(std::move(message)) {}
+
+    // `nullopt` <=> rethrow errors is false.
+    base::Optional<String> message_;
+  };
+
   // For the following methods, the caller sites have to hold
   // a HandleScope and a ContextScope.
   static v8::MaybeLocal<v8::Script> CompileScript(
@@ -69,7 +108,7 @@ class CORE_EXPORT V8ScriptRunner final {
       v8::ScriptCompiler::CompileOptions,
       v8::ScriptCompiler::NoCacheReason,
       const ReferrerScriptInfo&);
-  static v8::MaybeLocal<v8::Value> CompileAndRunScript(
+  static ScriptEvaluationResult CompileAndRunScript(
       v8::Isolate*,
       ScriptState*,
       ExecutionContext*,
@@ -77,7 +116,8 @@ class CORE_EXPORT V8ScriptRunner final {
       const KURL&,
       SanitizeScriptErrors,
       const ScriptFetchOptions&,
-      mojom::blink::V8CacheOptions);
+      mojom::blink::V8CacheOptions,
+      RethrowErrorsOption);
   static v8::MaybeLocal<v8::Value> CompileAndRunInternalScript(
       v8::Isolate*,
       ScriptState*,

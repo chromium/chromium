@@ -57,50 +57,14 @@ class CORE_EXPORT WorkerOrWorkletScriptController final
 
   bool IsExecutionForbidden() const;
 
-  // Rethrow errors flag in
-  // https://html.spec.whatwg.org/C/#run-a-classic-script
-  class RethrowErrorsOption final {
-    STACK_ALLOCATED();
-
-   public:
-    RethrowErrorsOption(RethrowErrorsOption&&) = default;
-    RethrowErrorsOption& operator=(RethrowErrorsOption&&) = default;
-
-    RethrowErrorsOption(const RethrowErrorsOption&) = delete;
-    RethrowErrorsOption& operator=(const RethrowErrorsOption&) = delete;
-
-    // Rethrow errors flag is false.
-    static RethrowErrorsOption DoNotRethrow() {
-      return RethrowErrorsOption(base::nullopt);
-    }
-
-    // Rethrow errors flag is true. When rethrowing, a NetworkError with
-    // `message` is thrown. This is used only for importScripts(), and
-    // `message` is used to throw NetworkErrors with the same message text,
-    // no matter whether the NetworkError is thrown inside or outside
-    // EvaluateAndReturnValue().
-    static RethrowErrorsOption Rethrow(const String& message) {
-      return RethrowErrorsOption(message);
-    }
-
-    bool ShouldRethrow() const { return static_cast<bool>(message_); }
-    String Message() const { return *message_; }
-
-   private:
-    explicit RethrowErrorsOption(base::Optional<String> message)
-        : message_(std::move(message)) {}
-
-    // `nullopt` <=> rethrow errors is false.
-    base::Optional<String> message_;
-  };
-
   // https://html.spec.whatwg.org/C/#run-a-classic-script
   // Callers should enter ScriptState::Scope before calling this.
   ScriptEvaluationResult EvaluateAndReturnValue(
       const ScriptSourceCode&,
       SanitizeScriptErrors sanitize_script_errors,
       mojom::blink::V8CacheOptions = mojom::blink::V8CacheOptions::kDefault,
-      RethrowErrorsOption = RethrowErrorsOption::DoNotRethrow());
+      V8ScriptRunner::RethrowErrorsOption =
+          V8ScriptRunner::RethrowErrorsOption::DoNotRethrow());
 
   // Prevents future JavaScript execution.
   void ForbidExecution();
