@@ -32,7 +32,7 @@
 
   function afterExpand() {
     ElementsTestRunner.selectNodeWithId('body', node => {
-      const treeElement = node[treeOutline.treeElementSymbol()];
+      const treeElement = treeOutline.treeElementByNode.get(node);
       TestRunner.addResult(`AFTER EXPAND: TreeElement childCount: ${treeElement.childCount()}`);
 
       var selectedElement = treeOutline.selectedTreeElement;

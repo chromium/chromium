@@ -43,8 +43,8 @@
 
       var child2 = ElementsTestRunner.expandedNodeWithId('child2');
       var child4 = ElementsTestRunner.expandedNodeWithId('child4');
-      treeOutline._treeElementBeingDragged = child2[treeOutline._treeElementSymbol];
-      var treeElementToDropOn = child4[treeOutline._treeElementSymbol];
+      treeOutline._treeElementBeingDragged = treeOutline.treeElementByNode.get(child2);
+      var treeElementToDropOn = treeOutline.treeElementByNode.get(child4);
       treeOutline._doMove(treeElementToDropOn);
     }
   ]);
