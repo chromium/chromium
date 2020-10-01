@@ -825,6 +825,16 @@ chrome.fileManagerPrivate.formatVolume = function(volumeId, filesystem,
     volumeLabel) {};
 
 /**
+ * Deletes partitions of removable device, creates a single partition
+ * and format it.
+ * @param {string} devicePath
+ * @param {chrome.fileManagerPrivate.FormatFileSystemType} filesystem
+ * @param {string} volumeLabel
+ */
+chrome.fileManagerPrivate.singlePartitionFormat = function(devicePath,
+  filesystem, volumeLabel) {};
+
+/**
  * Renames a mounted volume. |volumeId| ID of the volume to be renamed to
  * |newName|.
  * @param {string} volumeId

@@ -43,6 +43,7 @@
 #include "chrome/common/extensions/api/file_manager_private.h"
 #include "chrome/common/extensions/api/file_manager_private_internal.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "chromeos/disks/disk.h"
 #include "chromeos/disks/disk_mount_manager.h"
 #include "components/drive/event_logger.h"
 #include "components/drive/file_system_core_util.h"
@@ -695,6 +696,44 @@ FileManagerPrivateFormatVolumeFunction::Run() {
 
   DiskMountManager::GetInstance()->FormatMountedDevice(
       volume->mount_path().AsUTF8Unsafe(),
+      ApiFormatFileSystemToChromeEnum(params->filesystem),
+      params->volume_label);
+  return RespondNow(NoArguments());
+}
+
+ExtensionFunction::ResponseAction
+FileManagerPrivateSinglePartitionFormatFunction::Run() {
+  using extensions::api::file_manager_private::SinglePartitionFormat::Params;
+  const std::unique_ptr<Params> params(Params::Create(*args_));
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  const ChromeExtensionFunctionDetails chrome_details(this);
+
+  const DiskMountManager::DiskMap& disks =
+      DiskMountManager::GetInstance()->disks();
+
+  chromeos::disks::Disk* device_disk;
+  DiskMountManager::DiskMap::const_iterator it;
+
+  for (it = disks.begin(); it != disks.end(); ++it) {
+    if (it->second->storage_device_path() == params->device_storage_path &&
+        it->second->is_parent()) {
+      device_disk = it->second.get();
+      break;
+    }
+  }
+
+  if (it == disks.end()) {
+    return RespondNow(Error("Device not found"));
+  }
+
+  if (!device_disk->on_removable_device() || device_disk->on_boot_device() ||
+      device_disk->is_read_only()) {
+    return RespondNow(Error("Invalid device"));
+  }
+
+  DiskMountManager::GetInstance()->SinglePartitionFormatDevice(
+      device_disk->device_path(),
       ApiFormatFileSystemToChromeEnum(params->filesystem),
       params->volume_label);
   return RespondNow(NoArguments());

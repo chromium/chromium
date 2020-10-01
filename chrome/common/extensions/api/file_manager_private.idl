@@ -1117,6 +1117,15 @@ interface Functions {
                            FormatFileSystemType filesystem,
                            DOMString volumeLabel);
 
+  // Deletes partitions of removable device, creates a new partition and format
+  // it.
+  // |deviceStoragePath| Storage path of the device to be formatted.
+  // |filesystem| Filesystem type to be formatted to.
+  // |volumeLabel| Label of the drive after formatting.
+  static void singlePartitionFormat(DOMString deviceStoragePath,
+                           FormatFileSystemType filesystem,
+                           DOMString volumeLabel);
+
   // Renames a mounted volume.
   // |volumeId| ID of the volume to be renamed.
   // |newName| New name of the target volume.

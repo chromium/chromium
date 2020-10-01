@@ -229,6 +229,21 @@ class FileManagerPrivateFormatVolumeFunction : public LoggedExtensionFunction {
   ResponseAction Run() override;
 };
 
+// Implements the chrome.fileManagerPrivate.singlePartitionFormat method.
+// Deletes removable device partitions, create a single partition and format.
+class FileManagerPrivateSinglePartitionFormatFunction
+    : public LoggedExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("fileManagerPrivate.singlePartitionFormat",
+                             FILEMANAGERPRIVATE_SINGLEPARTITIONFORMAT)
+
+ protected:
+  ~FileManagerPrivateSinglePartitionFormatFunction() override = default;
+
+  // ExtensionFunction overrides.
+  ResponseAction Run() override;
+};
+
 // Implements the chrome.fileManagerPrivate.renameVolume method.
 // Renames Volume given its mount path and new Volume name.
 class FileManagerPrivateRenameVolumeFunction : public LoggedExtensionFunction {
