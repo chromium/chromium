@@ -182,6 +182,14 @@ For more information, see the detailed help with:
   out/Debug/content_browsertests --gtest_help
 ```
 
+Note: For Android, generated expectations will replace the existing files on
+the test device. For example, if running on an emulator, for an ARIA test
+called `my-test.html`, the generated output can be found:
+```
+  /storage/emulated/0/chromium_tests_root/content/test/
+     data/accessibility/aria/my-test-expected-android.html
+```
+
 ## Adding a new test:
 
 If you are adding a new test file remember to add a corresponding test case in:
