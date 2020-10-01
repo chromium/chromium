@@ -104,6 +104,17 @@ export class ViewerThumbnailElement extends PolymerElement {
     return {width: cssWidth, height: cssHeight};
   }
 
+  /**
+   * Focuses and scrolls the element into view.
+   * The default scroll behavior of focus() acts differently than
+   * scrollIntoView(), which is called in isActiveChanged_(). This method
+   * unifies the behavior.
+   */
+  focusAndScroll() {
+    this.scrollIntoView({block: 'nearest'});
+    this.focus({preventScroll: true});
+  }
+
   /** @return {boolean} */
   isPending() {
     return this.hasAttribute('pending');
@@ -122,15 +133,17 @@ export class ViewerThumbnailElement extends PolymerElement {
 
   /** @private */
   focusThumbnailNext_() {
-    if (this.nextElementSibling) {
-      this.nextElementSibling.focus();
+    if (this.nextElementSibling &&
+        this.nextElementSibling.matches('viewer-thumbnail')) {
+      this.nextElementSibling.focusAndScroll();
     }
   }
 
   /** @private */
   focusThumbnailPrev_() {
-    if (this.previousElementSibling) {
-      this.previousElementSibling.focus();
+    if (this.previousElementSibling &&
+        this.previousElementSibling.matches('viewer-thumbnail')) {
+      this.previousElementSibling.focusAndScroll();
     }
   }
 
