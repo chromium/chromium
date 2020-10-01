@@ -1018,6 +1018,7 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
   bool is_web_gl_depth_texture_formats_types_added_ = false;
   bool is_ext_srgb_formats_types_added_ = false;
   bool is_ext_color_buffer_float_formats_added_ = false;
+  bool is_ext_color_buffer_half_float_formats_added_ = false;
   bool is_ext_texture_norm16_added_ = false;
 
   GLenumHashSet supported_internal_formats_;

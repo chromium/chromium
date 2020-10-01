@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/loader/frame_loader.h"
 #include "third_party/blink/renderer/modules/webgl/ext_color_buffer_float.h"
+#include "third_party/blink/renderer/modules/webgl/ext_color_buffer_half_float.h"
 #include "third_party/blink/renderer/modules/webgl/ext_disjoint_timer_query_webgl2.h"
 #include "third_party/blink/renderer/modules/webgl/ext_float_blend.h"
 #include "third_party/blink/renderer/modules/webgl/ext_texture_compression_bptc.h"
@@ -145,6 +146,7 @@ ImageBitmap* WebGL2RenderingContext::TransferToImageBitmap(
 void WebGL2RenderingContext::RegisterContextExtensions() {
   // Register extensions.
   RegisterExtension(ext_color_buffer_float_);
+  RegisterExtension(ext_color_buffer_half_float_);
   RegisterExtension(ext_disjoint_timer_query_web_gl2_);
   RegisterExtension(ext_float_blend_);
   RegisterExtension(ext_texture_compression_bptc_);
@@ -174,6 +176,7 @@ void WebGL2RenderingContext::RegisterContextExtensions() {
 
 void WebGL2RenderingContext::Trace(Visitor* visitor) const {
   visitor->Trace(ext_color_buffer_float_);
+  visitor->Trace(ext_color_buffer_half_float_);
   visitor->Trace(ext_disjoint_timer_query_web_gl2_);
   visitor->Trace(ext_float_blend_);
   visitor->Trace(ext_texture_compression_bptc_);

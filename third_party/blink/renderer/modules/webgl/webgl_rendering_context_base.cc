@@ -1007,6 +1007,14 @@ static const GLenum kSupportedInternalFormatsCopyTexImageFloatES3[] = {
     GL_R16F,   GL_R32F,    GL_RG16F,   GL_RG32F,         GL_RGB16F,
     GL_RGB32F, GL_RGBA16F, GL_RGBA32F, GL_R11F_G11F_B10F};
 
+// Exposed by EXT_color_buffer_half_float
+static const GLenum kSupportedInternalFormatsCopyTexImageHalfFloatES3[] = {
+    GL_R16F,
+    GL_RG16F,
+    GL_RGB16F,
+    GL_RGBA16F,
+};
+
 // ES3 enums supported by TexImageSource
 static const GLenum kSupportedInternalFormatsTexImageSourceES3[] = {
     GL_R8,      GL_R16F,           GL_R32F,         GL_R8UI,     GL_RG8,
@@ -1364,6 +1372,7 @@ void WebGLRenderingContextBase::InitializeNewContext() {
   is_web_gl_depth_texture_formats_types_added_ = false;
   is_ext_srgb_formats_types_added_ = false;
   is_ext_color_buffer_float_formats_added_ = false;
+  is_ext_color_buffer_half_float_formats_added_ = false;
   is_ext_texture_norm16_added_ = false;
 
   supported_internal_formats_.clear();
@@ -2373,6 +2382,12 @@ bool WebGLRenderingContextBase::ValidateCopyTexFormat(const char* function_name,
     ADD_VALUES_TO_SET(supported_internal_formats_copy_tex_image_,
                       kSupportedInternalFormatsCopyTexImageFloatES3);
     is_ext_color_buffer_float_formats_added_ = true;
+  }
+  if (!is_ext_color_buffer_half_float_formats_added_ &&
+      ExtensionEnabled(kEXTColorBufferHalfFloatName)) {
+    ADD_VALUES_TO_SET(supported_internal_formats_copy_tex_image_,
+                      kSupportedInternalFormatsCopyTexImageHalfFloatES3);
+    is_ext_color_buffer_half_float_formats_added_ = true;
   }
 
   if (supported_internal_formats_copy_tex_image_.find(internalformat) ==

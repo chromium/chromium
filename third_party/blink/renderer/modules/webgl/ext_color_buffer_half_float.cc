@@ -29,7 +29,10 @@ namespace blink {
 
 EXTColorBufferHalfFloat::EXTColorBufferHalfFloat(
     WebGLRenderingContextBase* context)
-    : WebGLExtension(context) {}
+    : WebGLExtension(context) {
+  context->ExtensionsUtil()->EnsureExtensionEnabled(
+      "GL_EXT_color_buffer_half_float");
+}
 
 WebGLExtensionName EXTColorBufferHalfFloat::GetName() const {
   return kEXTColorBufferHalfFloatName;

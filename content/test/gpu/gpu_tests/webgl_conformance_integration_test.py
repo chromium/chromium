@@ -188,6 +188,7 @@ class WebGLConformanceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     else:
       return [
           'EXT_color_buffer_float',
+          'EXT_color_buffer_half_float',
           'EXT_disjoint_timer_query_webgl2',
           'EXT_float_blend',
           'EXT_texture_compression_bptc',

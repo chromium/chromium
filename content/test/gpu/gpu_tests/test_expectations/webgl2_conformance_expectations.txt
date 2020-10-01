@@ -2,7 +2,8 @@
 #         chromeos
 #         linux
 #         mac highsierra mojave sierra catalina
-#         win win7 win10 ]
+#         win win7 win10]
+# tags: [ desktop mobile ]
 # tags: [ d3d11 no-angle vulkan opengl opengles no-use-gl ]
 # tags: [ passthrough no-passthrough ]
 # tags: [ intel intel-0x3e92 intel-0x5912 intel-0xa2e
@@ -46,6 +47,7 @@
 [ mac ] WebglExtension_EXT_texture_compression_bptc [ Skip ]
 [ android qualcomm ] WebglExtension_EXT_texture_compression_bptc [ Skip ]
 [ android qualcomm ] WebglExtension_EXT_texture_compression_rgtc [ Skip ]
+[ desktop no-passthrough ] WebglExtension_EXT_color_buffer_half_float [ Skip ]
 crbug.com/776222 [ android ] WebglExtension_WEBGL_video_texture [ Skip ]
 crbug.com/1058744 [ no-passthrough ] WebglExtension_OES_draw_buffers_indexed [ Skip ]
 

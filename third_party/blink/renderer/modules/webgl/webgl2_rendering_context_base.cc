@@ -542,6 +542,15 @@ ScriptValue WebGL2RenderingContextBase::getInternalformatParameter(
     case GL_R16F:
     case GL_RG16F:
     case GL_RGBA16F:
+      if (!ExtensionEnabled(kEXTColorBufferFloatName) &&
+          !ExtensionEnabled(kEXTColorBufferHalfFloatName)) {
+        SynthesizeGLError(
+            GL_INVALID_ENUM, "getInternalformatParameter",
+            "invalid internalformat when EXT_color_buffer_[half_]float "
+            "is not enabled");
+        return ScriptValue::CreateNull(script_state->GetIsolate());
+      }
+      break;
     case GL_R32F:
     case GL_RG32F:
     case GL_RGBA32F:
@@ -905,6 +914,16 @@ void WebGL2RenderingContextBase::RenderbufferStorageImpl(
     case GL_R16F:
     case GL_RG16F:
     case GL_RGBA16F:
+      if (!ExtensionEnabled(kEXTColorBufferFloatName) &&
+          !ExtensionEnabled(kEXTColorBufferHalfFloatName)) {
+        SynthesizeGLError(
+            GL_INVALID_ENUM, function_name,
+            "EXT_color_buffer_float/EXT_color_buffer_half_float not enabled");
+        return;
+      }
+      RenderbufferStorageHelper(target, samples, internalformat, width, height,
+                                function_name);
+      break;
     case GL_R32F:
     case GL_RG32F:
     case GL_RGBA32F:
