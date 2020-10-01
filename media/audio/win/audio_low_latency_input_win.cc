@@ -5,10 +5,12 @@
 #include "media/audio/win/audio_low_latency_input_win.h"
 
 #include <objbase.h>
+#include <propkey.h>
 
 #include <algorithm>
 #include <cmath>
 #include <memory>
+#include <utility>
 
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -16,6 +18,8 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
+#include "base/win/scoped_propvariant.h"
+#include "base/win/scoped_variant.h"
 #include "media/audio/audio_device_description.h"
 #include "media/audio/audio_features.h"
 #include "media/audio/win/avrt_wrapper_win.h"
@@ -25,6 +29,7 @@
 #include "media/base/audio_timestamp_helper.h"
 #include "media/base/channel_layout.h"
 #include "media/base/limits.h"
+#include "media/base/media_switches.h"
 
 using base::win::ScopedCOMInitializer;
 
@@ -128,6 +133,17 @@ const char* StreamOpenResultToString(
       return "OK_WITH_RESAMPLING";
   }
   return "UNKNOWN";
+}
+
+bool VariantBoolToBool(VARIANT_BOOL var_bool) {
+  switch (var_bool) {
+    case VARIANT_TRUE:
+      return true;
+    case VARIANT_FALSE:
+      return false;
+  }
+  LOG(ERROR) << "Invalid VARIANT_BOOL type";
+  return false;
 }
 
 std::string GetOpenLogString(WASAPIAudioInputStream::StreamOpenResult result,
@@ -250,6 +266,9 @@ bool WASAPIAudioInputStream::Open() {
     return false;
   }
 
+  // Check if raw audio processing is supported for the selected capture device.
+  raw_processing_supported_ = RawProcessingSupported();
+
   // Obtain an IAudioClient interface which enables us to create and initialize
   // an audio stream between an audio application and the audio engine.
   hr = endpoint_device_->Activate(__uuidof(IAudioClient), CLSCTX_ALL, nullptr,
@@ -267,8 +286,17 @@ bool WASAPIAudioInputStream::Open() {
   hr = GetAudioEngineStreamFormat();
 #endif
 
+  // Attempt to enable communications category and raw capture mode on the audio
+  // stream. Ignoring return value since the method logs its own error messages
+  // and it should be OK to continue opening the stream even after a failure.
+  if (base::FeatureList::IsEnabled(media::kWasapiRawAudioCapture) &&
+      raw_processing_supported_ &&
+      !AudioDeviceDescription::IsLoopbackDevice(device_id_)) {
+    SetCommunicationsCategoryAndRawCaptureMode();
+  }
+
   // Verify that the selected audio endpoint supports the specified format
-  // set during construction.
+  // set during construction and using the specified client properties.
   hr = S_OK;
   if (!DesiredFormatIsSupported(&hr)) {
     open_result_ = OPEN_RESULT_FORMAT_NOT_SUPPORTED;
@@ -414,6 +442,15 @@ void WASAPIAudioInputStream::Close() {
   // It is valid to call Close() before calling open or Start().
   // It is also valid to call Close() after Start() has been called.
   Stop();
+
+  // Only upload UMA histogram for the case when AGC is enabled, i.e., for
+  // WebRTC based audio input streams.
+  if (GetAutomaticGainControl()) {
+    // Upload UMA histogram to track if the capture device supported raw audio
+    // capture or not. See https://crbug.com/1133643.
+    base::UmaHistogramBoolean("Media.Audio.RawProcessingSupportedWin",
+                              raw_processing_supported_);
+  }
 
   if (converter_)
     converter_->RemoveInput(this);
@@ -809,6 +846,68 @@ HRESULT WASAPIAudioInputStream::GetAudioEngineStreamFormat() {
   return hr;
 }
 
+bool WASAPIAudioInputStream::RawProcessingSupported() {
+  DCHECK(endpoint_device_.Get());
+  // Check if System.Devices.AudioDevice.RawProcessingSupported can be found
+  // and queried in the Windows Property System. It corresponds to raw
+  // processing mode support for the specified audio device. If its value is
+  // VARIANT_TRUE the device supports raw processing mode.
+  bool raw_processing_supported = false;
+  Microsoft::WRL::ComPtr<IPropertyStore> properties;
+  base::win::ScopedPropVariant raw_processing;
+  if (FAILED(endpoint_device_->OpenPropertyStore(STGM_READ, &properties)) ||
+      FAILED(
+          properties->GetValue(PKEY_Devices_AudioDevice_RawProcessingSupported,
+                               raw_processing.Receive())) ||
+      raw_processing.get().vt != VT_BOOL) {
+    SendLogMessage(
+        "%s => (WARNING: failed to access "
+        "System.Devices.AudioDevice.RawProcessingSupported)",
+        __func__);
+  } else {
+    raw_processing_supported = VariantBoolToBool(raw_processing.get().boolVal);
+    SendLogMessage(
+        "%s => (System.Devices.AudioDevice.RawProcessingSupported=%s)",
+        __func__, raw_processing_supported ? "true" : "false");
+  }
+  return raw_processing_supported;
+}
+
+HRESULT WASAPIAudioInputStream::SetCommunicationsCategoryAndRawCaptureMode() {
+  DCHECK(audio_client_.Get());
+  DCHECK(!AudioDeviceDescription::IsLoopbackDevice(device_id_));
+  DCHECK(raw_processing_supported_);
+  SendLogMessage("%s()", __func__);
+
+  Microsoft::WRL::ComPtr<IAudioClient2> audio_client2;
+  HRESULT hr = audio_client_.As(&audio_client2);
+  if (FAILED(hr)) {
+    SendLogMessage("%s => (ERROR: IAudioClient2 is not supported)", __func__);
+    return hr;
+  }
+  // Use IAudioClient2::SetClientProperties() to set communications category
+  // and to enable raw stream capture if it is supported.
+  if (audio_client2.Get()) {
+    AudioClientProperties audio_props = {0};
+    audio_props.cbSize = sizeof(AudioClientProperties);
+    audio_props.bIsOffload = false;
+    // AudioCategory_Communications opts us in to communications policy and
+    // communications processing. AUDCLNT_STREAMOPTIONS_RAW turns off the
+    // processing, but not the policy.
+    audio_props.eCategory = AudioCategory_Communications;
+    // The audio stream is a 'raw' stream that bypasses all signal processing
+    // except for endpoint specific, always-on processing in the Audio
+    // Processing Object (APO), driver, and hardware.
+    audio_props.Options = AUDCLNT_STREAMOPTIONS_RAW;
+    hr = audio_client2->SetClientProperties(&audio_props);
+    if (FAILED(hr)) {
+      SendLogMessage("%s => (ERROR: IAudioClient2::SetClientProperties=[%s])",
+                     __func__, ErrorToString(hr).c_str());
+    }
+  }
+  return hr;
+}
+
 bool WASAPIAudioInputStream::DesiredFormatIsSupported(HRESULT* hr) {
   SendLogMessage("%s()", __func__);
   // An application that uses WASAPI to manage shared-mode streams can rely
@@ -1014,7 +1113,7 @@ HRESULT WASAPIAudioInputStream::InitializeAudioEngine() {
   //
   // http://msdn.microsoft.com/en-us/library/windows/desktop/dd316551(v=vs.85).aspx
   if (AudioDeviceDescription::IsLoopbackDevice(device_id_)) {
-    SendLogMessage("%s => (WARNING: loopback mode is selected", __func__);
+    SendLogMessage("%s => (WARNING: loopback mode is selected)", __func__);
     hr = endpoint_device_->Activate(__uuidof(IAudioClient), CLSCTX_ALL, nullptr,
                                     &audio_render_client_for_loopback_);
     if (FAILED(hr)) {

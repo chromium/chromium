@@ -19,6 +19,7 @@
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "base/win/scoped_com_initializer.h"
@@ -29,6 +30,7 @@
 #include "media/audio/audio_unittest_util.h"
 #include "media/audio/test_audio_thread.h"
 #include "media/audio/win/core_audio_util_win.h"
+#include "media/base/media_switches.h"
 #include "media/base/seekable_buffer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -258,7 +260,8 @@ class ScopedAudioInputStream {
   DISALLOW_COPY_AND_ASSIGN(ScopedAudioInputStream);
 };
 
-class WinAudioInputTest : public ::testing::Test {
+class WinAudioInputTest : public ::testing::Test,
+                          public ::testing::WithParamInterface<bool> {
  public:
   WinAudioInputTest() {
     audio_manager_ =
@@ -350,8 +353,13 @@ TEST_F(WinAudioInputTest, WASAPIAudioInputStreamOpenStartAndClose) {
 }
 
 // Test Open(), Start(), Stop(), Close() calling sequence.
-TEST_F(WinAudioInputTest, WASAPIAudioInputStreamOpenStartStopAndClose) {
+TEST_P(WinAudioInputTest, WASAPIAudioInputStreamOpenStartStopAndClose) {
   ABORT_AUDIO_TEST_IF_NOT(HasCoreAudioAndInputDevices(audio_manager_.get()));
+  base::test::ScopedFeatureList feature_list;
+  const bool use_raw_audio = GetParam();
+  use_raw_audio
+      ? feature_list.InitAndEnableFeature(media::kWasapiRawAudioCapture)
+      : feature_list.InitAndDisableFeature(media::kWasapiRawAudioCapture);
   ScopedAudioInputStream ais(
       CreateDefaultAudioInputStream(audio_manager_.get()));
   EXPECT_TRUE(ais->Open());
@@ -526,6 +534,33 @@ TEST_F(WinAudioInputTest, DISABLED_WASAPIAudioInputStreamRecordToFile) {
   ais.Close();
 }
 
+// As above, intended for manual testing only but this time using the raw
+// capture mode.
+TEST_F(WinAudioInputTest, DISABLED_WASAPIAudioInputStreamRecordToFileRAW) {
+  ABORT_AUDIO_TEST_IF_NOT(HasCoreAudioAndInputDevices(audio_manager_.get()));
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(media::kWasapiRawAudioCapture);
+
+  // Name of the output PCM file containing captured data. The output file
+  // will be stored in the directory containing 'media_unittests.exe'.
+  // Example of full name: \src\build\Debug\out_stereo_10sec_raw.pcm.
+  const char* file_name = "out_10sec_raw.pcm";
+
+  AudioInputStreamWrapper aisw(audio_manager_.get());
+  ScopedAudioInputStream ais(aisw.Create());
+  ASSERT_TRUE(ais->Open());
+
+  VLOG(0) << ">> Sample rate: " << aisw.sample_rate() << " [Hz]";
+  WriteToFileAudioSink file_sink(file_name);
+  VLOG(0) << ">> Speak into the default microphone while recording.";
+  ais->Start(&file_sink);
+  base::PlatformThread::Sleep(TestTimeouts::action_timeout());
+  ais->Stop();
+  VLOG(0) << ">> Recording has stopped.";
+  ais.Close();
+}
+
 TEST_F(WinAudioInputTest, DISABLED_WASAPIAudioInputStreamResampleToFile) {
   ABORT_AUDIO_TEST_IF_NOT(HasCoreAudioAndInputDevices(audio_manager_.get()));
 
@@ -577,11 +612,14 @@ TEST_F(WinAudioInputTest, DISABLED_WASAPIAudioInputStreamResampleToFile) {
     VLOG(0) << ">> Speak into the default microphone while recording.";
     ais->Start(&file_sink);
     base::PlatformThread::Sleep(TestTimeouts::action_timeout());
-    // base::PlatformThread::Sleep(base::TimeDelta::FromMinutes(10));
     ais->Stop();
     VLOG(0) << ">> Recording has stopped.";
     ais.Close();
   }
 }
+
+INSTANTIATE_TEST_SUITE_P(WinAudioInputTests,
+                         WinAudioInputTest,
+                         testing::Bool());
 
 }  // namespace media

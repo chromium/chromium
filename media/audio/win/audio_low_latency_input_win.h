@@ -154,6 +154,10 @@ class MEDIA_EXPORT WASAPIAudioInputStream
 
   // The Open() method is divided into these sub methods.
   HRESULT SetCaptureDevice();
+  // Returns whether raw audio processing is supported or not for the selected
+  // capture device.
+  bool RawProcessingSupported();
+  HRESULT SetCommunicationsCategoryAndRawCaptureMode();
   HRESULT GetAudioEngineStreamFormat();
   // Returns whether the desired format is supported or not and writes the
   // result of a failing system call to |*hr|, or S_OK if successful. If this
@@ -297,6 +301,10 @@ class MEDIA_EXPORT WASAPIAudioInputStream
   // Enabled if the volume level of the audio session is set to zero when the
   // session starts. Utilized in UMA histogram.
   bool audio_session_starts_at_zero_volume_ = false;
+
+  // Set to true if the selected audio device supports raw audio capture.
+  // Also added to a UMS histogram.
+  bool raw_processing_supported_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

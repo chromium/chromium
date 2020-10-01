@@ -655,6 +655,15 @@ const base::Feature kMediaFoundationVideoCapture{
 const base::Feature MEDIA_EXPORT kMediaFoundationVP8Decoding{
     "MediaFoundationVP8Decoding", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Use the AUDCLNT_STREAMOPTIONS_RAW option on WASAPI input audio streams in
+// combination with  the IAudioClient2::SetClientProperties() API.
+// The audio stream is a 'raw' stream that bypasses all signal processing except
+// for endpoint specific, always-on processing in the Audio Processing Object
+// (APO), driver, and hardware.
+// https://docs.microsoft.com/en-us/windows/win32/api/audioclient/ne-audioclient-audclnt_streamoptions
+const base::Feature MEDIA_EXPORT kWasapiRawAudioCapture{
+    "WASAPIRawAudioCapture", base::FEATURE_DISABLED_BY_DEFAULT};
+
 #endif  // defined(OS_WIN)
 
 #if defined(OS_MAC)
