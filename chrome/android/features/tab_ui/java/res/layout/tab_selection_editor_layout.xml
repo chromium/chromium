@@ -9,4 +9,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/default_bg_color"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
     android:contentDescription="@string/accessibility_tab_selection_editor"/>

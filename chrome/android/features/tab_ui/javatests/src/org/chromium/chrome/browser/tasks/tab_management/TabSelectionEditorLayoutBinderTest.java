@@ -4,16 +4,13 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 
 import static org.junit.Assert.assertNull;
 
-import android.graphics.Rect;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -130,32 +127,6 @@ public class TabSelectionEditorLayoutBinderTest extends DummyUiActivityTestCase 
         mModel.set(TabSelectionEditorProperties.TOOLBAR_ACTION_BUTTON_ENABLING_THRESHOLD, 2);
         mSelectionDelegate.setSelectedItems(selectedItem);
         assertFalse(button.isEnabled());
-    }
-
-    @Test
-    @SmallTest
-    @UiThreadTest
-    public void testSetPositionRect() {
-        assertNull(mEditorLayoutView.getPositionRectForTesting());
-
-        Rect rect = new Rect();
-        mModel.set(TabSelectionEditorProperties.SELECTION_EDITOR_POSITION_RECT, rect);
-
-        assertEquals(rect, mModel.get(TabSelectionEditorProperties.SELECTION_EDITOR_POSITION_RECT));
-    }
-
-    @Test
-    @SmallTest
-    @UiThreadTest
-    public void testRegisterGlobalLayoutListener() {
-        AtomicBoolean globalLayoutChanged = new AtomicBoolean();
-        globalLayoutChanged.set(false);
-
-        ViewTreeObserver.OnGlobalLayoutListener listener = () -> globalLayoutChanged.set(true);
-        mModel.set(TabSelectionEditorProperties.SELECTION_EDITOR_GLOBAL_LAYOUT_LISTENER, listener);
-        mParentView.getViewTreeObserver().dispatchOnGlobalLayout();
-
-        assertTrue(globalLayoutChanged.get());
     }
 
     @Test

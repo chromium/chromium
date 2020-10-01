@@ -27,7 +27,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
@@ -51,8 +50,7 @@ import java.util.Map;
 /**
  * Parent for TabGridDialog component.
  */
-public class TabGridDialogView extends FrameLayout
-        implements TabSelectionEditorMediator.TabSelectionEditorPositionProvider {
+public class TabGridDialogView extends FrameLayout {
     private static final int DIALOG_ANIMATION_DURATION = 300;
     private static final int DIALOG_ALPHA_ANIMATION_DURATION = 150;
     private static final int CARD_FADE_ANIMATION_DURATION = 50;
@@ -711,20 +709,6 @@ public class TabGridDialogView extends FrameLayout
         mCurrentDialogAnimator = mHideDialogAnimation;
         mScrimCoordinator.hideScrim(true);
         mHideDialogAnimation.start();
-    }
-
-    /**
-     * {@link TabSelectionEditorMediator.TabSelectionEditorPositionProvider} implementation.
-     * Returns a {@link Rect} that indicates the current position of dialog.
-     */
-    @Override
-    @NonNull
-    public Rect getSelectionEditorPositionRect() {
-        // Get the status bar height as offset.
-        Rect parentRect = new Rect();
-        mParent.getGlobalVisibleRect(parentRect);
-        return new Rect(mSideMargin, mTopMargin + parentRect.top, mParentWidth - mSideMargin,
-                mParentHeight - mTopMargin + parentRect.top);
     }
 
     /**

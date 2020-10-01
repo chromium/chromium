@@ -4,6 +4,10 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static android.view.View.IMPORTANT_FOR_ACCESSIBILITY_NO;
+import static android.view.View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS;
+import static android.view.View.IMPORTANT_FOR_ACCESSIBILITY_YES;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
@@ -42,6 +46,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
+import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
@@ -51,7 +56,9 @@ import org.chromium.ui.test.util.UiRestriction;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * End-to-end test for TabSelectionEditor.
@@ -78,18 +85,18 @@ public class TabSelectionEditorTest {
     private TabSelectionEditorCoordinator mTabSelectionEditorCoordinator;
     private WeakReference<TabSelectionEditorLayout> mRef;
 
+    private ViewGroup mParentView;
+
     @Before
     public void setUp() throws Exception {
         mActivityTestRule.startMainActivityOnBlankPage();
 
         mTabModelSelector = mActivityTestRule.getActivity().getTabModelSelector();
-
+        mParentView = (ViewGroup) mActivityTestRule.getActivity().findViewById(R.id.coordinator);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mTabSelectionEditorCoordinator = new TabSelectionEditorCoordinator(
-                    mActivityTestRule.getActivity(),
-                    (ViewGroup) mActivityTestRule.getActivity().getWindow().getDecorView(),
-                    mTabModelSelector, mActivityTestRule.getActivity().getTabContentManager(), null,
-                    getMode());
+                    mActivityTestRule.getActivity(), mParentView, mTabModelSelector,
+                    mActivityTestRule.getActivity().getTabContentManager(), getMode());
 
             mTabSelectionEditorController = mTabSelectionEditorCoordinator.getController();
             mTabSelectionEditorLayout =
@@ -168,7 +175,12 @@ public class TabSelectionEditorTest {
 
     @Test
     @MediumTest
+    // clang-format off
+    @Features.EnableFeatures({ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID + "<Study"})
+    @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
+        "force-fieldtrial-params=Study.Group:enable_launch_polish/true"})
     public void testToolbarNavigationButtonHideTabSelectionEditor() {
+        // clang-format on
         prepareBlankTab(2, false);
         List<Tab> tabs = getTabsInCurrentTabModel();
 
@@ -589,6 +601,60 @@ public class TabSelectionEditorTest {
         Espresso.pressBack();
         TestThreadUtils.runOnUiThreadBlocking(() -> mTabSelectionEditorController.show(tabs));
         mRobot.resultRobot.verifyTabSelectionEditorIsVisible();
+    }
+
+    @Test
+    @MediumTest
+    // clang-format off
+    @EnableFeatures({ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID + "<Study"})
+    @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
+        "force-fieldtrial-params=Study.Group:enable_launch_polish/true"})
+    public void testBackgroundViewAccessibilityImportance() {
+        // clang-format on
+        prepareBlankTab(2, false);
+        List<Tab> tabs = getTabsInCurrentTabModel();
+
+        Map<View, Integer> initialValues = getParentViewAccessibilityImportanceMap();
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> { mTabSelectionEditorController.show(tabs); });
+        mRobot.resultRobot.verifyTabSelectionEditorIsVisible();
+        ViewGroup parentView = (ViewGroup) mTabSelectionEditorLayout.getParent();
+        verifyBackgroundViewAccessibilityImportance(parentView, true, initialValues);
+
+        mRobot.actionRobot.clickToolbarNavigationButton();
+        mRobot.resultRobot.verifyTabSelectionEditorIsHidden();
+        verifyBackgroundViewAccessibilityImportance(parentView, false, initialValues);
+    }
+
+    private Map<View, Integer> getParentViewAccessibilityImportanceMap() {
+        Map<View, Integer> map = new HashMap<>();
+
+        for (int i = 0; i < mParentView.getChildCount(); i++) {
+            View view = mParentView.getChildAt(i);
+            map.put(view, view.getImportantForAccessibility());
+        }
+
+        map.put(mParentView, mParentView.getImportantForAccessibility());
+        return map;
+    }
+
+    private void verifyBackgroundViewAccessibilityImportance(ViewGroup parentView,
+            boolean isTabSelectionEditorShowing, Map<View, Integer> initialValues) {
+        assertEquals(isTabSelectionEditorShowing ? IMPORTANT_FOR_ACCESSIBILITY_NO
+                                                 : initialValues.get(parentView).intValue(),
+                parentView.getImportantForAccessibility());
+
+        for (int i = 0; i < parentView.getChildCount(); i++) {
+            View view = parentView.getChildAt(i);
+            int expected = isTabSelectionEditorShowing
+                    ? IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS
+                    : initialValues.get(view).intValue();
+            if (view == mTabSelectionEditorLayout) {
+                expected = IMPORTANT_FOR_ACCESSIBILITY_YES;
+            }
+
+            assertEquals(expected, view.getImportantForAccessibility());
+        }
     }
 
     private List<Tab> getTabsInCurrentTabModel() {

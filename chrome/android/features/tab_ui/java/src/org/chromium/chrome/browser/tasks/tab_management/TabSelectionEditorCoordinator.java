@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_TYPE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.OTHERS;
+import static org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorProperties.IS_VISIBLE;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -20,6 +21,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
@@ -109,25 +111,29 @@ class TabSelectionEditorCoordinator {
     private final TabSelectionEditorLayout mTabSelectionEditorLayout;
     private final TabListCoordinator mTabListCoordinator;
     private final SelectionDelegate<Integer> mSelectionDelegate = new SelectionDelegate<>();
-    private final PropertyModel mModel = new PropertyModel(TabSelectionEditorProperties.ALL_KEYS);
+    private final PropertyModel mModel;
     private final PropertyModelChangeProcessor mTabSelectionEditorLayoutChangeProcessor;
     private final TabSelectionEditorMediator mTabSelectionEditorMediator;
 
     public TabSelectionEditorCoordinator(Context context, ViewGroup parentView,
             TabModelSelector tabModelSelector, TabContentManager tabContentManager,
-            @Nullable TabSelectionEditorMediator
-                    .TabSelectionEditorPositionProvider positionProvider,
-            @TabListCoordinator.TabListMode int mode) {
+            @TabListMode int mode) {
         mContext = context;
         mParentView = parentView;
         mTabModelSelector = tabModelSelector;
         assert mode == TabListCoordinator.TabListMode.GRID
                 || mode == TabListCoordinator.TabListMode.LIST;
 
+        mTabSelectionEditorLayout =
+                LayoutInflater.from(context)
+                        .inflate(R.layout.tab_selection_editor_layout, parentView, false)
+                        .findViewById(R.id.selectable_list);
+
         mTabListCoordinator = new TabListCoordinator(mode, context, mTabModelSelector,
                 tabContentManager::getTabThumbnailWithCallback, null, false, null, null,
-                TabProperties.UiType.SELECTABLE, this::getSelectionDelegate, mParentView, false,
-                COMPONENT_NAME);
+                TabProperties.UiType.SELECTABLE, this::getSelectionDelegate,
+                mTabSelectionEditorLayout, false, COMPONENT_NAME);
+
         // Note: The TabSelectionEditorCoordinator is always created after native is initialized.
         assert LibraryLoader.getInstance().isInitialized();
         mTabListCoordinator.initWithNative(null);
@@ -154,18 +160,19 @@ class TabSelectionEditorCoordinator {
                     });
         }
 
-        mTabSelectionEditorLayout = LayoutInflater.from(context)
-                .inflate(R.layout.tab_selection_editor_layout, null)
-                .findViewById(R.id.selectable_list);
         mTabSelectionEditorLayout.initialize(mParentView, mTabListCoordinator.getContainerView(),
                 mTabListCoordinator.getContainerView().getAdapter(), mSelectionDelegate);
         mSelectionDelegate.setSelectionModeEnabledForZeroItems(true);
 
-        mTabSelectionEditorLayoutChangeProcessor = PropertyModelChangeProcessor.create(
-                mModel, mTabSelectionEditorLayout, TabSelectionEditorLayoutBinder::bind);
+        mModel = new PropertyModel.Builder(TabSelectionEditorProperties.ALL_KEYS)
+                         .with(IS_VISIBLE, false)
+                         .build();
 
-        mTabSelectionEditorMediator = new TabSelectionEditorMediator(mContext, mTabModelSelector,
-                this::resetWithListOfTabs, mModel, mSelectionDelegate, positionProvider);
+        mTabSelectionEditorLayoutChangeProcessor = PropertyModelChangeProcessor.create(
+                mModel, mTabSelectionEditorLayout, TabSelectionEditorLayoutBinder::bind, false);
+
+        mTabSelectionEditorMediator = new TabSelectionEditorMediator(
+                mContext, mTabModelSelector, this::resetWithListOfTabs, mModel, mSelectionDelegate);
     }
 
     /**

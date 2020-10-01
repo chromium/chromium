@@ -27,7 +27,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertEquals;
@@ -108,6 +107,7 @@ import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.KeyboardVisibilityDelegate;
@@ -415,8 +415,13 @@ public class TabGridDialogTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
+    // clang-format off
+    @EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID,
+        ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID + "<Study"})
+    @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
+        "force-fieldtrial-params=Study.Group:enable_launch_polish/true"})
     public void testSelectionEditorShowHide() throws ExecutionException {
+        // clang-format on
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         createTabs(cta, false, 2);
         enterTabSwitcher(cta);
@@ -532,8 +537,13 @@ public class TabGridDialogTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
+    // clang-format off
+    @EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID,
+        ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID + "<Study"})
+    @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
+        "force-fieldtrial-params=Study.Group:enable_launch_polish/true"})
     public void testSelectionEditorPosition() {
+        // clang-format on
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         View parentView = cta.getCompositorViewHolder();
         createTabs(cta, false, 3);
@@ -546,22 +556,22 @@ public class TabGridDialogTest {
 
         // Verify the size and position of TabGridDialog in portrait mode.
         openDialogFromTabSwitcherAndVerify(cta, 3, null);
-        checkPopupPosition(cta, true, true);
+        checkPosition(cta, true, true);
 
         // Verify the size and position of TabSelectionEditor in portrait mode.
         openSelectionEditorAndVerify(cta, 3);
-        checkPopupPosition(cta, false, true);
+        checkPosition(cta, false, true);
 
         // Verify the size and position of TabSelectionEditor in landscape mode.
         rotateDeviceToOrientation(cta, Configuration.ORIENTATION_LANDSCAPE);
         CriteriaHelper.pollUiThread(() -> parentView.getHeight() < parentView.getWidth());
-        checkPopupPosition(cta, false, false);
+        checkPosition(cta, false, false);
 
         // Verify the size and position of TabGridDialog in landscape mode.
         mSelectionEditorRobot.actionRobot.clickToolbarNavigationButton();
         mSelectionEditorRobot.resultRobot.verifyTabSelectionEditorIsHidden();
         assertTrue(isDialogShowing(cta));
-        checkPopupPosition(cta, true, false);
+        checkPosition(cta, true, false);
 
         // Verify the positioning in multi-window mode. Adjusting the height of the root view to
         // mock entering/exiting multi-window mode.
@@ -574,17 +584,17 @@ public class TabGridDialogTest {
             params.height = rootViewHeight / 2;
             rootView.setLayoutParams(params);
         });
-        checkPopupPosition(cta, true, true);
+        checkPosition(cta, true, true);
         openSelectionEditorAndVerify(cta, 3);
-        checkPopupPosition(cta, false, true);
+        checkPosition(cta, false, true);
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             ViewGroup.LayoutParams params = rootView.getLayoutParams();
             params.height = rootViewHeight;
             rootView.setLayoutParams(params);
         });
-        checkPopupPosition(cta, false, true);
-        checkPopupPosition(cta, true, true);
+        checkPosition(cta, false, true);
+        checkPosition(cta, true, true);
     }
 
     @Test
@@ -1154,8 +1164,7 @@ public class TabGridDialogTest {
                 .verifyAdapterHasItemCount(count);
     }
 
-    private void checkPopupPosition(
-            ChromeTabbedActivity cta, boolean isDialog, boolean isPortrait) {
+    private void checkPosition(ChromeTabbedActivity cta, boolean isDialog, boolean isPortrait) {
         // If isDialog is true, we are checking the position of TabGridDialog; otherwise we are
         // checking the position of TabSelectionEditor.
         int contentViewId = isDialog ? R.id.dialog_container_view : R.id.selectable_list;
@@ -1168,19 +1177,16 @@ public class TabGridDialogTest {
         Rect parentRect = new Rect();
         parentView.getGlobalVisibleRect(parentRect);
 
-        onView(withId(contentViewId))
-                .inRoot(isDialog ? withDecorView(is(cta.getWindow().getDecorView()))
-                                 : withDecorView(not(cta.getWindow().getDecorView())))
-                .check((v, e) -> {
-                    int[] location = new int[2];
-                    v.getLocationOnScreen(location);
-                    // Check the position.
-                    assertEquals(sideMargin, location[0]);
-                    assertEquals(topMargin + parentRect.top, location[1]);
-                    // Check the size.
-                    assertEquals(parentView.getHeight() - 2 * topMargin, v.getHeight());
-                    assertEquals(parentView.getWidth() - 2 * sideMargin, v.getWidth());
-                });
+        onView(isDialog ? withId(contentViewId) : withId(contentViewId)).check((v, e) -> {
+            int[] location = new int[2];
+            v.getLocationOnScreen(location);
+            // Check the position.
+            assertEquals(sideMargin, location[0]);
+            assertEquals(topMargin + parentRect.top, location[1]);
+            // Check the size.
+            assertEquals(parentView.getHeight() - 2 * topMargin, v.getHeight());
+            assertEquals(parentView.getWidth() - 2 * sideMargin, v.getWidth());
+        });
     }
 
     private void editDialogTitle(ChromeTabbedActivity cta, String title) {

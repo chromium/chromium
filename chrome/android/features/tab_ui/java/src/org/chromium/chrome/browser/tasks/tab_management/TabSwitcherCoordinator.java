@@ -109,6 +109,7 @@ public class TabSwitcherCoordinator
     private ViewGroup mContainer;
     private TabCreatorManager mTabCreatorManager;
     private boolean mIsInitialized;
+    private final ViewGroup mRootView;
 
     private final MenuOrKeyboardActionController
             .MenuOrKeyboardActionHandler mTabSwitcherMenuActionHandler =
@@ -147,6 +148,7 @@ public class TabSwitcherCoordinator
         mMode = mode;
         mTabModelSelector = tabModelSelector;
         mContainer = container;
+        mRootView = ((ChromeTabbedActivity) context).findViewById(R.id.coordinator);
         mTabCreatorManager = tabCreatorManager;
         mMultiWindowModeStateDispatcher = multiWindowModeStateDispatcher;
 
@@ -213,9 +215,8 @@ public class TabSwitcherCoordinator
 
         if (TabUiFeatureUtilities.isTabGroupsAndroidEnabled()) {
             mTabGridDialogCoordinator = new TabGridDialogCoordinator(context, tabModelSelector,
-                    tabContentManager, tabCreatorManager,
-                    ((ChromeTabbedActivity) context).findViewById(R.id.coordinator), this,
-                    mMediator, this::getTabGridDialogAnimationSourceView, shareDelegateSupplier,
+                    tabContentManager, tabCreatorManager, mRootView, this, mMediator,
+                    this::getTabGridDialogAnimationSourceView, shareDelegateSupplier,
                     scrimCoordinator);
             mMediator.setTabGridDialogController(mTabGridDialogCoordinator.getDialogController());
         } else {
@@ -314,8 +315,8 @@ public class TabSwitcherCoordinator
         int selectionEditorMode = mMode == TabListCoordinator.TabListMode.CAROUSEL
                 ? TabListCoordinator.TabListMode.GRID
                 : mMode;
-        mTabSelectionEditorCoordinator = new TabSelectionEditorCoordinator(context, mContainer,
-                mTabModelSelector, tabContentManager, null, selectionEditorMode);
+        mTabSelectionEditorCoordinator = new TabSelectionEditorCoordinator(
+                context, mRootView, mTabModelSelector, tabContentManager, selectionEditorMode);
         mMediator.initWithNative(mTabSelectionEditorCoordinator.getController());
 
         mTabGroupManualSelectionMode = new TabGroupManualSelectionMode(

@@ -6,11 +6,9 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
-import android.graphics.Rect;
 import android.view.View;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 
@@ -53,19 +51,6 @@ class TabSelectionEditorMediator
         void resetWithListOfTabs(@Nullable List<Tab> tabs, int preSelectedCount);
     }
 
-    /**
-     * An interface to provide the {@link Rect} used to position the selection editor on screen.
-     */
-    public interface TabSelectionEditorPositionProvider {
-        /**
-         * This method fetches the {@link Rect} used to position the selection editor layout.
-         * @return The {@link Rect} indicates where to show the selection editor layout. This Rect
-         * should never be null.
-         */
-        @NonNull
-        Rect getSelectionEditorPositionRect();
-    }
-
     private final Context mContext;
     private final TabModelSelector mTabModelSelector;
     private final ResetHandler mResetHandler;
@@ -73,7 +58,6 @@ class TabSelectionEditorMediator
     private final SelectionDelegate<Integer> mSelectionDelegate;
     private final TabModelSelectorTabModelObserver mTabModelObserver;
     private final TabModelSelectorObserver mTabModelSelectorObserver;
-    private final TabSelectionEditorPositionProvider mPositionProvider;
     private TabSelectionEditorActionProvider mActionProvider;
     private TabSelectionEditorCoordinator.TabSelectionEditorNavigationProvider mNavigationProvider;
 
@@ -101,15 +85,12 @@ class TabSelectionEditorMediator
 
     TabSelectionEditorMediator(Context context, TabModelSelector tabModelSelector,
             ResetHandler resetHandler, PropertyModel model,
-            SelectionDelegate<Integer> selectionDelegate,
-            @Nullable TabSelectionEditorMediator
-                    .TabSelectionEditorPositionProvider positionProvider) {
+            SelectionDelegate<Integer> selectionDelegate) {
         mContext = context;
         mTabModelSelector = tabModelSelector;
         mResetHandler = resetHandler;
         mModel = model;
         mSelectionDelegate = selectionDelegate;
-        mPositionProvider = positionProvider;
 
         mModel.set(
                 TabSelectionEditorProperties.TOOLBAR_NAVIGATION_LISTENER, mNavigationClickListener);
@@ -119,6 +100,7 @@ class TabSelectionEditorMediator
         mTabModelObserver = new TabModelSelectorTabModelObserver(mTabModelSelector) {
             @Override
             public void didAddTab(Tab tab, int type, @TabCreationState int creationState) {
+                if (!mTabModelSelector.isTabStateInitialized()) return;
                 // When tab is added due to multi-window close or moving between multiple windows,
                 // force hiding the selection editor.
                 if (type == TabLaunchType.FROM_RESTORE || type == TabLaunchType.FROM_REPARENTING) {
@@ -170,18 +152,6 @@ class TabSelectionEditorMediator
 
         mNavigationProvider =
                 new TabSelectionEditorCoordinator.TabSelectionEditorNavigationProvider(this);
-
-        if (mPositionProvider != null) {
-            mModel.set(TabSelectionEditorProperties.SELECTION_EDITOR_GLOBAL_LAYOUT_LISTENER,
-                    ()
-                            -> mModel.set(
-                                    TabSelectionEditorProperties.SELECTION_EDITOR_POSITION_RECT,
-                                    mPositionProvider.getSelectionEditorPositionRect()));
-        }
-
-        if (TabUiFeatureUtilities.isLaunchPolishEnabled()) {
-            mModel.set(TabSelectionEditorProperties.DISMISS_HANDLER, this::hide);
-        }
     }
 
     private boolean isEditorVisible() {
@@ -214,10 +184,6 @@ class TabSelectionEditorMediator
 
         mResetHandler.resetWithListOfTabs(tabs, preSelectedTabCount);
 
-        if (mPositionProvider != null) {
-            mModel.set(TabSelectionEditorProperties.SELECTION_EDITOR_POSITION_RECT,
-                    mPositionProvider.getSelectionEditorPositionRect());
-        }
         mModel.set(TabSelectionEditorProperties.IS_VISIBLE, true);
     }
 
