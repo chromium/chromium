@@ -424,8 +424,6 @@ source_set("test_support") {
     "test/test_new_window_delegate.h",
     "test/test_system_tray_client.cc",
     "test/test_system_tray_client.h",
-    "test/test_tablet_mode.cc",
-    "test/test_tablet_mode.h",
   ]
 
   deps = [
