@@ -188,6 +188,7 @@ public class DownloadCallbackTest {
      */
     @Test
     @SmallTest
+    @MinWebLayerVersion(86) // Behavior landed in 86.
     public void testFirstNavigationIsDownloadClosesTab() throws Throwable {
         // Set up listening for the tab removal that we expect to happen.
         CallbackHelper onTabRemovedCallbackHelper = new CallbackHelper();
