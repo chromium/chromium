@@ -10275,6 +10275,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Previews.ContentLength" units="KB" expires_after="M85">
+  <obsolete>
+    Not even logged by code. Obsolete in 09/2020.
+  </obsolete>
   <owner>ryansturm@chromium.org</owner>
   <summary>
     The actual data used for a page load using a preview optimization.
@@ -10306,6 +10309,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Previews.DataSavings" units="KB" expires_after="M85">
+  <obsolete>
+    Obsolete as of 09/2020.
+  </obsolete>
   <owner>ryansturm@chromium.org</owner>
   <summary>
     The estimated data savings for a page load using a previews optimization.
@@ -10315,6 +10321,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Previews.DataSavingsPercent" units="%" expires_after="M85">
+  <obsolete>
+    Obsolete as of 09/2020.
+  </obsolete>
   <owner>ryansturm@chromium.org</owner>
   <summary>
     The estimated percent of data savings for a page load using a previews
@@ -10382,6 +10391,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Previews.OriginalContentLength" units="KB" expires_after="M85">
+  <obsolete>
+    Not even logged by code. Obsolete in 09/2020.
+  </obsolete>
   <owner>ryansturm@chromium.org</owner>
   <summary>
     The estimated content length of a page load using a preview optimization.
