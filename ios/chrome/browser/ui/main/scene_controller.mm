@@ -610,7 +610,21 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   [self createInitialUI:(startInIncognito ? ApplicationMode::INCOGNITO
                                           : ApplicationMode::NORMAL)];
 
-  if (!self.startupParameters) {
+  // A pending tab move should not display the restore infobar since restoration
+  // will replace the moved tab.
+  BOOL pendingTabMove = NO;
+  if (IsSceneStartupSupported()) {
+    if (@available(iOS 13, *)) {
+      for (NSUserActivity* activity in self.sceneState.connectionOptions
+               .userActivities) {
+        if (ActivityIsTabMove(activity)) {
+          pendingTabMove = YES;
+        }
+      }
+    }
+  }
+
+  if (!self.startupParameters && !pendingTabMove) {
     // The startup parameters may create new tabs or navigations. If the restore
     // infobar is displayed now, it may be dismissed immediately and the user
     // will never be able to restore the session.
@@ -1593,7 +1607,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
     if (@available(iOS 13, *)) {
       for (NSUserActivity* activity in self.sceneState.connectionOptions
                .userActivities) {
-        if (ActivityIsURLLoad(activity)) {
+        if (ActivityIsURLLoad(activity) || ActivityIsTabMove(activity)) {
           return NO;
         }
       }

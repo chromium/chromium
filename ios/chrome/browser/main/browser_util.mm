@@ -108,7 +108,11 @@ void MoveTabToBrowser(NSString* tab_id,
   MoveSnapshot(tab_id, source_browser, destination_browser);
   std::unique_ptr<web::WebState> web_state =
       source_browser->GetWebStateList()->DetachWebStateAt(source_tab_index);
+  int insertion_flags = WebStateList::INSERT_FORCE_INDEX;
+  if (destination_browser->GetWebStateList()->empty()) {
+    insertion_flags = WebStateList::INSERT_ACTIVATE;
+  }
   destination_browser->GetWebStateList()->InsertWebState(
-      destination_tab_index, std::move(web_state),
-      WebStateList::INSERT_FORCE_INDEX, WebStateOpener());
+      destination_tab_index, std::move(web_state), insertion_flags,
+      WebStateOpener());
 }
