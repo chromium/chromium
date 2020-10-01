@@ -35,7 +35,7 @@ const WebInputEvent& WebCoalescedInputEvent::CoalescedEvent(
   return *coalesced_events_[index].get();
 }
 
-const std::vector<WebCoalescedInputEvent::WebScopedInputEvent>&
+const std::vector<std::unique_ptr<WebInputEvent>>&
 WebCoalescedInputEvent::GetCoalescedEventsPointers() const {
   return coalesced_events_;
 }
@@ -54,7 +54,7 @@ const WebInputEvent& WebCoalescedInputEvent::PredictedEvent(
   return *predicted_events_[index].get();
 }
 
-const std::vector<WebCoalescedInputEvent::WebScopedInputEvent>&
+const std::vector<std::unique_ptr<WebInputEvent>>&
 WebCoalescedInputEvent::GetPredictedEventsPointers() const {
   return predicted_events_;
 }
@@ -98,7 +98,8 @@ bool WebCoalescedInputEvent::CanCoalesceWith(
   return event_->CanCoalesce(*other.event_);
 }
 
-void WebCoalescedInputEvent::CoalesceWith(WebCoalescedInputEvent& newer_event) {
+void WebCoalescedInputEvent::CoalesceWith(
+    const WebCoalescedInputEvent& newer_event) {
   TRACE_EVENT2("input", "WebCoalescedInputEvent::CoalesceWith", "traceId",
                latency_.trace_id(), "coalescedTraceId",
                newer_event.latency_.trace_id());
@@ -113,14 +114,10 @@ void WebCoalescedInputEvent::CoalesceWith(WebCoalescedInputEvent& newer_event) {
   event_->SetTimeStamp(time_stamp);
   AddCoalescedEvent(*newer_event.event_);
 
-  // When coalescing two input events, we keep the oldest LatencyInfo
-  // since it will represent the longest latency. If it's a GestureScrollUpdate
-  // event, update the old event's last timestamp and scroll delta using the
-  // newer event's latency info.
+  // If this is a GestureScrollUpdate event, update the old event's last
+  // timestamp and scroll delta using the newer event's latency info.
   if (event_->GetType() == WebInputEvent::Type::kGestureScrollUpdate)
     latency_.CoalesceScrollUpdateWith(newer_event.latency_);
-  newer_event.latency_ = latency_;
-  newer_event.latency_.set_coalesced();
 }
 
 }  // namespace blink

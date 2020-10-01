@@ -108,11 +108,6 @@ class QueuedWebInputEvent : public MainThreadEventQueueTask {
     // If the other event was blocking store its callback to call later, but we
     // also save the trace_id to ensure the flow events correct show the
     // critical path.
-    //
-    // IMPORTANT: this if has to remain above CoalesceWith because that will
-    // overwrite other_event->latency_info() to be equal to |latency_|
-    // (including
-    //  trace_id).
     if (other_event->callback_) {
       blocking_coalesced_callbacks_.push_back(
           std::make_pair(std::move(other_event->callback_),
