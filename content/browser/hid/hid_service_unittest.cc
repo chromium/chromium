@@ -370,17 +370,18 @@ TEST_F(HidServiceTest, RevokeDevicePermission) {
   EXPECT_TRUE(contents()->IsConnectedToHidDevice());
   EXPECT_TRUE(connection);
 
+  base::RunLoop disconnect_loop;
+  connection.set_disconnect_handler(
+      base::BindLambdaForTesting([&] { disconnect_loop.Quit(); }));
+
   // Simulate user revoking permission.
   EXPECT_CALL(hid_delegate(), HasDevicePermission).WillOnce(Return(false));
   url::Origin origin = url::Origin::Create(GURL(kTestUrl));
   hid_delegate().OnPermissionRevoked(origin, origin);
 
-  // TODO(mattreynolds): Use a disconnect handler with a run loop instead of the
-  // potentially flaky `RunUntilIdle`. This depends on fixing
-  // `FakeHidConnection` to monitor the watcher just as `HidConnectionImpl`
-  // does.
-  base::RunLoop().RunUntilIdle();
+  disconnect_loop.Run();
   EXPECT_FALSE(contents()->IsConnectedToHidDevice());
+  EXPECT_FALSE(connection.is_connected());
 }
 
 }  // namespace content
