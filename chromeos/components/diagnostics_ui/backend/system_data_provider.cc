@@ -10,7 +10,10 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/i18n/time_formatting.h"
 #include "base/optional.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "chromeos/components/diagnostics_ui/backend/cros_healthd_helpers.h"
 #include "chromeos/components/diagnostics_ui/backend/power_manager_client_conversions.h"
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
@@ -25,6 +28,8 @@ namespace healthd = cros_healthd::mojom;
 using PhysicalCpuInfos = std::vector<healthd::PhysicalCpuInfoPtr>;
 using PowerSupplyProperties = power_manager::PowerSupplyProperties;
 using ProbeCategories = healthd::ProbeCategoryEnum;
+
+constexpr int kChargeStatusRefreshIntervalInSeconds = 15;
 
 void PopulateBoardName(const healthd::SystemInfo& system_info,
                        mojom::SystemInfo& out_system_info) {
@@ -112,6 +117,7 @@ void PopulateBatteryChargeStatus(
 }  // namespace
 
 SystemDataProvider::SystemDataProvider() {
+  battery_charge_status_timer_ = std::make_unique<base::RepeatingTimer>();
   PowerManagerClient::Get()->AddObserver(this);
 }
 
@@ -138,13 +144,37 @@ void SystemDataProvider::GetBatteryInfo(GetBatteryInfoCallback callback) {
                      base::Unretained(this), std::move(callback)));
 }
 
-void SystemDataProvider::PowerChanged(const PowerSupplyProperties& proto) {
+void SystemDataProvider::ObserveBatteryChargeStatus(
+    mojo::PendingRemote<mojom::BatteryChargeStatusObserver> observer) {
+  battery_charge_status_observers_.Add(std::move(observer));
+
+  if (!battery_charge_status_timer_->IsRunning()) {
+    battery_charge_status_timer_->Start(
+        FROM_HERE,
+        base::TimeDelta::FromSeconds(kChargeStatusRefreshIntervalInSeconds),
+        base::BindRepeating(&SystemDataProvider::UpdateBatteryChargeStatus,
+                            base::Unretained(this)));
+  }
+  UpdateBatteryChargeStatus();
+}
+
+void SystemDataProvider::PowerChanged(
+    const power_manager::PowerSupplyProperties& proto) {
+  if (battery_charge_status_observers_.empty()) {
+    return;
+  }
+
   // Fetch updated data from CrosHealthd
   BindCrosHealthdProbeServiceIfNeccessary();
   probe_service_->ProbeTelemetryInfo(
       {ProbeCategories::kBattery},
       base::BindOnce(&SystemDataProvider::OnBatteryChargeStatusUpdated,
                      base::Unretained(this), proto));
+}
+
+void SystemDataProvider::SetBatteryChargeStatusTimerForTesting(
+    std::unique_ptr<base::RepeatingTimer> timer) {
+  battery_charge_status_timer_ = std::move(timer);
 }
 
 void SystemDataProvider::OnSystemInfoProbeResponse(
@@ -237,12 +267,14 @@ void SystemDataProvider::OnBatteryChargeStatusUpdated(
   if (info_ptr.is_null()) {
     LOG(ERROR) << "Null response from croshealthd::ProbeTelemetryInfo.";
     NotifyBatteryChargeStatusObservers(battery_charge_status);
+    battery_charge_status_timer_.reset();
     return;
   }
 
   if (!power_supply_properties.has_value()) {
     LOG(ERROR) << "Null response from power_manager_client::GetLastStatus.";
     NotifyBatteryChargeStatusObservers(battery_charge_status);
+    battery_charge_status_timer_.reset();
     return;
   }
 
@@ -252,6 +284,7 @@ void SystemDataProvider::OnBatteryChargeStatusUpdated(
               DoesDeviceHaveBattery(*power_supply_properties))
         << "Sources should not disagree about whether there is a battery.";
     NotifyBatteryChargeStatusObservers(battery_charge_status);
+    battery_charge_status_timer_.reset();
     return;
   }
 
@@ -263,7 +296,9 @@ void SystemDataProvider::OnBatteryChargeStatusUpdated(
 
 void SystemDataProvider::NotifyBatteryChargeStatusObservers(
     const mojom::BatteryChargeStatusPtr& battery_charge_status) {
-  NOTIMPLEMENTED();  // Implemented in subsequent CL.
+  for (auto& observer : battery_charge_status_observers_) {
+    observer->OnBatteryChargeStatusUpdated(battery_charge_status.Clone());
+  }
 }
 
 void SystemDataProvider::BindCrosHealthdProbeServiceIfNeccessary() {

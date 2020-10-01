@@ -12,6 +12,11 @@
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
+
+namespace base {
+class RepeatingTimer;
+}  // namespace base
 
 namespace chromeos {
 namespace diagnostics {
@@ -29,9 +34,15 @@ class SystemDataProvider : public mojom::SystemDataProvider,
   // mojom::SystemDataProvider:
   void GetSystemInfo(GetSystemInfoCallback callback) override;
   void GetBatteryInfo(GetBatteryInfoCallback callback) override;
+  void ObserveBatteryChargeStatus(
+      mojo::PendingRemote<mojom::BatteryChargeStatusObserver> observer)
+      override;
 
   // PowerManagerClient::Observer:
   void PowerChanged(const power_manager::PowerSupplyProperties& proto) override;
+
+  void SetBatteryChargeStatusTimerForTesting(
+      std::unique_ptr<base::RepeatingTimer> timer);
 
  private:
   void BindCrosHealthdProbeServiceIfNeccessary();
@@ -57,6 +68,10 @@ class SystemDataProvider : public mojom::SystemDataProvider,
       cros_healthd::mojom::TelemetryInfoPtr info_ptr);
 
   mojo::Remote<cros_healthd::mojom::CrosHealthdProbeService> probe_service_;
+  mojo::RemoteSet<mojom::BatteryChargeStatusObserver>
+      battery_charge_status_observers_;
+
+  std::unique_ptr<base::RepeatingTimer> battery_charge_status_timer_;
 };
 
 }  // namespace diagnostics

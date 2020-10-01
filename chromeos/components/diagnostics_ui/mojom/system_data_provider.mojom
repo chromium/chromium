@@ -55,6 +55,16 @@ struct BatteryChargeStatus {
   ExternalPowerSource power_adapter_status;
 };
 
+// Implemented by clients that wish to be updated periodically about changes to
+// the battery charge status.
+interface BatteryChargeStatusObserver {
+  // OnBatteryChargeStatus calls can be triggered by any of 3 conditions:
+  // 1) A BatteryChargeStatusObserver is registered with SystemDataProvider
+  // 2) A PowerManagerClient 'PowerChanged' event is received
+  // 3) A periodic update is sent by SystemDataProvider
+  OnBatteryChargeStatusUpdated(BatteryChargeStatus battery_charge_status);
+};
+
 // Provides telemetric information about the system. This API is exposed to the
 // Diagnostics SWA.
 interface SystemDataProvider {
@@ -66,4 +76,8 @@ interface SystemDataProvider {
   // information that does not change during the lifetime fo the service.
   // If the device does not have a battery, returns an empty BatteryInfo.
   GetBatteryInfo() => (BatteryInfo battery_info);
+
+  // Registers an observer of BatteryChargeStatus information.
+  ObserveBatteryChargeStatus(
+      pending_remote<BatteryChargeStatusObserver> observer);
 };
