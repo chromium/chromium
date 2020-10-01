@@ -1035,6 +1035,15 @@ const char
     OmniboxFieldTrial::kEntitySuggestionsReduceLatencyDecoderWakeupParam[] =
         "EntitySuggestionsReduceLatencyDecoderWakeup";
 
+extern const char OmniboxFieldTrial::kBookmarkPathsUiReplaceTitle[] =
+    "OmniboxBookmarkPathsUiReplaceTitle";
+extern const char OmniboxFieldTrial::kBookmarkPathsUiReplaceUrl[] =
+    "OmniboxBookmarkPathsUiReplaceUrl";
+extern const char OmniboxFieldTrial::kBookmarkPathsUiAppendAfterTitle[] =
+    "OmniboxBookmarkPathsUiAppendAfterTitle";
+extern const char OmniboxFieldTrial::kBookmarkPathsUiDynamicReplaceUrl[] =
+    "OmniboxBookmarkPathsUiDynamicReplaceUrl";
+
 std::string OmniboxFieldTrial::internal::GetValueForRuleInContext(
     const std::string& rule,
     OmniboxEventProto::PageClassification page_classification) {

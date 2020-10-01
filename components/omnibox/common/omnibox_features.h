@@ -82,6 +82,7 @@ extern const base::Feature kHistoryQuickProviderAllowMidwordContinuations;
 
 // Suggestions UI - these affect the UI or function of the suggestions popup.
 extern const base::Feature kAdaptiveSuggestionsCount;
+extern const base::Feature kBookmarkPaths;
 extern const base::Feature kCompactSuggestions;
 extern const base::Feature kDeferredKeyboardPopup;
 extern const base::Feature kMostVisitedTiles;

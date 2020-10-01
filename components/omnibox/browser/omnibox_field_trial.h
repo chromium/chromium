@@ -575,6 +575,13 @@ extern const char kOmniboxUIUnelideURLOnHoverThresholdMsParam[];
 extern const char kEntitySuggestionsReduceLatencyDecoderTimeoutParam[];
 extern const char kEntitySuggestionsReduceLatencyDecoderWakeupParam[];
 
+// Parameter names used for bookmark path variations that determine whether
+// bookmark suggestion texts will contain the title, URL, and/or path.
+extern const char kBookmarkPathsUiReplaceTitle[];
+extern const char kBookmarkPathsUiReplaceUrl[];
+extern const char kBookmarkPathsUiAppendAfterTitle[];
+extern const char kBookmarkPathsUiDynamicReplaceUrl[];
+
 namespace internal {
 // The bundled omnibox experiment comes with a set of parameters
 // (key-value pairs).  Each key indicates a certain rule that applies in
