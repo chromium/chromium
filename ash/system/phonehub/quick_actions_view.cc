@@ -4,8 +4,6 @@
 
 #include "ash/system/phonehub/quick_actions_view.h"
 
-#include "ash/system/phonehub/enable_hotspot_quick_action_controller.h"
-#include "ash/system/phonehub/locate_phone_quick_action_controller.h"
 #include "ash/system/phonehub/phone_hub_view_ids.h"
 #include "ash/system/phonehub/quick_action_item.h"
 #include "ash/system/phonehub/silence_phone_quick_action_controller.h"
@@ -38,13 +36,8 @@ QuickActionsView::QuickActionsView(
 QuickActionsView::~QuickActionsView() = default;
 
 void QuickActionsView::InitQuickActionItems() {
-  enable_hotspot_ =
-      AddItem(std::make_unique<EnableHotspotQuickActionController>(
-          phone_hub_manager_->GetTetherController()));
   silence_phone_ = AddItem(std::make_unique<SilencePhoneQuickActionController>(
       phone_hub_manager_->GetDoNotDisturbController()));
-  locate_phone_ = AddItem(std::make_unique<LocatePhoneQuickActionController>(
-      phone_hub_manager_->GetFindMyDeviceController()));
 }
 
 QuickActionItem* QuickActionsView::AddItem(
