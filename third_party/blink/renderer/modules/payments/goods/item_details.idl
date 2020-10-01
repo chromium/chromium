@@ -2,9 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// TODO(crbug.com/1061503): Add more fields from
 // https://github.com/WICG/digital-goods/blob/master/explainer.md
-// as the discussions settle.
 dictionary ItemDetails {
   DOMString itemId;
   DOMString title;

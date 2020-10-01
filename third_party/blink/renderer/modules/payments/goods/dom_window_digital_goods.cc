@@ -4,17 +4,39 @@
 
 #include "third_party/blink/renderer/modules/payments/goods/dom_window_digital_goods.h"
 
+#include <utility>
+
+#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/modules/payments/goods/digital_goods_service.h"
 
+namespace blink {
+
 namespace {
+
+using payments::mojom::blink::CreateDigitalGoodsResponseCode;
 
 const char known_payment_method_[] = "https://play.google.com/billing";
 
-}  // namespace
+void OnCreateDigitalGoodsResponse(
+    ScriptPromiseResolver* resolver,
+    CreateDigitalGoodsResponseCode code,
+    mojo::PendingRemote<payments::mojom::blink::DigitalGoods> pending_remote) {
+  if (code != CreateDigitalGoodsResponseCode::kOk) {
+    DCHECK(!pending_remote);
+    DVLOG(1) << "CreateDigitalGoodsResponseCode " << code;
+    resolver->Resolve();
+    return;
+  }
+  DCHECK(pending_remote);
 
-namespace blink {
+  auto* digital_goods_service_ =
+      MakeGarbageCollected<DigitalGoodsService>(std::move(pending_remote));
+  resolver->Resolve(digital_goods_service_);
+}
+
+}  // namespace
 
 const char DOMWindowDigitalGoods::kSupplementName[] = "DOMWindowDigitalGoods";
 
@@ -32,26 +54,31 @@ ScriptPromise DOMWindowDigitalGoods::GetDigitalGoodsService(
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   auto promise = resolver->Promise();
 
-  // TODO (crbug.com/1061503): Enable JS to connect to various payment method
-  // backends. For now, just connect to one known backend and check the URL is
-  // correct for that payment method.
+  if (payment_method.IsEmpty()) {
+    resolver->Resolve();
+    return promise;
+  }
   if (payment_method != known_payment_method_) {
     resolver->Resolve();
     return promise;
   }
 
-  if (!digital_goods_service_) {
-    digital_goods_service_ = MakeGarbageCollected<DigitalGoodsService>(
-        ExecutionContext::From(script_state));
+  // TODO: Bind only on platforms where an implementation exists.
+  if (!mojo_service_) {
+    ExecutionContext::From(script_state)
+        ->GetBrowserInterfaceBroker()
+        .GetInterface(mojo_service_.BindNewPipeAndPassReceiver());
   }
 
-  resolver->Resolve(digital_goods_service_);
+  mojo_service_->CreateDigitalGoods(
+      payment_method,
+      WTF::Bind(&OnCreateDigitalGoodsResponse, WrapPersistent(resolver)));
+
   return promise;
 }
 
 void DOMWindowDigitalGoods::Trace(Visitor* visitor) const {
   Supplement<LocalDOMWindow>::Trace(visitor);
-  visitor->Trace(digital_goods_service_);
 }
 
 // static

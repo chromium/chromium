@@ -5,12 +5,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_PAYMENTS_GOODS_DOM_WINDOW_DIGITAL_GOODS_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PAYMENTS_GOODS_DOM_WINDOW_DIGITAL_GOODS_H_
 
+#include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/blink/public/mojom/digital_goods/digital_goods.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
 
-class DigitalGoodsService;
 class LocalDOMWindow;
 class ScriptState;
 class Visitor;
@@ -31,7 +32,7 @@ class DOMWindowDigitalGoods final
   void Trace(Visitor* visitor) const override;
 
  private:
-  Member<DigitalGoodsService> digital_goods_service_;
+  mojo::Remote<payments::mojom::blink::DigitalGoodsFactory> mojo_service_;
 
   static DOMWindowDigitalGoods* FromState(LocalDOMWindow*);
 };

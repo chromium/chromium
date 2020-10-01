@@ -2,11 +2,12 @@
 <html>
 <head>
   <title>Digital Goods API: Test calls from WebIDL to mojo and back.</title>
+  <script src="../resources/js-test.js"></script>
   <script src="../resources/testharness.js"></script>
   <script src="../resources/testharnessreport.js"></script>
-  <script src="file:///gen/layout_test_data/mojo/public/js/mojo_bindings_lite.js"></script>
-  <script src="file:///gen/components/payments/mojom/payment_request_data.mojom-lite.js"></script>
-  <script src="file:///gen/third_party/blink/public/mojom/digital_goods/digital_goods.mojom-lite.js"></script>
+  <script src="file:///gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
+  <script src="file:///gen/components/payments/mojom/payment_request_data.mojom.js"></script>
+  <script src="file:///gen/third_party/blink/public/mojom/digital_goods/digital_goods.mojom.js"></script>
   <script src="resources/mock-digital-goods-service.js"></script>
 </head>
 <body>
@@ -65,7 +66,7 @@ digital_goods_test(async service => {
     await service.getDetails(['fail']);
     assert_unreached();
   } catch (error) {
-    assert_equals(error, 'error'); // TODO: throw an error instead of rejecting with a string?
+    assert_equals(error, 'error');
   }
 }, {title: 'GetDetails internal error.'});
 
@@ -90,7 +91,7 @@ digital_goods_test(async service => {
     await service.acknowledge('fail', 'repeatable');
     assert_unreached();
   } catch (error) {
-    assert_equals(error, 'error'); // TODO: throw an error instead of rejecting with a string?
+    assert_equals(error, 'error');
   }
 }, {title: 'Acknowledge bad ID should error.'});
 
@@ -102,6 +103,17 @@ digital_goods_test(async service => {
     assert_regexp_match(error.message, /not a valid enum value of type PurchaseType/);
   }
 }, {title: 'Acknowledge bad purchase type should error.'});
+
+digital_goods_test(async service => {
+  const response1 = await service.getDetails(['id1']);
+  assert_equals(response1.length, 1);
+  gc();
+  const response2 = await service.getDetails(['id2']);
+  assert_equals(response2.length, 1);
+  gc();
+  const response3 = await service.getDetails(['id3']);
+  assert_equals(response3.length, 1);
+}, {title: 'DigitalGoods referenced by scripts should survive garbage collector.'});
 
 </script>
 </body>

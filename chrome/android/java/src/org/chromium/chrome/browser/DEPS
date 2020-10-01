@@ -77,7 +77,7 @@ specific_include_rules = {
   "QualityEnforcer\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   ],
-  "DigitalGoodsFactory\.java": [
+  "DigitalGoodsFactoryImpl\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   ],
   "TwaFinishHandler\.java": [

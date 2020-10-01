@@ -2,19 +2,11 @@
 
 class MockDigitalGoods {
   constructor() {
-    this.interceptor_ =
-        new MojoInterfaceInterceptor(
-            payments.mojom.DigitalGoods.$interfaceName);
-    this.interceptor_.oninterfacerequest =
-        e => this.bindHandleToReceiver_(e.handle);
-
-    this.interceptor_.start();
     this.resetRecordedAction_();
   }
 
-  bindHandleToReceiver_(handle) {
-    this.receiver_ = new payments.mojom.DigitalGoodsReceiver(this);
-    this.receiver_.$.bindHandle(handle);
+  bind(request) {
+    this.binding = new mojo.Binding(payments.mojom.DigitalGoods, this, request);
   }
 
   getRecordedAction_() {
@@ -79,6 +71,42 @@ class MockDigitalGoods {
 }
 
 let mockDigitalGoods = new MockDigitalGoods();
+
+
+class MockDigitalGoodsFactory {
+  constructor() {
+    this.interceptor_ =
+        new MojoInterfaceInterceptor(
+            payments.mojom.DigitalGoodsFactory.name);
+    this.interceptor_.oninterfacerequest = e => this.bind(e.handle);
+    this.bindingSet_ = new mojo.BindingSet(payments.mojom.DigitalGoodsFactory);
+
+    this.interceptor_.start();
+  }
+
+  bind(handle) {
+    this.bindingSet_.addBinding(this, handle);
+  }
+
+  async createDigitalGoods(paymentMethod) {
+    if (paymentMethod !== 'https://play.google.com/billing') {
+      return {
+        code: /*CreateDigitalGoodsResponseCode.kUnsupportedPaymentMethod=*/2,
+        digitalGoods: null
+      };
+    }
+
+    let digitalGoodsPtr = new payments.mojom.DigitalGoodsPtr();
+    mockDigitalGoods.bind(mojo.makeRequest(digitalGoodsPtr));
+
+    return {
+      code: /*CreateDigitalGoodsResponseCode.kOk=*/0,
+      digitalGoods: digitalGoodsPtr
+    };
+  }
+}
+
+let mockDigitalGoodsFactory = new MockDigitalGoodsFactory();
 
 function digital_goods_test(func, {
   title,

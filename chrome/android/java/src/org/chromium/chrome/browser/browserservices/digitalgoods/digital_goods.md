@@ -9,8 +9,13 @@ Android APIs are the source of truth for information such as price.
 
 ## Code
 
-* `DigitalGoodsImpl` implements the `DigitalGoods` mojo API and is where
-  requests come from. It is created by the `DigitalGoodsFactory`.
+* `DigitalGoodsImpl` implements the `DigitalGoods` mojo API, which handles
+  requests from JavaScript. It is created by the `DigitalGoodsFactoryImpl`.
+* `DigitalGoodsFactoryImpl` implements the `DigitalGoodsFactory` mojo API, which
+  handles requests for new `DigitalGoods` instances. It is created by the
+  `DigitalGoodsFactoryFactory`. This extra indirection allows the
+  `DigitalGoodsFactory` to report success/failure when creating a `DigitalGoods`
+   instance, which would not be possible if instantiating it directly.
 * `TrustedWebActivityClient` is the class that talks to Trusted Web Activities.
 * `DigitalGoodsAdapter` sits between `DigitalGoodsImpl` and
   `TrustedWebActivityClient`, transforming between appropriate data types.

@@ -151,6 +151,7 @@ public class DigitalGoodsConverter {
             case PLAY_BILLING_ITEM_UNAVAILABLE:
                 return BillingResponseCode.ITEM_UNAVAILABLE;
             default:
+                Log.w(TAG, "Unexpected response code: " + responseCode);
                 return BillingResponseCode.ERROR;
         }
     }

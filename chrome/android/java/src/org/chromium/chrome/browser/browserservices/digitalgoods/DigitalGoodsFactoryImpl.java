@@ -9,17 +9,21 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.chrome.browser.ChromeApplication;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
+import org.chromium.components.payments.MethodStrings;
 import org.chromium.components.payments.PaymentFeatureList;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsStatics;
+import org.chromium.mojo.system.MojoException;
+import org.chromium.payments.mojom.CreateDigitalGoodsResponseCode;
 import org.chromium.payments.mojom.DigitalGoods;
-import org.chromium.services.service_manager.InterfaceFactory;
+import org.chromium.payments.mojom.DigitalGoodsFactory;
+import org.chromium.payments.mojom.DigitalGoodsFactory.CreateDigitalGoodsResponse;
 
 /**
- * A factory to create instances of the {@link DigitalGoods} mojo interface.
+ * An implementation of the mojo {@link DigitalGoodsFactory} interface.
  */
-public class DigitalGoodsFactory implements InterfaceFactory<DigitalGoods> {
+public class DigitalGoodsFactoryImpl implements DigitalGoodsFactory {
     private static DigitalGoods sImplForTesting;
 
     private final RenderFrameHost mRenderFrameHost;
@@ -31,30 +35,58 @@ public class DigitalGoodsFactory implements InterfaceFactory<DigitalGoods> {
         sImplForTesting = impl;
     }
 
-    public DigitalGoodsFactory(RenderFrameHost renderFrameHost) {
+    public DigitalGoodsFactoryImpl(RenderFrameHost renderFrameHost) {
         mRenderFrameHost = renderFrameHost;
         mDigitalGoodsDelegate = mRenderFrameHost::getLastCommittedURL;
         mAdapter = new DigitalGoodsAdapter(
                 ChromeApplication.getComponent().resolveTrustedWebActivityClient());
     }
 
-    @Override
-    public DigitalGoods createImpl() {
-        if (sImplForTesting != null) return sImplForTesting;
+    private int getResponseCode(String paymentMethod) {
         if (!PaymentFeatureList.isEnabled(PaymentFeatureList.WEB_PAYMENTS_APP_STORE_BILLING)) {
-            return null;
+            return CreateDigitalGoodsResponseCode.UNSUPPORTED_CONTEXT;
         }
 
         // Ensure that the DigitalGoodsImpl is only created if we're in a TWA and on its verified
         // origin.
         WebContents wc = WebContentsStatics.fromRenderFrameHost(mRenderFrameHost);
         ChromeActivity<?> activity = ChromeActivity.fromWebContents(wc);
-        if (!(activity instanceof CustomTabActivity)) return null;
+        if (!(activity instanceof CustomTabActivity)) {
+            return CreateDigitalGoodsResponseCode.UNSUPPORTED_CONTEXT;
+        }
         CustomTabActivity cta = (CustomTabActivity) activity;
-        if (!cta.isInTwaMode()) return null;
+        if (!cta.isInTwaMode()) {
+            return CreateDigitalGoodsResponseCode.UNSUPPORTED_CONTEXT;
+        }
+
+        if (!MethodStrings.GOOGLE_PLAY_BILLING.equals(paymentMethod)) {
+            return CreateDigitalGoodsResponseCode.UNSUPPORTED_PAYMENT_METHOD;
+        }
 
         // TODO(peconn): Add a test for this.
 
-        return new DigitalGoodsImpl(mAdapter, mDigitalGoodsDelegate);
+        return CreateDigitalGoodsResponseCode.OK;
     }
+
+    @Override
+    public void createDigitalGoods(String paymentMethod, CreateDigitalGoodsResponse callback) {
+        if (sImplForTesting != null) {
+            callback.call(CreateDigitalGoodsResponseCode.OK, sImplForTesting);
+            return;
+        }
+
+        int code = getResponseCode(paymentMethod);
+        CreateDigitalGoodsResponseCode.validate(code);
+        if (code == CreateDigitalGoodsResponseCode.OK) {
+            callback.call(code, new DigitalGoodsImpl(mAdapter, mDigitalGoodsDelegate));
+        } else {
+            callback.call(code, null);
+        }
+    }
+
+    @Override
+    public void close() {}
+
+    @Override
+    public void onConnectionError(MojoException e) {}
 }

@@ -11,7 +11,6 @@
 
 namespace blink {
 
-class ExecutionContext;
 class ScriptState;
 class Visitor;
 
@@ -19,7 +18,8 @@ class DigitalGoodsService final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit DigitalGoodsService(ExecutionContext* context);
+  explicit DigitalGoodsService(
+      mojo::PendingRemote<payments::mojom::blink::DigitalGoods> pending_remote);
   ~DigitalGoodsService() override;
 
   // IDL Interface:

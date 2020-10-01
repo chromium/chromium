@@ -6,7 +6,7 @@ package org.chromium.chrome.browser.mojo;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.blink.mojom.Authenticator;
-import org.chromium.chrome.browser.browserservices.digitalgoods.DigitalGoodsFactory;
+import org.chromium.chrome.browser.browserservices.digitalgoods.DigitalGoodsFactoryFactory;
 import org.chromium.chrome.browser.installedapp.InstalledAppProviderFactory;
 import org.chromium.chrome.browser.payments.PaymentRequestFactory;
 import org.chromium.chrome.browser.webauth.AuthenticatorFactory;
@@ -15,7 +15,7 @@ import org.chromium.content_public.browser.InterfaceRegistrar;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.installedapp.mojom.InstalledAppProvider;
-import org.chromium.payments.mojom.DigitalGoods;
+import org.chromium.payments.mojom.DigitalGoodsFactory;
 import org.chromium.payments.mojom.PaymentRequest;
 import org.chromium.services.service_manager.InterfaceRegistry;
 import org.chromium.webshare.mojom.ShareService;
@@ -49,7 +49,8 @@ class ChromeInterfaceRegistrar {
             registry.addInterface(
                     InstalledAppProvider.MANAGER, new InstalledAppProviderFactory(renderFrameHost));
             registry.addInterface(Authenticator.MANAGER, new AuthenticatorFactory(renderFrameHost));
-            registry.addInterface(DigitalGoods.MANAGER, new DigitalGoodsFactory(renderFrameHost));
+            registry.addInterface(
+                    DigitalGoodsFactory.MANAGER, new DigitalGoodsFactoryFactory(renderFrameHost));
         }
     }
 }

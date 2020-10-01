@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <utility>
+
 #include "third_party/blink/renderer/modules/payments/goods/digital_goods_service.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -43,9 +45,10 @@ void OnAcknowledgeResponse(ScriptPromiseResolver* resolver,
 
 }  // namespace
 
-DigitalGoodsService::DigitalGoodsService(ExecutionContext* context) {
-  context->GetBrowserInterfaceBroker().GetInterface(
-      mojo_service_.BindNewPipeAndPassReceiver());
+DigitalGoodsService::DigitalGoodsService(
+    mojo::PendingRemote<payments::mojom::blink::DigitalGoods> pending_remote) {
+  DCHECK(pending_remote.is_valid());
+  mojo_service_.Bind(std::move(pending_remote));
   DCHECK(mojo_service_);
 }
 

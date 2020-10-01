@@ -9,9 +9,11 @@
 
 namespace mojo {
 
-blink::ItemDetails*
-TypeConverter<blink::ItemDetails*, payments::mojom::blink::ItemDetailsPtr>::
-    Convert(const payments::mojom::blink::ItemDetailsPtr& input) {
+using payments::mojom::blink::BillingResponseCode;
+using payments::mojom::blink::ItemDetailsPtr;
+
+blink::ItemDetails* TypeConverter<blink::ItemDetails*, ItemDetailsPtr>::Convert(
+    const ItemDetailsPtr& input) {
   if (!input)
     return nullptr;
   blink::ItemDetails* output = blink::ItemDetails::Create();
@@ -23,26 +25,24 @@ TypeConverter<blink::ItemDetails*, payments::mojom::blink::ItemDetailsPtr>::
   return output;
 }
 
-WTF::String
-TypeConverter<WTF::String, payments::mojom::blink::BillingResponseCode>::
-    Convert(const payments::mojom::blink::BillingResponseCode& input) {
+WTF::String TypeConverter<WTF::String, BillingResponseCode>::Convert(
+    const BillingResponseCode& input) {
   switch (input) {
-    case payments::mojom::blink::BillingResponseCode::kOk:
+    case BillingResponseCode::kOk:
       return "ok";
-    case payments::mojom::blink::BillingResponseCode::kError:
+    case BillingResponseCode::kError:
       return "error";
-    case payments::mojom::blink::BillingResponseCode::kItemAlreadyOwned:
+    case BillingResponseCode::kItemAlreadyOwned:
       return "itemAlreadyOwned";
-    case payments::mojom::blink::BillingResponseCode::kItemNotOwned:
+    case BillingResponseCode::kItemNotOwned:
       return "itemNotOwned";
-    case payments::mojom::blink::BillingResponseCode::kItemUnavailable:
+    case BillingResponseCode::kItemUnavailable:
       return "itemUnavailable";
-    case payments::mojom::blink::BillingResponseCode::kClientAppUnavailable:
+    case BillingResponseCode::kClientAppUnavailable:
       return "clientAppUnavailable";
-    case payments::mojom::blink::BillingResponseCode::kClientAppError:
+    case BillingResponseCode::kClientAppError:
       return "clientAppError";
   }
-
   NOTREACHED();
 }
 

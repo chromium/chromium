@@ -91,13 +91,13 @@ public class DigitalGoodsTest {
 
     /**
      * Test that calling methods in JavaScript in the page gets correctly plumbed through to
-     * DigitalGoodsFactory.
+     * DigitalGoodsFactoryImpl.
      */
     @Test
     @MediumTest
     public void javaImplConnected() throws TimeoutException {
         FakeDigitalGoods fake = new FakeDigitalGoods();
-        DigitalGoodsFactory.setDigitalGoodsForTesting(fake);
+        DigitalGoodsFactoryImpl.setDigitalGoodsForTesting(fake);
 
         fake.addItem("id1", "Item 1", "desc", "GBP", "10");
 
@@ -144,7 +144,7 @@ public class DigitalGoodsTest {
     @Test
     @MediumTest
     public void jsToTwaConnected() throws TimeoutException {
-        DigitalGoodsFactory.setDigitalGoodsForTesting(createFixedDigitalGoods());
+        DigitalGoodsFactoryImpl.setDigitalGoodsForTesting(createFixedDigitalGoods());
 
         // Note: The response code much be 0 for success otherwise it doesn't propagate through to
         // JS.
@@ -166,7 +166,7 @@ public class DigitalGoodsTest {
     @Test
     @MediumTest
     public void acknowledge() throws TimeoutException {
-        DigitalGoodsFactory.setDigitalGoodsForTesting(createFixedDigitalGoods());
+        DigitalGoodsFactoryImpl.setDigitalGoodsForTesting(createFixedDigitalGoods());
 
         setTwaServiceResponse(RESPONSE_ACKNOWLEDGE, createAcknowledgeResponseBundle(0));
 
@@ -182,7 +182,7 @@ public class DigitalGoodsTest {
     @Test
     @MediumTest
     public void acknowledge_failsOnNonZeroResponse() throws TimeoutException {
-        DigitalGoodsFactory.setDigitalGoodsForTesting(createFixedDigitalGoods());
+        DigitalGoodsFactoryImpl.setDigitalGoodsForTesting(createFixedDigitalGoods());
 
         setTwaServiceResponse(RESPONSE_ACKNOWLEDGE, createAcknowledgeResponseBundle(1));
 

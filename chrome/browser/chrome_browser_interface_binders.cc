@@ -498,8 +498,8 @@ void PopulateChromeFrameBinders(
 #if defined(OS_ANDROID)
   map->Add<blink::mojom::InstalledAppProvider>(base::BindRepeating(
       &ForwardToJavaFrame<blink::mojom::InstalledAppProvider>));
-  map->Add<payments::mojom::DigitalGoods>(base::BindRepeating(
-      &ForwardToJavaFrame<payments::mojom::DigitalGoods>));
+  map->Add<payments::mojom::DigitalGoodsFactory>(base::BindRepeating(
+      &ForwardToJavaFrame<payments::mojom::DigitalGoodsFactory>));
 #if defined(BROWSER_MEDIA_CONTROLS_MENU)
   map->Add<blink::mojom::MediaControlsMenuHost>(base::BindRepeating(
       &ForwardToJavaFrame<blink::mojom::MediaControlsMenuHost>));

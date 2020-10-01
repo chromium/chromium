@@ -23,8 +23,17 @@ interface DigitalGoods {
       => (BillingResponseCode code);
 };
 
-// TODO(crbug.com/1061503): Narrow down this list as discussions settle on
-// https://github.com/WICG/digital-goods/blob/master/explainer.md
+// Allow the renderer to request a |DigitalGoods| instance. DigitalGoods
+// instances must be created via this factory to allow the backend to validate
+// the current context.
+interface DigitalGoodsFactory {
+  // Creates a DigitalGoods instance. The |digital_goods| is non-null iff
+  // |code| == kOk.
+  CreateDigitalGoods(string payment_method)
+    => (CreateDigitalGoodsResponseCode code,
+        pending_remote<DigitalGoods>? digital_goods);
+};
+
 enum BillingResponseCode {
   kOk,
   kError,
@@ -40,4 +49,11 @@ struct ItemDetails {
   string title;
   string description;
   PaymentCurrencyAmount price;
+};
+
+enum CreateDigitalGoodsResponseCode {
+  kOk,
+  kError,
+  kUnsupportedPaymentMethod,
+  kUnsupportedContext,
 };
