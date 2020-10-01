@@ -148,8 +148,7 @@ void TransactionImpl::Put(
   params->callback = std::move(aborting_callback);
   params->index_keys = index_keys;
   // This is decremented in IndexedDBDatabase::PutOperation.
-  transaction_->set_in_flight_memory(transaction_->in_flight_memory() +
-                                     output_value.SizeEstimate());
+  transaction_->in_flight_memory() += output_value.SizeEstimate();
   transaction_->ScheduleTask(BindWeakOperation(
       &IndexedDBDatabase::PutOperation, connection->database()->AsWeakPtr(),
       std::move(params)));
@@ -218,11 +217,8 @@ void TransactionImpl::PutAll(int64_t object_store_id,
           blink::mojom::IDBTransactionPutAllResultPtr>(
           std::move(callback), transaction_->AsWeakPtr());
 
-  // TODO(nums): Add checks to prevent overflow and underflow
-  // https://crbug.com/1116075
-  transaction_->set_in_flight_memory(
-      transaction_->in_flight_memory() +
-      base::checked_cast<int64_t>(size_estimate.ValueOrDie()));
+  transaction_->in_flight_memory() += size_estimate.ValueOrDefault(0);
+  DCHECK(transaction_->in_flight_memory().IsValid());
   transaction_->ScheduleTask(BindWeakOperation(
       &IndexedDBDatabase::PutAllOperation, connection->database()->AsWeakPtr(),
       object_store_id, std::move(put_params), std::move(aborting_callback)));

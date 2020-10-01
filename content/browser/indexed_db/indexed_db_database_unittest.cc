@@ -680,6 +680,10 @@ TEST_F(IndexedDBDatabaseOperationTest, CreatePutDelete) {
   std::vector<IndexedDBIndexKeys> index_keys;
   base::MockCallback<blink::mojom::IDBTransaction::PutCallback> callback;
 
+  // Set in-flight memory to a reasonably large number to prevent underflow in
+  // |PutOperation|
+  transaction_->in_flight_memory() += 1000;
+
   auto put_params = std::make_unique<IndexedDBDatabase::PutOperationParams>();
   put_params->object_store_id = store_id;
   put_params->value = value;

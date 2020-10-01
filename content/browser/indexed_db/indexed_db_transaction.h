@@ -151,10 +151,7 @@ class CONTENT_EXPORT IndexedDBTransaction {
 
   // in_flight_memory() is used to keep track of all memory scheduled to be
   // written using ScheduleTask. This is reported to memory dumps.
-  int64_t in_flight_memory() const { return in_flight_memory_; }
-  void set_in_flight_memory(int64_t in_flight_memory) {
-    in_flight_memory_ = in_flight_memory;
-  }
+  base::CheckedNumeric<size_t>& in_flight_memory() { return in_flight_memory_; }
 
  protected:
   // Test classes may derive, but most creation should be done via
@@ -247,7 +244,7 @@ class CONTENT_EXPORT IndexedDBTransaction {
   // Metrics for quota.
   int64_t size_ = 0;
 
-  int64_t in_flight_memory_ = 0;
+  base::CheckedNumeric<size_t> in_flight_memory_ = 0;
 
   class TaskQueue {
    public:

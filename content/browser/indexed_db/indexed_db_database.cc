@@ -1140,8 +1140,8 @@ Status IndexedDBDatabase::PutOperation(
   DCHECK_NE(transaction->mode(), blink::mojom::IDBTransactionMode::ReadOnly);
   bool key_was_generated = false;
   Status s = Status::OK();
-  transaction->set_in_flight_memory(transaction->in_flight_memory() -
-                                    params->value.SizeEstimate());
+  transaction->in_flight_memory() -= params->value.SizeEstimate();
+  DCHECK(transaction->in_flight_memory().IsValid());
 
   if (!IsObjectStoreIdInMetadata(params->object_store_id)) {
     IndexedDBDatabaseError error = CreateError(
@@ -1285,11 +1285,8 @@ Status IndexedDBDatabase::PutAllOperation(
   DCHECK_NE(transaction->mode(), blink::mojom::IDBTransactionMode::ReadOnly);
   bool key_was_generated = false;
   Status s = Status::OK();
-  // TODO(nums): Add checks to prevent overflow and underflow
-  // https://crbug.com/1116075
-  transaction->set_in_flight_memory(
-      transaction->in_flight_memory() -
-      base::checked_cast<int64_t>(size_estimate.ValueOrDie()));
+  transaction->in_flight_memory() -= size_estimate.ValueOrDefault(0);
+  DCHECK(transaction->in_flight_memory().IsValid());
 
   if (!IsObjectStoreIdInMetadata(object_store_id)) {
     IndexedDBDatabaseError error = CreateError(
