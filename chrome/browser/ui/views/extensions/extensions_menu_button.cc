@@ -25,14 +25,18 @@ ExtensionsMenuButton::ExtensionsMenuButton(
     ExtensionsMenuItemView* parent,
     ToolbarActionViewController* controller,
     bool allow_pinning)
-    : views::LabelButton(this),
+    : views::LabelButton(
+          base::BindRepeating(&ExtensionsMenuButton::ButtonPressed,
+                              base::Unretained(this))),
       browser_(browser),
       parent_(parent),
       controller_(controller),
       allow_pinning_(allow_pinning) {
   ConfigureBubbleMenuItem(this, 0);
   SetButtonController(std::make_unique<HoverButtonController>(
-      this, PressedCallback(this, this),
+      this,
+      base::BindRepeating(&ExtensionsMenuButton::ButtonPressed,
+                          base::Unretained(this)),
       std::make_unique<views::Button::DefaultButtonControllerDelegate>(this)));
   controller_->SetDelegate(this);
   UpdateState();
@@ -50,14 +54,6 @@ SkColor ExtensionsMenuButton::GetInkDropBaseColor() const {
 
 bool ExtensionsMenuButton::CanShowIconInToolbar() const {
   return allow_pinning_;
-}
-
-void ExtensionsMenuButton::ButtonPressed(Button* sender,
-                                         const ui::Event& event) {
-  base::RecordAction(
-      base::UserMetricsAction("Extensions.Toolbar.ExtensionActivatedFromMenu"));
-  controller_->ExecuteAction(
-      true, ToolbarActionViewController::InvocationSource::kMenuEntry);
 }
 
 // ToolbarActionViewDelegateViews:
@@ -101,4 +97,11 @@ void ExtensionsMenuButton::UpdateState() {
 
 bool ExtensionsMenuButton::IsMenuRunning() const {
   return parent_->IsContextMenuRunning();
+}
+
+void ExtensionsMenuButton::ButtonPressed() {
+  base::RecordAction(
+      base::UserMetricsAction("Extensions.Toolbar.ExtensionActivatedFromMenu"));
+  controller_->ExecuteAction(
+      true, ToolbarActionViewController::InvocationSource::kMenuEntry);
 }

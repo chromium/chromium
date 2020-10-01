@@ -14,6 +14,7 @@
 #include "components/storage_monitor/storage_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/controls/button/checkbox.h"
+#include "ui/views/test/button_test_api.h"
 
 using ::testing::_;
 using ::testing::AnyNumber;
@@ -100,14 +101,13 @@ TEST_F(MediaGalleriesDialogTest, ToggleCheckboxes) {
   views::Checkbox* checkbox = dialog.checkbox_map_[1]->checkbox();
   EXPECT_TRUE(checkbox->GetChecked());
 
-  ui::KeyEvent dummy_event(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::EF_NONE);
   EXPECT_CALL(*controller(), DidToggleEntry(1, false));
-  checkbox->SetChecked(false);
-  dialog.ButtonPressed(checkbox, dummy_event);
+  views::test::ButtonTestApi test_api(checkbox);
+  ui::KeyEvent dummy_event(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::EF_NONE);
+  test_api.NotifyClick(dummy_event);  // Toggles to unchecked before notifying.
 
   EXPECT_CALL(*controller(), DidToggleEntry(1, true));
-  checkbox->SetChecked(true);
-  dialog.ButtonPressed(checkbox, dummy_event);
+  test_api.NotifyClick(dummy_event);  // Toggles to checked before notifying.
 }
 
 // Tests that UpdateGallery will add a new checkbox, but only if it refers to

@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "ui/views/controls/button/button.h"
 #include "ui/views/view.h"
 
 class Browser;
@@ -24,8 +23,7 @@ class ImageButton;
 // particular extension. Includes information about the extension in addition to
 // a button to pin the extension to the toolbar and a button for accessing the
 // associated context menu.
-class ExtensionsMenuItemView : public views::View,
-                               public views::ButtonListener {
+class ExtensionsMenuItemView : public views::View {
  public:
   static constexpr int kMenuItemHeightDp = 40;
   static constexpr gfx::Size kIconSize{28, 28};
@@ -39,9 +37,6 @@ class ExtensionsMenuItemView : public views::View,
   ExtensionsMenuItemView& operator=(const ExtensionsMenuItemView&) = delete;
   ~ExtensionsMenuItemView() override;
 
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
-
   // views::View:
   const char* GetClassName() const override;
   void OnThemeChanged() override;
@@ -49,8 +44,10 @@ class ExtensionsMenuItemView : public views::View,
   void UpdatePinButton();
 
   bool IsContextMenuRunning() const;
-
   bool IsPinned() const;
+
+  void ContextMenuPressed();
+  void PinButtonPressed();
 
   ToolbarActionViewController* view_controller() { return controller_.get(); }
   const ToolbarActionViewController* view_controller() const {

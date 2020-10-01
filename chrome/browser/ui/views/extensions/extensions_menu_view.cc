@@ -55,15 +55,6 @@ ExtensionsMenuItemView* GetAsMenuItemView(views::View* view) {
 
 }  // namespace
 
-ExtensionsMenuView::ButtonListener::ButtonListener(Browser* browser)
-    : browser_(browser) {}
-
-void ExtensionsMenuView::ButtonListener::ButtonPressed(views::Button* sender,
-                                                       const ui::Event& event) {
-  DCHECK_EQ(sender->GetID(), EXTENSIONS_SETTINGS_ID);
-  chrome::ShowExtensions(browser_, std::string());
-}
-
 ExtensionsMenuView::ExtensionsMenuView(
     views::View* anchor_view,
     Browser* browser,
@@ -76,7 +67,6 @@ ExtensionsMenuView::ExtensionsMenuView(
       allow_pinning_(allow_pinning),
       toolbar_model_(ToolbarActionsModel::Get(browser_->profile())),
       toolbar_model_observer_(this),
-      button_listener_(browser_),
       cant_access_{nullptr, nullptr,
                    IDS_EXTENSIONS_MENU_CANT_ACCESS_SITE_DATA_SHORT,
                    IDS_EXTENSIONS_MENU_CANT_ACCESS_SITE_DATA,
@@ -154,7 +144,7 @@ void ExtensionsMenuView::Populate() {
   constexpr int kSettingsIconSize = 16;
   auto footer = CreateBubbleMenuItem(
       EXTENSIONS_SETTINGS_ID, l10n_util::GetStringUTF16(IDS_MANAGE_EXTENSION),
-      &button_listener_);
+      base::BindRepeating(&chrome::ShowExtensions, browser_, std::string()));
   footer->SetImage(
       views::Button::STATE_NORMAL,
       gfx::CreateVectorIcon(vector_icons::kSettingsIcon, kSettingsIconSize,

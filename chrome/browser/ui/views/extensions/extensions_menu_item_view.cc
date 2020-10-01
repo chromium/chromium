@@ -71,7 +71,10 @@ ExtensionsMenuItemView::ExtensionsMenuItemView(
                                views::MaximumFlexSizeRule::kUnbounded));
 
   if (primary_action_button_->CanShowIconInToolbar()) {
-    auto pin_button = CreateBubbleMenuItem(EXTENSION_PINNING, this);
+    auto pin_button = CreateBubbleMenuItem(
+        EXTENSION_PINNING,
+        base::BindRepeating(&ExtensionsMenuItemView::PinButtonPressed,
+                            base::Unretained(this)));
     pin_button->SetBorder(views::CreateEmptyBorder(kSecondaryButtonInsets));
     // Extension pinning is not available in Incognito as it leaves a trace of
     // user activity.
@@ -89,34 +92,15 @@ ExtensionsMenuItemView::ExtensionsMenuItemView(
       l10n_util::GetStringUTF16(IDS_EXTENSIONS_MENU_CONTEXT_MENU_TOOLTIP));
   context_menu_button->SetButtonController(
       std::make_unique<views::MenuButtonController>(
-          context_menu_button.get(), this,
+          context_menu_button.get(),
+          base::BindRepeating(&ExtensionsMenuItemView::ContextMenuPressed,
+                              base::Unretained(this)),
           std::make_unique<views::Button::DefaultButtonControllerDelegate>(
               context_menu_button.get())));
-
-  context_menu_button_ = context_menu_button.get();
-  AddChildView(std::move(context_menu_button));
+  context_menu_button_ = AddChildView(std::move(context_menu_button));
 }
 
 ExtensionsMenuItemView::~ExtensionsMenuItemView() = default;
-
-void ExtensionsMenuItemView::ButtonPressed(views::Button* sender,
-                                           const ui::Event& event) {
-  if (sender->GetID() == EXTENSION_PINNING) {
-    base::RecordAction(
-        base::UserMetricsAction("Extensions.Toolbar.PinButtonPressed"));
-    model_->SetActionVisibility(controller_->GetId(), !IsPinned());
-    return;
-  } else if (sender->GetID() == EXTENSION_CONTEXT_MENU) {
-    base::RecordAction(base::UserMetricsAction(
-        "Extensions.Toolbar.MoreActionsButtonPressedFromMenu"));
-    // TODO(crbug.com/998298): Cleanup the menu source type.
-    context_menu_controller_->ShowContextMenuForViewImpl(
-        sender, sender->GetMenuPosition(),
-        ui::MenuSourceType::MENU_SOURCE_MOUSE);
-    return;
-  }
-  NOTREACHED();
-}
 
 const char* ExtensionsMenuItemView::GetClassName() const {
   return kClassName;
@@ -160,9 +144,22 @@ bool ExtensionsMenuItemView::IsContextMenuRunning() const {
 
 bool ExtensionsMenuItemView::IsPinned() const {
   // |model_| can be null in unit tests.
-  if (!model_)
-    return false;
-  return model_->IsActionPinned(controller_->GetId());
+  return model_ && model_->IsActionPinned(controller_->GetId());
+}
+
+void ExtensionsMenuItemView::ContextMenuPressed() {
+  base::RecordAction(base::UserMetricsAction(
+      "Extensions.Toolbar.MoreActionsButtonPressedFromMenu"));
+  // TODO(crbug.com/998298): Cleanup the menu source type.
+  context_menu_controller_->ShowContextMenuForViewImpl(
+      context_menu_button_, context_menu_button_->GetMenuPosition(),
+      ui::MenuSourceType::MENU_SOURCE_MOUSE);
+}
+
+void ExtensionsMenuItemView::PinButtonPressed() {
+  base::RecordAction(
+      base::UserMetricsAction("Extensions.Toolbar.PinButtonPressed"));
+  model_->SetActionVisibility(controller_->GetId(), !IsPinned());
 }
 
 ExtensionsMenuButton*

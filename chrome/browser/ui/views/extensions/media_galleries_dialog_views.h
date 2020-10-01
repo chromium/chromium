@@ -12,7 +12,6 @@
 #include "base/macros.h"
 #include "chrome/browser/media_galleries/media_galleries_dialog_controller.h"
 #include "ui/views/context_menu_controller.h"
-#include "ui/views/controls/button/button.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace views {
@@ -27,7 +26,6 @@ class MediaGalleryCheckboxView;
 // The media galleries configuration view for Views. It will immediately show
 // upon construction.
 class MediaGalleriesDialogViews : public MediaGalleriesDialog,
-                                  public views::ButtonListener,
                                   public views::ContextMenuController,
                                   public views::DialogDelegate {
  public:
@@ -46,9 +44,6 @@ class MediaGalleriesDialogViews : public MediaGalleriesDialog,
   bool IsDialogButtonEnabled(ui::DialogButton button) const override;
   ui::ModalType GetModalType() const override;
 
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
-
   // views::ContextMenuController:
   void ShowContextMenuForViewImpl(views::View* source,
                                   const gfx::Point& point,
@@ -60,7 +55,7 @@ class MediaGalleriesDialogViews : public MediaGalleriesDialog,
   FRIEND_TEST_ALL_PREFIXES(MediaGalleriesDialogTest, UpdateAdds);
   FRIEND_TEST_ALL_PREFIXES(MediaGalleriesDialogTest, ForgetDeletes);
 
-  typedef std::map<MediaGalleryPrefId, MediaGalleryCheckboxView*> CheckboxMap;
+  using CheckboxMap = std::map<MediaGalleryPrefId, MediaGalleryCheckboxView*>;
 
   // MediaGalleriesDialog:
   void AcceptDialogForTesting() override;
@@ -81,6 +76,10 @@ class MediaGalleriesDialogViews : public MediaGalleriesDialog,
   // Whether |controller_| has a valid WebContents or not.
   // In unit tests, it may not.
   bool ControllerHasWebContents() const;
+
+  // Called when a button is pressed; does common preamble, then runs the
+  // supplied closure to execute the specific details of the particular button.
+  void ButtonPressed(base::RepeatingClosure closure);
 
   // Callback for MenuRunner.
   void OnMenuClosed();

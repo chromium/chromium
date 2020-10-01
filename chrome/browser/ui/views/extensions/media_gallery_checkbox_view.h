@@ -8,12 +8,12 @@
 #include "base/macros.h"
 #include "base/strings/string16.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/views/controls/button/button.h"
 #include "ui/views/view.h"
 
 struct MediaGalleryPrefInfo;
 
 namespace views {
-class ButtonListener;
 class Checkbox;
 class ContextMenuController;
 class Label;
@@ -26,15 +26,14 @@ class MediaGalleryCheckboxView : public views::View {
  public:
   MediaGalleryCheckboxView(const MediaGalleryPrefInfo& pref_info,
                            int trailing_vertical_space,
-                           views::ButtonListener* button_listener,
                            views::ContextMenuController* menu_controller);
   ~MediaGalleryCheckboxView() override;
 
-  // Overrides from views::View.
-  void Layout() override;
-
   views::Checkbox* checkbox() { return checkbox_; }
   views::Label* secondary_text() { return secondary_text_; }
+
+  // views::View:
+  void Layout() override;
 
  private:
   // Owned by the parent class (views::View).

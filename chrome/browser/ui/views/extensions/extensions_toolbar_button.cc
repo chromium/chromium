@@ -23,12 +23,14 @@
 ExtensionsToolbarButton::ExtensionsToolbarButton(
     Browser* browser,
     ExtensionsToolbarContainer* extensions_container)
-    : ToolbarButton(this),
+    : ToolbarButton(nullptr),
       browser_(browser),
       extensions_container_(extensions_container) {
   std::unique_ptr<views::MenuButtonController> menu_button_controller =
       std::make_unique<views::MenuButtonController>(
-          this, this,
+          this,
+          base::BindRepeating(&ExtensionsToolbarButton::ButtonPressed,
+                              base::Unretained(this)),
           std::make_unique<views::Button::DefaultButtonControllerDelegate>(
               this));
   menu_button_controller_ = menu_button_controller.get();
@@ -90,19 +92,6 @@ void ExtensionsToolbarButton::UpdateIcon() {
                     extensions_container_->GetIconColor(), GetIconSize()));
 }
 
-void ExtensionsToolbarButton::ButtonPressed(views::Button* sender,
-                                            const ui::Event& event) {
-  if (ExtensionsMenuView::IsShowing()) {
-    ExtensionsMenuView::Hide();
-    return;
-  }
-  pressed_lock_ = menu_button_controller_->TakeLock();
-  base::RecordAction(base::UserMetricsAction("Extensions.Toolbar.MenuOpened"));
-  ExtensionsMenuView::ShowBubble(this, browser_, extensions_container_,
-                                 extensions_container_->CanShowIconInToolbar())
-      ->AddObserver(this);
-}
-
 void ExtensionsToolbarButton::OnWidgetDestroying(views::Widget* widget) {
   widget->RemoveObserver(this);
   pressed_lock_.reset();
@@ -112,4 +101,16 @@ int ExtensionsToolbarButton::GetIconSize() const {
   const bool touch_ui = ui::TouchUiController::Get()->touch_ui();
   return (touch_ui && !browser_->app_controller()) ? kDefaultTouchableIconSize
                                                    : kDefaultIconSize;
+}
+
+void ExtensionsToolbarButton::ButtonPressed() {
+  if (ExtensionsMenuView::IsShowing()) {
+    ExtensionsMenuView::Hide();
+    return;
+  }
+  pressed_lock_ = menu_button_controller_->TakeLock();
+  base::RecordAction(base::UserMetricsAction("Extensions.Toolbar.MenuOpened"));
+  ExtensionsMenuView::ShowBubble(this, browser_, extensions_container_,
+                                 extensions_container_->CanShowIconInToolbar())
+      ->AddObserver(this);
 }

@@ -22,6 +22,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image.h"
 #include "ui/views/controls/button/label_button.h"
+#include "ui/views/test/button_test_api.h"
 #include "ui/views/view.h"
 
 // A view wrapper class that owns the ExtensionsToolbarContainer.
@@ -111,10 +112,7 @@ void ExtensionsMenuTestUtil::Press(int index) {
 
   ui::MouseEvent event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
                        ui::EventTimeForNow(), 0, 0);
-  // ExtensionsMenuButton::ButtonPressed() is private; workaround by casting to
-  // to a ButtonListener.
-  static_cast<views::ButtonListener*>(primary_button)
-      ->ButtonPressed(primary_button, event);
+  views::test::ButtonTestApi(primary_button).NotifyClick(event);
 }
 
 std::string ExtensionsMenuTestUtil::GetExtensionId(int index) {

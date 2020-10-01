@@ -18,7 +18,6 @@ class ExtensionsToolbarContainer;
 // Button in the toolbar that provides access to the corresponding extensions
 // menu.
 class ExtensionsToolbarButton : public ToolbarButton,
-                                public views::ButtonListener,
                                 public views::WidgetObserver {
  public:
   ExtensionsToolbarButton(Browser* browser,
@@ -34,14 +33,13 @@ class ExtensionsToolbarButton : public ToolbarButton,
   const char* GetClassName() const override;
   void UpdateIcon() override;
 
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
-
   // views::WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;
 
  private:
   int GetIconSize() const;
+
+  void ButtonPressed();
 
   // A lock to keep the button pressed when a popup is visible.
   std::unique_ptr<views::MenuButtonController::PressedLock> pressed_lock_;

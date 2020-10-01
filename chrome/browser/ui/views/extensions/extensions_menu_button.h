@@ -24,7 +24,6 @@ class Button;
 // the extensions menu. This includes the extension icon and name and triggers
 // the extension action.
 class ExtensionsMenuButton : public views::LabelButton,
-                             public views::ButtonListener,
                              public ToolbarActionViewDelegateViews {
  public:
   ExtensionsMenuButton(Browser* browser,
@@ -47,7 +46,6 @@ class ExtensionsMenuButton : public views::LabelButton,
  private:
   // views::ButtonListener:
   const char* GetClassName() const override;
-  void ButtonPressed(Button* sender, const ui::Event& event) override;
 
   // ToolbarActionViewDelegateViews:
   views::View* GetAsView() override;
@@ -56,6 +54,8 @@ class ExtensionsMenuButton : public views::LabelButton,
   content::WebContents* GetCurrentWebContents() const override;
   void UpdateState() override;
   bool IsMenuRunning() const override;
+
+  void ButtonPressed();
 
   Browser* const browser_;
 
