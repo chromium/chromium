@@ -71,6 +71,7 @@ class NotificationAccessManager {
 
  private:
   friend class NotificationAccessManagerImplTest;
+  friend class PhoneStatusProcessor;
 
   // This only sets the internal state of the whether notification access has
   // mode been enabled and does not send a request to set the state of the

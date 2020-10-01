@@ -16,8 +16,8 @@ class FakeMessageReceiver : public MessageReceiver {
   FakeMessageReceiver() = default;
   ~FakeMessageReceiver() override = default;
 
-  using MessageReceiver::NotifyPhoneStatusSnapshotUpdated;
-  using MessageReceiver::NotifyPhoneStatusUpdated;
+  using MessageReceiver::NotifyPhoneStatusSnapshotReceived;
+  using MessageReceiver::NotifyPhoneStatusUpdateReceived;
 };
 
 }  // namespace phonehub

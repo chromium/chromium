@@ -61,6 +61,8 @@ class NotificationManager {
   void RemoveObserver(Observer* observer);
 
  protected:
+  friend class PhoneStatusProcessor;
+
   NotificationManager();
 
   // Sets the internal collection of notifications. This does not send any
@@ -73,6 +75,10 @@ class NotificationManager {
   // remote device.
   virtual void RemoveNotificationsInternal(
       const base::flat_set<int64_t>& notification_ids) = 0;
+
+  // Clears the underlying internal collection of notifications. This does not
+  // send any requests to clear the phone's notifications.
+  virtual void ClearNotificationsInternal() = 0;
 
   void NotifyNotificationsAdded(
       const base::flat_set<int64_t>& notification_ids);

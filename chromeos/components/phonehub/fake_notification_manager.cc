@@ -63,6 +63,16 @@ void FakeNotificationManager::RemoveNotificationsInternal(
   NotifyNotificationsRemoved(ids);
 }
 
+void FakeNotificationManager::ClearNotificationsInternal() {
+  base::flat_set<int64_t> removed_ids;
+  for (const auto& pair : id_to_notification_map_) {
+    removed_ids.emplace(pair.first);
+  }
+
+  id_to_notification_map_.clear();
+  NotifyNotificationsRemoved(removed_ids);
+}
+
 const Notification* FakeNotificationManager::GetNotification(
     int64_t notification_id) const {
   auto it = id_to_notification_map_.find(notification_id);

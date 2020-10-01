@@ -25,6 +25,7 @@ class NotificationManagerImpl : public NotificationManager {
       const base::flat_set<Notification>& notifications) override;
   void RemoveNotificationsInternal(
       const base::flat_set<int64_t>& notification_ids) override;
+  void ClearNotificationsInternal() override;
   void DismissNotification(int64_t notification_id) override;
   void SendInlineReply(int64_t notification_id,
                        const base::string16& inline_reply_text) override;

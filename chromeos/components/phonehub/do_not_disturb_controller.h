@@ -38,6 +38,8 @@ class DoNotDisturbController {
   void RemoveObserver(Observer* observer);
 
  protected:
+  friend class PhoneStatusProcessor;
+
   DoNotDisturbController();
 
   // This only sets the internal state of the DoNotDisturb mode and does not

@@ -40,6 +40,8 @@ class FindMyDeviceController {
   void RemoveObserver(Observer* observer);
 
  protected:
+  friend class PhoneStatusProcessor;
+
   FindMyDeviceController();
 
   // This only sets the internal state of the whether the phone is ringin

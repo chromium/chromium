@@ -15,6 +15,8 @@
 #include "chromeos/components/phonehub/notification_access_manager_impl.h"
 #include "chromeos/components/phonehub/notification_manager_impl.h"
 #include "chromeos/components/phonehub/onboarding_ui_tracker_impl.h"
+#include "chromeos/components/phonehub/phone_model.h"
+#include "chromeos/components/phonehub/phone_status_processor.h"
 #include "chromeos/components/phonehub/tether_controller_impl.h"
 
 namespace chromeos {
@@ -54,6 +56,15 @@ PhoneHubManagerImpl::PhoneHubManagerImpl(
           multidevice_setup_client,
           show_multidevice_setup_dialog_callback)),
       phone_model_(std::make_unique<MutablePhoneModel>()),
+      phone_status_processor_(std::make_unique<PhoneStatusProcessor>(
+          do_not_disturb_controller_.get(),
+          feature_status_provider_.get(),
+          message_receiver_.get(),
+          find_my_device_controller_.get(),
+          notification_access_manager_.get(),
+          notification_manager_.get(),
+          multidevice_setup_client,
+          phone_model_.get())),
       tether_controller_(
           std::make_unique<TetherControllerImpl>(multidevice_setup_client)) {}
 
@@ -99,6 +110,7 @@ TetherController* PhoneHubManagerImpl::GetTetherController() {
 // initialized in the constructor.
 void PhoneHubManagerImpl::Shutdown() {
   tether_controller_.reset();
+  phone_status_processor_.reset();
   phone_model_.reset();
   onboarding_ui_tracker_.reset();
   notification_access_manager_.reset();

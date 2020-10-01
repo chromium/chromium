@@ -32,6 +32,8 @@ namespace phonehub {
 class ConnectionManager;
 class MessageSender;
 class MessageReceiver;
+class MutablePhoneModel;
+class PhoneStatusProcessor;
 
 // Implemented as a KeyedService which is keyed by the primary Profile.
 class PhoneHubManagerImpl : public PhoneHubManager, public KeyedService {
@@ -69,7 +71,8 @@ class PhoneHubManagerImpl : public PhoneHubManager, public KeyedService {
   std::unique_ptr<NotificationAccessManager> notification_access_manager_;
   std::unique_ptr<NotificationManager> notification_manager_;
   std::unique_ptr<OnboardingUiTracker> onboarding_ui_tracker_;
-  std::unique_ptr<PhoneModel> phone_model_;
+  std::unique_ptr<MutablePhoneModel> phone_model_;
+  std::unique_ptr<PhoneStatusProcessor> phone_status_processor_;
   std::unique_ptr<TetherController> tether_controller_;
 };
 

@@ -64,6 +64,8 @@ static_library("phonehub") {
     "phone_model.h",
     "phone_status_model.cc",
     "phone_status_model.h",
+    "phone_status_processor.cc",
+    "phone_status_processor.h",
     "pref_names.cc",
     "pref_names.h",
     "tether_controller.cc",
@@ -161,6 +163,7 @@ source_set("unit_tests") {
     "notification_manager_impl_unittest.cc",
     "onboarding_ui_tracker_impl_unittest.cc",
     "phone_status_model_unittest.cc",
+    "phone_status_processor_unittest.cc",
     "tether_controller_impl_unittest.cc",
   ]
 
@@ -181,5 +184,6 @@ source_set("unit_tests") {
     "//components/prefs:test_support",
     "//device/bluetooth:mocks",
     "//testing/gtest",
+    "//ui/gfx",
   ]
 }

@@ -35,6 +35,11 @@ void NotificationManagerImpl::DismissNotification(int64_t notification_id) {
   PA_LOG(INFO) << "Dismissing notification with ID " << notification_id << ".";
 }
 
+void NotificationManagerImpl::ClearNotificationsInternal() {
+  PA_LOG(INFO) << "Clearing notification internally.";
+  // TODO(jimmyxgong): Implement this stub function.
+}
+
 void NotificationManagerImpl::SendInlineReply(
     int64_t notification_id,
     const base::string16& inline_reply_text) {
