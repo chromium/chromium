@@ -312,7 +312,7 @@ HRESULT DoInstall(const base::FilePath& installer_path,
                  << putHR(hr);
   }
 
-  if (GetGlobalFlagOrDefault(extension::kEnableGCPWExtension, 0)) {
+  if (GetGlobalFlagOrDefault(extension::kEnableGCPWExtension, 1)) {
     DWORD error_code =
         InstallGCPWExtension(dest_path.Append(kCredentialProviderExtensionExe));
     if (error_code != ERROR_SUCCESS) {
