@@ -22,6 +22,7 @@
 #include "build/branding_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/connectors_manager.h"
+#include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
@@ -82,20 +83,24 @@ std::string ResultToString(BinaryUploadService::Result result) {
   }
 }
 
-#if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
 constexpr char kBinaryUploadServiceUrlFlag[] = "binary-upload-service-url";
-#endif
 
 base::Optional<GURL> GetUrlOverride() {
-#if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  // Ignore this flag on Stable and Beta to avoid abuse.
+  if (!g_browser_process || !g_browser_process->browser_policy_connector()
+                                 ->IsCommandLineSwitchSupported()) {
+    return base::nullopt;
+  }
+
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(kBinaryUploadServiceUrlFlag)) {
     GURL url =
         GURL(command_line->GetSwitchValueASCII(kBinaryUploadServiceUrlFlag));
     if (url.is_valid())
       return url;
+    else
+      LOG(ERROR) << "--binary-upload-service-url is set to an invalid URL";
   }
-#endif
 
   return base::nullopt;
 }
