@@ -32,8 +32,8 @@ constexpr int kCloseIconSize = 24;
 
 class CloseFullscreenButton : public views::Button {
  public:
-  explicit CloseFullscreenButton(views::ButtonListener* listener)
-      : views::Button(listener) {
+  explicit CloseFullscreenButton(PressedCallback callback)
+      : views::Button(std::move(callback)) {
     std::unique_ptr<views::ImageView> close_image_view =
         std::make_unique<views::ImageView>();
     close_image_view->SetImage(gfx::CreateVectorIcon(
@@ -60,19 +60,12 @@ class CloseFullscreenButton : public views::Button {
 }  // namespace
 
 FullscreenControlView::FullscreenControlView(
-    const base::RepeatingClosure& on_button_pressed)
-    : on_button_pressed_(on_button_pressed),
-      exit_fullscreen_button_(new CloseFullscreenButton(this)) {
-  AddChildView(exit_fullscreen_button_);
+    views::Button::PressedCallback callback) {
+  exit_fullscreen_button_ = AddChildView(
+      std::make_unique<CloseFullscreenButton>(std::move(callback)));
   SetLayoutManager(std::make_unique<views::FillLayout>());
   exit_fullscreen_button_->SetPreferredSize(
       gfx::Size(kCircleButtonDiameter, kCircleButtonDiameter));
 }
 
 FullscreenControlView::~FullscreenControlView() = default;
-
-void FullscreenControlView::ButtonPressed(views::Button* sender,
-                                          const ui::Event& event) {
-  if (sender == exit_fullscreen_button_ && on_button_pressed_)
-    on_button_pressed_.Run();
-}

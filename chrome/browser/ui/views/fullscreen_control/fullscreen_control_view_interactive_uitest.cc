@@ -34,6 +34,7 @@
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/gfx/animation/animation_test_api.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/test/button_test_api.h"
 #include "ui/views/view.h"
 #include "url/gurl.h"
 
@@ -91,7 +92,7 @@ class FullscreenControlViewTest : public InProcessBrowserTest {
   }
 
   views::Button* GetFullscreenExitButton() {
-    return GetFullscreenControlView()->exit_fullscreen_button();
+    return GetFullscreenControlView()->exit_fullscreen_button_for_testing();
   }
 
   ExclusiveAccessManager* GetExclusiveAccessManager() {
@@ -207,8 +208,8 @@ IN_PROC_BROWSER_TEST_F(FullscreenControlViewTest, MouseExitFullscreen) {
   ui::MouseEvent mouse_click(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
                              base::TimeTicks(), ui::EF_LEFT_MOUSE_BUTTON,
                              ui::EF_LEFT_MOUSE_BUTTON);
-  GetFullscreenControlView()->ButtonPressed(GetFullscreenExitButton(),
-                                            mouse_click);
+  views::test::ButtonTestApi(GetFullscreenExitButton())
+      .NotifyClick(mouse_click);
 
   ASSERT_FALSE(GetFullscreenControlHost());
   ASSERT_FALSE(browser_view->IsFullscreen());
@@ -385,8 +386,8 @@ IN_PROC_BROWSER_TEST_F(FullscreenControlViewTest, TouchPopupInteraction) {
   touch_event = ui::TouchEvent(
       ui::ET_TOUCH_PRESSED, gfx::Point(1, 1), ui::EventTimeForNow(),
       ui::PointerDetails(ui::EventPointerType::kTouch, 0));
-  GetFullscreenControlView()->ButtonPressed(GetFullscreenExitButton(),
-                                            touch_event);
+  views::test::ButtonTestApi(GetFullscreenExitButton())
+      .NotifyClick(touch_event);
 
   ASSERT_FALSE(GetFullscreenControlHost());
   ASSERT_FALSE(browser_view->IsFullscreen());

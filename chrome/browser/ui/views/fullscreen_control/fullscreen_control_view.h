@@ -13,24 +13,20 @@
 // FullscreenControlView shows a FAB (floating action button from the material
 // design spec) with close icon (i.e. a partially-transparent black circular
 // button with a "X" icon in the middle).
-// |on_button_pressed| will be called when the user taps the button.
-class FullscreenControlView : public views::View,
-                              public views::ButtonListener {
+// |callback| will be called when the user taps the button.
+class FullscreenControlView : public views::View {
  public:
-  explicit FullscreenControlView(
-      const base::RepeatingClosure& on_button_pressed);
+  explicit FullscreenControlView(views::Button::PressedCallback callback);
   ~FullscreenControlView() override;
 
   static constexpr int kCircleButtonDiameter = 48;
 
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
-
-  views::Button* exit_fullscreen_button() { return exit_fullscreen_button_; }
+  views::Button* exit_fullscreen_button_for_testing() {
+    return exit_fullscreen_button_;
+  }
 
  private:
-  const base::RepeatingClosure on_button_pressed_;
-  views::Button* const exit_fullscreen_button_;
+  views::Button* exit_fullscreen_button_;
 
   DISALLOW_COPY_AND_ASSIGN(FullscreenControlView);
 };
