@@ -101,6 +101,25 @@ std::unique_ptr<base::trace_event::TracedValue> CumulativeShiftScoreTraceData(
   return data;
 }
 
+int SiteInstanceRenderProcessAssignmentToInt(
+    content::SiteInstanceProcessAssignment assignment) {
+  // These values are logged in UKM and should not be reordered or changed. Add
+  // new values to the end and be sure to update the enum
+  // |SiteInstanceProcessAssignment| in
+  // //tools/metrics/histograms/enums.xml.
+  switch (assignment) {
+    case content::SiteInstanceProcessAssignment::UNKNOWN:
+      return 0;
+    case content::SiteInstanceProcessAssignment::REUSED_EXISTING_PROCESS:
+      return 1;
+    case content::SiteInstanceProcessAssignment::USED_SPARE_PROCESS:
+      return 2;
+    case content::SiteInstanceProcessAssignment::CREATED_NEW_PROCESS:
+      return 3;
+  }
+  return 0;
+}
+
 }  // namespace
 
 // static
@@ -211,6 +230,12 @@ UkmPageLoadMetricsObserver::ObservePolicy UkmPageLoadMetricsObserver::OnCommit(
                                        ->GetController()
                                        .GetLastCommittedEntry()
                                        ->GetMainFrameDocumentSequenceNumber();
+
+  render_process_assignment_ = navigation_handle->GetWebContents()
+                                   ->GetMainFrame()
+                                   ->GetSiteInstance()
+                                   ->GetLastProcessAssignmentOutcome();
+
   return CONTINUE_OBSERVING;
 }
 
@@ -224,6 +249,7 @@ UkmPageLoadMetricsObserver::FlushMetricsOnAppEnterBackground(
   if (!was_hidden_) {
     RecordNavigationTimingMetrics();
     RecordPageLoadMetrics(current_time);
+    RecordRendererUsageMetrics();
     RecordTimingMetrics(timing);
     RecordInputTimingMetrics();
   }
@@ -247,6 +273,7 @@ UkmPageLoadMetricsObserver::ObservePolicy UkmPageLoadMetricsObserver::OnHidden(
   if (!was_hidden_) {
     RecordNavigationTimingMetrics();
     RecordPageLoadMetrics(base::TimeTicks() /* no app_background_time */);
+    RecordRendererUsageMetrics();
     RecordTimingMetrics(timing);
     RecordInputTimingMetrics();
     was_hidden_ = true;
@@ -275,6 +302,8 @@ void UkmPageLoadMetricsObserver::OnFailedProvisionalLoad(
 
   RecordPageLoadMetrics(base::TimeTicks() /* no app_background_time */);
 
+  RecordRendererUsageMetrics();
+
   // Error codes have negative values, however we log net error code enum values
   // for UMA histograms using the equivalent positive value. For consistency in
   // UKM, we convert to a positive value here.
@@ -296,6 +325,7 @@ void UkmPageLoadMetricsObserver::OnComplete(
   if (!was_hidden_) {
     RecordNavigationTimingMetrics();
     RecordPageLoadMetrics(current_time /* no app_background_time */);
+    RecordRendererUsageMetrics();
     RecordTimingMetrics(timing);
     RecordInputTimingMetrics();
   }
@@ -666,6 +696,9 @@ void UkmPageLoadMetricsObserver::RecordPageLoadMetrics(
         foreground_duration.value().InMilliseconds());
   }
 
+  builder.SetSiteInstanceRenderProcessAssignment(
+      SiteInstanceRenderProcessAssignmentToInt(render_process_assignment_));
+
   // Convert to the EffectiveConnectionType as used in SystemProfileProto
   // before persisting the metric.
   metrics::SystemProfileProto::Network::EffectiveConnectionType
@@ -703,6 +736,15 @@ void UkmPageLoadMetricsObserver::RecordPageLoadMetrics(
     builder.SetNavigationEntryOffset(navigation_entry_offset_);
     builder.SetMainDocumentSequenceNumber(main_document_sequence_number_);
   }
+  builder.Record(ukm::UkmRecorder::Get());
+}
+
+void UkmPageLoadMetricsObserver::RecordRendererUsageMetrics() {
+  ukm::builders::PageLoad builder(GetDelegate().GetPageUkmSourceId());
+
+  builder.SetSiteInstanceRenderProcessAssignment(
+      SiteInstanceRenderProcessAssignmentToInt(render_process_assignment_));
+
   builder.Record(ukm::UkmRecorder::Get());
 }
 

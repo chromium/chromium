@@ -66907,6 +66907,13 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="9" label="Notification interaction"/>
 </enum>
 
+<enum name="SiteInstanceProcessAssignment">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Reused existing render process"/>
+  <int value="2" label="Used spare process"/>
+  <int value="3" label="Created new process"/>
+</enum>
+
 <enum name="SiteIsolatedCodeCacheJSBehaviour">
   <int value="0" label="Hit">Available in code cache</int>
   <int value="1" label="Miss">Not available in cache</int>

@@ -1462,6 +1462,26 @@ TEST_F(UkmPageLoadMetricsObserverTest, LayoutInstability) {
               testing::ElementsAre(base::Bucket(25, 1)));
 }
 
+TEST_F(UkmPageLoadMetricsObserverTest, SiteInstanceRenderProcessAssignment) {
+  NavigateAndCommit(GURL(kTestUrl1));
+
+  // Simulate closing the tab.
+  DeleteContents();
+
+  const auto& ukm_recorder = tester()->test_ukm_recorder();
+  std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr> merged_entries =
+      ukm_recorder.GetMergedEntriesByName(PageLoad::kEntryName);
+  EXPECT_EQ(1ul, merged_entries.size());
+
+  for (const auto& kv : merged_entries) {
+    const int64_t* metric = ukm_recorder.GetEntryMetric(
+        kv.second.get(),
+        ukm::builders::PageLoad::kSiteInstanceRenderProcessAssignmentName);
+    EXPECT_TRUE(metric);
+    EXPECT_NE(0u, *metric);
+  }
+}
+
 TEST_F(UkmPageLoadMetricsObserverTest,
        PerfectHeuristicsDelayaAsyncScriptExecution) {
   NavigateAndCommit(GURL(kTestUrl1));

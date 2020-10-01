@@ -10,6 +10,7 @@
 #include "base/optional.h"
 #include "base/time/time.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
+#include "content/public/browser/site_instance_process_assignment.h"
 #include "net/http/http_response_info.h"
 #include "services/metrics/public/cpp/ukm_source.h"
 #include "ui/base/page_transition_types.h"
@@ -133,6 +134,10 @@ class UkmPageLoadMetricsObserver
   // a null TimeTicks.
   void RecordPageLoadMetrics(base::TimeTicks app_background_time);
 
+  // Records metrics related to how the renderer process was used for the
+  // navigation.
+  void RecordRendererUsageMetrics();
+
   // Adds main resource timing metrics to |builder|.
   void ReportMainResourceTimingMetrics(
       const page_load_metrics::mojom::PageLoadTiming& timing,
@@ -209,6 +214,9 @@ class UkmPageLoadMetricsObserver
   // Load timing metrics of the main frame resource request.
   content::NavigationHandleTiming navigation_handle_timing_;
   base::Optional<net::LoadTimingInfo> main_frame_timing_;
+
+  // How the SiteInstance for the committed page was assigned a renderer.
+  content::SiteInstanceProcessAssignment render_process_assignment_;
 
   // PAGE_TRANSITION_LINK is the default PageTransition value.
   ui::PageTransition page_transition_ = ui::PAGE_TRANSITION_LINK;
