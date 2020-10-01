@@ -85,6 +85,10 @@ display::Display ScreenOzone::GetPrimaryDisplay() const {
   return platform_screen_->GetPrimaryDisplay();
 }
 
+void ScreenOzone::SetScreenSaverSuspended(bool suspend) {
+  platform_screen_->SetScreenSaverSuspended(suspend);
+}
+
 void ScreenOzone::AddObserver(display::DisplayObserver* observer) {
   platform_screen_->AddObserver(observer);
 }

@@ -63,6 +63,10 @@ void Screen::SetDisplayForNewWindows(int64_t display_id) {
   display_id_for_new_windows_ = display_id;
 }
 
+void Screen::SetScreenSaverSuspended(bool suspend) {
+  NOTIMPLEMENTED_LOG_ONCE();
+}
+
 gfx::Rect Screen::ScreenToDIPRectInWindow(gfx::NativeWindow window,
                                           const gfx::Rect& screen_rect) const {
   float scale = GetDisplayNearestWindow(window).device_scale_factor();

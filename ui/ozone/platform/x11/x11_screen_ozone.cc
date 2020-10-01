@@ -120,6 +120,10 @@ display::Display X11ScreenOzone::GetDisplayMatching(
   return matching_display ? *matching_display : GetPrimaryDisplay();
 }
 
+void X11ScreenOzone::SetScreenSaverSuspended(bool suspend) {
+  SuspendX11ScreenSaver(suspend);
+}
+
 void X11ScreenOzone::AddObserver(display::DisplayObserver* observer) {
   x11_display_manager_->AddObserver(observer);
 }

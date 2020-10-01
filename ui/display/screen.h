@@ -96,6 +96,9 @@ class DISPLAY_EXPORT Screen {
   // Sets the suggested display to use when creating a new window.
   void SetDisplayForNewWindows(int64_t display_id);
 
+  // Suspends the platform-specific screensaver, if applicable.
+  virtual void SetScreenSaverSuspended(bool suspend);
+
   // Adds/Removes display observers.
   virtual void AddObserver(DisplayObserver* observer) = 0;
   virtual void RemoveObserver(DisplayObserver* observer) = 0;

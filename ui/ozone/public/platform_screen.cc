@@ -23,4 +23,8 @@ std::string PlatformScreen::GetCurrentWorkspace() {
   return {};
 }
 
+void PlatformScreen::SetScreenSaverSuspended(bool suspend) {
+  NOTIMPLEMENTED_LOG_ONCE();
+}
+
 }  // namespace ui

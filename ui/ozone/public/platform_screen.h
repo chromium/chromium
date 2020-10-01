@@ -77,6 +77,9 @@ class COMPONENT_EXPORT(OZONE_BASE) PlatformScreen {
   virtual display::Display GetDisplayMatching(
       const gfx::Rect& match_rect) const = 0;
 
+  // Suspends the platform-specific screensaver, if applicable.
+  virtual void SetScreenSaverSuspended(bool suspend);
+
   // Adds/Removes display observers.
   virtual void AddObserver(display::DisplayObserver* observer) = 0;
   virtual void RemoveObserver(display::DisplayObserver* observer) = 0;

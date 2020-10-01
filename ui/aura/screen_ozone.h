@@ -41,6 +41,7 @@ class AURA_EXPORT ScreenOzone : public display::Screen {
   display::Display GetDisplayMatching(
       const gfx::Rect& match_rect) const override;
   display::Display GetPrimaryDisplay() const override;
+  void SetScreenSaverSuspended(bool suspend) override;
   void AddObserver(display::DisplayObserver* observer) override;
   void RemoveObserver(display::DisplayObserver* observer) override;
   std::string GetCurrentWorkspace() override;

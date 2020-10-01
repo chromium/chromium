@@ -64,6 +64,7 @@
 #include "ui/gfx/skia_util.h"
 #include "ui/gfx/switches.h"
 #include "ui/gfx/x/connection.h"
+#include "ui/gfx/x/screensaver.h"
 #include "ui/gfx/x/shm.h"
 #include "ui/gfx/x/sync.h"
 #include "ui/gfx/x/x11.h"
@@ -167,6 +168,24 @@ bool GetWindowManagerName(std::string* wm_name) {
   gfx::X11ErrorTracker err_tracker;
   bool result = GetStringProperty(wm_window, "_NET_WM_NAME", wm_name);
   return !err_tracker.FoundNewError() && result;
+}
+
+// Returns whether the X11 Screen Saver Extension can be used to disable the
+// screen saver.
+bool IsX11ScreenSaverAvailable() {
+  // X Screen Saver isn't accessible in headless mode.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kHeadless))
+    return false;
+
+  auto version = x11::Connection::Get()
+                     ->screensaver()
+                     .QueryVersion({x11::ScreenSaver::major_version,
+                                    x11::ScreenSaver::minor_version})
+                     .Sync();
+
+  return version && (version->server_major_version > 1 ||
+                     (version->server_major_version == 1 &&
+                      version->server_minor_version >= 1));
 }
 
 }  // namespace
@@ -1019,6 +1038,14 @@ bool IsX11WindowFullScreen(x11::Window window) {
   int width = connection->default_screen().width_in_pixels;
   int height = connection->default_screen().height_in_pixels;
   return window_rect.size() == gfx::Size(width, height);
+}
+
+void SuspendX11ScreenSaver(bool suspend) {
+  static const bool kScreenSaverAvailable = IsX11ScreenSaverAvailable();
+  if (!kScreenSaverAvailable)
+    return;
+
+  x11::Connection::Get()->screensaver().Suspend({suspend});
 }
 
 bool WmSupportsHint(x11::Atom atom) {

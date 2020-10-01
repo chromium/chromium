@@ -49,8 +49,12 @@ source_set("power_save_blocker") {
     if (use_x11) {
       deps += [
         "//ui/base:features",
+        "//ui/base/x:x",
         "//ui/gfx/x",
       ]
+    }
+    if (use_ozone) {
+      deps += [ "//ui/display:display" ]
     }
   } else if (is_mac) {
     sources += [ "power_save_blocker_mac.cc" ]

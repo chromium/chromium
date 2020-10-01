@@ -25,11 +25,19 @@
 #include "dbus/object_proxy.h"
 #include "ui/gfx/switches.h"
 
-#if defined(USE_X11)
+#if defined(USE_X11) || defined(USE_OZONE)
 #include "ui/base/ui_base_features.h"  // nogncheck
+#endif
+
+#if defined(USE_X11)
+#include "ui/base/x/x11_util.h"        // nogncheck
 #include "ui/gfx/x/connection.h"       // nogncheck
 #include "ui/gfx/x/screensaver.h"      // nogncheck
 #include "ui/gfx/x/x11_types.h"        // nogncheck
+#endif
+
+#if defined(USE_OZONE)
+#include "ui/display/screen.h"
 #endif
 
 namespace device {
@@ -132,36 +140,21 @@ void GetDbusStringsForApi(DBusAPI api,
   NOTREACHED();
 }
 
-#if defined(USE_X11)
-// Check whether the X11 Screen Saver Extension can be used to disable the
-// screen saver. Must be called on the UI thread.
-bool X11ScreenSaverAvailable() {
-  // X Screen Saver isn't accessible in headless mode.
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kHeadless))
-    return false;
-  auto* connection = x11::Connection::Get();
-
-  auto version = connection->screensaver()
-                     .QueryVersion({x11::ScreenSaver::major_version,
-                                    x11::ScreenSaver::minor_version})
-                     .Sync();
-
-  return version && (version->server_major_version > 1 ||
-                     (version->server_major_version == 1 &&
-                      version->server_minor_version >= 1));
-}
-
-// Wrapper for XScreenSaverSuspend. Checks whether the X11 Screen Saver
-// Extension is available first. If it isn't, this is a no-op.  Must be called
-// on the UI thread.
-void X11ScreenSaverSuspendSet(bool suspend) {
-  if (!X11ScreenSaverAvailable())
+void SetScreenSaverSuspended(bool suspend) {
+#if defined(USE_OZONE)
+  if (features::IsUsingOzonePlatform()) {
+    auto* const screen = display::Screen::GetScreen();
+    // The screen can be nullptr in tests.
+    if (!screen)
+      return;
+    screen->SetScreenSaverSuspended(suspend);
     return;
-
-  auto* connection = x11::Connection::Get();
-  connection->screensaver().Suspend({suspend});
-}
+  }
 #endif
+#if defined(USE_X11)
+  ui::SuspendX11ScreenSaver(suspend);
+#endif
+}
 
 }  // namespace
 
@@ -242,12 +235,8 @@ void PowerSaveBlocker::Delegate::Init() {
         FROM_HERE, base::BindOnce(&Delegate::ApplyBlock, this));
   }
 
-#if defined(USE_X11)
-  if (!features::IsUsingOzonePlatform()) {
-    ui_task_runner_->PostTask(FROM_HERE,
-                              base::BindOnce(X11ScreenSaverSuspendSet, true));
-  }
-#endif
+  ui_task_runner_->PostTask(FROM_HERE,
+                            base::BindOnce(SetScreenSaverSuspended, true));
 }
 
 void PowerSaveBlocker::Delegate::CleanUp() {
@@ -256,12 +245,8 @@ void PowerSaveBlocker::Delegate::CleanUp() {
         FROM_HERE, base::BindOnce(&Delegate::RemoveBlock, this));
   }
 
-#if defined(USE_X11)
-  if (!features::IsUsingOzonePlatform()) {
-    ui_task_runner_->PostTask(FROM_HERE,
-                              base::BindOnce(X11ScreenSaverSuspendSet, false));
-  }
-#endif
+  ui_task_runner_->PostTask(FROM_HERE,
+                            base::BindOnce(SetScreenSaverSuspended, false));
 }
 
 bool PowerSaveBlocker::Delegate::ShouldBlock() const {
