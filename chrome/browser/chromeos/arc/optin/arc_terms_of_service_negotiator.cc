@@ -13,9 +13,9 @@ ArcTermsOfServiceNegotiator::ArcTermsOfServiceNegotiator() = default;
 ArcTermsOfServiceNegotiator::~ArcTermsOfServiceNegotiator() = default;
 
 void ArcTermsOfServiceNegotiator::StartNegotiation(
-    NegotiationCallback callback) {
+    const NegotiationCallback& callback) {
   DCHECK(pending_callback_.is_null());
-  pending_callback_ = std::move(callback);
+  pending_callback_ = callback;
   StartNegotiationImpl();
 }
 

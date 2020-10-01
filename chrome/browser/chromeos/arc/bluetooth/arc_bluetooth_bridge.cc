@@ -2247,23 +2247,21 @@ void ArcBluetoothBridge::EnableAdvertisementImpl(
       base::Bind(&ArcBluetoothBridge::OnReadyToRegisterAdvertisement,
                  weak_factory_.GetWeakPtr(), repeating_callback, adv_handle,
                  base::Passed(std::move(advertisement)));
-  base::OnceCallback<void(BluetoothAdvertisement::ErrorCode)> error_callback =
-      base::BindOnce(&ArcBluetoothBridge::OnRegisterAdvertisementError,
-                     weak_factory_.GetWeakPtr(), repeating_callback,
-                     adv_handle);
+  base::Callback<void(BluetoothAdvertisement::ErrorCode)> error_callback =
+      base::Bind(&ArcBluetoothBridge::OnRegisterAdvertisementError,
+                 weak_factory_.GetWeakPtr(), repeating_callback, adv_handle);
 
   auto it = advertisements_.find(adv_handle);
   if (it == advertisements_.end()) {
-    std::move(error_callback)
-        .Run(BluetoothAdvertisement::ErrorCode::
-                 ERROR_ADVERTISEMENT_DOES_NOT_EXIST);
+    error_callback.Run(
+        BluetoothAdvertisement::ErrorCode::ERROR_ADVERTISEMENT_DOES_NOT_EXIST);
     return;
   }
   if (it->second == nullptr) {
-    std::move(done_callback).Run();
+    done_callback.Run();
     return;
   }
-  it->second->Unregister(done_callback, std::move(error_callback));
+  it->second->Unregister(done_callback, error_callback);
 }
 
 void ArcBluetoothBridge::DisableAdvertisement(
@@ -2286,23 +2284,21 @@ void ArcBluetoothBridge::DisableAdvertisementImpl(
   base::Closure done_callback =
       base::Bind(&ArcBluetoothBridge::OnUnregisterAdvertisementDone,
                  weak_factory_.GetWeakPtr(), repeating_callback, adv_handle);
-  base::OnceCallback<void(BluetoothAdvertisement::ErrorCode)> error_callback =
-      base::BindOnce(&ArcBluetoothBridge::OnUnregisterAdvertisementError,
-                     weak_factory_.GetWeakPtr(), repeating_callback,
-                     adv_handle);
+  base::Callback<void(BluetoothAdvertisement::ErrorCode)> error_callback =
+      base::Bind(&ArcBluetoothBridge::OnUnregisterAdvertisementError,
+                 weak_factory_.GetWeakPtr(), repeating_callback, adv_handle);
 
   auto it = advertisements_.find(adv_handle);
   if (it == advertisements_.end()) {
-    std::move(error_callback)
-        .Run(BluetoothAdvertisement::ErrorCode::
-                 ERROR_ADVERTISEMENT_DOES_NOT_EXIST);
+    error_callback.Run(
+        BluetoothAdvertisement::ErrorCode::ERROR_ADVERTISEMENT_DOES_NOT_EXIST);
     return;
   }
   if (it->second == nullptr) {
     done_callback.Run();
     return;
   }
-  it->second->Unregister(done_callback, std::move(error_callback));
+  it->second->Unregister(done_callback, error_callback);
 }
 
 void ArcBluetoothBridge::ReleaseAdvertisementHandle(

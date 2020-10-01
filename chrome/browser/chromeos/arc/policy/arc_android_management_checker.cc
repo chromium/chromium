@@ -70,7 +70,7 @@ void ArcAndroidManagementChecker::StartClient() {
   GetDeviceManagementService()->ScheduleInitialization(0);
 }
 
-void ArcAndroidManagementChecker::StartCheck(CheckCallback callback) {
+void ArcAndroidManagementChecker::StartCheck(const CheckCallback& callback) {
   DCHECK(callback_.is_null());
 
   // Do not send requests for Chrome OS managed users, nor for well-known
@@ -78,11 +78,11 @@ void ArcAndroidManagementChecker::StartCheck(CheckCallback callback) {
   if (policy_util::IsAccountManaged(profile_) ||
       policy::BrowserPolicyConnector::IsNonEnterpriseUser(
           profile_->GetProfileUserName())) {
-    std::move(callback).Run(policy::AndroidManagementClient::Result::UNMANAGED);
+    callback.Run(policy::AndroidManagementClient::Result::UNMANAGED);
     return;
   }
 
-  callback_ = std::move(callback);
+  callback_ = callback;
   EnsureRefreshTokenLoaded();
 }
 

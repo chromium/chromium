@@ -37,13 +37,13 @@ ArcAuthContext::~ArcAuthContext() {
   identity_manager_->RemoveObserver(this);
 }
 
-void ArcAuthContext::Prepare(PrepareCallback callback) {
+void ArcAuthContext::Prepare(const PrepareCallback& callback) {
   if (context_prepared_) {
-    std::move(callback).Run(true);
+    callback.Run(true);
     return;
   }
 
-  callback_ = std::move(callback);
+  callback_ = callback;
   identity_manager_->RemoveObserver(this);
   refresh_token_timeout_.Stop();
 
