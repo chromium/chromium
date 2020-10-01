@@ -49,9 +49,10 @@ class AppToCategoryMapper {
     // Please refer to
     // https://goto.google.com/arc++app-runtime-performance-metrics.
     Add("iicceeckdelepgbcpojbgahbhnklpane", "OnlineGame");
-    Add("kmglgjicdcmjphkoojighlhjejkiefih", "CasualGame");
+    Add("hhkmajjdndhdnkbmomodobajdjngeejb", "CasualGame2");
     Add("niajncocfieigpbiamllekeadpgbhkke", "ShooterGame");
     Add("icloenboalgjkknjdficgpgpcedmmojn", "Video");
+    Add("nlhkolcnehphdkaljhgcbkmahloeacoj", "HeavyGame");
   }
 
   static AppToCategoryMapper& GetInstance() {
