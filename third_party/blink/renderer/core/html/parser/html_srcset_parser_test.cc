@@ -10,6 +10,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/web_network_state_notifier.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -312,6 +313,27 @@ TEST(HTMLSrcsetParserTest, SaveDataEnabledBasic) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures({blink::features::kSaveDataImgSrcset},
                                        {});
+  for (unsigned i = 0; test_cases[i].src_input; ++i) {
+    SrcsetParserTestCase test = test_cases[i];
+    ImageCandidate candidate = BestFitSourceForImageAttributes(
+        test.device_scale_factor, test.effective_size, test.src_input,
+        test.srcset_input);
+    ASSERT_EQ(test.output_density, candidate.Density());
+    ASSERT_EQ(test.output_resource_width, candidate.GetResourceWidth());
+    ASSERT_EQ(test.output_url, candidate.ToString().Ascii());
+  }
+}
+
+TEST(HTMLSrcsetParserTest, MaxDensityEnabled) {
+  RuntimeEnabledFeatures::SetSrcsetMaxDensityEnabled(true);
+  SrcsetParserTestCase test_cases[] = {
+      {10.0, -1, "src.gif", "2x.gif 2e1x", "src.gif", 1.0, -1},
+      {2.5, -1, "src.gif", "1.5x.gif 1.5x, 3x.gif 3x", "3x.gif", 3.0, -1},
+      {4.0, 400, "", "400.gif 400w, 1000.gif 1000w", "1000.gif", 2.5, 1000},
+      {0, 0, nullptr, nullptr, nullptr,
+       0}  // Do not remove the terminator line.
+  };
+
   for (unsigned i = 0; test_cases[i].src_input; ++i) {
     SrcsetParserTestCase test = test_cases[i];
     ImageCandidate candidate = BestFitSourceForImageAttributes(
