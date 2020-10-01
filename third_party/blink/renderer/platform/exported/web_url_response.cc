@@ -413,20 +413,13 @@ void WebURLResponse::SetDidServiceWorkerNavigationPreload(bool value) {
   resource_response_->SetDidServiceWorkerNavigationPreload(value);
 }
 
-WebString WebURLResponse::RemoteIPAddress() const {
-  return resource_response_->RemoteIPAddress();
+net::IPEndPoint WebURLResponse::RemoteIPEndpoint() const {
+  return resource_response_->RemoteIPEndpoint();
 }
 
-void WebURLResponse::SetRemoteIPAddress(const WebString& remote_ip_address) {
-  resource_response_->SetRemoteIPAddress(remote_ip_address);
-}
-
-uint16_t WebURLResponse::RemotePort() const {
-  return resource_response_->RemotePort();
-}
-
-void WebURLResponse::SetRemotePort(uint16_t remote_port) {
-  resource_response_->SetRemotePort(remote_port);
+void WebURLResponse::SetRemoteIPEndpoint(
+    const net::IPEndPoint& remote_ip_endpoint) {
+  resource_response_->SetRemoteIPEndpoint(remote_ip_endpoint);
 }
 
 network::mojom::IPAddressSpace WebURLResponse::AddressSpace() const {

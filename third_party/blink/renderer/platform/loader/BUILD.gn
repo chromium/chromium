@@ -142,6 +142,7 @@ blink_platform_sources("loader") {
     ":make_platform_loader_generated_fetch_initiator_type_names",
     "//components/link_header_util",
     "//components/web_package",
+    "//net",
     "//services/metrics/public/cpp:ukm_builders",
     "//services/network/public/cpp",
     "//services/network/public/mojom:mojom_blink",

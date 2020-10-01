@@ -35,6 +35,7 @@
 
 #include "base/optional.h"
 #include "base/time/time.h"
+#include "net/base/ip_endpoint.h"
 #include "net/cert/ct_policy_status.h"
 #include "net/http/http_response_info.h"
 #include "third_party/blink/public/common/security/security_style.h"
@@ -286,13 +287,9 @@ class WebURLResponse {
   // See network::ResourceResponseInfo::did_navigation_preload for details.
   BLINK_PLATFORM_EXPORT void SetDidServiceWorkerNavigationPreload(bool);
 
-  // Remote IP address of the socket which fetched this resource.
-  BLINK_PLATFORM_EXPORT WebString RemoteIPAddress() const;
-  BLINK_PLATFORM_EXPORT void SetRemoteIPAddress(const WebString&);
-
-  // Remote port number of the socket which fetched this resource.
-  BLINK_PLATFORM_EXPORT uint16_t RemotePort() const;
-  BLINK_PLATFORM_EXPORT void SetRemotePort(uint16_t);
+  // Remote IP endpoint of the socket which fetched this resource.
+  BLINK_PLATFORM_EXPORT net::IPEndPoint RemoteIPEndpoint() const;
+  BLINK_PLATFORM_EXPORT void SetRemoteIPEndpoint(const net::IPEndPoint&);
 
   // Address space from which this resource was fetched.
   BLINK_PLATFORM_EXPORT network::mojom::IPAddressSpace AddressSpace() const;

@@ -456,31 +456,34 @@ TEST_F(WebURLLoaderImplTest, DefersLoadingBeforeStart) {
   EXPECT_TRUE(dispatcher()->defers_loading());
 }
 
-TEST_F(WebURLLoaderImplTest, ResponseIPAddress) {
+TEST_F(WebURLLoaderImplTest, ResponseIPEndpoint) {
   GURL url("http://example.test/");
 
   struct TestCase {
     const char* ip;
-    const char* expected;
+    uint16_t port;
   } cases[] = {
-      {"127.0.0.1", "127.0.0.1"},
-      {"123.123.123.123", "123.123.123.123"},
-      {"::1", "[::1]"},
-      {"2001:0db8:85a3:0000:0000:8a2e:0370:7334",
-       "[2001:db8:85a3::8a2e:370:7334]"},
-      {"2001:db8:85a3:0:0:8a2e:370:7334", "[2001:db8:85a3::8a2e:370:7334]"},
-      {"2001:db8:85a3::8a2e:370:7334", "[2001:db8:85a3::8a2e:370:7334]"},
-      {"::ffff:192.0.2.128", "[::ffff:c000:280]"}};
+      {"127.0.0.1", 443},
+      {"123.123.123.123", 80},
+      {"::1", 22},
+      {"2001:0db8:85a3:0000:0000:8a2e:0370:7334", 1337},
+      {"2001:db8:85a3:0:0:8a2e:370:7334", 12345},
+      {"2001:db8:85a3::8a2e:370:7334", 8080},
+      {"::ffff:192.0.2.128", 8443},
+  };
 
   for (const auto& test : cases) {
     SCOPED_TRACE(test.ip);
-    network::mojom::URLResponseHead head;
+
     net::IPAddress address;
     ASSERT_TRUE(address.AssignFromIPLiteral(test.ip));
-    head.remote_endpoint = net::IPEndPoint(address, 443);
+
+    network::mojom::URLResponseHead head;
+    head.remote_endpoint = net::IPEndPoint(address, test.port);
+
     blink::WebURLResponse response;
     WebURLLoaderImpl::PopulateURLResponse(url, head, &response, true, -1);
-    EXPECT_EQ(test.expected, response.RemoteIPAddress().Utf8());
+    EXPECT_EQ(head.remote_endpoint, response.RemoteIPEndpoint());
   };
 }
 

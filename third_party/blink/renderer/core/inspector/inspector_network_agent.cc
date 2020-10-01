@@ -37,6 +37,8 @@
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
+#include "net/base/ip_address.h"
+#include "net/base/ip_endpoint.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/mojom/referrer_policy.mojom-blink.h"
 #include "services/network/public/mojom/websocket.mojom-blink.h"
@@ -490,6 +492,15 @@ void SetNetworkStateOverride(bool offline,
   }
 }
 
+String IPAddressToString(const net::IPAddress& address) {
+  String unbracketed = String::FromUTF8(address.ToString());
+  if (!address.IsIPv6()) {
+    return unbracketed;
+  }
+
+  return "[" + unbracketed + "]";
+}
+
 }  // namespace
 
 void InspectorNetworkAgent::Restore() {
@@ -698,10 +709,11 @@ BuildObjectForResourceResponse(const ResourceResponse& response,
     }
   }
 
-  String remote_ip_address = response.RemoteIPAddress();
-  if (!remote_ip_address.IsEmpty()) {
-    response_object->setRemoteIPAddress(remote_ip_address);
-    response_object->setRemotePort(response.RemotePort());
+  const net::IPEndPoint& remote_ip_endpoint = response.RemoteIPEndpoint();
+  if (remote_ip_endpoint.address().IsValid()) {
+    response_object->setRemoteIPAddress(
+        IPAddressToString(remote_ip_endpoint.address()));
+    response_object->setRemotePort(remote_ip_endpoint.port());
   }
 
   String protocol = response.AlpnNegotiatedProtocol();

@@ -33,6 +33,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/optional.h"
 #include "base/time/time.h"
+#include "net/base/ip_endpoint.h"
 #include "services/network/public/mojom/cross_origin_embedder_policy.mojom-shared.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "services/network/public/mojom/ip_address_space.mojom-shared.h"
@@ -391,13 +392,12 @@ class PLATFORM_EXPORT ResourceResponse final {
     response_time_ = response_time;
   }
 
-  const AtomicString& RemoteIPAddress() const { return remote_ip_address_; }
-  void SetRemoteIPAddress(const AtomicString& value) {
-    remote_ip_address_ = value;
+  const net::IPEndPoint& RemoteIPEndpoint() const {
+    return remote_ip_endpoint_;
   }
-
-  uint16_t RemotePort() const { return remote_port_; }
-  void SetRemotePort(uint16_t value) { remote_port_ = value; }
+  void SetRemoteIPEndpoint(const net::IPEndPoint& value) {
+    remote_ip_endpoint_ = value;
+  }
 
   network::mojom::IPAddressSpace AddressSpace() const { return address_space_; }
   void SetAddressSpace(network::mojom::IPAddressSpace value) {
@@ -510,11 +510,8 @@ class PLATFORM_EXPORT ResourceResponse final {
   AtomicString http_status_text_;
   HTTPHeaderMap http_header_fields_;
 
-  // Remote IP address of the socket which fetched this resource.
-  AtomicString remote_ip_address_;
-
-  // Remote port number of the socket which fetched this resource.
-  uint16_t remote_port_ = 0;
+  // Remote IP endpoint of the socket which fetched this resource.
+  net::IPEndPoint remote_ip_endpoint_;
 
   // The address space from which this resource was fetched.
   network::mojom::IPAddressSpace address_space_ =

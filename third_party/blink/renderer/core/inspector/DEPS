@@ -9,6 +9,8 @@ include_rules = [
     "+base/process/process_handle.h",
     "+base/process/process_metrics.h",
     "+cc/trees/transform_node.h",
+    "+net/base/ip_address.h",
+    "+net/base/ip_endpoint.h",
     "+third_party/inspector_protocol/crdtp",
     "+third_party/icu/source/common/unicode/locid.h",
     "+net/http/http_status_code.h",

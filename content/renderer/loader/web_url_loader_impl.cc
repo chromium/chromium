@@ -934,9 +934,7 @@ void WebURLLoaderImpl::PopulateURLResponse(
           ? blink::WebString::FromUTF8(head.cache_storage_cache_name)
           : blink::WebString());
 
-  response->SetRemoteIPAddress(WebString::FromUTF8(
-      net::HostPortPair::FromIPEndPoint(head.remote_endpoint).HostForURL()));
-  response->SetRemotePort(head.remote_endpoint.port());
+  response->SetRemoteIPEndpoint(head.remote_endpoint);
 
   // This computation can only be done once SetUrlListViaServiceWorker() has
   // been called on |response|, so that ResponseUrl() returns the correct
