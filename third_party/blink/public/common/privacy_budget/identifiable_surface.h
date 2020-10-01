@@ -184,6 +184,9 @@ class IdentifiableSurface {
     // will key this type on a digest of both the enums' values.
     kWebGLShaderPrecisionFormat = 16,
 
+    // Represents a call to GPU.requestAdapter. Input is the options filter.
+    kGPU_RequestAdapter = 20,
+
     // We can use values up to and including |kMax|.
     kMax = (1 << kTypeBits) - 1
   };

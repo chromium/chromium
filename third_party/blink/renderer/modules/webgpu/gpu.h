@@ -15,6 +15,7 @@ struct WGPUDeviceProperties;
 
 namespace blink {
 
+class GPUAdapter;
 class GPURequestAdapterOptions;
 class ScriptPromiseResolver;
 class ScriptState;
@@ -40,9 +41,15 @@ class GPU final : public ScriptWrappable,
                                const GPURequestAdapterOptions* options);
 
  private:
-  void OnRequestAdapterCallback(ScriptPromiseResolver* resolver,
+  void OnRequestAdapterCallback(ScriptState* script_state,
+                                const GPURequestAdapterOptions* options,
+                                ScriptPromiseResolver* resolver,
                                 int32_t adapter_server_id,
                                 const WGPUDeviceProperties& properties);
+
+  void RecordAdapterForIdentifiability(ScriptState* script_state,
+                                       const GPURequestAdapterOptions* options,
+                                       GPUAdapter* adapter) const;
 
   scoped_refptr<DawnControlClientHolder> dawn_control_client_;
 

@@ -7,6 +7,9 @@
 #include <utility>
 
 #include "gpu/command_buffer/client/webgpu_interface.h"
+#include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
+#include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
+#include "third_party/blink/public/common/privacy_budget/identifiable_token_builder.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_graphics_context_3d_provider.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -17,6 +20,7 @@
 #include "third_party/blink/renderer/modules/webgpu/gpu_adapter.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/dawn_control_client_holder.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/privacy_budget/identifiability_digest_helpers.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -98,7 +102,9 @@ void GPU::ContextDestroyed() {
   dawn_control_client_->Destroy();
 }
 
-void GPU::OnRequestAdapterCallback(ScriptPromiseResolver* resolver,
+void GPU::OnRequestAdapterCallback(ScriptState* script_state,
+                                   const GPURequestAdapterOptions* options,
+                                   ScriptPromiseResolver* resolver,
                                    int32_t adapter_server_id,
                                    const WGPUDeviceProperties& properties) {
   GPUAdapter* adapter = nullptr;
@@ -106,7 +112,41 @@ void GPU::OnRequestAdapterCallback(ScriptPromiseResolver* resolver,
     adapter = MakeGarbageCollected<GPUAdapter>(
         "Default", adapter_server_id, properties, dawn_control_client_);
   }
+  RecordAdapterForIdentifiability(script_state, options, adapter);
   resolver->Resolve(adapter);
+}
+
+void GPU::RecordAdapterForIdentifiability(
+    ScriptState* script_state,
+    const GPURequestAdapterOptions* options,
+    GPUAdapter* adapter) const {
+  constexpr IdentifiableSurface::Type type =
+      IdentifiableSurface::Type::kGPU_RequestAdapter;
+  if (!IdentifiabilityStudySettings::Get()->IsTypeAllowed(type))
+    return;
+  ExecutionContext* context = GetExecutionContext();
+  if (!context)
+    return;
+
+  IdentifiableTokenBuilder input_builder;
+  if (options && options->hasPowerPreference()) {
+    input_builder.AddToken(
+        IdentifiabilityBenignStringToken(options->powerPreference()));
+  }
+  const auto surface =
+      IdentifiableSurface::FromTypeAndToken(type, input_builder.GetToken());
+
+  IdentifiableTokenBuilder output_builder;
+  if (adapter) {
+    output_builder.AddToken(IdentifiabilityBenignStringToken(adapter->name()));
+    for (const auto& extension : adapter->extensions(script_state)) {
+      output_builder.AddToken(IdentifiabilityBenignStringToken(extension));
+    }
+  }
+
+  IdentifiabilityMetricBuilder(context->UkmSourceID())
+      .Set(surface, output_builder.GetToken())
+      .Record(context->UkmRecorder());
 }
 
 ScriptPromise GPU::requestAdapter(ScriptState* script_state,
@@ -148,6 +188,7 @@ ScriptPromise GPU::requestAdapter(ScriptState* script_state,
   if (!dawn_control_client_->GetInterface()->RequestAdapterAsync(
           power_preference,
           WTF::Bind(&GPU::OnRequestAdapterCallback, WrapPersistent(this),
+                    WrapPersistent(script_state), WrapPersistent(options),
                     WrapPersistent(resolver)))) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kOperationError, "Fail to request GPUAdapter"));
