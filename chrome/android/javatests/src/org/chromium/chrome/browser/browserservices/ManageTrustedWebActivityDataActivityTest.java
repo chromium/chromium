@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.browserservices;
 
-import static junit.framework.Assert.assertTrue;
-
 import static org.chromium.chrome.browser.browserservices.TrustedWebActivityTestUtil.createSession;
 import static org.chromium.chrome.browser.browserservices.TrustedWebActivityTestUtil.spoofVerification;
 
@@ -25,10 +23,12 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.Matchers;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.webapk.lib.client.WebApkValidator;
+import org.chromium.content_public.browser.test.util.Criteria;
+import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.webapk.lib.common.WebApkConstants;
 
 import java.util.concurrent.TimeoutException;
@@ -44,13 +44,12 @@ import java.util.concurrent.TimeoutException;
 public class ManageTrustedWebActivityDataActivityTest {
     private static final String SETTINGS_ACTIVITY_NAME =
             "org.chromium.chrome.browser.settings.SettingsActivity";
-    private static final String WEBAPK_TEST_URL = "https://padr31.github.io";
+    private static final String WEBAPK_TEST_URL = "https://www.example.com";
     private static final String TEST_PACKAGE_NAME =
             InstrumentationRegistry.getTargetContext().getPackageName();
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1131836")
     public void launchesWebApkSiteSettings() {
         Intent siteSettingsIntent =
                 createWebApkSiteSettingsIntent(TEST_PACKAGE_NAME, Uri.parse(WEBAPK_TEST_URL));
@@ -60,18 +59,28 @@ public class ManageTrustedWebActivityDataActivityTest {
             launchSiteSettingsIntent(siteSettingsIntent);
 
             // Check settings activity is running.
-            boolean settingsActivityRunning = false;
-            for (Activity a : ApplicationStatus.getRunningActivities()) {
-                String activityName =
-                        a.getPackageManager().getActivityInfo(a.getComponentName(), 0).name;
-                if (activityName.equals(SETTINGS_ACTIVITY_NAME)) {
-                    settingsActivityRunning = true;
+            CriteriaHelper.pollUiThread(() -> {
+                try {
+                    Criteria.checkThat("Site settings activity was not launched",
+                            siteSettingsActivityRunning(), Matchers.is(true));
+                } catch (PackageManager.NameNotFoundException e) {
+                    e.printStackTrace();
                 }
-            }
-            assertTrue(settingsActivityRunning);
-        } catch (TimeoutException | PackageManager.NameNotFoundException e) {
+            });
+        } catch (TimeoutException e) {
             e.printStackTrace();
         }
+    }
+
+    private boolean siteSettingsActivityRunning() throws PackageManager.NameNotFoundException {
+        for (Activity a : ApplicationStatus.getRunningActivities()) {
+            String activityName =
+                    a.getPackageManager().getActivityInfo(a.getComponentName(), 0).name;
+            if (activityName.equals(SETTINGS_ACTIVITY_NAME)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private static Intent createWebApkSiteSettingsIntent(String packageName, Uri uri) {
