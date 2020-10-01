@@ -170,11 +170,11 @@ public class AutofillPopupBridge implements AutofillDelegate, DialogInterface.On
      */
     @CalledByNative
     private static void addToAutofillSuggestionArray(AutofillSuggestion[] array, int index,
-            String label, String sublabel, int iconId, boolean isIconAtStart,
+            String label, String sublabel, String itemTag, int iconId, boolean isIconAtStart,
             int suggestionId, boolean isDeletable, boolean isLabelMultiline, boolean isLabelBold) {
         int drawableId = iconId == 0 ? DropdownItem.NO_ICON : iconId;
-        array[index] = new AutofillSuggestion(label, sublabel, /*itemTag= */ "", drawableId,
-                isIconAtStart, suggestionId, isDeletable, isLabelMultiline, isLabelBold);
+        array[index] = new AutofillSuggestion(label, sublabel, itemTag, drawableId, isIconAtStart,
+                suggestionId, isDeletable, isLabelMultiline, isLabelBold);
     }
 
     @NativeMethods
