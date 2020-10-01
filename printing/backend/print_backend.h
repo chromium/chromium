@@ -16,6 +16,10 @@
 #include "printing/printing_export.h"
 #include "ui/gfx/geometry/size.h"
 
+#if defined(OS_CHROMEOS)
+#include <stdint.h>
+#endif
+
 namespace base {
 class DictionaryValue;
 }
@@ -47,8 +51,12 @@ using PrinterList = std::vector<PrinterBasicInfo>;
 
 struct PRINTING_EXPORT AdvancedCapabilityValue {
   AdvancedCapabilityValue();
+  AdvancedCapabilityValue(const std::string& name,
+                          const std::string& display_name);
   AdvancedCapabilityValue(const AdvancedCapabilityValue& other);
   ~AdvancedCapabilityValue();
+
+  bool operator==(const AdvancedCapabilityValue& other) const;
 
   // IPP identifier of the value.
   std::string name;
@@ -58,11 +66,16 @@ struct PRINTING_EXPORT AdvancedCapabilityValue {
 };
 
 struct PRINTING_EXPORT AdvancedCapability {
+  enum class Type : uint8_t { kBoolean, kFloat, kInteger, kString };
+
   AdvancedCapability();
+  AdvancedCapability(const std::string& name,
+                     const std::string& display_name,
+                     AdvancedCapability::Type type,
+                     const std::string& default_value,
+                     const std::vector<AdvancedCapabilityValue>& values);
   AdvancedCapability(const AdvancedCapability& other);
   ~AdvancedCapability();
-
-  enum class Type : uint8_t { kBoolean, kFloat, kInteger, kString };
 
   // IPP identifier of the attribute.
   std::string name;

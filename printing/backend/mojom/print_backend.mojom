@@ -13,3 +13,29 @@ struct Paper {
   gfx.mojom.Size size_um;
 };
 
+// An advanced capability value for ChromeOS printing.
+[EnableIf=is_chromeos]
+struct AdvancedCapabilityValue {
+  string name;
+  string display_name;
+};
+
+// The type of the values for advanced capabilities.
+[EnableIf=is_chromeos]
+enum AdvancedCapabilityType {
+  kBoolean,
+  kFloat,
+  kInteger,
+  kString
+};
+
+// An advanced capability for ChromeOS printing.
+[EnableIf=is_chromeos]
+struct AdvancedCapability {
+  string name;
+  string display_name;
+  AdvancedCapabilityType type;
+  string default_value;
+  array<AdvancedCapabilityValue> values;
+};
+

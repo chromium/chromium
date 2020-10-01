@@ -6,6 +6,7 @@
 #define PRINTING_BACKEND_MOJOM_PRINT_BACKEND_MOJOM_TRAITS_H_
 
 #include <string>
+#include <vector>
 
 #include "printing/backend/mojom/print_backend.mojom-shared.h"
 #include "printing/backend/print_backend.h"
@@ -32,6 +33,59 @@ struct StructTraits<printing::mojom::PaperDataView,
   static bool Read(printing::mojom::PaperDataView data,
                    printing::PrinterSemanticCapsAndDefaults::Paper* out);
 };
+
+#if defined(OS_CHROMEOS)
+template <>
+struct EnumTraits<printing::mojom::AdvancedCapabilityType,
+                  ::printing::AdvancedCapability::Type> {
+  static printing::mojom::AdvancedCapabilityType ToMojom(
+      ::printing::AdvancedCapability::Type input);
+  static bool FromMojom(printing::mojom::AdvancedCapabilityType input,
+                        ::printing::AdvancedCapability::Type* output);
+};
+
+template <>
+struct StructTraits<printing::mojom::AdvancedCapabilityValueDataView,
+                    ::printing::AdvancedCapabilityValue> {
+  static const std::string& name(const ::printing::AdvancedCapabilityValue& v) {
+    return v.name;
+  }
+  static const std::string& display_name(
+      const ::printing::AdvancedCapabilityValue& v) {
+    return v.display_name;
+  }
+
+  static bool Read(printing::mojom::AdvancedCapabilityValueDataView data,
+                   ::printing::AdvancedCapabilityValue* out);
+};
+
+template <>
+struct StructTraits<printing::mojom::AdvancedCapabilityDataView,
+                    ::printing::AdvancedCapability> {
+  static const std::string& name(const ::printing::AdvancedCapability& c) {
+    return c.name;
+  }
+  static const std::string& display_name(
+      const ::printing::AdvancedCapability& c) {
+    return c.display_name;
+  }
+  static ::printing::AdvancedCapability::Type type(
+      const ::printing::AdvancedCapability& c) {
+    return c.type;
+  }
+  static const std::string& default_value(
+      const ::printing::AdvancedCapability& c) {
+    return c.default_value;
+  }
+  static const std::vector<::printing::AdvancedCapabilityValue>& values(
+      const ::printing::AdvancedCapability& c) {
+    return c.values;
+  }
+
+  static bool Read(printing::mojom::AdvancedCapabilityDataView data,
+                   ::printing::AdvancedCapability* out);
+};
+#endif  // defined(OS_CHROMEOS)
 
 }  // namespace mojo
 

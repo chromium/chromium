@@ -21,4 +21,21 @@ mojom("mojom") {
       traits_headers = [ "print_backend_mojom_traits.h" ]
     },
   ]
+
+  if (is_chromeos) {
+    cpp_typemaps += [
+      {
+        types = [
+          {
+            mojom = "printing.mojom.AdvancedCapability"
+            cpp = "::printing::AdvancedCapability"
+          },
+          {
+            mojom = "printing.mojom.AdvancedCapabilityValue"
+            cpp = "::printing::AdvancedCapabilityValue"
+          },
+        ]
+      },
+    ]
+  }
 }

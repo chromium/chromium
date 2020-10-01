@@ -24,11 +24,33 @@ PrinterBasicInfo::~PrinterBasicInfo() = default;
 AdvancedCapabilityValue::AdvancedCapabilityValue() = default;
 
 AdvancedCapabilityValue::AdvancedCapabilityValue(
+    const std::string& name,
+    const std::string& display_name)
+    : name(name), display_name(display_name) {}
+
+AdvancedCapabilityValue::AdvancedCapabilityValue(
     const AdvancedCapabilityValue& other) = default;
 
 AdvancedCapabilityValue::~AdvancedCapabilityValue() = default;
 
+bool AdvancedCapabilityValue::operator==(
+    const AdvancedCapabilityValue& other) const {
+  return name == other.name && display_name == other.display_name;
+}
+
 AdvancedCapability::AdvancedCapability() = default;
+
+AdvancedCapability::AdvancedCapability(
+    const std::string& name,
+    const std::string& display_name,
+    AdvancedCapability::Type type,
+    const std::string& default_value,
+    const std::vector<AdvancedCapabilityValue>& values)
+    : name(name),
+      display_name(display_name),
+      type(type),
+      default_value(default_value),
+      values(values) {}
 
 AdvancedCapability::AdvancedCapability(const AdvancedCapability& other) =
     default;
