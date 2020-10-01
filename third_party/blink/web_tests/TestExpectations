@@ -6734,3 +6734,7 @@ crbug.com/1045599 fast/css-grid-layout/flex-content-sized-columns-resize.html [ 
 # Sheriff 2020-09-29
 crbug.com/1133342 external/wpt/html/cross-origin-opener-policy/reporting/access-reporting/reporting-observer.html [ Pass Failure Timeout ]
 crbug.com/1083605 media/controls-styling-strict.html [ Pass Failure ]
+
+# Sheriff 2020-09-30
+crbug.com/1133821 virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/one-custom-property-animation.https.html [ Pass Failure ]
+crbug.com/1133821 virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/two-custom-property-animation.https.html [ Pass Failure ]
