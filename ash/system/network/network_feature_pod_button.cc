@@ -141,42 +141,32 @@ const char* NetworkFeaturePodButton::GetClassName() const {
 }
 
 void NetworkFeaturePodButton::Update() {
-  bool image_animating = false;
-  bool toggled_image_animating = false;
+  TrayNetworkStateModel* model =
+      Shell::Get()->system_tray_model()->network_state_model();
+  const NetworkStateProperties* network = model->default_network();
 
+  const bool toggled = network || model->GetDeviceState(NetworkType::kWiFi) ==
+                                      DeviceStateType::kEnabled;
+  network_icon::IconType icon_type =
+      toggled ? network_icon::ICON_TYPE_FEATURE_POD_TOGGLED
+              : network_icon::ICON_TYPE_FEATURE_POD;
+  bool image_animating = false;
   gfx::ImageSkia image =
       Shell::Get()->system_tray_model()->active_network_icon()->GetImage(
-          ActiveNetworkIcon::Type::kSingle, network_icon::ICON_TYPE_FEATURE_POD,
-          &image_animating);
-
-  gfx::ImageSkia image_toggled =
-      Shell::Get()->system_tray_model()->active_network_icon()->GetImage(
-          ActiveNetworkIcon::Type::kSingle,
-          network_icon::ICON_TYPE_FEATURE_POD_TOGGLED,
-          &toggled_image_animating);
-
+          ActiveNetworkIcon::Type::kSingle, icon_type, &image_animating);
   gfx::ImageSkia image_disabled =
       Shell::Get()->system_tray_model()->active_network_icon()->GetImage(
           ActiveNetworkIcon::Type::kSingle,
           network_icon::ICON_TYPE_FEATURE_POD_DISABLED, &image_animating);
 
-  if (image_animating || toggled_image_animating)
+  if (image_animating)
     network_icon::NetworkIconAnimation::GetInstance()->AddObserver(this);
   else
     network_icon::NetworkIconAnimation::GetInstance()->RemoveObserver(this);
 
-  TrayNetworkStateModel* model =
-      Shell::Get()->system_tray_model()->network_state_model();
-  const NetworkStateProperties* network = model->default_network();
-
-  bool toggled = network || model->GetDeviceState(NetworkType::kWiFi) ==
-                                DeviceStateType::kEnabled;
-  SetToggled(toggled);
   icon_button()->SetImage(views::Button::STATE_NORMAL, image);
   icon_button()->SetImage(views::Button::STATE_DISABLED, image_disabled);
-  icon_button()->SetToggledImage(views::Button::STATE_NORMAL, &image_toggled);
-  icon_button()->SetToggledImage(views::Button::STATE_DISABLED,
-                                 &image_disabled);
+  SetToggled(toggled);
 
   base::string16 network_name;
   if (network) {

@@ -105,11 +105,6 @@ class ASH_EXPORT AshColorProvider : public SessionObserver {
     kButtonIconColor,
     kButtonIconColorPrimary,
 
-    // Color for system menu icon buttons with inverted dark mode colors, e.g,
-    // FeaturePodIconButton
-    kSystemMenuIconColor,
-    kSystemMenuIconColorToggled,
-
     // Color for sliders (volume, brightness etc.)
     kSliderThumbColorEnabled,
     kSliderThumbColorDisabled,

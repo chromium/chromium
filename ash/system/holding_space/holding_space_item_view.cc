@@ -208,7 +208,7 @@ void HoldingSpaceItemView::AddPin(views::View* parent) {
   pin_->SetVisible(false);
 
   const SkColor icon_color = AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kSystemMenuIconColor);
+      AshColorProvider::ContentLayerType::kButtonIconColor);
 
   const gfx::ImageSkia unpinned_icon = gfx::CreateVectorIcon(
       views::kUnpinIcon, kHoldingSpacePinIconSize, icon_color);

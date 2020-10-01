@@ -438,10 +438,10 @@ SkColor GetDefaultColorForIconType(IconType icon_type) {
       return kIconColorInOobe;
     case ICON_TYPE_FEATURE_POD:
       return AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kSystemMenuIconColor);
+          AshColorProvider::ContentLayerType::kButtonIconColor);
     case ICON_TYPE_FEATURE_POD_TOGGLED:
       return AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kSystemMenuIconColorToggled);
+          AshColorProvider::ContentLayerType::kButtonIconColorPrimary);
     case ICON_TYPE_FEATURE_POD_DISABLED:
       return AshColorProvider::GetDisabledColor(
           GetDefaultColorForIconType(ICON_TYPE_FEATURE_POD));

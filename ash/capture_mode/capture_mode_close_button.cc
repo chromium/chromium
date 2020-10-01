@@ -18,7 +18,7 @@ CaptureModeCloseButton::CaptureModeCloseButton(views::ButtonListener* listener)
   SetBorder(views::CreateEmptyBorder(capture_mode::kButtonPadding));
   auto* color_provider = AshColorProvider::Get();
   const SkColor normal_color = color_provider->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kSystemMenuIconColor);
+      AshColorProvider::ContentLayerType::kButtonIconColor);
   SetImage(views::Button::STATE_NORMAL,
            gfx::CreateVectorIcon(kCloseButtonIcon, normal_color));
   SetImageHorizontalAlignment(ALIGN_CENTER);

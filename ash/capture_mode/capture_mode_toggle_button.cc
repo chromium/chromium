@@ -69,9 +69,9 @@ void CaptureModeToggleButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 void CaptureModeToggleButton::SetIcon(const gfx::VectorIcon& icon) {
   auto* color_provider = AshColorProvider::Get();
   const SkColor normal_color = color_provider->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kSystemMenuIconColor);
+      AshColorProvider::ContentLayerType::kButtonIconColor);
   const SkColor toggled_color = color_provider->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kSystemMenuIconColorToggled);
+      AshColorProvider::ContentLayerType::kButtonIconColorPrimary);
 
   SetImage(views::Button::STATE_NORMAL,
            gfx::CreateVectorIcon(icon, normal_color));
