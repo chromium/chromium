@@ -76,6 +76,11 @@ class CONTENT_EXPORT HidDelegate {
   // object.
   virtual void AddObserver(RenderFrameHost* frame, Observer* observer) = 0;
   virtual void RemoveObserver(RenderFrameHost* frame, Observer* observer) = 0;
+
+  // Gets the device info for a particular device, identified by its guid.
+  virtual const device::mojom::HidDeviceInfo* GetDeviceInfo(
+      content::WebContents* web_contents,
+      const std::string& guid) = 0;
 };
 
 }  // namespace content

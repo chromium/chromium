@@ -60,7 +60,7 @@ class HidService : public content::FrameServiceBase<blink::mojom::HidService>,
   HidService(RenderFrameHost*, mojo::PendingReceiver<blink::mojom::HidService>);
   ~HidService() override;
 
-  void OnWatcherConnectionError();
+  void OnWatcherRemoved(bool cleanup_watcher_ids);
   void DecrementActiveFrameCount();
 
   void FinishGetDevices(GetDevicesCallback callback,
@@ -83,6 +83,10 @@ class HidService : public content::FrameServiceBase<blink::mojom::HidService>,
   // Each pipe here watches a connection created by Connect() in order to notify
   // the WebContentsImpl when an active connection indicator should be shown.
   mojo::ReceiverSet<device::mojom::HidConnectionWatcher> watchers_;
+
+  // Maps every receiver to a guid to allow closing particular connections when
+  // the user revokes a permission.
+  std::multimap<std::string, mojo::ReceiverId> watcher_ids_;
 
   base::WeakPtrFactory<HidService> weak_factory_{this};
 };

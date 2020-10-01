@@ -14,6 +14,7 @@
 #include "services/device/public/mojom/hid.mojom-forward.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/mojom/hid/hid.mojom-forward.h"
+#include "url/origin.h"
 
 namespace content {
 
@@ -41,6 +42,8 @@ class MockHidDelegate : public HidDelegate {
   // these methods to broadcast device connections to all delegate observers.
   void OnDeviceAdded(const device::mojom::HidDeviceInfo& device);
   void OnDeviceRemoved(const device::mojom::HidDeviceInfo& device);
+  void OnPermissionRevoked(const url::Origin& requesting_origin,
+                           const url::Origin& embedding_origin);
 
   MOCK_METHOD0(RunChooserInternal,
                std::vector<device::mojom::HidDeviceInfoPtr>());
@@ -53,6 +56,10 @@ class MockHidDelegate : public HidDelegate {
                     const device::mojom::HidDeviceInfo& device));
   MOCK_METHOD1(GetHidManager,
                device::mojom::HidManager*(content::WebContents* web_contents));
+  MOCK_METHOD2(
+      GetDeviceInfo,
+      const device::mojom::HidDeviceInfo*(content::WebContents* web_contents,
+                                          const std::string& guid));
 
  private:
   base::ObserverList<Observer> observer_list_;

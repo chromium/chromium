@@ -44,6 +44,12 @@ void MockHidDelegate::OnDeviceRemoved(
     observer.OnDeviceRemoved(device);
 }
 
+void MockHidDelegate::OnPermissionRevoked(const url::Origin& requesting_origin,
+                                          const url::Origin& embedding_origin) {
+  for (auto& observer : observer_list_)
+    observer.OnPermissionRevoked(requesting_origin, embedding_origin);
+}
+
 HidTestContentBrowserClient::HidTestContentBrowserClient() = default;
 
 HidTestContentBrowserClient::~HidTestContentBrowserClient() = default;

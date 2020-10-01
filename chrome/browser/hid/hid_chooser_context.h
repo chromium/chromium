@@ -79,6 +79,11 @@ class HidChooserContext : public permissions::ChooserContextBase,
   // Forward HidManager::GetDevices.
   void GetDevices(device::mojom::HidManager::GetDevicesCallback callback);
 
+  // Only call this if you're sure |devices_| has been initialized before-hand.
+  // The returned raw pointer is owned by |devices_| and will be destroyed when
+  // the device is removed.
+  const device::mojom::HidDeviceInfo* GetDeviceInfo(const std::string& guid);
+
   device::mojom::HidManager* GetHidManager();
 
   // Sets |manager| as the HidManager and registers this context as a

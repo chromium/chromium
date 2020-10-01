@@ -95,6 +95,15 @@ void ChromeHidDelegate::RemoveObserver(
   observer_list_.RemoveObserver(observer);
 }
 
+const device::mojom::HidDeviceInfo* ChromeHidDelegate::GetDeviceInfo(
+    content::WebContents* web_contents,
+    const std::string& guid) {
+  auto* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  auto* chooser_context = HidChooserContextFactory::GetForProfile(profile);
+  return chooser_context->GetDeviceInfo(guid);
+}
+
 void ChromeHidDelegate::OnPermissionRevoked(
     const url::Origin& requesting_origin,
     const url::Origin& embedding_origin) {

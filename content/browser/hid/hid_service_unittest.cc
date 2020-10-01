@@ -331,4 +331,56 @@ TEST_F(HidServiceTest, RegisterClient) {
   device_removed_loop.Run();
 }
 
+TEST_F(HidServiceTest, RevokeDevicePermission) {
+  NavigateAndCommit(GURL(kTestUrl));
+
+  mojo::Remote<blink::mojom::HidService> service;
+  contents()->GetMainFrame()->GetHidService(
+      service.BindNewPipeAndPassReceiver());
+
+  // For now the device has permission.
+  EXPECT_CALL(hid_delegate(), HasDevicePermission).WillOnce(Return(true));
+
+  // Create a new device.
+  auto device_info = device::mojom::HidDeviceInfo::New();
+  device_info->guid = kTestGuid;
+  ConnectDevice(*device_info);
+  EXPECT_CALL(hid_delegate(), GetDeviceInfo)
+      .WillOnce(Return(device_info.get()));
+
+  // Connect the device.
+  mojo::PendingRemote<device::mojom::HidConnectionClient> hid_connection_client;
+  connection_client()->Bind(
+      hid_connection_client.InitWithNewPipeAndPassReceiver());
+
+  EXPECT_FALSE(contents()->IsConnectedToHidDevice());
+
+  base::RunLoop run_loop;
+  mojo::Remote<device::mojom::HidConnection> connection;
+  service->Connect(
+      kTestGuid, std::move(hid_connection_client),
+      base::BindLambdaForTesting(
+          [&run_loop,
+           &connection](mojo::PendingRemote<device::mojom::HidConnection> c) {
+            connection.Bind(std::move(c));
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+
+  EXPECT_TRUE(contents()->IsConnectedToHidDevice());
+  EXPECT_TRUE(connection);
+
+  // Simulate user revoking permission.
+  EXPECT_CALL(hid_delegate(), HasDevicePermission).WillOnce(Return(false));
+  url::Origin origin = url::Origin::Create(GURL(kTestUrl));
+  hid_delegate().OnPermissionRevoked(origin, origin);
+
+  // TODO(mattreynolds): Use a disconnect handler with a run loop instead of the
+  // potentially flaky `RunUntilIdle`. This depends on fixing
+  // `FakeHidConnection` to monitor the watcher just as `HidConnectionImpl`
+  // does.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(contents()->IsConnectedToHidDevice());
+}
+
 }  // namespace content

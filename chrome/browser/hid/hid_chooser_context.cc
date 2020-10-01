@@ -251,6 +251,13 @@ void HidChooserContext::GetDevices(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(device_list)));
 }
 
+const device::mojom::HidDeviceInfo* HidChooserContext::GetDeviceInfo(
+    const std::string& guid) {
+  DCHECK(is_initialized_);
+  auto it = devices_.find(guid);
+  return it == devices_.end() ? nullptr : it->second.get();
+}
+
 device::mojom::HidManager* HidChooserContext::GetHidManager() {
   EnsureHidManagerConnection();
   return hid_manager_.get();
@@ -343,6 +350,8 @@ void HidChooserContext::InitDeviceList(
     std::vector<device::mojom::HidDeviceInfoPtr> devices) {
   for (auto& device : devices)
     devices_.insert({device->guid, std::move(device)});
+
+  is_initialized_ = true;
 
   while (!pending_get_devices_requests_.empty()) {
     std::vector<device::mojom::HidDeviceInfoPtr> device_list;
