@@ -251,7 +251,6 @@ bool WmGestureHandler::ProcessScrollEvent(const ui::ScrollEvent& event) {
 bool WmGestureHandler::ProcessEventImpl(int finger_count,
                                         float delta_x,
                                         float delta_y) {
-  LOG(ERROR) << "Scroll: " << delta_x;
   if (!scroll_data_)
     return false;
 
