@@ -151,6 +151,8 @@ class MetaBuildWrapper(object):
                              'the commands that will run)')
       subp.add_argument('-v', '--verbose', action='store_true',
                         help='verbose logging')
+      subp.add_argument('--root', help='Path to GN source root')
+      subp.add_argument('--dotfile', help='Path to GN dotfile')
 
       # TODO(crbug.com/1060857): Remove this once swarming task templates
       # support command prefixes.
@@ -1342,7 +1344,12 @@ class MetaBuildWrapper(object):
       subdir, exe = 'win', 'gn.exe'
 
     gn_path = self.PathJoin(self.chromium_src_dir, 'buildtools', subdir, exe)
-    return [gn_path, subcommand, path] + list(args)
+    cmd = [gn_path, subcommand]
+    if self.args.root:
+      cmd += ['--root=' + self.args.root]
+    if self.args.dotfile:
+      cmd += ['--dotfile=' + self.args.dotfile]
+    return cmd + [path] + list(args)
 
 
   def GNArgs(self, vals, expand_imports=False):
