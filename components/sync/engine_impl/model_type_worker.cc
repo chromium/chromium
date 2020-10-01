@@ -36,20 +36,31 @@ namespace syncer {
 
 namespace {
 
-void AdaptClientTagForWalletData(syncer::EntityData* data) {
-  // Server does not send any client tags for wallet data entities. This code
-  // manually asks the bridge to create the client tags for each entity, so that
-  // we can use ClientTagBasedModelTypeProcessor for WALLET_DATA.
+void AdaptClientTagForFullUpdateData(ModelType model_type,
+                                     syncer::EntityData* data) {
+  // Server does not send any client tags for wallet data entities or offer data
+  // entities. This code manually asks the bridge to create the client tags for
+  // each entity, so that we can use ClientTagBasedModelTypeProcessor for
+  // AUTOFILL_WALLET_DATA or AUTOFILL_WALLET_OFFER.
   if (data->parent_id == "0") {
     // Ignore the permanent root node as that one should have no client tag
     // hash.
     return;
   }
   DCHECK(!data->specifics.has_encrypted());
-  DCHECK(data->specifics.has_autofill_wallet());
-  data->client_tag_hash = ClientTagHash::FromUnhashed(
-      AUTOFILL_WALLET_DATA, GetUnhashedClientTagFromAutofillWalletSpecifics(
-                                data->specifics.autofill_wallet()));
+  if (model_type == AUTOFILL_WALLET_DATA) {
+    DCHECK(data->specifics.has_autofill_wallet());
+    data->client_tag_hash = ClientTagHash::FromUnhashed(
+        AUTOFILL_WALLET_DATA, GetUnhashedClientTagFromAutofillWalletSpecifics(
+                                  data->specifics.autofill_wallet()));
+  } else if (model_type == AUTOFILL_WALLET_OFFER) {
+    DCHECK(data->specifics.has_autofill_offer());
+    data->client_tag_hash = ClientTagHash::FromUnhashed(
+        AUTOFILL_WALLET_OFFER, GetUnhashedClientTagFromAutofillOfferSpecifics(
+                                   data->specifics.autofill_offer()));
+  } else {
+    NOTREACHED();
+  }
 }
 
 }  // namespace
@@ -298,8 +309,9 @@ ModelTypeWorker::DecryptionStatus ModelTypeWorker::PopulateUpdateResponseData(
                           specifics_were_encrypted);
     data.is_bookmark_guid_in_specifics_preprocessed =
         AdaptGuidForBookmark(update_entity, &data.specifics);
-  } else if (model_type == AUTOFILL_WALLET_DATA) {
-    AdaptClientTagForWalletData(&data);
+  } else if (model_type == AUTOFILL_WALLET_DATA ||
+             model_type == AUTOFILL_WALLET_OFFER) {
+    AdaptClientTagForFullUpdateData(model_type, &data);
   }
 
   response_data->entity = std::move(data);

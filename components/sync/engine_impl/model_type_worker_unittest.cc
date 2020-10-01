@@ -1645,6 +1645,25 @@ TEST_F(ModelTypeWorkerTest,
   EXPECT_FALSE(response_data.entity.client_tag_hash.value().empty());
 }
 
+TEST_F(ModelTypeWorkerTest,
+       PopulateUpdateResponseDataForOfferDataWithMissingClientTagHash) {
+  NormalInitialize();
+  UpdateResponseData response_data;
+
+  // Set up the entity with an arbitrary value for an arbitrary field in the
+  // specifics (so that it _has_ autofill offer specifics).
+  sync_pb::SyncEntity entity;
+  entity.mutable_specifics()->mutable_autofill_offer()->set_id(1234567);
+
+  ASSERT_EQ(ModelTypeWorker::SUCCESS,
+            ModelTypeWorker::PopulateUpdateResponseData(
+                /*cryptographer=*/nullptr, AUTOFILL_WALLET_OFFER, entity,
+                &response_data));
+
+  // The client tag hash gets filled in by the worker.
+  EXPECT_FALSE(response_data.entity.client_tag_hash.value().empty());
+}
+
 class GetLocalChangesRequestTest : public testing::Test {
  public:
   GetLocalChangesRequestTest();
