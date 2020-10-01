@@ -127,11 +127,6 @@ external/wpt/webgl [ Skip ]
 # (if it's a blink/test tooling issue) or an upstream bug reference
 # (if the test itself is buggy).
 
-# wpt.config.json overrides the following files with LayoutTests/resources
-# files. Having unused files would be confusing.
-external/wpt/resources/testdriver-vendor.js [ Skip ]
-external/wpt/resources/testharnessreport.js [ Skip ]
-
 # crbug.com/490939: The following tests are too large.  They cause time out frequently.
 # [ Slow ] didn't help the following svg-in-*.html tests.
 external/wpt/html/rendering/replaced-elements/svg-embedded-sizing/svg-in-iframe-auto.html [ Skip ]
