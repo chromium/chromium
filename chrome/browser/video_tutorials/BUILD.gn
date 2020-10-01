@@ -65,6 +65,7 @@ if (is_android) {
       "android/java/src/org/chromium/chrome/browser/video_tutorials/VideoTutorialService.java",
       "android/java/src/org/chromium/chrome/browser/video_tutorials/iph/VideoIPHCoordinator.java",
       "android/java/src/org/chromium/chrome/browser/video_tutorials/iph/VideoTutorialIPHUtils.java",
+      "android/java/src/org/chromium/chrome/browser/video_tutorials/list/TutorialListCoordinator.java",
       "android/java/src/org/chromium/chrome/browser/video_tutorials/player/VideoPlayerCoordinator.java",
     ]
 
@@ -85,9 +86,13 @@ if (is_android) {
 
   android_resources("java_resources") {
     create_srcjar = false
-    sources = [ "android/java/res/layout/video_tutorial_iph_card.xml" ]
+    sources = [
+      "android/java/res/layout/video_tutorial_iph_card.xml",
+      "android/java/res/layout/video_tutorial_list.xml",
+    ]
 
     deps = [
+      "//chrome/browser/download/android:java_resources",
       "//chrome/browser/ui/android/strings:ui_strings_grd",
       "//components/browser_ui/widget/android:java_resources",
       "//ui/android:ui_java_resources",
@@ -109,6 +114,7 @@ if (is_android) {
       "//chrome/browser/profiles/android:java",
       "//components/embedder_support/android:content_view_java",
       "//content/public/android:content_java",
+      "//third_party/android_deps:androidx_recyclerview_recyclerview_java",
     ]
 
     # This internal file will be replaced by a generated file so the resulting

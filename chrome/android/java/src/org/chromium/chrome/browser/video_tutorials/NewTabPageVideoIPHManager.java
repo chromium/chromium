@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.video_tutorials;
 
+import android.content.Context;
 import android.view.ViewStub;
 
 import org.chromium.base.Callback;
@@ -27,6 +28,7 @@ import java.util.List;
  * dismissed.
  */
 public class NewTabPageVideoIPHManager {
+    private Context mContext;
     private Tracker mTracker;
     private VideoIPHCoordinator mVideoIPHCoordinator;
     private VideoTutorialService mVideoTutorialService;
@@ -39,6 +41,7 @@ public class NewTabPageVideoIPHManager {
     public NewTabPageVideoIPHManager(ViewStub viewStub, Profile profile) {
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.VIDEO_TUTORIALS)) return;
 
+        mContext = viewStub.getContext();
         mTracker = TrackerFactory.getTrackerForProfile(profile);
         ImageFetcher imageFetcher =
                 ImageFetcherFactory.createImageFetcher(ImageFetcherConfig.IN_MEMORY_WITH_DISK_CACHE,
@@ -76,6 +79,7 @@ public class NewTabPageVideoIPHManager {
         mTracker.notifyEvent(VideoTutorialIPHUtils.getClickEvent(tutorial.featureType));
 
         // Bring up the player and start playing the video.
+        VideoPlayerActivity.playVideoTutorial(mContext, tutorial);
     }
 
     private void onDismissIPH(Tutorial tutorial) {

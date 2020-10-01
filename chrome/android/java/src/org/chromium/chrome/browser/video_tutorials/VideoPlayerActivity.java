@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.video_tutorials;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Pair;
 import android.view.WindowManager;
@@ -68,5 +70,13 @@ public class VideoPlayerActivity extends Activity {
     protected void onDestroy() {
         mCoordinator.destroy();
         super.onDestroy();
+    }
+
+    /** Called to launch this activity to play a given video tutorial. */
+    static void playVideoTutorial(Context context, Tutorial tutorial) {
+        Intent intent = new Intent();
+        intent.setClass(context, VideoPlayerActivity.class);
+        intent.putExtra(VideoPlayerActivity.EXTRA_VIDEO_TUTORIAL, tutorial.featureType);
+        context.startActivity(intent);
     }
 }

@@ -642,6 +642,12 @@ by a child template that "extends" this file.
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize">
         </activity>
 
+        <!-- Activities for video tutorials. -->
+        <activity android:name="org.chromium.chrome.browser.video_tutorials.VideoTutorialListActivity"
+            android:theme="@style/Theme.Chromium.Activity.Fullscreen"
+            android:exported="false">
+        </activity>
+
         <!-- Activities for downloads. -->
         <activity android:name="org.chromium.chrome.browser.download.DownloadActivity"
             android:theme="@style/Theme.Chromium.Activity.Fullscreen"

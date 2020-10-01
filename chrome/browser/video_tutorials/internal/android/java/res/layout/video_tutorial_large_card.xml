@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2020 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<androidx.gridlayout.widget.GridLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:clickable="true"
+    android:focusable="true"
+    android:background="@drawable/hairline_border_card_background"
+    app:columnCount="1"
+    app:rowCount="2">
+
+    <org.chromium.ui.widget.ChromeImageView
+        android:id="@+id/thumbnail"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_marginTop="1dp"
+        android:layout_marginStart="1dp"
+        android:layout_marginEnd="1dp"
+        android:scaleType="centerCrop"
+        android:adjustViewBounds="true"
+        app:layout_column="0"
+        app:layout_row="0"
+        app:layout_gravity="center"
+        app:cornerRadiusTopStart="@dimen/download_manager_thumbnail_corner_radius"
+        app:cornerRadiusTopEnd="@dimen/download_manager_thumbnail_corner_radius"
+        app:roundedfillColor="@color/modern_grey_300"/>
+
+    <org.chromium.ui.widget.ChromeImageButton
+        android:id="@+id/action_button"
+        app:layout_column="0"
+        app:layout_row="0"
+        app:layout_gravity="center"
+        android:elevation="2dp"
+        android:clickable="false"
+        style="@style/LargeMediaPlayButton"/>
+
+    <TextView
+        android:id="@+id/video_length"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="11dp"
+        android:layout_marginBottom="11dp"
+        app:layout_column="0"
+        app:layout_row="0"
+        app:layout_gravity="bottom"
+        android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="11dp"
+        android:layout_marginTop="11dp"
+        android:layout_marginBottom="11dp"
+        android:maxLines="1"
+        android:ellipsize="end"
+        app:layout_column="0"
+        app:layout_row="1"
+        android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
+
+</androidx.gridlayout.widget.GridLayout>

@@ -71,6 +71,10 @@ if (is_android) {
       "android/java/src/org/chromium/chrome/browser/video_tutorials/languages/LanguagePickerMediator.java",
       "android/java/src/org/chromium/chrome/browser/video_tutorials/languages/LanguagePickerProperties.java",
       "android/java/src/org/chromium/chrome/browser/video_tutorials/languages/LanguagePickerView.java",
+      "android/java/src/org/chromium/chrome/browser/video_tutorials/list/TutorialCardProperties.java",
+      "android/java/src/org/chromium/chrome/browser/video_tutorials/list/TutorialCardViewBinder.java",
+      "android/java/src/org/chromium/chrome/browser/video_tutorials/list/TutorialListCoordinatorImpl.java",
+      "android/java/src/org/chromium/chrome/browser/video_tutorials/list/TutorialListMediator.java",
       "android/java/src/org/chromium/chrome/browser/video_tutorials/metrics/VideoTutorialMetrics.java",
       "android/java/src/org/chromium/chrome/browser/video_tutorials/player/VideoPlayerCoordinatorImpl.java",
       "android/java/src/org/chromium/chrome/browser/video_tutorials/player/VideoPlayerMediator.java",
@@ -113,6 +117,7 @@ if (is_android) {
       "android/java/res/layout/language_picker.xml",
       "android/java/res/layout/video_player_controls.xml",
       "android/java/res/layout/video_player_loading.xml",
+      "android/java/res/layout/video_tutorial_large_card.xml",
     ]
 
     deps = [

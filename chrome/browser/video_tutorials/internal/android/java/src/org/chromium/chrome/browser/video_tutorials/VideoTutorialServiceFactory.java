@@ -8,6 +8,8 @@ import android.content.Context;
 import android.util.Pair;
 import android.view.ViewStub;
 
+import androidx.recyclerview.widget.RecyclerView;
+
 import org.chromium.base.Callback;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.supplier.Supplier;
@@ -15,6 +17,8 @@ import org.chromium.chrome.browser.image_fetcher.ImageFetcher;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.video_tutorials.iph.VideoIPHCoordinator;
 import org.chromium.chrome.browser.video_tutorials.iph.VideoIPHCoordinatorImpl;
+import org.chromium.chrome.browser.video_tutorials.list.TutorialListCoordinator;
+import org.chromium.chrome.browser.video_tutorials.list.TutorialListCoordinatorImpl;
 import org.chromium.chrome.browser.video_tutorials.player.VideoPlayerCoordinator;
 import org.chromium.chrome.browser.video_tutorials.player.VideoPlayerCoordinatorImpl;
 import org.chromium.components.embedder_support.view.ContentView;
@@ -52,7 +56,14 @@ public class VideoTutorialServiceFactory {
                 context, videoTutorialService, webContentsFactory, closeCallback);
     }
 
-    /** For testing only. */
+    /** See {@link TutorialListCoordinator}.*/
+    public static TutorialListCoordinator createTutorialListCoordinator(RecyclerView recyclerView,
+            VideoTutorialService videoTutorialService, ImageFetcher imageFetcher,
+            Callback<Tutorial> clickCallback) {
+        return new TutorialListCoordinatorImpl(
+                recyclerView, videoTutorialService, imageFetcher, clickCallback);
+    }
+
     public static void setVideoTutorialServiceForTesting(VideoTutorialService provider) {
         sVideoTutorialServiceForTesting = provider;
     }

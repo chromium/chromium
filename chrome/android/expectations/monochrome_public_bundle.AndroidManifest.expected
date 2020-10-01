@@ -503,6 +503,11 @@
         android:name="org.chromium.chrome.browser.video_tutorials.VideoPlayerActivity"
         android:theme="@style/Theme.Chromium.Activity.Fullscreen">
     </activity>  # DIFF-ANCHOR: bf27023e
+    <activity  # DIFF-ANCHOR: f15792de
+        android:exported="false"
+        android:name="org.chromium.chrome.browser.video_tutorials.VideoTutorialListActivity"
+        android:theme="@style/Theme.Chromium.Activity.Fullscreen">
+    </activity>  # DIFF-ANCHOR: f15792de
     <activity  # DIFF-ANCHOR: b007dcaa
         android:enableVrMode="@string/gvr_vr_mode_component"
         android:excludeFromRecents="true"

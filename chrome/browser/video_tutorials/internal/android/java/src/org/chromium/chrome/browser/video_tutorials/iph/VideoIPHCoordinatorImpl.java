@@ -53,7 +53,7 @@ public class VideoIPHCoordinatorImpl implements VideoIPHCoordinator {
 
         mModel.set(VideoIPHProperties.THUMBNAIL, null);
         ImageFetcher.Params params = ImageFetcher.Params.create(
-                tutorial.posterUrl, ImageFetcher.VIDEO_TUTORIALS_UMA_CLIENT_NAME);
+                tutorial.posterUrl, ImageFetcher.VIDEO_TUTORIALS_IPH_UMA_CLIENT_NAME);
         mImageFetcher.fetchImage(
                 params, bitmap -> mModel.set(VideoIPHProperties.THUMBNAIL, bitmap));
     }
