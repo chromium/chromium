@@ -49,26 +49,29 @@ export class ViewerThumbnailBarElement extends PolymerElement {
     /** @private {!IntersectionObserver} */
     this.intersectionObserver_ = new IntersectionObserver(entries => {
       entries.forEach(entry => {
-        if (!entry.isIntersecting) {
-          // TODO(crbug.com/652400): Unpaint thumbnails.
-          return;
-        }
-
         const thumbnail = /** @type {!ViewerThumbnailElement} */ (entry.target);
-        if (thumbnail.isPending()) {
+
+        if (!entry.isIntersecting) {
+          thumbnail.clearImage();
           return;
         }
 
-        thumbnail.setPending();
+        if (thumbnail.isPainted()) {
+          return;
+        }
+
+        thumbnail.setPainted();
         this.dispatchEvent(new CustomEvent(
             'paint-thumbnail',
             {detail: thumbnail, bubbles: true, composed: true}));
       });
     }, {
       root: thumbnailsDiv,
-      // The vertical root margin is set to 100% to also track thumbnails that
-      // are one standard finger swipe away.
-      rootMargin: '100% 0%',
+      // The root margin is set to 100% on the bottom to prepare thumbnails that
+      // are one standard scroll finger swipe away.
+      // The root margin is set to 500% on the top to discard thumbnails that
+      // far from view, but to avoid regenerating thumbnails that are close.
+      rootMargin: '500% 0% 100%',
     });
 
     FocusOutlineManager.forDocument(document);

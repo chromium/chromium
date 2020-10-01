@@ -16,6 +16,9 @@ const PORTRAIT_WIDTH = 108;
 /** @type {number} */
 const LANDSCAPE_WIDTH = 140;
 
+/** @type {string} */
+const PAINTED_ATTRIBUTE = 'painted';
+
 export class ViewerThumbnailElement extends PolymerElement {
   static get is() {
     return 'viewer-thumbnail';
@@ -66,7 +69,20 @@ export class ViewerThumbnailElement extends PolymerElement {
 
     const ctx = canvas.getContext('2d');
     ctx.putImageData(imageData, 0, 0);
-    this.removeAttribute('pending');
+  }
+
+  clearImage() {
+    if (!this.isPainted()) {
+      return;
+    }
+
+    const canvas = this.getCanvas_();
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    this.removeAttribute(PAINTED_ATTRIBUTE);
+
+    // For tests
+    this.dispatchEvent(new CustomEvent('clear-thumbnail-for-testing'));
   }
 
   /** @return {!HTMLElement} */
@@ -122,12 +138,12 @@ export class ViewerThumbnailElement extends PolymerElement {
   }
 
   /** @return {boolean} */
-  isPending() {
-    return this.hasAttribute('pending');
+  isPainted() {
+    return this.hasAttribute(PAINTED_ATTRIBUTE);
   }
 
-  setPending() {
-    this.toggleAttribute('pending', true);
+  setPainted() {
+    this.toggleAttribute(PAINTED_ATTRIBUTE, true);
   }
 
   /** @private */

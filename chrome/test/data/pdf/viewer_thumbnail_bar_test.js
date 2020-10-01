@@ -18,6 +18,18 @@ function createThumbnailBar() {
   return thumbnailBar;
 }
 
+/** @return {number} */
+function getTestThumbnailBarHeight() {
+  // Create a viewer-thumbnail element to get the standard height.
+  document.body.innerHTML = '';
+  const sizerThumbnail = document.createElement('viewer-thumbnail');
+  sizerThumbnail.pageNumber = 1;
+  document.body.appendChild(sizerThumbnail);
+  // Add 24 to cover padding between thumbnails.
+  const thumbnailBarHeight = sizerThumbnail.offsetHeight + 24;
+  return thumbnailBarHeight;
+}
+
 // Unit tests for the viewer-thumbnail-bar element.
 const tests = [
   // Test that the thumbnail bar has the correct number of thumbnails and
@@ -60,15 +72,10 @@ const tests = [
     });
   },
   function testTriggerPaint() {
-    // Create a viewer-thumbnail element to get the standard height.
-    document.body.innerHTML = '';
-    const sizerThumbnail = document.createElement('viewer-thumbnail');
-    document.body.appendChild(sizerThumbnail);
-    // Add 24 to cover padding between thumbnails.
-    const thumbnailBarHeight = sizerThumbnail.offsetHeight + 24;
+    const thumbnailBarHeight = getTestThumbnailBarHeight();
 
     // Clear HTML for just the thumbnail bar.
-    const testDocLength = 4;
+    const testDocLength = 8;
     const thumbnailBar = createThumbnailBar();
     thumbnailBar.docLength = testDocLength;
 
@@ -76,6 +83,10 @@ const tests = [
     // another should be hidden by intersecting the observer.
     thumbnailBar.style.height = `${thumbnailBarHeight}px`;
     thumbnailBar.style.display = 'block';
+
+    // Remove any padding from the scroller.
+    const scroller = thumbnailBar.shadowRoot.querySelector('#thumbnails');
+    scroller.style.padding = '';
 
     flush();
 
@@ -99,35 +110,52 @@ const tests = [
       });
     }
 
-    const whenRequestedPaintingFirst = [
-      paintThumbnailToPromise(thumbnails[0]),
-      paintThumbnailToPromise(thumbnails[1]),
-    ];
-
     testAsync(async () => {
+      // Only two thumbnails should be "painted" upon load.
+      const whenRequestedPaintingFirst = [
+        paintThumbnailToPromise(thumbnails[0]),
+        paintThumbnailToPromise(thumbnails[1]),
+      ];
       await Promise.all(whenRequestedPaintingFirst);
 
-      // Only two thumbnails should be pending.
+      chrome.test.assertEq(testDocLength, thumbnails.length);
       for (let i = 0; i < thumbnails.length; i++) {
-        chrome.test.assertEq(i < 2, thumbnails[i].hasAttribute('pending'));
+        chrome.test.assertEq(i < 2, thumbnails[i].isPainted());
       }
 
-      // Test that scrolling to the bottom triggers 'paint-thumbnail' events for
-      // the remaining thumbnails.
-      const whenRequestedPaintingLast = [
-        paintThumbnailToPromise(thumbnails[2]),
-        paintThumbnailToPromise(thumbnails[3]),
-      ];
+      // Test that scrolling to the sixth thumbnail triggers 'paint-thumbnail'
+      // for thumbnails 3 through 7. When on the sixth thumbnail, five
+      // thumbnails above and one thumbnail below should also be painted because
+      // of the 500% top and 100% bottom root margins.
+      const whenRequestedPaintingNext = [];
+      for (let i = 2; i < 7; i++) {
+        whenRequestedPaintingNext.push(paintThumbnailToPromise(thumbnails[i]));
+      }
+      scroller.scrollTop = 5 * thumbnailBarHeight;
+      await Promise.all(whenRequestedPaintingNext);
 
-      thumbnailBar.shadowRoot.querySelector('#thumbnails').scrollTop =
-          2 * thumbnailBarHeight;
+      // First seven thumbnails should be painted.
+      for (let i = 0; i < thumbnails.length; i++) {
+        chrome.test.assertEq(i < 7, thumbnails[i].isPainted());
+      }
+
+      // Test that scrolling down to the eighth thumbnail will clear the
+      // thumbnails outside the root margin, namely the first two. A paint
+      // should also be triggered for the eighth thumbnail.
+      const whenRequestedPaintingLast = [
+        paintThumbnailToPromise(thumbnails[7]),
+        eventToPromise('clear-thumbnail-for-testing', thumbnails[0]),
+        eventToPromise('clear-thumbnail-for-testing', thumbnails[1]),
+      ];
+      scroller.scrollTop = 7 * thumbnailBarHeight;
       await Promise.all(whenRequestedPaintingLast);
 
-      for (const thumbnail of thumbnails) {
-        chrome.test.assertTrue(thumbnail.hasAttribute('pending'));
+      // Only first two thumbnails should not be painted.
+      for (let i = 0; i < thumbnails.length; i++) {
+        chrome.test.assertEq(i > 1, thumbnails[i].isPainted());
       }
     });
-  }
+  },
 ];
 
 chrome.test.runTests(tests);
