@@ -158,7 +158,7 @@ class WebAppInstallTask : content::WebContentsObserver {
 
  private:
   void CheckInstallPreconditions();
-  void RecordInstallEvent(ForInstallableSite for_installable_site);
+  void RecordInstallEvent();
 
   // Calling the callback may destroy |this| task. Callers shouldn't work with
   // any |this| class members after calling it.

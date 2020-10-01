@@ -57,6 +57,7 @@ Source::Type InferSourceFromMetricsInstallSource(
     case WebappInstallSource::AMBIENT_BADGE_CUSTOM_TAB:
     case WebappInstallSource::OMNIBOX_INSTALL_ICON:
     case WebappInstallSource::SYNC:
+    case WebappInstallSource::MENU_CREATE_SHORTCUT:
       return Source::kSync;
 
     case WebappInstallSource::INTERNAL_DEFAULT:

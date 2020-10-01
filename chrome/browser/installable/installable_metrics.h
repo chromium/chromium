@@ -18,6 +18,7 @@ enum class InstallTrigger {
   API,
   AUTOMATIC_PROMPT,
   MENU,
+  CREATE_SHORTCUT,
 };
 
 // Sources for triggering webapp installation.
@@ -76,6 +77,9 @@ enum class WebappInstallSource {
 
   // Installed from sync (not reported by |TrackInstallEvent|).
   SYNC = 16,
+
+  // Create shortcut item in menu
+  MENU_CREATE_SHORTCUT = 17,
 
   // Add any new values above this one.
   COUNT,

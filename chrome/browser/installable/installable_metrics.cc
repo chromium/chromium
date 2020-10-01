@@ -36,7 +36,8 @@ bool InstallableMetrics::IsReportableInstallSource(WebappInstallSource source) {
          source == WebappInstallSource::EXTERNAL_DEFAULT ||
          source == WebappInstallSource::EXTERNAL_POLICY ||
          source == WebappInstallSource::SYSTEM_DEFAULT ||
-         source == WebappInstallSource::OMNIBOX_INSTALL_ICON;
+         source == WebappInstallSource::OMNIBOX_INSTALL_ICON ||
+         source == WebappInstallSource::MENU_CREATE_SHORTCUT;
 }
 
 // static
@@ -63,6 +64,11 @@ WebappInstallSource InstallableMetrics::GetInstallSource(
     case InstallTrigger::MENU:
       return is_custom_tab ? WebappInstallSource::MENU_CUSTOM_TAB
                            : WebappInstallSource::MENU_BROWSER_TAB;
+    // Create shortcut does not exist on Android, so it doesn't apply to custom
+    // tab.
+    case InstallTrigger::CREATE_SHORTCUT:
+      DCHECK(!is_custom_tab);
+      return WebappInstallSource::MENU_CREATE_SHORTCUT;
   }
   NOTREACHED();
   return WebappInstallSource::COUNT;

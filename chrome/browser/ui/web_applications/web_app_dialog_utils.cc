@@ -108,8 +108,9 @@ void CreateWebAppFromCurrentWebContents(Browser* browser,
   auto* provider = WebAppProvider::GetForWebContents(web_contents);
   DCHECK(provider);
 
-  WebappInstallSource install_source =
-      InstallableMetrics::GetInstallSource(web_contents, InstallTrigger::MENU);
+  WebappInstallSource install_source = InstallableMetrics::GetInstallSource(
+      web_contents, force_shortcut_app ? InstallTrigger::CREATE_SHORTCUT
+                                       : InstallTrigger::MENU);
 
   WebAppInstalledCallback callback = base::DoNothing();
 

@@ -3,9 +3,11 @@
 // found in the LICENSE file.
 
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/banners/test_app_banner_manager_desktop.h"
+#include "chrome/browser/installable/installable_metrics.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_dialogs.h"
@@ -16,6 +18,7 @@
 #include "chrome/browser/web_applications/components/app_registry_controller.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
+#include "chrome/browser/web_applications/components/web_app_prefs_utils.h"
 #include "chrome/browser/web_applications/components/web_app_provider_base.h"
 #include "chrome/browser/web_applications/test/web_app_install_observer.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
@@ -61,6 +64,29 @@ IN_PROC_BROWSER_TEST_P(CreateShortcutBrowserTest,
 
   EXPECT_EQ(0, user_action_tester.GetActionCount("InstallWebAppFromMenu"));
   EXPECT_EQ(1, user_action_tester.GetActionCount("CreateShortcut"));
+}
+
+IN_PROC_BROWSER_TEST_P(CreateShortcutBrowserTest, InstallSourceRecorded) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // LatestWebAppInstallSource should be correctly set and reported to UMA for
+  // both installable and non-installable sites.
+  for (const GURL& url : {GetInstallableAppURL(),
+                          embedded_test_server()->GetURL(
+                              "/web_apps/theme_color_only_manifest.html")}) {
+    base::HistogramTester histogram_tester;
+    NavigateToURLAndWait(browser(), url);
+    AppId app_id = InstallShortcutAppForCurrentUrl();
+
+    base::Optional<int> install_source = GetIntWebAppPref(
+        profile()->GetPrefs(), app_id, kLatestWebAppInstallSource);
+    EXPECT_TRUE(install_source.has_value());
+    EXPECT_EQ(static_cast<WebappInstallSource>(*install_source),
+              WebappInstallSource::MENU_CREATE_SHORTCUT);
+    histogram_tester.ExpectUniqueSample(
+        "Webapp.Install.InstallEvent",
+        static_cast<int>(WebappInstallSource::MENU_CREATE_SHORTCUT), 1);
+  }
 }
 
 IN_PROC_BROWSER_TEST_P(CreateShortcutBrowserTest,

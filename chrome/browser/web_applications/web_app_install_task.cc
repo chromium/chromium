@@ -202,7 +202,7 @@ void WebAppInstallTask::InstallWebAppFromInfo(
   install_source_ = install_source;
   background_installation_ = true;
 
-  RecordInstallEvent(for_installable_site);
+  RecordInstallEvent();
 
   InstallFinalizer::FinalizeOptions options;
   options.install_source = install_source;
@@ -314,12 +314,10 @@ void WebAppInstallTask::CheckInstallPreconditions() {
   initiated_ = true;
 }
 
-void WebAppInstallTask::RecordInstallEvent(
-    ForInstallableSite for_installable_site) {
+void WebAppInstallTask::RecordInstallEvent() {
   DCHECK(install_source_ != kNoInstallSource);
 
-  if (InstallableMetrics::IsReportableInstallSource(install_source_) &&
-      for_installable_site == ForInstallableSite::kYes) {
+  if (InstallableMetrics::IsReportableInstallSource(install_source_)) {
     InstallableMetrics::TrackInstallEvent(install_source_);
   }
 }
@@ -717,7 +715,7 @@ void WebAppInstallTask::OnDialogCompleted(
   WebApplicationInfo web_app_info_copy = *web_app_info;
 
   // This metric is recorded regardless of the installation result.
-  RecordInstallEvent(for_installable_site);
+  RecordInstallEvent();
 
   InstallFinalizer::FinalizeOptions finalize_options;
   finalize_options.install_source = install_source_;
