@@ -36,6 +36,12 @@ WGPUBindGroupLayoutEntry AsDawnType(
       webgpu_binding->textureComponentType());
   dawn_binding.multisampled = webgpu_binding->multisampled();
 
+  if (dawn_binding.multisampled) {
+    device->AddConsoleWarning(
+        "Creating a GPUBindGroupLayoutEntry with entry.multisampled = true is "
+        "deprecated: set entry.type = \"multisampled-texture\" instead.");
+  }
+
   dawn_binding.storageTextureFormat =
       AsDawnEnum<WGPUTextureFormat>(webgpu_binding->storageTextureFormat());
 
