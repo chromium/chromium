@@ -38,6 +38,8 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metrics.h"
+#include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
+#include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/modules/v8/rendering_context.h"
@@ -680,12 +682,13 @@ ImageData* CanvasRenderingContext2D::getImageData(
     int sw,
     int sh,
     ExceptionState& exception_state) {
-  blink::IdentifiabilityMetricBuilder(ukm_source_id_)
-      .Set(blink::IdentifiableSurface::FromTypeAndToken(
-               blink::IdentifiableSurface::Type::kCanvasReadback,
-               GetContextType()),
-           0)
-      .Record(ukm_recorder_);
+  const IdentifiableSurface surface = IdentifiableSurface::FromTypeAndToken(
+      IdentifiableSurface::Type::kCanvasReadback, GetContextType());
+  if (IdentifiabilityStudySettings::Get()->IsSurfaceAllowed(surface)) {
+    blink::IdentifiabilityMetricBuilder(ukm_source_id_)
+        .Set(surface, 0)
+        .Record(ukm_recorder_);
+  }
   return BaseRenderingContext2D::getImageData(sx, sy, sw, sh, exception_state);
 }
 
