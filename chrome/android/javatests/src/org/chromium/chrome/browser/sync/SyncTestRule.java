@@ -234,7 +234,8 @@ public class SyncTestRule extends ChromeActivityTestRule<ChromeActivity> {
     }
 
     public void signinAndEnableSync(final Account account) {
-        SigninTestUtil.signinAndEnableSync(account, mProfileSyncService);
+        SigninTestUtil.signinAndEnableSync(
+                mAccountManagerTestRule.toCoreAccountInfo(account.name), mProfileSyncService);
         enableUKM();
         SyncTestUtil.waitForSyncActive();
         SyncTestUtil.triggerSyncAndWaitForCompletion();

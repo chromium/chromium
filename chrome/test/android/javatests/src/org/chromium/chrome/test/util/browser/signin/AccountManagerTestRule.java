@@ -178,7 +178,8 @@ public class AccountManagerTestRule implements TestRule {
             @Nullable ProfileSyncService profileSyncService) {
         assert !mIsSignedIn : "An account is already signed in!";
         Account account = addAccountAndWaitForSeeding(TEST_ACCOUNT_EMAIL);
-        SigninTestUtil.signinAndEnableSync(account, profileSyncService);
+        CoreAccountInfo coreAccountInfo = toCoreAccountInfo(account.name);
+        SigninTestUtil.signinAndEnableSync(coreAccountInfo, profileSyncService);
         mIsSignedIn = true;
         return account;
     }

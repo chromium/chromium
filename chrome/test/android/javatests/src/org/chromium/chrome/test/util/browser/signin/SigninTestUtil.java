@@ -82,14 +82,14 @@ public final class SigninTestUtil {
      * @param profileSyncService Enable the sync with it if it is not null.
      */
     public static void signinAndEnableSync(
-            Account account, @Nullable ProfileSyncService profileSyncService) {
+            CoreAccountInfo coreAccountInfo, @Nullable ProfileSyncService profileSyncService) {
         CallbackHelper callbackHelper = new CallbackHelper();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(
                     Profile.getLastUsedRegularProfile());
             signinManager.onFirstRunCheckDone(); // Allow sign-in
             signinManager.signinAndEnableSync(
-                    SigninAccessPoint.UNKNOWN, account, new SigninManager.SignInCallback() {
+                    SigninAccessPoint.UNKNOWN, coreAccountInfo, new SigninManager.SignInCallback() {
                         @Override
                         public void onSignInComplete() {
                             if (profileSyncService != null) {
@@ -111,11 +111,10 @@ public final class SigninTestUtil {
             throw new RuntimeException("Timed out waiting for callback", e);
         }
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertEquals(account.name,
+            Assert.assertEquals(coreAccountInfo,
                     IdentityServicesProvider.get()
                             .getIdentityManager(Profile.getLastUsedRegularProfile())
-                            .getPrimaryAccountInfo(ConsentLevel.SYNC)
-                            .getEmail());
+                            .getPrimaryAccountInfo(ConsentLevel.SYNC));
         });
     }
 
