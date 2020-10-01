@@ -6,17 +6,13 @@
 
 #include <algorithm>
 #include <memory>
-#include <vector>
 
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_provider.h"
 #include "ash/system/phonehub/phone_hub_interstitial_view.h"
 #include "base/strings/string16.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
-#include "ui/views/controls/button/button.h"
-#include "ui/views/controls/button/label_button.h"
 #include "ui/views/layout/fill_layout.h"
 
 namespace ash {
@@ -35,22 +31,9 @@ InitialConnectingView::InitialConnectingView() {
       IDS_ASH_PHONE_HUB_INITIAL_CONNECTING_DIALOG_TITLE));
   content_view_->SetDescription(l10n_util::GetStringUTF16(
       IDS_ASH_PHONE_HUB_INITIAL_CONNECTING_DIALOG_DESCRIPTION));
-
-  // Add "Cancel" button for canceling the connection attempt.
-  auto cancel = std::make_unique<views::LabelButton>(
-      this, l10n_util::GetStringUTF16(
-                IDS_ASH_PHONE_HUB_INITIAL_CONNECTING_DIALOG_CANCEL_BUTTON));
-  cancel->SetEnabledTextColors(AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorPrimary));
-  content_view_->AddButton(std::move(cancel));
 }
 
 InitialConnectingView::~InitialConnectingView() = default;
-
-void InitialConnectingView::ButtonPressed(views::Button* sender,
-                                          const ui::Event& event) {
-  // TODO(meilinw): implement button pressed actions.
-}
 
 BEGIN_METADATA(InitialConnectingView, views::View)
 END_METADATA

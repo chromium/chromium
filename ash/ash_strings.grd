@@ -1071,9 +1071,6 @@ This file contains the strings for ash.
       <message name="IDS_ASH_PHONE_HUB_INITIAL_CONNECTING_DIALOG_DESCRIPTION" desc="The description of the onboarding dialog that indicates the device is trying to connect to your phone after the user has opted in the Phone Hub feature." translateable="false">
         Make sure your phone is nearby with Bluetooth and Wi-Fi turned on.
       </message>
-      <message name="IDS_ASH_PHONE_HUB_INITIAL_CONNECTING_DIALOG_CANCEL_BUTTON" desc="Cancel button on the initial connecting dialog to cancel the connection attempt to your phone.">
-        Cancel
-      </message>
       <message name="IDS_ASH_PHONE_HUB_CONNECTION_ERROR_DIALOG_TITLE" desc="The title of the dialog that pops up when the Phone Hub feature is not available because there is currently no active connection to the phone.">
         Uh Oh! Can’t find phone
       </message>

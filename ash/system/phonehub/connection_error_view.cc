@@ -45,7 +45,10 @@ ConnectionErrorView::ConnectionErrorView(ErrorStatus error) {
   content_view_->SetDescription(l10n_util::GetStringUTF16(
       IDS_ASH_PHONE_HUB_CONNECTION_ERROR_DIALOG_DESCRIPTION));
 
-  // Add "Learn more" and "Refresh" buttons.
+  if (error == ErrorStatus::kReconnecting)
+    return;
+
+  // Add "Learn more" and "Refresh" buttons only for disconnected state.
   auto learn_more = std::make_unique<views::LabelButton>(
       this, l10n_util::GetStringUTF16(
                 IDS_ASH_PHONE_HUB_CONNECTION_ERROR_DIALOG_LEARN_MORE_BUTTON));
