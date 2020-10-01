@@ -845,6 +845,13 @@ bool AppListView::IsShowingEmbeddedAssistantUI() const {
   return app_list_main_view()->contents_view()->IsShowingEmbeddedAssistantUI();
 }
 
+bool AppListView::IsFolderBeingRenamed() {
+  return GetAppsContainerView()
+      ->app_list_folder_view()
+      ->folder_header_view()
+      ->HasTextFocus();
+}
+
 void AppListView::UpdatePageResetTimer(bool app_list_visibility) {
   if (app_list_visibility || !delegate_->IsInTabletMode()) {
     page_reset_timer_.Stop();
@@ -2127,14 +2134,10 @@ void AppListView::RedirectKeyEventToSearchBox(ui::KeyEvent* event) {
 
   views::Textfield* search_box = search_box_view_->search_box();
   const bool is_search_box_focused = search_box->HasFocus();
-  const bool is_folder_header_view_focused = GetAppsContainerView()
-                                                 ->app_list_folder_view()
-                                                 ->folder_header_view()
-                                                 ->HasTextFocus();
 
   // Do not redirect the key event to the |search_box_| when focus is on a
   // text field.
-  if (is_search_box_focused || is_folder_header_view_focused)
+  if (is_search_box_focused || IsFolderBeingRenamed())
     return;
 
   // Do not redirect the arrow keys in app list as they are are used for focus

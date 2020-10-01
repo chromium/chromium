@@ -119,6 +119,9 @@ class FolderHeaderView::FolderNameView : public views::Textfield,
     if (!DoesMouseEventActuallyIntersect(event))
       return false;
 
+    if (!HasFocus())
+      defer_select_all_ = true;
+
     return Textfield::OnMousePressed(event);
   }
 
@@ -159,6 +162,8 @@ class FolderHeaderView::FolderNameView : public views::Textfield,
       if (!HasSelection())
         SelectAll(false);
     }
+
+    Textfield::OnMouseReleased(event);
   }
 
   bool DoesIntersectRect(const views::View* target,

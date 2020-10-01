@@ -310,6 +310,10 @@ void AppListPresenterDelegateImpl::OnKeyEvent(ui::KeyEvent* event) {
   if (view_->IsShowingEmbeddedAssistantUI())
     return;
 
+  // Don't absorb the first event when renaming folder.
+  if (view_->IsFolderBeingRenamed())
+    return;
+
   // Arrow keys or Tab will engage the traversal mode.
   if ((IsUnhandledArrowKeyEvent(*event) || event->key_code() == ui::VKEY_TAB)) {
     // Handle the first arrow key event to just show the focus rings.

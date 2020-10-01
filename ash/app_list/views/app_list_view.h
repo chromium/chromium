@@ -370,6 +370,9 @@ class APP_LIST_EXPORT AppListView : public views::WidgetDelegateView,
   // Returns true if the Embedded Assistant UI is currently being shown.
   bool IsShowingEmbeddedAssistantUI() const;
 
+  // Returns true if a folder is being renamed.
+  bool IsFolderBeingRenamed();
+
   // Starts or stops a timer which will reset the app list to the initial apps
   // page. Called when the app list's visibility changes.
   void UpdatePageResetTimer(bool app_list_visibility);
