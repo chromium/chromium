@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/optional.h"
 #include "base/strings/string_util.h"
 #include "chromeos/components/sync_wifi/network_eligibility_checker.h"
 #include "chromeos/login/login_state/login_state.h"
@@ -1268,7 +1269,7 @@ mojom::ManagedPropertiesPtr ManagedPropertiesToMojo(
       }
       cellular->auto_connect =
           GetManagedBoolean(cellular_dict, ::onc::cellular::kAutoConnect);
-      cellular->apn =
+      cellular->selected_apn =
           GetManagedApnProperties(cellular_dict, ::onc::cellular::kAPN);
       cellular->apn_list =
           GetManagedApnList(cellular_dict->FindKey(::onc::cellular::kAPNList));
@@ -1894,6 +1895,15 @@ void CrosNetworkConfig::OnGetManagedProperties(
   mojom::ManagedPropertiesPtr managed_properties = ManagedPropertiesToMojo(
       network_state, vpn_providers_, &properties.value());
 
+  if (managed_properties->type == mojom::NetworkType::kCellular) {
+    std::vector<mojom::ApnPropertiesPtr> custom_apn_list =
+        GetCustomAPNList(guid);
+    if (!custom_apn_list.empty()) {
+      managed_properties->type_properties->get_cellular()->custom_apn_list =
+          std::move(custom_apn_list);
+    }
+  }
+
   // For Ethernet networks with no authentication, check for a separate
   // EthernetEAP configuration.
   const NetworkState* eap_state = nullptr;
@@ -1981,6 +1991,11 @@ void CrosNetworkConfig::SetProperties(const std::string& guid,
       std::move(callback).Run(false, kErrorNetworkUnavailable);
     }
     network = eap_state;
+  }
+
+  if (network->type() == shill::kTypeCellular &&
+      properties->type_config->is_cellular()) {
+    UpdateCustomAPNList(network, properties.get());
   }
 
   std::unique_ptr<base::DictionaryValue> onc =
@@ -2333,6 +2348,78 @@ void CrosNetworkConfig::SelectCellularMobileNetworkFailure(
   DCHECK(iter != select_cellular_mobile_network_callbacks_.end());
   std::move(iter->second).Run(false);
   select_cellular_mobile_network_callbacks_.erase(iter);
+}
+
+void CrosNetworkConfig::UpdateCustomAPNList(
+    const NetworkState* network,
+    const mojom::ConfigProperties* properties) {
+  const mojom::CellularConfigProperties& cellular_config =
+      *properties->type_config->get_cellular();
+  if (!cellular_config.apn) {
+    return;
+  }
+
+  const DeviceState* device =
+      network_state_handler_->GetDeviceState(network->device_path());
+  DCHECK(device);
+  // Do not update custom APN list if APN is in device APN list.
+  if (device->HasAPN(cellular_config.apn->access_point_name)) {
+    return;
+  }
+
+  base::Value custom_apn(base::Value::Type::DICTIONARY);
+  custom_apn.SetStringKey(::onc::cellular_apn::kAccessPointName,
+                          cellular_config.apn->access_point_name);
+  SetString(::onc::cellular_apn::kName, cellular_config.apn->name, &custom_apn);
+  SetString(::onc::cellular_apn::kUsername, cellular_config.apn->username,
+            &custom_apn);
+  SetString(::onc::cellular_apn::kPassword, cellular_config.apn->password,
+            &custom_apn);
+  SetString(::onc::cellular_apn::kAuthentication,
+            cellular_config.apn->authentication, &custom_apn);
+  SetString(::onc::cellular_apn::kLocalizedName,
+            cellular_config.apn->localized_name, &custom_apn);
+  SetString(::onc::cellular_apn::kLanguage, cellular_config.apn->language,
+            &custom_apn);
+
+  // The UI currently only supports setting a single custom apn.
+  base::Value custom_apn_list(base::Value::Type::LIST);
+  custom_apn_list.Append(std::move(custom_apn));
+
+  NET_LOG(DEBUG) << "Saving Custom APN entry for " << network->guid();
+  NetworkMetadataStore* network_metadata_store =
+      NetworkHandler::Get()->network_metadata_store();
+  network_metadata_store->SetCustomAPNList(network->guid(),
+                                           std::move(custom_apn_list));
+}
+
+std::vector<mojom::ApnPropertiesPtr> CrosNetworkConfig::GetCustomAPNList(
+    const std::string& guid) {
+  NetworkMetadataStore* network_metadata_store =
+      NetworkHandler::Get()->network_metadata_store();
+  std::vector<mojom::ApnPropertiesPtr> mojo_custom_apns;
+  const base::Value* custom_apn_list =
+      network_metadata_store->GetCustomAPNList(guid);
+  if (!custom_apn_list) {
+    return mojo_custom_apns;
+  }
+  DCHECK(custom_apn_list->is_list());
+  for (const auto& apn : custom_apn_list->GetList()) {
+    DCHECK(apn.is_dict());
+    mojom::ApnPropertiesPtr mojo_apn = mojom::ApnProperties::New();
+    mojo_apn->access_point_name =
+        GetRequiredString(&apn, ::onc::cellular_apn::kAccessPointName);
+    mojo_apn->name = GetString(&apn, ::onc::cellular_apn::kName);
+    mojo_apn->username = GetString(&apn, ::onc::cellular_apn::kUsername);
+    mojo_apn->password = GetString(&apn, ::onc::cellular_apn::kPassword);
+    mojo_apn->authentication =
+        GetString(&apn, ::onc::cellular_apn::kAuthentication);
+    mojo_apn->localized_name =
+        GetString(&apn, ::onc::cellular_apn::kLocalizedName);
+    mojo_apn->language = GetString(&apn, ::onc::cellular_apn::kLanguage);
+    mojo_custom_apns.push_back(std::move(mojo_apn));
+  }
+  return mojo_custom_apns;
 }
 
 void CrosNetworkConfig::RequestNetworkScan(mojom::NetworkType type) {

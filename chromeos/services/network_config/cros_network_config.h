@@ -127,6 +127,10 @@ class CrosNetworkConfig : public mojom::CrosNetworkConfig,
       int callback_id,
       const std::string& error_name,
       std::unique_ptr<base::DictionaryValue> error_data);
+  void UpdateCustomAPNList(const NetworkState* network,
+                           const mojom::ConfigProperties* properties);
+  std::vector<mojom::ApnPropertiesPtr> GetCustomAPNList(
+      const std::string& guid);
 
   void StartConnectSuccess(int callback_id);
   void StartConnectFailure(int callback_id,

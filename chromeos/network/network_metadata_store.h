@@ -93,6 +93,14 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkMetadataStore
   // will always return false.
   bool GetHasBadPassword(const std::string& network_guid);
 
+  // Stores a list of user-entered APN entries for a cellular network. Takes
+  // ownership of |list|.
+  void SetCustomAPNList(const std::string& network_guid, base::Value list);
+
+  // Returns custom apn list for cellular network with given guid. Returns
+  // nullptr if no pref exists for |network_guid|.
+  const base::Value* GetCustomAPNList(const std::string& network_guid);
+
   // When the active user is the device owner and its the first login, this
   // marks networks that were added in OOBE to the user's list.
   void OwnSharedNetworksOnFirstUserLogin();

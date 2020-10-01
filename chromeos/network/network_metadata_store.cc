@@ -29,6 +29,7 @@ const char kIsFromSync[] = "is_from_sync";
 const char kOwner[] = "owner";
 const char kExternalModifications[] = "external_modifications";
 const char kBadPassword[] = "bad_password";
+const char kCustomApnList[] = "custom_apn_list";
 
 std::string GetPath(const std::string& guid, const std::string& subkey) {
   return base::StringPrintf("%s.%s", guid.c_str(), subkey.c_str());
@@ -333,6 +334,16 @@ bool NetworkMetadataStore::GetHasBadPassword(const std::string& network_guid) {
   }
 
   return has_bad_password->GetBool();
+}
+
+void NetworkMetadataStore::SetCustomAPNList(const std::string& network_guid,
+                                            base::Value list) {
+  SetPref(network_guid, kCustomApnList, std::move(list));
+}
+
+const base::Value* NetworkMetadataStore::GetCustomAPNList(
+    const std::string& network_guid) {
+  return GetPref(network_guid, kCustomApnList);
 }
 
 void NetworkMetadataStore::SetPref(const std::string& network_guid,

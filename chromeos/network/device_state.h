@@ -52,6 +52,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) DeviceState : public ManagedState {
   const std::string& imei() const { return imei_; }
   const std::string& iccid() const { return iccid_; }
   const std::string& mdn() const { return mdn_; }
+  const base::ListValue& apn_list() const { return apn_list_; }
   const CellularScanResults& scan_results() const { return scan_results_; }
 
   // |ip_configs_| is kept up to date by NetworkStateHandler.
@@ -88,6 +89,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) DeviceState : public ManagedState {
   bool IsSimAbsent() const;
   bool IsSimLocked() const;
 
+  // Returns true if |access_point_name| exists in apn_list for this device.
+  bool HasAPN(const std::string& access_point_name) const;
+
  private:
   // Common Device Properties
   std::string mac_address_;
@@ -122,6 +126,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) DeviceState : public ManagedState {
 
   // Keep all Device properties in a dictionary for now. See comment above.
   base::DictionaryValue properties_;
+
+  // List of APNs.
+  base::ListValue apn_list_;
 
   // Dictionary of IPConfig properties, keyed by IpConfig path.
   base::DictionaryValue ip_configs_;

@@ -1103,6 +1103,37 @@
     return a.lockType === b.lockType && a.lockEnabled === b.lockEnabled &&
         a.retriesLeft === b.retriesLeft;
   }
+
+  /**
+   * Returns true if the APN properties match.
+   * @param {chromeos.networkConfig.mojom.ApnProperties} a
+   * @param {chromeos.networkConfig.mojom.ApnProperties} b
+   * @return {boolean}
+   */
+  static apnMatch(a, b) {
+    if (!a || !b) {
+      return !!a === !!b;
+    }
+    return a.accessPointName === b.accessPointName &&
+           a.name === b.name && a.username === b.username &&
+           a.password === b.password;
+  }
+
+  /**
+   * Returns true if the APN List matches.
+   * @param {Array<!chromeos.networkConfig.mojom.ApnProperties>|undefined} a
+   * @param {Array<!chromeos.networkConfig.mojom.ApnProperties>|undefined} b
+   * @return {boolean}
+   */
+  static apnListMatch(a, b) {
+    if (!a || !b) {
+      return !!a === !!b;
+    }
+    if (a.length !== b.length) {
+      return false;
+    }
+    return a.every((apn, index) => OncMojo.apnMatch(apn, b[index]));
+  }
 }
 
 /** @typedef {chromeos.networkConfig.mojom.DeviceStateProperties} */

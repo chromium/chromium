@@ -118,19 +118,62 @@ Polymer({
   },
 
   /** @private*/
-  managedPropertiesChanged_() {
-    const cellular = this.managedProperties.typeProperties.cellular;
+  getActiveApnFromProperties_(managedProperties) {
+    const cellular = managedProperties.typeProperties.cellular;
     /** @type {!chromeos.networkConfig.mojom.ApnProperties|undefined} */ let
         activeApn;
-    if (cellular.apn) {
-      activeApn = this.getApnFromManaged_(cellular.apn);
+    // We show selectedAPN as the active entry in the select list but it may
+    // not correspond to the currently "active" APN which is represented by
+    // lastGoodApn.
+    if (cellular.selectedApn) {
+      activeApn = this.getApnFromManaged_(cellular.selectedApn);
     } else if (cellular.lastGoodApn && cellular.lastGoodApn.accessPointName) {
       activeApn = cellular.lastGoodApn;
     }
     if (activeApn && !activeApn.accessPointName) {
       activeApn = undefined;
     }
-    this.setApnSelectList_(activeApn);
+    return activeApn;
+  },
+
+  /** @private*/
+  shouldUpdateSelectList_(oldManagedProperties) {
+    if (!oldManagedProperties) {
+      return true;
+    }
+
+    const newActiveApn =
+        this.getActiveApnFromProperties_(this.managedProperties);
+    const oldActiveApn = this.getActiveApnFromProperties_(oldManagedProperties);
+    if (!OncMojo.apnMatch(newActiveApn, oldActiveApn)) {
+      return true;
+    }
+
+    const newApnList = this.managedProperties.typeProperties.cellular.apnList;
+    const oldApnList = oldManagedProperties.typeProperties.cellular.apnList;
+    if (!OncMojo.apnListMatch(
+            oldApnList && oldApnList.activeValue,
+            newApnList && newApnList.activeValue)) {
+      return true;
+    }
+
+    const newCustomApnList =
+        this.managedProperties.typeProperties.cellular.customApnList;
+    const oldCustomApnList =
+        oldManagedProperties.typeProperties.cellular.customApnList;
+    if (!OncMojo.apnListMatch(oldCustomApnList, newCustomApnList)) {
+      return true;
+    }
+
+    return false;
+  },
+
+  /** @private*/
+  managedPropertiesChanged_(managedProperties, oldManagedProperties) {
+    if (!this.shouldUpdateSelectList_(oldManagedProperties)) {
+      return;
+    }
+    this.setApnSelectList_(this.getActiveApnFromProperties_(managedProperties));
   },
 
   /**
@@ -157,15 +200,22 @@ Polymer({
       activeApnInList = apnList.find(a => a.name === activeApn.name);
     }
 
-    // If the active APN is not in the list, copy it to otherApn_.
-    if (!activeApnInList && activeApn && activeApn.accessPointName) {
-      this.otherApn_ = {
-        accessPointName: activeApn.accessPointName,
-        name: kOtherAccessPointName,
-        username: activeApn.username,
-        password: activeApn.password,
-      };
+    const customApnList =
+        this.managedProperties.typeProperties.cellular.customApnList;
+    let otherApn = this.otherApn_;
+    if (customApnList && customApnList.length) {
+      // If custom apn list exists, then use it's first entry as otherApn.
+      otherApn = customApnList[0];
+    } else if (!activeApnInList && activeApn && activeApn.accessPointName) {
+      // If the active APN is not in the list, copy it to otherApn.
+      otherApn = activeApn;
     }
+    this.otherApn_ = {
+      accessPointName: otherApn.accessPointName,
+      name: kOtherAccessPointName,
+      username: otherApn.username,
+      password: otherApn.password,
+    };
     apnList.push(this.otherApn_);
 
     this.apnSelectList_ = apnList;
