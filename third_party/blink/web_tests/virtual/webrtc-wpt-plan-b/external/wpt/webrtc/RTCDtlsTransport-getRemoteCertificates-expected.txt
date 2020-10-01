@@ -1,4 +1,4 @@
 This is a testharness.js-based test.
-FAIL RTCDtlsTransport.prototype.getRemoteCertificates assert_true: Expect pc.sctp to be set to valid RTCSctpTransport expected true got false
+FAIL RTCDtlsTransport.prototype.getRemoteCertificates Cannot read property 'state' of null
 Harness: the test ran to completion.
 
