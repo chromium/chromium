@@ -9,7 +9,7 @@ namespace extension {
 
 const wchar_t kGCPWExtensionServiceName[] = L"GCPWExtension";
 
-const wchar_t kGCPWExtensionServiceDescription[] = L"GCPW extension service";
+const wchar_t kGCPWExtensionServiceDisplayName[] = L"GCPW Extension Service";
 
 const wchar_t kEnableGCPWExtension[] = L"enable_gcpw_extension";
 
