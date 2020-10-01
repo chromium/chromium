@@ -159,6 +159,16 @@
 }
 
 - (void)autofillController:(CWVAutofillController*)autofillController
+    confirmCreditCardNameWithFixer:(CWVCreditCardNameFixer*)fixer {
+  [fixer acceptWithName:fixer.inferredCardHolderName ?: @""];
+}
+
+- (void)autofillController:(CWVAutofillController*)autofillController
+    confirmCreditCardExpirationWithFixer:(CWVCreditCardExpirationFixer*)fixer {
+  [fixer cancel];
+}
+
+- (void)autofillController:(CWVAutofillController*)autofillController
     decideSavePolicyForPassword:(CWVPassword*)password
                 decisionHandler:(void (^)(CWVPasswordUserDecision decision))
                                     decisionHandler {
