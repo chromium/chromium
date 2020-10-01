@@ -13,6 +13,7 @@
 #include "base/mac/bundle_locations.h"
 #include "base/mac/mac_logging.h"
 #include "base/notreached.h"
+#include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/stl_util.h"
 #include "base/strings/sys_string_conversions.h"
@@ -477,12 +478,13 @@ base::ScopedCFTypeRef<CFURLRef> FilePathToCFURL(const FilePath& path) {
 }
 
 bool CFRangeToNSRange(CFRange range, NSRange* range_out) {
+  decltype(range_out->location) end;
   if (base::IsValueInRangeForNumericType<decltype(range_out->location)>(
           range.location) &&
       base::IsValueInRangeForNumericType<decltype(range_out->length)>(
           range.length) &&
-      base::IsValueInRangeForNumericType<decltype(range_out->location)>(
-          range.location + range.length)) {
+      base::CheckAdd(range.location, range.length).AssignIfValid(&end) &&
+      base::IsValueInRangeForNumericType<decltype(range_out->location)>(end)) {
     *range_out = NSMakeRange(range.location, range.length);
     return true;
   }
