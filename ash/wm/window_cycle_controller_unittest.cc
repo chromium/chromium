@@ -690,6 +690,9 @@ TEST_F(WindowCycleControllerTest, TabKeyNotLeaked) {
 
 // While the UI is active, mouse events are captured.
 TEST_F(WindowCycleControllerTest, MouseEventsCaptured) {
+  if (features::IsInteractiveWindowCycleListEnabled())
+    return;
+
   // Set up a second root window
   UpdateDisplay("1000x600,600x400");
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
