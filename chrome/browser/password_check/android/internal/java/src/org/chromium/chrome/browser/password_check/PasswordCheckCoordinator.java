@@ -103,6 +103,7 @@ class PasswordCheckCoordinator implements PasswordCheckComponentUi, LifecycleObs
 
     @Override
     public void onResumeFragment() {
+        mMediator.onResumeFragment();
         mReauthenticationHelper.onReauthenticationMaybeHappened();
     }
 
@@ -110,6 +111,8 @@ class PasswordCheckCoordinator implements PasswordCheckComponentUi, LifecycleObs
     public void onDestroyFragment() {
         mMediator.stopCheck();
         if (mFragmentView.getActivity() == null || mFragmentView.getActivity().isFinishing()) {
+            mMediator
+                    .onUserLeavesCheckPage(); // Should be called only if the activity is finishing.
             mMediator.destroy();
             mModel = null;
         }

@@ -691,6 +691,92 @@ public class PasswordCheckControllerTest {
                 is(1));
     }
 
+    @Test
+    public void testRecordsDidNothingOnLeavingPage() {
+        when(mPasswordCheck.getCompromisedCredentials())
+                .thenReturn(new CompromisedCredential[] {ANA, BOB, CHARLIE});
+        when(mPasswordCheck.areScriptsRefreshed()).thenReturn(true);
+        when(mChangePasswordDelegate.canManuallyChangeCredential(any(CompromisedCredential.class)))
+                .thenReturn(true);
+
+        mMediator.onPasswordCheckStatusChanged(IDLE);
+        mMediator.onCompromisedCredentialsFetchCompleted();
+
+        mMediator.onUserLeavesCheckPage();
+
+        assertThat(RecordHistogram.getHistogramValueCountForTesting(
+                           PASSWORD_CHECK_RESOLUTION_HISTOGRAM_WITHOUT_AUTO_BUTTON,
+                           PasswordCheckResolutionAction.DID_NOTHING),
+                is(2));
+        assertThat(RecordHistogram.getHistogramValueCountForTesting(
+                           PASSWORD_CHECK_RESOLUTION_HISTOGRAM_WITH_AUTO_BUTTON,
+                           PasswordCheckResolutionAction.DID_NOTHING),
+                is(1));
+        assertThat(RecordHistogram.getHistogramValueCountForTesting(
+                           PASSWORD_CHECK_RESOLUTION_HISTOGRAM_FOR_SCRIPTED_SITES,
+                           PasswordCheckResolutionAction.DID_NOTHING),
+                is(2));
+    }
+
+    @Test
+    public void testDoesntRecordDidNothingOnLeavingPageIfCctIsOpen() {
+        when(mPasswordCheck.getCompromisedCredentials())
+                .thenReturn(new CompromisedCredential[] {ANA, BOB, CHARLIE});
+        when(mPasswordCheck.areScriptsRefreshed()).thenReturn(true);
+        when(mChangePasswordDelegate.canManuallyChangeCredential(any(CompromisedCredential.class)))
+                .thenReturn(true);
+
+        mMediator.onPasswordCheckStatusChanged(IDLE);
+        mMediator.onCompromisedCredentialsFetchCompleted();
+
+        // A user opens a CCT and then open the tab in browser => a user leaves the check page.
+        mMediator.onChangePasswordWithScriptButtonClick(BOB);
+        mMediator.onUserLeavesCheckPage();
+
+        assertThat(RecordHistogram.getHistogramValueCountForTesting(
+                           PASSWORD_CHECK_RESOLUTION_HISTOGRAM_WITHOUT_AUTO_BUTTON,
+                           PasswordCheckResolutionAction.DID_NOTHING),
+                is(0));
+        assertThat(RecordHistogram.getHistogramValueCountForTesting(
+                           PASSWORD_CHECK_RESOLUTION_HISTOGRAM_WITH_AUTO_BUTTON,
+                           PasswordCheckResolutionAction.DID_NOTHING),
+                is(0));
+        assertThat(RecordHistogram.getHistogramValueCountForTesting(
+                           PASSWORD_CHECK_RESOLUTION_HISTOGRAM_FOR_SCRIPTED_SITES,
+                           PasswordCheckResolutionAction.DID_NOTHING),
+                is(0));
+    }
+
+    @Test
+    public void testRecordDidNothingOnLeavingPageIfCctIsClosed() {
+        when(mPasswordCheck.getCompromisedCredentials())
+                .thenReturn(new CompromisedCredential[] {ANA, BOB, CHARLIE});
+        when(mPasswordCheck.areScriptsRefreshed()).thenReturn(true);
+        when(mChangePasswordDelegate.canManuallyChangeCredential(any(CompromisedCredential.class)))
+                .thenReturn(true);
+
+        mMediator.onPasswordCheckStatusChanged(IDLE);
+        mMediator.onCompromisedCredentialsFetchCompleted();
+
+        // A user opens a CCT, closes it, and leaves the password check page.
+        mMediator.onChangePasswordWithScriptButtonClick(BOB);
+        mMediator.onResumeFragment();
+        mMediator.onUserLeavesCheckPage();
+
+        assertThat(RecordHistogram.getHistogramValueCountForTesting(
+                           PASSWORD_CHECK_RESOLUTION_HISTOGRAM_WITHOUT_AUTO_BUTTON,
+                           PasswordCheckResolutionAction.DID_NOTHING),
+                is(2));
+        assertThat(RecordHistogram.getHistogramValueCountForTesting(
+                           PASSWORD_CHECK_RESOLUTION_HISTOGRAM_WITH_AUTO_BUTTON,
+                           PasswordCheckResolutionAction.DID_NOTHING),
+                is(1));
+        assertThat(RecordHistogram.getHistogramValueCountForTesting(
+                           PASSWORD_CHECK_RESOLUTION_HISTOGRAM_FOR_SCRIPTED_SITES,
+                           PasswordCheckResolutionAction.DID_NOTHING),
+                is(2));
+    }
+
     private void assertIdleHeader(MVCListAdapter.ListItem header) {
         assertHeaderTypeWithStatus(header, IDLE);
         assertNull(header.model.get(CHECK_PROGRESS));

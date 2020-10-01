@@ -59,6 +59,7 @@ class PasswordCheckMediator
     private HashSet<CompromisedCredential> mPreCheckSet;
     private final PasswordCheckIconHelper mIconHelper;
     private long mLastStatusUpdate;
+    private boolean mCctIsOpened;
 
     PasswordCheckMediator(PasswordCheckChangePasswordHelper changePasswordDelegate,
             PasswordCheckReauthenticationHelper reauthenticationHelper,
@@ -73,6 +74,7 @@ class PasswordCheckMediator
         mModel = model;
         mDelegate = delegate;
         mLaunchCheckupInAccount = launchCheckupInAccount;
+        mCctIsOpened = false;
 
         PasswordCheckMetricsRecorder.recordPasswordCheckReferrer(passwordCheckReferrer);
 
@@ -89,8 +91,27 @@ class PasswordCheckMediator
         }
     }
 
+    void onResumeFragment() {
+        // If the fragment is resumed, a CCT is closed.
+        mCctIsOpened = false;
+    }
+
+    void onUserLeavesCheckPage() {
+        // A user can leave the page because they opened a CCT in browser. As a user is fixing a
+        // compromised credential, don't count such a case as a user |DID_NOTHING| for the remaining
+        // credentials.
+        if (!mCctIsOpened) {
+            // A user closes the check page.
+            ListModel<ListItem> items = mModel.get(ITEMS);
+            for (int i = 1; i < items.size(); i++) {
+                PasswordCheckMetricsRecorder.recordCheckResolutionAction(
+                        PasswordCheckResolutionAction.DID_NOTHING,
+                        items.get(i).model.get(COMPROMISED_CREDENTIAL));
+            }
+        }
+    }
+
     void destroy() {
-        // TODO(crbug.com/): Report PasswordCheckResolutionAction.DID_NOTHING.
         getPasswordCheck().removeObserver(this);
     }
 
@@ -282,6 +303,7 @@ class PasswordCheckMediator
                         : PasswordCheckUserAction.CHANGE_PASSWORD);
         PasswordCheckMetricsRecorder.recordCheckResolutionAction(
                 PasswordCheckResolutionAction.OPENED_SITE, credential);
+        mCctIsOpened = true;
         mChangePasswordDelegate.launchAppOrCctWithChangePasswordUrl(credential);
     }
 
@@ -292,6 +314,7 @@ class PasswordCheckMediator
                 PasswordCheckUserAction.CHANGE_PASSWORD_AUTOMATICALLY);
         PasswordCheckMetricsRecorder.recordCheckResolutionAction(
                 PasswordCheckResolutionAction.STARTED_SCRIPT, credential);
+        mCctIsOpened = true;
         mChangePasswordDelegate.launchCctWithScript(credential);
     }
 
