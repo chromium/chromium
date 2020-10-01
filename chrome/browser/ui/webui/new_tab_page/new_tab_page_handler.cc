@@ -647,6 +647,14 @@ void NewTabPageHandler::GetPromo(GetPromoCallback callback) {
   promo_service_->Refresh();
 }
 
+void NewTabPageHandler::OnDismissModule(const std::string& module_id) {
+  // TODO(crbug.com/1130864): Record histograms.
+}
+
+void NewTabPageHandler::OnRestoreModule(const std::string& module_id) {
+  // TODO(crbug.com/1130864): Record histograms.
+}
+
 void NewTabPageHandler::OnPromoDataUpdated() {
   if (promo_load_start_time_.has_value()) {
     base::TimeDelta duration = base::TimeTicks::Now() - *promo_load_start_time_;

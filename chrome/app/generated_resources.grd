@@ -5626,6 +5626,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_MODULES_INFO_BUTTON_TITLE" desc="Text shown in tooltip of info button of an NTP module.">
         Why am I seeing this?
       </message>
+      <message name="IDS_NTP_MODULES_DISMISS_BUTTON_TITLE" desc="Text shown in tooltip of dismiss button of an NTP module.">
+        Remove
+      </message>
+      <message name="IDS_NTP_MODULES_DISMISS_TOAST_MESSAGE" desc="Text shown in the toast confirming a module has been dismissed.">
+        Removed <ph name="MODULE_TITLE">$1<ex>Office and Desk Chairs</ex></ph>
+      </message>
       <message name="IDS_NTP_MODULES_DUMMY_TITLE" translateable="false" desc="Title shown in the header of the dummy module.">
         Super Duper Module
       </message>

@@ -99,6 +99,8 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
   void GetOneGoogleBarParts(const std::string& ogdeb_value,
                             GetOneGoogleBarPartsCallback callback) override;
   void GetPromo(GetPromoCallback callback) override;
+  void OnDismissModule(const std::string& module_id) override;
+  void OnRestoreModule(const std::string& module_id) override;
   void OnMostVisitedTilesRendered(
       std::vector<new_tab_page::mojom::MostVisitedTilePtr> tiles,
       double time) override;

@@ -14,6 +14,7 @@ import './logo.js';
 import './modules/module_wrapper.js';
 import './modules/modules.js'; // Registers module descriptors.
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import 'chrome://resources/cr_elements/cr_toast/cr_toast.m.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
@@ -207,6 +208,23 @@ class AppElement extends PolymerElement {
 
       /** @private {!Array<!ModuleDescriptor>} */
       moduleDescriptors_: Object,
+
+      /**
+       * The <ntp-module-wrapper> element of the last dismissed module.
+       * @type {?Element}
+       * @private
+       */
+      dismissedModuleWrapper_: {
+        type: Object,
+        value: null,
+      },
+
+      /**
+       * The message shown in the toast when a module is dismissed.
+       * @type {string}
+       * @private
+       */
+      dismissModuleToastMessage_: String,
     };
   }
 
@@ -501,6 +519,9 @@ class AppElement extends PolymerElement {
       this.pageHandler_.onVoiceSearchAction(
           newTabPage.mojom.VoiceSearchAction.kActivateKeyboard);
     }
+    if (ctrlKeyPressed && e.key === 'z') {
+      this.onUndoDismissModuleButtonClick_();
+    }
   }
 
   /**
@@ -759,6 +780,37 @@ class AppElement extends PolymerElement {
   /** @private */
   onModulesRendered_() {
     this.pageHandler_.onModulesRendered(BrowserProxy.getInstance().now());
+  }
+
+  /**
+   * @param {!CustomEvent<string>} e Event notifying a module was dismissed.
+   *     Contains the message to show in the toast.
+   * @private
+   */
+  onDismissModule_(e) {
+    this.dismissedModuleWrapper_ = /** @type {!Element} */ (e.target);
+
+    // Notify the user.
+    this.dismissModuleToastMessage_ = e.detail;
+    $$(this, '#dismissModuleToast').show();
+    // Notify the backend.
+    this.pageHandler_.onDismissModule(
+        this.dismissedModuleWrapper_.descriptor.id);
+  }
+
+  /**
+   * @private
+   */
+  onUndoDismissModuleButtonClick_() {
+    // Restore the module.
+    this.dismissedModuleWrapper_.restore();
+    // Notify the user.
+    $$(this, '#dismissModuleToast').hide();
+    // Notify the backend.
+    this.pageHandler_.onRestoreModule(
+        this.dismissedModuleWrapper_.descriptor.id);
+
+    this.dismissedModuleWrapper_ = null;
   }
 
   /**

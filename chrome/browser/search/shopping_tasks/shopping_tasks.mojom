@@ -32,6 +32,8 @@ struct RelatedSearch {
 struct ShoppingTask {
   // Human-readable title.
   string title;
+  // Human-readable name.
+  string name;
   // Products associated with the task.
   array<Product> products;
   // Searches related to the task.

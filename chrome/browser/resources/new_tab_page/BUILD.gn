@@ -71,6 +71,7 @@ js_library("app") {
     "modules:module_wrapper",
     "modules:modules",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_toast:cr_toast.m",
     "//ui/webui/resources/js:event_tracker.m",
     "//ui/webui/resources/js:load_time_data.m",
   ]

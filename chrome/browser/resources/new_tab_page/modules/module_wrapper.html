@@ -1,4 +1,4 @@
-<style>
+<style include="cr-icons">
   :host {
     background-color: var(--ntp-background-override-color);
     border: solid var(--ntp-border-color) 1px;
@@ -28,6 +28,10 @@
     --cr-icon-image: url(./icons/info.svg);
   }
 
+  #dismissButton {
+    --cr-icon-button-margin-start: 4px;
+  }
+
   #moduleElement {
     align-items: center;
     display: flex;
@@ -40,6 +44,11 @@
   <template is="dom-if" if="[[descriptor.actions.info]]">
     <cr-icon-button id="infoButton" title="$i18n{moduleInfoButtonTitle}"
         on-click="onInfoButtonClick_">
+    </cr-icon-button>
+  </template>
+  <template is="dom-if" if="[[descriptor.actions.dismiss]]">
+    <cr-icon-button id="dismissButton" title="$i18n{moduleDismissButtonTitle}"
+        class="icon-clear" on-click="onDismissButtonClick_">
     </cr-icon-button>
   </template>
 </div>

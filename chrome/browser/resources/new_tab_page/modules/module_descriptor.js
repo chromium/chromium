@@ -10,6 +10,8 @@
 /**
  * @typedef {{
  *   info: (function()|undefined),
+ *   dismiss: (function():string|undefined),
+ *   restore: (function()|undefined),
  * }}
  */
 let Actions;
@@ -59,7 +61,7 @@ export class ModuleDescriptor {
     return this.title_;
   }
 
-  /** @return {HTMLElement} */
+  /** @return {?HTMLElement} */
   get element() {
     return this.element_;
   }

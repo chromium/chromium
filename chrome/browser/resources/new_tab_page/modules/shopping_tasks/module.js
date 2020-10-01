@@ -4,6 +4,7 @@
 
 import '../../img.js';
 
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {ModuleDescriptor} from '../module_descriptor.js';
 import {ShoppingTasksHandlerProxy} from './shopping_tasks_handler_proxy.js';
@@ -62,6 +63,10 @@ async function createModule() {
     actions: {
       info: () => {
         element.showInfoDialog = true;
+      },
+      dismiss: () => {
+        return loadTimeData.getStringF(
+            'dismissModuleToastMessage', shoppingTask.name);
       },
     },
   };

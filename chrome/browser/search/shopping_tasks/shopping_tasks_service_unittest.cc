@@ -56,6 +56,7 @@ TEST_F(ShoppingTasksServiceTest, GoodResponse) {
     "shopping_tasks": [
       {
         "title": "hello world",
+        "task_name": "hello world",
         "products": [
           {
             "name": "foo",
@@ -130,6 +131,7 @@ TEST_F(ShoppingTasksServiceTest, MultiRequest) {
     "shopping_tasks": [
       {
         "title": "hello world",
+        "task_name": "hello world",
         "products": [
           {
             "name": "foo",
@@ -207,6 +209,7 @@ TEST_F(ShoppingTasksServiceTest, NoProducts) {
     "shopping_tasks": [
       {
         "title": "hello world",
+        "task_name": "hello world",
         "products": [],
         "related_searches": [
           {

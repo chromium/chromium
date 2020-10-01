@@ -63,6 +63,24 @@ class ModuleWrapperElement extends PolymerElement {
   onInfoButtonClick_() {
     this.descriptor.actions.info();
   }
+
+  /** @private */
+  onDismissButtonClick_() {
+    this.hidden = true;
+    const message = this.descriptor.actions.dismiss();
+    this.dispatchEvent(new CustomEvent('dismiss-module', {
+      bubbles: true,
+      composed: true,
+      detail: message,
+    }));
+  }
+
+  restore() {
+    this.hidden = false;
+    if (this.descriptor.actions.restore) {
+      this.descriptor.actions.restore();
+    }
+  }
 }
 
 customElements.define(ModuleWrapperElement.is, ModuleWrapperElement);

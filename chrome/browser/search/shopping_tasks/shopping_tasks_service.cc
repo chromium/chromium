@@ -131,10 +131,11 @@ void ShoppingTasksService::OnJsonParsed(
     return;
   }
   auto* title = shopping_tasks->GetList()[0].FindStringPath("title");
+  auto* task_name = shopping_tasks->GetList()[0].FindStringPath("task_name");
   auto* products = shopping_tasks->GetList()[0].FindListPath("products");
   auto* related_searches =
       shopping_tasks->GetList()[0].FindListPath("related_searches");
-  if (!title || !products || !related_searches ||
+  if (!title || !task_name || !products || !related_searches ||
       products->GetList().size() == 0) {
     std::move(callback).Run(nullptr);
     return;
@@ -173,6 +174,7 @@ void ShoppingTasksService::OnJsonParsed(
   }
   auto mojo_shopping_task = shopping_tasks::mojom::ShoppingTask::New();
   mojo_shopping_task->title = *title;
+  mojo_shopping_task->name = *task_name;
   mojo_shopping_task->products = std::move(mojo_products);
   mojo_shopping_task->related_searches = std::move(mojo_related_searches);
   std::move(callback).Run(std::move(mojo_shopping_task));

@@ -181,7 +181,9 @@ content::WebUIDataSource* CreateNewTabPageUiHtmlSource(Profile* profile) {
       {"themeCreatedBy", IDS_NEW_TAB_ATTRIBUTION_INTRO},
 
       // Modules.
+      {"dismissModuleToastMessage", IDS_NTP_MODULES_DISMISS_TOAST_MESSAGE},
       {"moduleInfoButtonTitle", IDS_NTP_MODULES_INFO_BUTTON_TITLE},
+      {"moduleDismissButtonTitle", IDS_NTP_MODULES_DISMISS_BUTTON_TITLE},
       {"modulesDummyTitle", IDS_NTP_MODULES_DUMMY_TITLE},
       {"modulesDummy2Title", IDS_NTP_MODULES_DUMMY2_TITLE},
       {"modulesKaleidoscopeTitle", IDS_NTP_MODULES_KALEIDOSCOPE_TITLE},

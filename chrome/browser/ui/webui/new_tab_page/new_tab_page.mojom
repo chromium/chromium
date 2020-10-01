@@ -337,6 +337,10 @@ interface PageHandler {
   GetOneGoogleBarParts(string query_params) => (OneGoogleBarParts? parts);
   // Get the middle slot promo if it exists.
   GetPromo() => (Promo? promo);
+  // Called when a module the given id is dismissed.
+  OnDismissModule(string module_id);
+  // Called when a module the given id is restored.
+  OnRestoreModule(string module_id);
 
   // ======= METRICS =======
   // Logs that |tiles| were displayed / updated at |time|. The first instance of

@@ -286,7 +286,9 @@
       </ntp-middle-slot-promo>
       <template is="dom-repeat" items="[[moduleDescriptors_]]" id="modules"
           on-dom-change="onModulesRendered_">
-        <ntp-module-wrapper descriptor="[[item]]"></ntp-module-wrapper>
+        <ntp-module-wrapper descriptor="[[item]]"
+            on-dismiss-module="onDismissModule_">
+        </ntp-module-wrapper>
       </template>
       <a id="backgroundImageAttribution"
           href="[[backgroundImageAttributionUrl_]]"
@@ -335,6 +337,18 @@
         theme="[[theme_]]"
         background-selection="{{backgroundSelection_}}">
     </ntp-customize-dialog>
+  </template>
+</dom-if>
+<dom-if if="[[lazyRender_]]" restamp>
+  <template>
+    <cr-toast id="dismissModuleToast" duration="10000">
+      <div id="dismissModuleToastMessage">[[dismissModuleToastMessage_]]</div>
+      <cr-button id="undoDismissModuleButton"
+          aria-label="$i18n{undoDescription}"
+          on-click="onUndoDismissModuleButtonClick_">
+        $i18n{undo}
+      </cr-button>
+    </cr-toast>
   </template>
 </dom-if>
 <div id="oneGoogleBarOverlayBackdrop"></div>

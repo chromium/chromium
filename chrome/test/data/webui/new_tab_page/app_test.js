@@ -444,13 +444,11 @@ suite('NewTabPageAppTest', () => {
       moduleResolver.resolve([
         {
           id: 'foo',
-          name: 'Foo',
           element: document.createElement('div'),
           title: 'Foo Title',
         },
         {
           id: 'bar',
-          name: 'Bar',
           element: document.createElement('div'),
           title: 'Bar Title',
         }
@@ -461,6 +459,59 @@ suite('NewTabPageAppTest', () => {
       const modules = app.shadowRoot.querySelectorAll('ntp-module-wrapper');
       assertEquals(2, modules.length);
       assertEquals(1, testProxy.handler.getCallCount('onModulesRendered'));
+    });
+
+    test('modules can be dismissed and restored', async () => {
+      // Arrange.
+      let dismissCalled = false;
+      let restoreCalled = false;
+
+      // Act.
+      moduleResolver.resolve([{
+        id: 'foo',
+        element: document.createElement('div'),
+        title: 'Foo Title',
+        actions: {
+          dismiss: () => {
+            dismissCalled = true;
+            return 'Foo was removed';
+          },
+          restore: () => {
+            restoreCalled = true;
+          },
+        }
+      }]);
+      await flushTasks();  // Wait for module descriptor resolution.
+
+      // Assert.
+      const modules = app.shadowRoot.querySelectorAll('ntp-module-wrapper');
+      assertEquals(1, modules.length);
+      assertNotStyle($$(modules[0], '#dismissButton'), 'display', 'none');
+      assertFalse($$(app, '#dismissModuleToast').open);
+
+      // Act.
+      $$(modules[0], '#dismissButton').click();
+      await flushTasks();
+
+      // Assert.
+      assertTrue($$(app, '#dismissModuleToast').open);
+      assertEquals(
+          'Foo was removed',
+          $$(app, '#dismissModuleToastMessage').textContent.trim());
+      assertNotStyle($$(app, '#undoDismissModuleButton'), 'display', 'none');
+      assertTrue(dismissCalled);
+      assertEquals(
+          'foo', await testProxy.handler.whenCalled('onDismissModule'));
+
+      // Act.
+      $$(app, '#undoDismissModuleButton').click();
+      await flushTasks();
+
+      // Assert.
+      assertFalse($$(app, '#dismissModuleToast').open);
+      assertTrue(restoreCalled);
+      assertEquals(
+          'foo', await testProxy.handler.whenCalled('onRestoreModule'));
     });
   });
 });
