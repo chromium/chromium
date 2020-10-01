@@ -42,8 +42,9 @@ CommandSource::CommandResults SimpleCommandSource::GetCommands(
   for (const auto& command_spec : command_map) {
     if (!chrome::IsCommandEnabled(browser, command_spec.command_id))
       continue;
-    const base::string16 title =
+    base::string16 title =
         l10n_util::GetStringUTF16(command_spec.string_constant);
+    base::Erase(title, '&');
     double score = FuzzyFind(folded_input, title, &ranges);
     if (score == 0)
       continue;
