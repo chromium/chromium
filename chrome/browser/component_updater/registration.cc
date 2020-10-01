@@ -14,7 +14,7 @@
 #include "chrome/browser/component_updater/crowd_deny_component_installer.h"
 #include "chrome/browser/component_updater/file_type_policies_component_installer.h"
 #include "chrome/browser/component_updater/first_party_sets_component_installer.h"
-#include "chrome/browser/component_updater/floc_blocklist_component_installer.h"
+#include "chrome/browser/component_updater/floc_component_installer.h"
 #include "chrome/browser/component_updater/games_component_installer.h"
 #include "chrome/browser/component_updater/mei_preload_component_installer.h"
 #include "chrome/browser/component_updater/optimization_hints_component_installer.h"
@@ -121,8 +121,8 @@ void RegisterComponentsForUpdate(bool is_off_the_record_profile,
 #endif
 
   RegisterSubresourceFilterComponent(cus);
-  RegisterFlocBlocklistComponent(cus,
-                                 g_browser_process->floc_blocklist_service());
+  RegisterFlocComponent(cus, g_browser_process->floc_blocklist_service(),
+                        g_browser_process->floc_sorting_lsh_clusters_service());
   RegisterOnDeviceHeadSuggestComponent(
       cus, g_browser_process->GetApplicationLocale());
   RegisterOptimizationHintsComponent(cus, is_off_the_record_profile);

@@ -56,6 +56,7 @@ class RulesetService;
 
 namespace federated_learning {
 class FlocBlocklistService;
+class FlocSortingLshClustersService;
 }
 
 namespace variations {
@@ -222,6 +223,11 @@ class BrowserProcess {
   // Returns the service providing versioned storage for a blocklist of flocs.
   virtual federated_learning::FlocBlocklistService*
   floc_blocklist_service() = 0;
+
+  // Returns the service providing versioned storage for a list of limit values
+  // for calculating the floc based on SortingLSH.
+  virtual federated_learning::FlocSortingLshClustersService*
+  floc_sorting_lsh_clusters_service() = 0;
 
   // Returns the service used to provide hints for what optimizations can be
   // performed on slow page loads.

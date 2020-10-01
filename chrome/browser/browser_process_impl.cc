@@ -92,6 +92,7 @@
 #include "components/crash/core/common/crash_key.h"
 #include "components/federated_learning/floc_blocklist_service.h"
 #include "components/federated_learning/floc_constants.h"
+#include "components/federated_learning/floc_sorting_lsh_clusters_service.h"
 #include "components/gcm_driver/gcm_driver.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/metrics/metrics_pref_names.h"
@@ -1000,6 +1001,14 @@ BrowserProcessImpl::floc_blocklist_service() {
   return floc_blocklist_service_.get();
 }
 
+federated_learning::FlocSortingLshClustersService*
+BrowserProcessImpl::floc_sorting_lsh_clusters_service() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!floc_sorting_lsh_clusters_service_)
+    CreateFlocSortingLshClustersService();
+  return floc_sorting_lsh_clusters_service_.get();
+}
+
 optimization_guide::OptimizationGuideService*
 BrowserProcessImpl::optimization_guide_service() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -1277,6 +1286,12 @@ void BrowserProcessImpl::CreateFlocBlocklistService() {
   DCHECK(!floc_blocklist_service_);
   floc_blocklist_service_ =
       std::make_unique<federated_learning::FlocBlocklistService>();
+}
+
+void BrowserProcessImpl::CreateFlocSortingLshClustersService() {
+  DCHECK(!floc_sorting_lsh_clusters_service_);
+  floc_sorting_lsh_clusters_service_ =
+      std::make_unique<federated_learning::FlocSortingLshClustersService>();
 }
 
 void BrowserProcessImpl::CreateOptimizationGuideService() {

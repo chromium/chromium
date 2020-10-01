@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_COMPONENT_UPDATER_FLOC_BLOCKLIST_COMPONENT_INSTALLER_H_
-#define CHROME_BROWSER_COMPONENT_UPDATER_FLOC_BLOCKLIST_COMPONENT_INSTALLER_H_
+#ifndef CHROME_BROWSER_COMPONENT_UPDATER_FLOC_COMPONENT_INSTALLER_H_
+#define CHROME_BROWSER_COMPONENT_UPDATER_FLOC_COMPONENT_INSTALLER_H_
 
 #include <stdint.h>
 
@@ -19,26 +19,28 @@ class DictionaryValue;
 
 namespace federated_learning {
 class FlocBlocklistService;
+class FlocSortingLshClustersService;
 }  // namespace federated_learning
 
 namespace component_updater {
 
 class ComponentUpdateService;
 
-// Component for receiving a blocklist of floc ids.
-class FlocBlocklistComponentInstallerPolicy : public ComponentInstallerPolicy {
+// Component for receiving FLoC files, e.g. blocklist, sorting-lsh, etc.
+class FlocComponentInstallerPolicy : public ComponentInstallerPolicy {
  public:
-  explicit FlocBlocklistComponentInstallerPolicy(
-      federated_learning::FlocBlocklistService* floc_blocklist_service);
-  ~FlocBlocklistComponentInstallerPolicy() override;
+  explicit FlocComponentInstallerPolicy(
+      federated_learning::FlocBlocklistService* floc_blocklist_service,
+      federated_learning::FlocSortingLshClustersService*
+          floc_sorting_lsh_clusters_service);
+  ~FlocComponentInstallerPolicy() override;
 
-  FlocBlocklistComponentInstallerPolicy(
-      const FlocBlocklistComponentInstallerPolicy&) = delete;
-  FlocBlocklistComponentInstallerPolicy& operator=(
-      const FlocBlocklistComponentInstallerPolicy&) = delete;
+  FlocComponentInstallerPolicy(const FlocComponentInstallerPolicy&) = delete;
+  FlocComponentInstallerPolicy& operator=(const FlocComponentInstallerPolicy&) =
+      delete;
 
  private:
-  friend class FlocBlocklistComponentInstallerTest;
+  friend class FlocComponentInstallerTest;
 
   // ComponentInstallerPolicy implementation.
   bool SupportsGroupPolicyEnabledComponentUpdates() const override;
@@ -59,12 +61,16 @@ class FlocBlocklistComponentInstallerPolicy : public ComponentInstallerPolicy {
   std::vector<std::string> GetMimeTypes() const override;
 
   federated_learning::FlocBlocklistService* floc_blocklist_service_;
+  federated_learning::FlocSortingLshClustersService*
+      floc_sorting_lsh_clusters_service_;
 };
 
-void RegisterFlocBlocklistComponent(
+void RegisterFlocComponent(
     ComponentUpdateService* cus,
-    federated_learning::FlocBlocklistService* floc_blocklist_service);
+    federated_learning::FlocBlocklistService* floc_blocklist_service,
+    federated_learning::FlocSortingLshClustersService*
+        floc_sorting_lsh_clusters_service);
 
 }  // namespace component_updater
 
-#endif  // CHROME_BROWSER_COMPONENT_UPDATER_FLOC_BLOCKLIST_COMPONENT_INSTALLER_H_
+#endif  // CHROME_BROWSER_COMPONENT_UPDATER_FLOC_COMPONENT_INSTALLER_H_

@@ -99,6 +99,8 @@ class TestingBrowserProcess : public BrowserProcess {
   subresource_filter::RulesetService* subresource_filter_ruleset_service()
       override;
   federated_learning::FlocBlocklistService* floc_blocklist_service() override;
+  federated_learning::FlocSortingLshClustersService*
+  floc_sorting_lsh_clusters_service() override;
   optimization_guide::OptimizationGuideService* optimization_guide_service()
       override;
   BrowserProcessPlatformPart* platform_part() override;
@@ -152,6 +154,9 @@ class TestingBrowserProcess : public BrowserProcess {
       std::unique_ptr<subresource_filter::RulesetService> ruleset_service);
   void SetFlocBlocklistService(
       std::unique_ptr<federated_learning::FlocBlocklistService> service);
+  void SetFlocSortingLshClustersService(
+      std::unique_ptr<federated_learning::FlocSortingLshClustersService>
+          service);
   void SetOptimizationGuideService(
       std::unique_ptr<optimization_guide::OptimizationGuideService>
           optimization_guide_service);
@@ -206,6 +211,8 @@ class TestingBrowserProcess : public BrowserProcess {
       subresource_filter_ruleset_service_;
   std::unique_ptr<federated_learning::FlocBlocklistService>
       floc_blocklist_service_;
+  std::unique_ptr<federated_learning::FlocSortingLshClustersService>
+      floc_sorting_lsh_clusters_service_;
   std::unique_ptr<optimization_guide::OptimizationGuideService>
       optimization_guide_service_;
 

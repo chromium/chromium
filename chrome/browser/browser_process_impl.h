@@ -171,6 +171,8 @@ class BrowserProcessImpl : public BrowserProcess,
   subresource_filter::RulesetService* subresource_filter_ruleset_service()
       override;
   federated_learning::FlocBlocklistService* floc_blocklist_service() override;
+  federated_learning::FlocSortingLshClustersService*
+  floc_sorting_lsh_clusters_service() override;
   optimization_guide::OptimizationGuideService* optimization_guide_service()
       override;
 
@@ -221,6 +223,7 @@ class BrowserProcessImpl : public BrowserProcess,
   void CreateSafeBrowsingService();
   void CreateSubresourceFilterRulesetService();
   void CreateFlocBlocklistService();
+  void CreateFlocSortingLshClustersService();
   void CreateOptimizationGuideService();
   void CreateStatusTray();
   void CreateBackgroundModeManager();
@@ -323,6 +326,9 @@ class BrowserProcessImpl : public BrowserProcess,
 
   std::unique_ptr<federated_learning::FlocBlocklistService>
       floc_blocklist_service_;
+
+  std::unique_ptr<federated_learning::FlocSortingLshClustersService>
+      floc_sorting_lsh_clusters_service_;
 
   bool created_optimization_guide_service_ = false;
   std::unique_ptr<optimization_guide::OptimizationGuideService>
