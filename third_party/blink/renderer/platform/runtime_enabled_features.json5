@@ -2124,6 +2124,7 @@
     },
     {
       name: "WebXRDepth",
+      origin_trial_feature_name: "WebXRDepth",
       depends_on: ["WebXRARModule"],
       status: "experimental",
     },
