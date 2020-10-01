@@ -5588,25 +5588,25 @@
           'xctest',
         ],
         'variants': [
-          'SIM_IPHONE_X_14_0',
+          'SIM_IPHONE_X_14_2',
         ],
       },
       'ios_eg2_tests': {
         'mixins': ['xcode_parallelization'],
         'variants': [
-          'SIM_IPHONE_X_14_0',
-          'SIM_IPHONE_7_14_0',
-          'SIM_IPAD_AIR_3RD_GEN_14_0',
-          'SIM_IPAD_6_GEN_14_0',
+          'SIM_IPHONE_X_14_2',
+          'SIM_IPHONE_7_14_2',
+          'SIM_IPAD_AIR_3RD_GEN_14_2',
+          'SIM_IPAD_6_GEN_14_2',
         ]
       },
       'ios_eg2_cq_tests': {
         'mixins': ['xcode_parallelization'],
         'variants': [
-          'SIM_IPHONE_7_14_0',
-          'SIM_IPHONE_X_14_0',
-          'SIM_IPAD_PRO_2ND_GEN_14_0',
-          'SIM_IPAD_6_GEN_14_0',
+          'SIM_IPHONE_7_14_2',
+          'SIM_IPHONE_X_14_2',
+          'SIM_IPAD_PRO_2ND_GEN_14_2',
+          'SIM_IPAD_6_GEN_14_2',
         ]
       },
       'ios_screen_size_dependent_tests': {
@@ -5614,9 +5614,9 @@
           'xctest',
         ],
         'variants': [
-          'SIM_IPHONE_6S_PLUS_14_0',
-          'SIM_IPHONE_X_14_0',
-          'SIM_IPAD_AIR_2_14_0',
+          'SIM_IPHONE_6S_PLUS_14_2',
+          'SIM_IPHONE_X_14_2',
+          'SIM_IPAD_AIR_2_14_2',
         ],
       },
     },
@@ -5627,26 +5627,26 @@
           'xctest',
         ],
         'variants': [
-          # 14.0 Sims
-          'SIM_IPHONE_6S_14_0',
+          # 14.2 Sims
+          'SIM_IPHONE_6S_14_2',
         ],
       },
       'ios_eg2_tests': {
         'mixins': ['xcode_parallelization'],
         'variants': [
-          # 14.0 Sims
-          'SIM_IPHONE_7_14_0',
-          'SIM_IPAD_AIR_2_14_0',
-          'SIM_IPHONE_X_14_0',
+          # 14.2 Sims
+          'SIM_IPHONE_7_14_2',
+          'SIM_IPAD_AIR_2_14_2',
+          'SIM_IPHONE_X_14_2',
         ]
       },
       'ios_eg2_cq_tests': {
         'mixins': ['xcode_parallelization'],
         'variants': [
-          # 14.0 Sims
-          'SIM_IPHONE_X_14_0',
-          'SIM_IPAD_AIR_2_14_0',
-          'SIM_IPAD_PRO_2ND_GEN_14_0',
+          # 14.2 Sims
+          'SIM_IPHONE_X_14_2',
+          'SIM_IPAD_AIR_2_14_2',
+          'SIM_IPAD_PRO_2ND_GEN_14_2',
         ]
       },
       'ios_screen_size_dependent_tests': {
@@ -5654,9 +5654,9 @@
           'xctest',
         ],
         'variants': [
-          # 14.0 Sims
-          'SIM_IPHONE_6S_PLUS_14_0',
-          'SIM_IPHONE_6S_14_0',
+          # 14.2 Sims
+          'SIM_IPHONE_6S_PLUS_14_2',
+          'SIM_IPHONE_6S_14_2',
         ],
       },
     },
