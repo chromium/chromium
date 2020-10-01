@@ -285,7 +285,9 @@ void SharesheetBubbleView::ButtonPressed(views::Button* sender,
                                 std::move(intent_), share_action_view_);
     intent_.reset();
     user_cancelled_ = false;
-    std::move(close_callback_).Run(sharesheet::SharesheetResult::kSuccess);
+    if (close_callback_) {
+      std::move(close_callback_).Run(sharesheet::SharesheetResult::kSuccess);
+    }
   }
 }
 
