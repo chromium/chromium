@@ -11,7 +11,9 @@
 @interface PasswordBreachAppInterface : NSObject
 
 // Shows Password Breach with a default type of leak and URL.
-+ (void)showPasswordBreach;
+// |checkButtonPresent| indicates that password was reused and user has option
+// to check all passwords.
++ (void)showPasswordBreachWithCheckButton:(BOOL)checkButtonPresent;
 
 @end
 

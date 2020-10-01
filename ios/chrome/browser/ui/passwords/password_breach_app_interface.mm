@@ -13,10 +13,11 @@
 
 @implementation PasswordBreachAppInterface
 
-+ (void)showPasswordBreach {
++ (void)showPasswordBreachWithCheckButton:(BOOL)checkButtonPresent {
   auto handler = chrome_test_util::HandlerForActiveBrowser();
   auto leakType = password_manager::CreateLeakType(
-      password_manager::IsSaved(true), password_manager::IsReused(false),
+      password_manager::IsSaved(true),
+      password_manager::IsReused(checkButtonPresent),
       password_manager::IsSyncing(true));
   [(id<PasswordBreachCommands>)handler
       showPasswordBreachForLeakType:leakType
