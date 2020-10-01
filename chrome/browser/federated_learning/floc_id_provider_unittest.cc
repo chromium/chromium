@@ -33,6 +33,27 @@ namespace {
 using ComputeFlocTrigger = FlocIdProviderImpl::ComputeFlocTrigger;
 using ComputeFlocResult = FlocIdProviderImpl::ComputeFlocResult;
 
+class MockFlocBlocklistService : public FlocBlocklistService {
+ public:
+  using FlocBlocklistService::FlocBlocklistService;
+
+  void ConfigureFlocToBlock(const FlocId& floc_to_block) {
+    floc_to_block_ = floc_to_block;
+  }
+
+  void FilterByBlocklist(const FlocId& unfiltered_floc,
+                         FilterByBlocklistCallback callback) override {
+    if (floc_to_block_ == unfiltered_floc) {
+      std::move(callback).Run(FlocId());
+      return;
+    }
+    std::move(callback).Run(unfiltered_floc);
+  }
+
+ private:
+  FlocId floc_to_block_;
+};
+
 class FakeFlocRemotePermissionService : public FlocRemotePermissionService {
  public:
   using FlocRemotePermissionService::FlocRemotePermissionService;
@@ -182,8 +203,10 @@ class FlocIdProviderUnitTest : public testing::Test {
         &prefs_, /*is_off_the_record=*/false, /*store_last_modified=*/false,
         /*restore_session=*/false);
 
+    auto blocklist_service = std::make_unique<MockFlocBlocklistService>();
+    blocklist_service_ = blocklist_service.get();
     TestingBrowserProcess::GetGlobal()->SetFlocBlocklistService(
-        std::make_unique<FlocBlocklistService>());
+        std::move(blocklist_service));
 
     history_service_ = std::make_unique<history::HistoryService>();
     history_service_->Init(
@@ -287,11 +310,6 @@ class FlocIdProviderUnitTest : public testing::Test {
     floc_id_provider_->OnComputeFlocScheduledUpdate();
   }
 
-  void OnBlocklistLoaded(const std::unordered_set<uint64_t>& blocklist) {
-    g_browser_process->floc_blocklist_service()->OnBlocklistLoadResult(
-        blocklist);
-  }
-
  protected:
   content::BrowserTaskEnvironment task_environment_;
 
@@ -305,6 +323,8 @@ class FlocIdProviderUnitTest : public testing::Test {
       fake_floc_remote_permission_service_;
   scoped_refptr<FakeCookieSettings> fake_cookie_settings_;
   std::unique_ptr<MockFlocIdProvider> floc_id_provider_;
+
+  MockFlocBlocklistService* blocklist_service_;
 
   base::ScopedTempDir temp_dir_;
 
@@ -811,9 +831,9 @@ TEST_F(FlocIdProviderUnitTest,
 
   EXPECT_FALSE(first_floc_computation_triggered());
 
-  // Load the blocklist. The 1st floc computation should be triggered now as
-  // sync & sync-history are enabled the blocklist is loaded.
-  OnBlocklistLoaded({});
+  // Trigger the blocklist ready event. The 1st floc computation should be
+  // triggered now as sync & sync-history are enabled the blocklist is ready.
+  blocklist_service_->OnBlocklistFileReady(base::FilePath());
 
   EXPECT_TRUE(first_floc_computation_triggered());
 }
@@ -823,9 +843,9 @@ TEST_F(FlocIdProviderUnitTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kFlocIdBlocklistFiltering);
 
-  // Load the blocklist. The 1st floc computation should not be
+  // Trigger the blocklist ready event. The 1st floc computation should not be
   // triggered as sync & sync-history are not enabled yet.
-  OnBlocklistLoaded({});
+  blocklist_service_->OnBlocklistFileReady(base::FilePath());
 
   EXPECT_FALSE(first_floc_computation_triggered());
 
@@ -854,10 +874,9 @@ TEST_F(FlocIdProviderUnitTest, BlocklistFilteringEnabled_BlockedFloc) {
 
   task_environment_.RunUntilIdle();
 
-  // Load the blocklist and turn on sync & sync-history to trigger the 1st floc
-  // computation.
-  std::unordered_set<uint64_t> blocklist;
-  OnBlocklistLoaded(blocklist);
+  // Trigger the blocklist ready event, and turn on sync & sync-history to
+  // trigger the 1st floc computation.
+  blocklist_service_->OnBlocklistFileReady(base::FilePath());
 
   test_sync_service_->SetTransportState(
       syncer::SyncService::TransportState::ACTIVE);
@@ -875,9 +894,8 @@ TEST_F(FlocIdProviderUnitTest, BlocklistFilteringEnabled_BlockedFloc) {
   EXPECT_EQ(1u, floc_id_provider_->log_event_count());
   EXPECT_EQ(floc_from_history, floc_id());
 
-  // Insert the current floc to blocklist and reload it.
-  blocklist.insert(floc_from_history.ToUint64());
-  OnBlocklistLoaded(blocklist);
+  // Set the blocklist to block |floc_from_history|.
+  blocklist_service_->ConfigureFlocToBlock(floc_from_history);
 
   task_environment_.FastForwardBy(base::TimeDelta::FromDays(1));
 
@@ -908,9 +926,8 @@ TEST_F(FlocIdProviderUnitTest, BlocklistFilteringEnabled_BlockedFloc) {
             event.event_trigger());
   EXPECT_EQ(floc_from_history.ToUint64(), event.floc_id());
 
-  // Reset and reload the blocklist.
-  blocklist.clear();
-  OnBlocklistLoaded(blocklist);
+  // Reset the blocklist to block nothing.
+  blocklist_service_->ConfigureFlocToBlock(FlocId());
 
   task_environment_.FastForwardBy(base::TimeDelta::FromDays(1));
 

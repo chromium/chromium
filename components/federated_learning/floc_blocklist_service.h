@@ -7,15 +7,15 @@
 
 #include <stdint.h>
 
-#include <unordered_set>
-
+#include "base/callback.h"
+#include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/optional.h"
+#include "components/federated_learning/floc_id.h"
 
 namespace base {
-class FilePath;
 class SequencedTaskRunner;
 }  // namespace base
 
@@ -25,15 +25,14 @@ namespace federated_learning {
 // the component updater.
 //
 // File reading and parsing is posted to |background_task_runner_|.
-class FlocBlocklistService
-    : public base::SupportsWeakPtr<FlocBlocklistService> {
+class FlocBlocklistService {
  public:
+  using FilterByBlocklistCallback = base::OnceCallback<void(FlocId)>;
+
   class Observer {
    public:
-    virtual void OnBlocklistLoaded() = 0;
+    virtual void OnBlocklistFileReady() = 0;
   };
-
-  using LoadedBlocklist = base::Optional<std::unordered_set<uint64_t>>;
 
   FlocBlocklistService();
   virtual ~FlocBlocklistService();
@@ -45,21 +44,20 @@ class FlocBlocklistService
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
+  bool IsBlocklistFileReady() const;
+
   // Virtual for testing.
   virtual void OnBlocklistFileReady(const base::FilePath& file_path);
+
+  // Virtual for testing.
+  virtual void FilterByBlocklist(const FlocId& unfiltered_floc,
+                                 FilterByBlocklistCallback callback);
 
   void SetBackgroundTaskRunnerForTesting(
       scoped_refptr<base::SequencedTaskRunner> background_task_runner);
 
-  bool BlocklistLoaded() const;
-  bool ShouldBlockFloc(uint64_t floc_id) const;
-
- protected:
-  // Virtual for testing.
-  virtual void OnBlocklistLoadResult(LoadedBlocklist blocklist);
-
  private:
-  friend class MockFlocBlocklistService;
+  friend class FlocBlocklistServiceTest;
   friend class FlocIdProviderUnitTest;
   friend class FlocIdProviderWithCustomizedServicesBrowserTest;
 
@@ -68,7 +66,9 @@ class FlocBlocklistService
 
   base::ObserverList<Observer>::Unchecked observers_;
 
-  LoadedBlocklist loaded_blocklist_;
+  base::Optional<base::FilePath> blocklist_file_path_;
+
+  base::WeakPtrFactory<FlocBlocklistService> weak_ptr_factory_;
 };
 
 }  // namespace federated_learning

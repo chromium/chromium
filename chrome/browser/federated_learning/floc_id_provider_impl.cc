@@ -52,8 +52,8 @@ FlocIdProviderImpl::FlocIdProviderImpl(
 
   OnStateChanged(sync_service);
 
-  if (g_browser_process->floc_blocklist_service()->BlocklistLoaded())
-    OnBlocklistLoaded();
+  if (g_browser_process->floc_blocklist_service()->IsBlocklistFileReady())
+    OnBlocklistFileReady();
 }
 
 FlocIdProviderImpl::~FlocIdProviderImpl() = default;
@@ -179,11 +179,11 @@ void FlocIdProviderImpl::OnURLsDeleted(
   ComputeFloc(ComputeFlocTrigger::kHistoryDelete);
 }
 
-void FlocIdProviderImpl::OnBlocklistLoaded() {
-  if (first_blocklist_loaded_seen_)
+void FlocIdProviderImpl::OnBlocklistFileReady() {
+  if (first_blocklist_file_ready_seen_)
     return;
 
-  first_blocklist_loaded_seen_ = true;
+  first_blocklist_file_ready_seen_ = true;
 
   MaybeTriggerFirstFlocComputation();
 }
@@ -206,7 +206,7 @@ void FlocIdProviderImpl::MaybeTriggerFirstFlocComputation() {
 
   if (!first_sync_history_enabled_seen_ ||
       (base::FeatureList::IsEnabled(features::kFlocIdBlocklistFiltering) &&
-       !first_blocklist_loaded_seen_)) {
+       !first_blocklist_file_ready_seen_)) {
     return;
   }
 
@@ -369,14 +369,23 @@ void FlocIdProviderImpl::ApplyAdditionalFiltering(
     const FlocId& sim_hash) {
   DCHECK(sim_hash.IsValid());
 
-  if (base::FeatureList::IsEnabled(features::kFlocIdBlocklistFiltering) &&
-      g_browser_process->floc_blocklist_service()->ShouldBlockFloc(
-          sim_hash.ToUint64())) {
-    std::move(callback).Run(ComputeFlocResult(sim_hash, FlocId()));
+  if (!base::FeatureList::IsEnabled(features::kFlocIdBlocklistFiltering)) {
+    std::move(callback).Run(ComputeFlocResult(sim_hash, sim_hash));
     return;
   }
 
-  std::move(callback).Run(ComputeFlocResult(sim_hash, sim_hash));
+  g_browser_process->floc_blocklist_service()->FilterByBlocklist(
+      sim_hash, base::BindOnce(&FlocIdProviderImpl::DidApplyAdditionalFiltering,
+                               weak_ptr_factory_.GetWeakPtr(),
+                               std::move(callback), sim_hash));
+}
+
+void FlocIdProviderImpl::DidApplyAdditionalFiltering(
+    ComputeFlocCompletedCallback callback,
+    FlocId sim_hash,
+    FlocId final_hash) {
+  std::move(callback).Run(
+      ComputeFlocResult(std::move(sim_hash), std::move(final_hash)));
 }
 
 }  // namespace federated_learning

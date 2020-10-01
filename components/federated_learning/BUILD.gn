@@ -16,10 +16,7 @@ static_library("federated_learning") {
     "sim_hash.h",
   ]
 
-  public_deps = [
-    "//components/federated_learning/proto:federated_learning",
-    "//third_party/protobuf:protobuf_lite",
-  ]
+  public_deps = [ "//third_party/protobuf:protobuf_lite" ]
 
   deps = [ "//base" ]
 }

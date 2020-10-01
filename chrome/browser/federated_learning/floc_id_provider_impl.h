@@ -113,7 +113,7 @@ class FlocIdProviderImpl : public FlocIdProvider,
                      const history::DeletionInfo& deletion_info) override;
 
   // FlocBlocklistService::Observer
-  void OnBlocklistLoaded() override;
+  void OnBlocklistFileReady() override;
 
   // syncer::SyncServiceObserver:
   void OnStateChanged(syncer::SyncService* sync_service) override;
@@ -143,6 +143,9 @@ class FlocIdProviderImpl : public FlocIdProvider,
   // history. For example, invalidate it if it's in the blocklist.
   void ApplyAdditionalFiltering(ComputeFlocCompletedCallback callback,
                                 const FlocId& sim_hash);
+  void DidApplyAdditionalFiltering(ComputeFlocCompletedCallback callback,
+                                   FlocId sim_hash,
+                                   FlocId final_hash);
 
   // The id to be exposed to the JS API.
   FlocId floc_id_;
@@ -155,7 +158,7 @@ class FlocIdProviderImpl : public FlocIdProvider,
   // loggings, updates, etc.), and compute again.
   base::Optional<ComputeFlocTrigger> pending_recompute_event_;
 
-  bool first_blocklist_loaded_seen_ = false;
+  bool first_blocklist_file_ready_seen_ = false;
   bool first_sync_history_enabled_seen_ = false;
 
   // For the swaa/nac/account_type permission, we will use a cached status to

@@ -11,43 +11,34 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/bind_test_util.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
-#include "components/federated_learning/proto/blocklist.pb.h"
+#include "components/federated_learning/floc_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/protobuf/src/google/protobuf/io/coded_stream.h"
+#include "third_party/protobuf/src/google/protobuf/io/zero_copy_stream_impl_lite.h"
 
 namespace federated_learning {
 
-// The purpose of this class is to expose the loaded_blocklist_ member and to
-// allow monitoring the OnBlocklistLoadResult method calls.
-class MockFlocBlocklistService : public FlocBlocklistService {
+class CopyingFileOutputStream
+    : public google::protobuf::io::CopyingOutputStream {
  public:
-  using FlocBlocklistService::FlocBlocklistService;
+  explicit CopyingFileOutputStream(base::File file) : file_(std::move(file)) {}
 
-  void OnBlocklistLoadResult(LoadedBlocklist blocklist) override {
-    FlocBlocklistService::OnBlocklistLoadResult(std::move(blocklist));
+  CopyingFileOutputStream(const CopyingFileOutputStream&) = delete;
+  CopyingFileOutputStream& operator=(const CopyingFileOutputStream&) = delete;
 
-    ++load_result_count_;
+  ~CopyingFileOutputStream() override = default;
 
-    if (load_result_count_ == expected_load_result_count_)
-      run_loop_.Quit();
-  }
-
-  const LoadedBlocklist& loaded_blocklist() { return loaded_blocklist_; }
-
-  void WaitForExpectedLoadResultCount(size_t expected_load_result_count) {
-    DCHECK(!run_loop_.running());
-    if (expected_load_result_count_ >= expected_load_result_count)
-      return;
-
-    expected_load_result_count_ = expected_load_result_count;
-    run_loop_.Run();
+  // google::protobuf::io::CopyingOutputStream:
+  bool Write(const void* buffer, int size) override {
+    return file_.WriteAtCurrentPos(static_cast<const char*>(buffer), size) ==
+           size;
   }
 
  private:
-  size_t load_result_count_ = 0;
-  size_t expected_load_result_count_ = 0;
-  base::RunLoop run_loop_;
+  base::File file_;
 };
 
 class FlocBlocklistServiceTest : public ::testing::Test {
@@ -61,7 +52,7 @@ class FlocBlocklistServiceTest : public ::testing::Test {
 
  protected:
   void SetUp() override {
-    service_ = std::make_unique<MockFlocBlocklistService>();
+    service_ = std::make_unique<FlocBlocklistService>();
     service_->SetBackgroundTaskRunnerForTesting(background_task_runner_);
   }
 
@@ -71,33 +62,58 @@ class FlocBlocklistServiceTest : public ::testing::Test {
         base::NumberToString(next_unique_file_suffix_++));
   }
 
-  base::FilePath CreateTestBlocklistProtoFile(
+  base::FilePath CreateBlocklistFile(const std::vector<uint64_t>& blocklist) {
+    base::FilePath file_path = GetUniqueTemporaryPath();
+    base::File file(file_path, base::File::FLAG_CREATE | base::File::FLAG_READ |
+                                   base::File::FLAG_WRITE);
+    CHECK(file.IsValid());
+
+    CopyingFileOutputStream copying_stream(std::move(file));
+    google::protobuf::io::CopyingOutputStreamAdaptor zero_copy_stream_adaptor(
+        &copying_stream);
+
+    google::protobuf::io::CodedOutputStream output_stream(
+        &zero_copy_stream_adaptor);
+
+    for (uint64_t next : blocklist)
+      output_stream.WriteVarint64(next);
+
+    CHECK(!output_stream.HadError());
+
+    return file_path;
+  }
+
+  base::FilePath InitializeBlocklistFile(
       const std::vector<uint64_t>& blocklist) {
-    base::FilePath file_path = GetUniqueTemporaryPath();
-
-    federated_learning::proto::Blocklist blocklist_proto;
-    for (uint64_t n : blocklist)
-      blocklist_proto.add_entries(n);
-
-    std::string contents;
-    CHECK(blocklist_proto.SerializeToString(&contents));
-
-    CHECK_EQ(static_cast<int>(contents.size()),
-             base::WriteFile(file_path, contents.data(),
-                             static_cast<int>(contents.size())));
+    base::FilePath file_path = CreateBlocklistFile(blocklist);
+    service()->OnBlocklistFileReady(file_path);
+    EXPECT_TRUE(blocklist_file_path().has_value());
     return file_path;
   }
 
-  base::FilePath CreateCorruptedTestBlocklistProtoFile() {
-    base::FilePath file_path = GetUniqueTemporaryPath();
-    std::string contents = "1234\n5678\n";
-    CHECK_EQ(static_cast<int>(contents.size()),
-             base::WriteFile(file_path, contents.data(),
-                             static_cast<int>(contents.size())));
-    return file_path;
+  FlocId MaxFlocId() { return FlocId((1ULL << kMaxNumberOfBitsInFloc) - 1); }
+
+  FlocBlocklistService* service() { return service_.get(); }
+
+  const base::Optional<base::FilePath>& blocklist_file_path() {
+    return service()->blocklist_file_path_;
   }
 
-  MockFlocBlocklistService* service() { return service_.get(); }
+  FlocId FilterByBlocklist(const FlocId& unfiltered_floc) {
+    FlocId result;
+
+    base::RunLoop run_loop;
+    auto cb = base::BindLambdaForTesting([&](FlocId filtered_floc) {
+      result = filtered_floc;
+      run_loop.Quit();
+    });
+
+    service()->FilterByBlocklist(unfiltered_floc, std::move(cb));
+    background_task_runner_->RunPendingTasks();
+    run_loop.Run();
+
+    return result;
+  }
 
  protected:
   base::test::TaskEnvironment task_environment_;
@@ -106,73 +122,60 @@ class FlocBlocklistServiceTest : public ::testing::Test {
 
   scoped_refptr<base::TestSimpleTaskRunner> background_task_runner_;
 
-  std::unique_ptr<MockFlocBlocklistService> service_;
+  std::unique_ptr<FlocBlocklistService> service_;
 };
 
-TEST_F(FlocBlocklistServiceTest, Startup_NoBlocklistNotNotified) {
-  EXPECT_FALSE(service()->loaded_blocklist().has_value());
+TEST_F(FlocBlocklistServiceTest, NoFilePath) {
+  EXPECT_FALSE(blocklist_file_path().has_value());
 }
 
-TEST_F(FlocBlocklistServiceTest, NewEmptyBlocklist_Loaded) {
-  base::FilePath file_path = CreateTestBlocklistProtoFile({});
-  service()->OnBlocklistFileReady(file_path);
-
-  background_task_runner_->RunPendingTasks();
-  service()->WaitForExpectedLoadResultCount(1u);
-
-  EXPECT_TRUE(service()->loaded_blocklist().has_value());
-  EXPECT_EQ(service()->loaded_blocklist()->size(), 0u);
+TEST_F(FlocBlocklistServiceTest, EmptyList) {
+  InitializeBlocklistFile({});
+  EXPECT_EQ(FlocId(0), FilterByBlocklist(FlocId(0)));
+  EXPECT_EQ(FlocId(1), FilterByBlocklist(FlocId(1)));
+  EXPECT_EQ(MaxFlocId(), FilterByBlocklist(MaxFlocId()));
 }
 
-TEST_F(FlocBlocklistServiceTest, NewNonEmptyBlocklist_Loaded) {
-  base::FilePath file_path = CreateTestBlocklistProtoFile({1, 2, 3, 0});
-  service()->OnBlocklistFileReady(file_path);
-
-  background_task_runner_->RunPendingTasks();
-  service()->WaitForExpectedLoadResultCount(1u);
-
-  EXPECT_TRUE(service()->loaded_blocklist().has_value());
-  EXPECT_EQ(service()->loaded_blocklist()->size(), 4u);
-  EXPECT_TRUE(service()->loaded_blocklist()->count(0));
-  EXPECT_TRUE(service()->loaded_blocklist()->count(1));
-  EXPECT_TRUE(service()->loaded_blocklist()->count(2));
-  EXPECT_TRUE(service()->loaded_blocklist()->count(3));
+TEST_F(FlocBlocklistServiceTest, List_0) {
+  InitializeBlocklistFile({0});
+  EXPECT_EQ(FlocId(), FilterByBlocklist(FlocId(0)));
+  EXPECT_EQ(FlocId(1), FilterByBlocklist(FlocId(1)));
+  EXPECT_EQ(MaxFlocId(), FilterByBlocklist(MaxFlocId()));
 }
 
-TEST_F(FlocBlocklistServiceTest, NonExistentBlocklist_NotLoaded) {
+TEST_F(FlocBlocklistServiceTest, List_0_2) {
+  InitializeBlocklistFile({0, 2});
+  EXPECT_EQ(FlocId(), FilterByBlocklist(FlocId(0)));
+  EXPECT_EQ(FlocId(1), FilterByBlocklist(FlocId(1)));
+  EXPECT_EQ(FlocId(), FilterByBlocklist(FlocId(2)));
+  EXPECT_EQ(FlocId(3), FilterByBlocklist(FlocId(3)));
+  EXPECT_EQ(MaxFlocId(), FilterByBlocklist(MaxFlocId()));
+}
+
+TEST_F(FlocBlocklistServiceTest, List_1_Max) {
+  InitializeBlocklistFile({1, MaxFlocId().ToUint64()});
+  EXPECT_EQ(FlocId(0), FilterByBlocklist(FlocId(0)));
+  EXPECT_EQ(FlocId(), FilterByBlocklist(FlocId(1)));
+  EXPECT_EQ(FlocId(), FilterByBlocklist(MaxFlocId()));
+}
+
+TEST_F(FlocBlocklistServiceTest, List_MaxFlocPlus1) {
+  InitializeBlocklistFile({(1ULL << kMaxNumberOfBitsInFloc)});
+  EXPECT_EQ(FlocId(), FilterByBlocklist(FlocId(0)));
+  EXPECT_EQ(FlocId(), FilterByBlocklist(FlocId(1)));
+}
+
+TEST_F(FlocBlocklistServiceTest, NonExistentBlocklist_Blocked) {
   base::FilePath file_path = GetUniqueTemporaryPath();
   service()->OnBlocklistFileReady(file_path);
-
-  background_task_runner_->RunPendingTasks();
-  service()->WaitForExpectedLoadResultCount(1u);
-
-  EXPECT_FALSE(service()->loaded_blocklist().has_value());
-}
-
-TEST_F(FlocBlocklistServiceTest, CorruptedBlocklist_NotLoaded) {
-  base::FilePath file_path = CreateCorruptedTestBlocklistProtoFile();
-  service()->OnBlocklistFileReady(file_path);
-
-  background_task_runner_->RunPendingTasks();
-  service()->WaitForExpectedLoadResultCount(1u);
-
-  EXPECT_FALSE(service()->loaded_blocklist().has_value());
+  EXPECT_EQ(FlocId(), FilterByBlocklist(FlocId(3)));
 }
 
 TEST_F(FlocBlocklistServiceTest, MultipleUpdate_LatestOneLoaded) {
-  base::FilePath file_path1 = CreateTestBlocklistProtoFile({1, 2, 3, 0});
-  base::FilePath file_path2 = CreateTestBlocklistProtoFile({4});
-  service()->OnBlocklistFileReady(file_path1);
-  service()->OnBlocklistFileReady(file_path2);
-
-  EXPECT_FALSE(service()->loaded_blocklist().has_value());
-
-  background_task_runner_->RunPendingTasks();
-  service()->WaitForExpectedLoadResultCount(2u);
-
-  EXPECT_TRUE(service()->loaded_blocklist().has_value());
-  EXPECT_EQ(service()->loaded_blocklist()->size(), 1u);
-  EXPECT_TRUE(service()->loaded_blocklist()->count(4));
+  InitializeBlocklistFile({500});
+  InitializeBlocklistFile({600});
+  EXPECT_EQ(FlocId(500), FilterByBlocklist(FlocId(500)));
+  EXPECT_EQ(FlocId(), FilterByBlocklist(FlocId(600)));
 }
 
 }  // namespace federated_learning

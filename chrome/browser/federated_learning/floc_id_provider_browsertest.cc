@@ -7,6 +7,7 @@
 #include "base/strings/strcat.h"
 #include "base/test/bind_test_util.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/threading/thread_restrictions.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
@@ -36,8 +37,30 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/protobuf/src/google/protobuf/io/coded_stream.h"
+#include "third_party/protobuf/src/google/protobuf/io/zero_copy_stream_impl_lite.h"
 
 namespace federated_learning {
+
+class CopyingFileOutputStream
+    : public google::protobuf::io::CopyingOutputStream {
+ public:
+  explicit CopyingFileOutputStream(base::File file) : file_(std::move(file)) {}
+
+  CopyingFileOutputStream(const CopyingFileOutputStream&) = delete;
+  CopyingFileOutputStream& operator=(const CopyingFileOutputStream&) = delete;
+
+  ~CopyingFileOutputStream() override = default;
+
+  // google::protobuf::io::CopyingOutputStream:
+  bool Write(const void* buffer, int size) override {
+    return file_.WriteAtCurrentPos(static_cast<const char*>(buffer), size) ==
+           size;
+  }
+
+ private:
+  base::File file_;
+};
 
 class FlocIdProviderBrowserTest : public InProcessBrowserTest {
  public:
@@ -214,6 +237,16 @@ class FlocIdProviderWithCustomizedServicesBrowserTest
     run_loop.Run();
   }
 
+  void FinishOutstandingBlocklistQueries() {
+    base::RunLoop run_loop;
+    FlocId dummy_unfiltered_floc = FlocId(0u);
+    g_browser_process->floc_blocklist_service()->FilterByBlocklist(
+        dummy_unfiltered_floc,
+        base::BindLambdaForTesting(
+            [&](FlocId filtered_floc) { run_loop.Quit(); }));
+    run_loop.Run();
+  }
+
   void ExpireHistoryBefore(base::Time end_time) {
     base::RunLoop run_loop;
     base::CancelableTaskTracker tracker;
@@ -225,17 +258,53 @@ class FlocIdProviderWithCustomizedServicesBrowserTest
     run_loop.Run();
   }
 
-  // Turn on sync-history and load the blocklist. Finish outstanding remote
-  // permission queries and history queries.
-  void InitializeBlocklist(const std::unordered_set<uint64_t>& blocklist) {
+  base::FilePath GetUniqueTemporaryPath() {
+    CHECK(scoped_temp_dir_.IsValid() || scoped_temp_dir_.CreateUniqueTempDir());
+    return scoped_temp_dir_.GetPath().AppendASCII(
+        base::NumberToString(next_unique_file_suffix_++));
+  }
+
+  base::FilePath CreateBlocklistFile(
+      const std::vector<uint64_t>& blocklist_entries) {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+
+    base::FilePath file_path = GetUniqueTemporaryPath();
+    base::File file(file_path, base::File::FLAG_CREATE | base::File::FLAG_READ |
+                                   base::File::FLAG_WRITE);
+    CHECK(file.IsValid());
+
+    CopyingFileOutputStream copying_stream(std::move(file));
+    google::protobuf::io::CopyingOutputStreamAdaptor zero_copy_stream_adaptor(
+        &copying_stream);
+
+    google::protobuf::io::CodedOutputStream output_stream(
+        &zero_copy_stream_adaptor);
+
+    for (uint64_t next : blocklist_entries)
+      output_stream.WriteVarint64(next);
+
+    CHECK(!output_stream.HadError());
+
+    return file_path;
+  }
+
+  // Finish outstanding async queries for a full floc compute cycle to finish.
+  void FinishOutstandingAsyncQueries() {
+    FinishOutstandingRemotePermissionQueries();
+    FinishOutstandingHistoryQueries();
+    FinishOutstandingBlocklistQueries();
+  }
+
+  // Turn on sync-history, set up the blocklist file, and trigger the blocklist
+  // file-ready event.
+  void InitializeBlocklist(const std::vector<uint64_t>& blocklist_entries) {
     sync_service()->SetActiveDataTypes(syncer::ModelTypeSet::All());
     sync_service()->FireStateChanged();
 
-    g_browser_process->floc_blocklist_service()->OnBlocklistLoadResult(
-        blocklist);
+    g_browser_process->floc_blocklist_service()->OnBlocklistFileReady(
+        CreateBlocklistFile(blocklist_entries));
 
-    FinishOutstandingRemotePermissionQueries();
-    FinishOutstandingHistoryQueries();
+    FinishOutstandingAsyncQueries();
   }
 
   history::HistoryService* history_service() {
@@ -320,6 +389,9 @@ class FlocIdProviderWithCustomizedServicesBrowserTest
 
   base::test::ScopedFeatureList scoped_feature_list_;
 
+  base::ScopedTempDir scoped_temp_dir_;
+  int next_unique_file_suffix_ = 1;
+
   std::unique_ptr<
       BrowserContextDependencyManager::CreateServicesCallbackList::Subscription>
       subscription_;
@@ -397,8 +469,7 @@ IN_PROC_BROWSER_TEST_F(FlocIdProviderWithCustomizedServicesBrowserTest,
   ASSERT_EQ(1u, user_event_service()->GetRecordedUserEvents().size());
 
   ExpireHistoryBefore(base::Time::Now());
-  FinishOutstandingRemotePermissionQueries();
-  FinishOutstandingHistoryQueries();
+  FinishOutstandingAsyncQueries();
 
   // Expect that the 2nd FlocIdComputed event should be due to history deletion.
   ASSERT_EQ(2u, user_event_service()->GetRecordedUserEvents().size());

@@ -16,7 +16,7 @@ static_assert(kMaxNumberOfBitsInFloc > 0 &&
 
 const char kManifestFlocComponentFormatKey[] = "floc_component_format";
 
-const int kCurrentFlocComponentFormatVersion = 1;
+const int kCurrentFlocComponentFormatVersion = 2;
 
 const base::FilePath::CharType kTopLevelDirectoryName[] =
     FILE_PATH_LITERAL("Floc");
