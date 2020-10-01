@@ -7,6 +7,10 @@ def _outages_config(*, disable_cq_experiments = False):
         disable_cq_experiments = disable_cq_experiments,
     )
 
+# The default value that is used by a generator to compare against the current
+# config to output the effective outages configuration
+DEFAULT_CONFIG = _outages_config()
+
 # See README.md for documentation on allowable configuration values
 config = _outages_config(
 )

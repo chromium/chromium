@@ -29,3 +29,27 @@ available parameters are:
   other workarounds to improve the CQ experience for developers rather than
   tracking down which experimental tryjobs would be using the capacity that is
   needed for the particular outage.
+
+# Making changes during an outage
+
+If you attempt to make a configuration change while an outages configuration is
+enabled then the actual effect of your change may not be apparent if the outages
+configuration impacts the portion of the configuration that you are modifying.
+To prevent someone from unknowingly making such a change, a presubmit check will
+prevent changes from being landed if there is an outages configuration in effect
+unless all of the following are true:
+
+* 1 or more LUCI configuration files within //infra/config/outages are modified.
+* 0 or more LUCI configuration files within //infra/config/generated are
+  modified.
+* 0 other LUCI configuration files within //infra/config are modified.
+
+If an outages configuration is in effect and you need to make a change that
+doesn't meet these conditions to try and address the outage, add the footer
+`Infra-Config-Outage-Action`. The value for the footer should be some link that
+provides context on the outage being addressed.
+
+If an outages configuration is in effect and you need to make an unrelated
+change that cannot wait until the outage has been addressed, add the footer
+`Infra-Config-Ignore-Outage`. The value for the footer should explain why it is
+necessary to make such a change.

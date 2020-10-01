@@ -32,6 +32,7 @@ lucicfg.config(
         "luci-notify.cfg",
         "luci-notify/email-templates/*.template",
         "luci-scheduler.cfg",
+        "outages.pyl",
         "project.cfg",
         "project.pyl",
         "realms.cfg",
