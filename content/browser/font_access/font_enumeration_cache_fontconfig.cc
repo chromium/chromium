@@ -7,7 +7,7 @@
 #include <fontconfig/fontconfig.h>
 
 #include "base/feature_list.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -83,7 +83,7 @@ void FontEnumerationCacheFontconfig::PrepareFontEnumerationCache() {
   // Metrics.
   const base::ElapsedTimer start_timer;
   int incomplete_count = 0;
-  int dupe_count = 0;
+  int duplicate_count = 0;
 
   auto font_enumeration_table = std::make_unique<blink::FontEnumerationTable>();
 
@@ -94,7 +94,7 @@ void FontEnumerationCacheFontconfig::PrepareFontEnumerationCache() {
   std::unique_ptr<FcFontSet, decltype(&FcFontSetDestroy)> fontset(
       ListFonts(object_set.get()), FcFontSetDestroy);
 
-  UMA_HISTOGRAM_CUSTOM_COUNTS(
+  base::UmaHistogramCustomCounts(
       "Fonts.AccessAPI.EnumerationCache.Fontconfig.FontCount", fontset->nfont,
       1, 5000, 50);
 
@@ -120,7 +120,7 @@ void FontEnumerationCacheFontconfig::PrepareFontEnumerationCache() {
     }
 
     if (fonts_seen.count(postscript_name) != 0) {
-      ++dupe_count;
+      ++duplicate_count;
       // Skip duplicates.
       continue;
     }
@@ -137,17 +137,16 @@ void FontEnumerationCacheFontconfig::PrepareFontEnumerationCache() {
     *added_font_meta = metadata;
   }
 
-  UMA_HISTOGRAM_COUNTS_100(
+  base::UmaHistogramCounts100(
       "Fonts.AccessAPI.EnumerationCache.Fontconfig.IncompleteFontCount",
       incomplete_count);
-  UMA_HISTOGRAM_COUNTS_100(
-      "Fonts.AccessAPI.EnumerationCache.Fontconfig.DuplicateFontCount",
-      dupe_count);
+  base::UmaHistogramCounts100(
+      "Fonts.AccessAPI.EnumerationCache.DuplicateFontCount", duplicate_count);
 
   BuildEnumerationCache(std::move(font_enumeration_table));
 
-  UMA_HISTOGRAM_MEDIUM_TIMES("Fonts.AccessAPI.EnumerationTime",
-                             start_timer.Elapsed());
+  base::UmaHistogramMediumTimes("Fonts.AccessAPI.EnumerationTime",
+                                start_timer.Elapsed());
   // Respond to pending and future requests.
   StartCallbacksTaskQueue();
 }

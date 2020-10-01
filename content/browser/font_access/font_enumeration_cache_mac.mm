@@ -9,7 +9,7 @@
 
 #include "base/feature_list.h"
 #include "base/mac/foundation_util.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/task_traits.h"
@@ -81,6 +81,10 @@ void FontEnumerationCacheMac::PrepareFontEnumerationCache() {
     base::ScopedCFTypeRef<CFArrayRef> font_descs(
         CTFontCollectionCreateMatchingFontDescriptors(collection));
 
+    // Used to filter duplicates.
+    std::set<std::string> fonts_seen;
+    int duplicate_count = 0;
+
     for (CFIndex i = 0; i < CFArrayGetCount(font_descs); ++i) {
       CTFontDescriptorRef fd = base::mac::CFCast<CTFontDescriptorRef>(
           CFArrayGetValueAtIndex(font_descs, i));
@@ -91,9 +95,18 @@ void FontEnumerationCacheMac::PrepareFontEnumerationCache() {
       base::ScopedCFTypeRef<CFStringRef> cf_family =
           GetLocalizedString(fd, kCTFontFamilyNameAttribute);
 
+      std::string postscript_name =
+          base::SysCFStringRefToUTF8(cf_postscript_name.get());
+
+      if (fonts_seen.count(postscript_name) != 0) {
+        ++duplicate_count;
+        // Skip duplicates.
+        continue;
+      }
+      fonts_seen.insert(postscript_name);
+
       blink::FontEnumerationTable_FontMetadata metadata;
-      metadata.set_postscript_name(
-          base::SysCFStringRefToUTF8(cf_postscript_name.get()).c_str());
+      metadata.set_postscript_name(postscript_name.c_str());
       metadata.set_full_name(
           base::SysCFStringRefToUTF8(cf_full_name.get()).c_str());
       metadata.set_family(base::SysCFStringRefToUTF8(cf_family.get()).c_str());
@@ -105,8 +118,10 @@ void FontEnumerationCacheMac::PrepareFontEnumerationCache() {
 
     BuildEnumerationCache(std::move(font_enumeration_table));
 
-    UMA_HISTOGRAM_MEDIUM_TIMES("Fonts.AccessAPI.EnumerationTime",
-                               start_timer.Elapsed());
+    base::UmaHistogramCounts100(
+        "Fonts.AccessAPI.EnumerationCache.DuplicateFontCount", duplicate_count);
+    base::UmaHistogramMediumTimes("Fonts.AccessAPI.EnumerationTime",
+                                  start_timer.Elapsed());
     // Respond to pending and future requests.
     StartCallbacksTaskQueue();
   }

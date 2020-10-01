@@ -5133,6 +5133,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>Time to retrieve the fallback fonts on the system.</summary>
 </histogram>
 
+<histogram name="Fonts.AccessAPI.EnumerationCache.DuplicateFontCount"
+    units="count" expires_after="M90">
+  <owner>oyiptong@chromium.org</owner>
+  <owner>storage-dev@chromium.org</owner>
+  <summary>
+    The number of duplicate fonts returned by system APIs. This is recorded when
+    fonts are enumerated to be returned to script as a result of a call to the
+    Font Access API.
+  </summary>
+</histogram>
+
 <histogram name="Fonts.AccessAPI.EnumerationCache.Dwrite.FamilyCount"
     units="families" expires_after="M90">
   <owner>oyiptong@chromium.org</owner>
@@ -5171,6 +5182,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="Fonts.AccessAPI.EnumerationCache.Fontconfig.DuplicateFontCount"
     units="count" expires_after="M90">
+  <obsolete>
+    Removed in M86 in favor of
+    Fonts.AccessAPI.EnumerationCache.DuplicateFontCount.
+  </obsolete>
   <owner>oyiptong@chromium.org</owner>
   <owner>storage-dev@chromium.org</owner>
   <summary>The number of duplicate fonts returned by fontconfig.</summary>

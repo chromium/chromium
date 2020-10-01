@@ -248,7 +248,7 @@ void FontEnumerationCacheWin::PrepareFontEnumerationCache() {
 
     outstanding_family_results_ = collection_->GetFontFamilyCount();
 
-    UMA_HISTOGRAM_CUSTOM_COUNTS(
+    base::UmaHistogramCustomCounts(
         "Fonts.AccessAPI.EnumerationCache.Dwrite.FamilyCount",
         outstanding_family_results_, 1, 5000, 50);
   }
@@ -282,7 +282,20 @@ void FontEnumerationCacheWin::AppendFontDataAndFinalizeIfNeeded(
   if (FAILED(family_data_result->exit_hresult))
     enumeration_errors_[family_data_result->exit_hresult]++;
 
+  // Used to filter duplicates.
+  std::set<std::string> fonts_seen;
+  int duplicate_count = 0;
+
   for (const auto& font_meta : family_data_result->fonts) {
+    const std::string& postscript_name = font_meta.postscript_name();
+
+    if (fonts_seen.count(postscript_name) != 0) {
+      ++duplicate_count;
+      // Skip duplicates.
+      continue;
+    }
+    fonts_seen.insert(postscript_name);
+
     blink::FontEnumerationTable_FontMetadata* added_font_meta =
         font_enumeration_table_->add_fonts();
     *added_font_meta = font_meta;
@@ -291,6 +304,9 @@ void FontEnumerationCacheWin::AppendFontDataAndFinalizeIfNeeded(
   if (!outstanding_family_results_) {
     FinalizeEnumerationCache();
   }
+
+  base::UmaHistogramCounts100(
+      "Fonts.AccessAPI.EnumerationCache.DuplicateFontCount", duplicate_count);
 }
 
 void FontEnumerationCacheWin::FinalizeEnumerationCache() {
@@ -316,8 +332,8 @@ void FontEnumerationCacheWin::FinalizeEnumerationCache() {
       std::move(font_enumeration_table_));
   BuildEnumerationCache(std::move(enumeration_table));
 
-  UMA_HISTOGRAM_MEDIUM_TIMES("Fonts.AccessAPI.EnumerationTime",
-                             enumeration_timer_->Elapsed());
+  base::UmaHistogramMediumTimes("Fonts.AccessAPI.EnumerationTime",
+                                enumeration_timer_->Elapsed());
   enumeration_timer_.reset();
 
   // Respond to pending and future requests.
