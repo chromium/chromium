@@ -3073,7 +3073,7 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
       <message name="IDS_LOCATION_BAR_PREVIEW_LITE_PAGE_STATUS" desc="An indication in the location bar that the page the user is viewing has been modified in order to speed up the page load or decrease the amount of data used to load the page. [CHAR-LIMIT=10]">
         Lite
       </message>
-      <message name="IDS_LOCATION_BAR_PAINT_PREVIEW_PAGE_STATUS" desc="An indication in the location bar that the page the user is viewing is a paint preview of the original page. [CHAR-LIMIT=10]" translateable="false">
+      <message name="IDS_LOCATION_BAR_PAINT_PREVIEW_PAGE_STATUS" desc="An indication in the location bar that the page the user is viewing is a paint preview of the original page. [CHAR-LIMIT=10]">
         Preview
       </message>
 
@@ -4123,11 +4123,15 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
       </message>
 
       <!-- Paint Preview Startup Experiment -->
-      <message name="IDS_PAINT_PREVIEW_STARTUP_UPGRADE_SNACKBAR_MESSAGE" desc="Message displayed on a snackbar when a paint preview is shown on startup, telling the user that this is a preview of the page" translateable="false">
-        This is a preview
+      <message name="IDS_PAINT_PREVIEW_STARTUP_UPGRADE_SNACKBAR_MESSAGE" desc="Message displayed on a snackbar when a paint preview is shown on startup, telling the user that this is a preview of the page">
+        Previewing this page
       </message>
-      <message name="IDS_PAINT_PREVIEW_STARTUP_UPGRADE_SNACKBAR_ACTION" desc="Text displayed on the action button of snackbar, promting user to switch to the live page and exist paint preivew." translateable="false">
-        View live page
+      <message name="IDS_PAINT_PREVIEW_STARTUP_UPGRADE_SNACKBAR_ACTION" desc="Text displayed on the action button of snackbar, promting user to switch to the live page and exit paint preivew. [CHAR-LIMIT=12]">
+        Reload
+      </message>
+      <message name="IDS_PAINT_PREVIEW_STARTUP_AUTO_UPGRADE_TOAST" desc="Text displayed as a toast message when paint preview
+        is automatically removed and live tab is shown.">
+        Viewing live page
       </message>
 
       <!-- Default Browser Promo Strings-->
