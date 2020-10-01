@@ -54,6 +54,7 @@ import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.EmptyTabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
@@ -641,7 +642,13 @@ class StartSurfaceMediator
             }
             mPropertyModel.set(IS_SHOWING_OVERVIEW, false);
 
-            destroyFeedSurfaceCoordinator();
+            if (mTabModelSelector.getCurrentTab() == null
+                    || mTabModelSelector.getCurrentTab().getLaunchType()
+                            != TabLaunchType.FROM_START_SURFACE) {
+                // TODO(https://crbug.com/1132852): Destroy FeedSurfaceCoordinator if users don't
+                // navigate back to Start after a while.
+                destroyFeedSurfaceCoordinator();
+            }
             if (mNormalTabModelObserver != null) {
                 mNormalTabModel.removeObserver(mNormalTabModelObserver);
             }

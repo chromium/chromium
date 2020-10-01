@@ -86,7 +86,7 @@ class ExploreSurfaceCoordinator implements FeedSurfaceDelegate {
             boolean isInNightMode, boolean isPlaceholderShown,
             BottomSheetController bottomSheetController) {
         if (mExploreSurfaceNavigationDelegate == null) {
-            mExploreSurfaceNavigationDelegate = new ExploreSurfaceNavigationDelegate(mActivity);
+            mExploreSurfaceNavigationDelegate = new ExploreSurfaceNavigationDelegate();
         }
         Profile profile = Profile.getLastUsedRegularProfile();
 

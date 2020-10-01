@@ -23,7 +23,6 @@ import org.chromium.chrome.browser.flags.IntCachedFieldTrialParameter;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.tab.TabLaunchType;
-import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
@@ -139,11 +138,13 @@ public final class ReturnToChromeExperimentsUtil {
      *
      * @param url The URL to load.
      * @param transition The page transition type.
+     * @param incognito Whether to load URL in an incognito Tab.
      * @return true if we have handled the navigation, false otherwise.
      */
     public static boolean willHandleLoadUrlFromStartSurface(
-            String url, @PageTransition int transition) {
-        return willHandleLoadUrlWithPostDataFromStartSurface(url, transition, null, null);
+            String url, @PageTransition int transition, @Nullable Boolean incognito) {
+        return willHandleLoadUrlWithPostDataFromStartSurface(
+                url, transition, null, null, incognito);
     }
 
     /**
@@ -155,24 +156,33 @@ public final class ReturnToChromeExperimentsUtil {
      * @param postDataType   postData type.
      * @param postData       POST data to include in the tab URL's request body, ex. bitmap when
      *         image search.
+     * @param incognito Whether to load URL in an incognito Tab. If null, the current tab model will
+     *         be used.
      * @return true if we have handled the navigation, false otherwise.
      */
     public static boolean willHandleLoadUrlWithPostDataFromStartSurface(String url,
             @PageTransition int transition, @Nullable String postDataType,
-            @Nullable byte[] postData) {
+            @Nullable byte[] postData, @Nullable Boolean incognito) {
         ChromeActivity chromeActivity = getActivityPresentingOverviewWithOmnibox();
         if (chromeActivity == null) return false;
 
         // Create a new unparented tab.
-        TabModel model = chromeActivity.getCurrentTabModel();
+        boolean incognitoParam;
+        if (incognito == null) {
+            incognitoParam = chromeActivity.getCurrentTabModel().isIncognito();
+        } else {
+            incognitoParam = incognito;
+        }
+
         LoadUrlParams params = new LoadUrlParams(url);
+        // TODO(https://crbug.com/1134187): This may no longer accurate.
         params.setTransitionType(transition | PageTransition.FROM_ADDRESS_BAR);
         if (!TextUtils.isEmpty(postDataType) && postData != null && postData.length != 0) {
             params.setVerbatimHeaders("Content-Type: " + postDataType);
             params.setPostData(ResourceRequestBody.createFromBytes(postData));
         }
 
-        chromeActivity.getTabCreator(model.isIncognito())
+        chromeActivity.getTabCreator(incognitoParam)
                 .createNewTab(params, TabLaunchType.FROM_START_SURFACE, null);
 
         if (transition == PageTransition.AUTO_BOOKMARK) {

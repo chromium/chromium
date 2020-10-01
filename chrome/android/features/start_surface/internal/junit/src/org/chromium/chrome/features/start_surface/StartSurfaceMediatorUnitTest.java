@@ -7,7 +7,10 @@ package org.chromium.chrome.features.start_surface;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
@@ -59,11 +62,13 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeState;
+import org.chromium.chrome.browser.feed.FeedSurfaceCoordinator;
 import org.chromium.chrome.browser.night_mode.NightModeStateProvider;
 import org.chromium.chrome.browser.ntp.FakeboxDelegate;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.EmptyTabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
@@ -93,6 +98,8 @@ public class StartSurfaceMediatorUnitTest {
     @Mock
     private TabModelSelector mTabModelSelector;
     @Mock
+    private Tab mTab;
+    @Mock
     private TabModel mNormalTabModel;
     @Mock
     private TabModel mIncognitoTabModel;
@@ -100,6 +107,8 @@ public class StartSurfaceMediatorUnitTest {
     private FakeboxDelegate mFakeBoxDelegate;
     @Mock
     private ExploreSurfaceCoordinator.FeedSurfaceCreator mFeedSurfaceCreator;
+    @Mock
+    private FeedSurfaceCoordinator mFeedSurfaceCoordinator;
     @Mock
     private NightModeStateProvider mNightModeStateProvider;
     @Mock
@@ -144,6 +153,7 @@ public class StartSurfaceMediatorUnitTest {
                 .when(mSecondaryTasksSurfaceInitializer)
                 .initialize();
         doReturn(false).when(mActivityStateChecker).isFinishingOrDestroyed();
+        doReturn(mTab).when(mTabModelSelector).getCurrentTab();
     }
 
     @After
@@ -1503,6 +1513,50 @@ public class StartSurfaceMediatorUnitTest {
                 equalTo(false));
         assertThat(mediator.shouldShowTabSwitcherToolbar(), equalTo(true));
         assertThat(mediator.getOverviewState(), equalTo(OverviewModeState.SHOWN_TABSWITCHER));
+    }
+
+    @Test
+    public void singleShowingPreviousFromATabOfFeeds() {
+        doReturn(false).when(mTabModelSelector).isIncognitoSelected();
+        doReturn(mVoiceRecognitionHandler).when(mFakeBoxDelegate).getVoiceRecognitionHandler();
+        doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
+
+        StartSurfaceMediator mediator = createStartSurfaceMediator(SurfaceMode.SINGLE_PANE, false);
+        InOrder mainTabGridController = inOrder(mMainTabGridController);
+        mainTabGridController.verify(mMainTabGridController)
+                .addOverviewModeObserver(mOverviewModeObserverCaptor.capture());
+        assertThat(mediator.getOverviewState(), equalTo(OverviewModeState.NOT_SHOWN));
+
+        mediator.setOverviewState(OverviewModeState.SHOWING_HOMEPAGE);
+        mPropertyModel.set(IS_EXPLORE_SURFACE_VISIBLE, true);
+        when(mFeedSurfaceCreator.createFeedSurfaceCoordinator(anyBoolean(), anyBoolean()))
+                .thenReturn(mFeedSurfaceCoordinator);
+        mediator.showOverview(false);
+        mainTabGridController.verify(mMainTabGridController).showOverview(eq(false));
+        assertThat(mediator.getOverviewState(), equalTo(OverviewModeState.SHOWN_HOMEPAGE));
+        assertThat(mPropertyModel.get(FEED_SURFACE_COORDINATOR), equalTo(mFeedSurfaceCoordinator));
+
+        doReturn(TabLaunchType.FROM_START_SURFACE).when(mTab).getLaunchType();
+        mediator.hideOverview(true);
+        mOverviewModeObserverCaptor.getValue().startedHiding();
+        mOverviewModeObserverCaptor.getValue().finishedHiding();
+        assertThat(mPropertyModel.get(FEED_SURFACE_COORDINATOR), equalTo(mFeedSurfaceCoordinator));
+
+        FeedSurfaceCoordinator feedSurfaceCoordinator = mock(FeedSurfaceCoordinator.class);
+        assertNotEquals(mFeedSurfaceCoordinator, feedSurfaceCoordinator);
+        when(mFeedSurfaceCreator.createFeedSurfaceCoordinator(anyBoolean(), anyBoolean()))
+                .thenReturn(feedSurfaceCoordinator);
+        mediator.setOverviewState(OverviewModeState.SHOWING_PREVIOUS);
+        mediator.showOverview(false);
+        mainTabGridController.verify(mMainTabGridController).showOverview(eq(false));
+        assertThat(mediator.getOverviewState(), equalTo(OverviewModeState.SHOWN_HOMEPAGE));
+        assertThat(mPropertyModel.get(FEED_SURFACE_COORDINATOR), equalTo(mFeedSurfaceCoordinator));
+
+        doReturn(TabLaunchType.FROM_LINK).when(mTab).getLaunchType();
+        mediator.hideOverview(true);
+        mOverviewModeObserverCaptor.getValue().startedHiding();
+        mOverviewModeObserverCaptor.getValue().finishedHiding();
+        assertNull(mPropertyModel.get(FEED_SURFACE_COORDINATOR));
     }
 
     @Test

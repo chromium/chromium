@@ -82,7 +82,7 @@ public class TrendyTermsCoordinator {
                 RecordUserAction.record("StartSurface.TrendyTerms.TapTerm");
                 String url = TemplateUrlServiceFactory.get().getUrlForSearchQuery(trendyTerm);
                 ReturnToChromeExperimentsUtil.willHandleLoadUrlFromStartSurface(
-                        url, PageTransition.AUTO_BOOKMARK);
+                        url, PageTransition.AUTO_BOOKMARK, null /*incognito*/);
             };
             PropertyModel trendInfo =
                     new PropertyModel.Builder(TrendyTermsProperties.ALL_KEYS)

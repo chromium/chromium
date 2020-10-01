@@ -991,7 +991,7 @@ public class LocationBarLayout extends FrameLayout
 
         // TODO(crbug.com/1085812): Should be taking a fulll loaded LoadUrlParams.
         if (ReturnToChromeExperimentsUtil.willHandleLoadUrlWithPostDataFromStartSurface(
-                    url, transition, postDataType, postData)) {
+                    url, transition, postDataType, postData, mToolbarDataProvider.isIncognito())) {
             return;
         }
 
