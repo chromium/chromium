@@ -50,6 +50,9 @@ struct Suggestion {
 
   base::string16 value;
   base::string16 label;
+  // A label to be shown beneath |label| that will display information about any
+  // credit card offers or rewards.
+  base::string16 offer_label;
   // Used only for passwords to show the password value.
   // Also used to display an extra line of information if two line
   // display is enabled.

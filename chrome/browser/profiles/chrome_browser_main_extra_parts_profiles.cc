@@ -11,6 +11,7 @@
 #include "chrome/browser/autocomplete/autocomplete_classifier_factory.h"
 #include "chrome/browser/autocomplete/in_memory_url_index_factory.h"
 #include "chrome/browser/autocomplete/shortcuts_backend_factory.h"
+#include "chrome/browser/autofill/autofill_offer_manager_factory.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/background/background_contents_service_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -232,6 +233,7 @@ void ChromeBrowserMainExtraPartsProfiles::
 #endif
   AutocompleteClassifierFactory::GetInstance();
   autofill::PersonalDataManagerFactory::GetInstance();
+  autofill::AutofillOfferManagerFactory::GetInstance();
 #if BUILDFLAG(ENABLE_BACKGROUND_CONTENTS)
   BackgroundContentsServiceFactory::GetInstance();
 #endif

@@ -15,6 +15,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/autofill/address_normalizer_factory.h"
 #include "chrome/browser/autofill/autocomplete_history_manager_factory.h"
+#include "chrome/browser/autofill/autofill_offer_manager_factory.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/autofill/risk_util.h"
 #include "chrome/browser/autofill/strike_database_factory.h"
@@ -174,6 +175,11 @@ ukm::SourceId ChromeAutofillClient::GetUkmSourceId() {
 
 AddressNormalizer* ChromeAutofillClient::GetAddressNormalizer() {
   return AddressNormalizerFactory::GetInstance();
+}
+
+AutofillOfferManager* ChromeAutofillClient::GetAutofillOfferManager() {
+  return AutofillOfferManagerFactory::GetForBrowserContext(
+      web_contents()->GetBrowserContext());
 }
 
 const GURL& ChromeAutofillClient::GetLastCommittedURL() {

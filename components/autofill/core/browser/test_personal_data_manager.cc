@@ -294,6 +294,10 @@ void TestPersonalDataManager::ClearCloudTokenData() {
   server_credit_card_cloud_token_data_.clear();
 }
 
+void TestPersonalDataManager::ClearCreditCardOfferData() {
+  autofill_offer_data_.clear();
+}
+
 AutofillProfile* TestPersonalDataManager::GetProfileWithGUID(const char* guid) {
   for (AutofillProfile* profile : GetProfiles()) {
     if (!profile->guid().compare(guid))
@@ -323,6 +327,14 @@ void TestPersonalDataManager::AddCloudTokenData(
   std::unique_ptr<CreditCardCloudTokenData> data =
       std::make_unique<CreditCardCloudTokenData>(cloud_token_data);
   server_credit_card_cloud_token_data_.push_back(std::move(data));
+  NotifyPersonalDataObserver();
+}
+
+void TestPersonalDataManager::AddCreditCardOfferData(
+    const AutofillOfferData& offer_data) {
+  std::unique_ptr<AutofillOfferData> data =
+      std::make_unique<AutofillOfferData>(offer_data);
+  autofill_offer_data_.emplace_back(std::move(data));
   NotifyPersonalDataObserver();
 }
 

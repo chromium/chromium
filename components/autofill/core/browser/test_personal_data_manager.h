@@ -75,6 +75,9 @@ class TestPersonalDataManager : public PersonalDataManager {
   // Clears |server_credit_card_cloud_token_data_|.
   void ClearCloudTokenData();
 
+  // Clears |autofill_offer_data_|.
+  void ClearCreditCardOfferData();
+
   // Gets a profile based on the provided |guid|.
   AutofillProfile* GetProfileWithGUID(const char* guid);
 
@@ -87,6 +90,9 @@ class TestPersonalDataManager : public PersonalDataManager {
 
   // Adds a cloud token data to |server_credit_card_cloud_token_data_|.
   void AddCloudTokenData(const CreditCardCloudTokenData& cloud_token_data);
+
+  // Adds offer data to |autofill_offer_data_|.
+  void AddCreditCardOfferData(const AutofillOfferData& offer_data);
 
   // Sets a local/server card's nickname based on the provided |guid|.
   void SetNicknameForCardWithGUID(const char* guid,

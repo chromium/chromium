@@ -629,6 +629,7 @@ source_set("unit_tests") {
     "logging/log_manager_unittest.cc",
     "logging/log_router_unittest.cc",
     "pattern_provider/pattern_provider_unittest.cc",
+    "payments/autofill_offer_manager_unittest.cc",
     "payments/credit_card_access_manager_unittest.cc",
     "payments/credit_card_cvc_authenticator_unittest.cc",
     "payments/credit_card_save_manager_unittest.cc",

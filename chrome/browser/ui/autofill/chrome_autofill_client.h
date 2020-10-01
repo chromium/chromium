@@ -63,6 +63,7 @@ class ChromeAutofillClient
   ukm::UkmRecorder* GetUkmRecorder() override;
   ukm::SourceId GetUkmSourceId() override;
   AddressNormalizer* GetAddressNormalizer() override;
+  AutofillOfferManager* GetAutofillOfferManager() override;
   const GURL& GetLastCommittedURL() override;
   security_state::SecurityLevel GetSecurityLevelForUmaHistograms() override;
   const translate::LanguageState* GetLanguageState() override;

@@ -61,6 +61,7 @@
 #include "components/autofill/core/browser/geo/phone_number_i18n.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/metrics/form_events.h"
+#include "components/autofill/core/browser/payments/autofill_offer_manager.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #include "components/autofill/core/browser/payments/payments_client.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
@@ -1590,6 +1591,7 @@ void AutofillManager::Reset() {
       personal_data_, client_));
   credit_card_access_manager_.reset(new CreditCardAccessManager(
       driver(), client_, personal_data_, credit_card_form_event_logger_.get()));
+
   has_logged_autofill_enabled_ = false;
   has_logged_address_suggestions_count_ = false;
   did_show_suggestions_ = false;
@@ -1651,6 +1653,7 @@ AutofillManager::AutofillManager(
         driver, this, GetAPIKeyForUrl(channel), client_->GetLogManager()));
   }
   CountryNames::SetLocaleString(app_locale_);
+  offer_manager_ = client_->GetAutofillOfferManager();
 }
 
 bool AutofillManager::RefreshDataModels() {
@@ -2007,6 +2010,12 @@ std::vector<Suggestion> AutofillManager::GetCreditCardSuggestions(
       personal_data_->GetCreditCardSuggestions(
           type, SanitizeCreditCardFieldValue(field.value),
           client_->AreServerCardsSupported());
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableOffersInDownstream) &&
+      offer_manager_) {
+    offer_manager_->UpdateSuggestionsWithOffers(client_->GetLastCommittedURL(),
+                                                suggestions);
+  }
   *should_display_gpay_logo =
       credit_card_access_manager_->ShouldDisplayGPayLogo();
 
