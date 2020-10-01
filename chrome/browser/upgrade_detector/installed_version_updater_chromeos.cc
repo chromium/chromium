@@ -53,7 +53,7 @@ void InstalledVersionUpdater::UpdateStatusChanged(
     if (status.is_enterprise_rollback()) {
       update_type = BuildState::UpdateType::kEnterpriseRollback;
 
-      base::UmaHistogramEnumeration("UpgradeDetecter.RollbackReason",
+      base::UmaHistogramEnumeration("UpgradeDetector.RollbackReason",
                                     RollbackReason::kEnterpriseRollback);
 
       LOG(WARNING) << "Device is rolling back, will require powerwash. Reason:"
@@ -63,7 +63,7 @@ void InstalledVersionUpdater::UpdateStatusChanged(
       // Powerwash must have been triggered by channel change.
       update_type = BuildState::UpdateType::kChannelSwitchRollback;
 
-      base::UmaHistogramEnumeration("UpgradeDetecter.RollbackReason",
+      base::UmaHistogramEnumeration("UpgradeDetector.RollbackReason",
                                     RollbackReason::kToMoreStableChannel);
 
       LOG(WARNING) << "Device is rolling back, will require powerwash. Reason:"
