@@ -112,6 +112,8 @@ class PLATFORM_EXPORT ElasticOverscrollController {
                            VerifyForwardAnimationTick);
   FRIEND_TEST_ALL_PREFIXES(ElasticOverscrollControllerBezierTest,
                            VerifyForwardAnimationIsNotPlayed);
+  FRIEND_TEST_ALL_PREFIXES(ElasticOverscrollControllerBezierTest,
+                           VerifyInitialStretchDelta);
 
   enum State {
     // The initial state, during which the overscroll amount is zero and
@@ -155,11 +157,6 @@ class PLATFORM_EXPORT ElasticOverscrollController {
   bool CanScrollHorizontally() const;
   bool CanScrollVertically() const;
 
-  // This is set in response to a scroll (most likely programmatic) occuring
-  // while animating the momentum phase. In this case, re-set the initial
-  // velocity, stretch, and start time at the next frame (this is the same
-  // behavior as would happen if the scroll were caused by an active scroll).
-  bool momentum_animation_reset_at_next_frame_;
   base::TimeTicks momentum_animation_start_time_;
   cc::ScrollElasticityHelper* helper_;
   State state_;

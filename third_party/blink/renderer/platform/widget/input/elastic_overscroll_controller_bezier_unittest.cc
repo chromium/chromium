@@ -143,6 +143,53 @@ TEST_F(ElasticOverscrollControllerBezierTest, ReconcileStretchAndScroll) {
   EXPECT_EQ(Vector2dF(-18, 0), helper_.StretchAmount());
 }
 
+// Tests that momentum_animation_start_time_ doesn't get reset when the
+// overscroll animation is ticking and the scroller is diagonally overscrolled.
+TEST_F(ElasticOverscrollControllerBezierTest, VerifyInitialStretchDelta) {
+  // Set up the state to be in kStateMomentumAnimated with some amount of
+  // diagonal stretch.
+  controller_.state_ =
+      ElasticOverscrollController::State::kStateMomentumAnimated;
+  helper_.SetStretchAmount(Vector2dF(5, 10));
+  helper_.SetScrollOffsetAndMaxScrollOffset(gfx::ScrollOffset(0, 20),
+                                            gfx::ScrollOffset(100, 100));
+  controller_.ReconcileStretchAndScroll();
+  controller_.bounce_forwards_duration_x_ =
+      base::TimeDelta::FromMilliseconds(1000);
+  controller_.bounce_forwards_duration_y_ =
+      base::TimeDelta::FromMilliseconds(1000);
+  controller_.momentum_animation_initial_stretch_ = gfx::Vector2dF(10.f, 10.f);
+
+  // Verify that the momentum_animation_start_time_ doesn't get reset when the
+  // animation ticks.
+  const base::TimeTicks animation_start_time =
+      base::TimeTicks() + base::TimeDelta::FromMilliseconds(32);
+
+  // After 2 frames.
+  controller_.Animate(animation_start_time);
+  helper_.ScrollBy(Vector2dF(0, 2));
+  EXPECT_NE(controller_.momentum_animation_start_time_, animation_start_time);
+  EXPECT_EQ(controller_.state_,
+            ElasticOverscrollController::State::kStateMomentumAnimated);
+
+  // After 8 frames.
+  controller_.Animate(animation_start_time +
+                      base::TimeDelta::FromMilliseconds(128));
+  helper_.ScrollBy(Vector2dF(0, 8));
+  EXPECT_NE(controller_.momentum_animation_start_time_, animation_start_time);
+  EXPECT_EQ(controller_.state_,
+            ElasticOverscrollController::State::kStateMomentumAnimated);
+
+  // After 64 frames the forward animation should no longer be active.
+  controller_.Animate(animation_start_time +
+                      base::TimeDelta::FromMilliseconds(1024));
+  helper_.ScrollBy(Vector2dF(0, 64));
+  EXPECT_NE(controller_.momentum_animation_start_time_, animation_start_time);
+  EXPECT_EQ(controller_.state_,
+            ElasticOverscrollController::State::kStateInactive);
+  EXPECT_EQ(Vector2dF(), helper_.StretchAmount());
+}
+
 // Tests if the overscrolled delta maps correctly to the actual amount that the
 // scroller gets stretched.
 TEST_F(ElasticOverscrollControllerBezierTest, VerifyOverscrollBounceDistance) {

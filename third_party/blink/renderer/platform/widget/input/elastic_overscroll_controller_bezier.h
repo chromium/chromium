@@ -46,6 +46,8 @@ class PLATFORM_EXPORT ElasticOverscrollControllerBezier
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ElasticOverscrollControllerBezierTest,
+                           VerifyInitialStretchDelta);
+  FRIEND_TEST_ALL_PREFIXES(ElasticOverscrollControllerBezierTest,
                            VerifyForwardAnimationIsNotPlayed);
 
   const gfx::CubicBezier bounce_forwards_curve_;
