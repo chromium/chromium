@@ -10,8 +10,6 @@
 
 [
   {
-    'project': 'chrome',
-    'bucket': 'ci',
     'name': 'chrome',
     'mixins': ['chrome-tester-service-account'],
     'machines': {
@@ -410,8 +408,6 @@
     },
   },
   {
-    'project': 'chromium',
-    'bucket': 'ci',
     'name': 'chromium',
     'mixins': ['chromium-tester-service-account'],
     'machines': {
@@ -514,8 +510,6 @@
     }
   },
   {
-    'project': 'chromium',
-    'bucket': 'ci',
     'name': 'chromium.android',
     'mixins': ['chromium-tester-service-account'],
     'machines': {
@@ -1046,8 +1040,6 @@
     },
   },
   {
-    'project': 'chromium',
-    'bucket': 'ci',
     'name': 'chromium.android.fyi',
     'mixins': ['chromium-tester-service-account'],
     'machines': {
@@ -1088,8 +1080,6 @@
     },
   },
   {
-    'project': 'chromium',
-    'bucket': 'ci',
     'name': 'chromium.chromiumos',
     'mixins': ['chromium-tester-service-account'],
     'machines': {
@@ -1228,8 +1218,6 @@
     },
   },
   {
-    'project': 'chromium',
-    'bucket': 'ci',
     'name': 'chromium.clang',
     'mixins': ['chromium-tester-service-account'],
     'machines': {
@@ -1670,8 +1658,6 @@
     },
   },
   {
-    'project': 'chromium',
-    'bucket': 'ci',
     'name': 'chromium.dawn',
     'mixins': ['chromium-tester-service-account'],
     'machines': {
@@ -1876,8 +1862,6 @@
     }
   },
   {
-    'project': 'chrome',
-    'bucket': 'ci',
     'name': 'chromium.dev',
     'mixins': ['chromium-tester-dev-service-account'],
     'machines': {
@@ -1944,8 +1928,6 @@
     },
   },
   {
-    'project': 'devtools-frontend',
-    'bucket': 'ci',
     'name': 'chromium.devtools-frontend',
     'mixins': ['chromium-tester-service-account'],
     'machines': {
@@ -1962,8 +1944,6 @@
     },
   },
   {
-    'project': 'chromium',
-    'bucket': 'ci',
     'name': 'chromium.fuzz',
     'mixins': ['chromium-tester-service-account'],
     'machines': {
@@ -2055,8 +2035,6 @@
     },
   },
   {
-    'project': 'chromium',
-    'bucket': 'ci',
     'name': 'chromium.fyi',
     'mixins': ['chromium-tester-service-account'],
     'machines': {
@@ -2828,8 +2806,6 @@
     },
   },
   {
-    'project': 'chromium',
-    'bucket': 'goma',
     'name': 'chromium.goma',
     'mixins': ['chromium-tester-service-account'],
     'machines': {
@@ -2970,8 +2946,6 @@
     },
   },
   {
-    'project': 'chromium',
-    'bucket': 'goma',
     'name': 'chromium.goma.fyi',
     'mixins': ['chromium-tester-service-account'],
     'machines': {
@@ -3178,8 +3152,6 @@
     },
   },
   {
-    'project': 'chromium',
-    'bucket': 'ci',
     'name': 'chromium.gpu',
     'forbid_script_tests': True,
     'mixins': [
@@ -3330,8 +3302,6 @@
     },
   },
   {
-    'project': 'chromium',
-    'bucket': 'ci',
     'name': 'chromium.gpu.fyi',
     'forbid_script_tests': True,
     'mixins': [
@@ -4423,8 +4393,6 @@
     },
   },
   {
-    'project': 'chromium',
-    'bucket': 'ci',
     'name': 'chromium.linux',
     'mixins': ['chromium-tester-service-account'],
     'machines': {
@@ -4621,8 +4589,6 @@
     },
   },
   {
-    'project': 'chromium',
-    'bucket': 'ci',
     'name': 'chromium.mac',
     'mixins': ['chromium-tester-service-account'],
     'machines': {
@@ -4781,8 +4747,6 @@
     },
   },
   {
-    'project': 'chromium',
-    'bucket': 'ci',
     'name': 'chromium.memory',
     'mixins': ['chromium-tester-service-account'],
     'machines': {
@@ -4939,8 +4903,6 @@
     },
   },
   {
-    'project': 'chromium',
-    'bucket': 'ci',
     'name': 'chromium.mojo',
     'mixins': ['chromium-tester-service-account'],
     'machines': {
@@ -5002,8 +4964,6 @@
     },
   },
   {
-    'project': 'chromium',
-    'bucket': 'ci',
     'name': 'chromium.swangle',
     'mixins': ['chromium-tester-service-account'],
     'machines': {
@@ -5197,8 +5157,6 @@
     },
   },
   {
-    'project': 'chromium',
-    'bucket': 'webrtc',
     'name': 'chromium.webrtc',
     'mixins': ['chromium-tester-service-account'],
     'machines': {
@@ -5258,8 +5216,6 @@
     },
   },
   {
-    'project': 'chromium',
-    'bucket': 'webrtc.fyi',
     'name': 'chromium.webrtc.fyi',
     'mixins': ['chromium-tester-service-account'],
     'machines': {
@@ -5373,8 +5329,6 @@
     },
   },
   {
-    'project': 'chromium',
-    'bucket': 'ci',
     'name': 'chromium.win',
     'mixins': ['chromium-tester-service-account'],
     'machines': {
@@ -5462,8 +5416,6 @@
     },
   },
   {
-    'project': 'devtools-frontend',
-    'bucket': 'ci',
     'name': 'client.devtools-frontend.integration',
     'mixins': ['chromium-tester-service-account'],
     'machines': {
@@ -5480,8 +5432,6 @@
     },
   },
   {
-    'project': 'openscreen',
-    'bucket': 'ci',
     'name': 'client.openscreen.chromium',
     'machines': {
       'chromium_linux64_debug': {
@@ -5519,14 +5469,10 @@
     },
   },
   {
-    'project': 'v8',
-    'bucket': 'ci',
     'name': 'client.v8.branches',
     'machines': {},
   },
   {
-    'project': 'v8',
-    'bucket': 'ci',
     'name': 'client.v8.chromium',
     'mixins': ['chromium-tester-service-account'],
     'machines': {
@@ -5556,8 +5502,6 @@
     },
   },
   {
-    'project': 'v8',
-    'bucket': 'ci',
     'name': 'client.v8.fyi',
     'mixins': ['chromium-tester-service-account'],
     'machines': {
@@ -5830,8 +5774,6 @@
     },
   },
   {
-    'project': 'chromium',
-    'bucket': 'try',
     'name': 'tryserver.chromium.android',
     'mixins': ['chromium-tester-service-account'],
     'machines': {
@@ -5859,8 +5801,6 @@
     },
   },
   {
-    'project': 'chromium',
-    'bucket': 'try',
     'name': 'tryserver.chromium.linux',
     'mixins': ['chromium-tester-service-account'],
     'machines': {
@@ -5897,8 +5837,6 @@
     },
   },
   {
-    'project': 'devtools-frontend',
-    'bucket': 'try',
     'name': 'tryserver.devtools-frontend',
     'mixins': ['chromium-tester-service-account'],
     'machines': {
@@ -5922,8 +5860,6 @@
     }
   },
   {
-    'project': 'webrtc',
-    'bucket': 'try',
     'name': 'tryserver.webrtc',
     'mixins': ['chromium-tester-service-account'],
     'machines': {

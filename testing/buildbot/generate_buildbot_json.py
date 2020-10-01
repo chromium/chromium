@@ -1311,7 +1311,7 @@ class BBJSONGenerator(object):
     filters = self.args.waterfall_filters
     result = collections.defaultdict(dict)
 
-    required_fields = ('project', 'bucket', 'name')
+    required_fields = ('name',)
     for waterfall in self.waterfalls:
       for field in required_fields:
         # Verify required fields
@@ -1325,12 +1325,6 @@ class BBJSONGenerator(object):
       # Join config files and hardcoded values together
       all_tests = self.generate_output_tests(waterfall)
       result[waterfall['name']] = all_tests
-
-      # Deduce per-bucket mappings
-      # This will be the standard after masternames are gone
-      bucket_filename = waterfall['project'] + '.' + waterfall['bucket']
-      for buildername in waterfall['machines'].keys():
-        result[bucket_filename][buildername] = all_tests[buildername]
 
     # Add do not edit warning
     for tests in result.values():
