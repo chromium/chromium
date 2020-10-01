@@ -84,9 +84,9 @@ class MiddleSlotPromoElement extends PolymerElement {
       });
       this.pageHandler_.onPromoRendered(
           BrowserProxy.getInstance().now(), promo.logUrl || null);
+      this.hidden = false;
       this.dispatchEvent(new Event(
           'ntp-middle-slot-promo-loaded', {bubbles: true, composed: true}));
-      this.hidden = false;
     });
   }
 

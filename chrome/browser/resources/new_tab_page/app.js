@@ -199,6 +199,25 @@ class AppElement extends PolymerElement {
         reflectToAttribute: true,
       },
 
+      /** @private */
+      middleSlotPromoLoaded_: Boolean,
+
+      /** @private */
+      modulesLoaded_: Boolean,
+
+      /**
+       * In order to avoid flicker, the promo and modules are hidden until both
+       * are loaded. If modules are disabled, the promo is shown as soon as it
+       * is loaded.
+       * @private
+       */
+      promoAndModulesLoaded_: {
+        type: Boolean,
+        computed: `computePromoAndModulesLoaded_(middleSlotPromoLoaded_,
+            modulesLoaded_)`,
+        reflectToAttribute: true,
+      },
+
       /**
        * If true, renders additional elements that were not deemed crucial to
        * to show up immediately on load.
@@ -472,6 +491,15 @@ class AppElement extends PolymerElement {
         !!this.theme_;
   }
 
+  /**
+   * @return {boolean}
+   * @private
+   */
+  computePromoAndModulesLoaded_() {
+    return this.middleSlotPromoLoaded_ &&
+        (!loadTimeData.getBoolean('modulesEnabled') || this.modulesLoaded_);
+  }
+
   /** @private */
   async onLazyRendered_() {
     if (!loadTimeData.getBoolean('modulesEnabled')) {
@@ -479,6 +507,7 @@ class AppElement extends PolymerElement {
     }
     this.moduleDescriptors_ =
         await ModuleRegistry.getInstance().initializeModules();
+    this.modulesLoaded_ = true;
   }
 
   /** @private */
@@ -762,6 +791,7 @@ class AppElement extends PolymerElement {
 
   /** @private */
   onMiddleSlotPromoLoaded_() {
+    this.middleSlotPromoLoaded_ = true;
     // The promo is always shown when modules are enabled since it will not
     // overlap with other elements.
     if (this.modulesEnabled_) {

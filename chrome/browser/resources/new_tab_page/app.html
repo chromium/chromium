@@ -108,6 +108,11 @@
     margin-top: 16px;
   }
 
+  :host(:not([promo-and-modules-loaded_])) ntp-middle-slot-promo,
+  :host(:not([promo-and-modules-loaded_])) ntp-module-wrapper {
+    visibility: hidden;
+  }
+
   #customizeButtonSpacer {
     flex-grow: 1;
   }
