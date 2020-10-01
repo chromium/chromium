@@ -26,6 +26,7 @@
 using blink::mojom::ShareError;
 
 #if defined(OS_CHROMEOS)
+#include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "chrome/browser/webshare/chromeos/sharesheet_client.h"
 #endif
 
@@ -114,10 +115,11 @@ class ShareServiceUnitTest : public ChromeRenderViewHostTestHarness {
   }
 
 #if defined(OS_CHROMEOS)
-  static ShareError AcceptShareRequest(content::WebContents* web_contents,
-                                       std::vector<GURL> file_urls,
-                                       std::vector<std::string> content_types) {
-    return ShareError::OK;
+  static void AcceptShareRequest(content::WebContents* web_contents,
+                                 std::vector<GURL> file_urls,
+                                 std::vector<std::string> content_types,
+                                 sharesheet::CloseCallback close_callback) {
+    std::move(close_callback).Run(sharesheet::SharesheetResult::kSuccess);
   }
 #endif
 

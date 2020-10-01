@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/bind_helpers.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
@@ -16,6 +17,7 @@
 #include "chrome/browser/sharesheet/sharesheet_service_factory.h"
 #include "chrome/browser/webshare/chromeos/prepare_directory_task.h"
 #include "chrome/browser/webshare/chromeos/store_files_task.h"
+#include "chrome/common/chrome_features.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
@@ -46,6 +48,16 @@ base::FilePath GenerateFileName(const base::FilePath& directory,
   std::string filename = base::StringPrintf("share%u%s", counter,
                                             supplied_name.c_str() + suffix_pos);
   return directory.Append(filename);
+}
+
+blink::mojom::ShareError SharesheetResultToShareError(
+    sharesheet::SharesheetResult result) {
+  switch (result) {
+    case sharesheet::SharesheetResult::kSuccess:
+      return blink::mojom::ShareError::OK;
+    case sharesheet::SharesheetResult::kCancel:
+      return blink::mojom::ShareError::CANCELED;
+  }
 }
 
 }  // namespace
@@ -145,19 +157,28 @@ void SharesheetClient::OnStoreFiles(blink::mojom::ShareError error) {
     return;
   }
 
-  blink::mojom::ShareError result = GetSharesheetCallback().Run(
+  GetSharesheetCallback().Run(
       web_contents(), std::move(current_share_->file_urls),
-      std::move(current_share_->content_types));
+      std::move(current_share_->content_types),
+      base::BindOnce(&SharesheetClient::OnShowSharesheet,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
 
-  std::move(current_share_->callback).Run(result);
+void SharesheetClient::OnShowSharesheet(sharesheet::SharesheetResult result) {
+  std::move(current_share_->callback).Run(SharesheetResultToShareError(result));
   current_share_ = base::nullopt;
 }
 
 // static
-blink::mojom::ShareError SharesheetClient::ShowSharesheet(
-    content::WebContents* web_contents,
-    std::vector<GURL> file_urls,
-    std::vector<std::string> content_types) {
+void SharesheetClient::ShowSharesheet(content::WebContents* web_contents,
+                                      std::vector<GURL> file_urls,
+                                      std::vector<std::string> content_types,
+                                      CloseCallback close_callback) {
+  if (!base::FeatureList::IsEnabled(features::kSharesheet)) {
+    std::move(close_callback).Run(sharesheet::SharesheetResult::kCancel);
+    return;
+  }
+
   Profile* const profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   DCHECK(profile);
@@ -169,9 +190,7 @@ blink::mojom::ShareError SharesheetClient::ShowSharesheet(
       web_contents,
       apps_util::CreateShareIntentFromFiles(std::move(file_urls),
                                             std::move(content_types)),
-      base::NullCallback());
-
-  return blink::mojom::ShareError::OK;
+      std::move(close_callback));
 }
 
 SharesheetClient::SharesheetCallback&

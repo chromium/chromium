@@ -74,7 +74,8 @@ IN_PROC_BROWSER_TEST_F(SharesheetClientBrowserTest, ShareTwoFiles) {
   SharesheetClient::SetSharesheetCallbackForTesting(base::BindLambdaForTesting(
       [contents, &first_file_path, &second_file_path](
           content::WebContents* web_contents, std::vector<GURL> file_urls,
-          std::vector<std::string> content_types) {
+          std::vector<std::string> content_types,
+          SharesheetClient::CloseCallback close_callback) {
         EXPECT_EQ(contents, web_contents);
 
         EXPECT_EQ(file_urls.size(), 2U);
@@ -85,7 +86,7 @@ IN_PROC_BROWSER_TEST_F(SharesheetClientBrowserTest, ShareTwoFiles) {
         EXPECT_EQ(content_types[0], "audio/mp3");
         EXPECT_EQ(content_types[1], "video/mp4");
 
-        return blink::mojom::ShareError::OK;
+        std::move(close_callback).Run(sharesheet::SharesheetResult::kSuccess);
       }));
 
   EXPECT_EQ("share succeeded", content::EvalJs(contents, script));
@@ -106,9 +107,10 @@ IN_PROC_BROWSER_TEST_F(SharesheetClientBrowserTest, RepeatedShare) {
 
     SharesheetClient::SetSharesheetCallbackForTesting(
         base::BindLambdaForTesting(
-            [contents, &file_path](content::WebContents* web_contents,
-                                   std::vector<GURL> file_urls,
-                                   std::vector<std::string> content_types) {
+            [contents, &file_path](
+                content::WebContents* web_contents, std::vector<GURL> file_urls,
+                std::vector<std::string> content_types,
+                SharesheetClient::CloseCallback close_callback) {
               EXPECT_EQ(contents, web_contents);
 
               EXPECT_EQ(file_urls.size(), 1U);
@@ -117,12 +119,31 @@ IN_PROC_BROWSER_TEST_F(SharesheetClientBrowserTest, RepeatedShare) {
               EXPECT_EQ(content_types.size(), 1U);
               EXPECT_EQ(content_types[0], "image/webp");
 
-              return blink::mojom::ShareError::OK;
+              std::move(close_callback)
+                  .Run(sharesheet::SharesheetResult::kSuccess);
             }));
 
     EXPECT_EQ("share succeeded", content::EvalJs(contents, script));
     CheckSize(file_path, /*expected_size=*/12);
   }
+}
+
+IN_PROC_BROWSER_TEST_F(SharesheetClientBrowserTest, CancelledShare) {
+  const std::string script = "share_single_file()";
+  ASSERT_TRUE(embedded_test_server()->Start());
+  content::WebContents* const contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  ui_test_utils::NavigateToURL(browser(), GetAppUrl());
+  SharesheetClient::SetSharesheetCallbackForTesting(base::BindLambdaForTesting(
+      [](content::WebContents* web_contents, std::vector<GURL> file_urls,
+         std::vector<std::string> content_types,
+         SharesheetClient::CloseCallback close_callback) {
+        std::move(close_callback).Run(sharesheet::SharesheetResult::kCancel);
+      }));
+
+  EXPECT_EQ("share failed: AbortError: Share canceled",
+            content::EvalJs(contents, script));
 }
 
 }  // namespace webshare

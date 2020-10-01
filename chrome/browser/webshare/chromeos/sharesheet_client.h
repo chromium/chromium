@@ -10,6 +10,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
+#include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/blink/public/mojom/webshare/webshare.mojom.h"
 #include "url/gurl.h"
@@ -26,10 +27,12 @@ class PrepareDirectoryTask;
 // sharesheet::SharesheetService.
 class SharesheetClient : public content::WebContentsObserver {
  public:
-  using SharesheetCallback = base::RepeatingCallback<blink::mojom::ShareError(
-      content::WebContents* web_contents,
-      std::vector<GURL> file_urls,
-      std::vector<std::string> content_types)>;
+  using CloseCallback = sharesheet::CloseCallback;
+  using SharesheetCallback =
+      base::RepeatingCallback<void(content::WebContents* web_contents,
+                                   std::vector<GURL> file_urls,
+                                   std::vector<std::string> content_types,
+                                   CloseCallback close_callback)>;
 
   explicit SharesheetClient(content::WebContents* web_contents);
   SharesheetClient(const SharesheetClient&) = delete;
@@ -49,10 +52,12 @@ class SharesheetClient : public content::WebContentsObserver {
 
   void OnStoreFiles(blink::mojom::ShareError);
 
-  static blink::mojom::ShareError ShowSharesheet(
-      content::WebContents* web_contents,
-      std::vector<GURL> file_urls,
-      std::vector<std::string> content_types);
+  void OnShowSharesheet(sharesheet::SharesheetResult result);
+
+  static void ShowSharesheet(content::WebContents* web_contents,
+                             std::vector<GURL> file_urls,
+                             std::vector<std::string> content_types,
+                             CloseCallback close_callback);
 
   static SharesheetCallback& GetSharesheetCallback();
 
