@@ -10,9 +10,7 @@
 
 #include "base/no_destructor.h"
 #include "base/rand_util.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "components/session_manager/core/session_manager.h"
 #include "content/public/browser/storage_partition.h"
 
 namespace chromeos {
@@ -79,11 +77,6 @@ std::vector<std::string> GetRandomHostsWithFixedHosts(int num_random_hosts,
 }
 
 Profile* GetUserProfile() {
-  // Use sign-in profile if user has not logged in
-  if (session_manager::SessionManager::Get()->IsUserSessionBlocked()) {
-    return ProfileHelper::GetSigninProfile();
-  }
-  // Use primary profile if user is logged in
   return ProfileManager::GetPrimaryUserProfile();
 }
 
