@@ -254,7 +254,7 @@ static inline bool CanHaveWhitespaceChildren(
   const LayoutObject& parent = *context.parent;
   // <button> and <fieldset> should allow whitespace even though
   // LayoutFlexibleBox doesn't.
-  if (parent.IsButtonOrNGButton() || parent.IsFieldset())
+  if (parent.IsButtonIncludingNG() || parent.IsFieldset())
     return true;
 
   if (parent.IsTable() || parent.IsTableRow() || parent.IsTableSection() ||

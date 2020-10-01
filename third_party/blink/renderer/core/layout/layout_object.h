@@ -880,7 +880,7 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
     NOT_DESTROYED();
     return IsOfType(kLayoutObjectQuote);
   }
-  bool IsButtonOrNGButton() const {
+  bool IsButtonIncludingNG() const {
     NOT_DESTROYED();
     return IsOfType(kLayoutObjectLayoutButton) ||
            IsOfType(kLayoutObjectNGButton);
@@ -1767,7 +1767,7 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
   bool BehavesLikeBlockContainer() const {
     NOT_DESTROYED();
     return (IsLayoutBlockFlow() && StyleRef().IsDisplayBlockContainer()) ||
-           IsButtonOrNGButton();
+           IsButtonIncludingNG();
   }
 
   // May be optionally passed to container() and various other similar methods
