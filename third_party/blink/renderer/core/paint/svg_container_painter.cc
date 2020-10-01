@@ -81,25 +81,19 @@ void SVGContainerPainter::Paint(const PaintInfo& paint_info) {
 
     ScopedSVGPaintState paint_state(layout_svg_container_,
                                     paint_info_before_filtering);
-    bool continue_rendering = true;
-    if (paint_state.GetPaintInfo().phase == PaintPhase::kForeground)
-      continue_rendering = paint_state.ApplyEffects();
+    // When a filter applies to the container we need to make sure
+    // that it is applied even if nothing is painted.
+    if (paint_info_before_filtering.phase == PaintPhase::kForeground &&
+        properties && HasReferenceFilterEffect(*properties))
+      paint_info_before_filtering.context.GetPaintController().EnsureChunk();
 
-    if (continue_rendering) {
-      // When a filter applies to the container we need to make sure
-      // that it is applied even if nothing is painted.
-      if (paint_state.GetPaintInfo().phase == PaintPhase::kForeground &&
-          properties && HasReferenceFilterEffect(*properties))
-        paint_state.GetPaintInfo().context.GetPaintController().EnsureChunk();
-
-      for (LayoutObject* child = layout_svg_container_.FirstChild(); child;
-           child = child->NextSibling()) {
-        if (auto* foreign_object = DynamicTo<LayoutSVGForeignObject>(*child)) {
-          SVGForeignObjectPainter(*foreign_object)
-              .PaintLayer(paint_state.GetPaintInfo());
-        } else {
-          child->Paint(paint_state.GetPaintInfo());
-        }
+    for (LayoutObject* child = layout_svg_container_.FirstChild(); child;
+         child = child->NextSibling()) {
+      if (auto* foreign_object = DynamicTo<LayoutSVGForeignObject>(*child)) {
+        SVGForeignObjectPainter(*foreign_object)
+            .PaintLayer(paint_info_before_filtering);
+      } else {
+        child->Paint(paint_info_before_filtering);
       }
     }
   }

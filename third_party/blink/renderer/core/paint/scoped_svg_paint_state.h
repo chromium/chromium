@@ -80,23 +80,19 @@ class ScopedSVGPaintState {
  public:
   ScopedSVGPaintState(const LayoutObject& object, const PaintInfo& paint_info)
       : ScopedSVGPaintState(object, paint_info, object) {}
-
   ScopedSVGPaintState(const LayoutObject& object,
                       const PaintInfo& paint_info,
                       const DisplayItemClient& display_item_client)
       : object_(object),
         paint_info_(paint_info),
-        display_item_client_(display_item_client) {}
-
+        display_item_client_(display_item_client) {
+    if (paint_info.phase == PaintPhase::kForeground)
+      ApplyEffects();
+  }
   ~ScopedSVGPaintState();
 
-  const PaintInfo& GetPaintInfo() const { return paint_info_; }
-
-  // Return true if these operations aren't necessary or if they are
-  // successfully applied.
-  bool ApplyEffects();
-
  private:
+  void ApplyEffects();
   void ApplyPaintPropertyState(const ObjectPaintProperties&);
   void ApplyMaskIfNecessary();
 

@@ -34,13 +34,12 @@ namespace blink {
 
 ScopedSVGPaintState::~ScopedSVGPaintState() {
   if (should_paint_clip_path_as_mask_image_) {
-    ClipPathClipper::PaintClipPathAsMaskImage(GetPaintInfo().context, object_,
-                                              display_item_client_,
-                                              PhysicalOffset());
+    ClipPathClipper::PaintClipPathAsMaskImage(
+        paint_info_.context, object_, display_item_client_, PhysicalOffset());
   }
 }
 
-bool ScopedSVGPaintState::ApplyEffects() {
+void ScopedSVGPaintState::ApplyEffects() {
 #if DCHECK_IS_ON()
   DCHECK(!apply_effects_called_);
   apply_effects_called_ = true;
@@ -57,7 +56,7 @@ bool ScopedSVGPaintState::ApplyEffects() {
     DCHECK(!object_.IsSVGRoot());
     if (properties && properties->ClipPathMask())
       should_paint_clip_path_as_mask_image_ = true;
-    return true;
+    return;
   }
 
   // LayoutSVGRoot and LayoutSVGForeignObject always have a self-painting
@@ -72,8 +71,6 @@ bool ScopedSVGPaintState::ApplyEffects() {
   }
 
   ApplyMaskIfNecessary();
-  // TODO(fs): Change return value to void.
-  return true;
 }
 
 void ScopedSVGPaintState::ApplyPaintPropertyState(
@@ -82,7 +79,6 @@ void ScopedSVGPaintState::ApplyPaintPropertyState(
   // applied as stacking context effect by PaintLayerPainter.
   if (object_.IsSVGRoot())
     return;
-
   auto& paint_controller = paint_info_.context.GetPaintController();
   auto state = paint_controller.CurrentPaintChunkProperties();
   if (const auto* filter = properties.Filter())

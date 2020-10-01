@@ -46,13 +46,9 @@ void SVGRootInlineBoxPainter::Paint(const PaintInfo& paint_info,
   }
 
   ScopedSVGPaintState paint_state(layout_object, paint_info);
-  if (!paint_state.ApplyEffects())
-    return;
   for (InlineBox* child = svg_root_inline_box_.FirstChild(); child;
-       child = child->NextOnLine()) {
-    child->Paint(paint_state.GetPaintInfo(), paint_offset, LayoutUnit(),
-                 LayoutUnit());
-  }
+       child = child->NextOnLine())
+    child->Paint(paint_info, paint_offset, LayoutUnit(), LayoutUnit());
 }
 
 }  // namespace blink
