@@ -241,7 +241,7 @@ ScriptExecutor::ScriptExecutor(content::WebContents* web_contents)
 ScriptExecutor::~ScriptExecutor() {}
 
 void ScriptExecutor::ExecuteScript(const HostID& host_id,
-                                   ScriptExecutor::ScriptType script_type,
+                                   UserScript::ActionType action_type,
                                    const std::string& code,
                                    ScriptExecutor::FrameScope frame_scope,
                                    int frame_id,
@@ -268,7 +268,7 @@ void ScriptExecutor::ExecuteScript(const HostID& host_id,
   ExtensionMsg_ExecuteCode_Params params;
   params.request_id = next_request_id_++;
   params.host_id = host_id;
-  params.is_javascript = (script_type == JAVASCRIPT);
+  params.action_type = action_type;
   params.code = code;
   params.match_about_blank = (about_blank == MATCH_ABOUT_BLANK);
   params.run_at = run_at;
@@ -279,9 +279,11 @@ void ScriptExecutor::ExecuteScript(const HostID& host_id,
   params.user_gesture = user_gesture;
   params.css_origin = css_origin;
 
-  // Generate an injection key if this is a CSS injection from an extension
-  // (i.e. tabs.insertCSS).
-  if (host_id.type() == HostID::EXTENSIONS && script_type == CSS)
+  // Generate the unique key that represents this CSS injection or removal
+  // from an extension (i.e. tabs.insertCSS or tabs.removeCSS).
+  if (host_id.type() == HostID::EXTENSIONS &&
+      (action_type == UserScript::ADD_CSS ||
+       action_type == UserScript::REMOVE_CSS))
     params.injection_key = GenerateInjectionKey(host_id, script_url, code);
 
   // Handler handles IPCs and deletes itself on completion.

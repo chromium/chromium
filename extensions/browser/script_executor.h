@@ -46,12 +46,6 @@ class ScriptExecutor {
   explicit ScriptExecutor(content::WebContents* web_contents);
   ~ScriptExecutor();
 
-  // The type of script being injected.
-  enum ScriptType {
-    JAVASCRIPT,
-    CSS,
-  };
-
   // The scope of the script injection across the frames.
   enum FrameScope {
     SINGLE_FRAME,
@@ -93,7 +87,7 @@ class ScriptExecutor {
   // before a response is received (in this case the callback will be with a
   // failure and appropriate error message).
   void ExecuteScript(const HostID& host_id,
-                     ScriptType script_type,
+                     UserScript::ActionType action_type,
                      const std::string& code,
                      FrameScope frame_scope,
                      int frame_id,

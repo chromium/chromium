@@ -821,6 +821,32 @@
         ]
       },
       {
+        "name": "removeCSS",
+        "type": "function",
+        "description": "Removes from a page CSS that was previously injected by a call to $(ref:tabs.insertCSS).",
+        "parameters": [
+          {
+            "type": "integer",
+            "name": "tabId",
+            "minimum": 0,
+            "optional": true,
+            "description": "The ID of the tab from which to remove the CSS; defaults to the active tab of the current window."
+          },
+          {
+            "$ref": "extensionTypes.DeleteInjectionDetails",
+            "name": "details",
+            "description": "Details of the CSS text to remove. Either the code or the file property must be set, but both may not be set at the same time."
+          },
+          {
+            "type": "function",
+            "name": "callback",
+            "optional": true,
+            "description": "Called when all the CSS has been removed.",
+            "parameters": []
+          }
+        ]
+      },
+      {
         "name": "setZoom",
         "type": "function",
         "description": "Zooms a specified tab.",

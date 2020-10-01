@@ -1949,6 +1949,14 @@ ExecuteCodeFunction::InitResult ExecuteCodeInTabFunction::Init() {
   return set_init_result(SUCCESS);
 }
 
+bool ExecuteCodeInTabFunction::ShouldInsertCSS() const {
+  return false;
+}
+
+bool ExecuteCodeInTabFunction::ShouldRemoveCSS() const {
+  return false;
+}
+
 bool ExecuteCodeInTabFunction::CanExecuteScriptOnPage(std::string* error) {
   content::WebContents* contents = nullptr;
 
@@ -2032,11 +2040,11 @@ const GURL& ExecuteCodeInTabFunction::GetWebViewSrc() const {
   return GURL::EmptyGURL();
 }
 
-bool TabsExecuteScriptFunction::ShouldInsertCSS() const {
-  return false;
+bool TabsInsertCSSFunction::ShouldInsertCSS() const {
+  return true;
 }
 
-bool TabsInsertCSSFunction::ShouldInsertCSS() const {
+bool TabsRemoveCSSFunction::ShouldRemoveCSS() const {
   return true;
 }
 

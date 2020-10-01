@@ -45,6 +45,14 @@ class ScriptInjector {
   // Returns the CSS origin of this injection.
   virtual base::Optional<CSSOrigin> GetCssOrigin() const = 0;
 
+  // Returns true is CSS is being removed or added respectively.
+  //
+  // TODO(https://crrev.com/608854): Consider using a GetActionType()-like
+  // method that returns a bitmask or enum item with the operations being
+  // performed.
+  virtual bool IsRemovingCSS() const = 0;
+  virtual bool IsAddingCSS() const = 0;
+
   // Returns the key for this injection, if it's a CSS injection.
   virtual const base::Optional<std::string> GetInjectionKey() const = 0;
 
@@ -57,8 +65,9 @@ class ScriptInjector {
       UserScript::RunLocation run_location,
       const std::set<std::string>& executing_scripts) const = 0;
 
-  // Returns true if the script should inject CSS at the given |run_location|.
-  virtual bool ShouldInjectCss(
+  // Returns true if the script should inject or remove CSS at the given
+  // |run_location|.
+  virtual bool ShouldInjectOrRemoveCss(
       UserScript::RunLocation run_location,
       const std::set<std::string>& injected_stylesheets) const = 0;
 
@@ -76,7 +85,7 @@ class ScriptInjector {
       size_t* num_injected_js_scripts) const = 0;
 
   // Returns the css to inject at the given |run_location|.
-  // Only called if ShouldInjectCss() is true.
+  // Only called if ShouldInjectOrRemoveCss() is true.
   virtual std::vector<blink::WebString> GetCssSources(
       UserScript::RunLocation run_location,
       std::set<std::string>* injected_stylesheets,

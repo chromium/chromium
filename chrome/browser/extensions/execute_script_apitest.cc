@@ -132,6 +132,10 @@ IN_PROC_BROWSER_TEST_P(ExecuteScriptApiTest, ExecuteScriptCallback) {
   ASSERT_TRUE(RunTest("executescript/callback")) << message_;
 }
 
+IN_PROC_BROWSER_TEST_P(ExecuteScriptApiTest, ExecuteScriptRemoveCSS) {
+  ASSERT_TRUE(RunExtensionTest("executescript/remove_css")) << message_;
+}
+
 IN_PROC_BROWSER_TEST_P(ExecuteScriptApiTest, UserGesture) {
   // TODO(https://crbug.com/977629): Gesture support for testing is not
   // available for Service Worker-based extensions.

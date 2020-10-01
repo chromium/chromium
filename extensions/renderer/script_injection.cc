@@ -255,22 +255,22 @@ ScriptInjection::InjectionResult ScriptInjection::Inject(
   DCHECK(!complete_);
   bool should_inject_js = injector_->ShouldInjectJs(
       run_location_, scripts_run_info->executing_scripts[host_id().id()]);
-  bool should_inject_css = injector_->ShouldInjectCss(
+  bool should_inject_or_remove_css = injector_->ShouldInjectOrRemoveCss(
       run_location_, scripts_run_info->injected_stylesheets[host_id().id()]);
 
   // This can happen if the extension specified a script to
   // be run in multiple rules, and the script has already run.
   // See crbug.com/631247.
-  if (!should_inject_js && !should_inject_css) {
+  if (!should_inject_js && !should_inject_or_remove_css) {
     return INJECTION_FINISHED;
   }
 
   if (should_inject_js)
     InjectJs(&(scripts_run_info->executing_scripts[host_id().id()]),
              &(scripts_run_info->num_js));
-  if (should_inject_css)
-    InjectCss(&(scripts_run_info->injected_stylesheets[host_id().id()]),
-              &(scripts_run_info->num_css));
+  if (should_inject_or_remove_css)
+    InjectOrRemoveCss(&(scripts_run_info->injected_stylesheets[host_id().id()]),
+                      &(scripts_run_info->num_css));
 
   complete_ = did_inject_js_ || !should_inject_js;
 
@@ -379,8 +379,9 @@ void ScriptInjection::OnJsInjectionCompleted(
   }
 }
 
-void ScriptInjection::InjectCss(std::set<std::string>* injected_stylesheets,
-                                size_t* num_injected_stylesheets) {
+void ScriptInjection::InjectOrRemoveCss(
+    std::set<std::string>* injected_stylesheets,
+    size_t* num_injected_stylesheets) {
   std::vector<blink::WebString> css_sources = injector_->GetCssSources(
       run_location_, injected_stylesheets, num_injected_stylesheets);
   blink::WebLocalFrame* web_frame = render_frame_->GetWebFrame();
@@ -394,9 +395,28 @@ void ScriptInjection::InjectCss(std::set<std::string>* injected_stylesheets,
   if (const base::Optional<std::string>& injection_key =
           injector_->GetInjectionKey())
     style_sheet_key = blink::WebString::FromASCII(*injection_key);
-  for (const blink::WebString& css : css_sources)
-    web_frame->GetDocument().InsertStyleSheet(css, &style_sheet_key,
-                                              blink_css_origin);
+  // CSS deletion can be thought of as the inverse of CSS injection
+  // (i.e. x - y = x + -y and x | y = ~(~x & ~y)), so it is handled here in the
+  // injection function.
+  //
+  // TODO(https://crbug.com/1116061): Extend this API's capabilities to also
+  // remove CSS added by content scripts?
+  bool adding_css = injector_->IsAddingCSS();
+  bool removing_css = injector_->IsRemovingCSS();
+  DCHECK(!(adding_css && removing_css)) << "Operations are mutually exclusive.";
+  DCHECK(adding_css || removing_css)
+      << "At least one of the operations must happen for InjectOrRemoveCss() "
+         "to be called.";
+
+  if (removing_css) {
+    web_frame->GetDocument().RemoveInsertedStyleSheet(style_sheet_key,
+                                                      blink_css_origin);
+  } else {
+    DCHECK(adding_css);
+    for (const blink::WebString& css : css_sources)
+      web_frame->GetDocument().InsertStyleSheet(css, &style_sheet_key,
+                                                blink_css_origin);
+  }
 }
 
 }  // namespace extensions

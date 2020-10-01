@@ -46,6 +46,7 @@ class ExecuteCodeFunction : public ExtensionFunction {
   // fatal (VALIDATION_FAILURE).
   virtual InitResult Init() = 0;
   virtual bool ShouldInsertCSS() const = 0;
+  virtual bool ShouldRemoveCSS() const = 0;
   virtual bool CanExecuteScriptOnPage(std::string* error) = 0;
   virtual ScriptExecutor* GetScriptExecutor(std::string* error) = 0;
   virtual bool IsWebView() const = 0;
@@ -70,6 +71,9 @@ class ExecuteCodeFunction : public ExtensionFunction {
   }
 
   // The injection details.
+  // Note that for tabs.removeCSS we still use |InjectDetails| rather than
+  // |DeleteInjectionDetails|, since the two types are compatible; the value
+  // of |run_at| defaults to |RUN_AT_NONE|.
   std::unique_ptr<api::extension_types::InjectDetails> details_;
   base::Optional<InitResult> init_result_;
   // Set iff |init_result_| == FAILURE, holds the error string.

@@ -90,6 +90,7 @@ class WebViewInternalExecuteCodeFunction
   // Initialize |details_| if it hasn't already been.
   InitResult Init() override;
   bool ShouldInsertCSS() const override;
+  bool ShouldRemoveCSS() const override;
   bool CanExecuteScriptOnPage(std::string* error) override;
   // Guarded by a process ID check.
   extensions::ScriptExecutor* GetScriptExecutor(std::string* error) final;

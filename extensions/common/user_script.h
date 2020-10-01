@@ -54,6 +54,16 @@ class UserScript {
   // Update this if you add more injected script types!
   static const InjectionType INJECTION_TYPE_LAST = PROGRAMMATIC_SCRIPT;
 
+  // The type of the content being added or removed by the extension.
+  enum ActionType {
+    ADD_JAVASCRIPT,
+    ADD_CSS,
+    REMOVE_CSS,
+  };
+  // The last type of action taken; used for enum verification in IPC.
+  // Update this if you add more injected script types!
+  static const ActionType ACTION_TYPE_LAST = REMOVE_CSS;
+
   // Locations that user scripts can be run inside the document.
   // The three run locations must strictly follow each other in both load order
   // (i.e., start *always* comes before end) and numerically, as we use
