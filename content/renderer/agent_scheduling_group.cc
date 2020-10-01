@@ -118,19 +118,25 @@ AgentSchedulingGroup::~AgentSchedulingGroup() = default;
 // IPC messages to be forwarded to the `RenderThread`, for now. In the future
 // they will be handled directly by the `AgentSchedulingGroup`.
 bool AgentSchedulingGroup::Send(IPC::Message* message) {
-  return render_thread_.Send(message);
+  // TODO(crbug.com/1111231): For some reason, changing this to use
+  // render_thread_ causes trybots to time out (not specific tests).
+  return RenderThread::Get()->Send(message);
 }
 
 // IPC messages to be forwarded to the `RenderThread`, for now. In the future
 // they will be handled directly by the `AgentSchedulingGroup`.
 void AgentSchedulingGroup::AddRoute(int32_t routing_id, Listener* listener) {
-  render_thread_.AddRoute(routing_id, listener);
+  // TODO(crbug.com/1111231): For some reason, changing this to use
+  // render_thread_ causes trybots to time out (not specific tests).
+  RenderThread::Get()->AddRoute(routing_id, listener);
 }
 
 // IPC messages to be forwarded to the `RenderThread`, for now. In the future
 // they will be handled directly by the `AgentSchedulingGroup`.
 void AgentSchedulingGroup::RemoveRoute(int32_t routing_id) {
-  render_thread_.RemoveRoute(routing_id);
+  // TODO(crbug.com/1111231): For some reason, changing this to use
+  // render_thread_ causes trybots to time out (not specific tests).
+  RenderThread::Get()->RemoveRoute(routing_id);
 }
 
 mojom::RouteProvider* AgentSchedulingGroup::GetRemoteRouteProvider() {
