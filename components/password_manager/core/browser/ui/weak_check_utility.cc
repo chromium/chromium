@@ -4,6 +4,7 @@
 
 #include "components/password_manager/core/browser/ui/weak_check_utility.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "third_party/zxcvbn-cpp/native-src/zxcvbn/matching.hpp"
 #include "third_party/zxcvbn-cpp/native-src/zxcvbn/scoring.hpp"
@@ -12,6 +13,17 @@
 namespace password_manager {
 
 namespace {
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class PasswordWeaknessScore {
+  kTooGuessablePassword = 0,
+  kVeryGuessablePassword = 1,
+  kSomewhatGuessablePassword = 2,
+  kSafelyUnguessablePassword = 3,
+  kVeryUnguessablePassword = 4,
+  kMaxValue = kVeryUnguessablePassword,
+};
 
 // Passwords longer than this constant should not be checked for weakness using
 // the zxcvbn-cpp library. This is because the runtime grows extremely, starting
@@ -33,16 +45,25 @@ int PasswordWeakCheck(base::StringPiece16 password16) {
   std::vector<zxcvbn::Match> matches = zxcvbn::omnimatch(password);
   zxcvbn::ScoringResult result =
       zxcvbn::most_guessable_match_sequence(password, matches);
-  return zxcvbn::estimate_attack_times(result.guesses).score;
+
+  int score = zxcvbn::estimate_attack_times(result.guesses).score;
+  base::UmaHistogramEnumeration("PasswordManager.WeakCheck.PasswordScore",
+                                static_cast<PasswordWeaknessScore>(score));
+  return score;
 }
 
 }  // namespace
 
 base::flat_set<base::string16> BulkWeakCheck(
     base::flat_set<base::string16> passwords) {
+  base::UmaHistogramCounts1000("PasswordManager.WeakCheck.CheckedPasswords",
+                               passwords.size());
   base::EraseIf(passwords, [](const auto& password) {
     return kLowSeverityScore < PasswordWeakCheck(password);
   });
+
+  base::UmaHistogramCounts1000("PasswordManager.WeakCheck.WeakPasswords",
+                               passwords.size());
   return passwords;
 }
 
