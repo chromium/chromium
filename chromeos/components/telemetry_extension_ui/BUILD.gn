@@ -13,10 +13,14 @@ source_set("telemetry_extension_ui") {
     "diagnostics_service.h",
     "diagnostics_service_converters.cc",
     "diagnostics_service_converters.h",
+    "lid_observer.cc",
+    "lid_observer.h",
     "probe_service.cc",
     "probe_service.h",
     "probe_service_converters.cc",
     "probe_service_converters.h",
+    "system_events_service.cc",
+    "system_events_service.h",
     "telemetry_extension_ui.cc",
     "telemetry_extension_ui.h",
     "telemetry_extension_untrusted_source.cc",
@@ -46,6 +50,7 @@ source_set("unit_tests") {
     "diagnostics_service_converters_unittest.cc",
     "probe_service_converters_unittest.cc",
     "probe_service_unittest.cc",
+    "system_events_service_unittest.cc",
   ]
   deps = [
     ":telemetry_extension_ui",

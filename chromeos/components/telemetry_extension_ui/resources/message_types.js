@@ -43,6 +43,7 @@ dpsl_internal.Message = {
   DIAGNOSTICS_RUN_BATTERY_CHARGE_ROUTINE:
       'DiagnosticsService.RunBatteryChargeRoutine',
   PROBE_TELEMETRY_INFO: 'ProbeService.ProbeTelemetryInfo',
+  SYSTEM_EVENTS_SERVICE_EVENTS: 'SystemEventsService.Events',
 };
 
 /**
@@ -188,6 +189,12 @@ dpsl_internal.DiagnosticsRunBatteryChargeRoutineRequest;
  * @typedef { !Object | !Error }
  */
 dpsl_internal.DiagnosticsRunRoutineResponse;
+
+/**
+ * Event response from System Events Service.
+ * @typedef {{ type: !string }}
+ */
+dpsl_internal.Event;
 
 /**
  * Request message sent by the unprivileged context to request the privileged

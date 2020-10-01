@@ -152,6 +152,9 @@ class FakeCrosHealthdService final
   // Calls the lid event OnLidClosed for all registered lid observers.
   void EmitLidClosedEventForTesting();
 
+  // Calls the lid event OnLidOpened for all registered lid observers.
+  void EmitLidOpenedEventForTesting();
+
   // Requests the network health state using the network_health_remote_.
   void RequestNetworkHealthForTesting(
       chromeos::network_health::mojom::NetworkHealthService::

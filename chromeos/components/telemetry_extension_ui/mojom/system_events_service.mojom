@@ -1,0 +1,33 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+//
+// Definitions for the System Events API exposed by the telemetry
+// system web extension.
+// This API is consumed by chrome://.
+//
+// This Mojo interface will go through security review before shipping.
+//
+// This is a subset of the cros_healthd event service interface which is
+// src/chrome/services/cros_healthd/public/mojom/cros_healthd.mojom and
+// src/chrome/services/cros_healthd/public/mojom/cros_healthd_events.mojom.
+
+module chromeos.health.mojom;
+
+// System Events interface exposed by the Telemetry SWX.
+interface SystemEventsService {
+  // Adds an observer to be notified on lid events. The caller can remove the
+  // observer created by this call by closing their end of the message pipe.
+  //
+  // The request:
+  // * |observer| - lid observer to be added to system events service.
+  AddLidObserver(pending_remote<LidObserver> observer);
+};
+
+// Implemented by clients who desire lid notifications.
+interface LidObserver {
+  // Fired when the device's lid is closed.
+  OnLidClosed();
+  // Fired when the device's lid is opened.
+  OnLidOpened();
+};
