@@ -133,7 +133,7 @@
 </style>
 <div id="products">
   <template is="dom-repeat" id="productsRepeat"
-      items="[[shoppingTask.products]]">
+      items="[[shoppingTask.products]]" on-dom-change="onDomChange_">
     <a class="product" href="[[item.targetUrl.url]]" on-click="onClick_"
         on-auxclick="onClick_">
       <div class="image">
@@ -146,8 +146,8 @@
   </template>
 </div>
 <div id="relatedSearches">
-  <template is="dom-repeat"  id="relatedSearchesRepeat"
-      items="[[shoppingTask.relatedSearches]]">
+  <template is="dom-repeat" id="relatedSearchesRepeat"
+      items="[[shoppingTask.relatedSearches]]" on-dom-change="onDomChange_">
     <a class="pill" href="[[item.targetUrl.url]]" on-click="onClick_"
         on-auxclick="onClick_">
       <div class="loupe"></div>
