@@ -75,10 +75,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
     // Register to observe any changes on Perf backed values displayed by the
     // screen.
     _prefObserverBridge->ObserveChangesForPreference(
-        prefs::kNetworkPredictionEnabled,
-        &_prefChangeRegistrarApplicationContext);
-    _prefObserverBridge->ObserveChangesForPreference(
-        prefs::kNetworkPredictionWifiOnly,
+        prefs::kNetworkPredictionSetting,
         &_prefChangeRegistrarApplicationContext);
   }
   return self;
@@ -143,8 +140,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
         l10n_util::GetNSString(IDS_IOS_OPTIONS_PRELOAD_WEBPAGES);
     UIViewController* controller = [[DataplanUsageTableViewController alloc]
         initWithPrefs:_browserState->GetPrefs()
-             basePref:prefs::kNetworkPredictionEnabled
-             wifiPref:prefs::kNetworkPredictionWifiOnly
+          settingPref:prefs::kNetworkPredictionSetting
                 title:preloadTitle];
     [self.navigationController pushViewController:controller animated:YES];
   }
@@ -153,12 +149,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
 #pragma mark - PrefObserverDelegate
 
 - (void)onPreferenceChanged:(const std::string&)preferenceName {
-  if (preferenceName == prefs::kNetworkPredictionEnabled ||
-      preferenceName == prefs::kNetworkPredictionWifiOnly) {
+  if (preferenceName == prefs::kNetworkPredictionSetting) {
     NSString* detailText = [DataplanUsageTableViewController
         currentLabelForPreference:_browserState->GetPrefs()
-                         basePref:prefs::kNetworkPredictionEnabled
-                         wifiPref:prefs::kNetworkPredictionWifiOnly];
+                      settingPref:prefs::kNetworkPredictionSetting];
 
     _preloadWebpagesDetailItem.detailText = detailText;
 
@@ -173,8 +167,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (TableViewDetailIconItem*)preloadWebpagesItem {
   NSString* detailText = [DataplanUsageTableViewController
       currentLabelForPreference:_browserState->GetPrefs()
-                       basePref:prefs::kNetworkPredictionEnabled
-                       wifiPref:prefs::kNetworkPredictionWifiOnly];
+                    settingPref:prefs::kNetworkPredictionSetting];
   _preloadWebpagesDetailItem =
       [[TableViewDetailIconItem alloc] initWithType:ItemTypePreload];
 

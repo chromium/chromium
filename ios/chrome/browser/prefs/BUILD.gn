@@ -77,6 +77,7 @@ source_set("browser_prefs") {
     "//ios/chrome/browser/memory",
     "//ios/chrome/browser/metrics",
     "//ios/chrome/browser/net",
+    "//ios/chrome/browser/prerender:prerender_pref",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/ui/authentication",
     "//ios/chrome/browser/ui/bookmarks",

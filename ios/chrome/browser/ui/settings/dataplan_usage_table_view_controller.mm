@@ -8,6 +8,7 @@
 #import "base/mac/foundation_util.h"
 #include "components/prefs/pref_member.h"
 #include "components/prefs/pref_service.h"
+#import "ios/chrome/browser/prerender/prerender_pref.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_detail_text_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
@@ -21,30 +22,57 @@
 #error "This file requires ARC support."
 #endif
 
+using prerender_prefs::NetworkPredictionSetting;
+
 namespace {
 
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierOptions = kSectionIdentifierEnumZero,
 };
 
+// Item types to enumerate the table items.
 typedef NS_ENUM(NSInteger, ItemType) {
-  ItemTypeOptionsAlways = kItemTypeEnumZero,
-  ItemTypeOptionsOnlyOnWiFi,
+  ItemTypeOptionsEnabledAlways = kItemTypeEnumZero,
+  ItemTypeOptionsWifiOnly,
   ItemTypeOptionsNever,
 };
+
+// Converts an NetworkPredictionSetting, to a corresponding ItemType.
+ItemType ItemTypeWithSetting(NetworkPredictionSetting setting) {
+  switch (setting) {
+    case NetworkPredictionSetting::kEnabledWifiAndCellular: {
+      return ItemTypeOptionsEnabledAlways;
+    }
+    case NetworkPredictionSetting::kEnabledWifiOnly: {
+      return ItemTypeOptionsWifiOnly;
+    }
+    case NetworkPredictionSetting::kDisabled: {
+      return ItemTypeOptionsNever;
+    }
+  }
+}
+
+// Converts an ItemType, to a corresponding NetworkPredictionSetting.
+NetworkPredictionSetting SettingWithItemType(ItemType item_type) {
+  switch (item_type) {
+    case ItemTypeOptionsEnabledAlways: {
+      return NetworkPredictionSetting::kEnabledWifiAndCellular;
+    }
+    case ItemTypeOptionsWifiOnly: {
+      return NetworkPredictionSetting::kEnabledWifiOnly;
+    }
+    case ItemTypeOptionsNever: {
+      return NetworkPredictionSetting::kDisabled;
+    }
+  }
+}
 
 }  // namespace.
 
 @interface DataplanUsageTableViewController () {
-  BooleanPrefMember _basePreference;
-  BooleanPrefMember _wifiPreference;
+  IntegerPrefMember _settingPreference;
 }
 
-// Updates the checked state of the cells to match the preferences.
-- (void)updateCheckedState;
-
-// Updates the PrefService with the given values.
-- (void)updateBasePref:(BOOL)basePref wifiPref:(BOOL)wifiPref;
 @end
 
 @implementation DataplanUsageTableViewController
@@ -52,8 +80,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 #pragma mark - Initialization
 
 - (instancetype)initWithPrefs:(PrefService*)prefs
-                     basePref:(const char*)basePreference
-                     wifiPref:(const char*)wifiPreference
+                  settingPref:(const char*)settingPreference
                         title:(NSString*)title {
   UITableViewStyle style = base::FeatureList::IsEnabled(kSettingsRefresh)
                                ? UITableViewStylePlain
@@ -61,8 +88,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   self = [super initWithStyle:style];
   if (self) {
     self.title = title;
-    _basePreference.Init(basePreference, prefs);
-    _wifiPreference.Init(wifiPreference, prefs);
+    _settingPreference.Init(settingPreference, prefs);
   }
   return self;
 }
@@ -81,20 +107,22 @@ typedef NS_ENUM(NSInteger, ItemType) {
   TableViewModel<TableViewItem*>* model = self.tableViewModel;
   [model addSectionWithIdentifier:SectionIdentifierOptions];
 
-  TableViewDetailTextItem* always =
-      [[TableViewDetailTextItem alloc] initWithType:ItemTypeOptionsAlways];
+  TableViewDetailTextItem* always = [[TableViewDetailTextItem alloc]
+      initWithType:ItemTypeWithSetting(
+                       NetworkPredictionSetting::kEnabledWifiAndCellular)];
   [always setText:l10n_util::GetNSString(IDS_IOS_OPTIONS_DATA_USAGE_ALWAYS)];
   [always setAccessibilityTraits:UIAccessibilityTraitButton];
   [model addItem:always toSectionWithIdentifier:SectionIdentifierOptions];
 
-  TableViewDetailTextItem* wifi =
-      [[TableViewDetailTextItem alloc] initWithType:ItemTypeOptionsOnlyOnWiFi];
+  TableViewDetailTextItem* wifi = [[TableViewDetailTextItem alloc]
+      initWithType:ItemTypeWithSetting(
+                       NetworkPredictionSetting::kEnabledWifiOnly)];
   [wifi setText:l10n_util::GetNSString(IDS_IOS_OPTIONS_DATA_USAGE_ONLY_WIFI)];
   [wifi setAccessibilityTraits:UIAccessibilityTraitButton];
   [model addItem:wifi toSectionWithIdentifier:SectionIdentifierOptions];
 
-  TableViewDetailTextItem* never =
-      [[TableViewDetailTextItem alloc] initWithType:ItemTypeOptionsNever];
+  TableViewDetailTextItem* never = [[TableViewDetailTextItem alloc]
+      initWithType:ItemTypeWithSetting(NetworkPredictionSetting::kDisabled)];
   [never setText:l10n_util::GetNSString(IDS_IOS_OPTIONS_DATA_USAGE_NEVER)];
   [never setAccessibilityTraits:UIAccessibilityTraitButton];
   [model addItem:never toSectionWithIdentifier:SectionIdentifierOptions];
@@ -102,26 +130,23 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [self updateCheckedState];
 }
 
+// Updates the checked state of the cells to match the preferences.
 - (void)updateCheckedState {
-  BOOL basePrefOn = _basePreference.GetValue();
-  BOOL wifiPrefOn = _wifiPreference.GetValue();
-  TableViewModel<TableViewItem*>* model = self.tableViewModel;
+  NetworkPredictionSetting setting =
+      static_cast<prerender_prefs::NetworkPredictionSetting>(
+          _settingPreference.GetValue());
 
-  std::unordered_map<NSInteger, bool> optionsMap = {
-      {ItemTypeOptionsAlways, basePrefOn && !wifiPrefOn},
-      {ItemTypeOptionsOnlyOnWiFi, basePrefOn && wifiPrefOn},
-      {ItemTypeOptionsNever, !basePrefOn},
-  };
+  TableViewModel<TableViewItem*>* model = self.tableViewModel;
 
   NSMutableArray* modifiedItems = [NSMutableArray array];
   for (TableViewDetailTextItem* item in
        [model itemsInSectionWithIdentifier:SectionIdentifierOptions]) {
-    auto value = optionsMap.find(item.type);
-    DCHECK(value != optionsMap.end());
+    NetworkPredictionSetting itemSetting =
+        SettingWithItemType(static_cast<ItemType>(item.type));
 
     UITableViewCellAccessoryType desiredType =
-        value->second ? UITableViewCellAccessoryCheckmark
-                      : UITableViewCellAccessoryNone;
+        itemSetting == setting ? UITableViewCellAccessoryCheckmark
+                               : UITableViewCellAccessoryNone;
     if (item.accessoryType != desiredType) {
       item.accessoryType = desiredType;
       [modifiedItems addObject:item];
@@ -131,44 +156,43 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [self reconfigureCellsForItems:modifiedItems];
 }
 
-- (void)updateBasePref:(BOOL)basePref wifiPref:(BOOL)wifiPref {
-  _basePreference.SetValue(basePref);
-  _wifiPreference.SetValue(wifiPref);
-  [self updateCheckedState];
-}
-
 #pragma mark - Internal methods
 
 + (NSString*)currentLabelForPreference:(PrefService*)prefs
-                              basePref:(const char*)basePreference
-                              wifiPref:(const char*)wifiPreference {
+                           settingPref:(const char*)settingPreference {
   if (!prefs)
     return nil;
-  if (prefs->GetBoolean(basePreference)) {
-    if (prefs->GetBoolean(wifiPreference))
+
+  NetworkPredictionSetting setting =
+      static_cast<prerender_prefs::NetworkPredictionSetting>(
+          prefs->GetInteger(settingPreference));
+  switch (setting) {
+    case NetworkPredictionSetting::kDisabled: {
+      return l10n_util::GetNSString(IDS_IOS_OPTIONS_DATA_USAGE_NEVER);
+    }
+    case NetworkPredictionSetting::kEnabledWifiOnly: {
       return l10n_util::GetNSString(IDS_IOS_OPTIONS_DATA_USAGE_ONLY_WIFI);
-    else
+    }
+
+    case NetworkPredictionSetting::kEnabledWifiAndCellular: {
       return l10n_util::GetNSString(IDS_IOS_OPTIONS_DATA_USAGE_ALWAYS);
+    }
   }
-  return l10n_util::GetNSString(IDS_IOS_OPTIONS_DATA_USAGE_NEVER);
+}
+
+- (void)updateSetting:(prerender_prefs::NetworkPredictionSetting)newSetting {
+  _settingPreference.SetValue(static_cast<int>(newSetting));
+  [self updateCheckedState];
 }
 
 #pragma mark - UITableViewDelegate
 
 - (void)tableView:(UITableView*)tableView
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
-  NSInteger type = [self.tableViewModel itemTypeForIndexPath:indexPath];
-  switch (type) {
-    case ItemTypeOptionsAlways:
-      [self updateBasePref:YES wifiPref:NO];
-      break;
-    case ItemTypeOptionsOnlyOnWiFi:
-      [self updateBasePref:YES wifiPref:YES];
-      break;
-    case ItemTypeOptionsNever:
-      [self updateBasePref:NO wifiPref:NO];
-      break;
-  }
+  NetworkPredictionSetting chosenSetting =
+      SettingWithItemType(static_cast<ItemType>(
+          [self.tableViewModel itemTypeForIndexPath:indexPath]));
+  [self updateSetting:chosenSetting];
 
   [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }

@@ -11,6 +11,7 @@
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/browser/pref_names.h"
 #import "ios/chrome/browser/prerender/preload_controller.h"
+#import "ios/chrome/browser/prerender/prerender_pref.h"
 #include "ios/web/public/test/web_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/platform_test.h"
@@ -65,24 +66,25 @@ class PreloadControllerTest : public PlatformTest {
 
   // Set the "Preload webpages" setting to "Always".
   void PreloadWebpagesAlways() {
-    chrome_browser_state_->GetPrefs()->SetBoolean(
-        prefs::kNetworkPredictionEnabled, YES);
-    chrome_browser_state_->GetPrefs()->SetBoolean(
-        prefs::kNetworkPredictionWifiOnly, NO);
+    chrome_browser_state_->GetPrefs()->SetInteger(
+        prefs::kNetworkPredictionSetting,
+        static_cast<int>(prerender_prefs::NetworkPredictionSetting::
+                             kEnabledWifiAndCellular));
   }
 
   // Set the "Preload webpages" setting to "Only on Wi-Fi".
   void PreloadWebpagesWiFiOnly() {
-    chrome_browser_state_->GetPrefs()->SetBoolean(
-        prefs::kNetworkPredictionEnabled, YES);
-    chrome_browser_state_->GetPrefs()->SetBoolean(
-        prefs::kNetworkPredictionWifiOnly, YES);
+    chrome_browser_state_->GetPrefs()->SetInteger(
+        prefs::kNetworkPredictionSetting,
+        static_cast<int>(
+            prerender_prefs::NetworkPredictionSetting::kEnabledWifiOnly));
   }
 
   // Set the "Preload webpages" setting to "Never".
   void PreloadWebpagesNever() {
-    chrome_browser_state_->GetPrefs()->SetBoolean(
-        prefs::kNetworkPredictionEnabled, NO);
+    chrome_browser_state_->GetPrefs()->SetInteger(
+        prefs::kNetworkPredictionSetting,
+        static_cast<int>(prerender_prefs::NetworkPredictionSetting::kDisabled));
   }
 
   void SimulateWiFiConnection() {

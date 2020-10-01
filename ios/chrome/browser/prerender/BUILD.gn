@@ -2,6 +2,19 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+source_set("prerender_pref") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  public = [ "prerender_pref.h" ]
+  sources = [ "prerender_pref.mm" ]
+
+  deps = [
+    "//base",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//ios/chrome/browser:pref_names",
+  ]
+}
+
 source_set("prerender") {
   configs += [ "//build/config/compiler:enable_arc" ]
   public = [
@@ -20,6 +33,7 @@ source_set("prerender") {
   friend = [ ":unit_tests" ]
 
   deps = [
+    ":prerender_pref",
     "//base",
     "//components/keyed_service/core",
     "//components/keyed_service/ios",
@@ -69,6 +83,7 @@ source_set("unit_tests") {
   ]
   deps = [
     ":prerender",
+    ":prerender_pref",
     "//base",
     "//components/prefs",
     "//ios/chrome/browser",

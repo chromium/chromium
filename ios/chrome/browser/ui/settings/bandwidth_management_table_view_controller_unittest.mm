@@ -82,8 +82,7 @@ TEST_F(BandwidthManagementTableViewControllerTest, TestModel) {
       l10n_util::GetNSString(IDS_IOS_OPTIONS_PRELOAD_WEBPAGES);
   NSString* expected_subtitle = [DataplanUsageTableViewController
       currentLabelForPreference:chrome_browser_state_->GetPrefs()
-                       basePref:prefs::kNetworkPredictionEnabled
-                       wifiPref:prefs::kNetworkPredictionWifiOnly];
+                    settingPref:prefs::kNetworkPredictionSetting];
   CheckTextCellTextAndDetailText(expected_title, expected_subtitle, 0, 0);
   EXPECT_NE(nil, [controller().tableViewModel footerForSection:0]);
 }

@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/itunes_urls/itunes_urls_handler_tab_helper.h"
 #include "ios/chrome/browser/pref_names.h"
 #include "ios/chrome/browser/prerender/preload_controller_delegate.h"
+#import "ios/chrome/browser/prerender/prerender_pref.h"
 #import "ios/chrome/browser/signin/account_consistency_service_factory.h"
 #import "ios/chrome/browser/tabs/tab_helper_util.h"
 #import "ios/web/public/navigation/navigation_item.h"
@@ -185,14 +186,12 @@ class PreloadJavaScriptDialogPresenter : public web::JavaScriptDialogPresenter {
 // there is no prerender scheduled.
 @property(nonatomic, readonly) const GURL& scheduledURL;
 
-// Whether or not the preference is enabled.
-@property(nonatomic, getter=isPreferenceEnabled) BOOL preferenceEnabled;
-
-// Whether or not prerendering is only when on wifi.
-@property(nonatomic, getter=isWifiOnly) BOOL wifiOnly;
+// Network prediction settings.
+@property(nonatomic)
+    prerender_prefs::NetworkPredictionSetting networkPredictionSetting;
 
 // Whether or not the current connection is using WWAN.
-@property(nonatomic, getter=isUsingWWAN) BOOL usingWWAN;
+@property(nonatomic, assign) BOOL isOnCellularNetwork;
 
 // Number of successful prerenders (i.e. the user viewed the prerendered page)
 // during the lifetime of this controller.
@@ -230,22 +229,21 @@ class PreloadJavaScriptDialogPresenter : public web::JavaScriptDialogPresenter {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
   if ((self = [super init])) {
     _browserState = browserState;
-    _preferenceEnabled =
-        _browserState->GetPrefs()->GetBoolean(prefs::kNetworkPredictionEnabled);
-    _wifiOnly = _browserState->GetPrefs()->GetBoolean(
-        prefs::kNetworkPredictionWifiOnly);
-    _usingWWAN = net::NetworkChangeNotifier::IsConnectionCellular(
+    _networkPredictionSetting =
+        static_cast<prerender_prefs::NetworkPredictionSetting>(
+            _browserState->GetPrefs()->GetInteger(
+                prefs::kNetworkPredictionSetting));
+    _isOnCellularNetwork = net::NetworkChangeNotifier::IsConnectionCellular(
         net::NetworkChangeNotifier::GetConnectionType());
     _webStateDelegate = std::make_unique<web::WebStateDelegateBridge>(self);
     _webStateObserver = std::make_unique<web::WebStateObserverBridge>(self);
     _observerBridge = std::make_unique<PrefObserverBridge>(self);
     _prefChangeRegistrar.Init(_browserState->GetPrefs());
     _observerBridge->ObserveChangesForPreference(
-        prefs::kNetworkPredictionEnabled, &_prefChangeRegistrar);
-    _observerBridge->ObserveChangesForPreference(
-        prefs::kNetworkPredictionWifiOnly, &_prefChangeRegistrar);
+        prefs::kNetworkPredictionSetting, &_prefChangeRegistrar);
     _dialogPresenter = std::make_unique<PreloadJavaScriptDialogPresenter>(self);
-    if (_preferenceEnabled && _wifiOnly) {
+    if (_networkPredictionSetting ==
+        prerender_prefs::NetworkPredictionSetting::kEnabledWifiOnly) {
       _connectionTypeObserver =
           std::make_unique<ConnectionTypeObserverBridge>(self);
     }
@@ -273,11 +271,27 @@ class PreloadJavaScriptDialogPresenter : public web::JavaScriptDialogPresenter {
 
 - (BOOL)isEnabled {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
-  return !IsPrerenderTabEvictionExperimentalGroup() && self.preferenceEnabled &&
-         !ios::device_util::IsSingleCoreDevice() &&
-         ios::device_util::RamIsAtLeast512Mb() &&
-         !net::NetworkChangeNotifier::IsOffline() &&
-         (!self.wifiOnly || !self.usingWWAN);
+
+  if (IsPrerenderTabEvictionExperimentalGroup() ||
+      ios::device_util::IsSingleCoreDevice() ||
+      !ios::device_util::RamIsAtLeast512Mb() ||
+      net::NetworkChangeNotifier::IsOffline()) {
+    return false;
+  }
+
+  switch (self.networkPredictionSetting) {
+    case prerender_prefs::NetworkPredictionSetting::kEnabledWifiOnly: {
+      return !self.isOnCellularNetwork;
+    }
+
+    case prerender_prefs::NetworkPredictionSetting::kEnabledWifiAndCellular: {
+      return true;
+    }
+
+    case prerender_prefs::NetworkPredictionSetting::kDisabled: {
+      return false;
+    }
+  }
 }
 
 - (void)setLoadCompleted:(BOOL)loadCompleted {
@@ -384,9 +398,13 @@ class PreloadJavaScriptDialogPresenter : public web::JavaScriptDialogPresenter {
 
 - (void)connectionTypeChanged:(net::NetworkChangeNotifier::ConnectionType)type {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
-  self.usingWWAN = net::NetworkChangeNotifier::IsConnectionCellular(type);
-  if (self.wifiOnly && self.usingWWAN)
+  self.isOnCellularNetwork =
+      net::NetworkChangeNotifier::IsConnectionCellular(type);
+  if (self.networkPredictionSetting ==
+          prerender_prefs::NetworkPredictionSetting::kEnabledWifiOnly &&
+      self.isOnCellularNetwork) {
     [self cancelPrerender];
+  }
 }
 
 #pragma mark - CRWWebStateDelegate
@@ -480,29 +498,39 @@ class PreloadJavaScriptDialogPresenter : public web::JavaScriptDialogPresenter {
 #pragma mark - PrefObserverDelegate
 
 - (void)onPreferenceChanged:(const std::string&)preferenceName {
-  if (preferenceName == prefs::kNetworkPredictionEnabled ||
-      preferenceName == prefs::kNetworkPredictionWifiOnly) {
+  if (preferenceName == prefs::kNetworkPredictionSetting) {
     DCHECK_CURRENTLY_ON(web::WebThread::UI);
     // The logic is simpler if both preferences changes are handled equally.
-    self.preferenceEnabled = self.browserState->GetPrefs()->GetBoolean(
-        prefs::kNetworkPredictionEnabled);
-    self.wifiOnly = self.browserState->GetPrefs()->GetBoolean(
-        prefs::kNetworkPredictionWifiOnly);
+    self.networkPredictionSetting =
+        static_cast<prerender_prefs::NetworkPredictionSetting>(
+            self.browserState->GetPrefs()->GetInteger(
+                prefs::kNetworkPredictionSetting));
 
-    if (self.wifiOnly && self.preferenceEnabled) {
-      if (!_connectionTypeObserver.get()) {
-        self.usingWWAN = net::NetworkChangeNotifier::IsConnectionCellular(
-            net::NetworkChangeNotifier::GetConnectionType());
-        _connectionTypeObserver.reset(new ConnectionTypeObserverBridge(self));
+    switch (self.networkPredictionSetting) {
+      case prerender_prefs::NetworkPredictionSetting::kEnabledWifiOnly: {
+        if (!_connectionTypeObserver.get()) {
+          self.isOnCellularNetwork =
+              net::NetworkChangeNotifier::IsConnectionCellular(
+                  net::NetworkChangeNotifier::GetConnectionType());
+          _connectionTypeObserver =
+              std::make_unique<ConnectionTypeObserverBridge>(self);
+        }
+        if (self.isOnCellularNetwork) {
+          [self cancelPrerender];
+        }
+        break;
       }
-      if (self.usingWWAN) {
+
+      case prerender_prefs::NetworkPredictionSetting::kEnabledWifiAndCellular: {
+        _connectionTypeObserver.reset();
+        break;
+      }
+
+      case prerender_prefs::NetworkPredictionSetting::kDisabled: {
         [self cancelPrerender];
+        _connectionTypeObserver.reset();
+        break;
       }
-    } else if (self.preferenceEnabled) {
-      _connectionTypeObserver.reset();
-    } else {
-      [self cancelPrerender];
-      _connectionTypeObserver.reset();
     }
   }
 }
