@@ -148,6 +148,11 @@ void FakeDiskMountManager::FormatMountedDevice(
     chromeos::disks::FormatFileSystemType filesystem,
     const std::string& label) {}
 
+void FakeDiskMountManager::SinglePartitionFormatDevice(
+    const std::string& device_path,
+    chromeos::disks::FormatFileSystemType filesystem,
+    const std::string& label) {}
+
 void FakeDiskMountManager::RenameMountedDevice(const std::string& mount_path,
                                                const std::string& volume_name) {
 }

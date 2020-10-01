@@ -63,7 +63,12 @@ class COMPONENT_EXPORT(CHROMEOS_DISKS) DiskMountManager {
 
   enum FormatEvent {
     FORMAT_STARTED,
-    FORMAT_COMPLETED
+    FORMAT_COMPLETED,
+  };
+
+  enum PartitionEvent {
+    PARTITION_STARTED,
+    PARTITION_COMPLETED,
   };
 
   enum RenameEvent { RENAME_STARTED, RENAME_COMPLETED };
@@ -126,6 +131,10 @@ class COMPONENT_EXPORT(CHROMEOS_DISKS) DiskMountManager {
                                FormatError error_code,
                                const std::string& device_path,
                                const std::string& device_label) {}
+    virtual void OnPartitionEvent(PartitionEvent event,
+                                  PartitionError error_code,
+                                  const std::string& device_path,
+                                  const std::string& device_label) {}
     // Called on rename process events.
     virtual void OnRenameEvent(RenameEvent event,
                                RenameError error_code,
@@ -196,6 +205,18 @@ class COMPONENT_EXPORT(CHROMEOS_DISKS) DiskMountManager {
   virtual void FormatMountedDevice(const std::string& mount_path,
                                    FormatFileSystemType filesystem,
                                    const std::string& label) = 0;
+
+  // Deletes partitions of the device, create a partition taking whole device
+  // and format it as single volume. It converts devices with multiple child
+  // volumes to a single volume disk. It unmounts the mounted child volumes
+  // before erasing.
+  // Example: device_path: /sys/devices/pci0000:00/0000:00:14.0/usb1/1-3/
+  //                       1-3:1.0/host0/target0:0:0/0:0:0:0
+  //          filesystem: FormatFileSystemType::kNtfs
+  //          label: MYUSB
+  virtual void SinglePartitionFormatDevice(const std::string& device_path,
+                                           FormatFileSystemType filesystem,
+                                           const std::string& label) = 0;
 
   // Renames Device given its mount path.
   // Example: mount_path: /media/VOLUME_LABEL

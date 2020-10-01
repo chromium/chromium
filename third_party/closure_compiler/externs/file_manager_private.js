@@ -161,6 +161,9 @@ chrome.fileManagerPrivate.DeviceEventType = {
   RENAME_START: 'rename_start',
   RENAME_SUCCESS: 'rename_success',
   RENAME_FAIL: 'rename_fail',
+  PARTITION_START: 'partition_start',
+  PARTITION_SUCCESS: 'partition_success',
+  PARTITION_FAIL: 'partition_fail',
 };
 
 /** @enum {string} */

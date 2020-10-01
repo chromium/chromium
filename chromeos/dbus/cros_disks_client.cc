@@ -240,6 +240,20 @@ class CrosDisksClientImpl : public CrosDisksClient {
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
+  // CrosDisksClient override.
+  void SinglePartitionFormat(const std::string& device_path,
+                             PartitionCallback callback) override {
+    dbus::MethodCall method_call(cros_disks::kCrosDisksInterface,
+                                 cros_disks::kSinglePartitionFormat);
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendString(device_path);
+
+    proxy_->CallMethod(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&CrosDisksClientImpl::OnPartitionCompleted,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
   void Rename(const std::string& device_path,
               const std::string& volume_name,
               VoidDBusMethodCallback callback) override {
@@ -495,6 +509,23 @@ class CrosDisksClientImpl : public CrosDisksClient {
       observer.OnFormatCompleted(static_cast<FormatError>(error_code),
                                  device_path);
     }
+  }
+
+  void OnPartitionCompleted(PartitionCallback callback,
+                            dbus::Response* response) {
+    if (!response) {
+      std::move(callback).Run(PARTITION_ERROR_UNKNOWN);
+      return;
+    }
+    uint32_t status = PARTITION_ERROR_UNKNOWN;
+    dbus::MessageReader reader(response);
+    if (!reader.PopUint32(&status)) {
+      LOG(ERROR) << "Error reading SinglePartitionFormat response: "
+                 << response->ToString();
+      std::move(callback).Run(PARTITION_ERROR_UNKNOWN);
+      return;
+    }
+    std::move(callback).Run(static_cast<PartitionError>(status));
   }
 
   // Handles RenameCompleted signal and notifies observers.

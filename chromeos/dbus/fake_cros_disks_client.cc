@@ -185,6 +185,16 @@ void FakeCrosDisksClient::Format(const std::string& device_path,
       FROM_HERE, base::BindOnce(std::move(callback), format_success_));
 }
 
+void FakeCrosDisksClient::SinglePartitionFormat(const std::string& device_path,
+                                                PartitionCallback callback) {
+  DCHECK(!callback.is_null());
+
+  partition_call_count_++;
+  last_partition_device_path_ = device_path;
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), partition_error_));
+}
+
 void FakeCrosDisksClient::Rename(const std::string& device_path,
                                  const std::string& volume_name,
                                  VoidDBusMethodCallback callback) {

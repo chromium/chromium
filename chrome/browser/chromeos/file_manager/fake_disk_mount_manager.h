@@ -92,6 +92,10 @@ class FakeDiskMountManager : public chromeos::disks::DiskMountManager {
   void FormatMountedDevice(const std::string& mount_path,
                            chromeos::disks::FormatFileSystemType filesystem,
                            const std::string& label) override;
+  void SinglePartitionFormatDevice(
+      const std::string& device_path,
+      chromeos::disks::FormatFileSystemType filesystem,
+      const std::string& label) override;
   void RenameMountedDevice(const std::string& mount_path,
                            const std::string& volume_name) override;
   void UnmountDeviceRecursively(

@@ -974,6 +974,45 @@ void VolumeManager::OnFormatEvent(
   NOTREACHED();
 }
 
+void VolumeManager::OnPartitionEvent(
+    chromeos::disks::DiskMountManager::PartitionEvent event,
+    chromeos::PartitionError error_code,
+    const std::string& device_path,
+    const std::string& device_label) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DVLOG(1) << "OnPartitionEvent: " << event << ", " << error_code << ", "
+           << device_path;
+
+  switch (event) {
+    case chromeos::disks::DiskMountManager::PARTITION_STARTED:
+      for (auto& observer : observers_) {
+        observer.OnPartitionStarted(
+            device_path, device_label,
+            error_code == chromeos::PARTITION_ERROR_NONE);
+      }
+      return;
+    case chromeos::disks::DiskMountManager::PARTITION_COMPLETED:
+      // If partitioning failed, try to mount the device so the user can retry.
+      // MountPath auto-detects filesystem format if second argument is
+      // empty. The third argument (mount label) is not used in a disk mount
+      // operation.
+      if (error_code != chromeos::PARTITION_ERROR_NONE) {
+        disk_mount_manager_->MountPath(device_path, std::string(),
+                                       std::string(), {},
+                                       chromeos::MOUNT_TYPE_DEVICE,
+                                       GetExternalStorageAccessMode(profile_));
+      }
+
+      for (auto& observer : observers_) {
+        observer.OnPartitionCompleted(
+            device_path, device_label,
+            error_code == chromeos::PARTITION_ERROR_NONE);
+      }
+      return;
+  }
+  NOTREACHED();
+}
+
 void VolumeManager::OnRenameEvent(
     chromeos::disks::DiskMountManager::RenameEvent event,
     chromeos::RenameError error_code,

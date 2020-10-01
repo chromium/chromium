@@ -131,7 +131,13 @@ enum DeviceEventType {
   // Rename succeeded.
   rename_success,
   // Rename failed.
-  rename_fail
+  rename_fail,
+  // Partition started.
+  partition_start,
+  // Partition succeeded.
+  partition_success,
+  // Partition failed.
+  partition_fail
 };
 
 // Drive sync error type.

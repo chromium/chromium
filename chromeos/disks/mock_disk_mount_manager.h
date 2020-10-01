@@ -50,6 +50,10 @@ class MockDiskMountManager : public DiskMountManager {
                void(const std::string&,
                     FormatFileSystemType,
                     const std::string&));
+  MOCK_METHOD3(SinglePartitionFormatDevice,
+               void(const std::string&,
+                    FormatFileSystemType,
+                    const std::string&));
   MOCK_METHOD2(RenameMountedDevice,
                void(const std::string&, const std::string&));
   MOCK_METHOD2(UnmountDeviceRecursively,

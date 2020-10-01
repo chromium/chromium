@@ -391,6 +391,10 @@ class VolumeManager : public KeyedService,
                      chromeos::FormatError error_code,
                      const std::string& device_path,
                      const std::string& device_label) override;
+  void OnPartitionEvent(chromeos::disks::DiskMountManager::PartitionEvent event,
+                        chromeos::PartitionError error_code,
+                        const std::string& device_path,
+                        const std::string& device_label) override;
   void OnRenameEvent(chromeos::disks::DiskMountManager::RenameEvent event,
                      chromeos::RenameError error_code,
                      const std::string& device_path,

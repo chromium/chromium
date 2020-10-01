@@ -136,6 +136,12 @@ class EventRouter
   void OnFormatCompleted(const std::string& device_path,
                          const std::string& device_label,
                          bool success) override;
+  void OnPartitionStarted(const std::string& device_path,
+                          const std::string& device_label,
+                          bool success) override;
+  void OnPartitionCompleted(const std::string& device_path,
+                            const std::string& device_label,
+                            bool success) override;
   void OnRenameStarted(const std::string& device_path,
                        const std::string& device_label,
                        bool success) override;

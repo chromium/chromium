@@ -110,6 +110,18 @@ enum FormatError {
   FORMAT_ERROR_COUNT,
 };
 
+// Partition error reported by cros-disks.
+enum PartitionError {
+  PARTITION_ERROR_NONE = 0,
+  PARTITION_ERROR_UNKNOWN = 1,
+  PARTITION_ERROR_INTERNAL = 2,
+  PARTITION_ERROR_INVALID_DEVICE_PATH = 3,
+  PARTITION_ERROR_DEVICE_BEING_PARTITIONED = 4,
+  PARTITION_ERROR_PROGRAM_NOT_FOUND = 5,
+  PARTITION_ERROR_PROGRAM_FAILED = 6,
+  PARTITION_ERROR_DEVICE_NOT_ALLOWED = 7,
+};
+
 // Event type each corresponding to a signal sent from cros-disks.
 enum MountEventType {
   CROS_DISKS_DISK_ADDED,
@@ -294,6 +306,10 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) CrosDisksClient : public DBusClient {
   // The argument is the unmount error code.
   typedef base::OnceCallback<void(MountError error_code)> UnmountCallback;
 
+  // A callback to handle the result of SinglePartitionFormat.
+  // The argument is the partition error code.
+  using PartitionCallback = base::OnceCallback<void(PartitionError error_code)>;
+
   class Observer : public base::CheckedObserver {
    public:
     // Called when a mount event signal is received.
@@ -358,6 +374,11 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) CrosDisksClient : public DBusClient {
                       const std::string& filesystem,
                       const std::string& label,
                       VoidDBusMethodCallback callback) = 0;
+
+  // Calls SinglePartitionFormat async method. |callback| is called when
+  // response received.
+  virtual void SinglePartitionFormat(const std::string& device_path,
+                                     PartitionCallback callback) = 0;
 
   // Calls Rename method. On completion, |callback| is called, with |true| on
   // success, or with |false| otherwise.

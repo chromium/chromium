@@ -54,6 +54,16 @@ class VolumeManagerObserver {
                                  const std::string& device_label,
                                  bool success) {}
 
+  // Fired when partitioning a device is started.
+  virtual void OnPartitionStarted(const std::string& device_path,
+                                  const std::string& device_label,
+                                  bool success) {}
+
+  // Fired when partitioning a device is completed (or terminated on error).
+  virtual void OnPartitionCompleted(const std::string& device_path,
+                                    const std::string& device_label,
+                                    bool success) {}
+
   // Fired when renaming a device is started (or failed to start).
   virtual void OnRenameStarted(const std::string& device_path,
                                const std::string& device_label,

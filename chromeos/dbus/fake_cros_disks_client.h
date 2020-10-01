@@ -55,6 +55,8 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeCrosDisksClient
               const std::string& filesystem,
               const std::string& label,
               VoidDBusMethodCallback callback) override;
+  void SinglePartitionFormat(const std::string& device_path,
+                             PartitionCallback callback) override;
   void Rename(const std::string& device_path,
               const std::string& volume_name,
               VoidDBusMethodCallback callback) override;
@@ -123,6 +125,18 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeCrosDisksClient
     format_success_ = false;
   }
 
+  // Returns how many times Format() was called.
+  int partition_call_count() const { return partition_call_count_; }
+
+  // Returns the |device_path| parameter from the last invocation of Format().
+  const std::string& last_partition_device_path() const {
+    return last_partition_device_path_;
+  }
+
+  // Sets the SinglePartitionFormat() result code for the callback.
+  // Non error by default.
+  void SetPartitionResult(PartitionError error) { partition_error_ = error; }
+
   // Returns how many times Rename() was called.
   int rename_call_count() const { return rename_call_count_; }
 
@@ -172,6 +186,9 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeCrosDisksClient
   std::string last_format_filesystem_;
   std::string last_format_label_;
   bool format_success_ = true;
+  int partition_call_count_ = 0;
+  std::string last_partition_device_path_;
+  PartitionError partition_error_ = PARTITION_ERROR_NONE;
   int rename_call_count_ = 0;
   std::string last_rename_device_path_;
   std::string last_rename_volume_name_;
