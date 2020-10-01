@@ -82,38 +82,4 @@ TEST(ExtensionIMEUtilTest, IsArcIMETest) {
   EXPECT_FALSE(extension_ime_util::IsArcIME("mozc"));
 }
 
-TEST(ExtensionIMEUtilTest, IsMemberOfExtension) {
-  const char* extention1 = "abcdefg";
-  const char* extention2 = "hijklmn";
-  const char* extention3 = "opqrstu";
-  const char* engine_id1 = "12345";
-  const char* engine_id2 = "67890";
-  const char* engine_id3 = "31415";
-
-  const std::string extention_1_engine_1 =
-      extension_ime_util::GetInputMethodID(extention1, engine_id1);
-  const std::string extention_1_engine_2 =
-      extension_ime_util::GetInputMethodID(extention1, engine_id2);
-  const std::string component_3_engine_3 =
-      extension_ime_util::GetComponentInputMethodID(extention3, engine_id3);
-
-  EXPECT_TRUE(extension_ime_util::IsMemberOfExtension(extention_1_engine_1,
-                                                      extention1));
-  EXPECT_TRUE(extension_ime_util::IsMemberOfExtension(extention_1_engine_2,
-                                                      extention1));
-  EXPECT_FALSE(extension_ime_util::IsMemberOfExtension(extention_1_engine_1,
-                                                       extention2));
-  EXPECT_FALSE(extension_ime_util::IsMemberOfExtension(extention_1_engine_2,
-                                                       extention2));
-  EXPECT_FALSE(extension_ime_util::IsMemberOfExtension(component_3_engine_3,
-                                                       extention3));
-}
-
-TEST(ExtensionIMEUtilTest, IsLanguageForArcIMETest) {
-  EXPECT_TRUE(extension_ime_util::IsLanguageForArcIME(
-      extension_ime_util::kArcImeLanguage));
-  EXPECT_FALSE(extension_ime_util::IsLanguageForArcIME(
-      extension_ime_util::kArcImeLanguage + std::string(" ")));
-}
-
 }  // namespace chromeos

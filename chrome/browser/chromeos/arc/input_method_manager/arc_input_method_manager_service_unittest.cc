@@ -523,8 +523,8 @@ TEST_F(ArcInputMethodManagerServiceTest, OnImeInfoChanged) {
                                    std::get<1>(added_extensions[0])[0].id()));
     EXPECT_EQ(display_name1, std::get<1>(added_extensions[0])[0].name());
     ASSERT_EQ(1u, std::get<1>(added_extensions[0])[0].language_codes().size());
-    EXPECT_TRUE(chromeos::extension_ime_util::IsLanguageForArcIME(
-        (std::get<1>(added_extensions[0])[0].language_codes())[0]));
+    EXPECT_TRUE(chromeos::extension_ime_util::IsArcIME(
+        std::get<1>(added_extensions[0])[0].id()));
 
     // Emulate enabling ARC IME from chrome://settings.
     const std::string& arc_ime_id = std::get<1>(added_extensions[0])[0].id();

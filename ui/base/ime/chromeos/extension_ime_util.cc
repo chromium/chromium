@@ -173,15 +173,5 @@ bool IsKeyboardLayoutExtension(const std::string& input_method_id) {
   return false;
 }
 
-bool IsLanguageForArcIME(const std::string& language) {
-  return language == kArcImeLanguage;
-}
-
-std::string MaybeGetLegacyXkbId(const std::string& input_method_id) {
-  if (IsKeyboardLayoutExtension(input_method_id))
-    return GetComponentIDByInputMethodID(input_method_id);
-  return input_method_id;
-}
-
 }  // namespace extension_ime_util
 }  // namespace chromeos
