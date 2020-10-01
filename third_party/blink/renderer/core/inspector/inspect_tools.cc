@@ -102,10 +102,14 @@ Node* HoveredNodeForEvent(LocalFrame* frame,
 
 // SearchingForNodeTool --------------------------------------------------------
 
-SearchingForNodeTool::SearchingForNodeTool(InspectorDOMAgent* dom_agent,
+SearchingForNodeTool::SearchingForNodeTool(InspectorOverlayAgent* overlay,
+                                           OverlayFrontend* frontend,
+                                           InspectorDOMAgent* dom_agent,
                                            bool ua_shadow,
                                            const std::vector<uint8_t>& config)
-    : dom_agent_(dom_agent), ua_shadow_(ua_shadow) {
+    : InspectTool(overlay, frontend),
+      dom_agent_(dom_agent),
+      ua_shadow_(ua_shadow) {
   auto parsed_config = protocol::Overlay::HighlightConfig::FromBinary(
       config.data(), config.size());
   if (parsed_config) {
@@ -131,7 +135,6 @@ void SearchingForNodeTool::Draw(float scale) {
                              !omit_tooltip_ && highlight_config_->show_info &&
                              node->GetLayoutObject() &&
                              node->GetDocument().GetFrame();
-  DCHECK(overlay_);
   overlay_->EnsureAXContext(node);
   InspectorHighlight highlight(node, *highlight_config_, contrast_info_,
                                append_element_info, false, is_locked_ancestor_);
@@ -262,10 +265,15 @@ void SearchingForNodeTool::NodeHighlightRequested(Node* node) {
 
 // QuadHighlightTool -----------------------------------------------------------
 
-QuadHighlightTool::QuadHighlightTool(std::unique_ptr<FloatQuad> quad,
+QuadHighlightTool::QuadHighlightTool(InspectorOverlayAgent* overlay,
+                                     OverlayFrontend* frontend,
+                                     std::unique_ptr<FloatQuad> quad,
                                      Color color,
                                      Color outline_color)
-    : quad_(std::move(quad)), color_(color), outline_color_(outline_color) {}
+    : InspectTool(overlay, frontend),
+      quad_(std::move(quad)),
+      color_(color),
+      outline_color_(outline_color) {}
 
 bool QuadHighlightTool::ForwardEventsToOverlay() {
   return false;
@@ -284,10 +292,13 @@ void QuadHighlightTool::Draw(float scale) {
 // NodeHighlightTool -----------------------------------------------------------
 
 NodeHighlightTool::NodeHighlightTool(
+    InspectorOverlayAgent* overlay,
+    OverlayFrontend* frontend,
     Member<Node> node,
     String selector_list,
     std::unique_ptr<InspectorHighlightConfig> highlight_config)
-    : selector_list_(selector_list),
+    : InspectTool(overlay, frontend),
+      selector_list_(selector_list),
       highlight_config_(std::move(highlight_config)) {
   if (Node* locked_ancestor =
           DisplayLockUtilities::HighestLockedExclusiveAncestor(*node)) {
@@ -339,7 +350,6 @@ void NodeHighlightTool::DrawMatchingSelector() {
   if (!query_base)
     query_base = node_->ownerDocument();
 
-  DCHECK(overlay_);
   overlay_->EnsureAXContext(query_base);
 
   StaticElementList* elements = query_base->QuerySelectorAll(
@@ -369,7 +379,6 @@ std::unique_ptr<protocol::DictionaryValue>
 NodeHighlightTool::GetNodeInspectorHighlightAsJson(
     bool append_element_info,
     bool append_distance_info) const {
-  DCHECK(overlay_);
   overlay_->EnsureAXContext(node_.Get());
   InspectorHighlight highlight(node_.Get(), *highlight_config_, contrast_info_,
                                append_element_info, append_distance_info,
@@ -434,9 +443,12 @@ GridHighlightTool::GetGridInspectorHighlightsAsJson() const {
 // SourceOrderTool -----------------------------------------------------------
 
 SourceOrderTool::SourceOrderTool(
+    InspectorOverlayAgent* overlay,
+    OverlayFrontend* frontend,
     Node* node,
     std::unique_ptr<InspectorSourceOrderConfig> source_order_config)
-    : source_order_config_(std::move(source_order_config)) {
+    : InspectTool(overlay, frontend),
+      source_order_config_(std::move(source_order_config)) {
   if (Node* locked_ancestor =
           DisplayLockUtilities::HighestLockedExclusiveAncestor(*node)) {
     node_ = locked_ancestor;
@@ -559,7 +571,6 @@ void NearbyDistanceTool::Draw(float scale) {
   Node* node = hovered_node_.Get();
   if (!node)
     return;
-  DCHECK(overlay_);
   overlay_->EnsureAXContext(node);
   InspectorHighlight highlight(
       node, InspectorHighlight::DefaultConfig(),
@@ -589,7 +600,9 @@ bool ShowViewSizeTool::ForwardEventsToOverlay() {
 
 // ScreenshotTool --------------------------------------------------------------
 
-void ScreenshotTool::DoInit() {
+ScreenshotTool::ScreenshotTool(InspectorOverlayAgent* overlay,
+                               OverlayFrontend* frontend)
+    : InspectTool(overlay, frontend) {
   auto& client = overlay_->GetFrame()->GetPage()->GetChromeClient();
   client.SetCursorOverridden(false);
   client.SetCursor(CrossCursor(), overlay_->GetFrame());

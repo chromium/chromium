@@ -78,9 +78,10 @@ using OverlayFrontend = protocol::Overlay::Metainfo::FrontendClass;
 
 class CORE_EXPORT InspectTool : public GarbageCollected<InspectTool> {
  public:
+  InspectTool(InspectorOverlayAgent* overlay, OverlayFrontend* frontend)
+      : overlay_(overlay), frontend_(frontend) {}
   virtual ~InspectTool() = default;
 
-  void Init(InspectorOverlayAgent* overlay, OverlayFrontend* frontend);
   virtual int GetDataResourceId();
   virtual bool HandleInputEvent(LocalFrameView* frame_view,
                                 const WebInputEvent& input_event,
@@ -103,8 +104,6 @@ class CORE_EXPORT InspectTool : public GarbageCollected<InspectTool> {
   virtual bool HideOnMouseMove();
 
  protected:
-  InspectTool() = default;
-  virtual void DoInit() {}
   Member<InspectorOverlayAgent> overlay_;
   OverlayFrontend* frontend_ = nullptr;
 };

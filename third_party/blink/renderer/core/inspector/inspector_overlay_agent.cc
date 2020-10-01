@@ -111,13 +111,6 @@ bool ParseQuad(std::unique_ptr<protocol::Array<double>> quad_array,
 
 // InspectTool -----------------------------------------------------------------
 
-void InspectTool::Init(InspectorOverlayAgent* overlay,
-                       OverlayFrontend* frontend) {
-  overlay_ = overlay;
-  frontend_ = frontend;
-  DoInit();
-}
-
 int InspectTool::GetDataResourceId() {
   return IDR_INSPECT_TOOL_HIGHLIGHT_JS;
 }
@@ -624,7 +617,8 @@ Response InspectorOverlayAgent::highlightRect(
   std::unique_ptr<FloatQuad> quad =
       std::make_unique<FloatQuad>(FloatRect(x, y, width, height));
   SetInspectTool(MakeGarbageCollected<QuadHighlightTool>(
-      std::move(quad), InspectorDOMAgent::ParseColor(color.fromMaybe(nullptr)),
+      this, GetFrontend(), std::move(quad),
+      InspectorDOMAgent::ParseColor(color.fromMaybe(nullptr)),
       InspectorDOMAgent::ParseColor(outline_color.fromMaybe(nullptr))));
   return Response::Success();
 }
@@ -637,7 +631,8 @@ Response InspectorOverlayAgent::highlightQuad(
   if (!ParseQuad(std::move(quad_array), quad.get()))
     return Response::ServerError("Invalid Quad format");
   SetInspectTool(MakeGarbageCollected<QuadHighlightTool>(
-      std::move(quad), InspectorDOMAgent::ParseColor(color.fromMaybe(nullptr)),
+      this, GetFrontend(), std::move(quad),
+      InspectorDOMAgent::ParseColor(color.fromMaybe(nullptr)),
       InspectorDOMAgent::ParseColor(outline_color.fromMaybe(nullptr))));
   return Response::Success();
 }
@@ -704,7 +699,8 @@ Response InspectorOverlayAgent::highlightNode(
     return response;
 
   SetInspectTool(MakeGarbageCollected<NodeHighlightTool>(
-      node, selector_list.fromMaybe(String()), std::move(highlight_config)));
+      this, GetFrontend(), node, selector_list.fromMaybe(String()),
+      std::move(highlight_config)));
   return Response::Success();
 }
 
@@ -714,7 +710,8 @@ Response InspectorOverlayAgent::setShowGridOverlays(
   persistent_tool_ = nullptr;
 
   if (grid_node_highlight_configs->size()) {
-    GridHighlightTool* grid_tool = MakeGarbageCollected<GridHighlightTool>();
+    GridHighlightTool* grid_tool =
+        MakeGarbageCollected<GridHighlightTool>(this, GetFrontend());
     for (std::unique_ptr<protocol::Overlay::GridNodeHighlightConfig>& config :
          *grid_node_highlight_configs) {
       Node* node = nullptr;
@@ -725,7 +722,6 @@ Response InspectorOverlayAgent::setShowGridOverlays(
                                InspectorOverlayAgent::ToGridHighlightConfig(
                                    config->getGridHighlightConfig()));
     }
-    grid_tool->Init(this, GetFrontend());
     persistent_tool_ = grid_tool;
   }
 
@@ -752,7 +748,7 @@ Response InspectorOverlayAgent::highlightSourceOrder(
       std::make_unique<InspectorSourceOrderConfig>(config);
 
   SetInspectTool(MakeGarbageCollected<SourceOrderTool>(
-      node, std::move(source_order_config)));
+      this, GetFrontend(), node, std::move(source_order_config)));
   return Response::Success();
 }
 
@@ -775,7 +771,8 @@ Response InspectorOverlayAgent::highlightFrame(
         InspectorDOMAgent::ParseColor(outline_color.fromMaybe(nullptr));
 
     SetInspectTool(MakeGarbageCollected<NodeHighlightTool>(
-        frame->DeprecatedLocalOwner(), String(), std::move(highlight_config)));
+        this, GetFrontend(), frame->DeprecatedLocalOwner(), String(),
+        std::move(highlight_config)));
   } else {
     PickTheRightTool();
   }
@@ -815,8 +812,8 @@ Response InspectorOverlayAgent::getHighlightObjectForTest(
     config->color_format = ColorFormat::HEX;
   }
 
-  NodeHighlightTool tool(node, "" /* selector_list */, std::move(config));
-  tool.Init(this, GetFrontend());
+  NodeHighlightTool tool(this, GetFrontend(), node, "" /* selector_list */,
+                         std::move(config));
   *result = tool.GetNodeInspectorHighlightAsJson(
       true /* append_element_info */, include_distance.fromMaybe(false));
   return Response::Success();
@@ -825,8 +822,7 @@ Response InspectorOverlayAgent::getHighlightObjectForTest(
 Response InspectorOverlayAgent::getGridHighlightObjectsForTest(
     std::unique_ptr<protocol::Array<int>> node_ids,
     std::unique_ptr<protocol::DictionaryValue>* highlights) {
-  GridHighlightTool grid_highlight_tool;
-  grid_highlight_tool.Init(this, GetFrontend());
+  GridHighlightTool grid_highlight_tool(this, GetFrontend());
   for (const int node_id : *node_ids) {
     Node* node = nullptr;
     Response response = dom_agent_->AssertNode(node_id, node);
@@ -851,8 +847,7 @@ Response InspectorOverlayAgent::getSourceOrderHighlightObjectForTest(
   auto config = std::make_unique<InspectorSourceOrderConfig>(
       InspectorSourceOrderHighlight::DefaultConfig());
 
-  SourceOrderTool tool(node, std::move(config));
-  tool.Init(this, GetFrontend());
+  SourceOrderTool tool(this, GetFrontend(), node, std::move(config));
   *result = tool.GetNodeInspectorSourceOrderHighlightAsJson();
   return Response::Success();
 }
@@ -1230,7 +1225,7 @@ void InspectorOverlayAgent::OnResizeTimer(TimerBase*) {
   }
 
   // Show the resize tool.
-  SetInspectTool(MakeGarbageCollected<ShowViewSizeTool>());
+  SetInspectTool(MakeGarbageCollected<ShowViewSizeTool>(this, GetFrontend()));
   resize_timer_active_ = true;
   resize_timer_.Stop();
   resize_timer_.StartOneShot(base::TimeDelta::FromSeconds(1), FROM_HERE);
@@ -1322,19 +1317,20 @@ void InspectorOverlayAgent::PickTheRightTool() {
       inspect_mode ==
           protocol::Overlay::InspectModeEnum::SearchForUAShadowDOM) {
     inspect_tool = MakeGarbageCollected<SearchingForNodeTool>(
-        dom_agent_,
+        this, GetFrontend(), dom_agent_,
         inspect_mode ==
             protocol::Overlay::InspectModeEnum::SearchForUAShadowDOM,
         inspect_mode_protocol_config_.Get());
   } else if (inspect_mode ==
              protocol::Overlay::InspectModeEnum::CaptureAreaScreenshot) {
-    inspect_tool = MakeGarbageCollected<ScreenshotTool>();
+    inspect_tool = MakeGarbageCollected<ScreenshotTool>(this, GetFrontend());
   } else if (inspect_mode ==
              protocol::Overlay::InspectModeEnum::ShowDistances) {
-    inspect_tool = MakeGarbageCollected<NearbyDistanceTool>();
+    inspect_tool =
+        MakeGarbageCollected<NearbyDistanceTool>(this, GetFrontend());
   } else if (!paused_in_debugger_message_.Get().IsNull()) {
     inspect_tool = MakeGarbageCollected<PausedInDebuggerTool>(
-        v8_session_, paused_in_debugger_message_.Get());
+        this, GetFrontend(), v8_session_, paused_in_debugger_message_.Get());
   } else if (persistent_tool_) {
     inspect_tool = persistent_tool_;
   }
@@ -1375,7 +1371,6 @@ void InspectorOverlayAgent::SetInspectTool(InspectTool* inspect_tool) {
     // tool will be included into the JS resource.
     LoadFrameForTool(inspect_tool->GetDataResourceId());
     EnsureEnableFrameOverlay();
-    inspect_tool->Init(this, GetFrontend());
   } else {
     inspect_tool_ = nullptr;
     if (!hinge_)
