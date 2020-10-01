@@ -337,7 +337,7 @@ IN_PROC_BROWSER_TEST_F(FlocIdProviderWithCustomizedServicesBrowserTest,
 
   EXPECT_EQ(1u, GetHistoryUrls().size());
 
-  EXPECT_EQ(GetFlocId(), FlocId());
+  EXPECT_FALSE(GetFlocId().IsValid());
 
   InitializeBlocklist({});
 
@@ -367,12 +367,15 @@ IN_PROC_BROWSER_TEST_F(FlocIdProviderWithCustomizedServicesBrowserTest,
 
   EXPECT_EQ(1u, GetHistoryUrls().size());
 
-  EXPECT_EQ(GetFlocId(), FlocId());
+  EXPECT_FALSE(GetFlocId().IsValid());
 
   InitializeBlocklist({});
 
-  // Expect that the FlocIdComputed user event is not recorded.
+  // Expect that the FlocIdComputed user event is not recorded, as we won't
+  // record the 1st event after browser/sync startup if there are permission
+  // errors. The floc is should also be invalid.
   ASSERT_EQ(0u, user_event_service()->GetRecordedUserEvents().size());
+  EXPECT_FALSE(GetFlocId().IsValid());
 }
 
 IN_PROC_BROWSER_TEST_F(FlocIdProviderWithCustomizedServicesBrowserTest,
@@ -387,7 +390,7 @@ IN_PROC_BROWSER_TEST_F(FlocIdProviderWithCustomizedServicesBrowserTest,
 
   EXPECT_EQ(1u, GetHistoryUrls().size());
 
-  EXPECT_EQ(GetFlocId(), FlocId());
+  EXPECT_FALSE(GetFlocId().IsValid());
 
   InitializeBlocklist({});
 
@@ -424,13 +427,16 @@ IN_PROC_BROWSER_TEST_F(FlocIdProviderWithCustomizedServicesBrowserTest,
 
   EXPECT_EQ(1u, GetHistoryUrls().size());
 
-  EXPECT_EQ(GetFlocId(), FlocId());
+  EXPECT_FALSE(GetFlocId().IsValid());
 
   // Load a blocklist that would block the upcoming floc.
   InitializeBlocklist({FlocId::CreateFromHistory({test_host()}).ToUint64()});
 
-  // Expect that the FlocIdComputed user event is not recorded.
-  ASSERT_EQ(0u, user_event_service()->GetRecordedUserEvents().size());
+  // Expect that the FlocIdComputed user event is recorded.
+  ASSERT_EQ(1u, user_event_service()->GetRecordedUserEvents().size());
+
+  // Expect that the API call would reject.
+  EXPECT_EQ("rejected", InvokeInterestCohortJsApi(web_contents()));
 }
 
 IN_PROC_BROWSER_TEST_F(FlocIdProviderWithCustomizedServicesBrowserTest,
@@ -445,13 +451,20 @@ IN_PROC_BROWSER_TEST_F(FlocIdProviderWithCustomizedServicesBrowserTest,
 
   EXPECT_EQ(1u, GetHistoryUrls().size());
 
-  EXPECT_EQ(GetFlocId(), FlocId());
+  EXPECT_FALSE(GetFlocId().IsValid());
 
   // Load a blocklist that would block a floc different from the upcoming floc.
   InitializeBlocklist({FlocId::CreateFromHistory({"b.test"}).ToUint64()});
 
+  // Expect the current floc to have the expected value.
+  EXPECT_EQ(GetFlocId(), FlocId::CreateFromHistory({test_host()}));
+
   // Expect that the FlocIdComputed user event is recorded.
   ASSERT_EQ(1u, user_event_service()->GetRecordedUserEvents().size());
+
+  // Expect that the API call would return the expected floc.
+  EXPECT_EQ(FlocId::CreateFromHistory({test_host()}).ToString(),
+            InvokeInterestCohortJsApi(web_contents()));
 }
 
 IN_PROC_BROWSER_TEST_F(FlocIdProviderWithCustomizedServicesBrowserTest,

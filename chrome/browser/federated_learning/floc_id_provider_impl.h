@@ -54,8 +54,26 @@ class FlocIdProviderImpl : public FlocIdProvider,
     kHistoryDelete,
   };
 
+  struct ComputeFlocResult {
+    ComputeFlocResult() = default;
+
+    ComputeFlocResult(const FlocId& sim_hash, const FlocId& final_hash)
+        : sim_hash(sim_hash), final_hash(final_hash) {}
+
+    // Sim-hash of the browsing history. This is the baseline value where the
+    // |final_hash| field should be derived from. We'll log this field for the
+    // server to calculate the sorting-lsh cutting points and/or the blocklist.
+    FlocId sim_hash;
+
+    // The floc to be exposed to JS API. It can be set to a value different from
+    // |sim_hash| if we use sorting-lsh based encoding, or can be invalid if the
+    // final value is blocked.
+    FlocId final_hash;
+  };
+
   using CanComputeFlocCallback = base::OnceCallback<void(bool)>;
-  using ComputeFlocCompletedCallback = base::OnceCallback<void(FlocId)>;
+  using ComputeFlocCompletedCallback =
+      base::OnceCallback<void(ComputeFlocResult)>;
   using GetRecentlyVisitedURLsCallback =
       history::HistoryService::QueryHistoryCallback;
 
@@ -76,8 +94,9 @@ class FlocIdProviderImpl : public FlocIdProvider,
  protected:
   // protected virtual for testing.
   virtual void OnComputeFlocCompleted(ComputeFlocTrigger trigger,
-                                      FlocId floc_id);
-  virtual void NotifyFlocUpdated(ComputeFlocTrigger trigger);
+                                      ComputeFlocResult result);
+  virtual void LogFlocComputedEvent(ComputeFlocTrigger trigger,
+                                    const ComputeFlocResult& result);
 
  private:
   friend class FlocIdProviderUnitTest;
@@ -123,9 +142,11 @@ class FlocIdProviderImpl : public FlocIdProvider,
   // Apply any additional filtering or transformation on a floc computed from
   // history. For example, invalidate it if it's in the blocklist.
   void ApplyAdditionalFiltering(ComputeFlocCompletedCallback callback,
-                                const FlocId& floc_id);
+                                const FlocId& sim_hash);
 
+  // The id to be exposed to the JS API.
   FlocId floc_id_;
+
   bool floc_computation_in_progress_ = false;
   bool first_floc_computation_triggered_ = false;
 

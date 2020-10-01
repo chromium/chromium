@@ -31,6 +31,7 @@ namespace federated_learning {
 namespace {
 
 using ComputeFlocTrigger = FlocIdProviderImpl::ComputeFlocTrigger;
+using ComputeFlocResult = FlocIdProviderImpl::ComputeFlocResult;
 
 class FakeFlocRemotePermissionService : public FlocRemotePermissionService {
  public:
@@ -88,48 +89,45 @@ class MockFlocIdProvider : public FlocIdProviderImpl {
   using FlocIdProviderImpl::FlocIdProviderImpl;
 
   void OnComputeFlocCompleted(ComputeFlocTrigger trigger,
-                              FlocId floc_id) override {
+                              ComputeFlocResult result) override {
     if (should_pause_before_compute_floc_completed_) {
       DCHECK(!paused_);
       paused_ = true;
       paused_trigger_ = trigger;
-      paused_floc_id_ = floc_id;
+      paused_result_ = result;
       return;
     }
 
     ++compute_floc_completed_count_;
-    FlocIdProviderImpl::OnComputeFlocCompleted(trigger, floc_id);
+    FlocIdProviderImpl::OnComputeFlocCompleted(trigger, result);
   }
 
   void ContinueLastOnComputeFlocCompleted() {
     DCHECK(paused_);
     paused_ = false;
     ++compute_floc_completed_count_;
-    FlocIdProviderImpl::OnComputeFlocCompleted(paused_trigger_,
-                                               paused_floc_id_);
+    FlocIdProviderImpl::OnComputeFlocCompleted(paused_trigger_, paused_result_);
   }
 
-  void NotifyFlocUpdated(ComputeFlocTrigger trigger) override {
-    ++floc_update_notification_count_;
-    last_notification_trigger_ = trigger;
-    FlocIdProviderImpl::NotifyFlocUpdated(trigger);
+  void LogFlocComputedEvent(ComputeFlocTrigger trigger,
+                            const ComputeFlocResult& result) override {
+    ++log_event_count_;
+    last_log_event_trigger_ = trigger;
+    last_log_event_result_ = result;
+    FlocIdProviderImpl::LogFlocComputedEvent(trigger, result);
   }
 
   size_t compute_floc_completed_count() const {
     return compute_floc_completed_count_;
   }
 
-  size_t floc_update_notification_count() const {
-    return floc_update_notification_count_;
-  }
-
   void set_should_pause_before_compute_floc_completed(bool should_pause) {
     should_pause_before_compute_floc_completed_ = should_pause;
   }
 
-  FlocId paused_floc_id() const {
+  ComputeFlocResult paused_result() const {
     DCHECK(paused_);
-    return paused_floc_id_;
+    return paused_result_;
   }
 
   ComputeFlocTrigger paused_trigger() const {
@@ -137,9 +135,16 @@ class MockFlocIdProvider : public FlocIdProviderImpl {
     return paused_trigger_;
   }
 
-  ComputeFlocTrigger last_notification_trigger() const {
-    DCHECK_LT(0u, floc_update_notification_count_);
-    return last_notification_trigger_;
+  size_t log_event_count() const { return log_event_count_; }
+
+  ComputeFlocTrigger last_log_event_trigger() const {
+    DCHECK_LT(0u, log_event_count_);
+    return last_log_event_trigger_;
+  }
+
+  ComputeFlocResult last_log_event_result() const {
+    DCHECK_LT(0u, log_event_count_);
+    return last_log_event_result_;
   }
 
  private:
@@ -150,11 +155,12 @@ class MockFlocIdProvider : public FlocIdProviderImpl {
   bool should_pause_before_compute_floc_completed_ = false;
   bool paused_ = false;
   ComputeFlocTrigger paused_trigger_;
-  FlocId paused_floc_id_;
+  ComputeFlocResult paused_result_;
 
   size_t compute_floc_completed_count_ = 0u;
-  size_t floc_update_notification_count_ = 0u;
-  ComputeFlocTrigger last_notification_trigger_;
+  size_t log_event_count_ = 0u;
+  ComputeFlocTrigger last_log_event_trigger_;
+  ComputeFlocResult last_log_event_result_;
 };
 
 }  // namespace
@@ -320,7 +326,7 @@ TEST_F(FlocIdProviderUnitTest, QualifiedInitialHistory) {
   // Expect that the floc computation hasn't started, as the floc_id_provider
   // hasn't been notified about state of the sync_service.
   EXPECT_EQ(0u, floc_id_provider_->compute_floc_completed_count());
-  EXPECT_EQ(0u, floc_id_provider_->floc_update_notification_count());
+  EXPECT_EQ(0u, floc_id_provider_->log_event_count());
   EXPECT_FALSE(floc_id().IsValid());
   EXPECT_FALSE(first_floc_computation_triggered());
 
@@ -331,19 +337,19 @@ TEST_F(FlocIdProviderUnitTest, QualifiedInitialHistory) {
 
   task_environment_.RunUntilIdle();
 
-  // Expect a floc id update notification.
+  // Expect that the 1st computation has completed.
   EXPECT_EQ(1u, floc_id_provider_->compute_floc_completed_count());
-  EXPECT_EQ(1u, floc_id_provider_->floc_update_notification_count());
+  EXPECT_EQ(1u, floc_id_provider_->log_event_count());
   EXPECT_TRUE(floc_id().IsValid());
   EXPECT_EQ(FlocId::CreateFromHistory({domain}), floc_id());
   EXPECT_TRUE(first_floc_computation_triggered());
 
-  // Advance the clock by 1 day. Expect a floc id update notification, as
-  // there's no history in the last 7 days so the id has been reset to empty.
+  // Advance the clock by 1 day. Expect a computation, as there's no history in
+  // the last 7 days so the id has been reset to empty.
   task_environment_.FastForwardBy(base::TimeDelta::FromDays(1));
 
   EXPECT_EQ(2u, floc_id_provider_->compute_floc_completed_count());
-  EXPECT_EQ(2u, floc_id_provider_->floc_update_notification_count());
+  EXPECT_EQ(2u, floc_id_provider_->log_event_count());
   EXPECT_FALSE(floc_id().IsValid());
 }
 
@@ -362,7 +368,7 @@ TEST_F(FlocIdProviderUnitTest, UnqualifiedInitialHistory) {
   // Expect that the floc computation hasn't started, as the floc_id_provider
   // hasn't been notified about state of the sync_service.
   EXPECT_EQ(0u, floc_id_provider_->compute_floc_completed_count());
-  EXPECT_EQ(0u, floc_id_provider_->floc_update_notification_count());
+  EXPECT_EQ(0u, floc_id_provider_->log_event_count());
   EXPECT_FALSE(floc_id().IsValid());
   EXPECT_FALSE(first_floc_computation_triggered());
 
@@ -373,30 +379,28 @@ TEST_F(FlocIdProviderUnitTest, UnqualifiedInitialHistory) {
 
   task_environment_.RunUntilIdle();
 
-  // Expect no floc id update notification, as there is no qualified history
-  // entry. However, the 1st computation should already have started.
+  // Expect that the 1st computation has completed.
   EXPECT_EQ(1u, floc_id_provider_->compute_floc_completed_count());
-  EXPECT_EQ(0u, floc_id_provider_->floc_update_notification_count());
+  EXPECT_EQ(1u, floc_id_provider_->log_event_count());
   EXPECT_TRUE(first_floc_computation_triggered());
 
   // Add a history entry with a timestamp 6 days back from now.
   add_page_args.time = base::Time::Now() - base::TimeDelta::FromDays(6);
   history_service_->AddPage(add_page_args);
 
-  // Advance the clock by 23 hours. Expect no floc id update notification,
-  // as the id refresh interval is 24 hours.
+  // Advance the clock by 23 hours. Expect no more computation, as the id
+  // refresh interval is 24 hours.
   task_environment_.FastForwardBy(base::TimeDelta::FromHours(23));
 
   EXPECT_EQ(1u, floc_id_provider_->compute_floc_completed_count());
-  EXPECT_EQ(0u, floc_id_provider_->floc_update_notification_count());
+  EXPECT_EQ(1u, floc_id_provider_->log_event_count());
 
-  // Advance the clock by 1 hour. Expect a floc id update notification, as the
-  // refresh time is reached and there's a valid history entry in the last 7
-  // days.
+  // Advance the clock by 1 hour. Expect one more computation, as the refresh
+  // time is reached and there's a valid history entry in the last 7 days.
   task_environment_.FastForwardBy(base::TimeDelta::FromHours(1));
 
   EXPECT_EQ(2u, floc_id_provider_->compute_floc_completed_count());
-  EXPECT_EQ(1u, floc_id_provider_->floc_update_notification_count());
+  EXPECT_EQ(2u, floc_id_provider_->log_event_count());
   EXPECT_TRUE(floc_id().IsValid());
   EXPECT_EQ(FlocId::CreateFromHistory({domain}), floc_id());
 }
@@ -426,40 +430,39 @@ TEST_F(FlocIdProviderUnitTest, HistoryDeleteAndScheduledUpdate) {
 
   task_environment_.RunUntilIdle();
 
-  // Expect a floc id update notification.
+  // Expect that the 1st computation has completed.
   EXPECT_EQ(1u, floc_id_provider_->compute_floc_completed_count());
-  EXPECT_EQ(1u, floc_id_provider_->floc_update_notification_count());
+  EXPECT_EQ(1u, floc_id_provider_->log_event_count());
   EXPECT_TRUE(floc_id().IsValid());
   EXPECT_EQ(FlocId::CreateFromHistory({domain1, domain2}), floc_id());
 
-  // Advance the clock by 12 hours. Expect no floc id update notification.
+  // Advance the clock by 12 hours. Expect no more computation.
   task_environment_.FastForwardBy(base::TimeDelta::FromHours(12));
   EXPECT_EQ(1u, floc_id_provider_->compute_floc_completed_count());
-  EXPECT_EQ(1u, floc_id_provider_->floc_update_notification_count());
+  EXPECT_EQ(1u, floc_id_provider_->log_event_count());
 
   // Expire the oldest history entry.
   ExpireHistoryBefore(base::Time::Now() - base::TimeDelta::FromDays(7));
   task_environment_.RunUntilIdle();
 
-  // Expect a floc id update notification as it was just recomputed due to the
-  // history deletion.
+  // Expect one more computation due to the history deletion.
   EXPECT_EQ(2u, floc_id_provider_->compute_floc_completed_count());
-  EXPECT_EQ(2u, floc_id_provider_->floc_update_notification_count());
+  EXPECT_EQ(2u, floc_id_provider_->log_event_count());
   EXPECT_TRUE(floc_id().IsValid());
   EXPECT_EQ(FlocId::CreateFromHistory({domain2}), floc_id());
 
-  // Advance the clock by 23 hours. Expect no floc id update notification as the
-  // timer has been reset due to the recomputation from history deletion.
+  // Advance the clock by 23 hours. Expect no more computation, as the timer has
+  // been reset due to the recomputation from history deletion.
   task_environment_.FastForwardBy(base::TimeDelta::FromHours(23));
   EXPECT_EQ(2u, floc_id_provider_->compute_floc_completed_count());
-  EXPECT_EQ(2u, floc_id_provider_->floc_update_notification_count());
+  EXPECT_EQ(2u, floc_id_provider_->log_event_count());
 
-  // Advance the clock by 1 hour. Expect an floc id update notification as the
-  // scheduled time is reached. Expect an invalid floc id as there is no history
-  // in the past 7 days.
+  // Advance the clock by 1 hour. Expect one more computation, as the scheduled
+  // time is reached. Expect an invalid floc id as there is no history in the
+  // past 7 days.
   task_environment_.FastForwardBy(base::TimeDelta::FromHours(1));
   EXPECT_EQ(3u, floc_id_provider_->compute_floc_completed_count());
-  EXPECT_EQ(3u, floc_id_provider_->floc_update_notification_count());
+  EXPECT_EQ(3u, floc_id_provider_->log_event_count());
   EXPECT_FALSE(floc_id().IsValid());
 }
 
@@ -482,16 +485,18 @@ TEST_F(FlocIdProviderUnitTest, ScheduledUpdateSameFloc_NoNotification) {
 
   task_environment_.RunUntilIdle();
 
-  // Expect a floc id update notification.
+  // Expect that the 1st computation has completed.
   EXPECT_EQ(1u, floc_id_provider_->compute_floc_completed_count());
-  EXPECT_EQ(1u, floc_id_provider_->floc_update_notification_count());
+  EXPECT_EQ(1u, floc_id_provider_->log_event_count());
+  EXPECT_EQ(FlocId::CreateFromHistory({domain}), floc_id());
 
-  // Advance the clock by 1 day. Expect no additional floc id update
-  // notification, as the floc didn't change.
+  // Advance the clock by 1 day. Expect one more computation, but the floc
+  // didn't change.
   task_environment_.FastForwardBy(base::TimeDelta::FromDays(1));
 
   EXPECT_EQ(2u, floc_id_provider_->compute_floc_completed_count());
-  EXPECT_EQ(1u, floc_id_provider_->floc_update_notification_count());
+  EXPECT_EQ(2u, floc_id_provider_->log_event_count());
+  EXPECT_EQ(FlocId::CreateFromHistory({domain}), floc_id());
 }
 
 TEST_F(FlocIdProviderUnitTest, CheckCanComputeFloc_Success) {
@@ -580,8 +585,10 @@ TEST_F(FlocIdProviderUnitTest, EventLogging) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kFlocIdComputedEventLogging);
 
-  set_floc_id(FlocId(12345ULL));
-  floc_id_provider_->NotifyFlocUpdated(ComputeFlocTrigger::kBrowserStart);
+  // Event logging for browser start.
+  floc_id_provider_->LogFlocComputedEvent(
+      ComputeFlocTrigger::kBrowserStart,
+      ComputeFlocResult(FlocId(12345ULL), FlocId(123ULL)));
 
   EXPECT_EQ(1u, fake_user_event_service_->GetRecordedUserEvents().size());
   const sync_pb::UserEventSpecifics& specifics1 =
@@ -600,8 +607,10 @@ TEST_F(FlocIdProviderUnitTest, EventLogging) {
 
   task_environment_.FastForwardBy(base::TimeDelta::FromDays(3));
 
-  set_floc_id(FlocId(999ULL));
-  floc_id_provider_->NotifyFlocUpdated(ComputeFlocTrigger::kScheduledUpdate);
+  // Event logging for scheduled update.
+  floc_id_provider_->LogFlocComputedEvent(
+      ComputeFlocTrigger::kScheduledUpdate,
+      ComputeFlocResult(FlocId(999ULL), FlocId(777ULL)));
 
   EXPECT_EQ(2u, fake_user_event_service_->GetRecordedUserEvents().size());
   const sync_pb::UserEventSpecifics& specifics2 =
@@ -617,8 +626,10 @@ TEST_F(FlocIdProviderUnitTest, EventLogging) {
             event2.event_trigger());
   EXPECT_EQ(999ULL, event2.floc_id());
 
-  set_floc_id(FlocId());
-  floc_id_provider_->NotifyFlocUpdated(ComputeFlocTrigger::kScheduledUpdate);
+  // Event logging for invalid floc.
+  floc_id_provider_->LogFlocComputedEvent(
+      ComputeFlocTrigger::kScheduledUpdate,
+      ComputeFlocResult(FlocId(), FlocId()));
 
   EXPECT_EQ(3u, fake_user_event_service_->GetRecordedUserEvents().size());
   const sync_pb::UserEventSpecifics& specifics3 =
@@ -634,8 +645,10 @@ TEST_F(FlocIdProviderUnitTest, EventLogging) {
             event3.event_trigger());
   EXPECT_FALSE(event3.has_floc_id());
 
-  set_floc_id(FlocId(555));
-  floc_id_provider_->NotifyFlocUpdated(ComputeFlocTrigger::kHistoryDelete);
+  // Event logging for history delete.
+  floc_id_provider_->LogFlocComputedEvent(
+      ComputeFlocTrigger::kHistoryDelete,
+      ComputeFlocResult(FlocId(555), FlocId(444)));
 
   EXPECT_EQ(4u, fake_user_event_service_->GetRecordedUserEvents().size());
   const sync_pb::UserEventSpecifics& specifics4 =
@@ -650,6 +663,25 @@ TEST_F(FlocIdProviderUnitTest, EventLogging) {
   EXPECT_EQ(sync_pb::UserEventSpecifics::FlocIdComputed::HISTORY_DELETE,
             event4.event_trigger());
   EXPECT_EQ(555ULL, event4.floc_id());
+
+  // Event logging for blocked floc.
+  floc_id_provider_->LogFlocComputedEvent(
+      ComputeFlocTrigger::kScheduledUpdate,
+      ComputeFlocResult(FlocId(87654), FlocId(45678)));
+
+  EXPECT_EQ(5u, fake_user_event_service_->GetRecordedUserEvents().size());
+  const sync_pb::UserEventSpecifics& specifics5 =
+      fake_user_event_service_->GetRecordedUserEvents()[4];
+  EXPECT_EQ(specifics5.event_time_usec(),
+            base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
+  EXPECT_EQ(sync_pb::UserEventSpecifics::kFlocIdComputedEvent,
+            specifics5.event_case());
+
+  const sync_pb::UserEventSpecifics_FlocIdComputed& event5 =
+      specifics5.floc_id_computed_event();
+  EXPECT_EQ(sync_pb::UserEventSpecifics::FlocIdComputed::REFRESHED,
+            event5.event_trigger());
+  EXPECT_EQ(87654ULL, event5.floc_id());
 }
 
 TEST_F(FlocIdProviderUnitTest, HistoryDelete_AllHistory) {
@@ -808,7 +840,9 @@ TEST_F(FlocIdProviderUnitTest,
 
 TEST_F(FlocIdProviderUnitTest, BlocklistFilteringEnabled_BlockedFloc) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kFlocIdBlocklistFiltering);
+  feature_list.InitWithFeatures({features::kFlocIdComputedEventLogging,
+                                 features::kFlocIdBlocklistFiltering},
+                                {});
 
   std::string domain = "foo.com";
 
@@ -833,23 +867,46 @@ TEST_F(FlocIdProviderUnitTest, BlocklistFilteringEnabled_BlockedFloc) {
 
   task_environment_.RunUntilIdle();
 
-  // Expect a floc id update notification. The floc should be equal to the
-  // sim-hash of the history.
+  FlocId floc_from_history = FlocId::CreateFromHistory({domain});
+
+  // Expect a computation. The floc should be equal to the sim-hash of the
+  // history.
   EXPECT_EQ(1u, floc_id_provider_->compute_floc_completed_count());
-  EXPECT_EQ(1u, floc_id_provider_->floc_update_notification_count());
-  EXPECT_EQ(FlocId::CreateFromHistory({domain}), floc_id());
+  EXPECT_EQ(1u, floc_id_provider_->log_event_count());
+  EXPECT_EQ(floc_from_history, floc_id());
 
   // Insert the current floc to blocklist and reload it.
-  blocklist.insert(FlocId::CreateFromHistory({domain}).ToUint64());
+  blocklist.insert(floc_from_history.ToUint64());
   OnBlocklistLoaded(blocklist);
 
   task_environment_.FastForwardBy(base::TimeDelta::FromDays(1));
 
-  // Expect a floc id update notification, with an invalid floc because was
-  // blocked.
+  // Expect one more computation, where the result contains a valid sim_hash and
+  // an invalid final_hash, as it was blocked. The internal floc is set to the
+  // invalid one.
   EXPECT_EQ(2u, floc_id_provider_->compute_floc_completed_count());
-  EXPECT_EQ(2u, floc_id_provider_->floc_update_notification_count());
-  EXPECT_EQ(FlocId(), floc_id());
+  EXPECT_EQ(2u, floc_id_provider_->log_event_count());
+  EXPECT_EQ(floc_id_provider_->last_log_event_result().sim_hash,
+            floc_from_history);
+  EXPECT_FALSE(floc_id_provider_->last_log_event_result().final_hash.IsValid());
+  EXPECT_FALSE(floc_id().IsValid());
+
+  // In the event when the sim_hash is valid and final_hash is invalid, we'll
+  // still log it.
+  EXPECT_EQ(2u, fake_user_event_service_->GetRecordedUserEvents().size());
+  const sync_pb::UserEventSpecifics& specifics =
+      fake_user_event_service_->GetRecordedUserEvents()[1];
+  EXPECT_EQ(specifics.event_time_usec(),
+            base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
+
+  EXPECT_EQ(sync_pb::UserEventSpecifics::kFlocIdComputedEvent,
+            specifics.event_case());
+
+  const sync_pb::UserEventSpecifics_FlocIdComputed& event =
+      specifics.floc_id_computed_event();
+  EXPECT_EQ(sync_pb::UserEventSpecifics::FlocIdComputed::REFRESHED,
+            event.event_trigger());
+  EXPECT_EQ(floc_from_history.ToUint64(), event.floc_id());
 
   // Reset and reload the blocklist.
   blocklist.clear();
@@ -857,10 +914,10 @@ TEST_F(FlocIdProviderUnitTest, BlocklistFilteringEnabled_BlockedFloc) {
 
   task_environment_.FastForwardBy(base::TimeDelta::FromDays(1));
 
-  // Expect a floc id update notification. The floc should be equal to the
-  // sim-hash of the history.
+  // Expect one more computation. The floc should be equal to the sim-hash of
+  // the history.
   EXPECT_EQ(3u, floc_id_provider_->compute_floc_completed_count());
-  EXPECT_EQ(3u, floc_id_provider_->floc_update_notification_count());
+  EXPECT_EQ(3u, floc_id_provider_->log_event_count());
   EXPECT_EQ(FlocId::CreateFromHistory({domain}), floc_id());
 }
 
@@ -882,33 +939,32 @@ TEST_F(FlocIdProviderUnitTest, TurnSyncOffAndOn) {
 
   task_environment_.RunUntilIdle();
 
-  // Expect a floc id update notification.
+  // Expect that the 1st computation has completed.
   EXPECT_EQ(1u, floc_id_provider_->compute_floc_completed_count());
-  EXPECT_EQ(1u, floc_id_provider_->floc_update_notification_count());
+  EXPECT_EQ(1u, floc_id_provider_->log_event_count());
   EXPECT_EQ(FlocId::CreateFromHistory({domain}), floc_id());
 
   // Turn off sync.
   test_sync_service_->SetTransportState(
       syncer::SyncService::TransportState::DISABLED);
 
-  // Advance the clock by 1 day. Expect a floc id update notification, as
-  // the sync was turned off so the id has been reset to empty.
+  // Advance the clock by 1 day. Expect one more computation, as the sync was
+  // turned off so the id has been reset to empty.
   task_environment_.FastForwardBy(base::TimeDelta::FromDays(1));
 
   EXPECT_EQ(2u, floc_id_provider_->compute_floc_completed_count());
-  EXPECT_EQ(2u, floc_id_provider_->floc_update_notification_count());
+  EXPECT_EQ(2u, floc_id_provider_->log_event_count());
   EXPECT_FALSE(floc_id().IsValid());
 
   // Turn on sync.
   test_sync_service_->SetTransportState(
       syncer::SyncService::TransportState::ACTIVE);
 
-  // Advance the clock by 1 day. Expect a floc id update notification and a
-  // valid floc id.
+  // Advance the clock by 1 day. Expect one more floc computation.
   task_environment_.FastForwardBy(base::TimeDelta::FromDays(1));
 
   EXPECT_EQ(3u, floc_id_provider_->compute_floc_completed_count());
-  EXPECT_EQ(3u, floc_id_provider_->floc_update_notification_count());
+  EXPECT_EQ(3u, floc_id_provider_->log_event_count());
   EXPECT_EQ(FlocId::CreateFromHistory({domain}), floc_id());
 }
 
@@ -995,9 +1051,9 @@ TEST_F(FlocIdProviderUnitTest, HistoryDeleteDuringInProgressComputation) {
 
   task_environment_.RunUntilIdle();
 
-  // Expect a floc id update notification.
+  // Expect that the 1st computation has completed.
   EXPECT_EQ(1u, floc_id_provider_->compute_floc_completed_count());
-  EXPECT_EQ(1u, floc_id_provider_->floc_update_notification_count());
+  EXPECT_EQ(1u, floc_id_provider_->log_event_count());
   EXPECT_TRUE(floc_id().IsValid());
   EXPECT_EQ(FlocId::CreateFromHistory({domain1, domain2, domain3}), floc_id());
 
@@ -1010,14 +1066,14 @@ TEST_F(FlocIdProviderUnitTest, HistoryDeleteDuringInProgressComputation) {
   EXPECT_FALSE(pending_recompute_event().has_value());
   EXPECT_EQ(FlocId::CreateFromHistory({domain1, domain2, domain3}), floc_id());
   EXPECT_EQ(FlocId::CreateFromHistory({domain2, domain3}),
-            floc_id_provider_->paused_floc_id());
+            floc_id_provider_->paused_result().final_hash);
   EXPECT_EQ(ComputeFlocTrigger::kScheduledUpdate,
             floc_id_provider_->paused_trigger());
 
   // Expire the "domain2" history entry right before the floc computation
-  // completes. Since the computation is still considered to be
-  // in-progress, a new recompute event due to this delete will be
-  // scheduled to happen right after this computation completes.
+  // completes. Since the computation is still considered to be in-progress, a
+  // new recompute event due to this delete will be scheduled to happen right
+  // after this computation completes.
   ExpireHistoryBefore(base::Time::Now() - base::TimeDelta::FromDays(7));
 
   EXPECT_TRUE(pending_recompute_event().has_value());
@@ -1028,13 +1084,12 @@ TEST_F(FlocIdProviderUnitTest, HistoryDeleteDuringInProgressComputation) {
   floc_id_provider_->ContinueLastOnComputeFlocCompleted();
   task_environment_.RunUntilIdle();
 
-  // Expect 2 more compute completion events and 1 more update notification.
-  // This is because we won't send update notification if there's a recompute
-  // event scheduled.
+  // Expect 2 more compute completion events and 1 more log event. This is
+  // because we won't send log event if there's a recompute event scheduled.
   EXPECT_EQ(3u, floc_id_provider_->compute_floc_completed_count());
-  EXPECT_EQ(2u, floc_id_provider_->floc_update_notification_count());
+  EXPECT_EQ(2u, floc_id_provider_->log_event_count());
   EXPECT_EQ(ComputeFlocTrigger::kHistoryDelete,
-            floc_id_provider_->last_notification_trigger());
+            floc_id_provider_->last_log_event_trigger());
   EXPECT_FALSE(pending_recompute_event().has_value());
 
   // The final floc should be derived from "domain3".
@@ -1069,9 +1124,9 @@ TEST_F(FlocIdProviderUnitTest, ScheduledUpdateDuringInProgressComputation) {
 
   task_environment_.RunUntilIdle();
 
-  // Expect a floc id update notification.
+  // Expect that the 1st computation has completed.
   EXPECT_EQ(1u, floc_id_provider_->compute_floc_completed_count());
-  EXPECT_EQ(1u, floc_id_provider_->floc_update_notification_count());
+  EXPECT_EQ(1u, floc_id_provider_->log_event_count());
   EXPECT_TRUE(floc_id().IsValid());
   EXPECT_EQ(FlocId::CreateFromHistory({domain1}), floc_id());
 }

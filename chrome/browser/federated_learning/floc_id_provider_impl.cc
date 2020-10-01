@@ -81,7 +81,7 @@ std::string FlocIdProviderImpl::GetInterestCohortForJsApi(
 }
 
 void FlocIdProviderImpl::OnComputeFlocCompleted(ComputeFlocTrigger trigger,
-                                                FlocId floc_id) {
+                                                ComputeFlocResult result) {
   DCHECK(floc_computation_in_progress_);
   floc_computation_in_progress_ = false;
 
@@ -94,10 +94,8 @@ void FlocIdProviderImpl::OnComputeFlocCompleted(ComputeFlocTrigger trigger,
     return;
   }
 
-  if (floc_id_ != floc_id) {
-    floc_id_ = floc_id;
-    NotifyFlocUpdated(trigger);
-  }
+  LogFlocComputedEvent(trigger, result);
+  floc_id_ = result.final_hash;
 
   // Abandon the scheduled task if any, and schedule a new compute-floc task
   // that is |kFlocScheduledUpdateInterval| from now.
@@ -107,9 +105,19 @@ void FlocIdProviderImpl::OnComputeFlocCompleted(ComputeFlocTrigger trigger,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void FlocIdProviderImpl::NotifyFlocUpdated(ComputeFlocTrigger trigger) {
+void FlocIdProviderImpl::LogFlocComputedEvent(ComputeFlocTrigger trigger,
+                                              const ComputeFlocResult& result) {
   if (!base::FeatureList::IsEnabled(features::kFlocIdComputedEventLogging))
     return;
+
+  // Don't log if it's the 1st computation and sim_hash is not computed. This
+  // is likely due to sync just gets enabled but some floc permission settings
+  // are disabled. We don't want to mess up with the initial user event
+  // messagings (and some sync integration tests would fail otherwise).
+  if (trigger == ComputeFlocTrigger::kBrowserStart &&
+      !result.sim_hash.IsValid()) {
+    return;
+  }
 
   auto specifics = std::make_unique<sync_pb::UserEventSpecifics>();
   specifics->set_event_time_usec(
@@ -136,8 +144,8 @@ void FlocIdProviderImpl::NotifyFlocUpdated(ComputeFlocTrigger trigger) {
 
   floc_id_computed_event->set_event_trigger(event_trigger);
 
-  if (floc_id_.IsValid())
-    floc_id_computed_event->set_floc_id(floc_id_.ToUint64());
+  if (result.sim_hash.IsValid())
+    floc_id_computed_event->set_floc_id(result.sim_hash.ToUint64());
 
   user_event_service_->RecordUserEvent(std::move(specifics));
 }
@@ -249,7 +257,7 @@ void FlocIdProviderImpl::OnCheckCanComputeFlocCompleted(
     ComputeFlocCompletedCallback callback,
     bool can_compute_floc) {
   if (!can_compute_floc) {
-    std::move(callback).Run(FlocId());
+    std::move(callback).Run(ComputeFlocResult());
     return;
   }
 
@@ -347,29 +355,28 @@ void FlocIdProviderImpl::OnGetRecentlyVisitedURLsCompleted(
         net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES));
   }
 
-  FlocId floc_id = domains.size() >= kMinHistoryDomainSizeToReportFlocId
-                       ? FlocId::CreateFromHistory(domains)
-                       : FlocId();
+  if (domains.size() < kMinHistoryDomainSizeToReportFlocId) {
+    std::move(callback).Run(ComputeFlocResult());
+    return;
+  }
 
-  ApplyAdditionalFiltering(std::move(callback), floc_id);
+  ApplyAdditionalFiltering(std::move(callback),
+                           FlocId::CreateFromHistory(domains));
 }
 
 void FlocIdProviderImpl::ApplyAdditionalFiltering(
     ComputeFlocCompletedCallback callback,
-    const FlocId& floc_id) {
-  if (!floc_id.IsValid()) {
-    std::move(callback).Run(floc_id);
-    return;
-  }
+    const FlocId& sim_hash) {
+  DCHECK(sim_hash.IsValid());
 
   if (base::FeatureList::IsEnabled(features::kFlocIdBlocklistFiltering) &&
       g_browser_process->floc_blocklist_service()->ShouldBlockFloc(
-          floc_id.ToUint64())) {
-    std::move(callback).Run(FlocId());
+          sim_hash.ToUint64())) {
+    std::move(callback).Run(ComputeFlocResult(sim_hash, FlocId()));
     return;
   }
 
-  std::move(callback).Run(floc_id);
+  std::move(callback).Run(ComputeFlocResult(sim_hash, sim_hash));
 }
 
 }  // namespace federated_learning
