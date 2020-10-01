@@ -69,8 +69,8 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(AwFeatures.WEBVIEW_CONNECTIONLESS_SAFE_BROWSING,
                     "Uses GooglePlayService's 'connectionless' APIs for Safe Browsing "
                             + "security checks."),
-            Flag.baseFeature(
-                    "WebViewBrotliSupport", "Enables brotli compression support in WebView."),
+            Flag.baseFeature(AwFeatures.WEBVIEW_BROTLI_SUPPORT,
+                    "Enables brotli compression support in WebView."),
             Flag.baseFeature(
                     "AppCache", "Controls AppCache to facilitate testing against future removal."),
             Flag.baseFeature(AwFeatures.WEBVIEW_EXTRA_HEADERS_SAME_ORIGIN_ONLY,
