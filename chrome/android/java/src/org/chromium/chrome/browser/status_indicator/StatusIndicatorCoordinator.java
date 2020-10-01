@@ -40,6 +40,11 @@ public class StatusIndicatorCoordinator {
          * @param newColor The new color as {@link ColorInt}.
          */
         default void onStatusIndicatorColorChanged(@ColorInt int newColor) {}
+
+        /**
+         * Called when the "show" animation of the status indicator completes.
+         */
+        default void onStatusIndicatorShowAnimationEnd() {}
     }
 
     private StatusIndicatorMediator mMediator;

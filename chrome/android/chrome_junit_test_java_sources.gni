@@ -76,6 +76,7 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/dom_distiller/ReaderModeManagerTest.java",
   "junit/src/org/chromium/chrome/browser/download/DownloadResumptionSchedulerTest.java",
   "junit/src/org/chromium/chrome/browser/download/DownloadSharedPreferenceEntryTest.java",
+  "junit/src/org/chromium/chrome/browser/download/OfflineContentAvailabilityStatusProviderTest.java",
   "junit/src/org/chromium/chrome/browser/download/home/FileDeletionQueueTest.java",
   "junit/src/org/chromium/chrome/browser/download/home/filter/DeleteUndoOfflineItemFilterTest.java",
   "junit/src/org/chromium/chrome/browser/download/home/filter/FiltersTest.java",

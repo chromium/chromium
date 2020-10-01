@@ -83,6 +83,19 @@ base::Optional<FeatureConfig> GetClientSideFeatureConfig(
         "download_completed", Comparator(GREATER_THAN_OR_EQUAL, 1), 90, 360));
     return config;
   }
+  if (kIPHDownloadIndicatorFeature.name == feature->name) {
+    // A config that allows the DownloadIndicator IPH to be shown up to 2 times,
+    // but only if download home hasn't been opened in the last 90 days.
+    base::Optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(ANY, 0);
+    config->trigger = EventConfig("download_indicator_iph_trigger",
+                                  Comparator(LESS_THAN, 2), 360, 360);
+    config->used =
+        EventConfig("download_home_opened", Comparator(EQUAL, 0), 90, 360);
+    return config;
+  }
   if (kIPHExploreSitesTileFeature.name == feature->name) {
     // A config that allows the ExploreSites IPH to be shown:
     // * Once per day

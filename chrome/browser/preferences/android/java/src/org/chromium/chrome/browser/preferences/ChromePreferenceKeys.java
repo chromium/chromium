@@ -509,6 +509,13 @@ public final class ChromePreferenceKeys {
     /** Preference to indicate whether payment request has been completed successfully once.*/
     public static final String PAYMENTS_PAYMENT_COMPLETE_ONCE = "payment_complete_once";
 
+    /**
+     * Indicates whether or not there is any persistent (i.e. non-transient) content in chrome that
+     * can be viewed offline.
+     */
+    public static final String PERSISTENT_OFFLINE_CONTENT_AVAILABILITY_STATUS =
+            "Chrome.OfflineIndicatorV2.HasPersistentOfflineContent";
+
     public static final String PREFETCH_HAS_NEW_PAGES = "prefetch_notification_has_new_pages";
     public static final String PREFETCH_IGNORED_NOTIFICATION_COUNTER =
             "prefetch_notification_ignored_counter";
@@ -808,6 +815,7 @@ public final class ChromePreferenceKeys {
                 HOMEPAGE_USE_CHROME_NTP,
                 IMAGE_DESCRIPTIONS_JUST_ONCE_COUNT,
                 IMAGE_DESCRIPTIONS_DONT_ASK_AGAIN,
+                PERSISTENT_OFFLINE_CONTENT_AVAILABILITY_STATUS,
                 PROMO_IS_DISMISSED.pattern(),
                 PROMO_TIMES_SEEN.pattern(),
                 SETTINGS_SAFETY_CHECK_LAST_RUN_TIMESTAMP,

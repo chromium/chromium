@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.offlinepages.indicator.OfflineIndicatorControllerV2;
+import org.chromium.chrome.browser.offlinepages.indicator.OfflineIndicatorInProductHelpController;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
@@ -72,6 +73,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator implements Native
     private StatusIndicatorCoordinator mStatusIndicatorCoordinator;
     private StatusIndicatorCoordinator.StatusIndicatorObserver mStatusIndicatorObserver;
     private OfflineIndicatorControllerV2 mOfflineIndicatorController;
+    private OfflineIndicatorInProductHelpController mOfflineIndicatorInProductHelpController;
     private UrlFocusChangeListener mUrlFocusChangeListener;
     private @Nullable ToolbarButtonInProductHelpController mToolbarButtonInProductHelpController;
     private ObservableSupplier<Boolean> mIntentWithEffect;
@@ -134,6 +136,9 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator implements Native
                     mUrlFocusChangeListener);
         }
 
+        if (mOfflineIndicatorInProductHelpController != null) {
+            mOfflineIndicatorInProductHelpController.destroy();
+        }
         if (mStatusIndicatorCoordinator != null) {
             mStatusIndicatorCoordinator.removeObserver(mStatusIndicatorObserver);
             mStatusIndicatorCoordinator.removeObserver(mActivity.getStatusBarColorController());
@@ -300,6 +305,16 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator implements Native
                         mActivity.getLifecycleDispatcher(), mActivity.getActivityTabProvider());
         if (!triggerPromo(intentWithEffect)) {
             mToolbarButtonInProductHelpController.showColdStartIPH();
+        }
+
+        if (mOfflineIndicatorController != null) {
+            // Initialize the OfflineIndicatorInProductHelpController if the
+            // mOfflineIndicatorController is enabled and initialized. For example, it wouldn't be
+            // initialized if the OfflineIndicatorV2 feature is disabled.
+            assert mOfflineIndicatorInProductHelpController == null;
+            mOfflineIndicatorInProductHelpController =
+                    new OfflineIndicatorInProductHelpController(mActivity, mToolbarManager,
+                            mAppMenuCoordinator.getAppMenuHandler(), mStatusIndicatorCoordinator);
         }
     }
 

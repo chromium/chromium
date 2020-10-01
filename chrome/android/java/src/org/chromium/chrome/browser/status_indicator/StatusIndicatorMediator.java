@@ -215,6 +215,7 @@ class StatusIndicatorMediator
             @Override
             public void onEnd(Animator animator) {
                 mTextFadeInAnimation = null;
+                notifyShowAnimationEnd();
             }
         });
         mTextFadeInAnimation.start();
@@ -373,6 +374,12 @@ class StatusIndicatorMediator
     private void notifyColorChange(@ColorInt int color) {
         for (StatusIndicatorCoordinator.StatusIndicatorObserver observer : mObservers) {
             observer.onStatusIndicatorColorChanged(color);
+        }
+    }
+
+    private void notifyShowAnimationEnd() {
+        for (StatusIndicatorCoordinator.StatusIndicatorObserver observer : mObservers) {
+            observer.onStatusIndicatorShowAnimationEnd();
         }
     }
 

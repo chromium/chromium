@@ -20,6 +20,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHDataSaverMilestonePromoFeature,
     &kIPHDataSaverPreviewFeature,
     &kIPHDownloadHomeFeature,
+    &kIPHDownloadIndicatorFeature,
     &kIPHDownloadPageFeature,
     &kIPHDownloadPageScreenshotFeature,
     &kIPHChromeHomeExpandFeature,
