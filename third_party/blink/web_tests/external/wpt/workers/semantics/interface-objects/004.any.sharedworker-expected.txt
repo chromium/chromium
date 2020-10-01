@@ -8,7 +8,6 @@ PASS The DOMImplementation interface object should not be exposed
 PASS The Audio interface object should not be exposed
 PASS The HTMLCanvasElement interface object should not be exposed
 PASS The Path interface object should not be exposed
-FAIL The TextMetrics interface object should not be exposed assert_false: expected false got true
 PASS The CanvasProxy interface object should not be exposed
 PASS The CanvasRenderingContext2D interface object should not be exposed
 PASS The DrawingStyle interface object should not be exposed

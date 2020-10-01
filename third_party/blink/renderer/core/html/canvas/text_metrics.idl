@@ -34,8 +34,8 @@ interface TextMetrics {
     readonly attribute double actualBoundingBoxRight;
 
     // y-direction
-    [RuntimeEnabled=ExtendedTextMetrics] readonly attribute double fontBoundingBoxAscent;
-    [RuntimeEnabled=ExtendedTextMetrics] readonly attribute double fontBoundingBoxDescent;
+    readonly attribute double fontBoundingBoxAscent;
+    readonly attribute double fontBoundingBoxDescent;
     readonly attribute double actualBoundingBoxAscent;
     readonly attribute double actualBoundingBoxDescent;
     [RuntimeEnabled=ExtendedTextMetrics] readonly attribute double emHeightAscent;
