@@ -13,6 +13,7 @@
     android:orientation="vertical">
 
     <org.chromium.ui.widget.TextViewWithLeading
+        android:id="@+id/incognito_interstitial_message"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"

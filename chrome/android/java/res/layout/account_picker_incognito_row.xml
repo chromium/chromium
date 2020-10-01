@@ -14,6 +14,6 @@
     android:paddingTop="12dp"
     android:paddingBottom="12dp"
     android:gravity="center_vertical"
-    android:text="@string/signin_go_incognito"
+    android:text="@string/signin_incognito_button"
     android:textAppearance="@style/TextAppearance.TextLarge.Primary"
     app:drawableStartCompat="@drawable/ic_incognito_24dp" />

@@ -190,7 +190,7 @@ public class AccountPickerBottomSheetTest {
     @MediumTest
     public void testExpandedSheetShowsWhenBackpressingOnIncognitoInterstitial() {
         buildAndShowExpandedBottomSheet();
-        onView(withText(R.string.signin_go_incognito)).perform(click());
+        onView(withText(R.string.signin_incognito_button)).perform(click());
         onView(isRoot()).perform(pressBack());
 
         onView(withText(R.string.signin_account_picker_dialog_title)).check(matches(isDisplayed()));
@@ -433,7 +433,7 @@ public class AccountPickerBottomSheetTest {
     @MediumTest
     public void testIncognitoOptionShownOnExpandedSheet() {
         buildAndShowExpandedBottomSheet();
-        onView(withText(R.string.signin_go_incognito)).perform(click());
+        onView(withText(R.string.signin_incognito_button)).perform(click());
         checkIncognitoInterstitialSheet();
     }
 
@@ -441,7 +441,7 @@ public class AccountPickerBottomSheetTest {
     @MediumTest
     public void testLearnMoreButtonOnIncognitoInterstitial() {
         buildAndShowExpandedBottomSheet();
-        onView(withText(R.string.signin_go_incognito)).perform(click());
+        onView(withText(R.string.signin_incognito_button)).perform(click());
         onView(withId(R.id.incognito_interstitial_learn_more)).perform(click());
         verify(mIncognitoInterstitialDelegateMock).openLearnMorePage();
     }
@@ -450,7 +450,7 @@ public class AccountPickerBottomSheetTest {
     @MediumTest
     public void testContinueButtonOnIncognitoInterstitial() {
         buildAndShowExpandedBottomSheet();
-        onView(withText(R.string.signin_go_incognito)).perform(click());
+        onView(withText(R.string.signin_incognito_button)).perform(click());
         onView(withId(R.id.incognito_interstitial_continue_button)).perform(click());
         verify(mIncognitoInterstitialDelegateMock).openCurrentUrlInIncognitoTab();
     }
@@ -465,7 +465,7 @@ public class AccountPickerBottomSheetTest {
         onView(withId(R.id.account_picker_horizontal_divider)).check(matches(not(isDisplayed())));
         onView(withId(R.id.account_picker_account_list)).check(matches(not(isDisplayed())));
         onView(withId(R.id.incognito_interstitial_bottom_sheet_view)).check(matches(isDisplayed()));
-        onView(withText(R.string.incognito_interstitial_message)).check(matches(isDisplayed()));
+        onView(withId(R.id.incognito_interstitial_message)).check(matches(isDisplayed()));
         onView(withId(R.id.incognito_interstitial_learn_more)).check(matches(isDisplayed()));
         onView(withId(R.id.incognito_interstitial_continue_button)).check(matches(isDisplayed()));
     }
