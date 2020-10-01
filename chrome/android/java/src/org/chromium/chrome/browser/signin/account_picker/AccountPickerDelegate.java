@@ -24,6 +24,9 @@ import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.base.GoogleServiceAuthError;
+import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -40,6 +43,7 @@ public class AccountPickerDelegate implements WebSigninBridge.Listener {
     private final WebSigninBridge.Factory mWebSigninBridgeFactory;
     private final String mContinueUrl;
     private final SigninManager mSigninManager;
+    private final IdentityManager mIdentityManager;
     private @Nullable WebSigninBridge mWebSigninBridge;
     private Callback<GoogleServiceAuthError> mOnSignInErrorCallback;
 
@@ -60,6 +64,8 @@ public class AccountPickerDelegate implements WebSigninBridge.Listener {
         mContinueUrl = continueUrl;
         mSigninManager = IdentityServicesProvider.get().getSigninManager(
                 Profile.getLastUsedRegularProfile());
+        mIdentityManager = IdentityServicesProvider.get().getIdentityManager(
+                Profile.getLastUsedRegularProfile());
     }
 
     /**
@@ -75,6 +81,14 @@ public class AccountPickerDelegate implements WebSigninBridge.Listener {
      */
     public void signIn(CoreAccountInfo coreAccountInfo,
             Callback<GoogleServiceAuthError> onSignInErrorCallback) {
+        if (mIdentityManager.getPrimaryAccountInfo(ConsentLevel.NOT_REQUIRED) != null) {
+            // In case an error is fired because cookies are taking longer to generate than usual,
+            // if user retries the sign-in from the error screen, we need to sign out the user
+            // first before signing in again.
+            destroyWebSigninBridge();
+            // TODO(https://crbug.com/1133752): Revise sign-out reason
+            mSigninManager.signOut(SignoutReason.ABORT_SIGNIN);
+        }
         mOnSignInErrorCallback = onSignInErrorCallback;
         mWebSigninBridge = mWebSigninBridgeFactory.create(
                 Profile.getLastUsedRegularProfile(), coreAccountInfo, this);
@@ -152,7 +166,6 @@ public class AccountPickerDelegate implements WebSigninBridge.Listener {
     public void onSigninFailed(GoogleServiceAuthError error) {
         ThreadUtils.assertOnUiThread();
         mOnSignInErrorCallback.onResult(error);
-        destroyWebSigninBridge();
     }
 
     /**

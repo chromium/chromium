@@ -5,10 +5,12 @@
 package org.chromium.chrome.browser.signin.account_picker;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -73,6 +75,9 @@ public class AccountPickerDelegateTest {
     private SigninManager mSigninManagerMock;
 
     @Mock
+    private IdentityManager mIdentityManagerMock;
+
+    @Mock
     private Profile mProfileMock;
 
     @Mock
@@ -88,9 +93,6 @@ public class AccountPickerDelegateTest {
 
     private AccountPickerDelegate mDelegate;
 
-    private final IdentityManager mIdentityManager =
-            new IdentityManager(/* nativeIdentityManager= */ 0, /* OAuth2TokenService= */ null);
-
     @Before
     public void setUp() {
         initMocks(this);
@@ -99,7 +101,8 @@ public class AccountPickerDelegateTest {
 
         Profile.setLastUsedProfileForTesting(mProfileMock);
         IdentityServicesProvider.setInstanceForTests(mock(IdentityServicesProvider.class));
-        when(IdentityServicesProvider.get().getIdentityManager(any())).thenReturn(mIdentityManager);
+        when(IdentityServicesProvider.get().getIdentityManager(any()))
+                .thenReturn(mIdentityManagerMock);
         when(IdentityServicesProvider.get().getSigninManager(any())).thenReturn(mSigninManagerMock);
 
         mDelegate = new AccountPickerDelegate(
@@ -146,6 +149,27 @@ public class AccountPickerDelegateTest {
     }
 
     @Test
+    public void testSigninTriggersSignoutIfAlreadySignedIn() {
+        // In case an error is fired because cookies are taking longer to generate than usual,
+        // if user retries the sign-in from the error screen, we need to sign out the user
+        // first before signing in again.
+        Account account =
+                mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
+        CoreAccountInfo coreAccountInfo = mAccountManagerTestRule.toCoreAccountInfo(account.name);
+        mDelegate.signIn(coreAccountInfo, error -> {});
+        when(mIdentityManagerMock.getPrimaryAccountInfo(anyInt())).thenReturn(coreAccountInfo);
+
+        mDelegate.signIn(coreAccountInfo, error -> {});
+        InOrder calledInOrder = inOrder(mWebSigninBridgeMock, mSigninManagerMock,
+                mWebSigninBridgeFactoryMock, mSigninManagerMock);
+        calledInOrder.verify(mWebSigninBridgeMock).destroy();
+        calledInOrder.verify(mSigninManagerMock).signOut(anyInt());
+        calledInOrder.verify(mWebSigninBridgeFactoryMock)
+                .create(mProfileMock, coreAccountInfo, mDelegate);
+        calledInOrder.verify(mSigninManagerMock).signin(eq(coreAccountInfo), any());
+    }
+
+    @Test
     public void testSignInFailedWithConnectionError() {
         Account account =
                 mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
@@ -155,7 +179,9 @@ public class AccountPickerDelegateTest {
         mDelegate.signIn(coreAccountInfo, mockCallback);
         mDelegate.onSigninFailed(error);
         verify(mockCallback).onResult(error);
-        verify(mWebSigninBridgeMock).destroy();
+        // WebSigninBridge should be kept alive in case cookies are taking longer to
+        // generate than usual
+        verify(mWebSigninBridgeMock, never()).destroy();
     }
 
     @Test
