@@ -1519,6 +1519,21 @@ RefTestData ref_equal_test_data[] = {
     {":is(.a, span) :is(div, .b)", ".a div, .a .b, span div, span .b"},
     {":is(.a, span) + :is(div, .b)",
      ".a + div, .a + .b, span + div, span + .b"},
+    {":is(.a, .b)::slotted(.c)", ".a::slotted(.c), .b::slotted(.c)"},
+    {".a :is(.b, .c)::slotted(.d)", ".a .b::slotted(.d), .a .c::slotted(.d)"},
+    {".a + :is(.b, .c)::slotted(.d)",
+     ".a + .b::slotted(.d), .a + .c::slotted(.d)"},
+    {":is(.a, .b)::cue(i)", ".a::cue(i), .b::cue(i)"},
+    {".a :is(.b, .c)::cue(i)", ".a .b::cue(i), .a .c::cue(i)"},
+    {".a + :is(.b, .c)::cue(i)", ".a + .b::cue(i), .a + .c::cue(i)"},
+    {":is(.a, :host + .b, .c) .d", ".a .d, :host + .b .d, .c .d"},
+    {":is(.a, :host(.b) .c, .d) div", ".a div, :host(.b) .c div, .d div"},
+    {".a :is(.b, .c)::part(foo)", ".a .b::part(foo), .a .c::part(foo)"},
+    {":is(.a, .b)::part(foo)", ".a::part(foo), .b::part(foo)"},
+    {":is(.a, .b) :is(.c, .d)::part(foo)",
+     ".a .c::part(foo), .a .d ::part(foo),"
+     ".b .c::part(foo), .b .d ::part(foo)"},
+
     // clang-format on
 };
 

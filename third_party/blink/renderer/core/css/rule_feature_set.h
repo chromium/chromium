@@ -324,6 +324,25 @@ class CORE_EXPORT RuleFeatureSet {
     unsigned original_value_ = 0;
   };
 
+  // For :is(:host(.a), .b) .c, the invalidation set for .a should be marked
+  // as tree-crossing, but the invalidation set for .b should not.
+  class AutoRestoreTreeBoundaryCrossingFlag {
+    STACK_ALLOCATED();
+
+   public:
+    explicit AutoRestoreTreeBoundaryCrossingFlag(
+        InvalidationSetFeatures& features)
+        : features_(features),
+          original_value_(features.invalidation_flags.TreeBoundaryCrossing()) {}
+    ~AutoRestoreTreeBoundaryCrossingFlag() {
+      features_.invalidation_flags.SetTreeBoundaryCrossing(original_value_);
+    }
+
+   private:
+    InvalidationSetFeatures& features_;
+    bool original_value_;
+  };
+
   static void ExtractInvalidationSetFeature(const CSSSelector&,
                                             InvalidationSetFeatures&);
 

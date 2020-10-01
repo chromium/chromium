@@ -884,6 +884,11 @@ void RuleFeatureSet::AddFeaturesToInvalidationSetsForSelectorList(
            simple_selector.SelectorList()->First();
        sub_selector; sub_selector = CSSSelectorList::Next(*sub_selector)) {
     AutoRestoreMaxDirectAdjacentSelectors restore_max(sibling_features);
+    AutoRestoreTreeBoundaryCrossingFlag restore_tree_boundary(
+        descendant_features);
+
+    if (simple_selector.IsHostPseudoClass())
+      descendant_features.invalidation_flags.SetTreeBoundaryCrossing(true);
 
     descendant_features.has_features_for_rule_set_invalidation = false;
 
@@ -942,8 +947,6 @@ void RuleFeatureSet::AddFeaturesToInvalidationSetsForSimpleSelector(
     return;
   }
 
-  if (simple_selector.IsHostPseudoClass())
-    descendant_features.invalidation_flags.SetTreeBoundaryCrossing(true);
   if (simple_selector.IsV0InsertionPointCrossing())
     descendant_features.invalidation_flags.SetInsertionPointCrossing(true);
   if (simple_selector.GetPseudoType() == CSSSelector::kPseudoPart)
