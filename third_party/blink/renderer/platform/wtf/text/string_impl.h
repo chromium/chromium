@@ -543,7 +543,7 @@ class WTF_EXPORT StringImpl {
 #endif
   mutable unsigned ref_count_{1};
   const unsigned length_;
-  mutable std::atomic_uint32_t hash_and_flags_;
+  mutable std::atomic<uint32_t> hash_and_flags_;
 
   DISALLOW_COPY_AND_ASSIGN(StringImpl);
 };
