@@ -15150,6 +15150,20 @@ should be kept until we use this API.  -->
   </summary>
 </histogram>
 
+<histogram name="TrustedWebActivity.QualityEnforcementViolation.Crashed"
+    enum="TrustedWebActivityQualityEnforcementViolationType"
+    expires_after="2021-03-07">
+  <owner>eirage@chromium.org</owner>
+  <owner>peconn@chromium.org</owner>
+  <summary>
+    When Trusted Web Activity launches or navigates to a site that violate the
+    quality criteria, and the CCT will be closed, records the violation type.
+
+    This is similar to TrustedWebActivity.QualityEnforcementViolation but only
+    records when the violation will close the CCT.
+  </summary>
+</histogram>
+
 <histogram name="TrustedWebActivity.ShareTargetRequest"
     enum="WebShareTargetMethod" expires_after="M88">
   <owner>peconn@chromium.org</owner>

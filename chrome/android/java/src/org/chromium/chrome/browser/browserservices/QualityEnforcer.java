@@ -51,7 +51,8 @@ public class QualityEnforcer implements NativeInitObserver {
     static final String CRASH = "quality_enforcement.crash";
     @VisibleForTesting
     static final String KEY_CRASH_REASON = "crash_reason";
-    private static final String KEY_SUCCESS = "success";
+    @VisibleForTesting
+    static final String KEY_SUCCESS = "success";
 
     private final ChromeActivity<?> mActivity;
     private final Verifier mVerifier;
@@ -135,7 +136,7 @@ public class QualityEnforcer implements NativeInitObserver {
     }
 
     private void trigger(@ViolationType int type, String url, int httpStatusCode) {
-        mUmaRecorder.recordQualityEnforcementViolation(type);
+        mUmaRecorder.recordQualityEnforcementViolation(type, false /* crashed */);
 
         if (!ChromeFeatureList.isEnabled(
                     ChromeFeatureList.TRUSTED_WEB_ACTIVITY_QUALITY_ENFORCEMENT)) {
@@ -154,9 +155,19 @@ public class QualityEnforcer implements NativeInitObserver {
             showErrorToast(getToastMessage(type, url, httpStatusCode));
         }
 
+        // Do not crash on assetlink failures if the client app does not have installer package
+        // name.
+        if (type == ViolationType.DIGITAL_ASSETLINKS
+                && ContextUtils.getApplicationContext().getPackageManager().getInstallerPackageName(
+                           mClientPackageNameProvider.get())
+                        == null) {
+            return;
+        }
+
         if (ChromeFeatureList.isEnabled(
                     ChromeFeatureList.TRUSTED_WEB_ACTIVITY_QUALITY_ENFORCEMENT_FORCED)
                 || success) {
+            mUmaRecorder.recordQualityEnforcementViolation(type, true /* crashed */);
             mActivity.finish();
         }
     }
