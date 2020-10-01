@@ -43,6 +43,9 @@
 #endif
 
 using base::test::ios::kWaitForUIElementTimeout;
+using chrome_test_util::DeleteButton;
+using chrome_test_util::ReadingListMarkAsReadButton;
+using chrome_test_util::ReadingListMarkAsUnreadButton;
 
 namespace {
 const char kContentToRemove[] = "Text that distillation should remove.";
@@ -958,20 +961,7 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
   TapToolbarButtonWithID(kReadingListToolbarDeleteAllReadButtonID);
 
   // Verify the background string is displayed.
-  if ([ChromeEarlGrey isIllustratedEmptyStatesEnabled]) {
-    [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                            kTableViewIllustratedEmptyViewID)]
-        assertWithMatcher:grey_notNil()];
-    id<GREYMatcher> noReadingListMessageMatcher = grey_allOf(
-        grey_text(
-            l10n_util::GetNSString(IDS_IOS_READING_LIST_NO_ENTRIES_MESSAGE)),
-        grey_sufficientlyVisible(), nil);
-    [[EarlGrey selectElementWithMatcher:noReadingListMessageMatcher]
-        assertWithMatcher:grey_notNil()];
-  } else {
-    [[EarlGrey selectElementWithMatcher:EmptyBackground()]
-        assertWithMatcher:grey_notNil()];
-  }
+  [self verifyReadingListIsEmpty];
 }
 
 // Tests that the VC can be dismissed by swiping down.
@@ -1005,6 +995,148 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
   // Check that the TableView has been dismissed.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(kReadingListViewID)]
       assertWithMatcher:grey_nil()];
+}
+
+// Tests the Copy Link context menu action for a reading list entry.
+- (void)testContextMenuCopyLink {
+  AddEntriesAndOpenReadingList();
+  LongPressEntry(kReadTitle);
+
+  // Tap "Copy URL" and wait for the URL to be copied to the pasteboard.
+  [ChromeEarlGrey
+      verifyCopyLinkActionWithText:kReadURL
+                      useNewString:[ChromeEarlGrey
+                                       isNativeContextMenusEnabled]];
+}
+
+// Tests the Open in New Tab context menu action for a reading list entry.
+- (void)testContextMenuOpenInNewTab {
+  GURL distillablePageURL(self.testServer->GetURL(kDistillableURL));
+  [self addURLToReadingList:distillablePageURL];
+  LongPressEntry(kDistillableTitle);
+
+  // Select "Open in New Tab" and confirm that new tab is opened with selected
+  // URL.
+  [ChromeEarlGrey
+      verifyOpenInNewTabActionWithURL:distillablePageURL.GetContent()];
+}
+
+// Tests display and selection of 'Open in New Incognito Tab' in a context menu
+// on a history entry.
+- (void)testContextMenuOpenInIncognito {
+  GURL distillablePageURL(self.testServer->GetURL(kDistillableURL));
+  [self addURLToReadingList:distillablePageURL];
+  LongPressEntry(kDistillableTitle);
+
+  // Select "Open in Incognito" and confirm that new tab is opened with selected
+  // URL.
+  [ChromeEarlGrey
+      verifyOpenInIncognitoActionWithURL:distillablePageURL.GetContent()
+                            useNewString:[ChromeEarlGrey
+                                             isNativeContextMenusEnabled]];
+}
+
+// Tests the Mark as Read/Unread context menu action for a reading list entry.
+- (void)testContextMenuMarkAsReadAndBack {
+  if (![ChromeEarlGrey isNativeContextMenusEnabled]) {
+    EARL_GREY_TEST_SKIPPED(
+        @"Test disabled when Native Context Menus feature flag is off.");
+  }
+
+  AddEntriesAndOpenReadingList();
+
+  AssertAllEntriesVisible();
+  XCTAssertEqual(static_cast<long>(kNumberReadEntries),
+                 [ReadingListAppInterface readEntriesCount]);
+  XCTAssertEqual(static_cast<long>(kNumberUnreadEntries),
+                 [ReadingListAppInterface unreadEntriesCount]);
+
+  // Mark an unread entry as read.
+  LongPressEntry(kUnreadTitle);
+
+  [[EarlGrey selectElementWithMatcher:ReadingListMarkAsReadButton()]
+      performAction:grey_tap()];
+
+  AssertAllEntriesVisible();
+  XCTAssertEqual(static_cast<long>(kNumberReadEntries + 1),
+                 [ReadingListAppInterface readEntriesCount]);
+  XCTAssertEqual(static_cast<long>(kNumberUnreadEntries - 1),
+                 [ReadingListAppInterface unreadEntriesCount]);
+
+  // Now mark it back as unread.
+  LongPressEntry(kUnreadTitle);
+
+  [[EarlGrey selectElementWithMatcher:ReadingListMarkAsUnreadButton()]
+      performAction:grey_tap()];
+
+  AssertAllEntriesVisible();
+  XCTAssertEqual(static_cast<long>(kNumberReadEntries),
+                 [ReadingListAppInterface readEntriesCount]);
+  XCTAssertEqual(static_cast<long>(kNumberUnreadEntries),
+                 [ReadingListAppInterface unreadEntriesCount]);
+}
+
+// Tests the Share context menu action for a reading list entry.
+- (void)testContextMenuShare {
+  if (![ChromeEarlGrey isNativeContextMenusEnabled]) {
+    EARL_GREY_TEST_SKIPPED(
+        @"Test disabled when Native Context Menus feature flag is off.");
+  }
+
+  GURL distillablePageURL(self.testServer->GetURL(kDistillableURL));
+  [self addURLToReadingList:distillablePageURL];
+  LongPressEntry(kDistillableTitle);
+
+  [ChromeEarlGrey verifyShareActionWithPageTitle:kDistillableTitle];
+}
+
+// Tests the Delete context menu action for a reading list entry.
+- (void)testContextMenuDelete {
+  if (![ChromeEarlGrey isNativeContextMenusEnabled]) {
+    EARL_GREY_TEST_SKIPPED(
+        @"Test disabled when Native Context Menus feature flag is off.");
+  }
+
+  GURL distillablePageURL(self.testServer->GetURL(kDistillableURL));
+  [self addURLToReadingList:distillablePageURL];
+  LongPressEntry(kDistillableTitle);
+
+  [[EarlGrey selectElementWithMatcher:DeleteButton()] performAction:grey_tap()];
+
+  [self verifyReadingListIsEmpty];
+}
+
+#pragma mark - Helper Methods
+
+- (void)verifyReadingListIsEmpty {
+  if ([ChromeEarlGrey isIllustratedEmptyStatesEnabled]) {
+    [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                            kTableViewIllustratedEmptyViewID)]
+        assertWithMatcher:grey_notNil()];
+    id<GREYMatcher> emptyReadingListMatcher = grey_allOf(
+        grey_text(
+            l10n_util::GetNSString(IDS_IOS_READING_LIST_NO_ENTRIES_MESSAGE)),
+        grey_sufficientlyVisible(), nil);
+    [[EarlGrey selectElementWithMatcher:emptyReadingListMatcher]
+        assertWithMatcher:grey_notNil()];
+  } else {
+    [[EarlGrey selectElementWithMatcher:EmptyBackground()]
+        assertWithMatcher:grey_notNil()];
+  }
+}
+
+- (void)addURLToReadingList:(const GURL&)URL {
+  [ReadingListAppInterface forceConnectionToWifi];
+
+  // Open http://potato
+  [ChromeEarlGrey loadURL:URL];
+  [ChromeEarlGrey waitForPageToFinishLoading];
+
+  AddCurrentPageToReadingList();
+
+  [ChromeEarlGrey closeCurrentTab];
+  [ChromeEarlGrey openNewTab];
+  OpenReadingList();
 }
 
 @end

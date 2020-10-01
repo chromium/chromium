@@ -412,6 +412,14 @@ id<GREYMatcher> MoveButton() {
   return [ChromeMatchersAppInterface moveButton];
 }
 
+id<GREYMatcher> ReadingListMarkAsReadButton() {
+  return [ChromeMatchersAppInterface readingListMarkAsReadButton];
+}
+
+id<GREYMatcher> ReadingListMarkAsUnreadButton() {
+  return [ChromeMatchersAppInterface readingListMarkAsUnreadButton];
+}
+
 id<GREYMatcher> DeleteButton() {
   return [ChromeMatchersAppInterface deleteButton];
 }

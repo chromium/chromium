@@ -330,6 +330,12 @@ id<GREYMatcher> EditButton(BOOL use_new_string);
 // Matcher for the Move option on the updated context menus.
 id<GREYMatcher> MoveButton();
 
+// Matcher for the Mark as Read option on the Reading List's context menus.
+id<GREYMatcher> ReadingListMarkAsReadButton();
+
+// Matcher for the Mark as Unread option on the Reading List's context menus.
+id<GREYMatcher> ReadingListMarkAsUnreadButton();
+
 // Matcher for the Delete option on the updated context menus.
 id<GREYMatcher> DeleteButton();
 

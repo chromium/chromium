@@ -335,6 +335,12 @@
 // Matcher for the Move option on the updated context menus.
 + (id<GREYMatcher>)moveButton;
 
+// Matcher for the Mark as Read option on the Reading List's context menus.
++ (id<GREYMatcher>)readingListMarkAsReadButton;
+
+// Matcher for the Mark as Unread option on the Reading List's context menus.
++ (id<GREYMatcher>)readingListMarkAsUnreadButton;
+
 // Matcher for the Share option on the updated context menus.
 + (id<GREYMatcher>)deleteButton;
 

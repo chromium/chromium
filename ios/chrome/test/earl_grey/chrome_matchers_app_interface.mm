@@ -704,6 +704,17 @@ UIView* SubviewWithAccessibilityIdentifier(NSString* accessibility_id,
       buttonWithAccessibilityLabelID:IDS_IOS_BOOKMARK_CONTEXT_MENU_MOVE];
 }
 
++ (id<GREYMatcher>)readingListMarkAsReadButton {
+  return [ChromeMatchersAppInterface
+      buttonWithAccessibilityLabelID:IDS_IOS_READING_LIST_MARK_AS_READ_ACTION];
+}
+
++ (id<GREYMatcher>)readingListMarkAsUnreadButton {
+  return [ChromeMatchersAppInterface
+      buttonWithAccessibilityLabelID:
+          IDS_IOS_READING_LIST_MARK_AS_UNREAD_ACTION];
+}
+
 + (id<GREYMatcher>)deleteButton {
   return [ChromeMatchersAppInterface
       buttonWithAccessibilityLabelID:IDS_IOS_DELETE_ACTION_TITLE];
