@@ -167,7 +167,7 @@ DbusMenu::DbusMenu(dbus::ExportedObject* exported_object,
   properties_->RegisterInterface(kInterfaceDbusMenu);
   auto set_property = [&](const std::string& property_name, auto&& value) {
     properties_->SetProperty(kInterfaceDbusMenu, property_name,
-                             std::move(value), false);
+                             std::forward<decltype(value)>(value), false);
   };
   set_property(kPropertyIconThemePath, DbusArray<DbusString>());
   set_property(kPropertyMenuStatus, DbusString(kPropertyValueStatusNormal));
