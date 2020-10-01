@@ -25,6 +25,10 @@ class SearchController;
 
 // DriveQuickAccessProvider dispatches queries to extensions and fetches the
 // results from them via chrome.launcherSearchProvider API.
+//
+// TODO(crbug.com/1034842): This is deprecated in favour of
+// DriveZeroStateProvider. This class and related results classes can be
+// deleted.
 class DriveQuickAccessProvider : public SearchProvider,
                                  public drive::DriveIntegrationServiceObserver {
  public:
