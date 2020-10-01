@@ -17,6 +17,7 @@
 #include "base/strings/string16.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
+#include "components/autofill_assistant/browser/public/runtime_manager.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/permissions/permission_prompt.h"
@@ -174,6 +175,16 @@ void PermissionRequestManager::AddRequest(
         auto_approval_origin.value()) {
       request->PermissionGranted();
     }
+    request->RequestFinished();
+    return;
+  }
+
+  // Cancel permission requests wile Autofill Assistant's UI is shown.
+  auto* assistant_runtime_manager =
+      autofill_assistant::RuntimeManager::GetForWebContents(web_contents());
+  if (assistant_runtime_manager && assistant_runtime_manager->GetState() ==
+                                       autofill_assistant::UIState::kShown) {
+    request->Cancelled();
     request->RequestFinished();
     return;
   }
