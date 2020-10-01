@@ -1775,8 +1775,8 @@ DeveloperPrivateOpenDevToolsFunction::Run() {
     if (!extension)
       return RespondNow(Error(kNoSuchExtensionError));
     if (properties.render_process_id == -1) {
-      // TODO(crbug.com/1107596): Implement inspecting view of an inactive
-      // service worker.
+      // Start the service worker and open the inspect window.
+      devtools_util::InspectInactiveServiceWorkerBackground(extension, profile);
       return RespondNow(NoArguments());
     }
     devtools_util::InspectServiceWorkerBackground(extension, profile);
