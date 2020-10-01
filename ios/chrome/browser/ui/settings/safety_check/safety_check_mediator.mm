@@ -799,34 +799,34 @@ typedef NS_ENUM(NSInteger, CheckStartStates) {
     return;
   }
 
-  const GURL& upgradeUrl = details.upgrade_url;
-
-  if (!upgradeUrl.is_valid()) {
-    self.updateCheckRowState = UpdateCheckRowStateOmahaError;
-    [self reconfigureUpdateCheckItem];
-    return;
-  }
-
-  if (!details.next_version.size() ||
-      !base::Version(details.next_version).IsValid()) {
-    self.updateCheckRowState = UpdateCheckRowStateOmahaError;
-    [self reconfigureUpdateCheckItem];
-    return;
-  }
-
-  // Valid results, update NSUserDefaults.
-  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-
-  [defaults setValue:base::SysUTF8ToNSString(upgradeUrl.spec())
-              forKey:kIOSChromeUpgradeURLKey];
-  [defaults setValue:base::SysUTF8ToNSString(details.next_version)
-              forKey:kIOSChromeNextVersionKey];
-  [defaults setBool:details.is_up_to_date forKey:kIOSChromeUpToDateKey];
-
   if (details.is_up_to_date) {
     self.updateCheckRowState = UpdateCheckRowStateUpToDate;
   } else {
+    // upgradeURL and next_version are only set if not up to date.
+    const GURL& upgradeUrl = details.upgrade_url;
+
+    if (!upgradeUrl.is_valid()) {
+      self.updateCheckRowState = UpdateCheckRowStateOmahaError;
+      [self reconfigureUpdateCheckItem];
+      return;
+    }
+
+    if (!details.next_version.size() ||
+        !base::Version(details.next_version).IsValid()) {
+      self.updateCheckRowState = UpdateCheckRowStateOmahaError;
+      [self reconfigureUpdateCheckItem];
+      return;
+    }
+
     self.updateCheckRowState = UpdateCheckRowStateOutOfDate;
+    // Valid results, update NSUserDefaults.
+    NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+
+    [defaults setValue:base::SysUTF8ToNSString(upgradeUrl.spec())
+                forKey:kIOSChromeUpgradeURLKey];
+    [defaults setValue:base::SysUTF8ToNSString(details.next_version)
+                forKey:kIOSChromeNextVersionKey];
+    [defaults setBool:details.is_up_to_date forKey:kIOSChromeUpToDateKey];
     // Treat the safety check finding the device out of date as if the update
     // infobar was just shown to not overshow the infobar to the user.
     [defaults setObject:[NSDate date] forKey:kLastInfobarDisplayTimeKey];

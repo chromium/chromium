@@ -68,6 +68,8 @@ class OmahaService {
   FRIEND_TEST_ALL_PREFIXES(OmahaServiceTest, InstallEventMessageTest);
   FRIEND_TEST_ALL_PREFIXES(OmahaServiceTest, SendPingFailure);
   FRIEND_TEST_ALL_PREFIXES(OmahaServiceTest, SendPingSuccess);
+  FRIEND_TEST_ALL_PREFIXES(OmahaServiceTest,
+                           CallbackForScheduledNotUsedOnErrorResponse);
   FRIEND_TEST_ALL_PREFIXES(OmahaServiceTest, OneOffSuccess);
   FRIEND_TEST_ALL_PREFIXES(OmahaServiceTest, OngoingPingOneOffCallbackUsed);
   FRIEND_TEST_ALL_PREFIXES(OmahaServiceTest, OneOffCallbackUsedOnlyOnce);

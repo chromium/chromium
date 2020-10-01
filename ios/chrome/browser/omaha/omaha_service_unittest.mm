@@ -60,6 +60,7 @@ class OmahaServiceTest : public PlatformTest {
 
   void OnNeedUpdate(const UpgradeRecommendedDetails& details) {
     was_one_off_ = false;
+    scheduled_callback_used_ = true;
     need_update_ = !details.is_up_to_date;
   }
 
@@ -68,7 +69,13 @@ class OmahaServiceTest : public PlatformTest {
     need_update_ = !details.is_up_to_date;
   }
 
-  bool WasOneOff() { return was_one_off_; }
+  bool WasOneOff() {
+    bool was_one_off = was_one_off_;
+    was_one_off_ = false;
+    return was_one_off;
+  }
+
+  bool ScheduledCallbackUsed() { return scheduled_callback_used_; }
 
   bool NeedUpdate() {
     DCHECK_CURRENTLY_ON(web::WebThread::UI);
@@ -115,6 +122,7 @@ class OmahaServiceTest : public PlatformTest {
  private:
   bool need_update_ = false;
   bool was_one_off_ = false;
+  bool scheduled_callback_used_ = false;
   IOSChromeScopedTestingChromeBrowserStateManager scoped_browser_state_manager_;
   web::WebTaskEnvironment task_environment_;
 
@@ -257,6 +265,40 @@ TEST_F(OmahaServiceTest, SendPingSuccess) {
   EXPECT_GT(service.last_sent_time_, now);
   EXPECT_EQ(4088, service.last_server_date_);
   EXPECT_FALSE(NeedUpdate());
+  EXPECT_FALSE(ScheduledCallbackUsed());
+}
+
+TEST_F(OmahaServiceTest, CallbackForScheduledNotUsedOnErrorResponse) {
+  base::Time now = base::Time::Now();
+  OmahaService service(false);
+  service.StartInternal();
+
+  service.set_upgrade_recommended_callback(
+      base::Bind(&OmahaServiceTest::OnNeedUpdate, base::Unretained(this)));
+  service.InitializeURLLoaderFactory(test_shared_url_loader_factory_);
+  CleanService(&service, version_info::GetVersionNumber());
+
+  service.SendPing();
+
+  EXPECT_EQ(1, service.number_of_tries_);
+  EXPECT_TRUE(service.current_ping_time_.is_null());
+  EXPECT_GE(service.next_tries_time_, now + base::TimeDelta::FromMinutes(54));
+  EXPECT_LE(service.next_tries_time_, now + base::TimeDelta::FromHours(7));
+
+  std::string response =
+      std::string(
+          "<?xml version=\"1.0\"?><response protocol=\"3.0\" server=\"prod\">"
+          "<daystart elapsed_days=\"4088\"/><app appid=\"") +
+      test_application_id() +
+      "\" status=\"ok\">"
+      "<updatecheck status=\"error\"/><ping status=\"ok\"/>"
+      "</app></response>";
+  auto* pending_request = test_url_loader_factory_.GetPendingRequest(0);
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      pending_request->request.url.spec(), response);
+
+  EXPECT_FALSE(NeedUpdate());
+  EXPECT_FALSE(ScheduledCallbackUsed());
 }
 
 TEST_F(OmahaServiceTest, OneOffSuccess) {

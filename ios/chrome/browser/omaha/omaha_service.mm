@@ -251,6 +251,7 @@ class XmlWrapper : public OmahaXmlWriter {
       } else if ([status isEqualToString:@"ok"]) {
         _updateInformation->is_up_to_date = false;
       } else {
+        _updateInformation = nullptr;
         _hasError = YES;
       }
     } else if ([elementName isEqualToString:@"event"]) {
@@ -753,7 +754,7 @@ void OmahaService::OnURLLoadComplete(
       // it canceled a scheduled ping.
       need_to_schedule_ping = scheduled_ping_canceled_;
       scheduled_ping_canceled_ = false;
-    } else {
+    } else if (!details->is_up_to_date) {
       base::PostTask(FROM_HERE, {web::WebThread::UI},
                      base::BindOnce(upgrade_recommended_callback_, *details));
     }
