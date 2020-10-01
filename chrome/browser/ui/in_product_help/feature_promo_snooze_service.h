@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_IN_PRODUCT_HELP_FEATURE_PROMO_SNOOZE_SERVICE_H_
 
 #include <string>
+
 #include "base/optional.h"
 #include "base/time/time.h"
 
@@ -61,6 +62,10 @@ class FeaturePromoSnoozeService {
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
  private:
+  // TODO(crbug.com/1121399): refactor prefs code so friending tests
+  // isn't necessary.
+  friend class FeaturePromoSnoozeInteractiveTest;
+
   // Snooze information dictionary saved under path
   // in_product_help.snoozed_feature.[iph_name] in PerfService.
   struct SnoozeData {
