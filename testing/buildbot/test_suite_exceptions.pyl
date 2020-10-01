@@ -897,7 +897,6 @@
       'CrWinAsan(dll)', # https://crbug.com/935598
       'android-code-coverage-native', # crbug/1018434
       # http://crbug.com/1060245#c30: due to low utility and capacity.
-      'android-lollipop-arm-rel', # https://crbug.com/1131618
       'android-marshmallow-arm64-rel',
     ],
     'modifications': {
