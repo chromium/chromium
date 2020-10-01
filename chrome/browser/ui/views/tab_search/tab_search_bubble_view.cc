@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/tab_search/tab_search_bubble_view.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "chrome/browser/extensions/chrome_extension_web_contents_observer.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
@@ -66,6 +67,11 @@ TabSearchBubbleView::TabSearchBubbleView(
   set_margins(gfx::Insets());
 
   SetLayoutManager(std::make_unique<views::FillLayout>());
+  // Required for intercepting extension function calls when the page is loaded
+  // in a bubble (not a full tab, thus tab helpers are not registered
+  // automatically).
+  extensions::ChromeExtensionWebContentsObserver::CreateForWebContents(
+      web_view_->GetWebContents());
   web_view_->EnableSizingFromWebContents(kMinSize, kMaxSize);
   web_view_->LoadInitialURL(GURL(chrome::kChromeUITabSearchURL));
 
