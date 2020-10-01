@@ -232,13 +232,15 @@ suite('TabSearchAppTest', () => {
   });
 
   test('Verify initial tab render time is logged correctly', async () => {
-    // |recordTimeCalled| tracks the number of calls to recordTime().
-    let recordTimeCalled = 0;
-    // |metricString| tracks the metric name passed to recordTime().
-    let metricName;
+    // |metricNames| tracks thow many times recordTime() has been called for
+    // a metric.
+    const metricNames = {};
     chrome.metricsPrivate.recordTime = (...args) => {
-      recordTimeCalled += 1;
-      metricName = args[0];
+      if ( args[0] in metricNames ) {
+        metricNames[args[0]] += 1;
+      } else {
+        metricNames[args[0]] = 1;
+      }
     };
 
     await setupTest(sampleData());
@@ -248,9 +250,9 @@ suite('TabSearchAppTest', () => {
     verifyTabIds(queryRows(), [ 1, 5, 6, 2, 3, 4 ]);
 
     // Ensure that |chrome.metricsPrivate.recordTime()| has been called
-    // once after initial tab data has been recieved.
-    assertEquals(1, recordTimeCalled);
-    assertEquals('Tabs.TabSearch.WebUI.InitialTabsRenderTime', metricName);
+    // once for InitialTabsRenderTime after initial tab data has been
+    // recieved.
+    assertEquals(1, metricNames['Tabs.TabSearch.WebUI.InitialTabsRenderTime']);
 
     // Force a change to filtered tab data that would result in a
     // re-render.
@@ -262,8 +264,8 @@ suite('TabSearchAppTest', () => {
     verifyTabIds(queryRows(), [ 2 ]);
 
     // |chrome.metricsPrivate.recordTime()| should still have only been
-    // called once.
-    assertEquals(1, recordTimeCalled);
+    // called once for InitialTabsRenderTime.
+    assertEquals(1, metricNames['Tabs.TabSearch.WebUI.InitialTabsRenderTime']);
   });
 
   test('Verify tab switch is logged correctly', async () => {
