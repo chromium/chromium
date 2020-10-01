@@ -156,6 +156,7 @@ source_set("common") {
     "web_package/signed_exchange_consts.cc",
     "web_package/web_package_request_matcher.cc",
     "web_preferences/web_preferences.cc",
+    "web_preferences/web_preferences_mojom_traits.cc",
     "widget/device_emulation_params_mojom_traits.cc",
     "widget/screen_info_mojom_traits.cc",
     "widget/visual_properties_mojom_traits.cc",

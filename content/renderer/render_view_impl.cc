@@ -584,7 +584,6 @@ bool RenderViewImpl::OnMessageReceived(const IPC::Message& message) {
 
   bool handled = true;
   IPC_BEGIN_MESSAGE_MAP(RenderViewImpl, message)
-    IPC_MESSAGE_HANDLER(ViewMsg_UpdateWebPreferences, OnUpdateWebPreferences)
     IPC_MESSAGE_HANDLER(ViewMsg_MoveOrResizeStarted, OnMoveOrResizeStarted)
 
     // Page messages.
@@ -973,7 +972,7 @@ const blink::web_pref::WebPreferences& RenderViewImpl::GetBlinkPreferences() {
 
 void RenderViewImpl::SetBlinkPreferences(
     const blink::web_pref::WebPreferences& preferences) {
-  OnUpdateWebPreferences(preferences);
+  webview_->SetWebPreferences(preferences);
 }
 
 blink::WebView* RenderViewImpl::GetWebView() {
@@ -982,11 +981,6 @@ blink::WebView* RenderViewImpl::GetWebView() {
 
 bool RenderViewImpl::GetContentStateImmediately() {
   return send_content_state_immediately_;
-}
-
-void RenderViewImpl::OnUpdateWebPreferences(
-    const blink::web_pref::WebPreferences& prefs) {
-  webview_->SetWebPreferences(prefs);
 }
 
 void RenderViewImpl::OnSetRendererPrefs(

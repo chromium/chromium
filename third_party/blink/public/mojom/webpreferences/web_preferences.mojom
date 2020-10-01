@@ -1,0 +1,423 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "third_party/blink/public/mojom/v8_cache_options.mojom";
+import "url/mojom/url.mojom";
+import "mojo/public/mojom/base/string16.mojom";
+
+enum PointerType {
+  kPointerFirstType                         = 1,  // 1 << 0
+  kPointerCoarseType                        = 2,  // 1 << 1
+  kPointerFineType                          = 4   // 1 << 2
+};
+
+enum HoverType {
+  kHoverFirstType                            = 1,  // 1 << 0
+  kHoverHoverType                            = 2   // 1 << 1
+};
+
+enum PreferredColorScheme {
+  kDark,
+  kLight,
+};
+
+// TODO(gyuyoung): This Mojo enum will replace all uses of
+// web_pref::EditingBehaviorType in a follow-up CL.
+enum EditingBehavior {
+  kEditingMacBehavior,
+  kEditingWindowsBehavior,
+  kEditingUnixBehavior,
+  kEditingAndroidBehavior,
+  kEditingChromeOSBehavior
+};
+
+// ImageAnimationPolicy is used for controlling image animation
+// when image frame is rendered for animation.
+// See third_party/WebKit/Source/platform/graphics/ImageAnimationPolicy.h
+// for information on the options.
+enum ImageAnimationPolicy {
+  kImageAnimationPolicyAllowed,
+  kImageAnimationPolicyAnimateOnce,
+  kImageAnimationPolicyNoAnimation
+};
+
+enum ViewportStyle { kDefault, kMobile, kTelevision, kLast = kTelevision };
+
+// Defines the autoplay policy to be used. Should match the class in
+// WebSettings.h.
+enum AutoplayPolicy {
+  kNoUserGestureRequired,
+  kUserGestureRequired,
+  kDocumentUserActivationRequired,
+};
+
+enum EffectiveConnectionType {
+  // Effective connection type reported when the network quality is unknown.
+  kEffectiveConnectionUnknownType,
+
+  // Effective connection type reported when the Internet is unreachable
+  // because the device does not have a connection (as reported by underlying
+  // platform APIs). Note that due to rare but  potential bugs in the platform
+  // APIs, it is possible that effective connection type is reported as
+  // EFFECTIVE_CONNECTION_TYPE_OFFLINE. Callers must use caution when using
+  // acting on this.
+  kEffectiveConnectionOfflineType,
+
+  // Effective connection type reported when the network has the quality of a
+  // poor 2G connection.
+  kEffectiveConnectionSlow2GType,
+
+  // Effective connection type reported when the network has the quality of a
+  // faster 2G connection.
+  kEffectiveConnection2GType,
+
+  // Effective connection type reported when the network has the quality of a 3G
+  // connection.
+  kEffectiveConnection3GType,
+
+  // Effective connection type reported when the network has the quality of a 4G
+  // connection.
+  kEffectiveConnection4GType,
+};
+
+struct WebPreferences {
+  map<string, mojo_base.mojom.String16> standard_font_family_map;
+  map<string, mojo_base.mojom.String16> fixed_font_family_map;
+  map<string, mojo_base.mojom.String16> serif_font_family_map;
+  map<string, mojo_base.mojom.String16> sans_serif_font_family_map;
+  map<string, mojo_base.mojom.String16> cursive_font_family_map;
+  map<string, mojo_base.mojom.String16> fantasy_font_family_map;
+  map<string, mojo_base.mojom.String16> pictograph_font_family_map;
+  int32 default_font_size;
+  int32 default_fixed_font_size;
+  int32 minimum_font_size;
+  int32 minimum_logical_font_size;
+  string default_encoding;
+  bool context_menu_on_mouse_up;
+  bool javascript_enabled;
+  bool web_security_enabled;
+  bool loads_images_automatically;
+  bool images_enabled;
+  bool plugins_enabled;
+  bool dom_paste_enabled;
+  bool shrinks_standalone_images_to_fit;
+  bool text_areas_are_resizable;
+  bool allow_scripts_to_close_windows;
+  bool remote_fonts_enabled;
+  bool javascript_can_access_clipboard;
+  bool xslt_enabled;
+  // We don't use dns_prefetching_enabled to disable DNS prefetching.  Instead,
+  // we disable the feature at a lower layer so that we catch non-WebKit uses
+  // of DNS prefetch as well.
+  bool dns_prefetching_enabled;
+  // Preference to save data. When enabled, requests will contain the header
+  // 'Save-Data: on'.
+  bool data_saver_enabled;
+  // Whether data saver holdback for Web APIs is enabled. If enabled, data saver
+  // appears as disabled to the web consumers even if it has been actually
+  // enabled by the user.
+  bool data_saver_holdback_web_api_enabled;
+  bool local_storage_enabled;
+  bool databases_enabled;
+  bool application_cache_enabled;
+  bool tabs_to_links;
+  bool disable_ipc_flooding_protection;
+  bool hyperlink_auditing_enabled;
+  bool allow_universal_access_from_file_urls;
+  bool allow_file_access_from_file_urls;
+  bool webgl1_enabled;
+  bool webgl2_enabled;
+  bool pepper_3d_enabled;
+  bool flash_3d_enabled;
+  bool flash_stage3d_enabled;
+  bool flash_stage3d_baseline_enabled;
+  bool privileged_webgl_extensions_enabled;
+  bool webgl_errors_to_console_enabled;
+  bool hide_scrollbars;
+  bool accelerated_2d_canvas_enabled;
+  bool new_canvas_2d_api_enabled;
+  bool antialiased_2d_canvas_disabled;
+  bool antialiased_clips_2d_canvas_enabled;
+  bool accelerated_filters_enabled;
+  bool deferred_filters_enabled;
+  bool container_culling_enabled;
+  bool allow_running_insecure_content;
+  // If true, taint32s all <canvas> elements, regardless of origin.
+  bool disable_reading_from_canvas;
+  // Strict mixed content checking disables both displaying and running insecure
+  // mixed content, and disables embedder notifications that such content was
+  // requested (thereby preventing user override).
+  bool strict_mixed_content_checking;
+  // Strict powerful feature restrictions block insecure usage of powerful
+  // features (like device orientation) that we haven't yet disabled for the web
+  // at large.
+  bool strict_powerful_feature_restrictions;
+  // TODO(jww): Remove when WebView no longer needs this exception.
+  bool allow_geolocation_on_insecure_origins;
+  // Disallow user opt-in for blockable mixed content.
+  bool strictly_block_blockable_mixed_content;
+  bool block_mixed_plugin_content;
+  bool password_echo_enabled;
+  bool should_clear_document_background;
+  bool enable_scroll_animator;
+  bool prefers_reduced_motion;
+  bool touch_event_feature_detection_enabled;
+  int32 pointer_events_max_touch_points;
+  int32 available_pointer_types;
+  PointerType primary_pointer_type;
+  int32 available_hover_types;
+  HoverType primary_hover_type;
+  bool dont_send_key_events_to_javascript;
+  bool barrel_button_for_drag_enabled;
+  bool sync_xhr_in_documents_enabled;
+  int32 number_of_cpu_cores;
+  EditingBehavior editing_behavior;
+  bool supports_multiple_windows;
+  bool viewport_enabled;
+  bool viewport_meta_enabled;
+
+  // If true - Blink will clamp the minimum scale factor to the content width,
+  // preventing zoom beyond the visible content. This is really only needed if
+  // viewport_enabled is on.
+  bool shrinks_viewport_contents_to_fit;
+
+  ViewportStyle viewport_style;
+  bool smooth_scroll_for_find_enabled;
+  bool main_frame_resizes_are_orientation_changes;
+  bool initialize_at_minimum_page_scale;
+  bool smart_insert_delete_enabled;
+  bool spatial_navigation_enabled;
+  bool navigate_on_drag_drop;
+  V8CacheOptions v8_cache_options;
+  bool record_whole_document;
+
+  // This flags corresponds to a Page's Settings' setCookieEnabled state. It
+  // only controls whether or not the "document.cookie" field is properly
+  // connected to the backing store, for instance if you wanted to be able to
+  // define custom getters and setters from within a unique security content
+  // without raising a DOM security exception.
+  bool cookie_enabled;
+
+  // This flag indicates whether H/W accelerated video decode is enabled.
+  // Defaults to false.
+  bool accelerated_video_decode_enabled;
+
+  ImageAnimationPolicy animation_policy;
+
+  bool user_gesture_required_for_presentation;
+
+  bool text_tracks_enabled;
+
+  // These fields specify the foreground and background color for WebVTT text
+  // tracks. Their values can be any legal CSS color descriptor.
+  string text_track_background_color;
+  string text_track_text_color;
+
+  // These fields specify values for CSS properties used to style WebVTT text
+  // tracks.
+  // Specifies CSS font-size property in percentage.
+  string text_track_text_size;
+  string text_track_text_shadow;
+  string text_track_font_family;
+  string text_track_font_style;
+  // Specifies the value for CSS font-variant property.
+  string text_track_font_variant;
+
+  // These fields specify values for CSS properties used to style the window
+  // around WebVTT text tracks.
+  // Window color can be any legal CSS color descriptor.
+  string text_track_window_color;
+  // Window padding is in em.
+  string text_track_window_padding;
+  // Window radius is in pixels.
+  string text_track_window_radius;
+
+  // Specifies the margin for WebVTT text tracks as a percentage of media
+  // element height/width (for horizontal/vertical text respectively).
+  // Cues will not be placed in this margin area.
+  float text_track_margin_percentage;
+
+  bool immersive_mode_enabled;
+
+  bool double_tap_to_zoom_enabled;
+
+  bool fullscreen_supported;
+
+  bool text_autosizing_enabled;
+
+  // Representation of the Web App Manifest scope if any.
+  url.mojom.Url web_app_scope;
+
+  [EnableIf=is_android]
+  float font_scale_factor;
+
+  [EnableIf=is_android]
+  float device_scale_adjustment;
+
+  [EnableIf=is_android]
+  bool force_enable_zoom;
+
+  [EnableIf=is_android]
+  url.mojom.Url default_video_poster_url;
+
+  [EnableIf=is_android]
+  bool support_deprecated_target_density_dpi;
+
+  [EnableIf=is_android]
+  bool use_legacy_background_size_shorthand_behavior;
+
+  [EnableIf=is_android]
+  bool wide_viewport_quirk;
+
+  [EnableIf=is_android]
+  bool use_wide_viewport;
+
+  [EnableIf=is_android]
+  bool force_zero_layout_height;
+
+  [EnableIf=is_android]
+  bool viewport_meta_merge_content_quirk;
+
+  [EnableIf=is_android]
+  bool viewport_meta_non_user_scalable_quirk;
+
+  [EnableIf=is_android]
+  bool viewport_meta_zero_values_quirk;
+
+  [EnableIf=is_android]
+  bool clobber_user_agent_initial_scale_quirk;
+
+  [EnableIf=is_android]
+  bool ignore_main_frame_overflow_hidden_quirk;
+
+  [EnableIf=is_android]
+  bool report_screen_size_in_physical_pixels_quirk;
+
+  // Used by Android_WebView only to support legacy apps that inject script int32o
+  // a top-level initial empty document and expect it to persist on navigation.
+  [EnableIf=is_android]
+  bool reuse_global_for_unowned_main_frame;
+
+  // Specifies default setting for spellcheck when the spellcheck attribute is
+  // not explicitly specified.
+  [EnableIf=is_android]
+  bool spellcheck_enabled_by_default;
+
+  // If enabled, when a video goes fullscreen, the orientation should be locked.
+  [EnableIf=is_android]
+  bool video_fullscreen_orientation_lock_enabled;
+
+  // If enabled, fullscreen should be entered/exited when the device is rotated
+  // to/from the orientation of the video.
+  [EnableIf=is_android]
+  bool video_rotate_to_fullscreen_enabled;
+
+  [EnableIf=is_android]
+  bool embedded_media_experience_enabled;
+
+  // Enable 8 (#RRGGBBAA) and 4 (#RGBA) value hex colors in CSS Android
+  // WebView quirk (http://crbug.com/618472).
+  [EnableIf=is_android]
+  bool css_hex_alpha_color_enabled;
+
+  // Enable support for document.scrollingElement
+  // WebView sets this to false to retain old documentElement behaviour
+  // (http://crbug.com/761016).
+  [EnableIf=is_android]
+  bool scroll_top_left_interop_enabled;
+
+  // Disable features such as offscreen canvas that depend on the viz
+  // architecture of surface embedding. Android WebView does not support this
+  // architecture yet.
+  [EnableIf=is_android]
+  bool disable_features_depending_on_viz;
+
+  [EnableIf=is_android]
+  // Don't accelerate small canvases to avoid crashes TODO(crbug.com/1004304)
+  bool disable_accelerated_small_canvases;
+
+  // Re-enable Web Components v0 on Webview, temporarily. This should get
+  // removed when crbug.com/1021631 gets fixed.
+  [EnableIf=is_android]
+  bool reenable_web_components_v0;
+
+  // Enable forcibly modifying content rendering to result in a light on dark
+  // color scheme.
+  bool force_dark_mode_enabled;
+
+  // Default (used if the page or UA doesn't override these) values for page
+  // scale limits. These are set directly on the WebView so there's no analogue
+  // in WebSettings.
+  float default_minimum_page_scale_factor;
+  float default_maximum_page_scale_factor;
+
+  // Whether download UI should be hidden on this page.
+  bool hide_download_ui;
+
+  // Whether it is a presentation receiver.
+  bool presentation_receiver;
+
+  // If disabled, media controls should never be used.
+  bool media_controls_enabled;
+
+  // Whether we want to disable updating selection on mutating selection range.
+  // This is to work around Samsung's email app issue. See
+  // https://crbug.com/699943 for details.
+  // TODO(changwan): remove this once we no longer support Android N.
+  bool do_not_update_selection_on_mutating_selection_range;
+
+  // Defines the current autoplay policy.
+  AutoplayPolicy autoplay_policy;
+
+  // The preferred color scheme for the web content. The scheme is used to
+  // evaluate the prefers-color-scheme media query and resolve UA color scheme
+  // to be used based on the supported-color-schemes META tag and CSS property.
+  PreferredColorScheme preferred_color_scheme;
+
+  // Network quality threshold below which resources from iframes are assigned
+  // either kVeryLow or kVeryLow Blink priority.
+  EffectiveConnectionType low_priority_iframes_threshold;
+
+  // Whether Picture-in-Picture is enabled.
+  bool picture_in_picture_enabled;
+
+  // Whether a translate service is available.
+  // blink's hrefTranslate attribute existence relies on the result.
+  // See https://github.com/dtapuska/html-translate
+  bool translate_service_available;
+
+  // A value other than net::EFFECTIVE_CONNECTION_TYPE_UNKNOWN implies that the
+  // network quality estimate related Web APIs are in the holdback mode. When
+  // the holdback is enabled, the related Web APIs return network quality
+  // estimate corresponding to |network_quality_estimator_web_holdback|
+  // regardless of the actual quality.
+  EffectiveConnectionType network_quality_estimator_web_holdback;
+
+  // Whether lazy loading of frames and images is enabled.
+  bool lazy_load_enabled;
+
+  // Specifies how close a lazily loaded iframe or image should be from the
+  // viewport before it should start being loaded in, depending on the effective
+  // connection type of the current network. Blink will use the default distance
+  // threshold for effective connection types that aren't specified here.
+  map<EffectiveConnectionType, int32>
+      lazy_frame_loading_distance_thresholds_px;
+  map<EffectiveConnectionType, int32>
+      lazy_image_loading_distance_thresholds_px;
+  map<EffectiveConnectionType, int32> lazy_image_first_k_fully_load;
+
+  // Setting to false disables upgrades to HTTPS for HTTP resources in HTTPS
+  // sites.
+  bool allow_mixed_content_upgrades;
+
+  // Whether the focused element should always be indicated (for example, by
+  // forcing :focus-visible to match regardless of focus method).
+  bool always_show_focus;
+
+  // Whether touch input can trigger HTML drag-and-drop operations. The
+  // default value depends on the platform.
+  bool touch_drag_drop_enabled;
+};

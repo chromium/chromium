@@ -94,10 +94,6 @@ IPC_STRUCT_TRAITS_END()
 
 // Messages sent from the browser to the renderer.
 
-// This passes a set of webkit preferences down to the renderer.
-IPC_MESSAGE_ROUTED1(ViewMsg_UpdateWebPreferences,
-                    blink::web_pref::WebPreferences)
-
 // Notification that a move or resize renderer's containing window has
 // started.
 IPC_MESSAGE_ROUTED0(ViewMsg_MoveOrResizeStarted)

@@ -9,9 +9,9 @@ if (window.testRunner) {
 
 onload = function() {
   var newWindow = window.open('resources/5000x5000.png', 'image', 'width=100,height=150');
-  if (newWindow.internals)
-    newWindow.internals.settings.setViewportEnabled(true);
   newWindow.onload = function() {
+    if (newWindow.internals)
+      newWindow.internals.settings.setViewportEnabled(true);
     runAfterLayoutAndPaint(function() {
       document.getElementById('output').textContent =
           '\nviewport meta: ' + newWindow.document.querySelector('meta').outerHTML

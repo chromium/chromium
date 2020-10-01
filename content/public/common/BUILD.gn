@@ -393,35 +393,6 @@ mojom("renderer_type") {
   sources = [ "media_playback_renderer_type.mojom" ]
 }
 
-mojom("web_preferences_mojom") {
-  sources = [ "web_preferences.mojom" ]
-
-  public_deps = [
-    # This dependency is really a dependency for the typemaps, but we need
-    # it here so that we can override it correctly for the component build.
-    "//third_party/blink/public/mojom:mojom_platform",
-  ]
-
-  overridden_deps = [ "//third_party/blink/public/mojom:mojom_platform" ]
-  component_deps = [ "//third_party/blink/public/common" ]
-
-  cpp_typemaps = [
-    {
-      types = [
-        {
-          mojom = "content.mojom.WebPreferences"
-          cpp = "::blink::web_pref::WebPreferences"
-        },
-      ]
-      traits_headers = [
-        "//third_party/blink/public/common/web_preferences/web_preferences.h",
-      ]
-      traits_private_headers = _common_param_traits_headers
-      traits_deps = _common_param_traits_deps
-    },
-  ]
-}
-
 mojom("service_names") {
   sources = [ "service_names.mojom" ]
 }

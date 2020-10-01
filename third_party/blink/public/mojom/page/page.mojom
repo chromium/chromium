@@ -5,6 +5,7 @@
 module blink.mojom;
 import "mojo/public/mojom/base/time.mojom";
 import "third_party/blink/public/mojom/page/page_visibility_state.mojom";
+import "third_party/blink/public/mojom/webpreferences/web_preferences.mojom";
 
 enum PagehideDispatch {
   // We haven't dispatched pagehide and should do so when appropriate.
@@ -56,4 +57,7 @@ interface PageBroadcast {
   // Notifies renderers when a portal web contents is activated or if a
   // web contents is adopted as a portal.
   SetInsidePortal(bool is_inside_portal);
+
+  // Notifies the renderer when updating a set of blink preferences.
+  UpdateWebPreferences(blink.mojom.WebPreferences preferences);
 };

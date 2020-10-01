@@ -240,6 +240,8 @@ class CORE_EXPORT WebViewImpl final : public WebView,
       SetPageLifecycleStateCallback callback) override;
   void AudioStateChanged(bool is_audio_playing) override;
   void SetInsidePortal(bool is_inside_portal) override;
+  void UpdateWebPreferences(
+      const blink::web_pref::WebPreferences& preferences) override;
 
   void DispatchPageshow(base::TimeTicks navigation_start);
   void DispatchPagehide(mojom::blink::PagehideDispatch pagehide_dispatch);
@@ -540,9 +542,6 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   // Request the window to close from the renderer by sending the request to the
   // browser.
   void DoDeferredCloseWindowSoon();
-
-  // Applies blink related preferences to this view.
-  void UpdateWebPreferences(const blink::web_pref::WebPreferences& preferences);
 
   WebViewImpl(
       WebViewClient*,

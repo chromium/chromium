@@ -43,8 +43,7 @@ enum EditingBehaviorType {
   kEditingWindowsBehavior,
   kEditingUnixBehavior,
   kEditingAndroidBehavior,
-  kEditingChromeOSBehavior,
-  kEditingLastBehavior
+  kEditingChromeOSBehavior
 };
 
 }  // namespace web_pref

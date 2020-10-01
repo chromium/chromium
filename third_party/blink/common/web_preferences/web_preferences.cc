@@ -197,7 +197,8 @@ WebPreferences::WebPreferences()
       presentation_receiver(false),
       media_controls_enabled(true),
       do_not_update_selection_on_mutating_selection_range(false),
-      autoplay_policy(AutoplayPolicy::kDocumentUserActivationRequired),
+      autoplay_policy(
+          web_pref::AutoplayPolicy::kDocumentUserActivationRequired),
       low_priority_iframes_threshold(net::EFFECTIVE_CONNECTION_TYPE_UNKNOWN),
       picture_in_picture_enabled(true),
       translate_service_available(false),
@@ -206,14 +207,19 @@ WebPreferences::WebPreferences()
       allow_mixed_content_upgrades(true),
       always_show_focus(false),
       touch_drag_drop_enabled(IsTouchDragDropEnabled()) {
-  standard_font_family_map[kCommonScript] =
+  standard_font_family_map[web_pref::kCommonScript] =
       base::ASCIIToUTF16("Times New Roman");
-  fixed_font_family_map[kCommonScript] = base::ASCIIToUTF16("Courier New");
-  serif_font_family_map[kCommonScript] = base::ASCIIToUTF16("Times New Roman");
-  sans_serif_font_family_map[kCommonScript] = base::ASCIIToUTF16("Arial");
-  cursive_font_family_map[kCommonScript] = base::ASCIIToUTF16("Script");
-  fantasy_font_family_map[kCommonScript] = base::ASCIIToUTF16("Impact");
-  pictograph_font_family_map[kCommonScript] =
+  fixed_font_family_map[web_pref::kCommonScript] =
+      base::ASCIIToUTF16("Courier New");
+  serif_font_family_map[web_pref::kCommonScript] =
+      base::ASCIIToUTF16("Times New Roman");
+  sans_serif_font_family_map[web_pref::kCommonScript] =
+      base::ASCIIToUTF16("Arial");
+  cursive_font_family_map[web_pref::kCommonScript] =
+      base::ASCIIToUTF16("Script");
+  fantasy_font_family_map[web_pref::kCommonScript] =
+      base::ASCIIToUTF16("Impact");
+  pictograph_font_family_map[web_pref::kCommonScript] =
       base::ASCIIToUTF16("Times New Roman");
 }
 

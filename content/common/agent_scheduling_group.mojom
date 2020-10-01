@@ -6,7 +6,6 @@ module content.mojom;
 
 import "content/common/document_scoped_interface_bundle.mojom";
 import "content/common/native_types.mojom";
-import "content/public/common/web_preferences.mojom";
 import "ipc/constants.mojom";
 import "mojo/public/mojom/base/generic_pending_receiver.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
@@ -14,6 +13,7 @@ import "third_party/blink/public/mojom/frame/frame_owner_properties.mojom";
 import "third_party/blink/public/mojom/page/page.mojom";
 import "third_party/blink/public/mojom/page/widget.mojom";
 import "third_party/blink/public/mojom/renderer_preferences.mojom";
+import "third_party/blink/public/mojom/webpreferences/web_preferences.mojom";
 import "third_party/blink/public/mojom/widget/visual_properties.mojom";
 
 // A View (i.e. a "main frame") can be created for a few different cases, these
@@ -32,7 +32,7 @@ struct CreateViewParams {
   blink.mojom.RendererPreferences renderer_preferences;
 
   // Preferences for this view.
-  WebPreferences web_preferences;
+  blink.mojom.WebPreferences web_preferences;
 
   // The ID of the view to be created.
   int32 view_id = IPC.mojom.kRoutingIdNone;

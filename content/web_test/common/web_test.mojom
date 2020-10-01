@@ -4,12 +4,12 @@
 
 module content.mojom;
 
-import "content/public/common/web_preferences.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/values.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "skia/public/mojom/bitmap.mojom";
 import "third_party/blink/public/mojom/permissions/permission_status.mojom";
+import "third_party/blink/public/mojom/webpreferences/web_preferences.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
 
@@ -119,7 +119,7 @@ interface WebTestControlHost {
   PrintMessage(string message);
 
   // Update changed WebKit preferences.
-  OverridePreferences(WebPreferences web_preferences);
+  OverridePreferences(blink.mojom.WebPreferences web_preferences);
 
   // Trigger a reload navigation on the main WebView.
   Reload();

@@ -857,8 +857,8 @@ void RenderViewHostImpl::RequestSetBounds(const gfx::Rect& bounds) {
 }
 
 void RenderViewHostImpl::SendWebPreferencesToRenderer() {
-  Send(new ViewMsg_UpdateWebPreferences(
-      GetRoutingID(), delegate_->GetOrCreateWebPreferences()));
+  if (auto& broadcast = GetAssociatedPageBroadcast())
+    broadcast->UpdateWebPreferences(delegate_->GetOrCreateWebPreferences());
 }
 
 void RenderViewHostImpl::OnHardwareConfigurationChanged() {
