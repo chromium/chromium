@@ -240,20 +240,18 @@ void InvertedIndex::AddDocuments(const DocumentToUpdate& documents) {
 
 uint32_t InvertedIndex::RemoveDocuments(
     const std::vector<std::string>& document_ids) {
-  uint32_t num_erase = 0;
+  if (document_ids.empty())
+    return 0;
+
   for (const auto& id : document_ids) {
-    if (doc_length_.find(id) == doc_length_.end())
-      continue;
-    num_erase++;
+    // |doc_length_| could be in the process of being updated when this function
+    // is called, hence we cannot use it to verify the existence of the |id|.
     documents_to_update_.push_back({id, std::vector<Token>()});
   }
 
-  if (num_erase == 0)
-    return num_erase;
-
   is_index_built_ = false;
   InvertedIndexController();
-  return num_erase;
+  return document_ids.size();
 }
 
 std::vector<TfidfResult> InvertedIndex::GetTfidf(
@@ -320,8 +318,8 @@ void InvertedIndex::InvertedIndexController() {
     update_in_progress_ = true;
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-        // Can't move doc_length_ since it is used to check if a document exists
-        // or not.
+        // TODO(jiameng): |doc_length_| can be moved since it's not used for
+        // document existence checking any more.
         base::BindOnce(&UpdateDocuments, std::move(documents_to_update_),
                        doc_length_, std::move(dictionary_),
                        std::move(terms_to_be_updated_)),

@@ -158,7 +158,7 @@ TEST_F(InvertedIndexSearchTest, Delete) {
   Wait();
   EXPECT_EQ(search_->GetSize(), 2u);
 
-  EXPECT_EQ(search_->Delete({"id1", "id3"}), 1u);
+  EXPECT_EQ(search_->Delete({"id1", "id3"}), 2u);
   Wait();
 
   {
@@ -296,6 +296,33 @@ TEST_F(InvertedIndexSearchTest, Find) {
               ResponseStatus::kSuccess);
     EXPECT_EQ(results.size(), 2u);
   }
+}
+
+TEST_F(InvertedIndexSearchTest, SequenceOfDeletes) {
+  const std::map<std::string, std::vector<ContentWithId>> data_to_register = {
+      {"id1",
+       {{"cid_1", "This is a help wi-fi article"},
+        {"cid_2", "Another help help wi-fi"}}},
+      {"id2", {{"cid_3", "help article on wi-fi"}}}};
+
+  const std::vector<Data> data = CreateTestData(data_to_register);
+  search_->AddOrUpdate(data);
+
+  const std::map<std::string, std::vector<ContentWithId>> data_to_update = {
+      {"id1",
+       {{"cid_1", "This is a help bluetooth article"},
+        {"cid_2", "Google Playstore Google Music"}}},
+      {"id3", {{"cid_3", "Google Map"}}}};
+
+  const std::vector<Data> updated_data = CreateTestData(data_to_update);
+  search_->AddOrUpdate(updated_data);
+
+  EXPECT_EQ(search_->Delete({"id1"}), 1u);
+  EXPECT_EQ(search_->Delete({"id2", "id3"}), 2u);
+
+  // Force all operations to complete.
+  Wait();
+  EXPECT_EQ(search_->GetSize(), 0u);
 }
 
 }  // namespace local_search_service

@@ -81,9 +81,11 @@ class InvertedIndex {
   void AddDocuments(const DocumentToUpdate& documents);
 
   // Removes documents from the inverted index. Do nothing if the document id is
-  // not in the index. Returns number of documents deleted.
+  // not in the index.
   // This function doesn't modify any cache. It only removes
   // documents and tokens from the index.
+  // As other operations may be running on a separate thread, this function
+  // returns size of |document_ids| and not actually deleted documents.
   uint32_t RemoveDocuments(const std::vector<std::string>& document_ids);
 
   // Gets TF-IDF scores for a term. This function returns the TF-IDF score from

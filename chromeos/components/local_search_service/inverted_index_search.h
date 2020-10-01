@@ -39,6 +39,9 @@ class InvertedIndexSearch : public Index {
   void AddOrUpdate(const std::vector<Data>& data) override;
   // TODO(jiameng): we always build the index after documents are deleted. May
   // revise this strategy if there is a different use case.
+  // TODO(jiameng): for inverted index, the Delete function returns |ids| size,
+  // and not actual number of documents deleted. This would change in the next
+  // cl when these operations become async.
   uint32_t Delete(const std::vector<std::string>& ids) override;
   void ClearIndex() override;
   // Returns matching results for a given query by approximately matching the
@@ -55,8 +58,25 @@ class InvertedIndexSearch : public Index {
       const base::string16& term) const;
 
  private:
-  void OnExtractDocumentsContentDone(
+  void FinalizeAddOrUpdate(
       const std::vector<std::pair<std::string, std::vector<Token>>>& documents);
+
+  // FinalizeDelete is called if Delete cannot be immediately done because
+  // there's another index updating operation before it, i.e.
+  // |num_queued_index_updates_| is not zero.
+  void FinalizeDelete(const std::vector<std::string>& ids);
+
+  // In order to reduce unnecessary inverted index building, we only build the
+  // index if there's no upcoming modification to the index's document list.
+  void MaybeBuildInvertedIndex();
+
+  // AddOrUpdate requires content extraction to be done before index is updated
+  // (tokens added, index built). As content extraction runs on another thread
+  // (|blocking_task_runner_|), we need to keep track of how many index-update
+  // operations are to be done (and queued). Delete may be queued as well if
+  // there is an AddOrUpdate before it. We need to ensure documents are added or
+  // modified or deleted in the same order as they're given by the index client.
+  int num_queued_index_updates_ = 0;
 
   std::unique_ptr<InvertedIndex> inverted_index_;
   scoped_refptr<base::SequencedTaskRunner> blocking_task_runner_;
