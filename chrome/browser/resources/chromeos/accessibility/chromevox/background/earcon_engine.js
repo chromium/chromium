@@ -336,6 +336,22 @@ EarconEngine = class {
   }
 
   /**
+   * Play the smart sticky mode on sound.
+   */
+  onSmartStickyModeOn() {
+    this.play('static', {gain: this.clickVolume * 0.5});
+    this.play(this.controlSound, {pitch: 7});
+  }
+
+  /**
+   * Play the smart sticky mode off sound.
+   */
+  onSmartStickyModeOff() {
+    this.play('static', {gain: this.clickVolume * 0.5});
+    this.play(this.controlSound, {pitch: -5});
+  }
+
+  /**
    * Play the select control sound.
    */
   onSelect() {

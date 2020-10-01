@@ -46,6 +46,8 @@ Earcon = {
   SELECTION_REVERSE: 'selection_reverse',
   SKIP: 'skip',
   SLIDER: 'slider',
+  SMART_STICKY_MODE_OFF: 'smart_sticky_mode_off',
+  SMART_STICKY_MODE_ON: 'smart_sticky_mode_on',
   NO_POINTER_ANCHOR: 'no_pointer_anchor',
   WRAP: 'wrap',
   WRAP_EDGE: 'wrap_edge',

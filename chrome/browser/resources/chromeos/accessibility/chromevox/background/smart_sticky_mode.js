@@ -11,6 +11,7 @@
 goog.provide('SmartStickyMode');
 
 goog.require('AutomationUtil');
+goog.require('ChromeVox');
 goog.require('ChromeVoxState');
 
 /** @implements {ChromeVoxStateObserver} */
@@ -79,10 +80,12 @@ SmartStickyMode = class {
 
       // Save the sticky state for restoration later.
       this.didTurnOffStickyMode_ = true;
+      ChromeVox.earcons.playEarcon(Earcon.SMART_STICKY_MODE_OFF);
       ChromeVoxBackground.setPref(
           'sticky', false /* value */, true /* announce */);
     } else if (this.didTurnOffStickyMode_) {
       // Restore the previous sticky mode state.
+      ChromeVox.earcons.playEarcon(Earcon.SMART_STICKY_MODE_ON);
       ChromeVoxBackground.setPref(
           'sticky', true /* value */, true /* announce */);
       this.didTurnOffStickyMode_ = false;

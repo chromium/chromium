@@ -140,6 +140,12 @@ NextEarcons = class extends AbstractEarcons {
       case Earcon.SLIDER:
         this.engine_.onSlider();
         break;
+      case Earcon.SMART_STICKY_MODE_OFF:
+        this.engine_.onSmartStickyModeOff();
+        break;
+      case Earcon.SMART_STICKY_MODE_ON:
+        this.engine_.onSmartStickyModeOn();
+        break;
       case Earcon.NO_POINTER_ANCHOR:
         this.engine_.onNoPointerAnchor();
         break;

@@ -11,6 +11,7 @@ GEN_INCLUDE(['../testing/chromevox_next_e2e_test_base.js']);
 ChromeVoxSmartStickyModeTest = class extends ChromeVoxNextE2ETest {
   /** @override */
   setUp() {
+    window.doCmd = this.doCmd;
     this.ssm_ = new SmartStickyMode();
     // Deregister from actual range changes.
     ChromeVoxState.removeObserver(this.ssm_);
@@ -108,3 +109,68 @@ TEST_F(
         this.assertDidNotTurnOffForNode(p);
       });
     });
+
+TEST_F(
+    'ChromeVoxSmartStickyModeTest', 'SmartStickyModeJumpCommands', function() {
+      const mockFeedback = this.createMockFeedback();
+      this.runWithLoadedTree(
+          `
+        <p>start</p>
+        <input type="text"></input>
+        <button>end</button>
+      `,
+          function(root) {
+            mockFeedback.call(doCmd('toggleStickyMode'))
+                .expectSpeech('Sticky mode enabled')
+                .call(doCmd('nextFormField'))
+                .expectSpeech('Edit text')
+                .call(() => assertTrue(ChromeVox.isStickyModeOn()))
+                .call(doCmd('nextFormField'))
+                .expectSpeech('Button')
+                .call(doCmd('previousFormField'))
+                .expectSpeech('Edit text')
+                .call(() => assertTrue(ChromeVox.isStickyModeOn()))
+                .call(doCmd('previousObject'))
+                .expectSpeech('start')
+                .call(doCmd('nextEditText'))
+                .expectSpeech('Edit text')
+                .call(() => assertTrue(ChromeVox.isStickyModeOn()))
+                .call(doCmd('nextObject'))
+                .expectSpeech('Button')
+                .call(doCmd('previousEditText'))
+                .expectSpeech('Edit text')
+                .call(() => assertTrue(ChromeVox.isStickyModeOn()))
+                .call(doCmd('nextObject'))
+                .expectSpeech('Button')
+                .call(doCmd('previousObject'))
+                .expectSpeech('Sticky mode disabled')
+                .expectSpeech('Edit text')
+                .call(() => assertFalse(ChromeVox.isStickyModeOn()))
+                .replay();
+          });
+    });
+
+TEST_F('ChromeVoxSmartStickyModeTest', 'SmartStickyModeEarcons', function() {
+  const mockFeedback = this.createMockFeedback();
+  this.runWithLoadedTree(
+      `
+    <p>start</p>
+    <input type="text"></input>
+    <button>end</button>
+  `,
+      function(root) {
+        mockFeedback.call(doCmd('toggleStickyMode'))
+            .expectSpeech('Sticky mode enabled')
+            .call(doCmd('nextObject'))
+            .expectEarcon(Earcon.SMART_STICKY_MODE_OFF)
+            .expectSpeech('Sticky mode disabled')
+            .expectSpeech('Edit text')
+            .call(() => assertFalse(ChromeVox.isStickyModeOn()))
+            .call(doCmd('nextObject'))
+            .expectEarcon(Earcon.SMART_STICKY_MODE_ON)
+            .expectSpeech('Sticky mode enabled')
+            .expectSpeech('Button')
+            .call(() => assertTrue(ChromeVox.isStickyModeOn()))
+            .replay();
+      });
+});
