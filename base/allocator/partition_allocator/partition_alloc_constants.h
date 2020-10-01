@@ -6,7 +6,7 @@
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_CONSTANTS_H_
 
 #include <limits.h>
-#include <stddef.h>
+#include <cstddef>
 
 #include <algorithm>
 
