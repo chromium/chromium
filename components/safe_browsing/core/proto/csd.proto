@@ -366,6 +366,8 @@ message LoginReputationClientRequest {
     optional bool hide_on_interaction = 4;
     // True if OmniboxUIExperimentElideToRegistrableDomain is enabled.
     optional bool elide_to_registrable_domain = 5;
+    // True if this is the control group. This sent by the finch config.
+    optional bool simplified_url_display_enabled = 6;
   };
   optional UrlDisplayExperiment url_display_experiment = 14;
 }

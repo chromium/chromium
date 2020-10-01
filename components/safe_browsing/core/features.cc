@@ -47,6 +47,9 @@ const base::FeatureParam<bool> kDelayedWarningsEnableMouseClicks{
     &kDelayedWarnings, "mouse",
     /*default_value=*/false};
 
+const base::Feature kSimplifiedUrlDisplay{"SimplifiedUrlDisplay",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kDownloadRequestWithToken{
     "SafeBrowsingDownloadRequestWithToken", base::FEATURE_ENABLED_BY_DEFAULT};
 

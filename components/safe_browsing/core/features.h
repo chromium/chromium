@@ -136,6 +136,12 @@ extern const base::Feature kDelayedWarnings;
 // warnings feature is enabled.
 extern const base::FeatureParam<bool> kDelayedWarningsEnableMouseClicks;
 
+// Status of the SimplifiedUrlDisplay experiments. This does not control the
+// individual experiments, those are controlled by their own feature flags.
+// The feature is only set by Finch so that we can differentiate between
+// default and control groups of the experiment.
+extern const base::Feature kSimplifiedUrlDisplay;
+
 base::ListValue GetFeatureStatusList();
 
 // Returns whether or not to stop filling in the SyncAccountType and
