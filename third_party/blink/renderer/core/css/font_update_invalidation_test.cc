@@ -6,6 +6,7 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/core/svg/svg_text_element.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
@@ -78,6 +79,60 @@ TEST_F(FontUpdateInvalidationTest, PartialLayoutInvalidationAfterFontLoading) {
   Compositor().BeginFrame();
   EXPECT_EQ(250, target->OffsetWidth());
   EXPECT_GT(250, reference->OffsetWidth());
+
+  main_resource.Finish();
+}
+
+TEST_F(FontUpdateInvalidationTest,
+       PartialLayoutInvalidationAfterFontLoadingSVG) {
+  SimRequest main_resource("https://example.com", "text/html");
+  SimSubresourceRequest font_resource("https://example.com/Ahem.woff2",
+                                      "font/woff2");
+
+  LoadURL("https://example.com");
+  main_resource.Write(R"HTML(
+    <!doctype html>
+    <style>
+      @font-face {
+        font-family: custom-font;
+        src: url(https://example.com/Ahem.woff2) format("woff2");
+      }
+      #target {
+        font: 25px/1 custom-font, monospace;
+      }
+      #reference {
+        font: 25px/1 monospace;
+      }
+    </style>
+    <svg><text id=target dx=0,10>0123456789</text></svg>
+    <svg><text id=reference dx=0,10>0123456789</text></svg>
+  )HTML");
+
+  // First rendering the page with fallback
+  Compositor().BeginFrame();
+
+  auto* target = To<SVGTextElement>(GetDocument().getElementById("target"));
+  auto* reference =
+      To<SVGTextElement>(GetDocument().getElementById("reference"));
+
+  EXPECT_GT(250 + 10, target->GetBBox().Width());
+  EXPECT_GT(250 + 10, reference->GetBBox().Width());
+
+  // Finish font loading, and trigger invalidations.
+  font_resource.Complete(ReadAhemWoff2());
+  GetDocument().GetStyleEngine().InvalidateStyleAndLayoutForFontUpdates();
+
+  // No element is marked for style recalc, since no computed style is changed.
+  EXPECT_EQ(kNoStyleChange, target->GetStyleChangeType());
+  EXPECT_EQ(kNoStyleChange, reference->GetStyleChangeType());
+
+  // Only elements that had pending custom fonts are marked for relayout.
+  EXPECT_TRUE(target->GetLayoutObject()->NeedsLayout());
+  EXPECT_FALSE(reference->GetLayoutObject()->NeedsLayout());
+
+  Compositor().BeginFrame();
+  EXPECT_EQ(250 + 10, target->GetBBox().Width());
+  EXPECT_GT(250 + 10, reference->GetBBox().Width());
 
   main_resource.Finish();
 }

@@ -74,6 +74,7 @@ class LayoutSVGInlineText final : public LayoutText {
  private:
   void TextDidChange() override;
   void StyleDidChange(StyleDifference, const ComputedStyle*) override;
+  void InvalidateSubtreeLayoutForFontUpdates() override;
 
   void AddMetricsFromRun(const TextRun&, bool& last_character_was_white_space);
 
