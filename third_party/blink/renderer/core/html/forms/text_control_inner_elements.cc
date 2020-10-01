@@ -35,7 +35,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
 #include "third_party/blink/renderer/core/html_names.h"
-#include "third_party/blink/renderer/core/layout/layout_text_control_single_line.h"
+#include "third_party/blink/renderer/core/layout/layout_object_factory.h"
 
 namespace blink {
 
@@ -119,9 +119,10 @@ void TextControlInnerEditorElement::FocusChanged() {
 }
 
 LayoutObject* TextControlInnerEditorElement::CreateLayoutObject(
-    const ComputedStyle&,
-    LegacyLayout) {
-  return new LayoutTextControlInnerEditor(this);
+    const ComputedStyle& style,
+    LegacyLayout legacy) {
+  return LayoutObjectFactory::CreateTextControlInnerEditor(*this, style,
+                                                           legacy);
 }
 
 scoped_refptr<ComputedStyle>

@@ -28,10 +28,9 @@
 
 namespace blink {
 
-LayoutTextControlMultiLine::LayoutTextControlMultiLine(
-    HTMLTextAreaElement* element)
-    : LayoutTextControl(element) {
-  DCHECK(element);
+LayoutTextControlMultiLine::LayoutTextControlMultiLine(Element* element)
+    : LayoutTextControl(To<TextControlElement>(element)) {
+  DCHECK(IsA<HTMLTextAreaElement>(element));
 }
 
 LayoutTextControlMultiLine::~LayoutTextControlMultiLine() = default;

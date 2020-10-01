@@ -27,11 +27,9 @@
 
 namespace blink {
 
-class HTMLTextAreaElement;
-
 class LayoutTextControlMultiLine final : public LayoutTextControl {
  public:
-  LayoutTextControlMultiLine(HTMLTextAreaElement*);
+  explicit LayoutTextControlMultiLine(Element*);
   ~LayoutTextControlMultiLine() override;
 
  private:

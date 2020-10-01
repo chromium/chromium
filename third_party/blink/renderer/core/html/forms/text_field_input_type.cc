@@ -46,8 +46,7 @@
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/layout_details_marker.h"
-#include "third_party/blink/renderer/core/layout/layout_text_control_single_line.h"
-#include "third_party/blink/renderer/core/layout/layout_theme.h"
+#include "third_party/blink/renderer/core/layout/layout_object_factory.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
@@ -281,11 +280,13 @@ bool TextFieldInputType::TypeShouldForceLegacyLayout() const {
   return true;
 }
 
-LayoutObject* TextFieldInputType::CreateLayoutObject(const ComputedStyle&,
-                                                     LegacyLayout) const {
+LayoutObject* TextFieldInputType::CreateLayoutObject(
+    const ComputedStyle& style,
+    LegacyLayout legacy) const {
   UseCounter::Count(GetElement().GetDocument(),
                     WebFeature::kLegacyLayoutByTextControl);
-  return new LayoutTextControlSingleLine(&GetElement());
+  return LayoutObjectFactory::CreateTextControlSingleLine(GetElement(), style,
+                                                          legacy);
 }
 
 void TextFieldInputType::CreateShadowSubtree() {

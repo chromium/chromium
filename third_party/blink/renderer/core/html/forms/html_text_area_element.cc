@@ -47,7 +47,8 @@
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
 #include "third_party/blink/renderer/core/html_names.h"
-#include "third_party/blink/renderer/core/layout/layout_text_control_multi_line.h"
+#include "third_party/blink/renderer/core/layout/layout_object.h"
+#include "third_party/blink/renderer/core/layout/layout_object_factory.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -213,10 +214,11 @@ void HTMLTextAreaElement::ParseAttribute(
   }
 }
 
-LayoutObject* HTMLTextAreaElement::CreateLayoutObject(const ComputedStyle&,
-                                                      LegacyLayout) {
+LayoutObject* HTMLTextAreaElement::CreateLayoutObject(
+    const ComputedStyle& style,
+    LegacyLayout legacy) {
   UseCounter::Count(GetDocument(), WebFeature::kLegacyLayoutByTextControl);
-  return new LayoutTextControlMultiLine(this);
+  return LayoutObjectFactory::CreateTextControlMultiLine(*this, style, legacy);
 }
 
 void HTMLTextAreaElement::AppendToFormData(FormData& form_data) {

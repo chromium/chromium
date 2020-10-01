@@ -24,12 +24,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_TEXT_CONTROL_SINGLE_LINE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_TEXT_CONTROL_SINGLE_LINE_H_
 
-#include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/layout/layout_text_control.h"
 
 namespace blink {
-
-class HTMLInputElement;
 
 // LayoutObject for text-field <input>s.
 //
@@ -39,7 +36,7 @@ class HTMLInputElement;
 // base class.
 class LayoutTextControlSingleLine : public LayoutTextControl {
  public:
-  LayoutTextControlSingleLine(HTMLInputElement*);
+  explicit LayoutTextControlSingleLine(Element*);
   ~LayoutTextControlSingleLine() override;
 
  protected:

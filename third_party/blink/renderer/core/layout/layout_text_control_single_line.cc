@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
+#include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/layout_analyzer.h"
@@ -35,9 +36,10 @@
 
 namespace blink {
 
-LayoutTextControlSingleLine::LayoutTextControlSingleLine(
-    HTMLInputElement* element)
-    : LayoutTextControl(element) {}
+LayoutTextControlSingleLine::LayoutTextControlSingleLine(Element* element)
+    : LayoutTextControl(To<TextControlElement>(element)) {
+  DCHECK(IsA<HTMLInputElement>(element));
+}
 
 LayoutTextControlSingleLine::~LayoutTextControlSingleLine() = default;
 
