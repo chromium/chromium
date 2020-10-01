@@ -130,6 +130,18 @@ struct AnnotatedRegionValue {
   bool draggable;
 };
 
+// The axes which overflows should be clipped. This is not just because of
+// overflow clip, but other types of clip as well, such as control clips or
+// contain: paint.
+using OverflowClipAxes = uint8_t;
+
+enum {
+  kNoOverflowClip = 0,
+  kOverflowClipX = 1 << 0,
+  kOverflowClipY = 1 << 1,
+  kOverflowClipBothAxis = kOverflowClipX | kOverflowClipY,
+};
+
 #if DCHECK_IS_ON()
 const int kShowTreeCharacterOffset = 39;
 #endif
@@ -1581,10 +1593,6 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
     NOT_DESTROYED();
     return bitfields_.HasNonVisibleOverflow();
   }
-  bool ShouldClipOverflow() const {
-    NOT_DESTROYED();
-    return bitfields_.ShouldClipOverflow();
-  }
   bool HasClipRelatedProperty() const;
   bool IsScrollContainer() const {
     NOT_DESTROYED();
@@ -2004,9 +2012,21 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
     NOT_DESTROYED();
     bitfields_.SetHasNonVisibleOverflow(has_non_visible_overflow);
   }
-  void SetShouldClipOverflow(bool should_clip_overflow) {
+  void SetOverflowClipAxes(OverflowClipAxes axes) {
     NOT_DESTROYED();
-    bitfields_.SetShouldClipOverflow(should_clip_overflow);
+    bitfields_.SetOverflowClipAxes(axes);
+  }
+  OverflowClipAxes GetOverflowClipAxes() const {
+    NOT_DESTROYED();
+    return bitfields_.GetOverflowClipAxes();
+  }
+  bool ShouldClipOverflowAlongEitherAxis() const {
+    NOT_DESTROYED();
+    return bitfields_.GetOverflowClipAxes() != kNoOverflowClip;
+  }
+  bool ShouldClipOverflowAlongBothAxis() const {
+    NOT_DESTROYED();
+    return bitfields_.GetOverflowClipAxes() == kOverflowClipBothAxis;
   }
   void SetHasLayer(bool has_layer) {
     NOT_DESTROYED();
@@ -3636,7 +3656,6 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
           horizontal_writing_mode_(true),
           has_layer_(false),
           has_non_visible_overflow_(false),
-          should_clip_overflow_(false),
           has_transform_related_property_(false),
           has_reflection_(false),
           can_contain_fixed_position_objects_(false),
@@ -3673,7 +3692,8 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
           selection_state_(static_cast<unsigned>(SelectionState::kNone)),
           subtree_paint_property_update_reasons_(
               static_cast<unsigned>(SubtreePaintPropertyUpdateReason::kNone)),
-          background_paint_location_(kBackgroundPaintInGraphicsLayer) {}
+          background_paint_location_(kBackgroundPaintInGraphicsLayer),
+          overflow_clip_axes_(kNoOverflowClip) {}
 
     // Self needs layout for style means that this layout object is marked for a
     // full layout. This is the default layout but it is expensive as it
@@ -3832,11 +3852,6 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
     // details). Only set for LayoutBoxes and descendants.
     ADD_BOOLEAN_BITFIELD(has_non_visible_overflow_, HasNonVisibleOverflow);
 
-    // Returns whether content which overflows should be clipped. This is not
-    // just because of overflow clip, but other types of clip as well, such as
-    // control clips or contain: paint.
-    ADD_BOOLEAN_BITFIELD(should_clip_overflow_, ShouldClipOverflow);
-
     // The cached value from ComputedStyle::HasTransformRelatedProperty for
     // objects that do not ignore transform-related styles (e.g. not
     // LayoutInline, LayoutSVGBlock).
@@ -3971,6 +3986,8 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
     // in CompositeAfterPaint.
     unsigned background_paint_location_ : 2;  // BackgroundPaintLocation.
 
+    unsigned overflow_clip_axes_ : 2;
+
    public:
     bool IsOutOfFlowPositioned() const {
       return positioned_state_ == kIsOutOfFlowPositioned;
@@ -4043,6 +4060,13 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
         BackgroundPaintLocation location) {
       background_paint_location_ = static_cast<unsigned>(location);
       DCHECK_EQ(location, GetBackgroundPaintLocation());
+    }
+
+    ALWAYS_INLINE OverflowClipAxes GetOverflowClipAxes() const {
+      return static_cast<OverflowClipAxes>(overflow_clip_axes_);
+    }
+    ALWAYS_INLINE void SetOverflowClipAxes(OverflowClipAxes axes) {
+      overflow_clip_axes_ = axes;
     }
   };
 

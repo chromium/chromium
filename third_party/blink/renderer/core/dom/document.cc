@@ -2275,11 +2275,15 @@ void Document::PropagateStyleToViewport() {
       overflow_y = overflow_style->OverflowY();
       overflow_anchor = overflow_style->OverflowAnchor();
       // Visible overflow on the viewport is meaningless, and the spec says to
-      // treat it as 'auto':
+      // treat it as 'auto'. The spec also says to treat 'clip' as 'hidden'.
       if (overflow_x == EOverflow::kVisible)
         overflow_x = EOverflow::kAuto;
+      else if (overflow_x == EOverflow::kClip)
+        overflow_x = EOverflow::kHidden;
       if (overflow_y == EOverflow::kVisible)
         overflow_y = EOverflow::kAuto;
+      else if (overflow_y == EOverflow::kClip)
+        overflow_y = EOverflow::kHidden;
       if (overflow_anchor == EOverflowAnchor::kVisible)
         overflow_anchor = EOverflowAnchor::kAuto;
 

@@ -1289,11 +1289,15 @@ int Element::clientWidth() {
         GetDocument().UpdateStyleAndLayoutForNode(
             this, DocumentUpdateReason::kJavaScript);
       }
-      if (GetDocument().GetPage()->GetSettings().GetForceZeroLayoutHeight())
+      if (GetDocument().GetPage()->GetSettings().GetForceZeroLayoutHeight()) {
+        // TODO(sky): deal with OverflowClipRect() being infinite along an
+        // axis (because of overflow: clip and overflow:visible along the
+        // opposite axis).
         return AdjustForAbsoluteZoom::AdjustLayoutUnit(
                    layout_view->OverflowClipRect(PhysicalOffset()).Width(),
                    layout_view->StyleRef())
             .Round();
+      }
       return AdjustForAbsoluteZoom::AdjustLayoutUnit(
                  LayoutUnit(layout_view->GetLayoutSize().Width()),
                  layout_view->StyleRef())
@@ -1331,11 +1335,15 @@ int Element::clientHeight() {
         GetDocument().UpdateStyleAndLayoutForNode(
             this, DocumentUpdateReason::kJavaScript);
       }
-      if (GetDocument().GetPage()->GetSettings().GetForceZeroLayoutHeight())
+      if (GetDocument().GetPage()->GetSettings().GetForceZeroLayoutHeight()) {
+        // TODO(sky): deal with OverflowClipRect() being infinite along an
+        // axis (because of overflow: clip and overflow:visible along the
+        // opposite axis).
         return AdjustForAbsoluteZoom::AdjustLayoutUnit(
                    layout_view->OverflowClipRect(PhysicalOffset()).Height(),
                    layout_view->StyleRef())
             .Round();
+      }
       return AdjustForAbsoluteZoom::AdjustLayoutUnit(
                  LayoutUnit(layout_view->GetLayoutSize().Height()),
                  layout_view->StyleRef())

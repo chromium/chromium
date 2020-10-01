@@ -60,7 +60,7 @@ static bool HasNonVisibleOverflow(const PaintLayer& layer) {
   if (!layer.GetLayoutObject().IsBox())
     return false;
   const LayoutBox& box = ToLayoutBox(layer.GetLayoutObject());
-  return box.ShouldClipOverflow();
+  return box.ShouldClipOverflowAlongEitherAxis();
 }
 
 bool ClipRectsContext::ShouldRespectRootLayerClip() const {
@@ -96,11 +96,11 @@ static void ApplyClipRects(const ClipRectsContext& context,
   DCHECK(layout_object.IsBox());
   const LayoutBox& box = *ToLayoutBox(&layout_object);
 
-  DCHECK(box.ShouldClipOverflow() || box.HasClip());
+  DCHECK(box.ShouldClipOverflowAlongEitherAxis() || box.HasClip());
   LayoutView* view = box.View();
   DCHECK(view);
 
-  if (box.ShouldClipOverflow()) {
+  if (box.ShouldClipOverflowAlongEitherAxis()) {
     ClipRect new_overflow_clip =
         box.OverflowClipRect(offset, context.overlay_scrollbar_clip_behavior);
     new_overflow_clip.SetHasRadius(box.StyleRef().HasBorderRadius());
@@ -288,7 +288,7 @@ void PaintLayerClipper::CalculateRectsWithGeometryMapper(
   if (cull_rect)
     background_rect.Intersect(PhysicalRect(cull_rect->Rect()));
 
-  if (ShouldClipOverflow(context)) {
+  if (ShouldClipOverflowAlongEitherAxis(context)) {
     LayoutBoxModelObject& layout_object = layer_.GetLayoutObject();
     foreground_rect =
         ToLayoutBox(layout_object)
@@ -345,7 +345,7 @@ void PaintLayerClipper::CalculateRects(
   layer_bounds = PhysicalRect(offset, PhysicalSize(layer_.PixelSnappedSize()));
 
   // Update the clip rects that will be passed to child layers.
-  if (ShouldClipOverflow(context)) {
+  if (ShouldClipOverflowAlongEitherAxis(context)) {
     PhysicalRect overflow_and_clip_rect =
         ToLayoutBox(layout_object)
             .OverflowClipRect(offset, context.overlay_scrollbar_clip_behavior);
@@ -572,7 +572,7 @@ void PaintLayerClipper::GetOrCalculateClipRects(const ClipRectsContext& context,
     CalculateClipRects(context, clip_rects);
 }
 
-bool PaintLayerClipper::ShouldClipOverflow(
+bool PaintLayerClipper::ShouldClipOverflowAlongEitherAxis(
     const ClipRectsContext& context) const {
   if (&layer_ == context.root_layer && !context.ShouldRespectRootLayerClip())
     return false;

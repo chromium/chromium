@@ -1872,7 +1872,7 @@ bool NGBoxFragmentPainter::NodeAtPoint(const HitTestContext& hit_test,
   bool skip_children =
       layout_object &&
       layout_object == hit_test.result->GetHitTestRequest().GetStopNode();
-  if (!skip_children && box_fragment_.ShouldClipOverflow()) {
+  if (!skip_children && box_fragment_.ShouldClipOverflowAlongEitherAxis()) {
     // PaintLayer::HitTestContentsForFragments checked the fragments'
     // foreground rect for intersection if a layer is self painting,
     // so only do the overflow clip check here for non-self-painting layers.

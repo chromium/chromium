@@ -513,7 +513,7 @@ void LayoutBlock::ComputeLayoutOverflow(LayoutUnit old_client_after_edge,
   AddLayoutOverflowFromChildren();
   AddLayoutOverflowFromPositionedObjects();
 
-  if (HasNonVisibleOverflow()) {
+  if (IsScrollContainer()) {
     // When we have overflow clip, propagate the original spillout since it will
     // include collapsed bottom margins and bottom padding. Set the axis we
     // don't care about to be 1, since we want this overflow to always be
@@ -544,6 +544,8 @@ void LayoutBlock::ComputeLayoutOverflow(LayoutUnit old_client_after_edge,
       }
     }
   }
+
+  ApplyOverflowClipToLayoutOverflowRect();
 }
 
 void LayoutBlock::AddVisualOverflowFromBlockChildren() {

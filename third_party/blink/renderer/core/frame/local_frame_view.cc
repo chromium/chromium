@@ -880,9 +880,8 @@ void LocalFrameView::UpdateLayout() {
         mojom::blink::ScrollbarMode v_mode;
         GetLayoutView()->CalculateScrollbarModes(h_mode, v_mode);
         if (v_mode == mojom::blink::ScrollbarMode::kAuto) {
-          GetLayoutView()
-              ->GetScrollableArea()
-              ->ForceVerticalScrollbarForFirstLayout();
+          if (auto* scrollable_area = GetLayoutView()->GetScrollableArea())
+            scrollable_area->ForceVerticalScrollbarForFirstLayout();
         }
       }
 
@@ -1331,7 +1330,8 @@ void LocalFrameView::ViewportSizeChanged(bool width_changed,
     // clamp the scroll offset here.
     if (GetFrame().IsMainFrame()) {
       layout_view->Layer()->UpdateSize();
-      layout_view->GetScrollableArea()->ClampScrollOffsetAfterOverflowChange();
+      if (auto* scrollable_area = layout_view->GetScrollableArea())
+        scrollable_area->ClampScrollOffsetAfterOverflowChange();
     }
 
     // TODO(pdr): |UsesCompositing()| will be false with CompositeAfterPaint but
@@ -2760,7 +2760,8 @@ void LocalFrameView::RunPaintLifecyclePhase() {
                          paint_artifact_compositor_->NeedsUpdate();
     PushPaintArtifactToCompositor(repainted_layers);
     ForAllNonThrottledLocalFrameViews([this](LocalFrameView& frame_view) {
-      frame_view.GetScrollableArea()->UpdateCompositorScrollAnimations();
+      if (auto* scrollable_area = frame_view.GetScrollableArea())
+        scrollable_area->UpdateCompositorScrollAnimations();
       if (const auto* animating_scrollable_areas =
               frame_view.AnimatingScrollableAreas()) {
         for (PaintLayerScrollableArea* area : *animating_scrollable_areas)

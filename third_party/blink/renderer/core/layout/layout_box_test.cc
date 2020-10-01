@@ -392,7 +392,7 @@ TEST_P(LayoutBoxTest, ControlClip) {
   LayoutBox* target = GetLayoutBoxByElementId("target");
   EXPECT_TRUE(target->HasControlClip());
   EXPECT_TRUE(target->HasClipRelatedProperty());
-  EXPECT_TRUE(target->ShouldClipOverflow());
+  EXPECT_TRUE(target->ShouldClipOverflowAlongEitherAxis());
   EXPECT_EQ(PhysicalRect(2, 2, 96, 46), target->ClippingRect(PhysicalOffset()));
 }
 
@@ -542,7 +542,7 @@ TEST_P(LayoutBoxTest, OverflowRectsContainPaint) {
   )HTML");
 
   auto* container = GetLayoutBoxByElementId("container");
-  EXPECT_TRUE(container->ShouldClipOverflow());
+  EXPECT_TRUE(container->ShouldClipOverflowAlongEitherAxis());
   EXPECT_EQ(LayoutRect(10, 10, 300, 400), container->LayoutOverflowRect());
   EXPECT_EQ(LayoutRect(0, 0, 120, 220), container->VisualOverflowRect());
   EXPECT_EQ(LayoutRect(0, 0, 120, 220), container->SelfVisualOverflowRect());
@@ -561,7 +561,7 @@ TEST_P(LayoutBoxTest, OverflowRectsOverflowHidden) {
   )HTML");
 
   auto* container = GetLayoutBoxByElementId("container");
-  EXPECT_TRUE(container->ShouldClipOverflow());
+  EXPECT_TRUE(container->ShouldClipOverflowAlongEitherAxis());
   EXPECT_EQ(LayoutRect(10, 10, 300, 400), container->LayoutOverflowRect());
   EXPECT_EQ(LayoutRect(0, 0, 120, 220), container->VisualOverflowRect());
   EXPECT_EQ(LayoutRect(0, 0, 120, 220), container->SelfVisualOverflowRect());

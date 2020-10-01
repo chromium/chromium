@@ -56,9 +56,9 @@ class LayoutVideo final : public LayoutMedia {
 
   void IntrinsicSizeChanged() override;
 
-  bool ComputeShouldClipOverflow() const final {
+  OverflowClipAxes ComputeOverflowClipAxes() const final {
     NOT_DESTROYED();
-    return true;
+    return kOverflowClipBothAxis;
   }
 
  private:

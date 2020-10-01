@@ -181,7 +181,7 @@ class CORE_EXPORT NGPaintFragment : public RefCounted<NGPaintFragment>,
   bool IsScrollContainer() const {
     return PhysicalFragment().IsScrollContainer();
   }
-  bool ShouldClipOverflow() const;
+  bool ShouldClipOverflowAlongEitherAxis() const;
   bool HasSelfPaintingLayer() const;
 
   // Set ShouldDoFullPaintInvalidation flag in the corresponding LayoutObject.

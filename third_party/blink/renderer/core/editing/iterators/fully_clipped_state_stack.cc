@@ -18,7 +18,7 @@ namespace {
 inline bool FullyClipsContents(const Node* node) {
   LayoutObject* layout_object = node->GetLayoutObject();
   if (!layout_object || !layout_object->IsBox() ||
-      !layout_object->HasNonVisibleOverflow() || IsA<LayoutView>(layout_object))
+      !layout_object->IsScrollContainer() || IsA<LayoutView>(layout_object))
     return false;
   return ToLayoutBox(layout_object)->Size().IsEmpty();
 }

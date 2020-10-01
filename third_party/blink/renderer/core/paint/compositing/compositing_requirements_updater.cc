@@ -427,7 +427,7 @@ void CompositingRequirementsUpdater::UpdateRecursive(
       (!layer->DescendantHasDirectOrScrollingCompositingReason() &&
        !needs_recursion_for_composited_scrolling_plus_fixed_or_sticky &&
        !needs_recursion_for_out_of_flow_descendant &&
-       layer->GetLayoutObject().ShouldClipOverflow() &&
+       layer->GetLayoutObject().ShouldClipOverflowAlongEitherAxis() &&
        !layer->HasCompositingDescendant() &&
        !layer->DescendantMayNeedCompositingRequirementsUpdate());
 

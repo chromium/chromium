@@ -374,7 +374,7 @@ void LayoutTableCell::SetIsSpanningCollapsedRow(bool spanning_collapsed_row) {
   NOT_DESTROYED();
   if (is_spanning_collapsed_row_ != spanning_collapsed_row) {
     is_spanning_collapsed_row_ = spanning_collapsed_row;
-    SetShouldClipOverflow(ComputeShouldClipOverflow());
+    SetOverflowClipAxes(ComputeOverflowClipAxes());
   }
 }
 
@@ -383,7 +383,7 @@ void LayoutTableCell::SetIsSpanningCollapsedColumn(
   NOT_DESTROYED();
   if (is_spanning_collapsed_column_ != spanning_collapsed_column) {
     is_spanning_collapsed_column_ = spanning_collapsed_column;
-    SetShouldClipOverflow(ComputeShouldClipOverflow());
+    SetOverflowClipAxes(ComputeOverflowClipAxes());
   }
 }
 
@@ -439,10 +439,11 @@ void LayoutTableCell::ComputeVisualOverflow(bool recompute_floats) {
   collapsed_border_values_->SetLocalVisualRect(rect);
 }
 
-bool LayoutTableCell::ComputeShouldClipOverflow() const {
+OverflowClipAxes LayoutTableCell::ComputeOverflowClipAxes() const {
   NOT_DESTROYED();
-  return IsSpanningCollapsedRow() || IsSpanningCollapsedColumn() ||
-         LayoutBox::ComputeShouldClipOverflow();
+  if (IsSpanningCollapsedRow() || IsSpanningCollapsedColumn())
+    return kOverflowClipBothAxis;
+  return LayoutBox::ComputeOverflowClipAxes();
 }
 
 LayoutUnit LayoutTableCell::CellBaselinePosition() const {

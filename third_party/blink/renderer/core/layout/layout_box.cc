@@ -482,7 +482,7 @@ void LayoutBox::StyleDidChange(StyleDifference diff,
     ClearPercentHeightDescendants();
   }
 
-  SetShouldClipOverflow(ComputeShouldClipOverflow());
+  SetOverflowClipAxes(ComputeOverflowClipAxes());
 
   // If our zoom factor changes and we have a defined scrollLeft/Top, we need to
   // adjust that value into the new zoomed coordinate space.  Note that the new
@@ -527,7 +527,7 @@ void LayoutBox::StyleDidChange(StyleDifference diff,
 
     UpdateScrollSnapMappingAfterStyleChange(*old_style);
 
-    if (ShouldClipOverflow()) {
+    if (ShouldClipOverflowAlongEitherAxis()) {
       // The overflow clip paint property depends on border sizes through
       // overflowClipRect(), and border radii, so we update properties on
       // border size or radii change.
@@ -1657,7 +1657,7 @@ LayoutSize LayoutBox::PixelSnappedScrolledContentOffset() const {
 PhysicalRect LayoutBox::ClippingRect(const PhysicalOffset& location) const {
   NOT_DESTROYED();
   PhysicalRect result(PhysicalRect::InfiniteIntRect());
-  if (ShouldClipOverflow())
+  if (ShouldClipOverflowAlongEitherAxis())
     result = OverflowClipRect(location);
 
   if (HasClip())
@@ -2171,7 +2171,7 @@ bool LayoutBox::NodeAtPoint(HitTestResult& result,
 
   bool skip_children = (result.GetHitTestRequest().GetStopNode() == this) ||
                        ChildPaintBlockedByDisplayLock();
-  if (!skip_children && ShouldClipOverflow()) {
+  if (!skip_children && ShouldClipOverflowAlongEitherAxis()) {
     // PaintLayer::HitTestContentsForFragments checked the fragments'
     // foreground rect for intersection if a layer is self painting,
     // so only do the overflow clip check here for non-self-painting layers.
@@ -2329,7 +2329,7 @@ bool LayoutBox::BackgroundIsKnownToBeOpaqueInRect(
 bool LayoutBox::TextIsKnownToBeOnOpaqueBackground() const {
   NOT_DESTROYED();
   // Text may overflow the background area.
-  if (!ShouldClipOverflow())
+  if (!ShouldClipOverflowAlongEitherAxis())
     return false;
   // Same as BackgroundIsKnownToBeOpaqueInRect() about appearance.
   if (StyleRef().HasEffectiveAppearance())
@@ -2620,11 +2620,23 @@ PhysicalRect LayoutBox::OverflowClipRect(
     // RootScrollerController::IsValidRootScroller()
     clip_rect = PhysicalRect(location, View()->ViewRect().size);
   } else {
-    // FIXME: When overflow-clip (CSS3) is implemented, we'll obtain the
-    // property here.
     clip_rect = PhysicalBorderBoxRect();
-    clip_rect.Move(location);
     clip_rect.Contract(BorderBoxOutsets());
+    clip_rect.Move(location);
+    if (HasNonVisibleOverflow()) {
+      const auto overflow_clip = GetOverflowClipAxes();
+      if (overflow_clip != kOverflowClipBothAxis) {
+        auto infinite_rect = LayoutRect::InfiniteIntRect();
+        if ((overflow_clip & kOverflowClipX) == kNoOverflowClip) {
+          clip_rect.offset.left = LayoutUnit(infinite_rect.X());
+          clip_rect.size.width = LayoutUnit(infinite_rect.Width());
+        }
+        if ((overflow_clip & kOverflowClipY) == kNoOverflowClip) {
+          clip_rect.offset.top = LayoutUnit(infinite_rect.Y());
+          clip_rect.size.height = LayoutUnit(infinite_rect.Height());
+        }
+      }
+    }
   }
 
   if (IsScrollContainer())
@@ -6939,7 +6951,7 @@ LayoutRect LayoutBox::LayoutOverflowRectForPropagation(
   // Only propagate interior layout overflow if we don't clip it.
   LayoutRect rect = BorderBoxRect();
 
-  if (!ShouldClipOverflow() && !ShouldApplyLayoutContainment())
+  if (!ShouldApplyLayoutContainment() && !ShouldClipOverflowAlongBothAxis())
     rect.Unite(LayoutOverflowRect());
 
   bool has_transform = HasLayer() && Layer()->Transform();
@@ -6980,7 +6992,7 @@ LayoutRect LayoutBox::VisualOverflowRect() const {
   NOT_DESTROYED();
   if (!VisualOverflowIsSet())
     return BorderBoxRect();
-  if (ShouldClipOverflow() || HasMask())
+  if (ShouldClipOverflowAlongEitherAxis() || HasMask())
     return overflow_->visual_overflow->SelfVisualOverflowRect();
   return UnionRect(overflow_->visual_overflow->SelfVisualOverflowRect(),
                    overflow_->visual_overflow->ContentsVisualOverflowRect());
@@ -7426,10 +7438,42 @@ PhysicalRect LayoutBox::DebugRect() const {
   return PhysicalRect(PhysicalLocation(), Size());
 }
 
-bool LayoutBox::ComputeShouldClipOverflow() const {
+void LayoutBox::ApplyOverflowClipToLayoutOverflowRect() {
   NOT_DESTROYED();
-  return HasNonVisibleOverflow() || ShouldApplyPaintContainment() ||
-         HasControlClip();
+  if (!HasNonVisibleOverflow() || IsScrollContainer() ||
+      !LayoutOverflowIsSet()) {
+    return;
+  }
+
+  const OverflowClipAxes overflow_clip_axes = GetOverflowClipAxes();
+  if (overflow_clip_axes == kNoOverflowClip)
+    return;
+
+  const LayoutRect no_overflow_rect = NoOverflowRect();
+  LayoutRect overflow_rect = overflow_->layout_overflow->LayoutOverflowRect();
+  if (overflow_clip_axes & kOverflowClipX) {
+    overflow_rect.SetX(no_overflow_rect.X());
+    overflow_rect.SetWidth(no_overflow_rect.Width());
+  }
+  if (overflow_clip_axes & kOverflowClipY) {
+    overflow_rect.SetY(no_overflow_rect.Y());
+    overflow_rect.SetHeight(no_overflow_rect.Height());
+  }
+  overflow_->layout_overflow->SetLayoutOverflow(overflow_rect);
+}
+
+OverflowClipAxes LayoutBox::ComputeOverflowClipAxes() const {
+  NOT_DESTROYED();
+  if (ShouldApplyPaintContainment() || HasControlClip())
+    return kOverflowClipBothAxis;
+  if (!HasNonVisibleOverflow())
+    return kNoOverflowClip;
+  if (IsScrollContainer())
+    return kOverflowClipBothAxis;
+  return (StyleRef().OverflowX() == EOverflow::kVisible ? kNoOverflowClip
+                                                        : kOverflowClipX) |
+         (StyleRef().OverflowY() == EOverflow::kVisible ? kNoOverflowClip
+                                                        : kOverflowClipY);
 }
 
 void LayoutBox::MutableForPainting::SavePreviousOverflowData() {

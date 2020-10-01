@@ -212,7 +212,8 @@ class CORE_EXPORT PaintLayerClipper {
 
   void GetOrCalculateClipRects(const ClipRectsContext&, ClipRects&) const;
 
-  ALWAYS_INLINE bool ShouldClipOverflow(const ClipRectsContext&) const;
+  ALWAYS_INLINE bool ShouldClipOverflowAlongEitherAxis(
+      const ClipRectsContext&) const;
 
   // Returned clip rect in |output| is in the space of the context's rootLayer.
   ALWAYS_INLINE void CalculateBackgroundClipRectWithGeometryMapper(

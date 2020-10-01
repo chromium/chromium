@@ -1370,16 +1370,12 @@ crbug.com/680331 external/wpt/css/css-writing-modes/wm-propagation-body-055.html
 crbug.com/680331 external/wpt/css/cssom-view/scrollIntoView-sideways-lr-writing-mode-and-rtl-direction.html [ Skip ]
 crbug.com/680331 external/wpt/css/cssom-view/scrollIntoView-sideways-rl-writing-mode-and-rtl-direction.html [ Skip ]
 
-# 'overflow: clip' not implemented.
-crbug.com/966283 external/wpt/css/css-overflow/clip-001.html [ Skip ]
-crbug.com/966283 external/wpt/css/css-overflow/clip-002.html [ Skip ]
+# The expected results of this test are actually wrong, and the output of Blink
+# depends upon whether ng or non-ng is used. This should be fixed by adding the
+# ability for horizontal scrollbars to be dependent upon vertical scrollbars.
 crbug.com/966283 external/wpt/css/css-overflow/clip-003.html [ Skip ]
-crbug.com/966283 external/wpt/css/css-overflow/clip-004.html [ Skip ]
-crbug.com/966283 external/wpt/css/css-overflow/clip-005.html [ Skip ]
-crbug.com/966283 external/wpt/css/css-overflow/dynamic-visible-to-clip-001.html [ Skip ]
-crbug.com/966283 external/wpt/css/css-overflow/overflow-body-propagation-007.html [ Skip ]
+# TODO(sky): I believe the ref and test shouldn't actually match. Fix.
 crbug.com/966283 external/wpt/css/css-overflow/overflow-body-propagation-008.html [ Skip ]
-crbug.com/966283 external/wpt/css/css-overflow/overflow-body-propagation-009.html [ Skip ]
 
 # Requires --use-fake-ui-for-media-stream to run.
 external/wpt/mediacapture-streams/MediaStream-default-feature-policy.https.html [ Skip ]

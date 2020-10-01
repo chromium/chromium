@@ -226,13 +226,18 @@ TEST(CSSParserFastPathsTest, ParseColorWithDecimal) {
 }
 
 TEST(CSSParserFastPathsTest, IsValidKeywordPropertyAndValueOverflowClip) {
-  EXPECT_FALSE(CSSParserFastPaths::IsValidKeywordPropertyAndValue(
-      CSSPropertyID::kOverflowX, CSSValueID::kClip,
-      CSSParserMode::kHTMLStandardMode));
-  ScopedOverflowClipForTest overflow_clip_feature_enabler(true);
-  EXPECT_TRUE(CSSParserFastPaths::IsValidKeywordPropertyAndValue(
-      CSSPropertyID::kOverflowX, CSSValueID::kClip,
-      CSSParserMode::kHTMLStandardMode));
+  {
+    ScopedOverflowClipForTest overflow_clip_feature_enabler(false);
+    EXPECT_FALSE(CSSParserFastPaths::IsValidKeywordPropertyAndValue(
+        CSSPropertyID::kOverflowX, CSSValueID::kClip,
+        CSSParserMode::kHTMLStandardMode));
+  }
+  {
+    ScopedOverflowClipForTest overflow_clip_feature_enabler(true);
+    EXPECT_TRUE(CSSParserFastPaths::IsValidKeywordPropertyAndValue(
+        CSSPropertyID::kOverflowX, CSSValueID::kClip,
+        CSSParserMode::kHTMLStandardMode));
+  }
 }
 
 }  // namespace blink

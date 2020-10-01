@@ -728,11 +728,11 @@ void LayoutView::CalculateScrollbarModes(
       RETURN_SCROLLBAR_MODE(mojom::blink::ScrollbarMode::kAlwaysOff);
   }
 
-  Element* viewportDefiningElement = document.ViewportDefiningElement();
-  if (!viewportDefiningElement)
+  Element* viewport_defining_element = document.ViewportDefiningElement();
+  if (!viewport_defining_element)
     RETURN_SCROLLBAR_MODE(mojom::blink::ScrollbarMode::kAuto);
 
-  LayoutObject* viewport = viewportDefiningElement->GetLayoutObject();
+  LayoutObject* viewport = viewport_defining_element->GetLayoutObject();
   if (!viewport)
     RETURN_SCROLLBAR_MODE(mojom::blink::ScrollbarMode::kAuto);
 
@@ -757,16 +757,16 @@ void LayoutView::CalculateScrollbarModes(
   EOverflow overflow_x = style->OverflowX();
   EOverflow overflow_y = style->OverflowY();
 
-  bool shouldIgnoreOverflowHidden = false;
+  bool should_ignore_overflow_hidden = false;
   if (Settings* settings = document.GetSettings()) {
     if (settings->GetIgnoreMainFrameOverflowHiddenQuirk() &&
         frame->IsMainFrame())
-      shouldIgnoreOverflowHidden = true;
+      should_ignore_overflow_hidden = true;
   }
-  if (!shouldIgnoreOverflowHidden) {
-    if (overflow_x == EOverflow::kHidden)
+  if (!should_ignore_overflow_hidden) {
+    if (overflow_x == EOverflow::kHidden || overflow_x == EOverflow::kClip)
       h_mode = mojom::blink::ScrollbarMode::kAlwaysOff;
-    if (overflow_y == EOverflow::kHidden)
+    if (overflow_y == EOverflow::kHidden || overflow_y == EOverflow::kClip)
       v_mode = mojom::blink::ScrollbarMode::kAlwaysOff;
   }
 
@@ -799,7 +799,8 @@ IntSize LayoutView::GetLayoutSize(
     return IntSize();
 
   IntSize result = frame_view_->GetLayoutSize();
-  if (scrollbar_inclusion == kExcludeScrollbars)
+  if (scrollbar_inclusion == kExcludeScrollbars &&
+      frame_view_->LayoutViewport())
     result = frame_view_->LayoutViewport()->ExcludeScrollbars(result);
   return result;
 }

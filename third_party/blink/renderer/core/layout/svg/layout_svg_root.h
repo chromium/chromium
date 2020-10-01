@@ -114,9 +114,11 @@ class CORE_EXPORT LayoutSVGRoot final : public LayoutReplaced {
   }
 
  private:
-  bool ComputeShouldClipOverflow() const override {
+  OverflowClipAxes ComputeOverflowClipAxes() const override {
     NOT_DESTROYED();
-    return LayoutBox::ComputeShouldClipOverflow() || ShouldApplyViewportClip();
+    if (ShouldApplyViewportClip())
+      return kOverflowClipBothAxis;
+    return LayoutBox::ComputeOverflowClipAxes();
   }
   LayoutRect ComputeContentsVisualOverflow() const;
 

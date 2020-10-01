@@ -481,7 +481,7 @@ class CORE_EXPORT LayoutTableCell : public LayoutBlockFlow,
   void PaintMask(const PaintInfo&,
                  const PhysicalOffset& paint_offset) const override;
 
-  bool ComputeShouldClipOverflow() const override;
+  OverflowClipAxes ComputeOverflowClipAxes() const override;
 
   using CollapsedBorderValuesMethod =
       const CollapsedBorderValue& (CollapsedBorderValues::*)() const;

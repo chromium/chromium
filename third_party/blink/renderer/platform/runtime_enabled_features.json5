@@ -1367,6 +1367,7 @@
     },
     {
       name: "OverflowClip",
+      status: "test",
     },
     {
       name: "OverscrollCustomization",
