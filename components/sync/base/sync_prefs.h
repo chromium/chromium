@@ -184,8 +184,7 @@ class SyncPrefs : public CryptoSyncPrefs,
   void SetManagedForTest(bool is_managed);
 
   // Get/set for the last known sync invalidation versions.
-  void GetInvalidationVersions(
-      std::map<ModelType, int64_t>* invalidation_versions) const;
+  std::map<ModelType, int64_t> GetInvalidationVersions() const;
   void UpdateInvalidationVersions(
       const std::map<ModelType, int64_t>& invalidation_versions);
 

@@ -10,8 +10,8 @@ MockDebugInfoGetter::MockDebugInfoGetter() {}
 
 MockDebugInfoGetter::~MockDebugInfoGetter() {}
 
-void MockDebugInfoGetter::GetDebugInfo(sync_pb::DebugInfo* debug_info) {
-  debug_info->CopyFrom(debug_info_);
+sync_pb::DebugInfo MockDebugInfoGetter::GetDebugInfo() const {
+  return debug_info_;
 }
 
 void MockDebugInfoGetter::ClearDebugInfo() {

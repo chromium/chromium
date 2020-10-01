@@ -249,7 +249,7 @@ class SyncEngineImplTest : public testing::Test {
     params.http_factory_getter = base::BindOnce(&CreateHttpBridgeFactory);
     params.authenticated_account_id = CoreAccountId("account_id");
     params.sync_manager_factory = std::move(fake_manager_factory_);
-    sync_prefs_->GetInvalidationVersions(&params.invalidation_versions);
+    params.invalidation_versions = sync_prefs_->GetInvalidationVersions();
 
     backend_->Initialize(std::move(params));
 

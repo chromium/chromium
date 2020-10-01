@@ -142,16 +142,15 @@ bool ModelTypeWorker::IsInitialSyncEnded() const {
   return model_type_state_.initial_sync_done();
 }
 
-void ModelTypeWorker::GetDownloadProgress(
-    sync_pb::DataTypeProgressMarker* progress_marker) const {
+const sync_pb::DataTypeProgressMarker& ModelTypeWorker::GetDownloadProgress()
+    const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  progress_marker->CopyFrom(model_type_state_.progress_marker());
+  return model_type_state_.progress_marker();
 }
 
-void ModelTypeWorker::GetDataTypeContext(
-    sync_pb::DataTypeContext* context) const {
+const sync_pb::DataTypeContext& ModelTypeWorker::GetDataTypeContext() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  context->CopyFrom(model_type_state_.type_context());
+  return model_type_state_.type_context();
 }
 
 SyncerError ModelTypeWorker::ProcessGetUpdatesResponse(

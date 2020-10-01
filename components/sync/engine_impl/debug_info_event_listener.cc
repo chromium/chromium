@@ -141,20 +141,20 @@ void DebugInfoEventListener::OnNudgeFromDatatype(ModelType datatype) {
   AddEventToQueue(event_info);
 }
 
-void DebugInfoEventListener::GetDebugInfo(sync_pb::DebugInfo* debug_info) {
+sync_pb::DebugInfo DebugInfoEventListener::GetDebugInfo() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_LE(events_.size(), kMaxEntries);
 
-  for (DebugEventInfoQueue::const_iterator iter = events_.begin();
-       iter != events_.end(); ++iter) {
-    sync_pb::DebugEventInfo* event_info = debug_info->add_events();
-    event_info->CopyFrom(*iter);
+  sync_pb::DebugInfo debug_info;
+  for (const sync_pb::DebugEventInfo& event : events_) {
+    *debug_info.add_events() = event;
   }
 
-  debug_info->set_events_dropped(events_dropped_);
-  debug_info->set_cryptographer_ready(cryptographer_can_encrypt_);
-  debug_info->set_cryptographer_has_pending_keys(
+  debug_info.set_events_dropped(events_dropped_);
+  debug_info.set_cryptographer_ready(cryptographer_can_encrypt_);
+  debug_info.set_cryptographer_has_pending_keys(
       cryptographer_has_pending_keys_);
+  return debug_info;
 }
 
 void DebugInfoEventListener::ClearDebugInfo() {

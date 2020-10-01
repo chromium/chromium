@@ -155,8 +155,8 @@ SyncerError Commit::PostAndProcessResponse(
   }
 
   if (cycle->context()->debug_info_getter()) {
-    sync_pb::DebugInfo* debug_info = message_.mutable_debug_info();
-    cycle->context()->debug_info_getter()->GetDebugInfo(debug_info);
+    *message_.mutable_debug_info() =
+        cycle->context()->debug_info_getter()->GetDebugInfo();
   }
 
   DVLOG(1) << "Sending commit message.";

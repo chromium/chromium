@@ -685,12 +685,11 @@ bool SyncPrefs::GetDecoupledFromAndroidMasterSync() {
 }
 #endif  // defined(OS_ANDROID)
 
-void SyncPrefs::GetInvalidationVersions(
-    std::map<ModelType, int64_t>* invalidation_versions) const {
+std::map<ModelType, int64_t> SyncPrefs::GetInvalidationVersions() const {
+  std::map<ModelType, int64_t> invalidation_versions;
   const base::DictionaryValue* invalidation_dictionary =
       pref_service_->GetDictionary(prefs::kSyncInvalidationVersions);
-  ModelTypeSet protocol_types = ProtocolTypes();
-  for (ModelType type : protocol_types) {
+  for (ModelType type : ProtocolTypes()) {
     std::string key = ModelTypeToString(type);
     std::string version_str;
     if (!invalidation_dictionary->GetString(key, &version_str))
@@ -698,8 +697,9 @@ void SyncPrefs::GetInvalidationVersions(
     int64_t version = 0;
     if (!base::StringToInt64(version_str, &version))
       continue;
-    (*invalidation_versions)[type] = version;
+    invalidation_versions[type] = version;
   }
+  return invalidation_versions;
 }
 
 void SyncPrefs::UpdateInvalidationVersions(

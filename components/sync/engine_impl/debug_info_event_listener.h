@@ -74,7 +74,7 @@ class DebugInfoEventListener : public SyncManager::Observer,
   void OnNudgeFromDatatype(ModelType datatype);
 
   // DebugInfoGetter implementation.
-  void GetDebugInfo(sync_pb::DebugInfo* debug_info) override;
+  sync_pb::DebugInfo GetDebugInfo() const override;
 
   // DebugInfoGetter implementation.
   void ClearDebugInfo() override;

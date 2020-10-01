@@ -22,14 +22,13 @@ bool MockUpdateHandler::IsInitialSyncEnded() const {
   return false;
 }
 
-void MockUpdateHandler::GetDownloadProgress(
-    sync_pb::DataTypeProgressMarker* progress_marker) const {
-  progress_marker->CopyFrom(progress_marker_);
+const sync_pb::DataTypeProgressMarker& MockUpdateHandler::GetDownloadProgress()
+    const {
+  return progress_marker_;
 }
 
-void MockUpdateHandler::GetDataTypeContext(
-    sync_pb::DataTypeContext* context) const {
-  context->Clear();
+const sync_pb::DataTypeContext& MockUpdateHandler::GetDataTypeContext() const {
+  return kEmptyDataTypeContext;
 }
 
 SyncerError MockUpdateHandler::ProcessGetUpdatesResponse(

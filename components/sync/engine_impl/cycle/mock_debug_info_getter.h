@@ -20,7 +20,7 @@ class MockDebugInfoGetter : public DebugInfoGetter {
   ~MockDebugInfoGetter() override;
 
   // DebugInfoGetter implementation.
-  void GetDebugInfo(sync_pb::DebugInfo* debug_info) override;
+  sync_pb::DebugInfo GetDebugInfo() const override;
   void ClearDebugInfo() override;
 
   void AddDebugEvent();

@@ -73,8 +73,8 @@ TEST_F(SyncPrefsTest, InvalidationVersions) {
 
   sync_prefs_->UpdateInvalidationVersions(versions);
 
-  std::map<ModelType, int64_t> versions2;
-  sync_prefs_->GetInvalidationVersions(&versions2);
+  std::map<ModelType, int64_t> versions2 =
+      sync_prefs_->GetInvalidationVersions();
 
   EXPECT_EQ(versions.size(), versions2.size());
   for (auto map_iter : versions2) {

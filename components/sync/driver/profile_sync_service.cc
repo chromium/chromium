@@ -618,7 +618,7 @@ void ProfileSyncService::StartUpSlowEngineComponents() {
   params.engine_components_factory =
       std::make_unique<EngineComponentsFactoryImpl>(
           EngineSwitchesFromCommandLine());
-  sync_prefs_.GetInvalidationVersions(&params.invalidation_versions);
+  params.invalidation_versions = sync_prefs_.GetInvalidationVersions();
   params.poll_interval = sync_prefs_.GetPollInterval();
   if (params.poll_interval.is_zero()) {
     params.poll_interval =

@@ -28,8 +28,7 @@ TEST_F(DebugInfoEventListenerTest, VerifyQueueSize) {
     debug_info_event_listener.CreateAndAddEvent(
         sync_pb::SyncEnums::ENCRYPTION_COMPLETE);
   }
-  sync_pb::DebugInfo debug_info;
-  debug_info_event_listener.GetDebugInfo(&debug_info);
+  sync_pb::DebugInfo debug_info = debug_info_event_listener.GetDebugInfo();
   debug_info_event_listener.ClearDebugInfo();
   ASSERT_TRUE(debug_info.events_dropped());
   ASSERT_EQ(static_cast<int>(kMaxEntries), debug_info.events_size());
@@ -40,8 +39,7 @@ TEST_F(DebugInfoEventListenerTest, VerifyGetEvents) {
   debug_info_event_listener.CreateAndAddEvent(
       sync_pb::SyncEnums::ENCRYPTION_COMPLETE);
   ASSERT_EQ(debug_info_event_listener.events_.size(), 1U);
-  sync_pb::DebugInfo debug_info;
-  debug_info_event_listener.GetDebugInfo(&debug_info);
+  sync_pb::DebugInfo debug_info = debug_info_event_listener.GetDebugInfo();
   ASSERT_EQ(debug_info_event_listener.events_.size(), 1U);
   ASSERT_EQ(debug_info.events_size(), 1);
   ASSERT_TRUE(debug_info.events(0).has_singleton_event());

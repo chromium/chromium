@@ -479,20 +479,4 @@ class DownloadUpdatesDebugInfoTest : public ::testing::Test {
   MockDebugInfoGetter debug_info_getter_;
 };
 
-// Verify CopyClientDebugInfo when there are no events to upload.
-TEST_F(DownloadUpdatesDebugInfoTest, VerifyCopyClientDebugInfo_Empty) {
-  sync_pb::DebugInfo debug_info;
-  GetUpdatesProcessor::CopyClientDebugInfo(debug_info_getter(), &debug_info);
-  EXPECT_EQ(0, debug_info.events_size());
-}
-
-TEST_F(DownloadUpdatesDebugInfoTest, VerifyCopyOverwrites) {
-  sync_pb::DebugInfo debug_info;
-  AddDebugEvent();
-  GetUpdatesProcessor::CopyClientDebugInfo(debug_info_getter(), &debug_info);
-  EXPECT_EQ(1, debug_info.events_size());
-  GetUpdatesProcessor::CopyClientDebugInfo(debug_info_getter(), &debug_info);
-  EXPECT_EQ(1, debug_info.events_size());
-}
-
 }  // namespace syncer

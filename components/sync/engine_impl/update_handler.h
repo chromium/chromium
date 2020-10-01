@@ -25,19 +25,17 @@ class StatusController;
 // from the sync server.
 class UpdateHandler {
  public:
-  UpdateHandler();
-  virtual ~UpdateHandler() = 0;
+  virtual ~UpdateHandler() = default;
 
   // Returns true if initial sync was performed for this type.
   virtual bool IsInitialSyncEnded() const = 0;
 
-  // Fills the given parameter with the stored progress marker for this type.
-  virtual void GetDownloadProgress(
-      sync_pb::DataTypeProgressMarker* progress_marker) const = 0;
+  // Returns the stored progress marker for this type.
+  virtual const sync_pb::DataTypeProgressMarker& GetDownloadProgress()
+      const = 0;
 
-  // Fills |context| with the per-client datatype context, if one exists. Clears
-  // |context| otherwise.
-  virtual void GetDataTypeContext(sync_pb::DataTypeContext* context) const = 0;
+  // Returns the per-client datatype context.
+  virtual const sync_pb::DataTypeContext& GetDataTypeContext() const = 0;
 
   // Processes the contents of a GetUpdates response message.
   //

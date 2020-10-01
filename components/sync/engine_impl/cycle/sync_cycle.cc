@@ -33,8 +33,8 @@ SyncCycleSnapshot SyncCycle::TakeSnapshotWithOrigin(
     if (update_handler == nullptr) {
       continue;
     }
-    sync_pb::DataTypeProgressMarker progress_marker;
-    update_handler->GetDownloadProgress(&progress_marker);
+    sync_pb::DataTypeProgressMarker progress_marker =
+        update_handler->GetDownloadProgress();
     download_progress_markers[type] = progress_marker.SerializeAsString();
   }
 

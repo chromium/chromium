@@ -21,7 +21,6 @@ class GetUpdatesResponse;
 
 namespace syncer {
 
-class DebugInfoGetter;
 class GetUpdatesDelegate;
 class StatusController;
 class SyncCycle;
@@ -71,9 +70,6 @@ class GetUpdatesProcessor {
       const ModelTypeSet& gu_types,
       const sync_pb::GetUpdatesResponse& gu_response,
       StatusController* status_controller);
-
-  static void CopyClientDebugInfo(DebugInfoGetter* debug_info_getter,
-                                  sync_pb::DebugInfo* debug_info);
 
   FRIEND_TEST_ALL_PREFIXES(GetUpdatesProcessorTest, BookmarkNudge);
   FRIEND_TEST_ALL_PREFIXES(GetUpdatesProcessorTest, NotifyMany);

@@ -15,7 +15,7 @@ class DebugInfoGetter {
  public:
   // Gets the client debug info. Be sure to clear the info to ensure the data
   // isn't sent multiple times.
-  virtual void GetDebugInfo(sync_pb::DebugInfo* debug_info) = 0;
+  virtual sync_pb::DebugInfo GetDebugInfo() const = 0;
 
   // Clears the debug info.
   virtual void ClearDebugInfo() = 0;
