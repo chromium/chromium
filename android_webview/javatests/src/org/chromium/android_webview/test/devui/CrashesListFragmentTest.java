@@ -76,6 +76,7 @@ import org.chromium.android_webview.devui.util.WebViewPackageHelper;
 import org.chromium.android_webview.test.AwJUnit4ClassRunner;
 import org.chromium.base.Callback;
 import org.chromium.base.FileUtils;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.components.minidump_uploader.CrashFileManager;
@@ -95,6 +96,7 @@ import java.util.concurrent.TimeUnit;
  */
 @LargeTest
 @RunWith(AwJUnit4ClassRunner.class)
+@Batch(Batch.PER_CLASS)
 public class CrashesListFragmentTest {
     private static final String FAKE_APP_PACKAGE_NAME = "com.test.some_package";
     private static final String CRASH_REPORT_BUTTON_TEXT = "File bug report";

@@ -45,6 +45,7 @@ import org.chromium.android_webview.devui.FlagsFragment;
 import org.chromium.android_webview.devui.MainActivity;
 import org.chromium.android_webview.devui.R;
 import org.chromium.android_webview.test.AwJUnit4ClassRunner;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -53,6 +54,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
  * UI tests for {@link FlagsFragment}.
  */
 @RunWith(AwJUnit4ClassRunner.class)
+@Batch(Batch.PER_CLASS)
 public class FlagsFragmentTest {
     @Rule
     public ActivityTestRule mRule =

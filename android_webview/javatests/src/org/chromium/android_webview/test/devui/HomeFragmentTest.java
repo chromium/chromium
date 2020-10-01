@@ -49,6 +49,7 @@ import org.chromium.android_webview.devui.R;
 import org.chromium.android_webview.devui.WebViewPackageError;
 import org.chromium.android_webview.devui.util.WebViewPackageHelper;
 import org.chromium.android_webview.test.AwJUnit4ClassRunner;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 
 import java.util.Locale;
@@ -57,6 +58,7 @@ import java.util.Locale;
  * UI tests for the developer UI's HomeFragment.
  */
 @RunWith(AwJUnit4ClassRunner.class)
+@Batch(Batch.PER_CLASS)
 public class HomeFragmentTest {
     public static final PackageInfo FAKE_WEBVIEW_PACKAGE = new PackageInfo();
     static {
