@@ -248,6 +248,11 @@ class V8PerFrameMemoryDecorator
       public ProcessNode::ObserverDefaultImpl,
       public NodeDataDescriberDefaultImpl {
  public:
+  // A priority queue of memory requests. The decorator will hold a global
+  // queue of requests that measure every process, and each ProcessNode will
+  // have a queue of requests that measure only that process.
+  class MeasurementRequestQueue;
+
   V8PerFrameMemoryDecorator();
   ~V8PerFrameMemoryDecorator() override;
 
@@ -261,23 +266,27 @@ class V8PerFrameMemoryDecorator
 
   // ProcessNodeObserver overrides.
   void OnProcessNodeAdded(const ProcessNode* process_node) override;
+  void OnBeforeProcessNodeRemoved(const ProcessNode* process_node) override;
 
   // NodeDataDescriber overrides.
   base::Value DescribeFrameNodeData(const FrameNode* node) const override;
   base::Value DescribeProcessNodeData(const ProcessNode* node) const override;
 
   // Returns the next measurement request that should be scheduled.
-  V8PerFrameMemoryRequest* GetNextRequest() const;
+  const V8PerFrameMemoryRequest* GetNextRequest() const;
 
   // Returns the next measurement request with mode kBounded or
   // kEagerForTesting that should be scheduled.
-  V8PerFrameMemoryRequest* GetNextBoundedRequest() const;
+  const V8PerFrameMemoryRequest* GetNextBoundedRequest() const;
 
   // Implementation details below this point.
 
   // V8PerFrameMemoryRequest objects register themselves with the decorator.
+  // If |process_node| is null, the request will be sent to every process,
+  // otherwise it will be sent only to |process_node|.
   void AddMeasurementRequest(util::PassKey<V8PerFrameMemoryRequest>,
-                             V8PerFrameMemoryRequest* request);
+                             V8PerFrameMemoryRequest* request,
+                             const ProcessNode* process_node = nullptr);
   void RemoveMeasurementRequest(util::PassKey<V8PerFrameMemoryRequest>,
                                 V8PerFrameMemoryRequest* request);
 
@@ -289,13 +298,18 @@ class V8PerFrameMemoryDecorator
       const ProcessNode* process_node) const;
 
  private:
+  using RequestQueueCallback =
+      base::RepeatingCallback<void(MeasurementRequestQueue*)>;
+
+  // Runs the given |callback| for every MeasurementRequestQueue (global and
+  // per-process).
+  void ApplyToAllRequestQueues(RequestQueueCallback callback) const;
+
   void UpdateProcessMeasurementSchedules() const;
 
   Graph* graph_ = nullptr;
 
-  // Lists of requests sorted by min_time_between_requests (lowest first).
-  std::vector<V8PerFrameMemoryRequest*> bounded_measurement_requests_;
-  std::vector<V8PerFrameMemoryRequest*> lazy_measurement_requests_;
+  std::unique_ptr<MeasurementRequestQueue> measurement_requests_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
@@ -354,9 +368,15 @@ class V8PerFrameMemoryRequest {
 
   MeasurementMode mode() const { return mode_; }
 
-  // Requests measurements for all ProcessNode's in |graph|. This must only be
-  // called once for each V8PerFrameMemoryRequest.
+  // Requests measurements for all ProcessNode's in |graph|. There must be at
+  // most one call to this or StartMeasurementForProcess for each
+  // V8PerFrameMemoryRequest.
   void StartMeasurement(Graph* graph);
+
+  // Requests measurements only for the given |process_node|, which must be a
+  // renderer process. There must be at most one call to this or
+  // StartMeasurement for each V8PerFrameMemoryRequest.
+  void StartMeasurementForProcess(const ProcessNode* process_node);
 
   // Adds/removes an observer.
   void AddObserver(V8PerFrameMemoryObserver* observer);
@@ -374,17 +394,21 @@ class V8PerFrameMemoryRequest {
       MeasurementMode mode,
       base::WeakPtr<V8PerFrameMemoryRequestAnySeq> off_sequence_request);
 
-  // V8PerFrameMemoryDecorator calls OnDecoratorUnregistered when it is removed
-  // from the graph.
-  void OnDecoratorUnregistered(util::PassKey<V8PerFrameMemoryDecorator>);
+  // V8PerFrameMemoryDecorator::MeasurementRequestQueue calls
+  // OnOwnerUnregistered for all requests in the queue when the owning
+  // decorator or process node is removed from the graph.
+  void OnOwnerUnregistered(
+      util::PassKey<V8PerFrameMemoryDecorator::MeasurementRequestQueue>);
 
-  // V8PerFrameMemoryDecorator calls NotifyObserversOnMeasurementAvailable when
-  // a measurement is received.
+  // V8PerFrameMemoryDecorator::MeasurementRequestQueue calls
+  // NotifyObserversOnMeasurementAvailable when a measurement is received.
   void NotifyObserversOnMeasurementAvailable(
-      util::PassKey<V8PerFrameMemoryDecorator>,
+      util::PassKey<V8PerFrameMemoryDecorator::MeasurementRequestQueue>,
       const ProcessNode* process_node) const;
 
  private:
+  void StartMeasurementImpl(Graph* graph, const ProcessNode* process_node);
+
   base::TimeDelta min_time_between_requests_;
   MeasurementMode mode_;
   V8PerFrameMemoryDecorator* decorator_ = nullptr;

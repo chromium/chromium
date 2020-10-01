@@ -40,9 +40,11 @@ namespace v8_memory {
 using ::testing::_;
 using ::testing::Eq;
 using ::testing::InSequence;
+using ::testing::Invoke;
 using ::testing::Mock;
 using ::testing::Property;
 using ::testing::StrictMock;
+using ::testing::WithArg;
 
 constexpr RenderProcessHostId kTestProcessID = RenderProcessHostId(0xFAB);
 constexpr uint64_t kUnassociatedBytes = 0xABBA;
@@ -191,16 +193,18 @@ class V8PerFrameMemoryDecoratorTestBase {
       RenderProcessHostId expected_process_id = kTestProcessID,
       ExpectedMode expected_mode = ExpectedMode::DEFAULT) {
     InSequence seq;
-    EXPECT_CALL(*this, BindReceiverWithProxyHost(_, _))
-        .WillOnce(
-            [mock_reporter, expected_process_id](
-                mojo::PendingReceiver<blink::mojom::V8DetailedMemoryReporter>
-                    pending_receiver,
-                RenderProcessHostProxy proxy) {
-              DCHECK_EQ(expected_process_id, proxy.render_process_host_id());
-              mock_reporter->Bind(std::move(pending_receiver));
-            });
-
+    // Arg 0 is a
+    // mojo::PendingReceiver<blink::mojom::V8DetailedMemoryReporter>. Pass it
+    // to mock_reporter->Bind().
+    //
+    // Arg 1 is a RenderProcessHostProxy. Expect it to have the expected
+    // process ID.
+    EXPECT_CALL(*this,
+                BindReceiverWithProxyHost(
+                    _, Property(&RenderProcessHostProxy::render_process_host_id,
+                                Eq(expected_process_id))))
+        .WillOnce(WithArg<0>(
+            Invoke(mock_reporter, &MockV8DetailedMemoryReporter::Bind)));
     ExpectQueryAndReply(mock_reporter, std::move(data), expected_mode);
   }
 
@@ -288,6 +292,18 @@ class V8PerFrameMemoryDecoratorModeTest
 
   // The expected mojo mode parameter for bounded requests.
   ExpectedMode expected_bounded_mode_;
+};
+
+class V8PerFrameMemoryDecoratorSingleProcessModeTest
+    : public V8PerFrameMemoryDecoratorTest,
+      public ::testing::WithParamInterface<MeasurementMode> {
+ public:
+  V8PerFrameMemoryDecoratorSingleProcessModeTest()
+      : single_process_mode_(GetParam()) {}
+
+ protected:
+  // The mode that will be used for single-process requests.
+  MeasurementMode single_process_mode_;
 };
 
 using V8PerFrameMemoryDecoratorDeathTest = V8PerFrameMemoryDecoratorTest;
@@ -520,7 +536,7 @@ TEST_F(V8PerFrameMemoryDecoratorTest, MultipleProcessesHaveDistinctSchedules) {
   EXPECT_GT(process2_request_time, process1_request_time);
 }
 
-TEST_F(V8PerFrameMemoryDecoratorTest, MultipleisolatesInRenderer) {
+TEST_F(V8PerFrameMemoryDecoratorTest, MultipleIsolatesInRenderer) {
   V8PerFrameMemoryRequest memory_request(kMinTimeBetweenRequests, graph());
 
   MockV8DetailedMemoryReporter reporter;
@@ -1286,6 +1302,187 @@ TEST_F(V8PerFrameMemoryDecoratorTest, ObserverOutlivesDecorator) {
   // from ObserverList.
   memory_request.RemoveObserver(&observer);
 }
+
+TEST_F(V8PerFrameMemoryDecoratorTest, SingleProcessRequest) {
+  // Create 2 renderer processes. Create one request that measures both of
+  // them, and one request that measures only one.
+  constexpr RenderProcessHostId kProcessId1 = RenderProcessHostId(0xFAB);
+  auto process1 = CreateNode<ProcessNodeImpl>(
+      content::PROCESS_TYPE_RENDERER,
+      RenderProcessHostProxy::CreateForTesting(kProcessId1));
+  constexpr RenderProcessHostId kProcessId2 = RenderProcessHostId(0xBAF);
+  auto process2 = CreateNode<ProcessNodeImpl>(
+      content::PROCESS_TYPE_RENDERER,
+      RenderProcessHostProxy::CreateForTesting(kProcessId2));
+
+  // Set the all process request to only send once within the test.
+  V8PerFrameMemoryRequest all_process_request(kMinTimeBetweenRequests * 100);
+  all_process_request.StartMeasurement(graph());
+
+  auto process1_request =
+      std::make_unique<V8PerFrameMemoryRequest>(kMinTimeBetweenRequests);
+  process1_request->StartMeasurementForProcess(process1.get());
+
+  MockV8DetailedMemoryReporter mock_reporter1;
+  MockV8DetailedMemoryReporter mock_reporter2;
+  {
+    // Response to initial request in process 1.
+    auto data = NewPerProcessV8MemoryUsage(1);
+    data->isolates[0]->unassociated_bytes_used = 1U;
+    ExpectBindAndRespondToQuery(&mock_reporter1, std::move(data), kProcessId1);
+
+    // Response to initial request in process 2.
+    data = NewPerProcessV8MemoryUsage(1);
+    data->isolates[0]->unassociated_bytes_used = 2U;
+    ExpectBindAndRespondToQuery(&mock_reporter2, std::move(data), kProcessId2);
+  }
+
+  // All the following FastForwardBy calls will place the clock 1 sec after a
+  // measurement is expected.
+  task_env().FastForwardBy(base::TimeDelta::FromSeconds(1));
+  testing::Mock::VerifyAndClearExpectations(&mock_reporter1);
+  testing::Mock::VerifyAndClearExpectations(&mock_reporter2);
+
+  ASSERT_TRUE(V8PerFrameMemoryProcessData::ForProcessNode(process1.get()));
+  EXPECT_EQ(1U, V8PerFrameMemoryProcessData::ForProcessNode(process1.get())
+                    ->unassociated_v8_bytes_used());
+
+  ASSERT_TRUE(V8PerFrameMemoryProcessData::ForProcessNode(process2.get()));
+  EXPECT_EQ(2U, V8PerFrameMemoryProcessData::ForProcessNode(process2.get())
+                    ->unassociated_v8_bytes_used());
+
+  // After kMinTimeBetweenRequests another request should be sent to process1,
+  // but not process2.
+  {
+    auto data = NewPerProcessV8MemoryUsage(1);
+    data->isolates[0]->unassociated_bytes_used = 3U;
+    ExpectQueryAndDelayReply(&mock_reporter1, kMinTimeBetweenRequests,
+                             std::move(data));
+  }
+
+  task_env().FastForwardBy(kMinTimeBetweenRequests);
+  testing::Mock::VerifyAndClearExpectations(&mock_reporter1);
+  testing::Mock::VerifyAndClearExpectations(&mock_reporter2);
+
+  // Delete process1 request while waiting for measurement result.
+  process1_request.reset();
+  task_env().FastForwardBy(kMinTimeBetweenRequests);
+  testing::Mock::VerifyAndClearExpectations(&mock_reporter1);
+  testing::Mock::VerifyAndClearExpectations(&mock_reporter2);
+
+  ASSERT_TRUE(V8PerFrameMemoryProcessData::ForProcessNode(process1.get()));
+  EXPECT_EQ(3U, V8PerFrameMemoryProcessData::ForProcessNode(process1.get())
+                    ->unassociated_v8_bytes_used());
+
+  // Recreate process1 request. The new request will be sent immediately since
+  // enough time has passed since the last request.
+  {
+    auto data = NewPerProcessV8MemoryUsage(1);
+    data->isolates[0]->unassociated_bytes_used = 4U;
+    ExpectQueryAndReply(&mock_reporter1, std::move(data));
+  }
+
+  process1_request =
+      std::make_unique<V8PerFrameMemoryRequest>(kMinTimeBetweenRequests);
+  process1_request->StartMeasurementForProcess(process1.get());
+
+  // Test observers of single-process requests.
+  MockV8PerFrameMemoryObserver mock_observer;
+  process1_request->AddObserver(&mock_observer);
+  mock_observer.ExpectObservationOnProcess(process1.get(), 4U);
+
+  task_env().FastForwardBy(base::TimeDelta::FromSeconds(1));
+  testing::Mock::VerifyAndClearExpectations(&mock_reporter1);
+  testing::Mock::VerifyAndClearExpectations(&mock_reporter2);
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
+
+  ASSERT_TRUE(V8PerFrameMemoryProcessData::ForProcessNode(process1.get()));
+  EXPECT_EQ(4U, V8PerFrameMemoryProcessData::ForProcessNode(process1.get())
+                    ->unassociated_v8_bytes_used());
+
+  // Delete process1 while the request still exists. Nothing should crash.
+  process1.reset();
+  task_env().FastForwardBy(kMinTimeBetweenRequests);
+  testing::Mock::VerifyAndClearExpectations(&mock_reporter1);
+  testing::Mock::VerifyAndClearExpectations(&mock_reporter2);
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
+
+  // Clean up.
+  process1_request->RemoveObserver(&mock_observer);
+}
+
+TEST_P(V8PerFrameMemoryDecoratorSingleProcessModeTest,
+       SingleProcessLazyRequest) {
+  // Create a single process node so both "all process" and "single process"
+  // requests will have a single expectation, which reduces boilerplate.
+  auto process = CreateNode<ProcessNodeImpl>(
+      content::PROCESS_TYPE_RENDERER,
+      RenderProcessHostProxy::CreateForTesting(kTestProcessID));
+
+  V8PerFrameMemoryRequest lazy_request(kMinTimeBetweenRequests,
+                                       MeasurementMode::kLazy);
+  V8PerFrameMemoryRequest bounded_request(kMinTimeBetweenRequests * 2,
+                                          MeasurementMode::kBounded);
+  if (single_process_mode_ == MeasurementMode::kLazy) {
+    // Test that lazy single-process requests can't starve bounded all-process
+    // requests.
+    lazy_request.StartMeasurementForProcess(process.get());
+    bounded_request.StartMeasurement(graph());
+  } else {
+    // Test that lazy all-process requests can't starve bounded single-process
+    // requests.
+    lazy_request.StartMeasurement(graph());
+    bounded_request.StartMeasurementForProcess(process.get());
+  }
+
+  MockV8DetailedMemoryReporter mock_reporter;
+  {
+    // Response to initial request which is sent immediately. This will use the
+    // LAZY mode from |lazy_request| because it has a lower frequency.
+    auto data = NewPerProcessV8MemoryUsage(1);
+    data->isolates[0]->unassociated_bytes_used = 1U;
+    ExpectBindAndRespondToQuery(&mock_reporter, std::move(data), kTestProcessID,
+                                ExpectedMode::LAZY);
+  }
+
+  // All the following FastForwardBy calls will place the clock 1 sec after a
+  // measurement is expected.
+  task_env().FastForwardBy(base::TimeDelta::FromSeconds(1));
+  testing::Mock::VerifyAndClearExpectations(&mock_reporter);
+
+  // Delay next lazy reply and expect |bounded_request| to be sent while
+  // waiting.
+  {
+    auto data = NewPerProcessV8MemoryUsage(1);
+    data->isolates[0]->unassociated_bytes_used = 3U;
+    ExpectQueryAndDelayReply(&mock_reporter, 2 * kMinTimeBetweenRequests,
+                             std::move(data), ExpectedMode::LAZY);
+  }
+
+  task_env().FastForwardBy(kMinTimeBetweenRequests);
+  testing::Mock::VerifyAndClearExpectations(&mock_reporter);
+
+  // Lazy request sent, now 2*kMinTimeBetweenRequests until reply and
+  // 3*kMinTimeBetweenRequests until next lazy request. Advancing the clock
+  // should send |bounded_request| to both processes.
+  {
+    auto data = NewPerProcessV8MemoryUsage(1);
+    data->isolates[0]->unassociated_bytes_used = 4U;
+    ExpectQueryAndReply(&mock_reporter, std::move(data), ExpectedMode::DEFAULT);
+  }
+
+  task_env().FastForwardBy(kMinTimeBetweenRequests);
+  testing::Mock::VerifyAndClearExpectations(&mock_reporter);
+
+  ASSERT_TRUE(V8PerFrameMemoryProcessData::ForProcessNode(process.get()));
+  EXPECT_EQ(4U, V8PerFrameMemoryProcessData::ForProcessNode(process.get())
+                    ->unassociated_v8_bytes_used());
+}
+
+INSTANTIATE_TEST_SUITE_P(SingleProcessLazyOrBounded,
+                         V8PerFrameMemoryDecoratorSingleProcessModeTest,
+                         ::testing::Values(MeasurementMode::kLazy,
+                                           MeasurementMode::kBounded));
 
 TEST_F(V8PerFrameMemoryDecoratorDeathTest, MultipleStartMeasurement) {
   EXPECT_DCHECK_DEATH({
