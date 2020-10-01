@@ -56,6 +56,8 @@ void SaveStringPreferenceForced(const char* pref_name,
 // On Linux desktop, returns {DIR_USER_DATA}/.oobe_completed.
 base::FilePath GetOobeCompleteFlagPath() {
   // The constant is defined here so it won't be referenced directly.
+  // If you change this path make sure to also change the corresponding rollback
+  // constant in Chrome OS: src/platform2/oobe_config/rollback_constants.cc
   const char kOobeCompleteFlagFilePath[] = "/home/chronos/.oobe_completed";
 
   if (base::SysInfo::IsRunningOnChromeOS()) {
