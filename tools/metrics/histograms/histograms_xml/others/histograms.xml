@@ -11224,7 +11224,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="RelaunchNotification.ShowResult"
-    enum="RelaunchNotificationShowResult" expires_after="M85">
+    enum="RelaunchNotificationShowResult" expires_after="M90">
+  <owner>ayaelattar@chromium.org</owner>
   <owner>grt@chromium.org</owner>
   <summary>
     The result of an attempt to show a relaunch notification dialog.

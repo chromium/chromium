@@ -14,20 +14,30 @@ constexpr char kShowResultHistogramPrefix[] = "RelaunchNotification.ShowResult";
 constexpr char kRecommendedSuffix[] = ".Recommended";
 constexpr char kRequiredSuffix[] = ".Required";
 
+// The result of an attempt to show a relaunch notification dialog. These values
+// are persisted to logs. Entries should not be renumbered and numeric values
+// should never be reused.
+enum class ShowResult {
+  kShown = 0,
+  DEPRECATED_kUnknownNotShownReason = 1,
+  DEPRECATED_kBackgroundModeNoWindows = 2,
+  kCount
+};
+
 }  // namespace
 
 namespace relaunch_notification {
 
-void RecordRecommendedShowResult(ShowResult show_result) {
+void RecordRecommendedShowResult() {
   base::UmaHistogramEnumeration(
-      std::string(kShowResultHistogramPrefix) + kRecommendedSuffix, show_result,
-      ShowResult::kCount);
+      std::string(kShowResultHistogramPrefix) + kRecommendedSuffix,
+      ShowResult::kShown, ShowResult::kCount);
 }
 
-void RecordRequiredShowResult(ShowResult show_result) {
+void RecordRequiredShowResult() {
   base::UmaHistogramEnumeration(
-      std::string(kShowResultHistogramPrefix) + kRequiredSuffix, show_result,
-      ShowResult::kCount);
+      std::string(kShowResultHistogramPrefix) + kRequiredSuffix,
+      ShowResult::kShown, ShowResult::kCount);
 }
 
 }  // namespace relaunch_notification

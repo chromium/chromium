@@ -33,8 +33,7 @@ void RelaunchNotificationControllerPlatformImpl::NotifyRelaunchRecommended(
 
 void RelaunchNotificationControllerPlatformImpl::RecordRecommendedShowResult() {
   if (!recorded_shown_) {
-    relaunch_notification::RecordRecommendedShowResult(
-        relaunch_notification::ShowResult::kShown);
+    relaunch_notification::RecordRecommendedShowResult();
     recorded_shown_ = true;
   }
 }
@@ -49,8 +48,7 @@ void RelaunchNotificationControllerPlatformImpl::NotifyRelaunchRequired(
                                 RefreshRelaunchRequiredTitle,
                             base::Unretained(this)));
 
-    relaunch_notification::RecordRequiredShowResult(
-        relaunch_notification::ShowResult::kShown);
+    relaunch_notification::RecordRequiredShowResult();
   }
 
   RefreshRelaunchRequiredTitle();

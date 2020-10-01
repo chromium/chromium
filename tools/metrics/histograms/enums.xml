@@ -61683,8 +61683,9 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
 
 <enum name="RelaunchNotificationShowResult">
   <int value="0" label="Shown"/>
-  <int value="1" label="Not shown for unknown reason"/>
-  <int value="2" label="Not shown due to background mode with no windows"/>
+  <int value="1" label="Not shown for unknown reason (deprecated)"/>
+  <int value="2"
+      label="Not shown due to background mode with no windows (deprecated)"/>
 </enum>
 
 <enum name="RemoteBookmarkUpdateError">

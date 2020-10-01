@@ -7,23 +7,11 @@
 
 namespace relaunch_notification {
 
-// The result of an attempt to show a relaunch notification dialog. These values
-// are persisted to logs. Entries should not be renumbered and numeric values
-// should never be reused.
-enum class ShowResult {
-  kShown = 0,
-  kUnknownNotShownReason = 1,
-  kBackgroundModeNoWindows = 2,
-  kCount
-};
+// Record to UMA showing a relaunch recommended notification.
+void RecordRecommendedShowResult();
 
-// Record to UMA showing a relaunch recommended notification with the given
-// |show_result|.
-void RecordRecommendedShowResult(ShowResult show_result);
-
-// Record to UMA showing a relaunch required notification with the given
-// |show_result|.
-void RecordRequiredShowResult(ShowResult show_result);
+// Record to UMA showing a relaunch required notification.
+void RecordRequiredShowResult();
 
 }  // namespace relaunch_notification
 
