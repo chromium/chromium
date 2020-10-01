@@ -1049,6 +1049,10 @@ void ChromeBrowserMainPartsChromeos::PostBrowserStart() {
   if (system::InputDeviceSettings::Get()->ForceKeyboardDrivenUINavigation())
     event_rewriter_controller->SetKeyboardDrivenEventRewriterEnabled(true);
 
+  // Add MagnificationManager as a pretarget handler after ash:Shell is
+  // initialized.
+  ash::Shell::Get()->AddPreTargetHandler(MagnificationManager::Get());
+
   // In classic ash must occur after ash::Shell is initialized. Triggers a
   // fetch of the initial CrosSettings DeviceRebootOnShutdown policy.
   shutdown_policy_forwarder_ = std::make_unique<ShutdownPolicyForwarder>();
@@ -1115,6 +1119,8 @@ void ChromeBrowserMainPartsChromeos::PostMainMessageLoopRun() {
   assistant_client_.reset();
 
   assistant_state_client_.reset();
+
+  ash::Shell::Get()->RemovePreTargetHandler(MagnificationManager::Get());
 
   // Unregister CrosSettings observers before CrosSettings is destroyed.
   shutdown_policy_forwarder_.reset();

@@ -30,7 +30,14 @@
 namespace chromeos {
 
 namespace {
+
+// The duration of time to ignore focus changes after the last mouse event.
+// Keep under one frame length (~16ms at 60hz).
+constexpr base::TimeDelta kTimeIgnoreFocusChangeAfterMouseEvent =
+    base::TimeDelta::FromMilliseconds(15);
+
 MagnificationManager* g_magnification_manager = nullptr;
+
 }  // namespace
 
 // static
@@ -119,6 +126,10 @@ void MagnificationManager::HandleMoveMagnifierToRectIfEnabled(
   if (IsDockedMagnifierEnabled()) {
     ash::DockedMagnifierController::Get()->CenterOnPoint(rect.CenterPoint());
   }
+}
+
+void MagnificationManager::OnMouseEvent(ui::MouseEvent* event) {
+  last_mouse_event_ = base::TimeTicks::Now();
 }
 
 void MagnificationManager::OnViewEvent(views::View* view,
@@ -333,6 +344,12 @@ void MagnificationManager::HandleFocusChanged(const gfx::Rect& bounds_in_screen,
                                               bool is_editable) {
   if (bounds_in_screen.IsEmpty())
     return;
+
+  // Ignore focus changes while mouse activity is occurring.
+  if (base::TimeTicks::Now() - last_mouse_event_ <
+      kTimeIgnoreFocusChangeAfterMouseEvent) {
+    return;
+  }
 
   // Fullscreen magnifier and docked magnifier are mutually exclusive.
   if (fullscreen_magnifier_enabled_) {

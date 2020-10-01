@@ -61,8 +61,8 @@ constexpr int kDefaultAnimationDurationInMs = 100;
 constexpr gfx::Tween::Type kCenterCaretAnimationTweenType = gfx::Tween::LINEAR;
 
 // The delay of the timer for moving magnifier window for centering the text
-// input focus.
-constexpr int kMoveMagnifierDelayInMs = 10;
+// input focus. Keep under one frame length (~16ms at 60hz).
+constexpr int kMoveMagnifierDelayInMs = 15;
 
 // Threshold of panning. If the cursor moves to within pixels (in DIP) of
 // |kCursorPanningMargin| from the edge, the view-port moves.
