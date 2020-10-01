@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/containers/flat_set.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
@@ -243,7 +242,7 @@ void InsecureCredentialsManager::StartWeakCheck() {
       base::BindOnce(&BulkWeakCheck,
                      ExtractPasswords(presenter_->GetSavedPasswords())),
       base::BindOnce(&InsecureCredentialsManager::OnWeakCheckDone,
-                     weak_ptr_factory_.GetWeakPtr(), base::ElapsedTimer()));
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void InsecureCredentialsManager::SaveCompromisedCredential(
@@ -339,15 +338,12 @@ void InsecureCredentialsManager::RemoveObserver(Observer* observer) {
 }
 
 void InsecureCredentialsManager::OnWeakCheckDone(
-    base::ElapsedTimer timer_since_weak_check_start,
     base::flat_set<base::string16> weak_passwords) {
   weak_passwords_ = std::move(weak_passwords);
 
   credentials_to_forms_ = JoinInsecureCredentialsWithSavedPasswords(
       compromised_credentials_, weak_passwords_,
       presenter_->GetSavedPasswords());
-  base::UmaHistogramTimes("PasswordManager.WeakCheck.Time",
-                          timer_since_weak_check_start.Elapsed());
   NotifyWeakCredentialsChanged();
 }
 

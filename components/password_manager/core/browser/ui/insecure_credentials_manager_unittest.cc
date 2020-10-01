@@ -7,9 +7,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
-#include "base/timer/elapsed_timer.h"
 #include "components/password_manager/core/browser/compromised_credentials_table.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/test_password_store.h"
@@ -39,9 +37,6 @@ constexpr char kStrongPassword2[] = "pmsFlsnoab4nsl#losb@skpfnsbkjb^klsnbs!cns";
 using ::testing::ElementsAre;
 using ::testing::ElementsAreArray;
 using ::testing::IsEmpty;
-
-// Delay in milliseconds.
-const int kDelay = 2;
 
 struct MockInsecureCredentialsManagerObserver
     : InsecureCredentialsManager::Observer {
@@ -141,14 +136,9 @@ class InsecureCredentialsManagerTest : public ::testing::Test {
     return std::string();
   }
 
-  base::HistogramTester& histogram_tester() { return histogram_tester_; }
-
-  void AdvanceClock(base::TimeDelta time) { task_env_.AdvanceClock(time); }
-
  private:
   base::test::TaskEnvironment task_env_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  base::HistogramTester histogram_tester_;
   scoped_refptr<TestPasswordStore> store_ =
       base::MakeRefCounted<TestPasswordStore>();
   SavedPasswordsPresenter presenter_{store_};
@@ -508,26 +498,6 @@ TEST_F(InsecureCredentialsManagerTest, MapCompromisedPasswordsToPasswords) {
               ElementsAreArray(store().stored_passwords().at(kExampleOrg)));
 }
 
-TEST_F(InsecureCredentialsManagerTest, StartWeakCheckOnEmptyPasswordsList) {
-  EXPECT_THAT(
-      histogram_tester().GetTotalCountsForPrefix("PasswordManager.WeakCheck"),
-      IsEmpty());
-
-  RunUntilIdle();
-  provider().StartWeakCheck();
-  AdvanceClock(base::TimeDelta::FromMilliseconds(kDelay));
-  RunUntilIdle();
-
-  EXPECT_THAT(provider().GetWeakCredentials(), IsEmpty());
-
-  histogram_tester().ExpectUniqueSample(
-      "PasswordManager.WeakCheck.CheckedPasswords", 0, 1);
-  histogram_tester().ExpectUniqueSample("PasswordManager.WeakCheck.Time",
-                                        kDelay, 1);
-  histogram_tester().ExpectUniqueSample(
-      "PasswordManager.WeakCheck.WeakPasswords", 0, 1);
-}
-
 TEST_F(InsecureCredentialsManagerTest, WeakCredentialsNotFound) {
   std::vector<PasswordForm> passwords = {
       MakeSavedPassword(kExampleCom, kUsername1, kStrongPassword1),
@@ -535,27 +505,12 @@ TEST_F(InsecureCredentialsManagerTest, WeakCredentialsNotFound) {
 
   store().AddLogin(passwords[0]);
   store().AddLogin(passwords[1]);
-  EXPECT_THAT(
-      histogram_tester().GetTotalCountsForPrefix("PasswordManager.WeakCheck"),
-      IsEmpty());
 
   RunUntilIdle();
   provider().StartWeakCheck();
-  AdvanceClock(base::TimeDelta::FromMilliseconds(2 * kDelay));
   RunUntilIdle();
 
   EXPECT_THAT(provider().GetWeakCredentials(), IsEmpty());
-
-  histogram_tester().ExpectUniqueSample(
-      "PasswordManager.WeakCheck.CheckedPasswords", 2, 1);
-  histogram_tester().ExpectUniqueSample("PasswordManager.WeakCheck.Time",
-                                        2 * kDelay, 1);
-  histogram_tester().ExpectUniqueSample(
-      "PasswordManager.WeakCheck.WeakPasswords", 0, 1);
-  histogram_tester().ExpectTotalCount(
-      "PasswordManager.WeakCheck.PasswordLength", 2);
-  histogram_tester().ExpectUniqueSample(
-      "PasswordManager.WeakCheck.PasswordScore", 4, 2);
 }
 
 TEST_F(InsecureCredentialsManagerTest, DetectedWeakCredential) {
@@ -565,13 +520,9 @@ TEST_F(InsecureCredentialsManagerTest, DetectedWeakCredential) {
 
   store().AddLogin(passwords[0]);
   store().AddLogin(passwords[1]);
-  EXPECT_THAT(
-      histogram_tester().GetTotalCountsForPrefix("PasswordManager.WeakCheck"),
-      IsEmpty());
 
   RunUntilIdle();
   provider().StartWeakCheck();
-  AdvanceClock(base::TimeDelta::FromMilliseconds(kDelay));
   RunUntilIdle();
 
   std::vector<CredentialWithPassword> weak_credentials =
@@ -580,17 +531,6 @@ TEST_F(InsecureCredentialsManagerTest, DetectedWeakCredential) {
   ASSERT_EQ(weak_credentials.size(), 1u);
   EXPECT_EQ(base::UTF16ToUTF8(weak_credentials[0].password), kWeakPassword1);
   EXPECT_TRUE(IsWeak(weak_credentials[0].insecure_type));
-
-  histogram_tester().ExpectUniqueSample(
-      "PasswordManager.WeakCheck.CheckedPasswords", 2, 1);
-  histogram_tester().ExpectUniqueSample("PasswordManager.WeakCheck.Time",
-                                        kDelay, 1);
-  histogram_tester().ExpectUniqueSample(
-      "PasswordManager.WeakCheck.WeakPasswords", 1, 1);
-  histogram_tester().ExpectTotalCount(
-      "PasswordManager.WeakCheck.PasswordLength", 2);
-  histogram_tester().ExpectTotalCount("PasswordManager.WeakCheck.PasswordScore",
-                                      2);
 }
 
 // Tests that credentials with the same signon_realm and username, but different
@@ -606,7 +546,6 @@ TEST_F(InsecureCredentialsManagerTest,
 
   RunUntilIdle();
   provider().StartWeakCheck();
-  AdvanceClock(base::TimeDelta::FromMilliseconds(kDelay));
   RunUntilIdle();
 
   std::vector<CredentialWithPassword> weak_credentials =
@@ -615,17 +554,6 @@ TEST_F(InsecureCredentialsManagerTest,
   ASSERT_EQ(weak_credentials.size(), 2u);
   EXPECT_TRUE(IsWeak(weak_credentials[0].insecure_type));
   EXPECT_TRUE(IsWeak(weak_credentials[1].insecure_type));
-
-  histogram_tester().ExpectUniqueSample(
-      "PasswordManager.WeakCheck.CheckedPasswords", 2, 1);
-  histogram_tester().ExpectUniqueSample("PasswordManager.WeakCheck.Time",
-                                        kDelay, 1);
-  histogram_tester().ExpectUniqueSample(
-      "PasswordManager.WeakCheck.WeakPasswords", 2, 1);
-  histogram_tester().ExpectTotalCount(
-      "PasswordManager.WeakCheck.PasswordLength", 2);
-  histogram_tester().ExpectTotalCount("PasswordManager.WeakCheck.PasswordScore",
-                                      2);
 }
 
 // Tests that credentials with the same signon_realm, username and passwords
@@ -641,7 +569,6 @@ TEST_F(InsecureCredentialsManagerTest,
 
   RunUntilIdle();
   provider().StartWeakCheck();
-  AdvanceClock(base::TimeDelta::FromMilliseconds(kDelay));
   RunUntilIdle();
 
   std::vector<CredentialWithPassword> weak_credentials =
@@ -650,18 +577,6 @@ TEST_F(InsecureCredentialsManagerTest,
   ASSERT_EQ(weak_credentials.size(), 1u);
   EXPECT_EQ(base::UTF16ToUTF8(weak_credentials[0].password), kWeakPassword1);
   EXPECT_TRUE(IsWeak(weak_credentials[0].insecure_type));
-
-  histogram_tester().ExpectUniqueSample(
-      "PasswordManager.WeakCheck.CheckedPasswords", 1, 1);
-  histogram_tester().ExpectUniqueSample("PasswordManager.WeakCheck.Time",
-                                        kDelay, 1);
-  histogram_tester().ExpectUniqueSample(
-      "PasswordManager.WeakCheck.WeakPasswords", 1, 1);
-  // Length of kWeakPassword1 is 6.
-  histogram_tester().ExpectUniqueSample(
-      "PasswordManager.WeakCheck.PasswordLength", 6, 1);
-  histogram_tester().ExpectUniqueSample(
-      "PasswordManager.WeakCheck.PasswordScore", 0, 1);
 }
 
 TEST_F(InsecureCredentialsManagerTest, BothWeakAndCompromisedCredentialsExist) {
@@ -679,7 +594,6 @@ TEST_F(InsecureCredentialsManagerTest, BothWeakAndCompromisedCredentialsExist) {
 
   RunUntilIdle();
   provider().StartWeakCheck();
-  AdvanceClock(base::TimeDelta::FromMilliseconds(kDelay));
   RunUntilIdle();
 
   std::vector<CredentialWithPassword> returned_weak_credentials =
@@ -695,17 +609,6 @@ TEST_F(InsecureCredentialsManagerTest, BothWeakAndCompromisedCredentialsExist) {
   ASSERT_EQ(returned_compromised_credentials.size(), 2u);
   EXPECT_TRUE(IsCompromised(returned_compromised_credentials[0].insecure_type));
   EXPECT_TRUE(IsCompromised(returned_compromised_credentials[1].insecure_type));
-
-  histogram_tester().ExpectUniqueSample(
-      "PasswordManager.WeakCheck.CheckedPasswords", 2, 1);
-  histogram_tester().ExpectUniqueSample("PasswordManager.WeakCheck.Time",
-                                        kDelay, 1);
-  histogram_tester().ExpectUniqueSample(
-      "PasswordManager.WeakCheck.WeakPasswords", 1, 1);
-  histogram_tester().ExpectTotalCount(
-      "PasswordManager.WeakCheck.PasswordLength", 2);
-  histogram_tester().ExpectTotalCount("PasswordManager.WeakCheck.PasswordScore",
-                                      2);
 }
 
 // Checks that for a credential that is both weak and compromised,
@@ -722,7 +625,6 @@ TEST_F(InsecureCredentialsManagerTest, SingleCredentialIsWeakAndCompromised) {
 
   RunUntilIdle();
   provider().StartWeakCheck();
-  AdvanceClock(base::TimeDelta::FromMilliseconds(kDelay));
   RunUntilIdle();
 
   std::vector<CredentialWithPassword> returned_weak_credentials =
@@ -744,18 +646,6 @@ TEST_F(InsecureCredentialsManagerTest, SingleCredentialIsWeakAndCompromised) {
             kWeakPassword1);
   EXPECT_TRUE(IsWeak(returned_compromised_credentials[0].insecure_type));
   EXPECT_TRUE(IsCompromised(returned_compromised_credentials[0].insecure_type));
-
-  histogram_tester().ExpectUniqueSample(
-      "PasswordManager.WeakCheck.CheckedPasswords", 1, 1);
-  histogram_tester().ExpectUniqueSample("PasswordManager.WeakCheck.Time",
-                                        kDelay, 1);
-  histogram_tester().ExpectUniqueSample(
-      "PasswordManager.WeakCheck.WeakPasswords", 1, 1);
-  // Length of kWeakPassword1 is 6.
-  histogram_tester().ExpectUniqueSample(
-      "PasswordManager.WeakCheck.PasswordLength", 6, 1);
-  histogram_tester().ExpectUniqueSample(
-      "PasswordManager.WeakCheck.PasswordScore", 0, 1);
 }
 
 // Test verifies that saving LeakCheckCredential via provider adds expected

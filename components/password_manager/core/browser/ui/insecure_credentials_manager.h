@@ -14,7 +14,6 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/scoped_observer.h"
-#include "base/timer/elapsed_timer.h"
 #include "base/util/type_safety/strong_alias.h"
 #include "components/password_manager/core/browser/compromised_credentials_consumer.h"
 #include "components/password_manager/core/browser/compromised_credentials_table.h"
@@ -200,8 +199,7 @@ class InsecureCredentialsManager
 
   // Updates |weak_passwords| set and notifies observers that weak credentials
   // were changed.
-  void OnWeakCheckDone(base::ElapsedTimer timer_since_weak_check_start,
-                       base::flat_set<base::string16> weak_passwords);
+  void OnWeakCheckDone(base::flat_set<base::string16> weak_passwords);
 
   // CompromisedCredentialsReader::Observer:
   void OnCompromisedCredentialsChanged(

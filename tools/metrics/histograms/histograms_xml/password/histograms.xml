@@ -2156,50 +2156,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="PasswordManager.WeakCheck.CheckedPasswords" units="passwords"
-    expires_after="M92">
-  <owner>jdoerrie@chromium.org</owner>
-  <owner>vasilii@chromium.org</owner>
-  <summary>
-    The number of passwords analyzed during the passwords weak check.
-  </summary>
-</histogram>
-
-<histogram name="PasswordManager.WeakCheck.PasswordLength" units="characters"
-    expires_after="M92">
-  <owner>jdoerrie@chromium.org</owner>
-  <owner>vasilii@chromium.org</owner>
-  <summary>
-    The length of the saved password that was checked by the passwords weak
-    check.
-  </summary>
-</histogram>
-
-<histogram name="PasswordManager.WeakCheck.PasswordScore"
-    enum="PasswordWeaknessScore" expires_after="M92">
-  <owner>jdoerrie@chromium.org</owner>
-  <owner>vasilii@chromium.org</owner>
-  <summary>
-    The score of the password that was checked by the passwords weak check. The
-    score indicates how guessable the password is.
-  </summary>
-</histogram>
-
-<histogram name="PasswordManager.WeakCheck.Time" units="ms" expires_after="M92">
-  <owner>jdoerrie@chromium.org</owner>
-  <owner>vasilii@chromium.org</owner>
-  <summary>The time it took to complete the passwords weak check.</summary>
-</histogram>
-
-<histogram name="PasswordManager.WeakCheck.WeakPasswords" units="passwords"
-    expires_after="M92">
-  <owner>jdoerrie@chromium.org</owner>
-  <owner>vasilii@chromium.org</owner>
-  <summary>
-    The number of weak passwords found when the passwords weak check completed.
-  </summary>
-</histogram>
-
 <histogram
     name="PasswordManager.WellKnownChangePassword.GetChangePasswordUsage"
     enum="GetChangePasswordUrlMetric" expires_after="2021-01-31">
