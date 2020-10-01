@@ -92,13 +92,6 @@ void FakeCrosHealthdClient::EmitLidClosedEventForTesting() {
   fake_service_.EmitLidClosedEventForTesting();
 }
 
-void FakeCrosHealthdClient::EmitLidOpenedEventForTesting() {
-  // Flush the receiver, so any pending observers are registered before the
-  // event is emitted.
-  receiver_.FlushForTesting();
-  fake_service_.EmitLidOpenedEventForTesting();
-}
-
 void FakeCrosHealthdClient::RequestNetworkHealthForTesting(
     chromeos::network_health::mojom::NetworkHealthService::
         GetHealthSnapshotCallback callback) {

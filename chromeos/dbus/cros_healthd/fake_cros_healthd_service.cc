@@ -293,11 +293,6 @@ void FakeCrosHealthdService::EmitLidClosedEventForTesting() {
     observer->OnLidClosed();
 }
 
-void FakeCrosHealthdService::EmitLidOpenedEventForTesting() {
-  for (auto& observer : lid_observers_)
-    observer->OnLidOpened();
-}
-
 void FakeCrosHealthdService::RequestNetworkHealthForTesting(
     chromeos::network_health::mojom::NetworkHealthService::
         GetHealthSnapshotCallback callback) {

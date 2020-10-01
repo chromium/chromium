@@ -72,9 +72,6 @@ class COMPONENT_EXPORT(CROS_HEALTHD) FakeCrosHealthdClient
   // Calls the lid event OnLidClosed on all registered lid observers.
   void EmitLidClosedEventForTesting();
 
-  // Calls the lid event OnLidOpened on all registered lid observers.
-  void EmitLidOpenedEventForTesting();
-
   // Requests the network health state using the NetworkHealthService remote.
   void RequestNetworkHealthForTesting(
       chromeos::network_health::mojom::NetworkHealthService::

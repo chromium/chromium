@@ -370,17 +370,9 @@ chromeos.test_support = {};
 
   /**
    * DPSL Telemetry Requester.
-   * @suppress {checkTypes}
    */
-  class TelemetryRequester extends EventTarget {
-    constructor() {
-      super();
-      messagePipe.registerHandler(
-          dpsl_internal.Message.SYSTEM_EVENTS_SERVICE_EVENTS, (message) => {
-            const event = /** @type {!dpsl_internal.Event} */ (message);
-            this.dispatchEvent(new Event(event.type));
-          });
-    }
+  class TelemetryRequester {
+    constructor() {}
 
     /**
      * Requests telemetry info.

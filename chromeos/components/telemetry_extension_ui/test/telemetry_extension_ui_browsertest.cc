@@ -5,12 +5,8 @@
 #include "chromeos/components/telemetry_extension_ui/test/telemetry_extension_ui_browsertest.h"
 
 #include "base/base_paths.h"
-#include "base/bind.h"
 #include "base/files/file_path.h"
-#include "base/location.h"
 #include "base/path_service.h"
-#include "base/threading/thread_task_runner_handle.h"
-#include "base/time/time.h"
 #include "chrome/browser/chromeos/wilco_dtc_supportd/mojo_utils.h"
 #include "chromeos/components/telemetry_extension_ui/url_constants.h"
 #include "chromeos/components/web_applications/test/sandboxed_web_ui_test_base.h"
@@ -292,8 +288,6 @@ void TelemetryExtensionUiBrowserTest::SetUpOnMainThread() {
   chromeos::cros_healthd::FakeCrosHealthdClient::Get()
       ->SetProbeTelemetryInfoResponseForTesting(telemetry_info);
 
-  ConfigureSystemEventsServiceToEmitEvents();
-
   SandboxedWebUiAppTestBase::SetUpOnMainThread();
 }
 
@@ -432,19 +426,4 @@ void TelemetryExtensionUiBrowserTest::ConfigureProbeServiceToReturnErrors() {
 
   chromeos::cros_healthd::FakeCrosHealthdClient::Get()
       ->SetProbeTelemetryInfoResponseForTesting(telemetry_info);
-}
-
-void TelemetryExtensionUiBrowserTest::
-    ConfigureSystemEventsServiceToEmitEvents() {
-  chromeos::cros_healthd::FakeCrosHealthdClient::Get()
-      ->EmitLidClosedEventForTesting();
-  chromeos::cros_healthd::FakeCrosHealthdClient::Get()
-      ->EmitLidOpenedEventForTesting();
-
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&TelemetryExtensionUiBrowserTest::
-                         ConfigureSystemEventsServiceToEmitEvents,
-                     system_events_weak_ptr_factory_.GetWeakPtr()),
-      base::TimeDelta::FromSeconds(1));
 }

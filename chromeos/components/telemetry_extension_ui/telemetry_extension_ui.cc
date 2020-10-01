@@ -10,9 +10,7 @@
 #include "chromeos/components/telemetry_extension_ui/diagnostics_service.h"
 #include "chromeos/components/telemetry_extension_ui/mojom/diagnostics_service.mojom.h"
 #include "chromeos/components/telemetry_extension_ui/mojom/probe_service.mojom.h"
-#include "chromeos/components/telemetry_extension_ui/mojom/system_events_service.mojom.h"
 #include "chromeos/components/telemetry_extension_ui/probe_service.h"
-#include "chromeos/components/telemetry_extension_ui/system_events_service.h"
 #include "chromeos/components/telemetry_extension_ui/telemetry_extension_untrusted_source.h"
 #include "chromeos/components/telemetry_extension_ui/url_constants.h"
 #include "chromeos/grit/chromeos_telemetry_extension_resources.h"
@@ -42,9 +40,6 @@ CreateTrustedTelemetryExtensionDataSource() {
   trusted_source->AddResourcePath(
       "probe_service.mojom-lite.js",
       IDR_TELEMETRY_EXTENSION_PROBE_SERVICE_MOJO_LITE_JS);
-  trusted_source->AddResourcePath(
-      "system_events_service.mojom-lite.js",
-      IDR_TELEMETRY_EXTENSION_SYSTEM_EVENTS_SERVICE_MOJO_LITE_JS);
 
 #if !DCHECK_IS_ON()
   // If a user goes to an invalid url and non-DCHECK mode (DHECK = debug mode)
@@ -109,12 +104,6 @@ void TelemetryExtensionUI::BindInterface(
 void TelemetryExtensionUI::BindInterface(
     mojo::PendingReceiver<health::mojom::ProbeService> receiver) {
   probe_service_ = std::make_unique<ProbeService>(std::move(receiver));
-}
-
-void TelemetryExtensionUI::BindInterface(
-    mojo::PendingReceiver<health::mojom::SystemEventsService> receiver) {
-  system_events_service_ =
-      std::make_unique<SystemEventsService>(std::move(receiver));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(TelemetryExtensionUI)
