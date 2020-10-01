@@ -244,6 +244,48 @@ _RE_CIPD_CREATE = re.compile('cipd create --pkg-def cipd.yaml -tag (\S*)')
 _RE_CIPD_PACKAGE = re.compile('package: (\S*)')
 
 
+def _CheckVulnerabilities(build_android_deps_dir, report_dst):
+    logging.info(
+        'Running Gradle dependencyCheckAnalyze. This may take a few minutes the first time.'
+    )
+
+    abs_gradle_wrapper_path = os.path.join(_CHROMIUM_SRC, 'third_party',
+                                           'gradle_wrapper', 'gradlew')
+
+    # Separate command from main gradle command so that we can provide specific
+    # diagnostics in case of failure of this step.
+    gradle_cmd = [
+        abs_gradle_wrapper_path,
+        '-b',
+        os.path.join(build_android_deps_dir, _BUILD_GRADLE),
+        'dependencyCheckAnalyze',
+    ]
+
+    report_src = os.path.join(build_android_deps_dir, 'build', 'reports')
+    if os.path.exists(report_dst):
+        shutil.rmtree(report_dst)
+
+    try:
+        subprocess.run(gradle_cmd, check=True)
+    except subprocess.CalledProcessError:
+        report_path = os.path.join(report_dst, 'dependency-check-report.html')
+        logging.error(
+            textwrap.dedent("""
+               =============================================================================
+               A package has a known vulnerability. It may not be in a package or packages
+               which you just added, but you need to resolve the problem before proceeding.
+               If you can't easily fix it by rolling the package to a fixed version now,
+               please file a crbug of type= Bug-Security providing all relevant information,
+               and then rerun this command with --ignore-vulnerabilities.
+               The html version of the report is avialable at: {}
+               =============================================================================
+               """.format(report_path)))
+        raise
+    finally:
+        if os.path.exists(report_src):
+            CopyFileOrDirectory(report_src, report_dst)
+
+
 def GetCipdPackageInfo(cipd_yaml_path):
     """Returns the CIPD package name corresponding to a given cipd.yaml file.
 
@@ -449,11 +491,6 @@ def main():
         raise Exception('Missing files from {}: {}'.format(
             _CHROMIUM_SRC, missing_files))
 
-    abs_build_gradle_path = os.path.join(abs_android_deps_dir, _BUILD_GRADLE)
-    # Path to the gradlew script used to run build.gradle.
-    abs_gradle_wrapper_path = os.path.join(_CHROMIUM_SRC, 'third_party',
-                                           'gradle_wrapper', 'gradlew')
-
     with BuildDir(args.build_dir) as build_dir:
         build_android_deps_dir = os.path.join(build_dir, args.android_deps_dir)
 
@@ -467,57 +504,27 @@ def main():
             CopyFileOrDirectory(os.path.join(_CHROMIUM_SRC, path),
                                 os.path.join(build_dir, dest))
 
-        logging.info(
-            'Running Gradle dependencyCheckAnalyze. This may take a few minutes the first time.'
-        )
-        # Not run as part of the main gradle command below
-        # such that we can provide specific diagnostics in case
-        # of failure of this build stage.
-        gradle_cmd = [
-            abs_gradle_wrapper_path,
-            '-b',
-            os.path.join(build_dir, abs_build_gradle_path),
-            'dependencyCheckAnalyze',
-        ]
         if debug:
             gradle_cmd.append('--debug')
 
-        report_src = os.path.join(build_android_deps_dir, 'build', 'reports')
-        report_dst = os.path.join(abs_android_deps_dir,
-                                  'vulnerability_reports')
-        if os.path.exists(report_dst):
-            shutil.rmtree(report_dst)
-
-        try:
-            subprocess.run(gradle_cmd, check=True)
-        except subprocess.CalledProcessError:
-            report_path = os.path.join(report_dst,
-                                       'dependency-check-report.html')
-            logging.error(
-                textwrap.dedent("""
-                   =============================================================================
-                   A package has a known vulnerability. It may not be in a package or packages
-                   which you just added, but you need to resolve the problem before proceeding.
-                   If you can't easily fix it by rolling the package to a fixed version now,
-                   please file a crbug of type= Bug-Security providing all relevant information,
-                   and then rerun this command with --ignore-vulnerabilities.
-                   The html version of the report is avialable at: {}
-                   =============================================================================
-                   """.format(report_path)))
-            if not args.ignore_vulnerabilities:
-                raise
-        finally:
-            if os.path.exists(report_src):
-                CopyFileOrDirectory(report_src, report_dst)
+        if not args.ignore_vulnerabilities:
+            report_dst = os.path.join(abs_android_deps_dir,
+                                      'vulnerability_reports')
+            _CheckVulnerabilities(build_android_deps_dir, report_dst)
 
         logging.info('Running Gradle.')
+
+        # Path to the gradlew script used to run build.gradle.
+        abs_gradle_wrapper_path = os.path.join(_CHROMIUM_SRC, 'third_party',
+                                               'gradle_wrapper', 'gradlew')
+
         # This gradle command generates the new DEPS and BUILD.gn files, it can
         # also handle special cases.
         # Edit BuildConfigGenerator.groovy#addSpecialTreatment for such cases.
         gradle_cmd = [
             abs_gradle_wrapper_path,
             '-b',
-            os.path.join(build_dir, abs_build_gradle_path),
+            os.path.join(build_android_deps_dir, _BUILD_GRADLE),
             'setupRepository',
             '--stacktrace',
         ]

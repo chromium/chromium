@@ -1,0 +1,9 @@
+.gradle/
+.idea/
+.settings/
+build.gradle
+local.properties
+
+# JAR and AAR files will be fetched via CIPD.
+libs/*/*.jar
+libs/*/*.aar

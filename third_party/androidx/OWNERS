@@ -1,0 +1,4 @@
+file://third_party/android_deps/OWNERS
+
+# OS: Android
+# COMPONENT: Tools

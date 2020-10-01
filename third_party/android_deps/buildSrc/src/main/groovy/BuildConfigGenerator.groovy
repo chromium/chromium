@@ -36,7 +36,7 @@ class BuildConfigGenerator extends DefaultTask {
 
     // Some libraries are hosted in Chromium's //third_party directory. This is a mapping between
     // them so they can be used instead of android_deps pulling in its own copy.
-    private static final def EXISTING_LIBS = [
+    public static final def EXISTING_LIBS = [
         'com_ibm_icu_icu4j': '//third_party/icu4j:icu4j_java',
         'com_almworks_sqlite4java_sqlite4java': '//third_party/sqlite4java:sqlite4java_java',
         'com_google_android_apps_common_testing_accessibility_framework_accessibility_test_framework':
@@ -88,9 +88,16 @@ class BuildConfigGenerator extends DefaultTask {
      */
     String[] internalTargetVisibility
 
+    /**
+     * Whether to use dedicated directory for androidx dependencies.
+     */
+     boolean useDedicatedAndroidxDir
+
     @TaskAction
     void main() {
         skipLicenses = skipLicenses || project.hasProperty("skipLicenses")
+        useDedicatedAndroidxDir |= project.hasProperty("useDedicatedAndroidxDir")
+
         def graph = new ChromiumDepGraph(project: project, skipLicenses: skipLicenses)
         def normalisedRepoPath = normalisePath(repositoryPath)
         def rootDirPath = normalisePath(".")
@@ -102,7 +109,7 @@ class BuildConfigGenerator extends DefaultTask {
         def dependencyDirectories = []
         def downloadExecutor = Executors.newCachedThreadPool()
         graph.dependencies.values().each { dependency ->
-            if (excludeDependency(dependency, onlyPlayServices)) {
+            if (excludeDependency(dependency)) {
                 return
             }
             logger.debug "Processing ${dependency.name}: \n${jsonDump(dependency)}"
@@ -149,18 +156,16 @@ class BuildConfigGenerator extends DefaultTask {
         downloadExecutor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
 
         // 3. Generate the root level build files
-        updateBuildTargetDeclaration(graph, repositoryPath, normalisedRepoPath, onlyPlayServices,
-            internalTargetVisibility)
+        updateBuildTargetDeclaration(graph, repositoryPath, normalisedRepoPath)
         updateDepsDeclaration(graph, cipdBucket, stripFromCipdPath, repositoryPath,
-                              "${rootDirPath}/DEPS", onlyPlayServices)
+                              "${rootDirPath}/DEPS")
         dependencyDirectories.sort { path1, path2 -> return path1.compareTo(path2) }
         updateReadmeReferenceFile(dependencyDirectories,
                                   "${normalisedRepoPath}/additional_readme_paths.json")
     }
 
-    private static void updateBuildTargetDeclaration(ChromiumDepGraph depGraph,
-            String repositoryPath, String normalisedRepoPath, boolean onlyPlayServices,
-            String[] internalTargetVisibility) {
+    private void updateBuildTargetDeclaration(ChromiumDepGraph depGraph,
+            String repositoryPath, String normalisedRepoPath) {
         File buildFile = new File("${normalisedRepoPath}/BUILD.gn");
         def sb = new StringBuilder()
 
@@ -174,9 +179,22 @@ class BuildConfigGenerator extends DefaultTask {
         }
 
         depGraph.dependencies.values().sort(dependencyComparator).each { dependency ->
-            if (excludeDependency(dependency, onlyPlayServices) || !dependency.generateTarget) {
+            if (excludeDependency(dependency) || !dependency.generateTarget) {
                 return
             }
+
+            def targetName = translateTargetName(dependency.id) + "_java"
+            if (useDedicatedAndroidxDir && targetName.startsWith("androidx_")) {
+                assert dependency.extension == 'jar' || dependency.extension == 'aar'
+                sb.append("""
+                java_group("${targetName}") {
+                  deps = [ \"//third_party/androidx:${targetName}\" ]
+                """.stripIndent())
+                if (dependency.testOnly) sb.append("  testonly = true\n")
+                sb.append("}\n\n")
+                return
+            }
+
             def depsStr = ""
             if (!dependency.children.isEmpty()) {
                 dependency.children.each { childDep ->
@@ -187,23 +205,22 @@ class BuildConfigGenerator extends DefaultTask {
                     // Special case: If a child dependency is an existing lib, rather than skipping
                     // it, replace the child dependency with the existing lib.
                     def existingLib = EXISTING_LIBS.get(dep.id)
-                    def targetName = translateTargetName(dep.id) + "_java"
+                    def depTargetName = translateTargetName(dep.id) + "_java"
                     if (existingLib != null) {
                         depsStr += "\"${existingLib}\","
-                    } else if (onlyPlayServices && !isPlayServicesTarget(dep.id)) {
-                        depsStr += "\"//third_party/android_deps:${targetName}\","
+                    } else if (excludeDependency(dep)) {
+                        depsStr += "\"//third_party/android_deps:${depTargetName}\","
                     } else if (dep.id == "com_google_android_material_material") {
                         // Material design is pulled in via doubledown, should
                         // use the variable instead of the real target.
                         depsStr += "\"\\\$material_design_target\","
                     } else {
-                        depsStr += "\":${targetName}\","
+                        depsStr += "\":${depTargetName}\","
                     }
                 }
             }
 
             def libPath = "${DOWNLOAD_DIRECTORY_NAME}/${dependency.id}"
-            def targetName = translateTargetName(dependency.id) + "_java"
             sb.append(BUILD_GN_GEN_REMINDER)
             if (dependency.extension == 'jar') {
                 sb.append("""\
@@ -229,11 +246,8 @@ class BuildConfigGenerator extends DefaultTask {
                 throw new IllegalStateException("Dependency type should be JAR or AAR")
             }
 
-            if (!dependency.visible) {
-              sb.append("  # To remove visibility constraint, add this dependency to\n")
-              sb.append("  # //${repositoryPath}/build.gradle.\n")
-              sb.append("  visibility = " + makeGnArray(internalTargetVisibility) + "\n")
-            }
+            sb.append(generateBuildTargetVisibilityDeclaration(dependency))
+
             if (dependency.testOnly) sb.append("  testonly = true\n")
             if (!depsStr.empty) sb.append("  deps = [${depsStr}]\n")
             addSpecialTreatment(sb, dependency.id, dependency.extension)
@@ -259,6 +273,34 @@ class BuildConfigGenerator extends DefaultTask {
         // backwards compatibility. Datatransport is new as of 2019 and is used by many play
         // services libraries.
         return Pattern.matches(".*google.*(play_services|firebase|datatransport).*", dependencyId)
+    }
+
+    public String generateBuildTargetVisibilityDeclaration(
+            ChromiumDepGraph.DependencyDescription dependency) {
+        def sb = new StringBuilder()
+        switch (dependency.id) {
+            case 'com_google_android_material_material':
+                sb.append('  # Material Design is pulled in via Doubledown, thus this target should not\n')
+                sb.append('  # be directly depended on. Please use :material_design_java instead.\n')
+                sb.append(generateInternalTargetVisibilityLine())
+                return sb.toString()
+            case 'com_google_protobuf_protobuf_javalite':
+                sb.append('  # Protobuf runtime is pulled in via Doubledown, thus this target should not\n')
+                sb.append('  # be directly depended on. Please use :protobuf_lite_runtime_java instead.\n')
+                sb.append(generateInternalTargetVisibilityLine())
+                return sb.toString()
+        }
+
+        if (!dependency.visible) {
+            sb.append('  # To remove visibility constraint, add this dependency to\n')
+            sb.append("  # //${repositoryPath}/build.gradle.\n")
+            sb.append(generateInternalTargetVisibilityLine())
+        }
+        return sb.toString()
+    }
+
+    private String generateInternalTargetVisibilityLine() {
+        return 'visibility = ' + makeGnArray(internalTargetVisibility) + '\n'
     }
 
     private static void addSpecialTreatment(StringBuilder sb, String dependencyId, String dependencyExtension) {
@@ -354,10 +396,6 @@ class BuildConfigGenerator extends DefaultTask {
                 sb.append('\n')
                 sb.append('  # Reduce binary size. https:crbug.com/954584\n')
                 sb.append('  ignore_proguard_configs = true\n')
-                sb.append('\n')
-                sb.append('  # Material Design is pulled in via Doubledown, thus this target should not\n')
-                sb.append('  # be directly depended on. Please use :material_design_java instead.\n')
-                sb.append('  visibility = [ ":*" ]\n')
                 break
             case 'com_android_support_support_annotations':
                 sb.append('  # https://crbug.com/989505\n')
@@ -468,10 +506,6 @@ class BuildConfigGenerator extends DefaultTask {
                 sb.append('  ignore_manifest = true\n')
                 break
             case 'com_google_protobuf_protobuf_javalite':
-                sb.append('  # Protobuf runtime is pulled in via Doubledown, thus this target should not\n')
-                sb.append('  # be directly depended on. Please use :protobuf_lite_runtime_java instead.\n')
-                sb.append('  visibility = [ ":*" ]\n')
-                sb.append('\n')
                 sb.append('  # Prebuilt protos in the runtime library.\n')
                 sb.append('  # If you want to use these protos, you should create a proto_java_library\n')
                 sb.append('  # target for them. See crbug.com/1103399 for discussion.\n')
@@ -493,7 +527,10 @@ class BuildConfigGenerator extends DefaultTask {
                 sb.append('  ]')
                 break
             case 'androidx_webkit_webkit':
-                sb.append('  visibility = ["//android_webview/tools/system_webview_shell:*"]\n')
+                sb.append('  visibility = [\n')
+                sb.append('    "//android_webview/tools/system_webview_shell:*",\n')
+                sb.append('    "//third_party/android_deps:*"\n')
+                sb.append('  ]')
                 break
             case 'com_android_tools_desugar_jdk_libs_configuration':
                 sb.append('  enable_bytecode_checks = false\n')
@@ -501,9 +538,9 @@ class BuildConfigGenerator extends DefaultTask {
         }
     }
 
-    private static void updateDepsDeclaration(ChromiumDepGraph depGraph, String cipdBucket,
+    private void updateDepsDeclaration(ChromiumDepGraph depGraph, String cipdBucket,
                                               String stripFromCipdPath, String repoPath,
-                                              String depsFilePath, boolean onlyPlayServices) {
+                                              String depsFilePath) {
         File depsFile = new File(depsFilePath)
         def sb = new StringBuilder()
         // Note: The string we're inserting is nested 1 level, hence the 2 leading spaces. Same
@@ -516,7 +553,7 @@ class BuildConfigGenerator extends DefaultTask {
         }
 
         depGraph.dependencies.values().sort(dependencyComparator).each { dependency ->
-            if (excludeDependency(dependency, onlyPlayServices)) {
+            if (excludeDependency(dependency)) {
                 return
             }
             def depPath = "${DOWNLOAD_DIRECTORY_NAME}/${dependency.id}"
@@ -554,10 +591,12 @@ class BuildConfigGenerator extends DefaultTask {
         refFile.write(JsonOutput.prettyPrint(JsonOutput.toJson(directories)) + "\n")
     }
 
-    public static boolean excludeDependency(ChromiumDepGraph.DependencyDescription dependency,
-                                             boolean onlyPlayServices) {
+    public boolean excludeDependency(ChromiumDepGraph.DependencyDescription dependency) {
+        def onlyAndroidx = (repositoryPath == "third_party/androidx")
         return dependency.exclude || EXISTING_LIBS.get(dependency.id) != null ||
-                (onlyPlayServices && !isPlayServicesTarget(dependency.id))
+                (onlyPlayServices && !isPlayServicesTarget(dependency.id)) ||
+                (onlyAndroidx && !dependency.id.startsWith("androidx_")) ||
+                (useDedicatedAndroidxDir && dependency.id == "androidx_legacy_legacy_preference_v14")
     }
 
     private String normalisePath(String pathRelativeToChromiumRoot) {
