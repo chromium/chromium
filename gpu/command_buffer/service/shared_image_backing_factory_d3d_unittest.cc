@@ -11,6 +11,7 @@
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
+#include "gpu/command_buffer/service/shared_image_backing_d3d.h"
 #include "gpu/command_buffer/service/shared_image_factory.h"
 #include "gpu/command_buffer/service/shared_image_manager.h"
 #include "gpu/command_buffer/service/shared_image_representation.h"
@@ -846,5 +847,72 @@ TEST_F(SharedImageBackingFactoryD3DTest, SkiaAccessFirstFails) {
           skia_representation->BeginScopedReadAccess(nullptr, nullptr);
   EXPECT_EQ(scoped_read_access, nullptr);
 }
+
+TEST_F(SharedImageBackingFactoryD3DTest, CreateSharedImageFromHandle) {
+  if (!IsD3DSharedImageSupported())
+    return;
+
+  EXPECT_TRUE(
+      shared_image_factory_->CanImportGpuMemoryBuffer(gfx::DXGI_SHARED_HANDLE));
+
+  Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
+      shared_image_factory_->GetDeviceForTesting();
+
+  const gfx::Size size(1, 1);
+  D3D11_TEXTURE2D_DESC desc;
+  desc.Width = size.width();
+  desc.Height = size.height();
+  desc.MipLevels = 1;
+  desc.ArraySize = 1;
+  desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+  desc.SampleDesc.Count = 1;
+  desc.SampleDesc.Quality = 0;
+  desc.Usage = D3D11_USAGE_DEFAULT;
+  desc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
+  desc.CPUAccessFlags = 0;
+  desc.MiscFlags =
+      D3D11_RESOURCE_MISC_SHARED_NTHANDLE | D3D11_RESOURCE_MISC_SHARED;
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture;
+  HRESULT hr = d3d11_device->CreateTexture2D(&desc, nullptr, &d3d11_texture);
+  ASSERT_EQ(hr, S_OK);
+
+  Microsoft::WRL::ComPtr<IDXGIResource1> dxgi_resource;
+  hr = d3d11_texture.As(&dxgi_resource);
+  ASSERT_EQ(hr, S_OK);
+
+  HANDLE shared_handle;
+  hr = dxgi_resource->CreateSharedHandle(
+      nullptr, DXGI_SHARED_RESOURCE_READ | DXGI_SHARED_RESOURCE_WRITE, nullptr,
+      &shared_handle);
+  ASSERT_EQ(hr, S_OK);
+
+  gfx::GpuMemoryBufferHandle gpu_memory_buffer_handle;
+  gpu_memory_buffer_handle.dxgi_handle.Set(shared_handle);
+  gpu_memory_buffer_handle.type = gfx::DXGI_SHARED_HANDLE;
+
+  auto mailbox = Mailbox::GenerateForSharedImage();
+  const auto format = gfx::BufferFormat::RGBA_8888;
+  const auto color_space = gfx::ColorSpace::CreateSRGB();
+  const uint32_t usage = SHARED_IMAGE_USAGE_GLES2 | SHARED_IMAGE_USAGE_DISPLAY;
+  const gpu::SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;
+  const GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
+  const SkAlphaType alpha_type = kPremul_SkAlphaType;
+  auto backing = shared_image_factory_->CreateSharedImage(
+      mailbox, 0, std::move(gpu_memory_buffer_handle), format, surface_handle,
+      size, color_space, surface_origin, alpha_type, usage);
+  ASSERT_NE(backing, nullptr);
+
+  EXPECT_EQ(backing->format(), viz::RGBA_8888);
+  EXPECT_EQ(backing->size(), size);
+  EXPECT_EQ(backing->color_space(), color_space);
+  EXPECT_EQ(backing->surface_origin(), surface_origin);
+  EXPECT_EQ(backing->alpha_type(), alpha_type);
+  EXPECT_EQ(backing->mailbox(), mailbox);
+
+  SharedImageBackingD3D* backing_d3d =
+      static_cast<SharedImageBackingD3D*>(backing.get());
+  EXPECT_EQ(backing_d3d->GetSharedHandle(), shared_handle);
+}
+
 }  // anonymous namespace
 }  // namespace gpu

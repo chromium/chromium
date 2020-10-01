@@ -162,6 +162,7 @@ Mailbox SharedImageInterfaceProxy::CreateSharedImage(
     uint32_t usage) {
   DCHECK(gpu_memory_buffer->GetType() == gfx::NATIVE_PIXMAP ||
          gpu_memory_buffer->GetType() == gfx::ANDROID_HARDWARE_BUFFER ||
+         gpu_memory_buffer->GetType() == gfx::DXGI_SHARED_HANDLE ||
          gpu_memory_buffer_manager);
 
   auto mailbox = Mailbox::GenerateForSharedImage();

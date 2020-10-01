@@ -96,6 +96,10 @@ class GPU_GLES2_EXPORT SharedImageBackingFactoryD3D
   bool CanImportGpuMemoryBuffer(
       gfx::GpuMemoryBufferType memory_buffer_type) override;
 
+  Microsoft::WRL::ComPtr<ID3D11Device> GetDeviceForTesting() const {
+    return d3d11_device_;
+  }
+
  private:
   // Wraps the optional swap chain buffer (front buffer/back buffer) and texture
   // into GLimage and creates a GL texture and stores it as gles2::Texture or as
