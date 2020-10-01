@@ -978,7 +978,6 @@ typedef NS_ENUM(NSInteger, CheckStartStates) {
   self.updateCheckItem.enabled = YES;
   self.updateCheckItem.indicatorHidden = YES;
   self.updateCheckItem.infoButtonHidden = YES;
-  self.updateCheckItem.detailText = nil;
   self.updateCheckItem.trailingImage = nil;
   self.updateCheckItem.trailingImageTintColor = nil;
   self.updateCheckItem.accessoryType = UITableViewCellAccessoryNone;
@@ -987,8 +986,11 @@ typedef NS_ENUM(NSInteger, CheckStartStates) {
   [self resetsCheckStartItemIfNeeded];
 
   switch (self.updateCheckRowState) {
-    case UpdateCheckRowStateDefault:
+    case UpdateCheckRowStateDefault: {
+      self.updateCheckItem.detailText =
+          GetNSString(IDS_IOS_SETTINGS_SAFETY_CHECK_UPDATES_DESCRIPTION);
       break;
+    }
     case UpdateCheckRowStateRunning: {
       self.updateCheckItem.indicatorHidden = NO;
       break;
@@ -1063,7 +1065,6 @@ typedef NS_ENUM(NSInteger, CheckStartStates) {
   self.passwordCheckItem.enabled = YES;
   self.passwordCheckItem.indicatorHidden = YES;
   self.passwordCheckItem.infoButtonHidden = YES;
-  self.passwordCheckItem.detailText = nil;
   self.passwordCheckItem.trailingImage = nil;
   self.passwordCheckItem.trailingImageTintColor = nil;
   self.passwordCheckItem.accessoryType = UITableViewCellAccessoryNone;
@@ -1072,8 +1073,11 @@ typedef NS_ENUM(NSInteger, CheckStartStates) {
   [self resetsCheckStartItemIfNeeded];
 
   switch (self.passwordCheckRowState) {
-    case PasswordCheckRowStateDefault:
+    case PasswordCheckRowStateDefault: {
+      self.passwordCheckItem.detailText =
+          GetNSString(IDS_IOS_SETTINGS_SAFETY_CHECK_PASSWORDS_DESCRIPTION);
       break;
+    }
     case PasswordCheckRowStateRunning: {
       self.passwordCheckItem.indicatorHidden = NO;
       break;
@@ -1123,7 +1127,6 @@ typedef NS_ENUM(NSInteger, CheckStartStates) {
   self.safeBrowsingCheckItem.enabled = YES;
   self.safeBrowsingCheckItem.indicatorHidden = YES;
   self.safeBrowsingCheckItem.infoButtonHidden = YES;
-  self.safeBrowsingCheckItem.detailText = nil;
   self.safeBrowsingCheckItem.trailingImage = nil;
   self.safeBrowsingCheckItem.trailingImageTintColor = nil;
   self.safeBrowsingCheckItem.accessoryType = UITableViewCellAccessoryNone;
@@ -1132,8 +1135,11 @@ typedef NS_ENUM(NSInteger, CheckStartStates) {
   [self resetsCheckStartItemIfNeeded];
 
   switch (self.safeBrowsingCheckRowState) {
-    case SafeBrowsingCheckRowStateDefault:
+    case SafeBrowsingCheckRowStateDefault: {
+      self.safeBrowsingCheckItem.detailText =
+          GetNSString(IDS_IOS_SETTINGS_SAFETY_CHECK_SAFE_BROWSING_DESCRIPTION);
       break;
+    }
     case SafeBrowsingCheckRowStateRunning: {
       self.safeBrowsingCheckItem.indicatorHidden = NO;
       break;
