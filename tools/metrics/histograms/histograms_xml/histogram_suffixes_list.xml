@@ -5320,6 +5320,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="Quad9Cdn" label="Quad9 cdn service."/>
   <suffix name="Quad9Insecure" label="Quad9 insecure service."/>
   <suffix name="Quad9Secure" label="Quad9 secure service."/>
+  <suffix name="Quickline" label="Quickline AS15600"/>
   <suffix name="Spectrum1"
       label="Charter Communications/Spectrum DoH endpoint1."/>
   <suffix name="Spectrum2"

@@ -179,6 +179,14 @@ const DohProviderEntry::List& DohProviderEntry::GetList() {
           "https://www.quad9.net/home/privacy/" /* privacy_policy */,
           true /* display_globally */, {} /* display_countries */),
       new DohProviderEntry(
+          "Quickline", base::nullopt /* provider_id_for_histogram */,
+          {"212.60.61.246", "212.60.63.246", "2001:1a88:10:ffff::1",
+           "2001:1a88:10:ffff::2"},
+          {"dot.quickline.ch"} /* dns_over_tls_hostnames */,
+          "https://doh.quickline.ch/dns-query{?dns}", "" /* ui_name */,
+          "" /* privacy_policy */, false /* display_globally */,
+          {} /* display_countries */),
+      new DohProviderEntry(
           "Spectrum1", base::nullopt /* provider_id_for_histogram */,
           {"209.18.47.61", "209.18.47.62", "2001:1998:0f00:0001::1",
            "2001:1998:0f00:0002::1"},
