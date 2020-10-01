@@ -24,5 +24,5 @@ ENABLE_FORCE_FULL_DAMAGE = "--direct-composition-force-full-damage-for-testing"
 ENABLE_GPU_BENCHMARKING = '--enable-gpu-benchmarking'
 ENSURE_FORCED_COLOR_PROFILE = '--ensure-forced-color-profile'
 FORCE_COLOR_PROFILE_SRGB = '--force-color-profile=srgb'
-FORCE_GPU_RASTERIZATION = '--force-gpu-rasterization'
+ENABLE_GPU_RASTERIZATION = '--enable-gpu-rasterization'
 TEST_TYPE_GPU = '--test-type=gpu'

@@ -90,9 +90,9 @@ class ScreenshotSyncIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     yield ('ScreenshotSync_SWRasterWithDivs', 'screenshot_sync_divs.html',
            ('--disable-gpu-rasterization'))
     yield ('ScreenshotSync_GPURasterWithCanvas', 'screenshot_sync_canvas.html',
-           (cba.FORCE_GPU_RASTERIZATION))
+           (cba.ENABLE_GPU_RASTERIZATION))
     yield ('ScreenshotSync_GPURasterWithDivs', 'screenshot_sync_divs.html',
-           (cba.FORCE_GPU_RASTERIZATION))
+           (cba.ENABLE_GPU_RASTERIZATION))
 
   def _Navigate(self, test_path):
     url = self.UrlOfStaticFilePath(test_path)

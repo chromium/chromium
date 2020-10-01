@@ -330,7 +330,7 @@ class PixelTestPages(object):
   @staticmethod
   def GpuRasterizationPages(base_name):
     browser_args = [
-        cba.FORCE_GPU_RASTERIZATION,
+        cba.ENABLE_GPU_RASTERIZATION,
         cba.DISABLE_SOFTWARE_COMPOSITING_FALLBACK,
     ]
     return [
