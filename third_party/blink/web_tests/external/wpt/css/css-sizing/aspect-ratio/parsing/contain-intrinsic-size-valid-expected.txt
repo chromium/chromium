@@ -12,6 +12,6 @@ PASS e.style['aspect-ratio'] = "0 / 9" should set the property value
 PASS e.style['aspect-ratio'] = "16 / 0" should set the property value
 PASS e.style['aspect-ratio'] = "auto 16" should set the property value
 PASS e.style['aspect-ratio'] = "16 auto" should set the property value
-FAIL e.style['aspect-ratio'] = "0 / 0" should set the property value assert_equals: serialization should be canonical expected "1 / 0" but got "0 / 0"
+PASS e.style['aspect-ratio'] = "0 / 0" should set the property value
 Harness: the test ran to completion.
 
