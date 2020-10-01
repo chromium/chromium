@@ -788,7 +788,7 @@ void ProtocolHandlerRegistry::AddPredefinedHandler(
 shell_integration::DefaultWebClientWorkerCallback
 ProtocolHandlerRegistry::GetDefaultWebClientCallback(
     const std::string& protocol) {
-  return base::Bind(
+  return base::BindOnce(
       &ProtocolHandlerRegistry::OnSetAsDefaultProtocolClientFinished,
       weak_ptr_factory_.GetWeakPtr(), protocol);
 }
