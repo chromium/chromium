@@ -279,4 +279,31 @@ TEST_F(DefaultFrameHeaderTest, ResizeAndReorderDuringAnimation) {
   }
 }
 
+// Make sure that the animation request while animating will not
+// create another animation.
+TEST_F(DefaultFrameHeaderTest, AnimateDuringAnimation) {
+  const auto bounds = gfx::Rect(100, 100);
+  auto win_0 = CreateAppWindow(bounds, AppType::BROWSER);
+  // A frame will not animate until it is painted first.
+  FramePaintWaiter(win_0.get()).Wait();
+
+  auto* widget = Widget::GetWidgetForNativeWindow(win_0.get());
+
+  auto lock = widget->LockPaintAsActive();
+  auto win_1 = CreateAppWindow(bounds, AppType::BROWSER);
+  FramePaintWaiter(win_1.get()).Wait();
+
+  EXPECT_TRUE(wm::IsActiveWindow(win_1.get()));
+
+  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  auto layer_bounds = win_0->layer()->bounds();
+  lock.reset();
+  win_1.reset();
+  EXPECT_TRUE(wm::IsActiveWindow(win_0.get()));
+  // Makes sure that the layer has full damaged bounds.
+  EXPECT_TRUE(win_0->layer()->damaged_region().Contains(layer_bounds));
+}
+
 }  // namespace ash
