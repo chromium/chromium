@@ -49,8 +49,8 @@ class SyncBackendRegistrar {
 
   // Adds |type| to set of non-blocking types. These types are assigned to
   // GROUP_NON_BLOCKING model safe group and will be treated differently in
-  // ModelTypeRegistry. Unlike directory types, non-blocking types always stay
-  // assigned to GROUP_NON_BLOCKING group.
+  // ModelTypeRegistry. Unlike the legacy Directory types, non-blocking types
+  // always stay assigned to GROUP_NON_BLOCKING group.
   void RegisterNonBlockingType(ModelType type);
 
   // Informs the SyncBackendRegistrar of the currently enabled set of types.

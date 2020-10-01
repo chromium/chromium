@@ -175,7 +175,6 @@ class SyncManagerTest : public testing::Test {
     encryption_observer_ = encryption_observer.get();
 
     SyncManager::InitArgs args;
-    args.database_location = temp_dir_.GetPath();
     args.service_url = GURL("https://example.com/");
     args.post_factory = std::make_unique<TestHttpPostProviderFactory>();
     args.workers = workers;

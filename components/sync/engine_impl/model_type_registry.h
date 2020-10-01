@@ -124,10 +124,10 @@ class ModelTypeRegistry : public ModelTypeConnector,
   // The known ModelSafeWorkers.
   std::map<ModelSafeGroup, scoped_refptr<ModelSafeWorker>> workers_map_;
 
-  // A copy of the directory's most recent cryptographer.
+  // A copy of the most recent cryptographer.
   std::unique_ptr<Cryptographer> cryptographer_;
 
-  // A copy of the directory's most recent passphrase type.
+  // A copy of the most recent passphrase type.
   PassphraseType passphrase_type_ =
       SyncEncryptionHandler::kInitialPassphraseType;
 

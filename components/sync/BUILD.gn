@@ -206,7 +206,6 @@ static_library("rest_of_sync") {
     "engine_impl/syncer.h",
     "engine_impl/syncer_proto_util.cc",
     "engine_impl/syncer_proto_util.h",
-    "engine_impl/syncer_types.h",
     "engine_impl/traffic_logger.cc",
     "engine_impl/traffic_logger.h",
     "engine_impl/update_handler.cc",

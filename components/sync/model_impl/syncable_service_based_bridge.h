@@ -31,8 +31,8 @@ class SyncableService;
 
 // Implementation of ModelTypeSyncBridge that allows integrating legacy
 // datatypes that implement SyncableService. Internally, it uses a database to
-// persist and mimic the legacy directory's behavior, but as opposed to the
-// legacy directory, it's not exposed anywhere outside this bridge, and is
+// persist and mimic the legacy Directory's behavior, but as opposed to the
+// legacy Directory, it's not exposed anywhere outside this bridge, and is
 // considered an implementation detail.
 class SyncableServiceBasedBridge : public ModelTypeSyncBridge {
  public:

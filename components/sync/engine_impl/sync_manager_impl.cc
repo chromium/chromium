@@ -28,7 +28,6 @@
 #include "components/sync/engine_impl/model_type_connector_proxy.h"
 #include "components/sync/engine_impl/net/sync_server_connection_manager.h"
 #include "components/sync/engine_impl/sync_scheduler.h"
-#include "components/sync/engine_impl/syncer_types.h"
 #include "components/sync/nigori/cryptographer.h"
 #include "components/sync/nigori/keystore_keys_handler.h"
 #include "components/sync/nigori/nigori.h"

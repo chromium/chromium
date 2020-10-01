@@ -42,7 +42,7 @@ void SyncBackendRegistrar::SetInitialTypes(ModelTypeSet initial_types) {
   // routing info at that point is expected to be empty.
   DCHECK(routing_info_.empty());
 
-  // Set our initial state to reflect the current status of the sync directory.
+  // Set our initial state to reflect the current status of the sync Directory.
   // This will ensure that our calculations in ConfigureDataTypes() will always
   // return correct results.
   for (ModelType type : initial_types) {

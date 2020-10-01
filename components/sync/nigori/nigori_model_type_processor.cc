@@ -237,7 +237,7 @@ void NigoriModelTypeProcessor::GetAllNodesForDebugging(
 
   if (entity_) {
     const sync_pb::EntityMetadata& metadata = entity_->metadata();
-    // Set id value as directory, "s" means server.
+    // Set id value as the legacy Directory implementation, "s" means server.
     entity_data->id = "s" + metadata.server_id();
     entity_data->creation_time = ProtoTimeToTime(metadata.creation_time());
     entity_data->modification_time =

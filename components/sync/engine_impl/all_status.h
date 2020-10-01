@@ -16,7 +16,6 @@
 #include "components/sync/engine/sync_status.h"
 #include "components/sync/engine_impl/nudge_source.h"
 #include "components/sync/engine_impl/sync_engine_event_listener.h"
-#include "components/sync/engine_impl/syncer_types.h"
 
 namespace syncer {
 

@@ -13,8 +13,8 @@ package sync_pb;
 
 import "components/sync/protocol/sync.proto";
 
-// Sync proto to store entity data similar to what directory stores, used to
-// persist data locally and never sent through the wire.
+// Sync proto to store entity data similar to what the legacy Directory used
+// to store, used to persist data locally and never sent through the wire.
 //
 // Because it's conceptually similar to SyncEntity (actual protocol) and it's
 // unclear how big this'll grow, we've kept compatibility with SyncEntity by

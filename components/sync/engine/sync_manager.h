@@ -93,10 +93,6 @@ class SyncManager {
     InitArgs();
     ~InitArgs();
 
-    // Path in which to create or open sync's sqlite database (aka the
-    // directory).
-    base::FilePath database_location;
-
     // Used to propagate events to chrome://sync-internals.  Optional.
     WeakHandle<JsEventHandler> event_handler;
 

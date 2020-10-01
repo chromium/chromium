@@ -655,7 +655,7 @@ void ProfileSyncService::Shutdown() {
 void ProfileSyncService::ShutdownImpl(ShutdownReason reason) {
   if (!engine_) {
     // If the engine hasn't started or is already shut down when a DISABLE_SYNC
-    // happens, the data directory needs to be cleaned up here.
+    // happens, the Directory needs to be cleaned up here.
     if (reason == ShutdownReason::DISABLE_SYNC) {
       // Clearing the Directory via DeleteLegacyDirectoryFilesAndNigoriStorage()
       // means there's IO involved which may we considerable overhead if

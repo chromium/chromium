@@ -316,7 +316,6 @@ void SyncEngineBackend::DoInitialize(SyncEngine::InitParams params) {
   sync_manager_->AddObserver(this);
 
   SyncManager::InitArgs args;
-  args.database_location = sync_data_folder_;
   args.event_handler = params.event_handler;
   args.service_url = params.service_url;
   args.enable_local_sync_backend = params.enable_local_sync_backend;

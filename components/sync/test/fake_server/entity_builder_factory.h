@@ -35,7 +35,7 @@ class EntityBuilderFactory {
 
  private:
   // An identifier used when creating entities. This value is used similarly to
-  // the value in the Sync directory code.
+  // the value in the legacy Sync Directory code.
   const std::string cache_guid_;
 };
 

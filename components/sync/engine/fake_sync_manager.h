@@ -110,7 +110,7 @@ class FakeSyncManager : public SyncManager {
   base::ObserverList<SyncManager::Observer>::Unchecked observers_;
 
   bool should_fail_on_init_;
-  // Faked directory state.
+  // Faked data state.
   ModelTypeSet initial_sync_ended_types_;
   ModelTypeSet progress_marker_types_;
 

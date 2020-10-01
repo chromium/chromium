@@ -1059,7 +1059,7 @@ void ClientTagBasedModelTypeProcessor::MergeDataWithMetadataForDebugging(
     // |entity| could be null if there are some unapplied changes.
     if (entity != nullptr) {
       const sync_pb::EntityMetadata& metadata = entity->metadata();
-      // Set id value as directory, "s" means server.
+      // Set id value as the legacy Directory implementation, "s" means server.
       data->id = "s" + metadata.server_id();
       data->creation_time = ProtoTimeToTime(metadata.creation_time());
       data->modification_time = ProtoTimeToTime(metadata.modification_time());
@@ -1077,8 +1077,8 @@ void ClientTagBasedModelTypeProcessor::MergeDataWithMetadataForDebugging(
   }
 
   // Create a permanent folder for this data type. Since sync server no longer
-  // create root folders, and USS won't migrate root folders from directory, we
-  // create root folders for each data type here.
+  // creates root folders, and USS won't migrate root folders from the
+  // Directory, we create root folders for each data type here.
   std::unique_ptr<base::DictionaryValue> rootnode =
       std::make_unique<base::DictionaryValue>();
   // Function isTypeRootNode in sync_node_browser.js use PARENT_ID and

@@ -559,8 +559,7 @@ ModelTypeSet DataTypeManagerImpl::PrepareConfigureParams(
   // - Types which are newly enabled are downloaded.
   // - Types which have encountered a cryptographer error (crypto_types) are
   //   unapplied (local state is purged but sync state is not).
-  // - All other types not in the routing info (types just disabled) are deleted
-  //   from the directory.
+  // - All types not in the routing info (types just disabled) are deleted.
   // - Everything else (enabled types and already disabled types) is not
   //   touched.
   const DataTypeConfigStateMap config_state_map =
@@ -612,7 +611,7 @@ ModelTypeSet DataTypeManagerImpl::PrepareConfigureParams(
   // One common way to end up in this situation used to be types which
   // downloaded some or all of their data but have not applied it yet. We avoid
   // problems with those types by purging the data of any such partially synced
-  // types soon after we load the directory.
+  // types soon after we load the Directory.
   //
   // Another possible scenario is that we have newly supported or newly enabled
   // data types being downloaded here but the nigori type, which is always

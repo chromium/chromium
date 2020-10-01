@@ -244,7 +244,7 @@ bool ProcessorEntity::Delete() {
   //  - Original centity was committed to server, but client crashed before
   //    receiving response.
   //  - Entity was deleted while client was offline.
-  // Correct behavior is to send tombstone anyway, but directory based
+  // Correct behavior is to send tombstone anyway, but the legacy Directory
   // implementation doesn't and it is unclear how server will react to such
   // tombstones. Change the behavior to always sending tombstone after
   // experimenting with server.
