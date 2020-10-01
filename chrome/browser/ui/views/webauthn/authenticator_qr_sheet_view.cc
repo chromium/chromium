@@ -52,7 +52,8 @@ class QRView : public views::View {
 
   void RefreshQRCode(base::span<const uint8_t> new_qr_data) {
     state_ = (state_ + 1) % 6;
-    base::Optional<QRCode::GeneratedCode> code = qr_.Generate(new_qr_data);
+    base::Optional<QRCode::GeneratedCode> code =
+        qr_.Generate(new_qr_data, /*mask=*/state_);
     DCHECK(code);
     qr_tiles_ = code->data;
     SchedulePaint();
