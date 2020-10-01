@@ -107,7 +107,7 @@ class HostContentSettingsMap : public content_settings::Observer,
                                           std::string* provider_id) const;
 
   // Returns a single |ContentSetting| which applies to the given URLs.  Note
-  // that certain internal schemes are whitelisted. For |CONTENT_TYPE_COOKIES|,
+  // that certain internal schemes are allowlisted. For |CONTENT_TYPE_COOKIES|,
   // |CookieSettings| should be used instead. For content types that can't be
   // converted to a |ContentSetting|, |GetContentSettingValue| should be called.
   // If there is no content setting, returns CONTENT_SETTING_DEFAULT.
@@ -132,7 +132,7 @@ class HostContentSettingsMap : public content_settings::Observer,
   // source of the returned |Value| (POLICY, EXTENSION, USER, ...) and the
   // |primary_pattern| and the |secondary_pattern| fields of |info| are set to
   // the patterns of the applying rule.  Note that certain internal schemes are
-  // whitelisted. For whitelisted schemes the |source| field of |info| is set
+  // allowlisted. For allowlisted schemes the |source| field of |info| is set
   // the |SETTING_SOURCE_ALLOWLIST| and the |primary_pattern| and
   // |secondary_pattern| are set to a wildcard pattern.  If there is no content
   // setting, NULL is returned and the |source| field of |info| is set to

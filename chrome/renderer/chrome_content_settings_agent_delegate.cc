@@ -57,7 +57,7 @@ bool ChromeContentSettingsAgentDelegate::IsPluginTemporarilyAllowed(
          base::Contains(temporarily_allowed_plugins_, std::string());
 }
 
-bool ChromeContentSettingsAgentDelegate::IsSchemeWhitelisted(
+bool ChromeContentSettingsAgentDelegate::IsSchemeAllowlisted(
     const std::string& scheme) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   return scheme == extensions::kExtensionScheme;

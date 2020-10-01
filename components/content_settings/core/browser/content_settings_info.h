@@ -50,7 +50,7 @@ class ContentSettingsInfo {
 
   // This object does not take ownership of |website_settings_info|.
   ContentSettingsInfo(const WebsiteSettingsInfo* website_settings_info,
-                      const std::vector<std::string>& whitelisted_schemes,
+                      const std::vector<std::string>& allowlisted_schemes,
                       const std::set<ContentSetting>& valid_settings,
                       IncognitoBehavior incognito_behavior,
                       StorageBehavior storage_behavior,
@@ -60,8 +60,8 @@ class ContentSettingsInfo {
   const WebsiteSettingsInfo* website_settings_info() const {
     return website_settings_info_;
   }
-  const std::vector<std::string>& whitelisted_schemes() const {
-    return whitelisted_schemes_;
+  const std::vector<std::string>& allowlisted_schemes() const {
+    return allowlisted_schemes_;
   }
 
   // Gets the original default setting for a particular content type.
@@ -76,7 +76,7 @@ class ContentSettingsInfo {
 
  private:
   const WebsiteSettingsInfo* website_settings_info_;
-  const std::vector<std::string> whitelisted_schemes_;
+  const std::vector<std::string> allowlisted_schemes_;
   const std::set<ContentSetting> valid_settings_;
   const IncognitoBehavior incognito_behavior_;
   const StorageBehavior storage_behavior_;

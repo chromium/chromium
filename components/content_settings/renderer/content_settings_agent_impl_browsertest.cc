@@ -27,7 +27,7 @@
 namespace content_settings {
 namespace {
 
-constexpr char kWhitelistScheme[] = "foo";
+constexpr char kAllowlistScheme[] = "foo";
 constexpr char kEndUrl[] = ":something";
 
 constexpr char kScriptHtml[] = R"HTML(
@@ -86,8 +86,8 @@ class MockContentSettingsManagerImpl : public mojom::ContentSettingsManager {
 class MockContentSettingsAgentDelegate
     : public ContentSettingsAgentImpl::Delegate {
  public:
-  bool IsSchemeWhitelisted(const std::string& scheme) override {
-    return scheme == kWhitelistScheme;
+  bool IsSchemeAllowlisted(const std::string& scheme) override {
+    return scheme == kAllowlistScheme;
   }
 };
 
@@ -182,32 +182,32 @@ class ContentSettingsAgentImplBrowserTest : public content::RenderViewTest {
   }
 };
 
-TEST_F(ContentSettingsAgentImplBrowserTest, WhitelistedSchemes) {
+TEST_F(ContentSettingsAgentImplBrowserTest, AllowlistedSchemes) {
   url::ScopedSchemeRegistryForTests scoped_registry;
-  url::AddStandardScheme(kWhitelistScheme, url::SCHEME_WITH_HOST);
+  url::AddStandardScheme(kAllowlistScheme, url::SCHEME_WITH_HOST);
 
   MockContentSettingsAgentImpl mock_agent(view_->GetMainRenderFrame());
   GURL chrome_ui_url =
       GURL(std::string(content::kChromeUIScheme).append(kEndUrl));
   LoadHTMLWithUrlOverride("<html></html>", chrome_ui_url.spec().c_str());
-  EXPECT_TRUE(mock_agent.IsWhitelistedForContentSettings());
+  EXPECT_TRUE(mock_agent.IsAllowlistedForContentSettings());
 
   GURL chrome_dev_tools_url =
       GURL(std::string(content::kChromeDevToolsScheme).append(kEndUrl));
   LoadHTMLWithUrlOverride("<html></html>", chrome_dev_tools_url.spec().c_str());
-  EXPECT_TRUE(mock_agent.IsWhitelistedForContentSettings());
+  EXPECT_TRUE(mock_agent.IsAllowlistedForContentSettings());
 
-  GURL whitelist_url = GURL(std::string(kWhitelistScheme).append(kEndUrl));
-  LoadHTMLWithUrlOverride("<html></html>", whitelist_url.spec().c_str());
-  EXPECT_TRUE(mock_agent.IsWhitelistedForContentSettings());
+  GURL allowlist_url = GURL(std::string(kAllowlistScheme).append(kEndUrl));
+  LoadHTMLWithUrlOverride("<html></html>", allowlist_url.spec().c_str());
+  EXPECT_TRUE(mock_agent.IsAllowlistedForContentSettings());
 
   LoadHTMLWithUrlOverride("<html></html>", "file:///dir/");
-  EXPECT_TRUE(mock_agent.IsWhitelistedForContentSettings());
+  EXPECT_TRUE(mock_agent.IsAllowlistedForContentSettings());
   LoadHTMLWithUrlOverride("<html></html>", "file:///dir/file");
-  EXPECT_FALSE(mock_agent.IsWhitelistedForContentSettings());
+  EXPECT_FALSE(mock_agent.IsAllowlistedForContentSettings());
 
   LoadHTMLWithUrlOverride("<html></html>", "http://server.com/path");
-  EXPECT_FALSE(mock_agent.IsWhitelistedForContentSettings());
+  EXPECT_FALSE(mock_agent.IsAllowlistedForContentSettings());
 }
 
 TEST_F(ContentSettingsAgentImplBrowserTest, DidBlockContentType) {

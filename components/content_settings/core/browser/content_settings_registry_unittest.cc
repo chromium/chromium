@@ -68,7 +68,7 @@ TEST_F(ContentSettingsRegistryTest, Properties) {
       registry()->Get(ContentSettingsType::COOKIES);
   ASSERT_TRUE(info);
 
-  EXPECT_THAT(info->whitelisted_schemes(), ElementsAre("chrome", "devtools"));
+  EXPECT_THAT(info->allowlisted_schemes(), ElementsAre("chrome", "devtools"));
 
   // Check the other properties are populated correctly.
   EXPECT_TRUE(info->IsSettingValid(CONTENT_SETTING_SESSION_ONLY));

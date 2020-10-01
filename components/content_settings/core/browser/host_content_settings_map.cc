@@ -107,7 +107,7 @@ bool SupportsResourceIdentifier(ContentSettingsType content_type) {
   return content_type == ContentSettingsType::PLUGINS;
 }
 
-bool SchemeCanBeWhitelisted(const std::string& scheme) {
+bool SchemeCanBeAllowlisted(const std::string& scheme) {
   return scheme == content_settings::kChromeDevToolsScheme ||
          scheme == content_settings::kExtensionScheme ||
          scheme == content_settings::kChromeUIScheme;
@@ -895,7 +895,7 @@ std::unique_ptr<base::Value> HostContentSettingsMap::GetWebsiteSetting(
   DCHECK(SupportsResourceIdentifier(content_type) ||
          resource_identifier.empty());
 
-  // Check if the requested setting is whitelisted.
+  // Check if the requested setting is allowlisted.
   // TODO(raymes): Move this into GetContentSetting. This has nothing to do with
   // website settings
   const content_settings::ContentSettingsInfo* content_settings_info =
@@ -903,8 +903,8 @@ std::unique_ptr<base::Value> HostContentSettingsMap::GetWebsiteSetting(
           content_type);
   if (content_settings_info) {
     for (const std::string& scheme :
-         content_settings_info->whitelisted_schemes()) {
-      DCHECK(SchemeCanBeWhitelisted(scheme));
+         content_settings_info->allowlisted_schemes()) {
+      DCHECK(SchemeCanBeAllowlisted(scheme));
 
       if (primary_url.SchemeIs(scheme)) {
         if (info) {

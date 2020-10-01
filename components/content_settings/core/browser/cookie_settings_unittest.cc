@@ -149,7 +149,7 @@ class CookieSettingsTest : public testing::Test {
   base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_F(CookieSettingsTest, TestWhitelistedScheme) {
+TEST_F(CookieSettingsTest, TestAllowlistedScheme) {
   cookie_settings_->SetDefaultCookieSetting(CONTENT_SETTING_BLOCK);
   EXPECT_FALSE(cookie_settings_->IsCookieAccessAllowed(kHttpSite, kChromeURL));
   EXPECT_TRUE(cookie_settings_->IsCookieAccessAllowed(kHttpsSite, kChromeURL));

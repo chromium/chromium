@@ -76,7 +76,7 @@ bool IsFrameWithOpaqueOrigin(WebFrame* frame) {
 
 ContentSettingsAgentImpl::Delegate::~Delegate() = default;
 
-bool ContentSettingsAgentImpl::Delegate::IsSchemeWhitelisted(
+bool ContentSettingsAgentImpl::Delegate::IsSchemeAllowlisted(
     const std::string& scheme) {
   return false;
 }
@@ -100,12 +100,12 @@ void ContentSettingsAgentImpl::Delegate::PassiveInsecureContentFound(
 
 ContentSettingsAgentImpl::ContentSettingsAgentImpl(
     content::RenderFrame* render_frame,
-    bool should_whitelist,
+    bool should_allowlist,
     std::unique_ptr<Delegate> delegate)
     : content::RenderFrameObserver(render_frame),
       content::RenderFrameObserverTracker<ContentSettingsAgentImpl>(
           render_frame),
-      should_whitelist_(should_whitelist),
+      should_allowlist_(should_allowlist),
       delegate_(std::move(delegate)) {
   DCHECK(delegate_);
   ClearBlockedContentSettings();
@@ -337,7 +337,7 @@ bool ContentSettingsAgentImpl::AllowImage(bool enabled_per_settings,
     if (is_interstitial_page_)
       return true;
 
-    if (IsWhitelistedForContentSettings())
+    if (IsAllowlistedForContentSettings())
       return true;
 
     if (content_setting_rules_) {
@@ -365,7 +365,7 @@ bool ContentSettingsAgentImpl::AllowScript(bool enabled_per_settings) {
     return it->second;
 
   // Evaluate the content setting rules before
-  // IsWhitelistedForContentSettings(); if there is only the default rule
+  // IsAllowlistedForContentSettings(); if there is only the default rule
   // allowing all scripts, it's quicker this way.
   bool allow = true;
   if (content_setting_rules_) {
@@ -374,7 +374,7 @@ bool ContentSettingsAgentImpl::AllowScript(bool enabled_per_settings) {
         url::Origin(frame->GetDocument().GetSecurityOrigin()).GetURL());
     allow = setting != CONTENT_SETTING_BLOCK;
   }
-  allow = allow || IsWhitelistedForContentSettings();
+  allow = allow || IsAllowlistedForContentSettings();
 
   cached_script_permissions_[frame] = allow;
   return allow;
@@ -397,7 +397,7 @@ bool ContentSettingsAgentImpl::AllowScriptFromSource(
                                    render_frame()->GetWebFrame(), script_url);
     allow = setting != CONTENT_SETTING_BLOCK;
   }
-  return allow || IsWhitelistedForContentSettings();
+  return allow || IsAllowlistedForContentSettings();
 }
 
 bool ContentSettingsAgentImpl::AllowReadFromClipboard(bool default_value) {
@@ -471,11 +471,11 @@ void ContentSettingsAgentImpl::ClearBlockedContentSettings() {
   cached_script_permissions_.clear();
 }
 
-bool ContentSettingsAgentImpl::IsWhitelistedForContentSettings() const {
-  if (should_whitelist_)
+bool ContentSettingsAgentImpl::IsAllowlistedForContentSettings() const {
+  if (should_allowlist_)
     return true;
 
-  // Whitelist ftp directory listings, as they require JavaScript to function
+  // Allowlist ftp directory listings, as they require JavaScript to function
   // properly.
   if (render_frame()->IsFTPDirectoryListing())
     return true;
@@ -497,7 +497,7 @@ bool ContentSettingsAgentImpl::IsWhitelistedForContentSettings() const {
   if (protocol == content::kChromeDevToolsScheme)
     return true;  // DevTools UI elements should still work.
 
-  if (delegate_->IsSchemeWhitelisted(protocol.Utf8()))
+  if (delegate_->IsSchemeAllowlisted(protocol.Utf8()))
     return true;
 
   // If the scheme is file:, an empty file name indicates a directory listing,

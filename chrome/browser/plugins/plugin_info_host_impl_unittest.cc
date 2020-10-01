@@ -309,7 +309,7 @@ TEST_F(PluginInfoHostImplTest, RunAllFlashInAllowMode) {
   EXPECT_THAT(status, Eq(chrome::mojom::PluginStatus::kAllowed));
 }
 
-TEST_F(PluginInfoHostImplTest, PluginsOnlyAllowedInWhitelistedSchemes) {
+TEST_F(PluginInfoHostImplTest, PluginsOnlyAllowedInAllowlistedSchemes) {
   host_content_settings_map()->SetDefaultContentSetting(
       ContentSettingsType::PLUGINS, CONTENT_SETTING_DETECT_IMPORTANT_CONTENT);
 

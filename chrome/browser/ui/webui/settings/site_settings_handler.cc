@@ -292,7 +292,7 @@ bool IsPatternValidForType(const std::string& pattern_string,
 
   // Don't allow patterns for WebUI schemes, even though it's a valid pattern.
   // WebUI permissions are controlled by ContentSettingsRegistry
-  // WhitelistedSchemes and WebUIAllowlist. Users shouldn't be able to grant
+  // AllowlistedSchemes and WebUIAllowlist. Users shouldn't be able to grant
   // extra permissions or revoke existing permissions.
   if (pattern.GetScheme() == ContentSettingsPattern::SCHEME_CHROME ||
       pattern.GetScheme() == ContentSettingsPattern::SCHEME_CHROMEUNTRUSTED ||

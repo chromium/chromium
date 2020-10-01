@@ -34,7 +34,7 @@ class ChromeContentSettingsAgentDelegate
   bool IsPluginTemporarilyAllowed(const std::string& identifier);
 
   // content_settings::ContentSettingsAgentImpl::Delegate:
-  bool IsSchemeWhitelisted(const std::string& scheme) override;
+  bool IsSchemeAllowlisted(const std::string& scheme) override;
   base::Optional<bool> AllowReadFromClipboard() override;
   base::Optional<bool> AllowWriteToClipboard() override;
   base::Optional<bool> AllowMutationEvents() override;
