@@ -232,9 +232,6 @@ void ExternalPopupMenu::DidAcceptIndices(const Vector<int32_t>& indices) {
 }
 
 void ExternalPopupMenu::DidCancel() {
-  local_frame_->NotifyUserActivation(
-      mojom::blink::UserActivationNotificationType::kInteraction);
-
   if (owner_element_)
     owner_element_->PopupDidHide();
   Reset();
