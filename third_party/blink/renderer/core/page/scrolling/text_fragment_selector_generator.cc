@@ -349,7 +349,11 @@ void TextFragmentSelectorGenerator::GenerateExactSelector() {
   // by a block. Example: <div>start of the selection <div> sub block </div>end
   // of the selection</div>.
 
-  String selected_text = PlainText(ephemeral_range);
+  String selected_text = PlainText(ephemeral_range).StripWhiteSpace();
+  if (selected_text.IsEmpty()) {
+    state_ = kFailure;
+    return;
+  }
 
   // If too long should use ranges.
   if (selected_text.length() > kExactTextMaxChars) {
@@ -358,8 +362,7 @@ void TextFragmentSelectorGenerator::GenerateExactSelector() {
   }
 
   selector_ = std::make_unique<TextFragmentSelector>(
-      TextFragmentSelector::SelectorType::kExact,
-      selected_text.StripWhiteSpace(), "", "", "");
+      TextFragmentSelector::SelectorType::kExact, selected_text, "", "", "");
 
   // If too short should use exact selector, but should add context.
   if (selected_text.length() < kNoContextMinChars) {
