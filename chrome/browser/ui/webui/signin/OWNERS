@@ -1,5 +1,7 @@
+file://components/signin/OWNERS
+
+# For ChromeOS changes
 achuith@chromium.org
-msarda@chromium.org
 xiyuan@chromium.org
 
 per-file inline_login_handler_impl*=file://chrome/credential_provider/OWNERS
