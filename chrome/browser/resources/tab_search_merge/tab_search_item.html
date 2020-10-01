@@ -15,6 +15,21 @@
 
   .button-container cr-icon-button {
     --cr-icon-button-fill-color: transparent;
+    border-radius: 50%;
+  }
+
+  .button-container cr-icon-button:hover {
+    background-color: rgba(var(--google-grey-900-rgb), 0.1);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .button-container cr-icon-button:hover {
+      background-color: rgba(var(--white-rgb), 0.1);
+    }
+  }
+
+  .button-container cr-icon-button:focus {
+    border: 2px solid rgba(var(--google-blue-600-rgb), 0.4);
   }
 
   .favicon {
@@ -68,6 +83,7 @@
 </div>
 <div class="button-container">
   <cr-icon-button id="closeButton" aria-label="[[ariaLabel_(data.title)]]"
-      iron-icon="mwb16:close" on-click="onItemClose_" title="$i18n{closeTab}">
+      disable-ripple iron-icon="mwb16:close" on-click="onItemClose_"
+      title="$i18n{closeTab}">
   </cr-icon-button>
 </div>
