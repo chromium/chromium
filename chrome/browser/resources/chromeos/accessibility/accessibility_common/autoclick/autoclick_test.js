@@ -4,6 +4,7 @@
 
 GEN_INCLUDE(['../../common/testing/e2e_test_base.js']);
 GEN_INCLUDE(['../../common/testing/mock_accessibility_private.js']);
+GEN_INCLUDE(['../../common/rect_util.js']);
 
 /**
  * Automatic clicks feature using accessibility common extension browser tests.
@@ -54,10 +55,7 @@ AutoclickE2ETest = class extends E2ETestBase {
    * @param {!chrome.accessibilityPrivate.ScreenRect} second
    */
   assertSameRect(first, second) {
-    assertEquals(first.left, second.left);
-    assertEquals(first.top, second.top);
-    assertEquals(first.width, second.width);
-    assertEquals(first.height, second.height);
+    assertTrue(RectUtil.equal(first, second));
   }
 };
 

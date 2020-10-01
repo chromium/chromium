@@ -62,6 +62,7 @@ js2gtest("accessibility_common_extjs_tests") {
     "autoclick/autoclick_test.js",
   ]
   gen_include_files = [
+    "../common/rect_util.js",
     "../common/testing/callback_helper.js",
     "../common/testing/e2e_test_base.js",
     "../common/testing/mock_accessibility_private.js",
