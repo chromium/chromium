@@ -49,6 +49,8 @@ class CORE_EXPORT LayoutTextControl : public LayoutBlockFlow {
     return true;
   }
 
+  static float GetAvgCharWidth(const ComputedStyle& style);
+
  protected:
   LayoutTextControl(TextControlElement*);
 
@@ -66,7 +68,6 @@ class CORE_EXPORT LayoutTextControl : public LayoutBlockFlow {
 
   static bool HasValidAvgCharWidth(const SimpleFontData*,
                                    const AtomicString& family);
-  float GetAvgCharWidth(const AtomicString& family) const;
   virtual LayoutUnit PreferredContentLogicalWidth(float char_width) const = 0;
   virtual LayoutUnit ComputeControlLogicalHeight(
       LayoutUnit line_height,

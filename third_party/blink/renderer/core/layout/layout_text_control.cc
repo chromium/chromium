@@ -208,10 +208,10 @@ bool LayoutTextControl::HasValidAvgCharWidth(const SimpleFontData* font_data,
   return !font_families_with_invalid_char_width_map->Contains(family);
 }
 
-float LayoutTextControl::GetAvgCharWidth(const AtomicString& family) const {
-  NOT_DESTROYED();
-  const Font& font = StyleRef().GetFont();
-
+// static
+float LayoutTextControl::GetAvgCharWidth(const ComputedStyle& style) {
+  const Font& font = style.GetFont();
+  const AtomicString family = font.GetFontDescription().Family().Family();
   const SimpleFontData* primary_font = font.PrimaryFont();
   if (primary_font && HasValidAvgCharWidth(primary_font, family))
     return roundf(primary_font->AvgCharWidth());
@@ -219,7 +219,7 @@ float LayoutTextControl::GetAvgCharWidth(const AtomicString& family) const {
   const UChar kCh = '0';
   const String str = String(&kCh, 1);
   TextRun text_run =
-      ConstructTextRun(font, str, StyleRef(), TextRun::kAllowTrailingExpansion);
+      ConstructTextRun(font, str, style, TextRun::kAllowTrailingExpansion);
   return font.Width(text_run);
 }
 
@@ -229,10 +229,7 @@ MinMaxSizes LayoutTextControl::ComputeIntrinsicLogicalWidths() const {
   sizes += BorderAndPaddingLogicalWidth();
 
   // Use average character width. Matches IE.
-  AtomicString family =
-      StyleRef().GetFont().GetFontDescription().Family().Family();
-  sizes.max_size += PreferredContentLogicalWidth(
-      const_cast<LayoutTextControl*>(this)->GetAvgCharWidth(family));
+  sizes.max_size += PreferredContentLogicalWidth(GetAvgCharWidth(StyleRef()));
   if (InnerEditorElement()) {
     if (LayoutBox* inner_editor_layout_box =
             InnerEditorElement()->GetLayoutBox()) {
