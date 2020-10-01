@@ -205,12 +205,12 @@ class Cache::BarrierCallbackForPutResponse final
   void CompletedResponse(int index,
                          Response* response,
                          scoped_refptr<BlobDataHandle> blob) {
+    if (stopped_)
+      return;
+
     DCHECK(!response_list_[index]);
     DCHECK(!blob_list_[index]);
     DCHECK_LT(num_complete_, request_list_.size());
-
-    if (stopped_)
-      return;
 
     response_list_[index] = response;
     blob_list_[index] = std::move(blob);
@@ -223,6 +223,7 @@ class Cache::BarrierCallbackForPutResponse final
       cache_->PutImpl(resolver_, method_name_, request_list_, response_list_,
                       blob_list_, exception_state, trace_id_);
       blob_list_.clear();
+      stopped_ = true;
     }
   }
 
