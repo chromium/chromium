@@ -10,5 +10,7 @@ namespace features {
 const base::Feature kEnableRemovingAllThirdPartyCookies{
     "EnableRemovingAllThirdPartyCookies", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kEnableBrowsingDataLifetimeManager{
+    "BrowsingDataLifetimeManager", base::FEATURE_DISABLED_BY_DEFAULT};
 }  // namespace features
 }  // namespace browsing_data

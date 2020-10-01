@@ -366,6 +366,9 @@ extern const char kEnableNoScriptPreviewsDescription[];
 extern const char kEnableRemovingAllThirdPartyCookiesName[];
 extern const char kEnableRemovingAllThirdPartyCookiesDescription[];
 
+extern const char kEnableBrowsingDataLifetimeManagerName[];
+extern const char kEnableBrowsingDataLifetimeManagerDescription[];
+
 extern const char kDataReductionProxyServerAlternative1[];
 extern const char kDataReductionProxyServerAlternative2[];
 extern const char kDataReductionProxyServerAlternative3[];

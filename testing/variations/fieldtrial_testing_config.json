@@ -1209,6 +1209,24 @@
             ]
         }
     ],
+    "BrowsingDataLifetimeManager": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "chromeos",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "BrowsingDataLifetimeManager",
+                    "enable_features": [
+                        "BrowsingDataLifetimeManager"
+                    ]
+                }
+            ]
+        }
+    ],
     "CSSMatchedPropertiesCacheDependencies": [
         {
             "platforms": [

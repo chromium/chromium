@@ -13,6 +13,8 @@ namespace browsing_data {
 
 namespace prefs {
 
+extern const char kBrowsingDataLifetime[];
+
 extern const char kDeleteTimePeriod[];
 extern const char kDeleteTimePeriodBasic[];
 

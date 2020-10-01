@@ -4,11 +4,15 @@
 
 #include "components/browsing_data/core/pref_names.h"
 
+#include "base/values.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 
 namespace browsing_data {
 
 namespace prefs {
+
+// JSON config to periodically delete some user browsing data.
+const char kBrowsingDataLifetime[] = "browsing_data_lifetime";
 
 // Clear browsing data deletion time period.
 const char kDeleteTimePeriod[] = "browser.clear_data.time_period";
@@ -38,6 +42,8 @@ const char kPreferencesMigratedToBasic[] =
     "browser.clear_data.preferences_migrated_to_basic";
 
 void RegisterBrowserUserPrefs(user_prefs::PrefRegistrySyncable* registry) {
+  registry->RegisterListPref(kBrowsingDataLifetime,
+                             base::Value(base::Value::Type::LIST));
   registry->RegisterIntegerPref(
       kDeleteTimePeriod, 0,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);

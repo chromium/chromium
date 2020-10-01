@@ -6644,6 +6644,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(switches::kDecoupleSyncFromAndroidMasterSync)},
 #endif  // defined(OS_ANDROID)
 
+    {"enable-browsing-data-lifetime-manager",
+     flag_descriptions::kEnableBrowsingDataLifetimeManagerName,
+     flag_descriptions::kEnableBrowsingDataLifetimeManagerDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         browsing_data::features::kEnableBrowsingDataLifetimeManager)},
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

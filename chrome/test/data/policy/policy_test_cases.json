@@ -8228,5 +8228,15 @@
         "prefs": { "family_link_user.edu_coexistence_tos_version": {} }
       }
     ]
+  },
+  "BrowsingDataLifetime": {
+    "os": ["win", "linux", "mac", "chromeos", "android"],
+    "can_be_recommended": false,
+    "policy_pref_mapping_test": [
+      {
+        "policies": { "BrowsingDataLifetime": [{"data_types": ["browsing_history"], "time_to_live_in_hours": 2}] },
+        "prefs": { "browsing_data_lifetime": { "value": [{"data_types": ["browsing_history"], "time_to_live_in_hours": 2}]} }
+      }
+    ]
   }
 }

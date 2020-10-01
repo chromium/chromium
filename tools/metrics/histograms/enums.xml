@@ -21875,6 +21875,7 @@ Called by update_document_policy_enum.py.-->
   <int value="788" label="MediaRecommendationsEnabled"/>
   <int value="789" label="DeviceFamilyLinkAccountsAllowed"/>
   <int value="790" label="EduCoexistenceToSVersion"/>
+  <int value="791" label="BrowsingDataLifetime"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">
@@ -43084,6 +43085,7 @@ from previous Chrome versions.
   <int value="7444737" label="NTPSuggestionsStandaloneUI:disabled"/>
   <int value="7533886" label="disable-offer-store-unmasked-wallet-cards"/>
   <int value="8891567" label="CaptionSettings:enabled"/>
+  <int value="9609535" label="BrowsingDataLifetimeManager:disabled"/>
   <int value="10458238" label="disable-print-preview-simplify"/>
   <int value="11698808" label="enable-dom-distiller-button-animation"/>
   <int value="12016364" label="OmniboxBubbleUrlSuggestions:enabled"/>
@@ -45102,6 +45104,7 @@ from previous Chrome versions.
   <int value="2093235103" label="default-tile-width"/>
   <int value="2093949489" label="ArrayPrototypeValues:enabled"/>
   <int value="2094335682" label="StreamlinedUsbPrinterSetup:enabled"/>
+  <int value="2096736155" label="BrowsingDataLifetimeManager:enabled"/>
   <int value="2097048479" label="disable-auto-hiding-toolbar-threshold"/>
   <int value="2098714203" label="enable-generic-sensors"/>
   <int value="2098907258" label="UseSurfaceLayerForVideo:disabled"/>

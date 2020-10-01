@@ -947,6 +947,7 @@ if (!is_android) {
       "../browser/browser_encoding_browsertest.cc",
       "../browser/browsing_data/access_context_audit_browsertest.cc",
       "../browser/browsing_data/browsing_data_remover_browsertest.cc",
+      "../browser/browsing_data/chrome_browsing_data_lifetime_manager_browsertest.cc",
       "../browser/browsing_data/counters/autofill_counter_browsertest.cc",
       "../browser/browsing_data/counters/browsing_data_counter_utils_browsertest.cc",
       "../browser/browsing_data/counters/cache_counter_browsertest.cc",
@@ -3863,6 +3864,7 @@ test("unit_tests") {
     sources += [
       "../browser/browsing_data/access_context_audit_database_unittest.cc",
       "../browser/browsing_data/access_context_audit_service_unittest.cc",
+      "../browser/browsing_data/chrome_browsing_data_lifetime_manager_unittest.cc",
       "../browser/component_updater/soda_component_installer_unittest.cc",
       "../browser/component_updater/soda_en_us_component_installer_unittest.cc",
       "../browser/component_updater/soda_ja_jp_component_installer_unittest.cc",

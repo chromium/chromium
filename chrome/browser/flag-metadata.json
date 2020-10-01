@@ -1258,6 +1258,11 @@
     "expiry_milestone": 90
   },
   {
+    "name": "enable-browsing-data-lifetime-manager",
+    "owners": ["ydago"],
+    "expiry_milestone": 91
+  },
+  {
     "name": "enable-clipboard-provider-image-suggestions",
     "owners": [ "rkgibson", "gangwu", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 90

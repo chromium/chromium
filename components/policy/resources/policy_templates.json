@@ -23510,6 +23510,60 @@ If you disable this policy, web page scrolling to specific text fragments via UR
 
       This policy is only used for Family Link users.''',
     },
+    {
+      'name': 'BrowsingDataLifetime',
+      'owners': ['ydago@chromium.org', 'pastarmovj@chromium.org'],
+      'type': 'dict',
+      'schema': {
+        'type': 'array',
+        'items': {
+          'type': 'object',
+          'properties': {
+            'time_to_live_in_hours': { 'type': 'integer', 'minimum': 1 },
+            'data_types': {
+              'type': 'array',
+              'items': {
+                'type': 'string',
+                'enum': [
+                  'browsing_history',
+                  'download_history',
+                  'cookies_and_other_site_data',
+                  'cached_images_and_files',
+                  'password_signin',
+                  'autofill',
+                  'site_settings',
+                  'hosted_app_data',
+                ],
+              },
+            },
+          },
+        },
+      },
+      'future_on': ['android'],
+      'supported_on': ['chrome.*:87-', 'chrome_os:87-'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': True,
+      },
+      'example_value': [
+        {
+          'time_to_live_in_hours': 24,
+          'data_types': ['browsing_history'],
+        },
+        {
+          'time_to_live_in_hours': 12,
+          'data_types': ['password_signin', 'autofill'],
+        },
+      ],
+      'id': 791,
+      'caption': 'Browsing Data Lifetime Settings',
+      'tags': [],
+      'desc': '''Configures browsing data lifetime settings for <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>.
+      This policy controls the time to live of selected browsing data. This policy has no effect if Sync is enabled.
+      The available data types are the <ph name="DATA_TYPE_BROWSING_HISTORY">'browsing_history'</ph>, <ph name="DATA_TYPE_DOWNLOAD_HISTORY">'download_history'</ph>, <ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA">'cookies_and_other_site_data'</ph>, <ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES">'cached_images_and_files'</ph>, <ph name="DATA_TYPE_PASSWORD">'password_signin'</ph>, <ph name="DATA_TYPE_AUTOFILL">'autofill'</ph>, <ph name="DATA_TYPE_SITE_SETTINGS">'site_settings'</ph> and <ph name="DATA_TYPE_HOSTED_APP_DATA">'hosted_app_data'</ph>.
+      Chrome will regularly remove data of selected types that is older than <ph name="TIME_TO_LIVE_IN_HOURS">'time_to_live_in_hours'</ph>. As this deletion only happens in certain intervals, some data might live for slightly longer but never more than twice its expected <ph name="TIME_TO_LIVE_IN_HOURS">'time_to_live_in_hours'</ph>.
+      '''
+    }
   ],
 
   'messages': {
@@ -24439,6 +24493,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   ],
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 412, 476, 544, 546, 562, 569, 578],
-  'highest_id_currently_used': 790,
+  'highest_id_currently_used': 791,
   'highest_atomic_group_id_currently_used': 40
 }
