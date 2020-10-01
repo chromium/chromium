@@ -32280,6 +32280,10 @@ Called by update_feature_policy_enum.py.-->
   <int value="19" label="kSamplingProfiler"/>
   <int value="20" label="kSnapshotCreator"/>
   <int value="21" label="kTesting"/>
+  <int value="22" label="kExternalFinalize"/>
+  <int value="23" label="kGlobalAllocationLimit"/>
+  <int value="24" label="kMeasureMemory"/>
+  <int value="25" label="kBackgroundAllocationFailure"/>
 </enum>
 
 <enum name="GATTCharacteristicHash">
