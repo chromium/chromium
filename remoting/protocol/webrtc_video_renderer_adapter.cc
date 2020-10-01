@@ -22,6 +22,7 @@
 #include "remoting/protocol/frame_stats.h"
 #include "remoting/protocol/video_renderer.h"
 #include "remoting/protocol/webrtc_transport.h"
+#include "third_party/libyuv/include/libyuv/convert.h"
 #include "third_party/libyuv/include/libyuv/convert_from.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
 
