@@ -116,25 +116,6 @@ class AppListSearchBrowserTest : public InProcessBrowserTest {
   Profile* GetProfile() { return browser()->profile(); }
 };
 
-// Test fixture for OS settings search. This subclass exists because changing a
-// feature flag has to be done in the constructor. Otherwise, it could use
-// AppListSearchBrowserTest directly.
-class OsSettingsSearchBrowserTest : public AppListSearchBrowserTest {
- public:
-  OsSettingsSearchBrowserTest() : AppListSearchBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {app_list_features::kLauncherSettingsSearch}, {});
-  }
-  ~OsSettingsSearchBrowserTest() override = default;
-
-  OsSettingsSearchBrowserTest(const OsSettingsSearchBrowserTest&) = delete;
-  OsSettingsSearchBrowserTest& operator=(const OsSettingsSearchBrowserTest&) =
-      delete;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 // Test fixture for Release notes search. This subclass exists because changing
 // a feature flag has to be done in the constructor. Otherwise, it could use
 // AppListSearchBrowserTest directly.
@@ -164,19 +145,6 @@ IN_PROC_BROWSER_TEST_F(AppListSearchBrowserTest, SearchDoesntCrash) {
                             {ResultType::kInstalledApp, ResultType::kLauncher});
   SearchAndWaitForProviders("some query",
                             {ResultType::kInstalledApp, ResultType::kLauncher});
-}
-
-// Test that searching for "wifi" correctly returns a settings result for wifi.
-IN_PROC_BROWSER_TEST_F(OsSettingsSearchBrowserTest, AppListSearchForSettings) {
-  web_app::WebAppProvider::Get(GetProfile())
-      ->system_web_app_manager()
-      .InstallSystemAppsForTesting();
-  SearchAndWaitForProviders("wifi", {ResultType::kOsSettings});
-
-  auto* result = FindResult("os-settings://networks?type=WiFi");
-  ASSERT_TRUE(result);
-  EXPECT_EQ(base::UTF16ToASCII(result->accessible_name()),
-            "Wi-Fi networks, Network, Settings");
 }
 
 // Test that Help App shows up as Release notes if pref shows we have some times

@@ -55,7 +55,8 @@ enum class Error {
   kSearchHandlerUnavailable = 3,
   kHierarchyEmpty = 4,
   kNoHierarchy = 5,
-  kMaxValue = kNoHierarchy,
+  kSettingsAppNotReady = 6,
+  kMaxValue = kSettingsAppNotReady,
 };
 
 void LogError(Error error) {
@@ -223,8 +224,19 @@ ash::AppListSearchResultType OsSettingsProvider::ResultType() {
 void OsSettingsProvider::Start(const base::string16& query) {
   const base::TimeTicks start_time = base::TimeTicks::Now();
   last_query_ = query;
-  if (!search_handler_)
+  // Disable the provider if:
+  //  - the search backend isn't available
+  //  - the settings app isn't ready
+  //  - we don't have an icon to display with results.
+  if (!search_handler_) {
     return;
+  } else if (!settings_app_ready_) {
+    LogError(Error::kSettingsAppNotReady);
+    return;
+  } else if (icon_.isNull()) {
+    LogError(Error::kNoSettingsIcon);
+    return;
+  }
 
   ClearResultsSilently();
 
@@ -256,8 +268,6 @@ void OsSettingsProvider::OnSearchReturned(
   // Instead, we are gluing at most two to the top of the search box. Consider
   // ranking these with other results in the next version of the feature.
   DCHECK_LE(sorted_results.size(), kNumRequestedResults);
-  if (icon_.isNull())
-    LogError(Error::kNoSettingsIcon);
 
   SearchProvider::Results search_results;
   int i = 0;
@@ -274,11 +284,21 @@ void OsSettingsProvider::OnSearchReturned(
 }
 
 void OsSettingsProvider::OnAppUpdate(const apps::AppUpdate& update) {
-  // Watch the app service for updates. On an update that marks the OS settings
-  // app as ready, retrieve the icon for the app to use for search results.
-  if (update.AppId() == chromeos::default_web_apps::kOsSettingsAppId &&
-      update.ReadinessChanged() &&
-      update.Readiness() == apps::mojom::Readiness::kReady) {
+  if (update.AppId() != chromeos::default_web_apps::kOsSettingsAppId)
+    return;
+
+  // Request the Settings app icon when either the readiness is changed to
+  // kReady, or the icon has been updated, signalled by IconKeyChanged.
+  bool update_icon = false;
+  if (update.ReadinessChanged()) {
+    settings_app_ready_ = update.Readiness() == apps::mojom::Readiness::kReady;
+    if (settings_app_ready_)
+      update_icon = true;
+  } else if (update.IconKeyChanged()) {
+    update_icon = true;
+  }
+
+  if (update_icon) {
     auto icon_type =
         (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon))
             ? apps::mojom::IconType::kStandard
