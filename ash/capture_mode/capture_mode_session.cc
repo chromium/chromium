@@ -6,6 +6,7 @@
 
 #include "ash/capture_mode/capture_mode_bar_view.h"
 #include "ash/capture_mode/capture_mode_controller.h"
+#include "ash/capture_mode/capture_window_observer.h"
 #include "ash/display/mouse_cursor_event_filter.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -31,6 +32,7 @@
 #include "ui/views/background.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/label.h"
+#include "ui/wm/core/coordinate_conversion.h"
 
 namespace ash {
 
@@ -168,6 +170,11 @@ CaptureModeSession::CaptureModeSession(CaptureModeController* controller,
   capture_mode_bar_widget_.Show();
 
   RefreshStackingOrder(parent);
+
+  if (controller_->source() == CaptureModeSource::kWindow) {
+    capture_window_observer_ =
+        std::make_unique<CaptureWindowObserver>(this, controller_->type());
+  }
 }
 
 CaptureModeSession::~CaptureModeSession() {
@@ -176,15 +183,18 @@ CaptureModeSession::~CaptureModeSession() {
 }
 
 aura::Window* CaptureModeSession::GetSelectedWindow() const {
-  // Note that the capture bar widget is activatable, so we can't use
-  // window_util::GetActiveWindow(). Instead, we use the MRU window tracker and
-  // get the top-most window if any.
-  auto mru_windows =
-      Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk);
-  return mru_windows.empty() ? nullptr : mru_windows[0];
+  return capture_window_observer_ ? capture_window_observer_->window()
+                                  : nullptr;
 }
 
 void CaptureModeSession::OnCaptureSourceChanged(CaptureModeSource new_source) {
+  if (new_source == CaptureModeSource::kWindow) {
+    capture_window_observer_ =
+        std::make_unique<CaptureWindowObserver>(this, controller_->type());
+  } else {
+    capture_window_observer_.reset();
+  }
+
   capture_mode_bar_view_->OnCaptureSourceChanged(new_source);
   SetMouseWarpEnabled(new_source != CaptureModeSource::kRegion);
   UpdateCaptureRegionWidgets();
@@ -192,6 +202,8 @@ void CaptureModeSession::OnCaptureSourceChanged(CaptureModeSource new_source) {
 }
 
 void CaptureModeSession::OnCaptureTypeChanged(CaptureModeType new_type) {
+  if (controller_->source() == CaptureModeSource::kWindow)
+    capture_window_observer_->OnCaptureTypeChanged(new_type);
   capture_mode_bar_view_->OnCaptureTypeChanged(new_type);
 }
 
@@ -330,13 +342,45 @@ void CaptureModeSession::PaintCaptureRegion(gfx::Canvas* canvas) {
 
 void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
                                         bool is_touch) {
-  // No need to handle events if the current source is not region.
-  if (controller_->source() != CaptureModeSource::kRegion)
+  // No need to handle events if the current source is kFullscreen.
+  const CaptureModeSource capture_source = controller_->source();
+  if (capture_source == CaptureModeSource::kFullscreen)
     return;
 
   gfx::Point location = event->location();
   aura::Window* source = static_cast<aura::Window*>(event->target());
   aura::Window::ConvertPointToTarget(source, current_root_, &location);
+  const bool is_event_on_capture_bar =
+      CaptureModeBarView::GetBounds(current_root_).Contains(location);
+
+  if (capture_source == CaptureModeSource::kWindow) {
+    // Do not handle any event located on the capture mode bar.
+    if (is_event_on_capture_bar)
+      return;
+
+    event->SetHandled();
+    event->StopPropagation();
+
+    switch (event->type()) {
+      case ui::ET_MOUSE_MOVED:
+      case ui::ET_TOUCH_PRESSED:
+      case ui::ET_TOUCH_MOVED: {
+        gfx::Point screen_location(event->location());
+        ::wm::ConvertPointToScreen(source, &screen_location);
+        capture_window_observer_->UpdateSelectedWindowAtPosition(
+            screen_location);
+        break;
+      }
+      case ui::ET_MOUSE_RELEASED:
+      case ui::ET_TOUCH_RELEASED:
+        if (GetSelectedWindow())
+          controller_->PerformCapture();
+        break;
+      default:
+        break;
+    }
+    return;
+  }
 
   // Let the capture button handle any events within its bounds.
   if (capture_button_widget_ &&
@@ -346,7 +390,7 @@ void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
 
   // Allow events that are located on the capture mode bar to pass through so we
   // can click the buttons.
-  if (!CaptureModeBarView::GetBounds(current_root_).Contains(location)) {
+  if (!is_event_on_capture_bar) {
     event->SetHandled();
     event->StopPropagation();
   }
