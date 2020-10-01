@@ -29,8 +29,8 @@ HoldingSpaceItemChipView::HoldingSpaceItemChipView(
 
   SetPreferredSize(gfx::Size(kHoldingSpaceChipWidth, kHoldingSpaceChipHeight));
 
-  image_ = AddChildView(
-      std::make_unique<RoundedImageView>(kHoldingSpaceChipIconSize / 2));
+  image_ = AddChildView(std::make_unique<RoundedImageView>(
+      kHoldingSpaceChipIconSize / 2, RoundedImageView::Alignment::kLeading));
 
   label_ = AddChildView(std::make_unique<views::Label>(item->text()));
   label_->SetElideBehavior(gfx::ELIDE_MIDDLE);

@@ -23,8 +23,8 @@ HoldingSpaceItemScreenshotView::HoldingSpaceItemScreenshotView(
   SetPreferredSize(kHoldingSpaceScreenshotSize);
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
-  image_ = AddChildView(
-      std::make_unique<RoundedImageView>(kHoldingSpaceCornerRadius));
+  image_ = AddChildView(std::make_unique<RoundedImageView>(
+      kHoldingSpaceCornerRadius, RoundedImageView::Alignment::kLeading));
 
   // Subscribe to be notified of changes to `item_`'s image.
   image_subscription_ = item->image().AddImageSkiaChangedCallback(

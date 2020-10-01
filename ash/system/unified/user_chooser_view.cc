@@ -159,7 +159,8 @@ views::View* CreateUserAvatarView(int user_index) {
     return new TopShortcutButton(kSystemMenuGuestIcon,
                                  IDS_ASH_STATUS_TRAY_GUEST_LABEL);
   } else {
-    auto* image_view = new RoundedImageView(kTrayItemSize / 2);
+    auto* image_view = new RoundedImageView(
+        kTrayItemSize / 2, RoundedImageView::Alignment::kLeading);
     image_view->SetCanProcessEventsWithinSubtree(false);
     image_view->SetImage(user_session->user_info.avatar.image,
                          gfx::Size(kTrayItemSize, kTrayItemSize));

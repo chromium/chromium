@@ -16,9 +16,18 @@ namespace ash {
 // A custom image view with rounded edges.
 class ASH_PUBLIC_EXPORT RoundedImageView : public views::View {
  public:
+  enum class Alignment {
+    // The image's drawn portion always contains the image's origin.
+    kLeading,
+
+    // If the image's size is greater than the view's, only the portion around
+    // the image's center shows.
+    kCenter
+  };
+
   // Constructs a new rounded image view with rounded corners of radius
   // |corner_radius|.
-  explicit RoundedImageView(int corner_radius);
+  RoundedImageView(int corner_radius, Alignment alignment);
   ~RoundedImageView() override;
 
   // Set the image that should be displayed. The image contents is copied to the
@@ -48,6 +57,8 @@ class ASH_PUBLIC_EXPORT RoundedImageView : public views::View {
   gfx::ImageSkia original_image_;
   gfx::ImageSkia resized_image_;
   int corner_radius_[4];
+
+  const Alignment alignment_;
 
   DISALLOW_COPY_AND_ASSIGN(RoundedImageView);
 };

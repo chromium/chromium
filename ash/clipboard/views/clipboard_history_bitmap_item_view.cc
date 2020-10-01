@@ -57,7 +57,8 @@ class FadeImageView : public RoundedImageView,
                 const ClipboardHistoryItem* clipboard_history_item,
                 const ClipboardHistoryResourceManager* resource_manager,
                 float opacity)
-      : RoundedImageView(kRoundedCornerRadius),
+      : RoundedImageView(kRoundedCornerRadius,
+                         RoundedImageView::Alignment::kCenter),
         bitmap_item_view_(bitmap_item_view),
         resource_manager_(resource_manager),
         clipboard_history_item_(*clipboard_history_item),
@@ -260,8 +261,8 @@ ClipboardHistoryBitmapItemView::BuildImageView() {
                                              resource_manager_,
                                              GetContentsOpacity());
     case ui::ClipboardInternalFormat::kBitmap: {
-      auto image_view =
-          std::make_unique<RoundedImageView>(kRoundedCornerRadius);
+      auto image_view = std::make_unique<RoundedImageView>(
+          kRoundedCornerRadius, RoundedImageView::Alignment::kCenter);
       gfx::ImageSkia bitmap_image = gfx::ImageSkia::CreateFrom1xBitmap(
           clipboard_history_item()->data().bitmap());
       if (GetContentsOpacity() != 1.f) {

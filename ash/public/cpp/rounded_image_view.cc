@@ -12,7 +12,8 @@
 
 namespace ash {
 
-RoundedImageView::RoundedImageView(int corner_radius) {
+RoundedImageView::RoundedImageView(int corner_radius, Alignment alignment)
+    : alignment_(alignment) {
   for (int i = 0; i < 4; ++i)
     corner_radius_[i] = corner_radius;
 }
@@ -72,7 +73,21 @@ void RoundedImageView::OnPaint(gfx::Canvas* canvas) {
   path.addRoundRect(gfx::RectToSkRect(image_bounds), kRadius);
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
-  canvas->DrawImageInPath(resized_image_, image_bounds.x(), image_bounds.y(),
+
+  gfx::ImageSkia image_to_draw;
+  switch (alignment_) {
+    case Alignment::kLeading:
+      image_to_draw = resized_image_;
+      break;
+    case Alignment::kCenter:
+      gfx::Rect preferred_size(GetImageSize());
+      preferred_size.ClampToCenteredSize(image_bounds.size());
+      image_to_draw = gfx::ImageSkiaOperations::ExtractSubset(resized_image_,
+                                                              preferred_size);
+      break;
+  }
+
+  canvas->DrawImageInPath(image_to_draw, image_bounds.x(), image_bounds.y(),
                           path, flags);
 }
 
