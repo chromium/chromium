@@ -5,6 +5,7 @@
 import './data_point.js';
 import './diagnostics_card.js';
 import './diagnostics_shared_css.js';
+import './percent_bar_chart.js';
 
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {BatteryChargeStatus, BatteryHealth, BatteryInfo, SystemDataProviderInterface} from './diagnostics_types.js'

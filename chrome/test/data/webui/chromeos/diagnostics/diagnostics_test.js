@@ -173,6 +173,15 @@ suite('BatteryStatusCardTest', () => {
               fakeBatteryChargeStatus[0].power_adapter_status,
               dataPoints[5].value);
           assertEquals(fakeBatteryHealth[0].cycle_count, dataPoints[6].value);
+
+          const barChart = diagnostics_test_utils.getPercentBarChartElement(
+              batteryStatusElement);
+          assertEquals(
+              fakeBatteryChargeStatus[0].charge_full_now_milliamp_hours,
+              barChart.max);
+          assertEquals(
+              fakeBatteryChargeStatus[0].charge_now_milliamp_hours,
+              barChart.value);
         });
   });
 });

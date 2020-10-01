@@ -27,4 +27,9 @@
   <data-point slot="body" id="cycleCount"
     value="[[batteryHealth_.cycle_count]]">
   </data-point>
+  <!-- TODO(joonbug): Localize once strings are confirmed -->
+  <percent-bar-chart slot="body" title="Remaining charge"
+    value="[[batteryChargeStatus_.charge_now_milliamp_hours]]"
+    max="[[batteryChargeStatus_.charge_full_now_milliamp_hours]]">
+  </percent-bar-chart>
 </diagnostics-card>
