@@ -77,7 +77,6 @@ class MODULES_EXPORT BidirectionalStream final : public ScriptWrappable,
   const Member<IncomingStream> incoming_stream_;
   const Member<QuicTransport> quic_transport_;
   const uint32_t stream_id_;
-  bool sent_fin_ = false;
 };
 
 }  // namespace blink

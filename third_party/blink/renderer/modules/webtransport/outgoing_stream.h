@@ -52,6 +52,12 @@ class MODULES_EXPORT OutgoingStream final
     virtual void OnOutgoingStreamAbort() = 0;
   };
 
+  enum class State {
+    kOpen,
+    kSentFin,
+    kAborted,
+  };
+
   OutgoingStream(ScriptState*, Client*, mojo::ScopedDataPipeProducerHandle);
   ~OutgoingStream();
 
@@ -75,6 +81,8 @@ class MODULES_EXPORT OutgoingStream final
   // Called from QuicTransport via a WebTransportStream. Expects a JavaScript
   // scope to be entered.
   void Reset();
+
+  State GetState() const { return state_; }
 
   // Called from QuicTransport rather than using
   // ExecutionContextLifecycleObserver to ensure correct destruction order.
@@ -180,6 +188,8 @@ class MODULES_EXPORT OutgoingStream final
   // If an asynchronous write() on the underlying sink object is pending, this
   // will be non-null.
   Member<ScriptPromiseResolver> write_promise_resolver_;
+
+  State state_ = State::kOpen;
 };
 
 }  // namespace blink

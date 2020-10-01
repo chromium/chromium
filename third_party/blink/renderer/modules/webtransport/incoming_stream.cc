@@ -105,6 +105,9 @@ void IncomingStream::OnIncomingStreamClosed(bool fin_received) {
   DVLOG(1) << "IncomingStream::OnIncomingStreamClosed(" << fin_received
            << ") this=" << this;
 
+  DCHECK_NE(state_, State::kClosed);
+  state_ = State::kClosed;
+
   DCHECK(!fin_received_.has_value());
 
   fin_received_ = fin_received;
@@ -313,6 +316,8 @@ void IncomingStream::AbortAndReset() {
     reading_aborted_resolver_->Resolve(StreamAbortInfo::Create());
     reading_aborted_resolver_ = nullptr;
   }
+
+  state_ = State::kAborted;
 
   if (on_abort_) {
     // Cause QuicTransport to drop its reference to us.
