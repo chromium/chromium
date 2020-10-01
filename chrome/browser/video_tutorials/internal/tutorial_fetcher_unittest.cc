@@ -95,8 +95,9 @@ TutorialFetcher::FinishedCallback TutorialFetcherTest::StoreResult() {
 }
 
 std::unique_ptr<TutorialFetcher> TutorialFetcherTest::CreateFetcher() {
-  std::unique_ptr<TutorialFetcher> fetcher = TutorialFetcher::Create(
-      GURL(kServerURL), kGoogleApiKey, "", "", test_shared_url_loader_factory_);
+  std::unique_ptr<TutorialFetcher> fetcher =
+      TutorialFetcher::Create(GURL(kServerURL), "", "", kGoogleApiKey, "", "",
+                              test_shared_url_loader_factory_);
   return fetcher;
 }
 
@@ -188,7 +189,8 @@ TEST_F(TutorialFetcherTest, Success) {
   EXPECT_EQ(true, RunFetcherWithData(kVideoTutorialsMessage, &data));
   EXPECT_EQ(kVideoTutorialsMessage, data);
 
-  EXPECT_EQ(last_resource_request().url.spec(), "https://www.test.com/");
+  EXPECT_EQ(last_resource_request().url.spec(),
+            "https://www.test.com/?country_code=");
 }
 
 }  // namespace video_tutorials

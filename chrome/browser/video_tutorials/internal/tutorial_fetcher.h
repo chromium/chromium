@@ -30,6 +30,8 @@ class TutorialFetcher {
   // Method to create a TutorialFetcher.
   static std::unique_ptr<TutorialFetcher> Create(
       const GURL& url,
+      const std::string& country_code,
+      const std::string& accept_languages,
       const std::string& api_key,
       const std::string& experiment_tag,
       const std::string& client_version,

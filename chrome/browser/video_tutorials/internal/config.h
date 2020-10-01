@@ -41,6 +41,9 @@ class Config {
 
   // Get the default fetch frequency.
   static base::TimeDelta GetFetchFrequency();
+
+  // Gets the experiment tag to be passed to server.
+  static std::string GetExperimentTag();
 };
 
 }  // namespace video_tutorials

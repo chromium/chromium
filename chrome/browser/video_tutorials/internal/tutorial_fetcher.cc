@@ -50,12 +50,16 @@ class TutorialFetcherImpl : public TutorialFetcher {
  public:
   TutorialFetcherImpl(
       const GURL& url,
+      const std::string& country_code,
+      const std::string& accept_languages,
       const std::string& api_key,
       const std::string& experiment_tag,
       const std::string& client_version,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
       : url_loader_factory_(url_loader_factory),
         url_(url),
+        country_code_(country_code),
+        accept_languages_(accept_languages),
         api_key_(api_key),
         experiment_tag_(experiment_tag),
         client_version_(client_version) {}
@@ -80,10 +84,15 @@ class TutorialFetcherImpl : public TutorialFetcher {
     request->headers.SetHeader("X-Client-Version", client_version_);
     request->headers.SetHeader(net::HttpRequestHeaders::kContentType,
                                kRequestContentType);
-    request->url = url_;
+    request->url =
+        net::AppendOrReplaceQueryParameter(url_, "country_code", country_code_);
     if (!experiment_tag_.empty()) {
       request->url = net::AppendOrReplaceQueryParameter(
           request->url, "experiment_tag", experiment_tag_);
+    }
+    if (!accept_languages_.empty()) {
+      request->headers.SetHeader(net::HttpRequestHeaders::kAcceptLanguage,
+                                 accept_languages_);
     }
 
     if (!g_override_url_for_testing.Get().is_empty())
@@ -114,6 +123,8 @@ class TutorialFetcherImpl : public TutorialFetcher {
 
   // Params of resource request.
   GURL url_;
+  std::string country_code_;
+  std::string accept_languages_;
   std::string api_key_;
   std::string experiment_tag_;
   std::string client_version_;
@@ -126,12 +137,15 @@ class TutorialFetcherImpl : public TutorialFetcher {
 // static
 std::unique_ptr<TutorialFetcher> TutorialFetcher::Create(
     const GURL& url,
+    const std::string& country_code,
+    const std::string& accept_languages,
     const std::string& api_key,
     const std::string& experiment_tag,
     const std::string& client_version,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
   return std::make_unique<TutorialFetcherImpl>(
-      url, api_key, experiment_tag, client_version, url_loader_factory);
+      url, country_code, accept_languages, api_key, experiment_tag,
+      client_version, url_loader_factory);
 }
 
 // static

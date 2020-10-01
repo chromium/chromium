@@ -26,6 +26,8 @@ constexpr char kPreferredLocaleConfigKey[] = "default_locale";
 
 constexpr char kFetchFrequencyKey[] = "fetch_frequency";
 
+constexpr char kExperimentTagKey[] = "experiment_tag";
+
 // Default frequency in days for fetching tutorial metatada from server.
 constexpr int kDefaultFetchFrequencyDays = 15;
 
@@ -62,6 +64,12 @@ base::TimeDelta Config::GetFetchFrequency() {
       features::kVideoTutorials, kFetchFrequencyKey,
       kDefaultFetchFrequencyDays);
   return base::TimeDelta::FromDays(frequency_in_days);
+}
+
+// static
+std::string Config::GetExperimentTag() {
+  return base::GetFieldTrialParamValueByFeature(features::kVideoTutorials,
+                                                kExperimentTagKey);
 }
 
 }  // namespace video_tutorials
