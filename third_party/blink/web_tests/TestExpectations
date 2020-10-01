@@ -192,6 +192,7 @@ crbug.com/829740 fast/history/history-back-twice-with-subframes-assert.html [ Pa
 
 ########## Genuinely flaky ##########
 crbug.com/624233 virtual/gpu-rasterization/images/color-profile-background-clip-text.html [ Pass Failure ]
+crbug.com/757605 virtual/gpu-rasterization/images/jpeg-yuv-progressive-image.html [ Pass Failure ]
 
 ########## Bugs to fix ##########
 # This is a missing event and increasing the timeout or using run-after-layout-and-paint doesn't

@@ -43,15 +43,9 @@ const base::Feature kDefaultEnableGpuRasterization{
 #endif
 
 // Enable out of process rasterization by default.  This can still be overridden
-// by --enable-oop-rasterization or --disable-oop-rasterization.
-#if defined(OS_ANDROID) || defined(OS_CHROMEOS) || defined(OS_MAC) || \
-    defined(OS_WIN) || defined(OS_FUCHSIA)
+// by --disable-oop-rasterization.
 const base::Feature kDefaultEnableOopRasterization{
     "DefaultEnableOopRasterization", base::FEATURE_ENABLED_BY_DEFAULT};
-#else
-const base::Feature kDefaultEnableOopRasterization{
-    "DefaultEnableOopRasterization", base::FEATURE_DISABLED_BY_DEFAULT};
-#endif
 
 #if defined(OS_WIN)
 // Use a high priority for GPU process on Windows.
