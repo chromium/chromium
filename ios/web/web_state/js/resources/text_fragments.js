@@ -40,7 +40,10 @@ const utils = goog.require(
     let marks = [];
 
     for (const fragment of fragments) {
-      let newMarks = utils.processTextFragmentDirective(fragment);
+      // Process the fragments, then filter out any that evaluate to false.
+      let newMarks = utils.processTextFragmentDirective(fragment)
+          .filter((mark) => { return !!mark });
+
       if (Array.isArray(newMarks))
         marks.push(...newMarks);
     }
@@ -49,7 +52,12 @@ const utils = goog.require(
       utils.scrollElementIntoView(marks[0]);
 
     // TODO(crbug.com/1099268): Count successes/failures above and log metrics
-    // TODO(crbug.com/1099268): Make marks disappear on user interaction
+
+    for (const mark of marks) {
+      mark.addEventListener("click", () => {
+        utils.removeMarks(marks);
+      });
+    }
   }
 
 })();
