@@ -174,43 +174,51 @@ DeclarativeNetRequestUpdateEnabledRulesetsFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
   EXTENSION_FUNCTION_VALIDATE(error.empty());
 
-  auto* rules_monitor_service =
-      declarative_net_request::RulesMonitorService::Get(browser_context());
-  DCHECK(rules_monitor_service);
-  DCHECK(extension());
-
   std::set<RulesetID> ids_to_disable;
   std::set<RulesetID> ids_to_enable;
   const DNRManifestData::ManifestIDToRulesetMap& public_id_map =
       DNRManifestData::GetManifestIDToRulesetMap(*extension());
 
-  for (const std::string& public_id_to_enable : params->ruleset_ids_to_enable) {
-    auto it = public_id_map.find(public_id_to_enable);
-    if (it == public_id_map.end()) {
-      return RespondNow(Error(ErrorUtils::FormatErrorMessage(
-          declarative_net_request::kInvalidRulesetIDError,
-          public_id_to_enable)));
-    }
+  if (params->options.enable_ruleset_ids) {
+    for (const std::string& public_id_to_enable :
+         *params->options.enable_ruleset_ids) {
+      auto it = public_id_map.find(public_id_to_enable);
+      if (it == public_id_map.end()) {
+        return RespondNow(Error(ErrorUtils::FormatErrorMessage(
+            declarative_net_request::kInvalidRulesetIDError,
+            public_id_to_enable)));
+      }
 
-    ids_to_enable.insert(it->second->id);
+      ids_to_enable.insert(it->second->id);
+    }
   }
 
-  for (const std::string& public_id_to_disable :
-       params->ruleset_ids_to_disable) {
-    auto it = public_id_map.find(public_id_to_disable);
-    if (it == public_id_map.end()) {
-      return RespondNow(Error(ErrorUtils::FormatErrorMessage(
-          declarative_net_request::kInvalidRulesetIDError,
-          public_id_to_disable)));
+  if (params->options.disable_ruleset_ids) {
+    for (const std::string& public_id_to_disable :
+         *params->options.disable_ruleset_ids) {
+      auto it = public_id_map.find(public_id_to_disable);
+      if (it == public_id_map.end()) {
+        return RespondNow(Error(ErrorUtils::FormatErrorMessage(
+            declarative_net_request::kInvalidRulesetIDError,
+            public_id_to_disable)));
+      }
+
+      // |ruleset_ids_to_enable| takes priority over |ruleset_ids_to_disable|.
+      RulesetID id = it->second->id;
+      if (base::Contains(ids_to_enable, id))
+        continue;
+
+      ids_to_disable.insert(id);
     }
-
-    // |ruleset_ids_to_enable| takes priority over |ruleset_ids_to_disable|.
-    RulesetID id = it->second->id;
-    if (base::Contains(ids_to_enable, id))
-      continue;
-
-    ids_to_disable.insert(id);
   }
+
+  if (ids_to_enable.empty() && ids_to_disable.empty())
+    return RespondNow(NoArguments());
+
+  auto* rules_monitor_service =
+      declarative_net_request::RulesMonitorService::Get(browser_context());
+  DCHECK(rules_monitor_service);
+  DCHECK(extension());
 
   rules_monitor_service->UpdateEnabledStaticRulesets(
       *extension(), std::move(ids_to_disable), std::move(ids_to_enable),

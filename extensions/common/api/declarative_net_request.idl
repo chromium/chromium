@@ -419,6 +419,15 @@ namespace declarativeNetRequest {
     Rule[]? addRules;
   };
 
+  dictionary UpdateRulesetOptions {
+    // The set of ids corresponding to a static $(ref:Ruleset) that should be
+    // disabled.
+    DOMString[]? disableRulesetIds;
+    // The set of ids corresponding to a static $(ref:Ruleset) that should be
+    // enabled.
+    DOMString[]? enableRulesetIds;
+  };
+
   callback EmptyCallback = void();
   callback GetAllowedPagesCallback = void(DOMString[] result);
   callback GetRulesCallback = void(Rule[] rules);
@@ -456,24 +465,19 @@ namespace declarativeNetRequest {
     static void getDynamicRules(GetRulesCallback callback);
 
     // Updates the set of enabled static rulesets for the extension. The
-    // rulesets with IDs listed in <code>rulesetIDsToDisable</code> are first
-    // removed, and then the rulesets listed in <code>rulesetIDsToEnable</code>
-    // are added.
+    // rulesets with IDs listed in <code>options.disableRulesetIds</code> are
+    // first removed, and then the rulesets listed in
+    // <code>options.enableRulesetIds</code> are added.<br/>
     // Note that the set of enabled static rulesets is persisted across sessions
     // but not across extension updates, i.e. the <code>rule_resources</code>
     // manifest key will determine the set of enabled static rulesets on each
     // extension update.
-    // |rulesetIdsToDisable|: The set of ids corresponding to a static
-    // $(ref:Ruleset) that should be disabled.
-    // |rulesetIdsToEnable|: The set of ids corresponding to a static
-    // $(ref:Ruleset) that should be enabled.
     // |callback|: Called once the update is complete. In case of an error,
     // $(ref:runtime.lastError) will be set and no change will be made to set of
     // enabled rulesets. This can happen for multiple reasons, such as invalid
     // ruleset IDs, rule count limit exceeded, or internal errors.
-    static void updateEnabledRulesets(
-        DOMString[] rulesetIdsToDisable, DOMString[] rulesetIdsToEnable,
-        EmptyCallback callback);
+    static void updateEnabledRulesets(UpdateRulesetOptions options,
+                                      optional EmptyCallback callback);
 
     // Returns the ids for the current set of enabled static rulesets.
     // |callback|: Called with a list of ids, where each id corresponds to an

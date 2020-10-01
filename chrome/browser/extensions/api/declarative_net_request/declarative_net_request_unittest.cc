@@ -12,7 +12,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
-#include "base/json/json_writer.h"
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
 #include "base/optional.h"
@@ -225,14 +224,19 @@ class DeclarativeNetRequestUnittest : public DNRTestBase {
       const std::vector<std::string>& ruleset_ids_to_remove,
       const std::vector<std::string>& ruleset_ids_to_add,
       base::Optional<std::string> expected_error) {
-    std::unique_ptr<base::Value> args =
-        ListBuilder()
-            .Append(ToListValue(ruleset_ids_to_remove))
-            .Append(ToListValue(ruleset_ids_to_add))
-            .Build();
-    std::string json_args;
-    base::JSONWriter::WriteWithOptions(
-        *args, base::JSONWriter::OPTIONS_PRETTY_PRINT, &json_args);
+    std::unique_ptr<base::Value> ids_to_remove_value =
+        ToListValue(ruleset_ids_to_remove);
+    std::unique_ptr<base::Value> ids_to_add_value =
+        ToListValue(ruleset_ids_to_add);
+
+    constexpr const char kParams[] = R"(
+      [{
+        "disableRulesetIds": $1,
+        "enableRulesetIds": $2
+      }]
+    )";
+    const std::string json_args = content::JsReplace(
+        kParams, std::move(*ids_to_remove_value), std::move(*ids_to_add_value));
 
     auto function = base::MakeRefCounted<
         DeclarativeNetRequestUpdateEnabledRulesetsFunction>();
