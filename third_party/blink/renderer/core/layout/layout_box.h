@@ -560,11 +560,24 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
       LayoutUnit* logical_height = nullptr) const;
   bool ShouldComputeLogicalHeightFromAspectRatio() const {
     NOT_DESTROYED();
+    if (ShouldComputeLogicalWidthFromAspectRatioAndInsets())
+      return false;
     Length h = StyleRef().LogicalHeight();
     return !StyleRef().AspectRatio().IsAuto() &&
            (h.IsAuto() ||
             (!IsOutOfFlowPositioned() && h.IsPercentOrCalc() &&
              ComputePercentageLogicalHeight(h) == kIndefiniteSize));
+  }
+  bool ShouldComputeLogicalWidthFromAspectRatioAndInsets() const {
+    NOT_DESTROYED();
+    const ComputedStyle& style = StyleRef();
+    if (style.AspectRatio().IsAuto() || !IsOutOfFlowPositioned())
+      return false;
+    if (style.Width().IsAuto() && style.Height().IsAuto() &&
+        !style.LogicalTop().IsAuto() && !style.LogicalBottom().IsAuto() &&
+        (style.LogicalLeft().IsAuto() || style.LogicalRight().IsAuto()))
+      return true;
+    return false;
   }
   bool ComputeLogicalWidthFromAspectRatio(LayoutUnit* logical_width) const;
 

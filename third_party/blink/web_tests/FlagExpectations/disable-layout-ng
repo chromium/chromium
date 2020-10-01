@@ -118,7 +118,6 @@ crbug.com/591099 external/wpt/css/css-shapes/shape-outside/supported-shapes/inse
 crbug.com/591099 external/wpt/css/css-shapes/shape-outside/supported-shapes/polygon/shape-outside-polygon-017.html [ Failure ]
 
 ### external/wpt/css/css-sizing/
-crbug.com/1045668 external/wpt/css/css-sizing/aspect-ratio/abspos-004.tentative.html [ Failure ]
 crbug.com/1045668 external/wpt/css/css-sizing/aspect-ratio/abspos-013.tentative.html [ Pass ]
 crbug.com/1045668 external/wpt/css/css-sizing/aspect-ratio/block-aspect-ratio-024.tentative.html [ Failure ]
 crbug.com/1045668 external/wpt/css/css-sizing/aspect-ratio/block-aspect-ratio-028.tentative.html [ Failure ]

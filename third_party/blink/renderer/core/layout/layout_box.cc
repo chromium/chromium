@@ -3836,9 +3836,10 @@ LayoutUnit LayoutBox::ContainerWidthInInlineDirection() const {
 bool LayoutBox::ShouldComputeLogicalWidthFromAspectRatio(
     LayoutUnit* out_logical_height) const {
   NOT_DESTROYED();
-  if (StyleRef().AspectRatio().IsAuto() ||
-      (!StyleRef().LogicalHeight().IsFixed() &&
-       !StyleRef().LogicalHeight().IsPercentOrCalc())) {
+  if (!ShouldComputeLogicalWidthFromAspectRatioAndInsets() &&
+      (StyleRef().AspectRatio().IsAuto() ||
+       (!StyleRef().LogicalHeight().IsFixed() &&
+        !StyleRef().LogicalHeight().IsPercentOrCalc()))) {
     return false;
   }
 
