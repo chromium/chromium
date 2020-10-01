@@ -119,8 +119,7 @@ std::string FilesSection::GetSectionPath() const {
   return mojom::kFilesSectionPath;
 }
 
-bool FilesSection::LogMetric(mojom::Setting setting,
-                             const base::Optional<base::Value>& value) const {
+bool FilesSection::LogMetric(mojom::Setting setting, base::Value& value) const {
   // Unimplemented.
   return false;
 }

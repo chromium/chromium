@@ -267,7 +267,7 @@ std::string SearchSection::GetSectionPath() const {
 }
 
 bool SearchSection::LogMetric(mojom::Setting setting,
-                              const base::Optional<base::Value>& value) const {
+                              base::Value& value) const {
   // Unimplemented.
   return false;
 }

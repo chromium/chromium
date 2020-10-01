@@ -32,9 +32,8 @@ std::string FakeOsSettingsSection::GetSectionPath() const {
   return std::string();
 }
 
-bool FakeOsSettingsSection::LogMetric(
-    mojom::Setting setting,
-    const base::Optional<base::Value>& value) const {
+bool FakeOsSettingsSection::LogMetric(mojom::Setting setting,
+                                      base::Value& value) const {
   return false;
 }
 

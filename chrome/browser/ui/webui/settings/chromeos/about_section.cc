@@ -350,8 +350,7 @@ std::string AboutSection::GetSectionPath() const {
   return mojom::kAboutChromeOsSectionPath;
 }
 
-bool AboutSection::LogMetric(mojom::Setting setting,
-                             const base::Optional<base::Value>& value) const {
+bool AboutSection::LogMetric(mojom::Setting setting, base::Value& value) const {
   // Unimplemented.
   return false;
 }

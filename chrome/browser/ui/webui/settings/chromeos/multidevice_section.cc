@@ -418,9 +418,8 @@ std::string MultiDeviceSection::GetSectionPath() const {
   return mojom::kMultiDeviceSectionPath;
 }
 
-bool MultiDeviceSection::LogMetric(
-    mojom::Setting setting,
-    const base::Optional<base::Value>& value) const {
+bool MultiDeviceSection::LogMetric(mojom::Setting setting,
+                                   base::Value& value) const {
   // Unimplemented.
   return false;
 }

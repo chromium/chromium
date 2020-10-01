@@ -274,9 +274,8 @@ std::string PersonalizationSection::GetSectionPath() const {
   return mojom::kPersonalizationSectionPath;
 }
 
-bool PersonalizationSection::LogMetric(
-    mojom::Setting setting,
-    const base::Optional<base::Value>& value) const {
+bool PersonalizationSection::LogMetric(mojom::Setting setting,
+                                       base::Value& value) const {
   // Unimplemented.
   return false;
 }

@@ -153,9 +153,8 @@ std::string DateTimeSection::GetSectionPath() const {
   return mojom::kDateAndTimeSectionPath;
 }
 
-bool DateTimeSection::LogMetric(
-    mojom::Setting setting,
-    const base::Optional<base::Value>& value) const {
+bool DateTimeSection::LogMetric(mojom::Setting setting,
+                                base::Value& value) const {
   // Unimplemented.
   return false;
 }

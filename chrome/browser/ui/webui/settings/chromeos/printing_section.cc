@@ -274,9 +274,8 @@ std::string PrintingSection::GetSectionPath() const {
   return mojom::kPrintingSectionPath;
 }
 
-bool PrintingSection::LogMetric(
-    mojom::Setting setting,
-    const base::Optional<base::Value>& value) const {
+bool PrintingSection::LogMetric(mojom::Setting setting,
+                                base::Value& value) const {
   // Unimplemented.
   return false;
 }

@@ -207,9 +207,8 @@ std::string BluetoothSection::GetSectionPath() const {
   return mojom::kBluetoothSectionPath;
 }
 
-bool BluetoothSection::LogMetric(
-    mojom::Setting setting,
-    const base::Optional<base::Value>& value) const {
+bool BluetoothSection::LogMetric(mojom::Setting setting,
+                                 base::Value& value) const {
   // Unimplemented.
   return false;
 }

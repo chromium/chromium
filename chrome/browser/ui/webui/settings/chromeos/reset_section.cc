@@ -107,8 +107,7 @@ std::string ResetSection::GetSectionPath() const {
   return mojom::kResetSectionPath;
 }
 
-bool ResetSection::LogMetric(mojom::Setting setting,
-                             const base::Optional<base::Value>& value) const {
+bool ResetSection::LogMetric(mojom::Setting setting, base::Value& value) const {
   // Unimplemented.
   return false;
 }

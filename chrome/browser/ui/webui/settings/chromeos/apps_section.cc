@@ -238,8 +238,7 @@ std::string AppsSection::GetSectionPath() const {
   return mojom::kAppsSectionPath;
 }
 
-bool AppsSection::LogMetric(mojom::Setting setting,
-                            const base::Optional<base::Value>& value) const {
+bool AppsSection::LogMetric(mojom::Setting setting, base::Value& value) const {
   // Unimplemented.
   return false;
 }

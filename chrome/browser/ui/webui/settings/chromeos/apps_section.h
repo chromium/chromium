@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_CHROMEOS_APPS_SECTION_H_
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_CHROMEOS_APPS_SECTION_H_
 
-#include "base/optional.h"
 #include "base/values.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ui/webui/settings/chromeos/os_settings_section.h"
@@ -39,8 +38,7 @@ class AppsSection : public OsSettingsSection, public ArcAppListPrefs::Observer {
   mojom::Section GetSection() const override;
   mojom::SearchResultIcon GetSectionIcon() const override;
   std::string GetSectionPath() const override;
-  bool LogMetric(mojom::Setting setting,
-                 const base::Optional<base::Value>& value) const override;
+  bool LogMetric(mojom::Setting setting, base::Value& value) const override;
   void RegisterHierarchy(HierarchyGenerator* generator) const override;
 
   // ArcAppListPrefs::Observer:

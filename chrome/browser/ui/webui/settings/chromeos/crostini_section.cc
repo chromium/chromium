@@ -452,9 +452,8 @@ std::string CrostiniSection::GetSectionPath() const {
   return mojom::kCrostiniSectionPath;
 }
 
-bool CrostiniSection::LogMetric(
-    mojom::Setting setting,
-    const base::Optional<base::Value>& value) const {
+bool CrostiniSection::LogMetric(mojom::Setting setting,
+                                base::Value& value) const {
   // Unimplemented.
   return false;
 }

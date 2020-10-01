@@ -226,8 +226,7 @@ std::string MainSection::GetSectionPath() const {
   return std::string();
 }
 
-bool MainSection::LogMetric(mojom::Setting setting,
-                            const base::Optional<base::Value>& value) const {
+bool MainSection::LogMetric(mojom::Setting setting, base::Value& value) const {
   NOTIMPLEMENTED();
   return false;
 }

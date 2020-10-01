@@ -919,7 +919,7 @@ std::string PeopleSection::GetSectionPath() const {
 }
 
 bool PeopleSection::LogMetric(mojom::Setting setting,
-                              const base::Optional<base::Value>& value) const {
+                              base::Value& value) const {
   // Unimplemented.
   return false;
 }

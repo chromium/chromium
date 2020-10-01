@@ -614,9 +614,8 @@ mojom::SearchResultIcon AccessibilitySection::GetSectionIcon() const {
 std::string AccessibilitySection::GetSectionPath() const {
   return mojom::kAccessibilitySectionPath;
 }
-bool AccessibilitySection::LogMetric(
-    mojom::Setting setting,
-    const base::Optional<base::Value>& value) const {
+bool AccessibilitySection::LogMetric(mojom::Setting setting,
+                                     base::Value& value) const {
   // Unimplemented.
   return false;
 }

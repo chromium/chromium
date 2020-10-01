@@ -739,9 +739,8 @@ std::string InternetSection::GetSectionPath() const {
   return mojom::kNetworkSectionPath;
 }
 
-bool InternetSection::LogMetric(
-    mojom::Setting setting,
-    const base::Optional<base::Value>& value) const {
+bool InternetSection::LogMetric(mojom::Setting setting,
+                                base::Value& value) const {
   // Unimplemented.
   return false;
 }
