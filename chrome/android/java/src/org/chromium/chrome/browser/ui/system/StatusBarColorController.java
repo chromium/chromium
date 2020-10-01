@@ -227,8 +227,8 @@ public class StatusBarColorController
 
     // TopToolbarCoordinator.UrlExpansionObserver implementation.
     @Override
-    public void onUrlExpansionPercentageChanged(float percentage) {
-        mToolbarUrlExpansionPercentage = percentage;
+    public void onUrlExpansionProgressChanged(float fraction) {
+        mToolbarUrlExpansionPercentage = fraction;
         if (mShouldUpdateStatusBarColorForNTP) updateStatusBarColor();
     }
 

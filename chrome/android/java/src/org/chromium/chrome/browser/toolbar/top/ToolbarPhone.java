@@ -108,7 +108,7 @@ public class ToolbarPhone extends ToolbarLayout
     private static final int EXPERIMENTAL_ICON_ANIMATION_DURATION_MS = 100;
     private static final int EXPERIMENTAL_ICON_ANIMATION_DELAY_MS = 125;
 
-    private static final float UNINITIALIZED_PERCENT = -1f;
+    private static final float UNINITIALIZED_FRACTION = -1f;
 
     /** States that the toolbar can be in regarding the tab switcher. */
     protected static final int STATIC_TAB = 0;
@@ -163,7 +163,7 @@ public class ToolbarPhone extends ToolbarLayout
     // mode.  0 = entirely in normal mode and 1.0 = entirely in TabSwitcher mode.  In between values
     // can be used for animating between the two view modes.
     @ViewDebug.ExportedProperty(category = "chrome")
-    protected float mTabSwitcherModePercent;
+    protected float mTabSwitcherModeFraction;
 
     // Used to clip the toolbar during the fade transition into and out of TabSwitcher mode.  Only
     // used when |mAnimateNormalToolbar| is false.
@@ -175,18 +175,18 @@ public class ToolbarPhone extends ToolbarLayout
 
     /** 1.0 is 100% focused, 0 is completely unfocused */
     @ViewDebug.ExportedProperty(category = "chrome")
-    private float mUrlFocusChangePercent;
+    private float mUrlFocusChangeFraction;
 
     /**
      * The degree to which the omnibox has expanded to full width, either because it is getting
      * focused or the NTP search box is being scrolled up. Note that in the latter case, the actual
      * width of the omnibox is not interpolated linearly from this value. The value will be the
-     * maximum of {@link #mUrlFocusChangePercent} and {@link #mNtpSearchBoxScrollPercent}.
+     * maximum of {@link #mUrlFocusChangeFraction} and {@link #mNtpSearchBoxScrollFraction}.
      *
      * 0.0 == no expansion, 1.0 == fully expanded.
      */
     @ViewDebug.ExportedProperty(category = "chrome")
-    protected float mUrlExpansionPercent;
+    protected float mUrlExpansionFraction;
     private AnimatorSet mUrlFocusLayoutAnimator;
 
     protected boolean mDisableLocationBarRelayout;
@@ -198,7 +198,7 @@ public class ToolbarPhone extends ToolbarLayout
     private boolean mUnfocusedLocationBarUsesTransparentBg;
 
     private int mLocationBarBackgroundAlpha = 255;
-    private float mNtpSearchBoxScrollPercent = UNINITIALIZED_PERCENT;
+    private float mNtpSearchBoxScrollFraction = UNINITIALIZED_FRACTION;
     protected ColorDrawable mToolbarBackground;
 
     /** The omnibox background (white with a shadow). */
@@ -206,9 +206,6 @@ public class ToolbarPhone extends ToolbarLayout
     private Drawable mActiveLocationBarBackground;
 
     protected boolean mForceDrawLocationBarBackground;
-
-    private final int mLightModeDefaultColor;
-    private final int mDarkModeDefaultColor;
 
     /** The boundaries of the omnibox, without the NTP-specific offset applied. */
     protected final Rect mLocationBarBackgroundBounds = new Rect();
@@ -268,13 +265,14 @@ public class ToolbarPhone extends ToolbarLayout
     private AnimatorSet mOptionalButtonAnimator;
     private boolean mOptionalButtonAnimationRunning;
     private int mOptionalButtonTranslation;
+
     /**
-     * The percent completion for the location bar width change animation that is run when the
+     * The progress fraction for the location bar width change animation that is run when the
      * optional button is shown/hidden. Animates from 1.f to 0.f when showing the button and
      * 0.f to 1.f when hiding the button, where 0.f indicates the location bar width is not offset
      * at all for the animation.
      */
-    private float mLocBarWidthChangePercent;
+    private float mLocBarWidthChangeFraction;
 
     /**
      * A global layout listener used to capture a new texture when the experimental toolbar button
@@ -285,59 +283,56 @@ public class ToolbarPhone extends ToolbarLayout
     // The following are some properties used during animation.  We use explicit property classes
     // to avoid the cost of reflection for each animation setup.
 
-    private final Property<ToolbarPhone, Float> mUrlFocusChangePercentProperty =
+    private final Property<ToolbarPhone, Float> mUrlFocusChangeFractionProperty =
             new Property<ToolbarPhone, Float>(Float.class, "") {
                 @Override
                 public Float get(ToolbarPhone object) {
-                    return object.mUrlFocusChangePercent;
+                    return object.mUrlFocusChangeFraction;
                 }
 
                 @Override
                 public void set(ToolbarPhone object, Float value) {
-                    setUrlFocusChangePercent(value);
+                    setUrlFocusChangeFraction(value);
                 }
             };
 
-    private final Property<ToolbarPhone, Float> mTabSwitcherModePercentProperty =
+    private final Property<ToolbarPhone, Float> mTabSwitcherModeFractionProperty =
             new Property<ToolbarPhone, Float>(Float.class, "") {
                 @Override
                 public Float get(ToolbarPhone object) {
-                    return object.mTabSwitcherModePercent;
+                    return object.mTabSwitcherModeFraction;
                 }
 
                 @Override
                 public void set(ToolbarPhone object, Float value) {
-                    object.mTabSwitcherModePercent = value;
+                    object.mTabSwitcherModeFraction = value;
                     triggerPaintInvalidate(ToolbarPhone.this::postInvalidateOnAnimation);
                 }
             };
 
-    private final Property<ToolbarPhone, Float> mLocBarWidthChangePercentProperty =
+    private final Property<ToolbarPhone, Float> mLocBarWidthChangeFractionProperty =
             new Property<ToolbarPhone, Float>(Float.class, "") {
                 @Override
                 public Float get(ToolbarPhone object) {
-                    return object.mLocBarWidthChangePercent;
+                    return object.mLocBarWidthChangeFraction;
                 }
 
                 @Override
                 public void set(ToolbarPhone object, Float value) {
-                    mLocBarWidthChangePercent = value;
+                    mLocBarWidthChangeFraction = value;
                     updateLocationBarLayoutForExpansionAnimation();
                 }
             };
 
     /**
      * Constructs a ToolbarPhone object.
+     *
      * @param context The Context in which this View object is created.
      * @param attrs The AttributeSet that was specified with this View.
      */
     public ToolbarPhone(Context context, AttributeSet attrs) {
         super(context, attrs);
         mToolbarSidePadding = getResources().getDimensionPixelOffset(R.dimen.toolbar_edge_padding);
-        mLightModeDefaultColor =
-                ToolbarColors.getThemedToolbarIconTint(getContext(), true).getDefaultColor();
-        mDarkModeDefaultColor =
-                ToolbarColors.getThemedToolbarIconTint(getContext(), false).getDefaultColor();
     }
 
     @Override
@@ -490,8 +485,8 @@ public class ToolbarPhone extends ToolbarLayout
         // If the NTP is partially scrolled, prevent all touch events to the child views.  This
         // is to not allow a secondary touch event to trigger entering the tab switcher, which
         // can lead to really odd snapshots and transitions to the switcher.
-        if (mNtpSearchBoxScrollPercent != 0f && mNtpSearchBoxScrollPercent != 1f
-                && mNtpSearchBoxScrollPercent != UNINITIALIZED_PERCENT) {
+        if (mNtpSearchBoxScrollFraction != 0f && mNtpSearchBoxScrollFraction != 1f
+                && mNtpSearchBoxScrollFraction != UNINITIALIZED_FRACTION) {
             return true;
         }
 
@@ -720,10 +715,10 @@ public class ToolbarPhone extends ToolbarLayout
                 // bar is fully expanded), the background needs to change back to the default
                 // toolbar color so that the NTP content is not visible beneath the toolbar. In
                 // between the transition, we set a translucent default toolbar color based on
-                // the expansion percentage of the toolbar.
+                // the expansion progress of the toolbar.
                 return androidx.core.graphics.ColorUtils.setAlphaComponent(
                         ChromeColors.getDefaultThemeColor(getResources(), false),
-                        Math.round(mUrlExpansionPercent * 255));
+                        Math.round(mUrlExpansionFraction * 255));
             case VisualState.NORMAL:
                 return ChromeColors.getDefaultThemeColor(getResources(), false);
             case VisualState.INCOGNITO:
@@ -760,7 +755,7 @@ public class ToolbarPhone extends ToolbarLayout
                 // set the values before the draw happens.
                 if (!mAnimateNormalToolbar) {
                     drawTabSwitcherFadeAnimation(
-                            tabSwitcherAnimationFinished, mTabSwitcherModePercent);
+                            tabSwitcherAnimationFinished, mTabSwitcherModeFraction);
                 }
             }
 
@@ -770,7 +765,7 @@ public class ToolbarPhone extends ToolbarLayout
                 // Perform the overlay logic after super.dispatchDraw(canvas) as we need to draw on
                 // top of the current views.
                 if (mAnimateNormalToolbar) {
-                    drawTabSwitcherAnimationOverlay(canvas, mTabSwitcherModePercent);
+                    drawTabSwitcherAnimationOverlay(canvas, mTabSwitcherModeFraction);
                 }
 
                 // Clear the animation.
@@ -786,9 +781,9 @@ public class ToolbarPhone extends ToolbarLayout
 
     // NewTabPage.OnSearchBoxScrollListener
     @Override
-    public void onNtpScrollChanged(float scrollPercentage) {
-        mNtpSearchBoxScrollPercent = scrollPercentage;
-        updateUrlExpansionPercent();
+    public void onNtpScrollChanged(float scrollFraction) {
+        mNtpSearchBoxScrollFraction = scrollFraction;
+        updateUrlExpansionFraction();
         updateUrlExpansionAnimation();
     }
 
@@ -805,7 +800,7 @@ public class ToolbarPhone extends ToolbarLayout
     private void updateLocationBarBackgroundBounds(Rect out, @VisualState int visualState) {
         // Calculate the visible boundaries of the left and right most child views of the
         // location bar.
-        float expansion = getExpansionPercentForVisualState(visualState);
+        float expansion = getExpansionFractionForVisualState(visualState);
         int leftViewPosition = getLeftPositionOfLocationBarBackground(visualState);
         int rightViewPosition = getRightPositionOfLocationBarBackground(visualState);
 
@@ -824,7 +819,7 @@ public class ToolbarPhone extends ToolbarLayout
      * @return The left drawing position for the location bar background.
      */
     private int getLeftPositionOfLocationBarBackground(@VisualState int visualState) {
-        float expansion = getExpansionPercentForVisualState(visualState);
+        float expansion = getExpansionFractionForVisualState(visualState);
         int leftViewPosition =
                 (int) MathUtils.interpolate(getViewBoundsLeftOfLocationBar(visualState),
                         getFocusedLeftPositionOfLocationBarBackground(), expansion);
@@ -849,7 +844,7 @@ public class ToolbarPhone extends ToolbarLayout
      * @return The right drawing position for the location bar background.
      */
     private int getRightPositionOfLocationBarBackground(@VisualState int visualState) {
-        float expansion = getExpansionPercentForVisualState(visualState);
+        float expansion = getExpansionFractionForVisualState(visualState);
         int rightViewPosition =
                 (int) MathUtils.interpolate(getViewBoundsRightOfLocationBar(visualState),
                         getFocusedRightPositionOfLocationBarBackground(), expansion);
@@ -866,7 +861,7 @@ public class ToolbarPhone extends ToolbarLayout
      *         show/hide animation is running.
      */
     private int getLocationBarBackgroundOffsetForOptionalButton() {
-        return (int) (getLocationBarWidthOffsetForOptionalButton() * mLocBarWidthChangePercent);
+        return (int) (getLocationBarWidthOffsetForOptionalButton() * mLocBarWidthChangeFraction);
     }
 
     /**
@@ -894,30 +889,31 @@ public class ToolbarPhone extends ToolbarLayout
         return getWidth() - mToolbarSidePadding;
     }
 
-    private float getExpansionPercentForVisualState(@VisualState int visualState) {
+    private float getExpansionFractionForVisualState(@VisualState int visualState) {
         return visualState == VisualState.NEW_TAB_NORMAL && mTabSwitcherState == STATIC_TAB
                         || getToolbarDataProvider().isInOverviewAndShowingOmnibox()
                 ? 1
-                : mUrlExpansionPercent;
+                : mUrlExpansionFraction;
     }
 
     /**
-     * Updates percentage of current the URL focus change animation.
-     * @param percent 1.0 is 100% focused, 0 is completely unfocused.
+     * Updates progress of current the URL focus change animation.
+     *
+     * @param fraction 1.0 is 100% focused, 0 is completely unfocused.
      */
-    private void setUrlFocusChangePercent(float percent) {
-        mUrlFocusChangePercent = percent;
-        updateUrlExpansionPercent();
+    private void setUrlFocusChangeFraction(float fraction) {
+        mUrlFocusChangeFraction = fraction;
+        updateUrlExpansionFraction();
         updateUrlExpansionAnimation();
     }
 
-    private void updateUrlExpansionPercent() {
-        mUrlExpansionPercent = Math.max(mNtpSearchBoxScrollPercent, mUrlFocusChangePercent);
+    private void updateUrlExpansionFraction() {
+        mUrlExpansionFraction = Math.max(mNtpSearchBoxScrollFraction, mUrlFocusChangeFraction);
         for (UrlExpansionObserver observer : mUrlExpansionObservers) {
-            observer.onUrlExpansionPercentageChanged(mUrlExpansionPercent);
+            observer.onUrlExpansionProgressChanged(mUrlExpansionFraction);
         }
-        assert mUrlExpansionPercent >= 0;
-        assert mUrlExpansionPercent <= 1;
+        assert mUrlExpansionFraction >= 0;
+        assert mUrlExpansionFraction <= 1;
     }
 
     /**
@@ -944,7 +940,7 @@ public class ToolbarPhone extends ToolbarLayout
      * @return The visibility for {@link #mToolbarButtonsContainer}.
      */
     private int getToolbarButtonVisibility() {
-        return mUrlExpansionPercent == 1f ? INVISIBLE : VISIBLE;
+        return mUrlExpansionFraction == 1f ? INVISIBLE : VISIBLE;
     }
 
     /**
@@ -992,8 +988,8 @@ public class ToolbarPhone extends ToolbarLayout
         }
 
         locationBarBaseTranslationX *= 1f
-                - (mOptionalButtonAnimationRunning ? mLocBarWidthChangePercent
-                                                   : mUrlExpansionPercent);
+                - (mOptionalButtonAnimationRunning ? mLocBarWidthChangeFraction
+                                                   : mUrlExpansionFraction);
 
         mLocationBarBackgroundNtpOffset.setEmpty();
         mLocationBarNtpOffsetLeft = 0;
@@ -1003,7 +999,7 @@ public class ToolbarPhone extends ToolbarLayout
         if (currentTab != null) {
             NewTabPage ntp = getToolbarDataProvider().getNewTabPageForCurrentTab();
             if (ntp != null) {
-                ntp.setUrlFocusChangeAnimationPercent(mUrlFocusChangePercent);
+                ntp.setUrlFocusChangeAnimationPercent(mUrlFocusChangeFraction);
             }
 
             if (isLocationBarShownInNTP()
@@ -1030,7 +1026,7 @@ public class ToolbarPhone extends ToolbarLayout
         // LocationBar#getUrlBarTranslationXForToolbarAnimation() for implementation details.
         if (SearchEngineLogoUtils.shouldShowSearchEngineLogo(isIncognito)) {
             mUrlBar.setTranslationX(mLocationBar.getUrlBarTranslationXForToolbarAnimation(
-                    mUrlExpansionPercent, hasFocus()));
+                    mUrlExpansionFraction, hasFocus()));
         } else if (SearchEngineLogoUtils.isSearchEngineLogoEnabled()) {
             mUrlBar.setTranslationX(0);
         }
@@ -1038,7 +1034,7 @@ public class ToolbarPhone extends ToolbarLayout
         if (!mOptionalButtonAnimationRunning) {
             mUrlActionContainer.setTranslationX(getUrlActionsTranslationXForExpansionAnimation(
                     isLocationBarRtl, locationBarBaseTranslationX));
-            mLocationBar.setUrlFocusChangePercent(mUrlExpansionPercent);
+            mLocationBar.setUrlFocusChangePercent(mUrlExpansionFraction);
 
             // Only transition theme colors if in static tab mode that is not the NTP. In practice
             // this only runs when you focus the omnibox on a web page.
@@ -1049,10 +1045,10 @@ public class ToolbarPhone extends ToolbarLayout
                 int themedLocationBarColor = getLocationBarColorForToolbarColor(primaryColor);
 
                 updateToolbarBackground(ColorUtils.getColorWithOverlay(
-                        primaryColor, defaultColor, mUrlFocusChangePercent));
+                        primaryColor, defaultColor, mUrlFocusChangeFraction));
 
                 updateModernLocationBarColor(ColorUtils.getColorWithOverlay(
-                        themedLocationBarColor, defaultLocationBarColor, mUrlFocusChangePercent));
+                        themedLocationBarColor, defaultLocationBarColor, mUrlFocusChangeFraction));
             }
         }
 
@@ -1119,8 +1115,8 @@ public class ToolbarPhone extends ToolbarLayout
         }
 
         setAncestorsShouldClipChildren(true);
-        mNtpSearchBoxScrollPercent = UNINITIALIZED_PERCENT;
-        updateUrlExpansionPercent();
+        mNtpSearchBoxScrollFraction = UNINITIALIZED_FRACTION;
+        updateUrlExpansionFraction();
     }
 
     /**
@@ -1131,11 +1127,11 @@ public class ToolbarPhone extends ToolbarLayout
         // Skip if in or entering tab switcher mode.
         if (mTabSwitcherState == TAB_SWITCHER || mTabSwitcherState == ENTERING_TAB_SWITCHER) return;
 
-        boolean isExpanded = mUrlExpansionPercent > 0f;
+        boolean isExpanded = mUrlExpansionFraction > 0f;
         setAncestorsShouldClipChildren(!isExpanded);
         if (!mUrlFocusChangeInProgress) {
             float alpha = 0.f;
-            if (!mUrlBar.hasFocus() && mNtpSearchBoxScrollPercent == 1.f) {
+            if (!mUrlBar.hasFocus() && mNtpSearchBoxScrollFraction == 1.f) {
                 alpha = 1.f;
             }
             mToolbarShadow.setAlpha(alpha);
@@ -1154,13 +1150,13 @@ public class ToolbarPhone extends ToolbarLayout
         // shrinking the omnibox down to the size of the search box.
         float shrinkage = 1f
                 - Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR.getInterpolation(
-                        mUrlExpansionPercent);
+                        mUrlExpansionFraction);
 
         int leftBoundDifference = mNtpSearchBoxBounds.left - mLocationBarBackgroundBounds.left;
         int rightBoundDifference = mNtpSearchBoxBounds.right - mLocationBarBackgroundBounds.right;
         int verticalInset = (int) (getResources().getDimensionPixelSize(
                                            R.dimen.ntp_search_box_bounds_vertical_inset_modern)
-                * (1.f - mUrlExpansionPercent));
+                * (1.f - mUrlExpansionFraction));
         mLocationBarBackgroundNtpOffset.set(Math.round(leftBoundDifference * shrinkage),
                 locationBarTranslationY, Math.round(rightBoundDifference * shrinkage),
                 locationBarTranslationY);
@@ -1275,7 +1271,7 @@ public class ToolbarPhone extends ToolbarLayout
 
         // Draw the tab stack button and associated text if necessary.
         if (mTabSwitcherAnimationTabStackDrawable != null && mToggleTabStackButton != null
-                && mUrlExpansionPercent != 1f) {
+                && mUrlExpansionFraction != 1f) {
             // Draw the tab stack button image.
             canvas.save();
             translateCanvasToView(mToolbarButtonsContainer, mToggleTabStackButton, canvas);
@@ -1351,7 +1347,7 @@ public class ToolbarPhone extends ToolbarLayout
 
             int translationY = (int) mLocationBar.getTranslationY();
             int clipTop = mLocationBarBackgroundBounds.top + translationY;
-            if (mUrlExpansionPercent != 0f && clipTop < child.getBottom()) {
+            if (mUrlExpansionFraction != 0f && clipTop < child.getBottom()) {
                 // For other child views, use the inverse clipping of the URL viewport.
                 // Only necessary during animations.
                 // Hardware mode does not support unioned clip regions, so clip using the
@@ -1429,24 +1425,25 @@ public class ToolbarPhone extends ToolbarLayout
             // viewport used to draw the background.  During expansion transitions, compensation
             // is applied to increase the clip regions such that when the location bar converts
             // to the narrower collapsed layout the visible content is the same.
-            if (mUrlExpansionPercent != 1f && !mOptionalButtonAnimationRunning) {
+            if (mUrlExpansionFraction != 1f && !mOptionalButtonAnimationRunning) {
                 int leftDelta = mUnfocusedLocationBarLayoutLeft
                         - getViewBoundsLeftOfLocationBar(mVisualState);
                 int rightDelta = getViewBoundsRightOfLocationBar(mVisualState)
                         - mUnfocusedLocationBarLayoutLeft - mUnfocusedLocationBarLayoutWidth;
-                float inversePercent = 1f - mUrlExpansionPercent;
+                float remainingFraction = 1f - mUrlExpansionFraction;
 
-                locationBarClipLeft += leftDelta * inversePercent;
-                locationBarClipRight -= rightDelta * inversePercent;
+                locationBarClipLeft += leftDelta * remainingFraction;
+                locationBarClipRight -= rightDelta * remainingFraction;
 
                 // When the defocus animation is running, the location bar padding needs to be
                 // subtracted from the clip bounds so that the location bar text width in the last
                 // frame of the animation matches the text width of the unfocused location bar.
                 if (mLocationBar.getLayoutDirection() == LAYOUT_DIRECTION_RTL) {
                     locationBarClipLeft +=
-                            ViewCompat.getPaddingStart(mLocationBar) * inversePercent;
+                            ViewCompat.getPaddingStart(mLocationBar) * remainingFraction;
                 } else {
-                    locationBarClipRight -= ViewCompat.getPaddingEnd(mLocationBar) * inversePercent;
+                    locationBarClipRight -=
+                            ViewCompat.getPaddingEnd(mLocationBar) * remainingFraction;
                 }
             }
             if (mOptionalButtonAnimationRunning) {
@@ -1665,7 +1662,7 @@ public class ToolbarPhone extends ToolbarLayout
 
     private ObjectAnimator createEnterTabSwitcherModeAnimation() {
         ObjectAnimator enterAnimation =
-                ObjectAnimator.ofFloat(this, mTabSwitcherModePercentProperty, 1.f);
+                ObjectAnimator.ofFloat(this, mTabSwitcherModeFractionProperty, 1.f);
         enterAnimation.setDuration(
                 TopToolbarCoordinator.TAB_SWITCHER_MODE_NORMAL_ANIMATION_DURATION_MS);
         enterAnimation.setInterpolator(Interpolators.LINEAR_INTERPOLATOR);
@@ -1675,7 +1672,7 @@ public class ToolbarPhone extends ToolbarLayout
 
     private ObjectAnimator createExitTabSwitcherAnimation(final boolean animateNormalToolbar) {
         ObjectAnimator exitAnimation =
-                ObjectAnimator.ofFloat(this, mTabSwitcherModePercentProperty, 0.f);
+                ObjectAnimator.ofFloat(this, mTabSwitcherModeFractionProperty, 0.f);
         exitAnimation.setDuration(animateNormalToolbar
                         ? TopToolbarCoordinator.TAB_SWITCHER_MODE_NORMAL_ANIMATION_DURATION_MS
                         : TAB_SWITCHER_MODE_EXIT_FADE_ANIMATION_DURATION_MS);
@@ -1748,7 +1745,7 @@ public class ToolbarPhone extends ToolbarLayout
 
     private boolean hideShadowForRegularNtpTextureCapture() {
         return !isIncognito() && NewTabPage.isNTPUrl(getToolbarDataProvider().getCurrentUrl())
-                && mNtpSearchBoxScrollPercent < 1.f;
+                && mNtpSearchBoxScrollFraction < 1.f;
     }
 
     // TODO(dtrainor): This is always true when in the tab switcher (crbug.com/710750).
@@ -1899,7 +1896,7 @@ public class ToolbarPhone extends ToolbarLayout
         // crbug.com/974745.
         requestLayout();
 
-        mTabSwitcherModePercent = mTabSwitcherState != STATIC_TAB ? 1.0f : 0.0f;
+        mTabSwitcherModeFraction = mTabSwitcherState != STATIC_TAB ? 1.0f : 0.0f;
 
         if (!mAnimateNormalToolbar) {
             finishAnimations();
@@ -1939,7 +1936,7 @@ public class ToolbarPhone extends ToolbarLayout
 
     @Override
     public boolean shouldIgnoreSwipeGesture() {
-        return super.shouldIgnoreSwipeGesture() || mUrlExpansionPercent > 0f
+        return super.shouldIgnoreSwipeGesture() || mUrlExpansionFraction > 0f
                 || mNtpSearchBoxTranslation.y < 0f;
     }
 
@@ -1976,7 +1973,7 @@ public class ToolbarPhone extends ToolbarLayout
 
     private void populateUrlFocusingAnimatorSet(List<Animator> animators) {
         TraceEvent.begin("ToolbarPhone.populateUrlFocusingAnimatorSet");
-        Animator animator = ObjectAnimator.ofFloat(this, mUrlFocusChangePercentProperty, 1f);
+        Animator animator = ObjectAnimator.ofFloat(this, mUrlFocusChangeFractionProperty, 1f);
         animator.setDuration(URL_FOCUS_CHANGE_ANIMATION_DURATION_MS);
         animator.setInterpolator(BakedBezierInterpolator.TRANSFORM_CURVE);
         animators.add(animator);
@@ -2039,7 +2036,7 @@ public class ToolbarPhone extends ToolbarLayout
     }
 
     private void populateUrlClearFocusingAnimatorSet(List<Animator> animators) {
-        Animator animator = ObjectAnimator.ofFloat(this, mUrlFocusChangePercentProperty, 0f);
+        Animator animator = ObjectAnimator.ofFloat(this, mUrlFocusChangeFractionProperty, 0f);
         animator.setDuration(URL_FOCUS_CHANGE_ANIMATION_DURATION_MS);
         animator.setInterpolator(BakedBezierInterpolator.TRANSFORM_CURVE);
         animators.add(animator);
@@ -2093,7 +2090,7 @@ public class ToolbarPhone extends ToolbarLayout
         mLocationBar.populateFadeAnimations(
                 animators, URL_FOCUS_TOOLBAR_BUTTONS_DURATION_MS, URL_CLEAR_FOCUS_MENU_DELAY_MS, 1);
 
-        if (isLocationBarShownInNTP() && mNtpSearchBoxScrollPercent == 0f) return;
+        if (isLocationBarShownInNTP() && mNtpSearchBoxScrollFraction == 0f) return;
 
         if (mToolbarShadow != null) {
             animator = ObjectAnimator.ofFloat(mToolbarShadow, ALPHA, 1);
@@ -2292,7 +2289,7 @@ public class ToolbarPhone extends ToolbarLayout
     private void updateNtpAnimationState() {
         // Store previous NTP scroll before calling reset as that clears this value.
         boolean wasShowingNtp = mVisibleNewTabPage != null;
-        float previousNtpScrollPercent = mNtpSearchBoxScrollPercent;
+        float previousNtpScrollFraction = mNtpSearchBoxScrollFraction;
 
         resetNtpAnimationValues();
         if (mVisibleNewTabPage != null) {
@@ -2311,11 +2308,12 @@ public class ToolbarPhone extends ToolbarLayout
 
             requestLayout();
         } else if (wasShowingNtp) {
-            // Convert the previous NTP scroll percentage to URL focus percentage because that
+            // Convert the previous NTP scroll progress to URL focus progress because that
             // will give a nicer transition animation from the expanded NTP omnibox to the
             // collapsed normal omnibox on other non-NTP pages.
-            if (mTabSwitcherState == STATIC_TAB && previousNtpScrollPercent > 0f) {
-                mUrlFocusChangePercent = Math.max(previousNtpScrollPercent, mUrlFocusChangePercent);
+            if (mTabSwitcherState == STATIC_TAB && previousNtpScrollFraction > 0f) {
+                mUrlFocusChangeFraction =
+                        Math.max(previousNtpScrollFraction, mUrlFocusChangeFraction);
                 triggerUrlFocusAnimation(false);
             }
             requestLayout();
@@ -2353,7 +2351,7 @@ public class ToolbarPhone extends ToolbarLayout
 
     private boolean isLocationBarCurrentlyShown() {
         NewTabPage ntp = getToolbarDataProvider().getNewTabPageForCurrentTab();
-        return ntp == null || !isLocationBarShownInNTP() || mUrlExpansionPercent > 0;
+        return ntp == null || !isLocationBarShownInNTP() || mUrlExpansionFraction > 0;
     }
 
     /**
@@ -2607,9 +2605,9 @@ public class ToolbarPhone extends ToolbarLayout
 
         List<Animator> animators = new ArrayList<>();
 
-        mLocBarWidthChangePercent = 1.f;
+        mLocBarWidthChangeFraction = 1.f;
         Animator widthChangeAnimator =
-                ObjectAnimator.ofFloat(this, mLocBarWidthChangePercentProperty, 0.f);
+                ObjectAnimator.ofFloat(this, mLocBarWidthChangeFractionProperty, 0.f);
         widthChangeAnimator.setDuration(LOC_BAR_WIDTH_CHANGE_ANIMATION_DURATION_MS);
         widthChangeAnimator.setInterpolator(BakedBezierInterpolator.TRANSFORM_CURVE);
         animators.add(widthChangeAnimator);
@@ -2659,9 +2657,9 @@ public class ToolbarPhone extends ToolbarLayout
         if (mOptionalButtonAnimationRunning) mOptionalButtonAnimator.end();
 
         List<Animator> animators = new ArrayList<>();
-        mLocBarWidthChangePercent = 0.f;
+        mLocBarWidthChangeFraction = 0.f;
         Animator widthChangeAnimator =
-                ObjectAnimator.ofFloat(this, mLocBarWidthChangePercentProperty, 1.f);
+                ObjectAnimator.ofFloat(this, mLocBarWidthChangeFractionProperty, 1.f);
         widthChangeAnimator.setDuration(LOC_BAR_WIDTH_CHANGE_ANIMATION_DURATION_MS);
         widthChangeAnimator.setInterpolator(BakedBezierInterpolator.TRANSFORM_CURVE);
         animators.add(widthChangeAnimator);

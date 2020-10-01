@@ -140,14 +140,14 @@ public abstract class ToolbarLayout
     }
 
     /**
-     * @param urlExpansionObserver The observer that observes URL expansion percentage change.
+     * @param urlExpansionObserver The observer that observes URL expansion progress change.
      */
     void addUrlExpansionObserver(UrlExpansionObserver urlExpansionObserver) {
         mUrlExpansionObservers.addObserver(urlExpansionObserver);
     }
 
     /**
-     * @param urlExpansionObserver The observer that observes URL expansion percentage change.
+     * @param urlExpansionObserver The observer that observes URL expansion progress change.
      */
     void removeUrlExpansionObserver(UrlExpansionObserver urlExpansionObserver) {
         mUrlExpansionObservers.removeObserver(urlExpansionObserver);

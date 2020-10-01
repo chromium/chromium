@@ -44,16 +44,17 @@ import java.util.List;
  */
 public class TopToolbarCoordinator implements Toolbar {
     /**
-     * Observes toolbar URL expansion percentage change.
+     * Observes toolbar URL expansion progress change.
      */
     public interface UrlExpansionObserver {
         /**
-         * Notified when toolbar URL expansion percentage changes.
-         * @param percentage The toolbar expansion percentage. 0 indicates that the URL bar is not
+         * Notified when toolbar URL expansion progress fraction changes.
+         *
+         * @param fraction The toolbar expansion progress. 0 indicates that the URL bar is not
          *                   expanded. 1 indicates that the URL bar is expanded to the maximum
          *                   width.
          */
-        void onUrlExpansionPercentageChanged(float percentage);
+        void onUrlExpansionProgressChanged(float fraction);
     }
 
     public static final int TAB_SWITCHER_MODE_NORMAL_ANIMATION_DURATION_MS = 200;
@@ -201,14 +202,14 @@ public class TopToolbarCoordinator implements Toolbar {
     }
 
     /**
-     * @param urlExpansionObserver The observer that observes URL expansion percentage change.
+     * @param urlExpansionObserver The observer that observes URL expansion progress change.
      */
     public void addUrlExpansionObserver(UrlExpansionObserver urlExpansionObserver) {
         mToolbarLayout.addUrlExpansionObserver(urlExpansionObserver);
     }
 
     /**
-     * @param urlExpansionObserver The observer that observes URL expansion percentage change.
+     * @param urlExpansionObserver The observer that observes URL expansion progress change.
      */
     public void removeUrlExpansionObserver(UrlExpansionObserver urlExpansionObserver) {
         mToolbarLayout.removeUrlExpansionObserver(urlExpansionObserver);
