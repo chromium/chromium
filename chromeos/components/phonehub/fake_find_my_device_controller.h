@@ -15,15 +15,13 @@ class FakeFindMyDeviceController : public FindMyDeviceController {
   FakeFindMyDeviceController();
   ~FakeFindMyDeviceController() override;
 
-  void SetPhoneRingingState(Status status);
-
   // FindMyDeviceController:
+  bool IsPhoneRinging() const override;
   void SetIsPhoneRingingInternal(bool is_phone_ringing) override;
   void RequestNewPhoneRingingState(bool ringing) override;
-  Status GetPhoneRingingStatus() override;
 
  private:
-  Status phone_ringing_status_ = Status::kRingingOff;
+  bool is_phone_ringing_ = false;
 };
 
 }  // namespace phonehub

@@ -247,12 +247,12 @@ void MultidevicePhoneHubHandler::OnDndStateChanged() {
 }
 
 void MultidevicePhoneHubHandler::OnPhoneRingingStateChanged() {
-  phonehub::FindMyDeviceController::Status ringing_status =
-      fake_phone_hub_manager_->fake_find_my_device_controller()
-          ->GetPhoneRingingStatus();
-
+  // TODO(jimmyxgong): Change to casting the enum TBA to int.
+  bool is_ringing = fake_phone_hub_manager_->fake_find_my_device_controller()
+                        ->IsPhoneRinging();
+  int status_as_int = is_ringing ? 2 : 1;
   FireWebUIListener("find-my-device-status-changed",
-                    base::Value(static_cast<int>(ringing_status)));
+                    base::Value(status_as_int));
 }
 
 void MultidevicePhoneHubHandler::OnTetherStatusChanged() {

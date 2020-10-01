@@ -45,9 +45,8 @@ PhoneHubManagerImpl::PhoneHubManagerImpl(
       connection_scheduler_(std::make_unique<ConnectionSchedulerImpl>(
           connection_manager_.get(),
           feature_status_provider_.get())),
-      find_my_device_controller_(std::make_unique<FindMyDeviceControllerImpl>(
-          do_not_disturb_controller_.get(),
-          message_sender_.get())),
+      find_my_device_controller_(
+          std::make_unique<FindMyDeviceControllerImpl>()),
       notification_access_manager_(
           std::make_unique<NotificationAccessManagerImpl>(pref_service)),
       notification_manager_(std::make_unique<NotificationManagerImpl>()),

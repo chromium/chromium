@@ -137,8 +137,7 @@ TEST_F(PhoneStatusProcessorTest, PhoneStatusSnapshotUpdate) {
   EXPECT_EQ(base::UTF8ToUTF16(test_remote_device_.name()),
             *mutable_phone_model_->phone_name());
   EXPECT_TRUE(fake_do_not_disturb_controller_->IsDndEnabled());
-  EXPECT_EQ(FindMyDeviceController::Status::kRingingOn,
-            fake_find_my_device_controller_->GetPhoneRingingStatus());
+  EXPECT_TRUE(fake_find_my_device_controller_->IsPhoneRinging());
   EXPECT_TRUE(fake_notification_access_manager_->HasAccessBeenGranted());
 
   base::Optional<PhoneStatusModel> phone_status_model =
@@ -199,8 +198,7 @@ TEST_F(PhoneStatusProcessorTest, PhoneStatusUpdate) {
   EXPECT_EQ(base::UTF8ToUTF16(test_remote_device_.name()),
             *mutable_phone_model_->phone_name());
   EXPECT_TRUE(fake_do_not_disturb_controller_->IsDndEnabled());
-  EXPECT_EQ(FindMyDeviceController::Status::kRingingOn,
-            fake_find_my_device_controller_->GetPhoneRingingStatus());
+  EXPECT_TRUE(fake_find_my_device_controller_->IsPhoneRinging());
   EXPECT_TRUE(fake_notification_access_manager_->HasAccessBeenGranted());
 
   base::Optional<PhoneStatusModel> phone_status_model =
@@ -223,8 +221,7 @@ TEST_F(PhoneStatusProcessorTest, PhoneStatusUpdate) {
   EXPECT_EQ(base::UTF8ToUTF16(test_remote_device_.name()),
             *mutable_phone_model_->phone_name());
   EXPECT_TRUE(fake_do_not_disturb_controller_->IsDndEnabled());
-  EXPECT_EQ(FindMyDeviceController::Status::kRingingOn,
-            fake_find_my_device_controller_->GetPhoneRingingStatus());
+  EXPECT_TRUE(fake_find_my_device_controller_->IsPhoneRinging());
   EXPECT_TRUE(fake_notification_access_manager_->HasAccessBeenGranted());
 
   phone_status_model = mutable_phone_model_->phone_status_model();
