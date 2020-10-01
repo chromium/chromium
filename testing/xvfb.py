@@ -164,8 +164,7 @@ def _run_with_xvfb(cmd, env, stdoutfile, use_openbox, use_xcompmgr):
       signal.signal(signal.SIGUSR1, signal.SIG_IGN)
       xvfb_proc = subprocess.Popen(
           ['Xvfb', display, '-screen', '0', '1280x800x24', '-ac',
-           '-maxclients', '512', '-nolisten', 'tcp', '-dpi', '96',
-           '+extension', 'RANDR'],
+           '-nolisten', 'tcp', '-dpi', '96', '+extension', 'RANDR'],
           stderr=subprocess.STDOUT, env=env)
       signal.signal(signal.SIGUSR1, set_xvfb_ready)
       for _ in range(10):
