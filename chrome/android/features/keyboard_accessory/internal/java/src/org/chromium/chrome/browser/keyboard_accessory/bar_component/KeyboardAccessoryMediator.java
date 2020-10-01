@@ -8,8 +8,10 @@ import static org.chromium.chrome.browser.keyboard_accessory.bar_component.Keybo
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.BOTTOM_OFFSET_PX;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.DISABLE_ANIMATIONS_FOR_TESTING;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.KEYBOARD_TOGGLE_VISIBLE;
+import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.OBFUSCATED_CHILD_AT_CALLBACK;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SHEET_TITLE;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SHOW_KEYBOARD_CALLBACK;
+import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SHOW_SWIPING_IPH;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SKIP_CLOSING_ANIMATION;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.TAB_LAYOUT_ITEM;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.VISIBLE;
@@ -66,6 +68,7 @@ class KeyboardAccessoryMediator
         mTabSwitcher = tabSwitcher;
 
         // Add mediator as observer so it can use model changes as signal for accessory visibility.
+        mModel.set(OBFUSCATED_CHILD_AT_CALLBACK, this::onSuggestionObfuscatedAt);
         mModel.set(SHOW_KEYBOARD_CALLBACK, this::closeSheet);
         mModel.set(TAB_LAYOUT_ITEM, new TabLayoutBarItem(tabLayoutCallbacks));
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY)) {
@@ -235,6 +238,7 @@ class KeyboardAccessoryMediator
             PropertyObservable<PropertyKey> source, @Nullable PropertyKey propertyKey) {
         // Update the visibility only if we haven't set it just now.
         if (propertyKey == VISIBLE) {
+            mModel.set(SHOW_SWIPING_IPH, false); // Reset IPH if visibility changes.
             // When the accessory just (dis)appeared, there should be no active tab.
             mTabSwitcher.closeActiveTab();
             if (!mModel.get(VISIBLE)) {
@@ -251,7 +255,8 @@ class KeyboardAccessoryMediator
         if (propertyKey == BOTTOM_OFFSET_PX || propertyKey == SHOW_KEYBOARD_CALLBACK
                 || propertyKey == TAB_LAYOUT_ITEM || propertyKey == SHEET_TITLE
                 || propertyKey == SKIP_CLOSING_ANIMATION
-                || propertyKey == DISABLE_ANIMATIONS_FOR_TESTING) {
+                || propertyKey == DISABLE_ANIMATIONS_FOR_TESTING
+                || propertyKey == OBFUSCATED_CHILD_AT_CALLBACK || propertyKey == SHOW_SWIPING_IPH) {
             return;
         }
         assert false : "Every property update needs to be handled explicitly!";
@@ -278,6 +283,11 @@ class KeyboardAccessoryMediator
                 mTabSwitcher.getActiveTab().getRecordingType(), AccessorySheetTrigger.MANUAL_CLOSE);
         mModel.set(KEYBOARD_TOGGLE_VISIBLE, false);
         mVisibilityDelegate.onCloseAccessorySheet();
+    }
+
+    private void onSuggestionObfuscatedAt(Integer indexOfLast) {
+        // Show IPH if at least one entire item (suggestion or fallback) can be revealed by swiping.
+        mModel.set(SHOW_SWIPING_IPH, indexOfLast <= mModel.get(BAR_ITEMS).size() - 2);
     }
 
     /**

@@ -157,6 +157,9 @@ public final class EventConstants {
     public static final String KEYBOARD_ACCESSORY_PAYMENT_AUTOFILLED =
             "keyboard_accessory_payment_suggestion_accepted";
 
+    /** The keyboard accessory was swiped to reveal more suggestions. */
+    public static final String KEYBOARD_ACCESSORY_BAR_SWIPED = "keyboard_accessory_bar_swiped";
+
     /** The Explore Sites tile was tapped. */
     public static final String EXPLORE_SITES_TILE_TAPPED = "explore_sites_tile_tapped";
 

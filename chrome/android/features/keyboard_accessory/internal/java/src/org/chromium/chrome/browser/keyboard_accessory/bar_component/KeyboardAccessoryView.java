@@ -15,6 +15,7 @@ import android.view.accessibility.AccessibilityEvent;
 import android.view.animation.AccelerateInterpolator;
 import android.widget.LinearLayout;
 
+import androidx.annotation.CallSuper;
 import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -121,10 +122,15 @@ class KeyboardAccessoryView extends LinearLayout {
                 super.onItemRangeChanged(positionStart, itemCount);
                 mBarItemsView.scrollToPosition(0);
                 mBarItemsView.invalidateItemDecorations();
+                onItemsChanged();
             }
         });
         mBarItemsView.setAdapter(adapter);
     }
+
+    /** Template method. Override to be notified if the bar items change. */
+    @CallSuper
+    protected void onItemsChanged() {}
 
     private void show() {
         bringToFront(); // Needs to overlay every component and the bottom sheet - like a keyboard.

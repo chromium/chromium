@@ -3863,6 +3863,28 @@
             ]
         }
     ],
+    "KeyboardAccessorySwipingIPH": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Swiping_IPH_Enabled",
+                    "params": {
+                        "availability": "any",
+                        "event_trigger": "name:keyboard_accessory_bar_swiping_iph_trigger;comparator:<1;window:90;storage:360",
+                        "event_used": "name:keyboard_accessory_bar_swiped;comparator:<2;window:90;storage:360",
+                        "session_rate": "<1"
+                    },
+                    "enable_features": [
+                        "IPH_KeyboardAccessoryBarSwiping"
+                    ],
+                    "disable_features": []
+                }
+            ]
+        }
+    ],
     "LauncherSettingsSearch": [
         {
             "platforms": [

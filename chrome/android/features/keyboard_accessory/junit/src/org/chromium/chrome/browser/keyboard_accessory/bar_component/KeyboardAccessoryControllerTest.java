@@ -19,7 +19,9 @@ import static org.mockito.Mockito.when;
 import static org.chromium.chrome.browser.keyboard_accessory.AccessoryAction.AUTOFILL_SUGGESTION;
 import static org.chromium.chrome.browser.keyboard_accessory.AccessoryAction.GENERATE_PASSWORD_AUTOMATIC;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.BAR_ITEMS;
+import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.OBFUSCATED_CHILD_AT_CALLBACK;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SHEET_TITLE;
+import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SHOW_SWIPING_IPH;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SKIP_CLOSING_ANIMATION;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.VISIBLE;
 
@@ -33,6 +35,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordHistogramJni;
 import org.chromium.base.metrics.test.ShadowRecordHistogram;
@@ -416,6 +419,26 @@ public class KeyboardAccessoryControllerTest {
         assertThat(mModel.get(SKIP_CLOSING_ANIMATION), is(true));
         mCoordinator.show();
         assertThat(mModel.get(SKIP_CLOSING_ANIMATION), is(false));
+    }
+
+    @Test
+    public void testShowSwipingIphUntilVisibilityIsReset() {
+        // By default, no IPH is shown but the model holds a callback to notify the mediator.
+        mCoordinator.show();
+        Callback<Integer> obfuscatedChildAt = mModel.get(OBFUSCATED_CHILD_AT_CALLBACK);
+        assertThat(obfuscatedChildAt, notNullValue());
+        assertThat(mModel.get(SHOW_SWIPING_IPH), is(false));
+
+        // Notify the mediator to show the IPH because at least one of three items is not visible.
+        mModel.get(BAR_ITEMS).add(mock(BarItem.class));
+        mModel.get(BAR_ITEMS).add(mock(BarItem.class));
+        mModel.get(BAR_ITEMS).add(mock(BarItem.class));
+        obfuscatedChildAt.onResult(1);
+        assertThat(mModel.get(SHOW_SWIPING_IPH), is(true));
+
+        // Any change that changes the visibility should reset the swiping IPH.
+        mModel.set(VISIBLE, false);
+        assertThat(mModel.get(SHOW_SWIPING_IPH), is(false));
     }
 
     @Test
