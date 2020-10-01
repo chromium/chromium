@@ -131,6 +131,7 @@ declare_args() {
   is_official_build = false
 
   # Whether we're a traditional desktop unix.
+  # Deprecated: Please use `is_linux` instead. See https://crbug.com/1132395
   is_desktop_linux = current_os == "linux"
 
   # Set to true when compiling with the Clang compiler.

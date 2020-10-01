@@ -91,7 +91,7 @@ if (enable_js_type_check) {
         "webapks:closure_compile",
       ]
     }
-    if (is_win || is_mac || is_desktop_linux) {
+    if (is_win || is_mac || is_linux) {
       deps += [ "browser_switch:closure_compile" ]
     }
 

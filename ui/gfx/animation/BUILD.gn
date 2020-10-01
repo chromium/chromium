@@ -44,7 +44,7 @@ component("animation") {
     sources += [ "animation_win.cc" ]
   }
 
-  if (is_desktop_linux) {
+  if (is_linux) {
     sources += [
       "animation_linux.cc",
       "animation_settings_provider_linux.cc",

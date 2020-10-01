@@ -34,7 +34,7 @@ if ((enable_basic_printing && is_win) || enable_print_preview) {
 # Enable the CUPS IPP printing backend.
 # TODO(crbug.com/226176): Remove this after CUPS PPD API calls are removed.
 declare_args() {
-  use_cups_ipp = use_cups && !is_desktop_linux
+  use_cups_ipp = use_cups && !is_linux
 }
 
 # Several targets want to include this header file. We separate it out
@@ -141,7 +141,7 @@ component("printing") {
     ]
   }
 
-  if (is_desktop_linux) {
+  if (is_linux) {
     sources += [
       "printed_document_linux.cc",
       "printing_context_linux.cc",

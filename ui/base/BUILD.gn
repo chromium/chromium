@@ -481,7 +481,7 @@ component("base") {
     deps += [ "//ui/events" ]
   }
 
-  if ((is_desktop_linux || is_chromeos) && (use_x11 || ozone_platform_x11)) {
+  if ((is_linux || is_chromeos) && (use_x11 || ozone_platform_x11)) {
     public_deps += [ "//ui/base/x" ]
 
     # X11 drag and drop wants to use common drag and drop types.

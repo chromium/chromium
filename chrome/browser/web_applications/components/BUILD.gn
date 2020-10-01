@@ -88,7 +88,7 @@ source_set("components") {
     sources += [ "web_app_shortcut_chromeos.cc" ]
   }
 
-  if (is_desktop_linux) {
+  if (is_linux) {
     # Desktop linux, doesn't count ChromeOS.
     sources += [
       "web_app_file_handler_registration_linux.cc",
@@ -187,7 +187,7 @@ source_set("unit_tests") {
     ]
   }
 
-  if (is_desktop_linux) {
+  if (is_linux) {
     # Desktop linux, doesn't count ChromeOS.
     sources += [
       "web_app_file_handler_registration_linux_unittest.cc",
@@ -224,7 +224,7 @@ source_set("browser_tests") {
 
   sources = [ "web_app_url_loader_browsertest.cc" ]
 
-  if (is_desktop_linux) {
+  if (is_linux) {
     sources += [ "web_app_file_handler_registration_linux_browsertest.cc" ]
   }
 

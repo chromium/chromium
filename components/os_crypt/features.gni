@@ -7,5 +7,5 @@ import("//build/config/ui.gni")
 declare_args() {
   # Whether to use libgnome-keyring (deprecated by libsecret).
   # See http://crbug.com/466975 and http://crbug.com/355223.
-  use_gnome_keyring = is_desktop_linux && use_glib
+  use_gnome_keyring = is_linux && use_glib
 }

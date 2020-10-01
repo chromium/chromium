@@ -202,7 +202,7 @@ source_set("app_shell_lib") {
     }
   }
 
-  if (is_desktop_linux) {
+  if (is_linux) {
     sources += [
       "app/shell_crash_reporter_client.cc",
       "app/shell_crash_reporter_client.h",
@@ -433,7 +433,7 @@ source_set("unit_tests") {
   }
 }
 
-if (is_desktop_linux && is_official_build) {
+if (is_linux && is_official_build) {
   extract_symbols("app_shell_linux_symbols") {
     # testonly because :app_shell is testonly. See :app_shell_lib comment.
     testonly = true

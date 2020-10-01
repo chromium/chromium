@@ -58,7 +58,7 @@ source_set("common") {
     "//remoting/resources",
     "//remoting/signaling",
   ]
-  if (is_desktop_linux) {
+  if (is_linux) {
     deps += [
       "//build/config/linux/gtk",
 
@@ -234,7 +234,7 @@ if (!is_chromeos && enable_remoting_host) {
         }
       }
 
-      if (is_desktop_linux) {
+      if (is_linux) {
         deps += [ "//build/config/linux/gtk" ]
       }
     }

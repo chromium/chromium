@@ -11,7 +11,7 @@ declare_args() {
   # Controls whether the build should use the version of minigbm library shipped
   # with the system. In release builds of desktop Linux and Chrome OS we use the
   # system version.
-  use_system_minigbm = is_desktop_linux && !is_chromecast
+  use_system_minigbm = is_linux && !is_chromecast
 
   use_amdgpu_minigbm = false
   use_exynos_minigbm = false

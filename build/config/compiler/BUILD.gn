@@ -1741,7 +1741,7 @@ config("no_rtti") {
 # (de)allocate memory on a different heap, which would spell trouble if pointers
 # to heap-allocated memory are passed over shared library boundaries.
 config("export_dynamic") {
-  if (is_desktop_linux || export_libcxxabi_from_executables) {
+  if (is_linux || export_libcxxabi_from_executables) {
     ldflags = [ "-rdynamic" ]
   }
 }

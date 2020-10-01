@@ -45,7 +45,7 @@ source_set("file_transfer") {
     sources -= [ "get_desktop_directory.cc" ]
   }
 
-  if (is_desktop_linux) {
+  if (is_linux) {
     sources += [ "file_chooser_linux.cc" ]
     deps += [ "//build/config/linux/gtk" ]
   }

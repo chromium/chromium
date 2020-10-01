@@ -374,7 +374,7 @@ static_library("common") {
       "//remoting/host/linux:x11",
       "//ui/gfx/x",
     ]
-    if (is_desktop_linux) {
+    if (is_linux) {
       deps += [ "//build/config/linux/gtk" ]
     }
   } else {
@@ -758,7 +758,7 @@ if (enable_me2me_host) {
       deps += [ "//components/policy:generated" ]
     }
 
-    if (is_desktop_linux) {
+    if (is_linux) {
       deps += [ "//build/config/linux/gtk" ]
     }
     if ((is_linux && !is_chromeos) || is_mac) {

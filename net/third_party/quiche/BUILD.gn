@@ -1455,7 +1455,7 @@ source_set("quiche_tests") {
   ]
   public_deps = []
 
-  if (is_desktop_linux) {
+  if (is_linux) {
     public_deps += [ "//net:epoll_quic_tools" ]
   }
   if (is_linux || is_chromeos) {

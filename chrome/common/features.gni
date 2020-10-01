@@ -38,15 +38,15 @@ declare_args() {
   enable_basic_print_dialog = enable_basic_printing && !is_chromeos
 
   # Enables the Click to Call feature on desktop platforms.
-  enable_click_to_call = is_mac || is_win || is_desktop_linux || is_chromeos
+  enable_click_to_call = is_mac || is_win || is_linux || is_chromeos
 
   # Hangout services is an extension that adds extra features to Hangouts.
   # It is enableable separately to facilitate testing.
   enable_hangout_services_extension = is_chrome_branded
 
   # Enables usage of the system-provided notification center.
-  enable_native_notifications = is_android || is_mac || is_win ||
-                                (is_desktop_linux && use_dbus) || is_chromeos
+  enable_native_notifications =
+      is_android || is_mac || is_win || (is_linux && use_dbus) || is_chromeos
 
   enable_one_click_signin =
       is_win || is_mac || (is_linux && !is_chromeos && !is_chromecast)

@@ -79,7 +79,7 @@ source_set("linux") {
   if (use_x11) {
     deps += [ ":x11" ]
   }
-  if (is_desktop_linux) {
+  if (is_linux) {
     deps += [ "//build/config/linux/gtk" ]
   }
 }

@@ -4786,7 +4786,7 @@ static_library("browser") {
     }
   }
 
-  if (is_desktop_linux) {
+  if (is_linux) {
     # Desktop linux, doesn't count ChromeOS.
     sources += [
       "download/download_status_updater_linux.cc",
@@ -4865,7 +4865,7 @@ static_library("browser") {
     ]
   }
 
-  if (is_win || is_mac || is_desktop_linux) {
+  if (is_win || is_mac || is_linux) {
     sources += [
       "browser_switcher/alternative_browser_driver.h",
       "browser_switcher/browser_switcher_navigation_throttle.cc",
@@ -4884,7 +4884,7 @@ static_library("browser") {
     if (is_win) {
       sources += [ "browser_switcher/alternative_browser_driver_win.cc" ]
     }
-    if (is_mac || is_desktop_linux) {
+    if (is_mac || is_linux) {
       sources += [ "browser_switcher/alternative_browser_driver_posix.cc" ]
     }
   }
@@ -6095,7 +6095,7 @@ static_library("browser") {
     if (is_chromeos) {
       sources += [ "net/nss_context_chromeos.cc" ]
     }
-    if (is_desktop_linux) {
+    if (is_linux) {
       sources += [ "net/nss_context_linux.cc" ]
     }
   }
@@ -6241,7 +6241,7 @@ grit("resources") {
     }
   }
 
-  if (is_win || is_mac || is_desktop_linux || is_chromeos) {
+  if (is_win || is_mac || is_linux || is_chromeos) {
     deps += [
       "//chrome/browser/resources/discards:discards_resources_gen",
       "//chrome/browser/resources/gaia_auth_host:modulize",

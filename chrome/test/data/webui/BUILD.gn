@@ -360,7 +360,7 @@ if (include_js_tests) {
 
     deps = [ "//chrome/browser/ui" ]
 
-    if (is_win || is_mac || is_desktop_linux || is_chromeos) {
+    if (is_win || is_mac || is_linux || is_chromeos) {
       sources += [ "discards/discards_browsertest.js" ]
     }
 

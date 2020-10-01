@@ -113,7 +113,7 @@ action_foreach("calculate_deb_dependencies") {
     target_cpu,
     "deb_{{source_name_part}}.deps",
   ]
-  if (is_desktop_linux && target_cpu == "x64" && enable_distro_version_check) {
+  if (is_linux && target_cpu == "x64" && enable_distro_version_check) {
     args += [ "--distro-check" ]
   }
 }
@@ -147,7 +147,7 @@ action_foreach("calculate_rpm_dependencies") {
     "rpm_{{source_name_part}}.deps",
   ]
   args += rebase_path(packaging_files_shlibs, root_build_dir)
-  if (is_desktop_linux && target_cpu == "x64" && enable_distro_version_check) {
+  if (is_linux && target_cpu == "x64" && enable_distro_version_check) {
     args += [ "--distro-check" ]
   }
 }

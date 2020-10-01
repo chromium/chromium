@@ -589,7 +589,7 @@ static_library("ui") {
   allow_circular_includes_from +=
       [ "//chrome/browser/ui/webui/bluetooth_internals" ]
 
-  if (is_win || is_mac || is_desktop_linux || is_chromeos) {
+  if (is_win || is_mac || is_linux || is_chromeos) {
     deps += [ "//chrome/browser/ui/webui/discards:mojo_bindings" ]
   }
 
@@ -2702,7 +2702,7 @@ static_library("ui") {
     ]
   }
 
-  if (is_win || is_mac || is_desktop_linux || is_chromeos) {
+  if (is_win || is_mac || is_linux || is_chromeos) {
     sources += [
       "autofill/payments/virtual_card_selection_dialog_controller.h",
       "autofill/payments/virtual_card_selection_dialog_controller_impl.cc",
@@ -2771,7 +2771,7 @@ static_library("ui") {
     deps += [ "//ui/webui" ]
   }
 
-  if (is_win || is_mac || is_desktop_linux) {
+  if (is_win || is_mac || is_linux) {
     sources += [
       "bookmarks/bookmark_bubble_sign_in_delegate.cc",
       "bookmarks/bookmark_bubble_sign_in_delegate.h",
@@ -3180,7 +3180,7 @@ static_library("ui") {
     }
   }
 
-  if (is_desktop_linux) {
+  if (is_linux) {
     sources += [
       "views/apps/chrome_app_window_client_views_linux.cc",
       "views/first_run_dialog.cc",
@@ -3237,7 +3237,7 @@ static_library("ui") {
       ]
     }
     if (use_ozone) {
-      if (!is_desktop_linux) {
+      if (!is_linux) {
         sources += [
           "views/frame/browser_desktop_window_tree_host_platform.cc",
           "views/frame/browser_desktop_window_tree_host_platform.h",
@@ -3245,7 +3245,7 @@ static_library("ui") {
       }
       sources += [ "views/frame/native_browser_frame_factory_ozone.cc" ]
     }
-    if (is_desktop_linux) {
+    if (is_linux) {
       sources += [
         "views/frame/browser_desktop_window_tree_host_linux.cc",
         "views/frame/browser_desktop_window_tree_host_linux.h",
@@ -4075,7 +4075,7 @@ static_library("ui") {
 
     allow_circular_includes_from += [ "//chrome/browser/ui/views" ]
 
-    if (is_desktop_linux) {
+    if (is_linux) {
       sources += [
         "views/chrome_views_delegate_linux.cc",
         "views/frame/desktop_linux_browser_frame_view.cc",
@@ -4127,7 +4127,7 @@ static_library("ui") {
       sources += [ "views/chrome_views_delegate_win.cc" ]
     }
 
-    if (is_win || is_desktop_linux) {
+    if (is_win || is_linux) {
       sources += [
         "views/native_widget_factory.cc",
         "views/native_widget_factory.h",
@@ -4136,7 +4136,7 @@ static_library("ui") {
 
     if (use_aura) {
       # These files can do Gtk+-based theming for builds with gtk enabled.
-      if (is_desktop_linux) {
+      if (is_linux) {
         sources += [
           "views/chrome_browser_main_extra_parts_views_linux.cc",
           "views/chrome_browser_main_extra_parts_views_linux.h",

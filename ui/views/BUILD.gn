@@ -1312,7 +1312,7 @@ test("views_unittests") {
     }
   }
 
-  if (is_desktop_linux && use_ozone) {
+  if (is_linux && use_ozone) {
     data_deps +=
         [ "//testing/buildbot/filters:linux_ozone_views_unittests_filters" ]
   }
@@ -1378,7 +1378,7 @@ source_set("views_interactive_ui_tests") {
       "//ui/wm/public",
     ]
 
-    if (is_desktop_linux) {
+    if (is_linux) {
       sources += [ "widget/desktop_aura/desktop_window_tree_host_linux_interactive_uitest.cc" ]
     }
 

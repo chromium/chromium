@@ -55,7 +55,7 @@ if (chromeos_is_browser_only) {
   ]
 }
 
-if (is_desktop_linux) {
+if (is_linux) {
   grit_defines += [
     "-D",
     "desktop_linux",

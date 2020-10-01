@@ -42,14 +42,14 @@ declare_args() {
   toolkit_views = is_mac || is_win || is_linux || is_chromeos || is_fuchsia
 
   # Whether we should use glib, a low level C utility library.
-  use_glib = is_desktop_linux && !is_chromecast
+  use_glib = is_linux && !is_chromecast
 }
 
 # Make sure glib is not used if building for ChromeOS/Chromecast
 assert(!use_glib || (is_linux && !is_chromeos && !is_chromecast))
 
 # Whether to use atk, the Accessibility ToolKit library
-use_atk = is_desktop_linux && !is_chromecast && use_glib
+use_atk = is_linux && !is_chromecast && use_glib
 
 # Whether using Xvfb to provide a display server for a test might be
 # necessary.

@@ -575,7 +575,7 @@ test("gl_unittests") {
     sources += [ "gl_image_ahardwarebuffer_unittest.cc" ]
   }
 
-  if (is_desktop_linux) {
+  if (is_linux) {
     sources += [ "gl_image_native_pixmap_unittest.cc" ]
   }
 

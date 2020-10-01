@@ -12,7 +12,7 @@ declare_args() {
   #     2 : Used during the PGO (optimization) phase.
   chrome_pgo_phase = 0
   if (is_official_build &&
-      (is_win || is_mac || (is_desktop_linux && !chromeos_is_browser_only))) {
+      (is_win || is_mac || (is_linux && !chromeos_is_browser_only))) {
     chrome_pgo_phase = 2
   }
 

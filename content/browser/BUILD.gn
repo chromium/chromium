@@ -2107,7 +2107,7 @@ source_set("browser") {
     ]
   }
 
-  if (is_desktop_linux) {
+  if (is_linux) {
     sources += [ "speech/tts_linux.cc" ]
     deps += [ "//third_party/speech-dispatcher" ]
   }
@@ -2386,7 +2386,7 @@ source_set("browser") {
     # Ozone/Linux, but requires to use pangocairo. We probably want to continue
     # using pango on Linux and switch to something else for other systems that
     # use Ozone.
-    if (use_ozone && (!is_desktop_linux || !use_pangocairo)) {
+    if (use_ozone && (!is_linux || !use_pangocairo)) {
       sources += [ "renderer_host/pepper/pepper_truetype_font_list_ozone.cc" ]
     } else if (use_pangocairo) {
       sources += [ "renderer_host/pepper/pepper_truetype_font_list_pango.cc" ]

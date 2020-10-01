@@ -30,8 +30,8 @@ declare_args() {
   # the binary size impact is small and allows many VR tests to run on Linux
   enable_vr = enable_gvr_services || enable_oculus_vr || enable_windows_mr ||
               enable_openxr ||
-              (is_desktop_linux &&
-               (current_cpu == "x64" || current_cpu == "x86") && !is_chromecast)
+              (is_linux && (current_cpu == "x64" || current_cpu == "x86") &&
+               !is_chromecast)
 
   # Whether to include VR extras like test APKs in non-VR-specific targets
   include_vr_data = false

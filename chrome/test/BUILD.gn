@@ -2928,7 +2928,7 @@ if (!is_android) {
     if (is_mac || is_win || is_chromeos) {
       sources += [ "../browser/extensions/api/networking_cast_private/networking_cast_private_apitest.cc" ]
     }
-    if ((is_desktop_linux && !chromeos_is_browser_only) || is_mac) {
+    if ((is_linux && !chromeos_is_browser_only) || is_mac) {
       sources +=
           [ "../browser/first_run/first_run_internal_posix_browsertest.cc" ]
     }
@@ -4677,7 +4677,7 @@ test("unit_tests") {
 
   if (enable_native_notifications) {
     # TODO(crbug.com/1052397): Rename chromeos_is_browser_only to is_lacros.
-    if (is_desktop_linux && !chromeos_is_browser_only) {
+    if (is_linux && !chromeos_is_browser_only) {
       sources += [ "../browser/notifications/notification_platform_bridge_linux_unittest.cc" ]
     }
 
@@ -5827,7 +5827,7 @@ test("unit_tests") {
       "../browser/ui/views/translate/translate_bubble_view_unittest.cc",
       "../browser/ui/views/window_name_prompt_unittest.cc",
     ]
-    if (is_desktop_linux) {
+    if (is_linux) {
       sources += [ "../browser/ui/views/frame/desktop_linux_browser_frame_view_layout_unittest.cc" ]
     }
     if (enable_plugins) {
@@ -5914,7 +5914,7 @@ test("unit_tests") {
     ]
   }
 
-  if (enable_widevine_cdm_component && is_desktop_linux) {
+  if (enable_widevine_cdm_component && is_linux) {
     sources +=
         [ "../common/media/component_widevine_cdm_hint_file_linux_unittest.cc" ]
   }

@@ -54,7 +54,7 @@ component("x") {
     "x11_workspace_handler.h",
   ]
 
-  if (is_desktop_linux || is_chromeos) {
+  if (is_linux || is_chromeos) {
     sources += [
       "selection_owner.cc",
       "selection_owner.h",

@@ -7,5 +7,5 @@ import("//build/config/features.gni")
 declare_args() {
   # Enables Chromium implementation of the MPRIS D-Bus interface for controlling
   # media playback. See ../README.md for details.
-  use_mpris = is_desktop_linux && use_dbus
+  use_mpris = is_linux && use_dbus
 }
