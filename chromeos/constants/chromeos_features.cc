@@ -427,7 +427,7 @@ const base::Feature kPrinterStatus{"PrinterStatus",
 // Controls whether to show printer statuses on the Print Preview destination
 // dialog.
 const base::Feature kPrinterStatusDialog{"PrinterStatusDialog",
-                                         base::FEATURE_DISABLED_BY_DEFAULT};
+                                         base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Controls whether to enable the Print Job Management App.
 const base::Feature kPrintJobManagementApp{"PrintJobManagementApp",
