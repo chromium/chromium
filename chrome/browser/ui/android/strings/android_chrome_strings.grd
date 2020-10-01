@@ -275,6 +275,9 @@ CHAR-LIMIT guidelines:
       <message name="IDS_PREFS_SYNC_AND_SERVICES_CONTENT_DESCRIPTION" desc="The accessibility text to read when the 'Sync and Google services' Settings page is opened from the sign-in page. This text is attached to the 'Navigate Up' button shown at the top of the screen. The first two sentences describe the screen that is currently shown to the user, while 'Navigate up' is a description for the button this text is attached to. 'Navigate up' should match TC ID 6794660482873516081.">
         You are currently customizing your Sync and Google service settings. To finish turning on sync, tap the Confirm button near the bottom of the screen. Navigate up
       </message>
+      <message name="IDS_SIGNIN_PREF_DISALLOWED_TITLE" desc="Title for the signin entry in Settings when signin is disallowed.">
+        Not signed in
+      </message>
       <message name="IDS_SIGNIN_PREF_SUMMARY" desc="Summary for the entry in Settings to sign in to Chrome, explaining benefits of signing in.">
         Sync and personalize across devices
       </message>
