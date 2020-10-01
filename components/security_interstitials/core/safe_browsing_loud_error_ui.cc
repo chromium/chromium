@@ -8,9 +8,11 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/values.h"
 #include "components/google/core/common/google_util.h"
 #include "components/grit/components_resources.h"
 #include "components/security_interstitials/core/common_string_util.h"
+#include "components/security_interstitials/core/controller_client.h"
 #include "components/security_interstitials/core/metrics_helper.h"
 #include "components/strings/grit/components_strings.h"
 #include "net/base/escape.h"
@@ -86,6 +88,9 @@ void SafeBrowsingLoudErrorUI::PopulateStringsForHtml(
   load_time_data->SetString(
       security_interstitials::kOptInLink,
       l10n_util::GetStringUTF16(IDS_SAFE_BROWSING_SCOUT_REPORTING_AGREE));
+  load_time_data->SetString(
+      security_interstitials::kEnhancedProtectionMessage,
+      l10n_util::GetStringUTF16(IDS_SAFE_BROWSING_ENHANCED_PROTECTION_MESSAGE));
 
   if (always_show_back_to_safety()) {
     load_time_data->SetBoolean("hide_primary_button", false);
@@ -120,6 +125,7 @@ void SafeBrowsingLoudErrorUI::PopulateStringsForHtml(
   load_time_data->SetBoolean("show_recurrent_error_paragraph", false);
 
   PopulateExtendedReportingOption(load_time_data);
+  PopulateEnhancedProtectionMessage(load_time_data);
 }
 
 void SafeBrowsingLoudErrorUI::HandleCommand(
@@ -225,6 +231,10 @@ void SafeBrowsingLoudErrorUI::HandleCommand(
       controller()->OpenURL(should_open_links_in_new_tab(), phishing_error_url);
       break;
     }
+    case CMD_OPEN_ENHANCED_PROTECTION_SETTINGS: {
+      controller()->OpenEnhancedProtectionSettings();
+      break;
+    }
     case CMD_OPEN_DATE_SETTINGS:
     case CMD_OPEN_LOGIN:
     case CMD_ERROR:
@@ -302,14 +312,26 @@ void SafeBrowsingLoudErrorUI::PopulatePhishingLoadTimeData(
 void SafeBrowsingLoudErrorUI::PopulateExtendedReportingOption(
     base::DictionaryValue* load_time_data) {
   bool can_show_extended_reporting_option = CanShowExtendedReportingOption();
+  bool can_show_enhanced_protection_message =
+      CanShowEnhancedProtectionMessage();
   load_time_data->SetBoolean(security_interstitials::kDisplayCheckBox,
-                             can_show_extended_reporting_option);
+                             can_show_extended_reporting_option &&
+                                 !can_show_enhanced_protection_message);
   if (!can_show_extended_reporting_option) {
     return;
   }
 
   load_time_data->SetBoolean(security_interstitials::kBoxChecked,
                              is_extended_reporting_enabled());
+}
+
+void SafeBrowsingLoudErrorUI::PopulateEnhancedProtectionMessage(
+    base::DictionaryValue* load_time_data) {
+  bool can_show_enhanced_protection_message =
+      CanShowEnhancedProtectionMessage();
+  load_time_data->SetBoolean(
+      security_interstitials::kDisplayEnhancedProtectionMessage,
+      can_show_enhanced_protection_message);
 }
 
 void SafeBrowsingLoudErrorUI::PopulateBillingLoadTimeData(

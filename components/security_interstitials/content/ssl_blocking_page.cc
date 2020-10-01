@@ -47,6 +47,7 @@ void SSLBlockingPage::PopulateInterstitialStrings(
     base::DictionaryValue* load_time_data) {
   ssl_error_ui_->PopulateStringsForHTML(load_time_data);
   cert_report_helper()->PopulateExtendedReportingOption(load_time_data);
+  cert_report_helper()->PopulateEnhancedProtectionMessage(load_time_data);
 }
 
 // Note that we always create a navigation entry with SSL errors.

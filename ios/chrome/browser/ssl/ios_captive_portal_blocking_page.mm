@@ -82,6 +82,7 @@ void IOSCaptivePortalBlockingPage::PopulateInterstitialStrings(
   load_time_data->SetString("finalParagraph", base::string16());
   load_time_data->SetString("recurrentErrorParagraph", base::string16());
   load_time_data->SetString("optInLink", base::string16());
+  load_time_data->SetString("enhancedProtectionMessage", base::string16());
   load_time_data->SetBoolean("show_recurrent_error_paragraph", false);
 }
 

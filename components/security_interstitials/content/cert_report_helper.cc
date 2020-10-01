@@ -76,7 +76,8 @@ void CertReportHelper::PopulateExtendedReportingOption(
   // Only show the checkbox if not off-the-record and if this client is
   // part of the respective Finch group, and the feature is not disabled
   // by policy.
-  const bool show = ShouldShowCertificateReporterCheckbox();
+  const bool show = ShouldShowCertificateReporterCheckbox() &&
+                    !ShouldShowEnhancedProtectionMessage();
 
   load_time_data->SetBoolean(security_interstitials::kDisplayCheckBox, show);
   if (!show)
@@ -89,6 +90,21 @@ void CertReportHelper::PopulateExtendedReportingOption(
   load_time_data->SetString(
       security_interstitials::kOptInLink,
       l10n_util::GetStringUTF16(IDS_SAFE_BROWSING_SCOUT_REPORTING_AGREE));
+}
+
+void CertReportHelper::PopulateEnhancedProtectionMessage(
+    base::DictionaryValue* load_time_data) {
+  const bool show = ShouldShowEnhancedProtectionMessage();
+
+  load_time_data->SetBoolean(
+      security_interstitials::kDisplayEnhancedProtectionMessage, show);
+
+  if (!show)
+    return;
+
+  load_time_data->SetString(
+      security_interstitials::kEnhancedProtectionMessage,
+      l10n_util::GetStringUTF16(IDS_SAFE_BROWSING_ENHANCED_PROTECTION_MESSAGE));
 }
 
 void CertReportHelper::SetSSLCertReporterForTesting(
@@ -173,6 +189,12 @@ bool CertReportHelper::ShouldShowCertificateReporterCheckbox() {
   return base::FieldTrialList::FindFullName(kFinchExperimentName) ==
              kFinchGroupShowPossiblySend &&
          !in_incognito && can_show_checkbox && !is_enhanced_protection_enabled;
+}
+
+bool CertReportHelper::ShouldShowEnhancedProtectionMessage() {
+  // TODO(crbug.com/1130721): Check feature flag, check ep not managed, check
+  // not already in ep. Check not in incognito.
+  return false;
 }
 
 bool CertReportHelper::ShouldReportCertificateError() {

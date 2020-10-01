@@ -8,6 +8,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/security_interstitials/core/common_string_util.h"
+#include "components/security_interstitials/core/controller_client.h"
 #include "components/security_interstitials/core/metrics_helper.h"
 #include "components/ssl_errors/error_info.h"
 #include "components/strings/grit/components_strings.h"
@@ -129,6 +130,7 @@ void LegacyTLSUI::HandleCommand(SecurityInterstitialCommand command) {
     case CMD_OPEN_REPORTING_PRIVACY:
     case CMD_DO_REPORT:
     case CMD_DONT_REPORT:
+    case CMD_OPEN_ENHANCED_PROTECTION_SETTINGS:
       // Not supported by the legacy TLS error page.
       NOTREACHED() << "Unsupported command: " << command;
       break;

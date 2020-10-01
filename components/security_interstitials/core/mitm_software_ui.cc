@@ -85,6 +85,9 @@ void MITMSoftwareUI::HandleCommand(SecurityInterstitialCommand command) {
     case CMD_OPEN_WHITEPAPER:
       controller_->OpenExtendedReportingWhitepaper(true);
       break;
+    case CMD_OPEN_ENHANCED_PROTECTION_SETTINGS:
+      controller_->OpenEnhancedProtectionSettings();
+      break;
     case CMD_DONT_PROCEED:
     case CMD_OPEN_HELP_CENTER:
     case CMD_RELOAD:

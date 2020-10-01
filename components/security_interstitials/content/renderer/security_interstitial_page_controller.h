@@ -49,6 +49,7 @@ class SecurityInterstitialPageController
   void OpenReportingPrivacy();
   void OpenWhitepaper();
   void ReportPhishingError();
+  void OpenEnhancedProtectionSettings();
 
   void SendCommand(security_interstitials::SecurityInterstitialCommand command);
 

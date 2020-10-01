@@ -240,6 +240,7 @@ function setupEvents() {
 
   preventDefaultOnPoundLinkClicks();
   setupExtendedReportingCheckbox();
+  setupEnhancedProtectionMessage();
   setupSSLDebuggingInfo();
   document.addEventListener('keypress', handleKeypress);
 }

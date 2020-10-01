@@ -43225,6 +43225,8 @@ from previous Chrome versions.
   <int value="147373243" label="enable-deferred-image-decoding"/>
   <int value="147645817" label="DnsHttpssvc:enabled"/>
   <int value="149914698" label="SearchReadyOmnibox:disabled"/>
+  <int value="150820177"
+      label="SafeBrowsingEnhancedProtectionMessageInInterstitials:enabled"/>
   <int value="151022756" label="ArcAvailableForChildAccount:disabled"/>
   <int value="151101719" label="HtmlBaseUsernameDetector:enabled"/>
   <int value="151630887" label="WebUIA11yEnhancements:disabled"/>
@@ -44905,6 +44907,8 @@ from previous Chrome versions.
   <int value="1888812860" label="ChromeModernAlternateCardLayout:enabled"/>
   <int value="1889076955" label="disable-app-link"/>
   <int value="1889198874" label="TabSwitcherOnReturn:disabled"/>
+  <int value="1890329937"
+      label="SafeBrowsingEnhancedProtectionMessageInInterstitials:disabled"/>
   <int value="1891210939" label="enable-blink-features"/>
   <int value="1891312456" label="AndroidMessagesProdEndpoint:disabled"/>
   <int value="1892201400" label="enable-password-separated-signin-flow"/>

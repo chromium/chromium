@@ -10,6 +10,7 @@
 #include "components/google/core/common/google_util.h"
 #include "components/grit/components_resources.h"
 #include "components/security_interstitials/core/common_string_util.h"
+#include "components/security_interstitials/core/controller_client.h"
 #include "components/security_interstitials/core/metrics_helper.h"
 #include "components/strings/grit/components_strings.h"
 #include "net/base/escape.h"
@@ -112,6 +113,7 @@ void SafeBrowsingQuietErrorUI::HandleCommand(
     case CMD_ERROR:
     case CMD_TEXT_FOUND:
     case CMD_TEXT_NOT_FOUND:
+    case CMD_OPEN_ENHANCED_PROTECTION_SETTINGS:
       NOTREACHED();
       break;
   }

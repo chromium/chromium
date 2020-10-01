@@ -172,6 +172,11 @@ void SecurityInterstitialTabHelper::ReportPhishingError() {
                     CMD_REPORT_PHISHING_ERROR);
 }
 
+void SecurityInterstitialTabHelper::OpenEnhancedProtectionSettings() {
+  HandleCommand(security_interstitials::SecurityInterstitialCommand::
+                    CMD_OPEN_ENHANCED_PROTECTION_SETTINGS);
+}
+
 WEB_CONTENTS_USER_DATA_KEY_IMPL(SecurityInterstitialTabHelper)
 
 }  //  namespace security_interstitials

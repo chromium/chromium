@@ -52,6 +52,7 @@ class SafeBrowsingLoudErrorUI
   void PopulateHarmfulLoadTimeData(base::DictionaryValue* load_time_data);
   void PopulatePhishingLoadTimeData(base::DictionaryValue* load_time_data);
   void PopulateBillingLoadTimeData(base::DictionaryValue* load_time_data);
+  void PopulateEnhancedProtectionMessage(base::DictionaryValue* load_time_data);
 
   const bool created_prior_to_navigation_;
 

@@ -68,6 +68,8 @@ void OriginPolicyInterstitialPage::PopulateInterstitialStrings(
       {"heading", IDS_ORIGIN_POLICY_HEADING},
       {"openDetails", IDS_ORIGIN_POLICY_DETAILS},
       {"optInLink", IDS_SAFE_BROWSING_SCOUT_REPORTING_AGREE},
+      {"enhancedProtectionMessage",
+       IDS_SAFE_BROWSING_ENHANCED_PROTECTION_MESSAGE},
       {"primaryButtonText", IDS_ORIGIN_POLICY_BUTTON},
       {"primaryParagraph", IDS_ORIGIN_POLICY_INFO},
       {"recurrentErrorParagraph", IDS_ORIGIN_POLICY_INFO2},
