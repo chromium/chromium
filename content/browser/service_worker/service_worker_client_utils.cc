@@ -427,18 +427,20 @@ void GetNonWindowClients(
     blink::mojom::ServiceWorkerHost::GetClientsCallback callback,
     std::vector<blink::mojom::ServiceWorkerClientInfoPtr> clients) {
   DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
-  if (!options->include_uncontrolled) {
+  if (options->include_uncontrolled) {
+    if (controller->context()) {
+      for (auto it = controller->context()->GetClientContainerHostIterator(
+               controller->origin().GetURL(),
+               false /* include_reserved_clients */,
+               false /* include_back_forward_cached_clients */);
+           !it->IsAtEnd(); it->Advance()) {
+        AddNonWindowClient(it->GetContainerHost(), options->client_type,
+                           &clients);
+      }
+    }
+  } else {
     for (const auto& controllee : controller->controllee_map())
       AddNonWindowClient(controllee.second, options->client_type, &clients);
-  } else if (controller->context()) {
-    GURL origin = controller->script_url().GetOrigin();
-    for (auto it = controller->context()->GetClientContainerHostIterator(
-             origin, false /* include_reserved_clients */,
-             false /* include_back_forward_cached_clients */);
-         !it->IsAtEnd(); it->Advance()) {
-      AddNonWindowClient(it->GetContainerHost(), options->client_type,
-                         &clients);
-    }
   }
   DidGetClients(std::move(callback), std::move(clients));
 }
@@ -468,17 +470,19 @@ void GetWindowClients(
          options->client_type == blink::mojom::ServiceWorkerClientType::kAll);
 
   std::vector<std::tuple<int, int, base::TimeTicks, std::string>> clients_info;
-  if (!options->include_uncontrolled) {
+  if (options->include_uncontrolled) {
+    if (controller->context()) {
+      for (auto it = controller->context()->GetClientContainerHostIterator(
+               controller->origin().GetURL(),
+               false /* include_reserved_clients */,
+               false /* include_back_forward_cached_clients */);
+           !it->IsAtEnd(); it->Advance()) {
+        AddWindowClient(it->GetContainerHost(), &clients_info);
+      }
+    }
+  } else {
     for (const auto& controllee : controller->controllee_map())
       AddWindowClient(controllee.second, &clients_info);
-  } else if (controller->context()) {
-    GURL origin = controller->script_url().GetOrigin();
-    for (auto it = controller->context()->GetClientContainerHostIterator(
-             origin, false /* include_reserved_clients */,
-             false /* include_back_forward_cached_clients */);
-         !it->IsAtEnd(); it->Advance()) {
-      AddWindowClient(it->GetContainerHost(), &clients_info);
-    }
   }
 
   if (clients_info.empty()) {
