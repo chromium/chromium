@@ -112,6 +112,8 @@ TEST_F(ClipboardHistoryControllerTest, NoHistoryNoMenu) {
       "Ash.ClipboardHistory.ContextMenu.NumberOfItemsShown", 0);
   histogram_tester.ExpectTotalCount(
       "Ash.ClipboardHistory.ContextMenu.UserJourneyTime", 0);
+  histogram_tester.ExpectTotalCount(
+      "Ash.ClipboardHistory.ContextMenu.DisplayFormatShown", 0);
 }
 
 // Tests that search + v shows a menu when there is something to show.
@@ -128,6 +130,10 @@ TEST_F(ClipboardHistoryControllerTest, MultiShowMenu) {
   // No UserJourneyTime should be recorded as the menu is still showing.
   histogram_tester.ExpectTotalCount(
       "Ash.ClipboardHistory.ContextMenu.UserJourneyTime", 0);
+  histogram_tester.ExpectBucketCount(
+      "Ash.ClipboardHistory.ContextMenu.NumberOfItemsShown", 1, 1);
+  histogram_tester.ExpectTotalCount(
+      "Ash.ClipboardHistory.ContextMenu.DisplayFormatShown", 1);
 
   // Hide the menu.
   GetEventGenerator()->PressKey(ui::VKEY_ESCAPE, /*flags=*/0);
@@ -138,6 +144,8 @@ TEST_F(ClipboardHistoryControllerTest, MultiShowMenu) {
       "Ash.ClipboardHistory.ContextMenu.NumberOfItemsShown", 1, 1);
   histogram_tester.ExpectTotalCount(
       "Ash.ClipboardHistory.ContextMenu.UserJourneyTime", 1);
+  histogram_tester.ExpectTotalCount(
+      "Ash.ClipboardHistory.ContextMenu.DisplayFormatShown", 1);
 
   // Reshow the menu.
   ShowMenu();
@@ -146,11 +154,15 @@ TEST_F(ClipboardHistoryControllerTest, MultiShowMenu) {
   histogram_tester.ExpectBucketCount(
       "Ash.ClipboardHistory.ContextMenu.NumberOfItemsShown", 1, 2);
 
-  // No new UserJourneyTime histogram should be recorded as the menu is still
-  // showing.
+  // No new UserJourneyTime histogram should be recorded as the menu is
+  // still showing.
   histogram_tester.ExpectTotalCount(
       "Ash.ClipboardHistory.ContextMenu.UserJourneyTime", 1);
 
+  histogram_tester.ExpectBucketCount(
+      "Ash.ClipboardHistory.ContextMenu.NumberOfItemsShown", 1, 2);
+  histogram_tester.ExpectTotalCount(
+      "Ash.ClipboardHistory.ContextMenu.DisplayFormatShown", 2);
   // Hide the menu.
   GetEventGenerator()->PressKey(ui::VKEY_ESCAPE, /*flags=*/0);
   GetEventGenerator()->ReleaseKey(ui::VKEY_ESCAPE, /*flags=*/0);

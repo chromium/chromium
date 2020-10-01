@@ -17,7 +17,7 @@ class RoundedImageView;
 class ClipboardHistoryBitmapItemView : public ClipboardHistoryItemView {
  public:
   ClipboardHistoryBitmapItemView(
-      const ClipboardHistoryItem& clipboard_history_item,
+      const ClipboardHistoryItem* clipboard_history_item,
       const ClipboardHistoryResourceManager* resource_manager,
       views::MenuItemView* container);
   ClipboardHistoryBitmapItemView(const ClipboardHistoryBitmapItemView& rhs) =
@@ -45,9 +45,6 @@ class ClipboardHistoryBitmapItemView : public ClipboardHistoryItemView {
 
   // Owned by ClipboardHistoryController.
   const ClipboardHistoryResourceManager* const resource_manager_;
-
-  // The ClipboardHistoryItem represented by this view.
-  const ClipboardHistoryItem clipboard_history_item_;
 };
 
 }  // namespace ash

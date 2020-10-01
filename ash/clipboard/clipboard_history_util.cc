@@ -6,6 +6,8 @@
 
 #include <array>
 
+#include "ash/clipboard/clipboard_history_item.h"
+#include "ash/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/clipboard/clipboard_data.h"
 #include "ui/base/clipboard/custom_data_helper.h"
@@ -35,9 +37,38 @@ base::Optional<ui::ClipboardInternalFormat> CalculateMainFormat(
   return base::nullopt;
 }
 
+ClipboardHistoryDisplayFormat CalculateDisplayFormat(
+    const ui::ClipboardData& data) {
+  switch (CalculateMainFormat(data).value()) {
+    case ui::ClipboardInternalFormat::kBitmap:
+      return ClipboardHistoryDisplayFormat::kBitmap;
+    case ui::ClipboardInternalFormat::kHtml:
+      return ClipboardHistoryDisplayFormat::kHtml;
+    case ui::ClipboardInternalFormat::kText:
+    case ui::ClipboardInternalFormat::kSvg:
+    case ui::ClipboardInternalFormat::kRtf:
+    case ui::ClipboardInternalFormat::kBookmark:
+    case ui::ClipboardInternalFormat::kWeb:
+    case ui::ClipboardInternalFormat::kCustom:
+      return ClipboardHistoryDisplayFormat::kText;
+  }
+}
+
 bool ContainsFormat(const ui::ClipboardData& data,
                     ui::ClipboardInternalFormat format) {
   return data.format() & static_cast<int>(format);
+}
+
+void RecordClipboardHistoryItemDeleted(const ClipboardHistoryItem& item) {
+  UMA_HISTOGRAM_ENUMERATION(
+      "Ash.ClipboardHistory.ContextMenu.DisplayFormatDeleted",
+      CalculateDisplayFormat(item.data()));
+}
+
+void RecordClipboardHistoryItemPasted(const ClipboardHistoryItem& item) {
+  UMA_HISTOGRAM_ENUMERATION(
+      "Ash.ClipboardHistory.ContextMenu.DisplayFormatPasted",
+      CalculateDisplayFormat(item.data()));
 }
 
 bool ContainsFileSystemData(const ui::ClipboardData& data) {

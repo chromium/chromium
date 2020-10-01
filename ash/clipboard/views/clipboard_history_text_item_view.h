@@ -16,8 +16,9 @@ namespace ash {
 // The menu item showing the plain text.
 class ClipboardHistoryTextItemView : public ClipboardHistoryItemView {
  public:
-  ClipboardHistoryTextItemView(const ClipboardHistoryItem& item,
-                               views::MenuItemView* container);
+  ClipboardHistoryTextItemView(
+      const ClipboardHistoryItem* clipboard_history_item,
+      views::MenuItemView* container);
   ClipboardHistoryTextItemView(const ClipboardHistoryTextItemView& rhs) =
       delete;
   ClipboardHistoryItemView& operator=(const ClipboardHistoryTextItemView& rhs) =

@@ -209,6 +209,36 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Ash.ClipboardHistory.ContextMenu.DisplayFormatDeleted"
+    enum="ClipboardHistoryDisplayFormat" expires_after="2021-09-01">
+  <owner>andrewxu@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
+  <summary>
+    The format of the ClipboardHistoryItemView that was deleted from the
+    Clipboard History menu. Logged on ClipboardHistoryItemView::ButtonPressed().
+  </summary>
+</histogram>
+
+<histogram name="Ash.ClipboardHistory.ContextMenu.DisplayFormatPasted"
+    enum="ClipboardHistoryDisplayFormat" expires_after="2021-09-01">
+  <owner>andrewxu@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
+  <summary>
+    The format of the ClipboardHistoryItemView that was pasted from the
+    Clipboard History menu. Logged on ClipboardHistoryItemView::ButtonPressed().
+  </summary>
+</histogram>
+
+<histogram name="Ash.ClipboardHistory.ContextMenu.DisplayFormatShown"
+    enum="ClipboardHistoryDisplayFormat" expires_after="2021-09-01">
+  <owner>andrewxu@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
+  <summary>
+    The format of the view used to display clipboard data. Logged when the view
+    is created.
+  </summary>
+</histogram>
+
 <histogram name="Ash.ClipboardHistory.ContextMenu.MenuOptionSelected"
     units="index" expires_after="2021-09-01">
   <owner>andrewxu@chromium.org</owner>

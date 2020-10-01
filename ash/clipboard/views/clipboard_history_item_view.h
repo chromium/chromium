@@ -86,7 +86,11 @@ class ClipboardHistoryItemView : public views::View {
     DeleteButton* delete_button_ = nullptr;
   };
 
-  explicit ClipboardHistoryItemView(views::MenuItemView* container);
+  ClipboardHistoryItemView(const ClipboardHistoryItem* clipboard_history_item,
+                           views::MenuItemView* container);
+
+  // Records histograms after the button is pressed.
+  void RecordButtonPressedHistogram(bool is_delete_button);
 
   // Creates the contents view.
   virtual std::unique_ptr<ContentsView> CreateContentsView() = 0;
@@ -95,12 +99,19 @@ class ClipboardHistoryItemView : public views::View {
   // enabled state.
   float GetContentsOpacity() const;
 
+  const ClipboardHistoryItem* clipboard_history_item() {
+    return clipboard_history_item_;
+  }
+
  private:
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
 
   // Executes |command_id| on the delegate.
   void ExecuteCommand(int command_id, const ui::Event& event);
+
+  // Owned by ClipboardHistoryMenuModelAdapter.
+  const ClipboardHistoryItem* const clipboard_history_item_;
 
   views::MenuItemView* const container_;
 

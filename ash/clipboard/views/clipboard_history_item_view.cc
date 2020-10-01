@@ -11,6 +11,7 @@
 #include "ash/clipboard/views/clipboard_history_text_item_view.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/style/ash_color_provider.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard_data.h"
@@ -137,26 +138,26 @@ ClipboardHistoryItemView::CreateFromClipboardHistoryItem(
     const ClipboardHistoryItem& item,
     const ClipboardHistoryResourceManager* resource_manager,
     views::MenuItemView* container) {
-  switch (ClipboardHistoryUtil::CalculateMainFormat(item.data()).value()) {
-    case ui::ClipboardInternalFormat::kBitmap:
-    case ui::ClipboardInternalFormat::kHtml:
+  const auto display_format =
+      ClipboardHistoryUtil::CalculateDisplayFormat(item.data());
+  UMA_HISTOGRAM_ENUMERATION(
+      "Ash.ClipboardHistory.ContextMenu.DisplayFormatShown", display_format);
+  switch (display_format) {
+    case ClipboardHistoryUtil::ClipboardHistoryDisplayFormat::kText:
+      return std::make_unique<ClipboardHistoryTextItemView>(&item, container);
+    case ClipboardHistoryUtil::ClipboardHistoryDisplayFormat::kBitmap:
+    case ClipboardHistoryUtil::ClipboardHistoryDisplayFormat::kHtml:
       return std::make_unique<ClipboardHistoryBitmapItemView>(
-          item, resource_manager, container);
-    case ui::ClipboardInternalFormat::kText:
-    case ui::ClipboardInternalFormat::kSvg:
-    case ui::ClipboardInternalFormat::kRtf:
-    case ui::ClipboardInternalFormat::kBookmark:
-    case ui::ClipboardInternalFormat::kWeb:
-    case ui::ClipboardInternalFormat::kCustom:
-      return std::make_unique<ClipboardHistoryTextItemView>(item, container);
+          &item, resource_manager, container);
   }
 }
 
 ClipboardHistoryItemView::~ClipboardHistoryItemView() = default;
 
 ClipboardHistoryItemView::ClipboardHistoryItemView(
+    const ClipboardHistoryItem* clipboard_history_item,
     views::MenuItemView* container)
-    : container_(container) {}
+    : clipboard_history_item_(clipboard_history_item), container_(container) {}
 
 void ClipboardHistoryItemView::Init() {
   SetLayoutManager(std::make_unique<views::FillLayout>());
@@ -185,6 +186,18 @@ void ClipboardHistoryItemView::OnSelectionChanged() {
   main_button_->SchedulePaint();
 }
 
+void ClipboardHistoryItemView::RecordButtonPressedHistogram(
+    bool is_delete_button) {
+  if (is_delete_button) {
+    ClipboardHistoryUtil::RecordClipboardHistoryItemDeleted(
+        *clipboard_history_item_);
+    return;
+  }
+
+  ClipboardHistoryUtil::RecordClipboardHistoryItemPasted(
+      *clipboard_history_item_);
+}
+
 float ClipboardHistoryItemView::GetContentsOpacity() const {
   return container_->GetEnabled() ? 1.f : kDisabledAlpha;
 }
@@ -197,6 +210,8 @@ gfx::Size ClipboardHistoryItemView::CalculatePreferredSize() const {
 
 void ClipboardHistoryItemView::ExecuteCommand(int command_id,
                                               const ui::Event& event) {
+  RecordButtonPressedHistogram(/*is_delete_button=*/command_id ==
+                               ClipboardHistoryUtil::kDeleteCommandId);
   views::MenuDelegate* delegate = container_->GetDelegate();
   DCHECK(delegate->IsCommandEnabled(command_id));
   container_->GetDelegate()->ExecuteCommand(command_id, event.flags());

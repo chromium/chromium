@@ -54,13 +54,13 @@ class FadeImageView : public RoundedImageView,
                       public ClipboardHistoryResourceManager::Observer {
  public:
   FadeImageView(ClipboardHistoryBitmapItemView* bitmap_item_view,
-                const ClipboardHistoryItem& clipboard_history_item,
+                const ClipboardHistoryItem* clipboard_history_item,
                 const ClipboardHistoryResourceManager* resource_manager,
                 float opacity)
       : RoundedImageView(kRoundedCornerRadius),
         bitmap_item_view_(bitmap_item_view),
         resource_manager_(resource_manager),
-        clipboard_history_item_(clipboard_history_item),
+        clipboard_history_item_(*clipboard_history_item),
         opacity_(opacity) {
     resource_manager_->AddObserver(this);
     SetImageFromModel();
@@ -199,12 +199,11 @@ class ClipboardHistoryBitmapItemView::BitmapContentsView
 // ClipboardHistoryBitmapItemView
 
 ClipboardHistoryBitmapItemView::ClipboardHistoryBitmapItemView(
-    const ClipboardHistoryItem& clipboard_history_item,
+    const ClipboardHistoryItem* clipboard_history_item,
     const ClipboardHistoryResourceManager* resource_manager,
     views::MenuItemView* container)
-    : ClipboardHistoryItemView(container),
-      resource_manager_(resource_manager),
-      clipboard_history_item_(clipboard_history_item) {}
+    : ClipboardHistoryItemView(clipboard_history_item, container),
+      resource_manager_(resource_manager) {}
 
 ClipboardHistoryBitmapItemView::~ClipboardHistoryBitmapItemView() = default;
 
@@ -253,18 +252,18 @@ ClipboardHistoryBitmapItemView::BuildImageView() {
   // if menu items have their own layers, the part beyond the container's bounds
   // is still visible when the context menu is in overflow.
 
-  switch (
-      ClipboardHistoryUtil::CalculateMainFormat(clipboard_history_item_.data())
-          .value()) {
+  switch (ClipboardHistoryUtil::CalculateMainFormat(
+              clipboard_history_item()->data())
+              .value()) {
     case ui::ClipboardInternalFormat::kHtml:
-      return std::make_unique<FadeImageView>(this, clipboard_history_item_,
+      return std::make_unique<FadeImageView>(this, clipboard_history_item(),
                                              resource_manager_,
                                              GetContentsOpacity());
     case ui::ClipboardInternalFormat::kBitmap: {
       auto image_view =
           std::make_unique<RoundedImageView>(kRoundedCornerRadius);
       gfx::ImageSkia bitmap_image = gfx::ImageSkia::CreateFrom1xBitmap(
-          clipboard_history_item_.data().bitmap());
+          clipboard_history_item()->data().bitmap());
       if (GetContentsOpacity() != 1.f) {
         bitmap_image = gfx::ImageSkiaOperations::CreateTransparentImage(
             bitmap_image, GetContentsOpacity());

@@ -10819,6 +10819,12 @@ histogram as enum -->
   <int value="8" label="Svg"/>
 </enum>
 
+<enum name="ClipboardHistoryDisplayFormat">
+  <int value="0" label="Text"/>
+  <int value="1" label="Bitmap"/>
+  <int value="2" label="Html"/>
+</enum>
+
 <enum name="ClockdriftLevel">
   <int value="0" label="None"/>
   <int value="1" label="Probable"/>

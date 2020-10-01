@@ -6,7 +6,9 @@
 
 #include "ash/clipboard/clipboard_history_controller_impl.h"
 #include "ash/clipboard/clipboard_history_resource_manager.h"
+#include "ash/clipboard/clipboard_history_util.h"
 #include "ash/shell.h"
+#include "base/metrics/histogram_macros.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/menu/menu_config.h"
 #include "ui/views/layout/box_layout.h"
@@ -54,13 +56,13 @@ class ClipboardHistoryTextItemView::TextContentsView
 // ClipboardHistoryTextItemView
 
 ClipboardHistoryTextItemView::ClipboardHistoryTextItemView(
-    const ClipboardHistoryItem& item,
+    const ClipboardHistoryItem* clipboard_history_item,
     views::MenuItemView* container)
-    : ClipboardHistoryItemView(container),
+    : ClipboardHistoryItemView(clipboard_history_item, container),
       text_(Shell::Get()
                 ->clipboard_history_controller()
                 ->resource_manager()
-                ->GetLabel(item)) {}
+                ->GetLabel(*clipboard_history_item)) {}
 
 ClipboardHistoryTextItemView::~ClipboardHistoryTextItemView() = default;
 

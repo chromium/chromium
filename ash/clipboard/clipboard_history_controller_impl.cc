@@ -324,8 +324,17 @@ void ClipboardHistoryControllerImpl::DeleteSelectedMenuItemIfAny() {
 
   DCHECK_GE(*selected_command, ClipboardHistoryUtil::kFirstItemCommandId);
 
-  clipboard_history_->RemoveItemForId(
-      context_menu_->GetItemFromCommandId(*selected_command).id());
+  const auto& to_be_deleted_item =
+      context_menu_->GetItemFromCommandId(*selected_command);
+
+  // Pressing VKEY_DELETE is handled here via AcceleratorTarget because the
+  // contextual menu consumes the key event. Record the "pressing the delete
+  // button" histogram here because this action does the same thing as
+  // activating the button directly via click/tap. There is no special handling
+  // for pasting an item via VKEY_RETURN because in that case the menu does not
+  // process the key event.
+  ClipboardHistoryUtil::RecordClipboardHistoryItemDeleted(to_be_deleted_item);
+  clipboard_history_->RemoveItemForId(to_be_deleted_item.id());
 
   // If the item to be deleted is the last one, close the whole menu.
   if (context_menu_->GetMenuItemsCount() == 1) {
