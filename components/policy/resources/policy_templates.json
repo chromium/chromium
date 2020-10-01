@@ -3619,15 +3619,15 @@
 
        Setting the policy to:
 
-      * Block dangerous downloads means all downloads are allowed, except for those that carry Safe Browsing warnings.
+      * Block dangerous downloads means all downloads are allowed, except for those that carry safety warnings.
 
-      * Block potentially dangerous downloads means all downloads allowed, except for those that carry Safe Browsing warnings of potentially dangerous downloads.
+      * Block potentially dangerous downloads means all downloads allowed, except for those that carry safety warnings of potentially dangerous downloads.
 
       * Block all downloads means all downloads are blocked.
 
-      * Block malicious downloads means all downloads are allowed, except for those that Safe Browsing assesses to be malware with high confidence. Unlike with dangerous downloads, this does not take into account file type, but does take into account the host.
+      * Block malicious downloads means all downloads are allowed, except for those assessed to be malware with high confidence. Unlike with dangerous downloads, this does not take into account file type, but does take into account the host.
 
-      * No special restrictions means the downloads go through the usual security restrictions based on Safe Browsing analysis results.
+      * No special restrictions means the downloads go through the usual security restrictions based on safety analysis results.
 
       Note: These restrictions apply to downloads triggered from webpage content, as well as the Download link... menu option. They don't apply to the download of the currently displayed page or to saving as PDF from the printing options. Read more about Safe Browsing ( https://developers.google.com/safe-browsing ).''',
       'label': '''Download restrictions''',

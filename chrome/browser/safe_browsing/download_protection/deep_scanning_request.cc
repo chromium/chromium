@@ -10,6 +10,7 @@
 #include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_manager.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
@@ -22,6 +23,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/safe_browsing/deep_scanning_failure_modal_dialog.h"
+#include "chrome/common/pref_names.h"
 #include "components/download/public/common/download_item.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/policy/core/browser/url_util.h"
@@ -104,6 +106,49 @@ void ResponseToDownloadCheckResult(
   }
 
   *download_result = DownloadCheckResult::DEEP_SCANNED_SAFE;
+}
+
+EventResult GetEventResult(DownloadCheckResult download_result,
+                           Profile* profile) {
+  auto download_restriction = static_cast<DownloadPrefs::DownloadRestriction>(
+      profile->GetPrefs()->GetInteger(prefs::kDownloadRestrictions));
+  switch (download_result) {
+    case DownloadCheckResult::UNKNOWN:
+    case DownloadCheckResult::SAFE:
+    case DownloadCheckResult::WHITELISTED_BY_POLICY:
+    case DownloadCheckResult::DEEP_SCANNED_SAFE:
+      return EventResult::ALLOWED;
+
+    // The following results return WARNED or BLOCKED depending on
+    // |download_restriction|.
+    case DownloadCheckResult::DANGEROUS:
+    case DownloadCheckResult::DANGEROUS_HOST:
+      switch (download_restriction) {
+        case DownloadPrefs::DownloadRestriction::ALL_FILES:
+        case DownloadPrefs::DownloadRestriction::POTENTIALLY_DANGEROUS_FILES:
+        case DownloadPrefs::DownloadRestriction::DANGEROUS_FILES:
+        case DownloadPrefs::DownloadRestriction::MALICIOUS_FILES:
+          return EventResult::BLOCKED;
+        case DownloadPrefs::DownloadRestriction::NONE:
+          return EventResult::WARNED;
+      }
+
+    case DownloadCheckResult::UNCOMMON:
+    case DownloadCheckResult::POTENTIALLY_UNWANTED:
+    case DownloadCheckResult::SENSITIVE_CONTENT_WARNING:
+      return EventResult::WARNED;
+
+    case DownloadCheckResult::BLOCKED_PASSWORD_PROTECTED:
+    case DownloadCheckResult::BLOCKED_TOO_LARGE:
+    case DownloadCheckResult::SENSITIVE_CONTENT_BLOCK:
+    case DownloadCheckResult::BLOCKED_UNSUPPORTED_FILE_TYPE:
+      return EventResult::BLOCKED;
+
+    default:
+      NOTREACHED() << "Should never be final result";
+      break;
+  }
+  return EventResult::UNKNOWN;
 }
 
 }  // namespace
@@ -228,36 +273,6 @@ void DeepScanningRequest::OnScanComplete(
       download_result = DownloadCheckResult::BLOCKED_UNSUPPORTED_FILE_TYPE;
   }
 
-  // Determine if the user is allowed to access the downloaded file.
-  EventResult event_result = EventResult::UNKNOWN;
-  switch (download_result) {
-    case DownloadCheckResult::UNKNOWN:
-    case DownloadCheckResult::SAFE:
-    case DownloadCheckResult::WHITELISTED_BY_POLICY:
-    case DownloadCheckResult::DEEP_SCANNED_SAFE:
-      event_result = EventResult::ALLOWED;
-      break;
-
-    case DownloadCheckResult::UNCOMMON:
-    case DownloadCheckResult::POTENTIALLY_UNWANTED:
-    case DownloadCheckResult::SENSITIVE_CONTENT_WARNING:
-    case DownloadCheckResult::DANGEROUS:
-    case DownloadCheckResult::DANGEROUS_HOST:
-      event_result = EventResult::WARNED;
-      break;
-
-    case DownloadCheckResult::BLOCKED_PASSWORD_PROTECTED:
-    case DownloadCheckResult::BLOCKED_TOO_LARGE:
-    case DownloadCheckResult::SENSITIVE_CONTENT_BLOCK:
-    case DownloadCheckResult::BLOCKED_UNSUPPORTED_FILE_TYPE:
-      event_result = EventResult::BLOCKED;
-      break;
-
-    default:
-      NOTREACHED() << "Should never be final result";
-      break;
-  }
-
   Profile* profile = Profile::FromBrowserContext(
       content::DownloadItemUtils::GetBrowserContext(item_));
   if (profile && trigger_ == DeepScanTrigger::TRIGGER_POLICY) {
@@ -268,7 +283,7 @@ void DeepScanningRequest::OnScanComplete(
         item_->GetMimeType(),
         extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
         DeepScanAccessPoint::DOWNLOAD, item_->GetTotalBytes(), result, response,
-        event_result);
+        GetEventResult(download_result, profile));
 
     item_->SetUserData(
         enterprise_connectors::ScanResult::kKey,

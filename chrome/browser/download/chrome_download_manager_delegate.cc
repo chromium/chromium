@@ -4,6 +4,7 @@
 
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
 
+#include <algorithm>
 #include <string>
 #include <utility>
 
@@ -39,6 +40,7 @@
 #include "chrome/browser/download/download_target_determiner.h"
 #include "chrome/browser/download/mixed_content_download_blocking.h"
 #include "chrome/browser/download/save_package_file_picker.h"
+#include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
 #include "chrome/browser/platform_util.h"
@@ -341,6 +343,15 @@ void MaybeReportDangerousDownloadBlocked(
   Profile* profile = Profile::FromBrowserContext(browser_context);
   if (!profile)
     return;
+
+  // If |download| has a deep scanning malware verdict, then it means the
+  // dangerous file has already been reported.
+  auto* scan_result = static_cast<enterprise_connectors::ScanResult*>(
+      download->GetUserData(enterprise_connectors::ScanResult::kKey));
+  if (scan_result &&
+      enterprise_connectors::ContainsMalwareVerdict(scan_result->response)) {
+    return;
+  }
 
   std::string raw_digest_sha256 = download->GetHash();
   extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile)

@@ -9,6 +9,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_manager.h"
 #include "chrome/browser/enterprise/connectors/connectors_prefs.h"
@@ -22,6 +23,7 @@
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 #include "chrome/browser/safe_browsing/test_extension_event_observer.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -729,6 +731,124 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
     request.Start();
 
     EXPECT_EQ(DownloadCheckResult::UNKNOWN, last_result_);
+  }
+}
+
+class DeepScanningDownloadRestrictionsTest
+    : public DeepScanningReportingTest,
+      public testing::WithParamInterface<DownloadPrefs::DownloadRestriction> {
+ public:
+  void SetUp() override {
+    DeepScanningReportingTest::SetUp();
+    profile_->GetPrefs()->SetInteger(prefs::kDownloadRestrictions,
+                                     static_cast<int>(download_restriction()));
+  }
+
+  DownloadPrefs::DownloadRestriction download_restriction() const {
+    return GetParam();
+  }
+
+  EventResult expected_event_result_for_malware() const {
+    switch (download_restriction()) {
+      case DownloadPrefs::DownloadRestriction::NONE:
+        return EventResult::WARNED;
+      case DownloadPrefs::DownloadRestriction::DANGEROUS_FILES:
+      case DownloadPrefs::DownloadRestriction::MALICIOUS_FILES:
+      case DownloadPrefs::DownloadRestriction::POTENTIALLY_DANGEROUS_FILES:
+      case DownloadPrefs::DownloadRestriction::ALL_FILES:
+        return EventResult::BLOCKED;
+    }
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    DeepScanningDownloadRestrictionsTest,
+    testing::Values(
+        DownloadPrefs::DownloadRestriction::NONE,
+        DownloadPrefs::DownloadRestriction::DANGEROUS_FILES,
+        DownloadPrefs::DownloadRestriction::POTENTIALLY_DANGEROUS_FILES,
+        DownloadPrefs::DownloadRestriction::ALL_FILES,
+        DownloadPrefs::DownloadRestriction::MALICIOUS_FILES));
+
+TEST_P(DeepScanningDownloadRestrictionsTest, GeneratesCorrectReport) {
+  {
+    DeepScanningRequest request(
+        &item_, DeepScanningRequest::DeepScanTrigger::TRIGGER_POLICY,
+        base::BindRepeating(&DeepScanningRequestTest::SetLastResult,
+                            base::Unretained(this)),
+        &download_protection_service_, settings().value());
+
+    enterprise_connectors::ContentAnalysisResponse response;
+
+    auto* malware_result = response.add_results();
+    malware_result->set_tag("malware");
+    malware_result->set_status(
+        enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
+    auto* malware_rule = malware_result->add_triggered_rules();
+    malware_rule->set_action(enterprise_connectors::TriggeredRule::BLOCK);
+    malware_rule->set_rule_name("malware");
+
+    download_protection_service_.GetFakeBinaryUploadService()->SetResponse(
+        BinaryUploadService::Result::SUCCESS, response);
+
+    EventReportValidator validator(client_.get());
+    validator.ExpectDangerousDownloadEvent(
+        /*url*/ "https://example.com/download.exe",
+        /*filename*/ download_path_.AsUTF8Unsafe(),
+        // printf "download contents" | sha256sum |  tr '[:lower:]'
+        // '[:upper:]'
+        /*sha256*/
+        "76E00EB33811F5778A5EE557512C30D9341D4FEB07646BCE3E4DB13F9428573C",
+        /*threat_type*/ "DANGEROUS",
+        /*trigger*/
+        extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
+        /*mimetypes*/ ExeMimeTypes(),
+        /*size*/ std::string("download contents").size(),
+        /*result*/ EventResultToString(expected_event_result_for_malware()));
+
+    request.Start();
+
+    EXPECT_EQ(DownloadCheckResult::DANGEROUS, last_result_);
+  }
+  {
+    DeepScanningRequest request(
+        &item_, DeepScanningRequest::DeepScanTrigger::TRIGGER_POLICY,
+        base::BindRepeating(&DeepScanningRequestTest::SetLastResult,
+                            base::Unretained(this)),
+        &download_protection_service_, settings().value());
+
+    enterprise_connectors::ContentAnalysisResponse response;
+
+    auto* malware_result = response.add_results();
+    malware_result->set_tag("malware");
+    malware_result->set_status(
+        enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
+    auto* malware_rule = malware_result->add_triggered_rules();
+    malware_rule->set_action(enterprise_connectors::TriggeredRule::WARN);
+    malware_rule->set_rule_name("uws");
+
+    download_protection_service_.GetFakeBinaryUploadService()->SetResponse(
+        BinaryUploadService::Result::SUCCESS, response);
+
+    EventReportValidator validator(client_.get());
+    validator.ExpectDangerousDownloadEvent(
+        /*url*/ "https://example.com/download.exe",
+        /*filename*/ download_path_.AsUTF8Unsafe(),
+        // printf "download contents" | sha256sum |  tr '[:lower:]'
+        // '[:upper:]'
+        /*sha256*/
+        "76E00EB33811F5778A5EE557512C30D9341D4FEB07646BCE3E4DB13F9428573C",
+        /*threat_type*/ "POTENTIALLY_UNWANTED",
+        /*trigger*/
+        extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
+        /*mimetypes*/ ExeMimeTypes(),
+        /*size*/ std::string("download contents").size(),
+        /*result*/ EventResultToString(EventResult::WARNED));
+
+    request.Start();
+
+    EXPECT_EQ(DownloadCheckResult::POTENTIALLY_UNWANTED, last_result_);
   }
 }
 
