@@ -9324,8 +9324,14 @@ class LayerTreeHostUkmSmoothnessMetric : public LayerTreeTest {
     auto mapping = shmem_region_.Map();
     auto* smoothness = mapping.GetMemoryAs<UkmSmoothnessDataShared>();
     ASSERT_TRUE(smoothness);
-    // TODO(sad): Validate the content in |smoothness| once
-    // |DroppedFrameCounter| writes to the shared memory.
+    // It is not always possible to guarantee an exact number of dropped frames.
+    // So validate that there are non-zero dropped frames.
+    EXPECT_GT(smoothness->data.avg_smoothness, 0);
+  }
+
+  void WillBeginImplFrameOnThread(LayerTreeHostImpl* host_impl,
+                                  const viz::BeginFrameArgs& args) override {
+    host_impl->dropped_frame_counter()->OnFcpReceived();
   }
 
   void DidFinishImplFrameOnThread(LayerTreeHostImpl* host_impl) override {

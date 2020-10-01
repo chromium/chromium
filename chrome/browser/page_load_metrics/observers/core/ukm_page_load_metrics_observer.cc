@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/feature_list.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "cc/metrics/ukm_smoothness_data.h"
 #include "chrome/browser/browser_process.h"
@@ -883,8 +884,35 @@ void UkmPageLoadMetricsObserver::RecordSmoothnessMetrics() {
     return;
   }
 
-  // TODO(sad): Use atomic memcpy here before reading from the shared memory.
-  // https://chromium-review.googlesource.com/c/chromium/src/+/1572369
+  base::ElapsedTimer timer;
+  const uint32_t kMaxRetries = 5;
+  uint32_t retries = 0;
+  cc::UkmSmoothnessData smoothness_data;
+  base::subtle::Atomic32 version;
+  do {
+    const uint32_t kMaxReadAttempts = 32;
+    version = smoothness->seq_lock.ReadBegin(kMaxReadAttempts);
+    device::OneWriterSeqLock::AtomicReaderMemcpy(
+        &smoothness_data, &smoothness->data, sizeof(cc::UkmSmoothnessData));
+  } while (smoothness->seq_lock.ReadRetry(version) && ++retries < kMaxRetries);
+
+  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+      "Graphics.Smoothness.Diagnostic.ReadSharedMemoryDuration",
+      timer.Elapsed(), base::TimeDelta::FromMicroseconds(1),
+      base::TimeDelta::FromMilliseconds(5), 100);
+  UMA_HISTOGRAM_BOOLEAN(
+      "Graphics.Smoothness.Diagnostic.ReadSharedMemoryUKMSuccess",
+      retries < kMaxRetries);
+
+  if (retries >= kMaxRetries)
+    return;
+  ukm::builders::Graphics_Smoothness_NormalizedPercentDroppedFrames(
+      GetDelegate().GetPageUkmSourceId())
+      .SetAverage(smoothness_data.avg_smoothness)
+      .SetPercentile95(smoothness_data.percentile_95)
+      .SetAboveThreshold(smoothness_data.above_threshold)
+      .SetWorstCase(smoothness_data.worst_smoothness)
+      .Record(ukm::UkmRecorder::Get());
 }
 
 void UkmPageLoadMetricsObserver::RecordPageEndMetrics(

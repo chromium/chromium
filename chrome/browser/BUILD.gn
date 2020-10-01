@@ -2178,6 +2178,7 @@ static_library("browser") {
     "//crypto",
     "//crypto:platform",
     "//device/base",
+    "//device/base/synchronization",
     "//device/fido",
     "//device/gamepad/public/cpp:switches",
     "//device/vr/buildflags",

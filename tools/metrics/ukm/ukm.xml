@@ -4687,6 +4687,78 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Graphics.Smoothness.NormalizedPercentDroppedFrames"
+    singular="True">
+  <owner>animations-dev@chromium.org</owner>
+  <owner>sadrul@chromium.org</owner>
+  <summary>
+    Measures various normalizations for the smoothness metric. The metric is
+    measured by counting dropped frames, and various normalization strategies
+    are used.
+
+    The metric is reported once per page-load, and when the page closes (e.g.
+    the user closes the tab, or navigates away to a different page).
+  </summary>
+  <metric name="AboveThreshold">
+    <summary>
+      The number of fixed-duration sliding windows (as a percentage) where the
+      number of dropped frames are above a threshold. The specific threshold is
+      yet to be determined.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Average">
+    <summary>
+      This is trivially computable by counting the total number of dropped
+      frames and the total number of vsyncs the page has been visible for,
+      exposed as a percentage.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Percentile95">
+    <summary>
+      The 95-th percentile dropped frames within a fixed-duration sliding window
+      (as a percentage).
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="WorstCase">
+    <summary>
+      The maximum number of dropped frames (as a percentage) within a
+      fixed-duration sliding window.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
 <event name="Graphics.Smoothness.PercentDroppedFrames">
   <owner>animations-dev@chromium.org</owner>
   <owner>sadrul@chromium.org</owner>

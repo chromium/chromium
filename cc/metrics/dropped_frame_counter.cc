@@ -56,10 +56,16 @@ void DroppedFrameCounter::ReportFrames() {
   TRACE_EVENT2("cc,benchmark", "SmoothnessDroppedFrame", "total", total_frames,
                "smoothness", total_smoothness_dropped_);
 
-  if (ukm_smoothness_data_) {
-    // TODO(sad): Use atomic memcpy here to write to the shared memory, instead
-    // of writing individual fields in the shared memory.
-    // https://chromium-review.googlesource.com/c/chromium/src/+/1572369
+  if (ukm_smoothness_data_ && total_frames > 0) {
+    UkmSmoothnessData smoothness_data;
+    smoothness_data.avg_smoothness =
+        static_cast<double>(total_smoothness_dropped_) * 100 / total_frames;
+
+    ukm_smoothness_data_->seq_lock.WriteBegin();
+    device::OneWriterSeqLock::AtomicWriterMemcpy(&ukm_smoothness_data_->data,
+                                                 &smoothness_data,
+                                                 sizeof(UkmSmoothnessData));
+    ukm_smoothness_data_->seq_lock.WriteEnd();
   }
 }
 
