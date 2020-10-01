@@ -29330,10 +29330,10 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3498" label="IdentifiabilityStudyReserved3498"/>
   <int value="3499"
       label="V8BackgroundFetchRegistration_FailureReason_AttributeGetter"/>
-  <int value="3500" label="IdentifiabilityStudyReserved3500"/>
-  <int value="3501" label="IdentifiabilityStudyReserved3501"/>
-  <int value="3502" label="IdentifiabilityStudyReserved3502"/>
-  <int value="3503" label="IdentifiabilityStudyReserved3503"/>
+  <int value="3500" label="V8Document_ElementFromPoint_Method"/>
+  <int value="3501" label="V8Document_ElementsFromPoint_Method"/>
+  <int value="3502" label="V8ShadowRoot_ElementFromPoint_Method"/>
+  <int value="3503" label="V8ShadowRoot_ElementsFromPoint_Method"/>
   <int value="3504" label="IdentifiabilityStudyReserved3504"/>
   <int value="3505" label="IdentifiabilityStudyReserved3505"/>
   <int value="3506" label="IdentifiabilityStudyReserved3506"/>

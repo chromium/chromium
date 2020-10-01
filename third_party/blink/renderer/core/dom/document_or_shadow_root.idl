@@ -15,8 +15,8 @@
     [RuntimeEnabled=WebAnimationsAPI, Measure] sequence<Animation> getAnimations();
     // CSSOM View Module
     // https://drafts.csswg.org/cssom-view/#extensions-to-the-document-interface
-    Element? elementFromPoint(double x, double y);
-    sequence<Element> elementsFromPoint(double x, double y);
+    [Measure] Element? elementFromPoint(double x, double y);
+    [Measure] sequence<Element> elementsFromPoint(double x, double y);
     [Affects=Nothing] readonly attribute Element? activeElement;
     [SameObject] readonly attribute StyleSheetList styleSheets;
     // PointerLock API
