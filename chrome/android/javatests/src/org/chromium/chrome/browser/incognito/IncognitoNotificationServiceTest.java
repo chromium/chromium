@@ -7,10 +7,12 @@ package org.chromium.chrome.browser.incognito;
 import static org.junit.Assert.assertEquals;
 
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.PendingIntent.CanceledException;
 import android.content.Context;
+import android.os.Build;
 import android.support.test.InstrumentationRegistry;
 import android.util.Pair;
 
@@ -185,8 +187,9 @@ public class IncognitoNotificationServiceTest {
     }
 
     @Test
-    @Feature("Incognito")
     @MediumTest
+    @Feature("Incognito")
+    @TargetApi(Build.VERSION_CODES.M)
     @SuppressLint("NewApi")
     public void testCloseAllIncognitoNotificationIsDisplayed() {
         mActivityTestRule.startMainActivityOnBlankPage();
