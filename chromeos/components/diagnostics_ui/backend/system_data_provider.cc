@@ -29,7 +29,9 @@ using PhysicalCpuInfos = std::vector<healthd::PhysicalCpuInfoPtr>;
 using PowerSupplyProperties = power_manager::PowerSupplyProperties;
 using ProbeCategories = healthd::ProbeCategoryEnum;
 
+constexpr int kBatteryHealthRefreshIntervalInSeconds = 60;
 constexpr int kChargeStatusRefreshIntervalInSeconds = 15;
+constexpr int kMilliampsInAnAmp = 1000;
 
 void PopulateBoardName(const healthd::SystemInfo& system_info,
                        mojom::SystemInfo& out_system_info) {
@@ -86,9 +88,8 @@ void PopulateDeviceCapabilities(const healthd::TelemetryInfo& telemetry_info,
 void PopulateBatteryInfo(const healthd::BatteryInfo& battery_info,
                          mojom::BatteryInfo& out_battery_info) {
   out_battery_info.manufacturer = battery_info.vendor;
-  // Multiply by 1000 to convert amps to milliamps.
   out_battery_info.charge_full_design_milliamp_hours =
-      battery_info.charge_full_design * 1000;
+      battery_info.charge_full_design * kMilliampsInAnAmp;
 }
 
 void PopulatePowerInfo(const PowerSupplyProperties& power_supply_properties,
@@ -109,15 +110,29 @@ void PopulateBatteryChargeStatus(
     mojom::BatteryChargeStatus& out_charge_status) {
   PopulatePowerInfo(power_supply_properties, out_charge_status);
 
-  // Multiply by 1000 to convert amps to milliamps.
-  out_charge_status.current_now_milliamps = battery_info.current_now * 1000;
-  out_charge_status.charge_now_milliamp_hours = battery_info.charge_now * 1000;
+  out_charge_status.current_now_milliamps =
+      battery_info.current_now * kMilliampsInAnAmp;
+  out_charge_status.charge_now_milliamp_hours =
+      battery_info.charge_now * kMilliampsInAnAmp;
+}
+
+void PopulateBatteryHealth(const healthd::BatteryInfo& battery_info,
+                           mojom::BatteryHealth& out_battery_health) {
+  out_battery_health.charge_full_now_milliamp_hours =
+      battery_info.charge_full * kMilliampsInAnAmp;
+  out_battery_health.charge_full_design_milliamp_hours =
+      battery_info.charge_full_design * kMilliampsInAnAmp;
+  out_battery_health.cycle_count = battery_info.cycle_count;
+  out_battery_health.battery_wear_percentage =
+      out_battery_health.charge_full_now_milliamp_hours /
+      out_battery_health.charge_full_design_milliamp_hours;
 }
 
 }  // namespace
 
 SystemDataProvider::SystemDataProvider() {
   battery_charge_status_timer_ = std::make_unique<base::RepeatingTimer>();
+  battery_health_timer_ = std::make_unique<base::RepeatingTimer>();
   PowerManagerClient::Get()->AddObserver(this);
 }
 
@@ -158,6 +173,20 @@ void SystemDataProvider::ObserveBatteryChargeStatus(
   UpdateBatteryChargeStatus();
 }
 
+void SystemDataProvider::ObserveBatteryHealth(
+    mojo::PendingRemote<mojom::BatteryHealthObserver> observer) {
+  battery_health_observers_.Add(std::move(observer));
+
+  if (!battery_health_timer_->IsRunning()) {
+    battery_health_timer_->Start(
+        FROM_HERE,
+        base::TimeDelta::FromSeconds(kBatteryHealthRefreshIntervalInSeconds),
+        base::BindRepeating(&SystemDataProvider::UpdateBatteryHealth,
+                            base::Unretained(this)));
+  }
+  UpdateBatteryHealth();
+}
+
 void SystemDataProvider::PowerChanged(
     const power_manager::PowerSupplyProperties& proto) {
   if (battery_charge_status_observers_.empty()) {
@@ -175,6 +204,11 @@ void SystemDataProvider::PowerChanged(
 void SystemDataProvider::SetBatteryChargeStatusTimerForTesting(
     std::unique_ptr<base::RepeatingTimer> timer) {
   battery_charge_status_timer_ = std::move(timer);
+}
+
+void SystemDataProvider::SetBatteryHealthTimerForTesting(
+    std::unique_ptr<base::RepeatingTimer> timer) {
+  battery_health_timer_ = std::move(timer);
 }
 
 void SystemDataProvider::OnSystemInfoProbeResponse(
@@ -258,6 +292,15 @@ void SystemDataProvider::UpdateBatteryChargeStatus() {
                      base::Unretained(this), properties));
 }
 
+void SystemDataProvider::UpdateBatteryHealth() {
+  BindCrosHealthdProbeServiceIfNeccessary();
+
+  probe_service_->ProbeTelemetryInfo(
+      {ProbeCategories::kBattery},
+      base::BindOnce(&SystemDataProvider::OnBatteryHealthUpdated,
+                     base::Unretained(this)));
+}
+
 void SystemDataProvider::OnBatteryChargeStatusUpdated(
     const base::Optional<PowerSupplyProperties>& power_supply_properties,
     healthd::TelemetryInfoPtr info_ptr) {
@@ -294,10 +337,39 @@ void SystemDataProvider::OnBatteryChargeStatusUpdated(
   NotifyBatteryChargeStatusObservers(battery_charge_status);
 }
 
+void SystemDataProvider::OnBatteryHealthUpdated(
+    healthd::TelemetryInfoPtr info_ptr) {
+  mojom::BatteryHealthPtr battery_health = mojom::BatteryHealth::New();
+
+  if (info_ptr.is_null()) {
+    LOG(ERROR) << "Null response from croshealthd::ProbeTelemetryInfo.";
+    NotifyBatteryHealthObservers(battery_health);
+    battery_health_timer_.reset();
+    return;
+  }
+
+  if (!DoesDeviceHaveBattery(*info_ptr)) {
+    NotifyBatteryHealthObservers(battery_health);
+    battery_health_timer_.reset();
+    return;
+  }
+
+  PopulateBatteryHealth(*diagnostics::GetBatteryInfo(*info_ptr),
+                        *battery_health.get());
+  NotifyBatteryHealthObservers(battery_health);
+}
+
 void SystemDataProvider::NotifyBatteryChargeStatusObservers(
     const mojom::BatteryChargeStatusPtr& battery_charge_status) {
   for (auto& observer : battery_charge_status_observers_) {
     observer->OnBatteryChargeStatusUpdated(battery_charge_status.Clone());
+  }
+}
+
+void SystemDataProvider::NotifyBatteryHealthObservers(
+    const mojom::BatteryHealthPtr& battery_health) {
+  for (auto& observer : battery_health_observers_) {
+    observer->OnBatteryHealthUpdated(battery_health.Clone());
   }
 }
 

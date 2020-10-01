@@ -37,11 +37,16 @@ class SystemDataProvider : public mojom::SystemDataProvider,
   void ObserveBatteryChargeStatus(
       mojo::PendingRemote<mojom::BatteryChargeStatusObserver> observer)
       override;
+  void ObserveBatteryHealth(
+      mojo::PendingRemote<mojom::BatteryHealthObserver> observer) override;
 
   // PowerManagerClient::Observer:
   void PowerChanged(const power_manager::PowerSupplyProperties& proto) override;
 
   void SetBatteryChargeStatusTimerForTesting(
+      std::unique_ptr<base::RepeatingTimer> timer);
+
+  void SetBatteryHealthTimerForTesting(
       std::unique_ptr<base::RepeatingTimer> timer);
 
  private:
@@ -59,19 +64,28 @@ class SystemDataProvider : public mojom::SystemDataProvider,
 
   void UpdateBatteryChargeStatus();
 
+  void UpdateBatteryHealth();
+
   void NotifyBatteryChargeStatusObservers(
       const mojom::BatteryChargeStatusPtr& battery_charge_status);
+
+  void NotifyBatteryHealthObservers(
+      const mojom::BatteryHealthPtr& battery_health);
 
   void OnBatteryChargeStatusUpdated(
       const base::Optional<power_manager::PowerSupplyProperties>&
           power_supply_properties,
       cros_healthd::mojom::TelemetryInfoPtr info_ptr);
 
+  void OnBatteryHealthUpdated(cros_healthd::mojom::TelemetryInfoPtr info_ptr);
+
   mojo::Remote<cros_healthd::mojom::CrosHealthdProbeService> probe_service_;
   mojo::RemoteSet<mojom::BatteryChargeStatusObserver>
       battery_charge_status_observers_;
+  mojo::RemoteSet<mojom::BatteryHealthObserver> battery_health_observers_;
 
   std::unique_ptr<base::RepeatingTimer> battery_charge_status_timer_;
+  std::unique_ptr<base::RepeatingTimer> battery_health_timer_;
 };
 
 }  // namespace diagnostics

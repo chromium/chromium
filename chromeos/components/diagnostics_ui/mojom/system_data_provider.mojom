@@ -55,6 +55,14 @@ struct BatteryChargeStatus {
   ExternalPowerSource power_adapter_status;
 };
 
+// Contains information about the health of the battery.
+struct BatteryHealth {
+  int32 charge_full_now_milliamp_hours;
+  int32 charge_full_design_milliamp_hours;
+  int32 cycle_count;
+  int8 battery_wear_percentage;
+};
+
 // Implemented by clients that wish to be updated periodically about changes to
 // the battery charge status.
 interface BatteryChargeStatusObserver {
@@ -63,6 +71,15 @@ interface BatteryChargeStatusObserver {
   // 2) A PowerManagerClient 'PowerChanged' event is received
   // 3) A periodic update is sent by SystemDataProvider
   OnBatteryChargeStatusUpdated(BatteryChargeStatus battery_charge_status);
+};
+
+// Implemented by clients that wish to be updated periodically about the health
+// of the device battery.
+interface BatteryHealthObserver {
+  // OnBatteryHealthUpdated calls can be triggered by either of 2 conditions:
+  // 1) A BatteryHealthObserver is registered with SystemDataProvider
+  // 2) A periodic update is sent by SystemDataProvider
+  OnBatteryHealthUpdated(BatteryHealth battery_health);
 };
 
 // Provides telemetric information about the system. This API is exposed to the
@@ -80,4 +97,7 @@ interface SystemDataProvider {
   // Registers an observer of BatteryChargeStatus information.
   ObserveBatteryChargeStatus(
       pending_remote<BatteryChargeStatusObserver> observer);
+
+  // Registers an observer of BatteryHealth inforamation.
+  ObserveBatteryHealth(pending_remote<BatteryHealthObserver> observer);
 };

@@ -156,6 +156,27 @@ CreateCrosHealthdBatteryChargeStatusResponse(double charge_now,
       /*temperature=*/0);
 }
 
+cros_healthd::mojom::BatteryInfoPtr CreateCrosHealthdBatteryHealthResponse(
+    double charge_full_now,
+    double charge_full_design,
+    int32_t cycle_count) {
+  return CreateCrosHealthdBatteryInfoResponse(
+      /*cycle_count=*/cycle_count,
+      /*voltage_now=*/0,
+      /*vendor=*/"",
+      /*serial_number=*/"",
+      /*charge_full_design=*/charge_full_design,
+      /*charge_full=*/charge_full_now,
+      /*voltage_min_design=*/0,
+      /*model_name=*/"",
+      /*charge_now=*/0,
+      /*current_now=*/0,
+      /*technology=*/"",
+      /*status=*/"",
+      /*manufacture_date=*/base::nullopt,
+      /*temperature=*/0);
+}
+
 void SetCrosHealthdBatteryInfoResponse(const std::string& vendor,
                                        double charge_full_design) {
   cros_healthd::mojom::BatteryInfoPtr battery_info =
@@ -169,6 +190,17 @@ void SetCrosHealthdBatteryChargeStatusResponse(double charge_now,
                                                double current_now) {
   cros_healthd::mojom::BatteryInfoPtr battery_info =
       CreateCrosHealthdBatteryChargeStatusResponse(charge_now, current_now);
+  SetProbeTelemetryInfoResponse(std::move(battery_info), /*cpu_info=*/nullptr,
+                                /*memory_info=*/nullptr,
+                                /*memory_info=*/nullptr);
+}
+
+void SetCrosHealthdBatteryHealthResponse(double charge_full_now,
+                                         double charge_full_design,
+                                         int32_t cycle_count) {
+  cros_healthd::mojom::BatteryInfoPtr battery_info =
+      CreateCrosHealthdBatteryHealthResponse(charge_full_now,
+                                             charge_full_design, cycle_count);
   SetProbeTelemetryInfoResponse(std::move(battery_info), /*cpu_info=*/nullptr,
                                 /*memory_info=*/nullptr,
                                 /*memory_info=*/nullptr);
@@ -209,9 +241,9 @@ power_manager::PowerSupplyProperties ConstructPowerSupplyProperties(
 
 // Sets the PowerSupplyProperties on FakePowerManagerClient. Calling this
 // method immediately notifies PowerManagerClient observers. One of
-// |time_to_full| or |time_to_empty| must be either -1 or a positive number. The
-// other must be 0. If |battery_state| is NOT_PRESENT, both |time_to_full| and
-// |time_to_empty| will be left unset.
+// |time_to_full| or |time_to_empty| must be either -1 or a positive number.
+// The other must be 0. If |battery_state| is NOT_PRESENT, both |time_to_full|
+// and |time_to_empty| will be left unset.
 void SetPowerManagerProperties(
     power_manager::PowerSupplyProperties::ExternalPower power_source,
     power_manager::PowerSupplyProperties::BatteryState battery_state,
@@ -263,6 +295,26 @@ void VerifyChargeStatusResult(
   EXPECT_EQ(expected_power_time, update->power_time);
 }
 
+void VerifyHealthResult(const mojom::BatteryHealthPtr& update,
+                        double charge_full_now,
+                        double charge_full_design,
+                        int32_t expected_cycle_count) {
+  const int32_t expected_charge_full_now_milliamp_hours =
+      charge_full_now * 1000;
+  const int32_t expected_charge_full_design_milliamp_hours =
+      charge_full_design * 1000;
+  const int8_t expected_battery_wear_percentage =
+      expected_charge_full_now_milliamp_hours /
+      expected_charge_full_design_milliamp_hours;
+
+  EXPECT_EQ(expected_charge_full_now_milliamp_hours,
+            update->charge_full_now_milliamp_hours);
+  EXPECT_EQ(expected_charge_full_design_milliamp_hours,
+            update->charge_full_design_milliamp_hours);
+  EXPECT_EQ(expected_cycle_count, update->cycle_count);
+  EXPECT_EQ(expected_battery_wear_percentage, update->battery_wear_percentage);
+}
+
 }  // namespace
 
 struct FakeBatteryChargeStatusObserver
@@ -278,6 +330,19 @@ struct FakeBatteryChargeStatusObserver
   std::vector<mojom::BatteryChargeStatusPtr> updates;
 
   mojo::Receiver<mojom::BatteryChargeStatusObserver> receiver{this};
+};
+
+struct FakeBatteryHealthObserver : public mojom::BatteryHealthObserver {
+  // mojom::BatteryHealthObserver
+  void OnBatteryHealthUpdated(mojom::BatteryHealthPtr status_ptr) override {
+    updates.emplace_back(std::move(status_ptr));
+  }
+
+  // Tracks calls to OnBatteryHealthUpdated. Each call adds an element to
+  // the vector.
+  std::vector<mojom::BatteryHealthPtr> updates;
+
+  mojo::Receiver<mojom::BatteryHealthObserver> receiver{this};
 };
 
 class SystemDataProviderTest : public testing::Test {
@@ -444,6 +509,54 @@ TEST_F(SystemDataProviderTest, BatteryChargeStatusObserver) {
                            charge_now_amp_hours, current_now_amps, power_source,
                            battery_state, is_calculating_battery_time,
                            new_time_to_full_secs, time_to_empty_secs);
+}
+
+TEST_F(SystemDataProviderTest, BatteryHealthObserver) {
+  // Setup Timer
+  auto timer = std::make_unique<base::MockRepeatingTimer>();
+  auto* timer_ptr = timer.get();
+  system_data_provider_->SetBatteryHealthTimerForTesting(std::move(timer));
+
+  // Setup initial data
+  const double charge_full_now = 20;
+  const double charge_full_design = 26;
+  const int32_t cycle_count = 500;
+
+  SetCrosHealthdBatteryHealthResponse(charge_full_now, charge_full_design,
+                                      cycle_count);
+
+  // Registering as an observer should trigger one update.
+  FakeBatteryHealthObserver health_observer;
+  system_data_provider_->ObserveBatteryHealth(
+      health_observer.receiver.BindNewPipeAndPassRemote());
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(1u, health_observer.updates.size());
+  VerifyHealthResult(health_observer.updates[0], charge_full_now,
+                     charge_full_design, cycle_count);
+
+  // Firing the timer should trigger another.
+  timer_ptr->Fire();
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(2u, health_observer.updates.size());
+  VerifyHealthResult(health_observer.updates[1], charge_full_now,
+                     charge_full_design, cycle_count);
+
+  // Updating the information in Croshealthd does not trigger an update until
+  // the timer fires
+  const int32_t new_cycle_count = cycle_count + 1;
+  SetCrosHealthdBatteryHealthResponse(charge_full_now, charge_full_design,
+                                      new_cycle_count);
+
+  EXPECT_EQ(2u, health_observer.updates.size());
+
+  timer_ptr->Fire();
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(3u, health_observer.updates.size());
+  VerifyHealthResult(health_observer.updates[2], charge_full_now,
+                     charge_full_design, new_cycle_count);
 }
 
 }  // namespace diagnostics
