@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.keyboard_accessory.all_passwords_bottom_shee
 import static org.chromium.chrome.browser.keyboard_accessory.all_passwords_bottom_sheet.AllPasswordsBottomSheetProperties.SHEET_ITEMS;
 import static org.chromium.chrome.browser.keyboard_accessory.all_passwords_bottom_sheet.AllPasswordsBottomSheetProperties.VISIBLE;
 
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -14,6 +15,7 @@ import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.util.Arrays;
 import java.util.Locale;
 
 /**
@@ -57,6 +59,8 @@ class AllPasswordsBottomSheetMediator implements ModalDialogProperties.Controlle
 
     void setCredentials(Credential[] credentials, boolean isPasswordField) {
         assert credentials != null;
+        Arrays.sort(credentials, AllPasswordsBottomSheetMediator::compareCredentials);
+
         mCredentials = credentials;
         mIsPasswordField = isPasswordField;
 
@@ -134,5 +138,15 @@ class AllPasswordsBottomSheetMediator implements ModalDialogProperties.Controlle
         if (!mModel.get(VISIBLE)) return; // Dismiss only if not dismissed yet.
         mModel.set(VISIBLE, false);
         mDelegate.onDismissed();
+    }
+
+    private static int compareCredentials(Credential credential1, Credential credential2) {
+        String displayOrigin1 = credential1.isAndroidCredential()
+                ? credential1.getAppDisplayName().toLowerCase(Locale.ENGLISH)
+                : UrlUtilities.getDomainAndRegistry(credential1.getOriginUrl(), false);
+        String displayOrigin2 = credential2.isAndroidCredential()
+                ? credential2.getAppDisplayName().toLowerCase(Locale.ENGLISH)
+                : UrlUtilities.getDomainAndRegistry(credential2.getOriginUrl(), false);
+        return displayOrigin1.compareTo(displayOrigin2);
     }
 }

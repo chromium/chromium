@@ -7,7 +7,10 @@ package org.chromium.chrome.browser.keyboard_accessory.all_passwords_bottom_shee
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.keyboard_accessory.all_passwords_bottom_sheet.AllPasswordsBottomSheetProperties.CredentialProperties.CREDENTIAL;
 import static org.chromium.chrome.browser.keyboard_accessory.all_passwords_bottom_sheet.AllPasswordsBottomSheetProperties.DISMISS_HANDLER;
@@ -15,17 +18,22 @@ import static org.chromium.chrome.browser.keyboard_accessory.all_passwords_botto
 import static org.chromium.chrome.browser.keyboard_accessory.all_passwords_bottom_sheet.AllPasswordsBottomSheetProperties.VISIBLE;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.keyboard_accessory.all_passwords_bottom_sheet.AllPasswordsBottomSheetProperties.ItemType;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonType;
@@ -41,14 +49,20 @@ import org.chromium.ui.modelutil.PropertyModel;
 @Features.EnableFeatures(ChromeFeatureList.FILLING_PASSWORDS_FROM_ANY_ORIGIN)
 public class AllPasswordsBottomSheetControllerTest {
     private static final Credential ANA =
-            new Credential("Ana", "S3cr3t", "Ana", "https://m.a.xyz/", false, "");
+            new Credential("Ana", "S3cr3t", "Ana", "https://m.domain.xyz/", false, "");
     private static final Credential BOB =
             new Credential("Bob", "*****", "Bob", "https://subdomain.example.xyz", false, "");
     private static final Credential CARL =
-            new Credential("Carl", "G3h3!m", "Carl", "https://www.example.xyz", false, "");
-    private static final Credential[] TEST_CREDENTIALS = new Credential[] {ANA, BOB, CARL};
+            new Credential("Carl", "G3h3!m", "Carl", "https://www.origin.xyz", false, "");
+    private static final Credential[] TEST_CREDENTIALS = new Credential[] {BOB, CARL, ANA};
     private static final boolean IS_PASSWORD_FIELD = true;
 
+    @Rule
+    public JniMocker mJniMocker = new JniMocker();
+    @Rule
+    public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
+    @Mock
+    private UrlUtilities.Natives mUrlUtilitiesJniMock;
     @Mock
     private AllPasswordsBottomSheetCoordinator.Delegate mMockDelegate;
 
@@ -62,11 +76,15 @@ public class AllPasswordsBottomSheetControllerTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+        mJniMocker.mock(UrlUtilitiesJni.TEST_HOOKS, mUrlUtilitiesJniMock);
         mMediator = new AllPasswordsBottomSheetMediator();
         mModalDialogModel = getModalDialogModel(mMediator);
         mModel = AllPasswordsBottomSheetProperties.createDefaultModel(
                 mMediator::onDismissed, mMediator::onQueryTextChange);
         mMediator.initialize(mModalDialogManager, mModalDialogModel, mMockDelegate, mModel);
+
+        when(mUrlUtilitiesJniMock.getDomainAndRegistry(anyString(), anyBoolean()))
+                .then(inv -> getDomainAndRegistry(inv.getArgument(0)));
     }
 
     @Test
@@ -148,10 +166,32 @@ public class AllPasswordsBottomSheetControllerTest {
         assertThat(mModel.get(SHEET_ITEMS).size(), is(1));
     }
 
+    @Test
+    public void testCredentialSortedByOrigin() {
+        mMediator.setCredentials(TEST_CREDENTIALS, IS_PASSWORD_FIELD);
+
+        ListModel<ListItem> itemList = mModel.get(SHEET_ITEMS);
+
+        assertThat(itemList.get(0).model.get(CREDENTIAL), is(ANA));
+        assertThat(itemList.get(1).model.get(CREDENTIAL), is(BOB));
+        assertThat(itemList.get(2).model.get(CREDENTIAL), is(CARL));
+    }
+
     private PropertyModel getModalDialogModel(AllPasswordsBottomSheetMediator mediator) {
         return new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                 .with(ModalDialogProperties.CONTROLLER, mediator)
                 .with(ModalDialogProperties.FILTER_TOUCH_FOR_SECURITY, true)
                 .build();
+    }
+
+    /**
+     * Helper to get organization-identifying host from URLs. The real implementation calls
+     * {@link UrlUtilities}. It's not useful to actually reimplement it, so just return a string in
+     * a trivial way.
+     * @param origin A URL.
+     * @return The organization-identifying host from the given URL.
+     */
+    private String getDomainAndRegistry(String origin) {
+        return origin.replaceAll(".*\\.(.+\\.[^.]+$)", "$1");
     }
 }

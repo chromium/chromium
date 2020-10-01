@@ -122,6 +122,7 @@ junit_binary("keyboard_accessory_junit_tests") {
     "//components/autofill/android:autofill_java",
     "//components/browser_ui/android/bottomsheet:java",
     "//components/embedder_support/android:content_view_java",
+    "//components/embedder_support/android:util_java",
     "//components/feature_engagement/public:public_java",
     "//components/module_installer/android:module_installer_java",
     "//content/public/android:content_java",
