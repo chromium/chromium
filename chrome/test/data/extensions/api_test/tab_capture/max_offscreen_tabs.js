@@ -4,14 +4,25 @@
 
 var tabCapture = chrome.tabCapture;
 
-var helloWorldPageUri = 'data:text/html;charset=UTF-8,' +
-    encodeURIComponent('<html><body>Hello world!</body></html>');
+const helloWorldPageUri =
+    'data:text/html;charset=UTF-8,' +
+    encodeURIComponent(
+        '<html><body>Hello world!</body></html>' +
+        '<script>setTimeout(() => { window.close(); }, 3000);</script>');
 
 chrome.test.runTests([
  function canOpenUpToThreeOffscreenTabs() {
    function stopAllStreams(streams) {
+     // Off-screen tabs remain alive until either all MediaStreams are closed,
+     // the page self-closes, or the extension that called captureOffscreenTab
+     // is unloaded.
      for (var i = 0, end = streams.length; i < end; ++i) {
        streams[i].getVideoTracks()[0].stop();
+
+       audio_track = streams[i].getAudioTracks()[0];
+       if (audio_track) {
+         audio_track.stop();
+       }
      }
    }
 

@@ -19,6 +19,23 @@ function assertIsSameSetOfTabs(list_a, list_b, id_field_name) {
   }
 }
 
+// We can't actually unsubscribe from onStatusChanged, so make sure it
+// only fires once per test.
+let g_test_index = 0;
+function testSucceedOnCaptureEnd() {
+  g_test_index += 1;
+  const my_test_index = g_test_index;
+  var tabCaptureListener = function(info) {
+    console.log(
+        my_test_index + ' tabCapture.onStatusChanged to: ' + info.status);
+    if (info.status == 'stopped' && my_test_index == g_test_index) {
+      chrome.test.succeed();
+      return;
+    }
+  };
+  tabCapture.onStatusChanged.addListener(tabCaptureListener);
+}
+
 function assertIsValidStreamId(streamId) {
   chrome.test.assertTrue(typeof streamId == 'string');
   navigator.webkitGetUserMedia({
@@ -31,8 +48,8 @@ function assertIsValidStreamId(streamId) {
     }
   }, function(stream) {
     chrome.test.assertTrue(!!stream);
+    testSucceedOnCaptureEnd();
     stream.getVideoTracks()[0].stop();
-    chrome.test.succeed();
   }, function(error) {
     chrome.test.fail(error);
   });
@@ -156,16 +173,16 @@ var testsToRun = [
   function onlyVideo() {
     tabCapture.capture({video: true}, function(stream) {
       chrome.test.assertTrue(!!stream);
+      testSucceedOnCaptureEnd();
       stream.getVideoTracks()[0].stop();
-      chrome.test.succeed();
     });
   },
 
   function onlyAudio() {
     tabCapture.capture({audio: true}, function(stream) {
       chrome.test.assertTrue(!!stream);
+      testSucceedOnCaptureEnd();
       stream.getAudioTracks()[0].stop();
-      chrome.test.succeed();
     });
   },
 

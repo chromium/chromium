@@ -8,6 +8,7 @@ var expectedLastErrorMessage =
 
 var afterWhitelistExtension = function(msg) {
   chrome.tabCapture.capture({audio: true, video: true}, function(stream) {
+    chrome.test.assertNoLastError();
     chrome.test.assertTrue(!!stream);
     stream.getVideoTracks()[0].stop();
     stream.getAudioTracks()[0].stop();
@@ -25,6 +26,7 @@ var afterOpenNewTab = function(msg) {
 
 var afterGrantPermission = function(msg) {
   chrome.tabCapture.capture({audio: true, video: true}, function(stream) {
+    chrome.test.assertNoLastError();
     chrome.test.assertTrue(!!stream);
     stream.getVideoTracks()[0].stop();
     stream.getAudioTracks()[0].stop();
