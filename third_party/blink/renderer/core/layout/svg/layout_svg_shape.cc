@@ -225,6 +225,26 @@ bool LayoutSVGShape::ShapeDependentFillContains(
   return GetPath().Contains(location.TransformedPoint(), fill_rule);
 }
 
+static bool HasPaintServer(const LayoutObject& layout_object,
+                           const ComputedStyle& style,
+                           LayoutSVGResourceMode resource_mode) {
+  const bool apply_to_fill = resource_mode == kApplyToFillMode;
+  const SVGComputedStyle& svg_style = style.SvgStyle();
+  const SVGPaint& paint =
+      apply_to_fill ? svg_style.FillPaint() : svg_style.StrokePaint();
+  if (paint.HasColor())
+    return true;
+  if (paint.HasUrl()) {
+    SVGResources* resources =
+        SVGResourcesCache::CachedResourcesForLayoutObject(layout_object);
+    if (resources) {
+      if (apply_to_fill ? resources->Fill() : resources->Stroke())
+        return true;
+    }
+  }
+  return false;
+}
+
 bool LayoutSVGShape::FillContains(const HitTestLocation& location,
                                   bool requires_fill,
                                   const WindRule fill_rule) {
@@ -232,8 +252,7 @@ bool LayoutSVGShape::FillContains(const HitTestLocation& location,
   if (!fill_bounding_box_.Contains(location.TransformedPoint()))
     return false;
 
-  if (requires_fill && !SVGPaintServer::ExistsForLayoutObject(*this, StyleRef(),
-                                                              kApplyToFillMode))
+  if (requires_fill && !HasPaintServer(*this, StyleRef(), kApplyToFillMode))
     return false;
 
   return ShapeDependentFillContains(location, fill_rule);
@@ -250,8 +269,7 @@ bool LayoutSVGShape::StrokeContains(const HitTestLocation& location,
     if (!StrokeBoundingBox().Contains(location.TransformedPoint()))
       return false;
 
-    if (!SVGPaintServer::ExistsForLayoutObject(*this, StyleRef(),
-                                               kApplyToStrokeMode))
+    if (!HasPaintServer(*this, StyleRef(), kApplyToStrokeMode))
       return false;
   } else {
     if (!HitTestStrokeBoundingBox().Contains(location.TransformedPoint()))

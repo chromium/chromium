@@ -48,9 +48,6 @@ class SVGPaintServer {
   static SVGPaintServer RequestForLayoutObject(const LayoutObject&,
                                                const ComputedStyle&,
                                                LayoutSVGResourceMode);
-  static bool ExistsForLayoutObject(const LayoutObject&,
-                                    const ComputedStyle&,
-                                    LayoutSVGResourceMode);
 
   void ApplyToPaintFlags(PaintFlags&, float alpha);
 

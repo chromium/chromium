@@ -173,13 +173,6 @@ SVGPaintServer SVGPaintServer::RequestForLayoutObject(
   return Invalid();
 }
 
-bool SVGPaintServer::ExistsForLayoutObject(
-    const LayoutObject& layout_object,
-    const ComputedStyle& style,
-    LayoutSVGResourceMode resource_mode) {
-  return RequestPaint(layout_object, style, resource_mode).is_valid;
-}
-
 LayoutSVGResourcePaintServer::LayoutSVGResourcePaintServer(SVGElement* element)
     : LayoutSVGResourceContainer(element) {}
 
