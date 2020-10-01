@@ -140,7 +140,7 @@ let RequestSaveFileMessage;
  * Response message sent by the privileged context with a unique identifier for
  * the new writable file created on disk by the corresponding request save
  * file message.
- * @typedef {{token: number}}
+ * @typedef {{pickedFileContext: !FileContext}}
  */
 let RequestSaveFileResponse;
 

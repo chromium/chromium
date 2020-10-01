@@ -245,7 +245,16 @@ guestMessagePipe.registerHandler(Message.REQUEST_SAVE_FILE, async (message) => {
       /** @type {!RequestSaveFileMessage} */ (message);
   const handle = await pickWritableFile(suggestedName, mimeType);
   /** @type {!RequestSaveFileResponse} */
-  const response = {token: generateToken(handle)};
+  const response = {
+    pickedFileContext: {
+      token: generateToken(handle),
+      file: assertCast(await handle.getFile()),
+      name: handle.name,
+      error: '',
+      canDelete: false,
+      canRename: false,
+    }
+  };
   return response;
 });
 

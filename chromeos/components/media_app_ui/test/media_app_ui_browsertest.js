@@ -922,6 +922,8 @@ TEST_F('MediaAppUIBrowserTest', 'RequestSaveFileIPC', async () => {
   const result = await sendTestMessage({requestSaveFile: true});
   const options = await chooseEntries;
   const lastToken = [...tokenMap.keys()].slice(-1)[0];
+  // Check the token matches to confirm the ReceivedFile returned represents the
+  // new file created on disk.
   assertMatch(result.testQueryResult, lastToken);
   assertEquals(options.types.length, 1);
   assertEquals(options.types[0].description, '.png');

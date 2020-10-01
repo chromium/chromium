@@ -223,7 +223,7 @@ const DELEGATE = {
   /**
    * @param {string} suggestedName
    * @param {string} mimeType
-   * @return {!Promise<number>}
+   * @return {!Promise<!mediaApp.AbstractFile>}
    */
   async requestSaveFile(suggestedName, mimeType) {
     /** @type {!RequestSaveFileMessage} */
@@ -232,7 +232,7 @@ const DELEGATE = {
         /** @type {!RequestSaveFileResponse} */ (
             await parentMessagePipe.sendMessage(
                 Message.REQUEST_SAVE_FILE, msg));
-    return response.token;
+    return new ReceivedFile(response.pickedFileContext);
   },
   /**
    * @return {!Promise<undefined>}
