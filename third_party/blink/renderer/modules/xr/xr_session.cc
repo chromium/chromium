@@ -312,6 +312,7 @@ XRSession::XRSession(
     InteractionMode interaction_mode,
     bool uses_input_eventing,
     float default_framebuffer_scale,
+    bool supports_viewport_scaling,
     bool sensorless_session,
     XRSessionFeatureSet enabled_features)
     : xr_(xr),
@@ -327,6 +328,7 @@ XRSession::XRSession(
           MakeGarbageCollected<XRFrameRequestCallbackCollection>(
               xr->GetExecutionContext())),
       uses_input_eventing_(uses_input_eventing),
+      supports_viewport_scaling_(supports_viewport_scaling),
       sensorless_session_(sensorless_session) {
   client_receiver_.Bind(
       std::move(client_receiver),
@@ -342,6 +344,9 @@ XRSession::XRSession(
 
   world_tracking_state_ = MakeGarbageCollected<XRWorldTrackingState>(
       IsFeatureEnabled(device::mojom::XRSessionFeature::PLANE_DETECTION));
+
+  DVLOG(2) << __func__
+           << ": supports_viewport_scaling_=" << supports_viewport_scaling_;
 
   switch (environment_blend_mode) {
     case kBlendModeOpaque:
@@ -1691,6 +1696,15 @@ void XRSession::OnFrame(
       update_views_next_frame_ = false;
     }
 
+    // If the device has opted in, mark the viewports as modifiable
+    // at the start of an animation frame:
+    // https://immersive-web.github.io/webxr/#ref-for-view-viewport-modifiable
+    if (supports_viewport_scaling_) {
+      for (XRViewData* view : views_) {
+        view->SetViewportModifiable(true);
+      }
+    }
+
     // Resolve the queued requestAnimationFrame callbacks. All XR rendering will
     // happen within these calls. resolving_frame_ will be true for the duration
     // of the callbacks.
@@ -2075,7 +2089,8 @@ const HeapVector<Member<XRViewData>>& XRSession::views() {
   // TODO(bajones): For now we assume that immersive sessions render a stereo
   // pair of views and non-immersive sessions render a single view. That doesn't
   // always hold true, however, so the view configuration should ultimately come
-  // from the backing service.
+  // from the backing service. See also XRWebGLLayer::UpdateViewports() which
+  // assumes that the views are arranged as follows.
   if (views_dirty_) {
     if (immersive()) {
       // If we don't already have the views allocated, do so now.

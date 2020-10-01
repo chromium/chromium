@@ -118,6 +118,7 @@ class XRSession final
             InteractionMode interaction_mode,
             bool uses_input_eventing,
             float default_framebuffer_scale,
+            bool supports_viewport_scaling,
             bool sensorless_session,
             XRSessionFeatureSet enabled_features);
   ~XRSession() override = default;
@@ -571,6 +572,9 @@ class XRSession final
 
   bool uses_input_eventing_ = false;
   float default_framebuffer_scale_ = 1.0;
+
+  // Corresponds to mojo XRSession.supportsViewportScaling
+  bool supports_viewport_scaling_ = false;
 
   // Indicates that this is a sensorless session which should only support the
   // identity reference space.

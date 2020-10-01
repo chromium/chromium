@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 279 tests; 268 PASS, 11 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 279 tests; 270 PASS, 9 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Navigator: original interface defined
@@ -134,8 +134,8 @@ PASS XRView interface: existence and properties of interface prototype object's 
 PASS XRView interface: attribute eye
 PASS XRView interface: attribute projectionMatrix
 PASS XRView interface: attribute transform
-FAIL XRView interface: attribute recommendedViewportScale assert_true: The prototype object must have a property "recommendedViewportScale" expected true got false
-FAIL XRView interface: operation requestViewportScale(double?) assert_own_property: interface prototype object missing non-static operation expected property "requestViewportScale" missing
+PASS XRView interface: attribute recommendedViewportScale
+PASS XRView interface: operation requestViewportScale(double?)
 PASS XRViewport interface: existence and properties of interface object
 PASS XRViewport interface object length
 PASS XRViewport interface object name

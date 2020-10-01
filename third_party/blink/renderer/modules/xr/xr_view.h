@@ -45,6 +45,9 @@ class MODULES_EXPORT XRView final : public ScriptWrappable {
   // unconditionally.
   bool isFirstPersonObserver() const { return false; }
 
+  base::Optional<double> recommendedViewportScale() const;
+  void requestViewportScale(base::Optional<double> scale);
+
   void Trace(Visitor*) const override;
 
  private:
@@ -85,6 +88,20 @@ class MODULES_EXPORT XRViewData final : public GarbageCollected<XRViewData> {
     return projection_matrix_;
   }
 
+  base::Optional<double> recommendedViewportScale() const;
+
+  void requestViewportScale(base::Optional<double> scale);
+
+  bool ViewportModifiable() const { return viewport_modifiable_; }
+  void SetViewportModifiable(bool modifiable) {
+    viewport_modifiable_ = modifiable;
+  }
+  double CurrentViewportScale() const { return current_viewport_scale_; }
+  void SetCurrentViewportScale(double scale) {
+    current_viewport_scale_ = scale;
+  }
+  double RequestedViewportScale() const { return requested_viewport_scale_; }
+
   void Trace(Visitor*) const {}
 
  private:
@@ -94,6 +111,9 @@ class MODULES_EXPORT XRViewData final : public GarbageCollected<XRViewData> {
   TransformationMatrix inv_projection_;
   TransformationMatrix head_from_eye_;
   bool inv_projection_dirty_ = true;
+  double requested_viewport_scale_ = 1.0;
+  double current_viewport_scale_ = 1.0;
+  bool viewport_modifiable_ = false;
 };
 
 }  // namespace blink

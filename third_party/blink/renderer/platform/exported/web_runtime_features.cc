@@ -479,6 +479,10 @@ void WebRuntimeFeatures::EnableWebXRReflectionEstimation(bool enable) {
   RuntimeEnabledFeatures::SetWebXRReflectionEstimationEnabled(enable);
 }
 
+void WebRuntimeFeatures::EnableWebXRViewportScale(bool enable) {
+  RuntimeEnabledFeatures::SetWebXRViewportScaleEnabled(enable);
+}
+
 void WebRuntimeFeatures::EnablePresentationAPI(bool enable) {
   RuntimeEnabledFeatures::SetPresentationEnabled(enable);
 }

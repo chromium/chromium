@@ -11555,8 +11555,10 @@ interface XRView
     getter eye
     getter isFirstPersonObserver
     getter projectionMatrix
+    getter recommendedViewportScale
     getter transform
     method constructor
+    method requestViewportScale
 interface XRViewerPose : XRPose
     attribute @@toStringTag
     getter cameraViews

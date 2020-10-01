@@ -217,6 +217,7 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
     {wf::EnableWebXRLightEstimation, features::kWebXrIncubations},
     {wf::EnableWebXRPlaneDetection, features::kWebXrIncubations},
     {wf::EnableWebXRReflectionEstimation, features::kWebXrIncubations},
+    {wf::EnableWebXRViewportScale, features::kWebXrIncubations},
     {wf::EnableUserActivationSameOriginVisibility,
      features::kUserActivationSameOriginVisibility},
     {wf::EnableExpensiveBackgroundTimerThrottling,

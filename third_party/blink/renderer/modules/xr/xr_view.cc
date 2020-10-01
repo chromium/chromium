@@ -4,11 +4,23 @@
 
 #include "third_party/blink/renderer/modules/xr/xr_view.h"
 
+#include "base/numerics/ranges.h"
 #include "third_party/blink/renderer/modules/xr/xr_frame.h"
 #include "third_party/blink/renderer/modules/xr/xr_utils.h"
 #include "third_party/blink/renderer/platform/geometry/float_point_3d.h"
 
 namespace blink {
+
+namespace {
+
+// Arbitrary minimum size multiplier for dynamic viewport scaling,
+// where 1.0 is full framebuffer size (which may in turn be adjusted
+// by framebufferScaleFactor). TODO(klausw): a value around 0.2 would
+// be more reasonable. Intentionally allow extreme viewport scaling
+// to make the effect more obvious in initial testing.
+constexpr double kMinViewportScale = 0.05;
+
+}  // namespace
 
 XRView::XRView(XRFrame* frame, XRViewData* view_data)
     : eye_(view_data->Eye()), frame_(frame), view_data_(view_data) {
@@ -144,12 +156,32 @@ XRRigidTransform* XRView::transform() const {
   return ref_space_from_eye_;
 }
 
+base::Optional<double> XRView::recommendedViewportScale() const {
+  return base::nullopt;
+}
+
+void XRView::requestViewportScale(base::Optional<double> scale) {
+  view_data_->requestViewportScale(scale);
+}
+
 void XRView::Trace(Visitor* visitor) const {
   visitor->Trace(frame_);
   visitor->Trace(projection_matrix_);
   visitor->Trace(ref_space_from_eye_);
   visitor->Trace(view_data_);
   ScriptWrappable::Trace(visitor);
+}
+
+base::Optional<double> XRViewData::recommendedViewportScale() const {
+  return base::nullopt;
+}
+
+void XRViewData::requestViewportScale(base::Optional<double> scale) {
+  if (!scale)
+    return;
+
+  requested_viewport_scale_ =
+      base::ClampToRange(*scale, kMinViewportScale, 1.0);
 }
 
 }  // namespace blink

@@ -211,6 +211,7 @@ void GvrSchedulerDelegate::ConnectPresentingService(
   session->data_provider = frame_data_receiver_.BindNewPipeAndPassRemote();
   session->submit_frame_sink = std::move(submit_frame_sink);
   session->display_info = std::move(display_info);
+  session->supports_viewport_scaling = true;
 
   // This scalar will be applied in the renderer to the recommended render
   // target sizes. For WebVR it will always be applied, for WebXR it can be

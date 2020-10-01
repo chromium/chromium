@@ -2159,6 +2159,11 @@
       depends_on: ["WebXRARModule", "WebXRLightEstimation"],
       status: "experimental",
     },
+    {
+      name: "WebXRViewportScale",
+      depends_on: ["WebXRARModule"],
+      status: "experimental",
+    },
     // Extends window placement functionality for multi-screen devices. Also
     // exposes requisite information about displays connected to the device.
     {

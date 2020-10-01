@@ -133,6 +133,13 @@ struct XRSession {
   // The default scale that should be applied to the native framebuffer size
   // unless overridden by the developer.
   float default_framebuffer_scale = 1.0;
+
+  // Indicates whether the device supports dynamic viewport scaling via
+  // XRView.requestViewportScale which results in UpdateLayerBounds mojo calls.
+  // This is opt-in to avoid problems with devices that assume default bounds,
+  // this would result in broken rendering due to inconsistency between the
+  // drawn and displayed viewports.
+  bool supports_viewport_scaling;
 };
 
 // This structure contains the infomation and interfaces needed to create a two
