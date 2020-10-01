@@ -20,6 +20,7 @@ include_rules = [
   "+chrome/browser/preferences/android",
   "+chrome/browser/profiles/android/jni_headers",
   "+chrome/browser/util/android",
+  "+chrome/browser/version",
   "+chrome/browser/video_tutorials",
   "+chrome/credential_provider/common",
   "+chrome/grit",

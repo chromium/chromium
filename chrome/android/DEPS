@@ -24,6 +24,7 @@ include_rules = [
   "+chrome/browser/ui/messages/android",
   "+chrome/browser/user_education",
   "+chrome/browser/util/android/java",
+  "+chrome/browser/version",
   "+chrome/browser/webauthn/android",
   "+components/browser_ui/android/bottomsheet",
   "+components/browser_ui/banners/android",

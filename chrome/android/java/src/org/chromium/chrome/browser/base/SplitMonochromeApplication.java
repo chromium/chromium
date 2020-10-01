@@ -10,8 +10,7 @@ import com.android.webview.chromium.MonochromeLibraryPreloader;
 
 import org.chromium.android_webview.nonembedded.WebViewApkApplication;
 import org.chromium.base.library_loader.LibraryLoader;
-import org.chromium.chrome.browser.ChromeVersionConstants;
-import org.chromium.components.version_info.Channel;
+import org.chromium.chrome.browser.version.ChromeVersionInfo;
 
 /**
  * Application class to use for Monochrome when //chrome code is in an isolated split. See {@link
@@ -30,7 +29,7 @@ public class SplitMonochromeApplication extends SplitChromeApplication {
             super.onCreate();
             // TODO(crbug.com/1126301): This matches logic in MonochromeApplication.java.
             // Deduplicate if chrome split launches.
-            if (ChromeVersionConstants.CHANNEL != Channel.STABLE && isWebViewProcess()) {
+            if (!ChromeVersionInfo.isStableBuild() && isWebViewProcess()) {
                 WebViewApkApplication.postDeveloperUiLauncherIconTask();
             }
         }

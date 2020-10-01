@@ -5,7 +5,6 @@
 import("//build/android/resource_sizes.gni")
 import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
-import("//build/config/chrome_build.gni")  # For branding_file_path.
 import("//build/config/python.gni")
 import("//build/util/process_version.gni")
 import("//build/util/version.gni")
@@ -77,7 +76,6 @@ trichrome_library_32_android_manifest =
     "$target_gen_dir/trichrome_library_32_apk/AndroidManifest.xml"
 
 app_hooks_impl = "java/src/org/chromium/chrome/browser/AppHooksImpl.java"
-_chrome_version_java_file = "$target_gen_dir/templates/org/chromium/chrome/browser/ChromeVersionConstants.java"
 
 # Exclude it from JNI registration if VR is not enabled.
 chrome_jni_sources_exclusions = []
@@ -355,6 +353,7 @@ android_library("chrome_java") {
     "//chrome/browser/ui/messages/android:java",
     "//chrome/browser/user_education:java",
     "//chrome/browser/util:java",
+    "//chrome/browser/version:java",
     "//chrome/browser/video_tutorials:factory_java",
     "//chrome/browser/video_tutorials:java",
     "//chrome/browser/webauthn/android:java",
@@ -919,13 +918,6 @@ junit_binary("chrome_junit_tests") {
   data_deps = [ "//testing/buildbot/filters:chrome_junit_tests_filters" ]
 
   package_name = chrome_public_manifest_package
-}
-
-process_version("chrome_version_constants") {
-  process_only = true
-  template_file = "java/ChromeVersionConstants.java.version"
-  sources = [ branding_file_path ]
-  output = _chrome_version_java_file
 }
 
 # Files used for both chrome tests and VR/AR and autofill_assistant tests
@@ -2053,6 +2045,7 @@ android_library("base_monochrome_module_java") {
     ":base_module_java",
     "//android_webview:android_webview_java",
     "//base:base_java",
+    "//chrome/browser/version:java",
     "//components/version_info/android:version_constants_java",
   ]
 }
@@ -2063,15 +2056,12 @@ android_library("base_module_java") {
   sources = [
     "java/src/org/chromium/chrome/browser/base/SplitChromeApplication.java",
     "java/src/org/chromium/chrome/browser/base/SplitCompatApplication.java",
-    _chrome_version_java_file,
   ]
   deps = [
     ":chrome_base_module_resources",
-    ":chrome_version_constants",
     "//base:base_java",
     "//components/embedder_support/android:application_java",
     "//components/module_installer/android:module_installer_java",
-    "//components/version_info/android:version_constants_java",
     "//third_party/android_deps:androidx_annotation_annotation_java",
     "//ui/android:ui_no_recycler_view_java",
 

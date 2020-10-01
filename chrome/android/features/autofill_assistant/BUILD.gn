@@ -44,6 +44,7 @@ android_library("java") {
     "//chrome/browser/ui/android/favicon:java",
     "//chrome/browser/ui/messages/android:java",
     "//chrome/browser/util:java",
+    "//chrome/browser/version:java",
     "//components/autofill/android:autofill_java",
     "//components/browser_ui/android/bottomsheet:java",
     "//components/browser_ui/modaldialog/android:java",
