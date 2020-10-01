@@ -11,11 +11,19 @@ GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 GEN('#include "chromeos/constants/chromeos_features.h"');
 GEN('#include "content/public/test/browser_test.h"');
 
-[['DiagnosticsApp', 'diagnostics/diagnostics_test.js']].forEach(
-    test => registerTest(...test));
+[['Test', 'diagnostics/diagnostics_app_test.js'],
+ ['CpuCard', 'diagnostics/cpu_card_test.js'],
+ ['DataPoint', 'diagnostics/data_point_test.js'],
+ ['OverviewCard', 'diagnostics/overview_card_test.js'],
+ ['MemoryCard', 'diagnostics/memory_card_test.js'],
+ ['BatteryStatusCard', 'diagnostics/battery_status_card_test.js'],
+ ['FakeObservables', 'diagnostics/fake_observables_test.js'],
+ ['FakeMojoInterface', 'diagnostics/mojo_interface_provider_test.js'],
+ ['FakeMethodProvider', 'diagnostics/fake_method_provider_test.js']]
+    .forEach(test => registerTest(...test));
 
 function registerTest(testName, module) {
-  const className = `${testName}BrowserTest`;
+  const className = `DiagnosticsApp${testName}`;
   this[className] = class extends PolymerTest {
     /** @override */
     get browsePreload() {
