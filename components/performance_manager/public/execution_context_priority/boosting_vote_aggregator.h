@@ -2,27 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_FRAME_PRIORITY_BOOSTING_VOTE_AGGREGATOR_H_
-#define COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_FRAME_PRIORITY_BOOSTING_VOTE_AGGREGATOR_H_
+#ifndef COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_EXECUTION_CONTEXT_PRIORITY_BOOSTING_VOTE_AGGREGATOR_H_
+#define COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_EXECUTION_CONTEXT_PRIORITY_BOOSTING_VOTE_AGGREGATOR_H_
 
 #include <map>
 #include <set>
 
 #include "base/containers/flat_map.h"
 #include "base/task/task_traits.h"
-#include "components/performance_manager/public/frame_priority/frame_priority.h"
+#include "components/performance_manager/public/execution_context_priority/execution_context_priority.h"
 
 namespace performance_manager {
-namespace frame_priority {
+namespace execution_context_priority {
 
 class BoostingVoteAggregator;
 
 // A BoostingVote is a special kind of relative vote that allows a voter to
-// express that "frame X should have the same or greater priority than frame Y".
-// It allows implementing priority boost semantics to avoid priority inversions
-// for access to shared resources. BoostingVotes must be registered with a
-// BoostingVoteAggregator. Similar to a VoteReceipt, they are a move-only type
-// and their vote will be removed with their destruction.
+// express that "execution context X should have the same or greater priority
+// than execution context Y". It allows implementing priority boost semantics to
+// avoid priority inversions for access to shared resources. BoostingVotes must
+// be registered with a BoostingVoteAggregator. Similar to a VoteReceipt, they
+// are a move-only type and their vote will be removed with their destruction.
 //
 // A BoostingVote is considered "active" if it is associated with an aggregator
 // (the result of calling "aggregator()" is non-null).
@@ -31,11 +31,11 @@ class BoostingVoteAggregator;
 class BoostingVote {
  public:
   // Registers a relative vote with the provided |aggregator|, that ensures that
-  // the priority of |output_frame| will be at least as high as that of
-  // |input_frame|.
+  // the priority of |output_execution_context| will be at least as high as that
+  // of |input_execution_context|.
   BoostingVote(BoostingVoteAggregator* aggregator,
-               const FrameNode* input_frame,
-               const FrameNode* output_frame,
+               const ExecutionContext* input_execution_context,
+               const ExecutionContext* output_execution_context,
                const char* reason);
   BoostingVote(const BoostingVote& rhs) = delete;
   BoostingVote(BoostingVote&& rhs);
@@ -44,8 +44,12 @@ class BoostingVote {
   ~BoostingVote();
 
   BoostingVoteAggregator* aggregator() const { return aggregator_; }
-  const FrameNode* input_frame() const { return input_frame_; }
-  const FrameNode* output_frame() const { return output_frame_; }
+  const ExecutionContext* input_execution_context() const {
+    return input_execution_context_;
+  }
+  const ExecutionContext* output_execution_context() const {
+    return output_execution_context_;
+  }
   const char* reason() const { return reason_; }
 
   // Detaches this BoostingVote from its aggregator. After calling this
@@ -54,17 +58,17 @@ class BoostingVote {
 
  private:
   BoostingVoteAggregator* aggregator_ = nullptr;
-  const FrameNode* input_frame_ = nullptr;
-  const FrameNode* output_frame_ = nullptr;
+  const ExecutionContext* input_execution_context_ = nullptr;
+  const ExecutionContext* output_execution_context_ = nullptr;
   const char* reason_ = nullptr;
 };
 
 // The BoostingVoteAggregator allows for incoming votes to be modified via a
 // collection of registered "relative boosting votes" that express relationships
-// such as "frame X should have the same or greater priority than frame Y".
-// It is intended to serve as the root of a tree of voters and aggregators,
-// allowing priority boost semantics to be implemented. This class must outlive
-// all boosting votes registered with it.
+// such as "execution context X should have the same or greater priority than
+// execution context Y". It is intended to serve as the root of a tree of voters
+// and aggregators, allowing priority boost semantics to be implemented. This
+// class must outlive all boosting votes registered with it.
 class BoostingVoteAggregator : public VoteConsumer {
  public:
   BoostingVoteAggregator();
@@ -88,7 +92,7 @@ class BoostingVoteAggregator : public VoteConsumer {
   static_assert(static_cast<int>(base::TaskPriority::HIGHEST) == 2,
                 "expect 3 priority levels");
 
-  using NodePriorityMap = std::map<const FrameNode*, base::TaskPriority>;
+  using NodePriorityMap = std::map<const ExecutionContext*, base::TaskPriority>;
 
   // Small helper class used to endow both edges and nodes with "active" bits
   // for each priority layer.
@@ -178,7 +182,7 @@ class BoostingVoteAggregator : public VoteConsumer {
   // NOTE: It is important that NodeDataMap preserve pointers to NodeData
   // through insertions and deletions in the map, as we take raw pointers to
   // objects in the map.
-  using NodeDataMap = std::map<const FrameNode*, NodeData>;
+  using NodeDataMap = std::map<const ExecutionContext*, NodeData>;
   using NodeDataPtrSet = std::set<NodeDataMap::value_type*>;
 
   // For any given edge, this maintains the metadata associated with that
@@ -219,10 +223,11 @@ class BoostingVoteAggregator : public VoteConsumer {
   template <bool kForward>
   class Edge {
    public:
-    Edge(const FrameNode* src, const FrameNode* dst) : src_(src), dst_(dst) {}
+    Edge(const ExecutionContext* src, const ExecutionContext* dst)
+        : src_(src), dst_(dst) {}
     explicit Edge(const BoostingVote* boosting_vote)
-        : src_(boosting_vote->input_frame()),
-          dst_(boosting_vote->output_frame()) {}
+        : src_(boosting_vote->input_execution_context()),
+          dst_(boosting_vote->output_execution_context()) {}
     Edge(const Edge&) = default;
     ~Edge() {}
 
@@ -242,12 +247,12 @@ class BoostingVoteAggregator : public VoteConsumer {
       return std::tie(dst_, src_) < std::tie(rhs.dst_, rhs.src_);
     }
 
-    const FrameNode* src() const { return src_; }
-    const FrameNode* dst() const { return dst_; }
+    const ExecutionContext* src() const { return src_; }
+    const ExecutionContext* dst() const { return dst_; }
 
    private:
-    const FrameNode* src_ = nullptr;
-    const FrameNode* dst_ = nullptr;
+    const ExecutionContext* src_ = nullptr;
+    const ExecutionContext* dst_ = nullptr;
   };
   using ForwardEdge = Edge<true>;
   using ReverseEdge = Edge<false>;
@@ -274,17 +279,17 @@ class BoostingVoteAggregator : public VoteConsumer {
   // returns a bool. Returning true indicates the iteration should continue,
   // returning false indicates it should terminate.
   template <typename Function>
-  void ForEachIncomingEdge(const FrameNode* node, Function&& function);
+  void ForEachIncomingEdge(const ExecutionContext* node, Function&& function);
   template <typename Function>
-  void ForEachOutgoingEdge(const FrameNode* node, Function&& function);
+  void ForEachOutgoingEdge(const ExecutionContext* node, Function&& function);
 
   // Looks up the NodeData associated with the provided |vote|. The data is
   // expected to already exist (enforced by a DCHECK).
   NodeDataMap::iterator GetNodeDataByVote(AcceptedVote* vote);
 
   // Finds or creates the node data associated with the given node.
-  NodeDataMap::iterator FindOrCreateNodeData(const FrameNode* frame_node);
-  NodeDataMap::iterator FindNodeData(const FrameNode* frame_node);
+  NodeDataMap::iterator FindOrCreateNodeData(const ExecutionContext* node);
+  NodeDataMap::iterator FindNodeData(const ExecutionContext* node);
 
   // Returns the vote reason that should be associated with the given
   // node. This will preferentially select the reason that comes with a direct
@@ -294,7 +299,7 @@ class BoostingVoteAggregator : public VoteConsumer {
   // no non-null reasons have been provided.
   const char* GetVoteReason(const NodeDataMap::value_type* node_data_value);
 
-  // Upstreams the vote for this |frame_node| via its associated NodeData.
+  // Upstreams the vote for this |node| via its associated NodeData.
   void UpstreamVoteIfNeeded(NodeDataMap::value_type* node_data_value);
 
   // Upstreams changes that have been made to the provided set of nodes. This
@@ -378,7 +383,7 @@ class BoostingVoteAggregator : public VoteConsumer {
   DISALLOW_COPY_AND_ASSIGN(BoostingVoteAggregator);
 };
 
-}  // namespace frame_priority
+}  // namespace execution_context_priority
 }  // namespace performance_manager
 
-#endif  // COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_FRAME_PRIORITY_BOOSTING_VOTE_AGGREGATOR_H_
+#endif  // COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_EXECUTION_CONTEXT_PRIORITY_BOOSTING_VOTE_AGGREGATOR_H_

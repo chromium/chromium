@@ -2,19 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/performance_manager/public/frame_priority/frame_priority.h"
+#include "components/performance_manager/public/execution_context_priority/execution_context_priority.h"
 
-#include "components/performance_manager/test_support/frame_priority.h"
+#include "components/performance_manager/test_support/execution_context_priority.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace performance_manager {
-namespace frame_priority {
+namespace execution_context_priority {
 
 namespace {
 
-// Some dummy frames.
-const FrameNode* kDummyFrame1 = reinterpret_cast<const FrameNode*>(0xDEADBEEF);
-const FrameNode* kDummyFrame2 = reinterpret_cast<const FrameNode*>(0xBAADF00D);
+// Some dummy execution contexts.
+const ExecutionContext* kDummyExecutionContext1 =
+    reinterpret_cast<const ExecutionContext*>(0xDEADBEEF);
+const ExecutionContext* kDummyExecutionContext2 =
+    reinterpret_cast<const ExecutionContext*>(0xBAADF00D);
 
 void ExpectEntangled(const VoteReceipt& receipt, const AcceptedVote& vote) {
   EXPECT_TRUE(receipt.HasVote(&vote));
@@ -34,7 +36,7 @@ static const char kReason3[] = "reason1";  // Equal to kReason1 on purpose!
 
 }  // namespace
 
-TEST(FramePriorityTest, ReasonCompare) {
+TEST(ExecutionContextPriorityTest, ReasonCompare) {
   // Comparison with nullptr.
   EXPECT_GT(0, ReasonCompare(nullptr, kReason1));
   EXPECT_EQ(0, ReasonCompare(nullptr, nullptr));
@@ -52,7 +54,7 @@ TEST(FramePriorityTest, ReasonCompare) {
   EXPECT_EQ(0, ReasonCompare(kReason1, kReason3));
 }
 
-TEST(FramePriorityTest, PriorityAndReason) {
+TEST(ExecutionContextPriorityTest, PriorityAndReason) {
   // Default constructor
   PriorityAndReason par1;
   EXPECT_EQ(base::TaskPriority::LOWEST, par1.priority());
@@ -111,12 +113,12 @@ TEST(FramePriorityTest, PriorityAndReason) {
   EXPECT_EQ(kReason3, par1.reason());
 }
 
-TEST(FramePriorityTest, DefaultAcceptedVoteIsInvalid) {
+TEST(ExecutionContextPriorityTest, DefaultAcceptedVoteIsInvalid) {
   AcceptedVote vote;
   EXPECT_FALSE(vote.IsValid());
 }
 
-TEST(FramePriorityTest, VoteReceiptsWork) {
+TEST(ExecutionContextPriorityTest, VoteReceiptsWork) {
   test::DummyVoteConsumer consumer;
   test::DummyVoter voter;
 
@@ -127,12 +129,13 @@ TEST(FramePriorityTest, VoteReceiptsWork) {
   EXPECT_NE(kInvalidVoterId, voter.voting_channel_.voter_id());
   EXPECT_TRUE(voter.voting_channel_.IsValid());
 
-  voter.EmitVote(kDummyFrame1);
+  voter.EmitVote(kDummyExecutionContext1);
   EXPECT_EQ(1u, voter.receipts_.size());
   EXPECT_EQ(1u, consumer.votes_.size());
   EXPECT_EQ(1u, consumer.valid_vote_count_);
   EXPECT_EQ(voter.voting_channel_.voter_id(), consumer.votes_[0].voter_id());
-  EXPECT_EQ(kDummyFrame1, consumer.votes_[0].vote().frame_node());
+  EXPECT_EQ(kDummyExecutionContext1,
+            consumer.votes_[0].vote().execution_context());
   EXPECT_TRUE(consumer.votes_[0].IsValid());
   ExpectEntangled(voter.receipts_[0], consumer.votes_[0]);
 
@@ -156,24 +159,28 @@ TEST(FramePriorityTest, VoteReceiptsWork) {
     ExpectEntangled(voter.receipts_[0], consumer.votes_[0]);
   }
 
-  voter.EmitVote(kDummyFrame2);
+  voter.EmitVote(kDummyExecutionContext2);
   EXPECT_EQ(2u, voter.receipts_.size());
   EXPECT_EQ(2u, consumer.votes_.size());
   EXPECT_EQ(2u, consumer.valid_vote_count_);
-  EXPECT_EQ(kDummyFrame1, consumer.votes_[0].vote().frame_node());
-  EXPECT_EQ(kDummyFrame2, consumer.votes_[1].vote().frame_node());
+  EXPECT_EQ(kDummyExecutionContext1,
+            consumer.votes_[0].vote().execution_context());
+  EXPECT_EQ(kDummyExecutionContext2,
+            consumer.votes_[1].vote().execution_context());
   ExpectEntangled(voter.receipts_[0], consumer.votes_[0]);
   ExpectEntangled(voter.receipts_[1], consumer.votes_[1]);
 
   // Change a vote, but making no change.
   ExpectEntangled(voter.receipts_[0], consumer.votes_[0]);
-  EXPECT_EQ(kDummyFrame1, consumer.votes_[0].vote().frame_node());
+  EXPECT_EQ(kDummyExecutionContext1,
+            consumer.votes_[0].vote().execution_context());
   EXPECT_EQ(base::TaskPriority::LOWEST, consumer.votes_[0].vote().priority());
   EXPECT_EQ(test::DummyVoter::kReason, consumer.votes_[0].vote().reason());
   voter.receipts_[0].ChangeVote(base::TaskPriority::LOWEST,
                                 test::DummyVoter::kReason);
   ExpectEntangled(voter.receipts_[0], consumer.votes_[0]);
-  EXPECT_EQ(kDummyFrame1, consumer.votes_[0].vote().frame_node());
+  EXPECT_EQ(kDummyExecutionContext1,
+            consumer.votes_[0].vote().execution_context());
   EXPECT_EQ(base::TaskPriority::LOWEST, consumer.votes_[0].vote().priority());
   EXPECT_EQ(test::DummyVoter::kReason, consumer.votes_[0].vote().reason());
 
@@ -181,7 +188,8 @@ TEST(FramePriorityTest, VoteReceiptsWork) {
   static const char kReason[] = "another reason";
   voter.receipts_[0].ChangeVote(base::TaskPriority::HIGHEST, kReason);
   ExpectEntangled(voter.receipts_[0], consumer.votes_[0]);
-  EXPECT_EQ(kDummyFrame1, consumer.votes_[0].vote().frame_node());
+  EXPECT_EQ(kDummyExecutionContext1,
+            consumer.votes_[0].vote().execution_context());
   EXPECT_EQ(base::TaskPriority::HIGHEST, consumer.votes_[0].vote().priority());
   EXPECT_EQ(kReason, consumer.votes_[0].vote().reason());
 
@@ -190,8 +198,10 @@ TEST(FramePriorityTest, VoteReceiptsWork) {
   EXPECT_EQ(2u, voter.receipts_.size());
   EXPECT_EQ(2u, consumer.votes_.size());
   EXPECT_EQ(1u, consumer.valid_vote_count_);
-  EXPECT_EQ(kDummyFrame1, consumer.votes_[0].vote().frame_node());
-  EXPECT_EQ(kDummyFrame2, consumer.votes_[1].vote().frame_node());
+  EXPECT_EQ(kDummyExecutionContext1,
+            consumer.votes_[0].vote().execution_context());
+  EXPECT_EQ(kDummyExecutionContext2,
+            consumer.votes_[1].vote().execution_context());
   ExpectNotEntangled(voter.receipts_[0], consumer.votes_[0]);
   ExpectEntangled(voter.receipts_[1], consumer.votes_[1]);
 
@@ -200,7 +210,8 @@ TEST(FramePriorityTest, VoteReceiptsWork) {
   EXPECT_EQ(2u, voter.receipts_.size());
   EXPECT_EQ(1u, consumer.votes_.size());
   EXPECT_EQ(1u, consumer.valid_vote_count_);
-  EXPECT_EQ(kDummyFrame2, consumer.votes_[0].vote().frame_node());
+  EXPECT_EQ(kDummyExecutionContext2,
+            consumer.votes_[0].vote().execution_context());
   EXPECT_FALSE(voter.receipts_[0].HasVote());
   ExpectEntangled(voter.receipts_[1], consumer.votes_[0]);
 
@@ -209,7 +220,8 @@ TEST(FramePriorityTest, VoteReceiptsWork) {
   EXPECT_EQ(1u, voter.receipts_.size());
   EXPECT_EQ(1u, consumer.votes_.size());
   EXPECT_EQ(1u, consumer.valid_vote_count_);
-  EXPECT_EQ(kDummyFrame2, consumer.votes_[0].vote().frame_node());
+  EXPECT_EQ(kDummyExecutionContext2,
+            consumer.votes_[0].vote().execution_context());
   ExpectEntangled(voter.receipts_[0], consumer.votes_[0]);
 
   // Cancel the remaining vote by deleting the receipt.
@@ -217,10 +229,11 @@ TEST(FramePriorityTest, VoteReceiptsWork) {
   EXPECT_EQ(0u, voter.receipts_.size());
   EXPECT_EQ(1u, consumer.votes_.size());
   EXPECT_EQ(0u, consumer.valid_vote_count_);
-  EXPECT_EQ(kDummyFrame2, consumer.votes_[0].vote().frame_node());
+  EXPECT_EQ(kDummyExecutionContext2,
+            consumer.votes_[0].vote().execution_context());
   EXPECT_FALSE(consumer.votes_[0].HasReceipt());
   EXPECT_FALSE(consumer.votes_[0].IsValid());
 }
 
-}  // namespace frame_priority
+}  // namespace execution_context_priority
 }  // namespace performance_manager

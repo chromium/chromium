@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/performance_manager/public/frame_priority/override_vote_aggregator.h"
+#include "components/performance_manager/public/execution_context_priority/override_vote_aggregator.h"
 
 namespace performance_manager {
-namespace frame_priority {
+namespace execution_context_priority {
 
 OverrideVoteAggregator::OverrideVoteAggregator() : factory_(this) {}
 
@@ -46,7 +46,7 @@ VoteReceipt OverrideVoteAggregator::SubmitVote(VoterId voter_id,
   DCHECK(vote.IsValid());
   DCHECK(IsSetup());
 
-  VoteData& vote_data = vote_data_map_[vote.frame_node()];
+  VoteData& vote_data = vote_data_map_[vote.execution_context()];
   if (voter_id == override_voter_id_) {
     DCHECK(!vote_data.override_vote.IsValid());
     vote_data.override_vote = AcceptedVote(this, voter_id, vote);
@@ -126,7 +126,7 @@ OverrideVoteAggregator::GetVoteData(AcceptedVote* vote) {
          vote->voter_id() == default_voter_id_);
   DCHECK(IsSetup());
 
-  auto it = vote_data_map_.find(vote->vote().frame_node());
+  auto it = vote_data_map_.find(vote->vote().execution_context());
   DCHECK(it != vote_data_map_.end());
   return it;
 }
@@ -140,5 +140,5 @@ void OverrideVoteAggregator::UpstreamVote(const Vote& vote,
     vote_data->receipt = channel_.SubmitVote(vote);
 }
 
-}  // namespace frame_priority
+}  // namespace execution_context_priority
 }  // namespace performance_manager

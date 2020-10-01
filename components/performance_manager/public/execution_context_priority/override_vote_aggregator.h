@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_FRAME_PRIORITY_OVERRIDE_VOTE_AGGREGATOR_H_
-#define COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_FRAME_PRIORITY_OVERRIDE_VOTE_AGGREGATOR_H_
+#ifndef COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_EXECUTION_CONTEXT_PRIORITY_OVERRIDE_VOTE_AGGREGATOR_H_
+#define COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_EXECUTION_CONTEXT_PRIORITY_OVERRIDE_VOTE_AGGREGATOR_H_
 
 #include <map>
 
-#include "components/performance_manager/public/frame_priority/frame_priority.h"
+#include "components/performance_manager/public/execution_context_priority/execution_context_priority.h"
 
 namespace performance_manager {
-namespace frame_priority {
+namespace execution_context_priority {
 
 // Aggregator that allows votes from 2 different Voters, where one of the voters
 // is allowed to override the votes of another. This aggregator should be
@@ -48,9 +48,9 @@ class OverrideVoteAggregator : public VoteConsumer {
     VoteData& operator=(VoteData&& rhs) = default;
     ~VoteData() = default;
 
-    // Each of these IsValid if a vote has been emitted for this frame,
-    // otherwise !IsValid. At least one of the votes must be valid, otherwise
-    // the entire map entry will be destroyed.
+    // Each of these IsValid if a vote has been emitted for this execution
+    // context, otherwise !IsValid. At least one of the votes must be valid,
+    // otherwise the entire map entry will be destroyed.
     AcceptedVote override_vote;
     AcceptedVote default_vote;
 
@@ -58,7 +58,7 @@ class OverrideVoteAggregator : public VoteConsumer {
     VoteReceipt receipt;
   };
 
-  using VoteDataMap = std::map<const FrameNode*, VoteData>;
+  using VoteDataMap = std::map<const ExecutionContext*, VoteData>;
 
   // Looks up the VoteData associated with the provided |vote|. The data is
   // expected to already exist (enforced by a DCHECK).
@@ -85,7 +85,7 @@ class OverrideVoteAggregator : public VoteConsumer {
   DISALLOW_COPY_AND_ASSIGN(OverrideVoteAggregator);
 };
 
-}  // namespace frame_priority
+}  // namespace execution_context_priority
 }  // namespace performance_manager
 
-#endif  // COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_FRAME_PRIORITY_OVERRIDE_VOTE_AGGREGATOR_H_
+#endif  // COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_EXECUTION_CONTEXT_PRIORITY_OVERRIDE_VOTE_AGGREGATOR_H_

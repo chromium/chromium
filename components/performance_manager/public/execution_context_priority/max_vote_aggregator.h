@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_FRAME_PRIORITY_MAX_VOTE_AGGREGATOR_H_
-#define COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_FRAME_PRIORITY_MAX_VOTE_AGGREGATOR_H_
+#ifndef COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_EXECUTION_CONTEXT_PRIORITY_MAX_VOTE_AGGREGATOR_H_
+#define COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_EXECUTION_CONTEXT_PRIORITY_MAX_VOTE_AGGREGATOR_H_
 
 #include <map>
 #include <utility>
 
 #include "base/containers/intrusive_heap.h"
-#include "components/performance_manager/public/frame_priority/frame_priority.h"
+#include "components/performance_manager/public/execution_context_priority/execution_context_priority.h"
 
 namespace performance_manager {
-namespace frame_priority {
+namespace execution_context_priority {
 
 // Aggregator that allows votes from an arbitrary number of voters, and forwards
 // the maximum vote for each frame. The upstream voting channel must be set
@@ -74,10 +74,10 @@ class MaxVoteAggregator : public VoteConsumer {
     uint32_t vote_id = 0;
   };
 
-  // The collection of votes for a single frame. This is move-only because all
-  // of its members are move-only. Internally it houses the collection of all
-  // votes associated with a frame as max-heap, and a receipt for the vote that
-  // has been upstreamed.
+  // The collection of votes for a single execution context. This is move-only
+  // because all of its members are move-only. Internally it houses the
+  // collection of all votes associated with a execution context as max-heap,
+  // and a receipt for the vote that has been upstreamed.
   class VoteData {
    public:
     VoteData();
@@ -121,7 +121,7 @@ class MaxVoteAggregator : public VoteConsumer {
     VoteReceipt receipt_;
   };
 
-  using VoteDataMap = std::map<const FrameNode*, VoteData>;
+  using VoteDataMap = std::map<const ExecutionContext*, VoteData>;
 
   // Looks up the VoteData associated with the provided |vote|. The data is
   // expected to already exist (enforced by a DCHECK).
@@ -142,7 +142,7 @@ class MaxVoteAggregator : public VoteConsumer {
   DISALLOW_COPY_AND_ASSIGN(MaxVoteAggregator);
 };
 
-}  // namespace frame_priority
+}  // namespace execution_context_priority
 }  // namespace performance_manager
 
-#endif  // COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_FRAME_PRIORITY_MAX_VOTE_AGGREGATOR_H_
+#endif  // COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_EXECUTION_CONTEXT_PRIORITY_MAX_VOTE_AGGREGATOR_H_

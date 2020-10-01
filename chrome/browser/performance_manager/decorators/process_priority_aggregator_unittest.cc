@@ -15,7 +15,7 @@ namespace performance_manager {
 
 namespace {
 
-using PriorityAndReason = frame_priority::PriorityAndReason;
+using PriorityAndReason = execution_context_priority::PriorityAndReason;
 
 static const char* kReason = FrameNodeImpl::kDefaultPriorityReason;
 

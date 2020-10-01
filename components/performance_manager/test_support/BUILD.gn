@@ -10,8 +10,8 @@ source_set("test_support_common") {
 
   sources = [
     "decorators_utils.h",
-    "frame_priority.cc",
-    "frame_priority.h",
+    "execution_context_priority.cc",
+    "execution_context_priority.h",
     "graph_impl.h",
     "test_harness_helper.cc",
     "test_harness_helper.h",

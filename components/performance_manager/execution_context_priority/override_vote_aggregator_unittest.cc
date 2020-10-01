@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/performance_manager/public/frame_priority/override_vote_aggregator.h"
+#include "components/performance_manager/public/execution_context_priority/override_vote_aggregator.h"
 
-#include "components/performance_manager/test_support/frame_priority.h"
+#include "components/performance_manager/test_support/execution_context_priority.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace performance_manager {
-namespace frame_priority {
+namespace execution_context_priority {
 
-// Some dummy frames.
-const FrameNode* kDummyFrame1 = reinterpret_cast<const FrameNode*>(0xDEADBEEF);
-const FrameNode* kDummyFrame2 = reinterpret_cast<const FrameNode*>(0xBAADF00D);
+// Some dummy execution contexts.
+const ExecutionContext* kDummyExecutionContext =
+    reinterpret_cast<const ExecutionContext*>(0xDEADBEEF);
 
 TEST(OverrideVoteAggregatorTest, BlackboxTest) {
   // Priorities to use for default and override votes. The override priority is
@@ -50,13 +50,13 @@ TEST(OverrideVoteAggregatorTest, BlackboxTest) {
   EXPECT_TRUE(agg.IsSetup());
 
   // Submitting a default vote should immediately propagate to the consumer.
-  voter1.EmitVote(kDummyFrame1, kDefaultPriority);
+  voter1.EmitVote(kDummyExecutionContext, kDefaultPriority);
   EXPECT_EQ(0u, voter0.receipts_.size());
   EXPECT_EQ(1u, voter1.receipts_.size());
   EXPECT_EQ(1u, agg.GetSizeForTesting());
   EXPECT_EQ(1u, consumer.votes_.size());
   EXPECT_EQ(1u, consumer.valid_vote_count_);
-  consumer.ExpectValidVote(0, agg_id, kDummyFrame1, kDefaultPriority,
+  consumer.ExpectValidVote(0, agg_id, kDummyExecutionContext, kDefaultPriority,
                            test::DummyVoter::kReason);
 
   // Canceling the default vote should clear all votes.
@@ -68,24 +68,24 @@ TEST(OverrideVoteAggregatorTest, BlackboxTest) {
   EXPECT_EQ(0u, consumer.valid_vote_count_);
 
   // Resubmitting the default vote should propagate to the consumer.
-  voter1.EmitVote(kDummyFrame1, kDefaultPriority);
+  voter1.EmitVote(kDummyExecutionContext, kDefaultPriority);
   EXPECT_EQ(0u, voter0.receipts_.size());
   EXPECT_EQ(1u, voter1.receipts_.size());
   EXPECT_EQ(1u, agg.GetSizeForTesting());
   EXPECT_EQ(2u, consumer.votes_.size());
   EXPECT_EQ(1u, consumer.valid_vote_count_);
-  consumer.ExpectValidVote(1, agg_id, kDummyFrame1, kDefaultPriority,
+  consumer.ExpectValidVote(1, agg_id, kDummyExecutionContext, kDefaultPriority,
                            test::DummyVoter::kReason);
 
   // Submitting an override vote should override it and propagate to the
   // consumer. This should update the existing vote in place.
-  voter0.EmitVote(kDummyFrame1, kOverridePriority);
+  voter0.EmitVote(kDummyExecutionContext, kOverridePriority);
   EXPECT_EQ(1u, voter0.receipts_.size());
   EXPECT_EQ(1u, voter1.receipts_.size());
   EXPECT_EQ(1u, agg.GetSizeForTesting());
   EXPECT_EQ(2u, consumer.votes_.size());
   EXPECT_EQ(1u, consumer.valid_vote_count_);
-  consumer.ExpectValidVote(1, agg_id, kDummyFrame1, kOverridePriority,
+  consumer.ExpectValidVote(1, agg_id, kDummyExecutionContext, kOverridePriority,
                            test::DummyVoter::kReason);
 
   // Canceling the override vote should drop back to using the default vote.
@@ -96,7 +96,7 @@ TEST(OverrideVoteAggregatorTest, BlackboxTest) {
   EXPECT_EQ(1u, agg.GetSizeForTesting());
   EXPECT_EQ(2u, consumer.votes_.size());
   EXPECT_EQ(1u, consumer.valid_vote_count_);
-  consumer.ExpectValidVote(1, agg_id, kDummyFrame1, kDefaultPriority,
+  consumer.ExpectValidVote(1, agg_id, kDummyExecutionContext, kDefaultPriority,
                            test::DummyVoter::kReason);
 
   // Changing the default vote should propagate, as there's no override vote.
@@ -106,7 +106,8 @@ TEST(OverrideVoteAggregatorTest, BlackboxTest) {
   EXPECT_EQ(1u, agg.GetSizeForTesting());
   EXPECT_EQ(2u, consumer.votes_.size());
   EXPECT_EQ(1u, consumer.valid_vote_count_);
-  consumer.ExpectValidVote(1, agg_id, kDummyFrame1, kDefaultPriority, kReason);
+  consumer.ExpectValidVote(1, agg_id, kDummyExecutionContext, kDefaultPriority,
+                           kReason);
 
   // Changing back should also propagate.
   voter1.receipts_[0].ChangeVote(kDefaultPriority, test::DummyVoter::kReason);
@@ -115,18 +116,18 @@ TEST(OverrideVoteAggregatorTest, BlackboxTest) {
   EXPECT_EQ(1u, agg.GetSizeForTesting());
   EXPECT_EQ(2u, consumer.votes_.size());
   EXPECT_EQ(1u, consumer.valid_vote_count_);
-  consumer.ExpectValidVote(1, agg_id, kDummyFrame1, kDefaultPriority,
+  consumer.ExpectValidVote(1, agg_id, kDummyExecutionContext, kDefaultPriority,
                            test::DummyVoter::kReason);
 
   // Submitting an override vote should override it and propagate to the
   // consumer.
-  voter0.EmitVote(kDummyFrame1, kOverridePriority);
+  voter0.EmitVote(kDummyExecutionContext, kOverridePriority);
   EXPECT_EQ(1u, voter0.receipts_.size());
   EXPECT_EQ(1u, voter1.receipts_.size());
   EXPECT_EQ(1u, agg.GetSizeForTesting());
   EXPECT_EQ(2u, consumer.votes_.size());
   EXPECT_EQ(1u, consumer.valid_vote_count_);
-  consumer.ExpectValidVote(1, agg_id, kDummyFrame1, kOverridePriority,
+  consumer.ExpectValidVote(1, agg_id, kDummyExecutionContext, kOverridePriority,
                            test::DummyVoter::kReason);
 
   // Canceling the default vote should do nothing.
@@ -136,17 +137,17 @@ TEST(OverrideVoteAggregatorTest, BlackboxTest) {
   EXPECT_EQ(1u, agg.GetSizeForTesting());
   EXPECT_EQ(2u, consumer.votes_.size());
   EXPECT_EQ(1u, consumer.valid_vote_count_);
-  consumer.ExpectValidVote(1, agg_id, kDummyFrame1, kOverridePriority,
+  consumer.ExpectValidVote(1, agg_id, kDummyExecutionContext, kOverridePriority,
                            test::DummyVoter::kReason);
 
   // Submitting another default vote should do nothing.
-  voter1.EmitVote(kDummyFrame1, kDefaultPriority);
+  voter1.EmitVote(kDummyExecutionContext, kDefaultPriority);
   EXPECT_EQ(1u, voter0.receipts_.size());
   EXPECT_EQ(1u, voter1.receipts_.size());
   EXPECT_EQ(1u, agg.GetSizeForTesting());
   EXPECT_EQ(2u, consumer.votes_.size());
   EXPECT_EQ(1u, consumer.valid_vote_count_);
-  consumer.ExpectValidVote(1, agg_id, kDummyFrame1, kOverridePriority,
+  consumer.ExpectValidVote(1, agg_id, kDummyExecutionContext, kOverridePriority,
                            test::DummyVoter::kReason);
 
   // Changing the default vote should do nothing.
@@ -155,7 +156,7 @@ TEST(OverrideVoteAggregatorTest, BlackboxTest) {
   EXPECT_EQ(1u, agg.GetSizeForTesting());
   EXPECT_EQ(2u, consumer.votes_.size());
   EXPECT_EQ(1u, consumer.valid_vote_count_);
-  consumer.ExpectValidVote(1, agg_id, kDummyFrame1, kOverridePriority,
+  consumer.ExpectValidVote(1, agg_id, kDummyExecutionContext, kOverridePriority,
                            test::DummyVoter::kReason);
 
   // Changing the override vote should change the upstream vote.
@@ -164,7 +165,8 @@ TEST(OverrideVoteAggregatorTest, BlackboxTest) {
   EXPECT_EQ(1u, agg.GetSizeForTesting());
   EXPECT_EQ(2u, consumer.votes_.size());
   EXPECT_EQ(1u, consumer.valid_vote_count_);
-  consumer.ExpectValidVote(1, agg_id, kDummyFrame1, kOverridePriority, kReason);
+  consumer.ExpectValidVote(1, agg_id, kDummyExecutionContext, kOverridePriority,
+                           kReason);
 
   // Canceling the default vote should do nothing.
   voter1.receipts_.clear();
@@ -173,7 +175,8 @@ TEST(OverrideVoteAggregatorTest, BlackboxTest) {
   EXPECT_EQ(1u, agg.GetSizeForTesting());
   EXPECT_EQ(2u, consumer.votes_.size());
   EXPECT_EQ(1u, consumer.valid_vote_count_);
-  consumer.ExpectValidVote(1, agg_id, kDummyFrame1, kOverridePriority, kReason);
+  consumer.ExpectValidVote(1, agg_id, kDummyExecutionContext, kOverridePriority,
+                           kReason);
 
   // Finally, canceling the override vote should cancel the upstream vote.
   voter0.receipts_.clear();
@@ -184,5 +187,5 @@ TEST(OverrideVoteAggregatorTest, BlackboxTest) {
   EXPECT_EQ(0u, consumer.valid_vote_count_);
 }
 
-}  // namespace frame_priority
+}  // namespace execution_context_priority
 }  // namespace performance_manager

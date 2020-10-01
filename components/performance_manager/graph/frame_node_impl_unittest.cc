@@ -278,7 +278,7 @@ TEST_F(FrameNodeImplTest, IsHoldingIndexedDBLock) {
 }
 
 TEST_F(FrameNodeImplTest, Priority) {
-  using PriorityAndReason = frame_priority::PriorityAndReason;
+  using PriorityAndReason = execution_context_priority::PriorityAndReason;
 
   auto process = CreateNode<ProcessNodeImpl>();
   auto page = CreateNode<PageNodeImpl>();

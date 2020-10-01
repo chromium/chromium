@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PERFORMANCE_MANAGER_TEST_SUPPORT_FRAME_PRIORITY_H_
-#define COMPONENTS_PERFORMANCE_MANAGER_TEST_SUPPORT_FRAME_PRIORITY_H_
+#ifndef COMPONENTS_PERFORMANCE_MANAGER_TEST_SUPPORT_EXECUTION_CONTEXT_PRIORITY_H_
+#define COMPONENTS_PERFORMANCE_MANAGER_TEST_SUPPORT_EXECUTION_CONTEXT_PRIORITY_H_
 
-#include "components/performance_manager/public/frame_priority/frame_priority.h"
+#include "components/performance_manager/public/execution_context_priority/execution_context_priority.h"
 
 #include "base/macros.h"
 
 namespace performance_manager {
-namespace frame_priority {
+namespace execution_context_priority {
 namespace test {
 
 // A dummy consumer that simply maintains a list of all submitted votes and
@@ -31,11 +31,11 @@ class DummyVoteConsumer : public VoteConsumer {
   void ExpectInvalidVote(size_t index);
 
   // Checks that the vote at position |index| is valid, and has the
-  // corresponding |voter|, |frame_node| and |priority|. If |reason| is non-null
-  // then it will be validated as well.
+  // corresponding |voter|, |execution_context| and |priority|. If |reason| is
+  // non-null then it will be validated as well.
   void ExpectValidVote(size_t index,
                        VoterId voter_id,
-                       const FrameNode* frame_node,
+                       const ExecutionContext* execution_context,
                        base::TaskPriority priority,
                        const char* reason = nullptr);
 
@@ -57,9 +57,9 @@ class DummyVoter {
 
   void SetVotingChannel(VotingChannel&& voting_channel);
 
-  // Causes the voter to emit a vote for the given |frame_node| and with the
-  // given |priority|. The receipt is pushed back onto |receipts_|.
-  void EmitVote(const FrameNode* frame_node,
+  // Causes the voter to emit a vote for the given |execution_context| and with
+  // the given |priority|. The receipt is pushed back onto |receipts_|.
+  void EmitVote(const ExecutionContext* execution_context,
                 base::TaskPriority priority = base::TaskPriority::LOWEST,
                 const char* reason = kReason);
 
@@ -71,7 +71,7 @@ class DummyVoter {
 };
 
 }  // namespace test
-}  // namespace frame_priority
+}  // namespace execution_context_priority
 }  // namespace performance_manager
 
-#endif  // COMPONENTS_PERFORMANCE_MANAGER_TEST_SUPPORT_FRAME_PRIORITY_H_
+#endif  // COMPONENTS_PERFORMANCE_MANAGER_TEST_SUPPORT_EXECUTION_CONTEXT_PRIORITY_H_

@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/performance_manager/test_support/frame_priority.h"
+#include "components/performance_manager/test_support/execution_context_priority.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace performance_manager {
-namespace frame_priority {
+namespace execution_context_priority {
 namespace test {
 
 DummyVoteConsumer::DummyVoteConsumer() : voting_channel_factory_(this) {}
@@ -60,18 +60,19 @@ void DummyVoteConsumer::ExpectInvalidVote(size_t index) {
   EXPECT_FALSE(accepted_vote.IsValid());
 }
 
-void DummyVoteConsumer::ExpectValidVote(size_t index,
-                                        VoterId voter_id,
-                                        const FrameNode* frame_node,
-                                        base::TaskPriority priority,
-                                        const char* reason) {
+void DummyVoteConsumer::ExpectValidVote(
+    size_t index,
+    VoterId voter_id,
+    const ExecutionContext* execution_context,
+    base::TaskPriority priority,
+    const char* reason) {
   EXPECT_LT(index, votes_.size());
   const AcceptedVote& accepted_vote = votes_[index];
   EXPECT_EQ(this, accepted_vote.consumer());
   EXPECT_TRUE(accepted_vote.IsValid());
   EXPECT_EQ(voter_id, accepted_vote.voter_id());
   const Vote& vote = accepted_vote.vote();
-  EXPECT_EQ(frame_node, vote.frame_node());
+  EXPECT_EQ(execution_context, vote.execution_context());
   EXPECT_EQ(priority, vote.priority());
   EXPECT_TRUE(vote.reason());
   if (reason)
@@ -88,14 +89,14 @@ void DummyVoter::SetVotingChannel(VotingChannel&& voting_channel) {
   voting_channel_ = std::move(voting_channel);
 }
 
-void DummyVoter::EmitVote(const FrameNode* frame_node,
+void DummyVoter::EmitVote(const ExecutionContext* execution_context,
                           base::TaskPriority priority,
                           const char* reason) {
   EXPECT_TRUE(voting_channel_.IsValid());
   receipts_.emplace_back(
-      voting_channel_.SubmitVote(Vote(frame_node, priority, reason)));
+      voting_channel_.SubmitVote(Vote(execution_context, priority, reason)));
 }
 
 }  // namespace test
-}  // namespace frame_priority
+}  // namespace execution_context_priority
 }  // namespace performance_manager

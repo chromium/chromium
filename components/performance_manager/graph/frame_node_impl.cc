@@ -11,7 +11,7 @@
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
 #include "components/performance_manager/graph/worker_node_impl.h"
-#include "components/performance_manager/public/frame_priority/frame_priority.h"
+#include "components/performance_manager/public/execution_context_priority/execution_context_priority.h"
 
 namespace performance_manager {
 
@@ -19,7 +19,7 @@ namespace performance_manager {
 constexpr char FrameNodeImpl::kDefaultPriorityReason[] =
     "default frame priority";
 
-using PriorityAndReason = frame_priority::PriorityAndReason;
+using PriorityAndReason = execution_context_priority::PriorityAndReason;
 
 FrameNodeImpl::FrameNodeImpl(ProcessNodeImpl* process_node,
                              PageNodeImpl* page_node,

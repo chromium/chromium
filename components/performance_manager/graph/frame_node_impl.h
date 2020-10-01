@@ -160,8 +160,8 @@ class FrameNodeImpl
   }
 
  private:
+  friend class ExecutionContextPriorityAccess;
   friend class FrameNodeImplDescriber;
-  friend class FramePriorityAccess;
   friend class ProcessNodeImpl;
 
   // Rest of FrameNode implementation. These are private so that users of the
@@ -321,7 +321,7 @@ class FrameNodeImpl
   // The child workers of this frame.
   base::flat_set<WorkerNodeImpl*> child_worker_nodes_;
 
-  // Frame priority information. Set via FramePriorityDecorator.
+  // Frame priority information. Set via ExecutionContextPriorityDecorator.
   ObservedProperty::NotifiesOnlyOnChangesWithPreviousValue<
       PriorityAndReason,
       const PriorityAndReason&,
@@ -336,11 +336,11 @@ class FrameNodeImpl
       NotifiesOnlyOnChanges<bool, &FrameNodeObserver::OnIsAudibleChanged>
           is_audible_{false};
 
-  // Inline storage for FramePriorityDecorator data.
-  frame_priority::AcceptedVote accepted_vote_;
-
   // Inline storage for ExecutionContext.
   std::unique_ptr<NodeAttachedData> execution_context_;
+
+  // Inline storage for ExecutionContextPriorityDecorator data.
+  execution_context_priority::AcceptedVote accepted_vote_;
 
   base::WeakPtrFactory<FrameNodeImpl> weak_factory_;
 

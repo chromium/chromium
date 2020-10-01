@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/performance_manager/public/frame_priority/max_vote_aggregator.h"
+#include "components/performance_manager/public/execution_context_priority/max_vote_aggregator.h"
 
 #include <algorithm>
 #include <tuple>
 
 namespace performance_manager {
-namespace frame_priority {
+namespace execution_context_priority {
 
 MaxVoteAggregator::MaxVoteAggregator() : factory_(this) {}
 
@@ -30,10 +30,11 @@ VoteReceipt MaxVoteAggregator::SubmitVote(VoterId voter_id, const Vote& vote) {
   DCHECK(channel_.IsValid());
 
   // NOTE: We don't currently explicitly worry about having multiple votes for
-  // the same frame from a single voter, although such logic could be added.
+  // the same execution context from a single voter, although such logic could
+  // be added.
 
   // Add the new vote.
-  VoteData& vote_data = vote_data_map_[vote.frame_node()];
+  VoteData& vote_data = vote_data_map_[vote.execution_context()];
   auto accepted_vote = AcceptedVote(this, voter_id, vote);
   auto receipt = accepted_vote.IssueReceipt();
   if (vote_data.AddVote(std::move(accepted_vote), next_vote_id_++))
@@ -70,8 +71,8 @@ void MaxVoteAggregator::VoteInvalidated(AcceptedVote* vote) {
   if (vote_data.RemoveVote(index))
     vote_data.UpstreamVote(&channel_);
 
-  // If all the votes for this frame have disappeared then remove the entry
-  // entirely. This will automatically cancel our upstream vote.
+  // If all the votes for this execution context have disappeared then remove
+  // the entry entirely. This will automatically cancel our upstream vote.
   if (vote_data.IsEmpty())
     vote_data_map_.erase(it);
 }
@@ -84,8 +85,8 @@ MaxVoteAggregator::VoteDataMap::iterator MaxVoteAggregator::GetVoteData(
   DCHECK_EQ(this, vote->consumer());
   DCHECK(channel_.IsValid());
 
-  // Find the votes associated with this frame.
-  auto it = vote_data_map_.find(vote->vote().frame_node());
+  // Find the votes associated with this execution context.
+  auto it = vote_data_map_.find(vote->vote().execution_context());
   DCHECK(it != vote_data_map_.end());
   return it;
 }
@@ -159,5 +160,5 @@ void MaxVoteAggregator::VoteData::UpstreamVote(VotingChannel* channel) {
   }
 }
 
-}  // namespace frame_priority
+}  // namespace execution_context_priority
 }  // namespace performance_manager

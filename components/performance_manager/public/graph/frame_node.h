@@ -8,7 +8,7 @@
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
 #include "base/util/type_safety/strong_alias.h"
-#include "components/performance_manager/public/frame_priority/frame_priority.h"
+#include "components/performance_manager/public/execution_context_priority/execution_context_priority.h"
 #include "components/performance_manager/public/graph/node.h"
 #include "components/performance_manager/public/mojom/coordination_unit.mojom.h"
 #include "components/performance_manager/public/mojom/lifecycle.mojom.h"
@@ -56,7 +56,7 @@ class FrameNode : public Node {
   using LifecycleState = mojom::LifecycleState;
   using Observer = FrameNodeObserver;
   using PageNodeVisitor = base::RepeatingCallback<bool(const PageNode*)>;
-  using PriorityAndReason = frame_priority::PriorityAndReason;
+  using PriorityAndReason = execution_context_priority::PriorityAndReason;
 
   class ObserverDefaultImpl;
 
@@ -186,7 +186,7 @@ class FrameNode : public Node {
 class FrameNodeObserver {
  public:
   using InterventionPolicy = mojom::InterventionPolicy;
-  using PriorityAndReason = frame_priority::PriorityAndReason;
+  using PriorityAndReason = execution_context_priority::PriorityAndReason;
 
   FrameNodeObserver();
   virtual ~FrameNodeObserver();

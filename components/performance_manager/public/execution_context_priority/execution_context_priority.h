@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_FRAME_PRIORITY_FRAME_PRIORITY_H_
-#define COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_FRAME_PRIORITY_FRAME_PRIORITY_H_
+#ifndef COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_EXECUTION_CONTEXT_PRIORITY_EXECUTION_CONTEXT_PRIORITY_H_
+#define COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_EXECUTION_CONTEXT_PRIORITY_EXECUTION_CONTEXT_PRIORITY_H_
 
-// Declares the various structures and formats associated with the frame
-// priority voting system.
+// Declares the various structures and formats associated with the execution
+// context priority voting system.
 //
 // There are 6 interrelated classes declared here:
 //
-// (1) Vote - A simple wrapper for a FramePriority vote, unattributed,
-//     unsubmittted and unowned. This is a final concrete class.
+// (1) Vote - A simple wrapper for a ExecutionContextPriority vote,
+//     unattributed, unsubmittted and unowned. This is a final concrete class.
 // (2) AcceptedVote - A thin wrapper around a Vote, which gives it ownership
 //     (by a VoteConsumer) and tracking (via VoteReceipt). This is a final
 //     concrete class.
@@ -56,10 +56,6 @@
 // allocations. It is expected that there be O(1000s) of votes lying around, but
 // that they will not often have to move. Thus the pointer maintenance is a
 // reasonable trade-off for memory efficiency.
-//
-// TODO(chrisha): Once workers are added to the graph this should be an
-// "execution context priority" voting system, where an execution context is a
-// worker or a frame (document), and a common base-class of those node types.
 
 #include "base/callback_forward.h"
 #include "base/containers/flat_set.h"
@@ -68,9 +64,13 @@
 
 namespace performance_manager {
 
-class FrameNode;
+namespace execution_context {
+class ExecutionContext;
+}
 
-namespace frame_priority {
+namespace execution_context_priority {
+
+using execution_context::ExecutionContext;
 
 class VoteConsumer;
 
@@ -114,7 +114,7 @@ class PriorityAndReason {
 class Vote final {
  public:
   Vote();
-  Vote(const FrameNode* frame_node,
+  Vote(const ExecutionContext* execution_context,
        base::TaskPriority priority,
        const char* reason);
   Vote(const Vote& rhs);
@@ -123,7 +123,9 @@ class Vote final {
 
   ~Vote();
 
-  const FrameNode* frame_node() const { return frame_node_; }
+  const ExecutionContext* execution_context() const {
+    return execution_context_;
+  }
   base::TaskPriority priority() const { return priority_; }
   const char* reason() const { return reason_; }
 
@@ -133,7 +135,7 @@ class Vote final {
   bool IsValid() const;
 
  private:
-  const FrameNode* frame_node_ = nullptr;
+  const ExecutionContext* execution_context_ = nullptr;
   base::TaskPriority priority_ = base::TaskPriority::LOWEST;
   const char* reason_ = nullptr;
 };
@@ -388,7 +390,8 @@ class VoteConsumer {
   // and a VoteConsumer. A naive implementation of this would be the following:
   //
   //   // Tear down the old vote before submitting a new one in order to prevent
-  //   // the voter from having 2 simultaneous votes for the same frame.
+  //   // the voter from having 2 simultaneous votes for the same
+  //   // execution_context.
   //   auto voter_id = receipt.GetVoterId();
   //   receipt.Reset();
   //   return SubmitVote(voter_id, new_vote);
@@ -426,7 +429,7 @@ class VoteConsumerDefaultImpl : public VoteConsumer {
   DISALLOW_COPY_AND_ASSIGN(VoteConsumerDefaultImpl);
 };
 
-}  // namespace frame_priority
+}  // namespace execution_context_priority
 }  // namespace performance_manager
 
-#endif  // COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_FRAME_PRIORITY_FRAME_PRIORITY_H_
+#endif  // COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_EXECUTION_CONTEXT_PRIORITY_EXECUTION_CONTEXT_PRIORITY_H_

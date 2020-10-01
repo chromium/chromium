@@ -5,11 +5,12 @@
 #include "components/performance_manager/graph/frame_node_impl_describer.h"
 
 #include <sstream>
+#include <string>
 
 #include "base/task/task_traits.h"
 #include "base/values.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
-#include "components/performance_manager/public/frame_priority/frame_priority.h"
+#include "components/performance_manager/public/execution_context_priority/execution_context_priority.h"
 #include "components/performance_manager/public/graph/node_data_describer_registry.h"
 
 namespace performance_manager {
@@ -37,7 +38,7 @@ base::Value MaybeNullStringToValue(base::StringPiece str) {
 }
 
 base::Value PriorityAndReasonToValue(
-    const frame_priority::PriorityAndReason& priority_and_reason) {
+    const execution_context_priority::PriorityAndReason& priority_and_reason) {
   base::Value priority(base::Value::Type::DICTIONARY);
   priority.SetStringKey(
       "priority", base::TaskPriorityToString(priority_and_reason.priority()));

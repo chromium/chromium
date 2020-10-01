@@ -2,28 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PERFORMANCE_MANAGER_PUBLIC_FRAME_PRIORITY_BOOSTING_VOTE_AGGREGATOR_H_
-#define CHROME_BROWSER_PERFORMANCE_MANAGER_PUBLIC_FRAME_PRIORITY_BOOSTING_VOTE_AGGREGATOR_H_
-
-#include "components/performance_manager/public/frame_priority/boosting_vote_aggregator.h"
+#include "components/performance_manager/public/execution_context_priority/boosting_vote_aggregator.h"
 
 #include <algorithm>
 #include <tuple>
 #include <utility>
 
 #include "base/stl_util.h"
-#include "components/performance_manager/public/graph/frame_node.h"
+#include "components/performance_manager/public/execution_context/execution_context.h"
 
 // This voter allows expressing "priority boosts" which are used to resolve
 // priority inversions. These priority inversions are a result of resource
-// contention. For example, consider frames f0 and f1, where f0 holds a WebLock
-// and f1 is waiting to acquire that WebLock. If the priority of f0 is below
-// that of frame f1 then its priority needs to be boosted in order to prevent
-// a priority inversion.
+// contention. For example, consider execution contexts ec0 and ec1, where ec0
+// holds a WebLock and ec1 is waiting to acquire that WebLock. If the priority
+// of ec0 is below that of execution context ec1 then its priority needs to be
+// boosted in order to prevent a priority inversion.
 //
 // We represent this resource contention relationship with a directed edge from
-// f1 -> f0, which expresses the fact that f1 is waiting on a resource held by
-// f0. We instrument APIs that provide shared access to resources (WebLocks,
+// ec1 -> ec0, which expresses the fact that ec1 is waiting on a resource held
+// by ec0. We instrument APIs that provide shared access to resources (WebLocks,
 // IndexedDB, etc) and they serve as factories of edges, expressing their "wait
 // lists" to the BoostingVoteAggregator. This graph will in general be quite
 // sparse and consist of directed acyclic components (one per shared resource),
@@ -31,13 +28,14 @@
 // effectively indicates web content that has expressed a dead lock, so while
 // possible it is unlikely.)
 //
-// Nodes in the graph represent frames, which themselves have baseline
-// priorities that are calculated based on a variety of factors (visibility,
-// type of content, ...). These priorities flow along edges if the next node has
-// a lower priority, "boosting" the priority of the destination node in order to
-// resolve priority inversions. Since the graph is finite and the flow is in one
-// direction only this process is guaranteed to converge for any given graph and
-// set of baseline priorities. We call this graph the "priority flow graph".
+// Nodes in the graph represent execution contexts, which themselves have
+// baseline priorities that are calculated based on a variety of factors
+// (visibility, type of content, ...). These priorities flow along edges if the
+// next node has a lower priority, "boosting" the priority of the destination
+// node in order to resolve priority inversions. Since the graph is finite and
+// the flow is in one direction only this process is guaranteed to converge for
+// any given graph and set of baseline priorities. We call this graph the
+// "priority flow graph".
 //
 // We break this down into a separate graph problem per priority level. We
 // define a virtual "source" node, and create directed edges from that source
@@ -89,7 +87,7 @@
 //   the tree relationship rather than creating simple cycles.
 
 namespace performance_manager {
-namespace frame_priority {
+namespace execution_context_priority {
 
 namespace {
 
@@ -111,18 +109,18 @@ static constexpr uint32_t kLastLayerBit =
     PriorityToBit(base::TaskPriority::HIGHEST);
 static_assert(kFirstLayerBit < kLastLayerBit, "expect more than 1 layer");
 
-static const FrameNode* kMaxFrameNode =
-    reinterpret_cast<const FrameNode*>(static_cast<uintptr_t>(0) - 1);
+static const ExecutionContext* kMaxExecutionContext =
+    reinterpret_cast<const ExecutionContext*>(static_cast<uintptr_t>(0) - 1);
 
 }  // namespace
 
 BoostingVote::BoostingVote(BoostingVoteAggregator* aggregator,
-                           const FrameNode* input_frame,
-                           const FrameNode* output_frame,
+                           const ExecutionContext* input_execution_context,
+                           const ExecutionContext* output_execution_context,
                            const char* reason)
     : aggregator_(aggregator),
-      input_frame_(input_frame),
-      output_frame_(output_frame),
+      input_execution_context_(input_execution_context),
+      output_execution_context_(output_execution_context),
       reason_(reason) {
   aggregator_->SubmitBoostingVote(this);
 }
@@ -137,8 +135,10 @@ BoostingVote& BoostingVote::operator=(BoostingVote&& rhs) {
 
   // Take the aggregator.
   aggregator_ = std::exchange(rhs.aggregator_, nullptr);
-  input_frame_ = std::exchange(rhs.input_frame_, nullptr);
-  output_frame_ = std::exchange(rhs.output_frame_, nullptr);
+  input_execution_context_ =
+      std::exchange(rhs.input_execution_context_, nullptr);
+  output_execution_context_ =
+      std::exchange(rhs.output_execution_context_, nullptr);
   reason_ = std::exchange(rhs.reason_, nullptr);
 
   return *this;
@@ -296,8 +296,10 @@ void BoostingVoteAggregator::SubmitBoostingVote(
   if (!is_new_edge)
     return;
 
-  auto src_node_data_it = FindOrCreateNodeData(boosting_vote->input_frame());
-  auto dst_node_data_it = FindOrCreateNodeData(boosting_vote->output_frame());
+  auto src_node_data_it =
+      FindOrCreateNodeData(boosting_vote->input_execution_context());
+  auto dst_node_data_it =
+      FindOrCreateNodeData(boosting_vote->output_execution_context());
   src_node_data_it->second.IncrementEdgeCount();
   dst_node_data_it->second.IncrementEdgeCount();
 
@@ -337,8 +339,10 @@ void BoostingVoteAggregator::CancelBoostingVote(
   bool active_reason_changed =
       fwd_edge_it->second.RemoveReason(boosting_vote->reason());
 
-  auto src_node_data_it = FindNodeData(boosting_vote->input_frame());
-  auto dst_node_data_it = FindNodeData(boosting_vote->output_frame());
+  auto src_node_data_it =
+      FindNodeData(boosting_vote->input_execution_context());
+  auto dst_node_data_it =
+      FindNodeData(boosting_vote->output_execution_context());
 
   // If the edge's active reason changed, and the edge is active in any layer,
   // then the destination node might need to have its vote updated.
@@ -393,7 +397,7 @@ VoteReceipt BoostingVoteAggregator::SubmitVote(VoterId voter_id,
   DCHECK(vote.IsValid());
 
   // Store the vote.
-  auto node_data_it = FindOrCreateNodeData(vote.frame_node());
+  auto node_data_it = FindOrCreateNodeData(vote.execution_context());
   VoteReceipt receipt =
       node_data_it->second.SetIncomingVote(this, voter_id, vote);
 
@@ -465,10 +469,11 @@ void BoostingVoteAggregator::VoteInvalidated(AcceptedVote* vote) {
 }
 
 template <typename Function>
-void BoostingVoteAggregator::ForEachIncomingEdge(const FrameNode* node,
+void BoostingVoteAggregator::ForEachIncomingEdge(const ExecutionContext* node,
                                                  Function&& function) {
   auto edges_begin = reverse_edges_.lower_bound(ReverseEdge(nullptr, node));
-  auto edges_end = reverse_edges_.upper_bound(ReverseEdge(kMaxFrameNode, node));
+  auto edges_end =
+      reverse_edges_.upper_bound(ReverseEdge(kMaxExecutionContext, node));
   for (auto edge_it = edges_begin; edge_it != edges_end; ++edge_it) {
     if (!function(edge_it))
       return;
@@ -476,10 +481,11 @@ void BoostingVoteAggregator::ForEachIncomingEdge(const FrameNode* node,
 }
 
 template <typename Function>
-void BoostingVoteAggregator::ForEachOutgoingEdge(const FrameNode* node,
+void BoostingVoteAggregator::ForEachOutgoingEdge(const ExecutionContext* node,
                                                  Function&& function) {
   auto edges_begin = forward_edges_.lower_bound(ForwardEdge(node, nullptr));
-  auto edges_end = forward_edges_.upper_bound(ForwardEdge(node, kMaxFrameNode));
+  auto edges_end =
+      forward_edges_.upper_bound(ForwardEdge(node, kMaxExecutionContext));
   for (auto edge_it = edges_begin; edge_it != edges_end; ++edge_it) {
     if (!function(edge_it))
       return;
@@ -495,24 +501,24 @@ BoostingVoteAggregator::GetNodeDataByVote(AcceptedVote* vote) {
   DCHECK(vote->voter_id() == input_voter_id_);
   DCHECK(IsSetup());
 
-  auto it = nodes_.find(vote->vote().frame_node());
+  auto it = nodes_.find(vote->vote().execution_context());
   DCHECK(it != nodes_.end());
   DCHECK_EQ(vote, &it->second.incoming());
   return it;
 }
 
 BoostingVoteAggregator::NodeDataMap::iterator
-BoostingVoteAggregator::FindOrCreateNodeData(const FrameNode* frame_node) {
-  auto it = nodes_.lower_bound(frame_node);
-  if (it->first == frame_node)
+BoostingVoteAggregator::FindOrCreateNodeData(const ExecutionContext* node) {
+  auto it = nodes_.lower_bound(node);
+  if (it->first == node)
     return it;
-  it = nodes_.insert(it, std::make_pair(frame_node, NodeData()));
+  it = nodes_.insert(it, std::make_pair(node, NodeData()));
   return it;
 }
 
 BoostingVoteAggregator::NodeDataMap::iterator
-BoostingVoteAggregator::FindNodeData(const FrameNode* frame_node) {
-  auto it = nodes_.lower_bound(frame_node);
+BoostingVoteAggregator::FindNodeData(const ExecutionContext* node) {
+  auto it = nodes_.lower_bound(node);
   DCHECK(it != nodes_.end());
   return it;
 }
@@ -548,13 +554,13 @@ const char* BoostingVoteAggregator::GetVoteReason(
 
 void BoostingVoteAggregator::UpstreamVoteIfNeeded(
     NodeDataMap::value_type* node) {
-  const FrameNode* frame_node = node->first;
+  const ExecutionContext* execution_context = node->first;
   NodeData* node_data = &node->second;
   auto priority = node_data->GetEffectivePriorityLevel();
 
   // We specifically don't upstream lowest priority votes, as that is the
-  // default priority level of every frame in the absence of any specific higher
-  // votes.
+  // default priority level of every execution context in the absence of any
+  // specific higher votes.
   if (priority == base::TaskPriority::LOWEST) {
     if (node_data->HasOutgoingVote())
       node_data->CancelOutgoingVote();
@@ -573,7 +579,7 @@ void BoostingVoteAggregator::UpstreamVoteIfNeeded(
 
   // Create an outgoing vote.
   node_data->SetOutgoingVoteReceipt(
-      channel_.SubmitVote(Vote(frame_node, priority, reason)));
+      channel_.SubmitVote(Vote(execution_context, priority, reason)));
 }
 
 void BoostingVoteAggregator::UpstreamChanges(const NodeDataPtrSet& changes) {
@@ -645,7 +651,7 @@ BoostingVoteAggregator::GetNearestActiveAncestor(
                       [&](ReverseEdges::iterator edge_it) -> bool {
                         // None of the edges should be active, by definition.
                         DCHECK(!edge_it->second->IsActive(layer_bit));
-                        const FrameNode* src_node = edge_it->first.src();
+                        const ExecutionContext* src_node = edge_it->first.src();
                         auto src_node_it = FindNodeData(src_node);
 
                         if (!src_node_it->second.IsActive(layer_bit))
@@ -680,27 +686,27 @@ void BoostingVoteAggregator::MarkNodesActiveFromSearchFront(
     active_search_front->erase(active_search_front->begin());
     DCHECK(current_node->second.IsActive(layer_bit));
 
-    ForEachOutgoingEdge(current_node->first,
-                        [&](ForwardEdges::iterator edge_it) -> bool {
-                          // Ignore active edges.
-                          if (edge_it->second.IsActive(layer_bit))
-                            return true;
+    ForEachOutgoingEdge(
+        current_node->first, [&](ForwardEdges::iterator edge_it) -> bool {
+          // Ignore active edges.
+          if (edge_it->second.IsActive(layer_bit))
+            return true;
 
-                          // Ignore active destination nodes.
-                          const FrameNode* dst_node = edge_it->first.dst();
-                          auto dst_node_it = FindNodeData(dst_node);
-                          if (dst_node_it->second.IsActive(layer_bit))
-                            return true;
+          // Ignore active destination nodes.
+          const ExecutionContext* dst_node = edge_it->first.dst();
+          auto dst_node_it = FindNodeData(dst_node);
+          if (dst_node_it->second.IsActive(layer_bit))
+            return true;
 
-                          // Mark the edge and the node as active, and add the
-                          // node both to the search front and to the set of
-                          // nodes that became active as a part of this search.
-                          edge_it->second.SetActive(layer_bit);
-                          dst_node_it->second.SetActive(layer_bit);
-                          active_search_front->insert(&(*dst_node_it));
-                          activated->insert(&(*dst_node_it));
-                          return true;
-                        });
+          // Mark the edge and the node as active, and add the
+          // node both to the search front and to the set of
+          // nodes that became active as a part of this search.
+          edge_it->second.SetActive(layer_bit);
+          dst_node_it->second.SetActive(layer_bit);
+          active_search_front->insert(&(*dst_node_it));
+          activated->insert(&(*dst_node_it));
+          return true;
+        });
   }
 }
 
@@ -752,7 +758,5 @@ void BoostingVoteAggregator::OnVoteRemoved(uint32_t layer_bit,
   ReprocessSubtree(layer_bit, node, changes);
 }
 
-}  // namespace frame_priority
+}  // namespace execution_context_priority
 }  // namespace performance_manager
-
-#endif  // CHROME_BROWSER_PERFORMANCE_MANAGER_PUBLIC_FRAME_PRIORITY_OVERRIDE_VOTE_AGGREGATOR_H_

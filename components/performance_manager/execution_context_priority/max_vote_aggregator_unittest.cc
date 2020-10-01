@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/performance_manager/public/frame_priority/max_vote_aggregator.h"
+#include "components/performance_manager/public/execution_context_priority/max_vote_aggregator.h"
 
 #include "base/rand_util.h"
-#include "components/performance_manager/test_support/frame_priority.h"
+#include "components/performance_manager/test_support/execution_context_priority.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace performance_manager {
-namespace frame_priority {
+namespace execution_context_priority {
 
 // Expose the VoteData type for testing.
 class MaxVoteAggregatorTestAccess {
@@ -20,9 +20,11 @@ using VoteData = MaxVoteAggregatorTestAccess::VoteData;
 
 namespace {
 
-// Some dummy frames.
-const FrameNode* kFrame0 = reinterpret_cast<const FrameNode*>(0xDEADBEEF);
-const FrameNode* kFrame1 = reinterpret_cast<const FrameNode*>(0xBAADF00D);
+// Some dummy execution contexts.
+const ExecutionContext* kExecutionContext0 =
+    reinterpret_cast<const ExecutionContext*>(0xDEADBEEF);
+const ExecutionContext* kExecutionContext1 =
+    reinterpret_cast<const ExecutionContext*>(0xBAADF00D);
 
 static constexpr base::TaskPriority kPriority0 = base::TaskPriority::LOWEST;
 static constexpr base::TaskPriority kPriority1 =
@@ -119,9 +121,9 @@ TEST(MaxVoteAggregatorTest, VoteDataHeapStressTest) {
       case kInsert: {
         auto priority = RandPriority();
         auto* reason = RandReason();
-        vd.AddVote(
-            AcceptedVote(&consumer, voter_id, Vote(kFrame0, priority, reason)),
-            next_vote_id++);
+        vd.AddVote(AcceptedVote(&consumer, voter_id,
+                                Vote(kExecutionContext0, priority, reason)),
+                   next_vote_id++);
       } break;
 
       case kMove: {
@@ -137,7 +139,8 @@ TEST(MaxVoteAggregatorTest, VoteDataHeapStressTest) {
         }
 
         // Update the vote.
-        vote.UpdateVote(Vote(vote.vote().frame_node(), priority, reason));
+        vote.UpdateVote(
+            Vote(vote.vote().execution_context(), priority, reason));
         vd.UpdateVote(index, next_vote_id++);
       } break;
 
@@ -186,17 +189,17 @@ TEST(MaxVoteAggregatorTest, BlackboxTest) {
   voter1.SetVotingChannel(agg.GetVotingChannel());
   voter2.SetVotingChannel(agg.GetVotingChannel());
 
-  // Create some dummy votes for each frame and immediately expect them to
-  // propagate upwards.
-  voter0.EmitVote(kFrame0, kPriority0, kReason0);
-  voter1.EmitVote(kFrame1, kPriority1, kReason0);
+  // Create some dummy votes for each execution context and immediately expect
+  // them to propagate upwards.
+  voter0.EmitVote(kExecutionContext0, kPriority0, kReason0);
+  voter1.EmitVote(kExecutionContext1, kPriority1, kReason0);
   EXPECT_EQ(1u, voter0.receipts_.size());
   EXPECT_EQ(1u, voter1.receipts_.size());
   EXPECT_EQ(0u, voter2.receipts_.size());
   EXPECT_EQ(2u, consumer.votes_.size());
   EXPECT_EQ(2u, consumer.valid_vote_count_);
-  consumer.ExpectValidVote(0, agg_id, kFrame0, kPriority0, kReason0);
-  consumer.ExpectValidVote(1, agg_id, kFrame1, kPriority1, kReason0);
+  consumer.ExpectValidVote(0, agg_id, kExecutionContext0, kPriority0, kReason0);
+  consumer.ExpectValidVote(1, agg_id, kExecutionContext1, kPriority1, kReason0);
 
   // Change an existing vote, and expect it to propagate upwards.
   voter0.receipts_[0].ChangeVote(kPriority0, kReason1);
@@ -205,30 +208,30 @@ TEST(MaxVoteAggregatorTest, BlackboxTest) {
   EXPECT_EQ(0u, voter2.receipts_.size());
   EXPECT_EQ(2u, consumer.votes_.size());
   EXPECT_EQ(2u, consumer.valid_vote_count_);
-  consumer.ExpectValidVote(0, agg_id, kFrame0, kPriority0, kReason1);
-  consumer.ExpectValidVote(1, agg_id, kFrame1, kPriority1, kReason0);
+  consumer.ExpectValidVote(0, agg_id, kExecutionContext0, kPriority0, kReason1);
+  consumer.ExpectValidVote(1, agg_id, kExecutionContext1, kPriority1, kReason0);
 
   // Submit a new vote with lower priority than the upstream vote and expect no
   // change.
-  voter2.EmitVote(kFrame1, kPriority0, kReason0);
+  voter2.EmitVote(kExecutionContext1, kPriority0, kReason0);
   EXPECT_EQ(1u, voter0.receipts_.size());
   EXPECT_EQ(1u, voter1.receipts_.size());
   EXPECT_EQ(1u, voter2.receipts_.size());
   EXPECT_EQ(2u, consumer.votes_.size());
   EXPECT_EQ(2u, consumer.valid_vote_count_);
-  consumer.ExpectValidVote(0, agg_id, kFrame0, kPriority0, kReason1);
-  consumer.ExpectValidVote(1, agg_id, kFrame1, kPriority1, kReason0);
+  consumer.ExpectValidVote(0, agg_id, kExecutionContext0, kPriority0, kReason1);
+  consumer.ExpectValidVote(1, agg_id, kExecutionContext1, kPriority1, kReason0);
 
   // Submit a new vote with a higher priority than the upstream vote and expect
   // it to propagate.
-  voter2.EmitVote(kFrame0, kPriority2, kReason0);
+  voter2.EmitVote(kExecutionContext0, kPriority2, kReason0);
   EXPECT_EQ(1u, voter0.receipts_.size());
   EXPECT_EQ(1u, voter1.receipts_.size());
   EXPECT_EQ(2u, voter2.receipts_.size());
   EXPECT_EQ(2u, consumer.votes_.size());
   EXPECT_EQ(2u, consumer.valid_vote_count_);
-  consumer.ExpectValidVote(0, agg_id, kFrame0, kPriority2, kReason0);
-  consumer.ExpectValidVote(1, agg_id, kFrame1, kPriority1, kReason0);
+  consumer.ExpectValidVote(0, agg_id, kExecutionContext0, kPriority2, kReason0);
+  consumer.ExpectValidVote(1, agg_id, kExecutionContext1, kPriority1, kReason0);
 
   // Invalidate a lower priority vote that is not upstreamed. Expect no
   // upstream change.
@@ -238,19 +241,19 @@ TEST(MaxVoteAggregatorTest, BlackboxTest) {
   EXPECT_EQ(2u, voter2.receipts_.size());
   EXPECT_EQ(2u, consumer.votes_.size());
   EXPECT_EQ(2u, consumer.valid_vote_count_);
-  consumer.ExpectValidVote(0, agg_id, kFrame0, kPriority2, kReason0);
-  consumer.ExpectValidVote(1, agg_id, kFrame1, kPriority1, kReason0);
+  consumer.ExpectValidVote(0, agg_id, kExecutionContext0, kPriority2, kReason0);
+  consumer.ExpectValidVote(1, agg_id, kExecutionContext1, kPriority1, kReason0);
 
-  // Create a third vote for kFrame0 with yet another priority. Expect this not
-  // to propagate.
-  voter1.EmitVote(kFrame0, kPriority1, kReason0);
+  // Create a third vote for kExecutionContext0 with yet another priority.
+  // Expect this not to propagate.
+  voter1.EmitVote(kExecutionContext0, kPriority1, kReason0);
   EXPECT_EQ(1u, voter0.receipts_.size());
   EXPECT_EQ(2u, voter1.receipts_.size());
   EXPECT_EQ(2u, voter2.receipts_.size());
   EXPECT_EQ(2u, consumer.votes_.size());
   EXPECT_EQ(2u, consumer.valid_vote_count_);
-  consumer.ExpectValidVote(0, agg_id, kFrame0, kPriority2, kReason0);
-  consumer.ExpectValidVote(1, agg_id, kFrame1, kPriority1, kReason0);
+  consumer.ExpectValidVote(0, agg_id, kExecutionContext0, kPriority2, kReason0);
+  consumer.ExpectValidVote(1, agg_id, kExecutionContext1, kPriority1, kReason0);
 
   // Invalidate the highest priority vote that is upstreamed. Expect the vote to
   // revert to the next highest priority.
@@ -260,8 +263,8 @@ TEST(MaxVoteAggregatorTest, BlackboxTest) {
   EXPECT_EQ(0u, voter2.receipts_.size());
   EXPECT_EQ(2u, consumer.votes_.size());
   EXPECT_EQ(2u, consumer.valid_vote_count_);
-  consumer.ExpectValidVote(0, agg_id, kFrame0, kPriority1, kReason0);
-  consumer.ExpectValidVote(1, agg_id, kFrame1, kPriority1, kReason0);
+  consumer.ExpectValidVote(0, agg_id, kExecutionContext0, kPriority1, kReason0);
+  consumer.ExpectValidVote(1, agg_id, kExecutionContext1, kPriority1, kReason0);
 
   // Invalidate the next highest vote and expect it to revert to the lowest
   // vote.
@@ -271,11 +274,11 @@ TEST(MaxVoteAggregatorTest, BlackboxTest) {
   EXPECT_EQ(0u, voter2.receipts_.size());
   EXPECT_EQ(2u, consumer.votes_.size());
   EXPECT_EQ(2u, consumer.valid_vote_count_);
-  consumer.ExpectValidVote(0, agg_id, kFrame0, kPriority0, kReason1);
-  consumer.ExpectValidVote(1, agg_id, kFrame1, kPriority1, kReason0);
+  consumer.ExpectValidVote(0, agg_id, kExecutionContext0, kPriority0, kReason1);
+  consumer.ExpectValidVote(1, agg_id, kExecutionContext1, kPriority1, kReason0);
 
-  // Clear the last vote for |kFrame0| and expect the upstream vote to be
-  // invalidated.
+  // Clear the last vote for |kExecutionContext0| and expect the upstream vote
+  // to be invalidated.
   voter0.receipts_[0].Reset();
   EXPECT_EQ(1u, voter0.receipts_.size());
   EXPECT_EQ(2u, voter1.receipts_.size());
@@ -283,7 +286,7 @@ TEST(MaxVoteAggregatorTest, BlackboxTest) {
   EXPECT_EQ(2u, consumer.votes_.size());
   EXPECT_EQ(1u, consumer.valid_vote_count_);
   EXPECT_FALSE(consumer.votes_[0].IsValid());
-  consumer.ExpectValidVote(1, agg_id, kFrame1, kPriority1, kReason0);
+  consumer.ExpectValidVote(1, agg_id, kExecutionContext1, kPriority1, kReason0);
 
   // Clear the last outstanding votes and expect all upstream votes to have
   // been canceled.
@@ -298,5 +301,5 @@ TEST(MaxVoteAggregatorTest, BlackboxTest) {
   EXPECT_FALSE(consumer.votes_[1].IsValid());
 }
 
-}  // namespace frame_priority
+}  // namespace execution_context_priority
 }  // namespace performance_manager

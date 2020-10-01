@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/performance_manager/public/frame_priority/frame_priority.h"
+#include "components/performance_manager/public/execution_context_priority/execution_context_priority.h"
 
 #include <cstring>
 #include <utility>
 
 namespace performance_manager {
-namespace frame_priority {
+namespace execution_context_priority {
 
 int ReasonCompare(const char* reason1, const char* reason2) {
   if (reason1 == reason2)
@@ -60,10 +60,12 @@ bool PriorityAndReason::operator>(const PriorityAndReason& other) const {
 
 Vote::Vote() = default;
 
-Vote::Vote(const FrameNode* frame_node,
+Vote::Vote(const ExecutionContext* execution_context,
            base::TaskPriority priority,
            const char* reason)
-    : frame_node_(frame_node), priority_(priority), reason_(reason) {}
+    : execution_context_(execution_context),
+      priority_(priority),
+      reason_(reason) {}
 
 Vote::Vote(const Vote& rhs) = default;
 
@@ -72,8 +74,8 @@ Vote& Vote::operator=(const Vote& rhs) = default;
 Vote::~Vote() = default;
 
 bool Vote::operator==(const Vote& vote) const {
-  return frame_node_ == vote.frame_node_ && priority_ == vote.priority_ &&
-         ::strcmp(reason_, vote.reason_) == 0;
+  return execution_context_ == vote.execution_context_ &&
+         priority_ == vote.priority_ && ::strcmp(reason_, vote.reason_) == 0;
 }
 
 bool Vote::operator!=(const Vote& vote) const {
@@ -81,7 +83,7 @@ bool Vote::operator!=(const Vote& vote) const {
 }
 
 bool Vote::IsValid() const {
-  return frame_node_ && reason_;
+  return execution_context_ && reason_;
 }
 
 /////////////////////////////////////////////////////////////////////
@@ -221,7 +223,7 @@ VoteReceipt AcceptedVote::IssueReceipt() {
 }
 
 void AcceptedVote::UpdateVote(const Vote& vote) {
-  DCHECK_EQ(vote_.frame_node(), vote.frame_node());
+  DCHECK_EQ(vote_.execution_context(), vote.execution_context());
   DCHECK(vote_.priority() != vote.priority() ||
          vote_.reason() != vote.reason());
   vote_ = vote;
@@ -262,13 +264,13 @@ VoteReceipt AcceptedVote::ChangeVote(VoteReceipt receipt,
   Vote old_vote = vote_;
 
   // Notify the consumer of the new vote.
-  Vote new_vote = Vote(old_vote.frame_node(), priority, reason);
+  Vote new_vote = Vote(old_vote.execution_context(), priority, reason);
   receipt = consumer_->ChangeVote(std::move(receipt), this, new_vote);
 
   // Ensure that the returned receipt refers to a vote with the expected
   // properties.
   const Vote& returned_vote = receipt.GetVote();
-  DCHECK_EQ(new_vote.frame_node(), returned_vote.frame_node());
+  DCHECK_EQ(new_vote.execution_context(), returned_vote.execution_context());
   DCHECK_EQ(new_vote.priority(), returned_vote.priority());
   DCHECK_EQ(new_vote.reason(), returned_vote.reason());
 
@@ -393,11 +395,11 @@ VoteReceipt VoteConsumerDefaultImpl::ChangeVote(VoteReceipt receipt,
   DCHECK(old_vote->IsValid());
 
   // Tear down the old vote before submitting a new one in order to prevent
-  // the voter from having 2 simultaneous votes for the same frame.
+  // the voter from having 2 simultaneous votes for the same execution context.
   auto voter_id = receipt.GetVoterId();
   receipt.Reset();
   return SubmitVote(voter_id, new_vote);
 }
 
-}  // namespace frame_priority
+}  // namespace execution_context_priority
 }  // namespace performance_manager
