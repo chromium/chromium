@@ -9,6 +9,7 @@ import android.content.Context;
 import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabThemeColorHelper;
+import org.chromium.chrome.browser.toolbar.ThemeColorProvider;
 
 /** A ThemeColorProvider for the current tab's theming. */
 public class TabThemeColorProvider extends ThemeColorProvider {

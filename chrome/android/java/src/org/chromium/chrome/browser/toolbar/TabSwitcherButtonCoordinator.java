@@ -7,9 +7,8 @@ package org.chromium.chrome.browser.toolbar;
 import android.content.res.ColorStateList;
 import android.view.View.OnClickListener;
 
-import org.chromium.chrome.browser.ThemeColorProvider;
-import org.chromium.chrome.browser.ThemeColorProvider.TintObserver;
 import org.chromium.chrome.browser.toolbar.TabCountProvider.TabCountObserver;
+import org.chromium.chrome.browser.toolbar.ThemeColorProvider.TintObserver;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
