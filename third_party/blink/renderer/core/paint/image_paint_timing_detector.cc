@@ -137,6 +137,7 @@ ImageRecord* ImagePaintTimingDetector::UpdateCandidate() {
 
 void ImagePaintTimingDetector::OnPaintFinished() {
   frame_index_++;
+  viewport_size_ = base::nullopt;
   if (need_update_timing_at_frame_end_) {
     need_update_timing_at_frame_end_ = false;
     frame_view_->GetPaintTimingDetector()
@@ -297,6 +298,18 @@ uint64_t ImagePaintTimingDetector::ComputeImageRectSize(
   FloatRect float_visual_rect =
       frame_view_->GetPaintTimingDetector().BlinkSpaceToDIPs(
           FloatRect(image_border));
+  if (!viewport_size_.has_value()) {
+    FloatRect viewport = frame_view_->GetPaintTimingDetector().BlinkSpaceToDIPs(
+        FloatRect(frame_view_->GetScrollableArea()->VisibleContentRect()));
+    viewport_size_ = viewport.Size().Area();
+  }
+  // An SVG image size is computed with respect to the virtual viewport of the
+  // SVG, so |rect_size| can be larger than |*viewport_size| in edge cases. If
+  // the rect occupies the whole viewport, disregard this candidate by saying
+  // the size is 0.
+  if (rect_size >= *viewport_size_)
+    return 0;
+
   rect_size = DownScaleIfIntrinsicSizeIsSmaller(
       rect_size, intrinsic_size.Area(),
       float_visual_rect.Width() * float_visual_rect.Height());

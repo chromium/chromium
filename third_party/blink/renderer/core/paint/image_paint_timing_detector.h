@@ -10,6 +10,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_IMAGE_PAINT_TIMING_DETECTOR_H_
 
 #include "base/memory/weak_ptr.h"
+#include "base/optional.h"
 #include "third_party/blink/public/web/web_widget_client.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource_content.h"
@@ -292,6 +293,10 @@ class CORE_EXPORT ImagePaintTimingDetector final
   void RegisterNotifySwapTime();
   void ReportCandidateToTrace(ImageRecord&);
   void ReportNoCandidateToTrace();
+  // Computes the size of an image for the purpose of LargestContentfulPaint,
+  // downsizing the size of images with low intrinsic size. Images that occupy
+  // the full viewport are special-cased and this method returns 0 for them so
+  // that they are not considered valid candidates.
   uint64_t ComputeImageRectSize(const IntRect&,
                                 const IntSize&,
                                 const PropertyTreeStateOrAlias&,
@@ -316,6 +321,11 @@ class CORE_EXPORT ImagePaintTimingDetector final
   // This need to be set whenever changes that can affect the output of
   // |FindLargestPaintCandidate| occur during the paint tree walk.
   bool need_update_timing_at_frame_end_ = false;
+
+  // We cache the viewport size computation to avoid performing it on every
+  // image. This value is reset when paint is finished and is computed if unset
+  // when needed. 0 means that the size has not been computed.
+  base::Optional<uint64_t> viewport_size_;
 
   ImageRecordsManager records_manager_;
   Member<LocalFrameView> frame_view_;
