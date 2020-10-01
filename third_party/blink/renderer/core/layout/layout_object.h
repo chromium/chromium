@@ -965,17 +965,21 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
     NOT_DESTROYED();
     return IsOfType(kLayoutObjectTableSection);
   }
-  bool IsTextArea() const {
+  bool IsTextAreaIncludingNG() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectTextArea);
+    return IsOfType(kLayoutObjectTextArea) ||
+           IsOfType(kLayoutObjectNGTextControlMultiLine);
   }
-  bool IsTextControl() const {
+  bool IsTextControlIncludingNG() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectTextControl);
+    return IsOfType(kLayoutObjectTextControl) ||
+           IsOfType(kLayoutObjectNGTextControlMultiLine) ||
+           IsOfType(kLayoutObjectNGTextControlSingleLine);
   }
-  bool IsTextField() const {
+  bool IsTextFieldIncludingNG() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectTextField);
+    return IsOfType(kLayoutObjectTextField) ||
+           IsOfType(kLayoutObjectNGTextControlSingleLine);
   }
   bool IsVideo() const {
     NOT_DESTROYED();

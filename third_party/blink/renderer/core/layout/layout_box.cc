@@ -2646,7 +2646,7 @@ PhysicalRect LayoutBox::OverflowClipRect(
   if (UNLIKELY(input)) {
     // As for LayoutButton, ControlClip is to for not BUTTONs but INPUT
     // buttons for IE/Firefox compatibility.
-    if (IsTextField() || IsButtonIncludingNG()) {
+    if (IsTextFieldIncludingNG() || IsButtonIncludingNG()) {
       DCHECK(HasControlClip());
       PhysicalRect control_clip = PhysicalPaddingBoxRect();
       control_clip.Move(location);
@@ -2666,7 +2666,8 @@ PhysicalRect LayoutBox::OverflowClipRect(
 
 bool LayoutBox::HasControlClip() const {
   NOT_DESTROYED();
-  return UNLIKELY(IsTextField() || IsFileUploadControl() || IsMenuList(this) ||
+  return UNLIKELY(IsTextFieldIncludingNG() || IsFileUploadControl() ||
+                  IsMenuList(this) ||
                   (IsButtonIncludingNG() && IsA<HTMLInputElement>(GetNode())));
 }
 

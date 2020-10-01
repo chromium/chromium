@@ -107,7 +107,7 @@ void TextControlElement::DispatchBlurEvent(
 
 void TextControlElement::DefaultEventHandler(Event& event) {
   if (event.type() == event_type_names::kWebkitEditableContentChanged &&
-      GetLayoutObject() && GetLayoutObject()->IsTextControl()) {
+      GetLayoutObject() && GetLayoutObject()->IsTextControlIncludingNG()) {
     last_change_was_user_edit_ = !GetDocument().IsRunningExecCommand();
     user_has_edited_the_field_ |= last_change_was_user_edit_;
 

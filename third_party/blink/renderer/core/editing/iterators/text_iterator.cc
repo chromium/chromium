@@ -357,7 +357,7 @@ void TextIteratorAlgorithm<Strategy>::Advance() {
       // Enter user-agent shadow root, if necessary.
       if (iteration_progress_ < kHandledUserAgentShadowRoot) {
         if (std::is_same<Strategy, EditingStrategy>::value &&
-            EntersTextControls() && layout_object->IsTextControl()) {
+            EntersTextControls() && layout_object->IsTextControlIncludingNG()) {
           ShadowRoot* user_agent_shadow_root =
               To<Element>(node_)->UserAgentShadowRoot();
           DCHECK(user_agent_shadow_root->IsUserAgent());
@@ -554,7 +554,7 @@ void TextIteratorAlgorithm<Strategy>::HandleReplacedElement() {
     }
   }
 
-  if (EntersTextControls() && layout_object->IsTextControl()) {
+  if (EntersTextControls() && layout_object->IsTextControlIncludingNG()) {
     // The shadow tree should be already visited.
     return;
   }

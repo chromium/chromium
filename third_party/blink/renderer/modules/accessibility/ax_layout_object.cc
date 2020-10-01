@@ -337,7 +337,7 @@ bool AXLayoutObject::IsEditable() const {
   const auto* elem = DynamicTo<Element>(node);
   if (!elem)
     elem = FlatTreeTraversal::ParentElement(*node);
-  if (GetLayoutObject()->IsTextControl())
+  if (GetLayoutObject()->IsTextControlIncludingNG())
     return true;
 
   // Contrary to Firefox, we mark editable all auto-generated content, such as
@@ -591,7 +591,8 @@ bool AXLayoutObject::IsPlaceholder() const {
     return false;
 
   LayoutObject* parent_layout_object = parent_object->GetLayoutObject();
-  if (!parent_layout_object || !parent_layout_object->IsTextControl())
+  if (!parent_layout_object ||
+      !parent_layout_object->IsTextControlIncludingNG())
     return false;
 
   const auto* text_control_element =
@@ -716,7 +717,7 @@ bool AXLayoutObject::ComputeAccessibilityIsIgnored(
   // used to compute the character extent for index 0. This is the same as
   // what the caret's bounds would be if the editable area is focused.
   if (ParentObject() && ParentObject()->GetLayoutObject() &&
-      ParentObject()->GetLayoutObject()->IsTextControl()) {
+      ParentObject()->GetLayoutObject()->IsTextControlIncludingNG()) {
     return false;
   }
 
@@ -1895,14 +1896,14 @@ bool AXLayoutObject::OnNativeSetValueAction(const String& string) {
 
   LayoutBoxModelObject* layout_object = ToLayoutBoxModelObject(layout_object_);
   auto* html_input_element = DynamicTo<HTMLInputElement>(*GetNode());
-  if (html_input_element && layout_object->IsTextField()) {
+  if (html_input_element && layout_object->IsTextFieldIncludingNG()) {
     html_input_element->setValue(
         string, TextFieldEventBehavior::kDispatchInputAndChangeEvent);
     return true;
   }
 
   if (auto* text_area_element = DynamicTo<HTMLTextAreaElement>(*GetNode())) {
-    DCHECK(layout_object->IsTextArea());
+    DCHECK(layout_object->IsTextAreaIncludingNG());
     text_area_element->setValue(
         string, TextFieldEventBehavior::kDispatchInputAndChangeEvent);
     return true;

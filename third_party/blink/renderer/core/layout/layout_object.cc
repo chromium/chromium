@@ -1045,7 +1045,7 @@ static inline bool ObjectIsRelayoutBoundary(const LayoutObject* object) {
   if (!style->Width().IsFixed() || !style->Height().IsFixed())
     return false;
 
-  if (object->IsTextControl())
+  if (object->IsTextControlIncludingNG())
     return true;
 
   if (!object->HasNonVisibleOverflow())
@@ -1456,7 +1456,8 @@ bool LayoutObject::ComputeIsFixedContainer(const ComputedStyle* style) const {
   // select elements inside that are created by user agent shadow DOM, and we
   // have (C++) code that assumes that the elements are indeed contained by the
   // text control. So just make sure this is the case.
-  if (IsA<LayoutView>(this) || IsSVGForeignObject() || IsTextControl())
+  if (IsA<LayoutView>(this) || IsSVGForeignObject() ||
+      IsTextControlIncludingNG())
     return true;
   // https://www.w3.org/TR/css-transforms-1/#containing-block-for-all-descendants
 

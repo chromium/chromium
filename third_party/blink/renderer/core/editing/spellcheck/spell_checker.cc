@@ -556,7 +556,7 @@ static Node* FindFirstMarkable(Node* node) {
       return nullptr;
     if (layout_object->IsText())
       return node;
-    if (layout_object->IsTextControl()) {
+    if (layout_object->IsTextControlIncludingNG()) {
       node = To<TextControlElement>(node)
                  ->VisiblePositionForIndex(1)
                  .DeepEquivalent()
