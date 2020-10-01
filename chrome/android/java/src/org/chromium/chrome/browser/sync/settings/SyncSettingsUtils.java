@@ -305,12 +305,17 @@ public class SyncSettingsUtils {
                             R.color.default_icon_color);
         }
 
+        if (!profileSyncService.isFirstSetupComplete() || profileSyncService.hasUnrecoverableError()
+                || profileSyncService.getAuthError() != GoogleServiceAuthError.State.NONE) {
+            return useNewIcon
+                    ? AppCompatResources.getDrawable(context, R.drawable.ic_sync_error_48dp)
+                    : UiUtils.getTintedDrawable(
+                            context, R.drawable.ic_sync_error_legacy_40dp, R.color.default_red);
+        }
+
         if (profileSyncService.isEngineInitialized()
-                && (profileSyncService.hasUnrecoverableError()
-                        || profileSyncService.getAuthError() != GoogleServiceAuthError.State.NONE
-                        || profileSyncService.isPassphraseRequiredForPreferredDataTypes()
-                        || profileSyncService.isTrustedVaultKeyRequiredForPreferredDataTypes()
-                        || !profileSyncService.isFirstSetupComplete())) {
+                && (profileSyncService.isPassphraseRequiredForPreferredDataTypes()
+                        || profileSyncService.isTrustedVaultKeyRequiredForPreferredDataTypes())) {
             return useNewIcon
                     ? AppCompatResources.getDrawable(context, R.drawable.ic_sync_error_48dp)
                     : UiUtils.getTintedDrawable(
