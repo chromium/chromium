@@ -24,6 +24,7 @@ if (is_fuchsia) {
 
 if (is_chromeos) {
   import("//build/config/chromeos/rules.gni")
+  import("//build/util/generate_wrapper.gni")
 }
 
 if (is_ios) {
@@ -552,6 +553,66 @@ template("test") {
         deps += [ ":$_gen_runner_target" ]
       }
     }
+  }
+}
+
+# Defines a type of test that invokes a script to run, rather than
+# invoking an executable.
+#
+# The script must implement the
+# [test executable API](//docs/testing/test_executable_api.md).
+#
+# The template must be passed the `script` parameter, which specifies
+# the path to the script to run. It may optionally be passed a
+# `script_args` parameter, which can be used to include a list of
+# args to be specified by default. The template will produce
+# a `$root_build_dir/run_$target_name` wrapper and write the runtime_deps
+# for the target to $root_build_dir/${target_name}.runtime_deps, as per
+# the conventions listed in the
+# [test wrapper API](//docs/testing/test_wrapper_api.md).
+template("script_test") {
+  generate_wrapper(target_name) {
+    testonly = true
+    wrapper_script = "${root_build_dir}/bin/run_${target_name}"
+
+    executable = "//testing/test_env.py"
+
+    executable_args =
+        [ "@WrappedPath(" + rebase_path(invoker.script, root_build_dir) + ")" ]
+    if (defined(invoker.args)) {
+      executable_args += invoker.args
+    }
+
+    data = [
+      "//.vpython",
+      "//testing/test_env.py",
+
+      # These aren't needed by *every* test, but they're likely needed often
+      # enough to just make it easier to declare them here.
+      "//testing/xvfb.py",
+      "//testing/scripts/common.py",
+
+      invoker.script,
+    ]
+    if (defined(invoker.data)) {
+      data += invoker.data
+    }
+    data_deps = []
+    if (defined(invoker.data_deps)) {
+      data_deps += invoker.data_deps
+    }
+
+    forward_variables_from(invoker,
+                           [ "*" ],
+                           [
+                             "data",
+                             "data_deps",
+                             "script",
+                             "script_args",
+                             "testonly",
+                           ])
+
+    write_runtime_deps = "${root_build_dir}/${target_name}.runtime_deps"
   }
 }
 

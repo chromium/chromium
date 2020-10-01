@@ -92,5 +92,9 @@ template("generate_wrapper") {
       "--",
     ]
     args += _wrapped_arguments
+
+    if (defined(invoker.write_runtime_deps)) {
+      write_runtime_deps = invoker.write_runtime_deps
+    }
   }
 }

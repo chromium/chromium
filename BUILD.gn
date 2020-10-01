@@ -1146,24 +1146,37 @@ if (!is_ios) {
   }
 
   # https://chromium.googlesource.com/chromium/src/+/master/docs/testing/web_tests.md
-  generate_wrapper("blink_web_tests") {
-    testonly = true
-    wrapper_script = "${root_build_dir}/bin/run_blink_web_tests"
-    executable = "//third_party/blink/tools/run_web_tests.py"
-    executable_args = []
+  script_test("blink_web_tests") {
+    script = "//testing/scripts/run_isolated_script_test.py"
+
+    args = [ "@WrappedPath(" +
+             rebase_path("//third_party/blink/tools/run_web_tests.py",
+                         root_build_dir) + ")" ]
 
     if (is_debug) {
-      executable_args += [ "--debug" ]
+      args += [ "--debug" ]
     } else {
-      executable_args += [ "--release" ]
+      args += [ "--release" ]
     }
 
     if (is_android) {
-      executable_args += [
+      args += [
         "--platform",
         "android",
       ]
     }
+
+    args += [
+      "--seed",
+      "4",
+      "--no-show-results",
+      "--zero-tests-executed-ok",
+      "--clobber-old-results",
+      "--exit-after-n-failures",
+      "5000",
+      "--exit-after-n-crashes-or-timeouts",
+      "100",
+    ]
 
     data_deps = [ ":blink_web_tests_support_data" ]
     data = [
@@ -1227,14 +1240,15 @@ if (!is_ios) {
     deps = [ "//mojo/public/js:bindings_lite" ]
   }
 
-  group("blink_python_tests") {
+  script_test("blink_python_tests") {
+    script = "//testing/scripts/run_isolated_script_test.py"
+    args = [ "@WrappedPath(" +
+             rebase_path("//third_party/blink/tools/run_blinkpy_tests.py",
+                         root_build_dir) + ")" ]
+
     data = [
       "//build/android/",
       "//components/crash/content/tools/generate_breakpad_symbols.py",
-      "//testing/scripts/common.py",
-      "//testing/scripts/run_isolated_script_test.py",
-      "//testing/test_env.py",
-      "//testing/xvfb.py",
       "//third_party/blink/renderer/bindings/scripts/",
       "//third_party/blink/renderer/build/scripts/",
       "//third_party/blink/tools/",
