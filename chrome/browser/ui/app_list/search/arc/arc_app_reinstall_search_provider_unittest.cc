@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/app_list/test/test_app_list_controller_delegate.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/arc/mojom/app.mojom.h"
 #include "components/arc/test/fake_app_instance.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -203,6 +204,9 @@ TEST_F(ArcAppReinstallSearchProviderTest, TestPolicyManagedUser) {
 }
 
 TEST_F(ArcAppReinstallSearchProviderTest, TestResultsWithSearchChanged) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      chromeos::features::kSuggestedContentToggle);
   std::vector<arc::mojom::AppReinstallCandidatePtr> candidates;
   candidates.emplace_back(arc::mojom::AppReinstallCandidate::New(
       "com.package.fakepackage1", "Title of first package",

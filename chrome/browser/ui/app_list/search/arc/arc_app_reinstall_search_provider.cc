@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ui/app_list/search/common/url_icon_source.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/constants/chromeos_pref_names.h"
 #include "components/arc/arc_service_manager.h"
 #include "components/arc/session/arc_bridge_service.h"
@@ -259,9 +260,16 @@ void ArcAppReinstallSearchProvider::Start(const base::string16& query) {
 
   // Always check if suggested content is enabled before searching for
   // reinstall recommendations.
+  bool should_show_arc_app_reinstall_result = true;
   PrefService* pref_service = profile_->GetPrefs();
   if (pref_service &&
-      !pref_service->GetBoolean(chromeos::prefs::kSuggestedContentEnabled)) {
+      !pref_service->GetBoolean(chromeos::prefs::kSuggestedContentEnabled))
+    should_show_arc_app_reinstall_result = false;
+  if (!base::FeatureList::IsEnabled(
+          chromeos::features::kSuggestedContentToggle))
+    should_show_arc_app_reinstall_result = false;
+
+  if (!should_show_arc_app_reinstall_result) {
     ClearResults();
     return;
   }
