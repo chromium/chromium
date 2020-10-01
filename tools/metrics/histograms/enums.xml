@@ -69620,12 +69620,18 @@ would be helpful to identify which type is being sent.
 </enum>
 
 <enum name="SwapThrashingLevel">
+  <obsolete>
+    Obsolete as of 07/2020.
+  </obsolete>
   <int value="0" label="No swap thrashing"/>
   <int value="1" label="Suspiscion of swap thrashing"/>
   <int value="2" label="Confirmed swap thrashing"/>
 </enum>
 
 <enum name="SwapThrashingLevelChanges">
+  <obsolete>
+    Obsolete as of 07/2020.
+  </obsolete>
   <int value="0" label="None to Suspected"/>
   <int value="1" label="Suspected to Confirmed"/>
   <int value="2" label="Confirmed to Suspected"/>

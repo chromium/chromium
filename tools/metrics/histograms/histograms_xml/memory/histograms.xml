@@ -1111,25 +1111,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Memory.Experimental.SwapThrashingLevel"
-    enum="SwapThrashingLevel" expires_after="M85">
-  <owner>sebmarchand@chromium.org</owner>
-  <summary>
-    The swap thrashing level, which is recorded periodically. This shows the
-    cumulative number of seconds that systems spend in each of the swap
-    thrashing states. Only available on Windows.
-  </summary>
-</histogram>
-
-<histogram name="Memory.Experimental.SwapThrashingLevelChanges"
-    enum="SwapThrashingLevelChanges" expires_after="M85">
-  <owner>sebmarchand@chromium.org</owner>
-  <summary>
-    The number of swap-thrashing level state changes for each possible pairwise
-    state change. Only available on Windows.
-  </summary>
-</histogram>
-
 <histogram name="Memory.Experimental.Total2.PrivateMemoryFootprint" units="MB"
     expires_after="2022-01-10">
   <owner>erikchen@chromium.org</owner>
