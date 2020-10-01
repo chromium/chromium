@@ -358,10 +358,6 @@ class VIEWS_EXPORT DialogDelegateView : public DialogDelegate, public View {
   const Widget* GetWidget() const override;
   View* GetContentsView() override;
 
-  // View:
-  void ViewHierarchyChanged(
-      const ViewHierarchyChangedDetails& details) override;
-
  private:
   DISALLOW_COPY_AND_ASSIGN(DialogDelegateView);
 };

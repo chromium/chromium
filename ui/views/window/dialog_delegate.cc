@@ -455,12 +455,4 @@ View* DialogDelegateView::GetContentsView() {
   return this;
 }
 
-void DialogDelegateView::ViewHierarchyChanged(
-    const ViewHierarchyChangedDetails& details) {
-  if (details.is_add && details.child == this && GetWidget() &&
-      ui::IsAlert(GetAccessibleWindowRole())) {
-    NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
-  }
-}
-
 }  // namespace views

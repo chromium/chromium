@@ -94,10 +94,6 @@ void LocationBarBubbleDelegateView::ShowForReason(DisplayReason reason,
           l10n_util::GetStringUTF8(IDS_SHOW_BUBBLE_INACTIVE_DESCRIPTION));
     }
   }
-  if (ui::IsAlert(GetAccessibleWindowRole())) {
-    GetWidget()->GetRootView()->NotifyAccessibilityEvent(
-        ax::mojom::Event::kAlert, true);
-  }
 }
 
 void LocationBarBubbleDelegateView::OnFullscreenStateChanged() {

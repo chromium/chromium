@@ -87,8 +87,7 @@ IN_PROC_BROWSER_TEST_F(SessionCrashedBubbleViewTest, AlertAccessibleEvent) {
   views::test::AXEventCounter counter(views::AXEventManager::Get());
   EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kAlert));
   ShowUi("SessionCrashedBubble");
-  // TODO(crbug.com/1082217): This should only produce one event
-  EXPECT_LT(0, counter.GetCount(ax::mojom::Event::kAlert));
+  EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kAlert));
 }
 
 // Regression test for https://crbug.com/1081393.

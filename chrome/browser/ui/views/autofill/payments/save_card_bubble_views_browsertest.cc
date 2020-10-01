@@ -1019,8 +1019,7 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
   ClickOnDialogViewWithId(DialogViewId::OK_BUTTON);
   WaitForObservedEvent();
 
-  // TODO(crbug.com/1082217): This should only produce one event
-  EXPECT_LT(0, counter.GetCount(ax::mojom::Event::kAlert));
+  EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kAlert));
 }
 #endif
 
