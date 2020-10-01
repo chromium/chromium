@@ -245,8 +245,12 @@
     "type": "console_test_launcher",
   },
   "blink_python_tests": {
+    "args": [
+      "../../third_party/blink/tools/run_blinkpy_tests.py",
+    ],
     "label": "//:blink_python_tests",
-    "type": "generated_script",
+    "script": "//testing/scripts/run_isolated_script_test.py",
+    "type": "script",
   },
   "blink_tests": {
     "label": "//:blink_tests",
@@ -257,12 +261,23 @@
     "type": "console_test_launcher",
   },
   "blink_web_tests": {
-    "label": "//:blink_web_tests",
-    "type": "generated_script",
     "args": [
+      "../../third_party/blink/tools/run_web_tests.py",
+      "--seed",
+      "4",
+      "--no-show-results",
+      "--zero-tests-executed-ok",
+      "--clobber-old-results",
+      "--exit-after-n-failures",
+      "5000",
+      "--exit-after-n-crashes-or-timeouts",
+      "100",
       "--results-directory",
       "${ISOLATED_OUTDIR}",
     ],
+    "label": "//:blink_web_tests",
+    "script": "//testing/scripts/run_isolated_script_test.py",
+    "type": "script",
   },
   "boundary_interface_example_apk": {
     "label": "//android_webview/support_library/boundary_interfaces:boundary_interface_example_apk",
