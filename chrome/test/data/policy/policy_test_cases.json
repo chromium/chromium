@@ -8219,5 +8219,14 @@
         "prefs": { "kaleidoscope.enabled_by_policy": { } }
       }
     ]
+  },
+  "EduCoexistenceToSVersion": {
+    "os": ["chromeos"],
+    "policy_pref_mapping_test": [
+      {
+        "policies": {"EduCoexistenceToSVersion": "333024512" },
+        "prefs": { "family_link_user.edu_coexistence_tos_version": {} }
+      }
+    ]
   }
 }

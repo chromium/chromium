@@ -1150,13 +1150,15 @@
       'name': 'ParentalSupervision',
       'type': 'group',
       'caption': '''Parental supervision settings''',
-      'desc': '''Controls parental supervision policies, that are applied to child accounts only.''',
+      'desc': '''Controls parental supervision policies, that are applied to child accounts only.
+      These policies are not set in the admin console, but configured directly by Kids API Server.''',
       'policies': [
         'ParentAccessCodeConfig',
         'PerAppTimeLimits',
         'PerAppTimeLimitsWhitelist',
         'PerAppTimeLimitsAllowlist',
         'UsageTimeLimit',
+        'EduCoexistenceToSVersion',
       ],
     },
     {
@@ -23477,6 +23479,31 @@ If you disable this policy, web page scrolling to specific text fragments via UR
       If this policy is set to false (or not configured), no additional rules will be applied to Family Link accounts.
       If this policy is set to true, new Family Link user accounts will be allowed additionally to those defined in <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME">DeviceUserAllowlist</ph>.''',
     },
+    {
+      'name': 'EduCoexistenceToSVersion',
+      'owners': ['agawronska@chromium.org', 'danan@chromium.org', 'yilkal@chromium.org', 'cros-families-eng@google.com'],
+      'type': 'string',
+      'schema': {
+        'type': 'string',
+        'description': '''The valid version of Terms of Service derived from Google3 cl that introduced new Terms version.'''
+      },
+      'future_on': ['chrome_os'],
+      'tags': [],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': True,
+      },
+      'example_value': '333024512',
+      'id': 790,
+      'caption': '''The valid version of Edu Coexistence Terms of Service''',
+      'desc': '''This policy indicates current valid version of Edu Coexistence Terms of Service.
+      It is compared with the version last accepted by the parent and used to prompt parent permission renewal when needed.
+
+      When this policy is set Terms of Service version can be validated.
+      When this policy is unset it is not possible to verify validity of Edu Coexistence Terms of Service.
+
+      This policy is only used for Family Link users.''',
+    },
   ],
 
   'messages': {
@@ -24406,6 +24433,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   ],
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 412, 476, 544, 546, 562, 569, 578],
-  'highest_id_currently_used': 789,
+  'highest_id_currently_used': 790,
   'highest_atomic_group_id_currently_used': 40
 }

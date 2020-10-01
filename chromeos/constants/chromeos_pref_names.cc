@@ -68,6 +68,11 @@ const char kEduCoexistenceId[] = "account_manager.edu_coexistence_id";
 const char kEduCoexistenceSecondaryAccountsInvalidationVersion[] =
     "account_manager.edu_coexistence_secondary_accounts_invalidation_version";
 
+// A string pref containing valid version of Edu Coexistence Terms of Service.
+// Controlled by EduCoexistenceToSVersion policy.
+const char kEduCoexistenceToSVersion[] =
+    "family_link_user.edu_coexistence_tos_version";
+
 // A dictionary of info for Quirks Client/Server interaction, mostly last server
 // request times, keyed to display product_id's.
 const char kQuirksClientLastServerCheck[] = "quirks_client.last_server_check";
