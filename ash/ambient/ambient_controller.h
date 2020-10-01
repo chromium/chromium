@@ -28,9 +28,7 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
-class PrefChangeRegistrar;
 class PrefRegistrySimple;
-class PrefService;
 
 namespace ash {
 
@@ -59,7 +57,6 @@ class ASH_EXPORT AmbientController
   void OnAmbientUiVisibilityChanged(AmbientUiVisibility visibility) override;
 
   // SessionObserver:
-  void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
   void OnLockStateChanged(bool locked) override;
 
   // PowerStatus::Observer:
@@ -140,8 +137,6 @@ class ASH_EXPORT AmbientController
   void ReleaseWakeLock();
 
   void CloseWidget(bool immediately);
-
-  void RegisterPrefChanges(PrefService* pref_service);
 
   // Invoked when the |kAmbientModeEnabled| pref state changed.
   void OnEnabledStateChanged();

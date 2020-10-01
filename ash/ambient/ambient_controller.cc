@@ -282,16 +282,6 @@ void AmbientController::OnAutoShowTimeOut() {
   ambient_ui_model_.SetUiVisibility(AmbientUiVisibility::kShown);
 }
 
-void AmbientController::OnActiveUserPrefServiceChanged(
-    PrefService* pref_service) {
-  // Only registers for primary prefs as Ambient Mode is only available for
-  // primary profile.
-  PrefService* primary_user_prefs =
-      Shell::Get()->session_controller()->GetPrimaryUserPrefService();
-  if (primary_user_prefs == pref_service)
-    RegisterPrefChanges(primary_user_prefs);
-}
-
 void AmbientController::OnLockStateChanged(bool locked) {
   if (!IsAmbientModeEnabled()) {
     VLOG(1) << "Ambient mode is not allowed.";
@@ -563,31 +553,6 @@ void AmbientController::StartRefreshingImages() {
 
 void AmbientController::StopRefreshingImages() {
   ambient_photo_controller_.StopScreenUpdate();
-}
-
-void AmbientController::RegisterPrefChanges(PrefService* pref_service) {
-  DCHECK(pref_service);
-
-  // Registers preference changes.
-  pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
-  pref_change_registrar_->Init(pref_service);
-  pref_change_registrar_->Add(
-      ash::ambient::prefs::kAmbientModeEnabled,
-      base::BindRepeating(&AmbientController::OnEnabledStateChanged,
-                          weak_ptr_factory_.GetWeakPtr()));
-}
-
-void AmbientController::OnEnabledStateChanged() {
-  auto enabled = pref_change_registrar_->prefs()->GetBoolean(
-      ash::ambient::prefs::kAmbientModeEnabled);
-
-  // Initiates settings for ambient service upon enabled.
-  if (enabled) {
-    ambient_backend_controller_->InitSettings(base::BindOnce([](bool success) {
-      if (!success)
-        LOG(ERROR) << "Failed to initiate settings for ambient service.";
-    }));
-  }
 }
 
 void AmbientController::set_backend_controller_for_testing(

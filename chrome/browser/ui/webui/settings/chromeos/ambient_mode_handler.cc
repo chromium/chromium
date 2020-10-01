@@ -388,6 +388,17 @@ void AmbientModeHandler::OnSettingsAndAlbumsFetched(
   if (!topic_source) {
     SendTopicSource();
     SendTemperatureUnit();
+
+    // Explicitly enable the weather settings if necessary to make sure we
+    // can always get weather info in the response. Leaving this settings as
+    // default could result in unpredictable behavior (b/158630188). Note that
+    // right now the weather info is designed to be always shown on ambient
+    // screen, so we don't expose an option in ambient Settings for users to
+    // switch it off.
+    if (!settings_->show_weather) {
+      settings_->show_weather = true;
+      UpdateSettings();
+    }
     return;
   }
 

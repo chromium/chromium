@@ -30,7 +30,6 @@ class AmbientBackendControllerImpl : public AmbientBackendController {
   void FetchScreenUpdateInfo(
       int num_topics,
       OnScreenUpdateInfoFetchedCallback callback) override;
-  void InitSettings(UpdateSettingsCallback callback) override;
   void GetSettings(GetSettingsCallback callback) override;
   void UpdateSettings(const AmbientSettings& settings,
                       UpdateSettingsCallback callback) override;
