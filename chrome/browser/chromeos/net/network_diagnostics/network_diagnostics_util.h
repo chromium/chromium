@@ -15,6 +15,9 @@ namespace network_diagnostics {
 
 namespace util {
 
+// Generate 204 path.
+extern const char kGenerate204Path[];
+
 // Returns the Gstatic host suffix. Network diagnostic routines attach a random
 // prefix to |kGstaticHostSuffix| to get a complete hostname.
 const char* GetGstaticHostSuffix();
@@ -34,6 +37,17 @@ std::vector<std::string> GetRandomHosts(int num_hosts, int prefix_length);
 // num_random_hosts.
 std::vector<std::string> GetRandomHostsWithFixedHosts(int num_random_hosts,
                                                       int prefix_length);
+
+// Similar to GetRandomHosts, but with a |scheme| prepended to the hosts.
+std::vector<std::string> GetRandomHostsWithScheme(int num_hosts,
+                                                  int prefix_length,
+                                                  std::string scheme);
+
+// Similar to GetRandomHostsWithScheme, but with the 204 path appended to hosts.
+std::vector<std::string> GetRandomHostsWithSchemeAndGenerate204Path(
+    int num_hosts,
+    int prefix_length,
+    std::string scheme);
 
 // Returns the profile associated with this account.
 Profile* GetUserProfile();

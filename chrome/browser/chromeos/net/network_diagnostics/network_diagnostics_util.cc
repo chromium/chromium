@@ -18,6 +18,8 @@ namespace network_diagnostics {
 
 namespace util {
 
+const char kGenerate204Path[] = "/generate_204";
+
 namespace {
 
 // Returns |num_prefixes| prefixes of size |length|, where no two entries are
@@ -75,6 +77,27 @@ std::vector<std::string> GetRandomHostsWithFixedHosts(int num_random_hosts,
       GetRandomHosts(num_random_hosts, prefix_length);
   hosts.insert(hosts.end(), random_hosts.begin(), random_hosts.end());
 
+  return hosts;
+}
+
+std::vector<std::string> GetRandomHostsWithScheme(int num_hosts,
+                                                  int prefix_length,
+                                                  std::string scheme) {
+  std::vector<std::string> hosts = GetRandomHosts(num_hosts, prefix_length);
+  for (auto& host : hosts) {
+    host = scheme + host;
+  }
+  return hosts;
+}
+
+std::vector<std::string> GetRandomHostsWithSchemeAndGenerate204Path(
+    int num_hosts,
+    int prefix_length,
+    std::string scheme) {
+  std::vector<std::string> hosts = GetRandomHosts(num_hosts, prefix_length);
+  for (auto& host : hosts) {
+    host = scheme + host + kGenerate204Path;
+  }
   return hosts;
 }
 
