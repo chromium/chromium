@@ -13656,7 +13656,7 @@
       'tags': [],
       'desc': '''Setting the policy to a valid value means <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> won't use SSL/TLS versions less than the specified version. Unrecognized values are ignored.
 
-      If this policy is not set, then <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> uses a default minimum version of TLS 1.0.''',
+      If this policy is not set, then <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will show an error for TLS 1.0 and TLS 1.1, but the user will be able to bypass it.''',
     },
     {
       'name': 'SSLVersionFallbackMin',
