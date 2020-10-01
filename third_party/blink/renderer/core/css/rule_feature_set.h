@@ -273,15 +273,18 @@ class CORE_EXPORT RuleFeatureSet {
       attributes.clear();
       ids.clear();
       tag_names.clear();
+      emitted_tag_names.clear();
     }
     unsigned Size() const {
-      return classes.size() + attributes.size() + ids.size() + tag_names.size();
+      return classes.size() + attributes.size() + ids.size() +
+             tag_names.size() + emitted_tag_names.size();
     }
 
     Vector<AtomicString> classes;
     Vector<AtomicString> attributes;
     Vector<AtomicString> ids;
     Vector<AtomicString> tag_names;
+    Vector<AtomicString> emitted_tag_names;
     unsigned max_direct_adjacent_selectors = 0;
     InvalidationFlags invalidation_flags;
     bool content_pseudo_crossing = false;

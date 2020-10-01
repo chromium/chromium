@@ -511,6 +511,9 @@ void RuleFeatureSet::UpdateFeaturesFromCombinator(
 void RuleFeatureSet::ExtractInvalidationSetFeaturesFromSimpleSelector(
     const CSSSelector& selector,
     InvalidationSetFeatures& features) {
+  features.has_features_for_rule_set_invalidation |=
+      selector.IsIdClassOrAttributeSelector();
+
   if (selector.Match() == CSSSelector::kTag &&
       selector.TagQName().LocalName() != CSSSelector::UniversalSelectorAtom()) {
     features.NarrowToTag(selector.TagQName().LocalName());
@@ -729,6 +732,7 @@ RuleFeatureSet::ExtractInvalidationSetFeaturesFromSelectorList(
   const CSSSelector* sub_selector = selector_list->First();
 
   bool all_sub_selectors_have_features = true;
+  bool all_sub_selectors_have_features_for_ruleset_invalidation = true;
   InvalidationSetFeatures any_features;
 
   for (; sub_selector; sub_selector = CSSSelectorList::Next(*sub_selector)) {
@@ -739,6 +743,8 @@ RuleFeatureSet::ExtractInvalidationSetFeaturesFromSelectorList(
       features.invalidation_flags.SetWholeSubtreeInvalid(true);
       return kRequiresSubtreeInvalidation;
     }
+    all_sub_selectors_have_features_for_ruleset_invalidation &=
+        complex_features.has_features_for_rule_set_invalidation;
     if (complex_features.has_nth_pseudo)
       features.has_nth_pseudo = true;
     if (!all_sub_selectors_have_features)
@@ -752,6 +758,8 @@ RuleFeatureSet::ExtractInvalidationSetFeaturesFromSelectorList(
   // any invalidation set features. E.g. :-webkit-any(*, span).
   if (all_sub_selectors_have_features)
     features.NarrowToFeatures(any_features);
+  features.has_features_for_rule_set_invalidation |=
+      all_sub_selectors_have_features_for_ruleset_invalidation;
   return kNormalInvalidation;
 }
 
@@ -810,8 +818,6 @@ const CSSSelector* RuleFeatureSet::ExtractInvalidationSetFeaturesFromCompound(
 
     if (!simple_selector->TagHistory() ||
         simple_selector->Relation() != CSSSelector::kSubSelector) {
-      features.has_features_for_rule_set_invalidation =
-          features.HasIdClassOrAttribute();
       return simple_selector;
     }
   }
@@ -849,6 +855,8 @@ void RuleFeatureSet::AddFeaturesToInvalidationSet(
     invalidation_set.AddId(id);
   for (const auto& tag_name : features.tag_names)
     invalidation_set.AddTagName(tag_name);
+  for (const auto& emitted_tag_name : features.emitted_tag_names)
+    invalidation_set.AddTagName(emitted_tag_name);
   for (const auto& class_name : features.classes)
     invalidation_set.AddClass(class_name);
   for (const auto& attribute : features.attributes)
@@ -1384,7 +1392,22 @@ void RuleFeatureSet::InvalidationSetFeatures::Add(
   classes.AppendVector(other.classes);
   attributes.AppendVector(other.attributes);
   ids.AppendVector(other.ids);
-  tag_names.AppendVector(other.tag_names);
+  // Tag names that have been added to an invalidation set for an ID, a class,
+  // or an attribute are called "emitted" tag names. Emitted tag names need to
+  // go in a separate vector in order to correctly track which tag names to
+  // add to the type rule invalidation set.
+  //
+  // Example: :is(.a, div) :is(span, .b, ol, .c li)
+  //
+  // For the above selector, we need span and ol in the type invalidation set,
+  // but not li, since that tag name was added to the invalidation set for .c.
+  // Hence, when processing the rightmost :is(), we end up with li in the
+  // emitted_tag_names vector, and span and ol in the regular tag_names vector.
+  if (other.has_features_for_rule_set_invalidation)
+    emitted_tag_names.AppendVector(other.tag_names);
+  else
+    tag_names.AppendVector(other.tag_names);
+  emitted_tag_names.AppendVector(other.emitted_tag_names);
   max_direct_adjacent_selectors = std::max(max_direct_adjacent_selectors,
                                            other.max_direct_adjacent_selectors);
   invalidation_flags.Merge(other.invalidation_flags);
@@ -1404,7 +1427,8 @@ void RuleFeatureSet::InvalidationSetFeatures::NarrowToFeatures(
 
 bool RuleFeatureSet::InvalidationSetFeatures::HasFeatures() const {
   return !classes.IsEmpty() || !attributes.IsEmpty() || !ids.IsEmpty() ||
-         !tag_names.IsEmpty() || invalidation_flags.InvalidateCustomPseudo() ||
+         !tag_names.IsEmpty() || !emitted_tag_names.IsEmpty() ||
+         invalidation_flags.InvalidateCustomPseudo() ||
          invalidation_flags.InvalidatesParts();
 }
 

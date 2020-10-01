@@ -1512,6 +1512,13 @@ RefTestData ref_equal_test_data[] = {
     {":is(.a + .b, .c + .d) + :is(.e + .f, .g + .h)",
      ".a + .b + .f, .a + .b + .h, .c + .d + .f, .c + .d + .h,"
      ".e + .f, .g + .h"},
+    {":is(div)", "div"},
+    {":is(div, span)", "div, span"},
+    {":is(.a, div)", ".a, div"},
+    {":is(.a, :is(div, span))", ".a, div, span"},
+    {":is(.a, span) :is(div, .b)", ".a div, .a .b, span div, span .b"},
+    {":is(.a, span) + :is(div, .b)",
+     ".a + div, .a + .b, span + div, span + .b"},
     // clang-format on
 };
 
