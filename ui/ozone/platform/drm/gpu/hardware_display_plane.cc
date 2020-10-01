@@ -12,35 +12,9 @@
 #include "ui/ozone/platform/drm/gpu/drm_device.h"
 #include "ui/ozone/platform/drm/gpu/drm_gpu_util.h"
 
-#ifndef DRM_PLANE_TYPE_OVERLAY
-#define DRM_PLANE_TYPE_OVERLAY 0
-#endif
-
-#ifndef DRM_PLANE_TYPE_PRIMARY
-#define DRM_PLANE_TYPE_PRIMARY 1
-#endif
-
-#ifndef DRM_PLANE_TYPE_CURSOR
-#define DRM_PLANE_TYPE_CURSOR 2
-#endif
-
 namespace ui {
 
 namespace {
-
-HardwareDisplayPlane::Type GetPlaneType(int value) {
-  switch (value) {
-    case DRM_PLANE_TYPE_CURSOR:
-      return HardwareDisplayPlane::kCursor;
-    case DRM_PLANE_TYPE_PRIMARY:
-      return HardwareDisplayPlane::kPrimary;
-    case DRM_PLANE_TYPE_OVERLAY:
-      return HardwareDisplayPlane::kOverlay;
-    default:
-      NOTREACHED();
-      return HardwareDisplayPlane::kDummy;
-  }
-}
 
 void ParseSupportedFormatsAndModifiers(
     drmModePropertyBlobPtr blob,
@@ -91,7 +65,7 @@ bool HardwareDisplayPlane::Initialize(DrmDevice* drm) {
   }
 
   if (properties_.type.id)
-    type_ = GetPlaneType(properties_.type.value);
+    type_ = properties_.type.value;
 
   if (properties_.plane_color_encoding.id) {
     color_encoding_bt601_ =

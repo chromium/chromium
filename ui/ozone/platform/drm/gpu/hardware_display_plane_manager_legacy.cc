@@ -20,7 +20,6 @@
 #include "ui/ozone/platform/drm/gpu/drm_device.h"
 #include "ui/ozone/platform/drm/gpu/drm_framebuffer.h"
 #include "ui/ozone/platform/drm/gpu/hardware_display_plane.h"
-#include "ui/ozone/platform/drm/gpu/hardware_display_plane_dummy.h"
 #include "ui/ozone/platform/drm/gpu/page_flip_request.h"
 
 namespace ui {
@@ -119,7 +118,7 @@ bool HardwareDisplayPlaneManagerLegacy::DisableOverlayPlanes(
   DCHECK(std::find_if(plane_list->old_plane_list.begin(),
                       plane_list->old_plane_list.end(),
                       [](HardwareDisplayPlane* plane) {
-                        return plane->type() == HardwareDisplayPlane::kOverlay;
+                        return plane->type() == DRM_PLANE_TYPE_OVERLAY;
                       }) == plane_list->old_plane_list.end());
   return true;
 }
@@ -166,29 +165,10 @@ bool HardwareDisplayPlaneManagerLegacy::InitializePlanes() {
 
     // Overlays are not supported on the legacy path, so ignore all overlay
     // planes.
-    if (plane->type() == HardwareDisplayPlane::kOverlay)
+    if (plane->type() == DRM_PLANE_TYPE_OVERLAY)
       continue;
 
     planes_.push_back(std::move(plane));
-  }
-
-  // https://crbug.com/464085: if driver reports no primary planes for a crtc,
-  // create a dummy plane for which we can assign exactly one overlay.
-  if (!has_universal_planes_) {
-    for (size_t i = 0; i < crtc_state_.size(); ++i) {
-      uint32_t id = crtc_state_[i].properties.id - 1;
-      if (std::find_if(
-              planes_.begin(), planes_.end(),
-              [id](const std::unique_ptr<HardwareDisplayPlane>& plane) {
-                return plane->id() == id;
-              }) == planes_.end()) {
-        std::unique_ptr<HardwareDisplayPlane> dummy_plane(
-            new HardwareDisplayPlaneDummy(id, 1 << i));
-        if (dummy_plane->Initialize(drm_)) {
-          planes_.push_back(std::move(dummy_plane));
-        }
-      }
-    }
   }
 
   return true;
@@ -219,7 +199,7 @@ bool HardwareDisplayPlaneManagerLegacy::IsCompatible(
     HardwareDisplayPlane* plane,
     const DrmOverlayPlane& overlay,
     uint32_t crtc_index) const {
-  if (plane->type() == HardwareDisplayPlane::kCursor ||
+  if (plane->type() == DRM_PLANE_TYPE_CURSOR ||
       !plane->CanUseForCrtc(crtc_index))
     return false;
 

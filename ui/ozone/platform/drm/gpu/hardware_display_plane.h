@@ -20,8 +20,6 @@ namespace ui {
 
 class HardwareDisplayPlane {
  public:
-  enum Type { kDummy, kPrimary, kOverlay, kCursor };
-
   HardwareDisplayPlane(uint32_t id);
 
   virtual ~HardwareDisplayPlane();
@@ -39,8 +37,7 @@ class HardwareDisplayPlane {
 
   uint32_t id() const { return id_; }
 
-  Type type() const { return type_; }
-  void set_type(const Type type) { type_ = type; }
+  uint32_t type() const { return type_; }
 
   void set_owning_crtc(uint32_t crtc) { owning_crtc_ = crtc; }
   uint32_t owning_crtc() const { return owning_crtc_; }
@@ -80,7 +77,7 @@ class HardwareDisplayPlane {
   uint32_t owning_crtc_ = 0;
   uint32_t last_used_format_ = 0;
   bool in_use_ = false;
-  Type type_ = kPrimary;
+  uint32_t type_ = DRM_PLANE_TYPE_PRIMARY;
   std::vector<uint32_t> supported_formats_;
   std::vector<drm_format_modifier> supported_format_modifiers_;
 

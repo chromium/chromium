@@ -75,8 +75,6 @@ source_set("gbm") {
     "gpu/hardware_display_plane.h",
     "gpu/hardware_display_plane_atomic.cc",
     "gpu/hardware_display_plane_atomic.h",
-    "gpu/hardware_display_plane_dummy.cc",
-    "gpu/hardware_display_plane_dummy.h",
     "gpu/hardware_display_plane_manager.cc",
     "gpu/hardware_display_plane_manager.h",
     "gpu/hardware_display_plane_manager_atomic.cc",

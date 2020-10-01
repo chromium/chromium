@@ -111,7 +111,7 @@ int HardwareDisplayPlaneManager::LookupConnectorIndex(
 bool HardwareDisplayPlaneManager::IsCompatible(HardwareDisplayPlane* plane,
                                                const DrmOverlayPlane& overlay,
                                                uint32_t crtc_index) const {
-  if (plane->type() == HardwareDisplayPlane::kCursor ||
+  if (plane->type() == DRM_PLANE_TYPE_CURSOR ||
       !plane->CanUseForCrtc(crtc_index))
     return false;
 
@@ -180,17 +180,15 @@ bool HardwareDisplayPlaneManager::AssignOverlayPlanes(
     }
 
     gfx::Rect fixed_point_rect;
-    if (hw_plane->type() != HardwareDisplayPlane::kDummy) {
-      const gfx::Size& size = plane.buffer->size();
-      gfx::RectF crop_rectf = plane.crop_rect;
-      crop_rectf.Scale(size.width(), size.height());
-      // DrmOverlayManager::CanHandleCandidate guarantees this is safe.
-      gfx::Rect crop_rect = gfx::ToNearestRect(crop_rectf);
-      // Convert to 16.16 fixed point required by the DRM overlay APIs.
-      fixed_point_rect =
-          gfx::Rect(crop_rect.x() << 16, crop_rect.y() << 16,
-                    crop_rect.width() << 16, crop_rect.height() << 16);
-    }
+    const gfx::Size& size = plane.buffer->size();
+    gfx::RectF crop_rectf = plane.crop_rect;
+    crop_rectf.Scale(size.width(), size.height());
+    // DrmOverlayManager::CanHandleCandidate guarantees this is safe.
+    gfx::Rect crop_rect = gfx::ToNearestRect(crop_rectf);
+    // Convert to 16.16 fixed point required by the DRM overlay APIs.
+    fixed_point_rect =
+        gfx::Rect(crop_rect.x() << 16, crop_rect.y() << 16,
+                  crop_rect.width() << 16, crop_rect.height() << 16);
 
     if (!SetPlaneData(plane_list, hw_plane, plane, crtc_id, fixed_point_rect)) {
       ResetCurrentPlaneList(plane_list);
@@ -216,7 +214,7 @@ std::vector<uint64_t> HardwareDisplayPlaneManager::GetFormatModifiers(
 
   for (const auto& plane : planes_) {
     if (plane->CanUseForCrtc(crtc_index) &&
-        plane->type() == HardwareDisplayPlane::kPrimary) {
+        plane->type() == DRM_PLANE_TYPE_PRIMARY) {
       return plane->ModifiersForFormat(format);
     }
   }

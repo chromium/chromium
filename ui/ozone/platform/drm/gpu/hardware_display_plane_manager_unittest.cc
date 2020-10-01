@@ -351,7 +351,7 @@ TEST_P(HardwareDisplayPlaneManagerLegacyTest, AddCursor) {
 
   bool cursor_found = false;
   for (const auto& plane : fake_drm_->plane_manager()->planes()) {
-    if (plane->type() == ui::HardwareDisplayPlane::kCursor) {
+    if (plane->type() == DRM_PLANE_TYPE_CURSOR) {
       cursor_found = true;
       break;
     }
