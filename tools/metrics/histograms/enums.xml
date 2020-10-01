@@ -56279,6 +56279,14 @@ Called by update_net_trust_anchors.py.-->
   <int value="4" label="DB Error"/>
 </enum>
 
+<enum name="PasswordWeaknessScore">
+  <int value="0" label="Too guessable password"/>
+  <int value="1" label="Very guessable password"/>
+  <int value="2" label="Somewhat guessable password"/>
+  <int value="3" label="Safely unguessable password"/>
+  <int value="4" label="Very unguessable password"/>
+</enum>
+
 <enum name="PaymentRequestAbortReason">
   <int value="0" label="DismissedByUser"/>
   <int value="1" label="AbortedByMerchant"/>
