@@ -665,8 +665,6 @@
     },
     {
       name: "DigitalGoods",
-      origin_trial_feature_name: "DigitalGoods",
-      origin_trial_os: ["android"],
       status: "experimental",
     },
     {
