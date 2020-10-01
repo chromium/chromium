@@ -28,6 +28,7 @@ public class InterceptNavigationDelegateClientImpl implements InterceptNavigatio
     private RedirectHandler mRedirectHandler;
     private InterceptNavigationDelegateImpl mInterceptNavigationDelegate;
     private long mLastNavigationWithUserGestureTime = RedirectHandler.INVALID_TIME;
+    private boolean mDestroyed;
 
     InterceptNavigationDelegateClientImpl(TabImpl tab) {
         mTab = tab;
@@ -53,6 +54,7 @@ public class InterceptNavigationDelegateClientImpl implements InterceptNavigatio
     }
 
     public void destroy() {
+        mDestroyed = true;
         getWebContents().removeObserver(mWebContentsObserver);
         mInterceptNavigationDelegate.associateWithWebContents(null);
     }
@@ -118,6 +120,11 @@ public class InterceptNavigationDelegateClientImpl implements InterceptNavigatio
 
     @Override
     public void closeTab() {
+        // When InterceptNavigationDelegate determines that a tab needs to be closed, it posts a
+        // task invoking this method. It is possible that in the interim the tab was closed for
+        // another reason. In that case there is nothing more to do here.
+        if (mDestroyed) return;
+
         closeTab(mTab);
     }
 
