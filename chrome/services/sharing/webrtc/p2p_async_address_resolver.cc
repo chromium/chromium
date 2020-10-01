@@ -14,8 +14,10 @@
 namespace sharing {
 
 P2PAsyncAddressResolver::P2PAsyncAddressResolver(
-    network::mojom::P2PSocketManager* socket_manager)
-    : socket_manager_(socket_manager), state_(STATE_CREATED) {}
+    const mojo::SharedRemote<network::mojom::P2PSocketManager>& socket_manager)
+    : socket_manager_(socket_manager), state_(STATE_CREATED) {
+  DCHECK(socket_manager_.is_bound());
+}
 
 P2PAsyncAddressResolver::~P2PAsyncAddressResolver() {
   DCHECK(state_ == STATE_CREATED || state_ == STATE_FINISHED);

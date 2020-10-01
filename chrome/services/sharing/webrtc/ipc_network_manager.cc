@@ -45,10 +45,11 @@ rtc::AdapterType ConvertConnectionTypeToAdapterType(
 }  // namespace
 
 IpcNetworkManager::IpcNetworkManager(
-    network::mojom::P2PSocketManager* socket_manager,
+    const mojo::SharedRemote<network::mojom::P2PSocketManager>& socket_manager,
     std::unique_ptr<webrtc::MdnsResponderInterface> mdns_responder)
     : p2p_socket_manager_(socket_manager),
       mdns_responder_(std::move(mdns_responder)) {
+  DCHECK(p2p_socket_manager_.is_bound());
   p2p_socket_manager_->StartNetworkNotifications(
       network_notification_client_receiver_.BindNewPipeAndPassRemote());
 }

@@ -5,6 +5,7 @@
 #ifndef CHROME_SERVICES_SHARING_WEBRTC_IPC_PACKET_SOCKET_FACTORY_H_
 #define CHROME_SERVICES_SHARING_WEBRTC_IPC_PACKET_SOCKET_FACTORY_H_
 
+#include "mojo/public/cpp/bindings/shared_remote.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/mojom/p2p.mojom.h"
 #include "third_party/webrtc/api/packet_socket_factory.h"
@@ -21,7 +22,8 @@ namespace sharing {
 class IpcPacketSocketFactory : public rtc::PacketSocketFactory {
  public:
   IpcPacketSocketFactory(
-      network::mojom::P2PSocketManager* socket_manager,
+      const mojo::SharedRemote<network::mojom::P2PSocketManager>&
+          socket_manager,
       const net::NetworkTrafficAnnotationTag& traffic_annotation);
   IpcPacketSocketFactory(const IpcPacketSocketFactory&) = delete;
   IpcPacketSocketFactory& operator=(const IpcPacketSocketFactory&) = delete;
@@ -45,7 +47,7 @@ class IpcPacketSocketFactory : public rtc::PacketSocketFactory {
   rtc::AsyncResolverInterface* CreateAsyncResolver() override;
 
  private:
-  network::mojom::P2PSocketManager* socket_manager_;
+  mojo::SharedRemote<network::mojom::P2PSocketManager> socket_manager_;
   const net::NetworkTrafficAnnotationTag traffic_annotation_;
 };
 

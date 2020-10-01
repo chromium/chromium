@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/threading/thread_checker.h"
+#include "mojo/public/cpp/bindings/shared_remote.h"
 #include "net/base/ip_address.h"
 #include "services/network/public/mojom/p2p.mojom.h"
 #include "third_party/webrtc/rtc_base/async_resolver_interface.h"
@@ -25,7 +26,8 @@ class P2PAsyncAddressResolver {
       base::OnceCallback<void(const std::vector<net::IPAddress>&)>;
 
   explicit P2PAsyncAddressResolver(
-      network::mojom::P2PSocketManager* socket_manager);
+      const mojo::SharedRemote<network::mojom::P2PSocketManager>&
+          socket_manager);
   P2PAsyncAddressResolver(const P2PAsyncAddressResolver&) = delete;
   P2PAsyncAddressResolver& operator=(const P2PAsyncAddressResolver&) = delete;
   ~P2PAsyncAddressResolver();
@@ -44,7 +46,7 @@ class P2PAsyncAddressResolver {
 
   void OnResponse(const std::vector<net::IPAddress>& address);
 
-  network::mojom::P2PSocketManager* socket_manager_;
+  mojo::SharedRemote<network::mojom::P2PSocketManager> socket_manager_;
 
   THREAD_CHECKER(thread_checker_);
 

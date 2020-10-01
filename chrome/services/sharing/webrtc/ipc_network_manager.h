@@ -9,6 +9,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/shared_remote.h"
 #include "net/base/ip_address.h"
 #include "net/base/network_interfaces.h"
 #include "services/network/public/mojom/p2p.mojom.h"
@@ -28,7 +29,8 @@ class IpcNetworkManager : public rtc::NetworkManagerBase,
                           public network::mojom::P2PNetworkNotificationClient {
  public:
   IpcNetworkManager(
-      network::mojom::P2PSocketManager* socket_manager,
+      const mojo::SharedRemote<network::mojom::P2PSocketManager>&
+          socket_manager,
       std::unique_ptr<webrtc::MdnsResponderInterface> mdns_responder);
   IpcNetworkManager(const IpcNetworkManager&) = delete;
   IpcNetworkManager& operator=(const IpcNetworkManager&) = delete;
@@ -48,7 +50,7 @@ class IpcNetworkManager : public rtc::NetworkManagerBase,
  private:
   void SendNetworksChangedSignal();
 
-  network::mojom::P2PSocketManager* p2p_socket_manager_;
+  mojo::SharedRemote<network::mojom::P2PSocketManager> p2p_socket_manager_;
   std::unique_ptr<webrtc::MdnsResponderInterface> mdns_responder_;
   int start_count_ = 0;
   bool network_list_received_ = false;

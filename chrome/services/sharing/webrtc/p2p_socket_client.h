@@ -12,6 +12,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/shared_remote.h"
 #include "net/base/ip_endpoint.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/p2p_socket_type.h"
@@ -30,7 +31,8 @@ class P2PSocketClientDelegate;
 // TODO(crbug.com/1044522): reuse code from blink instead.
 class P2PSocketClient : public network::mojom::P2PSocketClient {
  public:
-  P2PSocketClient(network::mojom::P2PSocketManager* socket_manager,
+  P2PSocketClient(const mojo::SharedRemote<network::mojom::P2PSocketManager>&
+                      socket_manager,
                   const net::NetworkTrafficAnnotationTag& traffic_annotation);
   P2PSocketClient(const P2PSocketClient&) = delete;
   P2PSocketClient& operator=(const P2PSocketClient&) = delete;
@@ -94,7 +96,7 @@ class P2PSocketClient : public network::mojom::P2PSocketClient {
 
   void OnConnectionError();
 
-  network::mojom::P2PSocketManager* socket_manager_;
+  mojo::SharedRemote<network::mojom::P2PSocketManager> socket_manager_;
   THREAD_CHECKER(thread_checker_);
   int socket_id_;
   P2PSocketClientDelegate* delegate_;

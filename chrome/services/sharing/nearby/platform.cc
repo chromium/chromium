@@ -175,17 +175,19 @@ std::unique_ptr<WifiLanMedium> ImplementationPlatform::CreateWifiLanMedium() {
 std::unique_ptr<WebRtcMedium> ImplementationPlatform::CreateWebRtcMedium() {
   auto& connections = connections::NearbyConnections::GetInstance();
 
-  network::mojom::P2PSocketManager* socket_manager =
-      connections.GetWebRtcP2PSocketManager();
-  network::mojom::MdnsResponder* mdns_responder =
-      connections.GetWebRtcMdnsResponder();
-  sharing::mojom::IceConfigFetcher* ice_config_fetcher =
-      connections.GetWebRtcIceConfigFetcher();
-  sharing::mojom::WebRtcSignalingMessenger* messenger =
-      connections.GetWebRtcSignalingMessenger();
+  const mojo::SharedRemote<network::mojom::P2PSocketManager>& socket_manager =
+      connections.socket_manager();
+  const mojo::SharedRemote<network::mojom::MdnsResponder>& mdns_responder =
+      connections.mdns_responder();
+  const mojo::SharedRemote<sharing::mojom::IceConfigFetcher>&
+      ice_config_fetcher = connections.ice_config_fetcher();
+  const mojo::SharedRemote<sharing::mojom::WebRtcSignalingMessenger>&
+      messenger = connections.webrtc_signaling_messenger();
 
-  if (!socket_manager || !mdns_responder || !ice_config_fetcher || !messenger)
+  if (!socket_manager.is_bound() || !mdns_responder.is_bound() ||
+      !ice_config_fetcher.is_bound() || !messenger.is_bound()) {
     return nullptr;
+  }
 
   return std::make_unique<chrome::WebRtcMedium>(
       socket_manager, mdns_responder, ice_config_fetcher, messenger,

@@ -203,7 +203,8 @@ class IpcPacketSocket : public rtc::AsyncPacketSocket,
 class AsyncAddressResolverImpl : public rtc::AsyncResolverInterface {
  public:
   explicit AsyncAddressResolverImpl(
-      network::mojom::P2PSocketManager* socket_manager);
+      const mojo::SharedRemote<network::mojom::P2PSocketManager>&
+          socket_manager);
   ~AsyncAddressResolverImpl() override;
 
   // rtc::AsyncResolverInterface interface.
@@ -615,7 +616,7 @@ void IpcPacketSocket::OnDataReceived(const net::IPEndPoint& address,
 }
 
 AsyncAddressResolverImpl::AsyncAddressResolverImpl(
-    network::mojom::P2PSocketManager* socket_manager)
+    const mojo::SharedRemote<network::mojom::P2PSocketManager>& socket_manager)
     : resolver_(socket_manager) {}
 
 AsyncAddressResolverImpl::~AsyncAddressResolverImpl() {
@@ -681,10 +682,11 @@ void AsyncAddressResolverImpl::OnAddressResolved(
 }  // namespace
 
 IpcPacketSocketFactory::IpcPacketSocketFactory(
-    network::mojom::P2PSocketManager* socket_manager,
+    const mojo::SharedRemote<network::mojom::P2PSocketManager>& socket_manager,
     const net::NetworkTrafficAnnotationTag& traffic_annotation)
-    : socket_manager_(socket_manager),
-      traffic_annotation_(traffic_annotation) {}
+    : socket_manager_(socket_manager), traffic_annotation_(traffic_annotation) {
+  DCHECK(socket_manager_.is_bound());
+}
 
 IpcPacketSocketFactory::~IpcPacketSocketFactory() = default;
 

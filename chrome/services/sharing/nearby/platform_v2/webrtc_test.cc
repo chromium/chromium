@@ -7,7 +7,7 @@
 #include "base/test/task_environment.h"
 #include "chrome/services/sharing/nearby/test_support/mock_webrtc_dependencies.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/shared_remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -47,10 +47,10 @@ class WebRtcMediumTest : public ::testing::Test {
         ice_config_fetcher_(
             mojo_impl_.ice_config_fetcher_.BindNewPipeAndPassRemote()),
         messenger_(mojo_impl_.messenger_.BindNewPipeAndPassRemote()),
-        webrtc_medium_(socket_manager_.get(),
-                       mdns_responder_.get(),
-                       ice_config_fetcher_.get(),
-                       messenger_.get(),
+        webrtc_medium_(socket_manager_,
+                       mdns_responder_,
+                       ice_config_fetcher_,
+                       messenger_,
                        base::ThreadTaskRunnerHandle::Get()) {}
 
   ~WebRtcMediumTest() override {
@@ -69,10 +69,10 @@ class WebRtcMediumTest : public ::testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
   testing::NiceMock<sharing::MockWebRtcDependencies> mojo_impl_;
 
-  mojo::Remote<network::mojom::P2PSocketManager> socket_manager_;
-  mojo::Remote<network::mojom::MdnsResponder> mdns_responder_;
-  mojo::Remote<sharing::mojom::IceConfigFetcher> ice_config_fetcher_;
-  mojo::Remote<sharing::mojom::WebRtcSignalingMessenger> messenger_;
+  mojo::SharedRemote<network::mojom::P2PSocketManager> socket_manager_;
+  mojo::SharedRemote<network::mojom::MdnsResponder> mdns_responder_;
+  mojo::SharedRemote<sharing::mojom::IceConfigFetcher> ice_config_fetcher_;
+  mojo::SharedRemote<sharing::mojom::WebRtcSignalingMessenger> messenger_;
 
   WebRtcMedium webrtc_medium_;
 };

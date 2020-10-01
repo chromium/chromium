@@ -66,10 +66,22 @@ class NearbyConnections : public mojom::NearbyConnections {
     return bluetooth_adapter_;
   }
 
-  network::mojom::P2PSocketManager* GetWebRtcP2PSocketManager();
-  network::mojom::MdnsResponder* GetWebRtcMdnsResponder();
-  sharing::mojom::IceConfigFetcher* GetWebRtcIceConfigFetcher();
-  sharing::mojom::WebRtcSignalingMessenger* GetWebRtcSignalingMessenger();
+  const mojo::SharedRemote<network::mojom::P2PSocketManager>& socket_manager()
+      const {
+    return socket_manager_;
+  }
+  const mojo::SharedRemote<network::mojom::MdnsResponder>& mdns_responder()
+      const {
+    return mdns_responder_;
+  }
+  const mojo::SharedRemote<sharing::mojom::IceConfigFetcher>&
+  ice_config_fetcher() const {
+    return ice_config_fetcher_;
+  }
+  const mojo::SharedRemote<sharing::mojom::WebRtcSignalingMessenger>&
+  webrtc_signaling_messenger() const {
+    return webrtc_signaling_messenger_;
+  }
 
   // mojom::NearbyConnections:
   void StartAdvertising(

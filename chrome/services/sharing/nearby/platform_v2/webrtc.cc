@@ -86,7 +86,8 @@ class WebRtcSignalingMessengerImpl
 
   WebRtcSignalingMessengerImpl(
       const std::string& self_id,
-      sharing::mojom::WebRtcSignalingMessenger* messenger)
+      const mojo::SharedRemote<sharing::mojom::WebRtcSignalingMessenger>&
+          messenger)
       : self_id_(self_id), messenger_(messenger) {}
 
   ~WebRtcSignalingMessengerImpl() override = default;
@@ -145,7 +146,7 @@ class WebRtcSignalingMessengerImpl
   }
 
   std::string self_id_;
-  sharing::mojom::WebRtcSignalingMessenger* messenger_;
+  mojo::SharedRemote<sharing::mojom::WebRtcSignalingMessenger> messenger_;
   mojo::Receiver<sharing::mojom::IncomingMessagesListener>
       incoming_messages_receiver_{this};
   OnSignalingMessageCallback signaling_message_callback_;
@@ -156,16 +157,24 @@ class WebRtcSignalingMessengerImpl
 }  // namespace
 
 WebRtcMedium::WebRtcMedium(
-    network::mojom::P2PSocketManager* socket_manager,
-    network::mojom::MdnsResponder* mdns_responder,
-    sharing::mojom::IceConfigFetcher* ice_config_fetcher,
-    sharing::mojom::WebRtcSignalingMessenger* webrtc_signaling_messenger,
+    const mojo::SharedRemote<network::mojom::P2PSocketManager>& socket_manager,
+    const mojo::SharedRemote<network::mojom::MdnsResponder>& mdns_responder,
+    const mojo::SharedRemote<sharing::mojom::IceConfigFetcher>&
+        ice_config_fetcher,
+    const mojo::SharedRemote<sharing::mojom::WebRtcSignalingMessenger>&
+        webrtc_signaling_messenger,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : p2p_socket_manager_(socket_manager),
       mdns_responder_(mdns_responder),
       ice_config_fetcher_(ice_config_fetcher),
       webrtc_signaling_messenger_(webrtc_signaling_messenger),
-      task_runner_(std::move(task_runner)) {}
+      task_runner_(std::move(task_runner)) {
+  DCHECK(p2p_socket_manager_.is_bound());
+  DCHECK(mdns_responder_.is_bound());
+  DCHECK(ice_config_fetcher_.is_bound());
+  DCHECK(webrtc_signaling_messenger_.is_bound());
+}
+
 WebRtcMedium::~WebRtcMedium() = default;
 
 void WebRtcMedium::CreatePeerConnection(

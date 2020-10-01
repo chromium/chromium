@@ -12,6 +12,7 @@
 #include "base/single_thread_task_runner.h"
 #include "chrome/services/sharing/public/mojom/webrtc.mojom.h"
 #include "chrome/services/sharing/public/mojom/webrtc_signaling_messenger.mojom.h"
+#include "mojo/public/cpp/bindings/shared_remote.h"
 #include "services/network/public/mojom/mdns_responder.mojom.h"
 #include "services/network/public/mojom/p2p.mojom.h"
 #include "third_party/abseil-cpp/absl/strings/string_view.h"
@@ -30,10 +31,13 @@ class WebRtcMedium : public api::WebRtcMedium {
   using PeerConnectionCallback = api::WebRtcMedium::PeerConnectionCallback;
 
   WebRtcMedium(
-      network::mojom::P2PSocketManager* socket_manager,
-      network::mojom::MdnsResponder* mdns_responder,
-      sharing::mojom::IceConfigFetcher* ice_config_fetcher,
-      sharing::mojom::WebRtcSignalingMessenger* webrtc_signaling_messenger,
+      const mojo::SharedRemote<network::mojom::P2PSocketManager>&
+          socket_manager,
+      const mojo::SharedRemote<network::mojom::MdnsResponder>& mdns_responder,
+      const mojo::SharedRemote<sharing::mojom::IceConfigFetcher>&
+          ice_config_fetcher,
+      const mojo::SharedRemote<sharing::mojom::WebRtcSignalingMessenger>&
+          webrtc_signaling_messenger,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
   ~WebRtcMedium() override;
 
@@ -51,10 +55,11 @@ class WebRtcMedium : public api::WebRtcMedium {
       PeerConnectionCallback callback,
       std::vector<sharing::mojom::IceServerPtr> ice_servers);
 
-  network::mojom::P2PSocketManager* p2p_socket_manager_;
-  network::mojom::MdnsResponder* mdns_responder_;
-  sharing::mojom::IceConfigFetcher* ice_config_fetcher_;
-  sharing::mojom::WebRtcSignalingMessenger* webrtc_signaling_messenger_;
+  mojo::SharedRemote<network::mojom::P2PSocketManager> p2p_socket_manager_;
+  mojo::SharedRemote<network::mojom::MdnsResponder> mdns_responder_;
+  mojo::SharedRemote<sharing::mojom::IceConfigFetcher> ice_config_fetcher_;
+  mojo::SharedRemote<sharing::mojom::WebRtcSignalingMessenger>
+      webrtc_signaling_messenger_;
 
   std::unique_ptr<sharing::IpcPacketSocketFactory> socket_factory_;
 

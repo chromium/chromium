@@ -36,8 +36,10 @@ void OnNameRemovedForAddress(
 }  // namespace
 
 MdnsResponderAdapter::MdnsResponderAdapter(
-    network::mojom::MdnsResponder* mdns_responder)
-    : mdns_responder_(mdns_responder) {}
+    const mojo::SharedRemote<network::mojom::MdnsResponder>& mdns_responder)
+    : mdns_responder_(mdns_responder) {
+  DCHECK(mdns_responder_.is_bound());
+}
 
 MdnsResponderAdapter::~MdnsResponderAdapter() = default;
 

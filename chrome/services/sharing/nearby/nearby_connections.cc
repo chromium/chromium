@@ -154,37 +154,6 @@ void NearbyConnections::OnDisconnect() {
   // Note: |this| might be destroyed here.
 }
 
-network::mojom::P2PSocketManager*
-NearbyConnections::GetWebRtcP2PSocketManager() {
-  if (!socket_manager_.is_bound())
-    return nullptr;
-
-  return socket_manager_.get();
-}
-
-network::mojom::MdnsResponder* NearbyConnections::GetWebRtcMdnsResponder() {
-  if (!mdns_responder_.is_bound())
-    return nullptr;
-
-  return mdns_responder_.get();
-}
-
-sharing::mojom::IceConfigFetcher*
-NearbyConnections::GetWebRtcIceConfigFetcher() {
-  if (!ice_config_fetcher_.is_bound())
-    return nullptr;
-
-  return ice_config_fetcher_.get();
-}
-
-sharing::mojom::WebRtcSignalingMessenger*
-NearbyConnections::GetWebRtcSignalingMessenger() {
-  if (!webrtc_signaling_messenger_.is_bound())
-    return nullptr;
-
-  return webrtc_signaling_messenger_.get();
-}
-
 void NearbyConnections::StartAdvertising(
     const std::vector<uint8_t>& endpoint_info,
     const std::string& service_id,

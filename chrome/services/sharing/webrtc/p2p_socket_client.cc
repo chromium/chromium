@@ -25,7 +25,7 @@ uint64_t GetUniqueId(uint32_t random_socket_id, uint32_t packet_id) {
 namespace sharing {
 
 P2PSocketClient::P2PSocketClient(
-    network::mojom::P2PSocketManager* socket_manager,
+    const mojo::SharedRemote<network::mojom::P2PSocketManager>& socket_manager,
     const net::NetworkTrafficAnnotationTag& traffic_annotation)
     : socket_manager_(socket_manager),
       socket_id_(0),
@@ -34,6 +34,7 @@ P2PSocketClient::P2PSocketClient(
       traffic_annotation_(traffic_annotation),
       random_socket_id_(0),
       next_packet_id_(0) {
+  DCHECK(socket_manager_.is_bound());
   crypto::RandBytes(&random_socket_id_, sizeof(random_socket_id_));
 }
 
