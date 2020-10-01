@@ -6124,7 +6124,6 @@ crbug.com/1043920 [ Release Mac ] http/tests/devtools/stylesheet-source-mapping.
 crbug.com/1044350 [ Release ] http/tests/devtools/network/network-xhr-replay.js [ Pass Timeout ]
 crbug.com/1044414 [ Release ] http/tests/devtools/elements/styles/selector-line-sourcemap-header.js [ Pass Timeout ]
 crbug.com/1044415 [ Release ] http/tests/devtools/runtime/evaluate-without-side-effects.js [ Pass Timeout ]
-# crbug.com/1044424 [ Release ] http/tests/devtools/elements/css-rule-hover-highlights-selectors.js [ Pass Timeout ]
 crbug.com/1044425 [ Release ] http/tests/devtools/elements/shadow/elements-panel-shadow-selection-on-refresh-1.js [ Pass Timeout ]
 crbug.com/1044429 [ Release ] http/tests/devtools/oopif/oopif-navigator.js [ Pass Timeout ]
 crbug.com/1002914 http/tests/devtools/elements/elements-panel-styles.js [ Pass Timeout ]
@@ -6295,7 +6294,6 @@ crbug.com/1042877 virtual/autoupgrade-optionally-blockable-mixed-content/http/te
 
 # DevTools roll
 crbug.com/1052111 http/tests/devtools/a11y-axe-core/audits-start-view-a11y-test.js [ Skip ]
-crbug.com/1131801 http/tests/devtools/elements/css-rule-hover-highlights-selectors.js [ Pass Failure Timeout ]
 
 # Sheriff 2020-02-18
 crbug.com/1050893 [ Fuchsia ] virtual/gpu/fast/canvas/feimage-with-foreignobject-taint-canvas-2.html [ Skip ]
