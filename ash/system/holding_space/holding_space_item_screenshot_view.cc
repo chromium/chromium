@@ -51,6 +51,7 @@ HoldingSpaceItemScreenshotView::~HoldingSpaceItemScreenshotView() = default;
 
 void HoldingSpaceItemScreenshotView::UpdateImage() {
   image_->SetImage(item()->image().image_skia(), kHoldingSpaceScreenshotSize);
+  SchedulePaint();
 }
 
 BEGIN_METADATA(HoldingSpaceItemScreenshotView, HoldingSpaceItemView)

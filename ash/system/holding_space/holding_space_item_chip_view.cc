@@ -56,6 +56,7 @@ void HoldingSpaceItemChipView::UpdateImage() {
   image_->SetImage(
       item()->image().image_skia(),
       gfx::Size(kHoldingSpaceChipIconSize, kHoldingSpaceChipIconSize));
+  SchedulePaint();
 }
 
 BEGIN_METADATA(HoldingSpaceItemChipView, HoldingSpaceItemView)
