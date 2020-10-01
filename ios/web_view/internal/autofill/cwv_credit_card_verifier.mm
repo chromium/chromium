@@ -176,21 +176,6 @@ class WebViewCardUnmaskPromptView : public autofill::CardUnmaskPromptView {
       /*enable_fido_auth=*/false);
 }
 
-- (void)verifyWithCVC:(NSString*)CVC
-      expirationMonth:(nullable NSString*)expirationMonth
-       expirationYear:(nullable NSString*)expirationYear
-         storeLocally:(BOOL)storeLocally
-             riskData:(NSString*)riskData
-    completionHandler:(void (^)(NSError* _Nullable error))completionHandler {
-  DCHECK(!storeLocally) << "|storeLocally| is deprecated, please call the "
-                           "method without this parameter.";
-  [self verifyWithCVC:CVC
-        expirationMonth:expirationMonth
-         expirationYear:expirationYear
-               riskData:riskData
-      completionHandler:completionHandler];
-}
-
 - (BOOL)isCVCValid:(NSString*)CVC {
   return _unmaskingController->InputCvcIsValid(base::SysNSStringToUTF16(CVC));
 }
