@@ -19,11 +19,7 @@ namespace device {
 
 class FakeHidConnection : public mojom::HidConnection {
  public:
-  FakeHidConnection(
-      mojom::HidDeviceInfoPtr device,
-      mojo::PendingReceiver<mojom::HidConnection> receiver,
-      mojo::PendingRemote<mojom::HidConnectionClient> connection_client,
-      mojo::PendingRemote<mojom::HidConnectionWatcher> watcher);
+  explicit FakeHidConnection(mojom::HidDeviceInfoPtr device);
   FakeHidConnection(FakeHidConnection&) = delete;
   FakeHidConnection& operator=(FakeHidConnection&) = delete;
   ~FakeHidConnection() override;
@@ -41,10 +37,7 @@ class FakeHidConnection : public mojom::HidConnection {
                          SendFeatureReportCallback callback) override;
 
  private:
-  mojo::Receiver<mojom::HidConnection> receiver_;
   mojom::HidDeviceInfoPtr device_;
-  mojo::Remote<mojom::HidConnectionClient> client_;
-  mojo::Remote<mojom::HidConnectionWatcher> watcher_;
 };
 
 class FakeHidManager : public mojom::HidManager {
