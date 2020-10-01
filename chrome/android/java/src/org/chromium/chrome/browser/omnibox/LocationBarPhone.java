@@ -211,15 +211,17 @@ public class LocationBarPhone extends LocationBarLayout {
     }
 
     /**
-     * Updates percentage of current the URL focus change animation.
-     * @param percent 1.0 is 100% focused, 0 is completely unfocused.
+     * Updates progress of current the URL focus change animation.
+     *
+     * @param fraction 1.0 is 100% focused, 0 is completely unfocused.
      */
-    public void setUrlFocusChangePercent(float percent) {
-        mUrlFocusChangePercent = percent;
+    @Override
+    public void setUrlFocusChangeFraction(float fraction) {
+        super.setUrlFocusChangeFraction(fraction);
 
-        if (percent > 0f) {
+        if (fraction > 0f) {
             mUrlActionContainer.setVisibility(VISIBLE);
-        } else if (percent == 0f && !isUrlFocusChangeInProgress()) {
+        } else if (fraction == 0f && !isUrlFocusChangeInProgress()) {
             // If a URL focus change is in progress, then it will handle setting the visibility
             // correctly after it completes.  If done here, it would cause the URL to jump due
             // to a badly timed layout call.
@@ -227,7 +229,7 @@ public class LocationBarPhone extends LocationBarLayout {
         }
 
         updateButtonVisibility();
-        mStatusCoordinator.setUrlFocusChangePercent(percent);
+        mStatusCoordinator.setUrlFocusChangePercent(fraction);
     }
 
     @Override

@@ -843,6 +843,9 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                 @LocationBar.OmniboxFocusReason int reason) {}
 
         @Override
+        public void setUrlFocusChangeFraction(float fraction) {}
+
+        @Override
         public boolean isCurrentPage(NativePage nativePage) {
             return false;
         }

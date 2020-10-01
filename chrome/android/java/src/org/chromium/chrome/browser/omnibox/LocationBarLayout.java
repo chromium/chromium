@@ -24,6 +24,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.CallSuper;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.view.MarginLayoutParamsCompat;
@@ -131,7 +132,7 @@ public class LocationBarLayout extends FrameLayout
 
     private OmniboxPrerender mOmniboxPrerender;
 
-    protected float mUrlFocusChangePercent;
+    protected float mUrlFocusChangeFraction;
     protected LinearLayout mUrlActionContainer;
 
     private VoiceRecognitionHandler mVoiceRecognitionHandler;
@@ -390,6 +391,12 @@ public class LocationBarLayout extends FrameLayout
         mVoiceRecognitionHandler.setAssistantVoiceSearchService(mAssistantVoiceSearchService);
         onAssistantVoiceSearchServiceChanged();
         setProfile(mProfileSupplier.get());
+    }
+
+    @Override
+    @CallSuper
+    public void setUrlFocusChangeFraction(float fraction) {
+        mUrlFocusChangeFraction = fraction;
     }
 
     private void registerTemplateUrlObserver() {
@@ -1213,7 +1220,7 @@ public class LocationBarLayout extends FrameLayout
     protected void updateMicButtonVisibility() {
         boolean visible = !shouldShowDeleteButton();
         boolean showMicButton = mVoiceSearchEnabled && visible
-                && (mUrlBar.hasFocus() || mUrlFocusChangeInProgress || mUrlFocusChangePercent > 0f
+                && (mUrlBar.hasFocus() || mUrlFocusChangeInProgress || mUrlFocusChangeFraction > 0f
                         || mShouldShowMicButtonWhenUnfocused);
         mMicButton.setVisibility(showMicButton ? VISIBLE : GONE);
     }

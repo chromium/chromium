@@ -91,6 +91,13 @@ public interface LocationBar extends UrlBarDelegate, FakeboxDelegate {
     void updateVisualsForState();
 
     /**
+     * Updates progress of current the URL focus change animation.
+     *
+     * @param fraction 1.0 is 100% focused, 0 is completely unfocused.
+     */
+    void setUrlFocusChangeFraction(float fraction);
+
+    /**
      * Sets the displayed URL to be the URL of the page currently showing.
      *
      * <p>The URL is converted to the most user friendly format (removing HTTP:// for example).

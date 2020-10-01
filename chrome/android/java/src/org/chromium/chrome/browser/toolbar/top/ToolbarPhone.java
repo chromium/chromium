@@ -1034,7 +1034,7 @@ public class ToolbarPhone extends ToolbarLayout
         if (!mOptionalButtonAnimationRunning) {
             mUrlActionContainer.setTranslationX(getUrlActionsTranslationXForExpansionAnimation(
                     isLocationBarRtl, locationBarBaseTranslationX));
-            mLocationBar.setUrlFocusChangePercent(mUrlExpansionFraction);
+            mLocationBar.setUrlFocusChangeFraction(mUrlExpansionFraction);
 
             // Only transition theme colors if in static tab mode that is not the NTP. In practice
             // this only runs when you focus the omnibox on a web page.
