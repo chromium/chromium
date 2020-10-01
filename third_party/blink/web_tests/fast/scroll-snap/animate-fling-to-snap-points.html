@@ -44,7 +44,7 @@ function scrollLeft() {
 promise_test (async () => {
   scroller.scrollTo(0, 0);
   await smoothScroll(100, 200, 200, GestureSourceType.TOUCH_INPUT, 'downright', SPEED_INSTANT);
-  await waitForAnimationEnd(scrollLeft, 700, 10);
+  await waitForAnimationEndTimeBased(scrollLeft);
   assert_approx_equals(scroller.scrollLeft, 80, 1);
   assert_approx_equals(scroller.scrollTop, 80, 1);
 }, "Without fling enabled, the scroll ends at the closest snap point to the scroll destination.");
@@ -52,7 +52,7 @@ promise_test (async () => {
 promise_test (async () => {
   scroller.scrollTo(0, 0);
   await swipe(100, 200, 200, 'upleft', 900);
-  await waitForAnimationEnd(scrollLeft, 1000, 30);
+  await waitForAnimationEndTimeBased(scrollLeft);
   assert_approx_equals(scroller.scrollLeft, 200, 1);
   assert_approx_equals(scroller.scrollTop, 200, 1);
 }, "Fling scroll ends at the closest snap point to the fling destination.")
@@ -61,7 +61,7 @@ promise_test (async () => {
   scroller.scrollTo(0, 0);
   // Scroll horizontally to (100, 0) with momentum.
   await swipe(100, 200, 200, 'left', 900);
-  await waitForAnimationEnd(scrollLeft, 1000, 30);
+  await waitForAnimationEndTimeBased(scrollLeft);
   assert_approx_equals(scroller.scrollLeft, 200, 1);
   assert_approx_equals(scroller.scrollTop, 0, 1);
 }, "Fling scroll in one direction ends at closest snap point to the fling destination.");
@@ -72,7 +72,7 @@ promise_test (async () => {
   // expectation in this case is to snap as if user scrolled horizontally to (100, 0) with
   // momentun.
   await swipe(100, 200, 200, 'downleft', 900);
-  await waitForAnimationEnd(scrollLeft, 1000, 30);
+  await waitForAnimationEndTimeBased(scrollLeft);
   assert_approx_equals(scroller.scrollLeft, 200, 1);
   // TODO(823998): Scroll top may land either at 0px or 80px which are both valid snap targets.
   // My expectation was that it would be at 0. Needs more investigation to deflake.
@@ -92,7 +92,7 @@ promise_test (async () => {
     return scroller.scrollLeft > 120;
   });
   MakeUnscrollable();
-  await waitForAnimationEnd(scrollLeft, 1000, 20);
+  await waitForAnimationEndTimeBased(scrollLeft);
   MakeScrollable();
 }, "Should not crash if the scroller becomes unscrollable during fling.");
 
@@ -103,7 +103,7 @@ promise_test (async () => {
     return scroller.scrollLeft > 120;
   });
   body.removeChild(scroller);
-  await waitForAnimationEnd(scrollLeft, 1000, 20);
+  await waitForAnimationEndTimeBased(scrollLeft);
   body.appendChild(scroller);
 }, "Should not crash if the scroller is removed during fling.");
 

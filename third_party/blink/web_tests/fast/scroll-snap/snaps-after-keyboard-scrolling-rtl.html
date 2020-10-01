@@ -67,7 +67,7 @@ promise_test (async () => {
   await mouseClickOn(510, 10);
   scroller.scrollTo(-615, 0);
   await keyPress("ArrowRight");
-  await waitForAnimationEnd(scrollLeft, 500, 15);
+  await waitForAnimationEndTimeBased(scrollLeft);
   // The left border of #right is at -width.
   // The right border of #right is thus 200 - width.
   // When right-aligned, the scroll position should be 200 - width.
@@ -78,7 +78,7 @@ promise_test (async () => {
   await mouseClickOn(510, 10);
   scroller.scrollTo(-215, 0);
   await keyPress("ArrowLeft");
-  await waitForAnimationEnd(scrollLeft, 500, 15);
+  await waitForAnimationEndTimeBased(scrollLeft);
   // The left border of #left is at -(400 + width).
   // The right border of #left is thus -(200 + width).
   // When right-aligned, the scroll position should be -(200 + width).

@@ -104,11 +104,9 @@ promise_test(async function () {
 
   await arrowDown()
 
-  const max_frames = 500;
-  const max_unchanged_frames = 15;
-  await waitForAnimationEnd(() => {
+  await waitForAnimationEndTimeBased(() => {
     return root_scroller.scrollTop;
-  }, max_frames, max_unchanged_frames);
+  });
 
   // The offset of the visual viewport and the layout viewport combined should
   // be at the snap point.

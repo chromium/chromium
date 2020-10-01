@@ -59,7 +59,7 @@ promise_test (async t => {
   t.add_cleanup(cleanup);
   // scroll just 10px so the current snap point remains closest.
   await wheelScroll(10 /* pixels to scroll */, 50, 50, 'right');
-  await waitForAnimationEnd(scrollLeft, 500, 5);
+  await waitForAnimationEndTimeBased(scrollLeft);
   assert_approx_equals(scroller.scrollLeft, 120, 1);
 }, "Wheel scrolling (right) should prefer the next snap point in scroll"
    + " direction not the closest.");
@@ -69,7 +69,7 @@ promise_test (async t => {
 
   // Scroll just 1px so the current snap point remains closest.
   await wheelScroll(10 /* pixels to scroll */, 50, 50, 'left');
-  await waitForAnimationEnd(scrollLeft, 500, 5);
+  await waitForAnimationEndTimeBased(scrollLeft);
   assert_approx_equals(scroller.scrollLeft, 0, 1);
 }, "Wheel scrolling (left) should prefer the next snap point in scroll"
    + " direction not the closest.");
@@ -78,7 +78,7 @@ promise_test (async t => {
   t.add_cleanup(cleanup);
   // Scroll so we pass the second snap point.
   await wheelScroll(140 /* pixels to scroll */, 50, 50, 'right');
-  await waitForAnimationEnd(scrollLeft, 500, 5);
+  await waitForAnimationEndTimeBased(scrollLeft);
   assert_approx_equals(scroller.scrollLeft, 240, 1);
 }, "Wheel scrolling should prefer the next snap point in scroll"
    + " direction from scroll end position and not the scroll start position.");
@@ -87,7 +87,7 @@ promise_test (async t => {
   t.add_cleanup(cleanup);
   // Scroll passed the last snap point.
   await wheelScroll(200 /* pixels to scroll */, 50, 50, 'right');
-  await waitForAnimationEnd(scrollLeft, 500, 5);
+  await waitForAnimationEndTimeBased(scrollLeft);
   assert_approx_equals(scroller.scrollLeft, 240, 1);
 }, "Wheel scrolling should prefer the closest scroll offset in the opposite"
    + " direction when there is no snap point in the scroll direction.");

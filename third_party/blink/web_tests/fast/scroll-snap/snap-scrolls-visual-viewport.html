@@ -62,11 +62,9 @@ async function set_and_scroll_and_snap(
                      scroll_direction,
                      SPEED_INSTANT);
 
-  const max_frames = 500;
-  const max_unchanged_frames = 15;
-  await waitForAnimationEnd(() => {
+  await waitForAnimationEndTimeBased(() => {
       return window.scrollY + window.visualViewport.offsetTop;
-    },  max_frames, max_unchanged_frames);
+    });
 
   assert_approx_equals(window.scrollY, layout_viewport_y, 1);
   assert_approx_equals(window.visualViewport.offsetTop, visual_viewport_y, 1);

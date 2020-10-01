@@ -41,7 +41,7 @@ promise_test (async () => {
   await mouseClickOn(10, 10);
   scroller.scrollTo(0, 0);
   await keyPress("ArrowDown");
-  await waitForAnimationEnd(scrollTop, 500, 15);
+  await waitForAnimationEndTimeBased(scrollTop);
   assert_equals(scroller.scrollTop, 400);
 }, "Snaps to bottom-left after pressing ArrowDown");
 
@@ -49,7 +49,7 @@ promise_test (async () => {
   await mouseClickOn(10, 10);
   scroller.scrollTo(0, 400);
   await keyPress("ArrowUp");
-  await waitForAnimationEnd(scrollTop, 500, 15);
+  await waitForAnimationEndTimeBased(scrollTop);
   assert_equals(scroller.scrollTop, 0);
 }, "Snaps to top-left after pressing ArrowUp");
 
@@ -57,7 +57,7 @@ promise_test (async () => {
   await mouseClickOn(10, 10);
   scroller.scrollTo(0, 0);
   await keyPress("ArrowRight");
-  await waitForAnimationEnd(scrollLeft, 500, 15);
+  await waitForAnimationEndTimeBased(scrollLeft);
   assert_equals(scroller.scrollLeft, 400);
 }, "Snaps to top-right after pressing ArrowRight");
 
@@ -65,7 +65,7 @@ promise_test (async () => {
   await mouseClickOn(10, 10);
   scroller.scrollTo(400, 0);
   await keyPress("ArrowLeft");
-  await waitForAnimationEnd(scrollLeft, 500, 15);
+  await waitForAnimationEndTimeBased(scrollLeft);
   assert_equals(scroller.scrollLeft, 0);
 }, "Snaps to top-left after pressing ArrowLeft");
 
@@ -78,7 +78,7 @@ promise_test (async () => {
   await mouseClickOn(10, 10);
   scroller.scrollTo(0, 0);
   await keyPress("ArrowRight");
-  await waitForAnimationEnd(scrollLeft, 500, 15);
+  await waitForAnimationEndTimeBased(scrollLeft);
   assert_between_exclusive(scroller.scrollLeft, 0, 500);
   topLeft.style.width = "";
   topRight.style.left = "400px";
@@ -94,7 +94,7 @@ promise_test (async () => {
   await mouseClickOn(10, 10);
   scroller.scrollTo(0, 0);
   await keyPress("ArrowRight");
-  await waitForAnimationEnd(scrollLeft, 500, 15);
+  await waitForAnimationEndTimeBased(scrollLeft);
   assert_equals(scroller.scrollLeft, 20);
   topLeft.style.width = "";
   topRight.style.left = "400px";
@@ -106,7 +106,7 @@ promise_test (async () => {
   await mouseClickOn(10, 10);
   scroller.scrollTo(400, 0);
   await keyPress("ArrowRight");
-  await waitForAnimationEnd(scrollLeft, 500, 15);
+  await waitForAnimationEndTimeBased(scrollLeft);
   assert_equals(scroller.scrollLeft, 400);
 }, "If there is no valid snap offset on the arrow key's direction other than "
 + "the current offset, and the scroll-snap-type is mandatory, stay at the "
@@ -117,7 +117,7 @@ promise_test (async () => {
   await mouseClickOn(10, 10);
   scroller.scrollTo(400, 0);
   await keyPress("ArrowRight");
-  await waitForAnimationEnd(scrollLeft, 500, 15);
+  await waitForAnimationEndTimeBased(scrollLeft);
   assert_greater_than(scroller.scrollLeft, 400);
   scroller.style.scrollSnapType = "both mandatory";
 }, "If there is no valid snap offset on the arrow key's direction other than "

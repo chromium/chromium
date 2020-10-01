@@ -74,11 +74,11 @@ promise_test (async t => {
 
   await mouseClickOn(10, 10);
   await keyPress('ArrowDown');
-  await waitForAnimationEnd(() => { return scroller.scrollTop; }, 500, 15);
+  await waitForAnimationEndTimeBased(() => { return scroller.scrollTop; });
   assert_approx_equals(scroller.scrollTop, target_area.offsetTop, 1);
 
   await keyPress('ArrowUp');
-  await waitForAnimationEnd(() => { return scroller.scrollTop; }, 500, 15);
+  await waitForAnimationEndTimeBased(() => { return scroller.scrollTop; });
   assert_approx_equals(scroller.scrollTop, initial_area.offsetTop, 1);
 }, "Keyboard scrolling should ignore the current snapped element even when its"
 + " offset is a fractional number.");
@@ -88,11 +88,11 @@ promise_test (async t => {
   assert_approx_equals(scroller.scrollTop, initial_area.offsetTop, 1);
 
   scroller.scrollBy(0, 10);
-  await waitForAnimationEnd(() => { return scroller.scrollTop; }, 500, 15);
+  await waitForAnimationEndTimeBased(() => { return scroller.scrollTop; });
   assert_approx_equals(scroller.scrollTop, target_area.offsetTop, 1);
 
   scroller.scrollBy(0, -10);
-  await waitForAnimationEnd(() => { return scroller.scrollTop; }, 500, 15);
+  await waitForAnimationEndTimeBased(() => { return scroller.scrollTop; });
   assert_approx_equals(scroller.scrollTop, initial_area.offsetTop, 1);
 }, "Programmatic directional scrolling should ignore the current snapped element"
 + " even when its offset is a fractional number.");

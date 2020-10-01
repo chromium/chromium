@@ -26,7 +26,7 @@ function scrollTop() {
 promise_test (async () => {
   scroller.scrollTo(0, 0);
   await mouseDragAndDrop(398, 20, 398, 120);
-  await waitForAnimationEnd(scrollTop, 500, 5);
+  await waitForAnimationEndTimeBased(scrollTop);
   await waitFor( () => {
     return scroller.scrollTop == 400;
   });
@@ -35,7 +35,7 @@ promise_test (async () => {
 promise_test (async () => {
   scroller.scrollTo(0, 0);
   await mouseDragAndDrop(20, 398, 120, 398);
-  await waitForAnimationEnd(scrollLeft, 500, 5);
+  await waitForAnimationEndTimeBased(scrollLeft);
   await waitFor( () => {
     return scroller.scrollLeft == 400;
   });
@@ -44,7 +44,7 @@ promise_test (async () => {
 promise_test (async () => {
   scroller.scrollTo(0, 0);
   await mousePressOn(398, 350, 1000);
-  await waitForAnimationEnd(scrollTop, 500, 5);
+  await waitForAnimationEndTimeBased(scrollTop);
   await waitFor( () => {
     return scroller.scrollTop == 400;
   });
@@ -53,7 +53,7 @@ promise_test (async () => {
 promise_test (async () => {
   scroller.scrollTo(0, 0);
   await mousePressOn(350, 398, 1000);
-  await waitForAnimationEnd(scrollLeft, 500, 5);
+  await waitForAnimationEndTimeBased(scrollLeft);
   await waitFor( () => {
     return scroller.scrollLeft == 400;
   });
@@ -62,7 +62,7 @@ promise_test (async () => {
 promise_test (async () => {
   scroller.scrollTo(0, 0);
   await touchTapOn(398, 350, 1000);
-  await waitForAnimationEnd(scrollTop, 500, 5);
+  await waitForAnimationEndTimeBased(scrollTop);
   await waitFor( () => {
     return scroller.scrollTop == 400;
   });
@@ -71,7 +71,7 @@ promise_test (async () => {
 promise_test (async () => {
   scroller.scrollTo(0, 0);
   await touchTapOn(350, 398, 1000);
-  await waitForAnimationEnd(scrollLeft, 500, 5);
+  await waitForAnimationEndTimeBased(scrollLeft);
   await waitFor( () => {
     return scroller.scrollLeft == 400;
   });

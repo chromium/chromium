@@ -86,7 +86,7 @@ promise_test (async t => {
 
   await mouseClickOn(10, 10);
   await wheelScroll(250 /* pixels to scroll */, 50, 50, 'down');
-  await waitForAnimationEnd(() => { return scroller.scrollTop; }, 500, 15);
+  await waitForAnimationEndTimeBased(() => { return scroller.scrollTop; });
   assert_approx_equals(scroller.scrollTop, 400, 1);
 
   target_area.style.setProperty('top', '600px');
@@ -99,7 +99,7 @@ promise_test (async t => {
 
   await mouseClickOn(10, 10);
   await keyPress('ArrowDown');
-  await waitForAnimationEnd(() => { return scroller.scrollTop; }, 500, 15);
+  await waitForAnimationEndTimeBased(() => { return scroller.scrollTop; });
   assert_equals(scroller.scrollTop, 400);
 
   target_area.style.setProperty('top', '600px');
@@ -112,7 +112,7 @@ promise_test (async t => {
 
   await mouseClickOn(10, 10);
   await touchScroll(250 /* delta */, 400, 400, 'down');
-  await waitForAnimationEnd(() => { return scroller.scrollTop; }, 500, 15);
+  await waitForAnimationEndTimeBased(() => { return scroller.scrollTop; });
   assert_equals(scroller.scrollTop, 400);
 
   target_area.style.setProperty('top', '600px');

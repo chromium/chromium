@@ -69,7 +69,7 @@ promise_test (async () => {
   await mouseClickOn(10, 10);
   scroller.scrollTo(0, 0);
   await keyPress("ArrowDown");
-  await waitForAnimationEnd(scrollTop, 500, 15);
+  await waitForAnimationEndTimeBased(scrollTop);
   assert_equals(scroller.scrollTop, 200);
 }, "Snaps to page1-line1 after pressing ArrowDown at page1.");
 
@@ -77,7 +77,7 @@ promise_test (async () => {
   await mouseClickOn(10, 10);
   scroller.scrollTo(0, 1200);
   await keyPress("ArrowUp");
-  await waitForAnimationEnd(scrollTop, 500, 15);
+  await waitForAnimationEndTimeBased(scrollTop);
   assert_equals(scroller.scrollTop, 1000);
 }, "Snaps to page2-line2 after pressing ArrowUp at page3.");
 
@@ -85,7 +85,7 @@ promise_test (async () => {
   await mouseClickOn(10, 10);
   scroller.scrollTo(0, 0);
   await keyPress("PageDown");
-  await waitForAnimationEnd(scrollTop, 500, 15);
+  await waitForAnimationEndTimeBased(scrollTop);
   assert_equals(scroller.scrollTop, 600);
 }, "Snaps to page2 after pressing PageDown at page1.");
 
@@ -93,7 +93,7 @@ promise_test (async () => {
   await mouseClickOn(10, 10);
   scroller.scrollTo(0, 1200);
   await keyPress("PageUp");
-  await waitForAnimationEnd(scrollTop, 500, 15);
+  await waitForAnimationEndTimeBased(scrollTop);
   assert_equals(scroller.scrollTop, 600);
 }, "Snaps to page2 after pressing PageUp at page3.");
 
@@ -101,7 +101,7 @@ promise_test (async () => {
   await mouseClickOn(10, 10);
   scroller.scrollTo(0, 0);
   await keyPress("End");
-  await waitForAnimationEnd(scrollTop, 500, 15);
+  await waitForAnimationEndTimeBased(scrollTop);
   assert_equals(scroller.scrollTop, 1200);
 }, "Snaps to page3 after pressing End at page1.");
 
@@ -109,7 +109,7 @@ promise_test (async () => {
   await mouseClickOn(10, 10);
   scroller.scrollTo(0, 1200);
   await keyPress("Home");
-  await waitForAnimationEnd(scrollTop, 500, 15);
+  await waitForAnimationEndTimeBased(scrollTop);
   assert_equals(scroller.scrollTop, 0);
 }, "Snaps to page1 after pressing Home at page3.");
 </script>

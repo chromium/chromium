@@ -56,7 +56,7 @@ promise_test (async t => {
   t.add_cleanup(cleanup);
   // scroll just 10px so the current snap point remains closest.
   await touchpadScroll(10 /* pixels to scroll */, 50, 50, 'right');
-  await waitForAnimationEnd(scrollLeft, 500, 5);
+  await waitForAnimationEndTimeBased(scrollLeft);
   assert_approx_equals(scroller.scrollLeft, 0, 1);
 }, "Touchpad scrolling (right) should prefer the closest snap area regardless"
    + " of scroll direction.");
@@ -69,7 +69,7 @@ promise_test (async t => {
 
   // Scroll passed the last snap point.
   await touchpadScroll(10 /* pixels to scroll */, 50, 50, 'left');
-  await waitForAnimationEnd(scrollLeft, 500, 5);
+  await waitForAnimationEndTimeBased(scrollLeft);
   assert_approx_equals(scroller.scrollLeft, 120, 1);
 }, "Touchpad scrolling (left) should prefer the closest snap area regardless of"
    + " scroll direction.");
@@ -79,7 +79,7 @@ promise_test (async t => {
   t.add_cleanup(cleanup);
   // Scroll so we pass the second snap point and a closest to third.
   await touchpadScroll(220 /* pixels to scroll */, 50, 50, 'right');
-  await waitForAnimationEnd(scrollLeft, 500, 5);
+  await waitForAnimationEndTimeBased(scrollLeft);
   assert_approx_equals(scroller.scrollLeft, 240, 1);
 }, "Touchpad scrolling should prefer the closest snap point in scroll to the"
    + " scroll end position.");
