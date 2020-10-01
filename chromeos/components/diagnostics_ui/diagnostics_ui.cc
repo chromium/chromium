@@ -11,10 +11,12 @@
 #include "chromeos/components/diagnostics_ui/url_constants.h"
 #include "chromeos/grit/chromeos_diagnostics_app_resources.h"
 #include "chromeos/grit/chromeos_diagnostics_app_resources_map.h"
+#include "chromeos/strings/grit/chromeos_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
+#include "ui/base/webui/web_ui_util.h"
 #include "ui/resources/grit/webui_resources.h"
 
 namespace chromeos {
@@ -24,6 +26,18 @@ namespace {
 constexpr char kGeneratedPath[] =
     "@out_folder@/gen/chromeos/components/diagnostics_ui/resources/";
 
+void AddDiagnosticsStrings(content::WebUIDataSource* html_source) {
+  static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      {"batteryTitle", IDS_DIAGNOSTICS_BATTERY_TITLE},
+      {"cpuTitle", IDS_DIAGNOSTICS_CPU_TITLE},
+      {"diagnosticsTitle", IDS_DIAGNOSTICS_TITLE},
+      {"memoryTitle", IDS_DIAGNOSTICS_MEMORY_TITLE},
+  };
+  for (const auto& str : kLocalizedStrings) {
+    html_source->AddLocalizedString(str.name, str.id);
+  }
+  html_source->UseStringsJs();
+}
 // TODO(jimmyxgong): Replace with webui::SetUpWebUIDataSource() once it no
 // longer requires a dependency on //chrome/browser.
 void SetUpWebUIDataSource(content::WebUIDataSource* source,
@@ -58,7 +72,7 @@ DiagnosticsUI::DiagnosticsUI(content::WebUI* web_ui)
                                          kChromeosDiagnosticsAppResourcesSize);
   SetUpWebUIDataSource(html_source.get(), resources, kGeneratedPath,
                        IDR_DIAGNOSTICS_APP_INDEX_HTML);
-
+  AddDiagnosticsStrings(html_source.get());
   content::WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
                                 html_source.release());
 }

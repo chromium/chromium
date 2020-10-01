@@ -472,6 +472,22 @@ Try tapping the mic to ask me anything.
       <message name="IDS_SCANNING_APP_SOURCE_DROPDOWN_LABEL" desc="The label for the dropdown that displays available scan sources (e.g. flatbed, document feeder, etc.).">
         Source
       </message>
+
+      <!-- Diagnostics App -->
+      <!-- TODO(michaelcheco): Update with finalized copies of the strings -->
+      <message name="IDS_DIAGNOSTICS_TITLE" desc="The title of the diagnostics app." translateable="false">
+        Diagnostics
+      </message>
+      <message name="IDS_DIAGNOSTICS_MEMORY_TITLE" desc="The title of the diagnostics memory section which shows users' information about their computer memory." translateable="false">
+        Memory
+      </message>
+      <message name="IDS_DIAGNOSTICS_BATTERY_TITLE" desc="The title of the diagnostics battery section which shows users' information about their computer battery." translateable="false">
+        Battery
+      </message>
+      <message name="IDS_DIAGNOSTICS_CPU_TITLE" desc="The title of the diagnostics CPU section which shows users' information about their computer CPU usage." translateable="false">
+        CPU
+      </message>
+
     </messages>
   </release>
 </grit>

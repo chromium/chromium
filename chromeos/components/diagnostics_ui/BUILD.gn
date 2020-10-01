@@ -17,7 +17,9 @@ static_library("diagnostics_ui") {
     "//chromeos/components/diagnostics_ui/mojom",
     "//chromeos/constants",
     "//chromeos/resources:diagnostics_app_resources",
+    "//chromeos/strings/",
     "//content/public/browser",
+    "//ui/base",
     "//ui/resources",
     "//ui/webui",
   ]

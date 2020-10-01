@@ -11,6 +11,8 @@ import './memory_card.js';
 import './overview_card.js';
 
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import './strings.js';
 
 /**
  * @fileoverview
@@ -21,6 +23,8 @@ Polymer({
   is: 'diagnostics-app',
 
   _template: html`{__html_template__}`,
+
+  behaviors: [I18nBehavior],
 
   /** @override */
   ready() {
