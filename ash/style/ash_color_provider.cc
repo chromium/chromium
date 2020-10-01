@@ -210,7 +210,7 @@ SkColor AshColorProvider::GetContentLayerColor(ContentLayerType type) const {
       return is_dark_mode ? gfx::kGoogleBlue300 : gfx::kGoogleBlue600;
     case ContentLayerType::kButtonLabelColorPrimary:
     case ContentLayerType::kButtonIconColorPrimary:
-      return is_dark_mode ? gfx::kGoogleGrey200 : gfx::kGoogleGrey900;
+      return is_dark_mode ? gfx::kGoogleGrey900 : gfx::kGoogleGrey200;
     case ContentLayerType::kSliderThumbColorDisabled:
       return is_dark_mode ? gfx::kGoogleGrey600 : gfx::kGoogleGrey600;
     case ContentLayerType::kSystemMenuIconColor:
