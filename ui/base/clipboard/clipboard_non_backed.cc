@@ -240,19 +240,13 @@ class ClipboardInternal {
     return previous_data;
   }
 
-  void SetDlpController(
-      std::unique_ptr<ClipboardDlpController> dlp_controller) {
-    dlp_controller_ = std::move(dlp_controller);
-  }
-
   bool IsReadAllowed(const ClipboardDataEndpoint* data_dst) const {
-    if (!dlp_controller_)
+    ClipboardDlpController* dlp_controller = ClipboardDlpController::Get();
+    if (!dlp_controller)
       return true;
-    return dlp_controller_->IsDataReadAllowed(GetData()->source(), data_dst);
-  }
-
-  const ClipboardDlpController* dlp_controller() const {
-    return dlp_controller_.get();
+    auto* data = GetData();
+    return dlp_controller->IsDataReadAllowed(data ? data->source() : nullptr,
+                                             data_dst);
   }
 
  private:
@@ -267,9 +261,6 @@ class ClipboardInternal {
 
   // Sequence number uniquely identifying clipboard state.
   uint64_t sequence_number_ = 0;
-
-  // Data-leak prevention controller controlling clipboard read operations.
-  std::unique_ptr<ClipboardDlpController> dlp_controller_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(ClipboardInternal);
 };
@@ -401,17 +392,6 @@ std::unique_ptr<ClipboardData> ClipboardNonBacked::WriteClipboardData(
 }
 
 void ClipboardNonBacked::OnPreShutdown() {}
-
-void ClipboardNonBacked::SetClipboardDlpController(
-    std::unique_ptr<ClipboardDlpController> dlp_controller) {
-  clipboard_internal_->SetDlpController(std::move(dlp_controller));
-}
-
-const ClipboardDlpController* ClipboardNonBacked::GetClipboardDlpController()
-    const {
-  DCHECK(CalledOnValidThread());
-  return clipboard_internal_->dlp_controller();
-}
 
 uint64_t ClipboardNonBacked::GetSequenceNumber(ClipboardBuffer buffer) const {
   DCHECK(CalledOnValidThread());

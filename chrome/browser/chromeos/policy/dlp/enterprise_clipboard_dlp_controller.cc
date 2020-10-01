@@ -32,9 +32,10 @@ constexpr int kToastDurationMs = 2500;
 
 }  // namespace
 
-EnterpriseClipboardDlpController::EnterpriseClipboardDlpController() = default;
-
-EnterpriseClipboardDlpController::~EnterpriseClipboardDlpController() = default;
+// static
+void EnterpriseClipboardDlpController::Init() {
+  new EnterpriseClipboardDlpController();
+}
 
 bool EnterpriseClipboardDlpController::IsDataReadAllowed(
     const ui::ClipboardDataEndpoint* const data_src,
@@ -76,6 +77,10 @@ bool EnterpriseClipboardDlpController::IsDataReadAllowed(
 
   return level == DlpRulesManager::Level::kAllow;
 }
+
+EnterpriseClipboardDlpController::EnterpriseClipboardDlpController() = default;
+
+EnterpriseClipboardDlpController::~EnterpriseClipboardDlpController() = default;
 
 void EnterpriseClipboardDlpController::ShowBlockToast(
     const base::string16& text) const {

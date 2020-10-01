@@ -47,9 +47,6 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardNonBacked
 
   // Clipboard overrides:
   void OnPreShutdown() override;
-  void SetClipboardDlpController(
-      std::unique_ptr<ClipboardDlpController> dlp_controller) override;
-  const ClipboardDlpController* GetClipboardDlpController() const override;
   uint64_t GetSequenceNumber(ClipboardBuffer buffer) const override;
   bool IsFormatAvailable(const ClipboardFormatType& format,
                          ClipboardBuffer buffer,

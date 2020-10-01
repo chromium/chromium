@@ -27,7 +27,6 @@
 #include "build/build_config.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
-#include "ui/base/clipboard/clipboard_dlp_controller.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
 
 class SkBitmap;
@@ -107,15 +106,6 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
   // This can be used to version the data on the clipboard and determine
   // whether it has changed.
   virtual uint64_t GetSequenceNumber(ClipboardBuffer buffer) const = 0;
-
-  // Sets the data leak prevention controller for the clipboard. This function
-  // will be used only on Chrome OS.
-  virtual void SetClipboardDlpController(
-      std::unique_ptr<ClipboardDlpController> dlp_controller) = 0;
-
-  // Returns the data leak prevention controller. This function will be used
-  // only on Chrome OS.
-  virtual const ClipboardDlpController* GetClipboardDlpController() const = 0;
 
   // Tests whether the clipboard contains a certain format.
   // TODO(crbug.com/1103614): Update |data_dst| in all references to its

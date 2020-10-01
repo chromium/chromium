@@ -19,6 +19,16 @@
 
 namespace ui {
 
+namespace {
+bool IsDataReadAllowed(const ClipboardDataEndpoint* src,
+                       const ClipboardDataEndpoint* dst) {
+  auto* dlp_controller = ClipboardDlpController::Get();
+  if (!dlp_controller)
+    return true;
+  return dlp_controller->IsDataReadAllowed(src, dst);
+}
+}  // namespace
+
 TestClipboard::TestClipboard()
     : default_store_buffer_(ClipboardBuffer::kCopyPaste) {}
 
@@ -42,22 +52,11 @@ uint64_t TestClipboard::GetSequenceNumber(ClipboardBuffer buffer) const {
   return GetStore(buffer).sequence_number;
 }
 
-void TestClipboard::SetClipboardDlpController(
-    std::unique_ptr<ClipboardDlpController> dlp_controller) {
-  dlp_controller_ = std::move(dlp_controller);
-}
-
-const ui::ClipboardDlpController* TestClipboard::GetClipboardDlpController()
-    const {
-  return dlp_controller_.get();
-}
-
 bool TestClipboard::IsFormatAvailable(
     const ClipboardFormatType& format,
     ClipboardBuffer buffer,
     const ui::ClipboardDataEndpoint* data_dst) const {
-  if (dlp_controller_ && !dlp_controller_->IsDataReadAllowed(
-                             GetStore(buffer).data_src.get(), data_dst))
+  if (!IsDataReadAllowed(GetStore(buffer).data_src.get(), data_dst))
     return false;
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
   // The linux clipboard treats the presence of text on the clipboard
@@ -80,8 +79,7 @@ void TestClipboard::ReadAvailableTypes(
     std::vector<base::string16>* types) const {
   DCHECK(types);
   types->clear();
-  if (dlp_controller_ && !dlp_controller_->IsDataReadAllowed(
-                             GetStore(buffer).data_src.get(), data_dst))
+  if (!IsDataReadAllowed(GetStore(buffer).data_src.get(), data_dst))
     return;
 
   if (IsFormatAvailable(ClipboardFormatType::GetPlainTextType(), buffer,
@@ -101,8 +99,7 @@ TestClipboard::ReadAvailablePlatformSpecificFormatNames(
     ClipboardBuffer buffer,
     const ui::ClipboardDataEndpoint* data_dst) const {
   const DataStore& store = GetStore(buffer);
-  if (dlp_controller_ &&
-      !dlp_controller_->IsDataReadAllowed(store.data_src.get(), data_dst))
+  if (!IsDataReadAllowed(store.data_src.get(), data_dst))
     return {};
 
   const auto& data = store.data;
@@ -133,8 +130,7 @@ TestClipboard::ReadAvailablePlatformSpecificFormatNames(
 void TestClipboard::ReadText(ClipboardBuffer buffer,
                              const ClipboardDataEndpoint* data_dst,
                              base::string16* result) const {
-  if (dlp_controller_ && !dlp_controller_->IsDataReadAllowed(
-                             GetStore(buffer).data_src.get(), data_dst))
+  if (!IsDataReadAllowed(GetStore(buffer).data_src.get(), data_dst))
     return;
 
   std::string result8;
@@ -147,8 +143,7 @@ void TestClipboard::ReadAsciiText(ClipboardBuffer buffer,
                                   const ClipboardDataEndpoint* data_dst,
                                   std::string* result) const {
   const DataStore& store = GetStore(buffer);
-  if (dlp_controller_ &&
-      !dlp_controller_->IsDataReadAllowed(store.data_src.get(), data_dst))
+  if (!IsDataReadAllowed(store.data_src.get(), data_dst))
     return;
 
   result->clear();
@@ -164,8 +159,7 @@ void TestClipboard::ReadHTML(ClipboardBuffer buffer,
                              uint32_t* fragment_start,
                              uint32_t* fragment_end) const {
   const DataStore& store = GetStore(buffer);
-  if (dlp_controller_ &&
-      !dlp_controller_->IsDataReadAllowed(store.data_src.get(), data_dst))
+  if (!IsDataReadAllowed(store.data_src.get(), data_dst))
     return;
 
   markup->clear();
@@ -182,8 +176,7 @@ void TestClipboard::ReadSvg(ClipboardBuffer buffer,
                             const ClipboardDataEndpoint* data_dst,
                             base::string16* result) const {
   const DataStore& store = GetStore(buffer);
-  if (dlp_controller_ &&
-      !dlp_controller_->IsDataReadAllowed(store.data_src.get(), data_dst))
+  if (!IsDataReadAllowed(store.data_src.get(), data_dst))
     return;
 
   result->clear();
@@ -196,8 +189,7 @@ void TestClipboard::ReadRTF(ClipboardBuffer buffer,
                             const ClipboardDataEndpoint* data_dst,
                             std::string* result) const {
   const DataStore& store = GetStore(buffer);
-  if (dlp_controller_ &&
-      !dlp_controller_->IsDataReadAllowed(store.data_src.get(), data_dst))
+  if (!IsDataReadAllowed(store.data_src.get(), data_dst))
     return;
 
   result->clear();
@@ -223,8 +215,7 @@ void TestClipboard::ReadBookmark(const ClipboardDataEndpoint* data_dst,
                                  base::string16* title,
                                  std::string* url) const {
   const DataStore& store = GetDefaultStore();
-  if (dlp_controller_ &&
-      !dlp_controller_->IsDataReadAllowed(store.data_src.get(), data_dst))
+  if (!IsDataReadAllowed(store.data_src.get(), data_dst))
     return;
 
   if (url) {
@@ -240,8 +231,7 @@ void TestClipboard::ReadData(const ClipboardFormatType& format,
                              const ClipboardDataEndpoint* data_dst,
                              std::string* result) const {
   const DataStore& store = GetDefaultStore();
-  if (dlp_controller_ &&
-      !dlp_controller_->IsDataReadAllowed(store.data_src.get(), data_dst))
+  if (!IsDataReadAllowed(store.data_src.get(), data_dst))
     return;
 
   result->clear();
