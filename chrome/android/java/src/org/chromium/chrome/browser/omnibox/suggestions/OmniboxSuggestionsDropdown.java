@@ -53,6 +53,15 @@ public interface OmniboxSuggestionsDropdown {
          * Invoked whenever the User scrolls the list to the top.
          */
         void onSuggestionDropdownOverscrolledToTop();
+
+        /**
+         * Notify that the user is interacting with an item on the Suggestions list.
+         *
+         * @param isGestureUp Whether user pressed (false) or depressed (true) the element on the
+         *         list.
+         * @param timestamp The timestamp associated with the event.
+         */
+        void onGesture(boolean isGestureUp, long timestamp);
     }
 
     /** Get the Android View implementing suggestion list. */

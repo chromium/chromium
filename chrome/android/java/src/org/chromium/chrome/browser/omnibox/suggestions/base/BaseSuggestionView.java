@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.omnibox.suggestions.base;
 import android.content.Context;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -119,18 +118,6 @@ public class BaseSuggestionView<T extends View> extends SimpleHorizontalLayoutVi
      */
     public BaseSuggestionView(Context context, @LayoutRes int layoutId) {
         this((T) LayoutInflater.from(context).inflate(layoutId, null));
-    }
-
-    @Override
-    public boolean dispatchTouchEvent(MotionEvent ev) {
-        // Whenever the suggestion dropdown is touched, we dispatch onGestureDown which is
-        // used to let autocomplete controller know that it should stop updating suggestions.
-        if (ev.getActionMasked() == MotionEvent.ACTION_DOWN) {
-            mDelegate.onGestureDown();
-        } else if (ev.getActionMasked() == MotionEvent.ACTION_UP) {
-            mDelegate.onGestureUp(ev.getEventTime());
-        }
-        return super.dispatchTouchEvent(ev);
     }
 
     @Override

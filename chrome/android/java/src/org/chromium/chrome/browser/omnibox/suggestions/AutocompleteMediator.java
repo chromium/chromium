@@ -495,16 +495,6 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
             public void onLongPress() {
                 AutocompleteMediator.this.onLongPress(suggestion, position);
             }
-
-            @Override
-            public void onGestureUp(long timestamp) {
-                mLastActionUpTimestamp = timestamp;
-            }
-
-            @Override
-            public void onGestureDown() {
-                stopAutocomplete(false);
-            }
         };
     }
 
@@ -602,6 +592,14 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
             }
         }
         recordMetrics(position, WindowOpenDisposition.SWITCH_TO_TAB, suggestion);
+    }
+
+    @Override
+    public void onGesture(boolean isGestureUp, long timestamp) {
+        stopAutocomplete(false);
+        if (isGestureUp) {
+            mLastActionUpTimestamp = timestamp;
+        }
     }
 
     /**

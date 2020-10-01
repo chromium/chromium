@@ -11,6 +11,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -26,9 +28,10 @@ import org.chromium.chrome.browser.util.KeyNavigationUtil;
 @VisibleForTesting
 public class OmniboxSuggestionsRecyclerView
         extends RecyclerView implements OmniboxSuggestionsDropdown {
-    private final OmniboxSuggestionsDropdownDelegate mDropdownDelegate;
-    private final SuggestionScrollListener mScrollListener;
-    private OmniboxSuggestionsRecyclerViewAdapter mAdapter;
+    private final @NonNull OmniboxSuggestionsDropdownDelegate mDropdownDelegate;
+    private final @NonNull SuggestionScrollListener mScrollListener;
+    private @Nullable OmniboxSuggestionsDropdown.Observer mObserver;
+    private @Nullable OmniboxSuggestionsRecyclerViewAdapter mAdapter;
 
     private final int[] mTempMeasureSpecs = new int[2];
 
@@ -124,6 +127,7 @@ public class OmniboxSuggestionsRecyclerView
 
     @Override
     public void setObserver(OmniboxSuggestionsDropdown.Observer observer) {
+        mObserver = observer;
         mScrollListener.setObserver(observer);
         mDropdownDelegate.setObserver(observer);
     }
@@ -216,5 +220,15 @@ public class OmniboxSuggestionsRecyclerView
     public boolean onGenericMotionEvent(MotionEvent event) {
         return mDropdownDelegate.shouldIgnoreGenericMotionEvent(event)
                 || super.onGenericMotionEvent(event);
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        final int eventType = ev.getActionMasked();
+        if ((eventType == MotionEvent.ACTION_UP || eventType == MotionEvent.ACTION_DOWN)
+                && mObserver != null) {
+            mObserver.onGesture(eventType == MotionEvent.ACTION_UP, ev.getEventTime());
+        }
+        return super.dispatchTouchEvent(ev);
     }
 }
