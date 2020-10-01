@@ -70,6 +70,12 @@ public class AwContentsRenderTest {
         setBackgroundColorOnUiThread(Color.YELLOW);
         GraphicsTestUtils.pollForBackgroundColor(mAwContents, Color.YELLOW);
 
+        final String html_meta = "<html><head><meta name=color-scheme content=dark></head></html>";
+        mActivityTestRule.loadUrlSync(mAwContents, mContentsClient.getOnPageFinishedHelper(),
+                "data:text/html," + html_meta);
+        final int dark_scheme_color = 0xFF121212;
+        GraphicsTestUtils.pollForBackgroundColor(mAwContents, dark_scheme_color);
+
         final String html = "<html><head><style>body {background-color:#227788}</style></head>"
                 + "<body></body></html>";
         // Loading the html via a data URI requires us to encode '#' symbols as '%23'.
