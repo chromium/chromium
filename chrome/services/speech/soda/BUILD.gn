@@ -11,16 +11,3 @@ source_set("soda") {
 
   deps = [ "//base" ]
 }
-
-source_set("unit_tests") {
-  testonly = true
-
-  sources = [ "soda_client_unittest.cc" ]
-
-  deps = [
-    ":soda",
-    "//base",
-    "//media",
-    "//testing/gtest",
-  ]
-}
