@@ -3307,6 +3307,10 @@ const char kNtpWebUIDescription[] =
 const char kNtpModulesName[] = "NTP Modules";
 const char kNtpModulesDescription[] = "Shows modules on the New Tab Page.";
 
+const char kNtpShoppingTasksModuleName[] = "NTP Shopping Tasks Module";
+const char kNtpShoppingTasksModuleDescription[] =
+    "Shows the shopping tasks module on the New Tab Page.";
+
 const char kEnableReaderModeName[] = "Enable Reader Mode";
 const char kEnableReaderModeDescription[] =
     "Allows viewing of simplified web pages by selecting 'Customize and "

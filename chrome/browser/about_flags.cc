@@ -1528,6 +1528,12 @@ const FeatureEntry::FeatureVariation kPromoBrowserCommandsVariations[] = {
      kPromoBrowserCommandOpenSafeBrowsingSettingsCommandParam,
      base::size(kPromoBrowserCommandOpenSafeBrowsingSettingsCommandParam),
      nullptr}};
+#if !defined(OS_ANDROID)
+const FeatureEntry::FeatureVariation kNtpShoppingTasksModuleVariations[] = {
+    {"- Real Data", {}, 0, "t4445867" /* variation_id */},
+    {"- Fake Data", {}, 0, "t4445868" /* variation_id */},
+};
+#endif  // !defined(OS_ANDROID)
 
 #if defined(OS_ANDROID)
 const FeatureEntry::FeatureParam kTranslateForceTriggerOnEnglishHeuristic[] = {
@@ -4326,6 +4332,13 @@ const FeatureEntry kFeatureEntries[] = {
     {"ntp-modules", flag_descriptions::kNtpModulesName,
      flag_descriptions::kNtpModulesDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(ntp_features::kModules)},
+
+    {"ntp-shopping-tasks-module",
+     flag_descriptions::kNtpShoppingTasksModuleName,
+     flag_descriptions::kNtpShoppingTasksModuleDescription, kOsDesktop,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_features::kNtpShoppingTasksModule,
+                                    kNtpShoppingTasksModuleVariations,
+                                    "NtpShoppingTasksModule")},
 #endif  // !defined(OS_ANDROID)
 
 #if defined(DCHECK_IS_CONFIGURABLE)

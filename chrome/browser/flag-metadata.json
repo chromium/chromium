@@ -3227,6 +3227,11 @@
     "expiry_milestone": 89
   },
   {
+    "name": "ntp-shopping-tasks-module",
+    "owners": [ "aee", "mahmadi", "tiborg" ],
+    "expiry_milestone": 90
+  },
+  {
     "name": "ntp-webui",
     "owners": [ "aee", "mahmadi", "tiborg" ],
     "expiry_milestone": 87
