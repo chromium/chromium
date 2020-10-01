@@ -4,6 +4,7 @@
 
 let diagnosticsService = null;
 let probeService = null;
+let systemEventsService = null;
 
 /**
  * Lazy creates pointer to remote implementation of diagnostics service.
@@ -27,6 +28,18 @@ function getOrCreateProbeService() {
   }
   return /** @type {!chromeos.health.mojom.ProbeServiceRemote} */ (
       probeService);
+}
+
+/**
+ * Lazy creates pointer to remote implementation of system events service.
+ * @return {!chromeos.health.mojom.SystemEventsServiceRemote}
+ */
+function getOrCreateSystemEventsService() {
+  if (systemEventsService === null) {
+    systemEventsService = chromeos.health.mojom.SystemEventsService.getRemote();
+  }
+  return /** @type {!chromeos.health.mojom.SystemEventsServiceRemote} */ (
+      systemEventsService);
 }
 
 /**
@@ -852,6 +865,50 @@ class TelemetryProxy {
 
 const telemetryProxy = new TelemetryProxy();
 
+/**
+ * Proxying event requests between SystemEventsRequester on
+ * chrome-untrusted:// side with WebIDL types and SystemEventsService on
+ * chrome:// side with Mojo types.
+ */
+class SystemEventsProxy {
+  /**
+   * @param {!MessagePipe} messagePipe
+   * @param {!Promise<undefined>} iframeReady
+   */
+  constructor(messagePipe, iframeReady) {
+    this.messagePipe = messagePipe;
+    this.iframeReady = iframeReady;
+
+    this.events = {
+      ON_LID_CLOSED: 'lid-closed',
+      ON_LID_OPENED: 'lid-opened',
+    };
+
+    this.lidObserverCallbackRouter_ =
+        new chromeos.health.mojom.LidObserverCallbackRouter();
+
+    this.lidObserverCallbackRouter_.onLidClosed.addListener(
+        () => this.sendEvent(this.events.ON_LID_CLOSED));
+    this.lidObserverCallbackRouter_.onLidOpened.addListener(
+        () => this.sendEvent(this.events.ON_LID_OPENED));
+
+    getOrCreateSystemEventsService().addLidObserver(
+        this.lidObserverCallbackRouter_.$.bindNewPipeAndPassRemote());
+  }
+
+  /**
+   * Sends event type to chrome-untrusted://.
+   * @param {!string} type
+   */
+  async sendEvent(type) {
+    /* Prevent events from being sent until untrusted iframe is loaded. */
+    await this.iframeReady;
+    this.messagePipe.sendMessage(
+        dpsl_internal.Message.SYSTEM_EVENTS_SERVICE_EVENTS,
+        /** @type {!dpsl_internal.Event} */ ({type: type}));
+  }
+}
+
 const untrustedMessagePipe =
     new MessagePipe('chrome-untrusted://telemetry-extension');
 
@@ -956,3 +1013,6 @@ const iframeReady = new Promise(resolve => {
     resolve();
   });
 });
+
+const systemEventsProxy =
+    new SystemEventsProxy(untrustedMessagePipe, iframeReady);

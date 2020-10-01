@@ -19,6 +19,7 @@
         <include name="IDR_TELEMETRY_EXTENSION_TRUSTED_SCRIPTS_JS" file="trusted_scripts.js" flattenhtml="true" type="BINDATA" compress="gzip" />
         <include name="IDR_TELEMETRY_EXTENSION_DIAGNOSTICS_SERVICE_MOJO_LITE_JS" file="${root_gen_dir}/chromeos/components/telemetry_extension_ui/mojom/diagnostics_service.mojom-lite.js" compress="gzip" use_base_dir="false" type="BINDATA" />
         <include name="IDR_TELEMETRY_EXTENSION_PROBE_SERVICE_MOJO_LITE_JS" file="${root_gen_dir}/chromeos/components/telemetry_extension_ui/mojom/probe_service.mojom-lite.js" compress="gzip" use_base_dir="false" type="BINDATA" />
+        <include name="IDR_TELEMETRY_EXTENSION_SYSTEM_EVENTS_SERVICE_MOJO_LITE_JS" file="${root_gen_dir}/chromeos/components/telemetry_extension_ui/mojom/system_events_service.mojom-lite.js" compress="gzip" use_base_dir="false" type="BINDATA" />
 
         <!-- Untrusted app host contents. -->
         <include name="IDR_TELEMETRY_EXTENSION_DPSL_JS" file="dpsl.js" flattenhtml="true" type="BINDATA" compress="gzip" />

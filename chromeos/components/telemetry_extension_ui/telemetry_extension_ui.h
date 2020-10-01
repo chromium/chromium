@@ -13,6 +13,7 @@
 
 #include "chromeos/components/telemetry_extension_ui/mojom/diagnostics_service.mojom-forward.h"
 #include "chromeos/components/telemetry_extension_ui/mojom/probe_service.mojom-forward.h"
+#include "chromeos/components/telemetry_extension_ui/mojom/system_events_service.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
@@ -32,10 +33,14 @@ class TelemetryExtensionUI : public ui::MojoWebUIController {
   void BindInterface(
       mojo::PendingReceiver<health::mojom::ProbeService> receiver);
 
+  void BindInterface(
+      mojo::PendingReceiver<health::mojom::SystemEventsService> receiver);
+
  private:
   // Replaced when |BindInterface| is called.
   std::unique_ptr<health::mojom::DiagnosticsService> diagnostics_service_;
   std::unique_ptr<health::mojom::ProbeService> probe_service_;
+  std::unique_ptr<health::mojom::SystemEventsService> system_events_service_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };
