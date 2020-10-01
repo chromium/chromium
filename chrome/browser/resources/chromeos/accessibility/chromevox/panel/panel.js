@@ -1112,7 +1112,7 @@ Panel = class {
       desktop.addEventListener(
           chrome.automation.EventType.FOCUS, onFocus, true);
 
-      // Make sure all menus are cleared to avoid bogous output when we re-open.
+      // Make sure all menus are cleared to avoid bogus output when we re-open.
       Panel.clearMenus();
 
       // Ensure annotations input is cleared.
