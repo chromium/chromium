@@ -60,18 +60,12 @@ export class FakeSystemDataProvider {
    * @return {!Promise}
    */
   observeBatteryChargeStatus(remote) {
-    return new Promise((resolve) => {
-      this.observables_.observe(
-          'BatteryChargeStatusObserver_onBatteryChargeStatusUpdated',
-          (batteryChargeStatus) => {
-            remote.onBatteryChargeStatusUpdated(
-                /** @type {!BatteryChargeStatus} */ (batteryChargeStatus));
-          });
-
-      this.observables_.trigger(
-          'BatteryChargeStatusObserver_onBatteryChargeStatusUpdated');
-      resolve();
-    });
+    return this.observe_(
+        'BatteryChargeStatusObserver_onBatteryChargeStatusUpdated',
+        (batteryChargeStatus) => {
+          remote.onBatteryChargeStatusUpdated(
+              /** @type {!BatteryChargeStatus} */ (batteryChargeStatus));
+        });
   }
 
   /**
@@ -90,16 +84,11 @@ export class FakeSystemDataProvider {
    * @return {!Promise}
    */
   observeBatteryHealth(remote) {
-    return new Promise((resolve) => {
-      this.observables_.observe(
-          'BatteryHealthObserver_onBatteryHealthUpdated', (batteryHealth) => {
-            remote.onBatteryHealthUpdated(
-                /** @type {!BatteryHealth} */ (batteryHealth));
-          });
-
-      this.observables_.trigger('BatteryHealthObserver_onBatteryHealthUpdated');
-      resolve();
-    });
+    return this.observe_(
+        'BatteryHealthObserver_onBatteryHealthUpdated', (batteryHealth) => {
+          remote.onBatteryHealthUpdated(
+              /** @type {!BatteryHealth} */ (batteryHealth));
+        });
   }
 
   /**
@@ -117,15 +106,9 @@ export class FakeSystemDataProvider {
    * @return {!Promise}
    */
   observeCpuUsage(remote) {
-    return new Promise((resolve) => {
-      this.observables_.observe(
-          'CpuUsageObserver_onCpuUsageUpdated', (cpuUsage) => {
-            remote.onCpuUsageUpdated(
-                /** @type {!CpuUsage} */ (cpuUsage));
-          });
-
-      this.observables_.trigger('CpuUsageObserver_onCpuUsageUpdated');
-      resolve();
+    return this.observe_('CpuUsageObserver_onCpuUsageUpdated', (cpuUsage) => {
+      remote.onCpuUsageUpdated(
+          /** @type {!CpuUsage} */ (cpuUsage));
     });
   }
 
@@ -144,16 +127,11 @@ export class FakeSystemDataProvider {
    * @return {!Promise}
    */
   observeMemoryUsage(remote) {
-    return new Promise((resolve) => {
-      this.observables_.observe(
-          'MemoryUsageObserver_onMemoryUsageUpdated', (memoryUsage) => {
-            remote.onMemoryUsageUpdated(
-                /** @type {!MemoryUsage} */ (memoryUsage));
-          });
-
-      this.observables_.trigger('MemoryUsageObserver_onMemoryUsageUpdated');
-      resolve();
-    });
+    return this.observe_(
+        'MemoryUsageObserver_onMemoryUsageUpdated', (memoryUsage) => {
+          remote.onMemoryUsageUpdated(
+              /** @type {!MemoryUsage} */ (memoryUsage));
+        });
   }
 
   /**
@@ -216,5 +194,21 @@ export class FakeSystemDataProvider {
 
     this.registerMethods();
     this.registerObservables();
+  }
+
+  /*
+   * Sets up an observer for methodName.
+   * @template T
+   * @param {string} methodName
+   * @param {!function(!T)} callback
+   * @return {!Promise}
+   * @private
+   */
+  observe_(methodName, callback) {
+    return new Promise((resolve) => {
+      this.observables_.observe(methodName, callback);
+      this.observables_.trigger(methodName);
+      resolve();
+    });
   }
 }
