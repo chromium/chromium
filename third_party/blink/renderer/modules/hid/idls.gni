@@ -4,18 +4,18 @@
 
 modules_idl_files = [
   "hid.idl",
-  "hid_collection_info.idl",
   "hid_connection_event.idl",
   "hid_device.idl",
   "hid_input_report_event.idl",
-  "hid_report_info.idl",
-  "hid_report_item.idl",
 ]
 
 modules_dictionary_idl_files = [
+  "hid_collection_info.idl",
   "hid_connection_event_init.idl",
   "hid_device_filter.idl",
   "hid_device_request_options.idl",
+  "hid_report_info.idl",
+  "hid_report_item.idl",
 ]
 
 modules_dependency_idl_files = [ "navigator_hid.idl" ]

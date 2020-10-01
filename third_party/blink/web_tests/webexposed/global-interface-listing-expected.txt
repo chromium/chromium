@@ -2630,15 +2630,6 @@ interface HID : EventTarget
     method requestDevice
     setter onconnect
     setter ondisconnect
-interface HIDCollectionInfo
-    attribute @@toStringTag
-    getter children
-    getter featureReports
-    getter inputReports
-    getter outputReports
-    getter usage
-    getter usagePage
-    method constructor
 interface HIDConnectionEvent : Event
     attribute @@toStringTag
     getter device
@@ -2663,36 +2654,6 @@ interface HIDInputReportEvent : Event
     getter data
     getter device
     getter reportId
-    method constructor
-interface HIDReportInfo
-    attribute @@toStringTag
-    getter items
-    getter reportId
-    method constructor
-interface HIDReportItem
-    attribute @@toStringTag
-    getter hasNull
-    getter isAbsolute
-    getter isArray
-    getter isRange
-    getter logicalMaximum
-    getter logicalMinimum
-    getter physicalMaximum
-    getter physicalMinimum
-    getter reportCount
-    getter reportSize
-    getter strings
-    getter unitExponent
-    getter unitFactorCurrentExponent
-    getter unitFactorLengthExponent
-    getter unitFactorLuminousIntensityExponent
-    getter unitFactorMassExponent
-    getter unitFactorTemperatureExponent
-    getter unitFactorTimeExponent
-    getter unitSystem
-    getter usageMaximum
-    getter usageMinimum
-    getter usages
     method constructor
 interface HTMLAllCollection
     attribute @@toStringTag

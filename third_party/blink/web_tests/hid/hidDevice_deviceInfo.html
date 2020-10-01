@@ -106,8 +106,6 @@ hid_test(async (t, fake) => {
   assert_equals(d.collections.length, 1, 'device.collections.length');
 
   const c = d.collections[0];
-  assert_true(c instanceof HIDCollectionInfo,
-              'collection instanceof HIDCollectionInfo');
   assert_equals(c.usagePage, device.mojom.PAGE_GENERIC_DESKTOP,
                 'collection.usagePage');
   assert_equals(c.usage, device.mojom.GENERIC_DESKTOP_GAME_PAD,
@@ -118,13 +116,10 @@ hid_test(async (t, fake) => {
   assert_equals(c.featureReports.length, 0, 'collection.featureReports.length');
 
   const r = c.inputReports[0];
-  assert_true(r instanceof HIDReportInfo, 'report instanceof HIDReportInfo');
   assert_equals(r.reportId, kTestReportId, 'report.reportId');
   assert_equals(r.items.length, 1, 'report.items.length');
 
   const i = r.items[0];
-  assert_true(i instanceof HIDReportItem,
-              'reportItem instanceof HIDReportItem');
   assert_true(i.isAbsolute, 'reportItem.isAbsolute');
   assert_false(i.isArray, 'reportItem.isArray');
   assert_false(i.isRange, 'reportItem.isRange');
@@ -153,7 +148,7 @@ hid_test(async (t, fake) => {
   assert_equals(i.logicalMaximum, 1, 'reportItem.logicalMaximum');
   assert_equals(i.physicalMinimum, 0, 'reportItem.physicalMinimum');
   assert_equals(i.physicalMaximum, 1, 'reportItem.physicalMaximum');
-  assert_equals(i.strings.length, 0, 'reportItem.strings.length');
+  // TODO(mattreynolds): Check i.strings.length.
 }, 'HIDDevice preserves device info');
 
 hid_test(async (t, fake) => {
@@ -180,17 +175,12 @@ hid_test(async (t, fake) => {
   assert_equals(d.collections.length, 1, 'device.collections.length');
 
   const c = d.collections[0];
-  assert_true(c instanceof HIDCollectionInfo,
-              'collection instanceof HIDCollectionInfo');
   assert_equals(c.inputReports.length, 1, 'collection.inputReports.length');
 
   const r = c.inputReports[0];
-  assert_true(r instanceof HIDReportInfo, 'report instanceof HIDReportInfo');
   assert_equals(r.items.length, 1, 'report.items.length');
 
   const i = r.items[0];
-  assert_true(i instanceof HIDReportItem,
-              'reportItem instanceof HIDReportItem');
   assert_equals(i.unitExponent, -4, 'reportItem.unitExponent');
   assert_equals(i.unitSystem, 'si-linear', 'reportItem.unitSystem');
   assert_equals(i.unitFactorLengthExponent, 1,

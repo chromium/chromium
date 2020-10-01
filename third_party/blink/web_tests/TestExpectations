@@ -6653,9 +6653,6 @@ crbug.com/1112778 external/wpt/html/semantics/scripting-1/the-script-element/mod
 crbug.com/1092048 external/wpt/FileAPI/blob/Blob-stream.any.html [ Pass Timeout ]
 crbug.com/1092048 external/wpt/FileAPI/blob/Blob-stream.any.worker.html [ Pass Timeout ]
 
-# Sheriff 2020-08-04: New wpt tests are failing
-crbug.com/1112771 external/wpt/webhid/idlharness.https.window.html [ Failure ]
-
 # Sheriff 2020-08-05
 crbug.com/1113050 fast/borders/border-radius-mask-video-ratio.html [ Pass Failure ]
 crbug.com/1113127 fast/canvas/downsample-quality.html [ Pass Failure Crash ]

@@ -8,18 +8,12 @@ blink_modules_sources("hid") {
   sources = [
     "hid.cc",
     "hid.h",
-    "hid_collection_info.cc",
-    "hid_collection_info.h",
     "hid_connection_event.cc",
     "hid_connection_event.h",
     "hid_device.cc",
     "hid_device.h",
     "hid_input_report_event.cc",
     "hid_input_report_event.h",
-    "hid_report_info.cc",
-    "hid_report_info.h",
-    "hid_report_item.cc",
-    "hid_report_item.h",
     "navigator_hid.cc",
     "navigator_hid.h",
   ]
@@ -27,7 +21,7 @@ blink_modules_sources("hid") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "hid_report_item_test.cc" ]
+  sources = [ "hid_device_test.cc" ]
 
   configs += [
     "//third_party/blink/renderer:config",

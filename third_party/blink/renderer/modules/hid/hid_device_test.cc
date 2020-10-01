@@ -1,8 +1,8 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/modules/hid/hid_report_item.h"
+#include "third_party/blink/renderer/modules/hid/hid_device.h"
 
 #include "services/device/public/mojom/hid.mojom-blink.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -61,38 +61,38 @@ device::mojom::blink::HidReportItemPtr MakeReportItem() {
 
 }  // namespace
 
-TEST(HIDReportItemTest, singleUsageItem) {
+TEST(HIDDeviceTest, singleUsageItem) {
   device::mojom::blink::HidReportItemPtr mojo_item = MakeReportItem();
-  HIDReportItem item(*mojo_item);
+  HIDReportItem* item = HIDDevice::ToHIDReportItem(*mojo_item);
 
   // Check that all item properties are correctly converted for the sample
   // report item.
-  EXPECT_TRUE(item.isAbsolute());
-  EXPECT_FALSE(item.isArray());
-  EXPECT_FALSE(item.isRange());
-  EXPECT_FALSE(item.hasNull());
-  EXPECT_EQ(1U, item.usages().size());
-  EXPECT_EQ(0x00090001U, item.usages()[0]);
-  EXPECT_EQ(0U, item.usageMinimum());
-  EXPECT_EQ(0U, item.usageMaximum());
-  EXPECT_TRUE(item.strings().IsEmpty());
-  EXPECT_EQ(8U, item.reportSize());
-  EXPECT_EQ(1U, item.reportCount());
-  EXPECT_EQ(0, item.unitExponent());
-  EXPECT_EQ("none", item.unitSystem());
-  EXPECT_EQ(0, item.unitFactorLengthExponent());
-  EXPECT_EQ(0, item.unitFactorMassExponent());
-  EXPECT_EQ(0, item.unitFactorTimeExponent());
-  EXPECT_EQ(0, item.unitFactorTemperatureExponent());
-  EXPECT_EQ(0, item.unitFactorCurrentExponent());
-  EXPECT_EQ(0, item.unitFactorLuminousIntensityExponent());
-  EXPECT_EQ(0, item.logicalMinimum());
-  EXPECT_EQ(1, item.logicalMaximum());
-  EXPECT_EQ(0, item.physicalMinimum());
-  EXPECT_EQ(1, item.physicalMaximum());
+  EXPECT_TRUE(item->isAbsolute());
+  EXPECT_FALSE(item->isArray());
+  EXPECT_FALSE(item->isRange());
+  EXPECT_FALSE(item->hasNull());
+  EXPECT_EQ(1U, item->usages().size());
+  EXPECT_EQ(0x00090001U, item->usages()[0]);
+  EXPECT_EQ(0U, item->usageMinimum());
+  EXPECT_EQ(0U, item->usageMaximum());
+  EXPECT_FALSE(item->hasStrings());
+  EXPECT_EQ(8U, item->reportSize());
+  EXPECT_EQ(1U, item->reportCount());
+  EXPECT_EQ(0, item->unitExponent());
+  EXPECT_EQ("none", item->unitSystem());
+  EXPECT_EQ(0, item->unitFactorLengthExponent());
+  EXPECT_EQ(0, item->unitFactorMassExponent());
+  EXPECT_EQ(0, item->unitFactorTimeExponent());
+  EXPECT_EQ(0, item->unitFactorTemperatureExponent());
+  EXPECT_EQ(0, item->unitFactorCurrentExponent());
+  EXPECT_EQ(0, item->unitFactorLuminousIntensityExponent());
+  EXPECT_EQ(0, item->logicalMinimum());
+  EXPECT_EQ(1, item->logicalMaximum());
+  EXPECT_EQ(0, item->physicalMinimum());
+  EXPECT_EQ(1, item->physicalMaximum());
 }
 
-TEST(HIDReportItemTest, multiUsageItem) {
+TEST(HIDDeviceTest, multiUsageItem) {
   device::mojom::blink::HidReportItemPtr mojo_item = MakeReportItem();
 
   // Configure the item to use 8 non-consecutive usages.
@@ -103,22 +103,22 @@ TEST(HIDReportItemTest, multiUsageItem) {
   }
   mojo_item->report_size = 1;  // 1 bit.
   mojo_item->report_count = 8;
-  HIDReportItem item(*mojo_item);
+  HIDReportItem* item = HIDDevice::ToHIDReportItem(*mojo_item);
 
-  EXPECT_EQ(8U, item.usages().size());
-  EXPECT_EQ(0x00090002U, item.usages()[0]);
-  EXPECT_EQ(0x00090004U, item.usages()[1]);
-  EXPECT_EQ(0x00090006U, item.usages()[2]);
-  EXPECT_EQ(0x00090008U, item.usages()[3]);
-  EXPECT_EQ(0x0009000aU, item.usages()[4]);
-  EXPECT_EQ(0x0009000cU, item.usages()[5]);
-  EXPECT_EQ(0x0009000eU, item.usages()[6]);
-  EXPECT_EQ(0x00090010U, item.usages()[7]);
-  EXPECT_EQ(1U, item.reportSize());
-  EXPECT_EQ(8U, item.reportCount());
+  EXPECT_EQ(8U, item->usages().size());
+  EXPECT_EQ(0x00090002U, item->usages()[0]);
+  EXPECT_EQ(0x00090004U, item->usages()[1]);
+  EXPECT_EQ(0x00090006U, item->usages()[2]);
+  EXPECT_EQ(0x00090008U, item->usages()[3]);
+  EXPECT_EQ(0x0009000aU, item->usages()[4]);
+  EXPECT_EQ(0x0009000cU, item->usages()[5]);
+  EXPECT_EQ(0x0009000eU, item->usages()[6]);
+  EXPECT_EQ(0x00090010U, item->usages()[7]);
+  EXPECT_EQ(1U, item->reportSize());
+  EXPECT_EQ(8U, item->reportCount());
 }
 
-TEST(HIDReportItemTest, usageRangeItem) {
+TEST(HIDDeviceTest, usageRangeItem) {
   device::mojom::blink::HidReportItemPtr mojo_item = MakeReportItem();
 
   // Configure the item to use a usage range. The item defines eight fields,
@@ -131,32 +131,32 @@ TEST(HIDReportItemTest, usageRangeItem) {
   mojo_item->usage_maximum->usage = 0x08;  // 8th button usage.
   mojo_item->report_size = 1;              // 1 bit.
   mojo_item->report_count = 8;
-  HIDReportItem item(*mojo_item);
+  HIDReportItem* item = HIDDevice::ToHIDReportItem(*mojo_item);
 
-  EXPECT_TRUE(item.usages().IsEmpty());
-  EXPECT_EQ(0x00090001U, item.usageMinimum());
-  EXPECT_EQ(0x00090008U, item.usageMaximum());
-  EXPECT_EQ(1U, item.reportSize());
-  EXPECT_EQ(8U, item.reportCount());
+  EXPECT_FALSE(item->hasStrings());
+  EXPECT_EQ(0x00090001U, item->usageMinimum());
+  EXPECT_EQ(0x00090008U, item->usageMaximum());
+  EXPECT_EQ(1U, item->reportSize());
+  EXPECT_EQ(8U, item->reportCount());
 }
 
-TEST(HIDReportItemTest, unitDefinition) {
+TEST(HIDDeviceTest, unitDefinition) {
   device::mojom::blink::HidReportItemPtr mojo_item = MakeReportItem();
 
   // Add a unit definition and check that the unit properties are correctly
   // converted.
   mojo_item->unit_exponent = 0x0C;  // 10^-4
   mojo_item->unit = 0x0000E111;     // g*cm/s^2
-  HIDReportItem item(*mojo_item);
+  HIDReportItem* item = HIDDevice::ToHIDReportItem(*mojo_item);
 
-  EXPECT_EQ("si-linear", item.unitSystem());
-  EXPECT_EQ(-4, item.unitExponent());
-  EXPECT_EQ(1, item.unitFactorLengthExponent());
-  EXPECT_EQ(1, item.unitFactorMassExponent());
-  EXPECT_EQ(-2, item.unitFactorTimeExponent());
-  EXPECT_EQ(0, item.unitFactorTemperatureExponent());
-  EXPECT_EQ(0, item.unitFactorCurrentExponent());
-  EXPECT_EQ(0, item.unitFactorLuminousIntensityExponent());
+  EXPECT_EQ("si-linear", item->unitSystem());
+  EXPECT_EQ(-4, item->unitExponent());
+  EXPECT_EQ(1, item->unitFactorLengthExponent());
+  EXPECT_EQ(1, item->unitFactorMassExponent());
+  EXPECT_EQ(-2, item->unitFactorTimeExponent());
+  EXPECT_EQ(0, item->unitFactorTemperatureExponent());
+  EXPECT_EQ(0, item->unitFactorCurrentExponent());
+  EXPECT_EQ(0, item->unitFactorLuminousIntensityExponent());
 }
 
 }  // namespace blink
