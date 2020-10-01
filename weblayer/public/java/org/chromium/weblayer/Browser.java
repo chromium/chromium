@@ -388,6 +388,7 @@ public class Browser {
             for (TabListCallback callback : mTabListCallbacks) {
                 callback.onTabRemoved(tab);
             }
+            tab.onRemovedFromBrowser();
         }
 
         @Override

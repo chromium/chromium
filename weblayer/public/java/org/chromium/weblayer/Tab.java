@@ -59,6 +59,10 @@ public class Tab {
     // Id from the remote side.
     private final int mId;
 
+    // See comments in onTabDestroyed() for details.
+    // TODO(sky): this is necessary for < 87. Remove in 90.
+    private boolean mDestroyOnRemove;
+
     // Constructor for test mocking.
     protected Tab() {
         mImpl = null;
@@ -728,6 +732,15 @@ public class Tab {
         }
     }
 
+    // Called by Browser when removed.
+    void onRemovedFromBrowser() {
+        if (mDestroyOnRemove) {
+            unregisterTab(this);
+            mDestroyOnRemove = false;
+            mImpl = null;
+        }
+    }
+
     private static final class WebMessageCallbackClientImpl extends IWebMessageCallbackClient.Stub {
         private final WebMessageCallback mCallback;
         // Maps from id of IWebMessageReplyProxy to WebMessageReplyProxy. This is done to avoid AIDL
@@ -794,10 +807,12 @@ public class Tab {
             // Browser.prepareForDestroy()).
             if (WebLayer.getSupportedMajorVersionInternal() >= 87) {
                 unregisterTab(Tab.this);
+                // Ensure that the app will fail fast if the embedder mistakenly tries to call back
+                // into the implementation via this Tab.
+                mImpl = null;
+            } else {
+                mDestroyOnRemove = true;
             }
-            // Ensure that the app will fail fast if the embedder mistakenly tries to call back
-            // into the implementation via this Tab.
-            mImpl = null;
         }
 
         @Override
