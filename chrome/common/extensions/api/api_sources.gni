@@ -78,7 +78,10 @@ if (is_chromeos || is_mac || is_win) {
 }
 
 if (is_chromeos || chromeos_is_browser_only) {
-  schema_sources_ += [ "enterprise_platform_keys.idl" ]
+  schema_sources_ += [
+    "enterprise_platform_keys.idl",
+    "enterprise_platform_keys_internal.idl",
+  ]
 }
 
 if (is_chromeos) {
@@ -89,7 +92,6 @@ if (is_chromeos) {
     "echo_private.json",
     "enterprise_device_attributes.idl",
     "enterprise_networking_attributes.idl",
-    "enterprise_platform_keys_internal.idl",
     "enterprise_platform_keys_private.json",
     "file_browser_handler_internal.json",
     "file_manager_private.idl",

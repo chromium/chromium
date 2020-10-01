@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // Internal API for platform keys and certificate management.
-[ platforms = ("chromeos"),
+[ platforms = ("chromeos", "lacros"),
   implemented_in = "chrome/browser/extensions/api/enterprise_platform_keys/enterprise_platform_keys_api.h" ]
 namespace enterprise.platformKeysInternal {
   dictionary Hash {

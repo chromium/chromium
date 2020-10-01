@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/chromeos/platform_keys/platform_keys.h"
 #include "chromeos/crosapi/mojom/keystore_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -24,7 +25,7 @@ namespace crosapi {
 
 // This class is the ash implementation of the KeystoreService crosapi. It
 // allows lacros to expose blessed extension APIs which can query or modify the
-// system keystores.
+// system keystores. This class is affine to the UI thread.
 class KeystoreServiceAsh : public mojom::KeystoreService {
  public:
   explicit KeystoreServiceAsh(
@@ -40,8 +41,15 @@ class KeystoreServiceAsh : public mojom::KeystoreService {
       mojom::KeystoreType type,
       bool migrate,
       ChallengeAttestationOnlyKeystoreCallback callback) override;
+  void GetKeyStores(GetKeyStoresCallback callback) override;
 
  private:
+  static void OnGetTokens(
+      GetKeyStoresCallback callback,
+      std::unique_ptr<std::vector<chromeos::platform_keys::TokenId>>
+          platform_keys_token_ids,
+      chromeos::platform_keys::Status status);
+
   // |challenge| is used as a opaque identifier to match against the unique_ptr
   // in outstanding_challenges_. It should not be dereferenced.
   void DidChallengeAttestationOnlyKeystore(

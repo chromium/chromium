@@ -18,6 +18,14 @@ class LacrosNotImplementedExtensionFunction : public ExtensionFunction {
   ResponseAction Run() override;
 };
 
+class EnterprisePlatformKeysInternalGenerateKeyFunction
+    : public LacrosNotImplementedExtensionFunction {
+ private:
+  ~EnterprisePlatformKeysInternalGenerateKeyFunction() override = default;
+  DECLARE_EXTENSION_FUNCTION("enterprise.platformKeysInternal.generateKey",
+                             ENTERPRISE_PLATFORMKEYSINTERNAL_GENERATEKEY)
+};
+
 class EnterprisePlatformKeysGetCertificatesFunction
     : public LacrosNotImplementedExtensionFunction {
  private:
@@ -43,9 +51,13 @@ class EnterprisePlatformKeysRemoveCertificateFunction
 };
 
 class EnterprisePlatformKeysInternalGetTokensFunction
-    : public LacrosNotImplementedExtensionFunction {
+    : public ExtensionFunction {
  private:
   ~EnterprisePlatformKeysInternalGetTokensFunction() override = default;
+  ResponseAction Run() override;
+
+  using ResultPtr = crosapi::mojom::GetKeyStoresResultPtr;
+  void OnGetKeyStores(ResultPtr result);
   DECLARE_EXTENSION_FUNCTION("enterprise.platformKeysInternal.getTokens",
                              ENTERPRISE_PLATFORMKEYSINTERNAL_GETTOKENS)
 };
