@@ -53,4 +53,7 @@ interface IndexProxy {
   // code via a callback. |results| will be null if there is an error.
   Find(mojo_base.mojom.String16 query, uint32 max_results)
       => (ResponseStatus status, array<Result>? results);
+
+  // Clears all data stored by the index.
+  ClearIndex() => ();
 };

@@ -33,6 +33,7 @@ class IndexProxy : public mojom::IndexProxy {
   void Find(const base::string16& query,
             uint32_t max_results,
             FindCallback callback) override;
+  void ClearIndex(ClearIndexCallback callback) override;
 
  private:
   Index* const index_;

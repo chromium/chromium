@@ -50,5 +50,10 @@ void IndexProxy::Find(const base::string16& query,
   }
 }
 
+void IndexProxy::ClearIndex(ClearIndexCallback callback) {
+  index_->ClearIndex();
+  std::move(callback).Run();
+}
+
 }  // namespace local_search_service
 }  // namespace chromeos
