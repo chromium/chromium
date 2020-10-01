@@ -121,7 +121,6 @@ UseCounterPageLoadMetricsObserver::GetAllowedUkmFeatures() {
           WebFeature::kLazyLoadFrameLoadingAttributeEager,
           WebFeature::kLazyLoadImageLoadingAttributeLazy,
           WebFeature::kLazyLoadImageLoadingAttributeEager,
-          WebFeature::kRequestedFileSystemPersistent,
           WebFeature::kWebOTP,
           WebFeature::kBaseWithCrossOriginHref,
           WebFeature::kWakeLockAcquireScreenLock,

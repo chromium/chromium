@@ -1,5 +1,6 @@
 include_rules = [
     "+base/files/file.h",
+    "+services/metrics/public/cpp",
     "-third_party/blink/renderer/modules",
     "+third_party/blink/renderer/modules/event_target_modules.h",
     "+third_party/blink/renderer/modules/filesystem",

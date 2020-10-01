@@ -4047,6 +4047,24 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="FileSystemAPI.WebRequest">
+  <owner>mek@chromium.org</owner>
+  <owner>rhalavatigit@chromium.org</owner>
+  <summary>
+    Logged when a website requests accessing FileSystem API.
+  </summary>
+  <metric name="Persistent">
+    <summary>
+      Marks a request for a Persistent FileSystem.
+    </summary>
+  </metric>
+  <metric name="Temporary">
+    <summary>
+      Marks a request for a Temporary FileSystem.
+    </summary>
+  </metric>
+</event>
+
 <event name="FontMatchAttempts">
   <owner>caraitto@chromium.org</owner>
   <owner>pauljensen@chromium.org</owner>
