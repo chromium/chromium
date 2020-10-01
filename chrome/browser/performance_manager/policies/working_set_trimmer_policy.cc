@@ -7,6 +7,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/performance_manager/mechanisms/working_set_trimmer.h"
@@ -87,7 +88,11 @@ void WorkingSetTrimmerPolicy::SetLastTrimTime(const ProcessNode* process_node,
 bool WorkingSetTrimmerPolicy::TrimWorkingSet(const ProcessNode* process_node) {
   auto* trimmer = mechanism::WorkingSetTrimmer::GetInstance();
   DCHECK(trimmer);
+
+  static int renderers_trimmed = 0;
   if (process_node->GetProcess().IsValid()) {
+    UMA_HISTOGRAM_COUNTS_10000("Memory.WorkingSetTrim.RendererTrimCount",
+                               ++renderers_trimmed);
     SetLastTrimTimeNow(process_node);
     return trimmer->TrimWorkingSet(process_node);
   }
