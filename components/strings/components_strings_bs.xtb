@@ -15,7 +15,7 @@
 <translation id="1038106730571050514">Prikažite prijedloge</translation>
 <translation id="1038842779957582377">nepoznato ime</translation>
 <translation id="1041998700806130099">Poruka u tabeli za posao</translation>
-<translation id="1048785276086539861">Kad uredite napomene, dokument će se vratiti na prikaz pojedinačne stranice</translation>
+<translation id="1048785276086539861">Kada uredite bilješke, ovaj dokument će se vratiti na prikaz na jednoj stranici</translation>
 <translation id="1050038467049342496">Zatvorite druge aplikacije</translation>
 <translation id="1055184225775184556">&amp;Poništi dodavanje</translation>
 <translation id="1056898198331236512">Upozorenje</translation>
@@ -134,6 +134,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="1453974140256777690">Tekst koji zalijepite ili priložite se šalje u Google oblak ili trećim stranama na analizu. Naprimjer, može se skenirati radi otkrivanja postojanja osjetljivih podataka.</translation>
 <translation id="1455413310270022028">Gumica</translation>
 <translation id="1462245070427461050">JIS B9</translation>
+<translation id="1462951478840426066">Upotrijebite fontove na svojem računalu za izradu vjerne reprodukcije sadržaja</translation>
 <translation id="1463543813647160932">5 x 7</translation>
 <translation id="1467432559032391204">Lijevo</translation>
 <translation id="1472675084647422956">Prikaži više</translation>
@@ -221,6 +222,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="17513872634828108">Otvorene kartice</translation>
 <translation id="1752021286346845558">Poštansko sanduče 8</translation>
 <translation id="1753706481035618306">Broj stranice</translation>
+<translation id="1757773103848038814">Font Monospace</translation>
 <translation id="1763864636252898013">Ovaj server nije mogao potvrditi da je ovo domena <ph name="DOMAIN" />. Operativni sistem vašeg uređaja ne smatra njenu potvrdu sigurnosti pouzdanom. Uzrok može biti u pogrešnoj konfiguraciji ili da je napadač presreo vašu vezu.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Probajte pokrenuti Windows mrežnu dijagnostiku<ph name="END_LINK" />.</translation>
 <translation id="1772163372082567643">Server na koji idete, <ph name="ORIGIN" />, ima zaglavlje
@@ -380,7 +382,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="2465688316154986572">Spajanje</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />Pokrenuti dijagnostiku mreže<ph name="END_LINK" /></translation>
 <translation id="2469153820345007638">Redoslijed od 1 do N</translation>
-<translation id="2470767536994572628">Kad uredite napomene, dokument će se vratiti na prikaz pojedinačne stranice i izvorno usmjerenje</translation>
+<translation id="2470767536994572628">Kada uredite bilješke, ovaj dokument će se vratiti na prikaz na jednoj stranici i na svoju izvornu rotaciju</translation>
 <translation id="2479410451996844060">Nevažeći URL za pretraživanje.</translation>
 <translation id="2482878487686419369">Obavještenja</translation>
 <translation id="248348093745724435">Pravila uređaja</translation>
@@ -594,6 +596,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="3395827396354264108">Način preuzimanja</translation>
 <translation id="3399952811970034796">Adresa za isporuku</translation>
 <translation id="3402261774528610252">Veza korištena za učitavanje ove web lokacije je koristila verzije TLS 1.0 ili TLS 1.1, koje su zastarjele i u budućnosti će se onemogućiti. Kada se onemoguće, korisnici neće moću učitati ovu web lokaciju. Server treba omogućiti verziju TLS 1.2 ili noviju.</translation>
+<translation id="3411120537985775570">Administrator je blokirao lijepljenje s <ph name="ORIGIN_NAME" /> na ovu lokaciju.</translation>
 <translation id="3414952576877147120">Veličina:</translation>
 <translation id="3417660076059365994">Fajlovi koje otpremite ili priložite se šalju u Google oblak ili trećim stranama na analizu. Naprimjer, mogu se skenirati radi otkrivanja postojanja osjetljivih podataka ili zlonamjernog softvera.</translation>
 <translation id="3422248202833853650">Pokušajte izaći iz drugih programa da oslobodite memoriju.</translation>
@@ -632,6 +635,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="3532844647053365774"><ph name="HOST" /> želi koristiti vaš mikrofon</translation>
 <translation id="3533328374079021623">Poštansko sanduče 5</translation>
 <translation id="3539171420378717834">Zadrži kopiju ove kartice na ovom uređaju</translation>
+<translation id="3552297013052089404">Font Sans Serif</translation>
 <translation id="3558573058928565255">Dan</translation>
 <translation id="3566021033012934673">Vaša veza nije privatna</translation>
 <translation id="3567778190852720481">Nije se moguće prijaviti s računom preduzeća (račun preduzeća ne ispunjava uslove).</translation>
@@ -1000,6 +1004,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="503069730517007720">Potreban je korijenski certifikat za "<ph name="SOFTWARE_NAME" />", ali nije instaliran. Vaš IT administrator trebao bi pogledati upute za konfiguraciju softvera "<ph name="SOFTWARE_NAME" />" kako bi riješio taj problem. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5031870354684148875">O Google Prevodiocu</translation>
 <translation id="503498442187459473"><ph name="HOST" /> želi koristiti vašu kameru i mikrofon</translation>
+<translation id="5039762155821394373">Veličina fonta</translation>
 <translation id="5039804452771397117">Dozvoli</translation>
 <translation id="5040262127954254034">Privatnost</translation>
 <translation id="5043480802608081735">Veza koju ste kopirali</translation>
@@ -1229,6 +1234,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5946937721014915347">Otvaranje web lokacije <ph name="SITE_NAME" />…</translation>
 <translation id="5951495562196540101">Nije moguća prijava s potrošačkim računom (dostupna je paketna licenca).</translation>
+<translation id="5963413905009737549">Odjeljak</translation>
 <translation id="5967592137238574583">Uredite kontakt informacije</translation>
 <translation id="5967867314010545767">Ukloni iz historije</translation>
 <translation id="5975083100439434680">Smanji</translation>
@@ -1265,6 +1271,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="6051221802930200923">Trenutno ne možete posjetiti web lokaciju <ph name="SITE" />, jer web lokacija koristi kačenje potvrde. Greške i napadi na mreži su obično privremenog karaktera, tako da će ova stranica vjerovatno raditi kasnije.</translation>
 <translation id="6052284303005792909">•</translation>
 <translation id="6053328359599022071">Podijeliti prisutnost?</translation>
+<translation id="6057359309778282021">Administrator je blokirao dijeljenje s <ph name="ORIGIN_NAME" /> na <ph name="VM_NAME" /></translation>
 <translation id="6058977677006700226">Želite li plaćati svojim karticama na svim svojim uređajima?</translation>
 <translation id="6059925163896151826">USB uređaji</translation>
 <translation id="6060009363608157444">Nevažeći DnsOverHttps način.</translation>
@@ -1314,6 +1321,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
         <ph name="END_LIST" /></translation>
 <translation id="6280223929691119688">Isporuka na ovu adresu nije moguća. Odaberite drugu adresu.</translation>
 <translation id="6282194474023008486">Poštanski broj</translation>
+<translation id="6289939620939689042">Boja stranice</translation>
 <translation id="6290238015253830360">Predloženi članci će se pojaviti ovdje</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6302269476990306341">Zaustavljanje Google Asistenta u Chromeu</translation>
@@ -1470,6 +1478,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="7004583254764674281">Koristite Windows Hello da brže potvrdite kartice</translation>
 <translation id="7006930604109697472">Svejedno pošalji</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
+<translation id="7014741021609395734">Razina zumiranja</translation>
 <translation id="7016992613359344582">Ti troškovi mogu biti jednokratni ili ponavljajući te također mogu biti diskretni.</translation>
 <translation id="7029809446516969842">Lozinke</translation>
 <translation id="7031646650991750659">Koje Google Play aplikacije ste instalirali</translation>
@@ -1641,7 +1650,7 @@ Dodatni detalji:
 <translation id="7647206758853451655">Kvalitet štampanja</translation>
 <translation id="7648992873808071793">pohraniti fajlove na ovom uređaju</translation>
 <translation id="7653957176542370971">Stranica obrađivača uplate je zatvorena</translation>
-<translation id="7654909834015434372">Kad uredite napomene, dokument će se vratiti u izvorno usmjerenje</translation>
+<translation id="7654909834015434372">Kada uredite bilješke, ovaj dokument će se vratiti na svoju izvornu rotaciju</translation>
 <translation id="765676359832457558">Skrivanje naprednih postavki...</translation>
 <translation id="7658239707568436148">Otkaži</translation>
 <translation id="7662298039739062396">Postavku kontrolira ekstenzija</translation>
@@ -1871,6 +1880,7 @@ Dodatni detalji:
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">Nema lozinki koje se podudaraju. Prikaži sve sačuvane lozinke.</translation>
 <translation id="8625384913736129811">Sačuvaj ovu karticu na ovaj uređaj</translation>
+<translation id="8657078576661269990">Administrator je blokirao dijeljenje s <ph name="ORIGIN_NAME" /> na <ph name="VM_NAME_1" /> i <ph name="VM_NAME_2" /></translation>
 <translation id="8663226718884576429">Sažetak narudžbe, <ph name="TOTAL_LABEL" />, više detalja</translation>
 <translation id="867224526087042813">Potpis</translation>
 <translation id="8676424191133491403">Bez odgode</translation>
@@ -1883,6 +1893,7 @@ Dodatni detalji:
 <translation id="8699041776323235191">uređaj HID</translation>
 <translation id="8703575177326907206">Vaša veza na domenu <ph name="DOMAIN" /> nije šifrirana.</translation>
 <translation id="8705331520020532516">Serijski broj</translation>
+<translation id="8710842507289500830">Stil fonta</translation>
 <translation id="8718314106902482036">Plaćanje nije završeno</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />, <ph name="DESCRIPTION" />, prijedlog za pretraživanje</translation>
 <translation id="8719528812645237045">Višestruko bušenje na gornjoj strani</translation>
@@ -2003,6 +2014,7 @@ Dodatni detalji:
 <translation id="9191834167571392248">Bušenje u donjem lijevom uglu</translation>
 <translation id="9205078245616868884">Vaši podaci su šifrirani pristupnim izrazom za sinhronizaciju. Unesite ga da počnete sinhronizaciju.</translation>
 <translation id="9207861905230894330">Dodavanje članka nije uspjelo.</translation>
+<translation id="9213433120051936369">Prilagodi izgled</translation>
 <translation id="9215416866750762878">Jedna aplikacija sprečava sigurno povezivanje Chromea na ovu web lokaciju</translation>
 <translation id="9219103736887031265">Slike</translation>
 <translation id="933712198907837967">Diners Club</translation>

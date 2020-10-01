@@ -30,7 +30,7 @@
 <translation id="1208421848177517699">Transliterimi (namaste → નમસ્તે)</translation>
 <translation id="1243314992276662751">Ngarko</translation>
 <translation id="1249250836236328755">Zhanri</translation>
-<translation id="1276362640455948667">Portugalisht me tastierë ndërkombëtare amerikane</translation>
+<translation id="1276362640455948667">portugalisht me tastierë ndërkombëtare amerikane</translation>
 <translation id="1278813325885878377">Tastiera QWERTY në hungarisht</translation>
 <translation id="1293556467332435079">Skedarët</translation>
 <translation id="1297922636971898492">"Disku i Google" nuk ofrohet tani. Ngarkimi do të rifillojë automatikisht pasi të kthehet "Disku i Google".</translation>
@@ -117,10 +117,9 @@
 <translation id="2208158072373999562">Arkivi i ngjeshur</translation>
 <translation id="2225536596944493418">Je i sigurt që dëshiron të fshish <ph name="NUMBER_OF_ITEMS" /> artikuj?</translation>
 <translation id="2230062665678605299">Nuk mundi ta krijonte dosjen "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
-<translation id="2270413998793223379">Sanskritisht</translation>
 <translation id="2275059641601412272">Zhvendosur.</translation>
 <translation id="2278988676849463018">Tastierë Kannada (fonetike)</translation>
-<translation id="2287742181953707290">Portugalisht me tastierë amerikane ndërkombëtare për PC</translation>
+<translation id="2287742181953707290">portugalisht me tastierë amerikane ndërkombëtare për PC</translation>
 <translation id="2288278176040912387">Gramafoni</translation>
 <translation id="2291538123825441971">Po hapen <ph name="NUMBER_OF_FILES" /> skedarë.</translation>
 <translation id="2303301624314357662">Po hap skedarin <ph name="FILE_NAME" />.</translation>
@@ -224,7 +223,7 @@
 <translation id="3473378059788601120">Kopjuar te <ph name="FOLDER_NAME" />.</translation>
 <translation id="3475447146579922140">Fletëllogaritësja e Google</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> gabime.</translation>
-<translation id="349603508045926994">Persisht me transliterim</translation>
+<translation id="349603508045926994">persisht me transliterim</translation>
 <translation id="3519867315646775981">Transliterim (shalom ← שלום)</translation>
 <translation id="3522708245912499433">Portugalisht</translation>
 <translation id="3524311639100184459">Kujdes! Këta skedarë janë të përkohshëm dhe mund të fshihen automatikisht për të liruar hapësirën në disk.  <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
@@ -296,7 +295,7 @@
 <translation id="4298972503445160211">Tastiera në danisht</translation>
 <translation id="4299729908419173967">Braziliane</translation>
 <translation id="4309915981827077375">Informacione të përgjithshme</translation>
-<translation id="4315949787858895817">Holandisht (Belgjikë)</translation>
+<translation id="4315949787858895817">holandisht (Belgjikë)</translation>
 <translation id="4326192123064055915">Kafeja</translation>
 <translation id="4336032328163998280">Veprimi i kopjimit dështoi. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4364327530094270451">Pjepër</translation>
@@ -343,7 +342,7 @@
 <translation id="4804827417948292437">Avokado</translation>
 <translation id="4823651846660089135">Pajisja është vetëm për lexim</translation>
 <translation id="4839847978919684242">U zgjodhën <ph name="SELCTED_FILES_COUNT" /> artikuj</translation>
-<translation id="4849981557599196363">Gjermanisht (Belgjikë)</translation>
+<translation id="4849981557599196363">gjermanisht (Belgjikë)</translation>
 <translation id="4850886885716139402">Pamja</translation>
 <translation id="485316830061041779">Gjermanisht</translation>
 <translation id="4867079195717347957">Kliko për të renditur kolonën në rend zbritës.</translation>
@@ -407,7 +406,7 @@
     me të tjerët për skedarët, të gjitha në një vend të vetëm.<ph name="MARKUP_9" /></translation>
 <translation id="5274350207900771082">Kopjuar.</translation>
 <translation id="5275973617553375938">Skedarët e rikuperuar nga "Disku i Google"</translation>
-<translation id="5283140566205748520">Frëngjisht (Belgjikë)</translation>
+<translation id="5283140566205748520">frëngjisht (Belgjikë)</translation>
 <translation id="5317780077021120954">Ruaj</translation>
 <translation id="5318819489018851358">Ndaj me Linux</translation>
 <translation id="5319782540886810524">Tastierë letoneze</translation>
@@ -693,7 +692,7 @@
 <translation id="8329978297633540474">Tekst i thjeshtë</translation>
 <translation id="8335587457941836791">Zhgozhdo nga rafti</translation>
 <translation id="8336153091935557858">Dje <ph name="YESTERDAY_DAYTIME" /></translation>
-<translation id="8336524887811696057">Nepalisht me transliterim</translation>
+<translation id="8336524887811696057">nepalisht me transliterim</translation>
 <translation id="8336579025507394412">Tastierë në islandisht</translation>
 <translation id="8342318071240498787">Ekziston tashmë një skedar ose një direktori me të njëjtin emër.</translation>
 <translation id="8382450452152102026">Për <ph name="FOLDER_NAME" /></translation>
@@ -719,14 +718,14 @@
 <translation id="8600173386174225982">Lista e skedarëve ka ndryshuar në pamjen e miniaturës.</translation>
 <translation id="8601932370724196034">Skedar imazhi Crostini</translation>
 <translation id="8669949407341943408">Po zhvendos...</translation>
-<translation id="8694836330346852143">Urduisht</translation>
+<translation id="8694836330346852143">urduisht</translation>
 <translation id="8698464937041809063">Vizatimi Google</translation>
 <translation id="8714406895390098252">Biçikleta</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> u zgjodh.</translation>
 <translation id="8722421161699219904">Tastierë amerikane ndërkombëtare</translation>
 <translation id="872537912056138402">Kroatisht</translation>
 <translation id="874420130893181774">Metoda e hyrjes pinyin tradicionale</translation>
-<translation id="8770002329960263418">Holandisht (Holandë) me tastierë amerikane ndërkombëtare për PC</translation>
+<translation id="8770002329960263418">holandisht (Holandë) me tastierë amerikane ndërkombëtare për PC</translation>
 <translation id="8775404590947523323">Redaktimet e tua ruhen automatikisht.<ph name="BREAKS" />Për të mbajtur një kopje të imazhit origjinal, anulo zgjedhjen e "Mbishkruaj origjinalin"</translation>
 <translation id="8803496343472038847">Tastierë fonetike në rusisht</translation>
 <translation id="8808686172382650546">Macja</translation>

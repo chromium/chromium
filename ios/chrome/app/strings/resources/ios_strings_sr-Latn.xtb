@@ -97,7 +97,6 @@
 <translation id="1965935827552890526">Završite ono što ste radili u drugom otvorenom Chrome prozoru.</translation>
 <translation id="1974060860693918893">Napredne opcije</translation>
 <translation id="1989112275319619282">Pregledaj</translation>
-<translation id="1992734845128748707">Promenite podrazumevani pregledač…</translation>
 <translation id="2015722694326466240">Da biste videli lozinke, prvo morate da podesite šifru na uređaju.</translation>
 <translation id="2073572773299281212">Poslednja aktivnost: pre <ph name="DAYS" /> dan/a</translation>
 <translation id="2074131957428911366">Uvek možete da odaberete šta ćete sinhronizovati u <ph name="BEGIN_LINK" />podešavanjima<ph name="END_LINK" />.</translation>
@@ -165,6 +164,7 @@ Sajtovi ne mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja
 <translation id="2781331604911854368">Uključeno</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2800683595868705743">Izađi iz prebacivača kartica</translation>
+<translation id="2815198996063984598">2. Dodirnite Podrazumevana aplikacija za pregledanje</translation>
 <translation id="2830972654601096923">Upravljajte adresama...</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2840687315230832938">Početno podešavanje sinhronizacije nije završeno</translation>
@@ -181,6 +181,7 @@ Sajtovi ne mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja
 <translation id="2921219216347069551">Deljenje stranice nije moguće</translation>
 <translation id="2923448633003185837">Nalepi i idi</translation>
 <translation id="292639812446257861">Označi kao nepročitano</translation>
+<translation id="2952581218264071393">1. Otvorite podešavanja Chrome-a</translation>
 <translation id="2958718410589002129">Lozinke</translation>
 <translation id="2964349545761222050">Blokiraj kolačiće treće strane</translation>
 <translation id="2969979262385602596">Prijavljivanje nije uspelo. Probajte ponovo kasnije.</translation>
@@ -217,6 +218,7 @@ Kada ste u režimu bez arhiviranja, sajtovi ne mogu da koriste kolačiće da bi
 <translation id="3335947283844343239">Ponovo otvori zatvorenu karticu</translation>
 <translation id="3371831930909698441">Prevodilac je dostupan. Opcije su dostupne u dnu ekrana.</translation>
 <translation id="3393920035788932672">Dozvoljeni iskačući prozori</translation>
+<translation id="3399930248910934354">Otvori podešavanja Chrome-a</translation>
 <translation id="3425644765244388016">Nadimak kartice</translation>
 <translation id="3433057996795775706">Brisanjem ove lozinke nećete izbrisati nalog na <ph name="WEBSITE" />. Promenite lozinku na <ph name="WEBSITE" /> da biste je zaštitili od drugih.</translation>
 <translation id="3443810440409579745">Kartica je primljena.</translation>
@@ -241,6 +243,9 @@ Kada ste u režimu bez arhiviranja, sajtovi ne mogu da koriste kolačiće da bi
 <translation id="3551320343578183772">Zatvori karticu</translation>
 <translation id="3581564640715911333">Ponudi prevod stranica na drugim jezicima</translation>
 <translation id="3588820906588687999">Otvori sliku na novoj kartici</translation>
+<translation id="359441731697487922">Možete da automatski otvarate linkove u Chrome-u tako što ćete ga podesiti kao podrazumevanu aplikaciju za pregledanje.
+      
+Pratite korake u nastavku:</translation>
 <translation id="3603009562372709545">Kopiraj URL adresu linka</translation>
 <translation id="3607167657931203000">Podaci automatskog popunjavanja</translation>
 <translation id="3609785682760573515">Sinhronizovanje...</translation>
@@ -331,6 +336,7 @@ Podaci se šifruju pomoću pristupne fraze za sinhronizaciju. Unesite je da bis
 <translation id="4747097190499141774">Šifrovanje pomoću pristupne fraze ne obuhvata načine plaćanja i adrese iz Google Pay-a. Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fraza se ne šalje Google-u niti je on čuva. Ako zaboravite pristupnu frazu ili poželite da promenite ovo podešavanje, treba da resetujete sinhronizaciju. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">Nova kartica bez arhiviranja</translation>
 <translation id="4758977202923349869">Postavite kreditnu karticu u ovaj okvir</translation>
+<translation id="4775879719735953715">Podrazumevani pregledač</translation>
 <translation id="4802417911091824046">Šifrovanje pomoću pristupne fraze ne obuhvata načine plaćanja i adrese iz Google Pay-a.
 
 Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />resetujte sinhronizaciju<ph name="END_LINK" /></translation>
@@ -338,6 +344,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />resetujte sinhroniz
 <translation id="4808744395915275922">Ažuriranja</translation>
 <translation id="4818522717893377262">Dodajte jezik…</translation>
 <translation id="481968316161811770">Kolačići, podaci o sajtovima</translation>
+<translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} i još 1}one{{domain} i još {count}}few{{domain} i još {count}}other{{domain} i još {count}}}</translation>
 <translation id="4826218269716039351">Kolačići treće strane se blokiraju</translation>
 <translation id="48274138579728272">Označi kao pročitano</translation>
 <translation id="4833786495304741580">Automatski šalje Google-u statistiku korišćenja i izveštaje o otkazivanju.</translation>
@@ -586,6 +593,7 @@ Sajtovi ne mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja
 <translation id="7456847797759667638">Otvori lokaciju...</translation>
 <translation id="7460314822154045102">Koristi Kameru</translation>
 <translation id="7464701184726199289">Ovo će obrisati sinhronizovane podatke sa svih uređaja. Nećemo izbrisati sačuvana podešavanja sajtova i ona mogu da odražavaju vaše navike pri pregledanju. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
+<translation id="746684838091935575">3. Izaberite Chrome</translation>
 <translation id="7472734401283673885">Naziv kompanije</translation>
 <translation id="7473891865547856676">Ne, hvala</translation>
 <translation id="7481312909269577407">Prosledi</translation>

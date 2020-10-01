@@ -117,7 +117,6 @@
 <translation id="2208158072373999562">Zip සංරක්ෂකය</translation>
 <translation id="2225536596944493418">ඔබට අයිතම <ph name="NUMBER_OF_ITEMS" /> මැකීමට අවශ්‍ය බව ඔබට තහවුරුද?</translation>
 <translation id="2230062665678605299">මෙම ෆෝල්ඩරය සෑදීමට නොහැක "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
-<translation id="2270413998793223379">සංස්කෘත</translation>
 <translation id="2275059641601412272">ගෙන යන ලදී.</translation>
 <translation id="2278988676849463018">කන්නඩා යතුරු පුවරුව (ශබ්දිම)</translation>
 <translation id="2287742181953707290">එ.ජ. ජාත්‍යන්තර PC යතුරු පුවරුව සමඟ පෘතුගීසි</translation>
@@ -283,6 +282,7 @@
 <translation id="4072248638558688893">දෙමළ යතුරු පුවරුව (ශබ්දිම)</translation>
 <translation id="4124935795427217608">කඟවේනා</translation>
 <translation id="4158739975813877944">ධාවන ලැයිස්තුව විවෘත කරන්න</translation>
+<translation id="4159731583141908892"><ph name="FILE_NAME" /> ගෙන යන ලදී.</translation>
 <translation id="418179967336296930">රුසියානු ශබ්දානුකූල (YaZHert) යතුරුපුවරුව</translation>
 <translation id="4193154014135846272">Google ලේඛනය</translation>
 <translation id="4195249722193633765">Linux (Beta) සමගින් යෙදුම ස්ථාපනය කරන්න</translation>
@@ -318,6 +318,7 @@
 <translation id="4582497162516204941">Linux (Beta) සමගින් ස්ථාපනය කරන්න</translation>
 <translation id="4594543368593301662"><ph name="SEARCH_TERM" /> සඳහා වන ප්‍රතිඵල පෙන්වනු ලැබේ.</translation>
 <translation id="4603392156942865207"><ph name="FILE_NAME" /> <ph name="FOLDER_NAME" /> වෙත පිටපත් කිරීම</translation>
+<translation id="4627439232948440198">සංස්කෘත</translation>
 <translation id="4631887759990505102">කලාකරුවා</translation>
 <translation id="4656293982926141856">මෙම පරිගණකය</translation>
 <translation id="4669606053856530811">'<ph name="SOURCE_NAME" />' හි සාමාජිකයන්ට මෙම අයිතම ඔවුන් සමග බෙදා ගන්නේ නම් මිස ප්‍රවේශය අහිමි වනු ඇත.</translation>
@@ -617,6 +618,7 @@
 <translation id="7693909743393669729">ධාවකයක් හැඩ ගැන්වීම එහි ගබඩා කර ඇති සියලු දත්ත මකනු ඇති අතර දෘශ්‍යමාන නොවිය හැකි කොටස් ඇතුළුව දැනට පවතින සියලු කොටස් ඉවත් කරනු ඇත. මෙම ක්‍රියාව පසුගමනය කළ නොහැකිය.</translation>
 <translation id="7695430100978772476"><ph name="DRIVE_NAME" /> හැඩතල ගැන්විය නොහැකි විය</translation>
 <translation id="770015031906360009">ග්‍රීක</translation>
+<translation id="7705251383879779343"><ph name="FILE_NAME" /> පිටපත් කරන ලදි.</translation>
 <translation id="7706319470528945664">පෘතුගීසි යතුරු පුවරුව</translation>
 <translation id="7711920809702896782">රූප තතු</translation>
 <translation id="7724603315864178912">කැපීම</translation>

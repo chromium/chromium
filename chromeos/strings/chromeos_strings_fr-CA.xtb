@@ -5,6 +5,7 @@
 <translation id="1195447618553298278">Erreur inconnue.</translation>
 <translation id="1413240736185167732">Échec : problème de filtre</translation>
 <translation id="1468664791493211953">Offres</translation>
+<translation id="1478594628797167447">Numériseur</translation>
 <translation id="1482734542997480527"><ph name="ENROLLMENT_DOMAIN" /> gère cet appareil et pourrait surveiller votre activité sur celui-ci.</translation>
 <translation id="150962533380566081">Clé PUK non valide.</translation>
 <translation id="1510238584712386396">Lanceur</translation>
@@ -24,6 +25,7 @@
 <translation id="2872961005593481000">Arrêter</translation>
 <translation id="3008341117444806826">ACTUALISER</translation>
 <translation id="3091839911843451378">Échec : imprimante arrêtée</translation>
+<translation id="3246869037381808805">Les tâches d'impression de plus d'un jour seront retirées</translation>
 <translation id="3268178239013324452">Échec : porte de l'imprimante ouverte</translation>
 <translation id="3369013195428705271">Voulez-vous vraiment effacer tout l'historique d'impression? Vos tâches d'impression courantes ne seront pas effacées.</translation>
 <translation id="3456078764689556234">Page imprimée <ph name="PRINTED_PAGES" /> sur <ph name="TOTAL_PAGES" />.</translation>
@@ -34,6 +36,7 @@
 <translation id="38114475217616659">Effacer tout l'historique</translation>
 <translation id="3820172043799983114">NIP erroné.</translation>
 <translation id="3838338534323494292">Nouveau mot de passe</translation>
+<translation id="39823212440917567">Les tâches d'impression datant de plus de <ph name="NUMBER_OF_DAYS" /> jours seront supprimées</translation>
 <translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> gère cet appareil et a accès à toutes les activités, y compris les pages Web que vous visitez, vos mots de passe et vos courriels.</translation>
 <translation id="4003384961948020559">Échec : bac de sortie plein</translation>
 <translation id="4027485274696301677">Cet appareil <ph name="DEVICE_TYPE" /> est géré par <ph name="ENROLLMENT_DOMAIN" />. Les administrateurs peuvent configurer l'appareil à distance.</translation>
@@ -52,6 +55,7 @@
 <translation id="4890353053343094602">Choisissez-en un immédiatement</translation>
 <translation id="4917889632206600977">Tâche arrêtée : à court de papier</translation>
 <translation id="4932733599132424254">Date</translation>
+<translation id="520299634122159966">Aucun numériseur disponible</translation>
 <translation id="5212543919916444558">Je ne trouve aucun élément sur votre écran pour lequel je peux vous aider.
 Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation>
 <translation id="5222676887888702881">Déconnexion</translation>
@@ -71,6 +75,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="649050271426829538">Tâche arrêtée : bourrage de papier</translation>
 <translation id="6517239166834772319">Explorer</translation>
 <translation id="6564646048574748301">Échec : imprimante inaccessible</translation>
+<translation id="6620487321149975369">Les tâches d'impression s'afficheront dans l'historique, sauf si vous les retirez manuellement</translation>
 <translation id="6643016212128521049">Effacer</translation>
 <translation id="6747215703636344499">Tâche arrêtée : le plateau de sortie est plein</translation>
 <translation id="7162487448488904999">Galerie</translation>

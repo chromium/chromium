@@ -106,6 +106,7 @@
 <translation id="1810845389119482123">إعداد المزامنة الأولية لم يكتمل</translation>
 <translation id="1821253160463689938">يستخدم ملفات تعريف الارتباط لتذكّر الإعدادات المُفضّلة حتى إذا لم تزُر تلك الصفحات.</translation>
 <translation id="1829244130665387512">البحث في الصفحة</translation>
+<translation id="1830550083491357902">لم يتم تسجيل الدخول</translation>
 <translation id="1843805151597803366">‏للحصول على ترجمات أفضل، يُرجى السماح لمحرك "بحث Google" باستخدام الصفحة الحالية.</translation>
 <translation id="1853692000353488670">علامة تبويب جديدة للتصفح المتخفي</translation>
 <translation id="1856325424225101786">هل ترغب في إعادة ضبط الوضع البسيط؟</translation>
@@ -113,6 +114,7 @@
 <translation id="1877026089748256423">‏إصدار Chrome قديم</translation>
 <translation id="1883903952484604915">ملفاتي</translation>
 <translation id="189358972401248634">لغات أخرى</translation>
+<translation id="1919130412786645364">‏السماح بتسجيل الدخول إلى Chrome</translation>
 <translation id="1922362554271624559">اللغات المقترحة</translation>
 <translation id="1925021887439448749">إدخال عنوان الويب المُخصص</translation>
 <translation id="1928696683969751773">التحديثات</translation>
@@ -225,6 +227,7 @@
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{ملف صوتي واحد (#)}zero{# ملف صوتي}two{ملفان صوتيان (#)}few{# ملفات صوتية}many{# ملفًا صوتيًا}other{# ملف صوتي}}</translation>
 <translation id="2656405586795711023">تطبيقات الويب</translation>
 <translation id="2689830683995595741">‏يعني استخدامك لمتصفّح Chrome موافقتك على <ph name="BEGIN_LINK1" />بنود خدمة Google<ph name="END_LINK1" /> و<ph name="BEGIN_LINK2" />بنود الخدمة الإضافية لكل من متصفّح Google Chrome و"نظام التشغيل Chrome"<ph name="END_LINK2" />. وينطبق ذلك أيضًا على <ph name="BEGIN_LINK3" />إشعار الخصوصية لحسابات Google المُدارة من خلال Family Link<ph name="END_LINK3" />.</translation>
+<translation id="2704606927547763573">تم النسخ</translation>
 <translation id="2707726405694321444">إعادة تحميل الصفحة</translation>
 <translation id="2709516037105925701">الملء التلقائي</translation>
 <translation id="2718352093833049315">‏باستخدام شبكة Wi-Fi فقط</translation>
@@ -347,6 +350,7 @@
 <translation id="3631987586758005671">جارٍ المشاركة مع <ph name="DEVICE_NAME" /></translation>
 <translation id="3632295766818638029">كشف كلمة المرور</translation>
 <translation id="363596933471559332">يمكنك تسجيل الدخول تلقائيًا إلى المواقع الإلكترونية باستخدام بيانات الاعتماد المخزّنة. وعندما تكون هذه الميزة غير مفعّلة، سيُطلب منك التحقّق من بيانات الاعتماد في كل مرة قبل تسجيل الدخول إلى موقع إلكتروني.</translation>
+<translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3658159451045945436">تؤدي إعادة الضبط إلى محو سِجلّ البيانات المحفوظة، بما في ذلك قائمة المواقع الإلكترونية التي تمت زيارتها.</translation>
 <translation id="3692944402865947621">تعذّر تنزيل <ph name="FILE_NAME" /> نظرًا لعدم إمكانية الوصول إلى موقع مساحة التخزين.</translation>
 <translation id="3701167022068948696">إصلاح الخطأ الآن</translation>
@@ -655,7 +659,7 @@
 <translation id="5937580074298050696">تم توفير <ph name="AMOUNT" /></translation>
 <translation id="5939518447894949180">إعادة الضبط</translation>
 <translation id="5942872142862698679">‏استخدام محرك Google للبحث</translation>
-<translation id="5951615825629292797">تم تنزيل اللغة، يُرجى إعادة تشغيل <ph name="APP_NAME" />.</translation>
+<translation id="5951615825629292797">تم تنزيل حزمة اللغة المطلوبة. يُرجى إعادة تشغيل <ph name="APP_NAME" />.</translation>
 <translation id="5952764234151283551">‏يُرسِل عنوان URL لصفحة تحاول الوصول إليها إلى Google.</translation>
 <translation id="5956665950594638604">‏فتح مركز مساعدة Chrome في علامة تبويب جديدة</translation>
 <translation id="5957442310066583693">للاطّلاع على أهم المواقع الإلكترونية، انقر على زر "الشاشة الرئيسية".</translation>
@@ -707,6 +711,7 @@
 <translation id="6301525844455696527">متابعة قراءة ما فاتك في قائمة القراءة</translation>
 <translation id="6303969859164067831">تسجيل الخروج وإيقاف المزامنة</translation>
 <translation id="6312687380483398334">تطبيقات الويب (غير مزعجة)</translation>
+<translation id="6313752143992575395">عرض اقتراحات لموقع <ph name="WEBSITE_TITLE" /></translation>
 <translation id="6316139424528454185">‏إصدار Android غير متوافق</translation>
 <translation id="6324034347079777476">‏تمّ إيقاف مزامنة نظام Android</translation>
 <translation id="6333140779060797560">المشاركة عن طريق <ph name="APPLICATION" /></translation>
@@ -838,6 +843,7 @@
 <translation id="7233236755231902816">‏للاطّلاع على الويب بلغتك، يمكنك الحصول على أحدث إصدار من Chrome.</translation>
 <translation id="7248069434667874558">‏يُرجى التأكّد من تفعيل مزامنة <ph name="TARGET_DEVICE_NAME" /> في Chrome.</translation>
 <translation id="7274013316676448362">الموقع المحظور</translation>
+<translation id="7286572596625053347">هل تريد تغيير اللغة <ph name="LANGUAGE" />؟</translation>
 <translation id="7290209999329137901">إعادة التسمية غير متوفرة</translation>
 <translation id="7291387454912369099">‏الملء التلقائي باستخدام "مساعد Google"</translation>
 <translation id="7293171162284876153">‏لبدء المزامنة، يُرجى تفعيل "مزامنة بيانات Chrome".</translation>
@@ -960,7 +966,6 @@
 <translation id="8058746566562539958">‏فتح بعلامة تبويب Chrome جديدة</translation>
 <translation id="8063895661287329888">تعذّرت إضافة الإشارة المرجعية.</translation>
 <translation id="806745655614357130">الحفاظ على البيانات التابعة لي منفصلة</translation>
-<translation id="8069669375923284295">انقر لمواصلة إعداد المزامنة.</translation>
 <translation id="8073388330009372546">فتح الصورة بعلامة تبويب جديدة</translation>
 <translation id="8076492880354921740">علامات التبويب</translation>
 <translation id="8084114998886531721">كلمة مرور محفوظة</translation>

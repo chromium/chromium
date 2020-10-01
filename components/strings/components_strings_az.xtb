@@ -15,6 +15,7 @@
 <translation id="1038106730571050514">Təklifləri göstərin</translation>
 <translation id="1038842779957582377">bilinməyən ad</translation>
 <translation id="1041998700806130099">İş vərəqi mesajı</translation>
+<translation id="1048785276086539861">Annotasiyaları redaktə etdiyiniz zaman bu sənəd bir səhifəlik görünüşə qayıdacaq</translation>
 <translation id="1050038467049342496">Digər tətbiqləri bağlayın</translation>
 <translation id="1055184225775184556">Əlavəni geri qaytarın</translation>
 <translation id="1056898198331236512">Xəbərdarlıq</translation>
@@ -379,6 +380,7 @@
 <translation id="2465688316154986572">Ştapel vurun</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />Şəbəkə Diaqnostikası İşləyir<ph name="END_LINK" /></translation>
 <translation id="2469153820345007638">1-N sırası</translation>
+<translation id="2470767536994572628">Annotasiyaları redaktə etdiyiniz zaman bu sənəd bir səhifəlik görünüşə və ilkin vəziyyətinə qayıdacaq</translation>
 <translation id="2479410451996844060">Yanlış axtarış linki.</translation>
 <translation id="2482878487686419369">Bildirişlər</translation>
 <translation id="248348093745724435">Cihaz siyasətləri</translation>
@@ -1222,6 +1224,7 @@
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5946937721014915347"><ph name="SITE_NAME" /> açılır…</translation>
 <translation id="5951495562196540101">Müştəri hesabı (toplu lisenziya əlçatandır) ilə qeydiyyatdan keçmək mümkün deyil.</translation>
+<translation id="5963413905009737549">Bölmə</translation>
 <translation id="5967592137238574583">Kontakt Məlumatını Redaktə Edin</translation>
 <translation id="5967867314010545767">Tarixçədən silin</translation>
 <translation id="5975083100439434680">Kiçildin</translation>
@@ -1633,6 +1636,7 @@
 <translation id="7647206758853451655">Çap keyfiyyəti</translation>
 <translation id="7648992873808071793">Faylları bu cihazda saxlayın</translation>
 <translation id="7653957176542370971">Ödəniş səhifəsi bağlıdır</translation>
+<translation id="7654909834015434372">Annotasiyaları redaktə etdiyiniz zaman bu sənəd ilkin vəziyyətinə qayıdacaq</translation>
 <translation id="765676359832457558">Qabaqcıl ayarları gizlədin...</translation>
 <translation id="7658239707568436148">Ləğv edin</translation>
 <translation id="7662298039739062396">Ayara artırma tərəfindən nəzarət edildi</translation>

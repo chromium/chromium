@@ -15,6 +15,7 @@
 <translation id="1038106730571050514">సూచనలను చూపు</translation>
 <translation id="1038842779957582377">తెలియని పేరు</translation>
 <translation id="1041998700806130099">జాబ్ షీట్ సందేశం</translation>
+<translation id="1048785276086539861">మీరు అదనపు గమనికలను ఎడిట్ చేసినప్పుడు, ఈ డాక్యుమెంట్ సింగిల్ పేజీ వీక్షణకు తిరిగి వస్తుంది</translation>
 <translation id="1050038467049342496">ఇతర అనువర్తనాలను మూసివేయండి</translation>
 <translation id="1055184225775184556">&amp;జోడించడాన్ని రద్దు చేయి</translation>
 <translation id="1056898198331236512">హెచ్చరిక</translation>
@@ -381,6 +382,7 @@
 <translation id="2465688316154986572">స్టేపుల్</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />నెట్‌వర్క్ సమస్య విశ్లేషణలను అమలు చేయడం<ph name="END_LINK" /></translation>
 <translation id="2469153820345007638">1-నుండి-N వరకు ఉన్న క్రమం</translation>
+<translation id="2470767536994572628">మీరు అదనపు గమనికలను ఎడిట్ చేసినప్పుడు, ఈ డాక్యుమెంట్ సింగిల్ పేజీ వీక్షణకు, అలాగే దాని ఒరిజినల్ రొటేషన్‌కు తిరిగి వస్తుంది</translation>
 <translation id="2479410451996844060">శోధన URL చెల్లదు.</translation>
 <translation id="2482878487686419369">నోటిఫికేషన్‌లు</translation>
 <translation id="248348093745724435">మెషీన్ విధానాలు</translation>
@@ -1169,7 +1171,7 @@
 <translation id="5684874026226664614">అయ్యో. ఈ పేజీని అనువదించడం సాధ్యపడలేదు.</translation>
 <translation id="5685654322157854305">షిప్పింగ్ చిరునామాను జోడించండి</translation>
 <translation id="5689199277474810259">JSONకు ఎగుమతి చేయి</translation>
-<translation id="5689516760719285838">స్థానం</translation>
+<translation id="5689516760719285838">లొకేషన్</translation>
 <translation id="569000877158168851">DnsOverHttpsTemplates విలువ ఔచిత్యంగా లేదు, DnsOverHttpsMode విధానాన్ని <ph name="SECURE_DNS_MODE_AUTOMATIC" />కు లేదా <ph name="SECURE_DNS_MODE_SECURE" />కు సెట్ చేస్తే మినహా, అది ఉపయోగించబడదు.</translation>
 <translation id="5701381305118179107">మధ్యకు</translation>
 <translation id="570530837424789914">నిర్వహించండి...</translation>
@@ -1227,6 +1229,7 @@
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5946937721014915347"><ph name="SITE_NAME" /> తెరవబడుతోంది…</translation>
 <translation id="5951495562196540101">వినియోగదారు ఖాతాతో నమోదు చేయడం సాధ్యపడదు (ప్యాకేజ్డ్ లైసెన్స్ అందుబాటులో ఉంది).</translation>
+<translation id="5963413905009737549">విభాగం</translation>
 <translation id="5967592137238574583">సంప్రదింపు సమాచారాన్ని సవరించండి</translation>
 <translation id="5967867314010545767">చరిత్ర నుండి తీసివేయి</translation>
 <translation id="5975083100439434680">దూరంగా జూమ్ చేయి</translation>
@@ -1285,7 +1288,7 @@
 <translation id="6165508094623778733">మరింత తెలుసుకోండి</translation>
 <translation id="6177128806592000436">ఈ సైట్‌తో మీకున్న కనెక్షన్ సురక్షితంగా లేదు</translation>
 <translation id="6180316780098470077">పునఃప్రయత్నాల మధ్య విరామం</translation>
-<translation id="6196640612572343990">మూడవ పక్షం కుక్కీలను బ్లాక్ చేయి</translation>
+<translation id="6196640612572343990">థర్డ్ పార్టీ కుక్కీలను బ్లాక్ చేయండి</translation>
 <translation id="6203231073485539293">మీ ఇంటర్నెట్ కనెక్షన్‌ను తనిఖీ చేయండి</translation>
 <translation id="6218753634732582820">Chromium నుండి చిరునామాను తీసివేయాలా?</translation>
 <translation id="622039917539443112">పారలల్ ఫోల్డ్</translation>
@@ -1639,6 +1642,7 @@
 <translation id="7647206758853451655">ప్రింట్ నాణ్యత</translation>
 <translation id="7648992873808071793">ఈ పరికరంలో ఫైల్‌లను నిల్వ చేయాలనుకుంటోంది</translation>
 <translation id="7653957176542370971">చెల్లింపు హ్యాండ్లర్ షీట్ మూసివేయబడింది</translation>
+<translation id="7654909834015434372">మీరు అదనపు గమనికలను ఎడిట్ చేసినప్పుడు, ఈ డాక్యుమెంట్, దాని ఒరిజినల్ రొటేషన్‌కు తిరిగి వస్తుంది</translation>
 <translation id="765676359832457558">అధునాతన సెట్టింగ్‌లను దాచు...</translation>
 <translation id="7658239707568436148">రద్దు చేయి</translation>
 <translation id="7662298039739062396">పొడిగింపు ద్వారా సెట్టింగ్ నియంత్రించబడుతోంది</translation>

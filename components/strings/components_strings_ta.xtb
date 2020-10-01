@@ -15,6 +15,7 @@
 <translation id="1038106730571050514">பரிந்துரைகளைக் காட்டும்</translation>
 <translation id="1038842779957582377">அறியப்படாத பெயர்</translation>
 <translation id="1041998700806130099">பணித் தாள் மெசேஜ்</translation>
+<translation id="1048785276086539861">விரிவுரைகளைத் திருத்தினால் இந்த ஆவணம் ஒற்றைப் பக்கக்காட்சிக்கு மாறும்</translation>
 <translation id="1050038467049342496">பிற ஆப்ஸை மூடவும்</translation>
 <translation id="1055184225775184556">&amp;சேர்த்தலைச் செயல்தவிர்</translation>
 <translation id="1056898198331236512">எச்சரிக்கை</translation>
@@ -108,6 +109,7 @@
 <translation id="1348779747280417563">பெயரை உறுதிப்படுத்தவும்</translation>
 <translation id="1357195169723583938">சமீபத்தில் சாதனத்தை யார், எப்போது பயன்படுத்தியது</translation>
 <translation id="1360955481084547712">தனிப்பட்ட முறையில் உலாவ புதிய மறைநிலை சாளரத்தைத் திற</translation>
+<translation id="1363819917331173092">பக்கங்களை <ph name="SOURCE_LANGUAGE" /> மொழியில் மொழிபெயர்க்க அனுமதிக்காதே</translation>
 <translation id="1364822246244961190">இந்தக் கொள்கை தடைசெய்யப்பட்டுள்ளது, இதன் மதிப்பு புறக்கணிக்கப்படும்.</translation>
 <translation id="1374468813861204354">பரிந்துரைகள்</translation>
 <translation id="1374692235857187091">Index-4x6 (போஸ்ட்கார்டு)</translation>
@@ -378,6 +380,7 @@
 <translation id="2465688316154986572">ஸ்டேப்பில்</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />நெட்வொர்க் டயக்னாஸ்டிக்ஸ் கருவியை இயக்கவும்<ph name="END_LINK" /></translation>
 <translation id="2469153820345007638">முன்னோக்கிய வரிசை</translation>
+<translation id="2470767536994572628">விரிவுரைகளைத் திருத்தினால் இந்த ஆவணம் ஒற்றைப் பக்கக்காட்சிக்கும் தனது அசல் நிலைக்கும் மாறும்</translation>
 <translation id="2479410451996844060">தவறான தேடல் URL.</translation>
 <translation id="2482878487686419369">அறிவிப்புகள்</translation>
 <translation id="248348093745724435">சாதனக் கொள்கைகள்</translation>
@@ -501,6 +504,7 @@
 <translation id="2996674880327704673">Google வழங்கும் பரிந்துரைகள்</translation>
 <translation id="3002501248619246229">உள்ளீட்டுத் தட்டின் மீடியாவைச் சரிபார்</translation>
 <translation id="3005723025932146533">சேமித்த நகலைக் காட்டு</translation>
+<translation id="3007719053326478567">இந்த உள்ளடக்கத்தைப் பிரிண்ட் செய்வதை உங்கள் நிர்வாகி தடுத்துள்ளார்</translation>
 <translation id="3008447029300691911"><ph name="CREDIT_CARD" /> இன் CVC எண்ணை உள்ளிடவும். உறுதிசெய்த பின்னர், உங்கள் கார்டு விவரங்கள் இந்தத் தளத்திற்குப் பகிரப்படும்.</translation>
 <translation id="3010559122411665027">பட்டியல் உள்ளீடு "<ph name="ENTRY_INDEX" />": <ph name="ERROR" /></translation>
 <translation id="301521992641321250">தானாகத் தடுக்கப்பட்டது</translation>
@@ -1219,6 +1223,7 @@
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5946937721014915347"><ph name="SITE_NAME" />ஐத் திறக்கிறது…</translation>
 <translation id="5951495562196540101">நுகர்வோர் கணக்கில் பதிவுசெய்ய முடியவில்லை (தொகுக்கப்பட்ட உரிமம் உள்ளது).</translation>
+<translation id="5963413905009737549">பிரிவு</translation>
 <translation id="5967592137238574583">தொடர்புத் தகவலைத் திருத்தவும்</translation>
 <translation id="5967867314010545767">வரலாற்றிலிருந்து அகற்று</translation>
 <translation id="5975083100439434680">சிறிதாக்கு</translation>
@@ -1630,6 +1635,7 @@
 <translation id="7647206758853451655">அச்சின் தரம்</translation>
 <translation id="7648992873808071793">இந்தச் சாதனத்தில் கோப்புகளைச் சேமிக்கும்</translation>
 <translation id="7653957176542370971">பேமெண்ட் ஹேண்ட்லர் ஷீட் மூடியுள்ளது</translation>
+<translation id="7654909834015434372">விரிவுரைகளைத் திருத்தினால் இந்த ஆவணம் தனது அசல் நிலைக்கு மாறும்</translation>
 <translation id="765676359832457558">மேம்பட்ட அமைப்புகளை மறை...</translation>
 <translation id="7658239707568436148">ரத்து செய்</translation>
 <translation id="7662298039739062396">அமைப்பை நீட்டிப்பு கட்டுப்படுத்துகிறது</translation>
@@ -1785,6 +1791,7 @@
 <translation id="8267698848189296333"><ph name="USERNAME" /> ஆக உள்நுழைகிறீர்கள்</translation>
 <translation id="8269242089528251720">தனித்தனி ஆவணங்கள்/தொகுக்கப்பட்ட நகல்கள்</translation>
 <translation id="8269981117540303696">இப்போது தனிப்பட்ட முறையில் உலாவலாம். இந்தச் சாதனத்தைப் பயன்படுத்தும் பிறரால் உங்கள் செயல்பாட்டைப் பார்க்க முடியாது. எனினும் பதிவிறக்கங்களும் புக்மார்க்குகளும் சேமிக்கப்படும்.</translation>
+<translation id="8275952078857499577">இந்தத் தளத்தை மொழிபெயர்க்க அனுமதிக்காதே</translation>
 <translation id="8277900682056760511">பேமெண்ட் ஹேண்ட்லர் ஷீட் திறந்துள்ளது</translation>
 <translation id="8281084378435768645">Large-Photo</translation>
 <translation id="8282947398454257691">உங்கள் தனிப்பட்ட சாதன அடையாளங்காட்டியை அறியும்</translation>

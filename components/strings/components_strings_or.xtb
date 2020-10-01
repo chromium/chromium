@@ -15,6 +15,7 @@
 <translation id="1038106730571050514">ପରାମର୍ଶଗୁଡ଼ିକ ଦେଖାନ୍ତୁ</translation>
 <translation id="1038842779957582377">ଅଜ୍ଞାତ ନାମ</translation>
 <translation id="1041998700806130099">ଜବ୍ ସିଟ୍ ମେସେଜ୍</translation>
+<translation id="1048785276086539861">ଯେତେବେଳେ ଆପଣ ଏନୋଟେସନଗୁଡ଼ିକୁ ଏଡିଟ୍ କରନ୍ତି, ଏହି ଡକ୍ୟୁମେଣ୍ଟ ସିଙ୍ଗଲ୍ ପେଜ୍ ଭ୍ୟୁକୁ ଫେରି ଆସିବ</translation>
 <translation id="1050038467049342496">ଅନ୍ୟ ଆପ୍‍ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="1055184225775184556">ଯୋଗ କରାଯାଇଥିବା କାର୍ଯ୍ୟକୁ &amp;ପୂର୍ବବତ୍ କରନ୍ତୁ</translation>
 <translation id="1056898198331236512">ଚେତାବନୀ</translation>
@@ -374,6 +375,7 @@
 <translation id="2465688316154986572">ଷ୍ଟାପଲ୍</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />ନେଟ୍‌ୱର୍କ ଡାଏଗ୍ନୋଷ୍ଟିକ୍‍ ଚାଲୁଛି<ph name="END_LINK" /></translation>
 <translation id="2469153820345007638">1-ରୁ-N ଅର୍ଡର୍</translation>
+<translation id="2470767536994572628">ଆପଣ ଏନୋଟେସନଗୁଡ଼ିକୁ ଏଡିଟ୍ କଲେ, ଏହି ଡକ୍ୟୁମେଣ୍ଟ ସିଙ୍ଗଲ୍ ପୃଷ୍ଠା ଭ୍ୟୁ ଏବଂ ଏହାର ମୂଳ ରୋଟେସନକୁ ଫେରି ଆସିବ</translation>
 <translation id="2479410451996844060">ଅବୈଧ ସନ୍ଧାନ URL.</translation>
 <translation id="2482878487686419369">ବିଜ୍ଞପ୍ତି</translation>
 <translation id="248348093745724435">ମେସିନ୍‌ର ନୀତି</translation>
@@ -1212,6 +1214,7 @@
 <translation id="5938793338444039872">ଟ୍ରୟ</translation>
 <translation id="5946937721014915347"><ph name="SITE_NAME" /> ଖୋଲୁଛି…</translation>
 <translation id="5951495562196540101">ଉପଭୋକ୍ତାଙ୍କ ଆକାଉଣ୍ଟ (ପ୍ୟାକେଜ୍‌ ହୋ‍ଇଥିବା ଲାଇସେନ୍ସ ଉପଲବ୍ଧ ଅଛି ) ନାମାଙ୍କନ କରାଯାଇପାରିବ ନାହିଁ।</translation>
+<translation id="5963413905009737549">ବିଭାଗ</translation>
 <translation id="5967592137238574583">ଯୋଗାଯୋଗ ସୂଚନା ଏଡିଟ୍ କରନ୍ତୁ</translation>
 <translation id="5967867314010545767">ଇତିବୃତ୍ତିରୁ କାଢ଼ି ଦିଅନ୍ତୁ</translation>
 <translation id="5975083100439434680">ଜୁମ୍ କମାନ୍ତୁ</translation>
@@ -1622,6 +1625,7 @@
 <translation id="7647206758853451655">ପ୍ରିଣ୍ଟ ଗୁଣବତ୍ତା</translation>
 <translation id="7648992873808071793">ଏହି ଡିଭାଇସ୍‌ରେ ଫାଇଲ୍ ଷ୍ଟୋର୍ କରନ୍ତୁ</translation>
 <translation id="7653957176542370971">ପେମେଣ୍ଟ ହ୍ୟାଣ୍ଡଲର୍ ସିଟ୍ ବନ୍ଦ ଅଛି</translation>
+<translation id="7654909834015434372">ଆପଣ ଏନୋଟେସନଗୁଡ଼ିକୁ ଏଡିଟ୍ କଲେ, ଏହି ଡକ୍ୟୁମେଣ୍ଟ ଏହାର ମୂଳ ରୋଟେସନକୁ ଫେରି ଆସିବ</translation>
 <translation id="765676359832457558">ଉନ୍ନତ ସେଟିଂସ୍ ଲୁଚାନ୍ତୁ...</translation>
 <translation id="7658239707568436148">ବାତିଲ୍</translation>
 <translation id="7662298039739062396">ଗୋଟିଏ ଏକ୍ସଟେନ୍‍ସନ୍ ଦ୍ଵାରା ସେଟିଂକୁ ନିୟନ୍ତ୍ରଣ କରାଯାଉଛି</translation>

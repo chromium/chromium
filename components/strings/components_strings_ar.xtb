@@ -15,6 +15,7 @@
 <translation id="1038106730571050514">عرض الاقتراحات</translation>
 <translation id="1038842779957582377">اسم غير معروف</translation>
 <translation id="1041998700806130099">رسالة ورقة المهمة</translation>
+<translation id="1048785276086539861">عند تعديل التعليقات التوضيحية، سيعود هذا المستند إلى عرض صفحة واحدة.</translation>
 <translation id="1050038467049342496">إغلاق التطبيقات الأخرى</translation>
 <translation id="1055184225775184556">تراجع عن الإ&amp;ضافة</translation>
 <translation id="1056898198331236512">تحذير</translation>
@@ -379,6 +380,7 @@
 <translation id="2465688316154986572">وضع دبوس واحد</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />تشغيل بيانات تشخيص الشبكة<ph name="END_LINK" /></translation>
 <translation id="2469153820345007638">طباعة الصفحات بالترتيب الأساسي</translation>
+<translation id="2470767536994572628">عند تعديل التعليقات التوضيحية، سيعود هذا المستند إلى التدوير للاتجاه الأصلي وإلى عرض صفحة واحدة.</translation>
 <translation id="2479410451996844060">‏عنوان URL للبحث غير صالح.</translation>
 <translation id="2482878487686419369">الإشعارات</translation>
 <translation id="248348093745724435">سياسات الأجهزة</translation>
@@ -1227,6 +1229,7 @@
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5946937721014915347">جارٍ فتح <ph name="SITE_NAME" />…</translation>
 <translation id="5951495562196540101">لا يمكن التسجيل باستخدام حساب المستهلك (الترخيص المجمّع متوفّر).</translation>
+<translation id="5963413905009737549">قسم</translation>
 <translation id="5967592137238574583">تعديل معلومات الاتصال</translation>
 <translation id="5967867314010545767">إزالة من السجل</translation>
 <translation id="5975083100439434680">تصغير</translation>
@@ -1639,6 +1642,7 @@
 <translation id="7647206758853451655">جودة الطباعة</translation>
 <translation id="7648992873808071793">تخزين الملفات على هذا الجهاز</translation>
 <translation id="7653957176542370971">جدول بيانات معالج الدفع مغلق</translation>
+<translation id="7654909834015434372">عند تعديل التعليقات التوضيحية، سيعود هذا المستند إلى تدويره للاتجاه الأصلي.</translation>
 <translation id="765676359832457558">إخفاء الإعدادات المتقدمة...</translation>
 <translation id="7658239707568436148">إلغاء</translation>
 <translation id="7662298039739062396">يتم التحكّم في الإعداد بواسطة إحدى الإضافات</translation>

@@ -117,7 +117,6 @@
 <translation id="2208158072373999562">Zip arhīvs</translation>
 <translation id="2225536596944493418">Vai tiešām vēlaties dzēst <ph name="NUMBER_OF_ITEMS" /> vienumus?</translation>
 <translation id="2230062665678605299">Mapi “<ph name="FOLDER_NAME" />” nevar izveidot. <ph name="ERROR_MESSAGE" /></translation>
-<translation id="2270413998793223379">Sanskrits</translation>
 <translation id="2275059641601412272">Pārvietots.</translation>
 <translation id="2278988676849463018">Kannadu valodas tastatūra (fonētiskā)</translation>
 <translation id="2287742181953707290">Portugāļu valoda ar ASV starptautisko datora tastatūru</translation>
@@ -283,6 +282,7 @@
 <translation id="4072248638558688893">Tamilu valodas tastatūra (fonētiskā)</translation>
 <translation id="4124935795427217608">Vienradzis</translation>
 <translation id="4158739975813877944">Atvērt atskaņošanas sarakstu</translation>
+<translation id="4159731583141908892">Pārvietots vienums: <ph name="FILE_NAME" />.</translation>
 <translation id="418179967336296930">Krievu fonētiskā (YaZHert) tastatūra</translation>
 <translation id="4193154014135846272">Google dokuments</translation>
 <translation id="4195249722193633765">Lietotnes instalēšana operētājsistēmā Linux (Beta)</translation>
@@ -318,6 +318,7 @@
 <translation id="4582497162516204941">Instalēt operētājsistēmā Linux (Beta)</translation>
 <translation id="4594543368593301662">Tiek rādīti rezultāti šādam vaicājumam: <ph name="SEARCH_TERM" />.</translation>
 <translation id="4603392156942865207">Fails “<ph name="FILE_NAME" />” tiek kopēts uz mapi “<ph name="FOLDER_NAME" />”</translation>
+<translation id="4627439232948440198">Sanskrits</translation>
 <translation id="4631887759990505102">Izpildītājs</translation>
 <translation id="4656293982926141856">Šajā datorā</translation>
 <translation id="4669606053856530811">“<ph name="SOURCE_NAME" />” dalībnieki zaudēs piekļuvi šiem vienumiem, ja tie netiks kopīgoti ar viņiem.</translation>
@@ -618,6 +619,7 @@
 <translation id="7693909743393669729">Formatējot disku, tiks dzēsti visi tajā glabātie dati un tiks noņemti visi esošie nodalījumi, tostarp tie, kas nav redzami. Šo darbību nevar atsaukt.</translation>
 <translation id="7695430100978772476">Nevarēja formatēt disku “<ph name="DRIVE_NAME" />”.</translation>
 <translation id="770015031906360009">Grieķu valoda</translation>
+<translation id="7705251383879779343">Nokopēts vienums: <ph name="FILE_NAME" />.</translation>
 <translation id="7706319470528945664">Portugāļu valodas tastatūra</translation>
 <translation id="7711920809702896782">Attēla informācija</translation>
 <translation id="7724603315864178912">Izgriezt</translation>

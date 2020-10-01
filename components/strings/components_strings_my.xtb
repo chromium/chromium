@@ -15,6 +15,7 @@
 <translation id="1038106730571050514">အကြံပြုချက်များ ပြရန်</translation>
 <translation id="1038842779957582377">မသိရ အမည်</translation>
 <translation id="1041998700806130099">အလုပ် စာမျက်နှာ မက်ဆေ့ဂျ်</translation>
+<translation id="1048785276086539861">မှတ်ချက်များတည်းဖြတ်ပါက ဤမှတ်တမ်းသည် စာမျက်နှာတစ်ခုတည်းသို့ ပြန်ပြောင်းသွားမည်</translation>
 <translation id="1050038467049342496">အခြား အက်ပ်များကို ပိတ်ပါ</translation>
 <translation id="1055184225775184556">&amp;ထည့်ပေးမှု တစ်ဆင့်နောက်ပြန်ရန်</translation>
 <translation id="1056898198331236512">သတိပေးချက်</translation>
@@ -381,6 +382,7 @@
 <translation id="2465688316154986572">ချုပ်စက်ဖြင့် ချုပ်ရန်</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />ကွန်ရက်ပြဿနာရှာဖွေမှု ပြုလုပ်ပါ<ph name="END_LINK" /></translation>
 <translation id="2469153820345007638">၁ မှ N သို့ အစီအစဉ်</translation>
+<translation id="2470767536994572628">မှတ်ချက်များတည်းဖြတ်ပါက ဤမှတ်တမ်းသည် စာမျက်နှာတစ်ခုတည်းသို့ ပြန်ပြောင်းပြီး ၎င်း၏ မူရင်းအနေအထားသို့ ပြန်လှည့်သွားမည်</translation>
 <translation id="2479410451996844060">URL ရှာဖွေမှု မမှန်။</translation>
 <translation id="2482878487686419369">အကြောင်းကြားစာ</translation>
 <translation id="248348093745724435">စက်ပစ္စည်း မူဝါဒများ</translation>
@@ -1227,6 +1229,7 @@
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5946937721014915347"><ph name="SITE_NAME" /> ကို ဖွင့်နေသည်…</translation>
 <translation id="5951495562196540101">အသုံးပြုသူ အကောင့်ဖြင့် စာရင်းသွင်း၍ မရပါ (ပက်ကေ့ချ်လုပ်ထားသော လိုင်စင်ကို ရနိုင်သည်)။</translation>
+<translation id="5963413905009737549">အပိုင်း</translation>
 <translation id="5967592137238574583">အဆက်အသွယ် အချက်အလက်ကို တည်းဖြတ်ခြင်း</translation>
 <translation id="5967867314010545767">သမိုင်းမှ ဖယ်ရှားရန်</translation>
 <translation id="5975083100439434680">ဇူးမ်ဖြုတ်ရန်</translation>
@@ -1638,6 +1641,7 @@
 <translation id="7647206758853451655">ပုံနှိပ်အရည်အသွေး</translation>
 <translation id="7648992873808071793">ဤစက်ကိရိယာတွင် ဖိုင်များ သိမ်းပါ</translation>
 <translation id="7653957176542370971">ငွေပေးချေမှု ကိုင်တွယ်သည့်စနစ်စာမျက်နှာကို ပိတ်ထားသည်</translation>
+<translation id="7654909834015434372">မှတ်ချက်များတည်းဖြတ်ပါက ဤမှတ်တမ်းသည် ၎င်း၏ မူရင်းအနေအထားသို့ ပြန်လှည့်သွားမည်</translation>
 <translation id="765676359832457558">အဆင့်မြင့် ဆက်တင်များကို ဝှက်ထားရန်...</translation>
 <translation id="7658239707568436148">မလုပ်တော့</translation>
 <translation id="7662298039739062396">နောက်ဆက်တွဲတစ်ခုက ထိန်းချုပ်ထားသည့် ဆက်တင်</translation>

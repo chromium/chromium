@@ -113,6 +113,7 @@
 <translation id="2049240716062114887">ຊື່ໂຕະໄດ້ຖືກປ່ຽນເປັນ <ph name="DESK_NAME" /> ແລ້ວ</translation>
 <translation id="2050339315714019657">ລວງຕັ້ງ</translation>
 <translation id="2067602449040652523">ຄວາມແຈ້ງຂອງແປ້ນພິມ</translation>
+<translation id="2074759828767813253">ຮູບໜ້າຈໍ ແລະ ການດາວໂຫຼດຫຼ້າສຸດ</translation>
 <translation id="2083190527011054446">ຝັນດີ <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">ບໍ່ເຊື່ອມຕໍ່ກັບເຄືອຂ່າຍ</translation>
 <translation id="2126242104232412123">ພື້ນທີ່ເຮັດວຽກໃໝ່</translation>
@@ -197,7 +198,6 @@
 <translation id="2996462380875591307">ເປີດນຳໃຊ້ແວ່ນຂະຫຍາຍທີ່ຕັ້ງໄວ້ແລ້ວ. ກະລຸນາກົດ Ctrl+Search+D ອີກຄັ້ງເພື່ອປິດມັນ.</translation>
 <translation id="3000461861112256445">ສຽງໂມໂນ</translation>
 <translation id="3009178788565917040">ຜົນອອກມາ</translation>
-<translation id="3025081209054535615">ຖອນໝຸດການຄວບຄຸມສື່ສ່ວນກາງຈາກຖ້ານວາງ</translation>
 <translation id="3033545621352269033">ເປີດ</translation>
 <translation id="3038571455154067151">ເພື່ອເຂົ້າສູ່ລະບົບ, ກະລຸນາປ້ອນ ລະຫັດການເຂົ້າເຖິງຂອງພໍ່ແມ່ໃນ Family Link ຂອງທ່ານ</translation>
 <translation id="3045488863354895414">ສະບາຍດີຕອນບ່າຍ,</translation>
@@ -620,6 +620,7 @@
 <translation id="7526573455193969409">ອາດມີການຕິດຕາມເບິ່ງເຄືອຂ່າຍ</translation>
 <translation id="7536035074519304529">ທີ່ຢູ່ IP: <ph name="ADDRESS" /></translation>
 <translation id="7548434653388805669">ຮອດເວລານອນແລ້ວ</translation>
+<translation id="7551643184018910560">ປັກໝຸດໃສ່ຖ້ານ</translation>
 <translation id="7561982940498449837">ປິດເມນູ</translation>
 <translation id="7564874036684306347">ການຍ້າຍໜ້າຈໍໄປຫາເດັສທັອບອື່ນອາດຈະເຮັດໃຫ້ເກີດພຶດຕິກຳທີ່ບໍ່ຄາດຄິດ. ການແຈ້ງເຕືອນ, ໜ້າຈໍ ແລະ ກ່ອງໂຕ້ຕອບຕາມມາອາດຈະຖືກແຍກຈາກກັນລະຫວ່າງເດັສທັອບຕ່າງໆ.</translation>
 <translation id="7568294522609223312">ປິດການຄລິກອັດຕະໂນມັດ</translation>
@@ -700,7 +701,6 @@
 <translation id="8297006494302853456">ອ່ອນ</translation>
 <translation id="8308637677604853869">ເມ​ນູ​ຜ່ານ​ມາ</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
-<translation id="8349293353728876872">ປັກໝຸດການຄວບຄຸມສື່ສ່ວນກາງໃສ່ຖ້ານວາງ</translation>
 <translation id="8351131234907093545">ສ້າງບັນທຶກ</translation>
 <translation id="8371779926711439835">ໄປໜ້າເທື່ອລະຕົວໜັງສື</translation>
 <translation id="8375916635258623388"><ph name="DEVICE_NAME" />ນີ້ ແລະ ໂທລະສັບຂອງທ່ານຈະເຊື່ອມຕໍ່ໂດຍອັດຕະໂນມັດ</translation>

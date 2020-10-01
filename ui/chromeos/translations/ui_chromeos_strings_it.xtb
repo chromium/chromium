@@ -117,7 +117,6 @@
 <translation id="2208158072373999562">Archivio Zip</translation>
 <translation id="2225536596944493418">Vuoi eliminare <ph name="NUMBER_OF_ITEMS" /> elementi?</translation>
 <translation id="2230062665678605299">Impossibile creare la cartella "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
-<translation id="2270413998793223379">Sanscrito</translation>
 <translation id="2275059641601412272">Spostato.</translation>
 <translation id="2278988676849463018">Tastiera Kannada (fonetica)</translation>
 <translation id="2287742181953707290">Portoghese con tastiera internazionale USA (PC)</translation>
@@ -296,7 +295,7 @@
 <translation id="4298972503445160211">Tastiera danese</translation>
 <translation id="4299729908419173967">Brasiliano</translation>
 <translation id="4309915981827077375">Informazioni generali</translation>
-<translation id="4315949787858895817">Olandese (Belgio)</translation>
+<translation id="4315949787858895817">Nederlandese (Belgio)</translation>
 <translation id="4326192123064055915">Caffè</translation>
 <translation id="4336032328163998280">Operazione di copia non riuscita. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4364327530094270451">Melone</translation>
@@ -726,7 +725,7 @@
 <translation id="8722421161699219904">Tastiera internazionale americana</translation>
 <translation id="872537912056138402">Croato</translation>
 <translation id="874420130893181774">Metodo di immissione Pinyin tradizionale</translation>
-<translation id="8770002329960263418">Olandese (Paesi Bassi) con tastiera internazionale USA (PC)</translation>
+<translation id="8770002329960263418">Nederlandese (Paesi Bassi) con tastiera internazionale USA (PC)</translation>
 <translation id="8775404590947523323">Le modifiche vengono salvate automaticamente.<ph name="BREAKS" />Per conservare una copia dell'immagine originale, deseleziona l'opzione "Sovrascrivi originale".</translation>
 <translation id="8803496343472038847">Tastiera fonetica Russo</translation>
 <translation id="8808686172382650546">Gatto</translation>

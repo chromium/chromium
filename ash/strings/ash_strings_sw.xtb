@@ -113,6 +113,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="2049240716062114887">Jina la eneokazi limebadilishwa kuwa <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Wima</translation>
 <translation id="2067602449040652523">Ung'avu wa kibodi</translation>
+<translation id="2074759828767813253">Picha za skrini na vipakuliwa vya hivi majuzi</translation>
 <translation id="2083190527011054446">Usiku mwema <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">Haijaunganishwa kwenye mtandao</translation>
 <translation id="2126242104232412123">Sehemu mpya ya kufanyia kazi</translation>
@@ -197,7 +198,6 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="2996462380875591307">Umewasha Kikuzaji Kilichoambatishwa. Bonyeza Ctrl+Search+D tena ili ukizime.</translation>
 <translation id="3000461861112256445">Kipengele cha sauti moja</translation>
 <translation id="3009178788565917040">Towe</translation>
-<translation id="3025081209054535615">Bandua vidhibiti vya jumla vya maudhui kwenye rafu</translation>
 <translation id="3033545621352269033">Imewashwa</translation>
 <translation id="3038571455154067151">Ili uingie katika akaunti, weka msimbo wako wa mzazi wa kufikia Family Link</translation>
 <translation id="3045488863354895414">Habari za mchana,</translation>
@@ -620,6 +620,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="7526573455193969409">Huenda mtandao unafuatiliwa</translation>
 <translation id="7536035074519304529">Anwani ya IP: <ph name="ADDRESS" /></translation>
 <translation id="7548434653388805669">Ni wakati wa kulala</translation>
+<translation id="7551643184018910560">Bandika kwenye rafu</translation>
 <translation id="7561982940498449837">Funga menyu</translation>
 <translation id="7564874036684306347">Hatua ya kuhamishia madirisha kwenye eneo-kazi lingine inaweza kusababisha utendaji usiotarajiwa. 
 Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</translation>
@@ -701,7 +702,6 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="8297006494302853456">Dhaifu</translation>
 <translation id="8308637677604853869">Menyu ya awali</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
-<translation id="8349293353728876872">Bandika vidhibiti vya jumla vya maudhui kwenye rafu</translation>
 <translation id="8351131234907093545">Unda kidokezo</translation>
 <translation id="8371779926711439835">Sogeza mbele kwa herufi moja</translation>
 <translation id="8375916635258623388"><ph name="DEVICE_NAME" /> hii na simu yako zitaunganishwa kiotomatiki</translation>

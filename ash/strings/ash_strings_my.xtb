@@ -113,6 +113,7 @@
 <translation id="2049240716062114887">မျက်နှာပြင်နေရာအမည်ကို <ph name="DESK_NAME" /> သို့ ပြောင်းထားသည်</translation>
 <translation id="2050339315714019657">ဒေါင်လိုက်</translation>
 <translation id="2067602449040652523">ကီးဘုတ် တောက်ပမှု</translation>
+<translation id="2074759828767813253">လတ်တလော ဖန်သားပြင်ဓာတ်ပုံနှင့် ဒေါင်းလုဒ်များ</translation>
 <translation id="2083190527011054446">မင်္ဂလာ ညချမ်းပါ <ph name="GIVEN_NAME" /></translation>
 <translation id="209965399369889474">ကွန်ရက်ချိတ်ဆက်မထားပါ</translation>
 <translation id="2126242104232412123">မျက်နှာပြင်နေရာ အသစ်</translation>
@@ -197,7 +198,6 @@
 <translation id="2996462380875591307">နေရာချထားသည့် မှန်ဘီလူးကို ဖွင့်ထားပါသည်။ ၎င်းကို ပိတ်ရန် Ctrl+Search+D ကို ထပ်မံနှိပ်ပါ။</translation>
 <translation id="3000461861112256445">မိုနိုအသံ</translation>
 <translation id="3009178788565917040">အထွက်</translation>
-<translation id="3025081209054535615">အထွေထွေ မီဒီယာထိန်းချုပ်မှုများကို စင်မှ ပင်ဖြုတ်ရန်</translation>
 <translation id="3033545621352269033">ဖွင့်ရန်</translation>
 <translation id="3038571455154067151">လက်မှတ်ထိုးဝင်ရန် သင့် Family Link မိဘသုံးကုဒ် ထည့်ပါ</translation>
 <translation id="3045488863354895414">မင်္ဂလာ နေ့လယ်ခင်းပါ၊</translation>
@@ -620,6 +620,7 @@
 <translation id="7526573455193969409">ကွန်ရက်ကို စောင့်ကြည့်နိုင်ပါသည်</translation>
 <translation id="7536035074519304529">အိုင်ပီလိပ်စာ− <ph name="ADDRESS" /></translation>
 <translation id="7548434653388805669">အိပ်ချိန်ကျပါပြီ</translation>
+<translation id="7551643184018910560">စင်သို့ ပင်ထိုးရန်</translation>
 <translation id="7561982940498449837">မီနူးကို ပိတ်ရန်</translation>
 <translation id="7564874036684306347">ဝင်းဒိုးများကို အခြားဒက်စ်တော့တစ်ခုသို့ ရွှေ့ခြင်းဖြင့် မျှော်လင့်မထားသည့် လုပ်ဆောင်ပုံများ ဖြစ်ပေါ်စေနိုင်ပါသည်။ နောက်ဆက်တွဲ အကြောင်းကြားချက်များ၊ ဝင်းဒိုးများနှင့် စကားပြောများကို ဒက်စ်တော့များအကြား ခွဲဖွင့်နိုင်ပါသည်။</translation>
 <translation id="7568294522609223312">အလိုအလျောက် နှိပ်ခြင်းကို ပိတ်ခြင်း</translation>
@@ -700,7 +701,6 @@
 <translation id="8297006494302853456">အားမကောင်းပါ</translation>
 <translation id="8308637677604853869">ယခင် မီနျူး</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
-<translation id="8349293353728876872">အထွေထွေ မီဒီယာထိန်းချုပ်မှုများကို စင်တွင် ပင်ထိုးရန်</translation>
 <translation id="8351131234907093545">မှတ်စုရေးရန်</translation>
 <translation id="8371779926711439835">အက္ခရာအလိုက် ရှေ့သို့သွားရန်</translation>
 <translation id="8375916635258623388">ဤ <ph name="DEVICE_NAME" /> နှင့် သင့်ဖုန်းတို့ အလိုအလျောက် ချိတ်ဆက်ပါမည်</translation>

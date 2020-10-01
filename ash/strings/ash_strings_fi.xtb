@@ -113,6 +113,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2049240716062114887">Työpöydän nimeksi muutettiin <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Pystysuunta</translation>
 <translation id="2067602449040652523">Näppäimistön kirkkaus</translation>
+<translation id="2074759828767813253">Viimeaikaiset kuvakaappaukset ja lataukset</translation>
 <translation id="2083190527011054446">Hyvää yötä <ph name="GIVEN_NAME" /></translation>
 <translation id="209965399369889474">Ei verkkoyhteyttä</translation>
 <translation id="2126242104232412123">Uusi työpöytä</translation>
@@ -197,7 +198,6 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2996462380875591307">Kiinnitetty suurennus on käytössä. Poista se käytöstä painamalla uudelleen Ctrl + haku + D.</translation>
 <translation id="3000461861112256445">Monoääni</translation>
 <translation id="3009178788565917040">Äänentoisto</translation>
-<translation id="3025081209054535615">Irrota yleiset mediaohjaimet hyllystä</translation>
 <translation id="3033545621352269033">Päällä</translation>
 <translation id="3038571455154067151">Voit kirjautua sisään vanhemman Family Link ‑käyttökoodilla</translation>
 <translation id="3045488863354895414">Hyvää päivää</translation>
@@ -622,6 +622,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="7526573455193969409">Verkkoa saatetaan valvoa</translation>
 <translation id="7536035074519304529">IP-osoite: <ph name="ADDRESS" /></translation>
 <translation id="7548434653388805669">Nukkumaanmenoaika</translation>
+<translation id="7551643184018910560">Kiinnitä hyllyyn</translation>
 <translation id="7561982940498449837">Sulje valikko</translation>
 <translation id="7564874036684306347">Ikkunan siirtämisellä toiselle työpöydälle voi olla odottamattomia seurauksia. Myöhemmät ilmoitukset, ikkunat ja valintaikkunat voidaan jakaa työpöytien välillä.</translation>
 <translation id="7568294522609223312">Lopeta automaattinen klikkaaminen</translation>
@@ -702,7 +703,6 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="8297006494302853456">Heikko</translation>
 <translation id="8308637677604853869">Edellinen valikko</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" /> <ph name="GET_STARTED" /></translation>
-<translation id="8349293353728876872">Kiinnitä yleiset mediaohjaimet hyllyyn</translation>
 <translation id="8351131234907093545">Luo muistiinpano</translation>
 <translation id="8371779926711439835">Yksi kirjain eteenpäin</translation>
 <translation id="8375916635258623388"><ph name="DEVICE_NAME" /> muodostaa yhteyden puhelimeesi automaattisesti</translation>

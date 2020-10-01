@@ -15,6 +15,7 @@
 <translation id="1038106730571050514">Сунуштарды көрсөтүү</translation>
 <translation id="1038842779957582377">белгисиз ат</translation>
 <translation id="1041998700806130099">Жумуш барагынын билдирүүсү</translation>
+<translation id="1048785276086539861">Аннотацияларды түзөтүүдө бул документ бир бет көрүнүшүнө кайтып келет</translation>
 <translation id="1050038467049342496">Башка колдонмолорду жабуу</translation>
 <translation id="1055184225775184556">Кошууну &amp;жасабоо</translation>
 <translation id="1056898198331236512">Эскертүү</translation>
@@ -379,6 +380,7 @@
 <translation id="2465688316154986572">Илмек</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />Тармак мүчүлүштүгүн аныктоону иштетиңиз<ph name="END_LINK" /></translation>
 <translation id="2469153820345007638">1–N ирети</translation>
+<translation id="2470767536994572628">Аннотацияларды түзөтүүдө бул документ бир бет көрүнүшүнө жана өзүнүн түпнуска айлануусуна кайтып келет</translation>
 <translation id="2479410451996844060">Издөө URL жараксыз.</translation>
 <translation id="2482878487686419369">Билдирмелер</translation>
 <translation id="248348093745724435">Компьютердин саясаттары</translation>
@@ -1226,6 +1228,7 @@
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5946937721014915347"><ph name="SITE_NAME" /> ачылууда…</translation>
 <translation id="5951495562196540101">Аккаунт түзмөктүн уруксаттамасына дал келбегендиктен аны менен катталууга болбойт.</translation>
+<translation id="5963413905009737549">Бөлүм</translation>
 <translation id="5967592137238574583">Байланыш маалыматын түзөтүү</translation>
 <translation id="5967867314010545767">Таржымалдан алып салуу</translation>
 <translation id="5975083100439434680">Кичирейтүү</translation>
@@ -1637,6 +1640,7 @@
 <translation id="7647206758853451655">Басып чыгаруу сапаты</translation>
 <translation id="7648992873808071793">Ушул түзмөккө файлдарды сактайт</translation>
 <translation id="7653957176542370971">Төлөм иштетүүчү барак жабылды</translation>
+<translation id="7654909834015434372">Аннотацияны түзөтүүдө бул документ өзүнүн түпнуска айлануусуна кайтып келет</translation>
 <translation id="765676359832457558">Өркүндөтүлгөн жөндөөлөрдү жашыруу…</translation>
 <translation id="7658239707568436148">Жокко чыгаруу</translation>
 <translation id="7662298039739062396">Жөндөө кеңейтүү тарабынан көзөмөлдөнөт</translation>

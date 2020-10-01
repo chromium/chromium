@@ -97,7 +97,6 @@
 <translation id="1965935827552890526">Chromeৰ খোলা থকা অন্য ৱিণ্ড’ত আপুনি কি কৰি আছিল সেয়া সমাপ্ত কৰক।</translation>
 <translation id="1974060860693918893">উন্নত</translation>
 <translation id="1989112275319619282">ব্ৰাউজ কৰক</translation>
-<translation id="1992734845128748707">ডিফ’ল্ট ব্ৰাউজাৰ সলনি কৰক…</translation>
 <translation id="2015722694326466240">পাছৱৰ্ড চাবলৈ আপুনি প্ৰথমে এই ডিভাইচটোত এটা পাছক‘ড ছেট কৰিব লাগিব।</translation>
 <translation id="2073572773299281212"><ph name="DAYS" />দিনৰ পূৰ্বে সক্ৰিয় আছিল</translation>
 <translation id="2074131957428911366">আপুনি কি ছিংক কৰিব লাগে সেয়া <ph name="BEGIN_LINK" />ছেটিংসমূহ<ph name="END_LINK" />-লৈ গৈ যেতিয়াই মন যায় তেতিয়াই সলনি কৰিব পাৰে।</translation>
@@ -165,6 +164,7 @@
 <translation id="2781331604911854368">অন আছে</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2800683595868705743">টেব সলনি কৰোঁতা এৰক</translation>
+<translation id="2815198996063984598">২) ডিফ’ল্ট ব্ৰাউজাৰ এপত টিপক</translation>
 <translation id="2830972654601096923">ঠিকনা পৰিচালনা কৰক...</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2840687315230832938">প্ৰাৰম্ভিক ছিংক ছেট আপ সমাপ্ত হোৱা নাই</translation>
@@ -181,6 +181,7 @@
 <translation id="2921219216347069551">পৃষ্ঠা শ্বেয়াৰ কৰিব নোৱাৰি</translation>
 <translation id="2923448633003185837">পেষ্ট কৰক আৰু খোলক</translation>
 <translation id="292639812446257861">নপঢ়া হিচাপে চিহ্নিত কৰক</translation>
+<translation id="2952581218264071393">১) Chromeৰ ছেটিং খোলক</translation>
 <translation id="2958718410589002129">পাছৱৰ্ডসমূহ</translation>
 <translation id="2964349545761222050">তৃতীয় পক্ষৰ কুকিসমূহ অৱৰোধ কৰক</translation>
 <translation id="2969979262385602596">ছাইন ইন কৰিব পৰা নগ’ল। অনুগ্ৰহ কৰি কিছু সময়ৰ পাছত পুনৰ চেষ্টা কৰক।</translation>
@@ -217,6 +218,7 @@
 <translation id="3335947283844343239">বন্ধ কৰা টেব পুনৰ খোলক</translation>
 <translation id="3371831930909698441">অনুবাদ কৰিব পাৰি। স্ক্ৰীণৰ একেবাৰে তলৰ অংশৰ কাষত থকা বিকল্পসমূহ।</translation>
 <translation id="3393920035788932672">পপ-আপসমূহ অনুমতি দিয়া হৈছে</translation>
+<translation id="3399930248910934354">Chromeৰ ছেটিং খোলক</translation>
 <translation id="3425644765244388016">কার্ডৰ উপনাম</translation>
 <translation id="3433057996795775706">এই পাছৱর্ডটো মচাৰ ফলত <ph name="WEBSITE" />ত থকা আপোনাৰ একাউণ্টটো মচি পেলোৱা নহ’ব। অন্য লোকসকলৰ পৰা আপোনাৰ পাছৱর্ডটো সুৰক্ষিত কৰিবলৈ <ph name="WEBSITE" />ত এইটো সলনি কৰক।</translation>
 <translation id="3443810440409579745">টেব পাইছে।</translation>
@@ -241,6 +243,9 @@
 <translation id="3551320343578183772">টেব বন্ধ কৰক</translation>
 <translation id="3581564640715911333">অন্য ভাষাত পৃষ্ঠাসমূহ অনুবাদ কৰাৰ সুবিধা দিয়ক</translation>
 <translation id="3588820906588687999">প্ৰতিচ্ছবি নতুন টেবত খোলক</translation>
+<translation id="359441731697487922">আপুনি Chromeক আপোনাৰ ডিফ’ল্ট ব্ৰাউজাৰ এপ্‌ বনাই তাত স্বয়ংক্ৰিয়ভাৱে লিংকসমূহ খুলিব পাৰে।
+      
+তলৰ এই পদক্ষেপসমূহ অনুসৰণ কৰক:</translation>
 <translation id="3603009562372709545">লিংক URL প্ৰতিলিপি কৰক</translation>
 <translation id="3607167657931203000">স্বয়ংক্রিয়ভাৱে ডেটা ভৰাওক</translation>
 <translation id="3609785682760573515">ছিংক কৰি থকা হৈছে...</translation>
@@ -331,6 +336,7 @@
 <translation id="4747097190499141774">পাছফ্ৰেজ এনক্ৰিপশ্বনত Google Payৰ পৰিশোধ পদ্ধতি আৰু ঠিকনা অন্তৰ্ভুক্ত নহয়। আপোনাৰ পাছফ্ৰেজ থকাজনেহে আপোনাৰ এনক্ৰিপ্ট কৰা ডেটা পঢ়িব পাৰিব। পাছফ্ৰেজ Googleএ নপঠায় বা ষ্ট’ৰ নকৰে। আপুনি যদি নিজৰ পাছফ্রেজটো পাহৰিছে বা এই ছেটিংটো সলনি কৰিব বিচাৰিছে তেন্তে আপুনি পুনৰ ছিংক ৰিছেট কৰাৰ আৱশ্যক। <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">নতুন ইনকগনিট’ টেব</translation>
 <translation id="4758977202923349869">ক্ৰেডিট কাৰ্ডখনক এই ফ্ৰেমটোলৈ আনক</translation>
+<translation id="4775879719735953715">ডিফ’ল্ট ব্ৰাউজাৰ</translation>
 <translation id="4802417911091824046">পাছফ্ৰেজ এনক্ৰিপশ্বনত Google Payৰ পৰিশোধ পদ্ধতি আৰু ঠিকনা অন্তৰ্ভুক্ত নহয়।
 
 এই ছেটিংটো সলনি কৰিবলৈ <ph name="BEGIN_LINK" />ছিংক ৰিছেট কৰক<ph name="END_LINK" /></translation>
@@ -338,6 +344,7 @@
 <translation id="4808744395915275922">আপডে’টসমূহ</translation>
 <translation id="4818522717893377262">ভাষা যোগ কৰক...</translation>
 <translation id="481968316161811770">কুকি, ছাইটৰ ডেটা</translation>
+<translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} আৰু অন্য ১ টা}one{{domain} আৰু অন্য {count} টা}other{{domain} আৰু অন্য {count} টা}}</translation>
 <translation id="4826218269716039351">তৃতীয় পক্ষক অৱৰোধ কৰক</translation>
 <translation id="48274138579728272">পঢ়া হৈছে বুলি চিহ্নিত কৰক</translation>
 <translation id="4833786495304741580">Googleলৈ স্বয়ংক্ৰিয়ভাৱে ব্যৱহাৰৰ পৰিসংখ্যা আৰু ক্ৰেশ্ব ৰিপ’ৰ্ট পঠিয়ায়</translation>
@@ -585,6 +592,7 @@
 <translation id="7456847797759667638">অৱস্থান খোলক...</translation>
 <translation id="7460314822154045102">কেমেৰা ব্যৱহাৰ কৰক</translation>
 <translation id="7464701184726199289">এইটোৱে সকলো ডিভাইচৰ পৰা ছিংক কৰি থোৱা ডেটা মচে। ছেভ কৰি থোৱা ছাইটৰ ছেটিংসমূহ মচা নাযায় আৰু আপোনাৰ ব্ৰাউজিঙৰ ধৰণ প্ৰতিফলিত কৰিব পাৰে। <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
+<translation id="746684838091935575">৩) Chrome বাছনি কৰক</translation>
 <translation id="7472734401283673885">কোম্পানীৰ নাম</translation>
 <translation id="7473891865547856676">নালাগে, ধন্যবাদ</translation>
 <translation id="7481312909269577407">ফৰৱাৰ্ড কৰক</translation>

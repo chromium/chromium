@@ -198,7 +198,6 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="2996462380875591307">Kveikt á stækkunargleri í föstum glugga. Ýttu aftur á Ctrl+leitarhnappinn+D til að loka því.</translation>
 <translation id="3000461861112256445">Einóma hljóð</translation>
 <translation id="3009178788565917040">Úttak</translation>
-<translation id="3025081209054535615">Losa altækar efnisstýringar frá hillu</translation>
 <translation id="3033545621352269033">Kveikt</translation>
 <translation id="3038571455154067151">Til að skrá þig inn skaltu slá inn aðgangskóða foreldris fyrir Family Link</translation>
 <translation id="3045488863354895414">Góðan dag,</translation>
@@ -301,6 +300,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="3943857333388298514">Líma</translation>
 <translation id="394485226368336402">Hljóðstillingar</translation>
 <translation id="3962859241508114581">Fyrra lag</translation>
+<translation id="3969043077941541451">Slökkt</translation>
 <translation id="397105322502079400">Reiknar...</translation>
 <translation id="3977512764614765090">Rafhlaða í <ph name="PERCENTAGE" />% og í hleðslu.</translation>
 <translation id="3995138139523574647">USB-C tæki (tengi hægra megin að aftan)</translation>
@@ -311,6 +311,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">Þú ert að deila skjánum þínum</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Slökkt á fyrir forrit}one{Slökkt á fyrir # forrit}other{Slökkt á fyrir # forrit}}</translation>
+<translation id="4066027111132117168">Kveikt, <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">Miðlungssendistyrkur</translation>
 <translation id="4112140312785995938">Spóla til baka</translation>
 <translation id="4114315158543974537">Kveikja á Phone Hub</translation>
@@ -565,6 +566,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="6803622936009808957">Ekki var hægt að spegla skjái vegna þess að engin studd upplausn fannst. Skjáborð hefur verið framlengt í staðinn.</translation>
 <translation id="6818242057446442178">Til baka um orð</translation>
 <translation id="6820676911989879663">Taktu pásu!</translation>
+<translation id="6857725247182211756"><ph name="SECONDS" /> sek.</translation>
 <translation id="6857811139397017780">Virkja <ph name="NETWORKSERVICE" /></translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Ein tala eftir}one{# tala eftir}other{# tölur eftir}}</translation>
 <translation id="6878400149835617132">Slökkt á flýtileið</translation>
@@ -621,6 +623,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="7526573455193969409">Hugsanlega er fylgst með netinu</translation>
 <translation id="7536035074519304529">IP-tala: <ph name="ADDRESS" /></translation>
 <translation id="7548434653388805669">Háttatími</translation>
+<translation id="7551643184018910560">Festa á hillu</translation>
 <translation id="7561982940498449837">Loka valmynd</translation>
 <translation id="7564874036684306347">Ef gluggar eru færðir á annað skjáborð getur það valdið óvæntri hegðun. Frekari tilkynningum, gluggum og svargluggum verður hugsanlega deilt á milli skjáborða.</translation>
 <translation id="7568294522609223312">Slökkva á sjálfvirkum smellum</translation>
@@ -632,6 +635,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="7600875258240007829">Sjá allar tilkynningar</translation>
 <translation id="7618774594543487847">Hlutlaust</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
+<translation id="7633755430369750696">Sýna stillingar nærdeilingar.</translation>
 <translation id="7642647758716480637">Opna stillingar fyrir <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (eigandi)</translation>
 <translation id="7647488630410863958">Opnaðu tækið til að skoða tilkynningarnar</translation>
@@ -647,6 +651,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="7780159184141939021">Snúa skjánum</translation>
 <translation id="7796353162336583443">Ýttu á pennahnappinn á hillunni til að skrifa niður glósu, taka skjámynd, nota Google hjálparann, leysigeislabendilinn eða stækkunarglerið.</translation>
 <translation id="7798302898096527229">Ýttu á leitar- eða Shift-lykil til að hætta við.</translation>
+<translation id="781126011916719498">Fáðu skjótan aðgang að mikilvægum skrám. Hægrismelltu eða haltu fingri á skrá til að festa hana.</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> og <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Mikill sendistyrkur</translation>
 <translation id="7837740436429729974">Tíminn er liðinn</translation>
@@ -701,7 +706,6 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="8297006494302853456">Veikt</translation>
 <translation id="8308637677604853869">Fyrri valmynd</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
-<translation id="8349293353728876872">Festa altækar efnisstýringar við hillu</translation>
 <translation id="8351131234907093545">Búa til glósu</translation>
 <translation id="8371779926711439835">Áfram um staf</translation>
 <translation id="8375916635258623388">Þetta <ph name="DEVICE_NAME" /> og síminn þinn tengjast sjálfkrafa</translation>
@@ -791,6 +795,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="9089416786594320554">Innsláttaraðferðir</translation>
 <translation id="9091626656156419976">Skjárinn <ph name="DISPLAY_NAME" /> var fjarlægður</translation>
 <translation id="9151726767154816831">Endurræstu og djúphreinsaðu tækið til að uppfæra</translation>
+<translation id="9166331175924255663">Veldu/afveldu mikinn sýnileika nærdeilingar.</translation>
 <translation id="9168436347345867845">Gera þetta seinna</translation>
 <translation id="9179259655489829027">Þessi eiginleiki veitir þér fljótlegan aðgang að hvaða innskráða notanda sem er án þess að aðgangsorðs sé krafist. Notaðu þennan eiginleika aðeins með reikningum sem þú treystir.</translation>
 <translation id="9183456764293710005">Stækkun á öllum skjánum</translation>

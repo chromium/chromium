@@ -15,6 +15,7 @@
 <translation id="1038106730571050514">نمایش پیشنهادها</translation>
 <translation id="1038842779957582377">نام ناشناس</translation>
 <translation id="1041998700806130099">پیام برگ کار</translation>
+<translation id="1048785276086539861">وقتی یادداشت‌ها را ویرایش می‌کنید، این سند به نمای تک‌صفحه‌ای برمی‌گردد</translation>
 <translation id="1050038467049342496">برنامه‌های دیگر را ببندید</translation>
 <translation id="1055184225775184556">&amp;واگرد افزودن</translation>
 <translation id="1056898198331236512">اخطار</translation>
@@ -379,6 +380,7 @@
 <translation id="2465688316154986572">منگنه</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />در حال اجرای عیب‌یابی شبکه<ph name="END_LINK" /></translation>
 <translation id="2469153820345007638">‏ترتیب ۱ تا N</translation>
+<translation id="2470767536994572628">وقتی یادداشت‌ها را ویرایش می‌کنید، این سند به نمای تک‌صفحه‌ای و وضعیت چرخش اصلی برمی‌گردد</translation>
 <translation id="2479410451996844060">‏URL جستجو نامعتبر است.</translation>
 <translation id="2482878487686419369">اعلان‌ها</translation>
 <translation id="248348093745724435">خط‌مشی‌های ماشین</translation>
@@ -1225,6 +1227,7 @@
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5946937721014915347">درحال باز کردن <ph name="SITE_NAME" />…</translation>
 <translation id="5951495562196540101">نمی‌توان با حساب مصرف‌کننده ثبت‌نام کرد (مجوز بسته‌بندی دردسترس است).</translation>
+<translation id="5963413905009737549">بخش</translation>
 <translation id="5967592137238574583">ویرایش اطلاعات تماس</translation>
 <translation id="5967867314010545767">حذف از سابقه</translation>
 <translation id="5975083100439434680">دورنمایی کردن</translation>
@@ -1637,6 +1640,7 @@
 <translation id="7647206758853451655">کیفیت چاپ</translation>
 <translation id="7648992873808071793">ذخیره کردن فایل در این دستگاه</translation>
 <translation id="7653957176542370971">برگ کنترل‌کننده پرداخت بسته است</translation>
+<translation id="7654909834015434372">وقتی یادداشت‌ها را ویرایش می‌کنید، این سند به وضعیت چرخش اصلی برمی‌گردد</translation>
 <translation id="765676359832457558">پنهان کردن تنظیمات پیشرفته…</translation>
 <translation id="7658239707568436148">لغو</translation>
 <translation id="7662298039739062396">تنظیم توسط افزونه کنترل می‌شود</translation>

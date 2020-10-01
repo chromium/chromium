@@ -106,6 +106,7 @@
 <translation id="1810845389119482123">Шайкештирүү аягына чейин жөндөлгөн жок</translation>
 <translation id="1821253160463689938">Ал барактарга кирбесеңиз да, жеке тандоолоруңузду эстеп калуу үчүн cookie файлдарын колдонот</translation>
 <translation id="1829244130665387512">Ушул беттен табыңыз</translation>
+<translation id="1830550083491357902">Кирген жоксуз</translation>
 <translation id="1843805151597803366">Сапаттуу котормо үчүн Google Издөөгө учурдагы баракты колдонууга урусат бериңиз</translation>
 <translation id="1853692000353488670">Жаңы жашыруун өтмөк</translation>
 <translation id="1856325424225101786">Жөнөкөй режим кайра коюлсунбу?</translation>
@@ -113,6 +114,7 @@
 <translation id="1877026089748256423">Chrome эскирип калган.</translation>
 <translation id="1883903952484604915">Менин файлдарым</translation>
 <translation id="189358972401248634">Башка тилдер</translation>
+<translation id="1919130412786645364">Chrome'го кирүүгө уруксат берүү</translation>
 <translation id="1922362554271624559">Сунушталган тилдер</translation>
 <translation id="1925021887439448749">Жеке веб дарегин киргизиңиз</translation>
 <translation id="1928696683969751773">Жаңыртуулар</translation>
@@ -225,6 +227,7 @@
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# аудио файл}other{# аудио файл}}</translation>
 <translation id="2656405586795711023">Веб колдонмолор</translation>
 <translation id="2689830683995595741">Chrome'ду колдонуу менен, <ph name="BEGIN_LINK1" />Google'дун Тейлөө шарттарына<ph name="END_LINK1" /> жана <ph name="BEGIN_LINK2" />Google Chrome менен Chrome OS'тун Кошумча Тейлөө шарттарына<ph name="END_LINK2" /> макулдугуңузду билдиресиз. <ph name="BEGIN_LINK3" />Family Link'те башкарылган Google аккаунттары үчүн Купуялык эскертүүсү<ph name="END_LINK3" /> да колдонулат.</translation>
+<translation id="2704606927547763573">Көчүрүлдү</translation>
 <translation id="2707726405694321444">Бетти жаңылоо</translation>
 <translation id="2709516037105925701">Автотолтуруу</translation>
 <translation id="2718352093833049315">Wi-Fi'да гана</translation>
@@ -347,6 +350,7 @@
 <translation id="3631987586758005671"><ph name="DEVICE_NAME" /> менен бөлүшүлүүдө</translation>
 <translation id="3632295766818638029">Сырсөздү ачык көрсөтүү</translation>
 <translation id="363596933471559332">Веб-сайттарга сакталган колдонуучу аты жана сырсөз менен кирсе болот. Бул функция өчүрүлсө, вебсайтка кирген сайын колдонуучу аты менен сырсөздү киргизүүгө туура келет.</translation>
+<translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3658159451045945436">Баштапкы абалга келтирүү менен дайындарды сактоо таржымалы, анын ичинде баш баккан сайттардын тизмеси тазаланат.</translation>
 <translation id="3692944402865947621">Сактагыч жеткиликсиз болгондугуна байланыштуу, <ph name="FILE_NAME" /> жүктөлбөй калды.</translation>
 <translation id="3701167022068948696">Азыр оңдоо</translation>
@@ -707,6 +711,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="6301525844455696527">Окуу тизмеңизди унутпаңыз</translation>
 <translation id="6303969859164067831">Аккаунттан чыгып, шайкештирүүнү өчүрүү</translation>
 <translation id="6312687380483398334">Веб колдонмолор (добушсуз)</translation>
+<translation id="6313752143992575395"><ph name="WEBSITE_TITLE" /> сунуштары көрсөтүлүүдө</translation>
 <translation id="6316139424528454185">Android колдоого алынбайт</translation>
 <translation id="6324034347079777476">Android тутумун шайкештирүү өчүрүлдү</translation>
 <translation id="6333140779060797560"><ph name="APPLICATION" /> аркылуу бөлүшүү</translation>
@@ -838,6 +843,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="7233236755231902816">Веб-баракчаны эне тилиңизде көрүү үчүн, Chrome'дун акыркы версиясын жүктөп алыңыз</translation>
 <translation id="7248069434667874558"><ph name="TARGET_DEVICE_NAME" /> түзмөгүңүздү шайкештирүү Chrome'дон күйгүзүлгөнүн текшериңиз</translation>
 <translation id="7274013316676448362">Бөгөттөлгөн сайт</translation>
+<translation id="7286572596625053347"><ph name="LANGUAGE" /> тилине өзгөрсүнбү?</translation>
 <translation id="7290209999329137901">Аталышын өзгөртүү мүмкүн эмес</translation>
 <translation id="7291387454912369099">Жардамчы аркылуу төлөө</translation>
 <translation id="7293171162284876153">Шайкештирүүнү баштоо үчүн, "Chrome дайындарын шайкештирүүнү" күйгүзүңүз.</translation>
@@ -960,7 +966,6 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="8058746566562539958">Жаңы Chrome өтмөгүнөн ачуу</translation>
 <translation id="8063895661287329888">Кыстарма кошулбай калды.</translation>
 <translation id="806745655614357130">Дайындарды өзүнчө сактоо</translation>
-<translation id="8069669375923284295">Шайкештирүүнү жөндөп бүтүрүү үчүн басыңыз</translation>
 <translation id="8073388330009372546">Сүрөттү жаңы өтмөктө ачуу</translation>
 <translation id="8076492880354921740">Өтмөктөр</translation>
 <translation id="8084114998886531721">Сакталган сырсөз</translation>

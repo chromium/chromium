@@ -106,6 +106,7 @@
 <translation id="1810845389119482123">Configuration de la synchronisation initiale non terminée</translation>
 <translation id="1821253160463689938">Utilise des cookies pour mémoriser vos préférences, même si vous n'accédez pas à ces pages</translation>
 <translation id="1829244130665387512">Rechercher sur la page</translation>
+<translation id="1830550083491357902">Non connecté</translation>
 <translation id="1843805151597803366">Pour obtenir de meilleures traductions, autorisez la recherche Google à accéder au contenu de la page actuelle</translation>
 <translation id="1853692000353488670">Nouvel onglet de navigation privée</translation>
 <translation id="1856325424225101786">Réinitialiser le mode simplifié ?</translation>
@@ -113,6 +114,7 @@
 <translation id="1877026089748256423">Version de Chrome obsolète</translation>
 <translation id="1883903952484604915">Mes fichiers</translation>
 <translation id="189358972401248634">Autres langues</translation>
+<translation id="1919130412786645364">Autoriser la connexion à Chrome</translation>
 <translation id="1922362554271624559">Langues suggérées</translation>
 <translation id="1925021887439448749">Saisissez une adresse Web personnalisée</translation>
 <translation id="1928696683969751773">Mises à jour</translation>
@@ -225,6 +227,7 @@ Appuyez sur n'importe quel mot pour effectuer une recherche. Pour affiner la rec
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# fichier audio}one{# fichier audio}other{# fichiers audio}}</translation>
 <translation id="2656405586795711023">Applications Web</translation>
 <translation id="2689830683995595741">En utilisant Chrome, vous acceptez les <ph name="BEGIN_LINK1" />Conditions d'utilisation de Google<ph name="END_LINK1" /> et les <ph name="BEGIN_LINK2" />Conditions d'utilisation supplémentaires de Google Chrome et Chrome OS<ph name="END_LINK2" />. L'<ph name="BEGIN_LINK3" />Avis de confidentialité relatif aux comptes Google gérés avec Family Link<ph name="END_LINK3" /> s'applique également.</translation>
+<translation id="2704606927547763573">Copié</translation>
 <translation id="2707726405694321444">Actualiser la page</translation>
 <translation id="2709516037105925701">Saisie automatique</translation>
 <translation id="2718352093833049315">Wi-Fi uniquement</translation>
@@ -963,7 +966,6 @@ En mode Navigation privée, votre activité peut rester visible des sites Web qu
 <translation id="8058746566562539958">Ouvrir dans nouvel onglet Chrome</translation>
 <translation id="8063895661287329888">Échec de l'ajout du favori</translation>
 <translation id="806745655614357130">Conserver mes données à part</translation>
-<translation id="8069669375923284295">Appuyez pour poursuivre la configuration de la synchronisation</translation>
 <translation id="8073388330009372546">Ouvrir image dans autre onglet</translation>
 <translation id="8076492880354921740">Onglets</translation>
 <translation id="8084114998886531721">Mot de passe enregistré</translation>

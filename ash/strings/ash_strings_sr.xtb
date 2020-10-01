@@ -198,7 +198,6 @@
 <translation id="2996462380875591307">Монтирана лупа екрана је омогућена. Притисните Ctrl + тастер за претрагу + D поново да бисте је искључили.</translation>
 <translation id="3000461861112256445">Моно звук</translation>
 <translation id="3009178788565917040">Излаз</translation>
-<translation id="3025081209054535615">Откачите глобалне контроле за медије са полице</translation>
 <translation id="3033545621352269033">Укључено</translation>
 <translation id="3038571455154067151">Да бисте се пријавили, унесите приступни кôд родитеља за Family Link</translation>
 <translation id="3045488863354895414">Добар дан,</translation>
@@ -301,6 +300,7 @@
 <translation id="3943857333388298514">Налепи</translation>
 <translation id="394485226368336402">Подешавања звука</translation>
 <translation id="3962859241508114581">Претходна песма</translation>
+<translation id="3969043077941541451">Искључи</translation>
 <translation id="397105322502079400">Израчунавање...</translation>
 <translation id="3977512764614765090">Батерија је на <ph name="PERCENTAGE" />% и пуни се.</translation>
 <translation id="3995138139523574647">Уређај са USB прикључком типа C (десни задњи порт)</translation>
@@ -311,6 +311,7 @@
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">Делите екран</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Иск. за апл.}one{Иск. за # апл.}few{Иск. за # апл.}other{Иск. за # апл.}}</translation>
+<translation id="4066027111132117168">Укључено, <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">Сигнал средње јачине</translation>
 <translation id="4112140312785995938">Премотај уназад</translation>
 <translation id="4114315158543974537">Укључите Phone Hub</translation>
@@ -565,6 +566,7 @@
 <translation id="6803622936009808957">Није могуће пресликати екране зато што није пронађена ниједна подржана резолуција. Уместо тога, приказује се проширена радна површина.</translation>
 <translation id="6818242057446442178">Реч уназад</translation>
 <translation id="6820676911989879663">Направите паузу!</translation>
+<translation id="6857725247182211756"><ph name="SECONDS" /> сек</translation>
 <translation id="6857811139397017780">Активирај <ph name="NETWORKSERVICE" /></translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Преостала је једна цифра}one{Преостала је # цифра}few{Преостале су # цифре}other{Преостало је # цифара}}</translation>
 <translation id="6878400149835617132">Пречица је искључена</translation>
@@ -621,6 +623,7 @@
 <translation id="7526573455193969409">Мрежа се можда надгледа</translation>
 <translation id="7536035074519304529">IP адреса: <ph name="ADDRESS" /></translation>
 <translation id="7548434653388805669">Време је за спавање</translation>
+<translation id="7551643184018910560">Закачи на полицу</translation>
 <translation id="7561982940498449837">Затвори мени</translation>
 <translation id="7564874036684306347">Премештање прозора на други рачунар може да доведе до неочекиваног понашања. Накнадна обавештења, прозори и дијалози ће можда бити подељени између рачунара.</translation>
 <translation id="7568294522609223312">Искључите аутоматске кликове</translation>
@@ -632,6 +635,7 @@
 <translation id="7600875258240007829">Погледајте сва обавештења</translation>
 <translation id="7618774594543487847">Неутрално</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
+<translation id="7633755430369750696">Прикажите подешавања Дељења у близини.</translation>
 <translation id="7642647758716480637">Отворите подешавања мреже <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (власник)</translation>
 <translation id="7647488630410863958">Откључајте уређај да бисте прегледали обавештења</translation>
@@ -647,6 +651,7 @@
 <translation id="7780159184141939021">Ротирајте екран</translation>
 <translation id="7796353162336583443">Додирните дугме писаљке на полици да бисте направили белешку и снимак екрана и да бисте користили Google помоћник, ласерски показивач или лупу.</translation>
 <translation id="7798302898096527229">Притисните тастер за претрагу или Shift да бисте отказали.</translation>
+<translation id="781126011916719498">Брзо приступајте важним фајловима. Кликните десним тастером или додирните и задржите фајл да бисте га закачили.</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> и <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Јак сигнал</translation>
 <translation id="7837740436429729974">Време је истекло</translation>
@@ -701,7 +706,6 @@
 <translation id="8297006494302853456">Слаб</translation>
 <translation id="8308637677604853869">Претходни мени</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
-<translation id="8349293353728876872">Закачите глобалне контроле за медије на полицу</translation>
 <translation id="8351131234907093545">Направите белешку</translation>
 <translation id="8371779926711439835">Слово унапред</translation>
 <translation id="8375916635258623388">Овај <ph name="DEVICE_NAME" /> и телефон ће се аутоматски повезати</translation>
@@ -791,6 +795,7 @@
 <translation id="9089416786594320554">Методи уноса</translation>
 <translation id="9091626656156419976">Уклоњен је приказ <ph name="DISPLAY_NAME" /></translation>
 <translation id="9151726767154816831">Поново покрените и обавите Powerwash да бисте ажурирали</translation>
+<translation id="9166331175924255663">Укључите или искључите велику видљивост Дељења у близини.</translation>
 <translation id="9168436347345867845">Урадићу то касније</translation>
 <translation id="9179259655489829027">Ова функција вам омогућава да брзо приступите било ком пријављеном кориснику без лозинке. Користите ову функцију само са налозима у које имате поверења.</translation>
 <translation id="9183456764293710005">Лупа за цео екран</translation>

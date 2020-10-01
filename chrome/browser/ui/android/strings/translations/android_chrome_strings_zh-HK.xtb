@@ -106,6 +106,7 @@
 <translation id="1810845389119482123">未完成初始同步處理設定</translation>
 <translation id="1821253160463689938">使用 Cookie 記住您的偏好設定 (即使您沒有瀏覽這些網頁)</translation>
 <translation id="1829244130665387512">在網頁中尋找</translation>
+<translation id="1830550083491357902">未登入</translation>
 <translation id="1843805151597803366">如要獲得更佳的翻譯，請允許「Google 搜尋」使用目前的網頁</translation>
 <translation id="1853692000353488670">新增無痕式分頁</translation>
 <translation id="1856325424225101786">要重設精簡模式嗎？</translation>
@@ -113,6 +114,7 @@
 <translation id="1877026089748256423">Chrome 版本過舊</translation>
 <translation id="1883903952484604915">我的檔案</translation>
 <translation id="189358972401248634">其他語言</translation>
+<translation id="1919130412786645364">允許登入 Chrome</translation>
 <translation id="1922362554271624559">建議的語言</translation>
 <translation id="1925021887439448749">輸入自訂網址</translation>
 <translation id="1928696683969751773">更新</translation>
@@ -225,6 +227,7 @@
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# 個音訊檔案}other{# 個音訊檔案}}</translation>
 <translation id="2656405586795711023">網絡應用程式</translation>
 <translation id="2689830683995595741">使用 Chrome 即表示您同意《<ph name="BEGIN_LINK1" />Google 服務條款<ph name="END_LINK1" />》以及 <ph name="BEGIN_LINK2" />Google Chrome 和 Chrome 作業系統的《附加服務條款》<ph name="END_LINK2" />。須同時受《<ph name="BEGIN_LINK3" />透過 Family Link 管理的 Google 帳戶私隱聲明<ph name="END_LINK3" />》約束。</translation>
+<translation id="2704606927547763573">已複製</translation>
 <translation id="2707726405694321444">重新整理網頁</translation>
 <translation id="2709516037105925701">自動填入</translation>
 <translation id="2718352093833049315">僅限 Wi-Fi 連線時</translation>
@@ -347,6 +350,7 @@
 <translation id="3631987586758005671">正在分享至 <ph name="DEVICE_NAME" /></translation>
 <translation id="3632295766818638029">顯示密碼</translation>
 <translation id="363596933471559332">使用儲存的憑證自動登入網站。關閉功能時，每次登入網站之前都會要求您驗證。</translation>
+<translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />：<ph name="WEBSITE_URL" /></translation>
 <translation id="3658159451045945436">重設將會清除您儲存資料的記錄，包括瀏覽過的網站清單。</translation>
 <translation id="3692944402865947621">無法存取儲存位置，因此無法下載 <ph name="FILE_NAME" />。</translation>
 <translation id="3701167022068948696">立即修正</translation>
@@ -707,6 +711,7 @@
 <translation id="6301525844455696527">追上您的閱讀清單</translation>
 <translation id="6303969859164067831">登出並停用同步功能</translation>
 <translation id="6312687380483398334">網絡應用程式 (安靜模式)</translation>
+<translation id="6313752143992575395">顯示緊「<ph name="WEBSITE_TITLE" />」嘅建議</translation>
 <translation id="6316139424528454185">此 Android 版本不受支援</translation>
 <translation id="6324034347079777476">Android 系統同步處理功能已停用</translation>
 <translation id="6333140779060797560">透過 <ph name="APPLICATION" /> 分享</translation>
@@ -838,6 +843,7 @@
 <translation id="7233236755231902816">如要以您的語言查看網頁，請下載 Chrome 的最新版本。</translation>
 <translation id="7248069434667874558">請確認 <ph name="TARGET_DEVICE_NAME" /> 已開啟 Chrome 的同步處理功能。</translation>
 <translation id="7274013316676448362">已封鎖的網站</translation>
+<translation id="7286572596625053347">要將<ph name="LANGUAGE" />變更為其他語言嗎？</translation>
 <translation id="7290209999329137901">無法重新命名</translation>
 <translation id="7291387454912369099">Google 助理自動觸發結帳流程</translation>
 <translation id="7293171162284876153">如要開始同步處理，請開啟「同步處理 Chrome 資料」。</translation>
@@ -960,7 +966,6 @@
 <translation id="8058746566562539958">在 Chrome 新分頁中開啟</translation>
 <translation id="8063895661287329888">無法加入書籤。</translation>
 <translation id="806745655614357130">分開保留我的資料</translation>
-<translation id="8069669375923284295">輕按即可繼續同步處理設定</translation>
 <translation id="8073388330009372546">在新分頁中開啟圖片</translation>
 <translation id="8076492880354921740">分頁</translation>
 <translation id="8084114998886531721">已儲存的密碼</translation>

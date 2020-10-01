@@ -15,6 +15,7 @@
 <translation id="1038106730571050514">แสดงคำแนะนำ</translation>
 <translation id="1038842779957582377">ไม่ทราบชื่อ</translation>
 <translation id="1041998700806130099">ข้อความแผ่นงาน</translation>
+<translation id="1048785276086539861">เมื่อคุณแก้ไขคำอธิบายประกอบ เอกสารนี้จะกลับไปเป็นมุมมองแบบหน้าเดียว</translation>
 <translation id="1050038467049342496">ปิดแอปอื่นๆ</translation>
 <translation id="1055184225775184556">&amp;เลิกทำการเพิ่ม</translation>
 <translation id="1056898198331236512">คำเตือน</translation>
@@ -375,6 +376,7 @@
 <translation id="2465688316154986572">เย็บด้วยลวดเย็บกระดาษ</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />เรียกใช้การวินิจฉัยเครือข่าย<ph name="END_LINK" /></translation>
 <translation id="2469153820345007638">ลำดับ 1 ถึง N</translation>
+<translation id="2470767536994572628">เมื่อคุณแก้ไขคำอธิบายประกอบ เอกสารนี้จะกลับไปเป็นมุมมองแบบหน้าเดียวและกลับไปใช้การหมุนแบบเดิม</translation>
 <translation id="2479410451996844060">URL ค้นหาไม่ถูกต้อง</translation>
 <translation id="2482878487686419369">การแจ้งเตือน</translation>
 <translation id="248348093745724435">นโยบายเครื่อง</translation>
@@ -1215,6 +1217,7 @@
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5946937721014915347">กำลังเปิด <ph name="SITE_NAME" />…</translation>
 <translation id="5951495562196540101">ลงทะเบียนด้วยบัญชีผู้ใช้ทั่วไปไม่ได้ (มีใบอนุญาตแบบแพ็กเกจ)</translation>
+<translation id="5963413905009737549">ส่วน</translation>
 <translation id="5967592137238574583">แก้ไขข้อมูลติดต่อ</translation>
 <translation id="5967867314010545767">ลบจากประวัติการเข้าชม</translation>
 <translation id="5975083100439434680">ย่อ</translation>
@@ -1627,6 +1630,7 @@
 <translation id="7647206758853451655">คุณภาพการพิมพ์</translation>
 <translation id="7648992873808071793">จัดเก็บไฟล์บนอุปกรณ์นี้</translation>
 <translation id="7653957176542370971">แผ่นงานของเครื่องจัดการการชำระเงินปิดอยู่</translation>
+<translation id="7654909834015434372">เมื่อคุณแก้ไขคำอธิบายประกอบ เอกสารนี้จะกลับไปใช้การหมุนแบบเดิม</translation>
 <translation id="765676359832457558">ซ่อนการตั้งค่าขั้นสูง...</translation>
 <translation id="7658239707568436148">ยกเลิก</translation>
 <translation id="7662298039739062396">การตั้งค่าควบคุมโดยส่วนขยาย</translation>

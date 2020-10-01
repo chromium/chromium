@@ -106,6 +106,7 @@
 <translation id="1810845389119482123">A szinkronizálás kezdeti beállítása nem fejeződött be</translation>
 <translation id="1821253160463689938">Cookie-kat használ a preferenciák megjegyzésére még akkor is, ha Ön nem keresi fel az adott oldalakat</translation>
 <translation id="1829244130665387512">Keresés ezen az oldalon</translation>
+<translation id="1830550083491357902">Nem jelentkezett be</translation>
 <translation id="1843805151597803366">A jobb fordítások érdekében engedélyezze a Google Keresőnek a jelenlegi oldal használatát</translation>
 <translation id="1853692000353488670">Új inkognitó lap</translation>
 <translation id="1856325424225101786">Visszaállítja az Egyszerűsített módot?</translation>
@@ -113,6 +114,7 @@
 <translation id="1877026089748256423">A Chrome elavult</translation>
 <translation id="1883903952484604915">Saját fájlok</translation>
 <translation id="189358972401248634">Más nyelvek</translation>
+<translation id="1919130412786645364">Chrome-bejelentkezés engedélyezése</translation>
 <translation id="1922362554271624559">Javasolt nyelvek</translation>
 <translation id="1925021887439448749">Írja be az egyéni internetcímet</translation>
 <translation id="1928696683969751773">Frissítések</translation>
@@ -225,6 +227,7 @@ A kereséshez tartsa nyomva a kívánt szót. A keresés finomításához válas
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# hangfájl}other{# hangfájl}}</translation>
 <translation id="2656405586795711023">Webalkalmazások</translation>
 <translation id="2689830683995595741">A Chrome használatával elfogadja a <ph name="BEGIN_LINK1" />Google Általános Szerződési Feltételeket<ph name="END_LINK1" />, valamint <ph name="BEGIN_LINK2" />A Google Chrome és a Chrome OS Kiegészítő Általános Szerződési Feltételeit<ph name="END_LINK2" />. A <ph name="BEGIN_LINK3" />Family Link szolgáltatással kezelt Google-fiókokra vonatkozó adatvédelmi közlemény<ph name="END_LINK3" /> is érvényben van.</translation>
+<translation id="2704606927547763573">Másolt</translation>
 <translation id="2707726405694321444">Oldal frissítése</translation>
 <translation id="2709516037105925701">Automatikus kitöltés</translation>
 <translation id="2718352093833049315">Csak Wi-Fi-n</translation>
@@ -347,6 +350,7 @@ A kereséshez tartsa nyomva a kívánt szót. A keresés finomításához válas
 <translation id="3631987586758005671">Megosztás a következővel: <ph name="DEVICE_NAME" /></translation>
 <translation id="3632295766818638029">Jelszó megjelenítése</translation>
 <translation id="363596933471559332">Automatikus bejelentkezés webhelyekre a tárolt hitelesítő adatokkal. Ha ez a funkció ki van kapcsolva, mindig meg kell adnia hitelesítő adatait, amikor egy webhelyre szeretne bejelentkezni.</translation>
+<translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3658159451045945436">A visszaállítás törli a megtakarított adatmennyiségre vonatkozó előzményeket, így a felkeresett webhelyek listáját is.</translation>
 <translation id="3692944402865947621">A(z) <ph name="FILE_NAME" /> fájl letöltése sikertelen, mert nem lehet elérni a tárhelyet.</translation>
 <translation id="3701167022068948696">Javítás most</translation>
@@ -707,6 +711,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="6301525844455696527">Ne feledkezzen meg az olvasási listájáról</translation>
 <translation id="6303969859164067831">Kijelentkezés, és a szinkronizálás kikapcsolása</translation>
 <translation id="6312687380483398334">Webalkalmazások (csendes)</translation>
+<translation id="6313752143992575395">Javaslatok megjelenítése a következőhöz: <ph name="WEBSITE_TITLE" /></translation>
 <translation id="6316139424528454185">Nem támogatott Android-verzió</translation>
 <translation id="6324034347079777476">Az Android rendszer szinkronizálása letiltva</translation>
 <translation id="6333140779060797560">Megosztás a következőn keresztül: <ph name="APPLICATION" /></translation>
@@ -838,6 +843,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="7233236755231902816">Ha saját nyelvén szeretné böngészni az internetet, szerezze be a Chrome legújabb verzióját</translation>
 <translation id="7248069434667874558">Győződjön meg arról, hogy a(z) <ph name="TARGET_DEVICE_NAME" /> szinkronizálása be van kapcsolva a Chrome-ban</translation>
 <translation id="7274013316676448362">Letiltott oldal</translation>
+<translation id="7286572596625053347">Módosítja a(z) <ph name="LANGUAGE" /> nyelvet?</translation>
 <translation id="7290209999329137901">Nem lehetséges az átnevezés</translation>
 <translation id="7291387454912369099">Segéd által aktivált fizetés</translation>
 <translation id="7293171162284876153">A szinkronizálás megkezdéséhez kapcsolja be a „Chrome-adatok szinkronizálása” beállítást.</translation>
@@ -960,7 +966,6 @@ Előfordulhat, hogy inkognitó módban tevékenységei láthatók maradnak a fel
 <translation id="8058746566562539958">Megnyitás új Chrome-lapon</translation>
 <translation id="8063895661287329888">A könyvjelző hozzáadása sikertelen volt.</translation>
 <translation id="806745655614357130">Maradjanak elkülönítve az adataim</translation>
-<translation id="8069669375923284295">Koppintson a szinkronizálás beállításának folytatásához</translation>
 <translation id="8073388330009372546">Kép megnyitása új lapon</translation>
 <translation id="8076492880354921740">Lapok</translation>
 <translation id="8084114998886531721">Mentett jelszó</translation>

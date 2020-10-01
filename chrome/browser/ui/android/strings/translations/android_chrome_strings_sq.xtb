@@ -106,6 +106,7 @@
 <translation id="1810845389119482123">Konfigurimi i sinkronizimit fillestar nuk ka përfunduar</translation>
 <translation id="1821253160463689938">Përdor kuki për të kujtuar preferencat e tua, edhe nëse nuk i viziton ato faqe</translation>
 <translation id="1829244130665387512">Gjej në faqe</translation>
+<translation id="1830550083491357902">I pa identifikuar</translation>
 <translation id="1843805151597803366">Për të marrë përkthime më të mira, lejo që "Kërko në Google" të përdorë faqen aktuale</translation>
 <translation id="1853692000353488670">Skedë e re e fshehtë</translation>
 <translation id="1856325424225101786">Të rivendoset "Modaliteti i lehtë"?</translation>
@@ -113,6 +114,7 @@
 <translation id="1877026089748256423">Chrome nuk është i përditësuar</translation>
 <translation id="1883903952484604915">Skedarët e mi</translation>
 <translation id="189358972401248634">Gjuhë të tjera</translation>
+<translation id="1919130412786645364">Lejo identifikimin në Chrome</translation>
 <translation id="1922362554271624559">Gjuhët e sugjeruara</translation>
 <translation id="1925021887439448749">Fut adresën e personalizuar të uebit</translation>
 <translation id="1928696683969751773">Përditësimet</translation>
@@ -225,6 +227,7 @@ Prek dhe mbaj shtypur një fjalë për ta kërkuar. Për të përsosur kërkimin
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# skedar audio}other{# skedarë audio}}</translation>
 <translation id="2656405586795711023">Aplikacionet e uebit</translation>
 <translation id="2689830683995595741">Duke përdorur Chrome, ti pranon <ph name="BEGIN_LINK1" />Kushtet e shërbimit të Google<ph name="END_LINK1" /> dhe <ph name="BEGIN_LINK2" />Kushtet shtesë të shërbimit të Google Chrome dhe të sistemit operativ Chrome<ph name="END_LINK2" />. Zbatohet gjithashtu <ph name="BEGIN_LINK3" />"Njoftimi i privatësisë" për "Llogaritë e menaxhuara të Google" me Family Link<ph name="END_LINK3" />.</translation>
+<translation id="2704606927547763573">Kopjuar</translation>
 <translation id="2707726405694321444">Rifresko faqen</translation>
 <translation id="2709516037105925701">Plotëso automatikisht</translation>
 <translation id="2718352093833049315">Vetëm me Wi-Fi</translation>
@@ -347,6 +350,7 @@ Prek dhe mbaj shtypur një fjalë për ta kërkuar. Për të përsosur kërkimin
 <translation id="3631987586758005671">Po ndahet te <ph name="DEVICE_NAME" /></translation>
 <translation id="3632295766818638029">Shfaq fjalëkalimin</translation>
 <translation id="363596933471559332">Identifikohu automatikisht në sajtet e uebit duke përdorur kredencialet e ruajtura. Kur funksioni është i çaktivizuar, do të të kërkohet gjithmonë verifikimi  përpara se të identifikohesh në një sajt uebi.</translation>
+<translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3658159451045945436">Rivendosja spastron historikun e kursimit të të dhënave, duke përfshirë edhe listën e sajteve të vizituara.</translation>
 <translation id="3692944402865947621">Shkarkimi i skedarit <ph name="FILE_NAME" /> dështoi sepse vendndodhja e hapësirës ruajtëse nuk është e arritshme.</translation>
 <translation id="3701167022068948696">Rregullo tani</translation>
@@ -707,6 +711,7 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="6301525844455696527">Mos e harro listën tënde të leximit</translation>
 <translation id="6303969859164067831">Dil dhe çaktivizo sinkronizimin</translation>
 <translation id="6312687380483398334">Aplikacionet e uebit (në qetësi)</translation>
+<translation id="6313752143992575395">Po shfaq sugjerimin për <ph name="WEBSITE_TITLE" /></translation>
 <translation id="6316139424528454185">Versioni i Android s'mbështetet</translation>
 <translation id="6324034347079777476">Sinkronizimi i sistemit Android u çaktivizua</translation>
 <translation id="6333140779060797560">Ndaje nëpërmjet <ph name="APPLICATION" /></translation>
@@ -838,6 +843,7 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="7233236755231902816">Për ta parë uebin në gjuhën tënde, merr versionin e fundit të Chrome</translation>
 <translation id="7248069434667874558">Sigurohu që <ph name="TARGET_DEVICE_NAME" /> të ketë të aktivizuar sinkronizimin në Chrome</translation>
 <translation id="7274013316676448362">Sajt i bllokuar</translation>
+<translation id="7286572596625053347">Të ndryshohet <ph name="LANGUAGE" />?</translation>
 <translation id="7290209999329137901">Riemërtimi nuk ofrohet</translation>
 <translation id="7291387454912369099">Blerja e aktivizuar nga "Asistenti"</translation>
 <translation id="7293171162284876153">Për të nisur sinkronizimin, aktivizo "Sinkronizo të dhënat e tua të Chrome".</translation>
@@ -960,7 +966,6 @@ Në modalitetin "E fshehtë", aktiviteti yt do të jetë përsëri i dukshëm p�
 <translation id="8058746566562539958">Hape në një skedë të re të Chrome</translation>
 <translation id="8063895661287329888">Shtimi i faqeshënuesit dështoi.</translation>
 <translation id="806745655614357130">Mbaji më vete të dhënat e mia</translation>
-<translation id="8069669375923284295">Trokit për të vazhduar konfigurimin e sinkronizimit</translation>
 <translation id="8073388330009372546">Hape imazhin në një skedë të re</translation>
 <translation id="8076492880354921740">Skedat</translation>
 <translation id="8084114998886531721">Fjalëkalimi i ruajtur</translation>

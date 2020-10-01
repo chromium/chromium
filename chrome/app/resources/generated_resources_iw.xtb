@@ -498,6 +498,7 @@
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (אורח)</translation>
 <translation id="1572266655485775982">‏הפעלת Wi-Fi</translation>
 <translation id="1572876035008611720">הזן את כתובת האימייל</translation>
+<translation id="1575741822946219011">שפות ושיטות קלט</translation>
 <translation id="1576594961618857597">דמות ברירת מחדל לבנה</translation>
 <translation id="1578558981922970608">אילוץ סגירה</translation>
 <translation id="1578784163189013834">בחירת רקע לשומר המסך</translation>
@@ -682,7 +683,7 @@
 <translation id="177336675152937177">נתוני יישומים מתארחים</translation>
 <translation id="1776712937009046120">הוסף משתמש</translation>
 <translation id="1776883657531386793"><ph name="OID" />: <ph name="INFO" /></translation>
-<translation id="1778457539567749232">סימון כלא נקרא</translation>
+<translation id="1778457539567749232">סימון ככרטיסייה שלא נקראה</translation>
 <translation id="1779652936965200207">הזן את סיסמה זו ב-"<ph name="DEVICE_NAME" />":</translation>
 <translation id="177989070088644880">אפליקציה (<ph name="ANDROID_PACKAGE_NAME" />)</translation>
 <translation id="1780152987505130652">סגירת הקבוצה</translation>
@@ -855,6 +856,7 @@
 <translation id="1974821797477522211">התחבר לרשת</translation>
 <translation id="1975841812214822307">הסר...</translation>
 <translation id="1976150099241323601">היכנס אל התקן אבטחה</translation>
+<translation id="1976307821760494606">‏ניפוי באגים באמצעות ADB הושבת על-ידי <ph name="DOMAIN" />. פעולה זו תאפס את מכשיר <ph name="DEVICE_TYPE" /> שלך בתוך 24 שעות. כדאי לגבות קבצים שברצונך לשמור.</translation>
 <translation id="1977965994116744507">יש לקרב את הטלפון כדי לבטל את הנעילה של <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1978006917103730774">עדכוני תוכנה ואבטחה עתידיים יותקנו באופן אוטומטי.</translation>
 <translation id="1979095679518582070">השבתת התכונה הזו לא משפיעה על היכולת של המכשיר הזה לשלוח את המידע הדרוש עבור שירותים חיוניים, כמו אבטחה ועדכוני מערכת.</translation>
@@ -2036,6 +2038,7 @@
 <translation id="3404249063913988450">הפעלת שומר המסך</translation>
 <translation id="3405664148539009465">התאם אישית גופנים</translation>
 <translation id="3405763860805964263">...</translation>
+<translation id="3406396172897554194">חיפוש לפי שפה או לפי שם שיטת הקלט</translation>
 <translation id="3406605057700382950">&amp;הצג את סרגל הסימניות</translation>
 <translation id="340671561090997290">{NUM_EXTENSIONS,plural, =1{התוסף הזה עשוי להיות מסוכן}two{התוספים האלה עשויים להיות מסוכנים}many{התוספים האלה עשויים להיות מסוכנים}other{התוספים האלה עשויים להיות מסוכנים}}</translation>
 <translation id="3409785640040772790">מפות</translation>
@@ -2611,6 +2614,7 @@
 <translation id="4025039777635956441">השתקת האתרים שנבחרו</translation>
 <translation id="4027804175521224372">(אתה מפסיד- <ph name="IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_LINK" />)</translation>
 <translation id="4027951648498485763">‏ההגדרות שלך ל-Flash יישמרו עד ליציאה מ-Chrome.</translation>
+<translation id="4028467762035011525">הוספה של שיטות קלט</translation>
 <translation id="4031179711345676612">ניתן להשתמש במיקרופון בדף זה</translation>
 <translation id="4031527940632463547">החיישנים חסומים</translation>
 <translation id="4033471457476425443">הוספת תיקייה חדשה</translation>
@@ -2761,7 +2765,7 @@
 <translation id="4235200303672858594">כל המסך</translation>
 <translation id="4235965441080806197">בטל כניסה</translation>
 <translation id="4237773362828263530">הגדרות עם תווים כלליים מסוג "*" כבר אינן נתמכות. יש לפנות אל מנהל המערכת כדי <ph name="BEGIN_LINK" />לשנות את ההגדרות האלה<ph name="END_LINK" />.</translation>
-<translation id="4241393667672058421">{NUM_TABS,plural, =1{קריאת כרטיסייה במועד מאוחר יותר}two{קריאת כרטיסיות במועד מאוחר יותר}many{קריאת כרטיסיות במועד מאוחר יותר}other{קריאת כרטיסיות במועד מאוחר יותר}}</translation>
+<translation id="4241393667672058421">{NUM_TABS,plural, =1{קריאת הכרטיסייה במועד מאוחר יותר}two{קריאת הכרטיסיות במועד מאוחר יותר}many{קריאת הכרטיסיות במועד מאוחר יותר}other{קריאת הכרטיסיות במועד מאוחר יותר}}</translation>
 <translation id="4242145785130247982">אין תמיכה באישורי לקוח מרובים.</translation>
 <translation id="4242533952199664413">פתח את 'הגדרות'</translation>
 <translation id="4242577469625748426">התקנת הגדרות המדיניות במכשיר: <ph name="VALIDATION_ERROR" /> נכשלה.</translation>
@@ -3638,7 +3642,7 @@
 <translation id="5317780077021120954">שמור</translation>
 <translation id="5319359161174645648">‏Google ממליצה על Chrome</translation>
 <translation id="532247166573571973">ייתכן שהשרת אינו נגיש. נסה שוב מאוחר יותר.</translation>
-<translation id="5324300749339591280">רשימת אפליקציות</translation>
+<translation id="5324300749339591280">רשימת האפליקציות</translation>
 <translation id="5324780743567488672">היעזר במיקום להגדרה אוטומטית של אזור הזמן</translation>
 <translation id="5327248766486351172">שם</translation>
 <translation id="5327570636534774768">המכשיר הזה מסומן כמנוהל על ידי דומיין אחר. צריך לבטל את ניהול התצורה שלו מהדומיין הזה לפני ההגדרה של מצב ההדגמה.</translation>
@@ -4061,6 +4065,7 @@
 <translation id="5833726373896279253">רק הבעלים יכול לשנות הגדרות אלה:</translation>
 <translation id="5834581999798853053">נותרו בערך <ph name="TIME" /> דקות</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> - הקלטה במצלמה או במיקרופון</translation>
+<translation id="5839574759884227787">‏ניפוי הבאגים באמצעות ADB הושבת על ידי <ph name="DOMAIN" />. פעולה זו תאפס את מחשב <ph name="DEVICE_TYPE" /> שלך. יש לגבות את הקבצים לפני ההפעלה מחדש.</translation>
 <translation id="5840680448799937675">קבצים ישותפו תמיד במצב אופליין</translation>
 <translation id="5841270259333717135">‏הגדרת Ethernet</translation>
 <translation id="5842497610951477805">‏הפעלה של Bluetooth</translation>
@@ -4474,6 +4479,7 @@
 <translation id="6308077700132376815">חסימת תמונות</translation>
 <translation id="6308493641021088955">הכניסה מבוצעת בעזרת <ph name="EXTENSION_NAME" /></translation>
 <translation id="6308937455967653460">שמור קישור&amp; בשם...</translation>
+<translation id="6309443618838462258">שיטת הקלט הזו לא מאושרת על ידי מנהל המערכת</translation>
 <translation id="6309510305002439352">המיקרופון מושבת</translation>
 <translation id="6311220991371174222">‏לא ניתן להפעיל את Chrome מכיוון שמשהו השתבש בפתיחת הפרופיל שלך. נסה להפעיל מחדש את Chrome.</translation>
 <translation id="6312403991423642364">שגיאת רשת לא ידועה</translation>
@@ -5192,6 +5198,7 @@
 <translation id="7191159667348037">‏מדפסת לא ידועה (USB)</translation>
 <translation id="7193051357671784796">אפליקציה זו נוספה על-ידי הארגון שלך. עליך להפעיל מחדש את האפליקציה כדי לסיים את ההתקנה שלה.</translation>
 <translation id="7193374945610105795">לא נשמרו סיסמאות בשביל <ph name="ORIGIN" /></translation>
+<translation id="7196020411877309443">למה אני רואה את הדף הזה?</translation>
 <translation id="7196913789568937443">‏גיבוי ב-Google Drive. אפשר לשחזר נתונים או להחליף מכשיר בקלות מתי שרוצים. הגיבוי כולל נתוני אפליקציות. הגיבויים נשמרים ב-Google ומוצפנים באמצעות הסיסמה לחשבון Google שלך. <ph name="BEGIN_LINK1" />מידע נוסף<ph name="END_LINK1" /></translation>
 <translation id="7197190419934240522">‏חיפוש Google וכל היכולות של Google עומדים לרשותך בכל גלישה</translation>
 <translation id="7197632491113152433">מצאנו <ph name="NUMBER_OF_APPS" /> אפליקציות מהחשבון שלך שבהן אפשר להשתמש במכשיר הזה.</translation>
@@ -5847,6 +5854,7 @@
 <translation id="7952708427581814389">אתרים יכולים לבקש הרשאה לראות טקסט ותמונות בלוח העריכה</translation>
 <translation id="795282463722894016">השחזור הושלם</translation>
 <translation id="7952904276017482715">המזהה הצפוי הוא "<ph name="EXPECTED_ID" />", אך המזהה היה "<ph name="NEW_ID" />"</translation>
+<translation id="7953669802889559161">שיטות קלט</translation>
 <translation id="7953955868932471628">ניהול קיצורי דרך</translation>
 <translation id="7956373551960864128">מדפסות שמורות</translation>
 <translation id="7957074856830851026">הצגה של פרטי המכשיר, כמו המספר הסידורי או מזהה הנכס שלו</translation>
@@ -5870,6 +5878,7 @@
 <translation id="7973962044839454485">‏אימות PPP נכשל בשל שם משתמש או סיסמה שגויים</translation>
 <translation id="7974566588408714340">נסה שוב באמצעות <ph name="EXTENSIONNAME" /></translation>
 <translation id="7974936243149753750">סריקת יתר</translation>
+<translation id="7977404132325989121">יש לתת &amp;שם לחלון…</translation>
 <translation id="7978412674231730200">מפתח פרטי</translation>
 <translation id="7978450511781612192">‏הפעולה הזאת תוציא אותך מחשבונות Google שלך. הסימניות, ההיסטוריה, הסיסמאות ופרטים אחרים יפסיקו לעבור סנכרון.</translation>
 <translation id="7980084013673500153">מזהה נכס: <ph name="ASSET_ID" /></translation>
@@ -6209,7 +6218,7 @@
 <translation id="8378714024927312812">מנוהל על-ידי הארגון</translation>
 <translation id="8379878387931047019">המכשיר לא תומך במפתח אבטחה מהסוג המבוקש באתר הזה</translation>
 <translation id="8379991678458444070">הוספת הכרטיסייה לסימניות תאפשר לך לגשת אליה במהירות</translation>
-<translation id="8382384117483909115">{NUM_TABS,plural, =1{קריאת כרטיסייה במועד מאוחר יותר}two{קריאת כרטיסיות במועד מאוחר יותר}many{קריאת כרטיסיות במועד מאוחר יותר}other{קריאת כרטיסיות במועד מאוחר יותר}}</translation>
+<translation id="8382384117483909115">{NUM_TABS,plural, =1{קריאת הכרטיסייה במועד מאוחר יותר}two{קריאת הכרטיסיות במועד מאוחר יותר}many{קריאת הכרטיסיות במועד מאוחר יותר}other{קריאת הכרטיסיות במועד מאוחר יותר}}</translation>
 <translation id="8382913212082956454">העתק &amp;כתובת אימייל</translation>
 <translation id="8386091599636877289">המדיניות לא נמצאה.</translation>
 <translation id="8386903983509584791">הסריקה הושלמה</translation>
@@ -6424,6 +6433,7 @@
 <translation id="8648408795949963811">טמפרטורת הצבע של תאורת לילה</translation>
 <translation id="8648544143274677280">האתר <ph name="SITE_NAME" /> מבקש את ההרשאות הבאות: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> ונוספות</translation>
 <translation id="8650543407998814195">למרות שכבר אין לך גישה לפרופיל הישן, אפשר עדיין להסיר אותו.</translation>
+<translation id="865118751078059229">יש לתת &amp;שם לחלון…</translation>
 <translation id="8651585100578802546">אלץ טעינה מחדש של דף זה</translation>
 <translation id="8652400352452647993">שגיאת 'ארוז תוסף'</translation>
 <translation id="8654151524613148204">הקובץ גדול מכדי שהמחשב שלך יוכל לטפל בו. מצטערים.</translation>
@@ -6576,6 +6586,7 @@
 <translation id="8813872945700551674">צריך שההורים יאשרו את "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="8813969267212093033">טקסט מערכת מוצג בשפה הזו</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
+<translation id="8814319344131658221">השפות לבדיקת האיות מבוססות על העדפת השפה שלך</translation>
 <translation id="8814644416678422095">כונן קשיח</translation>
 <translation id="8814687660896548945">הארכיון נסרק כעת...</translation>
 <translation id="881782782501875829">הוספת מספר יציאה</translation>
@@ -6671,6 +6682,7 @@
 <translation id="8912810933860534797">הפעלת סריקה אוטומטית</translation>
 <translation id="8915370057835397490">טוען הצעה...</translation>
 <translation id="8916476537757519021">תת-מסגרת לגלישה בסתר: <ph name="SUBFRAME_SITE" /></translation>
+<translation id="8916749157829986308">הגדרת שם החלון</translation>
 <translation id="8918637186205009138">ה-<ph name="DEVICE_TYPE" /> של <ph name="GIVEN_NAME" /></translation>
 <translation id="8922013791253848639">התר תמיד מודעות באתר הזה</translation>
 <translation id="8923880975836399332">כחול-ירקרק כהה</translation>
@@ -6846,6 +6858,7 @@
 <translation id="9124003689441359348">כאן יופיעו הסיסמאות ששמרת</translation>
 <translation id="9126149354162942022">צבע הסמן</translation>
 <translation id="9128317794749765148">לא ניתן היה להשלים את ההגדרה</translation>
+<translation id="9128335130883257666">פתיחת דף ההגדרות של <ph name="INPUT_METHOD_NAME" /></translation>
 <translation id="9128870381267983090">התחבר לרשת</translation>
 <translation id="9130015405878219958">הוזן מצב לא חוקי.</translation>
 <translation id="9131487537093447019">‏שליחת הודעות למכשירי Bluetooth וקבלת הודעות מהם.</translation>

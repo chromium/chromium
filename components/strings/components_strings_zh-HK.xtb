@@ -15,6 +15,7 @@
 <translation id="1038106730571050514">顯示建議</translation>
 <translation id="1038842779957582377">不明名稱</translation>
 <translation id="1041998700806130099">工作表訊息</translation>
+<translation id="1048785276086539861">在您編輯註解時，此文件將會返回單頁檢視模式</translation>
 <translation id="1050038467049342496">關閉其他應用程式</translation>
 <translation id="1055184225775184556">復原新增(&amp;U)</translation>
 <translation id="1056898198331236512">警告</translation>
@@ -375,6 +376,7 @@
 <translation id="2465688316154986572">釘書釘</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />執行網絡診斷<ph name="END_LINK" /></translation>
 <translation id="2469153820345007638">1 至 N 的順序</translation>
+<translation id="2470767536994572628">在您編輯註解時，此文件將會返回單頁檢視模式及轉回原本的方向</translation>
 <translation id="2479410451996844060">無效的搜尋網址。</translation>
 <translation id="2482878487686419369">通知</translation>
 <translation id="248348093745724435">裝置政策</translation>
@@ -1215,6 +1217,7 @@
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5946937721014915347">正在開啟 <ph name="SITE_NAME" />…</translation>
 <translation id="5951495562196540101">無法使用消費者帳戶註冊 (有可用套裝授權)。</translation>
+<translation id="5963413905009737549">區段</translation>
 <translation id="5967592137238574583">編輯聯絡人資料</translation>
 <translation id="5967867314010545767">從記錄中移除</translation>
 <translation id="5975083100439434680">縮小</translation>
@@ -1627,6 +1630,7 @@
 <translation id="7647206758853451655">列印品質</translation>
 <translation id="7648992873808071793">在此裝置上存放檔案</translation>
 <translation id="7653957176542370971">付款處理常式工作表閂咗</translation>
+<translation id="7654909834015434372">在您編輯註解時，此文件將會轉回原本的方向</translation>
 <translation id="765676359832457558">隱藏進階設定…</translation>
 <translation id="7658239707568436148">取消</translation>
 <translation id="7662298039739062396">由擴充程式控制的設定</translation>

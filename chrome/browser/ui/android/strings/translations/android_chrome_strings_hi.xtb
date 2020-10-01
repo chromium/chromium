@@ -106,6 +106,7 @@
 <translation id="1810845389119482123">शुरुआती सिंक सेट अप पूरा नहीं हुआ</translation>
 <translation id="1821253160463689938">आपकी पसंद याद रखने के लिए कुकी का इस्तेमाल करती है, भले ही आप उन पेजों पर नहीं जाते</translation>
 <translation id="1829244130665387512">पेज में ढूंढें</translation>
+<translation id="1830550083491357902">प्रवेश नहीं है</translation>
 <translation id="1843805151597803366">बेहतर अनुवाद पाने के लिए, Google Search को मौजूदा पेज इस्तेमाल करने दें</translation>
 <translation id="1853692000353488670">नया गुप्त टैब</translation>
 <translation id="1856325424225101786">लाइट मोड रीसेट करें?</translation>
@@ -113,6 +114,7 @@
 <translation id="1877026089748256423">Chrome पुराना हो गया है</translation>
 <translation id="1883903952484604915">मेरी फ़ाइलें</translation>
 <translation id="189358972401248634">अन्य भाषाएं</translation>
+<translation id="1919130412786645364">Chrome में साइन-इन करने दें</translation>
 <translation id="1922362554271624559">सुझाई गई भाषाएं</translation>
 <translation id="1925021887439448749">पसंद के मुताबिक वेब पता डालें</translation>
 <translation id="1928696683969751773">अपडेट</translation>
@@ -225,6 +227,7 @@
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# ऑडियो फ़ाइल}one{# ऑडियो फ़ाइलें}other{# ऑडियो फ़ाइलें}}</translation>
 <translation id="2656405586795711023">वेब ऐप्लिकेशन</translation>
 <translation id="2689830683995595741">Chrome इस्तेमाल करने का मतलब है कि आप <ph name="BEGIN_LINK1" />Google की सेवा की शर्तों<ph name="END_LINK1" /> और <ph name="BEGIN_LINK2" />Google Chrome और Chrome OS की सेवा की अतिरिक्त शर्तों<ph name="END_LINK2" /> से सहमत हैं. साथ ही, आप <ph name="BEGIN_LINK3" />Family Link से प्रबंधित होने वाले Google खातों के लिए निजता सूचना<ph name="END_LINK3" /> से भी सहमत हैं.</translation>
+<translation id="2704606927547763573">कॉपी किया गया</translation>
 <translation id="2707726405694321444">पेज रीफ्रेश करें</translation>
 <translation id="2709516037105925701">ऑटोमैटिक भरना</translation>
 <translation id="2718352093833049315">केवल वाई-फ़ाई पर</translation>
@@ -347,6 +350,7 @@
 <translation id="3631987586758005671"><ph name="DEVICE_NAME" /> के साथ शेयर किया जा रहा है</translation>
 <translation id="3632295766818638029">पासवर्ड दिखाएं</translation>
 <translation id="363596933471559332">स्टोर किए गए क्रेडेंशियल का इस्तेमाल करके वेबसाइटों में अपने आप साइन इन करें. सुविधा के बंद होने पर, किसी वेबसाइट में साइन इन करने से पहले आपसे हर बार पुष्टि करने को कहा जाएगा.</translation>
+<translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3658159451045945436">रीसेट करने से आपकी देखी गई साइटों की सूची के साथ ही, डेटा बचाने का आपका इतिहास हमेशा के लिए मिट जाता है.</translation>
 <translation id="3692944402865947621"><ph name="FILE_NAME" /> डाउनलोड नहीं हो सकी क्योंकि स्टोर करने की जगह नहीं मिली.</translation>
 <translation id="3701167022068948696">अभी ठीक करें</translation>
@@ -707,6 +711,7 @@
 <translation id="6301525844455696527">पढ़ने की चीज़ों की सूची में आपके लिए बहुत कुछ नया है</translation>
 <translation id="6303969859164067831">साइन आउट करें और सिंक बंद करें</translation>
 <translation id="6312687380483398334">वेब ऐप्लिकेशन (म्यूट)</translation>
+<translation id="6313752143992575395"><ph name="WEBSITE_TITLE" /> के लिए सुझाव दिखाए जा रहे हैं</translation>
 <translation id="6316139424528454185">Android वर्शन काम नहीं कर रहा है</translation>
 <translation id="6324034347079777476">Android सिस्टम समन्वयन अक्षम है</translation>
 <translation id="6333140779060797560"><ph name="APPLICATION" /> के द्वारा शेयर करें</translation>
@@ -838,6 +843,7 @@
 <translation id="7233236755231902816">वेब को अपनी भाषा में देखने के लिए, Chrome का नया वर्शन पाएं</translation>
 <translation id="7248069434667874558">पक्का करें कि <ph name="TARGET_DEVICE_NAME" /> पर Chrome में सिंक करने की सुविधा चालू है</translation>
 <translation id="7274013316676448362">अवरोधित साइट</translation>
+<translation id="7286572596625053347">क्या आप <ph name="LANGUAGE" /> को बदलना चाहते हैं?</translation>
 <translation id="7290209999329137901">नाम बदलने की सुविधा उपलब्ध नहीं है</translation>
 <translation id="7291387454912369099">Assistant के ज़रिए अपने आप भरें</translation>
 <translation id="7293171162284876153">सिंक शुरू करने के लिए, "अपना Chrome डेटा सिंक करें" को चालू करें.</translation>
@@ -960,7 +966,6 @@
 <translation id="8058746566562539958">नए Chrome टैब में खोलें</translation>
 <translation id="8063895661287329888">बुकमार्क जोड़ने में विफल रहा.</translation>
 <translation id="806745655614357130">मेरा डेटा अलग रखें</translation>
-<translation id="8069669375923284295">सिंक सेट अप जारी रखने के लिए टैप करें</translation>
 <translation id="8073388330009372546">इमेज 'नए टैब' में खोलें</translation>
 <translation id="8076492880354921740">टैब</translation>
 <translation id="8084114998886531721">सहेजा गया पासवर्ड</translation>

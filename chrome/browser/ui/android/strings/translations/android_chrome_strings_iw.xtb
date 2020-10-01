@@ -106,6 +106,7 @@
 <translation id="1810845389119482123">ההגדרה הראשונית של הסנכרון לא הושלמה</translation>
 <translation id="1821253160463689938">‏שימוש בקובצי cookie כדי לשמור את ההעדפות שלך, גם אם לא נכנסת אל הדפים האלה</translation>
 <translation id="1829244130665387512">חיפוש בדף</translation>
+<translation id="1830550083491357902">לא מחובר</translation>
 <translation id="1843805151597803366">‏כדי לשפר את התרגומים, יש לאפשר לחיפוש Google להשתמש בדף הנוכחי</translation>
 <translation id="1853692000353488670">כרטיסייה חדשה לגלישה בסתר</translation>
 <translation id="1856325424225101786">לאפס את מצב הטעינה המהירה?</translation>
@@ -113,6 +114,7 @@
 <translation id="1877026089748256423">‏Chrome אינו מעודכן</translation>
 <translation id="1883903952484604915">הקבצים שלי</translation>
 <translation id="189358972401248634">שפות אחרות</translation>
+<translation id="1919130412786645364">‏התרת כניסה אל Chrome</translation>
 <translation id="1922362554271624559">שפות מוצעות</translation>
 <translation id="1925021887439448749">הזן כתובת אינטרנט מותאמת אישית</translation>
 <translation id="1928696683969751773">עדכונים</translation>
@@ -225,10 +227,11 @@
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{קובץ אודיו אחד (#)}two{# קובצי אודיו}many{# קובצי אודיו}other{# קובצי אודיו}}</translation>
 <translation id="2656405586795711023">אפליקציות אינטרנט</translation>
 <translation id="2689830683995595741">‏השימוש ב-Chrome מבטא הסכמה ל<ph name="BEGIN_LINK1" />תנאים ולהגבלות של Google<ph name="END_LINK1" /> ול<ph name="BEGIN_LINK2" />תנאים ולהגבלות הנוספים של Google Chrome ו-Chrome OS<ph name="END_LINK2" />. על השימוש חלה גם <ph name="BEGIN_LINK3" />הודעת הפרטיות לגבי חשבונות Google המנוהלים באמצעות Family Link<ph name="END_LINK3" />.</translation>
+<translation id="2704606927547763573">הועתק</translation>
 <translation id="2707726405694321444">רענן את הדף</translation>
 <translation id="2709516037105925701">מילוי אוטומטי</translation>
 <translation id="2718352093833049315">‏רק ב-Wi-Fi</translation>
-<translation id="2718846868787000099">כדי שנוכל להציג תוכן בשפות המועדפות עליך, האתרים שביקרת בהם יכולים לראות את ההעדפות שלך</translation>
+<translation id="2718846868787000099">כדי שנוכל להציג תוכן בשפות המועדפות עליך, ההעדפות שלך גלויות לאתרים שביקרת בהם</translation>
 <translation id="2723001399770238859">אודיו</translation>
 <translation id="2728754400939377704">מיון לפי אתר</translation>
 <translation id="2744248271121720757">כדי לחפש באופן מיידי או לראות פעולות קשורות, צריך להקיש על מילה</translation>
@@ -347,6 +350,7 @@
 <translation id="3631987586758005671">השיתוף עם <ph name="DEVICE_NAME" /> מתבצע</translation>
 <translation id="3632295766818638029">חשוף סיסמה</translation>
 <translation id="363596933471559332">כניסה אוטומטית לאתרים באמצעות פרטי כניסה מאוחסנים. כשתכונה זו כבויה, יהיה עליך לבצע אימות לפני כל כניסה לאתר.</translation>
+<translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3658159451045945436">האיפוס גורם למחיקת ההיסטוריה של החיסכון בנתונים, כולל רשימת האתרים שביקרת בהם.</translation>
 <translation id="3692944402865947621">ההורדה של <ph name="FILE_NAME" /> נכשלה כי מיקום האחסון לא נגיש.</translation>
 <translation id="3701167022068948696">לפתרון הבעיה עכשיו</translation>
@@ -707,6 +711,7 @@
 <translation id="6301525844455696527">רוצה להתקדם ברשימת הקריאה שלך?</translation>
 <translation id="6303969859164067831">יציאה וכיבוי הסנכרון</translation>
 <translation id="6312687380483398334">אפליקציות אינטרנט (שקט)</translation>
+<translation id="6313752143992575395">מוצגות הצעות הקשורות לדף <ph name="WEBSITE_TITLE" /></translation>
 <translation id="6316139424528454185">‏אין תמיכה בגרסת Android</translation>
 <translation id="6324034347079777476">‏סנכרון מערכת Android מושבת</translation>
 <translation id="6333140779060797560">שיתוף באמצעות <ph name="APPLICATION" /></translation>
@@ -838,6 +843,7 @@
 <translation id="7233236755231902816">‏כדי לראות באינטרנט תוכן בשפה שלך, יש להוריד את הגרסה האחרונה של Chrome</translation>
 <translation id="7248069434667874558">‏יש לוודא שהסנכרון ב-Chrome הופעל ב-<ph name="TARGET_DEVICE_NAME" /></translation>
 <translation id="7274013316676448362">אתר חסום</translation>
+<translation id="7286572596625053347"><ph name="LANGUAGE" /> לא מתאימה לך?</translation>
 <translation id="7290209999329137901">לא ניתן היה לשנת את השם מפני שהפריט לא זמין</translation>
 <translation id="7291387454912369099">‏Assistant למילוי אוטומטי</translation>
 <translation id="7293171162284876153">‏כדי להתחיל לסנכרן צריך להפעיל את האפשרות "סנכרון הנתונים מ-Chrome".</translation>
@@ -960,7 +966,6 @@
 <translation id="8058746566562539958">‏פתיחה בכרטיסייה חדשה של Chrome</translation>
 <translation id="8063895661287329888">הוספת הסימנייה נכשלה.</translation>
 <translation id="806745655614357130">שמור בנפרד את הנתונים שלי</translation>
-<translation id="8069669375923284295">יש להקיש להמשך הגדרת הסנכרון</translation>
 <translation id="8073388330009372546">פתיחת התמונה בכרטיסייה חדשה</translation>
 <translation id="8076492880354921740">כרטיסיות</translation>
 <translation id="8084114998886531721">סיסמה שמורה</translation>

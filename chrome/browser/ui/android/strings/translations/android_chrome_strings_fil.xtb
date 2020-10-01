@@ -106,6 +106,7 @@
 <translation id="1810845389119482123">Hindi natapos ang paunang pag-set up ng pag-sync</translation>
 <translation id="1821253160463689938">Gumamit ng mga cookie para matandaan ang iyong mga kagustuhan, kahit na hindi mo binibisita ang mga page na iyon</translation>
 <translation id="1829244130665387512">Hanapin sa page</translation>
+<translation id="1830550083491357902">Hindi naka-sign in</translation>
 <translation id="1843805151597803366">Para makakuha ng mas mahuhusay na pagsasalin, payagan ang Google Search na gamitin ang kasalukuyang page</translation>
 <translation id="1853692000353488670">Bagong tab na incognito</translation>
 <translation id="1856325424225101786">I-reset ang Lite mode?</translation>
@@ -113,6 +114,7 @@
 <translation id="1877026089748256423">Luma na ang Chrome</translation>
 <translation id="1883903952484604915">Aking Mga File</translation>
 <translation id="189358972401248634">Iba pang mga wika</translation>
+<translation id="1919130412786645364">Pagayan ang pag-sign in sa Chrome</translation>
 <translation id="1922362554271624559">Mga iminumungkahing wika</translation>
 <translation id="1925021887439448749">Maglagay ng custom na address sa web</translation>
 <translation id="1928696683969751773">Mga Update</translation>
@@ -225,6 +227,7 @@ Pindutin nang matagal ang anumang salita para maghanap. Para pinuhin ang iyong p
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# Audio file}one{# Audio file}other{# na Audio file}}</translation>
 <translation id="2656405586795711023">Mga web app</translation>
 <translation id="2689830683995595741">Sa pamamagitan ng paggamit sa Chrome, sumasang-ayon ka sa <ph name="BEGIN_LINK1" />Mga Tuntunin ng Serbisyo ng Google<ph name="END_LINK1" />, at sa <ph name="BEGIN_LINK2" />Mga Karagdagang Tuntunin ng Serbisyo ng Google Chrome at Chrome OS<ph name="END_LINK2" />. Nalalapat din ang <ph name="BEGIN_LINK3" />Notification ng Privacy para sa Mga Google Account na Pinapamahalaan Gamit ang Family Link<ph name="END_LINK3" />.</translation>
+<translation id="2704606927547763573">Kinopya</translation>
 <translation id="2707726405694321444">I-refresh ang page</translation>
 <translation id="2709516037105925701">AutoFill</translation>
 <translation id="2718352093833049315">Sa Wi-Fi lang</translation>
@@ -347,6 +350,7 @@ Pindutin nang matagal ang anumang salita para maghanap. Para pinuhin ang iyong p
 <translation id="3631987586758005671">Ibinabahagi sa <ph name="DEVICE_NAME" /></translation>
 <translation id="3632295766818638029">I-unmask ang password</translation>
 <translation id="363596933471559332">Awtomatikong mag-sign in sa mga website gamit ang mga naka-store na kredensyal. Kapag naka-off ang feature, hihilingin sa iyong mag-verify sa tuwing magsa-sign in ka sa isang website.</translation>
+<translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3658159451045945436">Kapag na-reset, mabubura ang iyong history ng pagtitipid ng data, kabilang ang listahan ng mga binisitang site.</translation>
 <translation id="3692944402865947621">Hindi na-download ang <ph name="FILE_NAME" /> dahil hindi maabot ang lokasyon ng storage.</translation>
 <translation id="3701167022068948696">Ayusin ngayon</translation>
@@ -707,6 +711,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="6301525844455696527">Balikan ang iyong listahan ng babasahin</translation>
 <translation id="6303969859164067831">Mag-sign out at i-off ang pag-sync</translation>
 <translation id="6312687380483398334">Mga web app (tahimik)</translation>
+<translation id="6313752143992575395">Ipinapakita ang suhestyon para sa <ph name="WEBSITE_TITLE" /></translation>
 <translation id="6316139424528454185">Hindi sinusuportahan ang bersyon ng Android</translation>
 <translation id="6324034347079777476">Naka-disable ang pag-sync ng Android system</translation>
 <translation id="6333140779060797560">Ibahagi sa pamamagitan ng <ph name="APPLICATION" /></translation>
@@ -838,6 +843,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="7233236755231902816">Para makita ang web sa iyong wika, kunin ang pinakabagong bersyon ng Chrome</translation>
 <translation id="7248069434667874558">Tiyaking naka-on sa <ph name="TARGET_DEVICE_NAME" /> ang pag-sync sa Chrome</translation>
 <translation id="7274013316676448362">Naka-block na site</translation>
+<translation id="7286572596625053347">Palitan ang <ph name="LANGUAGE" />?</translation>
 <translation id="7290209999329137901">Hindi available ang pag-rename</translation>
 <translation id="7291387454912369099">Assistant Triggered na Pag-check out</translation>
 <translation id="7293171162284876153">Para simulan ang pag-sync, i-on ang "I-sync ang iyong data sa Chrome."</translation>
@@ -960,7 +966,6 @@ Sa Incognito, posible pa ring makita ang iyong aktibidad ng mga website na binib
 <translation id="8058746566562539958">Buksan sa bagong tab ng Chrome</translation>
 <translation id="8063895661287329888">Hindi naidagdag ang bookmark.</translation>
 <translation id="806745655614357130">Panatilihing hiwalay ang aking data</translation>
-<translation id="8069669375923284295">Mag-tap para ipagpatuloy ang pag-set up ng pag-sync</translation>
 <translation id="8073388330009372546">Buksan ang larawan sa bagong tab</translation>
 <translation id="8076492880354921740">Mga Tab</translation>
 <translation id="8084114998886531721">Naka-save na password</translation>

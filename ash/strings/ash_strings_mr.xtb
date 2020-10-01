@@ -113,6 +113,7 @@
 <translation id="2049240716062114887">डेस्कचे नाव <ph name="DESK_NAME" /> वर बदलले होते</translation>
 <translation id="2050339315714019657">पोर्ट्रेट</translation>
 <translation id="2067602449040652523">कीबोर्डची चमक</translation>
+<translation id="2074759828767813253">अलीकडील स्क्रीनशॉट आणि डाउनलोड</translation>
 <translation id="2083190527011054446">शुभ रात्री <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">नेटवर्कशी कनेक्ट केलेले नाही</translation>
 <translation id="2126242104232412123">नवीन डेस्क</translation>
@@ -197,7 +198,6 @@
 <translation id="2996462380875591307">डॉक केलेले मॅग्निफायर सुरू केले. ते टॉगल करून बंद करण्यासाठी पुन्हा Ctrl+Search+D दाबा.</translation>
 <translation id="3000461861112256445">मोनो ऑडिओ</translation>
 <translation id="3009178788565917040">आउटपुट</translation>
-<translation id="3025081209054535615">शेल्फमधून जागतिक मीडिया नियंत्रणे अनपिन करा</translation>
 <translation id="3033545621352269033">सुरू</translation>
 <translation id="3038571455154067151">साइन इन करण्यासाठी, तुमचा Family Link पालक ॲक्सेस कोड एंटर करा</translation>
 <translation id="3045488863354895414">शुभ दुपार,</translation>
@@ -620,6 +620,7 @@
 <translation id="7526573455193969409">नेटवर्कचे परीक्षण केले जाऊ शकते</translation>
 <translation id="7536035074519304529">IP पत्ता: <ph name="ADDRESS" /></translation>
 <translation id="7548434653388805669">झोपण्याची वेळ</translation>
+<translation id="7551643184018910560">शेल्फवर पिन करा</translation>
 <translation id="7561982940498449837">मेनू बंद करा</translation>
 <translation id="7564874036684306347">दुसऱ्या डेस्कटॉपवर विंडो हलवण्याने अनपेक्षित वर्तन घडू शकते. नंतर येणाऱ्या सूचना, विंडो आणि डायलॉग हे डेस्कटॉपच्या दरम्यान विभाजित केले जाऊ शकतात.</translation>
 <translation id="7568294522609223312">ऑटोमेटिक क्लिक बंद करा</translation>
@@ -700,7 +701,6 @@
 <translation id="8297006494302853456">कमकुवत</translation>
 <translation id="8308637677604853869">मागील मेनू</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
-<translation id="8349293353728876872">शेल्फमध्ये जागतिक मीडिया नियंत्रणे पिन करा</translation>
 <translation id="8351131234907093545">टीप तयार करा</translation>
 <translation id="8371779926711439835">एक अक्षर पुढे जा</translation>
 <translation id="8375916635258623388">हे <ph name="DEVICE_NAME" />आणि तुमचा फोन आपोआप कनेक्ट होतील</translation>

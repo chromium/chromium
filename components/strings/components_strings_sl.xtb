@@ -134,6 +134,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1453974140256777690">Besedilo, ki ga prilepite ali pripnete, je poslano v oblak Google Cloud ali drugim ponudnikom v analizo. Lahko je na primer pregledano glede tega, ali vsebuje občutljive podatke.</translation>
 <translation id="1455413310270022028">Radirka</translation>
 <translation id="1462245070427461050">JIS B9</translation>
+<translation id="1462951478840426066">uporabiti pisave v računalniku, da boste lahko ustvarjali vsebino visoke kakovosti.</translation>
 <translation id="1463543813647160932">5 x 7</translation>
 <translation id="1467432559032391204">V levo</translation>
 <translation id="1472675084647422956">Pokaži več</translation>
@@ -221,6 +222,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="17513872634828108">Odprti zavihki</translation>
 <translation id="1752021286346845558">Nabiralnik 8</translation>
 <translation id="1753706481035618306">Številka strani</translation>
+<translation id="1757773103848038814">Pisava s stalno širino</translation>
 <translation id="1763864636252898013">Strežniku ni uspelo dokazati, da je <ph name="DOMAIN" />; operacijski sistem vaše naprave ne zaupa njegovemu varnostnemu potrdilu. Razlog za to je lahko napačna konfiguracija ali napadalčevo prestrezanje povezave.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Poskušajte zagnati orodje Omrežna diagnostika Windows<ph name="END_LINK" />.</translation>
 <translation id="1772163372082567643">Strežnik, na katerega greste, <ph name="ORIGIN" />, je nastavil glavo,
@@ -594,6 +596,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3395827396354264108">Način prevzema</translation>
 <translation id="3399952811970034796">Naslov za dostavo</translation>
 <translation id="3402261774528610252">Povezava, prek katere je bilo naloženo to spletno mesto, uporablja standard TLS 1.0 ali TLS 1.1; ta standarda sta zastarela in bosta v prihodnje onemogočena. Ko bosta onemogočena, bo uporabnikom preprečeno naložiti to spletno mesto. V strežniku omogočite standard TLS 1.2 ali novejšega.</translation>
+<translation id="3411120537985775570">Lepljenje iz vira <ph name="ORIGIN_NAME" /> na to mesto je blokiral skrbnik.</translation>
 <translation id="3414952576877147120">Velikost:</translation>
 <translation id="3417660076059365994">Datoteke, ki jih naložite ali pripnete, so poslane v oblak Google Cloud ali drugim ponudnikom v analizo. Lahko so na primer pregledane glede tega, ali vsebujejo občutljive podatke ali zlonamerno programsko opremo.</translation>
 <translation id="3422248202833853650">Poskusite zapreti druge programe, da boste tako sprostili pomnilnik.</translation>
@@ -632,6 +635,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3532844647053365774"><ph name="HOST" /> želi uporabiti vaš mikrofon</translation>
 <translation id="3533328374079021623">Nabiralnik 5</translation>
 <translation id="3539171420378717834">Ohrani kopijo te kartice v tej napravi</translation>
+<translation id="3552297013052089404">Neserifna pisava</translation>
 <translation id="3558573058928565255">Dnevni čas</translation>
 <translation id="3566021033012934673">Vaša povezava ni zasebna</translation>
 <translation id="3567778190852720481">Z računom podjetja se ni mogoče včlaniti (račun podjetja ni ustrezen).</translation>
@@ -1000,6 +1004,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="503069730517007720">Korensko potrdilo za programsko opremo »<ph name="SOFTWARE_NAME" />« je obvezno, vendar ni nameščeno. Skrbnik za IT lahko za odpravo te težave upošteva navodila za konfiguracijo za programsko opremo »<ph name="SOFTWARE_NAME" />«. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5031870354684148875">Google Prevajalnik – vizitka</translation>
 <translation id="503498442187459473"><ph name="HOST" /> želi uporabiti kamero in mikrofon</translation>
+<translation id="5039762155821394373">Velikost pisave</translation>
 <translation id="5039804452771397117">Dovoli</translation>
 <translation id="5040262127954254034">Zasebnost</translation>
 <translation id="5043480802608081735">Povezava, ki ste jo kopirali</translation>
@@ -1229,6 +1234,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5946937721014915347">Odpiranje spletnega mesta <ph name="SITE_NAME" /> …</translation>
 <translation id="5951495562196540101">S potrošniškim računom se ni mogoče včlaniti (na voljo je pridružena licenca).</translation>
+<translation id="5963413905009737549">Razdelek</translation>
 <translation id="5967592137238574583">Urejanje podatkov o stiku</translation>
 <translation id="5967867314010545767">Odstrani iz zgodovine</translation>
 <translation id="5975083100439434680">Pomanjšaj</translation>
@@ -1265,6 +1271,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6051221802930200923">Spletnega mesta <ph name="SITE" /> trenutno ni mogoče obiskati, ker uporablja pripenjanje potrdil. Napake omrežja in napadi na omrežje so običajno začasni, zato bo ta stran verjetno delovala pozneje.</translation>
 <translation id="6052284303005792909">•</translation>
 <translation id="6053328359599022071">Želite objaviti prisotnost?</translation>
+<translation id="6057359309778282021">Skrbnik je blokiral deljenje vsebine iz vira <ph name="ORIGIN_NAME" /> z navideznim računalnikom <ph name="VM_NAME" />.</translation>
 <translation id="6058977677006700226">Želite kartice uporabljati v vseh svojih napravah?</translation>
 <translation id="6059925163896151826">Naprave USB</translation>
 <translation id="6060009363608157444">Neveljaven način DnsOverHttps.</translation>
@@ -1314,6 +1321,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
         <ph name="END_LIST" /></translation>
 <translation id="6280223929691119688">Dostava na ta naslov ni mogoča. Izberite drugega.</translation>
 <translation id="6282194474023008486">Poštna številka</translation>
+<translation id="6289939620939689042">Barva strani</translation>
 <translation id="6290238015253830360">Tu so prikazani predlagani članki</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6302269476990306341">Pomočnik Google v Chromu se ustavlja</translation>
@@ -1470,6 +1478,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="7004583254764674281">Uporabite Windows Hello za hitrejše potrjevanje kartic</translation>
 <translation id="7006930604109697472">Vseeno pošlji</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
+<translation id="7014741021609395734">Stopnja povečave</translation>
 <translation id="7016992613359344582">Te bremenitve so lahko enkratne ali ponavljajoče se in morda niso očitne.</translation>
 <translation id="7029809446516969842">Gesla</translation>
 <translation id="7031646650991750659">Katere aplikacije iz Googla Play ste namestili</translation>
@@ -1871,6 +1880,7 @@ Dodatne podrobnosti:
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">Ni gesel, ki bi se ujemala. Prikaži vsa shranjena gesla.</translation>
 <translation id="8625384913736129811">Shrani to kartico v tej napravi</translation>
+<translation id="8657078576661269990">Skrbnik je blokiral deljenje vsebine iz vra <ph name="ORIGIN_NAME" /> z navideznima računalnikoma <ph name="VM_NAME_1" /> in <ph name="VM_NAME_2" />.</translation>
 <translation id="8663226718884576429">Povzetek naročila, <ph name="TOTAL_LABEL" />, več podrobnosti</translation>
 <translation id="867224526087042813">Podpis</translation>
 <translation id="8676424191133491403">Brez zakasnitve</translation>
@@ -1883,6 +1893,7 @@ Dodatne podrobnosti:
 <translation id="8699041776323235191">Naprava HID</translation>
 <translation id="8703575177326907206">Vaša povezava z <ph name="DOMAIN" /> ni kodirana.</translation>
 <translation id="8705331520020532516">Serijska številka</translation>
+<translation id="8710842507289500830">Slog pisave</translation>
 <translation id="8718314106902482036">Plačilo ni končano</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />, <ph name="DESCRIPTION" />, predlog iskanja</translation>
 <translation id="8719528812645237045">Večkratno luknjanje zgoraj</translation>
@@ -2003,6 +2014,7 @@ Dodatne podrobnosti:
 <translation id="9191834167571392248">Luknjanje spodaj levo</translation>
 <translation id="9205078245616868884">Podatki so šifrirani z vašim geslom za sinhronizacijo. Vnesite ga, če želite začeti sinhronizacijo.</translation>
 <translation id="9207861905230894330">Članka ni bilo mogoče dodati.</translation>
+<translation id="9213433120051936369">Prilagajanje videza</translation>
 <translation id="9215416866750762878">Aplikacija Chromu preprečuje vzpostavitev varne povezave s tem mestom</translation>
 <translation id="9219103736887031265">Slike</translation>
 <translation id="933712198907837967">Diners Club</translation>

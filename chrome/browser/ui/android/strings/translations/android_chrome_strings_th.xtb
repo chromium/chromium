@@ -106,6 +106,7 @@
 <translation id="1810845389119482123">ตั้งค่าการซิงค์เริ่มต้นไม่สำเร็จ</translation>
 <translation id="1821253160463689938">ใช้คุกกี้เพื่อให้จดจำค่ากำหนดของคุณ แม้ว่าคุณไม่ได้เข้าชมหน้าเว็บเหล่านั้น</translation>
 <translation id="1829244130665387512">ค้นหาในหน้าเว็บ</translation>
+<translation id="1830550083491357902">ไม่ได้ลงชื่อเข้าใช้</translation>
 <translation id="1843805151597803366">ให้ Google Search ใช้งานหน้าปัจจุบันเพื่อรับการแปลที่ดีขึ้น</translation>
 <translation id="1853692000353488670">แท็บใหม่ที่ไม่ระบุตัวตน</translation>
 <translation id="1856325424225101786">รีเซ็ตโหมด Lite ไหม</translation>
@@ -113,6 +114,7 @@
 <translation id="1877026089748256423">Chrome ล้าสมัย</translation>
 <translation id="1883903952484604915">ไฟล์ของฉัน</translation>
 <translation id="189358972401248634">ภาษาอื่นๆ</translation>
+<translation id="1919130412786645364">อนุญาตให้ลงชื่อเข้าใช้ Chrome</translation>
 <translation id="1922362554271624559">ภาษาที่แนะนำ</translation>
 <translation id="1925021887439448749">ป้อนที่อยู่เว็บที่กำหนดเอง</translation>
 <translation id="1928696683969751773">อัปเดต</translation>
@@ -225,6 +227,7 @@
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{ไฟล์เสียง # ไฟล์}other{ไฟล์เสียง # ไฟล์}}</translation>
 <translation id="2656405586795711023">เว็บแอป</translation>
 <translation id="2689830683995595741">การใช้ Chrome หมายความว่า คุณยอมรับ<ph name="BEGIN_LINK1" />ข้อกำหนดในการให้บริการของ Google<ph name="END_LINK1" /> และ<ph name="BEGIN_LINK2" />ข้อกำหนดในการให้บริการเพิ่มเติมของ Google Chrome และ Chrome OS<ph name="END_LINK2" /> <ph name="BEGIN_LINK3" />ประกาศเกี่ยวกับนโยบายความเป็นส่วนตัวสำหรับบัญชี Google ที่มีการจัดการด้วย Family Link<ph name="END_LINK3" /> จะมีผลใช้บังคับด้วย</translation>
+<translation id="2704606927547763573">คัดลอกแล้ว</translation>
 <translation id="2707726405694321444">รีเฟรชหน้า</translation>
 <translation id="2709516037105925701">ป้อนอัตโนมัติ</translation>
 <translation id="2718352093833049315">Wi-Fi เท่านั้น</translation>
@@ -347,6 +350,7 @@
 <translation id="3631987586758005671">กำลังแชร์กับ <ph name="DEVICE_NAME" /></translation>
 <translation id="3632295766818638029">เปิดเผยรหัสผ่าน</translation>
 <translation id="363596933471559332">ลงชื่อเข้าใช้เว็บไซต์โดยอัตโนมัติโดยใช้ข้อมูลเข้าสู่ระบบที่เก็บไว้ เมื่อฟีเจอร์นี้ปิดอยู่ ระบบจะขอให้คุณยืนยันทุกครั้งก่อนลงชื่อเข้าใช้เว็บไซต์</translation>
+<translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3658159451045945436">การรีเซ็ตจะลบประวัติการประหยัดเน็ต รวมถึงรายการเว็บไซต์ที่เข้าชม</translation>
 <translation id="3692944402865947621">ดาวน์โหลด <ph name="FILE_NAME" /> ไม่สำเร็จเนื่องจากเข้าถึงตำแหน่งที่เก็บข้อมูลไม่ได้</translation>
 <translation id="3701167022068948696">แก้ไขเลย</translation>
@@ -707,6 +711,7 @@
 <translation id="6301525844455696527">อ่านเรื่องรออ่านต่อ</translation>
 <translation id="6303969859164067831">ออกจากระบบและปิดการซิงค์</translation>
 <translation id="6312687380483398334">เว็บแอป (ไม่ส่งเสียงหรือแสดงให้เห็น)</translation>
+<translation id="6313752143992575395">กำลังแสดงคำแนะนำสำหรับ <ph name="WEBSITE_TITLE" /></translation>
 <translation id="6316139424528454185">ไม่รองรับ Android เวอร์ชันนี้</translation>
 <translation id="6324034347079777476">ปิดใช้การซิงค์ระบบ Android อยู่</translation>
 <translation id="6333140779060797560">แชร์ผ่าน <ph name="APPLICATION" /></translation>
@@ -838,6 +843,7 @@
 <translation id="7233236755231902816">โปรดอัปเดต Chrome เป็นเวอร์ชันล่าสุดเพื่อดูเว็บเป็นภาษาของคุณ</translation>
 <translation id="7248069434667874558">ตรวจสอบว่าการซิงค์ <ph name="TARGET_DEVICE_NAME" /> ใน Chrome เปิดอยู่</translation>
 <translation id="7274013316676448362">เว็บไซต์ที่ถูกบล็อก</translation>
+<translation id="7286572596625053347">เปลี่ยนภาษา<ph name="LANGUAGE" />ไหม</translation>
 <translation id="7290209999329137901">เปลี่ยนชื่อไม่ได้</translation>
 <translation id="7291387454912369099">Assistant สำหรับการป้อนข้อความอัตโนมัติ</translation>
 <translation id="7293171162284876153">หากต้องการเริ่มซิงค์ ให้เปิด "ซิงค์ข้อมูล Chrome"</translation>
@@ -960,7 +966,6 @@
 <translation id="8058746566562539958">เปิดในแท็บใหม่ของ Chrome</translation>
 <translation id="8063895661287329888">เพิ่มบุ๊กมาร์กไม่สำเร็จ</translation>
 <translation id="806745655614357130">เก็บข้อมูลของฉันแยกต่างหาก</translation>
-<translation id="8069669375923284295">แตะเพื่อดำเนินการตั้งค่าการซิงค์ต่อ</translation>
 <translation id="8073388330009372546">เปิดภาพในแท็บใหม่</translation>
 <translation id="8076492880354921740">แท็บ</translation>
 <translation id="8084114998886531721">รหัสผ่านที่บันทึกไว้</translation>

@@ -7,8 +7,8 @@
 <translation id="4165986682804962316">Подешавања сајта</translation>
 <translation id="6377677440246641805"><ph name="BROWSER_NAME" />\nНије подржано</translation>
 <translation id="7671141431838911305">ИНСТАЛИРАЊЕ</translation>
-<translation id="809358319115531236">Простор за управљање не подржава: <ph name="BROWSER_PACKAGE" />.</translation>
+<translation id="809358319115531236"><ph name="BROWSER_PACKAGE" /> не подржава управљање простором.</translation>
 <translation id="8252328707312954493">ЗАТВОРИ</translation>
-<translation id="9213932439211643363">Управљ. подеш. веб-сајт.</translation>
+<translation id="9213932439211643363">Подешавања веб-сајта</translation>
 <translation id="987264212798334818">Опште</translation>
 </translationbundle>

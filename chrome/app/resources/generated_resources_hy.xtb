@@ -501,6 +501,7 @@
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (հյուր)</translation>
 <translation id="1572266655485775982">Միացնել Wi-Fi-ը</translation>
 <translation id="1572876035008611720">Մուտքագրեք հասցեն</translation>
+<translation id="1575741822946219011">Լեզուներ և ներածման մեթոդներ</translation>
 <translation id="1576594961618857597">Կանխադրված սպիտակ ավատար</translation>
 <translation id="1578558981922970608">Ստիպողաբար փակել</translation>
 <translation id="1578784163189013834">Ընտրել էկրանապահի ֆոն</translation>
@@ -858,6 +859,7 @@
 <translation id="1974821797477522211">Միացում ցանցին</translation>
 <translation id="1975841812214822307">Հեռացնել…</translation>
 <translation id="1976150099241323601">Մուտք անվտանգության սարք</translation>
+<translation id="1976307821760494606"><ph name="DOMAIN" /> կայքն անջատել է ADB վրիպազերծումը։ 24 ժամ հետո ձեր <ph name="DEVICE_TYPE" /> սարքը կվերակայվի։ Պահուստավորեք ֆայլերը, որոնք ուզում եք պահել։</translation>
 <translation id="1977965994116744507"><ph name="DEVICE_TYPE" /> սարքն ապակողպելու համար մոտեցրեք հեռախոսը։</translation>
 <translation id="1978006917103730774">Ծրագրակազմի և անվտանգության համակարգի հետագա թարմացումները կտեղադրվեն ավտոմատ կերպով:</translation>
 <translation id="1979095679518582070">Այս գործառույթն անջատելու դեպքում ձեր սարքը նախկինի պես կուղարկի տվյալներ, որոնք անհրաժեշտ են հիմնական ծառայություններին (օրինակ՝ համակարգային թարմացումներին ու անվտանգությանը)։</translation>
@@ -2038,6 +2040,7 @@
 <translation id="3404249063913988450">Միացնել էկրանապահը</translation>
 <translation id="3405664148539009465">Հարմարեցնել տառատեսակները</translation>
 <translation id="3405763860805964263">...</translation>
+<translation id="3406396172897554194">Որոնեք ըստ լեզվի կամ ներածման մեթոդի</translation>
 <translation id="3406605057700382950">&amp;Ցուցադրել էջանիշների գոտին</translation>
 <translation id="340671561090997290">{NUM_EXTENSIONS,plural, =1{Այս ընդլայնումը կարող է վտանգավոր լինել}one{Այս ընդլայնումները կարող են վտանգավոր լինել}other{Այս ընդլայնումները կարող են վտանգավոր լինել}}</translation>
 <translation id="3409785640040772790">Քարտեզներ</translation>
@@ -2613,6 +2616,7 @@
 <translation id="4025039777635956441">Անջատել նշված կայքի ձայնը</translation>
 <translation id="4027804175521224372">(Մի բաց թողեք հնարավորությունը - <ph name="IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_LINK" />)</translation>
 <translation id="4027951648498485763">Երբ փակեք դիտարկիչը, Adobe Flash Player-ի կարգավորումները կզրոյացվեն:</translation>
+<translation id="4028467762035011525">Ավելացնել ներածման մեթոդներ</translation>
 <translation id="4031179711345676612">Խոսափողի օգտագործումը թույլատրված է</translation>
 <translation id="4031527940632463547">տվիչների օգտագործումն արգելված է</translation>
 <translation id="4033471457476425443">Նոր պանակ ավելացնել</translation>
@@ -4066,6 +4070,7 @@
 <translation id="5833726373896279253">Այս կարգավորումները կարող են միայն փոփոխվել սեփականատիրոջ կողմից՝</translation>
 <translation id="5834581999798853053">Մնացել է մոտ <ph name="TIME" /> րոպե</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> – Տեսախցիկը կամ խոսափողը ներկայումս ձայնագրում է</translation>
+<translation id="5839574759884227787"><ph name="DOMAIN" /> կայքն անջատել է ADB վրիպազերծումը, ինչի արդյունքում ձեր <ph name="DEVICE_TYPE" /> սարքը կվերակայվի։ Վերագործարկելուց առաջ պահուստավորեք ձեր ֆայլերը։</translation>
 <translation id="5840680448799937675">Ֆայլերը միշտ կփոխանցվեն անցանց ռեժիմում</translation>
 <translation id="5841270259333717135">Կարգավորել Ethernet-ը</translation>
 <translation id="5842497610951477805">Միացնել/անջատել Bluetooth-ը</translation>
@@ -4479,6 +4484,7 @@
 <translation id="6308077700132376815">Արգելափակել պատկերները</translation>
 <translation id="6308493641021088955">Մուտք «<ph name="EXTENSION_NAME" />» ընդլայնման միջոցով</translation>
 <translation id="6308937455967653460">Պահել հղ&amp;ումը որպես…</translation>
+<translation id="6309443618838462258">Ձեր ադմինիստրատորը թույլ չի տալիս ներածման այս մեթոդը</translation>
 <translation id="6309510305002439352">Խոսափողի օգտագործման թույլտվությունն անջատած է</translation>
 <translation id="6311220991371174222">Չհաջողվեց գործարկել Chrome-ը, քանի որ պրոֆիլը բացելիս սխալ առաջացավ: Վերագործարկեք Chrome-ը:</translation>
 <translation id="6312403991423642364">Ցանցի անհայտ սխալ</translation>
@@ -5197,6 +5203,7 @@
 <translation id="7191159667348037">Անհայտ տպիչ (USB)</translation>
 <translation id="7193051357671784796">Այս հավելվածն ավելացվել է ձեր կազմակերպության կողմից: Վերագործարկեք հավելվածը՝ տեղադրումն ավարտելու համար:</translation>
 <translation id="7193374945610105795"><ph name="ORIGIN" /> կայքի համար գաղտնաբառեր չեն պահվել</translation>
+<translation id="7196020411877309443">Ինչո՞ւ է սա ցուցադրվում:</translation>
 <translation id="7196913789568937443">Կրկնօրինակ Google Drive-ում։ Արագ վերականգնեք ձեր տվյալները կամ տեղափոխեք այլ սարք: Կրկնօրինակները ներառում են հավելվածների տվյալները։ Կրկնօրինակները վերբեռնվում են Google և գաղտնագրվում ձեր Google հաշվի գաղտնաբառի միջոցով։ <ph name="BEGIN_LINK1" />Իմանալ ավելին<ph name="END_LINK1" /></translation>
 <translation id="7197190419934240522">Օգնեք Որոնմանը և Google-ի մյուս ծառայություններին ավելի լավ ճանաչել ձեզ</translation>
 <translation id="7197632491113152433">Ձեր հաշվում գտնվել է <ph name="NUMBER_OF_APPS" /> հավելված, որոնք կարող են օգտագործվել այս սարքում:</translation>
@@ -5852,6 +5859,7 @@
 <translation id="7952708427581814389">Կայքերը կարող են սեղմատախտակին պատճենված տեքստն ու պատկերները դիտելու թույլտվություն խնդրել</translation>
 <translation id="795282463722894016">Վերականգնումն ավարտվեց</translation>
 <translation id="7952904276017482715">Սպասված ID-ն՝ «<ph name="EXPECTED_ID" />», ստացված ID-ն՝ «<ph name="NEW_ID" />»</translation>
+<translation id="7953669802889559161">Ներածման մեթոդներ</translation>
 <translation id="7953955868932471628">Կառավարել դյուրանցումները</translation>
 <translation id="7956373551960864128">Ձեր պահված տպիչները</translation>
 <translation id="7957074856830851026">Տեսնել սարքի մասին տեղեկություններ, օրինակ՝ սերիական համարը և օբյեկտի ID-ն</translation>
@@ -5875,6 +5883,7 @@
 <translation id="7973962044839454485">PPP իսկորոշումը չհաջողվեց: Օգտանունը կամ գաղտնաբառը սխալ են</translation>
 <translation id="7974566588408714340">Կրկնել՝ օգտագործելով <ph name="EXTENSIONNAME" />-ը</translation>
 <translation id="7974936243149753750">էկրանի շրջանակ</translation>
+<translation id="7977404132325989121">&amp;Անվանել պատուհանը…</translation>
 <translation id="7978412674231730200">Մասնավոր բանալի</translation>
 <translation id="7978450511781612192">Դուք դուրս կգաք Google հաշվից: Ձեր էջանիշները, այցելությունների պատմությունը, գաղտնաբառերը և մյուս կարգավորումներն այլևս չեն համաժամացվի:</translation>
 <translation id="7980084013673500153">Օբյեկտի ID-ն՝ <ph name="ASSET_ID" /></translation>
@@ -6426,6 +6435,7 @@
 <translation id="8648408795949963811">Գիշերային լույսի ռեժիմում գույնի ջերմաստիճանը</translation>
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> կայքն ուզում է <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> և այլն</translation>
 <translation id="8650543407998814195">Չնայած այլևս չեք կարող մուտք գործել ձեր հին պրոֆիլ, դուք կարող եք այն ջնջել:</translation>
+<translation id="865118751078059229">&amp;Անվանել պատուհանը…</translation>
 <translation id="8651585100578802546">Force Reload This Page</translation>
 <translation id="8652400352452647993">Ընդլայնման փաթեթավորման սխալ կա</translation>
 <translation id="8654151524613148204">Ֆայլը չափազանց մեծ է ձեր համակարգչի համար:</translation>
@@ -6578,6 +6588,7 @@
 <translation id="8813872945700551674">Դիմեք ձեր ծնողին՝ «<ph name="EXTENSION_NAME" />» ընդլայնումը թույլատրելու համար</translation>
 <translation id="8813969267212093033">Համակարգի տեքստը ցուցադրվում է այս լեզվով</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
+<translation id="8814319344131658221">Ուղղագրության ստուգման համար հասանելի լեզուների ցանկը հիմնված է ձեր լեզուների կարգավորումների վրա</translation>
 <translation id="8814644416678422095">Կոշտ սկավառակ</translation>
 <translation id="8814687660896548945">Խնդրում ենք սպասել։ Արխիվը սկանավորվում է...</translation>
 <translation id="881782782501875829">Ավելացրեք միացքի համարը</translation>
@@ -6673,6 +6684,7 @@
 <translation id="8912810933860534797">Միացնել ավտոմատ որոնումը</translation>
 <translation id="8915370057835397490">Առաջարկը բեռնվում է</translation>
 <translation id="8916476537757519021">Ինկոգնիտո ռեժիմի ենթաշրջանակ՝ <ph name="SUBFRAME_SITE" /></translation>
+<translation id="8916749157829986308">Նշեք պատուհանի անվանումը</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> (<ph name="GIVEN_NAME" />)</translation>
 <translation id="8922013791253848639">Միշտ թույլատրել գովազդն այս կայքում</translation>
 <translation id="8923880975836399332">Մուգ փիրուզագույն</translation>
@@ -6848,6 +6860,7 @@
 <translation id="9124003689441359348">Պահված գաղտնաբառերը կցուցադրվեն այստեղ</translation>
 <translation id="9126149354162942022">Նշորդի գույնը</translation>
 <translation id="9128317794749765148">Կարգավորումը չհաջողվեց ավարտել</translation>
+<translation id="9128335130883257666">Բացել «<ph name="INPUT_METHOD_NAME" />» ներածման մեթոդի կարգավորումները</translation>
 <translation id="9128870381267983090">Կապակցեք ցանցին</translation>
 <translation id="9130015405878219958">Սխալ ռեժիմ է նշված:</translation>
 <translation id="9131487537093447019">Ուղարկել և ստանալ հաղորդագրություններ Bluetooth սարքերից:</translation>

@@ -113,6 +113,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="2049240716062114887">Emri i tryezës u ndryshua në "<ph name="DESK_NAME" />"</translation>
 <translation id="2050339315714019657">Portret (vertikal</translation>
 <translation id="2067602449040652523">Ndriçimi i tastierës</translation>
+<translation id="2074759828767813253">Pamjet e fundit të ekranit dhe shkarkimet</translation>
 <translation id="2083190527011054446">Natën e mirë <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">Nuk është lidhur në rrjet</translation>
 <translation id="2126242104232412123">Tavolinë e re</translation>
@@ -197,7 +198,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="2996462380875591307">"Zmadhuesi i stacionuar" u aktivizua. Shtyp sërish "Ctrl+Kërko+D" për ta çaktivizuar.</translation>
 <translation id="3000461861112256445">Audioja mono</translation>
 <translation id="3009178788565917040">Dalja</translation>
-<translation id="3025081209054535615">Zhgozhdo kontrollet globale të medias nga rafti</translation>
 <translation id="3033545621352269033">Aktiv</translation>
 <translation id="3038571455154067151">Për t'u identifikuar, fut kodin e qasjes së prindit për Family Link</translation>
 <translation id="3045488863354895414">Mirëdita,</translation>
@@ -620,6 +620,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="7526573455193969409">Rrjeti mund të jetë i monitoruar</translation>
 <translation id="7536035074519304529">Adresa IP: <ph name="ADDRESS" /></translation>
 <translation id="7548434653388805669">Koha për gjumë</translation>
+<translation id="7551643184018910560">Gozhdo në raft</translation>
 <translation id="7561982940498449837">Mbyll menynë</translation>
 <translation id="7564874036684306347">Zhvendosja e dritareve te një desktop tjetër mund të shkaktojë një sjellje të papritur. Njoftimet pasuese, dritarja dhe dialogët mund të ndahen mes desktopëve.</translation>
 <translation id="7568294522609223312">Çaktivizo klikimet automatike</translation>
@@ -700,7 +701,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="8297006494302853456">I dobët</translation>
 <translation id="8308637677604853869">Menyja e mëparshme</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
-<translation id="8349293353728876872">Gozhdo kontrollet globale të medias në raft</translation>
 <translation id="8351131234907093545">Krijo një shënim</translation>
 <translation id="8371779926711439835">Përpara një shkronjë</translation>
 <translation id="8375916635258623388">Kjo pajisje <ph name="DEVICE_NAME" /> dhe telefoni yt do të lidhen automatikisht</translation>

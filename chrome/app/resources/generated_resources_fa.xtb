@@ -498,6 +498,7 @@
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (مهمان)</translation>
 <translation id="1572266655485775982">‏فعال کردن Wi-Fi</translation>
 <translation id="1572876035008611720">ایمیل‌تان را وارد کنید</translation>
+<translation id="1575741822946219011">زبان‌ها و ورودی‌ها</translation>
 <translation id="1576594961618857597">چهره‌نمای پیش‌فرض سفید</translation>
 <translation id="1578558981922970608">بستن اجباری</translation>
 <translation id="1578784163189013834">انتخاب پس‌زمینه محافظ صفحه</translation>
@@ -855,6 +856,7 @@
 <translation id="1974821797477522211">اتصال به شبکه</translation>
 <translation id="1975841812214822307">حذف...</translation>
 <translation id="1976150099241323601">ورود به سیستم دستگاه امنیتی</translation>
+<translation id="1976307821760494606">‏<ph name="DOMAIN" /> اشکال‌زدایی ADB (پل اشکال‌زدایی Android) را غیرفعال کرده است. با این کار، <ph name="DEVICE_TYPE" /> ظرف ۲۴ ساعت بازنشانی خواهد شد. از فایل‌هایی که مایلید نگه دارید پشتیبان‌گیری کنید.</translation>
 <translation id="1977965994116744507">برای باز کردن قفل <ph name="DEVICE_TYPE" />، تلفنتان را نزدیک‌تر کنید.</translation>
 <translation id="1978006917103730774">به‌روزرسانی‌های امنیتی و نرم‌افزار درآینده به‌طور خودکار نصب می‌شوند.</translation>
 <translation id="1979095679518582070">خاموش کردن این ویژگی توانایی این دستگاه را برای ارسال اطلاعات موردنیاز برای سرویس‌های ضروری، مانند امنیت و به‌روزرسانی‌های سیستم تحت‌تأثیر قرار نمی‌دهد.</translation>
@@ -2035,6 +2037,7 @@
 <translation id="3404249063913988450">فعال کردن محافظ صفحه</translation>
 <translation id="3405664148539009465">سفارشی کردن قلم‌ها</translation>
 <translation id="3405763860805964263">...</translation>
+<translation id="3406396172897554194">جستجو براساس زبان با نام ورودی</translation>
 <translation id="3406605057700382950">&amp;نمایش نوار نشانک‌ها</translation>
 <translation id="340671561090997290">{NUM_EXTENSIONS,plural, =1{این افزونه ممکن است خطرناک باشد}one{این افزونه‌ها ممکن است خطرناک باشند}other{این افزونه‌ها ممکن است خطرناک باشند}}</translation>
 <translation id="3409785640040772790">Maps</translation>
@@ -2610,6 +2613,7 @@
 <translation id="4025039777635956441">بی‌صدا کردن سایت انتخاب‌شده</translation>
 <translation id="4027804175521224372">(شما موفق نشدید-<ph name="IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_LINK" />)</translation>
 <translation id="4027951648498485763">‏تنظیمات Flash تا وقتی از Chrome خارج شوید حفظ می‌شود.</translation>
+<translation id="4028467762035011525">افزودن روش‌های ورودی</translation>
 <translation id="4031179711345676612">میکروفون مجاز است</translation>
 <translation id="4031527940632463547">حسگرها مسدود شدند</translation>
 <translation id="4033471457476425443">افزودن پوشه جدید</translation>
@@ -4060,6 +4064,7 @@
 <translation id="5833726373896279253">این تنظیمات فقط توسط مالک قابل تغییر هستند:</translation>
 <translation id="5834581999798853053">حدود <ph name="TIME" /> دقیقه باقی مانده است</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> - دوربین یا میکروفون درحال ضبط کردن است</translation>
+<translation id="5839574759884227787">‏<ph name="DOMAIN" /> اشکال‌زدایی «پل اشکال‌زدایی Android» ‏(ADB) را غیرفعال کرده است که موجب بازنشانی <ph name="DEVICE_TYPE" /> شما خواهد شد. قبل از بازراه‌اندازی از فایل‌هایتان پشتیبان‌گیری کنید.</translation>
 <translation id="5840680448799937675">فایل‌ها همیشه درحالت آفلاین هم‌رسانی می‌شود</translation>
 <translation id="5841270259333717135">پیکربندی اترنت</translation>
 <translation id="5842497610951477805">فعال کردن بلوتوث</translation>
@@ -4473,6 +4478,7 @@
 <translation id="6308077700132376815">تصاویر مسدود شوند</translation>
 <translation id="6308493641021088955">ورود به سیستم ارائه‌شده توسط <ph name="EXTENSION_NAME" /></translation>
 <translation id="6308937455967653460">ذخیره پی&amp;وند به‌عنوان...</translation>
+<translation id="6309443618838462258">سرپرستتان این روش ورودی را مجاز نمی‌کند</translation>
 <translation id="6309510305002439352">میکروفون خاموش است</translation>
 <translation id="6311220991371174222">‏راه‌اندازی Chrome ممکن نیست زیرا هنگام باز کردن نمایه‌تان مشکلی پیش آمد. Chrome را راه‌اندازی مجدد کنید.</translation>
 <translation id="6312403991423642364">خطای شبکه ناشناس</translation>
@@ -5191,6 +5197,7 @@
 <translation id="7191159667348037">‏چاپگر ناشناس (USB)</translation>
 <translation id="7193051357671784796">این برنامه توسط سازمانتان اضافه شده است. برای تکمیل نصب، برنامه را بازراه‌اندازی کنید.</translation>
 <translation id="7193374945610105795">هیچ گذرواژه‌ای برای <ph name="ORIGIN" /> ذخیره نشده است</translation>
+<translation id="7196020411877309443">چرا من این را می‌بینم؟</translation>
 <translation id="7196913789568937443">‏پشتیبان‌گیری در Google Drive. هرزمان خواستید داده‌هایتان را به‌آسانی بازیابی کنید یا دستگاهتان را عوض کنید. نسخه پشتیبان شما حاوی داده‌های برنامه است. داده‌های پشتیبان در Google بارگذاری می‌شود و با استفاده از گذرواژه حساب Google رمزگذاری می‌شود. <ph name="BEGIN_LINK1" />بیشتر بدانید<ph name="END_LINK1" /></translation>
 <translation id="7197190419934240522">‏دریافت «جستجوی Google» و هوشمندی‌های Google هنگام مرور</translation>
 <translation id="7197632491113152433"><ph name="NUMBER_OF_APPS" /> برنامه از حسابتان پیدا کردیم که می‌توان در این دستگاه از آن‌ها استفاده کرد.</translation>
@@ -5847,6 +5854,7 @@
 <translation id="7952708427581814389">سایت‌ها می‌توانند دیدن نوشتار و تصاویر موجود در بریده‌دان را درخواست کنند</translation>
 <translation id="795282463722894016">بازیابی کامل شد</translation>
 <translation id="7952904276017482715">شناسه موردانتظار «<ph name="EXPECTED_ID" />» است، اما شناسه «<ph name="NEW_ID" />» بود</translation>
+<translation id="7953669802889559161">ورودی‌ها</translation>
 <translation id="7953955868932471628">مدیریت میان‌برها</translation>
 <translation id="7956373551960864128">چاپگرهای ذخیره‌شده شما</translation>
 <translation id="7957074856830851026">دیدن اطلاعات دستگاه، مانند شماره سریال یا شناسه دارایی آن</translation>
@@ -5870,6 +5878,7 @@
 <translation id="7973962044839454485">‏احراز هویت PPP به دلیل نام کاربری یا گذرواژه نادرست انجام نشد</translation>
 <translation id="7974566588408714340">تلاش مجدد با <ph name="EXTENSIONNAME" /></translation>
 <translation id="7974936243149753750">تصویر بزرگ‌تر از صفحه</translation>
+<translation id="7977404132325989121">&amp;نام‌گذاری پنجره…</translation>
 <translation id="7978412674231730200">کلید خصوصی</translation>
 <translation id="7978450511781612192">‏با این کار از سیستم حساب Google خود خارج می‌شوید. نشانک‌ها، سابقه، گذرواژه‌ها و سایر موارد دیگر همگام‌سازی نمی‌شوند.</translation>
 <translation id="7980084013673500153">شناسه دارایی: <ph name="ASSET_ID" /></translation>
@@ -6422,6 +6431,7 @@
 <translation id="8648408795949963811">دمای رنگ «نور شب»</translation>
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> می‌خواهد: <ph name="FIRST_PERMISSION" />، <ph name="SECOND_PERMISSION" />، و غیره</translation>
 <translation id="8650543407998814195">هرچند دیگر نمی‌توانید به نمایه قدیمی‌تان دسترسی داشته باشید اما همچنان می‌توانید آن را حذف کنید.</translation>
+<translation id="865118751078059229">&amp;نام‌گذاری پنجره…</translation>
 <translation id="8651585100578802546">تازه سازی اجباری این صفحه</translation>
 <translation id="8652400352452647993">خطا در بسته‌بندی افزونه</translation>
 <translation id="8654151524613148204">فایل برای استفاده در رایانهٔ شما خیلی بزرگ است. متأسفیم.</translation>
@@ -6574,6 +6584,7 @@
 <translation id="8813872945700551674">از یکی از والدین بخواهید «<ph name="EXTENSION_NAME" />» را تأیید کند</translation>
 <translation id="8813969267212093033">نوشتار سیستم به این زبان نشان داده می‌شود</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
+<translation id="8814319344131658221">زبا‌های غلط گیر املا براساس اولویت‌های زبان ارائه می‌شوند</translation>
 <translation id="8814644416678422095">دیسک سخت</translation>
 <translation id="8814687660896548945">لطفاً صبر کنید، بایگانی در حال اسکن شدن است…</translation>
 <translation id="881782782501875829">افزودن شماره درگاه</translation>
@@ -6669,6 +6680,7 @@
 <translation id="8912810933860534797">فعال کردن اسکن خودکار</translation>
 <translation id="8915370057835397490">در حال بارگیری پیشنهادات</translation>
 <translation id="8916476537757519021">قاب فرعی ناشناس: <ph name="SUBFRAME_SITE" /></translation>
+<translation id="8916749157829986308">تنظیم نام پنجره</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> <ph name="GIVEN_NAME" /></translation>
 <translation id="8922013791253848639">آگهی‌ها همیشه در این سایت مجاز باشند</translation>
 <translation id="8923880975836399332">سبز دودی تیره</translation>
@@ -6844,6 +6856,7 @@
 <translation id="9124003689441359348">گذرواژه‌های ذخیره‌شده در اینجا ظاهر خواهند شد</translation>
 <translation id="9126149354162942022">رنگ نشانگر</translation>
 <translation id="9128317794749765148">راه‌اندازی تکمیل نشد</translation>
+<translation id="9128335130883257666">باز کردن صفحه تنظیمات برای <ph name="INPUT_METHOD_NAME" /></translation>
 <translation id="9128870381267983090">اتصال به شبکه</translation>
 <translation id="9130015405878219958">حالت نامعتبر وارد شده است.</translation>
 <translation id="9131487537093447019">ارسال پیام‌ها به دستگاه‌های بلوتوث و دریافت پیام‌ها از آنها</translation>

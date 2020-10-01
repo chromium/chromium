@@ -198,7 +198,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2996462380875591307">Lente d'ingrandimento ancorata attivata. Premi di nuovo CTRL + tasto per la ricerca + D per disattivarla.</translation>
 <translation id="3000461861112256445">Audio in formato mono</translation>
 <translation id="3009178788565917040">Uscita</translation>
-<translation id="3025081209054535615">Sblocca i controlli globali dei contenuti multimediali dalla shelf</translation>
 <translation id="3033545621352269033">On</translation>
 <translation id="3038571455154067151">Per accedere, inserisci il codice accesso genitori di Family Link</translation>
 <translation id="3045488863354895414">Buon pomeriggio,</translation>
@@ -622,6 +621,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="7526573455193969409">La rete potrebbe essere monitorata</translation>
 <translation id="7536035074519304529">Indirizzo IP: <ph name="ADDRESS" /></translation>
 <translation id="7548434653388805669">È ora di andare a letto</translation>
+<translation id="7551643184018910560">Fissa sullo shelf</translation>
 <translation id="7561982940498449837">Chiudi menu</translation>
 <translation id="7564874036684306347">Lo spostamento delle finestre su un altro desktop potrebbe causare comportamenti imprevisti. Le finestre, le notifiche e le finestre di dialogo successive potrebbero essere divise tra i desktop.</translation>
 <translation id="7568294522609223312">Disattiva i clic automatici</translation>
@@ -702,7 +702,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="8297006494302853456">Debole</translation>
 <translation id="8308637677604853869">Menu precedente</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
-<translation id="8349293353728876872">Blocca i controlli globali dei contenuti multimediali dalla shelf</translation>
 <translation id="8351131234907093545">Crea nota</translation>
 <translation id="8371779926711439835">Avanti per lettera</translation>
 <translation id="8375916635258623388">Questo dispositivo <ph name="DEVICE_NAME" /> e il telefono si connetteranno automaticamente</translation>

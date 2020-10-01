@@ -113,6 +113,7 @@
 <translation id="2049240716062114887">ഡെസ്‌കിന്റെ പേര് <ph name="DESK_NAME" /> എന്നാക്കി മാറ്റി</translation>
 <translation id="2050339315714019657">പോർട്രെയ്റ്റ്</translation>
 <translation id="2067602449040652523">കീബോർഡ് തെളിച്ചം</translation>
+<translation id="2074759828767813253">അടുത്തിടെയുള്ള സ്ക്രീന്‍ഷോട്ടുകളും ഡൗൺലോഡുകളും</translation>
 <translation id="2083190527011054446">ഗുഡ്‌നെെറ്റ് <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">നെറ്റ്‌വർക്കിൽ കണക്‌റ്റ് ചെയ്‌തിട്ടില്ല</translation>
 <translation id="2126242104232412123">പുതിയ ഡെസ്‌ക്</translation>
@@ -197,7 +198,6 @@
 <translation id="2996462380875591307">ഡോക്ക് ചെയ്‌ത മാഗ്നിഫയർ പ്രവർത്തനക്ഷമമാക്കി. ഇത് മാറ്റാൻ, കൺട്രോൾ+തിരയൽ+D വീണ്ടും അമർത്തുക.</translation>
 <translation id="3000461861112256445">മോണോ ഓഡിയോ</translation>
 <translation id="3009178788565917040">ഔട്ട്പുട്ട്</translation>
-<translation id="3025081209054535615">ആഗോള മീഡിയ നിയന്ത്രണങ്ങൾ ഷെൽഫിൽ നിന്ന് അൺപിൻ ചെയ്യുക</translation>
 <translation id="3033545621352269033">ഓണാണ്</translation>
 <translation id="3038571455154067151">സൈൻ ഇൻ ചെയ്യാൻ, നിങ്ങളുടെ Family Link രക്ഷാകർതൃ ആക്‌സസ് കോഡ് നൽകുക</translation>
 <translation id="3045488863354895414">ഗുഡ് ആഫ്‌റ്റർനൂൺ,</translation>
@@ -620,6 +620,7 @@
 <translation id="7526573455193969409">നെറ്റ്‌വർക്ക് നിരീക്ഷിക്കപ്പെടാം</translation>
 <translation id="7536035074519304529">IP വിലാസം: <ph name="ADDRESS" /></translation>
 <translation id="7548434653388805669">ഉറങ്ങാൻ സമയമായി</translation>
+<translation id="7551643184018910560">ഷെൽഫിലേക്ക് പിൻ ചെയ്യുക</translation>
 <translation id="7561982940498449837">മെനു അടയ്ക്കുക</translation>
 <translation id="7564874036684306347">മറ്റൊരു ഡെസ്‌ക്‌ടോപ്പിലേക്ക് വിൻഡോകൾ നീക്കുന്നത് അപ്രതീക്ഷിതമായ പ്രവർത്തനരീതിയ്‌ക്ക് ഇടയാക്കാം. തുടർന്നുള്ള അറിയിപ്പുകൾ, വിൻഡോകൾ, ഡയലോഗുകൾ എന്നിവ ഡെസ്‌ക്‌‌ടോപ്പുകൾക്കിടയിൽ വിഭജിക്കപ്പെടാം.</translation>
 <translation id="7568294522609223312">സ്വയമേവയുള്ള ക്ലിക്കുകൾ ഓഫാക്കുക</translation>
@@ -700,7 +701,6 @@
 <translation id="8297006494302853456">ദുര്‍ബലം</translation>
 <translation id="8308637677604853869">മുൻ മെനു</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
-<translation id="8349293353728876872">ആഗോള മീഡിയ നിയന്ത്രണങ്ങൾ ഷെൽഫിലേക്ക് പിൻ ചെയ്യുക</translation>
 <translation id="8351131234907093545">കുറിപ്പ് സൃഷ്‌ടിക്കുക</translation>
 <translation id="8371779926711439835">ഒരക്ഷരം മുന്നിലേക്ക് പോവുക</translation>
 <translation id="8375916635258623388">ഈ <ph name="DEVICE_NAME" /> ഉം നിങ്ങളുടെ ഫോണും സ്വമേധയാ കണക്റ്റ് ചെയ്യും</translation>

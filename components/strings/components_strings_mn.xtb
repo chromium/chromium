@@ -15,6 +15,7 @@
 <translation id="1038106730571050514">Зөвлөмжүүдийг харуулах</translation>
 <translation id="1038842779957582377">үл мэдэгдэх нэр</translation>
 <translation id="1041998700806130099">Ажлын хүснэгтийн зурвас</translation>
+<translation id="1048785276086539861">Та тэмдэглэгээг засах үед энэ документ нэг хуудсаар харах руу буцна</translation>
 <translation id="1050038467049342496">Бусад аппыг хаах</translation>
 <translation id="1055184225775184556">&amp; Нэмэх үйлдлийг буцаах</translation>
 <translation id="1056898198331236512">Анхааруулга</translation>
@@ -379,6 +380,7 @@
 <translation id="2465688316154986572">Үдэх</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />Сүлжээний оношилгоог ажиллуулж байна<ph name="END_LINK" /></translation>
 <translation id="2469153820345007638">1-с N хүртэлх дараалал</translation>
+<translation id="2470767536994572628">Та тэмдэглэгээг засах үед энэ документ нэг хуудсаар харах горим болон анхны эргүүлэлт рүүгээ буцна</translation>
 <translation id="2479410451996844060">Хүчин төгөлдөр бус хайлтын холбоос</translation>
 <translation id="2482878487686419369">Мэдэгдэл</translation>
 <translation id="248348093745724435">Машины удирдамж</translation>
@@ -1228,6 +1230,7 @@
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5946937721014915347"><ph name="SITE_NAME" />-г нээж байна…</translation>
 <translation id="5951495562196540101">Хэрэглэгчийн бүртгэлээр бүртгүүлэх боломжгүй (багцалсан лиценз боломжтой).</translation>
+<translation id="5963413905009737549">Хэсэг</translation>
 <translation id="5967592137238574583">Харилцагчийн мэдээллийг засах</translation>
 <translation id="5967867314010545767">Түүхэн хэсгээс устгах</translation>
 <translation id="5975083100439434680">Багасгаж харах</translation>
@@ -1638,6 +1641,7 @@
 <translation id="7647206758853451655">Хэвлэлийн чанар</translation>
 <translation id="7648992873808071793">Энэхүү төхөөрөмж дээр файлуудыг хадгалах</translation>
 <translation id="7653957176542370971">Төлбөр хариуцагчийн хүснэгт хаалттай байна</translation>
+<translation id="7654909834015434372">Тэмдэглэгээг засахад энэ документ анхны эргүүлэлт рүүгээ буцна</translation>
 <translation id="765676359832457558">Ахисан түвшний тохиргоог нуух...</translation>
 <translation id="7658239707568436148">Болих</translation>
 <translation id="7662298039739062396">Тохируулгыг өргөтгөлөөр хянадаг</translation>

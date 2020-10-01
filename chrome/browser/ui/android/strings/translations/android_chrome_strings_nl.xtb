@@ -106,6 +106,7 @@
 <translation id="1810845389119482123">Eerste synchronisatieconfiguratie niet voltooid</translation>
 <translation id="1821253160463689938">Maakt gebruik van cookies om je voorkeuren te onthouden, zelfs als je deze pagina's niet bezoekt</translation>
 <translation id="1829244130665387512">Zoeken op pagina</translation>
+<translation id="1830550083491357902">Niet ingelogd</translation>
 <translation id="1843805151597803366">Sta Google Zoeken toe de huidige pagina te gebruiken om betere vertalingen te krijgen</translation>
 <translation id="1853692000353488670">Nieuw incognitotabblad</translation>
 <translation id="1856325424225101786">Lite-versie resetten?</translation>
@@ -113,6 +114,7 @@
 <translation id="1877026089748256423">Chrome is verouderd</translation>
 <translation id="1883903952484604915">Mijn bestanden</translation>
 <translation id="189358972401248634">Andere talen</translation>
+<translation id="1919130412786645364">Inloggen bij Chrome toestaan</translation>
 <translation id="1922362554271624559">Voorgestelde talen</translation>
 <translation id="1925021887439448749">Aangepast webadres opgeven</translation>
 <translation id="1928696683969751773">Updates</translation>
@@ -225,6 +227,7 @@ Tik op een woord en houd dit vast om te zoeken. Selecteer meer of minder woorden
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# audiobestand}other{# audiobestanden}}</translation>
 <translation id="2656405586795711023">Web-apps</translation>
 <translation id="2689830683995595741">Door Chrome te gebruiken, ga je akkoord met de <ph name="BEGIN_LINK1" />servicevoorwaarden van Google<ph name="END_LINK1" /> en met de <ph name="BEGIN_LINK2" />aanvullende servicevoorwaarden van Google Chrome en Chrome OS<ph name="END_LINK2" />. Ook is de <ph name="BEGIN_LINK3" />privacyverklaring voor Google-accounts die worden beheerd met Family Link<ph name="END_LINK3" /> van toepassing.</translation>
+<translation id="2704606927547763573">Gekopieerd</translation>
 <translation id="2707726405694321444">Pagina vernieuwen</translation>
 <translation id="2709516037105925701">Automatisch invullen</translation>
 <translation id="2718352093833049315">Alleen via wifi</translation>
@@ -963,7 +966,6 @@ Je activiteit in de incognitomodus is mogelijk nog altijd zichtbaar voor website
 <translation id="8058746566562539958">Openen op nieuw Chrome-tabblad</translation>
 <translation id="8063895661287329888">Kan bookmark niet toevoegen.</translation>
 <translation id="806745655614357130">Mijn gegevens gescheiden houden</translation>
-<translation id="8069669375923284295">Tik om door te gaan met het instellen van synchronisatie</translation>
 <translation id="8073388330009372546">Openen op nieuw tabblad</translation>
 <translation id="8076492880354921740">Tabbladen</translation>
 <translation id="8084114998886531721">Opgeslagen wachtwoord</translation>

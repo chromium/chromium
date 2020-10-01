@@ -501,7 +501,7 @@
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (invitado)</translation>
 <translation id="1572266655485775982">Habilitar Wi-Fi</translation>
 <translation id="1572876035008611720">Introduce tu correo electrónico</translation>
-<translation id="1575741822946219011">Idiomas y métodos de introducción</translation>
+<translation id="1575741822946219011">Idiomas y métodos de introducción de texto</translation>
 <translation id="1576594961618857597">Avatar blanco predeterminado</translation>
 <translation id="1578558981922970608">Forzar cierre</translation>
 <translation id="1578784163189013834">Elegir fondo del salvapantallas</translation>
@@ -686,7 +686,7 @@
 <translation id="177336675152937177">Datos de aplicaciones alojadas</translation>
 <translation id="1776712937009046120">Añadir usuario</translation>
 <translation id="1776883657531386793"><ph name="OID" />: <ph name="INFO" /></translation>
-<translation id="1778457539567749232">Marcar como no leído</translation>
+<translation id="1778457539567749232">Marcar como no leída</translation>
 <translation id="1779652936965200207">Introduce esta clave de acceso en "<ph name="DEVICE_NAME" />":</translation>
 <translation id="177989070088644880">Aplicación (<ph name="ANDROID_PACKAGE_NAME" />)</translation>
 <translation id="1780152987505130652">Cerrar grupo</translation>
@@ -2040,7 +2040,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3404249063913988450">Habilitar salvapantallas</translation>
 <translation id="3405664148539009465">Personalizar fuentes</translation>
 <translation id="3405763860805964263">...</translation>
-<translation id="3406396172897554194">Buscar por idioma o nombre de método de introducción</translation>
+<translation id="3406396172897554194">Buscar por idioma o nombre de método de introducción de texto</translation>
 <translation id="3406605057700382950">&amp;Mostrar barra de marcadores</translation>
 <translation id="340671561090997290">{NUM_EXTENSIONS,plural, =1{Es posible que esta extensión sea peligrosa}other{Es posible que estas extensiones sean peligrosas}}</translation>
 <translation id="3409785640040772790">Maps</translation>
@@ -5199,6 +5199,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="7191159667348037">Impresora desconocida (USB)</translation>
 <translation id="7193051357671784796">Tu organización ha añadido esta aplicación. Reinicia la aplicación para terminar de instalarla.</translation>
 <translation id="7193374945610105795">No hay contraseñas guardadas de <ph name="ORIGIN" /></translation>
+<translation id="7196020411877309443">¿Por qué aparece este mensaje?</translation>
 <translation id="7196913789568937443">Crear copia de seguridad en Google Drive. Cambia de dispositivo o restaura tus datos fácilmente en cualquier momento. La copia de seguridad incluye datos de las aplicaciones. Tus copias de seguridad se suben a Google y se cifran con la contraseña de tu cuenta de Google. <ph name="BEGIN_LINK1" />Más información<ph name="END_LINK1" /></translation>
 <translation id="7197190419934240522">Disfruta de la Búsqueda de Google y las funciones inteligentes de Google siempre que navegues</translation>
 <translation id="7197632491113152433">Hemos encontrado <ph name="NUMBER_OF_APPS" /> aplicaciones en tu cuenta que se pueden utilizar en este dispositivo.</translation>
@@ -5855,7 +5856,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="7952708427581814389">Los sitios web pueden solicitar permiso para ver texto e imágenes del portapapeles</translation>
 <translation id="795282463722894016">Restauración completa</translation>
 <translation id="7952904276017482715">Se esperaba el ID "<ph name="EXPECTED_ID" />", pero se ha detectado el ID "<ph name="NEW_ID" />"</translation>
-<translation id="7953669802889559161">Métodos de introducción</translation>
+<translation id="7953669802889559161">Métodos de introducción de texto</translation>
 <translation id="7953955868932471628">Administrar accesos directos</translation>
 <translation id="7956373551960864128">Tus impresoras guardadas</translation>
 <translation id="7957074856830851026">Ver información del dispositivo, como el número de serie o el ID de recurso</translation>
@@ -5879,7 +5880,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="7973962044839454485">Se ha producido un error en la autenticación de PPP porque la contraseña o el nombre de usuario son incorrectos</translation>
 <translation id="7974566588408714340">Intentar de nuevo con <ph name="EXTENSIONNAME" /></translation>
 <translation id="7974936243149753750">Reajuste</translation>
-<translation id="7977404132325989121">&amp;Nombrar ventana...</translation>
+<translation id="7977404132325989121">&amp;Asignar nombre a ventana...</translation>
 <translation id="7978412674231730200">Clave privada</translation>
 <translation id="7978450511781612192">Se cerrará la sesión en tus cuentas de Google. Tus marcadores, historial, contraseñas y otros elementos dejarán de sincronizarse.</translation>
 <translation id="7980084013673500153">ID de recurso: <ph name="ASSET_ID" /></translation>
@@ -6432,7 +6433,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8648408795949963811">Temperatura del color de la luz nocturna</translation>
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> quiere: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> y más</translation>
 <translation id="8650543407998814195">Aunque ya no puedas acceder a tu antiguo perfil, puedes eliminarlo.</translation>
-<translation id="865118751078059229">&amp;Nombrar ventana...</translation>
+<translation id="865118751078059229">&amp;Asignar nombre a ventana...</translation>
 <translation id="8651585100578802546">Forzar recarga de esta página</translation>
 <translation id="8652400352452647993">No se ha podido empaquetar la extensión</translation>
 <translation id="8654151524613148204">El archivo es demasiado grande para que tu ordenador lo procese.</translation>
@@ -6681,7 +6682,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8912810933860534797">Habilitar búsqueda automática</translation>
 <translation id="8915370057835397490">Cargando sugerencia</translation>
 <translation id="8916476537757519021">Submarco incógnito: <ph name="SUBFRAME_SITE" /></translation>
-<translation id="8916749157829986308">Poner nombre a la ventana</translation>
+<translation id="8916749157829986308">Pon un nombre a la ventana</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> de <ph name="GIVEN_NAME" /></translation>
 <translation id="8922013791253848639">Permite los anuncios siempre en este sitio web</translation>
 <translation id="8923880975836399332">Turquesa oscuro</translation>

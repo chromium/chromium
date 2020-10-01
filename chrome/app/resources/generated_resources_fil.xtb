@@ -501,6 +501,7 @@
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (Bisita)</translation>
 <translation id="1572266655485775982">I-enable ang Wi-Fi</translation>
 <translation id="1572876035008611720">Ilagay ang iyong email</translation>
+<translation id="1575741822946219011">Mga wika at input</translation>
 <translation id="1576594961618857597">Default na puting avatar</translation>
 <translation id="1578558981922970608">Puwersahang pagsara</translation>
 <translation id="1578784163189013834">Pumili ng background ng screen saver</translation>
@@ -858,6 +859,7 @@
 <translation id="1974821797477522211">Kumonekta sa network</translation>
 <translation id="1975841812214822307">Alisin...</translation>
 <translation id="1976150099241323601">Mag-sign in sa Pangseguridad na Device</translation>
+<translation id="1976307821760494606">Na-disable ng <ph name="DOMAIN" /> ang pag-debug ng ADB. Ire-reset nito ang iyong <ph name="DEVICE_TYPE" /> pagkalipas ng 24 na oras. I-back up ang anumang file na gusto mong panatilihin.</translation>
 <translation id="1977965994116744507">Ilapit pa ang iyong telepono upang ma-unlock ang <ph name="DEVICE_TYPE" /> mo.</translation>
 <translation id="1978006917103730774">Awtomatikong mag-i-install ang mga update sa software at seguridad sa hinaharap.</translation>
 <translation id="1979095679518582070">Ang pag-off sa feature na ito ay hindi nakakaapekto sa kakayahan ng device na ito na ipadala ang impormasyong kinakailangan para sa mahahalagang serbisyo tulad ng mga pag-update ng system at seguridad.</translation>
@@ -2038,6 +2040,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="3404249063913988450">I-enable ang screen saver</translation>
 <translation id="3405664148539009465">I-customize ang mga font</translation>
 <translation id="3405763860805964263">...</translation>
+<translation id="3406396172897554194">Maghanap ayon sa wika o pangalan ng input</translation>
 <translation id="3406605057700382950">&amp;Ipakita ang bookmarks bar</translation>
 <translation id="340671561090997290">{NUM_EXTENSIONS,plural, =1{Posibleng mapanganib ang extension na ito}one{Posibleng mapanganib ang mga extension na ito}other{Posibleng mapanganib ang mga extension na ito}}</translation>
 <translation id="3409785640040772790">Maps</translation>
@@ -2613,6 +2616,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="4025039777635956441">I-mute ang Napiling Site</translation>
 <translation id="4027804175521224372">(Hindi ka nakakakuha—<ph name="IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_LINK" />)</translation>
 <translation id="4027951648498485763">Papanatilihin ang mga setting ng iyong Flash hanggang sa umalis ka sa Chrome.</translation>
+<translation id="4028467762035011525">Magdagdag ng mga pamamaraan ng pag-input</translation>
 <translation id="4031179711345676612">Pinapayagan ang mikropono</translation>
 <translation id="4031527940632463547">Na-block ang mga sensor</translation>
 <translation id="4033471457476425443">Magdagdag ng bagong folder</translation>
@@ -4063,6 +4067,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="5833726373896279253">Mababago lang ang mga setting na ito ng may-ari:</translation>
 <translation id="5834581999798853053">Mga <ph name="TIME" /> (na) minuto ang natitira</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> - Nagre-record ang camera o mikropono</translation>
+<translation id="5839574759884227787">Na-disable ng <ph name="DOMAIN" /> ang pag-debug ng ADB, kung kaya't mare-reset ang iyong <ph name="DEVICE_TYPE" />. I-back up ang iyong mga file bago mag-restart.</translation>
 <translation id="5840680448799937675">Palaging ibabahagi offline ang mga file</translation>
 <translation id="5841270259333717135">I-configure ang Ethernet</translation>
 <translation id="5842497610951477805">I-enable ang Bluetooth</translation>
@@ -4476,6 +4481,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="6308077700132376815">I-block ang mga larawan</translation>
 <translation id="6308493641021088955">Ibinibigay ng <ph name="EXTENSION_NAME" /> ang pag-sign in</translation>
 <translation id="6308937455967653460">I-save ang lin&amp;k bilang...</translation>
+<translation id="6309443618838462258">Hindi pinapayagan ng iyong administrator ang pamamaraan ng pag-input na ito</translation>
 <translation id="6309510305002439352">Naka-off ang mikropono</translation>
 <translation id="6311220991371174222">Hindi masimulan ang Chrome dahil nagkaproblema noong binubuksan ang iyong profile. Subukang i-restart ang Chrome.</translation>
 <translation id="6312403991423642364">Hindi alam na error sa network</translation>
@@ -5194,6 +5200,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="7191159667348037">Hindi Alam na Printer (USB)</translation>
 <translation id="7193051357671784796">Idinagdag ng iyong organisasyon ang app na ito. I-restart ang app para tapusin ang pag-install nito.</translation>
 <translation id="7193374945610105795">Walang naka-save na password para sa <ph name="ORIGIN" /></translation>
+<translation id="7196020411877309443">Bakit ko nakikita ito?</translation>
 <translation id="7196913789568937443">Mag-back up sa Google Drive. Madaling i-restore ang iyong data o magpalit ng device anumang oras. Kabilang sa iyong backup ang data ng app. Ina-upload sa Google ang iyong mga backup at ine-encrypt gamit ang password ng Google Account mo. <ph name="BEGIN_LINK1" />Matuto Pa<ph name="END_LINK1" /></translation>
 <translation id="7197190419934240522">Makakuha ng Google Search at Google smarts sa tuwing magba-browse ka</translation>
 <translation id="7197632491113152433">May nakita kaming <ph name="NUMBER_OF_APPS" /> (na) app mula sa iyong account na maaaring gamitin sa device na ito.</translation>
@@ -5850,6 +5857,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="7952708427581814389">Puwedeng hilingin ng mga site na makita ang text at mga larawan sa iyong clipboard</translation>
 <translation id="795282463722894016">Kumpleto na ang pag-restore</translation>
 <translation id="7952904276017482715">"<ph name="EXPECTED_ID" />" ang inaasahang ID, ngunit "<ph name="NEW_ID" />" ang ID</translation>
+<translation id="7953669802889559161">Mga Input</translation>
 <translation id="7953955868932471628">Pamahalaan ang mga shortcut</translation>
 <translation id="7956373551960864128">Mga naka-save mong printer</translation>
 <translation id="7957074856830851026">Tingnan ang impormasyon ng device, gaya ng serial number o asset ID nito</translation>
@@ -5873,6 +5881,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="7973962044839454485">Nabigo ang pagpapatotoo sa PPP dahil sa hindi tamang username o password</translation>
 <translation id="7974566588408714340">Subukang muli gamit ang <ph name="EXTENSIONNAME" /></translation>
 <translation id="7974936243149753750">Overscan</translation>
+<translation id="7977404132325989121">&amp;Pangalanan ang Window...</translation>
 <translation id="7978412674231730200">Private na key</translation>
 <translation id="7978450511781612192">Dahil dito, masa-sign out ka sa iyong mga Google Account. Hindi na masi-sync ang iyong mga bookmark, history, mga password, at higit pa.</translation>
 <translation id="7980084013673500153">Asset ID: <ph name="ASSET_ID" /></translation>
@@ -6426,6 +6435,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8648408795949963811">Temperatura ng kulay para sa Night Light</translation>
 <translation id="8648544143274677280">Gusto ng <ph name="SITE_NAME" /> na: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" />, at higit pa</translation>
 <translation id="8650543407998814195">Bagama't hindi mo na maa-access ang iyong lumang profile, maaari mo pa rin itong alisin.</translation>
+<translation id="865118751078059229">&amp;Pangalanan ang window...</translation>
 <translation id="8651585100578802546">Sapilitang I-reload ang Pahinang Ito</translation>
 <translation id="8652400352452647993">Nagka-error sa extension ng pack</translation>
 <translation id="8654151524613148204">Masyadong malaki ang file upang mapangasiwaan ng iyong computer. Paumanhin.</translation>
@@ -6578,6 +6588,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8813872945700551674">Ipaapruba sa magulang ang "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="8813969267212093033">Ipinapakita sa wikang ito ang system text</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
+<translation id="8814319344131658221">Nakabatay ang mga wika para sa pang-check ng pagbabaybay sa iyong kagustuhan sa wika</translation>
 <translation id="8814644416678422095">Hard drive</translation>
 <translation id="8814687660896548945">Maghintay, sini-scan ang archive...</translation>
 <translation id="881782782501875829">Magdagdag ng numero ng port</translation>
@@ -6674,6 +6685,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8912810933860534797">I-enable ang awtomatikong pag-scan</translation>
 <translation id="8915370057835397490">Nilo-load ang suhestiyon</translation>
 <translation id="8916476537757519021">Incognito na Subframe: <ph name="SUBFRAME_SITE" /></translation>
+<translation id="8916749157829986308">Itakda ang Pangalan ng Window</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> ni <ph name="GIVEN_NAME" /></translation>
 <translation id="8922013791253848639">Palaging payagan ang mga ad sa site na ito</translation>
 <translation id="8923880975836399332">Dark teal</translation>
@@ -6849,6 +6861,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="9124003689441359348">Lalabas dito ang mga na-save na password</translation>
 <translation id="9126149354162942022">Kulay ng cursor</translation>
 <translation id="9128317794749765148">Hindi makumpleto ang pag-set up</translation>
+<translation id="9128335130883257666">Buksan ang page ng mga setting para sa <ph name="INPUT_METHOD_NAME" /></translation>
 <translation id="9128870381267983090">Kumonekta sa network</translation>
 <translation id="9130015405878219958">Di-wastong mode ang ipinasok.</translation>
 <translation id="9131487537093447019">Magpadala ng mga mensahe sa at makatanggap ng mga mensahe mula sa mga Bluetooth device.</translation>

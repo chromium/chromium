@@ -307,6 +307,24 @@
 
           使用者無法變更這項設定。</translation>
 <translation id="1509692106376861764">我們已於 <ph name="PRODUCT_NAME" /> 版本 29 中移除這項政策。</translation>
+<translation id="1512974677514081818">為繫結至裝置的企業印表機提供設定。
+
+      這項政策可讓你為 <ph name="PRODUCT_OS_NAME" />裝置提供印表機設定。格式與 NativePrinters 條目相符，每台印表機還有額外的「id」或「guid」必填欄位，用於將印表機加入許可清單或列入黑名單。
+
+      檔案大小不得超過 5 MB，且必須使用 JSON 編碼。根據估計，一個 5 MB 的編碼檔案中可包含約 21,000 台印表機。系統會使用加密編譯雜湊碼驗證下載內容的完整性。
+
+      系統會下載並快取這個檔案，只要網址或雜湊碼有任何變更，系統就會重新下載檔案。
+
+      如果設定這項政策，<ph name="PRODUCT_OS_NAME" />會下載用於設定印表機的檔案，並按照 <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />、<ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> 和 <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" /> 政策提供可用的印表機。
+
+      這項政策對使用者是否能在個別裝置上設定印表機沒有影響，而是補足個別使用者的印表機設定。
+
+      這項政策是用來補充 <ph name="BULK_PRINTERS_POLICY_NAME" />。
+
+      如果不設定這項政策，系統將不會提供任何裝置印表機，並且會忽略其他 <ph name="DEVICE_NATIVE_PRINTERS_POLICY_PATTERN" /> 政策。
+
+      這項政策已遭淘汰，請改用 <ph name="DEVICE_PRINTERS_POLICY_NAME" />。
+      </translation>
 <translation id="1514888685242892912">啟用 <ph name="PRODUCT_NAME" /></translation>
 <translation id="1515230621229117540">啟用浮動式無障礙選單</translation>
 <translation id="1515824657887788963">允許頁面在關閉時執行同步 XHR 要求。</translation>
@@ -348,15 +366,6 @@
       如果不設定這項政策，系統會自動採用 <ph name="PRINTERS_ALLOW_ALL" />。
       </translation>
 <translation id="1588240398285670601">瀏覽器設定</translation>
-<translation id="1588456836529393506">你可以透過這項政策建立網址模式清單，指定哪些網站會自動取得權限，可以存取具有指定廠商和產品 ID 的 USB 裝置。每一個清單項目都必須包含裝置和網址，這項政策才會生效。裝置中的每個項目可以包含廠商 ID 和產品 ID 欄位。如省略任何 ID，系統將視作萬用字元處理，但以下情況例外：如果未指定廠商 ID，也不可指定產品 ID。否則，這項政策將不會生效。
-
-      USB 權限模型會使用要求網址以及頂層頁框網站的嵌入網址，允許要求網址存取 USB 裝置。當要求網站在 iframe 中載入時，要求網址可能與嵌入網址不同。因此，「urls」欄位最多可包含 2 個字串 (以半形逗號分隔)，以指定這些網址。如果只指定一個網址，當要求網站的網址與這個網址相符時，不論其是否為嵌入網址，系統都會授予相應 USB 裝置的存取權。「urls」中的網址必須是有效網址，否則系統會忽略這項政策。
-
-        如果未設定這項政策，系統會套用 <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" /> 政策 (如果已設定)。否則系統會套用使用者的個人設定。
-
-      這項政策中的網址模式不可與透過 <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" /> 政策設定的網址模式衝突。如果發生衝突，這項政策的優先順序高於 <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" /> 和 <ph name="WEB_USB_ASK_FOR_URLS_POLICY_NAME" /> 政策。
-
-      這項政策和 <ph name="DEVICE_WEB_USB_ALLOW_DEVICES_FOR_URLS_POLICY_NAME" /> 政策的值會合併。</translation>
 <translation id="1593245608325508847">設定這項政策會開啟 Chrome 在 G Suite 中的限制登入功能，並防止使用者變更這項設定。使用者只能透過指定網域的帳戶存取 Google 工具，如要允許 gmail 或 googlemail 帳戶，請將 consumer_accounts 新增至網域清單。這項設定可防止使用者在需要 Google 授權的受管理裝置上，使用不屬於明確允許網域的帳戶登入及新增次要帳戶。
 
       如果將這項設定保留空白或不設定，則使用者可透過任何帳戶存取 G Suite。
@@ -454,6 +463,14 @@
       你需將政策設為可供 <ph name="PRODUCT_OS_NAME" /> 下載《服務條款》的網址。《服務條款》需為純文字內容，以 MIME 類型 text/plain 提供。不允許任何標記。</translation>
 <translation id="1750315445671978749">封鎖所有下載作業</translation>
 <translation id="1760951637494635692">允許這些網站上的 Serial API</translation>
+<translation id="1765512315997108908">根據 <ph name="DEVICE_PRINTERS_POLICY_NAME" /> 政策控管可供使用的印表機。
+
+      這項政策可指派用於大量印表機設定的存取權政策。如果選取 <ph name="PRINTERS_ALLOW_ALL" />，系統會顯示所有印表機；如果選取 <ph name="PRINTERS_BLACKLIST" />，系統會使用 <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" /> 限制對特定印表機的存取權；如果選取 <ph name="PRINTERS_WHITELIST" />，則 <ph name="DEVICE_PRINTERS_ALLOWLIST_POLCY_NAME" /> 只會指派可選取的印表機。
+
+      如果不設定這項政策，系統會自動採用 <ph name="PRINTERS_ALLOW_ALL" />。
+
+      這項政策已遭淘汰，請改用 <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />。
+      </translation>
 <translation id="1767673020408652620">在零狀態搜尋框中啟用應用程式推薦</translation>
 <translation id="1780323582106687813">這項政策已遭淘汰，請改用「<ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" />」政策。
 
@@ -474,6 +491,12 @@
 
       指定政策時，請務必使用 JSON 格式的字串來表示網址和雜湊。</translation>
 <translation id="1819272352048746487">啟用或停用螢幕小鍵盤上的多項功能</translation>
+<translation id="1823974945066396306">定義可登入裝置的使用者清單。輸入項目格式為 <ph name="USER_ALLOWLIST_ENTRY_FORMAT" /> (例如 <ph name="USER_ALLOWLIST_ENTRY_EXAMPLE" />)。如要允許特定網域的任意使用者登入裝置，請使用 <ph name="USER_ALLOWLIST_ENTRY_WILDCARD" /> 格式輸入項目。
+
+      如果不設定這項政策，所有使用者均可登入裝置。請注意，如要建立新使用者，則仍然需要適當地設定 <ph name="DEVICE_ALLOW_NEW_USERS_POLICY_NAME" /> 政策。
+
+      這項政策已遭淘汰，請改用 <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" />。
+      </translation>
 <translation id="1827523283178827583">使用固定的 Proxy 伺服器</translation>
 <translation id="1839278886947586809">
       這項政策已在 M80 版中遭到移除，因為 WebDriver 現階段與所有現有政策相容，因此不再需要使用這項政策。
@@ -501,6 +524,7 @@
       如果未設定這項政策，或是將這項政策的值設為「tls1.2」，<ph name="PRODUCT_NAME" /> 就不會再執行這項遞補程序。請注意，這只會影響 <ph name="PRODUCT_NAME" /> 是否略過發生錯誤的伺服器 (無法正確交涉版本)，系統並不會因此停止支援較舊的 TLS 版本。
 
       如果實際狀況與上述情形皆不相符，而必須與發生錯誤的伺服器維持相容，系統可能會將這項政策的值設為「tls1.1」。這種方法是權宜之計，伺服器錯誤應該很快就會解決。</translation>
+<translation id="1861206724856734193">設定防止資料外洩的規則清單。</translation>
 <translation id="1864382791685519617">啟用 <ph name="PRODUCT_NAME" /> 的網路預測功能，並且禁止使用者變更這項設定。
 
       這項設定是用來控制 DNS 預先擷取、TCP 和 SSL 預先連線，以及網頁預先轉譯作業。
@@ -509,9 +533,6 @@
 
       如果未設定這項政策，系統會啟用網路預測功能，不過使用者可變更這項設定。</translation>
 <translation id="1865417998205858223">金鑰權限</translation>
-<translation id="1866563857170942397">這會定義可登入裝置的使用者清單，輸入項目格式為 <ph name="USER_ALLOWLIST_ENTRY_FORMAT" /> (例如 <ph name="USER_WHITELIST_ENTRY_EXAMPLE" />)。如要允許特定網域的任意使用者登入裝置，請使用 <ph name="USER_ALLOWLIST_ENTRY_WILDCARD" /> 格式輸入項目。
-
-      如果不設定這項政策，所有使用者均可登入裝置。請注意，想要建立新使用者，你仍需適當地設定 <ph name="DEVICE_ALLOW_NEW_USERS_POLICY_NAME" /> 政策。</translation>
 <translation id="186719019195685253">使用 AC 電源的情況下，系統在達到閒置延遲時間時所採取的動作</translation>
 <translation id="1885782360784839335">允許顯示完整分頁宣傳內容</translation>
 <translation id="1888871729456797026">電腦上的雲端政策註冊憑證</translation>
@@ -871,6 +892,31 @@
       如果設為 <ph name="CRITICAL_VARIATIONS_ONLY_OPTION_NAME" /> (值為 1)，使用者只能將修正重大安全性或穩定性問題的變化版本套用到 <ph name="PRODUCT_NAME" />。
 
       如果設為 <ph name="VARIATIONS_DISABLED_OPTION_NAME" /> (值為 2)，使用者無法將任何變化版本套用到瀏覽器。請注意，這個模式可能會讓 <ph name="PRODUCT_NAME" /> 開發人員無法及時提供重大安全性修正項目，因此不建議使用。</translation>
+<translation id="2402140031630105556">設定規則清單，避免 <ph name="PRODUCT_OS_NAME" />中發生資料外洩。
+      複製並貼上資料、傳輸檔案、列印、分享螢幕畫面或擷取螢幕畫面等動作都有可能導致資料外洩。
+
+      每條規則都包含下列項目：
+      - 以網址定義的來源清單。系統會將來源中的所有資料都視為機密資料並套用限制。
+      - 以網址或元件定義的目的地清單，可允許或禁止將機密資料分享到清單中的目的地。
+      - 要套用到來源資料的限制清單。
+
+      你可以透過新增規則來控管以下項目：
+      - 控管來源與目的地共用的剪貼簿資料。
+      - 控管擷取來源資料螢幕畫面的動作。
+      - 控管列印來源資料的動作。
+      - 控管是否要在系統顯示來源資料時啟用隱私保護畫面。
+
+      限制等級可設為「BLOCK」或「ALLOW」。
+      - 如果將限制設為「BLOCK」，就無法執行該動作。
+      - 如果將限制設為「ALLOW」，就可執行該動作。
+
+      注意：
+      - PRIVACY_SCREEN 限制不會禁止啟用隱私保護畫面，但會在限制等級設為「BLOCK」時強制執行這項功能。
+      - 如果其中一項限制是「CLIPBOARD」，就不能將目的地設為空白，但這對其餘限制而言沒有影響。
+      - 「CLIPBOARD」限制無法區分 CROSTINI 和 PLUGIN_VM。如果設為禁止/允許將資料分享到其中任何一項，兩者都會套用這項規則。
+      - 網址模式的格式如下：https://www.chromium.org/administrators/url-blacklist-filter-format。
+
+      如果不設定這項政策，系統就不會套用任何限制。</translation>
 <translation id="2411629345938804022">如果將這項政策設為 3，網站即可要求存取附近的藍牙裝置。如果將這項政策設為 2，網站將無法存取附近的藍牙裝置。
 
       如果未設定這項政策，網站可要求存取附近的藍牙裝置，但使用者可以變更這項設定。</translation>
@@ -2524,6 +2570,14 @@
 <translation id="489803897780524242">可使用這個參數來決定是否要為預設搜尋服務商提供替代搜尋字詞。</translation>
 <translation id="4899708173828500852">啟用安全瀏覽</translation>
 <translation id="4906194810004762807">裝置政策的重新整理頻率</translation>
+<translation id="4910101362791876581">指定可供使用的印表機。
+
+      只有在為 <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" /> 選擇 <ph name="PRINTERS_WHITELIST" /> 的情況下，系統才會使用這項政策
+
+      如果使用這項政策，只有 ID 與這項政策值相符的印表機可供使用。ID 必須與 <ph name="DEVICE_PRINTERS_POLICY_NAME" /> 政策中指定檔案的「id」或「guid」欄位相符。
+
+      這項政策已遭淘汰，請改用 <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" />。
+      </translation>
 <translation id="4917385247580444890">強</translation>
 <translation id="4919122295221518724">使用較嚴格的混合內容處理方式</translation>
 <translation id="4923806312383904642">允許 WebDriver 覆寫不相容的政策</translation>
@@ -3595,6 +3649,9 @@
 <translation id="6401669939808766804">登出使用者</translation>
 <translation id="640244877779556713">啟用表情符號建議功能</translation>
 <translation id="6407093060083181305">設定擴充功能安裝封鎖清單</translation>
+<translation id="6408233796253901198">如果設定這項政策，遠端存取主機會使用這個網址，驗證遠端存取用戶端提供的驗證憑證，據此決定是否要接受連線。這項政策必須搭配 RemoteAccessHostTokenUrl 使用。
+
+          如果設為空白或不設定，系統會停用這項功能。</translation>
 <translation id="6417265370957905582">Google 助理</translation>
 <translation id="6422575351619065453">這項政策可控管是否在 Kiosk 模式中顯示浮動式無障礙選單。
 
@@ -3611,6 +3668,12 @@
           如果選擇自動偵測 Proxy 伺服器，系統會提供指令碼網址「http://wpad/wpad.dat」給 Android 應用程式 (不會使用 Proxy 自動偵測通訊協定的其他部分)。
 
           如果選擇 .pac Proxy 指令碼，系統會提供該指令碼網址給 Android 應用程式。</translation>
+<translation id="6438364096042399634">你可以透過這項政策來定義 USB 裝置清單，使用者可以從核心驅動程式中卸除這份清單中的 USB 裝置，並且直接透過 chrome.usb API 在網頁應用程式中使用。輸入項目為可識別特定硬體的 USB 供應商識別碼和產品識別碼組合。
+
+      如果未設定，卸除式 USB 裝置的清單會空白。
+
+      這項政策已遭淘汰，請改用 <ph name="USB_DETACHABLE_ALLOWLIST_POLICY_NAME" />。
+      </translation>
 <translation id="6438972408080276697">如果將這項政策設為 True，系統會將政策觸發的主要 Android 應用程式安裝事件報告傳送給 Google。如果將這項政策設為 False，則系統不會擷取任何事件。</translation>
 <translation id="6440051664870270040">允許同時在多個網站中進行瀏覽及開啟彈出式視窗</translation>
 <translation id="6447948611083700881">備份與還原功能已停用</translation>
@@ -4436,6 +4499,9 @@
 
       這項政策已遭淘汰，請改用 <ph name="PRINTERS_POLICY_NAME" />。
       </translation>
+<translation id="7504632989711326175">如果設定這項政策，主機會使用用戶端憑證和指定核發機構一般名稱 (CN) 來驗證 RemoteAccessHostTokenValidationUrl 的連線。如果設為「*」，則可使用任何可用的用戶端憑證。
+
+          如果設為空白或不設定，系統會停用這項功能。</translation>
 <translation id="7506745375479451616">這項政策可控管從 <ph name="IE_PRODUCT_NAME" /> 切換到 Chrome 時，在 <ph name="PRODUCT_NAME" /> 中開啟網址時使用的指令。你可以將這項政策設為執行檔路徑，或是設為 <ph name="PRODUCT_NAME_PLACEHOLDER" />，讓系統自動偵測 <ph name="PRODUCT_NAME" /> 的位置。
 
       如果未設定這項政策，從 Internet Explorer 啟動 <ph name="PRODUCT_NAME" /> 時，<ph name="IE_PRODUCT_NAME" /> 會自動偵測 <ph name="PRODUCT_NAME" /> 自己的可執行路徑。
@@ -4665,6 +4731,14 @@
 <translation id="7823902813460802031">如果將這項政策設為啟用，<ph name="PRODUCT_OS_NAME" />會阻止裝置進入開發人員模式。
 
        如果將這項設為停用或不設定，裝置便可以使用開發人員模式。</translation>
+<translation id="7824349369175912332">指定禁止使用的印表機。
+
+      只有在為 <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" /> 選擇 <ph name="PRINTERS_BLACKLIST" /> 的情況下，系統才會使用這項政策。
+
+      如果使用這項政策，除了本政策中列出的 ID 之外，其他所有印表機皆可供使用。ID 必須與 <ph name="DEVICE_PRINTERS_POLICY_NAME" /> 政策中指定檔案的「id」或「guid」欄位相符。
+
+      這項政策已遭淘汰，請改用 <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" />。
+      </translation>
 <translation id="782661371433719637">不允許任何網站透過 File System API 要求讀取檔案及目錄</translation>
 <translation id="7841880500990419427">備用的最低 TLS 版本</translation>
 <translation id="7846952520291088817">會在 WebRTC ICE 候選項目中顯示本機 IP 的網址</translation>
@@ -5183,6 +5257,9 @@
       如果將這項政策設為 True，系統可能會凍結在背景執行 5 分鐘以上的分頁。凍結分頁可降低 CPU、電力和記憶體的使用量。<ph name="PRODUCT_NAME" /> 會根據經驗法則判斷，不會凍結在背景執行實用作業 (例如顯示通知、播放音效、串流播放影片) 的分頁。網站開發人員也可以將自己的網站設為禁止凍結 (https://chromium.googlesource.com/chromium/src/+/HEAD/chrome/browser/performance_manager/docs/freezing_opt_out_opt_in.md)。
 
       如果將這項政策設為 False，系統將不會凍結任何分頁。</translation>
+<translation id="8622378389102774881">如果設定這項政策，遠端存取主機會要求用戶端透過此網址取得驗證憑證，驗證通過後才能建立連線。這項政策必須搭配 RemoteAccessHostTokenValidationUrl 使用。
+
+          如果設為空白或不設定，系統會停用這項功能。</translation>
 <translation id="8625234016727663537">你可以設定一份網址清單，指定哪些網站會自動取得權限，可以在登入畫面上存取具有指定廠商和產品 ID 的 USB 裝置。清單中的每個項目都必須包含裝置和網址，這項政策才會生效。裝置中的每個項目可以包含廠商 ID 和產品 ID 欄位。如省略任何 ID，系統將視作萬用字元處理，但以下情況例外：如果未指定廠商 ID，也不可指定產品 ID。否則這項政策將不會生效，並會遭到忽略。
 
         USB 權限模型會使用要求網站的網址 (簡稱「要求網址」) 以及頂層頁框網站的網址 (簡稱「嵌入網址」)，將 USB 裝置的存取權授予要求網址。當要求網站在 iframe 中載入時，要求網址可能與嵌入網址不同。因此，「urls」欄位最多可包含兩個網址字串 (以半形逗號分隔)，以分別指定要求網址和嵌入網址。如果只指定一個網址，當要求網站的網址與這個網址相符時，不論其是否為嵌入網址，系統都會授予相應 USB 裝置的存取權限。「urls」中的網址必須是有效網址，否則系統將忽略這項政策。

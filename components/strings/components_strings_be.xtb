@@ -15,6 +15,7 @@
 <translation id="1038106730571050514">Паказаць прапановы</translation>
 <translation id="1038842779957582377">невядомае імя</translation>
 <translation id="1041998700806130099">Паведамленне аркуша задання</translation>
+<translation id="1048785276086539861">Калі вы будзеце змяняць анатацыі, гэты дакумент вернецца ў аднастаронкавы выгляд</translation>
 <translation id="1050038467049342496">Закрыйце іншыя праграмы</translation>
 <translation id="1055184225775184556">&amp;Адрабіць дадаванне</translation>
 <translation id="1056898198331236512">Папярэджанне</translation>
@@ -378,6 +379,7 @@
 <translation id="2465688316154986572">Скаба</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />Запусціць дыягностыку сеткі<ph name="END_LINK" /></translation>
 <translation id="2469153820345007638">Парадак "ад 1 да N"</translation>
+<translation id="2470767536994572628">Калі вы будзеце змяняць анатацыі, гэты дакумент вернецца ў аднастаронкавы выгляд і прыме першапачатковую пазіцыю</translation>
 <translation id="2479410451996844060">Няправільны URL-адрас пошуку.</translation>
 <translation id="2482878487686419369">Апавяшчэнні</translation>
 <translation id="248348093745724435">Палітыкі прылады</translation>
@@ -1225,6 +1227,7 @@
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5946937721014915347">Адкрываецца <ph name="SITE_NAME" />…</translation>
 <translation id="5951495562196540101">Не ўдалося зарэгістраваць з дапамогай уліковага запісу спажыўца (даступна пакетная ліцэнзія).</translation>
+<translation id="5963413905009737549">Раздзел</translation>
 <translation id="5967592137238574583">Рэдагаваць кантактныя звесткі</translation>
 <translation id="5967867314010545767">Выдаліць з гісторыі</translation>
 <translation id="5975083100439434680">Паменшыць</translation>
@@ -1637,6 +1640,7 @@
 <translation id="7647206758853451655">Якасць друку</translation>
 <translation id="7648992873808071793">Захоўваць файлы на гэтай прыладзе</translation>
 <translation id="7653957176542370971">Аркуш апрацоўшчыка плацяжоў закрыты</translation>
+<translation id="7654909834015434372">Калі вы будзеце змяняць анатацыі, гэты дакумент прыме першапачатковую пазіцыю</translation>
 <translation id="765676359832457558">Схаваць пашыраныя налады...</translation>
 <translation id="7658239707568436148">Скасаваць</translation>
 <translation id="7662298039739062396">Налада кантралюецца пашырэннем</translation>

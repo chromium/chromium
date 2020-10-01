@@ -228,6 +228,7 @@
 <translation id="1249643471736608405">Dodatna komponenta <ph name="PLUGIN_NAME" /> je blokirana jer je zastarela.</translation>
 <translation id="1251366534849411931">Nedostaje otvorena vitičasta zagrada: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Ovim brišete <ph name="TOTAL_USAGE" /> podataka koje čuvaju sajtovi i instalirane aplikacije</translation>
+<translation id="125220115284141797">Podrazumevane</translation>
 <translation id="1252987234827889034">Došlo je do greške na profilu</translation>
 <translation id="1254593899333212300">Direktna veza sa internetom</translation>
 <translation id="1259152067760398571">Bezbednosna provera je pokrenuta juče</translation>
@@ -319,6 +320,7 @@
 <translation id="1361872463926621533">Pusti zvuk pri pokretanju</translation>
 <translation id="1362865166188278099">Mehanički problem. Proverite štampač</translation>
 <translation id="1363585519747660921">USB štampač treba da se konfiguriše</translation>
+<translation id="1364664799726141130">Nalog koji ste verifikovali nije ovlašćen za pristup ovom uređaju. Uverite se da verifikujete <ph name="ACCOUNT" /> da biste otključali sesiju.</translation>
 <translation id="1365180424462182382"><ph name="BEGIN_LINK" />Pregledačem upravlja<ph name="END_LINK" /> <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="1367951781824006909">Izaberi datoteku</translation>
 <translation id="1369149969991017342">Pristup pomoću prekidača (kontrolišite računar pomoću samo jednog ili dva prekidača)</translation>
@@ -428,6 +430,7 @@
 <translation id="1486096554574027028">Pretražite lozinke</translation>
 <translation id="1487335504823219454">Uključeno – prilagođena podešavanja</translation>
 <translation id="1489664337021920575">Odaberi drugu opciju</translation>
+<translation id="1492417797159476138">Već ste sačuvali ovo korisničko ime za ovaj sajt</translation>
 <translation id="1493892686965953381">Čeka se <ph name="LOAD_STATE_PARAMETER" />...</translation>
 <translation id="1495486559005647033">Drugih dostupnih uređaja: <ph name="NUM_PRINTERS" />.</translation>
 <translation id="1495677929897281669">Nazad na karticu</translation>
@@ -650,6 +653,7 @@
 <translation id="173628468822554835">Važi. Novi sajtovi koje posećujete vam podrazumevano neće slati obaveštenja.</translation>
 <translation id="1736419249208073774">Istraži</translation>
 <translation id="1737968601308870607">Prijavi grešku</translation>
+<translation id="174123615272205933">Prilagođeno</translation>
 <translation id="1741314857973421784">Nastavi</translation>
 <translation id="1743570585616704562">Nije prepoznat</translation>
 <translation id="1743970419083351269">Zatvori traku sa preuzimanjima</translation>
@@ -684,6 +688,7 @@
 <translation id="1776712937009046120">Dodaj korisnika</translation>
 <translation id="1776883657531386793"><ph name="OID" />: <ph name="INFO" /></translation>
 <translation id="1778457539567749232">Označi kao nepročitano</translation>
+<translation id="1779468444204342338">Minimalne</translation>
 <translation id="1779652936965200207">Unesite ovaj pristupni kôd na uređaju „<ph name="DEVICE_NAME" />“:</translation>
 <translation id="177989070088644880">Aplikacija (<ph name="ANDROID_PACKAGE_NAME" />)</translation>
 <translation id="1780152987505130652">Zatvori grupu</translation>
@@ -1459,6 +1464,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2688196195245426394">Greška pri registrovanju uređaja na server: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2690024944919328218">Prikazuj opcije jezika</translation>
 <translation id="2691385045260836588">Model</translation>
+<translation id="2691440343905273290">Promenite podešavanja unosa</translation>
 <translation id="2693176596243495071">Ups! Došlo je do nepoznate greške. Probajte ponovo kasnije ili kontaktirajte administratora ako se problem nastavi.</translation>
 <translation id="2695749433451188613">Internet protokol za štampanje (HTTPS)</translation>
 <translation id="2699911226086014512">PIN operacija nije uspela, kôd greške <ph name="RETRIES" />.</translation>
@@ -1881,6 +1887,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3192947282887913208">Audio datoteke</translation>
 <translation id="3199127022143353223">Serveri</translation>
 <translation id="3200310363903241381">{COUNT,plural, =1{Chrome vam preporučuje da odmah proverite ovu lozinku}one{Chrome vam preporučuje da odmah proverite ove lozinke}few{Chrome vam preporučuje da odmah proverite ove lozinke}other{Chrome vam preporučuje da odmah proverite ove lozinke}}</translation>
+<translation id="3201154330231437478">Omogući obrnuto pomeranje <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="3201422919974259695">Dostupni USB uređaji će se prikazivati ovde.</translation>
 <translation id="3202131003361292969">Putanja</translation>
 <translation id="3202173864863109533">Zvuk ove kartice je isključen.</translation>
@@ -2076,6 +2083,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3440663250074896476">Još radnji za obeleživač <ph name="BOOKMARK_NAME" /></translation>
 <translation id="3440761377721825626">Pitaj kada sajt želi da pristupi mom računaru pomoću dodatne komponente</translation>
 <translation id="3441653493275994384">Ekran</translation>
+<translation id="3441663102605358937">Ponovo se prijavite na <ph name="ACCOUNT" /> da biste verifikovali ovaj nalog</translation>
 <translation id="3445047461171030979">Brzi odgovori Google pomoćnika</translation>
 <translation id="3445925074670675829">Uređaj sa USB priključkom tipa C</translation>
 <translation id="3446274660183028131">Pokrenite Parallels Desktop da biste instalirali Windows.</translation>
@@ -2827,6 +2835,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="4312866146174492540">Blokiraj (podrazumevano)</translation>
 <translation id="4314815835985389558">Upravljajte sinhronizacijom</translation>
 <translation id="4316850752623536204">Veb-sajt programera</translation>
+<translation id="4317820549299924617">Verifikacija nije uspela</translation>
 <translation id="4320177379694898372">Nema internet veze</translation>
 <translation id="4322394346347055525">Zatvori druge kartice</translation>
 <translation id="4324577459193912240">Datoteka je nepotpuna</translation>
@@ -3673,6 +3682,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="5362741141255528695">Izaberite datoteku privatnog ključa.</translation>
 <translation id="5363109466694494651">Obavi Powerwash i vrati</translation>
 <translation id="5365881113273618889">Direktorijum koji ste izabrali sadrži osetljive datoteke. Želite li stvarno da odobrite aplikaciji „<ph name="APP_NAME" />“ stalan pristup za upisivanje za ovaj direktorijum?</translation>
+<translation id="536638840841140142">Nema</translation>
 <translation id="5368720394188453070">Telefon je zaključan. Otključajte ga da biste pristupili.</translation>
 <translation id="5368779022775404937">Prijavite se na <ph name="REALM" /></translation>
 <translation id="5369491905435686894">Omogući ubrzavanje miša</translation>
@@ -4830,6 +4840,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6748465660675848252">Možete da nastavite, ali će biti vraćeni samo sinhronizovani podaci i podešavanja. Izgubićete sve lokalne podatke.</translation>
 <translation id="6749006854028927059">Sajtovi ne mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja na različitim sajtovima, na primer, za personalizaciju oglasa. Funkcije na nekim sajtovima mogu da prestanu sa radom.</translation>
 <translation id="6750757184909117990">Onemogući mobilnu mrežu</translation>
+<translation id="6750946710563435348">Koristite drugo korisničko ime</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (bez arhiviranja)</translation>
 <translation id="6757101664402245801">URL je kopiran</translation>
 <translation id="6758056191028427665">Podelite utiske o našem učinku.</translation>
@@ -5198,6 +5209,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="7191159667348037">Nepoznat štampač (USB)</translation>
 <translation id="7193051357671784796">Ovu aplikaciju je dodala vaša organizacija. Ponovo je pokrenite da biste završili instalaciju.</translation>
 <translation id="7193374945610105795">Nijedna lozinka nije sačuvana za <ph name="ORIGIN" /></translation>
+<translation id="7196020411877309443">Zašto vidim ovo?</translation>
 <translation id="7196913789568937443">Pravite rezervne kopije na Google disku. Lako vraćajte podatke ili menjajte uređaje u bilo kom trenutku. Rezervna kopija obuhvata podatke aplikacija. Rezervne kopije se otpremaju na Google i šifruju pomoću lozinke za Google nalog. <ph name="BEGIN_LINK1" />Saznajte više<ph name="END_LINK1" /></translation>
 <translation id="7197190419934240522">Dobijte Google pretragu i Google pametne funkcije svaki put kada pregledate</translation>
 <translation id="7197632491113152433">Na nalogu smo pronašli aplikacije (<ph name="NUMBER_OF_APPS" />) koje mogu da se koriste na ovom uređaju.</translation>
@@ -5348,6 +5360,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="7377451353532943397">Nastavi da blokiraš pristup senzorima</translation>
 <translation id="73786666777299047">Otvorite Chrome veb-prodavnicu</translation>
 <translation id="7378812711085314936">Korišćenje veze za prenos podataka</translation>
+<translation id="7380622428988553498">Ime uređaja sadrži nevažeće znakove</translation>
 <translation id="7380768571499464492">Ažurirano: <ph name="PRINTER_NAME" /></translation>
 <translation id="7384687527486377545">Automatsko ponavljanje na tastaturi</translation>
 <translation id="7385854874724088939">Došlo je do greške pri pokušaju štampanja. Proverite štampač i pokušajte ponovo.</translation>
@@ -5396,6 +5409,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="7434969625063495310">Dodavanje servera za štampanje nije uspelo. Proverite konfiguraciju servera i probajte ponovo.</translation>
 <translation id="7436921188514130341">O, ne! Došlo je do greške tokom promene naziva.</translation>
 <translation id="7438976808740265764">Flash Player više neće biti podržan od decembra 2020.</translation>
+<translation id="7439519621174723623">Dodajte naziv uređaja da biste nastavili</translation>
 <translation id="7441736921018636843">Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />resetujte sinhronizaciju<ph name="END_LINK" /> da biste uklonili pristupnu frazu za sinhronizaciju</translation>
 <translation id="7441830548568730290">Drugi korisnici</translation>
 <translation id="7442465037756169001">Hangouts Meet hardware je spreman za podešavanje.</translation>
@@ -5637,6 +5651,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="7717134585801378441">Sajtovi mogu da traže da koriste vašu lokaciju (preporučuje se)</translation>
 <translation id="7717845620320228976">Traženje ažuriranja</translation>
 <translation id="7719367874908701697">Zumiranje stranice</translation>
+<translation id="7719588063158526969">Naziv uređaja je predugačak</translation>
 <translation id="7721179060400456005">Dozvoli da se prozori prostiru na više ekrana</translation>
 <translation id="7722040605881499779">Za ažuriranje je potrebno: <ph name="NECESSARY_SPACE" /></translation>
 <translation id="7724603315864178912">Iseci</translation>
@@ -5941,6 +5956,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8049705080247101012">Google je označio dodatak „<ph name="EXTENSION_NAME" />“ kao zlonameran i instalacija je sprečena</translation>
 <translation id="8049948037269924837">Obrnuto pomeranje tačpedom</translation>
 <translation id="8050038245906040378">Microsoft potpisivanje komercijalnih kodova</translation>
+<translation id="8050191834453426339">Verifikuj ponovo</translation>
 <translation id="8051193500142930381">Funkcije kojima je potrebna kamera neće raditi</translation>
 <translation id="8051390370038326517">Uvek dozvoli potpunu kontrolu nad MIDI uređajima za <ph name="HOST" /></translation>
 <translation id="8053278772142718589">PKCS #12 datoteke</translation>

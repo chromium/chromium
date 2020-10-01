@@ -106,6 +106,7 @@
 <translation id="1810845389119482123">Початкове налаштування синхронізації не завершено</translation>
 <translation id="1821253160463689938">Використовує файли cookie, щоб зберігати налаштування, навіть якщо ви не відвідуєте ці сторінки</translation>
 <translation id="1829244130665387512">Знайти на сторінці</translation>
+<translation id="1830550083491357902">Користувач не ввійшов</translation>
 <translation id="1843805151597803366">Щоб отримати кращий переклад, надайте Пошуку Google доступ до поточної сторінки</translation>
 <translation id="1853692000353488670">Нова анонімна вкладка</translation>
 <translation id="1856325424225101786">Скинути спрощений режим?</translation>
@@ -113,6 +114,7 @@
 <translation id="1877026089748256423">Версія Chrome застаріла</translation>
 <translation id="1883903952484604915">Мої файли</translation>
 <translation id="189358972401248634">Інші мови</translation>
+<translation id="1919130412786645364">Дозволити вхід у Chrome</translation>
 <translation id="1922362554271624559">Пропоновані мови</translation>
 <translation id="1925021887439448749">Введіть користувацьку веб-адресу</translation>
 <translation id="1928696683969751773">Оновлення</translation>
@@ -225,6 +227,7 @@
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# аудіофайл}one{# аудіофайл}few{# аудіофайли}many{# аудіофайлів}other{# аудіофайлу}}</translation>
 <translation id="2656405586795711023">Веб-додатки</translation>
 <translation id="2689830683995595741">Використовуючи Chrome, ви погоджуєтесь із <ph name="BEGIN_LINK1" />Загальними положеннями та умовами Google<ph name="END_LINK1" /> і <ph name="BEGIN_LINK2" />Додатковими умовами використання Google Chrome і ОС Chrome<ph name="END_LINK2" />. Також застосовується <ph name="BEGIN_LINK3" />Примітка про конфіденційність для облікових записів Google, керованих у Family Link<ph name="END_LINK3" />.</translation>
+<translation id="2704606927547763573">Скопійов.</translation>
 <translation id="2707726405694321444">Оновити сторінку</translation>
 <translation id="2709516037105925701">Автозаповнення</translation>
 <translation id="2718352093833049315">Лише у Wi-Fi</translation>
@@ -963,7 +966,6 @@
 <translation id="8058746566562539958">Відкрити в новій вкладці Chrome</translation>
 <translation id="8063895661287329888">Не вдалося додати закладку.</translation>
 <translation id="806745655614357130">Зберігати мої дані окремо</translation>
-<translation id="8069669375923284295">Натисніть, щоб продовжити налаштування синхронізації</translation>
 <translation id="8073388330009372546">Відкрити в новій вкладці</translation>
 <translation id="8076492880354921740">Вкладки</translation>
 <translation id="8084114998886531721">Збережений пароль</translation>

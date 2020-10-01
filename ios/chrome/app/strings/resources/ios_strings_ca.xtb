@@ -97,7 +97,6 @@
 <translation id="1965935827552890526">Acaba el que estaves fent a l'altra finestra de Chrome oberta.</translation>
 <translation id="1974060860693918893">Configuració avançada</translation>
 <translation id="1989112275319619282">Examina</translation>
-<translation id="1992734845128748707">Canvia el navegador predeterminat…</translation>
 <translation id="2015722694326466240">Per veure les contrasenyes, primer has d'establir una contrasenya al dispositiu.</translation>
 <translation id="2073572773299281212">Actiu fa <ph name="DAYS" /> dies</translation>
 <translation id="2074131957428911366">Sempre pots anar a la <ph name="BEGIN_LINK" />configuració<ph name="END_LINK" /> per decidir què vols sincronitzar.</translation>
@@ -165,6 +164,7 @@ Els llocs web no poden fer servir galetes per veure la teva activitat de navegac
 <translation id="2781331604911854368">Activat</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2800683595868705743">Surt del selector de pestanyes</translation>
+<translation id="2815198996063984598">2. Toca Aplicació de navegador predeterminada.</translation>
 <translation id="2830972654601096923">Gestiona les adreces...</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2840687315230832938">La configuració de la sincronització inicial no ha finalitzat</translation>
@@ -181,6 +181,7 @@ Els llocs web no poden fer servir galetes per veure la teva activitat de navegac
 <translation id="2921219216347069551">No es pot compartir la pàgina</translation>
 <translation id="2923448633003185837">Enganxa i ves-hi</translation>
 <translation id="292639812446257861">Marca com a no llegit</translation>
+<translation id="2952581218264071393">1. Obre la configuració de Chrome.</translation>
 <translation id="2958718410589002129">Contrasenyes</translation>
 <translation id="2964349545761222050">Bloqueja les galetes de tercers</translation>
 <translation id="2969979262385602596">No s'ha pogut iniciar la sessió. Torneu-ho a provar més tard.</translation>
@@ -217,6 +218,7 @@ En mode d'incògnit, els llocs web no poden fer servir galetes per veure la teva
 <translation id="3335947283844343239">Torna a obrir la pestanya tancada</translation>
 <translation id="3371831930909698441">El Traductor està disponible. Tens opcions a la part inferior de la pantalla</translation>
 <translation id="3393920035788932672">Finestres emergents permeses</translation>
+<translation id="3399930248910934354">Obre la configuració de Chrome</translation>
 <translation id="3425644765244388016">Àlies de la targeta</translation>
 <translation id="3433057996795775706">Encara que suprimeixis aquesta contrasenya, no se suprimirà el teu compte a <ph name="WEBSITE" />. Canvia la contrasenya o suprimeix el teu compte a <ph name="WEBSITE" /> per protegir-lo dels altres.</translation>
 <translation id="3443810440409579745">S'ha rebut una pestanya.</translation>
@@ -241,6 +243,9 @@ En mode d'incògnit, els llocs web no poden fer servir galetes per veure la teva
 <translation id="3551320343578183772">Tanca la pestanya</translation>
 <translation id="3581564640715911333">Proposa traduir les pàgines en altres idiomes</translation>
 <translation id="3588820906588687999">Obre la imatge en una pestanya nova</translation>
+<translation id="359441731697487922">Pots obrir enllaços a Chrome automàticament establint-lo com a aplicació de navegador predeterminada.
+      
+Segueix aquests passos:</translation>
 <translation id="3603009562372709545">Copia l'URL de l'enllaç</translation>
 <translation id="3607167657931203000">Dades d'Emplenament automàtic</translation>
 <translation id="3609785682760573515">S'està sincronitzant...</translation>
@@ -331,6 +336,7 @@ Les vostres dades estan encriptades amb la vostra frase de contrasenya de sincro
 <translation id="4747097190499141774">L'encriptació de frases de contrasenya no inclou les formes de pagament ni les adreces de Google Pay. Només els usuaris que sàpiguen la teva frase de contrasenya poden llegir les dades que encriptes. La frase de contrasenya no s'envia a Google, i Google tampoc no l'emmagatzema. Si l'oblides o vols canviar aquesta opció, has de restablir la sincronització. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">Pestanya d'incògnit nova</translation>
 <translation id="4758977202923349869">Situa la targeta de crèdit dins d'aquest marc</translation>
+<translation id="4775879719735953715">Navegador predeterminat</translation>
 <translation id="4802417911091824046">L'encriptació de frases de contrasenya no inclou les formes de pagament ni les adreces de Google Pay.
 
 Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronització<ph name="END_LINK" />.</translation>
@@ -338,6 +344,7 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="4808744395915275922">Actualitzacions</translation>
 <translation id="4818522717893377262">Afegeix un idioma...</translation>
 <translation id="481968316161811770">Galetes, dades llocs</translation>
+<translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} i 1 més}other{{domain} i {count} més}}</translation>
 <translation id="4826218269716039351">Bloqueja les galetes de tercers</translation>
 <translation id="48274138579728272">Marca com a llegit</translation>
 <translation id="4833786495304741580">Envia automàticament a Google estadístiques d'ús i informes d'error.</translation>
@@ -586,6 +593,7 @@ Els llocs web no poden fer servir galetes per veure la teva activitat de navegac
 <translation id="7456847797759667638">Obre la ubicació...</translation>
 <translation id="7460314822154045102">Utilitza la càmera</translation>
 <translation id="7464701184726199289">S'esborraran les dades sincronitzades de tots els dispositius. La configuració desada del lloc no se suprimirà i és possible que reflecteixi els vostres hàbits de navegació. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
+<translation id="746684838091935575">3. Selecciona Chrome.</translation>
 <translation id="7472734401283673885">Nom de l'empresa</translation>
 <translation id="7473891865547856676">No, gràcies</translation>
 <translation id="7481312909269577407">Endavant</translation>

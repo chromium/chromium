@@ -106,6 +106,7 @@
 <translation id="1810845389119482123">Configuração de sincronização inicial não concluída</translation>
 <translation id="1821253160463689938">Utiliza cookies para lembrar suas preferências, mesmo se você não acessar essas páginas</translation>
 <translation id="1829244130665387512">Encontrar na página</translation>
+<translation id="1830550083491357902">Desconectado</translation>
 <translation id="1843805151597803366">Para ver traduções melhores, permita que a Pesquisa Google use a página atual</translation>
 <translation id="1853692000353488670">Nova guia anônima</translation>
 <translation id="1856325424225101786">Redefinir o Modo Lite?</translation>
@@ -113,6 +114,7 @@
 <translation id="1877026089748256423">O Google Chrome está desatualizado</translation>
 <translation id="1883903952484604915">Meus arquivos</translation>
 <translation id="189358972401248634">Outros idiomas</translation>
+<translation id="1919130412786645364">Permitir login no Chrome</translation>
 <translation id="1922362554271624559">Idiomas sugeridos</translation>
 <translation id="1925021887439448749">Digite o endereço da Web personalizado</translation>
 <translation id="1928696683969751773">Atualizações</translation>
@@ -225,6 +227,7 @@ Toque em qualquer palavra e a mantenha pressionada para pesquisar. Para refinar 
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# arquivo de áudio}one{# arquivo de áudio}other{# arquivos de áudio}}</translation>
 <translation id="2656405586795711023">Apps da Web</translation>
 <translation id="2689830683995595741">Ao usar o Chrome, você concorda com os <ph name="BEGIN_LINK1" />Termos de Serviço do Google<ph name="END_LINK1" /> e os <ph name="BEGIN_LINK2" />Termos de Serviço adicionais do Google Chrome e do Chrome OS<ph name="END_LINK2" />. O <ph name="BEGIN_LINK3" />Aviso de privacidade para Contas do Google gerenciadas no Family Link<ph name="END_LINK3" /> também é aplicável.</translation>
+<translation id="2704606927547763573">Copiado</translation>
 <translation id="2707726405694321444">Atualizar página</translation>
 <translation id="2709516037105925701">Preenchimento automático</translation>
 <translation id="2718352093833049315">Apenas com Wi-Fi</translation>
@@ -964,7 +967,6 @@ Na navegação anônima, sua atividade ainda pode ser visível para os sites que
 <translation id="8058746566562539958">Abrir em nova guia do Chrome</translation>
 <translation id="8063895661287329888">Falha ao adicionar favorito.</translation>
 <translation id="806745655614357130">Manter meus dados separados</translation>
-<translation id="8069669375923284295">Toque para continuar a configuração da sincronização</translation>
 <translation id="8073388330009372546">Abrir imagem em nova guia</translation>
 <translation id="8076492880354921740">Guias</translation>
 <translation id="8084114998886531721">Senha salva</translation>

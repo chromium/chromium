@@ -113,6 +113,7 @@
 <translation id="2049240716062114887">ডেস্কের নাম পরিবর্তন করে <ph name="DESK_NAME" /> রাখা হয়েছে</translation>
 <translation id="2050339315714019657">প্রতিকৃতি</translation>
 <translation id="2067602449040652523">কীবোর্ডের উজ্জ্বলতা</translation>
+<translation id="2074759828767813253">সাম্প্রতিক স্ক্রিনশট ও ডাউনলোড</translation>
 <translation id="2083190527011054446">শুভরাত্রি <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">কোনও নেটওয়ার্কে কানেক্ট করা নেই</translation>
 <translation id="2126242104232412123">নতুন ডেস্ক</translation>
@@ -197,7 +198,6 @@
 <translation id="2996462380875591307">ডক করা ম্যাগনিফায়ার চালু আছে। আবার Ctrl+Search+D প্রেস করে সেটিকে বন্ধ করুন।</translation>
 <translation id="3000461861112256445">মোনো অডিও</translation>
 <translation id="3009178788565917040">আউটপুট</translation>
-<translation id="3025081209054535615">শেল্ফ থেকে গ্লোবাল মিডিয়া কন্ট্রোল আনপিন করুন</translation>
 <translation id="3033545621352269033">চালু করা আছে</translation>
 <translation id="3038571455154067151">সাইন-ইন করতে, আপনার Family Link-এর অভিভাবকীয় অ্যাক্সেস কোডটি লিখুন</translation>
 <translation id="3045488863354895414">শুভ অপরাহ্ন,</translation>
@@ -621,6 +621,7 @@
 <translation id="7526573455193969409">নেটওয়ার্কের উপরে নজর রাখা হতে পারে</translation>
 <translation id="7536035074519304529">আইপি অ্যাড্রেস: <ph name="ADDRESS" /></translation>
 <translation id="7548434653388805669">শুতে যাওয়ার সময় হয়েছে</translation>
+<translation id="7551643184018910560">শেল্ফে পিন করুন</translation>
 <translation id="7561982940498449837">মেনু বন্ধ করুন</translation>
 <translation id="7564874036684306347">কোনও উইন্ডো অন্য ডেস্কটপে সরানো হলে সেটির আচরণে অপ্রত্যাশিত পরিবর্তন হতে পারে। পরবর্তী বিজ্ঞপ্তি, উইন্ডো এবং ডায়ালগ দুটি ডেস্কটপ মিলিয়ে দেখানো হতে পারে।</translation>
 <translation id="7568294522609223312">অটোমেটিক ক্লিক বিকল্প বন্ধ করুন</translation>
@@ -701,7 +702,6 @@
 <translation id="8297006494302853456">দুর্বল</translation>
 <translation id="8308637677604853869">পূর্ববর্তী মেনু</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
-<translation id="8349293353728876872">শেল্ফে গ্লোবাল মিডিয়া কন্ট্রোল পিন করুন</translation>
 <translation id="8351131234907093545">নোট তৈরি করুন</translation>
 <translation id="8371779926711439835">অক্ষর অনুযায়ী এগিয়ে যান</translation>
 <translation id="8375916635258623388">এই <ph name="DEVICE_NAME" />টি এবং আপনার ফোন নিজে থেকেই কানেক্ট হয়ে যাবে</translation>

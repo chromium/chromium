@@ -42,7 +42,7 @@
 <translation id="1263231323834454256">Elenco di lettura</translation>
 <translation id="1266864766717917324">Impossibile condividere <ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">Tocca per espandere</translation>
-<translation id="1285310382777185058">Cambiare lingua</translation>
+<translation id="1285310382777185058">Cambia lingua</translation>
 <translation id="1291207594882862231">Cancella la cronologia, i cookie, i dati dei siti, la cache…</translation>
 <translation id="129553762522093515">Chiuse di recente</translation>
 <translation id="1298077576058087471">Risparmia fino al 60% di dati, leggi le notizie di oggi</translation>
@@ -106,6 +106,7 @@
 <translation id="1810845389119482123">Configurazione iniziale della sincronizzazione non terminata</translation>
 <translation id="1821253160463689938">Utilizza i cookie per memorizzare le tue preferenze, anche se non visiti quelle pagine</translation>
 <translation id="1829244130665387512">Trova nella pagina</translation>
+<translation id="1830550083491357902">Accesso non eseguito</translation>
 <translation id="1843805151597803366">Consenti alla Ricerca Google di accedere alla pagina corrente per ricevere traduzioni migliori</translation>
 <translation id="1853692000353488670">Nuova scheda in incognito</translation>
 <translation id="1856325424225101786">Reimpostare la modalità Lite?</translation>
@@ -113,6 +114,7 @@
 <translation id="1877026089748256423">Chrome non è aggiornato</translation>
 <translation id="1883903952484604915">I miei file</translation>
 <translation id="189358972401248634">Altre lingue</translation>
+<translation id="1919130412786645364">Consenti l'accesso a Chrome</translation>
 <translation id="1922362554271624559">Lingue consigliate</translation>
 <translation id="1925021887439448749">Inserisci l'indirizzo web personalizzato</translation>
 <translation id="1928696683969751773">Aggiornamenti</translation>
@@ -225,6 +227,7 @@ Tocca e tieni premuta una parola per eseguire una ricerca. Per perfezionare la r
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# file audio}other{# file audio}}</translation>
 <translation id="2656405586795711023">App web</translation>
 <translation id="2689830683995595741">Utilizzando Chrome, accetti i <ph name="BEGIN_LINK1" />Termini di servizio di Google<ph name="END_LINK1" /> e i <ph name="BEGIN_LINK2" />Termini di servizio aggiuntivi di Google Chrome e Chrome OS<ph name="END_LINK2" />. Si applica inoltre l'<ph name="BEGIN_LINK3" />Informativa sulla privacy per gli Account Google gestiti tramite Family Link<ph name="END_LINK3" />.</translation>
+<translation id="2704606927547763573">Copiata</translation>
 <translation id="2707726405694321444">Aggiorna la pagina</translation>
 <translation id="2709516037105925701">Compilazione automatica</translation>
 <translation id="2718352093833049315">Solo su Wi-Fi</translation>
@@ -963,7 +966,6 @@ In incognito, la tua attività potrebbe essere comunque visibile ai siti web vis
 <translation id="8058746566562539958">Apri in nuova scheda di Chrome</translation>
 <translation id="8063895661287329888">Impossibile aggiungere preferito.</translation>
 <translation id="806745655614357130">Mantieni separati i miei dati</translation>
-<translation id="8069669375923284295">Tocca per continuare la configurazione della sincronizzazione</translation>
 <translation id="8073388330009372546">Immagine in nuova scheda</translation>
 <translation id="8076492880354921740">Schede</translation>
 <translation id="8084114998886531721">Password salvata</translation>

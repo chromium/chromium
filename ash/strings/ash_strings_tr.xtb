@@ -113,6 +113,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2049240716062114887">Masa adı <ph name="DESK_NAME" /> olarak değiştirildi</translation>
 <translation id="2050339315714019657">Dikey</translation>
 <translation id="2067602449040652523">Klavye parlaklığı</translation>
+<translation id="2074759828767813253">En son ekran görüntüleri ve indirilenler</translation>
 <translation id="2083190527011054446">İyi geceler <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">Ağa bağlı değilsiniz</translation>
 <translation id="2126242104232412123">Yeni masa</translation>
@@ -197,7 +198,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2996462380875591307">Yerleştirilmiş Büyüteç etkinleştirildi. Kapatmak için tekrar Ctrl+Arama+H tuşlarına basın.</translation>
 <translation id="3000461861112256445">Mono ses</translation>
 <translation id="3009178788565917040">Çıkış</translation>
-<translation id="3025081209054535615">Genel medya denetimlerinin sabitlemesini raftan kaldır</translation>
 <translation id="3033545621352269033">Açık</translation>
 <translation id="3038571455154067151">Oturum açmak için Family Link ebeveyn erişim kodunuzu girin</translation>
 <translation id="3045488863354895414">İyi günler,</translation>
@@ -621,6 +621,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="7526573455193969409">Ağ trafiği izleniyor olabilir</translation>
 <translation id="7536035074519304529">IP adresi: <ph name="ADDRESS" /></translation>
 <translation id="7548434653388805669">Uyku vakti geldi</translation>
+<translation id="7551643184018910560">Rafa sabitle</translation>
 <translation id="7561982940498449837">Menüyü kapat</translation>
 <translation id="7564874036684306347">Pencereleri başka bir masaüstüne taşımak, beklenmeyen davranışlara neden olabilir. Pencereler taşındıktan sonra gelen bildirimler, pencereler ve iletişim kutuları masaüstleri arasında bölünebilir.</translation>
 <translation id="7568294522609223312">Otomatik tıklamayı kapat</translation>
@@ -701,7 +702,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="8297006494302853456">Zayıf</translation>
 <translation id="8308637677604853869">Önceki menü</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
-<translation id="8349293353728876872">Genel medya denetimlerini rafa sabitle</translation>
 <translation id="8351131234907093545">Not oluştur</translation>
 <translation id="8371779926711439835">Harf bazında ilerle</translation>
 <translation id="8375916635258623388">Bu <ph name="DEVICE_NAME" /> ve telefonunuz otomatik olarak bağlanacaktır</translation>

@@ -501,6 +501,7 @@
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (Misafir)</translation>
 <translation id="1572266655485775982">Kablosuz bağlantıyı etkinleştir</translation>
 <translation id="1572876035008611720">E-postanızı girin</translation>
+<translation id="1575741822946219011">Diller ve girişler</translation>
 <translation id="1576594961618857597">Varsayılan beyaz avatar</translation>
 <translation id="1578558981922970608">Kapanmaya zorla</translation>
 <translation id="1578784163189013834">Ekran koruyucu arka planı seç</translation>
@@ -858,6 +859,7 @@
 <translation id="1974821797477522211">Ağa bağlan</translation>
 <translation id="1975841812214822307">Kaldır...</translation>
 <translation id="1976150099241323601">Güvenlik Cihazında oturum açın</translation>
+<translation id="1976307821760494606"><ph name="DOMAIN" />, ADB hata ayıklama işlevini devre dışı bıraktı. Bu işlem, 24 saat içinde <ph name="DEVICE_TYPE" /> cihazınızı sıfırlar. Saklamak istediğiniz dosyaları yedekleyin.</translation>
 <translation id="1977965994116744507"><ph name="DEVICE_TYPE" /> cihazınızın kilidini açmak için telefonunuzu cihaza yaklaştırın.</translation>
 <translation id="1978006917103730774">Gelecekteki yazılım ve güvenlik güncellemeleri otomatik olarak yüklenir.</translation>
 <translation id="1979095679518582070">Bu özelliğin kapatılması, bu cihazın sistem güncellemeleri ve güvenlik gibi önemli hizmetler için gereken bilgileri gönderme özelliğini etkilemez.</translation>
@@ -2038,6 +2040,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3404249063913988450">Ekran koruyucuyu etkinleştir</translation>
 <translation id="3405664148539009465">Yazı tiplerini özelleştir</translation>
 <translation id="3405763860805964263">...</translation>
+<translation id="3406396172897554194">Dile veya giriş adına göre ara</translation>
 <translation id="3406605057700382950">Yer işaretleri ç&amp;ubuğunu göster</translation>
 <translation id="340671561090997290">{NUM_EXTENSIONS,plural, =1{Bu uzantı tehlikeli olabilir}other{Bu uzantılar tehlikeli olabilir}}</translation>
 <translation id="3409785640040772790">Haritalar</translation>
@@ -2613,6 +2616,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4025039777635956441">Seçili Sitenin Sesini Kapat</translation>
 <translation id="4027804175521224372">(Kaçırıyorsunuz—<ph name="IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_LINK" />)</translation>
 <translation id="4027951648498485763">Flash ayarlarınız Chrome'dan çıkmanıza kadar tutulacak.</translation>
+<translation id="4028467762035011525">Giriş yöntemleri ekle</translation>
 <translation id="4031179711345676612">Mikrofona izin verildi</translation>
 <translation id="4031527940632463547">Sensörler engellendi</translation>
 <translation id="4033471457476425443">Yeni klasör ekle</translation>
@@ -4064,6 +4068,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="5833726373896279253">Bu ayarlar yalnızca sahibi tarafından değiştirilebilir:</translation>
 <translation id="5834581999798853053">Yaklaşık <ph name="TIME" /> dakika kaldı</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> - Kamera veya mikrofon kaydediyor</translation>
+<translation id="5839574759884227787"><ph name="DOMAIN" />, ADB hata ayıklamayı devre dışı bıraktı. Bu durumda <ph name="DEVICE_TYPE" /> sıfırlanacak. Yeniden başlatmadan önce dosyalarınızı yedekleyin.</translation>
 <translation id="5840680448799937675">Dosyalar her zaman çevrimdışı paylaşılır</translation>
 <translation id="5841270259333717135">Ethernet'i yapılandır</translation>
 <translation id="5842497610951477805">Bluetooth etkin</translation>
@@ -4477,6 +4482,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6308077700132376815">Resimleri engelle</translation>
 <translation id="6308493641021088955">Oturum açma işlemi <ph name="EXTENSION_NAME" /> tarafından sağlanmıştır</translation>
 <translation id="6308937455967653460">Bağlantıyı far&amp;klı kaydet...</translation>
+<translation id="6309443618838462258">Yöneticiniz bu giriş yöntemine izin vermiyor</translation>
 <translation id="6309510305002439352">Mikrofon kapalı</translation>
 <translation id="6311220991371174222">Profiliniz açılırken bir sorun oluştuğundan Chrome başlatılamıyor. Chrome'u yeniden başlatmayı deneyin.</translation>
 <translation id="6312403991423642364">Bilinmeyen ağ hatası</translation>
@@ -5195,6 +5201,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="7191159667348037">Bilinmeyen Yazıcı (USB)</translation>
 <translation id="7193051357671784796">Bu uygulama kuruluşunuz tarafından eklendi. Yüklemeyi tamamlamak için uygulamayı yeniden başlatın.</translation>
 <translation id="7193374945610105795"><ph name="ORIGIN" /> için şifre kaydedilmedi</translation>
+<translation id="7196020411877309443">Neden bunu görüyorum?</translation>
 <translation id="7196913789568937443">Google Drive'a yedekleyin. Verilerinizi istediğiniz zaman kolayca geri yükleyebilir veya cihazlar arasında geçiş yapabilirsiniz. Yedekleme işleminiz uygulama verilerini içerir. Yedek verileriniz Google'a yüklenir ve Google Hesabınızın şifresi kullanılarak şifrelenir. <ph name="BEGIN_LINK1" />Daha Fazla Bilgi<ph name="END_LINK1" /></translation>
 <translation id="7197190419934240522">Her göz attığınızda Google Arama ve Google zekasından yararlanın</translation>
 <translation id="7197632491113152433">Hesabınızdan bu cihazda kullanılabilecek <ph name="NUMBER_OF_APPS" /> uygulama bulduk.</translation>
@@ -5850,6 +5857,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="7952708427581814389">Siteler panonuzdaki metin ve görselleri görmek isteyebilir</translation>
 <translation id="795282463722894016">Geri yükleme tamamlandı</translation>
 <translation id="7952904276017482715">Beklenen Kimlik "<ph name="EXPECTED_ID" />" idi, ancak "<ph name="NEW_ID" />" kimliği belirlendi</translation>
+<translation id="7953669802889559161">Girişler</translation>
 <translation id="7953955868932471628">Kısayolları yönet</translation>
 <translation id="7956373551960864128">Kayıtlı yazıcılarınız</translation>
 <translation id="7957074856830851026">Seri numarası veya öğe kimliği gibi cihaz bilgilerini görüntüleyin</translation>
@@ -5873,6 +5881,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="7973962044839454485">Yanlış kullanıcı adı veya şifreden dolayı PPP kimlik doğrulaması başarısız oldu</translation>
 <translation id="7974566588408714340"><ph name="EXTENSIONNAME" /> uzantısını kullanmayı yeniden dene</translation>
 <translation id="7974936243149753750">Fazla tarama</translation>
+<translation id="7977404132325989121">&amp;Pencereye Ad Ver...</translation>
 <translation id="7978412674231730200">Özel anahtar</translation>
 <translation id="7978450511781612192">Bu işlem Google hesaplarınızın oturumunu kapatacak. Yer işaretleriniz, şifreleriniz ve diğer içerikler artık senkronize edilmeyecek.</translation>
 <translation id="7980084013673500153">Öğe kimliği: <ph name="ASSET_ID" /></translation>
@@ -6425,6 +6434,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8648408795949963811">Gece Işığı renk sıcaklığı</translation>
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> şunu yapmak istiyor: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> ve daha fazlası</translation>
 <translation id="8650543407998814195">Artık eski profilinize erişemeseniz de onu yine de kaldırabilirsiniz.</translation>
+<translation id="865118751078059229">&amp;Pencereye ad ver...</translation>
 <translation id="8651585100578802546">Bu Sayfayı Tekrar Yüklemeye Zorla</translation>
 <translation id="8652400352452647993">Uzantı paketleme hatası</translation>
 <translation id="8654151524613148204">Maalesef dosya bilgisayarınız için çok büyük.</translation>
@@ -6577,6 +6587,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8813872945700551674">Ebeveyninizden "<ph name="EXTENSION_NAME" />" uzantısını onaylamasını isteyin</translation>
 <translation id="8813969267212093033">Sistem metni bu dilde gösterilir</translation>
 <translation id="8814190375133053267">Kablosuz</translation>
+<translation id="8814319344131658221">Yazım denetimi dilleri, dil tercihinize dayalıdır</translation>
 <translation id="8814644416678422095">Sabit sürücü</translation>
 <translation id="8814687660896548945">Arşiv taranırken lütfen bekleyin...</translation>
 <translation id="881782782501875829">Bağlantı noktası numarası ekleyin</translation>
@@ -6672,6 +6683,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8912810933860534797">Otomatik taramayı etkinleştir</translation>
 <translation id="8915370057835397490">Öneriler yükleniyor</translation>
 <translation id="8916476537757519021">Gizli Alt Çerçeve: <ph name="SUBFRAME_SITE" /></translation>
+<translation id="8916749157829986308">Pencere Adını Ayarlayın</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" /> adlı kişinin <ph name="DEVICE_TYPE" /> cihazı</translation>
 <translation id="8922013791253848639">Bu sitede her zaman reklamlara izin ver</translation>
 <translation id="8923880975836399332">Koyu turkuaz</translation>
@@ -6847,6 +6859,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="9124003689441359348">Kayıtlı şifreleriniz burada görünür</translation>
 <translation id="9126149354162942022">İmleç rengi</translation>
 <translation id="9128317794749765148">Kurulum tamamlanamadı</translation>
+<translation id="9128335130883257666"><ph name="INPUT_METHOD_NAME" /> için ayarlar sayfasını aç</translation>
 <translation id="9128870381267983090">Ağa bağlan</translation>
 <translation id="9130015405878219958">Geçersiz mod girildi</translation>
 <translation id="9131487537093447019">Bluetooth cihazlarına ileti gönderme ve Bluetooth cihazlarından gelen iletileri alma.</translation>

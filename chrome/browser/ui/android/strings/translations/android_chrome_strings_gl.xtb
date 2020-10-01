@@ -106,6 +106,7 @@
 <translation id="1810845389119482123">Non se completou a configuración de sincronización inicial</translation>
 <translation id="1821253160463689938">Utiliza cookies para lembrar as túas preferencias, mesmo se non visitas esas páxinas</translation>
 <translation id="1829244130665387512">Buscar na páxina</translation>
+<translation id="1830550083491357902">Sesión non iniciada</translation>
 <translation id="1843805151597803366">Para obter mellores traducións, deixa que a Busca de Google utilice a páxina actual</translation>
 <translation id="1853692000353488670">Nova pestana de incógnito</translation>
 <translation id="1856325424225101786">Queres restablecer o modo básico?</translation>
@@ -113,6 +114,7 @@
 <translation id="1877026089748256423">Chromium está desactualizado</translation>
 <translation id="1883903952484604915">Os meus ficheiros</translation>
 <translation id="189358972401248634">Outros idiomas</translation>
+<translation id="1919130412786645364">Permitir inicio de sesión en Chrome</translation>
 <translation id="1922362554271624559">Idiomas suxeridos</translation>
 <translation id="1925021887439448749">Introducir enderezo web personalizado</translation>
 <translation id="1928696683969751773">Actualizacións</translation>
@@ -225,6 +227,7 @@ Mantén premida calquera palabra para buscala. Se queres refinar a busca, selecc
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# ficheiro de audio}other{# ficheiros de audio}}</translation>
 <translation id="2656405586795711023">Aplicacións web</translation>
 <translation id="2689830683995595741">Ao utilizar Chrome, aceptas as <ph name="BEGIN_LINK1" />Condicións de servizo de Google<ph name="END_LINK1" /> e as <ph name="BEGIN_LINK2" />Condicións de servizo adicionais de Google Chrome e Chrome OS<ph name="END_LINK2" />. Tamén se aplica o <ph name="BEGIN_LINK3" />Aviso de privacidade das Contas de Google xestionadas a través de Family Link<ph name="END_LINK3" />.</translation>
+<translation id="2704606927547763573">Copiada</translation>
 <translation id="2707726405694321444">Actualiza páxina</translation>
 <translation id="2709516037105925701">Autocompletar</translation>
 <translation id="2718352093833049315">Só con wifi</translation>
@@ -963,7 +966,6 @@ Lembra que ese modo non impide que os sitios web que visites, a túa empresa, o 
 <translation id="8058746566562539958">Abrir na pestana de Chrome</translation>
 <translation id="8063895661287329888">Non se puido engadir o marcador.</translation>
 <translation id="806745655614357130">Conservar os meus datos por separado</translation>
-<translation id="8069669375923284295">Toca para continuar coa configuración da sincronización</translation>
 <translation id="8073388330009372546">Abrir imaxe na pestana nova</translation>
 <translation id="8076492880354921740">Pestanas</translation>
 <translation id="8084114998886531721">Gardouse o contrasinal</translation>

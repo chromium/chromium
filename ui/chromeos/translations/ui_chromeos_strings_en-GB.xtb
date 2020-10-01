@@ -117,7 +117,6 @@
 <translation id="2208158072373999562">Zip archive</translation>
 <translation id="2225536596944493418">Are you sure that you want to delete <ph name="NUMBER_OF_ITEMS" /> items?</translation>
 <translation id="2230062665678605299">Unable to create folder "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
-<translation id="2270413998793223379">Sanskrit</translation>
 <translation id="2275059641601412272">Moved.</translation>
 <translation id="2278988676849463018">Kannada keyboard (Phonetic)</translation>
 <translation id="2287742181953707290">Portuguese with US international PC keyboard</translation>
@@ -283,6 +282,7 @@
 <translation id="4072248638558688893">Tamil keyboard (Phonetic)</translation>
 <translation id="4124935795427217608">Unicorn</translation>
 <translation id="4158739975813877944">Open play list</translation>
+<translation id="4159731583141908892"><ph name="FILE_NAME" /> moved.</translation>
 <translation id="418179967336296930">Russian Phonetic (YaZHert) keyboard</translation>
 <translation id="4193154014135846272">Google document</translation>
 <translation id="4195249722193633765">Install app with Linux (Beta)</translation>
@@ -318,6 +318,7 @@
 <translation id="4582497162516204941">Install with Linux (Beta)</translation>
 <translation id="4594543368593301662">Showing results for <ph name="SEARCH_TERM" />.</translation>
 <translation id="4603392156942865207">Copying <ph name="FILE_NAME" /> to <ph name="FOLDER_NAME" /></translation>
+<translation id="4627439232948440198">Sanskrit</translation>
 <translation id="4631887759990505102">Artist</translation>
 <translation id="4656293982926141856">This computer</translation>
 <translation id="4669606053856530811">Members of '<ph name="SOURCE_NAME" />' will lose access unless these items are shared with them.</translation>
@@ -618,6 +619,7 @@
 <translation id="7693909743393669729">Formatting a drive will erase all data stored on it and remove all existing partitions, including partitions that may not be visible. This action cannot be undone.</translation>
 <translation id="7695430100978772476">Could not format <ph name="DRIVE_NAME" /></translation>
 <translation id="770015031906360009">Greek</translation>
+<translation id="7705251383879779343"><ph name="FILE_NAME" /> copied.</translation>
 <translation id="7706319470528945664">Portuguese keyboard</translation>
 <translation id="7711920809702896782">Image info</translation>
 <translation id="7724603315864178912">Cut</translation>

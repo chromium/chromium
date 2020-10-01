@@ -97,7 +97,6 @@
 <translation id="1965935827552890526">Terminez ce que vous étiez en train de faire dans l'autre fenêtre Chrome ouverte.</translation>
 <translation id="1974060860693918893">Paramètres avancés</translation>
 <translation id="1989112275319619282">Parcourir</translation>
-<translation id="1992734845128748707">Changer de navigateur par défaut…</translation>
 <translation id="2015722694326466240">Pour afficher les mots de passe, vous devez d'abord définir un code secret sur votre appareil.</translation>
 <translation id="2073572773299281212">Actif il y a <ph name="DAYS" /> jours</translation>
 <translation id="2074131957428911366">Vous avez toujours la possibilité de sélectionner les éléments à synchroniser dans les <ph name="BEGIN_LINK" />paramètres<ph name="END_LINK" />.</translation>
@@ -331,6 +330,7 @@ Vos données sont chiffrées avec votre phrase secrète de synchronisation. Sais
 <translation id="4747097190499141774">Le chiffrement par phrase secrète ne s'applique pas aux modes de paiement et adresses Google Pay. Seule une personne connaissant votre phrase secrète peut lire vos données chiffrées. La phrase secrète n'est pas envoyée à Google et Google ne la stocke pas. Si vous l'oubliez ou si vous souhaitez modifier ce paramètre, vous devrez réinitialiser la synchronisation. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">Nouvel onglet de navigation privée</translation>
 <translation id="4758977202923349869">Positionnez la carte de crédit à l'intérieur de ce cadre</translation>
+<translation id="4775879719735953715">Navigateur par défaut</translation>
 <translation id="4802417911091824046">Le chiffrement par phrase secrète ne s'applique pas aux modes de paiement et adresses Google Pay.
 
 Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchronisation<ph name="END_LINK" /></translation>

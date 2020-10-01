@@ -97,7 +97,6 @@
 <translation id="1965935827552890526">Completa las tareas que tenías en curso en otra ventana abierta de Chrome.</translation>
 <translation id="1974060860693918893">Configuración avanzada</translation>
 <translation id="1989112275319619282">Navegar</translation>
-<translation id="1992734845128748707">Cambiar el navegador predeterminado…</translation>
 <translation id="2015722694326466240">Para ver las contraseñas, primero debes establecer una en tu dispositivo.</translation>
 <translation id="2073572773299281212">Activo hace <ph name="DAYS" /> días</translation>
 <translation id="2074131957428911366">En la <ph name="BEGIN_LINK" />configuración<ph name="END_LINK" />, puedes elegir los datos para sincronizar en cualquier momento.</translation>
@@ -288,6 +287,7 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="4181841719683918333">Idiomas</translation>
 <translation id="424315890655130736">Ingresar frase de contraseña</translation>
 <translation id="4263576668337963058">Mostrar las acciones de página disponibles</translation>
+<translation id="4267380167363222949">Siguiente pestaña</translation>
 <translation id="4272631900155121838">Habilita la cámara en la configuración para escanear un código QR</translation>
 <translation id="4276041135170112053">Corregir ahora.</translation>
 <translation id="4277990410970811858">Navegación segura</translation>
@@ -330,6 +330,7 @@ Tus datos están encriptados con tu frase de contraseña para sincronización. D
 <translation id="4747097190499141774">La encriptación de la frase de contraseña no incluye formas de pago ni direcciones de Google Pay. Solo las personas que tengan tu frase de contraseña pueden leer los datos encriptados. Google no envía ni almacena la frase de contraseña. Si la olvidas o quieres cambiar esta configuración, deberás restablecer la sincronización. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">Nueva pestaña de incógnito</translation>
 <translation id="4758977202923349869">Coloca la tarjeta de crédito en este marco</translation>
+<translation id="4775879719735953715">Navegador predeterminado</translation>
 <translation id="4802417911091824046">La encriptación de la frase de contraseña no incluye formas de pago ni direcciones de Google Pay.
 
 Para cambiar esta configuración, <ph name="BEGIN_LINK" />restablece la sincronización<ph name="END_LINK" /></translation>
@@ -576,6 +577,7 @@ Sin embargo, no pueden usar cookies para ver la actividad de navegación en dife
 <translation id="734758817008927353">Opciones para guardar una tarjeta</translation>
 <translation id="7348502496356775519">Agregar a favoritos</translation>
 <translation id="7383797227493018512">Lista de lectura</translation>
+<translation id="739941347996872055">Pestaña anterior</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7409985198648820906"><ph name="UNREAD_COUNT" /> artículos sin leer.</translation>
 <translation id="7425346204213733349">Los cambios de tus favoritos, historial, contraseñas y otras opciones de configuración ya no se sincronizarán con tu cuenta de Google. Sin embargo, los datos existentes permanecerán almacenados en tu cuenta de Google.</translation>

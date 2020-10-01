@@ -113,6 +113,7 @@
 <translation id="2049240716062114887">డెస్క్ పేరు <ph name="DESK_NAME" />గా మార్చబడింది</translation>
 <translation id="2050339315714019657">పోర్ట్రెయిట్</translation>
 <translation id="2067602449040652523">కీబోర్డ్ ప్రకాశం</translation>
+<translation id="2074759828767813253">ఇటీవలి స్క్రీన్‌షాట్‌లు, డౌన్‌లోడ్‌లు</translation>
 <translation id="2083190527011054446">శుభరాత్రి <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">నెట్‌వర్క్‌కు కనెక్ట్ కాలేదు</translation>
 <translation id="2126242104232412123">కొత్త డెస్క్</translation>
@@ -197,7 +198,6 @@
 <translation id="2996462380875591307">డాక్ చేయబడిన మాగ్నిఫైయర్ ప్రారంభించబడింది. దాన్ని టోగుల్ ఆఫ్ చేయడానికి మళ్లీ Ctrl+Search+Dని నొక్కండి.</translation>
 <translation id="3000461861112256445">మోనో ఆడియో</translation>
 <translation id="3009178788565917040">అవుట్‌పుట్</translation>
-<translation id="3025081209054535615">షెల్ఫ్ నుంచి గ్లోబల్ మీడియా నియంత్రణలను అన్‌పిన్ చేస్తుంది</translation>
 <translation id="3033545621352269033">ఆన్</translation>
 <translation id="3038571455154067151">సైన్ ఇన్ చేయడానికి, మీ Family Link తల్లిదండ్రుల యాక్సెస్ కోడ్‌ను ఎంటర్ చేయండి</translation>
 <translation id="3045488863354895414">గుడ్ ఆఫ్టర్‌నూన్,</translation>
@@ -621,6 +621,7 @@
 <translation id="7526573455193969409">నెట్‌వ‌ర్క్‌పై ప‌ర్య‌వేక్ష‌ణ ఉండ‌వ‌చ్చు</translation>
 <translation id="7536035074519304529">IP చిరునామా: <ph name="ADDRESS" /></translation>
 <translation id="7548434653388805669">నిద్రపోయే సమయం</translation>
+<translation id="7551643184018910560">అరకు పిన్ చేయండి</translation>
 <translation id="7561982940498449837">మెనూను మూసివేయి</translation>
 <translation id="7564874036684306347">విండోలను మరొక డెస్క్‌టాప్‌కు తరలించడం వలన ఊహించని ప్రవర్తన చోటు చేసుకోవచ్చు. తర్వాత చూపబడే నోటిఫికేషన్‌లు, విండోలు మరియు డైలాగ్‌లు డెస్క్‌టాప్‌ల మధ్య విభజించబడవచ్చు.</translation>
 <translation id="7568294522609223312">ఆటోమేటిక్ క్లిక్‌లను ఆఫ్ చేయండి</translation>
@@ -701,7 +702,6 @@
 <translation id="8297006494302853456">బలహీనం</translation>
 <translation id="8308637677604853869">మునుపటి మెను</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
-<translation id="8349293353728876872">షెల్ఫ్‌కు గ్లోబల్ మీడియా నియంత్రణలను పిన్ చేయండి</translation>
 <translation id="8351131234907093545">గమనికను సృష్టించండి</translation>
 <translation id="8371779926711439835">ఒక అక్షరం ముందుకు</translation>
 <translation id="8375916635258623388">ఈ <ph name="DEVICE_NAME" /> మరియు మీ ఫోన్‌ ఆటోమెటిక్‌గా కనెక్ట్ చేయబడతాయి</translation>

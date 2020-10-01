@@ -97,7 +97,6 @@
 <translation id="1965935827552890526">በእርስዎ ሌላኛው ክፍት የChrome መስኮት ላይ እያደረጉ ያሉትን ነገር ያጠናቅቁ።</translation>
 <translation id="1974060860693918893">የላቀ</translation>
 <translation id="1989112275319619282">አስስ</translation>
-<translation id="1992734845128748707">ነባሪ አሳሽን ይቀይሩ…</translation>
 <translation id="2015722694326466240">የይለፍ ቃላትን ለመመልከት በመጀመሪያ በመሣሪያዎ ላይ የይለፍ ኮድ ማዘጋጀት አለብዎት።</translation>
 <translation id="2073572773299281212">ገባሪ ከ<ph name="DAYS" /> ቀናት በፊት</translation>
 <translation id="2074131957428911366">በማንኛውም ጊዜ ምን እንደሚያሳምሩ በ<ph name="BEGIN_LINK" />ቅንብሮች<ph name="END_LINK" /> ውስጥ መምረጥ ይችላሉ።</translation>
@@ -165,6 +164,7 @@
 <translation id="2781331604911854368">አብራ</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2800683595868705743">ከየትር መቀያየሪያ ውጣ</translation>
+<translation id="2815198996063984598">2. ነባሪ የአሳሽ መተግበሪያን መታ ያድርጉ</translation>
 <translation id="2830972654601096923">አድራሻዎችን ያቀናብሩ...</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />፣ <ph name="STATE" />፣ <ph name="URL" /></translation>
 <translation id="2840687315230832938">የመጀመሪያ የስምረት ማዋቀር አልተጠናቀቀም</translation>
@@ -181,6 +181,7 @@
 <translation id="2921219216347069551">ገጽ ማጋራት አልተቻለም</translation>
 <translation id="2923448633003185837">ለጥፍ እና ሂድ</translation>
 <translation id="292639812446257861">እንዳልተነበበ ምልክት አድርግ</translation>
+<translation id="2952581218264071393">1. የChrome ቅንብሮችን ይክፈቱ</translation>
 <translation id="2958718410589002129">የይለፍ ቃላት</translation>
 <translation id="2964349545761222050">የሶስተኛ ወገን ኩኪዎችን ያግዱ</translation>
 <translation id="2969979262385602596">በመለያ መግባት አልተሳካም። እባክዎ ቆይተው እንደገና ይሞክሩ።</translation>
@@ -217,6 +218,7 @@
 <translation id="3335947283844343239">የተዘጋውን ትር ዳግም ክፈት</translation>
 <translation id="3371831930909698441">ትርጉም ይገኛል። አማራጮች ከማያው ግርጌ አጠገብ ይገኛሉ።</translation>
 <translation id="3393920035788932672">ብቅ-ባዮች ተፈቅደዋል</translation>
+<translation id="3399930248910934354">የChrome ቅንብሮችን ይክፈቱ</translation>
 <translation id="3425644765244388016">የካርድ ቅጽል ስም</translation>
 <translation id="3433057996795775706">ይህን የይለፍ ቃል መሰረዝ <ph name="WEBSITE" /> ላይ መለያዎን አይሰርዘውም። የይለፍ ቃልዎን ከሌሎች ለመጠበቅ <ph name="WEBSITE" /> ላይ ይቀይሩት።</translation>
 <translation id="3443810440409579745">ትር ደርሷል።</translation>
@@ -241,6 +243,9 @@
 <translation id="3551320343578183772">ትር ዝጋ</translation>
 <translation id="3581564640715911333">በሌሎች ቋንቋዎች ለመተርጎም ሐሳብ አቅርብ</translation>
 <translation id="3588820906588687999">ምስሉን በአዲስ ትር ውስጥ ክፈት</translation>
+<translation id="359441731697487922">ነባሪ የአሳሽዎ መተግበሪያ በማድረግ አገናኞችን በChrome ውስጥ በራስ-ሰር መክፈት ይችላሉ።
+      
+ከዚህ በታች ያሉትን ደረጃዎች ይከተሉ፦</translation>
 <translation id="3603009562372709545">የአገናኝ ዩአርኤል ገልብጥ</translation>
 <translation id="3607167657931203000">የራስ-ሙላ ውሂብ</translation>
 <translation id="3609785682760573515">በማመሳሰል ላይ...</translation>
@@ -331,6 +336,7 @@
 <translation id="4747097190499141774">የእርስዎ የይለፍ ሐረግ ያለው ሰው ብቻ ነው የእርስዎን የተመሰጠረ ውሂብ ማንበብ የሚችለው። የይለፍ ሐረጉ ወደ Google አይላክም እንዲሁም አይከማችም። የእርስዎን የይለፍ ሐረግ ከረሱት ወይም ይህን ቅንብር መለወጥ ከፈለጉ ማሥመሩን ዳግም ማስጀመር ያስፈልገዎታል። <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">አዲስ ማንነት የማያሳውቅ ትር</translation>
 <translation id="4758977202923349869">ክሬዲት ካርድን በዚህ ክፈፍ ውስጥ ያድርጉት</translation>
+<translation id="4775879719735953715">ነባሪ አሳሽ፦</translation>
 <translation id="4802417911091824046">የይለፍ ሐረግ ምስጠራ ከGoogle Pay የመክፈያ ዘዴዎችን እና አድራሻዎችን አያካትትም።
 
 ይህን ቅንብር ለመቀየር <ph name="BEGIN_LINK" />ስምረትን ዳግም ያስጀምሩ<ph name="END_LINK" /></translation>
@@ -338,6 +344,7 @@
 <translation id="4808744395915275922">ዝማኔዎች</translation>
 <translation id="4818522717893377262">ቋንቋን አክል...</translation>
 <translation id="481968316161811770">ኩኪዎች፣ የጣቢያ ውሂብ</translation>
+<translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} እና 1 ሌላ}one{{domain} እና {count} ሌሎች}other{{domain} እና {count} ሌሎች}}</translation>
 <translation id="4826218269716039351">ሦስተኛ ወገን አግድ</translation>
 <translation id="48274138579728272">እንደተነበበ ምልክት አድርግ</translation>
 <translation id="4833786495304741580">የአጠቃቀም ስታቲስቲክስስን እና የስንክል ሪፖርቶችን በራስ-ሰር ወደ Google ይልካል።</translation>
@@ -586,6 +593,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="7456847797759667638">የተቀመጠበትን ቦታ ክፈት…</translation>
 <translation id="7460314822154045102">ካሜራ ተጠቀም</translation>
 <translation id="7464701184726199289">ይሄ የሠመረ ከሁሉም መሣሪያዎች ያጸዳል። የተቀመጡ የጣቢያ ቅንብሮች አይሰረዙም፣ እና የእርስዎን የአሰሳ ልማዶች ሊያንጸባርቁ ይችላሉ። <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
+<translation id="746684838091935575">3. Chromeን ይምረጡ</translation>
 <translation id="7472734401283673885">የኩባንያ ስም</translation>
 <translation id="7473891865547856676">አይ፣ አመሰግናለሁ</translation>
 <translation id="7481312909269577407">ወደ ፊት</translation>

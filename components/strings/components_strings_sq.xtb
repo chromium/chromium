@@ -15,6 +15,7 @@
 <translation id="1038106730571050514">Shfaq sugjerimet</translation>
 <translation id="1038842779957582377">emër i panjohur</translation>
 <translation id="1041998700806130099">Mesazhi i fletës së punës</translation>
+<translation id="1048785276086539861">Kur redakton shënimet, ky dokument do të kthehet te pamja me një faqe</translation>
 <translation id="1050038467049342496">Mbyll aplikacionet e tjera</translation>
 <translation id="1055184225775184556">&amp;Zhbëj shtimin</translation>
 <translation id="1056898198331236512">Paralajmërim</translation>
@@ -378,6 +379,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2465688316154986572">Kapje me tel</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />Po ekzekuton diagnostikimin e rrjetit<ph name="END_LINK" /></translation>
 <translation id="2469153820345007638">Renditja 1 deri në N</translation>
+<translation id="2470767536994572628">Kur redakton shënimet, ky dokument do të kthehet te pamja me një faqe dhe te rrotullimi fillestar</translation>
 <translation id="2479410451996844060">URL-ja e kërkimit është e pavlefshme.</translation>
 <translation id="2482878487686419369">Njoftimet</translation>
 <translation id="248348093745724435">Politikat e pajisjes</translation>
@@ -1222,6 +1224,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5946937721014915347">Po hap <ph name="SITE_NAME" />…</translation>
 <translation id="5951495562196540101">Nuk mund të regjistrohesh me një llogari konsumatori (ofrohet një licencë paketë).</translation>
+<translation id="5963413905009737549">Seksioni</translation>
 <translation id="5967592137238574583">Modifiko informacionet e kontaktit</translation>
 <translation id="5967867314010545767">Hiqe nga historiku</translation>
 <translation id="5975083100439434680">Zvogëlo</translation>
@@ -1632,6 +1635,7 @@ Detaje shtesë:
 <translation id="7647206758853451655">Cilësia e printimit</translation>
 <translation id="7648992873808071793">Ruaji skedarët në këtë pajisje</translation>
 <translation id="7653957176542370971">Fleta e përpunuesit të pagesës është mbyllur</translation>
+<translation id="7654909834015434372">Kur redakton shënimet, ky dokument do të kthehet te rrotullimi i vet fillestar</translation>
 <translation id="765676359832457558">Fshih cilësimet e përparuara...</translation>
 <translation id="7658239707568436148">Anulo</translation>
 <translation id="7662298039739062396">Cilësim i kontrolluar nga një shtesë</translation>

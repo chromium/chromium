@@ -113,6 +113,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="2049240716062114887">Le bureau a été renommé : <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Portrait</translation>
 <translation id="2067602449040652523">Luminosité du clavier</translation>
+<translation id="2074759828767813253">Captures d'écran et téléchargements récents</translation>
 <translation id="2083190527011054446">Bonne nuit <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">Aucune connexion réseau</translation>
 <translation id="2126242104232412123">Nouveau bureau</translation>
@@ -384,6 +385,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="4804818685124855865">Déconnecter</translation>
 <translation id="4814539958450445987">Écran de connexion</translation>
 <translation id="4831034276697007977">Voulez-vous vraiment désactiver les clics automatiques?</translation>
+<translation id="4836108105469522644">Activer les notifications provenant de votre téléphone Android</translation>
 <translation id="4849058404725798627">Mettre l'élément sélectionné par le clavier en surbrillance</translation>
 <translation id="485592688953820832">Aucune action (pause)</translation>
 <translation id="4868492592575313542">activée</translation>
@@ -618,6 +620,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="7526573455193969409">Le réseau peut être surveillé</translation>
 <translation id="7536035074519304529">Adresse IP : <ph name="ADDRESS" /></translation>
 <translation id="7548434653388805669">C'est l'heure du dodo</translation>
+<translation id="7551643184018910560">Épingler sur l'étagère</translation>
 <translation id="7561982940498449837">Fermer le menu</translation>
 <translation id="7564874036684306347">Si vous déplacez des fenêtres sur un autre bureau, elles peuvent présenter des comportements inattendus. À la suite d'une telle opération, les notifications, les fenêtres et les boîtes de dialogue peuvent s'afficher sur les deux écrans.</translation>
 <translation id="7568294522609223312">Désactiver les clics automatiques</translation>

@@ -499,7 +499,7 @@ xizmatlarini sizga moslashtirish maqsadlarida foydalanishi mumkin. Bu ruxsatni m
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (Mehmon)</translation>
 <translation id="1572266655485775982">Wi-Fi’ni yoqish</translation>
 <translation id="1572876035008611720">Elektron pochta</translation>
-<translation id="1575741822946219011">Til va klaviaturalar</translation>
+<translation id="1575741822946219011">Tillar va klaviaturalar</translation>
 <translation id="1576594961618857597">Standart oq avatar</translation>
 <translation id="1578558981922970608">Majburiy yopish</translation>
 <translation id="1578784163189013834">Ekran lavhasi uchun fon rasmini tanlash</translation>
@@ -4065,7 +4065,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="5833726373896279253">Bu sozlashlarni faqat egasi o‘zgartirishi mumkin.</translation>
 <translation id="5834581999798853053">Taxminan <ph name="TIME" /> daqiqa qoldi</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> – kamera yoki mikrofon yozib olmoqda</translation>
-<translation id="5839574759884227787"><ph name="DOMAIN" /> ADB tuzatish vositasini faolsizlashtirdi, <ph name="DEVICE_TYPE" /> sozlamalari asliga qaytariladi. Qayta yoqishdan avval fayllaringiz zaxiralanmoqda.</translation>
+<translation id="5839574759884227787"><ph name="DOMAIN" /> ADB tuzatish vositasini faolsizlantirdi, <ph name="DEVICE_TYPE" /> sozlamalari asliga qaytariladi. Qayta yoqishdan avval fayllaringiz zaxiralanmoqda.</translation>
 <translation id="5840680448799937675">Fayllar doim oflayn rejimda yuboriladi</translation>
 <translation id="5841270259333717135">Ethernet tarmoqni sozlash</translation>
 <translation id="5842497610951477805">Bluetooth yoniq</translation>
@@ -5198,6 +5198,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="7191159667348037">Notanish printer (USB)</translation>
 <translation id="7193051357671784796">Bu ilova tashkilotingiz tomonidan kiritildi. Ilova oʻrnatilishini yakunlash uchun uni oʻchirib yoqing.</translation>
 <translation id="7193374945610105795"><ph name="ORIGIN" /> uchun birorta ham parol saqlanmagan</translation>
+<translation id="7196020411877309443">Bu nima?</translation>
 <translation id="7196913789568937443">Google Drive xizmatiga zaxiralash. Axborotlaringizni osongina tiklashingiz yoki qurilmangizni xohlagan vaqtda almashtirishingiz mumkin. Zaxira ichida ilova ma’lumotlari ham bor. Zaxiralar Google serverlariga yuklanadi va Google hisobingiz paroli bilan shifrlanadi. <ph name="BEGIN_LINK1" />Batafsil axborot<ph name="END_LINK1" /></translation>
 <translation id="7197190419934240522">Qidiruv va boshqa Google xizmatlariga oʻzingizni yaxshiroq tanishtiring</translation>
 <translation id="7197632491113152433">Biz hisobingizda bu qurilmaga mos <ph name="NUMBER_OF_APPS" /> ta ilova topdik.</translation>
@@ -5877,7 +5878,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="7973962044839454485">PPP haqiqiyligini tekshirib bo‘lmadi: foydalanuvchi nomi yoki parol noto‘g‘ri</translation>
 <translation id="7974566588408714340"><ph name="EXTENSIONNAME" /> orqali ulanish</translation>
 <translation id="7974936243149753750">Ekran hoshiyasi</translation>
-<translation id="7977404132325989121">&amp;Oynani nomlash...</translation>
+<translation id="7977404132325989121">Oynani &amp;nomlash...</translation>
 <translation id="7978412674231730200">Xususiy kalit</translation>
 <translation id="7978450511781612192">Google hisobingizdan chiqarilasiz. Xatcho‘p, tarix va parollaringiz boshqa sinxronlanmaydi.</translation>
 <translation id="7980084013673500153">Obyekt identifikatori: <ph name="ASSET_ID" /></translation>
@@ -6429,7 +6430,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8648408795949963811">Tungi rejim rang harorati</translation>
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> quyidagi ruxsatlarni olmoqchi: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> va boshqa</translation>
 <translation id="8650543407998814195">Eski profilga ruxsat berilmagan, lekin uni o‘chirib tashlashingiz mumkin.</translation>
-<translation id="865118751078059229">&amp;Oynani nomlash...</translation>
+<translation id="865118751078059229">Oynani &amp;nomlash...</translation>
 <translation id="8651585100578802546">Sahifani majburiy yangilash</translation>
 <translation id="8652400352452647993">Kengaytmani arxivlash xatoligi</translation>
 <translation id="8654151524613148204">Kechirasiz, kompyuteringizda bu faylni saqlash uchun yetarli joy yo‘q.</translation>

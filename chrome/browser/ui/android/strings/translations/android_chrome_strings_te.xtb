@@ -106,6 +106,7 @@
 <translation id="1810845389119482123">ప్రారంభ సింక్ సెటప్ పూర్తి కాలేదు</translation>
 <translation id="1821253160463689938">మీ ప్రాధాన్యతలను గుర్తుంచుకోవడానికి కుక్కీలను ఉపయోగిస్తుంది, మీరు ఆ పేజీలను సందర్శించకపోయినా కూడా అది అమలవుతుంది</translation>
 <translation id="1829244130665387512">పేజీలో కనుగొను</translation>
+<translation id="1830550083491357902">సైన్ ఇన్ చేయలేదు</translation>
 <translation id="1843805151597803366">మెరుగైన అనువాదాలను పొందడానికి, Google Searchను ప్రస్తుత పేజీని ఉపయోగించడానికి అనుమతించండి</translation>
 <translation id="1853692000353488670">కొత్త అజ్ఞాత ట్యాబ్</translation>
 <translation id="1856325424225101786">లైట్ మోడ్‌ని రీసెట్ చేయాలా?</translation>
@@ -113,6 +114,7 @@
 <translation id="1877026089748256423">Chrome కాలం చెల్లినది</translation>
 <translation id="1883903952484604915">నా ఫైల్‌లు</translation>
 <translation id="189358972401248634">ఇతర భాషలు</translation>
+<translation id="1919130412786645364">Chrome సైన్-ఇన్‌ని అనుమతించండి</translation>
 <translation id="1922362554271624559">సూచించిన భాషలు</translation>
 <translation id="1925021887439448749">అనుకూల వెబ్ చిరునామాను నమోదు చేయండి</translation>
 <translation id="1928696683969751773">నవీకరిస్తుంది</translation>
@@ -225,6 +227,7 @@
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# ఆడియో ఫైల్}other{# ఆడియో ఫైల్‌లు}}</translation>
 <translation id="2656405586795711023">వెబ్ యాప్‌లు</translation>
 <translation id="2689830683995595741">Chromeను ఉపయోగించడం ద్వారా, మీరు <ph name="BEGIN_LINK1" />Google సేవా నిబంధనలు<ph name="END_LINK1" />, అలాగే <ph name="BEGIN_LINK2" />Google Chrome, Chrome OS అదనపు సేవా నిబంధనలు<ph name="END_LINK2" />కు అంగీకరిస్తున్నారు. <ph name="BEGIN_LINK3" />Family Linkతో మేనేజ్ చేస్తున్న Google ఖాతాల కోసం గోప్యతా ప్రకటన<ph name="END_LINK3" /> కూడా వర్తిస్తుంది.</translation>
+<translation id="2704606927547763573">కాపీ చేయబడింది</translation>
 <translation id="2707726405694321444">పేజీని రిఫ్రెష్ చేయండి</translation>
 <translation id="2709516037105925701">ఆటో-ఫిల్</translation>
 <translation id="2718352093833049315">Wi-Fiలో మాత్రమే</translation>
@@ -347,6 +350,7 @@
 <translation id="3631987586758005671"><ph name="DEVICE_NAME" />తో షేర్ చేస్తోంది</translation>
 <translation id="3632295766818638029">పాస్‌వర్డ్‌ను చూపుతుంది</translation>
 <translation id="363596933471559332">నిల్వ చేసిన ఆధారాలను ఉపయోగించి ఆటోమేటిక్‌గా వెబ్‌సైట్‌లకు సైన్ ఇన్ చేయండి. ఫీచ‌ర్‌ ఆఫ్ చేయబడినప్పుడు, మీరు వెబ్‌సైట్‌కు సైన్ ఇన్ చేసే ప్రతిసారి ధృవీకరణ కోసం మిమ్మల్ని అడుగుతుంది.</translation>
+<translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3658159451045945436">రీసెట్ చేసినట్లయితే, సందర్శించిన సైట్‌ల జాబితాతో పాటు మీ డేటా ఆదాల చరిత్ర తొలగించబడుతుంది.</translation>
 <translation id="3692944402865947621">నిల్వ స్థానాన్ని చేరుకోలేకపోయిన కారణంగా <ph name="FILE_NAME" /> డౌన్‌లోడ్ విఫలమైంది.</translation>
 <translation id="3701167022068948696">ఇప్పుడే పరిష్కరించు</translation>
@@ -707,6 +711,7 @@
 <translation id="6301525844455696527">మీ చదవాల్సిన లిస్ట్‌ను మిస్ కాకుండా చూడండి</translation>
 <translation id="6303969859164067831">సైన్ అవుట్ చేసి, సమకాలీకరణను ఆఫ్ చేయండి</translation>
 <translation id="6312687380483398334">వెబ్ యాప్‌లు (నిశ్శబ్దం)</translation>
+<translation id="6313752143992575395"><ph name="WEBSITE_TITLE" /> కోసం సూచనను చూపిస్తోంది</translation>
 <translation id="6316139424528454185">Android వెర్షన్‌కు మద్దతు లేదు</translation>
 <translation id="6324034347079777476">Android సిస్టమ్ సమకాలీకరణ నిలిపివేయబడింది</translation>
 <translation id="6333140779060797560"><ph name="APPLICATION" /> ద్వారా భాగస్వామ్యం చేయి</translation>
@@ -838,6 +843,7 @@
 <translation id="7233236755231902816">మీ భాషలో వెబ్‌ను చూడడానికి, Chrome యొక్క తాజా వెర్షన్‌ను డౌన్‌లోడ్ చేసుకోండి</translation>
 <translation id="7248069434667874558">Chromeలో <ph name="TARGET_DEVICE_NAME" />కు సింక్ ఆన్ చేయబడి ఉందని నిర్ధారించుకోండి</translation>
 <translation id="7274013316676448362">బ్లాక్ చేసిన సైట్</translation>
+<translation id="7286572596625053347"><ph name="LANGUAGE" /> మార్చాలా?</translation>
 <translation id="7290209999329137901">పేరు మార్పు అందుబాటులో లేదు</translation>
 <translation id="7291387454912369099">అసిస్టెంట్ ప్రేరేపిత చెక్‌అవుట్</translation>
 <translation id="7293171162284876153">సింక్‌ను మొదలుపెట్టడానికి, "మీ Chrome డేటాను సింక్ చేయడం" ఆన్ చేయండి</translation>
@@ -960,7 +966,6 @@
 <translation id="8058746566562539958">కొత్త Chrome ట్యాబ్‌లో తెరువు</translation>
 <translation id="8063895661287329888">బుక్‌మార్క్‌ను జోడించడంలో విఫలమైంది.</translation>
 <translation id="806745655614357130">నా డేటాను విడిగా ఉంచండి</translation>
-<translation id="8069669375923284295">సింక్ సెటప్‌ను కొనసాగించడానికి ట్యాప్ చేయండి</translation>
 <translation id="8073388330009372546">కొత్త ట్యాబ్‌లో చిత్రం తెరువు</translation>
 <translation id="8076492880354921740">ట్యాబ్‌లు</translation>
 <translation id="8084114998886531721">సేవ్ చేసిన పాస్‌వర్డ్</translation>

@@ -97,7 +97,6 @@
 <translation id="1965935827552890526">Terminez ce que vous faisiez dans votre autre fenêtre de Chrome.</translation>
 <translation id="1974060860693918893">Options avancées</translation>
 <translation id="1989112275319619282">Parcourir</translation>
-<translation id="1992734845128748707">Changer le navigateur par défaut…</translation>
 <translation id="2015722694326466240">Pour afficher vos mots de passe, vous devez d'abord définir un mot de passe sur votre appareil.</translation>
 <translation id="2073572773299281212">Actif il y a <ph name="DAYS" /> jours</translation>
 <translation id="2074131957428911366">Vous pouvez toujours choisir les éléments à synchroniser dans les <ph name="BEGIN_LINK" />paramètres<ph name="END_LINK" />.</translation>
@@ -288,6 +287,7 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="4181841719683918333">Langues</translation>
 <translation id="424315890655130736">Entrer la phrase de passe</translation>
 <translation id="4263576668337963058">Afficher les actions de page proposées</translation>
+<translation id="4267380167363222949">Onglet suivant</translation>
 <translation id="4272631900155121838">Pour numériser un code QR, activez la caméra dans les paramètres</translation>
 <translation id="4276041135170112053">Corriger maintenant.</translation>
 <translation id="4277990410970811858">Navigation sécurisée</translation>
@@ -576,6 +576,7 @@ Les sites ne peuvent pas utiliser de témoins pour voir votre activité de navig
 <translation id="734758817008927353">Options pour enregistrer la carte</translation>
 <translation id="7348502496356775519">Ajouter aux favoris</translation>
 <translation id="7383797227493018512">Liste de lecture</translation>
+<translation id="739941347996872055">Onglet précédent</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7409985198648820906"><ph name="UNREAD_COUNT" /> articles non lus.</translation>
 <translation id="7425346204213733349">Les modifications apportées à vos favoris, à votre historique, à vos mots de passe et aux autres paramètres ne seront plus synchronisées avec votre compte Google. Cependant, vos données actuelles resteront stockées dans votre compte Google.</translation>

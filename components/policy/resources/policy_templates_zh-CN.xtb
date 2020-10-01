@@ -313,6 +313,24 @@
 
           此设置无法由用户更改。</translation>
 <translation id="1509692106376861764">此政策从 <ph name="PRODUCT_NAME" /> 版本 29 起开始弃用。</translation>
+<translation id="1512974677514081818">为绑定到设备的企业打印机提供配置。
+
+      此政策让您能够为 <ph name="PRODUCT_OS_NAME" />设备提供打印机配置。格式与 NativePrinters 字典一样，不过每台打印机都还对应一个额外的必填字段“id”或“guid”，以用于将相应打印机加入白名单/黑名单。
+
+      该文件不得超过 5MB，且必须用 JSON 编码。据估计，一个包含大约 21000 台打印机的文件在编码后的大小将会是 5MB。相应的加密哈希值用于验证下载内容是否完整。
+
+      系统会下载并缓存该文件。只要相应网址或哈希值发生了变化，系统就会重新下载该文件。
+
+      如果您设置了此政策，<ph name="PRODUCT_OS_NAME" />将会下载该文件以获取打印机配置，并会根据 <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />、<ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> 和 <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" /> 向用户提供可用的打印机。
+
+      此政策对用户能否在各部设备上配置打印机没有影响。它旨在对各用户的打印机配置进行补充。
+
+      此政策是 <ph name="BULK_PRINTERS_POLICY_NAME" /> 的附加内容。
+
+      如果您未设置此政策，便不存在任何设备打印机，同时其他 <ph name="DEVICE_NATIVE_PRINTERS_POLICY_PATTERN" /> 政策会被忽略。
+
+      此政策已被弃用，请改用 <ph name="DEVICE_PRINTERS_POLICY_NAME" />。
+      </translation>
 <translation id="1514888685242892912">启用 <ph name="PRODUCT_NAME" /></translation>
 <translation id="1515230621229117540">启用悬浮无障碍功能菜单</translation>
 <translation id="1515824657887788963">允许页面在关闭过程中执行同步 XHR 请求。</translation>
@@ -354,15 +372,6 @@
       如果此政策未设置，系统将会默认使用 <ph name="PRINTERS_ALLOW_ALL" />。
       </translation>
 <translation id="1588240398285670601">浏览器设置</translation>
-<translation id="1588456836529393506">通过设置此政策，您可以创建一个网址格式列表，从而指定自动授权哪些网站访问具有给定供应商 ID 和产品 ID 的 USB 设备。每个列表项都必须包含设备和网址，此政策才会有效。设备部分中的每项都可包含供应商 ID 和产品 ID 字段。被省略的任何 ID 都会被视为通配符，但例外情况是：如果未指定供应商 ID，便无法指定产品 ID。否则，此政策将会无效。
-
-      USB 权限模型会使用请求网址（发出请求的网站的网址）和嵌入网址（顶级框架网站的网址）来授权请求网址访问相应 USB 设备。如果发出请求的网站是在 iframe 中加载的，请求网址可能会与嵌入网址不同。因此，“urls”字段最多可包含 2 个以英文逗号分隔的字符串，以分别指定请求网址和嵌入网址。如果仅指定了 1 个网址，那么无论嵌入网址的状态为何，系统将会在请求网站的网址与这个网址相符时授权该网站访问相应 USB 设备。“urls”字段中的网址必须是有效网址，否则系统会忽略此政策。
-
-      如果您不设置此政策，系统会应用 <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" />（若已设置）。否则，系统会应用用户的个人设置。
-
-      此政策中的网址格式不应与通过 <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" /> 配置的网址格式冲突。如果它们存在冲突，则此政策优先于 <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" /> 和 <ph name="WEB_USB_ASK_FOR_URLS_POLICY_NAME" />。
-
-      此政策的值和 <ph name="DEVICE_WEB_USB_ALLOW_DEVICES_FOR_URLS_POLICY_NAME" /> 的值会合并。</translation>
 <translation id="1593245608325508847">通过设置此政策，您可以启用 Chrome 的 G Suite 受限登录功能，并禁止用户更改此设置。用户只能通过来自指定网域的帐号使用 Google 工具（若要允许使用 gmail 或 googlemail 帐号，请将 consumer_accounts 添加到网域列表中）。在需要通过 Google 身份验证的受管理设备上，这项设置会禁止用户登录帐号并添加辅助帐号（如果该帐号不属于某个明确允许的网域）。
 
       如果您将此设置留空/未配置此设置，用户将能够使用任何帐号访问 G Suite。
@@ -456,6 +465,14 @@
       该政策的值应设置为供 <ph name="PRODUCT_OS_NAME" />下载服务条款的网址。该服务条款必须是纯文本，以 MIME 纯文本形式提供，不允许进行任何标记。</translation>
 <translation id="1750315445671978749">拦截所有下载内容</translation>
 <translation id="1760951637494635692">允许在这些网站上使用 Serial API</translation>
+<translation id="1765512315997108908">控制用户可以使用 <ph name="DEVICE_PRINTERS_POLICY_NAME" /> 中的哪些打印机。
+
+      通过设置此政策，您可以指定对批量打印机配置使用哪项访问政策。如果您选择 <ph name="PRINTERS_ALLOW_ALL" />，系统将会显示所有打印机。如果您选择 <ph name="PRINTERS_BLACKLIST" />，系统便会使用 <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" /> 来限制用户对指定打印机的访问权。如果您选择 <ph name="PRINTERS_WHITELIST" />，<ph name="DEVICE_PRINTERS_ALLOWLIST_POLCY_NAME" /> 仅会指定可供用户选择的打印机。
+
+      如果此政策未设置，系统将会默认使用 <ph name="PRINTERS_ALLOW_ALL" />。
+
+      此政策已被弃用，请改用 <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />。
+      </translation>
 <translation id="1767673020408652620">在处于零状态的搜索框内启用应用推荐</translation>
 <translation id="1780323582106687813">此政策已被弃用，请改用“<ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" />”政策。
 
@@ -475,6 +492,12 @@
 
       应采用以 JSON 格式表示网址和哈希值的字符串形式来指定此政策。</translation>
 <translation id="1819272352048746487">启用或停用各种屏幕键盘功能</translation>
+<translation id="1823974945066396306">以列表形式指定哪些用户能登录该设备。条目应采用 <ph name="USER_ALLOWLIST_ENTRY_FORMAT" /> 格式，例如 <ph name="USER_ALLOWLIST_ENTRY_EXAMPLE" />。若要允许某个网域上的任意用户登录该设备，请使用 <ph name="USER_ALLOWLIST_ENTRY_WILDCARD" /> 格式的条目。
+
+      如果此政策未配置，任何用户都能登录该设备。请注意，倘若涉及到创建新用户，您仍需适当配置 <ph name="DEVICE_ALLOW_NEW_USERS_POLICY_NAME" /> 政策。
+
+      此政策已被弃用，请改用 <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" />。
+      </translation>
 <translation id="1827523283178827583">使用固定的代理服务器</translation>
 <translation id="1839278886947586809">
       此政策已从 M80 中移除，因为 WebDriver 现已与所有现有政策兼容，因而不再需要此政策。
@@ -502,6 +525,7 @@
       如果此政策未配置或设为“tls1.2”，<ph name="PRODUCT_NAME" /> 将不再执行此回退。请注意，这并不会导致停止支持旧版 TLS，只是用于指定 <ph name="PRODUCT_NAME" /> 是否忽略存在错误且无法正确协商版本的服务器。
 
       在其他情况下，如果必须与存在错误的服务器保持兼容，则可将此政策设为“tls1.1”。这是一种权宜之计，服务器中的错误应该很快会得到解决。</translation>
+<translation id="1861206724856734193">设置一系列规则，防止数据泄露。</translation>
 <translation id="1864382791685519617">在 <ph name="PRODUCT_NAME" /> 中启用网络联想查询功能，并禁止用户更改此设置。
 
       此政策用于控制 DNS 预提取、TCP 和 SSL 预连接以及网页预呈现。
@@ -510,9 +534,6 @@
 
       如果未设置此政策，系统将会启用网络联想查询功能，但用户将能够自行更改此设置。</translation>
 <translation id="1865417998205858223">密钥使用权限</translation>
-<translation id="1866563857170942397">以列表形式指定哪些用户能登录该设备。条目应采用 <ph name="USER_ALLOWLIST_ENTRY_FORMAT" /> 格式，例如 <ph name="USER_WHITELIST_ENTRY_EXAMPLE" />。若要允许某个网域上的任意用户登录该设备，请使用 <ph name="USER_ALLOWLIST_ENTRY_WILDCARD" /> 格式的条目。
-
-      如果此政策未配置，任何用户都能登录该设备。请注意，倘若涉及到创建新用户，您仍需适当配置 <ph name="DEVICE_ALLOW_NEW_USERS_POLICY_NAME" /> 政策。</translation>
 <translation id="186719019195685253">当闲置延迟时间已过且使用交流电源供电时执行的操作</translation>
 <translation id="1885782360784839335">允许使用整个标签页显示宣传内容</translation>
 <translation id="1888871729456797026">云政策在桌面设备上的注册令牌</translation>
@@ -874,6 +895,31 @@
       如果将此政策设置为 <ph name="CRITICAL_VARIATIONS_ONLY_OPTION_NAME" />（值为 1），则只有被视为重要安全性或稳定性修复程序的变体可以应用于 <ph name="PRODUCT_NAME" />。
 
       如果将此政策设置为 <ph name="VARIATIONS_DISABLED_OPTION_NAME" />（值为 2），则任何变体都不会应用于浏览器。请注意，我们不建议您使用此模式，因为它可能会妨碍 <ph name="PRODUCT_NAME" /> 开发者及时提供重要的安全性修复程序。</translation>
+<translation id="2402140031630105556">以列表形式配置一系列规则，防止 <ph name="PRODUCT_OS_NAME" />上发生数据泄露。
+      复制并粘贴数据、传输文件、打印、共享屏幕或截屏等操作都可能会导致数据泄露。
+
+      每条规则均包含以下内容：
+      - 一系列被定义为网址的来源。系统会将这些来源中的所有数据都视为机密数据并对其应用限制。
+      - 一系列被定义为网址或组件的目的地，您可以允许或禁止将机密数据共享到这些目的地。
+      - 一系列要应用在来源所含数据中的限制。
+
+      您可通过添加规则来实现以下目的：
+      - 控制在来源和目的地之间共享的剪贴板数据。
+      - 控制针对任何来源的截屏操作。
+      - 控制针对任何来源的打印操作。
+      - 控制任何来源可见时的隐私保护屏幕。
+
+      限制级别可设为 BLOCK 或 ALLOW。
+      - 如果限制级别设为 BLOCK，系统将不允许执行该操作。
+      - 如果限制级别设为 ALLOW，系统将允许执行该操作。
+
+      注意：
+      - PRIVACY_SCREEN 限制不会禁止开启隐私保护屏幕，但会在限制级别设为 BLOCK 时强制使用隐私保护屏幕。
+      - 如果限制列表中含有 CLIPBOARD，目的地便不能为空，但它们对其余的限制没有任何影响。
+      - CLIPBOARD 限制无法区分 CROSTINI 和 PLUGIN_VM。如果您禁止/允许将数据共享给这两者之一，此规则对这两者都适用。
+      - 网址格式必须符合此页面所述格式：( https://www.chromium.org/administrators/url-blacklist-filter-format )。
+
+      如果此政策未设置，系统将不会应用任何限制。</translation>
 <translation id="2411629345938804022">如果此政策设为 3，系统会允许网站请求访问附近的蓝牙设备。如果此政策设为 2，系统会禁止网站访问附近的蓝牙设备。
 
       如果此政策未设置，系统会允许网站请求访问，但用户可以更改此设置。</translation>
@@ -2531,6 +2577,14 @@
 <translation id="489803897780524242">此参数可控制是否为默认搜索服务提供商替换搜索字词</translation>
 <translation id="4899708173828500852">启用安全浏览</translation>
 <translation id="4906194810004762807">设备策略的更新频率</translation>
+<translation id="4910101362791876581">此政策旨在指定用户可以使用的打印机。
+
+      仅当为 <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" /> 选择了 <ph name="PRINTERS_WHITELIST" /> 时，才会用到此政策。
+
+      如果您设置了此政策，用户将只能使用那些符合条件（ID 与此政策中所列的值匹配）的打印机。ID 必须与 <ph name="DEVICE_PRINTERS_POLICY_NAME" /> 所指定文件内的“id”或“guid”字段相符。
+
+      此政策已被弃用，请改用 <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" />。
+      </translation>
 <translation id="4917385247580444890">强</translation>
 <translation id="4919122295221518724">为混合内容启用更严格的处理方式</translation>
 <translation id="4923806312383904642">允许 WebDriver 替换与之冲突的政策</translation>
@@ -3598,6 +3652,9 @@
 <translation id="6401669939808766804">使用户退出</translation>
 <translation id="640244877779556713">启用表情符号建议</translation>
 <translation id="6407093060083181305">配置扩展程序安装屏蔽名单</translation>
+<translation id="6408233796253901198">如果您设置了此政策，远程访问主机会使用此网址验证来自远程访问客户端的身份验证令牌，以便确定是否接受连接。此政策必须与 RemoteAccessHostTokenUrl 结合使用。
+
+          如果您未设置此政策或将它留空，系统会停用此功能。</translation>
 <translation id="6417265370957905582">Google 助理</translation>
 <translation id="6422575351619065453">在自助服务终端模式中，用于控制是否显示悬浮无障碍功能菜单。
 
@@ -3614,6 +3671,12 @@
           如果您选择自动检测代理服务器，则系统会向 Android 应用提供脚本网址“http://wpad/wpad.dat”，但不会使用代理自动检测协议的任何其他部分。
 
           如果您选择使用 .pac 代理脚本，则系统会向 Android 应用提供相应的脚本网址。</translation>
+<translation id="6438364096042399634">通过设置此政策，您可以指定一个 USB 设备列表，在其中列出用户可从内核驱动程序分离以便直接在 Web 应用内通过 chrome.usb API 使用的 USB 设备。列表中的条目是成对的用于标识特定硬件的 USB 供应商标识符和产品标识符。
+
+      如果您未设置此政策，可分离式 USB 设备的列表便会是空的。
+
+      此政策已被弃用，请改用 <ph name="USB_DETACHABLE_ALLOWLIST_POLICY_NAME" />。
+      </translation>
 <translation id="6438972408080276697">如果您将此政策设为 True，系统便会向 Google 报告由政策触发的主要 Android 应用安装事件。将此政策设为 False 意味着系统不会记录任何事件。</translation>
 <translation id="6440051664870270040">允许网站在导航的同时打开弹出式窗口</translation>
 <translation id="6447948611083700881">已停用备份和恢复服务</translation>
@@ -4438,6 +4501,9 @@
 
       此政策已被弃用，请改用 <ph name="PRINTERS_POLICY_NAME" />。
       </translation>
+<translation id="7504632989711326175">如果您设置了此政策，主机会使用带有指定颁发者 CN 的客户端证书向 RemoteAccessHostTokenValidationUrl 验证身份。将此政策设为“*”意味着允许使用任何可用的客户端证书。
+
+          如果您未设置此政策或将它留空，系统会停用此功能。</translation>
 <translation id="7506745375479451616">此政策旨在控制从 <ph name="IE_PRODUCT_NAME" /> 切换至 <ph name="PRODUCT_NAME" /> 时应使用哪个命令打开网址。此政策可设为一个可执行文件路径，也可设为 <ph name="PRODUCT_NAME_PLACEHOLDER" /> 以自动检测 <ph name="PRODUCT_NAME" /> 的位置。
 
       如果您不设置此政策，当从 Internet Explorer 中启动 <ph name="PRODUCT_NAME" /> 时，<ph name="IE_PRODUCT_NAME" /> 将会自动检测 <ph name="PRODUCT_NAME" /> 自有的可执行文件路径。
@@ -4673,6 +4739,14 @@
 <translation id="7823902813460802031">如果此政策已启用，<ph name="PRODUCT_OS_NAME" />会阻止相应设备进入开发者模式。
 
        如果此政策已停用或未设置，相应设备将可以使用开发者模式。</translation>
+<translation id="7824349369175912332">此政策旨在指定用户无法使用的打印机。
+
+      仅当为 <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" /> 选择了 <ph name="PRINTERS_BLACKLIST" /> 时，才会用到此政策。
+
+      如果您设置了此政策，那么除了与此政策中所列 ID 对应的打印机之外，其他所有打印机都可供用户使用。ID 必须与 <ph name="DEVICE_PRINTERS_POLICY_NAME" /> 所指定文件内的“id”或“guid”字段相符。
+
+      此政策已被弃用，请改用 <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" />。
+      </translation>
 <translation id="782661371433719637">不允许任何网站通过 File System API 请求对文件和目录的读取权限</translation>
 <translation id="7841880500990419427">要回退到的最低 TLS 版本</translation>
 <translation id="7846952520291088817">在 WebRTC ICE 候选路径中显示本地 IP 的网址</translation>
@@ -5192,6 +5266,9 @@
       如果此政策设为 true，系统可能会冻结已在后台运行至少 5 分钟的标签页。冻结标签页可以降低 CPU、电池和内存使用量。<ph name="PRODUCT_NAME" /> 会使用试探法来避免冻结在后台执行有用工作（例如显示通知、播放声音、流式传输视频）的标签页。网络开发者也可选择停用用于冻结网站标签页的功能 (https://chromium.googlesource.com/chromium/src/+/HEAD/chrome/browser/performance_manager/docs/freezing_opt_out_opt_in.md)。
 
       如果此政策设为 false，系统将不会冻结任何标签页。</translation>
+<translation id="8622378389102774881">如果您设置了此政策，远程访问主机将要求身份验证客户端从该网址获取身份验证令牌，以便建立连接。此政策必须与 RemoteAccessHostTokenValidationUrl 结合使用。
+
+          如果您未设置此政策或将它留空，系统会停用此功能。</translation>
 <translation id="8625234016727663537">让您能够以列表的形式设置一系列网址，以指定自动授权哪些网站在登录屏幕上访问具有给定供应商 ID 和产品 ID 的 USB 设备。列表中的每项内容都必须包含设备和网址这两个部分，此政策才会有效。设备部分中的每项都可包含供应商 ID 和产品 ID 字段。被省略的任何 ID 都会被视为通配符，但例外情况是：如果未指定供应商 ID，便无法指定产品 ID。否则，此政策将会无效并会被忽略。
 
         USB 权限模型会使用发出相应请求的网站的网址（“请求网址”）和顶级框架网站的网址（“嵌入网址”）来授权请求网址访问 USB 设备。如果发出请求的网站是在 iframe 中加载的，则请求网址可能会与嵌入网址不同。因此，“urls”字段最多可包含 2 个以英文逗号分隔的网址字符串，以分别指定请求网址和嵌入网址。如果仅指定了 1 个网址，系统将会在请求网址与这个网址相符（无论嵌入网址的状态为何）时向该网站授予对相应 USB 设备的访问权限。“urls”字段中的网址必须是有效网址，否则系统会忽略此政策。

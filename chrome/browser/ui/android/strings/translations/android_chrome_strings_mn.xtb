@@ -106,6 +106,7 @@
 <translation id="1810845389119482123">Синк хийх эхний тохируулга дуусаагүй байна</translation>
 <translation id="1821253160463689938">Таны сонголтыг таныг тэдгээр хуудсанд зочлоогүй байсан ч санахын тулд күүки ашигладаг</translation>
 <translation id="1829244130665387512">Хуудаснаас хайх</translation>
+<translation id="1830550083491357902">-д нэвтрээгүй</translation>
 <translation id="1843805151597803366">Илүү сайн орчуулга авахын тулд одоогийн хуудсыг ашиглах боломжийг Google Хайлтад олгоно уу</translation>
 <translation id="1853692000353488670">Нууцлал бүхий шинэ таб</translation>
 <translation id="1856325424225101786">Lite горимыг шинэчлэх үү?</translation>
@@ -113,6 +114,7 @@
 <translation id="1877026089748256423">Chrome хуучирсан байна.</translation>
 <translation id="1883903952484604915">Миний файл</translation>
 <translation id="189358972401248634">Бусад хэлнүүд</translation>
+<translation id="1919130412786645364">Chromium-д нэвтрэхийг зөвшөөрөх</translation>
 <translation id="1922362554271624559">Санал болгосон хэлнүүд</translation>
 <translation id="1925021887439448749">Тохируулсан вэб хаяг оруулах</translation>
 <translation id="1928696683969751773">Шинэчлэл</translation>
@@ -225,6 +227,7 @@
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# Аудио файл}other{# Аудио файл}}</translation>
 <translation id="2656405586795711023">Вэб программууд</translation>
 <translation id="2689830683995595741">Chrome-г ашигласнаар та <ph name="BEGIN_LINK1" />Google-н Үйлчилгээний нөхцөл<ph name="END_LINK1" /> ба <ph name="BEGIN_LINK2" />Google Chrome болон Chrome үйлдлийн системийн Үйлчилгээний нэмэлт нөхцөлийг<ph name="END_LINK2" /> зөвшөөрч байна. <ph name="BEGIN_LINK3" />Family Link-р удирддаг Google Бүртгэлийн нууцлалын сануулгыг<ph name="END_LINK3" /> мөн хэрэгжүүлнэ.</translation>
+<translation id="2704606927547763573">Хуулсан</translation>
 <translation id="2707726405694321444">Хуудсыг дахин шинэчлэх</translation>
 <translation id="2709516037105925701">Автоматаар бөглөх</translation>
 <translation id="2718352093833049315">Зөвхөн Wi-Fi-аар</translation>
@@ -347,6 +350,7 @@
 <translation id="3631987586758005671"><ph name="DEVICE_NAME" />-тай хуваалцаж байна</translation>
 <translation id="3632295766818638029">Нууц үгийг харуулах</translation>
 <translation id="363596933471559332">Хадгалсан итгэмжлэлийг ашиглан вэбсайтад автоматаар нэвтрэх. Энэ үйлдлийг идэвхжүүлээгүй тохиолдолд аливаа вэбсайтад хандах бүрт таниас баталгаажуулалт шаардана.</translation>
+<translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3658159451045945436">Шинэчилснээр таны зочилсон сайтын жагсаалт зэрэг өгөгдөл хадгалалтын түүхийг устгана.</translation>
 <translation id="3692944402865947621">Сангийн байршил олдоогүй тул <ph name="FILE_NAME" />-г татаж чадсангүй.</translation>
 <translation id="3701167022068948696">Одоо засах</translation>
@@ -706,6 +710,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="6301525844455696527">Унших жагсаалтаа гүйцээрэй</translation>
 <translation id="6303969859164067831">Гараад синк хийхийг унтраах</translation>
 <translation id="6312687380483398334">Вэб программууд (чимээгүй)</translation>
+<translation id="6313752143992575395"><ph name="WEBSITE_TITLE" />-н зөвлөмжийг харуулж байна</translation>
 <translation id="6316139424528454185">Android-н хувилбарыг дэмжээгүй байна</translation>
 <translation id="6324034347079777476">Андройд системийн синкийг идэвхгүй болгосон</translation>
 <translation id="6333140779060797560"><ph name="APPLICATION" />-аар дамжуулан хуваалцах</translation>
@@ -837,6 +842,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="7233236755231902816">Вэбийг өөрийн хэлээр үзэхийн тулд Chrome-н хамгийн сүүлийн үеийн хувилбарыг авна уу</translation>
 <translation id="7248069434667874558"><ph name="TARGET_DEVICE_NAME" /> нь Chrome дээр синк хийхийг асаасан эсэхийг шалгана уу</translation>
 <translation id="7274013316676448362">Блоклосон сайт</translation>
+<translation id="7286572596625053347"><ph name="LANGUAGE" />-г өөрчлөх үү?</translation>
 <translation id="7290209999329137901">Нэр өөрчлөх боломжгүй байна</translation>
 <translation id="7291387454912369099">Туслахыг идэвхжүүлэх</translation>
 <translation id="7293171162284876153">Синк хийж эхлэхийн тулд "Chrome-н өгөгдлөө синк хийх" гэснийг асаана уу.</translation>
@@ -959,7 +965,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="8058746566562539958">Chrome-н шинэ чихтэй хуудсанд нээх</translation>
 <translation id="8063895661287329888">Хавчуургыг нэмж чадсангүй.</translation>
 <translation id="806745655614357130">Миний өгөгдлийг тусад нь байлгах</translation>
-<translation id="8069669375923284295">Тохиргуулгыг синк хийхийг үргэлжлүүлэхийн тулд товшино уу</translation>
 <translation id="8073388330009372546">Зургийг шинэ цонхонд нээ</translation>
 <translation id="8076492880354921740">Чихтэй хуудас</translation>
 <translation id="8084114998886531721">Хадгалсан нууц үг</translation>

@@ -385,15 +385,6 @@ Nếu bạn tắt chính sách này, thì việc cuộn trang web đến các ph
       Nếu bạn không đặt chính sách này, <ph name="PRINTERS_ALLOW_ALL" /> sẽ là tùy chọn mặc định.
       </translation>
 <translation id="1588240398285670601">Cài đặt của trình duyệt</translation>
-<translation id="1588456836529393506">Nếu đặt chính sách này, bạn có thể thiết lập danh sách các mẫu URL chỉ định những trang web được hệ thống tự động cấp quyền truy cập vào thiết bị USB bằng mã sản phẩm và mã nhà cung cấp đã cho. Từng mục trong danh sách phải chứa các thiết bị và URL thì chính sách này mới hợp lệ. Mỗi mục trong các thiết bị có thể chứa trường mã sản phẩm và mã nhà cung cấp. Mọi mã bạn bỏ qua đều được coi là ký tự đại diện trừ trường hợp: Bạn không thể chỉ định mã sản phẩm nếu không chỉ định cả mã nhà cung cấp. Trong trường hợp khác, chính sách này sẽ không hợp lệ.
-
-      Mô hình quản lý quyền truy cập vào USB sử dụng URL yêu cầu và URL nhúng (của trang web khung cấp cao nhất) để cho phép URL yêu cầu truy cập vào thiết bị USB. URL yêu cầu có thể khác với URL nhúng khi trang web yêu cầu tải trong iframe. Do đó, trường "urls" có thể chứa tối đa 2 chuỗi được phân tách bằng dấu phẩy để chỉ định những URL này. Nếu bạn chỉ định duy nhất một URL, thì hệ thống sẽ cấp quyền truy cập vào các thiết bị USB tương ứng khi URL của trang web yêu cầu khớp với URL này, bất kể trạng thái nhúng. Các URL trong trường "urls" phải là URL hợp lệ. Nếu không, chính sách này sẽ bị bỏ qua.
-
-      Nếu bạn không đặt chính sách này, thì <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" /> (nếu được đặt) sẽ được áp dụng. Nếu không, tùy chọn cài đặt cá nhân của người dùng sẽ được áp dụng.
-
-      Các mẫu URL trong chính sách này không được xung đột với những mẫu URL đã định cấu hình thông qua <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" />. Nếu có xung đột, chính sách này sẽ được ưu tiên hơn <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" /> và <ph name="WEB_USB_ASK_FOR_URLS_POLICY_NAME" />.
-
-      Các giá trị của chính sách này và <ph name="DEVICE_WEB_USB_ALLOW_DEVICES_FOR_URLS_POLICY_NAME" /> sẽ được hợp nhất.</translation>
 <translation id="1593245608325508847">Khi bạn đặt chính sách này, tính năng đăng nhập có giới hạn của Chrome sẽ được bật trong G Suite và người dùng sẽ không thể thay đổi tùy chọn cài đặt này. Người dùng chỉ có thể truy cập vào các công cụ của Google bằng tài khoản thuộc miền được chỉ định (để cho phép tài khoản gmail hoặc googlemail, hãy thêm consumer_accounts vào danh sách miền). Tùy chọn cài đặt này ngăn người dùng đăng nhập và thêm Tài khoản phụ trên một thiết bị được quản lý có yêu cầu quy trình xác thực của Google, nếu tài khoản đó không thuộc một trong những miền được cho phép rõ ràng.
 
       Nếu bạn để trống hoặc không đặt tùy chọn cài đặt này, người dùng có thể truy cập vào G Suite bằng bất kỳ tài khoản nào.
@@ -564,9 +555,6 @@ Nếu bạn tắt chính sách này, thì việc cuộn trang web đến các ph
 
       Nếu bạn không đặt chính sách này, thì tùy chọn gợi ý mạng sẽ bật nhưng người dùng có thể thay đổi tùy chọn này.</translation>
 <translation id="1865417998205858223">Quyền khóa</translation>
-<translation id="1866563857170942397">Xác định danh sách những người dùng được phép đăng nhập vào thiết bị. Các mục sẽ có dạng <ph name="USER_ALLOWLIST_ENTRY_FORMAT" />, chẳng hạn như <ph name="USER_WHITELIST_ENTRY_EXAMPLE" />. Để cho phép người dùng bất kỳ trên một miền, hãy sử dụng các mục có dạng <ph name="USER_ALLOWLIST_ENTRY_WILDCARD" />.
-
-      Nếu bạn không định cấu hình chính sách này, tất cả người dùng đều được phép đăng nhập. Lưu ý rằng việc tạo người dùng mới sẽ vẫn yêu cầu phải định cấu hình chính sách <ph name="DEVICE_ALLOW_NEW_USERS_POLICY_NAME" /> một cách phù hợp.</translation>
 <translation id="186719019195685253">Tác vụ sẽ thực hiện khi đạt độ trễ không hoạt động trong khi chạy bằng nguồn AC</translation>
 <translation id="1885782360784839335">Cho phép hiển thị nội dung quảng cáo dưới dạng toàn bộ thẻ</translation>
 <translation id="1888871729456797026">Mã thông báo đăng ký của chính sách đám mây trên màn hình</translation>

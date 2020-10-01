@@ -97,7 +97,6 @@
 <translation id="1965935827552890526">Gjør deg ferdig med det du holdt på med i det andre åpne Chrome-vinduet.</translation>
 <translation id="1974060860693918893">Avanserte</translation>
 <translation id="1989112275319619282">Bla gjennom</translation>
-<translation id="1992734845128748707">Bytt standardnettleser…</translation>
 <translation id="2015722694326466240">For å se passordene må du først angi en adgangskode på enheten din.</translation>
 <translation id="2073572773299281212">Aktiv for <ph name="DAYS" /> dager siden</translation>
 <translation id="2074131957428911366">Du kan når som helst velge hva du vil synkronisere, i <ph name="BEGIN_LINK" />innstillingene<ph name="END_LINK" />.</translation>
@@ -165,6 +164,7 @@ Nettsteder kan ikke bruke informasjonskapsler til å se nettleseraktiviteten din
 <translation id="2781331604911854368">På</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2800683595868705743">Avslutt fanevelgeren</translation>
+<translation id="2815198996063984598">2. Trykk på Standard nettleserapp.</translation>
 <translation id="2830972654601096923">Administrer adresser</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2840687315230832938">Det innledende synkroniseringsoppsettet er ikke fullført</translation>
@@ -181,6 +181,7 @@ Nettsteder kan ikke bruke informasjonskapsler til å se nettleseraktiviteten din
 <translation id="2921219216347069551">Kan ikke dele siden</translation>
 <translation id="2923448633003185837">Lim inn og gå til</translation>
 <translation id="292639812446257861">Merk som ulest</translation>
+<translation id="2952581218264071393">1. Åpne Chrome-innstillingene.</translation>
 <translation id="2958718410589002129">Passord</translation>
 <translation id="2964349545761222050">Blokkér informasjonskapsler fra tredjeparter</translation>
 <translation id="2969979262385602596">Kunne ikke logge på. Prøv igjen senere.</translation>
@@ -217,6 +218,7 @@ Når du er i inkognitomodus, kan ikke nettsteder bruke informasjonskapsler til �
 <translation id="3335947283844343239">Åpne lukkede faner igjen</translation>
 <translation id="3371831930909698441">Oversetter er tilgjengelig. Du finner alternativer på nedre del av skjermen.</translation>
 <translation id="3393920035788932672">Tillat forgrunnsvinduer</translation>
+<translation id="3399930248910934354">Åpne Chrome-innstillingene</translation>
 <translation id="3425644765244388016">Kallenavn på kortet</translation>
 <translation id="3433057996795775706">Sletting av dette passordet sletter ikke kontoen din på <ph name="WEBSITE" />. Endre passordet på <ph name="WEBSITE" /> for å beskytte den mot andre.</translation>
 <translation id="3443810440409579745">Fane er mottatt.</translation>
@@ -241,6 +243,9 @@ Når du er i inkognitomodus, kan ikke nettsteder bruke informasjonskapsler til �
 <translation id="3551320343578183772">Lukk fanen</translation>
 <translation id="3581564640715911333">Tilby å oversette sider på andre språk</translation>
 <translation id="3588820906588687999">Åpne bildet i en ny fane</translation>
+<translation id="359441731697487922">Du kan åpne linker i Chrome automatisk ved å angi den som standard nettleserapp.
+
+Følg fremgangsmåten under:</translation>
 <translation id="3603009562372709545">Kopiér linkadressen</translation>
 <translation id="3607167657931203000">Autofylldata</translation>
 <translation id="3609785682760573515">Synkroniserer …</translation>
@@ -331,6 +336,7 @@ Dataene dine er kryptert med passordfrasen din for synkronisering. Skriv den inn
 <translation id="4747097190499141774">Kryptering av passordfraser inkluderer ikke betalingsmåter og adresser fra Google Pay. Bare personer som har passordfrasen din, kan lese de krypterte dataene dine. Passordfrasen blir verken sendt til Google eller lagret. Hvis du glemmer den, må du tilbakestille synkroniseringen. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">Ny inkognitofane</translation>
 <translation id="4758977202923349869">Plassér kredittkortet inni denne rammen</translation>
+<translation id="4775879719735953715">Standardnettleser</translation>
 <translation id="4802417911091824046">Kryptering av passordfraser inkluderer ikke betalingsmåter og adresser fra Google Pay.
 
 For å endre denne innstillingen, <ph name="BEGIN_LINK" />tilbakestill synkroniseringen<ph name="END_LINK" /></translation>
@@ -338,6 +344,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />tilbakestill synkronis
 <translation id="4808744395915275922">Oppdateringer</translation>
 <translation id="4818522717893377262">Legg til språk...</translation>
 <translation id="481968316161811770">Informasjonskapsler og nettstedsdata</translation>
+<translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} og 1 til}other{{domain} og {count} til}}</translation>
 <translation id="4826218269716039351">Blokkér fra tredjeparter</translation>
 <translation id="48274138579728272">Merk som lest</translation>
 <translation id="4833786495304741580">Sender automatisk bruksstatistikk og programstopprapporter til Google.</translation>
@@ -586,6 +593,7 @@ Nettsteder kan ikke bruke informasjonskapsler til å se nettleseraktiviteten din
 <translation id="7456847797759667638">Åpne sted</translation>
 <translation id="7460314822154045102">Bruk kameraet</translation>
 <translation id="7464701184726199289">Dette sletter synkroniserte data fra alle enheter. Lagrede nettstedsinnstillinger slettes ikke og kan gjenspeile nettleserbruken din. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
+<translation id="746684838091935575">3. Velg Chrome.</translation>
 <translation id="7472734401283673885">Bedriftsnavn</translation>
 <translation id="7473891865547856676">Nei takk</translation>
 <translation id="7481312909269577407">Frem</translation>

@@ -97,7 +97,6 @@
 <translation id="1965935827552890526">Termine o que estava a fazer na outra janela do Chrome aberta.</translation>
 <translation id="1974060860693918893">Avançadas</translation>
 <translation id="1989112275319619282">Procurar</translation>
-<translation id="1992734845128748707">Alterar navegador predefinido…</translation>
 <translation id="2015722694326466240">Para ver as palavras-passe, tem de definir primeiro um código secreto no dispositivo.</translation>
 <translation id="2073572773299281212">Ativo há <ph name="DAYS" /> dias</translation>
 <translation id="2074131957428911366">Pode escolher o que pretende sincronizar nas <ph name="BEGIN_LINK" />definições<ph name="END_LINK" />.</translation>
@@ -165,6 +164,7 @@ Os sites não podem utilizar cookies para ver a sua atividade de navegação em 
 <translation id="2781331604911854368">Ativado</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2800683595868705743">Sair do Comutador de separadores</translation>
+<translation id="2815198996063984598">2. Toque em App de navegador predefinida.</translation>
 <translation id="2830972654601096923">Gerir endereços…</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2840687315230832938">Configuração da sincronização inicial não concluída</translation>
@@ -181,6 +181,7 @@ Os sites não podem utilizar cookies para ver a sua atividade de navegação em 
 <translation id="2921219216347069551">Impossível Partilhar Página</translation>
 <translation id="2923448633003185837">Colar e ir</translation>
 <translation id="292639812446257861">Marcar como não lidas</translation>
+<translation id="2952581218264071393">1. Abra as definições do Chrome.</translation>
 <translation id="2958718410589002129">Palavras-passe</translation>
 <translation id="2964349545761222050">Bloquear cookies de terceiros</translation>
 <translation id="2969979262385602596">Falha ao iniciar sessão. Tente nov. mais tarde.</translation>
@@ -217,6 +218,7 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <translation id="3335947283844343239">Reabrir separador fechado</translation>
 <translation id="3371831930909698441">A tradução está disponível. Opções disponíveis junto à parte inferior do ecrã.</translation>
 <translation id="3393920035788932672">Pop-ups Permitidos</translation>
+<translation id="3399930248910934354">Abrir definições do Chrome</translation>
 <translation id="3425644765244388016">Pseudónimo do cartão</translation>
 <translation id="3433057996795775706">Eliminar esta palavra-passe não elimina a sua conta em <ph name="WEBSITE" />. Altere a palavra-passe em <ph name="WEBSITE" /> para a manter protegida contra terceiros.</translation>
 <translation id="3443810440409579745">Separador recebido.</translation>
@@ -241,6 +243,9 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <translation id="3551320343578183772">Fechar Separador</translation>
 <translation id="3581564640715911333">Proponha a tradução de páginas noutros idiomas</translation>
 <translation id="3588820906588687999">Abrir imagem num novo separador</translation>
+<translation id="359441731697487922">Pode abrir links no Chrome automaticamente ao torná-lo a sua app de navegador predefinida.
+      
+Siga os passos abaixo:</translation>
 <translation id="3603009562372709545">Copiar URL do Link</translation>
 <translation id="3607167657931203000">Dados de preenchimento automático</translation>
 <translation id="3609785682760573515">A sincronizar…</translation>
@@ -331,6 +336,7 @@ Os dados estão encriptados com a sua frase de acesso de sincronização. Introd
 <translation id="4747097190499141774">A encriptação da frase de acesso não inclui métodos de pagamento nem endereços do Google Pay. Apenas alguém que conheça a sua frase de acesso pode ler os seus dados encriptados. A frase de acesso não é enviada para a Google nem armazenada pela mesma. Se se esquecer da frase de acesso ou pretender alterar esta definição, tem de repor a sincronização. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">Novo separador de navegação anónima</translation>
 <translation id="4758977202923349869">Posicione o cartão de crédito nesta moldura</translation>
+<translation id="4775879719735953715">Navegador predefinido</translation>
 <translation id="4802417911091824046">A encriptação da frase de acesso não inclui métodos de pagamento nem endereços do Google Pay.
 
 Para alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização<ph name="END_LINK" />.</translation>
@@ -338,6 +344,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização
 <translation id="4808744395915275922">Atualizações</translation>
 <translation id="4818522717893377262">Adicionar idioma…</translation>
 <translation id="481968316161811770">Cookies, dados de sites</translation>
+<translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} e mais 1}other{{domain} e mais {count}}}</translation>
 <translation id="4826218269716039351">Bloquear terceiros</translation>
 <translation id="48274138579728272">Marcar como lido</translation>
 <translation id="4833786495304741580">Envia automaticamente estatísticas de utilização e relatórios de falhas para a Google.</translation>
@@ -586,6 +593,7 @@ Os sites não podem utilizar cookies para ver a sua atividade de navegação em 
 <translation id="7456847797759667638">Abrir localização...</translation>
 <translation id="7460314822154045102">Utilizar a Câmara</translation>
 <translation id="7464701184726199289">Esta ação limpa os dados sincronizados de todos os dispositivos. As definições de sites guardadas não são eliminadas e podem refletir os seus hábitos de navegação. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
+<translation id="746684838091935575">3. Selecione o Chrome.</translation>
 <translation id="7472734401283673885">Nome da empresa</translation>
 <translation id="7473891865547856676">Não, obrigado</translation>
 <translation id="7481312909269577407">Avançar</translation>

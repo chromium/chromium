@@ -106,6 +106,7 @@
 <translation id="1810845389119482123">სინქრონიზაციის თავდაპირველი დაყენება არ დასრულებულა</translation>
 <translation id="1821253160463689938">იყენებს ქუქი-ჩანაწერებს თქვენთვის სასურველი პარამეტრების დასამახსოვრებლად, მაშინაც კი, როცა ამ გვერდებს არ სტუმრობთ</translation>
 <translation id="1829244130665387512">გვერდზე ძებნა</translation>
+<translation id="1830550083491357902">არ არის შესული</translation>
 <translation id="1843805151597803366">უკეთესი თარგმანებისთვის Google Search-ს მიეცით საშუალება, გამოიყენოს მიმდინარე გვერდი</translation>
 <translation id="1853692000353488670">ახალი ინკოგნიტო ჩანართი</translation>
 <translation id="1856325424225101786">გსურთ Lite რეჟიმის გადაყენება?</translation>
@@ -113,6 +114,7 @@
 <translation id="1877026089748256423">Chrome მოძველებულია</translation>
 <translation id="1883903952484604915">ჩემი ფაილები</translation>
 <translation id="189358972401248634">სხვა ენები</translation>
+<translation id="1919130412786645364">Chrome-ში შესვლის დაშვება</translation>
 <translation id="1922362554271624559">შემოთავაზებული ენები</translation>
 <translation id="1925021887439448749">შეიყვანეთ მორგებული ვებ-მისამართი</translation>
 <translation id="1928696683969751773">განახლება</translation>
@@ -225,6 +227,7 @@
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# აუდიოფაილი}other{# აუდიოფაილი}}</translation>
 <translation id="2656405586795711023">ვებ-აპები</translation>
 <translation id="2689830683995595741">Chrome-ის გამოყენებით ეთანხმებით <ph name="BEGIN_LINK1" />Google-ის მომსახურების პირობებს<ph name="END_LINK1" />, ასევე, <ph name="BEGIN_LINK2" />Google Chrome-ისა და Chrome OS-ის მომსახურების დამატებით პირობებს<ph name="END_LINK2" />. გარდა ამისა, ვრცელდება <ph name="BEGIN_LINK3" />კონფიდენციალურობის შეტყობინება Family Link-ით მართული Google ანგარიშებისთვის<ph name="END_LINK3" />.</translation>
+<translation id="2704606927547763573">დაკოპირდა</translation>
 <translation id="2707726405694321444">გვერდის განახლება</translation>
 <translation id="2709516037105925701">ავტომატური შევსება</translation>
 <translation id="2718352093833049315">მხოლოდ Wi-Fi-ით</translation>
@@ -963,7 +966,6 @@
 <translation id="8058746566562539958">Chrome-ის ახალ ჩანართში გახსნა</translation>
 <translation id="8063895661287329888">სანიშნის დამატება ვერ მოხერხდა.</translation>
 <translation id="806745655614357130">ჩემი მონაცემების ცალკე შენახვა</translation>
-<translation id="8069669375923284295">შეეხეთ სინქრონიზაციის დაყენების გასაგრძელებლად</translation>
 <translation id="8073388330009372546">გამოსახულების გახსნა ახალ ჩანართზე</translation>
 <translation id="8076492880354921740">ჩანართები</translation>
 <translation id="8084114998886531721">შენახული პაროლი</translation>

@@ -319,13 +319,13 @@ Se disattivi questo criterio, lo scorrimento della pagina web ai frammenti di te
 
       Questo criterio consente di fornire configurazioni delle stampanti ai dispositivi <ph name="PRODUCT_OS_NAME" />.  Il formato corrisponde a quello del dizionario NativePrinters, con un campo "id" o "guid" aggiuntivo obbligatorio per ciascuna stampante ai fini dell'autorizzazione o del blocco della stessa.
 
-      La dimensione del file non deve superare 5 MB e deve essere codificata in JSON.  È stato stimato che un file contenente circa 21.000 stampanti viene codificato come file di 5 MB.  L'hash di crittografia viene utilizzato per verificare l'integrità del download.
+      Il file non può avere dimensioni superiori a 5 MB e deve essere codificato in JSON.  Si stima che le dimensioni di un file contenente circa 21.000 stampanti siano pari a 5 MB.  L'hash di crittografia viene utilizzato per verificare l'integrità del download.
 
       Il file viene scaricato e memorizzato nella cache. Verrà scaricato nuovamente ogni volta che l'URL o l'hash cambiano.
 
       Se il criterio è impostato, <ph name="PRODUCT_OS_NAME" /> scaricherà il file per le configurazioni delle stampanti e renderà disponibili le stampanti in base a <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> e <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" />.
 
-      Questo criterio non influisce sulla possibilità per gli utenti di configurare le stampanti su singoli dispositivi.  È supplementare alla configurazione delle stampanti da parte dei singoli utenti.
+      Questo criterio non influisce sulla possibilità per gli utenti di configurare le stampanti su singoli dispositivi.  È inteso come integrativo alla configurazione delle stampanti da parte dei singoli utenti.
 
       Si tratta di un criterio aggiuntivo rispetto al criterio <ph name="BULK_PRINTERS_POLICY_NAME" />.
 
@@ -374,15 +374,6 @@ Se disattivi questo criterio, lo scorrimento della pagina web ai frammenti di te
       Se questo criterio non viene impostato, viene utilizzata l'opzione <ph name="PRINTERS_ALLOW_ALL" />.
       </translation>
 <translation id="1588240398285670601">Impostazioni del browser</translation>
-<translation id="1588456836529393506">Se il criterio viene configurato, puoi impostare un elenco di pattern URL che specificano i siti a cui viene concessa automaticamente l'autorizzazione di accesso a un dispositivo USB con gli ID fornitore e prodotto indicati. Affinché il criterio sia valido, ogni elemento dell'elenco deve contenere sia dispositivi sia URL. Ogni elemento nei dispositivi può contenere un campo ID fornitore e un campo ID prodotto. Gli eventuali ID omessi verranno considerati caratteri jolly con l'eccezione che non è possibile specificare un ID prodotto senza specificare anche un ID fornitore. In caso contrario, il criterio non sarà valido.
-
-      Il modello di autorizzazione USB utilizza l'URL richiedente e l'URL di incorporamento (del sito frame di primo livello) per consentire all'URL richiedente di accedere al dispositivo USB. L'URL richiedente potrebbe essere diverso dall'URL di incorporamento quando il sito richiedente viene caricato in un iframe. Di conseguenza il campo "URL" può contenere fino a due stringhe delimitate da virgola per specificare questi URL. Se specifichi un solo URL, l'accesso ai dispositivi USB corrispondenti viene concesso quando l'URL del sito richiedente corrisponde all'URL indicato, a prescindere dallo stato di incorporamento. Gli URL indicati nel campo "URL" devono essere validi, altrimenti il criterio viene ignorato.
-
-      Se il criterio non viene configurato, viene applicato il criterio <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" />, se impostato. In caso contrario, viene applicata l'impostazione personale dell'utente.
-
-      I pattern URL di questo criterio non devono essere in conflitto con quelli configurati tramite <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" />. In caso di conflitto, questo criterio ha la precedenza sui criteri <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" /> e <ph name="WEB_USB_ASK_FOR_URLS_POLICY_NAME" />.
-
-      I valori di questo criterio e del criterio <ph name="DEVICE_WEB_USB_ALLOW_DEVICES_FOR_URLS_POLICY_NAME" /> vengono uniti.</translation>
 <translation id="1593245608325508847">La configurazione del criterio consente di attivare la funzionalità di accesso limitato di Chrome in G Suite e di impedire agli utenti di modificare questa impostazione. Gli utenti possono accedere solo agli strumenti Google utilizzando gli account dei domini specificati (per consentire gli account gmail o googlemail, aggiungi consumer_accounts all'elenco dei domini). Questa impostazione impedisce agli utenti di accedere a un account secondario e di aggiungerne uno su un dispositivo gestito che richiede l'autenticazione di Google, se tale account non appartiene a uno dei domini esplicitamente consentiti.
 
       Se il criterio viene lasciato vuoto o se non viene configurato, gli utenti possono accedere a G Suite con qualsiasi account.
@@ -476,13 +467,13 @@ Se questa norma non viene impostata, i Termini di servizio non verranno visualiz
 Per la norma dovrebbe essere impostato un URL da cui <ph name="PRODUCT_OS_NAME" /> possa scaricare i Termini di servizio. I Termini di servizio devono essere in testo normale e pubblicati come testo di tipo MIME/semplice. Il markup non è consentito.</translation>
 <translation id="1750315445671978749">Blocca tutti i download</translation>
 <translation id="1760951637494635692">Consenti l'API Serial su questi siti</translation>
-<translation id="1765512315997108908">Consente di stabilire quali stampanti del criterio <ph name="DEVICE_PRINTERS_POLICY_NAME" /> sono a disposizione degli utenti.
+<translation id="1765512315997108908">Consente di stabilire quali stampanti del criterio <ph name="DEVICE_PRINTERS_POLICY_NAME" /> sono disponibili agli utenti.
 
       Determina quale criterio di accesso viene utilizzato per la configurazione collettiva delle stampanti. Se viene selezionata l'opzione <ph name="PRINTERS_ALLOW_ALL" />, vengono mostrate tutte le stampanti. Se viene selezionata l'opzione <ph name="PRINTERS_BLACKLIST" />, viene utilizzato il criterio <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" /> per limitare l'accesso alle stampanti specificate.  Se viene selezionata l'opzione <ph name="PRINTERS_WHITELIST" />, <ph name="DEVICE_PRINTERS_ALLOWLIST_POLCY_NAME" /> indica soltanto le stampanti selezionabili.
 
       Se questo criterio non viene impostato, viene utilizzata l'opzione <ph name="PRINTERS_ALLOW_ALL" />.
 
-      Questo criterio è deprecato, al suo posto utilizza <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />.
+      Questo criterio è deprecato, utilizza <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" /> al suo posto.
       </translation>
 <translation id="1767673020408652620">Attiva consigli di app a stato nullo della casella di ricerca</translation>
 <translation id="1780323582106687813">Questo criterio è deprecato, al suo posto utilizza "<ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" />".
@@ -545,9 +536,6 @@ Questa norma viene rispettata soltanto se la norma "DefaultSearchProviderEnabled
 
       Se questa norma non viene impostata, la previsione di rete verrà attivata ma l'utente potrà modificarla.</translation>
 <translation id="1865417998205858223">Autorizzazioni chiave</translation>
-<translation id="1866563857170942397">Consente di definire l'elenco di utenti autorizzati ad accedere al dispositivo. Le voci sono nel formato <ph name="USER_ALLOWLIST_ENTRY_FORMAT" />, ad esempio <ph name="USER_WHITELIST_ENTRY_EXAMPLE" />. Per autorizzare utenti arbitrari su un dominio, le voci devono essere nel formato <ph name="USER_ALLOWLIST_ENTRY_WILDCARD" />.
-
-      Se questo criterio non viene configurato, non vi sono limitazioni in termini di utenti autorizzati ad accedere. Tieni presente che la creazione di nuovi utenti richiede comunque la corretta configurazione del criterio <ph name="DEVICE_ALLOW_NEW_USERS_POLICY_NAME" />.</translation>
 <translation id="186719019195685253">Azione da compiere quando il ritardo di inattività viene raggiunto durante l'utilizzo della corrente CA</translation>
 <translation id="1885782360784839335">Attiva la visualizzazione di contenuti promozionali a scheda intera</translation>
 <translation id="1888871729456797026">Il token di registrazione della norma relativa alla cloud su desktop</translation>
@@ -919,27 +907,27 @@ Questa norma viene rispettata soltanto se la norma "DefaultSearchProviderEnabled
 
       La configurazione di <ph name="VARIATIONS_DISABLED_OPTION_NAME" /> (valore 2) impedisce di applicare al browser tutte le varianti. Questa modalità potrebbe impedire agli sviluppatori di <ph name="PRODUCT_NAME" /> di fornire tempestivamente correzioni fondamentali per la sicurezza ed è pertanto sconsigliata.</translation>
 <translation id="2402140031630105556">Consente di configurare un elenco di regole per prevenire la fuga di dati su <ph name="PRODUCT_OS_NAME" />.
-      La fuga di dati può verificarsi tramite le operazioni di copia e incolla dei data, il trasferimento di file, la stampa, la condivisione schermo o l'acquisizione di screenshot.
+      La fuga di dati può verificarsi tramite le operazioni di copia e incolla dei dati, il trasferimento di file, la stampa, la condivisione schermo o l'acquisizione di screenshot.
 
       Ciascuna regola prevede quanto segue:
-      - Un elenco di sorgenti definite URL. Tutti i dati delle origini saranno considerati riservati e su di essi verranno applicate le limitazioni.
-      - Un elenco di destinazioni definite come URL o componenti, nei quali la condivisione dei dati è consentita o non consentita.
+      - Un elenco di sorgenti definite come URL. Tutti i dati delle origini saranno considerati riservati e su di essi verranno applicate le limitazioni.
+      - Un elenco di destinazioni definite come URL o componenti, con i quali la condivisione dei dati riservati è consentita o non consentita.
       - Un elenco di limitazioni da applicare ai dati delle origini.
 
       È possibile aggiungere regole per:
       - Controllare i dati degli appunti condivisi tra le origini e le destinazioni.
       - Controllare l'acquisizione di screenshot di tutte le origini.
       - Controllare la stampa di tutte le origini.
-      - Controllare la schermata privata quando una delle origini è visibile.
+      - Controllare la Schermata privata quando una delle origini è visibile.
 
-      Il livello di limitazione può essere impostato su BLOCK, ALLOW.
+      Il livello di limitazione può essere impostato su BLOCK o su ALLOW.
       - Se la limitazione è impostata su BLOCK, l'azione non sarà consentita.
       - Se la limitazione è imposta su ALLOW, l'azione sarà consentita.
 
       Note:
       - La limitazione PRIVACY_SCREEN non blocca la capacità di attivare la schermata privata, ma la applica quando la classe della limitazione è impostata su BLOCK.
-      - Le destinazioni non possono essere vuote nel caso in cui una delle limitazioni sia CLIPBOARD, ma non vi è alcuna differenza per le restanti limitazioni.
-      - La limitazione CLIPBOARD non può distinguere tra CROSTINI e PLUGIN_VM. Se una qualsiasi di queste viene selezionata per bloccare/consentire la condivisione dei dati, la regola si applica a entrambe.
+      - Le destinazioni non possono essere vuote nel caso in cui una delle limitazioni sia CLIPBOARD, ma questo non fa alcuna differenza per le altre limitazioni.
+      - La limitazione CLIPBOARD non può distinguere tra CROSTINI e PLUGIN_VM. Se uno di questi criteri viene selezionato per bloccare/consentire la condivisione dei dati, la regola si applica a entrambi.
       - I pattern URL devono avere il formato indicato all'indirizzo ( https://www.chromium.org/administrators/url-blacklist-filter-format ).
 
       Se il criterio non viene configurato, non sarà applicata alcuna limitazione.</translation>
@@ -2611,13 +2599,13 @@ Se il criterio viene disattivato, <ph name="PRODUCT_OS_NAME" /> disattiva il Blu
 <translation id="489803897780524242">Parametro di controllo sostituzione termini di ricerca per fornitore ricerca predefinito</translation>
 <translation id="4899708173828500852">Consenti Navigazione sicura</translation>
 <translation id="4906194810004762807">Frequenza di aggiornamento per norma dispositivo</translation>
-<translation id="4910101362791876581">Specifica le stampanti che un utente può utilizzare.
+<translation id="4910101362791876581">Consente di specificare le stampanti che un utente può utilizzare.
 
       Questo criterio viene utilizzato soltanto se è selezionata l'opzione <ph name="PRINTERS_WHITELIST" /> per <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />
 
-      Se viene utilizzato questo criterio, l'utente avrà a disposizione soltanto le stampanti con ID corrispondenti ai valori specificati in questo criterio. Gli ID devono corrispondere ai campi "id" o "guid" del file specificato nel criterio <ph name="DEVICE_PRINTERS_POLICY_NAME" />.
+      Se viene utilizzato questo criterio, per l'utente saranno disponibili soltanto le stampanti con ID corrispondenti ai valori specificati in questo criterio. Gli ID devono corrispondere ai campi "id" o "guid" del file specificato nel criterio <ph name="DEVICE_PRINTERS_POLICY_NAME" />.
 
-      Questo criterio è deprecato, al suo posto utilizza <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" />.
+      Questo criterio è deprecato, utilizza <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> al suo posto.
       </translation>
 <translation id="4917385247580444890">Forte</translation>
 <translation id="4919122295221518724">Attiva trattamento più restrittivo per i contenuti misti</translation>
@@ -3699,9 +3687,9 @@ Il valore della norma deve essere specificato in millisecondi. I valori devono e
 <translation id="6401669939808766804">Disconnetti l'utente</translation>
 <translation id="640244877779556713">Attiva suggerimento di emoji</translation>
 <translation id="6407093060083181305">Configura la lista bloccata di installazione delle estensioni</translation>
-<translation id="6408233796253901198">Se questo criterio è impostato, l'host di accesso remoto utilizzerà questo URL per convalidare i token di autenticazione dai client di accesso remoto per accettare connessioni. Deve essere usato insieme a RemoteAccessHostTokenUrl.
+<translation id="6408233796253901198">Se questo criterio è impostato, l'host di accesso remoto utilizzerà questo URL per convalidare i token di autenticazione dai client di accesso remoto allo scopo di accettare connessioni. Deve essere usato insieme a RemoteAccessHostTokenUrl.
 
-          Questa funzionalità viene disattivata se è vuoto o non impostato.</translation>
+          Questa funzionalità viene disattivata se il criterio è vuoto o non impostato.</translation>
 <translation id="6417265370957905582">Assistente Google</translation>
 <translation id="6422575351619065453">In modalità kiosk, consente di controllare se visualizzare o meno il menu Accessibilità mobile.
 
@@ -3718,11 +3706,11 @@ Il valore della norma deve essere specificato in millisecondi. I valori devono e
           Se si decide di rilevare automaticamente il server proxy, alle app Android viene fornito l'URL script "http://wpad/wpad.dat". Non viene utilizzata nessun'altra parte del protocollo di rilevamento automatico del server proxy.
 
           Se si decide di utilizzare uno script proxy .pac, alle app Android viene fornito l'URL script.</translation>
-<translation id="6438364096042399634">L'impostazione del criterio consente di definire l'elenco di dispositivi USB che gli utenti possono scollegare dal proprio driver del kernel per essere utilizzati tramite l'API chrome.usb direttamente all'interno di un'app web. Le voci sono coppie costituite dall'ID fornitore USB e dall'ID prodotto per identificare un hardware specifico.
+<translation id="6438364096042399634">L'impostazione del criterio consente di definire l'elenco di dispositivi USB che gli utenti possono scollegare dal proprio driver del kernel per essere utilizzati tramite l'API chrome.usb direttamente all'interno di un'app web. Le voci sono coppie costituite dall'ID fornitore USB e dall'ID prodotto per identificare hardware specifico.
 
-      Se non viene configurato, l'elenco di dispositivi USB scollegabili è vuoto.
+      Se il criterio non viene configurato, l'elenco di dispositivi USB scollegabili è vuoto.
 
-      Questo criterio è deprecato, al suo posto utilizza <ph name="USB_DETACHABLE_ALLOWLIST_POLICY_NAME" />.
+      Questo criterio è deprecato, utilizza <ph name="USB_DETACHABLE_ALLOWLIST_POLICY_NAME" /> al suo posto.
       </translation>
 <translation id="6438972408080276697">Se il criterio è impostato su True, vengono inviati rapporti degli eventi principali di installazione delle app Android attivati dal criterio. Se il criterio è impostato su False, non viene acquisito alcun evento.</translation>
 <translation id="6440051664870270040">Consenti ai siti di navigare e aprire popup contemporaneamente</translation>
@@ -4550,9 +4538,9 @@ Se l'impostazione viene disattivata, questa funzione non sarà disponibile.</tra
 
       Questo criterio è deprecato. Usa il criterio <ph name="PRINTERS_POLICY_NAME" />.
       </translation>
-<translation id="7504632989711326175">Se questo criterio è impostato, l'host utilizzerà un certificato client con il nome comune dell'emittente indicato per eseguire l'autenticazione su RemoteAccessHostTokenValidationUrl. Impostare il criterio su "*" per utilizzare qualsiasi certificato client disponibile.
+<translation id="7504632989711326175">Se questo criterio è impostato, l'host utilizzerà un certificato client con il nome comune dell'emittente indicato per eseguire l'autenticazione su RemoteAccessHostTokenValidationUrl. Imposta il criterio su "*" per utilizzare qualsiasi certificato client disponibile.
 
-          Questa funzionalità viene disattivata se è vuoto o non impostato.</translation>
+          Questa funzionalità viene disattivata se il criterio è vuoto o non impostato.</translation>
 <translation id="7506745375479451616">Questo criterio consente di stabilire il comando da usare per aprire gli URL in <ph name="PRODUCT_NAME" /> anziché in <ph name="IE_PRODUCT_NAME" />. Per questo criterio è possibile impostare un percorso file eseguibile o un valore <ph name="PRODUCT_NAME_PLACEHOLDER" /> per rilevare automaticamente la posizione di <ph name="PRODUCT_NAME" />.
 
       Se il criterio non viene impostato, <ph name="IE_PRODUCT_NAME" /> rileva automaticamente il percorso eseguibile di <ph name="PRODUCT_NAME" /> all'avvio di <ph name="PRODUCT_NAME" /> da Internet Explorer.
@@ -4790,13 +4778,13 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 <translation id="7823902813460802031">Se il criterio viene impostato su Attivato, <ph name="PRODUCT_OS_NAME" /> impedisce al dispositivo di avviare la modalità sviluppatore.
 
        Se il criterio viene impostato su Disattivato o se non viene configurato, la modalità sviluppatore continua a essere disponibile per il dispositivo.</translation>
-<translation id="7824349369175912332">Consente di specificare le stampanti non utilizzabili dagli utenti.
+<translation id="7824349369175912332">Consente di specificare le stampanti non utilizzabili da un utente.
 
       Questo criterio viene utilizzato soltanto se è selezionata l'opzione <ph name="PRINTERS_BLACKLIST" /> per <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />.
 
-      Se viene utilizzato questo criterio, l'utente avrà a disposizione tutte le stampanti tranne quelle i cui ID sono elencati in questo criterio. Gli ID devono corrispondere ai campi "id" o "guid" del file specificato nel criterio <ph name="DEVICE_PRINTERS_POLICY_NAME" />.
+      Se viene utilizzato questo criterio, per l'utente saranno disponibili tutte le stampanti tranne quelle i cui ID sono elencati in questo criterio. Gli ID devono corrispondere ai campi "id" o "guid" del file specificato nel criterio <ph name="DEVICE_PRINTERS_POLICY_NAME" />.
 
-      Questo criterio è deprecato, al suo posto utilizza <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" />.
+      Questo criterio è deprecato, utilizza <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" /> al suo posto.
       </translation>
 <translation id="782661371433719637">Non consentire a nessun sito di richiedere l'accesso di lettura di file e directory tramite l'API file system</translation>
 <translation id="7841880500990419427">Versione TLS minima a cui retrocedere</translation>
@@ -5320,9 +5308,9 @@ Se questa norma non viene impostata, le pagine saranno sottoposte a scansione pe
       Se il criterio viene impostato su true, le schede che sono in secondo piano da almeno cinque minuti potrebbero essere bloccate. Il blocco delle schede riduce l'utilizzo di CPU, batteria e memoria. <ph name="PRODUCT_NAME" /> usa l'euristica per evitare di bloccare le schede in secondo piano che hanno una funzione utile (ad esempio visualizzare notifiche, riprodurre audio, riprodurre video in streaming). Gli sviluppatori web possono anche disattivare il blocco nei loro siti (https://chromium.googlesource.com/chromium/src/+/HEAD/chrome/browser/performance_manager/docs/freezing_opt_out_opt_in.md).
 
       Se il criterio viene impostato su false, le schede non verranno bloccate.</translation>
-<translation id="8622378389102774881">Se questo criterio viene impostato, l'host di accesso remoto richiederà che i client di autenticazione ottengano un token di autenticazione da questo URL per consentire la connessione. Deve essere utilizzato insieme a RemoteAccessHostTokenValidationUrl.
+<translation id="8622378389102774881">Se questo criterio viene impostato, l'host di accesso remoto richiederà che i client che eseguono l'autenticazione ottengano un token di autenticazione da questo URL perché la connessione avvenga. Deve essere utilizzato insieme a RemoteAccessHostTokenValidationUrl.
 
-          Questa funzionalità viene disattivata se è vuoto o non impostato.</translation>
+          Questa funzionalità viene disattivata se il criterio è vuoto o non impostato.</translation>
 <translation id="8625234016727663537">Consente di impostare un elenco di URL che specifica a quali siti verrà concessa automaticamente l'autorizzazione per accedere a un dispositivo USB con gli ID prodotto e fornitore indicati nella schermata di accesso. Perché il criterio sia valido, ogni elemento dell'elenco deve contenere sia dispositivi sia URL. Ogni elemento nei dispositivi può contenere un campo ID fornitore e un campo ID prodotto. Gli eventuali ID omessi verranno considerati caratteri jolly con l'eccezione che non è possibile specificare un ID prodotto senza aver specificato un ID fornitore. In caso contrario, il criterio non sarà valido e verrà ignorato.
 
         Il modello di autorizzazione USB utilizza l'URL del sito richiedente ("URL richiedente") e l'URL del sito frame di livello principale ("URL di incorporamento") per concedere all'URL richiedente l'autorizzazione di accesso al dispositivo USB. L'URL richiedente può essere diverso dall'URL di incorporamento quando il sito richiedente viene caricato in un iframe. Di conseguenza il campo "URL" può contenere fino a due stringhe URL delimitate da virgola per specificare rispettivamente l'URL richiedente e l'URL di incorporamento. Se è specificato un solo URL, l'accesso ai dispositivi USB corrispondenti viene concesso quando l'URL del sito richiedente corrisponde all'URL, a prescindere dallo stato di incorporamento. Gli URL in "URL" devono essere validi, altrimenti il criterio viene ignorato.

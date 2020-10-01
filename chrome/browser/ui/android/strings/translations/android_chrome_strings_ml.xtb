@@ -19,7 +19,7 @@
 <translation id="1126809382673880764">അപകടകരമായ വെബ്‌സൈറ്റുകൾ ഡൗൺലോഡുകൾ, വിപുലീകരണങ്ങൾ എന്നിവയിൽ നിന്ന് നിങ്ങളെ പരിരക്ഷിക്കില്ല. Gmail, Search പോലുള്ള മറ്റ് Google സേവനങ്ങളിൽ ഉള്ള സുരക്ഷിത ബ്രൗസിംഗ് പരിരക്ഷ നിങ്ങൾക്ക് തുടർന്നും ലഭിക്കും.</translation>
 <translation id="1129510026454351943">വിശദാംശങ്ങള്‍: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1141800923049248244">{FILE_COUNT,plural, =1{ഒരു ഡൗൺലോഡ് ശേഷിക്കുന്നു.}other{# ഡൗൺലോഡുകൾ ശേഷിക്കുന്നു.}}</translation>
-<translation id="1142732900304639782">ഈ സൈറ്റുകൾ വിവർത്തനം ചെയ്യാനുള്ള ഓഫർ നൽകരുത്</translation>
+<translation id="1142732900304639782">ഈ സൈറ്റുകൾ വിവർത്തനം ചെയ്യേണ്ട</translation>
 <translation id="1145536944570833626">നിലവിലുള്ള വിവരങ്ങൾ ഇല്ലാതാക്കുക.</translation>
 <translation id="1146678959555564648">VR-ൽ പ്രവേശിക്കുക</translation>
 <translation id="1154704303112745282">ഓഫ്‌ലൈനിൽ പേജ് ലഭ്യമല്ല: <ph name="VIOLATED_URL" /></translation>
@@ -106,6 +106,7 @@
 <translation id="1810845389119482123">പ്രാഥമിക സമന്വയ സജ്ജീകരണം പൂർത്തിയാക്കിയിട്ടില്ല</translation>
 <translation id="1821253160463689938">നിങ്ങൾ ആ പേജുകൾ സന്ദർശിക്കുന്നില്ലെങ്കിൽ പോലും, നിങ്ങളുടെ മുൻഗണനകൾ ഓർമ്മിക്കുന്നതിന് കുക്കികളെ ഉപയോഗിക്കുന്നു</translation>
 <translation id="1829244130665387512">പേജില്‍ കണ്ടുപിടിക്കുക</translation>
+<translation id="1830550083491357902">പ്രവേശിച്ചിട്ടില്ല</translation>
 <translation id="1843805151597803366">മികച്ച വിവർത്തനങ്ങൾ ലഭിക്കുന്നതിന്, നിലവിലെ പേജ് ഉപയോഗിക്കാൻ Google Search-നെ അനുവദിക്കുക</translation>
 <translation id="1853692000353488670">പുതിയ അദൃശ്യ ടാബ്</translation>
 <translation id="1856325424225101786">ലൈറ്റ് മോഡ് പുനഃസജ്ജീകരിക്കണോ?</translation>
@@ -113,6 +114,7 @@
 <translation id="1877026089748256423">Chrome കാലഹരണപ്പെട്ടതാണ്</translation>
 <translation id="1883903952484604915">എന്റെ ഫയലുകൾ</translation>
 <translation id="189358972401248634">മറ്റ് ഭാഷകൾ</translation>
+<translation id="1919130412786645364">Chrome-ലേക്ക് സൈൻ ഇൻ ചെയ്യാൻ അനുവദിക്കുക</translation>
 <translation id="1922362554271624559">നിർദ്ദേശിക്കുന്ന ഭാഷകൾ</translation>
 <translation id="1925021887439448749">ഇഷ്‌ടാനുസൃത വെബ് വിലാസം നൽകുക</translation>
 <translation id="1928696683969751773">അപ്‌ഡേറ്റുചെയ്യുന്നു</translation>
@@ -131,7 +133,7 @@
 <translation id="1993768208584545658"><ph name="SITE" /> ജോടിയാക്കാൻ താൽപ്പര്യപ്പെടുന്നു</translation>
 <translation id="2000419248597011803">നിങ്ങളുടെ ഡിഫോൾട്ട് തിരയൽ എഞ്ചിനിലേക്ക് വിലാസ ബാറിൽ നിന്നും തിരയൽ ബോക്‌സിൽ നിന്നുമുള്ള തിരയലുകളും കുറച്ച് കുക്കികളും അയയ്ക്കുന്നു</translation>
 <translation id="2002537628803770967">Google Pay ഉപയോഗിക്കുന്ന ക്രെഡിറ്റ് കാർഡുകളും വിലാസങ്ങളും</translation>
-<translation id="2010780124464321179">ടെക്‌സ്റ്റിലേക്കുള്ള ലിങ്ക് സൃഷ്ടിക്കാനാകില്ല. ലിങ്ക്, പേജിൽ പങ്കിടുക.</translation>
+<translation id="2010780124464321179">ടെക്‌സ്റ്റിലേക്കുള്ള ലിങ്ക് സൃഷ്ടിക്കാനാകില്ല. പേജിലേക്കുള്ള ലിങ്ക് പങ്കിടുക.</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# ഫയല്‍}other{# ഫയലുകൾ}}</translation>
 <translation id="2017836877785168846">വിലാസ ബാറിലെ ചരിത്രവും സ്വയം പൂർത്തീകരണങ്ങളും മായ്ക്കുന്നു.</translation>
 <translation id="2021896219286479412">പൂർണ്ണ സ്ക്രീൻ സൈറ്റ് നിയന്ത്രണങ്ങൾ</translation>
@@ -213,7 +215,7 @@
 <translation id="2537178555904266562">പാസ്‌വേഡുകൾ സമന്വയിപ്പിക്കുന്നതിൽ പിശക്</translation>
 <translation id="2546283357679194313">കുക്കികളും സൈറ്റ് ഡാറ്റയും</translation>
 <translation id="2567385386134582609">ചിത്രം</translation>
-<translation id="2571711316400087311">മറ്റ് ഭാഷകളിലുള്ള പേജുകൾ Google Translate-ലേക്ക് അയയ്ക്കുന്നതിനുള്ള ഓഫർ</translation>
+<translation id="2571711316400087311">മറ്റ് ഭാഷകളിലുള്ള പേജുകൾ Google Translate-ലേക്ക് അയയ്ക്കുന്നു</translation>
 <translation id="2581165646603367611">ഇത്, Chrome പ്രധാനമായി കണക്കാക്കാത്ത സൈറ്റുകളുടെ കുക്കികളും കാഷെയും മറ്റ് വിവരങ്ങളും മായ്‌ക്കും.</translation>
 <translation id="2587052924345400782">ഏറ്റവും പുതിയ പതിപ്പ് ലഭ്യമാണ്</translation>
 <translation id="2593272815202181319">മോണോസ്പെ‌യ്‌സ്</translation>
@@ -225,6 +227,7 @@
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# ഓഡിയോ ഫയൽ}other{# ഓഡിയോ ഫയലുകള്‍}}</translation>
 <translation id="2656405586795711023">വെബ് ആപ്പുകൾ</translation>
 <translation id="2689830683995595741">Chrome ഉപയോഗിക്കുന്നതിലൂടെ, നിങ്ങൾ <ph name="BEGIN_LINK1" />Google സേവന നിബന്ധനകളും<ph name="END_LINK1" /> <ph name="BEGIN_LINK2" />Google Chrome, Chrome OS അധിക സേവന നിബന്ധനകളും<ph name="END_LINK2" /> അംഗീകരിക്കുന്നു. <ph name="BEGIN_LINK3" />Family Link ഉപയോഗിച്ച് മാനേജ് ചെയ്യുന്ന Google അക്കൗണ്ടുകൾക്കുള്ള സ്വകാര്യതാ കുറിപ്പും<ph name="END_LINK3" /> ബാധകമാണ്.</translation>
+<translation id="2704606927547763573">പകർത്തി</translation>
 <translation id="2707726405694321444">പേജ് പുതുക്കുക</translation>
 <translation id="2709516037105925701">സ്വയമേവ പൂരിപ്പിക്കൽ</translation>
 <translation id="2718352093833049315">Wi-Fi യിൽ മാത്രം</translation>
@@ -347,6 +350,7 @@
 <translation id="3631987586758005671"><ph name="DEVICE_NAME" /> എന്നതിലേക്ക് പങ്കിടുന്നു</translation>
 <translation id="3632295766818638029">പാസ്‌വേഡ് വെളിപ്പെടുത്തുക</translation>
 <translation id="363596933471559332">സൂക്ഷിച്ചിരിക്കുന്ന ക്രെഡൻഷ്യലുകൾ ഉപയോഗിച്ച് വെബ്‌സൈറ്റുകളിലേക്ക് സ്വയമേവ സൈൻ ഇൻ ചെയ്യുക. ഫീച്ചർ ഓഫായിരിക്കുമ്പോൾ, ഒരു വെബ്‌സൈറ്റിലേക്ക് സൈൻ ഇൻ ചെയ്യുന്നതിനുമുമ്പ് പരിശോധിച്ചുറപ്പിക്കാൻ ഓരോ തവണയും നിങ്ങളോടാവശ്യപ്പെടും.</translation>
+<translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3658159451045945436">പുനഃസജ്ജീകരിക്കുന്നത്, സന്ദർശിച്ച സൈറ്റുകളുടെ ലിസ്‌റ്റ് അടക്കമുള്ള ഡാറ്റ ലാഭിക്കൽ ചരിത്രത്തെ മായ്ക്കുന്നു.</translation>
 <translation id="3692944402865947621">സ്റ്റോറേജ് ലൊക്കേഷൻ കണ്ടെത്താനാകാത്തതിനാൽ <ph name="FILE_NAME" /> ഡൗൺലോഡ് ചെയ്യുന്നത് പരാജയപ്പെട്ടു.</translation>
 <translation id="3701167022068948696">ഇപ്പോൾ പരിഹരിക്കുക</translation>
@@ -707,6 +711,7 @@
 <translation id="6301525844455696527">നിങ്ങളുടെ വായനാ ലിസ്‌റ്റ് കാണൂ</translation>
 <translation id="6303969859164067831">സൈൻ ഔട്ട് ചെയ്‌ത് സമന്വയം ഓഫാക്കുക</translation>
 <translation id="6312687380483398334">വെബ്‌ ആപ്പുകൾ (നിശബ്‌ദം)</translation>
+<translation id="6313752143992575395"><ph name="WEBSITE_TITLE" /> എന്നതിനുള്ള നിർദ്ദേശം കാണിക്കുന്നു</translation>
 <translation id="6316139424528454185">Android പതിപ്പ് പിന്തുണയ്‌ക്കുന്നതല്ല</translation>
 <translation id="6324034347079777476">Android സിസ്‌റ്റം സമന്വയിപ്പിക്കൽ പ്രവർത്തനരഹിതമാക്കി</translation>
 <translation id="6333140779060797560"><ph name="APPLICATION" /> വഴി പങ്കിടുക</translation>
@@ -838,6 +843,7 @@
 <translation id="7233236755231902816">നിങ്ങളുടെ ഭാഷയിൽ വെബ് കാണാൻ Chrome-ൻ്റെ ഏറ്റവും പുതിയ പതിപ്പ് നേടൂ</translation>
 <translation id="7248069434667874558">Chrome-ൽ <ph name="TARGET_DEVICE_NAME" /> ഉപകരണത്തിലെ സമന്വയിപ്പിക്കൽ ഓണാക്കിയിട്ടുണ്ടെന്ന് ഉറപ്പാക്കുക</translation>
 <translation id="7274013316676448362">സൈറ്റ് ബ്ലോക്ക് ചെയ്‌തു</translation>
+<translation id="7286572596625053347"><ph name="LANGUAGE" /> മാറ്റണോ?</translation>
 <translation id="7290209999329137901">പേര് മാറ്റൽ ലഭ്യമല്ല</translation>
 <translation id="7291387454912369099">അസിസ്‌റ്റന്റ് ചെക്ക് ഔട്ട് ചെയ്യാൻ പ്രേരിപ്പിച്ചു</translation>
 <translation id="7293171162284876153">സമന്വയം ആരംഭിക്കാൻ, "നിങ്ങളുടെ Chrome ഡാറ്റാ സമന്വയിപ്പിക്കൽ" ഓണാക്കുക.</translation>
@@ -960,7 +966,6 @@
 <translation id="8058746566562539958">പുതിയ Chrome ടാബിൽ തുറക്കുക</translation>
 <translation id="8063895661287329888">ബുക്ക്മാർക്ക് ചേർക്കാനായില്ല.</translation>
 <translation id="806745655614357130">എന്റെ വിവരങ്ങൾ പ്രത്യേകം വേർതിരിച്ച് സൂക്ഷിക്കുക</translation>
-<translation id="8069669375923284295">സമന്വയിപ്പിക്കൽ സജ്ജീകരണം തുടരാൻ ടാപ്പ് ചെയ്യുക</translation>
 <translation id="8073388330009372546">ചിത്രം പുതിയ ടാബിൽ തുറക്കുക</translation>
 <translation id="8076492880354921740">ടാബുകള്‍‌</translation>
 <translation id="8084114998886531721">സംരക്ഷിച്ച പാസ്‌വേഡ്</translation>
@@ -1046,7 +1051,7 @@
 <translation id="8683039184091909753">ചിത്രം</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{സിഗ്‌നൽ സ്‌ട്രെംഗ്‌ത്ത് ലെവൽ # ബാർ}other{സിഗ്‌നൽ സ്‌ട്രെംഗ്‌ത്ത് ലെവൽ # ബാറുകൾ}}</translation>
 <translation id="869891660844655955">കാലഹരണപ്പെടല്‍‌ തീയതി</translation>
-<translation id="8699120352855309748">ഈ ഭാഷകൾ വിവർത്തനം ചെയ്യാനുള്ള ഓഫർ നൽകരുത്</translation>
+<translation id="8699120352855309748">ഈ ഭാഷകൾ വിവർത്തനം ചെയ്യേണ്ട</translation>
 <translation id="8712637175834984815">മനസ്സിലായി</translation>
 <translation id="8725066075913043281">വീണ്ടും ശ്രമിക്കുക</translation>
 <translation id="8748850008226585750">കോൺടാക്‌റ്റുകൾ മറച്ചു</translation>

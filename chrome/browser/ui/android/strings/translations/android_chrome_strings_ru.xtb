@@ -106,6 +106,7 @@
 <translation id="1810845389119482123">Синхронизация не настроена</translation>
 <translation id="1821253160463689938">Использовать файлы cookie, чтобы запомнить ваши предпочтения, даже если вы не открываете эти страницы</translation>
 <translation id="1829244130665387512">Найти на странице</translation>
+<translation id="1830550083491357902">Вход не выполнен</translation>
 <translation id="1843805151597803366">Чтобы обеспечить более высокое качество переводов, предоставьте Google Поиску доступ к содержанию этой страницы.</translation>
 <translation id="1853692000353488670">Новая вкладка инкогнито</translation>
 <translation id="1856325424225101786">Сбросить упрощенный режим?</translation>
@@ -113,6 +114,7 @@
 <translation id="1877026089748256423">Версия Chrome устарела</translation>
 <translation id="1883903952484604915">Скачанные</translation>
 <translation id="189358972401248634">Другие языки</translation>
+<translation id="1919130412786645364">Разрешить вход в Chrome</translation>
 <translation id="1922362554271624559">Рекомендуемые языки</translation>
 <translation id="1925021887439448749">Введите веб-адрес</translation>
 <translation id="1928696683969751773">Обновления</translation>
@@ -225,10 +227,11 @@
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# аудиофайл}one{# аудиофайл}few{# аудиофайла}many{# аудиофайлов}other{# аудиофайла}}</translation>
 <translation id="2656405586795711023">Веб-приложения</translation>
 <translation id="2689830683995595741">Используя Chrome, вы принимаете <ph name="BEGIN_LINK1" />Условия использования Google<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />Дополнительные условия использования Chrome и Chrome OS<ph name="END_LINK2" />. Кроме этих документов, также действует <ph name="BEGIN_LINK3" />Примечание о конфиденциальности данных в аккаунтах Google, управляемых с помощью Family Link<ph name="END_LINK3" />.</translation>
+<translation id="2704606927547763573">Скопировано</translation>
 <translation id="2707726405694321444">Обновить страницу</translation>
 <translation id="2709516037105925701">Автозаполнение</translation>
 <translation id="2718352093833049315">Только Wi-Fi</translation>
-<translation id="2718846868787000099">Сайты, которые вы посещаете, могут видеть предпочтения, чтобы показывать контент на нужном языке.</translation>
+<translation id="2718846868787000099">Сайты, которые вы посещаете, могут видеть выбранные вами настройки, чтобы показывать контент на нужном языке.</translation>
 <translation id="2723001399770238859">аудио</translation>
 <translation id="2728754400939377704">Сортировать по имени домена</translation>
 <translation id="2744248271121720757">Нажмите на слово, чтобы увидеть связанные с ним результаты поиска и действия.</translation>
@@ -656,7 +659,7 @@
 <translation id="5937580074298050696">Сохранено: <ph name="AMOUNT" /></translation>
 <translation id="5939518447894949180">Сбросить</translation>
 <translation id="5942872142862698679">Google используется как поисковая система по умолчанию</translation>
-<translation id="5951615825629292797">Язык скачан, перезапустите <ph name="APP_NAME" /></translation>
+<translation id="5951615825629292797">Языковой пакет скачан, перезапустите <ph name="APP_NAME" />.</translation>
 <translation id="5952764234151283551">Отправлять в Google URL страниц, которые вы пытаетесь открыть</translation>
 <translation id="5956665950594638604">Открыть Справочный центр Chrome в новой вкладке</translation>
 <translation id="5957442310066583693">Нажмите эту кнопку, чтобы увидеть интересные вам сайты</translation>
@@ -963,7 +966,6 @@
 <translation id="8058746566562539958">Открыть в новой вкладке</translation>
 <translation id="8063895661287329888">Не удалось добавить закладку.</translation>
 <translation id="806745655614357130">Не объединять данные</translation>
-<translation id="8069669375923284295">Нажмите, чтобы продолжить настройку синхронизации.</translation>
 <translation id="8073388330009372546">Открыть в новой вкладке</translation>
 <translation id="8076492880354921740">Вкладки</translation>
 <translation id="8084114998886531721">Сохраненный пароль</translation>

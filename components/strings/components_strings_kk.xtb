@@ -15,6 +15,7 @@
 <translation id="1038106730571050514">Ұсыныстарды көрсету</translation>
 <translation id="1038842779957582377">белгісіз ат</translation>
 <translation id="1041998700806130099">Тапсырма парағының хабарламасы</translation>
+<translation id="1048785276086539861">Аннотацияларды өзгерткен кезде, бұл құжат бір беттік көрініске ауысады.</translation>
 <translation id="1050038467049342496">Басқа қолданбаларды жабу</translation>
 <translation id="1055184225775184556">&amp;Қосуды болдырмау</translation>
 <translation id="1056898198331236512">Ескерту</translation>
@@ -379,6 +380,7 @@
 <translation id="2465688316154986572">Қапсыру</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />Network Diagnostics құралын қосу<ph name="END_LINK" /></translation>
 <translation id="2469153820345007638">1 бастап N дейінгі ретпен</translation>
+<translation id="2470767536994572628">Аннотацияларды өзгерткен кезде, бұл құжат бір беттік көрініске ауысады және бастапқыдағыдай бұрылып тұрады.</translation>
 <translation id="2479410451996844060">Жарамсыз іздеу URL сілтемесі.</translation>
 <translation id="2482878487686419369">Хабарландырулар</translation>
 <translation id="248348093745724435">Құрылғы саясаттары</translation>
@@ -1226,6 +1228,7 @@
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5946937721014915347"><ph name="SITE_NAME" /> ашылуда…</translation>
 <translation id="5951495562196540101">Тұтынушының есептік жазбасымен тіркеу мүмкін емес (лицензия пакеті бар).</translation>
+<translation id="5963413905009737549">Бөлім</translation>
 <translation id="5967592137238574583">Байланыс ақпаратын өңдеу</translation>
 <translation id="5967867314010545767">Тарихтан алып тастау</translation>
 <translation id="5975083100439434680">Кішірейту</translation>
@@ -1637,6 +1640,7 @@
 <translation id="7647206758853451655">Басып шығару сапасы</translation>
 <translation id="7648992873808071793">Файлдарды осы құрылғыда сақтау</translation>
 <translation id="7653957176542370971">Төлем өңдегіш беті жабық.</translation>
+<translation id="7654909834015434372">Аннотацияларды өзгерткенде, бұл құжат бастапқыдағыдай бұрылып тұрады.</translation>
 <translation id="765676359832457558">Қосымша параметрлерді жасыру…</translation>
 <translation id="7658239707568436148">Бас тарту</translation>
 <translation id="7662298039739062396">Кеңейтім арқылы реттелетін параметр</translation>

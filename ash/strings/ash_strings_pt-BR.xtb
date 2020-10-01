@@ -198,7 +198,6 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="2996462380875591307">Lupa em área fixa ativada. Pressione Ctrl+Pesquisa+D novamente para desativá-la.</translation>
 <translation id="3000461861112256445">Áudio mono</translation>
 <translation id="3009178788565917040">Saída</translation>
-<translation id="3025081209054535615">Liberar os controles de mídia globais da estante</translation>
 <translation id="3033545621352269033">Ativada</translation>
 <translation id="3038571455154067151">Para fazer login, insira seu código de acesso de pai/mãe do Family Link</translation>
 <translation id="3045488863354895414">Boa tarde,</translation>
@@ -622,6 +621,7 @@ permanentemente excluídos assim que esse usuário for removido. Os websites vis
 <translation id="7526573455193969409">A rede pode ser monitorada</translation>
 <translation id="7536035074519304529">Endereço IP: <ph name="ADDRESS" /></translation>
 <translation id="7548434653388805669">Hora de dormir</translation>
+<translation id="7551643184018910560">Fixar na estante</translation>
 <translation id="7561982940498449837">Fechar menu</translation>
 <translation id="7564874036684306347">A movimentação de janelas para outra área de trabalho pode resultar em comportamentos inesperados. Notificações posteriores, janelas e caixas de diálogo podem ser divididas entre as áreas de trabalho.</translation>
 <translation id="7568294522609223312">Desativar cliques automáticos</translation>
@@ -702,7 +702,6 @@ permanentemente excluídos assim que esse usuário for removido. Os websites vis
 <translation id="8297006494302853456">Fraco</translation>
 <translation id="8308637677604853869">Menu anterior</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
-<translation id="8349293353728876872">Fixar os controles de mídia globais na estante</translation>
 <translation id="8351131234907093545">Criar nota</translation>
 <translation id="8371779926711439835">Avançar por letra</translation>
 <translation id="8375916635258623388">Este <ph name="DEVICE_NAME" /> e seu smartphone serão conectados automaticamente</translation>

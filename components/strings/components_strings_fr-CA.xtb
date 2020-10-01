@@ -15,6 +15,7 @@
 <translation id="1038106730571050514">Afficher les suggestions</translation>
 <translation id="1038842779957582377">nom inconnu</translation>
 <translation id="1041998700806130099">Message de la feuille de travail</translation>
+<translation id="1048785276086539861">Lorsque vous modifiez des annotations, ce document s'affiche au format de vue par page</translation>
 <translation id="1050038467049342496">Fermer les autres applications</translation>
 <translation id="1055184225775184556">&amp;Annuler l'ajout</translation>
 <translation id="1056898198331236512">Avertissement</translation>
@@ -108,6 +109,7 @@
 <translation id="1348779747280417563">Confirmer le nom</translation>
 <translation id="1357195169723583938">Qui a utilisé cet appareil récemment, et quand</translation>
 <translation id="1360955481084547712">Ouvrez une nouvelle fenêtre en mode de navigation privée pour naviguer de manière privée</translation>
+<translation id="1363819917331173092">Ne pas proposer de traduire les pages en <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1364822246244961190">Cette politique est bloquée, sa valeur sera ignorée.</translation>
 <translation id="1374468813861204354">suggestions</translation>
 <translation id="1374692235857187091">Fiche 4 po x 6 po (carte postale)</translation>
@@ -374,6 +376,7 @@
 <translation id="2465688316154986572">Agrafe</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />d'exécuter Network Diagnostics<ph name="END_LINK" /></translation>
 <translation id="2469153820345007638">Ordre 1 sur N</translation>
+<translation id="2470767536994572628">Lorsque vous modifiez des annotations, ce document s'affiche au format de vue par page, dans son orientation d'origine</translation>
 <translation id="2479410451996844060">URL de recherche non valide</translation>
 <translation id="2482878487686419369">Notifications</translation>
 <translation id="248348093745724435">Politiques applicables à la machine</translation>
@@ -497,6 +500,7 @@
 <translation id="2996674880327704673">Suggestions de Google</translation>
 <translation id="3002501248619246229">Vérifier le support du bac d'alimentation</translation>
 <translation id="3005723025932146533">Afficher une copie sauvegardée</translation>
+<translation id="3007719053326478567">Votre administrateur a bloqué l'impression de ce contenu</translation>
 <translation id="3008447029300691911">Entrez le code de vérification de carte (CVC) pour <ph name="CREDIT_CARD" />. Après confirmation, les détails de votre carte seront partagés avec ce site.</translation>
 <translation id="3010559122411665027">Élément de liste « <ph name="ENTRY_INDEX" /> » : <ph name="ERROR" /></translation>
 <translation id="301521992641321250">Bloquée automatiquement</translation>
@@ -1214,6 +1218,7 @@
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5946937721014915347">Ouverture du site <ph name="SITE_NAME" /> en cours…</translation>
 <translation id="5951495562196540101">Impossible de s'inscrire avec un compte de consommateur (licence empaquetée disponible).</translation>
+<translation id="5963413905009737549">Section</translation>
 <translation id="5967592137238574583">Modifier les coordonnées</translation>
 <translation id="5967867314010545767">Supprimer de l'historique</translation>
 <translation id="5975083100439434680">Zoom arrière</translation>
@@ -1625,6 +1630,7 @@ Détails supplémentaires :
 <translation id="7647206758853451655">Qualité d'impression</translation>
 <translation id="7648992873808071793">Enregistrer des fichiers sur cet appareil</translation>
 <translation id="7653957176542370971">La feuille du module de traitement du paiement est fermée</translation>
+<translation id="7654909834015434372">Lorsque vous modifiez des annotations, ce document s'affiche dans son orientation d'origine</translation>
 <translation id="765676359832457558">Masquer les paramètres avancés…</translation>
 <translation id="7658239707568436148">Annuler</translation>
 <translation id="7662298039739062396">Paramètre commandé par une extension</translation>
@@ -1780,6 +1786,7 @@ Détails supplémentaires :
 <translation id="8267698848189296333">Connexion en tant que <ph name="USERNAME" /></translation>
 <translation id="8269242089528251720">Documents séparés/Copies assemblées</translation>
 <translation id="8269981117540303696">Vous pouvez maintenant naviguer de façon privée, et les autres personnes qui utilisent cet appareil ne verront pas votre activité. Cependant, les téléchargements et les favoris seront enregistrés.</translation>
+<translation id="8275952078857499577">Ne pas proposer de traduire ce site</translation>
 <translation id="8277900682056760511">La feuille du module de traitement du paiement est ouverte</translation>
 <translation id="8281084378435768645">Grande photo</translation>
 <translation id="8282947398454257691">Connaître votre identifiant d'appareil unique</translation>

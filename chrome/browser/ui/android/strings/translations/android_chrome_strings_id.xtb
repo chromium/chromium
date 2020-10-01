@@ -54,7 +54,7 @@
 <translation id="1327257854815634930">Histori navigasi terbuka</translation>
 <translation id="1331212799747679585">Chrome tidak dapat diupdate. Opsi lainnya</translation>
 <translation id="1332501820983677155">Pintasan fitur Google Chrome</translation>
-<translation id="133857033449832692">Mendownload <ph name="LANG" />…</translation>
+<translation id="133857033449832692">Mendownload bahasa <ph name="LANG" />…</translation>
 <translation id="1347468774581902829">Kelola aktivitas</translation>
 <translation id="1360432990279830238">Logout dan nonaktifkan sinkronisasi?</translation>
 <translation id="1373696734384179344">Memori tidak cukup untuk mendownload konten yang dipilih.</translation>
@@ -106,6 +106,7 @@
 <translation id="1810845389119482123">Penyiapan sinkronisasi awal belum selesai</translation>
 <translation id="1821253160463689938">Menggunakan cookie untuk mengingat preferensi, meski Anda tidak membuka halaman tersebut</translation>
 <translation id="1829244130665387512">Cari di halaman</translation>
+<translation id="1830550083491357902">Belum masuk</translation>
 <translation id="1843805151597803366">Untuk mendapatkan terjemahan yang lebih baik, izinkan Google Penelusuran menggunakan halaman saat ini</translation>
 <translation id="1853692000353488670">Tab samaran baru</translation>
 <translation id="1856325424225101786">Reset Mode Ringan?</translation>
@@ -113,6 +114,7 @@
 <translation id="1877026089748256423">Chrome terlalu lawas</translation>
 <translation id="1883903952484604915">File Saya</translation>
 <translation id="189358972401248634">Bahasa lain</translation>
+<translation id="1919130412786645364">Izinkan login Chrome</translation>
 <translation id="1922362554271624559">Bahasa yang disarankan</translation>
 <translation id="1925021887439448749">Masukkan alamat web khusus</translation>
 <translation id="1928696683969751773">Pembaruan</translation>
@@ -225,6 +227,7 @@ Sentuh lama kata apa pun untuk menelusurinya. Untuk menyaring penelusuran, pilih
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# File audio}other{# File audio}}</translation>
 <translation id="2656405586795711023">Aplikasi web</translation>
 <translation id="2689830683995595741">Dengan menggunakan Chrome, Anda menyetujui <ph name="BEGIN_LINK1" />Persyaratan Layanan Google<ph name="END_LINK1" /> serta <ph name="BEGIN_LINK2" />Persyaratan Layanan Tambahan Google Chrome dan Chrome OS<ph name="END_LINK2" />. <ph name="BEGIN_LINK3" />Pemberitahuan Privasi untuk Akun Google yang Dikelola dengan Family Link<ph name="END_LINK3" /> juga berlaku.</translation>
+<translation id="2704606927547763573">Disalin</translation>
 <translation id="2707726405694321444">Segarkan halaman</translation>
 <translation id="2709516037105925701">Isi-Otomatis</translation>
 <translation id="2718352093833049315">Hanya melalui Wi-Fi</translation>
@@ -347,6 +350,7 @@ Sentuh lama kata apa pun untuk menelusurinya. Untuk menyaring penelusuran, pilih
 <translation id="3631987586758005671">Membagikan ke <ph name="DEVICE_NAME" /></translation>
 <translation id="3632295766818638029">Tampilkan sandi</translation>
 <translation id="363596933471559332">Otomatis login ke situs web menggunakan kredensial yang tersimpan. Saat fitur dinonaktifkan, Anda akan dimintai verifikasi setiap kali hendak login ke situs web.</translation>
+<translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3658159451045945436">Penyetalan ulang akan menghapus histori penyimpanan data, termasuk daftar situs yang dibuka.</translation>
 <translation id="3692944402865947621">Download <ph name="FILE_NAME" /> gagal karena lokasi penyimpanan tidak dapat dijangkau.</translation>
 <translation id="3701167022068948696">Perbaiki sekarang</translation>
@@ -707,6 +711,7 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="6301525844455696527">Selesaikan daftar bacaan Anda</translation>
 <translation id="6303969859164067831">Logout dan nonaktifkan sinkronisasi</translation>
 <translation id="6312687380483398334">Aplikasi web (minim notifikasi)</translation>
+<translation id="6313752143992575395">Menampilkan saran untuk <ph name="WEBSITE_TITLE" /></translation>
 <translation id="6316139424528454185">Versi Android tidak didukung</translation>
 <translation id="6324034347079777476">Sinkronisasi sistem Android dinonaktifkan</translation>
 <translation id="6333140779060797560">Bagikan dengan <ph name="APPLICATION" /></translation>
@@ -838,6 +843,7 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="7233236755231902816">Untuk melihat web dalam bahasa Anda, dapatkan versi terbaru Chrome</translation>
 <translation id="7248069434667874558">Pastikan <ph name="TARGET_DEVICE_NAME" /> telah mengaktifkan sinkronisasi di Chrome</translation>
 <translation id="7274013316676448362">Situs yang diblokir</translation>
+<translation id="7286572596625053347">Ubah <ph name="LANGUAGE" />?</translation>
 <translation id="7290209999329137901">Ganti nama tidak tersedia</translation>
 <translation id="7291387454912369099">Pemicuan Pembayaran oleh Asisten</translation>
 <translation id="7293171162284876153">Untuk memulai sinkronisasi, aktifkan "Sinkronkan data Chrome Anda".</translation>
@@ -960,7 +966,6 @@ Dalam mode Samaran, aktivitas Anda mungkin masih terlihat oleh situs yang dikunj
 <translation id="8058746566562539958">Buka di tab Chrome baru</translation>
 <translation id="8063895661287329888">Gagal menambahkan bookmark.</translation>
 <translation id="806745655614357130">Tetap pisahkan data saya</translation>
-<translation id="8069669375923284295">Ketuk untuk melanjutkan penyiapan sinkronisasi</translation>
 <translation id="8073388330009372546">Buka gambar di tab baru</translation>
 <translation id="8076492880354921740">Tab</translation>
 <translation id="8084114998886531721">Sandi tersimpan</translation>
@@ -998,7 +1003,7 @@ Dalam mode Samaran, aktivitas Anda mungkin masih terlihat oleh situs yang dikunj
 <translation id="8349013245300336738">Urutkan menurut jumlah kuota yang digunakan</translation>
 <translation id="8364299278605033898">Lihat situs yang populer</translation>
 <translation id="8368027906805972958">Perangkat tidak dikenal atau tidak didukung (<ph name="DEVICE_ID" />)</translation>
-<translation id="8372925856448695381"><ph name="LANG" /> sudah siap.</translation>
+<translation id="8372925856448695381">Bahasa <ph name="LANG" /> sudah siap.</translation>
 <translation id="8393700583063109961">Kirim pesan</translation>
 <translation id="8407396331882458341">1. Pilih <ph name="APP_NAME" />\n2. Ketuk "Selalu"</translation>
 <translation id="8413126021676339697">Tampilkan histori lengkap</translation>

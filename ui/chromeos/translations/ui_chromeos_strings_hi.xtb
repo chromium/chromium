@@ -117,7 +117,6 @@
 <translation id="2208158072373999562">ज़िप संग्रह</translation>
 <translation id="2225536596944493418">क्या आप वाकई <ph name="NUMBER_OF_ITEMS" /> आइटम मिटाना चाहते हैं?</translation>
 <translation id="2230062665678605299">"<ph name="FOLDER_NAME" />" फ़ोल्डर बनाने में असमर्थ. <ph name="ERROR_MESSAGE" /></translation>
-<translation id="2270413998793223379">संस्कृत</translation>
 <translation id="2275059641601412272">भेज दिया गया.</translation>
 <translation id="2278988676849463018">कन्नड़ कीबोर्ड (फ़ोनेटिक)</translation>
 <translation id="2287742181953707290">यूएस इंटरनैशनल पीसी कीबोर्ड के साथ पॉर्चुगीज़</translation>
@@ -615,7 +614,7 @@
 <translation id="7649070708921625228">सहायता</translation>
 <translation id="7654209398114106148"><ph name="NUMBER_OF_ITEMS" /> आइटम ले जाए रहे हैं...</translation>
 <translation id="7658239707568436148">अभी नहीं</translation>
-<translation id="7693909743393669729">ड्राइव को फ़ॉर्मैट करने से, उस पर सेव सभी डेटा मिट जाएगा और सारे मौजूदा पार्टीशन हट जाएंगे. इसमें वे पार्टीशन भी शामिल होंगे जो शायद दिख न रहे हों. मिटने के बाद यह सब वापस नहीं पाया जा सकता.</translation>
+<translation id="7693909743393669729">ड्राइव को फ़ॉर्मैट करने से, उस पर सेव सभी डेटा मिट जाएगा और सारे मौजूदा पार्टीशन हट जाएंगे. इनमें वे पार्टीशन भी शामिल होंगे जो शायद दिख न रहे हों. मिटने के बाद यह सब वापस नहीं पाया जा सकता.</translation>
 <translation id="7695430100978772476"><ph name="DRIVE_NAME" /> को फ़ॉर्मैट नहीं किया जा सका</translation>
 <translation id="770015031906360009">ग्रीक</translation>
 <translation id="7706319470528945664">पुर्तगाली कीबोर्ड</translation>

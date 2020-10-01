@@ -371,15 +371,6 @@ Se você desativar a política, essa rolagem será desativada.</translation>
       Se esta política for deixada sem definição, <ph name="PRINTERS_ALLOW_ALL" /> será usada.
       </translation>
 <translation id="1588240398285670601">Configurações do navegador</translation>
-<translation id="1588456836529393506">Se a política for definida, será possível criar uma lista de padrões de URL que especifica quais sites recebem permissão automaticamente para acessar um dispositivo USB com os IDs de produto e de fornecedor especificados. Cada item da lista precisa conter dispositivos e URLs para que a política seja válida. Cada item dos dispositivos pode conter um campo de ID de fornecedor e ID de produto. Todos os IDs omitidos serão tratados como caracteres curinga, com uma exceção: não é possível especificar um ID de produto sem especificar um ID de fornecedor. Caso contrário, a política não será válida.
-
-      O modelo de permissões de USB usa o URL solicitante e o URL de incorporação (do site de frame de nível superior) para permitir que o URL solicitante acesse o dispositivo USB. O URL solicitante pode ser diferente do URL de incorporação quando o site solicitante é carregado em um iframe. Portanto, o campo "URLs" pode conter até duas strings delimitadas por vírgula para especificar esses URLs. Se você especificar apenas uma, o acesso ao dispositivo USB correspondente será concedido quando o URL do site solicitante corresponder a esse URL, independente do status de incorporação. Os URLs desse campo precisam ser válidos, caso contrário, a política será ignorada.
-
-      Se a política não tiver definição, <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" /> será aplicada, se estiver definida. Caso contrário, a configuração pessoal do usuário será aplicada.
-
-      Os padrões de URL desta política não podem entrar em conflito com os configurados por meio da <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" />. Se entrarem, esta política terá precedência sobre <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" /> e <ph name="WEB_USB_ASK_FOR_URLS_POLICY_NAME" />.
-
-      Os valores dessa política e da <ph name="DEVICE_WEB_USB_ALLOW_DEVICES_FOR_URLS_POLICY_NAME" /> são mesclados.</translation>
 <translation id="1593245608325508847">Se a política for definida, o recurso de login restrito do Chrome será ativado no G Suite e os usuários não poderão mudar essa configuração. Os usuários poderão acessar as ferramentas do Google apenas usando contas dos domínios especificados. Para permitir contas gmail ou googlemail, adicione consumer_accounts à lista de domínios. Essa configuração impede que os usuários façam login e adicionem uma conta secundária em um dispositivo gerenciado que precisa da autenticação do Google se essa conta não pertencer a um dos domínios explicitamente permitidos.
 
       Deixar essa configuração vazia ou sem definição permitirá que os usuários acessem o G Suite com qualquer conta.
@@ -546,9 +537,6 @@ Se você desativar a política, essa rolagem será desativada.</translation>
 
       Se esta política não for configurada, a previsão de redes ficará ativada, e o usuário poderá alterá-la.</translation>
 <translation id="1865417998205858223">Principais permissões</translation>
-<translation id="1866563857170942397">Define a lista de usuários que têm permissão para fazer login no dispositivo. As entradas são feitas no formato <ph name="USER_ALLOWLIST_ENTRY_FORMAT" />, como <ph name="USER_WHITELIST_ENTRY_EXAMPLE" />. Para permitir usuários arbitrários em um domínio, use entradas no formato <ph name="USER_ALLOWLIST_ENTRY_WILDCARD" />.
-
-      Se esta política não for configurada, não haverá restrições quanto aos usuários autorizados a fazer login. Ainda assim, a criação de novos usuários exige que a política <ph name="DEVICE_ALLOW_NEW_USERS_POLICY_NAME" /> seja configurada de forma adequada.</translation>
 <translation id="186719019195685253">Ação a ser executada quando o tempo de inatividade for atingido durante operação com alimentação CA</translation>
 <translation id="1885782360784839335">Ativar a exibição de conteúdo promocional em guia cheia</translation>
 <translation id="1888871729456797026">Token de inscrição da política de nuvem na área de trabalho</translation>

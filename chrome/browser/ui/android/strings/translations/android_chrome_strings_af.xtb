@@ -106,6 +106,7 @@
 <translation id="1810845389119482123">Aanvanklike sinkronisering-opstelling is nie klaar nie</translation>
 <translation id="1821253160463689938">Gebruik webkoekies om jou voorkeure te onthou, selfs al besoek jy nie daardie bladsye nie</translation>
 <translation id="1829244130665387512">Vind op bladsy</translation>
+<translation id="1830550083491357902">Nie aangemeld nie</translation>
 <translation id="1843805151597803366">Laat Google Search die huidige bladsy gebruik om beter vertalings te kry</translation>
 <translation id="1853692000353488670">Nuwe incognito-oortjie</translation>
 <translation id="1856325424225101786">Stel Ligte Modus terug?</translation>
@@ -113,6 +114,7 @@
 <translation id="1877026089748256423">Chrome is verouderd</translation>
 <translation id="1883903952484604915">My lêers</translation>
 <translation id="189358972401248634">Ander tale</translation>
+<translation id="1919130412786645364">Laat Chrome-aanmelding toe</translation>
 <translation id="1922362554271624559">Voorgestelde tale</translation>
 <translation id="1925021887439448749">Voer gepasmaakte webadres in</translation>
 <translation id="1928696683969751773">Opdaterings</translation>
@@ -225,6 +227,7 @@ Raak en hou enige woord om te soek. Kies meer of minder woorde as jy jou soektog
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# oudiolêer}other{# oudiolêers}}</translation>
 <translation id="2656405586795711023">Webprogramme</translation>
 <translation id="2689830683995595741">As jy Chrome gebruik, stem jy in tot <ph name="BEGIN_LINK1" />Google se diensbepalings<ph name="END_LINK1" /> en <ph name="BEGIN_LINK2" />Google Chrome en Chrome-bedryfstelsel se bykomende diensbepalings<ph name="END_LINK2" />. Die <ph name="BEGIN_LINK3" />Privaatheidskennisgewing vir Google-rekeninge wat met Family Link bestuur word<ph name="END_LINK3" /> is ook van toepassing.</translation>
+<translation id="2704606927547763573">Gekopieer</translation>
 <translation id="2707726405694321444">Herlaai bladsy</translation>
 <translation id="2709516037105925701">Outovul</translation>
 <translation id="2718352093833049315">Net met Wi-Fi</translation>
@@ -963,7 +966,6 @@ In Incognito kan webwerwe wat jy besoek, jou werkgewer of skool, en jou internet
 <translation id="8058746566562539958">Open in nuwe Chrome-oortjie</translation>
 <translation id="8063895661287329888">Kon nie boekmerk byvoeg nie.</translation>
 <translation id="806745655614357130">Hou my data apart</translation>
-<translation id="8069669375923284295">Tik om met opstelling van sinkronisering voort te gaan</translation>
 <translation id="8073388330009372546">Maak prent in nuwe oortjie oop</translation>
 <translation id="8076492880354921740">Oortjies</translation>
 <translation id="8084114998886531721">Gestoorde wagwoord</translation>

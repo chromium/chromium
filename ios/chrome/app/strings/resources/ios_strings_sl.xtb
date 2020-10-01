@@ -97,7 +97,6 @@
 <translation id="1965935827552890526">Končajte, kar ste počeli v drugem odprtem oknu v Chromu.</translation>
 <translation id="1974060860693918893">Dodatno</translation>
 <translation id="1989112275319619282">Brskanje</translation>
-<translation id="1992734845128748707">Spreminjanje privzetega brskalnika …</translation>
 <translation id="2015722694326466240">Če si želite ogledati gesla, morate najprej nastaviti geslo v napravi.</translation>
 <translation id="2073572773299281212">Aktivna pred toliko dnevi: <ph name="DAYS" /></translation>
 <translation id="2074131957428911366">V <ph name="BEGIN_LINK" />nastavitvah<ph name="END_LINK" /> lahko kadar koli izberete, kaj želite sinhronizirati.</translation>
@@ -165,6 +164,7 @@ Spletna mesta ne smejo uporabljati piškotkov za ogled dejavnosti brskanja na ra
 <translation id="2781331604911854368">Vklopljeno</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2800683595868705743">Leave Tab Switcher</translation>
+<translation id="2815198996063984598">2. Dotaknite se možnosti za privzeto aplikacijo za brskanje.</translation>
 <translation id="2830972654601096923">Upravljanje naslovov ...</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2840687315230832938">Začetna nastavitev sinhronizacije se ni dokončala</translation>
@@ -181,6 +181,7 @@ Spletna mesta ne smejo uporabljati piškotkov za ogled dejavnosti brskanja na ra
 <translation id="2921219216347069551">Deljenje te strani z drugimi ni mogoče</translation>
 <translation id="2923448633003185837">Prilepi in nadaljuj</translation>
 <translation id="292639812446257861">Označi kot neprebrano</translation>
+<translation id="2952581218264071393">1. Odprite nastavitve brskalnika Chrome.</translation>
 <translation id="2958718410589002129">Gesla</translation>
 <translation id="2964349545761222050">Blokiranje piškotkov drugih spletnih mest</translation>
 <translation id="2969979262385602596">Failed to sign in. Please try again later.</translation>
@@ -217,6 +218,7 @@ Ko uporabljate način brez beleženja dejavnosti, spletna mesta ne smejo uporabl
 <translation id="3335947283844343239">Znova odpri zaprt zavihek</translation>
 <translation id="3371831930909698441">Prevod je na voljo. Možnosti so na voljo pri dnu zaslona.</translation>
 <translation id="3393920035788932672">Pojavna okna so dovoljena</translation>
+<translation id="3399930248910934354">Odpri nastavitve Chroma</translation>
 <translation id="3425644765244388016">Vzdevek za kartico</translation>
 <translation id="3433057996795775706">Če izbrišete to geslo, ne izbrišete računa na <ph name="WEBSITE" />. Če želite račun zaščititi pred drugimi, spremenite geslo na <ph name="WEBSITE" />.</translation>
 <translation id="3443810440409579745">Prejet zavihek.</translation>
@@ -241,6 +243,9 @@ Ko uporabljate način brez beleženja dejavnosti, spletna mesta ne smejo uporabl
 <translation id="3551320343578183772">Zapri zavihek</translation>
 <translation id="3581564640715911333">Ponudi prevajanje strani v drugih jezikih</translation>
 <translation id="3588820906588687999">Odpri sliko na novem zavihku</translation>
+<translation id="359441731697487922">Če nastavite Chrome kot privzeto aplikacijo za brskanje, lahko samodejno odpirate povezave v njem.
+      
+Upoštevajte spodnja navodila:</translation>
 <translation id="3603009562372709545">Kopiraj URL povezave</translation>
 <translation id="3607167657931203000">Autofill Data</translation>
 <translation id="3609785682760573515">Sinhroniziranje ...</translation>
@@ -331,6 +336,7 @@ Podatki so šifrirani z vašim geslom za sinhronizacijo. Vnesite ga, če želite
 <translation id="4747097190499141774">Šifriranje gesla ne vključuje plačilnih sredstev in naslovov iz Googla Pay. Vaše šifrirane podatke lahko bere samo oseba z vašim geslom. Geslo ni poslano Googlu in ni shranjeno v Googlu. Če ga pozabite ali želite spremeniti to nastavitev, boste morali sinhronizacijo ponastaviti. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">Nov zavihek brez beleženja zgodovine</translation>
 <translation id="4758977202923349869">Kreditno kartico postavite v ta okvir</translation>
+<translation id="4775879719735953715">Privzeti brskalnik</translation>
 <translation id="4802417911091824046">Šifriranje gesla ne vključuje plačilnih sredstev in naslovov iz Googla Pay.
 
 Če želite spremeniti to nastavitev, <ph name="BEGIN_LINK" />ponastavite sinhronizacijo<ph name="END_LINK" /></translation>
@@ -338,6 +344,7 @@ Podatki so šifrirani z vašim geslom za sinhronizacijo. Vnesite ga, če želite
 <translation id="4808744395915275922">Posodobitve</translation>
 <translation id="4818522717893377262">Dodaj jezik …</translation>
 <translation id="481968316161811770">Cookies, Site Data</translation>
+<translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} ]in še 1}one{{domain} in še {count}}two{{domain} in še {count}}few{{domain} in še {count}}other{{domain} in še {count}}}</translation>
 <translation id="4826218269716039351">Blokiraj piškotke drugih spletnih mest</translation>
 <translation id="48274138579728272">Označi kot prebrano</translation>
 <translation id="4833786495304741580">Samodejno pošilja statistične podatke o uporabi in poročila o zrušitvah Googlu.</translation>
@@ -586,6 +593,7 @@ Spletna mesta ne smejo uporabljati piškotkov za ogled dejavnosti brskanja na ra
 <translation id="7456847797759667638">Odpri mesto ...</translation>
 <translation id="7460314822154045102">Uporabi fotoaparat</translation>
 <translation id="7464701184726199289">S tem bodo sinhronizirani podatki izbrisani iz vseh naprav. Shranjene nastavitve spletnih mest ne bodo izbrisane in morda odražajo vaše brskalne navade. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
+<translation id="746684838091935575">3. Izberite Chrome.</translation>
 <translation id="7472734401283673885">Ime podjetja</translation>
 <translation id="7473891865547856676">Ne, hvala</translation>
 <translation id="7481312909269577407">Naprej</translation>

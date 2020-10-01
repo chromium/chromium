@@ -498,6 +498,7 @@
 <translation id="1572139610531470719">(Зочин) <ph name="WINDOW_TITLE" /></translation>
 <translation id="1572266655485775982">Wi-Fi-г идэвхжүүлэх</translation>
 <translation id="1572876035008611720">Имэйлээ оруулна уу</translation>
+<translation id="1575741822946219011">Хэл болон оролтууд</translation>
 <translation id="1576594961618857597">Өгөгдмөл цагаан аватар</translation>
 <translation id="1578558981922970608">Хүчээр хаах</translation>
 <translation id="1578784163189013834">Дэлгэц амраагчийн арын дэвсгэрийг сонгох</translation>
@@ -854,6 +855,7 @@
 <translation id="1974821797477522211">Сүлжээнд холбогдох</translation>
 <translation id="1975841812214822307">Устгах...</translation>
 <translation id="1976150099241323601">Аюулгүй байдлын төхөөрөмж рүү нэвтэрнэ үү.</translation>
+<translation id="1976307821760494606"><ph name="DOMAIN" /> ADB дебагийг идэвхгүй болгосон. Энэ нь таны <ph name="DEVICE_TYPE" />-г 24 цагийн дотор шинэчлэнэ. Та хадгалахыг хүссэн файлуудаа хуулбарлана уу.</translation>
 <translation id="1977965994116744507"><ph name="DEVICE_TYPE" />-н түгжээг тайлахын тулд утсаа ойртуулна уу.</translation>
 <translation id="1978006917103730774">Программ хангамж болон аюулгүй байдлын цаашдын шинэчлэлтийг автоматаар суулгана.</translation>
 <translation id="1979095679518582070">Энэ онцлогийг унтраах нь системийн шинэчлэлт, аюулгүй байдал зэрэг чухал үйлчилгээнд шаардлагатай мэдээлэл илгээх энэ төхөөрөмжийн чадварт нөлөөлөхгүй.</translation>
@@ -2033,6 +2035,7 @@
 <translation id="3404249063913988450">Дэлгэц амраагчийг идэвхжүүлэх</translation>
 <translation id="3405664148539009465">Үсгийн хэвийг өөрчлөх</translation>
 <translation id="3405763860805964263">...</translation>
+<translation id="3406396172897554194">Хэл эсвэл оролтын нэрээр хайх</translation>
 <translation id="3406605057700382950">&amp; Хадгалагдсан хуудсуудыг харуулах</translation>
 <translation id="340671561090997290">{NUM_EXTENSIONS,plural, =1{Энэ өргөтгөл аюултай байж болзошгүй}other{Эдгээр өргөтгөл аюултай байж болзошгүй}}</translation>
 <translation id="3409785640040772790">Газрын зураг</translation>
@@ -2607,6 +2610,7 @@
 <translation id="4025039777635956441">Сонгосон сайтын дууг хаах</translation>
 <translation id="4027804175521224372">(<ph name="IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_LINK" />-Та үүнийг орхисон байна)</translation>
 <translation id="4027951648498485763">Chrome-с гарах хүртэл таны анивчих тохиргоог хэвээр үлдээх болно.</translation>
+<translation id="4028467762035011525">Оруулах арга нэмэх</translation>
 <translation id="4031179711345676612">Микрофоныг зөвшөөрсөн</translation>
 <translation id="4031527940632463547">Мэдрэгчийг хориглосон</translation>
 <translation id="4033471457476425443">Шинэ фолдер нэмэх</translation>
@@ -4058,6 +4062,7 @@
 <translation id="5833726373896279253">Эдгээр тохиргоонуудийг зөвхөн эзэмшигч нь өөрчилж болно:</translation>
 <translation id="5834581999798853053"><ph name="TIME" /> үлдсэн минутын тухай</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> - Камер, эсвэл микрофоны бичлэг</translation>
+<translation id="5839574759884227787"><ph name="DOMAIN" /> нь таны <ph name="DEVICE_TYPE" />-г шинэчлэх ADB дебагийг идэвхгүй болгосон. Дахин эхлүүлэхээс өмнө файлуудаа хуулбарлана уу.</translation>
 <translation id="5840680448799937675">Файлыг үргэлж офлайн үед хуваалцана</translation>
 <translation id="5841270259333717135">Ethernet-г тохируулах</translation>
 <translation id="5842497610951477805">Bluetooth-г идэвхжүүлэх</translation>
@@ -4470,6 +4475,7 @@
 <translation id="6308077700132376815">Зургийг блоклоно</translation>
 <translation id="6308493641021088955">Нэвтрэх үйлчилгээ үзүүлэгч: <ph name="EXTENSION_NAME" /></translation>
 <translation id="6308937455967653460">Холбоосыг ... хэлбэрээр хадгалах</translation>
+<translation id="6309443618838462258">Таны администратор энэ оруулах аргыг зөвшөөрдөггүй</translation>
 <translation id="6309510305002439352">Микрофоныг унтраасан байна.</translation>
 <translation id="6311220991371174222">Таны профайлыг нээх явцад алдаа гарсан тул Chrome-г эхлүүлэх боломжгүй байна. Chrome-г дахин эхлүүлээд үзнэ үү.</translation>
 <translation id="6312403991423642364">Сүлжээний алдаа мэдэгдэхгүй байна</translation>
@@ -5188,6 +5194,7 @@
 <translation id="7191159667348037">Тодорхойгүй хэвлэгч (USB)</translation>
 <translation id="7193051357671784796">Энэ аппыг танай байгууллага нэмсэн байна. Аппыг суулгаж дуусгахын тулд дахин эхлүүлнэ үү.</translation>
 <translation id="7193374945610105795"><ph name="ORIGIN" />-д хадгалсан нууц үг алга</translation>
+<translation id="7196020411877309443">Би яагаад үүнийг харж байна вэ?</translation>
 <translation id="7196913789568937443">Google Драйвт нөөцлөх. Өгөгдлөө хялбархнаар сэргээж эсвэл төхөөрөмжийг хүссэн үедээ сэлгээрэй. Таны нөөцлөлтөд аппын өгөгдөл багтдаг. Таны нөөцлөлтийг Google-д байршуулдаг бөгөөд таны Google Бүртгэлийн нууц үгийг ашиглан шифрлэдэг. <ph name="BEGIN_LINK1" />Нэмэлт мэдээлэл авах<ph name="END_LINK1" /></translation>
 <translation id="7197190419934240522">Хөтчийг ашиглах бүрдээ Google Хайлт болон Google smarts-г аваарай</translation>
 <translation id="7197632491113152433">Таны бүртгэлээс энэ төхөөрөмж дээр ашиглах боломжтой <ph name="NUMBER_OF_APPS" /> апп олдлоо.</translation>
@@ -5843,6 +5850,7 @@
 <translation id="7952708427581814389">Сайтууд таны түр санах ойн текст болон зургийг харахыг хүсэх боломжтой</translation>
 <translation id="795282463722894016">Сэргээж дууслаа</translation>
 <translation id="7952904276017482715">Хүлээгдэж байсан ID нь "<ph name="EXPECTED_ID" />" хэдий ч ID "<ph name="NEW_ID" />" байсан</translation>
+<translation id="7953669802889559161">Оролт</translation>
 <translation id="7953955868932471628">Богино холбоосыг зохицуулах</translation>
 <translation id="7956373551960864128">Таны хадгалсан хэвлэгч</translation>
 <translation id="7957074856830851026">Серийн дугаар эсвэл өмчийн ID зэрэг төхөөрөмжийн мэдээллийг харах</translation>
@@ -5866,6 +5874,7 @@
 <translation id="7973962044839454485">Хэрэглэгчийн нэр эсвэл нууц үг буруу орсноос PPP баталгаажуулалт амжилтгүй боллоо.</translation>
 <translation id="7974566588408714340"><ph name="EXTENSIONNAME" />-ыг ашиглан дахин оролдож үзнэ үү</translation>
 <translation id="7974936243149753750">Дэлгэцийн дүрсийг бүтнээр нь гаргахгүй байх</translation>
+<translation id="7977404132325989121">Цонхыг &amp;нэрлэх...</translation>
 <translation id="7978412674231730200">Хувийн түлхүүр</translation>
 <translation id="7978450511781612192">Энэ нь таныг Google Бүртгэлүүдээс тань гаргах болно. Таны хавчуурга, түүх, нууц үгнүүд болон бусад зүйлийг синк хийхээ зогсооно.</translation>
 <translation id="7980084013673500153">Хөрөнгийн ID: <ph name="ASSET_ID" /></translation>
@@ -6415,6 +6424,7 @@
 <translation id="8648408795949963811">Шөнийн гэрлийн өнгөний хэм</translation>
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> дараах зөвшөөрлүүдийг хүсэж байна: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> болон бусад</translation>
 <translation id="8650543407998814195">Та цаашид хуучин профайлдаа хандах боломжгүй хэдий ч тус профайлаа устгах боломжтой хэвээр байна.</translation>
+<translation id="865118751078059229">Цонхыг &amp;нэрлэх...</translation>
 <translation id="8651585100578802546">Энэ хуудсыг дахин ачаал</translation>
 <translation id="8652400352452647993">Өргөтгөл багцлахад алдаа гарлаа</translation>
 <translation id="8654151524613148204">Энэ файлыг таны компьютерт боловсруулахад хэтэрхий том байна. Уучлаарай.</translation>
@@ -6565,6 +6575,7 @@
 <translation id="8813872945700551674">"<ph name="EXTENSION_NAME" />"-г эцэг эхээрээ зөвшөөрүүлнэ үү</translation>
 <translation id="8813969267212093033">Системийн текстийг энэ хэлээр харуулдаг</translation>
 <translation id="8814190375133053267">Утасгүй интернет</translation>
+<translation id="8814319344131658221">Хэлний зөв бичгийн алдаа шалгах нь таны хэлний сонголтод тулгуурлана</translation>
 <translation id="8814644416678422095">Хатуу диск</translation>
 <translation id="8814687660896548945">Түр хүлээнэ үү. Архивыг скан хийж байна...</translation>
 <translation id="881782782501875829">Портын дугаар нэмэх</translation>
@@ -6660,6 +6671,7 @@
 <translation id="8912810933860534797">Автомат сканыг идэвхжүүлэх</translation>
 <translation id="8915370057835397490">Зөвлөмжийг ачаалж байна</translation>
 <translation id="8916476537757519021">Нууцлалтай дэд хүрээ: <ph name="SUBFRAME_SITE" /></translation>
+<translation id="8916749157829986308">Цонхны нэр тохируулах</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" />-н <ph name="DEVICE_TYPE" /></translation>
 <translation id="8922013791253848639">Энэ сайтад зарыг үргэлж зөвшөөрөх</translation>
 <translation id="8923880975836399332">Бараан номин ногоон</translation>
@@ -6835,6 +6847,7 @@
 <translation id="9124003689441359348">Хадгалсан нууц үг энд харагдана</translation>
 <translation id="9126149354162942022">Курсорын өнгө</translation>
 <translation id="9128317794749765148">Тохируулгыг дуусгаж чадсангүй</translation>
+<translation id="9128335130883257666"><ph name="INPUT_METHOD_NAME" />-н тохиргооны хуудсыг нээнэ үү</translation>
 <translation id="9128870381267983090">Сүлжээнд холбогдох</translation>
 <translation id="9130015405878219958">Хүчин төгөлдөр бус горим оруулсан байна.</translation>
 <translation id="9131487537093447019">Bluethooth төмхөөрөмжид мэдээ илгээх болон мэдээ хүлээн авах.</translation>

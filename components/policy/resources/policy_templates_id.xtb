@@ -384,15 +384,6 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
       Jika kebijakan ini tidak disetel, <ph name="PRINTERS_ALLOW_ALL" /> akan diberlakukan.
       </translation>
 <translation id="1588240398285670601">Setelan Browser</translation>
-<translation id="1588456836529393506">Jika menyetel kebijakan, Anda akan dapat membuat daftar pola URL yang menentukan situs mana yang otomatis diizinkan untuk mengakses perangkat USB dengan ID vendor dan produk tertentu. Setiap item daftar harus memiliki perangkat dan URL agar kebijakan menjadi valid. Setiap item di perangkat dapat memiliki kolom ID produk dan ID vendor. ID yang Anda hapus akan diperlakukan sebagai karakter pengganti dengan satu pengecualian: Anda tidak dapat menentukan ID produk tanpa menentukan ID vendor. Jika tidak, kebijakan tidak akan valid.
-
-      Model izin USB menggunakan URL peminta dan URL sematan (dari situs bingkai level teratas) untuk mengizinkan URL peminta mengakses perangkat USB. URL peminta mungkin berbeda dengan URL sematan saat situs peminta dimuat dalam iframe. Jadi, kolom "url" dapat berisi hingga dua string yang dipisahkan dengan koma untuk menentukan URL ini. Jika Anda hanya menentukan satu, akses ke perangkat USB terkait akan diizinkan saat URL situs peminta cocok dengan URL ini, terlepas dari status sematan. URL dalam "url" harus berupa URL yang valid. Jika tidak, kebijakan akan diabaikan.
-
-      Tidak menyetel kebijakan berarti <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" /> akan berlaku, jika disetel. Jika tidak, setelan pribadi pengguna akan digunakan.
-
-      Pola URL dalam kebijakan ini tidak boleh bertentangan dengan pola URL yang dikonfigurasi melalui <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" />. Jika bertentangan, kebijakan ini akan lebih diprioritaskan daripada <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" /> dan <ph name="WEB_USB_ASK_FOR_URLS_POLICY_NAME" />.
-
-      Nilai untuk kebijakan ini dan <ph name="DEVICE_WEB_USB_ALLOW_DEVICES_FOR_URLS_POLICY_NAME" /> digabungkan.</translation>
 <translation id="1593245608325508847">Jika kebijakan ditetapkan, fitur login terbatas Chrome di G Suite akan diaktifkan dan pengguna tidak dapat mengubah setelan ini. Pengguna hanya dapat mengakses alat Google menggunakan akun dari domain yang telah ditentukan (untuk mengizinkan akun gmail atau googlemail, tambahkan consumer_accounts ke daftar domain). Setelan ini mencegah pengguna untuk login dan menambahkan Akun Sekunder di perangkat terkelola yang memerlukan autentikasi Google, jika akun tersebut bukan milik salah satu domain yang diizinkan secara eksplisit.
 
       Jika setelan ini dibiarkan kosong atau tidak ditetapkan, pengguna dapat mengakses G Suite dengan akun apa pun.
@@ -563,9 +554,6 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
 
       Jika kebijakan ini dibiarkan tidak disetel, prediksi jaringan akan diaktifkan namun pengguna dapat mengubahnya.</translation>
 <translation id="1865417998205858223">Izin Kunci</translation>
-<translation id="1866563857170942397">Menetapkan daftar pengguna yang diizinkan untuk login ke perangkat. Entri memiliki format <ph name="USER_ALLOWLIST_ENTRY_FORMAT" />, misalnya <ph name="USER_WHITELIST_ENTRY_EXAMPLE" />. Untuk mengizinkan sembarang pengguna di suatu domain, gunakan entri berformat <ph name="USER_ALLOWLIST_ENTRY_WILDCARD" />.
-
-      Jika kebijakan ini tidak dikonfigurasi, semua pengguna akan diizinkan untuk login. Perlu diperhatikan bahwa pembuatan pengguna baru tetap mengharuskan kebijakan <ph name="DEVICE_ALLOW_NEW_USERS_POLICY_NAME" /> dikonfigurasi dengan tepat.</translation>
 <translation id="186719019195685253">Kebijakan yang diambil saat penundaan nganggur tercapai ketika dijalankan pada daya AC</translation>
 <translation id="1885782360784839335">Mengaktifkan ditampilkannya konten promosi tab penuh</translation>
 <translation id="1888871729456797026">Token pendaftaran kebijakan cloud di desktop</translation>
@@ -941,8 +929,8 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
       Kebocoran data dapat terjadi dengan menyalin dan menempelkan data, mentransfer file, mencetak, berbagi layar, atau mengambil screenshot ...dll.
 
       Setiap aturan terdiri dari hal-hal berikut:
-      - Daftar sumber yang ditentukan sebagai URL. Setiap data dalam sumber akan dianggap sebagai data rahasia, yang akan diterapkan pembatasan.
-      - Daftar tujuan yang ditentukan sebagai URL atau komponen, data rahasia akan diizinkan atau tidak diizinkan untuk dibagikan ke daftar tujuan tersebut.
+      - Daftar sumber yang ditentukan sebagai URL. Setiap data dalam sumber akan dianggap sebagai data rahasia. Pembatasan akan diterapkan terhadap data tersebut.
+      - Daftar tujuan yang ditentukan sebagai URL atau komponen. Data rahasia akan diizinkan atau tidak diizinkan untuk dibagikan ke daftar tujuan tersebut.
       - Daftar batasan yang akan diterapkan pada data sumber.
 
       Aturan dapat ditambahkan untuk:
@@ -951,14 +939,14 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
       - Mengontrol pencetakan dari sumber mana pun.
       - Mengontrol layar privasi saat sumber mana pun terlihat.
 
-      Level batasan dapat disetel ke BLOKIR atau IZINKAN.
-      - Jika batasan disetel ke BLOKIR, tindakan tidak akan diizinkan.
-      - Jika batasan disetel ke IZINKAN, tindakan akan diizinkan.
+      Level batasan dapat disetel ke BLOCK atau ALLOW.
+      - Jika batasan disetel ke BLOCK, tindakan tidak akan diizinkan.
+      - Jika batasan disetel ke ALLOW, tindakan akan diizinkan.
 
       Catatan:
-      - Batasan PRIVACY_SCREEN tidak memblokir kemampuan untuk mengaktifkan layar privasi, tetapi menerapkannya saat class batasan disetel ke BLOKIR.
-      - Tujuan tidak boleh kosong jika salah satu batasannya adalah PAPAN KLIP, tetapi hal ini tidak membuat perbedaan apa pun untuk batasan lainnya.
-      - Batasan PAPAN KLIP tidak dapat membedakan antara CROSTINI dan PLUGIN_VM. Jika salah satu dipilih untuk memblokir/mengizinkan berbagi data, aturan akan diterapkan untuk keduanya.
+      - Batasan PRIVACY_SCREEN tidak memblokir kemampuan untuk mengaktifkan layar privasi, tetapi menerapkannya saat class batasan disetel ke BLOCK.
+      - Tujuan tidak boleh kosong jika salah satu batasannya adalah CLIPBOARD, tetapi hal ini tidak membuat perbedaan apa pun untuk batasan lainnya.
+      - Batasan CLIPBOARD tidak dapat membedakan antara CROSTINI dan PLUGIN_VM. Jika salah satu dipilih untuk memblokir/mengizinkan berbagi data, aturan akan diterapkan untuk keduanya.
       - Format pola URL sesuai dengan format ini (https://www.chromium.org/administrators/url-blacklist-filter-format).
 
       Jika kebijakan tidak disetel, tidak akan ada batasan yang diterapkan.</translation>

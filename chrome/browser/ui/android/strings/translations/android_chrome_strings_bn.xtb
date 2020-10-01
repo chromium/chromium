@@ -106,6 +106,7 @@
 <translation id="1810845389119482123">প্রারম্ভিক সিঙ্ক সেট-আপ করা সম্পূর্ণ হয়নি</translation>
 <translation id="1821253160463689938">আপনার পছন্দগুলি মনে রাখার জন্য কুকি ব্যবহার করে। আপনি সেই সমস্ত পৃষ্ঠায় না গেলেও তা করে থাকে</translation>
 <translation id="1829244130665387512">পৃষ্ঠাতে খুঁজুন</translation>
+<translation id="1830550083491357902">প্রবেশ করেননি</translation>
 <translation id="1843805151597803366">আরও ভাল অনুবাদের জন্য, Google Search-কে বর্তমান পৃষ্ঠা ব্যবহার করতে দিন</translation>
 <translation id="1853692000353488670">নতুন ছদ্মবেশী ট্যাব</translation>
 <translation id="1856325424225101786">লাইট মোড রিসেট করবেন?</translation>
@@ -113,6 +114,7 @@
 <translation id="1877026089748256423">Chrome পুরানো হয়ে গেছে</translation>
 <translation id="1883903952484604915">আমার ফাইল</translation>
 <translation id="189358972401248634">অন্যান্য ভাষা</translation>
+<translation id="1919130412786645364">Chrome-এ সাইন-ইন করতে দিন</translation>
 <translation id="1922362554271624559">সাজেস্ট করা ভাষা</translation>
 <translation id="1925021887439448749">কাস্টম ওয়েব ঠিকানা লিখুন</translation>
 <translation id="1928696683969751773">আপডেটগুলি</translation>
@@ -225,6 +227,7 @@
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{#টি অডিও ফাইল}one{#টি অডিও ফাইল}other{#টি অডিও ফাইল}}</translation>
 <translation id="2656405586795711023">ওয়েব অ্যাপ</translation>
 <translation id="2689830683995595741">Chrome ব্যবহার করার মাধ্যমে, আপনি <ph name="BEGIN_LINK1" />Google পরিষেবার শর্তাবলী<ph name="END_LINK1" /> এবং <ph name="BEGIN_LINK2" />Google Chrome ও Chrome OS-এর পরিষেবার অতিরিক্ত শর্তাবলী<ph name="END_LINK2" /> মেনে নিচ্ছেন। তাছাড়া, এর সাথে <ph name="BEGIN_LINK3" />Family Link-এর মাধ্যমে ম্যানেজ করা Google অ্যাকাউন্টের গোপনীয়তা বিজ্ঞপ্তি<ph name="END_LINK3" />ও প্রযোজ্য হবে।</translation>
+<translation id="2704606927547763573">প্রতিলিপি করা হয়েছে</translation>
 <translation id="2707726405694321444">পৃষ্ঠা রিফ্রেশ করুন</translation>
 <translation id="2709516037105925701">স্বয়ংপূরণ</translation>
 <translation id="2718352093833049315">শুধুমাত্র ওয়াই-ফাই এ</translation>
@@ -347,6 +350,7 @@
 <translation id="3631987586758005671"><ph name="DEVICE_NAME" />-এর সাথে শেয়ার করা হচ্ছে</translation>
 <translation id="3632295766818638029">পাসওয়ার্ড উম্মোচন করুন</translation>
 <translation id="363596933471559332">সঞ্চিত ক্রেডেনশিয়াল ব্যবহার করে ওয়েবসাইটগুলিতে অটোমেটিক সাইন-ইন। যখন বৈশিষ্ট্যটি বন্ধ করা থাকে, তখন প্রতিবারই একটি ওয়েবসাইটে সাইন-ইন করার সময় আপনাকে যাচাইকরণের জন্য বলা হবে।</translation>
+<translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3658159451045945436">রিসেট করলে আপনার ঘুরে দেখা সাইট সহ আপনার ডেটা সেভিংয়ের ইতিহাস মুছে দেয়।</translation>
 <translation id="3692944402865947621">স্টোর করার জায়গা খুঁজে না পাওয়ায় <ph name="FILE_NAME" /> ডাউনলোড করা যায়নি।</translation>
 <translation id="3701167022068948696">এখনই সমাধান করুন</translation>
@@ -709,6 +713,7 @@
 <translation id="6301525844455696527">আপনি যা পড়তে চান সেগুলি দেখুন</translation>
 <translation id="6303969859164067831">সাইন-আউট করুন এবং সিঙ্ক করা বন্ধ করুন</translation>
 <translation id="6312687380483398334">ওয়েব অ্যাপ (কোনও রকম আওয়াজ ছাড়া)</translation>
+<translation id="6313752143992575395"><ph name="WEBSITE_TITLE" />-এর জন্য সাজেশন দেখানো হচ্ছে</translation>
 <translation id="6316139424528454185">এই Android ভার্সন সমর্থিত নয়</translation>
 <translation id="6324034347079777476">Android সিস্টেম সিঙ্ক অক্ষম করা হয়েছে</translation>
 <translation id="6333140779060797560"><ph name="APPLICATION" /> এর মাধ্যমে শেয়ার করুন</translation>
@@ -840,6 +845,7 @@
 <translation id="7233236755231902816">ওয়েবের কন্টেন্ট নিজের ভাষায় পড়তে, Chrome-এর লেটেস্ট ভার্সন ইনস্টল করুন</translation>
 <translation id="7248069434667874558">Chrome-এ <ph name="TARGET_DEVICE_NAME" /> সিঙ্ক করার ফিচার চালু করে রেখেছেন কিনা দেখে নিন।</translation>
 <translation id="7274013316676448362">অবরুদ্ধ সাইট</translation>
+<translation id="7286572596625053347"><ph name="LANGUAGE" /> পরিবর্তন করবেন?</translation>
 <translation id="7290209999329137901">আবার নামকরণের বিকল্পটি উপলভ্য নেই</translation>
 <translation id="7291387454912369099">অ্যাসিস্ট্যান্টের মাধ্যমে চেকআউট</translation>
 <translation id="7293171162284876153">সিঙ্ক চালু করতে "আপনার Chrome ডেটা সিঙ্ক করুন" বিকল্পটি চালু করুন।</translation>
@@ -962,7 +968,6 @@
 <translation id="8058746566562539958">নতুন Chrome ট্যাবে খুলুন</translation>
 <translation id="8063895661287329888">বুকমার্ক যোগ করতে ব্যর্থ হয়েছে।</translation>
 <translation id="806745655614357130">আমার ডেটা আলাদা রাখুন</translation>
-<translation id="8069669375923284295">সিঙ্ক সেটআপ চালিয়ে যাওয়ার জন্য ট্যাপ করুন</translation>
 <translation id="8073388330009372546">নতুন ট্যাবে ছবি খুলুন</translation>
 <translation id="8076492880354921740">ট্যাবগুলি</translation>
 <translation id="8084114998886531721">সংরক্ষিত পাসওয়ার্ড</translation>

@@ -316,6 +316,24 @@ Wenn Sie diese Richtlinie deaktivieren, wird das Scrollen zu bestimmten Textfrag
 
           Diese Einstellung kann vom Nutzer nicht geändert werden.</translation>
 <translation id="1509692106376861764">Diese Richtlinie wird ab <ph name="PRODUCT_NAME" />-Version 29 nicht mehr verwendet.</translation>
+<translation id="1512974677514081818">Stellt Konfigurationen für gerätegebundene Unternehmensdrucker bereit.
+
+      Mit dieser Richtlinie können Druckerkonfigurationen für <ph name="PRODUCT_OS_NAME" />-Geräte bereitgestellt werden.  Das Format entspricht dem des "NativePrinters"-Wörterbuchs, erfordert jedoch zusätzlich ein "id"- oder "guid"-Feld pro Drucker für die Zulassungs- oder Sperrliste.
+
+      Die Datei darf nicht größer als 5 MB und muss in JSON codiert sein.  Eine Datei mit ungefähr 21.000 Druckern ergibt nach dem Codieren eine Datei mit schätzungsweise 5 MB.  Anhand des kryptografischen Hashs wird die Integrität des Downloads verifiziert.
+
+      Die Datei wird heruntergeladen und im Cache gespeichert. Sobald sich URL oder Hash ändern, wird sie noch einmal heruntergeladen.
+
+      Wenn diese Richtlinie festgelegt ist, lädt <ph name="PRODUCT_OS_NAME" /> die Datei für Druckerkonfigurationen herunter und die Drucker werden gemäß <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> und <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" /> bereitgestellt.
+
+      Diese Richtlinie hat keinen Einfluss darauf, ob Nutzer auf einzelnen Geräten Drucker konfigurieren können.  Sie ist als Ergänzung zu den Druckerkonfigurationen der einzelnen Nutzer gedacht.
+
+      Diese Richtlinie ist ein Zusatz zu <ph name="BULK_PRINTERS_POLICY_NAME" />.
+
+      Wenn diese Richtlinie nicht konfiguriert ist, gibt es keine gerätegebundenen Drucker und <ph name="DEVICE_NATIVE_PRINTERS_POLICY_PATTERN" />-Richtlinien werden ignoriert.
+
+      Diese Richtlinie existiert nicht mehr. Bitte verwenden Sie stattdessen die Richtlinie <ph name="DEVICE_PRINTERS_POLICY_NAME" />.
+      </translation>
 <translation id="1514888685242892912"><ph name="PRODUCT_NAME" /> aktivieren</translation>
 <translation id="1515230621229117540">Aktiviert das unverankerte Menü für Bedienungshilfen</translation>
 <translation id="1515824657887788963">Einer Seite erlauben, während des Schließens synchrone XHR-Anfragen auszuführen.</translation>
@@ -357,15 +375,6 @@ Wenn Sie diese Richtlinie deaktivieren, wird das Scrollen zu bestimmten Textfrag
       Wenn die Richtlinie nicht festgelegt wird, wird angenommen, dass <ph name="PRINTERS_ALLOW_ALL" /> ausgewählt ist.
       </translation>
 <translation id="1588240398285670601">Browsereinstellungen</translation>
-<translation id="1588456836529393506">Wenn diese Richtlinie konfiguriert ist, können Sie eine Liste mit URL-Mustern erstellen, die die Websites angeben, denen automatisch die Berechtigung für den Zugriff auf ein USB-Gerät mit den angegebenen Anbieter- und Produkt-IDs gewährt wird. Damit die Richtlinie gültig ist, müssen für jeden Eintrag auf der Liste Geräte und URLs angegeben sein. Jeder Geräteeintrag kann je ein Feld für eine Anbieter-ID und eine Produkt-ID enthalten. Fehlende IDs werden als Platzhalter betrachtet, wobei als Ausnahme zu berücksichtigen ist, dass eine Produkt-ID nicht ohne zugehörige Anbieter-ID angegeben werden kann. Andernfalls ist die Richtlinie nicht gültig.
-
-      Im USB-Berechtigungsmodell werden die anfragende und die einbettende URL (d. h. die URL der Frame-Website der obersten Ebene) verwendet, um der anfragenden URL die Berechtigung für den Zugriff auf das USB-Gerät zu erteilen. Wird die anfragende Website in einen iFrame geladen, kann die anfragende URL von der einbettenden URL abweichen. Deshalb darf das Feld "urls" bis zu zwei durch ein Komma voneinander getrennte Strings enthalten, die diese URLs angeben. Wenn Sie nur eine URL angeben, wird der Zugriff auf die entsprechenden USB-Geräte gewährt, wenn die URL der anfragenden Website dieser URL entspricht, wobei der Einbettungsstatus keine Rolle spielt. Die URLs im Feld "urls" müssen gültig sein, da die Richtlinie andernfalls ignoriert wird.
-
-      Wenn die Richtlinie nicht konfiguriert ist, gilt <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" />, sofern diese Einstellung konfiguriert ist. Falls nicht, wird die persönliche Einstellung des Nutzers verwendet.
-
-      URL-Muster in dieser Richtlinie dürfen nicht im Widerspruch zu den über <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" /> konfigurierten URLs stehen. Andernfalls hat diese Richtlinie Vorrang vor <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" /> und <ph name="WEB_USB_ASK_FOR_URLS_POLICY_NAME" />.
-
-      Werte für diese Richtlinie und für <ph name="DEVICE_WEB_USB_ALLOW_DEVICES_FOR_URLS_POLICY_NAME" /> werden zusammengeführt.</translation>
 <translation id="1593245608325508847">Wenn die Richtlinie konfiguriert ist, sind die eingeschränkten Anmeldefunktionen von Chrome in der G Suite aktiviert und es wird verhindert, dass Nutzer diese Einstellung ändern. Nutzer können nur über Konten der angegebenen Domains auf Tools von Google zugreifen. Möchten Sie gmail.com- oder googlemail.com-Konten zulassen, müssen Sie der Domainliste "consumer_accounts" (ohne Anführungszeichen) hinzufügen. Diese Einstellung verhindert, dass Nutzer sich auf einem verwalteten Gerät, für das eine Authentifizierung durch Google notwendig ist, anmelden und ein zweites Konto hinzufügen können, wenn dieses Konto nicht zu einer der Domains in der Zulassungsliste gehört.
 
       Wenn Sie diese Einstellung leer lassen oder nicht konfigurieren, können Nutzer über beliebige Konten auf die G Suite zugreifen.
@@ -463,6 +472,14 @@ Ist die Richtlinie auf "False" gesetzt, können Nutzer keine eigenen Drucker hin
       In der Richtlinie muss eine URL angegeben werden, von der <ph name="PRODUCT_OS_NAME" /> die Nutzungsbedingungen herunterladen kann. Die Nutzungsbedingungen müssen als unformatierter Text mit dem MIME-Typ "text/plain" vorliegen. Markups sind nicht zulässig.</translation>
 <translation id="1750315445671978749">Alle Downloads blockieren</translation>
 <translation id="1760951637494635692">Serial API auf diesen Seiten erlauben</translation>
+<translation id="1765512315997108908">Legt fest, welche Drucker aus <ph name="DEVICE_PRINTERS_POLICY_NAME" /> Nutzern zur Verfügung stehen.
+
+      Gibt an, welche Zugriffsrichtlinie für die Massenkonfiguration von Druckern verwendet wird. Wenn <ph name="PRINTERS_ALLOW_ALL" /> ausgewählt ist, werden alle Drucker angezeigt. Wenn <ph name="PRINTERS_BLACKLIST" /> ausgewählt ist, wird der Zugriff auf die angegebenen Drucker anhand von <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" /> eingeschränkt.  Wenn <ph name="PRINTERS_WHITELIST" /> ausgewählt ist, gibt <ph name="DEVICE_PRINTERS_ALLOWLIST_POLCY_NAME" /> nur die Drucker an, die ausgewählt werden können.
+
+      Ist die Richtlinie nicht festgelegt, dann wird angenommen, dass <ph name="PRINTERS_ALLOW_ALL" /> ausgewählt ist.
+
+      Diese Richtlinie existiert nicht mehr. Bitte verwenden Sie stattdessen die Richtlinie <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />.
+      </translation>
 <translation id="1767673020408652620">App-Empfehlungen bei Nullstatus des Suchfelds aktivieren</translation>
 <translation id="1780323582106687813">Diese Richtlinie wurde eingestellt. Bitte verwenden Sie stattdessen "<ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" />".
 
@@ -482,6 +499,12 @@ Ist die Richtlinie auf "False" gesetzt, können Nutzer keine eigenen Drucker hin
 
       Die Richtlinie sollte als String spezifiziert sein, in dem die URL und der Hash-Wert im JSON-Format angegeben wird.</translation>
 <translation id="1819272352048746487">Verschiedene Funktionen auf der Bildschirmtastatur aktivieren oder deaktivieren</translation>
+<translation id="1823974945066396306">Definiert eine Liste mit Nutzern, die sich auf dem Gerät anmelden dürfen. Die Einträge haben das Format <ph name="USER_ALLOWLIST_ENTRY_FORMAT" />, zum Beispiel <ph name="USER_ALLOWLIST_ENTRY_EXAMPLE" />. Wenn allen Nutzern in einer Domain die Anmeldung erlaubt werden soll, verwenden Sie Einträge im Format <ph name="USER_ALLOWLIST_ENTRY_WILDCARD" />.
+
+      Wenn diese Richtlinie nicht festgelegt ist, gibt es keine Einschränkungen im Hinblick auf die Nutzer, die sich anmelden dürfen. Zum Erstellen neuer Nutzer muss aber weiterhin die Richtlinie <ph name="DEVICE_ALLOW_NEW_USERS_POLICY_NAME" /> entsprechend konfiguriert werden.
+
+      Diese Richtlinie existiert nicht mehr. Bitte verwenden Sie stattdessen die Richtlinie <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" />.
+      </translation>
 <translation id="1827523283178827583">Feste Proxyserver verwenden</translation>
 <translation id="1839278886947586809">
       Diese Richtlinie wurde in M80 entfernt, da WebDriver mittlerweile mit allen vorhandenen Richtlinien kompatibel ist und sie deshalb nicht mehr gebraucht wurde.
@@ -509,6 +532,7 @@ Ist die Richtlinie auf "False" gesetzt, können Nutzer keine eigenen Drucker hin
       Ist diese Richtlinie nicht konfiguriert oder auf "tls1.2" eingestellt, führt <ph name="PRODUCT_NAME" /> diesen Fallback nicht mehr durch. Die Unterstützung älterer TLS-Versionen wird dadurch nicht deaktiviert, es wird lediglich festgelegt, ob <ph name="PRODUCT_NAME" /> fehlerträchtige Server umgeht, die keine korrekten Versionsaushandlungen durchführen können.
 
       Wenn die Kompatibilität mit einem fehlerträchtigen Server aufrechterhalten werden muss, kann "tls1.1" eingestellt werden. Hierbei handelt es sich um einen provisorischen Wert und der Server sollte schnell repariert werden.</translation>
+<translation id="1861206724856734193">Legt eine Liste mit Regeln zur Vermeidung von Datenlecks fest.</translation>
 <translation id="1864382791685519617">Durch diese Richtlinie wird die Netzwerkvorhersage in <ph name="PRODUCT_NAME" /> aktiviert und es wird verhindert, dass die Einstellung von Nutzern geändert wird.
 
       Hiermit werden DNS-Vorabruf, TCP- und SSL-Vorverbindung sowie das Pre-Rendering von Webseiten gesteuert.
@@ -517,9 +541,6 @@ Ist die Richtlinie auf "False" gesetzt, können Nutzer keine eigenen Drucker hin
 
       Ist die Richtlinie nicht konfiguriert, wird die Netzwerkvorhersage aktiviert, kann jedoch vom Nutzer geändert werden.</translation>
 <translation id="1865417998205858223">Hauptberechtigungen</translation>
-<translation id="1866563857170942397">Definiert eine Liste mit Nutzern, die sich auf dem Gerät anmelden dürfen. Die Einträge haben das Format <ph name="USER_ALLOWLIST_ENTRY_FORMAT" />, zum Beispiel <ph name="USER_WHITELIST_ENTRY_EXAMPLE" />. Wenn allen Nutzern in einer Domain die Anmeldung erlaubt werden soll, verwenden Sie Einträge im Format <ph name="USER_ALLOWLIST_ENTRY_WILDCARD" />.
-
-      Wenn diese Richtlinie nicht konfiguriert ist, gibt es keine Einschränkungen im Hinblick auf die Nutzer, die sich anmelden dürfen. Zum Erstellen neuer Nutzer muss aber weiterhin die Richtlinie <ph name="DEVICE_ALLOW_NEW_USERS_POLICY_NAME" /> entsprechend konfiguriert werden.</translation>
 <translation id="186719019195685253">Auszuführende Aktion beim Erreichen der Leerlaufverzögerung während des Wechselstrombetriebs</translation>
 <translation id="1885782360784839335">Einblendung von Werbung auf dem gesamten Tab aktivieren</translation>
 <translation id="1888871729456797026">Das Registrierungstoken der Cloud-Richtlinie auf dem Desktop</translation>
@@ -880,6 +901,31 @@ Ist die Richtlinie auf "False" gesetzt, können Nutzer keine eigenen Drucker hin
       Wenn Sie "<ph name="CRITICAL_VARIATIONS_ONLY_OPTION_NAME" />" festlegen (Wert: 1), werden nur Variationen für <ph name="PRODUCT_NAME" /> angewendet, die als wichtige Sicherheits- oder Stabilitätskorrekturen gewertet werden.
 
       Wenn Sie "<ph name="VARIATIONS_DISABLED_OPTION_NAME" />" festlegen (Wert: 2), werden keine Variationen auf den Browser angewendet. Dieser Modus kann die <ph name="PRODUCT_NAME" />-Entwickler möglicherweise daran hindern, wichtige Sicherheitskorrekturen zeitnah durchzuführen. Er wird daher nicht empfohlen.</translation>
+<translation id="2402140031630105556">Konfiguriert eine Liste mit Regeln zur Vermeidung von Datenlecks in <ph name="PRODUCT_OS_NAME" />.
+      Datenlecks können unter anderem beim Kopieren und Einfügen von Daten, beim Übertragen von Dateien, beim Drucken, bei der Bildschirmfreigabe oder beim Aufnehmen von Screenshots auftreten.
+
+Jede Regel hat folgende Bestandteile:
+- Eine Liste von Quellen, die als URLs definiert sind. Alle Daten in den Quellen werden als vertrauliche Daten behandelt, auf die Einschränkungen angewendet werden.
+      - Eine Liste von Zielen, die als URLs oder Komponenten definiert sind, für die vertrauliche Daten entweder freigegeben oder nicht freigegeben werden dürfen.
+      - Eine Liste von Einschränkungen, die auf die Daten der Quellen angewendet werden.
+
+      Regeln können hinzugefügt werden, um Einschränkungen für Folgendes zu steuern:
+- Daten in der Zwischenablage, die zwischen Quellen und Zielen geteilt werden
+      - Die Aufnahme von Screenshots der Quellen
+      - Das Drucken von Quellen
+      - Die Privatsphärefunktion, wenn eine der Quellen sichtbar ist
+
+      Die Einschränkungsebene kann mit BLOCK oder ALLOW festgelegt werden.
+      - Wenn die Einschränkung auf BLOCK gesetzt ist, wird die Aktion nicht zugelassen.
+      - Wenn die Einschränkung auf ALLOW gesetzt ist, wird die Aktion zugelassen.
+
+      Hinweise:
+- Die Einschränkung PRIVACY_SCREEN blockiert nicht das Aktivieren der Privatsphärefunktion, sondern erzwingt diese, wenn die Einschränkungsklasse auf BLOCK gesetzt ist.
+      - Ziele dürfen nicht leer sein, für den Fall, dass eine der Einschränkungen CLIPBOARD lautet. Sie wirken sich nicht auf andere Einschränkungen aus.
+      - Bei der Einschränkung CLIPBOARD kann nicht zwischen CROSTINI und PLUGIN_VM unterschieden werden. Wenn eines davon ausgewählt wird, um die Datenfreigabe zu blockieren oder zuzulassen, wird die Regel auf beide angewendet.
+      - Formatieren Sie die URL-Muster entsprechend diesem Format (https://www.chromium.org/administrators/url-blacklist-filter-format).
+
+Wenn die Richtlinie nicht festgelegt ist, werden keine Einschränkungen angewendet.</translation>
 <translation id="2411629345938804022">Wenn die Richtlinie auf "3" gesetzt ist, können Websites den Zugriff auf Bluetooth-Geräte in der Nähe anfragen. Wenn die Richtlinie auf "2" gesetzt ist, wird der Zugriff auf Bluetooth-Geräte in der Nähe verweigert.
 
       Wird sie nicht konfiguriert, können Websites den Zugriff anfragen, Nutzer können diese Einstellung jedoch ändern.</translation>
@@ -2541,6 +2587,14 @@ Diese Richtlinie hat keine Auswirkungen darauf, ob die lokalen Nutzerdaten auf d
 <translation id="489803897780524242">Parameter zur Steuerung der Suchbegriffersetzung für den Standardsuchanbieter</translation>
 <translation id="4899708173828500852">Safe Browsing aktivieren</translation>
 <translation id="4906194810004762807">Aktualisierungsrate für Geräterichtlinien</translation>
+<translation id="4910101362791876581">Gibt die Drucker an, die ein Nutzer verwenden kann.
+
+      Diese Richtlinie wird nur verwendet, wenn <ph name="PRINTERS_WHITELIST" /> für <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" /> ausgewählt wurde.
+
+Wenn diese Richtlinie verwendet wird, stehen dem Nutzer nur die Drucker zur Verfügung, deren IDs mit den Werten in dieser Richtlinie übereinstimmen. Die IDs müssen dem Feld "id" oder dem Feld "guid" in der Datei entsprechen, die in <ph name="DEVICE_PRINTERS_POLICY_NAME" /> angegeben ist.
+
+      Diese Richtlinie existiert nicht mehr. Bitte verwenden Sie stattdessen die Richtlinie <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" />.
+      </translation>
 <translation id="4917385247580444890">Stark</translation>
 <translation id="4919122295221518724">Strengere Handhabung gemischter Inhalte aktivieren</translation>
 <translation id="4923806312383904642">WebDriver erlauben, nicht kompatible Richtlinien zu überschreiben</translation>
@@ -3620,6 +3674,9 @@ Durch Festlegen dieser Richtlinie bestimmen Sie, ob sich ein Nutzer in <ph name=
 <translation id="6401669939808766804">Nutzer abmelden</translation>
 <translation id="640244877779556713">Emoji-Vorschläge aktivieren</translation>
 <translation id="6407093060083181305">Sperrliste für Installation von Erweiterungen konfigurieren</translation>
+<translation id="6408233796253901198">Wenn diese Richtlinie festgelegt ist, verwendet der Host für den Remotezugriff diese URL zur Validierung von Authentifizierungstokens von Clients für den Remotezugriff, um Verbindungen zu akzeptieren. Die Richtlinie muss in Verbindung mit "RemoteAccessHostTokenUrl" verwendet werden.
+
+          Diese Funktion wird deaktiviert, wenn sie leer oder nicht konfiguriert ist.</translation>
 <translation id="6417265370957905582">Google Assistant</translation>
 <translation id="6422575351619065453">Im Kioskmodus legt diese Einstellung fest, ob das unverankerte Menü für Bedienungshilfen angezeigt wird.
 
@@ -3637,6 +3694,12 @@ Ein Teil der Proxyeinstellungen ist für Android-Apps verfügbar und kann auf fr
           Wenn Sie "Proxyserver automatisch erkennen" wählen, erhalten Android-Apps die Skript-URL "http://wpad/wpad.dat". Kein anderer Teil des Protokolls zur automatischen Proxyerkennung wird verwendet.
 
           Wenn Sie ein PAC-Proxyskript wählen, erhalten Android-Apps die Skript-URL.</translation>
+<translation id="6438364096042399634">Wenn diese Richtlinie konfiguriert ist, können Sie eine Liste der USB-Geräte definieren, die vom jeweiligen Kerneltreiber getrennt werden können, um über die chrome.usb API direkt in einer Webanwendung eingesetzt zu werden. Die Einträge bestehen aus der ID des USB-Herstellers und der Produkt-ID, über die die Hardware identifiziert werden kann.
+
+      Ist diese Richtlinie nicht konfiguriert, dann bleibt die Liste der trennbaren USB-Geräte leer.
+
+      Diese Richtlinie existiert nicht mehr. Bitte verwenden Sie stattdessen die Richtlinie <ph name="USB_DETACHABLE_ALLOWLIST_POLICY_NAME" />.
+      </translation>
 <translation id="6438972408080276697">Wenn diese Richtlinie auf "True" gesetzt ist, werden Informationen über wichtige richtlinienbasierte Android-App-Installationsereignisse an Google gesendet. Wenn die Richtlinie auf "False" gesetzt ist, werden keine Ereignisse erfasst.</translation>
 <translation id="6440051664870270040">Websites erlauben, gleichzeitig auf andere Websites weiterzuleiten und Pop-ups zu öffnen</translation>
 <translation id="6447948611083700881">"Sicherung und Wiederherstellung" deaktiviert</translation>
@@ -4462,6 +4525,9 @@ Wenn die Richtlinie "<ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" />" k
 
       Diese Richtlinie wurde eingestellt. Bitte verwenden Sie stattdessen die Richtlinie "<ph name="PRINTERS_POLICY_NAME" />".
       </translation>
+<translation id="7504632989711326175">Wenn diese Richtlinie festgelegt ist, verwendet der Host ein Clientzertifikat mit dem angegebenen Aussteller-CN zur Authentifizierung bei "RemoteAccessHostTokenValidationUrl". Verwenden Sie "*", um ein beliebiges verfügbares Clientzertifikat zu nutzen.
+
+          Diese Funktion wird deaktiviert, wenn sie leer oder nicht konfiguriert ist.</translation>
 <translation id="7506745375479451616">Mit dieser Richtlinie wird der Befehl konfiguriert, mit dem URLs in <ph name="PRODUCT_NAME" /> geöffnet werden, wenn von <ph name="IE_PRODUCT_NAME" /> dorthin gewechselt wird. Diese Richtlinie kann mit einem Pfad zur ausführbaren Datei oder <ph name="PRODUCT_NAME_PLACEHOLDER" /> konfiguriert werden, damit das Verzeichnis von <ph name="PRODUCT_NAME" /> automatisch erkannt wird.
 
       Ist die Richtlinie nicht konfiguriert, erkennt <ph name="IE_PRODUCT_NAME" /> den Pfad zur ausführbaren Datei von <ph name="PRODUCT_NAME" /> automatisch, wenn <ph name="PRODUCT_NAME" /> über Internet Explorer geöffnet wird.
@@ -4697,6 +4763,14 @@ Die Richtlinienwerte sollten in % angegeben werden und zwischen 0 und 100 liegen
 <translation id="7823902813460802031">Wenn die Richtlinie aktiviert ist, lässt <ph name="PRODUCT_OS_NAME" /> nicht zu, dass das Gerät in den Entwicklermodus wechselt.
 
        Ist die Richtlinie deaktiviert oder nicht konfiguriert, bleibt der Entwicklermodus auf dem Gerät verfügbar.</translation>
+<translation id="7824349369175912332">Gibt die Drucker an, die ein Nutzer nicht verwenden kann.
+
+      Diese Richtlinie wird nur verwendet, wenn <ph name="PRINTERS_BLACKLIST" /> für <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" /> ausgewählt wurde.
+
+      Wenn diese Richtlinie verwendet wird, werden dem Nutzer alle Drucker mit Ausnahme der in dieser Richtlinie aufgeführten IDs zur Verfügung gestellt. Die IDs müssen dem Feld "id" oder dem Feld "guid" in der Datei entsprechen, die in <ph name="DEVICE_PRINTERS_POLICY_NAME" /> angegeben ist.
+
+      Diese Richtlinie existiert nicht mehr. Bitte verwenden Sie stattdessen die Richtlinie <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" />.
+      </translation>
 <translation id="782661371433719637">Websites dürfen den Nutzer nicht um Lesezugriff auf Dateien und Verzeichnisse über die File System API bitten</translation>
 <translation id="7841880500990419427">TLS-Mindestversion für Fallback</translation>
 <translation id="7846952520291088817">URLs, für die lokale IPs in WebRTC ICE Candidates offengelegt sind</translation>
@@ -5216,6 +5290,9 @@ Ist die Richtlinie auf "false" gesetzt oder nicht konfiguriert, kann der Nutzer 
       Wenn sie auf "true" gesetzt ist, können diese Tabs deaktiviert werden. Durch die Deaktivierung von Tabs werden CPU, Akku und Arbeitsspeicher entlastet. Bei <ph name="PRODUCT_NAME" /> wird eine Heuristik genutzt, um Tabs zu erkennen, die zwar im Hintergrund ausgeführt werden, jedoch aktiviert bleiben sollten, weil auf ihnen beispielsweise Benachrichtigungen angezeigt, Ton wiedergegeben oder Videos gestreamt werden. Webentwickler können die Deaktivierung ihrer Website auch unterbinden (https://chromium.googlesource.com/chromium/src/+/HEAD/chrome/browser/performance_manager/docs/freezing_opt_out_opt_in.md).
 
       Wenn die Richtlinie auf "false" gesetzt ist, werden Tabs nicht deaktiviert.</translation>
+<translation id="8622378389102774881">Wenn diese Richtlinie konfiguriert ist, verlangt der Host für den Remotezugriff von Clients, die sich authentifizieren, ein Authentifizierungstoken von dieser URL, damit eine Verbindung aufgebaut werden kann. Diese Richtlinie muss in Verbindung mit "RemoteAccessHostTokenValidationUrl" verwendet werden.
+
+          Diese Funktion wird deaktiviert, wenn sie leer oder nicht konfiguriert ist.</translation>
 <translation id="8625234016727663537">Hiermit können Sie eine Liste mit URLs festlegen, deren Websites automatisch über den Anmeldebildschirm auf ein USB-Gerät mit der angegebenen Anbieter- und Produkt-ID zugreifen dürfen. Damit die Richtlinie gültig ist, muss jeder Eintrag in der Liste sowohl Geräte als auch URLs enthalten. Jeder Geräteeintrag kann je ein Feld für eine Anbieter-ID und eine Produkt-ID enthalten. Fehlende IDs werden als Platzhalter betrachtet, wobei als Ausnahme zu berücksichtigen ist, dass eine Produkt-ID nicht ohne zugehörige Anbieter-ID angegeben werden kann. Andernfalls ist die Richtlinie ungültig und wird ignoriert.
 
         Im USB-Berechtigungsmodell wird die URL der anfragenden Website ("anfragende URL") und die URL der Frame-Website der obersten Ebene ("einbettende URL") verwendet. Dabei wird der anfragenden URL die Berechtigung erteilt, auf das USB-Gerät zuzugreifen. Wird die anfragende Website in einen iFrame geladen, kann die anfragende von der einbettenden URL abweichen. Deshalb darf das Feld "urls" bis zu zwei durch ein Komma voneinander getrennte URL-Strings enthalten: die anfragende URL und die einbettende URL. Falls nur eine einzige URL angegeben ist, wird der Zugriff auf die entsprechenden USB-Geräte gewährt, wenn unabhängig vom Einbettungsstatus die URL der anfragenden Website mit dieser URL übereinstimmt. Die URLs im Feld "urls" müssen gültig sein, da ansonsten die Richtlinie ignoriert wird.

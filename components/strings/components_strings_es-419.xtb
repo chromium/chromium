@@ -15,6 +15,7 @@
 <translation id="1038106730571050514">Mostrar sugerencias</translation>
 <translation id="1038842779957582377">nombre desconocido</translation>
 <translation id="1041998700806130099">Mensaje de la hoja del trabajo</translation>
+<translation id="1048785276086539861">Cuando edites anotaciones, se mostrará este documento en una vista de una sola página</translation>
 <translation id="1050038467049342496">Cierra las demás apps.</translation>
 <translation id="1055184225775184556">&amp;Deshacer Agregar</translation>
 <translation id="1056898198331236512">Advertencia</translation>
@@ -108,6 +109,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1348779747280417563">Confirmar el nombre</translation>
 <translation id="1357195169723583938">Quién usó el dispositivo recientemente y cuándo</translation>
 <translation id="1360955481084547712">Abre una nueva ventana de incógnito para navegar de forma privada</translation>
+<translation id="1363819917331173092">No ofrecer la traducción de las páginas en <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1364822246244961190">Como esta política está bloqueada, se omitirá su valor.</translation>
 <translation id="1374468813861204354">sugerencias</translation>
 <translation id="1374692235857187091">Index-4x6 (Postcard)</translation>
@@ -374,6 +376,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2465688316154986572">Grapa</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />Ejecución del Diagnóstico de red<ph name="END_LINK" /></translation>
 <translation id="2469153820345007638">Orden de 1 a N</translation>
+<translation id="2470767536994572628">Cuando edites anotaciones, se mostrará este documento en una vista de una sola página y en su rotación original</translation>
 <translation id="2479410451996844060">URL de búsqueda no válida</translation>
 <translation id="2482878487686419369">Notificaciones</translation>
 <translation id="248348093745724435">Políticas de la máquina</translation>
@@ -497,6 +500,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2996674880327704673">Sugerencias de Google</translation>
 <translation id="3002501248619246229">Revisar el medio en la bandeja de entrada</translation>
 <translation id="3005723025932146533">Mostrar copia guardada</translation>
+<translation id="3007719053326478567">Tu administrador no permite imprimir este contenido</translation>
 <translation id="3008447029300691911">Ingresa el CVC de la tarjeta <ph name="CREDIT_CARD" />. Después de confirmarla, los datos de tu tarjeta se compartirán con este sitio.</translation>
 <translation id="3010559122411665027">Entrada de lista "<ph name="ENTRY_INDEX" />": <ph name="ERROR" /></translation>
 <translation id="301521992641321250">Bloqueado de forma automática</translation>
@@ -1215,6 +1219,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5946937721014915347">Abriendo <ph name="SITE_NAME" />…</translation>
 <translation id="5951495562196540101">No se puede realizar la inscripción con una cuenta personal (licencia de paquete disponible).</translation>
+<translation id="5963413905009737549">Sección</translation>
 <translation id="5967592137238574583">Editar la información de contacto</translation>
 <translation id="5967867314010545767">Eliminar del historial</translation>
 <translation id="5975083100439434680">Alejar</translation>
@@ -1627,6 +1632,7 @@ Detalles adicionales:
 <translation id="7647206758853451655">Calidad de impresión</translation>
 <translation id="7648992873808071793">Almacenar archivos en el dispositivo</translation>
 <translation id="7653957176542370971">La hoja del controlador de pagos está cerrada</translation>
+<translation id="7654909834015434372">Cuando edites anotaciones, se mostrará este documento en su rotación original</translation>
 <translation id="765676359832457558">Ocultar configuración avanzada...</translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7662298039739062396">Configuración controlada por una extensión</translation>
@@ -1782,6 +1788,7 @@ Detalles adicionales:
 <translation id="8267698848189296333">Acceder como <ph name="USERNAME" /></translation>
 <translation id="8269242089528251720">Documentos separados/copias intercaladas</translation>
 <translation id="8269981117540303696">Ahora puedes navegar de forma privada. Si otras personas usan este dispositivo, no verán tu actividad. Sin embargo, se guardarán las descargas y los favoritos.</translation>
+<translation id="8275952078857499577">No ofrecer la traducción de este sitio</translation>
 <translation id="8277900682056760511">La hoja del controlador de pagos está abierta</translation>
 <translation id="8281084378435768645">Large-Photo</translation>
 <translation id="8282947398454257691">Conocer tu identificador de dispositivo único</translation>

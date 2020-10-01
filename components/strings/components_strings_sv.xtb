@@ -134,6 +134,7 @@ Annars blockeras detta av sekretessinställningarna. Om du tillåter detta kan i
 <translation id="1453974140256777690">Text som du klistrar in eller bifogar skickas till Google Cloud eller tredje parter för analys. Den kan till exempel genomsökas efter känsliga uppgifter.</translation>
 <translation id="1455413310270022028">Suddgummi</translation>
 <translation id="1462245070427461050">JIS B9</translation>
+<translation id="1462951478840426066">Använd teckensnitten på datorn så att du kan skapa innehåll av hög kvalitet</translation>
 <translation id="1463543813647160932">5:7</translation>
 <translation id="1467432559032391204">Vänster</translation>
 <translation id="1472675084647422956">Visa fler</translation>
@@ -221,6 +222,7 @@ Annars blockeras detta av sekretessinställningarna. Om du tillåter detta kan i
 <translation id="17513872634828108">Öppna flikar</translation>
 <translation id="1752021286346845558">Postfack 8</translation>
 <translation id="1753706481035618306">Sidnummer</translation>
+<translation id="1757773103848038814">Jämnbrett teckensnitt</translation>
 <translation id="1763864636252898013">Servern kunde inte bevisa att den är <ph name="DOMAIN" /> eftersom enhetens operativsystem inte litar på dess säkerhetscertifikat. Detta kan orsakas av en felaktig konfigurering eller att någon spärrar anslutningen.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Testa att köra nätverksdiagnostik för Windows<ph name="END_LINK" />.</translation>
 <translation id="1772163372082567643">Servern som du är på väg till, <ph name="ORIGIN" />, har en inställning som innebär
@@ -594,6 +596,7 @@ Annars blockeras detta av sekretessinställningarna. Om du tillåter detta kan i
 <translation id="3395827396354264108">Alternativ för utlämning</translation>
 <translation id="3399952811970034796">Leveransadress</translation>
 <translation id="3402261774528610252">TLS 1.0 eller TLS 1.1 användes för anslutningen när den här webbplatsen lästes in. De versionerna har fasats ut och kommer att inaktiveras i framtiden. Efter inaktiveringen kan användarna inte längre läsa in den här webbplatsen. TLS 1.2 eller senare behöver aktiveras på servern.</translation>
+<translation id="3411120537985775570">Möjligheten att klistra in från <ph name="ORIGIN_NAME" /> här blockeras av administratören.</translation>
 <translation id="3414952576877147120">Storlek:</translation>
 <translation id="3417660076059365994">Filer som du laddar upp eller bifogar skickas till Google Cloud eller tredje parter för analys. De kan till exempel genomsökas efter känsliga uppgifter eller skadlig programvara.</translation>
 <translation id="3422248202833853650">Testa att stänga andra program för att frigöra minne.</translation>
@@ -632,6 +635,7 @@ Annars blockeras detta av sekretessinställningarna. Om du tillåter detta kan i
 <translation id="3532844647053365774"><ph name="HOST" /> vill använda din mikrofon</translation>
 <translation id="3533328374079021623">Postfack 5</translation>
 <translation id="3539171420378717834">Spara en kopia av kortet på enheten</translation>
+<translation id="3552297013052089404">Sans serif-teckensnitt</translation>
 <translation id="3558573058928565255">dagtid</translation>
 <translation id="3566021033012934673">Anslutningen är inte privat</translation>
 <translation id="3567778190852720481">Det går inte att registrera sig med ett jobbkonto (jobbkonton är inte behöriga).</translation>
@@ -1000,6 +1004,7 @@ Annars blockeras detta av sekretessinställningarna. Om du tillåter detta kan i
 <translation id="503069730517007720">Ett rotcertifikat för <ph name="SOFTWARE_NAME" /> krävs men har inte installerats. IT-administratören bör granska konfigurationsanvisningarna för <ph name="SOFTWARE_NAME" /> och åtgärda problemet. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5031870354684148875">Om Google Översätt</translation>
 <translation id="503498442187459473"><ph name="HOST" /> vill använda kameran och mikrofonen</translation>
+<translation id="5039762155821394373">Teckensnittsstorlek</translation>
 <translation id="5039804452771397117">Tillåt</translation>
 <translation id="5040262127954254034">Sekretess</translation>
 <translation id="5043480802608081735">Länk som du har kopierat</translation>
@@ -1229,6 +1234,7 @@ Annars blockeras detta av sekretessinställningarna. Om du tillåter detta kan i
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5946937721014915347">Öppnar <ph name="SITE_NAME" /> …</translation>
 <translation id="5951495562196540101">Det går inte att registrera enheten med ett konsumentkonto (paketerad licens är tillgänglig).</translation>
+<translation id="5963413905009737549">Avsnitt</translation>
 <translation id="5967592137238574583">Redigera kontaktuppgifter</translation>
 <translation id="5967867314010545767">Ta bort från historiken</translation>
 <translation id="5975083100439434680">Zooma ut</translation>
@@ -1265,6 +1271,7 @@ Annars blockeras detta av sekretessinställningarna. Om du tillåter detta kan i
 <translation id="6051221802930200923">Du kan inte besöka <ph name="SITE" /> just nu eftersom tekniken att fästa certifikat används på webbplatsen. Nätverksfel och attacker är ofta tillfälliga, så sidan kommer förmodligen att fungera senare.</translation>
 <translation id="6052284303005792909">•</translation>
 <translation id="6053328359599022071">Vill du dela information om din närvaro?</translation>
+<translation id="6057359309778282021">Administratören har blockerat delning från <ph name="ORIGIN_NAME" /> till <ph name="VM_NAME" /></translation>
 <translation id="6058977677006700226">Vill du använda dina kort på alla enheter?</translation>
 <translation id="6059925163896151826">USB-enheter</translation>
 <translation id="6060009363608157444">Ogiltigt läge för DnsOverHttps.</translation>
@@ -1314,6 +1321,7 @@ Annars blockeras detta av sekretessinställningarna. Om du tillåter detta kan i
         <ph name="END_LIST" /></translation>
 <translation id="6280223929691119688">Det går inte att leverera till den här adressen. Välj en annan adress.</translation>
 <translation id="6282194474023008486">Postnummer</translation>
+<translation id="6289939620939689042">Sidfärg</translation>
 <translation id="6290238015253830360">Rekommenderade artiklar visas här</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6302269476990306341">Google-assistenten i Chrome stoppas</translation>
@@ -1470,6 +1478,7 @@ Annars blockeras detta av sekretessinställningarna. Om du tillåter detta kan i
 <translation id="7004583254764674281">Verifiera kreditkort snabbare med Windows Hello</translation>
 <translation id="7006930604109697472">Skicka ändå</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
+<translation id="7014741021609395734">Zoomnivå</translation>
 <translation id="7016992613359344582">Debiteringen kan göras en gång eller återkommande och det behöver inte framgå tydligt att detta händer.</translation>
 <translation id="7029809446516969842">Lösenord</translation>
 <translation id="7031646650991750659">Vilka appar från Google Play som du har installerat</translation>
@@ -1872,6 +1881,7 @@ Mer information:
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">Inga matchande lösenord. Visa alla sparade lösenord.</translation>
 <translation id="8625384913736129811">Spara kortet på enheten</translation>
+<translation id="8657078576661269990">Administratören har blockerat delning från <ph name="ORIGIN_NAME" /> till <ph name="VM_NAME_1" /> och <ph name="VM_NAME_2" /></translation>
 <translation id="8663226718884576429">Beställningsöversikt, <ph name="TOTAL_LABEL" />, mer information</translation>
 <translation id="867224526087042813">Signatur</translation>
 <translation id="8676424191133491403">Ingen fördröjning</translation>
@@ -1884,6 +1894,7 @@ Mer information:
 <translation id="8699041776323235191">HID-enhet</translation>
 <translation id="8703575177326907206">Din anslutning till <ph name="DOMAIN" /> är inte krypterad.</translation>
 <translation id="8705331520020532516">Serienummer</translation>
+<translation id="8710842507289500830">Teckensnittsformat</translation>
 <translation id="8718314106902482036">Betalningen slutfördes inte</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />, <ph name="DESCRIPTION" />, sökförslag</translation>
 <translation id="8719528812645237045">Flera hål högst upp</translation>
@@ -2004,6 +2015,7 @@ Mer information:
 <translation id="9191834167571392248">Hål nere till vänster</translation>
 <translation id="9205078245616868884">Din data har krypterats med din lösenfras för synkronisering. Ange den om du vill starta synkroniseringen.</translation>
 <translation id="9207861905230894330">Det gick inte att lägga till artikeln.</translation>
+<translation id="9213433120051936369">Anpassa utseendet</translation>
 <translation id="9215416866750762878">Ett program förhindrar att Chrome ansluter till den här webbplatsen på ett säkert sätt</translation>
 <translation id="9219103736887031265">Bilder</translation>
 <translation id="933712198907837967">Diners Club</translation>

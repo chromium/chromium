@@ -106,6 +106,7 @@
 <translation id="1810845389119482123">Sinxronizatsiya oxirigacha sozlanmagan</translation>
 <translation id="1821253160463689938">Saytlarga tashrif buyurmasangiz ham, cookie-axborot ulardagi afzalliklaringizni eslab qolish uchun foydalaniladi</translation>
 <translation id="1829244130665387512">Sahifa ichidan qidirish</translation>
+<translation id="1830550083491357902">Kirish bajarilmagan</translation>
 <translation id="1843805151597803366">Yaxshiroq tarjima uchun Google qidiruvi joriy sahifani ochishiga ruxsat bering</translation>
 <translation id="1853692000353488670">Yangi inkognito varaq</translation>
 <translation id="1856325424225101786">Lite rejimi asliga qaytarilsinmi?</translation>
@@ -113,6 +114,7 @@
 <translation id="1877026089748256423">Chrome versiyasi eskirdi</translation>
 <translation id="1883903952484604915">Fayllarim</translation>
 <translation id="189358972401248634">Boshqa tillar</translation>
+<translation id="1919130412786645364">Chrome hisobiga kirishga ruxsat berish</translation>
 <translation id="1922362554271624559">Tavsiya etilgan tillar</translation>
 <translation id="1925021887439448749">Boshqa veb-manzilni kiriting</translation>
 <translation id="1928696683969751773">Yangilanishlar</translation>
@@ -225,6 +227,7 @@ Qidiruvni boshlash uchun istalgan soʻzni bosib turing. Qidruvni aniqlashtirish 
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# ta audio fayl}other{# ta audio fayl}}</translation>
 <translation id="2656405586795711023">Veb-ilovalar</translation>
 <translation id="2689830683995595741">Chromeni ishlatish bilan siz <ph name="BEGIN_LINK1" />Google xizmat shartlari<ph name="END_LINK1" /> bilan <ph name="BEGIN_LINK2" />Google Chrome va Chrome OS qoʻshimcha xizmat shartlariga<ph name="END_LINK2" /> rozilik bildirgan hisoblanasiz. <ph name="BEGIN_LINK3" />Family Link bilan boshqariladigan Google hisoblari uchun Maxfiylik eslatmasi<ph name="END_LINK3" /> ham tatbiq qilinadi.</translation>
+<translation id="2704606927547763573">Nusxa olindi</translation>
 <translation id="2707726405694321444">Sahifani yangilash</translation>
 <translation id="2709516037105925701">Avtoto‘ldirish</translation>
 <translation id="2718352093833049315">Faqat Wi-Fi orqali</translation>
@@ -963,7 +966,6 @@ Inkognito rejimidagi faoliyatingizni siz tashrif buyurgan saytlar, ishxonangiz, 
 <translation id="8058746566562539958">Yangi Chrome oynasida ochish</translation>
 <translation id="8063895661287329888">Xatcho‘pni qo‘shib bo‘lmadi.</translation>
 <translation id="806745655614357130">Ma’lumotlar alohida saqlansin</translation>
-<translation id="8069669375923284295">Sinxronlash sozlamalarini davom ettirish uchun bosing</translation>
 <translation id="8073388330009372546">&amp;Rasmni yangi ichki oynada ochish</translation>
 <translation id="8076492880354921740">Varaqlar</translation>
 <translation id="8084114998886531721">Saqlangan parol</translation>

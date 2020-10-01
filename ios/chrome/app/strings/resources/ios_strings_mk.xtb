@@ -97,7 +97,6 @@
 <translation id="1965935827552890526">Завршете го тоа што сте го започнале во другиот отворен прозорец на Chrome.</translation>
 <translation id="1974060860693918893">Напредни</translation>
 <translation id="1989112275319619282">Прелистувај</translation>
-<translation id="1992734845128748707">Променете го стандардниот прелистувач…</translation>
 <translation id="2015722694326466240">За да ги видите лозинките, прво мора да поставите лозинка на вашиот уред.</translation>
 <translation id="2073572773299281212">Активен пред <ph name="DAYS" /> дена</translation>
 <translation id="2074131957428911366">Секогаш може да изберете што да синхронизирате во <ph name="BEGIN_LINK" />Поставки<ph name="END_LINK" />.</translation>
@@ -147,7 +146,7 @@
 <translation id="2625189173221582860">Лозинката е копирана</translation>
 <translation id="2647269890314209800">Колачиња во употреба</translation>
 <translation id="2648803196158606475">Избриши ги прочитаните</translation>
-<translation id="2653659639078652383">Поднеси</translation>
+<translation id="2653659639078652383">Испрати</translation>
 <translation id="2690858294534178585">Камерата е во употреба</translation>
 <translation id="2691653761409724435">Не се достапни офлајн</translation>
 <translation id="2695507686909505111">Страницата е преведена</translation>
@@ -165,6 +164,7 @@
 <translation id="2781331604911854368">Вклучено</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2800683595868705743">Излези од менувачот на картички</translation>
+<translation id="2815198996063984598">2. Допрете „Стандардна апликација за прелистување“</translation>
 <translation id="2830972654601096923">Управувајте со адресите…</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2840687315230832938">Првичното поставување на синхронизацијата не е завршено</translation>
@@ -181,6 +181,7 @@
 <translation id="2921219216347069551">Страницата не може да се сподели</translation>
 <translation id="2923448633003185837">Залепи и оди</translation>
 <translation id="292639812446257861">Означи како непрочитано</translation>
+<translation id="2952581218264071393">1. Отворете ги поставките за Chrome</translation>
 <translation id="2958718410589002129">Лозинки</translation>
 <translation id="2964349545761222050">Блокирај колачиња од трети страни</translation>
 <translation id="2969979262385602596">Најавувањето не успеа. Обидете се повторно подоцна.</translation>
@@ -217,6 +218,7 @@
 <translation id="3335947283844343239">Повторно отвори затворена картичка</translation>
 <translation id="3371831930909698441">„Преведи“ е достапна. Достапни се опции на дното на екранот.</translation>
 <translation id="3393920035788932672">Појавни прозорци се дозволени</translation>
+<translation id="3399930248910934354">Отворете ги поставките за Chrome</translation>
 <translation id="3425644765244388016">Прекар на картичката</translation>
 <translation id="3433057996795775706">Со бришењето на лозинкава нема да се избрише вашата сметка на <ph name="WEBSITE" />. Сменете ја лозинката на <ph name="WEBSITE" /> за да ја заштитите сметката од надворешни лица.</translation>
 <translation id="3443810440409579745">Примена е картичка.</translation>
@@ -241,6 +243,9 @@
 <translation id="3551320343578183772">Затвори ја картичката</translation>
 <translation id="3581564640715911333">Понудувај превод на страниците на други јазици</translation>
 <translation id="3588820906588687999">Отворете ја сликата во нова картичка</translation>
+<translation id="359441731697487922">Може да отворате линкови во Chrome автоматски ако ја поставите како стандарден прелистувач.
+      
+Следете ги чекорите подолу:</translation>
 <translation id="3603009562372709545">Копирајте URL на врска</translation>
 <translation id="3607167657931203000">Автомат. пополнување</translation>
 <translation id="3609785682760573515">Се синхронизира...</translation>
@@ -331,6 +336,7 @@
 <translation id="4747097190499141774">Шифрирањето на лозинката не ги вклучува начините на плаќање и адресите од Google Pay. Само некој што ја има вашата лозинка може да ги чита вашите шифрирани податоци. Лозинката не се испраќа, ниту зачувува во Google. Доколку ја заборавите лозинката или сакате да ја промените поставкава, ќе треба да ја ресетирате синхронизацијата. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">Нова инкогнито картичка</translation>
 <translation id="4758977202923349869">Ставете ја кредитната картичка во рамкава</translation>
+<translation id="4775879719735953715">Стандарден прелистувач</translation>
 <translation id="4802417911091824046">Шифрирањето на лозинката не ги вклучува начините на плаќање и адресите од Google Pay.
 
 За да ја промените поставкава, <ph name="BEGIN_LINK" />ресетирајте ја синхронизацијата<ph name="END_LINK" /></translation>
@@ -338,6 +344,7 @@
 <translation id="4808744395915275922">Ажурирања</translation>
 <translation id="4818522717893377262">Додај јазик…</translation>
 <translation id="481968316161811770">Колачиња, податоци</translation>
+<translation id="4824497107140370669">{count,plural, =0{{domain}}=1{и уште {domain} друг}one{{domain} и {count} друг}other{{domain} и {count} други}}</translation>
 <translation id="4826218269716039351">Се блокираат колачиња од трети страни</translation>
 <translation id="48274138579728272">Означи како прочитано</translation>
 <translation id="4833786495304741580">Автоматски испраќа статистика за користењето и извештаи за падовите во Google.</translation>
@@ -586,6 +593,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="7456847797759667638">Отвори локација...</translation>
 <translation id="7460314822154045102">Користи ја камерата</translation>
 <translation id="7464701184726199289">Ова ги чисти синхронизираните податоци од сите уреди. Поставките на зачуваните сајтови нема да се избришат и може да ги отсликуваат вашите навики за прелистување. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
+<translation id="746684838091935575">3. Изберете Chrome</translation>
 <translation id="7472734401283673885">Име на компанија</translation>
 <translation id="7473891865547856676">Не, фала</translation>
 <translation id="7481312909269577407">Напред</translation>

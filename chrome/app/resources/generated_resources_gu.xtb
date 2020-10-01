@@ -498,6 +498,7 @@
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (અતિથિ)</translation>
 <translation id="1572266655485775982">વાઇ-ફાઇ ચાલુ</translation>
 <translation id="1572876035008611720">તમારું ઇમેઇલ દાખલ કરો</translation>
+<translation id="1575741822946219011">ભાષાઓ અને ઇનપુટ</translation>
 <translation id="1576594961618857597">ડિફોલ્ટ સફેદ અવતાર</translation>
 <translation id="1578558981922970608">ફરજિયાત બંધ</translation>
 <translation id="1578784163189013834">સ્ક્રીન સેવરનું બૅકગ્રાઉન્ડ પસંદ કરો</translation>
@@ -854,6 +855,7 @@
 <translation id="1974821797477522211">નેટવર્ક સાથે કનેક્ટ કરો</translation>
 <translation id="1975841812214822307">દૂર કરો ...</translation>
 <translation id="1976150099241323601">સુરક્ષા ઉપકરણ પર સાઇન ઇન કરો </translation>
+<translation id="1976307821760494606"><ph name="DOMAIN" /> દ્વારા ADB ડિબગીંગ બંધ કરાયું છે. આમ કરવાથી 24 કલાકમાં તમારું <ph name="DEVICE_TYPE" /> રીસેટ થશે. તમે રાખવા માગતા હો તેવી કોઈપણ ફાઇલનું બૅકઅપ લો.</translation>
 <translation id="1977965994116744507">તમારા <ph name="DEVICE_TYPE" />ને અનલૉક કરવા તમારા ફોનને વધુ નજીક લાવો.</translation>
 <translation id="1978006917103730774">ભાવિ સૉફ્ટવેર અને સુરક્ષા અપડેટ ઑટોમૅટિક રીતે ઇન્સ્ટૉલ કરવામાં આવશે.</translation>
 <translation id="1979095679518582070">આ સુવિધાને બંધ કરવાથી સિસ્ટમ અપડેટ અને સુરક્ષા જેવી આવશ્યક સેવાઓ માટે આવશ્યક માહિતી મોકલવાની આ ડિવાઇસની ક્ષમતાને અસર થતી નથી.</translation>
@@ -2034,6 +2036,7 @@
 <translation id="3404249063913988450">સ્ક્રીન સેવર ચાલુ કરો</translation>
 <translation id="3405664148539009465">ફોન્ટ્સ કસ્ટમાઇઝ કરો </translation>
 <translation id="3405763860805964263">...</translation>
+<translation id="3406396172897554194">ભાષા કે ઇનપુટના નામ મુજબ શોધો</translation>
 <translation id="3406605057700382950">બુકમાર્ક્સ બાર &amp;બતાવો</translation>
 <translation id="340671561090997290">{NUM_EXTENSIONS,plural, =1{આ એક્સ્ટેન્શન જોખમકારક હોઈ શકે છે}one{આ એક્સ્ટેન્શન જોખમકારક હોઈ શકે છે}other{આ એક્સ્ટેન્શન જોખમકારક હોઈ શકે છે}}</translation>
 <translation id="3409785640040772790">Maps</translation>
@@ -2609,6 +2612,7 @@
 <translation id="4025039777635956441">પસંદ કરેલી સાઇટને મ્યૂટ કરો</translation>
 <translation id="4027804175521224372">(તમે ભૂલી રહ્યા છો - <ph name="IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_LINK" />)</translation>
 <translation id="4027951648498485763">જ્યાં સુધી તમે Chrome છોડશો નહીં, ત્યાં સુધી તમારી ફ્લૅશ સેટિંગને સાચવી રખાશે.</translation>
+<translation id="4028467762035011525">ઇનપુટ પદ્ધતિઓ ઉમેરો</translation>
 <translation id="4031179711345676612">માઇક્રોફોનને મંજૂરી</translation>
 <translation id="4031527940632463547">સેન્સર બ્લૉક કરેલ છે</translation>
 <translation id="4033471457476425443">નવું ફોલ્ડર ઉમેરો</translation>
@@ -4060,6 +4064,7 @@
 <translation id="5833726373896279253">આ સેટિંગ્સ ફક્ત માલિક દ્વારા જ સંશોધિત થઈ શકે છે:</translation>
 <translation id="5834581999798853053">લગભગ <ph name="TIME" /> મિનિટ બાકી</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> - કૅમેરા અથવા માઇક્રોફોન રેકોર્ડિંગ</translation>
+<translation id="5839574759884227787"><ph name="DOMAIN" /> દ્વારા ADB ડિબગીંગ બંધ કરાયું છે, જેને કારણે તમારું <ph name="DEVICE_TYPE" /> રીસેટ થશે. ફરી શરૂ કરતા પહેલાં તમારી ફાઇલોનો બૅકઅપ લો.</translation>
 <translation id="5840680448799937675">ફાઇલો તો હંમેશાં ઑફલાઇન શેર કરી શકાશે જ</translation>
 <translation id="5841270259333717135">ઇથરનેટ ગોઠવો</translation>
 <translation id="5842497610951477805">બ્લૂટૂથ ચાલુ</translation>
@@ -4474,6 +4479,7 @@ USB ડિવાઇસ</translation>
 <translation id="6308077700132376815">છબીઓને બ્લૉક કરો</translation>
 <translation id="6308493641021088955"><ph name="EXTENSION_NAME" /> દ્વારા આપવામાં આવેલું સાઇન-ઇન</translation>
 <translation id="6308937455967653460">લિં&amp;કને આ રીતે સાચવો...</translation>
+<translation id="6309443618838462258">તમારા વ્યવસ્થાપક આ ઇનપુટ પદ્ધતિની મંજૂરી આપતા નથી</translation>
 <translation id="6309510305002439352">માઇક્રોફોન બંધ છે</translation>
 <translation id="6311220991371174222">તમારી પ્રોફાઇલ ખોલતી વખતે કોઈ ભૂલ આવાને કારણે Chrome પ્રારંભ કરી શકતાં નથી. Chrome પુનઃપ્રારંભ કરવાનો પ્રયાસ કરો.</translation>
 <translation id="6312403991423642364">અજ્ઞાત નેટવર્ક ભૂલ</translation>
@@ -5192,6 +5198,7 @@ USB ડિવાઇસ</translation>
 <translation id="7191159667348037">અજાણ્યું પ્રિન્ટર (USB)</translation>
 <translation id="7193051357671784796">આ ઍપ તમારી સંસ્થા દ્વારા ઉમેરવામાં આવી છે. ઍપને ઇન્સ્ટૉલ કરવાનું સમાપ્ત કરવા માટે તેને ફરી શરૂ કરો.</translation>
 <translation id="7193374945610105795"><ph name="ORIGIN" /> માટે કોઈ પાસવર્ડ સાચવેલા નથી</translation>
+<translation id="7196020411877309443">હું આ કેમ જોઇ રહ્યો(હી) છું?</translation>
 <translation id="7196913789568937443">Google ડ્રાઇવમાં બૅકઅપ લો. કોઈપણ સમયે તમારો ડેટા સરળતાથી પાછો મેળવો અથવા ડિવાઇસ સ્વિચ કરો. તમારા બૅકઅપમાં ઍપનો ડેટા શામેલ હોય છે. તમારું બૅકઅપ Google પર અપલોડ કરવામાં આવે છે અને તમારા Google એકાઉન્ટ પાસવર્ડનો ઉપયોગ કરીને એન્ક્રિપ્ટ કરવામાં આવે છે. <ph name="BEGIN_LINK1" />વધુ જાણો<ph name="END_LINK1" /></translation>
 <translation id="7197190419934240522">તમે બ્રાઉઝ કરો તે દર વખતે Google શોધ અને Google સ્માર્ટ મેળવો</translation>
 <translation id="7197632491113152433">અમને તમારા એકાઉન્ટમાંથી આ ડિવાઇસ પર ઉપયોગ કરી શકાય તેવી <ph name="NUMBER_OF_APPS" /> ઍપ મળી છે.</translation>
@@ -5847,6 +5854,7 @@ USB ડિવાઇસ</translation>
 <translation id="7952708427581814389">સાઇટ તમારા ક્લિપબોર્ડ પરની ટેક્સ્ટ અને છબીઓ જોવાનું પૂછી શકે છે</translation>
 <translation id="795282463722894016">પુનઃસ્થાપન પૂર્ણ</translation>
 <translation id="7952904276017482715">અપેક્ષિત ID "<ph name="EXPECTED_ID" />" છે, પણ ID "<ph name="NEW_ID" />" હતું.</translation>
+<translation id="7953669802889559161">ઇનપુટ</translation>
 <translation id="7953955868932471628">શૉર્ટકટ્સનું સંચાલન કરો</translation>
 <translation id="7956373551960864128">તમે સાચવેલું પ્રિન્ટર</translation>
 <translation id="7957074856830851026">ડિવાઇસ વિશેની માહિતી જુઓ, જેમ કે તેનો અનુક્રમ નંબર અથવા અસેટ ID</translation>
@@ -5870,6 +5878,7 @@ USB ડિવાઇસ</translation>
 <translation id="7973962044839454485">ખોટા વપરાશકર્તાનામ અથવા પાસવર્ડને કારણે PPP પ્રમાણીકરણ નિષ્ફળ થયું</translation>
 <translation id="7974566588408714340"><ph name="EXTENSIONNAME" /> નો ઉપયોગ કરીને ફરીથી પ્રયાસ કરો</translation>
 <translation id="7974936243149753750">ઓવરસ્કૅન</translation>
+<translation id="7977404132325989121">વિન્ડોને &amp;નામ આપો...</translation>
 <translation id="7978412674231730200">ખાનગી કી</translation>
 <translation id="7978450511781612192">આનાથી તમે તમારા Google એકાઉન્ટમાંથી સાઇન આઉટ થઈ જશો. ત્યાર પછી તમારાં બુકમાર્ક, ઇતિહાસ, પાસવર્ડ અને ઘણું બધું સિંક કરવામાં નહીં આવે.</translation>
 <translation id="7980084013673500153">સંપત્તિ ID: <ph name="ASSET_ID" /></translation>
@@ -6417,6 +6426,7 @@ USB ડિવાઇસ</translation>
 <translation id="8648408795949963811">રાત્રિ પ્રકાશ માટે રંગ તાપમાન</translation>
 <translation id="8648544143274677280"><ph name="SITE_NAME" />ની પરવાનગી માગે છે: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" />, અને વધુ</translation>
 <translation id="8650543407998814195">જો કે તમે હવે તમારી જૂની પ્રોફાઇલ ઍક્સેસ કરી શકતા નથી, છતાં તમે તેને કાઢી નાખી શકો છો.</translation>
+<translation id="865118751078059229">વિન્ડોને &amp;નામ આપો...</translation>
 <translation id="8651585100578802546">આ પૃષ્ઠ ફરીથી લોડ કરવા દબાણ કરો</translation>
 <translation id="8652400352452647993">પૅક એક્સટેન્શન ભૂલ</translation>
 <translation id="8654151524613148204">આ ફાઇલ તમારા કમ્પ્યુટરને સંચાલિત કરવા માટે ખૂબ મોટી છે. માફ કરશો.</translation>
@@ -6569,6 +6579,7 @@ USB ડિવાઇસ</translation>
 <translation id="8813872945700551674">જાઓ અને માતાપિતા પાસેથી "<ph name="EXTENSION_NAME" />"ની મંજૂરી મેળવો</translation>
 <translation id="8813969267212093033">સિસ્ટમ ટેક્સ્ટ આ ભાષામાં દર્શાવાય છે</translation>
 <translation id="8814190375133053267">વાઇ-ફાઇ</translation>
+<translation id="8814319344131658221">જોડણીની તપાસ માટેની ભાષાઓ તમારી ભાષાની પસંદગી પર આધારિત છે</translation>
 <translation id="8814644416678422095">હાર્ડ ડ્રાઇવ</translation>
 <translation id="8814687660896548945">કૃપા કરીને રાહ જુઓ, આર્કાઇવને તપાસવામાં આવી રહ્યો છે…</translation>
 <translation id="881782782501875829">પોર્ટ નંબર ઉમેરો</translation>
@@ -6664,6 +6675,7 @@ USB ડિવાઇસ</translation>
 <translation id="8912810933860534797">ઑટો સ્કૅન ચાલુ કરો</translation>
 <translation id="8915370057835397490">સૂચનને લોડ કરી રહ્યું છે</translation>
 <translation id="8916476537757519021">છુપો મોડ સબફ્રેમ: <ph name="SUBFRAME_SITE" /></translation>
+<translation id="8916749157829986308">વિન્ડોનું નામ સેટ કરો</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" />ની <ph name="DEVICE_TYPE" /></translation>
 <translation id="8922013791253848639">આ સાઇટ પર જાહેરાતો માટે હંમેશાં પરવાનગી આપે છે</translation>
 <translation id="8923880975836399332">ઘેરો મોરપીંછ</translation>
@@ -6839,6 +6851,7 @@ USB ડિવાઇસ</translation>
 <translation id="9124003689441359348">સાચવેલા પાસવર્ડ અહીં દેખાશે</translation>
 <translation id="9126149354162942022">કર્સરનો રંગ</translation>
 <translation id="9128317794749765148">સેટઅપ પૂર્ણ ન થઈ શક્યું</translation>
+<translation id="9128335130883257666"><ph name="INPUT_METHOD_NAME" /> માટેનું સેટિંગ પેજ ખોલો</translation>
 <translation id="9128870381267983090">નેટવર્કથી કનેક્ટ કરો</translation>
 <translation id="9130015405878219958">અમાન્ય મોડ દાખલ થયો.</translation>
 <translation id="9131487537093447019">Bluetooth ડિવાઇસ પર સંદેશા મોકલો અને ત્યાંથી પ્રાપ્ત કરો.</translation>

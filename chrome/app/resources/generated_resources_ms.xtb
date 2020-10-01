@@ -859,7 +859,7 @@
 <translation id="1974821797477522211">Sambung ke rangkaian</translation>
 <translation id="1975841812214822307">Alih keluar...</translation>
 <translation id="1976150099241323601">Log masuk ke Peranti Keselamatan</translation>
-<translation id="1976307821760494606"><ph name="DOMAIN" /> telah melumpuhkan penyahpepijatan ADB. Tindakan ini akan menetapkan semula <ph name="DEVICE_TYPE" /> anda dalam masa 24 jam. Sandarkan mana-mana fail yang ingin anda simpan.</translation>
+<translation id="1976307821760494606"><ph name="DOMAIN" /> telah melumpuhkan penyahpepijatan ADB. Tindakan ini akan menetapkan semula <ph name="DEVICE_TYPE" /> anda dalam masa 24 jam. Buat sandaran mana-mana fail yang ingin anda simpan.</translation>
 <translation id="1977965994116744507">Rapatkan telefon anda untuk membuka kunci <ph name="DEVICE_TYPE" /> anda</translation>
 <translation id="1978006917103730774">Kemas kini perisian dan keselamatan pada masa hadapan akan dipasang secara automatik.</translation>
 <translation id="1979095679518582070">Tindakan mematikan ciri ini tidak menjejaskan keupayaan peranti ini untuk menghantar maklumat yang diperlukan untuk perkhidmatan penting seperti kemas kini sistem dan keselamatan.</translation>
@@ -5200,6 +5200,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="7191159667348037">Pencetak Tidak Diketahui (USB)</translation>
 <translation id="7193051357671784796">Apl ini ditambahkan oleh organisasi anda. Mulakan semula apl untuk menyelesaikan pemasangan.</translation>
 <translation id="7193374945610105795">Tiada kata laluan disimpan untuk <ph name="ORIGIN" /></translation>
+<translation id="7196020411877309443">Mengapakah halaman ini yang saya lihat?</translation>
 <translation id="7196913789568937443">Buat sandaran ke Google Drive. Pulihkan data atau tukar peranti anda dengan mudah pada bila-bila masa. Sandaran anda merangkumi data apl. Sandaran anda dimuat naik ke Google dan disulitkan dengan menggunakan kata laluan Akaun Google anda. <ph name="BEGIN_LINK1" />Ketahui Lebih Lanjut<ph name="END_LINK1" /></translation>
 <translation id="7197190419934240522">Dapatkan Carian Google dan ciri pintar Google setiap kali anda menyemak imbas</translation>
 <translation id="7197632491113152433">Kami menemui <ph name="NUMBER_OF_APPS" /> apl daripada akaun anda yang boleh digunakan pada peranti ini.</translation>
@@ -6587,7 +6588,7 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8813872945700551674">Sila minta ibu/bapa meluluskan "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="8813969267212093033">Teks sistem ditunjukkan dalam bahasa ini</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
-<translation id="8814319344131658221">Bahasa untuk semak ejaan adalah berdasarkan pilihan bahasa anda</translation>
+<translation id="8814319344131658221">Bahasa untuk semakan ejaan adalah berdasarkan pilihan bahasa anda</translation>
 <translation id="8814644416678422095">Pemacu keras</translation>
 <translation id="8814687660896548945">Sila tunggu, arkib sedang diimbas…</translation>
 <translation id="881782782501875829">Tambahkan nombor port</translation>

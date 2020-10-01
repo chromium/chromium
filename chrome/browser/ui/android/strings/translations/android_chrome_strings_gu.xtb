@@ -106,6 +106,7 @@
 <translation id="1810845389119482123">સિંકનું પ્રારંભિક સેટઅપ પૂર્ણ થયું નથી</translation>
 <translation id="1821253160463689938">તમારી પસંદગીઓ યાદ રાખવા માટે કુકીનો ઉપયોગ કરે છે, પછી ભલે તમે તે પેજની મુલાકાત ન પણ લો</translation>
 <translation id="1829244130665387512">આ પૃષ્ઠમાં શોધો</translation>
+<translation id="1830550083491357902">સાઇન ઇન નથી</translation>
 <translation id="1843805151597803366">બહેતર અનુવાદો મેળવવા માટે, Google Searchને હાલના પેજનો ઉપયોગ કરવાની પરવાનગી આપો</translation>
 <translation id="1853692000353488670">નવી છુપી ટેબ</translation>
 <translation id="1856325424225101786">લાઇટ મોડને રીસેટ કરીએ?</translation>
@@ -113,6 +114,7 @@
 <translation id="1877026089748256423">Chrome જૂનું થઈ ગયું છે</translation>
 <translation id="1883903952484604915">મારી ફાઇલો</translation>
 <translation id="189358972401248634">અન્ય ભાષાઓ</translation>
+<translation id="1919130412786645364">Chromeમાં સાઇન-ઇનની મંજૂરી આપો</translation>
 <translation id="1922362554271624559">સૂચવેલી ભાષાઓ</translation>
 <translation id="1925021887439448749">કસ્ટમ વેબ ઍડ્રેસ દાખલ કરો</translation>
 <translation id="1928696683969751773">અપડેટ</translation>
@@ -225,6 +227,7 @@
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# ઑડિયો ફાઇલ}one{# ઑડિયો ફાઇલો}other{# ઑડિયો ફાઇલો}}</translation>
 <translation id="2656405586795711023">વેબ ઍપ</translation>
 <translation id="2689830683995595741">Chromeનો ઉપયોગ કરીને, તમે <ph name="BEGIN_LINK1" />Googleની સેવાની શરતો<ph name="END_LINK1" /> અને <ph name="BEGIN_LINK2" />Google Chrome તથા Chrome OSની વધારાની સેવાની શરતો<ph name="END_LINK2" /> સાથે સંમત થાઓ છો. <ph name="BEGIN_LINK3" />Family Link વડે મેનેજ કરવામાં આવતા Google એકાઉન્ટ માટેની પ્રાઇવસી નોટિસ<ph name="END_LINK3" /> પણ લાગુ.</translation>
+<translation id="2704606927547763573">કૉપિ કર્યું</translation>
 <translation id="2707726405694321444">પેજ રિફ્રેશ કરો</translation>
 <translation id="2709516037105925701">સ્વતઃભરો</translation>
 <translation id="2718352093833049315">ફક્ત વાઇ-ફાઇ પર</translation>
@@ -347,6 +350,7 @@
 <translation id="3631987586758005671"><ph name="DEVICE_NAME" /> પર શેર કરી રહ્યાં છે</translation>
 <translation id="3632295766818638029">પાસવર્ડ બતાવો</translation>
 <translation id="363596933471559332">સંગ્રહિત ઓળખપત્રોનો ઉપયોગ કરીને વેબસાઇટ્સમાં આપમેળે સાઇન ઇન કરો. જ્યારે સુવિધા બંધ હોય છે, ત્યારે વેબસાઇટમાં સાઇન ઇન કરતાં પહેલાં દર વખતે તમને ચકાસણી માટે કહેવામાં આવશે.</translation>
+<translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3658159451045945436">રીસેટ કરવાથી મુલાકાત લીધેલી સાઇટની સૂચિ સહિત તમારા ડેટા બચતના ઇતિહાસને કાઢી નાખે છે.</translation>
 <translation id="3692944402865947621">સ્ટોરેજ સ્થાન સુધી પહોંચી ન શકવાને કારણે <ph name="FILE_NAME" />નું ડાઉનલોડ નિષ્ફળ થયું.</translation>
 <translation id="3701167022068948696">હમણાં જ સુધારો</translation>
@@ -707,6 +711,7 @@
 <translation id="6301525844455696527">વાંચવાની સૂચિમાં બાકી હોય તે વાંચી લો</translation>
 <translation id="6303969859164067831">સાઇન આઉટ કરો અને સિંક બંધ કરો</translation>
 <translation id="6312687380483398334">વેબ ઍપ (છોડો)</translation>
+<translation id="6313752143992575395"><ph name="WEBSITE_TITLE" /> માટેનું સૂચન બતાવી રહ્યાં છીએ</translation>
 <translation id="6316139424528454185">Android વર્ઝન અસમર્થિત છે</translation>
 <translation id="6324034347079777476">Android સિસ્ટમ સમન્વયન અક્ષમ છે</translation>
 <translation id="6333140779060797560"><ph name="APPLICATION" /> મારફતે શેર કરો</translation>
@@ -838,6 +843,7 @@
 <translation id="7233236755231902816">વેબ તમારી ભાષામાં જોવા માટે Chromeનું એકદમ નવું વર્ઝન મેળવો</translation>
 <translation id="7248069434667874558">ખાતરી કરો કે <ph name="TARGET_DEVICE_NAME" />માં Chromeમાં સિંક ચાલુ કરેલું છે</translation>
 <translation id="7274013316676448362">અવરોધિત સાઇટ</translation>
+<translation id="7286572596625053347"><ph name="LANGUAGE" /> બદલીએ?</translation>
 <translation id="7290209999329137901">નામ બદલવું ઉપલબ્ધ નથી</translation>
 <translation id="7291387454912369099">આસિસ્ટંટે ચેકઆઉટ ટ્રિગર કર્યું</translation>
 <translation id="7293171162284876153">સિંક શરુ કરવા માટે, "તમારો Chromeનો ડેટા સિંક કરો" ચાલુ કરો.</translation>
@@ -960,7 +966,6 @@
 <translation id="8058746566562539958">નવા Chrome ટૅબમાં ખોલો</translation>
 <translation id="8063895661287329888">બુકમાર્ક ઉમેરવામાં નિષ્ફળ થયાં.</translation>
 <translation id="806745655614357130">મારા ડેટાને અલગ રાખો</translation>
-<translation id="8069669375923284295">સિંક કરવાની સુવિધાનું સેટઅપ કરવાનું ચાલુ રાખવા માટે ટૅપ કરો</translation>
 <translation id="8073388330009372546">નવા ટેબમાં છબી ખોલો</translation>
 <translation id="8076492880354921740">ટૅબ્સ</translation>
 <translation id="8084114998886531721">સાચવેલ પાસવર્ડ</translation>
@@ -1052,7 +1057,7 @@
 <translation id="8748850008226585750">સામગ્રીઓ છુપાવેલ છે</translation>
 <translation id="8788265440806329501">નૅવિગેશન ઇતિહાસ બંધ છે</translation>
 <translation id="8788968922598763114">છેલ્લે બંધ કરેલ ટૅબ ફરીથી ખોલો</translation>
-<translation id="8798449543960971550">વાંચો</translation>
+<translation id="8798449543960971550">વાંચેલાં</translation>
 <translation id="8812260976093120287">કેટલીક વેબસાઇટ પર, તમે સમર્થિત ચુકવણી ઍપ્લિકેશનો વડે ચુકવણી કરી શકો છો.</translation>
 <translation id="8820817407110198400">બુકમાર્ક</translation>
 <translation id="883806473910249246">કન્ટેન્ટ ડાઉનલોડ કરતી વખતે એક ભૂલ આવી.</translation>

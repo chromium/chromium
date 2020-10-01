@@ -109,7 +109,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1348779747280417563">Confirmar nombre</translation>
 <translation id="1357195169723583938">Quién ha utilizado este dispositivo recientemente y cuándo</translation>
 <translation id="1360955481084547712">Abre una nueva ventana de incógnito para navegar en privado</translation>
-<translation id="1363819917331173092">No ofrecer traducir páginas en <ph name="SOURCE_LANGUAGE" /></translation>
+<translation id="1363819917331173092">No ofrecer que se traduzcan páginas en <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1364822246244961190">Esta política está bloqueada, su valor será ignorado.</translation>
 <translation id="1374468813861204354">sugerencias</translation>
 <translation id="1374692235857187091">Index-4x6 (Postcard)</translation>
@@ -1229,6 +1229,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5946937721014915347">Abriendo <ph name="SITE_NAME" />…</translation>
 <translation id="5951495562196540101">No te puedes registrar con una cuenta de consumidor (hay una licencia asociada disponible).</translation>
+<translation id="5963413905009737549">Etiqueta de sección</translation>
 <translation id="5967592137238574583">Edita la información de contacto</translation>
 <translation id="5967867314010545767">Eliminar del historial</translation>
 <translation id="5975083100439434680">Reducir</translation>
@@ -1797,7 +1798,7 @@ Más información:
 <translation id="8267698848189296333">Iniciando sesión como <ph name="USERNAME" /></translation>
 <translation id="8269242089528251720">Documentos separados/Copias intercaladas</translation>
 <translation id="8269981117540303696">Ahora puedes navegar de forma privada. Nadie más que use este dispositivo verá tu actividad, pero sí se guardarán tus descargas y marcadores.</translation>
-<translation id="8275952078857499577">No ofrecer traducir este sitio web</translation>
+<translation id="8275952078857499577">No ofrecer que se traduzca este sitio web</translation>
 <translation id="8277900682056760511">La hoja del controlador de pagos está abierta</translation>
 <translation id="8281084378435768645">Large-Photo</translation>
 <translation id="8282947398454257691">Conocer tu identificador de dispositivo único</translation>

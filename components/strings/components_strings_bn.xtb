@@ -15,6 +15,7 @@
 <translation id="1038106730571050514">সাজেশনগুলি দেখান</translation>
 <translation id="1038842779957582377">অজানা নাম</translation>
 <translation id="1041998700806130099">জব শিট মেসেজ</translation>
+<translation id="1048785276086539861">অ্যানোটেশন এডিট করার সময় এই ডকুমেন্ট আবার 'সিঙ্গেল পেজ ভিউ' মোডে দেখা যাবে</translation>
 <translation id="1050038467049342496">অন্যান্য অ্যাপ্লিকেশানগুলি বন্ধ করুন</translation>
 <translation id="1055184225775184556">&amp;যোগ করাকে পূর্বাবস্থায় ফেরান</translation>
 <translation id="1056898198331236512">সতর্কতা</translation>
@@ -380,6 +381,7 @@
 <translation id="2465688316154986572">স্টেপল করুন</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />নেটওয়ার্ক ডায়গনিস্টিক্স চালান<ph name="END_LINK" /></translation>
 <translation id="2469153820345007638">1-to-N অর্ডার</translation>
+<translation id="2470767536994572628">অ্যানোটেশন এডিট করার সময় এই ডকুমেন্ট 'সিঙ্গেল পেজ ভিউ' মোডে এবং এর আসল রোটেশনে ফিরে যাবে</translation>
 <translation id="2479410451996844060">ভুল সার্চের ইউআরএল৷</translation>
 <translation id="2482878487686419369">বিজ্ঞপ্তিগুলি</translation>
 <translation id="248348093745724435">মেশিনের নীতি</translation>
@@ -1228,6 +1230,7 @@
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5946937721014915347"><ph name="SITE_NAME" /> খুলছে…</translation>
 <translation id="5951495562196540101">ক্রেতার অ্যাকাউন্টের মাধ্যমে এনরোল করা যাচ্ছে না (প্যাকেজ লাইসেন্স পাওয়া যাবে)৷</translation>
+<translation id="5963413905009737549">বিভাগ</translation>
 <translation id="5967592137238574583">পরিচিতির তথ্য সম্পাদনা করুন</translation>
 <translation id="5967867314010545767">ইতিহাস থেকে সরান</translation>
 <translation id="5975083100439434680">ছোট করুন</translation>
@@ -1639,6 +1642,7 @@
 <translation id="7647206758853451655">প্রিন্টের কোয়ালিটি</translation>
 <translation id="7648992873808071793">এই ডিভাইসে ফাইলগুলি জমা করুন</translation>
 <translation id="7653957176542370971">পেমেন্ট হ্যান্ডলার শিট বন্ধ করা আছে</translation>
+<translation id="7654909834015434372">অ্যানোটেশন এডিট করার সময়, এই ডকুমেন্ট তার আসল রোটেশনে ফিরে যাবে</translation>
 <translation id="765676359832457558">উন্নত সেটিংস লুকান...</translation>
 <translation id="7658239707568436148">বাতিল</translation>
 <translation id="7662298039739062396">সেটিংস একটি এক্সটেনশন দ্বারা নিয়ন্ত্রিত</translation>

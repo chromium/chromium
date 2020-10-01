@@ -5,6 +5,7 @@
 <translation id="1195447618553298278">Error desconocido.</translation>
 <translation id="1413240736185167732">Error: Problema en el filtro</translation>
 <translation id="1468664791493211953">Ofertas</translation>
+<translation id="1478594628797167447">Escáner</translation>
 <translation id="1482734542997480527"><ph name="ENROLLMENT_DOMAIN" /> administra este dispositivo y es posible que pueda supervisar tu actividad.</translation>
 <translation id="150962533380566081">PUK no válida.</translation>
 <translation id="1510238584712386396">Selector</translation>
@@ -24,6 +25,7 @@
 <translation id="2872961005593481000">Apagar</translation>
 <translation id="3008341117444806826">ACTUALIZAR</translation>
 <translation id="3091839911843451378">Error: La impresora se detuvo</translation>
+<translation id="3246869037381808805">Se quitarán los trabajos de impresión que tengan más de 1 día</translation>
 <translation id="3268178239013324452">Error: La tapa está abierta</translation>
 <translation id="3369013195428705271">¿Seguro que quieres borrar todo el historial de impresiones? No se quitarán tus trabajos de impresión en curso.</translation>
 <translation id="3456078764689556234">Se imprimió la página <ph name="PRINTED_PAGES" /> de un total de <ph name="TOTAL_PAGES" />.</translation>
@@ -34,6 +36,7 @@
 <translation id="38114475217616659">Borrar todo el historial</translation>
 <translation id="3820172043799983114">PIN no válido</translation>
 <translation id="3838338534323494292">Nueva contraseña</translation>
+<translation id="39823212440917567">Se quitarán los trabajos de impresión que tengan más de <ph name="NUMBER_OF_DAYS" /> días</translation>
 <translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> administra este dispositivo y tiene acceso a toda la actividad del usuario, incluso las páginas web que visitó, su correo electrónico y sus contraseñas.</translation>
 <translation id="4003384961948020559">Error: La bandeja de salida está llena</translation>
 <translation id="4027485274696301677"><ph name="ENROLLMENT_DOMAIN" /> administra el dispositivo <ph name="DEVICE_TYPE" />. Los administradores pueden configurarlo de forma remota.</translation>
@@ -52,6 +55,7 @@
 <translation id="4890353053343094602">Elige una nueva de inmediato</translation>
 <translation id="4917889632206600977">Se detuvo: no hay papel</translation>
 <translation id="4932733599132424254">Fecha</translation>
+<translation id="520299634122159966">No hay escáneres disponibles</translation>
 <translation id="5212543919916444558">No hay nada en la pantalla con lo que pueda ayudarte.
 Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="5222676887888702881">Salir</translation>
@@ -71,6 +75,7 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="649050271426829538">Se detuvo: se atascó el papel</translation>
 <translation id="6517239166834772319">Explorar</translation>
 <translation id="6564646048574748301">Error: No se puede acceder a la impresora</translation>
+<translation id="6620487321149975369">Los trabajos de impresión aparecerán en el historial, a menos que se quiten manualmente</translation>
 <translation id="6643016212128521049">Borrar</translation>
 <translation id="6747215703636344499">Se detuvo: la bandeja de salida está llena</translation>
 <translation id="7162487448488904999">Galería</translation>

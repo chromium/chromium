@@ -106,6 +106,7 @@
 <translation id="1810845389119482123">Chưa hoàn tất quá trình thiết lập đồng bộ hóa ban đầu</translation>
 <translation id="1821253160463689938">Sử dụng cookie để ghi nhớ tùy chọn của bạn, ngay cả khi bạn không truy cập vào các trang đó</translation>
 <translation id="1829244130665387512">Tìm trong trang</translation>
+<translation id="1830550083491357902">Chưa đăng nhập</translation>
 <translation id="1843805151597803366">Để có bản dịch chính xác hơn, hãy cho phép Google Tìm kiếm sử dụng trang hiện tại</translation>
 <translation id="1853692000353488670">Thẻ ẩn danh mới</translation>
 <translation id="1856325424225101786">Đặt lại Chế độ thu gọn?</translation>
@@ -113,6 +114,7 @@
 <translation id="1877026089748256423">Chrome đã lỗi thời</translation>
 <translation id="1883903952484604915">Tệp của tôi</translation>
 <translation id="189358972401248634">Ngôn ngữ khác</translation>
+<translation id="1919130412786645364">Cho phép đăng nhập vào Chrome</translation>
 <translation id="1922362554271624559">Ngôn ngữ đề xuất</translation>
 <translation id="1925021887439448749">Nhập địa chỉ web tùy chỉnh</translation>
 <translation id="1928696683969751773">Số lần cập nhật</translation>
@@ -225,6 +227,7 @@ Chạm và giữ từ bất kỳ để tìm kiếm. Để điều chỉnh nội 
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# tệp âm thanh}other{# tệp âm thanh}}</translation>
 <translation id="2656405586795711023">Ứng dụng web</translation>
 <translation id="2689830683995595741">Bằng việc sử dụng Chrome, bạn đồng ý với <ph name="BEGIN_LINK1" />Điều khoản dịch vụ của Google<ph name="END_LINK1" /> cũng như <ph name="BEGIN_LINK2" />Điều khoản dịch vụ bổ sung của Google Chrome và Chrome OS<ph name="END_LINK2" />. Bạn sẽ phải tuân thủ cả <ph name="BEGIN_LINK3" />Thông báo về quyền riêng tư cho Tài khoản Google được quản lý bằng Family Link<ph name="END_LINK3" />.</translation>
+<translation id="2704606927547763573">Đã sao chép</translation>
 <translation id="2707726405694321444">Làm mới trang</translation>
 <translation id="2709516037105925701">Tự động điền</translation>
 <translation id="2718352093833049315">Chỉ trên Wi-Fi</translation>
@@ -347,6 +350,7 @@ Chạm và giữ từ bất kỳ để tìm kiếm. Để điều chỉnh nội 
 <translation id="3631987586758005671">Đang chia sẻ đến <ph name="DEVICE_NAME" /></translation>
 <translation id="3632295766818638029">Hiển thị mật khẩu</translation>
 <translation id="363596933471559332">Tự động đăng nhập vào các trang web bằng thông tin đăng nhập được lưu trữ. Khi tính năng này tắt, bạn sẽ luôn được yêu cầu xác minh trước khi đăng nhập vào trang web.</translation>
+<translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3658159451045945436">Việc đặt lại sẽ xóa lịch sử tiết kiệm dữ liệu, bao gồm cả danh sách các trang web bạn đã truy cập.</translation>
 <translation id="3692944402865947621">Không tải <ph name="FILE_NAME" /> xuống được do không tìm thấy vị trí bộ nhớ.</translation>
 <translation id="3701167022068948696">Khắc phục ngay</translation>
@@ -707,6 +711,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="6301525844455696527">Hãy hoàn thành danh sách đọc của bạn</translation>
 <translation id="6303969859164067831">Đăng xuất và tắt đồng bộ hóa</translation>
 <translation id="6312687380483398334">Ứng dụng web (im lặng)</translation>
+<translation id="6313752143992575395">Đang hiển thị nội dung đề xuất cho <ph name="WEBSITE_TITLE" /></translation>
 <translation id="6316139424528454185">Phiên bản Android không được hỗ trợ</translation>
 <translation id="6324034347079777476">Đồng bộ hóa hệ thống Android đã bị tắt</translation>
 <translation id="6333140779060797560">Chia sẻ qua <ph name="APPLICATION" /></translation>
@@ -838,6 +843,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7233236755231902816">Để duyệt web bằng ngôn ngữ của bạn, hãy tải phiên bản Chrome mới nhất</translation>
 <translation id="7248069434667874558">Hãy đảm bảo <ph name="TARGET_DEVICE_NAME" /> đã bật tính năng đồng bộ hóa trên Chrome</translation>
 <translation id="7274013316676448362">Trang web bị chặn</translation>
+<translation id="7286572596625053347">Thay đổi <ph name="LANGUAGE" />?</translation>
 <translation id="7290209999329137901">Không đổi tên được</translation>
 <translation id="7291387454912369099">Trợ lý kích hoạt thanh toán</translation>
 <translation id="7293171162284876153">Để bắt đầu đồng bộ hóa, hãy bật tùy chọn "Đồng bộ hóa dữ liệu của bạn trên Chrome".</translation>
@@ -960,7 +966,6 @@ Trong chế độ Ẩn danh, hoạt động của bạn có thể vẫn hiển t
 <translation id="8058746566562539958">Mở trong thẻ Chrome mới</translation>
 <translation id="8063895661287329888">Không thêm được dấu trang.</translation>
 <translation id="806745655614357130">Giữ dữ liệu của tôi riêng biệt</translation>
-<translation id="8069669375923284295">Nhấn để tiếp tục thiết lập tính năng đồng bộ hóa</translation>
 <translation id="8073388330009372546">Mở ảnh trong thẻ mới</translation>
 <translation id="8076492880354921740">Thẻ</translation>
 <translation id="8084114998886531721">Mật khẩu đã lưu</translation>

@@ -1239,7 +1239,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2434758125294431199">Seleziona chi può condividere file con te</translation>
 <translation id="2435248616906486374">Rete scollegata</translation>
 <translation id="2435457462613246316">Mostra password</translation>
-<translation id="2435579801172349831">Apri tutto (<ph name="URL_COUNT" />) nella finestra di navigazione in incognito</translation>
+<translation id="2435579801172349831">Apri tutti gli URL (<ph name="URL_COUNT" />) nella finestra di navigazione in incognito</translation>
 <translation id="2436186046335138073">Consentire a <ph name="HANDLER_HOSTNAME" /> di aprire tutti i link <ph name="PROTOCOL" />?</translation>
 <translation id="2439545803278355377">Inserisci il nuovo PIN. Il PIN deve avere almeno quattro caratteri e può contenere lettere, numeri e altri caratteri.</translation>
 <translation id="2440604414813129000">Visualizza &amp;sorgente</translation>
@@ -4956,7 +4956,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="6902066522699286937">Voce per l'anteprima</translation>
 <translation id="6902336033320348843">Sezione non supportata: <ph name="ERROR_LINE" /></translation>
 <translation id="6902837902700739466">Aggiungi il dispositivo al dominio</translation>
-<translation id="6903590427234129279">Apri tutto (<ph name="URL_COUNT" />)</translation>
+<translation id="6903590427234129279">Apri tutti gli URL (<ph name="URL_COUNT" />)</translation>
 <translation id="6903907808598579934">Attiva la sincronizzazione</translation>
 <translation id="6904344821472985372">Revoca accesso a file</translation>
 <translation id="6904655473976120856">Premi il pulsante App per uscire</translation>
@@ -5199,6 +5199,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="7191159667348037">Stampante sconosciuta (USB)</translation>
 <translation id="7193051357671784796">Questa app è stata aggiunta dalla tua organizzazione. Riavvia l'app per terminarne l'installazione.</translation>
 <translation id="7193374945610105795">Nessuna password salvata per il sito <ph name="ORIGIN" /></translation>
+<translation id="7196020411877309443">Perché visualizzo questo avviso?</translation>
 <translation id="7196913789568937443">Effettua il backup su Google Drive. Ripristina i dati o cambia facilmente dispositivo in qualsiasi momento. Il backup include i dati delle app. Le copie di backup vengono caricate su Google e criptate mediante la password del tuo Account Google. <ph name="BEGIN_LINK1" />Ulteriori informazioni<ph name="END_LINK1" /></translation>
 <translation id="7197190419934240522">Sfrutta tutti i vantaggi di Ricerca Google e Google ogni volta che navighi</translation>
 <translation id="7197632491113152433">Nel tuo account abbiamo trovato <ph name="NUMBER_OF_APPS" /> app che possono essere utilizzate su questo dispositivo.</translation>
@@ -5471,7 +5472,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="7526658513669652747">{NUM_DOWNLOADS,plural, =1{1 altro}other{Altri {NUM_DOWNLOADS}}}</translation>
 <translation id="7526989658317409655">Segnaposto</translation>
 <translation id="7529411698175791732">Controlla la connessione a Internet. Se il problema persiste, prova a uscire e ad accedere di nuovo.</translation>
-<translation id="7529876053219658589">{0,plural, =1{Chiudi Ospite}other{Chiudi Ospite}}</translation>
+<translation id="7529876053219658589">{0,plural, =1{Chiudi Ospite}other{Chiudi Ospiti}}</translation>
 <translation id="7530016656428373557">Velocità di esaurimento in watt</translation>
 <translation id="7531310913436731628">La geolocalizzazione è disattivata nelle Preferenze di Sistema del Mac</translation>
 <translation id="7531771599742723865">Dispositivo in uso</translation>
@@ -6273,7 +6274,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8455026683977728932">Impossibile attivare l'illustrazione ADB</translation>
 <translation id="845702320058262034">Impossibile stabilire una connessione. Assicurati che il Bluetooth del telefono sia attivo.</translation>
 <translation id="8457451314607652708">Importa Preferiti</translation>
-<translation id="8458627787104127436">Apri tutto (<ph name="URL_COUNT" />) in una nuova finestra</translation>
+<translation id="8458627787104127436">Apri tutti gli URL (<ph name="URL_COUNT" />) in una nuova finestra</translation>
 <translation id="8461329675984532579">Nome del provider principale</translation>
 <translation id="84613761564611563">Interfaccia utente di configurazione rete richiesta. Attendi...</translation>
 <translation id="8461914792118322307">Proxy</translation>
@@ -6831,7 +6832,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="9094038138851891550">Nome utente non valido</translation>
 <translation id="9094982973264386462">Rimuovi</translation>
 <translation id="9095253524804455615">Rimuovi</translation>
-<translation id="909554839118732438">Chiudi in incognito</translation>
+<translation id="909554839118732438">Chiudi finestre in incognito</translation>
 <translation id="9100610230175265781">Passphrase obbligatoria</translation>
 <translation id="9100765901046053179">Impostazioni avanzate</translation>
 <translation id="9101691533782776290">Avvia app</translation>

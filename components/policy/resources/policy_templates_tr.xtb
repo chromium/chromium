@@ -374,15 +374,6 @@ Bu politikayı devre dışı bırakırsanız web sayfasını URL yoluyla belirli
       Bu politika ayarlanmazsa <ph name="PRINTERS_ALLOW_ALL" /> uygulanır.
       </translation>
 <translation id="1588240398285670601">Tarayıcı Ayarları</translation>
-<translation id="1588456836529393506">Politikayı ayarlamak, otomatik olarak tedarikçi ve ürün kimlikleri olan USB cihazına erişme izni verilen siteleri belirten URL kalıpları için bir liste yapmanıza olanak tanır. Politikanın geçerli olabilmesi için listedeki her öğenin hem cihazları hem de URL'leri içermesi gerekir. Cihazlardaki her öğe, satıcı kimliği ve ürün kimliği alanı içerebilir. Dahil etmediğiniz her kimlik, bir istisna dışında özel bir durum olarak değerlendirilir: Aynı anda satıcı kimliği de belirtilmeden ürün kimliği belirtilemez. Aksi takdirde politika geçerli olmaz.
-
-      USB izin modeli, istekte bulunan URL'nin USB cihazına erişmesine izni vermek için hem istekte bulunan URL'yi hem de yerleştirilmiş URL öğesini (üst düzey çerçeve sitesinin) kullanır. İstekte bulunan site, iFrame içinde yüklendiğinde istekte bulunan URL yerleştirilmiş URL öğesinden farklı olabilir. Bu nedenle, "URL'ler" alanı, bu URL'leri belirtmek için virgülle sınırlandırılmış en fazla 2 dize içerebilir. Yalnızca bir URL belirtirseniz yerleştirme durumundan bağımsız olarak bu URL ile eşleşen istekte bulunan sitenin URL'sine karşılık gelen USB cihazlarına erişim izni verilir. "URL'ler" alanındaki URL'lerin geçerli URL'ler olmaları gerekir; aksi halde, politika yok sayılır.
-
-      Politika ayarlanmadan bırakılırsa <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" /> (ayarlanmışsa) geçerli olur. Aksi takdirde kullanıcının kişisel ayarları geçerlidir.
-
-      Bu politikadaki URL kalıpları, <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" /> aracılığıyla yapılandırılan kalıplarla çakışmamalıdır. Çakışırsa bu politika, <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" /> ve <ph name="WEB_USB_ASK_FOR_URLS_POLICY_NAME" /> politikalarına göre daha önceliklidir.
-
-      Bu politikanın ve <ph name="DEVICE_WEB_USB_ALLOW_DEVICES_FOR_URLS_POLICY_NAME" /> politikasının değerleri birleştirilir.</translation>
 <translation id="1593245608325508847">Politika ayarlanırsa G Suite'te Chrome'un kısıtlı oturum açma özelliği etkinleştirilir ve kullanıcılar bu ayarı değiştiremezler. Kullanıcılar sadece belirtilen alan adlarındaki hesapları kullanarak Google araçlarına erişebilirler (gmail veya googlemail hesaplarına izin vermek için alan adı listesine consumer_accounts öğesini ekleyin). Bu ayar, kullanıcıların Google kimlik doğrulaması gerektiren yönetilen bir cihazda oturum açmalarını ve açıkça izin verilen alan adlarından birine ait olmadığı sürece İkincil Hesap eklemelerini engeller.
 
       Bu ayar boş veya ayarlanmadan bırakılırsa kullanıcılar herhangi bir hesapla G Suite'e erişebilirler.
@@ -553,9 +544,6 @@ Bu politikayı devre dışı bırakırsanız web sayfasını URL yoluyla belirli
 
       Bu politika ayarlanmadan bırakılırsa ağ tahmini etkinleştirilir, ancak isteyen kullanıcı bu ayarı değiştirebilir.</translation>
 <translation id="1865417998205858223">Temel İzinler</translation>
-<translation id="1866563857170942397">Cihaza giriş yapmalarına izin verilen kullanıcıların listesini tanımlar. Girişler <ph name="USER_ALLOWLIST_ENTRY_FORMAT" /> biçimindedir (örneğin, <ph name="USER_WHITELIST_ENTRY_EXAMPLE" />). Bir etki alanı üzerinde keyfi kullanıcılara izin vermek için <ph name="USER_ALLOWLIST_ENTRY_WILDCARD" /> biçiminde girişler kullanın.
-
-      Bu politika yapılandırılmazsa kullanıcıların nerelerde oturum açabileceğine dair herhangi bir kısıtlama olmaz. Yeni kullanıcı oluşturmak için yine de <ph name="DEVICE_ALLOW_NEW_USERS_POLICY_NAME" /> politikasının uygun şekilde yapılandırılması gerekeceğini unutmayın.</translation>
 <translation id="186719019195685253">Cihaz AC güçle çalışırken boşta kalma süresine ulaşıldığında yapılacak işlem</translation>
 <translation id="1885782360784839335">Tap sekme tanıtım içeriğini göstermeyi etkinleştir</translation>
 <translation id="1888871729456797026">Masaüstünde bulut politikasının kayıt jetonu</translation>

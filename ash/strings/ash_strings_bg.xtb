@@ -198,7 +198,6 @@
 <translation id="2996462380875591307">Лупата в прикрепен режим е активирана. За да я изключите, натиснете отново Ctrl + клавиш „Търсене“ + D.</translation>
 <translation id="3000461861112256445">Монозвук</translation>
 <translation id="3009178788565917040">Изход</translation>
-<translation id="3025081209054535615">Премахване на глобалните контроли за мултимедия от лавицата</translation>
 <translation id="3033545621352269033">Включено</translation>
 <translation id="3038571455154067151">За да влезете в профила си, въведете кода си за достъп на родител от Family Link</translation>
 <translation id="3045488863354895414">Добър ден,</translation>
@@ -621,6 +620,7 @@
 <translation id="7526573455193969409">Мрежата може да е под наблюдение</translation>
 <translation id="7536035074519304529">IP адрес: <ph name="ADDRESS" /></translation>
 <translation id="7548434653388805669">Време е за сън</translation>
+<translation id="7551643184018910560">Фиксиране в лавицата</translation>
 <translation id="7561982940498449837">Затваряне на менюто</translation>
 <translation id="7564874036684306347">Преместването на прозорци към друг работен плот може да предизвика неочаквано поведение. Последващите известия, прозорци и диалогови прозорци може да бъдат разделени между работните плотове.</translation>
 <translation id="7568294522609223312">Изключване на автоматичните кликвания</translation>
@@ -701,7 +701,6 @@
 <translation id="8297006494302853456">Слаб</translation>
 <translation id="8308637677604853869">Предишно меню</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
-<translation id="8349293353728876872">Фиксиране на глобалните контроли за мултимедия към лавицата</translation>
 <translation id="8351131234907093545">Създаване на бележка</translation>
 <translation id="8371779926711439835">Придвижване напред с една буква</translation>
 <translation id="8375916635258623388">Това устройство <ph name="DEVICE_NAME" /> и телефонът ви ще се свържат автоматично</translation>

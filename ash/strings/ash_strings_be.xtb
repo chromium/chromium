@@ -113,6 +113,7 @@
 <translation id="2049240716062114887">Назва працоўнага стала зменена на наступную: <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Кніжная</translation>
 <translation id="2067602449040652523">Яркасць клавіятуры</translation>
+<translation id="2074759828767813253">Нядаўнія здымкі экрана і спампоўкі</translation>
 <translation id="2083190527011054446">Добрай ночы, <ph name="GIVEN_NAME" />!</translation>
 <translation id="209965399369889474">Няма падключэння да сеткі</translation>
 <translation id="2126242104232412123">Новы стол</translation>
@@ -197,7 +198,6 @@
 <translation id="2996462380875591307">Прыстыкаваная лупа ўключана. Каб выключыць яе, зноў націсніце Ctrl + Пошук + D.</translation>
 <translation id="3000461861112256445">Монафанія</translation>
 <translation id="3009178788565917040">Выхад</translation>
-<translation id="3025081209054535615">Адмацаваць агульныя элементы кіравання мультымедыйным змесцівам ад паліцы</translation>
 <translation id="3033545621352269033">Уключана</translation>
 <translation id="3038571455154067151">Каб увайсці, увядзіце бацькоўскі код доступу Family Link</translation>
 <translation id="3045488863354895414">Добры дзень,</translation>
@@ -620,6 +620,7 @@
 <translation id="7526573455193969409">За сеткай могуць сачыць</translation>
 <translation id="7536035074519304529">IP-адрас: <ph name="ADDRESS" /></translation>
 <translation id="7548434653388805669">Час класціся спаць</translation>
+<translation id="7551643184018910560">Замацаваць на паліцы</translation>
 <translation id="7561982940498449837">Закрыць меню</translation>
 <translation id="7564874036684306347">Перамяшчэнне акна на іншы працоўны стол можа прывесці да непрадказальных паводзін. Пасля гэтага паведамленні і вокны могуць раздзяліцца паміж працоўнымі сталамі.</translation>
 <translation id="7568294522609223312">Выключэнне аўтаматычных націсканняў</translation>
@@ -700,7 +701,6 @@
 <translation id="8297006494302853456">Слабы</translation>
 <translation id="8308637677604853869">Папярэдняе меню</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
-<translation id="8349293353728876872">Замацаваць агульныя элементы кіравання мультымедыйным змесцівам на паліцы</translation>
 <translation id="8351131234907093545">Стварыць нататку</translation>
 <translation id="8371779926711439835">Уперад на адну літару</translation>
 <translation id="8375916635258623388">Гэта прылада <ph name="DEVICE_NAME" /> і ваш тэлефон будуць падключацца аўтаматычна</translation>

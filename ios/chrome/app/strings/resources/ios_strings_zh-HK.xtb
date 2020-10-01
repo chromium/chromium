@@ -97,7 +97,6 @@
 <translation id="1965935827552890526">請完成您在其他已開啟的 Chrome 視窗中正在執行的動作。</translation>
 <translation id="1974060860693918893">進階選項</translation>
 <translation id="1989112275319619282">瀏覽</translation>
-<translation id="1992734845128748707">變更預設瀏覽器…</translation>
 <translation id="2015722694326466240">如要查看密碼，您必須先在裝置上設定密碼。</translation>
 <translation id="2073572773299281212">曾於 <ph name="DAYS" /> 天前在線</translation>
 <translation id="2074131957428911366">您隨時可在<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />中選擇要同步的資料。</translation>
@@ -331,6 +330,7 @@
 <translation id="4747097190499141774">密碼短語加密的資料不包括 Google Pay 的付款方法和地址。只有知道您密碼短語的使用者，才能讀取已加密的資料。系統不會將密碼短語傳送給 Google，Google 也不會儲存您的密碼短語。如果您忘記自己的密碼短語，或希望變更這項設定，則必須重設同步功能。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">新無痕式分頁</translation>
 <translation id="4758977202923349869">請將信用放在此頁框內</translation>
+<translation id="4775879719735953715">預設瀏覽器</translation>
 <translation id="4802417911091824046">密碼短語加密的資料並不包括 Google Pay 上的付款方法和地址。
 
 如要變更此設定，請<ph name="BEGIN_LINK" />重設同步功能<ph name="END_LINK" /></translation>

@@ -134,6 +134,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1453974140256777690">Tekst du limer inn eller legger ved, sendes til Google Cloud eller tredjeparter for analyse. Den kan for eksempel bli skannet for sensitive data.</translation>
 <translation id="1455413310270022028">Viskelær</translation>
 <translation id="1462245070427461050">JIS B9</translation>
+<translation id="1462951478840426066">bruke skrifttypene på datamaskinen din, slik at du kan lage innhold av høy kvalitet</translation>
 <translation id="1463543813647160932">5 x 7</translation>
 <translation id="1467432559032391204">Venstre</translation>
 <translation id="1472675084647422956">Vis mer</translation>
@@ -221,6 +222,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="17513872634828108">Åpne faner</translation>
 <translation id="1752021286346845558">Postkasse 8</translation>
 <translation id="1753706481035618306">Sidenummer</translation>
+<translation id="1757773103848038814">Monospace-skrifttype</translation>
 <translation id="1763864636252898013">Denne tjeneren kunne ikke bevise at den er <ph name="DOMAIN" />. Sikkerhetssertifikatet til tjeneren er ikke klarert av enhetens operativsystem. Dette kan være forårsaket av en feilkonfigurering eller en angriper som avskjærer tilkoblingen din.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Prøv å kjøre Windows Nettverksdiagnose<ph name="END_LINK" />.</translation>
 <translation id="1772163372082567643">Tjeneren du er på vei til (<ph name="ORIGIN" />), har angitt en header
@@ -594,6 +596,7 @@ brukere av denne nettleseren.</translation>
 <translation id="3395827396354264108">Hentemetode</translation>
 <translation id="3399952811970034796">Leveringsadresse</translation>
 <translation id="3402261774528610252">Tilkoblingen som ble brukt til å laste inn dette nettstedet, brukte TLS 1.0 eller TLS 1.1, som er foreldet og kommer til å bli slått av i fremtiden. Når det er slått av, blir brukerne hindret i å laste inn dette nettstedet. Tjeneren bør slå på TLS 1.2 eller nyere.</translation>
+<translation id="3411120537985775570">Administratoren din har blokkert innliming fra <ph name="ORIGIN_NAME" /> på denne plasseringen</translation>
 <translation id="3414952576877147120">Størrelse:</translation>
 <translation id="3417660076059365994">Filer du laster opp eller legger ved, sendes til Google Cloud eller tredjeparter for analyse. De kan for eksempel bli skannet for sensitive data eller skadelig programvare.</translation>
 <translation id="3422248202833853650">Prøv å lukke andre programmer for å frigjøre minne.</translation>
@@ -632,6 +635,7 @@ brukere av denne nettleseren.</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> ber om å bruke mikrofonen din</translation>
 <translation id="3533328374079021623">Postkasse 5</translation>
 <translation id="3539171420378717834">Lagre en kopi av dette kortet på denne enheten</translation>
+<translation id="3552297013052089404">Skrifttype uten seriffer</translation>
 <translation id="3558573058928565255">Dagtid</translation>
 <translation id="3566021033012934673">Tilkoblingen din er ikke privat</translation>
 <translation id="3567778190852720481">Kan ikke registrere med bedriftskontoen (bedriftskontoen er ikke kvalifisert).</translation>
@@ -1000,6 +1004,7 @@ brukere av denne nettleseren.</translation>
 <translation id="503069730517007720">Et rotsertifikat for «<ph name="SOFTWARE_NAME" />» kreves, men er ikke installert. IT-administratoren din bør se på konfigurasjonsveiledningen for «<ph name="SOFTWARE_NAME" />» for å løse dette problemet. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5031870354684148875">Om Google Oversett</translation>
 <translation id="503498442187459473"><ph name="HOST" /> ber om å bruke kameraet ditt og mikrofonen din</translation>
+<translation id="5039762155821394373">Skriftstørrelse</translation>
 <translation id="5039804452771397117">Tillat</translation>
 <translation id="5040262127954254034">Personvern</translation>
 <translation id="5043480802608081735">Linken du kopierte</translation>
@@ -1229,6 +1234,7 @@ brukere av denne nettleseren.</translation>
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5946937721014915347">Åpner <ph name="SITE_NAME" /> …</translation>
 <translation id="5951495562196540101">Kan ikke registrere med en forbrukerkonto (medfølgende lisens er tilgjengelig).</translation>
+<translation id="5963413905009737549">Del</translation>
 <translation id="5967592137238574583">Endre kontaktinformasjonen</translation>
 <translation id="5967867314010545767">Fjern fra loggen</translation>
 <translation id="5975083100439434680">Zoom ut</translation>
@@ -1265,6 +1271,7 @@ brukere av denne nettleseren.</translation>
 <translation id="6051221802930200923">Du kan ikke gå til <ph name="SITE" /> akkurat nå, siden nettstedet bruker sertifikatfesting. Nettverksfeil og -angrep er vanligvis midlertidige, så denne siden fungerer sannsynligvis senere.</translation>
 <translation id="6052284303005792909">•</translation>
 <translation id="6053328359599022071">Vil du dele tilstedeværelsen din?</translation>
+<translation id="6057359309778282021">Administratoren din har blokkert deling fra <ph name="ORIGIN_NAME" /> til <ph name="VM_NAME" /></translation>
 <translation id="6058977677006700226">Vil du bruke kortene på alle enhetene dine?</translation>
 <translation id="6059925163896151826">USB-enheter</translation>
 <translation id="6060009363608157444">Ugyldig DnsOverHttps-modus.</translation>
@@ -1314,6 +1321,7 @@ brukere av denne nettleseren.</translation>
         <ph name="END_LIST" /></translation>
 <translation id="6280223929691119688">Kan ikke levere til denne adressen. Velg en annen adresse.</translation>
 <translation id="6282194474023008486">Postnummer</translation>
+<translation id="6289939620939689042">Sidefarge</translation>
 <translation id="6290238015253830360">De foreslåtte artiklene dine vises her</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6302269476990306341">Stopper Google-assistenten i Chrome</translation>
@@ -1470,6 +1478,7 @@ brukere av denne nettleseren.</translation>
 <translation id="7004583254764674281">Bruk Windows Hello til å bekrefte kort raskere</translation>
 <translation id="7006930604109697472">Send likevel</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
+<translation id="7014741021609395734">Zoomnivå</translation>
 <translation id="7016992613359344582">Disse belastningene kan skje én gang eller være gjentakende, og det er ikke sikkert de er åpenbare.</translation>
 <translation id="7029809446516969842">Passord</translation>
 <translation id="7031646650991750659">hvilke Google Play-apper du har installert</translation>
@@ -1870,6 +1879,7 @@ Mer informasjon:
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">Ingen samsvarende passord. Vis alle lagrede passord.</translation>
 <translation id="8625384913736129811">Lagre dette kortet på denne enheten</translation>
+<translation id="8657078576661269990">Administratoren din har blokkert deling fra <ph name="ORIGIN_NAME" /> til <ph name="VM_NAME_1" /> og <ph name="VM_NAME_2" /></translation>
 <translation id="8663226718884576429">Bestillingssammendrag, <ph name="TOTAL_LABEL" />, mer informasjon</translation>
 <translation id="867224526087042813">Signatur</translation>
 <translation id="8676424191133491403">Uten forsinkelse</translation>
@@ -1882,6 +1892,7 @@ Mer informasjon:
 <translation id="8699041776323235191">HID-enhet</translation>
 <translation id="8703575177326907206">Tilkoblingen til <ph name="DOMAIN" /> er ikke kryptert.</translation>
 <translation id="8705331520020532516">Serienummer</translation>
+<translation id="8710842507289500830">Skriftstil</translation>
 <translation id="8718314106902482036">Betalingen er ikke fullført</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />, <ph name="DESCRIPTION" />, søkeforslag</translation>
 <translation id="8719528812645237045">Flere hull topp</translation>
@@ -2002,6 +2013,7 @@ Mer informasjon:
 <translation id="9191834167571392248">Hull nede til venstre</translation>
 <translation id="9205078245616868884">Dataene dine er kryptert med passordfrasen din for synkronisering. Skriv den inn for å starte synkroniseringen.</translation>
 <translation id="9207861905230894330">Kunne ikke legge til artikkelen.</translation>
+<translation id="9213433120051936369">Tilpass utseendet</translation>
 <translation id="9215416866750762878">Et program hindrer Chrome i å koble trygt til dette nettstedet.</translation>
 <translation id="9219103736887031265">Bilder</translation>
 <translation id="933712198907837967">Diners Club</translation>

@@ -15,6 +15,7 @@
 <translation id="1038106730571050514">Önerileri göster</translation>
 <translation id="1038842779957582377">bilinmeyen ad</translation>
 <translation id="1041998700806130099">İş sayfası mesajı</translation>
+<translation id="1048785276086539861">Ek açıklamaları düzenlediğinizde bu doküman tek sayfalı görünüme geri döner</translation>
 <translation id="1050038467049342496">Diğer uygulamaları kapatın</translation>
 <translation id="1055184225775184556">Eklemeyi &amp;Geri Al</translation>
 <translation id="1056898198331236512">Uyarı</translation>
@@ -376,6 +377,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2465688316154986572">Tel zımba</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />Ağ Teşhislerini Çalıştırma<ph name="END_LINK" /></translation>
 <translation id="2469153820345007638">1'den N'ye sıralı</translation>
+<translation id="2470767536994572628">Ek açıklamaları düzenlerseniz bu doküman hem tek sayfalı görünüme hem de orijinal rotasyonuna geri döner</translation>
 <translation id="2479410451996844060">Geçersiz arama URL'si.</translation>
 <translation id="2482878487686419369">Bildirimler</translation>
 <translation id="248348093745724435">Makine politikaları</translation>
@@ -1218,6 +1220,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5946937721014915347"><ph name="SITE_NAME" /> açılıyor…</translation>
 <translation id="5951495562196540101">Tüketici hesabına kaydedilemiyor (paket lisans mevcut).</translation>
+<translation id="5963413905009737549">Bölüm</translation>
 <translation id="5967592137238574583">İletişim Bilgilerini Düzenleyin</translation>
 <translation id="5967867314010545767">Geçmişten kaldır.</translation>
 <translation id="5975083100439434680">Uzaklaştır</translation>
@@ -1630,6 +1633,7 @@ Ek ayrıntılar:
 <translation id="7647206758853451655">Yazdırma kalitesi</translation>
 <translation id="7648992873808071793">Dosyaları bu cihazda depolama</translation>
 <translation id="7653957176542370971">Ödeme işleyici sayfası kapatıldı</translation>
+<translation id="7654909834015434372">Ek açıklamaları düzenlediğinizde bu doküman orijinal rotasyonuna geri döner</translation>
 <translation id="765676359832457558">Gelişmiş ayarları gizle...</translation>
 <translation id="7658239707568436148">İptal</translation>
 <translation id="7662298039739062396">Ayar bir uzantının kontrolü altında</translation>

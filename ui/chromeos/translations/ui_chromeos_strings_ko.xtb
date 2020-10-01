@@ -117,7 +117,6 @@
 <translation id="2208158072373999562">Zip 아카이브</translation>
 <translation id="2225536596944493418">선택한 <ph name="NUMBER_OF_ITEMS" />개의 항목을 삭제하시겠습니까?</translation>
 <translation id="2230062665678605299">'<ph name="FOLDER_NAME" />' 폴더를 생성할 수 없습니다. <ph name="ERROR_MESSAGE" /></translation>
-<translation id="2270413998793223379">산스크리트어</translation>
 <translation id="2275059641601412272">이동했습니다.</translation>
 <translation id="2278988676849463018">칸나다어 키보드(음역)</translation>
 <translation id="2287742181953707290">영어(미국식) 국제 PC 키보드로 포르투갈어 입력</translation>
@@ -727,7 +726,7 @@
 <translation id="8722421161699219904">영어(미국식) 국제 키보드</translation>
 <translation id="872537912056138402">크로아티아어</translation>
 <translation id="874420130893181774">번체 병음 입력 방법</translation>
-<translation id="8770002329960263418">영어(미국식) 국제 PC 키보드로 네덜란드어 입력</translation>
+<translation id="8770002329960263418">영어(미국식) 국제 PC 키보드로 네덜란드어(네덜란드) 입력</translation>
 <translation id="8775404590947523323">수정 사항이 자동으로 저장됩니다.<ph name="BREAKS" />원본 이미지의 사본을 보관하려면 '원본 덮어쓰기'를 선택 해제합니다.</translation>
 <translation id="8803496343472038847">러시아어 표음식 키보드</translation>
 <translation id="8808686172382650546">고양이</translation>

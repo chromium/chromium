@@ -198,7 +198,6 @@
 <translation id="2996462380875591307">Закрепленная лупа включена. Чтобы отключить ее, нажмите Ctrl + Поиск + D.</translation>
 <translation id="3000461861112256445">Монофонический звук</translation>
 <translation id="3009178788565917040">Выход</translation>
-<translation id="3025081209054535615">Открепить от панели запуска универсальные элементы управления медиафайлами</translation>
 <translation id="3033545621352269033">Включено</translation>
 <translation id="3038571455154067151">Чтобы войти, введите родительский код доступа Family Link.</translation>
 <translation id="3045488863354895414">Добрый день!</translation>
@@ -621,6 +620,7 @@
 <translation id="7526573455193969409">Сеть может отслеживаться</translation>
 <translation id="7536035074519304529">IP-адрес: <ph name="ADDRESS" /></translation>
 <translation id="7548434653388805669">Пора ложиться спать</translation>
+<translation id="7551643184018910560">Закрепить на панели запуска</translation>
 <translation id="7561982940498449837">Закрыть меню</translation>
 <translation id="7564874036684306347">При переносе окон на другой рабочий стол иногда возникают ошибки. Уведомления и диалоговые окна могут появляться на разных рабочих столах.</translation>
 <translation id="7568294522609223312">Выключение автоматического нажатия</translation>
@@ -701,7 +701,6 @@
 <translation id="8297006494302853456">Слабый</translation>
 <translation id="8308637677604853869">Предыдущее меню</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
-<translation id="8349293353728876872">Закрепить на панели запуска универсальные элементы управления медиафайлами</translation>
 <translation id="8351131234907093545">Создать заметку</translation>
 <translation id="8371779926711439835">Вперед на одну букву</translation>
 <translation id="8375916635258623388"><ph name="DEVICE_NAME" /> и телефон будут подключены друг к другу автоматически</translation>

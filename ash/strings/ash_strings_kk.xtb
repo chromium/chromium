@@ -113,6 +113,7 @@
 <translation id="2049240716062114887">Жұмыс үстелінің атауы <ph name="DESK_NAME" /> деп өзгертілді.</translation>
 <translation id="2050339315714019657">Портреттік</translation>
 <translation id="2067602449040652523">Пернетақта ашықтығы</translation>
+<translation id="2074759828767813253">Соңғы скриншоттар және жүктеп алынғандар</translation>
 <translation id="2083190527011054446">Қайырлы түн, <ph name="GIVEN_NAME" />!</translation>
 <translation id="209965399369889474">Желіге жалғанбаған.</translation>
 <translation id="2126242104232412123">Жаңа жұмыс үстелі</translation>
@@ -197,7 +198,6 @@
 <translation id="2996462380875591307">Бекітілген ұлғайтқыш қосылды. Оны өшіру үшін Ctrl+Search+D пернелер тіркесімін қайта басыңыз.</translation>
 <translation id="3000461861112256445">Моно аудио</translation>
 <translation id="3009178788565917040">Шығыс</translation>
-<translation id="3025081209054535615">Ғаламдық медиа басқару элементтерін сөреден босату</translation>
 <translation id="3033545621352269033">Қосулы</translation>
 <translation id="3038571455154067151">Есептік жазбаға кіру үшін Family Link ата-ананың рұқсат кодын енгізіңіз.</translation>
 <translation id="3045488863354895414">Қайырлы күн!</translation>
@@ -620,6 +620,7 @@
 <translation id="7526573455193969409">Желі бақылануы мүмкін</translation>
 <translation id="7536035074519304529">IP мекенжайы: <ph name="ADDRESS" /></translation>
 <translation id="7548434653388805669">Ұйықтайтын уақыт болды</translation>
+<translation id="7551643184018910560">Сөреге бекіту</translation>
 <translation id="7561982940498449837">Мәзірді жабу</translation>
 <translation id="7564874036684306347">Терезелерді басқа жұмыс үстеліне ауыстырғанда, күтпеген қате шығуы мүмкін. Хабарландырулар, терезелер мен диалогтік терезелер түрлі жұмыс үстелдерінде көрсетілуі ықтимал.</translation>
 <translation id="7568294522609223312">Автоматты түрде басу функцияларын өшіру</translation>
@@ -700,7 +701,6 @@
 <translation id="8297006494302853456">Әлсіз</translation>
 <translation id="8308637677604853869">Алдыңғы мәзір</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
-<translation id="8349293353728876872">Ғаламдық медиа басқару элементтерін сөреге бекіту</translation>
 <translation id="8351131234907093545">Ескертпе жасау</translation>
 <translation id="8371779926711439835">Бір әріпке алға жылжу</translation>
 <translation id="8375916635258623388"><ph name="DEVICE_NAME" /> және телефоныңыз автоматты түрде жалғанады</translation>

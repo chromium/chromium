@@ -15,7 +15,7 @@
 <translation id="1038106730571050514">Показать подсказки</translation>
 <translation id="1038842779957582377">неизвестное имя</translation>
 <translation id="1041998700806130099">Сообщение на листе задания</translation>
-<translation id="1048785276086539861">При редактировании аннотаций будет возвращен одностраничный режим просмотра.</translation>
+<translation id="1048785276086539861">При редактировании аннотаций документ вернется одностраничный режим просмотра.</translation>
 <translation id="1050038467049342496">Закройте другие приложения.</translation>
 <translation id="1055184225775184556">&amp;Отменить добавление</translation>
 <translation id="1056898198331236512">Внимание</translation>
@@ -109,7 +109,7 @@
 <translation id="1348779747280417563">Подтверждение</translation>
 <translation id="1357195169723583938">кто и когда использовал устройство;</translation>
 <translation id="1360955481084547712">Открыть новое окно в режиме инкогнито</translation>
-<translation id="1363819917331173092">Не предлагать перевести страницы на языке: <ph name="SOURCE_LANGUAGE" /></translation>
+<translation id="1363819917331173092">Не предлагать перевести страницы на этом языке: <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1364822246244961190">Правило заблокировано. Его значение не будет учтено.</translation>
 <translation id="1374468813861204354">подсказки</translation>
 <translation id="1374692235857187091">Index-4x6 (открытка)</translation>
@@ -376,7 +376,7 @@
 <translation id="2465688316154986572">Скоба</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />Выполните диагностику сети<ph name="END_LINK" /></translation>
 <translation id="2469153820345007638">В порядке от 1 до N</translation>
-<translation id="2470767536994572628">При редактировании аннотаций будут возвращены исходная ориентация документа и одностраничный режим просмотра.</translation>
+<translation id="2470767536994572628">При изменении аннотаций документ вернется в одностраничный режим и исходную ориентацию.</translation>
 <translation id="2479410451996844060">Недействительный URL поисковой системы.</translation>
 <translation id="2482878487686419369">Уведомления</translation>
 <translation id="248348093745724435">Правила для компьютера</translation>
@@ -1217,6 +1217,7 @@
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5946937721014915347">Загрузка <ph name="SITE_NAME" />…</translation>
 <translation id="5951495562196540101">Регистрация невозможна, так как тип аккаунта не соответствует лицензии на устройстве.</translation>
+<translation id="5963413905009737549">Раздел</translation>
 <translation id="5967592137238574583">Измените контактную информацию</translation>
 <translation id="5967867314010545767">Удалить из истории</translation>
 <translation id="5975083100439434680">Уменьшить</translation>

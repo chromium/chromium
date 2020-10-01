@@ -198,7 +198,6 @@
 <translation id="2996462380875591307">Увімкнено закріплену лупу. Щоб вимкнути її, знову натисніть комбінацію Ctrl + клавіша пошуку + D.</translation>
 <translation id="3000461861112256445">Монофонічне аудіо</translation>
 <translation id="3009178788565917040">Вихід</translation>
-<translation id="3025081209054535615">Відкріпити від панелі загальні елементи керування медіа</translation>
 <translation id="3033545621352269033">Увімкнено</translation>
 <translation id="3038571455154067151">Щоб увійти, введіть свій батьківський код доступу з Family Link</translation>
 <translation id="3045488863354895414">Доброго дня!</translation>
@@ -621,6 +620,7 @@
 <translation id="7526573455193969409">Мережевий трафік може відстежуватися</translation>
 <translation id="7536035074519304529">ІР-адреса: <ph name="ADDRESS" /></translation>
 <translation id="7548434653388805669">Час спати</translation>
+<translation id="7551643184018910560">Закріпити на полиці</translation>
 <translation id="7561982940498449837">Закрити меню</translation>
 <translation id="7564874036684306347">Переміщення вікон на інший робочий стіл може спричинити неочікувану поведінку. Нові сповіщення та вікна можуть розділятися між робочими столами.</translation>
 <translation id="7568294522609223312">Вимкнути автоматичні кліки</translation>
@@ -701,7 +701,6 @@
 <translation id="8297006494302853456">Слабкий</translation>
 <translation id="8308637677604853869">Попереднє меню</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" /> <ph name="GET_STARTED" /></translation>
-<translation id="8349293353728876872">Закріпити на панелі загальні елементи керування медіа</translation>
 <translation id="8351131234907093545">Створити нотатку</translation>
 <translation id="8371779926711439835">Уперед на одну літеру</translation>
 <translation id="8375916635258623388"><ph name="DEVICE_NAME" /> і ваш телефон під’єднуватимуться автоматично</translation>

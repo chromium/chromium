@@ -5,6 +5,7 @@
 <translation id="1195447618553298278">Unbekannter Fehler.</translation>
 <translation id="1413240736185167732">Fehlgeschlagen – Filter funktioniert nicht</translation>
 <translation id="1468664791493211953">Angebote</translation>
+<translation id="1478594628797167447">Scanner</translation>
 <translation id="1482734542997480527"><ph name="ENROLLMENT_DOMAIN" /> verwaltet dieses Gerät und könnte Ihre Aktivitäten überwachen.</translation>
 <translation id="150962533380566081">Ungültiger PUK.</translation>
 <translation id="1510238584712386396">Launcher</translation>
@@ -24,6 +25,7 @@
 <translation id="2872961005593481000">Herunterfahren</translation>
 <translation id="3008341117444806826">AKTUALISIEREN</translation>
 <translation id="3091839911843451378">Fehlgeschlagen – Angehalten</translation>
+<translation id="3246869037381808805">Druckaufträge, die älter als 1 Tag sind, werden entfernt</translation>
 <translation id="3268178239013324452">Fehlgeschlagen – Druckerklappe offen</translation>
 <translation id="3369013195428705271">Möchten Sie den gesamten Druckverlauf wirklich löschen? Ihre laufenden Druckaufträge werden nicht gelöscht.</translation>
 <translation id="3456078764689556234">Seite <ph name="PRINTED_PAGES" /> von <ph name="TOTAL_PAGES" /> wird gedruckt.</translation>
@@ -34,6 +36,7 @@
 <translation id="38114475217616659">Gesamten Verlauf löschen</translation>
 <translation id="3820172043799983114">Ungültige PIN.</translation>
 <translation id="3838338534323494292">Neues Passwort</translation>
+<translation id="39823212440917567">Druckaufträge, die älter als <ph name="NUMBER_OF_DAYS" /> Tage sind, werden entfernt</translation>
 <translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> verwaltet dieses Gerät und hat Zugriff auf alle Nutzeraktivitäten, einschließlich besuchter Webseiten, Passwörter und E-Mails.</translation>
 <translation id="4003384961948020559">Fehlgeschlagen – Ausgabefach ist voll</translation>
 <translation id="4027485274696301677">Dieses <ph name="DEVICE_TYPE" /> wird von <ph name="ENROLLMENT_DOMAIN" /> verwaltet. Administratoren können das Gerät per Remotezugriff konfigurieren.</translation>
@@ -52,6 +55,7 @@
 <translation id="4890353053343094602">Legen Sie so schnell wie möglich ein neues fest</translation>
 <translation id="4917889632206600977">Angehalten – Kein Papier</translation>
 <translation id="4932733599132424254">Datum</translation>
+<translation id="520299634122159966">Keine Scanner verfügbar</translation>
 <translation id="5212543919916444558">Ich finde nichts auf deinem Display, wobei ich dir helfen könnte.
 Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="5222676887888702881">Abmelden</translation>
@@ -71,6 +75,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="649050271426829538">Angehalten – Papierstau</translation>
 <translation id="6517239166834772319">Entdecken</translation>
 <translation id="6564646048574748301">Fehlgeschlagen – Drucker nicht erreichbar</translation>
+<translation id="6620487321149975369">Druckaufträge erscheinen im Verlauf, solange sie nicht manuell gelöscht werden</translation>
 <translation id="6643016212128521049">Löschen</translation>
 <translation id="6747215703636344499">Angehalten – Ausgabefach ist voll</translation>
 <translation id="7162487448488904999">Galerie</translation>

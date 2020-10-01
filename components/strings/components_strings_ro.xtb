@@ -15,6 +15,7 @@
 <translation id="1038106730571050514">Afișează sugestii</translation>
 <translation id="1038842779957582377">nume necunoscut</translation>
 <translation id="1041998700806130099">Mesajul din foaia sarcinii</translation>
+<translation id="1048785276086539861">Când editezi adnotări, acest document va reveni la afișarea cu o pagină</translation>
 <translation id="1050038467049342496">închide celelalte aplicații;</translation>
 <translation id="1055184225775184556">&amp;Anulați adăugarea</translation>
 <translation id="1056898198331236512">Avertisment</translation>
@@ -379,6 +380,7 @@
 <translation id="2465688316154986572">Capsare</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />să rulezi Diagnostice rețea<ph name="END_LINK" />;</translation>
 <translation id="2469153820345007638">În ordinea de la 1-la-N</translation>
+<translation id="2470767536994572628">Când editezi adnotări, acest document va reveni la afișarea cu o pagină și la orientarea inițială</translation>
 <translation id="2479410451996844060">Adresă URL de căutare nevalidă.</translation>
 <translation id="2482878487686419369">Notificări</translation>
 <translation id="248348093745724435">Politicile dispozitivului</translation>
@@ -1225,6 +1227,7 @@
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5946937721014915347">Se deschide <ph name="SITE_NAME" />…</translation>
 <translation id="5951495562196540101">Nu te poți înscrie cu contul de consumator (este disponibilă o licență din pachet).</translation>
+<translation id="5963413905009737549">Secțiune</translation>
 <translation id="5967592137238574583">Editează informațiile de contact</translation>
 <translation id="5967867314010545767">Eliminați din istoric</translation>
 <translation id="5975083100439434680">Micșorează</translation>
@@ -1637,6 +1640,7 @@ Detalii suplimentare:
 <translation id="7647206758853451655">Calitatea printării</translation>
 <translation id="7648992873808071793">Stocheze fișiere pe acest dispozitiv</translation>
 <translation id="7653957176542370971">Foaia handlerului pentru plăți este închisă</translation>
+<translation id="7654909834015434372">Când editezi adnotări, acest document va reveni la orientarea inițială</translation>
 <translation id="765676359832457558">Ascundeți setările avansate...</translation>
 <translation id="7658239707568436148">Anulează</translation>
 <translation id="7662298039739062396">Setare controlată de o extensie</translation>

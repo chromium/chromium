@@ -134,6 +134,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1453974140256777690">Wpisany lub dołączony test jest wysyłany do Google Cloud lub innych firm w celu przeanalizowania. Na przykład może zostać przeskanowany w poszukiwaniu danych wrażliwych.</translation>
 <translation id="1455413310270022028">Gumka</translation>
 <translation id="1462245070427461050">JIS B9</translation>
+<translation id="1462951478840426066">korzystać z czcionek zainstalowanych na komputerze w celu tworzenia treści wysokiej jakości</translation>
 <translation id="1463543813647160932">5 x 7</translation>
 <translation id="1467432559032391204">W lewo</translation>
 <translation id="1472675084647422956">Pokaż więcej</translation>
@@ -221,6 +222,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="17513872634828108">Otwarte karty</translation>
 <translation id="1752021286346845558">Zestaw tac odbiorczych 8</translation>
 <translation id="1753706481035618306">Numer strony</translation>
+<translation id="1757773103848038814">Czcionka o stałej szerokości</translation>
 <translation id="1763864636252898013">Ten serwer nie mógł udowodnić, że należy do <ph name="DOMAIN" />. Jego certyfikat bezpieczeństwa nie jest zaufany w systemie operacyjnym tego urządzenia. Może to być spowodowane błędną konfiguracją lub przechwyceniem połączenia przez atakującego.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Uruchom Diagnostykę sieci systemu Windows<ph name="END_LINK" />.</translation>
 <translation id="1772163372082567643">Serwer <ph name="ORIGIN" />, z którym chcesz się połączyć, ma ustawiony nagłówek z wymaganiem, by do wszystkich kierowanych do niego żądań stosować zasadę dotyczącą źródła. Jednak ten nagłówek ma nieprawidłowy format, przez co przeglądarka nie może zrealizować Twojego żądania dotyczącego strony <ph name="SITE" />. Zasady dotyczące źródła mogą stosować operatorzy stron internetowych, by skonfigurować zabezpieczenia i inne właściwości strony.</translation>
@@ -590,6 +592,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="3395827396354264108">Metoda odbioru</translation>
 <translation id="3399952811970034796">Adres dostawy</translation>
 <translation id="3402261774528610252">Do połączenia z tą stroną użyto protokołu TLS 1.0 lub 1.1. Obie te wersje zostały wycofane, a w przyszłości zostaną wyłączone. Po ich wyłączeniu użytkownicy nie będą mogli otwierać tej strony. Serwer powinien korzystać z protokołu TLS w wersji 1.2 lub nowszej.</translation>
+<translation id="3411120537985775570">Administrator zablokował tu wklejanie informacji z <ph name="ORIGIN_NAME" /></translation>
 <translation id="3414952576877147120">Rozmiar:</translation>
 <translation id="3417660076059365994">Przesyłane lub dołączone pliki są wysyłane do Google Cloud lub innych firm w celu przeanalizowania. Na przykład mogą zostać przeskanowane w poszukiwaniu danych wrażliwych lub złośliwego oprogramowania.</translation>
 <translation id="3422248202833853650">Zamknij inne programy, by zwolnić pamięć.</translation>
@@ -628,9 +631,10 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="3532844647053365774"><ph name="HOST" /> chce korzystać z mikrofonu</translation>
 <translation id="3533328374079021623">Zestaw tac odbiorczych 5</translation>
 <translation id="3539171420378717834">Zachowaj kopię tej karty na urządzeniu</translation>
+<translation id="3552297013052089404">Czcionka bezszeryfowa</translation>
 <translation id="3558573058928565255">Dzień godzina</translation>
 <translation id="3566021033012934673">Połączenie nie jest prywatne</translation>
-<translation id="3567778190852720481">Nie można zarejestrować się przy użyciu konta firmowego (konto firmowe nie spełnia warunków).</translation>
+<translation id="3567778190852720481">Nie można zarejestrować się przy użyciu konta służbowego (konto służbowe nie spełnia warunków).</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
 <translation id="3576616784287504635">Komunikat z elementu umieszczonego na stronie <ph name="SITE" /></translation>
 <translation id="3581089476000296252">Chrome powiadomi Cię, gdy strona będzie gotowa. &lt;a&gt;Anuluj&lt;/a&gt;</translation>
@@ -991,6 +995,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="503069730517007720">Certyfikat główny oprogramowania „<ph name="SOFTWARE_NAME" />” jest wymagany, ale nie został zainstalowany. Aby rozwiązać ten problem, administrator powinien przeczytać instrukcje dotyczące konfiguracji oprogramowania „<ph name="SOFTWARE_NAME" />”. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5031870354684148875">Tłumacz Google – informacje</translation>
 <translation id="503498442187459473"><ph name="HOST" /> chce korzystać z kamery i mikrofonu</translation>
+<translation id="5039762155821394373">Rozmiar czcionki</translation>
 <translation id="5039804452771397117">Zezwalaj</translation>
 <translation id="5040262127954254034">Prywatność</translation>
 <translation id="5043480802608081735">Skopiowany link</translation>
@@ -1220,6 +1225,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5946937721014915347">Otwieram <ph name="SITE_NAME" />…</translation>
 <translation id="5951495562196540101">Nie można zarejestrować się przy użyciu konta klienta (w pakiecie dostępna jest licencja).</translation>
+<translation id="5963413905009737549">Sekcja</translation>
 <translation id="5967592137238574583">Edytuj dane kontaktowe</translation>
 <translation id="5967867314010545767">Usuń z historii</translation>
 <translation id="5975083100439434680">Pomniejsz</translation>
@@ -1256,6 +1262,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="6051221802930200923">Nie możesz teraz otworzyć strony <ph name="SITE" />, ponieważ stosuje ona przypinanie certyfikatów. Błędy sieciowe i ataki są zazwyczaj tymczasowe, więc prawdopodobnie strona będzie dostępna później.</translation>
 <translation id="6052284303005792909">•</translation>
 <translation id="6053328359599022071">Chcesz udostępniać informacje o obecności?</translation>
+<translation id="6057359309778282021">Administrator zablokował udostępnianie zawartości z <ph name="ORIGIN_NAME" /> maszynie wirtualnej <ph name="VM_NAME" /></translation>
 <translation id="6058977677006700226">Chcesz używać swoich kart na wszystkich urządzeniach?</translation>
 <translation id="6059925163896151826">Urządzenia USB</translation>
 <translation id="6060009363608157444">Nieprawidłowy tryb DnsOverHttps.</translation>
@@ -1305,6 +1312,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <ph name="END_LIST" /></translation>
 <translation id="6280223929691119688">Nie można dostarczyć pod ten adres. Wybierz inny.</translation>
 <translation id="6282194474023008486">Kod pocztowy</translation>
+<translation id="6289939620939689042">Kolor strony</translation>
 <translation id="6290238015253830360">Tutaj wyświetlą się proponowane artykuły</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6302269476990306341">Wyłączam Asystenta Google w Chrome</translation>
@@ -1461,6 +1469,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="7004583254764674281">Używaj Windows Hello, by szybciej potwierdzać karty</translation>
 <translation id="7006930604109697472">Wyślij mimo wszystko</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
+<translation id="7014741021609395734">Poziom powiększenia</translation>
 <translation id="7016992613359344582">Może to być opłata jednorazowa lub cykliczna, a informacje o niej mogą nie być wyraźnie podane.</translation>
 <translation id="7029809446516969842">Hasła</translation>
 <translation id="7031646650991750659">Zainstalowane przez Ciebie aplikacje z Google Play</translation>
@@ -1862,6 +1871,7 @@ Dodatkowe informacje:
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">Nie znaleziono pasujących haseł. Pokaż wszystkie zapisane hasła.</translation>
 <translation id="8625384913736129811">Zapisz tę kartę na tym urządzeniu</translation>
+<translation id="8657078576661269990">Administrator zablokował udostępnianie zawartości z <ph name="ORIGIN_NAME" /> maszynom wirtualnym <ph name="VM_NAME_1" /> i <ph name="VM_NAME_2" /></translation>
 <translation id="8663226718884576429">Podsumowanie zamówienia, <ph name="TOTAL_LABEL" />, Szczegółowe informacje</translation>
 <translation id="867224526087042813">Podpis</translation>
 <translation id="8676424191133491403">Bez opóźnienia</translation>
@@ -1874,6 +1884,7 @@ Dodatkowe informacje:
 <translation id="8699041776323235191">Urządzenie HID</translation>
 <translation id="8703575177326907206">Połączenie z witryną <ph name="DOMAIN" /> nie jest szyfrowane.</translation>
 <translation id="8705331520020532516">Numer seryjny</translation>
+<translation id="8710842507289500830">Styl czcionki</translation>
 <translation id="8718314106902482036">Płatność nie została zrealizowana</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />, <ph name="DESCRIPTION" />, sugestia wyszukiwania</translation>
 <translation id="8719528812645237045">Wiele otworów u góry</translation>
@@ -1994,6 +2005,7 @@ Dodatkowe informacje:
 <translation id="9191834167571392248">Otwór w lewym dolnym rogu</translation>
 <translation id="9205078245616868884">Twoje dane są szyfrowane z użyciem hasła synchronizacji. Wpisz je, by rozpocząć synchronizację.</translation>
 <translation id="9207861905230894330">Nie udało się dodać artykułu.</translation>
+<translation id="9213433120051936369">Dostosuj wygląd</translation>
 <translation id="9215416866750762878">Aplikacja uniemożliwia Chrome bezpieczne połączenie się z tą stroną</translation>
 <translation id="9219103736887031265">Grafika</translation>
 <translation id="933712198907837967">Diners Club</translation>

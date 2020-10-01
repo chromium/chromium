@@ -106,6 +106,7 @@
 <translation id="1810845389119482123">सुरुवातीचे सिंक सेट करणे पूर्ण झाले नाही</translation>
 <translation id="1821253160463689938">तुम्ही त्या पेजना भेट दिली नसली तरीही, तुमची प्राधान्ये लक्षात ठेवण्यासाठी कुकीचा वापर करते</translation>
 <translation id="1829244130665387512">या पृष्ठामध्ये शोधा</translation>
+<translation id="1830550083491357902">साइन इन केलेले नाही</translation>
 <translation id="1843805151597803366">आणखी चांगली भाषांतरे मिळवण्यासाठी, Google Search ला सध्याचे पेज वापरू द्या</translation>
 <translation id="1853692000353488670">नवीन गुप्त टॅब</translation>
 <translation id="1856325424225101786">लाइट मोड रीसेट करायचा?</translation>
@@ -113,6 +114,7 @@
 <translation id="1877026089748256423">Chrome कालबाह्य आहे</translation>
 <translation id="1883903952484604915">माझ्या फाइल</translation>
 <translation id="189358972401248634">इतर भाषा</translation>
+<translation id="1919130412786645364">Chrome मध्ये साइन इन करण्यासाठी अनुमती द्या</translation>
 <translation id="1922362554271624559">सुचवलेल्या भाषा</translation>
 <translation id="1925021887439448749">कस्टम वेब पत्ता एंटर करा</translation>
 <translation id="1928696683969751773">अपडेट</translation>
@@ -225,6 +227,7 @@
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# ऑडिओ फाइल}other{# ऑडिओ फाइल}}</translation>
 <translation id="2656405586795711023">वेब अ‍ॅप्स</translation>
 <translation id="2689830683995595741">Chrome वापरून, तुम्ही <ph name="BEGIN_LINK1" />Google सेवा अटी<ph name="END_LINK1" /> आणि <ph name="BEGIN_LINK2" />Google Chrome व Chrome OS अतिरिक्त सेवा अटी<ph name="END_LINK2" /> यांना सहमती दर्शवता. <ph name="BEGIN_LINK3" />Family Link सोबत व्यवस्थापित केलेली Google खाती यांसाठी गोपनीयतेची सूचना<ph name="END_LINK3" /> देखील लागू होते.</translation>
+<translation id="2704606927547763573">कॉपी केले</translation>
 <translation id="2707726405694321444">पृष्ठ रिफ्रेश करा</translation>
 <translation id="2709516037105925701">ऑटोफिल</translation>
 <translation id="2718352093833049315">केवळ वाय-फाय वर</translation>
@@ -347,6 +350,7 @@
 <translation id="3631987586758005671"><ph name="DEVICE_NAME" /> शी शेअर करत आहे</translation>
 <translation id="3632295766818638029">पासवर्ड पहा</translation>
 <translation id="363596933471559332">स्टोअर क्रेडेंशियल वापरून वेबसाइटवर आपोआप साइन इन करा. वैशिष्ट्य बंद असते तेव्हा, वेबसाइटवर साइन इन करण्यापूर्वी दरवेळी तुम्हाला पडताळणीसाठी विचारले जाईल.</translation>
+<translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3658159451045945436">रीसेट केल्याने तुमचा डेटा सेव्हिंग इतिहास, भेट दिलेल्या साइटच्या सूचीसह, मिटवला जातो.</translation>
 <translation id="3692944402865947621"><ph name="FILE_NAME" /> download failed because storage location is not reachable.</translation>
 <translation id="3701167022068948696">आता निराकरण करा</translation>
@@ -707,6 +711,7 @@
 <translation id="6301525844455696527">वाचन सूचीसह, तुमच्या राहून गेलेल्या वाचनाची भरपाई करा</translation>
 <translation id="6303969859164067831">साइन आउट करा आणि सिंक बंद करा</translation>
 <translation id="6312687380483398334">वेब अ‍ॅप्स (शांत)</translation>
+<translation id="6313752143992575395"><ph name="WEBSITE_TITLE" /> साठी सूचना दाखवत आहे</translation>
 <translation id="6316139424528454185">Android आवृत्तीला सपोर्ट नाही</translation>
 <translation id="6324034347079777476">Android सिस्‍टीम संकालन अक्षम केले</translation>
 <translation id="6333140779060797560"><ph name="APPLICATION" /> द्वारे शेअर करा</translation>
@@ -838,6 +843,7 @@
 <translation id="7233236755231902816">तुमच्या भाषेत वेब पाहण्यासाठी, Chrome ची नवीनतम आवृत्ती मिळवा</translation>
 <translation id="7248069434667874558"><ph name="TARGET_DEVICE_NAME" /> ने Chrome मध्ये सिंक सुरू केले असल्याची खात्री करा</translation>
 <translation id="7274013316676448362">अवरोधित केलेली साइट</translation>
+<translation id="7286572596625053347"><ph name="LANGUAGE" /> बदलायची आहे का?</translation>
 <translation id="7290209999329137901">नाव बदलणे उपलब्ध नाही</translation>
 <translation id="7291387454912369099">असिस्टंटने ट्रिगर केलेला चेकआउट</translation>
 <translation id="7293171162284876153">सिंक सुरू करण्यासाठी, "तुमचा Chrome डेटा सिंक करा" सुरू करा.</translation>
@@ -960,7 +966,6 @@
 <translation id="8058746566562539958">नवीन Chrome टॅबमध्‍ये उघडा</translation>
 <translation id="8063895661287329888">बुकमार्क जोडण्यात अयशस्वी झाले.</translation>
 <translation id="806745655614357130">माझा डेटा स्वतंत्र ठेवा</translation>
-<translation id="8069669375923284295">सिंक सेटअप पुढे सुरू ठेवण्यासाठी टॅप करा</translation>
 <translation id="8073388330009372546">नवीन टॅबमध्ये इमेज उघडा</translation>
 <translation id="8076492880354921740">टॅब</translation>
 <translation id="8084114998886531721">सेव्ह केलेले पासवर्ड</translation>

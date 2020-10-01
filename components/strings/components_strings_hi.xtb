@@ -15,6 +15,7 @@
 <translation id="1038106730571050514">सुझाव दिखाएं</translation>
 <translation id="1038842779957582377">अज्ञात नाम</translation>
 <translation id="1041998700806130099">जॉब शीट मैसेज</translation>
+<translation id="1048785276086539861">जब आप वीडियो के ऊपर टेक्स्ट, लिंक वगैरह में बदलाव करते हैं, तो दस्तावेज़, सिंगल पेज व्यू पर वापस चला जाएगा</translation>
 <translation id="1050038467049342496">दूूूूसरे ऐप्लिकेशन बंद करें</translation>
 <translation id="1055184225775184556">&amp;जोड़ना वापस लाएं</translation>
 <translation id="1056898198331236512">चेतावनी</translation>
@@ -379,6 +380,7 @@
 <translation id="2465688316154986572">स्टेपल</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />नेटवर्क निदान चलाकर देखें<ph name="END_LINK" /></translation>
 <translation id="2469153820345007638">1-से-N के क्रम में</translation>
+<translation id="2470767536994572628">जब आप वीडियो के ऊपर टेक्स्ट, लिंक वगैरह में बदलाव करते हैं, तो दस्तावेज़, सिंगल पेज व्यू और अपने मूल रोटेशन पर वापस चला जाएगा</translation>
 <translation id="2479410451996844060">गलत खोज URL.</translation>
 <translation id="2482878487686419369">सूचनाएं</translation>
 <translation id="248348093745724435">मशीन के लिए नीतियां</translation>
@@ -1224,6 +1226,7 @@
 <translation id="5938793338444039872">ट्रॉय</translation>
 <translation id="5946937721014915347"><ph name="SITE_NAME" /> को खोला जा रहा है…</translation>
 <translation id="5951495562196540101">उपभोक्ता खाते (पैकेज किया गया लाइसेंस मौजूद है) के साथ नामांकन नहीं कर सकते.</translation>
+<translation id="5963413905009737549">अनुभाग</translation>
 <translation id="5967592137238574583">संपर्क जानकारी में बदलाव करें</translation>
 <translation id="5967867314010545767">इतिहास से निकालें</translation>
 <translation id="5975083100439434680">ज़ूम आउट</translation>
@@ -1636,6 +1639,7 @@
 <translation id="7647206758853451655">प्रिंट क्वालिटी</translation>
 <translation id="7648992873808071793">फ़ाइलों को इस डिवाइस पर संग्रहित करें</translation>
 <translation id="7653957176542370971">पैसे चुकाने की हैंडलर शीट बंद है</translation>
+<translation id="7654909834015434372">जब आप वीडियो के ऊपर टेक्स्ट, लिंक वगैरह में बदलाव करते हैं, तो दस्तावेज़ अपने मूल रोटेशन पर वापस चला जाएगा</translation>
 <translation id="765676359832457558">बेहतर सेटिंग छिपाएं...</translation>
 <translation id="7658239707568436148">अभी नहीं</translation>
 <translation id="7662298039739062396">सेटिंग किसी एक्सटेंशन से नियंत्रित है</translation>

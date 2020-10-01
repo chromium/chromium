@@ -385,15 +385,6 @@
       정책을 설정하지 않으면 <ph name="PRINTERS_ALLOW_ALL" />이 기본적으로 사용됩니다.
       </translation>
 <translation id="1588240398285670601">브라우저 설정</translation>
-<translation id="1588456836529393506">정책을 설정하면 주어진 공급업체 및 제품 ID로 USB 기기에 대한 액세스 권한을 자동으로 받는 사이트를 지정하는 URL 패턴 목록을 작성할 수 있습니다. 정책이 유효하려면 각 목록 항목에 기기와 URL이 있어야 합니다. 기기의 각 항목에는 공급업체 ID 및 제품 ID 입력란이 포함될 수 있습니다. 공급업체 ID를 지정하지 않으면 제품 ID도 지정할 수 없다는 하나의 예외 사항을 제외하면 생략한 모든 ID는 와일드 카드로 취급됩니다. 이를 따르지 않으면 정책이 유효하지 않습니다.
-
-      USB 권한 모델은 요청 URL과 삽입 URL(최상위 프레임 사이트)을 사용하여 요청 URL에 USB 기기 액세스 권한을 부여합니다. 요청하는 사이트가 iframe에서 로드되는 경우 요청 URL은 삽입 URL과 다를 수 있습니다. 따라서 'URL' 입력란에는 URL을 지정하기 위해 쉼표로 구분된 문자열을 2개까지 포함할 수 있습니다. URL을 하나만 지정한 경우 삽입 상태와 관계없이 요청하는 사이트의 URL이 지정한 URL과 일치하면 해당 USB 기기에 액세스할 권한이 부여됩니다. 'URL' 입력란의 URL은 반드시 유효한 URL이어야 하며 그렇지 않으면 정책이 무시됩니다.
-
-      정책을 설정하지 않은 경우 <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" />이(가) 설정되어 있으면 적용됩니다. 설정되어 있지 않다면 사용자의 개인 설정이 적용됩니다.
-
-      정책의 URL 패턴은 <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" />을(를) 통해 구성된 패턴과 충돌해서는 안 됩니다. 충돌할 경우 이 정책이 <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" />과(와) <ph name="WEB_USB_ASK_FOR_URLS_POLICY_NAME" />보다 우선 적용됩니다.
-
-      정책과 <ph name="DEVICE_WEB_USB_ALLOW_DEVICES_FOR_URLS_POLICY_NAME" />의 값은 병합됩니다.</translation>
 <translation id="1593245608325508847">이 정책을 설정하면 G Suite 내 Chrome의 제한된 로그인 기능이 사용 설정되고 사용자가 설정을 변경할 수 없습니다. 사용자는 특정 도메인의 계정을 사용해서만 gmail 또는 googlemail 계정을 허용하고 도메인 목록에 consumer_accounts를 추가하기 위해 Google 도구에 액세스할 수 있습니다. 이 설정은 보조 계정이 명시적으로 허용된 도메인에 속하지 않은 경우 사용자가 Google 인증이 필요한 관리 대상 기기에 보조 계정을 추가하고 보조 계정으로 로그인하는 것을 차단합니다.
 
       설정을 비워 두거나 설정하지 않으면 사용자가 어느 계정으로든 G Suite에 액세스할 수 있습니다.
@@ -493,7 +484,7 @@
 <translation id="1760951637494635692">이 사이트에서 Serial API 허용</translation>
 <translation id="1765512315997108908"><ph name="DEVICE_PRINTERS_POLICY_NAME" /> 정책의 프린터 중 어떤 프린터가 사용자에게 제공될지 관리합니다.
 
-      일괄 프린터 설정에 사용할 액세스 정책을 지정합니다. <ph name="PRINTERS_ALLOW_ALL" />을 선택하면 모든 프린터가 표시됩니다. <ph name="PRINTERS_BLACKLIST" />을 선택하면 <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" />를 사용해 지정된 프린터 액세스를 제한합니다.  <ph name="PRINTERS_WHITELIST" />를 선택하면 <ph name="DEVICE_PRINTERS_ALLOWLIST_POLCY_NAME" />가 선택 가능한 프린터만 지정합니다.
+      일괄 프린터 설정에 사용할 액세스 정책을 지정합니다. <ph name="PRINTERS_ALLOW_ALL" />을 선택하면 모든 프린터가 표시됩니다. <ph name="PRINTERS_BLACKLIST" />를 선택하면 <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" />를 사용해 지정된 프린터 액세스를 제한합니다.  <ph name="PRINTERS_WHITELIST" />를 선택하면 <ph name="DEVICE_PRINTERS_ALLOWLIST_POLCY_NAME" />가 선택 가능한 프린터만 지정합니다.
 
       정책을 설정하지 않으면 <ph name="PRINTERS_ALLOW_ALL" />이 기본적으로 사용됩니다.
 
@@ -560,9 +551,6 @@
 
       정책이 설정되지 않으면 네트워크 예측이 사용 설정되지만 사용자가 변경할 수 있게 됩니다.</translation>
 <translation id="1865417998205858223">주요 권한</translation>
-<translation id="1866563857170942397">기기에 로그인할 수 있는 사용자 목록을 정의합니다. <ph name="USER_ALLOWLIST_ENTRY_FORMAT" /> 형식(예: <ph name="USER_WHITELIST_ENTRY_EXAMPLE" />)의 항목이 사용됩니다. 도메인에 임의의 사용자를 허용하려면 <ph name="USER_ALLOWLIST_ENTRY_WILDCARD" /> 형식의 항목을 사용합니다.
-
-      이 정책이 구성되지 않으면 어떤 사용자가 로그인할 수 있는지에 관한 제한이 없습니다. 새 사용자를 만들기 위해서는 <ph name="DEVICE_ALLOW_NEW_USERS_POLICY_NAME" /> 정책이 적절히 구성되어야 합니다.</translation>
 <translation id="186719019195685253">AC 전원으로 기기를 실행하는 동안 유휴 지연 시간에 도달했을 때 실행할 작업</translation>
 <translation id="1885782360784839335">전체 탭 프로모션 콘텐츠 표시 기능을 사용합니다.</translation>
 <translation id="1888871729456797026">데스크톱의 클라우드 정책 등록 토큰</translation>
@@ -948,8 +936,8 @@
       - 소스 중 하나의 인쇄 제어.
       - 소스가 표시될 경우 개인정보 보호 화면의 제어.
 
-      제한 수준은 BLOCK, ALLOW로 설정될 수 있습니다.
-      - 제한 수준이 BLOCK으로 설정될 경우 작업은 허용되지 않습니다.
+      제한 수준은 BLOCK 또는 ALLOW로 설정될 수 있습니다.
+      - 제한 수준이 BLOCK으로 설정된 경우 작업은 허용되지 않습니다.
       - 제한 수준이 ALLOW로 설정된 경우 작업이 허용됩니다.
 
       참고:

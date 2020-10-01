@@ -374,15 +374,6 @@ Als je dit beleid uitschakelt, wordt op de webpagina naar specifieke tekstfragme
       Als dit beleid niet is ingesteld, wordt er uitgegaan van <ph name="PRINTERS_ALLOW_ALL" />.
       </translation>
 <translation id="1588240398285670601">Browserinstellingen</translation>
-<translation id="1588456836529393506">Als je het beleid instelt, kun je een lijst met URL-patronen opgeven met de sites die automatisch toegangsrechten krijgen voor een USB-apparaat met de opgegeven leveranciers- en product-ID's. Het beleid is alleen geldig als elk lijstitem apparaten en URL's bevat. Elk item in apparaten kan een veld voor de leverancier-ID en een veld voor de product-ID bevatten. Elke ID die je weglaat, wordt als jokerteken behandeld, met één uitzondering: je kunt geen product-ID opgeven als je niet ook een leverancier-ID opgeeft. Als je dit niet doet, is het beleid niet geldig.
-
-      Het USB-rechtenmodel gebruikt de aanvragende URL en de insluitings-URL (van de framesite op hoofdniveau) om de aanvragende URL toegang te geven tot het USB-apparaat. Als de aanvragende site in een iframe wordt geladen, is het mogelijk dat de aanvragende URL en de insluitings-URL niet hetzelfde zijn. Daarom kan het veld voor URL's maximaal twee, door een komma gescheiden tekenreeksen bevatten om deze URL's op te geven. Als je maar één URL wilt opgeven, wordt er alleen toegang tot de bijbehorende USB-apparaten gegeven als de URL van de aanvragende site overeenkomt met deze URL, ongeacht de insluitingsstatus. De URL's in het veld voor URL's moeten geldig zijn. Als dit niet het geval is, wordt het beleid genegeerd.
-
-      Als je het beleid niet instelt, is <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" /> van toepassing als dit is ingesteld. Zo niet, dan gelden de persoonlijke instellingen van de gebruiker.
-
-      De URL-patronen in dit beleid mogen geen conflict vormen met de patronen die zijn ingesteld via <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" />. Als dit het geval is, krijgt dit beleid voorrang op <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" /> en <ph name="WEB_USB_ASK_FOR_URLS_POLICY_NAME" />.
-
-      Waarden voor dit beleid en <ph name="DEVICE_WEB_USB_ALLOW_DEVICES_FOR_URLS_POLICY_NAME" /> worden samengevoegd.</translation>
 <translation id="1593245608325508847">Als je dit beleid instelt, wordt de beperkte inlogfunctie van Chrome in G Suite ingeschakeld. Gebruikers kunnen deze instelling niet wijzigen. Gebruikers kunnen Google-tools alleen openen met accounts van de opgegeven domeinen (voeg consumer_accounts toe aan de lijst met domeinen om Gmail- en GoogleMail-accounts toe te staan). Deze instelling voorkomt dat gebruikers inloggen op een secundair account en dit toevoegen aan een beheerd apparaat waarvoor Google-verificatie vereist is, als dit account niet behoort tot één van de expliciet toegestane domeinen.
 
       Als je deze instelling leeg laat of niet instelt, kunnen gebruikers G Suite openen met elk account.
@@ -550,9 +541,6 @@ Als je dit beleid uitschakelt, wordt op de webpagina naar specifieke tekstfragme
 
       Als dit beleid niet wordt ingesteld, wordt netwerkvoorspelling ingeschakeld, maar kan de gebruiker dit wijzigen.</translation>
 <translation id="1865417998205858223">Rechten voor sleutels</translation>
-<translation id="1866563857170942397">Definieert de lijst met gebruikers die toestemming hebben om op het apparaat in te loggen. De invoer heeft de vorm <ph name="USER_ALLOWLIST_ENTRY_FORMAT" />, zoals <ph name="USER_WHITELIST_ENTRY_EXAMPLE" />. Als je willekeurige gebruikers toegang wilt geven tot een domein, gebruik je invoer in de vorm <ph name="USER_ALLOWLIST_ENTRY_WILDCARD" />.
-
-      Als dit beleid niet is geconfigureerd, zijn er geen beperkingen voor welke gebruikers mogen inloggen. Als je nieuwe gebruikers wilt maken, moet het beleid <ph name="DEVICE_ALLOW_NEW_USERS_POLICY_NAME" /> correct zijn ingesteld.</translation>
 <translation id="186719019195685253">Actie die moet worden ondernomen wanneer de vertraging voor inactief wordt bereikt bij gebruik op netspanning</translation>
 <translation id="1885782360784839335">Weergave van promotiecontent op volledig tabblad inschakelen</translation>
 <translation id="1888871729456797026">De inschrijvingstoken van het cloudbeleid op een desktop</translation>

@@ -106,6 +106,7 @@
 <translation id="1810845389119482123">İlk senkronizasyon kurulumu tamamlanmadı</translation>
 <translation id="1821253160463689938">Belirtilen sayfaları ziyaret etmiyor olsanız bile tercihlerinizi hatırlamak için çerezler kullanır</translation>
 <translation id="1829244130665387512">Sayfada bul</translation>
+<translation id="1830550083491357902">Oturum açılmadı</translation>
 <translation id="1843805151597803366">Daha iyi çeviriler için Google Arama'nın geçerli sayfayı kullanmasına izin verin</translation>
 <translation id="1853692000353488670">Yeni gizli sekme</translation>
 <translation id="1856325424225101786">Basit mod sıfırlansın mı?</translation>
@@ -113,6 +114,7 @@
 <translation id="1877026089748256423">Chrome sürümü eski</translation>
 <translation id="1883903952484604915">Dosyalarım</translation>
 <translation id="189358972401248634">Diğer diller</translation>
+<translation id="1919130412786645364">Chrome'da oturum açmaya izin verin</translation>
 <translation id="1922362554271624559">Önerilen diller</translation>
 <translation id="1925021887439448749">Özel web adresini girin</translation>
 <translation id="1928696683969751773">Güncellemeler</translation>
@@ -225,6 +227,7 @@ Arama yapmak için herhangi bir kelimeye dokunup basılı tutun. Aramanızı has
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# Ses dosyası}other{# Ses dosyası}}</translation>
 <translation id="2656405586795711023">Web uygulamaları</translation>
 <translation id="2689830683995595741">Chrome'u kullanarak <ph name="BEGIN_LINK1" />Google Hizmet Şartları<ph name="END_LINK1" /> ile <ph name="BEGIN_LINK2" />Google Chrome ve Chrome OS Ek Hizmet Şartları<ph name="END_LINK2" />'nı kabul etmiş olursunuz. <ph name="BEGIN_LINK3" />Family Link ile Yönetilen Google Hesapları İçin Gizlilik Uyarısı<ph name="END_LINK3" /> da geçerlidir.</translation>
+<translation id="2704606927547763573">Kopyalandı</translation>
 <translation id="2707726405694321444">Sayfayı yenile</translation>
 <translation id="2709516037105925701">Otomatik doldurma</translation>
 <translation id="2718352093833049315">Yaln. Kablosuzda</translation>
@@ -347,6 +350,7 @@ Arama yapmak için herhangi bir kelimeye dokunup basılı tutun. Aramanızı has
 <translation id="3631987586758005671"><ph name="DEVICE_NAME" /> ile paylaşılıyor</translation>
 <translation id="3632295766818638029">Şifreyi göster</translation>
 <translation id="363596933471559332">Depolanmış kimlik bilgileriyle web sitelerinde otomatik olarak oturum açın. Bu özellik kapatıldığında, bir web sitesinde oturum açmadan önce her defasında doğrulama yapmanız istenir.</translation>
+<translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3658159451045945436">Sıfırlama işlemi, ziyaret edilen sitelerin listesi de dahil olmak üzere veri tasarrufu geçmişinizi siler.</translation>
 <translation id="3692944402865947621">Depolama konumuna erişilemediği için <ph name="FILE_NAME" /> dosyası indirilemedi.</translation>
 <translation id="3701167022068948696">Şimdi düzelt</translation>
@@ -707,6 +711,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="6301525844455696527">Okuma listenizde geride kalmayın</translation>
 <translation id="6303969859164067831">Oturumu ve senkronizasyonu kapat</translation>
 <translation id="6312687380483398334">Web uygulamaları (sessiz)</translation>
+<translation id="6313752143992575395"><ph name="WEBSITE_TITLE" /> için öneri gösteriliyor</translation>
 <translation id="6316139424528454185">Android sürümü desteklenmiyor</translation>
 <translation id="6324034347079777476">Android sistem senkronizasyonu devre dışı</translation>
 <translation id="6333140779060797560">Paylaşım yöntemi: <ph name="APPLICATION" /></translation>
@@ -838,6 +843,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="7233236755231902816">Web'i kendi dilinizde görmek için Chrome'un en son sürümünü edinin</translation>
 <translation id="7248069434667874558"><ph name="TARGET_DEVICE_NAME" /> cihazının Chrome'da senkronizasyonunun açık olduğundan emin olun</translation>
 <translation id="7274013316676448362">Engellenmiş site</translation>
+<translation id="7286572596625053347"><ph name="LANGUAGE" /> değiştirilsin mi?</translation>
 <translation id="7290209999329137901">Yeniden adlandırma yapılamıyor</translation>
 <translation id="7291387454912369099">Asistan'ın Başlattığı Ödeme</translation>
 <translation id="7293171162284876153">Senkronizasyonu başlatmak için "Chrome verilerimi senkronize et" ayarını etkinleştirin.</translation>
@@ -960,7 +966,6 @@ Gizli modda etkinliğiniz ziyaret ettiğiniz web siteleri, işvereniniz veya oku
 <translation id="8058746566562539958">Yeni Chrome sekmesinde aç</translation>
 <translation id="8063895661287329888">Yer işareti eklenemedi.</translation>
 <translation id="806745655614357130">Verilerimi ayrı tut</translation>
-<translation id="8069669375923284295">Senkronizasyon kurulumuna devam etmek için dokunun</translation>
 <translation id="8073388330009372546">Resmi yeni sekmede aç</translation>
 <translation id="8076492880354921740">Sekmeler</translation>
 <translation id="8084114998886531721">Kayıtlı şifre</translation>

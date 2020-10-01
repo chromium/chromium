@@ -113,6 +113,7 @@
 <translation id="2049240716062114887">ଡେସ୍କ ନାମକୁ <ph name="DESK_NAME" />ରେ ବଦଳା ଯାଇଥିଲା</translation>
 <translation id="2050339315714019657">ପୋଟ୍ରେଟ୍‌</translation>
 <translation id="2067602449040652523">କୀ'ବୋର୍ଡ ଉଜ୍ଜ୍ଵଳତା</translation>
+<translation id="2074759828767813253">ବର୍ତ୍ତମାନର ସ୍କ୍ରିନସଟ୍ ଏବଂ ଡାଉନଲୋଡଗୁଡ଼ିକ</translation>
 <translation id="2083190527011054446">ଶୁଭ ରାତ୍ରି <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">ନେଟ୍‌ୱାର୍କ ସହିତ ସଂଯୁକ୍ତ ହୋଇ ନାହିଁ</translation>
 <translation id="2126242104232412123">ନୂଆ ଡେସ୍କ</translation>
@@ -197,7 +198,6 @@
 <translation id="2996462380875591307">ଡକ୍‌ ହୋଇଥିବା ମ୍ୟାଗ୍ନିଫାୟର୍‌କୁ ସକ୍ଷମ କରାଯାଇଛି। ଏହାକୁ ବନ୍ଦରେ ଟଗଲ୍‌ କରିବାକୁ Ctrl+Search+D ଦବାନ୍ତୁ</translation>
 <translation id="3000461861112256445">ମୋନୋ ଅଡିଓ</translation>
 <translation id="3009178788565917040">ଆଉଟ୍‌ପୁଟ୍</translation>
-<translation id="3025081209054535615">ସେଲ୍ଫରୁ ଗ୍ଲୋବାଲ ମିଡିଆ ନିୟନ୍ତ୍ରଣଗୁଡ଼ିକୁ ଅନପିନ୍ କରନ୍ତୁ</translation>
 <translation id="3033545621352269033">ଚାଲୁ</translation>
 <translation id="3038571455154067151">ସାଇନ୍ ଇନ୍ କରିବାକୁ, ଆପଣଙ୍କର Family Linkର ବାପାମା ଆକ୍ସେସ୍ କୋଡ୍ ଲେଖନ୍ତୁ</translation>
 <translation id="3045488863354895414">ଶୁଭ ଅପରାହ୍ନ,</translation>
@@ -620,6 +620,7 @@
 <translation id="7526573455193969409">ନେଟ୍‌ୱର୍କ ଉପରେ ହୁଏତ ନଜର ରଖାଯାଇପାରେ</translation>
 <translation id="7536035074519304529">IP ଠିକଣା: <ph name="ADDRESS" /></translation>
 <translation id="7548434653388805669">ଶୋଇବାର ସମୟ</translation>
+<translation id="7551643184018910560">ସେଲ୍ଫରେ ପିନ୍‌ କରନ୍ତୁ</translation>
 <translation id="7561982940498449837">ମେନୁ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="7564874036684306347">ୱିଣ୍ଡୋକୁ ଅନ୍ୟ ଡେକ୍ସଟପ୍‌କୁ ତ୍ୱରିତ କରିବା ଦ୍ୱାରା ଅପ୍ରତ୍ୟାଶିତ ଆଚରଣ ହୋଇପାରେ। ଏହା ପରବର୍ତ୍ତୀ ବିଜ୍ଞପ୍ତି, ୱିଣ୍ଡୋ ଏବଂ ଡାଏଲଗ୍‌ଗୁଡ଼ିକ ଡେକ୍ସଟପ୍‌ଗୁଡ଼ିକ ମଧ୍ୟରେ ଅଲଗା ହୋଇପାରେ।</translation>
 <translation id="7568294522609223312">ସ୍ୱଚାଳିତ କ୍ଲିକ୍‌ଗୁଡ଼ିକ ବନ୍ଦ କରନ୍ତୁ</translation>
@@ -700,7 +701,6 @@
 <translation id="8297006494302853456">ଦୁର୍ବଳ</translation>
 <translation id="8308637677604853869">ପୂର୍ବବର୍ତ୍ତୀ ମେନୁ</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
-<translation id="8349293353728876872">ଗ୍ଲୋବାଲ ମିଡିଆ ନିୟନ୍ତ୍ରଣଗୁଡ଼ିକୁ ସେଲ୍ଫରେ ପିନ୍ କରନ୍ତୁ</translation>
 <translation id="8351131234907093545">ନୋଟ୍ ତିଆରି କରନ୍ତୁ</translation>
 <translation id="8371779926711439835">ଗୋଟିଏ ଅକ୍ଷର ଆଗକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="8375916635258623388">ଏହି <ph name="DEVICE_NAME" /> ଏବଂ ଆପଣଙ୍କର ଫୋନ୍‌ ସ୍ୱଚାଳିତ ଭାବେ ସଂଯୋଗ ହେବ</translation>

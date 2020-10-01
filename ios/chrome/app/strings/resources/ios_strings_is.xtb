@@ -97,7 +97,6 @@
 <translation id="1965935827552890526">Ljúktu því sem þú ert að gera í öðrum opnum Chrome glugga.</translation>
 <translation id="1974060860693918893">Ítarlegt</translation>
 <translation id="1989112275319619282">Skoða</translation>
-<translation id="1992734845128748707">Breyta um sjálfgefinn vafra…</translation>
 <translation id="2015722694326466240">Til að sjá aðgangsorð þarftu fyrst að stilla aðgangsorð á tækinu þínu.</translation>
 <translation id="2073572773299281212">Virkt fyrir <ph name="DAYS" /> dögum</translation>
 <translation id="2074131957428911366">Þú getur alltaf valið hvað á að samstilla í <ph name="BEGIN_LINK" />stillingunum<ph name="END_LINK" />.</translation>
@@ -165,6 +164,7 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 <translation id="2781331604911854368">Kveikt</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2800683595868705743">Fara úr flipavali</translation>
+<translation id="2815198996063984598">2. Ýttu á „Sjálfgefið vafraforrit“</translation>
 <translation id="2830972654601096923">Stjórna heimilisföngum ...</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2840687315230832938">Fyrstu uppsetningu samstillingar var ekki lokið</translation>
@@ -181,6 +181,7 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 <translation id="2921219216347069551">Ekki er hægt að deila síðu</translation>
 <translation id="2923448633003185837">Líma og opna</translation>
 <translation id="292639812446257861">Merkja sem ólesið</translation>
+<translation id="2952581218264071393">1. Opnaðu stillingar Chrome</translation>
 <translation id="2958718410589002129">Aðgangsorð</translation>
 <translation id="2964349545761222050">Loka á fótspor frá þriðja aðila</translation>
 <translation id="2969979262385602596">Innskráning mistókst. Reyndu aftur síðar.</translation>
@@ -217,6 +218,7 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 <translation id="3335947283844343239">Enduropna lokaðan flipa</translation>
 <translation id="3371831930909698441">Þýðing er í boði. Valkostir eru neðst á skjánum</translation>
 <translation id="3393920035788932672">Sprettigluggar leyfðir</translation>
+<translation id="3399930248910934354">Opna stillingar Chrome</translation>
 <translation id="3425644765244388016">Gælunafn korts</translation>
 <translation id="3433057996795775706">Reikningnum þínum á <ph name="WEBSITE" /> verður ekki eytt þó að þessu aðgangsorði verði eytt. Breyttu aðgangsorðinu á <ph name="WEBSITE" /> til að halda því öruggu fyrir öðrum.</translation>
 <translation id="3443810440409579745">Flipi móttekinn.</translation>
@@ -241,6 +243,9 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 <translation id="3551320343578183772">Loka flipa</translation>
 <translation id="3581564640715911333">Bjóðast til að þýða síður á önnur tungumál</translation>
 <translation id="3588820906588687999">Opna mynd í nýjum flipa</translation>
+<translation id="359441731697487922">Þú getur opnað tengla sjálfkrafa með Chrome ef þú gerir það að sjálfgefnu vafraforriti.
+      
+Fylgdu leiðbeiningunum hér að neðan:</translation>
 <translation id="3603009562372709545">Afrita vefslóð tengils</translation>
 <translation id="3607167657931203000">Gögn sjálfvirkrar útfyllingar</translation>
 <translation id="3609785682760573515">Samstillir...</translation>
@@ -331,6 +336,7 @@ Gögnin þín eru dulkóðuð með aðgangsorði samstillingar. Sláðu það in
 <translation id="4747097190499141774">Dulkóðun aðgangsorðs inniheldur ekki greiðslumáta og heimilisföng af Google Pay. Aðeins þeir sem vita aðgangsorðið þitt geta lesið dulkóðuðu gögnin þín. Aðgangsorðið er hvorki sent til Google né geymt. Ef þú gleymir aðgangsorðinu eða vilt breyta þessari stillingu þarftu að endurstilla samstillingu. <ph name="BEGIN_LINK" />Frekari upplýsingar<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">Nýr huliðsflipi</translation>
 <translation id="4758977202923349869">Settu kreditkortið innan þessa ramma</translation>
+<translation id="4775879719735953715">Sjálfgefinn vafri</translation>
 <translation id="4802417911091824046">Dulkóðun aðgangsorðs inniheldur ekki greiðslumáta og heimilisföng af Google Pay.
 
 Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />endurstilla samstillingu<ph name="END_LINK" /></translation>
@@ -338,6 +344,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />endurstilla sam
 <translation id="4808744395915275922">Uppfærslur</translation>
 <translation id="4818522717893377262">Bæta við tungumáli...</translation>
 <translation id="481968316161811770">Fótspor, gögn vefsvæða</translation>
+<translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} og 1 í viðbót}one{{domain} og {count} í viðbót}other{{domain} og {count} í viðbót}}</translation>
 <translation id="4826218269716039351">Loka á þriðju aðila</translation>
 <translation id="48274138579728272">Merkja sem lesið</translation>
 <translation id="4833786495304741580">Sendir sjálfkrafa talnagögn um notkun og tilkynningar um hrun til Google.</translation>
@@ -586,6 +593,7 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 <translation id="7456847797759667638">Opna staðsetningu...</translation>
 <translation id="7460314822154045102">Nota myndavél</translation>
 <translation id="7464701184726199289">Þetta hreinsar samstillt gögn út af öllum tækjum. Vistuðum stillingum vefsvæða verður ekki eytt og þær kunna að endurspegla vefnotkun þína. <ph name="BEGIN_LINK" />Frekari upplýsingar<ph name="END_LINK" /></translation>
+<translation id="746684838091935575">3. Veldu Chrome</translation>
 <translation id="7472734401283673885">Heiti fyrirtækis</translation>
 <translation id="7473891865547856676">Nei, takk</translation>
 <translation id="7481312909269577407">Áfram</translation>

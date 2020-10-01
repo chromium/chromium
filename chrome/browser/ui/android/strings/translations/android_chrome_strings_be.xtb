@@ -106,6 +106,7 @@
 <translation id="1810845389119482123">Першапачатковая наладка сінхранізацыі не завершана</translation>
 <translation id="1821253160463689938">Выкарыстоўваць файлы cookie для захавання параметраў, нават калі вы не адкрываеце гэтыя старонкі</translation>
 <translation id="1829244130665387512">Пошук на старонцы</translation>
+<translation id="1830550083491357902">Уваход не выкананы</translation>
 <translation id="1843805151597803366">Дазвольце Google Пошуку выкарыстаць бягучую старонку для паляпшэння перакладу</translation>
 <translation id="1853692000353488670">Новая ўкладка інкогніта</translation>
 <translation id="1856325424225101786">Скінуць налады лёгкага рэжыму?</translation>
@@ -113,6 +114,7 @@
 <translation id="1877026089748256423">Chrome састарэў</translation>
 <translation id="1883903952484604915">Мае файлы</translation>
 <translation id="189358972401248634">Іншыя мовы</translation>
+<translation id="1919130412786645364">Дазволіць уваход ва ўліковы запіс Chrome</translation>
 <translation id="1922362554271624559">Прапанаваныя мовы</translation>
 <translation id="1925021887439448749">Увядзіце карыстальніцкі вэб-адрас</translation>
 <translation id="1928696683969751773">Абнаўленні</translation>
@@ -225,6 +227,7 @@
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# аўдыяфайл}one{# аўдыяфайл}few{# аўдыяфайлы}many{# аўдыяфайлаў}other{# аўдыяфайла}}</translation>
 <translation id="2656405586795711023">Вэб-праграмы</translation>
 <translation id="2689830683995595741">Выкарыстоўваючы Chrome, вы згаджаецеся з <ph name="BEGIN_LINK1" />Умовамі выкарыстання Google<ph name="END_LINK1" /> і <ph name="BEGIN_LINK2" />Дадатковымі ўмовамі выкарыстання Google Chrome і Chrome OS<ph name="END_LINK2" />. Таксама прымяняецца <ph name="BEGIN_LINK3" />Паведамленне аб прыватнасці ў дачыненні да Уліковых запісаў Google, якія кіруюцца праз Family Link<ph name="END_LINK3" />.</translation>
+<translation id="2704606927547763573">Скапіравана</translation>
 <translation id="2707726405694321444">Абнавіць старонку</translation>
 <translation id="2709516037105925701">Аўтазапаўненне</translation>
 <translation id="2718352093833049315">Толькі па Wi-Fi</translation>
@@ -347,6 +350,7 @@
 <translation id="3631987586758005671">Абагульваецца з прыладай "<ph name="DEVICE_NAME" />"</translation>
 <translation id="3632295766818638029">Паказаць пароль</translation>
 <translation id="363596933471559332">Аўтаматычна ўваходзіць на вэб-сайты, выкарыстоўваючы захаваныя ўліковыя даныя. Калі функцыя выключана, кожны раз пры ўваходзе на вэб-сайт у вас будуць патрабаваць спраўджання.</translation>
+<translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3658159451045945436">Скід прывядзе да выдалення захаваных даных, у тым ліку спіса наведаных сайтаў.</translation>
 <translation id="3692944402865947621">Не ўдалося спампаваць файл "<ph name="FILE_NAME" />": месца захоўвання недаступнае.</translation>
 <translation id="3701167022068948696">Выправіць</translation>
@@ -707,6 +711,7 @@
 <translation id="6301525844455696527">Не забудзьце прачытаць</translation>
 <translation id="6303969859164067831">Выйсці і выключыць сінхранізацыю</translation>
 <translation id="6312687380483398334">Вэб-праграмы (бязгучныя)</translation>
+<translation id="6313752143992575395">Паказваецца прапанова для сайта "<ph name="WEBSITE_TITLE" />"</translation>
 <translation id="6316139424528454185">Версія Android не падтрымлів.</translation>
 <translation id="6324034347079777476">Сінхранізацыя сістэмы Android выключана</translation>
 <translation id="6333140779060797560">Абагуліць праз <ph name="APPLICATION" /></translation>
@@ -838,6 +843,7 @@
 <translation id="7233236755231902816">Каб праглядаць вэб-сайты на сваёй мове, усталюйце апошнюю версію Chrome</translation>
 <translation id="7248069434667874558">Праверце, ці ўключана на прыладзе "<ph name="TARGET_DEVICE_NAME" />" сінхранізацыя ў браўзеры Chrome</translation>
 <translation id="7274013316676448362">Заблакіраваны сайт</translation>
+<translation id="7286572596625053347">Змяніць мову (<ph name="LANGUAGE" />)?</translation>
 <translation id="7290209999329137901">Перайменаванне недаступнае</translation>
 <translation id="7291387454912369099">Афармленне заказаў з Памочнікам</translation>
 <translation id="7293171162284876153">Каб пачаць сінхранізацыю, уключыце "Сінхранізацыю даных Chrome".</translation>
@@ -960,7 +966,6 @@
 <translation id="8058746566562539958">Адкрыць у новай укладцы Chrome</translation>
 <translation id="8063895661287329888">Не ўдалося дадаць закладку.</translation>
 <translation id="806745655614357130">Захоўваць мае даныя асобна</translation>
-<translation id="8069669375923284295">Дакраніцеся, каб працягнуць наладку сінхранізацыі</translation>
 <translation id="8073388330009372546">Адкрыць відарыс у нов. укладцы</translation>
 <translation id="8076492880354921740">Укладкі</translation>
 <translation id="8084114998886531721">Захаваны пароль</translation>

@@ -113,6 +113,7 @@
 <translation id="2049240716062114887">ડેસ્કનું નામ બદલીને <ph name="DESK_NAME" /> કરવામાં આવ્યું હતું</translation>
 <translation id="2050339315714019657">પોર્ટ્રેટ</translation>
 <translation id="2067602449040652523">કીબોર્ડનું તેજ</translation>
+<translation id="2074759828767813253">તાજેતરના સ્ક્રીનશૉટ અને ડાઉનલોડ</translation>
 <translation id="2083190527011054446">ગુડ નાઇટ <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">નેટવર્કથી કનેક્ટ કરેલું નથી</translation>
 <translation id="2126242104232412123">નવું ડેસ્ક</translation>
@@ -197,7 +198,6 @@
 <translation id="2996462380875591307">ડૉક કરેલ મૅગ્નિફાયર ચાલુ કર્યું. ટૉગલ કરવાનું બંધ કરવા માટે ફરીથી Ctrl+Search+D દબાવો.</translation>
 <translation id="3000461861112256445">મૉનો ઑડિઓ</translation>
 <translation id="3009178788565917040">આઉટપુટ</translation>
-<translation id="3025081209054535615">શેલ્ફમાંથી વૈશ્વિક મીડિયા નિયંત્રણોને અનપિન કરો</translation>
 <translation id="3033545621352269033">ચાલુ</translation>
 <translation id="3038571455154067151">સાઇન ઇન કરવા માટે, તમારી Family Linkનો માતાપિતા માટેનો ઍક્સેસ કોડ દાખલ કરો</translation>
 <translation id="3045488863354895414">ગુડ આફ્ટરનૂન,</translation>
@@ -620,6 +620,7 @@
 <translation id="7526573455193969409">નેટવર્કને મોનિટર કરવામાં આવી શકે છે</translation>
 <translation id="7536035074519304529">IP સરનામું: <ph name="ADDRESS" /></translation>
 <translation id="7548434653388805669">સૂવાનો સમય</translation>
+<translation id="7551643184018910560">શેલ્ફ પર પિન કરો</translation>
 <translation id="7561982940498449837">મેનૂ બંધ કરો</translation>
 <translation id="7564874036684306347">વિંડોને બીજા ડેસ્કટૉપમાં ખસેડવું તે અનપેક્ષિત વર્તણૂકનું કારણ બની શકે છે. અનુગામી નોટિફિકેશન, વિંડો અને સંવાદો ડેસ્કટૉપ વચ્ચે વિભાજિત થઈ શકે છે.</translation>
 <translation id="7568294522609223312">ઑટોમૅટિક ક્લિક બંધ કરો</translation>
@@ -700,7 +701,6 @@
 <translation id="8297006494302853456">નબળું</translation>
 <translation id="8308637677604853869">પાછલું મેનૂ</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
-<translation id="8349293353728876872">શેલ્ફ પર વૈશ્વિક મીડિયા નિયંત્રણોને પિન કરો</translation>
 <translation id="8351131234907093545">નોંધ બનાવો</translation>
 <translation id="8371779926711439835">એક અક્ષર આગળ જાઓ</translation>
 <translation id="8375916635258623388">આ <ph name="DEVICE_NAME" /> અને તમારો ફોન ઑટોમૅટિક રીતે કનેક્ટ થશે</translation>

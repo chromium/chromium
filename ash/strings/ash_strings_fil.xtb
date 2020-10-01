@@ -113,6 +113,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2049240716062114887">Ginawang <ph name="DESK_NAME" /> ang pangalan ng desk</translation>
 <translation id="2050339315714019657">Portrait</translation>
 <translation id="2067602449040652523">Liwanag ng keyboard</translation>
+<translation id="2074759828767813253">Mga kamakailang screenshot at download</translation>
 <translation id="2083190527011054446">Magandang gabi <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">Hindi nakakonekta sa network</translation>
 <translation id="2126242104232412123">Bagong desk</translation>
@@ -197,7 +198,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2996462380875591307">Na-enable ang Naka-dock na Magnifier. Pinduting muli ang Ctrl+Search+D para i-off ito.</translation>
 <translation id="3000461861112256445">Mono audio</translation>
 <translation id="3009178788565917040">Output</translation>
-<translation id="3025081209054535615">I-unpin ang mga pangkalahatang kontrol sa media sa shelf</translation>
 <translation id="3033545621352269033">Naka-on</translation>
 <translation id="3038571455154067151">Para mag-sign in, ilagay ang iyong access code ng magulang sa Family Link</translation>
 <translation id="3045488863354895414">Magandang hapon,</translation>
@@ -620,6 +620,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="7526573455193969409">Maaaring sinusubaybayan ang network</translation>
 <translation id="7536035074519304529">IP address: <ph name="ADDRESS" /></translation>
 <translation id="7548434653388805669">Oras nang matulog</translation>
+<translation id="7551643184018910560">I-pin sa shelf</translation>
 <translation id="7561982940498449837">Isara ang menu</translation>
 <translation id="7564874036684306347">Kapag inilipat ang mga window sa isa pang desktop, maaari itong magresulta sa hindi inaasahang gawi. Maaaring hatiin ang mga susunod na notification, window, at dialog sa pagitan ng mga desktop.</translation>
 <translation id="7568294522609223312">I-off ang mga awtomatikong pag-click</translation>
@@ -700,7 +701,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="8297006494302853456">Mahina</translation>
 <translation id="8308637677604853869">Nakaraang menu</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
-<translation id="8349293353728876872">I-pin ang mga pangkalahatang kontrol sa media sa shelf</translation>
 <translation id="8351131234907093545">Gumawa ng tala</translation>
 <translation id="8371779926711439835">Sumulong nang paisa-isang titik</translation>
 <translation id="8375916635258623388">Awtomatikong kokonekta ang <ph name="DEVICE_NAME" /> na ito at ang iyong telepono</translation>

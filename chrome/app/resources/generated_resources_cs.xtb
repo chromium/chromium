@@ -501,6 +501,7 @@
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (host)</translation>
 <translation id="1572266655485775982">Aktivovat Wi-Fi</translation>
 <translation id="1572876035008611720">Zadejte svůj e-mail</translation>
+<translation id="1575741822946219011">Jazyky a metody zadávání</translation>
 <translation id="1576594961618857597">Výchozí bílý avatar</translation>
 <translation id="1578558981922970608">Ukončit aplikaci</translation>
 <translation id="1578784163189013834">Vybrat pozadí spořiče obrazovky</translation>
@@ -858,6 +859,7 @@ Na aplikace a obsah v jiných zařízeních tato akce nemá vliv.</translation
 <translation id="1974821797477522211">Připojení k síti</translation>
 <translation id="1975841812214822307">Odebrat...</translation>
 <translation id="1976150099241323601">Přihlášení do zabezpečeného zařízení</translation>
+<translation id="1976307821760494606">Web <ph name="DOMAIN" /> deaktivoval ladění ADB. Zařízení <ph name="DEVICE_TYPE" /> bude do 24 hodin resetováno. Zálohujte soubory, které si chcete ponechat.</translation>
 <translation id="1977965994116744507">Chcete-li odemknout své zařízení <ph name="DEVICE_TYPE" />, umístěte telefon blíže k němu.</translation>
 <translation id="1978006917103730774">Budoucí aktualizace softwaru a zabezpečení se nainstalují automaticky.</translation>
 <translation id="1979095679518582070">Vypnutí této funkce nemá vliv na schopnost zařízení odesílat informace, které potřebuje pro základní služby, jako jsou aktualizace systému a zabezpečení.</translation>
@@ -2037,6 +2039,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3404249063913988450">Aktivovat spořič obrazovky</translation>
 <translation id="3405664148539009465">Personalizovat písma</translation>
 <translation id="3405763860805964263">...</translation>
+<translation id="3406396172897554194">Vyhledávat podle jazyka nebo názvu metody zadávání</translation>
 <translation id="3406605057700382950">&amp;Zobrazit lištu záložek</translation>
 <translation id="340671561090997290">{NUM_EXTENSIONS,plural, =1{Toto rozšíření může být nebezpečné}few{Tato rozšíření mohou být nebezpečná}many{Tato rozšíření mohou být nebezpečná}other{Tato rozšíření mohou být nebezpečná}}</translation>
 <translation id="3409785640040772790">Mapy</translation>
@@ -2611,6 +2614,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4025039777635956441">Ztlumit vybraný web</translation>
 <translation id="4027804175521224372">(Využijte všech funkcí — <ph name="IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_LINK" />)</translation>
 <translation id="4027951648498485763">Nastavení přehrávače Flash zůstanou zachována, dokud Chrome neukončíte.</translation>
+<translation id="4028467762035011525">Přidat metody zadávání</translation>
 <translation id="4031179711345676612">Mikrofon je povolen</translation>
 <translation id="4031527940632463547">Použití senzorů je blokováno</translation>
 <translation id="4033471457476425443">Přidat novou složku</translation>
@@ -4061,6 +4065,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="5833726373896279253">Toto nastavení může upravit pouze vlastník.</translation>
 <translation id="5834581999798853053">Zbývá přibližně <ph name="TIME" /> min</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> – probíhá záznam z fotoaparátu nebo mikrofonu</translation>
+<translation id="5839574759884227787">Web <ph name="DOMAIN" /> deaktivoval ladění ADB, a vaše zařízení <ph name="DEVICE_TYPE" /> proto bude resetováno. Před restartováním zálohujte soubory.</translation>
 <translation id="5840680448799937675">Soubory se vždy budou sdílet offline</translation>
 <translation id="5841270259333717135">Nakonfigurovat ethernet</translation>
 <translation id="5842497610951477805">Aktivace Bluetooth</translation>
@@ -4474,6 +4479,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="6308077700132376815">Blokovat obrázky</translation>
 <translation id="6308493641021088955">Poskytovatel přihlášení: <ph name="EXTENSION_NAME" /></translation>
 <translation id="6308937455967653460">Uložit od&amp;kaz jako...</translation>
+<translation id="6309443618838462258">Váš administrátor tuto metodu zadávání nepovoluje</translation>
 <translation id="6309510305002439352">Mikrofon je vypnutý</translation>
 <translation id="6311220991371174222">Chrome nelze spustit, protože při otevírání vašeho profilu došlo k chybě. Zkuste Chrome restartovat.</translation>
 <translation id="6312403991423642364">Neznámá chyba sítě</translation>
@@ -5192,6 +5198,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="7191159667348037">Neznámá tiskárna (USB)</translation>
 <translation id="7193051357671784796">Tuto aplikaci přidala vaše organizace. Chcete-li její instalaci dokončit, restartujte ji.</translation>
 <translation id="7193374945610105795">Pro web <ph name="ORIGIN" /> nejsou uložena žádná hesla</translation>
+<translation id="7196020411877309443">Proč je zobrazeno toto dialogové okno?</translation>
 <translation id="7196913789568937443">Zálohování na Disk Google. Snadno obnovte svá data nebo kdykoliv přejděte na jiné zařízení. Záloha zahrnuje data aplikací. Zálohy se nahrávají do Googlu a šifrují pomocí hesla účtu Google. <ph name="BEGIN_LINK1" />Další informace<ph name="END_LINK1" /></translation>
 <translation id="7197190419934240522">Mějte při procházení internetu vždy k dispozici Vyhledávání Google a chytré funkce Google</translation>
 <translation id="7197632491113152433">Ve vašem účtu jsme našli aplikace, které lze použít na tomto zařízení, celkem <ph name="NUMBER_OF_APPS" />.</translation>
@@ -5848,6 +5855,7 @@ V zařízení se systémem Chrome OS můžete aktivovat funkce ladění, abyste
 <translation id="7952708427581814389">Weby mohou žádat o zobrazení textu a obrázků ve schránce</translation>
 <translation id="795282463722894016">Obnovení bylo dokončeno</translation>
 <translation id="7952904276017482715">Bylo očekáváno ID <ph name="EXPECTED_ID" />, ale bylo použito ID <ph name="NEW_ID" /></translation>
+<translation id="7953669802889559161">Metody zadávání</translation>
 <translation id="7953955868932471628">Spravovat zástupce</translation>
 <translation id="7956373551960864128">Vaše uložené tiskárny</translation>
 <translation id="7957074856830851026">Zobrazit informace o zařízení, například sériové či evidenční číslo</translation>
@@ -5871,6 +5879,7 @@ V zařízení se systémem Chrome OS můžete aktivovat funkce ladění, abyste
 <translation id="7973962044839454485">Ověření PPP se nezdařilo kvůli nesprávnému uživatelskému jménu nebo heslu</translation>
 <translation id="7974566588408714340">Zkusit znovu pomocí rozšíření <ph name="EXTENSIONNAME" /></translation>
 <translation id="7974936243149753750">Přesah obrazu</translation>
+<translation id="7977404132325989121">&amp;Název okna…</translation>
 <translation id="7978412674231730200">Soukromý klíč</translation>
 <translation id="7978450511781612192">Tímto se odhlásíte ze svých účtů Google. Vaše záložky, historie, hesla a další údaje již nebudou synchronizovány.</translation>
 <translation id="7980084013673500153">ID díla: <ph name="ASSET_ID" /></translation>
@@ -6422,6 +6431,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8648408795949963811">Teplota barev nočního režimu</translation>
 <translation id="8648544143274677280">Web <ph name="SITE_NAME" /> žádá o tato oprávnění: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> a další</translation>
 <translation id="8650543407998814195">Ačkoliv svůj starý profil již nemůžete používat, můžete jej odstranit.</translation>
+<translation id="865118751078059229">&amp;Název okna…</translation>
 <translation id="8651585100578802546">Vynutit opětovné načtení této stránky</translation>
 <translation id="8652400352452647993">Chyba zabalení rozšíření</translation>
 <translation id="8654151524613148204">Litujeme, soubor je příliš velký na to, aby jej váš počítač dokázal zpracovat.</translation>
@@ -6574,6 +6584,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8813872945700551674">Požádejte rodiče o schválení rozšíření <ph name="EXTENSION_NAME" /></translation>
 <translation id="8813969267212093033">V tomto jazyce je zobrazen text systému</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
+<translation id="8814319344131658221">Jazyky kontroly pravopisu vycházejí z jazykových předvoleb</translation>
 <translation id="8814644416678422095">Pevný disk</translation>
 <translation id="8814687660896548945">Čekejte prosím, probíhá prohledávání archivu...</translation>
 <translation id="881782782501875829">Přidání čísla portu</translation>
@@ -6669,6 +6680,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8912810933860534797">Zapnout automatické prohledávání</translation>
 <translation id="8915370057835397490">Načítá se návrh</translation>
 <translation id="8916476537757519021">Anonymní podrámec: <ph name="SUBFRAME_SITE" /></translation>
+<translation id="8916749157829986308">Zadejte název okna</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" />: <ph name="DEVICE_TYPE" /></translation>
 <translation id="8922013791253848639">Na tomto webu reklamy vždy povolovat</translation>
 <translation id="8923880975836399332">Tmavě tyrkysová</translation>
@@ -6844,6 +6856,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="9124003689441359348">Zde se zobrazí uložená hesla</translation>
 <translation id="9126149354162942022">Barva kurzoru</translation>
 <translation id="9128317794749765148">Instalaci nebylo možné dokončit</translation>
+<translation id="9128335130883257666">Otevřít stránku nastavení <ph name="INPUT_METHOD_NAME" /></translation>
 <translation id="9128870381267983090">Připojit k síti</translation>
 <translation id="9130015405878219958">Byl zadán neplatný režim.</translation>
 <translation id="9131487537093447019">Odesílání zpráv do zařízení Bluetooth a přijímání zpráv ze zařízení Bluetooth</translation>

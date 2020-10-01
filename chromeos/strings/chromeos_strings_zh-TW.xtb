@@ -5,6 +5,7 @@
 <translation id="1195447618553298278">未知的錯誤。</translation>
 <translation id="1413240736185167732">失敗 - 無法使用過濾器</translation>
 <translation id="1468664791493211953">優惠</translation>
+<translation id="1478594628797167447">掃描器</translation>
 <translation id="1482734542997480527"><ph name="ENROLLMENT_DOMAIN" /> 會管理這個裝置，也或許可以監控你的活動。</translation>
 <translation id="150962533380566081">PUK 無效。</translation>
 <translation id="1510238584712386396">啟動器</translation>
@@ -24,6 +25,7 @@
 <translation id="2872961005593481000">關閉</translation>
 <translation id="3008341117444806826">更新</translation>
 <translation id="3091839911843451378">失敗 - 已停止</translation>
+<translation id="3246869037381808805">系統會移除 1 天前的列印工作</translation>
 <translation id="3268178239013324452">失敗 - 蓋子處於開啟狀態</translation>
 <translation id="3369013195428705271">確定要清除所有列印記錄嗎？系統不會清除進行中的列印工作。</translation>
 <translation id="3456078764689556234">已列印 <ph name="PRINTED_PAGES" /> 頁 (共 <ph name="TOTAL_PAGES" /> 頁)。</translation>
@@ -34,6 +36,7 @@
 <translation id="38114475217616659">清除所有記錄</translation>
 <translation id="3820172043799983114">PIN 無效。</translation>
 <translation id="3838338534323494292">新密碼</translation>
+<translation id="39823212440917567">系統會移除 <ph name="NUMBER_OF_DAYS" /> 天前的列印工作</translation>
 <translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> 會管理這個裝置並可存取所有使用者活動，包括網頁造訪記錄、密碼和電子郵件。</translation>
 <translation id="4003384961948020559">失敗 - 輸出紙匣已滿</translation>
 <translation id="4027485274696301677">這部 <ph name="DEVICE_TYPE" /> 是由 <ph name="ENROLLMENT_DOMAIN" /> 管理。系統管理員可以遠端設定這部裝置。</translation>
@@ -52,6 +55,7 @@
 <translation id="4890353053343094602">立即選擇新密碼</translation>
 <translation id="4917889632206600977">已停止 - 紙張用盡</translation>
 <translation id="4932733599132424254">日期</translation>
+<translation id="520299634122159966">沒有可用的掃描器</translation>
 <translation id="5212543919916444558">系統在你的畫面上找不到任何能提供協助的內容。
 請輕觸麥克風圖示，直接說出你的問題。</translation>
 <translation id="5222676887888702881">登出</translation>
@@ -71,6 +75,7 @@
 <translation id="649050271426829538">已停止 - 卡紙</translation>
 <translation id="6517239166834772319">探索</translation>
 <translation id="6564646048574748301">失敗 - 無法連上印表機</translation>
+<translation id="6620487321149975369">除非手動移除列印工作，否則這項資料會顯示在歷史記錄中</translation>
 <translation id="6643016212128521049">清除</translation>
 <translation id="6747215703636344499">已停止 - 輸出紙匣已滿</translation>
 <translation id="7162487448488904999">相片庫</translation>

@@ -106,6 +106,7 @@
 <translation id="1810845389119482123">Първоначалното настройване на синхронизирането не завърши</translation>
 <translation id="1821253160463689938">Използва „бисквитки“ за запомняне на предпочитанията ви дори ако не посещавате тези страници</translation>
 <translation id="1829244130665387512">Търсене в страницата</translation>
+<translation id="1830550083491357902">Не сте в профила си</translation>
 <translation id="1843805151597803366">За да получите по-добри преводи, позволете на Google Търсене да използва текущата страница</translation>
 <translation id="1853692000353488670">Нов раздел „инкогнито“</translation>
 <translation id="1856325424225101786">Да се нулира ли олекотеният режим?</translation>
@@ -113,6 +114,7 @@
 <translation id="1877026089748256423">Chrome не е актуален</translation>
 <translation id="1883903952484604915">Моите файлове</translation>
 <translation id="189358972401248634">Други езици</translation>
+<translation id="1919130412786645364">Разрешаване на влизането в Chrome</translation>
 <translation id="1922362554271624559">Предложени езици</translation>
 <translation id="1925021887439448749">Въведете персонализиран уеб адрес</translation>
 <translation id="1928696683969751773">Актуализации</translation>
@@ -225,6 +227,7 @@
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# аудиофайл}other{# аудиофайла}}</translation>
 <translation id="2656405586795711023">Уеб приложения</translation>
 <translation id="2689830683995595741">С използването на Chrome приемате <ph name="BEGIN_LINK1" />Общите условия на Google<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />Допълнителните общи условия на Chrome и Chrome OS<ph name="END_LINK2" />. В сила е и <ph name="BEGIN_LINK3" />Съобщението за поверителност за профилите в Google, управлявани чрез Family Link<ph name="END_LINK3" />.</translation>
+<translation id="2704606927547763573">Копирано</translation>
 <translation id="2707726405694321444">Опресняване на страницата</translation>
 <translation id="2709516037105925701">Автоматично попълване</translation>
 <translation id="2718352093833049315">Само при Wi-Fi</translation>
@@ -963,7 +966,6 @@
 <translation id="8058746566562539958">Отваряне в нов раздел в Chrome</translation>
 <translation id="8063895661287329888">Добавянето на отметката не бе успешно.</translation>
 <translation id="806745655614357130">Оставяне на данните отделно</translation>
-<translation id="8069669375923284295">Докоснете, за да продължите настройването на синхронизирането</translation>
 <translation id="8073388330009372546">Отваряне в нов раздел</translation>
 <translation id="8076492880354921740">Раздели</translation>
 <translation id="8084114998886531721">Запазена парола</translation>

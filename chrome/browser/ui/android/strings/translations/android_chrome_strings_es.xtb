@@ -19,7 +19,7 @@
 <translation id="1126809382673880764">No te protege frente a descargas, extensiones ni sitios web peligrosos. Seguirás disfrutando de protección con la función Navegación segura, si está disponible, en otros servicios de Google, como Gmail y la Búsqueda.</translation>
 <translation id="1129510026454351943">Detalles: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1141800923049248244">{FILE_COUNT,plural, =1{Hay 1 descarga pendiente.}other{Hay # descargas pendientes.}}</translation>
-<translation id="1142732900304639782">No ofrecer traducir estos sitios web</translation>
+<translation id="1142732900304639782">No ofrecer que se traduzcan estos sitios web</translation>
 <translation id="1145536944570833626">Elimina los datos actuales.</translation>
 <translation id="1146678959555564648">Iniciar RV</translation>
 <translation id="1154704303112745282">Página no disponible sin conexión: <ph name="VIOLATED_URL" /></translation>
@@ -106,6 +106,7 @@
 <translation id="1810845389119482123">La configuración de sincronización inicial no ha terminado</translation>
 <translation id="1821253160463689938">Usa cookies para recordar tus preferencias aunque no visites esas páginas</translation>
 <translation id="1829244130665387512">Buscar en la página</translation>
+<translation id="1830550083491357902">No has iniciado sesión.</translation>
 <translation id="1843805151597803366">Para obtener mejores traducciones, permite que la Búsqueda de Google use la página actual</translation>
 <translation id="1853692000353488670">Nueva pestaña de incógnito</translation>
 <translation id="1856325424225101786">¿Restablecer el modo básico?</translation>
@@ -113,6 +114,7 @@
 <translation id="1877026089748256423">Chrome no está actualizado</translation>
 <translation id="1883903952484604915">Mis archivos</translation>
 <translation id="189358972401248634">Otros idiomas</translation>
+<translation id="1919130412786645364">Permitir el inicio de sesión en Chrome</translation>
 <translation id="1922362554271624559">Idiomas sugeridos</translation>
 <translation id="1925021887439448749">Introduce una dirección web personalizada</translation>
 <translation id="1928696683969751773">Actualizaciones</translation>
@@ -213,7 +215,7 @@ Mantén pulsada cualquier palabra para buscarla. Para acotar la búsqueda, selec
 <translation id="2537178555904266562">No se han podido sincronizar las contraseñas</translation>
 <translation id="2546283357679194313">Cookies y datos de sitios</translation>
 <translation id="2567385386134582609">IMAGEN</translation>
-<translation id="2571711316400087311">Ofrecer enviar páginas en otros idiomas al Traductor de Google</translation>
+<translation id="2571711316400087311">Ofrecer que se traduzcan páginas en otros idiomas con el Traductor de Google</translation>
 <translation id="2581165646603367611">Se borrarán las cookies, la caché y otros datos de los sitios web que Chrome no considere importantes.</translation>
 <translation id="2587052924345400782">Hay una nueva versión disponible</translation>
 <translation id="2593272815202181319">Monoespaciado</translation>
@@ -225,10 +227,11 @@ Mantén pulsada cualquier palabra para buscarla. Para acotar la búsqueda, selec
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# archivo de audio}other{# archivos de audio}}</translation>
 <translation id="2656405586795711023">Aplicaciones web</translation>
 <translation id="2689830683995595741">Al utilizar Chrome, aceptas los <ph name="BEGIN_LINK1" />Términos del Servicio de Google<ph name="END_LINK1" /> y los <ph name="BEGIN_LINK2" />Términos del Servicio Adicionales de Google Chrome y Chrome OS<ph name="END_LINK2" />. El uso de Chrome también está sujeto al <ph name="BEGIN_LINK3" />Aviso de Privacidad para Cuentas de Google Gestionadas con Family Link<ph name="END_LINK3" />.</translation>
+<translation id="2704606927547763573">Copiado</translation>
 <translation id="2707726405694321444">Actualizar página</translation>
 <translation id="2709516037105925701">Autocompletar</translation>
 <translation id="2718352093833049315">Solo en Wi-Fi</translation>
-<translation id="2718846868787000099">Para poder mostrar contenido en los idiomas que has seleccionado, los sitios web que visites pueden ver tus preferencias</translation>
+<translation id="2718846868787000099">Para mostrar contenido en los idiomas que has seleccionado, los sitios web que visites pueden ver tus preferencias</translation>
 <translation id="2723001399770238859">audio</translation>
 <translation id="2728754400939377704">Ordenar por sitio web</translation>
 <translation id="2744248271121720757">Toca una palabra para buscarla de forma instantánea o ver acciones relacionadas</translation>
@@ -963,7 +966,6 @@ En el modo de incógnito, tu actividad podría seguir siendo visible para los si
 <translation id="8058746566562539958">Abrir en una pestaña nueva</translation>
 <translation id="8063895661287329888">No se ha podido añadir el marcador.</translation>
 <translation id="806745655614357130">Mantener mis datos separados</translation>
-<translation id="8069669375923284295">Toca para seguir configurando la sincronización</translation>
 <translation id="8073388330009372546">Abrir en pestaña nueva</translation>
 <translation id="8076492880354921740">Pestañas</translation>
 <translation id="8084114998886531721">Contraseña guardada</translation>
@@ -1049,7 +1051,7 @@ En el modo de incógnito, tu actividad podría seguir siendo visible para los si
 <translation id="8683039184091909753">imagen</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{Nivel de intensidad de la señal: # barra}other{Nivel de intensidad de la señal: # barras}}</translation>
 <translation id="869891660844655955">Fecha de caducidad</translation>
-<translation id="8699120352855309748">No ofrecer traducir estos idiomas</translation>
+<translation id="8699120352855309748">No ofrecer que se traduzcan estos idiomas</translation>
 <translation id="8712637175834984815">Listo</translation>
 <translation id="8725066075913043281">Volver a intentarlo</translation>
 <translation id="8748850008226585750">Contenidos ocultos</translation>

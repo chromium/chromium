@@ -15,6 +15,7 @@
 <translation id="1038106730571050514">Näytä ehdotukset</translation>
 <translation id="1038842779957582377">tuntematon nimi</translation>
 <translation id="1041998700806130099">Työpaikkasivun viesti</translation>
+<translation id="1048785276086539861">Kun muokkaat merkintöjä, tämä dokumentti palaa yhden sivun näkymään</translation>
 <translation id="1050038467049342496">Sulje muita sovelluksia.</translation>
 <translation id="1055184225775184556">K&amp;umoa lisäys</translation>
 <translation id="1056898198331236512">Varoitus</translation>
@@ -379,6 +380,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2465688316154986572">Niitti</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />verkon diagnostiikkaa<ph name="END_LINK" /></translation>
 <translation id="2469153820345007638">1-to-N-järjestys</translation>
+<translation id="2470767536994572628">Kun muokkaat merkintöjä, tämä dokumentti palaa yhden sivun näkymään ja alkuperäiseen asentoon</translation>
 <translation id="2479410451996844060">Virheellinen hakukoneen URL-osoite.</translation>
 <translation id="2482878487686419369">Ilmoitukset</translation>
 <translation id="248348093745724435">Laitteen käytännöt</translation>
@@ -1228,6 +1230,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5946937721014915347">Avataan <ph name="SITE_NAME" />…</translation>
 <translation id="5951495562196540101">Liittyminen kuluttajatilillä ei onnistu (pakettilisenssi saatavilla).</translation>
+<translation id="5963413905009737549">Osio</translation>
 <translation id="5967592137238574583">Muokkaa yhteystietoja</translation>
 <translation id="5967867314010545767">Poista historiasta</translation>
 <translation id="5975083100439434680">Loitonna</translation>
@@ -1640,6 +1643,7 @@ Lisätietoja:
 <translation id="7647206758853451655">Tulostuslaatu</translation>
 <translation id="7648992873808071793">Tallentaa tiedostoja tälle laitteelle.</translation>
 <translation id="7653957176542370971">Maksujenkäsittelytaulukko on suljettu</translation>
+<translation id="7654909834015434372">Kun muokkaat merkintöjä, tämä dokumentti palaa alkuperäiseen asentoon</translation>
 <translation id="765676359832457558">Piilota lisäasetukset...</translation>
 <translation id="7658239707568436148">Peruuta</translation>
 <translation id="7662298039739062396">Laajennuksen hallinnoima asetus</translation>

@@ -113,6 +113,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="2049240716062114887">Masa adı <ph name="DESK_NAME" /> olaraq dəyişdirilib</translation>
 <translation id="2050339315714019657">Portret</translation>
 <translation id="2067602449040652523">Klaviatura parlaqlığı</translation>
+<translation id="2074759828767813253">Son skrinşotlar və endirmələr</translation>
 <translation id="2083190527011054446">Gecəniz xeyir, <ph name="GIVEN_NAME" /></translation>
 <translation id="209965399369889474">Şəbəkəyə qoşulmayıb</translation>
 <translation id="2126242104232412123">Yeni iş masası</translation>
@@ -197,7 +198,6 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="2996462380875591307">Yüksək Kontrast Rejimi aktiv edildi. Rejimi deaktiv etmək üçün Ctrl+Search+D düymələrini basın.</translation>
 <translation id="3000461861112256445">Mono audio</translation>
 <translation id="3009178788565917040">Çıxış</translation>
-<translation id="3025081209054535615">Qlobal media nizamlayıcılarını rəfdən çıxarın</translation>
 <translation id="3033545621352269033">Aktiv</translation>
 <translation id="3038571455154067151">Daxil olmaq üçün Family Link valideyn giriş kodunuzu daxil edin</translation>
 <translation id="3045488863354895414">Günortanız xeyir,</translation>
@@ -620,6 +620,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="7526573455193969409">Şəbəkəyə nəzarət edilə bilər</translation>
 <translation id="7536035074519304529">IP ünvanı: <ph name="ADDRESS" /></translation>
 <translation id="7548434653388805669">Yatmaq vaxtı</translation>
+<translation id="7551643184018910560">Rəfə sancaqlayın</translation>
 <translation id="7561982940498449837">Menyunu bağlayın</translation>
 <translation id="7564874036684306347">Pəncərənin digər masaüstünə köçürülməsi gözlənilməz nəticələr verə bilər. Növbəti bildirişlər, pəncərə və dialoqlar masaüstülər arasında bölüşdürülə bilər.</translation>
 <translation id="7568294522609223312">Avtomatik klikləri deaktiv edin</translation>
@@ -700,7 +701,6 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="8297006494302853456">Zəif</translation>
 <translation id="8308637677604853869">Öncəki menyu</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
-<translation id="8349293353728876872">Qlobal media nizamlayıcılarını rəfə bərkidin</translation>
 <translation id="8351131234907093545">Qeyd yaradın</translation>
 <translation id="8371779926711439835">Hərf üzrə irəli keçin</translation>
 <translation id="8375916635258623388">Bu <ph name="DEVICE_NAME" /> və telefon avtomatik qoşulacaq</translation>

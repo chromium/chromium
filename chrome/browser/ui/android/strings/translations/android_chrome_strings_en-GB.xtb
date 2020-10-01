@@ -106,6 +106,7 @@
 <translation id="1810845389119482123">Initial sync setup not finished</translation>
 <translation id="1821253160463689938">Uses cookies to remember your preferences, even if you don't visit those pages</translation>
 <translation id="1829244130665387512">Find in page</translation>
+<translation id="1830550083491357902">Not signed in</translation>
 <translation id="1843805151597803366">To get better translations, let Google Search use the current page</translation>
 <translation id="1853692000353488670">New incognito tab</translation>
 <translation id="1856325424225101786">Reset Lite mode?</translation>
@@ -113,6 +114,7 @@
 <translation id="1877026089748256423">Chrome is out of date</translation>
 <translation id="1883903952484604915">My files</translation>
 <translation id="189358972401248634">Other languages</translation>
+<translation id="1919130412786645364">Allow Chrome sign-in</translation>
 <translation id="1922362554271624559">Suggested languages</translation>
 <translation id="1925021887439448749">Enter custom web address</translation>
 <translation id="1928696683969751773">Updates</translation>
@@ -225,6 +227,7 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# Audio file}other{# Audio files}}</translation>
 <translation id="2656405586795711023">Web apps</translation>
 <translation id="2689830683995595741">By using Chrome, you agree to the <ph name="BEGIN_LINK1" />Google Terms of Service<ph name="END_LINK1" />, and the <ph name="BEGIN_LINK2" />Google Chrome and Chrome OS Additional Terms of Service<ph name="END_LINK2" />. The <ph name="BEGIN_LINK3" />Privacy Notice for Google Accounts managed with Family Link<ph name="END_LINK3" /> also applies.</translation>
+<translation id="2704606927547763573">Copied</translation>
 <translation id="2707726405694321444">Refresh page</translation>
 <translation id="2709516037105925701">Auto-fill</translation>
 <translation id="2718352093833049315">Only on Wi-Fi</translation>
@@ -663,6 +666,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5958275228015807058">Find your files and pages in Downloads</translation>
 <translation id="5962718611393537961">Tap to collapse</translation>
 <translation id="5964805880140440652">To share this page to another device, turn on sync in Chrome settings</translation>
+<translation id="5964869237734432770">Stop image descriptions</translation>
 <translation id="5979084224081478209">Check passwords</translation>
 <translation id="6000066717592683814">Keep Google</translation>
 <translation id="6005538289190791541">Suggested password</translation>
@@ -690,6 +694,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="6157392216611456285">Choose <ph name="APP_NAME" /></translation>
 <translation id="6159335304067198720"><ph name="PERCENT" /> data savings</translation>
 <translation id="6186394685773237175">No compromised passwords found</translation>
+<translation id="6192907950379606605">Get image descriptions</translation>
 <translation id="6206830853671714236">Choose when to download</translation>
 <translation id="6210748933810148297">Not <ph name="EMAIL" />?</translation>
 <translation id="6218096829563201111">Search similar products <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
@@ -759,6 +764,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6590471736817333463">Save up to 60% data</translation>
 <translation id="6590680911007613645">Make sure that the password you are saving matches your password for <ph name="SITE" /></translation>
 <translation id="6593061639179217415">Desktop site</translation>
+<translation id="6595046016124923392">Images are sent to Google to improve descriptions for you.</translation>
 <translation id="6597891566292541626">Position QR/barcode in this frame.</translation>
 <translation id="6600954340915313787">Copied to Chrome</translation>
 <translation id="661266467055912436">Improves security for you and everyone on the web.</translation>
@@ -817,6 +823,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="702463548815491781">Recommended when TalkBack or Switch Access are on</translation>
 <translation id="7029809446516969842">Passwords</translation>
 <translation id="703523980599857277">Change home page</translation>
+<translation id="7054588988317389591">Get image descriptions?</translation>
 <translation id="7055152154916055070">Redirect blocked:</translation>
 <translation id="7063006564040364415">Could not connect to the sync server.</translation>
 <translation id="7071521146534760487">Manage account</translation>
@@ -848,6 +855,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="729975465115245577">Your device doesn’t have an app to store the passwords file.</translation>
 <translation id="7302081693174882195">Details: Sorted by amount of data saved</translation>
 <translation id="7304873321153398381">Offline. Chrome can’t check your passwords.</translation>
+<translation id="7313188324932846546">Tap to set up sync</translation>
 <translation id="7328017930301109123">In Lite mode, Chrome loads pages faster and uses up to 60 per cent less data.</translation>
 <translation id="7333031090786104871">Still adding previous site</translation>
 <translation id="7340958967809483333">Options for Discover</translation>
@@ -963,7 +971,6 @@ In Incognito, your activity might still be visible to websites that you visit, y
 <translation id="8058746566562539958">Open in new Chrome tab</translation>
 <translation id="8063895661287329888">Failed to add bookmark.</translation>
 <translation id="806745655614357130">Keep my data separate</translation>
-<translation id="8069669375923284295">Tap to continue sync setup</translation>
 <translation id="8073388330009372546">Open image in new tab</translation>
 <translation id="8076492880354921740">Tabs</translation>
 <translation id="8084114998886531721">Saved password</translation>
@@ -1043,6 +1050,7 @@ In Incognito, your activity might still be visible to websites that you visit, y
 <translation id="8636825310635137004">To get your tabs from your other devices, turn on sync.</translation>
 <translation id="8641930654639604085">Try to block mature sites</translation>
 <translation id="8655129584991699539">You can clear the data in Chrome Settings</translation>
+<translation id="8656747343598256512">Sign in to this site and Chrome with your Google Account. You can turn on sync later.</translation>
 <translation id="8659579665266920523">How to search with Chrome</translation>
 <translation id="8662811608048051533">Signs you out of most sites.</translation>
 <translation id="8664979001105139458">File name already exists</translation>
@@ -1062,6 +1070,7 @@ In Incognito, your activity might still be visible to websites that you visit, y
 <translation id="8840953339110955557">This page may differ from the online version.</translation>
 <translation id="8853345339104747198"><ph name="TAB_TITLE" />, tab</translation>
 <translation id="8854223127042600341">See your offline files</translation>
+<translation id="8856607253650333758">Get descriptions</translation>
 <translation id="8873817150012960745">Tap here to start</translation>
 <translation id="889338405075704026">Go to Chrome settings</translation>
 <translation id="8898822736010347272">Sends URLs of some pages that you visit, limited system information and some page content to Google, to help discover new threats and protect everyone on the web.</translation>

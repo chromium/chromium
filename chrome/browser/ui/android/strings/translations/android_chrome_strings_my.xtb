@@ -106,6 +106,7 @@
 <translation id="1810845389119482123">စင့်ခ်စတင်လုပ်ရန် စနစ်ထည့်သွင်းခြင်းကို အပြီးသတ်မထားပါ</translation>
 <translation id="1821253160463689938">အဆိုပါ စာမျက်နှာများကို ဝင်ကြည့်မထားလျှင်ပင် သင့်ဦးစားပေးများကို မှတ်သားရန် ကွတ်ကီးများအား အသုံးပြုသည်</translation>
 <translation id="1829244130665387512">စာမျက်နှာတွင် ရှာရန်</translation>
+<translation id="1830550083491357902">မဝင်ရောက်ရသေးပါ</translation>
 <translation id="1843805151597803366">ပိုမိုကောင်းမွန်သော ဘာသာပြန်များရယူရန် လက်ရှိစာမျက်နှာအား Google Search ကို သုံးခွင့်ပြုပါ</translation>
 <translation id="1853692000353488670">ကိုယ်ပျောက် တဘ်အသစ်</translation>
 <translation id="1856325424225101786">'အပေါ့စားမုဒ်' ပြန်လည်သတ်မှတ်မလား။</translation>
@@ -113,6 +114,7 @@
 <translation id="1877026089748256423">Chrome မှာ ဟောင်းသွားပြီ</translation>
 <translation id="1883903952484604915">ကျွန်ုပ်၏ဖိုင်များ</translation>
 <translation id="189358972401248634">အခြား ဘာသာစကားများ</translation>
+<translation id="1919130412786645364">Chrome သို့ လက်မှတ်ထိုးဝင်ခွင့် ပေးပါ</translation>
 <translation id="1922362554271624559">အကြံပြုထားသည့် ဘာသာစကားများ</translation>
 <translation id="1925021887439448749">စိတ်ကြိုက်ဝဘ်လိပ်စာကို ထည့်ရန်</translation>
 <translation id="1928696683969751773">အဆင့်မြှင့်မှုများ</translation>
@@ -225,6 +227,7 @@
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{အသံဖိုင် # ဖိုင်}other{အသံဖိုင် # ဖိုင်}}</translation>
 <translation id="2656405586795711023">ဝဘ်အက်ပ်များ</translation>
 <translation id="2689830683995595741">Chrome ကို အသုံးပြုခြင်းဖြင့် သင်သည် <ph name="BEGIN_LINK1" />Google ဝန်ဆောင်မှုဆိုင်ရာ စည်းမျဉ်းများ<ph name="END_LINK1" /> နှင့် <ph name="BEGIN_LINK2" />Google Chrome နှင့် Chrome OS ထပ်တိုးဝန်ဆောင်မှု စည်းမျဉ်းများ<ph name="END_LINK2" /> ကို သဘောတူရာရောက်သည်။ <ph name="BEGIN_LINK3" />Family Link ဖြင့် ကြီးကြပ်ထားသည့် Google Account များအတွက် ပုဂ္ဂိုလ်ရေးဆိုင်ရာ ကြေညာချက်<ph name="END_LINK3" /> လည်း အကျုံးဝင်သည်။</translation>
+<translation id="2704606927547763573">ကူးယူပြီးပါပြီ</translation>
 <translation id="2707726405694321444">စာမျက်နှာကို ဆန်းသစ်ယူရန်</translation>
 <translation id="2709516037105925701">အလိုလျောက် ဖြည့်စွက်</translation>
 <translation id="2718352093833049315">ဝိုင်ဖိုင်တွင်သာ</translation>
@@ -347,6 +350,7 @@
 <translation id="3631987586758005671"><ph name="DEVICE_NAME" /> သို့ မျှဝေနေသည်</translation>
 <translation id="3632295766818638029">စကားဝှက်ကို ကြည့်ပါ</translation>
 <translation id="363596933471559332">သိမ်းဆည်းထားသည့် အထောက်အထားများကို သုံးကာ ဝဘ်ဆိုက်များသို့ အလိုအလျောက် လက်မှတ်ထိုး ဝင်ပါသည်။ ၎င်းအင်္ဂါရပ်ကို ပိတ်ထားလျှင်၊ ထိုသို့ လုပ်ဆောင်နိုင်ချက်အား ပိတ်ထားပါက၊ သင်က ဝဘ်ဆိုက် တစ်ခုခုသို့ လက်မှတ်ထိုး ဝင်လိုတိုင်းမှာ အတည်ပြုရန် တောင်းဆိုပါလိမ့်မည်။</translation>
+<translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />− <ph name="WEBSITE_URL" /></translation>
 <translation id="3658159451045945436">ပြင်ဆင်သတ်မှတ်ခြင်းသည် သင်ဝင်ကြည့်ခဲ့သည့် ဝဘ်ဆိုက်များစာရင်း အပါအဝင် သင်၏ ဒေတာ ချွေတာမှုမှတ်တမ်းကို ဖျက်လိုက်ပါမည်။</translation>
 <translation id="3692944402865947621">သိုလှောင်ခန်းနေရာသို့ ချိတ်ဆက်၍မရသောကြောင့် <ph name="FILE_NAME" /> ကို ဒေါင်းလုဒ်လုပ်၍မရပါ။</translation>
 <translation id="3701167022068948696">ယခု ပြင်ဆင်ရန်</translation>
@@ -706,6 +710,7 @@
 <translation id="6301525844455696527">သင်၏ဖတ်ရန်စာရင်းကို အမီလိုက်ကြည့်ခြင်း</translation>
 <translation id="6303969859164067831">ထွက်ပြီးနောက် စင့်ခ်လုပ်ခြင်းကို ပိတ်ပါ</translation>
 <translation id="6312687380483398334">ဝဘ်အက်ပ်များ (ငြိမ်)</translation>
+<translation id="6313752143992575395"><ph name="WEBSITE_TITLE" /> အတွက် အကြံပြုချက် ပြထားသည်</translation>
 <translation id="6316139424528454185">Android ဗားရှင်းကို ပံ့ပိုးမထားပါ</translation>
 <translation id="6324034347079777476">Android စနစ်စင့်ခ်ပြုလုပ်ခြင်းကို ပိတ်ထားသည်</translation>
 <translation id="6333140779060797560"><ph name="APPLICATION" /> မှတစ်ဆင့် မျှဝေရန်</translation>
@@ -837,6 +842,7 @@
 <translation id="7233236755231902816">ဝဘ်ကို သင့်ဘာသာစကားနှင့် ကြည့်ရန် Chrome နောက်ဆုံးဗားရှင်းကို ရယူပါ</translation>
 <translation id="7248069434667874558">Chrome တွင် <ph name="TARGET_DEVICE_NAME" /> က စင့်ခ်ဖွင့်ထားခြင်း ရှိမရှိ စစ်ဆေးပါ</translation>
 <translation id="7274013316676448362">ပိတ်ထားသည့်ဆိုက်</translation>
+<translation id="7286572596625053347"><ph name="LANGUAGE" /> ပြောင်းမလား။</translation>
 <translation id="7290209999329137901">အမည်ပြောင်း၍ မရပါ</translation>
 <translation id="7291387454912369099">Assistant ဖြင့် ငွေရှင်းခြင်း</translation>
 <translation id="7293171162284876153">စင့်ခ် စတင်ရန်အတွက် "သင်၏ Chrome ဒေတာ စင့်ခ်လုပ်ပါ" ကို ဖွင့်ပါ။</translation>
@@ -959,7 +965,6 @@
 <translation id="8058746566562539958">Chrome တဘ်အသစ်တွင် ဖွင့်ပါ</translation>
 <translation id="8063895661287329888">စာညှပ်ကို ထည့်မရခဲ့ပါ။</translation>
 <translation id="806745655614357130">ကျွန်ုပ်၏ ဒေတာများကို ခွဲခြားထားရန်</translation>
-<translation id="8069669375923284295">စနစ်ထည့်သွင်းမှု ဆက်လက်စင့်ခ်လုပ်ရန် တို့ပါ</translation>
 <translation id="8073388330009372546">ပုံကို တဘ် အသစ်ထဲမှာ ဖွင့်ရန်</translation>
 <translation id="8076492880354921740">တဘ်များ</translation>
 <translation id="8084114998886531721">သိမ်းဆည်းထားသော စကားဝှက်</translation>

@@ -113,6 +113,7 @@
 <translation id="2049240716062114887">Дэлгэцийн нэрийг <ph name="DESK_NAME" /> болгож өөрчилсөн</translation>
 <translation id="2050339315714019657">Хөрөг зураг</translation>
 <translation id="2067602449040652523">Гарын гэрэлтүүлэг</translation>
+<translation id="2074759828767813253">Саяхны дэлгэцийн агшин болон татаж авсан файл</translation>
 <translation id="2083190527011054446">Сайхан амраарай <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">Сүлжээнд холбогдоогүй байна</translation>
 <translation id="2126242104232412123">Шинэ ширээ</translation>
@@ -197,7 +198,6 @@
 <translation id="2996462380875591307">Суурилуулсан томруулагчийг идэвхжүүлсэн. Үүнийг унтраах/асаахын тулд Ctrl+Search+D-г дахин дарна уу.</translation>
 <translation id="3000461861112256445">Моно аудио</translation>
 <translation id="3009178788565917040">Гаралт</translation>
-<translation id="3025081209054535615">Тавиурын глобал медиа хяналтыг тогтоосныг болиулах</translation>
 <translation id="3033545621352269033">Асаалттай</translation>
 <translation id="3038571455154067151">Нэвтрэхийн тулд Family Link-н эцэг эхийн хандалтын кодоо оруулна уу</translation>
 <translation id="3045488863354895414">Өдрийн мэнд,</translation>
@@ -621,6 +621,7 @@
 <translation id="7526573455193969409">Сүлжээг хянаж байж болзошгүй</translation>
 <translation id="7536035074519304529">IP хаяг: <ph name="ADDRESS" /></translation>
 <translation id="7548434653388805669">Унтах цаг</translation>
+<translation id="7551643184018910560">Програмын жагсаалтын өмнө гаргах</translation>
 <translation id="7561982940498449837">Цэсийг хаах</translation>
 <translation id="7564874036684306347">Цонхыг өөр дэлгэцэд зөөснөөр гэнэтийн асуудал үүсэж болзошгүй. Дараагийн мэдэгдэл, цонх болон харилцах цонх нь дэлгэцийн хооронд хуваагдаж болзошгүй.</translation>
 <translation id="7568294522609223312">Автомат даралтыг унтраах</translation>
@@ -701,7 +702,6 @@
 <translation id="8297006494302853456">Сул</translation>
 <translation id="8308637677604853869">Өмнөх цэс</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
-<translation id="8349293353728876872">Глобал медиа хяналтыг тавиурт тогтоох</translation>
 <translation id="8351131234907093545">Тэмдэглэл үүсгэх</translation>
 <translation id="8371779926711439835">Нэг үсгээр урагшлуулах</translation>
 <translation id="8375916635258623388">Энэ <ph name="DEVICE_NAME" /> болон таны утас автоматаар холбогдоно</translation>

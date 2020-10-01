@@ -15,6 +15,7 @@
 <translation id="1038106730571050514">추천 보기</translation>
 <translation id="1038842779957582377">알 수 없는 이름</translation>
 <translation id="1041998700806130099">작업 시트 메시지</translation>
+<translation id="1048785276086539861">주석을 수정하면 문서가 단일 페이지 뷰로 돌아갑니다.</translation>
 <translation id="1050038467049342496">다른 앱 닫기</translation>
 <translation id="1055184225775184556">추가 실행 취소(&amp;U)</translation>
 <translation id="1056898198331236512">경고</translation>
@@ -375,6 +376,7 @@
 <translation id="2465688316154986572">스테이플</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />네트워크 진단 프로그램 실행<ph name="END_LINK" /></translation>
 <translation id="2469153820345007638">1-to-N 순서</translation>
+<translation id="2470767536994572628">주석을 수정하면 문서가 원래 방향의 단일 페이지 뷰로 돌아갑니다.</translation>
 <translation id="2479410451996844060">검색 URL이 잘못됨</translation>
 <translation id="2482878487686419369">알림</translation>
 <translation id="248348093745724435">컴퓨터 정책</translation>
@@ -1216,6 +1218,7 @@
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5946937721014915347"><ph name="SITE_NAME" /> 여는 중…</translation>
 <translation id="5951495562196540101">일반 계정으로 등록할 수 없습니다(패키지 라이선스 사용 가능).</translation>
+<translation id="5963413905009737549">섹션</translation>
 <translation id="5967592137238574583">연락처 정보 수정</translation>
 <translation id="5967867314010545767">기록에서 삭제</translation>
 <translation id="5975083100439434680">축소</translation>
@@ -1627,6 +1630,7 @@
 <translation id="7647206758853451655">인쇄 품질</translation>
 <translation id="7648992873808071793">이 기기에 파일 저장</translation>
 <translation id="7653957176542370971">결제 핸들러 시트가 닫힘</translation>
+<translation id="7654909834015434372">주석을 수정하면 문서가 원래 방향으로 돌아갑니다.</translation>
 <translation id="765676359832457558">고급 설정 숨기기</translation>
 <translation id="7658239707568436148">취소</translation>
 <translation id="7662298039739062396">확장 프로그램에서 관리되는 설정</translation>

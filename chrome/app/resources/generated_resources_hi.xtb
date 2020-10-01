@@ -305,7 +305,7 @@
 <translation id="1340527397989195812">फ़ाइल ऐप्लिकेशन का उपयोग करके डिवाइस से मीडिया का बैक अप लें.</translation>
 <translation id="1341988552785875222">वर्तमान वॉलपेपर '<ph name="APP_NAME" />' द्वारा सेट किया गया है. भिन्न वॉलपेपर चुनने से पहले आपको '<ph name="APP_NAME" />' को अनइंस्टॉल करने की आवश्यकता हो सकती है.</translation>
 <translation id="1343865611738742294">Linux के ऐप्लिकेशन को यूएसबी डिवाइस ऐक्सेस करने की अनुमति दें. यूएसबी डिवाइस को हटाने के बाद Linux उसे याद नहीं रखेगा.</translation>
-<translation id="1346630054604077329">पुष्टि करें और रीसेट करें</translation>
+<translation id="1346630054604077329">पुष्टि करें और रीस्टार्ट करें</translation>
 <translation id="1347256498747320987">अपडेट और ऐप्लिकेशन इंस्टॉल करें. जारी रखकर, आप सहमति देते हैं कि यह डिवाइस Google, आपको मोबाइल और इंटरनेट सेवा देने वाली कंपनी और आपके डिवाइस के निर्माता से अपडेट और ऐप्लिकेशन अपने आप डाउनलोड और इंस्टॉल भी कर सकता है. इसके लिए मोबाइल डेटा का इस्तेमाल किया जा सकता है. इनमें से कुछ ऐप्लिकेशन इन-ऐप्लिकेशन खरीदारियों की सुविधा दे सकते हैं. <ph name="BEGIN_LINK1" />ज़्यादा जानें<ph name="END_LINK1" /></translation>
 <translation id="1347975661240122359">बैटरी <ph name="BATTERY_LEVEL" />% बचते ही अपडेट शुरू हो जाएगा.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
@@ -501,6 +501,7 @@
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (मेहमान)</translation>
 <translation id="1572266655485775982">वाई-फ़ाई चालू करें</translation>
 <translation id="1572876035008611720">अपना ईमेल डालें</translation>
+<translation id="1575741822946219011">भाषाएं और इनपुट</translation>
 <translation id="1576594961618857597">डिफ़ॉल्ट सफ़ेद अवतार</translation>
 <translation id="1578558981922970608">ज़बरदस्ती बंद करें</translation>
 <translation id="1578784163189013834">स्क्रीन सेवर का बैकग्राउंड चुनें</translation>
@@ -763,7 +764,7 @@
 <translation id="1861262398884155592">यह फ़ोल्डर खाली है</translation>
 <translation id="1863182668524159459">काेई सीरियल पाेर्ट नहीं मिला</translation>
 <translation id="1863316578636157783">"<ph name="EXTENSION_NAME" />" को बंद कर दिया गया है, क्योंकि इसमें मैलवेयर है</translation>
-<translation id="1864111464094315414">प्रवेश करें</translation>
+<translation id="1864111464094315414">लॉगिन करें</translation>
 <translation id="1864400682872660285">कूलर</translation>
 <translation id="1864454756846565995">USB-C डिवाइस (पिछला पोर्ट)</translation>
 <translation id="1865769994591826607">केवल समान-साइट कनेक्शन</translation>
@@ -858,6 +859,7 @@
 <translation id="1974821797477522211">नेटवर्क से कनेक्ट करें</translation>
 <translation id="1975841812214822307">निकालें...</translation>
 <translation id="1976150099241323601">सुरक्षा डिवाइस में साइन इन करें</translation>
+<translation id="1976307821760494606"><ph name="DOMAIN" /> ने ADB को डीबग करने की सुविधा बंद कर दी है. इससे आपका <ph name="DEVICE_TYPE" />, 24 घंटे में रीसेट हो जाएगा. आप जिन फ़ाइलों को सेव रखना चाहते हैं उनका बैक अप लें.</translation>
 <translation id="1977965994116744507">अपने <ph name="DEVICE_TYPE" /> को अनलॉक करने के लिए अपने फ़ोन को पास लाएं.</translation>
 <translation id="1978006917103730774">आने वाले सॉफ़्टवेयर और सुरक्षा के अपडेट अपने आप इंस्टॉल हो जाएंगे.</translation>
 <translation id="1979095679518582070">इस सुविधा को बंद करने के बाद भी यह डिवाइस, सिस्टम अपडेट, और सुरक्षा जैसी ज़रूरी सेवाएं पाने के लिए जानकारी भेज सकेगा.</translation>
@@ -865,7 +867,7 @@
 <translation id="197989455406964291">केडीसी में सुरक्षित करने का यह तरीका इस्तेमाल नहीं किया जा सकता.</translation>
 <translation id="1984417487208496350">कोई सुरक्षा नहीं (हम ऐसा करने का सुझाव नहीं देते)</translation>
 <translation id="1987317783729300807">खाते</translation>
-<translation id="1988494864246143197">आम तौर पर, साइटें Flash का इस्तेमाल ऑडियो, वीडियो या वीडियो गेम चलाने के लिए करती हैं. दिसंबर, 2020 के बाद Flash Player को बंद कर दिया जाएगा.</translation>
+<translation id="1988494864246143197">आम तौर पर, साइटें Flash का इस्तेमाल ऑडियो, वीडियो या वीडियो गेम चलाने के लिए करती हैं. दिसंबर 2020 के बाद Flash Player को बंद कर दिया जाएगा.</translation>
 <translation id="1989112275319619282">ब्राउज़ करें</translation>
 <translation id="1990512225220753005">इस पेज पर शॉर्टकट न दिखाएं</translation>
 <translation id="1992397118740194946">सेट नहीं है</translation>
@@ -2038,6 +2040,7 @@
 <translation id="3404249063913988450">स्क्रीन सेवर चालू करें</translation>
 <translation id="3405664148539009465">फ़ॉन्‍ट को पसंद के मुताबिक बनाएं</translation>
 <translation id="3405763860805964263">...</translation>
+<translation id="3406396172897554194">भाषा या इनपुट के नाम से खोजें</translation>
 <translation id="3406605057700382950">बुकमार्क बार &amp;दिखाएं</translation>
 <translation id="340671561090997290">{NUM_EXTENSIONS,plural, =1{यह एक्सटेंशन खतरनाक हो सकता है}one{यह एक्सटेंशन खतरनाक हो सकता है}other{ये एक्सटेंशन खतरनाक हो सकते हैं}}</translation>
 <translation id="3409785640040772790">Maps</translation>
@@ -2612,6 +2615,7 @@
 <translation id="4025039777635956441">चुनी गई साइट म्यूट करें</translation>
 <translation id="4027804175521224372">(आप इसे छोड़ रहे हैं—<ph name="IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_LINK" />)</translation>
 <translation id="4027951648498485763">आपकी फ़्लैश सेटिंग को तब तक रखा जाएगा जब तक कि आप Chrome को छोड़ नहीं देते.</translation>
+<translation id="4028467762035011525">इनपुट का तरीका जोड़ें</translation>
 <translation id="4031179711345676612">माइक्रोफ़ोन की अनुमति है</translation>
 <translation id="4031527940632463547">सेंसर ब्लॉक हैं</translation>
 <translation id="4033471457476425443">नया फ़ोल्डर जोड़ें</translation>
@@ -2720,7 +2724,7 @@
 <translation id="4157869833395312646">Microsoft Server Gated Cryptography</translation>
 <translation id="4159681666905192102">यह बच्‍चों के लिए बनाया गया खाता है जिसे <ph name="CUSTODIAN_EMAIL" /> और <ph name="SECOND_CUSTODIAN_EMAIL" /> द्वारा प्रबंधित किया जाता है.</translation>
 <translation id="4163560723127662357">अज्ञात कीबोर्ड</translation>
-<translation id="4167686856635546851">आम तौर पर, साइटें, JavaScript का इस्तेमाल इंटरैक्टिव सुविधाओं को दिखाने के लिए करती है. जैसे कि वीडियो गेम या वेब फ़ॉर्म</translation>
+<translation id="4167686856635546851">आम तौर पर, साइटें, JavaScript का इस्तेमाल इंटरैक्टिव सुविधाओं को दिखाने के लिए करती हैं. जैसे कि वीडियो गेम या वेब फ़ॉर्म</translation>
 <translation id="4168015872538332605"><ph name="PRIMARY_EMAIL" /> से संबंधित कुछ सेटिंग आपके साथ शेयर की जा रही हैं. ये सेटिंग आपके खाते को सिर्फ़ तभी प्रभावित करते हैं जब एक से ज़्यादा साइन-इन का इस्तेमाल किया जाता है.</translation>
 <translation id="4170256733935344210">अपने डिवाइस का कैमरा इस्तेमाल करके क्यूआर कोड को स्कैन करें या मोबाइल और इंटरनेट सेवा देने वाली कंपनी से मिला ऐक्टिव करने वाला कोड डालें</translation>
 <translation id="4170314459383239649">बाहर निकलने पर हटाएं</translation>
@@ -3754,7 +3758,7 @@
 <translation id="5464632865477611176">इस बार चलाएं</translation>
 <translation id="5464660706533281090">कोई भी बच्चा इस सेटिंग में बदलाव नहीं कर सकता.</translation>
 <translation id="5466374726908360271">“<ph name="SEARCH_TERMS" />” को चिपकाएं और खोजें</translation>
-<translation id="5468119583641912100">साइटें सुरक्षित सामग्री चलाने के लिए पूछ सकती हैं (हम इस सेटिंग को चालू रखने का सुझाव देते हैं)</translation>
+<translation id="5468119583641912100">साइटें सुरक्षित कॉन्टेंट चलाने के लिए पूछ सकती हैं (हम इस सेटिंग को चालू रखने का सुझाव देते हैं)</translation>
 <translation id="5468173180030470402">फ़ाइल शेयर को ढूंढा जा रहा है</translation>
 <translation id="5469852975082458401">टेक्स्ट कर्सर की मदद से आप पेजों पर जा सकते हैं. कैरेट ब्राउज़िंग को बंद करने के लिए F7 दबाएं.</translation>
 <translation id="5470735824776589490">डिवाइस को 'पावरवॉश' से रीसेट करने से पहले रीस्टार्ट करना ज़रूरी है. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
@@ -4062,6 +4066,7 @@
 <translation id="5833726373896279253">ये सेटिंग केवल मालिक द्वारा ही संशोधित की जा सकती हैं:</translation>
 <translation id="5834581999798853053">करीब <ph name="TIME" /> मिनट शेष हैं</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> - कैमरा या माइक्रोफ़ोन रिकॉर्डिंग</translation>
+<translation id="5839574759884227787"><ph name="DOMAIN" /> ने ADB को डीबग करने की सुविधा बंद कर दी है. इससे आपका <ph name="DEVICE_TYPE" /> रीसेट हो जाएगा. डिवाइस को रीस्टार्ट करने से पहले, अपनी फ़ाइलों का बैक अप लें.</translation>
 <translation id="5840680448799937675">फ़ाइलों को हमेशा ऑफ़लाइन शेयर किया जाएगा</translation>
 <translation id="5841270259333717135">ईथरनेट कॉन्फ़िगर करें</translation>
 <translation id="5842497610951477805">ब्लूटूथ चालू है</translation>
@@ -4459,7 +4464,7 @@
 <translation id="628352644014831790">4 सेकंड</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> को आमतौर पर डाउनलोड नहीं किया जाता और यह खतरनाक हो सकता है.</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{आपके नेटवर्क पर नया प्रिंटर}one{आपके नेटवर्क पर नए प्रिंटर}other{आपके नेटवर्क पर नए प्रिंटर}}</translation>
-<translation id="6289626062715012577">कई भाषाओं में काम करने वाले ऐप्लिकेशन और वेबसाइटें, इस सूची में दी गई पहली भाषा का इस्तेमाल करेंगे. Chrome ब्राउज़र में, भाषा की प्राथमिकताएं सिंक होती हैं. <ph name="BEGIN_LINK_LEARN_MORE" />ज़्यादा जानें<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="6289626062715012577">कई भाषाओं में काम करने वाले ऐप्लिकेशन और वेबसाइटें, इस सूची में दी गई पहली भाषा का इस्तेमाल करेंगी. Chrome ब्राउज़र में, भाषा की प्राथमिकताएं सिंक होती हैं. <ph name="BEGIN_LINK_LEARN_MORE" />ज़्यादा जानें<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370">Linux शुरू करने के लिए, <ph name="ORGANIZATION_NAME" /> चाहता है कि आप अपने डेटा का बैक अप ले लें. साथ ही, इस Chromebook को फ़ैक्ट्री सेटिंग पर रीसेट कर लें.</translation>
 <translation id="6291949900244949761">जब कोई साइट USB डिवाइस एक्सेस करना चाहे, तो इसके लिए पूछें (सुझाया गया)</translation>
 <translation id="6291953229176937411">खोजकर्ता में &amp;दिखाएं</translation>
@@ -4475,6 +4480,7 @@
 <translation id="6308077700132376815">इमेज को ब्लॉक करें</translation>
 <translation id="6308493641021088955">साइन-इन की सुविधा <ph name="EXTENSION_NAME" /> ने दी है</translation>
 <translation id="6308937455967653460">लिंक को इस रूप में सेव करें...</translation>
+<translation id="6309443618838462258">आपका एडमिन, इनपुट के इस तरीके को इस्तेमाल करने की अनुमति नहीं देता है</translation>
 <translation id="6309510305002439352">माइक्रोफ़ोन बंद किया गया</translation>
 <translation id="6311220991371174222">Chrome शुरू नहीं हो पा रहा है क्योंकि आपकी प्रोफ़ाइल खोलते समय कुछ गलत हो गया. Chrome को फिर से शुरू करने की कोशिश करें.</translation>
 <translation id="6312403991423642364">अज्ञात नेटवर्क गड़बड़ी</translation>
@@ -5193,6 +5199,7 @@
 <translation id="7191159667348037">अज्ञात प्रिंटर (USB)</translation>
 <translation id="7193051357671784796">यह ऐप्लिकेशन आपके संगठन ने जोड़ा था. ऐप्लिकेशन का इंस्टॉलेशन पूरा करने के लिए इसे रीस्टार्ट करें.</translation>
 <translation id="7193374945610105795"><ph name="ORIGIN" /> के लिए कोई पासवर्ड सेव नहीं किया गया है</translation>
+<translation id="7196020411877309443">मैं यह क्यों देख रहा/रही हूं?</translation>
 <translation id="7196913789568937443">'Google डिस्क' में बैक अप लें. किसी भी समय अपना डेटा आसानी से बहाल करें या डिवाइस बदलें. आपके बैकअप में ऐप्लिकेशन डेटा शामिल होता है. आपके बैकअप आपके Google खाते के पासवर्ड से सुरक्षित करके Google पर अपलोड किए जाते हैं. <ph name="BEGIN_LINK1" />ज़्यादा जानें<ph name="END_LINK1" /></translation>
 <translation id="7197190419934240522">हर बार जब भी ब्राउज़ करें, 'Google सर्च' और Google स्मार्ट पाएं</translation>
 <translation id="7197632491113152433">हमें आपके खाते से ऐसे <ph name="NUMBER_OF_APPS" /> ऐप्लिकेशन मिले हैं जिनका इस्तेमाल इस डिवाइस पर किया जा सकता है.</translation>
@@ -5848,6 +5855,7 @@
 <translation id="7952708427581814389">साइटें आपके क्लिपबोर्ड पर टेक्स्ट पढ़ने और इमेज देखने के लिए कह सकती हैं</translation>
 <translation id="795282463722894016">इंपोर्ट कर लिया गया है</translation>
 <translation id="7952904276017482715">अपेक्षित आईडी "<ph name="EXPECTED_ID" />" है, लेकिन आईडी "<ph name="NEW_ID" />" था</translation>
+<translation id="7953669802889559161">इनपुट</translation>
 <translation id="7953955868932471628">शॉर्टकट प्रबंधित करें</translation>
 <translation id="7956373551960864128">आपके सेव किए गए प्रिंटर</translation>
 <translation id="7957074856830851026">डिवाइस की जानकारी देखें, जैसे कि सीरियल नंबर या एसेट आईडी</translation>
@@ -5871,6 +5879,7 @@
 <translation id="7973962044839454485">किसी गलत उपयोगकर्ता नाम या पासवर्ड के कारण PPP प्रमाणीकरण विफल रहा</translation>
 <translation id="7974566588408714340"><ph name="EXTENSIONNAME" /> का उपयोग करके फिर से प्रयास करें</translation>
 <translation id="7974936243149753750">ओवरस्कैन</translation>
+<translation id="7977404132325989121">&amp;इस विंडो को कोई नाम दें...</translation>
 <translation id="7978412674231730200">निजी कुंजी</translation>
 <translation id="7978450511781612192">इससे आप अपने Google खातों से साइन आउट हो जाएंगे. आपके बुकमार्क, इतिहास, पासवर्ड और कई चीज़ें अब सिंक नहीं की जाएंगी.</translation>
 <translation id="7980084013673500153">एसेट आईडी: <ph name="ASSET_ID" /></translation>
@@ -6423,6 +6432,7 @@
 <translation id="8648408795949963811">नाइट लाइट कलर टेंपरेचर</translation>
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> इनके लिए अनुमति चाहता है: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" />, वगैरह</translation>
 <translation id="8650543407998814195">हालांकि अब आप अपनी पुरानी प्रोफ़ाइल एक्सेस नहीं कर सकते हैं, लेकिन फिर भी आप उसे हटा सकते हैं.</translation>
+<translation id="865118751078059229">&amp;इस विंडो को कोई नाम दें...</translation>
 <translation id="8651585100578802546">इस पेज को ज़बरदस्ती फिर से लोड करें</translation>
 <translation id="8652400352452647993">पैक एक्‍सटेंशन गड़बड़ी</translation>
 <translation id="8654151524613148204">फ़ाइल आपके कंप्‍यूटर द्वारा संभाले जाने के लिए बहुत बड़ी है. क्षमा करें.</translation>
@@ -6575,6 +6585,7 @@
 <translation id="8813872945700551674">"<ph name="EXTENSION_NAME" />" को इंस्टॉल करने की अनुमति पाने के लिए, माता-पिता से संपर्क करें</translation>
 <translation id="8813969267212093033">सिस्टम का टेक्स्ट इस भाषा में दिखाया गया है</translation>
 <translation id="8814190375133053267">वाई-फ़ाई </translation>
+<translation id="8814319344131658221">वर्तनी जांच की सुविधा, आपकी चुनी गई भाषाओं में काम करती है</translation>
 <translation id="8814644416678422095">हार्ड ड्राइव</translation>
 <translation id="8814687660896548945">कृपया इंतज़ार करें, संग्रह स्‍कैन किया जा रहा है...</translation>
 <translation id="881782782501875829">पाेर्ट नंबर जोड़ें</translation>
@@ -6670,6 +6681,7 @@
 <translation id="8912810933860534797">अपने आप स्कैन करने की सुविधा चालू करें</translation>
 <translation id="8915370057835397490">सुझाव लोड हो रहे हैं</translation>
 <translation id="8916476537757519021">गुप्त सबफ़्रेम: <ph name="SUBFRAME_SITE" /></translation>
+<translation id="8916749157829986308">विंडो का नाम सेट करें</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" /> का <ph name="DEVICE_TYPE" /></translation>
 <translation id="8922013791253848639">इस साइट पर विज्ञापनों की हमेशा अनुमति दें</translation>
 <translation id="8923880975836399332">गहरा नीला-हरा</translation>
@@ -6845,6 +6857,7 @@
 <translation id="9124003689441359348">सहेजे गए पासवर्ड यहां दिखाई देंगे</translation>
 <translation id="9126149354162942022">कर्सर का रंग</translation>
 <translation id="9128317794749765148">सेटअप पूरा नहीं हो सका</translation>
+<translation id="9128335130883257666"><ph name="INPUT_METHOD_NAME" /> की सेटिंग वाला पेज खोलें</translation>
 <translation id="9128870381267983090">नेटवर्क से कनेक्ट करें</translation>
 <translation id="9130015405878219958">गलत मोड डाला गया.</translation>
 <translation id="9131487537093447019">ब्लूटूथ डिवाइस से मैसेज भेजें और मैसेज पाएं.</translation>

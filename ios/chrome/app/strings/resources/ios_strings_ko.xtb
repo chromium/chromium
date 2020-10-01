@@ -97,7 +97,6 @@
 <translation id="1965935827552890526">열려 있는 다른 Chrome 창에서 진행 중이던 작업을 완료하세요.</translation>
 <translation id="1974060860693918893">고급</translation>
 <translation id="1989112275319619282">찾아보기</translation>
-<translation id="1992734845128748707">기본 브라우저 변경…</translation>
 <translation id="2015722694326466240">비밀번호를 보려면 먼저 기기에 비밀번호를 설정해야 합니다.</translation>
 <translation id="2073572773299281212"><ph name="DAYS" />일 전 사용됨</translation>
 <translation id="2074131957428911366">언제든지 <ph name="BEGIN_LINK" />설정<ph name="END_LINK" />에서 동기화할 항목을 선택할 수 있습니다.</translation>
@@ -331,6 +330,7 @@
 <translation id="4747097190499141774">Google Pay 결제 수단 및 주소는 암호로 암호화되지 않습니다. 암호를 아는 사람만 암호화된 데이터를 읽을 수 있습니다. 암호는 Google로 전송되거나 Google에 저장되지 않습니다. 암호가 기억나지 않거나 이 설정을 변경하려면 동기화를 재설정해야 합니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">새 시크릿 탭</translation>
 <translation id="4758977202923349869">신용카드가 이 프레임 안에 들어오도록 배치하세요</translation>
+<translation id="4775879719735953715">기본 브라우저</translation>
 <translation id="4802417911091824046">Google Pay 결제 수단 및 주소는 암호로 암호화되지 않습니다.
 
 이 설정을 변경하려면 <ph name="BEGIN_LINK" />동기화를 재설정<ph name="END_LINK" />하세요.</translation>

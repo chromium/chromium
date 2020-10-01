@@ -97,7 +97,6 @@
 <translation id="1965935827552890526">ඔබගේ අනෙක් විවෘත Chrome කවුළුව තුළ ඔබ කරමින් සිටි දේ අවසන් කරන්න.</translation>
 <translation id="1974060860693918893">උසස් කළ</translation>
 <translation id="1989112275319619282">බ්‍රවුස් කරන්න</translation>
-<translation id="1992734845128748707">පෙරනිමි බ්‍රව්සරය වෙනස් කරන්න…</translation>
 <translation id="2015722694326466240">මුරපද බැලීමට, ඔබ ප්‍රථමයෙන් ඔබේ උපාංගයේ මුරකේතයක් සැකසිය යුතුය.</translation>
 <translation id="2073572773299281212">දින <ph name="DAYS" /> කට පෙර ක්‍රියාත්මකයි</translation>
 <translation id="2074131957428911366">ඔබට සැමවිටම <ph name="BEGIN_LINK" />සැකසීම්<ph name="END_LINK" /> තුළ සමමුහු කළ යුතු දෙය තෝරා ගත හැක.</translation>
@@ -165,6 +164,7 @@
 <translation id="2781331604911854368">ක්‍රියාත්මකයි</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2800683595868705743">පටිති මාරුකරවනය වෙතින් ඉවත් වන්න</translation>
+<translation id="2815198996063984598">2. පෙරනිමි බ්‍රව්සර යෙදුම තට්ටු කරන්න</translation>
 <translation id="2830972654601096923">ලිපින කළමනාකරණය...</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2840687315230832938">මූලික සමමුහුර්ත පිහිටුවීම අවසන් නොවීය</translation>
@@ -181,6 +181,7 @@
 <translation id="2921219216347069551">පිටුව බෙදා ගැනීමට නොහැකිය</translation>
 <translation id="2923448633003185837">අලවා යන්න</translation>
 <translation id="292639812446257861">නොකියවූ ලෙස ලකුණු කරන්න</translation>
+<translation id="2952581218264071393">1. Chrome සැකසීම් විවෘත කරන්න</translation>
 <translation id="2958718410589002129">මුරපද</translation>
 <translation id="2964349545761222050">තෙවන පාර්ශ්ව කුකී අවහිර කරන්න</translation>
 <translation id="2969979262385602596">පුරනය අසාර්ථක විය, කරුණාකර පසුව නැවත උත්සාහ කරන්න.</translation>
@@ -217,6 +218,7 @@
 <translation id="3335947283844343239">වැසූ ටැබය යළි විවෘත කරන්න</translation>
 <translation id="3371831930909698441">පරිවර්තනය ලැබේ. තිරයේ පහළට ආසන්නව විකල්ප ලබා ගත හැක.</translation>
 <translation id="3393920035788932672">උත්පතන වලට ඉඩ දෙන ලද</translation>
+<translation id="3399930248910934354">Chrome සැකසීම් විවෘත කරන්න</translation>
 <translation id="3425644765244388016">කාඩ්පත් අපනාමය</translation>
 <translation id="3433057996795775706">මෙම මුරපදය මැකීම <ph name="WEBSITE" /> මත ඔබේ ගිණුම මකන්නේ නැත. එය අන් අයගෙන් ආරක්ෂිතව තබා ගැනීමට <ph name="WEBSITE" /> හි ඔබගේ මුරපදය වෙනස් කරන්න.</translation>
 <translation id="3443810440409579745">ලැබූ පටිත්ත.</translation>
@@ -241,6 +243,9 @@
 <translation id="3551320343578183772">ටැබය වසන්න</translation>
 <translation id="3581564640715911333">වෙනත් භාෂාවල පිටු පරිවර්තනයට පිරිනමන්න</translation>
 <translation id="3588820906588687999">රූපය නව පටිත්තක විවෘත කරන්න</translation>
+<translation id="359441731697487922">ඔබගේ පෙරනිමි බ්‍රව්සර යෙදුම බවට Chrome පත් කිරීමෙන් ඔබට එහි සබැඳි ස්වයංක්‍රියව විවෘත කළ හැකිය.
+      
+පහත මෙම පියවර අනුගමනය කරන්න:</translation>
 <translation id="3603009562372709545">සබැඳි URL පිටපත් කරන්න</translation>
 <translation id="3607167657931203000">ස්වයං පිරවුම් දත්ත</translation>
 <translation id="3609785682760573515">සමමු වේ...</translation>
@@ -331,6 +336,7 @@
 <translation id="4747097190499141774">මුර-වැකිකඩ සංකේතනයට Google Pay වෙතින් ගෙවීමේ ක්‍රම සහ ලිපින ඇතුළු නෙවේ. සංකේතන කළ දත්ත කියවිය හැක්කේ ඔබේ මුර-වැකිකඩ සහිත අයෙකුට පමණයි. මෙම මුර-වැකිකඩ Google වෙත යැවීම හෝ ගබඩා කිරීම සිදු නොවේ. ඔබට ඔබේ මුර-වැකිකඩ අමතක වූයේ නම්, ඔබ සමමුහූර්ත කිරීම අවශ්‍ය වෙයි. <ph name="BEGIN_LINK" />තවත් දැන ගන්න<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">නව අප්‍රසිද්ධ පටිත්ත</translation>
 <translation id="4758977202923349869">ණය කාඩ්පත මෙම රාමුව තුළ ස්ථාන ගත කරන්න</translation>
+<translation id="4775879719735953715">පෙරනිමි වෙබ් බ්‍රව්සරය</translation>
 <translation id="4802417911091824046">මුර-වැකිකඩ සංකේතනයට Google Pay වෙතින් ගෙවීමේ ක්‍රම සහ ලිපින ඇතුළු නොවේ.
 
 මෙම සැකසීම වෙනස් කිරීමට, <ph name="BEGIN_LINK" />සමමුහූර්තය යළි සකසන්න<ph name="END_LINK" /></translation>
@@ -338,6 +344,7 @@
 <translation id="4808744395915275922">යාවත්කාලීන</translation>
 <translation id="4818522717893377262">භාෂාව එක් කරන්න...</translation>
 <translation id="481968316161811770">කුකී, අඩවි දත්ත</translation>
+<translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} සහ තවත් 1}one{{domain} සහ තවත් {count}}other{{domain} සහ තවත් {count}}}</translation>
 <translation id="4826218269716039351">තෙවන පාර්ශවය අවහිර කරන්න</translation>
 <translation id="48274138579728272">කියවූ ලෙස ලකුණු කරන්න</translation>
 <translation id="4833786495304741580">භාවිත සංඛ්‍යාල්ඛන සහ බිඳ වැටීම් වාර්තා ස්වයංක්‍රියව Google වෙත යවයි.</translation>
@@ -586,6 +593,7 @@
 <translation id="7456847797759667638">ස්ථානය විවෘත කරන්න ...</translation>
 <translation id="7460314822154045102">කැමරාව භාවිත කරන්න</translation>
 <translation id="7464701184726199289">සියලු උපාංග වලින් සමමුහුර්ත කළ දත්ත මෙයින් හිස් කරයි. සුරැකි අඩවි සැකසීම් නොමැකෙනු ඇති අතර එයින් ඔබගේ බ්‍රවුස් කිරීමේ පුරුදු පිළිබිඹු විය හැක. <ph name="BEGIN_LINK" />තවත් දැන ගන්න<ph name="END_LINK" /></translation>
+<translation id="746684838091935575">3. Chrome තෝරන්න</translation>
 <translation id="7472734401283673885">සමාගමේ නම</translation>
 <translation id="7473891865547856676">එපා ස්තූතියි</translation>
 <translation id="7481312909269577407">ඉදිරියට යන්න</translation>

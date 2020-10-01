@@ -113,6 +113,7 @@
 <translation id="2049240716062114887">डेस्क का नाम बदलकर <ph name="DESK_NAME" /> कर दिया गया है</translation>
 <translation id="2050339315714019657">पोर्ट्रेट</translation>
 <translation id="2067602449040652523">कीबोर्ड की रोशनी</translation>
+<translation id="2074759828767813253">हाल ही के स्क्रीनशॉट और डाउनलोड की गई फ़ाइलें</translation>
 <translation id="2083190527011054446">गुड नाइट <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">नेटवर्क से जुड़ा हुआ नहीं है</translation>
 <translation id="2126242104232412123">नया डेस्क</translation>
@@ -197,7 +198,6 @@
 <translation id="2996462380875591307">सामग्री को बड़ा दिखाने की डॉक की गई सुविधा चालू है. उसे बंद पर टॉगल करने के लिए Ctrl+Search+D फिर से दबाएं.</translation>
 <translation id="3000461861112256445">मोनो ऑडियो</translation>
 <translation id="3009178788565917040">आउटपुट</translation>
-<translation id="3025081209054535615">शेल्फ़ से ग्लोबल मीडिया कंट्रोल (कार्ड की सूची) अनपिन करें</translation>
 <translation id="3033545621352269033">चालू है</translation>
 <translation id="3038571455154067151">साइन इन करने के लिए, अपने Family Link का अभिभावक ऐक्सेस कोड डालें</translation>
 <translation id="3045488863354895414">गुड आफ़्टरनून,</translation>
@@ -621,6 +621,7 @@
 <translation id="7526573455193969409">नेटवर्क की निगरानी की जा सकती है</translation>
 <translation id="7536035074519304529">आईपी पता: <ph name="ADDRESS" /></translation>
 <translation id="7548434653388805669">सोने का समय हो गया</translation>
+<translation id="7551643184018910560">अलमारी से पिन करें</translation>
 <translation id="7561982940498449837">मेन्यू बंद करें</translation>
 <translation id="7564874036684306347">विंडो को किसी दूसरे डेस्कटॉप पर ले जाने से अनचाहा बर्ताव हो सकता है. इसके बाद की सूचनाएं, विंडो और संवाद डेस्कटॉप के बीच बंट सकती हैं.</translation>
 <translation id="7568294522609223312">अपने-आप क्लिक होने की सुविधा बंद करें</translation>
@@ -701,7 +702,6 @@
 <translation id="8297006494302853456">कमज़ोर</translation>
 <translation id="8308637677604853869">पिछला मेन्यू</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
-<translation id="8349293353728876872">शेल्फ़ पर ग्लोबल मीडिया कंट्रोल (कार्ड की सूची) पिन करें</translation>
 <translation id="8351131234907093545">नोट बनाएं</translation>
 <translation id="8371779926711439835">एक वर्ण आगे जाएं</translation>
 <translation id="8375916635258623388">यह <ph name="DEVICE_NAME" /> और आपका फ़ोन, अपने आप कनेक्ट हो जाएंगे</translation>

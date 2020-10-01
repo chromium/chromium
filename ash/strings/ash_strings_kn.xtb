@@ -198,7 +198,6 @@
 <translation id="2996462380875591307">ಡಾಕ್‌‌ ಮಾಡಿರುವ ವರ್ಧಕವನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ. ಅದನ್ನು ಟಾಗಲ್‌ ಆಫ್‌ ಮಾಡಲು ಪುನಃ Ctrl+Search+D ಅನ್ನು ಒತ್ತಿರಿ.</translation>
 <translation id="3000461861112256445">ಮೊನೊ ಆಡಿಯೊ</translation>
 <translation id="3009178788565917040">ಔಟ್‌ಪುಟ್</translation>
-<translation id="3025081209054535615">ಜಾಗತಿಕ ಮಾಧ್ಯಮ ನಿಯಂತ್ರಣಗಳನ್ನು ಶೆಲ್ಫ್‌ನಿಂದ ಅನ್‌ಪಿನ್ ಮಾಡಿ</translation>
 <translation id="3033545621352269033">ಆನ್</translation>
 <translation id="3038571455154067151">ಸೈನ್ ಇನ್ ಮಾಡಲು, ನಿಮ್ಮ Family Link ಪೋಷಕರ ಪ್ರವೇಶ ಕೋಡ್ ಅನ್ನು ನಮೂದಿಸಿ</translation>
 <translation id="3045488863354895414">ಶುಭ ಮಧ್ಯಾಹ್ನ,</translation>
@@ -622,6 +621,7 @@ Ctrl+ಹುಡುಕಾಟ+H ಅನ್ನು ಒತ್ತಿರಿ.</translation
 <translation id="7526573455193969409">ನೆಟ್‌ವರ್ಕ್‌ನ ಮೇಲ್ವಿಚಾರಣೆ ಮಾಡಬಹುದಾಗಿದೆ</translation>
 <translation id="7536035074519304529">ಐಪಿ ವಿಳಾಸ: <ph name="ADDRESS" /></translation>
 <translation id="7548434653388805669">ಮಲಗುವ ಸಮಯ</translation>
+<translation id="7551643184018910560">ಶೆಲ್ಫ್‌ಗೆ ಪಿನ್‌ ಮಾಡು</translation>
 <translation id="7561982940498449837">ಮೆನು ಮುಚ್ಚಿರಿ</translation>
 <translation id="7564874036684306347">ವಿಂಡೋಗಳನ್ನು ಬೇರೊಂದು ಡೆಸ್ಕ್‌ಟಾಪ್‌ಗೆ ಸರಿಸಿದರೆ, ಅದು ಅನಿರೀಕ್ಷಿತ ವರ್ತನೆಗೆ ಕಾರಣವಾಗಬಹುದು. ಆನಂತರ ಬರುವ ಅಧಿಸೂಚನೆಗಳು, ವಿಂಡೋಗಳು ಮತ್ತು ಡೈಲಾಗ್‌ಗಳು ಡೆಸ್ಕ್‌ಟಾಪ್‌ಗಳ ನಡುವೆ ವಿಭಜನೆಯಾಗಬಹುದು.</translation>
 <translation id="7568294522609223312">ಸ್ವಯಂಚಾಲಿತ ಕ್ಲಿಕ್‌ಗಳನ್ನು ಆಫ್ ಮಾಡಿ</translation>
@@ -702,7 +702,6 @@ Ctrl+ಹುಡುಕಾಟ+H ಅನ್ನು ಒತ್ತಿರಿ.</translation
 <translation id="8297006494302853456">ದುರ್ಬಲ</translation>
 <translation id="8308637677604853869">ಹಿಂದಿನ ಮೆನು</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
-<translation id="8349293353728876872">ಜಾಗತಿಕ ಮಾಧ್ಯಮ ನಿಯಂತ್ರಣಗಳನ್ನು ಶೆಲ್ಫ್‌ಗೆ ಪಿನ್ ಮಾಡಿ</translation>
 <translation id="8351131234907093545">ಟಿಪ್ಪಣಿ ರಚಿಸಿ</translation>
 <translation id="8371779926711439835">ಅಕ್ಷರದ ಮೂಲಕ ಫಾರ್ವರ್ಡ್ ಮಾಡಿ</translation>
 <translation id="8375916635258623388">ಈ <ph name="DEVICE_NAME" /> ಸಾಧನ ಮತ್ತು ನಿಮ್ಮ ಫೋನ್ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಸಂಪರ್ಕಗೊಳ್ಳುತ್ತವೆ</translation>

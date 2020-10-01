@@ -15,6 +15,7 @@
 <translation id="1038106730571050514">Kuva soovitused</translation>
 <translation id="1038842779957582377">tundmatu nimi</translation>
 <translation id="1041998700806130099">Töölehe sõnum</translation>
+<translation id="1048785276086539861">Märkuste muutmisel naaseb see dokument ühe lehe vaatele</translation>
 <translation id="1050038467049342496">Sulgege muud rakendused</translation>
 <translation id="1055184225775184556">&amp;Võta lisamine tagasi</translation>
 <translation id="1056898198331236512">Hoiatus</translation>
@@ -378,6 +379,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2465688316154986572">Kirjaklamber</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />Võrgudiagnostika käitamine<ph name="END_LINK" /></translation>
 <translation id="2469153820345007638">Järjestus 1–N</translation>
+<translation id="2470767536994572628">Märkuste muutmisel naaseb see dokument ühe lehe vaatele ja algsesse asendisse</translation>
 <translation id="2479410451996844060">Kehtetu otsingu URL.</translation>
 <translation id="2482878487686419369">Märguanded</translation>
 <translation id="248348093745724435">Seadme reeglid</translation>
@@ -503,7 +505,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2996674880327704673">Soovitused Google'ilt</translation>
 <translation id="3002501248619246229">Kontrolli sisestussalve meediat</translation>
 <translation id="3005723025932146533">Kuva salvestatud koopia</translation>
-<translation id="3007719053326478567">Administraator on selle sisu kopeerimise blokeerinud</translation>
+<translation id="3007719053326478567">Administraator on selle sisu printimise blokeerinud</translation>
 <translation id="3008447029300691911">Sisestage krediitkaardi <ph name="CREDIT_CARD" /> CVC. Kui selle kinnitate, jagatakse teie kaardi üksikasju selle saidiga.</translation>
 <translation id="3010559122411665027">Loendi kirje „<ph name="ENTRY_INDEX" />”: <ph name="ERROR" /></translation>
 <translation id="301521992641321250">Automaatselt blokeeritud</translation>
@@ -1226,6 +1228,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5946937721014915347">Saidi <ph name="SITE_NAME" /> avamine …</translation>
 <translation id="5951495562196540101">Tarbijakontoga ei saa registreeruda (paketipõhine litsents on saadaval).</translation>
+<translation id="5963413905009737549">Jaotis</translation>
 <translation id="5967592137238574583">Kontaktteabe muutmine</translation>
 <translation id="5967867314010545767">Eemalda ajaloost</translation>
 <translation id="5975083100439434680">Suumib välja</translation>
@@ -1638,6 +1641,7 @@ Lisateave:
 <translation id="7647206758853451655">Prindikvaliteet</translation>
 <translation id="7648992873808071793">Salvestada failid sellesse seadmesse</translation>
 <translation id="7653957176542370971">Maksetöötleja leht on suletud</translation>
+<translation id="7654909834015434372">Märkuste muutmisel naaseb see dokument algsesse asendisse</translation>
 <translation id="765676359832457558">Peida täpsemad seaded ...</translation>
 <translation id="7658239707568436148">Tühista</translation>
 <translation id="7662298039739062396">Seadet juhib laiendus</translation>

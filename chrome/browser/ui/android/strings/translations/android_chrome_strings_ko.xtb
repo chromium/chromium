@@ -106,6 +106,7 @@
 <translation id="1810845389119482123">초기 동기화 설정이 완료되지 않음</translation>
 <translation id="1821253160463689938">페이지를 방문하지 않더라도 쿠키를 사용하여 환경설정 저장</translation>
 <translation id="1829244130665387512">페이지에서 찾기</translation>
+<translation id="1830550083491357902">로그인하지 않음</translation>
 <translation id="1843805151597803366">번역을 개선하려면 Google 검색을 통해 현재 페이지를 사용하세요.</translation>
 <translation id="1853692000353488670">새 시크릿 탭</translation>
 <translation id="1856325424225101786">라이트 모드를 재설정하시겠습니까?</translation>
@@ -113,6 +114,7 @@
 <translation id="1877026089748256423">Chrome이 이전 버전임</translation>
 <translation id="1883903952484604915">내 파일</translation>
 <translation id="189358972401248634">다른 언어</translation>
+<translation id="1919130412786645364">Chrome 로그인 허용</translation>
 <translation id="1922362554271624559">추천 언어</translation>
 <translation id="1925021887439448749">맞춤 웹 주소 입력</translation>
 <translation id="1928696683969751773">업데이트</translation>
@@ -225,6 +227,7 @@
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{오디오 파일 #개}other{오디오 파일 #개}}</translation>
 <translation id="2656405586795711023">웹 앱</translation>
 <translation id="2689830683995595741">Chrome을 사용하면 <ph name="BEGIN_LINK1" />Google 서비스 약관<ph name="END_LINK1" />과 <ph name="BEGIN_LINK2" />Chrome 및 Chrome OS 추가 서비스 약관<ph name="END_LINK2" />에 동의하는 것으로 간주됩니다. <ph name="BEGIN_LINK3" />Family Link로 관리되는 Google 계정에 관한 개인정보처리방침<ph name="END_LINK3" />도 적용됩니다.</translation>
+<translation id="2704606927547763573">복사됨</translation>
 <translation id="2707726405694321444">페이지 새로고침</translation>
 <translation id="2709516037105925701">자동 완성</translation>
 <translation id="2718352093833049315">Wi-Fi 연결 시</translation>
@@ -347,6 +350,7 @@
 <translation id="3631987586758005671"><ph name="DEVICE_NAME" />에 공유하는 중</translation>
 <translation id="3632295766818638029">비밀번호 공개</translation>
 <translation id="363596933471559332">저장된 사용자 인증 정보를 사용하여 자동으로 웹사이트에 로그인합니다. 이 기능이 꺼져 있는 경우에는 웹사이트에 로그인할 때마다 인증 요청 메시지가 표시됩니다.</translation>
+<translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3658159451045945436">재설정하면 방문한 사이트 목록을 비롯한 데이터 절약 기록이 삭제됩니다.</translation>
 <translation id="3692944402865947621">저장 위치에 연결할 수 없어 <ph name="FILE_NAME" />을(를) 다운로드할 수 없습니다.</translation>
 <translation id="3701167022068948696">지금 해결하기</translation>
@@ -707,6 +711,7 @@
 <translation id="6301525844455696527">잊지 말고 읽기 목록을 확인하세요</translation>
 <translation id="6303969859164067831">로그아웃하고 동기화 사용 중지</translation>
 <translation id="6312687380483398334">웹 앱(무음)</translation>
+<translation id="6313752143992575395"><ph name="WEBSITE_TITLE" /> 추천 표시</translation>
 <translation id="6316139424528454185">지원되지 않는 Android 버전입니다.</translation>
 <translation id="6324034347079777476">Android 시스템 동기화 사용 안함</translation>
 <translation id="6333140779060797560">공유 방법: <ph name="APPLICATION" /></translation>
@@ -838,6 +843,7 @@
 <translation id="7233236755231902816">내가 사용하는 언어로 웹을 보려면 최신 버전의 Chrome을 사용하세요.</translation>
 <translation id="7248069434667874558"><ph name="TARGET_DEVICE_NAME" />에서 Chrome 동기화가 사용 설정되어 있는지 확인하세요.</translation>
 <translation id="7274013316676448362">차단된 사이트</translation>
+<translation id="7286572596625053347"><ph name="LANGUAGE" />를 변경하시겠습니까?</translation>
 <translation id="7290209999329137901">이름 변경 불가</translation>
 <translation id="7291387454912369099">어시스턴트 트리거 확인</translation>
 <translation id="7293171162284876153">동기화를 시작하려면 'Chrome 데이터 동기화'를 사용 설정하세요.</translation>
@@ -960,7 +966,6 @@
 <translation id="8058746566562539958">새 Chrome 탭에서 열기</translation>
 <translation id="8063895661287329888">북마크를 추가하지 못했습니다.</translation>
 <translation id="806745655614357130">내 데이터 별도로 유지</translation>
-<translation id="8069669375923284295">동기화 설정을 계속하려면 탭하세요.</translation>
 <translation id="8073388330009372546">새 탭에서 이미지 열기</translation>
 <translation id="8076492880354921740">탭</translation>
 <translation id="8084114998886531721">저장된 비밀번호</translation>

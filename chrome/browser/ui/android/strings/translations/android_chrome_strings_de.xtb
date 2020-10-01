@@ -19,6 +19,7 @@
 <translation id="1126809382673880764">Schützt Sie nicht vor schädlichen Websites, Downloads und Erweiterungen. Sofern verfügbar, sind Sie in anderen Google-Diensten, wie Gmail und der Google Suche, weiterhin durch Safe Browsing geschützt.</translation>
 <translation id="1129510026454351943">Details: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1141800923049248244">{FILE_COUNT,plural, =1{1 Download ausstehend.}other{# Downloads ausstehend.}}</translation>
+<translation id="1142732900304639782">Übersetzen dieser Websites nicht anbieten</translation>
 <translation id="1145536944570833626">Vorhandene Daten löschen</translation>
 <translation id="1146678959555564648">VR aktivieren</translation>
 <translation id="1154704303112745282">Seite offline nicht verfügbar: <ph name="VIOLATED_URL" /></translation>
@@ -41,6 +42,7 @@
 <translation id="1263231323834454256">Leseliste</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> konnte nicht geteilt werden</translation>
 <translation id="1283039547216852943">Zum Maximieren tippen</translation>
+<translation id="1285310382777185058">Sprache ändern</translation>
 <translation id="1291207594882862231">Verlauf, Cookies, Websitedaten, Cache leeren…</translation>
 <translation id="129553762522093515">Kürzlich geschlossen</translation>
 <translation id="1298077576058087471">Bis zu 60 % Daten sparen und die Nachrichten von heute lesen</translation>
@@ -52,6 +54,7 @@
 <translation id="1327257854815634930">Der Navigationsverlauf ist geöffnet</translation>
 <translation id="1331212799747679585">Chrome kann nicht aktualisiert werden. Weitere Optionen</translation>
 <translation id="1332501820983677155">Tastenkombinationen für Google Chrome-Funktionen</translation>
+<translation id="133857033449832692"><ph name="LANG" /> wird heruntergeladen…</translation>
 <translation id="1347468774581902829">Aktivitäten verwalten</translation>
 <translation id="1360432990279830238">Abmelden &amp; Synchronisierung deaktivieren?</translation>
 <translation id="1373696734384179344">Der Speicher reicht nicht aus, um den ausgewählten Inhalt herunterzuladen.</translation>
@@ -103,6 +106,7 @@
 <translation id="1810845389119482123">Erste Einrichtung der Synchronisierung nicht abgeschlossen</translation>
 <translation id="1821253160463689938">Zum Speichern Ihrer Einstellungen werden Cookies verwendet, auch wenn Sie diese Seiten nicht besuchen</translation>
 <translation id="1829244130665387512">Auf Seite suchen</translation>
+<translation id="1830550083491357902">Nicht angemeldet</translation>
 <translation id="1843805151597803366">Lassen Sie die Google Suche auf die aktuelle Seite zugreifen, um bessere Übersetzungen zu bekommen</translation>
 <translation id="1853692000353488670">Neuer Inkognitotab</translation>
 <translation id="1856325424225101786">Lite-Modus zurücksetzen?</translation>
@@ -110,6 +114,8 @@
 <translation id="1877026089748256423">Chrome ist veraltet.</translation>
 <translation id="1883903952484604915">Meine Dateien</translation>
 <translation id="189358972401248634">Sonstige Sprachen</translation>
+<translation id="1919130412786645364">Anmeldung in Chrome zulassen</translation>
+<translation id="1922362554271624559">Vorgeschlagene Sprachen</translation>
 <translation id="1925021887439448749">Benutzerdefinierte Webadresse eingeben</translation>
 <translation id="1928696683969751773">Aktualisierungen</translation>
 <translation id="19288952978244135">Öffnen Sie Chrome noch einmal.</translation>
@@ -198,6 +204,7 @@ Berühren und halten Sie ein Wort, um eine Suche damit zu starten. Sie können I
 <translation id="2496180316473517155">Browserverlauf</translation>
 <translation id="2497852260688568942">Die Synchronisierung wurde von Ihrem Administrator deaktiviert</translation>
 <translation id="250020030759455918">Sie können Ihren Anmeldestatus für <ph name="SITE_NAME" />, Browserdaten und Websitedaten in Chrome einsehen</translation>
+<translation id="2512164632052122970">Content-Sprachen</translation>
 <translation id="2513403576141822879">Weitere Einstellungen in Verbindung mit Datenschutz, Sicherheit und der Erhebung von Daten finden Sie unter <ph name="BEGIN_LINK" />Synchronisierung und Google-Dienste<ph name="END_LINK" /></translation>
 <translation id="2517472476991765520">Suchen</translation>
 <translation id="2518590038762162553">Im Lite-Modus werden Seiten schneller in Chrome geladen und es werden bis zu 60 % weniger Daten verbraucht. Zum Optimieren der von Ihnen besuchten Seiten sendet Chrome Ihren Datenverkehr an Google. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
@@ -208,6 +215,7 @@ Berühren und halten Sie ein Wort, um eine Suche damit zu starten. Sie können I
 <translation id="2537178555904266562">Fehler beim Synchronisieren von Passwörtern</translation>
 <translation id="2546283357679194313">Cookies und Websitedaten</translation>
 <translation id="2567385386134582609">BILD</translation>
+<translation id="2571711316400087311">Anbieten, Seiten in anderen Sprachen an Google Übersetzer zu senden</translation>
 <translation id="2581165646603367611">Alle Cookies, der Cache und andere Daten von Websites, die Chrome nicht für wichtig hält, werden gelöscht.</translation>
 <translation id="2587052924345400782">Neuere Version verfügbar</translation>
 <translation id="2593272815202181319">Monospace</translation>
@@ -219,9 +227,11 @@ Berühren und halten Sie ein Wort, um eine Suche damit zu starten. Sie können I
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# Audiodatei}other{# Audiodateien}}</translation>
 <translation id="2656405586795711023">Web-Apps</translation>
 <translation id="2689830683995595741">Wenn Sie Chrome verwenden, stimmen Sie damit den <ph name="BEGIN_LINK1" />Nutzungsbedingungen von Google<ph name="END_LINK1" /> und den <ph name="BEGIN_LINK2" />zusätzlichen Nutzungsbedingungen für Google Chrome und Chrome OS<ph name="END_LINK2" /> zu. Außerdem gelten die <ph name="BEGIN_LINK3" />Datenschutzhinweise für mit Family Link verwaltete Google-Konten<ph name="END_LINK3" />.</translation>
+<translation id="2704606927547763573">Kopiert</translation>
 <translation id="2707726405694321444">Seite aktualisieren</translation>
 <translation id="2709516037105925701">Automatisches Ausfüllen</translation>
 <translation id="2718352093833049315">Nur bei WLAN</translation>
+<translation id="2718846868787000099">Zum Anzeigen von Inhalten in Ihren bevorzugten Sprachen müssen Websites, die Sie besuchen, Ihre Einstellungen abrufen können</translation>
 <translation id="2723001399770238859">Audio</translation>
 <translation id="2728754400939377704">Nach Website sortieren</translation>
 <translation id="2744248271121720757">Tippen Sie auf ein Wort, um eine Sofortsuche zu starten oder weitere Aktionen anzuzeigen</translation>
@@ -340,6 +350,7 @@ Berühren und halten Sie ein Wort, um eine Suche damit zu starten. Sie können I
 <translation id="3631987586758005671">Wird mit "<ph name="DEVICE_NAME" />" geteilt</translation>
 <translation id="3632295766818638029">Passwort anzeigen</translation>
 <translation id="363596933471559332">Sie werden mit gespeicherten Anmeldedaten automatisch auf Websites angemeldet. Wenn diese Funktion nicht aktiviert ist, werden Sie jedes Mal aufgefordert, sich manuell auf einer Website anzumelden.</translation>
+<translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3658159451045945436">Durch das Zurücksetzen wird der Verlauf gelöscht. Dazu gehört auch die Liste der besuchten Websites.</translation>
 <translation id="3692944402865947621">Download von <ph name="FILE_NAME" /> fehlgeschlagen, weil der Speicherort nicht erreichbar ist.</translation>
 <translation id="3701167022068948696">Jetzt beheben</translation>
@@ -347,6 +358,7 @@ Berühren und halten Sie ein Wort, um eine Suche damit zu starten. Sie können I
 <translation id="3714981814255182093">Suchleiste öffnen</translation>
 <translation id="3716182511346448902">Diese Seite benötigt zu viel Arbeitsspeicher und wurde daher von Chrome angehalten.</translation>
 <translation id="3721119614952978349">Google und ich</translation>
+<translation id="3737319253362202215">Übersetzungseinstellungen</translation>
 <translation id="3738139272394829648">Zum Suchen tippen</translation>
 <translation id="3739899004075612870">Als Lesezeichen in <ph name="PRODUCT_NAME" /> gespeichert</translation>
 <translation id="3749259744154402564">Nicht unterstützt</translation>
@@ -494,6 +506,7 @@ Wenn Sie diese Einstellung ändern möchten, <ph name="BEGIN_LINK" />setzen Sie 
 <translation id="4842092870884894799">Pop-up-Fenster zur Passwortgenerierung wird angezeigt.</translation>
 <translation id="4860895144060829044">Anrufen</translation>
 <translation id="4864369630010738180">Anmeldung erfolgt...</translation>
+<translation id="4865987431642283918">Standardmäßige Gerätesprache</translation>
 <translation id="4866368707455379617"><ph name="MODULE" /> kann nicht für Chrome installiert werden</translation>
 <translation id="4875775213178255010">Inhaltsvorschläge</translation>
 <translation id="4878404682131129617">Tunnelerstellung via Proxyserver ist fehlgeschlagen</translation>
@@ -567,6 +580,7 @@ Wenn Sie diese Einstellung ändern möchten, <ph name="BEGIN_LINK" />setzen Sie 
 <translation id="543338862236136125">Passwort ändern</translation>
 <translation id="5433691172869980887">Nutzername kopiert</translation>
 <translation id="543509235395288790"><ph name="COUNT" /> Dateien (<ph name="MEGABYTES" /> MB) werden heruntergeladen.</translation>
+<translation id="5441466871879044658">In diese Sprache übersetzen</translation>
 <translation id="5441522332038954058">Zur Adressleiste wechseln</translation>
 <translation id="544776284582297024">Auf die Schaltfläche "Tabs öffnen" tippen, um Tabs zu öffnen und mehrere Seiten gleichzeitig zu besuchen</translation>
 <translation id="545042621069398927">Download wird beschleunigt.</translation>
@@ -645,6 +659,7 @@ Wenn Sie diese Einstellung ändern möchten, <ph name="BEGIN_LINK" />setzen Sie 
 <translation id="5937580074298050696"><ph name="AMOUNT" /> gespeichert</translation>
 <translation id="5939518447894949180">Zurücksetzen</translation>
 <translation id="5942872142862698679">Suche erfolgt mit Google</translation>
+<translation id="5951615825629292797">Sprache heruntergeladen, <ph name="APP_NAME" /> neu starten</translation>
 <translation id="5952764234151283551">Die URL einer Seite, die Sie aufrufen möchten, wird an Google gesendet</translation>
 <translation id="5956665950594638604">Chrome-Hilfe in einem neuen Tab öffnen</translation>
 <translation id="5957442310066583693">Auf die Schaltfläche "Startseite" tippen, um Ihre Top-Websites aufzurufen</translation>
@@ -670,6 +685,7 @@ Wenn Sie diese Einstellung ändern möchten, <ph name="BEGIN_LINK" />setzen Sie 
 <translation id="6112702117600201073">Aktualisierung der Seite</translation>
 <translation id="6122831415929794347">Safe Browsing deaktivieren?</translation>
 <translation id="6127379762771434464">Eintrag entfernt</translation>
+<translation id="6137022273846704445">Sprache von <ph name="APP_NAME" /></translation>
 <translation id="6140709049082532940">Erweiterter Schutz</translation>
 <translation id="6140912465461743537">Land/Region</translation>
 <translation id="614940544461990577">Versuchen Sie Folgendes:</translation>
@@ -695,6 +711,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="6301525844455696527">Lesen Sie weiter</translation>
 <translation id="6303969859164067831">Abmelden und die Synchronisierung ausschalten</translation>
 <translation id="6312687380483398334">Web-Apps (stumm)</translation>
+<translation id="6313752143992575395">Vorschlag für <ph name="WEBSITE_TITLE" /> wird angezeigt</translation>
 <translation id="6316139424528454185">Android-Version nicht unterstützt</translation>
 <translation id="6324034347079777476">Android-Systemsynchronisierung deaktiviert</translation>
 <translation id="6333140779060797560">Über <ph name="APPLICATION" /> teilen</translation>
@@ -826,9 +843,11 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="7233236755231902816">Das Web in Ihrer Sprache – mit der aktuellen Version von Chrome</translation>
 <translation id="7248069434667874558">Prüfen Sie, ob auf <ph name="TARGET_DEVICE_NAME" /> die Synchronisierung in Chrome aktiviert ist</translation>
 <translation id="7274013316676448362">Blockierte Website</translation>
+<translation id="7286572596625053347"><ph name="LANGUAGE" /> ändern?</translation>
 <translation id="7290209999329137901">Umbenennen nicht verfügbar</translation>
 <translation id="7291387454912369099">Assistant für automatisches Ausfüllen</translation>
 <translation id="7293171162284876153">Aktivieren Sie "Chrome-Daten synchronisieren", um die Synchronisierung zu starten.</translation>
+<translation id="7293429513719260019">Sprache auswählen</translation>
 <translation id="729975465115245577">Auf Ihrem Gerät befindet sich keine App zum Speichern der Passwortdatei.</translation>
 <translation id="7302081693174882195">Details: Nach der Menge der gespeicherten Daten sortiert</translation>
 <translation id="7304873321153398381">Offline. Chrome kann Ihre Passwörter nicht prüfen.</translation>
@@ -918,6 +937,7 @@ Im Inkognitomodus bleiben Ihre Aktivitäten möglicherweise für Websites, die S
 <translation id="7882131421121961860">Kein Verlauf gefunden</translation>
 <translation id="7886917304091689118">Wird in Chrome ausgeführt</translation>
 <translation id="789763218334337857">Chrome verwenden</translation>
+<translation id="7919123827536834358">Diese Sprachen automatisch übersetzen</translation>
 <translation id="7925590027513907933">{FILE_COUNT,plural, =1{Datei wird heruntergeladen.}other{# Dateien werden heruntergeladen.}}</translation>
 <translation id="7926975587469166629">Kartenalias</translation>
 <translation id="7929962904089429003">Menü öffnen</translation>
@@ -946,7 +966,6 @@ Im Inkognitomodus bleiben Ihre Aktivitäten möglicherweise für Websites, die S
 <translation id="8058746566562539958">In neuem Chrome-Tab öffnen</translation>
 <translation id="8063895661287329888">Fehler beim Hinzufügen des Lesezeichens.</translation>
 <translation id="806745655614357130">Daten getrennt halten</translation>
-<translation id="8069669375923284295">Tippen, um mit der Einrichtung der Synchronisierung fortzufahren</translation>
 <translation id="8073388330009372546">Bild in neuem Tab öffnen</translation>
 <translation id="8076492880354921740">Tabs</translation>
 <translation id="8084114998886531721">Gespeichertes Passwort</translation>
@@ -984,6 +1003,7 @@ Im Inkognitomodus bleiben Ihre Aktivitäten möglicherweise für Websites, die S
 <translation id="8349013245300336738">Nach Menge der verwendeten Daten sortieren</translation>
 <translation id="8364299278605033898">Beliebte Websites ansehen</translation>
 <translation id="8368027906805972958">Unbekanntes oder nicht unterstütztes Gerät (<ph name="DEVICE_ID" />)</translation>
+<translation id="8372925856448695381"><ph name="LANG" /> ist bereit.</translation>
 <translation id="8393700583063109961">Nachricht senden</translation>
 <translation id="8407396331882458341">1. Wählen Sie <ph name="APP_NAME" /> aus\n2. Tippen Sie auf "Immer"</translation>
 <translation id="8413126021676339697">Gesamtverlauf anzeigen</translation>
@@ -1031,6 +1051,7 @@ Im Inkognitomodus bleiben Ihre Aktivitäten möglicherweise für Websites, die S
 <translation id="8683039184091909753">Bild</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{Signalstärke: # Balken}other{Signalstärke: # Balken}}</translation>
 <translation id="869891660844655955">Ablaufdatum</translation>
+<translation id="8699120352855309748">Übersetzen dieser Sprachen nicht anbieten</translation>
 <translation id="8712637175834984815">Alles klar</translation>
 <translation id="8725066075913043281">Erneut versuchen</translation>
 <translation id="8748850008226585750">Inhalte ausgeblendet</translation>

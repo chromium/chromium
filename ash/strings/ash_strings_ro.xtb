@@ -113,6 +113,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2049240716062114887">Numele desktopului a fost schimbat în <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Portret</translation>
 <translation id="2067602449040652523">Luminozitatea tastaturii</translation>
+<translation id="2074759828767813253">Capturi de ecran și descărcări recente</translation>
 <translation id="2083190527011054446">Bună seara, <ph name="GIVEN_NAME" />!</translation>
 <translation id="209965399369889474">Fără conexiune la rețea</translation>
 <translation id="2126242104232412123">Desktop nou</translation>
@@ -197,7 +198,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2996462380875591307">Lupa andocată este activată. Apasă din nou pe Ctrl + tasta de căutare + D pentru a o dezactiva.</translation>
 <translation id="3000461861112256445">Audio mono</translation>
 <translation id="3009178788565917040">Ieșiri</translation>
-<translation id="3025081209054535615">Anulează fixarea comenzilor media globale din raft</translation>
 <translation id="3033545621352269033">Activat</translation>
 <translation id="3038571455154067151">Pentru a te conecta, introdu codul de acces pentru părinte Family Link</translation>
 <translation id="3045488863354895414">Bună!</translation>
@@ -620,6 +620,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="7526573455193969409">Este posibil ca rețeaua să fie monitorizată</translation>
 <translation id="7536035074519304529">Adresă IP: <ph name="ADDRESS" /></translation>
 <translation id="7548434653388805669">Este timpul pentru culcare</translation>
+<translation id="7551643184018910560">Fixați în raft</translation>
 <translation id="7561982940498449837">Închide meniul</translation>
 <translation id="7564874036684306347">Mutarea ferestrelor pe alt desktop poate duce la un comportament neașteptat. Notificările, ferestrele și casetele de dialog ulterioare ar putea fi împărțite între ecrane.</translation>
 <translation id="7568294522609223312">Dezactivează clicurile automate</translation>
@@ -700,7 +701,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="8297006494302853456">Slab</translation>
 <translation id="8308637677604853869">Meniul anterior</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
-<translation id="8349293353728876872">Fixează comenzile media globale în raft</translation>
 <translation id="8351131234907093545">Creează o notă</translation>
 <translation id="8371779926711439835">Înainte cu o literă</translation>
 <translation id="8375916635258623388"><ph name="DEVICE_NAME" /> și telefonul se vor conecta automat</translation>

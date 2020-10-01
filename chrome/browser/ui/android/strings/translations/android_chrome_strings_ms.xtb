@@ -106,6 +106,7 @@
 <translation id="1810845389119482123">Penyediaan penyegerakan permulaan belum selesai</translation>
 <translation id="1821253160463689938">Menggunakan kuki untuk mengingati pilihan anda, walaupun anda tidak melawati halaman tersebut</translation>
 <translation id="1829244130665387512">Cari dalam halaman</translation>
+<translation id="1830550083491357902">Tidak dilog masuk</translation>
 <translation id="1843805151597803366">Untuk mendapatkan terjemahan yang lebih baik, benarkan Carian Google menggunakan halaman semasa</translation>
 <translation id="1853692000353488670">Tab inkognito baharu</translation>
 <translation id="1856325424225101786">Tetapkan semula mod Ringkas?</translation>
@@ -113,6 +114,7 @@
 <translation id="1877026089748256423">Chrome sudah usang</translation>
 <translation id="1883903952484604915">Fail Saya</translation>
 <translation id="189358972401248634">Bahasa lain</translation>
+<translation id="1919130412786645364">Benarkan log masuk Chrome</translation>
 <translation id="1922362554271624559">Bahasa yang dicadangkan</translation>
 <translation id="1925021887439448749">Masukkan alamat web tersuai</translation>
 <translation id="1928696683969751773">Kemas kini</translation>
@@ -225,6 +227,7 @@ Sentuh &amp; tahan mana-mana perkataan untuk mencari. Untuk memperhalus carian a
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# Fail audio}other{# Fail audio}}</translation>
 <translation id="2656405586795711023">Apl web</translation>
 <translation id="2689830683995595741">Dengan menggunakan Chrome, anda bersetuju menerima <ph name="BEGIN_LINK1" />Syarat Perkhidmatan Google<ph name="END_LINK1" /> dan <ph name="BEGIN_LINK2" />Syarat Perkhidmatan Tambahan Google Chrome dan OS Chrome<ph name="END_LINK2" />. <ph name="BEGIN_LINK3" />Notis Privasi untuk Akaun Google yang Diurus dengan Family Link<ph name="END_LINK3" /> juga terpakai.</translation>
+<translation id="2704606927547763573">Disalin</translation>
 <translation id="2707726405694321444">Muat semula halaman</translation>
 <translation id="2709516037105925701">Autoisi</translation>
 <translation id="2718352093833049315">Hanya pada Wi-Fi</translation>
@@ -577,7 +580,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />tetapkan semula penyegerakan<
 <translation id="543338862236136125">Edit kata laluan</translation>
 <translation id="5433691172869980887">Nama pengguna disalin</translation>
 <translation id="543509235395288790">Memuat turun <ph name="COUNT" /> fail (<ph name="MEGABYTES" />).</translation>
-<translation id="5441466871879044658">Terjemah ke dalam bahasa ini</translation>
+<translation id="5441466871879044658">Terjemah kepada bahasa ini</translation>
 <translation id="5441522332038954058">Lompat ke bar alamat</translation>
 <translation id="544776284582297024">Untuk membuka tab dan melawat halaman yang berlainan pada masa yang sama, ketik butang buka tab</translation>
 <translation id="545042621069398927">Mempercepatkan muat turun anda.</translation>
@@ -963,7 +966,6 @@ Dalam Inkognito, aktiviti anda mungkin masih kelihatan kepada tapak web yang and
 <translation id="8058746566562539958">Buka dalam tab Chrome baharu</translation>
 <translation id="8063895661287329888">Gagal menambah penanda halaman.</translation>
 <translation id="806745655614357130">Biarkan data saya diasingkan</translation>
-<translation id="8069669375923284295">Ketik untuk meneruskan persediaan penyegerakan</translation>
 <translation id="8073388330009372546">Buka imej dalam tab baharu</translation>
 <translation id="8076492880354921740">Tab</translation>
 <translation id="8084114998886531721">Kata laluan disimpan</translation>

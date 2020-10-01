@@ -198,7 +198,6 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="2996462380875591307">Mahkamlangan lupa yoniq. Uni olib tashlash uchun Ctrl+Qidiruv+D tugmalarini bosing.</translation>
 <translation id="3000461861112256445">Mono audio</translation>
 <translation id="3009178788565917040">Chiqarish</translation>
-<translation id="3025081209054535615">Global media boshqaruv elementlarini javondan yechish</translation>
 <translation id="3033545621352269033">Yoniq</translation>
 <translation id="3038571455154067151">Kirish uchun Family Link ota-ona ruxsat kodini tering</translation>
 <translation id="3045488863354895414">Xayrli kun,</translation>
@@ -621,6 +620,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="7526573455193969409">Tarmoq kuzatilishi mumkin</translation>
 <translation id="7536035074519304529">IP manzil: <ph name="ADDRESS" /></translation>
 <translation id="7548434653388805669">Uyqu vaqti keldi</translation>
+<translation id="7551643184018910560">Javonga qadab qo‘yish</translation>
 <translation id="7561982940498449837">Menyuni yopish</translation>
 <translation id="7564874036684306347">Oynalarni boshqa ish stoliga ko‘chirish oqibatida kutilmagan xatti-harakatlar sodir bo‘lishi mumkin. Bildirishnomalar va muloqot oynalari turli ekranlarda ko‘rsatiladi.</translation>
 <translation id="7568294522609223312">Avtomatik kliklarni faolsizlantirish</translation>
@@ -701,7 +701,6 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="8297006494302853456">Zaif</translation>
 <translation id="8308637677604853869">Avvalgi menyu</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
-<translation id="8349293353728876872">Global media boshqaruv elementlarini javonga mahkamlash</translation>
 <translation id="8351131234907093545">Qayd yaratish</translation>
 <translation id="8371779926711439835">Bitta harf oldinga</translation>
 <translation id="8375916635258623388">Bu <ph name="DEVICE_NAME" /> telefonga avtomatik ulanadi</translation>

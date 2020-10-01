@@ -113,6 +113,7 @@
 <translation id="2049240716062114887">데스크 이름이 <ph name="DESK_NAME" />(으)로 변경되었습니다.</translation>
 <translation id="2050339315714019657">세로 방향</translation>
 <translation id="2067602449040652523">키보드 밝기</translation>
+<translation id="2074759828767813253">최근 스크린샷 및 다운로드</translation>
 <translation id="2083190527011054446">편안한 밤 보내세요, <ph name="GIVEN_NAME" />님</translation>
 <translation id="209965399369889474">네트워크에 연결되어 있지 않음</translation>
 <translation id="2126242104232412123">새 데스크</translation>
@@ -197,7 +198,6 @@
 <translation id="2996462380875591307">고정 돋보기가 사용 설정되었습니다. 사용 중지하려면 다시 Ctrl+Search+D를 누르세요.</translation>
 <translation id="3000461861112256445">모노 오디오</translation>
 <translation id="3009178788565917040">출력</translation>
-<translation id="3025081209054535615">실행기에서 전체 미디어 컨트롤 고정 해제</translation>
 <translation id="3033545621352269033">사용</translation>
 <translation id="3038571455154067151">로그인하려면 Family Link 부모 액세스 코드를 입력하세요</translation>
 <translation id="3045488863354895414">즐거운 오후 보내세요</translation>
@@ -620,6 +620,7 @@
 <translation id="7526573455193969409">네트워크가 모니터링될 수 있음</translation>
 <translation id="7536035074519304529">IP 주소: <ph name="ADDRESS" /></translation>
 <translation id="7548434653388805669">취침 시간</translation>
+<translation id="7551643184018910560">임시보관함에 고정</translation>
 <translation id="7561982940498449837">메뉴 닫기</translation>
 <translation id="7564874036684306347">창을 다른 데스크톱으로 이동하면 예기치 못한 동작이 나타날 수 있습니다. 이후의 알림, 창, 대화상자가 데스크톱 간에 분할될 수 있습니다.</translation>
 <translation id="7568294522609223312">자동 클릭 사용 중지</translation>
@@ -700,7 +701,6 @@
 <translation id="8297006494302853456">약함</translation>
 <translation id="8308637677604853869">이전 메뉴</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
-<translation id="8349293353728876872">실행기에 전체 미디어 컨트롤 고정</translation>
 <translation id="8351131234907093545">메모 만들기</translation>
 <translation id="8371779926711439835">한 글자 앞으로 이동</translation>
 <translation id="8375916635258623388">이 <ph name="DEVICE_NAME" />과(와) 휴대전화가 자동으로 연결됩니다.</translation>
