@@ -299,9 +299,12 @@ class CandidateFormat {
           static_cast<double>(track_settings_with_rescale.target_width()) /
           track_settings_with_rescale.target_height();
       DCHECK(!std::isnan(target_aspect_ratio));
-      double target_frame_rate = track_settings_with_rescale.max_frame_rate();
-      if (target_frame_rate == 0.0)
-        target_frame_rate = NativeFrameRate();
+      double best_supported_frame_rate =
+          track_settings_with_rescale.max_frame_rate();
+      if (best_supported_frame_rate == 0.0 ||
+          best_supported_frame_rate > NativeFrameRate()) {
+        best_supported_frame_rate = NativeFrameRate();
+      }
 
       track_fitness_with_rescale =
           NumericValueFitness(basic_constraint_set.aspect_ratio,
@@ -311,7 +314,7 @@ class CandidateFormat {
           NumericValueFitness(basic_constraint_set.width,
                               track_settings_with_rescale.target_width()) +
           NumericValueFitness(basic_constraint_set.frame_rate,
-                              target_frame_rate);
+                              best_supported_frame_rate);
     }
 
     double track_fitness_without_rescale = HUGE_VAL;
@@ -326,17 +329,19 @@ class CandidateFormat {
             basic_constraint_set, resolution_set(), constrained_frame_rate(),
             format(), false /* enable_rescale */);
         DCHECK(!track_settings_without_rescale.target_size().has_value());
-        double target_frame_rate =
+        double best_supported_frame_rate =
             track_settings_without_rescale.max_frame_rate();
-        if (target_frame_rate == 0.0)
-          target_frame_rate = NativeFrameRate();
+        if (best_supported_frame_rate == 0.0 ||
+            best_supported_frame_rate > NativeFrameRate()) {
+          best_supported_frame_rate = NativeFrameRate();
+        }
         track_fitness_without_rescale =
             NumericValueFitness(basic_constraint_set.aspect_ratio,
                                 NativeAspectRatio()) +
             NumericValueFitness(basic_constraint_set.height, NativeHeight()) +
             NumericValueFitness(basic_constraint_set.width, NativeWidth()) +
             NumericValueFitness(basic_constraint_set.frame_rate,
-                                target_frame_rate);
+                                best_supported_frame_rate);
       }
     }
 

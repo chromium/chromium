@@ -50,8 +50,6 @@ void CheckTrackAdapterSettingsEqualsResolution(
 void CheckTrackAdapterSettingsEqualsFrameRate(
     const VideoCaptureSettings& settings,
     double value = 0.0) {
-  if (value >= settings.FrameRate())
-    value = 0.0;
   EXPECT_EQ(value, settings.track_adapter_settings().max_frame_rate());
 }
 
@@ -1184,7 +1182,8 @@ TEST_F(MediaStreamConstraintsUtilVideoDeviceTest, MandatoryFrameRateRange) {
     // format has a frame rate included in the requested range.
     EXPECT_EQ(default_device_->device_id.Utf8(), result.device_id());
     EXPECT_EQ(*default_closest_format_, result.Format());
-    CheckTrackAdapterSettingsEqualsFormat(result);
+    CheckTrackAdapterSettingsEqualsResolution(result);
+    CheckTrackAdapterSettingsEqualsFrameRate(result, kMaxFrameRate);
   }
 
   {
@@ -1201,7 +1200,8 @@ TEST_F(MediaStreamConstraintsUtilVideoDeviceTest, MandatoryFrameRateRange) {
     // range. The default resolution should be preferred as secondary criterion.
     EXPECT_EQ(low_res_device_->device_id.Utf8(), result.device_id());
     EXPECT_EQ(*low_res_closest_format_, result.Format());
-    CheckTrackAdapterSettingsEqualsFormat(result);
+    CheckTrackAdapterSettingsEqualsResolution(result);
+    CheckTrackAdapterSettingsEqualsFrameRate(result, kMaxFrameRate);
   }
 
   {
@@ -1220,7 +1220,8 @@ TEST_F(MediaStreamConstraintsUtilVideoDeviceTest, MandatoryFrameRateRange) {
     EXPECT_EQ(high_res_device_->device_id.Utf8(), result.device_id());
     EXPECT_EQ(1280, result.Width());
     EXPECT_EQ(720, result.Height());
-    CheckTrackAdapterSettingsEqualsFormat(result);
+    CheckTrackAdapterSettingsEqualsResolution(result);
+    CheckTrackAdapterSettingsEqualsFrameRate(result, kMaxFrameRate);
   }
 }
 
@@ -1284,7 +1285,8 @@ TEST_F(MediaStreamConstraintsUtilVideoDeviceTest, IdealFrameRate) {
     EXPECT_EQ(1280, result.Width());
     EXPECT_EQ(720, result.Height());
     EXPECT_EQ(60, result.FrameRate());
-    CheckTrackAdapterSettingsEqualsFormat(result);
+    CheckTrackAdapterSettingsEqualsResolution(result);
+    CheckTrackAdapterSettingsEqualsFrameRate(result, kIdealFrameRate);
   }
 }
 
@@ -2383,7 +2385,7 @@ TEST_F(MediaStreamConstraintsUtilVideoDeviceTest,
   // set.
   EXPECT_EQ(40.0, result.FrameRate());
   CheckTrackAdapterSettingsEqualsResolution(result);
-  CheckTrackAdapterSettingsEqualsFrameRate(result);
+  CheckTrackAdapterSettingsEqualsFrameRate(result, 40.0);
 }
 
 TEST_F(MediaStreamConstraintsUtilVideoDeviceTest,
@@ -2425,7 +2427,8 @@ TEST_F(MediaStreamConstraintsUtilVideoDeviceTest,
   EXPECT_EQ(low_res_device_->device_id.Utf8(), result.device_id());
   EXPECT_EQ(30.0, result.FrameRate());
   EXPECT_GE(1920, result.Width());
-  CheckTrackAdapterSettingsEqualsFormat(result);
+  CheckTrackAdapterSettingsEqualsResolution(result);
+  CheckTrackAdapterSettingsEqualsFrameRate(result, 30.0);
 }
 
 TEST_F(MediaStreamConstraintsUtilVideoDeviceTest,
@@ -2450,7 +2453,8 @@ TEST_F(MediaStreamConstraintsUtilVideoDeviceTest,
   EXPECT_EQ(high_res_device_->device_id.Utf8(), result.device_id());
   EXPECT_EQ(60.0, result.FrameRate());
   EXPECT_GE(1080, result.Height());
-  CheckTrackAdapterSettingsEqualsFormat(result);
+  CheckTrackAdapterSettingsEqualsResolution(result);
+  CheckTrackAdapterSettingsEqualsFrameRate(result, 60.0);
 }
 
 TEST_F(MediaStreamConstraintsUtilVideoDeviceTest, AdvancedDeviceID) {

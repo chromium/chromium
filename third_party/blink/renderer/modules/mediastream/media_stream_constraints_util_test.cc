@@ -544,9 +544,7 @@ TEST_F(MediaStreamConstraintsUtilTest, VideoTrackAdapterSettingsConstrained) {
     EXPECT_EQ(kSourceWidth, result.target_width());
     EXPECT_EQ(kMinAspectRatio, result.min_aspect_ratio());
     EXPECT_EQ(kMaxAspectRatio, result.max_aspect_ratio());
-    // No frame-rate adjustment because the track will use the same frame rate
-    // as the source.
-    EXPECT_EQ(0.0, result.max_frame_rate());
+    EXPECT_EQ(kSourceFrameRate, result.max_frame_rate());
   }
 
   // High frame rate.
@@ -563,9 +561,7 @@ TEST_F(MediaStreamConstraintsUtilTest, VideoTrackAdapterSettingsConstrained) {
     EXPECT_EQ(kSourceWidth, result.target_width());
     EXPECT_EQ(kMinAspectRatio, result.min_aspect_ratio());
     EXPECT_EQ(kMaxAspectRatio, result.max_aspect_ratio());
-    // No frame-rate adjustment because the track will use a frame rate that is
-    // greater than the source's.
-    EXPECT_EQ(0.0, result.max_frame_rate());
+    EXPECT_EQ(kHighFrameRate, result.max_frame_rate());
   }
 }
 
