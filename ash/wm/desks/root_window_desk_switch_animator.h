@@ -190,6 +190,10 @@ class ASH_EXPORT RootWindowDeskSwitchAnimator
   // continuously.
   static constexpr float kEdgePaddingRatio = 0.15f;
 
+  // In touchpad units, a touchpad swipe of this length will correspond to a
+  // full desk change.
+  static constexpr int kTouchpadSwipeLengthForDeskChange = 100;
+
   RootWindowDeskSwitchAnimator(aura::Window* root,
                                int starting_desk_index,
                                int ending_desk_index,

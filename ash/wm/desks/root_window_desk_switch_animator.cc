@@ -43,10 +43,6 @@ constexpr int kMinDistanceBeforeScreenshotDp = 40;
 constexpr base::TimeDelta kAnimationDuration =
     base::TimeDelta::FromMilliseconds(300);
 
-// In touchpad units, a touchpad swipe of this length will correspond to a full
-// desk change.
-constexpr int kTouchpadSwipeLengthForDeskChange = 100;
-
 // The amount, by which the detached old layers of the removed desk's windows,
 // is translated vertically during the for-remove desk switch animation.
 constexpr int kRemovedDeskWindowYTranslation = 20;
@@ -115,7 +111,8 @@ std::string GetScreenshotLayerName(int index) {
 // units. Convert these units so that what is considered a full touchpad swipe
 // shifts the animation layer one entire desk length.
 float TouchpadToXTranslation(float touchpad_x, int desk_length) {
-  return desk_length * touchpad_x / kTouchpadSwipeLengthForDeskChange;
+  return desk_length * touchpad_x /
+         RootWindowDeskSwitchAnimator::kTouchpadSwipeLengthForDeskChange;
 }
 
 }  // namespace
@@ -274,21 +271,23 @@ bool RootWindowDeskSwitchAnimator::UpdateSwipeAnimation(float scroll_delta_x) {
   // the delegate to request a new screenshot if the animating layer is about to
   // slide past the bounds which are visible to the user (root window bounds).
   //
-  //            <--- moving left
-  //   +------------------------------+
-  //   |               +-----------+  |
-  //   |      b        |     a     |  |
-  //   |               +___________+  |
-  //   +______________________________+
+  //              moving right ---->
+  //   +---+------------------------------+---+
+  //   |   |               +-----------+  |   |
+  //   | c |      b        |     a     |  | c |
+  //   |   |               +___________+  |   |
+  //   +___+______________________________+___+
   //
   //  a - root window/visible bounds - (0,0-1000x500)
-  //  b - animating layer with two screenshots - (0,0-2050x500)
-  //    - with translation (-1000, 0)
-  //  We will notify the delegate to request a new screenshot once the right
-  //  of b is within |kMinDistanceBeforeScreenshotDp| of the right of a (i.e.
-  //  translation of (-1040, 0)).
+  //  b - animating layer with two screenshots and edge padding - (0,0-2350x500)
+  //    - current second screenshot is visible (translation (-1200, 0))
+  //  c - Edge padding, equal to |kEdgePaddingRatio| x 1000 - 150 dips wide
+  //  We will notify the delegate to request a new screenshot once the x of b is
+  //  within |kMinDistanceBeforeScreenshotDp| of the x of a, not including the
+  //  edge padding (i.e. translation of (-190, 0)).
   gfx::RectF transformed_animation_layer_bounds(animation_layer->bounds());
   transform.TransformRect(&transformed_animation_layer_bounds);
+  transformed_animation_layer_bounds.Inset(edge_padding_width_dp_, 0);
 
   const bool moving_left = scroll_delta_x < 0.f;
   const bool going_out_of_bounds =
