@@ -31,4 +31,20 @@ public class LoadProgressCoordinator {
         mPropertyModelChangeProcessor = PropertyModelChangeProcessor.create(
                 mModel, mProgressBarView, mLoadProgressViewBinder::bind);
     }
+
+    /**
+     * Simulates progressbar being filled over a short time.
+     */
+    public void simulateLoadProgressCompletion() {
+        mMediator.simulateLoadProgressCompletion();
+    }
+
+    /**
+     * Whether progressbar should be updated on tab progress changes.
+     * @param preventUpdates If true, prevents updating progressbar when the tab it's observing
+     *                       is being loaded.
+     */
+    public void setPreventUpdates(boolean preventUpdates) {
+        mMediator.setPreventUpdates(preventUpdates);
+    }
 }
