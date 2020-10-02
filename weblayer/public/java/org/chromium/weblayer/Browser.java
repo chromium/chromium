@@ -73,6 +73,14 @@ public class Browser {
                                                    : null;
     }
 
+    /**
+     * Returns true if this Browser has been destroyed.
+     */
+    public boolean isDestroyed() {
+        ThreadCheck.ensureOnUiThread();
+        return mImpl == null;
+    }
+
     // Called prior to notifying IBrowser of destroy().
     void prepareForDestroy() {
         mFragment = null;

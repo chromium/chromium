@@ -10,6 +10,7 @@ android_library("weblayer_java_tests") {
   testonly = true
   sources = [
     "src/org/chromium/weblayer/test/BrowserFragmentLifecycleTest.java",
+    "src/org/chromium/weblayer/test/BrowserTest.java",
     "src/org/chromium/weblayer/test/CookieManagerTest.java",
     "src/org/chromium/weblayer/test/CrashReporterTest.java",
     "src/org/chromium/weblayer/test/DataClearingTest.java",

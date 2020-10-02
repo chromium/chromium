@@ -18,6 +18,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.weblayer.Browser;
 import org.chromium.weblayer.Navigation;
 import org.chromium.weblayer.NavigationCallback;
 import org.chromium.weblayer.NavigationController;
@@ -281,5 +282,26 @@ public class BrowserFragmentLifecycleTest {
             });
         });
         helper.waitForCallback(callCount, 1);
+    }
+
+    @Test
+    @SmallTest
+    public void browserAndTabIsDestroyedWhenFragmentDestroyed() throws Throwable {
+        mActivityTestRule.launchShellWithUrl(mActivityTestRule.getTestDataURL("simple_page.html"));
+
+        CallbackHelper helper = new CallbackHelper();
+        Browser browser = TestThreadUtils.runOnUiThreadBlocking(
+                () -> { return mActivityTestRule.getActivity().getBrowser(); });
+        Tab tab = TestThreadUtils.runOnUiThreadBlocking(() -> { return browser.getActiveTab(); });
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Assert.assertFalse(browser.isDestroyed());
+            Assert.assertFalse(tab.isDestroyed());
+            destroyFragment(helper);
+        });
+        helper.waitForFirst();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Assert.assertTrue(browser.isDestroyed());
+            Assert.assertTrue(tab.isDestroyed());
+        });
     }
 }

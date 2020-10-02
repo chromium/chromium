@@ -128,6 +128,14 @@ public class Tab {
         mBrowser = browser;
     }
 
+    /**
+     * Returns true if this Tab has been destroyed.
+     */
+    public boolean isDestroyed() {
+        ThreadCheck.ensureOnUiThread();
+        return mImpl == null;
+    }
+
     @NonNull
     public Browser getBrowser() {
         ThreadCheck.ensureOnUiThread();
