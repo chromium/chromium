@@ -112,6 +112,8 @@ void MetricIntegrationTest::SetUpCommandLine(CommandLine* command_line) {
   // Set a default window size for consistency.
   command_line->AppendSwitchASCII(switches::kWindowSize, "800,600");
   command_line->AppendSwitch(switches::kEnableExperimentalWebPlatformFeatures);
+
+  content::IsolateAllSitesForTesting(command_line);
 }
 
 std::unique_ptr<HttpResponse> MetricIntegrationTest::HandleRequest(

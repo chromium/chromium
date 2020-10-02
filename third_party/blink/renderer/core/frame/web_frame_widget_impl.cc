@@ -490,6 +490,8 @@ WebInputEventResult WebFrameWidgetImpl::HandleInputEvent(
     return WebInputEventResult::kHandledSystem;
   }
 
+  NotifyInputObservers(coalesced_event);
+
   if (mouse_capture_element_ &&
       WebInputEvent::IsMouseEventType(input_event.GetType())) {
     TRACE_EVENT1("input", "captured mouse event", "type",

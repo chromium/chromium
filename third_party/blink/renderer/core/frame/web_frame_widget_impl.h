@@ -67,6 +67,11 @@ class WebMouseEvent;
 class WebMouseWheelEvent;
 class WebFrameWidgetImpl;
 
+// Implements WebFrameWidget for a child local root frame (OOPIF). This object
+// is created in the child renderer and attached to the OOPIF's WebLocalFrame.
+//
+// For the main frame's WebFrameWidget implementation, see WebViewFrameWidget.
+//
 class WebFrameWidgetImpl final : public WebFrameWidgetBase,
                                  public PageWidgetEventHandler {
  public:

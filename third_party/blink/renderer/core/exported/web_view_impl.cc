@@ -2323,6 +2323,9 @@ WebInputEventResult WebViewImpl::HandleInputEvent(
     return WebInputEventResult::kNotHandled;
   DCHECK(!WebInputEvent::IsTouchEventType(input_event.GetType()));
 
+  WebFrameWidgetBase* widget = MainFrameImpl()->FrameWidgetImpl();
+  DCHECK(widget);
+
   GetPage()->GetVisualViewport().StartTrackingPinchStats();
 
   TRACE_EVENT1("input,rail", "WebViewImpl::handleInputEvent", "type",
@@ -2330,7 +2333,7 @@ WebInputEventResult WebViewImpl::HandleInputEvent(
 
   // If a drag-and-drop operation is in progress, ignore input events except
   // PointerCancel.
-  if (MainFrameImpl()->FrameWidgetImpl()->DoingDragAndDrop() &&
+  if (widget->DoingDragAndDrop() &&
       input_event.GetType() != WebInputEvent::Type::kPointerCancel)
     return WebInputEventResult::kHandledSuppressed;
 
@@ -2350,14 +2353,12 @@ WebInputEventResult WebViewImpl::HandleInputEvent(
   UIEventWithKeyState::ClearNewTabModifierSetFromIsolatedWorld();
 
   bool is_pointer_locked = false;
-  if (WebFrameWidgetBase* widget = MainFrameImpl()->FrameWidgetImpl()) {
-    if (WebWidgetClient* client = widget->Client())
-      is_pointer_locked = client->IsPointerLocked();
-  }
+  if (WebWidgetClient* client = widget->Client())
+    is_pointer_locked = client->IsPointerLocked();
 
   if (is_pointer_locked &&
       WebInputEvent::IsMouseEventType(input_event.GetType())) {
-    MainFrameImpl()->FrameWidgetImpl()->PointerLockMouseEvent(coalesced_event);
+    widget->PointerLockMouseEvent(coalesced_event);
     return WebInputEventResult::kHandledSystem;
   }
 
@@ -2377,16 +2378,12 @@ WebInputEventResult WebViewImpl::HandleInputEvent(
     }
   }
 
+  widget->NotifyInputObservers(coalesced_event);
+
   // Notify the focus frame of the input. Note that the other frames are not
   // notified as input is only handled by the focused frame.
   Frame* frame = FocusedCoreFrame();
   if (auto* local_frame = DynamicTo<LocalFrame>(frame)) {
-    if (local_frame->View() && local_frame->View()
-                                   ->GetPaintTimingDetector()
-                                   .NeedToNotifyInputOrScroll()) {
-      local_frame->View()->GetPaintTimingDetector().NotifyInputEvent(
-          input_event.GetType());
-    }
     if (auto* content_capture_manager =
             local_frame->LocalFrameRoot().GetContentCaptureManager()) {
       content_capture_manager->NotifyInputEvent(input_event.GetType(),

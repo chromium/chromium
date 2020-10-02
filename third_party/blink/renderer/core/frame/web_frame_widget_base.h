@@ -607,6 +607,11 @@ class CORE_EXPORT WebFrameWidgetBase
   void NotifyPageScaleFactorChanged(float page_scale_factor,
                                     bool is_pinch_gesture_active);
 
+  // Helper for notifying frame-level objects that care about input events.
+  // TODO: With some effort, this could be folded into a common implementation
+  // of WebViewImpl::HandleInputEvent and WebFrameWidgetImpl::HandleInputEvent.
+  void NotifyInputObservers(const WebCoalescedInputEvent& coalesced_event);
+
   // A copy of the web drop data object we received from the browser.
   Member<DataObject> current_drag_data_;
 
