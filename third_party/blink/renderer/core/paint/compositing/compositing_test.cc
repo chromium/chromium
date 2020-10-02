@@ -43,7 +43,7 @@ class CompositingTest : public PaintTestConfigurations, public testing::Test {
     web_view_helper_ = std::make_unique<frame_test_helpers::WebViewHelper>();
     web_view_helper_->Initialize(nullptr, nullptr, &web_widget_client_,
                                  &ConfigureCompositingWebView);
-    web_view_helper_->Resize(WebSize(200, 200));
+    web_view_helper_->Resize(gfx::Size(200, 200));
 
     // The paint artifact compositor should have been created as part of the
     // web view helper setup.
@@ -495,7 +495,7 @@ class CompositingSimTest : public PaintTestConfigurations, public SimTest {
   void SetUp() override {
     SimTest::SetUp();
     // Ensure a non-empty size so painting does not early-out.
-    WebView().Resize(WebSize(800, 600));
+    WebView().Resize(gfx::Size(800, 600));
   }
 };
 

@@ -245,7 +245,7 @@ TEST_F(LocalFrameTest, CharacterIndexAtPointWithPinchZoom) {
   frame_test_helpers::WebViewHelper web_view_helper;
   web_view_helper.InitializeAndLoad("http://internal.test/sometext.html");
   web_view_helper.LoadAhem();
-  web_view_helper.Resize(WebSize(640, 480));
+  web_view_helper.Resize(gfx::Size(640, 480));
 
   // Move the visual viewport to the start of the target div containing the
   // text.

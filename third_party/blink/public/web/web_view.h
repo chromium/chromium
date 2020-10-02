@@ -74,7 +74,6 @@ class WebViewClient;
 class WebWidget;
 struct DeviceEmulationParams;
 struct WebRect;
-struct WebSize;
 struct WebWindowFeatures;
 
 class WebView {
@@ -272,7 +271,7 @@ class WebView {
   //
   // This may only be called when there is a local main frame attached to this
   // WebView.
-  virtual WebSize ContentsPreferredMinimumSize() = 0;
+  virtual gfx::Size ContentsPreferredMinimumSize() = 0;
 
   // Check whether the preferred size has changed. This should only be called
   // with up-to-date layout.
@@ -301,7 +300,7 @@ class WebView {
   // controls. If |browser_controls_shrink_layout| is true, the embedder shrunk
   // the WebView size by the browser controls height.
   virtual void ResizeWithBrowserControls(
-      const WebSize& main_frame_widget_size,
+      const gfx::Size& main_frame_widget_size,
       float top_controls_height,
       float bottom_controls_height,
       bool browser_controls_shrink_layout) = 0;
@@ -311,20 +310,20 @@ class WebView {
   // size becomes the size of the viewport when page scale = 1. This
   // is used to shrink the visible viewport to allow things like the ChromeOS
   // virtual keyboard to overlay over content but allow scrolling it into view.
-  virtual void ResizeVisualViewport(const WebSize&) = 0;
+  virtual void ResizeVisualViewport(const gfx::Size&) = 0;
 
-  // Same as ResizeWithBrowserControls(const WebSize&,float,float,bool), but
+  // Same as ResizeWithBrowserControls(const gfx::Size&,float,float,bool), but
   // includes all browser controls params such as the min heights.
   virtual void ResizeWithBrowserControls(
-      const WebSize& main_frame_widget_size,
-      const WebSize& visible_viewport_size,
+      const gfx::Size& main_frame_widget_size,
+      const gfx::Size& visible_viewport_size,
       cc::BrowserControlsParams browser_controls_params) = 0;
 
   // Same as ResizeWithBrowserControls, but keeps the same BrowserControl
   // settings.
-  virtual void Resize(const WebSize&) = 0;
+  virtual void Resize(const gfx::Size&) = 0;
 
-  virtual WebSize GetSize() = 0;
+  virtual gfx::Size GetSize() = 0;
 
   // Override the screen orientation override.
   virtual void SetScreenOrientationOverrideForTesting(
@@ -355,7 +354,7 @@ class WebView {
   // Do a hit test equivalent to what would be done for a GestureTap event
   // that has width/height corresponding to the supplied |tapArea|.
   virtual WebHitTestResult HitTestResultForTap(const gfx::Point& tap_point,
-                                               const WebSize& tap_area) = 0;
+                                               const gfx::Size& tap_area) = 0;
 
   // Support for resource loading initiated by plugins -------------------
 
@@ -462,7 +461,7 @@ class WebView {
   virtual void AddAutoplayFlags(int32_t flags) = 0;
   virtual void ClearAutoplayFlags() = 0;
   virtual int32_t AutoplayFlagsForTest() = 0;
-  virtual WebSize GetPreferredSizeForTest() = 0;
+  virtual gfx::Size GetPreferredSizeForTest() = 0;
 
   // Non-composited support -----------------------------------------------
 

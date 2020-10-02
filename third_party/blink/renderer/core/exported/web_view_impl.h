@@ -45,7 +45,6 @@
 #include "third_party/blink/public/mojom/page/page_visibility_state.mojom-blink.h"
 #include "third_party/blink/public/platform/web_input_event_result.h"
 #include "third_party/blink/public/platform/web_rect.h"
-#include "third_party/blink/public/platform/web_size.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
@@ -147,12 +146,12 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   void SetIsActive(bool value) override;
   void SetWindowFeatures(const WebWindowFeatures&) override;
   void SetOpenedByDOM() override;
-  void ResizeWithBrowserControls(const WebSize& main_frame_widget_size,
+  void ResizeWithBrowserControls(const gfx::Size& main_frame_widget_size,
                                  float top_controls_height,
                                  float bottom_controls_height,
                                  bool browser_controls_shrink_layout) override;
-  void ResizeWithBrowserControls(const WebSize& main_frame_widget_size,
-                                 const WebSize& visible_viewport_size,
+  void ResizeWithBrowserControls(const gfx::Size& main_frame_widget_size,
+                                 const gfx::Size& visible_viewport_size,
                                  cc::BrowserControlsParams) override;
   WebFrame* MainFrame() override;
   WebLocalFrame* FocusedFrame() override;
@@ -177,9 +176,9 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   void SetVisualViewportOffset(const gfx::PointF&) override;
   gfx::PointF VisualViewportOffset() const override;
   gfx::SizeF VisualViewportSize() const override;
-  void ResizeVisualViewport(const WebSize&) override;
-  void Resize(const WebSize&) override;
-  WebSize GetSize() override;
+  void ResizeVisualViewport(const gfx::Size&) override;
+  void Resize(const gfx::Size&) override;
+  gfx::Size GetSize() override;
   void SetScreenOrientationOverrideForTesting(
       base::Optional<blink::mojom::ScreenOrientation> orientation) override;
   void UseSynchronousResizeModeForTesting(bool enable) override;
@@ -187,7 +186,7 @@ class CORE_EXPORT WebViewImpl final : public WebView,
       const gfx::Rect& new_window_rect) override;
   void ResetScrollAndScaleState() override;
   void SetIgnoreViewportTagScaleLimits(bool) override;
-  WebSize ContentsPreferredMinimumSize() override;
+  gfx::Size ContentsPreferredMinimumSize() override;
   void UpdatePreferredSize() override;
   void EnablePreferredSizeChangedMode() override;
   void Focus() override;
@@ -202,7 +201,7 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   void DisableAutoResizeForTesting(const gfx::Size& new_window_size) override;
   WebHitTestResult HitTestResultAt(const gfx::PointF&);
   WebHitTestResult HitTestResultForTap(const gfx::Point&,
-                                       const WebSize&) override;
+                                       const gfx::Size&) override;
   uint64_t CreateUniqueIdentifierForRequest() override;
   void EnableDeviceEmulation(const DeviceEmulationParams&) override;
   void DisableDeviceEmulation() override;
@@ -420,9 +419,9 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   void AddAutoplayFlags(int32_t) override;
   void ClearAutoplayFlags() override;
   int32_t AutoplayFlagsForTest() override;
-  WebSize GetPreferredSizeForTest() override;
+  gfx::Size GetPreferredSizeForTest() override;
 
-  WebSize Size();
+  gfx::Size Size();
   IntSize MainFrameSize();
 
   PageScaleConstraintsSet& GetPageScaleConstraintsSet() const;
@@ -627,7 +626,7 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   // the page. This allows the browser to shrink the size of the displayed
   // contents [e.g. to accomodate a keyboard] without forcing the web page to
   // relayout. For more details, see the header for the VisualViewport class.
-  WebSize size_;
+  gfx::Size size_;
   // If true, automatically resize the layout view around its content.
   bool should_auto_resize_ = false;
   // The lower bound on the size when auto-resizing.

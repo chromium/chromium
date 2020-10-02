@@ -310,7 +310,7 @@ TEST_F(ImageDocumentViewportTest, HidingURLBarDoesntChangeImageLocation) {
   // Initialize with the URL bar showing. Make the viewport very thin so that
   // we load an image much wider than the viewport but fits vertically. The
   // page will load zoomed out so the image will be vertically centered.
-  WebView().ResizeWithBrowserControls(IntSize(5, 40), 10, 10, true);
+  WebView().ResizeWithBrowserControls(gfx::Size(5, 40), 10, 10, true);
   SimRequest request("https://example.com/test.jpg", "image/jpeg");
   LoadURL("https://example.com/test.jpg");
 
@@ -337,7 +337,7 @@ TEST_F(ImageDocumentViewportTest, HidingURLBarDoesntChangeImageLocation) {
 
   // Hide the URL bar. This will make the viewport taller but won't change the
   // layout size so the image location shouldn't change.
-  WebView().ResizeWithBrowserControls(IntSize(5, 50), 10, 10, false);
+  WebView().ResizeWithBrowserControls(gfx::Size(5, 50), 10, 10, false);
   Compositor().BeginFrame();
   rect = img->getBoundingClientRect();
   EXPECT_EQ(50, rect->width());

@@ -576,7 +576,7 @@ WebRemoteFrameImpl* WebViewHelper::RemoteMainFrame() const {
   return To<WebRemoteFrameImpl>(web_view_->MainFrame());
 }
 
-void WebViewHelper::Resize(WebSize size) {
+void WebViewHelper::Resize(const gfx::Size& size) {
   GetWebView()->Resize(size);
 }
 

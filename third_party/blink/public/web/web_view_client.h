@@ -47,7 +47,6 @@ class WebPagePopup;
 class WebURLRequest;
 class WebView;
 struct WebRect;
-struct WebSize;
 struct WebWindowFeatures;
 
 class WebViewClient {
@@ -123,7 +122,7 @@ class WebViewClient {
 
   // Return true to swallow the input event if the embedder will start a
   // disambiguation popup
-  virtual bool DidTapMultipleTargets(const WebSize& visual_viewport_offset,
+  virtual bool DidTapMultipleTargets(const gfx::Size& visual_viewport_offset,
                                      const WebRect& touch_rect,
                                      const WebVector<WebRect>& target_rects) {
     return false;
@@ -133,7 +132,7 @@ class WebViewClient {
   virtual WebString AcceptLanguages() { return WebString(); }
 
   // Called when the View has changed size as a result of an auto-resize.
-  virtual void DidAutoResize(const WebSize& new_size) {}
+  virtual void DidAutoResize(const gfx::Size& new_size) {}
 
   // Called when the View acquires focus.
   virtual void DidFocus() {}

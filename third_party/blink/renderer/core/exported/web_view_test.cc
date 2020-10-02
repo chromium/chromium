@@ -182,7 +182,7 @@ class TestData {
   void SetWebView(WebView* web_view) {
     web_view_ = static_cast<WebViewImpl*>(web_view);
   }
-  void SetSize(const WebSize& new_size) { size_ = new_size; }
+  void SetSize(const gfx::Size& new_size) { size_ = new_size; }
   HorizontalScrollbarState GetHorizontalScrollbarState() const {
     return web_view_->HasHorizontalScrollbar() ? kVisibleHorizontalScrollbar
                                                : kNoHorizontalScrollbar;
@@ -191,18 +191,18 @@ class TestData {
     return web_view_->HasVerticalScrollbar() ? kVisibleVerticalScrollbar
                                              : kNoVerticalScrollbar;
   }
-  int Width() const { return size_.width; }
-  int Height() const { return size_.height; }
+  int Width() const { return size_.width(); }
+  int Height() const { return size_.height(); }
 
  private:
-  WebSize size_;
+  gfx::Size size_;
   WebViewImpl* web_view_;
 };
 
 class AutoResizeWebViewClient : public frame_test_helpers::TestWebViewClient {
  public:
   // WebViewClient methods
-  void DidAutoResize(const WebSize& new_size) override {
+  void DidAutoResize(const gfx::Size& new_size) override {
     test_data_.SetSize(new_size);
   }
 
@@ -230,7 +230,7 @@ class WebViewTest : public testing::Test {
   }
 
  protected:
-  void SetViewportSize(const WebSize& size) {
+  void SetViewportSize(const gfx::Size& size) {
     cc::LayerTreeHost* layer_tree_host = web_view_helper_.GetLayerTreeHost();
     layer_tree_host->SetViewportRectAndScale(
         gfx::Rect(static_cast<gfx::Size>(size)), /*device_scale_factor=*/1.f,
@@ -816,7 +816,7 @@ TEST_F(WebViewTest, HitTestResultForTapWithTapArea) {
   negative_result.Reset();
 
   // The tap area is 20 by 20 square, centered at 55, 55.
-  WebSize tap_area(20, 20);
+  gfx::Size tap_area(20, 20);
   WebHitTestResult positive_result =
       web_view->HitTestResultForTap(hit_point, tap_area);
   EXPECT_TRUE(positive_result.GetNode().To<WebElement>().HasHTMLTagName("img"));
@@ -846,7 +846,7 @@ TEST_F(WebViewTest, HitTestResultForTapWithTapAreaPageScaleAndPan) {
   negative_result.Reset();
 
   // The tap area is 20 by 20 square, centered at 55, 55.
-  WebSize tap_area(20, 20);
+  gfx::Size tap_area(20, 20);
   WebHitTestResult positive_result =
       web_view->HitTestResultForTap(hit_point, tap_area);
   EXPECT_TRUE(positive_result.GetNode().To<WebElement>().HasHTMLTagName("img"));
@@ -4582,26 +4582,26 @@ TEST_F(WebViewTest, PreferredSize) {
       ToKURL(url), test::CoreTestDataPath("specify_size.html"));
   WebView* web_view = web_view_helper_.InitializeAndLoad(url);
 
-  WebSize size = web_view->ContentsPreferredMinimumSize();
-  EXPECT_EQ(100, size.width);
-  EXPECT_EQ(100, size.height);
+  gfx::Size size = web_view->ContentsPreferredMinimumSize();
+  EXPECT_EQ(100, size.width());
+  EXPECT_EQ(100, size.height());
 
   web_view->SetZoomLevel(PageZoomFactorToZoomLevel(2.0));
   size = web_view->ContentsPreferredMinimumSize();
-  EXPECT_EQ(200, size.width);
-  EXPECT_EQ(200, size.height);
+  EXPECT_EQ(200, size.width());
+  EXPECT_EQ(200, size.height());
 
   // Verify that both width and height are rounded (in this case up)
   web_view->SetZoomLevel(PageZoomFactorToZoomLevel(0.9995));
   size = web_view->ContentsPreferredMinimumSize();
-  EXPECT_EQ(100, size.width);
-  EXPECT_EQ(100, size.height);
+  EXPECT_EQ(100, size.width());
+  EXPECT_EQ(100, size.height());
 
   // Verify that both width and height are rounded (in this case down)
   web_view->SetZoomLevel(PageZoomFactorToZoomLevel(1.0005));
   size = web_view->ContentsPreferredMinimumSize();
-  EXPECT_EQ(100, size.width);
-  EXPECT_EQ(100, size.height);
+  EXPECT_EQ(100, size.width());
+  EXPECT_EQ(100, size.height());
 
   url = base_url_ + "specify_size.html?1.5px:1.5px";
   url_test_helpers::RegisterMockedURLLoad(
@@ -4610,8 +4610,8 @@ TEST_F(WebViewTest, PreferredSize) {
 
   web_view->SetZoomLevel(PageZoomFactorToZoomLevel(1));
   size = web_view->ContentsPreferredMinimumSize();
-  EXPECT_EQ(2, size.width);
-  EXPECT_EQ(2, size.height);
+  EXPECT_EQ(2, size.width());
+  EXPECT_EQ(2, size.height());
 }
 
 TEST_F(WebViewTest, PreferredMinimumSizeQuirksMode) {
@@ -4626,10 +4626,10 @@ TEST_F(WebViewTest, PreferredMinimumSizeQuirksMode) {
       </html>)HTML",
       url_test_helpers::ToKURL("http://example.com/"));
 
-  WebSize size = web_view->ContentsPreferredMinimumSize();
-  EXPECT_EQ(99, size.width);
+  gfx::Size size = web_view->ContentsPreferredMinimumSize();
+  EXPECT_EQ(99, size.width());
   // When in quirks mode the preferred height stretches to fill the viewport.
-  EXPECT_EQ(600, size.height);
+  EXPECT_EQ(600, size.height());
 }
 
 TEST_F(WebViewTest, PreferredSizeWithGrid) {
@@ -4649,9 +4649,9 @@ TEST_F(WebViewTest, PreferredSizeWithGrid) {
                                    )HTML",
                                      base_url);
 
-  WebSize size = web_view->ContentsPreferredMinimumSize();
-  EXPECT_EQ(100, size.width);
-  EXPECT_EQ(100, size.height);
+  gfx::Size size = web_view->ContentsPreferredMinimumSize();
+  EXPECT_EQ(100, size.width());
+  EXPECT_EQ(100, size.height());
 }
 
 TEST_F(WebViewTest, PreferredSizeWithGridMinWidth) {
@@ -4667,8 +4667,8 @@ TEST_F(WebViewTest, PreferredSizeWithGridMinWidth) {
                                    )HTML",
                                      base_url);
 
-  WebSize size = web_view->ContentsPreferredMinimumSize();
-  EXPECT_EQ(200, size.width);
+  gfx::Size size = web_view->ContentsPreferredMinimumSize();
+  EXPECT_EQ(200, size.width());
 }
 
 TEST_F(WebViewTest, PreferredSizeWithGridMinWidthFlexibleTracks) {
@@ -4684,8 +4684,8 @@ TEST_F(WebViewTest, PreferredSizeWithGridMinWidthFlexibleTracks) {
                                    )HTML",
                                      base_url);
 
-  WebSize size = web_view->ContentsPreferredMinimumSize();
-  EXPECT_EQ(200, size.width);
+  gfx::Size size = web_view->ContentsPreferredMinimumSize();
+  EXPECT_EQ(200, size.width());
 }
 
 #if BUILDFLAG(ENABLE_UNHANDLED_TAP)
@@ -5073,7 +5073,7 @@ TEST_F(WebViewTest, ForceAndResetViewport) {
   WebViewImpl* web_view_impl =
       web_view_helper_.InitializeAndLoad(base_url_ + "200-by-300.html");
   web_view_impl->MainFrameViewWidget()->Resize(gfx::Size(100, 150));
-  SetViewportSize(WebSize(100, 150));
+  SetViewportSize(gfx::Size(100, 150));
   DevToolsEmulator* dev_tools_emulator = web_view_impl->GetDevToolsEmulator();
 
   TransformationMatrix expected_matrix;
@@ -5152,7 +5152,7 @@ TEST_F(WebViewTest, ViewportOverrideAdaptsToScaleAndScroll) {
   WebViewImpl* web_view_impl =
       web_view_helper_.InitializeAndLoad(base_url_ + "200-by-300.html");
   web_view_impl->MainFrameViewWidget()->Resize(gfx::Size(100, 150));
-  SetViewportSize(WebSize(100, 150));
+  SetViewportSize(gfx::Size(100, 150));
   LocalFrameView* frame_view =
       web_view_impl->MainFrameImpl()->GetFrame()->View();
   DevToolsEmulator* dev_tools_emulator = web_view_impl->GetDevToolsEmulator();

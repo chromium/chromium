@@ -1128,7 +1128,7 @@ TEST_F(SpatialNavigationTest, HasRemoteFrame) {
                                      "<iframe id='iframe'></iframe>",
                                      base_url);
 
-  webview->ResizeWithBrowserControls(IntSize(400, 400), 50, 0, false);
+  webview->ResizeWithBrowserControls(gfx::Size(400, 400), 50, 0, false);
   UpdateAllLifecyclePhases(webview->MainFrameImpl()->GetFrame()->View());
 
   Element* iframe =

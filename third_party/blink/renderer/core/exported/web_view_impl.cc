@@ -1079,10 +1079,10 @@ void WebViewImpl::ComputeScaleAndScrollForBlockRect(
     // correct if we end up fully zooming to it, and won't matter if we
     // don't.
     rect = WidenRectWithinPageBounds(
-        rect, static_cast<int>(default_margin * rect.width / size_.width),
-        static_cast<int>(minimum_margin * rect.width / size_.width));
+        rect, static_cast<int>(default_margin * rect.width / size_.width()),
+        static_cast<int>(minimum_margin * rect.width / size_.width()));
     // Fit block to screen, respecting limits.
-    scale = static_cast<float>(size_.width) / rect.width;
+    scale = static_cast<float>(size_.width()) / rect.width;
     scale = std::min(scale, MaximumLegiblePageScale());
     if (PageScaleFactor() < default_scale_when_already_legible)
       scale = std::max(scale, default_scale_when_already_legible);
@@ -1096,8 +1096,8 @@ void WebViewImpl::ComputeScaleAndScrollForBlockRect(
   // double-tap zoom strategy (fitting the containing block to the screen)
   // though.
 
-  float screen_width = size_.width / scale;
-  float screen_height = size_.height / scale;
+  float screen_width = size_.width() / scale;
+  float screen_height = size_.height() / scale;
 
   // Scroll to vertically align the block.
   if (rect.height < screen_height) {
@@ -1428,12 +1428,12 @@ void WebViewImpl::Close() {
   Release();  // Balances a reference acquired in WebView::Create
 }
 
-WebSize WebViewImpl::Size() {
+gfx::Size WebViewImpl::Size() {
   return size_;
 }
 
-void WebViewImpl::ResizeVisualViewport(const WebSize& new_size) {
-  GetPage()->GetVisualViewport().SetSize(new_size);
+void WebViewImpl::ResizeVisualViewport(const gfx::Size& new_size) {
+  GetPage()->GetVisualViewport().SetSize(WebSize(new_size));
   GetPage()->GetVisualViewport().ClampToBoundaries();
 }
 
@@ -1442,7 +1442,7 @@ void WebViewImpl::UpdateICBAndResizeViewport(
   // We'll keep the initial containing block size from changing when the top
   // controls hide so that the ICB will always be the same size as the
   // viewport with the browser controls shown.
-  IntSize icb_size = size_;
+  IntSize icb_size = IntSize(size_);
   if (GetBrowserControls().PermittedState() ==
           cc::BrowserControlsState::kBoth &&
       !GetBrowserControls().ShrinkViewport()) {
@@ -1564,7 +1564,7 @@ void WebViewImpl::ResizeViewWhileAnchored(
 }
 
 void WebViewImpl::ResizeWithBrowserControls(
-    const WebSize& new_size,
+    const gfx::Size& new_size,
     float top_controls_height,
     float bottom_controls_height,
     bool browser_controls_shrink_layout) {
@@ -1577,8 +1577,8 @@ void WebViewImpl::ResizeWithBrowserControls(
 }
 
 void WebViewImpl::ResizeWithBrowserControls(
-    const WebSize& main_frame_widget_size,
-    const WebSize& visible_viewport_size,
+    const gfx::Size& main_frame_widget_size,
+    const gfx::Size& visible_viewport_size,
     cc::BrowserControlsParams browser_controls_params) {
   if (should_auto_resize_) {
     // When auto-resizing only the viewport size comes from the browser, while
@@ -1598,8 +1598,9 @@ void WebViewImpl::ResizeWithBrowserControls(
     // so that it can be used for initialization if the main frame gets
     // swapped to a LocalFrame at a later time.
     size_ = main_frame_widget_size;
-    GetPageScaleConstraintsSet().DidChangeInitialContainingBlockSize(size_);
-    GetPage()->GetVisualViewport().SetSize(size_);
+    GetPageScaleConstraintsSet().DidChangeInitialContainingBlockSize(
+        IntSize(size_));
+    GetPage()->GetVisualViewport().SetSize(IntSize(size_));
     GetPage()->GetBrowserControls().SetParams(browser_controls_params);
     return;
   }
@@ -1616,8 +1617,8 @@ void WebViewImpl::ResizeWithBrowserControls(
 
   bool is_rotation =
       GetPage()->GetSettings().GetMainFrameResizesAreOrientationChanges() &&
-      size_.width && ContentsSize().Width() &&
-      main_frame_widget_size.width != size_.width &&
+      size_.width() && ContentsSize().Width() &&
+      main_frame_widget_size.width() != size_.width() &&
       !fullscreen_controller_->IsFullscreenOrTransitioning();
   size_ = main_frame_widget_size;
 
@@ -1626,15 +1627,17 @@ void WebViewImpl::ResizeWithBrowserControls(
     RotationViewportAnchor anchor(*view, visual_viewport,
                                   viewport_anchor_coords,
                                   GetPageScaleConstraintsSet());
-    ResizeViewWhileAnchored(browser_controls_params, visible_viewport_size);
+    ResizeViewWhileAnchored(browser_controls_params,
+                            IntSize(visible_viewport_size));
   } else {
     ResizeViewportAnchor::ResizeScope resize_scope(*resize_viewport_anchor_);
-    ResizeViewWhileAnchored(browser_controls_params, visible_viewport_size);
+    ResizeViewWhileAnchored(browser_controls_params,
+                            IntSize(visible_viewport_size));
   }
   SendResizeEventForMainFrame();
 }
 
-void WebViewImpl::Resize(const WebSize& new_size) {
+void WebViewImpl::Resize(const gfx::Size& new_size) {
   if (should_auto_resize_ || size_ == new_size)
     return;
 
@@ -1643,7 +1646,7 @@ void WebViewImpl::Resize(const WebSize& new_size) {
                             GetBrowserControls().ShrinkViewport());
 }
 
-WebSize WebViewImpl::GetSize() {
+gfx::Size WebViewImpl::GetSize() {
   return size_;
 }
 
@@ -2263,7 +2266,7 @@ void WebViewImpl::ThemeChanged() {
     return;
   LocalFrameView* view = GetPage()->DeprecatedLocalMainFrame()->View();
 
-  WebRect damaged_rect(0, 0, size_.width, size_.height);
+  WebRect damaged_rect(0, 0, size_.width(), size_.height());
   view->InvalidateRect(damaged_rect);
 }
 
@@ -3289,9 +3292,7 @@ void WebViewImpl::SetIgnoreViewportTagScaleLimits(bool ignore) {
 IntSize WebViewImpl::MainFrameSize() {
   // The frame size should match the viewport size at minimum scale, since the
   // viewport must always be contained by the frame.
-  FloatSize frame_size(size_);
-  frame_size.Scale(1 / MinimumPageScaleFactor());
-  return ExpandedIntSize(frame_size);
+  return IntSize(gfx::ScaleToCeiledSize(size_, 1 / MinimumPageScaleFactor()));
 }
 
 PageScaleConstraintsSet& WebViewImpl::GetPageScaleConstraintsSet() const {
@@ -3332,7 +3333,7 @@ void WebViewImpl::RefreshPageScaleFactor() {
 
 void WebViewImpl::UpdatePageDefinedViewportConstraints(
     const ViewportDescription& description) {
-  if (!GetPage() || (!size_.width && !size_.height))
+  if (!GetPage() || (!size_.width() && !size_.height()))
     return;
   // The viewport is a property of the main frame and its widget, so ignore it
   // when the main frame is remote.
@@ -3398,15 +3399,15 @@ void WebViewImpl::UpdateMainFrameLayoutSize() {
   if (!view)
     return;
 
-  WebSize layout_size = size_;
+  gfx::Size layout_size = size_;
 
   if (GetSettings()->ViewportEnabled())
-    layout_size = GetPageScaleConstraintsSet().GetLayoutSize();
+    layout_size = gfx::Size(GetPageScaleConstraintsSet().GetLayoutSize());
 
   if (GetPage()->GetSettings().GetForceZeroLayoutHeight())
-    layout_size.height = 0;
+    layout_size.set_height(0);
 
-  view->SetLayoutSize(layout_size);
+  view->SetLayoutSize(IntSize(layout_size));
 }
 
 IntSize WebViewImpl::ContentsSize() const {
@@ -3419,14 +3420,14 @@ IntSize WebViewImpl::ContentsSize() const {
   return PixelSnappedIntRect(layout_view->DocumentRect()).Size();
 }
 
-WebSize WebViewImpl::ContentsPreferredMinimumSize() {
+gfx::Size WebViewImpl::ContentsPreferredMinimumSize() {
   DCHECK(page_->MainFrame()->IsLocalFrame());
 
   auto* main_local_frame = DynamicTo<LocalFrame>(page_->MainFrame());
   Document* document = main_local_frame->GetDocument();
   if (!document || !document->GetLayoutView() || !document->documentElement() ||
       !document->documentElement()->GetLayoutBox())
-    return WebSize();
+    return gfx::Size();
 
   // The preferred size requires an up-to-date layout tree.
   DCHECK(!document->NeedsLayoutTreeUpdate() &&
@@ -3439,7 +3440,7 @@ WebSize WebViewImpl::ContentsPreferredMinimumSize() {
                          .min_size.Round();  // Already accounts for zoom.
   int height_scaled =
       document->documentElement()->GetLayoutBox()->ScrollHeight().Round();
-  return IntSize(width_scaled, height_scaled);
+  return gfx::Size(width_scaled, height_scaled);
 }
 
 void WebViewImpl::UpdatePreferredSize() {
@@ -3849,16 +3850,17 @@ void WebViewImpl::ResizeAfterLayout() {
 
   if (should_auto_resize_) {
     LocalFrameView* view = MainFrameImpl()->GetFrame()->View();
-    WebSize frame_size = view->Size();
+    gfx::Size frame_size = gfx::Size(view->Size());
     if (frame_size != size_) {
       size_ = frame_size;
 
-      GetPage()->GetVisualViewport().SetSize(size_);
-      GetPageScaleConstraintsSet().DidChangeInitialContainingBlockSize(size_);
-      view->SetInitialViewportSize(size_);
+      GetPage()->GetVisualViewport().SetSize(IntSize(size_));
+      GetPageScaleConstraintsSet().DidChangeInitialContainingBlockSize(
+          IntSize(size_));
+      view->SetInitialViewportSize(IntSize(size_));
 
       web_view_client_->DidAutoResize(size_);
-      web_widget_->DidAutoResize(gfx::Size(size_));
+      web_widget_->DidAutoResize(size_);
       SendResizeEventForMainFrame();
     }
   }
@@ -3987,7 +3989,7 @@ HitTestResult WebViewImpl::HitTestResultForRootFramePos(
 
 WebHitTestResult WebViewImpl::HitTestResultForTap(
     const gfx::Point& tap_point_window_pos,
-    const WebSize& tap_area) {
+    const gfx::Size& tap_area) {
   auto* main_frame = DynamicTo<LocalFrame>(page_->MainFrame());
   if (!main_frame)
     return HitTestResult();
@@ -3998,8 +4000,8 @@ WebHitTestResult WebViewImpl::HitTestResultForTap(
   // GestureTap is only ever from a touchscreen.
   tap_event.SetPositionInWidget(FloatPoint(IntPoint(tap_point_window_pos)));
   tap_event.data.tap.tap_count = 1;
-  tap_event.data.tap.width = tap_area.width;
-  tap_event.data.tap.height = tap_area.height;
+  tap_event.data.tap.width = tap_area.width();
+  tap_event.data.tap.height = tap_area.height();
 
   WebGestureEvent scaled_event =
       TransformWebGestureEvent(MainFrameImpl()->GetFrameView(), tap_event);
@@ -4233,8 +4235,8 @@ int32_t WebViewImpl::AutoplayFlagsForTest() {
   return page_->AutoplayFlags();
 }
 
-WebSize WebViewImpl::GetPreferredSizeForTest() {
-  return WebSize(preferred_size_in_dips_);
+gfx::Size WebViewImpl::GetPreferredSizeForTest() {
+  return preferred_size_in_dips_;
 }
 
 void WebViewImpl::StopDeferringMainFrameUpdate() {

@@ -1206,8 +1206,8 @@ void WebFrameWidgetImpl::ApplyVisualPropertiesSizing(
   // main frame do not do this in order to not clobber the source of truth in
   // the main frame.
   if (!View()->MainFrameImpl()) {
-    View()->Resize(WebSize(widget_base_->DIPsToCeiledBlinkSpace(
-        widget_base_->VisibleViewportSizeInDIPs())));
+    View()->Resize(widget_base_->DIPsToCeiledBlinkSpace(
+        widget_base_->VisibleViewportSizeInDIPs()));
   }
 
   Resize(widget_base_->DIPsToCeiledBlinkSpace(visual_properties.new_size));

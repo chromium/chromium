@@ -314,7 +314,7 @@ TEST_P(LazyLoadImagesSimTest, ImgSrcset) {
   if (!GetParam())  // Only test when LazyImage is enabled.
     return;
   SetLazyLoadEnabled(true);
-  WebView().Resize(WebSize(100, 1));
+  WebView().Resize(gfx::Size(100, 1));
   LoadMainResource(R"HTML(
         <body onload='console.log("main body onload");'>
           <div style='height:10000px;'></div>

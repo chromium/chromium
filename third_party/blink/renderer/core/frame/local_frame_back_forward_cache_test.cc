@@ -79,7 +79,7 @@ TEST_F(LocalFrameBackForwardCacheTest, EvictionOnV8ExecutionAtMicrotask) {
   web_view_helper.Initialize(
       &web_frame_client, nullptr, nullptr,
       [](WebSettings* settings) { settings->SetJavaScriptEnabled(true); });
-  web_view_helper.Resize(WebSize(640, 480));
+  web_view_helper.Resize(gfx::Size(640, 480));
 
   LocalFrame* frame = web_view_helper.GetWebView()->MainFrameImpl()->GetFrame();
 

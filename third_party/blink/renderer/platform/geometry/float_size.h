@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/platform/wtf/hash_traits.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/skia/include/core/SkSize.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
@@ -60,6 +61,8 @@ class PLATFORM_EXPORT FloatSize {
       : width_(width), height_(height) {}
   constexpr explicit FloatSize(const IntSize& s)
       : FloatSize(s.Width(), s.Height()) {}
+  constexpr explicit FloatSize(const gfx::Size& s)
+      : FloatSize(s.width(), s.height()) {}
   constexpr explicit FloatSize(const gfx::SizeF& s)
       : FloatSize(s.width(), s.height()) {}
   explicit FloatSize(const SkSize& s) : FloatSize(s.width(), s.height()) {}

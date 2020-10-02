@@ -351,7 +351,7 @@ class WebViewHelper : public ScopedMockOverlayScrollbars {
   // See external/wpt/css/fonts/ahem/README for more about the 'Ahem' font.
   void LoadAhem();
 
-  void Resize(WebSize);
+  void Resize(const gfx::Size&);
 
   void Reset();
 

@@ -1092,7 +1092,7 @@ class ScrollAnchorFindInPageTest : public testing::Test {
   }
 
   void ResizeAndFocus() {
-    web_view_helper_.Resize(WebSize(640, 480));
+    web_view_helper_.Resize(gfx::Size(640, 480));
     web_view_helper_.GetWebView()->MainFrameWidget()->SetFocus(true);
     test::RunPendingTasks();
   }

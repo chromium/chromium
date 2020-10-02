@@ -61,7 +61,7 @@ gfx::Size WebViewFrameWidget::Size() {
 
 void WebViewFrameWidget::Resize(const gfx::Size& size) {
   size_ = size;
-  web_view_->Resize(WebSize(size));
+  web_view_->Resize(size);
 }
 
 void WebViewFrameWidget::SetSuppressFrameRequestsWorkaroundFor704763Only(
@@ -543,9 +543,9 @@ void WebViewFrameWidget::ApplyVisualPropertiesSizing(
     size_ = widget_base_->DIPsToCeiledBlinkSpace(visual_properties.new_size);
 
     View()->ResizeWithBrowserControls(
-        WebSize(size_),
-        WebSize(widget_base_->DIPsToCeiledBlinkSpace(
-            widget_base_->VisibleViewportSizeInDIPs())),
+        size_,
+        widget_base_->DIPsToCeiledBlinkSpace(
+            widget_base_->VisibleViewportSizeInDIPs()),
         visual_properties.browser_controls_params);
   }
 }
