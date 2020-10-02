@@ -134,6 +134,11 @@ interface BackgroundFetchRegistration : EventTarget
 interface ServiceWorkerRegistration : EventTarget
     getter backgroundFetch
 
+# Periodic Background Sync API is not enabled in Android webview, crbug.com/1134599
+interface PeriodicSyncManager
+interface ServiceWorkerRegistration : EventTarget
+    getter periodicSync
+
 # support_webgl2_compute_context not supported on android, crbug.com/865569
 interface WebGL2ComputeRenderingContext
 
