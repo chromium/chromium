@@ -22,10 +22,9 @@ class ReportingObserver;
 
 // ReportingContext processes all reports for an ExecutionContext, and serves as
 // a container for all active ReportingObservers on that ExecutionContext.
-class CORE_EXPORT ReportingContext final
-    : public GarbageCollected<ReportingContext>,
-      public mojom::blink::ReportingObserver,
-      public Supplement<ExecutionContext> {
+class CORE_EXPORT ReportingContext : public GarbageCollected<ReportingContext>,
+                                     public mojom::blink::ReportingObserver,
+                                     public Supplement<ExecutionContext> {
  public:
   static const char kSupplementName[];
 
@@ -40,7 +39,8 @@ class CORE_EXPORT ReportingContext final
   void Bind(mojo::PendingReceiver<mojom::blink::ReportingObserver> receiver);
 
   // Queues a report for the Reporting API and in all registered observers.
-  void QueueReport(Report*, const Vector<String>& endpoints = {"default"});
+  virtual void QueueReport(Report*,
+                           const Vector<String>& endpoints = {"default"});
 
   void RegisterObserver(blink::ReportingObserver*);
   void UnregisterObserver(blink::ReportingObserver*);

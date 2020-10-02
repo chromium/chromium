@@ -23,4 +23,11 @@ ScriptValue Report::toJSON(ScriptState* script_state) const {
   return builder.GetScriptValue();
 }
 
+unsigned Report::MatchId() const {
+  unsigned hash = body()->MatchId();
+  hash = WTF::HashInts(hash, url().IsNull() ? 0 : url().Impl()->GetHash());
+  hash = WTF::HashInts(hash, type().Impl()->GetHash());
+  return hash;
+}
+
 }  // namespace blink

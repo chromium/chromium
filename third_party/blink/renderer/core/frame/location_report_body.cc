@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/frame/location_report_body.h"
+#include "third_party/blink/renderer/platform/wtf/hash_functions.h"
 
 namespace blink {
 
@@ -36,6 +37,17 @@ void LocationReportBody::BuildJSONValue(V8ObjectBuilder& builder) const {
   } else {
     builder.AddNull("columnNumber");
   }
+}
+
+unsigned LocationReportBody::MatchId() const {
+  const base::Optional<uint32_t> line = lineNumber(), column = columnNumber();
+
+  unsigned hash = sourceFile().IsNull() ? 0 : sourceFile().Impl()->GetHash();
+  hash = WTF::HashInts(hash,
+                       line ? DefaultHash<uint32_t>::Hash::GetHash(*line) : 0);
+  hash = WTF::HashInts(
+      hash, column ? DefaultHash<uint32_t>::Hash::GetHash(*column) : 0);
+  return hash;
 }
 
 }  // namespace blink

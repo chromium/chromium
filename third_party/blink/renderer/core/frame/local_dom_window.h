@@ -512,6 +512,11 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   // creation. Remains valid even after the frame is destroyed and the context
   // is detached.
   const LocalFrameToken token_;
+
+  // Tracks which document policy violation reports have already been sent in
+  // this document, to avoid reporting duplicates. The value stored comes
+  // from |DocumentPolicyViolationReport::MatchId()|.
+  mutable HashSet<unsigned> document_policy_violation_reports_sent_;
 };
 
 template <>

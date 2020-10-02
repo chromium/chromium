@@ -21,14 +21,7 @@ class CORE_EXPORT DocumentPolicyViolationReportBody
       const String& message,
       const String& disposition,
       // URL of the resource that violated the document policy.
-      const String& resource_url)
-      : LocationReportBody(resource_url),
-        feature_id_(feature_id),
-        message_("Document policy violation: " +
-                 (message.IsEmpty()
-                      ? feature_id + " is not allowed in this document."
-                      : message)),
-        disposition_(disposition) {}
+      const String& resource_url);
 
   const String& featureId() const { return feature_id_; }
   const String& disposition() const { return disposition_; }
@@ -37,6 +30,8 @@ class CORE_EXPORT DocumentPolicyViolationReportBody
   void BuildJSONValue(V8ObjectBuilder& builder) const override;
 
   ~DocumentPolicyViolationReportBody() override = default;
+
+  unsigned MatchId() const override;
 
  private:
   const String feature_id_;

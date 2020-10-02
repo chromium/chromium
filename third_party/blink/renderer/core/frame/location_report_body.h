@@ -56,6 +56,8 @@ class CORE_EXPORT LocationReportBody : public ReportBody {
 
   void BuildJSONValue(V8ObjectBuilder& builder) const override;
 
+  unsigned MatchId() const override;
+
  protected:
   const String source_file_;
   const base::Optional<uint32_t> line_number_;
