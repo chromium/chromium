@@ -50,53 +50,52 @@ namespace {
 
 // This function is called when the result of malware scanning is already known
 // (via |reason|), but we still want to perform DLP scanning.
-void MaybeOverrideDlpScanResult(DownloadCheckResultReason reason,
-                                CheckDownloadRepeatingCallback callback,
-                                DownloadCheckResult deep_scan_result) {
-  if (reason == REASON_DOWNLOAD_DANGEROUS ||
-      reason == REASON_DOWNLOAD_DANGEROUS_HOST ||
-      reason == REASON_DOWNLOAD_POTENTIALLY_UNWANTED ||
-      reason == REASON_DOWNLOAD_UNCOMMON) {
-    // Don't let safe deep scanning results override these previous
-    // dangerous reasons.
-    switch (deep_scan_result) {
-      case DownloadCheckResult::UNKNOWN:
-      case DownloadCheckResult::SENSITIVE_CONTENT_WARNING:
-      case DownloadCheckResult::DEEP_SCANNED_SAFE:
-        if (reason == REASON_DOWNLOAD_DANGEROUS)
-          callback.Run(DownloadCheckResult::DANGEROUS);
-        else if (reason == REASON_DOWNLOAD_DANGEROUS_HOST)
-          callback.Run(DownloadCheckResult::DANGEROUS_HOST);
-        else if (reason == REASON_DOWNLOAD_POTENTIALLY_UNWANTED)
-          callback.Run(DownloadCheckResult::POTENTIALLY_UNWANTED);
-        else
-          callback.Run(DownloadCheckResult::UNCOMMON);
-        return;
+void MaybeOverrideScanResult(DownloadCheckResultReason reason,
+                             CheckDownloadRepeatingCallback callback,
+                             DownloadCheckResult deep_scan_result) {
+  switch (deep_scan_result) {
+    // These results are more dangerous or equivalent to any |reason|, so they
+    // take precedence.
+    case DownloadCheckResult::DANGEROUS_HOST:
+    case DownloadCheckResult::DANGEROUS:
+      callback.Run(deep_scan_result);
+      return;
 
-      case DownloadCheckResult::ASYNC_SCANNING:
-      case DownloadCheckResult::BLOCKED_PASSWORD_PROTECTED:
-      case DownloadCheckResult::BLOCKED_TOO_LARGE:
-      case DownloadCheckResult::SENSITIVE_CONTENT_BLOCK:
-      case DownloadCheckResult::BLOCKED_UNSUPPORTED_FILE_TYPE:
+    // These deep scanning results don't override any dangerous reasons.
+    case DownloadCheckResult::UNKNOWN:
+    case DownloadCheckResult::SENSITIVE_CONTENT_WARNING:
+    case DownloadCheckResult::DEEP_SCANNED_SAFE:
+    case DownloadCheckResult::SAFE:
+    case DownloadCheckResult::PROMPT_FOR_SCANNING:
+    case DownloadCheckResult::POTENTIALLY_UNWANTED:
+    case DownloadCheckResult::UNCOMMON:
+      if (reason == REASON_DOWNLOAD_DANGEROUS)
+        callback.Run(DownloadCheckResult::DANGEROUS);
+      else if (reason == REASON_DOWNLOAD_DANGEROUS_HOST)
+        callback.Run(DownloadCheckResult::DANGEROUS_HOST);
+      else if (reason == REASON_DOWNLOAD_POTENTIALLY_UNWANTED)
+        callback.Run(DownloadCheckResult::POTENTIALLY_UNWANTED);
+      else if (reason == REASON_DOWNLOAD_UNCOMMON)
+        callback.Run(DownloadCheckResult::UNCOMMON);
+      else
         callback.Run(deep_scan_result);
-        return;
+      return;
 
-      case DownloadCheckResult::SAFE:
-      case DownloadCheckResult::UNCOMMON:
-      case DownloadCheckResult::DANGEROUS_HOST:
-      case DownloadCheckResult::WHITELISTED_BY_POLICY:
-      case DownloadCheckResult::PROMPT_FOR_SCANNING:
-      case DownloadCheckResult::DANGEROUS:
-      case DownloadCheckResult::POTENTIALLY_UNWANTED:
-        NOTREACHED();
-        return;
-    }
-  } else if (reason == REASON_WHITELISTED_URL) {
-    callback.Run(deep_scan_result);
-    return;
+    // These other results have precedence over dangerous ones because they
+    // indicate the scan is not done, that the file is blocked for another
+    // reason, or that the file is allowed by policy.
+    case DownloadCheckResult::ASYNC_SCANNING:
+    case DownloadCheckResult::BLOCKED_PASSWORD_PROTECTED:
+    case DownloadCheckResult::BLOCKED_TOO_LARGE:
+    case DownloadCheckResult::SENSITIVE_CONTENT_BLOCK:
+    case DownloadCheckResult::BLOCKED_UNSUPPORTED_FILE_TYPE:
+    case DownloadCheckResult::WHITELISTED_BY_POLICY:
+      callback.Run(deep_scan_result);
+      return;
   }
 
-  NOTREACHED();
+  // This function should always run |callback| and return before reaching this.
+  CHECK(false);
 }
 
 }  // namespace
@@ -298,8 +297,7 @@ void CheckClientDownloadRequest::UploadBinary(
       reason == REASON_DOWNLOAD_POTENTIALLY_UNWANTED ||
       reason == REASON_DOWNLOAD_UNCOMMON || reason == REASON_WHITELISTED_URL) {
     service()->UploadForDeepScanning(
-        item_,
-        base::BindRepeating(&MaybeOverrideDlpScanResult, reason, callback_),
+        item_, base::BindRepeating(&MaybeOverrideScanResult, reason, callback_),
         DeepScanningRequest::DeepScanTrigger::TRIGGER_POLICY,
         std::move(settings));
   } else {
