@@ -131,9 +131,12 @@ void AutofillPopupControllerImpl::Show(
   }
 
   static_cast<ContentAutofillDriver*>(delegate_->GetAutofillDriver())
-      ->RegisterKeyPressHandler(
-          base::Bind(&AutofillPopupControllerImpl::HandleKeyPressEvent,
-                     base::Unretained(this)));
+      ->RegisterKeyPressHandler(base::BindRepeating(
+          [](base::WeakPtr<AutofillPopupControllerImpl> weak_this,
+             const content::NativeWebKeyboardEvent& event) {
+            return weak_this && weak_this->HandleKeyPressEvent(event);
+          },
+          GetWeakPtr()));
 
   delegate_->OnPopupShown();
 }
