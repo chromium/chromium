@@ -27,22 +27,22 @@ component("gpu") {
   # Only local test code, GPU-related IPC code in the media layer, and
   # media-related content code should access //media/gpu.
   visibility = [
+    ":*",
     "//chrome/gpu",
     "//chromecast/*",
     "//components/arc/mojom:media",
     "//components/arc/mojom:media_mojolpm",
     "//components/arc/video_accelerator:common",
-    "//components/mirroring/service:mirroring_service",
     "//components/chromeos_camera/*",
+    "//components/mirroring/service:mirroring_service",
     "//components/viz/service/main",
     "//content/gpu:*",
     "//content/renderer:*",
     "//media/gpu/ipc/*",
-    "//media/gpu/vaapi/*",
     "//media/gpu/test/*",
+    "//media/gpu/vaapi/*",
     "//media/mojo/*",
     "//remoting/codec:encoder",
-    ":*",
   ]
 
   if (is_mac) {
@@ -495,7 +495,7 @@ source_set("unit_tests") {
   ]
   sources = [ "h264_decoder_unittest.cc" ]
 
-  if (use_v4l2_codec || use_vaapi) {
+  if (is_chromeos && (use_v4l2_codec || use_vaapi)) {
     deps += [ "//media/gpu/chromeos:unit_tests" ]
   }
   if (use_vaapi) {
