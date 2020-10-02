@@ -210,7 +210,7 @@ void AXImageAnnotator::MarkDirty(const blink::WebAXObject& image) const {
   blink::WebAXObject parent = image.ParentObject();
   for (int ancestor_count = 0; !parent.IsDetached() && ancestor_count < 2;
        parent = parent.ParentObject()) {
-    if (parent.AccessibilityIsIncludedInTree()) {
+    if (!parent.AccessibilityIsIgnored()) {
       ++ancestor_count;
       if (parent.Role() == ax::mojom::Role::kLink ||
           parent.Role() == ax::mojom::Role::kRootWebArea) {

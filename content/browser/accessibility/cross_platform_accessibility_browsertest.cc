@@ -28,6 +28,7 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "third_party/blink/public/common/features.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/accessibility_switches.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_tree.h"
@@ -64,7 +65,7 @@ class CrossPlatformAccessibilityBrowserTest : public ContentBrowserTest {
       RecursiveAssertUniqueIds(child, ids);
   }
 
-  // ContentBrowserTest
+  void SetUp() override;
   void SetUpOnMainThread() override;
   void TearDownOnMainThread() override;
 
@@ -77,6 +78,10 @@ class CrossPlatformAccessibilityBrowserTest : public ContentBrowserTest {
   }
 
  protected:
+  // Choose which feature flags to enable or disable.
+  virtual void ChooseFeatures(std::vector<base::Feature>* enabled_features,
+                              std::vector<base::Feature>* disabled_features);
+
   void LoadInitialAccessibilityTreeFromUrl(
       const GURL& url,
       ui::AXMode accessibility_mode = ui::kAXModeComplete) {
@@ -139,12 +144,36 @@ class CrossPlatformAccessibilityBrowserTest : public ContentBrowserTest {
   bool GetBoolAttr(const ui::AXNode* node, const ax::mojom::BoolAttribute attr);
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+
 #if defined(OS_WIN)
   std::unique_ptr<base::win::ScopedCOMInitializer> com_initializer_;
 #endif
 
   DISALLOW_COPY_AND_ASSIGN(CrossPlatformAccessibilityBrowserTest);
 };
+
+void CrossPlatformAccessibilityBrowserTest::SetUp() {
+  std::vector<base::Feature> enabled_features;
+  std::vector<base::Feature> disabled_features;
+  ChooseFeatures(&enabled_features, &disabled_features);
+
+  scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+
+  // The <input type="color"> popup tested in
+  // AccessibilityInputColorWithPopupOpen requires the ability to read pixels
+  // from a Canvas, so we need to be able to produce pixel output.
+  EnablePixelOutput();
+
+  ContentBrowserTest::SetUp();
+}
+
+void CrossPlatformAccessibilityBrowserTest::ChooseFeatures(
+    std::vector<base::Feature>* enabled_features,
+    std::vector<base::Feature>* disabled_features) {
+  enabled_features->emplace_back(
+      features::kEnableAccessibilityExposeHTMLElement);
+}
 
 void CrossPlatformAccessibilityBrowserTest::SetUpOnMainThread() {
 #if defined(OS_WIN)
@@ -936,14 +965,16 @@ IN_PROC_BROWSER_TEST_F(
   const char url_str[] =
       "data:text/html,"
       "<!doctype html>"
+      "<fieldset>"
       "<input type='text' placeholder='placeholder'>"
-      "<input type='text' placeholder='placeholder' aria-label='label'>";
+      "<input type='text' placeholder='placeholder' aria-label='label'>"
+      "</fieldset>";
   GURL url(url_str);
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
   const ui::AXTree& tree = GetAXTree();
   const ui::AXNode* root = tree.root();
-  const ui::AXNode* group = root->children().front();
+  const ui::AXNode* group = root->GetUnignoredChildAtIndex(0);
   const ui::AXNode* input1 = group->children()[0];
   const ui::AXNode* input2 = group->children()[1];
 
@@ -1387,14 +1418,12 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
 
 class CrossPlatformAccessibilityBrowserTestWithImplicitRootScrolling
     : public CrossPlatformAccessibilityBrowserTest {
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        blink::features::kImplicitRootScroller);
-    CrossPlatformAccessibilityBrowserTest::SetUp();
+  void ChooseFeatures(std::vector<base::Feature>* enabled_features,
+                      std::vector<base::Feature>* disabled_features) override {
+    enabled_features->emplace_back(blink::features::kImplicitRootScroller);
+    CrossPlatformAccessibilityBrowserTest::ChooseFeatures(enabled_features,
+                                                          disabled_features);
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(

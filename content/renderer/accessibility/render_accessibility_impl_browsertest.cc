@@ -340,15 +340,9 @@ class RenderAccessibilityImplTest : public RenderViewTest {
 
   void SetUp() override {
     RenderViewTest::SetUp();
-    // These flags are enabled in the parent class to make the testing
-    // environment match the Blink one. But there are some accessibility flags
-    // that cause some of the tests here to fail such as:
-    // SendFullAccessibilityTreeOnReload, ShowAccessibilityObject, and
-    // HideAccessibilityObject. Disabling these flags for now to keep the
-    // behavior the same as production for these tests. Ideally someone with the
-    // domain knowledge here should be able keep these features enabled.
     blink::WebRuntimeFeatures::EnableExperimentalFeatures(false);
     blink::WebRuntimeFeatures::EnableTestOnlyFeatures(false);
+    blink::WebRuntimeFeatures::EnableAccessibilityExposeHTMLElement(true);
 
     sink_ = &render_thread_->sink();
 
@@ -430,7 +424,7 @@ TEST_F(RenderAccessibilityImplTest, SendFullAccessibilityTreeOnReload) {
       )HTML";
   LoadHTMLAndRefreshAccessibilityTree(html);
 
-  EXPECT_EQ(5, CountAccessibilityNodesSentToBrowser());
+  EXPECT_EQ(6, CountAccessibilityNodesSentToBrowser());
 
   // If we post another event but the tree doesn't change,
   // we should only send 1 node to the browser.
@@ -457,7 +451,7 @@ TEST_F(RenderAccessibilityImplTest, SendFullAccessibilityTreeOnReload) {
   GetRenderAccessibilityImpl()->HandleAXEvent(
       ui::AXEvent(root_obj.AxID(), ax::mojom::Event::kLayoutComplete));
   SendPendingAccessibilityEvents();
-  EXPECT_EQ(5, CountAccessibilityNodesSentToBrowser());
+  EXPECT_EQ(6, CountAccessibilityNodesSentToBrowser());
 
   // Even if the first event is sent on an element other than
   // the root, the whole tree should be updated because we know
@@ -470,7 +464,7 @@ TEST_F(RenderAccessibilityImplTest, SendFullAccessibilityTreeOnReload) {
   GetRenderAccessibilityImpl()->HandleAXEvent(
       ui::AXEvent(first_child.AxID(), ax::mojom::Event::kLiveRegionChanged));
   SendPendingAccessibilityEvents();
-  EXPECT_EQ(5, CountAccessibilityNodesSentToBrowser());
+  EXPECT_EQ(6, CountAccessibilityNodesSentToBrowser());
 }
 
 TEST_F(RenderAccessibilityImplTest, TestDeferred) {
@@ -544,11 +538,12 @@ TEST_F(RenderAccessibilityImplTest, HideAccessibilityObject) {
       </body>
       )HTML");
 
-  EXPECT_EQ(5, CountAccessibilityNodesSentToBrowser());
+  EXPECT_EQ(6, CountAccessibilityNodesSentToBrowser());
 
   WebDocument document = GetMainFrame()->GetDocument();
   WebAXObject root_obj = WebAXObject::FromWebDocument(document);
-  WebAXObject body = root_obj.ChildAt(0);
+  WebAXObject html = root_obj.ChildAt(0);
+  WebAXObject body = html.ChildAt(0);
   WebAXObject node_a = body.ChildAt(0);
   WebAXObject node_b = node_a.ChildAt(0);
   WebAXObject node_c = node_b.ChildAt(0);
@@ -593,11 +588,12 @@ TEST_F(RenderAccessibilityImplTest, ShowAccessibilityObject) {
       </body>
       )HTML");
 
-  EXPECT_EQ(5, CountAccessibilityNodesSentToBrowser());
+  EXPECT_EQ(6, CountAccessibilityNodesSentToBrowser());
 
   WebDocument document = GetMainFrame()->GetDocument();
   WebAXObject root_obj = WebAXObject::FromWebDocument(document);
-  WebAXObject body = root_obj.ChildAt(0);
+  WebAXObject html = root_obj.ChildAt(0);
+  WebAXObject body = html.ChildAt(0);
   WebAXObject node_a = body.ChildAt(0);
   WebAXObject node_b = node_a.ChildAt(0);
   WebAXObject node_c = node_b.ChildAt(0);
@@ -769,7 +765,8 @@ TEST_F(RenderAccessibilityImplTest, TestFocusConsistency) {
 
   WebDocument document = GetMainFrame()->GetDocument();
   WebAXObject root_obj = WebAXObject::FromWebDocument(document);
-  WebAXObject body = root_obj.ChildAt(0);
+  WebAXObject html_elem = root_obj.ChildAt(0);
+  WebAXObject body = html_elem.ChildAt(0);
   WebAXObject link = body.ChildAt(0);
   WebAXObject button = body.ChildAt(1);
 
@@ -943,7 +940,8 @@ TEST_F(BlinkAXActionTargetTest, TestMethods) {
 
   WebDocument document = GetMainFrame()->GetDocument();
   WebAXObject root_obj = WebAXObject::FromWebDocument(document);
-  WebAXObject body = root_obj.ChildAt(0);
+  WebAXObject html_elem = root_obj.ChildAt(0);
+  WebAXObject body = html_elem.ChildAt(0);
   WebAXObject input_checkbox = body.ChildAt(0);
   WebAXObject input_range = body.ChildAt(1);
   WebAXObject input_text = body.ChildAt(2);

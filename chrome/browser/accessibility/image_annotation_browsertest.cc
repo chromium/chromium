@@ -221,9 +221,11 @@ class ImageAnnotationBrowserTest : public InProcessBrowserTest {
  protected:
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        std::vector<base::Feature>({features::kExperimentalAccessibilityLabels,
-                                    features::kAugmentExistingImageLabels}),
-        std::vector<base::Feature>({}));
+        std::vector<base::Feature>{
+            features::kEnableAccessibilityExposeHTMLElement,
+            features::kExperimentalAccessibilityLabels,
+            features::kAugmentExistingImageLabels},
+        std::vector<base::Feature>{});
     InProcessBrowserTest::SetUp();
   }
 
