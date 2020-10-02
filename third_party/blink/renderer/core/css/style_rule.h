@@ -188,7 +188,7 @@ class StyleRulePage : public StyleRuleBase {
   CSSSelectorList selector_list_;
 };
 
-class StyleRuleProperty : public StyleRuleBase {
+class CORE_EXPORT StyleRuleProperty : public StyleRuleBase {
  public:
   StyleRuleProperty(const String& name, CSSPropertyValueSet*);
   StyleRuleProperty(const StyleRuleProperty&);

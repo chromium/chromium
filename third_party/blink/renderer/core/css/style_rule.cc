@@ -332,6 +332,7 @@ StyleRuleProperty::StyleRuleProperty(const String& name,
 
 StyleRuleProperty::StyleRuleProperty(const StyleRuleProperty& property_rule)
     : StyleRuleBase(property_rule),
+      name_(property_rule.name_),
       properties_(property_rule.properties_->MutableCopy()) {}
 
 StyleRuleProperty::~StyleRuleProperty() = default;

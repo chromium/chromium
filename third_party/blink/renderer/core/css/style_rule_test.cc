@@ -77,4 +77,33 @@ TEST_F(StyleRuleTest, StyleRuleScrollTimelineCopy) {
   EXPECT_EQ(rule->GetTimeRange(), copy->GetTimeRange());
 }
 
+TEST_F(StyleRuleTest, StyleRulePropertyCopy) {
+  ScopedCSSVariables2AtPropertyForTest scoped_feature(true);
+
+  auto* base_rule = css_test_helpers::ParseRule(GetDocument(), R"CSS(
+      @property --foo {
+        syntax: "<length>";
+        initial-value: 0px;
+        inherits: false;
+      }
+    )CSS");
+
+  ASSERT_TRUE(base_rule);
+  auto* base_copy = base_rule->Copy();
+
+  EXPECT_NE(base_rule, base_copy);
+  EXPECT_EQ(base_rule->GetType(), base_copy->GetType());
+
+  auto* rule = DynamicTo<StyleRuleProperty>(base_rule);
+  auto* copy = DynamicTo<StyleRuleProperty>(base_copy);
+
+  ASSERT_TRUE(rule);
+  ASSERT_TRUE(copy);
+
+  EXPECT_EQ(rule->GetName(), copy->GetName());
+  EXPECT_EQ(rule->GetSyntax(), copy->GetSyntax());
+  EXPECT_EQ(rule->Inherits(), copy->Inherits());
+  EXPECT_EQ(rule->GetInitialValue(), copy->GetInitialValue());
+}
+
 }  // namespace blink
