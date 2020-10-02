@@ -770,6 +770,11 @@ public class FeedStreamSurface implements SurfaceActionsHandler, FeedActionsHand
 
     @Override
     public void processThereAndBackAgainData(byte[] data) {
+        processThereAndBackAgainData(data, null);
+    }
+
+    @Override
+    public void processThereAndBackAgainData(byte[] data, @Nullable View actionSourceView) {
         assert ThreadUtils.runningOnUiThread();
         FeedStreamSurfaceJni.get().processThereAndBackAgain(
                 mNativeFeedStreamSurface, FeedStreamSurface.this, data);

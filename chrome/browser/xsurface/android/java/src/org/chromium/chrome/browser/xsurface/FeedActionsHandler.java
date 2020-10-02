@@ -4,6 +4,10 @@
 
 package org.chromium.chrome.browser.xsurface;
 
+import android.view.View;
+
+import androidx.annotation.Nullable;
+
 import java.util.Map;
 
 /**
@@ -22,6 +26,13 @@ public interface FeedActionsHandler {
      * Sends data back to the server when content is clicked.
      */
     default void processThereAndBackAgainData(byte[] data) {}
+
+    /**
+     * Sends data back to the server when content is clicked and provides the corresponding view
+     * through |actionSourceView| which can be null.
+     */
+    @Deprecated
+    default void processThereAndBackAgainData(byte[] data, @Nullable View actionSourceView) {}
 
     /**
      * Stores a view FeedAction for eventual upload. 'data' is a serialized FeedAction protobuf
