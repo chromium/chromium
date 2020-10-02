@@ -2544,7 +2544,15 @@ class RenderViewImplTextInputMessageOrder : public RenderViewImplTest {
   }
 };
 
-TEST_F(RenderViewImplTextInputMessageOrder, MessageOrderInDidChangeSelection) {
+// Failing on Windows; see https://crbug.com/1134571.
+#if defined(OS_WIN)
+#define MAYBE_MessageOrderInDidChangeSelection \
+  DISABLED_MessageOrderInDidChangeSelection
+#else
+#define MAYBE_MessageOrderInDidChangeSelection MessageOrderInDidChangeSelection
+#endif
+TEST_F(RenderViewImplTextInputMessageOrder,
+       MAYBE_MessageOrderInDidChangeSelection) {
   LoadHTML("<textarea id=\"test\"></textarea>");
 
   // TextInputStateChanged should be called earlier than TextSelectionChanged.
