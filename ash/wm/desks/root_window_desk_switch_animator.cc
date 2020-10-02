@@ -74,28 +74,31 @@ void TakeScreenshot(
       viz::CopyOutputRequest::ResultFormat::RGBA_TEXTURE,
       std::move(on_screenshot_taken));
   screenshot_request->set_area(request_bounds);
-  screenshot_request->set_result_selection(request_bounds);
-
   screenshot_layer->RequestCopyOfOutput(std::move(screenshot_request));
 }
 
 // Given a screenshot |copy_result|, creates a texture layer that contains the
-// content of that screenshot.
+// content of that screenshot. The result layer will be size |layer_size|, which
+// is in dips.
 std::unique_ptr<ui::Layer> CreateLayerFromScreenshotResult(
+    const gfx::Size& layer_size,
     std::unique_ptr<viz::CopyOutputResult> copy_result) {
   DCHECK(copy_result);
   DCHECK(!copy_result->IsEmpty());
   DCHECK_EQ(copy_result->format(), viz::CopyOutputResult::Format::RGBA_TEXTURE);
 
-  const gfx::Size layer_size = copy_result->size();
+  // |texture_size| is in pixels and is not used to size the layer otherwise we
+  // may lose some quality. See https://crbug.com/1134451.
+  const gfx::Size texture_size = copy_result->size();
   viz::TransferableResource transferable_resource =
       viz::TransferableResource::MakeGL(
           copy_result->GetTextureResult()->mailbox, GL_LINEAR, GL_TEXTURE_2D,
-          copy_result->GetTextureResult()->sync_token, layer_size,
+          copy_result->GetTextureResult()->sync_token, texture_size,
           /*is_overlay_candidate=*/false);
   std::unique_ptr<viz::SingleReleaseCallback> take_texture_ownership_callback =
       copy_result->TakeTextureOwnership();
   auto screenshot_layer = std::make_unique<ui::Layer>();
+  screenshot_layer->SetBounds(gfx::Rect(layer_size));
   screenshot_layer->SetTransferableResource(
       transferable_resource, std::move(take_texture_ownership_callback),
       layer_size);
@@ -393,8 +396,8 @@ void RootWindowDeskSwitchAnimator::OnStartingDeskScreenshotTaken(
     return;
   }
 
-  CompleteAnimationPhase1WithLayer(
-      CreateLayerFromScreenshotResult(std::move(copy_result)));
+  CompleteAnimationPhase1WithLayer(CreateLayerFromScreenshotResult(
+      root_window_->bounds().size(), std::move(copy_result)));
 }
 
 void RootWindowDeskSwitchAnimator::OnEndingDeskScreenshotTaken(
@@ -416,7 +419,9 @@ void RootWindowDeskSwitchAnimator::OnEndingDeskScreenshotTaken(
   }
 
   ui::Layer* ending_desk_screenshot_layer =
-      CreateLayerFromScreenshotResult(std::move(copy_result)).release();
+      CreateLayerFromScreenshotResult(root_window_->bounds().size(),
+                                      std::move(copy_result))
+          .release();
   screenshot_layers_[ending_desk_index_] = ending_desk_screenshot_layer;
   ending_desk_screenshot_layer->SetName(
       GetScreenshotLayerName(ending_desk_index_));
