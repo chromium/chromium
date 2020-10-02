@@ -296,10 +296,22 @@ bool AudioBufferSourceHandler::RenderFromBuffer(
       DCHECK_LE(write_index + frames_this_time, destination_length);
       DCHECK_LE(read_index + frames_this_time, buffer_length);
 
-      for (unsigned i = 0; i < number_of_channels; ++i)
-        memcpy(destination_channels[i] + write_index,
-               source_channels[i] + read_index,
-               sizeof(float) * frames_this_time);
+      for (unsigned i = 0; i < number_of_channels; ++i) {
+        DCHECK(destination_channels[i]);
+
+        // Note: the buffer corresponding to source_channels[i] could have been
+        // transferred so need to check for that.  If it was transferred,
+        // source_channels[i] is null.
+        if (source_channels[i]) {
+          memcpy(destination_channels[i] + write_index,
+                 source_channels[i] + read_index,
+                 sizeof(float) * frames_this_time);
+        } else {
+          // Recall that a floating-point zero is represented by 4 bytes of 0.
+          memset(destination_channels[i] + write_index, 0,
+                 sizeof(float) * frames_this_time);
+        }
+      }
 
       write_index += frames_this_time;
       read_index += frames_this_time;
@@ -348,19 +360,25 @@ bool AudioBufferSourceHandler::RenderFromBuffer(
         const float* source = source_channels[i];
         double sample;
 
-        if (read_index == read_index2 && read_index >= 1) {
-          // We're at the end of the buffer, so just linearly extrapolate from
-          // the last two samples.
-          double sample1 = source[read_index - 1];
-          double sample2 = source[read_index];
-          sample = sample2 + (sample2 - sample1) * interpolation_factor;
+        // The source channel may have been transferred so don't try to read
+        // from it if it was.  Just set the destination to 0.
+        if (source) {
+          if (read_index == read_index2 && read_index >= 1) {
+            // We're at the end of the buffer, so just linearly extrapolate from
+            // the last two samples.
+            double sample1 = source[read_index - 1];
+            double sample2 = source[read_index];
+            sample = sample2 + (sample2 - sample1) * interpolation_factor;
+          } else {
+            double sample1 = source[read_index];
+            double sample2 = source[read_index2];
+            sample = (1.0 - interpolation_factor) * sample1 +
+                     interpolation_factor * sample2;
+          }
+          destination[write_index] = clampTo<float>(sample);
         } else {
-          double sample1 = source[read_index];
-          double sample2 = source[read_index2];
-          sample = (1.0 - interpolation_factor) * sample1 +
-                   interpolation_factor * sample2;
+          destination[write_index] = 0;
         }
-        destination[write_index] = clampTo<float>(sample);
       }
       write_index++;
 
