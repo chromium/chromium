@@ -22,7 +22,9 @@
 #include "ui/views/controls/button/label_button.h"
 
 ReadLaterButton::ReadLaterButton(Browser* browser)
-    : ToolbarButton(this), browser_(browser) {
+    : ToolbarButton(base::BindRepeating(&ReadLaterButton::ButtonPressed,
+                                        base::Unretained(this))),
+      browser_(browser) {
   SetTooltipText(l10n_util::GetStringUTF16(IDS_READ_LATER_TITLE));
   GetViewAccessibility().OverrideHasPopup(ax::mojom::HasPopup::kMenu);
   button_controller()->set_notify_action(
@@ -47,18 +49,17 @@ void ReadLaterButton::UpdateIcon() {
                     GetIconSize()));
 }
 
-void ReadLaterButton::ButtonPressed(views::Button* sender,
-                                    const ui::Event& event) {
+int ReadLaterButton::GetIconSize() const {
+  const bool touch_ui = ui::TouchUiController::Get()->touch_ui();
+  return (touch_ui && !browser_->app_controller()) ? kDefaultTouchableIconSize
+                                                   : kDefaultIconSize;
+}
+
+void ReadLaterButton::ButtonPressed() {
   if (read_later_bubble_) {
     read_later_bubble_->GetWidget()->Close();
 
   } else {
     read_later_bubble_ = ReadLaterBubbleView::Show(browser_, this);
   }
-}
-
-int ReadLaterButton::GetIconSize() const {
-  const bool touch_ui = ui::TouchUiController::Get()->touch_ui();
-  return (touch_ui && !browser_->app_controller()) ? kDefaultTouchableIconSize
-                                                   : kDefaultIconSize;
 }

@@ -14,7 +14,7 @@ class BackForwardButton : public ToolbarButton {
   enum class Direction { kBack, kForward };
 
   BackForwardButton(Direction direction,
-                    views::ButtonListener* listener,
+                    PressedCallback callback,
                     Browser* browser);
   BackForwardButton(const BackForwardButton&) = delete;
   BackForwardButton& operator=(const BackForwardButton&) = delete;

@@ -14,7 +14,6 @@
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/context_menu_controller.h"
-#include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/label_button.h"
 
 class TabStripModel;
@@ -40,14 +39,14 @@ class ToolbarButton : public views::LabelButton,
  public:
   // More convenient form of the ctor below, when |model| and |tab_strip_model|
   // are both nullptr.
-  explicit ToolbarButton(views::ButtonListener* listener);
+  explicit ToolbarButton(PressedCallback callback);
 
-  // |listener| and |tab_strip_model| must outlive this class.
+  // |tab_strip_model| must outlive this class.
   // |model| can be null if no menu is to be shown.
   // |tab_strip_model| is only needed if showing the menu with |model| requires
   // an active tab. There may be no active tab in |tab_strip_model| during
   // shutdown.
-  ToolbarButton(views::ButtonListener* listener,
+  ToolbarButton(PressedCallback callback,
                 std::unique_ptr<ui::MenuModel> model,
                 TabStripModel* tab_strip_model,
                 bool trigger_menu_on_long_press = true);

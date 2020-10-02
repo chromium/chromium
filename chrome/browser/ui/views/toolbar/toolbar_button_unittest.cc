@@ -102,8 +102,9 @@ TEST_F(ToolbarButtonViewsTest, MenuDoesNotShowWhenTabStripIsEmpty) {
 
   // ToolbarButton needs a parent view on some platforms.
   auto parent_view = std::make_unique<views::View>();
-  ToolbarButton* button = parent_view->AddChildView(
-      std::make_unique<ToolbarButton>(nullptr, std::move(model), &tab_strip));
+  ToolbarButton* button =
+      parent_view->AddChildView(std::make_unique<ToolbarButton>(
+          views::Button::PressedCallback(), std::move(model), &tab_strip));
   std::unique_ptr<views::Widget> widget_ = CreateTestWidget();
   widget_->SetContentsView(std::move(parent_view));
 
@@ -131,7 +132,7 @@ class ToolbarButtonUITest : public ChromeViewsTestBase {
 
     widget_ = CreateTestWidget();
     button_ = widget_->SetContentsView(std::make_unique<TestToolbarButton>(
-        nullptr, std::move(model), nullptr));
+        views::Button::PressedCallback(), std::move(model), nullptr));
   }
 
   void TearDown() override {

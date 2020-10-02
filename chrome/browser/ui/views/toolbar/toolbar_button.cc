@@ -56,14 +56,16 @@ SkColor GetDefaultTextColor(const ui::ThemeProvider* theme_provider) {
 
 }  // namespace
 
-ToolbarButton::ToolbarButton(views::ButtonListener* listener)
-    : ToolbarButton(listener, nullptr, nullptr) {}
+ToolbarButton::ToolbarButton(PressedCallback callback)
+    : ToolbarButton(std::move(callback), nullptr, nullptr) {}
 
-ToolbarButton::ToolbarButton(views::ButtonListener* listener,
+ToolbarButton::ToolbarButton(PressedCallback callback,
                              std::unique_ptr<ui::MenuModel> model,
                              TabStripModel* tab_strip_model,
                              bool trigger_menu_on_long_press)
-    : views::LabelButton(listener, base::string16(), CONTEXT_TOOLBAR_BUTTON),
+    : views::LabelButton(std::move(callback),
+                         base::string16(),
+                         CONTEXT_TOOLBAR_BUTTON),
       model_(std::move(model)),
       tab_strip_model_(tab_strip_model),
       trigger_menu_on_long_press_(trigger_menu_on_long_press),

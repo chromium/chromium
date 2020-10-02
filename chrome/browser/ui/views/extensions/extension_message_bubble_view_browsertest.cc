@@ -24,6 +24,7 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/image_button.h"
+#include "ui/views/test/button_test_api.h"
 
 namespace {
 
@@ -180,12 +181,11 @@ void ExtensionMessageBubbleViewBrowserTest::CheckBubbleIsNotPresentNative(
 void ExtensionMessageBubbleViewBrowserTest::ClickLearnMoreButton(
     Browser* browser) {
   ToolbarActionsBarBubbleViews* bubble = GetViewsBubbleForBrowser(browser);
-  const views::ImageButton* learn_more = bubble->learn_more_button();
+  views::ImageButton* learn_more = bubble->learn_more_button();
   const gfx::Point origin;
-  static_cast<views::ButtonListener*>(bubble)->ButtonPressed(
-      const_cast<views::ImageButton*>(learn_more),
-      ui::MouseEvent(ui::ET_MOUSE_PRESSED, origin, origin,
-                     ui::EventTimeForNow(), 0, 0));
+  views::test::ButtonTestApi(learn_more)
+      .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, origin, origin,
+                                  ui::EventTimeForNow(), 0, 0));
 
   // Clicking a button closes asynchronously. Since the close is asynchronous,
   // platform events may happen before the close completes and the dialog needs

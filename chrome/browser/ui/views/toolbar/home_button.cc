@@ -142,8 +142,8 @@ void HomePageUndoBubble::WindowClosing() {
 
 // HomeButton -----------------------------------------------------------
 
-HomeButton::HomeButton(views::ButtonListener* listener, Browser* browser)
-    : ToolbarButton(listener), browser_(browser) {
+HomeButton::HomeButton(PressedCallback callback, Browser* browser)
+    : ToolbarButton(std::move(callback)), browser_(browser) {
   SetTriggerableEventFlags(ui::EF_LEFT_MOUSE_BUTTON |
                            ui::EF_MIDDLE_MOUSE_BUTTON);
   SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_HOME));

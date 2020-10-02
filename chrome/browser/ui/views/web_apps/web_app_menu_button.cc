@@ -28,7 +28,9 @@
 
 WebAppMenuButton::WebAppMenuButton(BrowserView* browser_view,
                                    base::string16 accessible_name)
-    : AppMenuButton(this), browser_view_(browser_view) {
+    : AppMenuButton(base::BindRepeating(&WebAppMenuButton::ButtonPressed,
+                                        base::Unretained(this))),
+      browser_view_(browser_view) {
   views::SetHitTestComponent(this, static_cast<int>(HTMENU));
 
   SetInkDropMode(InkDropMode::ON);
@@ -72,8 +74,7 @@ void WebAppMenuButton::StartHighlightAnimation() {
                              this, &WebAppMenuButton::FadeHighlightOff);
 }
 
-void WebAppMenuButton::ButtonPressed(views::Button* source,
-                                     const ui::Event& event) {
+void WebAppMenuButton::ButtonPressed(const ui::Event& event) {
   Browser* browser = browser_view_->browser();
   RunMenu(std::make_unique<WebAppMenuModel>(browser_view_, browser), browser,
           event.IsKeyEvent() ? views::MenuRunner::SHOULD_SHOW_MNEMONICS

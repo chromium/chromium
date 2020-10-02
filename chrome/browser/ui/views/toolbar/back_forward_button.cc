@@ -15,9 +15,9 @@
 #include "ui/views/accessibility/view_accessibility.h"
 
 BackForwardButton::BackForwardButton(Direction direction,
-                                     views::ButtonListener* listener,
+                                     PressedCallback callback,
                                      Browser* browser)
-    : ToolbarButton(listener,
+    : ToolbarButton(std::move(callback),
                     std::make_unique<BackForwardMenuModel>(
                         browser,
                         direction == Direction::kBack

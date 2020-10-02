@@ -56,7 +56,10 @@ const char ToolbarActionView::kClassName[] = "ToolbarActionView";
 ToolbarActionView::ToolbarActionView(
     ToolbarActionViewController* view_controller,
     ToolbarActionView::Delegate* delegate)
-    : MenuButton(this), view_controller_(view_controller), delegate_(delegate) {
+    : MenuButton(base::BindRepeating(&ToolbarActionView::ButtonPressed,
+                                     base::Unretained(this))),
+      view_controller_(view_controller),
+      delegate_(delegate) {
   SetInkDropMode(InkDropMode::ON);
   SetHasInkDropActionOnClick(true);
   SetHideInkDropWhenShowingContextMenu(false);
@@ -175,26 +178,6 @@ void ToolbarActionView::UpdateState() {
 
   Layout();  // We need to layout since we may have added an icon as a result.
   SchedulePaint();
-}
-
-void ToolbarActionView::ButtonPressed(views::Button* sender,
-                                      const ui::Event& event) {
-  if (!view_controller_->IsEnabled(GetCurrentWebContents())) {
-    // We should only get a button pressed event with a non-enabled action if
-    // the left-click behavior should open the menu.
-    DCHECK(view_controller_->DisabledClickOpensMenu());
-    context_menu_controller()->ShowContextMenuForView(this, GetMenuPosition(),
-                                                      ui::MENU_SOURCE_NONE);
-  } else {
-    base::RecordAction(base::UserMetricsAction(
-        "Extensions.Toolbar.ExtensionActivatedFromToolbar"));
-    auto source =
-        delegate_->ShownInsideMenu()
-            ? ToolbarActionViewController::InvocationSource::
-                  kLegacyOverflowedEntry
-            : ToolbarActionViewController::InvocationSource::kToolbarButton;
-    view_controller_->ExecuteAction(true, source);
-  }
 }
 
 bool ToolbarActionView::IsMenuRunningForTesting() const {
@@ -317,4 +300,23 @@ void ToolbarActionView::OnPopupShown(bool by_user) {
 
 void ToolbarActionView::OnPopupClosed() {
   pressed_lock_.reset();  // Unpress the menu button if it was pressed.
+}
+
+void ToolbarActionView::ButtonPressed() {
+  if (view_controller_->IsEnabled(GetCurrentWebContents())) {
+    base::RecordAction(base::UserMetricsAction(
+        "Extensions.Toolbar.ExtensionActivatedFromToolbar"));
+    auto source =
+        delegate_->ShownInsideMenu()
+            ? ToolbarActionViewController::InvocationSource::
+                  kLegacyOverflowedEntry
+            : ToolbarActionViewController::InvocationSource::kToolbarButton;
+    view_controller_->ExecuteAction(true, source);
+  } else {
+    // We should only get a button pressed event with a non-enabled action if
+    // the left-click behavior should open the menu.
+    DCHECK(view_controller_->DisabledClickOpensMenu());
+    context_menu_controller()->ShowContextMenuForView(this, GetMenuPosition(),
+                                                      ui::MENU_SOURCE_NONE);
+  }
 }

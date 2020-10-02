@@ -12,7 +12,7 @@ class Browser;
 
 class HomeButton : public ToolbarButton {
  public:
-  HomeButton(views::ButtonListener* listener, Browser* browser);
+  HomeButton(PressedCallback callback, Browser* browser);
   HomeButton(const HomeButton&) = delete;
   HomeButton& operator=(const HomeButton&) = delete;
   ~HomeButton() override;

@@ -196,17 +196,24 @@ void ToolbarView::Init() {
     return;
   }
 
+  const auto callback = [](Browser* browser, int command,
+                           const ui::Event& event) {
+    chrome::ExecuteCommandWithDisposition(
+        browser, command, ui::DispositionFromEventFlags(event.flags()));
+  };
   std::unique_ptr<ToolbarButton> back = std::make_unique<BackForwardButton>(
-      BackForwardButton::Direction::kBack, this, browser_);
+      BackForwardButton::Direction::kBack,
+      base::BindRepeating(callback, browser_, IDC_BACK), browser_);
 
   std::unique_ptr<ToolbarButton> forward = std::make_unique<BackForwardButton>(
-      BackForwardButton::Direction::kForward, this, browser_);
+      BackForwardButton::Direction::kForward,
+      base::BindRepeating(callback, browser_, IDC_FORWARD), browser_);
 
   std::unique_ptr<ReloadButton> reload =
       std::make_unique<ReloadButton>(browser_->command_controller());
 
-  std::unique_ptr<HomeButton> home =
-      std::make_unique<HomeButton>(this, browser_);
+  std::unique_ptr<HomeButton> home = std::make_unique<HomeButton>(
+      base::BindRepeating(callback, browser_, IDC_HOME), browser_);
 
   std::unique_ptr<ExtensionsToolbarContainer> extensions_container;
   std::unique_ptr<BrowserActionsContainer> browser_actions;
@@ -279,7 +286,10 @@ void ToolbarView::Init() {
     avatar_->SetVisible(show_avatar_toolbar_button);
   }
 
-  auto app_menu_button = std::make_unique<BrowserAppMenuButton>(this);
+  auto app_menu_button = std::make_unique<BrowserAppMenuButton>(
+      base::BindRepeating(&ToolbarView::AppMenuButtonPressed,
+                          base::Unretained(this)),
+      this);
   app_menu_button->EnableCanvasFlippingForRTLUI(true);
   app_menu_button->SetAccessibleName(
       l10n_util::GetStringUTF16(IDS_ACCNAME_APP));
@@ -498,23 +508,6 @@ void ToolbarView::EnabledStateChangedForCommand(int id, bool enabled) {
   auto* button = *base::ranges::find(kButtons, id, &views::Button::tag);
   DCHECK(button);
   button->SetEnabled(enabled);
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// ToolbarView, views::Button::ButtonListener implementation:
-
-void ToolbarView::ButtonPressed(views::Button* sender,
-                                const ui::Event& event) {
-  TRACE_EVENT0("views", "ToolbarView::ButtonPressed");
-  if (sender->GetID() == VIEW_ID_APP_MENU) {
-    DCHECK_EQ(VIEW_ID_APP_MENU, sender->GetID());
-    app_menu_button_->ShowMenu(event.IsKeyEvent()
-                                   ? views::MenuRunner::SHOULD_SHOW_MNEMONICS
-                                   : views::MenuRunner::NO_FLAGS);
-  }
-
-  chrome::ExecuteCommandWithDisposition(
-      browser_, sender->tag(), ui::DispositionFromEventFlags(event.flags()));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -952,4 +945,10 @@ void ToolbarView::OnTouchUiChanged() {
     LoadImages();
     PreferredSizeChanged();
   }
+}
+
+void ToolbarView::AppMenuButtonPressed(const ui::Event& event) {
+  app_menu_button_->ShowMenu(event.IsKeyEvent()
+                                 ? views::MenuRunner::SHOULD_SHOW_MNEMONICS
+                                 : views::MenuRunner::NO_FLAGS);
 }

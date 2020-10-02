@@ -43,7 +43,10 @@ const gfx::VectorIcon& GetIconForMode(bool is_reload) {
 const char ReloadButton::kViewClassName[] = "ReloadButton";
 
 ReloadButton::ReloadButton(CommandUpdater* command_updater)
-    : ToolbarButton(this, CreateMenuModel(), nullptr),
+    : ToolbarButton(base::BindRepeating(&ReloadButton::ButtonPressed,
+                                        base::Unretained(this)),
+                    CreateMenuModel(),
+                    nullptr),
       command_updater_(command_updater),
       double_click_timer_delay_(
           base::TimeDelta::FromMilliseconds(views::GetDoubleClickInterval())),
@@ -135,8 +138,40 @@ void ReloadButton::ShowDropDownMenu(ui::MenuSourceType source_type) {
   ChangeMode(intended_mode_, true);
 }
 
-void ReloadButton::ButtonPressed(views::Button* /* button */,
-                                 const ui::Event& event) {
+bool ReloadButton::IsCommandIdChecked(int command_id) const {
+  return false;
+}
+
+bool ReloadButton::IsCommandIdEnabled(int command_id) const {
+  return true;
+}
+
+bool ReloadButton::IsCommandIdVisible(int command_id) const {
+  return true;
+}
+
+bool ReloadButton::GetAcceleratorForCommandId(
+    int command_id,
+    ui::Accelerator* accelerator) const {
+  return GetWidget()->GetAccelerator(command_id, accelerator);
+}
+
+void ReloadButton::ExecuteCommand(int command_id, int event_flags) {
+  ExecuteBrowserCommand(command_id, event_flags);
+}
+
+std::unique_ptr<ui::SimpleMenuModel> ReloadButton::CreateMenuModel() {
+  auto menu_model = std::make_unique<ui::SimpleMenuModel>(this);
+  menu_model->AddItemWithStringId(IDC_RELOAD,
+                                  IDS_RELOAD_MENU_NORMAL_RELOAD_ITEM);
+  menu_model->AddItemWithStringId(IDC_RELOAD_BYPASSING_CACHE,
+                                  IDS_RELOAD_MENU_HARD_RELOAD_ITEM);
+  menu_model->AddItemWithStringId(IDC_RELOAD_CLEARING_CACHE,
+                                  IDS_RELOAD_MENU_EMPTY_AND_HARD_RELOAD_ITEM);
+  return menu_model;
+}
+
+void ReloadButton::ButtonPressed(const ui::Event& event) {
   ClearPendingMenu();
 
   if (visible_mode_ == Mode::kStop) {
@@ -174,39 +209,6 @@ void ReloadButton::ButtonPressed(views::Button* /* button */,
     ExecuteBrowserCommand(command, flags);
     ++testing_reload_count_;
   }
-}
-
-bool ReloadButton::IsCommandIdChecked(int command_id) const {
-  return false;
-}
-
-bool ReloadButton::IsCommandIdEnabled(int command_id) const {
-  return true;
-}
-
-bool ReloadButton::IsCommandIdVisible(int command_id) const {
-  return true;
-}
-
-bool ReloadButton::GetAcceleratorForCommandId(
-    int command_id,
-    ui::Accelerator* accelerator) const {
-  return GetWidget()->GetAccelerator(command_id, accelerator);
-}
-
-void ReloadButton::ExecuteCommand(int command_id, int event_flags) {
-  ExecuteBrowserCommand(command_id, event_flags);
-}
-
-std::unique_ptr<ui::SimpleMenuModel> ReloadButton::CreateMenuModel() {
-  auto menu_model = std::make_unique<ui::SimpleMenuModel>(this);
-  menu_model->AddItemWithStringId(IDC_RELOAD,
-                                  IDS_RELOAD_MENU_NORMAL_RELOAD_ITEM);
-  menu_model->AddItemWithStringId(IDC_RELOAD_BYPASSING_CACHE,
-                                  IDS_RELOAD_MENU_HARD_RELOAD_ITEM);
-  menu_model->AddItemWithStringId(IDC_RELOAD_CLEARING_CACHE,
-                                  IDS_RELOAD_MENU_EMPTY_AND_HARD_RELOAD_ITEM);
-  return menu_model;
 }
 
 void ReloadButton::ExecuteBrowserCommand(int command, int event_flags) {

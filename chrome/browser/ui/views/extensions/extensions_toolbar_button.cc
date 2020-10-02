@@ -23,7 +23,7 @@
 ExtensionsToolbarButton::ExtensionsToolbarButton(
     Browser* browser,
     ExtensionsToolbarContainer* extensions_container)
-    : ToolbarButton(nullptr),
+    : ToolbarButton(PressedCallback()),
       browser_(browser),
       extensions_container_(extensions_container) {
   std::unique_ptr<views::MenuButtonController> menu_button_controller =

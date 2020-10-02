@@ -114,8 +114,8 @@ bool IsRecentTabsCommand(int command_id) {
 // Subclass of ImageButton whose preferred size includes the size of the border.
 class FullscreenButton : public ImageButton {
  public:
-  explicit FullscreenButton(views::ButtonListener* listener)
-      : ImageButton(listener) {}
+  explicit FullscreenButton(PressedCallback callback)
+      : ImageButton(std::move(callback)) {}
   FullscreenButton(const FullscreenButton&) = delete;
   FullscreenButton& operator=(const FullscreenButton&) = delete;
 
@@ -231,8 +231,8 @@ base::string16 GetAccessibleNameForAppMenuItem(ButtonMenuItemModel* model,
 // A button that lives inside a menu item.
 class InMenuButton : public LabelButton {
  public:
-  InMenuButton(views::ButtonListener* listener, const base::string16& text)
-      : LabelButton(listener, text) {}
+  InMenuButton(PressedCallback callback, const base::string16& text)
+      : LabelButton(std::move(callback), text) {}
   InMenuButton(const InMenuButton&) = delete;
   InMenuButton& operator=(const InMenuButton&) = delete;
 
@@ -281,7 +281,7 @@ class InMenuButton : public LabelButton {
 };
 
 // AppMenuView is a view that can contain label buttons.
-class AppMenuView : public views::View, public views::ButtonListener {
+class AppMenuView : public views::View {
  public:
   AppMenuView(AppMenu* menu, ButtonMenuItemModel* menu_model)
       : menu_(menu->AsWeakPtr()), menu_model_(menu_model) {}
@@ -297,14 +297,17 @@ class AppMenuView : public views::View, public views::ButtonListener {
   }
 
   InMenuButton* CreateAndConfigureButton(
+      views::Button::PressedCallback callback,
       int string_id,
       InMenuButtonBackground::ButtonType type,
       int index) {
-    return CreateButtonWithAccName(string_id, type, index, string_id,
+    return CreateButtonWithAccName(std::move(callback), string_id, type, index,
+                                   string_id,
                                    /*add_accelerator_text*/ true);
   }
 
-  InMenuButton* CreateButtonWithAccName(int string_id,
+  InMenuButton* CreateButtonWithAccName(views::Button::PressedCallback callback,
+                                        int string_id,
                                         InMenuButtonBackground::ButtonType type,
                                         int index,
                                         int acc_string_id,
@@ -312,8 +315,9 @@ class AppMenuView : public views::View, public views::ButtonListener {
     // Should only be invoked during construction when |menu_| is valid.
     DCHECK(menu_);
     InMenuButton* button = new InMenuButton(
-        this, gfx::RemoveAcceleratorChar(l10n_util::GetStringUTF16(string_id),
-                                         '&', nullptr, nullptr));
+        std::move(callback),
+        gfx::RemoveAcceleratorChar(l10n_util::GetStringUTF16(string_id), '&',
+                                   nullptr, nullptr));
     button->Init(type);
     button->SetAccessibleName(GetAccessibleNameForAppMenuItem(
         menu_model_, index, acc_string_id, add_accelerator_text));
@@ -330,12 +334,6 @@ class AppMenuView : public views::View, public views::ButtonListener {
  protected:
   base::WeakPtr<AppMenu> menu() { return menu_; }
   base::WeakPtr<const AppMenu> menu() const { return menu_; }
-  ButtonMenuItemModel* menu_model() {
-    // The menu and the items in the menu model have similar lifetimes; it's
-    // only safe to access model items if the menu is still alive.
-    DCHECK(menu_);
-    return menu_model_;
-  }
 
  private:
   // Hosting AppMenu.
@@ -358,12 +356,22 @@ class AppMenu::CutCopyPasteView : public AppMenuView {
                    int copy_index,
                    int paste_index)
       : AppMenuView(menu, menu_model) {
-    CreateAndConfigureButton(IDS_CUT, InMenuButtonBackground::LEADING_BORDER,
-                             cut_index);
-    CreateAndConfigureButton(IDS_COPY, InMenuButtonBackground::LEADING_BORDER,
-                             copy_index);
-    CreateAndConfigureButton(IDS_PASTE, InMenuButtonBackground::LEADING_BORDER,
-                             paste_index);
+    const auto cancel_and_evaluate =
+        [](AppMenu* menu, ButtonMenuItemModel* menu_model, int index) {
+          menu->CancelAndEvaluate(menu_model, index);
+        };
+    CreateAndConfigureButton(
+        base::BindRepeating(cancel_and_evaluate, base::Unretained(menu),
+                            menu_model, cut_index),
+        IDS_CUT, InMenuButtonBackground::LEADING_BORDER, cut_index);
+    CreateAndConfigureButton(
+        base::BindRepeating(cancel_and_evaluate, base::Unretained(menu),
+                            menu_model, copy_index),
+        IDS_COPY, InMenuButtonBackground::LEADING_BORDER, copy_index);
+    CreateAndConfigureButton(
+        base::BindRepeating(cancel_and_evaluate, base::Unretained(menu),
+                            menu_model, paste_index),
+        IDS_PASTE, InMenuButtonBackground::LEADING_BORDER, paste_index);
   }
   CutCopyPasteView(const CutCopyPasteView&) = delete;
   CutCopyPasteView& operator=(const CutCopyPasteView&) = delete;
@@ -383,11 +391,6 @@ class AppMenu::CutCopyPasteView : public AppMenuView {
       child->SetBounds(x, 0, width, height());
       x += width;
     }
-  }
-
-  // Overridden from ButtonListener.
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override {
-    menu()->CancelAndEvaluate(menu_model(), sender->tag());
   }
 
  private:
@@ -413,7 +416,6 @@ class AppMenu::ZoomView : public AppMenuView {
            int increment_index,
            int fullscreen_index)
       : AppMenuView(menu, menu_model),
-        fullscreen_index_(fullscreen_index),
         increment_button_(nullptr),
         zoom_label_(nullptr),
         decrement_button_(nullptr),
@@ -426,7 +428,11 @@ class AppMenu::ZoomView : public AppMenuView {
                 base::BindRepeating(&AppMenu::ZoomView::OnZoomLevelChanged,
                                     base::Unretained(this)));
 
+    const auto activate = [](ButtonMenuItemModel* menu_model, int index) {
+      menu_model->ActivatedAt(index);
+    };
     decrement_button_ = CreateButtonWithAccName(
+        base::BindRepeating(activate, menu_model, decrement_index),
         IDS_ZOOM_MINUS2, InMenuButtonBackground::LEADING_BORDER,
         decrement_index, IDS_ACCNAME_ZOOM_MINUS2,
         /*add_accelerator_text*/ false);
@@ -446,10 +452,15 @@ class AppMenu::ZoomView : public AppMenuView {
     zoom_label_max_width_valid_ = false;
 
     increment_button_ = CreateButtonWithAccName(
+        base::BindRepeating(activate, menu_model, increment_index),
         IDS_ZOOM_PLUS2, InMenuButtonBackground::NO_BORDER, increment_index,
         IDS_ACCNAME_ZOOM_PLUS2, /*add_accelerator_text*/ false);
 
-    fullscreen_button_ = new FullscreenButton(this);
+    fullscreen_button_ = new FullscreenButton(base::BindRepeating(
+        [](AppMenu* menu, ButtonMenuItemModel* menu_model, int index) {
+          menu->CancelAndEvaluate(menu_model, index);
+        },
+        menu, menu_model, fullscreen_index));
     // all buttons on menu should must be a custom button in order for
     // the keyboard navigation to work.
     DCHECK(Button::AsButton(fullscreen_button_));
@@ -543,20 +554,14 @@ class AppMenu::ZoomView : public AppMenuView {
                                  hovered_fullscreen_image);
   }
 
-  // Overridden from ButtonListener.
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override {
-    if (sender->tag() == fullscreen_index_) {
-      menu()->CancelAndEvaluate(menu_model(), sender->tag());
-    } else {
-      // Zoom buttons don't close the menu.
-      menu_model()->ActivatedAt(sender->tag());
-    }
-  }
-
  private:
-  content::WebContents* GetActiveWebContents() const {
+  const content::WebContents* GetActiveWebContents() const {
     return menu() ? menu()->browser_->tab_strip_model()->GetActiveWebContents()
                   : nullptr;
+  }
+  content::WebContents* GetActiveWebContents() {
+    return const_cast<content::WebContents*>(
+        static_cast<const AppMenu::ZoomView*>(this)->GetActiveWebContents());
   }
 
   void OnZoomLevelChanged(const content::HostZoomMap::ZoomLevelChange& change) {
@@ -567,7 +572,8 @@ class AppMenu::ZoomView : public AppMenuView {
     WebContents* contents = GetActiveWebContents();
     int zoom = 100;
     if (contents) {
-      auto* zoom_controller = zoom::ZoomController::FromWebContents(contents);
+      const auto* zoom_controller =
+          zoom::ZoomController::FromWebContents(contents);
       if (zoom_controller)
         zoom = zoom_controller->GetZoomPercent();
       increment_button_->SetEnabled(zoom < contents->GetMaximumZoomPercent());
@@ -590,9 +596,9 @@ class AppMenu::ZoomView : public AppMenuView {
 
       int max_w = 0;
 
-      WebContents* selected_tab = GetActiveWebContents();
+      const WebContents* selected_tab = GetActiveWebContents();
       if (selected_tab) {
-        auto* zoom_controller =
+        const auto* zoom_controller =
             zoom::ZoomController::FromWebContents(selected_tab);
         DCHECK(zoom_controller);
         // Enumerate all zoom factors that can be used in PageZoom::Zoom.
@@ -613,9 +619,6 @@ class AppMenu::ZoomView : public AppMenuView {
     }
     return zoom_label_max_width_;
   }
-
-  // Index of the fullscreen menu item in the model.
-  const int fullscreen_index_;
 
   std::unique_ptr<content::HostZoomMap::Subscription>
       browser_zoom_subscription_;

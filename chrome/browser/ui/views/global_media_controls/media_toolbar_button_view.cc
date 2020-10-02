@@ -29,7 +29,7 @@
 #include "ui/views/controls/button/button_controller.h"
 
 MediaToolbarButtonView::MediaToolbarButtonView(BrowserView* browser_view)
-    : ToolbarButton(this),
+    : ToolbarButton(PressedCallback(this, this)),
       browser_(browser_view->browser()),
       service_(MediaNotificationServiceFactory::GetForProfile(
           browser_view->browser()->profile())),

@@ -167,7 +167,7 @@ class WebAppToolbarButton : public BaseClass {
 
 class WebAppToolbarBackButton : public WebAppToolbarButton<BackForwardButton> {
  public:
-  WebAppToolbarBackButton(views::ButtonListener* listener, Browser* browser);
+  WebAppToolbarBackButton(PressedCallback callback, Browser* browser);
   WebAppToolbarBackButton(const WebAppToolbarBackButton&) = delete;
   WebAppToolbarBackButton& operator=(const WebAppToolbarBackButton&) = delete;
   ~WebAppToolbarBackButton() override = default;
@@ -176,12 +176,11 @@ class WebAppToolbarBackButton : public WebAppToolbarButton<BackForwardButton> {
   const gfx::VectorIcon* GetAlternativeIcon() const override;
 };
 
-WebAppToolbarBackButton::WebAppToolbarBackButton(
-    views::ButtonListener* listener,
-    Browser* browser)
+WebAppToolbarBackButton::WebAppToolbarBackButton(PressedCallback callback,
+                                                 Browser* browser)
     : WebAppToolbarButton<BackForwardButton>(
           BackForwardButton::Direction::kBack,
-          listener,
+          std::move(callback),
           browser) {}
 
 const gfx::VectorIcon* WebAppToolbarBackButton::GetAlternativeIcon() const {
@@ -349,8 +348,7 @@ WebAppFrameToolbarView::ContentSettingsContainer::ContentSettingsContainer(
 // Holds controls in the far left of the toolbar.
 class WebAppFrameToolbarView::NavigationButtonContainer
     : public views::View,
-      public CommandObserver,
-      public views::ButtonListener {
+      public CommandObserver {
  public:
   explicit NavigationButtonContainer(BrowserView* browser_view);
   ~NavigationButtonContainer() override;
@@ -378,21 +376,14 @@ class WebAppFrameToolbarView::NavigationButtonContainer
     }
   }
 
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override {
-    chrome::ExecuteCommandWithDisposition(
-        browser_view_->browser(), sender->tag(),
-        ui::DispositionFromEventFlags(event.flags()));
-  }
-
  private:
   // views::View:
   const char* GetClassName() const override {
     return "WebAppFrameToolbarView::NavigationButtonContainer";
   }
 
-  // The containing browser view.
-  BrowserView* const browser_view_;
+  // The containing browser.
+  Browser* const browser_;
 
   // These members are owned by the views hierarchy.
   WebAppToolbarBackButton* back_button_ = nullptr;
@@ -401,7 +392,7 @@ class WebAppFrameToolbarView::NavigationButtonContainer
 
 WebAppFrameToolbarView::NavigationButtonContainer::NavigationButtonContainer(
     BrowserView* browser_view)
-    : browser_view_(browser_view) {
+    : browser_(browser_view->browser()) {
   views::BoxLayout& layout =
       *SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kHorizontal,
@@ -413,27 +404,34 @@ WebAppFrameToolbarView::NavigationButtonContainer::NavigationButtonContainer(
       views::BoxLayout::CrossAxisAlignment::kCenter);
 
   back_button_ = AddChildView(std::make_unique<WebAppToolbarBackButton>(
-      this, browser_view_->browser()));
+      base::BindRepeating(
+          [](Browser* browser, const ui::Event& event) {
+            chrome::ExecuteCommandWithDisposition(
+                browser, IDC_BACK,
+                ui::DispositionFromEventFlags(event.flags()));
+          },
+          browser_),
+      browser_));
   back_button_->set_tag(IDC_BACK);
   reload_button_ = AddChildView(std::make_unique<WebAppToolbarReloadButton>(
-      browser_view_->browser()->command_controller()));
+      browser_->command_controller()));
   reload_button_->set_tag(IDC_RELOAD);
 
-  const bool is_browser_focus_mode = browser_view_->browser()->is_focus_mode();
+  const bool is_browser_focus_mode = browser_->is_focus_mode();
   SetInsetsForWebAppToolbarButton(back_button_, is_browser_focus_mode);
   SetInsetsForWebAppToolbarButton(reload_button_, is_browser_focus_mode);
 
   views::SetHitTestComponent(back_button_, static_cast<int>(HTCLIENT));
   views::SetHitTestComponent(reload_button_, static_cast<int>(HTCLIENT));
 
-  chrome::AddCommandObserver(browser_view_->browser(), IDC_BACK, this);
-  chrome::AddCommandObserver(browser_view_->browser(), IDC_RELOAD, this);
+  chrome::AddCommandObserver(browser_, IDC_BACK, this);
+  chrome::AddCommandObserver(browser_, IDC_RELOAD, this);
 }
 
 WebAppFrameToolbarView::NavigationButtonContainer::
     ~NavigationButtonContainer() {
-  chrome::RemoveCommandObserver(browser_view_->browser(), IDC_BACK, this);
-  chrome::RemoveCommandObserver(browser_view_->browser(), IDC_RELOAD, this);
+  chrome::RemoveCommandObserver(browser_, IDC_BACK, this);
+  chrome::RemoveCommandObserver(browser_, IDC_RELOAD, this);
 }
 
 // Holds controls in the far right of the toolbar.

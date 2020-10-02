@@ -51,7 +51,7 @@ AvatarToolbarButton::AvatarToolbarButton(Browser* browser)
 
 AvatarToolbarButton::AvatarToolbarButton(Browser* browser,
                                          ToolbarIconContainerView* parent)
-    : ToolbarButton(nullptr),
+    : ToolbarButton(PressedCallback()),
       delegate_(std::make_unique<AvatarToolbarButtonDelegate>()),
       browser_(browser),
       parent_(parent) {
@@ -236,9 +236,10 @@ void AvatarToolbarButton::OnHighlightChanged() {
 void AvatarToolbarButton::NotifyClick(const ui::Event& event) {
   Button::NotifyClick(event);
   delegate_->NotifyClick();
-  // TODO(bsep): Other toolbar buttons have ToolbarView as a listener and let it
-  // call ExecuteCommandWithDisposition on their behalf. Unfortunately, it's not
-  // possible to plumb IsKeyEvent through, so this has to be a special case.
+  // TODO(bsep): Other toolbar buttons have a ToolbarView method as a callback
+  // and let it call ExecuteCommandWithDisposition on their behalf.
+  // Unfortunately, it's not possible to plumb IsKeyEvent through, so this has
+  // to be a special case.
   browser_->window()->ShowAvatarBubbleFromAvatarButton(
       BrowserWindow::AVATAR_BUBBLE_MODE_DEFAULT,
       signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN,

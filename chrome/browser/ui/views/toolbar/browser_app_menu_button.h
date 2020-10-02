@@ -22,7 +22,7 @@ enum class InProductHelpFeature;
 // windows, which is implemented in WebAppMenuButton).
 class BrowserAppMenuButton : public AppMenuButton {
  public:
-  explicit BrowserAppMenuButton(ToolbarView* toolbar_view);
+  BrowserAppMenuButton(PressedCallback callback, ToolbarView* toolbar_view);
   BrowserAppMenuButton(const BrowserAppMenuButton&) = delete;
   BrowserAppMenuButton& operator=(const BrowserAppMenuButton&) = delete;
   ~BrowserAppMenuButton() override;

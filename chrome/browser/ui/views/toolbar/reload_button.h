@@ -8,7 +8,6 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "ui/base/models/simple_menu_model.h"
-#include "ui/views/controls/button/button.h"
 
 class CommandUpdater;
 
@@ -23,7 +22,6 @@ class CommandUpdater;
 ////////////////////////////////////////////////////////////////////////////////
 
 class ReloadButton : public ToolbarButton,
-                     public views::ButtonListener,
                      public ui::SimpleMenuModel::Delegate {
  public:
   enum class Mode { kReload = 0, kStop };
@@ -56,10 +54,6 @@ class ReloadButton : public ToolbarButton,
   void ShowDropDownMenu(ui::MenuSourceType source_type) override;
   void UpdateIcon() override;
 
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* /* button */,
-                     const ui::Event& event) override;
-
   // ui::SimpleMenuModel::Delegate:
   bool IsCommandIdChecked(int command_id) const override;
   bool IsCommandIdEnabled(int command_id) const override;
@@ -72,6 +66,8 @@ class ReloadButton : public ToolbarButton,
   friend class ReloadButtonTest;
 
   std::unique_ptr<ui::SimpleMenuModel> CreateMenuModel();
+
+  void ButtonPressed(const ui::Event& event);
 
   void ExecuteBrowserCommand(int command, int event_flags);
 

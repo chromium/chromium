@@ -10,13 +10,9 @@
 class Browser;
 class ReadLaterBubbleView;
 
-namespace views {
-class ButtonListener;
-}
-
 // Button in the bookmarks bar that provides access to the corresponding
 // read later menu.
-class ReadLaterButton : public ToolbarButton, public views::ButtonListener {
+class ReadLaterButton : public ToolbarButton {
  public:
   explicit ReadLaterButton(Browser* browser);
   ReadLaterButton(const ReadLaterButton&) = delete;
@@ -32,10 +28,9 @@ class ReadLaterButton : public ToolbarButton, public views::ButtonListener {
   }
 
  private:
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
-
   int GetIconSize() const;
+
+  void ButtonPressed();
 
   base::WeakPtr<ReadLaterBubbleView> read_later_bubble_;
 

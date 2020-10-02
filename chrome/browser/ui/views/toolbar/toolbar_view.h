@@ -29,7 +29,6 @@
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/views/accessible_pane_view.h"
 #include "ui/views/animation/animation_delegate_views.h"
-#include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/menu_button.h"
 #include "ui/views/view.h"
 #include "url/origin.h"
@@ -71,7 +70,6 @@ class ToolbarView : public views::AccessiblePaneView,
                     public LocationBarView::Delegate,
                     public BrowserActionsContainer::Delegate,
                     public CommandObserver,
-                    public views::ButtonListener,
                     public AppMenuIconController::Delegate,
                     public UpgradeObserver,
                     public ToolbarButtonProvider,
@@ -173,9 +171,6 @@ class ToolbarView : public views::AccessiblePaneView,
   // CommandObserver:
   void EnabledStateChangedForCommand(int id, bool enabled) override;
 
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
-
   // UpgradeObserver toolbar_button_view_provider.
   void OnOutdatedInstall() override;
   void OnOutdatedInstallNoAutoUpdate() override;
@@ -255,6 +250,8 @@ class ToolbarView : public views::AccessiblePaneView,
   void UpdateHomeButtonVisibility();
 
   void OnTouchUiChanged();
+
+  void AppMenuButtonPressed(const ui::Event& event);
 
   gfx::SlideAnimation size_animation_{this};
 
