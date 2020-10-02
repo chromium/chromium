@@ -3280,7 +3280,6 @@ crbug.com/1050754 external/wpt/pointerevents/compat/pointerevent_compat-mouse-ev
 crbug.com/1050754 external/wpt/pointerevents/compat/pointerevent_mouse-on-object.html [ Failure ]
 crbug.com/1050754 external/wpt/pointerevents/compat/pointerevent_mouse-pointer-on-scrollbar.html [ Failure ]
 crbug.com/1050754 external/wpt/pointerevents/idlharness.window.html [ Failure ]
-crbug.com/1050754 external/wpt/pointerevents/mouse-pointer-boundary-events-for-shadowdom.html [ Failure ]
 crbug.com/1050754 external/wpt/pointerevents/pointerevent_coalesced_events_attributes.html [ Failure ]
 crbug.com/1050754 external/wpt/pointerevents/pointerevent_pointercapture_in_frame.html [ Timeout ]
 crbug.com/1050754 external/wpt/pointerevents/pointerevent_tiltX_tiltY_to_azimuth_altitude.html [ Failure ]

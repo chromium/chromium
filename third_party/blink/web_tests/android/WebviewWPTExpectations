@@ -3444,7 +3444,6 @@ crbug.com/1050754 external/wpt/pointerevents/compat/pointerevent_mouse-on-object
 crbug.com/1050754 external/wpt/pointerevents/compat/pointerevent_mouse-pointer-on-scrollbar.html [ Failure ]
 crbug.com/1050754 external/wpt/pointerevents/compat/pointerevent_touch-action_two-finger_interaction.html [ Failure Timeout ]
 crbug.com/1050754 external/wpt/pointerevents/idlharness.window.html [ Failure ]
-crbug.com/1050754 external/wpt/pointerevents/mouse-pointer-boundary-events-for-shadowdom.html [ Failure ]
 crbug.com/1050754 external/wpt/pointerevents/pointerevent_attributes_nohover_pointers.html [ Failure Timeout ]
 crbug.com/1050754 external/wpt/pointerevents/pointerevent_boundary_events_in_capturing.html [ Failure Timeout ]
 crbug.com/1050754 external/wpt/pointerevents/pointerevent_change-touch-action-onpointerdown_touch.html [ Failure Timeout ]
