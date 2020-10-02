@@ -5636,6 +5636,7 @@ test("unit_tests") {
       "../browser/ui/cocoa/main_menu_builder_unittest.mm",
       "../browser/ui/cocoa/notifications/notification_builder_mac_unittest.mm",
       "../browser/ui/cocoa/notifications/notification_response_builder_mac_unittest.mm",
+      "../browser/ui/cocoa/notifications/unnotification_builder_mac_unittest.mm",
       "../browser/ui/cocoa/notifications/unnotification_response_builder_mac_unittest.mm",
       "../browser/ui/cocoa/nsmenuitem_additions_unittest.mm",
       "../browser/ui/cocoa/profiles/profile_menu_controller_unittest.mm",
