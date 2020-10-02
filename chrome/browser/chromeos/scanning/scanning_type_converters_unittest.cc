@@ -100,6 +100,9 @@ INSTANTIATE_TEST_SUITE_P(
             mojo_ipc::SourceType::kAdfSimplex, mojo_ipc::ColorMode::kGrayscale},
         ScanningTypeConvertersTestParams{
             lorgnette::SOURCE_ADF_DUPLEX, lorgnette::MODE_COLOR,
-            mojo_ipc::SourceType::kAdfDuplex, mojo_ipc::ColorMode::kColor}));
+            mojo_ipc::SourceType::kAdfDuplex, mojo_ipc::ColorMode::kColor},
+        ScanningTypeConvertersTestParams{
+            lorgnette::SOURCE_DEFAULT, lorgnette::MODE_COLOR,
+            mojo_ipc::SourceType::kDefault, mojo_ipc::ColorMode::kColor}));
 
 }  // namespace chromeos
