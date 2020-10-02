@@ -1,0 +1,20 @@
+This is a testharness.js-based test.
+FAIL Setting binaryType to 'blob' should succeed Failed to set the 'binaryType' property on 'RTCDataChannel': Blob support not implemented yet
+PASS Setting binaryType to 'arraybuffer' should succeed
+FAIL Setting invalid binaryType 'jellyfish' should throw SyntaxError assert_throws_dom: function "() => {
+      dc.binaryType = binaryType;
+    }" threw object "TypeMismatchError: Failed to set the 'binaryType' property on 'RTCDataChannel': Unknown binary type : jellyfish" that is not a DOMException SyntaxError: property "code" is equal to 17, expected 12
+FAIL Setting invalid binaryType 'arraybuffer ' should throw SyntaxError assert_throws_dom: function "() => {
+      dc.binaryType = binaryType;
+    }" threw object "TypeMismatchError: Failed to set the 'binaryType' property on 'RTCDataChannel': Unknown binary type : arraybuffer " that is not a DOMException SyntaxError: property "code" is equal to 17, expected 12
+FAIL Setting invalid binaryType '' should throw SyntaxError assert_throws_dom: function "() => {
+      dc.binaryType = binaryType;
+    }" threw object "TypeMismatchError: Failed to set the 'binaryType' property on 'RTCDataChannel': Unknown binary type : " that is not a DOMException SyntaxError: property "code" is equal to 17, expected 12
+FAIL Setting invalid binaryType 'null' should throw SyntaxError assert_throws_dom: function "() => {
+      dc.binaryType = binaryType;
+    }" threw object "TypeMismatchError: Failed to set the 'binaryType' property on 'RTCDataChannel': Unknown binary type : null" that is not a DOMException SyntaxError: property "code" is equal to 17, expected 12
+FAIL Setting invalid binaryType 'undefined' should throw SyntaxError assert_throws_dom: function "() => {
+      dc.binaryType = binaryType;
+    }" threw object "TypeMismatchError: Failed to set the 'binaryType' property on 'RTCDataChannel': Unknown binary type : undefined" that is not a DOMException SyntaxError: property "code" is equal to 17, expected 12
+Harness: the test ran to completion.
+

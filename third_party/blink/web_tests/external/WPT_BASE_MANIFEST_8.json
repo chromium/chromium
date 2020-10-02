@@ -159289,6 +159289,19 @@
        {}
       ]
      ],
+     "mask-containing-image-with-clip-path.svg": [
+      "faeec28a35292846fb25c5788d1e6d39e1e33975",
+      [
+       null,
+       [
+        [
+         "/svg/embedded/reference/green-rect-100x100.svg",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "reftests": {
       "display-none-mask.html": [
        "5a746c9fdaec71c5c530e393aaa1f641f55c89b8",
@@ -174734,7 +174747,7 @@
       []
      ],
      "KeyframeEffect-getKeyframes.tentative-expected.txt": [
-      "9dc46918c17373ca1cb2b8cd6816750155280697",
+      "bfffc51489c6c02572b0b8599dc1c8b8097e29e6",
       []
      ],
      "META.yml": [
@@ -211488,7 +211501,7 @@
       []
      ],
      "window-tests-enumeration.js": [
-      "24c8e0f94664a055318feaa3bf58a5bb1a840256",
+      "6e60910251fc59012d28f3c9a42adac7b7cb6d7a",
       []
      ]
     }
@@ -227814,7 +227827,7 @@
       []
      ],
      "largest-contentful-paint-helpers.js": [
-      "0529e227b8094656361a7ab9d5ae81a92f0e8934",
+      "e7f7aa764f8643460f5ae86de5b39171da29d80a",
       []
      ]
     }
@@ -233892,7 +233905,7 @@
       []
      ],
      "webxr-test.js": [
-      "084d692ee0a7f705e9647c7b13038c85127cb9af",
+      "6b6c41de0c4c1082affb2ec54208c326a755b425",
       []
      ],
      "webxr-test.js.headers": [
@@ -233928,6 +233941,10 @@
      "b6030bf121388d5f4e33fbc31f8680fb6f58344b",
      []
     ],
+    "testdriver-vendor.js": [
+     "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+     []
+    ],
     "testdriver-vendor.js.headers": [
      "5e8f640c6659d176eaca4c71cc1798b7285540b7",
      []
@@ -233946,6 +233963,10 @@
     ],
     "testharness.js.headers": [
      "5e8f640c6659d176eaca4c71cc1798b7285540b7",
+     []
+    ],
+    "testharnessreport.js": [
+     "e5cb40fe0ef652be407d4c48b1c59391864cec7b",
      []
     ],
     "testharnessreport.js.headers": [
@@ -238440,6 +238461,12 @@
       ],
       "percentage-ref.svg": [
        "610a3ddb2d21da119fb4a53f5f351dff0190880c",
+       []
+      ]
+     },
+     "support": {
+      "white-rect-100x100.svg": [
+       "6ee3841974a82aa60187570b3f18fc239bf44534",
        []
       ]
      },
@@ -248482,6 +248509,10 @@
      "cb6e177c1eaa6e75659080e578e767ee807a7be7",
      []
     ],
+    "RTCDataChannel-binaryType.window-expected.txt": [
+     "c9bf0c90775919645f47d2085a90837c06e4c6ef",
+     []
+    ],
     "RTCDataChannel-bufferedAmount-expected.txt": [
      "b7497b7d878c2ffcc7f2f4c1e728e50425fe56c4",
      []
@@ -251331,7 +251362,7 @@
      ]
     },
     "idlharness.https.window-expected.txt": [
-     "babb34bddc7e1462737ce060c9e27cd60982ae8f",
+     "88ee8bc4e5a3d1ad1b5b7839263053cd5c13ae97",
      []
     ],
     "resources": {
@@ -251362,6 +251393,10 @@
     },
     "webxr_feature_policy.https.html.headers": [
      "2c758962332e723453f31a6cb8d3dfc3ac292d44",
+     []
+    ],
+    "xr_viewport_scale.https-expected.txt": [
+     "5f7bbdc82bb4858a88b92287b35559c0a1399fc5",
      []
     ]
    },
@@ -366429,21 +366464,28 @@
      ]
     ],
     "image-TAO.sub.html": [
-     "41c8c748619aea00c2afe67dd5983ab7601121b0",
+     "8b7d99e47164803047cad4b7280e2b3e4950d93f",
+     [
+      null,
+      {}
+     ]
+    ],
+    "image-full-viewport.html": [
+     "7da6c5c3dc9a2c32699277da0bfecf1b7a4a1dab",
      [
       null,
       {}
      ]
     ],
     "image-inside-svg.html": [
-     "5fff9e47f6424284fd707e276a68fa1f302d781c",
+     "ce96574609a56e5721a136416c5d411a1e37e38e",
      [
       null,
       {}
      ]
     ],
     "image-not-fully-visible.html": [
-     "cec488c1c899d3d8b7ad9fbd306ec6cd92ecc416",
+     "8990fd14c0787caa07225017108edb8031eca899",
      [
       null,
       {}
@@ -366527,7 +366569,7 @@
      ]
     ],
     "observe-text.html": [
-     "a0a07d9422d62c2a20d72310c903242af0c56825",
+     "b4b485ddebd57afbd4af2ff962151f92d19a54d3",
      [
       null,
       {}
@@ -414986,6 +415028,13 @@
       }
      ]
     ],
+    "RTCDataChannel-binaryType.window.js": [
+     "c63281bd51b0a01de27785c1e14792a6b51e0625",
+     [
+      "webrtc/RTCDataChannel-binaryType.window.html",
+      {}
+     ]
+    ],
     "RTCDataChannel-bufferedAmount.html": [
      "f663941162d93e511b1a5d6be01ed79fe28c9bbf",
      [
@@ -422557,6 +422606,13 @@
     ],
     "xrWebGLLayer_viewports.https.html": [
      "94a23dcdb427298722a989987a02f35a8d98d055",
+     [
+      null,
+      {}
+     ]
+    ],
+    "xr_viewport_scale.https.html": [
+     "baff125705fb2121c973845d89214e8bc435e115",
      [
       null,
       {}
