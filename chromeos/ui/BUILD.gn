@@ -7,9 +7,18 @@ assert(is_chromeos || chromeos_is_browser_only,
 
 # C++ headers and sources that can be used by both ash and lacros builds.
 component("ui") {
-  sources = [ "chromeos_ui_constants.h" ]
+  defines = [ "IS_CHROMEOS_UI_IMPL" ]
+
+  sources = [
+    "chromeos_ui_constants.h",
+    "tablet_state.cc",
+    "tablet_state.h",
+  ]
 
   output_name = "chromeos_ui"
 
-  deps = [ "//skia" ]
+  deps = [
+    "//base",
+    "//skia",
+  ]
 }

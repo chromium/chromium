@@ -23,6 +23,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/dbus/power/power_manager_client.h"
+#include "chromeos/ui/tablet_state.h"
 #include "ui/aura/window_occlusion_tracker.h"
 #include "ui/compositor/layer_animation_element.h"
 #include "ui/compositor/layer_animation_observer.h"
@@ -430,7 +431,7 @@ class ASH_EXPORT TabletModeController
   gfx::Vector3dF base_smoothed_;
   gfx::Vector3dF lid_smoothed_;
 
-  State state_ = State::kInClamshellMode;
+  chromeos::TabletState tablet_state_;
 
   // Calls RecordLidAngle() periodically.
   base::RepeatingTimer record_lid_angle_timer_;
