@@ -11,7 +11,7 @@
 #include "base/strings/string16.h"
 #include "chrome/browser/android/password_edit_delegate.h"
 #include "chrome/browser/android/password_editing_bridge.h"
-#include "components/autofill/core/common/password_form.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
 
 class Profile;
@@ -27,7 +27,8 @@ class PasswordEditDelegateSettingsImpl : public PasswordEditDelegate {
   // username conflicts with any previously existing ones.
   PasswordEditDelegateSettingsImpl(
       Profile* profile,
-      base::span<const std::unique_ptr<autofill::PasswordForm>> forms_to_change,
+      base::span<const std::unique_ptr<password_manager::PasswordForm>>
+          forms_to_change,
       std::vector<base::string16> existing_usernames);
   ~PasswordEditDelegateSettingsImpl() override;
 
@@ -37,7 +38,7 @@ class PasswordEditDelegateSettingsImpl : public PasswordEditDelegate {
  private:
   Profile* profile_ = nullptr;
   std::vector<base::string16> existing_usernames_;
-  std::vector<std::unique_ptr<autofill::PasswordForm>> forms_to_change_;
+  std::vector<std::unique_ptr<password_manager::PasswordForm>> forms_to_change_;
 };
 
 #endif  // CHROME_BROWSER_ANDROID_PASSWORD_EDIT_DELEGATE_SETTINGS_IMPL_H_

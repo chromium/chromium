@@ -11,7 +11,8 @@
 
 PasswordEditDelegateSettingsImpl::PasswordEditDelegateSettingsImpl(
     Profile* profile,
-    base::span<const std::unique_ptr<autofill::PasswordForm>> forms_to_change,
+    base::span<const std::unique_ptr<password_manager::PasswordForm>>
+        forms_to_change,
     std::vector<base::string16> existing_usernames)
     : profile_(profile), existing_usernames_(std::move(existing_usernames)) {
   DCHECK(!forms_to_change.empty());
@@ -21,7 +22,7 @@ PasswordEditDelegateSettingsImpl::PasswordEditDelegateSettingsImpl(
   forms_to_change_.reserve(forms_to_change.size());
   for (const auto& password_form : forms_to_change) {
     forms_to_change_.push_back(
-        std::make_unique<autofill::PasswordForm>(*password_form));
+        std::make_unique<password_manager::PasswordForm>(*password_form));
   }
 }
 

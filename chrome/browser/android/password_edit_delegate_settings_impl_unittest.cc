@@ -16,7 +16,7 @@
 #include "chrome/browser/android/password_edit_delegate_settings_impl.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/autofill/core/common/password_form.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_list_sorter.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/test_password_store.h"
@@ -40,7 +40,7 @@ constexpr char kUsername1[] = "user";
 constexpr char kUsername2[] = "user2";
 
 std::vector<std::pair<std::string, std::string>> GetUsernamesAndPasswords(
-    const std::vector<autofill::PasswordForm>& forms) {
+    const std::vector<password_manager::PasswordForm>& forms) {
   std::vector<std::pair<std::string, std::string>> result;
   result.reserve(forms.size());
   for (const auto& form : forms) {
@@ -51,10 +51,10 @@ std::vector<std::pair<std::string, std::string>> GetUsernamesAndPasswords(
   return result;
 }
 
-autofill::PasswordForm MakeSavedForm(const GURL& origin,
-                                     base::StringPiece username,
-                                     base::StringPiece password) {
-  autofill::PasswordForm form;
+password_manager::PasswordForm MakeSavedForm(const GURL& origin,
+                                             base::StringPiece username,
+                                             base::StringPiece password) {
+  password_manager::PasswordForm form;
   form.url = origin;
   form.signon_realm = origin.GetOrigin().spec();
   form.username_element = base::ASCIIToUTF16("Email");
@@ -64,15 +64,16 @@ autofill::PasswordForm MakeSavedForm(const GURL& origin,
   return form;
 }
 
-std::vector<std::unique_ptr<autofill::PasswordForm>> ExtractEquivalentForms(
-    const autofill::PasswordForm& edited_form,
-    const std::vector<autofill::PasswordForm>& saved_forms) {
+std::vector<std::unique_ptr<password_manager::PasswordForm>>
+ExtractEquivalentForms(
+    const password_manager::PasswordForm& edited_form,
+    const std::vector<password_manager::PasswordForm>& saved_forms) {
   std::string sort_key = password_manager::CreateSortKey(edited_form);
-  std::vector<std::unique_ptr<autofill::PasswordForm>> equivalent_forms;
-  for (const autofill::PasswordForm& form : saved_forms) {
+  std::vector<std::unique_ptr<password_manager::PasswordForm>> equivalent_forms;
+  for (const password_manager::PasswordForm& form : saved_forms) {
     if (password_manager::CreateSortKey(form) == sort_key) {
       equivalent_forms.push_back(
-          std::make_unique<autofill::PasswordForm>(form));
+          std::make_unique<password_manager::PasswordForm>(form));
     }
   }
   return equivalent_forms;
@@ -80,7 +81,7 @@ std::vector<std::unique_ptr<autofill::PasswordForm>> ExtractEquivalentForms(
 
 std::vector<base::string16> ExtractUsernamesSameUrl(
     const GURL& url,
-    const std::vector<autofill::PasswordForm>& saved_forms) {
+    const std::vector<password_manager::PasswordForm>& saved_forms) {
   std::vector<base::string16> existing_usernames;
   for (const auto& form : saved_forms) {
     if (form.url == url) {
@@ -106,14 +107,14 @@ class PasswordEditDelegateSettingsImplTest : public testing::Test {
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
   std::unique_ptr<PasswordEditDelegateSettingsImpl> CreateTestDelegate(
-      const std::vector<std::unique_ptr<autofill::PasswordForm>>& forms,
+      const std::vector<std::unique_ptr<password_manager::PasswordForm>>& forms,
       std::vector<base::string16> existing_usernames);
 
-  const std::vector<autofill::PasswordForm>& GetStoredPasswordsForRealm(
+  const std::vector<password_manager::PasswordForm>& GetStoredPasswordsForRealm(
       base::StringPiece signon_realm);
 
   void InitializeStoreWithForms(
-      const std::vector<autofill::PasswordForm>& saved_forms);
+      const std::vector<password_manager::PasswordForm>& saved_forms);
 
  private:
   content::BrowserTaskEnvironment task_environment_;
@@ -131,13 +132,13 @@ class PasswordEditDelegateSettingsImplTest : public testing::Test {
 
 std::unique_ptr<PasswordEditDelegateSettingsImpl>
 PasswordEditDelegateSettingsImplTest::CreateTestDelegate(
-    const std::vector<std::unique_ptr<autofill::PasswordForm>>& forms,
+    const std::vector<std::unique_ptr<password_manager::PasswordForm>>& forms,
     std::vector<base::string16> existing_usernames) {
   return std::make_unique<PasswordEditDelegateSettingsImpl>(
       &profile_, forms, std::move(existing_usernames));
 }
 
-const std::vector<autofill::PasswordForm>&
+const std::vector<password_manager::PasswordForm>&
 PasswordEditDelegateSettingsImplTest::GetStoredPasswordsForRealm(
     base::StringPiece signon_realm) {
   const auto& stored_passwords = GetStore()->stored_passwords();
@@ -146,7 +147,7 @@ PasswordEditDelegateSettingsImplTest::GetStoredPasswordsForRealm(
 }
 
 void PasswordEditDelegateSettingsImplTest::InitializeStoreWithForms(
-    const std::vector<autofill::PasswordForm>& saved_forms) {
+    const std::vector<password_manager::PasswordForm>& saved_forms) {
   for (const auto& form : saved_forms) {
     GetStore()->AddLogin(form);
   }
@@ -154,11 +155,11 @@ void PasswordEditDelegateSettingsImplTest::InitializeStoreWithForms(
 }
 
 TEST_F(PasswordEditDelegateSettingsImplTest, EditPassword) {
-  autofill::PasswordForm edited_form =
+  password_manager::PasswordForm edited_form =
       MakeSavedForm(GURL(kExampleCom), kUsername1, kPassword1);
-  std::vector<autofill::PasswordForm> saved_forms = {edited_form};
+  std::vector<password_manager::PasswordForm> saved_forms = {edited_form};
   InitializeStoreWithForms(saved_forms);
-  std::vector<std::unique_ptr<autofill::PasswordForm>> forms_to_change =
+  std::vector<std::unique_ptr<password_manager::PasswordForm>> forms_to_change =
       ExtractEquivalentForms(edited_form, saved_forms);
   std::vector<base::string16> existing_usernames =
       ExtractUsernamesSameUrl(edited_form.url, saved_forms);
@@ -174,13 +175,13 @@ TEST_F(PasswordEditDelegateSettingsImplTest, EditPassword) {
 }
 
 TEST_F(PasswordEditDelegateSettingsImplTest, EditUsername) {
-  autofill::PasswordForm edited_form =
+  password_manager::PasswordForm edited_form =
       MakeSavedForm(GURL(kExampleCom), kUsername1, kPassword1);
 
-  std::vector<autofill::PasswordForm> saved_forms = {edited_form};
+  std::vector<password_manager::PasswordForm> saved_forms = {edited_form};
   InitializeStoreWithForms(saved_forms);
 
-  std::vector<std::unique_ptr<autofill::PasswordForm>> forms_to_change =
+  std::vector<std::unique_ptr<password_manager::PasswordForm>> forms_to_change =
       ExtractEquivalentForms(edited_form, saved_forms);
   std::vector<base::string16> existing_usernames =
       ExtractUsernamesSameUrl(edited_form.url, saved_forms);
@@ -196,13 +197,13 @@ TEST_F(PasswordEditDelegateSettingsImplTest, EditUsername) {
 }
 
 TEST_F(PasswordEditDelegateSettingsImplTest, EditUsernameAndPassword) {
-  autofill::PasswordForm edited_form =
+  password_manager::PasswordForm edited_form =
       MakeSavedForm(GURL(kExampleCom), kUsername1, kPassword1);
 
-  std::vector<autofill::PasswordForm> saved_forms = {edited_form};
+  std::vector<password_manager::PasswordForm> saved_forms = {edited_form};
   InitializeStoreWithForms(saved_forms);
 
-  std::vector<std::unique_ptr<autofill::PasswordForm>> forms_to_change =
+  std::vector<std::unique_ptr<password_manager::PasswordForm>> forms_to_change =
       ExtractEquivalentForms(edited_form, saved_forms);
   std::vector<base::string16> existing_usernames =
       ExtractUsernamesSameUrl(edited_form.url, saved_forms);
@@ -218,14 +219,15 @@ TEST_F(PasswordEditDelegateSettingsImplTest, EditUsernameAndPassword) {
 }
 
 TEST_F(PasswordEditDelegateSettingsImplTest, RejectSameUsernameForSameRealm) {
-  autofill::PasswordForm edited_form =
+  password_manager::PasswordForm edited_form =
       MakeSavedForm(GURL(kExampleCom), kUsername1, kPassword1);
-  autofill::PasswordForm other_form =
+  password_manager::PasswordForm other_form =
       MakeSavedForm(GURL(kExampleCom), kUsername2, kPassword2);
-  std::vector<autofill::PasswordForm> saved_forms = {edited_form, other_form};
+  std::vector<password_manager::PasswordForm> saved_forms = {edited_form,
+                                                             other_form};
   InitializeStoreWithForms(saved_forms);
 
-  std::vector<std::unique_ptr<autofill::PasswordForm>> forms_to_change =
+  std::vector<std::unique_ptr<password_manager::PasswordForm>> forms_to_change =
       ExtractEquivalentForms(edited_form, saved_forms);
   std::vector<base::string16> existing_usernames =
       ExtractUsernamesSameUrl(edited_form.url, saved_forms);
@@ -241,14 +243,15 @@ TEST_F(PasswordEditDelegateSettingsImplTest, RejectSameUsernameForSameRealm) {
 }
 
 TEST_F(PasswordEditDelegateSettingsImplTest, UpdateDuplicates) {
-  autofill::PasswordForm edited_form = MakeSavedForm(
+  password_manager::PasswordForm edited_form = MakeSavedForm(
       GURL(base::StrCat({kExampleCom, "pathA"})), kUsername1, kPassword1);
-  autofill::PasswordForm other_form = MakeSavedForm(
+  password_manager::PasswordForm other_form = MakeSavedForm(
       GURL(base::StrCat({kExampleCom, "pathB"})), kUsername1, kPassword1);
-  std::vector<autofill::PasswordForm> saved_forms = {edited_form, other_form};
+  std::vector<password_manager::PasswordForm> saved_forms = {edited_form,
+                                                             other_form};
   InitializeStoreWithForms(saved_forms);
 
-  std::vector<std::unique_ptr<autofill::PasswordForm>> forms_to_change =
+  std::vector<std::unique_ptr<password_manager::PasswordForm>> forms_to_change =
       ExtractEquivalentForms(edited_form, saved_forms);
   std::vector<base::string16> existing_usernames =
       ExtractUsernamesSameUrl(edited_form.url, saved_forms);
@@ -266,19 +269,19 @@ TEST_F(PasswordEditDelegateSettingsImplTest, UpdateDuplicates) {
 
 TEST_F(PasswordEditDelegateSettingsImplTest,
        EditUsernameForTheRightCredential) {
-  autofill::PasswordForm edited_form =
+  password_manager::PasswordForm edited_form =
       MakeSavedForm(GURL(kExampleCom), kUsername1, kPassword1);
-  autofill::PasswordForm other_form1 =
+  password_manager::PasswordForm other_form1 =
       MakeSavedForm(GURL(kExampleCom), kUsername2, kPassword2);
-  autofill::PasswordForm other_form2 =
+  password_manager::PasswordForm other_form2 =
       MakeSavedForm(GURL(kExampleOrg), kUsername1, kPassword1);
-  autofill::PasswordForm other_form3 =
+  password_manager::PasswordForm other_form3 =
       MakeSavedForm(GURL(kExampleOrg), kUsername2, kPassword2);
-  std::vector<autofill::PasswordForm> saved_forms = {edited_form, other_form1,
-                                                     other_form2, other_form3};
+  std::vector<password_manager::PasswordForm> saved_forms = {
+      edited_form, other_form1, other_form2, other_form3};
   InitializeStoreWithForms(saved_forms);
 
-  std::vector<std::unique_ptr<autofill::PasswordForm>> forms_to_change =
+  std::vector<std::unique_ptr<password_manager::PasswordForm>> forms_to_change =
       ExtractEquivalentForms(edited_form, saved_forms);
   std::vector<base::string16> existing_usernames =
       ExtractUsernamesSameUrl(edited_form.url, saved_forms);
@@ -299,19 +302,19 @@ TEST_F(PasswordEditDelegateSettingsImplTest,
 
 TEST_F(PasswordEditDelegateSettingsImplTest,
        EditPasswordForTheRightCredential) {
-  autofill::PasswordForm edited_form =
+  password_manager::PasswordForm edited_form =
       MakeSavedForm(GURL(kExampleCom), kUsername1, kPassword1);
-  autofill::PasswordForm other_form1 =
+  password_manager::PasswordForm other_form1 =
       MakeSavedForm(GURL(kExampleCom), kUsername2, kPassword2);
-  autofill::PasswordForm other_form2 =
+  password_manager::PasswordForm other_form2 =
       MakeSavedForm(GURL(kExampleOrg), kUsername1, kPassword1);
-  autofill::PasswordForm other_form3 =
+  password_manager::PasswordForm other_form3 =
       MakeSavedForm(GURL(kExampleOrg), kUsername2, kPassword2);
-  std::vector<autofill::PasswordForm> saved_forms = {edited_form, other_form1,
-                                                     other_form2, other_form3};
+  std::vector<password_manager::PasswordForm> saved_forms = {
+      edited_form, other_form1, other_form2, other_form3};
   InitializeStoreWithForms(saved_forms);
 
-  std::vector<std::unique_ptr<autofill::PasswordForm>> forms_to_change =
+  std::vector<std::unique_ptr<password_manager::PasswordForm>> forms_to_change =
       ExtractEquivalentForms(edited_form, saved_forms);
   std::vector<base::string16> existing_usernames =
       ExtractUsernamesSameUrl(edited_form.url, saved_forms);

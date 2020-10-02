@@ -30,9 +30,9 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/autofill/core/common/password_form.h"
 #include "components/password_manager/core/browser/export/password_csv_writer.h"
 #include "components/password_manager/core/browser/leak_detection/authenticated_leak_check.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
 #include "components/password_manager/core/browser/ui/credential_provider_interface.h"
 #include "content/public/browser/browser_thread.h"
@@ -73,7 +73,8 @@ Profile* PasswordUIViewAndroid::GetProfile() {
 }
 
 void PasswordUIViewAndroid::SetPasswordList(
-    const std::vector<std::unique_ptr<autofill::PasswordForm>>& password_list) {
+    const std::vector<std::unique_ptr<password_manager::PasswordForm>>&
+        password_list) {
   JNIEnv* env = base::android::AttachCurrentThread();
   ScopedJavaLocalRef<jobject> ui_controller = weak_java_ui_controller_.get(env);
   if (!ui_controller.is_null()) {
@@ -83,7 +84,7 @@ void PasswordUIViewAndroid::SetPasswordList(
 }
 
 void PasswordUIViewAndroid::SetPasswordExceptionList(
-    const std::vector<std::unique_ptr<autofill::PasswordForm>>&
+    const std::vector<std::unique_ptr<password_manager::PasswordForm>>&
         password_exception_list) {
   JNIEnv* env = base::android::AttachCurrentThread();
   ScopedJavaLocalRef<jobject> ui_controller = weak_java_ui_controller_.get(env);
@@ -104,7 +105,7 @@ ScopedJavaLocalRef<jobject> PasswordUIViewAndroid::GetSavedPasswordEntry(
     const JavaRef<jobject>&,
     int index) {
   DCHECK_EQ(State::ALIVE, state_);
-  const autofill::PasswordForm* form =
+  const password_manager::PasswordForm* form =
       password_manager_presenter_.GetPassword(index);
   if (!form) {
     return Java_PasswordUIView_createSavedPasswordEntry(
@@ -125,7 +126,7 @@ ScopedJavaLocalRef<jstring> PasswordUIViewAndroid::GetSavedPasswordException(
     const JavaRef<jobject>&,
     int index) {
   DCHECK_EQ(State::ALIVE, state_);
-  const autofill::PasswordForm* form =
+  const password_manager::PasswordForm* form =
       password_manager_presenter_.GetPasswordException(index);
   if (!form)
     return ConvertUTF8ToJavaString(env, std::string());
@@ -232,7 +233,7 @@ PasswordUIViewAndroid::ObtainAndSerializePasswords(
       credential_provider_for_testing_ ? credential_provider_for_testing_
                                        : &password_manager_presenter_;
 
-  std::vector<std::unique_ptr<autofill::PasswordForm>> passwords =
+  std::vector<std::unique_ptr<password_manager::PasswordForm>> passwords =
       provider->GetAllPasswords();
 
   // The UI should not trigger serialization if there are not passwords.
