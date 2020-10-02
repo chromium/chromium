@@ -109,9 +109,9 @@ class PLATFORM_EXPORT TransformOperations {
     return false;
   }
 
-  bool DependsOnBoxSize() const {
-    for (auto& operation : operations_) {
-      if (operation->DependsOnBoxSize())
+  bool DependsOnBoxSize(wtf_size_t skip_prefix = 0) const {
+    for (wtf_size_t i = skip_prefix; i < operations_.size(); i++) {
+      if (operations_[i]->DependsOnBoxSize())
         return true;
     }
     return false;

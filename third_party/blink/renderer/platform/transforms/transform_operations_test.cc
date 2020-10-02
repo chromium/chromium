@@ -611,4 +611,42 @@ TEST(TransformOperationsTest, InterpolatedTransformBlendIdentityTest) {
   EXPECT_TRANSFORMATION_MATRIX(mat_d1, mat_d3);
   EXPECT_TRANSFORMATION_MATRIX(mat_d2, mat_d3);
 }
+
+TEST(TransformOperationsTest, BlendPercentPrefixTest) {
+  TransformOperations ops_a, ops_b;
+  ops_a.Operations().push_back(TranslateTransformOperation::Create(
+      Length::Percent(100), Length::Fixed(0), TransformOperation::kTranslate));
+  ops_a.Operations().push_back(
+      RotateTransformOperation::Create(180, TransformOperation::kRotate));
+
+  ops_b.Operations().push_back(TranslateTransformOperation::Create(
+      Length::Fixed(0), Length::Percent(50), TransformOperation::kTranslate));
+  ops_b.Operations().push_back(
+      ScaleTransformOperation::Create(2, 2, TransformOperation::kScale));
+
+  EXPECT_TRUE(ops_a.DependsOnBoxSize());
+  EXPECT_FALSE(ops_a.DependsOnBoxSize(1));
+  EXPECT_TRUE(ops_b.DependsOnBoxSize());
+  EXPECT_FALSE(ops_b.DependsOnBoxSize(1));
+
+  TransformOperations ops_c = ops_a.Blend(ops_b, 0.5);
+  EXPECT_TRUE(ops_c.DependsOnBoxSize());
+  ASSERT_EQ(ops_c.Operations().size(), 2u);
+  ASSERT_TRUE(IsA<TranslateTransformOperation>(*ops_c.Operations()[0]));
+
+  // Even though both transform lists contain percents, the matrix interpolated
+  // part does not, so it should interpolate to a matrix and not defer to an
+  // InterpolatedTransformOperation.
+  ASSERT_TRUE(IsA<Matrix3DTransformOperation>(*ops_c.Operations()[1]));
+  TransformationMatrix mat_c =
+      To<Matrix3DTransformOperation>(*ops_c.Operations()[1]).Matrix();
+
+  auto translate_ref = TranslateTransformOperation::Create(
+      Length::Percent(50), Length::Percent(25), TransformOperation::kTranslate);
+  // scale(1.5) rotate(90deg)
+  TransformationMatrix matrix_ref(0, 1.5, -1.5, 0, 0, 0);
+  EXPECT_EQ(*ops_c.Operations()[0], *translate_ref);
+  EXPECT_TRANSFORMATION_MATRIX(mat_c, matrix_ref);
+}
+
 }  // namespace blink

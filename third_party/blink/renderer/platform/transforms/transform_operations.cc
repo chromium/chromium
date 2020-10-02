@@ -118,7 +118,8 @@ TransformOperations::BlendRemainingByUsingMatrixInterpolation(
     double progress) const {
   // Not safe to use a cached transform if any of the operations are size
   // dependent.
-  if (DependsOnBoxSize() || from.DependsOnBoxSize()) {
+  if (DependsOnBoxSize(matching_prefix_length) ||
+      from.DependsOnBoxSize(matching_prefix_length)) {
     return InterpolatedTransformOperation::Create(
         from, *this, matching_prefix_length, progress);
   }

@@ -81,7 +81,8 @@ class PLATFORM_EXPORT InterpolatedTransformOperation final
   }
 
   bool DependsOnBoxSize() const override {
-    return from_.DependsOnBoxSize() || to_.DependsOnBoxSize();
+    return from_.DependsOnBoxSize(starting_index_) ||
+           to_.DependsOnBoxSize(starting_index_);
   }
 
   InterpolatedTransformOperation(const TransformOperations& from,
@@ -91,7 +92,11 @@ class PLATFORM_EXPORT InterpolatedTransformOperation final
       : from_(from),
         to_(to),
         starting_index_(starting_index),
-        progress_(progress) {}
+        progress_(progress) {
+    // This should only be generated during interpolation when it is impossible
+    // to create a Matrix3DTransformOperation due to layout-dependence.
+    DCHECK(DependsOnBoxSize());
+  }
 
   const TransformOperations from_;
   const TransformOperations to_;
