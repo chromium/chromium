@@ -84,12 +84,11 @@ bool IsElementInInvisibleSubTree(const Element& element) {
     return true;
   for (Node& ancestor : FlatTreeTraversal::InclusiveAncestorsOf(element)) {
     auto* ancestor_element = DynamicTo<Element>(ancestor);
-    if (!ancestor_element) {
-      // Return true if the whole frame is not rendered.
-      if (ancestor.IsDocumentNode() && !ancestor.GetLayoutObject())
-        return true;
+    if (!ancestor_element)
       continue;
-    }
+    // Return true if the whole frame is not rendered.
+    if (ancestor.IsHTMLElement() && !ancestor.GetLayoutObject())
+      return true;
     const ComputedStyle* style = ancestor_element->EnsureComputedStyle();
     if (style && (style->Visibility() != EVisibility::kVisible ||
                   style->Display() == EDisplay::kNone)) {
