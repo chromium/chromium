@@ -5,13 +5,6 @@
 import("//chromecast/chromecast.gni")
 import("//testing/test.gni")
 
-# This file depends on the legacy global sources assignment filter. It should
-# be converted to check target platform before assigning source files to the
-# sources variable. Remove this import and set_sources_assignment_filter call
-# when the file has been converted. See https://crbug.com/1018739 for details.
-import("//build/config/deprecated_default_sources_assignment_filter.gni")
-set_sources_assignment_filter(deprecated_default_sources_assignment_filter)
-
 cast_source_set("build_info") {
   sources = [
     "build_info.cc",
@@ -70,22 +63,27 @@ cast_source_set("crash") {
     sources += [
       "cast_crashdump_uploader.cc",
       "cast_crashdump_uploader.h",
-      "linux/crash_util.cc",
-      "linux/crash_util.h",
-      "linux/dummy_minidump_generator.cc",
-      "linux/dummy_minidump_generator.h",
-      "linux/dump_info.cc",
-      "linux/dump_info.h",
-      "linux/minidump_generator.h",
-      "linux/minidump_params.cc",
-      "linux/minidump_params.h",
-      "linux/minidump_uploader.cc",
-      "linux/minidump_uploader.h",
-      "linux/minidump_writer.cc",
-      "linux/minidump_writer.h",
-      "linux/synchronized_minidump_manager.cc",
-      "linux/synchronized_minidump_manager.h",
     ]
+
+    if (is_linux || is_chromeos) {
+      sources += [
+        "linux/crash_util.cc",
+        "linux/crash_util.h",
+        "linux/dummy_minidump_generator.cc",
+        "linux/dummy_minidump_generator.h",
+        "linux/dump_info.cc",
+        "linux/dump_info.h",
+        "linux/minidump_generator.h",
+        "linux/minidump_params.cc",
+        "linux/minidump_params.h",
+        "linux/minidump_uploader.cc",
+        "linux/minidump_uploader.h",
+        "linux/minidump_writer.cc",
+        "linux/minidump_writer.h",
+        "linux/synchronized_minidump_manager.cc",
+        "linux/synchronized_minidump_manager.h",
+      ]
+    }
 
     deps += [
       ":build_info",
@@ -102,7 +100,10 @@ cast_source_set("crash") {
 
 if (!is_fuchsia) {
   cast_executable("crash_uploader") {
-    sources = [ "linux/crash_uploader.cc" ]
+    sources = []
+    if (is_linux || is_chromeos) {
+      sources += [ "linux/crash_uploader.cc" ]
+    }
 
     deps = [
       ":crash",
@@ -116,10 +117,13 @@ if (!is_fuchsia) {
   }
 
   cast_source_set("test_support") {
-    sources = [
-      "linux/crash_testing_utils.cc",
-      "linux/crash_testing_utils.h",
-    ]
+    sources = []
+    if (is_linux || is_chromeos) {
+      sources += [
+        "linux/crash_testing_utils.cc",
+        "linux/crash_testing_utils.h",
+      ]
+    }
 
     deps = [
       ":crash",
