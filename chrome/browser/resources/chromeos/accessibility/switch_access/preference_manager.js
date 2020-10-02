@@ -5,7 +5,7 @@
 /**
  * Class to manage user preferences.
  */
-class SwitchAccessPreferences {
+class PreferenceManager {
   /** @private */
   constructor() {
     /**
@@ -21,7 +21,7 @@ class SwitchAccessPreferences {
   // =============== Static Methods ==============
 
   static initialize() {
-    SwitchAccessPreferences.instance = new SwitchAccessPreferences();
+    PreferenceManager.instance = new PreferenceManager();
   }
 
   // =============== Private Methods ==============

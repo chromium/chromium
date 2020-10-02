@@ -17,7 +17,7 @@ class SwitchAccess {
 
       Commands.initialize();
       KeyboardRootNode.startWatchingVisibility();
-      SwitchAccessPreferences.initialize();
+      PreferenceManager.initialize();
     });
   }
 

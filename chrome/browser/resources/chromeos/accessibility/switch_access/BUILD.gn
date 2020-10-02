@@ -72,7 +72,7 @@ run_jsbundler("switch_access_copied_files") {
     "nodes/switch_access_node.js",
     "nodes/tab_node.js",
     "nodes/window_node.js",
-    "preferences.js",
+    "preference_manager.js",
     "switch_access.js",
     "switch_access_constants.js",
     "switch_access_predicate.js",
@@ -147,7 +147,7 @@ js_type_check("closure_compile") {
     ":metrics",
     ":modal_dialog_node",
     ":navigation_manager",
-    ":preferences",
+    ":preference_manager",
     ":slider_node",
     ":switch_access",
     ":switch_access_constants",
@@ -361,7 +361,7 @@ js_library("basic_node") {
   ]
 }
 
-js_library("preferences") {
+js_library("preference_manager") {
   deps = [ ":switch_access_constants" ]
   externs_list = [ "$externs_path/settings_private.js" ]
 }
@@ -383,7 +383,7 @@ js_library("switch_access") {
     ":commands",
     ":menu_manager",
     ":navigation_manager",
-    ":preferences",
+    ":preference_manager",
     ":switch_access_constants",
     "../common:constants",
     "../common:tree_walker",
