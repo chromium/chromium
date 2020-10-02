@@ -7750,4 +7750,134 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   EXPECT_EQ(EvalJs(root, "pageshowLength").ExtractInt(), 2);
 }
 
+// This observer keeps tracks whether a given RenderViewHost is deleted or not
+// to avoid accessing it and causing use-after-free condition.
+class RenderViewHostDeletedObserver : public WebContentsObserver {
+ public:
+  explicit RenderViewHostDeletedObserver(RenderViewHost* rvh)
+      : WebContentsObserver(WebContents::FromRenderViewHost(rvh)),
+        render_view_host_(rvh),
+        deleted_(false) {}
+
+  void RenderViewDeleted(RenderViewHost* render_view_host) override {
+    if (render_view_host_ == render_view_host)
+      deleted_ = true;
+  }
+
+  bool deleted() const { return deleted_; }
+
+ private:
+  RenderViewHost* render_view_host_;
+  bool deleted_;
+};
+
+// Tests that RenderViewHost is deleted on eviction along with
+// RenderProcessHost.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       RenderViewHostDeletedOnEviction) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  NavigationControllerImpl& controller = web_contents()->GetController();
+  BackForwardCacheImpl& cache = controller.GetBackForwardCache();
+
+  // 1) Navigate to A.
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImpl* rfh_a = current_frame_host();
+  RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
+  RenderViewHostDeletedObserver delete_observer_rvh_a(
+      rfh_a->GetRenderViewHost());
+
+  RenderProcessHost* process = rfh_a->GetProcess();
+  RenderProcessHostWatcher destruction_observer(
+      process, RenderProcessHostWatcher::WATCH_FOR_HOST_DESTRUCTION);
+  cache.Flush();
+
+  // 2) Navigate to B. A should be stored in cache, count of entries should
+  // be 1.
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+  EXPECT_EQ(1u, cache.GetEntries().size());
+
+  // 3) Initiate eviction of rfh_a from BackForwardCache. Entries should be 0.
+  // RenderViewHost, RenderProcessHost and RenderFrameHost should all be
+  // deleted.
+  EXPECT_TRUE(rfh_a->IsInactiveAndDisallowReactivation());
+  destruction_observer.Wait();
+  ASSERT_TRUE(delete_observer_rvh_a.deleted());
+  delete_observer_rfh_a.WaitUntilDeleted();
+  EXPECT_EQ(0u, cache.GetEntries().size());
+}
+
+// Tests that cross-process sub-frame's RenderViewHost is deleted on root
+// RenderFrameHost eviction from BackForwardCache along with its
+// RenderProcessHost.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       CrossProcessSubFrameRenderViewHostDeletedOnEviction) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b)"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  // 1) Navigate to A.
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImpl* a1 = current_frame_host();
+  RenderFrameHostImpl* b1 = a1->child_at(0)->current_frame_host();
+  RenderFrameDeletedObserver delete_observer_rfh_b1(b1);
+
+  RenderViewHostDeletedObserver delete_observer_rvh_b1(b1->GetRenderViewHost());
+
+  RenderProcessHost* process = b1->GetProcess();
+  RenderProcessHostWatcher destruction_observer(
+      process, RenderProcessHostWatcher::WATCH_FOR_HOST_DESTRUCTION);
+
+  // 2) Navigate to URL B.
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+  EXPECT_TRUE(a1->IsInBackForwardCache());
+
+  // 3) Initiate eviction of rfh a1 from BackForwardCache. RenderViewHost,
+  // RenderProcessHost and RenderFrameHost of sub-frame b1 should all be deleted
+  // on eviction.
+  EXPECT_TRUE(a1->IsInactiveAndDisallowReactivation());
+  destruction_observer.Wait();
+  ASSERT_TRUE(delete_observer_rvh_b1.deleted());
+  delete_observer_rfh_b1.WaitUntilDeleted();
+}
+
+// Tests that same-process sub-frame's RenderViewHost is deleted on root
+// RenderFrameHost eviction from BackForwardCache along with its
+// RenderProcessHost.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       SameProcessSubFrameRenderViewHostDeletedOnEviction) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(a)"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  // 1) Navigate to A.
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImpl* a1 = current_frame_host();
+  RenderFrameHostImpl* a2 = a1->child_at(0)->current_frame_host();
+  RenderFrameDeletedObserver delete_observer_rfh_a2(a2);
+
+  RenderViewHostDeletedObserver delete_observer_rvh_a2(a2->GetRenderViewHost());
+
+  RenderProcessHost* process = a2->GetProcess();
+  RenderProcessHostWatcher destruction_observer(
+      process, RenderProcessHostWatcher::WATCH_FOR_HOST_DESTRUCTION);
+
+  // 2) Navigate to URL B.
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+  EXPECT_TRUE(a1->IsInBackForwardCache());
+
+  // 3) Initiate eviction of rfh a1 from BackForwardCache. RenderViewHost,
+  // RenderProcessHost and RenderFrameHost of sub-frame a2 should all be
+  // deleted.
+  EXPECT_TRUE(a1->IsInactiveAndDisallowReactivation());
+  destruction_observer.Wait();
+  ASSERT_TRUE(delete_observer_rvh_a2.deleted());
+  delete_observer_rfh_a2.WaitUntilDeleted();
+}
+
 }  // namespace content

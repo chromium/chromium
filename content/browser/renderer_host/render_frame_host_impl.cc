@@ -1124,6 +1124,20 @@ RenderFrameHostImpl::~RenderFrameHostImpl() {
   //    progress; otherwise, it is advanced directly to
   //    LifeCycleState::kReadyToBeDeleted.
   //
+  // For BackForwardCache case:
+  //
+  // Deleting the BackForwardCache::Entry deletes immediately all the
+  // Render{View,Frame,FrameProxy}Host. This will destroy the main RenderFrame
+  // eventually as part of path #1 above:
+  //
+  // - The RenderFrameHost/RenderFrameProxyHost of the main frame are owned by
+  //   the BackForwardCache::Entry.
+  // - RenderFrameHost/RenderFrameProxyHost for sub-frames are owned by their
+  //   parent RenderFrameHost.
+  // - The RenderViewHost(s) are refcounted by the
+  //   RenderFrameHost/RenderFrameProxyHost of the page. They are guaranteed not
+  //   to be referenced by any other pages.
+  //
   // The browser side gives the renderer a small timeout to finish processing
   // unload / detach messages. When the timeout expires, the RFH will be
   // removed regardless of whether or not the renderer acknowledged that it

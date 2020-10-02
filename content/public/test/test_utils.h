@@ -311,8 +311,8 @@ class InProcessUtilityThreadHelper : public BrowserChildProcessObserver {
   DISALLOW_COPY_AND_ASSIGN(InProcessUtilityThreadHelper);
 };
 
-// This observer keeps track of the last deleted RenderFrame to avoid
-// accessing it and causing use-after-free condition.
+// This observer keeps tracks of whether a given RenderFrameHost is deleted or
+// not to avoid accessing it and causing use-after-free condition.
 class RenderFrameDeletedObserver : public WebContentsObserver {
  public:
   RenderFrameDeletedObserver(RenderFrameHost* rfh);
