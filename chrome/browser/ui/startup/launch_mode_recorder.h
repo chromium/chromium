@@ -40,6 +40,7 @@ enum class LaunchMode {
   // Launched as an installed web application in a browser tab.
   kAsWebAppInTab = 21,
   kUnknownWebApp = 22,  // The requested web application was not installed.
+  kMaxValue = kUnknownWebApp,
 };
 
 class LaunchModeRecorder {
