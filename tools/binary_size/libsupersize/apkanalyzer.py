@@ -159,9 +159,8 @@ def CreateDexSymbols(apk_path, mapping_path, size_info_prefix):
       'Node size too large, check for node processing errors. '
       'dex_expected_size=%d total_node_size=%d', dex_expected_size,
       total_node_size)
-  # We have more than 100KB of ids for methods, strings
-  id_metadata_overhead_size = dex_expected_size - total_node_size
-  symbols = []
+  # Use (DEX_METHODS, DEX) buckets to speed up sorting.
+  symbols = ([], [])
   lambda_by_class_counter = collections.defaultdict(int)
   lambda_name_to_nested_number = {}
   for _, name, node_size in nodes:
@@ -192,16 +191,21 @@ def CreateDexSymbols(apk_path, mapping_path, size_info_prefix):
     if source_path:
       object_path = package
     elif package == _TOTAL_NODE_NAME:
-      name = '* Unattributed Dex'
-      object_path = ''  # Categorize in the anonymous section.
-      node_size += id_metadata_overhead_size
+      # Unattributed size is handled outside of this function.
+      continue
     else:
       object_path = os.path.join(models.APK_PREFIX_PATH, *package.split('.'))
     if name.endswith(')'):
       section_name = models.SECTION_DEX_METHOD
     else:
       section_name = models.SECTION_DEX
-    symbols.append(models.Symbol(
-        section_name, node_size, full_name=name, object_path=object_path,
-        source_path=source_path))
-  return symbols
+    symbols[int(section_name is models.SECTION_DEX)].append(
+        models.Symbol(section_name,
+                      node_size,
+                      full_name=name,
+                      object_path=object_path,
+                      source_path=source_path))
+  symbols[0].sort(key=lambda s: s.full_name)
+  symbols[1].sort(key=lambda s: s.full_name)
+  symbols[0].extend(symbols[1])
+  return symbols[0]

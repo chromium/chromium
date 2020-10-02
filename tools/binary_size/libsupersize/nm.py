@@ -133,7 +133,7 @@ def CollectAliasesByAddress(elf_path, tool_prefix):
   # only aliased symbols.
   # Also: Sort to ensure stable ordering.
   return {
-      addr: sorted(names)
+      addr: sorted(names, key=lambda n: (n.startswith('**'), n))
       for addr, names in names_by_address.items()
       if len(names) > 1 or num_outlined_functions_at_address.get(addr, 0) > 1
   }

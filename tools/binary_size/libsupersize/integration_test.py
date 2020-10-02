@@ -441,16 +441,19 @@ class IntegrationTest(unittest.TestCase):
     container1.metadata = {"foo": 1, "bar": [1, 2, 3], "baz": "yes"}
     container2.metadata = {"foo": 1, "bar": [1, 3], "baz": "yes"}
 
-    size_info1.raw_symbols -= size_info1.raw_symbols[:2]
-    size_info2.raw_symbols -= size_info2.raw_symbols[-3:]
+    size_info1.raw_symbols -= size_info1.raw_symbols.WhereNameMatches(
+        r'pLinuxKernelCmpxchg|pLinuxKernelMemoryBarrier')
+    size_info2.raw_symbols -= size_info2.raw_symbols.WhereNameMatches(
+        r'IDS_AW_WEBPAGE_PARENTAL_|IDS_WEB_FONT_FAMILY|IDS_WEB_FONT_SIZE')
     changed_sym = size_info1.raw_symbols.WhereNameMatches('Patcher::Name_')[0]
     changed_sym.size -= 10
     padding_sym = size_info2.raw_symbols.WhereNameMatches('symbol gap 0')[0]
     padding_sym.padding += 20
     padding_sym.size += 20
-    pak_sym = size_info2.raw_symbols.WhereInSection(
-        models.SECTION_PAK_NONTRANSLATED)[0]
-    pak_sym.full_name = 'foo: ' + pak_sym.full_name.split()[-1]
+    # Test pak symbols changing .grd files. They should not show as changed.
+    pak_sym = size_info2.raw_symbols.WhereNameMatches(
+        r'IDR_PDF_COMPOSITOR_MANIFEST')[0]
+    pak_sym.full_name = pak_sym.full_name.replace('.grd', '2.grd')
 
     # Serialize & de-serialize so that name normalization runs again for the pak
     # symbol.
@@ -461,7 +464,7 @@ class IntegrationTest(unittest.TestCase):
 
     d = diff.Diff(size_info1, size_info2)
     d.raw_symbols = d.raw_symbols.Sorted()
-    self.assertEqual(d.raw_symbols.CountsByDiffStatus()[1:], (2, 2, 3))
+    self.assertEqual((1, 2, 3), d.raw_symbols.CountsByDiffStatus()[1:])
     changed_sym = d.raw_symbols.WhereNameMatches('Patcher::Name_')[0]
     padding_sym = d.raw_symbols.WhereNameMatches('symbol gap 0')[0]
     bss_sym = d.raw_symbols.WhereInSection(models.SECTION_BSS)[0]

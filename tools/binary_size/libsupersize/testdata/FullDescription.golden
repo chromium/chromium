@@ -124,253 +124,253 @@ Number of unique paths: 9
 Section Legend: t=.text, r=.rodata, R=.data.rel.ro, d=.data, b=.bss, o=.other
 Index | Running Total | Section@Address | ...
 ------------------------------------------------------------
-0)          4 (0.0%)  d@0x2de7000  pss=4  padding=0  num_aliases=1
-             source_path=base/page_allocator.cc 	object_path=base/base/page_allocator.o
-             flags={}  name=google::protobuf::internal::pLinuxKernelCmpxchg
-1)          8 (0.0%)  d@0x2de7004  pss=4  padding=0  num_aliases=1
-             source_path=third_party/container/container.c 	object_path=third_party/sub/ContiguousContainer.o
-             flags={}  name=google::protobuf::internal::pLinuxKernelMemoryBarrier
-2)        160 (0.0%)  d@0x2de7008  pss=152  padding=0  num_aliases=1
-             source_path=third_party/container/container.c 	object_path=third_party/sub/ContiguousContainer.o
-             flags={rel}  name=base::android::kBaseRegisteredMethods
-3)        164 (0.0%)  d@0x2de70a0  pss=4  padding=0  num_aliases=1
-             source_path=third_party/container/container.c 	object_path=third_party/sub/ContiguousContainer.o
-             flags={anon}  name=base::android::g_renderer_histogram_code
-4)        168 (0.0%)  d@0x2de70a4  pss=4  padding=0  num_aliases=1
-             source_path=third_party/container/container.c 	object_path=third_party/sub/ContiguousContainer.o
-             flags={anon,rel.loc}  name=base::android::g_library_version_number
-5)     101768 (0.1%)  d@0x2de70a8  pss=101600  padding=0  num_aliases=1
-             source_path= 	object_path=
-             flags={}  name=** .data (unattributed)
-6)     101824 (0.1%)  R@0x2cd8500  pss=56  padding=0  num_aliases=1
-             source_path=third_party/paint.cc 	object_path=third_party/sub/PaintChunker.o
-             flags={}  name=ChromeMainDelegateAndroid [vtable]
-7)     101848 (0.1%)  R@0x2cd8538  pss=24  padding=0  num_aliases=1
-             source_path=base/page_allocator.cc 	object_path=base/base/page_allocator.o
-             flags={}  name=mojo::MessageReceiver [vtable]
-8)     101860 (0.1%)  R@0x2cd8550  pss=12  padding=0  num_aliases=1
-             source_path=base/page_allocator.cc 	object_path=base/base/page_allocator.o
-             flags={}  name=kMethodsAnimationFrameTimeHistogram
-9)    1166992 (0.9%)  R@0x2cd855c  pss=1065132  padding=0  num_aliases=1
-             source_path= 	object_path=
-             flags={}  name=** .data.rel.ro (unattributed)
-10)   1167048 (0.9%)  R@0x2c176f0  pss=56  padding=0  num_aliases=1
-             source_path=third_party/icu/ucnv_ext.c 	object_path=third_party/icu/icuuc/ucnv_ext.o
-             flags={gen}  name=ChromeMainDelegate [vtable]
-11)   1167072 (0.9%)  R@0x2c17728  pss=24  padding=0  num_aliases=1
-             source_path=third_party/icu/ucnv_ext.c 	object_path=third_party/icu/icuuc/ucnv_ext.o
-             flags={gen}  name=chrome::mojom::FieldTrialRecorder [vtable]
-12)   1956976 (1.5%)  R@0x2c17740  pss=789904  padding=0  num_aliases=1
-             source_path=third_party/container/container.c 	object_path=third_party/sub/ContiguousContainer.o
-             flags={}  name=chrome::mojom::FieldTrialRecorderProxy [vtable]
-13)   1957008 (1.5%)  R@0x2cd84e0  pss=32  padding=16  num_aliases=1
-             source_path= 	object_path=third_party/gvr-android-sdk/libgvr_shim_static_arm.a/libcontroller_api_impl.a_controller_api_impl.o
-             flags={}  name=.Lswitch.table.45
-14)   1957016 (1.5%)  R@0x2cd84f0  pss=8  padding=0  num_aliases=1
-             source_path= 	object_path=third_party/gvr-android-sdk/libgvr_shim_static_arm.a/libport_android_jni.a_jni_utils.o
-             flags={anon}  name=kSystemClassPrefixes
-15)   1957076 (1.5%)  o@0x0        pss=60  padding=0  num_aliases=1
-             source_path= 	object_path=
-             flags={}  name=** ELF Section: .ARM.attributes
-16)   1957104 (1.5%)  o@0x0        pss=28  padding=0  num_aliases=1
-             source_path= 	object_path=
-             flags={}  name=** ELF Section: .note.gnu.gold-version
-17)   1957540 (1.5%)  o@0x0        pss=436  padding=0  num_aliases=1
-             source_path= 	object_path=
-             flags={}  name=** ELF Section: .shstrtab
-18)  36799394 (27.4%) o@0x0        pss=34841854  padding=0  num_aliases=1
-             source_path= 	object_path=
-             flags={}  name=** ELF Section: .strtab
-19)  53965506 (40.2%) o@0x0        pss=17166112  padding=0  num_aliases=1
-             source_path= 	object_path=
-             flags={}  name=** ELF Section: .symtab
-20)  87868141 (65.5%) o@0x0        pss=33902635  padding=33902635  num_aliases=1
-             source_path= 	object_path=
-             flags={}  name=Overhead: ELF file
-21)  87868160 (65.5%) o@0x154      pss=19  padding=0  num_aliases=1
-             source_path= 	object_path=
-             flags={}  name=** ELF Section: .interp
-22)  87868196 (65.5%) o@0x168      pss=36  padding=0  num_aliases=1
-             source_path= 	object_path=
-             flags={}  name=** ELF Section: .note.gnu.build-id
-23)  87874692 (65.5%) o@0x18c      pss=6496  padding=0  num_aliases=1
-             source_path= 	object_path=
-             flags={}  name=** ELF Section: .dynsym
-24)  87878717 (65.5%) o@0x1b0c     pss=4025  padding=0  num_aliases=1
-             source_path= 	object_path=
-             flags={}  name=** ELF Section: .dynstr
-25)  87881401 (65.5%) o@0x2ad4     pss=2684  padding=0  num_aliases=1
-             source_path= 	object_path=
-             flags={}  name=** ELF Section: .hash
-26)  87882213 (65.5%) o@0x3558     pss=812  padding=0  num_aliases=1
-             source_path= 	object_path=
-             flags={}  name=** ELF Section: .gnu.version
-27)  87882241 (65.5%) o@0x3888     pss=28  padding=0  num_aliases=1
-             source_path= 	object_path=
-             flags={}  name=** ELF Section: .gnu.version_d
-28)  87882337 (65.5%) o@0x38a4     pss=96  padding=0  num_aliases=1
-             source_path= 	object_path=
-             flags={}  name=** ELF Section: .gnu.version_r
-29)  90537721 (67.5%) o@0x3904     pss=2655384  padding=0  num_aliases=1
-             source_path= 	object_path=
-             flags={}  name=** ELF Section: .rel.dyn
-30)  90540537 (67.5%) o@0x29fbec   pss=2816  padding=0  num_aliases=1
-             source_path= 	object_path=
-             flags={}  name=** ELF Section: .rel.plt
-31)  90544781 (67.5%) o@0x2a06ec   pss=4244  padding=0  num_aliases=1
-             source_path= 	object_path=
-             flags={}  name=** ELF Section: .plt
-32)  92081237 (68.6%) o@0x2bd3d10  pss=1536456  padding=0  num_aliases=1
-             source_path= 	object_path=
-             flags={}  name=** ELF Section: .ARM.exidx
-33)  92264869 (68.7%) o@0x2bd5858  pss=183632  padding=0  num_aliases=1
-             source_path= 	object_path=
-             flags={}  name=** ELF Section: .ARM.extab
-34)  92264877 (68.7%) o@0x2ddc608  pss=8  padding=0  num_aliases=1
-             source_path= 	object_path=
-             flags={}  name=** ELF Section: .init_array
-35)  92264885 (68.7%) o@0x2ddc6f4  pss=8  padding=0  num_aliases=1
-             source_path= 	object_path=
-             flags={}  name=** ELF Section: .fini_array
-36)  92265189 (68.7%) o@0x2ddc6fc  pss=304  padding=0  num_aliases=1
-             source_path= 	object_path=
-             flags={}  name=** ELF Section: .dynamic
-37)  92308145 (68.8%) o@0x2ddc834  pss=42956  padding=0  num_aliases=1
-             source_path= 	object_path=
-             flags={}  name=** ELF Section: .got
-38)  92308147 (68.8%) r@0x266e600  pss=2.5 (size=5)  padding=0  num_aliases=2
-             source_path=base/page_allocator.cc 	object_path=base/base/page_allocator.o
-             flags={}  name="Str1"
-39)  92308150 (68.8%) r@0x266e600  pss=2.5 (size=5)  padding=0  num_aliases=2
-             source_path=third_party/icu/ucnv_ext.c 	object_path=third_party/icu/icuuc/ucnv_ext.o
-             flags={gen}  name="Str1"
-40)  92308166 (68.8%) r@0x266e605  pss=16  padding=0  num_aliases=1
-             source_path=third_party/icu/ucnv_ext.c 	object_path=third_party/icu/icuuc/ucnv_ext.o
-             flags={gen}  name="String literal2"
-41)  92308209 (68.8%) r@0x266e630  pss=43  padding=27  num_aliases=1
-             source_path= 	object_path=
-             flags={}  name=** merge strings
-42)  94273554 (70.2%) r@0x284d600  pss=1965345  padding=1961920  num_aliases=1
-             source_path= 	object_path=
-             flags={}  name=** merge constants
-43)  94273557 (70.2%) r@0x284e364  pss=3  padding=3  num_aliases=1
-             source_path= 	object_path=
-             flags={}  name=** symbol gap 0
-44)  94273565 (70.2%) r@0x284e364  pss=8  padding=0  num_aliases=1
-             source_path=base/page_allocator.cc 	object_path=base/base/page_allocator.o
-45)  94273609 (70.2%) r@0x284e370  pss=44  padding=4  num_aliases=1
-             source_path=base/page_allocator.cc 	object_path=base/base/page_allocator.o
-             flags={}  name=Name
-46)  94273641 (70.2%) r@0x284e398  pss=32  padding=0  num_aliases=1
-             source_path=third_party/container/container.c 	object_path=third_party/sub/ContiguousContainer.o
-             flags={}  name=chrome::mojom::FilePatcher::Name_
-47)  94949681 (70.7%) r@0x28f3450  pss=676040  padding=675992  num_aliases=1
-             source_path=third_party/paint.cc 	object_path=third_party/sub/PaintChunker.o
-             flags={anon}  name=kAnimationFrameTimeHistogramClassPath
-48)  94949685 (70.7%) r@0x28f3480  pss=4  padding=0  num_aliases=1
-             source_path=third_party/paint.cc 	object_path=third_party/sub/PaintChunker.o
-             flags={anon}  name=blink::CSSValueKeywordsHash::findValueImpl::value_word_list
-                  full_name=blink::CSSValueKeywordsHash::findValueImpl(char const*, unsigned int)::value_word_list
-49)  98235781 (73.2%) r@0x28f3484  pss=3286096  padding=0  num_aliases=1
-             source_path= 	object_path=
-             flags={}  name=** .rodata (unattributed)
-50)  98235797 (73.2%) t@0x28d900   pss=16  padding=0  num_aliases=1
+0)         16 (0.0%)  t@0x28d900   pss=16  padding=0  num_aliases=1
              source_path=base/page_allocator.cc 	object_path=base/base/page_allocator.o
              flags={startup}  name=_GLOBAL__sub_I_page_allocator.cc
-51)  98235853 (73.2%) t@0x28d910   pss=56  padding=0  num_aliases=1
+1)         72 (0.0%)  t@0x28d910   pss=56  padding=0  num_aliases=1
              source_path=base/page_allocator.cc 	object_path=base/base/page_allocator.o
              flags={startup}  name=_GLOBAL__sub_I_bbr_sender.cc
-52)  98235881 (73.2%) t@0x28d948   pss=28  padding=0  num_aliases=1
+2)        100 (0.0%)  t@0x28d948   pss=28  padding=0  num_aliases=1
              source_path=base/page_allocator.cc 	object_path=base/base/page_allocator.o
              flags={startup}  name=_GLOBAL__sub_I_pacing_sender.cc
-53)  98235919 (73.2%) t@0x28d964   pss=38  padding=0  num_aliases=1
+3)        138 (0.0%)  t@0x28d964   pss=38  padding=0  num_aliases=1
              source_path=base/page_allocator.cc 	object_path=base/base/page_allocator.o
              flags={}  name=extFromUUseMapping
                   full_name=extFromUUseMapping(signed char, unsigned int, int)
-54)  98235951 (73.2%) t@0x28d98a   pss=32  padding=0  num_aliases=1
+4)        170 (0.0%)  t@0x28d98a   pss=32  padding=0  num_aliases=1
              source_path=base/page_allocator.cc 	object_path=base/base/page_allocator.o
              flags={}  name=extFromUUseMapping
                   full_name=extFromUUseMapping(aj, int)
-55)  98241669 (73.2%) t@0x28f000   pss=5718  padding=5718  num_aliases=1
+5)       5888 (0.0%)  t@0x28f000   pss=5718  padding=5718  num_aliases=1
              source_path= 	object_path=
              flags={}  name=** symbol gap 0
-56)  98242117 (73.2%) t@0x28f000   pss=448  padding=0  num_aliases=1
+6)       6336 (0.0%)  t@0x28f000   pss=448  padding=0  num_aliases=1
              source_path=third_party/icu/ucnv_ext.c 	object_path=third_party/icu/icuuc/ucnv_ext.o
              flags={gen}  name=ucnv_extMatchFromU
                   full_name=ucnv_extMatchFromU(int const*, int, unsigned short const*, int, unsigned short const*, int, unsigned int*, signed char, signed char)
-57)  98242145 (73.2%) t@0x28f1c8   pss=28  padding=8  num_aliases=1
+7)       6364 (0.0%)  t@0x28f1c8   pss=28  padding=8  num_aliases=1
              source_path=third_party/icu/ucnv_ext.c 	object_path=third_party/icu/icuuc/ucnv_ext.o
              flags={startup,gen}  name=_GLOBAL__sub_I_SkDeviceProfile.cpp
-58)  98311269 (73.2%) t@0x28f1e0   pss=69124  padding=4  num_aliases=1
+8)      75488 (0.1%)  t@0x28f1e0   pss=69124  padding=4  num_aliases=1
              source_path=third_party/icu/ucnv_ext.c 	object_path=third_party/icu/icuuc/ucnv_ext.o
              flags={unlikely,gen}  name=foo_bar
-59)  98311293 (73.2%) t@0x2a0000   pss=24 (size=48)  padding=32  num_aliases=2
+9)      75512 (0.1%)  t@0x2a0000   pss=24 (size=48)  padding=32  num_aliases=2
              source_path=third_party/icu/ucnv_ext.c 	object_path=third_party/icu/icuuc/ucnv_ext.o
              flags={gen}  name=BazAlias
                   full_name=BazAlias(bool)
-60)  98311317 (73.2%) t@0x2a0000   pss=24 (size=48)  padding=32  num_aliases=2
+10)     75536 (0.1%)  t@0x2a0000   pss=24 (size=48)  padding=32  num_aliases=2
              source_path= 	object_path=
              flags={}  name=blink::ContiguousContainerBase::shrinkToFit
                   full_name=blink::ContiguousContainerBase::shrinkToFit()
-61)  98311320 (73.2%) t@0x2a0010   pss=3 (size=12)  padding=0  num_aliases=4
+11)     75539 (0.1%)  t@0x2a0010   pss=3 (size=12)  padding=0  num_aliases=4
              source_path=third_party/fft_float.cc 	object_path=third_party/ffmpeg/libffmpeg_internal.a/fft_float.o
              flags={}  name=BarAlias
                   full_name=BarAlias()
-62)  98311323 (73.2%) t@0x2a0010   pss=3 (size=12)  padding=0  num_aliases=4
+12)     75542 (0.1%)  t@0x2a0010   pss=3 (size=12)  padding=0  num_aliases=4
              source_path=third_party/fft_float.cc 	object_path=third_party/ffmpeg/libffmpeg_internal.a/fft_float.o
              flags={}  name=FooAlias
                   full_name=FooAlias()
-63)  98311326 (73.2%) t@0x2a0010   pss=3 (size=12)  padding=0  num_aliases=4
+13)     75545 (0.1%)  t@0x2a0010   pss=3 (size=12)  padding=0  num_aliases=4
              source_path=third_party/icu/ucnv_ext.c 	object_path=third_party/icu/icuuc/ucnv_ext.o
              flags={gen,clone}  name=blink::ContiguousContainerBase::shrinkToFit
                   full_name=blink::ContiguousContainerBase::shrinkToFit()
-64)  98311329 (73.2%) t@0x2a0010   pss=3 (size=12)  padding=0  num_aliases=4
+14)     75548 (0.1%)  t@0x2a0010   pss=3 (size=12)  padding=0  num_aliases=4
              source_path=third_party/paint.cc 	object_path=third_party/sub/PaintChunker.o
              flags={clone}  name=blink::ContiguousContainerBase::shrinkToFit
                   full_name=blink::ContiguousContainerBase::shrinkToFit()
-65)  98311357 (73.2%) t@0x2a0020   pss=28  padding=4  num_aliases=1
+15)     75576 (0.1%)  t@0x2a0020   pss=28  padding=4  num_aliases=1
              source_path=third_party/container/container.c 	object_path=third_party/sub/ContiguousContainer.o
              flags={}  name=blink::ContiguousContainerBase::ContiguousContainerBase
                   full_name=blink::ContiguousContainerBase::ContiguousContainerBase(blink::ContiguousContainerBase&&)
-66)  98315397 (73.3%) t@0x2a1000   pss=4040  padding=4040  num_aliases=1
+16)     79616 (0.1%)  t@0x2a1000   pss=4040  padding=4040  num_aliases=1
              source_path= 	object_path=
              flags={}  name=** symbol gap 1
-67)  98315491 (73.3%) t@0x2a1000   pss=94  padding=0  num_aliases=1
+17)     79710 (0.1%)  t@0x2a1000   pss=94  padding=0  num_aliases=1
              source_path=third_party/container/container.c 	object_path=third_party/sub/ContiguousContainer.o
              flags={anon,clone}  name=blink::PaintChunker::releasePaintChunks
                   full_name=blink::PaintChunker::releasePaintChunks()
-68)  98319525 (73.3%) t@0x2a2000   pss=4034  padding=4002  num_aliases=1
+18)     83744 (0.1%)  t@0x2a2000   pss=4034  padding=4002  num_aliases=1
              source_path=third_party/container/container.c 	object_path=third_party/sub/ContiguousContainer.o
              flags={}  name=** outlined function
-69)  98319549 (73.3%) t@0x2a2020   pss=24 (size=48)  padding=0  num_aliases=2
-             source_path= 	object_path=
-             flags={}  name=** outlined function * 2
-70)  98319573 (73.3%) t@0x2a2020   pss=24 (size=48)  padding=0  num_aliases=2
+19)     83768 (0.1%)  t@0x2a2020   pss=24 (size=48)  padding=0  num_aliases=2
              source_path= 	object_path=
              flags={}  name=aliasedWithOutlinedFunction
                   full_name=aliasedWithOutlinedFunction()
-71)  134218029 (100.0%) t@0x2a2050   pss=35898456  padding=0  num_aliases=1
+20)     83792 (0.1%)  t@0x2a2020   pss=24 (size=48)  padding=0  num_aliases=2
+             source_path= 	object_path=
+             flags={}  name=** outlined function * 2
+21)  35982248 (26.8%) t@0x2a2050   pss=35898456  padding=0  num_aliases=1
              source_path= 	object_path=
              flags={}  name=** .text (unattributed)
-72)  134218029 (100.0%) b@0x0        pss=262144  padding=0  num_aliases=1
+22)  35982250 (26.8%) r@0x266e600  pss=2.5 (size=5)  padding=0  num_aliases=2
+             source_path=base/page_allocator.cc 	object_path=base/base/page_allocator.o
+             flags={}  name="Str1"
+23)  35982253 (26.8%) r@0x266e600  pss=2.5 (size=5)  padding=0  num_aliases=2
+             source_path=third_party/icu/ucnv_ext.c 	object_path=third_party/icu/icuuc/ucnv_ext.o
+             flags={gen}  name="Str1"
+24)  35982269 (26.8%) r@0x266e605  pss=16  padding=0  num_aliases=1
+             source_path=third_party/icu/ucnv_ext.c 	object_path=third_party/icu/icuuc/ucnv_ext.o
+             flags={gen}  name="String literal2"
+25)  35982312 (26.8%) r@0x266e630  pss=43  padding=27  num_aliases=1
+             source_path= 	object_path=
+             flags={}  name=** merge strings
+26)  37947657 (28.3%) r@0x284d600  pss=1965345  padding=1961920  num_aliases=1
+             source_path= 	object_path=
+             flags={}  name=** merge constants
+27)  37947660 (28.3%) r@0x284e364  pss=3  padding=3  num_aliases=1
+             source_path= 	object_path=
+             flags={}  name=** symbol gap 0
+28)  37947668 (28.3%) r@0x284e364  pss=8  padding=0  num_aliases=1
+             source_path=base/page_allocator.cc 	object_path=base/base/page_allocator.o
+29)  37947712 (28.3%) r@0x284e370  pss=44  padding=4  num_aliases=1
+             source_path=base/page_allocator.cc 	object_path=base/base/page_allocator.o
+             flags={}  name=Name
+30)  37947744 (28.3%) r@0x284e398  pss=32  padding=0  num_aliases=1
+             source_path=third_party/container/container.c 	object_path=third_party/sub/ContiguousContainer.o
+             flags={}  name=chrome::mojom::FilePatcher::Name_
+31)  38623784 (28.8%) r@0x28f3450  pss=676040  padding=675992  num_aliases=1
+             source_path=third_party/paint.cc 	object_path=third_party/sub/PaintChunker.o
+             flags={anon}  name=kAnimationFrameTimeHistogramClassPath
+32)  38623788 (28.8%) r@0x28f3480  pss=4  padding=0  num_aliases=1
+             source_path=third_party/paint.cc 	object_path=third_party/sub/PaintChunker.o
+             flags={anon}  name=blink::CSSValueKeywordsHash::findValueImpl::value_word_list
+                  full_name=blink::CSSValueKeywordsHash::findValueImpl(char const*, unsigned int)::value_word_list
+33)  41909884 (31.2%) r@0x28f3484  pss=3286096  padding=0  num_aliases=1
+             source_path= 	object_path=
+             flags={}  name=** .rodata (unattributed)
+34)  41909940 (31.2%) R@0x2c176f0  pss=56  padding=0  num_aliases=1
+             source_path=third_party/icu/ucnv_ext.c 	object_path=third_party/icu/icuuc/ucnv_ext.o
+             flags={gen}  name=ChromeMainDelegate [vtable]
+35)  41909964 (31.2%) R@0x2c17728  pss=24  padding=0  num_aliases=1
+             source_path=third_party/icu/ucnv_ext.c 	object_path=third_party/icu/icuuc/ucnv_ext.o
+             flags={gen}  name=chrome::mojom::FieldTrialRecorder [vtable]
+36)  42699868 (31.8%) R@0x2c17740  pss=789904  padding=0  num_aliases=1
+             source_path=third_party/container/container.c 	object_path=third_party/sub/ContiguousContainer.o
+             flags={}  name=chrome::mojom::FieldTrialRecorderProxy [vtable]
+37)  42699900 (31.8%) R@0x2cd84e0  pss=32  padding=16  num_aliases=1
+             source_path= 	object_path=third_party/gvr-android-sdk/libgvr_shim_static_arm.a/libcontroller_api_impl.a_controller_api_impl.o
+             flags={}  name=.Lswitch.table.45
+38)  42699908 (31.8%) R@0x2cd84f0  pss=8  padding=0  num_aliases=1
+             source_path= 	object_path=third_party/gvr-android-sdk/libgvr_shim_static_arm.a/libport_android_jni.a_jni_utils.o
+             flags={anon}  name=kSystemClassPrefixes
+39)  42699964 (31.8%) R@0x2cd8500  pss=56  padding=0  num_aliases=1
+             source_path=third_party/paint.cc 	object_path=third_party/sub/PaintChunker.o
+             flags={}  name=ChromeMainDelegateAndroid [vtable]
+40)  42699988 (31.8%) R@0x2cd8538  pss=24  padding=0  num_aliases=1
+             source_path=base/page_allocator.cc 	object_path=base/base/page_allocator.o
+             flags={}  name=mojo::MessageReceiver [vtable]
+41)  42700000 (31.8%) R@0x2cd8550  pss=12  padding=0  num_aliases=1
+             source_path=base/page_allocator.cc 	object_path=base/base/page_allocator.o
+             flags={}  name=kMethodsAnimationFrameTimeHistogram
+42)  43765132 (32.6%) R@0x2cd855c  pss=1065132  padding=0  num_aliases=1
+             source_path= 	object_path=
+             flags={}  name=** .data.rel.ro (unattributed)
+43)  43765136 (32.6%) d@0x2de7000  pss=4  padding=0  num_aliases=1
+             source_path=base/page_allocator.cc 	object_path=base/base/page_allocator.o
+             flags={}  name=google::protobuf::internal::pLinuxKernelCmpxchg
+44)  43765140 (32.6%) d@0x2de7004  pss=4  padding=0  num_aliases=1
+             source_path=third_party/container/container.c 	object_path=third_party/sub/ContiguousContainer.o
+             flags={}  name=google::protobuf::internal::pLinuxKernelMemoryBarrier
+45)  43765292 (32.6%) d@0x2de7008  pss=152  padding=0  num_aliases=1
+             source_path=third_party/container/container.c 	object_path=third_party/sub/ContiguousContainer.o
+             flags={rel}  name=base::android::kBaseRegisteredMethods
+46)  43765296 (32.6%) d@0x2de70a0  pss=4  padding=0  num_aliases=1
+             source_path=third_party/container/container.c 	object_path=third_party/sub/ContiguousContainer.o
+             flags={anon}  name=base::android::g_renderer_histogram_code
+47)  43765300 (32.6%) d@0x2de70a4  pss=4  padding=0  num_aliases=1
+             source_path=third_party/container/container.c 	object_path=third_party/sub/ContiguousContainer.o
+             flags={anon,rel.loc}  name=base::android::g_library_version_number
+48)  43866900 (32.7%) d@0x2de70a8  pss=101600  padding=0  num_aliases=1
+             source_path= 	object_path=
+             flags={}  name=** .data (unattributed)
+49)  43866900 (32.7%) b@0x0        pss=262144  padding=0  num_aliases=1
              source_path=third_party/fft_float.cc 	object_path=third_party/ffmpeg/libffmpeg_internal.a/fft_float.o
              flags={}  name=ff_cos_131072
-73)  134218029 (100.0%) b@0x0        pss=131072  padding=0  num_aliases=1
+50)  43866900 (32.7%) b@0x0        pss=131072  padding=0  num_aliases=1
              source_path=third_party/fft_fixed.cc 	object_path=third_party/ffmpeg/libffmpeg_internal.a/fft_fixed.o
              flags={}  name=ff_cos_131072_fixed
-74)  134218029 (100.0%) b@0x0        pss=131072  padding=0  num_aliases=1
+51)  43866900 (32.7%) b@0x0        pss=131072  padding=0  num_aliases=1
              source_path=third_party/fft_float.cc 	object_path=third_party/ffmpeg/libffmpeg_internal.a/fft_float.o
              flags={}  name=ff_cos_65536
-75)  134218029 (100.0%) b@0x2dffda0  pss=28  padding=0  num_aliases=1
+52)  43866900 (32.7%) b@0x2dffda0  pss=28  padding=0  num_aliases=1
              source_path=third_party/icu/ucnv_ext.c 	object_path=third_party/icu/icuuc/ucnv_ext.o
              flags={gen}  name=g_chrome_content_browser_client
-76)  134218029 (100.0%) b@0x2dffe80  pss=200  padding=196  num_aliases=1
+53)  43866900 (32.7%) b@0x2dffe80  pss=200  padding=196  num_aliases=1
              source_path=third_party/icu/ucnv_ext.c 	object_path=third_party/icu/icuuc/ucnv_ext.o
              flags={gen}  name=SaveHistogram::atomic_histogram_pointer
                   full_name=SaveHistogram(_JNIEnv*, base::android::JavaParamRef<_jobject*> const&, base::android::JavaParamRef<_jstring*> const&, base::android::JavaParamRef<_jlongArray*> const&, int)::atomic_histogram_pointer
-77)  134218029 (100.0%) b@0x2dffe84  pss=4  padding=0  num_aliases=1
+54)  43866900 (32.7%) b@0x2dffe84  pss=4  padding=0  num_aliases=1
              source_path=third_party/icu/ucnv_ext.c 	object_path=third_party/icu/icuuc/ucnv_ext.o
              flags={anon,gen}  name=g_AnimationFrameTimeHistogram_clazz
+55)  43866960 (32.7%) o@0x0        pss=60  padding=0  num_aliases=1
+             source_path= 	object_path=
+             flags={}  name=** ELF Section: .ARM.attributes
+56)  45403416 (33.8%) o@0x0        pss=1536456  padding=0  num_aliases=1
+             source_path= 	object_path=
+             flags={}  name=** ELF Section: .ARM.exidx
+57)  45587048 (34.0%) o@0x0        pss=183632  padding=0  num_aliases=1
+             source_path= 	object_path=
+             flags={}  name=** ELF Section: .ARM.extab
+58)  45587352 (34.0%) o@0x0        pss=304  padding=0  num_aliases=1
+             source_path= 	object_path=
+             flags={}  name=** ELF Section: .dynamic
+59)  45591377 (34.0%) o@0x0        pss=4025  padding=0  num_aliases=1
+             source_path= 	object_path=
+             flags={}  name=** ELF Section: .dynstr
+60)  45597873 (34.0%) o@0x0        pss=6496  padding=0  num_aliases=1
+             source_path= 	object_path=
+             flags={}  name=** ELF Section: .dynsym
+61)  45597881 (34.0%) o@0x0        pss=8  padding=0  num_aliases=1
+             source_path= 	object_path=
+             flags={}  name=** ELF Section: .fini_array
+62)  45598693 (34.0%) o@0x0        pss=812  padding=0  num_aliases=1
+             source_path= 	object_path=
+             flags={}  name=** ELF Section: .gnu.version
+63)  45598721 (34.0%) o@0x0        pss=28  padding=0  num_aliases=1
+             source_path= 	object_path=
+             flags={}  name=** ELF Section: .gnu.version_d
+64)  45598817 (34.0%) o@0x0        pss=96  padding=0  num_aliases=1
+             source_path= 	object_path=
+             flags={}  name=** ELF Section: .gnu.version_r
+65)  45641773 (34.0%) o@0x0        pss=42956  padding=0  num_aliases=1
+             source_path= 	object_path=
+             flags={}  name=** ELF Section: .got
+66)  45644457 (34.0%) o@0x0        pss=2684  padding=0  num_aliases=1
+             source_path= 	object_path=
+             flags={}  name=** ELF Section: .hash
+67)  45644465 (34.0%) o@0x0        pss=8  padding=0  num_aliases=1
+             source_path= 	object_path=
+             flags={}  name=** ELF Section: .init_array
+68)  45644484 (34.0%) o@0x0        pss=19  padding=0  num_aliases=1
+             source_path= 	object_path=
+             flags={}  name=** ELF Section: .interp
+69)  45644520 (34.0%) o@0x0        pss=36  padding=0  num_aliases=1
+             source_path= 	object_path=
+             flags={}  name=** ELF Section: .note.gnu.build-id
+70)  45644548 (34.0%) o@0x0        pss=28  padding=0  num_aliases=1
+             source_path= 	object_path=
+             flags={}  name=** ELF Section: .note.gnu.gold-version
+71)  45648792 (34.0%) o@0x0        pss=4244  padding=0  num_aliases=1
+             source_path= 	object_path=
+             flags={}  name=** ELF Section: .plt
+72)  48304176 (36.0%) o@0x0        pss=2655384  padding=0  num_aliases=1
+             source_path= 	object_path=
+             flags={}  name=** ELF Section: .rel.dyn
+73)  48306992 (36.0%) o@0x0        pss=2816  padding=0  num_aliases=1
+             source_path= 	object_path=
+             flags={}  name=** ELF Section: .rel.plt
+74)  48307428 (36.0%) o@0x0        pss=436  padding=0  num_aliases=1
+             source_path= 	object_path=
+             flags={}  name=** ELF Section: .shstrtab
+75)  83149282 (62.0%) o@0x0        pss=34841854  padding=0  num_aliases=1
+             source_path= 	object_path=
+             flags={}  name=** ELF Section: .strtab
+76)  100315394 (74.7%) o@0x0        pss=17166112  padding=0  num_aliases=1
+             source_path= 	object_path=
+             flags={}  name=** ELF Section: .symtab
+77)  134218029 (100.0%) o@0x0        pss=33902635  padding=33902635  num_aliases=1
+             source_path= 	object_path=
+             flags={}  name=Overhead: ELF file
 Showing 77 symbols (71 unique) with total pss: 134218029 bytes
 Histogram of symbols based on PSS:
       [2,4): 7      [32,64): 11     [512,1024): 1     [32768,65536): 1      [524288,1048576): 2   [33554432,67108864): 3
@@ -384,174 +384,24 @@ Number of unique paths: 9
 Section Legend: t=.text, r=.rodata, R=.data.rel.ro, d=.data, b=.bss, o=.other
 Index | Running Total | Section@Address | ...
 ------------------------------------------------------------
-0)          4 (0.0%)  d@0x2de7000  pss=4  padding=0  num_aliases=1
-             source_path=base/page_allocator.cc 	object_path=base/base/page_allocator.o
-             flags={}  name=google::protobuf::internal::pLinuxKernelCmpxchg
-1)          8 (0.0%)  d@0x2de7004  pss=4  padding=0  num_aliases=1
-             source_path=third_party/container/container.c 	object_path=third_party/sub/ContiguousContainer.o
-             flags={}  name=google::protobuf::internal::pLinuxKernelMemoryBarrier
-2)        160 (0.0%)  d@0x2de7008  pss=152  padding=0  num_aliases=1
-             source_path=third_party/container/container.c 	object_path=third_party/sub/ContiguousContainer.o
-             flags={rel}  name=base::android::kBaseRegisteredMethods
-3)        164 (0.0%)  d@0x2de70a0  pss=4  padding=0  num_aliases=1
-             source_path=third_party/container/container.c 	object_path=third_party/sub/ContiguousContainer.o
-             flags={anon}  name=base::android::g_renderer_histogram_code
-4)        168 (0.0%)  d@0x2de70a4  pss=4  padding=0  num_aliases=1
-             source_path=third_party/container/container.c 	object_path=third_party/sub/ContiguousContainer.o
-             flags={anon,rel.loc}  name=base::android::g_library_version_number
-5)     101768 (0.1%)  d@0x2de70a8  pss=101600  padding=0  num_aliases=1
-             source_path= 	object_path=
-             flags={}  name=** .data (unattributed)
-6)     101824 (0.1%)  R@0x2cd8500  pss=56  padding=0  num_aliases=1
-             source_path=third_party/paint.cc 	object_path=third_party/sub/PaintChunker.o
-             flags={}  name=ChromeMainDelegateAndroid [vtable]
-7)     101848 (0.1%)  R@0x2cd8538  pss=24  padding=0  num_aliases=1
-             source_path=base/page_allocator.cc 	object_path=base/base/page_allocator.o
-             flags={}  name=mojo::MessageReceiver [vtable]
-8)     101860 (0.1%)  R@0x2cd8550  pss=12  padding=0  num_aliases=1
-             source_path=base/page_allocator.cc 	object_path=base/base/page_allocator.o
-             flags={}  name=kMethodsAnimationFrameTimeHistogram
-9)    1166992 (0.9%)  R@0x2cd855c  pss=1065132  padding=0  num_aliases=1
-             source_path= 	object_path=
-             flags={}  name=** .data.rel.ro (unattributed)
-10)   1167048 (0.9%)  R@0x2c176f0  pss=56  padding=0  num_aliases=1
-             source_path=third_party/icu/ucnv_ext.c 	object_path=third_party/icu/icuuc/ucnv_ext.o
-             flags={gen}  name=ChromeMainDelegate [vtable]
-11)   1167072 (0.9%)  R@0x2c17728  pss=24  padding=0  num_aliases=1
-             source_path=third_party/icu/ucnv_ext.c 	object_path=third_party/icu/icuuc/ucnv_ext.o
-             flags={gen}  name=chrome::mojom::FieldTrialRecorder [vtable]
-12)   1956976 (1.5%)  R@0x2c17740  pss=789904  padding=0  num_aliases=1
-             source_path=third_party/container/container.c 	object_path=third_party/sub/ContiguousContainer.o
-             flags={}  name=chrome::mojom::FieldTrialRecorderProxy [vtable]
-13)   1957008 (1.5%)  R@0x2cd84e0  pss=32  padding=16  num_aliases=1
-             source_path= 	object_path=third_party/gvr-android-sdk/libgvr_shim_static_arm.a/libcontroller_api_impl.a_controller_api_impl.o
-             flags={}  name=.Lswitch.table.45
-14)   1957016 (1.5%)  R@0x2cd84f0  pss=8  padding=0  num_aliases=1
-             source_path= 	object_path=third_party/gvr-android-sdk/libgvr_shim_static_arm.a/libport_android_jni.a_jni_utils.o
-             flags={anon}  name=kSystemClassPrefixes
-15)   1957076 (1.5%)  o@0x0        pss=60  padding=0  num_aliases=1
-             source_path= 	object_path=
-             flags={}  name=** ELF Section: .ARM.attributes
-16)   1957104 (1.5%)  o@0x0        pss=28  padding=0  num_aliases=1
-             source_path= 	object_path=
-             flags={}  name=** ELF Section: .note.gnu.gold-version
-17)   1957540 (1.5%)  o@0x0        pss=436  padding=0  num_aliases=1
-             source_path= 	object_path=
-             flags={}  name=** ELF Section: .shstrtab
-18)  36799394 (27.4%) o@0x0        pss=34841854  padding=0  num_aliases=1
-             source_path= 	object_path=
-             flags={}  name=** ELF Section: .strtab
-19)  53965506 (40.2%) o@0x0        pss=17166112  padding=0  num_aliases=1
-             source_path= 	object_path=
-             flags={}  name=** ELF Section: .symtab
-20)  87868141 (65.5%) o@0x0        pss=33902635  padding=33902635  num_aliases=1
-             source_path= 	object_path=
-             flags={}  name=Overhead: ELF file
-21)  87868160 (65.5%) o@0x154      pss=19  padding=0  num_aliases=1
-             source_path= 	object_path=
-             flags={}  name=** ELF Section: .interp
-22)  87868196 (65.5%) o@0x168      pss=36  padding=0  num_aliases=1
-             source_path= 	object_path=
-             flags={}  name=** ELF Section: .note.gnu.build-id
-23)  87874692 (65.5%) o@0x18c      pss=6496  padding=0  num_aliases=1
-             source_path= 	object_path=
-             flags={}  name=** ELF Section: .dynsym
-24)  87878717 (65.5%) o@0x1b0c     pss=4025  padding=0  num_aliases=1
-             source_path= 	object_path=
-             flags={}  name=** ELF Section: .dynstr
-25)  87881401 (65.5%) o@0x2ad4     pss=2684  padding=0  num_aliases=1
-             source_path= 	object_path=
-             flags={}  name=** ELF Section: .hash
-26)  87882213 (65.5%) o@0x3558     pss=812  padding=0  num_aliases=1
-             source_path= 	object_path=
-             flags={}  name=** ELF Section: .gnu.version
-27)  87882241 (65.5%) o@0x3888     pss=28  padding=0  num_aliases=1
-             source_path= 	object_path=
-             flags={}  name=** ELF Section: .gnu.version_d
-28)  87882337 (65.5%) o@0x38a4     pss=96  padding=0  num_aliases=1
-             source_path= 	object_path=
-             flags={}  name=** ELF Section: .gnu.version_r
-29)  90537721 (67.5%) o@0x3904     pss=2655384  padding=0  num_aliases=1
-             source_path= 	object_path=
-             flags={}  name=** ELF Section: .rel.dyn
-30)  90540537 (67.5%) o@0x29fbec   pss=2816  padding=0  num_aliases=1
-             source_path= 	object_path=
-             flags={}  name=** ELF Section: .rel.plt
-31)  90544781 (67.5%) o@0x2a06ec   pss=4244  padding=0  num_aliases=1
-             source_path= 	object_path=
-             flags={}  name=** ELF Section: .plt
-32)  92081237 (68.6%) o@0x2bd3d10  pss=1536456  padding=0  num_aliases=1
-             source_path= 	object_path=
-             flags={}  name=** ELF Section: .ARM.exidx
-33)  92264869 (68.7%) o@0x2bd5858  pss=183632  padding=0  num_aliases=1
-             source_path= 	object_path=
-             flags={}  name=** ELF Section: .ARM.extab
-34)  92264877 (68.7%) o@0x2ddc608  pss=8  padding=0  num_aliases=1
-             source_path= 	object_path=
-             flags={}  name=** ELF Section: .init_array
-35)  92264885 (68.7%) o@0x2ddc6f4  pss=8  padding=0  num_aliases=1
-             source_path= 	object_path=
-             flags={}  name=** ELF Section: .fini_array
-36)  92265189 (68.7%) o@0x2ddc6fc  pss=304  padding=0  num_aliases=1
-             source_path= 	object_path=
-             flags={}  name=** ELF Section: .dynamic
-37)  92308145 (68.8%) o@0x2ddc834  pss=42956  padding=0  num_aliases=1
-             source_path= 	object_path=
-             flags={}  name=** ELF Section: .got
-38)  92308147 (68.8%) r@0x266e600  pss=2.5 (size=5)  padding=0  num_aliases=2
-             source_path=base/page_allocator.cc 	object_path=base/base/page_allocator.o
-             flags={}  name="Str1"
-39)  92308150 (68.8%) r@0x266e600  pss=2.5 (size=5)  padding=0  num_aliases=2
-             source_path=third_party/icu/ucnv_ext.c 	object_path=third_party/icu/icuuc/ucnv_ext.o
-             flags={gen}  name="Str1"
-40)  92308166 (68.8%) r@0x266e605  pss=16  padding=0  num_aliases=1
-             source_path=third_party/icu/ucnv_ext.c 	object_path=third_party/icu/icuuc/ucnv_ext.o
-             flags={gen}  name="String literal2"
-41)  92308209 (68.8%) r@0x266e630  pss=43  padding=27  num_aliases=1
-             source_path= 	object_path=
-             flags={}  name=** merge strings
-42)  94273554 (70.2%) r@0x284d600  pss=1965345  padding=1961920  num_aliases=1
-             source_path= 	object_path=
-             flags={}  name=** merge constants
-43)  94273557 (70.2%) r@0x284e364  pss=3  padding=3  num_aliases=1
-             source_path= 	object_path=
-             flags={}  name=** symbol gap 0
-44)  94273565 (70.2%) r@0x284e364  pss=8  padding=0  num_aliases=1
-             source_path=base/page_allocator.cc 	object_path=base/base/page_allocator.o
-45)  94273609 (70.2%) r@0x284e370  pss=44  padding=4  num_aliases=1
-             source_path=base/page_allocator.cc 	object_path=base/base/page_allocator.o
-             flags={}  name=Name
-46)  94273641 (70.2%) r@0x284e398  pss=32  padding=0  num_aliases=1
-             source_path=third_party/container/container.c 	object_path=third_party/sub/ContiguousContainer.o
-             flags={}  name=chrome::mojom::FilePatcher::Name_
-47)  94949681 (70.7%) r@0x28f3450  pss=676040  padding=675992  num_aliases=1
-             source_path=third_party/paint.cc 	object_path=third_party/sub/PaintChunker.o
-             flags={anon}  name=kAnimationFrameTimeHistogramClassPath
-48)  94949685 (70.7%) r@0x28f3480  pss=4  padding=0  num_aliases=1
-             source_path=third_party/paint.cc 	object_path=third_party/sub/PaintChunker.o
-             flags={anon}  name=blink::CSSValueKeywordsHash::findValueImpl::value_word_list
-                  full_name=blink::CSSValueKeywordsHash::findValueImpl(char const*, unsigned int)::value_word_list
-49)  98235781 (73.2%) r@0x28f3484  pss=3286096  padding=0  num_aliases=1
-             source_path= 	object_path=
-             flags={}  name=** .rodata (unattributed)
-50)  98235797 (73.2%) t@0x28d900   pss=16  padding=0  num_aliases=1
+0)         16 (0.0%)  t@0x28d900   pss=16  padding=0  num_aliases=1
              source_path=base/page_allocator.cc 	object_path=base/base/page_allocator.o
              flags={startup}  name=_GLOBAL__sub_I_page_allocator.cc
-51)  98235853 (73.2%) t@0x28d910   pss=56  padding=0  num_aliases=1
+1)         72 (0.0%)  t@0x28d910   pss=56  padding=0  num_aliases=1
              source_path=base/page_allocator.cc 	object_path=base/base/page_allocator.o
              flags={startup}  name=_GLOBAL__sub_I_bbr_sender.cc
-52)  98235881 (73.2%) t@0x28d948   pss=28  padding=0  num_aliases=1
+2)        100 (0.0%)  t@0x28d948   pss=28  padding=0  num_aliases=1
              source_path=base/page_allocator.cc 	object_path=base/base/page_allocator.o
              flags={startup}  name=_GLOBAL__sub_I_pacing_sender.cc
-53)  98235919 (73.2%) t@0x28d964   pss=38  padding=0  num_aliases=1
+3)        138 (0.0%)  t@0x28d964   pss=38  padding=0  num_aliases=1
              source_path=base/page_allocator.cc 	object_path=base/base/page_allocator.o
              flags={}  name=extFromUUseMapping
                   full_name=extFromUUseMapping(signed char, unsigned int, int)
-54)  98235951 (73.2%) t@0x28d98a   pss=32  padding=0  num_aliases=1
+4)        170 (0.0%)  t@0x28d98a   pss=32  padding=0  num_aliases=1
              source_path=base/page_allocator.cc 	object_path=base/base/page_allocator.o
              flags={}  name=extFromUUseMapping
                   full_name=extFromUUseMapping(aj, int)
-55)  98245709 (73.2%) t@Group      pss=9758  padding=9758  count=2
+5)       9928 (0.0%)  t@Group      pss=9758  padding=9758  count=2
              source_path= 	object_path=
              flags={}  name=** symbol gaps
 > 0)       5718 (58.6%) t@0x28f000   pss=5718  padding=5718  num_aliases=1
@@ -560,77 +410,227 @@ Index | Running Total | Section@Address | ...
 > 1)       9758 (100.0%) t@0x2a1000   pss=4040  padding=4040  num_aliases=1
                source_path= 	object_path=
                flags={}  name=** symbol gap 1
-56)  98246157 (73.2%) t@0x28f000   pss=448  padding=0  num_aliases=1
+6)      10376 (0.0%)  t@0x28f000   pss=448  padding=0  num_aliases=1
              source_path=third_party/icu/ucnv_ext.c 	object_path=third_party/icu/icuuc/ucnv_ext.o
              flags={gen}  name=ucnv_extMatchFromU
                   full_name=ucnv_extMatchFromU(int const*, int, unsigned short const*, int, unsigned short const*, int, unsigned int*, signed char, signed char)
-57)  98246185 (73.2%) t@0x28f1c8   pss=28  padding=8  num_aliases=1
+7)      10404 (0.0%)  t@0x28f1c8   pss=28  padding=8  num_aliases=1
              source_path=third_party/icu/ucnv_ext.c 	object_path=third_party/icu/icuuc/ucnv_ext.o
              flags={startup,gen}  name=_GLOBAL__sub_I_SkDeviceProfile.cpp
-58)  98315309 (73.3%) t@0x28f1e0   pss=69124  padding=4  num_aliases=1
+8)      79528 (0.1%)  t@0x28f1e0   pss=69124  padding=4  num_aliases=1
              source_path=third_party/icu/ucnv_ext.c 	object_path=third_party/icu/icuuc/ucnv_ext.o
              flags={unlikely,gen}  name=foo_bar
-59)  98315333 (73.3%) t@0x2a0000   pss=24 (size=48)  padding=32  num_aliases=2
+9)      79552 (0.1%)  t@0x2a0000   pss=24 (size=48)  padding=32  num_aliases=2
              source_path=third_party/icu/ucnv_ext.c 	object_path=third_party/icu/icuuc/ucnv_ext.o
              flags={gen}  name=BazAlias
                   full_name=BazAlias(bool)
-60)  98315357 (73.3%) t@0x2a0000   pss=24 (size=48)  padding=32  num_aliases=2
+10)     79576 (0.1%)  t@0x2a0000   pss=24 (size=48)  padding=32  num_aliases=2
              source_path= 	object_path=
              flags={}  name=blink::ContiguousContainerBase::shrinkToFit
                   full_name=blink::ContiguousContainerBase::shrinkToFit()
-61)  98315360 (73.3%) t@0x2a0010   pss=3 (size=12)  padding=0  num_aliases=4
+11)     79579 (0.1%)  t@0x2a0010   pss=3 (size=12)  padding=0  num_aliases=4
              source_path=third_party/fft_float.cc 	object_path=third_party/ffmpeg/libffmpeg_internal.a/fft_float.o
              flags={}  name=BarAlias
                   full_name=BarAlias()
-62)  98315363 (73.3%) t@0x2a0010   pss=3 (size=12)  padding=0  num_aliases=4
+12)     79582 (0.1%)  t@0x2a0010   pss=3 (size=12)  padding=0  num_aliases=4
              source_path=third_party/fft_float.cc 	object_path=third_party/ffmpeg/libffmpeg_internal.a/fft_float.o
              flags={}  name=FooAlias
                   full_name=FooAlias()
-63)  98315366 (73.3%) t@0x2a0010   pss=3 (size=12)  padding=0  num_aliases=4
+13)     79585 (0.1%)  t@0x2a0010   pss=3 (size=12)  padding=0  num_aliases=4
              source_path=third_party/icu/ucnv_ext.c 	object_path=third_party/icu/icuuc/ucnv_ext.o
              flags={gen,clone}  name=blink::ContiguousContainerBase::shrinkToFit
                   full_name=blink::ContiguousContainerBase::shrinkToFit()
-64)  98315369 (73.3%) t@0x2a0010   pss=3 (size=12)  padding=0  num_aliases=4
+14)     79588 (0.1%)  t@0x2a0010   pss=3 (size=12)  padding=0  num_aliases=4
              source_path=third_party/paint.cc 	object_path=third_party/sub/PaintChunker.o
              flags={clone}  name=blink::ContiguousContainerBase::shrinkToFit
                   full_name=blink::ContiguousContainerBase::shrinkToFit()
-65)  98315397 (73.3%) t@0x2a0020   pss=28  padding=4  num_aliases=1
+15)     79616 (0.1%)  t@0x2a0020   pss=28  padding=4  num_aliases=1
              source_path=third_party/container/container.c 	object_path=third_party/sub/ContiguousContainer.o
              flags={}  name=blink::ContiguousContainerBase::ContiguousContainerBase
                   full_name=blink::ContiguousContainerBase::ContiguousContainerBase(blink::ContiguousContainerBase&&)
-66)  98315491 (73.3%) t@0x2a1000   pss=94  padding=0  num_aliases=1
+16)     79710 (0.1%)  t@0x2a1000   pss=94  padding=0  num_aliases=1
              source_path=third_party/container/container.c 	object_path=third_party/sub/ContiguousContainer.o
              flags={anon,clone}  name=blink::PaintChunker::releasePaintChunks
                   full_name=blink::PaintChunker::releasePaintChunks()
-67)  98319525 (73.3%) t@0x2a2000   pss=4034  padding=4002  num_aliases=1
+17)     83744 (0.1%)  t@0x2a2000   pss=4034  padding=4002  num_aliases=1
              source_path=third_party/container/container.c 	object_path=third_party/sub/ContiguousContainer.o
              flags={}  name=** outlined function
-68)  98319549 (73.3%) t@0x2a2020   pss=24 (size=48)  padding=0  num_aliases=2
-             source_path= 	object_path=
-             flags={}  name=** outlined function * 2
-69)  98319573 (73.3%) t@0x2a2020   pss=24 (size=48)  padding=0  num_aliases=2
+18)     83768 (0.1%)  t@0x2a2020   pss=24 (size=48)  padding=0  num_aliases=2
              source_path= 	object_path=
              flags={}  name=aliasedWithOutlinedFunction
                   full_name=aliasedWithOutlinedFunction()
-70)  134218029 (100.0%) t@0x2a2050   pss=35898456  padding=0  num_aliases=1
+19)     83792 (0.1%)  t@0x2a2020   pss=24 (size=48)  padding=0  num_aliases=2
+             source_path= 	object_path=
+             flags={}  name=** outlined function * 2
+20)  35982248 (26.8%) t@0x2a2050   pss=35898456  padding=0  num_aliases=1
              source_path= 	object_path=
              flags={}  name=** .text (unattributed)
-71)  134218029 (100.0%) b@0x0        pss=262144  padding=0  num_aliases=1
+21)  35982250 (26.8%) r@0x266e600  pss=2.5 (size=5)  padding=0  num_aliases=2
+             source_path=base/page_allocator.cc 	object_path=base/base/page_allocator.o
+             flags={}  name="Str1"
+22)  35982253 (26.8%) r@0x266e600  pss=2.5 (size=5)  padding=0  num_aliases=2
+             source_path=third_party/icu/ucnv_ext.c 	object_path=third_party/icu/icuuc/ucnv_ext.o
+             flags={gen}  name="Str1"
+23)  35982269 (26.8%) r@0x266e605  pss=16  padding=0  num_aliases=1
+             source_path=third_party/icu/ucnv_ext.c 	object_path=third_party/icu/icuuc/ucnv_ext.o
+             flags={gen}  name="String literal2"
+24)  35982312 (26.8%) r@0x266e630  pss=43  padding=27  num_aliases=1
+             source_path= 	object_path=
+             flags={}  name=** merge strings
+25)  37947657 (28.3%) r@0x284d600  pss=1965345  padding=1961920  num_aliases=1
+             source_path= 	object_path=
+             flags={}  name=** merge constants
+26)  37947660 (28.3%) r@0x284e364  pss=3  padding=3  num_aliases=1
+             source_path= 	object_path=
+             flags={}  name=** symbol gap 0
+27)  37947668 (28.3%) r@0x284e364  pss=8  padding=0  num_aliases=1
+             source_path=base/page_allocator.cc 	object_path=base/base/page_allocator.o
+28)  37947712 (28.3%) r@0x284e370  pss=44  padding=4  num_aliases=1
+             source_path=base/page_allocator.cc 	object_path=base/base/page_allocator.o
+             flags={}  name=Name
+29)  37947744 (28.3%) r@0x284e398  pss=32  padding=0  num_aliases=1
+             source_path=third_party/container/container.c 	object_path=third_party/sub/ContiguousContainer.o
+             flags={}  name=chrome::mojom::FilePatcher::Name_
+30)  38623784 (28.8%) r@0x28f3450  pss=676040  padding=675992  num_aliases=1
+             source_path=third_party/paint.cc 	object_path=third_party/sub/PaintChunker.o
+             flags={anon}  name=kAnimationFrameTimeHistogramClassPath
+31)  38623788 (28.8%) r@0x28f3480  pss=4  padding=0  num_aliases=1
+             source_path=third_party/paint.cc 	object_path=third_party/sub/PaintChunker.o
+             flags={anon}  name=blink::CSSValueKeywordsHash::findValueImpl::value_word_list
+                  full_name=blink::CSSValueKeywordsHash::findValueImpl(char const*, unsigned int)::value_word_list
+32)  41909884 (31.2%) r@0x28f3484  pss=3286096  padding=0  num_aliases=1
+             source_path= 	object_path=
+             flags={}  name=** .rodata (unattributed)
+33)  41909940 (31.2%) R@0x2c176f0  pss=56  padding=0  num_aliases=1
+             source_path=third_party/icu/ucnv_ext.c 	object_path=third_party/icu/icuuc/ucnv_ext.o
+             flags={gen}  name=ChromeMainDelegate [vtable]
+34)  41909964 (31.2%) R@0x2c17728  pss=24  padding=0  num_aliases=1
+             source_path=third_party/icu/ucnv_ext.c 	object_path=third_party/icu/icuuc/ucnv_ext.o
+             flags={gen}  name=chrome::mojom::FieldTrialRecorder [vtable]
+35)  42699868 (31.8%) R@0x2c17740  pss=789904  padding=0  num_aliases=1
+             source_path=third_party/container/container.c 	object_path=third_party/sub/ContiguousContainer.o
+             flags={}  name=chrome::mojom::FieldTrialRecorderProxy [vtable]
+36)  42699900 (31.8%) R@0x2cd84e0  pss=32  padding=16  num_aliases=1
+             source_path= 	object_path=third_party/gvr-android-sdk/libgvr_shim_static_arm.a/libcontroller_api_impl.a_controller_api_impl.o
+             flags={}  name=.Lswitch.table.45
+37)  42699908 (31.8%) R@0x2cd84f0  pss=8  padding=0  num_aliases=1
+             source_path= 	object_path=third_party/gvr-android-sdk/libgvr_shim_static_arm.a/libport_android_jni.a_jni_utils.o
+             flags={anon}  name=kSystemClassPrefixes
+38)  42699964 (31.8%) R@0x2cd8500  pss=56  padding=0  num_aliases=1
+             source_path=third_party/paint.cc 	object_path=third_party/sub/PaintChunker.o
+             flags={}  name=ChromeMainDelegateAndroid [vtable]
+39)  42699988 (31.8%) R@0x2cd8538  pss=24  padding=0  num_aliases=1
+             source_path=base/page_allocator.cc 	object_path=base/base/page_allocator.o
+             flags={}  name=mojo::MessageReceiver [vtable]
+40)  42700000 (31.8%) R@0x2cd8550  pss=12  padding=0  num_aliases=1
+             source_path=base/page_allocator.cc 	object_path=base/base/page_allocator.o
+             flags={}  name=kMethodsAnimationFrameTimeHistogram
+41)  43765132 (32.6%) R@0x2cd855c  pss=1065132  padding=0  num_aliases=1
+             source_path= 	object_path=
+             flags={}  name=** .data.rel.ro (unattributed)
+42)  43765136 (32.6%) d@0x2de7000  pss=4  padding=0  num_aliases=1
+             source_path=base/page_allocator.cc 	object_path=base/base/page_allocator.o
+             flags={}  name=google::protobuf::internal::pLinuxKernelCmpxchg
+43)  43765140 (32.6%) d@0x2de7004  pss=4  padding=0  num_aliases=1
+             source_path=third_party/container/container.c 	object_path=third_party/sub/ContiguousContainer.o
+             flags={}  name=google::protobuf::internal::pLinuxKernelMemoryBarrier
+44)  43765292 (32.6%) d@0x2de7008  pss=152  padding=0  num_aliases=1
+             source_path=third_party/container/container.c 	object_path=third_party/sub/ContiguousContainer.o
+             flags={rel}  name=base::android::kBaseRegisteredMethods
+45)  43765296 (32.6%) d@0x2de70a0  pss=4  padding=0  num_aliases=1
+             source_path=third_party/container/container.c 	object_path=third_party/sub/ContiguousContainer.o
+             flags={anon}  name=base::android::g_renderer_histogram_code
+46)  43765300 (32.6%) d@0x2de70a4  pss=4  padding=0  num_aliases=1
+             source_path=third_party/container/container.c 	object_path=third_party/sub/ContiguousContainer.o
+             flags={anon,rel.loc}  name=base::android::g_library_version_number
+47)  43866900 (32.7%) d@0x2de70a8  pss=101600  padding=0  num_aliases=1
+             source_path= 	object_path=
+             flags={}  name=** .data (unattributed)
+48)  43866900 (32.7%) b@0x0        pss=262144  padding=0  num_aliases=1
              source_path=third_party/fft_float.cc 	object_path=third_party/ffmpeg/libffmpeg_internal.a/fft_float.o
              flags={}  name=ff_cos_131072
-72)  134218029 (100.0%) b@0x0        pss=131072  padding=0  num_aliases=1
+49)  43866900 (32.7%) b@0x0        pss=131072  padding=0  num_aliases=1
              source_path=third_party/fft_fixed.cc 	object_path=third_party/ffmpeg/libffmpeg_internal.a/fft_fixed.o
              flags={}  name=ff_cos_131072_fixed
-73)  134218029 (100.0%) b@0x0        pss=131072  padding=0  num_aliases=1
+50)  43866900 (32.7%) b@0x0        pss=131072  padding=0  num_aliases=1
              source_path=third_party/fft_float.cc 	object_path=third_party/ffmpeg/libffmpeg_internal.a/fft_float.o
              flags={}  name=ff_cos_65536
-74)  134218029 (100.0%) b@0x2dffda0  pss=28  padding=0  num_aliases=1
+51)  43866900 (32.7%) b@0x2dffda0  pss=28  padding=0  num_aliases=1
              source_path=third_party/icu/ucnv_ext.c 	object_path=third_party/icu/icuuc/ucnv_ext.o
              flags={gen}  name=g_chrome_content_browser_client
-75)  134218029 (100.0%) b@0x2dffe80  pss=200  padding=196  num_aliases=1
+52)  43866900 (32.7%) b@0x2dffe80  pss=200  padding=196  num_aliases=1
              source_path=third_party/icu/ucnv_ext.c 	object_path=third_party/icu/icuuc/ucnv_ext.o
              flags={gen}  name=SaveHistogram::atomic_histogram_pointer
                   full_name=SaveHistogram(_JNIEnv*, base::android::JavaParamRef<_jobject*> const&, base::android::JavaParamRef<_jstring*> const&, base::android::JavaParamRef<_jlongArray*> const&, int)::atomic_histogram_pointer
-76)  134218029 (100.0%) b@0x2dffe84  pss=4  padding=0  num_aliases=1
+53)  43866900 (32.7%) b@0x2dffe84  pss=4  padding=0  num_aliases=1
              source_path=third_party/icu/ucnv_ext.c 	object_path=third_party/icu/icuuc/ucnv_ext.o
              flags={anon,gen}  name=g_AnimationFrameTimeHistogram_clazz
+54)  43866960 (32.7%) o@0x0        pss=60  padding=0  num_aliases=1
+             source_path= 	object_path=
+             flags={}  name=** ELF Section: .ARM.attributes
+55)  45403416 (33.8%) o@0x0        pss=1536456  padding=0  num_aliases=1
+             source_path= 	object_path=
+             flags={}  name=** ELF Section: .ARM.exidx
+56)  45587048 (34.0%) o@0x0        pss=183632  padding=0  num_aliases=1
+             source_path= 	object_path=
+             flags={}  name=** ELF Section: .ARM.extab
+57)  45587352 (34.0%) o@0x0        pss=304  padding=0  num_aliases=1
+             source_path= 	object_path=
+             flags={}  name=** ELF Section: .dynamic
+58)  45591377 (34.0%) o@0x0        pss=4025  padding=0  num_aliases=1
+             source_path= 	object_path=
+             flags={}  name=** ELF Section: .dynstr
+59)  45597873 (34.0%) o@0x0        pss=6496  padding=0  num_aliases=1
+             source_path= 	object_path=
+             flags={}  name=** ELF Section: .dynsym
+60)  45597881 (34.0%) o@0x0        pss=8  padding=0  num_aliases=1
+             source_path= 	object_path=
+             flags={}  name=** ELF Section: .fini_array
+61)  45598693 (34.0%) o@0x0        pss=812  padding=0  num_aliases=1
+             source_path= 	object_path=
+             flags={}  name=** ELF Section: .gnu.version
+62)  45598721 (34.0%) o@0x0        pss=28  padding=0  num_aliases=1
+             source_path= 	object_path=
+             flags={}  name=** ELF Section: .gnu.version_d
+63)  45598817 (34.0%) o@0x0        pss=96  padding=0  num_aliases=1
+             source_path= 	object_path=
+             flags={}  name=** ELF Section: .gnu.version_r
+64)  45641773 (34.0%) o@0x0        pss=42956  padding=0  num_aliases=1
+             source_path= 	object_path=
+             flags={}  name=** ELF Section: .got
+65)  45644457 (34.0%) o@0x0        pss=2684  padding=0  num_aliases=1
+             source_path= 	object_path=
+             flags={}  name=** ELF Section: .hash
+66)  45644465 (34.0%) o@0x0        pss=8  padding=0  num_aliases=1
+             source_path= 	object_path=
+             flags={}  name=** ELF Section: .init_array
+67)  45644484 (34.0%) o@0x0        pss=19  padding=0  num_aliases=1
+             source_path= 	object_path=
+             flags={}  name=** ELF Section: .interp
+68)  45644520 (34.0%) o@0x0        pss=36  padding=0  num_aliases=1
+             source_path= 	object_path=
+             flags={}  name=** ELF Section: .note.gnu.build-id
+69)  45644548 (34.0%) o@0x0        pss=28  padding=0  num_aliases=1
+             source_path= 	object_path=
+             flags={}  name=** ELF Section: .note.gnu.gold-version
+70)  45648792 (34.0%) o@0x0        pss=4244  padding=0  num_aliases=1
+             source_path= 	object_path=
+             flags={}  name=** ELF Section: .plt
+71)  48304176 (36.0%) o@0x0        pss=2655384  padding=0  num_aliases=1
+             source_path= 	object_path=
+             flags={}  name=** ELF Section: .rel.dyn
+72)  48306992 (36.0%) o@0x0        pss=2816  padding=0  num_aliases=1
+             source_path= 	object_path=
+             flags={}  name=** ELF Section: .rel.plt
+73)  48307428 (36.0%) o@0x0        pss=436  padding=0  num_aliases=1
+             source_path= 	object_path=
+             flags={}  name=** ELF Section: .shstrtab
+74)  83149282 (62.0%) o@0x0        pss=34841854  padding=0  num_aliases=1
+             source_path= 	object_path=
+             flags={}  name=** ELF Section: .strtab
+75)  100315394 (74.7%) o@0x0        pss=17166112  padding=0  num_aliases=1
+             source_path= 	object_path=
+             flags={}  name=** ELF Section: .symtab
+76)  134218029 (100.0%) o@0x0        pss=33902635  padding=33902635  num_aliases=1
+             source_path= 	object_path=
+             flags={}  name=Overhead: ELF file

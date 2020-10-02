@@ -165,9 +165,8 @@ def _NormalizeNames(raw_symbols):
       name = full_name[space_idx + 1:]
       symbol.template_name = name
       symbol.name = name
-    elif (full_name.startswith('*') or
-        symbol.IsOverhead() or
-        symbol.IsOther()):
+    elif (full_name.startswith('**') or symbol.IsOverhead()
+          or symbol.IsOther()):
       symbol.template_name = full_name
       symbol.name = full_name
     elif symbol.IsDex():
@@ -492,9 +491,8 @@ def _CreateMergeStringsReplacements(merge_string_syms,
   logging.debug('Created %d string literal symbols', sum(len(x) for x in ret))
   logging.debug('Sorting string literals')
   for symbols in ret:
-    # In order to achieve a total ordering in the presence of aliases, need to
-    # include both |address| and |object_path|.
-    # In order to achieve consistent deduping, need to include |size|.
+    # For de-duping & alias creation, order by address & size.
+    # For alias symbol ordering, sort by object_path.
     symbols.sort(key=lambda x: (x.address, -x.size, x.object_path))
 
   logging.debug('Deduping string literals')
@@ -532,8 +530,6 @@ def _CreateMergeStringsReplacements(merge_string_syms,
       new_symbols.append(symbol)
       prev_symbol = symbol
     ret[i] = new_symbols
-    # Aliases come out in random order, so sort to be deterministic.
-    ret[i].sort(key=lambda s: (s.address, s.object_path))
 
   logging.debug(
       'Removed %d overlapping string literals (%d bytes) & created %d aliases',
@@ -1144,20 +1140,17 @@ def _ParsePakSymbols(symbols_by_id, object_paths_by_pak_id):
     paths = object_paths_by_pak_id.get(resource_id)
     if not paths:
       continue
-    symbol.object_path = paths.pop()
-    if not paths:
+    symbol.object_path = paths[0]
+    if len(paths) == 1:
       continue
     aliases = symbol.aliases or [symbol]
     symbol.aliases = aliases
-    for path in paths:
+    for path in paths[1:]:
       new_sym = models.Symbol(
           symbol.section_name, symbol.size, address=symbol.address,
           full_name=symbol.full_name, object_path=path, aliases=aliases)
       aliases.append(new_sym)
       raw_symbols.append(new_sym)
-  # Sorting can ignore containers because symbols created here are all in the
-  # same container.
-  raw_symbols.sort(key=lambda s: (s.section_name, s.address, s.object_path))
   raw_total = 0.0
   int_total = 0
   for symbol in raw_symbols:
@@ -1167,9 +1160,18 @@ def _ParsePakSymbols(symbols_by_id, object_paths_by_pak_id):
     symbol.size = int(symbol.size)
     int_total += symbol.size
   # Attribute excess to translations since only those are compressed.
-  raw_symbols.append(models.Symbol(
-      models.SECTION_PAK_TRANSLATIONS, int(round(raw_total - int_total)),
-      full_name='Overhead: Pak compression artifacts'))
+  overhead_size = round(raw_total - int_total)
+  if overhead_size:
+    raw_symbols.append(
+        models.Symbol(models.SECTION_PAK_TRANSLATIONS,
+                      overhead_size,
+                      address=raw_symbols[-1].end_address,
+                      full_name='Overhead: Pak compression artifacts'))
+
+  # Pre-sort to make final sort faster.
+  # Note: _SECTION_SORT_ORDER[] for pak symbols matches section_name ordering.
+  raw_symbols.sort(
+      key=lambda s: (s.section_name, s.IsOverhead(), s.address, s.object_path))
   return raw_symbols
 
 
@@ -1420,44 +1422,54 @@ def _OverwriteSymbolSizesWithRelocationCount(raw_symbols, tool_prefix,
 def _AddUnattributedSectionSymbols(raw_symbols, section_ranges):
   # Create symbols for ELF sections not covered by existing symbols.
   logging.info('Searching for symbol gaps...')
-  last_symbol_ends = collections.defaultdict(int)
-  for sym in raw_symbols:
-    if sym.end_address > last_symbol_ends[sym.section_name]:
-      last_symbol_ends[sym.section_name] = sym.end_address
-  for section_name, last_symbol_end in last_symbol_ends.items():
-    size_from_syms = last_symbol_end - section_ranges[section_name][0]
+  new_syms_by_section = collections.defaultdict(list)
+
+  for section_name, group in itertools.groupby(
+      raw_symbols, lambda s: s.section_name):
+    # Get last Last symbol in group.
+    for sym in group:
+      pass
+    end_address = sym.end_address  # pylint: disable=undefined-loop-variable
+    size_from_syms = end_address - section_ranges[section_name][0]
     overhead = section_ranges[section_name][1] - size_from_syms
     assert overhead >= 0, (
         ('End of last symbol (%x) in section %s is %d bytes after the end of '
-         'section from readelf (%x).') % (last_symbol_end, section_name,
-                                          -overhead,
+         'section from readelf (%x).') % (end_address, section_name, -overhead,
                                           sum(section_ranges[section_name])))
     if overhead > 0 and section_name not in models.BSS_SECTIONS:
-      raw_symbols.append(
-          models.Symbol(
-              section_name,
-              overhead,
-              address=last_symbol_end,
-              full_name='** {} (unattributed)'.format(section_name)))
+      new_syms_by_section[section_name].append(
+          models.Symbol(section_name,
+                        overhead,
+                        address=end_address,
+                        full_name='** {} (unattributed)'.format(section_name)))
       logging.info('Last symbol in %s does not reach end of section, gap=%d',
                    section_name, overhead)
 
   # Sections that should not bundle into ".other".
   unsummed_sections, summed_sections = models.ClassifySections(
       section_ranges.keys())
+  other_elf_symbols = []
   # Sort keys to ensure consistent order (> 1 sections may have address = 0).
-  for section_name in sorted(section_ranges.keys()):
+  for section_name, (_, section_size) in list(section_ranges.items()):
     # Handle sections that don't appear in |raw_symbols|.
-    address, section_size = section_ranges[section_name]
     if (section_name not in unsummed_sections
         and section_name not in summed_sections):
-      raw_symbols.append(
-          models.Symbol(
-              models.SECTION_OTHER,
-              section_size,
-              full_name='** ELF Section: {}'.format(section_name),
-              address=address))
+      other_elf_symbols.append(
+          models.Symbol(models.SECTION_OTHER,
+                        section_size,
+                        full_name='** ELF Section: {}'.format(section_name)))
       _ExtendSectionRange(section_ranges, models.SECTION_OTHER, section_size)
+  other_elf_symbols.sort(key=lambda s: (s.address, s.full_name))
+
+  # TODO(agrieve): It would probably simplify things to use a dict of
+  #     section_name->raw_symbols while creating symbols.
+  # Merge |new_syms_by_section| into |raw_symbols| while maintaining ordering.
+  ret = []
+  for section_name, group in itertools.groupby(
+      raw_symbols, lambda s: s.section_name):
+    ret.extend(group)
+    ret.extend(new_syms_by_section[section_name])
+  return ret, other_elf_symbols
 
 
 def CreateContainerAndSymbols(knobs=None,
@@ -1588,9 +1600,11 @@ def CreateContainerAndSymbols(knobs=None,
       elf_overhead_size = _CalculateElfOverhead(section_ranges, f.name)
 
   if elf_path:
-    _AddUnattributedSectionSymbols(raw_symbols, section_ranges)
+    raw_symbols, other_elf_symbols = _AddUnattributedSectionSymbols(
+        raw_symbols, section_ranges)
 
   pak_symbols_by_id = None
+  other_symbols = []
   if apk_path and size_info_prefix:
     # Can modify |section_ranges|.
     pak_symbols_by_id = _FindPakSymbolsFromApk(opts, section_ranges, apk_path,
@@ -1606,7 +1620,6 @@ def CreateContainerAndSymbols(knobs=None,
     if opts.analyze_java:
       dex_symbols = apkanalyzer.CreateDexSymbols(apk_path, mapping_path,
                                                  size_info_prefix)
-      raw_symbols.extend(dex_symbols)
 
       # We can't meaningfully track section size of dex methods vs other, so
       # just fake the size of dex methods as the sum of symbols, and make
@@ -1627,13 +1640,12 @@ def CreateContainerAndSymbols(knobs=None,
       assert unattributed_dex >= -5, ('Dex symbols take up more space than '
                                       'the dex sections have available')
       if unattributed_dex > 0:
-        other_symbols.append(
+        dex_symbols.append(
             models.Symbol(
                 models.SECTION_DEX,
                 unattributed_dex,
                 full_name='** .dex (unattributed - includes string literals)'))
-
-    raw_symbols.extend(other_symbols)
+      raw_symbols.extend(dex_symbols)
 
   elif pak_files and pak_info_file:
     # Can modify |section_ranges|.
@@ -1644,7 +1656,8 @@ def CreateContainerAndSymbols(knobs=None,
     elf_overhead_symbol = models.Symbol(
         models.SECTION_OTHER, elf_overhead_size, full_name='Overhead: ELF file')
     _ExtendSectionRange(section_ranges, models.SECTION_OTHER, elf_overhead_size)
-    raw_symbols.append(elf_overhead_symbol)
+    other_symbols.append(elf_overhead_symbol)
+    other_symbols.extend(other_elf_symbols)
 
   if pak_symbols_by_id:
     logging.debug('Extracting pak IDs from symbol names, and creating symbols')
@@ -1654,6 +1667,11 @@ def CreateContainerAndSymbols(knobs=None,
     pak_raw_symbols = _ParsePakSymbols(
         pak_symbols_by_id, object_paths_by_pak_id)
     raw_symbols.extend(pak_raw_symbols)
+
+  # Always have .other come last.
+  other_symbols.sort(key=lambda s: (s.IsOverhead(), s.full_name.startswith(
+      '**'), s.address, s.full_name))
+  raw_symbols.extend(other_symbols)
 
   _ExtractSourcePathsAndNormalizeObjectPaths(raw_symbols, source_mapper)
   _PopulateComponents(raw_symbols, source_directory)
@@ -1671,6 +1689,9 @@ def CreateContainerAndSymbols(knobs=None,
                                section_sizes=section_sizes)
   for symbol in raw_symbols:
     symbol.container = container
+
+  file_format.SortSymbols(raw_symbols, check_already_mostly_sorted=True)
+
   return container, raw_symbols
 
 
@@ -1683,7 +1704,6 @@ def CreateSizeInfo(build_config,
 
   all_raw_symbols = []
   for raw_symbols in raw_symbols_list:
-    file_format.SortSymbols(raw_symbols)
     file_format.CalculatePadding(raw_symbols)
 
     # Do not call _NormalizeNames() during archive since that method tends to
