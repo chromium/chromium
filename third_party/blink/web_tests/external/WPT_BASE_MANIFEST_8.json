@@ -304,6 +304,13 @@
        {}
       ]
      ],
+     "overflow-clip-crash.html": [
+      "156343954deba47d0276ea482285048d773b74ab",
+      [
+       null,
+       {}
+      ]
+     ],
      "shrink-to-fit-auto-overflow-relayout-crash.html": [
       "c0f0214ee186a0b13787f6f86bd199e7d6df7ac0",
       [
@@ -110419,7 +110426,7 @@
       ]
      ],
      "text-emphasis-color-001.xht": [
-      "b60f03591ed067b8a8411cdad2ea8bcd222a37fc",
+      "ed2ce0130eaa8062911a53b3a89ef1bbf7c29fec",
       [
        null,
        [
@@ -110432,7 +110439,7 @@
       ]
      ],
      "text-emphasis-position-above-left-001.xht": [
-      "c663f5fd63c25892e6d4fbe6480cde161e182413",
+      "55285ef101802cbafde3d69cc3042800574d9d2f",
       [
        null,
        [
@@ -110445,7 +110452,7 @@
       ]
      ],
      "text-emphasis-position-above-left-002.xht": [
-      "2464e218105696678c1002ce3e65b6b09c1d7d21",
+      "409e1efd751489fc906b1bcbbaf36840cde8ff28",
       [
        null,
        [
@@ -110458,7 +110465,7 @@
       ]
      ],
      "text-emphasis-position-above-right-001.xht": [
-      "3068f1069bfdf9a7becc3f28023856e93acc045f",
+      "9c211941b9683e129275591a16ec47274d23a49c",
       [
        null,
        [
@@ -110471,7 +110478,7 @@
       ]
      ],
      "text-emphasis-position-above-right-002.xht": [
-      "beb4c94590ee632e8d707b3d3d75e8466d71ee9d",
+      "6ef022f635982a85eca64f4ef741d6f8816d6ecf",
       [
        null,
        [
@@ -110484,7 +110491,7 @@
       ]
      ],
      "text-emphasis-position-below-left-001.xht": [
-      "a675d56c5a1a837f7ea09cbbf47ef2045699878f",
+      "8c055a58ee5d39b014bb007bcac62f3eb9068083",
       [
        null,
        [
@@ -110497,7 +110504,7 @@
       ]
      ],
      "text-emphasis-position-below-left-002.xht": [
-      "15cfdefd07a712521af35958d9e8800b7e9dfb9f",
+      "f32c86146dd32770fc97a16a505588285d1e4dea",
       [
        null,
        [
@@ -110510,7 +110517,7 @@
       ]
      ],
      "text-emphasis-position-below-right-001.xht": [
-      "e680441c07a596f16991dead80abbb1587552f4d",
+      "c39ca23de7a5d734e360d83b22770cf9e47486d2",
       [
        null,
        [
@@ -110523,7 +110530,7 @@
       ]
      ],
      "text-emphasis-position-below-right-002.xht": [
-      "993fa7f7c0adefc04fba10e5d41d714a968aabbd",
+      "1dfea19907dd4a94706a8e16e9ad6e95efffd37c",
       [
        null,
        [
@@ -228045,7 +228052,7 @@
     ],
     "resources": {
      "cross-origin-child-iframe.sub.html": [
-      "8e2c36ed56072ad9fd2e82d43b609f5719d78a55",
+      "c341cd410227139176d3457aa6b953fc1b8a8a96",
       []
      ],
      "cross-origin-subframe.html": [
@@ -228073,7 +228080,7 @@
       []
      ],
      "same-origin-grand-child-iframe.html": [
-      "25db5a29d8a917916d0b2012f8f790ea9178e681",
+      "f5645bf3e3f5c05107347495f153ed61137ce131",
       []
      ],
      "scaled-target-subframe.html": [
@@ -229743,14 +229750,6 @@
     ],
     "MediaStreamTrack-getConstraints-fast-expected.txt": [
      "9b9d77c3b7b55e69e58d6d80f834cbccd6767d39",
-     []
-    ],
-    "getPhotoCapabilities-expected.txt": [
-     "939f1646d5836628f95fcb28fb7f5de938614f65",
-     []
-    ],
-    "getPhotoSettings-expected.txt": [
-     "a9b1ff4d20488990ffd72a5ac9ef8ff502e07ee6",
      []
     ],
     "resources": {
@@ -245468,7 +245467,7 @@
        []
       ],
       "client.py": [
-       "adc9b3a3f705e4624408ed74b581478fd2422cd8",
+       "f4e3c763795e905a85f3c41951f86e558b7c1073",
        []
       ],
       "error.py": [
@@ -366258,7 +366257,7 @@
      ]
     ],
     "same-origin-grand-child-iframe.sub.html": [
-     "57c0347ddc8ec748e3ff025a0ef7f11342f32a1d",
+     "a311a8732ab15c3d61ed9ea51a37b5b4079f2e09",
      [
       null,
       {}
