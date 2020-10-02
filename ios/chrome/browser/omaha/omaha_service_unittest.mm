@@ -131,9 +131,9 @@ class OmahaServiceTest : public PlatformTest {
 
 TEST_F(OmahaServiceTest, PingMessageTest) {
   const char* expectedResult =
-      "<request protocol=\"3.0\" version=\"iOS-1.0.0.0\" ismachine=\"1\" "
-      "requestid=\"requestId\" sessionid=\"sessionId\""
-      " hardware_class=\"[^\"]*\">"
+      "<request protocol=\"3.0\" updater=\"iOS\" updaterversion=\"[^\"]*\""
+      " updaterchannel=\"[^\"]*\" ismachine=\"1\" requestid=\"requestId\""
+      " sessionid=\"sessionId\" hardware_class=\"[^\"]*\">"
       "<os platform=\"ios\" version=\"[0-9][0-9]*\\(\\.[0-9][0-9]*\\)*\""
       " arch=\"[^\"]*\"/>"
       "<app version=\"[^\"]*\" nextversion=\"\" lang=\"[^\"]*\""
@@ -154,15 +154,15 @@ TEST_F(OmahaServiceTest, PingMessageTest) {
   regcomp(&regex, expectedResult, REG_NOSUB);
   int result = regexec(&regex, content.c_str(), 0, NULL, 0);
   regfree(&regex);
-  EXPECT_EQ(0, result);
+  EXPECT_EQ(0, result) << "Actual contents: " << content;
   EXPECT_FALSE(NeedUpdate());
 }
 
 TEST_F(OmahaServiceTest, PingMessageTestWithUnknownInstallDate) {
   const char* expectedResult =
-      "<request protocol=\"3.0\" version=\"iOS-1.0.0.0\" ismachine=\"1\" "
-      "requestid=\"requestId\" sessionid=\"sessionId\""
-      " hardware_class=\"[^\"]*\">"
+      "<request protocol=\"3.0\" updater=\"iOS\" updaterversion=\"[^\"]*\""
+      " updaterchannel=\"[^\"]*\" ismachine=\"1\" requestid=\"requestId\""
+      " sessionid=\"sessionId\" hardware_class=\"[^\"]*\">"
       "<os platform=\"ios\" version=\"[0-9][0-9]*\\(\\.[0-9][0-9]*\\)*\""
       " arch=\"[^\"]*\"/>"
       "<app version=\"[^\"]*\" nextversion=\"\" lang=\"[^\"]*\""
@@ -184,15 +184,15 @@ TEST_F(OmahaServiceTest, PingMessageTestWithUnknownInstallDate) {
   regcomp(&regex, expectedResult, REG_NOSUB);
   int result = regexec(&regex, content.c_str(), 0, NULL, 0);
   regfree(&regex);
-  EXPECT_EQ(0, result);
+  EXPECT_EQ(0, result) << "Actual contents: " << content;
   EXPECT_FALSE(NeedUpdate());
 }
 
 TEST_F(OmahaServiceTest, InstallEventMessageTest) {
   const char* kExpectedResultFormat =
-      "<request protocol=\"3.0\" version=\"iOS-1.0.0.0\" ismachine=\"1\" "
-      "requestid=\"requestId\" sessionid=\"sessionId\""
-      " hardware_class=\"[^\"]*\">"
+      "<request protocol=\"3.0\" updater=\"iOS\" updaterversion=\"[^\"]*\""
+      " updaterchannel=\"[^\"]*\" ismachine=\"1\" requestid=\"requestId\""
+      " sessionid=\"sessionId\" hardware_class=\"[^\"]*\">"
       "<os platform=\"ios\" version=\"[0-9][0-9]*(\\.[0-9][0-9]*)*\""
       " arch=\"[^\"]*\"/>"
       "<app version=\"%s\" nextversion=\"[^\"]*\" lang=\"[^\"]*\""
@@ -478,9 +478,9 @@ TEST_F(OmahaServiceTest, ParseAndEchoLastServerDate) {
   EXPECT_EQ(4088, service.last_server_date_);
 
   const char* expectedResult =
-      "<request protocol=\"3.0\" version=\"iOS-1.0.0.0\" ismachine=\"1\" "
-      "requestid=\"requestId\" sessionid=\"sessionId\""
-      " hardware_class=\"[^\"]*\">"
+      "<request protocol=\"3.0\" updater=\"iOS\" updaterversion=\"[^\"]*\""
+      " updaterchannel=\"[^\"]*\" ismachine=\"1\" requestid=\"requestId\""
+      " sessionid=\"sessionId\" hardware_class=\"[^\"]*\">"
       "<os platform=\"ios\" version=\"[0-9][0-9]*\\(\\.[0-9][0-9]*\\)*\""
       " arch=\"[^\"]*\"/>"
       "<app version=\"[^\"]*\" nextversion=\"\" lang=\"[^\"]*\""
@@ -497,7 +497,7 @@ TEST_F(OmahaServiceTest, ParseAndEchoLastServerDate) {
   regcomp(&regex, expectedResult, REG_NOSUB);
   int result = regexec(&regex, content.c_str(), 0, nullptr, 0);
   regfree(&regex);
-  EXPECT_EQ(0, result);
+  EXPECT_EQ(0, result) << "Actual contents: " << content;
 }
 
 TEST_F(OmahaServiceTest, SendInstallEventSuccess) {

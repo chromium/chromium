@@ -513,7 +513,9 @@ std::string OmahaService::GetPingContent(const std::string& requestId,
   XmlWrapper xml_wrapper;
   xml_wrapper.StartElement("request");
   xml_wrapper.WriteAttribute("protocol", "3.0");
-  xml_wrapper.WriteAttribute("version", "iOS-1.0.0.0");
+  xml_wrapper.WriteAttribute("updater", "iOS");
+  xml_wrapper.WriteAttribute("updaterversion", versionName.c_str());
+  xml_wrapper.WriteAttribute("updaterchannel", channelName.c_str());
   xml_wrapper.WriteAttribute("ismachine", "1");
   xml_wrapper.WriteAttribute("requestid", requestId.c_str());
   xml_wrapper.WriteAttribute("sessionid", sessionId.c_str());
