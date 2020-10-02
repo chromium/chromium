@@ -251,7 +251,7 @@ void StandaloneTrustedVaultBackend::MaybeRegisterDevice(
   // Cancel existing callbacks passed to |connection_| to ensure there is only
   // one ongoing request.
   AbandonConnectionRequest();
-  connection_->RegisterDevice(
+  connection_->RegisterAuthenticationFactor(
       *primary_account_, last_key_bytes,
       per_user_vault->last_vault_key_version(), key_pair->public_key(),
       base::BindOnce(&StandaloneTrustedVaultBackend::OnDeviceRegistered,

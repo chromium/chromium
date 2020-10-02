@@ -32,11 +32,12 @@ class TrustedVaultConnectionImpl : public TrustedVaultConnection {
       const TrustedVaultConnectionImpl& other) = delete;
   ~TrustedVaultConnectionImpl() override = default;
 
-  void RegisterDevice(const CoreAccountInfo& account_info,
-                      const std::vector<uint8_t>& last_trusted_vault_key,
-                      int last_trusted_vault_key_version,
-                      const SecureBoxPublicKey& device_key_pair,
-                      RegisterDeviceCallback callback) override;
+  void RegisterAuthenticationFactor(
+      const CoreAccountInfo& account_info,
+      const std::vector<uint8_t>& last_trusted_vault_key,
+      int last_trusted_vault_key_version,
+      const SecureBoxPublicKey& authentication_factor_public_key,
+      RegisterAuthenticationFactorCallback callback) override;
 
   void DownloadKeys(const CoreAccountInfo& account_info,
                     const std::vector<uint8_t>& last_trusted_vault_key,
