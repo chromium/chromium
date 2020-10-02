@@ -94,6 +94,7 @@ class ResultSinkClient(object):
     if len(test_log) > report_check_size:
       tr['artifacts'] = {'Test Log': {'contents': base64.b64encode(test_log)}}
 
-    requests.post(url=self.url,
-                  headers=self.headers,
-                  data=json.dumps({'testResults': [tr]}))
+    res = requests.post(url=self.url,
+                        headers=self.headers,
+                        data=json.dumps({'testResults': [tr]}))
+    res.raise_for_status()
