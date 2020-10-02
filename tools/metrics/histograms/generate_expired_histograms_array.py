@@ -233,7 +233,15 @@ def _GenerateFile(arguments):
       arguments.major_branch_date_filepath: File path for base date.
       arguments.milestone_filepath: File path for milestone information.
   """
-  descriptions = merge_xml.MergeFiles(histogram_paths.ALL_XMLS)
+  # TODO(sweilun): Assert that the |--inputs| is the same as
+  # |histogram_paths.ALL_XMLS| to make sure we have the most updated list of
+  # histogram descriptions. Otherwise, inform the cl owner to update the
+  # --inputs.
+  # assert histogram_paths.ALL_XMLS == arguments.inputs, "The --inputs is not "
+  # "sync with the most updated list of xmls. Please update the inputs in "
+  # "chrome/browser/metrics/BUILD.gn and ios/chrome/browser/metrics/BUILD.gn."
+
+  descriptions = merge_xml.MergeFiles(arguments.inputs)
   with open(arguments.major_branch_date_filepath, "r") as date_file:
     branch_file_content = date_file.read()
   with open(arguments.milestone_filepath, "r") as milestone_file:
@@ -278,6 +286,10 @@ def _ParseArguments():
       "-m",
       required=True,
       help="A path to the file with the milestone information.")
+  arg_parser.add_argument(
+      "inputs",
+      nargs="+",
+      help="Paths to .xml files with histogram descriptions.")
   return arg_parser.parse_args()
 
 
