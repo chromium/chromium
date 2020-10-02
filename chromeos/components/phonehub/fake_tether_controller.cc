@@ -7,7 +7,8 @@
 namespace chromeos {
 namespace phonehub {
 
-FakeTetherController::FakeTetherController() = default;
+FakeTetherController::FakeTetherController()
+    : status_(Status::kConnectionAvailable) {}
 
 FakeTetherController::~FakeTetherController() = default;
 

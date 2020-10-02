@@ -12,7 +12,8 @@
 
 namespace ash {
 
-using Status = chromeos::phonehub::TetherController::Status;
+using TetherController = chromeos::phonehub::TetherController;
+using FindMyDeviceController = chromeos::phonehub::FindMyDeviceController;
 
 namespace {
 
@@ -60,17 +61,68 @@ class QuickActionsViewTest : public AshTestBase {
   base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_F(QuickActionsViewTest, QuickActionsToggle) {
+TEST_F(QuickActionsViewTest, EnableHotspotVisibility) {
+  tether_controller()->SetStatus(
+      TetherController::Status::kIneligibleForFeature);
+
+  // Enable Hotspot button should not be shown if the feature is ineligible.
+  EXPECT_FALSE(actions_view()->enable_hotspot_for_testing()->GetVisible());
+
+  tether_controller()->SetStatus(
+      TetherController::Status::kConnectionAvailable);
+  // Enable Hotspot button should be shown if the feature is available.
+  EXPECT_TRUE(actions_view()->enable_hotspot_for_testing()->GetVisible());
+}
+
+TEST_F(QuickActionsViewTest, EnableHotspotToggle) {
+  tether_controller()->SetStatus(
+      TetherController::Status::kConnectionAvailable);
+
+  // Simulate a toggle press. Status should be connecting.
+  actions_view()->enable_hotspot_for_testing()->ButtonPressed(nullptr,
+                                                              DummyEvent());
+  EXPECT_EQ(TetherController::Status::kConnecting,
+            tether_controller()->GetStatus());
+
+  tether_controller()->SetStatus(TetherController::Status::kConnected);
+  // Toggle again will change the state.
+  actions_view()->enable_hotspot_for_testing()->ButtonPressed(nullptr,
+                                                              DummyEvent());
+  EXPECT_EQ(TetherController::Status::kConnecting,
+            tether_controller()->GetStatus());
+}
+
+TEST_F(QuickActionsViewTest, SilencePhoneToggle) {
   // Initially, silence phone is not enabled.
   EXPECT_FALSE(dnd_controller()->IsDndEnabled());
 
   // Toggle the button will enable the feature.
-  actions_view()->silence_phone_->ButtonPressed(nullptr, DummyEvent());
+  actions_view()->silence_phone_for_testing()->ButtonPressed(nullptr,
+                                                             DummyEvent());
   EXPECT_TRUE(dnd_controller()->IsDndEnabled());
 
   // Togge again to disable.
-  actions_view()->silence_phone_->ButtonPressed(nullptr, DummyEvent());
+  actions_view()->silence_phone_for_testing()->ButtonPressed(nullptr,
+                                                             DummyEvent());
   EXPECT_FALSE(dnd_controller()->IsDndEnabled());
+}
+
+TEST_F(QuickActionsViewTest, LocatePhoneToggle) {
+  // Initially, locate phone is not enabled.
+  EXPECT_EQ(FindMyDeviceController::Status::kRingingOff,
+            find_my_device_controller()->GetPhoneRingingStatus());
+
+  // Toggle the button will enable the feature.
+  actions_view()->locate_phone_for_testing()->ButtonPressed(nullptr,
+                                                            DummyEvent());
+  EXPECT_EQ(FindMyDeviceController::Status::kRingingOn,
+            find_my_device_controller()->GetPhoneRingingStatus());
+
+  // Togge again to disable.
+  actions_view()->locate_phone_for_testing()->ButtonPressed(nullptr,
+                                                            DummyEvent());
+  EXPECT_EQ(FindMyDeviceController::Status::kRingingOff,
+            find_my_device_controller()->GetPhoneRingingStatus());
 }
 
 }  // namespace ash

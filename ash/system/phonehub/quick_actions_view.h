@@ -24,9 +24,11 @@ class ASH_EXPORT QuickActionsView : public views::View {
   QuickActionsView(QuickActionsView&) = delete;
   QuickActionsView operator=(QuickActionsView&) = delete;
 
- private:
-  FRIEND_TEST_ALL_PREFIXES(QuickActionsViewTest, QuickActionsToggle);
+  QuickActionItem* enable_hotspot_for_testing() { return enable_hotspot_; }
+  QuickActionItem* silence_phone_for_testing() { return silence_phone_; }
+  QuickActionItem* locate_phone_for_testing() { return locate_phone_; }
 
+ private:
   // Add all the quick actions items to the view.
   void InitQuickActionItems();
 
@@ -41,7 +43,9 @@ class ASH_EXPORT QuickActionsView : public views::View {
   chromeos::phonehub::PhoneHubManager* phone_hub_manager_ = nullptr;
 
   // QuickActionItem for unit testing. Owned by this view.
+  QuickActionItem* enable_hotspot_ = nullptr;
   QuickActionItem* silence_phone_ = nullptr;
+  QuickActionItem* locate_phone_ = nullptr;
 };
 
 }  // namespace ash

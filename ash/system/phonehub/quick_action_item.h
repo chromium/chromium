@@ -43,6 +43,9 @@ class QuickActionItem : public views::View, public views::ButtonListener {
   // Set the text of sub-label shown below the label.
   void SetSubLabel(const base::string16& sub_label);
 
+  // Set the icon button to be either |icon_on_| or |icon_off_|.
+  void SetIcon(bool is_on);
+
   // Set the tooltip text of the icon button.
   void SetIconTooltip(const base::string16& text);
 

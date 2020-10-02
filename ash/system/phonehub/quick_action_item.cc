@@ -58,10 +58,9 @@ QuickActionItem::QuickActionItem(Delegate* delegate,
 
   label_ = label_view->AddChildView(
       std::make_unique<views::Label>(l10n_util::GetStringUTF16(label_id)));
-  ConfigureLabel(label_, true /* is_primary */);
-
   sub_label_ = label_view->AddChildView(std::make_unique<views::Label>());
-  ConfigureLabel(sub_label_, false /* is_primary */);
+
+  SetEnabled(true /* enabled */);
 
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
@@ -78,13 +77,17 @@ void QuickActionItem::SetSubLabel(const base::string16& sub_label) {
   sub_label_->SetText(sub_label);
 }
 
+void QuickActionItem::SetIcon(bool is_on) {
+  icon_button_->SetVectorIcon(is_on ? icon_on_ : icon_off_);
+}
+
 void QuickActionItem::SetIconTooltip(const base::string16& text) {
   icon_button_->SetTooltipText(text);
 }
 
 void QuickActionItem::SetToggled(bool toggled) {
   icon_button_->SetToggled(toggled);
-  icon_button_->SetVectorIcon(toggled ? icon_on_ : icon_off_);
+  SetIcon(toggled /* is_on */);
 }
 
 bool QuickActionItem::IsToggled() const {
@@ -110,6 +113,7 @@ void QuickActionItem::SetEnabled(bool enabled) {
     icon_button_->SetTooltipText(l10n_util::GetStringFUTF16(
         IDS_ASH_PHONE_HUB_QUICK_ACTIONS_NOT_AVAILABLE_STATE_TOOLTIP,
         GetItemLabel()));
+    SetIcon(false /* is_on */);
   } else {
     ConfigureLabel(label_, true /* is_primary */);
     ConfigureLabel(sub_label_, false /* is_primary */);
