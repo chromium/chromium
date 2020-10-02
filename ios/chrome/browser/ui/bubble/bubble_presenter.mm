@@ -265,9 +265,6 @@ presentBubbleForFeature:(const base::Feature&)feature
 
 // Presents a bubble associated with the Discover feed header's menu button.
 - (void)presentDiscoverFeedHeaderTipBubble {
-  if (![self canPresentBubble])
-    return;
-
   BubbleArrowDirection arrowDirection = BubbleArrowDirectionDown;
   NSString* text =
       l10n_util::GetNSStringWithFixup(IDS_IOS_DISCOVER_FEED_HEADER_IPH);
@@ -276,6 +273,12 @@ presentBubbleForFeature:(const base::Feature&)feature
                                            view:self.rootViewController.view];
   DCHECK(guide);
   UIView* menuButton = guide.constrainedView;
+  // Checks "canPresentBubble" after checking that the NTP with feed is visible.
+  // This ensures that the feature tracker doesn't trigger the IPH event if the
+  // bubble isn't shown, which would prevent it from ever being shown again.
+  if (!menuButton || ![self canPresentBubble]) {
+    return;
+  }
   CGPoint discoverFeedHeaderAnchor =
       [menuButton.superview convertPoint:menuButton.frame.origin toView:nil];
   discoverFeedHeaderAnchor.x += menuButton.frame.size.width / 2;
