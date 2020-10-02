@@ -151,10 +151,6 @@ class ZeroSuggestProviderTest : public testing::Test,
   // AutocompleteProviderListener:
   void OnProviderUpdate(bool updated_matches) override;
 
-  void CreateRemoteNoUrlFieldTrial();
-  void CreateMostVisitedFieldTrial();
-  void SetZeroSuggestVariantForAllContexts(const std::string& variant);
-
   base::test::SingleThreadTaskEnvironment task_environment_;
   std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
 
@@ -173,6 +169,17 @@ class ZeroSuggestProviderTest : public testing::Test,
     return RemoteSuggestionsService::EndpointUrl(
         search_terms_args, client_->GetTemplateURLService());
   }
+
+  AutocompleteInput CreateNTPOnFocusInputForRemoteNoUrl() {
+    // Use NTP as the page classification, since REMOTE_NO_URL is enabled by
+    // default for the NTP.
+    AutocompleteInput input(
+        base::string16(),
+        metrics::OmniboxEventProto::INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS,
+        TestSchemeClassifier());
+    input.set_focus_type(OmniboxFocusType::ON_FOCUS);
+    return input;
+  }
 };
 
 void ZeroSuggestProviderTest::SetUp() {
@@ -190,23 +197,6 @@ void ZeroSuggestProviderTest::SetUp() {
 }
 
 void ZeroSuggestProviderTest::OnProviderUpdate(bool updated_matches) {
-}
-
-void ZeroSuggestProviderTest::CreateRemoteNoUrlFieldTrial() {
-  SetZeroSuggestVariantForAllContexts(ZeroSuggestProvider::kRemoteNoUrlVariant);
-}
-
-void ZeroSuggestProviderTest::CreateMostVisitedFieldTrial() {
-  SetZeroSuggestVariantForAllContexts(ZeroSuggestProvider::kMostVisitedVariant);
-}
-
-void ZeroSuggestProviderTest::SetZeroSuggestVariantForAllContexts(
-    const std::string& variant) {
-  scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
-  scoped_feature_list_->InitAndEnableFeatureWithParameters(
-      omnibox::kOnFocusSuggestions,
-      {{std::string(OmniboxFieldTrial::kZeroSuggestVariantRule) + ":*:*",
-        variant}});
 }
 
 TEST_F(ZeroSuggestProviderTest, AllowZeroSuggestSuggestions) {
@@ -315,12 +305,6 @@ TEST_F(ZeroSuggestProviderTest, TypeOfResultToRun) {
       ntp_input,
       /*remote_no_url_allowed=*/true);
 
-  CreateRemoteNoUrlFieldTrial();
-  GURL other_suggest_url = GetSuggestURL(metrics::OmniboxEventProto::OTHER);
-  EXPECT_EQ(ZeroSuggestProvider::ResultType::REMOTE_NO_URL,
-            ZeroSuggestProvider::TypeOfResultToRun(client_.get(), other_input,
-                                                   other_suggest_url));
-
   // But if the user has signed out, fall back to platform-specific defaults.
   EXPECT_CALL(*client_, IsAuthenticated())
       .WillRepeatedly(testing::Return(false));
@@ -341,7 +325,6 @@ TEST_F(ZeroSuggestProviderTest, TypeOfResultToRun) {
   EXPECT_CALL(*client_, IsAuthenticated())
       .WillRepeatedly(testing::Return(true));
   TemplateURLService* turl_model = client_->GetTemplateURLService();
-  auto* google_search_provider = turl_model->GetDefaultSearchProvider();
   TemplateURLData data;
   data.SetURL("https://www.example.com/?q={searchTerms}");
   data.suggestions_url = "https://www.example.com/suggest/?q={searchTerms}";
@@ -351,55 +334,6 @@ TEST_F(ZeroSuggestProviderTest, TypeOfResultToRun) {
   ExpectPlatformSpecificDefaultZeroSuggestBehavior(
       other_input,
       /*remote_no_url_allowed=*/false);
-
-  // Restore Google as the default search provider.
-  turl_model->SetUserSelectedDefaultSearchProvider(
-      const_cast<TemplateURL*>(google_search_provider));
-
-  // Verify a few globally configured states work.
-  SetZeroSuggestVariantForAllContexts(
-      ZeroSuggestProvider::kRemoteSendUrlVariant);
-  EXPECT_EQ(ZeroSuggestProvider::ResultType::REMOTE_SEND_URL,
-            ZeroSuggestProvider::TypeOfResultToRun(client_.get(), other_input,
-                                                   other_suggest_url));
-  CreateRemoteNoUrlFieldTrial();
-  EXPECT_EQ(ZeroSuggestProvider::ResultType::REMOTE_NO_URL,
-            ZeroSuggestProvider::TypeOfResultToRun(client_.get(), other_input,
-                                                   other_suggest_url));
-  CreateMostVisitedFieldTrial();
-  EXPECT_EQ(ZeroSuggestProvider::ResultType::MOST_VISITED,
-            ZeroSuggestProvider::TypeOfResultToRun(client_.get(), other_input,
-                                                   other_suggest_url));
-
-  // Verify that a wildcard rule works in conjunction with a
-  // page-classification-specific rule.
-  scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
-  scoped_feature_list_->InitAndEnableFeatureWithParameters(
-      omnibox::kOnFocusSuggestions,
-      {
-          {std::string(OmniboxFieldTrial::kZeroSuggestVariantRule) + ":*:*",
-           ZeroSuggestProvider::kMostVisitedVariant},
-          {base::StringPrintf("%s:%d:*",
-                              OmniboxFieldTrial::kZeroSuggestVariantRule,
-                              metrics::OmniboxEventProto::BLANK),
-           ZeroSuggestProvider::kNoneVariant},
-      });
-  EXPECT_EQ(ZeroSuggestProvider::ResultType::MOST_VISITED,
-            ZeroSuggestProvider::TypeOfResultToRun(client_.get(), other_input,
-                                                   other_suggest_url));
-
-  // Test the BLANK page classification to verify the wildcard rule works.
-  {
-    std::string url("chrome://newtab/");
-    AutocompleteInput blank_input(base::ASCIIToUTF16(url),
-                                  metrics::OmniboxEventProto::BLANK,
-                                  TestSchemeClassifier());
-    blank_input.set_current_url(GURL(url));
-    EXPECT_EQ(ZeroSuggestProvider::ResultType::NONE,
-              ZeroSuggestProvider::TypeOfResultToRun(
-                  client_.get(), blank_input,
-                  GetSuggestURL(metrics::OmniboxEventProto::BLANK)));
-  }
 }
 
 TEST_F(ZeroSuggestProviderTest, TypeOfResultToRunForContextualWeb) {
@@ -476,13 +410,11 @@ TEST_F(ZeroSuggestProviderTest, TypeOfResultToRunForContextualWeb) {
 }
 
 TEST_F(ZeroSuggestProviderTest, TestDoesNotReturnMatchesForPrefix) {
-  CreateRemoteNoUrlFieldTrial();
-
-  std::string url("http://www.cnn.com/");
-  AutocompleteInput input(base::ASCIIToUTF16(url),
-                          metrics::OmniboxEventProto::OTHER,
-                          TestSchemeClassifier());
-  input.set_current_url(GURL(url));
+  // Use NTP because REMOTE_NO_URL is enabled by default for NTP.
+  AutocompleteInput prefix_input(
+      base::ASCIIToUTF16("foobar input"),
+      metrics::OmniboxEventProto::INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS,
+      TestSchemeClassifier());
 
   // Set up the pref to cache the response from the previous run.
   std::string json_response("[\"\",[\"search1\", \"search2\", \"search3\"],"
@@ -491,7 +423,7 @@ TEST_F(ZeroSuggestProviderTest, TestDoesNotReturnMatchesForPrefix) {
   PrefService* prefs = client_->GetPrefs();
   prefs->SetString(omnibox::kZeroSuggestCachedResults, json_response);
 
-  provider_->Start(input, false);
+  provider_->Start(prefix_input, false);
 
   // Expect that matches don't get populated out of cache because we are not
   // in zero suggest mode.
@@ -505,15 +437,7 @@ TEST_F(ZeroSuggestProviderTest, TestStartWillStopForSomeInput) {
   EXPECT_CALL(*client_, IsAuthenticated())
       .WillRepeatedly(testing::Return(true));
 
-  CreateRemoteNoUrlFieldTrial();
-
-  std::string input_url("http://www.cnn.com/");
-  AutocompleteInput input(base::ASCIIToUTF16(input_url),
-                          metrics::OmniboxEventProto::OTHER,
-                          TestSchemeClassifier());
-  input.set_current_url(GURL(input_url));
-  input.set_focus_type(OmniboxFocusType::ON_FOCUS);
-
+  AutocompleteInput input = CreateNTPOnFocusInputForRemoteNoUrl();
   provider_->Start(input, false);
   EXPECT_FALSE(provider_->done_);
 
@@ -531,9 +455,9 @@ TEST_F(ZeroSuggestProviderTest, TestStartWillStopForSomeInput) {
   EXPECT_TRUE(provider_->done_);
 }
 
+// MostVisited in only ever enabled on Mobile platforms.
+#if defined(OS_IOS) || defined(OS_ANDROID)
 TEST_F(ZeroSuggestProviderTest, TestMostVisitedCallback) {
-  CreateMostVisitedFieldTrial();
-
   std::string current_url("http://www.foxnews.com/");
   std::string input_url("http://www.cnn.com/");
   AutocompleteInput input(base::ASCIIToUTF16(input_url),
@@ -579,8 +503,6 @@ TEST_F(ZeroSuggestProviderTest, TestMostVisitedCallback) {
 }
 
 TEST_F(ZeroSuggestProviderTest, TestMostVisitedNavigateToSearchPage) {
-  CreateMostVisitedFieldTrial();
-
   std::string current_url("http://www.foxnews.com/");
   std::string input_url("http://www.cnn.com/");
   AutocompleteInput input(base::ASCIIToUTF16(input_url),
@@ -612,9 +534,9 @@ TEST_F(ZeroSuggestProviderTest, TestMostVisitedNavigateToSearchPage) {
   static_cast<FakeEmptyTopSites*>(top_sites.get())->RunACallback(urls);
   EXPECT_TRUE(provider_->matches().empty());
 }
+#endif  // defined(OS_IOS) || defined(OS_ANDROID)
 
 TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestCachingFirstRun) {
-  CreateRemoteNoUrlFieldTrial();
   EXPECT_CALL(*client_, IsAuthenticated())
       .WillRepeatedly(testing::Return(true));
 
@@ -622,19 +544,16 @@ TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestCachingFirstRun) {
   PrefService* prefs = client_->GetPrefs();
   prefs->SetString(omnibox::kZeroSuggestCachedResults, std::string());
 
-  std::string url("http://www.cnn.com/");
-  AutocompleteInput input(base::ASCIIToUTF16(url),
-                          metrics::OmniboxEventProto::OTHER,
-                          TestSchemeClassifier());
-  input.set_current_url(GURL(url));
-  input.set_focus_type(OmniboxFocusType::ON_FOCUS);
-
+  AutocompleteInput input = CreateNTPOnFocusInputForRemoteNoUrl();
   provider_->Start(input, false);
+  ASSERT_EQ(ZeroSuggestProvider::REMOTE_NO_URL,
+            provider_->GetResultTypeRunningForTesting());
 
   EXPECT_TRUE(prefs->GetString(omnibox::kZeroSuggestCachedResults).empty());
   EXPECT_TRUE(provider_->matches().empty());
 
-  GURL suggest_url = GetSuggestURL(metrics::OmniboxEventProto::OTHER);
+  GURL suggest_url = GetSuggestURL(
+      metrics::OmniboxEventProto::INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS);
   EXPECT_TRUE(test_loader_factory()->IsPending(suggest_url.spec()));
 
   std::string json_response("[\"\",[\"search1\", \"search2\", \"search3\"],"
@@ -644,27 +563,14 @@ TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestCachingFirstRun) {
 
   base::RunLoop().RunUntilIdle();
 
-#if defined(OS_ANDROID) || defined(OS_IOS)
-  EXPECT_EQ(4U, provider_->matches().size());  // 3 results + verbatim
-#else
   EXPECT_EQ(3U, provider_->matches().size());  // 3 results, no verbatim match
-#endif
-
   EXPECT_EQ(json_response,
             prefs->GetString(omnibox::kZeroSuggestCachedResults));
 }
 
 TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestHasCachedResults) {
-  CreateRemoteNoUrlFieldTrial();
   EXPECT_CALL(*client_, IsAuthenticated())
       .WillRepeatedly(testing::Return(true));
-
-  std::string url("http://www.cnn.com/");
-  AutocompleteInput input(base::ASCIIToUTF16(url),
-                          metrics::OmniboxEventProto::OTHER,
-                          TestSchemeClassifier());
-  input.set_current_url(GURL(url));
-  input.set_focus_type(OmniboxFocusType::ON_FOCUS);
 
   // Set up the pref to cache the response from the previous run.
   std::string json_response("[\"\",[\"search1\", \"search2\", \"search3\"],"
@@ -673,22 +579,19 @@ TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestHasCachedResults) {
   PrefService* prefs = client_->GetPrefs();
   prefs->SetString(omnibox::kZeroSuggestCachedResults, json_response);
 
+  AutocompleteInput input = CreateNTPOnFocusInputForRemoteNoUrl();
   provider_->Start(input, false);
+  ASSERT_EQ(ZeroSuggestProvider::REMOTE_NO_URL,
+            provider_->GetResultTypeRunningForTesting());
 
   // Expect that matches get populated synchronously out of the cache.
-#if defined(OS_ANDROID) || defined(OS_IOS)
-  ASSERT_EQ(4U, provider_->matches().size());  // 3 results + verbatim
-  EXPECT_EQ(base::ASCIIToUTF16("search1"), provider_->matches()[1].contents);
-  EXPECT_EQ(base::ASCIIToUTF16("search2"), provider_->matches()[2].contents);
-  EXPECT_EQ(base::ASCIIToUTF16("search3"), provider_->matches()[3].contents);
-#else
   ASSERT_EQ(3U, provider_->matches().size());  // 3 results, no verbatim match
   EXPECT_EQ(base::ASCIIToUTF16("search1"), provider_->matches()[0].contents);
   EXPECT_EQ(base::ASCIIToUTF16("search2"), provider_->matches()[1].contents);
   EXPECT_EQ(base::ASCIIToUTF16("search3"), provider_->matches()[2].contents);
-#endif
 
-  GURL suggest_url = GetSuggestURL(metrics::OmniboxEventProto::OTHER);
+  GURL suggest_url = GetSuggestURL(
+      metrics::OmniboxEventProto::INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS);
   EXPECT_TRUE(test_loader_factory()->IsPending(suggest_url.spec()));
   std::string json_response2("[\"\",[\"search4\", \"search5\", \"search6\"],"
       "[],[],{\"google:suggestrelevance\":[602, 601, 600],"
@@ -698,17 +601,10 @@ TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestHasCachedResults) {
   base::RunLoop().RunUntilIdle();
 
   // Expect the same results after the response has been handled.
-#if defined(OS_ANDROID) || defined(OS_IOS)
-  ASSERT_EQ(4U, provider_->matches().size());  // 3 results + verbatim
-  EXPECT_EQ(base::ASCIIToUTF16("search1"), provider_->matches()[1].contents);
-  EXPECT_EQ(base::ASCIIToUTF16("search2"), provider_->matches()[2].contents);
-  EXPECT_EQ(base::ASCIIToUTF16("search3"), provider_->matches()[3].contents);
-#else
   ASSERT_EQ(3U, provider_->matches().size());  // 3 results, no verbatim match
   EXPECT_EQ(base::ASCIIToUTF16("search1"), provider_->matches()[0].contents);
   EXPECT_EQ(base::ASCIIToUTF16("search2"), provider_->matches()[1].contents);
   EXPECT_EQ(base::ASCIIToUTF16("search3"), provider_->matches()[2].contents);
-#endif
 
   // Expect the new results have been stored.
   EXPECT_EQ(json_response2,
@@ -716,16 +612,8 @@ TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestHasCachedResults) {
 }
 
 TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestReceivedEmptyResults) {
-  CreateRemoteNoUrlFieldTrial();
   EXPECT_CALL(*client_, IsAuthenticated())
       .WillRepeatedly(testing::Return(true));
-
-  std::string url("http://www.cnn.com/");
-  AutocompleteInput input(base::ASCIIToUTF16(url),
-                          metrics::OmniboxEventProto::OTHER,
-                          TestSchemeClassifier());
-  input.set_current_url(GURL(url));
-  input.set_focus_type(OmniboxFocusType::ON_FOCUS);
 
   // Set up the pref to cache the response from the previous run.
   std::string json_response("[\"\",[\"search1\", \"search2\", \"search3\"],"
@@ -734,22 +622,19 @@ TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestReceivedEmptyResults) {
   PrefService* prefs = client_->GetPrefs();
   prefs->SetString(omnibox::kZeroSuggestCachedResults, json_response);
 
+  AutocompleteInput input = CreateNTPOnFocusInputForRemoteNoUrl();
   provider_->Start(input, false);
+  ASSERT_EQ(ZeroSuggestProvider::REMOTE_NO_URL,
+            provider_->GetResultTypeRunningForTesting());
 
   // Expect that matches get populated synchronously out of the cache.
-#if defined(OS_ANDROID) || defined(OS_IOS)
-  ASSERT_EQ(4U, provider_->matches().size());  // 3 results + verbatim
-  EXPECT_EQ(base::ASCIIToUTF16("search1"), provider_->matches()[1].contents);
-  EXPECT_EQ(base::ASCIIToUTF16("search2"), provider_->matches()[2].contents);
-  EXPECT_EQ(base::ASCIIToUTF16("search3"), provider_->matches()[3].contents);
-#else
   ASSERT_EQ(3U, provider_->matches().size());  // 3 results, no verbatim match
   EXPECT_EQ(base::ASCIIToUTF16("search1"), provider_->matches()[0].contents);
   EXPECT_EQ(base::ASCIIToUTF16("search2"), provider_->matches()[1].contents);
   EXPECT_EQ(base::ASCIIToUTF16("search3"), provider_->matches()[2].contents);
-#endif
 
-  GURL suggest_url = GetSuggestURL(metrics::OmniboxEventProto::OTHER);
+  GURL suggest_url = GetSuggestURL(
+      metrics::OmniboxEventProto::INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS);
   EXPECT_TRUE(test_loader_factory()->IsPending(suggest_url.spec()));
   std::string empty_response("[\"\",[],[],[],{}]");
   test_loader_factory()->AddResponse(suggest_url.spec(), empty_response);

@@ -87,11 +87,7 @@ bool IsRealboxEnabled() {
   return base::FeatureList::IsEnabled(kRealbox) ||
          base::FeatureList::IsEnabled(omnibox::kZeroSuggestionsOnNTPRealbox) ||
          base::FeatureList::IsEnabled(
-             omnibox::kReactiveZeroSuggestionsOnNTPRealbox) ||
-         (base::FeatureList::IsEnabled(omnibox::kOnFocusSuggestions) &&
-          !OmniboxFieldTrial::GetZeroSuggestVariants(
-               metrics::OmniboxEventProto::NTP_REALBOX)
-               .empty());
+             omnibox::kReactiveZeroSuggestionsOnNTPRealbox);
 }
 
 }  // namespace ntp_features

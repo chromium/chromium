@@ -133,12 +133,6 @@ bool RemoteNoUrlSuggestionsAreAllowed(
 }  // namespace
 
 // static
-const char ZeroSuggestProvider::kNoneVariant[] = "None";
-const char ZeroSuggestProvider::kRemoteNoUrlVariant[] = "RemoteNoUrl";
-const char ZeroSuggestProvider::kRemoteSendUrlVariant[] = "RemoteSendUrl";
-const char ZeroSuggestProvider::kMostVisitedVariant[] = "MostVisited";
-
-// static
 ZeroSuggestProvider* ZeroSuggestProvider::Create(
     AutocompleteProviderClient* client,
     AutocompleteProviderListener* listener) {
@@ -248,9 +242,7 @@ void ZeroSuggestProvider::Stop(bool clear_cached_results,
 }
 
 void ZeroSuggestProvider::DeleteMatch(const AutocompleteMatch& match) {
-  if (base::Contains(OmniboxFieldTrial::GetZeroSuggestVariants(
-                         current_page_classification_),
-                     kRemoteNoUrlVariant)) {
+  if (result_type_running_ == REMOTE_NO_URL) {
     // Remove the deleted match from the cache, so it is not shown to the user
     // again. Since we cannot remove just one result, blow away the cache.
     client()->GetPrefs()->SetString(omnibox::kZeroSuggestCachedResults,
@@ -664,12 +656,6 @@ ZeroSuggestProvider::ResultType ZeroSuggestProvider::TypeOfResultToRun(
       kOmniboxZeroSuggestEligibleHistogramName, static_cast<int>(eligibility),
       static_cast<int>(ZeroSuggestEligibility::ELIGIBLE_MAX_VALUE));
 
-  const auto field_trial_variants =
-      OmniboxFieldTrial::GetZeroSuggestVariants(current_page_classification);
-
-  if (base::Contains(field_trial_variants, kNoneVariant))
-    return NONE;
-
   if (current_page_classification == OmniboxEventProto::CHROMEOS_APP_LIST)
     return REMOTE_NO_URL;
 
@@ -712,18 +698,6 @@ ZeroSuggestProvider::ResultType ZeroSuggestProvider::TypeOfResultToRun(
       return REMOTE_NO_URL;
     }
   }
-
-  if (base::Contains(field_trial_variants, kRemoteNoUrlVariant) &&
-      remote_no_url_allowed) {
-    return REMOTE_NO_URL;
-  }
-
-  if (base::Contains(field_trial_variants, kRemoteSendUrlVariant) &&
-      can_send_current_url)
-    return REMOTE_SEND_URL;
-
-  if (base::Contains(field_trial_variants, kMostVisitedVariant))
-    return MOST_VISITED;
 
   // For Desktop, Android, and iOS, default to REMOTE_NO_URL on the NTP, if
   // allowed.

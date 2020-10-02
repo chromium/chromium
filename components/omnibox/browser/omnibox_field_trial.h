@@ -165,14 +165,6 @@ base::TimeDelta StopTimerFieldTrialDuration();
 base::Time GetLocalHistoryZeroSuggestAgeThreshold();
 
 // ---------------------------------------------------------
-// For the ZeroSuggestProvider field trial.
-
-// Returns the configured "ZeroSuggestVariant" parameter values for
-// |page_classification|.
-std::vector<std::string> GetZeroSuggestVariants(
-    metrics::OmniboxEventProto::PageClassification page_classification);
-
-// ---------------------------------------------------------
 // For the ShortcutsScoringMaxRelevance experiment that's part of the
 // bundled omnibox field trial.
 

@@ -88,17 +88,11 @@ bool AllowLocalHistoryZeroSuggestSuggestions(const AutocompleteInput& input) {
     return true;
   }
 
-  return base::Contains(
-      OmniboxFieldTrial::GetZeroSuggestVariants(current_page_classification),
-      LocalHistoryZeroSuggestProvider::kZeroSuggestLocalVariant);
+  return false;
 #endif
 }
 
 }  // namespace
-
-// static
-const char LocalHistoryZeroSuggestProvider::kZeroSuggestLocalVariant[] =
-    "Local";
 
 // static
 LocalHistoryZeroSuggestProvider* LocalHistoryZeroSuggestProvider::Create(

@@ -144,100 +144,32 @@ class SearchSuggestServiceTest : public BrowserWithTestWindowTest {
 };
 
 TEST_F(SearchSuggestServiceTest, IsEnabled) {
-  constexpr char kRemoteSendUrl[] = "RemoteSendUrl";
-  constexpr char kRemoteNoUrlLocal[] = "RemoteNoUrl,Local";
   {
-    // The service is enabled by default.
-    EXPECT_TRUE(SearchSuggestService::IsEnabled());
-  }
-  {
-    // Enabling omnibox::kOnFocusSuggestions for SERP does not disable the
-    // service.
-    base::test::ScopedFeatureList feature_list;
-    std::map<std::string, std::string> feature_params;
-    // Note: ZPS variant 6 is Search Engine Results Page.
-    feature_params["ZeroSuggestVariant:6:*"] = kRemoteSendUrl;
-    feature_list.InitWithFeaturesAndParameters(
-        {{omnibox::kOnFocusSuggestions, feature_params}}, {});
-    EXPECT_TRUE(SearchSuggestService::IsEnabled());
-  }
-  {
-    // Enabling omnibox::kOnFocusSuggestions for NTP Omnibox disables the
-    // service.
-    base::test::ScopedFeatureList feature_list;
-    std::map<std::string, std::string> feature_params;
-    // Note: ZPS variant 7 is NTP with Omnibox as starting focus.
-    feature_params["ZeroSuggestVariant:7:*"] = kRemoteNoUrlLocal;
-    feature_list.InitWithFeaturesAndParameters(
-        {{omnibox::kOnFocusSuggestions, feature_params}}, {});
+    // The service is disabled by default.
     EXPECT_FALSE(SearchSuggestService::IsEnabled());
-  }
-  {
-    // Enabling omnibox::kOnFocusSuggestions for NTP Realbox disables the
-    // service.
-    base::test::ScopedFeatureList feature_list;
-    std::map<std::string, std::string> feature_params;
-    // Note: ZPS variant 15 is NTP Realbox as starting focus.
-    feature_params["ZeroSuggestVariant:15:*"] = kRemoteNoUrlLocal;
-    feature_list.InitWithFeaturesAndParameters(
-        {{omnibox::kOnFocusSuggestions, feature_params}}, {});
-    EXPECT_FALSE(SearchSuggestService::IsEnabled());
-  }
-  {
-    // Disabling omnibox::kNewSearchFeatures does not disable the service.
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeaturesAndParameters({},
-                                               {omnibox::kNewSearchFeatures});
-    EXPECT_TRUE(SearchSuggestService::IsEnabled());
-  }
-  {
-    // Disabling ntp_features::kSearchSuggestChips does not disable the service.
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeaturesAndParameters(
-        {}, {ntp_features::kSearchSuggestChips});
-    EXPECT_TRUE(SearchSuggestService::IsEnabled());
   }
   {
     // Enabling ntp_features::kSearchSuggestChips enables the service despite
     // the other config.
     base::test::ScopedFeatureList feature_list;
-    std::map<std::string, std::string> feature_params;
-    // Note: ZPS variant 7 is NTP with Omnibox as starting focus.
-    feature_params["ZeroSuggestVariant:7:*"] = kRemoteNoUrlLocal;
-    // Note: ZPS variant 15 is NTP Realbox as starting focus.
-    feature_params["ZeroSuggestVariant:15:*"] = kRemoteNoUrlLocal;
-    feature_list.InitWithFeaturesAndParameters(
-        {{omnibox::kOnFocusSuggestions, feature_params},
-         {ntp_features::kSearchSuggestChips, {}}},
-        {});
+    feature_list.InitAndEnableFeature(ntp_features::kSearchSuggestChips);
     EXPECT_TRUE(SearchSuggestService::IsEnabled());
   }
   {
     // Disabling ntp_features::kDisableSearchSuggestChips does not enable the
     // service.
     base::test::ScopedFeatureList feature_list;
-    std::map<std::string, std::string> feature_params;
-    // Note: ZPS variant 15 is NTP Realbox as starting focus.
-    feature_params["ZeroSuggestVariant:15:*"] = kRemoteNoUrlLocal;
-    feature_list.InitWithFeaturesAndParameters(
-        {{omnibox::kOnFocusSuggestions, feature_params}},
-        {ntp_features::kDisableSearchSuggestChips});
+    feature_list.InitAndDisableFeature(
+        ntp_features::kDisableSearchSuggestChips);
     EXPECT_FALSE(SearchSuggestService::IsEnabled());
   }
   {
     // Enabling ntp_features::kDisableSearchSuggestChips disables the service
     // despite the other configs.
     base::test::ScopedFeatureList feature_list;
-    std::map<std::string, std::string> feature_params;
-    // Note: ZPS variant 7 is NTP with Omnibox as starting focus.
-    feature_params["ZeroSuggestVariant:7:*"] = kRemoteNoUrlLocal;
-    // Note: ZPS variant 15 is NTP Realbox as starting focus.
-    feature_params["ZeroSuggestVariant:15:*"] = kRemoteNoUrlLocal;
-    feature_list.InitWithFeaturesAndParameters(
-        {{omnibox::kOnFocusSuggestions, feature_params},
-         {ntp_features::kSearchSuggestChips, {}},
-         {ntp_features::kDisableSearchSuggestChips, {}}},
-        {});
+    feature_list.InitWithFeatures({ntp_features::kSearchSuggestChips,
+                                   ntp_features::kDisableSearchSuggestChips},
+                                  {});
     EXPECT_FALSE(SearchSuggestService::IsEnabled());
   }
 }

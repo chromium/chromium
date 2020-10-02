@@ -389,33 +389,6 @@ TEST_F(OmniboxFieldTrialTest, LocalZeroSuggestAgeThreshold) {
             base::TimeDelta(base::Time::Now() - age_threshold).InDays());
 }
 
-TEST_F(OmniboxFieldTrialTest, GetZeroSuggestVariantsCanUseMultipleFeatures) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      {
-          {omnibox::kOnFocusSuggestions,
-           // 7 is NTP omnibox.
-           {{"ZeroSuggestVariant:7:*", "omnibox1,omnibox2"}}},
-          {omnibox::kZeroSuggestionsOnNTPRealbox,
-           // 15 is NTP realbox.
-           {{"ZeroSuggestVariant:15:*", "realbox1, realbox2"}}},
-      },
-      {});
-
-  std::vector<std::string> omnibox_variants =
-      OmniboxFieldTrial::GetZeroSuggestVariants(
-          OmniboxEventProto::INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS);
-  ASSERT_EQ(2U, omnibox_variants.size());
-  EXPECT_EQ("omnibox1", omnibox_variants[0]);
-  EXPECT_EQ("omnibox2", omnibox_variants[1]);
-
-  std::vector<std::string> realbox_variants =
-      OmniboxFieldTrial::GetZeroSuggestVariants(OmniboxEventProto::NTP_REALBOX);
-  ASSERT_EQ(2U, realbox_variants.size());
-  EXPECT_EQ("realbox1", realbox_variants[0]);
-  EXPECT_EQ("realbox2", realbox_variants[1]);
-}
-
 TEST_F(OmniboxFieldTrialTest, HUPNewScoringFieldTrial) {
   {
     std::map<std::string, std::string> params;

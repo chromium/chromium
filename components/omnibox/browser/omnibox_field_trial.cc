@@ -244,53 +244,6 @@ base::Time OmniboxFieldTrial::GetLocalHistoryZeroSuggestAgeThreshold() {
   return (base::Time::Now() - base::TimeDelta::FromDays(param_value_as_int));
 }
 
-// static
-std::vector<std::string> OmniboxFieldTrial::GetZeroSuggestVariants(
-    OmniboxEventProto::PageClassification page_classification) {
-  if (!base::FeatureList::IsEnabled(omnibox::kNewSearchFeatures))
-    return {};
-
-  // Deprecated: Prefer to add a simple boolean flag that's checked directly
-  // in ZeroSuggestProvider instead of using this complicated mechanism.
-  //
-  // We check all these features for ZeroSuggestVariant because it's not
-  // possible to enable multiple features using Finch Forcing groups
-  // (omnibox::kOnFocusSuggestions as well as another feature). Therefore, in
-  // order to specify the ZeroSuggestVariant parameter in those groups we allow
-  // it to be associated with the feature that is being force enabled.
-  const base::Feature* features_to_check[] = {
-      // kOnFocusSuggestions must be the first checked feature, because it's
-      // used by about:flags to set a variety of ZeroSuggest parameters.
-      // We want it to be first so it overrides server-provided field trials.
-      &omnibox::kOnFocusSuggestions,
-
-      &omnibox::kZeroSuggestionsOnNTP,
-      &omnibox::kZeroSuggestionsOnNTPRealbox,
-      &omnibox::kZeroSuggestionsOnSERP,
-  };
-  for (const base::Feature* feature : features_to_check) {
-    // We check every feature on the list until we find one that matches
-    // |page_classification|, since GetValueForRuleInContextByFeature returns
-    // an empty string if no paramater matches |page_classification|.
-    //
-    // For instance, if we have:
-    //  kOnFocusSuggestions - ZeroSuggestVariant:7:* = RemoteNoUrl
-    //  kZeroSuggestionsOnNTPRealbox - ZeroSuggestVariant:15:* = RemoteSendUrl
-    //
-    // These can both simultaneously work, since they configure different
-    // page classifications. If one of them had a ZeroSuggestVariant:*:*
-    // wildcard rule, however, it would shadow all subsequent features.
-    auto parameter_value = internal::GetValueForRuleInContextByFeature(
-        *feature, kZeroSuggestVariantRule, page_classification);
-    if (!parameter_value.empty()) {
-      return base::SplitString(parameter_value, ",", base::TRIM_WHITESPACE,
-                               base::SPLIT_WANT_NONEMPTY);
-    }
-  }
-
-  return {};
-}
-
 bool OmniboxFieldTrial::ShortcutsScoringMaxRelevance(
     OmniboxEventProto::PageClassification current_page_classification,
     int* max_relevance) {
@@ -905,7 +858,6 @@ const char OmniboxFieldTrial::kHQPTypedValueRule[] = "HQPTypedValue";
 const char OmniboxFieldTrial::kHQPAllowMatchInTLDRule[] = "HQPAllowMatchInTLD";
 const char OmniboxFieldTrial::kHQPAllowMatchInSchemeRule[] =
     "HQPAllowMatchInScheme";
-const char OmniboxFieldTrial::kZeroSuggestVariantRule[] = "ZeroSuggestVariant";
 const char
     OmniboxFieldTrial::kMeasureSuggestPollingDelayFromLastKeystrokeRule[] =
         "MeasureSuggestPollingDelayFromLastKeystroke";

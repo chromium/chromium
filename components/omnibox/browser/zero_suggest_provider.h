@@ -41,13 +41,24 @@ class SimpleURLLoader;
 // omnibox text and suggestions.
 class ZeroSuggestProvider : public BaseSearchProvider {
  public:
-  // ZeroSuggestVariant field trial param values corresponding to each
-  // ZeroSuggestProvider::ResultType.
-  // Public for testing.
-  static const char kNoneVariant[];
-  static const char kRemoteNoUrlVariant[];
-  static const char kRemoteSendUrlVariant[];
-  static const char kMostVisitedVariant[];
+  // ZeroSuggestProvider is processing one of the following type of results
+  // at any time. Exposed as public for testing purposes.
+  enum ResultType {
+    NONE,
+
+    // A remote endpoint (usually the default search provider) is queried for
+    // suggestions. The endpoint is sent the user's authentication state, but
+    // not sent the current URL.
+    REMOTE_NO_URL,
+
+    // A remote endpoint (usually the default search provider) is queried for
+    // suggestions. The endpoint is sent the user's authentication state and
+    // the current URL.
+    REMOTE_SEND_URL,
+
+    // Gets the most visited sites from local history.
+    MOST_VISITED,
+  };
 
   // Creates and returns an instance of this provider.
   static ZeroSuggestProvider* Create(AutocompleteProviderClient* client,
@@ -83,6 +94,10 @@ class ZeroSuggestProvider : public BaseSearchProvider {
     return results_.hidden_group_ids;
   }
 
+  ResultType GetResultTypeRunningForTesting() const {
+    return result_type_running_;
+  }
+
  private:
   FRIEND_TEST_ALL_PREFIXES(ZeroSuggestProviderTest,
                            AllowZeroSuggestSuggestions);
@@ -98,25 +113,6 @@ class ZeroSuggestProvider : public BaseSearchProvider {
 
   ZeroSuggestProvider(const ZeroSuggestProvider&) = delete;
   ZeroSuggestProvider& operator=(const ZeroSuggestProvider&) = delete;
-
-  // ZeroSuggestProvider is processing one of the following type of results
-  // at any time.
-  enum ResultType {
-    NONE,
-
-    // A remote endpoint (usually the default search provider) is queried for
-    // suggestions. The endpoint is sent the user's authentication state, but
-    // not sent the current URL.
-    REMOTE_NO_URL,
-
-    // A remote endpoint (usually the default search provider) is queried for
-    // suggestions. The endpoint is sent the user's authentication state and
-    // the current URL.
-    REMOTE_SEND_URL,
-
-    // Gets the most visited sites from local history.
-    MOST_VISITED,
-  };
 
   // BaseSearchProvider:
   const TemplateURL* GetTemplateURL(bool is_keyword) const override;

@@ -21,11 +21,6 @@ class QueryResults;
 // history when Google is the default search engine.
 class LocalHistoryZeroSuggestProvider : public AutocompleteProvider {
  public:
-  // ZeroSuggestVariant field trial param value for the local history query
-  // suggestions.
-  // Public for testing.
-  static const char kZeroSuggestLocalVariant[];
-
   // Creates and returns an instance of this provider.
   static LocalHistoryZeroSuggestProvider* Create(
       AutocompleteProviderClient* client,

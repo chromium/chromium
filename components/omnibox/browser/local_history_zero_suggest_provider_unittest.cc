@@ -78,9 +78,9 @@ class LocalHistoryZeroSuggestProviderTest
         LocalHistoryZeroSuggestProvider::Create(client_.get(), this));
 
 #if defined(OS_IOS)  // Only needed for iOS.
-    SetZeroSuggestVariant(
-        metrics::OmniboxEventProto::NTP_REALBOX,
-        LocalHistoryZeroSuggestProvider::kZeroSuggestLocalVariant);
+    scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
+    scoped_feature_list_->InitAndEnableFeature(
+        omnibox::kReactiveZeroSuggestionsOnNTPRealbox);
 #endif
 
     // Add the fallback default search provider to the TemplateURLService so
@@ -105,11 +105,6 @@ class LocalHistoryZeroSuggestProviderTest
 
   // AutocompleteProviderListener
   void OnProviderUpdate(bool updated_matches) override;
-
-  // Configures the ZeroSuggestVariant field trial param with the given value
-  // for the given context.
-  void SetZeroSuggestVariant(PageClassification page_classification,
-                             std::string zero_suggest_variant_value);
 
   // Fills the URLDatabase with search URLs using the provided information.
   void LoadURLs(const std::vector<TestURLData>& url_data_list);
@@ -136,17 +131,6 @@ class LocalHistoryZeroSuggestProviderTest
   std::unique_ptr<FakeAutocompleteProviderClient> client_;
   scoped_refptr<LocalHistoryZeroSuggestProvider> provider_;
 };
-
-void LocalHistoryZeroSuggestProviderTest::SetZeroSuggestVariant(
-    PageClassification page_classification,
-    std::string zero_suggest_variant_value) {
-  scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
-  scoped_feature_list_->InitAndEnableFeatureWithParameters(
-      omnibox::kOnFocusSuggestions,
-      {{std::string(OmniboxFieldTrial::kZeroSuggestVariantRule) + ":" +
-            base::NumberToString(static_cast<int>(page_classification)) + ":*",
-        zero_suggest_variant_value}});
-}
 
 void LocalHistoryZeroSuggestProviderTest::LoadURLs(
     const std::vector<TestURLData>& url_data_list) {
@@ -281,15 +265,15 @@ TEST_F(LocalHistoryZeroSuggestProviderTest, Incognito) {
   ExpectMatches({{"hello world", 500}});
 }
 
-// Tests that suggestions are returned only if ZeroSuggestVariant is configured
+// Tests that suggestions are returned only if FeatureFlags is configured
 // to return local history suggestions in the NTP.
 #if defined(OS_IOS)
 // Flaky thread check failure: https://crbug.com/1071877
-#define MAYBE_ZeroSuggestVariant DISABLED_ZeroSuggestVariant
+#define MAYBE_FeatureFlags DISABLED_FeatureFlags
 #else
-#define MAYBE_ZeroSuggestVariant ZeroSuggestVariant
+#define MAYBE_FeatureFlags FeatureFlags
 #endif
-TEST_F(LocalHistoryZeroSuggestProviderTest, MAYBE_ZeroSuggestVariant) {
+TEST_F(LocalHistoryZeroSuggestProviderTest, MAYBE_FeatureFlags) {
   LoadURLs({
       {default_search_provider(), "hello world", "&foo=bar", 1},
   });
@@ -297,25 +281,6 @@ TEST_F(LocalHistoryZeroSuggestProviderTest, MAYBE_ZeroSuggestVariant) {
   // Verify that local history zero-prefix suggestions are enabled by default
   // on Desktop and Android NTP.
   scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
-  StartProviderAndWaitUntilDone();
-#if !defined(OS_IOS)  // Enabled by default on Desktop and Android NTP.
-  ExpectMatches({{"hello world", 500}});
-#else
-  ExpectMatches({});
-#endif
-
-  // Verify that local history zero-prefix suggestions are enabled on the NTP
-  // only.
-  SetZeroSuggestVariant(
-      metrics::OmniboxEventProto::OTHER,
-      LocalHistoryZeroSuggestProvider::kZeroSuggestLocalVariant);
-  StartProviderAndWaitUntilDone(
-      /*text=*/"", OmniboxFocusType::ON_FOCUS,
-      /*page_classification=*/metrics::OmniboxEventProto::OTHER);
-  ExpectMatches({});
-
-  SetZeroSuggestVariant(metrics::OmniboxEventProto::NTP_REALBOX,
-                        /*zero_suggest_variant_value=*/"blah");
   StartProviderAndWaitUntilDone();
 #if !defined(OS_IOS)  // Enabled by default on Desktop and Android NTP.
   ExpectMatches({{"hello world", 500}});
@@ -361,23 +326,6 @@ TEST_F(LocalHistoryZeroSuggestProviderTest, MAYBE_ZeroSuggestVariant) {
 #else
   ExpectMatches({});
 #endif
-
-  // Verify that configuring the ZeroSuggestVariant param with "local" for the
-  // NTP, enables local history zero-prefix suggestions for that context.
-  SetZeroSuggestVariant(
-      metrics::OmniboxEventProto::NTP_REALBOX,
-      LocalHistoryZeroSuggestProvider::kZeroSuggestLocalVariant);
-  StartProviderAndWaitUntilDone();
-  ExpectMatches({{"hello world", 500}});
-
-  SetZeroSuggestVariant(
-      metrics::OmniboxEventProto::INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS,
-      LocalHistoryZeroSuggestProvider::kZeroSuggestLocalVariant);
-  StartProviderAndWaitUntilDone(
-      /*text=*/"", OmniboxFocusType::ON_FOCUS,
-      /*page_classification=*/
-      metrics::OmniboxEventProto::INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS);
-  ExpectMatches({{"hello world", 500}});
 }
 
 // Tests that search terms are extracted from the default search provider's
