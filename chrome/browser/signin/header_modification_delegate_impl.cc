@@ -72,13 +72,26 @@ void HeaderModificationDelegateImpl::ProcessRequest(
     consent_level = ConsentLevel::kNotRequired;
 #endif
 
+  IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile_);
+  CoreAccountInfo account =
+      identity_manager->GetPrimaryAccountInfo(consent_level);
+  base::Optional<bool> is_child_account = base::nullopt;
+  if (!account.IsEmpty()) {
+    base::Optional<AccountInfo> extended_account_info =
+        identity_manager->FindExtendedAccountInfoForAccountWithRefreshToken(
+            account);
+    if (extended_account_info.has_value()) {
+      is_child_account = base::make_optional<bool>(
+          extended_account_info.value().is_child_account);
+    }
+  }
+
   FixAccountConsistencyRequestHeader(
       request_adapter, redirect_url, profile_->IsOffTheRecord(),
       prefs->GetInteger(prefs::kIncognitoModeAvailability),
       AccountConsistencyModeManager::GetMethodForProfile(profile_),
-      IdentityManagerFactory::GetForProfile(profile_)
-          ->GetPrimaryAccountInfo(consent_level)
-          .gaia,
+      account.gaia, is_child_account,
 #if defined(OS_CHROMEOS)
       is_secondary_account_addition_allowed,
 #endif

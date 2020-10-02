@@ -238,6 +238,7 @@ void AppendOrRemoveMirrorRequestHeader(
     RequestAdapter* request,
     const GURL& redirect_url,
     const std::string& gaia_id,
+    const base::Optional<bool>& is_child_account,
     AccountConsistencyMethod account_consistency,
     const content_settings::CookieSettings* cookie_settings,
     int profile_mode_mask,

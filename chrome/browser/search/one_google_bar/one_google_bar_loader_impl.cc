@@ -204,11 +204,16 @@ void OneGoogleBarLoaderImpl::AuthenticatedURLLoader::SetRequestHeaders(
     profile_mode = signin::PROFILE_MODE_INCOGNITO_DISABLED |
                    signin::PROFILE_MODE_ADD_ACCOUNT_DISABLED;
   }
+
+  // TODO(crbug.com/1134045): Check whether the child account status should also
+  // be sent in the Mirror request header when loading the local version of
+  // OneGoogleBar.
   std::string chrome_connected_header_value =
       chrome_connected_header_helper.BuildRequestHeader(
           /*is_header_request=*/true, api_url_,
           // Gaia ID is only needed for (drive|docs).google.com.
-          /*gaia_id=*/std::string(), profile_mode,
+          /*gaia_id=*/std::string(),
+          /* is_child_account=*/base::nullopt, profile_mode,
           signin::kChromeMirrorHeaderSource,
           /*force_account_consistency=*/false);
   if (!chrome_connected_header_value.empty()) {

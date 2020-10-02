@@ -84,14 +84,16 @@ class SigninHeaderHelperTest : public testing::Test {
               expected_request);
   }
 
-  net::HttpRequestHeaders CreateRequest(const GURL& url,
-                                        const std::string& account_id) {
+  net::HttpRequestHeaders CreateRequest(
+      const GURL& url,
+      const std::string& account_id,
+      const base::Optional<bool>& is_child_account) {
     net::HttpRequestHeaders original_headers;
     RequestAdapterWrapper request_adapter(url, original_headers);
     AppendOrRemoveMirrorRequestHeader(
-        request_adapter.adapter(), GURL(), account_id, account_consistency_,
-        cookie_settings_.get(), PROFILE_MODE_DEFAULT, kTestSource,
-        force_account_consistency_);
+        request_adapter.adapter(), GURL(), account_id, is_child_account,
+        account_consistency_, cookie_settings_.get(), PROFILE_MODE_DEFAULT,
+        kTestSource, force_account_consistency_);
     AppendOrRemoveDiceRequestHeader(
         request_adapter.adapter(), GURL(), account_id, sync_enabled_,
         account_consistency_, cookie_settings_.get(), device_id_);
@@ -113,8 +115,10 @@ class SigninHeaderHelperTest : public testing::Test {
 
   void CheckMirrorHeaderRequest(const GURL& url,
                                 const std::string& account_id,
+                                const base::Optional<bool>& is_child_account,
                                 const std::string& expected_request) {
-    net::HttpRequestHeaders headers = CreateRequest(url, account_id);
+    net::HttpRequestHeaders headers =
+        CreateRequest(url, account_id, is_child_account);
     CheckAccountConsistencyHeaderRequest(headers, kChromeConnectedHeader,
                                          expected_request);
   }
@@ -122,9 +126,11 @@ class SigninHeaderHelperTest : public testing::Test {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   void CheckDiceHeaderRequest(const GURL& url,
                               const std::string& account_id,
+                              const base::Optional<bool>& is_child_account,
                               const std::string& expected_mirror_request,
                               const std::string& expected_dice_request) {
-    net::HttpRequestHeaders headers = CreateRequest(url, account_id);
+    net::HttpRequestHeaders headers =
+        CreateRequest(url, account_id, is_child_account);
     CheckAccountConsistencyHeaderRequest(headers, kChromeConnectedHeader,
                                          expected_mirror_request);
     CheckAccountConsistencyHeaderRequest(headers, kDiceRequestHeader,
@@ -152,7 +158,7 @@ class SigninHeaderHelperTest : public testing::Test {
 TEST_F(SigninHeaderHelperTest, TestMirrorRequestNoAccountIdChromeOS) {
   account_consistency_ = AccountConsistencyMethod::kMirror;
   CheckMirrorHeaderRequest(
-      GURL("https://docs.google.com"), "",
+      GURL("https://docs.google.com"), "", /*is_child_account=*/base::nullopt,
       "source=TestSource,mode=0,enable_account_consistency=true,"
       "consistency_enabled_by_default=false");
   CheckMirrorCookieRequest(GURL("https://docs.google.com"), "",
@@ -170,6 +176,7 @@ TEST_F(SigninHeaderHelperTest, TestEligibleForConsistencyRequestGaiaOrigin) {
 
   account_consistency_ = AccountConsistencyMethod::kMirror;
   CheckMirrorHeaderRequest(GURL("https://accounts.google.com"), "",
+                           /*is_child_account=*/base::nullopt,
                            "source=TestSource,eligible_for_consistency=true");
   CheckMirrorCookieRequest(GURL("https://accounts.google.com"), "",
                            "eligible_for_consistency=true");
@@ -184,7 +191,8 @@ TEST_F(SigninHeaderHelperTest,
   feature_list.InitAndEnableFeature(kMobileIdentityConsistency);
 
   account_consistency_ = AccountConsistencyMethod::kMirror;
-  CheckMirrorHeaderRequest(GURL("https://docs.google.com"), "", "");
+  CheckMirrorHeaderRequest(GURL("https://docs.google.com"), "",
+                           /*is_child_account=*/base::nullopt, "");
   CheckMirrorCookieRequest(GURL("https://docs.google.com"), "", "");
 }
 
@@ -197,7 +205,7 @@ TEST_F(SigninHeaderHelperTest, TestForceAccountConsistencyMobile) {
   account_consistency_ = AccountConsistencyMethod::kMirror;
   force_account_consistency_ = true;
   CheckMirrorHeaderRequest(
-      GURL("https://docs.google.com"), "",
+      GURL("https://docs.google.com"), "", /*is_child_account=*/base::nullopt,
       "source=TestSource,mode=0,enable_account_consistency=true,"
       "consistency_enabled_by_default=false");
 }
@@ -207,7 +215,8 @@ TEST_F(SigninHeaderHelperTest, TestForceAccountConsistencyMobile) {
 // account id), for non Chrome OS platforms.
 TEST_F(SigninHeaderHelperTest, TestNoMirrorRequestNoAccountId) {
   account_consistency_ = AccountConsistencyMethod::kMirror;
-  CheckMirrorHeaderRequest(GURL("https://docs.google.com"), "", "");
+  CheckMirrorHeaderRequest(GURL("https://docs.google.com"), "",
+                           /*is_child_account=*/base::nullopt, "");
   CheckMirrorCookieRequest(GURL("https://docs.google.com"), "", "");
 }
 #endif
@@ -217,14 +226,16 @@ TEST_F(SigninHeaderHelperTest, TestNoMirrorRequestNoAccountId) {
 TEST_F(SigninHeaderHelperTest, TestNoMirrorRequestCookieSettingBlocked) {
   account_consistency_ = AccountConsistencyMethod::kMirror;
   cookie_settings_->SetDefaultCookieSetting(CONTENT_SETTING_BLOCK);
-  CheckMirrorHeaderRequest(GURL("https://docs.google.com"), "0123456789", "");
+  CheckMirrorHeaderRequest(GURL("https://docs.google.com"), "0123456789",
+                           /*is_child_account=*/base::nullopt, "");
   CheckMirrorCookieRequest(GURL("https://docs.google.com"), "0123456789", "");
 }
 
 // Tests that no Mirror request is returned when the target is a non-Google URL.
 TEST_F(SigninHeaderHelperTest, TestNoMirrorRequestExternalURL) {
   account_consistency_ = AccountConsistencyMethod::kMirror;
-  CheckMirrorHeaderRequest(GURL("https://foo.com"), "0123456789", "");
+  CheckMirrorHeaderRequest(GURL("https://foo.com"), "0123456789",
+                           /*is_child_account=*/base::nullopt, "");
   CheckMirrorCookieRequest(GURL("https://foo.com"), "0123456789", "");
 }
 
@@ -234,6 +245,7 @@ TEST_F(SigninHeaderHelperTest, TestMirrorRequestGoogleTLD) {
   account_consistency_ = AccountConsistencyMethod::kMirror;
   CheckMirrorHeaderRequest(
       GURL("https://google.fr"), "0123456789",
+      /*is_child_account=*/base::nullopt,
       "source=TestSource,mode=0,enable_account_consistency=true,"
       "consistency_enabled_by_default=false");
   CheckMirrorCookieRequest(GURL("https://google.de"), "0123456789",
@@ -247,6 +259,7 @@ TEST_F(SigninHeaderHelperTest, TestMirrorRequestGoogleCom) {
   account_consistency_ = AccountConsistencyMethod::kMirror;
   CheckMirrorHeaderRequest(
       GURL("https://www.google.com"), "0123456789",
+      /*is_child_account=*/base::nullopt,
       "source=TestSource,mode=0,enable_account_consistency=true,"
       "consistency_enabled_by_default=false");
   CheckMirrorCookieRequest(
@@ -261,7 +274,8 @@ TEST_F(SigninHeaderHelperTest, TestMirrorRequestGoogleComNoProfileConsistency) {
   RequestAdapterWrapper request_adapter(GURL("https://www.google.com"),
                                         original_headers);
   AppendOrRemoveMirrorRequestHeader(
-      request_adapter.adapter(), GURL(), "0123456789", account_consistency_,
+      request_adapter.adapter(), GURL(), "0123456789",
+      /*is_child_account=*/base::nullopt, account_consistency_,
       cookie_settings_.get(), PROFILE_MODE_DEFAULT, kTestSource,
       false /* force_account_consistency */);
   CheckAccountConsistencyHeaderRequest(request_adapter.GetFinalHeaders(),
@@ -275,13 +289,33 @@ TEST_F(SigninHeaderHelperTest, TestMirrorRequestGoogleComProfileConsistency) {
   RequestAdapterWrapper request_adapter(GURL("https://www.google.com"),
                                         original_headers);
   AppendOrRemoveMirrorRequestHeader(
-      request_adapter.adapter(), GURL(), "0123456789", account_consistency_,
+      request_adapter.adapter(), GURL(), "0123456789",
+      /*is_child_account=*/base::nullopt, account_consistency_,
       cookie_settings_.get(), PROFILE_MODE_DEFAULT, kTestSource,
       false /* force_account_consistency */);
   CheckAccountConsistencyHeaderRequest(
       request_adapter.GetFinalHeaders(), kChromeConnectedHeader,
       "source=TestSource,mode=0,enable_account_consistency=true,"
       "consistency_enabled_by_default=false");
+}
+
+TEST_F(SigninHeaderHelperTest, TestMirrorRequestGoogleComSupervised) {
+  account_consistency_ = AccountConsistencyMethod::kMirror;
+  CheckMirrorHeaderRequest(
+      GURL("https://www.google.com"), "0123456789",
+      /*is_child_account=*/base::nullopt,
+      "source=TestSource,mode=0,enable_account_consistency=true,"
+      "consistency_enabled_by_default=false");
+  CheckMirrorHeaderRequest(
+      GURL("https://www.google.com"), "0123456789",
+      /*is_child_account=*/base::Optional<bool>(true),
+      "source=TestSource,mode=0,enable_account_consistency=true,"
+      "supervised=true,consistency_enabled_by_default=false");
+  CheckMirrorHeaderRequest(
+      GURL("https://www.google.com"), "0123456789",
+      /*is_child_account=*/base::Optional<bool>(false),
+      "source=TestSource,mode=0,enable_account_consistency=true,"
+      "supervised=false,consistency_enabled_by_default=false");
 }
 
 // Mirror is always enabled on Android and iOS, so these tests are only relevant
@@ -293,6 +327,7 @@ TEST_F(SigninHeaderHelperTest, TestMirrorRequestGoogleComProfileConsistency) {
 TEST_F(SigninHeaderHelperTest, TestMirrorRequestGaiaURL) {
   CheckMirrorHeaderRequest(
       GURL("https://accounts.google.com"), "0123456789",
+      /*is_child_account=*/base::nullopt,
       "source=TestSource,mode=0,enable_account_consistency=false,"
       "consistency_enabled_by_default=false");
   CheckMirrorCookieRequest(
@@ -307,6 +342,7 @@ TEST_F(SigninHeaderHelperTest, TestDiceRequest) {
   // ChromeConnected but no Dice for Docs URLs.
   CheckDiceHeaderRequest(
       GURL("https://docs.google.com"), "0123456789",
+      /*is_child_account=*/base::nullopt,
       "source=TestSource,id=0123456789,mode=0,enable_account_consistency=false,"
       "consistency_enabled_by_default=false",
       "");
@@ -317,6 +353,7 @@ TEST_F(SigninHeaderHelperTest, TestDiceRequest) {
   ASSERT_FALSE(client_id.empty());
   CheckDiceHeaderRequest(
       GURL("https://accounts.google.com"), "0123456789",
+      /*is_child_account=*/base::nullopt,
       "source=TestSource,mode=0,enable_account_consistency=false,"
       "consistency_enabled_by_default=false",
       base::StringPrintf(
@@ -328,6 +365,7 @@ TEST_F(SigninHeaderHelperTest, TestDiceRequest) {
   sync_enabled_ = true;
   CheckDiceHeaderRequest(
       GURL("https://accounts.google.com"), "0123456789",
+      /*is_child_account=*/base::nullopt,
       "source=TestSource,mode=0,enable_account_consistency=false,"
       "consistency_enabled_by_default=false",
       base::StringPrintf("version=%s,client_id=%s,device_id=DeviceID,"
@@ -337,7 +375,8 @@ TEST_F(SigninHeaderHelperTest, TestDiceRequest) {
   sync_enabled_ = false;
 
   // No ChromeConnected and no Dice for other URLs.
-  CheckDiceHeaderRequest(GURL("https://www.google.com"), "0123456789", "", "");
+  CheckDiceHeaderRequest(GURL("https://www.google.com"), "0123456789",
+                         /*is_child_account=*/base::nullopt, "", "");
 }
 
 // When cookies are blocked, only the Dice header is sent.
@@ -348,7 +387,8 @@ TEST_F(SigninHeaderHelperTest, DiceCookiesBlocked) {
   std::string client_id = GaiaUrls::GetInstance()->oauth2_chrome_client_id();
   ASSERT_FALSE(client_id.empty());
   CheckDiceHeaderRequest(
-      GURL("https://accounts.google.com"), "0123456789", "",
+      GURL("https://accounts.google.com"), "0123456789",
+      /*is_child_account=*/base::nullopt, "",
       base::StringPrintf(
           "version=%s,client_id=%s,device_id=DeviceID,signin_mode=all_accounts,"
           "signout_mode=show_confirmation",
@@ -360,6 +400,7 @@ TEST_F(SigninHeaderHelperTest, TestNoDiceRequestWhenDisabled) {
   account_consistency_ = AccountConsistencyMethod::kMirror;
   CheckDiceHeaderRequest(
       GURL("https://accounts.google.com"), "0123456789",
+      /*is_child_account=*/base::nullopt,
       "source=TestSource,mode=0,enable_account_consistency=true,"
       "consistency_enabled_by_default=false",
       "");
@@ -374,6 +415,7 @@ TEST_F(SigninHeaderHelperTest, TestDiceEmptyDeviceID) {
 
   CheckDiceHeaderRequest(
       GURL("https://accounts.google.com"), "0123456789",
+      /*is_child_account=*/base::nullopt,
       "source=TestSource,mode=0,enable_account_consistency=false,"
       "consistency_enabled_by_default=false",
       base::StringPrintf("version=%s,client_id=%s,signin_mode=all_accounts,"
@@ -389,6 +431,7 @@ TEST_F(SigninHeaderHelperTest, TestSignoutConfirmation) {
 
   CheckDiceHeaderRequest(
       GURL("https://accounts.google.com"), "0123456789",
+      /*is_child_account=*/base::nullopt,
       "source=TestSource,mode=0,enable_account_consistency=false,"
       "consistency_enabled_by_default=false",
       base::StringPrintf(
@@ -402,6 +445,7 @@ TEST_F(SigninHeaderHelperTest, TestSignoutConfirmation) {
 TEST_F(SigninHeaderHelperTest, TestMirrorRequestDrive) {
   CheckMirrorHeaderRequest(
       GURL("https://docs.google.com/document"), "0123456789",
+      /*is_child_account=*/base::nullopt,
       "source=TestSource,id=0123456789,mode=0,enable_account_consistency=false,"
       "consistency_enabled_by_default=false");
   CheckMirrorCookieRequest(
@@ -413,6 +457,7 @@ TEST_F(SigninHeaderHelperTest, TestMirrorRequestDrive) {
   account_consistency_ = AccountConsistencyMethod::kMirror;
   CheckMirrorHeaderRequest(
       GURL("https://docs.google.com/document"), "0123456789",
+      /*is_child_account=*/base::nullopt,
       "source=TestSource,id=0123456789,mode=0,enable_account_consistency=true,"
       "consistency_enabled_by_default=false");
   CheckMirrorCookieRequest(
@@ -555,7 +600,8 @@ TEST_F(SigninHeaderHelperTest, TestMirrorHeaderEligibleRedirectURL) {
   net::HttpRequestHeaders original_headers;
   RequestAdapterWrapper request_adapter(url, original_headers);
   AppendOrRemoveMirrorRequestHeader(
-      request_adapter.adapter(), redirect_url, account_id, account_consistency_,
+      request_adapter.adapter(), redirect_url, account_id,
+      /*is_child_account=*/base::nullopt, account_consistency_,
       cookie_settings_.get(), PROFILE_MODE_DEFAULT, kTestSource,
       false /* force_account_consistency */);
   EXPECT_TRUE(
@@ -573,7 +619,8 @@ TEST_F(SigninHeaderHelperTest, TestMirrorHeaderNonEligibleRedirectURL) {
   original_headers.SetHeader(kChromeConnectedHeader, "foo,bar");
   RequestAdapterWrapper request_adapter(url, original_headers);
   AppendOrRemoveMirrorRequestHeader(
-      request_adapter.adapter(), redirect_url, account_id, account_consistency_,
+      request_adapter.adapter(), redirect_url, account_id,
+      /*is_child_account=*/base::nullopt, account_consistency_,
       cookie_settings_.get(), PROFILE_MODE_DEFAULT, kTestSource,
       false /* force_account_consistency */);
   EXPECT_FALSE(
@@ -592,7 +639,8 @@ TEST_F(SigninHeaderHelperTest, TestIgnoreMirrorHeaderNonEligibleURLs) {
   original_headers.SetHeader(kChromeConnectedHeader, fake_header);
   RequestAdapterWrapper request_adapter(url, original_headers);
   AppendOrRemoveMirrorRequestHeader(
-      request_adapter.adapter(), redirect_url, account_id, account_consistency_,
+      request_adapter.adapter(), redirect_url, account_id,
+      /*is_child_account=*/base::nullopt, account_consistency_,
       cookie_settings_.get(), PROFILE_MODE_DEFAULT, kTestSource,
       false /* force_account_consistency */);
   std::string header;

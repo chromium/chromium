@@ -141,8 +141,12 @@ void SigninURLLoaderThrottle::ProcessRequest(
   // Disable incognito and adding accounts for now. This shouldn't matter in
   // practice though since we are skipping the /SignOutOptions page completely
   // with the manage=true param.
+  //
+  // TODO(crbug.com/1134042): Check whether the child account status should also
+  // be sent in the Mirror request header from WebLayer.
   signin::AppendOrRemoveMirrorRequestHeader(
       &request_adapter, new_url, delegate->GetGaiaId(),
+      base::nullopt /* is_child_account */,
       signin::AccountConsistencyMethod::kMirror,
       CookieSettingsFactory::GetForBrowserContext(browser_context_).get(),
       signin::PROFILE_MODE_INCOGNITO_DISABLED |

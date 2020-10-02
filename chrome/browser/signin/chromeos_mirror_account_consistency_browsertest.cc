@@ -126,11 +126,16 @@ IN_PROC_BROWSER_TEST_F(ChromeOsMirrorAccountConsistencyTest,
   PrefService* prefs = profile->GetPrefs();
   prefs->SetInteger(prefs::kIncognitoModeAvailability,
                     IncognitoModePrefs::DISABLED);
-
   ASSERT_EQ(1, signin::PROFILE_MODE_INCOGNITO_DISABLED);
+
+  // TODO(http://crbug.com/1134144): This test seems to test supervised profiles
+  // instead of child accounts. With the current implementation,
+  // X-Chrome-Connected header gets a supervised=true argument only for child
+  // profiles. Verify if these tests needs to be updated to use child accounts
+  // or whether supervised profiles need to be supported as well.
   TestMirrorRequestForProfile(
       test_server_.get(), profile,
-      "source=Chrome,mode=1,enable_account_consistency=true,"
+      "source=Chrome,mode=1,enable_account_consistency=true,supervised=false,"
       "consistency_enabled_by_default=false");
 }
 
@@ -150,6 +155,6 @@ IN_PROC_BROWSER_TEST_F(ChromeOsMirrorAccountConsistencyTest,
       AccountConsistencyModeManager::IsMirrorEnabledForProfile(profile));
   TestMirrorRequestForProfile(
       test_server_.get(), profile,
-      "source=Chrome,mode=0,enable_account_consistency=true,"
+      "source=Chrome,mode=0,enable_account_consistency=true,supervised=false,"
       "consistency_enabled_by_default=false");
 }

@@ -167,6 +167,7 @@ void AppendOrRemoveMirrorRequestHeader(
     RequestAdapter* request,
     const GURL& redirect_url,
     const std::string& gaia_id,
+    const base::Optional<bool>& is_child_account,
     AccountConsistencyMethod account_consistency,
     const content_settings::CookieSettings* cookie_settings,
     int profile_mode_mask,
@@ -177,8 +178,8 @@ void AppendOrRemoveMirrorRequestHeader(
   std::string chrome_connected_header_value;
   if (chrome_connected_helper.ShouldBuildRequestHeader(url, cookie_settings)) {
     chrome_connected_header_value = chrome_connected_helper.BuildRequestHeader(
-        true /* is_header_request */, url, gaia_id, profile_mode_mask, source,
-        force_account_consistency);
+        true /* is_header_request */, url, gaia_id, is_child_account,
+        profile_mode_mask, source, force_account_consistency);
   }
   chrome_connected_helper.AppendOrRemoveRequestHeader(
       request, redirect_url, kChromeConnectedHeader,

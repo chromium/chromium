@@ -32,6 +32,7 @@ const char kIsSameTabAttrName[] = "is_same_tab";
 const char kIsSamlAttrName[] = "is_saml";
 const char kProfileModeAttrName[] = "mode";
 const char kServiceTypeAttrName[] = "action";
+const char kSupervisedAttrName[] = "supervised";
 const char kSourceAttrName[] = "source";
 #if defined(OS_ANDROID) || defined(OS_IOS)
 const char kEligibleForConsistency[] = "eligible_for_consistency";
@@ -70,9 +71,13 @@ std::string ChromeConnectedHeaderHelper::BuildRequestCookieIfPossible(
   ChromeConnectedHeaderHelper chrome_connected_helper(account_consistency);
   if (!chrome_connected_helper.ShouldBuildRequestHeader(url, cookie_settings))
     return "";
+
+  // Child accounts are not supported on iOS, so it is preferred to not include
+  // this information in the ChromeConnected cookie.
   return chrome_connected_helper.BuildRequestHeader(
-      false /* is_header_request */, url, gaia_id, profile_mode_mask,
-      "" /* source */, false /* force_account_consistency */);
+      false /* is_header_request */, url, gaia_id,
+      base::nullopt /* is_child_account */, profile_mode_mask, "" /* source */,
+      false /* force_account_consistency */);
 }
 
 // static
@@ -178,6 +183,7 @@ std::string ChromeConnectedHeaderHelper::BuildRequestHeader(
     bool is_header_request,
     const GURL& url,
     const std::string& gaia_id,
+    const base::Optional<bool>& is_child_account,
     int profile_mode_mask,
     const std::string& source,
     bool force_account_consistency) {
@@ -220,6 +226,11 @@ std::string ChromeConnectedHeaderHelper::BuildRequestHeader(
       account_consistency_ == AccountConsistencyMethod::kMirror;
   parts.push_back(base::StringPrintf("%s=%s", kEnableAccountConsistencyAttrName,
                                      is_mirror_enabled ? "true" : "false"));
+  if (is_child_account.has_value()) {
+    parts.push_back(
+        base::StringPrintf("%s=%s", kSupervisedAttrName,
+                           is_child_account.value() ? "true" : "false"));
+  }
   parts.push_back(base::StringPrintf(
       "%s=%s", kConsistencyEnabledByDefaultAttrName, "false"));
 
