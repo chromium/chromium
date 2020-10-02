@@ -154,6 +154,10 @@ public class DefaultBrowserPromoDeps {
         return false;
     }
 
+    ResolveInfo getDefaultWebBrowserActivityResolveInfo() {
+        return PackageManagerUtils.resolveDefaultWebBrowserActivity();
+    }
+
     int getSDKInt() {
         return Build.VERSION.SDK_INT;
     }

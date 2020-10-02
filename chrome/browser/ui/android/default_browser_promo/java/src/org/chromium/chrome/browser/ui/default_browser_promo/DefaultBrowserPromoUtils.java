@@ -13,7 +13,6 @@ import android.os.Build;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.PackageManagerUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -54,11 +53,6 @@ public class DefaultBrowserPromoUtils {
 
     private static final String DISAMBIGUATION_SHEET_PROMOED_KEY_PREFIX =
             "disambiguation_sheet_promoed.";
-    static final String CHROME_STABLE_PACKAGE_NAME = "com.android.chrome";
-
-    // TODO(crbug.com/1090103): move to some util class for reuse.
-    static final String[] CHROME_PACKAGE_NAMES = {CHROME_STABLE_PACKAGE_NAME, "org.chromium.chrome",
-            "com.chrome.canary", "com.chrome.beta", "com.chrome.dev"};
 
     /**
      * Determine whether a promo dialog should be displayed or not. And prepare related logic to
@@ -118,7 +112,11 @@ public class DefaultBrowserPromoUtils {
             return DefaultBrowserPromoAction.NO_ACTION;
         }
 
-        ResolveInfo info = PackageManagerUtils.resolveDefaultWebBrowserActivity();
+        ResolveInfo info = deps.getDefaultWebBrowserActivityResolveInfo();
+        if (info == null) {
+            return DefaultBrowserPromoAction.NO_ACTION;
+        }
+
         int state = deps.getCurrentDefaultBrowserState(info);
         int action = DefaultBrowserPromoAction.NO_ACTION;
         if (state == DefaultBrowserState.CHROME_DEFAULT) {
