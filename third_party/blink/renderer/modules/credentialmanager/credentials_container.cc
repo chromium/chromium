@@ -536,10 +536,12 @@ void OnSmsReceive(ScriptPromiseResolver* resolver,
   ukm::SourceId source_id = window.UkmSourceID();
   ukm::UkmRecorder* recorder = window.UkmRecorder();
 
-  if (status == mojom::blink::SmsStatus::kTimeout) {
-    RecordSmsOutcome(SMSReceiverOutcome::kTimeout, source_id, recorder);
+  if (status == mojom::blink::SmsStatus::kUnhandledRequest) {
+    RecordSmsOutcome(SMSReceiverOutcome::kUnhandledRequest, source_id,
+                     recorder);
     resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kTimeoutError, "OTP retrieval timed out."));
+        DOMExceptionCode::kInvalidStateError,
+        "OTP retrieval request not handled."));
     return;
   } else if (status == mojom::blink::SmsStatus::kAborted) {
     RecordSmsOutcome(SMSReceiverOutcome::kAborted, source_id, recorder);
