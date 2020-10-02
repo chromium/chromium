@@ -206,8 +206,10 @@ class CORE_EXPORT NGBlockNode final : public NGLayoutInputNode {
       const NGConstraintSpace&,
       const NGLayoutResult&,
       const NGBlockBreakToken* previous_break_token) const;
-  void CopyFragmentItemsToLayoutBox(const NGPhysicalBoxFragment& container,
-                                    const NGFragmentItems& items) const;
+  void CopyFragmentItemsToLayoutBox(
+      const NGPhysicalBoxFragment& container,
+      const NGFragmentItems& items,
+      const NGBlockBreakToken* previous_break_token) const;
   void CopyFragmentDataToLayoutBoxForInlineChildren(
       const NGPhysicalContainerFragment& container,
       LayoutUnit initial_container_width,

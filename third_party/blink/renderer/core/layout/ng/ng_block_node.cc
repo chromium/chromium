@@ -717,7 +717,7 @@ void NGBlockNode::FinishLayout(
             Style().IsFlippedBlocksWritingMode());
         block_flow->SetPaintFragment(break_token, &physical_fragment);
       } else if (items) {
-        CopyFragmentItemsToLayoutBox(physical_fragment, *items);
+        CopyFragmentItemsToLayoutBox(physical_fragment, *items, break_token);
       }
     } else {
       // We still need to clear paint fragments in case it had inline children,
@@ -1204,7 +1204,7 @@ void NGBlockNode::PlaceChildrenInFlowThread(
     // (but rather inside fragment items). Make sure that they get positioned,
     // too.
     if (const NGFragmentItems* items = column->Items())
-      CopyFragmentItemsToLayoutBox(*column, *items);
+      CopyFragmentItemsToLayoutBox(*column, *items, previous_break_token);
 
     previous_break_token = To<NGBlockBreakToken>(column->BreakToken());
   }
@@ -1298,9 +1298,13 @@ void NGBlockNode::CopyFragmentDataToLayoutBoxForInlineChildren(
 
 void NGBlockNode::CopyFragmentItemsToLayoutBox(
     const NGPhysicalBoxFragment& container,
-    const NGFragmentItems& items) const {
+    const NGFragmentItems& items,
+    const NGBlockBreakToken* previous_break_token) const {
   DCHECK(RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled());
 
+  LayoutUnit previously_consumed_block_size;
+  if (previous_break_token)
+    previously_consumed_block_size = previous_break_token->ConsumedBlockSize();
   bool initial_container_is_flipped = Style().IsFlippedBlocksWritingMode();
   for (NGInlineCursor cursor(items); cursor; cursor.MoveToNext()) {
     if (const NGPhysicalBoxFragment* child = cursor.Current().BoxFragment()) {
@@ -1317,6 +1321,10 @@ void NGBlockNode::CopyFragmentItemsToLayoutBox(
                                       child->Size().width -
                                       maybe_flipped_offset.left;
         }
+        if (container.Style().IsHorizontalWritingMode())
+          maybe_flipped_offset.top += previously_consumed_block_size;
+        else
+          maybe_flipped_offset.left += previously_consumed_block_size;
         layout_box->SetLocationAndUpdateOverflowControlsIfNeeded(
             maybe_flipped_offset.ToLayoutPoint());
         if (UNLIKELY(layout_box->HasSelfPaintingLayer()))
