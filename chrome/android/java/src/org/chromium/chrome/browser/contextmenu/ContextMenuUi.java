@@ -39,4 +39,9 @@ public interface ContextMenuUi {
     void displayMenu(WindowAndroid window, WebContents webContents, ContextMenuParams params,
             List<Pair<Integer, ModelList>> items, Callback<Integer> onItemClicked,
             Runnable onMenuShown, Callback<Boolean> onMenuClosed);
+
+    /**
+     * Dismiss the context menu.
+     */
+    void dismiss();
 }

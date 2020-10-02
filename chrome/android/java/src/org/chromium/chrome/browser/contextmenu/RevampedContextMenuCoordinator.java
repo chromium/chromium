@@ -89,6 +89,11 @@ public class RevampedContextMenuCoordinator implements ContextMenuUi {
                 onMenuClosed, /* lensAsyncManager=*/null);
     }
 
+    @Override
+    public void dismiss() {
+        dismissDialog();
+    }
+
     // Shows the Context Menu in Chrome with the lens chip (if supported).
     void displayMenuWithLensChip(final WindowAndroid window, WebContents webContents,
             ContextMenuParams params, List<Pair<Integer, ModelList>> items,

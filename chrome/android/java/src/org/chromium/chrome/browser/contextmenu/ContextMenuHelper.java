@@ -40,6 +40,7 @@ public class ContextMenuHelper {
     private ContextMenuPopulator mCurrentPopulator;
     private ContextMenuPopulatorFactory mPopulatorFactory;
     private ContextMenuParams mCurrentContextMenuParams;
+    private ContextMenuUi mCurrentContextMenu;
     private WindowAndroid mWindow;
     private Callback<Integer> mCallback;
     private Runnable mOnMenuShown;
@@ -59,6 +60,10 @@ public class ContextMenuHelper {
 
     @CalledByNative
     private void destroy() {
+        if (mCurrentContextMenu != null) {
+            mCurrentContextMenu.dismiss();
+            mCurrentContextMenu = null;
+        }
         if (mCurrentPopulator != null) mCurrentPopulator.onDestroy();
         if (mPopulatorFactory != null) mPopulatorFactory.onDestroy();
         mNativeContextMenuHelper = 0;
@@ -66,6 +71,10 @@ public class ContextMenuHelper {
 
     @CalledByNative
     private void setPopulatorFactory(ContextMenuPopulatorFactory populatorFactory) {
+        if (mCurrentContextMenu != null) {
+            mCurrentContextMenu.dismiss();
+            mCurrentContextMenu = null;
+        }
         if (mCurrentPopulator != null) mCurrentPopulator.onDestroy();
         mCurrentPopulator = null;
         if (mPopulatorFactory != null) mPopulatorFactory.onDestroy();
@@ -112,6 +121,7 @@ public class ContextMenuHelper {
         };
         mOnMenuClosed = (notAbandoned) -> {
             recordTimeToTakeActionHistogram(mSelectedItemBeforeDismiss || notAbandoned);
+            mCurrentContextMenu = null;
             mCurrentPopulator.onMenuClosed();
             if (LensUtils.enableShoppyImageMenuItem()
                     || LensUtils.enableImageChip(mCurrentPopulator.isIncognito())) {
@@ -151,6 +161,7 @@ public class ContextMenuHelper {
 
         final RevampedContextMenuCoordinator menuCoordinator = new RevampedContextMenuCoordinator(
                 topContentOffsetPx, () -> shareImageWithLastShareComponent());
+        mCurrentContextMenu = menuCoordinator;
 
         if (LensUtils.enableImageChip(mCurrentPopulator.isIncognito())) {
             LensAsyncManager lensAsyncManager =
