@@ -34,7 +34,7 @@ void SecurePaymentConfirmationController::ShowDialog() {
   NOTREACHED();
 #endif  // OS_ANDROID
 
-  if (!request_ || request_->spec())
+  if (!request_ || !request_->spec())
     return;
 
   if (!request_->state()->IsInitialized()) {
