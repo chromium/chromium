@@ -554,6 +554,11 @@ class CORE_EXPORT WebFrameWidgetBase
   virtual void ApplyVisualPropertiesSizing(
       const VisualProperties& visual_properties) = 0;
 
+  // Calculates the selection bounds in the root frame. Returns bounds unchanged
+  // when there is no focused frame or no selection.
+  virtual void CalculateSelectionBounds(gfx::Rect& anchor_in_root_frame,
+                                        gfx::Rect& focus_in_root_frame) = 0;
+
   // Update the surface allocation information, compositor viewport rect and
   // screen info on the widget.
   void UpdateSurfaceAndScreenInfo(

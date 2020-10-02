@@ -1870,11 +1870,10 @@ TEST_F(WebViewTest, IsSelectionAnchorFirst) {
   web_view->MainFrameImpl()->GetFrame()->SetInitialFocus(false);
   frame->SetEditableSelectionOffsets(4, 10);
   EXPECT_TRUE(frame->IsSelectionAnchorFirst());
-  WebRect anchor;
-  WebRect focus;
-  web_view->MainFrameWidget()->SelectionBounds(anchor, focus);
-  frame->SelectRange(gfx::Point(focus.x, focus.y),
-                     gfx::Point(anchor.x, anchor.y));
+  gfx::Rect anchor;
+  gfx::Rect focus;
+  web_view->MainFrameViewWidget()->CalculateSelectionBounds(anchor, focus);
+  frame->SelectRange(focus.origin(), anchor.origin());
   EXPECT_FALSE(frame->IsSelectionAnchorFirst());
 }
 

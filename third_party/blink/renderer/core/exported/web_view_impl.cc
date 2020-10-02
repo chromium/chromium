@@ -2535,30 +2535,6 @@ void WebViewImpl::SetFocus(bool enable) {
   }
 }
 
-bool WebViewImpl::SelectionBounds(WebRect& anchor_web,
-                                  WebRect& focus_web) const {
-  const Frame* frame = FocusedCoreFrame();
-  const auto* local_frame = DynamicTo<LocalFrame>(frame);
-  if (!local_frame)
-    return false;
-
-  LocalFrameView* frame_view = local_frame->View();
-  if (!frame_view)
-    return false;
-
-  IntRect anchor;
-  IntRect focus;
-  if (!local_frame->Selection().ComputeAbsoluteBounds(anchor, focus))
-    return false;
-
-  VisualViewport& visual_viewport = GetPage()->GetVisualViewport();
-  anchor_web = visual_viewport.RootFrameToViewport(
-      frame_view->ConvertToRootFrame(anchor));
-  focus_web = visual_viewport.RootFrameToViewport(
-      frame_view->ConvertToRootFrame(focus));
-  return true;
-}
-
 // WebView --------------------------------------------------------------------
 
 WebSettingsImpl* WebViewImpl::SettingsImpl() {

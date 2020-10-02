@@ -68,7 +68,6 @@ class CORE_EXPORT WebViewFrameWidget : public WebFrameWidgetBase {
   WebInputEventResult DispatchBufferedTouchEvents() override;
   void SetCursorVisibilityState(bool is_visible) override;
   void MouseCaptureLost() override;
-  bool SelectionBounds(WebRect& anchor, WebRect& focus) const override;
   WebURL GetURLForDebugTrace() override;
   WebString GetLastToolTipTextForTesting() const override;
 
@@ -103,6 +102,7 @@ class CORE_EXPORT WebViewFrameWidget : public WebFrameWidgetBase {
   const ScreenInfo& GetOriginalScreenInfo() override;
   void ApplyVisualPropertiesSizing(
       const VisualProperties& visual_properties) override;
+  void CalculateSelectionBounds(gfx::Rect& anchor, gfx::Rect& focus) override;
 
   // FrameWidget overrides:
   void SetRootLayer(scoped_refptr<cc::Layer>) override;

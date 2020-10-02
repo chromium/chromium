@@ -897,17 +897,17 @@ TEST_P(VisualViewportTest, TestTextSelectionHandles) {
   VisualViewport& visual_viewport = GetFrame()->GetPage()->GetVisualViewport();
   To<LocalFrame>(WebView()->GetPage()->MainFrame())->SetInitialFocus(false);
 
-  WebRect original_anchor;
-  WebRect original_focus;
-  WebView()->MainFrameViewWidget()->SelectionBounds(original_anchor,
-                                                    original_focus);
+  gfx::Rect original_anchor;
+  gfx::Rect original_focus;
+  WebView()->MainFrameViewWidget()->CalculateSelectionBounds(original_anchor,
+                                                             original_focus);
 
   WebView()->SetPageScaleFactor(2);
   visual_viewport.SetLocation(FloatPoint(100, 400));
 
-  WebRect anchor;
-  WebRect focus;
-  WebView()->MainFrameViewWidget()->SelectionBounds(anchor, focus);
+  gfx::Rect anchor;
+  gfx::Rect focus;
+  WebView()->MainFrameViewWidget()->CalculateSelectionBounds(anchor, focus);
 
   IntPoint expected(IntRect(original_anchor).Location());
   expected.MoveBy(-FlooredIntPoint(visual_viewport.VisibleRect().Location()));
@@ -1069,29 +1069,30 @@ TEST_P(VisualViewportTest,
   RegisterMockedHttpURLLoad("move_range.html");
   NavigateTo(base_url_ + "move_range.html");
 
-  WebRect base_rect;
-  WebRect extent_rect;
+  gfx::Rect base_rect;
+  gfx::Rect extent_rect;
 
   WebView()->SetPageScaleFactor(2);
-  WebLocalFrame* mainFrame = WebView()->MainFrameImpl();
+  WebLocalFrame* main_frame = WebView()->MainFrameImpl();
 
   // Select some text and get the base and extent rects (that's the start of
   // the range and its end). Do a sanity check that the expected text is
   // selected
-  mainFrame->ExecuteScript(WebScriptSource("selectRange();"));
-  EXPECT_EQ("ir", mainFrame->SelectionAsText().Utf8());
+  main_frame->ExecuteScript(WebScriptSource("selectRange();"));
+  EXPECT_EQ("ir", main_frame->SelectionAsText().Utf8());
 
-  WebView()->MainFrameViewWidget()->SelectionBounds(base_rect, extent_rect);
-  gfx::Point initialPoint(base_rect.x, base_rect.y);
-  gfx::Point endPoint(extent_rect.x, extent_rect.y);
+  WebView()->MainFrameViewWidget()->CalculateSelectionBounds(base_rect,
+                                                             extent_rect);
+  gfx::Point initial_point = base_rect.origin();
+  gfx::Point end_point = extent_rect.origin();
 
   // Move the visual viewport over and make the selection in the same
   // screen-space location. The selection should change to two characters to the
   // right and down one line.
   VisualViewport& visual_viewport = GetFrame()->GetPage()->GetVisualViewport();
   visual_viewport.Move(ScrollOffset(60, 25));
-  mainFrame->MoveRangeSelection(initialPoint, endPoint);
-  EXPECT_EQ("t ", mainFrame->SelectionAsText().Utf8());
+  main_frame->MoveRangeSelection(initial_point, end_point);
+  EXPECT_EQ("t ", main_frame->SelectionAsText().Utf8());
 }
 
 // Test that resizing the WebView causes ViewportConstrained objects to

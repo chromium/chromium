@@ -440,12 +440,12 @@ class WebFrameTest : public testing::Test {
       IntRect& element_bounds,
       IntRect& caret_bounds) {
     Element* element = helper.GetWebView()->FocusedElement();
-    WebRect caret_in_viewport, unused;
-    helper.GetWebView()->MainFrameWidget()->SelectionBounds(caret_in_viewport,
-                                                            unused);
+    gfx::Rect caret_in_viewport, unused;
+    helper.GetWebView()->MainFrameViewWidget()->CalculateSelectionBounds(
+        caret_in_viewport, unused);
     caret_bounds =
         helper.GetWebView()->GetPage()->GetVisualViewport().ViewportToRootFrame(
-            caret_in_viewport);
+            IntRect(caret_in_viewport));
     element_bounds = element->GetDocument().View()->ConvertToRootFrame(
         PixelSnappedIntRect(element->Node::BoundingBox()));
   }
@@ -3881,11 +3881,12 @@ TEST_F(WebFrameTest, DivScrollIntoEditableTest) {
       .To<WebInputElement>()
       .SetSelectionRange(1000, 1000);
   SetScaleAndScrollAndLayout(web_view_helper.GetWebView(), gfx::Point(), 1);
-  WebRect rect, caret;
-  web_view_helper.GetWebView()->SelectionBounds(caret, rect);
+  gfx::Rect rect, caret;
+  web_view_helper.GetWebView()->MainFrameViewWidget()->CalculateSelectionBounds(
+      caret, rect);
 
   // Set the page scale to be smaller than the minimal readable scale.
-  float initial_scale = min_readable_caret_height / caret.height * 0.5f;
+  float initial_scale = min_readable_caret_height / caret.height() * 0.5f;
   SetScaleAndScrollAndLayout(web_view_helper.GetWebView(), gfx::Point(),
                              initial_scale);
 
@@ -3905,7 +3906,7 @@ TEST_F(WebFrameTest, DivScrollIntoEditableTest) {
   int v_scroll = edit_box_with_text.y -
                  (viewport_height / scale - edit_box_with_text.height) / 2;
   EXPECT_NEAR(v_scroll, scroll.Y(), 2);
-  EXPECT_NEAR(min_readable_caret_height / caret.height, scale, 0.1);
+  EXPECT_NEAR(min_readable_caret_height / caret.height(), scale, 0.1);
 
   // The edit box is wider than the viewport when legible.
   viewport_width = 200;
@@ -3921,9 +3922,9 @@ TEST_F(WebFrameTest, DivScrollIntoEditableTest) {
   EXPECT_TRUE(need_animation);
   // The caret should be right aligned since the caret would be offscreen when
   // the edit box is left aligned.
-  h_scroll = caret.x + caret.width + caret_padding - viewport_width / scale;
+  h_scroll = caret.x() + caret.width() + caret_padding - viewport_width / scale;
   EXPECT_NEAR(h_scroll, scroll.X(), 2);
-  EXPECT_NEAR(min_readable_caret_height / caret.height, scale, 0.1);
+  EXPECT_NEAR(min_readable_caret_height / caret.height(), scale, 0.1);
 
   SetScaleAndScrollAndLayout(web_view_helper.GetWebView(), gfx::Point(),
                              initial_scale);
@@ -3941,7 +3942,7 @@ TEST_F(WebFrameTest, DivScrollIntoEditableTest) {
   v_scroll = edit_box_with_no_text.y -
              (viewport_height / scale - edit_box_with_no_text.height) / 2;
   EXPECT_NEAR(v_scroll, scroll.Y(), 2);
-  EXPECT_NEAR(min_readable_caret_height / caret.height, scale, 0.1);
+  EXPECT_NEAR(min_readable_caret_height / caret.height(), scale, 0.1);
 
   // Move focus back to the first edit box.
   web_view_helper.GetWebView()->AdvanceFocus(true);
@@ -3989,11 +3990,12 @@ TEST_F(WebFrameTest, DivScrollIntoEditablePreservePageScaleTest) {
       .To<WebInputElement>()
       .SetSelectionRange(0, 0);
   SetScaleAndScrollAndLayout(web_view_helper.GetWebView(), gfx::Point(), 1);
-  WebRect rect, caret;
-  web_view_helper.GetWebView()->SelectionBounds(caret, rect);
+  gfx::Rect rect, caret;
+  web_view_helper.GetWebView()->MainFrameViewWidget()->CalculateSelectionBounds(
+      caret, rect);
 
   // Set the page scale to be twice as large as the minimal readable scale.
-  float new_scale = kMinReadableCaretHeight / caret.height * 2.0;
+  float new_scale = kMinReadableCaretHeight / caret.height() * 2.0;
   SetScaleAndScrollAndLayout(web_view_helper.GetWebView(), gfx::Point(),
                              new_scale);
 
@@ -4099,8 +4101,9 @@ TEST_F(WebFrameTest, DivScrollIntoEditableTestZoomToLegibleScaleDisabled) {
 
   // Select the first textbox.
   web_view_helper.GetWebView()->AdvanceFocus(true);
-  WebRect rect, caret;
-  web_view_helper.GetWebView()->SelectionBounds(caret, rect);
+  gfx::Rect rect, caret;
+  web_view_helper.GetWebView()->MainFrameViewWidget()->CalculateSelectionBounds(
+      caret, rect);
   GetElementAndCaretBoundsForFocusedEditableElement(
       web_view_helper, element_bounds, caret_bounds);
   web_view_helper.GetWebView()->ComputeScaleAndScrollForEditableElementRects(
@@ -5415,22 +5418,20 @@ TEST_F(WebFrameTest, FindInPageForcedRedoOfFindInPage) {
   EXPECT_EQ(2, find_in_page_client.ActiveIndex());
 }
 
-static gfx::Point TopLeft(const WebRect& rect) {
-  return gfx::Point(rect.x, rect.y);
-}
-
-static gfx::Point BottomRightMinusOne(const WebRect& rect) {
+static gfx::Point BottomRightMinusOne(const gfx::Rect& rect) {
   // FIXME: If we don't subtract 1 from the x- and y-coordinates of the
   // selection bounds, selectRange() will select the *next* element. That's
   // strictly correct, as hit-testing checks the pixel to the lower-right of
   // the input coordinate, but it's a wart on the API.
-  if (rect.width > 0)
-    return gfx::Point(rect.x + rect.width - 1, rect.y + rect.height - 1);
-  return gfx::Point(rect.x + rect.width, rect.y + rect.height - 1);
+  if (rect.width() > 0) {
+    return gfx::Point(rect.x() + rect.width() - 1,
+                      rect.y() + rect.height() - 1);
+  }
+  return gfx::Point(rect.x() + rect.width(), rect.y() + rect.height() - 1);
 }
 
-static WebRect ElementBounds(WebLocalFrame* frame, const WebString& id) {
-  return frame->GetDocument().GetElementById(id).BoundsInViewport();
+static gfx::Rect ElementBounds(WebLocalFrame* frame, const WebString& id) {
+  return gfx::Rect(frame->GetDocument().GetElementById(id).BoundsInViewport());
 }
 
 static std::string SelectionAsString(WebFrame* frame) {
@@ -5439,8 +5440,8 @@ static std::string SelectionAsString(WebFrame* frame) {
 
 TEST_F(WebFrameTest, SelectRange) {
   WebLocalFrame* frame;
-  WebRect start_web_rect;
-  WebRect end_web_rect;
+  gfx::Rect start_rect;
+  gfx::Rect end_rect;
 
   RegisterMockedHttpURLLoad("select_range_basic.html");
   RegisterMockedHttpURLLoad("select_range_scroll.html");
@@ -5450,12 +5451,11 @@ TEST_F(WebFrameTest, SelectRange) {
                                  &web_view_helper);
   frame = web_view_helper.LocalMainFrame();
   EXPECT_EQ("Some test text for testing.", SelectionAsString(frame));
-  web_view_helper.GetWebView()->MainFrameWidget()->SelectionBounds(
-      start_web_rect, end_web_rect);
+  web_view_helper.GetWebView()->MainFrameViewWidget()->CalculateSelectionBounds(
+      start_rect, end_rect);
   frame->ExecuteCommand(WebString::FromUTF8("Unselect"));
   EXPECT_EQ("", SelectionAsString(frame));
-  frame->SelectRange(TopLeft(start_web_rect),
-                     BottomRightMinusOne(end_web_rect));
+  frame->SelectRange(start_rect.origin(), BottomRightMinusOne(end_rect));
   // On some devices, the above bottomRightMinusOne() causes the ending '.' not
   // selected.
   std::string selection_string = SelectionAsString(frame);
@@ -5466,12 +5466,11 @@ TEST_F(WebFrameTest, SelectRange) {
                                  &web_view_helper);
   frame = web_view_helper.LocalMainFrame();
   EXPECT_EQ("Some offscreen test text for testing.", SelectionAsString(frame));
-  web_view_helper.GetWebView()->MainFrameWidget()->SelectionBounds(
-      start_web_rect, end_web_rect);
+  web_view_helper.GetWebView()->MainFrameViewWidget()->CalculateSelectionBounds(
+      start_rect, end_rect);
   frame->ExecuteCommand(WebString::FromUTF8("Unselect"));
   EXPECT_EQ("", SelectionAsString(frame));
-  frame->SelectRange(TopLeft(start_web_rect),
-                     BottomRightMinusOne(end_web_rect));
+  frame->SelectRange(start_rect.origin(), BottomRightMinusOne(end_rect));
   // On some devices, the above bottomRightMinusOne() causes the ending '.' not
   // selected.
   selection_string = SelectionAsString(frame);
@@ -5552,8 +5551,8 @@ TEST_F(WebFrameTest, SelectRangePreserveHandleVisibility) {
 
 TEST_F(WebFrameTest, SelectRangeInIframe) {
   WebFrame* frame;
-  WebRect start_web_rect;
-  WebRect end_web_rect;
+  gfx::Rect start_rect;
+  gfx::Rect end_rect;
 
   RegisterMockedHttpURLLoad("select_range_iframe.html");
   RegisterMockedHttpURLLoad("select_range_basic.html");
@@ -5564,12 +5563,11 @@ TEST_F(WebFrameTest, SelectRangeInIframe) {
   frame = web_view_helper.GetWebView()->MainFrame();
   WebLocalFrame* subframe = frame->FirstChild()->ToWebLocalFrame();
   EXPECT_EQ("Some test text for testing.", SelectionAsString(subframe));
-  web_view_helper.GetWebView()->MainFrameWidget()->SelectionBounds(
-      start_web_rect, end_web_rect);
+  web_view_helper.GetWebView()->MainFrameViewWidget()->CalculateSelectionBounds(
+      start_rect, end_rect);
   subframe->ExecuteCommand(WebString::FromUTF8("Unselect"));
   EXPECT_EQ("", SelectionAsString(subframe));
-  subframe->SelectRange(TopLeft(start_web_rect),
-                        BottomRightMinusOne(end_web_rect));
+  subframe->SelectRange(start_rect.origin(), BottomRightMinusOne(end_rect));
   // On some devices, the above bottomRightMinusOne() causes the ending '.' not
   // selected.
   std::string selection_string = SelectionAsString(subframe);
@@ -5579,8 +5577,8 @@ TEST_F(WebFrameTest, SelectRangeInIframe) {
 
 TEST_F(WebFrameTest, SelectRangeDivContentEditable) {
   WebLocalFrame* frame;
-  WebRect start_web_rect;
-  WebRect end_web_rect;
+  gfx::Rect start_rect;
+  gfx::Rect end_rect;
 
   RegisterMockedHttpURLLoad("select_range_div_editable.html");
 
@@ -5592,10 +5590,10 @@ TEST_F(WebFrameTest, SelectRangeDivContentEditable) {
                                  &web_view_helper);
   frame = web_view_helper.LocalMainFrame();
   EXPECT_EQ("This text is initially selected.", SelectionAsString(frame));
-  web_view_helper.GetWebView()->MainFrameWidget()->SelectionBounds(
-      start_web_rect, end_web_rect);
+  web_view_helper.GetWebView()->MainFrameViewWidget()->CalculateSelectionBounds(
+      start_rect, end_rect);
 
-  frame->SelectRange(BottomRightMinusOne(end_web_rect), gfx::Point());
+  frame->SelectRange(BottomRightMinusOne(end_rect), gfx::Point());
   EXPECT_EQ("16-char header. This text is initially selected.",
             SelectionAsString(frame));
 
@@ -5604,17 +5602,16 @@ TEST_F(WebFrameTest, SelectRangeDivContentEditable) {
                                  &web_view_helper);
   frame = web_view_helper.LocalMainFrame();
 
-  web_view_helper.GetWebView()->MainFrameWidget()->SelectionBounds(
-      start_web_rect, end_web_rect);
-  frame->SelectRange(TopLeft(start_web_rect),
-                     BottomRightMinusOne(end_web_rect));
+  web_view_helper.GetWebView()->MainFrameViewWidget()->CalculateSelectionBounds(
+      start_rect, end_rect);
+  frame->SelectRange(start_rect.origin(), BottomRightMinusOne(end_rect));
   EXPECT_EQ("This text is initially selected.", SelectionAsString(frame));
-  web_view_helper.GetWebView()->MainFrameWidget()->SelectionBounds(
-      start_web_rect, end_web_rect);
+  web_view_helper.GetWebView()->MainFrameViewWidget()->CalculateSelectionBounds(
+      start_rect, end_rect);
 
-  web_view_helper.GetWebView()->MainFrameWidget()->SelectionBounds(
-      start_web_rect, end_web_rect);
-  frame->SelectRange(TopLeft(start_web_rect), gfx::Point(640, 480));
+  web_view_helper.GetWebView()->MainFrameViewWidget()->CalculateSelectionBounds(
+      start_rect, end_rect);
+  frame->SelectRange(start_rect.origin(), gfx::Point(640, 480));
   EXPECT_EQ("This text is initially selected. 16-char footer.",
             SelectionAsString(frame));
 }
@@ -5623,8 +5620,8 @@ TEST_F(WebFrameTest, SelectRangeDivContentEditable) {
 // http://crbug.com/238334.
 TEST_F(WebFrameTest, DISABLED_SelectRangeSpanContentEditable) {
   WebLocalFrame* frame;
-  WebRect start_web_rect;
-  WebRect end_web_rect;
+  gfx::Rect start_rect;
+  gfx::Rect end_rect;
 
   RegisterMockedHttpURLLoad("select_range_span_editable.html");
 
@@ -5637,10 +5634,10 @@ TEST_F(WebFrameTest, DISABLED_SelectRangeSpanContentEditable) {
                                  &web_view_helper);
   frame = web_view_helper.LocalMainFrame();
   EXPECT_EQ("This text is initially selected.", SelectionAsString(frame));
-  web_view_helper.GetWebView()->MainFrameWidget()->SelectionBounds(
-      start_web_rect, end_web_rect);
+  web_view_helper.GetWebView()->MainFrameViewWidget()->CalculateSelectionBounds(
+      start_rect, end_rect);
 
-  frame->SelectRange(BottomRightMinusOne(end_web_rect), gfx::Point());
+  frame->SelectRange(BottomRightMinusOne(end_rect), gfx::Point());
   EXPECT_EQ("16-char header. This text is initially selected.",
             SelectionAsString(frame));
 
@@ -5649,18 +5646,17 @@ TEST_F(WebFrameTest, DISABLED_SelectRangeSpanContentEditable) {
                                  &web_view_helper);
   frame = web_view_helper.LocalMainFrame();
 
-  web_view_helper.GetWebView()->MainFrameWidget()->SelectionBounds(
-      start_web_rect, end_web_rect);
-  frame->SelectRange(TopLeft(start_web_rect),
-                     BottomRightMinusOne(end_web_rect));
+  web_view_helper.GetWebView()->MainFrameViewWidget()->CalculateSelectionBounds(
+      start_rect, end_rect);
+  frame->SelectRange(start_rect.origin(), BottomRightMinusOne(end_rect));
   EXPECT_EQ("This text is initially selected.", SelectionAsString(frame));
-  web_view_helper.GetWebView()->MainFrameWidget()->SelectionBounds(
-      start_web_rect, end_web_rect);
+  web_view_helper.GetWebView()->MainFrameViewWidget()->CalculateSelectionBounds(
+      start_rect, end_rect);
 
   EXPECT_EQ("This text is initially selected.", SelectionAsString(frame));
-  web_view_helper.GetWebView()->MainFrameWidget()->SelectionBounds(
-      start_web_rect, end_web_rect);
-  frame->SelectRange(TopLeft(start_web_rect), gfx::Point(640, 480));
+  web_view_helper.GetWebView()->MainFrameViewWidget()->CalculateSelectionBounds(
+      start_rect, end_rect);
+  frame->SelectRange(start_rect.origin(), gfx::Point(640, 480));
   EXPECT_EQ("This text is initially selected. 16-char footer.",
             SelectionAsString(frame));
 }
@@ -5676,7 +5672,7 @@ TEST_F(WebFrameTest, SelectRangeCanMoveSelectionStart) {
   frame->ExecuteScript(WebScriptSource("selectElement('header_2');"));
   EXPECT_EQ("Header 2.", SelectionAsString(frame));
   frame->SelectRange(BottomRightMinusOne(ElementBounds(frame, "header_2")),
-                     TopLeft(ElementBounds(frame, "header_1")));
+                     ElementBounds(frame, "header_1").origin());
   EXPECT_EQ("Header 1. Header 2.", SelectionAsString(frame));
 
   // We can move the start and end together.
@@ -5699,14 +5695,14 @@ TEST_F(WebFrameTest, SelectRangeCanMoveSelectionStart) {
   frame->ExecuteScript(WebScriptSource("selectElement('footer_2');"));
   EXPECT_EQ("Footer 2.", SelectionAsString(frame));
   frame->SelectRange(BottomRightMinusOne(ElementBounds(frame, "footer_2")),
-                     TopLeft(ElementBounds(frame, "editable_2")));
+                     ElementBounds(frame, "editable_2").origin());
   EXPECT_EQ(" [ Footer 1. Footer 2.", SelectionAsString(frame));
 
   // Can extend the selection completely across editable elements.
   frame->ExecuteScript(WebScriptSource("selectElement('footer_2');"));
   EXPECT_EQ("Footer 2.", SelectionAsString(frame));
   frame->SelectRange(BottomRightMinusOne(ElementBounds(frame, "footer_2")),
-                     TopLeft(ElementBounds(frame, "header_2")));
+                     ElementBounds(frame, "header_2").origin());
   EXPECT_EQ("Header 2. ] [ Editable 1. Editable 2. ] [ Footer 1. Footer 2.",
             SelectionAsString(frame));
 
@@ -5715,7 +5711,7 @@ TEST_F(WebFrameTest, SelectRangeCanMoveSelectionStart) {
   frame->ExecuteScript(WebScriptSource("selectElement('editable_2');"));
   EXPECT_EQ("Editable 2.", SelectionAsString(frame));
   frame->SelectRange(BottomRightMinusOne(ElementBounds(frame, "editable_2")),
-                     TopLeft(ElementBounds(frame, "header_2")));
+                     ElementBounds(frame, "header_2").origin());
   EXPECT_EQ("[ Editable 1. Editable 2.", SelectionAsString(frame));
 }
 
@@ -5729,15 +5725,15 @@ TEST_F(WebFrameTest, SelectRangeCanMoveSelectionEnd) {
   // Select first span. We can move the end to include the second span.
   frame->ExecuteScript(WebScriptSource("selectElement('header_1');"));
   EXPECT_EQ("Header 1.", SelectionAsString(frame));
-  frame->SelectRange(TopLeft(ElementBounds(frame, "header_1")),
+  frame->SelectRange(ElementBounds(frame, "header_1").origin(),
                      BottomRightMinusOne(ElementBounds(frame, "header_2")));
   EXPECT_EQ("Header 1. Header 2.", SelectionAsString(frame));
 
   // We can move the start and end together.
   frame->ExecuteScript(WebScriptSource("selectElement('header_2');"));
   EXPECT_EQ("Header 2.", SelectionAsString(frame));
-  frame->SelectRange(TopLeft(ElementBounds(frame, "header_2")),
-                     TopLeft(ElementBounds(frame, "header_2")));
+  frame->SelectRange(ElementBounds(frame, "header_2").origin(),
+                     ElementBounds(frame, "header_2").origin());
   EXPECT_EQ("", SelectionAsString(frame));
   // Selection is a caret, not empty.
   EXPECT_FALSE(frame->SelectionRange().IsNull());
@@ -5745,21 +5741,21 @@ TEST_F(WebFrameTest, SelectRangeCanMoveSelectionEnd) {
   // We can move the end across the start.
   frame->ExecuteScript(WebScriptSource("selectElement('header_2');"));
   EXPECT_EQ("Header 2.", SelectionAsString(frame));
-  frame->SelectRange(TopLeft(ElementBounds(frame, "header_2")),
-                     TopLeft(ElementBounds(frame, "header_1")));
+  frame->SelectRange(ElementBounds(frame, "header_2").origin(),
+                     ElementBounds(frame, "header_1").origin());
   EXPECT_EQ("Header 1. ", SelectionAsString(frame));
 
   // Can't extend the selection part-way into an editable element.
   frame->ExecuteScript(WebScriptSource("selectElement('header_1');"));
   EXPECT_EQ("Header 1.", SelectionAsString(frame));
-  frame->SelectRange(TopLeft(ElementBounds(frame, "header_1")),
+  frame->SelectRange(ElementBounds(frame, "header_1").origin(),
                      BottomRightMinusOne(ElementBounds(frame, "editable_1")));
   EXPECT_EQ("Header 1. Header 2. ] ", SelectionAsString(frame));
 
   // Can extend the selection completely across editable elements.
   frame->ExecuteScript(WebScriptSource("selectElement('header_1');"));
   EXPECT_EQ("Header 1.", SelectionAsString(frame));
-  frame->SelectRange(TopLeft(ElementBounds(frame, "header_1")),
+  frame->SelectRange(ElementBounds(frame, "header_1").origin(),
                      BottomRightMinusOne(ElementBounds(frame, "footer_1")));
   EXPECT_EQ("Header 1. Header 2. ] [ Editable 1. Editable 2. ] [ Footer 1.",
             SelectionAsString(frame));
@@ -5768,15 +5764,15 @@ TEST_F(WebFrameTest, SelectRangeCanMoveSelectionEnd) {
   // text.
   frame->ExecuteScript(WebScriptSource("selectElement('editable_1');"));
   EXPECT_EQ("Editable 1.", SelectionAsString(frame));
-  frame->SelectRange(TopLeft(ElementBounds(frame, "editable_1")),
+  frame->SelectRange(ElementBounds(frame, "editable_1").origin(),
                      BottomRightMinusOne(ElementBounds(frame, "footer_1")));
   EXPECT_EQ("Editable 1. Editable 2. ]", SelectionAsString(frame));
 }
 
 TEST_F(WebFrameTest, MoveRangeSelectionExtent) {
   WebLocalFrameImpl* frame;
-  WebRect start_web_rect;
-  WebRect end_web_rect;
+  gfx::Rect start_rect;
+  gfx::Rect end_rect;
 
   RegisterMockedHttpURLLoad("move_range_selection_extent.html");
 
@@ -5785,8 +5781,8 @@ TEST_F(WebFrameTest, MoveRangeSelectionExtent) {
                                  &web_view_helper);
   frame = web_view_helper.LocalMainFrame();
   EXPECT_EQ("This text is initially selected.", SelectionAsString(frame));
-  web_view_helper.GetWebView()->MainFrameWidget()->SelectionBounds(
-      start_web_rect, end_web_rect);
+  web_view_helper.GetWebView()->MainFrameViewWidget()->CalculateSelectionBounds(
+      start_rect, end_rect);
 
   frame->MoveRangeSelectionExtent(gfx::Point(640, 480));
   EXPECT_EQ("This text is initially selected. 16-char footer.",
@@ -5796,8 +5792,7 @@ TEST_F(WebFrameTest, MoveRangeSelectionExtent) {
   EXPECT_EQ("16-char header. ", SelectionAsString(frame));
 
   // Reset with swapped base and extent.
-  frame->SelectRange(TopLeft(end_web_rect),
-                     BottomRightMinusOne(start_web_rect));
+  frame->SelectRange(end_rect.origin(), BottomRightMinusOne(start_rect));
   EXPECT_EQ("This text is initially selected.", SelectionAsString(frame));
 
   frame->MoveRangeSelectionExtent(gfx::Point(640, 480));
@@ -5813,8 +5808,8 @@ TEST_F(WebFrameTest, MoveRangeSelectionExtent) {
 
 TEST_F(WebFrameTest, MoveRangeSelectionExtentCannotCollapse) {
   WebLocalFrameImpl* frame;
-  WebRect start_web_rect;
-  WebRect end_web_rect;
+  gfx::Rect start_rect;
+  gfx::Rect end_rect;
 
   RegisterMockedHttpURLLoad("move_range_selection_extent.html");
 
@@ -5823,25 +5818,24 @@ TEST_F(WebFrameTest, MoveRangeSelectionExtentCannotCollapse) {
                                  &web_view_helper);
   frame = web_view_helper.LocalMainFrame();
   EXPECT_EQ("This text is initially selected.", SelectionAsString(frame));
-  web_view_helper.GetWebView()->MainFrameWidget()->SelectionBounds(
-      start_web_rect, end_web_rect);
+  web_view_helper.GetWebView()->MainFrameViewWidget()->CalculateSelectionBounds(
+      start_rect, end_rect);
 
-  frame->MoveRangeSelectionExtent(BottomRightMinusOne(start_web_rect));
+  frame->MoveRangeSelectionExtent(BottomRightMinusOne(start_rect));
   EXPECT_EQ("This text is initially selected.", SelectionAsString(frame));
 
   // Reset with swapped base and extent.
-  frame->SelectRange(TopLeft(end_web_rect),
-                     BottomRightMinusOne(start_web_rect));
+  frame->SelectRange(end_rect.origin(), BottomRightMinusOne(start_rect));
   EXPECT_EQ("This text is initially selected.", SelectionAsString(frame));
 
-  frame->MoveRangeSelectionExtent(BottomRightMinusOne(end_web_rect));
+  frame->MoveRangeSelectionExtent(BottomRightMinusOne(end_rect));
   EXPECT_EQ("This text is initially selected.", SelectionAsString(frame));
 }
 
 TEST_F(WebFrameTest, MoveRangeSelectionExtentScollsInputField) {
   WebLocalFrameImpl* frame;
-  WebRect start_web_rect;
-  WebRect end_web_rect;
+  gfx::Rect start_rect;
+  gfx::Rect end_rect;
 
   RegisterMockedHttpURLLoad("move_range_selection_extent_input_field.html");
 
@@ -5851,16 +5845,15 @@ TEST_F(WebFrameTest, MoveRangeSelectionExtentScollsInputField) {
       &web_view_helper);
   frame = web_view_helper.LocalMainFrame();
   EXPECT_EQ("Length", SelectionAsString(frame));
-  web_view_helper.GetWebView()->MainFrameWidget()->SelectionBounds(
-      start_web_rect, end_web_rect);
+  web_view_helper.GetWebView()->MainFrameViewWidget()->CalculateSelectionBounds(
+      start_rect, end_rect);
 
   EXPECT_EQ(0, frame->GetFrame()
                    ->Selection()
                    .ComputeVisibleSelectionInDOMTree()
                    .RootEditableElement()
                    ->scrollLeft());
-  frame->MoveRangeSelectionExtent(
-      gfx::Point(end_web_rect.x + 500, end_web_rect.y));
+  frame->MoveRangeSelectionExtent(gfx::Point(end_rect.x() + 500, end_rect.y()));
   EXPECT_GE(frame->GetFrame()
                 ->Selection()
                 .ComputeVisibleSelectionInDOMTree()
@@ -6026,43 +6019,43 @@ TEST_F(WebFrameTest, SelectRangeStaysHorizontallyAlignedWhenMoved) {
                                  &web_view_helper);
   WebLocalFrameImpl* frame = web_view_helper.LocalMainFrame();
 
-  WebRect initial_start_rect;
-  WebRect initial_end_rect;
-  WebRect start_rect;
-  WebRect end_rect;
+  gfx::Rect initial_start_rect;
+  gfx::Rect initial_end_rect;
+  gfx::Rect start_rect;
+  gfx::Rect end_rect;
 
   frame->ExecuteScript(WebScriptSource("selectRange();"));
-  web_view_helper.GetWebView()->MainFrameWidget()->SelectionBounds(
+  web_view_helper.GetWebView()->MainFrameViewWidget()->CalculateSelectionBounds(
       initial_start_rect, initial_end_rect);
-  gfx::Point moved_start(TopLeft(initial_start_rect));
+  gfx::Point moved_start(initial_start_rect.origin());
 
   moved_start.Offset(0, 40);
   frame->SelectRange(moved_start, BottomRightMinusOne(initial_end_rect));
-  web_view_helper.GetWebView()->MainFrameWidget()->SelectionBounds(start_rect,
-                                                                   end_rect);
+  web_view_helper.GetWebView()->MainFrameViewWidget()->CalculateSelectionBounds(
+      start_rect, end_rect);
   EXPECT_EQ(start_rect, initial_start_rect);
   EXPECT_EQ(end_rect, initial_end_rect);
 
   moved_start.Offset(0, -80);
   frame->SelectRange(moved_start, BottomRightMinusOne(initial_end_rect));
-  web_view_helper.GetWebView()->MainFrameWidget()->SelectionBounds(start_rect,
-                                                                   end_rect);
+  web_view_helper.GetWebView()->MainFrameViewWidget()->CalculateSelectionBounds(
+      start_rect, end_rect);
   EXPECT_EQ(start_rect, initial_start_rect);
   EXPECT_EQ(end_rect, initial_end_rect);
 
   gfx::Point moved_end(BottomRightMinusOne(initial_end_rect));
 
   moved_end.Offset(0, 40);
-  frame->SelectRange(TopLeft(initial_start_rect), moved_end);
-  web_view_helper.GetWebView()->MainFrameWidget()->SelectionBounds(start_rect,
-                                                                   end_rect);
+  frame->SelectRange(initial_start_rect.origin(), moved_end);
+  web_view_helper.GetWebView()->MainFrameViewWidget()->CalculateSelectionBounds(
+      start_rect, end_rect);
   EXPECT_EQ(start_rect, initial_start_rect);
   EXPECT_EQ(end_rect, initial_end_rect);
 
   moved_end.Offset(0, -80);
-  frame->SelectRange(TopLeft(initial_start_rect), moved_end);
-  web_view_helper.GetWebView()->MainFrameWidget()->SelectionBounds(start_rect,
-                                                                   end_rect);
+  frame->SelectRange(initial_start_rect.origin(), moved_end);
+  web_view_helper.GetWebView()->MainFrameViewWidget()->CalculateSelectionBounds(
+      start_rect, end_rect);
   EXPECT_EQ(start_rect, initial_start_rect);
   EXPECT_EQ(end_rect, initial_end_rect);
 }
@@ -6076,27 +6069,27 @@ TEST_F(WebFrameTest, MoveCaretStaysHorizontallyAlignedWhenMoved) {
                                  &web_view_helper);
   frame = (WebLocalFrameImpl*)web_view_helper.GetWebView()->MainFrame();
 
-  WebRect initial_start_rect;
-  WebRect initial_end_rect;
-  WebRect start_rect;
-  WebRect end_rect;
+  gfx::Rect initial_start_rect;
+  gfx::Rect initial_end_rect;
+  gfx::Rect start_rect;
+  gfx::Rect end_rect;
 
   frame->ExecuteScript(WebScriptSource("selectCaret();"));
-  web_view_helper.GetWebView()->MainFrameWidget()->SelectionBounds(
+  web_view_helper.GetWebView()->MainFrameViewWidget()->CalculateSelectionBounds(
       initial_start_rect, initial_end_rect);
-  gfx::Point move_to(TopLeft(initial_start_rect));
+  gfx::Point move_to(initial_start_rect.origin());
 
   move_to.Offset(0, 40);
   frame->MoveCaretSelection(move_to);
-  web_view_helper.GetWebView()->MainFrameWidget()->SelectionBounds(start_rect,
-                                                                   end_rect);
+  web_view_helper.GetWebView()->MainFrameViewWidget()->CalculateSelectionBounds(
+      start_rect, end_rect);
   EXPECT_EQ(start_rect, initial_start_rect);
   EXPECT_EQ(end_rect, initial_end_rect);
 
   move_to.Offset(0, -80);
   frame->MoveCaretSelection(move_to);
-  web_view_helper.GetWebView()->MainFrameWidget()->SelectionBounds(start_rect,
-                                                                   end_rect);
+  web_view_helper.GetWebView()->MainFrameViewWidget()->CalculateSelectionBounds(
+      start_rect, end_rect);
   EXPECT_EQ(start_rect, initial_start_rect);
   EXPECT_EQ(end_rect, initial_end_rect);
 }

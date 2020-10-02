@@ -508,7 +508,6 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   void SendScrollEndEventFromImplSide(cc::ElementId scroll_latched_element_id);
   void MouseCaptureLost();
   void SetFocus(bool enable) override;
-  bool SelectionBounds(WebRect& anchor, WebRect& focus) const;
   WebURL GetURLForDebugTrace();
 
   // Update the target url locally and tell the browser that the target URL has

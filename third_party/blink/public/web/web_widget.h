@@ -161,12 +161,6 @@ class WebWidget {
   // Returns the state of focus for the WebWidget.
   virtual bool HasFocus() { return false; }
 
-  // Returns the anchor and focus bounds of the current selection.
-  // If the selection range is empty, it returns the caret bounds.
-  virtual bool SelectionBounds(WebRect& anchor, WebRect& focus) const {
-    return false;
-  }
-
   // Calling WebWidgetClient::requestPointerLock() will result in one
   // return call to didAcquirePointerLock() or didNotAcquirePointerLock().
   virtual void DidAcquirePointerLock() {}

@@ -5,9 +5,11 @@
 #include "third_party/blink/renderer/core/frame/web_view_frame_widget.h"
 
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/exported/web_view_impl.h"
 #include "third_party/blink/renderer/core/frame/local_frame_ukm_aggregator.h"
 #include "third_party/blink/renderer/core/frame/screen_metrics_emulator.h"
+#include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/widget/widget_base.h"
@@ -202,9 +204,27 @@ float WebViewFrameWidget::GetEmulatorScale() {
   return 1.0f;
 }
 
-bool WebViewFrameWidget::SelectionBounds(WebRect& anchor,
-                                         WebRect& focus) const {
-  return web_view_->SelectionBounds(anchor, focus);
+void WebViewFrameWidget::CalculateSelectionBounds(gfx::Rect& anchor_root_frame,
+                                                  gfx::Rect& focus_root_frame) {
+  const Frame* frame = View()->FocusedCoreFrame();
+  const auto* local_frame = DynamicTo<LocalFrame>(frame);
+  if (!local_frame)
+    return;
+
+  LocalFrameView* frame_view = local_frame->View();
+  if (!frame_view)
+    return;
+
+  IntRect anchor;
+  IntRect focus;
+  if (!local_frame->Selection().ComputeAbsoluteBounds(anchor, focus))
+    return;
+
+  VisualViewport& visual_viewport = GetPage()->GetVisualViewport();
+  anchor_root_frame = visual_viewport.RootFrameToViewport(
+      frame_view->ConvertToRootFrame(anchor));
+  focus_root_frame = visual_viewport.RootFrameToViewport(
+      frame_view->ConvertToRootFrame(focus));
 }
 
 WebURL WebViewFrameWidget::GetURLForDebugTrace() {
