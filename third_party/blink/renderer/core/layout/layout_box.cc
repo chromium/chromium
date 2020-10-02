@@ -5129,6 +5129,16 @@ LayoutUnit LayoutBox::AvailableLogicalHeightUsing(
     }
   }
 
+  if (ShouldComputeLogicalHeightFromAspectRatio()) {
+    NGBoxStrut border_padding(BorderStart() + ComputedCSSPaddingStart(),
+                              BorderEnd() + ComputedCSSPaddingEnd(),
+                              BorderBefore() + ComputedCSSPaddingBefore(),
+                              BorderAfter() + ComputedCSSPaddingAfter());
+    return BlockSizeFromAspectRatio(border_padding,
+                                    StyleRef().LogicalAspectRatio(),
+                                    StyleRef().BoxSizing(), LogicalWidth());
+  }
+
   if (h.IsPercentOrCalc() && IsOutOfFlowPositioned()) {
     // FIXME: This is wrong if the containingBlock has a perpendicular writing
     // mode.
