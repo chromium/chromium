@@ -32,6 +32,7 @@
 #include "cc/paint/render_surface_filters.h"
 #include "cc/raster/scoped_gpu_raster.h"
 #include "components/viz/common/display/renderer_settings.h"
+#include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/gpu/context_provider.h"
 #include "components/viz/common/quads/compositor_frame.h"
@@ -77,6 +78,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size_conversions.h"
+#include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/rrect_f.h"
 #include "ui/gfx/skia_util.h"
 
@@ -217,6 +219,37 @@ class ScopedTimerQuery {
  private:
   gpu::gles2::GLES2Interface* gl_;
 };
+
+void AccumulateDrawRects(const gfx::Rect& quad_rect,
+                         const gfx::Transform& target_transform,
+                         std::vector<gfx::Rect>* drawn_rects) {
+  gfx::RectF quad_rect_f(quad_rect);
+
+  // If the transform is not axis aligned then assume the largest possible
+  // bounds the quad can take in the render target. In this case, we take the
+  // sum of 2 sides.
+  if (!target_transform.Preserves2dAxisAlignment()) {
+    // Increase the length of each side to |width + height|.
+    const int total_length = quad_rect.width() + quad_rect.height();
+    quad_rect_f.set_height(total_length);
+    quad_rect_f.set_width(total_length);
+
+    // Ensure that the increase is equally distributed on either sides of the
+    // quad such that the position of the center of the quad does not change.
+    const float delta_x = -(quad_rect.height() / 2.f);
+    const float delta_y = -(quad_rect.width() / 2.f);
+    quad_rect_f.Offset(gfx::Vector2d(delta_x, delta_y));
+
+    // Apply only the scale and translation component.
+    const gfx::Vector2dF& translate = target_transform.To2dTranslation();
+    const gfx::Vector2dF& scale = target_transform.Scale2d();
+    quad_rect_f.Scale(scale.x(), scale.y());
+    quad_rect_f.Offset(translate.x(), translate.y());
+  } else {
+    target_transform.TransformRect(&quad_rect_f);
+  }
+  drawn_rects->push_back(gfx::ToRoundedRect(quad_rect_f));
+}
 
 // Smallest unit that impact anti-aliasing output. We use this to
 // determine when anti-aliasing is unnecessary.
@@ -420,6 +453,8 @@ GLRenderer::GLRenderer(
   prefer_draw_to_copy_ = output_surface_->context_provider()
                              ->GetGpuFeatureInfo()
                              .IsWorkaroundEnabled(gpu::PREFER_DRAW_TO_COPY);
+  use_fast_path_solid_color_quad_ =
+      features::IsUsingFastPathForSolidColorQuad();
   InitializeSharedObjects();
 }
 
@@ -509,6 +544,9 @@ void GLRenderer::PrepareSurfaceForPass(
     gl_->GenQueriesEXT(1, &occlusion_query_);
     gl_->BeginQueryEXT(GL_SAMPLES_PASSED_ARB, occlusion_query_);
   }
+
+  // For each render pass, reset the drawn region.
+  drawn_rects_.clear();
 }
 
 void GLRenderer::ClearFramebuffer() {
@@ -1286,6 +1324,10 @@ void GLRenderer::DrawRenderPassQuadInternal(
   ChooseRPDQProgram(params, CurrentRenderPassColorSpace());
   UpdateRPDQUniforms(params);
   DrawRPDQ(*params);
+
+  AccumulateDrawRects(params->quad->visible_rect,
+                      params->quad->shared_quad_state->quad_to_target_transform,
+                      &drawn_rects_);
 }
 
 bool GLRenderer::InitializeRPDQParameters(
@@ -2120,41 +2162,84 @@ void GLRenderer::DrawSolidColorQuad(const SolidColorDrawQuad* quad,
     color = color_f.toSkColor();
   }
 
-  SetShaderColor(color, opacity);
-  if (current_program_->rounded_corner_rect_location() != -1) {
-    SetShaderRoundedCorner(
-        quad->shared_quad_state->rounded_corner_bounds,
-        current_frame()->window_matrix * current_frame()->projection_matrix);
-  }
+  // Try using glClear to draw the solid color quad if possible. This is much
+  // more performant than executing the shader pipeline.
+  if (CanUseFastSolidColorDraw(quad) && !use_aa) {
+    // Pre-multiply the alpha and opacity to get the correct blending in case of
+    // transparent buffers. glClear does not have any alpha blending stage.
+    Float4 result = PremultipliedColor(color, opacity);
+    SkRGBA4f<kPremul_SkAlphaType> color_f_premul;
+    std::copy(result.data, result.data + 4, color_f_premul.vec());
 
-  if (current_program_->tint_color_matrix_location() != -1) {
-    auto matrix = cc::DebugColors::TintCompositedContentColorTransformMatrix();
-    gl_->UniformMatrix4fv(current_program_->tint_color_matrix_location(), 1,
-                          false, matrix.data());
-  }
+    gfx::RectF quad_rect_in_target_f(quad->visible_rect);
 
-  if (use_aa) {
-    gl_->Uniform3fv(current_program_->edge_location(), 8, edge);
-  }
+    device_transform.TransformRect(&quad_rect_in_target_f);
+    gfx::Rect quad_rect_in_target = gfx::ToRoundedRect(quad_rect_in_target_f);
 
-  // Enable blending when the quad properties require it or if we decided
-  // to use antialiasing.
-  SetBlendEnabled(quad->ShouldDrawWithBlending() || use_aa);
-  ApplyBlendModeUsingBlendFunc(quad->shared_quad_state->blend_mode);
+    // If we are using partial swap, make sure the new scissor rect is within
+    // the partial swap bounds.
+    if (!scissor_rect_.IsEmpty() && is_scissor_enabled_)
+      quad_rect_in_target.Intersect(scissor_rect_);
 
-  // Antialising requires a normalized quad, but this could lead to floating
-  // point precision errors, so only normalize when antialising is on.
-  if (use_aa) {
-    DrawQuadGeometryWithAA(quad, &local_quad, tile_rect);
+    gl_->Enable(GL_SCISSOR_TEST);
+    gl_->Scissor(quad_rect_in_target.x(), quad_rect_in_target.y(),
+                 quad_rect_in_target.width(), quad_rect_in_target.height());
+
+    gl_->ClearColor(color_f_premul.fR, color_f_premul.fG, color_f_premul.fB,
+                    color_f_premul.fA);
+    gl_->Clear(GL_COLOR_BUFFER_BIT);
+
+    // Restore GL scissor state.
+    if (is_scissor_enabled_)
+      gl_->Enable(GL_SCISSOR_TEST);
+    else
+      gl_->Disable(GL_SCISSOR_TEST);
+
+    gl_->Scissor(scissor_rect_.x(), scissor_rect_.y(), scissor_rect_.width(),
+                 scissor_rect_.height());
   } else {
-    PrepareGeometry(SHARED_BINDING);
-    SetShaderQuadF(local_quad);
-    SetShaderMatrix(current_frame()->projection_matrix *
-                    quad->shared_quad_state->quad_to_target_transform);
-    gl_->DrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
-    num_triangles_drawn_ += 2;
+    SetShaderColor(color, opacity);
+    if (current_program_->rounded_corner_rect_location() != -1) {
+      SetShaderRoundedCorner(
+          quad->shared_quad_state->rounded_corner_bounds,
+          current_frame()->window_matrix * current_frame()->projection_matrix);
+    }
+
+    if (current_program_->tint_color_matrix_location() != -1) {
+      auto matrix =
+          cc::DebugColors::TintCompositedContentColorTransformMatrix();
+      gl_->UniformMatrix4fv(current_program_->tint_color_matrix_location(), 1,
+                            false, matrix.data());
+    }
+
+    if (use_aa) {
+      gl_->Uniform3fv(current_program_->edge_location(), 8, edge);
+    }
+
+    // Enable blending when the quad properties require it or if we decided
+    // to use antialiasing.
+    SetBlendEnabled(quad->ShouldDrawWithBlending() || use_aa);
+    ApplyBlendModeUsingBlendFunc(quad->shared_quad_state->blend_mode);
+
+    // Antialiasing requires a normalized quad, but this could lead to floating
+    // point precision errors, so only normalize when antialiasing is on.
+    if (use_aa) {
+      DrawQuadGeometryWithAA(quad, &local_quad, tile_rect);
+    } else {
+      PrepareGeometry(SHARED_BINDING);
+      SetShaderQuadF(local_quad);
+      SetShaderMatrix(current_frame()->projection_matrix *
+                      quad->shared_quad_state->quad_to_target_transform);
+      gl_->DrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
+      num_triangles_drawn_ += 2;
+    }
+    RestoreBlendFuncToDefault(quad->shared_quad_state->blend_mode);
   }
-  RestoreBlendFuncToDefault(quad->shared_quad_state->blend_mode);
+
+  // Add the quad to the region that has been drawn.
+  AccumulateDrawRects(quad->visible_rect,
+                      quad->shared_quad_state->quad_to_target_transform,
+                      &drawn_rects_);
 }
 
 void GLRenderer::DrawTileQuad(const TileDrawQuad* quad,
@@ -2193,6 +2278,10 @@ void GLRenderer::DrawContentQuad(const ContentDrawQuadBase* quad,
                       clip_region);
   else
     DrawContentQuadNoAA(quad, resource_id, clip_region);
+
+  AccumulateDrawRects(quad->visible_rect,
+                      quad->shared_quad_state->quad_to_target_transform,
+                      &drawn_rects_);
 }
 
 void GLRenderer::DrawContentQuadAA(const ContentDrawQuadBase* quad,
@@ -2633,6 +2722,11 @@ void GLRenderer::DrawYUVVideoQuad(const YUVVideoDrawQuad* quad,
         quad->shared_quad_state->quad_to_target_transform, tile_rect,
         region_quad, uvs);
   }
+
+  // Track the region in the current target surface that has been drawn to.
+  AccumulateDrawRects(quad->visible_rect,
+                      quad->shared_quad_state->quad_to_target_transform,
+                      &drawn_rects_);
 }
 
 void GLRenderer::DrawStreamVideoQuad(const StreamVideoDrawQuad* quad,
@@ -2708,6 +2802,10 @@ void GLRenderer::DrawStreamVideoQuad(const StreamVideoDrawQuad* quad,
         quad->shared_quad_state->quad_to_target_transform, tile_rect,
         region_quad, uvs);
   }
+
+  AccumulateDrawRects(quad->visible_rect,
+                      quad->shared_quad_state->quad_to_target_transform,
+                      &drawn_rects_);
 }
 
 void GLRenderer::FlushTextureQuadCache(BoundGeometry flush_binding) {
@@ -2904,6 +3002,11 @@ void GLRenderer::EnqueueTextureQuad(const TextureDrawQuad* quad,
   Float16 m;
   quad_rect_matrix.matrix().asColMajorf(m.data);
   draw_cache_.matrix_data.push_back(m);
+
+  // Track the region in the current target surface that has been drawn to.
+  AccumulateDrawRects(quad->visible_rect,
+                      quad->shared_quad_state->quad_to_target_transform,
+                      &drawn_rects_);
 
   if (clip_region) {
     DCHECK_EQ(quad->rect, quad->visible_rect);
@@ -4242,6 +4345,67 @@ bool GLRenderer::HasOutputColorMatrix() const {
       current_frame()->current_render_pass == current_frame()->root_render_pass;
   const SkMatrix44& output_color_matrix = output_surface_->color_matrix();
   return is_root_render_pass && !output_color_matrix.isIdentity();
+}
+
+bool GLRenderer::CanUseFastSolidColorDraw(
+    const SolidColorDrawQuad* quad) const {
+  const SharedQuadState* sqs = quad->shared_quad_state;
+
+  if (!use_fast_path_solid_color_quad_)
+    return false;
+
+  // Rounded corners require blending with the background, which is not possible
+  // with the glClear draw method.
+  if (!sqs->rounded_corner_bounds.IsEmpty())
+    return false;
+
+  // 3D transforms need vertex computation in 3D and cannot be handled using
+  // glClear().
+  if (!sqs->quad_to_target_transform.IsFlat())
+    return false;
+
+  // glClear ignores stencil buffer.
+  if (stencil_shadow_)
+    return false;
+
+  // Any non axis aligned transform cannot be handled by glClear.
+  if (!sqs->quad_to_target_transform.Preserves2dAxisAlignment())
+    return false;
+
+  // If no blending is needed for the quad, then fast draw can be safely used.
+  if (!quad->ShouldDrawWithBlending() && SkColorGetA(quad->color) == 255)
+    return true;
+
+  // It is safe to use glClearColor with alpha blending when the render
+  // pass has transparent background because the blending happens against
+  // (0, 0, 0, 0) which is the same as replacing the destination color & alpha.
+  // However, if the render pass does not have a transparent background, using
+  // glClear with a color that has alpha or opacity, would end up punching an
+  // unwanted hole in the frame buffer.
+  if (!current_frame()->current_render_pass->has_transparent_background)
+    return false;
+
+  // If the color has any alpha and blending is needed, ensure the blend mode
+  // allows replacing destination color & alpha.
+  const bool is_translucent =
+      SkColorGetA(quad->color) != 255 || quad->shared_quad_state->opacity < 1.f;
+  if (is_translucent &&
+      !(quad->shared_quad_state->blend_mode == SkBlendMode::kSrc ||
+        quad->shared_quad_state->blend_mode == SkBlendMode::kSrcOver)) {
+    return false;
+  }
+
+  gfx::RectF quad_rect_in_target(quad->visible_rect);
+  sqs->quad_to_target_transform.TransformRect(&quad_rect_in_target);
+  const gfx::Rect quad_rect_in_target_rounded =
+      gfx::ToRoundedRect(quad_rect_in_target);
+
+  // If the quad does not intersect with any region that has already been drawn
+  // to, then blending is not an issue and fast draw path can be used.
+  for (const auto& rect : drawn_rects_)
+    if (quad_rect_in_target_rounded.Intersects(rect))
+      return false;
+  return true;
 }
 
 void GLRenderer::AllocateRenderPassResourceIfNeeded(

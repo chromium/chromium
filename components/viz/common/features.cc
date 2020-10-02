@@ -42,6 +42,10 @@ const base::Feature kDynamicColorGamut{"DynamicColorGamut",
                                        base::FEATURE_ENABLED_BY_DEFAULT};
 #endif
 
+// Uses glClear to composite solid color quads whenever possible.
+const base::Feature kFastSolidColorDraw{"FastSolidColorDraw",
+                                        base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Viz for WebView architecture.
 const base::Feature kVizForWebView{"VizForWebView",
                                    base::FEATURE_DISABLED_BY_DEFAULT};
@@ -126,6 +130,10 @@ bool IsDynamicColorGamutEnabled() {
   return base::FeatureList::IsEnabled(kDynamicColorGamut);
 }
 #endif
+
+bool IsUsingFastPathForSolidColorQuad() {
+  return base::FeatureList::IsEnabled(kFastSolidColorDraw);
+}
 
 bool IsUsingVizForWebView() {
   // Viz for WebView requires shared images to be enabled.
