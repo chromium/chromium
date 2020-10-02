@@ -384,6 +384,28 @@ CommandUtil.isDriveEntries = (entries, volumeManager) => {
   return false;
 };
 
+
+/**
+ * Extracts entry on which command event was dispatched.
+ *
+ * @param {!Event} event Command event to mark.
+ * @param {!CommandHandlerDeps} fileManager CommandHandlerDeps to use.
+ * @return {Entry|FilesAppDirEntry} Entry of the event node.
+ */
+CommandUtil.getEventEntry = (event, fileManager) => {
+  let entry;
+  if (fileManager.ui.directoryTree.contains(
+          /** @type {Node} */ (event.target))) {
+    // The command is executed from the directory tree context menu.
+    entry = CommandUtil.getCommandEntry(fileManager, event.target);
+  } else {
+    // The command is executed from the gear menu.
+    entry = fileManager.directoryModel.getCurrentDirEntry();
+  }
+  return entry;
+};
+
+
 /**
  * Handle of the command events.
  */
@@ -737,7 +759,59 @@ CommandHandler.COMMANDS_['format'] = new class extends Command {
     const removableRoot = location && isRoot &&
         location.rootType === VolumeManagerCommon.RootType.REMOVABLE;
     event.canExecute = removableRoot && (isUnrecognizedVolume || writable);
-    event.command.setHidden(!removableRoot);
+
+    if (util.isSinglePartitionFormatEnabled()) {
+      let isDevice = false;
+      if (root && root instanceof EntryList) {
+        // root entry is device node if it has child (partition).
+        isDevice = !!removableRoot && root.getUIChildren().length > 0;
+      }
+      // Disable format command on device when SinglePartitionFormat on,
+      // erase command will be available.
+      event.command.setHidden(!removableRoot || isDevice);
+    } else {
+      event.command.setHidden(!removableRoot);
+    }
+  }
+};
+
+/**
+ * Deletes removable device partition, creates single partition and formats it.
+ */
+CommandHandler.COMMANDS_['erase-device'] = new class extends Command {
+  execute(event, fileManager) {
+    const root = CommandUtil.getEventEntry(event, fileManager);
+
+    if (root && root instanceof EntryList) {
+      /** @type {FilesFormatDialogElement} */ (fileManager.ui.formatDialog)
+          .showEraseModal(root);
+    }
+  }
+
+  /** @override */
+  canExecute(event, fileManager) {
+    if (!util.isSinglePartitionFormatEnabled()) {
+      event.canExecute = false;
+      event.command.setHidden(true);
+      return;
+    }
+    const root = CommandUtil.getEventEntry(event, fileManager);
+    const location = root && fileManager.volumeManager.getLocationInfo(root);
+    const writable = location && !location.isReadOnly;
+    const isRoot = location && location.isRootEntry;
+
+    const removableRoot = location && isRoot &&
+        location.rootType === VolumeManagerCommon.RootType.REMOVABLE;
+
+    let isDevice = false;
+    if (root && root instanceof EntryList) {
+      // root entry is device node if it has child (partition).
+      isDevice = !!removableRoot && root.getUIChildren().length > 0;
+    }
+
+    event.canExecute = removableRoot && !writable;
+    // Enable the command if this is a removable and device node.
+    event.command.setHidden(!removableRoot || !isDevice);
   }
 };
 

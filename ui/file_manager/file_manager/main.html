@@ -111,6 +111,7 @@
       <command id="unmount" label="$i18n{UNMOUNT_DEVICE_BUTTON_LABEL}"
                shortcut="E|Shift|Ctrl">
       <command id="format" label="$i18n{FORMAT_DEVICE_BUTTON_LABEL}">
+      <command id="erase-device" label="$i18n{REPARTITION_DEVICE_BUTTON_LABEL}">
       <command id="configure" label="$i18n{CONFIGURE_VOLUME_BUTTON_LABEL}">
 
       <command id="volume-help" label="$i18n{DRIVE_MENU_HELP}">
@@ -223,6 +224,7 @@
         <cr-menu-item command="#configure"></cr-menu-item>
         <cr-menu-item command="#unmount"></cr-menu-item>
         <cr-menu-item command="#format"></cr-menu-item>
+        <cr-menu-item command="#erase-device"></cr-menu-item>
         <cr-menu-item command="#rename"></cr-menu-item>
         <cr-menu-item command="#unpin-folder"></cr-menu-item>
         <cr-menu-item command="#share-with-linux"></cr-menu-item>
@@ -297,6 +299,7 @@
         <cr-menu-item id="gear-menu-newservice" command="#new-service"
             sub-menu="#add-new-services-menu"></cr-menu-item>
         <cr-menu-item id="gear-menu-format" command="#format"></cr-menu-item>
+        <cr-menu-item id="gear-menu-erase" command="#erase-device"></cr-menu-item>
         <cr-menu-item id="volume-space-info" command="#volume-storage">
           <div id="volume-space-info-contents">
             <span id="volume-space-info-label"></span>

@@ -759,8 +759,12 @@ testcase.transferDragAndHoverTreeItemFakeEntry = async () => {
           'fakeDragAndDrop', appId, [source, target, skipDrop]),
       'fakeDragAndDrop failed');
 
+  let navigationPath = '/fake-usb';
+  if (await isSinglePartitionFormat(appId)) {
+    navigationPath = '/FAKEUSB/fake-usb';
+  }
   // Check: drag hovering should navigate the file list.
-  await remoteCall.waitUntilCurrentDirectoryIsChanged(appId, '/fake-usb');
+  await remoteCall.waitUntilCurrentDirectoryIsChanged(appId, navigationPath);
 };
 
 /**
@@ -984,8 +988,12 @@ testcase.transferToUsbHasDestinationText = async () => {
   chrome.test.assertTrue(
       await remoteCall.callRemoteTestUtil('execCommand', appId, ['copy']));
 
+  let navigationPath = '/fake-usb';
+  if (await isSinglePartitionFormat(appId)) {
+    navigationPath = '/FAKEUSB/fake-usb';
+  }
   // Select USB volume.
-  await navigateWithDirectoryTree(appId, '/fake-usb');
+  await navigateWithDirectoryTree(appId, navigationPath);
 
   // Tell the background page to never finish the file copy.
   await remoteCall.callRemoteTestUtil(

@@ -607,6 +607,41 @@ function testFormatFailed() {
       progressCenter.getItemById('format:/device/path').message);
 }
 
+function testPartitionSucceeded() {
+  mockChrome.fileManagerPrivate.onDeviceChanged.dispatch({
+    type: 'partition_start',
+    devicePath: '/device/path',
+    deviceLabel: 'label'
+  });
+  assertEquals(0, progressCenter.getItemCount());
+
+  mockChrome.fileManagerPrivate.onDeviceChanged.dispatch({
+    type: 'partition_success',
+    devicePath: '/device/path',
+    deviceLabel: 'label'
+  });
+  assertEquals(0, progressCenter.getItemCount());
+}
+
+function testPartitionFailed() {
+  mockChrome.fileManagerPrivate.onDeviceChanged.dispatch({
+    type: 'partition_start',
+    devicePath: '/device/path',
+    deviceLabel: 'label'
+  });
+  assertEquals(0, progressCenter.getItemCount());
+
+  mockChrome.fileManagerPrivate.onDeviceChanged.dispatch({
+    type: 'partition_fail',
+    devicePath: '/device/path',
+    deviceLabel: 'label'
+  });
+  assertEquals(1, progressCenter.getItemCount());
+  assertEquals(
+      'FORMAT_FAILURE_MESSAGE: label',
+      progressCenter.getItemById('partition:/device/path').message);
+}
+
 function testRenameSucceeded() {
   mockChrome.fileManagerPrivate.onDeviceChanged.dispatch(
       {type: 'rename_start', devicePath: '/device/path'});

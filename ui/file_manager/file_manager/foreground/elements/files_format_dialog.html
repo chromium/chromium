@@ -54,12 +54,13 @@
       }
     </style>
 
-    <cr-dialog id="dialog" close-text="[[i18n('CLOSE_LABEL')]]">
+    <cr-dialog id="dialog" close-text="[[i18n('CLOSE_LABEL')]]"
+               single-partition-format$="[[getSinglePartitionFormat()]]">
       <div slot="title">
-        [[i18n('FORMAT_DIALOG_TITLE', volumeInfo_.label)]]
+        [[i18n('FORMAT_DIALOG_TITLE', title)]]
       </div>
       <div slot="body">
-        <div>[[i18n('FORMAT_DIALOG_MESSAGE')]]</div>
+        <div>[[getDialogMessage_(isErase_)]]</div>
         <div id="warning-container" hidden="[[!space_used_]]" role="alert">
           <iron-icon id="warning-icon" icon="cr:warning"></iron-icon>
           <div id="warning-message">
@@ -87,7 +88,7 @@
         </cr-button>
         <cr-button class="action-button" on-click="format_"
             id="format-button">
-          [[i18n('FORMAT_DIALOG_CONFIRM_LABEL')]]
+          [[getConfirmLabel_(isErase_)]]
         </cr-button>
       </div>
     </cr-dialog>

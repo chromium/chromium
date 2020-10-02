@@ -92,6 +92,9 @@ class FileManagerBrowserTestBase : public extensions::ExtensionApiTest {
 
     // Whether test should enable sharesheet.
     bool enable_sharesheet = false;
+
+    // Whether test needs the single partition format feature.
+    bool single_partition_format = false;
   };
 
  protected:

@@ -30822,6 +30822,9 @@ Called by update_feature_policy_enum.py.-->
   <int value="11" label="FORMAT_SUCCESS"/>
   <int value="12" label="FORMAT_FAIL"/>
   <int value="13" label="RENAME_FAIL"/>
+  <int value="14" label="PARTITION_START"/>
+  <int value="15" label="PARTITION_SUCCESS"/>
+  <int value="16" label="PARTITION_FAIL"/>
 </enum>
 
 <enum name="FileManagerNotificationUserAction">

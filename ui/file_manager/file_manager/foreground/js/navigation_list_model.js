@@ -717,7 +717,8 @@ class NavigationListModel extends cr.EventTarget {
             removableGroup[0].volumeInfo.driveLabel :
             /*default*/ 'External Drive';
         removableEntry = new EntryList(
-            rootLabel, VolumeManagerCommon.RootType.REMOVABLE, devicePath);
+            rootLabel, VolumeManagerCommon.RootType.REMOVABLE,
+            removableGroup[0].volumeInfo.devicePath);
         removableModel = new NavigationModelFakeItem(
             removableEntry.label, NavigationModelItemType.ENTRY_LIST,
             removableEntry);

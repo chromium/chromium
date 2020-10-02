@@ -103,6 +103,11 @@ struct TestCase {
     return *this;
   }
 
+  TestCase& EnableSinglePartitionFormat() {
+    options.single_partition_format = true;
+    return *this;
+  }
+
   // Show the startup browser. Some tests invoke the file picker dialog during
   // the test. Requesting a file picker from a background page is forbidden by
   // the apps platform, and it's a bug that these tests do so.
@@ -148,6 +153,9 @@ struct TestCase {
 
     if (options.zip_no_nacl)
       full_name += "_ZipNoNaCl";
+
+    if (options.single_partition_format)
+      full_name += "_SinglePartitionFormat";
 
     return full_name;
   }
@@ -272,6 +280,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("fileDisplayMtp"),
         TestCase("fileDisplayUsb"),
         TestCase("fileDisplayUsbPartition"),
+        TestCase("fileDisplayUsbPartition").EnableSinglePartitionFormat(),
         TestCase("fileDisplayUsbPartitionSort"),
         TestCase("fileDisplayPartitionFileTable"),
         TestCase("fileSearch"),
@@ -613,9 +622,11 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("dirContextMenuCrostini"),
         TestCase("dirContextMenuPlayFiles"),
         TestCase("dirContextMenuUsbs"),
+        TestCase("dirContextMenuUsbs").EnableSinglePartitionFormat(),
         TestCase("dirContextMenuFsp"),
         TestCase("dirContextMenuDocumentsProvider").EnableDocumentsProvider(),
         TestCase("dirContextMenuUsbDcim"),
+        TestCase("dirContextMenuUsbDcim").EnableSinglePartitionFormat(),
         TestCase("dirContextMenuMtp"),
         TestCase("dirContextMenuMediaView").EnableArc(),
         TestCase("dirContextMenuMyDrive"),
@@ -629,24 +640,26 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     DriveSpecific, /* drive_specific.js */
     FilesAppBrowserTest,
-    ::testing::Values(TestCase("driveOpenSidebarOffline"),
-                      TestCase("driveOpenSidebarSharedWithMe"),
-                      TestCase("driveAutoCompleteQuery"),
-                      TestCase("drivePinMultiple"),
-                      TestCase("drivePinHosted"),
-                      TestCase("drivePinFileMobileNetwork"),
-                      TestCase("driveClickFirstSearchResult"),
-                      TestCase("drivePressEnterToSearch"),
-                      TestCase("drivePressClearSearch"),
-                      TestCase("drivePressCtrlAFromSearch"),
-                      TestCase("driveBackupPhotos"),
-                      TestCase("driveAvailableOfflineGearMenu"),
-                      TestCase("driveAvailableOfflineDirectoryGearMenu"),
-                      TestCase("driveAvailableOfflineActionBar"),
-                      TestCase("driveLinkToDirectory"),
-                      TestCase("driveLinkOpenFileThroughLinkedDirectory"),
-                      TestCase("driveLinkOpenFileThroughTransitiveLink"),
-                      TestCase("driveWelcomeBanner")));
+    ::testing::Values(
+        TestCase("driveOpenSidebarOffline"),
+        TestCase("driveOpenSidebarSharedWithMe"),
+        TestCase("driveAutoCompleteQuery"),
+        TestCase("drivePinMultiple"),
+        TestCase("drivePinHosted"),
+        TestCase("drivePinFileMobileNetwork"),
+        TestCase("driveClickFirstSearchResult"),
+        TestCase("drivePressEnterToSearch"),
+        TestCase("drivePressClearSearch"),
+        TestCase("drivePressCtrlAFromSearch"),
+        TestCase("driveBackupPhotos"),
+        TestCase("driveBackupPhotos").EnableSinglePartitionFormat(),
+        TestCase("driveAvailableOfflineGearMenu"),
+        TestCase("driveAvailableOfflineDirectoryGearMenu"),
+        TestCase("driveAvailableOfflineActionBar"),
+        TestCase("driveLinkToDirectory"),
+        TestCase("driveLinkOpenFileThroughLinkedDirectory"),
+        TestCase("driveLinkOpenFileThroughTransitiveLink"),
+        TestCase("driveWelcomeBanner")));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     Transfer, /* transfer.js */
@@ -674,6 +687,8 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("transferDragDropTreeItemDenies").FilesNg(),
         TestCase("transferDragAndHoverTreeItemEntryList"),
         TestCase("transferDragAndHoverTreeItemFakeEntry"),
+        TestCase("transferDragAndHoverTreeItemFakeEntry")
+            .EnableSinglePartitionFormat(),
         TestCase("transferDragFileListItemSelects"),
         TestCase("transferDragAndDrop"),
         TestCase("transferDragAndHover"),
@@ -1031,11 +1046,18 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     FormatDialog, /* format_dialog.js */
     FilesAppBrowserTest,
-    ::testing::Values(TestCase("formatDialog"),
-                      TestCase("formatDialogEmpty"),
-                      TestCase("formatDialogCancel"),
-                      TestCase("formatDialogNameLength"),
-                      TestCase("formatDialogNameInvalid"),
-                      TestCase("formatDialogGearMenu")));
+    ::testing::Values(
+        TestCase("formatDialog"),
+        TestCase("formatDialogEmpty"),
+        TestCase("formatDialogCancel"),
+        TestCase("formatDialogNameLength"),
+        TestCase("formatDialogNameInvalid"),
+        TestCase("formatDialogGearMenu"),
+        TestCase("formatDialog").EnableSinglePartitionFormat(),
+        TestCase("formatDialogEmpty").EnableSinglePartitionFormat(),
+        TestCase("formatDialogCancel").EnableSinglePartitionFormat(),
+        TestCase("formatDialogNameLength").EnableSinglePartitionFormat(),
+        TestCase("formatDialogNameInvalid").EnableSinglePartitionFormat(),
+        TestCase("formatDialogGearMenu").EnableSinglePartitionFormat()));
 
 }  // namespace file_manager

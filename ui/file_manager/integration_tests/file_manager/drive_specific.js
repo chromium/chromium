@@ -438,9 +438,14 @@ testcase.driveBackupPhotos = async () => {
   // Wait for the USB mount.
   await remoteCall.waitForElement(appId, USB_VOLUME_QUERY);
 
-  // Navigate to the DCIM directory.
-  await remoteCall.navigateWithDirectoryTree(
-      appId, '/DCIM', 'fake-usb', 'removable');
+  if (await isSinglePartitionFormat(appId)) {
+    // Navigate to the DCIM directory.
+    await navigateWithDirectoryTree(appId, '/FAKEUSB/fake-usb/DCIM');
+  } else {
+    // Navigate to the DCIM directory.
+    await remoteCall.navigateWithDirectoryTree(
+        appId, '/DCIM', 'fake-usb', 'removable');
+  }
 
   // Wait for the import button to be ready.
   await remoteCall.waitForElement(

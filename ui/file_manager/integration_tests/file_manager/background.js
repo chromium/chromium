@@ -649,3 +649,14 @@ async function isFilesNg(appId) {
   const cssClass = body.attributes['class'] || '';
   return cssClass.includes('files-ng');
 }
+
+/**
+ * Returns true if the SinglePartitionFormat flag is on.
+ * @param {string} appId Files app windowId.
+ */
+async function isSinglePartitionFormat(appId) {
+  const dialog = await remoteCall.waitForElement(
+      appId, ['files-format-dialog', 'cr-dialog']);
+  const flag = dialog.attributes['single-partition-format'] || '';
+  return !!flag;
+}

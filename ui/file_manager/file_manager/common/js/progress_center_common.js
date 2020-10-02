@@ -52,7 +52,9 @@ const ProgressItemType = {
   // The item is external drive format operation.
   FORMAT: 'format',
   // The item is archive operation.
-  MOUNT_ARCHIVE: 'mount_archive'
+  MOUNT_ARCHIVE: 'mount_archive',
+  // The item is external drive partitioning operation.
+  PARTITION: 'partition'
 };
 Object.freeze(ProgressItemType);
 

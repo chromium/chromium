@@ -268,14 +268,28 @@ testcase.fileDisplayUsbPartition = async () => {
   chrome.test.assertEq(
       'removable', fakeUsb.attributes['volume-type-for-testing']);
 
-  // Check unpartitioned USB does not have partitions as tree children.
-  const itemEntriesQuery =
-      ['[entry-label="fake-usb"] .tree-children .tree-item'];
-  const itemEntries = await remoteCall.callRemoteTestUtil(
-      'queryAllElements', appId, itemEntriesQuery);
-  chrome.test.assertEq(1, itemEntries.length);
-  const childVolumeType = itemEntries[0].attributes['volume-type-for-testing'];
-  chrome.test.assertTrue('removable' !== childVolumeType);
+  if (await isSinglePartitionFormat(appId)) {
+    // Check unpartitioned USB has single partition as tree child.
+    const itemEntriesQuery =
+        ['[entry-label="FAKEUSB"] .tree-children .tree-item'];
+    const itemEntries = await remoteCall.callRemoteTestUtil(
+        'queryAllElements', appId, itemEntriesQuery);
+    chrome.test.assertEq(1, itemEntries.length);
+    const childVolumeType =
+        itemEntries[0].attributes['volume-type-for-testing'];
+
+    chrome.test.assertTrue('removable' == childVolumeType);
+  } else {
+    // Check unpartitioned USB does not have partitions as tree children.
+    const itemEntriesQuery =
+        ['[entry-label="fake-usb"] .tree-children .tree-item'];
+    const itemEntries = await remoteCall.callRemoteTestUtil(
+        'queryAllElements', appId, itemEntriesQuery);
+    chrome.test.assertEq(1, itemEntries.length);
+    const childVolumeType =
+        itemEntries[0].attributes['volume-type-for-testing'];
+    chrome.test.assertTrue('removable' !== childVolumeType);
+  }
 };
 
 /**

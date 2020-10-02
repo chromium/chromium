@@ -718,6 +718,7 @@ std::ostream& operator<<(std::ostream& out,
   PRINT_IF_NOT_DEFAULT(tablet_mode)
   PRINT_IF_NOT_DEFAULT(zip)
   PRINT_IF_NOT_DEFAULT(zip_no_nacl)
+  PRINT_IF_NOT_DEFAULT(single_partition_format)
 
 #undef PRINT_IF_NOT_DEFAULT
 
@@ -1581,6 +1582,10 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
 
   if (options.enable_sharesheet) {
     enabled_features.push_back(features::kSharesheet);
+  }
+
+  if (options.single_partition_format) {
+    enabled_features.push_back(chromeos::features::kFilesSinglePartitionFormat);
   }
 
   // This is destroyed in |TearDown()|. We cannot initialize this in the

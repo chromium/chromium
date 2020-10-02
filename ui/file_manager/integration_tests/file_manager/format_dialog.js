@@ -21,6 +21,11 @@ async function setupFormatDialogTest() {
  * @param {string} usbLabel Label of usb to format.
  */
 async function openFormatDialog(appId, usbLabel) {
+  if (await isSinglePartitionFormat(appId)) {
+    await openFormatDialogWithSinglePartitionFormat(appId, usbLabel, 'FAKEUSB');
+    return;
+  }
+
   // Focus the directory tree.
   chrome.test.assertTrue(
       !!await remoteCall.callRemoteTestUtil(
@@ -37,6 +42,44 @@ async function openFormatDialog(appId, usbLabel) {
 
   // Click on the format menu item.
   const formatItemQuery = '#roots-context-menu:not([hidden])' +
+      ' cr-menu-item[command="#format"]:not([hidden]):not([disabled])';
+  await remoteCall.waitAndClickElement(appId, formatItemQuery);
+
+  // Check the dialog is open.
+  await remoteCall.waitForElement(
+      appId, ['files-format-dialog', 'cr-dialog[open]']);
+}
+
+/**
+ * Opens a format dialog for the USB with label |usbLabel| and device with
+ * label |deviceLabel|.
+ *
+ * @param {string} appId Files app window ID.
+ * @param {string} usbLabel Label of usb to format.
+ * @param {string} deviceLabel Label of the parent device of usb.
+ */
+async function openFormatDialogWithSinglePartitionFormat(
+    appId, usbLabel, deviceLabel) {
+  // Focus the directory tree.
+  chrome.test.assertTrue(
+      !!await remoteCall.callRemoteTestUtil(
+          'focus', appId, ['#directory-tree']),
+      'focus failed: #directory-tree');
+
+  // Expand device tree entry to access partition entry.
+  await remoteCall.expandTreeItemInDirectoryTree(
+      appId, `#directory-tree [entry-label="${deviceLabel}"]`);
+
+  // Right click on the USB's directory tree entry.
+  const treeQuery = `#directory-tree [entry-label="${usbLabel}"]`;
+  await remoteCall.waitForElement(appId, treeQuery);
+  chrome.test.assertTrue(
+      !!await remoteCall.callRemoteTestUtil(
+          'fakeMouseRightClick', appId, [treeQuery]),
+      'fakeMouseRightClick failed');
+
+  // Click on the format menu item.
+  const formatItemQuery = '#directory-tree-context-menu:not([hidden])' +
       ' cr-menu-item[command="#format"]:not([hidden]):not([disabled])';
   await remoteCall.waitAndClickElement(appId, formatItemQuery);
 
@@ -261,8 +304,12 @@ testcase.formatDialogGearMenu = async () => {
           'focus', appId, ['#directory-tree']),
       'focus failed: #directory-tree');
 
+  let usbNavigationPath = '/fake-usb';
+  if (await isSinglePartitionFormat(appId)) {
+    usbNavigationPath = '/FAKEUSB/fake-usb';
+  }
   // Navigate to the USB via the directory tree.
-  await navigateWithDirectoryTree(appId, '/fake-usb');
+  await navigateWithDirectoryTree(appId, usbNavigationPath);
 
   // Click on the gear menu button.
   await remoteCall.waitAndClickElement(appId, '#gear-button:not([hidden])');
