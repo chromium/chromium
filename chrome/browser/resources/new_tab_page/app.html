@@ -110,7 +110,7 @@
 
   :host(:not([promo-and-modules-loaded_])) ntp-middle-slot-promo,
   :host(:not([promo-and-modules-loaded_])) ntp-module-wrapper {
-    visibility: hidden;
+    display: none;
   }
 
   #customizeButtonSpacer {
@@ -290,7 +290,7 @@
           on-ntp-middle-slot-promo-loaded="onMiddleSlotPromoLoaded_" hidden>
       </ntp-middle-slot-promo>
       <template is="dom-repeat" items="[[moduleDescriptors_]]" id="modules"
-          on-dom-change="onModulesRendered_">
+          on-dom-change="onModulesLoaded_">
         <ntp-module-wrapper descriptor="[[item]]"
             on-dismiss-module="onDismissModule_">
         </ntp-module-wrapper>

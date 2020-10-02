@@ -216,6 +216,7 @@ class AppElement extends PolymerElement {
         computed: `computePromoAndModulesLoaded_(middleSlotPromoLoaded_,
             modulesLoaded_)`,
         reflectToAttribute: true,
+        observer: 'onPromoAndModulesLoadedChange_',
       },
 
       /**
@@ -507,7 +508,6 @@ class AppElement extends PolymerElement {
     }
     this.moduleDescriptors_ =
         await ModuleRegistry.getInstance().initializeModules();
-    this.modulesLoaded_ = true;
   }
 
   /** @private */
@@ -590,6 +590,11 @@ class AppElement extends PolymerElement {
       this.backgroundManager_.setBackgroundColor(this.theme_.backgroundColor);
     }
     this.updateBackgroundImagePath_();
+  }
+
+  /** @private */
+  onPromoAndModulesLoadedChange_() {
+    this.pageHandler_.onModulesRendered(BrowserProxy.getInstance().now());
   }
 
   /**
@@ -808,8 +813,8 @@ class AppElement extends PolymerElement {
   }
 
   /** @private */
-  onModulesRendered_() {
-    this.pageHandler_.onModulesRendered(BrowserProxy.getInstance().now());
+  onModulesLoaded_() {
+    this.modulesLoaded_ = true;
   }
 
   /**
