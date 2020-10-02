@@ -99,6 +99,28 @@ BoxLayout::BoxLayout(BoxLayout::Orientation orientation,
 
 BoxLayout::~BoxLayout() = default;
 
+void BoxLayout::SetOrientation(Orientation orientation) {
+  if (orientation_ != orientation) {
+    orientation_ = orientation;
+    InvalidateLayout();
+  }
+}
+
+BoxLayout::Orientation BoxLayout::GetOrientation() const {
+  return orientation_;
+}
+
+void BoxLayout::SetCollapseMarginsSpacing(bool collapse_margins_spacing) {
+  if (collapse_margins_spacing != collapse_margins_spacing_) {
+    collapse_margins_spacing_ = collapse_margins_spacing;
+    InvalidateLayout();
+  }
+}
+
+bool BoxLayout::GetCollapseMarginsSpacing() const {
+  return collapse_margins_spacing_;
+}
+
 void BoxLayout::SetFlexForView(const View* view,
                                int flex_weight,
                                bool use_min_size) {
@@ -118,6 +140,10 @@ void BoxLayout::ClearFlexForView(const View* view) {
 void BoxLayout::SetDefaultFlex(int default_flex) {
   DCHECK_GE(default_flex, 0);
   default_flex_ = default_flex;
+}
+
+int BoxLayout::GetDefaultFlex() const {
+  return default_flex_;
 }
 
 void BoxLayout::Layout(View* host) {
