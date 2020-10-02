@@ -153,7 +153,7 @@ void SystemMediaControlsLinux::InitializeProperties() {
   // org.mpris.MediaPlayer2 interface properties.
   auto set_property = [&](const std::string& property_name, auto&& value) {
     properties_->SetProperty(kMprisAPIInterfaceName, property_name,
-                             std::move(value), false);
+                             std::forward<decltype(value)>(value), false);
   };
   set_property("CanQuit", DbusBoolean(false));
   set_property("CanRaise", DbusBoolean(false));
@@ -171,7 +171,7 @@ void SystemMediaControlsLinux::InitializeProperties() {
   auto set_player_property = [&](const std::string& property_name,
                                  auto&& value) {
     properties_->SetProperty(kMprisAPIPlayerInterfaceName, property_name,
-                             std::move(value), false);
+                             std::forward<decltype(value)>(value), false);
   };
   set_player_property("PlaybackStatus", DbusString("Stopped"));
   set_player_property("Rate", DbusDouble(1.0));
