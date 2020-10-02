@@ -4,9 +4,13 @@
 
 copy("signing") {
   sources = [
+    "$root_out_dir/certificate_tag.exe",
     "//chrome/tools/build/win/resedit.py",
+    "//third_party/lzma_sdk/7zr.exe",
     "sign.py",
   ]
 
-  outputs = [ "$root_out_dir/Updater Signing/{{source_file_part}}" ]
+  deps = [ "//chrome/updater/tools:certificate_tag" ]
+
+  outputs = [ "$root_out_dir/UpdaterSigning/{{source_file_part}}" ]
 }
