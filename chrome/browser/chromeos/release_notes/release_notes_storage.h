@@ -35,6 +35,9 @@ class ReleaseNotesStorage {
   // Decreases the amount of times left to show the suggestion chip.
   void DecreaseTimesLeftToShowSuggestionChip();
 
+  // Sets the number of times left to show the suggestion chip to 0.
+  void StopShowingSuggestionChip();
+
  private:
   Profile* const profile_;
 

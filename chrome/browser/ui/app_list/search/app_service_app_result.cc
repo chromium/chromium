@@ -172,6 +172,7 @@ void AppServiceAppResult::Launch(int event_flags,
         base::UserMetricsAction("ReleaseNotes.SuggestionChipLaunched"));
     proxy->LaunchAppWithUrl(app_id(), event_flags, query_url().value(),
                             launch_source, controller()->GetAppListDisplayId());
+    chromeos::ReleaseNotesStorage(profile()).StopShowingSuggestionChip();
     return;
   }
 

@@ -111,4 +111,9 @@ void ReleaseNotesStorage::DecreaseTimesLeftToShowSuggestionChip() {
       times_left_to_show - 1);
 }
 
+void ReleaseNotesStorage::StopShowingSuggestionChip() {
+  profile_->GetPrefs()->SetInteger(
+      prefs::kReleaseNotesSuggestionChipTimesLeftToShow, 0);
+}
+
 }  // namespace chromeos
