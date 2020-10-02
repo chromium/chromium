@@ -4,6 +4,8 @@
 
 #include "chrome/browser/media/router/providers/cast/cast_session_client_impl.h"
 
+#include <vector>
+
 #include "chrome/browser/media/router/data_decoder_util.h"
 #include "chrome/browser/media/router/providers/cast/app_activity.h"
 #include "components/cast_channel/enum_table.h"
@@ -21,6 +23,28 @@ void ReportClientMessageParseError(const MediaRoute::Id& route_id,
   // TODO(crbug.com/905002): Record UMA metric for parse result.
   DLOG(ERROR) << "Failed to parse Cast client message for " << route_id << ": "
               << error;
+}
+
+// Traverses a JSON value, recursively removing any dict entries whose value is
+// null.
+void RemoveNullFields(base::Value& value) {
+  if (value.is_list()) {
+    for (auto& item : value.GetList()) {
+      RemoveNullFields(item);
+    }
+  } else if (value.is_dict()) {
+    std::vector<std::string> to_remove;
+    for (auto pair : value.DictItems()) {
+      if (pair.second.is_none()) {
+        to_remove.push_back(pair.first);
+      } else {
+        RemoveNullFields(pair.second);
+      }
+    }
+    for (const auto& key : to_remove) {
+      value.RemoveKey(key);
+    }
+  }
 }
 
 }  // namespace
@@ -126,6 +150,11 @@ void CastSessionClientImpl::HandleParsedClientMessage(
                                   *result.error);
     return;
   }
+
+  // NOTE(jrw): This step isn't part of the Cast protocol per se, but it's
+  // required for backward compatibility.  There is one known case
+  // (crbug.com/1129217) where not doing it breaks the Cast SDK.
+  RemoveNullFields(*result.value);
 
   std::unique_ptr<CastInternalMessage> cast_message =
       CastInternalMessage::From(std::move(*result.value));
