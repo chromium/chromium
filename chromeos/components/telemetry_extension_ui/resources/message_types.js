@@ -15,7 +15,7 @@ const dpsl_internal = {};
 
 /**
  * Enum for message types.
- * @enum { string }
+ * @enum { !string }
  */
 dpsl_internal.Message = {
   DIAGNOSTICS_AVAILABLE_ROUTINES: 'DiagnosticsService.GetAvailableRoutines',

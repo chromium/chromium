@@ -45,9 +45,9 @@ chromeos.test_support = {};
      */
     async getAvailableRoutines() {
       const response =
-          /** @type {dpsl_internal.DiagnosticsGetAvailableRoutinesResponse} */ (
-              await messagePipe.sendMessage(
-                  dpsl_internal.Message.DIAGNOSTICS_AVAILABLE_ROUTINES));
+          /** @type {!dpsl_internal.DiagnosticsGetAvailableRoutinesResponse} */
+          (await messagePipe.sendMessage(
+              dpsl_internal.Message.DIAGNOSTICS_AVAILABLE_ROUTINES));
       return response;
     }
 
@@ -61,7 +61,7 @@ chromeos.test_support = {};
      */
     async sendCommandToRoutine(routineId, command, includeOutput) {
       const message =
-          /** @type {dpsl_internal.DiagnosticsGetRoutineUpdateRequest} */ ({
+          /** @type {!dpsl_internal.DiagnosticsGetRoutineUpdateRequest} */ ({
             routineId: routineId,
             command: command,
             includeOutput: includeOutput,

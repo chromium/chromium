@@ -211,7 +211,7 @@ class DiagnosticsProxy {
 
   /**
    * Requests available routines.
-   * @return { !Promise<dpsl_internal.DiagnosticsGetAvailableRoutinesResponse> }
+   * @return {!Promise<!dpsl_internal.DiagnosticsGetAvailableRoutinesResponse>}
    */
   async handleGetAvailableRoutines() {
     const availableRoutines =
@@ -305,11 +305,11 @@ class DiagnosticsProxy {
   /**
    * Runs a command on a routine.
    * @param { !Object } message
-   * @return { !Promise<dpsl_internal.DiagnosticsGetRoutineUpdateResponse> }
+   * @return { !Promise<!dpsl_internal.DiagnosticsGetRoutineUpdateResponse> }
    */
   async handleGetRoutineUpdate(message) {
     const request =
-        /** @type {dpsl_internal.DiagnosticsGetRoutineUpdateRequest} */ (
+        /** @type {!dpsl_internal.DiagnosticsGetRoutineUpdateRequest} */ (
             message);
 
     let routine, command;
@@ -347,7 +347,7 @@ class DiagnosticsProxy {
     try {
       const response = await handler(message);
       return this.convertRunRoutineResponse(response.response);
-    } catch (/** @type !Error */ error) {
+    } catch (/** @type {!Error} */ error) {
       return error;
     }
   };
@@ -841,7 +841,7 @@ class TelemetryProxy {
 
   /**
    * Requests telemetry info.
-   * @param { Object } message
+   * @param { !Object } message
    * @return { !Promise<!dpsl_internal.ProbeTelemetryInfoResponse> }
    */
   async handleProbeTelemetryInfo(message) {
