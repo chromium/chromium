@@ -106,3 +106,13 @@ export const fakeSystemInfo = {
   total_memory_kib: 128000,
   version: {milestone_version: 'M99'},
 };
+
+/* @type {!SystemInfo} */
+export const fakeSystemInfoWithoutBattery = {
+  board_name: 'CrOS Board',
+  cpu_model_name: 'BestCpu SoFast 1000',
+  cpu_threads_count: 8,
+  device_capabilities: {has_battery: false},
+  total_memory_kib: 128000,
+  version: {milestone_version: 'M99'},
+};

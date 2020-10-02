@@ -14,6 +14,9 @@ import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bun
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import './strings.js';
 
+import {SystemDataProviderInterface, SystemInfo} from './diagnostics_types.js'
+import {getSystemDataProvider} from './mojo_interface_provider.js';
+
 /**
  * @fileoverview
  * 'diagnostics-app' is the main page for viewing telemetric system information
@@ -26,8 +29,37 @@ Polymer({
 
   behaviors: [I18nBehavior],
 
+  /**
+   * @private {?SystemDataProviderInterface}
+   */
+  systemDataProvider_: null,
+
+  properties: {
+    /** @private */
+    showBatteryStatusCard_: {
+      type: Boolean,
+      value: false,
+    },
+  },
+
   /** @override */
-  ready() {
+  created() {
+    this.systemDataProvider_ = getSystemDataProvider();
+    this.fetchSystemInfo_();
+  },
+
+  /** @private */
+  fetchSystemInfo_() {
+    this.systemDataProvider_.getSystemInfo().then(
+        this.onSystemInfoReceived_.bind(this));
+  },
+
+  /**
+   * @param {!SystemInfo} systemInfo
+   * @private
+   */
+  onSystemInfoReceived_(systemInfo) {
+    this.showBatteryStatusCard_ = systemInfo.device_capabilities.has_battery;
   },
 
 });
