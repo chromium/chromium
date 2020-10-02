@@ -725,11 +725,10 @@ ZeroSuggestProvider::ResultType ZeroSuggestProvider::TypeOfResultToRun(
   if (base::Contains(field_trial_variants, kMostVisitedVariant))
     return MOST_VISITED;
 
-#if !defined(OS_IOS)
-  // For Desktop and Android, default to REMOTE_NO_URL on the NTP, if allowed.
+  // For Desktop, Android, and iOS, default to REMOTE_NO_URL on the NTP, if
+  // allowed.
   if (IsNTPPage(current_page_classification) && remote_no_url_allowed)
     return REMOTE_NO_URL;
-#endif
 
 #if defined(OS_ANDROID) || defined(OS_IOS)
   // For Android and iOS, default to MOST_VISITED everywhere except on the SERP.

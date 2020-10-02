@@ -279,7 +279,7 @@ TEST_F(ZeroSuggestProviderTest, TypeOfResultToRun) {
                       ? ZeroSuggestProvider::ResultType::REMOTE_NO_URL
                       : ZeroSuggestProvider::ResultType::NONE,
                   result_type);
-#elif !defined(OS_IOS)  // Android
+#else                                         // Android and iOS
         EXPECT_EQ(BaseSearchProvider::IsNTPPage(current_page_classification) &&
                           remote_no_url_allowed
                       ? ZeroSuggestProvider::ResultType::REMOTE_NO_URL
@@ -287,12 +287,6 @@ TEST_F(ZeroSuggestProviderTest, TypeOfResultToRun) {
                             current_page_classification)
                             ? ZeroSuggestProvider::ResultType::MOST_VISITED
                             : ZeroSuggestProvider::ResultType::NONE,
-                  result_type);
-#else                   // iOS
-        EXPECT_EQ(!BaseSearchProvider::IsSearchResultsPage(
-                      current_page_classification)
-                      ? ZeroSuggestProvider::ResultType::MOST_VISITED
-                      : ZeroSuggestProvider::ResultType::NONE,
                   result_type);
 #endif
       };
