@@ -151,17 +151,6 @@ viz::FrameSinkId GetRemoteFrameSinkId(const HitTestResult& result) {
 
 }  // namespace
 
-// Ensure that the DragOperation enum values stay in sync with the original
-// DragOperation constants.
-// STATIC_ASSERT_ENUM(kDragOperationNone, kDragOperationNone);
-// STATIC_ASSERT_ENUM(kDragOperationCopy, kDragOperationCopy);
-// STATIC_ASSERT_ENUM(kDragOperationLink, kDragOperationLink);
-// STATIC_ASSERT_ENUM(kDragOperationGeneric, kDragOperationGeneric);
-// STATIC_ASSERT_ENUM(kDragOperationPrivate, kDragOperationPrivate);
-// STATIC_ASSERT_ENUM(kDragOperationMove, kDragOperationMove);
-// STATIC_ASSERT_ENUM(kDragOperationDelete, kDragOperationDelete);
-// STATIC_ASSERT_ENUM(kDragOperationEvery, kDragOperationEvery);
-
 bool WebFrameWidgetBase::ignore_input_events_ = false;
 
 WebFrameWidgetBase::WebFrameWidgetBase(
