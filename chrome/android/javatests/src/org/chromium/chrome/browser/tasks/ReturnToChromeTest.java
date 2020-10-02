@@ -413,6 +413,8 @@ public class ReturnToChromeTest {
     // clang-format off
     @CommandLineFlags.Add({BASE_PARAMS + "/" + TAB_SWITCHER_ON_RETURN_MS_PARAM + "/0"
             + "/start_surface_variation/omniboxonly"})
+    @DisableIf.Build(sdk_is_less_than = VERSION_CODES.Q, sdk_is_greater_than = VERSION_CODES.O,
+            message = "crbug.com/1134361")
     public void testTabSwitcherModeTriggeredBeyondThreshold_WarmStart() throws Exception {
         // clang-format on
         testTabSwitcherModeTriggeredBeyondThreshold();
