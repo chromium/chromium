@@ -16,9 +16,6 @@ import("../../build/crashpad_buildconfig.gni")
 
 if (crashpad_is_in_chromium) {
   import("//build/config/ios/rules.gni")
-
-  # Prevent Chromium source assignment filters from being inherited.
-  set_sources_assignment_filter([])
 } else if (crashpad_is_standalone) {
   import("//third_party/mini_chromium/mini_chromium/build/ios/rules.gni")
 }

@@ -17,9 +17,6 @@ import("net/tls.gni")
 
 if (crashpad_is_in_chromium) {
   import("//build/config/sanitizers/sanitizers.gni")
-
-  # Prevent Chromium source assignment filters from being inherited.
-  set_sources_assignment_filter([])
 }
 
 if (crashpad_is_mac || crashpad_is_ios) {

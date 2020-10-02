@@ -16,11 +16,6 @@ import("build/crashpad_buildconfig.gni")
 import("build/test.gni")
 import("util/net/tls.gni")
 
-if (crashpad_is_in_chromium) {
-  # Prevent Chromium source assignment filters from being inherited.
-  set_sources_assignment_filter([])
-}
-
 config("crashpad_config") {
   include_dirs = [ "." ]
 }
@@ -31,8 +26,8 @@ config("disable_ubsan") {
     cflags = [ "-fno-sanitize=undefined" ]
   }
   visibility = [
-    "snapshot:snapshot",
     "minidump:minidump_test",
+    "snapshot:snapshot",
     "third_party/googletest:googletest",
     "util:util",
   ]
