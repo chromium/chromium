@@ -18,6 +18,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.weblayer.Browser;
 import org.chromium.weblayer.Tab;
@@ -263,5 +264,27 @@ public class TabTest {
 
         hidden = mActivityTestRule.executeScriptAndExtractBoolean("document.hidden;");
         Assert.assertTrue(hidden);
+    }
+
+    @Test
+    @SmallTest
+    @MinWebLayerVersion(87) // Bug fix in 87.
+    // This is a regression test for https://crbug.com/1075744 .
+    public void testRotationDoesntChangeVisibility() throws Exception {
+        String url = mActivityTestRule.getTestDataURL("rotation.html");
+        mActivity = mActivityTestRule.launchShellWithUrl(url);
+        mActivity.setRetainInstance(true);
+        Assert.assertNotNull(mActivity);
+
+        // Touch to trigger fullscreen and rotation.
+        EventUtils.simulateTouchCenterOfView(mActivity.getWindow().getDecorView());
+
+        // Wait for the page to be told the orientation changed.
+        CriteriaHelper.pollInstrumentationThread(() -> {
+            return mActivityTestRule.executeScriptAndExtractBoolean("gotOrientationChange", false);
+        });
+
+        // The WebContents should not have been hidden as a result of the rotation.
+        Assert.assertFalse(mActivityTestRule.executeScriptAndExtractBoolean("gotHide", false));
     }
 }

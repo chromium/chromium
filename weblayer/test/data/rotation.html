@@ -1,0 +1,29 @@
+<html>
+  <body style="height:5000px">
+    <p>A (mostly) empty page.</p>
+  </body>
+  <script>
+    var gotHide = false;
+    var gotOrientationChange = false;
+    async function doRequestFullscreen() {
+        return document.documentElement.requestFullscreen();
+    }
+    async function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+          await doRequestFullscreen();
+          await screen.orientation.lock("landscape");
+      } else {
+        document.exitFullscreen();
+      }
+    }
+    document.addEventListener("visibilitychange", function() {
+      if (document.visibilityState !== 'visible') {
+        gotHide = true;
+      }
+    });
+    window.addEventListener("orientationchange", function() {
+      gotOrientationChange = true;
+    });
+    document.addEventListener('touchend', function(e) { toggleFullscreen(); }, false);
+  </script>
+</html>

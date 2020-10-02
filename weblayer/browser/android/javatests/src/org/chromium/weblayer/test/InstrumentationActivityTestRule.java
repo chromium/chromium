@@ -228,9 +228,12 @@ public class InstrumentationActivityTestRule
     }
 
     public boolean executeScriptAndExtractBoolean(String script) {
+        return executeScriptAndExtractBoolean(script, true /* useSeparateIsolate */);
+    }
+
+    public boolean executeScriptAndExtractBoolean(String script, boolean useSeparateIsolate) {
         try {
-            return executeScriptSync(script, true /* useSeparateIsolate */)
-                    .getBoolean(Tab.SCRIPT_RESULT_KEY);
+            return executeScriptSync(script, useSeparateIsolate).getBoolean(Tab.SCRIPT_RESULT_KEY);
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }

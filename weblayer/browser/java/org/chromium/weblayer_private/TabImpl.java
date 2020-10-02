@@ -453,7 +453,7 @@ public final class TabImpl extends ITab.Stub implements LoginPrompt.Observer {
     public boolean isVisible() {
         return mBrowser.getActiveTab() == this
                 && ((mBrowser.isStarted() && mBrowser.isViewAttachedToWindow())
-                        || mBrowser.isFragmentStoppedForConfigurationChange());
+                        || mBrowser.isInConfigurationChangeAndWasAttached());
     }
 
     private void updateWebContentsVisibility() {
@@ -1102,7 +1102,12 @@ public final class TabImpl extends ITab.Stub implements LoginPrompt.Observer {
      */
     @Nullable
     private BrowserViewController getViewController() {
-        return (mBrowser.getActiveTab() == this) ? mBrowser.getPossiblyNullViewController() : null;
+        if (mBrowser.getActiveTab() != this) return null;
+        // During rotation it's possible for this to be called before BrowserViewController has been
+        // updated. Verify BrowserViewController reflects this is the active tab before returning
+        // it.
+        BrowserViewController viewController = mBrowser.getPossiblyNullViewController();
+        return viewController != null && viewController.getTab() == this ? viewController : null;
     }
 
     @VisibleForTesting
