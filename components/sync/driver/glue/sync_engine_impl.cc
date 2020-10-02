@@ -53,21 +53,6 @@ SyncEngineImpl::SyncEngineImpl(
 #endif
   backend_ = base::MakeRefCounted<SyncEngineBackend>(
       name_, sync_data_folder, weak_ptr_factory_.GetWeakPtr());
-
-  // If the new invalidations system (SyncInvalidationsService) is fully
-  // enabled, then the SyncService doesn't need to communicate with the old
-  // InvalidationService anymore.
-  if (invalidator_ &&
-      base::FeatureList::IsEnabled(switches::kSyncSendInterestedDataTypes) &&
-      base::FeatureList::IsEnabled(switches::kUseSyncInvalidations) &&
-      base::FeatureList::IsEnabled(
-          switches::kUseSyncInvalidationsForWalletAndOffer)) {
-    invalidator_->RegisterInvalidationHandler(this);
-    bool success = invalidator_->UpdateInterestedTopics(this, /*topics=*/{});
-    DCHECK(success);
-    invalidator_->UnregisterInvalidationHandler(this);
-    invalidator_ = nullptr;
-  }
 }
 
 SyncEngineImpl::~SyncEngineImpl() {
@@ -87,6 +72,22 @@ void SyncEngineImpl::Initialize(InitParams params) {
   sync_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&SyncEngineBackend::DoInitialize, backend_,
                                 std::move(params)));
+
+  // If the new invalidations system (SyncInvalidationsService) is fully
+  // enabled, then the SyncService doesn't need to communicate with the old
+  // InvalidationService anymore.
+  if (invalidator_ &&
+      base::FeatureList::IsEnabled(switches::kSyncSendInterestedDataTypes) &&
+      base::FeatureList::IsEnabled(switches::kUseSyncInvalidations) &&
+      base::FeatureList::IsEnabled(
+          switches::kUseSyncInvalidationsForWalletAndOffer)) {
+    DCHECK(!invalidation_handler_registered_);
+    invalidator_->RegisterInvalidationHandler(this);
+    bool success = invalidator_->UpdateInterestedTopics(this, /*topics=*/{});
+    DCHECK(success);
+    invalidator_->UnregisterInvalidationHandler(this);
+    invalidator_ = nullptr;
+  }
 }
 
 bool SyncEngineImpl::IsInitialized() const {
