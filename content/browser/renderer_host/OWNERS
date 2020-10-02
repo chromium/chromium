@@ -42,6 +42,10 @@ per-file dwrite_*=drott@chromium.org
 # BackForwardCache.
 per-file back_forward_cache*=altimin@chromium.org
 
+# Clipboard
+per-file *clipboard_host_impl*=huangdarwin@chromium.org
+per-file *clipboard_host_impl*=dcheng@chromium.org
+
 # AgentSchedulingGroup (MBI)
 per-file agent_scheduling_group*=talp@chromium.org
 per-file agent_scheduling_group*=kouhei@chromium.org
