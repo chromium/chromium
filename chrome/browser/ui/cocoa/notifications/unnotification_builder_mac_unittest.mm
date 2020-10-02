@@ -180,3 +180,16 @@ TEST(UNNotificationBuilderMacTest, TestBuildDictionary) {
             isEqualToNumber:@0]);
   }
 }
+
+TEST(UNNotificationBuilderMacTest,
+     TestNotificationDoesNotCloseOnDefaultAction) {
+  if (@available(macOS 10.14, *)) {
+    base::scoped_nsobject<UNNotificationBuilder> builder =
+        NewTestBuilder(NotificationHandler::Type::WEB_PERSISTENT);
+    UNMutableNotificationContent* content = [builder buildUserNotification];
+
+    EXPECT_TRUE([[content
+        valueForKey:@"shouldPreventNotificationDismissalAfterDefaultAction"]
+        boolValue]);
+  }
+}

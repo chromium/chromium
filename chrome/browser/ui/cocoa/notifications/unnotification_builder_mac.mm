@@ -37,6 +37,15 @@
           ? [_notificationData
                 objectForKey:notification_constants::kNotificationOrigin]
           : @"";
+
+  // This uses a private API to prevent notifications from dismissing on default
+  // action instead of clicking on a button
+  if ([toast respondsToSelector:@selector
+             (shouldPreventNotificationDismissalAfterDefaultAction)]) {
+    [toast setValue:@YES
+             forKey:@"shouldPreventNotificationDismissalAfterDefaultAction"];
+  }
+
   DCHECK(
       [_notificationData objectForKey:notification_constants::kNotificationId]);
   NSString* notificationId =

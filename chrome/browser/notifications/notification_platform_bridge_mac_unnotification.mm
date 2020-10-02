@@ -104,7 +104,28 @@ void NotificationPlatformBridgeMacUNNotification::Display(
 void NotificationPlatformBridgeMacUNNotification::Close(
     Profile* profile,
     const std::string& notification_id) {
-  NOTIMPLEMENTED();
+  NSString* candidateId = base::SysUTF8ToNSString(notification_id);
+  NSString* currentProfileId = base::SysUTF8ToNSString(GetProfileId(profile));
+
+  [notification_center_ getDeliveredNotificationsWithCompletionHandler:^(
+                            NSArray<UNNotification*>* _Nonnull notifications) {
+    for (UNNotification* notification in notifications) {
+      NSString* toastId = [[[[notification request] content] userInfo]
+          objectForKey:notification_constants::kNotificationId];
+      NSString* persistentProfileId =
+          [[[[notification request] content] userInfo]
+              objectForKey:notification_constants::kNotificationProfileId];
+
+      if ([toastId isEqualToString:candidateId] &&
+          [persistentProfileId isEqualToString:currentProfileId]) {
+        [notification_center_
+            removeDeliveredNotificationsWithIdentifiers:@[ toastId ]];
+        break;
+      }
+    }
+  }];
+  // TODO(crbug/1134539): If the notification was not present as a banner, check
+  // alerts
 }
 
 void NotificationPlatformBridgeMacUNNotification::GetDisplayed(
