@@ -119,6 +119,7 @@ if (is_win || is_mac) {
 
     if (is_mac) {
       sources += [
+        "app/app_install_mac.mm",
         "app/server/mac/app_server.h",
         "app/server/mac/server.h",
         "app/server/mac/server.mm",
@@ -144,6 +145,7 @@ if (is_win || is_mac) {
 
     if (is_win) {
       sources += [
+        "app/app_install_win.cc",
         "app/server/win/com_classes.cc",
         "app/server/win/com_classes.h",
         "app/server/win/com_classes_legacy.cc",

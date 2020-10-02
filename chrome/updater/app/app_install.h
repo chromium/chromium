@@ -56,6 +56,10 @@ class AppInstall : public App {
 
   void InstallCandidateDone(int result);
 
+  void WakeCandidate();
+
+  void WakeCandidateDone();
+
   void RegisterUpdater();
 
   void RegisterUpdaterDone(const RegistrationResponse& response);
