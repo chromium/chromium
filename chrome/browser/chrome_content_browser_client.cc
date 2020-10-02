@@ -3373,22 +3373,6 @@ void ChromeContentBrowserClient::OverrideWebkitPrefs(
     web_prefs->immersive_mode_enabled = vr::VrTabHelper::IsInVr(contents);
   }
 
-  if (base::FeatureList::IsEnabled(features::kLowPriorityIframes)) {
-    // Obtain the maximum effective connection type at which the feature is
-    // enabled.
-    std::string effective_connection_type_param =
-        base::GetFieldTrialParamValueByFeature(
-            features::kLowPriorityIframes,
-            "max_effective_connection_type_threshold");
-
-    base::Optional<net::EffectiveConnectionType> effective_connection_type =
-        net::GetEffectiveConnectionTypeForName(effective_connection_type_param);
-    if (effective_connection_type) {
-      web_prefs->low_priority_iframes_threshold =
-          effective_connection_type.value();
-    }
-  }
-
   web_prefs->lazy_load_enabled = !contents || !contents->GetDelegate() ||
                                  contents->GetDelegate()->ShouldAllowLazyLoad();
 

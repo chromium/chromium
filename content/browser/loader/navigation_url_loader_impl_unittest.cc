@@ -280,25 +280,6 @@ class NavigationURLLoaderImplTest : public testing::Test {
     }
   }
 
-  net::RequestPriority NavigateAndReturnRequestPriority(const GURL& url,
-                                                        bool is_main_frame) {
-    TestNavigationURLLoaderDelegate delegate;
-    base::test::ScopedFeatureList scoped_feature_list_;
-
-    scoped_feature_list_.InitAndEnableFeature(features::kLowPriorityIframes);
-
-    std::unique_ptr<NavigationURLLoader> loader = CreateTestLoader(
-        url,
-        base::StringPrintf("%s: %s", net::HttpRequestHeaders::kOrigin,
-                           url.GetOrigin().spec().c_str()),
-        "GET", &delegate, NavigationDownloadPolicy(), is_main_frame);
-    delegate.WaitForRequestRedirected();
-    loader->FollowRedirect({}, {}, {}, blink::PreviewsTypes::PREVIEWS_OFF);
-    delegate.WaitForResponseStarted();
-
-    return most_recent_resource_request_.value().priority;
-  }
-
   net::RedirectInfo NavigateAndReturnRedirectInfo(const GURL& url,
                                                   bool upgrade_if_insecure,
                                                   bool expect_request_fail) {
@@ -327,16 +308,6 @@ class NavigationURLLoaderImplTest : public testing::Test {
   net::EmbeddedTestServer http_test_server_;
   base::Optional<network::ResourceRequest> most_recent_resource_request_;
 };
-
-TEST_F(NavigationURLLoaderImplTest, RequestPriority) {
-  ASSERT_TRUE(http_test_server_.Start());
-  const GURL url = http_test_server_.GetURL("/redirect301-to-echo");
-
-  EXPECT_EQ(net::HIGHEST,
-            NavigateAndReturnRequestPriority(url, true /* is_main_frame */));
-  EXPECT_EQ(net::LOWEST,
-            NavigateAndReturnRequestPriority(url, false /* is_main_frame */));
-}
 
 TEST_F(NavigationURLLoaderImplTest, IsolationInfoOfMainFrameNavigation) {
   ASSERT_TRUE(http_test_server_.Start());

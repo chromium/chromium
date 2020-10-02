@@ -206,16 +206,8 @@ std::unique_ptr<network::ResourceRequest> CreateResourceRequest(
   new_request->trusted_params->client_security_state =
       request_info->client_security_state.Clone();
   new_request->is_main_frame = request_info->is_main_frame;
-
-  net::RequestPriority net_priority = net::HIGHEST;
-  if (!request_info->is_main_frame &&
-      base::FeatureList::IsEnabled(features::kLowPriorityIframes)) {
-    net_priority = net::LOWEST;
-  }
-  new_request->priority = net_priority;
-
+  new_request->priority = net::HIGHEST;
   new_request->render_frame_id = frame_tree_node_id;
-
   new_request->request_initiator =
       request_info->common_params->initiator_origin;
   new_request->referrer = request_info->common_params->referrer->url;

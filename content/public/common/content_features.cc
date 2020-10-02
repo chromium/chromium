@@ -356,10 +356,6 @@ const base::Feature kLogJsConsoleMessages {
 #endif
 };
 
-// Enables lowering the priority of the resources in iframes.
-const base::Feature kLowPriorityIframes{"LowPriorityIframes",
-                                        base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Removes the association between the `AgentSchedulingGroup` interfaces and the
 // IPC Channel. This will break ordering guarantees between different agent
 // scheduling groups (ordering withing a group is still preserved).
