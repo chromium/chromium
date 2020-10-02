@@ -178,6 +178,11 @@ UseCounterPageLoadMetricsObserver::GetAllowedUkmFeatures() {
           WebFeature::kAddressSpacePrivateEmbeddedInPublicNonSecureContext,
           WebFeature::kAddressSpacePrivateEmbeddedInUnknownSecureContext,
           WebFeature::kAddressSpacePrivateEmbeddedInUnknownNonSecureContext,
+          WebFeature::kFileSystemPickerMethod,
+          WebFeature::kV8Window_ShowOpenFilePicker_Method,
+          WebFeature::kV8Window_ShowSaveFilePicker_Method,
+          WebFeature::kV8Window_ShowDirectoryPicker_Method,
+          WebFeature::kV8StorageManager_GetDirectory_Method,
       }));
   return *opt_in_features;
 }
