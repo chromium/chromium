@@ -82,6 +82,9 @@ class CONTENT_EXPORT TtsControllerImpl : public TtsController,
   TtsControllerImpl();
   ~TtsControllerImpl() override;
 
+  // Exposed for unittest.
+  bool IsPausedForTesting() const { return paused_; }
+
  private:
   friend class TestTtsControllerImpl;
   friend struct base::DefaultSingletonTraits<TtsControllerImpl>;

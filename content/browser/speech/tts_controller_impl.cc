@@ -184,6 +184,8 @@ bool TtsControllerImpl::StopCurrentUtteranceIfMatches(const GURL& source_url) {
 
 void TtsControllerImpl::Pause() {
   base::RecordAction(base::UserMetricsAction("TextToSpeech.Pause"));
+  if (paused_)
+    return;
 
   paused_ = true;
   if (current_utterance_ && !current_utterance_->GetEngineId().empty()) {
@@ -197,6 +199,8 @@ void TtsControllerImpl::Pause() {
 
 void TtsControllerImpl::Resume() {
   base::RecordAction(base::UserMetricsAction("TextToSpeech.Resume"));
+  if (!paused_)
+    return;
 
   paused_ = false;
   if (current_utterance_ && !current_utterance_->GetEngineId().empty()) {
@@ -328,8 +332,7 @@ void TtsControllerImpl::RemoveUtteranceEventDelegate(
     }
 
     FinishCurrentUtterance();
-    if (!paused_)
-      SpeakNextUtterance();
+    SpeakNextUtterance();
   }
 }
 

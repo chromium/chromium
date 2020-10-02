@@ -28,29 +28,33 @@ namespace content {
 // Platform Tts implementation that does nothing.
 class MockTtsPlatformImpl : public TtsPlatform {
  public:
-  MockTtsPlatformImpl() = default;
+  explicit MockTtsPlatformImpl(TtsController* controller)
+      : controller_(controller) {}
   virtual ~MockTtsPlatformImpl() = default;
 
+  // Override the Mock API results.
   void set_voices(const std::vector<VoiceData>& voices) { voices_ = voices; }
-
-  void set_run_speak_callback(bool value) { run_speak_callback_ = value; }
   void set_is_speaking(bool value) { is_speaking_ = value; }
 
   // TtsPlatform:
   bool PlatformImplAvailable() override { return true; }
-  void Speak(int utterance_id,
-             const std::string& utterance,
-             const std::string& lang,
-             const VoiceData& voice,
-             const UtteranceContinuousParameters& params,
-             base::OnceCallback<void(bool)> on_speak_finished) override {
-    if (run_speak_callback_)
-      std::move(on_speak_finished).Run(true);
+  void Speak(
+      int utterance_id,
+      const std::string& utterance,
+      const std::string& lang,
+      const VoiceData& voice,
+      const UtteranceContinuousParameters& params,
+      base::OnceCallback<void(bool)> did_start_speaking_callback) override {
+    utterance_id_ = utterance_id;
+    did_start_speaking_callback_ = std::move(did_start_speaking_callback);
   }
   bool IsSpeaking() override { return is_speaking_; }
-  bool StopSpeaking() override { return true; }
-  void Pause() override {}
-  void Resume() override {}
+  bool StopSpeaking() override {
+    ++stop_speaking_called_;
+    return true;
+  }
+  void Pause() override { ++pause_called_; }
+  void Resume() override { ++resume_called_; }
   void GetVoices(std::vector<VoiceData>* out_voices) override {
     *out_voices = voices_;
   }
@@ -59,14 +63,39 @@ class MockTtsPlatformImpl : public TtsPlatform {
   }
   void WillSpeakUtteranceWithVoice(TtsUtterance* utterance,
                                    const VoiceData& voice_data) override {}
-  void SetError(const std::string& error) override {}
-  std::string GetError() override { return std::string(); }
-  void ClearError() override {}
+  void SetError(const std::string& error) override { error_ = error; }
+  std::string GetError() override { return error_; }
+  void ClearError() override { error_.clear(); }
+
+  // Returns the amount of calls to Mock API.
+  int pause_called() const { return pause_called_; }
+  int resume_called() const { return resume_called_; }
+  int stop_speaking_called() const { return stop_speaking_called_; }
+
+  // Simulate the TTS platform calling back the closure
+  // |did_start_speaking_callback| passed to Speak(...). This closure can be
+  // called synchronously or asynchronously.
+  void StartSpeaking(bool result) {
+    is_speaking_ = true;
+    std::move(did_start_speaking_callback_).Run(result);
+  }
+
+  void FinishSpeaking() {
+    is_speaking_ = false;
+    controller_->OnTtsEvent(utterance_id_, TTS_EVENT_END, 0, 0, {});
+    utterance_id_ = -1;
+  }
 
  private:
+  TtsController* const controller_;
   std::vector<VoiceData> voices_;
-  bool run_speak_callback_ = true;
+  int utterance_id_ = -1;
   bool is_speaking_ = false;
+  int pause_called_ = 0;
+  int resume_called_ = 0;
+  int stop_speaking_called_ = 0;
+  std::string error_;
+  base::OnceCallback<void(bool)> did_start_speaking_callback_;
 };
 
 #if defined(OS_CHROMEOS)
@@ -115,6 +144,7 @@ class TestTtsControllerImpl : public TtsControllerImpl {
 #if defined(OS_CHROMEOS)
   using TtsControllerImpl::SetTtsControllerDelegateForTesting;
 #endif
+  using TtsControllerImpl::IsPausedForTesting;
 
   TtsUtterance* current_utterance() { return current_utterance_.get(); }
 };
@@ -126,14 +156,15 @@ class TtsControllerTest : public testing::Test {
 
   void SetUp() override {
     controller_ = std::make_unique<TestTtsControllerImpl>();
+    platform_impl_ = std::make_unique<MockTtsPlatformImpl>(controller_.get());
     browser_context_ = std::make_unique<TestBrowserContext>();
-    controller()->SetTtsPlatform(&platform_impl_);
+    controller()->SetTtsPlatform(platform_impl_.get());
 #if defined(OS_CHROMEOS)
     controller()->SetTtsControllerDelegateForTesting(&delegate_);
 #endif
   }
 
-  MockTtsPlatformImpl* platform_impl() { return &platform_impl_; }
+  MockTtsPlatformImpl* platform_impl() { return platform_impl_.get(); }
   TestTtsControllerImpl* controller() { return controller_.get(); }
   TestBrowserContext* browser_context() { return browser_context_.get(); }
 
@@ -172,7 +203,7 @@ class TtsControllerTest : public testing::Test {
   RenderViewHostTestEnabler rvh_enabler_;
 
   std::unique_ptr<TestTtsControllerImpl> controller_;
-  MockTtsPlatformImpl platform_impl_;
+  std::unique_ptr<MockTtsPlatformImpl> platform_impl_;
   std::unique_ptr<TestBrowserContext> browser_context_;
 #if defined(OS_CHROMEOS)
   MockTtsControllerDelegate delegate_;
@@ -536,6 +567,158 @@ TEST_F(TtsControllerTest, SkipsQueuedUtteranceFromHiddenWebContents) {
   controller()->OnTtsEvent(utterance1_id, TTS_EVENT_END, 0, 0, {});
   EXPECT_EQ(nullptr, TtsControllerCurrentUtterance());
   EXPECT_TRUE(IsUtteranceListEmpty());
+}
+
+TEST_F(TtsControllerTest, PauseResumeNoUtterance) {
+  // Pause should not call the platform API when there is no utterance.
+  controller()->Pause();
+  controller()->Resume();
+  EXPECT_EQ(0, platform_impl()->pause_called());
+  EXPECT_EQ(0, platform_impl()->resume_called());
+}
+
+TEST_F(TtsControllerTest, SpeakPauseResume) {
+  std::unique_ptr<WebContents> web_contents = CreateWebContents();
+  std::unique_ptr<TtsUtteranceImpl> utterance =
+      CreateUtteranceImpl(web_contents.get());
+  utterance->SetCanEnqueue(true);
+
+  // Start speaking an utterance.
+  controller()->SpeakOrEnqueue(std::move(utterance));
+  platform_impl()->StartSpeaking(true);
+
+  // Pause the currently playing utterance should call the platform API pause.
+  controller()->Pause();
+  EXPECT_TRUE(controller()->IsPausedForTesting());
+  EXPECT_EQ(1, platform_impl()->pause_called());
+
+  // Double pause should not call again the platform API pause.
+  controller()->Pause();
+  EXPECT_EQ(1, platform_impl()->pause_called());
+
+  EXPECT_TRUE(IsUtteranceListEmpty());
+  EXPECT_TRUE(TtsControllerCurrentUtterance());
+
+  // Resuming the playing utterance should call the platform API resume.
+  controller()->Resume();
+  EXPECT_FALSE(controller()->IsPausedForTesting());
+  EXPECT_EQ(1, platform_impl()->resume_called());
+
+  // Double resume should not call again the platform API resume.
+  controller()->Resume();
+  EXPECT_EQ(1, platform_impl()->resume_called());
+  EXPECT_TRUE(controller()->IsSpeaking());
+
+  // Complete the playing utterance.
+  platform_impl()->FinishSpeaking();
+
+  EXPECT_TRUE(IsUtteranceListEmpty());
+  EXPECT_FALSE(TtsControllerCurrentUtterance());
+  EXPECT_FALSE(controller()->IsSpeaking());
+}
+
+TEST_F(TtsControllerTest, SpeakWhenPaused) {
+  std::unique_ptr<WebContents> web_contents = CreateWebContents();
+  std::unique_ptr<TtsUtteranceImpl> utterance =
+      CreateUtteranceImpl(web_contents.get());
+  utterance->SetCanEnqueue(true);
+
+  // Pause the controller.
+  controller()->Pause();
+  EXPECT_TRUE(controller()->IsPausedForTesting());
+
+  // Speak an utterance while controller is paused, the utterance should be
+  // queued.
+  controller()->SpeakOrEnqueue(std::move(utterance));
+  EXPECT_FALSE(IsUtteranceListEmpty());
+  EXPECT_FALSE(TtsControllerCurrentUtterance());
+
+  // Resume speaking, the utterance should start playing.
+  controller()->Resume();
+  EXPECT_FALSE(controller()->IsPausedForTesting());
+  EXPECT_TRUE(IsUtteranceListEmpty());
+  EXPECT_TRUE(TtsControllerCurrentUtterance());
+
+  // Simulate platform starting to play the utterance.
+  platform_impl()->StartSpeaking(true);
+  EXPECT_TRUE(IsUtteranceListEmpty());
+  EXPECT_TRUE(TtsControllerCurrentUtterance());
+
+  EXPECT_TRUE(controller()->IsSpeaking());
+
+  // Complete the playing utterance.
+  platform_impl()->FinishSpeaking();
+  EXPECT_TRUE(IsUtteranceListEmpty());
+  EXPECT_FALSE(TtsControllerCurrentUtterance());
+  EXPECT_FALSE(controller()->IsSpeaking());
+}
+
+TEST_F(TtsControllerTest, SpeakWhenPausedAndCannotEnqueueUtterance) {
+  std::unique_ptr<WebContents> web_contents = CreateWebContents();
+  std::unique_ptr<TtsUtteranceImpl> utterance1 =
+      CreateUtteranceImpl(web_contents.get());
+  utterance1->SetCanEnqueue(false);
+
+  // Pause the controller.
+  controller()->Pause();
+  EXPECT_TRUE(controller()->IsPausedForTesting());
+
+  // Speak an utterance while controller is paused. The utterance cannot be
+  // queued and should be dropped.
+  controller()->SpeakOrEnqueue(std::move(utterance1));
+  EXPECT_TRUE(IsUtteranceListEmpty());
+  EXPECT_FALSE(TtsControllerCurrentUtterance());
+
+  // Speak an utterance that can be queued. The controller should stay paused
+  // and the second utterance must be queued.
+  std::unique_ptr<TtsUtteranceImpl> utterance2 =
+      CreateUtteranceImpl(web_contents.get());
+  utterance2->SetCanEnqueue(true);
+
+  controller()->SpeakOrEnqueue(std::move(utterance2));
+  EXPECT_TRUE(controller()->IsPausedForTesting());
+  EXPECT_FALSE(IsUtteranceListEmpty());
+  EXPECT_FALSE(TtsControllerCurrentUtterance());
+
+  // Speak an utterance that cannot be queued should clear the queue.
+  std::unique_ptr<TtsUtteranceImpl> utterance3 =
+      CreateUtteranceImpl(web_contents.get());
+  utterance3->SetCanEnqueue(false);
+
+  controller()->SpeakOrEnqueue(std::move(utterance3));
+  EXPECT_TRUE(controller()->IsPausedForTesting());
+  EXPECT_TRUE(IsUtteranceListEmpty());
+  EXPECT_FALSE(TtsControllerCurrentUtterance());
+
+  // Resume the controller.
+  controller()->Resume();
+  EXPECT_FALSE(controller()->IsPausedForTesting());
+}
+
+TEST_F(TtsControllerTest, StopMustResumeController) {
+  std::unique_ptr<WebContents> web_contents = CreateWebContents();
+  std::unique_ptr<TtsUtteranceImpl> utterance =
+      CreateUtteranceImpl(web_contents.get());
+  utterance->SetCanEnqueue(true);
+
+  // Pause the controller.
+  controller()->Pause();
+  EXPECT_TRUE(controller()->IsPausedForTesting());
+
+  // Speak an utterance while controller is paused. The utterance is queued.
+  controller()->SpeakOrEnqueue(std::move(utterance));
+  EXPECT_FALSE(IsUtteranceListEmpty());
+  EXPECT_FALSE(TtsControllerCurrentUtterance());
+
+  platform_impl()->SetError("dummy");
+
+  // Stop must resume the controller and clear the queue.
+  controller()->Stop();
+  EXPECT_FALSE(controller()->IsPausedForTesting());
+  EXPECT_EQ(1, platform_impl()->stop_speaking_called());
+  EXPECT_TRUE(IsUtteranceListEmpty());
+  EXPECT_FALSE(TtsControllerCurrentUtterance());
+  EXPECT_TRUE(platform_impl()->GetError().empty());
 }
 
 }  // namespace content
