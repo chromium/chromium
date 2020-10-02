@@ -93,6 +93,12 @@ void ExecutionContextRegistryImpl::AddObserver(
   observers_.AddObserver(observer);
 }
 
+bool ExecutionContextRegistryImpl::HasObserver(
+    ExecutionContextObserver* observer) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return observers_.HasObserver(observer);
+}
+
 void ExecutionContextRegistryImpl::RemoveObserver(
     ExecutionContextObserver* observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

@@ -38,6 +38,7 @@ class ExecutionContextRegistryImpl
 
   // ExecutionContextRegistry implementation:
   void AddObserver(ExecutionContextObserver* observer) override;
+  bool HasObserver(ExecutionContextObserver* observer) const override;
   void RemoveObserver(ExecutionContextObserver* observer) override;
   const ExecutionContext* GetExecutionContextByToken(
       const blink::ExecutionContextToken& token) override;

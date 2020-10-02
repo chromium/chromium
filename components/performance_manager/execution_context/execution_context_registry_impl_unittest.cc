@@ -72,7 +72,9 @@ TEST_F(ExecutionContextRegistryImplTest, RegistryWorks) {
 
   // Create an observer.
   MockExecutionContextObserver obs;
+  EXPECT_FALSE(registry_->HasObserver(&obs));
   registry_->AddObserver(&obs);
+  EXPECT_TRUE(registry_->HasObserver(&obs));
 
   // Create some mock nodes. This creates a graph with 1 page containing 2
   // frames in 1 process.

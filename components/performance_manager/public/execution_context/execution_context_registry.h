@@ -37,6 +37,9 @@ class ExecutionContextRegistry {
   // the registry is torn down.
   virtual void AddObserver(ExecutionContextObserver* observer) = 0;
 
+  // Determines if an observer is in the registry.
+  virtual bool HasObserver(ExecutionContextObserver* observer) const = 0;
+
   // Removes an observer from the registry.
   virtual void RemoveObserver(ExecutionContextObserver* observer) = 0;
 
