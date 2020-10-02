@@ -28,6 +28,11 @@ class MediaStringViewTest : public AmbientAshTestBase {
     GetSessionControllerClient()->set_show_lock_screen_views(true);
   }
 
+  void TearDown() override {
+    CloseAmbientScreen();
+    AmbientAshTestBase::TearDown();
+  }
+
   const base::string16& GetText() {
     return GetMediaStringViewTextLabel()->GetText();
   }
@@ -260,6 +265,8 @@ TEST_F(MediaStringViewTest, HasNoMaskLayerWithShortText) {
   metadata.title = base::ASCIIToUTF16("title");
   metadata.artist = base::ASCIIToUTF16("artist");
 
+  SimulateMediaPlaybackStateChanged(
+      media_session::mojom::MediaPlaybackState::kPlaying);
   SimulateMediaMetadataChanged(metadata);
   // Force re-layout.
   container_view()->Layout();
@@ -277,6 +284,8 @@ TEST_F(MediaStringViewTest, HasMaskLayerWithLongText) {
   metadata.title = base::ASCIIToUTF16("A super duper long title");
   metadata.artist = base::ASCIIToUTF16("A super duper long artist name");
 
+  SimulateMediaPlaybackStateChanged(
+      media_session::mojom::MediaPlaybackState::kPlaying);
   SimulateMediaMetadataChanged(metadata);
   // Force re-layout.
   container_view()->Layout();
@@ -294,6 +303,8 @@ TEST_F(MediaStringViewTest, MaskLayerShouldUpdate) {
   metadata.title = base::ASCIIToUTF16("title");
   metadata.artist = base::ASCIIToUTF16("artist");
 
+  SimulateMediaPlaybackStateChanged(
+      media_session::mojom::MediaPlaybackState::kPlaying);
   SimulateMediaMetadataChanged(metadata);
   // Force re-layout.
   container_view()->Layout();
@@ -357,7 +368,6 @@ TEST_F(MediaStringViewTest, DoNotShowOnLockScreenIfPrefIsDisabled) {
   PrefService* pref =
       Shell::Get()->session_controller()->GetPrimaryUserPrefService();
   pref->SetBoolean(prefs::kLockScreenMediaControlsEnabled, false);
-
   // Simulates Ambient Mode shown on lock-screen.
   LockScreen();
   FastForwardToInactivity();
@@ -368,6 +378,30 @@ TEST_F(MediaStringViewTest, DoNotShowOnLockScreenIfPrefIsDisabled) {
 
   // Verifies media string is hidden.
   EXPECT_FALSE(GetMediaStringView()->GetVisible());
+}
+
+TEST_F(MediaStringViewTest, ShouldHasDifferentTransform) {
+  ShowAmbientScreen();
+
+  // Sets metadata for current session.
+  media_session::MediaMetadata metadata;
+  metadata.title = base::ASCIIToUTF16("title");
+  metadata.artist = base::ASCIIToUTF16("artist");
+
+  SimulateMediaPlaybackStateChanged(
+      media_session::mojom::MediaPlaybackState::kPlaying);
+  SimulateMediaMetadataChanged(metadata);
+  EXPECT_TRUE(GetMediaStringView()->GetVisible());
+
+  // It is theoretically that the transforms could be the same in two
+  // consecutive updates, therefore we test with two updates.
+  gfx::Transform transform1 =
+      GetMediaStringView()->layer()->GetTargetTransform();
+  FastForwardToNextImage();
+  FastForwardToNextImage();
+  gfx::Transform transform2 =
+      GetMediaStringView()->layer()->GetTargetTransform();
+  EXPECT_NE(transform1, transform2);
 }
 
 }  // namespace ash
