@@ -267,46 +267,6 @@ GpuFeatureStatus Get2DCanvasFeatureStatus(
   return kGpuFeatureStatusEnabled;
 }
 
-GpuFeatureStatus GetFlash3DFeatureStatus(
-    const std::set<int>& blocklisted_features,
-    bool use_swift_shader) {
-  if (use_swift_shader) {
-    // This is for testing only. Chrome should exercise the GPU accelerated
-    // path on top of SwiftShader driver.
-    return kGpuFeatureStatusEnabled;
-  }
-  if (blocklisted_features.count(GPU_FEATURE_TYPE_FLASH3D))
-    return kGpuFeatureStatusBlocklisted;
-  return kGpuFeatureStatusEnabled;
-}
-
-GpuFeatureStatus GetFlashStage3DFeatureStatus(
-    const std::set<int>& blocklisted_features,
-    bool use_swift_shader) {
-  if (use_swift_shader) {
-    // This is for testing only. Chrome should exercise the GPU accelerated
-    // path on top of SwiftShader driver.
-    return kGpuFeatureStatusEnabled;
-  }
-  if (blocklisted_features.count(GPU_FEATURE_TYPE_FLASH_STAGE3D))
-    return kGpuFeatureStatusBlocklisted;
-  return kGpuFeatureStatusEnabled;
-}
-
-GpuFeatureStatus GetFlashStage3DBaselineFeatureStatus(
-    const std::set<int>& blocklisted_features,
-    bool use_swift_shader) {
-  if (use_swift_shader) {
-    // This is for testing only. Chrome should exercise the GPU accelerated
-    // path on top of SwiftShader driver.
-    return kGpuFeatureStatusEnabled;
-  }
-  if (blocklisted_features.count(GPU_FEATURE_TYPE_FLASH_STAGE3D) ||
-      blocklisted_features.count(GPU_FEATURE_TYPE_FLASH_STAGE3D_BASELINE))
-    return kGpuFeatureStatusBlocklisted;
-  return kGpuFeatureStatusEnabled;
-}
-
 GpuFeatureStatus GetAcceleratedVideoDecodeFeatureStatus(
     const std::set<int>& blocklisted_features,
     bool use_swift_shader) {
@@ -436,13 +396,7 @@ GpuFeatureInfo ComputeGpuFeatureInfoWithHardwareAccelerationDisabled() {
       kGpuFeatureStatusSoftware;
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_ACCELERATED_WEBGL] =
       kGpuFeatureStatusSoftware;
-  gpu_feature_info.status_values[GPU_FEATURE_TYPE_FLASH3D] =
-      kGpuFeatureStatusDisabled;
-  gpu_feature_info.status_values[GPU_FEATURE_TYPE_FLASH_STAGE3D] =
-      kGpuFeatureStatusDisabled;
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_ACCELERATED_VIDEO_DECODE] =
-      kGpuFeatureStatusDisabled;
-  gpu_feature_info.status_values[GPU_FEATURE_TYPE_FLASH_STAGE3D_BASELINE] =
       kGpuFeatureStatusDisabled;
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_GPU_RASTERIZATION] =
       kGpuFeatureStatusDisabled;
@@ -474,13 +428,7 @@ GpuFeatureInfo ComputeGpuFeatureInfoWithNoGpu() {
       kGpuFeatureStatusSoftware;
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_ACCELERATED_WEBGL] =
       kGpuFeatureStatusDisabled;
-  gpu_feature_info.status_values[GPU_FEATURE_TYPE_FLASH3D] =
-      kGpuFeatureStatusDisabled;
-  gpu_feature_info.status_values[GPU_FEATURE_TYPE_FLASH_STAGE3D] =
-      kGpuFeatureStatusDisabled;
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_ACCELERATED_VIDEO_DECODE] =
-      kGpuFeatureStatusDisabled;
-  gpu_feature_info.status_values[GPU_FEATURE_TYPE_FLASH_STAGE3D_BASELINE] =
       kGpuFeatureStatusDisabled;
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_GPU_RASTERIZATION] =
       kGpuFeatureStatusDisabled;
@@ -512,13 +460,7 @@ GpuFeatureInfo ComputeGpuFeatureInfoForSwiftShader() {
       kGpuFeatureStatusSoftware;
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_ACCELERATED_WEBGL] =
       kGpuFeatureStatusSoftware;
-  gpu_feature_info.status_values[GPU_FEATURE_TYPE_FLASH3D] =
-      kGpuFeatureStatusDisabled;
-  gpu_feature_info.status_values[GPU_FEATURE_TYPE_FLASH_STAGE3D] =
-      kGpuFeatureStatusDisabled;
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_ACCELERATED_VIDEO_DECODE] =
-      kGpuFeatureStatusDisabled;
-  gpu_feature_info.status_values[GPU_FEATURE_TYPE_FLASH_STAGE3D_BASELINE] =
       kGpuFeatureStatusDisabled;
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_GPU_RASTERIZATION] =
       kGpuFeatureStatusDisabled;
@@ -601,13 +543,6 @@ GpuFeatureInfo ComputeGpuFeatureInfo(const GPUInfo& gpu_info,
       GetWebGL2FeatureStatus(blocklisted_features, use_swift_shader);
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_ACCELERATED_2D_CANVAS] =
       Get2DCanvasFeatureStatus(blocklisted_features, use_swift_shader);
-  gpu_feature_info.status_values[GPU_FEATURE_TYPE_FLASH3D] =
-      GetFlash3DFeatureStatus(blocklisted_features, use_swift_shader);
-  gpu_feature_info.status_values[GPU_FEATURE_TYPE_FLASH_STAGE3D] =
-      GetFlashStage3DFeatureStatus(blocklisted_features, use_swift_shader);
-  gpu_feature_info.status_values[GPU_FEATURE_TYPE_FLASH_STAGE3D_BASELINE] =
-      GetFlashStage3DBaselineFeatureStatus(blocklisted_features,
-                                           use_swift_shader);
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_ACCELERATED_VIDEO_DECODE] =
       GetAcceleratedVideoDecodeFeatureStatus(blocklisted_features,
                                              use_swift_shader);

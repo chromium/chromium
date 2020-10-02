@@ -29,10 +29,6 @@ std::unique_ptr<GpuBlocklist> GpuBlocklist::Create(
                             GPU_FEATURE_TYPE_ACCELERATED_2D_CANVAS);
   list->AddSupportedFeature("accelerated_webgl",
                             GPU_FEATURE_TYPE_ACCELERATED_WEBGL);
-  list->AddSupportedFeature("flash3d", GPU_FEATURE_TYPE_FLASH3D);
-  list->AddSupportedFeature("flash_stage3d", GPU_FEATURE_TYPE_FLASH_STAGE3D);
-  list->AddSupportedFeature("flash_stage3d_baseline",
-                            GPU_FEATURE_TYPE_FLASH_STAGE3D_BASELINE);
   list->AddSupportedFeature("accelerated_video_decode",
                             GPU_FEATURE_TYPE_ACCELERATED_VIDEO_DECODE);
   list->AddSupportedFeature("gpu_rasterization",

@@ -13,8 +13,6 @@
       "multi_gpu_category": "any",
       "features": [
         "accelerated_webgl",
-        "flash3d",
-        "flash_stage3d",
         "gpu_rasterization"
       ]
     },
@@ -38,8 +36,6 @@
       "device_id": ["0x27AE", "0x27A2"],
       "features": [
         "accelerated_webgl",
-        "flash3d",
-        "flash_stage3d",
         "accelerated_2d_canvas"
       ]
     },
@@ -100,8 +96,6 @@
       "multi_gpu_category": "any",
       "features": [
         "accelerated_webgl",
-        "flash3d",
-        "flash_stage3d",
         "gpu_rasterization"
       ]
     },
@@ -358,16 +352,6 @@
       ]
     },
     {
-      "id": 53,
-      "description": "The Intel GMA500 is too slow for Stage3D",
-      "cr_bugs": [152096],
-      "vendor_id": "0x8086",
-      "device_id": ["0x8108", "0x8109"],
-      "features": [
-        "flash_stage3d"
-      ]
-    },
-    {
       "id": 56,
       "description": "NVIDIA linux drivers are unstable when using multiple Open GL contexts and with low memory",
       "cr_bugs": [145600],
@@ -381,9 +365,7 @@
         "value": "331.38"
       },
       "features": [
-        "accelerated_video_decode",
-        "flash3d",
-        "flash_stage3d"
+        "accelerated_video_decode"
       ]
     },
     {
@@ -436,57 +418,6 @@
       },
       "features": [
         "all"
-      ]
-    },
-    {
-      "id": 69,
-      "description": "NVIDIA driver 196.21 is buggy with Stage3D baseline mode",
-      "cr_bugs": [172771],
-      "os": {
-        "type": "win"
-      },
-      "vendor_id": "0x10de",
-      "driver_version": {
-        "comment": "INF_version: 8.17.11.9621; date: 01/11/2010",
-        "op": "=",
-        "value": "8.17.11.9621"
-      },
-      "features": [
-        "flash_stage3d_baseline"
-      ]
-    },
-    {
-      "id": 70,
-      "description": "NVIDIA driver 182.67 is buggy with Stage3D baseline mode",
-      "cr_bugs": [172771],
-      "os": {
-        "type": "win"
-      },
-      "vendor_id": "0x10de",
-      "driver_version": {
-        "comment": "INF_version: 7.15.11.8267; date: 05/12/2009",
-        "op": "=",
-        "value": "7.15.11.8267"
-      },
-      "features": [
-        "flash_stage3d_baseline"
-      ]
-    },
-    {
-      "id": 71,
-      "description": "All Intel drivers before 8.15.10.2021 are buggy with Stage3D baseline mode",
-      "cr_bugs": [172771],
-      "os": {
-        "type": "win"
-      },
-      "vendor_id": "0x8086",
-      "driver_version": {
-        "comment": "INF_version: 8.15.10.2021; date: 12/14/2009",
-        "op": "<",
-        "value": "8.15.10.2021"
-      },
-      "features": [
-        "flash_stage3d_baseline"
       ]
     },
     {
@@ -1639,8 +1570,6 @@
       },
       "features": [
         "accelerated_webgl",
-        "flash3d",
-        "flash_stage3d",
         "accelerated_2d_canvas"
       ]
     },
@@ -1658,8 +1587,6 @@
       },
       "features": [
         "accelerated_webgl",
-        "flash3d",
-        "flash_stage3d",
         "accelerated_2d_canvas"
       ]
     },
