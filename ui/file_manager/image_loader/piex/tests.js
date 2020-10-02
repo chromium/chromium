@@ -43,8 +43,14 @@ const puppeteer = require('puppeteer');
     console.log(puppeteer.defaultArgs());
   }
 
+  let args = [];
+  if (process.platform === 'linux') {
+    args = ['--no-sandbox'];
+  }
+
   const browser = await puppeteer.launch({
-    headless: !program.debug
+    headless: !program.debug,
+    args: [...args]
   });
 
   const page = await browser.newPage();
