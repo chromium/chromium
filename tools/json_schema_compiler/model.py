@@ -208,7 +208,7 @@ class Type(object):
     self.name = name
 
     # The typename "ManifestKeys" is reserved.
-    if name is 'ManifestKeys':
+    if name == 'ManifestKeys':
       assert parent == namespace and input_origin.from_manifest_keys, \
           'ManifestKeys type is reserved'
 
