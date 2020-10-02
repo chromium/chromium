@@ -727,8 +727,9 @@ class BBJSONGenerator(object):
 
     self.initialize_args_for_test(
         result, tester_config, additional_arg_keys=['gtest_args'])
-    if self.is_android(tester_config) and tester_config.get('use_swarming',
-                                                            True):
+    if self.is_android(tester_config) and tester_config.get(
+        'use_swarming',
+        True) and not test_config.get('use_isolated_scripts_api', False):
       self.add_android_presentation_args(tester_config, test_name, result)
       result['args'] = result.get('args', []) + ['--recover-devices']
 
@@ -740,9 +741,14 @@ class BBJSONGenerator(object):
     if not result.get('merge'):
       # TODO(https://crbug.com/958376): Consider adding the ability to not have
       # this default.
+      if test_config.get('use_isolated_scripts_api', False):
+        merge_script = 'standard_isolated_script_merge'
+      else:
+        merge_script = 'standard_gtest_merge'
+
       result['merge'] = {
-        'script': '//testing/merge_scripts/standard_gtest_merge.py',
-        'args': [],
+          'script': '//testing/merge_scripts/%s.py' % merge_script,
+          'args': [],
       }
     return result
 
