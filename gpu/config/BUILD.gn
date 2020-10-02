@@ -245,9 +245,19 @@ if (is_android) {
     template = "android/java/src/org/chromium/gpu/config/GpuSwitches.java.tmpl"
   }
 
+  java_cpp_features("java_features_srcjar") {
+    # External code should depend on ":config_java" instead.
+    visibility = [ ":*" ]
+    sources = [ "gpu_finch_features.cc" ]
+    template = "android/java/src/org/chromium/gpu/config/GpuFeatures.java.tmpl"
+  }
+
   android_library("config_java") {
-    # Right now, this only includes the Java switches. But if we need more Java
-    # files, they should be added here as necessary.
-    srcjar_deps = [ ":java_switches_srcjar" ]
+    # Right now, this only includes the Java switches/features. But if we need
+    # more Java files, they should be added here as necessary.
+    srcjar_deps = [
+      ":java_features_srcjar",
+      ":java_switches_srcjar",
+    ]
   }
 }
