@@ -183,7 +183,7 @@ TEST_F(GridViewControllerTest, MoveUnselectedItem) {
 
 // Tests that |-replaceItemID:withItem:| does not crash when updating an item
 // that is scrolled offscreen.
-TEST_F(GridViewControllerTest, ReplaceScrolledOffScreenCell) {
+TEST_F(GridViewControllerTest, DISABLED_ReplaceScrolledOffScreenCell) {
   // TODO(crbug.com/1104872): On iOS 14 iPhone X, visibleCellsCount is always
   // equal to the total number of cells, so the while loop below never
   // terminates.
