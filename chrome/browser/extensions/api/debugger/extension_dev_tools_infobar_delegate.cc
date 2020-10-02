@@ -30,22 +30,27 @@ base::LazyInstance<Delegates>::Leaky g_delegates = LAZY_INSTANCE_INITIALIZER;
 }  // namespace
 
 // static
+constexpr base::TimeDelta ExtensionDevToolsInfoBarDelegate::kAutoCloseDelay;
+
 std::unique_ptr<ExtensionDevToolsInfoBarDelegate::CallbackList::Subscription>
 ExtensionDevToolsInfoBarDelegate::Create(const std::string& extension_id,
                                          const std::string& extension_name,
                                          base::OnceClosure destroyed_callback) {
   Delegates& delegates = g_delegates.Get();
   const auto it = delegates.find(extension_id);
-  if (it != delegates.end())
+  if (it != delegates.end()) {
+    it->second->timer_.Stop();
     return it->second->RegisterDestroyedCallback(std::move(destroyed_callback));
+  }
 
   // Can't use std::make_unique<>(), constructor is private.
   auto delegate = base::WrapUnique(
       new ExtensionDevToolsInfoBarDelegate(extension_id, extension_name));
-  delegates[extension_id] = delegate.get();
+  auto* delegate_raw = delegate.get();
+  delegates[extension_id] = delegate_raw;
   std::unique_ptr<CallbackList::Subscription> subscription =
       delegate->RegisterDestroyedCallback(std::move(destroyed_callback));
-  GlobalConfirmInfoBar::Show(std::move(delegate));
+  delegate_raw->infobar_ = GlobalConfirmInfoBar::Show(std::move(delegate));
   return subscription;
 }
 
@@ -53,6 +58,18 @@ ExtensionDevToolsInfoBarDelegate::~ExtensionDevToolsInfoBarDelegate() {
   callback_list_.Notify();
   const size_t erased = g_delegates.Get().erase(extension_id_);
   DCHECK(erased);
+}
+
+void ExtensionDevToolsInfoBarDelegate::NotifyExtensionDetached(
+    const std::string& extension_id) {
+  const Delegates& delegates = g_delegates.Get();
+  const auto iter = delegates.find(extension_id);
+  if (iter != delegates.cend()) {
+    // Infobar_ was set in Create() which makes the following access safe.
+    iter->second->timer_.Start(FROM_HERE, kAutoCloseDelay,
+                               iter->second->infobar_,
+                               &GlobalConfirmInfoBar::Close);
+  }
 }
 
 infobars::InfoBarDelegate::InfoBarIdentifier

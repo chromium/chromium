@@ -270,6 +270,7 @@ bool ExtensionDevToolsClientHost::Attach() {
 }
 
 ExtensionDevToolsClientHost::~ExtensionDevToolsClientHost() {
+  ExtensionDevToolsInfoBarDelegate::NotifyExtensionDetached(extension_id());
   g_attached_client_hosts.Get().erase(this);
 }
 

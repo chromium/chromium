@@ -94,3 +94,27 @@ IN_PROC_BROWSER_TEST_F(GlobalConfirmInfoBarTest, UserInteraction) {
   for (int i = 0; i < tab_strip_model->count(); i++)
     EXPECT_EQ(0u, GetInfoBarServiceFromTabIndex(i)->infobar_count());
 }
+
+IN_PROC_BROWSER_TEST_F(GlobalConfirmInfoBarTest, CreateAndCloseInfobar) {
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  ASSERT_EQ(1, tab_strip_model->count());
+  InfoBarService* infobar_service = GetInfoBarServiceFromTabIndex(0);
+
+  // Make sure the tab has no info bar.
+  EXPECT_EQ(0u, infobar_service->infobar_count());
+
+  auto delegate = std::make_unique<TestConfirmInfoBarDelegate>();
+  TestConfirmInfoBarDelegate* delegate_ptr = delegate.get();
+
+  GlobalConfirmInfoBar* infobar =
+      GlobalConfirmInfoBar::Show(std::move(delegate));
+
+  // Verify that the info bar is shown.
+  ASSERT_EQ(1u, infobar_service->infobar_count());
+  EXPECT_TRUE(
+      infobar_service->infobar_at(0)->delegate()->EqualsDelegate(delegate_ptr));
+
+  // Close the infobar and make sure that the tab has no info bar.
+  infobar->Close();
+  EXPECT_EQ(0u, infobar_service->infobar_count());
+}

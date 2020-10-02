@@ -37,11 +37,15 @@ class GlobalConfirmInfoBar : public TabStripModelObserver,
   // the delegate will be deleted synchronously when any of the tabs' infobars
   // is closed via user action.  Note that both of these aspects of lifetime
   // management differ from how typical infobars work.
-  static void Show(std::unique_ptr<ConfirmInfoBarDelegate> delegate);
+  static GlobalConfirmInfoBar* Show(
+      std::unique_ptr<ConfirmInfoBarDelegate> delegate);
 
   // infobars::InfoBarManager::Observer:
   void OnInfoBarRemoved(infobars::InfoBar* info_bar, bool animate) override;
   void OnManagerShuttingDown(infobars::InfoBarManager* manager) override;
+
+  // Closes all the infobars.
+  void Close();
 
  private:
   class DelegateProxy;
@@ -61,9 +65,6 @@ class GlobalConfirmInfoBar : public TabStripModelObserver,
 
   // Adds the info bar to the tab if it is missing.
   void MaybeAddInfoBar(content::WebContents* web_contents);
-
-  // Closes all the infobars.
-  void Close();
 
   std::unique_ptr<ConfirmInfoBarDelegate> delegate_;
   std::map<infobars::InfoBarManager*, DelegateProxy*> proxies_;

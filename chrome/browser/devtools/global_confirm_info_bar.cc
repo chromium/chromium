@@ -156,14 +156,10 @@ void GlobalConfirmInfoBar::DelegateProxy::Detach() {
 }
 
 // static
-void GlobalConfirmInfoBar::Show(
+GlobalConfirmInfoBar* GlobalConfirmInfoBar::Show(
     std::unique_ptr<ConfirmInfoBarDelegate> delegate) {
   // Owns itself, deleted by Close().
-  new GlobalConfirmInfoBar(std::move(delegate));
-}
-
-void GlobalConfirmInfoBar::Close() {
-  delete this;
+  return new GlobalConfirmInfoBar(std::move(delegate));
 }
 
 GlobalConfirmInfoBar::GlobalConfirmInfoBar(
@@ -213,6 +209,10 @@ void GlobalConfirmInfoBar::OnManagerShuttingDown(
     infobars::InfoBarManager* manager) {
   manager->RemoveObserver(this);
   proxies_.erase(manager);
+}
+
+void GlobalConfirmInfoBar::Close() {
+  delete this;
 }
 
 void GlobalConfirmInfoBar::MaybeAddInfoBar(content::WebContents* web_contents) {
