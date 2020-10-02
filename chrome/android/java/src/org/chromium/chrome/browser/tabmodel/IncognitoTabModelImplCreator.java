@@ -82,6 +82,8 @@ class IncognitoTabModelImplCreator implements IncognitoTabModelDelegate {
             if (otrProfile == null) {
                 return Profile.getLastUsedRegularProfile().getPrimaryOTRProfile();
             }
+
+            return otrProfile;
         }
         return Profile.getLastUsedRegularProfile().getPrimaryOTRProfile();
     }
