@@ -236,7 +236,7 @@ std::unique_ptr<VideoFrameValidator::MismatchedFrameInfo>
 MD5VideoFrameValidator::Validate(scoped_refptr<const VideoFrame> frame,
                                  size_t frame_index) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(validator_thread_sequence_checker_);
-#if BUILDFLAG(USE_VAAPI)
+#if defined(OS_CHROMEOS) || BUILDFLAG(IS_LACROS)
   // b/149808895: There is a bug in the synchronization on mapped buffers, which
   // causes the frame validation failure. The bug is due to some missing i915
   // patches in kernel v3.18. The bug will be fixed if the kernel is upreved to
@@ -256,7 +256,7 @@ MD5VideoFrameValidator::Validate(scoped_refptr<const VideoFrame> frame,
     if (is_skylake)
       usleep(10);
   }
-#endif  // BUILDFLAG(USE_VAAPI)
+#endif  // defined(OS_CHROMEOS) || BUILDFLAG(IS_LACROS)
   if (frame->format() != validation_format_) {
     frame = ConvertVideoFrame(frame.get(), validation_format_);
   }
