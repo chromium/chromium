@@ -12664,6 +12664,96 @@ should be kept until we remove incident reporting. -->
   <summary>Win32 APIs that error out during setup.</summary>
 </histogram>
 
+<histogram name="SharedHighlights.LinkGenerated" units="BooleanSuccess"
+    expires_after="2021-03-07">
+  <owner>gayane@chromium.org</owner>
+  <owner>chrome-shared-highlighting@google.com</owner>
+  <summary>
+    Indicates whether text fragment selector generation was successful.
+  </summary>
+</histogram>
+
+<histogram name="SharedHighlights.LinkGenerated.Error"
+    enum="LinkGenerationError" expires_after="2021-03-07">
+  <owner>gayane@chromium.org</owner>
+  <owner>chrome-shared-highlighting@google.com</owner>
+  <summary>
+    Indicates error that caused text fragment selector generation to fail.
+  </summary>
+</histogram>
+
+<histogram name="SharedHighlights.LinkGenerated.Error.Iterations"
+    units="iterations" expires_after="2021-03-07">
+  <owner>gayane@chromium.org</owner>
+  <owner>chrome-shared-highlighting@google.com</owner>
+  <summary>
+    Indicates number of iterations it took for the unsuccessful text fragment
+    selector generation run.
+  </summary>
+</histogram>
+
+<histogram name="SharedHighlights.LinkGenerated.Error.TimeToGenerate"
+    units="ms" expires_after="2021-03-07">
+  <owner>gayane@chromium.org</owner>
+  <owner>chrome-shared-highlighting@google.com</owner>
+  <summary>
+    Time it took in millisecons for a failed text fragment selector generation
+    attempt.
+  </summary>
+</histogram>
+
+<histogram name="SharedHighlights.LinkGenerated.Iterations" units="iterations"
+    expires_after="2021-03-07">
+  <owner>gayane@chromium.org</owner>
+  <owner>chrome-shared-highlighting@google.com</owner>
+  <summary>
+    Indicates number of iterations it took to successfully generate text
+    fragment selector.
+  </summary>
+</histogram>
+
+<histogram name="SharedHighlights.LinkGenerated.ParamLength" units="characters"
+    expires_after="2021-03-07">
+  <owner>gayane@chromium.org</owner>
+  <owner>chrome-shared-highlighting@google.com</owner>
+  <summary>
+    Number of charaters in successfully generated text fragment selector. For
+    example, for #:=:text=sample%20text, it would be the
+    len(&quot;sample%20text&quot;) which is 13. Recorded only when selector
+    generation was successful.
+  </summary>
+</histogram>
+
+<histogram name="SharedHighlights.LinkGenerated.SelectionLength"
+    units="characters" expires_after="2021-03-07">
+  <owner>gayane@chromium.org</owner>
+  <owner>chrome-shared-highlighting@google.com</owner>
+  <summary>
+    Number of characters in the user selected text, that text fragment selector
+    is generated for. Recorded regardless of generation success.
+  </summary>
+</histogram>
+
+<histogram name="SharedHighlights.LinkGenerated.SelectorParameters"
+    enum="TextFragmentAnchorParameters" expires_after="2021-03-07">
+  <owner>gayane@chromium.org</owner>
+  <owner>chrome-shared-highlighting@google.com</owner>
+  <summary>
+    Indicates which parameters were specified in a text fragment selector.
+    Recorded only when selector generation was successful.
+  </summary>
+</histogram>
+
+<histogram name="SharedHighlights.LinkGenerated.TimeToGenerate" units="ms"
+    expires_after="2021-03-07">
+  <owner>gayane@chromium.org</owner>
+  <owner>chrome-shared-highlighting@google.com</owner>
+  <summary>
+    How long it took in milliseconds to successfully generate text fragment
+    selector.
+  </summary>
+</histogram>
+
 <histogram name="SharedMemory.MapBlockedForSecurity" enum="BooleanBlocked"
     expires_after="M85">
   <owner>dcheng@chromium.org</owner>
@@ -14234,6 +14324,17 @@ should be kept until we remove incident reporting. -->
     The length of the matched text, in the case of an exact match. Only recorded
     if a match was found. Recorded when TextFragmentAnchor finishes searching
     once the page is loaded.
+  </summary>
+</histogram>
+
+<histogram name="TextFragmentAnchor.LinkOpenSource"
+    enum="TextFragmentLinkOpenSource" expires_after="2021-03-07">
+  <owner>gayane@chromium.org</owner>
+  <owner>chrome-shared-highlighting@google.com</owner>
+  <summary>
+    Recorded for every navigatin to a link with a valid text fragment selector
+    (e.g. #:=:text=SELECTOR). Indicates source type that navigation originated
+    from.
   </summary>
 </histogram>
 

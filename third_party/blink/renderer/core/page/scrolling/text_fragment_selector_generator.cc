@@ -4,12 +4,15 @@
 
 #include "third_party/blink/renderer/core/page/scrolling/text_fragment_selector_generator.h"
 
+#include "base/metrics/histogram_macros.h"
+#include "base/time/default_tick_clock.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/interface_registry.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/finder/find_buffer.h"
 #include "third_party/blink/renderer/core/editing/iterators/text_iterator.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/page/scrolling/text_fragment_anchor_metrics.h"
 #include "third_party/blink/renderer/core/page/scrolling/text_fragment_finder.h"
 #include "third_party/blink/renderer/platform/text/text_boundaries.h"
 
@@ -157,6 +160,7 @@ constexpr int kExactTextMaxChars = 300;
 constexpr int kNoContextMinChars = 20;
 constexpr int kMaxContextWords = 10;
 constexpr int kMaxRangeWords = 10;
+constexpr int kMaxIterationCountToRecord = 10;
 
 void TextFragmentSelectorGenerator::UpdateSelection(
     LocalFrame* selection_frame,
@@ -228,6 +232,7 @@ void TextFragmentSelectorGenerator::GenerateSelector(
   DCHECK(selection_range_);
   DCHECK(callback);
 
+  generation_start_time_ = base::DefaultTickClock::GetInstance()->NowTicks();
   pending_generate_selector_callback_ = std::move(callback);
   state_ = kNeedsNewCandidate;
   step_ = kExact;
@@ -235,8 +240,13 @@ void TextFragmentSelectorGenerator::GenerateSelector(
   max_available_suffix_ = "";
   num_prefix_words_ = 0;
   num_suffix_words_ = 0;
+  iteration_ = 0;
 
   CompleteSelection();
+  UMA_HISTOGRAM_COUNTS_1000(
+      "SharedHighlights.LinkGenerated.SelectionLength",
+      PlainText(EphemeralRange(selection_range_)).length());
+
   GenerateSelectorCandidate();
 }
 
@@ -274,7 +284,7 @@ void TextFragmentSelectorGenerator::ResolveSelectorState() {
 
 void TextFragmentSelectorGenerator::RunTextFinder() {
   DCHECK(selector_);
-
+  iteration_++;
   // |FindMatch| will call |DidFindMatch| indicating if the match was unique.
   TextFragmentFinder finder(*this, *selector_);
   finder.FindMatch(*selection_frame_->GetDocument());
@@ -301,6 +311,8 @@ void TextFragmentSelectorGenerator::DidFindMatch(
 }
 
 void TextFragmentSelectorGenerator::NoMatchFound() {
+  UMA_HISTOGRAM_ENUMERATION("SharedHighlights.LinkGenerated.Error",
+                            LinkGenerationError::kIncorrectSelector);
   NotifySelectorReady(
       TextFragmentSelector(TextFragmentSelector::SelectorType::kInvalid));
 }
@@ -308,6 +320,33 @@ void TextFragmentSelectorGenerator::NoMatchFound() {
 void TextFragmentSelectorGenerator::NotifySelectorReady(
     const TextFragmentSelector& selector) {
   DCHECK(pending_generate_selector_callback_);
+  // TODO(crbug.com/1133823): Add unit tests for all SharedHighlights.*
+  // histograms.
+  UMA_HISTOGRAM_BOOLEAN(
+      "SharedHighlights.LinkGenerated",
+      selector.Type() != TextFragmentSelector::SelectorType::kInvalid);
+
+  if (selector.Type() != TextFragmentSelector::SelectorType::kInvalid) {
+    UMA_HISTOGRAM_COUNTS_1000("SharedHighlights.LinkGenerated.ParamLength",
+                              selector.ToString().length());
+
+    UMA_HISTOGRAM_EXACT_LINEAR("SharedHighlights.LinkGenerated.Iterations",
+                               iteration_, kMaxIterationCountToRecord);
+    UMA_HISTOGRAM_TIMES("SharedHighlights.LinkGenerated.TimeToGenerate",
+                        base::DefaultTickClock::GetInstance()->NowTicks() -
+                            generation_start_time_);
+    UMA_HISTOGRAM_ENUMERATION(
+        "SharedHighlights.LinkGenerated.SelectorParameters",
+        TextFragmentAnchorMetrics::GetParametersForSelector(selector));
+  } else {
+    UMA_HISTOGRAM_EXACT_LINEAR(
+        "SharedHighlights.LinkGenerated.Error.Iterations", iteration_,
+        kMaxIterationCountToRecord);
+    UMA_HISTOGRAM_TIMES("SharedHighlights.LinkGenerated.Error.TimeToGenerate",
+                        base::DefaultTickClock::GetInstance()->NowTicks() -
+                            generation_start_time_);
+  }
+
   std::move(pending_generate_selector_callback_).Run(selector.ToString());
 }
 
@@ -351,6 +390,8 @@ void TextFragmentSelectorGenerator::GenerateExactSelector() {
 
   String selected_text = PlainText(ephemeral_range).StripWhiteSpace();
   if (selected_text.IsEmpty()) {
+    UMA_HISTOGRAM_ENUMERATION("SharedHighlights.LinkGenerated.Error",
+                              LinkGenerationError::kEmptySelection);
     state_ = kFailure;
     return;
   }
@@ -411,6 +452,8 @@ void TextFragmentSelectorGenerator::ExtendRangeSelector() {
       // If from middle till end of selection there is no word break, then we
       // cannot use it for range end.
       if (mid_point == selection_length) {
+        UMA_HISTOGRAM_ENUMERATION("SharedHighlights.LinkGenerated.Error",
+                                  LinkGenerationError::kNoRange);
         state_ = kFailure;
         return;
       }
@@ -451,6 +494,8 @@ void TextFragmentSelectorGenerator::ExtendContext() {
   // Give up if context is already too long.
   if (num_prefix_words_ == kMaxContextWords ||
       num_prefix_words_ == kMaxContextWords) {
+    UMA_HISTOGRAM_ENUMERATION("SharedHighlights.LinkGenerated.Error",
+                              LinkGenerationError::kContextLimitReached);
     state_ = kFailure;
     return;
   }
@@ -463,6 +508,8 @@ void TextFragmentSelectorGenerator::ExtendContext() {
   }
 
   if (max_available_prefix_.IsEmpty() && max_available_suffix_.IsEmpty()) {
+    UMA_HISTOGRAM_ENUMERATION("SharedHighlights.LinkGenerated.Error",
+                              LinkGenerationError::kNoContext);
     state_ = kFailure;
     return;
   }
@@ -472,6 +519,8 @@ void TextFragmentSelectorGenerator::ExtendContext() {
 
   // Give up if we were unable to get new prefix and suffix.
   if (prefix == selector_->Prefix() && suffix == selector_->Suffix()) {
+    UMA_HISTOGRAM_ENUMERATION("SharedHighlights.LinkGenerated.Error",
+                              LinkGenerationError::kContextExhausted);
     state_ = kFailure;
     return;
   }

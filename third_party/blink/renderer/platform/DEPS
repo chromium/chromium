@@ -97,4 +97,7 @@ specific_include_rules = {
     "ukm_time_aggregator_test.cc" : [
         "+components/ukm/test_ukm_recorder.h"
     ],
+    "search_engine_utils.cc": [
+        "+components/search_engines/search_engine_utils.h"
+    ],
 }

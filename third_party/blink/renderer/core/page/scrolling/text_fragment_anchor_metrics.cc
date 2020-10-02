@@ -150,7 +150,7 @@ void TextFragmentAnchorMetrics::ReportMetrics() {
     }
 
     UMA_HISTOGRAM_ENUMERATION("TextFragmentAnchor.Parameters",
-                              GetParametersForMatch(match));
+                              GetParametersForSelector(match.selector));
   }
 
   UMA_HISTOGRAM_BOOLEAN("TextFragmentAnchor.AmbiguousMatch", ambiguous_match_);
@@ -182,6 +182,8 @@ void TextFragmentAnchorMetrics::ReportMetrics() {
                          time_to_scroll_into_view.InMilliseconds());
   }
 
+  UMA_HISTOGRAM_BOOLEAN("TextFragmentAnchor.LinkOpenSource",
+                        has_search_engine_source_);
 #ifndef NDEBUG
   metrics_reported_ = true;
 #endif
@@ -200,26 +202,26 @@ void TextFragmentAnchorMetrics::Trace(Visitor* visitor) const {
 }
 
 TextFragmentAnchorMetrics::TextFragmentAnchorParameters
-TextFragmentAnchorMetrics::GetParametersForMatch(const Match& match) {
+TextFragmentAnchorMetrics::GetParametersForSelector(
+    const TextFragmentSelector& selector) {
   TextFragmentAnchorParameters parameters =
       TextFragmentAnchorParameters::kUnknown;
 
-  if (match.selector.Type() == TextFragmentSelector::SelectorType::kExact) {
-    if (match.selector.Prefix().length() && match.selector.Suffix().length())
+  if (selector.Type() == TextFragmentSelector::SelectorType::kExact) {
+    if (selector.Prefix().length() && selector.Suffix().length())
       parameters = TextFragmentAnchorParameters::kExactTextWithContext;
-    else if (match.selector.Prefix().length())
+    else if (selector.Prefix().length())
       parameters = TextFragmentAnchorParameters::kExactTextWithPrefix;
-    else if (match.selector.Suffix().length())
+    else if (selector.Suffix().length())
       parameters = TextFragmentAnchorParameters::kExactTextWithSuffix;
     else
       parameters = TextFragmentAnchorParameters::kExactText;
-  } else if (match.selector.Type() ==
-             TextFragmentSelector::SelectorType::kRange) {
-    if (match.selector.Prefix().length() && match.selector.Suffix().length())
+  } else if (selector.Type() == TextFragmentSelector::SelectorType::kRange) {
+    if (selector.Prefix().length() && selector.Suffix().length())
       parameters = TextFragmentAnchorParameters::kTextRangeWithContext;
-    else if (match.selector.Prefix().length())
+    else if (selector.Prefix().length())
       parameters = TextFragmentAnchorParameters::kTextRangeWithPrefix;
-    else if (match.selector.Suffix().length())
+    else if (selector.Suffix().length())
       parameters = TextFragmentAnchorParameters::kTextRangeWithSuffix;
     else
       parameters = TextFragmentAnchorParameters::kTextRange;
@@ -231,6 +233,11 @@ TextFragmentAnchorMetrics::GetParametersForMatch(const Match& match) {
 void TextFragmentAnchorMetrics::SetTickClockForTesting(
     const base::TickClock* tick_clock) {
   tick_clock_ = tick_clock;
+}
+
+void TextFragmentAnchorMetrics::SetSearchEngineSource(
+    bool has_search_engine_source) {
+  has_search_engine_source_ = has_search_engine_source;
 }
 
 }  // namespace blink

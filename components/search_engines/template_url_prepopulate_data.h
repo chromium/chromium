@@ -11,9 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "components/search_engines/search_engine_type.h"
-
-class GURL;
 class PrefService;
 struct TemplateURLData;
 
@@ -64,10 +61,6 @@ void ClearPrepopulatedEnginesInPrefs(PrefService* prefs);
 // not used.
 std::unique_ptr<TemplateURLData> GetPrepopulatedDefaultSearch(
     PrefService* prefs);
-
-// Like the above, but takes a GURL which is expected to represent a search URL.
-// This may be called on any thread.
-SearchEngineType GetEngineType(const GURL& url);
 
 }  // namespace TemplateURLPrepopulateData
 

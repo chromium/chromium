@@ -8,15 +8,12 @@
 #include "base/stl_util.h"
 #include "build/build_config.h"
 #include "components/country_codes/country_codes.h"
-#include "components/google/core/common/google_util.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/prepopulated_engines.h"
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_data_util.h"
-#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
-#include "url/gurl.h"
 
 namespace TemplateURLPrepopulateData {
 
@@ -1356,13 +1353,6 @@ std::vector<std::unique_ptr<TemplateURLData>> GetPrepopulatedTemplateURLData(
   return t_urls;
 }
 
-bool SameDomain(const GURL& given_url, const GURL& prepopulated_url) {
-  return prepopulated_url.is_valid() &&
-      net::registry_controlled_domains::SameDomainOrHost(
-          given_url, prepopulated_url,
-          net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
-}
-
 }  // namespace
 
 // Global functions -----------------------------------------------------------
@@ -1450,35 +1440,6 @@ std::unique_ptr<TemplateURLData> GetPrepopulatedDefaultSearch(
   return (default_search_index < loaded_urls.size())
              ? std::move(loaded_urls[default_search_index])
              : nullptr;
-}
-
-SearchEngineType GetEngineType(const GURL& url) {
-  DCHECK(url.is_valid());
-
-  // Check using TLD+1s, in order to more aggressively match search engine types
-  // for data imported from other browsers.
-  //
-  // First special-case Google, because the prepopulate URL for it will not
-  // convert to a GURL and thus won't have an origin.  Instead see if the
-  // incoming URL's host is "[*.]google.<TLD>".
-  if (google_util::IsGoogleHostname(url.host(),
-                                    google_util::DISALLOW_SUBDOMAIN))
-    return google.type;
-
-  // Now check the rest of the prepopulate data.
-  for (size_t i = 0; i < kAllEnginesLength; ++i) {
-    // First check the main search URL.
-    if (SameDomain(url, GURL(kAllEngines[i]->search_url)))
-      return kAllEngines[i]->type;
-
-    // Then check the alternate URLs.
-    for (size_t j = 0; j < kAllEngines[i]->alternate_urls_size; ++j) {
-      if (SameDomain(url, GURL(kAllEngines[i]->alternate_urls[j])))
-        return kAllEngines[i]->type;
-    }
-  }
-
-  return SEARCH_ENGINE_OTHER;
 }
 
 }  // namespace TemplateURLPrepopulateData

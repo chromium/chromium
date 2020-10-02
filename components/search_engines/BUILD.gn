@@ -52,6 +52,7 @@ static_library("search_engines") {
   public_deps = [
     ":prepopulated_engines",
     ":search_engine_type",
+    ":search_engine_utils",
     "//base",
     "//components/google/core/common",
     "//components/keyed_service/core",
@@ -93,6 +94,28 @@ static_library("search_engines") {
       "android/template_url_service_android.h",
     ]
 
+    deps += [
+      "//components/search_engines/android:jni_headers",
+      "//url:gurl_android",
+    ]
+  }
+}
+
+source_set("search_engine_utils") {
+  sources = [
+    "search_engine_utils.cc",
+    "search_engine_utils.h",
+  ]
+
+  public_deps = [
+    ":prepopulated_engines",
+    ":search_engine_type",
+    "//components/google/core/common",
+  ]
+
+  deps = [ "//url" ]
+
+  if (is_android) {
     deps += [
       "//components/search_engines/android:jni_headers",
       "//url:gurl_android",

@@ -19,7 +19,7 @@
 #include "chrome/common/url_constants.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/prefs/pref_service.h"
-#include "components/search_engines/template_url_prepopulate_data.h"
+#include "components/search_engines/search_engine_utils.h"
 #include "url/gurl.h"
 
 PrefMetricsService::PrefMetricsService(Profile* profile)
@@ -48,10 +48,9 @@ void PrefMetricsService::RecordHomePageLaunchMetrics(bool show_home_button,
   // pages, e.g. plus.google.com).
   if (!homepage_is_ntp) {
     if (homepage_url.is_valid()) {
-      UMA_HISTOGRAM_ENUMERATION(
-          "Settings.HomePageEngineType",
-          TemplateURLPrepopulateData::GetEngineType(homepage_url),
-          SEARCH_ENGINE_MAX);
+      UMA_HISTOGRAM_ENUMERATION("Settings.HomePageEngineType",
+                                SearchEngineUtils::GetEngineType(homepage_url),
+                                SEARCH_ENGINE_MAX);
     }
   }
 }
@@ -84,10 +83,9 @@ void PrefMetricsService::RecordLaunchPrefs() {
       if (url_list->GetString(i, &url_text)) {
         GURL start_url(url_text);
         if (start_url.is_valid()) {
-          UMA_HISTOGRAM_ENUMERATION(
-              "Settings.StartupPageEngineTypes",
-              TemplateURLPrepopulateData::GetEngineType(start_url),
-              SEARCH_ENGINE_MAX);
+          UMA_HISTOGRAM_ENUMERATION("Settings.StartupPageEngineTypes",
+                                    SearchEngineUtils::GetEngineType(start_url),
+                                    SEARCH_ENGINE_MAX);
         }
       }
     }
@@ -100,10 +98,9 @@ void PrefMetricsService::RecordLaunchPrefs() {
   for (size_t i = 0; i < startup_tabs.size(); ++i) {
     GURL start_url(startup_tabs.at(i).url);
     if (start_url.is_valid()) {
-      UMA_HISTOGRAM_ENUMERATION(
-          "Settings.PinnedTabEngineTypes",
-          TemplateURLPrepopulateData::GetEngineType(start_url),
-          SEARCH_ENGINE_MAX);
+      UMA_HISTOGRAM_ENUMERATION("Settings.PinnedTabEngineTypes",
+                                SearchEngineUtils::GetEngineType(start_url),
+                                SEARCH_ENGINE_MAX);
     }
   }
 #endif
