@@ -24,6 +24,7 @@ import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
@@ -677,7 +678,7 @@ public class ContentViewRenderView
                 ContentViewRenderViewJni.get().init(ContentViewRenderView.this, rootWindow);
         assert mNativeContentViewRenderView != 0;
         mWindowAndroid = rootWindow;
-        requestMode(mode, (Boolean result) -> {});
+        requestMode(mode, null);
         mDisplayAndroidObserver = new DisplayAndroid.DisplayAndroidObserver() {
             @Override
             public void onRotationChanged(int rotation) {
@@ -689,10 +690,9 @@ public class ContentViewRenderView
         updateBackgroundColor();
     }
 
-    public void requestMode(@Mode int mode, ValueCallback<Boolean> callback) {
+    public void requestMode(@Mode int mode, @Nullable ValueCallback<Boolean> callback) {
         boolean allowSurfaceControl = !mSelectionHandlesActive;
         assert mode == MODE_SURFACE_VIEW || mode == MODE_TEXTURE_VIEW;
-        assert callback != null;
         if (mRequested != null
                 && (mRequested.getMode() != mode
                         || mRequested.getAllowSurfaceControl() != allowSurfaceControl)) {
@@ -710,7 +710,7 @@ public class ContentViewRenderView
             listener.setRequestData(mRequested);
         }
         assert mRequested.getMode() == mode;
-        mRequested.addCallback(callback);
+        if (callback != null) mRequested.addCallback(callback);
     }
 
     /**
@@ -805,7 +805,7 @@ public class ContentViewRenderView
 
         // requestMode will take into account the updated |mSelectionHandlesActive|
         // and respond appropriately, even if mode is the same.
-        requestMode(mCurrent.getMode(), (Boolean result) -> {});
+        requestMode(mCurrent.getMode(), null);
     }
 
     public InsetObserverView getInsetObserverView() {
