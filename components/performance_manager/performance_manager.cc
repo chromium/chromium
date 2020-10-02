@@ -75,8 +75,14 @@ base::WeakPtr<FrameNode> PerformanceManager::GetFrameNodeForRenderFrameHost(
       PerformanceManagerTabHelper::FromWebContents(wc);
   if (!helper)
     return nullptr;
-
-  return helper->GetFrameNode(rfh)->GetWeakPtr();
+  auto* frame_node = helper->GetFrameNode(rfh);
+  if (!frame_node) {
+    // This should only happen if GetFrameNodeForRenderFrameHost is called
+    // before the RenderFrameCreate notification is dispatched.
+    DCHECK(!rfh->IsRenderFrameCreated());
+    return nullptr;
+  }
+  return frame_node->GetWeakPtr();
 }
 
 // static

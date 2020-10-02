@@ -8,13 +8,17 @@
 
 #include "base/run_loop.h"
 #include "base/test/bind_test_util.h"
+#include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/page_node.h"
+#include "components/performance_manager/public/render_frame_host_proxy.h"
 #include "components/performance_manager/public/web_contents_proxy.h"
 #include "components/performance_manager/test_support/performance_manager_test_harness.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/navigation_simulator.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace performance_manager {
 
@@ -41,42 +45,60 @@ class PerformanceManagerTest : public PerformanceManagerTestHarness {
   DISALLOW_COPY_AND_ASSIGN(PerformanceManagerTest);
 };
 
-TEST_F(PerformanceManagerTest, GetPageNodeForWebContents) {
+TEST_F(PerformanceManagerTest, NodeAccessors) {
   auto contents = CreateTestWebContents();
+  content::RenderFrameHost* rfh = contents->GetMainFrame();
+  ASSERT_TRUE(rfh);
 
   base::WeakPtr<PageNode> page_node =
       PerformanceManager::GetPageNodeForWebContents(contents.get());
 
+  // FrameNode's and ProcessNode's don't exist until an observer fires on
+  // navigation. Verify that looking them up before that returns null instead
+  // of crashing.
+  EXPECT_FALSE(PerformanceManager::GetFrameNodeForRenderFrameHost(rfh));
+
+  // Simulate a committed navigation to create the nodes.
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      contents.get(), GURL("https://www.example.com/"));
+  base::WeakPtr<FrameNode> frame_node =
+      PerformanceManager::GetFrameNodeForRenderFrameHost(rfh);
+
   // Post a task to the Graph and make it call a function on the UI thread that
-  // will ensure that |page_node| is really associated with |contents|.
+  // will ensure that the nodes are really associated with the content objects.
 
   base::RunLoop run_loop;
-  auto check_wc_on_main_thread =
-      base::BindLambdaForTesting([&](const WebContentsProxy& wc_proxy) {
+  auto check_proxies_on_main_thread =
+      base::BindLambdaForTesting([&](const WebContentsProxy& wc_proxy,
+                                     const RenderFrameHostProxy& rfh_proxy) {
         EXPECT_EQ(contents.get(), wc_proxy.Get());
+        EXPECT_EQ(rfh, rfh_proxy.Get());
         run_loop.Quit();
       });
 
   auto call_on_graph_cb = base::BindLambdaForTesting([&]() {
     EXPECT_TRUE(page_node.get());
+    EXPECT_TRUE(frame_node.get());
     content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(std::move(check_wc_on_main_thread),
-                                  page_node->GetContentsProxy()));
+        FROM_HERE, base::BindOnce(std::move(check_proxies_on_main_thread),
+                                  page_node->GetContentsProxy(),
+                                  frame_node->GetRenderFrameHostProxy()));
   });
 
   PerformanceManager::CallOnGraph(FROM_HERE, call_on_graph_cb);
 
-  // Wait for |check_wc_on_main_thread| to be called.
+  // Wait for |check_proxies_on_main_thread| to be called.
   run_loop.Run();
 
   contents.reset();
 
-  // After deleting |contents| the corresponding PageNode WeakPtr should be
+  // After deleting |contents| the corresponding WeakPtr's should be
   // invalid.
   base::RunLoop run_loop_after_contents_reset;
   auto quit_closure = run_loop_after_contents_reset.QuitClosure();
   auto call_on_graph_cb_2 = base::BindLambdaForTesting([&]() {
     EXPECT_FALSE(page_node.get());
+    EXPECT_FALSE(frame_node.get());
     std::move(quit_closure).Run();
   });
 
