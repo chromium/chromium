@@ -1027,10 +1027,14 @@ if (enable_java_templates) {
 
       # Save generated xml files in a consistent location for debugging.
       _lint_gen_dir = "$target_gen_dir/$target_name"
+      _backported_methods = "//third_party/r8/backported_methods.txt"
 
       script = "//build/android/gyp/lint.py"
       depfile = "$target_gen_dir/$target_name.d"
-      inputs = [ _lint_binary_path ]
+      inputs = [
+        _lint_binary_path,
+        _backported_methods,
+      ]
 
       args = [
         "--depfile",
@@ -1045,6 +1049,8 @@ if (enable_java_templates) {
         "--min-sdk-version=$_min_sdk_version",
         "--android-sdk-root",
         rebase_path(lint_android_sdk_root, root_build_dir),
+        "--backported-methods",
+        rebase_path(_backported_methods, root_build_dir),
       ]
 
       if (defined(invoker.lint_suppressions_file)) {

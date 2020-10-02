@@ -110,6 +110,31 @@ def _GenerateProjectFile(android_manifest,
   return project
 
 
+def _RetrieveBackportedMethods(backported_methods_path):
+  with open(backported_methods_path) as f:
+    methods = f.read().splitlines()
+  # Methods look like:
+  #   java/util/Set#of(Ljava/lang/Object;)Ljava/util/Set;
+  # But error message looks like:
+  #   Call requires API level R (current min is 21): java.util.Set#of [NewApi]
+  methods = (m.replace('/', '\\.') for m in methods)
+  methods = (m[:m.index('(')] for m in methods)
+  return sorted(set(methods))
+
+
+def _GenerateConfigXmlTree(orig_config_path, backported_methods):
+  if orig_config_path:
+    root_node = ElementTree.parse(orig_config_path).getroot()
+  else:
+    root_node = ElementTree.fromstring('<lint/>')
+
+  issue_node = ElementTree.SubElement(root_node, 'issue')
+  issue_node.attrib['id'] = 'NewApi'
+  ignore_node = ElementTree.SubElement(issue_node, 'ignore')
+  ignore_node.attrib['regexp'] = '|'.join(backported_methods)
+  return root_node
+
+
 def _GenerateAndroidManifest(original_manifest_path, extra_manifest_paths,
                              min_sdk_version, android_sdk_version):
   # Set minSdkVersion in the manifest to the correct value.
@@ -141,6 +166,7 @@ def _GenerateAndroidManifest(original_manifest_path, extra_manifest_paths,
 
 
 def _WriteXmlFile(root, path):
+  logging.info('Writing xml file %s', path)
   build_utils.MakeDirectory(os.path.dirname(path))
   with build_utils.AtomicOutput(path) as f:
     # Although we can write it just with ElementTree.tostring, using minidom
@@ -162,6 +188,7 @@ def _CheckLintWarning(expected_warnings, lint_output):
 
 
 def _RunLint(lint_binary_path,
+             backported_methods_path,
              config_path,
              manifest_path,
              extra_manifest_paths,
@@ -189,14 +216,19 @@ def _RunLint(lint_binary_path,
   ]
   if baseline:
     cmd.extend(['--baseline', baseline])
-  if config_path:
-    cmd.extend(['--config', config_path])
   if testonly_target:
     cmd.extend(['--disable', ','.join(_DISABLED_FOR_TESTS)])
 
   if not manifest_path:
     manifest_path = os.path.join(build_utils.DIR_SOURCE_ROOT, 'build',
                                  'android', 'AndroidManifest.xml')
+
+  logging.info('Generating config.xml')
+  backported_methods = _RetrieveBackportedMethods(backported_methods_path)
+  config_xml_node = _GenerateConfigXmlTree(config_path, backported_methods)
+  generated_config_path = os.path.join(lint_gen_dir, 'config.xml')
+  _WriteXmlFile(config_xml_node, generated_config_path)
+  cmd.extend(['--config', generated_config_path])
 
   logging.info('Generating Android manifest file')
   android_manifest_tree = _GenerateAndroidManifest(manifest_path,
@@ -206,7 +238,6 @@ def _RunLint(lint_binary_path,
   # Include the rebased manifest_path in the lint generated path so that it is
   # clear in error messages where the original AndroidManifest.xml came from.
   lint_android_manifest_path = os.path.join(lint_gen_dir, manifest_path)
-  logging.info('Writing xml file %s', lint_android_manifest_path)
   _WriteXmlFile(android_manifest_tree.getroot(), lint_android_manifest_path)
 
   resource_root_dir = os.path.join(lint_gen_dir, _RES_ZIP_DIR)
@@ -244,7 +275,6 @@ def _RunLint(lint_binary_path,
                                            android_sdk_version)
 
   project_xml_path = os.path.join(lint_gen_dir, 'project.xml')
-  logging.info('Writing xml file %s', project_xml_path)
   _WriteXmlFile(project_file_root, project_xml_path)
   cmd += ['--project', project_xml_path]
 
@@ -308,6 +338,8 @@ def _ParseArgs(argv):
   parser.add_argument('--lint-binary-path',
                       required=True,
                       help='Path to lint executable.')
+  parser.add_argument('--backported-methods',
+                      help='Path to backported methods file created by R8.')
   parser.add_argument('--cache-dir',
                       required=True,
                       help='Path to the directory in which the android cache '
@@ -391,6 +423,7 @@ def main():
   depfile_deps = [p for p in possible_depfile_deps if p]
 
   _RunLint(args.lint_binary_path,
+           args.backported_methods,
            args.config_path,
            args.manifest_path,
            args.extra_manifest_paths,

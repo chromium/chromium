@@ -51,6 +51,9 @@ git format-patch -3 -o $CHROMIUM_SRC/third_party/r8/patches
 cd $CHROMIUM_SRC/third_party/r8
 cipd create --pkg-def cipd.yaml # Make note of the instance ID
 
+# Update backported methods list:
+java -cp third_party/r8/lib/r8.jar com.android.tools.r8.BackportedMethodList --min-api 16 > third_party/r8/backported_methods.txt
+
 # Manually update:
 * README.chromium (version number via "java -cp lib/r8.jar com.android.tools.r8.R8 --version")
 * //DEPS (instance ID output by cipd create)
