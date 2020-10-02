@@ -156,26 +156,44 @@
       <ExpandedItem>impl_.body_</ExpandedItem>
     </Expand>
   </Type>
-  <Type Name="base::Value">
-    <DisplayString Condition="type_ == NONE">NONE</DisplayString>
-    <DisplayString Condition="type_ == BOOLEAN">BOOLEAN {bool_value_}</DisplayString>
-    <DisplayString Condition="type_ == INTEGER">INTEGER {int_value_}</DisplayString>
-    <DisplayString Condition="type_ == DOUBLE">DOUBLE {double_value_}</DisplayString>
-    <DisplayString Condition="type_ == STRING">STRING {string_value_}</DisplayString>
-    <DisplayString Condition="type_ == BINARY">BINARY {binary_value_}</DisplayString>
-    <DisplayString Condition="type_ == DICTIONARY">DICTIONARY {dict_}</DisplayString>
-    <DisplayString Condition="type_ == LIST">LIST {list_}</DisplayString>
-    <Expand>
-      <Item Name="[type]">type_</Item>
-      <Item Condition="type_ == BOOLEAN" Name="[boolean]">bool_value_</Item>
-      <Item Condition="type_ == INTEGER" Name="[integer]">int_value_</Item>
-      <Item Condition="type_ == DOUBLE" Name="[double]">double_value_</Item>
-      <Item Condition="type_ == STRING" Name="[string]">string_value_</Item>
-      <Item Condition="type_ == BINARY" Name="[binary]">binary_value_</Item>
-      <!-- Put the members for dictionary and list directly inline without
-           requiring a separate expansion to view. -->
-      <ExpandedItem Condition="type_ == DICTIONARY">dict_</ExpandedItem>
-      <ExpandedItem Condition="type_ == LIST">list_</ExpandedItem>
+  <Type Name="base::Value" >
+    <DisplayString Condition="data_.index_==base::Value::NONE">None</DisplayString>
+    <DisplayString Condition="data_.index_==base::Value::BOOLEAN">Boolean {data_.state_.tail.head}</DisplayString>
+    <DisplayString Condition="data_.index_==base::Value::INTEGER">Integer {data_.state_.tail.tail.head}</DisplayString>
+    <DisplayString Condition="data_.index_==base::Value::DOUBLE">Double {*(double*)data_.state_.tail.tail.tail.head.v}</DisplayString>
+    <DisplayString Condition="data_.index_==base::Value::STRING">String {data_.state_.tail.tail.tail.tail.head,na}</DisplayString>
+    <DisplayString Condition="data_.index_==base::Value::BINARY">Binary</DisplayString>
+    <DisplayString Condition="data_.index_==base::Value::DICTIONARY">Dictionary {data_.state_.tail.tail.tail.tail.tail.tail.head.impl_.body_}</DisplayString>
+    <DisplayString Condition="data_.index_==base::Value::LIST">List {data_.state_.tail.tail.tail.tail.tail.tail.head.impl_.body_}</DisplayString>
+    <DisplayString Condition="data_.index_==base::Value::DEAD">Dead</DisplayString>
+    <DisplayString>Unknown type</DisplayString>
+    <Expand >
+      <Item Condition="data_.index_==base::Value::BOOLEAN" Name="[Value]">data_.state_.tail.head</Item>
+      <Item Condition="data_.index_==base::Value::INTEGER" Name="[Value]">data_.state_.tail.tail.head</Item>
+      <Item Condition="data_.index_==base::Value::DOUBLE" Name="[Value]">*(double*)data_.state_.tail.tail.tail.head.v</Item>
+      <Item Condition="data_.index_==base::Value::STRING" Name="[String]">data_.state_.tail.tail.tail.tail.head,na</Item>
+      <!-- Dictionary -->
+      <Item Condition="data_.index_==base::Value::DICTIONARY" Name="[size]">
+      data_.state_.tail.tail.tail.tail.tail.tail.head.impl_.body_.__end_ -
+      data_.state_.tail.tail.tail.tail.tail.tail.head.impl_.body_.__begin_ </Item>
+      <ArrayItems Condition="data_.index_==base::Value::DICTIONARY">
+        <Size>
+          data_.state_.tail.tail.tail.tail.tail.tail.head.impl_.body_.__end_ -
+          data_.state_.tail.tail.tail.tail.tail.tail.head.impl_.body_.__begin_
+        </Size>
+        <ValuePointer>data_.state_.tail.tail.tail.tail.tail.tail.head.impl_.body_.__begin_</ValuePointer>
+      </ArrayItems>
+      <!-- List -->
+      <Item Condition="data_.index_==base::Value::LIST" Name="[size]">
+      data_.state_.tail.tail.tail.tail.tail.tail.head.impl_.body_.__end_ -
+      data_.state_.tail.tail.tail.tail.tail.tail.head.impl_.body_.__begin_ </Item>
+      <ArrayItems Condition="data_.index_==base::Value::LIST">
+        <Size>
+          data_.state_.tail.tail.tail.tail.tail.tail.head.impl_.body_.__end_ -
+          data_.state_.tail.tail.tail.tail.tail.tail.head.impl_.body_.__begin_
+        </Size>
+        <ValuePointer>(base::Value*)data_.state_.tail.tail.tail.tail.tail.tail.head.impl_.body_.__begin_</ValuePointer>
+      </ArrayItems>
     </Expand>
   </Type>
 </AutoVisualizer>

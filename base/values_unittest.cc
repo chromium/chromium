@@ -418,10 +418,10 @@ TEST(ValuesTest, TakeList) {
   // Prepare a list with a value of each type.
   ListValue value;
   value.Append(Value(Value::Type::NONE));
-  value.Append(Value(Value::Type::BOOLEAN));
-  value.Append(Value(Value::Type::INTEGER));
-  value.Append(Value(Value::Type::DOUBLE));
-  value.Append(Value(Value::Type::STRING));
+  value.Append(Value(true));
+  value.Append(Value(123));
+  value.Append(Value(123.456));
+  value.Append(Value("string"));
   value.Append(Value(Value::Type::BINARY));
   value.Append(Value(Value::Type::LIST));
   value.Append(Value(Value::Type::DICTIONARY));
