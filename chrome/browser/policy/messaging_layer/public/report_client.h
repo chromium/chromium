@@ -133,7 +133,11 @@ class ReportingClient {
     void OnStorageModuleConfigured(
         StatusOr<scoped_refptr<StorageModule>> storage_result);
 
-    void UpdateConfiguration();
+    void CreateUploadClient();
+    void OnUploadClientCreated(
+        StatusOr<std::unique_ptr<UploadClient>> upload_client_result);
+
+    void UpdateConfiguration(std::unique_ptr<UploadClient> upload_client);
 
     // Complete calls response with |client_config_|
     void Complete(Status status);

@@ -38,7 +38,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-#if defined(OS_CHROMEOS)
+#ifdef OS_CHROMEOS
 #include "chrome/browser/chromeos/login/users/chrome_user_manager.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
@@ -57,7 +57,7 @@ namespace {
 // NOT THREAD SAFE - these functions must be called on the main thread.
 // TODO(chromium:1078512) Wrap CloudPolicyClient in a new object so that its
 // methods, constructor, and destructor are accessed on the correct thread.
-#if defined(OS_CHROMEOS)
+#ifdef OS_CHROMEOS
 void BuildCloudPolicyClient(
     base::OnceCallback<
         void(StatusOr<std::unique_ptr<policy::CloudPolicyClient>>)> build_cb) {
@@ -376,7 +376,7 @@ void ReportingClient::InitializingContext::OnLeaderPromotionResult(
     StatusOr<ReportingClient::InitializationStateTracker::ReleaseLeaderCallback>
         promo_result) {
   if (promo_result.status().error_code() == error::FAILED_PRECONDITION) {
-    // Between building this InitializationContext and attempting to promote to
+    // Between building this InitializingContext and attempting to promote to
     // leader, the ReportingClient was configured. Ok response.
     Complete(Status::StatusOK());
     return;
@@ -449,11 +449,41 @@ void ReportingClient::InitializingContext::OnStorageModuleConfigured(
   }
 
   client_config_->storage = storage_result.ValueOrDie();
-  Schedule(&ReportingClient::InitializingContext::UpdateConfiguration,
-           base::Unretained(this));
+  Schedule(
+      base::BindOnce(&ReportingClient::InitializingContext::CreateUploadClient,
+                     base::Unretained(this)));
 }
 
-void ReportingClient::InitializingContext::UpdateConfiguration() {
+void ReportingClient::InitializingContext::CreateUploadClient() {
+  ReportingClient* const instance = GetInstance();
+  DCHECK(!instance->upload_client_);
+  UploadClient::Create(
+      std::move(client_config_->cloud_policy_client),
+      base::BindRepeating(&StorageModule::ReportSuccess,
+                          client_config_->storage),
+      base::BindOnce(&InitializingContext::OnUploadClientCreated,
+                     base::Unretained(this)));
+}
+
+void ReportingClient::InitializingContext::OnUploadClientCreated(
+    StatusOr<std::unique_ptr<UploadClient>> upload_client_result) {
+  if (!upload_client_result.ok()) {
+    Complete(Status(error::FAILED_PRECONDITION,
+                    base::StrCat({"Unable to create UploadClient: ",
+                                  upload_client_result.status().message()})));
+    return;
+  }
+  Schedule(&ReportingClient::InitializingContext::UpdateConfiguration,
+           base::Unretained(this),
+           std::move(upload_client_result.ValueOrDie()));
+}
+
+void ReportingClient::InitializingContext::UpdateConfiguration(
+    std::unique_ptr<UploadClient> upload_client) {
+  ReportingClient* const instance = GetInstance();
+  DCHECK(!instance->upload_client_);
+  instance->upload_client_ = std::move(upload_client);
+
   std::move(update_config_cb_)
       .Run(std::move(client_config_),
            base::BindOnce(&ReportingClient::InitializingContext::Complete,
@@ -603,13 +633,7 @@ void ReportingClient::BuildRequestQueue(
 StatusOr<std::unique_ptr<Storage::UploaderInterface>>
 ReportingClient::BuildUploader(Priority priority) {
   ReportingClient* const instance = GetInstance();
-  if (instance->upload_client_ == nullptr) {
-    ASSIGN_OR_RETURN(
-        instance->upload_client_,
-        UploadClient::Create(std::move(instance->config_->cloud_policy_client),
-                             base::BindRepeating(&StorageModule::ReportSuccess,
-                                                 instance->config_->storage)));
-  }
+  DCHECK(instance->upload_client_);
   return Uploader::Create(
       base::BindOnce(&UploadClient::EnqueueUpload,
                      base::Unretained(instance->upload_client_.get())));
