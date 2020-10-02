@@ -1286,8 +1286,8 @@ gfx::Point WidgetBase::BlinkSpaceToFlooredDIPs(const gfx::Point& point) {
     return point;
   // TODO(danakj): Should this be GetScreenInfo() so it changes under emulation?
   // TODO(dtapuska): Determine if this should be a floor vs rounded.
-  return gfx::ScaleToFlooredPoint(
-      point, client_->GetOriginalScreenInfo().device_scale_factor);
+  float reverse = 1 / client_->GetOriginalScreenInfo().device_scale_factor;
+  return gfx::ScaleToFlooredPoint(point, reverse);
 }
 
 gfx::Size WidgetBase::DIPsToCeiledBlinkSpace(const gfx::Size& size) {
