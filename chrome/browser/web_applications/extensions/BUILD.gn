@@ -31,6 +31,7 @@ source_set("extensions") {
     "bookmark_app_shortcut_manager.h",
     "bookmark_app_util.cc",
     "bookmark_app_util.h",
+    "extension_status_utils.cc",
     "web_app_extension_shortcut.cc",
     "web_app_extension_shortcut.h",
     "web_app_extension_shortcut_mac.h",

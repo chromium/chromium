@@ -46,7 +46,8 @@ PreinstalledWebApps GetPreinstalledWebApps() {
   PreinstalledWebApps result;
 
   for (const PreinstalledAppData& app_data : GetPreinstalledAppData()) {
-    if (!IsExternalAppInstallFeatureEnabled(app_data.feature_name)) {
+    if (app_data.feature_name &&
+        !IsExternalAppInstallFeatureEnabled(app_data.feature_name)) {
       ++result.disabled_count;
       continue;
     }

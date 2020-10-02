@@ -18,6 +18,7 @@ source_set("common") {
   sources = [
     "daily_metrics_helper.cc",
     "daily_metrics_helper.h",
+    "extension_status_utils.h",
     "manifest_update_manager.cc",
     "manifest_update_manager.h",
     "manifest_update_task.cc",

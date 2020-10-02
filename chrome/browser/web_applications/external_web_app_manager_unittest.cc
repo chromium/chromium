@@ -19,13 +19,16 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_path_override.h"
+#include "chrome/browser/extensions/extension_management_test_util.h"
 #include "chrome/browser/supervised_user/supervised_user_constants.h"
 #include "chrome/browser/web_applications/components/external_app_install_features.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
+#include "chrome/browser/web_applications/preinstalled_web_apps.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/account_id/account_id.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -185,6 +188,53 @@ class ExternalWebAppManagerTest : public testing::Test {
 
   DISALLOW_COPY_AND_ASSIGN(ExternalWebAppManagerTest);
 };
+
+TEST_F(ExternalWebAppManagerTest, ReplacementExtensionBlockedByPolicy) {
+  using PolicyUpdater = extensions::ExtensionManagementPrefUpdater<
+      sync_preferences::TestingPrefServiceSyncable>;
+  auto test_profile = std::make_unique<TestingProfile>();
+  sync_preferences::TestingPrefServiceSyncable* prefs =
+      test_profile->GetTestingPrefService();
+
+  ScopedTestingPreinstalledAppData scoped_preinstalled_apps;
+  GURL install_url("https://test.app");
+  constexpr char kExtensionId[] = "abcdefghijklmnopabcdefghijklmnop";
+  scoped_preinstalled_apps.apps.push_back({
+      .install_url = install_url,
+      .feature_name = nullptr,
+      .app_id_to_replace = kExtensionId,
+  });
+
+  auto expect_present = [&]() {
+    std::vector<ExternalInstallOptions> options_list =
+        LoadApps(/*test_dir=*/"", test_profile.get());
+    ASSERT_EQ(options_list.size(), 1u);
+    EXPECT_EQ(options_list[0].install_url, install_url);
+  };
+
+  auto expect_not_present = [&]() {
+    std::vector<ExternalInstallOptions> options_list =
+        LoadApps(/*test_dir=*/"", test_profile.get());
+    ASSERT_EQ(options_list.size(), 0u);
+  };
+
+  expect_present();
+
+  PolicyUpdater(prefs).SetBlocklistedByDefault(false);
+  expect_present();
+
+  PolicyUpdater(prefs).SetBlocklistedByDefault(true);
+  expect_not_present();
+
+  PolicyUpdater(prefs).SetIndividualExtensionInstallationAllowed(kExtensionId,
+                                                                 true);
+  expect_present();
+
+  PolicyUpdater(prefs).SetBlocklistedByDefault(false);
+  PolicyUpdater(prefs).SetIndividualExtensionInstallationAllowed(kExtensionId,
+                                                                 false);
+  expect_not_present();
+}
 
 // Only Chrome OS parses config files.
 #if defined(OS_CHROMEOS)

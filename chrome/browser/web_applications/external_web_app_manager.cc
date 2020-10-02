@@ -31,6 +31,7 @@
 #include "chrome/browser/web_applications/components/pending_app_manager.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_install_utils.h"
+#include "chrome/browser/web_applications/extension_status_utils.h"
 #include "chrome/browser/web_applications/external_web_app_utils.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps.h"
 #include "chrome/common/chrome_features.h"
@@ -246,31 +247,35 @@ void ExternalWebAppManager::PostProcessConfigs(ConsumeInstallOptions callback,
     parsed_configs.options_list.push_back(std::move(options));
   parsed_configs.disabled_count += preinstalled_web_apps.disabled_count;
 
-  // Save this as we may remove apps due to user uninstall (not the same as
-  // being disabled).
+  // Track this separately as we may remove apps due to user uninstall (not the
+  // same as being disabled).
   int enabled_count = parsed_configs.options_list.size();
 
-  // Remove web apps whose replace target was uninstalled.
-  if (extensions::ExtensionSystem::Get(profile_)) {
-    auto* extension_prefs = extensions::ExtensionPrefs::Get(profile_);
-    auto* extension_registry = extensions::ExtensionRegistry::Get(profile_);
-
-    base::EraseIf(
-        parsed_configs.options_list,
-        [&](const ExternalInstallOptions& options) {
-          for (const AppId& app_id : options.uninstall_and_replace) {
-            if (extension_registry->GetInstalledExtension(app_id))
-              return false;
+  base::EraseIf(
+      parsed_configs.options_list, [&](const ExternalInstallOptions& options) {
+        // Remove if any blocked by admin policy.
+        for (const AppId& app_id : options.uninstall_and_replace) {
+          if (extensions::IsExtensionBlockedByPolicy(profile_, app_id)) {
+            ++parsed_configs.disabled_count;
+            --enabled_count;
+            return true;
           }
+        }
 
-          for (const AppId& app_id : options.uninstall_and_replace) {
-            if (extension_prefs->IsExternalExtensionUninstalled(app_id))
-              return true;
-          }
+        // Keep if any installed.
+        for (const AppId& app_id : options.uninstall_and_replace) {
+          if (extensions::IsExtensionInstalled(profile_, app_id))
+            return false;
+        }
 
-          return false;
-        });
-  }
+        // Remove if any previously uninstalled.
+        for (const AppId& app_id : options.uninstall_and_replace) {
+          if (extensions::IsExternalExtensionUninstalled(profile_, app_id))
+            return true;
+        }
+
+        return false;
+      });
 
   base::UmaHistogramCounts100(ExternalWebAppManager::kHistogramEnabledCount,
                               enabled_count);
