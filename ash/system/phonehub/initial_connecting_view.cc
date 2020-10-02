@@ -10,6 +10,7 @@
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/phonehub/phone_hub_interstitial_view.h"
+#include "ash/system/phonehub/phone_hub_view_ids.h"
 #include "base/strings/string16.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -18,6 +19,7 @@
 namespace ash {
 
 InitialConnectingView::InitialConnectingView() {
+  SetID(PhoneHubViewID::kInitialConnectingView);
   SetLayoutManager(std::make_unique<views::FillLayout>());
   content_view_ = AddChildView(
       std::make_unique<PhoneHubInterstitialView>(/*show_progress=*/true));

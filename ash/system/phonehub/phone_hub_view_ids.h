@@ -28,6 +28,10 @@ enum PhoneHubViewID {
   kReconnectingView,
   kDisconnectedLearnMoreButton,
   kDisconnectedRefreshButton,
+
+  kPhoneConnectedView,
+  kInitialConnectingView,
+  kBluetoothDisabledView,
 };
 
 }  // namespace ash

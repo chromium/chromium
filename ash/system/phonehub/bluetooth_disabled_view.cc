@@ -8,6 +8,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/phonehub/phone_hub_interstitial_view.h"
+#include "ash/system/phonehub/phone_hub_view_ids.h"
 #include "ash/system/unified/rounded_label_button.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -25,6 +26,8 @@ constexpr int kOkButtonTag = 2;
 }  // namespace
 
 BluetoothDisabledView::BluetoothDisabledView() {
+  SetID(PhoneHubViewID::kBluetoothDisabledView);
+
   SetLayoutManager(std::make_unique<views::FillLayout>());
   content_view_ = AddChildView(
       std::make_unique<PhoneHubInterstitialView>(/*show_progress=*/false));

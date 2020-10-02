@@ -8,6 +8,7 @@
 
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/phonehub/notification_opt_in_view.h"
+#include "ash/system/phonehub/phone_hub_view_ids.h"
 #include "ash/system/phonehub/phone_status_view.h"
 #include "ash/system/phonehub/quick_actions_view.h"
 #include "ash/system/phonehub/task_continuation_view.h"
@@ -31,6 +32,8 @@ constexpr int kPaddingBetweenTitleAndSeparator = 3;
 PhoneConnectedView::PhoneConnectedView(
     TrayBubbleView* bubble_view,
     chromeos::phonehub::PhoneHubManager* phone_hub_manager) {
+  SetID(PhoneHubViewID::kPhoneConnectedView);
+
   auto setup_layered_view = [](views::View* view) {
     view->SetPaintToLayer();
     view->layer()->SetFillsBoundsOpaquely(false);

@@ -200,8 +200,7 @@ TEST_F(PhoneHubTrayTest, TransitionContentView) {
   EXPECT_TRUE(phone_hub_tray_->is_active());
 
   EXPECT_TRUE(content_view());
-  // TODO(tengs) Test the actual view id.
-  EXPECT_EQ(0, content_view()->GetID());
+  EXPECT_EQ(PhoneHubViewID::kPhoneConnectedView, content_view()->GetID());
 
   GetFeatureStatusProvider()->SetStatus(
       chromeos::phonehub::FeatureStatus::kEnabledButDisconnected);
@@ -237,6 +236,8 @@ TEST_F(PhoneHubTrayTest, ClickButtonsOnDisconnectedView) {
 
   // Simulates a click on the "Learn more" button.
   ClickOnAndWait(disconnected_learn_more_button());
+  EXPECT_TRUE(content_view());
+  EXPECT_EQ(PhoneHubViewID::kDisconnectedView, content_view()->GetID());
 }
 
 }  // namespace ash

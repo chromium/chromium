@@ -104,8 +104,7 @@ TEST_F(PhoneHubUiControllerTest, PhoneConnectingForOnboarding) {
             controller_.ui_state());
 
   auto content_view = controller_.CreateContentView(/*bubble_view=*/nullptr);
-  // TODO(tengs): Test the actual view id.
-  EXPECT_EQ(0, content_view->GetID());
+  EXPECT_EQ(PhoneHubViewID::kInitialConnectingView, content_view->GetID());
 }
 
 TEST_F(PhoneHubUiControllerTest, BluetoothOff) {
@@ -115,8 +114,7 @@ TEST_F(PhoneHubUiControllerTest, BluetoothOff) {
             controller_.ui_state());
 
   auto content_view = controller_.CreateContentView(/*bubble_view=*/nullptr);
-  // TODO(tengs): Test the actual view id.
-  EXPECT_EQ(0, content_view->GetID());
+  EXPECT_EQ(PhoneHubViewID::kBluetoothDisabledView, content_view->GetID());
 }
 
 TEST_F(PhoneHubUiControllerTest, PhoneDisconnected) {
@@ -143,8 +141,7 @@ TEST_F(PhoneHubUiControllerTest, PhoneConnected) {
             controller_.ui_state());
 
   auto content_view = controller_.CreateContentView(/*bubble_view=*/nullptr);
-  // TODO(tengs): Test the actual view id.
-  EXPECT_EQ(0, content_view->GetID());
+  EXPECT_EQ(kPhoneConnectedView, content_view->GetID());
 }
 
 }  // namespace ash
