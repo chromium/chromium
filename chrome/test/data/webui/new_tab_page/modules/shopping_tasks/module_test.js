@@ -4,6 +4,7 @@
 
 import {shoppingTasksDescriptor, ShoppingTasksHandlerProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.m.js';
+import {eventToPromise} from 'chrome://test/test_util.m.js';
 
 suite('NewTabPageModulesShoppingTasksModuleTest', () => {
   /**
@@ -101,5 +102,46 @@ suite('NewTabPageModulesShoppingTasksModuleTest', () => {
     assertEquals('baz', pills[0].querySelector('.search-text').innerText);
     assertEquals('https://blub.com/', pills[1].href);
     assertEquals('blub', pills[1].querySelector('.search-text').innerText);
+  });
+
+  test('products and pills are hidden when cutoff', async () => {
+    const repeat = (n, fn) => Array(n).fill(0).map(fn);
+    testProxy.handler.setResultFor('getPrimaryShoppingTask', Promise.resolve({
+      shoppingTask: {
+        title: 'Hello world',
+        products: repeat(20, () => ({
+                               name: 'foo',
+                               imageUrl: {url: 'https://foo.com/img.png'},
+                               price: '1 gazillion dollars',
+                               info: 'foo info',
+                               targetUrl: {url: 'https://foo.com'},
+                             })),
+        relatedSearches: repeat(20, () => ({
+                                      text: 'baz',
+                                      targetUrl: {url: 'https://baz.com'},
+                                    })),
+      }
+    }));
+    await shoppingTasksDescriptor.initialize();
+    const moduleElement = shoppingTasksDescriptor.element;
+    document.body.append(moduleElement);
+    moduleElement.$.productsRepeat.render();
+    moduleElement.$.relatedSearchesRepeat.render();
+    const getElements = () => Array.from(
+        moduleElement.shadowRoot.querySelectorAll('.product, .pill'));
+    assertEquals(40, getElements().length);
+    const hiddenCount = () =>
+        getElements().filter(el => el.style.visibility === 'hidden').length;
+    const checkHidden = async (width, count) => {
+      const waitForVisibilityUpdate =
+          eventToPromise('visibility-update', moduleElement);
+      moduleElement.style.width = width;
+      await waitForVisibilityUpdate;
+      assertEquals(count, hiddenCount());
+    };
+    await checkHidden('500px', 31);
+    await checkHidden('300px', 35);
+    await checkHidden('700px', 26);
+    await checkHidden('500px', 31);
   });
 });
