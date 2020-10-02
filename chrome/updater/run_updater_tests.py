@@ -12,7 +12,7 @@ import typ
 
 def main():
   return typ.main(
-      path=[path_finder.get_integration_tests_dir()],
+      tests=[path_finder.get_integration_tests_dir()],
   )
 
 
