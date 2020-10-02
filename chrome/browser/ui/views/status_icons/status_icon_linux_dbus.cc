@@ -344,7 +344,7 @@ void StatusIconLinuxDbus::OnOwnership(const std::string& service_name,
   properties_->RegisterInterface(kInterfaceStatusNotifierItem);
   auto set_property = [&](const std::string& property_name, auto&& value) {
     properties_->SetProperty(kInterfaceStatusNotifierItem, property_name,
-                             std::move(value), false);
+                             std::forward<decltype(value)>(value), false);
   };
   set_property(kPropertyItemIsMenu, DbusBoolean(false));
   set_property(kPropertyWindowId, DbusInt32(0));
