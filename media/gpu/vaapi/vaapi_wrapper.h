@@ -34,7 +34,7 @@
 #include "ui/gfx/geometry/size.h"
 
 #if defined(USE_X11)
-#include "ui/gfx/x/x11.h"
+#include "ui/gfx/x/x11.h"  // nogncheck
 #endif  // USE_X11
 
 namespace gfx {
