@@ -11,13 +11,6 @@ if (is_android) {
   import("//build/config/android/rules.gni")
 }
 
-# This file depends on the legacy global sources assignment filter. It should
-# be converted to check target platform before assigning source files to the
-# sources variable. Remove this import and set_sources_assignment_filter call
-# when the file has been converted. See https://crbug.com/1018739 for details.
-import("//build/config/deprecated_default_sources_assignment_filter.gni")
-set_sources_assignment_filter(deprecated_default_sources_assignment_filter)
-
 group("config") {
   if (is_component_build) {
     public_deps = [ "//gpu" ]
@@ -139,7 +132,6 @@ source_set("config_sources") {
     "gpu_driver_bug_workaround_type.h",
     "gpu_driver_bug_workarounds.cc",
     "gpu_driver_bug_workarounds.h",
-    "gpu_dx_diagnostics_win.cc",
     "gpu_extra_info.cc",
     "gpu_extra_info.h",
     "gpu_feature_info.cc",
@@ -151,10 +143,6 @@ source_set("config_sources") {
     "gpu_info.h",
     "gpu_info_collector.cc",
     "gpu_info_collector.h",
-    "gpu_info_collector_android.cc",
-    "gpu_info_collector_linux.cc",
-    "gpu_info_collector_mac.mm",
-    "gpu_info_collector_win.cc",
     "gpu_mode.h",
     "gpu_preferences.cc",
     "gpu_preferences.h",
@@ -210,7 +198,14 @@ source_set("config_sources") {
   # Prefer mesa GL headers to system headers, which cause problems on Win.
   include_dirs = [ "//third_party/mesa_headers" ]
 
+  if (is_android) {
+    sources += [ "gpu_info_collector_android.cc" ]
+  }
   if (is_win) {
+    sources += [
+      "gpu_dx_diagnostics_win.cc",
+      "gpu_info_collector_win.cc",
+    ]
     libs = [
       "dxgi.lib",
       "dxguid.lib",
@@ -224,7 +219,11 @@ source_set("config_sources") {
     }
   }
   if (is_mac) {
+    sources += [ "gpu_info_collector_mac.mm" ]
     frameworks = [ "OpenGL.framework" ]
+  }
+  if (is_linux || is_chromeos) {
+    sources += [ "gpu_info_collector_linux.cc" ]
   }
   if (is_linux || is_chromeos || is_mac) {
     deps += [ "//third_party/angle:angle_gpu_info_util" ]
