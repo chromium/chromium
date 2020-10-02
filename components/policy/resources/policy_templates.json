@@ -3868,39 +3868,27 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'deprecated': True,
       'example_value': 'direct',
       'id': 21,
       'caption': '''Choose how to specify proxy server settings''',
       'tags': [],
-      'desc': '''Allows you to specify the proxy server used by <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> and prevents users from changing proxy settings.
+      'desc': '''This policy is deprecated, please use <ph name="PROXY_SETTINGS_POLICY_NAME">ProxySettings</ph> instead.
 
-          This policy only takes effect if the <ph name="PROXY_SETTINGS_POLICY_NAME">ProxySettings</ph> policy has not been specified.
+       Setting the policy to Enabled lets you specify the proxy server Chrome uses and prevents users from changing proxy settings. Chrome and ARC-apps ignore all proxy-related options specified from the command line. The policy only takes effect if the <ph name="PROXY_SETTINGS_POLICY_NAME">ProxySettings</ph> policy isn't specified.
 
-          If you choose to never use a proxy server and always connect directly, all other options are ignored.
+       Other options are ignored if you choose:
+         * <ph name="PROXY_MODE_ENUM_DIRECT">direct</ph> = Never use a proxy server and always connect directly
+         * <ph name="PROXY_MODE_ENUM_SYSTEM">system</ph> = Use system proxy settings
+         * <ph name="PROXY_MODE_ENUM_AUTO_DETECT">auto_detect</ph> = Auto detect the proxy server
 
-          If you choose to use system proxy settings, all other options are ignored.
+       If you choose to use:
+         * <ph name="PROXY_MODE_ENUM_FIXED_SERVERS">fixed_servers</ph> = Fixed proxy servers. You can specify further options with <ph name="PROXY_SERVER_POLICY_NAME">ProxyServer</ph> and <ph name="PROXY_BYPASS_LIST_POLICY_NAME">ProxyBypassList</ph>. Only the HTTP proxy server with the highest priority is available for ARC-apps.
+         * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT">pac_script</ph> =  A .pac proxy script. Use <ph name="PROXY_PAC_URL_POLICY_NAME">ProxyPacUrl</ph> to the URL to a proxy .pac file.
 
-          If you choose to auto detect the proxy server, all other options are ignored.
+      Leaving the policy unset lets users choose the proxy settings.
 
-          If you choose fixed server proxy mode, you can specify further options in 'Address or URL of proxy server' and 'Comma-separated list of proxy bypass rules'. Only the HTTP proxy server with the highest priority is available for ARC-apps.
-
-          If you choose to use a .pac proxy script, you must specify the URL to the script in 'URL to a proxy .pac file'.
-
-          For detailed examples, visit:
-          <ph name="PROXY_HELP_URL">https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett<ex>https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett</ex></ph>.
-
-          If you enable this setting, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> and ARC-apps ignore all proxy-related options specified from the command line.
-
-          Leaving this policy not set will allow the users to choose the proxy settings on their own.''',
-      'arc_support': '''You cannot force Android apps to use a proxy. A subset of proxy settings is made available to Android apps, which they may voluntarily choose to honor:
-
-          If you choose to never use a proxy server, Android apps are informed that no proxy is configured.
-
-          If you choose to use system proxy settings or a fixed server proxy, Android apps are provided with the http proxy server address and port.
-
-          If you choose to auto detect the proxy server, the script URL "http://wpad/wpad.dat" is provided to Android apps. No other part of the proxy auto-detection protocol is used.
-
-          If you choose to use a .pac proxy script, the script URL is provided to Android apps.''',
+      Note: For detailed examples, visit The Chromium Projects ( https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett ).''',
     },
     {
       'name': 'ProxyServerMode',
@@ -3981,18 +3969,18 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'deprecated': True,
       'example_value': '123.123.123.123:8080',
       'id': 23,
       'caption': '''Address or URL of proxy server''',
       'tags': [],
-      'desc': '''You can specify the URL of the proxy server here.
+      'desc': '''This policy is deprecated, please use <ph name="PROXY_SETTINGS_POLICY_NAME">ProxySettings</ph> instead.
 
-          This policy only takes effect if you have selected manual proxy settings at 'Choose how to specify proxy server settings' and if the <ph name="PROXY_SETTINGS_POLICY_NAME">ProxySettings</ph> policy has not been specified.
+       Setting the policy lets you specify the URL of the proxy server. This policy only takes effect if the <ph name="PROXY_SETTINGS_POLICY_NAME">ProxySettings</ph> policy isn't specified and you selected <ph name="PROXY_MODE_ENUM_FIXED_SERVERS">fixed_servers</ph> with <ph name="PROXY_MODE_POLICY_NAME">ProxyMode</ph>.
 
-          You should leave this policy not set if you have selected any other mode for setting proxy policies.
+       Leave this policy unset if you selected any other mode for setting proxy policies.
 
-          For more options and detailed examples, visit:
-          <ph name="PROXY_HELP_URL">https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett<ex>https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett</ex></ph>.''',
+      Note: For detailed examples, visit The Chromium Projects ( https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett ).''',
       'arc_support': 'You cannot force Android apps to use a proxy. A subset of proxy settings is made available to Android apps, which they may voluntarily choose to honor. See the <ph name="PROXY_MODE_POLICY_NAME">ProxyMode</ph> policy for more details.',
     },
     {
@@ -4009,18 +3997,18 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'deprecate': True,
       'example_value': 'https://internal.site/example.pac',
       'id': 24,
       'caption': '''URL to a proxy .pac file''',
       'tags': [],
-      'desc': '''You can specify a URL to a proxy .pac file here.
+      'desc': '''This policy is deprecated, please use <ph name="PROXY_SETTINGS_POLICY_NAME">ProxySettings</ph> instead.
 
-          This policy only takes effect if you have selected manual proxy settings at 'Choose how to specify proxy server settings' and if the <ph name="PROXY_SETTINGS_POLICY_NAME">ProxySettings</ph> policy has not been specified.
+       Setting the policy lets you specify a URL to a proxy .pac file. This policy only takes effect if the <ph name="PROXY_SETTINGS_POLICY_NAME">ProxySettings</ph> policy isn't specified and you selected <ph name="PROXY_MODE_ENUM_PAC_SCRIPT">pac_script</ph> with <ph name="PROXY_MODE_POLICY_NAME">ProxyMode</ph>.
 
-          You should leave this policy not set if you have selected any other mode for setting proxy policies.
+       Leave this policy unset if you selected any other mode for setting proxy policies.
 
-          For detailed examples, visit:
-          <ph name="PROXY_HELP_URL">https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett<ex>https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett</ex></ph>.''',
+       Note: For detailed examples, visit The Chromium Projects ( https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett ).''',
       'arc_support': 'You cannot force Android apps to use a proxy. A subset of proxy settings is made available to Android apps, which they may voluntarily choose to honor. See the <ph name="PROXY_MODE_POLICY_NAME">ProxyMode</ph> policy for more details.',
     },
     {
@@ -4037,18 +4025,18 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'deprecated': True,
       'example_value': 'https://www.example1.com,https://www.example2.com,https://internalsite/',
       'id': 25,
       'caption': '''Proxy bypass rules''',
       'tags': [],
-      'desc': '''<ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will bypass any proxy for the list of hosts given here.
+      'desc': '''This policy is deprecated, please use <ph name="PROXY_SETTINGS_POLICY_NAME">ProxySettings</ph> instead.
 
-          This policy only takes effect if you have selected manual proxy settings at 'Choose how to specify proxy server settings' and if the <ph name="PROXY_SETTINGS_POLICY_NAME">ProxySettings</ph> policy has not been specified.
+       Setting the policy means <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> bypasses any proxy for the list of hosts given here. This policy only takes effect if the <ph name="PROXY_SETTINGS_POLICY_NAME">ProxySettings</ph> policy isn't specified and you selected a <ph name="PROXY_MODE_ENUM_FIXED_SERVERS">fixed_servers</ph> with <ph name="PROXY_MODE_POLICY_NAME">ProxyMode</ph>.
 
-          You should leave this policy not set if you have selected any other mode for setting proxy policies.
+       Leave this policy unset if you selected any other mode for setting proxy policies.
 
-          For more detailed examples, visit:
-          <ph name="PROXY_HELP_URL">https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett<ex>https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett</ex></ph>.''',
+       Note: For more detailed examples, visit The Chromium Projects ( https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett ).''',
       'label': '''Comma-separated list of proxy bypass rules''',
       'arc_support': 'You cannot force Android apps to use a proxy. A subset of proxy settings is made available to Android apps, which they may voluntarily choose to honor. See the <ph name="PROXY_MODE_POLICY_NAME">ProxyMode</ph> policy for more details.',
     },
@@ -4082,34 +4070,26 @@
       'id': 116,
       'caption': '''Proxy settings''',
       'tags': ['system-security'],
-      'desc': '''Configures the proxy settings for <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>. These proxy settings will be available for ARC-apps too.
+      'desc': '''"Setting the policy configures the proxy settings for Chrome and ARC-apps, which ignore all proxy-related options specified from the command line.
 
-          If you enable this setting, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> and ARC-apps ignore all proxy-related options specified from the command line.
+       Leaving the policy unset lets users choose their proxy settings.
 
-          Leaving this policy not set will allow the users to choose the proxy settings on their own.
+       Setting the <ph name="PROXY_SETTINGS_POLICY_NAME">ProxySettings</ph> policy accepts the following fields:
+         * <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD">ProxyMode</ph>, which lets you specify the proxy server Chrome uses and prevents users from changing proxy settings
+         * <ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD">ProxyPacUrl</ph>, a URL to a proxy .pac file
+         * <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD">ProxyServer</ph>, a URL of the proxy server
+         * <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD">ProxyBypassList</ph>, a list of proxy hosts that <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> bypasses
 
-          If the <ph name="PROXY_SETTINGS_POLICY_NAME">ProxySettings</ph> policy is set, it will override any of the individual policies <ph name="PROXY_MODE_POLICY_NAME">ProxyMode</ph>, <ph name="PROXY_PAC_URL_POLICY_NAME">ProxyPacUrl</ph>, <ph name="PROXY_SERVER_POLICY_NAME">ProxyServer</ph>, <ph name="PROXY_BYPASS_POLICY_NAME">ProxyBypassList</ph> and <ph name="PROXY_SERVER_MODE_POLICY_NAME">ProxyServerMode</ph>.
+       The <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD">ProxyServerMode</ph> field is deprecated in favor of the <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD">ProxyMode</ph> field, which lets you specify the proxy server Chrome uses and prevents users from changing proxy settings.
 
-          The <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD">ProxyMode</ph> field allows you to specify the proxy server used by <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> and prevents users from changing proxy settings.
+        For <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD">ProxyMode</ph>, if you choose the value:
+          * <ph name="PROXY_MODE_ENUM_DIRECT">direct</ph>, a proxy is never used and all other fields are ignored.
+          * <ph name="PROXY_MODE_ENUM_SYSTEM">system</ph>, the systems's proxy is used and all other fields are ignored.
+          * <ph name="PROXY_MODE_ENUM_AUTO_DETECT">auto_detect</ph>, all other fields are ignored.
+          * <ph name="PROXY_MODE_ENUM_FIXED_SERVER">fixed_server</ph>, the <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD">ProxyServer</ph> and <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD">ProxyBypassList</ph> fields are used.
+          * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT">pac_script</ph>, the <ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL">ProxyPacUrl</ph> and <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD">ProxyBypassList</ph> fields are used.
 
-          The <ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD">ProxyPacUrl</ph> field is a URL to a proxy .pac file.
-
-          The <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD">ProxyServer</ph> field is a URL of the proxy server.
-
-          The <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD">ProxyBypassList</ph> field is a list of proxy hosts that <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will bypass.
-
-          The <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD">ProxyServerMode</ph> field is deprecated in favor of the field 'ProxyMode'. It allows you to specify the proxy server used by <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> and prevents users from changing proxy settings.
-
-          If you choose the value 'direct' as 'ProxyMode', a proxy will never be used and all other fields will be ignored.
-
-          If you choose the value 'system' as 'ProxyMode', the systems's proxy will be used and all other fields will be ignored.
-
-          If you choose the value 'auto_detect' as 'ProxyMode', all other fields will be ignored.
-
-          If you choose the value 'fixed_server' as 'ProxyMode', the 'ProxyServer' and 'ProxyBypassList' fields will be used.
-
-          If you choose the value 'pac_script' as 'ProxyMode', the 'ProxyPacUrl' and 'ProxyBypassList' fields will be used.''',
-
+      Note: For more detailed examples, visit The Chromium Projects ( https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett ).''',
       'arc_support': 'Only a subset of proxy configuration options are made available to Android apps. Android apps may voluntarily choose to use the proxy. You cannot force them to use a proxy.',
     },
     {
