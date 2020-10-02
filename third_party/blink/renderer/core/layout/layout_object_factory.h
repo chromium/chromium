@@ -98,6 +98,9 @@ class LayoutObjectFactory {
   static LayoutRubyAsBlock* CreateRubyAsBlock(Node* node,
                                               const ComputedStyle& style,
                                               LegacyLayout legacy);
+  static LayoutObject* CreateRubyText(Node* node,
+                                      const ComputedStyle& style,
+                                      LegacyLayout legacy);
 
   // Anonoymous creation methods
 

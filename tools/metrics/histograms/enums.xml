@@ -29066,7 +29066,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3213" label="OBSOLETE_LegacyLayoutByMenuList"/>
   <int value="3214" label="LegacyLayoutByMultiCol"/>
   <int value="3215" label="LegacyLayoutByPrinting"/>
-  <int value="3216" label="LegacyLayoutByRuby"/>
+  <int value="3216" label="OBSOLETE_LegacyLayoutByRuby"/>
   <int value="3217" label="LegacyLayoutBySVG"/>
   <int value="3218" label="LegacyLayoutBySlider"/>
   <int value="3219" label="LegacyLayoutByTable"/>

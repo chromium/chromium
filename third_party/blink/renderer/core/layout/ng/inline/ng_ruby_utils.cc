@@ -11,7 +11,6 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_container_fragment.h"
 #include "third_party/blink/renderer/platform/fonts/font_height.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -100,7 +99,6 @@ PhysicalRect AdjustTextRectForEmHeight(const PhysicalRect& rect,
 
 // See LayoutRubyRun::GetOverhang().
 NGAnnotationOverhang GetOverhang(const NGInlineItemResult& item) {
-  DCHECK(RuntimeEnabledFeatures::LayoutNGRubyEnabled());
   NGAnnotationOverhang overhang;
   if (!item.layout_result)
     return overhang;
@@ -166,7 +164,6 @@ bool CanApplyStartOverhang(const NGLineInfo& line_info,
                            LayoutUnit& start_overhang) {
   if (start_overhang <= LayoutUnit())
     return false;
-  DCHECK(RuntimeEnabledFeatures::LayoutNGRubyEnabled());
   const NGInlineItemResults& items = line_info.Results();
   // Requires at least the current item and the previous item.
   if (items.size() < 2)
@@ -193,7 +190,6 @@ bool CanApplyStartOverhang(const NGLineInfo& line_info,
 
 // See LayoutRubyRun::GetOverhang().
 LayoutUnit CommitPendingEndOverhang(NGLineInfo* line_info) {
-  DCHECK(RuntimeEnabledFeatures::LayoutNGRubyEnabled());
   DCHECK(line_info);
   NGInlineItemResults* items = line_info->MutableResults();
   if (items->size() < 2U)
@@ -235,7 +231,6 @@ NGAnnotationMetrics ComputeAnnotationOverflow(
     const FontHeight& line_box_metrics,
     LayoutUnit line_over,
     const ComputedStyle& line_style) {
-  DCHECK(RuntimeEnabledFeatures::LayoutNGRubyEnabled());
   // Min/max position of content and annotations, ignoring line-height.
   LayoutUnit content_over = line_over + line_box_metrics.ascent;
   LayoutUnit content_under = content_over;

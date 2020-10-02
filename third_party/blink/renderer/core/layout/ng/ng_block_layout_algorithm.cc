@@ -759,7 +759,6 @@ scoped_refptr<const NGLayoutResult> NGBlockLayoutAlgorithm::FinishLayout(
   // can extend on the padding. So we decrease logical_block_offset by
   // shareable part of the annotation overflow and the padding.
   if (previous_inflow_position->block_end_annotation_space < LayoutUnit()) {
-    DCHECK(RuntimeEnabledFeatures::LayoutNGRubyEnabled());
     const LayoutUnit annotation_overflow =
         -previous_inflow_position->block_end_annotation_space;
     previous_inflow_position->logical_block_offset -=
@@ -2775,7 +2774,6 @@ bool NGBlockLayoutAlgorithm::IsRubyText(const NGLayoutInputNode& child) const {
 
 void NGBlockLayoutAlgorithm::LayoutRubyText(
     NGLayoutInputNode* ruby_text_child) {
-  DCHECK(RuntimeEnabledFeatures::LayoutNGRubyEnabled());
   DCHECK(Node().IsRubyRun());
 
   scoped_refptr<const NGBlockBreakToken> break_token;

@@ -1026,12 +1026,6 @@
       name: "LayoutNGPrinting",
     },
     {
-      name: "LayoutNGRuby",
-      depends_on: ["LayoutNG"],
-      // The flag value is managed by kLayoutNGRuby in common/features.cc too.
-      status: "stable",
-    },
-    {
       name: "LayoutNGTable",
     },
     {

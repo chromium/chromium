@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_fieldset.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_progress.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_ruby_as_block.h"
+#include "third_party/blink/renderer/core/layout/ng/layout_ng_ruby_text.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_text_control_inner_editor.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_text_control_multi_line.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_text_control_single_line.h"
@@ -341,6 +342,12 @@ LayoutRubyAsBlock* LayoutObjectFactory::CreateRubyAsBlock(
     LegacyLayout legacy) {
   return CreateObject<LayoutRubyAsBlock, LayoutNGRubyAsBlock>(*node, style,
                                                               legacy);
+}
+
+LayoutObject* LayoutObjectFactory::CreateRubyText(Node* node,
+                                                  const ComputedStyle& style,
+                                                  LegacyLayout legacy) {
+  return CreateObject<LayoutRubyText, LayoutNGRubyText>(*node, style, legacy);
 }
 
 LayoutBox* LayoutObjectFactory::CreateAnonymousTableWithParent(

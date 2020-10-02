@@ -208,8 +208,7 @@ LayoutRubyRun* LayoutRubyRun::StaticCreateRubyRun(
   DCHECK(parent_ruby);
   DCHECK(parent_ruby->IsRuby());
   LayoutRubyRun* rr;
-  if (RuntimeEnabledFeatures::LayoutNGRubyEnabled() &&
-      containing_block.IsLayoutNGObject()) {
+  if (containing_block.IsLayoutNGObject()) {
     rr = new LayoutNGRubyRun();
   } else {
     rr = new LayoutRubyRun(nullptr);

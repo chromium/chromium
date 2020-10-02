@@ -7,19 +7,11 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/layout_object_factory.h"
 #include "third_party/blink/renderer/core/layout/layout_ruby.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
 HTMLRubyElement::HTMLRubyElement(Document& document)
     : HTMLElement(html_names::kRubyTag, document) {}
-
-bool HTMLRubyElement::TypeShouldForceLegacyLayout() const {
-  if (RuntimeEnabledFeatures::LayoutNGRubyEnabled())
-    return false;
-  UseCounter::Count(GetDocument(), WebFeature::kLegacyLayoutByRuby);
-  return true;
-}
 
 LayoutObject* HTMLRubyElement::CreateLayoutObject(const ComputedStyle& style,
                                                   LegacyLayout legacy) {
