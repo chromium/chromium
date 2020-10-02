@@ -108,13 +108,13 @@
       "E703483CEF33DEC18B4B6DD84B5C776FB9182BDB",  // http://crbug.com/234235
       "307E96539209F95A1A8740C713E6998A73657D96",  // http://crbug.com/329690
       "A291B26E088FA6BA53FFD72F0916F06EBA7C585A",  // http://crbug.com/341258
-      // TODO (ntang) Remove the following hash by 12/31/2017.
+      // TODO(ntang): Remove this hash when the app is no longer active.
       "D7986543275120831B39EF28D1327552FC343960",  // http://crbug.com/329088
       "4F25792AF1AA7483936DE29C07806F203C7170A0",  // http://crbug.com/407693
       "BD8781D757D830FC2E85470A1B6E8A718B7EE0D9",  // http://crbug.com/407693
       "4AC2B6C63C6480D150DFDA13E4A5956EB1D0DDBB",  // http://crbug.com/407693
       "81986D4F846CEDDDB962643FA501D1780DD441BB",  // http://crbug.com/407693
-      // TODO (ntang) Remove the following 2 hashes by 12/31/2017.
+      // TODO(ntang): Remove these 2 hashes when the app is no longer active.
       "B620CF4203315F9F2E046EDED22C7571A935958D",  // http://crbug.com/510270
       "B206D8716769728278D2D300349C6CB7D7DE2EF9",  // http://crbug.com/510270
       "A3E3DE9E9F16B41D4A2FAD106BD6CA76B94A0C94",  // http://crbug.com/590259
@@ -697,11 +697,11 @@
     "channel": "stable",
     "extension_types": ["extension", "platform_app"],
     "whitelist": [
-      // TODO (ntang) Remove the following 2 hashes by 12/31/2017.
+      // TODO(ntang): Remove these 2 hashes when the app is no longer active.
       "A291B26E088FA6BA53FFD72F0916F06EBA7C585A", // http://crbug.com/329088
       "D7986543275120831B39EF28D1327552FC343960", // http://crbug.com/329088
       "BCC85C0D7F85897F2699974421EA402144C35C0C", // API Test
-      // TODO (ntang) Remove the following 2 hashes by 12/31/2017.
+      // TODO(ntang): Remove these 2 hashes when the app is no longer active.
       "B620CF4203315F9F2E046EDED22C7571A935958D", // http://crbug.com/510270
       "B206D8716769728278D2D300349C6CB7D7DE2EF9", // http://crbug.com/510270
       "2B6C6A4A5940017146F3E58B7F90116206E84685",  // http://crbug.com/642141
