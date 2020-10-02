@@ -656,7 +656,10 @@ public class WebLayerShellActivity extends AppCompatActivity {
         // testing where a port is remapped.
         // Use WEB_URL first to ensure this matches urls such as 'https.'
         if (WEB_URL.matcher(input).matches() || input.startsWith("http://localhost:")) {
-            return Uri.parse(input);
+            // WEB_URL matches relative urls (relative meaning no scheme), but this branch is only
+            // interested in absolute urls. Fall through if no scheme is supplied.
+            Uri uri = Uri.parse(input);
+            if (!uri.isRelative()) return uri;
         }
 
         if (input.startsWith("www.") || input.indexOf(":") == -1) {
