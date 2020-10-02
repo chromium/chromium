@@ -11,6 +11,7 @@
 
 #include "base/files/file_path.h"
 #include "components/autofill/core/browser/proto/api_v1.pb.h"
+#include "components/autofill/core/browser/proto/legacy_server_request_response.pb.h"
 #include "components/autofill/core/browser/proto/server.pb.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "third_party/protobuf/src/google/protobuf/stubs/statusor.h"
