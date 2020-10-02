@@ -111,7 +111,8 @@ public class DownloadDialogBridge
             @DownloadLocationDialogType
             int suggestedDialogType = dialogType;
             if (ChromeFeatureList.isEnabled(ChromeFeatureList.SMART_SUGGESTION_FOR_LARGE_DOWNLOADS)
-                    && DownloadDialogUtils.shouldSuggestDownloadLocation(dirs, totalBytes)) {
+                    && DownloadDialogUtils.shouldSuggestDownloadLocation(
+                            dirs, getDownloadDefaultDirectory(), totalBytes)) {
                 suggestedDialogType = DownloadLocationDialogType.LOCATION_SUGGESTION;
             }
 

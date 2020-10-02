@@ -144,6 +144,7 @@ android_library("junit_tests") {
   sources = [
     "java/src/org/chromium/chrome/browser/download/DownloadDialogBridgeUnitTest.java",
     "java/src/org/chromium/chrome/browser/download/DownloadLaterMetricsUnitTest.java",
+    "java/src/org/chromium/chrome/browser/download/dialogs/DownloadDialogUtilsUnitTest.java",
     "java/src/org/chromium/chrome/browser/download/dialogs/DownloadLaterDialogHelperUnitTest.java",
   ]
 
