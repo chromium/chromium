@@ -15,6 +15,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 
+class PrefRegistrySimple;
 class Profile;
 namespace network {
 class SharedURLLoaderFactory;
@@ -31,6 +32,8 @@ class ShoppingTasksService : public KeyedService {
   ShoppingTasksService(const ShoppingTasksService&) = delete;
   ~ShoppingTasksService() override;
 
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
+
   // KeyedService:
   void Shutdown() override;
 
@@ -38,9 +41,13 @@ class ShoppingTasksService : public KeyedService {
       shopping_tasks::mojom::ShoppingTaskPtr shopping_task)>;
   // Downloads and parses shopping tasks and calls |callback| when done.
   // On success |callback| is called with a populated |ShoppingTasksData| object
-  // of the highest priority shopping task. On failure, it is called with
-  // nullptr.
+  // of the first shopping task which has not been dismissed. On failure, it is
+  // called with nullptr.
   void GetPrimaryShoppingTask(ShoppingTaskCallback callback);
+  // Dismisses the task with the given name and remembers that setting.
+  void DismissShoppingTask(const std::string& task_name);
+  // Restores the task with the given name and remembers that setting.
+  void RestoreShoppingTask(const std::string& task_name);
 
  private:
   void OnDataLoaded(network::SimpleURLLoader* loader,
@@ -49,6 +56,10 @@ class ShoppingTasksService : public KeyedService {
   void OnJsonParsed(ShoppingTaskCallback callback,
                     data_decoder::DataDecoder::ValueOrError result);
 
+  // Returns whether a task with the given name has been dismissed.
+  bool IsShoppingTaskDismissed(const std::string& task_name);
+
+  Profile* profile_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::list<std::unique_ptr<network::SimpleURLLoader>> loaders_;
   std::string application_locale_;

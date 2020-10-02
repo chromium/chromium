@@ -258,3 +258,127 @@ TEST_F(ShoppingTasksServiceTest, ErrorResponse) {
 
   ASSERT_FALSE(result);
 }
+
+// Verifies shopping tasks can be dismissed and restored and that the service
+// remembers not to return dismissed tasks.
+TEST_F(ShoppingTasksServiceTest, DismissTasks) {
+  test_url_loader_factory_.AddResponse(
+      "https://www.google.com/async/newtab_shopping_tasks?hl=en-US",
+      R"()]}'
+{
+  "update": {
+    "shopping_tasks": [
+      {
+        "title": "task 1 title",
+        "task_name": "task 1 name",
+        "products": [
+          {
+            "name": "foo",
+            "image_url": "https://foo.com",
+            "price": "$500",
+            "info": "visited 5 days ago",
+            "target_url": "https://google.com/foo"
+          }
+        ],
+        "related_searches": [
+          {
+            "text": "baz",
+            "target_url": "https://google.com/baz"
+          }
+        ]
+      },
+      {
+        "title": "task 2 title",
+        "task_name": "task 2 name",
+        "products": [
+          {
+            "name": "foo",
+            "image_url": "https://foo.com",
+            "price": "$500",
+            "info": "visited 5 days ago",
+            "target_url": "https://google.com/foo"
+          }
+        ],
+        "related_searches": [
+          {
+            "text": "baz",
+            "target_url": "https://google.com/baz"
+          }
+        ]
+      }
+    ]
+  }
+})");
+
+  shopping_tasks::mojom::ShoppingTaskPtr result1;
+  base::MockCallback<ShoppingTasksService::ShoppingTaskCallback> callback1;
+  EXPECT_CALL(callback1, Run(testing::_))
+      .Times(1)
+      .WillOnce(testing::Invoke(
+          [&result1](shopping_tasks::mojom::ShoppingTaskPtr arg) {
+            result1 = std::move(arg);
+          }));
+  service_->GetPrimaryShoppingTask(callback1.Get());
+  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(result1);
+  EXPECT_EQ("task 1 name", result1->name);
+
+  service_->DismissShoppingTask("task 1 name");
+
+  shopping_tasks::mojom::ShoppingTaskPtr result2;
+  base::MockCallback<ShoppingTasksService::ShoppingTaskCallback> callback2;
+  EXPECT_CALL(callback2, Run(testing::_))
+      .Times(1)
+      .WillOnce(testing::Invoke(
+          [&result2](shopping_tasks::mojom::ShoppingTaskPtr arg) {
+            result2 = std::move(arg);
+          }));
+  service_->GetPrimaryShoppingTask(callback2.Get());
+  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(result2);
+  EXPECT_EQ("task 2 name", result2->name);
+
+  service_->DismissShoppingTask("task 2 name");
+
+  shopping_tasks::mojom::ShoppingTaskPtr result3;
+  base::MockCallback<ShoppingTasksService::ShoppingTaskCallback> callback3;
+  EXPECT_CALL(callback3, Run(testing::_))
+      .Times(1)
+      .WillOnce(testing::Invoke(
+          [&result3](shopping_tasks::mojom::ShoppingTaskPtr arg) {
+            result3 = std::move(arg);
+          }));
+  service_->GetPrimaryShoppingTask(callback3.Get());
+  base::RunLoop().RunUntilIdle();
+  ASSERT_FALSE(result3);
+
+  service_->RestoreShoppingTask("task 2 name");
+
+  shopping_tasks::mojom::ShoppingTaskPtr result4;
+  base::MockCallback<ShoppingTasksService::ShoppingTaskCallback> callback4;
+  EXPECT_CALL(callback4, Run(testing::_))
+      .Times(1)
+      .WillOnce(testing::Invoke(
+          [&result4](shopping_tasks::mojom::ShoppingTaskPtr arg) {
+            result4 = std::move(arg);
+          }));
+  service_->GetPrimaryShoppingTask(callback4.Get());
+  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(result4);
+  EXPECT_EQ("task 2 name", result4->name);
+
+  service_->RestoreShoppingTask("task 1 name");
+
+  shopping_tasks::mojom::ShoppingTaskPtr result5;
+  base::MockCallback<ShoppingTasksService::ShoppingTaskCallback> callback5;
+  EXPECT_CALL(callback5, Run(testing::_))
+      .Times(1)
+      .WillOnce(testing::Invoke(
+          [&result5](shopping_tasks::mojom::ShoppingTaskPtr arg) {
+            result5 = std::move(arg);
+          }));
+  service_->GetPrimaryShoppingTask(callback5.Get());
+  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(result5);
+  EXPECT_EQ("task 1 name", result5->name);
+}

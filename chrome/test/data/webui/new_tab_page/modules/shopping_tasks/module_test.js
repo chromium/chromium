@@ -144,4 +144,65 @@ suite('NewTabPageModulesShoppingTasksModuleTest', () => {
     await checkHidden('700px', 26);
     await checkHidden('500px', 31);
   });
+
+  test('Backend is notified when module is dismissed or restored', async () => {
+    // Arrange.
+    const shoppingTask = {
+      title: 'Continue searching for Hello world',
+      name: 'Hello world',
+      products: [
+        {
+          name: 'foo',
+          imageUrl: {url: 'https://foo.com/img.png'},
+          price: '1 gazillion dollars',
+          info: 'foo info',
+          targetUrl: {url: 'https://foo.com'},
+        },
+        {
+          name: 'bar',
+          imageUrl: {url: 'https://bar.com/img.png'},
+          price: '2 gazillion dollars',
+          info: 'bar info',
+          targetUrl: {url: 'https://bar.com'},
+        },
+      ],
+      relatedSearches: [
+        {
+          text: 'baz',
+          targetUrl: {url: 'https://baz.com'},
+        },
+        {
+          text: 'blub',
+          targetUrl: {url: 'https://blub.com'},
+        },
+      ],
+    };
+    testProxy.handler.setResultFor(
+        'getPrimaryShoppingTask', Promise.resolve({shoppingTask}));
+
+
+    // Act.
+    await shoppingTasksDescriptor.initialize();
+
+    // Assert.
+    assertEquals('function', typeof shoppingTasksDescriptor.actions.dismiss);
+    assertEquals('function', typeof shoppingTasksDescriptor.actions.restore);
+
+    // Act.
+    const toastMessage = shoppingTasksDescriptor.actions.dismiss();
+
+    // Assert.
+    assertEquals('Removed Hello world', toastMessage);
+    assertEquals(
+        'Hello world',
+        await testProxy.handler.whenCalled('dismissShoppingTask'));
+
+    // Act.
+    shoppingTasksDescriptor.actions.restore();
+
+    // Assert.
+    assertEquals(
+        'Hello world',
+        await testProxy.handler.whenCalled('restoreShoppingTask'));
+  });
 });

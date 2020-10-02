@@ -89,8 +89,14 @@ async function createModule() {
         element.showInfoDialog = true;
       },
       dismiss: () => {
+        ShoppingTasksHandlerProxy.getInstance().handler.dismissShoppingTask(
+            shoppingTask.name);
         return loadTimeData.getStringF(
             'dismissModuleToastMessage', shoppingTask.name);
+      },
+      restore: () => {
+        ShoppingTasksHandlerProxy.getInstance().handler.restoreShoppingTask(
+            shoppingTask.name);
       },
     },
   };
