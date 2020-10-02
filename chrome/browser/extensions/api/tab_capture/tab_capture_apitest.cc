@@ -148,7 +148,8 @@ TEST(TabCaptureCaptureOffscreenTabTest, DetermineInitialSize) {
 }
 
 // Tests API behaviors, including info queries, and constraints violations.
-IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, ApiTests) {
+// Disabled due to high flake rate; see https://crbug.com/764464.
+IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, DISABLED_ApiTests) {
   AddExtensionToCommandLineAllowlist();
   ASSERT_TRUE(RunExtensionSubtest("tab_capture", "api_tests.html")) << message_;
 }
