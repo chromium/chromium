@@ -26,7 +26,7 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/notification_service.h"
 
-using autofill::PasswordForm;
+using password_manager::PasswordForm;
 using password_manager::PasswordStoreChange;
 using password_manager::PasswordStoreChangeList;
 using password_manager::PasswordStoreDefault;
@@ -40,7 +40,7 @@ PasswordStoreX::MigrationToLoginDBStep EncryptDatabase(
     password_manager::LoginDatabase* login_db) {
   // Read the unencrypted entries.
   login_db->disable_encryption();
-  std::map<int, std::unique_ptr<autofill::PasswordForm>> logins;
+  std::map<int, std::unique_ptr<PasswordForm>> logins;
   if (login_db->GetAllLogins(&logins) !=
       password_manager::FormRetrievalResult::kSuccess) {
     return PasswordStoreX::FAILED_INIT_ENCRYPTED;

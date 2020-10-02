@@ -97,7 +97,7 @@ class ChromePasswordManagerClient
       password_manager::PasswordManagerDriver* driver,
       autofill::mojom::FocusedFieldType focused_field_type) override;
   bool PromptUserToChooseCredentials(
-      std::vector<std::unique_ptr<autofill::PasswordForm>> local_forms,
+      std::vector<std::unique_ptr<password_manager::PasswordForm>> local_forms,
       const url::Origin& origin,
       CredentialsCallback callback) override;
   void ShowTouchToFill(
@@ -109,28 +109,28 @@ class ChromePasswordManagerClient
       override;
   void GeneratePassword() override;
   void NotifyUserAutoSignin(
-      std::vector<std::unique_ptr<autofill::PasswordForm>> local_forms,
+      std::vector<std::unique_ptr<password_manager::PasswordForm>> local_forms,
       const url::Origin& origin) override;
   void NotifyUserCouldBeAutoSignedIn(
-      std::unique_ptr<autofill::PasswordForm> form) override;
+      std::unique_ptr<password_manager::PasswordForm> form) override;
   void NotifySuccessfulLoginWithExistingPassword(
       std::unique_ptr<password_manager::PasswordFormManagerForUI>
           submitted_manager) override;
   void NotifyStorePasswordCalled() override;
   void UpdateCredentialCache(
       const url::Origin& origin,
-      const std::vector<const autofill::PasswordForm*>& best_matches,
+      const std::vector<const password_manager::PasswordForm*>& best_matches,
       bool is_blacklisted) override;
   void AutomaticPasswordSave(
       std::unique_ptr<password_manager::PasswordFormManagerForUI>
           saved_form_manager) override;
   void PasswordWasAutofilled(
-      const std::vector<const autofill::PasswordForm*>& best_matches,
+      const std::vector<const password_manager::PasswordForm*>& best_matches,
       const url::Origin& origin,
-      const std::vector<const autofill::PasswordForm*>* federated_matches)
-      override;
+      const std::vector<const password_manager::PasswordForm*>*
+          federated_matches) override;
   void AutofillHttpAuth(
-      const autofill::PasswordForm& preferred_match,
+      const password_manager::PasswordForm& preferred_match,
       const password_manager::PasswordFormManagerForUI* form_manager) override;
   void NotifyUserCredentialsWereLeaked(
       password_manager::CredentialLeakType leak_type,

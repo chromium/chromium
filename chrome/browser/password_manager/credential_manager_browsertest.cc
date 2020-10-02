@@ -197,7 +197,7 @@ class CredentialManagerBrowserTest : public PasswordManagerBrowserTestBase {
                 .get());
 
     ASSERT_EQ(1u, test_password_store->stored_passwords().size());
-    autofill::PasswordForm signin_form =
+    password_manager::PasswordForm signin_form =
         test_password_store->stored_passwords().begin()->second[0];
     EXPECT_EQ(base::ASCIIToUTF16("user"), signin_form.username_value);
     EXPECT_EQ(base::ASCIIToUTF16("hunter2"), signin_form.password_value);
@@ -272,7 +272,7 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
           PasswordStoreFactory::GetForProfile(
               browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS)
               .get());
-  autofill::PasswordForm signin_form;
+  password_manager::PasswordForm signin_form;
   signin_form.signon_realm = embedded_test_server()->base_url().spec();
   signin_form.password_value = base::ASCIIToUTF16("password");
   signin_form.username_value = base::ASCIIToUTF16("user");
@@ -308,10 +308,10 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
   password_manager::TestPasswordStore::PasswordMap passwords_map =
       password_store->stored_passwords();
   ASSERT_EQ(1u, passwords_map.size());
-  const std::vector<autofill::PasswordForm>& passwords_vector =
+  const std::vector<password_manager::PasswordForm>& passwords_vector =
       passwords_map.begin()->second;
   ASSERT_EQ(1u, passwords_vector.size());
-  const autofill::PasswordForm& form = passwords_vector[0];
+  const password_manager::PasswordForm& form = passwords_vector[0];
   EXPECT_EQ(base::ASCIIToUTF16("user"), form.username_value);
   EXPECT_EQ(base::ASCIIToUTF16("password"), form.password_value);
   EXPECT_FALSE(form.skip_zero_click);
@@ -327,13 +327,13 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
 
   GURL url = embedded_test_server()->base_url();
 
-  autofill::PasswordForm form_1;
+  password_manager::PasswordForm form_1;
   form_1.signon_realm = url.spec();
   form_1.url = url;
   form_1.username_value = base::ASCIIToUTF16("user1");
   form_1.password_value = base::ASCIIToUTF16("abcdef");
 
-  autofill::PasswordForm form_2;
+  password_manager::PasswordForm form_2;
   form_2.signon_realm = url.spec();
   form_2.url = url;
   form_2.username_value = base::ASCIIToUTF16("user2");
@@ -347,7 +347,8 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
   {
     auto found = password_store->stored_passwords().find(url.spec());
     ASSERT_NE(password_store->stored_passwords().end(), found);
-    const std::vector<autofill::PasswordForm>& passwords = found->second;
+    const std::vector<password_manager::PasswordForm>& passwords =
+        found->second;
 
     ASSERT_EQ(2U, passwords.size());
     EXPECT_EQ(base::ASCIIToUTF16("user1"), passwords[0].username_value);
@@ -392,7 +393,8 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
   {
     auto found = password_store->stored_passwords().find(url.spec());
     ASSERT_NE(password_store->stored_passwords().end(), found);
-    const std::vector<autofill::PasswordForm>& passwords = found->second;
+    const std::vector<password_manager::PasswordForm>& passwords =
+        found->second;
 
     ASSERT_EQ(2U, passwords.size());
     EXPECT_EQ(base::ASCIIToUTF16("user1"), passwords[0].username_value);
@@ -412,13 +414,13 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
 
   GURL url = embedded_test_server()->base_url();
 
-  autofill::PasswordForm form_1;
+  password_manager::PasswordForm form_1;
   form_1.signon_realm = url.spec();
   form_1.url = url;
   form_1.username_value = base::ASCIIToUTF16("user1");
   form_1.password_value = base::ASCIIToUTF16("abcdef");
 
-  autofill::PasswordForm form_2;
+  password_manager::PasswordForm form_2;
   form_2.signon_realm = url.spec();
   form_2.url = url;
   form_2.username_value = base::ASCIIToUTF16("user2");
@@ -432,7 +434,8 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
   {
     auto found = password_store->stored_passwords().find(url.spec());
     ASSERT_NE(password_store->stored_passwords().end(), found);
-    const std::vector<autofill::PasswordForm>& passwords = found->second;
+    const std::vector<password_manager::PasswordForm>& passwords =
+        found->second;
 
     ASSERT_EQ(2U, passwords.size());
     EXPECT_EQ(base::ASCIIToUTF16("user1"), passwords[0].username_value);
@@ -478,7 +481,8 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
   {
     auto found = password_store->stored_passwords().find(url.spec());
     ASSERT_NE(password_store->stored_passwords().end(), found);
-    const std::vector<autofill::PasswordForm>& passwords = found->second;
+    const std::vector<password_manager::PasswordForm>& passwords =
+        found->second;
 
     ASSERT_EQ(2U, passwords.size());
     EXPECT_EQ(base::ASCIIToUTF16("user1"), passwords[0].username_value);
@@ -500,7 +504,7 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
 
   GURL url = embedded_test_server()->base_url();
 
-  autofill::PasswordForm form_1;
+  password_manager::PasswordForm form_1;
   form_1.signon_realm = url.spec();
   form_1.username_value = base::ASCIIToUTF16("user1");
   form_1.password_value = base::ASCIIToUTF16("abcdef");
@@ -508,7 +512,7 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
   form_1.password_element = base::ASCIIToUTF16("pass");
   form_1.url = GURL(url.spec() + "/my/custom/path/");
 
-  autofill::PasswordForm form_2;
+  password_manager::PasswordForm form_2;
   form_2.signon_realm = url.spec();
   form_2.username_value = base::ASCIIToUTF16("user2");
   form_2.password_value = base::ASCIIToUTF16("123456");
@@ -524,7 +528,8 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
   {
     auto found = password_store->stored_passwords().find(url.spec());
     ASSERT_NE(password_store->stored_passwords().end(), found);
-    const std::vector<autofill::PasswordForm>& passwords = found->second;
+    const std::vector<password_manager::PasswordForm>& passwords =
+        found->second;
 
     ASSERT_EQ(2U, passwords.size());
     EXPECT_EQ(base::ASCIIToUTF16("user1"), passwords[0].username_value);
@@ -576,7 +581,8 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
   {
     auto found = password_store->stored_passwords().find(url.spec());
     ASSERT_NE(password_store->stored_passwords().end(), found);
-    const std::vector<autofill::PasswordForm>& passwords = found->second;
+    const std::vector<password_manager::PasswordForm>& passwords =
+        found->second;
 
     ASSERT_EQ(2U, passwords.size());
     EXPECT_EQ(base::ASCIIToUTF16("user1"), passwords[0].username_value);
@@ -597,7 +603,7 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
   // The call to |GetURL| is needed to get the correct port.
   GURL psl_url = https_test_server().GetURL("psl.example.com", "/");
 
-  autofill::PasswordForm signin_form;
+  password_manager::PasswordForm signin_form;
   signin_form.signon_realm = psl_url.spec();
   signin_form.password_value = base::ASCIIToUTF16("password");
   signin_form.username_value = base::ASCIIToUTF16("user");
@@ -654,7 +660,7 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
   // The call to |GetURL| is needed to get the correct port.
   GURL psl_url = https_test_server().GetURL("psl.example.com", "/");
 
-  autofill::PasswordForm signin_form;
+  password_manager::PasswordForm signin_form;
   signin_form.signon_realm = psl_url.spec();
   signin_form.password_value = base::ASCIIToUTF16("password");
   signin_form.username_value = base::ASCIIToUTF16("user");
@@ -706,7 +712,7 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
   GURL::Replacements rep;
   rep.SetSchemeStr(url::kHttpScheme);
   GURL http_origin = https_origin.ReplaceComponents(rep);
-  autofill::PasswordForm http_form;
+  password_manager::PasswordForm http_form;
   http_form.signon_realm = http_origin.spec();
   http_form.url = http_origin;
   http_form.username_value = base::ASCIIToUTF16("user");
@@ -748,7 +754,7 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
           PasswordStoreFactory::GetForProfile(
               browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS)
               .get());
-  autofill::PasswordForm signin_form;
+  password_manager::PasswordForm signin_form;
   signin_form.signon_realm = embedded_test_server()->base_url().spec();
   signin_form.password_value = base::ASCIIToUTF16("password");
   signin_form.username_value = base::ASCIIToUTF16("user");
@@ -913,7 +919,7 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest, SaveViaAPIAndAutofill) {
               .get())
           ->stored_passwords();
   ASSERT_EQ(1u, stored.size());
-  autofill::PasswordForm signin_form = stored.begin()->second[0];
+  password_manager::PasswordForm signin_form = stored.begin()->second[0];
   EXPECT_EQ(base::ASCIIToUTF16("user"), signin_form.username_value);
   EXPECT_EQ(base::ASCIIToUTF16("API"), signin_form.password_value);
   EXPECT_EQ(embedded_test_server()->base_url().spec(),
@@ -928,7 +934,7 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest, UpdateViaAPIAndAutofill) {
           PasswordStoreFactory::GetForProfile(
               browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS)
               .get());
-  autofill::PasswordForm signin_form;
+  password_manager::PasswordForm signin_form;
   signin_form.signon_realm = embedded_test_server()->base_url().spec();
   signin_form.password_value = base::ASCIIToUTF16("old_pass");
   signin_form.username_value = base::ASCIIToUTF16("user");

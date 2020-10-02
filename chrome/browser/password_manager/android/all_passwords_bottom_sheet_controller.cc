@@ -57,7 +57,7 @@ void AllPasswordsBottomSheetController::Show() {
 }
 
 void AllPasswordsBottomSheetController::OnGetPasswordStoreResults(
-    std::vector<std::unique_ptr<autofill::PasswordForm>> results) {
+    std::vector<std::unique_ptr<password_manager::PasswordForm>> results) {
   // TODO(crbug.com/1104132): Handle empty credentials case.
   view_->Show(std::move(results), focused_field_type_);
 }

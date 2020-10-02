@@ -9,14 +9,14 @@
 
 #include "base/android/jni_array.h"
 #include "base/android/scoped_java_ref.h"
-#include "components/autofill/core/common/password_form.h"
+#include "components/password_manager/core/browser/password_form.h"
 
-// Creates Java counterpart of autofill::PasswordForm, assigning it a |position|
-// in case form is part of some array of forms and |type| which should be either
-// local or federated.
+// Creates Java counterpart of password_manager::PasswordForm, assigning it a
+// |position| in case form is part of some array of forms and |type| which
+// should be either local or federated.
 base::android::ScopedJavaLocalRef<jobject> CreateNativeCredential(
     JNIEnv* env,
-    const autofill::PasswordForm& password_form,
+    const password_manager::PasswordForm& password_form,
     int position);
 
 // Creates Java Credential[] array of size |size|.

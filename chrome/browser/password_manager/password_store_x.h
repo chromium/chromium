@@ -80,13 +80,13 @@ class PasswordStoreX : public password_manager::PasswordStoreDefault {
   scoped_refptr<base::SequencedTaskRunner> CreateBackgroundTaskRunner()
       const override;
   password_manager::PasswordStoreChangeList AddLoginImpl(
-      const autofill::PasswordForm& form,
+      const password_manager::PasswordForm& form,
       password_manager::AddLoginError* error = nullptr) override;
   password_manager::PasswordStoreChangeList UpdateLoginImpl(
-      const autofill::PasswordForm& form,
+      const password_manager::PasswordForm& form,
       password_manager::UpdateLoginError* error = nullptr) override;
   password_manager::PasswordStoreChangeList RemoveLoginImpl(
-      const autofill::PasswordForm& form) override;
+      const password_manager::PasswordForm& form) override;
   password_manager::PasswordStoreChangeList RemoveLoginsByURLAndTimeImpl(
       const base::RepeatingCallback<bool(const GURL&)>& url_filter,
       base::Time delete_begin,
@@ -96,15 +96,17 @@ class PasswordStoreX : public password_manager::PasswordStoreDefault {
       base::Time delete_end) override;
   password_manager::PasswordStoreChangeList DisableAutoSignInForOriginsImpl(
       const base::RepeatingCallback<bool(const GURL&)>& origin_filter) override;
-  std::vector<std::unique_ptr<autofill::PasswordForm>> FillMatchingLogins(
-      const FormDigest& form) override;
-  std::vector<std::unique_ptr<autofill::PasswordForm>>
+  std::vector<std::unique_ptr<password_manager::PasswordForm>>
+  FillMatchingLogins(const FormDigest& form) override;
+  std::vector<std::unique_ptr<password_manager::PasswordForm>>
   FillMatchingLoginsByPassword(
       const base::string16& plain_text_password) override;
   bool FillAutofillableLogins(
-      std::vector<std::unique_ptr<autofill::PasswordForm>>* forms) override;
+      std::vector<std::unique_ptr<password_manager::PasswordForm>>* forms)
+      override;
   bool FillBlacklistLogins(
-      std::vector<std::unique_ptr<autofill::PasswordForm>>* forms) override;
+      std::vector<std::unique_ptr<password_manager::PasswordForm>>* forms)
+      override;
 
   // Checks whether the login database is encrypted or not.
   void CheckMigration();

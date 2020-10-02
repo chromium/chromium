@@ -11,10 +11,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/optional.h"
 #include "base/strings/string16.h"
-
-namespace autofill {
-struct PasswordForm;
-}
+#include "components/password_manager/core/browser/password_form_forward.h"
 
 namespace password_manager {
 class PasswordStore;
@@ -29,7 +26,8 @@ class Profile;
 // been performed, prior to calling it.
 void EditSavedPasswords(
     Profile* profile,
-    base::span<const std::unique_ptr<autofill::PasswordForm>> forms_to_change,
+    base::span<const std::unique_ptr<password_manager::PasswordForm>>
+        forms_to_change,
     const base::string16& new_username,
     const base::Optional<base::string16>& new_password);
 

@@ -42,8 +42,8 @@ class UpdatePasswordInfoBarDelegate : public PasswordManagerInfoBarDelegate {
   // credential is being affected.
   bool ShowMultipleAccounts() const;
 
-  const std::vector<std::unique_ptr<autofill::PasswordForm>>& GetCurrentForms()
-      const;
+  const std::vector<std::unique_ptr<password_manager::PasswordForm>>&
+  GetCurrentForms() const;
 
   // Returns the username of the saved credentials to be updated by default.
   const base::string16& GetDefaultUsername() const;
@@ -54,7 +54,8 @@ class UpdatePasswordInfoBarDelegate : public PasswordManagerInfoBarDelegate {
 
   // Exposed for testing.
   static unsigned int GetDisplayUsernames(
-      const std::vector<std::unique_ptr<autofill::PasswordForm>>& current_forms,
+      const std::vector<std::unique_ptr<password_manager::PasswordForm>>&
+          current_forms,
       const base::string16& default_username,
       std::vector<base::string16>* usernames);
 

@@ -147,14 +147,15 @@ class PasswordStoreResultsObserver
   ~PasswordStoreResultsObserver() override;
 
   // Waits for OnGetPasswordStoreResults() and returns the result.
-  std::vector<std::unique_ptr<autofill::PasswordForm>> WaitForResults();
+  std::vector<std::unique_ptr<password_manager::PasswordForm>> WaitForResults();
 
  private:
   void OnGetPasswordStoreResults(
-      std::vector<std::unique_ptr<autofill::PasswordForm>> results) override;
+      std::vector<std::unique_ptr<password_manager::PasswordForm>> results)
+      override;
 
   base::RunLoop run_loop_;
-  std::vector<std::unique_ptr<autofill::PasswordForm>> results_;
+  std::vector<std::unique_ptr<password_manager::PasswordForm>> results_;
 
   DISALLOW_COPY_AND_ASSIGN(PasswordStoreResultsObserver);
 };

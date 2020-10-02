@@ -24,7 +24,8 @@ class AccountChooserDialogAndroid : public content::WebContentsObserver {
  public:
   AccountChooserDialogAndroid(
       content::WebContents* web_contents,
-      std::vector<std::unique_ptr<autofill::PasswordForm>> local_credentials,
+      std::vector<std::unique_ptr<password_manager::PasswordForm>>
+          local_credentials,
       const url::Origin& origin,
       ManagePasswordsState::CredentialsCallback callback);
 
@@ -55,7 +56,7 @@ class AccountChooserDialogAndroid : public content::WebContentsObserver {
  private:
   void OnDialogCancel();
 
-  const std::vector<std::unique_ptr<autofill::PasswordForm>>&
+  const std::vector<std::unique_ptr<password_manager::PasswordForm>>&
   local_credentials_forms() const;
 
   void ChooseCredential(size_t index,

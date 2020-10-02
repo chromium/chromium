@@ -55,7 +55,7 @@ bool UpdatePasswordInfoBarDelegate::ShowMultipleAccounts() const {
   return GetCurrentForms().size() > 1;
 }
 
-const std::vector<std::unique_ptr<autofill::PasswordForm>>&
+const std::vector<std::unique_ptr<password_manager::PasswordForm>>&
 UpdatePasswordInfoBarDelegate::GetCurrentForms() const {
   return passwords_state_.GetCurrentForms();
 }
@@ -75,7 +75,8 @@ unsigned int UpdatePasswordInfoBarDelegate::GetDisplayUsernames(
 
 // static
 unsigned int UpdatePasswordInfoBarDelegate::GetDisplayUsernames(
-    const std::vector<std::unique_ptr<autofill::PasswordForm>>& current_forms,
+    const std::vector<std::unique_ptr<password_manager::PasswordForm>>&
+        current_forms,
     const base::string16& default_username,
     std::vector<base::string16>* usernames) {
   unsigned int selected_username = 0;

@@ -78,20 +78,22 @@ class CustomManagePasswordsUIController : public ManagePasswordsUIController {
       bool is_update) override;
   void OnHideManualFallbackForSaving() override;
   bool OnChooseCredentials(
-      std::vector<std::unique_ptr<autofill::PasswordForm>> local_credentials,
+      std::vector<std::unique_ptr<password_manager::PasswordForm>>
+          local_credentials,
       const url::Origin& origin,
       ManagePasswordsState::CredentialsCallback callback) override;
   void OnPasswordAutofilled(
-      const std::vector<const autofill::PasswordForm*>& password_forms,
+      const std::vector<const password_manager::PasswordForm*>& password_forms,
       const url::Origin& origin,
-      const std::vector<const autofill::PasswordForm*>* federated_matches)
-      override;
+      const std::vector<const password_manager::PasswordForm*>*
+          federated_matches) override;
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
 
   // ManagePasswordsUIController:
   void NotifyUnsyncedCredentialsWillBeDeleted(
-      std::vector<autofill::PasswordForm> unsynced_credentials) override;
+      std::vector<password_manager::PasswordForm> unsynced_credentials)
+      override;
 
   // Should not be used for manual fallback events.
   bool IsTargetStateObserved(
@@ -206,7 +208,8 @@ void CustomManagePasswordsUIController::OnHideManualFallbackForSaving() {
 }
 
 bool CustomManagePasswordsUIController::OnChooseCredentials(
-    std::vector<std::unique_ptr<autofill::PasswordForm>> local_credentials,
+    std::vector<std::unique_ptr<password_manager::PasswordForm>>
+        local_credentials,
     const url::Origin& origin,
     ManagePasswordsState::CredentialsCallback callback) {
   ProcessStateExpectations(password_manager::ui::CREDENTIAL_REQUEST_STATE);
@@ -215,9 +218,10 @@ bool CustomManagePasswordsUIController::OnChooseCredentials(
 }
 
 void CustomManagePasswordsUIController::OnPasswordAutofilled(
-    const std::vector<const autofill::PasswordForm*>& password_forms,
+    const std::vector<const password_manager::PasswordForm*>& password_forms,
     const url::Origin& origin,
-    const std::vector<const autofill::PasswordForm*>* federated_matches) {
+    const std::vector<const password_manager::PasswordForm*>*
+        federated_matches) {
   ProcessStateExpectations(password_manager::ui::MANAGE_STATE);
   return ManagePasswordsUIController::OnPasswordAutofilled(
       password_forms, origin, federated_matches);
@@ -235,7 +239,7 @@ void CustomManagePasswordsUIController::DidFinishNavigation(
 }
 
 void CustomManagePasswordsUIController::NotifyUnsyncedCredentialsWillBeDeleted(
-    std::vector<autofill::PasswordForm> unsynced_credentials) {
+    std::vector<password_manager::PasswordForm> unsynced_credentials) {
   ManagePasswordsUIController::NotifyUnsyncedCredentialsWillBeDeleted(
       std::move(unsynced_credentials));
   was_prompt_automatically_shown_ = true;
@@ -408,12 +412,12 @@ PasswordStoreResultsObserver::PasswordStoreResultsObserver() = default;
 PasswordStoreResultsObserver::~PasswordStoreResultsObserver() = default;
 
 void PasswordStoreResultsObserver::OnGetPasswordStoreResults(
-    std::vector<std::unique_ptr<autofill::PasswordForm>> results) {
+    std::vector<std::unique_ptr<password_manager::PasswordForm>> results) {
   results_ = std::move(results);
   run_loop_.Quit();
 }
 
-std::vector<std::unique_ptr<autofill::PasswordForm>>
+std::vector<std::unique_ptr<password_manager::PasswordForm>>
 PasswordStoreResultsObserver::WaitForResults() {
   run_loop_.Run();
   return std::move(results_);
@@ -702,7 +706,7 @@ void PasswordManagerBrowserTestBase::CheckThatCredentialsStored(
   ASSERT_EQ(1u, passwords_map.size());
   auto& passwords_vector = passwords_map.begin()->second;
   ASSERT_EQ(1u, passwords_vector.size());
-  const autofill::PasswordForm& form = passwords_vector[0];
+  const password_manager::PasswordForm& form = passwords_vector[0];
   EXPECT_EQ(base::ASCIIToUTF16(username), form.username_value);
   EXPECT_EQ(base::ASCIIToUTF16(password), form.password_value);
 }

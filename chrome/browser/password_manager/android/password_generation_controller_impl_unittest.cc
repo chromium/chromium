@@ -34,11 +34,11 @@ using password_manager::metrics_util::GenerationDialogChoice;
 
 namespace {
 using autofill::FooterCommand;
-using autofill::PasswordForm;
 using autofill::mojom::FocusedFieldType;
 using autofill::password_generation::PasswordGenerationUIData;
 using base::ASCIIToUTF16;
 using password_manager::MockPasswordStore;
+using password_manager::PasswordForm;
 using testing::_;
 using testing::ByMove;
 using testing::Eq;

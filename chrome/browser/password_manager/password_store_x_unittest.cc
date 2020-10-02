@@ -36,8 +36,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using autofill::PasswordForm;
 using password_manager::FormRetrievalResult;
+using password_manager::PasswordForm;
 using password_manager::PasswordStoreChange;
 using password_manager::PasswordStoreChangeList;
 using password_manager::PrimaryKeyToFormMap;
@@ -74,7 +74,7 @@ PasswordForm MakePasswordForm() {
   form.password_element = base::UTF8ToUTF16("password_element");
   form.password_value = base::UTF8ToUTF16(kPassword);
   form.signon_realm = form.url.GetOrigin().spec();
-  form.in_store = autofill::PasswordForm::Store::kProfileStore;
+  form.in_store = password_manager::PasswordForm::Store::kProfileStore;
   return form;
 }
 

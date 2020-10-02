@@ -24,12 +24,12 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/autofill/core/browser/ui/accessory_sheet_enums.h"
 #include "components/autofill/core/common/autofill_features.h"
-#include "components/autofill/core/common/password_form.h"
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/password_manager/core/browser/credential_cache.h"
 #include "components/password_manager/core/browser/mock_password_store.h"
 #include "components/password_manager/core/browser/origin_credential_store.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/browser/stub_password_manager_driver.h"
@@ -48,7 +48,6 @@ using autofill::AccessoryAction;
 using autofill::AccessorySheetData;
 using autofill::AccessoryTabType;
 using autofill::FooterCommand;
-using autofill::PasswordForm;
 using autofill::UserInfo;
 using autofill::mojom::FocusedFieldType;
 using base::ASCIIToUTF16;
@@ -56,6 +55,7 @@ using password_manager::CreateEntry;
 using password_manager::CredentialCache;
 using password_manager::MockPasswordStore;
 using password_manager::OriginCredentialStore;
+using password_manager::PasswordForm;
 using testing::_;
 using testing::ByMove;
 using testing::Eq;
@@ -858,17 +858,16 @@ TEST_F(PasswordAccessoryControllerTest, SavePasswordsToggledUpdatesCache) {
 
 TEST_F(PasswordAccessoryControllerTest, SavePasswordsEnabledUpdatesStore) {
   password_manager::PasswordStore::FormDigest form_digest(
-      autofill::PasswordForm::Scheme::kHtml, kExampleSignonRealm,
-      GURL(kExampleSite));
+      PasswordForm::Scheme::kHtml, kExampleSignonRealm, GURL(kExampleSite));
   EXPECT_CALL(*mock_password_store_, Unblacklist(form_digest, _));
   controller()->OnToggleChanged(
       autofill::AccessoryAction::TOGGLE_SAVE_PASSWORDS, true);
 }
 
 TEST_F(PasswordAccessoryControllerTest, SavePasswordsDisabledUpdatesStore) {
-  autofill::PasswordForm expected_form;
+  PasswordForm expected_form;
   expected_form.blocked_by_user = true;
-  expected_form.scheme = autofill::PasswordForm::Scheme::kHtml;
+  expected_form.scheme = PasswordForm::Scheme::kHtml;
   expected_form.signon_realm = kExampleSignonRealm;
   expected_form.url = GURL(kExampleSite);
   expected_form.date_created = base::Time::Now();

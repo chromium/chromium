@@ -15,8 +15,8 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/autofill/core/common/form_data.h"
-#include "components/autofill/core/common/password_form.h"
 #include "components/password_manager/core/browser/fake_form_fetcher.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_save_manager_impl.h"
@@ -61,10 +61,10 @@ class MockPasswordFormManager : public PasswordFormManager {
 
   // Constructor for federation credentials.
   MockPasswordFormManager(password_manager::PasswordManagerClient* client,
-                          const autofill::PasswordForm& form)
+                          const password_manager::PasswordForm& form)
       : PasswordFormManager(
             client,
-            std::make_unique<autofill::PasswordForm>(form),
+            std::make_unique<password_manager::PasswordForm>(form),
             std::make_unique<password_manager::FakeFormFetcher>(),
             std::make_unique<PasswordSaveManagerImpl>(
                 std::make_unique<password_manager::StubFormSaver>())) {
@@ -101,7 +101,7 @@ class SavePasswordInfoBarDelegateTest : public ChromeRenderViewHostTestHarness {
   void TearDown() override;
 
   PrefService* prefs();
-  const autofill::PasswordForm& test_form() { return test_form_; }
+  const password_manager::PasswordForm& test_form() { return test_form_; }
   std::unique_ptr<MockPasswordFormManager> CreateMockFormManager(
       scoped_refptr<PasswordFormMetricsRecorder> metrics_recorder,
       bool with_federation_origin);
@@ -115,7 +115,7 @@ class SavePasswordInfoBarDelegateTest : public ChromeRenderViewHostTestHarness {
   password_manager::StubPasswordManagerClient client_;
   password_manager::StubPasswordManagerDriver driver_;
 
-  autofill::PasswordForm test_form_;
+  password_manager::PasswordForm test_form_;
   autofill::FormData observed_form_;
 
  private:

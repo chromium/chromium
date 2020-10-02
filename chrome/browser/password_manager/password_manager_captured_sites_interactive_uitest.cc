@@ -16,7 +16,7 @@
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 #include "chrome/browser/ui/tab_dialogs.h"
 #include "components/autofill/core/common/autofill_features.h"
-#include "components/autofill/core/common/password_form.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/test_password_store.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -77,7 +77,7 @@ class CapturedSitesPasswordManagerBrowserTest
             PasswordStoreFactory::GetForProfile(
                 browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS)
                 .get());
-    autofill::PasswordForm signin_form;
+    password_manager::PasswordForm signin_form;
     signin_form.url = GURL(origin);
     signin_form.signon_realm = origin;
     signin_form.password_value = base::ASCIIToUTF16(password);
@@ -141,7 +141,8 @@ class CapturedSitesPasswordManagerBrowserTest
       return false;
     }
 
-    const std::vector<autofill::PasswordForm>& passwords_vector = found->second;
+    const std::vector<password_manager::PasswordForm>& passwords_vector =
+        found->second;
     for (const auto& found_password : passwords_vector) {
       if (base::ASCIIToUTF16(username) == found_password.username_value &&
           base::ASCIIToUTF16(password) == found_password.password_value) {

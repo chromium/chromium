@@ -48,7 +48,8 @@ class AllPasswordsBottomSheetController
 
   // PasswordStoreConsumer:
   void OnGetPasswordStoreResults(
-      std::vector<std::unique_ptr<autofill::PasswordForm>> results) override;
+      std::vector<std::unique_ptr<password_manager::PasswordForm>> results)
+      override;
 
   // Instructs AllPasswordsBottomSheetView to show the credentials to the user.
   void Show();

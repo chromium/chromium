@@ -7,7 +7,7 @@
 #include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/autofill/core/common/password_form.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_store.h"
 
@@ -18,7 +18,7 @@ using password_manager::metrics_util::IsUsernameChanged;
 
 void EditSavedPasswords(
     Profile* profile,
-    const base::span<const std::unique_ptr<autofill::PasswordForm>>
+    const base::span<const std::unique_ptr<password_manager::PasswordForm>>
         forms_to_change,
     const base::string16& new_username,
     const base::Optional<base::string16>& new_password) {
@@ -41,7 +41,7 @@ void EditSavedPasswords(
     if (!store) {
       continue;
     }
-    autofill::PasswordForm new_form = *old_form;
+    password_manager::PasswordForm new_form = *old_form;
     new_form.username_value = new_username;
 
     // The desktop logic allows to edit usernames even in cases when the

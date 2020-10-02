@@ -13,7 +13,7 @@
 
 base::android::ScopedJavaLocalRef<jobject> CreateNativeCredential(
     JNIEnv* env,
-    const autofill::PasswordForm& password_form,
+    const password_manager::PasswordForm& password_form,
     int position) {
   using base::android::ConvertUTF16ToJavaString;
   using base::android::ConvertUTF8ToJavaString;

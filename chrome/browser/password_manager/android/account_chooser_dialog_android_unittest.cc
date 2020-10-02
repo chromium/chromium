@@ -10,7 +10,7 @@
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "components/autofill/core/common/password_form.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -21,7 +21,7 @@
 namespace {
 
 password_manager::PasswordFormData kFormData = {
-    autofill::PasswordForm::Scheme::kHtml,
+    password_manager::PasswordForm::Scheme::kHtml,
     "http://example.com/",
     "http://example.com/origin",
     "http://example.com/action",
@@ -43,14 +43,14 @@ class AccountChooserDialogAndroidTest : public ChromeRenderViewHostTestHarness {
 
   void SetUp() override;
 
-  MOCK_METHOD1(OnChooseCredential, void(const autofill::PasswordForm*));
+  MOCK_METHOD1(OnChooseCredential, void(const password_manager::PasswordForm*));
 
  protected:
   AccountChooserDialogAndroid* CreateDialogOneAccount();
   AccountChooserDialogAndroid* CreateDialogManyAccounts();
 
   AccountChooserDialogAndroid* CreateDialog(
-      std::vector<std::unique_ptr<autofill::PasswordForm>> credentials);
+      std::vector<std::unique_ptr<password_manager::PasswordForm>> credentials);
 
  private:
   DISALLOW_COPY_AND_ASSIGN(AccountChooserDialogAndroidTest);
@@ -63,7 +63,7 @@ void AccountChooserDialogAndroidTest::SetUp() {
 }
 
 AccountChooserDialogAndroid* AccountChooserDialogAndroidTest::CreateDialog(
-    std::vector<std::unique_ptr<autofill::PasswordForm>> credentials) {
+    std::vector<std::unique_ptr<password_manager::PasswordForm>> credentials) {
   return new AccountChooserDialogAndroid(
       web_contents(), std::move(credentials),
       url::Origin::Create(GURL("https://example.com")),
@@ -73,14 +73,14 @@ AccountChooserDialogAndroid* AccountChooserDialogAndroidTest::CreateDialog(
 
 AccountChooserDialogAndroid*
 AccountChooserDialogAndroidTest::CreateDialogOneAccount() {
-  std::vector<std::unique_ptr<autofill::PasswordForm>> credentials;
+  std::vector<std::unique_ptr<password_manager::PasswordForm>> credentials;
   credentials.push_back(FillPasswordFormWithData(kFormData));
   return CreateDialog(std::move(credentials));
 }
 
 AccountChooserDialogAndroid*
 AccountChooserDialogAndroidTest::CreateDialogManyAccounts() {
-  std::vector<std::unique_ptr<autofill::PasswordForm>> credentials;
+  std::vector<std::unique_ptr<password_manager::PasswordForm>> credentials;
   credentials.push_back(FillPasswordFormWithData(kFormData));
   credentials.push_back(FillPasswordFormWithData(kFormData));
   return CreateDialog(std::move(credentials));

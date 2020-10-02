@@ -351,14 +351,14 @@ void PasswordAccessoryControllerImpl::ChangeCurrentOriginSavePasswordsStatus(
 
   const GURL origin_as_gurl = origin.GetURL();
   password_manager::PasswordStore::FormDigest form_digest(
-      autofill::PasswordForm::Scheme::kHtml,
+      password_manager::PasswordForm::Scheme::kHtml,
       password_manager::GetSignonRealm(origin_as_gurl), origin_as_gurl);
   password_manager::PasswordStore* store =
       password_client_->GetProfilePasswordStore();
   if (saving_enabled) {
     store->Unblacklist(form_digest, base::NullCallback());
   } else {
-    autofill::PasswordForm form =
+    password_manager::PasswordForm form =
         password_manager_util::MakeNormalizedBlacklistedForm(
             std::move(form_digest));
     form.date_created = base::Time::Now();
