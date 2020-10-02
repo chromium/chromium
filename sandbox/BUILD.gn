@@ -46,7 +46,6 @@ buildflag_header("sandbox_buildflags") {
 # Although the code is Windows-based, the fuzzer is designed to work on Linux,
 # so do not disable this fuzzer on non-Windows platforms.
 fuzzer_test("sandbox_ipc_fuzzer") {
-  set_sources_assignment_filter([])
   sources = [
     "win/fuzzer/fuzzer_types.h",
     "win/fuzzer/sandbox_ipc_fuzzer.cc",

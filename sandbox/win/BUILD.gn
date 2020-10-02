@@ -367,10 +367,9 @@ shared_library("pocdll") {
   defines = [ "POCDLL_EXPORTS" ]
 }
 
-# This fuzzer will only work on Windows, add fuzz targets which could run on Linux
-# to //sandbox/ directly.
+# This fuzzer will only work on Windows, add fuzz targets which could run on
+# Linux to //sandbox/ directly.
 fuzzer_test("sandbox_policy_rule_fuzzer") {
-  set_sources_assignment_filter([])
   sources = [
     "fuzzer/fuzzer_types.h",
     "fuzzer/sandbox_policy_rule_fuzzer.cc",

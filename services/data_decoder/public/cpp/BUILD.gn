@@ -22,8 +22,6 @@ component("service_provider") {
 }
 
 source_set("cpp") {
-  set_sources_assignment_filter([])
-
   public = [
     "data_decoder.h",
     "json_sanitizer.h",

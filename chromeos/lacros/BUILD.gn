@@ -10,12 +10,6 @@ import("//build/lacros/lacros_resource_sizes.gni")
 assert(chromeos_is_browser_only)
 assert(!use_gtk)
 
-# Reset sources_assignment_filter for the BUILD.gn file to prevent
-# regression during the migration of Chromium away from the feature.
-# See docs/no_sources_assignment_filter.md for more information.
-# TODO(crbug.com/1018739): remove this when migration is done.
-set_sources_assignment_filter([])
-
 component("lacros") {
   defines = [ "IS_CHROMEOS_LACROS_IMPL" ]
   deps = [

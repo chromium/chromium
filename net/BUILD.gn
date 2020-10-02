@@ -103,12 +103,6 @@ if (is_linux || is_chromeos) {
   net_configs += [ "//build/config/linux:libresolv" ]
 }
 
-# Reset sources_assignment_filter for the BUILD.gn file to prevent
-# regression during the migration of Chromium away from the feature.
-# See docs/no_sources_assignment_filter.md for more information.
-# TODO(crbug.com/1018739): Remove this when migration is done.
-set_sources_assignment_filter([])
-
 source_set("constants") {
   sources = [ "base/trace_constants.h" ]
   deps = [ "//base" ]
