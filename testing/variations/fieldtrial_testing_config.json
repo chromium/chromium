@@ -6941,18 +6941,6 @@
             ]
         }
     ],
-    "TriggeredResetFieldTrial": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "On"
-                }
-            ]
-        }
-    ],
     "TrustTokenOriginTrial": [
         {
             "platforms": [
