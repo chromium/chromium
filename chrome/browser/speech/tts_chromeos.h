@@ -6,12 +6,16 @@
 #define CHROME_BROWSER_SPEECH_TTS_CHROMEOS_H_
 
 #include "base/macros.h"
+#include "base/no_destructor.h"
 #include "content/public/browser/tts_platform.h"
 
 // This class includes extension-based tts through LoadBuiltInTtsExtension and
 // native tts through ARC.
 class TtsPlatformImplChromeOs : public content::TtsPlatform {
  public:
+  TtsPlatformImplChromeOs(const TtsPlatformImplChromeOs&) = delete;
+  TtsPlatformImplChromeOs& operator=(const TtsPlatformImplChromeOs&) = delete;
+
   // TtsPlatform overrides:
   bool PlatformImplAvailable() override;
   bool LoadBuiltInTtsEngine(content::BrowserContext* browser_context) override;
@@ -39,8 +43,8 @@ class TtsPlatformImplChromeOs : public content::TtsPlatform {
   static TtsPlatformImplChromeOs* GetInstance();
 
  private:
+  friend base::NoDestructor<TtsPlatformImplChromeOs>;
   TtsPlatformImplChromeOs();
-  virtual ~TtsPlatformImplChromeOs();
 
   void ProcessSpeech(int utterance_id,
                      const std::string& lang,
@@ -49,13 +53,7 @@ class TtsPlatformImplChromeOs : public content::TtsPlatform {
                      base::OnceCallback<void(bool)> on_speak_finished,
                      const std::string& parsed_utterance);
 
-  friend struct base::DefaultSingletonTraits<TtsPlatformImplChromeOs>;
-
   std::string error_;
-
-  base::WeakPtrFactory<TtsPlatformImplChromeOs> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TtsPlatformImplChromeOs);
 };
 
 #endif  // CHROME_BROWSER_SPEECH_TTS_CHROMEOS_H_

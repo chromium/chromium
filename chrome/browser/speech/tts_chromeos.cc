@@ -11,8 +11,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/tts_platform.h"
 
-TtsPlatformImplChromeOs::TtsPlatformImplChromeOs() {}
-TtsPlatformImplChromeOs::~TtsPlatformImplChromeOs() {}
+TtsPlatformImplChromeOs::TtsPlatformImplChromeOs() = default;
 
 bool TtsPlatformImplChromeOs::PlatformImplAvailable() {
   return arc::ArcServiceManager::Get() && arc::ArcServiceManager::Get()
@@ -42,7 +41,7 @@ void TtsPlatformImplChromeOs::Speak(
   // Parse SSML and process speech.
   content::TtsController::GetInstance()->StripSSML(
       utterance, base::BindOnce(&TtsPlatformImplChromeOs::ProcessSpeech,
-                                weak_factory_.GetWeakPtr(), utterance_id, lang,
+                                base::Unretained(this), utterance_id, lang,
                                 voice, params, std::move(on_speak_finished)));
 }
 
@@ -117,5 +116,6 @@ bool TtsPlatformImplChromeOs::IsSpeaking() {
 // static
 TtsPlatformImplChromeOs*
 TtsPlatformImplChromeOs::GetInstance() {
-  return base::Singleton<TtsPlatformImplChromeOs>::get();
+  static base::NoDestructor<TtsPlatformImplChromeOs> tts_platform;
+  return tts_platform.get();
 }
