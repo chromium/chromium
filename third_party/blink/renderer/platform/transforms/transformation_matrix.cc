@@ -845,8 +845,7 @@ FloatPoint TransformationMatrix::ProjectPoint(const FloatPoint& p,
   return FloatPoint(static_cast<float>(out_x), static_cast<float>(out_y));
 }
 
-FloatQuad TransformationMatrix::ProjectQuad(const FloatQuad& q,
-                                            bool* clamped) const {
+FloatQuad TransformationMatrix::ProjectQuad(const FloatQuad& q) const {
   FloatQuad projected_quad;
 
   bool clamped1 = false;
@@ -858,9 +857,6 @@ FloatQuad TransformationMatrix::ProjectQuad(const FloatQuad& q,
   projected_quad.SetP2(ProjectPoint(q.P2(), &clamped2));
   projected_quad.SetP3(ProjectPoint(q.P3(), &clamped3));
   projected_quad.SetP4(ProjectPoint(q.P4(), &clamped4));
-
-  if (clamped)
-    *clamped = clamped1 || clamped2 || clamped3 || clamped4;
 
   // If all points on the quad had w < 0, then the entire quad would not be
   // visible to the projected surface.
