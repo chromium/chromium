@@ -19,6 +19,10 @@ class CORE_EXPORT NavigatorUA {
  protected:
   virtual UserAgentMetadata GetUserAgentMetadata() const = 0;
   virtual ExecutionContext* GetUAExecutionContext() const = 0;
+
+  // Record identifiability study metrics for NavigatorUAData if the user is in
+  // the study.
+  void MaybeRecordMetrics(const NavigatorUAData& ua_data);
 };
 
 }  // namespace blink

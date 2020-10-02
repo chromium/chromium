@@ -187,6 +187,11 @@ class IdentifiableSurface {
     // Represents a call to GPU.requestAdapter. Input is the options filter.
     kGPU_RequestAdapter = 20,
 
+    // NavigatorUAData.getHighEntropyValues() is, shockingly, a high entropy
+    // API to provide more detailed User-Agent data. The output is keyed on
+    // the hint parameter.
+    kNavigatorUAData_GetHighEntropyValues = 24,
+
     // We can use values up to and including |kMax|.
     kMax = (1 << kTypeBits) - 1
   };

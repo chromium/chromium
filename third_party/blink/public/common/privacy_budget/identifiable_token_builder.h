@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_PRIVACY_BUDGET_IDENTIFIABLE_TOKEN_BUILDER_H_
 
 #include "base/containers/span.h"
+#include "base/strings/string_piece.h"
 #include "base/sys_byteorder.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_internal_templates.h"
@@ -73,6 +74,9 @@ class BLINK_COMMON_EXPORT IdentifiableTokenBuilder {
   // adding the contents of the buffer. Doing so will achieve the same ends as
   // AddAtomic().
   IdentifiableTokenBuilder& AddAtomic(ByteBuffer buffer);
+  IdentifiableTokenBuilder& AddAtomic(base::StringPiece string) {
+    return AddAtomic(base::as_bytes(base::make_span(string)));
+  }
 
   // Feeds the underlying value of the |token| itself to the digest. Use this
   // when |token| is computed in parallel in order to preserve the ordering of
