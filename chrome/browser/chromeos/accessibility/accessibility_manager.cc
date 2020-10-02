@@ -47,6 +47,7 @@
 #include "chrome/browser/extensions/api/braille_display_private/stub_braille_controller.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/common/chrome_paths.h"
@@ -1436,6 +1437,12 @@ void AccessibilityManager::PostUnloadSelectToSpeak() {
 
 void AccessibilityManager::PostLoadSwitchAccess() {
   InitializeFocusRings(extension_misc::kSwitchAccessExtensionId);
+
+  was_vk_enabled_before_switch_access_ =
+      ChromeKeyboardControllerClient::Get()->IsEnableFlagSet(
+          keyboard::KeyboardEnableFlag::kExtensionEnabled);
+  ChromeKeyboardControllerClient::Get()->SetEnableFlag(
+      keyboard::KeyboardEnableFlag::kExtensionEnabled);
 }
 
 void AccessibilityManager::PostUnloadSwitchAccess() {
@@ -1444,6 +1451,13 @@ void AccessibilityManager::PostUnloadSwitchAccess() {
 
   // Clear the accessibility focus ring.
   RemoveFocusRings(extension_misc::kSwitchAccessExtensionId);
+
+  if (!was_vk_enabled_before_switch_access_) {
+    ChromeKeyboardControllerClient::Get()->ClearEnableFlag(
+        keyboard::KeyboardEnableFlag::kExtensionEnabled);
+  } else {
+    was_vk_enabled_before_switch_access_ = false;
+  }
 }
 
 void AccessibilityManager::PostLoadAccessibilityCommon() {
