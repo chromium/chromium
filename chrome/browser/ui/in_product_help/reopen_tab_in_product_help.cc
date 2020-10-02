@@ -31,7 +31,8 @@ ReopenTabInProductHelp::ReopenTabInProductHelp(Profile* profile,
   // currently living browsers.
   BrowserList::AddObserver(this);
   for (Browser* browser : *BrowserList::GetInstance()) {
-    active_tab_tracker_.AddTabStripModel(browser->tab_strip_model());
+    if (browser->profile() == profile_)
+      active_tab_tracker_.AddTabStripModel(browser->tab_strip_model());
   }
 
   // |base::Unretained| is safe here since this is a member.
@@ -42,7 +43,8 @@ ReopenTabInProductHelp::ReopenTabInProductHelp(Profile* profile,
 ReopenTabInProductHelp::~ReopenTabInProductHelp() {
   BrowserList::RemoveObserver(this);
   for (Browser* browser : *BrowserList::GetInstance()) {
-    active_tab_tracker_.RemoveTabStripModel(browser->tab_strip_model());
+    if (browser->profile() == profile_)
+      active_tab_tracker_.RemoveTabStripModel(browser->tab_strip_model());
   }
 }
 
@@ -71,11 +73,13 @@ void ReopenTabInProductHelp::OnShowHelp() {
 }
 
 void ReopenTabInProductHelp::OnBrowserAdded(Browser* browser) {
-  active_tab_tracker_.AddTabStripModel(browser->tab_strip_model());
+  if (browser->profile() == profile_)
+    active_tab_tracker_.AddTabStripModel(browser->tab_strip_model());
 }
 
 void ReopenTabInProductHelp::OnBrowserRemoved(Browser* browser) {
-  active_tab_tracker_.RemoveTabStripModel(browser->tab_strip_model());
+  if (browser->profile() == profile_)
+    active_tab_tracker_.RemoveTabStripModel(browser->tab_strip_model());
 }
 
 feature_engagement::Tracker* ReopenTabInProductHelp::GetTracker() {
