@@ -40,4 +40,11 @@ public interface SuggestionHost {
      * @param isCollapsed True if group should appear collapsed, otherwise false.
      */
     void setGroupCollapsedState(int groupId, boolean isCollapsed);
+
+    /**
+     * Update the content of the Omnibox without triggering the Navigation.
+     *
+     * @param text The text to be displayed in the Omnibox.
+     */
+    void setOmniboxEditingText(String text);
 }

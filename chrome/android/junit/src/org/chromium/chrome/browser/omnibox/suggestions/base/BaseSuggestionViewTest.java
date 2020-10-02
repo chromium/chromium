@@ -41,6 +41,9 @@ public class BaseSuggestionViewTest {
     private View mContentView;
 
     @Mock
+    private Runnable mOnFocusListener;
+
+    @Mock
     SuggestionViewDelegate mMockDelegate;
 
     // IMPORTANT: We need to extend the tested class here to support functionality currently
@@ -87,6 +90,7 @@ public class BaseSuggestionViewTest {
         mContentView = new View(mActivity);
         mView = new BaseSuggestionViewForTest(mContentView);
         mView.setDelegate(mMockDelegate);
+        mView.setOnFocusViaSelectionListener(mOnFocusListener);
 
         mActionIconWidthPx = mActivity.getResources().getDimensionPixelSize(
                 R.dimen.omnibox_suggestion_action_icon_width);
@@ -333,12 +337,12 @@ public class BaseSuggestionViewTest {
     @Test
     public void setSelected_emitsOmniboxUpdateWhenSelected() {
         mView.setSelected(true);
-        verify(mMockDelegate, times(1)).onSetUrlToSuggestion();
+        verify(mOnFocusListener, times(1)).run();
     }
 
     @Test
     public void setSelected_noOmniboxUpdateWhenDeselected() {
         mView.setSelected(false);
-        verify(mMockDelegate, never()).onSetUrlToSuggestion();
+        verify(mOnFocusListener, never()).run();
     }
 }

@@ -63,6 +63,9 @@ public final class BaseSuggestionViewBinder<T extends View>
             updateColorScheme(model, view);
         } else if (BaseSuggestionViewProperties.ACTIONS == propertyKey) {
             bindActionButtons(model, view, model.get(BaseSuggestionViewProperties.ACTIONS));
+        } else if (BaseSuggestionViewProperties.ON_FOCUS_VIA_SELECTION == propertyKey) {
+            view.setOnFocusViaSelectionListener(
+                    model.get(BaseSuggestionViewProperties.ON_FOCUS_VIA_SELECTION));
         }
     }
 

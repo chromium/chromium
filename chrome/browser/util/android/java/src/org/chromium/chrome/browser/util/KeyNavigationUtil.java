@@ -73,6 +73,15 @@ public class KeyNavigationUtil {
     }
 
     /**
+     * Checks whether the given event is any DPAD or NUMPAD direction.
+     * @param event Event to be checked.
+     * @return Whether the event should be processed as any of navigation direction.
+     */
+    public static boolean isGoAnyDirection(KeyEvent event) {
+        return isGoDown(event) || isGoUp(event) || isGoLeft(event) || isGoRight(event);
+    }
+
+    /**
      * Checks whether the given event is any of ENTER or NUMPAD ENTER.
      * @param event Event to be checked.
      * @return Whether the event should be processed as ENTER.

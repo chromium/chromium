@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.clipboard.ClipboardSugges
 import org.chromium.chrome.browser.omnibox.suggestions.editurl.EditUrlSuggestionProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.entity.EntitySuggestionProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.header.HeaderProcessor;
+import org.chromium.chrome.browser.omnibox.suggestions.mostvisited.MostVisitedTilesProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.tail.TailSuggestionProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.tiles.TileSuggestionProcessor;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -100,6 +101,8 @@ class DropdownItemViewInfoListBuilder {
         registerSuggestionProcessor(new TailSuggestionProcessor(context, host));
         registerSuggestionProcessor(
                 new TileSuggestionProcessor(context, queryTileSuggestionCallback));
+        registerSuggestionProcessor(
+                new MostVisitedTilesProcessor(context, host, iconBridgeSupplier));
         registerSuggestionProcessor(
                 new BasicSuggestionProcessor(context, host, textProvider, iconBridgeSupplier));
     }

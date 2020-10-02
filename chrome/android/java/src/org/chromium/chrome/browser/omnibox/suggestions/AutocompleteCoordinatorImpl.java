@@ -28,11 +28,13 @@ import org.chromium.chrome.browser.omnibox.suggestions.answer.AnswerSuggestionVi
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionView;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewBinder;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.SuggestionViewViewBinder;
+import org.chromium.chrome.browser.omnibox.suggestions.carousel.BaseCarouselSuggestionViewBinder;
 import org.chromium.chrome.browser.omnibox.suggestions.editurl.EditUrlSuggestionView;
 import org.chromium.chrome.browser.omnibox.suggestions.editurl.EditUrlSuggestionViewBinder;
 import org.chromium.chrome.browser.omnibox.suggestions.entity.EntitySuggestionViewBinder;
 import org.chromium.chrome.browser.omnibox.suggestions.header.HeaderView;
 import org.chromium.chrome.browser.omnibox.suggestions.header.HeaderViewBinder;
+import org.chromium.chrome.browser.omnibox.suggestions.mostvisited.MostVisitedTilesProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.tail.TailSuggestionView;
 import org.chromium.chrome.browser.omnibox.suggestions.tail.TailSuggestionViewBinder;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
@@ -173,6 +175,11 @@ public class AutocompleteCoordinatorImpl implements AutocompleteCoordinator {
                         mQueryTileCoordinator::bind);
 
                 adapter.registerType(
+                        OmniboxSuggestionUiType.TILE_NAVSUGGEST,
+                        MostVisitedTilesProcessor::createView,
+                        BaseCarouselSuggestionViewBinder::bind);
+
+                adapter.registerType(
                         OmniboxSuggestionUiType.HEADER,
                         parent -> new HeaderView(parent.getContext()),
                         HeaderViewBinder::bind);
@@ -287,12 +294,11 @@ public class AutocompleteCoordinatorImpl implements AutocompleteCoordinator {
     public boolean handleKeyEvent(int keyCode, KeyEvent event) {
         boolean isShowingList = mDropdown != null && mDropdown.getViewGroup().isShown();
 
-        boolean isUpOrDown = KeyNavigationUtil.isGoUpOrDown(event);
-        if (isShowingList && mMediator.getSuggestionCount() > 0 && isUpOrDown) {
+        boolean isAnyDirection = KeyNavigationUtil.isGoAnyDirection(event);
+        if (isShowingList && mMediator.getSuggestionCount() > 0 && isAnyDirection) {
             mMediator.allowPendingItemSelection();
         }
-        boolean isValidListKey = isUpOrDown || KeyNavigationUtil.isGoRight(event)
-                || KeyNavigationUtil.isGoLeft(event) || KeyNavigationUtil.isEnter(event);
+        boolean isValidListKey = isAnyDirection || KeyNavigationUtil.isEnter(event);
         if (isShowingList && isValidListKey && mDropdown.getViewGroup().onKeyDown(keyCode, event)) {
             return true;
         }

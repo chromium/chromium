@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.ImageView;
 
 import androidx.annotation.LayoutRes;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.widget.AppCompatImageView;
 
@@ -32,6 +33,7 @@ public class BaseSuggestionView<T extends View> extends SimpleHorizontalLayoutVi
     private final List<ImageView> mActionButtons;
     private final DecoratedSuggestionView<T> mDecoratedView;
     private SuggestionViewDelegate mDelegate;
+    private @Nullable Runnable mOnFocusViaSelectionListener;
 
     /**
      * Constructs a new suggestion view.
@@ -136,8 +138,8 @@ public class BaseSuggestionView<T extends View> extends SimpleHorizontalLayoutVi
     @Override
     public void setSelected(boolean selected) {
         mDecoratedView.setSelected(selected);
-        if (selected) {
-            mDelegate.onSetUrlToSuggestion();
+        if (selected && mOnFocusViaSelectionListener != null) {
+            mOnFocusViaSelectionListener.run();
         }
     }
 
@@ -168,6 +170,15 @@ public class BaseSuggestionView<T extends View> extends SimpleHorizontalLayoutVi
      */
     void setDelegate(SuggestionViewDelegate delegate) {
         mDelegate = delegate;
+    }
+
+    /**
+     * Specify the listener receiving a call when the user highlights this Suggestion.
+     *
+     * @param listener The listener to be notified about selection.
+     */
+    void setOnFocusViaSelectionListener(@Nullable Runnable listener) {
+        mOnFocusViaSelectionListener = listener;
     }
 
     /** @return Widget holding suggestion decoration icon. */

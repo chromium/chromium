@@ -74,6 +74,10 @@ public class BaseSuggestionViewProperties {
     public static final WritableObjectPropertyKey<List<Action>> ACTIONS =
             new WritableObjectPropertyKey();
 
+    /** Callback invoked when the Suggestion view is highlighted. */
+    public static final WritableObjectPropertyKey<Runnable> ON_FOCUS_VIA_SELECTION =
+            new WritableObjectPropertyKey<>();
+
     /** Delegate receiving user events. */
     public static final WritableObjectPropertyKey<SuggestionViewDelegate> SUGGESTION_DELEGATE =
             new WritableObjectPropertyKey<>();
@@ -82,7 +86,7 @@ public class BaseSuggestionViewProperties {
     public static final WritableIntPropertyKey DENSITY = new WritableIntPropertyKey();
 
     public static final PropertyKey[] ALL_UNIQUE_KEYS =
-            new PropertyKey[] {ACTIONS, ICON, DENSITY, SUGGESTION_DELEGATE};
+            new PropertyKey[] {ACTIONS, ICON, DENSITY, SUGGESTION_DELEGATE, ON_FOCUS_VIA_SELECTION};
 
     public static final PropertyKey[] ALL_KEYS =
             PropertyModel.concatKeys(ALL_UNIQUE_KEYS, SuggestionCommonProperties.ALL_KEYS);

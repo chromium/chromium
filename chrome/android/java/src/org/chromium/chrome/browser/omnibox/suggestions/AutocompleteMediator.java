@@ -479,13 +479,6 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
             PropertyModel model, OmniboxSuggestion suggestion, int position) {
         return new SuggestionViewDelegate() {
             @Override
-            public void onSetUrlToSuggestion() {
-                if (mIgnoreOmniboxItemSelection) return;
-                mIgnoreOmniboxItemSelection = true;
-                AutocompleteMediator.this.onSetUrlToSuggestion(suggestion);
-            }
-
-            @Override
             public void onSelection() {
                 processor.recordItemUsed(model);
                 AutocompleteMediator.this.onSelection(suggestion, position);
@@ -662,10 +655,13 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
 
     /**
      * Triggered when the user navigates to one of the suggestions without clicking on it.
-     * @param suggestion The suggestion that was selected.
+     * @param text The text to be displayed in the Omnibox.
      */
-    void onSetUrlToSuggestion(OmniboxSuggestion suggestion) {
-        mDelegate.setOmniboxEditingText(suggestion.getFillIntoEdit());
+    @Override
+    public void setOmniboxEditingText(String text) {
+        if (mIgnoreOmniboxItemSelection) return;
+        mIgnoreOmniboxItemSelection = true;
+        mDelegate.setOmniboxEditingText(text);
     }
 
     /**

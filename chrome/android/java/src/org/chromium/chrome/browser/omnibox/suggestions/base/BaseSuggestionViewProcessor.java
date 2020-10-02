@@ -152,6 +152,8 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
                 mSuggestionHost.createSuggestionViewDelegate(this, model, suggestion, position);
 
         model.set(BaseSuggestionViewProperties.SUGGESTION_DELEGATE, delegate);
+        model.set(BaseSuggestionViewProperties.ON_FOCUS_VIA_SELECTION,
+                () -> { mSuggestionHost.setOmniboxEditingText(suggestion.getFillIntoEdit()); });
         model.set(BaseSuggestionViewProperties.DENSITY, mDensity);
         setCustomActions(model, null);
     }

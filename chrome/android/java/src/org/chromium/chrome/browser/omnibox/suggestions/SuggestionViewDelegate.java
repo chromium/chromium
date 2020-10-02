@@ -13,7 +13,4 @@ public interface SuggestionViewDelegate {
 
     /** Triggered when the user long presses the omnibox suggestion. */
     void onLongPress();
-
-    /** Triggered when the user navigates to one of the suggestions without clicking on it. */
-    void onSetUrlToSuggestion();
 }
