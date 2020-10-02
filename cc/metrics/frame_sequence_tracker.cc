@@ -276,9 +276,6 @@ void FrameSequenceTracker::ReportSubmitFrame(
 
   TRACKER_TRACE_STREAM << "s(" << frame_token % kDebugStrMod << ")";
   had_impl_frame_submitted_between_commits_ = true;
-  metrics()->NotifySubmitForJankReporter(
-      FrameSequenceMetrics::ThreadType::kCompositor, frame_token,
-      ack.frame_id.sequence_number);
 
   const bool main_changes_after_sequence_started =
       first_received_main_sequence_ &&
@@ -301,9 +298,6 @@ void FrameSequenceTracker::ReportSubmitFrame(
                            << origin_args.frame_id.sequence_number %
                                   kDebugStrMod
                            << ")";
-      metrics()->NotifySubmitForJankReporter(
-          FrameSequenceMetrics::ThreadType::kMain, frame_token,
-          origin_args.frame_id.sequence_number);
 
       last_submitted_main_sequence_ = origin_args.frame_id.sequence_number;
       main_frames_.push_back(frame_token);
@@ -364,9 +358,6 @@ void FrameSequenceTracker::ReportFrameEnd(
               impl_throughput().frames_ontime)
         << TRACKER_DCHECK_MSG;
     --impl_throughput().frames_expected;
-    metrics()->NotifyNoUpdateForJankReporter(
-        FrameSequenceMetrics::ThreadType::kCompositor,
-        args.frame_id.sequence_number, args.interval);
 #if DCHECK_IS_ON()
     ++impl_throughput().frames_processed;
     // If these two are the same, it means that each impl frame is either
@@ -470,7 +461,7 @@ void FrameSequenceTracker::ReportFramePresented(
     }
 
     metrics()->ComputeJank(FrameSequenceMetrics::ThreadType::kCompositor,
-                           frame_token, feedback.timestamp, feedback.interval);
+                           feedback.timestamp, feedback.interval);
   }
 
   if (was_presented) {
@@ -492,8 +483,7 @@ void FrameSequenceTracker::ReportFramePresented(
       }
 
       metrics()->ComputeJank(FrameSequenceMetrics::ThreadType::kMain,
-                             frame_token, feedback.timestamp,
-                             feedback.interval);
+                             feedback.timestamp, feedback.interval);
     }
     if (main_frames_.size() < size_before_erase) {
       if (!last_frame_presentation_timestamp_.is_null() &&
@@ -608,10 +598,6 @@ void FrameSequenceTracker::ReportMainFrameCausedNoDamage(
       << TRACKER_DCHECK_MSG;
   last_no_main_damage_sequence_ = args.frame_id.sequence_number;
   --main_throughput().frames_expected;
-  metrics()->NotifyNoUpdateForJankReporter(
-      FrameSequenceMetrics::ThreadType::kMain, args.frame_id.sequence_number,
-      args.interval);
-
   DCHECK_GE(main_throughput().frames_expected, main_frames_.size())
       << TRACKER_DCHECK_MSG;
 
