@@ -26,12 +26,17 @@ import wpt_common
 # be mutated by wptrunner
 WPT_CHECKED_IN_MANIFEST = (
     "../../third_party/blink/web_tests/external/WPT_BASE_MANIFEST_8.json")
-WPT_WORKING_COPY_MANIFEST = "../../out/Release/MANIFEST.json"
+WPT_WORKING_COPY_MANIFEST = "../../out/{}/MANIFEST.json"
 
 WPT_CHECKED_IN_METADATA_DIR = "../../third_party/blink/web_tests/external/wpt"
-WPT_METADATA_OUTPUT_DIR = "../../out/Release/wpt_expectations_metadata/"
+WPT_METADATA_OUTPUT_DIR = "../../out/{}/wpt_expectations_metadata/"
 WPT_OVERRIDE_EXPECTATIONS_PATH = (
     "../../third_party/blink/web_tests/WPTOverrideExpectations")
+
+CHROME_BINARY = "../../out/{}/chrome"
+CHROMEDRIVER_BINARY = "../../out/{}/chromedriver"
+
+MOJO_JS_PATH = "../../out/{}/gen/"
 
 class WPTTestAdapter(wpt_common.BaseWptScriptAdapter):
 
@@ -39,6 +44,7 @@ class WPTTestAdapter(wpt_common.BaseWptScriptAdapter):
     def rest_args(self):
         rest_args = super(WPTTestAdapter, self).rest_args
         # Here we add all of the arguments required to run WPT tests on Chrome.
+        target_dir = self.options.target
         rest_args.extend([
             "../../third_party/blink/web_tests/external/wpt/wpt",
             "--venv=../../",
@@ -46,12 +52,12 @@ class WPTTestAdapter(wpt_common.BaseWptScriptAdapter):
             "run",
             "chrome"
         ] + self.options.test_list + [
-            "--binary=../../out/Release/chrome",
+            "--binary=" + CHROME_BINARY.format(target_dir),
             "--binary-arg=--host-resolver-rules="
                 "MAP nonexistent.*.test ~NOTFOUND, MAP *.test 127.0.0.1",
             "--binary-arg=--enable-experimental-web-platform-features",
             "--binary-arg=--enable-blink-features=MojoJS,MojoJSTest",
-            "--webdriver-binary=../../out/Release/chromedriver",
+            "--webdriver-binary=" + CHROMEDRIVER_BINARY.format(target_dir),
             "--webdriver-arg=--enable-chrome-logs",
             "--headless",
             "--no-capture-stdio",
@@ -65,8 +71,7 @@ class WPTTestAdapter(wpt_common.BaseWptScriptAdapter):
             # it uses the exit code to determine which shards to retry (ie:
             # those that had non-zero exit codes).
             #"--no-fail-on-unexpected",
-            "--metadata",
-            WPT_METADATA_OUTPUT_DIR,
+            "--metadata", WPT_METADATA_OUTPUT_DIR.format(target_dir),
             # By specifying metadata above, WPT will try to find manifest in the
             # metadata directory. So here we point it back to the correct path
             # for the manifest.
@@ -76,8 +81,7 @@ class WPTTestAdapter(wpt_common.BaseWptScriptAdapter):
             # a lengthy import/export cycle to refresh. So we allow WPT to
             # update the manifest in cast it's stale.
             #"--no-manifest-update",
-            "--manifest",
-            WPT_WORKING_COPY_MANIFEST,
+            "--manifest", WPT_WORKING_COPY_MANIFEST.format(target_dir),
             # (crbug.com/1023835) The flags below are temporary to aid debugging
             "--log-mach=-",
             "--log-mach-verbose",
@@ -85,24 +89,28 @@ class WPTTestAdapter(wpt_common.BaseWptScriptAdapter):
             # TODO(lpz): Consider removing --processes and compute automatically
             # from multiprocessing.cpu_count()
             #"--processes=5",
-            "--mojojs-path=../../out/Release/gen/",
+            "--mojojs-path=" + MOJO_JS_PATH.format(target_dir),
         ])
         return rest_args
 
     def add_extra_arguments(self, parser):
-        parser.add_argument('test_list', nargs="*",
+        target_help = "Specify the target build subdirectory under src/out/"
+        parser.add_argument("-t", "--target", dest="target", default="Release",
+                            help=target_help)
+        parser.add_argument("test_list", nargs="*",
                             help="List of tests or test directories to run")
 
     def do_pre_test_run_tasks(self):
         # Copy the checked-in manifest to the temporary working directory
-        shutil.copy(WPT_CHECKED_IN_MANIFEST, WPT_WORKING_COPY_MANIFEST)
+        shutil.copy(WPT_CHECKED_IN_MANIFEST,
+                    WPT_WORKING_COPY_MANIFEST.format(self.options.target))
 
         # Generate WPT metadata files.
         common.run_command([
             sys.executable,
             os.path.join(wpt_common.BLINK_TOOLS_DIR, 'build_wpt_metadata.py'),
             "--metadata-output-dir",
-            WPT_METADATA_OUTPUT_DIR,
+            WPT_METADATA_OUTPUT_DIR.format(self.options.target),
             "--additional-expectations",
             WPT_OVERRIDE_EXPECTATIONS_PATH,
             "--checked-in-metadata-dir",
