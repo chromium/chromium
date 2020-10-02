@@ -54,7 +54,7 @@ class ReadOnlySlider : public SystemSlider {
 };
 
 // A button used in a slider row of UnifiedSystemTray. The button is togglable.
-class UnifiedSliderButton : public views::ToggleImageButton {
+class UnifiedSliderButton : public views::ImageButton {
  public:
   UnifiedSliderButton(views::ButtonListener* listener,
                       const gfx::VectorIcon& icon,
@@ -73,7 +73,7 @@ class UnifiedSliderButton : public views::ToggleImageButton {
   // views::Button:
   const char* GetClassName() const override;
 
-  // views::ToggleImageButton:
+  // views::ImageButton:
   std::unique_ptr<views::InkDrop> CreateInkDrop() override;
   std::unique_ptr<views::InkDropRipple> CreateInkDropRipple() const override;
   std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight()
@@ -83,11 +83,12 @@ class UnifiedSliderButton : public views::ToggleImageButton {
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
  private:
+  void UpdateVectorIcon();
+
   // True if the button is currently toggled.
   bool toggled_ = false;
 
-  // Icon used when the button is toggled.
-  gfx::ImageSkia toggled_icon_;
+  const gfx::VectorIcon* icon_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(UnifiedSliderButton);
 };

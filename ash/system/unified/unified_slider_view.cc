@@ -74,7 +74,7 @@ void ReadOnlySlider::OnGestureEvent(ui::GestureEvent* event) {}
 UnifiedSliderButton::UnifiedSliderButton(views::ButtonListener* listener,
                                          const gfx::VectorIcon& icon,
                                          int accessible_name_id)
-    : views::ToggleImageButton(listener) {
+    : views::ImageButton(listener) {
   SetImageHorizontalAlignment(ALIGN_CENTER);
   SetImageVerticalAlignment(ALIGN_MIDDLE);
   if (accessible_name_id)
@@ -105,24 +105,13 @@ const char* UnifiedSliderButton::GetClassName() const {
 }
 
 void UnifiedSliderButton::SetVectorIcon(const gfx::VectorIcon& icon) {
-  const SkColor toggled_color = AshColorProvider::Get()->GetContentLayerColor(
-      ContentLayerType::kButtonIconColorPrimary);
-  const SkColor icon_color = AshColorProvider::Get()->GetContentLayerColor(
-      ContentLayerType::kButtonIconColor);
-
-  SetImage(views::Button::STATE_NORMAL,
-           gfx::CreateVectorIcon(icon, icon_color));
-
-  toggled_icon_ = gfx::CreateVectorIcon(icon, toggled_color);
-  SetToggledImage(views::Button::STATE_NORMAL, &toggled_icon_);
-
-  SetImage(views::Button::STATE_DISABLED,
-           gfx::CreateVectorIcon(icon, icon_color));
+  icon_ = &icon;
+  UpdateVectorIcon();
 }
 
 void UnifiedSliderButton::SetToggled(bool toggled) {
   toggled_ = toggled;
-  views::ToggleImageButton::SetToggled(toggled);
+  UpdateVectorIcon();
 }
 
 void UnifiedSliderButton::PaintButtonContents(gfx::Canvas* canvas) {
@@ -160,10 +149,19 @@ UnifiedSliderButton::CreateInkDropHighlight() const {
 void UnifiedSliderButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   if (!GetEnabled())
     return;
-  views::ToggleImageButton::GetAccessibleNodeData(node_data);
+  views::ImageButton::GetAccessibleNodeData(node_data);
   node_data->role = ax::mojom::Role::kToggleButton;
   node_data->SetCheckedState(toggled_ ? ax::mojom::CheckedState::kTrue
                                       : ax::mojom::CheckedState::kFalse);
+}
+
+void UnifiedSliderButton::UpdateVectorIcon() {
+  if (!icon_)
+    return;
+
+  AshColorProvider::Get()->DecorateIconButton(
+      this, AshColorProvider::ButtonType::kIconButtonSmallOrMedium, *icon_,
+      toggled_, GetDefaultSizeOfVectorIcon(*icon_));
 }
 
 UnifiedSliderView::UnifiedSliderView(UnifiedSliderListener* listener,
