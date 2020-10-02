@@ -8,6 +8,12 @@
 #include "ash/ash_export.h"
 #include "ui/views/controls/button/button.h"
 
+namespace chromeos {
+namespace phonehub {
+class ConnectionScheduler;
+}  // namespace phonehub
+}  // namespace chromeos
+
 namespace ash {
 
 class PhoneHubInterstitialView;
@@ -25,7 +31,9 @@ class ASH_EXPORT ConnectionErrorView : public views::View,
     kReconnecting,  // Attempts to resume the connection to the phone.
   };
 
-  explicit ConnectionErrorView(ErrorStatus error);
+  ConnectionErrorView(
+      ErrorStatus error,
+      chromeos::phonehub::ConnectionScheduler* connection_scheduler);
   ConnectionErrorView(const ConnectionErrorView&) = delete;
   ConnectionErrorView& operator=(const ConnectionErrorView&) = delete;
   ~ConnectionErrorView() override;
@@ -34,6 +42,8 @@ class ASH_EXPORT ConnectionErrorView : public views::View,
   void ButtonPressed(views::Button* sender, const ui::Event& event) override;
 
  private:
+  chromeos::phonehub::ConnectionScheduler* connection_scheduler_ = nullptr;
+
   PhoneHubInterstitialView* content_view_ = nullptr;
 };
 

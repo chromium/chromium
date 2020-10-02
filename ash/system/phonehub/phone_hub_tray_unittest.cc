@@ -11,6 +11,7 @@
 #include "ash/system/status_area_widget_test_helper.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/components/phonehub/fake_connection_scheduler.h"
 #include "chromeos/components/phonehub/fake_notification_access_manager.h"
 #include "chromeos/components/phonehub/fake_phone_hub_manager.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -60,10 +61,8 @@ class PhoneHubTrayTest : public AshTestBase {
     return phone_hub_manager_.fake_notification_access_manager();
   }
 
-  void ClickTrayButton() {
-    ui::GestureEvent tap(0, 0, 0, base::TimeTicks(),
-                         ui::GestureEventDetails(ui::ET_GESTURE_TAP));
-    phone_hub_tray_->PerformAction(tap);
+  chromeos::phonehub::FakeConnectionScheduler* GetConnectionScheduler() {
+    return phone_hub_manager_.fake_connection_scheduler();
   }
 
   // Simulate a mouse click on the given view.
@@ -76,12 +75,30 @@ class PhoneHubTrayTest : public AshTestBase {
     base::RunLoop().RunUntilIdle();
   }
 
+  void ClickTrayButton() { ClickOnAndWait(phone_hub_tray_); }
+
   MockNewWindowDelegate& new_window_delegate() { return new_window_delegate_; }
+
+  views::View* content_view() {
+    return phone_hub_tray_->content_view_for_testing();
+  }
 
   NotificationOptInView* notification_opt_in_view() {
     return static_cast<NotificationOptInView*>(
         phone_hub_tray_->GetBubbleView()->GetViewByID(
             PhoneHubViewID::kNotificationOptInView));
+  }
+
+  views::Button* disconnected_refresh_button() {
+    return static_cast<views::Button*>(
+        phone_hub_tray_->GetBubbleView()->GetViewByID(
+            PhoneHubViewID::kDisconnectedRefreshButton));
+  }
+
+  views::Button* disconnected_learn_more_button() {
+    return static_cast<views::Button*>(
+        phone_hub_tray_->GetBubbleView()->GetViewByID(
+            PhoneHubViewID::kDisconnectedLearnMoreButton));
   }
 
  protected:
@@ -182,18 +199,44 @@ TEST_F(PhoneHubTrayTest, TransitionContentView) {
   ClickTrayButton();
   EXPECT_TRUE(phone_hub_tray_->is_active());
 
-  auto* content_view = phone_hub_tray_->content_view_for_testing();
-  EXPECT_TRUE(content_view);
+  EXPECT_TRUE(content_view());
   // TODO(tengs) Test the actual view id.
-  EXPECT_EQ(0, content_view->GetID());
+  EXPECT_EQ(0, content_view()->GetID());
 
   GetFeatureStatusProvider()->SetStatus(
       chromeos::phonehub::FeatureStatus::kEnabledButDisconnected);
 
-  content_view = phone_hub_tray_->content_view_for_testing();
-  EXPECT_TRUE(content_view);
-  // TODO(tengs) Test the actual view id.
-  EXPECT_EQ(0, content_view->GetID());
+  EXPECT_TRUE(content_view());
+  EXPECT_EQ(PhoneHubViewID::kDisconnectedView, content_view()->GetID());
+}
+
+TEST_F(PhoneHubTrayTest, ClickButtonsOnDisconnectedView) {
+  // Simulates a phone disconnected error state to show the disconnected view.
+  GetFeatureStatusProvider()->SetStatus(
+      chromeos::phonehub::FeatureStatus::kEnabledButDisconnected);
+
+  ClickTrayButton();
+  EXPECT_TRUE(phone_hub_tray_->is_active());
+  EXPECT_EQ(PhoneHubViewID::kDisconnectedView, content_view()->GetID());
+
+  // Simulates a click on the "Refresh" button.
+  EXPECT_EQ(0u, GetConnectionScheduler()->num_schedule_connection_now_calls());
+  ClickOnAndWait(disconnected_refresh_button());
+
+  // Clicking "Refresh" button should schedule a connection attempt.
+  EXPECT_EQ(1u, GetConnectionScheduler()->num_schedule_connection_now_calls());
+
+  // Clicking "Learn More" button should open the corresponding help center
+  // article in a browser tab.
+  EXPECT_CALL(new_window_delegate(), NewTabWithUrl)
+      .WillOnce([](const GURL& url, bool from_user_interaction) {
+        EXPECT_EQ(GURL("https://support.google.com/chromebook/?p=multi_device"),
+                  url);
+        EXPECT_TRUE(from_user_interaction);
+      });
+
+  // Simulates a click on the "Learn more" button.
+  ClickOnAndWait(disconnected_learn_more_button());
 }
 
 }  // namespace ash

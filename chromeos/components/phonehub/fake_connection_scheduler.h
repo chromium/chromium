@@ -25,7 +25,7 @@ class FakeConnectionScheduler : public ConnectionScheduler {
   // ConnectionScheduler:
   void ScheduleConnectionNow() override;
 
-  size_t num_schedule_connection_now_calls_;
+  size_t num_schedule_connection_now_calls_ = 0u;
 };
 
 }  // namespace phonehub

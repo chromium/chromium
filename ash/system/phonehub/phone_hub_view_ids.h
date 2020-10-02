@@ -22,6 +22,12 @@ enum PhoneHubViewID {
   kOnboardingView,
   kOnboardingGetStartedButton,
   kOnboardingDismissButton,
+
+  // Connection error view and its components.
+  kDisconnectedView,
+  kReconnectingView,
+  kDisconnectedLearnMoreButton,
+  kDisconnectedRefreshButton,
 };
 
 }  // namespace ash

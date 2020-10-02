@@ -125,8 +125,7 @@ TEST_F(PhoneHubUiControllerTest, PhoneDisconnected) {
             controller_.ui_state());
 
   auto content_view = controller_.CreateContentView(/*bubble_view=*/nullptr);
-  // TODO(tengs): Test the actual view id.
-  EXPECT_EQ(0, content_view->GetID());
+  EXPECT_EQ(PhoneHubViewID::kDisconnectedView, content_view->GetID());
 }
 
 TEST_F(PhoneHubUiControllerTest, PhoneConnecting) {
@@ -135,8 +134,7 @@ TEST_F(PhoneHubUiControllerTest, PhoneConnecting) {
             controller_.ui_state());
 
   auto content_view = controller_.CreateContentView(/*bubble_view=*/nullptr);
-  // TODO(tengs): Test the actual view id.
-  EXPECT_EQ(0, content_view->GetID());
+  EXPECT_EQ(PhoneHubViewID::kReconnectingView, content_view->GetID());
 }
 
 TEST_F(PhoneHubUiControllerTest, PhoneConnected) {

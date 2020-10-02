@@ -62,10 +62,12 @@ std::unique_ptr<views::View> PhoneHubUiController::CreateContentView(
       return std::make_unique<InitialConnectingView>();
     case UiState::kPhoneConnecting:
       return std::make_unique<ConnectionErrorView>(
-          ConnectionErrorView::ErrorStatus::kReconnecting);
+          ConnectionErrorView::ErrorStatus::kReconnecting,
+          phone_hub_manager_->GetConnectionScheduler());
     case UiState::kConnectionError:
       return std::make_unique<ConnectionErrorView>(
-          ConnectionErrorView::ErrorStatus::kDisconnected);
+          ConnectionErrorView::ErrorStatus::kDisconnected,
+          phone_hub_manager_->GetConnectionScheduler());
     case UiState::kPhoneConnected:
       return std::make_unique<PhoneConnectedView>(bubble_view,
                                                   phone_hub_manager_);
