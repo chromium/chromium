@@ -153,7 +153,8 @@ Process LaunchProcess(const std::vector<std::string>& argv,
   // |clear_environment|, |environment| or |current_directory| are set then we
   // construct a new (possibly empty) environment, otherwise we let fdio_spawn()
   // clone the caller's environment into the new process.
-  uint32_t spawn_flags = FDIO_SPAWN_DEFAULT_LDSVC | options.spawn_flags;
+  uint32_t spawn_flags = FDIO_SPAWN_DEFAULT_LDSVC | FDIO_SPAWN_CLONE_UTC_CLOCK |
+                         options.spawn_flags;
 
   EnvironmentMap environ_modifications = options.environment;
   if (!options.current_directory.empty()) {
