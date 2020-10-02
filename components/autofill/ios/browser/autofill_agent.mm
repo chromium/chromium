@@ -429,6 +429,7 @@ autofillManagerFromWebState:(web::WebState*)webState
                     frameID:(NSString*)frameID
           completionHandler:(SuggestionHandledCompletion)completion {
   [[UIDevice currentDevice] playInputClick];
+  DCHECK(completion);
   _suggestionHandledCompletion = [completion copy];
 
   if (suggestion.identifier > 0) {
@@ -453,6 +454,9 @@ autofillManagerFromWebState:(web::WebState*)webState
     web::WebFrame* frame =
         web::GetWebFrameWithId(_webState, SysNSStringToUTF8(frameID));
     __weak AutofillAgent* weakSelf = self;
+    SuggestionHandledCompletion suggestionHandledCompletionCopy =
+        [_suggestionHandledCompletion copy];
+    _suggestionHandledCompletion = nil;
     [_jsAutofillManager
         clearAutofilledFieldsForFormName:formName
                             formUniqueID:uniqueFormID
@@ -465,8 +469,7 @@ autofillManagerFromWebState:(web::WebState*)webState
                            return;
                          UpdateFieldManagerForClearedIDs(
                              strongSelf->_fieldDataManager, jsonString);
-                         strongSelf->_suggestionHandledCompletion();
-                         strongSelf->_suggestionHandledCompletion = nil;
+                         suggestionHandledCompletionCopy();
                        }];
 
   } else if (suggestion.identifier ==
@@ -915,6 +918,9 @@ autofillManagerFromWebState:(web::WebState*)webState
 
   DCHECK(_suggestionHandledCompletion);
   __weak AutofillAgent* weakSelf = self;
+  SuggestionHandledCompletion suggestionHandledCompletionCopy =
+      [_suggestionHandledCompletion copy];
+  _suggestionHandledCompletion = nil;
   [_jsAutofillManager
       fillActiveFormField:std::move(data)
                   inFrame:frame
@@ -926,8 +932,7 @@ autofillManagerFromWebState:(web::WebState*)webState
             strongSelf->_fieldDataManager->UpdateFieldDataWithAutofilledValue(
                 uniqueFieldID, value, kAutofilledOnUserTrigger);
           }
-          strongSelf->_suggestionHandledCompletion();
-          strongSelf->_suggestionHandledCompletion = nil;
+          suggestionHandledCompletionCopy();
         }];
 }
 
@@ -935,12 +940,10 @@ autofillManagerFromWebState:(web::WebState*)webState
 - (void)sendData:(std::unique_ptr<base::Value>)data
          toFrame:(web::WebFrame*)frame {
   DCHECK(_webState->IsVisible());
-  // It is possible that the fill was not initiated by selecting a suggestion.
-  // In this case we provide an empty callback.
-  if (!_suggestionHandledCompletion)
-    _suggestionHandledCompletion = [^{
-    } copy];
   __weak AutofillAgent* weakSelf = self;
+  SuggestionHandledCompletion suggestionHandledCompletionCopy =
+      [_suggestionHandledCompletion copy];
+  _suggestionHandledCompletion = nil;
   [_jsAutofillManager fillForm:std::move(data)
       forceFillFieldIdentifier:SysUTF16ToNSString(_pendingAutocompleteField)
         forceFillFieldUniqueID:_pendingAutocompleteFieldID
@@ -951,8 +954,10 @@ autofillManagerFromWebState:(web::WebState*)webState
                  return;
                UpdateFieldManagerWithFillingResults(
                    strongSelf->_fieldDataManager, jsonString);
-               strongSelf->_suggestionHandledCompletion();
-               strongSelf->_suggestionHandledCompletion = nil;
+               // It is possible that the fill was not initiated by selecting
+               // a suggestion in this case the callback is nil.
+               if (suggestionHandledCompletionCopy)
+                 suggestionHandledCompletionCopy();
              }];
 }
 
