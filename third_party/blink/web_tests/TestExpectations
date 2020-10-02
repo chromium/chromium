@@ -273,11 +273,6 @@ crbug.com/1007134 external/wpt/intersection-observer/v2/delay-test.html [ Pass F
 crbug.com/1004547 external/wpt/intersection-observer/cross-origin-iframe.sub.html [ Pass Failure ]
 crbug.com/1007229 external/wpt/intersection-observer/same-origin-grand-child-iframe.sub.html [ Pass Failure ]
 
-# Not supported yet
-crbug.com/1133835 external/wpt/css/css-sizing/aspect-ratio/replaced-element-023.tentative.html [ Failure ]
-crbug.com/1133835 external/wpt/css/css-sizing/aspect-ratio/replaced-element-025.tentative.html [ Failure ]
-crbug.com/1133835 external/wpt/css/css-sizing/aspect-ratio/replaced-element-027.tentative.html [ Failure ]
-
 crbug.com/936084 external/wpt/css/css-sizing/max-content-input-001.html [ Failure ]
 
 crbug.com/849459 fragmentation/repeating-thead-under-repeating-thead.html [ Failure ]

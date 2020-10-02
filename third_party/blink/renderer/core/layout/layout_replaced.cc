@@ -178,6 +178,14 @@ void LayoutReplaced::ComputeIntrinsicSizingInfoForReplacedContent(
     // Reset the size in case it was already populated.
     intrinsic_sizing_info.size = FloatSize();
 
+    const StyleAspectRatio& aspect_ratio = StyleRef().AspectRatio();
+    if (!aspect_ratio.IsAuto()) {
+      intrinsic_sizing_info.aspect_ratio.SetWidth(
+          aspect_ratio.GetRatio().Width());
+      intrinsic_sizing_info.aspect_ratio.SetHeight(
+          aspect_ratio.GetRatio().Height());
+    }
+
     // If any of the dimensions are overridden, set those sizes.
     if (HasOverrideIntrinsicContentLogicalWidth()) {
       intrinsic_sizing_info.size.SetWidth(
