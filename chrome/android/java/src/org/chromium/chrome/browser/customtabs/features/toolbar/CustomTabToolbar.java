@@ -49,6 +49,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.WindowDelegate;
 import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.native_page.NativePageFactory;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
@@ -828,6 +829,9 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
         @Override
         public void setUnfocusedWidth(int unfocusedWidth) {}
+
+        @Override
+        public void setOverviewModeBehavior(OverviewModeBehavior overviewModeBehavior) {}
 
         // Implements FakeBoxDelegate.
         @Override

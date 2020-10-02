@@ -15,7 +15,6 @@ import android.view.View;
 
 import org.chromium.base.TraceEvent;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.ui.interpolators.BakedBezierInterpolator;
 
@@ -327,10 +326,6 @@ public class LocationBarPhone extends LocationBarLayout {
         try (TraceEvent e = TraceEvent.scoped("LocationBarPhone.onLayout")) {
             super.onLayout(changed, left, top, right, bottom);
         }
-    }
-
-    public void setOverviewModeBehavior(OverviewModeBehavior overviewModeBehavior) {
-        mAutocompleteCoordinator.setOverviewModeBehavior(overviewModeBehavior);
     }
 
     /** Update the status visibility according to the current state held in LocationBar. */

@@ -15,6 +15,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.WindowDelegate;
+import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.ntp.FakeboxDelegate;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.omnibox.UrlBar.UrlBarDelegate;
@@ -127,6 +128,11 @@ public interface LocationBar extends UrlBarDelegate, FakeboxDelegate {
      * Sets the {@link ToolbarDataProvider} to be used for accessing {@link Toolbar} state.
      */
     void setToolbarDataProvider(ToolbarDataProvider model);
+
+    /**
+     * Sets the {@link OverviewModeBehavior}.
+     */
+    void setOverviewModeBehavior(OverviewModeBehavior overviewModeBehavior);
 
     /**
      * Gets the {@link ToolbarDataProvider} to be used for accessing {@link Toolbar} state.

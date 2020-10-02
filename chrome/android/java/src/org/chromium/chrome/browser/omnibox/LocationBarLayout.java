@@ -43,6 +43,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.WindowDelegate;
+import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.gsa.GSAState;
 import org.chromium.chrome.browser.locale.LocaleManager;
@@ -353,6 +354,11 @@ public class LocationBarLayout extends FrameLayout
     @Override
     public AutocompleteCoordinator getAutocompleteCoordinator() {
         return mAutocompleteCoordinator;
+    }
+
+    @Override
+    public void setOverviewModeBehavior(OverviewModeBehavior overviewModeBehavior) {
+        mAutocompleteCoordinator.setOverviewModeBehavior(overviewModeBehavior);
     }
 
     @Override
