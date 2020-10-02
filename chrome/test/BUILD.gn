@@ -3092,7 +3092,10 @@ if (chromeos_is_browser_only) {
       "CHROME_VERSION_MAJOR=" + chrome_version_major,
     ]
 
-    sources = [ "../browser/lacros/screen_manager_lacros_browsertest.cc" ]
+    sources = [
+      "../browser/lacros/keystore_service_lacros_browsertest.cc",
+      "../browser/lacros/screen_manager_lacros_browsertest.cc",
+    ]
 
     deps = [
       ":browser_tests_runner",
