@@ -3294,7 +3294,7 @@ PhysicalOffset LayoutObject::OffsetFromContainerInternal(
     bool ignore_scroll_offset) const {
   NOT_DESTROYED();
   DCHECK_EQ(o, Container());
-  return o->HasNonVisibleOverflow()
+  return o->IsScrollContainer()
              ? OffsetFromScrollableContainer(o, ignore_scroll_offset)
              : PhysicalOffset();
 }
@@ -3303,7 +3303,7 @@ PhysicalOffset LayoutObject::OffsetFromScrollableContainer(
     const LayoutObject* container,
     bool ignore_scroll_offset) const {
   NOT_DESTROYED();
-  DCHECK(container->HasNonVisibleOverflow());
+  DCHECK(container->IsScrollContainer());
   const LayoutBox* box = ToLayoutBox(container);
   if (!ignore_scroll_offset)
     return -PhysicalOffset(box->ScrolledContentOffset());
