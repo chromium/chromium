@@ -87,7 +87,8 @@ INSTANTIATE_TEST_SUITE_P(PersistentBackground,
                          ExtensionManagementApiTestWithBackgroundType,
                          ::testing::Values(ContextType::kPersistentBackground));
 
-INSTANTIATE_TEST_SUITE_P(ServiceWorker,
+// Disabled due to timeouts; see https://crbug.com/1132581.
+INSTANTIATE_TEST_SUITE_P(DISABLED_ServiceWorker,
                          ExtensionManagementApiTestWithBackgroundType,
                          ::testing::Values(ContextType::kServiceWorker));
 
