@@ -168,7 +168,8 @@ void PerFrameContentTranslateDriver::TranslateFrame(
   mojo::AssociatedRemote<mojom::TranslateAgent> frame_agent;
   render_frame_host->GetRemoteAssociatedInterfaces()->GetInterface(
       &frame_agent);
-  frame_agent->TranslateFrame(
+  mojom::TranslateAgent* frame_agent_ptr = frame_agent.get();
+  frame_agent_ptr->TranslateFrame(
       translate_script, source_lang, target_lang,
       base::BindOnce(&PerFrameContentTranslateDriver::OnFrameTranslated,
                      weak_pointer_factory_.GetWeakPtr(), translate_seq_no,
@@ -336,7 +337,8 @@ void PerFrameContentTranslateDriver::StartLanguageDetection() {
   mojo::AssociatedRemote<mojom::TranslateAgent> frame_agent;
   web_contents()->GetMainFrame()->GetRemoteAssociatedInterfaces()->GetInterface(
       &frame_agent);
-  frame_agent->GetWebLanguageDetectionDetails(base::BindOnce(
+  mojom::TranslateAgent* frame_agent_ptr = frame_agent.get();
+  frame_agent_ptr->GetWebLanguageDetectionDetails(base::BindOnce(
       &PerFrameContentTranslateDriver::OnWebLanguageDetectionDetails,
       weak_pointer_factory_.GetWeakPtr(), std::move(frame_agent)));
 }
