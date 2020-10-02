@@ -1846,6 +1846,25 @@
             ]
         }
     ],
+    "CrosSchedulerCore": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "config": "core-scheduling"
+                    },
+                    "enable_features": [
+                        "CoreSchedulingEnabled",
+                        "SchedulerConfiguration"
+                    ]
+                }
+            ]
+        }
+    ],
     "CrostiniWebUIUpgrader": [
         {
             "platforms": [
