@@ -13,10 +13,18 @@ TestOutputSurfaceProvider::TestOutputSurfaceProvider() = default;
 
 TestOutputSurfaceProvider::~TestOutputSurfaceProvider() = default;
 
+std::unique_ptr<gpu::GpuTaskSchedulerHelper>
+TestOutputSurfaceProvider::CreateGpuTaskScheduler(
+    bool gpu_compositing,
+    const RendererSettings& renderer_settings) {
+  return nullptr;
+}
+
 std::unique_ptr<OutputSurface> TestOutputSurfaceProvider::CreateOutputSurface(
     gpu::SurfaceHandle surface_handle,
     bool gpu_compositing,
     mojom::DisplayClient* display_client,
+    gpu::GpuTaskSchedulerHelper* gpu_task_scheduler,
     const RendererSettings& renderer_settings,
     const DebugRendererSettings* debug_settings) {
   if (gpu_compositing) {

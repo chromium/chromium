@@ -304,7 +304,7 @@ gpu::ContextResult InProcessCommandBuffer::Initialize(
     task_sequence_ = task_sequence;
   } else {
     task_scheduler_holder_ =
-        base::MakeRefCounted<gpu::GpuTaskSchedulerHelper>(task_executor_);
+        std::make_unique<gpu::GpuTaskSchedulerHelper>(task_executor_);
     task_sequence_ = task_scheduler_holder_->GetTaskSequence();
   }
 

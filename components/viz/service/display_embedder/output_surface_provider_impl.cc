@@ -99,10 +99,27 @@ OutputSurfaceProviderImpl::OutputSurfaceProviderImpl(bool headless)
 
 OutputSurfaceProviderImpl::~OutputSurfaceProviderImpl() = default;
 
+std::unique_ptr<gpu::GpuTaskSchedulerHelper>
+OutputSurfaceProviderImpl::CreateGpuTaskScheduler(
+    bool gpu_compositing,
+    const RendererSettings& renderer_settings) {
+  if (!gpu_compositing)
+    return nullptr;
+
+  if (renderer_settings.use_skia_renderer) {
+    return std::make_unique<gpu::GpuTaskSchedulerHelper>(
+        gpu_service_impl_->GetGpuScheduler());
+  }
+
+  DCHECK(task_executor_);
+  return std::make_unique<gpu::GpuTaskSchedulerHelper>(task_executor_);
+}
+
 std::unique_ptr<OutputSurface> OutputSurfaceProviderImpl::CreateOutputSurface(
     gpu::SurfaceHandle surface_handle,
     bool gpu_compositing,
     mojom::DisplayClient* display_client,
+    gpu::GpuTaskSchedulerHelper* gpu_task_scheduler,
     const RendererSettings& renderer_settings,
     const DebugRendererSettings* debug_settings) {
 #if defined(OS_CHROMEOS)
@@ -118,12 +135,13 @@ std::unique_ptr<OutputSurface> OutputSurfaceProviderImpl::CreateOutputSurface(
     output_surface = std::make_unique<SoftwareOutputSurface>(
         CreateSoftwareOutputDeviceForPlatform(surface_handle, display_client));
   } else if (renderer_settings.use_skia_renderer) {
+    DCHECK(gpu_task_scheduler);
     {
       gpu::ScopedAllowScheduleGpuTask allow_schedule_gpu_task;
       output_surface = SkiaOutputSurfaceImpl::Create(
           std::make_unique<SkiaOutputSurfaceDependencyImpl>(gpu_service_impl_,
                                                             surface_handle),
-          renderer_settings, debug_settings);
+          gpu_task_scheduler, renderer_settings, debug_settings);
     }
     if (!output_surface) {
 #if defined(OS_CHROMEOS) || BUILDFLAG(IS_CHROMECAST)
@@ -138,6 +156,7 @@ std::unique_ptr<OutputSurface> OutputSurfaceProviderImpl::CreateOutputSurface(
     }
   } else {
     DCHECK(task_executor_);
+    DCHECK(gpu_task_scheduler);
 
     scoped_refptr<VizProcessContextProvider> context_provider;
 
@@ -155,7 +174,8 @@ std::unique_ptr<OutputSurface> OutputSurfaceProviderImpl::CreateOutputSurface(
 
       context_provider = base::MakeRefCounted<VizProcessContextProvider>(
           task_executor_, surface_handle, gpu_memory_buffer_manager_.get(),
-          image_factory_, gpu_channel_manager_delegate_, renderer_settings);
+          image_factory_, gpu_channel_manager_delegate_, gpu_task_scheduler,
+          renderer_settings);
       context_result = context_provider->BindToCurrentThread();
 
 #if defined(OS_ANDROID)

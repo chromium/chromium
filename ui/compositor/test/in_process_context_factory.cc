@@ -31,6 +31,7 @@
 #include "components/viz/service/display_embedder/skia_output_surface_dependency_impl.h"
 #include "components/viz/service/display_embedder/skia_output_surface_impl.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
+#include "components/viz/service/gl/gpu_service_impl.h"
 #include "components/viz/test/test_gpu_service_holder.h"
 #include "gpu/command_buffer/client/context_support.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
@@ -124,10 +125,6 @@ class DirectOutputSurface : public viz::OutputSurface {
   void SetDisplayTransformHint(gfx::OverlayTransform transform) override {}
   gfx::OverlayTransform GetDisplayTransform() override {
     return gfx::OVERLAY_TRANSFORM_NONE;
-  }
-  scoped_refptr<gpu::GpuTaskSchedulerHelper> GetGpuTaskSchedulerHelper()
-      override {
-    return nullptr;
   }
   gpu::MemoryTracker* GetMemoryTracker() override { return nullptr; }
 
@@ -323,18 +320,27 @@ void InProcessContextFactory::CreateLayerTreeFrameSink(
   DCHECK_EQ(context_result, gpu::ContextResult::kSuccess);
 
   std::unique_ptr<viz::OutputSurface> display_output_surface;
+  std::unique_ptr<gpu::GpuTaskSchedulerHelper> gpu_task_scheduler;
 
   if (renderer_settings_.use_skia_renderer) {
+    gpu_task_scheduler = std::make_unique<gpu::GpuTaskSchedulerHelper>(
+        viz::TestGpuServiceHolder::GetInstance()
+            ->gpu_service()
+            ->GetGpuScheduler());
     display_output_surface = viz::SkiaOutputSurfaceImpl::Create(
         std::make_unique<viz::SkiaOutputSurfaceDependencyImpl>(
             viz::TestGpuServiceHolder::GetInstance()->gpu_service(),
             gpu::kNullSurfaceHandle),
-        renderer_settings_, &debug_settings_);
+        nullptr, renderer_settings_, &debug_settings_);
   } else if (use_test_surface_) {
+    // The |context_provider| will contain an InProcessCommandBuffer, which will
+    // make a gpu::GpuTaskSchedulerHelper if one is not provided.
     gfx::SurfaceOrigin surface_origin = gfx::SurfaceOrigin::kBottomLeft;
     display_output_surface = std::make_unique<cc::PixelTestOutputSurface>(
         context_provider, surface_origin);
   } else {
+    // The |context_provider| will contain an InProcessCommandBuffer, which will
+    // make a gpu::GpuTaskSchedulerHelper if one is not provided.
     display_output_surface =
         std::make_unique<DirectOutputSurface>(context_provider);
   }
@@ -362,9 +368,9 @@ void InProcessContextFactory::CreateLayerTreeFrameSink(
 
   data->SetDisplay(std::make_unique<viz::Display>(
       &shared_bitmap_manager_, renderer_settings_, &debug_settings_,
-      compositor->frame_sink_id(), std::move(display_output_surface),
-      std::move(overlay_processor), std::move(scheduler),
-      compositor->task_runner()));
+      compositor->frame_sink_id(), std::move(gpu_task_scheduler),
+      std::move(display_output_surface), std::move(overlay_processor),
+      std::move(scheduler), compositor->task_runner()));
   frame_sink_manager_->RegisterBeginFrameSource(begin_frame_source.get(),
                                                 compositor->frame_sink_id());
   // Note that we are careful not to destroy a prior |data->begin_frame_source|

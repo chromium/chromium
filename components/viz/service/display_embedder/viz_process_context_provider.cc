@@ -113,12 +113,13 @@ VizProcessContextProvider::VizProcessContextProvider(
     gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
     gpu::ImageFactory* image_factory,
     gpu::GpuChannelManagerDelegate* gpu_channel_manager_delegate,
+    gpu::GpuTaskSchedulerHelper* gpu_task_scheduler,
     const RendererSettings& renderer_settings)
     : attributes_(CreateAttributes(renderer_settings.requires_alpha_channel,
                                    renderer_settings)) {
   InitializeContext(std::move(task_executor), surface_handle,
                     gpu_memory_buffer_manager, image_factory,
-                    gpu_channel_manager_delegate,
+                    gpu_channel_manager_delegate, gpu_task_scheduler,
                     SharedMemoryLimitsForRendererSettings(renderer_settings));
 
   if (context_result_ == gpu::ContextResult::kSuccess) {
@@ -242,11 +243,11 @@ void VizProcessContextProvider::InitializeContext(
     gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
     gpu::ImageFactory* image_factory,
     gpu::GpuChannelManagerDelegate* gpu_channel_manager_delegate,
+    gpu::GpuTaskSchedulerHelper* gpu_task_scheduler,
     const gpu::SharedMemoryLimits& mem_limits) {
   const bool is_offscreen = surface_handle == gpu::kNullSurfaceHandle;
-
-  gpu_task_scheduler_helper_ =
-      base::MakeRefCounted<gpu::GpuTaskSchedulerHelper>(task_executor);
+  DCHECK(gpu_task_scheduler);
+  gpu_task_scheduler_helper_ = gpu_task_scheduler;
   command_buffer_ = std::make_unique<gpu::InProcessCommandBuffer>(
       task_executor,
       GURL("chrome://gpu/VizProcessContextProvider::InitializeContext"));
@@ -269,7 +270,8 @@ void VizProcessContextProvider::InitializeContext(
     return;
   }
 
-  gpu_task_scheduler_helper_->Initialize(gles2_helper_.get());
+  if (gpu_task_scheduler_helper_)
+    gpu_task_scheduler_helper_->Initialize(gles2_helper_.get());
 
   transfer_buffer_ = std::make_unique<gpu::TransferBuffer>(gles2_helper_.get());
 
@@ -332,11 +334,6 @@ bool VizProcessContextProvider::OnMemoryDump(
 
 base::ScopedClosureRunner VizProcessContextProvider::GetCacheBackBufferCb() {
   return command_buffer_->GetCacheBackBufferCb();
-}
-
-scoped_refptr<gpu::GpuTaskSchedulerHelper>
-VizProcessContextProvider::GetGpuTaskSchedulerHelper() {
-  return gpu_task_scheduler_helper_;
 }
 
 gpu::SharedImageManager* VizProcessContextProvider::GetSharedImageManager() {

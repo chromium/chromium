@@ -127,8 +127,6 @@ class FakeSkiaOutputSurface : public SkiaOutputSurface {
       base::OnceClosure callback,
       std::vector<gpu::SyncToken> sync_tokens) override;
 
-  scoped_refptr<gpu::GpuTaskSchedulerHelper> GetGpuTaskSchedulerHelper()
-      override;
   gpu::MemoryTracker* GetMemoryTracker() override;
 
  private:

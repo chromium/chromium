@@ -2428,8 +2428,6 @@ class MockOutputSurface : public OutputSurface {
   MOCK_METHOD1(SetUpdateVSyncParametersCallback,
                void(UpdateVSyncParametersCallback));
   MOCK_METHOD1(SetDisplayTransformHint, void(gfx::OverlayTransform));
-  MOCK_METHOD0(GetGpuTaskSchedulerHelper,
-               scoped_refptr<gpu::GpuTaskSchedulerHelper>());
   MOCK_METHOD0(GetMemoryTracker, gpu::MemoryTracker*());
 
   gfx::OverlayTransform GetDisplayTransform() override {

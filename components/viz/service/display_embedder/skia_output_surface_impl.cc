@@ -93,11 +93,12 @@ SkiaOutputSurfaceImpl::ScopedPaint::~ScopedPaint() = default;
 // static
 std::unique_ptr<SkiaOutputSurface> SkiaOutputSurfaceImpl::Create(
     std::unique_ptr<SkiaOutputSurfaceDependency> deps,
+    gpu::GpuTaskSchedulerHelper* gpu_task_scheduler,
     const RendererSettings& renderer_settings,
     const DebugRendererSettings* debug_settings) {
   auto output_surface = std::make_unique<SkiaOutputSurfaceImpl>(
       util::PassKey<SkiaOutputSurfaceImpl>(), std::move(deps),
-      renderer_settings, debug_settings);
+      gpu_task_scheduler, renderer_settings, debug_settings);
   if (!output_surface->Initialize())
     output_surface = nullptr;
   return output_surface;
@@ -106,12 +107,24 @@ std::unique_ptr<SkiaOutputSurface> SkiaOutputSurfaceImpl::Create(
 SkiaOutputSurfaceImpl::SkiaOutputSurfaceImpl(
     util::PassKey<SkiaOutputSurfaceImpl> /* pass_key */,
     std::unique_ptr<SkiaOutputSurfaceDependency> deps,
+    gpu::GpuTaskSchedulerHelper* gpu_task_scheduler,
     const RendererSettings& renderer_settings,
     const DebugRendererSettings* debug_settings)
     : SkiaOutputSurface(GetOutputSurfaceType(deps.get())),
       dependency_(std::move(deps)),
       renderer_settings_(renderer_settings),
       debug_settings_(debug_settings) {
+  if (!gpu_task_scheduler) {
+    // For testing and Android WebView, we do not have Overlay, and do not go
+    // through OutputSurfaceProviderImpl to create SkiaOutputSurface. In these
+    // cases, there is no need for sharing the gpu_task_scheduler, and thus
+    // SkiaOutputSurface class could take ownership of the gpu_task_scheduler_.
+    gpu_task_scheduler_holder_ = std::make_unique<gpu::GpuTaskSchedulerHelper>(
+        dependency_->CreateSequence());
+    gpu_task_scheduler_ = gpu_task_scheduler_holder_.get();
+  } else {
+    gpu_task_scheduler_ = gpu_task_scheduler;
+  }
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 }
 
@@ -141,8 +154,6 @@ SkiaOutputSurfaceImpl::~SkiaOutputSurfaceImpl() {
       std::move(impl_on_gpu_), &event);
   ScheduleGpuTask(std::move(task), {});
   event.Wait();
-
-  gpu_task_scheduler_.reset();
 }
 
 gpu::SurfaceHandle SkiaOutputSurfaceImpl::GetSurfaceHandle() const {
@@ -729,11 +740,6 @@ void SkiaOutputSurfaceImpl::SetCapabilitiesForTesting(
 bool SkiaOutputSurfaceImpl::Initialize() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  // Before starting to schedule GPU task, set up |gpu_task_scheduler_| that
-  // holds a task sequence.
-  gpu_task_scheduler_ = base::MakeRefCounted<gpu::GpuTaskSchedulerHelper>(
-      dependency_->CreateSequence());
-
   weak_ptr_ = weak_ptr_factory_.GetWeakPtr();
 
   // This runner could be called from vsync or GPU thread after |this| is
@@ -1098,11 +1104,6 @@ void SkiaOutputSurfaceImpl::ContextLost() {
   gr_context_thread_safe_.reset();
   for (auto& observer : observers_)
     observer.OnContextLost();
-}
-
-scoped_refptr<gpu::GpuTaskSchedulerHelper>
-SkiaOutputSurfaceImpl::GetGpuTaskSchedulerHelper() {
-  return gpu_task_scheduler_;
 }
 
 gfx::Rect SkiaOutputSurfaceImpl::GetCurrentFramebufferDamage() const {

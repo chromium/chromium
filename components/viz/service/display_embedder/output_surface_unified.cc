@@ -49,11 +49,6 @@ gfx::OverlayTransform OutputSurfaceUnified::GetDisplayTransform() {
   return gfx::OVERLAY_TRANSFORM_NONE;
 }
 
-scoped_refptr<gpu::GpuTaskSchedulerHelper>
-OutputSurfaceUnified::GetGpuTaskSchedulerHelper() {
-  return nullptr;
-}
-
 gpu::MemoryTracker* OutputSurfaceUnified::GetMemoryTracker() {
   return nullptr;
 }

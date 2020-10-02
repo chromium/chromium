@@ -20,6 +20,7 @@
 #include "components/viz/common/features.h"
 #include "components/viz/service/display_embedder/skia_output_surface_impl.h"
 #include "gpu/config/gpu_finch_features.h"
+#include "gpu/ipc/single_task_sequence.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_share_group.h"
 #include "ui/gl/init/gl_factory.h"
@@ -130,8 +131,15 @@ OutputSurfaceProviderWebview::CreateOutputSurface() {
     auto skia_dependency = std::make_unique<SkiaOutputSurfaceDependencyWebView>(
         TaskQueueWebView::GetInstance(), GpuServiceWebView::GetInstance(),
         shared_context_state_.get(), gl_surface_.get());
-    return viz::SkiaOutputSurfaceImpl::Create(
-        std::move(skia_dependency), renderer_settings_, debug_settings());
+    // We are not passing in a gpu_task_scheduler here, so SkiaOutputSurface
+    // will create one from its skia_dependency. This is because Android WebView
+    // does not support overlays and do not need to share the gpu_task_scheduler
+    // with OverlayProcessor.
+    // TODO(weiliangc): Android WebView should support overlays. Change
+    // initialization order to make this happen.
+    return viz::SkiaOutputSurfaceImpl::Create(std::move(skia_dependency),
+                                              nullptr, renderer_settings_,
+                                              debug_settings());
   } else {
     auto context_provider = AwRenderThreadContextProvider::Create(
         gl_surface_, DeferredGpuCommandService::GetInstance());

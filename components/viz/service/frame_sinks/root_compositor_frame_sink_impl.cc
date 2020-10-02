@@ -41,9 +41,11 @@ RootCompositorFrameSinkImpl::Create(
   // First create an output surface.
   mojo::Remote<mojom::DisplayClient> display_client(
       std::move(params->display_client));
+  auto gpu_task_scheduler = output_surface_provider->CreateGpuTaskScheduler(
+      params->gpu_compositing, params->renderer_settings);
   auto output_surface = output_surface_provider->CreateOutputSurface(
       params->widget, params->gpu_compositing, display_client.get(),
-      params->renderer_settings, debug_settings);
+      gpu_task_scheduler.get(), params->renderer_settings, debug_settings);
 
   // Creating output surface failed. The host can send a new request, possibly
   // with a different compositing mode.
@@ -127,16 +129,22 @@ RootCompositorFrameSinkImpl::Create(
 #if !defined(OS_APPLE)
   auto* output_surface_ptr = output_surface.get();
 #endif
+  gpu::SharedImageInterface* sii = nullptr;
+  if (output_surface->context_provider())
+    sii = output_surface->context_provider()->SharedImageInterface();
 
   auto overlay_processor = OverlayProcessorInterface::CreateOverlayProcessor(
-      output_surface.get(), output_surface_provider->GetSharedImageManager(),
+      output_surface.get(), output_surface->GetSurfaceHandle(),
+      output_surface->capabilities(),
+      output_surface_provider->GetSharedImageManager(),
+      output_surface->GetMemoryTracker(), gpu_task_scheduler.get(), sii,
       params->renderer_settings, debug_settings);
 
   auto display = std::make_unique<Display>(
       frame_sink_manager->shared_bitmap_manager(), params->renderer_settings,
-      debug_settings, params->frame_sink_id, std::move(output_surface),
-      std::move(overlay_processor), std::move(scheduler),
-      std::move(task_runner));
+      debug_settings, params->frame_sink_id, std::move(gpu_task_scheduler),
+      std::move(output_surface), std::move(overlay_processor),
+      std::move(scheduler), std::move(task_runner));
 
   if (external_begin_frame_source_mojo)
     external_begin_frame_source_mojo->SetDisplay(display.get());

@@ -4,6 +4,8 @@
 
 #include "components/viz/service/display/overlay_processor_android.h"
 
+#include <utility>
+
 #include "base/synchronization/waitable_event.h"
 #include "components/viz/common/quads/stream_video_draw_quad.h"
 #include "components/viz/service/display/overlay_processor_on_gpu.h"
@@ -16,10 +18,10 @@ namespace viz {
 OverlayProcessorAndroid::OverlayProcessorAndroid(
     gpu::SharedImageManager* shared_image_manager,
     gpu::MemoryTracker* memory_tracker,
-    scoped_refptr<gpu::GpuTaskSchedulerHelper> gpu_task_scheduler,
+    gpu::GpuTaskSchedulerHelper* gpu_task_scheduler,
     bool enable_overlay)
     : OverlayProcessorUsingStrategy(),
-      gpu_task_scheduler_(std::move(gpu_task_scheduler)),
+      gpu_task_scheduler_(gpu_task_scheduler),
       overlay_enabled_(enable_overlay) {
   if (!overlay_enabled_)
     return;

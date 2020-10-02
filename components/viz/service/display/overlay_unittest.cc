@@ -214,10 +214,6 @@ class OverlayOutputSurface : public OutputSurface {
   gfx::OverlayTransform GetDisplayTransform() override {
     return gfx::OVERLAY_TRANSFORM_NONE;
   }
-  scoped_refptr<gpu::GpuTaskSchedulerHelper> GetGpuTaskSchedulerHelper()
-      override {
-    return nullptr;
-  }
   gpu::MemoryTracker* GetMemoryTracker() override { return nullptr; }
 
   void set_is_displayed_as_overlay_plane(bool value) {

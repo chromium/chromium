@@ -47,8 +47,6 @@ class OutputSurfaceUnified : public OutputSurface {
       UpdateVSyncParametersCallback callback) override {}
   void SetDisplayTransformHint(gfx::OverlayTransform transform) override {}
   gfx::OverlayTransform GetDisplayTransform() override;
-  scoped_refptr<gpu::GpuTaskSchedulerHelper> GetGpuTaskSchedulerHelper()
-      override;
   gpu::MemoryTracker* GetMemoryTracker() override;
 
  private:

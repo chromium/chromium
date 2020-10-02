@@ -5,7 +5,9 @@
 #include "gpu/ipc/gpu_task_scheduler_helper.h"
 
 #include "gpu/command_buffer/client/cmd_buffer_helper.h"
+#include "gpu/command_buffer/service/scheduler.h"
 #include "gpu/ipc/command_buffer_task_executor.h"
+#include "gpu/ipc/scheduler_sequence.h"
 #include "gpu/ipc/single_task_sequence.h"
 
 namespace gpu {
@@ -14,6 +16,11 @@ GpuTaskSchedulerHelper::GpuTaskSchedulerHelper(
     std::unique_ptr<SingleTaskSequence> task_sequence)
     : using_command_buffer_(false),
       task_sequence_(std::move(task_sequence)),
+      initialized_(true) {}
+
+GpuTaskSchedulerHelper::GpuTaskSchedulerHelper(Scheduler* scheduler)
+    : using_command_buffer_(false),
+      task_sequence_(std::make_unique<SchedulerSequence>(scheduler)),
       initialized_(true) {}
 
 GpuTaskSchedulerHelper::GpuTaskSchedulerHelper(

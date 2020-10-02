@@ -267,8 +267,6 @@ class VIZ_SERVICE_EXPORT OutputSurface {
   // between the output surface and the overlay processor.
   // TODO(weiliangc): Consider making this outside of output surface and pass in
   // instead of passing it out here.
-  virtual scoped_refptr<gpu::GpuTaskSchedulerHelper>
-  GetGpuTaskSchedulerHelper() = 0;
   virtual gpu::MemoryTracker* GetMemoryTracker() = 0;
 
   // Notifies the OutputSurface of rate of content updates in frames per second.

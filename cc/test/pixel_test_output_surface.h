@@ -42,8 +42,6 @@ class PixelTestOutputSurface : public viz::OutputSurface {
       viz::UpdateVSyncParametersCallback callback) override;
   void SetDisplayTransformHint(gfx::OverlayTransform transform) override {}
   gfx::OverlayTransform GetDisplayTransform() override;
-  scoped_refptr<gpu::GpuTaskSchedulerHelper> GetGpuTaskSchedulerHelper()
-      override;
   gpu::MemoryTracker* GetMemoryTracker() override;
 
   void set_has_external_stencil_test(bool has_test) {

@@ -85,10 +85,6 @@ class OverlayOutputSurface : public OutputSurface {
   gfx::OverlayTransform GetDisplayTransform() override {
     return gfx::OVERLAY_TRANSFORM_NONE;
   }
-  scoped_refptr<gpu::GpuTaskSchedulerHelper> GetGpuTaskSchedulerHelper()
-      override {
-    return nullptr;
-  }
   gpu::MemoryTracker* GetMemoryTracker() override { return nullptr; }
 
   unsigned bind_framebuffer_count() const { return bind_framebuffer_count_; }

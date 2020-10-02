@@ -50,11 +50,13 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
  public:
   static std::unique_ptr<SkiaOutputSurface> Create(
       std::unique_ptr<SkiaOutputSurfaceDependency> deps,
+      gpu::GpuTaskSchedulerHelper* gpu_task_scheduler,
       const RendererSettings& renderer_settings,
       const DebugRendererSettings* debug_settings);
 
   SkiaOutputSurfaceImpl(util::PassKey<SkiaOutputSurfaceImpl> pass_key,
                         std::unique_ptr<SkiaOutputSurfaceDependency> deps,
+                        gpu::GpuTaskSchedulerHelper* gpu_task_scheduler,
                         const RendererSettings& renderer_settings,
                         const DebugRendererSettings* debug_settings);
   ~SkiaOutputSurfaceImpl() override;
@@ -88,8 +90,6 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
   void SetNeedsSwapSizeNotifications(
       bool needs_swap_size_notifications) override;
   base::ScopedClosureRunner GetCacheBackBufferCb() override;
-  scoped_refptr<gpu::GpuTaskSchedulerHelper> GetGpuTaskSchedulerHelper()
-      override;
   gfx::Rect GetCurrentFramebufferDamage() const override;
   void SetFrameRate(float frame_rate) override;
   void SetNeedsMeasureNextDrawLatency() override;
@@ -263,17 +263,24 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
   // Points to the viz-global singleton.
   const DebugRendererSettings* const debug_settings_;
 
-  // The display transform relative to the hardware natural orientation,
-  // applied to the frame content. The transform can be rotations in 90 degree
-  // increments or flips.
-  gfx::OverlayTransform display_transform_ = gfx::OVERLAY_TRANSFORM_NONE;
-
   // |gpu_task_scheduler_| holds a gpu::SingleTaskSequence, and helps schedule
   // tasks on GPU as a single sequence. It is shared with OverlayProcessor so
   // compositing and overlay processing are in order. A gpu::SingleTaskSequence
   // in regular Viz is implemented by SchedulerSequence. In Android WebView
   // gpu::SingleTaskSequence is implemented on top of WebView's task queue.
-  scoped_refptr<gpu::GpuTaskSchedulerHelper> gpu_task_scheduler_;
+  gpu::GpuTaskSchedulerHelper* gpu_task_scheduler_;
+
+  // For testing cases we would need to setup a SkiaOutputSurface without
+  // OverlayProcessor and Display. For those cases, we hold the gpu task
+  // scheduler inside this class by having a unique_ptr.
+  // TODO(weiliangc): After changing to proper initialization order for Android
+  // WebView, remove this holder.
+  std::unique_ptr<gpu::GpuTaskSchedulerHelper> gpu_task_scheduler_holder_;
+
+  // The display transform relative to the hardware natural orientation,
+  // applied to the frame content. The transform can be rotations in 90 degree
+  // increments or flips.
+  gfx::OverlayTransform display_transform_ = gfx::OVERLAY_TRANSFORM_NONE;
 
   // |impl_on_gpu| is created and destroyed on the GPU thread.
   std::unique_ptr<SkiaOutputSurfaceImplOnGpu> impl_on_gpu_;

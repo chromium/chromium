@@ -114,6 +114,7 @@ class PixelTest : public testing::Test {
   gfx::Size device_viewport_size_;
   gfx::DisplayColorSpaces display_color_spaces_;
   bool disable_picture_quad_image_filtering_;
+  std::unique_ptr<gpu::GpuTaskSchedulerHelper> gpu_task_scheduler_;
   std::unique_ptr<FakeOutputSurfaceClient> output_surface_client_;
   std::unique_ptr<viz::OutputSurface> output_surface_;
   std::unique_ptr<viz::TestSharedBitmapManager> shared_bitmap_manager_;

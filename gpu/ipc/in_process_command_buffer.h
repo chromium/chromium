@@ -399,7 +399,7 @@ class GL_IN_PROCESS_CONTEXT_EXPORT InProcessCommandBuffer
   CommandBufferTaskExecutor* const task_executor_;
 
   // If no SingleTaskSequence is passed in, create our own.
-  scoped_refptr<GpuTaskSchedulerHelper> task_scheduler_holder_;
+  std::unique_ptr<GpuTaskSchedulerHelper> task_scheduler_holder_;
 
   // Pointer to the SingleTaskSequence that actually does the scheduling.
   SingleTaskSequence* task_sequence_;
