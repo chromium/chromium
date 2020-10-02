@@ -230,7 +230,11 @@ void DeviceInfoSyncBridge::RefreshLocalDeviceInfo(base::OnceClosure callback) {
     device_info_synced_callback_list_.push_back(std::move(callback));
   }
 
-  SendLocalData();
+  // Device info cannot be synced if the provider is not initialized. When it
+  // gets initialized, local device info will be sent.
+  if (local_device_info_provider_->GetLocalDeviceInfo()) {
+    SendLocalData();
+  }
 }
 
 void DeviceInfoSyncBridge::OnSyncStarting(
