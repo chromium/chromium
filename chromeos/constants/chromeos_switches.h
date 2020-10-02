@@ -84,7 +84,7 @@ COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const char kDisableFineGrainedTimeZoneDetection[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) extern const char kDisableGaiaServices[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
-extern const char kDisableHIDDetectionOnOOBE[];
+extern const char kDisableHIDDetectionOnOOBEForTesting[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const char kDisableLoginAnimations[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)

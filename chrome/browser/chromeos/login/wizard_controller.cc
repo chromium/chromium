@@ -227,12 +227,15 @@ const chromeos::StaticOobeScreenId kScreensWithHiddenStatusArea[] = {
 // The HID detection screen is only allowed for form factors without built-in
 // inputs: Chromebases, Chromebits, and Chromeboxes (crbug.com/965765).
 bool CanShowHIDDetectionScreen() {
+  if (chromeos::StartupUtils::IsHIDDetectionScreenDisabledForTests())
+    return false;
+
   switch (chromeos::GetDeviceType()) {
     case chromeos::DeviceType::kChromebase:
     case chromeos::DeviceType::kChromebit:
     case chromeos::DeviceType::kChromebox:
       return !base::CommandLine::ForCurrentProcess()->HasSwitch(
-          chromeos::switches::kDisableHIDDetectionOnOOBE);
+          chromeos::switches::kDisableHIDDetectionOnOOBEForTesting);
     default:
       return false;
   }
@@ -903,6 +906,13 @@ void WizardController::SkipToUpdateForTesting() {
   VLOG(1) << "SkipToUpdateForTesting.";
   wizard_context_->skip_to_update_for_tests = true;
   StartupUtils::MarkEulaAccepted();
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          chromeos::switches::kDisableHIDDetectionOnOOBEForTesting)) {
+    // We store the flag into local state so it persists restart after the
+    // update. Command line switch does not persist the restart during the
+    // test.
+    StartupUtils::DisableHIDDetectionScreenForTests();
+  }
   PerformPostEulaActions();
   InitiateOOBEUpdate();
 }

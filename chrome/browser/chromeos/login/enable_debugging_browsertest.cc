@@ -161,7 +161,8 @@ class EnableDebuggingTestBase : public OobeBaseTest {
     OobeBaseTest::SetUpCommandLine(command_line);
     // Disable HID detection because it takes precedence and could block
     // enable-debugging UI.
-    command_line->AppendSwitch(chromeos::switches::kDisableHIDDetectionOnOOBE);
+    command_line->AppendSwitch(
+        chromeos::switches::kDisableHIDDetectionOnOOBEForTesting);
   }
   void SetUpInProcessBrowserTestFixture() override {
     std::unique_ptr<DBusThreadManagerSetter> dbus_setter =

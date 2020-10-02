@@ -221,7 +221,8 @@ const char kDisableFineGrainedTimeZoneDetection[] =
 const char kDisableGaiaServices[] = "disable-gaia-services";
 
 // Disables HID-detection OOBE screen.
-const char kDisableHIDDetectionOnOOBE[] = "disable-hid-detection-on-oobe";
+const char kDisableHIDDetectionOnOOBEForTesting[] =
+    "disable-hid-detection-on-oobe";
 
 // Avoid doing expensive animations upon login.
 const char kDisableLoginAnimations[] = "disable-login-animations";

@@ -906,7 +906,8 @@ class OobeSpokenFeedbackTest : public OobeBaseTest {
     OobeBaseTest::SetUpCommandLine(command_line);
     // Many bots don't have keyboard/mice which triggers the HID detection
     // dialog in the OOBE.  Avoid confusing the tests with that.
-    command_line->AppendSwitch(chromeos::switches::kDisableHIDDetectionOnOOBE);
+    command_line->AppendSwitch(
+        chromeos::switches::kDisableHIDDetectionOnOOBEForTesting);
   }
 
   SpeechMonitor sm_;

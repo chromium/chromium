@@ -54,6 +54,10 @@ class StartupUtils {
   // Mark a device as requiring enrollment recovery.
   static void MarkEnrollmentRecoveryRequired();
 
+  static void DisableHIDDetectionScreenForTests();
+
+  static bool IsHIDDetectionScreenDisabledForTests();
+
   // Returns initial locale from local settings.
   static std::string GetInitialLocale();
 
