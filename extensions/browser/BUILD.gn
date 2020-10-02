@@ -5,13 +5,6 @@
 import("//build/config/features.gni")
 import("//extensions/buildflags/buildflags.gni")
 
-# This file depends on the legacy global sources assignment filter. It should
-# be converted to check target platform before assigning source files to the
-# sources variable. Remove this import and set_sources_assignment_filter call
-# when the file has been converted. See https://crbug.com/1018739 for details.
-import("//build/config/deprecated_default_sources_assignment_filter.gni")
-set_sources_assignment_filter(deprecated_default_sources_assignment_filter)
-
 assert(enable_extensions)
 
 group("browser") {
@@ -638,8 +631,6 @@ source_set("unit_tests") {
     "api/file_handlers/directory_util_unittest.cc",
     "api/file_handlers/mime_util_unittest.cc",
     "api/idle/idle_api_unittest.cc",
-    "api/networking_config/networking_config_service_chromeos_unittest.cc",
-    "api/networking_private/networking_private_chromeos_unittest.cc",
     "api/power/power_api_unittest.cc",
     "api/runtime/restart_after_delay_api_unittest.cc",
     "api/socket/mojo_data_pump_unittest.cc",
@@ -768,6 +759,8 @@ source_set("unit_tests") {
       "api/lock_screen_data/lock_screen_value_store_migrator_impl_unittest.cc",
       "api/media_perception_private/conversion_utils_unittest.cc",
       "api/media_perception_private/media_perception_api_manager_unittest.cc",
+      "api/networking_config/networking_config_service_chromeos_unittest.cc",
+      "api/networking_private/networking_private_chromeos_unittest.cc",
       "api/system_power_source/system_power_source_api_unittest.cc",
       "api/virtual_keyboard_private/virtual_keyboard_private_api_unittest.cc",
       "api/webcam_private/visca_webcam_unittest.cc",

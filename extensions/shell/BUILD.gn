@@ -16,13 +16,6 @@ if (is_linux || is_chromeos) {
   import("//build/linux/extract_symbols.gni")
 }
 
-# This file depends on the legacy global sources assignment filter. It should
-# be converted to check target platform before assigning source files to the
-# sources variable. Remove this import and set_sources_assignment_filter call
-# when the file has been converted. See https://crbug.com/1018739 for details.
-import("//build/config/deprecated_default_sources_assignment_filter.gni")
-set_sources_assignment_filter(deprecated_default_sources_assignment_filter)
-
 assert(enable_extensions)
 
 grit("resources") {
@@ -93,7 +86,6 @@ source_set("app_shell_lib") {
   sources = [
     "app/shell_main_delegate.cc",
     "app/shell_main_delegate.h",
-    "app/shell_main_delegate_mac.mm",
     "browser/api/feedback_private/shell_feedback_private_delegate.cc",
     "browser/api/feedback_private/shell_feedback_private_delegate.h",
     "browser/api/identity/identity_api.cc",
@@ -112,9 +104,6 @@ source_set("app_shell_lib") {
     "browser/shell_app_view_guest_delegate.h",
     "browser/shell_app_window_client.cc",
     "browser/shell_app_window_client.h",
-    "browser/shell_app_window_client_mac.mm",
-    "browser/shell_audio_controller_chromeos.cc",
-    "browser/shell_audio_controller_chromeos.h",
     "browser/shell_browser_context.cc",
     "browser/shell_browser_context.h",
     "browser/shell_browser_context_keyed_service_factories.cc",
@@ -124,8 +113,6 @@ source_set("app_shell_lib") {
     "browser/shell_browser_main_parts.h",
     "browser/shell_content_browser_client.cc",
     "browser/shell_content_browser_client.h",
-    "browser/shell_desktop_controller_mac.h",
-    "browser/shell_desktop_controller_mac.mm",
     "browser/shell_display_info_provider.cc",
     "browser/shell_display_info_provider.h",
     "browser/shell_extension_host_delegate.cc",
@@ -148,12 +135,8 @@ source_set("app_shell_lib") {
     "browser/shell_keep_alive_requester.h",
     "browser/shell_native_app_window.cc",
     "browser/shell_native_app_window.h",
-    "browser/shell_native_app_window_mac.h",
-    "browser/shell_native_app_window_mac.mm",
     "browser/shell_navigation_ui_data.cc",
     "browser/shell_navigation_ui_data.h",
-    "browser/shell_network_controller_chromeos.cc",
-    "browser/shell_network_controller_chromeos.h",
     "browser/shell_prefs.cc",
     "browser/shell_prefs.h",
     "browser/shell_special_storage_policy.cc",
@@ -179,6 +162,26 @@ source_set("app_shell_lib") {
     "renderer/shell_extensions_renderer_client.cc",
     "renderer/shell_extensions_renderer_client.h",
   ]
+
+  if (is_mac) {
+    sources += [
+      "app/shell_main_delegate_mac.mm",
+      "browser/shell_app_window_client_mac.mm",
+      "browser/shell_desktop_controller_mac.h",
+      "browser/shell_desktop_controller_mac.mm",
+      "browser/shell_native_app_window_mac.h",
+      "browser/shell_native_app_window_mac.mm",
+    ]
+  }
+
+  if (is_chromeos) {
+    sources += [
+      "browser/shell_audio_controller_chromeos.cc",
+      "browser/shell_audio_controller_chromeos.h",
+      "browser/shell_network_controller_chromeos.cc",
+      "browser/shell_network_controller_chromeos.h",
+    ]
+  }
 
   if (use_aura) {
     sources += [
