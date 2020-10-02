@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/window_proxy.h"
 #include "third_party/blink/renderer/bindings/core/v8/window_proxy_manager.h"
 #include "third_party/blink/renderer/core/events/message_event.h"
+#include "third_party/blink/renderer/core/exported/web_view_impl.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -619,7 +620,9 @@ void RemoteFrame::ScrollRectToVisible(
   // This is due to something such as scroll focused editable element into
   // view on Android which also requires an automatic zoom into legible scale.
   // This is handled by main frame's WebView.
-  WebFrame::FromFrame(this)->View()->ZoomAndScrollToFocusedEditableElementRect(
+  WebViewImpl* web_view =
+      static_cast<WebViewImpl*>(WebFrame::FromFrame(this)->View());
+  web_view->ZoomAndScrollToFocusedEditableElementRect(
       element_bounds_in_document, caret_bounds_in_document, true);
 }
 

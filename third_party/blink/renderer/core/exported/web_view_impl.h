@@ -135,12 +135,8 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   void DidAttachRemoteMainFrame() override;
   void DidDetachRemoteMainFrame() override;
   void SetPrerendererClient(WebPrerendererClient*) override;
-  void CloseWindowSoon() override;
   WebSettings* GetSettings() override;
   WebString PageEncoding() const override;
-  bool TabsToLinks() const override;
-  void SetTabsToLinks(bool value) override;
-  bool TabKeyCyclesThroughElements() const override;
   void SetTabKeyCyclesThroughElements(bool value) override;
   bool IsActive() const override;
   void SetIsActive(bool value) override;
@@ -160,10 +156,6 @@ class CORE_EXPORT WebViewImpl final : public WebView,
                     int target_y,
                     base::TimeDelta duration) override;
   void AdvanceFocus(bool reverse) override;
-  void ZoomAndScrollToFocusedEditableElementRect(
-      const WebRect& element_bounds_in_document,
-      const WebRect& caret_bounds_in_document,
-      bool zoom_into_legible_scale) override;
   double ZoomLevel() override;
   double SetZoomLevel(double) override;
   float PageScaleFactor() const override;
@@ -171,25 +163,20 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   float MaximumPageScaleFactor() const override;
   void SetDefaultPageScaleLimits(float min_scale, float max_scale) override;
   void SetInitialPageScaleOverride(float) override;
-  void SetMaximumLegibleScale(float) override;
   void SetPageScaleFactor(float) override;
   void SetVisualViewportOffset(const gfx::PointF&) override;
   gfx::PointF VisualViewportOffset() const override;
   gfx::SizeF VisualViewportSize() const override;
-  void ResizeVisualViewport(const gfx::Size&) override;
   void Resize(const gfx::Size&) override;
-  gfx::Size GetSize() override;
   void SetScreenOrientationOverrideForTesting(
       base::Optional<blink::mojom::ScreenOrientation> orientation) override;
   void UseSynchronousResizeModeForTesting(bool enable) override;
   void SetWindowRectSynchronouslyForTesting(
       const gfx::Rect& new_window_rect) override;
   void ResetScrollAndScaleState() override;
-  void SetIgnoreViewportTagScaleLimits(bool) override;
   gfx::Size ContentsPreferredMinimumSize() override;
   void UpdatePreferredSize() override;
   void EnablePreferredSizeChangedMode() override;
-  void Focus() override;
   void SetDeviceScaleFactor(float) override;
   void SetZoomFactorForDeviceScaleFactor(float) override;
   float ZoomFactorForDeviceScaleFactor() override {
@@ -202,7 +189,6 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   WebHitTestResult HitTestResultAt(const gfx::PointF&);
   WebHitTestResult HitTestResultForTap(const gfx::Point&,
                                        const gfx::Size&) override;
-  uint64_t CreateUniqueIdentifierForRequest() override;
   void EnableDeviceEmulation(const DeviceEmulationParams&) override;
   void DisableDeviceEmulation() override;
   void PerformCustomContextMenuAction(unsigned action) override;
@@ -298,6 +284,14 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   // Event related methods:
   void MouseContextMenu(const WebMouseEvent&);
   void MouseDoubleClick(const WebMouseEvent&);
+
+  // Changes the zoom and scroll for zooming into an editable element
+  // with bounds |element_bounds_in_document| and caret bounds
+  // |caret_bounds_in_document|.
+  void ZoomAndScrollToFocusedEditableElementRect(
+      const IntRect& element_bounds_in_document,
+      const IntRect& caret_bounds_in_document,
+      bool zoom_into_legible_scale);
 
   bool StartPageScaleAnimation(const IntPoint& target_position,
                                bool use_anchor,
@@ -454,6 +448,26 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   void DidEnterFullscreen();
   void DidExitFullscreen();
 
+  // Called when some JS code has instructed the window associated to the main
+  // frame to close, which will result in a request to the browser to close the
+  // Widget associated to it.
+  void CloseWindowSoon();
+
+  // Controls whether pressing Tab key advances focus to links.
+  bool TabsToLinks() const;
+  void SetTabsToLinks(bool);
+
+  // Prevent the web page from setting min/max scale via the viewport meta
+  // tag. This is an accessibility feature that lets folks zoom in to web
+  // pages even if the web page tries to block scaling.
+  void SetIgnoreViewportTagScaleLimits(bool);
+
+  // Sets the maximum page scale considered to be legible. Automatic zooms (e.g,
+  // double-tap or find in page) will have the page scale limited to this value
+  // times the font scale factor. Manual pinch zoom will not be affected by this
+  // limit.
+  void SetMaximumLegibleScale(float);
+
   void SetMainFrameViewWidget(WebViewFrameWidget* widget);
   WebViewFrameWidget* MainFrameViewWidget();
 
@@ -464,6 +478,17 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   void SetKeyboardFocusURL(const KURL&);
 
   void RunPaintBenchmark(int repeat_count, cc::PaintBenchmarkResult& result);
+
+  // Asks the browser process to activate this web view.
+  void Focus();
+
+  // This method is used for testing.
+  // Resizes the unscaled (page scale = 1.0) visual viewport. Normally the
+  // unscaled visual viewport is the same size as the main frame. The passed
+  // size becomes the size of the viewport when page scale = 1. This
+  // is used to shrink the visible viewport to allow things like the ChromeOS
+  // virtual keyboard to overlay over content but allow scrolling it into view.
+  void ResizeVisualViewport(const gfx::Size&);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(WebFrameTest, DivScrollIntoEditableTest);

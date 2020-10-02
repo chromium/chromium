@@ -516,11 +516,6 @@ WebDevToolsAgentImpl* WebViewImpl::MainFrameDevToolsAgentImpl() {
   return main_frame ? main_frame->DevToolsAgentImpl() : nullptr;
 }
 
-bool WebViewImpl::TabKeyCyclesThroughElements() const {
-  DCHECK(page_);
-  return page_->TabKeyCyclesThroughElements();
-}
-
 void WebViewImpl::SetTabKeyCyclesThroughElements(bool value) {
   if (page_)
     page_->SetTabKeyCyclesThroughElements(value);
@@ -1646,10 +1641,6 @@ void WebViewImpl::Resize(const gfx::Size& new_size) {
                             GetBrowserControls().ShrinkViewport());
 }
 
-gfx::Size WebViewImpl::GetSize() {
-  return size_;
-}
-
 void WebViewImpl::SetScreenOrientationOverrideForTesting(
     base::Optional<blink::mojom::ScreenOrientation> orientation) {
   screen_orientation_override_ = orientation;
@@ -1875,6 +1866,7 @@ void WebViewImpl::PaintContent(cc::PaintCanvas* canvas, const gfx::Rect& rect) {
 // static
 void WebView::ApplyWebPreferences(const web_pref::WebPreferences& prefs,
                                   WebView* web_view) {
+  WebViewImpl* web_view_impl = static_cast<WebViewImpl*>(web_view);
   WebSettings* settings = web_view->GetSettings();
   ApplyFontsFromMap(prefs.standard_font_family_map,
                     SetStandardFontFamilyWrapper, settings);
@@ -1956,7 +1948,7 @@ void WebView::ApplyWebPreferences(const web_pref::WebPreferences& prefs,
 
   // Tabs to link is not part of the settings. WebCore calls
   // ChromeClient::tabsToLinks which is part of the glue code.
-  web_view->SetTabsToLinks(prefs.tabs_to_links);
+  web_view_impl->SetTabsToLinks(prefs.tabs_to_links);
 
   settings->SetAllowRunningOfInsecureContent(
       prefs.allow_running_insecure_content);
@@ -2066,7 +2058,7 @@ void WebView::ApplyWebPreferences(const web_pref::WebPreferences& prefs,
   settings->SetAllowCustomScrollbarInMainFrame(false);
   settings->SetAccessibilityFontScaleFactor(prefs.font_scale_factor);
   settings->SetDeviceScaleAdjustment(prefs.device_scale_adjustment);
-  web_view->SetIgnoreViewportTagScaleLimits(prefs.force_enable_zoom);
+  web_view_impl->SetIgnoreViewportTagScaleLimits(prefs.force_enable_zoom);
   settings->SetAutoZoomFocusedNodeToLegibleScale(true);
   settings->SetDefaultVideoPosterURL(
       WebString::FromASCII(prefs.default_video_poster_url.spec()));
@@ -2249,7 +2241,8 @@ void WebView::ApplyWebPreferences(const web_pref::WebPreferences& prefs,
   settings->SetTouchDragEndContextMenu(prefs.touch_dragend_context_menu);
 
 #if defined(OS_MAC)
-  web_view->SetMaximumLegibleScale(prefs.default_maximum_page_scale_factor);
+  web_view_impl->SetMaximumLegibleScale(
+      prefs.default_maximum_page_scale_factor);
 #endif
 
 #if defined(OS_WIN)
@@ -2719,8 +2712,8 @@ bool WebViewImpl::ShouldZoomToLegibleScale(const Element& element) {
 }
 
 void WebViewImpl::ZoomAndScrollToFocusedEditableElementRect(
-    const WebRect& element_bounds_in_document,
-    const WebRect& caret_bounds_in_document,
+    const IntRect& element_bounds_in_document,
+    const IntRect& caret_bounds_in_document,
     bool zoom_into_legible_scale) {
   float scale;
   IntPoint scroll;
@@ -3609,10 +3602,6 @@ void WebViewImpl::ConfigureAutoResizeMode() {
   } else {
     MainFrameImpl()->GetFrame()->View()->DisableAutoSizeMode();
   }
-}
-
-uint64_t WebViewImpl::CreateUniqueIdentifierForRequest() {
-  return CreateUniqueIdentifier();
 }
 
 void WebViewImpl::SetCompositorDeviceScaleFactorOverride(
