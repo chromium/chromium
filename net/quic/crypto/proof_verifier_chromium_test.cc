@@ -199,7 +199,7 @@ class ProofVerifierChromiumTest : public ::testing::Test {
           ct_verify_result.scts,
           ct::SignedCertificateTimestamp::SCT_FROM_TLS_EXTENSION));
     } else {
-      EXPECT_EQ(1U, ct_verify_result.scts.size());
+      ASSERT_EQ(1U, ct_verify_result.scts.size());
       EXPECT_EQ(ct::SCT_STATUS_LOG_UNKNOWN, ct_verify_result.scts[0].status);
     }
   }
@@ -275,61 +275,61 @@ TEST_F(ProofVerifierChromiumTest, FailsIfCertFails) {
   ASSERT_EQ(quic::QUIC_FAILURE, status);
 }
 
-// Valid SCT, but invalid signature.
+// Valid SCT and cert
 TEST_F(ProofVerifierChromiumTest, ValidSCTList) {
   // Use different certificates for SCT tests.
   ASSERT_NO_FATAL_FAILURE(GetSCTTestCertificates(&certs_));
 
-  MockCertVerifier cert_verifier;
+  std::string der_test_cert(ct::GetDerEncodedX509Cert());
+  scoped_refptr<X509Certificate> test_cert = X509Certificate::CreateFromBytes(
+      der_test_cert.data(), der_test_cert.length());
+  ASSERT_TRUE(test_cert);
+  CertVerifyResult dummy_result;
+  dummy_result.verified_cert = test_cert;
+  dummy_result.is_issued_by_known_root = true;
+  MockCertVerifier dummy_verifier;
+  dummy_verifier.AddResultForCert(test_cert.get(), dummy_result, OK);
 
   ProofVerifierChromium proof_verifier(
-      &cert_verifier, &ct_policy_enforcer_, &transport_security_state_,
+      &dummy_verifier, &ct_policy_enforcer_, &transport_security_state_,
       ct_verifier_.get(), nullptr, {}, NetworkIsolationKey());
 
   std::unique_ptr<DummyProofVerifierCallback> callback(
       new DummyProofVerifierCallback);
-  quic::QuicAsyncStatus status = proof_verifier.VerifyProof(
-      kTestHostname, kTestPort, kTestConfig, kTestTransportVersion,
-      kTestChloHash, certs_, ct::GetSCTListForTesting(), kTestEmptySignature,
-      verify_context_.get(), &error_details_, &details_, std::move(callback));
-  ASSERT_EQ(quic::QUIC_FAILURE, status);
-  CheckSCT(/*sct_expected_ok=*/true);
-
-  callback = std::make_unique<DummyProofVerifierCallback>();
-  status = proof_verifier.VerifyCertChain(
+  quic::QuicAsyncStatus status = proof_verifier.VerifyCertChain(
       kTestHostname, kTestPort, certs_, kTestEmptyOCSPResponse,
       ct::GetSCTListForTesting(), verify_context_.get(), &error_details_,
       &details_, std::move(callback));
-  ASSERT_EQ(quic::QUIC_FAILURE, status);
+  ASSERT_EQ(quic::QUIC_SUCCESS, status);
   CheckSCT(/*sct_expected_ok=*/true);
 }
 
-// Invalid SCT and signature.
+// Invalid SCT, but valid cert
 TEST_F(ProofVerifierChromiumTest, InvalidSCTList) {
   // Use different certificates for SCT tests.
   ASSERT_NO_FATAL_FAILURE(GetSCTTestCertificates(&certs_));
 
-  MockCertVerifier cert_verifier;
+  std::string der_test_cert(ct::GetDerEncodedX509Cert());
+  scoped_refptr<X509Certificate> test_cert = X509Certificate::CreateFromBytes(
+      der_test_cert.data(), der_test_cert.length());
+  ASSERT_TRUE(test_cert);
+  CertVerifyResult dummy_result;
+  dummy_result.verified_cert = test_cert;
+  dummy_result.is_issued_by_known_root = true;
+  MockCertVerifier dummy_verifier;
+  dummy_verifier.AddResultForCert(test_cert.get(), dummy_result, OK);
+
   ProofVerifierChromium proof_verifier(
-      &cert_verifier, &ct_policy_enforcer_, &transport_security_state_,
+      &dummy_verifier, &ct_policy_enforcer_, &transport_security_state_,
       ct_verifier_.get(), nullptr, {}, NetworkIsolationKey());
 
   std::unique_ptr<DummyProofVerifierCallback> callback(
       new DummyProofVerifierCallback);
-  quic::QuicAsyncStatus status = proof_verifier.VerifyProof(
-      kTestHostname, kTestPort, kTestConfig, kTestTransportVersion,
-      kTestChloHash, certs_, ct::GetSCTListWithInvalidSCT(),
-      kTestEmptySignature, verify_context_.get(), &error_details_, &details_,
-      std::move(callback));
-  ASSERT_EQ(quic::QUIC_FAILURE, status);
-  CheckSCT(/*sct_expected_ok=*/false);
-
-  callback = std::make_unique<DummyProofVerifierCallback>();
-  status = proof_verifier.VerifyCertChain(
+  quic::QuicAsyncStatus status = proof_verifier.VerifyCertChain(
       kTestHostname, kTestPort, certs_, kTestEmptyOCSPResponse,
       ct::GetSCTListWithInvalidSCT(), verify_context_.get(), &error_details_,
       &details_, std::move(callback));
-  ASSERT_EQ(quic::QUIC_FAILURE, status);
+  ASSERT_EQ(quic::QUIC_SUCCESS, status);
   CheckSCT(/*sct_expected_ok=*/false);
 }
 

@@ -237,13 +237,6 @@ quic::QuicAsyncStatus ProofVerifierChromium::Job::VerifyProof(
   if (!GetX509Certificate(certs, error_details, verify_details))
     return quic::QUIC_FAILURE;
 
-  // Note that this is a completely synchronous operation: The CT Log Verifier
-  // gets all the data it needs for SCT verification and does not do any
-  // external communication.
-  cert_transparency_verifier_->Verify(
-      hostname, cert_.get(), std::string(), cert_sct,
-      &verify_details_->ct_verify_result.scts, net_log_);
-
   // We call VerifySignature first to avoid copying of server_config and
   // signature.
   if (!VerifySignature(server_config, quic_version, chlo_hash, signature,
@@ -285,13 +278,6 @@ quic::QuicAsyncStatus ProofVerifierChromium::Job::VerifyCertChain(
   // Converts |certs| to |cert_|.
   if (!GetX509Certificate(certs, error_details, verify_details))
     return quic::QUIC_FAILURE;
-
-  // Note that this is a completely synchronous operation: The CT Log Verifier
-  // gets all the data it needs for SCT verification and does not do any
-  // external communication.
-  cert_transparency_verifier_->Verify(
-      hostname, cert_.get(), std::string(), cert_sct,
-      &verify_details_->ct_verify_result.scts, net_log_);
 
   return VerifyCert(hostname, port, ocsp_response, cert_sct, error_details,
                     verify_details, std::move(callback));
@@ -421,6 +407,13 @@ int ProofVerifierChromium::Job::DoVerifyCertComplete(int result) {
   // If the connection was good, check HPKP and CT status simultaneously,
   // but prefer to treat the HPKP error as more serious, if there was one.
   if (result == OK) {
+    // Note that this is a completely synchronous operation: The CT Log Verifier
+    // gets all the data it needs for SCT verification and does not do any
+    // external communication.
+    cert_transparency_verifier_->Verify(
+        hostname_, cert_.get(), std::string(), cert_sct_,
+        &verify_details_->ct_verify_result.scts, net_log_);
+
     ct::SCTList verified_scts = ct::SCTsMatchingStatus(
         verify_details_->ct_verify_result.scts, ct::SCT_STATUS_OK);
 
