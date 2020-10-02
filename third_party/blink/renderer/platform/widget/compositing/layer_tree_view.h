@@ -42,20 +42,20 @@ class PLATFORM_EXPORT LayerTreeView
       public cc::LayerTreeHostSingleThreadClient,
       public cc::LayerTreeHostSchedulingClient {
  public:
+  LayerTreeView(LayerTreeViewDelegate* delegate,
+                scheduler::WebThreadScheduler* scheduler);
+  ~LayerTreeView() override;
+
   // The |main_thread| is the task runner that the compositor will use for the
   // main thread (where it is constructed). The |compositor_thread| is the task
   // runner for the compositor thread, but is null if the compositor will run in
   // single-threaded mode (in tests only).
-  LayerTreeView(LayerTreeViewDelegate* delegate,
-                scoped_refptr<base::SingleThreadTaskRunner> main_thread,
-                scoped_refptr<base::SingleThreadTaskRunner> compositor_thread,
-                cc::TaskGraphRunner* task_graph_runner,
-                scheduler::WebThreadScheduler* scheduler);
-  ~LayerTreeView() override;
-
   // The |ukm_recorder_factory| may be null to disable recording (in tests
   // only).
   void Initialize(const cc::LayerTreeSettings& settings,
+                  scoped_refptr<base::SingleThreadTaskRunner> main_thread,
+                  scoped_refptr<base::SingleThreadTaskRunner> compositor_thread,
+                  cc::TaskGraphRunner* task_graph_runner,
                   std::unique_ptr<cc::UkmRecorderFactory> ukm_recorder_factory);
 
   // Drops any references back to the delegate in preparation for being
@@ -135,9 +135,6 @@ class PLATFORM_EXPORT LayerTreeView
       std::unique_ptr<cc::RenderFrameMetadataObserver>
           render_frame_metadata_observer);
 
-  const scoped_refptr<base::SingleThreadTaskRunner> main_thread_;
-  const scoped_refptr<base::SingleThreadTaskRunner> compositor_thread_;
-  cc::TaskGraphRunner* const task_graph_runner_;
   scheduler::WebThreadScheduler* const web_main_thread_scheduler_;
   const std::unique_ptr<cc::AnimationHost> animation_host_;
 

@@ -68,7 +68,6 @@ class CORE_EXPORT WebViewFrameWidget : public WebFrameWidgetBase {
   WebInputEventResult DispatchBufferedTouchEvents() override;
   void SetCursorVisibilityState(bool is_visible) override;
   void MouseCaptureLost() override;
-  WebURL GetURLForDebugTrace() override;
   WebString GetLastToolTipTextForTesting() const override;
 
   // blink::mojom::FrameWidget

@@ -41,14 +41,6 @@ class WebExternalWidgetClient {
   // from background inactive to active.
   virtual void RecordTimeToFirstActivePaint(base::TimeDelta duration) {}
 
-  using LayerTreeFrameSinkCallback = base::OnceCallback<void(
-      std::unique_ptr<cc::LayerTreeFrameSink>,
-      std::unique_ptr<cc::RenderFrameMetadataObserver>)>;
-
-  // Requests a LayerTreeFrameSink to submit CompositorFrames to.
-  virtual void RequestNewLayerTreeFrameSink(
-      LayerTreeFrameSinkCallback callback) = 0;
-
   // Notification that the BeginMainFrame completed, was committed into the
   // compositor (thread) and submitted to the display compositor.
   virtual void DidCommitAndDrawCompositorFrame() = 0;

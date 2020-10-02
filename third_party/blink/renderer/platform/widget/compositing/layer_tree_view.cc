@@ -46,16 +46,9 @@ class Layer;
 
 namespace blink {
 
-LayerTreeView::LayerTreeView(
-    LayerTreeViewDelegate* delegate,
-    scoped_refptr<base::SingleThreadTaskRunner> main_thread,
-    scoped_refptr<base::SingleThreadTaskRunner> compositor_thread,
-    cc::TaskGraphRunner* task_graph_runner,
-    scheduler::WebThreadScheduler* scheduler)
-    : main_thread_(std::move(main_thread)),
-      compositor_thread_(std::move(compositor_thread)),
-      task_graph_runner_(task_graph_runner),
-      web_main_thread_scheduler_(scheduler),
+LayerTreeView::LayerTreeView(LayerTreeViewDelegate* delegate,
+                             scheduler::WebThreadScheduler* scheduler)
+    : web_main_thread_scheduler_(scheduler),
       animation_host_(cc::AnimationHost::CreateMainInstance()),
       delegate_(delegate) {}
 
@@ -63,16 +56,19 @@ LayerTreeView::~LayerTreeView() = default;
 
 void LayerTreeView::Initialize(
     const cc::LayerTreeSettings& settings,
+    scoped_refptr<base::SingleThreadTaskRunner> main_thread,
+    scoped_refptr<base::SingleThreadTaskRunner> compositor_thread,
+    cc::TaskGraphRunner* task_graph_runner,
     std::unique_ptr<cc::UkmRecorderFactory> ukm_recorder_factory) {
   DCHECK(delegate_);
-  const bool is_threaded = !!compositor_thread_;
+  const bool is_threaded = !!compositor_thread;
 
   cc::LayerTreeHost::InitParams params;
   params.client = this;
   params.scheduling_client = this;
   params.settings = &settings;
-  params.task_graph_runner = task_graph_runner_;
-  params.main_task_runner = main_thread_;
+  params.task_graph_runner = task_graph_runner;
+  params.main_task_runner = std::move(main_thread);
   params.mutator_host = animation_host_.get();
   params.ukm_recorder_factory = std::move(ukm_recorder_factory);
   if (base::ThreadPoolInstance::Get()) {
@@ -89,8 +85,8 @@ void LayerTreeView::Initialize(
     layer_tree_host_ =
         cc::LayerTreeHost::CreateSingleThreaded(this, std::move(params));
   } else {
-    layer_tree_host_ = cc::LayerTreeHost::CreateThreaded(compositor_thread_,
-                                                         std::move(params));
+    layer_tree_host_ =
+        cc::LayerTreeHost::CreateThreaded(std::move(compositor_thread), std::move(params));
   }
 }
 

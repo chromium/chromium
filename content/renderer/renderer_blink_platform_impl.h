@@ -112,7 +112,9 @@ class CONTENT_EXPORT RendererBlinkPlatformImpl : public BlinkPlatformImpl {
   bool IsThreadedAnimationEnabled() override;
   bool IsGpuCompositingDisabled() override;
 #if defined(OS_ANDROID)
-  bool IsSynchronousCompositingEnabled() override;
+  bool IsSynchronousCompositingEnabledForAndroidWebView() override;
+  bool IsZeroCopySynchronousSwDrawEnabledForAndroidWebView() override;
+  SkCanvas* SynchronousCompositorGetSkCanvasForAndroidWebView() override;
 #endif
   bool IsUseZoomForDSFEnabled() override;
   bool IsLcdTextEnabled() override;
@@ -137,7 +139,11 @@ class CONTENT_EXPORT RendererBlinkPlatformImpl : public BlinkPlatformImpl {
   scoped_refptr<media::AudioCapturerSource> NewAudioCapturerSource(
       blink::WebLocalFrame* web_frame,
       const media::AudioSourceParameters& params) override;
-  viz::RasterContextProvider* SharedMainThreadContextProvider() override;
+  scoped_refptr<viz::RasterContextProvider> SharedMainThreadContextProvider()
+      override;
+  scoped_refptr<viz::RasterContextProvider>
+  SharedCompositorWorkerContextProvider() override;
+  scoped_refptr<gpu::GpuChannelHost> EstablishGpuChannelSync() override;
   bool RTCSmoothnessAlgorithmEnabled() override;
   base::Optional<double> GetWebRtcMaxCaptureFrameRate() override;
   scoped_refptr<media::AudioRendererSink> NewAudioRendererSink(

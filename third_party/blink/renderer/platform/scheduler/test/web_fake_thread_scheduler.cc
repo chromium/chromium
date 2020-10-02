@@ -29,7 +29,7 @@ WebFakeThreadScheduler::DefaultTaskRunner() {
 
 scoped_refptr<base::SingleThreadTaskRunner>
 WebFakeThreadScheduler::CompositorTaskRunner() {
-  return nullptr;
+  return base::ThreadTaskRunnerHandle::Get();
 }
 
 std::unique_ptr<WebWidgetScheduler>

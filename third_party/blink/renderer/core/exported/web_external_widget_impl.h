@@ -42,7 +42,6 @@ class WebExternalWidgetImpl : public WebExternalWidget,
   void Close(
       scoped_refptr<base::SingleThreadTaskRunner> cleanup_runner) override;
   WebHitTestResult HitTestResultAt(const gfx::PointF&) override;
-  WebURL GetURLForDebugTrace() override;
   gfx::Size Size() override;
   void Resize(const gfx::Size& size) override;
   WebInputEventResult HandleInputEvent(
@@ -73,9 +72,6 @@ class WebExternalWidgetImpl : public WebExternalWidget,
           void(mojom::blink::PointerLockResult,
                CrossVariantMojoRemote<
                    mojom::blink::PointerLockContextInterfaceBase>)>) override;
-#if defined(OS_ANDROID)
-  SynchronousCompositorRegistry* GetSynchronousCompositorRegistry() override;
-#endif
   void ApplyVisualProperties(
       const VisualProperties& visual_properties) override;
   const ScreenInfo& GetScreenInfo() override;
@@ -95,8 +91,6 @@ class WebExternalWidgetImpl : public WebExternalWidget,
   void RecordTimeToFirstActivePaint(base::TimeDelta duration) override;
   void UpdateLifecycle(WebLifecycleUpdate requested_update,
                        DocumentUpdateReason reason) override {}
-  void RequestNewLayerTreeFrameSink(
-      LayerTreeFrameSinkCallback callback) override;
   void DidCommitAndDrawCompositorFrame() override;
   bool WillHandleGestureEvent(const WebGestureEvent& event) override;
   bool WillHandleMouseEvent(const WebMouseEvent& event) override;
@@ -112,6 +106,9 @@ class WebExternalWidgetImpl : public WebExternalWidget,
       const VisualProperties& visual_properties) override;
   const ScreenInfo& GetOriginalScreenInfo() override;
   gfx::Rect ViewportVisibleRect() override;
+  KURL GetURLForDebugTrace() override;
+  std::unique_ptr<cc::LayerTreeFrameSink> AllocateNewLayerTreeFrameSink()
+      override;
 
  private:
   WebExternalWidgetClient* const client_;

@@ -35,7 +35,6 @@
 #include "content/common/content_export.h"
 #include "content/common/frame.mojom.h"
 #include "content/common/frame_replication_state.h"
-#include "content/common/frame_sink_provider.mojom.h"
 #include "content/common/render_message_filter.mojom.h"
 #include "content/common/renderer.mojom.h"
 #include "content/common/renderer_host.mojom.h"
@@ -202,11 +201,6 @@ class CONTENT_EXPORT RenderThreadImpl
   cc::TaskGraphRunner* GetTaskGraphRunner() override;
   bool IsScrollAnimatorEnabled() override;
   std::unique_ptr<cc::UkmRecorderFactory> CreateUkmRecorderFactory() override;
-  void RequestNewLayerTreeFrameSink(
-      RenderWidget* render_widget,
-      const GURL& url,
-      LayerTreeFrameSinkCallback callback,
-      const char* client_name) override;
 
   bool IsThreadedAnimationEnabled();
   scoped_refptr<base::SingleThreadTaskRunner>
@@ -657,8 +651,6 @@ class CONTENT_EXPORT RenderThreadImpl
   bool online_status_ = true;
 
   int32_t client_id_;
-
-  mojo::Remote<mojom::FrameSinkProvider> frame_sink_provider_;
 
   // A mojo connection to the CompositingModeReporter service.
   mojo::Remote<viz::mojom::CompositingModeReporter> compositing_mode_reporter_;

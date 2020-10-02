@@ -292,9 +292,7 @@ void SynchronousCompositorProxy::ReclaimResources(
     const Vector<viz::ReturnedResource>& resources) {
   if (!layer_tree_frame_sink_)
     return;
-  layer_tree_frame_sink_->ReclaimResources(
-      layer_tree_frame_sink_id,
-      std::vector<viz::ReturnedResource>(resources.begin(), resources.end()));
+  layer_tree_frame_sink_->ReclaimResources(layer_tree_frame_sink_id, resources);
 }
 
 void SynchronousCompositorProxy::SetSharedMemory(

@@ -35,7 +35,6 @@
 #include "content/browser/media/media_internals.h"
 #include "content/browser/media/video_decoder_proxy.h"
 #include "content/browser/renderer_host/embedded_frame_sink_provider_impl.h"
-#include "content/browser/renderer_host/frame_sink_provider_impl.h"
 #include "content/browser/renderer_host/media/aec_dump_manager_impl.h"
 #include "content/browser/tracing/tracing_service_controller.h"
 #include "content/common/associated_interfaces.mojom.h"
@@ -783,8 +782,6 @@ class CONTENT_EXPORT RenderProcessHostImpl
 
   void CreateEmbeddedFrameSinkProvider(
       mojo::PendingReceiver<blink::mojom::EmbeddedFrameSinkProvider> receiver);
-  void BindFrameSinkProvider(
-      mojo::PendingReceiver<mojom::FrameSinkProvider> receiver);
   void BindCompositingModeReporter(
       mojo::PendingReceiver<viz::mojom::CompositingModeReporter> receiver);
   void CreateDomStorageProvider(
@@ -1202,7 +1199,6 @@ class CONTENT_EXPORT RenderProcessHostImpl
   base::Optional<base::WeakPtrFactory<RenderProcessHostImpl>>
       instance_weak_factory_;
 
-  FrameSinkProviderImpl frame_sink_provider_;
   std::unique_ptr<mojo::Receiver<viz::mojom::CompositingModeReporter>>
       compositing_mode_reporter_;
 

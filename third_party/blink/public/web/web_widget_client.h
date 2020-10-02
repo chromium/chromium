@@ -104,6 +104,15 @@ class WebWidgetClient {
   // scrollbars, URL bar, tab strip, etc. if they exist.
   virtual void SetWindowRect(const gfx::Rect&) {}
 
+  // Allocates a LayerTreeFrameSink to submit CompositorFrames to. Only
+  // override this method if you wish to provide your own implementation
+  // of LayerTreeFrameSinks (usually for tests). If this method returns null
+  // a frame sink will be requested from the browser process (ie. default flow).
+  virtual std::unique_ptr<cc::LayerTreeFrameSink>
+  AllocateNewLayerTreeFrameSink() {
+    return nullptr;
+  }
+
   // Requests to lock the mouse cursor for the |requester_frame| in the
   // widget. If true is returned, the success result will be asynchronously
   // returned via a single call to WebWidget::didAcquirePointerLock() or
@@ -139,14 +148,6 @@ class WebWidgetClient {
                                       const gfx::Point& drag_image_offset) {
     return false;
   }
-
-  using LayerTreeFrameSinkCallback = base::OnceCallback<void(
-      std::unique_ptr<cc::LayerTreeFrameSink>,
-      std::unique_ptr<cc::RenderFrameMetadataObserver>)>;
-
-  // Requests a LayerTreeFrameSink to submit CompositorFrames to.
-  virtual void RequestNewLayerTreeFrameSink(
-      LayerTreeFrameSinkCallback callback) {}
 
   virtual viz::FrameSinkId GetFrameSinkId() {
     NOTREACHED();

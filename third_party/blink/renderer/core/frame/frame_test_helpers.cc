@@ -790,11 +790,9 @@ viz::FrameSinkId TestWebWidgetClient::GetFrameSinkId() {
   return frame_sink_id_;
 }
 
-void TestWebWidgetClient::RequestNewLayerTreeFrameSink(
-    LayerTreeFrameSinkCallback callback) {
-  // Make a valid LayerTreeFrameSink so the compositor will generate begin main
-  // frames.
-  std::move(callback).Run(cc::FakeLayerTreeFrameSink::Create3d(), nullptr);
+std::unique_ptr<cc::LayerTreeFrameSink>
+TestWebWidgetClient::AllocateNewLayerTreeFrameSink() {
+  return cc::FakeLayerTreeFrameSink::Create3d();
 }
 
 void TestWebWidgetClient::WillQueueSyntheticEvent(
@@ -818,6 +816,18 @@ void TestWebWidgetClient::SelectionBoundsChanged(
     const gfx::Rect& focus_rect,
     base::i18n::TextDirection focus_dir,
     bool is_anchor_first) {}
+
+void TestWebWidgetClient::CreateFrameSink(
+    mojo::PendingReceiver<viz::mojom::blink::CompositorFrameSink>
+        compositor_frame_sink_receiver,
+    mojo::PendingRemote<viz::mojom::blink::CompositorFrameSinkClient>
+        compositor_frame_sink_client) {}
+
+void TestWebWidgetClient::RegisterRenderFrameMetadataObserver(
+    mojo::PendingReceiver<cc::mojom::blink::RenderFrameMetadataObserverClient>
+        render_frame_metadata_observer_client_receiver,
+    mojo::PendingRemote<cc::mojom::blink::RenderFrameMetadataObserver>
+        render_frame_metadata_observer) {}
 
 void TestWebViewClient::DestroyChildViews() {
   child_web_views_.clear();

@@ -15,15 +15,11 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
-class GURL;
-
 namespace base {
 class SingleThreadTaskRunner;
 }
 
 namespace cc {
-class LayerTreeFrameSink;
-class RenderFrameMetadataObserver;
 class TaskGraphRunner;
 class UkmRecorderFactory;
 }  // namespace cc
@@ -35,7 +31,6 @@ class WebThreadScheduler;
 }  // namespace blink
 
 namespace content {
-class RenderWidget;
 
 class CONTENT_EXPORT CompositorDependencies {
  public:
@@ -50,15 +45,6 @@ class CONTENT_EXPORT CompositorDependencies {
   virtual bool IsScrollAnimatorEnabled() = 0;
   virtual std::unique_ptr<cc::UkmRecorderFactory>
   CreateUkmRecorderFactory() = 0;
-
-  using LayerTreeFrameSinkCallback = base::OnceCallback<void(
-      std::unique_ptr<cc::LayerTreeFrameSink>,
-      std::unique_ptr<cc::RenderFrameMetadataObserver>)>;
-  virtual void RequestNewLayerTreeFrameSink(
-      RenderWidget* render_widget,
-      const GURL& url,
-      LayerTreeFrameSinkCallback callback,
-      const char* client_name) = 0;
 
   virtual ~CompositorDependencies() {}
 };

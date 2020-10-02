@@ -70,7 +70,6 @@ class LatencyInfo;
 }
 
 namespace blink {
-class SynchronousCompositorRegistry;
 struct VisualProperties;
 class WebCoalescedInputEvent;
 
@@ -175,15 +174,6 @@ class WebWidget {
   virtual scheduler::WebRenderWidgetSchedulingState*
   RendererWidgetSchedulingState() = 0;
 
-  // When the WebWidget is part of a frame tree, returns the active url for
-  // main frame of that tree, if the main frame is local in that tree. When
-  // the WebWidget is of a different kind (e.g. a popup) it returns the active
-  // url for the main frame of the frame tree that spawned the WebWidget, if
-  // the main frame is local in that tree. When the relevant main frame is
-  // remote in that frame tree, then the url is not known, and an empty url is
-  // returned.
-  virtual WebURL GetURLForDebugTrace() = 0;
-
   virtual void SetCursor(const ui::Cursor& cursor) = 0;
 
   // Get the current tooltip text.
@@ -276,11 +266,6 @@ class WebWidget {
   // to clear the pending window rect once the browser has acknowledged the
   // request.
   virtual void SetPendingWindowRect(const gfx::Rect* window_screen_rect) = 0;
-
-#if defined(OS_ANDROID)
-  // Return the synchronous compositor registry.
-  virtual SynchronousCompositorRegistry* GetSynchronousCompositorRegistry() = 0;
-#endif
 
   virtual bool IsHidden() const = 0;
 

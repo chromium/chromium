@@ -13,10 +13,6 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/platform/scheduler/test/web_fake_thread_scheduler.h"
 
-namespace cc {
-class FakeLayerTreeFrameSink;
-}
-
 namespace content {
 
 class FakeCompositorDependencies : public CompositorDependencies {
@@ -34,30 +30,15 @@ class FakeCompositorDependencies : public CompositorDependencies {
   cc::TaskGraphRunner* GetTaskGraphRunner() override;
   bool IsScrollAnimatorEnabled() override;
   std::unique_ptr<cc::UkmRecorderFactory> CreateUkmRecorderFactory() override;
-  void RequestNewLayerTreeFrameSink(
-      RenderWidget* render_widget,
-      const GURL& url,
-      LayerTreeFrameSinkCallback callback,
-      const char* client_name) override;
 
   void set_use_zoom_for_dsf_enabled(bool enabled) {
     use_zoom_for_dsf_ = enabled;
-  }
-
-  // The returned pointer is valid after RequestNewLayerTreeFrameSink() occurs,
-  // until another call to RequestNewLayerTreeFrameSink() happens. It's okay to
-  // use this pointer on the main thread because this class causes the
-  // compositor to run in single thread mode by returning a null from
-  // GetCompositorImplThreadTaskRunner().
-  cc::FakeLayerTreeFrameSink* last_created_frame_sink() {
-    return last_created_frame_sink_;
   }
 
  private:
   cc::TestTaskGraphRunner task_graph_runner_;
   blink::scheduler::WebFakeThreadScheduler main_thread_scheduler_;
   bool use_zoom_for_dsf_ = false;
-  cc::FakeLayerTreeFrameSink* last_created_frame_sink_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(FakeCompositorDependencies);
 };

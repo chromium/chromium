@@ -1450,6 +1450,8 @@ component("platform") {
     "widget/compositing/layer_tree_view_delegate.h",
     "widget/compositing/queue_report_time_swap_promise.cc",
     "widget/compositing/queue_report_time_swap_promise.h",
+    "widget/compositing/render_frame_metadata_observer_impl.cc",
+    "widget/compositing/render_frame_metadata_observer_impl.h",
     "widget/compositing/widget_compositor.cc",
     "widget/compositing/widget_compositor.h",
     "widget/compositing/widget_swap_queue.cc",
@@ -1508,16 +1510,6 @@ component("platform") {
     if (get_path_info(_output, "extension") != "pickle") {
       sources += [ _output ]
     }
-  }
-
-  if (is_android) {
-    sources += [
-      "fonts/android/font_cache_android.cc",
-      "fonts/android/font_unique_name_lookup_android.cc",
-      "fonts/android/font_unique_name_lookup_android.h",
-      "widget/input/synchronous_compositor_proxy.cc",
-      "widget/input/synchronous_compositor_proxy.h",
-    ]
   }
 
   if (is_mac) {
@@ -1616,6 +1608,7 @@ component("platform") {
     "//base:base_static",
     "//base/allocator:buildflags",
     "//cc/ipc",
+    "//cc/mojo_embedder",
     "//components/paint_preview/common",
     "//components/search_engines:search_engine_utils",
     "//components/viz/client",
@@ -1698,6 +1691,17 @@ component("platform") {
       "/wd4334",  # Result of 32-bit shift implicitly converted to 64 bits.
       "/wd4724",  # Modulo by 0.
     ]
+  }
+
+  if (is_android) {
+    sources += [
+      "fonts/android/font_cache_android.cc",
+      "fonts/android/font_unique_name_lookup_android.cc",
+      "fonts/android/font_unique_name_lookup_android.h",
+      "widget/input/synchronous_compositor_proxy.cc",
+      "widget/input/synchronous_compositor_proxy.h",
+    ]
+    deps += [ "//third_party/blink/renderer/platform/widget/compositing/android_webview" ]
   }
 
   if (is_fuchsia) {
@@ -2081,6 +2085,7 @@ source_set("blink_platform_unittests_sources") {
     "webrtc/webrtc_video_frame_adapter_test.cc",
     "widget/compositing/layer_tree_settings_unittest.cc",
     "widget/compositing/layer_tree_view_unittest.cc",
+    "widget/compositing/render_frame_metadata_observer_impl_unittest.cc",
     "widget/compositing/test/stub_layer_tree_view_delegate.h",
     "widget/compositing/widget_compositor_unittest.cc",
     "widget/input/elastic_overscroll_controller_bezier_unittest.cc",

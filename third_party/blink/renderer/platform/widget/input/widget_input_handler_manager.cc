@@ -28,7 +28,7 @@
 #include "third_party/blink/renderer/platform/widget/widget_base_client.h"
 
 #if defined(OS_ANDROID)
-#include "third_party/blink/public/platform/input/synchronous_compositor_registry.h"
+#include "third_party/blink/renderer/platform/widget/compositing/android_webview/synchronous_compositor_registry.h"
 #include "third_party/blink/renderer/platform/widget/input/synchronous_compositor_proxy.h"
 #endif
 
@@ -217,7 +217,8 @@ WidgetInputHandlerManager::WidgetInputHandlerManager(
 void WidgetInputHandlerManager::InitInputHandler() {
   bool sync_compositing = false;
 #if defined(OS_ANDROID)
-  sync_compositing = Platform::Current()->IsSynchronousCompositingEnabled();
+  sync_compositing =
+      Platform::Current()->IsSynchronousCompositingEnabledForAndroidWebView();
 #endif
   uses_input_handler_ = true;
   base::OnceClosure init_closure = base::BindOnce(

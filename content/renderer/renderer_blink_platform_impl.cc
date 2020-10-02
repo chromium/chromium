@@ -31,6 +31,7 @@
 #include "build/build_config.h"
 #include "components/url_formatter/url_formatter.h"
 #include "content/child/child_process.h"
+#include "content/common/android/sync_compositor_statics.h"
 #include "content/common/content_constants_internal.h"
 #include "content/common/frame_messages.h"
 #include "content/public/common/content_features.h"
@@ -418,8 +419,20 @@ bool RendererBlinkPlatformImpl::IsGpuCompositingDisabled() {
 }
 
 #if defined(OS_ANDROID)
-bool RendererBlinkPlatformImpl::IsSynchronousCompositingEnabled() {
+bool RendererBlinkPlatformImpl::
+    IsSynchronousCompositingEnabledForAndroidWebView() {
   return GetContentClient()->UsingSynchronousCompositing();
+}
+
+bool RendererBlinkPlatformImpl::
+    IsZeroCopySynchronousSwDrawEnabledForAndroidWebView() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      switches::kSingleProcess);
+}
+
+SkCanvas*
+RendererBlinkPlatformImpl::SynchronousCompositorGetSkCanvasForAndroidWebView() {
+  return content::SynchronousCompositorGetSkCanvas();
 }
 #endif
 
@@ -500,9 +513,20 @@ RendererBlinkPlatformImpl::NewAudioCapturerSource(
       web_frame->GetLocalFrameToken(), params);
 }
 
-viz::RasterContextProvider*
+scoped_refptr<viz::RasterContextProvider>
 RendererBlinkPlatformImpl::SharedMainThreadContextProvider() {
-  return RenderThreadImpl::current()->SharedMainThreadContextProvider().get();
+  return RenderThreadImpl::current()->SharedMainThreadContextProvider();
+}
+
+scoped_refptr<viz::RasterContextProvider>
+RendererBlinkPlatformImpl::SharedCompositorWorkerContextProvider() {
+  return RenderThreadImpl::current()->SharedCompositorWorkerContextProvider(
+      /*try_gpu_rasterization=*/true);
+}
+
+scoped_refptr<gpu::GpuChannelHost>
+RendererBlinkPlatformImpl::EstablishGpuChannelSync() {
+  return RenderThreadImpl::current()->EstablishGpuChannelSync();
 }
 
 bool RendererBlinkPlatformImpl::RTCSmoothnessAlgorithmEnabled() {

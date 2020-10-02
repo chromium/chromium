@@ -109,7 +109,6 @@ class WebFrameWidgetImpl final : public WebFrameWidgetBase,
   void SetInheritedEffectiveTouchActionForSubFrame(TouchAction) override;
   void UpdateRenderThrottlingStatusForSubFrame(bool is_throttled,
                                                bool subtree_throttled) override;
-  WebURL GetURLForDebugTrace() override;
 
   // WebFrameWidget implementation.
   void DidDetachLocalFrameTree() override;

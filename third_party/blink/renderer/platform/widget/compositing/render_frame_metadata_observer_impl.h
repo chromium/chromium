@@ -2,37 +2,38 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_RENDERER_RENDER_FRAME_METADATA_OBSERVER_IMPL_H_
-#define CONTENT_RENDERER_RENDER_FRAME_METADATA_OBSERVER_IMPL_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WIDGET_COMPOSITING_RENDER_FRAME_METADATA_OBSERVER_IMPL_H_
+#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WIDGET_COMPOSITING_RENDER_FRAME_METADATA_OBSERVER_IMPL_H_
 
 #include "build/build_config.h"
-#include "cc/mojom/render_frame_metadata.mojom.h"
+#include "cc/mojom/render_frame_metadata.mojom-blink.h"
 #include "cc/trees/render_frame_metadata.h"
 #include "cc/trees/render_frame_metadata_observer.h"
-#include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/blink/renderer/platform/platform_export.h"
 
-namespace content {
+namespace blink {
 
 // Implementation of cc::RenderFrameMetadataObserver which exists in the
-// renderer an observers frame submission. It then notifies the
-// mojom::RenderFrameMetadataObserverClient, which is expected to be in the
+// renderer and observers frame submission. It then notifies the
+// cc::mojom::RenderFrameMetadataObserverClient, which is expected to be in the
 // browser process, of the metadata associated with the frame.
 //
 // BindToCurrentThread should be called from the Compositor thread so that the
 // Mojo pipe is properly bound.
 //
 // Subsequent usage should only be from the Compositor thread.
-class CONTENT_EXPORT RenderFrameMetadataObserverImpl
+class PLATFORM_EXPORT RenderFrameMetadataObserverImpl
     : public cc::RenderFrameMetadataObserver,
-      public cc::mojom::RenderFrameMetadataObserver {
+      public cc::mojom::blink::RenderFrameMetadataObserver {
  public:
   RenderFrameMetadataObserverImpl(
-      mojo::PendingReceiver<cc::mojom::RenderFrameMetadataObserver> receiver,
-      mojo::PendingRemote<cc::mojom::RenderFrameMetadataObserverClient>
+      mojo::PendingReceiver<cc::mojom::blink::RenderFrameMetadataObserver>
+          receiver,
+      mojo::PendingRemote<cc::mojom::blink::RenderFrameMetadataObserverClient>
           client_remote);
   ~RenderFrameMetadataObserverImpl() override;
 
@@ -78,18 +79,17 @@ class CONTENT_EXPORT RenderFrameMetadataObserverImpl
   base::Optional<cc::RenderFrameMetadata> last_render_frame_metadata_;
 
   // These are destroyed when BindToCurrentThread() is called.
-  mojo::PendingReceiver<cc::mojom::RenderFrameMetadataObserver> receiver_;
-  mojo::PendingRemote<cc::mojom::RenderFrameMetadataObserverClient>
+  mojo::PendingReceiver<cc::mojom::blink::RenderFrameMetadataObserver>
+      receiver_;
+  mojo::PendingRemote<cc::mojom::blink::RenderFrameMetadataObserverClient>
       client_remote_;
 
-  mojo::Receiver<cc::mojom::RenderFrameMetadataObserver>
+  mojo::Receiver<cc::mojom::blink::RenderFrameMetadataObserver>
       render_frame_metadata_observer_receiver_{this};
-  mojo::Remote<cc::mojom::RenderFrameMetadataObserverClient>
+  mojo::Remote<cc::mojom::blink::RenderFrameMetadataObserverClient>
       render_frame_metadata_observer_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderFrameMetadataObserverImpl);
 };
 
-}  // namespace content
+}  // namespace blink
 
-#endif  // CONTENT_RENDERER_RENDER_FRAME_METADATA_OBSERVER_IMPL_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WIDGET_COMPOSITING_RENDER_FRAME_METADATA_OBSERVER_IMPL_H_

@@ -127,9 +127,6 @@ namespace {
 RenderWidget::CreateRenderWidgetFunction g_create_render_widget_for_frame =
     nullptr;
 
-static const char* kOOPIF = "OOPIF";
-static const char* kRenderer = "Renderer";
-
 class WebWidgetLockTarget : public content::MouseLockDispatcher::LockTarget {
  public:
   explicit WebWidgetLockTarget(RenderWidget* render_widget)
@@ -385,23 +382,6 @@ void RenderWidget::RequestPresentation(PresentationTimeCallback callback) {
 void RenderWidget::SetActive(bool active) {
   if (delegate())
     delegate()->SetActiveForWidget(active);
-}
-
-void RenderWidget::RequestNewLayerTreeFrameSink(
-    LayerTreeFrameSinkCallback callback) {
-  GURL url = GetWebWidget()->GetURLForDebugTrace();
-  // The |url| is not always available, fallback to a fixed string.
-  if (url.is_empty())
-    url = GURL("chrome://gpu/RenderWidget::RequestNewLayerTreeFrameSink");
-  // TODO(danakj): This may not be accurate, depending on the intent. A child
-  // local root could be in the same process as the view, so if the client is
-  // meant to designate the process type, it seems kRenderer would be the
-  // correct choice. If client is meant to designate the widget type, then
-  // kOOPIF would denote that it is not for the main frame. However, kRenderer
-  // would also be used for other widgets such as popups.
-  const char* client_name = for_child_local_root_frame_ ? kOOPIF : kRenderer;
-  compositor_deps_->RequestNewLayerTreeFrameSink(
-      this, std::move(url), std::move(callback), client_name);
 }
 
 void RenderWidget::DidCommitCompositorFrame(base::TimeTicks commit_start_time) {

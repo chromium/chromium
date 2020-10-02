@@ -133,7 +133,6 @@ class MockWebExternalWidgetClient : public blink::WebExternalWidgetClient {
   MOCK_METHOD1(
       HandleInputEvent,
       blink::WebInputEventResult(const blink::WebCoalescedInputEvent&));
-  MOCK_METHOD1(RequestNewLayerTreeFrameSink, void(LayerTreeFrameSinkCallback));
   MOCK_METHOD0(DidCommitAndDrawCompositorFrame, void());
   MOCK_METHOD1(WillHandleGestureEvent, bool(const blink::WebGestureEvent&));
   MOCK_METHOD4(DidHandleGestureScrollEvent,
@@ -200,6 +199,23 @@ class InteractiveRenderWidget : public RenderWidget {
     return false;
   }
 
+  std::unique_ptr<cc::LayerTreeFrameSink> AllocateNewLayerTreeFrameSink()
+      override {
+    std::unique_ptr<cc::FakeLayerTreeFrameSink> sink =
+        cc::FakeLayerTreeFrameSink::Create3d();
+    last_created_frame_sink_ = sink.get();
+    return sink;
+  }
+
+  // The returned pointer is valid after RequestNewLayerTreeFrameSink() occurs,
+  // until another call to RequestNewLayerTreeFrameSink() happens. It's okay to
+  // use this pointer on the main thread because this class causes the
+  // compositor to run in single thread mode by returning a null from
+  // GetCompositorImplThreadTaskRunner().
+  cc::FakeLayerTreeFrameSink* last_created_frame_sink() {
+    return last_created_frame_sink_;
+  }
+
  protected:
   bool Send(IPC::Message* msg) override {
     sink_.OnMessageReceived(*msg);
@@ -210,6 +226,7 @@ class InteractiveRenderWidget : public RenderWidget {
  private:
   IPC::TestSink sink_;
   static int next_routing_id_;
+  cc::FakeLayerTreeFrameSink* last_created_frame_sink_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(InteractiveRenderWidget);
 };
@@ -281,7 +298,7 @@ class RenderWidgetUnittest : public testing::Test {
   }
 
   cc::FakeLayerTreeFrameSink* GetFrameSink() {
-    return compositor_deps_.last_created_frame_sink();
+    return widget_->last_created_frame_sink();
   }
 
  private:
@@ -343,7 +360,7 @@ class RenderWidgetExternalWidgetUnittest : public testing::Test {
   }
 
   cc::FakeLayerTreeFrameSink* GetFrameSink() {
-    return compositor_deps_.last_created_frame_sink();
+    return widget_->last_created_frame_sink();
   }
 
  private:

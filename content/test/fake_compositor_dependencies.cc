@@ -62,15 +62,4 @@ FakeCompositorDependencies::CreateUkmRecorderFactory() {
   return std::make_unique<cc::TestUkmRecorderFactory>();
 }
 
-void FakeCompositorDependencies::RequestNewLayerTreeFrameSink(
-    RenderWidget* render_widget,
-    const GURL& url,
-    LayerTreeFrameSinkCallback callback,
-    const char* client_name) {
-  std::unique_ptr<cc::FakeLayerTreeFrameSink> sink =
-      cc::FakeLayerTreeFrameSink::Create3d();
-  last_created_frame_sink_ = sink.get();
-  std::move(callback).Run(std::move(sink), nullptr);
-}
-
 }  // namespace content

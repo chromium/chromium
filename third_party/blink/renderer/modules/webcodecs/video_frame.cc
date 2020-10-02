@@ -375,7 +375,7 @@ ScriptPromise VideoFrame::CreateImageBitmap(ScriptState* script_state,
           SkImage::MakeRasterData(info, image_pixels, bytes_per_row);
       image = UnacceleratedStaticBitmapImage::Create(std::move(skImage));
     } else {
-      viz::RasterContextProvider* raster_context_provider =
+      scoped_refptr<viz::RasterContextProvider> raster_context_provider =
           Platform::Current()->SharedMainThreadContextProvider();
       gpu::SharedImageInterface* shared_image_interface =
           raster_context_provider->SharedImageInterface();
@@ -395,7 +395,7 @@ ScriptPromise VideoFrame::CreateImageBitmap(ScriptState* script_state,
       dest_holder.texture_target = GL_TEXTURE_2D;
 
       media::VideoFrameYUVConverter::ConvertYUVVideoFrameNoCaching(
-          local_frame.get(), raster_context_provider, dest_holder);
+          local_frame.get(), raster_context_provider.get(), dest_holder);
       gpu::SyncToken sync_token;
       raster_context_provider->RasterInterface()
           ->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());

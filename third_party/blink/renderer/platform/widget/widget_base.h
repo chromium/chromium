@@ -66,7 +66,8 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
           widget_host,
       CrossVariantMojoAssociatedReceiver<mojom::WidgetInterfaceBase> widget,
       bool hidden,
-      bool never_composited);
+      bool never_composited,
+      bool is_for_child_local_root);
   ~WidgetBase() override;
 
   // Initialize the compositor. |settings| is typically null. When |settings| is
@@ -434,6 +435,13 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
 
   // Indicates that we are never visible, so never produce graphical output.
   const bool never_composited_;
+
+  // Indicates this is for a child local root.
+  const bool is_for_child_local_root_;
+
+  // The task runner on the main thread used for compositor tasks.
+  scoped_refptr<base::SingleThreadTaskRunner>
+      main_thread_compositor_task_runner_;
 
   base::WeakPtrFactory<WidgetBase> weak_ptr_factory_{this};
 };

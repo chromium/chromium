@@ -19,7 +19,6 @@
 namespace cc {
 class LayerTreeFrameSink;
 struct BeginMainFrameMetrics;
-class RenderFrameMetadataObserver;
 }  // namespace cc
 
 namespace blink {
@@ -107,16 +106,12 @@ class WidgetBaseClient {
       base::TimeDelta first_scroll_delay,
       base::TimeTicks first_scroll_timestamp) {}
 
-  using LayerTreeFrameSinkCallback = base::OnceCallback<void(
-      std::unique_ptr<cc::LayerTreeFrameSink>,
-      std::unique_ptr<cc::RenderFrameMetadataObserver>)>;
-
-  // Requests a LayerTreeFrameSink to submit CompositorFrames to.
-  virtual void RequestNewLayerTreeFrameSink(
-      LayerTreeFrameSinkCallback callback) = 0;
-
   virtual void WillBeginMainFrame() {}
   virtual void DidCompletePageScaleAnimation() {}
+
+  virtual std::unique_ptr<cc::LayerTreeFrameSink>
+  AllocateNewLayerTreeFrameSink() = 0;
+
   virtual void FocusChangeComplete() {}
 
   virtual WebInputEventResult DispatchBufferedTouchEvents() = 0;
@@ -207,6 +202,15 @@ class WidgetBaseClient {
 
   virtual void RunPaintBenchmark(int repeat_count,
                                  cc::PaintBenchmarkResult& result) {}
+
+  // When the WebWidget is part of a frame tree, returns the active url for
+  // main frame of that tree, if the main frame is local in that tree. When
+  // the WebWidget is of a different kind (e.g. a popup) it returns the active
+  // url for the main frame of the frame tree that spawned the WebWidget, if
+  // the main frame is local in that tree. When the relevant main frame is
+  // remote in that frame tree, then the url is not known, and an empty url is
+  // returned.
+  virtual KURL GetURLForDebugTrace() = 0;
 };
 
 }  // namespace blink

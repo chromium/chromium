@@ -276,6 +276,15 @@ class CONTENT_EXPORT RenderWidgetHostImpl
                               const gfx::Rect& focus_rect,
                               base::i18n::TextDirection focus_dir,
                               bool is_anchor_first) override;
+  void CreateFrameSink(
+      mojo::PendingReceiver<viz::mojom::CompositorFrameSink>
+          compositor_frame_sink_receiver,
+      mojo::PendingRemote<viz::mojom::CompositorFrameSinkClient>) override;
+  void RegisterRenderFrameMetadataObserver(
+      mojo::PendingReceiver<cc::mojom::RenderFrameMetadataObserverClient>
+          render_frame_metadata_observer_client_receiver,
+      mojo::PendingRemote<cc::mojom::RenderFrameMetadataObserver>
+          render_frame_metadata_observer) override;
 
   // Notification that the screen info has changed.
   void NotifyScreenInfoChanged();
@@ -674,18 +683,6 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // |monitoring_composition_info_| == |monitor_updates| no IPC is sent to the
   // renderer unless it is for an immediate request.
   void RequestCompositionUpdates(bool immediate_request, bool monitor_updates);
-
-  void RequestCompositorFrameSink(
-      mojo::PendingReceiver<viz::mojom::CompositorFrameSink>
-          compositor_frame_sink_receiver,
-      mojo::PendingRemote<viz::mojom::CompositorFrameSinkClient>
-          compositor_frame_sink_client);
-
-  void RegisterRenderFrameMetadataObserver(
-      mojo::PendingReceiver<cc::mojom::RenderFrameMetadataObserverClient>
-          render_frame_metadata_observer_client_receiver,
-      mojo::PendingRemote<cc::mojom::RenderFrameMetadataObserver>
-          render_frame_metadata_observer);
 
   RenderFrameMetadataProviderImpl* render_frame_metadata_provider() {
     return &render_frame_metadata_provider_;

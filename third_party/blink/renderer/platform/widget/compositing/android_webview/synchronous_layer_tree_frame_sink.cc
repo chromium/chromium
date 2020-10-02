@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/renderer/android/synchronous_layer_tree_frame_sink_impl.h"
+#include "third_party/blink/renderer/platform/widget/compositing/android_webview/synchronous_layer_tree_frame_sink.h"
 
 #include <vector>
 
@@ -31,22 +31,16 @@
 #include "components/viz/service/display/texture_deleter.h"
 #include "components/viz/service/frame_sinks/compositor_frame_sink_support.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
-#include "content/common/android/sync_compositor_statics.h"
-#include "content/common/view_messages.h"
-#include "content/public/common/content_switches.h"
-#include "content/renderer/render_thread_impl.h"
 #include "gpu/command_buffer/client/context_support.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/common/gpu_memory_allocation.h"
-#include "ipc/ipc_message.h"
-#include "ipc/ipc_message_macros.h"
-#include "ipc/ipc_sender.h"
+#include "third_party/blink/public/platform/platform.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/skia_util.h"
 #include "ui/gfx/transform.h"
 
-namespace content {
+namespace blink {
 
 namespace {
 
@@ -101,7 +95,7 @@ class SoftwareCompositorFrameSinkClient
 
 }  // namespace
 
-class SynchronousLayerTreeFrameSinkImpl::SoftwareOutputSurface
+class SynchronousLayerTreeFrameSink::SoftwareOutputSurface
     : public viz::OutputSurface {
  public:
   SoftwareOutputSurface(std::unique_ptr<SoftwareDevice> software_device)
@@ -133,59 +127,56 @@ class SynchronousLayerTreeFrameSinkImpl::SoftwareOutputSurface
   gpu::MemoryTracker* GetMemoryTracker() override { return nullptr; }
 };
 
-base::TimeDelta SynchronousLayerTreeFrameSinkImpl::StubDisplayClient::
+base::TimeDelta SynchronousLayerTreeFrameSink::StubDisplayClient::
     GetPreferredFrameIntervalForFrameSinkId(
         const viz::FrameSinkId& id,
-        viz::mojom::CompositorFrameSinkType* type) {
+        viz::mojom::blink::CompositorFrameSinkType* type) {
   return viz::BeginFrameArgs::MinInterval();
 }
 
-SynchronousLayerTreeFrameSinkImpl::SynchronousLayerTreeFrameSinkImpl(
+SynchronousLayerTreeFrameSink::SynchronousLayerTreeFrameSink(
     scoped_refptr<viz::ContextProvider> context_provider,
     scoped_refptr<viz::RasterContextProvider> worker_context_provider,
     scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner,
     gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
-    IPC::Sender* sender,
     uint32_t layer_tree_frame_sink_id,
     std::unique_ptr<viz::BeginFrameSource> synthetic_begin_frame_source,
-    blink::SynchronousCompositorRegistry* registry,
-    mojo::PendingRemote<viz::mojom::CompositorFrameSink>
+    SynchronousCompositorRegistry* registry,
+    mojo::PendingRemote<viz::mojom::blink::CompositorFrameSink>
         compositor_frame_sink_remote,
-    mojo::PendingReceiver<viz::mojom::CompositorFrameSinkClient>
+    mojo::PendingReceiver<viz::mojom::blink::CompositorFrameSinkClient>
         client_receiver)
-    : SynchronousLayerTreeFrameSink(std::move(context_provider),
-                                    std::move(worker_context_provider),
-                                    std::move(compositor_task_runner),
-                                    gpu_memory_buffer_manager),
+    : cc::LayerTreeFrameSink(std::move(context_provider),
+                             std::move(worker_context_provider),
+                             std::move(compositor_task_runner),
+                             gpu_memory_buffer_manager),
       layer_tree_frame_sink_id_(layer_tree_frame_sink_id),
       registry_(registry),
-      sender_(sender),
       memory_policy_(0u),
       unbound_compositor_frame_sink_(std::move(compositor_frame_sink_remote)),
       unbound_client_(std::move(client_receiver)),
       synthetic_begin_frame_source_(std::move(synthetic_begin_frame_source)),
       viz_frame_submission_enabled_(
           features::IsUsingVizFrameSubmissionForWebView()),
-      use_zero_copy_sw_draw_(base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kSingleProcess)) {
+      use_zero_copy_sw_draw_(
+          Platform::Current()
+              ->IsZeroCopySynchronousSwDrawEnabledForAndroidWebView()) {
   DCHECK(registry_);
-  DCHECK(sender_);
-  thread_checker_.DetachFromThread();
+  DETACH_FROM_THREAD(thread_checker_);
   memory_policy_.priority_cutoff_when_visible =
       gpu::MemoryAllocation::CUTOFF_ALLOW_NICE_TO_HAVE;
 }
 
-SynchronousLayerTreeFrameSinkImpl::~SynchronousLayerTreeFrameSinkImpl() =
-    default;
+SynchronousLayerTreeFrameSink::~SynchronousLayerTreeFrameSink() = default;
 
-void SynchronousLayerTreeFrameSinkImpl::SetSyncClient(
-    blink::SynchronousLayerTreeFrameSinkClient* compositor) {
+void SynchronousLayerTreeFrameSink::SetSyncClient(
+    SynchronousLayerTreeFrameSinkClient* compositor) {
   sync_client_ = compositor;
 }
 
-bool SynchronousLayerTreeFrameSinkImpl::BindToClient(
+bool SynchronousLayerTreeFrameSink::BindToClient(
     cc::LayerTreeFrameSinkClient* sink_client) {
-  DCHECK(CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (!cc::LayerTreeFrameSink::BindToClient(sink_client))
     return false;
 
@@ -211,7 +202,7 @@ bool SynchronousLayerTreeFrameSinkImpl::BindToClient(
 
   client_->SetMemoryPolicy(memory_policy_);
   client_->SetTreeActivationCallback(base::BindRepeating(
-      &SynchronousLayerTreeFrameSinkImpl::DidActivatePendingTree,
+      &SynchronousLayerTreeFrameSink::DidActivatePendingTree,
       base::Unretained(this)));
   registry_->RegisterLayerTreeFrameSink(this);
 
@@ -254,8 +245,8 @@ bool SynchronousLayerTreeFrameSinkImpl::BindToClient(
   return true;
 }
 
-void SynchronousLayerTreeFrameSinkImpl::DetachFromClient() {
-  DCHECK(CalledOnValidThread());
+void SynchronousLayerTreeFrameSink::DetachFromClient() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   client_->SetBeginFrameSource(nullptr);
   // Destroy the begin frame source on the same thread it was bound on.
   synthetic_begin_frame_source_ = nullptr;
@@ -277,17 +268,17 @@ void SynchronousLayerTreeFrameSinkImpl::DetachFromClient() {
   cc::LayerTreeFrameSink::DetachFromClient();
 }
 
-void SynchronousLayerTreeFrameSinkImpl::SetLocalSurfaceId(
+void SynchronousLayerTreeFrameSink::SetLocalSurfaceId(
     const viz::LocalSurfaceId& local_surface_id) {
-  DCHECK(CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   local_surface_id_ = local_surface_id;
 }
 
-void SynchronousLayerTreeFrameSinkImpl::SubmitCompositorFrame(
+void SynchronousLayerTreeFrameSink::SubmitCompositorFrame(
     viz::CompositorFrame frame,
     bool hit_test_data_changed,
     bool show_hit_test_borders) {
-  DCHECK(CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(sync_client_);
 
   base::Optional<viz::CompositorFrame> submit_frame;
@@ -408,14 +399,14 @@ void SynchronousLayerTreeFrameSinkImpl::SubmitCompositorFrame(
   did_submit_frame_ = true;
 }
 
-void SynchronousLayerTreeFrameSinkImpl::DidNotProduceFrame(
+void SynchronousLayerTreeFrameSink::DidNotProduceFrame(
     const viz::BeginFrameAck& ack) {
   // We do not call CompositorFrameSink::DidNotProduceFrame here because
   // submission of frame depends on DemandDraw calls. DidNotProduceFrame will be
   // called there or during OnBeginFrame as fallback.
 }
 
-void SynchronousLayerTreeFrameSinkImpl::DidAllocateSharedBitmap(
+void SynchronousLayerTreeFrameSink::DidAllocateSharedBitmap(
     base::ReadOnlySharedMemoryRegion region,
     const viz::SharedBitmapId& id) {
   // Webview does not use software compositing (other than resourceless draws,
@@ -423,24 +414,24 @@ void SynchronousLayerTreeFrameSinkImpl::DidAllocateSharedBitmap(
   NOTREACHED();
 }
 
-void SynchronousLayerTreeFrameSinkImpl::DidDeleteSharedBitmap(
+void SynchronousLayerTreeFrameSink::DidDeleteSharedBitmap(
     const viz::SharedBitmapId& id) {
   // Webview does not use software compositing (other than resourceless draws,
   // but this is called for software /resources/).
   NOTREACHED();
 }
 
-void SynchronousLayerTreeFrameSinkImpl::Invalidate(bool needs_draw) {
-  DCHECK(CalledOnValidThread());
+void SynchronousLayerTreeFrameSink::Invalidate(bool needs_draw) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (sync_client_)
     sync_client_->Invalidate(needs_draw);
 }
 
-void SynchronousLayerTreeFrameSinkImpl::DemandDrawHw(
+void SynchronousLayerTreeFrameSink::DemandDrawHw(
     const gfx::Size& viewport_size,
     const gfx::Rect& viewport_rect_for_tile_priority,
     const gfx::Transform& transform_for_tile_priority) {
-  DCHECK(CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(HasClient());
   DCHECK(context_provider_.get());
 
@@ -449,13 +440,14 @@ void SynchronousLayerTreeFrameSinkImpl::DemandDrawHw(
   InvokeComposite(gfx::Transform(), gfx::Rect(viewport_size));
 }
 
-void SynchronousLayerTreeFrameSinkImpl::DemandDrawSwZeroCopy() {
+void SynchronousLayerTreeFrameSink::DemandDrawSwZeroCopy() {
   DCHECK(use_zero_copy_sw_draw_);
-  DemandDrawSw(SynchronousCompositorGetSkCanvas());
+  DemandDrawSw(
+      Platform::Current()->SynchronousCompositorGetSkCanvasForAndroidWebView());
 }
 
-void SynchronousLayerTreeFrameSinkImpl::DemandDrawSw(SkCanvas* canvas) {
-  DCHECK(CalledOnValidThread());
+void SynchronousLayerTreeFrameSink::DemandDrawSw(SkCanvas* canvas) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(canvas);
   DCHECK(!current_sw_canvas_);
 
@@ -475,16 +467,16 @@ void SynchronousLayerTreeFrameSinkImpl::DemandDrawSw(SkCanvas* canvas) {
   InvokeComposite(transform, viewport);
 }
 
-void SynchronousLayerTreeFrameSinkImpl::WillSkipDraw() {
+void SynchronousLayerTreeFrameSink::WillSkipDraw() {
   client_->OnDraw(gfx::Transform(), gfx::Rect(), in_software_draw_,
                   true /*skip_draw*/);
 }
 
-bool SynchronousLayerTreeFrameSinkImpl::UseZeroCopySoftwareDraw() {
+bool SynchronousLayerTreeFrameSink::UseZeroCopySoftwareDraw() {
   return use_zero_copy_sw_draw_;
 }
 
-void SynchronousLayerTreeFrameSinkImpl::InvokeComposite(
+void SynchronousLayerTreeFrameSink::InvokeComposite(
     const gfx::Transform& transform,
     const gfx::Rect& viewport) {
   did_submit_frame_ = false;
@@ -506,18 +498,19 @@ void SynchronousLayerTreeFrameSinkImpl::InvokeComposite(
   }
 }
 
-void SynchronousLayerTreeFrameSinkImpl::ReclaimResources(
+void SynchronousLayerTreeFrameSink::ReclaimResources(
     uint32_t layer_tree_frame_sink_id,
-    const std::vector<viz::ReturnedResource>& resources) {
+    const Vector<viz::ReturnedResource>& resources) {
   // Ignore message if it's a stale one coming from a different output surface
   // (e.g. after a lost context).
   if (layer_tree_frame_sink_id != layer_tree_frame_sink_id_)
     return;
-  client_->ReclaimResources(resources);
+  client_->ReclaimResources(
+      std::vector<viz::ReturnedResource>(resources.begin(), resources.end()));
 }
 
-void SynchronousLayerTreeFrameSinkImpl::SetMemoryPolicy(size_t bytes_limit) {
-  DCHECK(CalledOnValidThread());
+void SynchronousLayerTreeFrameSink::SetMemoryPolicy(size_t bytes_limit) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   bool became_zero = memory_policy_.bytes_limit_when_visible && !bytes_limit;
   bool became_non_zero =
       !memory_policy_.bytes_limit_when_visible && bytes_limit;
@@ -538,34 +531,26 @@ void SynchronousLayerTreeFrameSinkImpl::SetMemoryPolicy(size_t bytes_limit) {
   }
 }
 
-void SynchronousLayerTreeFrameSinkImpl::DidActivatePendingTree() {
-  DCHECK(CalledOnValidThread());
+void SynchronousLayerTreeFrameSink::DidActivatePendingTree() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (sync_client_)
     sync_client_->DidActivatePendingTree();
 }
 
-bool SynchronousLayerTreeFrameSinkImpl::Send(IPC::Message* message) {
-  DCHECK(CalledOnValidThread());
-  return sender_->Send(message);
-}
-
-bool SynchronousLayerTreeFrameSinkImpl::CalledOnValidThread() const {
-  return thread_checker_.CalledOnValidThread();
-}
-
-void SynchronousLayerTreeFrameSinkImpl::DidReceiveCompositorFrameAck(
-    const std::vector<viz::ReturnedResource>& resources) {
-  DCHECK(CalledOnValidThread());
+void SynchronousLayerTreeFrameSink::DidReceiveCompositorFrameAck(
+    const Vector<viz::ReturnedResource>& resources) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(viz_frame_submission_enabled_);
-  client_->ReclaimResources(resources);
+  client_->ReclaimResources(
+      std::vector<viz::ReturnedResource>(resources.begin(), resources.end()));
   // client_->DidReceiveCompositorFrameAck() is called just after frame
   // submission so cc won't be throttled on actual draw which can happen late
   // (or not happen at all) for WebView.
 }
 
-void SynchronousLayerTreeFrameSinkImpl::OnBeginFrame(
+void SynchronousLayerTreeFrameSink::OnBeginFrame(
     const viz::BeginFrameArgs& args,
-    const viz::FrameTimingDetailsMap& timing_details) {
+    const HashMap<uint32_t, viz::FrameTimingDetails>& timing_details) {
   DCHECK(viz_frame_submission_enabled_);
 
   // We do not receive BeginFrames via CompositorFrameSink, so we do not forward
@@ -574,23 +559,24 @@ void SynchronousLayerTreeFrameSinkImpl::OnBeginFrame(
 
   if (client_) {
     for (const auto& pair : timing_details) {
-      client_->DidPresentCompositorFrame(pair.first, pair.second);
+      client_->DidPresentCompositorFrame(pair.key, pair.value);
     }
   }
 }
 
-void SynchronousLayerTreeFrameSinkImpl::ReclaimResources(
-    const std::vector<viz::ReturnedResource>& resources) {
-  DCHECK(CalledOnValidThread());
+void SynchronousLayerTreeFrameSink::ReclaimResources(
+    const Vector<viz::ReturnedResource>& resources) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(viz_frame_submission_enabled_);
-  client_->ReclaimResources(resources);
+  client_->ReclaimResources(
+      std::vector<viz::ReturnedResource>(resources.begin(), resources.end()));
 }
 
-void SynchronousLayerTreeFrameSinkImpl::OnBeginFramePausedChanged(bool paused) {
+void SynchronousLayerTreeFrameSink::OnBeginFramePausedChanged(bool paused) {
   DCHECK(viz_frame_submission_enabled_);
 }
 
-void SynchronousLayerTreeFrameSinkImpl::OnNeedsBeginFrames(
+void SynchronousLayerTreeFrameSink::OnNeedsBeginFrames(
     bool needs_begin_frames) {
   needs_begin_frames_ = needs_begin_frames;
   if (sync_client_) {
@@ -598,7 +584,7 @@ void SynchronousLayerTreeFrameSinkImpl::OnNeedsBeginFrames(
   }
 }
 
-void SynchronousLayerTreeFrameSinkImpl::DidPresentCompositorFrame(
+void SynchronousLayerTreeFrameSink::DidPresentCompositorFrame(
     const viz::FrameTimingDetailsMap& timing_details) {
   DCHECK(!viz_frame_submission_enabled_ || timing_details.empty());
 
@@ -608,15 +594,15 @@ void SynchronousLayerTreeFrameSinkImpl::DidPresentCompositorFrame(
     client_->DidPresentCompositorFrame(pair.first, pair.second);
 }
 
-void SynchronousLayerTreeFrameSinkImpl::BeginFrame(
+void SynchronousLayerTreeFrameSink::BeginFrame(
     const viz::BeginFrameArgs& args) {
   if (external_begin_frame_source_)
     external_begin_frame_source_->OnBeginFrame(args);
 }
 
-void SynchronousLayerTreeFrameSinkImpl::SetBeginFrameSourcePaused(bool paused) {
+void SynchronousLayerTreeFrameSink::SetBeginFrameSourcePaused(bool paused) {
   if (external_begin_frame_source_)
     external_begin_frame_source_->OnSetBeginFrameSourcePaused(paused);
 }
 
-}  // namespace content
+}  // namespace blink

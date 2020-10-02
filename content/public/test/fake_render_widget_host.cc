@@ -62,6 +62,18 @@ void FakeRenderWidgetHost::SelectionBoundsChanged(
     base::i18n::TextDirection focus_dir,
     bool is_anchor_first) {}
 
+void FakeRenderWidgetHost::CreateFrameSink(
+    mojo::PendingReceiver<viz::mojom::CompositorFrameSink>
+        compositor_frame_sink_receiver,
+    mojo::PendingRemote<viz::mojom::CompositorFrameSinkClient>
+        compositor_frame_sink_client) {}
+
+void FakeRenderWidgetHost::RegisterRenderFrameMetadataObserver(
+    mojo::PendingReceiver<cc::mojom::RenderFrameMetadataObserverClient>
+        render_frame_metadata_observer_client_receiver,
+    mojo::PendingRemote<cc::mojom::RenderFrameMetadataObserver>
+        render_frame_metadata_observer) {}
+
 void FakeRenderWidgetHost::SetTouchActionFromMain(
     cc::TouchAction touch_action) {}
 

@@ -60,8 +60,7 @@ scoped_refptr<media::VideoFrame> CopyFrame(
         media::PIXEL_FORMAT_I420, frame->coded_size(), frame->visible_rect(),
         frame->natural_size(), frame->timestamp());
 
-    auto* const provider =
-        Platform::Current()->SharedMainThreadContextProvider();
+    auto provider = Platform::Current()->SharedMainThreadContextProvider();
     if (!provider) {
       // Return a black frame (yuv = {0, 0x80, 0x80}).
       return media::VideoFrame::CreateColorFrame(
@@ -74,7 +73,7 @@ scoped_refptr<media::VideoFrame> CopyFrame(
     cc::SkiaPaintCanvas paint_canvas(bitmap);
 
     DCHECK(provider->RasterInterface());
-    video_renderer->Copy(frame.get(), &paint_canvas, provider);
+    video_renderer->Copy(frame.get(), &paint_canvas, provider.get());
 
     SkPixmap pixmap;
     const bool result = bitmap.peekPixels(&pixmap);

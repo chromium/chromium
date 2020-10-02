@@ -1389,8 +1389,6 @@ source_set("browser") {
     "renderer_host/frame_metadata_util.h",
     "renderer_host/frame_navigation_entry.cc",
     "renderer_host/frame_navigation_entry.h",
-    "renderer_host/frame_sink_provider_impl.cc",
-    "renderer_host/frame_sink_provider_impl.h",
     "renderer_host/frame_token_message_queue.cc",
     "renderer_host/frame_token_message_queue.h",
     "renderer_host/frame_tree.cc",

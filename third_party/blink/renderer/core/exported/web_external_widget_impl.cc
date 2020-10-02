@@ -33,11 +33,13 @@ WebExternalWidgetImpl::WebExternalWidgetImpl(
         widget)
     : client_(client),
       debug_url_(debug_url),
-      widget_base_(std::make_unique<WidgetBase>(this,
-                                                std::move(widget_host),
-                                                std::move(widget),
-                                                /*hidden=*/false,
-                                                /*never_composited=*/false)) {
+      widget_base_(
+          std::make_unique<WidgetBase>(this,
+                                       std::move(widget_host),
+                                       std::move(widget),
+                                       /*hidden=*/false,
+                                       /*never_composited=*/false,
+                                       /*is_for_child_local_root=*/false)) {
   DCHECK(client_);
 }
 
@@ -71,7 +73,7 @@ WebHitTestResult WebExternalWidgetImpl::HitTestResultAt(const gfx::PointF&) {
   return {};
 }
 
-WebURL WebExternalWidgetImpl::GetURLForDebugTrace() {
+KURL WebExternalWidgetImpl::GetURLForDebugTrace() {
   return debug_url_;
 }
 
@@ -159,14 +161,6 @@ void WebExternalWidgetImpl::RequestMouseLock(
                                  std::move(callback));
 }
 
-#if defined(OS_ANDROID)
-SynchronousCompositorRegistry*
-WebExternalWidgetImpl::GetSynchronousCompositorRegistry() {
-  return widget_base_->widget_input_handler_manager()
-      ->GetSynchronousCompositorRegistry();
-}
-#endif
-
 void WebExternalWidgetImpl::ApplyVisualProperties(
     const VisualProperties& visual_properties) {
   widget_base_->UpdateVisualProperties(visual_properties);
@@ -231,11 +225,6 @@ void WebExternalWidgetImpl::SetRootLayer(scoped_refptr<cc::Layer> layer) {
   widget_base_->LayerTreeHost()->SetNonBlinkManagedRootLayer(layer);
 }
 
-void WebExternalWidgetImpl::RequestNewLayerTreeFrameSink(
-    LayerTreeFrameSinkCallback callback) {
-  client_->RequestNewLayerTreeFrameSink(std::move(callback));
-}
-
 void WebExternalWidgetImpl::RecordTimeToFirstActivePaint(
     base::TimeDelta duration) {
   client_->RecordTimeToFirstActivePaint(duration);
@@ -273,6 +262,11 @@ const ScreenInfo& WebExternalWidgetImpl::GetOriginalScreenInfo() {
 
 gfx::Rect WebExternalWidgetImpl::ViewportVisibleRect() {
   return widget_base_->CompositorViewportRect();
+}
+
+std::unique_ptr<cc::LayerTreeFrameSink>
+WebExternalWidgetImpl::AllocateNewLayerTreeFrameSink() {
+  return nullptr;
 }
 
 }  // namespace blink

@@ -146,11 +146,6 @@ class PepperExternalWidgetClient : public blink::WebExternalWidgetClient {
 
   void DidResize(const gfx::Size& size) override { widget_->DidResize(size); }
 
-  void RequestNewLayerTreeFrameSink(
-      LayerTreeFrameSinkCallback callback) override {
-    widget_->RequestNewLayerTreeFrameSink(std::move(callback));
-  }
-
   void RecordTimeToFirstActivePaint(base::TimeDelta duration) override {
     widget_->RecordTimeToFirstActivePaint(duration);
   }

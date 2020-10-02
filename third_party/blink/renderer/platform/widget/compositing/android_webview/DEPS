@@ -1,0 +1,8 @@
+include_rules = [
+    "+base/cancelable_callback.h",
+    "+components/viz/service/display",
+    "+components/viz/service/display_embedder",
+    "+components/viz/service/frame_sinks",
+    "+services/viz/public/mojom",
+    "+gpu/command_buffer",
+]

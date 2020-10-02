@@ -934,7 +934,7 @@ void WebMediaPlayerMS::Paint(cc::PaintCanvas* canvas,
 
   const scoped_refptr<media::VideoFrame> frame = compositor_->GetCurrentFrame();
 
-  viz::RasterContextProvider* provider = nullptr;
+  scoped_refptr<viz::RasterContextProvider> provider;
   if (frame && frame->HasTextures()) {
     provider = Platform::Current()->SharedMainThreadContextProvider();
     // GPU Process crashed.
@@ -943,7 +943,7 @@ void WebMediaPlayerMS::Paint(cc::PaintCanvas* canvas,
   }
   const gfx::RectF dest_rect(rect.x, rect.y, rect.width, rect.height);
   video_renderer_.Paint(frame, canvas, dest_rect, flags, video_transformation_,
-                        provider);
+                        provider.get());
 }
 
 bool WebMediaPlayerMS::WouldTaintOrigin() const {
@@ -1120,14 +1120,14 @@ bool WebMediaPlayerMS::CopyVideoTextureToPlatformTexture(
   if (!video_frame.get() || !video_frame->HasTextures())
     return false;
 
-  auto* provider = Platform::Current()->SharedMainThreadContextProvider();
+  auto provider = Platform::Current()->SharedMainThreadContextProvider();
   // GPU Process crashed.
   if (!provider)
     return false;
 
   return video_renderer_.CopyVideoFrameTexturesToGLTexture(
-      provider, gl, video_frame.get(), target, texture, internal_format, format,
-      type, level, premultiply_alpha, flip_y);
+      provider.get(), gl, video_frame.get(), target, texture, internal_format,
+      format, type, level, premultiply_alpha, flip_y);
 }
 
 bool WebMediaPlayerMS::CopyVideoYUVDataToPlatformTexture(
@@ -1152,14 +1152,14 @@ bool WebMediaPlayerMS::CopyVideoYUVDataToPlatformTexture(
   if (video_frame->HasTextures())
     return false;
 
-  auto* provider = Platform::Current()->SharedMainThreadContextProvider();
+  auto provider = Platform::Current()->SharedMainThreadContextProvider();
   // GPU Process crashed.
   if (!provider)
     return false;
 
   return video_renderer_.CopyVideoFrameYUVDataToGLTexture(
-      provider, gl, *video_frame, target, texture, internal_format, format,
-      type, level, premultiply_alpha, flip_y);
+      provider.get(), gl, *video_frame, target, texture, internal_format,
+      format, type, level, premultiply_alpha, flip_y);
 }
 
 bool WebMediaPlayerMS::TexImageImpl(TexImageFunctionID functionID,
@@ -1187,7 +1187,7 @@ bool WebMediaPlayerMS::TexImageImpl(TexImageFunctionID functionID,
   }
 
   if (functionID == kTexImage2D) {
-    auto* provider = Platform::Current()->SharedMainThreadContextProvider();
+    auto provider = Platform::Current()->SharedMainThreadContextProvider();
     // GPU Process crashed.
     if (!provider)
       return false;

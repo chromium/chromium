@@ -194,7 +194,8 @@ WebFrameWidgetImpl::WebFrameWidgetImpl(
                          std::move(widget_host),
                          std::move(widget),
                          hidden,
-                         never_composited),
+                         never_composited,
+                         /*is_for_child_local_root=*/true),
       self_keep_alive_(PERSISTENT_FROM_HERE, this) {}
 
 WebFrameWidgetImpl::~WebFrameWidgetImpl() = default;
@@ -713,13 +714,6 @@ void WebFrameWidgetImpl::UpdateRenderThrottlingStatusForSubFrame(
   DCHECK(LocalRootImpl()->Parent()->IsWebRemoteFrame());
   LocalRootImpl()->GetFrameView()->UpdateRenderThrottlingStatus(
       is_throttled, subtree_throttled, true);
-}
-
-WebURL WebFrameWidgetImpl::GetURLForDebugTrace() {
-  WebFrame* main_frame = View()->MainFrame();
-  if (main_frame->IsWebLocalFrame())
-    return main_frame->ToWebLocalFrame()->GetDocument().Url();
-  return {};
 }
 
 void WebFrameWidgetImpl::HandleMouseLeave(LocalFrame& main_frame,

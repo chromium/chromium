@@ -186,7 +186,7 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
 #if defined(OS_ANDROID)
   // WebView should always raster in the default color space.
   // Synchronous compositing indicates WebView.
-  if (!platform->IsSynchronousCompositingEnabled())
+  if (!platform->IsSynchronousCompositingEnabledForAndroidWebView())
     settings.prefer_raster_in_srgb = ::features::IsDynamicColorGamutEnabled();
 
   // We can use a more aggressive limit on Android since decodes tend to take
@@ -392,7 +392,7 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
 
 #if defined(OS_ANDROID)
   bool using_synchronous_compositor =
-      platform->IsSynchronousCompositingEnabled();
+      platform->IsSynchronousCompositingEnabledForAndroidWebView();
   bool using_low_memory_policy =
       base::SysInfo::IsLowEndDevice() && !IsSmallScreen(screen_size);
 

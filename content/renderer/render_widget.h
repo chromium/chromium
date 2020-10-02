@@ -232,8 +232,6 @@ class CONTENT_EXPORT RenderWidget
   void RecordTimeToFirstActivePaint(base::TimeDelta duration) override;
   void DidCommitCompositorFrame(base::TimeTicks commit_start_time) override;
   void DidCompletePageScaleAnimation() override;
-  void RequestNewLayerTreeFrameSink(
-      LayerTreeFrameSinkCallback callback) override;
   bool WillHandleMouseEvent(const blink::WebMouseEvent& event) override;
   bool CanComposeInline() override;
   bool ShouldDispatchImeEventsToPepper() override;

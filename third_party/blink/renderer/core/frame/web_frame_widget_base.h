@@ -75,7 +75,8 @@ class CORE_EXPORT WebFrameWidgetBase
       CrossVariantMojoAssociatedReceiver<mojom::blink::WidgetInterfaceBase>
           widget,
       bool hidden,
-      bool never_composited);
+      bool never_composited,
+      bool is_for_child_local_root);
   ~WebFrameWidgetBase() override;
 
   // Returns the WebFrame that this widget is attached to. It will be a local
@@ -311,9 +312,6 @@ class CORE_EXPORT WebFrameWidgetBase
           void(mojom::blink::PointerLockResult,
                CrossVariantMojoRemote<
                    mojom::blink::PointerLockContextInterfaceBase>)>) override;
-#if defined(OS_ANDROID)
-  SynchronousCompositorRegistry* GetSynchronousCompositorRegistry() override;
-#endif
   void ApplyVisualProperties(
       const VisualProperties& visual_properties) override;
   bool IsFullscreenGranted() override;
@@ -334,8 +332,8 @@ class CORE_EXPORT WebFrameWidgetBase
   void RecordTimeToFirstActivePaint(base::TimeDelta duration) override;
   void EndCommitCompositorFrame(base::TimeTicks commit_start_time) override;
   void DidCommitAndDrawCompositorFrame() override;
-  void RequestNewLayerTreeFrameSink(
-      LayerTreeFrameSinkCallback callback) override;
+  std::unique_ptr<cc::LayerTreeFrameSink> AllocateNewLayerTreeFrameSink()
+      override;
   void DidCompletePageScaleAnimation() override;
   void DidObserveFirstScrollDelay(
       base::TimeDelta first_scroll_delay,
@@ -367,6 +365,7 @@ class CORE_EXPORT WebFrameWidgetBase
       override;
   void WasHidden() override;
   void WasShown(bool was_evicted) override;
+  KURL GetURLForDebugTrace() override;
 
   // mojom::blink::FrameWidget methods.
   void DragTargetDragOver(const gfx::PointF& point_in_viewport,

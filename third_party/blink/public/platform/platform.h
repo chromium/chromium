@@ -68,6 +68,8 @@
 #include "third_party/webrtc/api/video/video_codec_type.h"
 #include "ui/base/resource/scale_factor.h"
 
+class SkCanvas;
+
 namespace base {
 class SingleThreadTaskRunner;
 }
@@ -529,7 +531,22 @@ class BLINK_PLATFORM_EXPORT Platform {
 #if defined(OS_ANDROID)
   // Returns if synchronous compositing is enabled. Only used for Android
   // webview.
-  virtual bool IsSynchronousCompositingEnabled() { return false; }
+  virtual bool IsSynchronousCompositingEnabledForAndroidWebView() {
+    return false;
+  }
+
+  // Returns if zero copy synchronouse software draw is enabled. Only used
+  // when SynchronousCompositing is enabled and only when in single process
+  // mode.
+  virtual bool IsZeroCopySynchronousSwDrawEnabledForAndroidWebView() {
+    return false;
+  }
+
+  // Return the SkCanvas that is to be used if
+  // ZeroCopySynchronousSwDrawEnabled returns true.
+  virtual SkCanvas* SynchronousCompositorGetSkCanvasForAndroidWebView() {
+    return nullptr;
+  }
 #endif
 
   // Whether zoom for dsf is enabled. When true, inputs to blink would all be
@@ -547,14 +564,26 @@ class BLINK_PLATFORM_EXPORT Platform {
   // Whether the scroll animator that produces smooth scrolling is enabled.
   virtual bool IsScrollAnimatorEnabled() { return true; }
 
+  // Returns a context provider that will be bound on the main thread
+  // thread.
+  virtual scoped_refptr<viz::RasterContextProvider>
+  SharedMainThreadContextProvider();
+
+  // Returns a worker context provider that will be bound on the compositor
+  // thread.
+  virtual scoped_refptr<viz::RasterContextProvider>
+  SharedCompositorWorkerContextProvider();
+
+  // Synchronously establish a channel to the GPU plugin if not previously
+  // established or if it has been lost (for example if the GPU plugin crashed).
+  // If there is a pending asynchronous request, it will be completed by the
+  // time this routine returns.
+  virtual scoped_refptr<gpu::GpuChannelHost> EstablishGpuChannelSync();
+
   // Media stream ----------------------------------------------------
   virtual scoped_refptr<media::AudioCapturerSource> NewAudioCapturerSource(
       blink::WebLocalFrame* web_frame,
       const media::AudioSourceParameters& params) {
-    return nullptr;
-  }
-
-  virtual viz::RasterContextProvider* SharedMainThreadContextProvider() {
     return nullptr;
   }
 

@@ -37,7 +37,8 @@ WebViewFrameWidget::WebViewFrameWidget(
                          std::move(widget_host),
                          std::move(widget),
                          hidden,
-                         never_composited),
+                         never_composited,
+                         /*is_for_child_local_root=*/false),
       web_view_(&web_view),
       is_for_nested_main_frame_(is_for_nested_main_frame),
       self_keep_alive_(PERSISTENT_FROM_HERE, this) {
@@ -225,10 +226,6 @@ void WebViewFrameWidget::CalculateSelectionBounds(gfx::Rect& anchor_root_frame,
       frame_view->ConvertToRootFrame(anchor));
   focus_root_frame = visual_viewport.RootFrameToViewport(
       frame_view->ConvertToRootFrame(focus));
-}
-
-WebURL WebViewFrameWidget::GetURLForDebugTrace() {
-  return web_view_->GetURLForDebugTrace();
 }
 
 WebString WebViewFrameWidget::GetLastToolTipTextForTesting() const {

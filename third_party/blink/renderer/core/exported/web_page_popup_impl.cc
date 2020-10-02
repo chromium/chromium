@@ -253,11 +253,13 @@ WebPagePopupImpl::WebPagePopupImpl(
     CrossVariantMojoAssociatedReceiver<mojom::blink::WidgetInterfaceBase>
         widget)
     : web_page_popup_client_(client),
-      widget_base_(std::make_unique<WidgetBase>(this,
-                                                std::move(widget_host),
-                                                std::move(widget),
-                                                /*hidden=*/false,
-                                                /*never_composited=*/false)) {
+      widget_base_(
+          std::make_unique<WidgetBase>(this,
+                                       std::move(widget_host),
+                                       std::move(widget),
+                                       /*hidden=*/false,
+                                       /*never_composited=*/false,
+                                       /*is_for_child_local_root=*/false)) {
   DCHECK(client);
 }
 
@@ -467,14 +469,6 @@ void WebPagePopupImpl::RequestMouseLock(
                                  std::move(callback));
 }
 
-#if defined(OS_ANDROID)
-SynchronousCompositorRegistry*
-WebPagePopupImpl::GetSynchronousCompositorRegistry() {
-  return widget_base_->widget_input_handler_manager()
-      ->GetSynchronousCompositorRegistry();
-}
-#endif
-
 void WebPagePopupImpl::ApplyVisualProperties(
     const VisualProperties& visual_properties) {
   widget_base_->UpdateVisualProperties(visual_properties);
@@ -592,11 +586,6 @@ void WebPagePopupImpl::SetSuppressFrameRequestsWorkaroundFor704763Only(
     return;
   page_->Animator().SetSuppressFrameRequestsWorkaroundFor704763Only(
       suppress_frame_requests);
-}
-
-void WebPagePopupImpl::RequestNewLayerTreeFrameSink(
-    LayerTreeFrameSinkCallback callback) {
-  WidgetClient()->RequestNewLayerTreeFrameSink(std::move(callback));
 }
 
 void WebPagePopupImpl::RecordTimeToFirstActivePaint(base::TimeDelta duration) {
@@ -825,7 +814,7 @@ gfx::Rect WebPagePopupImpl::ViewportVisibleRect() {
   return widget_base_->CompositorViewportRect();
 }
 
-WebURL WebPagePopupImpl::GetURLForDebugTrace() {
+KURL WebPagePopupImpl::GetURLForDebugTrace() {
   if (!page_)
     return {};
   WebFrame* main_frame = web_view_->MainFrame();
@@ -959,6 +948,11 @@ void WebPagePopupImpl::EmulatedToScreenRect(gfx::Rect& screen_rect) {
   screen_rect.set_y(opener_original_widget_screen_origin_.y() +
                     (screen_rect.y() - opener_widget_screen_origin_.y()) *
                         opener_emulator_scale_);
+}
+
+std::unique_ptr<cc::LayerTreeFrameSink>
+WebPagePopupImpl::AllocateNewLayerTreeFrameSink() {
+  return nullptr;
 }
 
 // WebPagePopup ----------------------------------------------------------------

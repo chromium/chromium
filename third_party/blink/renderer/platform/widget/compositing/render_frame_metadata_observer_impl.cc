@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/renderer/render_frame_metadata_observer_impl.h"
+#include "third_party/blink/renderer/platform/widget/compositing/render_frame_metadata_observer_impl.h"
 
 #include <cmath>
 
@@ -10,17 +10,18 @@
 #include "build/build_config.h"
 #include "components/viz/common/quads/compositor_frame_metadata.h"
 
-namespace content {
+namespace blink {
 
 namespace {
 #if defined(OS_ANDROID)
 constexpr float kEdgeThreshold = 10.0f;
 #endif
-}
+}  // namespace
 
 RenderFrameMetadataObserverImpl::RenderFrameMetadataObserverImpl(
-    mojo::PendingReceiver<cc::mojom::RenderFrameMetadataObserver> receiver,
-    mojo::PendingRemote<cc::mojom::RenderFrameMetadataObserverClient>
+    mojo::PendingReceiver<cc::mojom::blink::RenderFrameMetadataObserver>
+        receiver,
+    mojo::PendingRemote<cc::mojom::blink::RenderFrameMetadataObserverClient>
         client_remote)
     : receiver_(std::move(receiver)),
       client_remote_(std::move(client_remote)) {}
@@ -225,4 +226,4 @@ bool RenderFrameMetadataObserverImpl::ShouldSendRenderFrameMetadata(
   return false;
 }
 
-}  // namespace content
+}  // namespace blink

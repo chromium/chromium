@@ -18,7 +18,11 @@ class StubWidgetBaseClient : public WidgetBaseClient {
   void BeginMainFrame(base::TimeTicks) override {}
   void RecordTimeToFirstActivePaint(base::TimeDelta) override {}
   void UpdateLifecycle(WebLifecycleUpdate, DocumentUpdateReason) override {}
-  void RequestNewLayerTreeFrameSink(LayerTreeFrameSinkCallback) override {}
+  std::unique_ptr<cc::LayerTreeFrameSink> AllocateNewLayerTreeFrameSink()
+      override {
+    return nullptr;
+  }
+  KURL GetURLForDebugTrace() override { return {}; }
   WebInputEventResult DispatchBufferedTouchEvents() override {
     return WebInputEventResult::kNotHandled;
   }
@@ -72,8 +76,9 @@ class WidgetCompositorTest : public cc::LayerTreeTest {
             blink::mojom::WidgetHostInterfaceBase>(),
         blink::CrossVariantMojoAssociatedReceiver<
             blink::mojom::WidgetInterfaceBase>(),
-        /* is_hidden */ false,
-        /* never_composited */ false);
+        /*is_hidden=*/false,
+        /*never_composited=*/false,
+        /*is_for_child_local_root=*/false);
 
     widget_compositor_ = base::MakeRefCounted<FakeWidgetCompositor>(
         layer_tree_host(), widget_base_->GetWeakPtr(),

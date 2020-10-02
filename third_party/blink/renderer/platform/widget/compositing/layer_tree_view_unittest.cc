@@ -123,14 +123,8 @@ class LayerTreeViewWithFrameSinkTracking : public LayerTreeView {
  public:
   LayerTreeViewWithFrameSinkTracking(
       FakeLayerTreeViewDelegate* delegate,
-      scoped_refptr<base::SingleThreadTaskRunner> main_thread,
-      scoped_refptr<base::SingleThreadTaskRunner> compositor_thread,
-      cc::TaskGraphRunner* task_graph_runner,
       blink::scheduler::WebThreadScheduler* scheduler)
       : LayerTreeView(delegate,
-                      std::move(main_thread),
-                      std::move(compositor_thread),
-                      task_graph_runner,
                       scheduler),
         delegate_(delegate) {}
 
@@ -211,14 +205,13 @@ class LayerTreeViewWithFrameSinkTrackingTest : public testing::Test {
   LayerTreeViewWithFrameSinkTrackingTest()
       : layer_tree_view_(
             &layer_tree_view_delegate_,
-            blink::scheduler::GetSingleThreadTaskRunnerForTesting(),
-            /*compositor_thread=*/nullptr,
-            &test_task_graph_runner_,
             &fake_thread_scheduler_) {
     cc::LayerTreeSettings settings;
     settings.single_thread_proxy_scheduler = false;
-    layer_tree_view_.Initialize(settings,
-                                std::make_unique<cc::TestUkmRecorderFactory>());
+    layer_tree_view_.Initialize(
+        settings, blink::scheduler::GetSingleThreadTaskRunnerForTesting(),
+        /*compositor_thread=*/nullptr, &test_task_graph_runner_,
+        std::make_unique<cc::TestUkmRecorderFactory>());
   }
 
   void RunTest(int expected_successes, FailureMode failure_mode) {
@@ -302,14 +295,8 @@ class VisibilityTestLayerTreeView : public LayerTreeView {
  public:
   VisibilityTestLayerTreeView(
       StubLayerTreeViewDelegate* delegate,
-      scoped_refptr<base::SingleThreadTaskRunner> main_thread,
-      scoped_refptr<base::SingleThreadTaskRunner> compositor_thread,
-      cc::TaskGraphRunner* task_graph_runner,
       blink::scheduler::WebThreadScheduler* scheduler)
       : LayerTreeView(delegate,
-                      std::move(main_thread),
-                      std::move(compositor_thread),
-                      task_graph_runner,
                       scheduler) {}
 
   void RequestNewLayerTreeFrameSink() override {
@@ -339,12 +326,13 @@ TEST(LayerTreeViewTest, VisibilityTest) {
   StubLayerTreeViewDelegate layer_tree_view_delegate;
   VisibilityTestLayerTreeView layer_tree_view(
       &layer_tree_view_delegate,
-      blink::scheduler::GetSingleThreadTaskRunnerForTesting(),
-      /*compositor_thread=*/nullptr, &test_task_graph_runner,
       &fake_thread_scheduler);
 
-  layer_tree_view.Initialize(cc::LayerTreeSettings(),
-                             std::make_unique<cc::TestUkmRecorderFactory>());
+  layer_tree_view.Initialize(
+      cc::LayerTreeSettings(),
+      blink::scheduler::GetSingleThreadTaskRunnerForTesting(),
+      /*compositor_thread=*/nullptr, &test_task_graph_runner,
+      std::make_unique<cc::TestUkmRecorderFactory>());
 
   {
     // Make one request and stop immediately while invisible.

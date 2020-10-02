@@ -7,11 +7,19 @@
 #include "base/command_line.h"
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
+#include "cc/mojo_embedder/async_layer_tree_frame_sink.h"
 #include "cc/trees/layer_tree_host.h"
 #include "cc/trees/layer_tree_settings.h"
 #include "cc/trees/ukm_manager.h"
+#include "components/viz/common/features.h"
+#include "components/viz/common/switches.h"
+#include "gpu/command_buffer/client/shared_memory_limits.h"
+#include "gpu/command_buffer/common/context_creation_attribs.h"
+#include "gpu/ipc/client/gpu_channel_host.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
+#include "services/viz/public/cpp/gpu/context_provider_command_buffer.h"
+#include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom-blink.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_input_event_attribution.h"
 #include "third_party/blink/public/common/switches.h"
@@ -19,14 +27,17 @@
 #include "third_party/blink/public/mojom/input/pointer_lock_context.mojom-blink.h"
 #include "third_party/blink/public/mojom/page/record_content_to_visible_time_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/widget/visual_properties.mojom-blink.h"
+#include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/scheduler/web_render_widget_scheduling_state.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 #include "third_party/blink/public/platform/scheduler/web_widget_scheduler.h"
+#include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/widget/compositing/layer_tree_settings.h"
 #include "third_party/blink/renderer/platform/widget/compositing/layer_tree_view.h"
+#include "third_party/blink/renderer/platform/widget/compositing/render_frame_metadata_observer_impl.h"
 #include "third_party/blink/renderer/platform/widget/compositing/widget_compositor.h"
 #include "third_party/blink/renderer/platform/widget/frame_widget.h"
 #include "third_party/blink/renderer/platform/widget/input/ime_event_guard.h"
@@ -37,11 +48,30 @@
 #include "ui/gfx/geometry/dip_util.h"
 #include "ui/gfx/presentation_feedback.h"
 
+#if defined(OS_ANDROID)
+#include "third_party/blink/renderer/platform/widget/compositing/android_webview/synchronous_layer_tree_frame_sink.h"
+#endif
+
 namespace blink {
 
 namespace {
 
+#if defined(OS_ANDROID)
+// Unique identifier for each output surface created.
+uint32_t g_next_layer_tree_frame_sink_id = 1;
+#endif
+
+// Used for renderer compositor thread context, WebGL (when high priority is
+// not requested by workaround), canvas, etc.
+const gpu::SchedulingPriority kGpuStreamPriorityDefault =
+    gpu::SchedulingPriority::kNormal;
+
+const uint32_t kGpuStreamIdDefault = 0;
+
 static const int kInvalidNextPreviousFlagsValue = -1;
+
+static const char kOOPIF[] = "OOPIF";
+static const char kRenderer[] = "Renderer";
 
 void OnDidPresentForceDrawFrame(
     mojom::blink::Widget::ForceRedrawCallback callback,
@@ -92,6 +122,17 @@ unsigned OrientationTypeToAngle(mojom::blink::ScreenOrientation type) {
   return angle;
 }
 
+std::unique_ptr<viz::SyntheticBeginFrameSource>
+CreateSyntheticBeginFrameSource() {
+  base::SingleThreadTaskRunner* compositor_impl_side_task_runner =
+      Platform::Current()->CompositorThreadTaskRunner()
+          ? Platform::Current()->CompositorThreadTaskRunner().get()
+          : base::ThreadTaskRunnerHandle::Get().get();
+  return std::make_unique<viz::BackToBackBeginFrameSource>(
+      std::make_unique<viz::DelayBasedTimeSource>(
+          compositor_impl_side_task_runner));
+}
+
 }  // namespace
 
 WidgetBase::WidgetBase(
@@ -100,14 +141,16 @@ WidgetBase::WidgetBase(
         widget_host,
     CrossVariantMojoAssociatedReceiver<mojom::WidgetInterfaceBase> widget,
     bool hidden,
-    bool never_composited)
+    bool never_composited,
+    bool is_for_child_local_root)
     : client_(client),
       widget_host_(std::move(widget_host)),
       receiver_(this, std::move(widget)),
       next_previous_flags_(kInvalidNextPreviousFlagsValue),
       use_zoom_for_dsf_(Platform::Current()->IsUseZoomForDSFEnabled()),
       is_hidden_(hidden),
-      never_composited_(never_composited) {
+      never_composited_(never_composited),
+      is_for_child_local_root_(is_for_child_local_root) {
   if (auto* main_thread_scheduler =
           scheduler::WebThreadScheduler::MainThreadScheduler()) {
     render_widget_scheduling_state_ =
@@ -127,19 +170,13 @@ void WidgetBase::InitializeCompositing(
     const ScreenInfo& screen_info,
     std::unique_ptr<cc::UkmRecorderFactory> ukm_recorder_factory,
     const cc::LayerTreeSettings* settings) {
-  scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner =
+  main_thread_compositor_task_runner_ =
       main_thread_scheduler->CompositorTaskRunner();
-  if (!main_thread_task_runner)
-    main_thread_task_runner = base::ThreadTaskRunnerHandle::Get();
 
   auto* compositing_thread_scheduler =
       scheduler::WebThreadScheduler::CompositorThreadScheduler();
-  layer_tree_view_ = std::make_unique<LayerTreeView>(
-      this, main_thread_task_runner,
-      compositing_thread_scheduler
-          ? compositing_thread_scheduler->DefaultTaskRunner()
-          : nullptr,
-      task_graph_runner, main_thread_scheduler);
+  layer_tree_view_ =
+      std::make_unique<LayerTreeView>(this, main_thread_scheduler);
 
   base::Optional<cc::LayerTreeSettings> default_settings;
   if (!settings) {
@@ -149,7 +186,12 @@ void WidgetBase::InitializeCompositing(
     settings = &default_settings.value();
   }
   screen_info_ = screen_info;
-  layer_tree_view_->Initialize(*settings, std::move(ukm_recorder_factory));
+  layer_tree_view_->Initialize(
+      *settings, main_thread_compositor_task_runner_,
+      compositing_thread_scheduler
+          ? compositing_thread_scheduler->DefaultTaskRunner()
+          : nullptr,
+      task_graph_runner, std::move(ukm_recorder_factory));
 
   FrameWidget* frame_widget = client_->FrameWidget();
 
@@ -447,7 +489,188 @@ void WidgetBase::RequestNewLayerTreeFrameSink(
   // never get a request for a cc::LayerTreeFrameSink.
   DCHECK(!never_composited_);
 
-  client_->RequestNewLayerTreeFrameSink(std::move(callback));
+  // Provide a hook for testing to provide their own layer tree frame sink, if
+  // one is returned just run the callback.
+  if (std::unique_ptr<cc::LayerTreeFrameSink> sink =
+          client_->AllocateNewLayerTreeFrameSink()) {
+    std::move(callback).Run(std::move(sink), nullptr);
+    return;
+  }
+
+  KURL url = client_->GetURLForDebugTrace();
+  // The |url| is not always available, fallback to a fixed string.
+  if (url.IsEmpty())
+    url = KURL("chrome://gpu/WidgetBase::RequestNewLayerTreeFrameSink");
+
+  // TODO(danakj): This may not be accurate, depending on the intent. A child
+  // local root could be in the same process as the view, so if the client is
+  // meant to designate the process type, it seems kRenderer would be the
+  // correct choice. If client is meant to designate the widget type, then
+  // kOOPIF would denote that it is not for the main frame. However, kRenderer
+  // would also be used for other widgets such as popups.
+  const char* client_name = is_for_child_local_root_ ? kOOPIF : kRenderer;
+  const bool for_web_tests = WebTestMode();
+  // Misconfigured bots (eg. crbug.com/780757) could run web tests on a
+  // machine where gpu compositing doesn't work. Don't crash in that case.
+  if (for_web_tests && Platform::Current()->IsGpuCompositingDisabled()) {
+    LOG(FATAL) << "Web tests require gpu compositing, but it is disabled.";
+    return;
+  }
+
+  // TODO(jonross): Have this generated by the LayerTreeFrameSink itself, which
+  // would then handle binding.
+  mojo::PendingRemote<cc::mojom::blink::RenderFrameMetadataObserver>
+      render_frame_metadata_observer_remote;
+  mojo::PendingRemote<cc::mojom::blink::RenderFrameMetadataObserverClient>
+      render_frame_metadata_client_remote;
+  mojo::PendingReceiver<cc::mojom::blink::RenderFrameMetadataObserverClient>
+      render_frame_metadata_observer_client_receiver =
+          render_frame_metadata_client_remote.InitWithNewPipeAndPassReceiver();
+  auto render_frame_metadata_observer =
+      std::make_unique<RenderFrameMetadataObserverImpl>(
+          render_frame_metadata_observer_remote
+              .InitWithNewPipeAndPassReceiver(),
+          std::move(render_frame_metadata_client_remote));
+
+  const base::CommandLine& command_line =
+      *base::CommandLine::ForCurrentProcess();
+  cc::mojo_embedder::AsyncLayerTreeFrameSink::InitParams params;
+  params.compositor_task_runner =
+      Platform::Current()->CompositorThreadTaskRunner();
+  if (for_web_tests && !params.compositor_task_runner) {
+    // The frame sink provider expects a compositor task runner, but we might
+    // not have that if we're running web tests in single threaded mode.
+    // Set it to be our thread's task runner instead.
+    params.compositor_task_runner = main_thread_compositor_task_runner_;
+  }
+
+  // The renderer runs animations and layout for animate_only BeginFrames.
+  params.wants_animate_only_begin_frames = true;
+
+  // In disable frame rate limit mode, also let the renderer tick as fast as it
+  // can. The top level begin frame source will also be running as a back to
+  // back begin frame source, but using a synthetic begin frame source here
+  // reduces latency when in this mode (at least for frames starting--it
+  // potentially increases it for input on the other hand.)
+  if (command_line.HasSwitch(::switches::kDisableFrameRateLimit))
+    params.synthetic_begin_frame_source = CreateSyntheticBeginFrameSource();
+
+  params.client_name = client_name;
+
+  mojo::PendingReceiver<viz::mojom::blink::CompositorFrameSink>
+      compositor_frame_sink_receiver = CrossVariantMojoReceiver<
+          viz::mojom::blink::CompositorFrameSinkInterfaceBase>(
+          params.pipes.compositor_frame_sink_remote
+              .InitWithNewPipeAndPassReceiver());
+  mojo::PendingRemote<viz::mojom::blink::CompositorFrameSinkClient>
+      compositor_frame_sink_client;
+  params.pipes.client_receiver = CrossVariantMojoReceiver<
+      viz::mojom::blink::CompositorFrameSinkClientInterfaceBase>(
+      compositor_frame_sink_client.InitWithNewPipeAndPassReceiver());
+
+  if (Platform::Current()->IsGpuCompositingDisabled()) {
+    DCHECK(!for_web_tests);
+    widget_host_->CreateFrameSink(std::move(compositor_frame_sink_receiver),
+                                  std::move(compositor_frame_sink_client));
+    widget_host_->RegisterRenderFrameMetadataObserver(
+        std::move(render_frame_metadata_observer_client_receiver),
+        std::move(render_frame_metadata_observer_remote));
+    std::move(callback).Run(
+        std::make_unique<cc::mojo_embedder::AsyncLayerTreeFrameSink>(
+            nullptr, nullptr, &params),
+        std::move(render_frame_metadata_observer));
+    return;
+  }
+
+  scoped_refptr<gpu::GpuChannelHost> gpu_channel_host =
+      Platform::Current()->EstablishGpuChannelSync();
+  if (!gpu_channel_host) {
+    // Wait and try again. We may hear that the compositing mode has switched
+    // to software in the meantime.
+    std::move(callback).Run(nullptr, nullptr);
+    return;
+  }
+
+  scoped_refptr<viz::RasterContextProvider> worker_context_provider =
+      Platform::Current()->SharedCompositorWorkerContextProvider();
+  if (!worker_context_provider) {
+    // Cause the compositor to wait and try again.
+    std::move(callback).Run(nullptr, nullptr);
+    return;
+  }
+
+  // The renderer compositor context doesn't do a lot of stuff, so we don't
+  // expect it to need a lot of space for commands or transfer. Raster and
+  // uploads happen on the worker context instead.
+  gpu::SharedMemoryLimits limits = gpu::SharedMemoryLimits::ForMailboxContext();
+
+  // This is for an offscreen context for the compositor. So the default
+  // framebuffer doesn't need alpha, depth, stencil, antialiasing.
+  gpu::ContextCreationAttribs attributes;
+  attributes.alpha_size = -1;
+  attributes.depth_size = 0;
+  attributes.stencil_size = 0;
+  attributes.samples = 0;
+  attributes.sample_buffers = 0;
+  attributes.bind_generates_resource = false;
+  attributes.lose_context_when_out_of_memory = true;
+  attributes.enable_gles2_interface = true;
+  attributes.enable_raster_interface = false;
+  attributes.enable_oop_rasterization = false;
+
+  constexpr bool automatic_flushes = false;
+  constexpr bool support_locking = false;
+  constexpr bool support_grcontext = true;
+  gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager =
+      Platform::Current()->GetGpuMemoryBufferManager();
+
+  scoped_refptr<viz::ContextProviderCommandBuffer> context_provider(
+      new viz::ContextProviderCommandBuffer(
+          gpu_channel_host, gpu_memory_buffer_manager, kGpuStreamIdDefault,
+          kGpuStreamPriorityDefault, gpu::kNullSurfaceHandle, url,
+          automatic_flushes, support_locking, support_grcontext, limits,
+          attributes,
+          viz::command_buffer_metrics::ContextType::RENDER_COMPOSITOR));
+
+#if defined(OS_ANDROID)
+  if (Platform::Current()->IsSynchronousCompositingEnabledForAndroidWebView()) {
+    // TODO(ericrk): Collapse with non-webview registration below.
+    if (::features::IsUsingVizFrameSubmissionForWebView()) {
+      widget_host_->CreateFrameSink(std::move(compositor_frame_sink_receiver),
+                                    std::move(compositor_frame_sink_client));
+    }
+    widget_host_->RegisterRenderFrameMetadataObserver(
+        std::move(render_frame_metadata_observer_client_receiver),
+        std::move(render_frame_metadata_observer_remote));
+
+    std::move(callback).Run(
+        std::make_unique<SynchronousLayerTreeFrameSink>(
+            std::move(context_provider), std::move(worker_context_provider),
+            Platform::Current()->CompositorThreadTaskRunner(),
+            gpu_memory_buffer_manager, g_next_layer_tree_frame_sink_id++,
+            std::move(params.synthetic_begin_frame_source),
+            widget_input_handler_manager_->GetSynchronousCompositorRegistry(),
+            CrossVariantMojoRemote<
+                viz::mojom::blink::CompositorFrameSinkInterfaceBase>(
+                std::move(params.pipes.compositor_frame_sink_remote)),
+            CrossVariantMojoReceiver<
+                viz::mojom::blink::CompositorFrameSinkClientInterfaceBase>(
+                std::move(params.pipes.client_receiver))),
+        std::move(render_frame_metadata_observer));
+    return;
+  }
+#endif
+  widget_host_->CreateFrameSink(std::move(compositor_frame_sink_receiver),
+                                std::move(compositor_frame_sink_client));
+  widget_host_->RegisterRenderFrameMetadataObserver(
+      std::move(render_frame_metadata_observer_client_receiver),
+      std::move(render_frame_metadata_observer_remote));
+  params.gpu_memory_buffer_manager = gpu_memory_buffer_manager;
+  std::move(callback).Run(
+      std::make_unique<cc::mojo_embedder::AsyncLayerTreeFrameSink>(
+          std::move(context_provider), std::move(worker_context_provider),
+          &params),
+      std::move(render_frame_metadata_observer));
 }
 
 void WidgetBase::DidCommitAndDrawCompositorFrame() {

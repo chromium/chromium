@@ -91,6 +91,10 @@ specific_include_rules = {
         "+crypto",
         "+third_party/boringssl/src/include",
     ],
+    "platform.cc": [
+        "+components/viz/common/gpu/raster_context_provider.h",
+        "+gpu/ipc/client/gpu_channel_host.h",
+    ],
     "web_url_error\.cc": [
         "+net/base/net_errors.h"
     ],

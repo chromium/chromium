@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/renderer/render_frame_metadata_observer_impl.h"
+#include "third_party/blink/renderer/platform/widget/compositing/render_frame_metadata_observer_impl.h"
 
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
-#include "cc/mojom/render_frame_metadata.mojom.h"
+#include "cc/mojom/render_frame_metadata.mojom-blink.h"
 #include "cc/trees/render_frame_metadata.h"
 #include "components/viz/common/quads/compositor_frame_metadata.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -17,7 +17,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace content {
+namespace blink {
 namespace {
 
 ACTION_P(InvokeClosure, closure) {
@@ -27,12 +27,13 @@ ACTION_P(InvokeClosure, closure) {
 }  // namespace
 
 class MockRenderFrameMetadataObserverClient
-    : public cc::mojom::RenderFrameMetadataObserverClient {
+    : public cc::mojom::blink::RenderFrameMetadataObserverClient {
  public:
   MockRenderFrameMetadataObserverClient(
-      mojo::PendingReceiver<cc::mojom::RenderFrameMetadataObserverClient>
+      mojo::PendingReceiver<cc::mojom::blink::RenderFrameMetadataObserverClient>
           client_receiver,
-      mojo::PendingRemote<cc::mojom::RenderFrameMetadataObserver> observer)
+      mojo::PendingRemote<cc::mojom::blink::RenderFrameMetadataObserver>
+          observer)
       : render_frame_metadata_observer_client_receiver_(
             this,
             std::move(client_receiver)),
@@ -47,9 +48,9 @@ class MockRenderFrameMetadataObserverClient
 #endif
 
  private:
-  mojo::Receiver<cc::mojom::RenderFrameMetadataObserverClient>
+  mojo::Receiver<cc::mojom::blink::RenderFrameMetadataObserverClient>
       render_frame_metadata_observer_client_receiver_;
-  mojo::Remote<cc::mojom::RenderFrameMetadataObserver>
+  mojo::Remote<cc::mojom::blink::RenderFrameMetadataObserver>
       render_frame_metadata_observer_remote_;
 
   DISALLOW_COPY_AND_ASSIGN(MockRenderFrameMetadataObserverClient);
@@ -66,10 +67,11 @@ class RenderFrameMetadataObserverImplTest : public testing::Test {
 
   // testing::Test:
   void SetUp() override {
-    mojo::PendingRemote<cc::mojom::RenderFrameMetadataObserver> observer_remote;
-    mojo::PendingReceiver<cc::mojom::RenderFrameMetadataObserver> receiver =
-        observer_remote.InitWithNewPipeAndPassReceiver();
-    mojo::PendingRemote<cc::mojom::RenderFrameMetadataObserverClient>
+    mojo::PendingRemote<cc::mojom::blink::RenderFrameMetadataObserver>
+        observer_remote;
+    mojo::PendingReceiver<cc::mojom::blink::RenderFrameMetadataObserver>
+        receiver = observer_remote.InitWithNewPipeAndPassReceiver();
+    mojo::PendingRemote<cc::mojom::blink::RenderFrameMetadataObserverClient>
         client_remote;
 
     client_ = std::make_unique<
@@ -306,4 +308,4 @@ TEST_F(RenderFrameMetadataObserverImplTest, ForceSendMetadata) {
   }
 }
 
-}  // namespace content
+}  // namespace blink

@@ -165,12 +165,14 @@ WebFrameWidgetBase::WebFrameWidgetBase(
     CrossVariantMojoAssociatedReceiver<mojom::blink::WidgetInterfaceBase>
         widget,
     bool hidden,
-    bool never_composited)
+    bool never_composited,
+    bool is_for_child_local_root)
     : widget_base_(std::make_unique<WidgetBase>(this,
                                                 std::move(widget_host),
                                                 std::move(widget),
                                                 hidden,
-                                                never_composited)),
+                                                never_composited,
+                                                is_for_child_local_root)),
       client_(&client) {
   frame_widget_host_.Bind(
       std::move(frame_widget_host),
@@ -698,9 +700,9 @@ void WebFrameWidgetBase::DidObserveFirstScrollDelay(
   }
 }
 
-void WebFrameWidgetBase::RequestNewLayerTreeFrameSink(
-    LayerTreeFrameSinkCallback callback) {
-  Client()->RequestNewLayerTreeFrameSink(std::move(callback));
+std::unique_ptr<cc::LayerTreeFrameSink>
+WebFrameWidgetBase::AllocateNewLayerTreeFrameSink() {
+  return Client()->AllocateNewLayerTreeFrameSink();
 }
 
 void WebFrameWidgetBase::DidCompletePageScaleAnimation() {
@@ -1190,14 +1192,6 @@ void WebFrameWidgetBase::RequestMouseLock(
                                  request_unadjusted_movement,
                                  std::move(callback));
 }
-
-#if defined(OS_ANDROID)
-SynchronousCompositorRegistry*
-WebFrameWidgetBase::GetSynchronousCompositorRegistry() {
-  return widget_base_->widget_input_handler_manager()
-      ->GetSynchronousCompositorRegistry();
-}
-#endif
 
 void WebFrameWidgetBase::ApplyVisualProperties(
     const VisualProperties& visual_properties) {
@@ -2315,6 +2309,13 @@ void WebFrameWidgetBase::NotifyInputObservers(
 
   if (paint_timing_detector.NeedToNotifyInputOrScroll())
     paint_timing_detector.NotifyInputEvent(input_event.GetType());
+}
+
+KURL WebFrameWidgetBase::GetURLForDebugTrace() {
+  WebFrame* main_frame = View()->MainFrame();
+  if (main_frame->IsWebLocalFrame())
+    return main_frame->ToWebLocalFrame()->GetDocument().Url();
+  return {};
 }
 
 }  // namespace blink

@@ -231,8 +231,8 @@ class TestWebWidgetClient : public WebWidgetClient,
   // WebWidgetClient overrides;
   void ScheduleAnimation() override { animation_scheduled_ = true; }
   viz::FrameSinkId GetFrameSinkId() override;
-  void RequestNewLayerTreeFrameSink(
-      LayerTreeFrameSinkCallback callback) override;
+  std::unique_ptr<cc::LayerTreeFrameSink> AllocateNewLayerTreeFrameSink()
+      override;
   void WillQueueSyntheticEvent(const WebCoalescedInputEvent& event) override;
   bool ShouldAutoDetermineCompositingToLCDTextSetting() override {
     return false;
@@ -249,6 +249,16 @@ class TestWebWidgetClient : public WebWidgetClient,
                               const gfx::Rect& focus_rect,
                               base::i18n::TextDirection focus_dir,
                               bool is_anchor_first) override;
+  void CreateFrameSink(
+      mojo::PendingReceiver<viz::mojom::blink::CompositorFrameSink>
+          compositor_frame_sink_receiver,
+      mojo::PendingRemote<viz::mojom::blink::CompositorFrameSinkClient>
+          compositor_frame_sink_client) override;
+  void RegisterRenderFrameMetadataObserver(
+      mojo::PendingReceiver<cc::mojom::blink::RenderFrameMetadataObserverClient>
+          render_frame_metadata_observer_client_receiver,
+      mojo::PendingRemote<cc::mojom::blink::RenderFrameMetadataObserver>
+          render_frame_metadata_observer) override;
 
  private:
   WebFrameWidget* frame_widget_ = nullptr;

@@ -20,7 +20,8 @@ QueueReportTimeSwapPromise::QueueReportTimeSwapPromise(
       swap_callback_(std::move(swap_callback)),
 #if defined(OS_ANDROID)
       call_swap_on_activate_(
-          Platform::Current()->IsSynchronousCompositingEnabled()),
+          Platform::Current()
+              ->IsSynchronousCompositingEnabledForAndroidWebView()),
 #endif
       compositor_task_runner_(std::move(compositor_task_runner)) {
 }

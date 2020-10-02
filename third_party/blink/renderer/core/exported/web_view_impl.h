@@ -533,7 +533,6 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   void SendScrollEndEventFromImplSide(cc::ElementId scroll_latched_element_id);
   void MouseCaptureLost();
   void SetFocus(bool enable) override;
-  WebURL GetURLForDebugTrace();
 
   // Update the target url locally and tell the browser that the target URL has
   // changed. If |url| is empty, show |fallback_url|.

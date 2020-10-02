@@ -3150,7 +3150,7 @@ void RenderWidgetHostImpl::RequestCompositionUpdates(bool immediate_request,
                                                      monitor_updates);
 }
 
-void RenderWidgetHostImpl::RequestCompositorFrameSink(
+void RenderWidgetHostImpl::CreateFrameSink(
     mojo::PendingReceiver<viz::mojom::CompositorFrameSink>
         compositor_frame_sink_receiver,
     mojo::PendingRemote<viz::mojom::CompositorFrameSinkClient>
