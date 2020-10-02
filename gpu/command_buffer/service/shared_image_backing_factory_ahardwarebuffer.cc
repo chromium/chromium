@@ -38,9 +38,9 @@
 #include "gpu/command_buffer/service/texture_manager.h"
 #include "gpu/vulkan/vulkan_image.h"
 #include "third_party/skia/include/core/SkPromiseImageTexture.h"
+#include "ui/gfx/android/android_surface_control_compat.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gl/android/android_surface_control_compat.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_fence_android_native_fence_sync.h"
 #include "ui/gl/gl_gl_api_implementation.h"
@@ -602,7 +602,7 @@ std::unique_ptr<SharedImageBacking> SharedImageBackingFactoryAHB::MakeBacking(
   hwb_desc.usage = AHARDWAREBUFFER_USAGE_GPU_SAMPLED_IMAGE |
                    AHARDWAREBUFFER_USAGE_GPU_COLOR_OUTPUT;
   if (usage & SHARED_IMAGE_USAGE_SCANOUT)
-    hwb_desc.usage |= gl::SurfaceControl::RequiredUsage();
+    hwb_desc.usage |= gfx::SurfaceControl::RequiredUsage();
 
   // Add WRITE usage as we'll it need to upload data
   if (!pixel_data.empty())

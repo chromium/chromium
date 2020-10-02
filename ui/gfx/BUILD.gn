@@ -137,6 +137,8 @@ component("gfx") {
   ]
   if (is_android) {
     sources += [
+      "android/android_surface_control_compat.cc",
+      "android/android_surface_control_compat.h",
       "android/java_bitmap.cc",
       "android/java_bitmap.h",
       "android/view_configuration.cc",

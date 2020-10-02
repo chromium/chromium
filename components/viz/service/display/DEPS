@@ -29,7 +29,7 @@ include_rules = [
   "+third_party/perfetto/protos/perfetto/trace/track_event",
   "+ui/latency",
   "+ui/gfx/video_types.h",
-  "+ui/gl/android/android_surface_control_compat.h",
+  "+ui/gfx/android/android_surface_control_compat.h",
   "+ui/gl/ca_renderer_layer_params.h",
   "+ui/gl/dc_renderer_layer_params.h",
   "+ui/gl/gl_utils.h",

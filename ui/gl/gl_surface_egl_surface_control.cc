@@ -64,7 +64,7 @@ GLSurfaceEGLSurfaceControl::GLSurfaceEGLSurfaceControl(
                    ANativeWindow_getWidth(window),
                    ANativeWindow_getHeight(window)),
       root_surface_(
-          new SurfaceControl::Surface(window, root_surface_name_.c_str())),
+          new gfx::SurfaceControl::Surface(window, root_surface_name_.c_str())),
       gpu_task_runner_(std::move(task_runner)) {}
 
 GLSurfaceEGLSurfaceControl::~GLSurfaceEGLSurfaceControl() {
@@ -244,7 +244,7 @@ void GLSurfaceEGLSurfaceControl::CommitPendingTransaction(
   current_frame_resources_.swap(pending_frame_resources_);
   pending_frame_resources_.clear();
 
-  SurfaceControl::Transaction::OnCompleteCb callback = base::BindOnce(
+  gfx::SurfaceControl::Transaction::OnCompleteCb callback = base::BindOnce(
       &GLSurfaceEGLSurfaceControl::OnTransactionAckOnGpuThread,
       weak_factory_.GetWeakPtr(), std::move(completion_callback),
       std::move(present_callback), std::move(resources_to_release),
@@ -287,7 +287,7 @@ bool GLSurfaceEGLSurfaceControl::ScheduleOverlayPlane(
   }
 
   const auto& image_color_space = GetNearestSupportedImageColorSpace(image);
-  if (!SurfaceControl::SupportsColorSpace(image_color_space)) {
+  if (!gfx::SurfaceControl::SupportsColorSpace(image_color_space)) {
     LOG(ERROR) << "Not supported color space used with overlay : "
                << image_color_space.ToString();
   }
@@ -428,7 +428,7 @@ void GLSurfaceEGLSurfaceControl::OnTransactionAckOnGpuThread(
     PresentationCallback presentation_callback,
     ResourceRefs released_resources,
     base::Optional<PrimaryPlaneFences> primary_plane_fences,
-    SurfaceControl::TransactionStats transaction_stats) {
+    gfx::SurfaceControl::TransactionStats transaction_stats) {
   TRACE_EVENT0("gpu",
                "GLSurfaceEGLSurfaceControl::OnTransactionAckOnGpuThread");
 
@@ -586,9 +586,9 @@ GLSurfaceEGLSurfaceControl::GetNearestSupportedImageColorSpace(
 }
 
 GLSurfaceEGLSurfaceControl::SurfaceState::SurfaceState(
-    const SurfaceControl::Surface& parent,
+    const gfx::SurfaceControl::Surface& parent,
     const std::string& name)
-    : surface(new SurfaceControl::Surface(parent, name.c_str())) {}
+    : surface(new gfx::SurfaceControl::Surface(parent, name.c_str())) {}
 
 GLSurfaceEGLSurfaceControl::SurfaceState::SurfaceState() = default;
 GLSurfaceEGLSurfaceControl::SurfaceState::SurfaceState(SurfaceState&& other) =

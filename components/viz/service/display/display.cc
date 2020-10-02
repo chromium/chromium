@@ -52,7 +52,7 @@
 #include "ui/gfx/swap_result.h"
 
 #if defined(OS_ANDROID)
-#include "ui/gl/android/android_surface_control_compat.h"
+#include "ui/gfx/android/android_surface_control_compat.h"
 #endif
 namespace viz {
 
@@ -245,7 +245,7 @@ bool ReduceComplexity(const cc::Region& region,
 bool SupportsSetFrameRate(const OutputSurface* output_surface) {
 #if defined(OS_ANDROID)
   return output_surface->capabilities().supports_surfaceless &&
-         gl::SurfaceControl::SupportsSetFrameRate();
+         gfx::SurfaceControl::SupportsSetFrameRate();
 #elif defined(OS_WIN)
   return output_surface->capabilities().supports_dc_layers &&
          features::ShouldUseSetPresentDuration();

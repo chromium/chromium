@@ -55,7 +55,7 @@
 
 #if defined(OS_ANDROID)
 #include "base/android/android_image_reader_compat.h"
-#include "ui/gl/android/android_surface_control_compat.h"
+#include "ui/gfx/android/android_surface_control_compat.h"
 #endif
 
 #if BUILDFLAG(ENABLE_VULKAN)
@@ -103,7 +103,7 @@ void InitializePlatformOverlaySettings(GPUInfo* gpu_info,
   CollectHardwareOverlayInfo(&gpu_info->overlay_info);
 #elif defined(OS_ANDROID)
   if (gpu_info->gpu.vendor_string == "Qualcomm")
-    gl::SurfaceControl::EnableQualcommUBWC();
+    gfx::SurfaceControl::EnableQualcommUBWC();
 #endif
 }
 

@@ -8,7 +8,7 @@
 #include "base/android/build_info.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_split.h"
-#include "ui/gl/android/android_surface_control_compat.h"
+#include "ui/gfx/android/android_surface_control_compat.h"
 #endif
 
 namespace features {
@@ -133,7 +133,7 @@ bool IsAImageReaderEnabled() {
 bool IsAndroidSurfaceControlEnabled() {
   return IsAImageReaderEnabled() &&
          base::FeatureList::IsEnabled(kAndroidSurfaceControl) &&
-         gl::SurfaceControl::IsSupported();
+         gfx::SurfaceControl::IsSupported();
 }
 #endif
 

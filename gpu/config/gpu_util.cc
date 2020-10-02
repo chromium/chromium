@@ -47,7 +47,7 @@
 #if defined(OS_ANDROID)
 #include "base/no_destructor.h"
 #include "base/synchronization/lock.h"
-#include "ui/gl/android/android_surface_control_compat.h"
+#include "ui/gfx/android/android_surface_control_compat.h"
 #include "ui/gl/gl_surface_egl.h"
 #include "ui/gl/init/gl_factory.h"
 #endif  // OS_ANDROID
@@ -121,7 +121,7 @@ GpuFeatureStatus GetAndroidSurfaceControlFeatureStatus(
   if (!gl::GLSurfaceEGL::IsAndroidNativeFenceSyncSupported())
     return kGpuFeatureStatusDisabled;
 
-  DCHECK(gl::SurfaceControl::IsSupported());
+  DCHECK(gfx::SurfaceControl::IsSupported());
   return kGpuFeatureStatusEnabled;
 #endif
 }

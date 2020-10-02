@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_GL_ANDROID_ANDROID_SURFACE_CONTROL_COMPAT_H_
-#define UI_GL_ANDROID_ANDROID_SURFACE_CONTROL_COMPAT_H_
+#ifndef UI_GFX_ANDROID_ANDROID_SURFACE_CONTROL_COMPAT_H_
+#define UI_GFX_ANDROID_ANDROID_SURFACE_CONTROL_COMPAT_H_
 
 #include <memory>
 
@@ -14,8 +14,8 @@
 #include "base/memory/ref_counted.h"
 #include "base/single_thread_task_runner.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/gfx_export.h"
 #include "ui/gfx/overlay_transform.h"
-#include "ui/gl/gl_export.h"
 
 extern "C" {
 typedef struct ASurfaceControl ASurfaceControl;
@@ -24,11 +24,8 @@ typedef struct ASurfaceTransaction ASurfaceTransaction;
 
 namespace gfx {
 class ColorSpace;
-}  // namespace gfx
 
-namespace gl {
-
-class GL_EXPORT SurfaceControl {
+class GFX_EXPORT SurfaceControl {
  public:
   // Check if the platform is capable of supporting the low-level SurfaceControl
   // API. See also gpu/config/gpu_util's GetAndroidSurfaceControlFeatureStatus
@@ -50,7 +47,7 @@ class GL_EXPORT SurfaceControl {
   // Returns true if tagging a surface with a frame rate value is supported.
   static bool SupportsSetFrameRate();
 
-  class GL_EXPORT Surface : public base::RefCounted<Surface> {
+  class GFX_EXPORT Surface : public base::RefCounted<Surface> {
    public:
     Surface();
     Surface(const Surface& parent, const char* name);
@@ -67,7 +64,7 @@ class GL_EXPORT SurfaceControl {
     DISALLOW_COPY_AND_ASSIGN(Surface);
   };
 
-  struct GL_EXPORT SurfaceStats {
+  struct GFX_EXPORT SurfaceStats {
     SurfaceStats();
     ~SurfaceStats();
 
@@ -81,7 +78,7 @@ class GL_EXPORT SurfaceControl {
     base::ScopedFD fence;
   };
 
-  struct GL_EXPORT TransactionStats {
+  struct GFX_EXPORT TransactionStats {
    public:
     TransactionStats();
     ~TransactionStats();
@@ -99,7 +96,7 @@ class GL_EXPORT SurfaceControl {
     DISALLOW_COPY_AND_ASSIGN(TransactionStats);
   };
 
-  class GL_EXPORT Transaction {
+  class GFX_EXPORT Transaction {
    public:
     Transaction();
     ~Transaction();
@@ -140,6 +137,6 @@ class GL_EXPORT SurfaceControl {
     DISALLOW_COPY_AND_ASSIGN(Transaction);
   };
 };
-}  // namespace gl
+}  // namespace gfx
 
-#endif  // UI_GL_ANDROID_ANDROID_SURFACE_CONTROL_COMPAT_H_
+#endif  // UI_GFX_ANDROID_ANDROID_SURFACE_CONTROL_COMPAT_H_

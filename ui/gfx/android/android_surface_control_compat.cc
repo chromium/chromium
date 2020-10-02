@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/gl/android/android_surface_control_compat.h"
+#include "ui/gfx/android/android_surface_control_compat.h"
 
-#include <dlfcn.h>
 #include <android/data_space.h>
+#include <dlfcn.h>
 
 #include "base/android/build_info.h"
 #include "base/atomic_sequence_num.h"
@@ -100,7 +100,7 @@ using pASurfaceTransactionStats_getPreviousReleaseFenceFd =
     int (*)(ASurfaceTransactionStats* stats, ASurfaceControl* surface_control);
 }
 
-namespace gl {
+namespace gfx {
 namespace {
 
 base::AtomicSequenceNumber g_next_transaction_id;
@@ -288,8 +288,8 @@ void OnTransactionCompletedOnAnyThread(void* context,
                                        ASurfaceTransactionStats* stats) {
   auto* ack_ctx = static_cast<TransactionAckCtx*>(context);
   auto transaction_stats = ToTransactionStats(stats);
-  TRACE_EVENT_ASYNC_END0("gpu,benchmark", "SurfaceControlTransaction",
-                         ack_ctx->id);
+  TRACE_EVENT_NESTABLE_ASYNC_END0("gpu,benchmark", "SurfaceControlTransaction",
+                                  ack_ctx->id);
 
   if (ack_ctx->task_runner) {
     ack_ctx->task_runner->PostTask(
@@ -482,8 +482,9 @@ void SurfaceControl::Transaction::SetOnCompleteCb(
 }
 
 void SurfaceControl::Transaction::Apply() {
-  TRACE_EVENT_ASYNC_BEGIN0("gpu,benchmark", "SurfaceControlTransaction", id_);
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("gpu,benchmark",
+                                    "SurfaceControlTransaction", id_);
   SurfaceControlMethods::Get().ASurfaceTransaction_applyFn(transaction_);
 }
 
-}  // namespace gl
+}  // namespace gfx

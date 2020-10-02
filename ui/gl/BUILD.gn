@@ -143,8 +143,6 @@ component("gl") {
 
   if (is_android) {
     sources += [
-      "android/android_surface_control_compat.cc",
-      "android/android_surface_control_compat.h",
       "android/scoped_java_surface.cc",
       "android/scoped_java_surface.h",
       "android/surface_texture.cc",
