@@ -560,7 +560,7 @@ DataReductionProxyTestContext::data_reduction_proxy_service() const {
 TestDataReductionProxyService*
 DataReductionProxyTestContext::test_data_reduction_proxy_service() const {
   DCHECK(!(test_context_flags_ & USE_MOCK_SERVICE));
-  return reinterpret_cast<TestDataReductionProxyService*>(
+  return static_cast<TestDataReductionProxyService*>(
       data_reduction_proxy_service());
 }
 
@@ -568,21 +568,21 @@ MockDataReductionProxyService*
 DataReductionProxyTestContext::mock_data_reduction_proxy_service() const {
   DCHECK(!(test_context_flags_ & SKIP_SETTINGS_INITIALIZATION));
   DCHECK(test_context_flags_ & USE_MOCK_SERVICE);
-  return reinterpret_cast<MockDataReductionProxyService*>(
+  return static_cast<MockDataReductionProxyService*>(
       data_reduction_proxy_service());
 }
 
 MockDataReductionProxyRequestOptions*
 DataReductionProxyTestContext::mock_request_options() const {
   DCHECK(test_context_flags_ & USE_MOCK_REQUEST_OPTIONS);
-  return reinterpret_cast<MockDataReductionProxyRequestOptions*>(
+  return static_cast<MockDataReductionProxyRequestOptions*>(
       data_reduction_proxy_service()->request_options());
 }
 
 TestDataReductionProxyConfigServiceClient*
 DataReductionProxyTestContext::test_config_client() {
   DCHECK(test_context_flags_ & USE_TEST_CONFIG_CLIENT);
-  return reinterpret_cast<TestDataReductionProxyConfigServiceClient*>(
+  return static_cast<TestDataReductionProxyConfigServiceClient*>(
       data_reduction_proxy_service()->config_client());
 }
 
