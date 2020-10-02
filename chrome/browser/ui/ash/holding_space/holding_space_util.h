@@ -47,6 +47,15 @@ void FilePathValid(Profile*,
                    FilePathWithValidityRequirement,
                    FilePathValidCallback);
 
+// Partitions `file_paths` into `existing_file_paths` and
+// `non_existing_file_paths`, returning the result via `callback`.
+using PartitionFilePathsByExistenceCallback =
+    base::OnceCallback<void(FilePathList existing_file_paths,
+                            FilePathList invalid_file_paths)>;
+void PartitionFilePathsByExistence(Profile*,
+                                   FilePathList,
+                                   PartitionFilePathsByExistenceCallback);
+
 // Partitions `file_paths` into `valid_file_paths` and
 // `invalid_file_paths`, returning the result via `callback`.
 using PartitionFilePathsByValidityCallback =
