@@ -246,18 +246,18 @@ TEST_F(DesksGestureHandlerTest, HorizontalScrolls) {
   ASSERT_EQ(2u, desk_controller->desks().size());
   ASSERT_EQ(desk_controller->desks()[0].get(), desk_controller->active_desk());
 
-  // Tests that scrolling left should take us to the next desk.
-  ScrollToSwitchDesks(/*scroll_left=*/true);
+  // Tests that scrolling right should take us to the next desk.
+  ScrollToSwitchDesks(/*scroll_left=*/false);
   EXPECT_EQ(desk_controller->desks()[1].get(), desk_controller->active_desk());
 
-  // Tests that scrolling right should take us to the previous desk.
-  ScrollToSwitchDesks(/*scroll_left=*/false);
+  // Tests that scrolling left should take us to the previous desk.
+  ScrollToSwitchDesks(/*scroll_left=*/true);
   EXPECT_EQ(desk_controller->desks()[0].get(), desk_controller->active_desk());
 
   // Tests that since there is no previous desk, we remain on the same desk when
-  // scrolling right.
+  // scrolling left.
   const float long_scroll = WmGestureHandler::kHorizontalThresholdDp;
-  Scroll(long_scroll, 0.f, kNumFingersForDesksSwitch);
+  Scroll(-long_scroll, 0.f, kNumFingersForDesksSwitch);
   EXPECT_EQ(desk_controller->desks()[0].get(), desk_controller->active_desk());
 }
 
@@ -272,12 +272,12 @@ TEST_F(DesksGestureHandlerTest, NoDeskChanges) {
   const float short_scroll = WmGestureHandler::kHorizontalThresholdDp - 10.f;
   const float long_scroll = WmGestureHandler::kHorizontalThresholdDp;
   // Tests that a short horizontal scroll does not switch desks.
-  Scroll(short_scroll, 0.f, kNumFingersForDesksSwitch);
+  Scroll(-short_scroll, 0.f, kNumFingersForDesksSwitch);
   EXPECT_EQ(desk_controller->desks()[0].get(), desk_controller->active_desk());
 
   // Tests that a scroll that meets the horizontal requirements, but is mostly
   // vertical does not switch desks.
-  Scroll(long_scroll, long_scroll + 10.f, kNumFingersForDesksSwitch);
+  Scroll(-long_scroll, long_scroll + 10.f, kNumFingersForDesksSwitch);
   EXPECT_EQ(desk_controller->desks()[0].get(), desk_controller->active_desk());
 
   // Tests that a vertical scroll does not switch desks.
@@ -297,7 +297,7 @@ TEST_F(DesksGestureHandlerTest, NoDoubleDeskChange) {
 
   const float long_scroll = WmGestureHandler::kHorizontalThresholdDp * 3;
   DeskSwitchAnimationWaiter waiter;
-  Scroll(-long_scroll, 0, kNumFingersForDesksSwitch);
+  Scroll(long_scroll, 0, kNumFingersForDesksSwitch);
   waiter.Wait();
   EXPECT_EQ(desk_controller->desks()[1].get(), desk_controller->active_desk());
 }
@@ -317,7 +317,7 @@ TEST_F(DesksGestureHandlerTest, NoDeskChangesInLockScreen) {
   ASSERT_TRUE(session_controller->IsScreenLocked());
 
   const float long_scroll = WmGestureHandler::kHorizontalThresholdDp * 3;
-  Scroll(-long_scroll, 0, kNumFingersForDesksSwitch);
+  Scroll(long_scroll, 0, kNumFingersForDesksSwitch);
   EXPECT_FALSE(desk_controller->AreDesksBeingModified());
   EXPECT_EQ(desk_controller->desks()[0].get(), desk_controller->active_desk());
 }
@@ -564,11 +564,11 @@ TEST_F(ReverseGestureHandlerTest, SwitchDesk) {
   const Desk* desk1 = GetActiveDesk();
   const Desk* desk2 = GetNextDesk();
 
-  // Scroll right to get next desk.
-  ScrollToSwitchDesks(/*scroll_left=*/false);
+  // Scroll left to get next desk.
+  ScrollToSwitchDesks(/*scroll_left=*/true);
   EXPECT_EQ(desk2, GetActiveDesk());
-  // Scroll left to get previous desk.
-  ScrollToSwitchDesks(/*scroll_right=*/true);
+  // Scroll right to get previous desk.
+  ScrollToSwitchDesks(/*scroll_right=*/false);
   EXPECT_EQ(desk1, GetActiveDesk());
 }
 

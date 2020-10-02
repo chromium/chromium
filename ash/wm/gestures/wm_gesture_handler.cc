@@ -171,8 +171,8 @@ bool HandleDesksSwitchHorizontalScroll(float scroll_x) {
   if (std::fabs(scroll_x) < WmGestureHandler::kHorizontalThresholdDp)
     return false;
 
-  if (IsNaturalScrollOn()) {
-    if (GetOffset(scroll_x) < 0 && !DesksController::Get()->GetNextDesk() &&
+  if (!IsNaturalScrollOn()) {
+    if (scroll_x > 0 && !DesksController::Get()->GetNextDesk() &&
         DesksController::Get()->GetPreviousDesk()) {
       if (!gDidWrongLastDeskGesture) {
         gDidWrongLastDeskGesture = true;
@@ -180,7 +180,7 @@ bool HandleDesksSwitchHorizontalScroll(float scroll_x) {
         ShowReverseGestureToast(kSwitchLastDeskToastId,
                                 IDS_CHANGE_LAST_DESK_REVERSE_GESTURE);
       }
-    } else if (GetOffset(scroll_x) > 0 &&
+    } else if (scroll_x < 0 &&
                !DesksController::Get()->GetPreviousDesk() &&
                DesksController::Get()->GetNextDesk()) {
       if (!gDidWrongNextDeskGesture) {
@@ -197,9 +197,9 @@ bool HandleDesksSwitchHorizontalScroll(float scroll_x) {
     }
   }
 
-  // If touchpad reverse scroll is on, the swip direction will invert.
+  // If touchpad reverse scroll is on, the swipe direction will invert.
   return DesksController::Get()->ActivateAdjacentDesk(
-      /*going_left=*/GetOffset(scroll_x) > 0,
+      /*going_left=*/GetOffset(scroll_x) < 0,
       DesksSwitchSource::kDeskSwitchTouchpad);
 }
 
