@@ -25,9 +25,10 @@ namespace autofill {
 namespace {
 // Ensure the offer is not expired and is valid for the current page.
 bool IsOfferEligible(const AutofillOfferData& offer,
-                     const GURL& last_committed_url) {
+                     const GURL& last_committed_url_origin) {
   bool is_eligible = (offer.expiry > AutofillClock::Now());
-  is_eligible &= base::ranges::count(offer.merchant_domain, last_committed_url);
+  is_eligible &=
+      base::ranges::count(offer.merchant_domain, last_committed_url_origin);
   return is_eligible;
 }
 }  // namespace
@@ -49,12 +50,13 @@ void AutofillOfferManager::OnPersonalDataChanged() {
 void AutofillOfferManager::UpdateSuggestionsWithOffers(
     const GURL& last_committed_url,
     std::vector<Suggestion>& suggestions) {
-  if (eligible_merchant_domains_.count(last_committed_url) == 0) {
+  GURL last_committed_url_origin = last_committed_url.GetOrigin();
+  if (eligible_merchant_domains_.count(last_committed_url_origin) == 0) {
     return;
   }
 
   AutofillOfferManager::OffersMap eligible_offers_map =
-      CreateOffersMap(last_committed_url);
+      CreateOffersMap(last_committed_url_origin);
 
   // Update |offer_label| for each suggestion.
   for (auto& suggestion : suggestions) {
@@ -85,7 +87,7 @@ void AutofillOfferManager::UpdateEligibleMerchantDomains() {
 }
 
 AutofillOfferManager::OffersMap AutofillOfferManager::CreateOffersMap(
-    const GURL& last_committed_url) const {
+    const GURL& last_committed_url_origin) const {
   AutofillOfferManager::OffersMap offers_map;
 
   std::vector<AutofillOfferData*> offers =
@@ -94,7 +96,7 @@ AutofillOfferManager::OffersMap AutofillOfferManager::CreateOffersMap(
 
   for (auto* offer : offers) {
     // Ensure the offer is valid.
-    if (!IsOfferEligible(*offer, last_committed_url)) {
+    if (!IsOfferEligible(*offer, last_committed_url_origin)) {
       continue;
     }
 

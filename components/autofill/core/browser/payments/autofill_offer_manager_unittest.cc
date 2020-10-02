@@ -25,6 +25,8 @@ namespace {
 const char kTestGuid[] = "00000000-0000-0000-0000-000000000001";
 const char kTestNumber[] = "4234567890123456";  // Visa
 const char kTestUrl[] = "http://www.example.com/";
+const char kTestUrlWithParam[] =
+    "http://www.example.com/en/payments?name=checkout";
 
 }  // namespace
 
@@ -91,7 +93,7 @@ TEST_F(AutofillOfferManagerTest, UpdateSuggestionsWithOffers_EligibleDiscount) {
 
   std::vector<Suggestion> suggestions = {Suggestion()};
   suggestions[0].backend_id = kTestGuid;
-  autofill_offer_manager_->UpdateSuggestionsWithOffers(GURL(kTestUrl),
+  autofill_offer_manager_->UpdateSuggestionsWithOffers(GURL(kTestUrlWithParam),
                                                        suggestions);
 
   EXPECT_EQ(suggestions[0].offer_label, base::UTF8ToUTF16("$4 Off"));
@@ -103,7 +105,7 @@ TEST_F(AutofillOfferManagerTest, UpdateSuggestionsWithOffers_EligibleCashback) {
 
   std::vector<Suggestion> suggestions = {Suggestion()};
   suggestions[0].backend_id = kTestGuid;
-  autofill_offer_manager_->UpdateSuggestionsWithOffers(GURL(kTestUrl),
+  autofill_offer_manager_->UpdateSuggestionsWithOffers(GURL(kTestUrlWithParam),
                                                        suggestions);
 
   EXPECT_EQ(suggestions[0].offer_label, base::UTF8ToUTF16("5% Cash Back"));
@@ -115,7 +117,7 @@ TEST_F(AutofillOfferManagerTest, UpdateSuggestionsWithOffers_ExpiredOffer) {
 
   std::vector<Suggestion> suggestions = {Suggestion()};
   suggestions[0].backend_id = kTestGuid;
-  autofill_offer_manager_->UpdateSuggestionsWithOffers(GURL(kTestUrl),
+  autofill_offer_manager_->UpdateSuggestionsWithOffers(GURL(kTestUrlWithParam),
                                                        suggestions);
 
   EXPECT_TRUE(suggestions[0].offer_label.empty());
