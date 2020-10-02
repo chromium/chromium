@@ -548,48 +548,54 @@ class ArcBluetoothBridge
   // DevicePairedChange() but not in this function.
   void TrackPairingState(const device::BluetoothDevice* device);
 
-  // Data structures for RFCOMM listening/connecting sockets that live in
+  // Data structures for Bluetooth listening/connecting sockets that live in
   // Chrome.
-  struct RfcommListeningSocket {
-    mojo::Remote<mojom::RfcommListeningSocketClient> remote;
+  struct BluetoothListeningSocket {
+    // TODO(b/163099156): Remove the following two fields when
+    // RfcommListen()/RfcommConnect() are removed.
+    bool created_by_deprecated_method = false;
+    mojo::Remote<mojom::RfcommListeningSocketClient> deprecated_remote;
     base::ScopedFD file;
     std::unique_ptr<base::FileDescriptorWatcher::Controller> controller;
-    RfcommListeningSocket();
-    ~RfcommListeningSocket();
+    BluetoothListeningSocket();
+    ~BluetoothListeningSocket();
   };
-  struct RfcommConnectingSocket {
-    mojo::Remote<mojom::RfcommConnectingSocketClient> remote;
+  struct BluetoothConnectingSocket {
+    // TODO(b/163099156): Remove the following two fields when
+    // RfcommListen()/RfcommConnect() are removed.
+    bool created_by_deprecated_method = false;
+    mojo::Remote<mojom::RfcommConnectingSocketClient> deprecated_remote;
     base::ScopedFD file;
     std::unique_ptr<base::FileDescriptorWatcher::Controller> controller;
-    RfcommConnectingSocket();
-    ~RfcommConnectingSocket();
+    BluetoothConnectingSocket();
+    ~BluetoothConnectingSocket();
   };
 
-  // Creates a bluetooth socket with socket option |optval|, and then bind()
-  // and listen() with requested RFCOMM |channel| number. The actual channel
-  // number will be filled in |channel| as the return value. Returns a
-  // RfcommListeningSocket that holds the socket.
-  std::unique_ptr<RfcommListeningSocket> RfcommCreateListenSocket(
+  // Creates a Bluetooth socket with socket option |optval|, and then bind() and
+  // listen() with requested |channel| number. The actual channel number will be
+  // filled in |channel| as the return value. Returns a BluetoothListeningSocket
+  // that holds the socket.
+  std::unique_ptr<BluetoothListeningSocket> CreateBluetoothListenSocket(
       int32_t optval,
-      uint8_t* channel);
-  // Creates a bluetooth socket with socket option |optval|, and then calls
+      uint16_t* channel);
+  // Creates a Bluetooth socket with socket option |optval|, and then calls
   // connect() to (|addr|, |channel|). This connect() call is non-blocking.
-  // Returns a RfcommConnectingSocket that holds the socket.
-  std::unique_ptr<RfcommConnectingSocket> RfcommCreateConnectSocket(
+  // Returns a BluetoothConnectingSocket that holds the socket.
+  std::unique_ptr<BluetoothConnectingSocket> CreateBluetoothConnectSocket(
+      int32_t optval,
       mojom::BluetoothAddressPtr addr,
-      uint8_t channel,
-      int32_t optval);
+      uint16_t channel);
 
-  // Closes RFCOMM sockets. Releases the corresponding resources.
-  void RfcommCloseListeningSocket(RfcommListeningSocket* socket);
-  void RfcommCloseConnectingSocket(RfcommConnectingSocket* socket);
+  // Closes Bluetooth sockets. Releases the corresponding resources.
+  void CloseBluetoothListeningSocket(BluetoothListeningSocket* socket);
+  void CloseBluetoothConnectingSocket(BluetoothConnectingSocket* socket);
 
   // Called when the listening socket is ready to accept().
-  void OnRfcommListeningSocketReady(
-      ArcBluetoothBridge::RfcommListeningSocket* socket);
+  void OnBluetoothListeningSocketReady(
+      ArcBluetoothBridge::BluetoothListeningSocket* socket);
   // Called when the connecting socket is ready.
-  void OnRfcommConnectingSocketReady(
-      ArcBluetoothBridge::RfcommConnectingSocket* socket);
+  void OnBluetoothConnectingSocketReady(
+      ArcBluetoothBridge::BluetoothConnectingSocket* socket);
 
   ArcBridgeService* const arc_bridge_service_;  // Owned by ArcServiceManager.
 
@@ -699,10 +705,11 @@ class ArcBluetoothBridge
   // Start/StopLEScan().
   ArcBluetoothTaskQueue discovery_queue_;
 
-  // Rfcomm sockets that live in Chrome.
-  std::set<std::unique_ptr<RfcommListeningSocket>, base::UniquePtrComparator>
+  // Bluetooth sockets that live in Chrome.
+  std::set<std::unique_ptr<BluetoothListeningSocket>, base::UniquePtrComparator>
       listening_sockets_;
-  std::set<std::unique_ptr<RfcommConnectingSocket>, base::UniquePtrComparator>
+  std::set<std::unique_ptr<BluetoothConnectingSocket>,
+           base::UniquePtrComparator>
       connecting_sockets_;
 
   // Observes the ARC connection to Bluetooth service in Android. We need to do
