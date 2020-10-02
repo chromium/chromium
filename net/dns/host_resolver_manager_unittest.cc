@@ -6636,6 +6636,29 @@ TEST_F(HostResolverManagerDnsTest, CachedError_SecureMode) {
   EXPECT_FALSE(!!cache_result);
 }
 
+// Test that if one of A and AAAA completes successfully and the other fails,
+// the failure is not cached.
+TEST_F(HostResolverManagerDnsTest, TtlNotSharedBetweenQtypes) {
+  CreateResolver();
+  set_allow_fallback_to_proctask(false);
+  ChangeDnsConfig(CreateValidDnsConfig());
+
+  ResolveHostResponseHelper response(resolver_->CreateRequest(
+      HostPortPair("4slow_4timeout", 80), NetworkIsolationKey(),
+      NetLogWithSource(), base::nullopt /* optional_parameters */,
+      resolve_context_.get(), resolve_context_->host_cache()));
+
+  // Ensure success completes before the timeout result.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(response.complete());
+
+  dns_client_->CompleteDelayedTransactions();
+  EXPECT_THAT(response.result_error(), IsError(ERR_DNS_TIMED_OUT));
+
+  // Expect failure not cached.
+  EXPECT_EQ(resolve_context_->host_cache()->size(), 0u);
+}
+
 TEST_F(HostResolverManagerDnsTest, NoCanonicalName) {
   MockDnsClientRuleList rules;
   AddDnsRule(&rules, "alias", dns_protocol::kTypeA, IPAddress::IPv4Localhost(),

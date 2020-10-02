@@ -127,8 +127,9 @@ class NET_EXPORT HostCache {
         : Entry(error, std::forward<T>(results), source, base::nullopt) {}
 
     // For errors with no |results|.
-    Entry(int error, Source source, base::TimeDelta ttl);
-    Entry(int error, Source source);
+    Entry(int error,
+          Source source,
+          base::Optional<base::TimeDelta> ttl = base::nullopt);
 
     Entry(const Entry& entry);
     Entry(Entry&& entry);

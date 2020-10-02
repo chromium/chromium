@@ -122,14 +122,14 @@ HostCache::Key::Key() = default;
 HostCache::Key::Key(const Key& key) = default;
 HostCache::Key::Key(Key&& key) = default;
 
-HostCache::Entry::Entry(int error, Source source, base::TimeDelta ttl)
-    : error_(error), source_(source), ttl_(ttl) {
-  DCHECK_GE(ttl_, base::TimeDelta());
-  DCHECK_NE(OK, error_);
-}
-
-HostCache::Entry::Entry(int error, Source source)
-    : error_(error), source_(source), ttl_(base::TimeDelta::FromSeconds(-1)) {
+HostCache::Entry::Entry(int error,
+                        Source source,
+                        base::Optional<base::TimeDelta> ttl)
+    : error_(error),
+      source_(source),
+      ttl_(ttl.value_or(base::TimeDelta::FromSeconds(-1))) {
+  // If |ttl| has a value, must not be negative.
+  DCHECK_GE(ttl.value_or(base::TimeDelta()), base::TimeDelta());
   DCHECK_NE(OK, error_);
 }
 
