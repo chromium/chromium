@@ -1002,9 +1002,6 @@ TEST(Mutex, AcquireFromCondition) {
   x.mu0.Unlock();
 }
 
-// The deadlock detector is not part of non-prod builds, so do not test it.
-#if !defined(ABSL_INTERNAL_USE_NONPROD_MUTEX)
-
 TEST(Mutex, DeadlockDetector) {
   absl::SetMutexDeadlockDetectionMode(absl::OnDeadlockCycle::kAbort);
 
@@ -1158,7 +1155,6 @@ TEST(Mutex, DeadlockIdBug) ABSL_NO_THREAD_SAFETY_ANALYSIS {
   c.Lock();
   c.Unlock();
 }
-#endif  // !defined(ABSL_INTERNAL_USE_NONPROD_MUTEX)
 
 // --------------------------------------------------------
 // Test for timeouts/deadlines on condition waits that are specified using

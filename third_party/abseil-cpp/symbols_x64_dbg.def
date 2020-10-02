@@ -938,6 +938,7 @@ EXPORTS
     ??0HashtablezInfo@container_internal@absl@@QEAA@XZ
     ??0HashtablezSampler@container_internal@absl@@QEAA@XZ
     ??0Impl@time_zone@cctz@time_internal@absl@@AEAA@AEBV?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@@Z
+    ??0InlineData@cord_internal@absl@@QEAA@XZ
     ??0InlineRep@Cord@absl@@QEAA@$$QEAV012@@Z
     ??0InlineRep@Cord@absl@@QEAA@AEBV012@@Z
     ??0InlineRep@Cord@absl@@QEAA@XZ
@@ -2015,6 +2016,7 @@ EXPORTS
     ?Reset@?$AllocationTransaction@V?$allocator@UPayload@status_internal@absl@@@__1@std@@@inlined_vector_internal@absl@@QEAAXXZ
     ?Reset@?$AllocationTransaction@V?$allocator@USubRange@absl@@@__1@std@@@inlined_vector_internal@absl@@QEAAXXZ
     ?ResetToBuiltinUTC@TimeZoneInfo@cctz@time_internal@absl@@AEAA_NAEBV?$duration@_JV?$ratio@$00$00@__1@std@@@chrono@__1@std@@@Z
+    ?ResetToEmpty@InlineRep@Cord@absl@@AEAAXXZ
     ?Resize@?$ResizeUninitializedTraits@V?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@X@strings_internal@absl@@SAXPEAV?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@_K@Z
     ?ResourceExhaustedError@absl@@YA?AVStatus@1@Vstring_view@1@@Z
     ?Rethrow@variant_internal@absl@@YAXXZ
@@ -3022,6 +3024,7 @@ EXPORTS
     ?set_data@InlineRep@Cord@absl@@QEAAXPEBD_K_N@Z
     ?set_depth@CordRepConcat@cord_internal@absl@@QEAAXE@Z
     ?set_from_arg@InputValue@UnboundConversion@str_format_internal@absl@@QEAAXH@Z
+    ?set_tagged_size@InlineRep@Cord@absl@@AEAAXD@Z
     ?set_tree@InlineRep@Cord@absl@@QEAAXPEAUCordRep@cord_internal@3@@Z
     ?set_value@InputValue@UnboundConversion@str_format_internal@absl@@QEAAXH@Z
     ?shrink_to_fit@?$vector@UTransition@cctz@time_internal@absl@@V?$allocator@UTransition@cctz@time_internal@absl@@@__1@std@@@__1@std@@QEAAXXZ
@@ -3068,6 +3071,7 @@ EXPORTS
     ?substr@string_view@absl@@QEBA?AV12@_K0@Z
     ?substring@CordRep@cord_internal@absl@@QEAAPEAUCordRepSubstring@23@XZ
     ?substring@CordRep@cord_internal@absl@@QEBAPEBUCordRepSubstring@23@XZ
+    ?tagged_size@InlineRep@Cord@absl@@AEBADXZ
     ?thread_identity@PerThreadSynch@base_internal@absl@@QEAAPEAUThreadIdentity@23@XZ
     ?throw_bad_optional_access@optional_internal@absl@@YAXXZ
     ?total_written@BufferRawSink@str_format_internal@absl@@QEBA_KXZ

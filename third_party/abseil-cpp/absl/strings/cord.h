@@ -644,14 +644,12 @@ class Cord {
   // InlineRep holds either a tree pointer, or an array of kMaxInline bytes.
   class InlineRep {
    public:
-    static constexpr unsigned char kMaxInline = 15;
+    static constexpr unsigned char kMaxInline = cord_internal::kMaxInline;
     static_assert(kMaxInline >= sizeof(absl::cord_internal::CordRep*), "");
-    // Tag byte & kMaxInline means we are storing a pointer.
-    static constexpr unsigned char kTreeFlag = 1 << 4;
-    // Tag byte & kProfiledFlag means we are profiling the Cord.
-    static constexpr unsigned char kProfiledFlag = 1 << 5;
+    static constexpr unsigned char kTreeFlag = cord_internal::kTreeFlag;
+    static constexpr unsigned char kProfiledFlag = cord_internal::kProfiledFlag;
 
-    constexpr InlineRep() : data_{} {}
+    constexpr InlineRep() : data_() {}
     InlineRep(const InlineRep& src);
     InlineRep(InlineRep&& src);
     InlineRep& operator=(const InlineRep& src);
@@ -684,16 +682,16 @@ class Cord {
     void GetAppendRegion(char** region, size_t* size, size_t max_length);
     void GetAppendRegion(char** region, size_t* size);
     bool IsSame(const InlineRep& other) const {
-      return memcmp(data_, other.data_, sizeof(data_)) == 0;
+      return memcmp(&data_, &other.data_, sizeof(data_)) == 0;
     }
     int BitwiseCompare(const InlineRep& other) const {
       uint64_t x, y;
-      // Use memcpy to avoid anti-aliasing issues.
-      memcpy(&x, data_, sizeof(x));
-      memcpy(&y, other.data_, sizeof(y));
+      // Use memcpy to avoid aliasing issues.
+      memcpy(&x, &data_, sizeof(x));
+      memcpy(&y, &other.data_, sizeof(y));
       if (x == y) {
-        memcpy(&x, data_ + 8, sizeof(x));
-        memcpy(&y, other.data_ + 8, sizeof(y));
+        memcpy(&x, reinterpret_cast<const char*>(&data_) + 8, sizeof(x));
+        memcpy(&y, reinterpret_cast<const char*>(&other.data_) + 8, sizeof(y));
         if (x == y) return 0;
       }
       return absl::big_endian::FromHost64(x) < absl::big_endian::FromHost64(y)
@@ -706,16 +704,16 @@ class Cord {
       // to 15 bytes does not cause a memory allocation.
       absl::strings_internal::STLStringResizeUninitialized(dst,
                                                            sizeof(data_) - 1);
-      memcpy(&(*dst)[0], data_, sizeof(data_) - 1);
+      memcpy(&(*dst)[0], &data_, sizeof(data_) - 1);
       // erase is faster than resize because the logic for memory allocation is
       // not needed.
-      dst->erase(data_[kMaxInline]);
+      dst->erase(tagged_size());
     }
 
     // Copies the inline contents into `dst`. Assumes the cord is not empty.
     void CopyToArray(char* dst) const;
 
-    bool is_tree() const { return data_[kMaxInline] > kMaxInline; }
+    bool is_tree() const { return tagged_size() > kMaxInline; }
 
    private:
     friend class Cord;
@@ -724,10 +722,18 @@ class Cord {
     // Unrefs the tree, stops profiling, and zeroes the contents
     void ClearSlow();
 
-    // If the data has length <= kMaxInline, we store it in data_[0..len-1],
-    // and store the length in data_[kMaxInline].  Else we store it in a tree
-    // and store a pointer to that tree in data_[0..sizeof(CordRep*)-1].
-    alignas(absl::cord_internal::CordRep*) char data_[kMaxInline + 1];
+    void ResetToEmpty() { data_ = {}; }
+
+    // This uses reinterpret_cast instead of the union to avoid accessing the
+    // inactive union element. The tagged size is not a common prefix.
+    void set_tagged_size(char new_tag) {
+      reinterpret_cast<char*>(&data_)[kMaxInline] = new_tag;
+    }
+    char tagged_size() const {
+      return reinterpret_cast<const char*>(&data_)[kMaxInline];
+    }
+
+    cord_internal::InlineData data_;
   };
   InlineRep contents_;
 
@@ -879,12 +885,12 @@ Cord MakeCordFromExternal(absl::string_view data, Releaser&& releaser) {
 }
 
 inline Cord::InlineRep::InlineRep(const Cord::InlineRep& src) {
-  cord_internal::SmallMemmove(data_, src.data_, sizeof(data_));
+  data_ = src.data_;
 }
 
 inline Cord::InlineRep::InlineRep(Cord::InlineRep&& src) {
-  memcpy(data_, src.data_, sizeof(data_));
-  memset(src.data_, 0, sizeof(data_));
+  data_ = src.data_;
+  src.ResetToEmpty();
 }
 
 inline Cord::InlineRep& Cord::InlineRep::operator=(const Cord::InlineRep& src) {
@@ -892,7 +898,7 @@ inline Cord::InlineRep& Cord::InlineRep::operator=(const Cord::InlineRep& src) {
     return *this;
   }
   if (!is_tree() && !src.is_tree()) {
-    cord_internal::SmallMemmove(data_, src.data_, sizeof(data_));
+    data_ = src.data_;
     return *this;
   }
   AssignSlow(src);
@@ -904,8 +910,8 @@ inline Cord::InlineRep& Cord::InlineRep::operator=(
   if (is_tree()) {
     ClearSlow();
   }
-  memcpy(data_, src.data_, sizeof(data_));
-  memset(src.data_, 0, sizeof(data_));
+  data_ = src.data_;
+  src.ResetToEmpty();
   return *this;
 }
 
@@ -914,43 +920,39 @@ inline void Cord::InlineRep::Swap(Cord::InlineRep* rhs) {
     return;
   }
 
-  Cord::InlineRep tmp;
-  cord_internal::SmallMemmove(tmp.data_, data_, sizeof(data_));
-  cord_internal::SmallMemmove(data_, rhs->data_, sizeof(data_));
-  cord_internal::SmallMemmove(rhs->data_, tmp.data_, sizeof(data_));
+  std::swap(data_, rhs->data_);
 }
 
 inline const char* Cord::InlineRep::data() const {
-  return is_tree() ? nullptr : data_;
+  return is_tree() ? nullptr : data_.as_chars;
 }
 
 inline absl::cord_internal::CordRep* Cord::InlineRep::tree() const {
   if (is_tree()) {
-    absl::cord_internal::CordRep* rep;
-    memcpy(&rep, data_, sizeof(rep));
-    return rep;
+    return data_.as_tree.rep;
   } else {
     return nullptr;
   }
 }
 
-inline bool Cord::InlineRep::empty() const { return data_[kMaxInline] == 0; }
+inline bool Cord::InlineRep::empty() const { return tagged_size() == 0; }
 
 inline size_t Cord::InlineRep::size() const {
-  const char tag = data_[kMaxInline];
+  const char tag = tagged_size();
   if (tag <= kMaxInline) return tag;
   return static_cast<size_t>(tree()->length);
 }
 
 inline void Cord::InlineRep::set_tree(absl::cord_internal::CordRep* rep) {
   if (rep == nullptr) {
-    memset(data_, 0, sizeof(data_));
+    ResetToEmpty();
   } else {
     bool was_tree = is_tree();
-    memcpy(data_, &rep, sizeof(rep));
-    memset(data_ + sizeof(rep), 0, sizeof(data_) - sizeof(rep) - 1);
+    data_.as_tree = {rep, {}, tagged_size()};
     if (!was_tree) {
-      data_[kMaxInline] = kTreeFlag;
+      // If we were not a tree already, set the tag.
+      // Otherwise, leave it alone because it might have the profile bit on.
+      set_tagged_size(kTreeFlag);
     }
   }
 }
@@ -961,25 +963,20 @@ inline void Cord::InlineRep::replace_tree(absl::cord_internal::CordRep* rep) {
     set_tree(rep);
     return;
   }
-  memcpy(data_, &rep, sizeof(rep));
-  memset(data_ + sizeof(rep), 0, sizeof(data_) - sizeof(rep) - 1);
+  data_.as_tree = {rep, {}, tagged_size()};
 }
 
 inline absl::cord_internal::CordRep* Cord::InlineRep::clear() {
-  const char tag = data_[kMaxInline];
-  absl::cord_internal::CordRep* result = nullptr;
-  if (tag > kMaxInline) {
-    memcpy(&result, data_, sizeof(result));
-  }
-  memset(data_, 0, sizeof(data_));  // Clear the cord
+  absl::cord_internal::CordRep* result = tree();
+  ResetToEmpty();
   return result;
 }
 
 inline void Cord::InlineRep::CopyToArray(char* dst) const {
   assert(!is_tree());
-  size_t n = data_[kMaxInline];
+  size_t n = tagged_size();
   assert(n != 0);
-  cord_internal::SmallMemmove(dst, data_, n);
+  cord_internal::SmallMemmove(dst, data_.as_chars, n);
 }
 
 constexpr inline Cord::Cord() noexcept {}

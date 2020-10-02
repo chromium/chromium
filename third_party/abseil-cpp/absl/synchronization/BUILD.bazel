@@ -73,15 +73,13 @@ cc_library(
         "internal/create_thread_identity.cc",
         "internal/per_thread_sem.cc",
         "internal/waiter.cc",
+        "mutex.cc",
         "notification.cc",
-    ] + select({
-        "//conditions:default": ["mutex.cc"],
-    }),
+    ],
     hdrs = [
         "barrier.h",
         "blocking_counter.h",
         "internal/create_thread_identity.h",
-        "internal/mutex_nonprod.inc",
         "internal/per_thread_sem.h",
         "internal/waiter.h",
         "mutex.h",

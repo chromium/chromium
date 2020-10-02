@@ -98,7 +98,7 @@ enum class StatusCode : int {
 
   // StatusCode::kCancelled
   //
-  // kCanelled (gRPC code "CANCELLED") indicates the operation was cancelled,
+  // kCancelled (gRPC code "CANCELLED") indicates the operation was cancelled,
   // typically by the caller.
   kCancelled = 1,
 
@@ -198,9 +198,9 @@ enum class StatusCode : int {
   // `kAborted`, and `kUnavailable`.
   kAborted = 10,
 
-  // StatusCode::kOutofRange
+  // StatusCode::kOutOfRange
   //
-  // kOutofRange (gRPC code "OUT_OF_RANGE") indicates the operation was
+  // kOutOfRange (gRPC code "OUT_OF_RANGE") indicates the operation was
   // attempted past the valid range, such as seeking or reading past an
   // end-of-file.
   //

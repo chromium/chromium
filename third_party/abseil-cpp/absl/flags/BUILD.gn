@@ -61,7 +61,6 @@ absl_source_set("commandlineflag_internal") {
     "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/base:fast_type_id",
   ]
-  visibility = [ ":*" ]
 }
 
 absl_source_set("commandlineflag") {

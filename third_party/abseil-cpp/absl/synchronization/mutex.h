@@ -72,15 +72,6 @@
 #include "absl/synchronization/internal/per_thread_sem.h"
 #include "absl/time/time.h"
 
-// Decide if we should use the non-production implementation because
-// the production implementation hasn't been fully ported yet.
-#ifdef ABSL_INTERNAL_USE_NONPROD_MUTEX
-#error ABSL_INTERNAL_USE_NONPROD_MUTEX cannot be directly set
-#elif defined(ABSL_LOW_LEVEL_ALLOC_MISSING)
-#define ABSL_INTERNAL_USE_NONPROD_MUTEX 1
-#include "absl/synchronization/internal/mutex_nonprod.inc"
-#endif
-
 namespace absl {
 ABSL_NAMESPACE_BEGIN
 
@@ -461,15 +452,6 @@ class ABSL_LOCKABLE Mutex {
   static void InternalAttemptToUseMutexInFatalSignalHandler();
 
  private:
-#ifdef ABSL_INTERNAL_USE_NONPROD_MUTEX
-  friend class CondVar;
-
-  synchronization_internal::MutexImpl *impl() { return impl_.get(); }
-
-  synchronization_internal::SynchronizationStorage<
-      synchronization_internal::MutexImpl>
-      impl_;
-#else
   std::atomic<intptr_t> mu_;  // The Mutex state.
 
   // Post()/Wait() versus associated PerThreadSem; in class for required
@@ -504,7 +486,6 @@ class ABSL_LOCKABLE Mutex {
   void Trans(MuHow how);  // used for CondVar->Mutex transfer
   void Fer(
       base_internal::PerThreadSynch *w);  // used for CondVar->Mutex transfer
-#endif
 
   // Catch the error of writing Mutex when intending MutexLock.
   Mutex(const volatile Mutex * /*ignored*/) {}  // NOLINT(runtime/explicit)
@@ -838,17 +819,10 @@ class CondVar {
   void EnableDebugLog(const char *name);
 
  private:
-#ifdef ABSL_INTERNAL_USE_NONPROD_MUTEX
-  synchronization_internal::CondVarImpl *impl() { return impl_.get(); }
-  synchronization_internal::SynchronizationStorage<
-      synchronization_internal::CondVarImpl>
-      impl_;
-#else
   bool WaitCommon(Mutex *mutex, synchronization_internal::KernelTimeout t);
   void Remove(base_internal::PerThreadSynch *s);
   void Wakeup(base_internal::PerThreadSynch *w);
   std::atomic<intptr_t> cv_;  // Condition variable state.
-#endif
   CondVar(const CondVar&) = delete;
   CondVar& operator=(const CondVar&) = delete;
 };
@@ -906,12 +880,6 @@ class ABSL_SCOPED_LOCKABLE ReleasableMutexLock {
   ReleasableMutexLock& operator=(ReleasableMutexLock&&) = delete;
 };
 
-#ifdef ABSL_INTERNAL_USE_NONPROD_MUTEX
-
-inline constexpr Mutex::Mutex(absl::ConstInitType) : impl_(absl::kConstInit) {}
-
-#else
-
 inline Mutex::Mutex() : mu_(0) {
   ABSL_TSAN_MUTEX_CREATE(this, __tsan_mutex_not_static);
 }
@@ -919,8 +887,6 @@ inline Mutex::Mutex() : mu_(0) {
 inline constexpr Mutex::Mutex(absl::ConstInitType) : mu_(0) {}
 
 inline CondVar::CondVar() : cv_(0) {}
-
-#endif  // ABSL_INTERNAL_USE_NONPROD_MUTEX
 
 // static
 template <typename T>

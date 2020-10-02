@@ -763,7 +763,8 @@ void AppendNumberUnit(std::string* out, double n, DisplayUnit unit) {
 //   form "72h3m0.5s". Leading zero units are omitted.  As a special
 //   case, durations less than one second format use a smaller unit
 //   (milli-, micro-, or nanoseconds) to ensure that the leading digit
-//   is non-zero.  The zero duration formats as 0, with no unit.
+//   is non-zero.
+// Unlike Go, we format the zero duration as 0, with no unit.
 std::string FormatDuration(Duration d) {
   const Duration min_duration = Seconds(kint64min);
   if (d == min_duration) {

@@ -55,6 +55,7 @@ using ::testing::ElementsAreArray;
 using ::testing::IsEmpty;
 using ::testing::IsNull;
 using ::testing::Pair;
+using ::testing::SizeIs;
 
 template <typename T, typename U>
 void CheckPairEquals(const T &x, const U &y) {
@@ -2107,6 +2108,31 @@ TEST(Btree, MergeIntoMultiMapsWithDifferentComparators) {
   EXPECT_TRUE(src2.empty());
   EXPECT_THAT(dst, ElementsAre(Pair(1, 1), Pair(2, 2), Pair(3, 3), Pair(3, 2),
                                Pair(4, 1), Pair(4, 4), Pair(5, 5)));
+}
+
+TEST(Btree, MergeIntoSetMovableOnly) {
+  absl::btree_set<MovableOnlyInstance> src;
+  src.insert(MovableOnlyInstance(1));
+  absl::btree_multiset<MovableOnlyInstance> dst1;
+  dst1.insert(MovableOnlyInstance(2));
+  absl::btree_set<MovableOnlyInstance> dst2;
+
+  // Test merge into multiset.
+  dst1.merge(src);
+
+  EXPECT_TRUE(src.empty());
+  // ElementsAre/ElementsAreArray don't work with move-only types.
+  ASSERT_THAT(dst1, SizeIs(2));
+  EXPECT_EQ(*dst1.begin(), MovableOnlyInstance(1));
+  EXPECT_EQ(*std::next(dst1.begin()), MovableOnlyInstance(2));
+
+  // Test merge into set.
+  dst2.merge(dst1);
+
+  EXPECT_TRUE(dst1.empty());
+  ASSERT_THAT(dst2, SizeIs(2));
+  EXPECT_EQ(*dst2.begin(), MovableOnlyInstance(1));
+  EXPECT_EQ(*std::next(dst2.begin()), MovableOnlyInstance(2));
 }
 
 struct KeyCompareToWeakOrdering {

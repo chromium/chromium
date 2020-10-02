@@ -151,7 +151,6 @@ class btree_container {
     return extract(iterator(position));
   }
 
- public:
   // Utility routines.
   void clear() { tree_.clear(); }
   void swap(btree_container &other) { tree_.swap(other.tree_); }
@@ -344,7 +343,7 @@ class btree_set_container : public btree_container<Tree> {
           int> = 0>
   void merge(btree_container<T> &src) {  // NOLINT
     for (auto src_it = src.begin(); src_it != src.end();) {
-      if (insert(std::move(*src_it)).second) {
+      if (insert(std::move(params_type::element(src_it.slot()))).second) {
         src_it = src.erase(src_it);
       } else {
         ++src_it;
@@ -627,8 +626,9 @@ class btree_multiset_container : public btree_container<Tree> {
                            typename T::params_type::is_map_container>>::value,
           int> = 0>
   void merge(btree_container<T> &src) {  // NOLINT
-    insert(std::make_move_iterator(src.begin()),
-           std::make_move_iterator(src.end()));
+    for (auto src_it = src.begin(), end = src.end(); src_it != end; ++src_it) {
+      insert(std::move(params_type::element(src_it.slot())));
+    }
     src.clear();
   }
 

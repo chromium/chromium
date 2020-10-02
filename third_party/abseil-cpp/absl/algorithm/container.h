@@ -539,12 +539,20 @@ BidirectionalIterator c_move_backward(C&& src, BidirectionalIterator dest) {
 // c_swap_ranges()
 //
 // Container-based version of the <algorithm> `std::swap_ranges()` function to
-// swap a container's elements with another container's elements.
+// swap a container's elements with another container's elements. Swaps the
+// first N elements of `c1` and `c2`, where N = min(size(c1), size(c2)).
 template <typename C1, typename C2>
 container_algorithm_internal::ContainerIter<C2> c_swap_ranges(C1& c1, C2& c2) {
-  return std::swap_ranges(container_algorithm_internal::c_begin(c1),
-                          container_algorithm_internal::c_end(c1),
-                          container_algorithm_internal::c_begin(c2));
+  auto first1 = container_algorithm_internal::c_begin(c1);
+  auto last1 = container_algorithm_internal::c_end(c1);
+  auto first2 = container_algorithm_internal::c_begin(c2);
+  auto last2 = container_algorithm_internal::c_end(c2);
+
+  using std::swap;
+  for (; first1 != last1 && first2 != last2; ++first1, (void)++first2) {
+    swap(*first1, *first2);
+  }
+  return first2;
 }
 
 // c_transform()
@@ -562,16 +570,23 @@ OutputIterator c_transform(const InputSequence& input, OutputIterator output,
 }
 
 // Overload of c_transform() for performing a transformation using a binary
-// predicate.
+// predicate. Applies `binary_op` to the first N elements of `c1` and `c2`,
+// where N = min(size(c1), size(c2)).
 template <typename InputSequence1, typename InputSequence2,
           typename OutputIterator, typename BinaryOp>
 OutputIterator c_transform(const InputSequence1& input1,
                            const InputSequence2& input2, OutputIterator output,
                            BinaryOp&& binary_op) {
-  return std::transform(container_algorithm_internal::c_begin(input1),
-                        container_algorithm_internal::c_end(input1),
-                        container_algorithm_internal::c_begin(input2), output,
-                        std::forward<BinaryOp>(binary_op));
+  auto first1 = container_algorithm_internal::c_begin(input1);
+  auto last1 = container_algorithm_internal::c_end(input1);
+  auto first2 = container_algorithm_internal::c_begin(input2);
+  auto last2 = container_algorithm_internal::c_end(input2);
+  for (; first1 != last1 && first2 != last2;
+       ++first1, (void)++first2, ++output) {
+    *output = binary_op(*first1, *first2);
+  }
+
+  return output;
 }
 
 // c_replace()

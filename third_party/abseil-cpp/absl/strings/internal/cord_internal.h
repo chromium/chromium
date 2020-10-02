@@ -85,6 +85,17 @@ struct CordRepConcat;
 struct CordRepSubstring;
 struct CordRepExternal;
 
+// Various representations that we allow
+enum CordRepKind {
+  CONCAT        = 0,
+  EXTERNAL      = 1,
+  SUBSTRING     = 2,
+
+  // We have different tags for different sized flat arrays,
+  // starting with FLAT
+  FLAT          = 3,
+};
+
 struct CordRep {
   // The following three fields have to be less than 32 bytes since
   // that is the smallest supported flat node size.
@@ -166,6 +177,34 @@ struct CordRepExternalImpl
     delete static_cast<CordRepExternalImpl*>(rep);
   }
 };
+
+enum {
+  kMaxInline = 15,
+  // Tag byte & kMaxInline means we are storing a pointer.
+  kTreeFlag = 1 << 4,
+  // Tag byte & kProfiledFlag means we are profiling the Cord.
+  kProfiledFlag = 1 << 5
+};
+
+// If the data has length <= kMaxInline, we store it in `as_chars`, and
+// store the size in `tagged_size`.
+// Else we store it in a tree and store a pointer to that tree in
+// `as_tree.rep` and store a tag in `tagged_size`.
+struct AsTree {
+  absl::cord_internal::CordRep* rep;
+  char padding[kMaxInline + 1 - sizeof(absl::cord_internal::CordRep*) - 1];
+  char tagged_size;
+};
+union InlineData {
+  constexpr InlineData() : as_chars{} {}
+  explicit constexpr InlineData(AsTree tree) : as_tree(tree) {}
+
+  AsTree as_tree;
+  char as_chars[kMaxInline + 1];
+};
+static_assert(sizeof(InlineData) == kMaxInline + 1, "");
+static_assert(sizeof(AsTree) == sizeof(InlineData), "");
+static_assert(offsetof(AsTree, tagged_size) == kMaxInline, "");
 
 }  // namespace cord_internal
 ABSL_NAMESPACE_END

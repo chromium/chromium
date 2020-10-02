@@ -676,6 +676,15 @@ TEST(MutatingTest, SwapRanges) {
   absl::c_swap_ranges(odds, evens);
   EXPECT_THAT(odds, ElementsAre(1, 3, 5));
   EXPECT_THAT(evens, ElementsAre(2, 4, 6));
+
+  odds.pop_back();
+  absl::c_swap_ranges(odds, evens);
+  EXPECT_THAT(odds, ElementsAre(2, 4));
+  EXPECT_THAT(evens, ElementsAre(1, 3, 6));
+
+  absl::c_swap_ranges(evens, odds);
+  EXPECT_THAT(odds, ElementsAre(1, 3));
+  EXPECT_THAT(evens, ElementsAre(2, 4, 6));
 }
 
 TEST_F(NonMutatingTest, Transform) {
@@ -690,6 +699,20 @@ TEST_F(NonMutatingTest, Transform) {
   EXPECT_EQ(std::vector<int>({1, 5, 4}), z);
   *end = 7;
   EXPECT_EQ(std::vector<int>({1, 5, 4, 7}), z);
+
+  z.clear();
+  y.pop_back();
+  end = absl::c_transform(x, y, std::back_inserter(z), std::plus<int>());
+  EXPECT_EQ(std::vector<int>({1, 5}), z);
+  *end = 7;
+  EXPECT_EQ(std::vector<int>({1, 5, 7}), z);
+
+  z.clear();
+  std::swap(x, y);
+  end = absl::c_transform(x, y, std::back_inserter(z), std::plus<int>());
+  EXPECT_EQ(std::vector<int>({1, 5}), z);
+  *end = 7;
+  EXPECT_EQ(std::vector<int>({1, 5, 7}), z);
 }
 
 TEST(MutatingTest, Replace) {

@@ -52,7 +52,6 @@ absl_cc_library(
     "barrier.h"
     "blocking_counter.h"
     "internal/create_thread_identity.h"
-    "internal/mutex_nonprod.inc"
     "internal/per_thread_sem.h"
     "internal/waiter.h"
     "mutex.h"

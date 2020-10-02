@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef ABSL_BASE_INTERNAL_LOG_SEVERITY_H_
-#define ABSL_BASE_INTERNAL_LOG_SEVERITY_H_
+#ifndef ABSL_BASE_LOG_SEVERITY_H_
+#define ABSL_BASE_LOG_SEVERITY_H_
 
 #include <array>
 #include <ostream>
@@ -118,4 +118,4 @@ std::ostream& operator<<(std::ostream& os, absl::LogSeverity s);
 ABSL_NAMESPACE_END
 }  // namespace absl
 
-#endif  // ABSL_BASE_INTERNAL_LOG_SEVERITY_H_
+#endif  // ABSL_BASE_LOG_SEVERITY_H_

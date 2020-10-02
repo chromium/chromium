@@ -292,6 +292,17 @@ TEST(StatusOr, TestDefaultCtor) {
   EXPECT_EQ(thing.status().code(), absl::StatusCode::kUnknown);
 }
 
+TEST(StatusOr, StatusCtorForwards) {
+  absl::Status status(absl::StatusCode::kInternal, "Some error");
+
+  EXPECT_EQ(absl::StatusOr<int>(status).status().message(), "Some error");
+  EXPECT_EQ(status.message(), "Some error");
+
+  EXPECT_EQ(absl::StatusOr<int>(std::move(status)).status().message(),
+            "Some error");
+  EXPECT_NE(status.message(), "Some error");
+}
+
 // Define `EXPECT_DEATH_OR_THROW` to test the behavior of `StatusOr::value`,
 // which either throws `BadStatusOrAccess` or `LOG(FATAL)` based on whether
 // exceptions are enabled.

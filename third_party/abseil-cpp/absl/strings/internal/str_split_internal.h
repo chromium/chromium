@@ -336,7 +336,7 @@ class Splitter {
     Container operator()(const Splitter& splitter) const {
       Container c;
       auto it = std::inserter(c, c.end());
-      for (const auto sp : splitter) {
+      for (const auto& sp : splitter) {
         *it++ = ValueType(sp);
       }
       return c;
@@ -401,7 +401,7 @@ class Splitter {
       Container m;
       typename Container::iterator it;
       bool insert = true;
-      for (const auto sp : splitter) {
+      for (const auto& sp : splitter) {
         if (insert) {
           it = Inserter<Container>::Insert(&m, First(sp), Second());
         } else {

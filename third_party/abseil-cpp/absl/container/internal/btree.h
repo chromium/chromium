@@ -391,6 +391,9 @@ struct SearchResult {
 // useful information.
 template <typename V>
 struct SearchResult<V, false> {
+  explicit SearchResult(V value) : value(value) {}
+  SearchResult(V value, MatchKind /*match*/) : value(value) {}
+
   V value;
 
   static constexpr bool HasMatch() { return false; }
@@ -672,7 +675,7 @@ class btree_node {
       }
       ++s;
     }
-    return {s};
+    return SearchResult<int, false>{s};
   }
 
   // Returns the position of the first value whose key is not less than k using
@@ -707,7 +710,7 @@ class btree_node {
         e = mid;
       }
     }
-    return {s};
+    return SearchResult<int, false>{s};
   }
 
   // Returns the position of the first value whose key is not less than k using
@@ -1453,24 +1456,14 @@ class btree {
   static IterType internal_last(IterType iter);
 
   // Returns an iterator pointing to the leaf position at which key would
-  // reside in the tree. We provide 2 versions of internal_locate. The first
-  // version uses a less-than comparator and is incapable of distinguishing when
-  // there is an exact match. The second version is for the key-compare-to
-  // specialization and distinguishes exact matches. The key-compare-to
-  // specialization allows the caller to avoid a subsequent comparison to
-  // determine if an exact match was made, which is important for keys with
-  // expensive comparison, such as strings.
+  // reside in the tree, unless there is an exact match - in which case, the
+  // result may not be on a leaf. When there's a three-way comparator, we can
+  // return whether there was an exact match. This allows the caller to avoid a
+  // subsequent comparison to determine if an exact match was made, which is
+  // important for keys with expensive comparison, such as strings.
   template <typename K>
   SearchResult<iterator, is_key_compare_to::value> internal_locate(
       const K &key) const;
-
-  template <typename K>
-  SearchResult<iterator, false> internal_locate_impl(
-      const K &key, std::false_type /* IsCompareTo */) const;
-
-  template <typename K>
-  SearchResult<iterator, true> internal_locate_impl(
-      const K &key, std::true_type /* IsCompareTo */) const;
 
   // Internal routine which implements lower_bound().
   template <typename K>
@@ -1934,8 +1927,8 @@ auto btree<P>::insert_unique(const K &key, Args &&... args)
     mutable_root() = rightmost_ = new_leaf_root_node(1);
   }
 
-  auto res = internal_locate(key);
-  iterator &iter = res.value;
+  SearchResult<iterator, is_key_compare_to::value> res = internal_locate(key);
+  iterator iter = res.value;
 
   if (res.HasMatch()) {
     if (res.IsEq()) {
@@ -2285,11 +2278,11 @@ void btree<P>::rebalance_or_split(iterator *iter) {
         // inserting at the end of the right node then we bias rebalancing to
         // fill up the left node.
         int to_move = (kNodeValues - left->count()) /
-                      (1 + (insert_position < kNodeValues));
+                      (1 + (insert_position < static_cast<int>(kNodeValues)));
         to_move = (std::max)(1, to_move);
 
         if (insert_position - to_move >= node->start() ||
-            left->count() + to_move < kNodeValues) {
+            left->count() + to_move < static_cast<int>(kNodeValues)) {
           left->rebalance_right_to_left(to_move, node, mutable_allocator());
 
           assert(node->max_count() - node->count() == to_move);
@@ -2313,12 +2306,12 @@ void btree<P>::rebalance_or_split(iterator *iter) {
         // We bias rebalancing based on the position being inserted. If we're
         // inserting at the beginning of the left node then we bias rebalancing
         // to fill up the right node.
-        int to_move = (kNodeValues - right->count()) /
+        int to_move = (static_cast<int>(kNodeValues) - right->count()) /
                       (1 + (insert_position > node->start()));
         to_move = (std::max)(1, to_move);
 
         if (insert_position <= node->finish() - to_move ||
-            right->count() + to_move < kNodeValues) {
+            right->count() + to_move < static_cast<int>(kNodeValues)) {
           node->rebalance_left_to_right(to_move, right, mutable_allocator());
 
           if (insert_position > node->finish()) {
@@ -2381,7 +2374,7 @@ bool btree<P>::try_merge_or_rebalance(iterator *iter) {
     // Try merging with our left sibling.
     node_type *left = parent->child(iter->node->position() - 1);
     assert(left->max_count() == kNodeValues);
-    if (1 + left->count() + iter->node->count() <= kNodeValues) {
+    if (1U + left->count() + iter->node->count() <= kNodeValues) {
       iter->position += 1 + left->count();
       merge_nodes(left, iter->node);
       iter->node = left;
@@ -2392,7 +2385,7 @@ bool btree<P>::try_merge_or_rebalance(iterator *iter) {
     // Try merging with our right sibling.
     node_type *right = parent->child(iter->node->position() + 1);
     assert(right->max_count() == kNodeValues);
-    if (1 + iter->node->count() + right->count() <= kNodeValues) {
+    if (1U + iter->node->count() + right->count() <= kNodeValues) {
       merge_nodes(iter->node, right);
       return true;
     }
@@ -2501,46 +2494,25 @@ template <typename P>
 template <typename K>
 inline auto btree<P>::internal_locate(const K &key) const
     -> SearchResult<iterator, is_key_compare_to::value> {
-  return internal_locate_impl(key, is_key_compare_to());
-}
-
-template <typename P>
-template <typename K>
-inline auto btree<P>::internal_locate_impl(
-    const K &key, std::false_type /* IsCompareTo */) const
-    -> SearchResult<iterator, false> {
   iterator iter(const_cast<node_type *>(root()));
   for (;;) {
-    iter.position = iter.node->lower_bound(key, key_comp()).value;
-    // NOTE: we don't need to walk all the way down the tree if the keys are
-    // equal, but determining equality would require doing an extra comparison
-    // on each node on the way down, and we will need to go all the way to the
-    // leaf node in the expected case.
-    if (iter.node->leaf()) {
-      break;
-    }
-    iter.node = iter.node->child(iter.position);
-  }
-  return {iter};
-}
-
-template <typename P>
-template <typename K>
-inline auto btree<P>::internal_locate_impl(
-    const K &key, std::true_type /* IsCompareTo */) const
-    -> SearchResult<iterator, true> {
-  iterator iter(const_cast<node_type *>(root()));
-  for (;;) {
-    SearchResult<int, true> res = iter.node->lower_bound(key, key_comp());
+    SearchResult<int, is_key_compare_to::value> res =
+        iter.node->lower_bound(key, key_comp());
     iter.position = res.value;
-    if (res.match == MatchKind::kEq) {
+    if (res.IsEq()) {
       return {iter, MatchKind::kEq};
     }
+    // Note: in the non-key-compare-to case, we don't need to walk all the way
+    // down the tree if the keys are equal, but determining equality would
+    // require doing an extra comparison on each node on the way down, and we
+    // will need to go all the way to the leaf node in the expected case.
     if (iter.node->leaf()) {
       break;
     }
     iter.node = iter.node->child(iter.position);
   }
+  // Note: in the non-key-compare-to case, the key may actually be equivalent
+  // here (and the MatchKind::kNe is ignored).
   return {iter, MatchKind::kNe};
 }
 
@@ -2575,7 +2547,7 @@ auto btree<P>::internal_upper_bound(const K &key) const -> iterator {
 template <typename P>
 template <typename K>
 auto btree<P>::internal_find(const K &key) const -> iterator {
-  auto res = internal_locate(key);
+  SearchResult<iterator, is_key_compare_to::value> res = internal_locate(key);
   if (res.HasMatch()) {
     if (res.IsEq()) {
       return res.value;

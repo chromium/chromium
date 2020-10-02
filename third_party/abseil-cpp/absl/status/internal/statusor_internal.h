@@ -215,7 +215,7 @@ class StatusOrData {
   template <typename U,
             absl::enable_if_t<std::is_constructible<absl::Status, U&&>::value,
                               int> = 0>
-  explicit StatusOrData(U&& v) : status_(v) {
+  explicit StatusOrData(U&& v) : status_(std::forward<U>(v)) {
     EnsureNotOk();
   }
 
