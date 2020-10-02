@@ -193,9 +193,6 @@ media::OutputDeviceInfo WebAudioDeviceFactory::GetOutputDeviceInfo(
       base::TimeDelta::FromMilliseconds(5000);
 
   // There's one process wide instance that lives on the render thread.
-  //
-  // TODO(crbug.com/787252): Replace the use of base::ThreadPool below by
-  // worker_pool::PostTask().
   static base::NoDestructor<AudioRendererSinkCache> cache(
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::TaskPriority::BEST_EFFORT,

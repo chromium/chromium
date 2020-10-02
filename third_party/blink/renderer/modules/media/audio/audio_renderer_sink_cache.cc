@@ -8,13 +8,11 @@
 #include <memory>
 #include <utility>
 
-#include "base/bind.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/stl_util.h"
 #include "base/synchronization/lock.h"
-#include "base/task/post_task.h"
 #include "base/trace_event/trace_event.h"
 #include "media/audio/audio_device_description.h"
 #include "media/base/audio_renderer_sink.h"
@@ -23,7 +21,9 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
 namespace blink {
 
@@ -245,14 +245,15 @@ void AudioRendererSinkCache::ReleaseSink(
 }
 
 void AudioRendererSinkCache::DeleteLaterIfUnused(
-    const media::AudioRendererSink* sink_ptr) {
-  cleanup_task_runner_->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&AudioRendererSinkCache::DeleteSink,
-                     // Unretained is safe here since this is a process-wide
-                     // singleton and tests will ensure lifetime.
-                     base::Unretained(this), base::RetainedRef(sink_ptr),
-                     false /*do not delete if used*/),
+    scoped_refptr<media::AudioRendererSink> sink) {
+  PostDelayedCrossThreadTask(
+      *cleanup_task_runner_, FROM_HERE,
+      CrossThreadBindOnce(
+          &AudioRendererSinkCache::DeleteSink,
+          // Unretained is safe here since this is a process-wide
+          // singleton and tests will ensure lifetime.
+          CrossThreadUnretained(this), WTF::RetainedRef(std::move(sink)),
+          false /*do not delete if used*/),
       delete_timeout_);
 }
 
@@ -343,7 +344,7 @@ void AudioRendererSinkCache::CacheOrStopUnusedSink(
     cache_.push_back(cache_entry);
   }
 
-  DeleteLaterIfUnused(cache_entry.sink.get());
+  DeleteLaterIfUnused(cache_entry.sink);
 }
 
 void AudioRendererSinkCache::DropSinksForFrame(

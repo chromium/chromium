@@ -74,7 +74,7 @@ class MODULES_EXPORT AudioRendererSinkCache {
 
   // Schedules a sink for deletion. Deletion will be performed on the same
   // thread the cache is created on.
-  void DeleteLaterIfUnused(const media::AudioRendererSink* sink_ptr);
+  void DeleteLaterIfUnused(scoped_refptr<media::AudioRendererSink> sink);
 
   // Deletes a sink from the cache. If |force_delete_used| is set, a sink being
   // deleted can (and should) be in use at the moment of deletion; otherwise the
