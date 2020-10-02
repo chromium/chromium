@@ -4,13 +4,6 @@
 
 import("//third_party/blink/renderer/core/core.gni")
 
-# This file depends on the legacy global sources assignment filter. It should
-# be converted to check target platform before assigning source files to the
-# sources variable. Remove this import and set_sources_assignment_filter call
-# when the file has been converted. See https://crbug.com/1018739 for details.
-import("//build/config/deprecated_default_sources_assignment_filter.gni")
-set_sources_assignment_filter(deprecated_default_sources_assignment_filter)
-
 blink_core_sources("scroll") {
   sources = [
     "ns_scroller_imp_details.h",
@@ -18,14 +11,10 @@ blink_core_sources("scroll") {
     "programmatic_scroll_animator.h",
     "scroll_alignment.cc",
     "scroll_alignment.h",
-    "scroll_animator.cc",
-    "scroll_animator.h",
     "scroll_animator_base.cc",
     "scroll_animator_base.h",
     "scroll_animator_compositor_coordinator.cc",
     "scroll_animator_compositor_coordinator.h",
-    "scroll_animator_mac.h",
-    "scroll_animator_mac.mm",
     "scroll_customization.cc",
     "scroll_customization.h",
     "scroll_state_data.h",
@@ -39,9 +28,6 @@ blink_core_sources("scroll") {
     "scrollbar_test_suite.h",
     "scrollbar_theme.cc",
     "scrollbar_theme.h",
-    "scrollbar_theme_android.cc",
-    "scrollbar_theme_mac.h",
-    "scrollbar_theme_mac.mm",
     "scrollbar_theme_overlay.cc",
     "scrollbar_theme_overlay.h",
     "scrollbar_theme_overlay_mobile.cc",
@@ -51,12 +37,23 @@ blink_core_sources("scroll") {
     "smooth_scroll_sequencer.h",
   ]
 
+  if (is_android) {
+    sources += [ "scrollbar_theme_android.cc" ]
+  }
+
   if (is_mac) {
-    sources -= [
+    sources += [
+      "scroll_animator_mac.h",
+      "scroll_animator_mac.mm",
+      "scrollbar_theme_mac.h",
+      "scrollbar_theme_mac.mm",
+      "web_scrollbar_theme.mm",
+    ]
+  } else {
+    sources += [
       "scroll_animator.cc",
       "scroll_animator.h",
     ]
-    sources += [ "web_scrollbar_theme.mm" ]
   }
 
   if (use_aura) {

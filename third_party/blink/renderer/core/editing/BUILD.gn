@@ -4,13 +4,6 @@
 
 import("//third_party/blink/renderer/core/core.gni")
 
-# This file depends on the legacy global sources assignment filter. It should
-# be converted to check target platform before assigning source files to the
-# sources variable. Remove this import and set_sources_assignment_filter call
-# when the file has been converted. See https://crbug.com/1018739 for details.
-import("//build/config/deprecated_default_sources_assignment_filter.gni")
-set_sources_assignment_filter(deprecated_default_sources_assignment_filter)
-
 blink_core_sources("editing") {
   sources = [
     "bidi_adjustment.cc",
@@ -316,8 +309,6 @@ blink_core_sources("editing") {
     "state_machines/state_machine_util.h",
     "state_machines/text_segmentation_machine_state.cc",
     "state_machines/text_segmentation_machine_state.h",
-    "substring_util.h",
-    "substring_util.mm",
     "suggestion/text_suggestion_backend_impl.cc",
     "suggestion/text_suggestion_backend_impl.h",
     "suggestion/text_suggestion_controller.cc",
@@ -348,6 +339,8 @@ blink_core_sources("editing") {
     sources += [
       "commands/smart_replace_cf.cc",
       "kill_ring_mac.mm",
+      "substring_util.h",
+      "substring_util.mm",
     ]
   } else {
     sources += [ "kill_ring_none.cc" ]
@@ -435,7 +428,6 @@ source_set("unit_tests") {
     "state_machines/state_machine_test_util.cc",
     "state_machines/state_machine_test_util.h",
     "state_machines/state_machine_util_test.cc",
-    "substring_util_test.mm",
     "suggestion/text_suggestion_controller_test.cc",
     "surrounding_text_test.cc",
     "testing/editing_test_base.cc",
@@ -453,6 +445,10 @@ source_set("unit_tests") {
     "visible_units_test.cc",
     "visible_units_word_test.cc",
   ]
+
+  if (is_mac) {
+    sources += [ "substring_util_test.mm" ]
+  }
 
   configs += [
     "//third_party/blink/renderer/core:blink_core_pch",
