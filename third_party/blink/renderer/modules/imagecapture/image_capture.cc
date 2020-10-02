@@ -181,6 +181,13 @@ ScriptPromise ImageCapture::getPhotoCapabilities(ScriptState* script_state) {
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
 
+  if (TrackIsInactive(*stream_track_)) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kInvalidStateError,
+        "The associated Track is in an invalid state."));
+    return promise;
+  }
+
   if (!service_.is_bound()) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kNotFoundError, kNoServiceError));
@@ -206,6 +213,13 @@ ScriptPromise ImageCapture::getPhotoCapabilities(ScriptState* script_state) {
 ScriptPromise ImageCapture::getPhotoSettings(ScriptState* script_state) {
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
+
+  if (TrackIsInactive(*stream_track_)) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kInvalidStateError,
+        "The associated Track is in an invalid state."));
+    return promise;
+  }
 
   if (!service_.is_bound()) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
@@ -959,6 +973,14 @@ void ImageCapture::OnMojoGetPhotoState(
   if (photo_state.is_null()) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kUnknownError, "platform error"));
+    service_requests_.erase(resolver);
+    return;
+  }
+
+  if (TrackIsInactive(*stream_track_)) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kOperationError,
+        "The associated Track is in an invalid state."));
     service_requests_.erase(resolver);
     return;
   }
