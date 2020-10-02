@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/android/vr/arcore_device/arcore_gl.h"
+#include "device/vr/android/arcore/arcore_gl.h"
 
 #include <algorithm>
 #include <iomanip>
@@ -20,12 +20,12 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
-#include "chrome/browser/android/vr/arcore_device/ar_image_transport.h"
-#include "chrome/browser/android/vr/arcore_device/arcore_session_utils.h"
-#include "chrome/browser/android/vr/web_xr_presentation_state.h"
+#include "device/vr/android/arcore/ar_image_transport.h"
 #include "device/vr/android/arcore/arcore.h"
 #include "device/vr/android/arcore/arcore_math_utils.h"
+#include "device/vr/android/arcore/arcore_session_utils.h"
 #include "device/vr/android/arcore/type_converters.h"
+#include "device/vr/android/web_xr_presentation_state.h"
 #include "device/vr/public/mojom/pose.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "gpu/ipc/common/gpu_memory_buffer_impl_android_hardware_buffer.h"

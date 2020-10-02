@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ANDROID_VR_ARCORE_DEVICE_ARCORE_SESSION_UTILS_H_
-#define CHROME_BROWSER_ANDROID_VR_ARCORE_DEVICE_ARCORE_SESSION_UTILS_H_
+#ifndef DEVICE_VR_ANDROID_ARCORE_ARCORE_SESSION_UTILS_H_
+#define DEVICE_VR_ANDROID_ARCORE_ARCORE_SESSION_UTILS_H_
 
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/weak_ptr.h"
@@ -51,4 +51,4 @@ class ArCoreSessionUtils {
 
 }  // namespace vr
 
-#endif  // CHROME_BROWSER_ANDROID_VR_ARCORE_DEVICE_ARCORE_SESSION_UTILS_H_
+#endif  // DEVICE_VR_ANDROID_ARCORE_ARCORE_SESSION_UTILS_H_

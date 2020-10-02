@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/android/vr/arcore_device/arcore_gl_thread.h"
+#include "device/vr/android/arcore/arcore_gl_thread.h"
 
 #include <utility>
 #include "base/version.h"
-#include "chrome/browser/android/vr/arcore_device/ar_image_transport.h"
-#include "chrome/browser/android/vr/arcore_device/arcore_gl.h"
+#include "device/vr/android/arcore/ar_image_transport.h"
+#include "device/vr/android/arcore/arcore_gl.h"
 
 namespace device {
 
 ArCoreGlThread::ArCoreGlThread(
     std::unique_ptr<ArImageTransportFactory> ar_image_transport_factory,
-    std::unique_ptr<vr::MailboxToSurfaceBridge> mailbox_bridge,
+    std::unique_ptr<MailboxToSurfaceBridge> mailbox_bridge,
     base::OnceCallback<void()> initialized_callback)
     : base::android::JavaHandlerThread("ArCoreGL"),
       ar_image_transport_factory_(std::move(ar_image_transport_factory)),

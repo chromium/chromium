@@ -11,12 +11,22 @@ component("arcore") {
   defines = [ "IS_VR_ARCORE_IMPL" ]
   sources = [
     "address_to_id_map.h",
+    "ar_image_transport.cc",
+    "ar_image_transport.h",
+    "ar_renderer.cc",
+    "ar_renderer.h",
     "arcore.cc",
     "arcore.h",
     "arcore_anchor_manager.cc",
     "arcore_anchor_manager.h",
+    "arcore_device.cc",
+    "arcore_device.h",
     "arcore_device_provider_factory.cc",
     "arcore_device_provider_factory.h",
+    "arcore_gl.cc",
+    "arcore_gl.h",
+    "arcore_gl_thread.cc",
+    "arcore_gl_thread.h",
     "arcore_impl.cc",
     "arcore_impl.h",
     "arcore_math_utils.cc",
@@ -24,6 +34,7 @@ component("arcore") {
     "arcore_plane_manager.cc",
     "arcore_plane_manager.h",
     "arcore_sdk.h",
+    "arcore_session_utils.h",
     "arcore_shim.cc",
     "arcore_shim.h",
     "scoped_arcore_objects.h",
@@ -35,9 +46,12 @@ component("arcore") {
 
   deps = [
     "//base",
+    "//device/vr:vr",
     "//device/vr:vr_base",
+    "//device/vr/android:vr_android",
     "//mojo/public/cpp/bindings",
     "//ui/gfx",
+    "//ui/gl/init",
   ]
 
   configs += [ "//third_party/arcore-android-sdk:libarcore_config" ]

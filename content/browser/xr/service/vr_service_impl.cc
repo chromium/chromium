@@ -504,6 +504,9 @@ void VRServiceImpl::DoRequestSession(SessionRequestData request) {
                        "id", request.runtime_id);
 
   auto runtime_options = GetRuntimeOptions(request.options.get());
+  // Make the resolved enabled features available to the runtime.
+  runtime_options->enabled_features.assign(request.enabled_features.begin(),
+                                           request.enabled_features.end());
 
 #if defined(OS_ANDROID) && BUILDFLAG(ENABLE_ARCORE)
   if (request.runtime_id == device::mojom::XRDeviceId::ARCORE_DEVICE_ID) {
@@ -512,10 +515,15 @@ void VRServiceImpl::DoRequestSession(SessionRequestData request) {
     runtime_options->render_frame_id = render_frame_host_->GetRoutingID();
   }
 #endif
-  // Make the resolved enabled features available to the runtime.
-  runtime_options->enabled_features.reserve(request.enabled_features.size());
-  for (const auto& feature : request.enabled_features) {
-    runtime_options->enabled_features.push_back(feature);
+
+  bool use_dom_overlay =
+      base::Contains(runtime_options->enabled_features,
+                     device::mojom::XRSessionFeature::DOM_OVERLAY);
+
+  if (use_dom_overlay) {
+    // Tell RenderFrameHostImpl that we're setting up the WebXR DOM Overlay,
+    // it checks for this in EnterFullscreen via HasSeenRecentXrOverlaySetup().
+    render_frame_host_->SetIsXrOverlaySetup();
   }
 
   if (device::XRSessionModeUtils::IsImmersive(runtime_options->mode)) {

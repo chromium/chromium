@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/android/vr/arcore_device/arcore_device.h"
+#include "device/vr/android/arcore/arcore_device.h"
 
 #include <algorithm>
 
@@ -11,16 +11,12 @@
 #include "base/optional.h"
 #include "base/task/post_task.h"
 #include "base/trace_event/trace_event.h"
-#include "chrome/browser/android/tab_android.h"
-#include "chrome/browser/android/vr/arcore_device/ar_image_transport.h"
-#include "chrome/browser/android/vr/arcore_device/arcore_gl.h"
-#include "chrome/browser/android/vr/arcore_device/arcore_gl_thread.h"
-#include "chrome/browser/android/vr/arcore_device/arcore_java_utils.h"
-#include "chrome/browser/android/vr/arcore_device/arcore_session_utils.h"
-#include "chrome/browser/android/vr/mailbox_to_surface_bridge.h"
-#include "chrome/browser/permissions/permission_update_infobar_delegate_android.h"
-#include "content/public/browser/render_frame_host.h"
+#include "device/vr/android/arcore/ar_image_transport.h"
+#include "device/vr/android/arcore/arcore_gl.h"
+#include "device/vr/android/arcore/arcore_gl_thread.h"
 #include "device/vr/android/arcore/arcore_impl.h"
+#include "device/vr/android/arcore/arcore_session_utils.h"
+#include "device/vr/android/mailbox_to_surface_bridge.h"
 #include "ui/display/display.h"
 
 using base::android::JavaRef;
@@ -64,14 +60,16 @@ ArCoreDevice::SessionState::~SessionState() = default;
 ArCoreDevice::ArCoreDevice(
     std::unique_ptr<ArCoreFactory> arcore_factory,
     std::unique_ptr<ArImageTransportFactory> ar_image_transport_factory,
-    std::unique_ptr<vr::MailboxToSurfaceBridge> mailbox_to_surface_bridge,
+    std::unique_ptr<MailboxToSurfaceBridgeFactory>
+        mailbox_to_surface_bridge_factory,
     std::unique_ptr<vr::ArCoreSessionUtils> arcore_session_utils)
     : VRDeviceBase(mojom::XRDeviceId::ARCORE_DEVICE_ID),
       main_thread_task_runner_(base::ThreadTaskRunnerHandle::Get()),
       arcore_factory_(std::move(arcore_factory)),
       ar_image_transport_factory_(std::move(ar_image_transport_factory)),
-      mailbox_bridge_(std::move(mailbox_to_surface_bridge)),
+      mailbox_bridge_factory_(std::move(mailbox_to_surface_bridge_factory)),
       arcore_session_utils_(std::move(arcore_session_utils)),
+      mailbox_bridge_(mailbox_bridge_factory_->Create()),
       session_state_(std::make_unique<ArCoreDevice::SessionState>()) {
   // Ensure display_info_ is set to avoid crash in CallDeferredSessionCallback
   // if initialization fails. Use an arbitrary but really low resolution to make
@@ -79,12 +77,6 @@ ArCoreDevice::ArCoreDevice(
   // from the output drawing surface.
   SetVRDisplayInfo(CreateVRDisplayInfo({16, 16}));
 }
-
-ArCoreDevice::ArCoreDevice()
-    : ArCoreDevice(std::make_unique<ArCoreImplFactory>(),
-                   std::make_unique<ArImageTransportFactory>(),
-                   std::make_unique<vr::MailboxToSurfaceBridge>(),
-                   std::make_unique<vr::ArCoreJavaUtils>()) {}
 
 ArCoreDevice::~ArCoreDevice() {
   // If there's still a pending session request, reject it.
@@ -127,16 +119,6 @@ void ArCoreDevice::RequestSession(
 
   bool use_dom_overlay = base::Contains(
       options->enabled_features, device::mojom::XRSessionFeature::DOM_OVERLAY);
-
-  if (use_dom_overlay) {
-    // Tell RenderFrameHostImpl that we're setting up the WebXR DOM Overlay,
-    // it checks for this in EnterFullscreen via HasSeenRecentXrOverlaySetup().
-    content::RenderFrameHost* render_frame_host =
-        content::RenderFrameHost::FromID(options->render_process_id,
-                                         options->render_frame_id);
-    DCHECK(render_frame_host);
-    render_frame_host->SetIsXrOverlaySetup();
-  }
 
   // mailbox_bridge_ is either supplied from the constructor, or recreated in
   // OnSessionEnded().
@@ -242,7 +224,7 @@ void ArCoreDevice::OnSessionEnded() {
 
   // Create a new mailbox bridge for use in the next session. (This is cheap,
   // the constructor doesn't establish a GL context.)
-  mailbox_bridge_ = std::make_unique<vr::MailboxToSurfaceBridge>();
+  mailbox_bridge_ = mailbox_bridge_factory_->Create();
 
   // This sets HasExclusiveSession status to false.
   OnExitPresent();

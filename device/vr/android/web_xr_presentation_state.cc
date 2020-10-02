@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/android/vr/web_xr_presentation_state.h"
+#include "device/vr/android/web_xr_presentation_state.h"
 
 #include "base/logging.h"
 #include "base/trace_event/trace_event.h"

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ANDROID_VR_ARCORE_DEVICE_AR_RENDERER_H_
-#define CHROME_BROWSER_ANDROID_VR_ARCORE_DEVICE_AR_RENDERER_H_
+#ifndef DEVICE_VR_ANDROID_ARCORE_AR_RENDERER_H_
+#define DEVICE_VR_ANDROID_ARCORE_AR_RENDERER_H_
 
 #include "base/macros.h"
 #include "ui/gl/gl_bindings.h"
@@ -33,4 +33,4 @@ class ArRenderer {
 
 }  // namespace device
 
-#endif  // CHROME_BROWSER_ANDROID_VR_ARCORE_DEVICE_AR_RENDERER_H_
+#endif  // DEVICE_VR_ANDROID_ARCORE_AR_RENDERER_H_

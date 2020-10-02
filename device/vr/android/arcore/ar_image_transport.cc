@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/android/vr/arcore_device/ar_image_transport.h"
+#include "device/vr/android/arcore/ar_image_transport.h"
 
 #include "base/android/android_hardware_buffer_compat.h"
 #include "base/android/scoped_hardware_buffer_handle.h"
 #include "base/containers/queue.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
-#include "chrome/browser/android/vr/mailbox_to_surface_bridge.h"
-#include "chrome/browser/android/vr/web_xr_presentation_state.h"
+#include "device/vr/android/mailbox_to_surface_bridge.h"
+#include "device/vr/android/web_xr_presentation_state.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/ipc/common/gpu_memory_buffer_impl_android_hardware_buffer.h"
 #include "ui/gfx/gpu_fence.h"
@@ -26,7 +26,7 @@
 namespace device {
 
 ArImageTransport::ArImageTransport(
-    std::unique_ptr<vr::MailboxToSurfaceBridge> mailbox_bridge)
+    std::unique_ptr<MailboxToSurfaceBridge> mailbox_bridge)
     : gl_thread_task_runner_(base::ThreadTaskRunnerHandle::Get()),
       mailbox_bridge_(std::move(mailbox_bridge)) {
   DVLOG(2) << __func__;
@@ -401,7 +401,7 @@ bool ArImageTransport::IsOnGlThread() const {
 }
 
 std::unique_ptr<ArImageTransport> ArImageTransportFactory::Create(
-    std::unique_ptr<vr::MailboxToSurfaceBridge> mailbox_bridge) {
+    std::unique_ptr<MailboxToSurfaceBridge> mailbox_bridge) {
   return std::make_unique<ArImageTransport>(std::move(mailbox_bridge));
 }
 
