@@ -30,8 +30,8 @@ TEST(OmniboxPedals, DataLoadsForAllLocales) {
       { "am",
         {
           "አስወግድ መሸጎጫ",
-          "አቀናባሪ የይለፍ ቃላት",
-          "አቀናብር የክሬዲት ካርድ መረጃ",
+          "አስቀምጥ የይለፍ ቃላት",
+          "አስቀምጥ የክሬዲት ካርድ መረጃ",
           "ማንነት የማያሳውቅ መስኮት",
           "ቋንቋ ቀይር ይህ ገጽ",
           "google chrome አዘምን",
@@ -40,16 +40,16 @@ TEST(OmniboxPedals, DataLoadsForAllLocales) {
       { "ar",
         {
           "إزالة ذاكرة التخزين المؤقت",
-          "تعديل بيانات الاعتماد",
+          "إدارة بيانات الاعتماد",
           "إدارة معلومات بطاقة الائتمان",
           "علامة تبويب في وضع التصفّح المتخفي",
           "تغيير اللغة هذه الصفحة",
-          "google chrome ترقية",
+          "google chrome تثبيت",
         }
       },
       { "bg",
         {
-          "премахване",
+          "изчистване",
           "актуализиране идентификацията",
           "актуализиране информацията кредитната карта",
           "стартиране поверително сърфиране",
@@ -71,7 +71,7 @@ TEST(OmniboxPedals, DataLoadsForAllLocales) {
         {
           "suprimeix memòria cau",
           "administrador contrasenyes",
-          "administrar informació targeta crèdit",
+          "actualitzar informació targeta crèdit",
           "finestra d'incògnit",
           "canviar l'idioma aquesta pàgina",
           "google chrome actualitzar versió",
@@ -84,7 +84,7 @@ TEST(OmniboxPedals, DataLoadsForAllLocales) {
           "aktualizovat informace o platební kartě",
           "anonymní režim",
           "změnit jazyk tato stránka",
-          "google chrome nainstalovat",
+          "google chrome aktualizovat",
         }
       },
       { "da",
@@ -100,7 +100,7 @@ TEST(OmniboxPedals, DataLoadsForAllLocales) {
       { "de",
         {
           "entfernen browserverlauf",
-          "verwalten passwörter",
+          "anschauen passwörter",
           "aktualisieren karteninformationen",
           "arbeiten inkognito fenster",
           "sprache ändern diese webseite",
@@ -121,20 +121,20 @@ TEST(OmniboxPedals, DataLoadsForAllLocales) {
         {
           "delete information",
           "manager credentials",
-          "manage credit card information",
+          "change credit card information",
           "incognito window",
           "change language this page",
-          "google chrome upgrade",
+          "google chrome install",
         }
       },
       { "en-GB",
         {
           "delete information",
           "manager credentials",
-          "manage credit card information",
+          "change credit card information",
           "incognito window",
           "change language this page",
-          "google chrome upgrade",
+          "google chrome install",
         }
       },
       { "es",
@@ -173,7 +173,7 @@ TEST(OmniboxPedals, DataLoadsForAllLocales) {
           "به‌روزرسانی کردن اطلاعات کاربری",
           "به‌روزرسانی کردن اطلاعات کارت اعتباری",
           "پنجره ناشناس",
-          "تغییر زبان این صفحه",
+          "ترجمه کردن این صفحه",
           "google chrome به‌روزرسانی کردن",
         }
       },
@@ -194,7 +194,7 @@ TEST(OmniboxPedals, DataLoadsForAllLocales) {
           "pamahalaan impormasyon ng credit card",
           "incognito window",
           "baguhin ang wika i-translate ang page",
-          "google chrome i-upgrade",
+          "google chrome i-install",
         }
       },
       { "fr",
@@ -209,7 +209,7 @@ TEST(OmniboxPedals, DataLoadsForAllLocales) {
       },
       { "gu",
         {
-          "ડિલીટ કરો ઇતિહાસ",
+          "કાઢી નાખો ઇતિહાસ",
           "ફેરફાર કરો લૉગ ઇન વિગત",
           "ફેરફાર કરો ક્રેડિટ કાર્ડની માહિતી",
           "ખાનગી વિંડો",
@@ -219,11 +219,11 @@ TEST(OmniboxPedals, DataLoadsForAllLocales) {
       },
       { "he",
         {
-          "איפוס נתונים",
-          "עריכה פרטי כניסה",
-          "ניהול",
+          "איפוס נתונים קובצי cookie",
+          "להציג פרטי כניסה",
+          "לעדכן פרטי כרטיס אשראי",
           "כרטיסיית מצב אנונימי",
-          "שינוי שפה דף זה",
+          "לשנות שפה דף זה",
           "google chrome להתקין",
         }
       },
@@ -240,8 +240,8 @@ TEST(OmniboxPedals, DataLoadsForAllLocales) {
       { "hr",
         {
           "odstranjivanje privremena memorija",
-          "uređivanje vjerodajnice",
-          "upravljanje informacije o kreditnoj kartici",
+          "ažuriranje vjerodajnice",
+          "ažuriranje informacije o kreditnoj kartici",
           "anonimna kartica",
           "promjena jezika ova stranica",
           "google chrome instaliranje",
@@ -251,7 +251,7 @@ TEST(OmniboxPedals, DataLoadsForAllLocales) {
         {
           "eltávolítása gyorsítótár",
           "megjelenítése bejelentkezési adatok",
-          "szerkesztése hitelkártya adatok",
+          "módosítása hitelkártya adatok",
           "inkognitó ablak",
           "nyelvének módosítása ezt az oldalt",
           "google chrome frissítése",
@@ -262,8 +262,8 @@ TEST(OmniboxPedals, DataLoadsForAllLocales) {
           "hapus informasi",
           "pengelola kredensial",
           "kelola informasi kartu kredit",
-          "jendela samaran",
-          "ubah bahasa halaman ini",
+          "jendela pribadi",
+          "terjemahkan halaman ini",
           "google chrome upgrade",
         }
       },
@@ -302,7 +302,7 @@ TEST(OmniboxPedals, DataLoadsForAllLocales) {
           "완전 삭제 데이터",
           "업데이트 사용자 인증 정보",
           "업데이트 신용카드 정보",
-          "시크릿 모드",
+          "비공개 모드",
           "언어 변경 이 페이지",
           "브라우저 업그레이드",
         }
@@ -314,14 +314,14 @@ TEST(OmniboxPedals, DataLoadsForAllLocales) {
           "atnaujinti kredito kortelės informacija",
           "inkognito skirtukas",
           "pakeisti kalbą šis puslapis",
-          "google chrome naujovinti",
+          "google chrome atnaujinti",
         }
       },
       { "lv",
         {
-          "notīrīt informācija",
+          "iztīrīt informācija",
           "pārvaldnieks akreditācijas dati",
-          "pārvaldīt informācija par kredītkarti",
+          "atjaunināt informācija par kredītkarti",
           "inkognito režīma logs",
           "mainīt valodu šī lapa",
           "google chrome atjaunināt",
@@ -329,7 +329,7 @@ TEST(OmniboxPedals, DataLoadsForAllLocales) {
       },
       { "ml",
         {
-          "നീക്കം ചെയ്യുക വിവരങ്ങൾ",
+          "നീക്കം ചെയ്യുക കുക്കികൾ",
           "അപ്ഡേറ്റ് ചെയ്യുക ക്രെഡന്‍ഷ്യലുകൾ",
           "അപ്ഡേറ്റ് ചെയ്യുക ക്രെഡിറ്റ് കാർഡ് വിവരങ്ങൾ",
           "സ്വകാര്യ വിൻഡോ",
@@ -342,7 +342,7 @@ TEST(OmniboxPedals, DataLoadsForAllLocales) {
           "काढून टाका इतिहास",
           "व्यवस्थापित करा क्रेडेंशियल",
           "व्यवस्थापित करा क्रेडिट कार्डाची माहिती",
-          "गुप्त विंडो",
+          "खाजगी विंडो",
           "भाषांतर करा हे पेज",
           "ब्राउझर अपग्रेड करा",
         }
@@ -354,7 +354,7 @@ TEST(OmniboxPedals, DataLoadsForAllLocales) {
           "kemas kini maklumat kad kredit",
           "tetingkap inkognito",
           "tukar bahasa halaman ini",
-          "penyemak imbas tingkatkan",
+          "penyemak imbas kemas kini",
         }
       },
       { "nl",
@@ -362,7 +362,7 @@ TEST(OmniboxPedals, DataLoadsForAllLocales) {
           "google chrome verwijderen cachegeheugen",
           "veranderen inloggegevens",
           "bijwerken creditcardinformatie",
-          "incognitovenster",
+          "incognitotabblad",
           "taal wijzigen deze pagina",
           "google chrome installeren",
         }
@@ -380,8 +380,8 @@ TEST(OmniboxPedals, DataLoadsForAllLocales) {
       { "pt-BR",
         {
           "excluir permanentemente informações",
-          "gerenciar credenciais",
-          "gerenciar informações do cartão de crédito",
+          "atualizar credenciais",
+          "atualizar informações do cartão de crédito",
           "modo de navegação anônima",
           "mudar idioma esta página",
           "google chrome fazer upgrade",
@@ -410,7 +410,7 @@ TEST(OmniboxPedals, DataLoadsForAllLocales) {
       { "ru",
         {
           "почистить информацию",
-          "управление учетные данные",
+          "посмотреть учетные данные",
           "управление данные кредитной карты",
           "анонимный просмотр",
           "изменить язык эту страницу",
@@ -439,9 +439,9 @@ TEST(OmniboxPedals, DataLoadsForAllLocales) {
       },
       { "sr",
         {
-          "избрисати информације",
-          "прегледати креденцијали",
-          "управљати информацијама о кредитним картицама",
+          "избрисати информација",
+          "прегледати креденцијала",
+          "ажурирати информацијама о кредитним картицама",
           "картица за приватно прегледање",
           "променити језик ове странице",
           "прегледача надограђивање",
@@ -454,7 +454,7 @@ TEST(OmniboxPedals, DataLoadsForAllLocales) {
           "uppdatera kreditkortsinformation",
           "inkognitofönster",
           "ändra språk denna sida",
-          "google chrome uppgradera",
+          "google chrome installera",
         }
       },
       { "sw",
@@ -464,7 +464,7 @@ TEST(OmniboxPedals, DataLoadsForAllLocales) {
           "badilisha maelezo ya kadi ya mikopo",
           "dirisha la faragha",
           "badilisha lugha ukurasa huu",
-          "google chrome uppgradera",
+          "google chrome installera",
         }
       },
       { "ta",
@@ -472,7 +472,7 @@ TEST(OmniboxPedals, DataLoadsForAllLocales) {
           "வைப் செய் தற்காலிகச் சேமிப்பு",
           "திருத்து அனுமதிச் சான்றுகள்",
           "திருத்து கிரெடிட் கார்டு தகவல்",
-          "மறைநிலைப் பயன்முறை",
+          "தனிப்பட்ட பயன்முறை",
           "மொழியை மாற்று மொழிபெயர்க்கவும்",
           "உலாவி மேம்படுத்து",
         }
@@ -494,7 +494,7 @@ TEST(OmniboxPedals, DataLoadsForAllLocales) {
           "เปลี่ยนแปลง ข้อมูลบัตรเครดิต",
           "หน้าต่างไม่ระบุตัวตน",
           "เปลี่ยนภาษา หน้านี้",
-          "เบราว์เซอร์ อัปเกรด",
+          "เบราว์เซอร์ ติดตั้ง",
         }
       },
       { "tr",
@@ -529,20 +529,20 @@ TEST(OmniboxPedals, DataLoadsForAllLocales) {
       },
       { "zh-CN",
         {
-          "清除浏览数据",
-          "管理密码",
-          "更新信用卡信息",
+          "删除浏览历史",
+          "保存凭据",
+          "保存信用卡信息",
           "启动无痕模式",
           "切换语言",
-          "google chrome更新",
+          "google chrome升级",
         }
       },
       { "zh-TW",
         {
           "刪除 歷史記錄",
           "管理員 密碼",
-          "管理 信用卡資訊",
-          "私密瀏覽視窗",
+          "儲存 信用卡資訊",
+          "私密瀏覽模式",
           "變更語言 這個頁面",
           "google chrome 升級",
         }

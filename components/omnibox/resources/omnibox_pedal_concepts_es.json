@@ -1,7 +1,7 @@
 {
   "schema": "pedal_concepts_runtime",
   "schema_version": 1,
-  "data_version": 15497154,
+  "data_version": 15538875,
   "tokenize_characters": " -",
   "dictionary": [
     "a",
@@ -105,10 +105,10 @@
               52
             ],
             [
-              51
+              5
             ],
             [
-              5
+              51
             ]
           ]
         },
@@ -116,9 +116,6 @@
           "required": true,
           "single": true,
           "synonyms": [
-            [
-              33
-            ],
             [
               33
             ],
@@ -259,17 +256,6 @@
             [
               33,
               36,
-              55,
-              14
-            ],
-            [
-              33,
-              36,
-              55
-            ],
-            [
-              33,
-              36,
               55
             ],
             [
@@ -325,10 +311,10 @@
               34
             ],
             [
-              37
+              23
             ],
             [
-              23
+              37
             ],
             [
               1

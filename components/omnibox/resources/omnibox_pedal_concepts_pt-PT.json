@@ -1,7 +1,7 @@
 {
   "schema": "pedal_concepts_runtime",
   "schema_version": 1,
-  "data_version": 15497154,
+  "data_version": 15538875,
   "tokenize_characters": " -",
   "dictionary": [
     "abrir",
@@ -101,9 +101,6 @@
             ],
             [
               3
-            ],
-            [
-              36
             ],
             [
               36
@@ -255,17 +252,6 @@
               18,
               6,
               14
-            ],
-            [
-              32,
-              18,
-              6,
-              14
-            ],
-            [
-              32,
-              18,
-              6
             ],
             [
               32,
@@ -452,9 +438,6 @@
           "required": true,
           "single": true,
           "synonyms": [
-            [
-              4
-            ],
             [
               4
             ],
