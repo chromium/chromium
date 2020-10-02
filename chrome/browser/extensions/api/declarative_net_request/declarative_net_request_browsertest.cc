@@ -450,14 +450,15 @@ class DeclarativeNetRequestBrowserTest
 
   void SetActionsAsBadgeText(const ExtensionId& extension_id, bool pref) {
     const char* pref_string = pref ? "true" : "false";
-    static constexpr char kSetActionCountAsBadgeTextScript[] = R"(
-      chrome.declarativeNetRequest.setActionCountAsBadgeText(%s);
+    static constexpr char kSetExtensionActionOptionsScript[] = R"(
+      chrome.declarativeNetRequest.setExtensionActionOptions(
+        {displayActionCountAsBadgeText: %s});
       window.domAutomationController.send("done");
     )";
 
     ExecuteScriptInBackgroundPage(
         extension_id,
-        base::StringPrintf(kSetActionCountAsBadgeTextScript, pref_string));
+        base::StringPrintf(kSetExtensionActionOptionsScript, pref_string));
   }
 
   // Navigates frame with name |frame_name| to |url|.
@@ -3091,8 +3092,9 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
   EXPECT_FALSE(action->HasDNRActionCount(first_tab_id));
 }
 
-// Test that enabling the setActionCountAsBadgeText preference will update
-// all browsers sharing the same browser context.
+// Test that enabling the "displayActionCountAsBadgeText" preference using
+// setExtensionActionOptions will update all browsers sharing the same browser
+// context.
 IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
                        ActionCountPreferenceMultipleWindows) {
   // Load the extension with a background script so scripts can be run from its

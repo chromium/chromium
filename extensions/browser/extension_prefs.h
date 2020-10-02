@@ -671,7 +671,7 @@ class ExtensionPrefs : public KeyedService {
 
   // Whether the extension with the given |extension_id| is using its ruleset's
   // matched action count for the badge text. This is set via the
-  // setActionCountAsBadgeText API call.
+  // setExtensionActionOptions API call.
   bool GetDNRUseActionCountAsBadgeText(const ExtensionId& extension_id) const;
   void SetDNRUseActionCountAsBadgeText(const ExtensionId& extension_id,
                                        bool use_action_count_as_badge_text);

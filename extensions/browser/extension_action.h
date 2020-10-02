@@ -308,7 +308,7 @@ class ExtensionAction {
 
   // Maps tab_id to the number of actions taken based on declarative net request
   // rule matches on incoming requests. Overrides the default |badge_text_| for
-  // this extension if it has called chrome.setActionCountAsBadgeText(true).
+  // this extension if it has opted into setting the action count as badge text.
   std::map<int, int> dnr_action_count_;
 
   // ExtensionIconSet containing paths to bitmaps from which default icon's

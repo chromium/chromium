@@ -105,15 +105,15 @@ class DeclarativeNetRequestGetMatchedRulesFunction : public ExtensionFunction {
   static bool disable_throttling_for_test_;
 };
 
-class DeclarativeNetRequestSetActionCountAsBadgeTextFunction
+class DeclarativeNetRequestSetExtensionActionOptionsFunction
     : public ExtensionFunction {
  public:
-  DeclarativeNetRequestSetActionCountAsBadgeTextFunction();
-  DECLARE_EXTENSION_FUNCTION("declarativeNetRequest.setActionCountAsBadgeText",
+  DeclarativeNetRequestSetExtensionActionOptionsFunction();
+  DECLARE_EXTENSION_FUNCTION("declarativeNetRequest.setExtensionActionOptions",
                              DECLARATIVENETREQUEST_SETACTIONCOUNTASBADGETEXT)
 
  protected:
-  ~DeclarativeNetRequestSetActionCountAsBadgeTextFunction() override;
+  ~DeclarativeNetRequestSetExtensionActionOptionsFunction() override;
 
   ExtensionFunction::ResponseAction Run() override;
 };

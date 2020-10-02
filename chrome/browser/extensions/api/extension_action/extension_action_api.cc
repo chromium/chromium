@@ -513,16 +513,16 @@ ExtensionActionGetPopupFunction::RunExtensionAction() {
 
 ExtensionFunction::ResponseAction
 ExtensionActionGetBadgeTextFunction::RunExtensionAction() {
-  // Return a placeholder value if the extension has called
-  // setActionCountAsBadgeText(true) and the badge count shown for this tab is
-  // the number of actions matched.
+  // Return a placeholder value if the extension has enabled using
+  // declarativeNetRequest action count as badge text and the badge count shown
+  // for this tab is the number of actions matched.
   std::string badge_text =
       extension_action_->UseDNRActionCountAsBadgeText(tab_id_)
           ? declarative_net_request::kActionCountPlaceholderBadgeText
           : extension_action_->GetExplicitlySetBadgeText(tab_id_);
 
   // TODO(crbug.com/990224): Document this behavior once
-  // chrome.declarativeNetRequest.setActionCountAsBadgeText is promoted to beta
+  // chrome.declarativeNetRequest.setExtensionActionOptions is promoted to beta
   // from trunk.
   return RespondNow(
       OneArgument(std::make_unique<base::Value>(std::move(badge_text))));
