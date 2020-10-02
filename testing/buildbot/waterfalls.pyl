@@ -3357,6 +3357,7 @@
         'test_suites': {
           'gtest_tests': 'gpu_angle_mac_gtests',
           'gpu_telemetry_tests': 'gpu_angle_mac_telemetry_tests',
+          'isolated_scripts': 'gpu_standalone_angle_unittests_isolated_scripts',
         },
       },
       'ANGLE GPU Mac Retina Release (AMD)': {
@@ -3368,6 +3369,7 @@
         'test_suites': {
           'gtest_tests': 'gpu_angle_mac_gtests',
           'gpu_telemetry_tests': 'gpu_angle_mac_telemetry_tests',
+          'isolated_scripts': 'gpu_standalone_angle_unittests_isolated_scripts',
         },
       },
       'ANGLE GPU Mac Retina Release (NVIDIA)': {
@@ -4300,6 +4302,7 @@
         'test_suites': {
           'gtest_tests': 'gpu_win_angle_amd_gtests',
           'gpu_telemetry_tests': 'gpu_win_angle_amd_telemetry_tests',
+          'isolated_scripts': 'gpu_standalone_angle_unittests_isolated_scripts',
         },
       },
       'Win7 FYI Debug (AMD)': {

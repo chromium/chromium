@@ -81,6 +81,24 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "angle_unittests",
+        "test_id_prefix": "ninja://third_party/angle/src/tests:angle_unittests/"
+      },
+      {
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "gpu": "none",
+              "os": "Mac-10.10"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
         "test": "app_shell_unittests",
         "test_id_prefix": "ninja://extensions/shell:app_shell_unittests/"
       },
@@ -1205,28 +1223,6 @@
         },
         "test": "sql_unittests",
         "test_id_prefix": "ninja://sql:sql_unittests/"
-      },
-      {
-        "args": [
-          "standalone_angle_unittests"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "gpu": "none",
-              "os": "Mac-10.10"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "standalone_angle_unittests",
-        "test_id_prefix": "ninja://third_party/angle/src/tests:standalone_angle_unittests/",
-        "use_isolated_scripts_api": true
       },
       {
         "merge": {
@@ -1782,6 +1778,24 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "angle_unittests",
+        "test_id_prefix": "ninja://third_party/angle/src/tests:angle_unittests/"
+      },
+      {
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "gpu": "none",
+              "os": "Mac-10.11"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
         "test": "app_shell_unittests",
         "test_id_prefix": "ninja://extensions/shell:app_shell_unittests/"
       },
@@ -2925,28 +2939,6 @@
         },
         "test": "sql_unittests",
         "test_id_prefix": "ninja://sql:sql_unittests/"
-      },
-      {
-        "args": [
-          "standalone_angle_unittests"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "gpu": "none",
-              "os": "Mac-10.11"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "standalone_angle_unittests",
-        "test_id_prefix": "ninja://third_party/angle/src/tests:standalone_angle_unittests/",
-        "use_isolated_scripts_api": true
       },
       {
         "merge": {
@@ -3502,6 +3494,24 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "angle_unittests",
+        "test_id_prefix": "ninja://third_party/angle/src/tests:angle_unittests/"
+      },
+      {
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "gpu": "8086:0a2e",
+              "os": "Mac-10.12.6"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
         "test": "app_shell_unittests",
         "test_id_prefix": "ninja://extensions/shell:app_shell_unittests/"
       },
@@ -4645,28 +4655,6 @@
         },
         "test": "sql_unittests",
         "test_id_prefix": "ninja://sql:sql_unittests/"
-      },
-      {
-        "args": [
-          "standalone_angle_unittests"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "gpu": "8086:0a2e",
-              "os": "Mac-10.12.6"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "standalone_angle_unittests",
-        "test_id_prefix": "ninja://third_party/angle/src/tests:standalone_angle_unittests/",
-        "use_isolated_scripts_api": true
       },
       {
         "merge": {
@@ -5298,6 +5286,24 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "angle_unittests",
+        "test_id_prefix": "ninja://third_party/angle/src/tests:angle_unittests/"
+      },
+      {
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "gpu": "none",
+              "os": "Mac-10.13.6"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
         "test": "app_shell_unittests",
         "test_id_prefix": "ninja://extensions/shell:app_shell_unittests/"
       },
@@ -6424,28 +6430,6 @@
         "test_id_prefix": "ninja://sql:sql_unittests/"
       },
       {
-        "args": [
-          "standalone_angle_unittests"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "gpu": "none",
-              "os": "Mac-10.13.6"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "standalone_angle_unittests",
-        "test_id_prefix": "ninja://third_party/angle/src/tests:standalone_angle_unittests/",
-        "use_isolated_scripts_api": true
-      },
-      {
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -7033,6 +7017,24 @@
         },
         "test": "accessibility_unittests",
         "test_id_prefix": "ninja://ui/accessibility:accessibility_unittests/"
+      },
+      {
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "gpu": "none",
+              "os": "Mac-10.13.6"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "angle_unittests",
+        "test_id_prefix": "ninja://third_party/angle/src/tests:angle_unittests/"
       },
       {
         "merge": {
@@ -8212,28 +8214,6 @@
         "test_id_prefix": "ninja://sql:sql_unittests/"
       },
       {
-        "args": [
-          "standalone_angle_unittests"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "gpu": "none",
-              "os": "Mac-10.13.6"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "standalone_angle_unittests",
-        "test_id_prefix": "ninja://third_party/angle/src/tests:standalone_angle_unittests/",
-        "use_isolated_scripts_api": true
-      },
-      {
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -8731,6 +8711,25 @@
         },
         "test": "accessibility_unittests",
         "test_id_prefix": "ninja://ui/accessibility:accessibility_unittests/"
+      },
+      {
+        "isolate_profile_data": true,
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "gpu": "none",
+              "os": "Mac-10.13.6"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "angle_unittests",
+        "test_id_prefix": "ninja://third_party/angle/src/tests:angle_unittests/"
       },
       {
         "isolate_profile_data": true,
@@ -9934,29 +9933,6 @@
         },
         "test": "sql_unittests",
         "test_id_prefix": "ninja://sql:sql_unittests/"
-      },
-      {
-        "args": [
-          "standalone_angle_unittests"
-        ],
-        "isolate_profile_data": true,
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "gpu": "none",
-              "os": "Mac-10.13.6"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "standalone_angle_unittests",
-        "test_id_prefix": "ninja://third_party/angle/src/tests:standalone_angle_unittests/",
-        "use_isolated_scripts_api": true
       },
       {
         "isolate_profile_data": true,
@@ -10591,6 +10567,24 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "angle_unittests",
+        "test_id_prefix": "ninja://third_party/angle/src/tests:angle_unittests/"
+      },
+      {
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "gpu": "none",
+              "os": "Mac-10.14.6"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
         "test": "app_shell_unittests",
         "test_id_prefix": "ninja://extensions/shell:app_shell_unittests/"
       },
@@ -11734,28 +11728,6 @@
         },
         "test": "sql_unittests",
         "test_id_prefix": "ninja://sql:sql_unittests/"
-      },
-      {
-        "args": [
-          "standalone_angle_unittests"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "gpu": "none",
-              "os": "Mac-10.14.6"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "standalone_angle_unittests",
-        "test_id_prefix": "ninja://third_party/angle/src/tests:standalone_angle_unittests/",
-        "use_isolated_scripts_api": true
       },
       {
         "merge": {
@@ -12383,6 +12355,23 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "angle_unittests",
+        "test_id_prefix": "ninja://third_party/angle/src/tests:angle_unittests/"
+      },
+      {
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "os": "Mac-10.15"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
         "test": "app_shell_unittests",
         "test_id_prefix": "ninja://extensions/shell:app_shell_unittests/"
       },
@@ -13463,27 +13452,6 @@
         },
         "test": "sql_unittests",
         "test_id_prefix": "ninja://sql:sql_unittests/"
-      },
-      {
-        "args": [
-          "standalone_angle_unittests"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Mac-10.15"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "standalone_angle_unittests",
-        "test_id_prefix": "ninja://third_party/angle/src/tests:standalone_angle_unittests/",
-        "use_isolated_scripts_api": true
       },
       {
         "merge": {
