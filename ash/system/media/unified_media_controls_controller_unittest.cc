@@ -24,7 +24,7 @@ using media_session::test::TestMediaController;
 
 namespace {
 
-constexpr int kHideControlsDelay = 2000; /* in milliseconds */
+constexpr int kFreezeControlsTime = 2000; /* in milliseconds */
 constexpr int kHideArtworkDelay = 2000;  /* in milliseconds */
 constexpr int kArtworkCornerRadius = 4;
 constexpr int kArtworkHeight = 40;
@@ -380,7 +380,7 @@ TEST_F(UnifiedMediaControlsControllerTest,
 
   // Still in normal state since we are within waiting delay time frame.
   task_environment()->FastForwardBy(
-      base::TimeDelta::FromMilliseconds(kHideControlsDelay - 1));
+      base::TimeDelta::FromMilliseconds(kFreezeControlsTime - 1));
   EXPECT_FALSE(IsMediaControlsInEmptyState());
 
   // Session resumes, controls should still be in normal state.
@@ -391,7 +391,7 @@ TEST_F(UnifiedMediaControlsControllerTest,
   // Hide controls timer expired, controls should be in empty state.
   controller()->MediaSessionChanged(base::nullopt);
   task_environment()->FastForwardBy(
-      base::TimeDelta::FromMilliseconds(kHideControlsDelay));
+      base::TimeDelta::FromMilliseconds(kFreezeControlsTime));
   EXPECT_TRUE(IsMediaControlsInEmptyState());
   EXPECT_TRUE(delegate()->IsControlsVisible());
 }
@@ -418,7 +418,7 @@ TEST_F(UnifiedMediaControlsControllerTest, MediaControlsEmptyState) {
   // Media controls should be in empty state after getting empty session.
   controller()->MediaSessionChanged(base::nullopt);
   task_environment()->FastForwardBy(
-      base::TimeDelta::FromMilliseconds(kHideControlsDelay));
+      base::TimeDelta::FromMilliseconds(kFreezeControlsTime));
 
   EXPECT_TRUE(IsMediaControlsInEmptyState());
 
@@ -471,7 +471,7 @@ TEST_F(UnifiedMediaControlsControllerTest, MediaControlsEmptyStateWithArtwork) {
 
   controller()->MediaSessionChanged(base::nullopt);
   task_environment()->FastForwardBy(
-      base::TimeDelta::FromMilliseconds(kHideControlsDelay));
+      base::TimeDelta::FromMilliseconds(kFreezeControlsTime));
 
   // Artwork view should still be visible and have an background in empty state.
   EXPECT_TRUE(IsMediaControlsInEmptyState());
@@ -554,6 +554,78 @@ TEST_F(UnifiedMediaControlsControllerTest, FreezeControlsWhenUpdateSession) {
   EnableAction(MediaSessionAction::kPreviousTrack);
   EXPECT_TRUE(
       GetActionButton(MediaSessionAction::kPreviousTrack)->GetVisible());
+}
+
+TEST_F(UnifiedMediaControlsControllerTest, FreezeControlsBetweenSessions) {
+  auto request_id = base::UnguessableToken::Create();
+  controller()->MediaSessionChanged(request_id);
+
+  EnableAction(MediaSessionAction::kPreviousTrack);
+  SimulateMediaPlaybackStateChanged(
+      media_session::mojom::MediaPlaybackState::kPlaying);
+
+  media_session::MediaMetadata metadata;
+  metadata.title = base::ASCIIToUTF16("title");
+  metadata.artist = base::ASCIIToUTF16("artist");
+  controller()->MediaSessionMetadataChanged(metadata);
+
+  // Verify initial state
+  EXPECT_TRUE(
+      GetActionButton(MediaSessionAction::kPreviousTrack)->GetVisible());
+  EXPECT_NE(GetActionButton(MediaSessionAction::kPause), nullptr);
+  EXPECT_EQ(metadata.title, title_label()->GetText());
+  EXPECT_EQ(metadata.artist, artist_label()->GetText());
+  EXPECT_FALSE(artwork_view()->GetVisible());
+
+  // Receive a new session with new data.
+  auto new_request_id = base::UnguessableToken::Create();
+  controller()->MediaSessionChanged(new_request_id);
+
+  DisableAction(MediaSessionAction::kPreviousTrack);
+  SimulateMediaPlaybackStateChanged(
+      media_session::mojom::MediaPlaybackState::kPaused);
+
+  media_session::MediaMetadata new_metadata;
+  new_metadata.title = base::ASCIIToUTF16("different title");
+  new_metadata.artist = base::ASCIIToUTF16("different artist");
+  controller()->MediaSessionMetadataChanged(new_metadata);
+
+  SkBitmap artwork;
+  artwork.allocN32Pixels(40, 40);
+  controller()->MediaControllerImageChanged(
+      media_session::mojom::MediaSessionImageType::kArtwork, artwork);
+
+  // Session resumes within freezing timeout.
+  task_environment()->FastForwardBy(
+      base::TimeDelta::FromMilliseconds(kFreezeControlsTime - 1));
+  controller()->MediaSessionChanged(request_id);
+
+  // Media controls should not be updated.
+  EXPECT_TRUE(
+      GetActionButton(MediaSessionAction::kPreviousTrack)->GetVisible());
+  EXPECT_NE(GetActionButton(MediaSessionAction::kPause), nullptr);
+  EXPECT_EQ(metadata.title, title_label()->GetText());
+  EXPECT_EQ(metadata.artist, artist_label()->GetText());
+  EXPECT_FALSE(artwork_view()->GetVisible());
+
+  // Receive new session and data.
+  controller()->MediaSessionChanged(new_request_id);
+  DisableAction(MediaSessionAction::kPreviousTrack);
+  SimulateMediaPlaybackStateChanged(
+      media_session::mojom::MediaPlaybackState::kPaused);
+  controller()->MediaSessionMetadataChanged(new_metadata);
+  controller()->MediaControllerImageChanged(
+      media_session::mojom::MediaSessionImageType::kArtwork, artwork);
+
+  // Controls should be updated after freeze timeout.
+  task_environment()->FastForwardBy(
+      base::TimeDelta::FromMilliseconds(kFreezeControlsTime));
+  EXPECT_FALSE(
+      GetActionButton(MediaSessionAction::kPreviousTrack)->GetVisible());
+  EXPECT_EQ(GetActionButton(MediaSessionAction::kPause), nullptr);
+  EXPECT_EQ(new_metadata.title, title_label()->GetText());
+  EXPECT_EQ(new_metadata.artist, artist_label()->GetText());
+  EXPECT_TRUE(artwork_view()->GetVisible());
 }
 
 TEST_F(UnifiedMediaControlsControllerTest,
