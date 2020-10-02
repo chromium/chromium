@@ -274,11 +274,11 @@ void MultidevicePhoneHubHandler::HandleSetFindMyDeviceStatus(
   int status_as_int = 0;
   CHECK(args->GetInteger(0, &status_as_int));
 
-  // TODO(jimmyxgong): Change to casting the enum TBA to int.
-  bool is_ringing = status_as_int == 2;
-  PA_LOG(VERBOSE) << "Setting phone ringing status to " << is_ringing;
+  auto status =
+      static_cast<phonehub::FindMyDeviceController::Status>(status_as_int);
+  PA_LOG(VERBOSE) << "Setting phone ringing status to " << status;
   fake_phone_hub_manager_->fake_find_my_device_controller()
-      ->SetIsPhoneRingingInternal(is_ringing);
+      ->SetPhoneRingingState(status);
 }
 
 void MultidevicePhoneHubHandler::HandleSetTetherStatus(

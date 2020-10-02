@@ -24,5 +24,21 @@ void FindMyDeviceController::NotifyPhoneRingingStateChanged() {
     observer.OnPhoneRingingStateChanged();
 }
 
+std::ostream& operator<<(std::ostream& stream,
+                         FindMyDeviceController::Status status) {
+  switch (status) {
+    case FindMyDeviceController::Status::kRingingOff:
+      stream << "[Ringing Off]";
+      break;
+    case FindMyDeviceController::Status::kRingingOn:
+      stream << "[Ringing On]";
+      break;
+    case FindMyDeviceController::Status::kRingingNotAvailable:
+      stream << "[Ringing Not Available]";
+      break;
+  }
+  return stream;
+}
+
 }  // namespace phonehub
 }  // namespace chromeos

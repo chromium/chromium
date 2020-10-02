@@ -23,13 +23,13 @@ class FindMyDeviceController {
   };
 
   enum class Status {
-    // The connected phone is not currently ringing.
-    kRingingOff = 0,
-    // The connected phone is currently ringing.
-    kRingingOn = 1,
     // Ringing is not available if the phone's DoNotDisturb mode is enabled.
     // To re-enable ringing, DoNotDisturb mode must be disabled.
-    kRingingNotAvailable = 2,
+    kRingingNotAvailable = 0,
+    // The connected phone is not currently ringing.
+    kRingingOff = 1,
+    // The connected phone is currently ringing.
+    kRingingOn = 2,
   };
 
   FindMyDeviceController(const FindMyDeviceController&) = delete;
@@ -63,6 +63,9 @@ class FindMyDeviceController {
  private:
   base::ObserverList<Observer> observer_list_;
 };
+
+std::ostream& operator<<(std::ostream& stream,
+                         FindMyDeviceController::Status status);
 
 }  // namespace phonehub
 }  // namespace chromeos
