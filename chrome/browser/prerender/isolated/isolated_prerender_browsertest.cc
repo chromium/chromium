@@ -2573,6 +2573,50 @@ IN_PROC_BROWSER_TEST_F(IsolatedPrerenderWithNSPBrowserTest,
       "IsolatedPrerender.AfterClick.Subresources.UsedCache", true, 2);
 }
 
+IN_PROC_BROWSER_TEST_F(IsolatedPrerenderWithNSPBrowserTest,
+                       DISABLE_ON_WIN_MAC_CHROMEOS(StartsSpareRenderer)) {
+  // Enable low-end device mode to turn off automatic spare renderers. Note that
+  // this will also prevent NSPs from triggering, but the logic under test
+  // happens before that anyways.
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kEnableLowEndDeviceMode);
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      "isolated-prerender-start-spare-renderer");
+
+  SetDataSaverEnabled(true);
+  GURL starting_page = GetOriginServerURL("/simple.html");
+  ui_test_utils::NavigateToURL(browser(), starting_page);
+  WaitForUpdatedCustomProxyConfig();
+
+  IsolatedPrerenderTabHelper* tab_helper =
+      IsolatedPrerenderTabHelper::FromWebContents(GetWebContents());
+
+  GURL eligible_link =
+      GetOriginServerURL("/prerender/isolated/prefetch_page.html");
+
+  TestTabHelperObserver tab_helper_observer(tab_helper);
+  tab_helper_observer.SetExpectedSuccessfulURLs({eligible_link});
+
+  base::RunLoop prefetch_run_loop;
+  tab_helper_observer.SetOnPrefetchSuccessfulClosure(
+      prefetch_run_loop.QuitClosure());
+
+  GURL doc_url("https://www.google.com/search?q=test");
+  MakeNavigationPrediction(doc_url, {eligible_link});
+
+  base::HistogramTester histogram_tester;
+
+  // This run loop will quit when all the prefetch responses have been
+  // successfully done and processed.
+  prefetch_run_loop.Run();
+
+  // Navigate to trigger the histogram recording.
+  ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
+
+  histogram_tester.ExpectUniqueSample(
+      "IsolatedPrerender.SpareRenderer.CountStartedOnSRP", 1, 1);
+}
+
 namespace {
 std::unique_ptr<net::test_server::HttpResponse> HandleNonEligibleOrigin(
     const net::test_server::HttpRequest& request) {

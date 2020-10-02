@@ -73,4 +73,8 @@ bool IsolatedPrerenderMustHTTPProbeInsteadOfTLS();
 // The maximum number of subresources that will be fetched per prefetched page.
 size_t IsolatedPrerenderMaxSubresourcesPerPrerender();
 
+// Whether a spare renderer should be started after all prefetching and NSP is
+// complete.
+bool IsolatedPrerenderStartsSpareRenderer();
+
 #endif  // CHROME_BROWSER_PRERENDER_ISOLATED_ISOLATED_PRERENDER_PARAMS_H_

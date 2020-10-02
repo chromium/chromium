@@ -362,6 +362,9 @@ class IsolatedPrerenderTabHelper
     // The number of no state prefetch requests that have been made.
     size_t number_of_no_state_prefetch_attempts_ = 0;
 
+    // The number of spare renderers that were started during this page load.
+    size_t number_of_spare_renderers_started_ = 0;
+
     // All urls that are eligible to be no state prefetched. Once a no state
     // prefetch finishes, in success or in error, it is removed from this list.
     // If there is an active no state prefetch, its url will always be the first
@@ -444,6 +447,10 @@ class IsolatedPrerenderTabHelper
 
   // Starts a new no state prefetch for the next eligible url.
   void DoNoStatePrefetch();
+
+  // Starts a spare renderer. Should only be called when all NSPs and
+  // prefetching is complete.
+  void StartSpareRenderer();
 
   // Makes a clone of |this|'s prefetch response so that it can be used for
   // NoStatePrefetch now and later reused if the user navigates to that page.
