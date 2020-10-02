@@ -56,15 +56,18 @@ E2ETestBase = class extends testing.Test {
    */
   listenUntil(predicate, node, eventType, callback, capture = false) {
     callback = this.newCallback(callback);
-    const listenOnce = true;
-    const listener = new EventHandler(
-        node, eventType, callback, {predicate, capture, listenOnce});
-    listener.start();
-
     if (predicate()) {
-      listener.stop();
       callback();
+      return;
     }
+
+    const listener = () => {
+      if (predicate()) {
+        node.removeEventListener(eventType, listener, capture);
+        callback.apply(this, arguments);
+      }
+    };
+    node.addEventListener(eventType, listener, capture);
   }
 
   /**

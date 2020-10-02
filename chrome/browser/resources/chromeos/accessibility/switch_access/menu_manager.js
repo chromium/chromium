@@ -35,9 +35,6 @@ class MenuManager {
     this.clickHandler_ = new EventHandler(
         [], chrome.automation.EventType.CLICKED,
         this.onButtonClicked_.bind(this));
-
-    /** @private {!function()} */
-    this.onMenuLoadedForTesting_ = () => {};
   }
 
   static get instance() {
@@ -218,7 +215,6 @@ class MenuManager {
     this.clickHandler_.setNodes(this.menuAutomationNode_);
     this.clickHandler_.start();
     NavigationManager.jumpToSwitchAccessMenu(this.menuAutomationNode_);
-    this.onMenuLoadedForTesting_();
   }
 
   /**
