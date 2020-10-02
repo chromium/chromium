@@ -6,6 +6,7 @@
 import ast
 import collections
 import json
+import os
 import re
 
 
@@ -136,3 +137,24 @@ def CheckDuplicateConfigs(errs, config_pool, mixin_pool, grouping,
           'following configs are all equivalent: %s. Please '
           'consolidate these configs into only one unique name per '
           'configuration value.' % (', '.join(sorted('%r' % val for val in v))))
+
+
+def CheckExpectations(mbw, jsonish_blob, expectations_dir):
+  """Checks that the expectation files match the config file.
+
+  Returns: True if expectations are up-to-date. False otherwise.
+  """
+  # Assert number of masters == number of expectation files.
+  if len(mbw.ListDir(expectations_dir)) != len(jsonish_blob):
+    return False
+  for master, builders in jsonish_blob.items():
+    if not mbw.Exists(os.path.join(expectations_dir, master + '.json')):
+      return False  # No expecation file for the master.
+    expectation = mbw.ReadFile(os.path.join(expectations_dir, master + '.json'))
+    builders_json = json.dumps(builders,
+                               indent=2,
+                               sort_keys=True,
+                               separators=(',', ': '))
+    if builders_json != expectation:
+      return False  # Builders' expectation out of sync.
+  return True

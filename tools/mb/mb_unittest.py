@@ -12,6 +12,7 @@ import json
 import os
 import re
 import sys
+import tempfile
 import unittest
 
 if sys.version_info.major == 2:
@@ -52,6 +53,7 @@ class FakeMBW(mb.MetaBuildWrapper):
       self.cwd = '/fake_src/out/Default'
 
     self.files = {}
+    self.dirs = set()
     self.calls = []
     self.cmds = []
     self.cross_compile = None
@@ -63,11 +65,20 @@ class FakeMBW(mb.MetaBuildWrapper):
     return '$HOME/%s' % path
 
   def Exists(self, path):
-    return self.files.get(self._AbsPath(path)) is not None
+    abs_path = self._AbsPath(path)
+    return (self.files.get(abs_path) is not None or abs_path in self.dirs)
+
+  def ListDir(self, path):
+    dir_contents = []
+    for f in list(self.files.keys()) + list(self.dirs):
+      head, _ = os.path.split(f)
+      if head == path:
+        dir_contents.append(f)
+    return dir_contents
 
   def MaybeMakeDirectory(self, path):
     abpath = self._AbsPath(path)
-    self.files[abpath] = True
+    self.dirs.add(abpath)
 
   def PathJoin(self, *comps):
     return self.sep.join(comps)
@@ -95,6 +106,11 @@ class FakeMBW(mb.MetaBuildWrapper):
       self.err += sep.join(args) + end
     else:
       self.out += sep.join(args) + end
+
+  def TempDir(self):
+    tmp_dir = os.path.join(tempfile.gettempdir(), 'mb_test')
+    self.dirs.add(tmp_dir)
+    return tmp_dir
 
   def TempFile(self, mode='w'):
     return FakeFile(self.files)
@@ -786,6 +802,12 @@ class UnitTest(unittest.TestCase):
                     'enable_doom_melon = true\n'
                     'use_goma = true\n'))
 
+  def test_train(self):
+    mbw = self.fake_mbw()
+    temp_dir = mbw.TempDir()
+    self.check(['train', '--expectations-dir', temp_dir], mbw=mbw, ret=0)
+    self.assertIn(os.path.join(temp_dir, 'fake_master.json'), mbw.files)
+
   def test_validate(self):
     mbw = self.fake_mbw()
     self.check(['validate'], mbw=mbw, ret=0)
@@ -803,6 +825,25 @@ class UnitTest(unittest.TestCase):
         'Duplicate configs detected. When evaluated fully, the '
         'following configs are all equivalent: \'some_config\', '
         '\'some_other_config\'.', mbw.out)
+
+  def test_good_expectations_validate(self):
+    mbw = self.fake_mbw()
+    # Train the expectations normally.
+    temp_dir = mbw.TempDir()
+    self.check(['train', '--expectations-dir', temp_dir], mbw=mbw, ret=0)
+    # Immediately validating them should pass.
+    self.check(['validate', '--expectations-dir', temp_dir], mbw=mbw, ret=0)
+
+  def test_bad_expectations_validate(self):
+    mbw = self.fake_mbw()
+    # Train the expectations normally.
+    temp_dir = mbw.TempDir()
+    self.check(['train', '--expectations-dir', temp_dir], mbw=mbw, ret=0)
+    # Remove one of the expectation files.
+    mbw.files.pop(os.path.join(temp_dir, 'fake_master.json'))
+    # Now validating should fail.
+    self.check(['validate', '--expectations-dir', temp_dir], mbw=mbw, ret=1)
+    self.assertIn('Expectations out of date', mbw.out)
 
   def test_build_command_unix(self):
     files = {

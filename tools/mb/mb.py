@@ -85,6 +85,8 @@ class MetaBuildWrapper(object):
     self.chromium_src_dir = CHROMIUM_SRC_DIR
     self.default_config = os.path.join(self.chromium_src_dir, 'tools', 'mb',
                                        'mb_config.pyl')
+    self.default_expectations = os.path.join(self.chromium_src_dir, 'tools',
+                                             'mb', 'mb_config_expectations')
     self.default_isolate_map = os.path.join(self.chromium_src_dir, 'testing',
                                             'buildbot', 'gn_isolate_map.pyl')
     self.executable = sys.executable
@@ -204,6 +206,28 @@ class MetaBuildWrapper(object):
                       help='path to goma directory')
     subp.set_defaults(func=self.CmdExport)
 
+    subp = subps.add_parser('train',
+                            description='Writes the expanded configuration '
+                            'for each builder as JSON files to a configured '
+                            'directory.')
+    subp.add_argument('-f',
+                      '--config-file',
+                      metavar='PATH',
+                      help='path to config file (default is mb_config.pyl')
+    subp.add_argument('--expectations-dir',
+                      metavar='PATH',
+                      help='path to dir containing expectation files')
+    subp.add_argument('-n',
+                      '--dryrun',
+                      action='store_true',
+                      help='Do a dry run (i.e., do nothing, just print '
+                      'the commands that will run)')
+    subp.add_argument('-v',
+                      '--verbose',
+                      action='store_true',
+                      help='verbose logging')
+    subp.set_defaults(func=self.CmdTrain)
+
     subp = subps.add_parser('gen',
                             description='Generate a new set of build files.')
     AddCommonOptions(subp)
@@ -316,6 +340,9 @@ class MetaBuildWrapper(object):
                             description='Validate the config file.')
     subp.add_argument('-f', '--config-file', metavar='PATH',
                       help='path to config file (default is %(default)s)')
+    subp.add_argument('--expectations-dir',
+                      metavar='PATH',
+                      help='path to dir containing expectation files')
     subp.set_defaults(func=self.CmdValidate)
 
     subp = subps.add_parser('zip',
@@ -375,6 +402,25 @@ class MetaBuildWrapper(object):
     obj = self._ToJsonish()
     s = json.dumps(obj, sort_keys=True, indent=2, separators=(',', ': '))
     self.Print(s)
+    return 0
+
+  def CmdTrain(self):
+    expectations_dir = self.args.expectations_dir or self.default_expectations
+    if not self.Exists(expectations_dir):
+      self.Print('Expectations dir (%s) does not exist.' % expectations_dir)
+      return 1
+    # Removing every expectation file then immediately re-generating them will
+    # clear out deleted groups.
+    for f in self.ListDir(expectations_dir):
+      self.RemoveFile(os.path.join(expectations_dir, f))
+    obj = self._ToJsonish()
+    for master, builder in sorted(obj.items()):
+      expectation_file = os.path.join(expectations_dir, master + '.json')
+      json_s = json.dumps(builder,
+                          indent=2,
+                          sort_keys=True,
+                          separators=(',', ': '))
+      self.WriteFile(expectation_file, json_s)
     return 0
 
   def CmdGen(self):
@@ -722,6 +768,14 @@ class MetaBuildWrapper(object):
       raise MBErr(('mb config file %s has problems:' %
                    (self.args.config_file if self.args.config_file else self.
                     default_config)) + '\n  ' + '\n  '.join(errs))
+
+    expectations_dir = self.args.expectations_dir or self.default_expectations
+    # TODO(crbug.com/1117577): Force all versions of mb_config.pyl to have
+    # expectations. For now, just ignore those that don't have them.
+    if self.Exists(expectations_dir):
+      jsonish_blob = self._ToJsonish()
+      if not validation.CheckExpectations(self, jsonish_blob, expectations_dir):
+        raise MBErr("Expectations out of date. Please run 'mb.py train'.")
 
     if print_ok:
       self.Print('mb config file %s looks ok.' %
@@ -1797,6 +1851,10 @@ class MetaBuildWrapper(object):
     contents = f.read()
     f.close()
     return contents
+
+  def ListDir(self, path):
+    # This function largely exists so it can be overridden for testing.
+    return os.listdir(path)
 
   def MaybeMakeDirectory(self, path):
     try:
