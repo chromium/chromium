@@ -7,13 +7,6 @@ import("//build/config/ui.gni")
 import("//media/media_options.gni")
 import("//testing/test.gni")
 
-# This file depends on the legacy global sources assignment filter. It should
-# be converted to check target platform before assigning source files to the
-# sources variable. Remove this import and set_sources_assignment_filter call
-# when the file has been converted. See https://crbug.com/1018739 for details.
-import("//build/config/deprecated_default_sources_assignment_filter.gni")
-set_sources_assignment_filter(deprecated_default_sources_assignment_filter)
-
 group("capture") {
   public_deps = [
     ":capture_lib",
@@ -251,8 +244,6 @@ component("capture_lib") {
   # these sources into linux, chromeos, and common.
   if (is_linux || is_chromeos) {
     sources += [
-      "video/linux/camera_config_chromeos.cc",
-      "video/linux/camera_config_chromeos.h",
       "video/linux/scoped_v4l2_device_fd.cc",
       "video/linux/scoped_v4l2_device_fd.h",
       "video/linux/v4l2_capture_delegate.cc",
@@ -260,8 +251,6 @@ component("capture_lib") {
       "video/linux/v4l2_capture_device.h",
       "video/linux/v4l2_capture_device_impl.cc",
       "video/linux/v4l2_capture_device_impl.h",
-      "video/linux/video_capture_device_chromeos.cc",
-      "video/linux/video_capture_device_chromeos.h",
       "video/linux/video_capture_device_factory_linux.cc",
       "video/linux/video_capture_device_factory_linux.h",
       "video/linux/video_capture_device_linux.cc",
@@ -317,6 +306,10 @@ component("capture_lib") {
       "video/chromeos/video_capture_jpeg_decoder.h",
       "video/chromeos/video_capture_jpeg_decoder_impl.cc",
       "video/chromeos/video_capture_jpeg_decoder_impl.h",
+      "video/linux/camera_config_chromeos.cc",
+      "video/linux/camera_config_chromeos.h",
+      "video/linux/video_capture_device_chromeos.cc",
+      "video/linux/video_capture_device_chromeos.h",
     ]
     public_deps += [ "//media/capture/video/chromeos/public" ]
     deps += [
@@ -350,10 +343,6 @@ source_set("test_support") {
   testonly = true
 
   sources = [
-    "video/linux/fake_device_provider.cc",
-    "video/linux/fake_device_provider.h",
-    "video/linux/fake_v4l2_impl.cc",
-    "video/linux/fake_v4l2_impl.h",
     "video/mock_device.cc",
     "video/mock_device.h",
     "video/mock_device_factory.cc",
@@ -377,6 +366,15 @@ source_set("test_support") {
     "//testing/gmock",
     "//ui/gfx:test_support",
   ]
+
+  if (is_linux || is_chromeos) {
+    sources += [
+      "video/linux/fake_device_provider.cc",
+      "video/linux/fake_device_provider.h",
+      "video/linux/fake_v4l2_impl.cc",
+      "video/linux/fake_v4l2_impl.h",
+    ]
+  }
 
   if (is_chromeos) {
     sources += [
@@ -407,17 +405,6 @@ test("capture_unittests") {
     "run_all_unittests.cc",
     "video/fake_video_capture_device_unittest.cc",
     "video/file_video_capture_device_unittest.cc",
-    "video/linux/camera_config_chromeos_unittest.cc",
-    "video/linux/v4l2_capture_delegate_unittest.cc",
-    "video/linux/video_capture_device_factory_linux_unittest.cc",
-    "video/mac/pixel_buffer_pool_mac_unittest.mm",
-    "video/mac/test/mock_video_capture_device_avfoundation_frame_receiver_mac.h",
-    "video/mac/test/mock_video_capture_device_avfoundation_frame_receiver_mac.mm",
-    "video/mac/test/video_capture_test_utils_mac.h",
-    "video/mac/test/video_capture_test_utils_mac.mm",
-    "video/mac/video_capture_device_avfoundation_mac_unittest.mm",
-    "video/mac/video_capture_device_factory_mac_unittest.mm",
-    "video/mac/video_capture_device_mac_unittest.mm",
     "video/video_capture_device_client_unittest.cc",
     "video/video_capture_device_unittest.cc",
     "video_capture_types_unittest.cc",
@@ -438,6 +425,17 @@ test("capture_unittests") {
     "//testing/gtest",
     "//ui/gfx:test_support",
   ]
+
+  if (is_linux || is_chromeos) {
+    sources += [
+      "video/linux/v4l2_capture_delegate_unittest.cc",
+      "video/linux/video_capture_device_factory_linux_unittest.cc",
+    ]
+  }
+
+  if (is_chromeos) {
+    sources += [ "video/linux/camera_config_chromeos_unittest.cc" ]
+  }
 
   if (is_android) {
     deps += [
@@ -460,6 +458,16 @@ test("capture_unittests") {
   }
 
   if (is_mac) {
+    sources += [
+      "video/mac/pixel_buffer_pool_mac_unittest.mm",
+      "video/mac/test/mock_video_capture_device_avfoundation_frame_receiver_mac.h",
+      "video/mac/test/mock_video_capture_device_avfoundation_frame_receiver_mac.mm",
+      "video/mac/test/video_capture_test_utils_mac.h",
+      "video/mac/test/video_capture_test_utils_mac.mm",
+      "video/mac/video_capture_device_avfoundation_mac_unittest.mm",
+      "video/mac/video_capture_device_factory_mac_unittest.mm",
+      "video/mac/video_capture_device_mac_unittest.mm",
+    ]
     frameworks = [
       "AVFoundation.framework",
       "CoreMedia.framework",
