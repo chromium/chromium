@@ -33,9 +33,6 @@ int GetOzonePlatformId() {
     return g_selected_platform;
 
   std::string platform_name = GetPlatformName();
-  // TODO(b/169115289) remove once all Tast tests use "drm".
-  if (platform_name == "gbm")
-    platform_name = "drm";
 
   // Search for a matching platform in the list.
   for (int platform_id = 0; platform_id < kPlatformCount; ++platform_id) {
