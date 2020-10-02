@@ -42,15 +42,15 @@ enum FullscreenVisibility {
 // List items for NotificationType::kList.
 [Stable]
 struct NotificationItem {
-  mojo_base.mojom.String16 title;
-  mojo_base.mojom.String16 message;
+  mojo_base.mojom.String16 title@0;
+  mojo_base.mojom.String16 message@1;
 };
 
 // Data for each button. Implemented as a struct for extensibility (e.g. so we
 // could add icon buttons).
 [Stable]
 struct ButtonInfo {
-  mojo_base.mojom.String16 title;
+  mojo_base.mojom.String16 title@0;
 };
 
 // A notification to show in the system message center. Fields exist to support
@@ -61,87 +61,87 @@ struct ButtonInfo {
 [Stable]
 struct Notification {
   // Type of notification to show.
-  NotificationType type;
+  NotificationType type@0;
 
   // The client decides the format of the ID.
-  string id;
+  string id@1;
 
   // The title, usually just a few words.
-  mojo_base.mojom.String16 title;
+  mojo_base.mojom.String16 title@2;
 
   // The message body. If long, will wrap inside the notification.
-  mojo_base.mojom.String16 message;
+  mojo_base.mojom.String16 message@3;
 
   // Human-readable description of the source of the notification. For example,
   // "Google Calendar".
-  mojo_base.mojom.String16 display_source;
+  mojo_base.mojom.String16 display_source@4;
 
   // For web notifications, the URL of the website responsible for showing the
   // notification. Otherwise empty.
-  url.mojom.Url? origin_url;
+  url.mojom.Url? origin_url@5;
 
   // DEPRECATED, replaced with |icon| below.
-  Bitmap? deprecated_icon;
+  Bitmap? deprecated_icon@6;
 
   // Priority from -2 to 2. Zero is the default. Other values are clamped.
-  int32 priority;
+  int32 priority@7;
 
   // User must explicitly dismiss.
-  bool require_interaction;
+  bool require_interaction@8;
 
   // Time at which the notification is applicable (past, present or future).
   // See web platform API "timestamp" and chrome.notifications "eventTime".
-  mojo_base.mojom.Time timestamp;
+  mojo_base.mojom.Time timestamp@9;
 
   // DEPRECATED, replaced with |image| below.
-  Bitmap? deprecated_image;
+  Bitmap? deprecated_image@10;
 
   // DEPRECATED, replaced with |badge| below.
-  Bitmap? deprecated_badge;
+  Bitmap? deprecated_badge@11;
 
   // Item list for type kList. Not displayed for other types.
-  array<NotificationItem> items;
+  array<NotificationItem> items@12;
 
   // Progress from 0 to 100 for type kProgress. Negative values result in an
   // animating "indefinite progress" indicator. Values above 100 are clamped.
-  int32 progress;
+  int32 progress@13;
 
   // Status message for type kProgress.
-  mojo_base.mojom.String16 progress_status;
+  mojo_base.mojom.String16 progress_status@14;
 
   // Up to 4 buttons. It is not guaranteed that all buttons will be visible,
   // especially if the labels are long.
-  array<ButtonInfo> buttons;
+  array<ButtonInfo> buttons@15;
 
   // Pinned notifications cannot be closed by the user, only by a call to
   // MessageCenter::CloseNotification.
-  bool pinned;
+  bool pinned@16;
 
   // Whether an announcement should occur (e.g. a popup or vibration) when an
   // existing notification is updated. See web platform API
   // Notification.renotify.
-  bool renotify;
+  bool renotify@17;
 
   // Whether all announcement mechanisms should be suppressed. See web platform
   // API Notification.silent.
-  bool silent;
+  bool silent@18;
 
   // Accessible description of the notification's contents. If empty, the
   // message field will be used instead.
-  mojo_base.mojom.String16 accessible_name;
+  mojo_base.mojom.String16 accessible_name@19;
 
   // Whether to show on top of fullscreen windows. See enum definition.
-  FullscreenVisibility fullscreen_visibility;
+  FullscreenVisibility fullscreen_visibility@20;
 
   // Icon for the notification.
   [MinVersion=1]
-  gfx.mojom.ImageSkia? icon;
+  gfx.mojom.ImageSkia? icon@21;
 
   // For type kImage, the large image.
   [MinVersion=1]
-  gfx.mojom.ImageSkia? image;
+  gfx.mojom.ImageSkia? image@22;
 
   // Badge to show the source of the notification (e.g. a 16x16 browser icon).
   [MinVersion=1]
-  gfx.mojom.ImageSkia? badge;
+  gfx.mojom.ImageSkia? badge@23;
 };

@@ -9,7 +9,7 @@ module crosapi.mojom;
 // TODO(https://crbug.com/1094460): Use a more performant transport mechanism.
 [Stable]
 struct Bitmap {
-  uint32 width;
-  uint32 height;
-  array<uint8> pixels;
+  uint32 width@0;
+  uint32 height@1;
+  array<uint8> pixels@2;
 };
