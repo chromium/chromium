@@ -148,6 +148,16 @@ void TranslateOverlayTabHelper::TranslateStepObserver::OnTranslateStepChanged(
   }
 }
 
+void TranslateOverlayTabHelper::TranslateStepObserver::OnTargetLanguageChanged(
+    const std::string& target_language_code) {
+  // Unimplemented on iOS as target language changes are initiated solely by the
+  // UI. This method should always be a no-op.
+  DCHECK_EQ(translate_infobar_->delegate()
+                ->AsTranslateInfoBarDelegate()
+                ->target_language_code(),
+            target_language_code);
+}
+
 bool TranslateOverlayTabHelper::TranslateStepObserver::IsDeclinedByUser() {
   return false;
 }

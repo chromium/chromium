@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.browserservices.OriginVerifier;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
 import org.chromium.chrome.browser.test.CommandLineInitRule;
+import org.chromium.chrome.browser.translate.TranslateIntentHandler;
 import org.chromium.chrome.browser.webapps.WebappLauncherActivity;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.util.browser.webapps.WebappTestHelper;
@@ -602,6 +603,19 @@ public class IntentHandlerTest {
         Intent intent = WebappLauncherActivity.createIntentToLaunchForWebapp(
                 webappLauncherActivityIntent, launchData, 0);
 
-        assertFalse(mIntentHandler.shouldIgnoreIntent(intent));
+        assertFalse(mIntentHandler.shouldIgnoreIntent(intent, /*startedActivity=*/true));
+    }
+
+    /**
+     * Test that IntentHandler#shouldIgnoreIntent() returns true for Translate intents that cause
+     * the Activity to start.
+     */
+    @Test
+    @SmallTest
+    @Feature({"Android-AppBase"})
+    public void testShouldIgnoreIntentTranslateStartsActivity() {
+        Intent intent = new Intent(TranslateIntentHandler.ACTION_TRANSLATE_TAB);
+        assertFalse(mIntentHandler.shouldIgnoreIntent(intent, /*startedActivity=*/false));
+        assertTrue(mIntentHandler.shouldIgnoreIntent(intent, /*startedActivity=*/true));
     }
 }

@@ -359,6 +359,23 @@ public class TranslateCompactInfoBar extends InfoBar
                 Snackbar.UMA_TRANSLATE_ALWAYS, ACTION_AUTO_ALWAYS_TRANSLATE);
     }
 
+    private boolean updateTargetLanguage(String languageCode) {
+        // Set the target code in TranslateOptions.
+        if (!mOptions.setTargetLanguage(languageCode)) {
+            return false;
+        }
+
+        // Adjust UI if options were updated successfully.
+        mTabLayout.replaceTabTitle(
+                TARGET_TAB_INDEX, mOptions.getRepresentationFromCode(languageCode));
+        return true;
+    }
+
+    @CalledByNative
+    public void onTargetLanguageChanged(String languageCode) {
+        updateTargetLanguage(languageCode);
+    }
+
     @Override
     protected void onNativeDestroyed() {
         mNativeTranslateInfoBarPtr = 0;
@@ -469,30 +486,30 @@ public class TranslateCompactInfoBar extends InfoBar
     }
 
     @Override
-    public void onTargetMenuItemClicked(String code) {
-        // Reset target code in both UI and native.
-        if (mNativeTranslateInfoBarPtr != 0 && mOptions.setTargetLanguage(code)) {
+    public void onTargetMenuItemClicked(String languageCode) {
+        // Set the target code in both UI and native.
+        if (mNativeTranslateInfoBarPtr != 0 && updateTargetLanguage(languageCode)) {
             recordInfobarAction(INFOBAR_MORE_LANGUAGES_TRANSLATE);
             recordInfobarLanguageData(
                     INFOBAR_HISTOGRAM_MORE_LANGUAGES_LANGUAGE, mOptions.targetLanguageCode());
+            // Update the target language in the backend.
             TranslateCompactInfoBarJni.get().applyStringTranslateOption(mNativeTranslateInfoBarPtr,
-                    TranslateCompactInfoBar.this, TranslateOption.TARGET_CODE, code);
-            // Adjust UI.
-            mTabLayout.replaceTabTitle(TARGET_TAB_INDEX, mOptions.getRepresentationFromCode(code));
+                    TranslateCompactInfoBar.this, TranslateOption.TARGET_CODE, languageCode);
             startUserInitiatedTranslation();
         }
     }
 
     @Override
-    public void onSourceMenuItemClicked(String code) {
-        // Reset source code in both UI and native.
-        if (mNativeTranslateInfoBarPtr != 0 && mOptions.setSourceLanguage(code)) {
+    public void onSourceMenuItemClicked(String languageCode) {
+        // Set the source code in both UI and native.
+        if (mNativeTranslateInfoBarPtr != 0 && mOptions.setSourceLanguage(languageCode)) {
             recordInfobarLanguageData(
                     INFOBAR_HISTOGRAM_PAGE_NOT_IN_LANGUAGE, mOptions.sourceLanguageCode());
             TranslateCompactInfoBarJni.get().applyStringTranslateOption(mNativeTranslateInfoBarPtr,
-                    TranslateCompactInfoBar.this, TranslateOption.SOURCE_CODE, code);
+                    TranslateCompactInfoBar.this, TranslateOption.SOURCE_CODE, languageCode);
             // Adjust UI.
-            mTabLayout.replaceTabTitle(SOURCE_TAB_INDEX, mOptions.getRepresentationFromCode(code));
+            mTabLayout.replaceTabTitle(
+                    SOURCE_TAB_INDEX, mOptions.getRepresentationFromCode(languageCode));
             startUserInitiatedTranslation();
         }
     }

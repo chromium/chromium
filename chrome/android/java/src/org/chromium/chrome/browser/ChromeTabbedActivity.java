@@ -148,6 +148,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabManagementModuleProvi
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.toolbar.ToolbarButtonInProductHelpController;
 import org.chromium.chrome.browser.toolbar.top.ToolbarControlContainer;
+import org.chromium.chrome.browser.translate.TranslateIntentHandler;
 import org.chromium.chrome.browser.ui.RootUiCoordinator;
 import org.chromium.chrome.browser.ui.TabObscuringHandler;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuPropertiesDelegate;
@@ -1044,7 +1045,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             mInactivityTracker.register(this.getLifecycleDispatcher());
             mIntentWithEffect = false;
             if (getSavedInstanceState() == null && intent != null) {
-                if (!mIntentHandler.shouldIgnoreIntent(intent)) {
+                if (!mIntentHandler.shouldIgnoreIntent(intent, /*startedActivity=*/true)) {
                     mIntentWithEffect = mIntentHandler.onNewIntent(intent);
                 }
 
@@ -1358,6 +1359,12 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         @Override
         public void processWebSearchIntent(String query) {
             assert false;
+        }
+
+        @Override
+        public void processTranslateTabIntent(
+                @Nullable String targetLanguageCode, @Nullable String expectedUrl) {
+            TranslateIntentHandler.translateTab(getActivityTab(), targetLanguageCode, expectedUrl);
         }
 
         /**

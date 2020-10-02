@@ -160,7 +160,7 @@ public class StartupTabPreloader implements ProfileManager.Observer, Destroyable
         if (IntentUtils.safeGetBooleanExtra(intent, EXTRA_DISABLE_STARTUP_TAB_PRELOADER, false)) {
             return false;
         }
-        if (mIntentHandler.shouldIgnoreIntent(intent)) return false;
+        if (mIntentHandler.shouldIgnoreIntent(intent, /*startedActivity=*/true)) return false;
         if (getUrlFromIntent(intent) == null) return false;
 
         // We don't support incognito tabs because only chrome can send new incognito tab

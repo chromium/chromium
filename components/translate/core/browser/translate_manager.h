@@ -179,6 +179,12 @@ class TranslateManager {
   // See https://github.com/dtapuska/html-translate
   static bool IsAvailable(const TranslatePrefs* prefs);
 
+  // Check whether there is specified target, the source and the target are both
+  // supported, and the source and target don't match.
+  static bool IsTranslatableLanguagePair(
+      const std::string& page_language_code,
+      const std::string& target_language_code);
+
   // Returns true if the decision should be overridden and logs the event
   // appropriately. |event_type| must be one of the
   // values defined by metrics::TranslateEventProto::EventType.
@@ -265,11 +271,6 @@ class TranslateManager {
   void FilterForPredefinedTarget(TranslateTriggerDecision* decision,
                                  TranslatePrefs* translate_prefs,
                                  const std::string& page_language_code);
-
-  // Check whether there is specified target, the source and
-  // the target are both supported, and the source and target don't match.
-  bool IsTranslatableLanguagePair(const std::string& page_language_code,
-                                  const std::string& target_language_code);
 
   // Enables or disables the translate omnibox icon depending on |decision|. The
   // icon is always shown if translate UI is shown, auto-translation happens, or

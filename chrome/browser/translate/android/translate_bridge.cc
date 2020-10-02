@@ -20,6 +20,7 @@
 #include "components/language/core/common/language_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_locale_settings.h"
+#include "components/translate/core/browser/translate_download_manager.h"
 #include "components/translate/core/browser/translate_manager.h"
 #include "components/translate/core/browser/translate_pref_names.h"
 #include "components/translate/core/browser/translate_prefs.h"
@@ -61,6 +62,31 @@ static void JNI_TranslateBridge_ManualTranslateWhenReady(
       ChromeTranslateClient::FromWebContents(web_contents);
   DCHECK(client);
   client->ManualTranslateWhenReady();
+}
+
+static void JNI_TranslateBridge_TranslateToLanguage(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& j_web_contents,
+    const base::android::JavaParamRef<jstring>& j_target_language_code) {
+  content::WebContents* web_contents =
+      content::WebContents::FromJavaWebContents(j_web_contents);
+  ChromeTranslateClient* client =
+      ChromeTranslateClient::FromWebContents(web_contents);
+  DCHECK(client);
+  const std::string target_language_code(
+      ConvertJavaStringToUTF8(env, j_target_language_code));
+  const std::string& source_language_code =
+      client->GetLanguageState().original_language();
+  // Only translate if the source language has been determined and both
+  // languages are supported.
+  if (!source_language_code.empty() &&
+      translate::TranslateManager::IsTranslatableLanguagePair(
+          source_language_code, target_language_code)) {
+    translate::TranslateManager* manager = client->GetTranslateManager();
+    DCHECK(manager);
+    manager->TranslatePage(source_language_code, target_language_code,
+                           /*triggered_from_menu=*/false);
+  }
 }
 
 static jboolean JNI_TranslateBridge_CanManuallyTranslate(

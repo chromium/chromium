@@ -49,6 +49,9 @@ class TranslateInfoBarDelegate : public infobars::InfoBarDelegate {
     // Handles UI changes on the translate step given.
     virtual void OnTranslateStepChanged(translate::TranslateStep step,
                                         TranslateErrors::Type error_type) = 0;
+    // Handles UI changes when the target language is updated.
+    virtual void OnTargetLanguageChanged(
+        const std::string& target_language_code) = 0;
     // Return whether user declined translate service.
     virtual bool IsDeclinedByUser() = 0;
     // Called when the TranslateInfoBarDelegate instance is destroyed.

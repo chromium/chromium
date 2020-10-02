@@ -48,6 +48,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.translate.TranslateIntentHandler;
 import org.chromium.chrome.browser.webapps.WebappActivity;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
@@ -333,6 +334,16 @@ public class IntentHandler {
                 Intent intent);
 
         void processWebSearchIntent(String query);
+
+        /**
+         * Processes a TRANSLATE_TAB intent.
+         * @param targetLanguageCode The language code that the page should be translated into.
+         *         Optional.
+         * @param expectedUrl The URL of the page that should be translated. If this doesn't match
+         *         the current tab, no translate will be performed.
+         */
+        void processTranslateTabIntent(
+                @Nullable String targetLanguageCode, @Nullable String expectedUrl);
     }
 
     /** Sets whether or not test intents are enabled. */
@@ -470,7 +481,8 @@ public class IntentHandler {
                 intent, TabOpenType.BRING_TAB_TO_FRONT_STRING, Tab.INVALID_TAB_ID);
         if (url == null && tabIdToBringToFront == Tab.INVALID_TAB_ID
                 && tabOpenType != TabOpenType.OPEN_NEW_INCOGNITO_TAB) {
-            return handleWebSearchIntent(intent);
+            return handleWebSearchIntent(intent)
+                    || TranslateIntentHandler.handleTranslateTabIntent(intent, mDelegate);
         }
 
         String referrerUrl = getReferrerUrlIncludingExtraHeaders(intent);
@@ -870,9 +882,10 @@ public class IntentHandler {
      * Returns true if the app should ignore a given intent.
      *
      * @param intent Intent to check.
+     * @param startedActivity True if the Activity was not running prior to receiving the Intent.
      * @return true if the intent should be ignored.
      */
-    public boolean shouldIgnoreIntent(Intent intent) {
+    public boolean shouldIgnoreIntent(Intent intent, boolean startedActivity) {
         // Although not documented to, many/most methods that retrieve values from an Intent may
         // throw. Because we can't control what packages might send to us, we should catch any
         // Throwable and then fail closed (safe). This is ugly, but resolves top crashers in the
@@ -909,6 +922,12 @@ public class IntentHandler {
             String url = getUrlFromIntent(intent);
             if (url == null && Intent.ACTION_MAIN.equals(intent.getAction())) {
                 return false;
+            }
+
+            // Ignore Translate intents if they were the intent that started the activity.
+            if (startedActivity && intent != null
+                    && TranslateIntentHandler.ACTION_TRANSLATE_TAB.equals(intent.getAction())) {
+                return true;
             }
 
             // Ignore all intents that specify a Chrome internal scheme if they did not come from

@@ -43,6 +43,7 @@ import org.chromium.chrome.browser.notifications.NotificationPlatformBridge;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
 import org.chromium.chrome.browser.searchwidget.SearchActivity;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.translate.TranslateIntentHandler;
 import org.chromium.chrome.browser.vr.VrModuleProvider;
 import org.chromium.chrome.browser.webapps.WebappLauncherActivity;
 import org.chromium.components.browser_ui.media.MediaNotificationUma;
@@ -220,6 +221,12 @@ public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelega
     }
 
     @Override
+    public void processTranslateTabIntent(
+            @Nullable String targetLanguageCode, @Nullable String expectedUrl) {
+        assert false;
+    }
+
+    @Override
     public void processUrlViewIntent(String url, String referer, String headers,
             @IntentHandler.TabOpenType int tabOpenType, String externalAppId,
             int tabIdToBringToFront, boolean hasUserGesture, boolean isRendererInitiated,
@@ -234,6 +241,22 @@ public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelega
             if (maybeUrl != null) {
                 WarmupManager.getInstance().maybePrefetchDnsForUrlInBackground(mActivity, maybeUrl);
             }
+        }
+    }
+
+    /**
+     * Adds a token to TRANSLATE_TAB intents that we know were sent from a first party app.
+     *
+     * TRANSLATE_TAB requires a signature permission. We know that permission has been enforced (and
+     * thus comes from a first party application) if it was routed via the TranslateDispatcher
+     * activity-alias. In this case, add a token so IntentHandler knows the intent is from a first
+     * party app.
+     */
+    private static void maybeAuthenticateFirstPartyTranslateIntent(Intent intent) {
+        if (intent != null && TranslateIntentHandler.ACTION_TRANSLATE_TAB.equals(intent.getAction())
+                && TranslateIntentHandler.COMPONENT_TRANSLATE_DISPATCHER.equals(
+                        intent.getComponent().getClassName())) {
+            IntentHandler.addTrustedIntentExtras(intent);
         }
     }
 
@@ -384,6 +407,8 @@ public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelega
         }
 
         maybePrefetchDnsInBackground();
+
+        maybeAuthenticateFirstPartyTranslateIntent(mIntent);
 
         Intent newIntent = new Intent(mIntent);
         String targetActivityClassName = MultiWindowUtils.getInstance()

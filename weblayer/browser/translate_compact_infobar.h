@@ -53,6 +53,8 @@ class TranslateCompactInfoBar
   void OnTranslateStepChanged(
       translate::TranslateStep step,
       translate::TranslateErrors::Type error_type) override;
+  void OnTargetLanguageChanged(
+      const std::string& target_language_code) override;
   // Returns true if the user didn't take any affirmative action.
   // The function will be called when the translate infobar is dismissed.
   // If it's true, we will record a declined event.

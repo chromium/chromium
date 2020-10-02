@@ -42,6 +42,9 @@
 # crbug.com/1061214
 -org.chromium.chrome.browser.customtabs.CustomTabActivityTest.testHiddenTabAndChangingFragmentDontWait
 
+# crbug.com/1036553
+-org.chromium.chrome.browser.translate.TranslateIntentTest.*
+
 # crbug.com/1041233
 -org.chromium.chrome.browser.gesturenav.NavigationHandlerTest.testSwipeNavigateOnNativePage
 -org.chromium.chrome.browser.gesturenav.NavigationHandlerTest.testSwipeNavigateOnRenderedPage

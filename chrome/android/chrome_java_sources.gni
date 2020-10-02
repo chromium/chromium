@@ -1615,6 +1615,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/tracing/settings/TracingCategoriesSettings.java",
   "java/src/org/chromium/chrome/browser/tracing/settings/TracingSettings.java",
   "java/src/org/chromium/chrome/browser/translate/TranslateBridge.java",
+  "java/src/org/chromium/chrome/browser/translate/TranslateIntentHandler.java",
   "java/src/org/chromium/chrome/browser/translate/TranslateUtils.java",
   "java/src/org/chromium/chrome/browser/ui/BottomContainer.java",
   "java/src/org/chromium/chrome/browser/ui/BottomSheetManager.java",

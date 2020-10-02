@@ -27,6 +27,13 @@ public class TranslateBridge {
     }
 
     /**
+     * Initates a translation on the given tab to the given target language.
+     */
+    public static void translateTabToLanguage(Tab tab, String targetLanguageCode) {
+        TranslateBridgeJni.get().translateToLanguage(tab.getWebContents(), targetLanguageCode);
+    }
+
+    /**
      * Returns true iff the current tab can be manually translated.
      */
     public static boolean canManuallyTranslate(Tab tab) {
@@ -189,6 +196,7 @@ public class TranslateBridge {
     @NativeMethods
     interface Natives {
         void manualTranslateWhenReady(WebContents webContents);
+        void translateToLanguage(WebContents webContents, String targetLanguageCode);
         boolean canManuallyTranslate(WebContents webContents);
         boolean shouldShowManualTranslateIPH(WebContents webContents);
         void setPredefinedTargetLanguage(WebContents webContents, String targetLanguage);

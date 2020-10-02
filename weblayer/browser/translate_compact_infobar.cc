@@ -221,6 +221,13 @@ void TranslateCompactInfoBar::OnTranslateStepChanged(
   }
 }
 
+void TranslateCompactInfoBar::OnTargetLanguageChanged(
+    const std::string& target_language_code) {
+  // In WebLayer, target language changes are only initiated by the UI. This
+  // method should always be a no-op.
+  DCHECK_EQ(GetDelegate()->target_language_code(), target_language_code);
+}
+
 bool TranslateCompactInfoBar::IsDeclinedByUser() {
   // Whether there is any affirmative action bit.
   return action_flags_ == FLAG_NONE;

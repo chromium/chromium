@@ -34,6 +34,8 @@ class TranslateInfobarDelegateObserverBridge
   void OnTranslateStepChanged(
       translate::TranslateStep step,
       translate::TranslateErrors::Type error_type) override;
+  void OnTargetLanguageChanged(
+      const std::string& target_language_code) override;
   bool IsDeclinedByUser() override;
   void OnTranslateInfoBarDelegateDestroyed(
       translate::TranslateInfoBarDelegate* delegate) override;

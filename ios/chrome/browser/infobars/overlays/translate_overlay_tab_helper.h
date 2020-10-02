@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_INFOBARS_OVERLAYS_TRANSLATE_OVERLAY_TAB_HELPER_H_
 #define IOS_CHROME_BROWSER_INFOBARS_OVERLAYS_TRANSLATE_OVERLAY_TAB_HELPER_H_
 
+#include <string>
+
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/scoped_observer.h"
@@ -65,6 +67,8 @@ class TranslateOverlayTabHelper
     void OnTranslateStepChanged(
         translate::TranslateStep step,
         translate::TranslateErrors::Type error_type) override;
+    void OnTargetLanguageChanged(
+        const std::string& target_language_code) override;
     bool IsDeclinedByUser() override;
     void OnTranslateInfoBarDelegateDestroyed(
         translate::TranslateInfoBarDelegate* delegate) override;

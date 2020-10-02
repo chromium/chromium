@@ -235,6 +235,29 @@ void TranslateCompactInfoBar::OnTranslateStepChanged(
   }
 }
 
+void TranslateCompactInfoBar::OnTargetLanguageChanged(
+    const std::string& target_language_code) {
+  // TODO(crbug/1093320): intended to mitigate a crash where
+  // the java infobar is gone. If this works, look into root cause.
+  if (!HasSetJavaInfoBar())
+    return;  // No connected Java infobar
+
+  if (!owner())
+    return;  // We're closing; don't call anything.
+
+  translate::TranslateInfoBarDelegate* delegate = GetDelegate();
+  if (delegate->target_language_code().compare(target_language_code) == 0) {
+    return;
+  }
+  delegate->UpdateTargetLanguage(target_language_code);
+
+  JNIEnv* env = base::android::AttachCurrentThread();
+  ScopedJavaLocalRef<jstring> target_code =
+      base::android::ConvertUTF8ToJavaString(env, target_language_code);
+  Java_TranslateCompactInfoBar_onTargetLanguageChanged(env, GetJavaInfoBar(),
+                                                       target_code);
+}
+
 bool TranslateCompactInfoBar::IsDeclinedByUser() {
   // Whether there is any affirmative action bit.
   return action_flags_ == FLAG_NONE;

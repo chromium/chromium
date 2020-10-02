@@ -11,6 +11,7 @@
   <permission android:name="$PACKAGE.permission.CHILD_SERVICE" android:protectionLevel="signature"/>
   <permission android:label="Debug web pages" android:name="$PACKAGE.permission.DEBUG" android:permissionGroup="android.permission-group.DEVELOPMENT_TOOLS" android:protectionLevel="signature"/>
   <permission android:name="$PACKAGE.permission.READ_WRITE_BOOKMARK_FOLDERS" android:protectionLevel="signatureOrSystem"/>
+  <permission android:name="$PACKAGE.permission.TRANSLATE" android:protectionLevel="signature"/>
   <uses-feature android:name="android.hardware.camera" android:required="false"/>
   <uses-feature android:name="android.hardware.location.gps" android:required="false"/>
   <uses-feature android:name="android.hardware.microphone" android:required="false"/>
@@ -751,6 +752,16 @@
       </intent-filter>  # DIFF-ANCHOR: dea53031
       <meta-data android:name="android.app.shortcuts" android:resource="@xml/launchershortcuts"/>
     </activity-alias>  # DIFF-ANCHOR: 5042984f
+    <activity-alias  # DIFF-ANCHOR: 03398466
+        android:exported="true"
+        android:name="com.google.android.apps.chrome.TranslateDispatcher"
+        android:permission="$PACKAGE.permission.TRANSLATE"
+        android:targetActivity="org.chromium.chrome.browser.document.ChromeLauncherActivity">
+      <intent-filter>  # DIFF-ANCHOR: 75e5f897
+        <action android:name="org.chromium.chrome.browser.translate.TRANSLATE_TAB"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+      </intent-filter>  # DIFF-ANCHOR: 75e5f897
+    </activity-alias>  # DIFF-ANCHOR: 03398466
     <activity-alias  # DIFF-ANCHOR: dcfe2999
         android:label="@string/webapp_activity_title"
         android:name="com.google.android.apps.chrome.webapps.WebappActivity"

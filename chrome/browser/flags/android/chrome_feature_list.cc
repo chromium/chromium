@@ -226,6 +226,7 @@ const base::Feature* kFeaturesExposedToJava[] = {
     &paint_preview::kPaintPreviewShowOnStartup,
     &language::kDetailedLanguageSettings,
     &language::kExplicitLanguageAsk,
+    &language::kTranslateIntent,
     &messages::kMessagesForAndroidInfrastructure,
     &offline_pages::kOfflineIndicatorFeature,
     &offline_pages::kOfflineIndicatorAlwaysHttpProbeFeature,

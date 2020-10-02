@@ -1004,7 +1004,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         }
 
         super.onNewIntentWithNative(intent);
-        if (mIntentHandler.shouldIgnoreIntent(intent)) return;
+        if (mIntentHandler.shouldIgnoreIntent(intent, /*startedActivity=*/false)) return;
 
         // We send this intent so that we can enter WebVr presentation mode if needed. This
         // call doesn't consume the intent because it also has the url that we need to load.
@@ -1472,6 +1472,10 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                 LocaleManager.getInstance().showSearchEnginePromoIfNeeded(
                         ChromeActivity.this, callback);
             }
+
+            @Override
+            public void processTranslateTabIntent(
+                    @Nullable String targetLanguageCode, @Nullable String expectedUrl) {}
 
             @Override
             public void processUrlViewIntent(String url, String referer, String headers,

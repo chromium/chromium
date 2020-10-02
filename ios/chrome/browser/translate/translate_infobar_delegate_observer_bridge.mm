@@ -32,6 +32,14 @@ void TranslateInfobarDelegateObserverBridge::OnTranslateStepChanged(
                      withErrorType:error_type];
 }
 
+void TranslateInfobarDelegateObserverBridge::OnTargetLanguageChanged(
+    const std::string& target_language_code) {
+  // Unimplemented on iOS as target language changes are initiated solely by the
+  // UI. This method should always be a no-op.
+  DCHECK_EQ(translate_infobar_delegate_->target_language_code(),
+            target_language_code);
+}
+
 bool TranslateInfobarDelegateObserverBridge::IsDeclinedByUser() {
   return [owner_ translateInfoBarDelegateDidDismissWithoutInteraction:
                      translate_infobar_delegate_];
