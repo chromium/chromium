@@ -41,6 +41,10 @@ class UMABrowsingActivityObserver : public content::NotificationObserver {
   // tabs here.
   void LogBrowserTabCount() const;
 
+  // Maps |total_tab_count| to the corresponding histogram bucket with the
+  // proper name suffix.
+  std::string AppendTabBucketCountToHistogramName(int total_tab_count) const;
+
   content::NotificationRegistrar registrar_;
   TabStripModelStatsRecorder tab_recorder_;
 

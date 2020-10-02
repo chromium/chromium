@@ -1672,6 +1672,35 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </details>
 </histogram>
 
+<histogram name="Tabs.TabCountPerDomainPerLoad.{TotalTabCountBucket}"
+    units="tabs" expires_after="2021-03-07">
+  <owner>connily@chromium.org</owner>
+  <owner>cyan@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    The number of tabs across all browsers (counting app-mode windows) with the
+    same host piece when a load completes. {TotalTabCountBucket} is inclusive
+    and describes the total number of tabs when logging.
+  </summary>
+  <token key="TotalTabCountBucket">
+    <variant name="0to5" summary=""/>
+    <variant name="6to10" summary=""/>
+    <variant name="10to15" summary=""/>
+    <variant name="16to20" summary=""/>
+    <variant name="21to30" summary=""/>
+    <variant name="31to40" summary=""/>
+    <variant name="41to60" summary=""/>
+    <variant name="61to80" summary=""/>
+    <variant name="81to100" summary=""/>
+    <variant name="101to150" summary=""/>
+    <variant name="151to200" summary=""/>
+    <variant name="201to300" summary=""/>
+    <variant name="301to400" summary=""/>
+    <variant name="401to500" summary=""/>
+    <variant name="500+" summary=""/>
+  </token>
+</histogram>
+
 <histogram name="Tabs.TabCountPerLoad" units="tabs" expires_after="2021-07-31">
   <owner>mpearson@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>

@@ -4,8 +4,10 @@
 
 #include "chrome/browser/ui/uma_browsing_activity_observer.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
+#include "base/numerics/ranges.h"
 #include "base/time/time.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/profiles/profile.h"
@@ -115,6 +117,8 @@ void UMABrowsingActivityObserver::LogBrowserTabCount() const {
   int app_window_count = 0;
   int popup_window_count = 0;
   int tabbed_window_count = 0;
+  std::map<base::StringPiece, int> unique_domain;
+
   for (auto* browser : *BrowserList::GetInstance()) {
     // Record how many tabs each window has open.
     UMA_HISTOGRAM_CUSTOM_COUNTS("Tabs.TabCountPerWindow",
@@ -122,6 +126,13 @@ void UMABrowsingActivityObserver::LogBrowserTabCount() const {
                                 50);
     TabStripModel* const tab_strip_model = browser->tab_strip_model();
     tab_count += tab_strip_model->count();
+
+    for (int i = 0; i < tab_strip_model->count(); ++i) {
+      base::StringPiece domain = tab_strip_model->GetWebContentsAt(i)
+                                     ->GetLastCommittedURL()
+                                     .host_piece();
+      unique_domain[domain] += 1;
+    }
 
     const std::vector<tab_groups::TabGroupId>& groups =
         tab_strip_model->group_model()->ListTabGroups();
@@ -152,6 +163,15 @@ void UMABrowsingActivityObserver::LogBrowserTabCount() const {
     else if (browser->is_type_normal())
       tabbed_window_count++;
   }
+
+  // Record how many tabs share a domain based on the total number of tabs open.
+  const std::string tab_count_per_domain_histogram_name =
+      AppendTabBucketCountToHistogramName(tab_count);
+  for (auto domain : unique_domain) {
+    base::UmaHistogramSparse(tab_count_per_domain_histogram_name,
+                             base::ClampToRange(domain.second, 0, 200));
+  }
+
   // Record how many tabs total are open (across all windows).
   UMA_HISTOGRAM_CUSTOM_COUNTS("Tabs.TabCountPerLoad", tab_count, 1, 200, 50);
 
@@ -190,6 +210,44 @@ void UMABrowsingActivityObserver::LogBrowserTabCount() const {
                            popup_window_count);
   UMA_HISTOGRAM_COUNTS_100("WindowManager.TabbedWindowCountPerLoad",
                            tabbed_window_count);
+}
+
+std::string UMABrowsingActivityObserver::AppendTabBucketCountToHistogramName(
+    int total_tab_count) const {
+  const char* bucket = nullptr;
+  if (total_tab_count < 6) {
+    bucket = "0to5";
+  } else if (total_tab_count < 11) {
+    bucket = "6to10";
+  } else if (total_tab_count < 16) {
+    bucket = "10to15";
+  } else if (total_tab_count < 21) {
+    bucket = "16to20";
+  } else if (total_tab_count < 31) {
+    bucket = "21to30";
+  } else if (total_tab_count < 41) {
+    bucket = "31to40";
+  } else if (total_tab_count < 61) {
+    bucket = "41to60";
+  } else if (total_tab_count < 81) {
+    bucket = "61to80";
+  } else if (total_tab_count < 101) {
+    bucket = "81to100";
+  } else if (total_tab_count < 151) {
+    bucket = "101to150";
+  } else if (total_tab_count < 201) {
+    bucket = "151to200";
+  } else if (total_tab_count < 301) {
+    bucket = "201to300";
+  } else if (total_tab_count < 401) {
+    bucket = "301to400";
+  } else if (total_tab_count < 501) {
+    bucket = "401to500";
+  } else {
+    bucket = "501+";
+  }
+  const char kHistogramBaseName[] = "Tabs.TabCountPerDomainPerLoad";
+  return base::StringPrintf("%s.%s", kHistogramBaseName, bucket);
 }
 
 }  // namespace chrome
