@@ -134,12 +134,13 @@ void ExpectAllContainers() {
   EXPECT_FALSE(Shell::GetContainer(root_window, kShellWindowId_PhantomWindow));
 }
 
-views::WidgetDelegateView* CreateModalWidgetDelegate() {
+std::unique_ptr<views::WidgetDelegateView> CreateModalWidgetDelegate() {
   auto delegate = std::make_unique<views::WidgetDelegateView>();
   delegate->SetCanResize(true);
   delegate->SetModalType(ui::MODAL_TYPE_SYSTEM);
+  delegate->SetOwnedByWidget(true);
   delegate->SetTitle(base::ASCIIToUTF16("Modal Window"));
-  return delegate.release();
+  return delegate;
 }
 
 class SimpleMenuDelegate : public ui::SimpleMenuModel::Delegate {
@@ -322,14 +323,6 @@ TEST_F(ShellTest, CreateModalWindow) {
   widget->Close();
 }
 
-class TestModalDialogDelegate : public views::DialogDelegateView {
- public:
-  TestModalDialogDelegate() = default;
-
-  // Overridden from views::WidgetDelegate:
-  ui::ModalType GetModalType() const override { return ui::MODAL_TYPE_SYSTEM; }
-};
-
 TEST_F(ShellTest, CreateLockScreenModalWindow) {
   views::Widget::InitParams widget_params(
       views::Widget::InitParams::TYPE_WINDOW);
@@ -383,9 +376,9 @@ TEST_F(ShellTest, CreateLockScreenModalWindow) {
       Shell::GetPrimaryRootWindow(), kShellWindowId_SystemModalContainer);
   EXPECT_EQ(modal_container, modal_widget->GetNativeWindow()->parent());
 
-  // Modal dialog without parent, caused crash see crbug.com/226141
+  // Modal widget without parent, caused crash see crbug.com/226141
   views::Widget* modal_dialog = views::DialogDelegate::CreateDialogWidget(
-      new TestModalDialogDelegate(), GetContext(), nullptr);
+      CreateModalWidgetDelegate(), GetContext(), nullptr);
 
   modal_dialog->Show();
   EXPECT_FALSE(modal_dialog->GetNativeView()->HasFocus());

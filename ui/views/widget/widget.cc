@@ -197,6 +197,13 @@ Widget* Widget::CreateWindowWithParent(WidgetDelegate* delegate,
   return new Widget(std::move(params));
 }
 
+Widget* Widget::CreateWindowWithParent(std::unique_ptr<WidgetDelegate> delegate,
+                                       gfx::NativeView parent,
+                                       const gfx::Rect& bounds) {
+  DCHECK(delegate->owned_by_widget());
+  return CreateWindowWithParent(delegate.release(), parent, bounds);
+}
+
 // static
 Widget* Widget::CreateWindowWithContext(WidgetDelegate* delegate,
                                         gfx::NativeWindow context,
@@ -206,6 +213,15 @@ Widget* Widget::CreateWindowWithContext(WidgetDelegate* delegate,
   params.context = context;
   params.bounds = bounds;
   return new Widget(std::move(params));
+}
+
+// static
+Widget* Widget::CreateWindowWithContext(
+    std::unique_ptr<WidgetDelegate> delegate,
+    gfx::NativeWindow context,
+    const gfx::Rect& bounds) {
+  DCHECK(delegate->owned_by_widget());
+  return CreateWindowWithContext(delegate.release(), context, bounds);
 }
 
 // static
