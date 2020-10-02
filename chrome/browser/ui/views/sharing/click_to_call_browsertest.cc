@@ -86,13 +86,7 @@ class BaseClickToCallBrowserTest : public SharingBrowserTest {
 
   base::HistogramTester::CountsMap GetTotalHistogramCounts(
       const base::HistogramTester& histograms) {
-    base::HistogramTester::CountsMap counts =
-        histograms.GetTotalCountsForPrefix(HistogramName(""));
-    // PhoneNumberPrecompileTime will be logged 15 seconds after startup but
-    // we want to ignore it in these browser tests as we don't know if the
-    // test takes more or less time than that.
-    counts.erase(HistogramName("PhoneNumberPrecompileTime"));
-    return counts;
+    return histograms.GetTotalCountsForPrefix(HistogramName(""));
   }
 };
 

@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/feature_list.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
@@ -26,7 +25,6 @@ const char kPhoneNumberRegexPatternSimple[] =
     R"((?:^|\p{Z})((?:\(?\+[0-9]+\)?)?(?:[.\p{Z}\-(]?[0-9][\p{Z}\-)]?){8,}))";
 
 void PrecompilePhoneNumberRegexes() {
-  SCOPED_UMA_HISTOGRAM_TIMER("Sharing.ClickToCallPhoneNumberPrecompileTime");
   static const char kExampleInput[] = "+01(2)34-5678 9012";
 
   std::string parsed;
