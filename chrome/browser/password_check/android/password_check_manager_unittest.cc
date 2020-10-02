@@ -593,3 +593,20 @@ TEST_F(PasswordCheckManagerTest, DoesntUpdateNonExistingProgress) {
                                                 base::ASCIIToUTF16(kPassword1)),
           password_manager::IsLeaked(false));
 }
+
+TEST_F(PasswordCheckManagerTest, TurnsIdleIntoNoPasswords) {
+  InitializeManager();
+  RunUntilIdle();
+
+  EXPECT_CALL(mock_observer(),
+              OnPasswordCheckStatusChanged(PasswordCheckUIStatus::kRunning))
+      .Times(1);
+  EXPECT_CALL(mock_observer(),
+              OnPasswordCheckStatusChanged(PasswordCheckUIStatus::kIdle))
+      .Times(0);
+  EXPECT_CALL(mock_observer(), OnPasswordCheckStatusChanged(
+                                   PasswordCheckUIStatus::kErrorNoPasswords))
+      .Times(1);
+
+  manager().StartCheck();
+}

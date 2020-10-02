@@ -91,7 +91,6 @@ void PasswordCheckManager::StartCheck() {
   // The request is being handled, so reset the boolean.
   was_start_requested_ = false;
   is_check_running_ = true;
-
   progress_ = std::make_unique<PasswordCheckProgress>();
   for (const auto& password : saved_passwords_presenter_.GetSavedPasswords())
     progress_->IncrementCounts(password);
@@ -197,6 +196,11 @@ void PasswordCheckManager::OnStateChanged(State state) {
   if (state != State::kRunning) {
     progress_.reset();
     is_check_running_ = false;
+    if (saved_passwords_presenter_.GetSavedPasswords().empty()) {
+      observer_->OnPasswordCheckStatusChanged(
+          PasswordCheckUIStatus::kErrorNoPasswords);
+      return;
+    }
   }
 
   observer_->OnPasswordCheckStatusChanged(GetUIStatus(state));
