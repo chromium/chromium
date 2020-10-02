@@ -2,9 +2,7 @@
 </style>
 
 <diagnostics-card>
-  <div slot="title">
-    <div id="cardTitle">[[i18n('cpuTitle')]]</div>
-  </div>
+  <div id="cardTitle" slot="title">[[i18n('cpuTitle')]]</div>
   <!-- TODO(michaelcheco): Add i18n string for percent number format -->
   <data-point slot="body" id="cpuUsageUser"
     value="[[computeCurrentlyUsing_(cpuUsage_.percent_usage_system,
