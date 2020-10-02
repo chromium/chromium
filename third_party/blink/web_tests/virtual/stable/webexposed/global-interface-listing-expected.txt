@@ -5583,6 +5583,7 @@ interface RTCRtpTransceiver
     getter stopped
     method constructor
     method setCodecPreferences
+    method stop
     setter direction
 interface RTCSctpTransport : EventTarget
     attribute @@toStringTag

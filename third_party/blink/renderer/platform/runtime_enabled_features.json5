@@ -1637,7 +1637,7 @@
     // Enables the use of |RTCRtpTransceiver::stop()|
     {
       name: "RTCRtpTransceiverStop",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "RTCStatsRelativePacketArrivalDelay",
