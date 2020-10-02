@@ -3,13 +3,21 @@
 # found in the LICENSE file.
 
 declare_args() {
+  # Deprecated, use is_lacros.
+  #
   # This controls UI configuration for Chrome.
   # If this flag is set, we assume Chrome runs on Chrome OS devices, using
   # Wayland (instead of X11).
-  # TODO(crbug.com/1052397): After the clean up, this should be
-  # replaced with is_lacros = chromeos_product == "browser".
+  #
+  # TODO(crbug.com/1052397):
+  # Define chromeos_product instead, which takes either "browser" or "ash".
+  # Re-define the following variables as:
+  # is_lacros = chromeos_product == "browser"
+  # is_ash = chromeos_product == "ash"
   chromeos_is_browser_only = false
 }
 
-# TODO(crbug.com/1052397): Replace this with chromeos_product == "ash".
 is_ash = is_chromeos && !chromeos_is_browser_only
+
+# Temporarily define is_lacros as an alias.
+is_lacros = chromeos_is_browser_only
