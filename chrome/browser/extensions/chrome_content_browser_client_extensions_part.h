@@ -51,8 +51,8 @@ class ChromeContentBrowserClientExtensionsPart
   static bool DoesSiteRequireDedicatedProcess(
       content::BrowserContext* browser_context,
       const GURL& effective_site_url);
-  static bool ShouldLockProcess(content::BrowserContext* browser_context,
-                                const GURL& effective_site_url);
+  static bool ShouldLockProcessToSite(content::BrowserContext* browser_context,
+                                      const GURL& effective_site_url);
   static bool CanCommitURL(content::RenderProcessHost* process_host,
                            const GURL& url);
   static bool IsSuitableHost(Profile* profile,

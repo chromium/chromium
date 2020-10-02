@@ -87,9 +87,8 @@ void LockProcessIfNeeded(int process_id,
           browser_context, UrlInfo::CreateForTesting(url),
           false /* is_coop_coep_cross_origin_isolated */);
   if (site_instance->RequiresDedicatedProcess() &&
-      SiteInstanceImpl::ShouldLockProcess(site_instance->GetIsolationContext(),
-                                          site_instance->GetSiteInfo(),
-                                          site_instance->IsGuest())) {
+      site_instance->GetSiteInfo().ShouldLockProcessToSite(
+          site_instance->GetIsolationContext(), site_instance->IsGuest())) {
     ChildProcessSecurityPolicyImpl::GetInstance()->LockProcess(
         site_instance->GetIsolationContext(), process_id,
         site_instance->GetProcessLock());

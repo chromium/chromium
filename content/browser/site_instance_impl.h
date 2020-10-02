@@ -95,9 +95,9 @@ class CONTENT_EXPORT SiteInfo {
   //
   // NOTE: This URL is currently set even in cases where this SiteInstance's
   //       process is *not* going to be locked to it.  Callers should be careful
-  //       to consider this case when comparing lock URLs; ShouldLockProcess()
-  //       may be used to determine whether the process lock will actually be
-  //       used.
+  //       to consider this case when comparing lock URLs;
+  //       ShouldLockProcessToSite() may be used to determine whether the
+  //       process lock will actually be used.
   //
   // TODO(alexmos): See if we can clean this up and not set |process_lock_url_|
   //                if the SiteInstance's process isn't going to be locked.
@@ -140,6 +140,31 @@ class CONTENT_EXPORT SiteInfo {
 
   // Returns a string representation of this SiteInfo principal.
   std::string GetDebugString() const;
+
+  // Returns true if pages loaded with this SiteInfo ought to be handled only
+  // by a renderer process isolated from other sites. If --site-per-process is
+  // used, like it is on desktop platforms, then this is true for all sites. In
+  // other site isolation modes, only a subset of sites will require dedicated
+  // processes.
+  bool RequiresDedicatedProcess(
+      const IsolationContext& isolation_context) const;
+
+  // Returns true if a process for this SiteInfo should be locked to a
+  // ProcessLock whose is_locked_to_site() method returns true. Returning true
+  // here also implies that this SiteInfo requires a dedicated process. However,
+  // the converse does not hold: this might still return false for certain
+  // special cases where a site specific process lock can't be applied even when
+  // this SiteInfo requires a dedicated process (e.g., with
+  // --site-per-process). Examples of those cases include <webview> guests,
+  // single-process mode, or extensions where a process is currently allowed to
+  // be reused for different extensions.  Most of these special cases should
+  // eventually be removed, and this function should become equivalent to
+  // RequiresDedicatedProcess().
+  //
+  // |is_guest| should be set to true if the call is being made for a <webview>
+  // guest SiteInstance(i.e. SiteInstance::IsGuest() returns true).
+  bool ShouldLockProcessToSite(const IsolationContext& isolation_context,
+                               const bool is_guest) const;
 
  private:
   static auto MakeTie(const SiteInfo& site_info);
@@ -518,31 +543,6 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance,
   // Only public so that we can make a consistent process swap decision in
   // RenderFrameHostManager.
   static GURL GetEffectiveURL(BrowserContext* browser_context, const GURL& url);
-
-  // Returns true if pages loaded from |site_info| ought to be handled only by a
-  // renderer process isolated from other sites. If --site-per-process is used,
-  // this is true for all sites. In other site isolation modes, only a subset
-  // of sites will require dedicated processes.
-  static bool DoesSiteInfoRequireDedicatedProcess(
-      const IsolationContext& isolation_context,
-      const SiteInfo& site_info);
-
-  // Returns true if a process for a |site_info| should be locked. Returning
-  // true here also implies that |site_info| requires a dedicated process.
-  // However, the converse does not hold: this might still
-  // return false for certain special cases where an origin lock can't be
-  // applied even when |site_info| requires a dedicated process (e.g., with
-  // --site-per-process). Examples of those cases include <webview> guests,
-  // single-process mode, or extensions where a process is currently allowed to
-  // be reused for different extensions.  Most of these special cases should
-  // eventually be removed, and this function should become equivalent to
-  // DoesSiteInfoRequireDedicatedProcess().
-  //
-  // |is_guest| should be set to true if the call is being made for a <webview>
-  // guest SiteInstance(i.e. SiteInstance::IsGuest() returns true).
-  static bool ShouldLockProcess(const IsolationContext& isolation_context,
-                                const SiteInfo& site_info,
-                                const bool is_guest);
 
   // Return an ID of the next BrowsingInstance to be created.  This ID is
   // guaranteed to be higher than any ID of an existing BrowsingInstance.

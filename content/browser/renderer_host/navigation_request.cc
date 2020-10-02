@@ -2369,8 +2369,7 @@ void NavigationRequest::OnResponseStarted(
         instance->IsCoopCoepCrossOriginIsolated(),
         instance->CoopCoepCrossOriginIsolatedOrigin());
     if (!instance->HasSite() &&
-        SiteInstanceImpl::DoesSiteInfoRequireDedicatedProcess(isolation_context,
-                                                              site_info)) {
+        site_info.RequiresDedicatedProcess(isolation_context)) {
       instance->ConvertToDefaultOrSetSite(GetUrlInfo());
     }
 

@@ -1685,16 +1685,11 @@ bool ChromeContentBrowserClient::DoesSiteRequireDedicatedProcess(
   return false;
 }
 
-// TODO(creis, nick): https://crbug.com/160576 describes a weakness in our
-// origin-lock enforcement, where we don't have a way to efficiently know
-// effective URLs on the IO thread, and wind up killing processes that e.g.
-// request cookies for their actual URL. This whole function (and its
-// ExtensionsPart) should be removed once we add that ability to the IO thread.
-bool ChromeContentBrowserClient::ShouldLockProcess(
+bool ChromeContentBrowserClient::ShouldLockProcessToSite(
     content::BrowserContext* browser_context,
     const GURL& effective_site_url) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  if (!ChromeContentBrowserClientExtensionsPart::ShouldLockProcess(
+  if (!ChromeContentBrowserClientExtensionsPart::ShouldLockProcessToSite(
           browser_context, effective_site_url)) {
     return false;
   }

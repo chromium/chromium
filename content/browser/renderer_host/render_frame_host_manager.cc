@@ -111,14 +111,12 @@ bool ShouldSwapBrowsingInstancesForDynamicIsolation(
   // process if we left it in the current BrowsingInstance.  If so, there's no
   // need to swap BrowsingInstances.
   auto& current_isolation_context = current_instance->GetIsolationContext();
-  if (SiteInstanceImpl::DoesSiteInfoRequireDedicatedProcess(
-          current_isolation_context,
-          SiteInstanceImpl::ComputeSiteInfo(
-              current_isolation_context, destination_effective_url_info,
-              is_coop_coep_cross_origin_isolated,
-              coop_coep_cross_origin_isolated_origin))) {
+  auto current_site_info = SiteInstanceImpl::ComputeSiteInfo(
+      current_isolation_context, destination_effective_url_info,
+      is_coop_coep_cross_origin_isolated,
+      coop_coep_cross_origin_isolated_origin);
+  if (current_site_info.RequiresDedicatedProcess(current_isolation_context))
     return false;
-  }
 
   // Finally, check whether |destination_effective_url_info| would require a
   // dedicated process if we were to swap to a fresh BrowsingInstance.  To check
@@ -130,8 +128,7 @@ bool ShouldSwapBrowsingInstancesForDynamicIsolation(
       future_isolation_context, destination_effective_url_info,
       is_coop_coep_cross_origin_isolated,
       coop_coep_cross_origin_isolated_origin);
-  return SiteInstanceImpl::DoesSiteInfoRequireDedicatedProcess(
-      future_isolation_context, future_site_info);
+  return future_site_info.RequiresDedicatedProcess(future_isolation_context);
 }
 
 bool IsSiteInstanceCompatibleWithErrorIsolation(SiteInstance* site_instance,
@@ -1991,15 +1988,13 @@ RenderFrameHostManager::DetermineSiteInstanceForURL(
       RenderFrameHostImpl* parent = frame_tree_node_->parent();
       auto& parent_isolation_context =
           parent->GetSiteInstance()->GetIsolationContext();
-      bool dest_url_requires_dedicated_process =
-          SiteInstanceImpl::DoesSiteInfoRequireDedicatedProcess(
-              parent_isolation_context,
-              SiteInstanceImpl::ComputeSiteInfo(
-                  parent_isolation_context, dest_url_info,
-                  is_coop_coep_cross_origin_isolated,
-                  coop_coep_cross_origin_isolated_origin));
+
+      auto site_info = SiteInstanceImpl::ComputeSiteInfo(
+          parent_isolation_context, dest_url_info,
+          is_coop_coep_cross_origin_isolated,
+          coop_coep_cross_origin_isolated_origin);
       if (!parent->GetSiteInstance()->RequiresDedicatedProcess() &&
-          !dest_url_requires_dedicated_process) {
+          !site_info.RequiresDedicatedProcess(parent_isolation_context)) {
         return SiteInstanceDescriptor(parent->GetSiteInstance());
       }
     }

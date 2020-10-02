@@ -890,7 +890,7 @@ bool AwContentBrowserClient::ShouldEnableStrictSiteIsolation() {
   return false;
 }
 
-bool AwContentBrowserClient::ShouldLockProcess(
+bool AwContentBrowserClient::ShouldLockProcessToSite(
     content::BrowserContext* browser_context,
     const GURL& effective_url) {
   // TODO(lukasza): https://crbug.cmo/869494: Once Android WebView supports

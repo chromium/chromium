@@ -153,6 +153,94 @@ std::ostream& operator<<(std::ostream& out, const SiteInfo& site_info) {
   return out << site_info.GetDebugString();
 }
 
+bool SiteInfo::RequiresDedicatedProcess(
+    const IsolationContext& isolation_context) const {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK(isolation_context.browser_or_resource_context());
+
+  // If --site-per-process is enabled, site isolation is enabled everywhere.
+  if (SiteIsolationPolicy::UseDedicatedProcessesForAllSites())
+    return true;
+
+  // Always require a dedicated process for isolated origins.
+  auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
+  if (policy->IsIsolatedOrigin(isolation_context,
+                               url::Origin::Create(site_url_),
+                               is_origin_keyed_)) {
+    return true;
+  }
+
+  // Error pages in main frames do require isolation, however since this is
+  // missing the context whether this is for a main frame or not, that part
+  // is enforced in RenderFrameHostManager.
+  if (site_url_.SchemeIs(kChromeErrorScheme))
+    return true;
+
+  // Isolate WebUI pages from one another and from other kinds of schemes.
+  for (const auto& webui_scheme : URLDataManagerBackend::GetWebUISchemes()) {
+    if (site_url_.SchemeIs(webui_scheme))
+      return true;
+  }
+
+  // Let the content embedder enable site isolation for specific URLs. Use the
+  // canonical site url for this check, so that schemes with nested origins
+  // (blob and filesystem) work properly.
+  if (GetContentClient()->browser()->DoesSiteRequireDedicatedProcess(
+          isolation_context.browser_or_resource_context().ToBrowserContext(),
+          site_url_)) {
+    return true;
+  }
+
+  return false;
+}
+
+bool SiteInfo::ShouldLockProcessToSite(
+    const IsolationContext& isolation_context,
+    const bool is_guest) const {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  BrowserContext* browser_context =
+      isolation_context.browser_or_resource_context().ToBrowserContext();
+  DCHECK(browser_context);
+
+  // Don't lock to origin in --single-process mode, since this mode puts
+  // cross-site pages into the same process.  Note that this also covers the
+  // single-process mode in Android Webview.
+  if (RenderProcessHost::run_renderer_in_process())
+    return false;
+
+  if (!RequiresDedicatedProcess(isolation_context))
+    return false;
+
+  // Guest processes cannot be locked to a specific site because guests always
+  // use a single SiteInstance for all URLs it loads. The SiteInfo for those
+  // URLs do not match the SiteInfo of the guest SiteInstance so we skip
+  // locking the guest process.
+  // TODO(acolwell): Revisit this once we have the ability to store guest state
+  // and StoragePartition information in SiteInfo instead of packing this info
+  // into the guest site URL. Once we have these capabilities we won't need to
+  // restrict guests to a single SiteInstance.
+  if (is_guest)
+    return false;
+
+  // Most WebUI processes should be locked on all platforms.  The only exception
+  // is NTP, handled via the separate callout to the embedder.
+  const auto& webui_schemes = URLDataManagerBackend::GetWebUISchemes();
+  if (base::Contains(webui_schemes, site_url_.scheme())) {
+    return GetContentClient()->browser()->DoesWebUISchemeRequireProcessLock(
+        site_url_.scheme());
+  }
+
+  // Allow the embedder to prevent process locking so that multiple sites
+  // can share a process. For example, this is how Chrome allows ordinary
+  // extensions to share a process.
+  if (!GetContentClient()->browser()->ShouldLockProcessToSite(browser_context,
+                                                              site_url_)) {
+    return false;
+  }
+
+  return true;
+}
+
 SiteInstanceImpl::SiteInstanceImpl(BrowsingInstance* browsing_instance)
     : id_(next_site_instance_id_++),
       active_frame_count_(0),
@@ -693,8 +781,8 @@ bool SiteInstanceImpl::IsSuitableForUrlInfo(const UrlInfo& url_info) {
     // If the site URLs do not match, but neither this SiteInstance nor the
     // destination site_url require dedicated processes, then it is safe to use
     // this SiteInstance.
-    if (!RequiresDedicatedProcess() && !DoesSiteInfoRequireDedicatedProcess(
-                                           GetIsolationContext(), site_info)) {
+    if (!RequiresDedicatedProcess() &&
+        !site_info.RequiresDedicatedProcess(GetIsolationContext())) {
       return true;
     }
 
@@ -713,7 +801,7 @@ bool SiteInstanceImpl::RequiresDedicatedProcess() {
   if (!has_site_)
     return false;
 
-  return DoesSiteInfoRequireDedicatedProcess(GetIsolationContext(), site_info_);
+  return site_info_.RequiresDedicatedProcess(GetIsolationContext());
 }
 
 void SiteInstanceImpl::IncrementActiveFrameCount() {
@@ -1297,7 +1385,7 @@ bool SiteInstanceImpl::CanBePlacedInDefaultSiteInstance(
 
   // Allow the default SiteInstance to be used for sites that don't need to be
   // isolated in their own process.
-  return !DoesSiteInfoRequireDedicatedProcess(isolation_context, site_info);
+  return !site_info.RequiresDedicatedProcess(isolation_context);
 }
 
 // static
@@ -1320,99 +1408,6 @@ GURL SiteInstanceImpl::GetEffectiveURL(BrowserContext* browser_context,
 bool SiteInstanceImpl::HasEffectiveURL(BrowserContext* browser_context,
                                        const GURL& url) {
   return GetEffectiveURL(browser_context, url) != url;
-}
-
-// static
-bool SiteInstanceImpl::DoesSiteInfoRequireDedicatedProcess(
-    const IsolationContext& isolation_context,
-    const SiteInfo& site_info) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(isolation_context.browser_or_resource_context());
-
-  // If --site-per-process is enabled, site isolation is enabled everywhere.
-  if (SiteIsolationPolicy::UseDedicatedProcessesForAllSites())
-    return true;
-
-  const GURL& site_url = site_info.site_url();
-
-  // Always require a dedicated process for isolated origins.
-  auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
-  if (policy->IsIsolatedOrigin(isolation_context, url::Origin::Create(site_url),
-                               site_info.is_origin_keyed())) {
-    return true;
-  }
-
-  // Error pages in main frames do require isolation, however since this is
-  // missing the context whether this is for a main frame or not, that part
-  // is enforced in RenderFrameHostManager.
-  if (site_url.SchemeIs(kChromeErrorScheme))
-    return true;
-
-  // Isolate WebUI pages from one another and from other kinds of schemes.
-  for (const auto& webui_scheme : URLDataManagerBackend::GetWebUISchemes()) {
-    if (site_url.SchemeIs(webui_scheme))
-      return true;
-  }
-
-  // Let the content embedder enable site isolation for specific URLs. Use the
-  // canonical site url for this check, so that schemes with nested origins
-  // (blob and filesystem) work properly.
-  if (GetContentClient()->browser()->DoesSiteRequireDedicatedProcess(
-          isolation_context.browser_or_resource_context().ToBrowserContext(),
-          site_url)) {
-    return true;
-  }
-
-  return false;
-}
-
-// static
-bool SiteInstanceImpl::ShouldLockProcess(
-    const IsolationContext& isolation_context,
-    const SiteInfo& site_info,
-    const bool is_guest) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  BrowserContext* browser_context =
-      isolation_context.browser_or_resource_context().ToBrowserContext();
-  DCHECK(browser_context);
-
-  // Don't lock to origin in --single-process mode, since this mode puts
-  // cross-site pages into the same process.  Note that this also covers the
-  // single-process mode in Android Webview.
-  if (RenderProcessHost::run_renderer_in_process())
-    return false;
-
-  if (!DoesSiteInfoRequireDedicatedProcess(isolation_context, site_info))
-    return false;
-
-  // Guest processes cannot be locked to their site because guests always have
-  // a fixed SiteInstance. The site of GURLs a guest loads doesn't match that
-  // SiteInstance. So we skip locking the guest process to the site.
-  // TODO(ncarter): Remove this exclusion once we can make origin lock per
-  // RenderFrame routing id.
-  if (is_guest)
-    return false;
-
-  const GURL& site_url = site_info.site_url();
-
-  // Most WebUI processes should be locked on all platforms.  The only exception
-  // is NTP, handled via the separate callout to the embedder.
-  const auto& webui_schemes = URLDataManagerBackend::GetWebUISchemes();
-  if (base::Contains(webui_schemes, site_url.scheme())) {
-    return GetContentClient()->browser()->DoesWebUISchemeRequireProcessLock(
-        site_url.scheme());
-  }
-
-  // TODO(creis, nick): Until we can handle sites with effective URLs at the
-  // call sites of ChildProcessSecurityPolicy::CanAccessDataForOrigin, we
-  // must give the embedder a chance to exempt some sites to avoid process
-  // kills.
-  if (!GetContentClient()->browser()->ShouldLockProcess(browser_context,
-                                                        site_url)) {
-    return false;
-  }
-
-  return true;
 }
 
 void SiteInstanceImpl::RenderProcessHostDestroyed(RenderProcessHost* host) {
@@ -1464,7 +1459,7 @@ void SiteInstanceImpl::LockProcessIfNeeded() {
   // preassigned site.
   process_->SetIsUsed();
 
-  if (ShouldLockProcess(GetIsolationContext(), site_info_, IsGuest())) {
+  if (site_info_.ShouldLockProcessToSite(GetIsolationContext(), IsGuest())) {
     // Sanity check that this won't try to assign an origin lock to a <webview>
     // process, which can't be locked.
     CHECK(!process_->IsForGuestsOnly());

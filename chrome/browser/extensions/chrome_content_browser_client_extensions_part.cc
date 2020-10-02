@@ -313,7 +313,7 @@ bool ChromeContentBrowserClientExtensionsPart::DoesSiteRequireDedicatedProcess(
 }
 
 // static
-bool ChromeContentBrowserClientExtensionsPart::ShouldLockProcess(
+bool ChromeContentBrowserClientExtensionsPart::ShouldLockProcessToSite(
     content::BrowserContext* browser_context,
     const GURL& effective_site_url) {
   if (!effective_site_url.SchemeIs(kExtensionScheme))

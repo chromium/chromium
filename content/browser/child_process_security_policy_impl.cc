@@ -1700,7 +1700,8 @@ bool ChildProcessSecurityPolicyImpl::CanAccessDataForOrigin(
         return true;
 #else
         // TODO(acolwell, lukasza): https://crbug.com/764958: Make it possible
-        // to call ShouldLockProcess (and GetSiteForURL?) on the IO thread.
+        // to call ShouldLockProcessToSite (and GetSiteForURL?) on the IO
+        // thread.
         if (BrowserThread::CurrentlyOn(BrowserThread::IO))
           return true;
         DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -1730,9 +1731,8 @@ bool ChildProcessSecurityPolicyImpl::CanAccessDataForOrigin(
 
         // A process that's not locked to any site can only access data from
         // origins that do not require a locked process.
-        bool should_lock_target =
-            SiteInstanceImpl::ShouldLockProcess(isolation_context, site_info,
-                                                /* is_guest= */ false);
+        bool should_lock_target = site_info.ShouldLockProcessToSite(
+            isolation_context, /* is_guest= */ false);
         if (!should_lock_target)
           return true;
         failure_reason = " citadel_enforcement";

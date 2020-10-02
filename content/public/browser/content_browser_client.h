@@ -369,12 +369,9 @@ class CONTENT_EXPORT ContentBrowserClient {
 
   // Returns true unless the effective URL is part of a site that cannot live in
   // a process restricted to just that site.  This is only called if site
-  // isolation is enabled for this URL, and is a bug workaround.
-  //
-  // TODO(nick): Remove this function once https://crbug.com/160576 is fixed,
-  // and ProcessLock can be applied to all URLs.
-  virtual bool ShouldLockProcess(BrowserContext* browser_context,
-                                 const GURL& effective_url);
+  // isolation is enabled for this URL.
+  virtual bool ShouldLockProcessToSite(BrowserContext* browser_context,
+                                       const GURL& effective_url);
 
   // Returns a boolean indicating whether the WebUI |scheme| requires its
   // process to be locked to the WebUI origin.

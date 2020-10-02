@@ -141,9 +141,8 @@ bool Navigator::CheckWebUIRendererDoesNotDisplayNormalURL(
       site_instance->GetIsolationContext(), url_info,
       site_instance->IsCoopCoepCrossOriginIsolated(),
       site_instance->CoopCoepCrossOriginIsolatedOrigin());
-  bool should_lock_process =
-      SiteInstanceImpl::ShouldLockProcess(site_instance->GetIsolationContext(),
-                                          site_info, site_instance->IsGuest());
+  bool should_lock_process = site_info.ShouldLockProcessToSite(
+      site_instance->GetIsolationContext(), site_instance->IsGuest());
 
   // If the |render_frame_host| has any WebUI bindings, disallow URLs that are
   // not allowed in a WebUI renderer process.

@@ -4147,8 +4147,7 @@ bool RenderProcessHostImpl::IsSuitableHost(
       // destination that doesn't require a dedicated process, even for the
       // same site. This can happen with dynamic isolated origins (see
       // https://crbug.com/950453).
-      if (!SiteInstanceImpl::ShouldLockProcess(isolation_context, site_info,
-                                               is_guest))
+      if (!site_info.ShouldLockProcessToSite(isolation_context, is_guest))
         return false;
 
       // If the destination requires a different process lock, this process
@@ -4165,8 +4164,8 @@ bool RenderProcessHostImpl::IsSuitableHost(
         return false;
       }
 
-      if (!host->IsUnused() && SiteInstanceImpl::ShouldLockProcess(
-                                   isolation_context, site_info, is_guest)) {
+      if (!host->IsUnused() &&
+          site_info.ShouldLockProcessToSite(isolation_context, is_guest)) {
         // If this process has been used to host any other content, it cannot
         // be reused if the destination site requires a dedicated process and
         // should use a process locked to just that site.
@@ -4188,8 +4187,7 @@ bool RenderProcessHostImpl::IsSuitableHost(
   // before the commit for the siteless URL arrives, resulting in a renderer
   // kill. See https://crbug.com/970046.
   if (SiteInstanceImpl::ShouldAssignSiteForURL(site_info.site_url()) &&
-      SiteInstanceImpl::DoesSiteInfoRequireDedicatedProcess(isolation_context,
-                                                            site_info)) {
+      site_info.RequiresDedicatedProcess(isolation_context)) {
     SiteProcessCountTracker* pending_tracker =
         static_cast<SiteProcessCountTracker*>(
             browser_context->GetUserData(kPendingSiteProcessCountTrackerKey));

@@ -48,9 +48,8 @@ content::mojom::OpenURLParamsPtr CreateOpenURLParams(const GURL& url) {
 
 bool DoesURLRequireDedicatedProcess(const IsolationContext& isolation_context,
                                     const GURL& url) {
-  return SiteInstanceImpl::DoesSiteInfoRequireDedicatedProcess(
-      isolation_context,
-      SiteInstanceImpl::ComputeSiteInfoForTesting(isolation_context, url));
+  return SiteInstanceImpl::ComputeSiteInfoForTesting(isolation_context, url)
+      .RequiresDedicatedProcess(isolation_context);
 }
 
 }  // namespace
