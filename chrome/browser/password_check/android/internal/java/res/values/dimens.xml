@@ -4,6 +4,7 @@
      found in the LICENSE file. -->
 
 <resources>
+  <dimen name="check_status_text_margin">16dp</dimen>
   <dimen name="check_status_description_margin_top">2dp</dimen>
   <dimen name="check_status_icon_margin_horizontal">16dp</dimen>
   <dimen name="check_status_icon_size">24dp</dimen>

@@ -276,6 +276,24 @@ public class PasswordCheckViewTest {
 
     @Test
     @MediumTest
+    public void testStatusDisplaysRestartForOffline() {
+        runOnUiThreadBlocking(() -> { mModel.get(ITEMS).add(buildHeader(ERROR_OFFLINE)); });
+        waitForListViewToHaveLength(1);
+        assertThat(getActionButton().getVisibility(), is(View.VISIBLE));
+        assertTrue(getActionButton().isClickable());
+    }
+
+    @Test
+    @MediumTest
+    public void testStatusDoesNotDisplayRestartForNoPasswords() {
+        runOnUiThreadBlocking(() -> { mModel.get(ITEMS).add(buildHeader(ERROR_NO_PASSWORDS)); });
+        waitForListViewToHaveLength(1);
+        assertThat(getActionButton().getVisibility(), is(View.GONE));
+        assertFalse(getActionButton().isClickable());
+    }
+
+    @Test
+    @MediumTest
     public void testStatusRunningText() {
         runOnUiThreadBlocking(
                 () -> { mModel.get(ITEMS).add(buildHeader(RUNNING, UNKNOWN_PROGRESS)); });

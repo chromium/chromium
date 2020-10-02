@@ -257,14 +257,18 @@ class PasswordCheckViewBinder {
     private static void updateActionButton(
             View view, @PasswordCheckUIStatus int status, Runnable startCheck) {
         ImageButton restartButton = view.findViewById(R.id.check_status_restart_button);
-        if (status != PasswordCheckUIStatus.RUNNING) {
-            restartButton.setVisibility(View.VISIBLE);
-            restartButton.setClickable(true);
-            restartButton.setOnClickListener(unusedView -> startCheck.run());
-        } else {
-            restartButton.setVisibility(View.GONE);
-            restartButton.setClickable(false);
-        }
+        LinearLayout textWrapper = view.findViewById(R.id.check_status_text_layout);
+        boolean shouldBeVisible = shouldShowActionButton(status);
+
+        LinearLayout.LayoutParams layoutParams =
+                (LinearLayout.LayoutParams) textWrapper.getLayoutParams();
+        layoutParams.setMarginEnd(shouldBeVisible ? 0
+                                                  : view.getResources().getDimensionPixelSize(
+                                                          R.dimen.check_status_text_margin));
+
+        restartButton.setVisibility(shouldBeVisible ? View.VISIBLE : View.GONE);
+        restartButton.setOnClickListener(shouldBeVisible ? unusedView -> startCheck.run() : null);
+        restartButton.setClickable(shouldBeVisible);
     }
 
     private static void updateStatusIcon(
@@ -276,6 +280,23 @@ class PasswordCheckViewBinder {
         statusIcon.setVisibility(getIconVisibility(status));
         view.findViewById(R.id.check_status_progress)
                 .setVisibility(getProgressBarVisibility(status));
+    }
+
+    private static boolean shouldShowActionButton(@PasswordCheckUIStatus int status) {
+        switch (status) {
+            case PasswordCheckUIStatus.IDLE:
+            case PasswordCheckUIStatus.ERROR_OFFLINE:
+            case PasswordCheckUIStatus.ERROR_UNKNOWN:
+                return true;
+            case PasswordCheckUIStatus.RUNNING:
+            case PasswordCheckUIStatus.ERROR_NO_PASSWORDS:
+            case PasswordCheckUIStatus.ERROR_SIGNED_OUT:
+            case PasswordCheckUIStatus.ERROR_QUOTA_LIMIT:
+            case PasswordCheckUIStatus.ERROR_QUOTA_LIMIT_ACCOUNT_CHECK:
+                return false;
+        }
+        assert false : "Unhandled check status " + status + "on action button update";
+        return false;
     }
 
     private static int getIconResource(
