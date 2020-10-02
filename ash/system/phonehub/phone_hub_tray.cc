@@ -119,6 +119,9 @@ void PhoneHubTray::OnPhoneHubUiStateChanged() {
     bubble_view->RemoveChildView(content_view_);
   content_view_ = content_view.get();
   bubble_view->AddChildView(std::move(content_view));
+
+  // Updates bubble to handle possible size change with a different child view.
+  bubble_view->UpdateBubble();
 }
 
 void PhoneHubTray::AnchorUpdated() {
