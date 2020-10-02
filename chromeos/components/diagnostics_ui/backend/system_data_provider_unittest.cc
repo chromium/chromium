@@ -183,7 +183,7 @@ void SetCrosHealthdBatteryInfoResponse(const std::string& vendor,
       CreateCrosHealthdBatteryInfoResponse(vendor, charge_full_design);
   SetProbeTelemetryInfoResponse(std::move(battery_info), /*cpu_info=*/nullptr,
                                 /*memory_info=*/nullptr,
-                                /*memory_info=*/nullptr);
+                                /*system_info=*/nullptr);
 }
 
 void SetCrosHealthdBatteryChargeStatusResponse(double charge_now,
@@ -192,7 +192,7 @@ void SetCrosHealthdBatteryChargeStatusResponse(double charge_now,
       CreateCrosHealthdBatteryChargeStatusResponse(charge_now, current_now);
   SetProbeTelemetryInfoResponse(std::move(battery_info), /*cpu_info=*/nullptr,
                                 /*memory_info=*/nullptr,
-                                /*memory_info=*/nullptr);
+                                /*system_info=*/nullptr);
 }
 
 void SetCrosHealthdBatteryHealthResponse(double charge_full_now,
@@ -203,7 +203,19 @@ void SetCrosHealthdBatteryHealthResponse(double charge_full_now,
                                              charge_full_design, cycle_count);
   SetProbeTelemetryInfoResponse(std::move(battery_info), /*cpu_info=*/nullptr,
                                 /*memory_info=*/nullptr,
-                                /*memory_info=*/nullptr);
+                                /*system_info=*/nullptr);
+}
+
+void SetCrosHealthdMemoryUsageResponse(uint32_t total_memory_kib,
+                                       uint32_t free_memory_kib,
+                                       uint32_t available_memory_kib) {
+  cros_healthd::mojom::MemoryInfoPtr memory_info =
+      cros_healthd::mojom::MemoryInfo::New(total_memory_kib, free_memory_kib,
+                                           available_memory_kib,
+                                           /*page_faults_since_last_boot=*/0);
+  SetProbeTelemetryInfoResponse(/*battery_info=*/nullptr, /*cpu_info=*/nullptr,
+                                /*memory_info=*/std::move(memory_info),
+                                /*system_info=*/nullptr);
 }
 
 bool AreValidPowerTimes(int64_t time_to_full, int64_t time_to_empty) {
@@ -315,6 +327,15 @@ void VerifyHealthResult(const mojom::BatteryHealthPtr& update,
   EXPECT_EQ(expected_battery_wear_percentage, update->battery_wear_percentage);
 }
 
+void VerifyMemoryUsageResult(const mojom::MemoryUsagePtr& update,
+                             uint32_t expected_total_memory_kib,
+                             uint32_t expected_free_memory_kib,
+                             uint32_t expected_available_memory_kib) {
+  EXPECT_EQ(expected_total_memory_kib, update->total_memory_kib);
+  EXPECT_EQ(expected_free_memory_kib, update->free_memory_kib);
+  EXPECT_EQ(expected_available_memory_kib, update->available_memory_kib);
+}
+
 }  // namespace
 
 struct FakeBatteryChargeStatusObserver
@@ -343,6 +364,19 @@ struct FakeBatteryHealthObserver : public mojom::BatteryHealthObserver {
   std::vector<mojom::BatteryHealthPtr> updates;
 
   mojo::Receiver<mojom::BatteryHealthObserver> receiver{this};
+};
+
+struct FakeMemoryUsageObserver : public mojom::MemoryUsageObserver {
+  // mojom::MemoryUsageObserver
+  void OnMemoryUsageUpdated(mojom::MemoryUsagePtr status_ptr) override {
+    updates.emplace_back(std::move(status_ptr));
+  }
+
+  // Tracks calls to OnMemoryUsageUpdated. Each call adds an element to
+  // the vector.
+  std::vector<mojom::MemoryUsagePtr> updates;
+
+  mojo::Receiver<mojom::MemoryUsageObserver> receiver{this};
 };
 
 class SystemDataProviderTest : public testing::Test {
@@ -557,6 +591,54 @@ TEST_F(SystemDataProviderTest, BatteryHealthObserver) {
   EXPECT_EQ(3u, health_observer.updates.size());
   VerifyHealthResult(health_observer.updates[2], charge_full_now,
                      charge_full_design, new_cycle_count);
+}
+
+TEST_F(SystemDataProviderTest, MemoryUsageObserver) {
+  // Setup Timer
+  auto timer = std::make_unique<base::MockRepeatingTimer>();
+  auto* timer_ptr = timer.get();
+  system_data_provider_->SetMemoryUsageTimerForTesting(std::move(timer));
+
+  // Setup initial data
+  const uint32_t total_memory_kib = 10000;
+  const uint32_t free_memory_kib = 2000;
+  const uint32_t available_memory_kib = 4000;
+
+  SetCrosHealthdMemoryUsageResponse(total_memory_kib, free_memory_kib,
+                                    available_memory_kib);
+
+  // Registering as an observer should trigger one update.
+  FakeMemoryUsageObserver memory_usage_observer;
+  system_data_provider_->ObserveMemoryUsage(
+      memory_usage_observer.receiver.BindNewPipeAndPassRemote());
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(1u, memory_usage_observer.updates.size());
+  VerifyMemoryUsageResult(memory_usage_observer.updates[0], total_memory_kib,
+                          free_memory_kib, available_memory_kib);
+
+  // Firing the timer should trigger another.
+  timer_ptr->Fire();
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(2u, memory_usage_observer.updates.size());
+  VerifyMemoryUsageResult(memory_usage_observer.updates[1], total_memory_kib,
+                          free_memory_kib, available_memory_kib);
+
+  // Updating the information in Croshealthd does not trigger an update until
+  // the timer fires
+  const uint32_t new_available_memory_kib = available_memory_kib + 1000;
+  SetCrosHealthdMemoryUsageResponse(total_memory_kib, free_memory_kib,
+                                    new_available_memory_kib);
+
+  EXPECT_EQ(2u, memory_usage_observer.updates.size());
+
+  timer_ptr->Fire();
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(3u, memory_usage_observer.updates.size());
+  VerifyMemoryUsageResult(memory_usage_observer.updates[2], total_memory_kib,
+                          free_memory_kib, new_available_memory_kib);
 }
 
 }  // namespace diagnostics

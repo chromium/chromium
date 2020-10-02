@@ -31,6 +31,7 @@ using ProbeCategories = healthd::ProbeCategoryEnum;
 
 constexpr int kBatteryHealthRefreshIntervalInSeconds = 60;
 constexpr int kChargeStatusRefreshIntervalInSeconds = 15;
+constexpr int kMemoryUsageRefreshIntervalInSeconds = 10;
 constexpr int kMilliampsInAnAmp = 1000;
 
 void PopulateBoardName(const healthd::SystemInfo& system_info,
@@ -128,6 +129,12 @@ void PopulateBatteryHealth(const healthd::BatteryInfo& battery_info,
       out_battery_health.charge_full_design_milliamp_hours;
 }
 
+void PopulateMemoryUsage(const healthd::MemoryInfo& memory_info,
+                         mojom::MemoryUsage& out_memory_usage) {
+  out_memory_usage.total_memory_kib = memory_info.total_memory_kib;
+  out_memory_usage.free_memory_kib = memory_info.free_memory_kib;
+  out_memory_usage.available_memory_kib = memory_info.available_memory_kib;
+}
 }  // namespace
 
 SystemDataProvider::SystemDataProvider() {
@@ -187,6 +194,20 @@ void SystemDataProvider::ObserveBatteryHealth(
   UpdateBatteryHealth();
 }
 
+void SystemDataProvider::ObserveMemoryUsage(
+    mojo::PendingRemote<mojom::MemoryUsageObserver> observer) {
+  memory_usage_observers_.Add(std::move(observer));
+
+  if (!memory_usage_timer_->IsRunning()) {
+    memory_usage_timer_->Start(
+        FROM_HERE,
+        base::TimeDelta::FromSeconds(kMemoryUsageRefreshIntervalInSeconds),
+        base::BindRepeating(&SystemDataProvider::UpdateMemoryUsage,
+                            base::Unretained(this)));
+  }
+  UpdateMemoryUsage();
+}
+
 void SystemDataProvider::PowerChanged(
     const power_manager::PowerSupplyProperties& proto) {
   if (battery_charge_status_observers_.empty()) {
@@ -209,6 +230,11 @@ void SystemDataProvider::SetBatteryChargeStatusTimerForTesting(
 void SystemDataProvider::SetBatteryHealthTimerForTesting(
     std::unique_ptr<base::RepeatingTimer> timer) {
   battery_health_timer_ = std::move(timer);
+}
+
+void SystemDataProvider::SetMemoryUsageTimerForTesting(
+    std::unique_ptr<base::RepeatingTimer> timer) {
+  memory_usage_timer_ = std::move(timer);
 }
 
 void SystemDataProvider::OnSystemInfoProbeResponse(
@@ -301,6 +327,15 @@ void SystemDataProvider::UpdateBatteryHealth() {
                      base::Unretained(this)));
 }
 
+void SystemDataProvider::UpdateMemoryUsage() {
+  BindCrosHealthdProbeServiceIfNeccessary();
+
+  probe_service_->ProbeTelemetryInfo(
+      {ProbeCategories::kMemory},
+      base::BindOnce(&SystemDataProvider::OnMemoryUsageUpdated,
+                     base::Unretained(this)));
+}
+
 void SystemDataProvider::OnBatteryChargeStatusUpdated(
     const base::Optional<PowerSupplyProperties>& power_supply_properties,
     healthd::TelemetryInfoPtr info_ptr) {
@@ -359,6 +394,29 @@ void SystemDataProvider::OnBatteryHealthUpdated(
   NotifyBatteryHealthObservers(battery_health);
 }
 
+void SystemDataProvider::OnMemoryUsageUpdated(
+    healthd::TelemetryInfoPtr info_ptr) {
+  mojom::MemoryUsagePtr memory_usage = mojom::MemoryUsage::New();
+
+  if (info_ptr.is_null()) {
+    LOG(ERROR) << "Null response from croshealthd::ProbeTelemetryInfo.";
+    NotifyMemoryUsageObservers(memory_usage);
+    memory_usage_timer_.reset();
+    return;
+  }
+
+  const healthd::MemoryInfo* memory_info = GetMemoryInfo(*info_ptr);
+  if (memory_info == nullptr) {
+    LOG(ERROR) << "No MemoryInfo in response from cros_healthd.";
+    NotifyMemoryUsageObservers(memory_usage);
+    memory_usage_timer_.reset();
+    return;
+  }
+
+  PopulateMemoryUsage(*memory_info, *memory_usage.get());
+  NotifyMemoryUsageObservers(memory_usage);
+}
+
 void SystemDataProvider::NotifyBatteryChargeStatusObservers(
     const mojom::BatteryChargeStatusPtr& battery_charge_status) {
   for (auto& observer : battery_charge_status_observers_) {
@@ -370,6 +428,13 @@ void SystemDataProvider::NotifyBatteryHealthObservers(
     const mojom::BatteryHealthPtr& battery_health) {
   for (auto& observer : battery_health_observers_) {
     observer->OnBatteryHealthUpdated(battery_health.Clone());
+  }
+}
+
+void SystemDataProvider::NotifyMemoryUsageObservers(
+    const mojom::MemoryUsagePtr& memory_usage) {
+  for (auto& observer : memory_usage_observers_) {
+    observer->OnMemoryUsageUpdated(memory_usage.Clone());
   }
 }
 

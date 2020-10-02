@@ -39,6 +39,8 @@ class SystemDataProvider : public mojom::SystemDataProvider,
       override;
   void ObserveBatteryHealth(
       mojo::PendingRemote<mojom::BatteryHealthObserver> observer) override;
+  void ObserveMemoryUsage(
+      mojo::PendingRemote<mojom::MemoryUsageObserver> observer) override;
 
   // PowerManagerClient::Observer:
   void PowerChanged(const power_manager::PowerSupplyProperties& proto) override;
@@ -47,6 +49,9 @@ class SystemDataProvider : public mojom::SystemDataProvider,
       std::unique_ptr<base::RepeatingTimer> timer);
 
   void SetBatteryHealthTimerForTesting(
+      std::unique_ptr<base::RepeatingTimer> timer);
+
+  void SetMemoryUsageTimerForTesting(
       std::unique_ptr<base::RepeatingTimer> timer);
 
  private:
@@ -66,11 +71,15 @@ class SystemDataProvider : public mojom::SystemDataProvider,
 
   void UpdateBatteryHealth();
 
+  void UpdateMemoryUsage();
+
   void NotifyBatteryChargeStatusObservers(
       const mojom::BatteryChargeStatusPtr& battery_charge_status);
 
   void NotifyBatteryHealthObservers(
       const mojom::BatteryHealthPtr& battery_health);
+
+  void NotifyMemoryUsageObservers(const mojom::MemoryUsagePtr& memory_usage);
 
   void OnBatteryChargeStatusUpdated(
       const base::Optional<power_manager::PowerSupplyProperties>&
@@ -79,13 +88,17 @@ class SystemDataProvider : public mojom::SystemDataProvider,
 
   void OnBatteryHealthUpdated(cros_healthd::mojom::TelemetryInfoPtr info_ptr);
 
+  void OnMemoryUsageUpdated(cros_healthd::mojom::TelemetryInfoPtr info_ptr);
+
   mojo::Remote<cros_healthd::mojom::CrosHealthdProbeService> probe_service_;
   mojo::RemoteSet<mojom::BatteryChargeStatusObserver>
       battery_charge_status_observers_;
   mojo::RemoteSet<mojom::BatteryHealthObserver> battery_health_observers_;
+  mojo::RemoteSet<mojom::MemoryUsageObserver> memory_usage_observers_;
 
   std::unique_ptr<base::RepeatingTimer> battery_charge_status_timer_;
   std::unique_ptr<base::RepeatingTimer> battery_health_timer_;
+  std::unique_ptr<base::RepeatingTimer> memory_usage_timer_;
 };
 
 }  // namespace diagnostics
