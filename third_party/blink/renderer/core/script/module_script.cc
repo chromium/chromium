@@ -100,7 +100,7 @@ void ModuleScript::Trace(Visitor* visitor) const {
   Script::Trace(visitor);
 }
 
-void ModuleScript::RunScript(LocalFrame* frame) {
+void ModuleScript::RunScript(LocalDOMWindow*) {
   // We need a HandleScope for the ScriptEvaluationResult that is created
   // in ::ExecuteModule(...).
   ScriptState::Scope scope(SettingsObject()->GetScriptState());

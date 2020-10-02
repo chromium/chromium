@@ -48,17 +48,17 @@ class CORE_EXPORT ClassicScript final : public Script {
   // TODO(crbug/1111134): The RunScript() with ExecuteScriptPolicy is declared
   // and overloaded here to avoid modifying Script::RunScript(), because this is
   // a tentative interface. When crbug/1111134 is done, this should be gone.
-  void RunScript(LocalFrame*) override;
-  void RunScript(LocalFrame*, ScriptController::ExecuteScriptPolicy);
+  void RunScript(LocalDOMWindow*) override;
+  void RunScript(LocalDOMWindow*, ScriptController::ExecuteScriptPolicy);
   bool RunScriptOnWorkerOrWorklet(WorkerOrWorkletGlobalScope&) override;
 
   // Unlike RunScript() and RunScriptOnWorkerOrWorklet(), callers of the
   // following methods must enter a v8::HandleScope before calling.
   v8::Local<v8::Value> RunScriptAndReturnValue(
-      LocalFrame*,
+      LocalDOMWindow*,
       ScriptController::ExecuteScriptPolicy = ScriptController::
           ExecuteScriptPolicy::kDoNotExecuteScriptWhenScriptsDisabled);
-  v8::Local<v8::Value> RunScriptInIsolatedWorldAndReturnValue(LocalFrame*,
+  v8::Local<v8::Value> RunScriptInIsolatedWorldAndReturnValue(LocalDOMWindow*,
                                                               int32_t world_id);
 
  private:

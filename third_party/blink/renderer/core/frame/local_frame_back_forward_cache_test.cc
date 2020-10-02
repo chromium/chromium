@@ -100,7 +100,7 @@ TEST_F(LocalFrameBackForwardCacheTest, EvictionOnV8ExecutionAtMicrotask) {
       [](LocalFrame* frame) {
         ClassicScript::CreateUnspecifiedScript(
             ScriptSourceCode("console.log('hi');"))
-            ->RunScript(frame);
+            ->RunScript(frame->DomWindow());
       },
       frame));
   frame_host.WaitUntilEvictedFromBackForwardCache();

@@ -16,7 +16,7 @@
 
 namespace blink {
 
-class LocalFrame;
+class LocalDOMWindow;
 class ScriptSourceCode;
 class ScriptState;
 class WebScriptExecutionCallback;
@@ -27,8 +27,7 @@ class CORE_EXPORT PausableScriptExecutor final
  public:
   enum BlockingOption { kNonBlocking, kOnloadBlocking };
 
-  static void CreateAndRun(LocalFrame*,
-                           v8::Isolate*,
+  static void CreateAndRun(LocalDOMWindow*,
                            v8::Local<v8::Context>,
                            v8::Local<v8::Function>,
                            v8::Local<v8::Value> receiver,
@@ -40,17 +39,17 @@ class CORE_EXPORT PausableScriptExecutor final
    public:
     virtual ~Executor() = default;
 
-    virtual Vector<v8::Local<v8::Value>> Execute(LocalFrame*) = 0;
+    virtual Vector<v8::Local<v8::Value>> Execute(LocalDOMWindow*) = 0;
 
     virtual void Trace(Visitor* visitor) const {}
   };
 
-  PausableScriptExecutor(LocalFrame*,
+  PausableScriptExecutor(LocalDOMWindow*,
                          scoped_refptr<DOMWrapperWorld>,
                          const HeapVector<ScriptSourceCode>&,
                          bool,
                          WebScriptExecutionCallback*);
-  PausableScriptExecutor(LocalFrame*,
+  PausableScriptExecutor(LocalDOMWindow*,
                          ScriptState*,
                          WebScriptExecutionCallback*,
                          Executor*);

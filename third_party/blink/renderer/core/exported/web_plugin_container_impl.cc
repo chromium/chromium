@@ -519,8 +519,8 @@ v8::Local<v8::Object> WebPluginContainerImpl::V8ObjectForElement() {
 // TODO(hiroshige): Consider merging with LocalFrame::ExecuteJavaScriptURL().
 WebString WebPluginContainerImpl::ExecuteScriptURL(const WebURL& url,
                                                    bool popups_allowed) {
-  LocalFrame* frame = element_->GetDocument().GetFrame();
-  if (!frame)
+  LocalDOMWindow* window = element_->GetDocument().domWindow();
+  if (!window)
     return WebString();
 
   const KURL& kurl = url;
@@ -539,14 +539,15 @@ WebString WebPluginContainerImpl::ExecuteScriptURL(const WebURL& url,
 
   if (popups_allowed) {
     LocalFrame::NotifyUserActivation(
-        frame, mojom::blink::UserActivationNotificationType::kPlugin);
+        window->GetFrame(),
+        mojom::blink::UserActivationNotificationType::kPlugin);
   }
 
-  v8::HandleScope handle_scope(ToIsolate(frame));
+  v8::HandleScope handle_scope(window->GetIsolate());
   v8::Local<v8::Value> result =
       ClassicScript::CreateUnspecifiedScript(
           ScriptSourceCode(script, ScriptSourceLocationType::kJavascriptUrl))
-          ->RunScriptAndReturnValue(frame);
+          ->RunScriptAndReturnValue(window);
 
   // Failure is reported as a null string.
   if (result.IsEmpty() || !result->IsString())

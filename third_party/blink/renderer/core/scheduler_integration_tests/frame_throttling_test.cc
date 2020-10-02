@@ -12,7 +12,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_source_code.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
-#include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
@@ -1086,10 +1086,9 @@ TEST_P(FrameThrottlingTest, DumpThrottledFrame) {
   CompositeFrame();
   EXPECT_TRUE(frame_element->contentDocument()->View()->CanThrottleRendering());
 
-  LocalFrame* local_frame = To<LocalFrame>(frame_element->ContentFrame());
   ClassicScript::CreateUnspecifiedScript(
       ScriptSourceCode("document.body.innerHTML = 'throttled'"))
-      ->RunScript(local_frame);
+      ->RunScript(To<LocalDOMWindow>(frame_element->contentWindow()));
   EXPECT_FALSE(Compositor().NeedsBeginFrame());
 
   // The dumped contents should not include the throttled frame.
@@ -1314,8 +1313,6 @@ TEST_P(FrameThrottlingTest, SynchronousLayoutInAnimationFrameCallback) {
   // frame is throttled during the animation frame callback.
   auto* second_frame_element =
       To<HTMLIFrameElement>(GetDocument().getElementById("second"));
-  LocalFrame* local_frame =
-      To<LocalFrame>(second_frame_element->ContentFrame());
   ClassicScript::CreateUnspecifiedScript(
       ScriptSourceCode(
           "window.requestAnimationFrame(function() {\n"
@@ -1325,7 +1322,7 @@ TEST_P(FrameThrottlingTest, SynchronousLayoutInAnimationFrameCallback) {
           "throttledFrame.document.querySelector('#d').getBoundingClientRect();"
           "\n"
           "});\n"))
-      ->RunScript(local_frame);
+      ->RunScript(To<LocalDOMWindow>(second_frame_element->contentWindow()));
   CompositeFrame();
 }
 
@@ -1352,11 +1349,11 @@ TEST_P(FrameThrottlingTest, AllowOneAnimationFrame) {
   CompositeFrame();
   EXPECT_TRUE(frame_element->contentDocument()->View()->CanThrottleRendering());
 
-  LocalFrame* local_frame = To<LocalFrame>(frame_element->ContentFrame());
   v8::HandleScope scope(v8::Isolate::GetCurrent());
   v8::Local<v8::Value> result =
       ClassicScript::CreateUnspecifiedScript(ScriptSourceCode("window.didRaf;"))
-          ->RunScriptAndReturnValue(local_frame);
+          ->RunScriptAndReturnValue(
+              To<LocalDOMWindow>(frame_element->contentWindow()));
   EXPECT_TRUE(result->IsTrue());
 }
 

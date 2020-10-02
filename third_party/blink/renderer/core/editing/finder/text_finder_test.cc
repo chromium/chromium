@@ -75,7 +75,7 @@ class TextFinderSimTest : public SimTest {
 v8::Local<v8::Value> TextFinderTest::EvalJs(const std::string& script) {
   return ClassicScript::CreateUnspecifiedScript(
              ScriptSourceCode(script.c_str()))
-      ->RunScriptAndReturnValue(GetDocument().GetFrame());
+      ->RunScriptAndReturnValue(GetDocument().domWindow());
 }
 
 Document& TextFinderTest::GetDocument() const {

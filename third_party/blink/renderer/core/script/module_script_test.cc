@@ -100,14 +100,14 @@ class ModuleScriptTest : public ::testing::Test, public ParametrizedModuleTest {
   static void TestFoo(V8TestingScope& scope) {
     v8::Local<v8::Value> value =
         ClassicScript::CreateUnspecifiedScript(ScriptSourceCode("window.foo"))
-            ->RunScriptAndReturnValue(&scope.GetFrame());
+            ->RunScriptAndReturnValue(&scope.GetWindow());
     EXPECT_TRUE(value->IsNumber());
     EXPECT_EQ(kScriptRepeatLength,
               value->NumberValue(scope.GetContext()).ToChecked());
 
     ClassicScript::CreateUnspecifiedScript(
         ScriptSourceCode("window.foo = undefined;"))
-        ->RunScript(&scope.GetFrame());
+        ->RunScript(&scope.GetWindow());
   }
 
   // Accessors for ModuleScript private members.
@@ -250,7 +250,7 @@ TEST_P(ModuleScriptTest, V8CodeCacheWithoutDiscarding) {
   ClassicScript::CreateUnspecifiedScript(
       ScriptSourceCode(LargeSourceText(), ScriptSourceLocationType::kInternal,
                        cache_handler))
-      ->RunScript(&scope.GetFrame());
+      ->RunScript(&scope.GetWindow());
 
   checkpoint.Call(4);
 
@@ -392,7 +392,7 @@ TEST_P(ModuleScriptTest, V8CodeCacheWithDiscarding) {
   ClassicScript::CreateUnspecifiedScript(
       ScriptSourceCode(LargeSourceText(), ScriptSourceLocationType::kInternal,
                        cache_handler))
-      ->RunScript(&scope.GetFrame());
+      ->RunScript(&scope.GetWindow());
   checkpoint.Call(4);
 
   TestFoo(scope);

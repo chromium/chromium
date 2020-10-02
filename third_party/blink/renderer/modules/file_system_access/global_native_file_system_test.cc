@@ -132,7 +132,7 @@ TEST_F(GlobalNativeFileSystemTest, UserActivationRequiredOtherwiseDenied) {
       }));
   ClassicScript::CreateUnspecifiedScript(
       ScriptSourceCode("window.showOpenFilePicker();"))
-      ->RunScript(&GetFrame());
+      ->RunScript(GetFrame().DomWindow());
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(frame->HasStickyUserActivation());
 }
@@ -168,7 +168,7 @@ TEST_F(GlobalNativeFileSystemTest, UserActivationChooseEntriesSuccessful) {
       }));
   ClassicScript::CreateUnspecifiedScript(
       ScriptSourceCode("window.showOpenFilePicker();"))
-      ->RunScript(&GetFrame());
+      ->RunScript(GetFrame().DomWindow());
   manager_run_loop.Run();
 
   // Mock Manager finished sending data over the mojo pipe.
@@ -218,7 +218,7 @@ TEST_F(GlobalNativeFileSystemTest, UserActivationChooseEntriesErrors) {
         status));
     ClassicScript::CreateUnspecifiedScript(
         ScriptSourceCode("window.showOpenFilePicker();"))
-        ->RunScript(&GetFrame());
+        ->RunScript(GetFrame().DomWindow());
     manager_run_loop.Run();
 
     // Mock Manager finished sending data over the mojo pipe.

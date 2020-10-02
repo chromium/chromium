@@ -242,8 +242,7 @@ void ScriptController::ExecuteJavaScriptURL(
 
   DCHECK_EQ(&window_->GetScriptController(), this);
   v8::HandleScope handle_scope(GetIsolate());
-  v8::Local<v8::Value> v8_result =
-      script->RunScriptAndReturnValue(window_->GetFrame());
+  v8::Local<v8::Value> v8_result = script->RunScriptAndReturnValue(window_);
   UseCounter::Count(window_.Get(), WebFeature::kExecutedJavaScriptURL);
 
   // If executing script caused this frame to be removed from the page, we

@@ -816,7 +816,8 @@ void WebLocalFrameImpl::SetIsAdSubframe(
 
 void WebLocalFrameImpl::ExecuteScript(const WebScriptSource& source) {
   DCHECK(GetFrame());
-  ClassicScript::CreateUnspecifiedScript(source)->RunScript(GetFrame());
+  ClassicScript::CreateUnspecifiedScript(source)->RunScript(
+      GetFrame()->DomWindow());
 }
 
 void WebLocalFrameImpl::ExecuteScriptInIsolatedWorld(
@@ -831,7 +832,8 @@ void WebLocalFrameImpl::ExecuteScriptInIsolatedWorld(
   v8::HandleScope handle_scope(ToIsolate(GetFrame()));
   ClassicScript::CreateUnspecifiedScript(source_in,
                                          SanitizeScriptErrors::kDoNotSanitize)
-      ->RunScriptInIsolatedWorldAndReturnValue(GetFrame(), world_id);
+      ->RunScriptInIsolatedWorldAndReturnValue(GetFrame()->DomWindow(),
+                                               world_id);
 }
 
 v8::Local<v8::Value>
@@ -846,7 +848,8 @@ WebLocalFrameImpl::ExecuteScriptInIsolatedWorldAndReturnValue(
   // a foreign world.
   return ClassicScript::CreateUnspecifiedScript(
              source_in, SanitizeScriptErrors::kDoNotSanitize)
-      ->RunScriptInIsolatedWorldAndReturnValue(GetFrame(), world_id);
+      ->RunScriptInIsolatedWorldAndReturnValue(GetFrame()->DomWindow(),
+                                               world_id);
 }
 
 void WebLocalFrameImpl::ClearIsolatedWorldCSPForTesting(int32_t world_id) {
@@ -907,7 +910,7 @@ v8::Local<v8::Value> WebLocalFrameImpl::ExecuteScriptAndReturnValue(
     const WebScriptSource& source) {
   DCHECK(GetFrame());
   return ClassicScript::CreateUnspecifiedScript(source)
-      ->RunScriptAndReturnValue(GetFrame());
+      ->RunScriptAndReturnValue(GetFrame()->DomWindow());
 }
 
 void WebLocalFrameImpl::RequestExecuteScriptAndReturnValue(
@@ -918,8 +921,8 @@ void WebLocalFrameImpl::RequestExecuteScriptAndReturnValue(
 
   scoped_refptr<DOMWrapperWorld> main_world = &DOMWrapperWorld::MainWorld();
   auto* executor = MakeGarbageCollected<PausableScriptExecutor>(
-      GetFrame(), std::move(main_world), CreateSourcesVector(&source, 1),
-      user_gesture, callback);
+      GetFrame()->DomWindow(), std::move(main_world),
+      CreateSourcesVector(&source, 1), user_gesture, callback);
   executor->Run();
 }
 
@@ -931,8 +934,8 @@ void WebLocalFrameImpl::RequestExecuteV8Function(
     v8::Local<v8::Value> argv[],
     WebScriptExecutionCallback* callback) {
   DCHECK(GetFrame());
-  PausableScriptExecutor::CreateAndRun(GetFrame(), ToIsolate(GetFrame()),
-                                       context, function, receiver, argc, argv,
+  PausableScriptExecutor::CreateAndRun(GetFrame()->DomWindow(), context,
+                                       function, receiver, argc, argv,
                                        callback);
 }
 
@@ -950,7 +953,7 @@ void WebLocalFrameImpl::RequestExecuteScriptInIsolatedWorld(
   scoped_refptr<DOMWrapperWorld> isolated_world =
       DOMWrapperWorld::EnsureIsolatedWorld(ToIsolate(GetFrame()), world_id);
   auto* executor = MakeGarbageCollected<PausableScriptExecutor>(
-      GetFrame(), std::move(isolated_world),
+      GetFrame()->DomWindow(), std::move(isolated_world),
       CreateSourcesVector(sources_in, num_sources), user_gesture, callback);
   switch (option) {
     case kAsynchronousBlockingOnload:

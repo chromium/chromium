@@ -1181,7 +1181,7 @@ void InspectorOverlayAgent::EvaluateInOverlay(const String& method,
               String(reinterpret_cast<const char*>(json.data()), json.size()) +
               ")",
           ScriptSourceLocationType::kInspector))
-      ->RunScript(To<LocalFrame>(OverlayMainFrame()),
+      ->RunScript(To<LocalFrame>(OverlayMainFrame())->DomWindow(),
                   ScriptController::kExecuteScriptWhenScriptsDisabled);
 }
 
@@ -1200,7 +1200,7 @@ void InspectorOverlayAgent::EvaluateInOverlay(
               String(reinterpret_cast<const char*>(json.data()), json.size()) +
               ")",
           ScriptSourceLocationType::kInspector))
-      ->RunScript(To<LocalFrame>(OverlayMainFrame()),
+      ->RunScript(To<LocalFrame>(OverlayMainFrame())->DomWindow(),
                   ScriptController::kExecuteScriptWhenScriptsDisabled);
 }
 
@@ -1211,7 +1211,7 @@ String InspectorOverlayAgent::EvaluateInOverlayForTest(const String& script) {
       ClassicScript::CreateUnspecifiedScript(
           ScriptSourceCode(script, ScriptSourceLocationType::kInspector))
           ->RunScriptAndReturnValue(
-              To<LocalFrame>(OverlayMainFrame()),
+              To<LocalFrame>(OverlayMainFrame())->DomWindow(),
               ScriptController::kExecuteScriptWhenScriptsDisabled);
   return ToCoreStringWithUndefinedOrNullCheck(string);
 }

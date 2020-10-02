@@ -309,7 +309,7 @@ TEST_P(ModuleRecordTest, Evaluate) {
             ScriptEvaluationResult::ResultType::kSuccess);
   v8::Local<v8::Value> value =
       ClassicScript::CreateUnspecifiedScript(ScriptSourceCode("window.foo"))
-          ->RunScriptAndReturnValue(&scope.GetFrame());
+          ->RunScriptAndReturnValue(&scope.GetWindow());
   ASSERT_TRUE(value->IsString());
   EXPECT_EQ("bar", ToCoreString(v8::Local<v8::String>::Cast(value)));
 

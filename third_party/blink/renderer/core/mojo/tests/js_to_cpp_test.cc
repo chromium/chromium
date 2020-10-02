@@ -65,11 +65,11 @@ String TestScriptPath() {
 }
 
 v8::Local<v8::Value> ExecuteScript(const String& script_path,
-                                   LocalFrame& frame) {
+                                   LocalDOMWindow& window) {
   scoped_refptr<SharedBuffer> script_src = test::ReadFromFile(script_path);
   return ClassicScript::CreateUnspecifiedScript(
              ScriptSourceCode(String(script_src->Data(), script_src->size())))
-      ->RunScriptAndReturnValue(&frame);
+      ->RunScriptAndReturnValue(&window);
 }
 
 void CheckDataPipe(mojo::DataPipeConsumerHandle data_pipe_handle) {
@@ -383,11 +383,11 @@ class JsToCppTest : public testing::Test {
 
     V8TestingScope scope;
     scope.GetPage().GetSettings().SetScriptEnabled(true);
-    ExecuteScript(MojoBindingsScriptPath(), scope.GetFrame());
-    ExecuteScript(TestBindingsScriptPath(), scope.GetFrame());
+    ExecuteScript(MojoBindingsScriptPath(), scope.GetWindow());
+    ExecuteScript(TestBindingsScriptPath(), scope.GetWindow());
 
     v8::Local<v8::Value> start_fn =
-        ExecuteScript(TestScriptPath(), scope.GetFrame());
+        ExecuteScript(TestScriptPath(), scope.GetWindow());
     ASSERT_FALSE(start_fn.IsEmpty());
     ASSERT_TRUE(start_fn->IsFunction());
     v8::Local<v8::Object> global_proxy = scope.GetContext()->Global();

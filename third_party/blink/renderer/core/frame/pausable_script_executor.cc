@@ -34,7 +34,7 @@ class WebScriptExecutor : public PausableScriptExecutor::Executor {
                     int32_t world_id,
                     bool user_gesture);
 
-  Vector<v8::Local<v8::Value>> Execute(LocalFrame*) override;
+  Vector<v8::Local<v8::Value>> Execute(LocalDOMWindow*) override;
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(sources_);
@@ -53,11 +53,13 @@ WebScriptExecutor::WebScriptExecutor(
     bool user_gesture)
     : sources_(sources), world_id_(world_id), user_gesture_(user_gesture) {}
 
-Vector<v8::Local<v8::Value>> WebScriptExecutor::Execute(LocalFrame* frame) {
+Vector<v8::Local<v8::Value>> WebScriptExecutor::Execute(
+    LocalDOMWindow* window) {
   if (user_gesture_) {
     // TODO(mustaq): Need to make sure this is safe. https://crbug.com/1082273
     LocalFrame::NotifyUserActivation(
-        frame, mojom::blink::UserActivationNotificationType::kWebScriptExec);
+        window->GetFrame(),
+        mojom::blink::UserActivationNotificationType::kWebScriptExec);
   }
 
   Vector<v8::Local<v8::Value>> results;
@@ -68,8 +70,8 @@ Vector<v8::Local<v8::Value>> WebScriptExecutor::Execute(LocalFrame* frame) {
         source, SanitizeScriptErrors::kDoNotSanitize);
     v8::Local<v8::Value> script_value =
         world_id_ ? classic_script->RunScriptInIsolatedWorldAndReturnValue(
-                        frame, world_id_)
-                  : classic_script->RunScriptAndReturnValue(frame);
+                        window, world_id_)
+                  : classic_script->RunScriptAndReturnValue(window);
     results.push_back(script_value);
   }
 
@@ -84,7 +86,7 @@ class V8FunctionExecutor : public PausableScriptExecutor::Executor {
                      int argc,
                      v8::Local<v8::Value> argv[]);
 
-  Vector<v8::Local<v8::Value>> Execute(LocalFrame*) override;
+  Vector<v8::Local<v8::Value>> Execute(LocalDOMWindow*) override;
 
   void Trace(Visitor*) const override;
 
@@ -105,7 +107,8 @@ V8FunctionExecutor::V8FunctionExecutor(v8::Isolate* isolate,
     args_.push_back(TraceWrapperV8Reference<v8::Value>(isolate, argv[i]));
 }
 
-Vector<v8::Local<v8::Value>> V8FunctionExecutor::Execute(LocalFrame* frame) {
+Vector<v8::Local<v8::Value>> V8FunctionExecutor::Execute(
+    LocalDOMWindow* window) {
   v8::Isolate* isolate = v8::Isolate::GetCurrent();
   Vector<v8::Local<v8::Value>> results;
   v8::Local<v8::Value> single_result;
@@ -116,12 +119,12 @@ Vector<v8::Local<v8::Value>> V8FunctionExecutor::Execute(LocalFrame* frame) {
     args.push_back(args_[i].NewLocal(isolate));
 
   {
-    if (V8ScriptRunner::CallFunction(function_.NewLocal(isolate),
-                                     frame->DomWindow(),
+    if (V8ScriptRunner::CallFunction(function_.NewLocal(isolate), window,
                                      receiver_.NewLocal(isolate), args.size(),
-                                     args.data(), ToIsolate(frame))
-            .ToLocal(&single_result))
+                                     args.data(), window->GetIsolate())
+            .ToLocal(&single_result)) {
       results.push_back(single_result);
+    }
   }
   return results;
 }
@@ -136,8 +139,7 @@ void V8FunctionExecutor::Trace(Visitor* visitor) const {
 }  // namespace
 
 void PausableScriptExecutor::CreateAndRun(
-    LocalFrame* frame,
-    v8::Isolate* isolate,
+    LocalDOMWindow* window,
     v8::Local<v8::Context> context,
     v8::Local<v8::Function> function,
     v8::Local<v8::Value> receiver,
@@ -152,9 +154,9 @@ void PausableScriptExecutor::CreateAndRun(
   }
   PausableScriptExecutor* executor =
       MakeGarbageCollected<PausableScriptExecutor>(
-          frame, script_state, callback,
-          MakeGarbageCollected<V8FunctionExecutor>(isolate, function, receiver,
-                                                   argc, argv));
+          window, script_state, callback,
+          MakeGarbageCollected<V8FunctionExecutor>(
+              window->GetIsolate(), function, receiver, argc, argv));
   executor->Run();
 }
 
@@ -171,25 +173,25 @@ void PausableScriptExecutor::ContextDestroyed() {
 }
 
 PausableScriptExecutor::PausableScriptExecutor(
-    LocalFrame* frame,
+    LocalDOMWindow* window,
     scoped_refptr<DOMWrapperWorld> world,
     const HeapVector<ScriptSourceCode>& sources,
     bool user_gesture,
     WebScriptExecutionCallback* callback)
     : PausableScriptExecutor(
-          frame,
-          ToScriptState(frame, *world),
+          window,
+          ToScriptState(window, *world),
           callback,
           MakeGarbageCollected<WebScriptExecutor>(sources,
                                                   world->GetWorldId(),
                                                   user_gesture)) {}
 
 PausableScriptExecutor::PausableScriptExecutor(
-    LocalFrame* frame,
+    LocalDOMWindow* window,
     ScriptState* script_state,
     WebScriptExecutionCallback* callback,
     Executor* executor)
-    : ExecutionContextLifecycleObserver(frame->DomWindow()),
+    : ExecutionContextLifecycleObserver(window),
       script_state_(script_state),
       callback_(callback),
       blocking_option_(kNonBlocking),
@@ -236,7 +238,7 @@ void PausableScriptExecutor::ExecuteAndDestroySelf() {
 
   auto* window = To<LocalDOMWindow>(GetExecutionContext());
   ScriptState::Scope script_scope(script_state_);
-  Vector<v8::Local<v8::Value>> results = executor_->Execute(window->GetFrame());
+  Vector<v8::Local<v8::Value>> results = executor_->Execute(window);
 
   // The script may have removed the frame, in which case contextDestroyed()
   // will have handled the disposal/callback.

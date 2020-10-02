@@ -27,7 +27,7 @@ void TransformDocumentToXMLTreeView(Document& document) {
   ClassicScript::CreateUnspecifiedScript(
       ScriptSourceCode(script_string, ScriptSourceLocationType::kInternal))
       ->RunScriptInIsolatedWorldAndReturnValue(
-          document.GetFrame(), IsolatedWorldId::kDocumentXMLTreeViewerWorldId);
+          document.domWindow(), IsolatedWorldId::kDocumentXMLTreeViewerWorldId);
 
   Element* element = document.getElementById("xml-viewer-style");
   if (element) {

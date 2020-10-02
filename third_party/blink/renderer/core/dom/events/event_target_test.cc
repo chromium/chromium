@@ -21,7 +21,7 @@ TEST_F(EventTargetTest, UseCountPassiveTouchEventListener) {
   ClassicScript::CreateUnspecifiedScript(
       ScriptSourceCode("window.addEventListener('touchstart', function() {}, "
                        "{passive: true});"))
-      ->RunScript(GetDocument().GetFrame());
+      ->RunScript(GetDocument().domWindow());
   EXPECT_TRUE(
       GetDocument().IsUseCounted(WebFeature::kPassiveTouchEventListener));
   EXPECT_FALSE(
@@ -35,7 +35,7 @@ TEST_F(EventTargetTest, UseCountNonPassiveTouchEventListener) {
   ClassicScript::CreateUnspecifiedScript(
       ScriptSourceCode("window.addEventListener('touchstart', function() {}, "
                        "{passive: false});"))
-      ->RunScript(GetDocument().GetFrame());
+      ->RunScript(GetDocument().domWindow());
   EXPECT_TRUE(
       GetDocument().IsUseCounted(WebFeature::kNonPassiveTouchEventListener));
   EXPECT_FALSE(
@@ -48,7 +48,7 @@ TEST_F(EventTargetTest, UseCountPassiveTouchEventListenerPassiveNotSpecified) {
   GetDocument().GetSettings()->SetScriptEnabled(true);
   ClassicScript::CreateUnspecifiedScript(
       ScriptSourceCode("window.addEventListener('touchstart', function() {});"))
-      ->RunScript(GetDocument().GetFrame());
+      ->RunScript(GetDocument().domWindow());
   EXPECT_TRUE(
       GetDocument().IsUseCounted(WebFeature::kPassiveTouchEventListener));
   EXPECT_FALSE(
@@ -64,7 +64,7 @@ TEST_F(EventTargetTest, UseCountBeforematch) {
                        document.body.appendChild(element);
                        element.addEventListener('beforematch', () => {});
                       )HTML"))
-      ->RunScript(GetDocument().GetFrame());
+      ->RunScript(GetDocument().domWindow());
   EXPECT_TRUE(
       GetDocument().IsUseCounted(WebFeature::kBeforematchHandlerRegistered));
 }

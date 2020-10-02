@@ -886,7 +886,7 @@ void InspectorPageAgent::DidClearDocumentOfWindowObject(LocalFrame* frame) {
     const String world_name = worlds_to_evaluate_on_load_.Get(key);
     if (world_name.IsEmpty()) {
       ClassicScript::CreateUnspecifiedScript(ScriptSourceCode(source))
-          ->RunScript(frame,
+          ->RunScript(frame->DomWindow(),
                       ScriptController::kExecuteScriptWhenScriptsDisabled);
       continue;
     }
@@ -900,13 +900,15 @@ void InspectorPageAgent::DidClearDocumentOfWindowObject(LocalFrame* frame) {
     // a foreign world.
     v8::HandleScope handle_scope(V8PerIsolateData::MainThreadIsolate());
     ClassicScript::CreateUnspecifiedScript(ScriptSourceCode(source))
-        ->RunScriptInIsolatedWorldAndReturnValue(frame, world->GetWorldId());
+        ->RunScriptInIsolatedWorldAndReturnValue(frame->DomWindow(),
+                                                 world->GetWorldId());
   }
 
   if (!script_to_evaluate_on_load_once_.IsEmpty()) {
     ClassicScript::CreateUnspecifiedScript(
         ScriptSourceCode(script_to_evaluate_on_load_once_))
-        ->RunScript(frame, ScriptController::kExecuteScriptWhenScriptsDisabled);
+        ->RunScript(frame->DomWindow(),
+                    ScriptController::kExecuteScriptWhenScriptsDisabled);
   }
 }
 

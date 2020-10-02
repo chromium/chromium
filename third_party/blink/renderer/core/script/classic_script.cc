@@ -8,7 +8,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_source_code.h"
 #include "third_party/blink/renderer/bindings/core/v8/worker_or_worklet_script_controller.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
-#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/workers/worker_or_worklet_global_scope.h"
 #include "third_party/blink/renderer/core/workers/worker_reporting_proxy.h"
 
@@ -26,29 +25,29 @@ void ClassicScript::Trace(Visitor* visitor) const {
   visitor->Trace(script_source_code_);
 }
 
-void ClassicScript::RunScript(LocalFrame* frame) {
-  return RunScript(frame,
+void ClassicScript::RunScript(LocalDOMWindow* window) {
+  return RunScript(window,
                    ScriptController::kDoNotExecuteScriptWhenScriptsDisabled);
 }
 
-void ClassicScript::RunScript(LocalFrame* frame,
+void ClassicScript::RunScript(LocalDOMWindow* window,
                               ScriptController::ExecuteScriptPolicy policy) {
-  v8::HandleScope handle_scope(frame->DomWindow()->GetIsolate());
-  RunScriptAndReturnValue(frame, policy);
+  v8::HandleScope handle_scope(window->GetIsolate());
+  RunScriptAndReturnValue(window, policy);
 }
 
 v8::Local<v8::Value> ClassicScript::RunScriptAndReturnValue(
-    LocalFrame* frame,
+    LocalDOMWindow* window,
     ScriptController::ExecuteScriptPolicy policy) {
-  return frame->DomWindow()->GetScriptController().EvaluateScriptInMainWorld(
+  return window->GetScriptController().EvaluateScriptInMainWorld(
       GetScriptSourceCode(), BaseURL(), sanitize_script_errors_, FetchOptions(),
       policy);
 }
 
 v8::Local<v8::Value> ClassicScript::RunScriptInIsolatedWorldAndReturnValue(
-    LocalFrame* frame,
+    LocalDOMWindow* window,
     int32_t world_id) {
-  return frame->DomWindow()->GetScriptController().ExecuteScriptInIsolatedWorld(
+  return window->GetScriptController().ExecuteScriptInIsolatedWorld(
       world_id, GetScriptSourceCode(), BaseURL(), sanitize_script_errors_);
 }
 

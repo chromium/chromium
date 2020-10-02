@@ -67,7 +67,7 @@ class CORE_EXPORT ModuleScript : public Script {
   mojom::blink::ScriptType GetScriptType() const override {
     return mojom::blink::ScriptType::kModule;
   }
-  void RunScript(LocalFrame*) override;
+  void RunScript(LocalDOMWindow*) override;
   bool RunScriptOnWorkerOrWorklet(WorkerOrWorkletGlobalScope&) override;
 
   std::pair<size_t, size_t> GetClassicScriptSizes() const override;

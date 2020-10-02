@@ -44,8 +44,8 @@ class DOMTimerTest : public RenderingTest {
     // Advance timer manually as RenderingTest expects the time to be non-zero.
     platform()->AdvanceClockSeconds(1.);
     RenderingTest::SetUp();
-    auto* window_performance = DOMWindowPerformance::performance(
-        *GetDocument().GetFrame()->DomWindow());
+    auto* window_performance =
+        DOMWindowPerformance::performance(*GetDocument().domWindow());
     auto test_task_runner = platform()->test_task_runner();
     auto* mock_clock = test_task_runner->GetMockClock();
     auto* mock_tick_clock = test_task_runner->GetMockTickClock();
@@ -61,7 +61,7 @@ class DOMTimerTest : public RenderingTest {
 
   v8::Local<v8::Value> EvalExpression(const char* expr) {
     return ClassicScript::CreateUnspecifiedScript(ScriptSourceCode(expr))
-        ->RunScriptAndReturnValue(GetDocument().GetFrame());
+        ->RunScriptAndReturnValue(GetDocument().domWindow());
   }
 
   Vector<double> ToDoubleArray(v8::Local<v8::Value> value,
@@ -79,7 +79,7 @@ class DOMTimerTest : public RenderingTest {
   void ExecuteScriptAndWaitUntilIdle(const char* script_text) {
     ScriptSourceCode script(script_text);
     ClassicScript::CreateUnspecifiedScript(script)->RunScript(
-        GetDocument().GetFrame());
+        GetDocument().domWindow());
     platform()->RunUntilIdle();
   }
 };
