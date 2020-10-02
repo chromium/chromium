@@ -43,6 +43,11 @@ class CastMessagePortImpl : public openscreen::cast::MessagePort,
   // * Empties |pending_fidl_messages_|.
   void MaybeCloseWithEpitaph(zx_status_t epitaph);
 
+  // Returns a "not supported" error message to the sender for messages from
+  // the inject namespace.
+  void SendInjectResponse(const std::string& sender_id,
+                          const std::string& message);
+
   // fuchsia::web::MessagePort implementation.
   void PostMessage(fuchsia::web::WebMessage message,
                    PostMessageCallback callback) final;
