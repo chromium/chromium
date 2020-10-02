@@ -280,6 +280,7 @@ void PaymentRequest::Show(bool is_user_gesture, bool wait_for_updated_details) {
     // This method does not block.
     spec_->StartWaitingForUpdateWith(
         PaymentRequestSpec::UpdateReason::INITIAL_PAYMENT_DETAILS);
+    spec_->AddInitializationObserver(this);
   } else {
     DCHECK(spec_->details().total);
     journey_logger_.RecordTransactionAmount(
@@ -567,8 +568,10 @@ bool PaymentRequest::ChangeShippingAddress(
 void PaymentRequest::AreRequestedMethodsSupportedCallback(
     bool methods_supported,
     const std::string& error_message) {
-  if (is_show_called_ && observer_for_testing_)
+  if (is_show_called_ && spec_ && spec_->IsInitialized() &&
+      observer_for_testing_) {
     observer_for_testing_->OnAppListReady(weak_ptr_factory_.GetWeakPtr());
+  }
 
   if (methods_supported) {
     if (SatisfiesSkipUIConstraints())
@@ -591,6 +594,16 @@ void PaymentRequest::AreRequestedMethodsSupportedCallback(
 
 base::WeakPtr<PaymentRequest> PaymentRequest::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
+}
+
+void PaymentRequest::OnInitialized(InitializationTask* initialization_task) {
+  DCHECK_EQ(spec_.get(), initialization_task);
+  DCHECK_EQ(PaymentRequestSpec::UpdateReason::INITIAL_PAYMENT_DETAILS,
+            spec_->current_update_reason());
+  if (is_show_called_ && state_ && state_->is_get_all_apps_finished() &&
+      observer_for_testing_) {
+    observer_for_testing_->OnAppListReady(weak_ptr_factory_.GetWeakPtr());
+  }
 }
 
 bool PaymentRequest::IsInitialized() const {

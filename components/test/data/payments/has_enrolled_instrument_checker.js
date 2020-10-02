@@ -10,9 +10,18 @@
  * @return {string} - 'true', 'false', or error message on failure.
  */
 async function hasEnrolledInstrument(method) { // eslint-disable-line no-unused-vars, max-len
+  return hasEnrolledInstrumentForMethodData([{supportedMethods: method}]);
+}
+
+/**
+ * Creates a PaymentRequest with `methodData` and checks hasEnrolledInstrument.
+ * @param {object} methodData - The payment method data to build the request.
+ * @return {string} - 'true', 'false', or error message on failure.
+ */
+async function hasEnrolledInstrumentForMethodData(methodData) {
   try {
     const request = new PaymentRequest(
-        [{supportedMethods: method}],
+        methodData,
         {total: {label: 'TEST', amount: {currency: 'USD', value: '0.01'}}});
     const result = await request.hasEnrolledInstrument();
     return result ? 'true' : 'false';
