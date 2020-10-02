@@ -44,13 +44,6 @@ void AmbientUiModel::SetUiVisibility(AmbientUiVisibility visibility) {
   NotifyAmbientUiVisibilityChanged();
 }
 
-void AmbientUiModel::SetUiMode(AmbientUiMode ui_mode) {
-  if (ui_mode_ == ui_mode)
-    return;
-
-  ui_mode_ = ui_mode;
-}
-
 void AmbientUiModel::NotifyAmbientUiVisibilityChanged() {
   for (auto& observer : observers_)
     observer.OnAmbientUiVisibilityChanged(ui_visibility_);
@@ -63,6 +56,21 @@ std::ostream& operator<<(std::ostream& out, AmbientUiMode mode) {
       break;
     case AmbientUiMode::kInSessionUi:
       out << "kInSessionUi";
+      break;
+  }
+  return out;
+}
+
+std::ostream& operator<<(std::ostream& out, AmbientUiVisibility visibility) {
+  switch (visibility) {
+    case AmbientUiVisibility::kShown:
+      out << "kShown";
+      break;
+    case AmbientUiVisibility::kHidden:
+      out << "kHidden";
+      break;
+    case AmbientUiVisibility::kClosed:
+      out << "kClosed";
       break;
   }
   return out;
