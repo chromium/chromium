@@ -267,7 +267,8 @@ class ArcBluetoothBridge
   void ReadRemoteRssi(mojom::BluetoothAddressPtr remote_addr,
                       ReadRemoteRssiCallback callback) override;
 
-  void OpenBluetoothSocket(OpenBluetoothSocketCallback callback) override;
+  void OpenBluetoothSocketDeprecated(
+      OpenBluetoothSocketDeprecatedCallback callback) override;
 
   // Bluetooth Mojo host interface - Bluetooth Gatt Server functions
   // Android counterpart link:
@@ -316,13 +317,25 @@ class ArcBluetoothBridge
                        RemoveSdpRecordCallback callback) override;
 
   // Bluetooth Mojo host interface - Bluetooth RFCOMM functions
-  void RfcommListen(int32_t channel,
-                    int32_t optval,
-                    RfcommListenCallback callback) override;
-  void RfcommConnect(mojom::BluetoothAddressPtr remote_addr,
-                     int32_t channel,
-                     int32_t optval,
-                     RfcommConnectCallback callback) override;
+  void RfcommListenDeprecated(int32_t channel,
+                              int32_t optval,
+                              RfcommListenDeprecatedCallback callback) override;
+  void RfcommConnectDeprecated(
+      mojom::BluetoothAddressPtr remote_addr,
+      int32_t channel,
+      int32_t optval,
+      RfcommConnectDeprecatedCallback callback) override;
+
+  // Bluetooth Mojo host interface - Bluetooth socket functions
+  void BluetoothSocketListen(mojom::BluetoothSocketType sock_type,
+                             mojom::BluetoothSocketFlagsPtr sock_flags,
+                             int32_t port,
+                             BluetoothSocketListenCallback callback) override;
+  void BluetoothSocketConnect(mojom::BluetoothSocketType sock_type,
+                              mojom::BluetoothSocketFlagsPtr sock_flags,
+                              mojom::BluetoothAddressPtr remote_addr,
+                              int32_t port,
+                              BluetoothSocketConnectCallback callback) override;
 
   // Set up or disable multiple advertising.
   void ReserveAdvertisementHandle(
@@ -551,20 +564,24 @@ class ArcBluetoothBridge
   // Data structures for Bluetooth listening/connecting sockets that live in
   // Chrome.
   struct BluetoothListeningSocket {
+    mojom::BluetoothSocketType sock_type;
     // TODO(b/163099156): Remove the following two fields when
-    // RfcommListen()/RfcommConnect() are removed.
+    // RfcommListenDeprecated()/RfcommConnectDeprecated() are removed.
     bool created_by_deprecated_method = false;
     mojo::Remote<mojom::RfcommListeningSocketClient> deprecated_remote;
+    mojo::Remote<mojom::BluetoothListenSocketClient> remote;
     base::ScopedFD file;
     std::unique_ptr<base::FileDescriptorWatcher::Controller> controller;
     BluetoothListeningSocket();
     ~BluetoothListeningSocket();
   };
   struct BluetoothConnectingSocket {
+    mojom::BluetoothSocketType sock_type;
     // TODO(b/163099156): Remove the following two fields when
-    // RfcommListen()/RfcommConnect() are removed.
+    // RfcommListenDeprecated()/RfcommConnectDeprecated() are removed.
     bool created_by_deprecated_method = false;
     mojo::Remote<mojom::RfcommConnectingSocketClient> deprecated_remote;
+    mojo::Remote<mojom::BluetoothConnectSocketClient> remote;
     base::ScopedFD file;
     std::unique_ptr<base::FileDescriptorWatcher::Controller> controller;
     BluetoothConnectingSocket();
@@ -572,19 +589,21 @@ class ArcBluetoothBridge
   };
 
   // Creates a Bluetooth socket with socket option |optval|, and then bind() and
-  // listen() with requested |channel| number. The actual channel number will be
-  // filled in |channel| as the return value. Returns a BluetoothListeningSocket
+  // listen() with requested |port| number. The actual port number will be
+  // filled in |port| as the return value. Returns a BluetoothListeningSocket
   // that holds the socket.
   std::unique_ptr<BluetoothListeningSocket> CreateBluetoothListenSocket(
+      mojom::BluetoothSocketType type,
       int32_t optval,
-      uint16_t* channel);
+      uint16_t* port);
   // Creates a Bluetooth socket with socket option |optval|, and then calls
-  // connect() to (|addr|, |channel|). This connect() call is non-blocking.
+  // connect() to (|addr|, |port|). This connect() call is non-blocking.
   // Returns a BluetoothConnectingSocket that holds the socket.
   std::unique_ptr<BluetoothConnectingSocket> CreateBluetoothConnectSocket(
+      mojom::BluetoothSocketType type,
       int32_t optval,
       mojom::BluetoothAddressPtr addr,
-      uint16_t channel);
+      uint16_t port);
 
   // Closes Bluetooth sockets. Releases the corresponding resources.
   void CloseBluetoothListeningSocket(BluetoothListeningSocket* socket);

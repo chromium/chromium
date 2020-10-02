@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 18
+// Next MinVersion: 19
 
 module arc.mojom;
 
@@ -316,8 +316,56 @@ interface RfcommConnectingSocketClient {
   OnConnectFailed@1();
 };
 
-// Next Method ID: 47
-// Deprecated Method ID: 4, 5, 6, 7, 20, 21
+// Copied from Android. See android.bluetooth.BluetoothSocket.
+// Currently we only support RFCOMM and LE CoC (L2CAP_LE) sockets.
+[Extensible]
+enum BluetoothSocketType {
+  TYPE_RFCOMM = 1,
+  TYPE_L2CAP_LE = 4,
+};
+
+// Bluetooth socket security flags in Android, used in open socket requests.
+// Chrome should set the socket option based on these flags.
+struct BluetoothSocketFlags {
+  bool encrypt;
+  bool auth;
+  bool auth_mitm;
+  bool auth_16_digit;
+};
+
+// BluetoothSocketConnection contains the information for a new Bluetooth socket
+// connection. Note that |port| is either the channel number for an RFCOMM
+// socket or PSM for an L2CAP socket. Since we cannot get socket (or peer) name
+// on the transferred socket on Android side, we also need to pass the peer
+// address and port number.
+struct BluetoothSocketConnection {
+  handle sock;
+  BluetoothAddress addr;
+  int32 port;
+};
+
+// The mojo connection represents a listening socket.
+// Next Method ID: 1
+interface BluetoothListenSocketClient {
+  // Called when accept() succeeds. |port| in |connection| is the peer port
+  // number.
+  OnAccepted@0(BluetoothSocketConnection connection);
+};
+
+// The mojo connection represents a connecting (not connected yet) socket.
+// After connect() either succeeds or fails, Android is responsible for closing
+// this mojo connection.
+// Next Method ID: 2
+interface BluetoothConnectSocketClient {
+  // Called when connect() succeeds. |port| in |connection| is the port number
+  // on our side.
+  OnConnected@0(BluetoothSocketConnection connection);
+  // Called when connect() fails.
+  OnConnectFailed@1();
+};
+
+// Next Method ID: 49
+// Deprecated Method ID: 4, 5, 6, 7, 20, 21, 29, 45, 46
 interface BluetoothHost {
   EnableAdapter@0() => (BluetoothAdapterState state);
   DisableAdapter@1() => (BluetoothAdapterState state);
@@ -375,7 +423,9 @@ interface BluetoothHost {
   [MinVersion=1] ReadRemoteRssi@28(BluetoothAddress remote_addr)
       => (int32 rssi);
 
-  [MinVersion=2] OpenBluetoothSocket@29()
+  // DEPRECATED: Use BluetoothSocketListen@47 or BluetoothSocketConnect@48
+  // instead.
+  [MinVersion=2] OpenBluetoothSocketDeprecated@29()
       => (handle sock);
 
   // Bluetooth Gatt Server functions
@@ -430,7 +480,7 @@ interface BluetoothHost {
   // we will select a channel number automatically.  If this process succeeds,
   // returns SUCCESS in |status|, the actual listening channel in |channel|,
   // and a new mojo connection which represents the listening socket.
-  [MinVersion=15] RfcommListen@45(int32 channel, int32 optval)
+  [MinVersion=15] RfcommListenDeprecated@45(int32 channel, int32 optval)
       => (BluetoothStatus status, int32 channel,
           RfcommListeningSocketClient&? client);
   // Opens a bluetooth socket with socket option |optval|, and then connect()
@@ -438,9 +488,27 @@ interface BluetoothHost {
   // in |status| and a new mojo connection which holds the connecting socket.
   // Unlike in RfcommListen(), |channel| here could not be 0, since this is the
   // peer channel number.
-  [MinVersion=15] RfcommConnect@46(BluetoothAddress remote_addr,
-                                   int32 channel, int32 optval)
+  [MinVersion=15] RfcommConnectDeprecated@46(BluetoothAddress remote_addr,
+                                             int32 channel, int32 optval)
       => (BluetoothStatus status, RfcommConnectingSocketClient&? client);
+
+  // Bluetooth socket (RFCOMM and L2CAP LE) functions
+  // Opens a |sock_type| socket with security options in |sock_flags|, and
+  // listens on |port| (RFCOMM channel or L2CAP PSM). When |port| = 0, we will
+  // select a port number automatically. If this process succeeds, the actual
+  // listening port will be returned in |port|.
+  [MinVersion=18] BluetoothSocketListen@47(BluetoothSocketType sock_type,
+                                           BluetoothSocketFlags sock_flags,
+                                           int32 port)
+      => (BluetoothStatus status, int32 port,
+          BluetoothListenSocketClient&? client);
+  // Opens a |sock_type| socket with security options in |sock_flags|, and
+  // connects to |remote_addr| which is listening on |remote_port|.
+  [MinVersion=18] BluetoothSocketConnect@48(BluetoothSocketType sock_type,
+                                            BluetoothSocketFlags sock_flags,
+                                            BluetoothAddress remote_addr,
+                                            int32 remote_port)
+      => (BluetoothStatus status, BluetoothConnectSocketClient&? client);
 };
 
 // Next Method ID: 24
