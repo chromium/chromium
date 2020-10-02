@@ -13,8 +13,9 @@ namespace metrics {
 
 // The following are unique function names for forcing the crash when a thread
 // is unresponsive. This makes it possible to tell from the callstack alone what
-// thread was unresponsive.
-NOINLINE void ReportThreadHang() {
+// thread was unresponsive. Inhibiting tail calls to this function ensures that
+// the caller will appear on the call stack.
+NOINLINE NOT_TAIL_CALLED void ReportThreadHang() {
   volatile const char* inhibit_comdat = __func__;
   ALLOW_UNUSED_LOCAL(inhibit_comdat);
 
@@ -37,35 +38,29 @@ NOINLINE void ReportThreadHang() {
 #if !defined(OS_ANDROID)
 
 NOINLINE void StartupHang() {
-  volatile int inhibit_comdat = __LINE__;
-  ALLOW_UNUSED_LOCAL(inhibit_comdat);
   // TODO(rtenneti): http://crbug.com/440885 enable crashing after fixing false
   // positive startup hang data.
   // ReportThreadHang();
+  volatile int inhibit_comdat = __LINE__;
+  ALLOW_UNUSED_LOCAL(inhibit_comdat);
 }
 
 NOINLINE void ShutdownHang() {
+  ReportThreadHang();
   volatile int inhibit_comdat = __LINE__;
   ALLOW_UNUSED_LOCAL(inhibit_comdat);
-  ReportThreadHang();
 }
 
 #endif  // !defined(OS_ANDROID)
 
 NOINLINE void ThreadUnresponsive_UI() {
   ReportThreadHang();
-  // Defining |inhibit_comdat| *after* calling ReportThreadHang() prevents tail
-  // call optimization from not putting this function's address on the stack.
-  // https://crbug.com/905288#c10
   volatile int inhibit_comdat = __LINE__;
   ALLOW_UNUSED_LOCAL(inhibit_comdat);
 }
 
 NOINLINE void ThreadUnresponsive_IO() {
   ReportThreadHang();
-  // Defining |inhibit_comdat| *after* calling ReportThreadHang() prevents tail
-  // call optimization from not putting this function's address on the stack.
-  // https://crbug.com/905288#c10
   volatile int inhibit_comdat = __LINE__;
   ALLOW_UNUSED_LOCAL(inhibit_comdat);
 }
