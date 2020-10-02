@@ -5,6 +5,7 @@
 #include "components/performance_manager/service_worker_context_adapter.h"
 
 #include "base/check_op.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/notreached.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_process_host_observer.h"
@@ -276,7 +277,7 @@ void ServiceWorkerContextAdapter::OnControlleeAdded(
   bool inserted =
       service_worker_clients_[version_id].insert(client_uuid).second;
   if (!inserted) {
-    NOTREACHED();
+    base::debug::DumpWithoutCrashing();
     return;
   }
 
@@ -291,13 +292,13 @@ void ServiceWorkerContextAdapter::OnControlleeRemoved(
   // notification is dropped.
   auto it = service_worker_clients_.find(version_id);
   if (it == service_worker_clients_.end()) {
-    NOTREACHED();
+    base::debug::DumpWithoutCrashing();
     return;
   }
 
   size_t removed = it->second.erase(client_uuid);
   if (!removed) {
-    NOTREACHED();
+    base::debug::DumpWithoutCrashing();
     return;
   }
 
@@ -324,12 +325,12 @@ void ServiceWorkerContextAdapter::OnControlleeNavigationCommitted(
   // not already a client of |version_id|.
   auto it = service_worker_clients_.find(version_id);
   if (it == service_worker_clients_.end()) {
-    NOTREACHED();
+    base::debug::DumpWithoutCrashing();
     return;
   }
 
   if (it->second.find(client_uuid) == it->second.end()) {
-    NOTREACHED();
+    base::debug::DumpWithoutCrashing();
     return;
   }
 
