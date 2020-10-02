@@ -10,6 +10,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/federated_learning/floc_id_provider.h"
 #include "components/federated_learning/floc_blocklist_service.h"
+#include "components/federated_learning/floc_sorting_lsh_clusters_service.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/sync/driver/sync_service_observer.h"
@@ -44,6 +45,7 @@ class FlocRemotePermissionService;
 // the event of history deletion, the floc will be recomputed immediately and
 // reset the timer of any currently scheduled computation to be 24 hours later.
 class FlocIdProviderImpl : public FlocIdProvider,
+                           public FlocSortingLshClustersService::Observer,
                            public FlocBlocklistService::Observer,
                            public history::HistoryServiceObserver,
                            public syncer::SyncServiceObserver {
@@ -112,6 +114,9 @@ class FlocIdProviderImpl : public FlocIdProvider,
   void OnURLsDeleted(history::HistoryService* history_service,
                      const history::DeletionInfo& deletion_info) override;
 
+  // FlocSortingLshClustersService::Observer
+  void OnSortingLshClustersFileReady() override;
+
   // FlocBlocklistService::Observer
   void OnBlocklistFileReady() override;
 
@@ -143,6 +148,11 @@ class FlocIdProviderImpl : public FlocIdProvider,
   // history. For example, invalidate it if it's in the blocklist.
   void ApplyAdditionalFiltering(ComputeFlocCompletedCallback callback,
                                 const FlocId& sim_hash);
+  void SkippedOrAppliedSortingLsh(
+      ComputeFlocCompletedCallback callback,
+      const FlocId& sim_hash,
+      FlocId sim_hash_or_sorting_lsh,
+      base::Optional<base::Version> version_to_validate);
   void DidApplyAdditionalFiltering(ComputeFlocCompletedCallback callback,
                                    FlocId sim_hash,
                                    FlocId final_hash);
@@ -158,6 +168,7 @@ class FlocIdProviderImpl : public FlocIdProvider,
   // loggings, updates, etc.), and compute again.
   base::Optional<ComputeFlocTrigger> pending_recompute_event_;
 
+  bool first_sorting_lsh_file_ready_seen_ = false;
   bool first_blocklist_file_ready_seen_ = false;
   bool first_sync_history_enabled_seen_ = false;
 

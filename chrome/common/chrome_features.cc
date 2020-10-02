@@ -385,6 +385,11 @@ const base::Feature kFlocIdComputedEventLogging{
 const base::Feature kFlocIdBlocklistFiltering{
     "FlocIdBlocklistFiltering", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// If enabled, the sim-hash floc computed from history will be further encoded
+// based on the sorting-lsh.
+const base::Feature kFlocIdSortingLshBasedComputation{
+    "FlocIdSortingLshBasedComputation", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables Focus Mode which brings up a PWA-like window look.
 const base::Feature kFocusMode{"FocusMode", base::FEATURE_DISABLED_BY_DEFAULT};
 

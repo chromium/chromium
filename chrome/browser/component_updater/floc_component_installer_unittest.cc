@@ -49,14 +49,18 @@ class MockFlocBlocklistService
 
   ~MockFlocBlocklistService() override = default;
 
-  void OnBlocklistFileReady(const base::FilePath& file_path) override {
+  void OnBlocklistFileReady(const base::FilePath& file_path,
+                            const base::Version& version) override {
     file_paths_.push_back(file_path);
+    versions_.push_back(version);
   }
 
   const std::vector<base::FilePath>& file_paths() const { return file_paths_; }
+  const std::vector<base::Version>& versions() const { return versions_; }
 
  private:
   std::vector<base::FilePath> file_paths_;
+  std::vector<base::Version> versions_;
 };
 
 // This class monitors the OnSortingLshClustersFileReady method calls.
@@ -72,14 +76,18 @@ class MockFlocSortingLshClustersService
 
   ~MockFlocSortingLshClustersService() override = default;
 
-  void OnSortingLshClustersFileReady(const base::FilePath& file_path) override {
+  void OnSortingLshClustersFileReady(const base::FilePath& file_path,
+                                     const base::Version& version) override {
     file_paths_.push_back(file_path);
+    versions_.push_back(version);
   }
 
   const std::vector<base::FilePath>& file_paths() const { return file_paths_; }
+  const std::vector<base::Version>& versions() const { return versions_; }
 
  private:
   std::vector<base::FilePath> file_paths_;
+  std::vector<base::Version> versions_;
 };
 
 }  //  namespace
@@ -203,10 +211,12 @@ TEST_F(FlocComponentInstallerTest, LoadFlocComponent) {
   std::string contents = "abcd";
   ASSERT_NO_FATAL_FAILURE(CreateTestFlocComponentFiles(contents, contents));
   ASSERT_NO_FATAL_FAILURE(LoadFlocComponent(
-      "1.0.0", federated_learning::kCurrentFlocComponentFormatVersion));
+      "1.0.1", federated_learning::kCurrentFlocComponentFormatVersion));
 
   ASSERT_EQ(blocklist_service()->file_paths().size(), 1u);
+  ASSERT_EQ(blocklist_service()->versions().size(), 1u);
   ASSERT_EQ(sorting_lsh_clusters_service()->file_paths().size(), 1u);
+  ASSERT_EQ(sorting_lsh_clusters_service()->versions().size(), 1u);
 
   // Assert that the file path is the concatenation of |component_install_dir_|
   // and the corresponding file name, which implies that the |version| argument
@@ -221,6 +231,9 @@ TEST_F(FlocComponentInstallerTest, LoadFlocComponent) {
             component_install_dir()
                 .Append(federated_learning::kSortingLshClustersFileName)
                 .AsUTF8Unsafe());
+
+  EXPECT_EQ(blocklist_service()->versions()[0].GetString(), "1.0.1");
+  EXPECT_EQ(sorting_lsh_clusters_service()->versions()[0].GetString(), "1.0.1");
 
   std::string actual_contents;
   ASSERT_TRUE(base::ReadFileToString(blocklist_service()->file_paths()[0],

@@ -59,15 +59,12 @@ void FlocComponentInstallerPolicy::ComponentReady(
     std::unique_ptr<base::DictionaryValue> manifest) {
   DCHECK(!install_dir.empty());
 
-  // TODO(yaoxia): Pass along the |version| to each service. At the end of each
-  // floc computation cycle, it should verify the two versions match. This is
-  // not needed currently as the floc_sorting_lsh_clusters_service is not set up
-  // yet.
   floc_blocklist_service_->OnBlocklistFileReady(
-      install_dir.Append(federated_learning::kBlocklistFileName));
+      install_dir.Append(federated_learning::kBlocklistFileName), version);
 
   floc_sorting_lsh_clusters_service_->OnSortingLshClustersFileReady(
-      install_dir.Append(federated_learning::kSortingLshClustersFileName));
+      install_dir.Append(federated_learning::kSortingLshClustersFileName),
+      version);
 }
 
 // Called during startup and installation before ComponentReady().

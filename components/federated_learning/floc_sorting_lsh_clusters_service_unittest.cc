@@ -23,6 +23,8 @@ namespace federated_learning {
 
 namespace {
 
+base::Version kDummyVersion = base::Version("1.2.3");
+
 class CopyingFileOutputStream
     : public google::protobuf::io::CopyingOutputStream {
  public:
@@ -94,7 +96,7 @@ class FlocSortingLshClustersServiceTest : public ::testing::Test {
       const std::vector<uint32_t>& sorting_lsh_clusters) {
     base::FilePath file_path =
         CreateTestSortingLshClustersFile(sorting_lsh_clusters);
-    service()->OnSortingLshClustersFileReady(file_path);
+    service()->OnSortingLshClustersFileReady(file_path, kDummyVersion);
     EXPECT_TRUE(sorting_lsh_clusters_file_path().has_value());
     return file_path;
   }
@@ -103,7 +105,10 @@ class FlocSortingLshClustersServiceTest : public ::testing::Test {
 
   FlocSortingLshClustersService* service() { return service_.get(); }
 
-  const base::Optional<base::FilePath>& sorting_lsh_clusters_file_path() {
+  base::Optional<base::FilePath> sorting_lsh_clusters_file_path() {
+    if (!service()->first_file_ready_seen_)
+      return base::nullopt;
+
     return service()->sorting_lsh_clusters_file_path_;
   }
 
@@ -111,10 +116,11 @@ class FlocSortingLshClustersServiceTest : public ::testing::Test {
     FlocId result;
 
     base::RunLoop run_loop;
-    auto cb = base::BindLambdaForTesting([&](FlocId floc_id) {
-      result = floc_id;
-      run_loop.Quit();
-    });
+    auto cb = base::BindLambdaForTesting(
+        [&](FlocId floc_id, base::Optional<base::Version> version) {
+          result = floc_id;
+          run_loop.Quit();
+        });
 
     service()->ApplySortingLsh(floc_id, std::move(cb));
     background_task_runner_->RunPendingTasks();
@@ -216,11 +222,12 @@ TEST_F(FlocSortingLshClustersServiceTest,
   base::FilePath file_path = InitializeSortingLshClustersFile({0});
 
   base::RunLoop run_loop;
-  auto cb = base::BindLambdaForTesting([&](FlocId floc_id) {
-    // Since the file has been deleted, expect an invalid floc id.
-    EXPECT_EQ(FlocId(), floc_id);
-    run_loop.Quit();
-  });
+  auto cb = base::BindLambdaForTesting(
+      [&](FlocId floc_id, base::Optional<base::Version> version) {
+        // Since the file has been deleted, expect an invalid floc id.
+        EXPECT_EQ(FlocId(), floc_id);
+        run_loop.Quit();
+      });
 
   service()->ApplySortingLsh(FlocId(0), std::move(cb));
   base::DeleteFile(file_path);

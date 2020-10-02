@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/optional.h"
+#include "base/version.h"
 #include "components/federated_learning/floc_id.h"
 
 namespace base {
@@ -47,11 +48,14 @@ class FlocBlocklistService {
   bool IsBlocklistFileReady() const;
 
   // Virtual for testing.
-  virtual void OnBlocklistFileReady(const base::FilePath& file_path);
+  virtual void OnBlocklistFileReady(const base::FilePath& file_path,
+                                    const base::Version& version);
 
   // Virtual for testing.
-  virtual void FilterByBlocklist(const FlocId& unfiltered_floc,
-                                 FilterByBlocklistCallback callback);
+  virtual void FilterByBlocklist(
+      const FlocId& unfiltered_floc,
+      const base::Optional<base::Version>& version_to_validate,
+      FilterByBlocklistCallback callback);
 
   void SetBackgroundTaskRunnerForTesting(
       scoped_refptr<base::SequencedTaskRunner> background_task_runner);
@@ -66,7 +70,9 @@ class FlocBlocklistService {
 
   base::ObserverList<Observer>::Unchecked observers_;
 
-  base::Optional<base::FilePath> blocklist_file_path_;
+  bool first_file_ready_seen_ = false;
+  base::FilePath blocklist_file_path_;
+  base::Version blocklist_version_;
 
   base::WeakPtrFactory<FlocBlocklistService> weak_ptr_factory_;
 };

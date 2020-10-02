@@ -90,12 +90,14 @@ void FlocBlocklistService::RemoveObserver(Observer* observer) {
 }
 
 bool FlocBlocklistService::IsBlocklistFileReady() const {
-  return blocklist_file_path_.has_value();
+  return first_file_ready_seen_;
 }
 
-void FlocBlocklistService::OnBlocklistFileReady(
-    const base::FilePath& file_path) {
+void FlocBlocklistService::OnBlocklistFileReady(const base::FilePath& file_path,
+                                                const base::Version& version) {
   blocklist_file_path_ = file_path;
+  blocklist_version_ = version;
+  first_file_ready_seen_ = true;
 
   for (auto& observer : observers_)
     observer.OnBlocklistFileReady();
@@ -103,13 +105,20 @@ void FlocBlocklistService::OnBlocklistFileReady(
 
 void FlocBlocklistService::FilterByBlocklist(
     const FlocId& unfiltered_floc,
+    const base::Optional<base::Version>& version_to_validate,
     FilterByBlocklistCallback callback) {
   DCHECK(unfiltered_floc.IsValid());
-  DCHECK(blocklist_file_path_.has_value());
+  DCHECK(first_file_ready_seen_);
+  if (version_to_validate &&
+      version_to_validate.value().CompareTo(blocklist_version_) != 0) {
+    std::move(callback).Run(FlocId());
+    return;
+  }
+
   base::PostTaskAndReplyWithResult(
       background_task_runner_.get(), FROM_HERE,
       base::BindOnce(&FilterByBlocklistOnBackgroundThread, unfiltered_floc,
-                     blocklist_file_path_.value()),
+                     blocklist_file_path_),
       std::move(callback));
 }
 

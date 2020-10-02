@@ -21,6 +21,10 @@
 
 namespace federated_learning {
 
+namespace {
+
+base::Version kDummyVersion = base::Version("1.0.0");
+
 class CopyingFileOutputStream
     : public google::protobuf::io::CopyingOutputStream {
  public:
@@ -40,6 +44,8 @@ class CopyingFileOutputStream
  private:
   base::File file_;
 };
+
+}  // namespace
 
 class FlocBlocklistServiceTest : public ::testing::Test {
  public:
@@ -86,7 +92,7 @@ class FlocBlocklistServiceTest : public ::testing::Test {
   base::FilePath InitializeBlocklistFile(
       const std::vector<uint64_t>& blocklist) {
     base::FilePath file_path = CreateBlocklistFile(blocklist);
-    service()->OnBlocklistFileReady(file_path);
+    service()->OnBlocklistFileReady(file_path, kDummyVersion);
     EXPECT_TRUE(blocklist_file_path().has_value());
     return file_path;
   }
@@ -95,7 +101,10 @@ class FlocBlocklistServiceTest : public ::testing::Test {
 
   FlocBlocklistService* service() { return service_.get(); }
 
-  const base::Optional<base::FilePath>& blocklist_file_path() {
+  base::Optional<base::FilePath> blocklist_file_path() {
+    if (!service()->first_file_ready_seen_)
+      return base::nullopt;
+
     return service()->blocklist_file_path_;
   }
 
@@ -108,7 +117,7 @@ class FlocBlocklistServiceTest : public ::testing::Test {
       run_loop.Quit();
     });
 
-    service()->FilterByBlocklist(unfiltered_floc, std::move(cb));
+    service()->FilterByBlocklist(unfiltered_floc, kDummyVersion, std::move(cb));
     background_task_runner_->RunPendingTasks();
     run_loop.Run();
 
@@ -167,7 +176,7 @@ TEST_F(FlocBlocklistServiceTest, List_MaxFlocPlus1) {
 
 TEST_F(FlocBlocklistServiceTest, NonExistentBlocklist_Blocked) {
   base::FilePath file_path = GetUniqueTemporaryPath();
-  service()->OnBlocklistFileReady(file_path);
+  service()->OnBlocklistFileReady(file_path, kDummyVersion);
   EXPECT_EQ(FlocId(), FilterByBlocklist(FlocId(3)));
 }
 

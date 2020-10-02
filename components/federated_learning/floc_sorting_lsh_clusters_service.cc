@@ -116,29 +116,46 @@ void FlocSortingLshClustersService::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void FlocSortingLshClustersService::SetBackgroundTaskRunnerForTesting(
-    scoped_refptr<base::SequencedTaskRunner> background_task_runner) {
-  background_task_runner_ = background_task_runner;
+bool FlocSortingLshClustersService::IsSortingLshClustersFileReady() const {
+  return first_file_ready_seen_;
+}
+
+void FlocSortingLshClustersService::OnSortingLshClustersFileReady(
+    const base::FilePath& file_path,
+    const base::Version& version) {
+  sorting_lsh_clusters_file_path_ = file_path;
+  sorting_lsh_clusters_version_ = version;
+  first_file_ready_seen_ = true;
+
+  for (auto& observer : observers_)
+    observer.OnSortingLshClustersFileReady();
 }
 
 void FlocSortingLshClustersService::ApplySortingLsh(
     const FlocId& raw_floc_id,
     ApplySortingLshCallback callback) {
   DCHECK(raw_floc_id.IsValid());
-  DCHECK(sorting_lsh_clusters_file_path_.has_value());
+  DCHECK(first_file_ready_seen_);
+
   base::PostTaskAndReplyWithResult(
       background_task_runner_.get(), FROM_HERE,
       base::BindOnce(&ApplySortingLshOnBackgroundThread, raw_floc_id,
-                     sorting_lsh_clusters_file_path_.value()),
-      std::move(callback));
+                     sorting_lsh_clusters_file_path_),
+      base::BindOnce(&FlocSortingLshClustersService::DidApplySortingLsh,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     sorting_lsh_clusters_version_));
 }
 
-void FlocSortingLshClustersService::OnSortingLshClustersFileReady(
-    const base::FilePath& file_path) {
-  sorting_lsh_clusters_file_path_ = file_path;
+void FlocSortingLshClustersService::SetBackgroundTaskRunnerForTesting(
+    scoped_refptr<base::SequencedTaskRunner> background_task_runner) {
+  background_task_runner_ = background_task_runner;
+}
 
-  for (auto& observer : observers_)
-    observer.OnSortingLshClustersFileReady();
+void FlocSortingLshClustersService::DidApplySortingLsh(
+    ApplySortingLshCallback callback,
+    base::Version version,
+    FlocId floc_id) {
+  std::move(callback).Run(std::move(floc_id), std::move(version));
 }
 
 }  // namespace federated_learning

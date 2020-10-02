@@ -48,9 +48,15 @@ FlocIdProviderImpl::FlocIdProviderImpl(
       user_event_service_(user_event_service) {
   history_service->AddObserver(this);
   sync_service_->AddObserver(this);
+  g_browser_process->floc_sorting_lsh_clusters_service()->AddObserver(this);
   g_browser_process->floc_blocklist_service()->AddObserver(this);
 
   OnStateChanged(sync_service);
+
+  if (g_browser_process->floc_sorting_lsh_clusters_service()
+          ->IsSortingLshClustersFileReady()) {
+    OnSortingLshClustersFileReady();
+  }
 
   if (g_browser_process->floc_blocklist_service()->IsBlocklistFileReady())
     OnBlocklistFileReady();
@@ -179,6 +185,15 @@ void FlocIdProviderImpl::OnURLsDeleted(
   ComputeFloc(ComputeFlocTrigger::kHistoryDelete);
 }
 
+void FlocIdProviderImpl::OnSortingLshClustersFileReady() {
+  if (first_sorting_lsh_file_ready_seen_)
+    return;
+
+  first_sorting_lsh_file_ready_seen_ = true;
+
+  MaybeTriggerFirstFlocComputation();
+}
+
 void FlocIdProviderImpl::OnBlocklistFileReady() {
   if (first_blocklist_file_ready_seen_)
     return;
@@ -204,9 +219,17 @@ void FlocIdProviderImpl::MaybeTriggerFirstFlocComputation() {
   if (first_floc_computation_triggered_)
     return;
 
-  if (!first_sync_history_enabled_seen_ ||
-      (base::FeatureList::IsEnabled(features::kFlocIdBlocklistFiltering) &&
-       !first_blocklist_file_ready_seen_)) {
+  bool sorting_lsh_ready_or_not_required =
+      !base::FeatureList::IsEnabled(
+          features::kFlocIdSortingLshBasedComputation) ||
+      first_sorting_lsh_file_ready_seen_;
+
+  bool blocklist_ready_or_not_required =
+      !base::FeatureList::IsEnabled(features::kFlocIdBlocklistFiltering) ||
+      first_blocklist_file_ready_seen_;
+
+  if (!first_sync_history_enabled_seen_ || !sorting_lsh_ready_or_not_required ||
+      !blocklist_ready_or_not_required) {
     return;
   }
 
@@ -369,15 +392,39 @@ void FlocIdProviderImpl::ApplyAdditionalFiltering(
     const FlocId& sim_hash) {
   DCHECK(sim_hash.IsValid());
 
-  if (!base::FeatureList::IsEnabled(features::kFlocIdBlocklistFiltering)) {
-    std::move(callback).Run(ComputeFlocResult(sim_hash, sim_hash));
+  if (!base::FeatureList::IsEnabled(
+          features::kFlocIdSortingLshBasedComputation)) {
+    SkippedOrAppliedSortingLsh(std::move(callback), sim_hash,
+                               /*sim_hash_or_sorting_lsh=*/sim_hash,
+                               /*version_to_validate=*/base::nullopt);
+    return;
+  }
+
+  g_browser_process->floc_sorting_lsh_clusters_service()->ApplySortingLsh(
+      sim_hash, base::BindOnce(&FlocIdProviderImpl::SkippedOrAppliedSortingLsh,
+                               weak_ptr_factory_.GetWeakPtr(),
+                               std::move(callback), sim_hash));
+}
+
+void FlocIdProviderImpl::SkippedOrAppliedSortingLsh(
+    ComputeFlocCompletedCallback callback,
+    const FlocId& sim_hash,
+    FlocId sim_hash_or_sorting_lsh,
+    base::Optional<base::Version> version_to_validate) {
+  // |!sim_hash_or_sorting_lsh.IsValid()| indicates a missing or corrupted
+  // sorting-lsh file.
+  if (!base::FeatureList::IsEnabled(features::kFlocIdBlocklistFiltering) ||
+      !sim_hash_or_sorting_lsh.IsValid()) {
+    std::move(callback).Run(
+        ComputeFlocResult(sim_hash, sim_hash_or_sorting_lsh));
     return;
   }
 
   g_browser_process->floc_blocklist_service()->FilterByBlocklist(
-      sim_hash, base::BindOnce(&FlocIdProviderImpl::DidApplyAdditionalFiltering,
-                               weak_ptr_factory_.GetWeakPtr(),
-                               std::move(callback), sim_hash));
+      sim_hash_or_sorting_lsh, version_to_validate,
+      base::BindOnce(&FlocIdProviderImpl::DidApplyAdditionalFiltering,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     sim_hash));
 }
 
 void FlocIdProviderImpl::DidApplyAdditionalFiltering(

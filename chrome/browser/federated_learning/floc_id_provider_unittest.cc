@@ -32,17 +32,22 @@ namespace {
 
 using ComputeFlocTrigger = FlocIdProviderImpl::ComputeFlocTrigger;
 using ComputeFlocResult = FlocIdProviderImpl::ComputeFlocResult;
+using ComputeFlocCompletedCallback =
+    FlocIdProviderImpl::ComputeFlocCompletedCallback;
+using CanComputeFlocCallback = FlocIdProviderImpl::CanComputeFlocCallback;
 
 class MockFlocBlocklistService : public FlocBlocklistService {
  public:
   using FlocBlocklistService::FlocBlocklistService;
 
-  void ConfigureFlocToBlock(const FlocId& floc_to_block) {
+  void ConfigureBlocklist(const FlocId& floc_to_block) {
     floc_to_block_ = floc_to_block;
   }
 
-  void FilterByBlocklist(const FlocId& unfiltered_floc,
-                         FilterByBlocklistCallback callback) override {
+  void FilterByBlocklist(
+      const FlocId& unfiltered_floc,
+      const base::Optional<base::Version>& version_to_validate,
+      FilterByBlocklistCallback callback) override {
     if (floc_to_block_ == unfiltered_floc) {
       std::move(callback).Run(FlocId());
       return;
@@ -52,6 +57,33 @@ class MockFlocBlocklistService : public FlocBlocklistService {
 
  private:
   FlocId floc_to_block_;
+};
+
+class MockFlocSortingLshService : public FlocSortingLshClustersService {
+ public:
+  using FlocSortingLshClustersService::FlocSortingLshClustersService;
+
+  void ConfigureSortingLsh(
+      const std::unordered_map<uint64_t, FlocId>& sorting_lsh_map,
+      const base::Version& version) {
+    sorting_lsh_map_ = sorting_lsh_map;
+    version_ = version;
+  }
+
+  void ApplySortingLsh(const FlocId& raw_floc_id,
+                       ApplySortingLshCallback callback) override {
+    if (sorting_lsh_map_.count(raw_floc_id.ToUint64())) {
+      std::move(callback).Run(sorting_lsh_map_.at(raw_floc_id.ToUint64()),
+                              version_);
+      return;
+    }
+
+    std::move(callback).Run(FlocId(), version_);
+  }
+
+ private:
+  std::unordered_map<uint64_t, FlocId> sorting_lsh_map_;
+  base::Version version_;
 };
 
 class FakeFlocRemotePermissionService : public FlocRemotePermissionService {
@@ -203,6 +235,11 @@ class FlocIdProviderUnitTest : public testing::Test {
         &prefs_, /*is_off_the_record=*/false, /*store_last_modified=*/false,
         /*restore_session=*/false);
 
+    auto sorting_lsh_service = std::make_unique<MockFlocSortingLshService>();
+    sorting_lsh_service_ = sorting_lsh_service.get();
+    TestingBrowserProcess::GetGlobal()->SetFlocSortingLshClustersService(
+        std::move(sorting_lsh_service));
+
     auto blocklist_service = std::make_unique<MockFlocBlocklistService>();
     blocklist_service_ = blocklist_service.get();
     TestingBrowserProcess::GetGlobal()->SetFlocBlocklistService(
@@ -238,13 +275,16 @@ class FlocIdProviderUnitTest : public testing::Test {
     history_service_->RemoveObserver(floc_id_provider_.get());
   }
 
-  void CheckCanComputeFloc(
-      FlocIdProviderImpl::CanComputeFlocCallback callback) {
+  void ApplyAdditionalFiltering(ComputeFlocCompletedCallback callback,
+                                const FlocId& sim_hash) {
+    floc_id_provider_->ApplyAdditionalFiltering(std::move(callback), sim_hash);
+  }
+
+  void CheckCanComputeFloc(CanComputeFlocCallback callback) {
     floc_id_provider_->CheckCanComputeFloc(std::move(callback));
   }
 
-  void IsSwaaNacAccountEnabled(
-      FlocIdProviderImpl::CanComputeFlocCallback callback) {
+  void IsSwaaNacAccountEnabled(CanComputeFlocCallback callback) {
     floc_id_provider_->IsSwaaNacAccountEnabled(std::move(callback));
   }
 
@@ -324,6 +364,7 @@ class FlocIdProviderUnitTest : public testing::Test {
   scoped_refptr<FakeCookieSettings> fake_cookie_settings_;
   std::unique_ptr<MockFlocIdProvider> floc_id_provider_;
 
+  MockFlocSortingLshService* sorting_lsh_service_;
   MockFlocBlocklistService* blocklist_service_;
 
   base::ScopedTempDir temp_dir_;
@@ -833,7 +874,7 @@ TEST_F(FlocIdProviderUnitTest,
 
   // Trigger the blocklist ready event. The 1st floc computation should be
   // triggered now as sync & sync-history are enabled the blocklist is ready.
-  blocklist_service_->OnBlocklistFileReady(base::FilePath());
+  blocklist_service_->OnBlocklistFileReady(base::FilePath(), base::Version());
 
   EXPECT_TRUE(first_floc_computation_triggered());
 }
@@ -845,7 +886,7 @@ TEST_F(FlocIdProviderUnitTest,
 
   // Trigger the blocklist ready event. The 1st floc computation should not be
   // triggered as sync & sync-history are not enabled yet.
-  blocklist_service_->OnBlocklistFileReady(base::FilePath());
+  blocklist_service_->OnBlocklistFileReady(base::FilePath(), base::Version());
 
   EXPECT_FALSE(first_floc_computation_triggered());
 
@@ -876,7 +917,7 @@ TEST_F(FlocIdProviderUnitTest, BlocklistFilteringEnabled_BlockedFloc) {
 
   // Trigger the blocklist ready event, and turn on sync & sync-history to
   // trigger the 1st floc computation.
-  blocklist_service_->OnBlocklistFileReady(base::FilePath());
+  blocklist_service_->OnBlocklistFileReady(base::FilePath(), base::Version());
 
   test_sync_service_->SetTransportState(
       syncer::SyncService::TransportState::ACTIVE);
@@ -895,7 +936,7 @@ TEST_F(FlocIdProviderUnitTest, BlocklistFilteringEnabled_BlockedFloc) {
   EXPECT_EQ(floc_from_history, floc_id());
 
   // Set the blocklist to block |floc_from_history|.
-  blocklist_service_->ConfigureFlocToBlock(floc_from_history);
+  blocklist_service_->ConfigureBlocklist(floc_from_history);
 
   task_environment_.FastForwardBy(base::TimeDelta::FromDays(1));
 
@@ -927,7 +968,7 @@ TEST_F(FlocIdProviderUnitTest, BlocklistFilteringEnabled_BlockedFloc) {
   EXPECT_EQ(floc_from_history.ToUint64(), event.floc_id());
 
   // Reset the blocklist to block nothing.
-  blocklist_service_->ConfigureFlocToBlock(FlocId());
+  blocklist_service_->ConfigureBlocklist(FlocId());
 
   task_environment_.FastForwardBy(base::TimeDelta::FromDays(1));
 
@@ -1146,6 +1187,54 @@ TEST_F(FlocIdProviderUnitTest, ScheduledUpdateDuringInProgressComputation) {
   EXPECT_EQ(1u, floc_id_provider_->log_event_count());
   EXPECT_TRUE(floc_id().IsValid());
   EXPECT_EQ(FlocId::CreateFromHistory({domain1}), floc_id());
+}
+
+TEST_F(FlocIdProviderUnitTest, ApplyAdditionalFiltering_SortingLsh) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({features::kFlocIdSortingLshBasedComputation},
+                                {});
+
+  bool callback_called = false;
+  auto callback = base::BindLambdaForTesting([&](ComputeFlocResult result) {
+    EXPECT_FALSE(callback_called);
+    EXPECT_EQ(result.sim_hash, FlocId(3));
+    EXPECT_EQ(result.final_hash, FlocId(2));
+    callback_called = true;
+  });
+
+  // Map 3 to 2
+  sorting_lsh_service_->OnSortingLshClustersFileReady(base::FilePath(),
+                                                      base::Version());
+  sorting_lsh_service_->ConfigureSortingLsh({{3, FlocId(2)}},
+                                            base::Version("3.4.5"));
+
+  FlocId sim_hash(3);
+  ApplyAdditionalFiltering(std::move(callback), sim_hash);
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(callback_called);
+}
+
+TEST_F(FlocIdProviderUnitTest, ApplyAdditionalFiltering_SortingLshCorrupted) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({features::kFlocIdSortingLshBasedComputation},
+                                {});
+
+  bool callback_called = false;
+  auto callback = base::BindLambdaForTesting([&](ComputeFlocResult result) {
+    EXPECT_FALSE(callback_called);
+    EXPECT_EQ(result.sim_hash, FlocId(3));
+    EXPECT_EQ(result.final_hash, FlocId());
+    callback_called = true;
+  });
+
+  sorting_lsh_service_->OnSortingLshClustersFileReady(base::FilePath(),
+                                                      base::Version());
+  sorting_lsh_service_->ConfigureSortingLsh({}, base::Version("3.4.5"));
+
+  FlocId sim_hash(3);
+  ApplyAdditionalFiltering(std::move(callback), sim_hash);
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(callback_called);
 }
 
 }  // namespace federated_learning

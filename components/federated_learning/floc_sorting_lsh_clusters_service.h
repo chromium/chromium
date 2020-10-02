@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/optional.h"
+#include "base/version.h"
 #include "components/federated_learning/floc_id.h"
 
 namespace base {
@@ -28,7 +29,8 @@ namespace federated_learning {
 // File reading and parsing is posted to |background_task_runner_|.
 class FlocSortingLshClustersService {
  public:
-  using ApplySortingLshCallback = base::OnceCallback<void(FlocId)>;
+  using ApplySortingLshCallback =
+      base::OnceCallback<void(FlocId, base::Optional<base::Version>)>;
 
   class Observer {
    public:
@@ -46,24 +48,34 @@ class FlocSortingLshClustersService {
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
+  bool IsSortingLshClustersFileReady() const;
+
+  // Virtual for testing.
+  virtual void OnSortingLshClustersFileReady(const base::FilePath& file_path,
+                                             const base::Version& version);
+
+  // Virtual for testing.
+  virtual void ApplySortingLsh(const FlocId& raw_floc_id,
+                               ApplySortingLshCallback callback);
+
   void SetBackgroundTaskRunnerForTesting(
       scoped_refptr<base::SequencedTaskRunner> background_task_runner);
 
-  void ApplySortingLsh(const FlocId& raw_floc_id,
-                       ApplySortingLshCallback callback);
-
-  // Virtual for testing.
-  virtual void OnSortingLshClustersFileReady(const base::FilePath& file_path);
-
  private:
   friend class FlocSortingLshClustersServiceTest;
+
+  void DidApplySortingLsh(ApplySortingLshCallback callback,
+                          base::Version version,
+                          FlocId floc_id);
 
   // Runner for tasks that do not influence user experience.
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
 
   base::ObserverList<Observer>::Unchecked observers_;
 
-  base::Optional<base::FilePath> sorting_lsh_clusters_file_path_;
+  bool first_file_ready_seen_ = false;
+  base::FilePath sorting_lsh_clusters_file_path_;
+  base::Version sorting_lsh_clusters_version_;
 
   base::WeakPtrFactory<FlocSortingLshClustersService> weak_ptr_factory_;
 };
