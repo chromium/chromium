@@ -14,4 +14,6 @@ interface IBrowserClient {
 
   // Added in 87.
   IRemoteFragment createMediaRouteDialogFragment() = 3;
+  void onBrowserControlsOffsetsChanged(in boolean isTop,
+                                       in int controlsOffset) = 4;
 }

@@ -68,6 +68,7 @@ android_library("weblayer_java_tests") {
 android_library("weblayer_private_java_tests") {
   testonly = true
   sources = [
+    "src/org/chromium/weblayer/test/BrowserControlsOffsetCallbackTest.java",
     "src/org/chromium/weblayer/test/BrowserControlsTest.java",
     "src/org/chromium/weblayer/test/FullscreenCallbackPrivateTest.java",
     "src/org/chromium/weblayer/test/GeolocationTest.java",

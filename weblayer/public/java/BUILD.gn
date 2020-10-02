@@ -37,6 +37,7 @@ android_library("java") {
   sources = [
     "org/chromium/weblayer/BroadcastReceiver.java",
     "org/chromium/weblayer/Browser.java",
+    "org/chromium/weblayer/BrowserControlsOffsetCallback.java",
     "org/chromium/weblayer/BrowserFragment.java",
     "org/chromium/weblayer/BrowsingDataType.java",
     "org/chromium/weblayer/Callback.java",

@@ -283,6 +283,12 @@ public final class BrowserViewController
     }
 
     @Override
+    public void onOffsetsChanged(boolean isTop, int controlsOffset) {
+        if (mTab == null) return;
+        mTab.getBrowser().onBrowserControlsOffsetsChanged(mTab, isTop, controlsOffset);
+    }
+
+    @Override
     public void onGestureStateChanged() {
         // This is called from |mGestureStateTracker|.
         assert mGestureStateTracker != null;

@@ -161,6 +161,11 @@ class BrowserControlsContainerView extends FrameLayout {
          * Requests that the browser controls visibility state be changed.
          */
         void setAnimationConstraint(@BrowserControlsState int constraint);
+
+        /**
+         * Called when the offset of the controls changes.
+         */
+        void onOffsetsChanged(boolean isTop, int controlsOffset);
     }
 
     BrowserControlsContainerView(Context context, ContentViewRenderView contentViewRenderView,
@@ -498,6 +503,7 @@ class BrowserControlsContainerView extends FrameLayout {
             BrowserControlsContainerViewJni.get().setBottomControlsOffset(
                     mNativeBrowserControlsContainerView);
         }
+        mDelegate.onOffsetsChanged(mIsTop, mControlsOffset);
     }
 
     private void reportHeightChange() {
