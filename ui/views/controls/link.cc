@@ -71,6 +71,14 @@ bool Link::GetCanProcessEventsWithinSubtree() const {
   return View::GetCanProcessEventsWithinSubtree();
 }
 
+void Link::OnMouseEntered(const ui::MouseEvent& event) {
+  RecalculateFont();
+}
+
+void Link::OnMouseExited(const ui::MouseEvent& event) {
+  RecalculateFont();
+}
+
 bool Link::OnMousePressed(const ui::MouseEvent& event) {
   if (!GetEnabled() ||
       (!event.IsLeftMouseButton() && !event.IsMiddleMouseButton()))
@@ -198,9 +206,10 @@ void Link::OnClick(const ui::Event& event) {
 
 void Link::RecalculateFont() {
   const int style = font_list().GetFontStyle();
-  const int intended_style = ((GetEnabled() && HasFocus()) || force_underline_)
-                                 ? (style | gfx::Font::UNDERLINE)
-                                 : (style & ~gfx::Font::UNDERLINE);
+  const int intended_style =
+      ((GetEnabled() && (HasFocus() || IsMouseHovered())) || force_underline_)
+          ? (style | gfx::Font::UNDERLINE)
+          : (style & ~gfx::Font::UNDERLINE);
 
   if (style != intended_style)
     Label::SetFontList(font_list().DeriveWithStyle(intended_style));
