@@ -1029,7 +1029,7 @@ def swangle_windows_builder(*, name, **kwargs):
     return swangle_builder(
         name = name,
         goma_backend = builders.goma.backend.RBE_PROD,
-        os = builders.os.WINDOWS_DEFAULT,
+        os = builders.os.WINDOWS_ANY,
         pool = "luci.chromium.gpu.ci",
         **kwargs
     )
