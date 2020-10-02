@@ -41167,6 +41167,8 @@ from previous Chrome versions.
   <int value="-1925453192" label="BlockInsecurePrivateNetworkRequests:enabled"/>
   <int value="-1925117279" label="disable-quic-https"/>
   <int value="-1925106340" label="CameraSystemWebApp:disabled"/>
+  <int value="-1922176861"
+      label="WalletRequiresFirstSyncSetupComplete:disabled"/>
   <int value="-1921593903" label="ImeInputLogicHmm:disabled"/>
   <int value="-1920912991" label="PermissionChip:disabled"/>
   <int value="-1919683750" label="EnableOopPrintDrivers:disabled"/>
@@ -43723,6 +43725,7 @@ from previous Chrome versions.
   <int value="652561231" label="CustomContextMenu:enabled"/>
   <int value="653795860" label="HelpAppReleaseNotes:disabled"/>
   <int value="654199907" label="AllowSyncXHRInPageDismissal:disabled"/>
+  <int value="654879464" label="WalletRequiresFirstSyncSetupComplete:enabled"/>
   <int value="656864700" label="FillOnAccountSelectHttp:disabled"/>
   <int value="659086147" label="OverlayScrollbarFlashWhenMouseEnter:enabled"/>
   <int value="661020875" label="AutofillSaveCardShowNoThanks:disabled"/>

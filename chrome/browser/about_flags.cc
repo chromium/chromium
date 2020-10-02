@@ -6659,10 +6659,19 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop,
      FEATURE_VALUE_TYPE(
          browsing_data::features::kEnableBrowsingDataLifetimeManager)},
-    // NOTE: Adding a new flag requires adding a corresponding entry to enum
-    // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
-    // Histograms" in tools/metrics/histograms/README.md (run the
-    // AboutFlagsHistogramTest unit test to verify this process).
+
+#if defined(OS_ANDROID)
+    {"wallet-requires-first-sync-setup",
+     flag_descriptions::kWalletRequiresFirstSyncSetupCompleteName,
+     flag_descriptions::kWalletRequiresFirstSyncSetupCompleteDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kWalletRequiresFirstSyncSetupComplete)},
+#endif  // defined(OS_ANDROID)
+        // NOTE: Adding a new flag requires adding a corresponding entry to enum
+        // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
+        // Histograms" in tools/metrics/histograms/README.md (run the
+        // AboutFlagsHistogramTest unit test to verify this process).
 };
 
 class FlagsStateSingleton : public flags_ui::FlagsState::Delegate {

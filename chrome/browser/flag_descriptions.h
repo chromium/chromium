@@ -1852,6 +1852,9 @@ extern const char kTabbedAppOverflowMenuRegroupDescription[];
 extern const char kTabbedAppOverflowMenuThreeButtonActionbarName[];
 extern const char kTabbedAppOverflowMenuThreeButtonActionbarDescription[];
 
+extern const char kWalletRequiresFirstSyncSetupCompleteName[];
+extern const char kWalletRequiresFirstSyncSetupCompleteDescription[];
+
 // Non-Android ----------------------------------------------------------------
 
 #else  // !defined(OS_ANDROID)

@@ -4671,6 +4671,11 @@
     "expiry_milestone": 90
   },
   {
+    "name": "wallet-requires-first-sync-setup",
+    "owners": [ "treib", "butter-team@google.com" ],
+    "expiry_milestone": 90
+  },
+  {
     "name": "wallet-service-use-sandbox",
     "owners": [ "jsaul@google.com", "payments-autofill-team@google.com" ],
     // This flag is used by testing teams to run Google Payments calls against

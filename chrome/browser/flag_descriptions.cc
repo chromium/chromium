@@ -3245,6 +3245,14 @@ const char kTabbedAppOverflowMenuThreeButtonActionbarName[] =
 const char kTabbedAppOverflowMenuThreeButtonActionbarDescription[] =
     "If enabled, the actionbar in the overflow menu will have 3 buttons.";
 
+const char kWalletRequiresFirstSyncSetupCompleteName[] =
+    "Controls whether Wallet (GPay) integration on Android requires "
+    "first-sync-setup to be complete";
+const char kWalletRequiresFirstSyncSetupCompleteDescription[] =
+    "Controls whether the Wallet (GPay) integration on Android requires "
+    "first-sync-setup to be complete. Only has an effect if "
+    "enable-autofill-account-wallet-storage is also enabled.";
+
 // Non-Android -----------------------------------------------------------------
 
 #else  // !defined(OS_ANDROID)

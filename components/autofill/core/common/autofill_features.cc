@@ -335,5 +335,13 @@ const base::Feature kAutofillUseUniqueRendererIDsOnIOS{
     "AutofillUseUniqueRendererIDsOnIOS", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
+#if defined(OS_ANDROID)
+// Controls whether the Wallet (GPay) integration requires first-sync-setup to
+// be complete.
+// TODO(crbug.com/1134564): Clean up after launch.
+const base::Feature kWalletRequiresFirstSyncSetupComplete{
+    "WalletRequiresFirstSyncSetupComplete", base::FEATURE_ENABLED_BY_DEFAULT};
+#endif
+
 }  // namespace features
 }  // namespace autofill
