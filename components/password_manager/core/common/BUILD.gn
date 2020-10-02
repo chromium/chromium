@@ -28,21 +28,19 @@ static_library("common") {
   ]
 }
 
-source_set("unit_tests") {
-  testonly = true
-  sources = [ "credential_manager_types_unittest.cc" ]
+if (is_ios) {
+  source_set("unit_tests") {
+    testonly = true
+    sources = [ "passwords_directory_util_ios_unittest.cc" ]
 
-  if (is_ios) {
-    sources += [ "passwords_directory_util_ios_unittest.cc" ]
+    deps = [
+      ":common",
+      "//base",
+      "//base/test:test_support",
+      "//components/autofill/core/common",
+      "//sql",
+      "//testing/gtest",
+      "//url",
+    ]
   }
-
-  deps = [
-    ":common",
-    "//base",
-    "//base/test:test_support",
-    "//components/autofill/core/common",
-    "//sql",
-    "//testing/gtest",
-    "//url",
-  ]
 }

@@ -7,10 +7,7 @@
 
 #include <vector>
 #include "components/autofill/core/common/form_data.h"
-
-namespace autofill {
-struct PasswordForm;
-}
+#include "components/password_manager/core/browser/password_form_forward.h"
 
 namespace content {
 class RenderFrameHost;
@@ -61,17 +58,15 @@ bool CheckChildProcessSecurityPolicyForURL(content::RenderFrameHost* frame,
 // on |password_form|. If the origin mismatches, the process for |frame| is
 // terminated and the function returns false.
 // TODO: Delete this signature after transferring all driver calls to FormData
-bool CheckChildProcessSecurityPolicy(
-    content::RenderFrameHost* frame,
-    const autofill::PasswordForm& password_form,
-    BadMessageReason reason);
+bool CheckChildProcessSecurityPolicy(content::RenderFrameHost* frame,
+                                     const PasswordForm& password_form,
+                                     BadMessageReason reason);
 
 // Same as above but checks every form in |forms|.
 // TODO: Delete this signature after transferring all driver calls to FormData
-bool CheckChildProcessSecurityPolicy(
-    content::RenderFrameHost* frame,
-    const std::vector<autofill::PasswordForm>& forms,
-    BadMessageReason reason);
+bool CheckChildProcessSecurityPolicy(content::RenderFrameHost* frame,
+                                     const std::vector<PasswordForm>& forms,
+                                     BadMessageReason reason);
 
 bool CheckChildProcessSecurityPolicy(
     content::RenderFrameHost* frame,

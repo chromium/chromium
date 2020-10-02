@@ -17,10 +17,6 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-namespace autofill {
-struct PasswordForm;
-}
-
 namespace password_manager {
 
 // Limit the size of the federations array that we pass to the browser to
@@ -48,7 +44,13 @@ std::ostream& operator<<(std::ostream& os, CredentialType value);
 
 struct CredentialInfo {
   CredentialInfo();
-  CredentialInfo(const autofill::PasswordForm& form, CredentialType form_type);
+  CredentialInfo(CredentialType type,
+                 base::Optional<base::string16> id,
+                 base::Optional<base::string16> name,
+                 GURL icon,
+                 base::Optional<base::string16> password,
+                 url::Origin federation);
+
   CredentialInfo(const CredentialInfo& other);
   ~CredentialInfo();
 
@@ -74,13 +76,6 @@ struct CredentialInfo {
   // Corresponds to WebFederatedCredential's provider property.
   url::Origin federation;
 };
-
-// Create a new autofill::PasswordForm object based on |info|, valid in the
-// context of |origin|. Returns an empty std::unique_ptr for
-// CREDENTIAL_TYPE_EMPTY.
-std::unique_ptr<autofill::PasswordForm> CreatePasswordFormFromCredentialInfo(
-    const CredentialInfo& info,
-    const url::Origin& origin);
 
 }  // namespace password_manager
 

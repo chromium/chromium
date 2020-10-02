@@ -12,7 +12,6 @@
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/core/common/form_data.h"
-#include "components/autofill/core/common/password_form.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/content/browser/form_submission_tracker_util.h"
 #include "components/password_manager/core/browser/password_manager_client.h"

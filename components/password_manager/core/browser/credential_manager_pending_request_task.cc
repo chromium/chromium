@@ -17,6 +17,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/stl_util.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliated_match_helper.h"
+#include "components/password_manager/core/browser/credential_manager_utils.h"
 #include "components/password_manager/core/browser/password_bubble_experiment.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
@@ -241,10 +242,7 @@ void CredentialManagerPendingRequestTask::ProcessForms(
   if (can_use_autosignin && !local_results[0]->skip_zero_click &&
       !password_bubble_experiment::ShouldShowAutoSignInPromptFirstRunExperience(
           delegate_->client()->GetPrefs())) {
-    CredentialInfo info(*local_results[0],
-                        local_results[0]->federation_origin.opaque()
-                            ? CredentialType::CREDENTIAL_TYPE_PASSWORD
-                            : CredentialType::CREDENTIAL_TYPE_FEDERATED);
+    auto info = PasswordFormToCredentialInfo(*local_results[0]);
     delegate_->client()->NotifyUserAutoSignin(std::move(local_results),
                                               origin_);
     base::RecordAction(base::UserMetricsAction("CredentialManager_Autosignin"));

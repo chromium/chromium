@@ -7,7 +7,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/syslog_logging.h"
-#include "components/autofill/core/common/password_form.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -55,10 +55,9 @@ bool CheckChildProcessSecurityPolicyForURL(content::RenderFrameHost* frame,
   return true;
 }
 
-bool CheckChildProcessSecurityPolicy(
-    content::RenderFrameHost* frame,
-    const autofill::PasswordForm& password_form,
-    BadMessageReason reason) {
+bool CheckChildProcessSecurityPolicy(content::RenderFrameHost* frame,
+                                     const PasswordForm& password_form,
+                                     BadMessageReason reason) {
   return CheckChildProcessSecurityPolicyForURL(frame, password_form.url,
                                                reason) &&
          CheckChildProcessSecurityPolicyForURL(
@@ -67,10 +66,9 @@ bool CheckChildProcessSecurityPolicy(
              frame, password_form.form_data.url, reason);
 }
 
-bool CheckChildProcessSecurityPolicy(
-    content::RenderFrameHost* frame,
-    const std::vector<autofill::PasswordForm>& forms,
-    BadMessageReason reason) {
+bool CheckChildProcessSecurityPolicy(content::RenderFrameHost* frame,
+                                     const std::vector<PasswordForm>& forms,
+                                     BadMessageReason reason) {
   for (const auto& form : forms) {
     if (!bad_message::CheckChildProcessSecurityPolicy(frame, form, reason))
       return false;

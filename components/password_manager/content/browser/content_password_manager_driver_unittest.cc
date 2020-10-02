@@ -29,7 +29,6 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 
 using autofill::ParsingResult;
-using autofill::PasswordForm;
 using autofill::PasswordFormFillData;
 using base::ASCIIToUTF16;
 using testing::_;

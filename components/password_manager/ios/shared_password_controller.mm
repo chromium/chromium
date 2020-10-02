@@ -22,7 +22,6 @@
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_data.h"
-#include "components/autofill/core/common/password_form.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
 #include "components/autofill/core/common/password_form_generation_data.h"
 #include "components/autofill/core/common/renderer_id.h"
@@ -56,7 +55,6 @@
 using autofill::FormActivityObserverBridge;
 using autofill::FormData;
 using autofill::PasswordFormGenerationData;
-using autofill::PasswordForm;
 using autofill::FormRendererId;
 using autofill::FieldRendererId;
 using base::SysNSStringToUTF16;

@@ -32,7 +32,6 @@ NS_ASSUME_NONNULL_BEGIN
 using autofill::FieldRendererId;
 using autofill::FormData;
 using autofill::FormRendererId;
-using autofill::PasswordForm;
 using autofill::PasswordFormFillData;
 using base::test::ios::kWaitForJSCompletionTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;

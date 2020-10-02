@@ -1,43 +1,41 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/password_manager/core/common/credential_manager_types.h"
+#include "components/password_manager/core/browser/credential_manager_utils.h"
+
+#include <memory>
 
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/autofill/core/common/password_form.h"
+#include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/common/credential_manager_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
 namespace password_manager {
 
-class CredentialManagerTypesTest : public testing::Test {
- public:
-  CredentialManagerTypesTest()
-      : origin_(url::Origin::Create(GURL("https://example.test/"))),
-        icon_(GURL("https://fast-cdn.test/icon.png")),
-        federation_(url::Origin::Create(GURL("https://federation.test/"))) {}
-
+class CredentialManagerUtilsTest : public testing::Test {
  protected:
-  url::Origin origin_;
-  GURL icon_;
-  url::Origin federation_;
+  url::Origin origin_{url::Origin::Create(GURL("https://example.test/"))};
+  GURL icon_{"https://fast-cdn.test/icon.png"};
+  url::Origin federation_{
+      url::Origin::Create(GURL("https://federation.test/"))};
 };
 
-TEST_F(CredentialManagerTypesTest, CreatePasswordFormEmpty) {
+TEST_F(CredentialManagerUtilsTest, CreatePasswordFormEmpty) {
   CredentialInfo info;
-  std::unique_ptr<autofill::PasswordForm> form;
+  std::unique_ptr<PasswordForm> form;
 
   // Empty CredentialInfo -> nullptr.
   form = CreatePasswordFormFromCredentialInfo(info, origin_);
   EXPECT_EQ(nullptr, form.get());
 }
 
-TEST_F(CredentialManagerTypesTest, CreatePasswordFormFederation) {
+TEST_F(CredentialManagerUtilsTest, CreatePasswordFormFederation) {
   CredentialInfo info;
-  std::unique_ptr<autofill::PasswordForm> form;
+  std::unique_ptr<PasswordForm> form;
 
   info.id = base::ASCIIToUTF16("id");
   info.name = base::ASCIIToUTF16("name");
@@ -48,11 +46,11 @@ TEST_F(CredentialManagerTypesTest, CreatePasswordFormFederation) {
   form = CreatePasswordFormFromCredentialInfo(info, origin_);
   ASSERT_NE(nullptr, form.get());
 
-  EXPECT_EQ(autofill::PasswordForm::Type::kApi, form->type);
+  EXPECT_EQ(PasswordForm::Type::kApi, form->type);
   EXPECT_EQ(info.icon, form->icon_url);
   EXPECT_EQ(info.name, form->display_name);
   EXPECT_EQ(origin_.GetURL(), form->url);
-  EXPECT_EQ(autofill::PasswordForm::Scheme::kHtml, form->scheme);
+  EXPECT_EQ(PasswordForm::Scheme::kHtml, form->scheme);
 
   // Federated credentials have empty passwords, non-empty federation_origins,
   // and funky signon realms.
@@ -61,9 +59,9 @@ TEST_F(CredentialManagerTypesTest, CreatePasswordFormFederation) {
   EXPECT_EQ("federation://example.test/federation.test", form->signon_realm);
 }
 
-TEST_F(CredentialManagerTypesTest, CreatePasswordFormLocal) {
+TEST_F(CredentialManagerUtilsTest, CreatePasswordFormLocal) {
   CredentialInfo info;
-  std::unique_ptr<autofill::PasswordForm> form;
+  std::unique_ptr<PasswordForm> form;
 
   info.id = base::ASCIIToUTF16("id");
   info.name = base::ASCIIToUTF16("name");
@@ -77,7 +75,7 @@ TEST_F(CredentialManagerTypesTest, CreatePasswordFormLocal) {
   EXPECT_EQ(info.icon, form->icon_url);
   EXPECT_EQ(info.name, form->display_name);
   EXPECT_EQ(origin_.GetURL().spec(), form->url);
-  EXPECT_EQ(autofill::PasswordForm::Scheme::kHtml, form->scheme);
+  EXPECT_EQ(PasswordForm::Scheme::kHtml, form->scheme);
 
   // Local credentials have empty federation_origins, non-empty passwords, and
   // a signon realm that matches the origin.
