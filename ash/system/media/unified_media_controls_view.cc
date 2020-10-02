@@ -195,7 +195,6 @@ UnifiedMediaControlsView::UnifiedMediaControlsView(
           AshColorProvider::ContentLayerType::kIconColorPrimary)));
   drop_down_icon_ = title_row->AddChildView(std::move(drop_down_icon));
 
-  title_row_layout->SetFlexForView(title_label_, 1);
   track_column->AddChildView(std::move(title_row));
 
   auto artist_label = std::make_unique<views::Label>();
