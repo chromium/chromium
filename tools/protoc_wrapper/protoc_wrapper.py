@@ -9,6 +9,12 @@ Script for //third_party/protobuf/proto_library.gni .
 Features:
 - Inserts #include for extra header automatically.
 - Prevents bad proto names.
+- Works around protoc's bad descriptor file generation.
+  Ninja expects the format:
+  target: deps
+  But protoc just outputs:
+  deps
+  This script adds the "target:" part.
 """
 
 from __future__ import print_function
@@ -99,6 +105,9 @@ def main(argv):
   )
   parser.add_argument("--descriptor-set-out",
                       help="Path to write a descriptor.")
+  parser.add_argument(
+      "--descriptor-set-dependency-file",
+      help="Path to write the dependency file for descriptor set.")
   parser.add_argument("protos", nargs="+",
                       help="Input protobuf definition file(s).")
 
@@ -155,6 +164,15 @@ def main(argv):
 
   if options.descriptor_set_out:
     protoc_cmd += ["--descriptor_set_out", options.descriptor_set_out]
+    protoc_cmd += ["--include_imports"]
+
+  dependency_file_data = None
+  if options.descriptor_set_out and options.descriptor_set_dependency_file:
+      protoc_cmd += ['--dependency_out', options.descriptor_set_dependency_file]
+      ret = subprocess.call(protoc_cmd)
+
+      with open(options.descriptor_set_dependency_file, 'r') as f:
+        dependency_file_data = f.read().decode('utf-8')
 
   ret = subprocess.call(protoc_cmd)
   if ret != 0:
@@ -167,6 +185,11 @@ def main(argv):
       error_number = "%d" % ret
     raise RuntimeError("Protoc has returned non-zero status: "
                        "{0}".format(error_number))
+
+  if dependency_file_data:
+    with open(options.descriptor_set_dependency_file, 'w') as f:
+      f.write(options.descriptor_set_out + ":")
+      f.write(dependency_file_data)
 
   if options.include:
     WriteIncludes(headers, options.include)

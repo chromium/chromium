@@ -297,8 +297,8 @@ template("proto_library") {
   # Generate protobuf stubs.
   action(action_name) {
     visibility = [
-      ":$source_set_name",
       ":$javascript_name",
+      ":$source_set_name",
     ]
     script = "//tools/protoc_wrapper/protoc_wrapper.py"
     sources = proto_sources
@@ -371,9 +371,15 @@ template("proto_library") {
     }
 
     if (generate_descriptor != "") {
+      depfile =
+          "$root_gen_dir/" + proto_out_dir + "/" + generate_descriptor + ".d"
+      rel_depfile = rebase_path(depfile, root_build_dir)
+
       args += [
         "--descriptor-set-out",
         rel_descriptor_out,
+        "--descriptor-set-dependency-file",
+        rel_depfile,
       ]
     }
 
