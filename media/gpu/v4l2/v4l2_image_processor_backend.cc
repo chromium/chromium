@@ -96,13 +96,23 @@ void FillV4L2BufferByGpuMemoryBufferHandle(
 }
 
 bool AllocateV4L2Buffers(V4L2Queue* queue,
-                         size_t num_buffers,
+                         const size_t num_buffers,
                          v4l2_memory memory_type) {
   DCHECK(queue);
-  if (queue->AllocateBuffers(num_buffers, memory_type) == 0u)
+
+  size_t requested_buffers = num_buffers;
+
+  // If we are using DMABUFs, then we will try to keep using the same V4L2
+  // buffer for a given input or output frame. In that case, allocate as many
+  // V4L2 buffers as we can to avoid running out of them. Unused buffers won't
+  // use backed memory and are thus virtually free.
+  if (memory_type == V4L2_MEMORY_DMABUF)
+    requested_buffers = VIDEO_MAX_FRAME;
+
+  if (queue->AllocateBuffers(requested_buffers, memory_type) == 0u)
     return false;
 
-  if (queue->AllocatedBuffersCount() != num_buffers) {
+  if (queue->AllocatedBuffersCount() < num_buffers) {
     VLOGF(1) << "Failed to allocate buffers. Allocated number="
              << queue->AllocatedBuffersCount()
              << ", Requested number=" << num_buffers;
