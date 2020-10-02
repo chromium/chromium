@@ -76,6 +76,8 @@ import java.io.IOException;
 public class MainSettingsFragmentTest {
     private static final String SEARCH_ENGINE_SHORT_NAME = "Google";
 
+    private static final int RENDER_TEST_REVISION = 2;
+
     private final HomepageTestRule mHomepageTestRule = new HomepageTestRule();
 
     private final SyncTestRule mSyncTestRule = new SyncTestRule();
@@ -91,8 +93,9 @@ public class MainSettingsFragmentTest {
                                                 .around(mSettingsActivityTestRule);
 
     @Rule
-    public ChromeRenderTestRule mRenderTestRule =
-            ChromeRenderTestRule.Builder.withPublicCorpus().build();
+    public ChromeRenderTestRule mRenderTestRule = ChromeRenderTestRule.Builder.withPublicCorpus()
+                                                          .setRevision(RENDER_TEST_REVISION)
+                                                          .build();
 
     @Mock
     public TemplateUrlService mMockTemplateUrlService;

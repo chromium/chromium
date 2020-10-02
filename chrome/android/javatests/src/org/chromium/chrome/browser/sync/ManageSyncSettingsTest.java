@@ -69,6 +69,8 @@ import java.util.Set;
 public class ManageSyncSettingsTest {
     private static final String TAG = "ManageSyncSettingsTest";
 
+    private static final int RENDER_TEST_REVISION = 2;
+
     /**
      * Maps ModelTypes to their UI element IDs.
      */
@@ -98,7 +100,9 @@ public class ManageSyncSettingsTest {
 
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
-            ChromeRenderTestRule.Builder.withPublicCorpus().build();
+            ChromeRenderTestRule.Builder.withPublicCorpus()
+                    .setRevision(RENDER_TEST_REVISION)
+                    .build();
 
     @Test
     @SmallTest
