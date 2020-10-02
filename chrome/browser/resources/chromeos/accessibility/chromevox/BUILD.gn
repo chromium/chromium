@@ -192,8 +192,7 @@ run_jsbundler("chromevox_copied_files") {
     "background/keymaps/default_keymap.json",
     "background/logging/log.css",
     "background/logging/log.html",
-    "i_tutorial/components/i_tutorial.js",
-    "i_tutorial/components/tutorial_lesson.js",
+    "i_tutorial/components/tutorial_common.js",
     "i_tutorial/lessons/basic_navigation.html",
     "i_tutorial/lessons/jump_commands.html",
     "i_tutorial/lessons/selects.html",
@@ -496,7 +495,7 @@ if (is_chromeos) {
 
 copy("lesson_component") {
   sources = [ "$chromevox_gen_dir/i_tutorial/components/tutorial_lesson.js" ]
-  outputs = [ "$chromevox_out_dir/i_tutorial/tutorial_lesson.js" ]
+  outputs = [ "$chromevox_out_dir/i_tutorial/components/tutorial_lesson.js" ]
   deps = [
     "i_tutorial/components:closure_compile",
     "i_tutorial/components:components",
@@ -505,7 +504,7 @@ copy("lesson_component") {
 
 copy("tutorial_component") {
   sources = [ "$chromevox_gen_dir/i_tutorial/components/i_tutorial.js" ]
-  outputs = [ "$chromevox_out_dir/i_tutorial/i_tutorial.js" ]
+  outputs = [ "$chromevox_out_dir/i_tutorial/components/i_tutorial.js" ]
 
   deps = [
     "i_tutorial/components:closure_compile",

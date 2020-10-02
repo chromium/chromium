@@ -16,6 +16,7 @@ js_type_check("closure_compile") {
   is_polymer3 = true
   deps = [
     ":i_tutorial",
+    ":tutorial_common",
     ":tutorial_lesson",
   ]
 }
@@ -30,4 +31,7 @@ js_library("i_tutorial") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
+}
+
+js_library("tutorial_common") {
 }

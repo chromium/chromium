@@ -9,7 +9,9 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
+
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {TutorialCommon} from './tutorial_common.js';
 import {TutorialLesson} from './tutorial_lesson.js';
 
 /** @enum {string} */
@@ -63,6 +65,8 @@ Polymer({
   is: 'i-tutorial',
 
   _template: html`{__html_template__}`,
+
+  behaviors: [TutorialCommon],
 
   properties: {
     curriculum: {
@@ -312,38 +316,22 @@ Polymer({
         },
 
         {
-          title: 'On, Off, and Stop',
-          content: [
-            'To temporarily stop ChromeVox from speaking, press the Control ' +
-                'key.',
-            'To turn ChromeVox on or off, use Control+Alt+Z.',
-          ],
+          title: 'tutorial_on_off_heading',
+          content: ['tutorial_control', 'tutorial_on_off'],
           medium: InteractionMedium.KEYBOARD,
           curriculums: [Curriculum.ESSENTIAL_KEYS],
         },
 
         {
-          title: 'The ChromeVox Modifier Key',
-          content: [
-            'In ChromeVox, the Search key is the modifier key. ' +
-                'Most ChromeVox shortcuts start with the Search key. ' +
-                'You’ll also use the arrow keys for navigation.',
-            'On the Chromebook, the Search key is immediately above the ' +
-                'left Shift key.',
-          ],
+          title: 'tutorial_modifier_heading',
+          content: ['tutorial_modifier', 'tutorial_chromebook_search'],
           medium: InteractionMedium.KEYBOARD,
           curriculums: [Curriculum.ESSENTIAL_KEYS],
         },
 
         {
-          title: 'Basic Navigation',
-          content: [
-            'To move forward between items on a page, press Search + Right ' +
-                'Arrow, or Search + Left Arrow to jump back.',
-            'To go to the next line, press Search + Down Arrow. ' +
-                'To get to the previous line, use Search + Up Arrow.',
-            'If you reach an item you want to click, press Search + Space.',
-          ],
+          title: 'tutorial_basic_navigation_heading',
+          content: ['tutorial_basic_navigation'],
           medium: InteractionMedium.KEYBOARD,
           curriculums: [Curriculum.NAVIGATION],
           practiceTitle: 'Basic Navigation Practice',
@@ -364,15 +352,11 @@ Polymer({
         },
 
         {
-          title: 'Jump Commands',
+          title: 'tutorial_jump_heading',
           content: [
-            'Use jump commands to skip to specific types of elements.',
-            'To jump forward between headings, press Search + H, or to ' +
-                'jump backward, press Search + Shift + H.',
-            'To jump forward between buttons, press Search + B, or to ' +
-                'jump backward, press Search + Shift + B',
-            'To jump foorward beetween links, press Search + L, or to ' +
-                'jump backward, press Search + Shift + L'
+            'tutorial_jump',
+            'tutorial_jump_second_heading',
+            'tutorial_jump_wrap_heading',
           ],
           medium: InteractionMedium.KEYBOARD,
           curriculums: [Curriculum.NAVIGATION],
@@ -403,48 +387,27 @@ Polymer({
         },
 
         {
-          title: 'The ChromeVox Menu',
+          title: 'tutorial_menus_heading',
           content: [
-            'To explore all ChromeVox commands and shortcuts, press ' +
-                'Search + Period, then use the Arrow keys to navigate the ' +
-                'menus, and Enter to activate a command. Return here by ' +
-                'pressing Search+o then t.',
+            'tutorial_menus',
           ],
           medium: InteractionMedium.KEYBOARD,
           curriculums: [Curriculum.COMMAND_REFERENCES]
         },
 
         {
-          title: 'Helpful Chrome Shortcuts',
+          title: 'tutorial_chrome_shortcuts_heading',
           content: [
-            'The next few shortcuts aren’t ChromeVox commands, but they are ' +
-                'still very useful for getting the most out of Chrome.',
-            'To navigate forward through actionable items like buttons and ' +
-                'links, press the Tab key. To navigate backwards, press ' +
-                'Shift+Tab.',
-            'To enter the Chrome browser address box, also called the ' +
-                'omnibox, press Control + L.',
-            'To open and go to a new tab automatically, press Control+T. ' +
-                'Your cursor will be in the omnibox.',
-            ' To close a tab, press Control+W.',
-            'To move forward between open tabs, use Control+Tab.',
-            'To open the Chrome browser menu, press Alt+F.',
-            'To open the full list of keyboard shortcuts, press ' +
-                'Control + Alt + /'
+            'tutorial_chrome_shortcuts',
+            'tutorial_chromebook_ctrl_forward',
           ],
           medium: InteractionMedium.KEYBOARD,
           curriculums: [Curriculum.COMMAND_REFERENCES]
         },
 
         {
-          title: 'Sounds',
-          content:
-              ['ChromeVox uses sounds to give you essential and additional ' +
-               'information. You can use these sounds to navigate more ' +
-               'quickly by learning what each sound means. Once you get ' +
-               'more comfortable, you can turn off verbose descriptions in ' +
-               'speech and rely on them for essential information about the ' +
-               'page. Here is a complete list of sounds and what they mean'],
+          title: 'tutorial_earcon_page_title',
+          content: ['tutorial_earcon_page_body'],
           medium: InteractionMedium.KEYBOARD,
           curriculums: [Curriculum.SOUNDS_AND_SETTINGS]
         },
@@ -471,14 +434,10 @@ Polymer({
         },
 
         {
-          title: 'Resources',
+          title: 'tutorial_learn_more_heading',
           content: [
-            'You’ve learned the essentials to use ChromeVox successfully.  ' +
-                'Remember that you can open the ChromeVox command menu at ' +
-                'any time by pressing Search+Period. To learn even more ' +
-                'about ChromeVox and Chrome OS, visit the following articles.',
-            'If you are done with the tutorial, use ChromeVox to navigate ' +
-                'to the Quit button and click it.'
+            'tutorial_learn_more', 'next_command_reference',
+            'chrome_keyboard_shortcuts', 'touchscreen_accessibility'
           ],
           medium: InteractionMedium.KEYBOARD,
           curriculums: [Curriculum.RESOURCES],
@@ -661,7 +620,7 @@ Polymer({
     for (const lesson of this.includedLessons) {
       const button = document.createElement('cr-button');
       button.addEventListener('click', this.showLesson.bind(this, count - 1));
-      button.textContent = lesson.title;
+      button.textContent = this.getMsg(lesson.title);
       this.$.lessonShortcuts.appendChild(button);
       count += 1;
     }
@@ -963,7 +922,7 @@ Polymer({
   readCurrentLessonTitle() {
     const lesson = this.getCurrentLesson();
     this.requestSpeech(
-        lesson.title, QueueMode.INTERJECT, {doNotInterrupt: true});
+        this.getMsg(lesson.title), QueueMode.INTERJECT, {doNotInterrupt: true});
   },
 
   /**
@@ -975,21 +934,22 @@ Polymer({
     const lesson = this.getCurrentLesson();
     for (const text of lesson.content) {
       // Queue lesson content so it is read after the lesson title.
-      this.requestSpeech(text, QueueMode.QUEUE);
+      this.requestSpeech(this.getMsg(text), QueueMode.QUEUE);
     }
   },
 
   /**
    * @private
    * @suppress {undefinedVars|missingProperties} For referencing
-   * EarconDescription and Msgs, which are defined on the Panel window.
+   * EarconDescription, which is defined on the Panel window.
    */
   buildEarconLesson() {
     // Find earcon lesson.
     let earconLesson;
     const elements = this.$.lessonContainer.children;
     for (const element of elements) {
-      if (element.is === 'tutorial-lesson' && element.title === 'Sounds') {
+      if (element.is === 'tutorial-lesson' &&
+          element.title === 'tutorial_earcon_page_title') {
         earconLesson = element;
       }
     }
@@ -1002,7 +962,7 @@ Polymer({
     for (const earconId in EarconDescription) {
       const msgid = EarconDescription[earconId];
       const earconElement = document.createElement('p');
-      earconElement.innerText = Msgs.getMsg(msgid);
+      earconElement.innerText = this.getMsg(msgid);
       earconElement.setAttribute('tabindex', -1);
       earconElement.addEventListener(
           'focus', this.requestEarcon.bind(this, earconId));
@@ -1017,5 +977,5 @@ Polymer({
   requestEarcon(earconId) {
     this.dispatchEvent(
         new CustomEvent('requestearcon', {composed: true, detail: {earconId}}));
-  }
+  },
 });

@@ -11,11 +11,14 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {TutorialCommon} from './tutorial_common.js';
 
 export const TutorialLesson = Polymer({
   is: 'tutorial-lesson',
 
   _template: html`{__html_template__}`,
+
+  behaviors: [TutorialCommon],
 
   properties: {
     lessonNum: {type: Number},
@@ -267,5 +270,10 @@ export const TutorialLesson = Polymer({
   /** @return {Element} */
   get contentDiv() {
     return this.$.content;
+  },
+
+  /** @return {string} */
+  getTitleText() {
+    return this.$.title.textContent;
   }
 });

@@ -1166,10 +1166,10 @@ Panel = class {
    */
   static createITutorial(curriculum) {
     const tutorialScript = document.createElement('script');
-    tutorialScript.src = '../i_tutorial/i_tutorial.js';
+    tutorialScript.src = '../i_tutorial/components/i_tutorial.js';
     tutorialScript.setAttribute('type', 'module');
     const lessonScript = document.createElement('script');
-    lessonScript.src = '../i_tutorial/tutorial_lesson.js';
+    lessonScript.src = '../i_tutorial/components/tutorial_lesson.js';
     lessonScript.setAttribute('type', 'module');
     document.body.appendChild(tutorialScript);
     document.body.appendChild(lessonScript);

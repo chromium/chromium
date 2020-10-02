@@ -94,12 +94,12 @@ a {
 
 <div id="container" hidden>
   <template is="dom-if" if="[[ title ]]">
-    <h1 id="title" tabindex="-1">[[ title ]]</h1>
+    <h1 id="title" tabindex="-1">[[ getMsg(title) ]]</h1>
   </template>
   <div id="content">
     <template id="contentTemplate" is="dom-repeat" items="[[ content ]]"
         as="text">
-      <p tabindex="-1">[[ text ]]</p>
+      <p tabindex="-1">[[ getMsg(text) ]]</p>
     </template>
   </div>
   <cr-dialog id="practice" close-text="Exit practice area"

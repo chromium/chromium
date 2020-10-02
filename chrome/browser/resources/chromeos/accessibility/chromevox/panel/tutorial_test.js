@@ -393,7 +393,7 @@ TEST_F('ChromeVoxTutorialTest', 'NextPreviousButtons', function() {
         .call(doCmd('nextButton'))
         .expectSpeech('Next lesson')
         .call(doCmd('forceClickOnCurrentItem'))
-        .expectSpeech('The ChromeVox Modifier Key', 'Heading 1')
+        .expectSpeech('The ChromeVox modifier key', 'Heading 1')
         .call(this.assertActiveLessonIndex.bind(this, 1))
         .call(doCmd('nextButton'))
         .expectSpeech('Previous lesson')
