@@ -54,6 +54,9 @@ class MailboxToSurfaceBridgeImpl : public device::MailboxToSurfaceBridge {
 
   bool CopyMailboxToSurfaceAndSwap(const gpu::MailboxHolder& mailbox) override;
 
+  bool CopyMailboxToSurfaceAndSwap(const gpu::MailboxHolder& mailbox,
+                                   const gfx::Transform& uv_transform) override;
+
   void GenSyncToken(gpu::SyncToken* out_sync_token) override;
 
   void WaitSyncToken(const gpu::SyncToken& sync_token) override;
@@ -77,7 +80,7 @@ class MailboxToSurfaceBridgeImpl : public device::MailboxToSurfaceBridge {
       scoped_refptr<viz::ContextProvider> provider);
   void InitializeRenderer();
   void DestroyContext();
-  void DrawQuad(unsigned int textureHandle);
+  void DrawQuad(unsigned int textureHandle, const gfx::Transform& uv_transform);
 
   scoped_refptr<viz::ContextProvider> context_provider_;
   std::unique_ptr<gl::ScopedJavaSurface> surface_;
@@ -97,6 +100,9 @@ class MailboxToSurfaceBridgeImpl : public device::MailboxToSurfaceBridge {
 
   // A swap ID which is passed to GL swap. Incremented each call.
   uint64_t swap_id_ = 0;
+
+  // Uniform handle for the UV transform used by DrawQuad.
+  uint32_t uniform_uv_transform_handle_ = 0;
 
   // A task runner for the GL thread
   scoped_refptr<base::SingleThreadTaskRunner> gl_thread_task_runner_;

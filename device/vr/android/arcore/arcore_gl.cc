@@ -62,6 +62,22 @@ const char kInputSourceProfileName[] = "generic-touchscreen";
 const gfx::Size kDefaultFrameSize = {1, 1};
 const display::Display::Rotation kDefaultRotation = display::Display::ROTATE_0;
 
+gfx::Transform GetContentTransform(const gfx::RectF& bounds) {
+  // Calculate the transform matrix from quad coordinates (range 0..1 with
+  // origin at bottom left of the quad) to texture lookup UV coordinates (also
+  // range 0..1 with origin at bottom left), where the active viewport uses a
+  // subset of the texture range that needs to be magnified to fill the quad.
+  // The bounds as used by the UpdateLayerBounds mojo messages appear to use an
+  // old WebVR convention with origin at top left, so the Y range needs to be
+  // mirrored.
+  gfx::Transform transform;
+  transform.matrix().set(0, 0, bounds.width());
+  transform.matrix().set(1, 1, bounds.height());
+  transform.matrix().set(0, 3, bounds.x());
+  transform.matrix().set(1, 3, 1.f - bounds.y() - bounds.height());
+  return transform;
+}
+
 }  // namespace
 
 namespace device {
@@ -400,6 +416,7 @@ void ArCoreGl::GetFrameData(
 
   vr::WebXrFrame* xrframe = webxr_->GetAnimatingFrame();
   xrframe->time_pose = now;
+  xrframe->bounds_left = viewport_bounds_;
 
   if (display_info_changed_) {
     frame_data->left_eye = display_info_->left_eye.Clone();
@@ -573,7 +590,13 @@ void ArCoreGl::ProcessFrameFromMailbox(int16_t frame_index,
   DCHECK(webxr_->HaveProcessingFrame());
   DCHECK(!ar_image_transport_->UseSharedBuffer());
 
-  ar_image_transport_->CopyMailboxToSurfaceAndSwap(transfer_size_, mailbox);
+  // Use only the active bounds of the viewport, converting the
+  // bounds UV boundaries to a transform. See also OnWebXrTokenSignaled().
+  gfx::Transform transform =
+      GetContentTransform(webxr_->GetProcessingFrame()->bounds_left);
+  ar_image_transport_->CopyMailboxToSurfaceAndSwap(transfer_size_, mailbox,
+                                                   transform);
+
   // Notify the client that we're done with the mailbox so that the underlying
   // image is eligible for destruction.
   submit_client_->OnSubmitFrameTransferred(true);
@@ -661,9 +684,13 @@ void ArCoreGl::OnWebXrTokenSignaled(int16_t frame_index,
   webxr_->GetProcessingFrame()->time_copied = base::TimeTicks::Now();
   webxr_->TransitionFrameProcessingToRendering();
 
+  // Use only the active bounds of the viewport, converting the
+  // bounds UV boundaries to a transform. See also ProcessFrameFromMailbox().
+  gfx::Transform transform =
+      GetContentTransform(webxr_->GetRenderingFrame()->bounds_left);
   glBindFramebufferEXT(GL_DRAW_FRAMEBUFFER, 0);
   ar_image_transport_->CopyDrawnImageToFramebuffer(
-      webxr_.get(), camera_image_size_, shared_buffer_transform_);
+      webxr_.get(), camera_image_size_, transform);
 
   FinishFrame(frame_index);
 
@@ -684,8 +711,22 @@ void ArCoreGl::UpdateLayerBounds(int16_t frame_index,
                                  const gfx::RectF& left_bounds,
                                  const gfx::RectF& right_bounds,
                                  const gfx::Size& source_size) {
-  DVLOG(2) << __func__ << " source_size=" << source_size.ToString();
+  DVLOG(2) << __func__ << " source_size=" << source_size.ToString()
+           << " left_bounds=" << left_bounds.ToString();
 
+  // The first UpdateLayerBounds may arrive early, when there's
+  // no animating frame yet. In that case, just save it in viewport_bounds_
+  // so that it's applied to the next animating frame.
+  if (webxr_->HaveAnimatingFrame()) {
+    // Handheld AR mode is monoscopic and only uses the left bounds.
+    webxr_->GetAnimatingFrame()->bounds_left = left_bounds;
+    (void)right_bounds;
+  }
+  viewport_bounds_ = left_bounds;
+
+  // Early setting of transfer_size_ is OK since that's only used by the
+  // animating frame. Processing/rendering frames use the bounds from
+  // WebXRPresentationState.
   transfer_size_ = source_size;
 }
 

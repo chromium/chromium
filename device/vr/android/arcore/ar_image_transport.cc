@@ -378,7 +378,8 @@ void ArImageTransport::CopyTextureToFramebuffer(
 
 void ArImageTransport::CopyMailboxToSurfaceAndSwap(
     const gfx::Size& frame_size,
-    const gpu::MailboxHolder& mailbox) {
+    const gpu::MailboxHolder& mailbox,
+    const gfx::Transform& uv_transform) {
   DVLOG(2) << __func__;
   if (frame_size != surface_size_) {
     DVLOG(2) << __func__ << " resize from " << surface_size_.ToString()
@@ -392,7 +393,8 @@ void ArImageTransport::CopyMailboxToSurfaceAndSwap(
   // Draw the image to the surface in the GPU process's command buffer context.
   // This will trigger an OnFrameAvailable event once the corresponding
   // SurfaceTexture in the local GL context is ready for updating.
-  bool swapped = mailbox_bridge_->CopyMailboxToSurfaceAndSwap(mailbox);
+  bool swapped =
+      mailbox_bridge_->CopyMailboxToSurfaceAndSwap(mailbox, uv_transform);
   DCHECK(swapped);
 }
 

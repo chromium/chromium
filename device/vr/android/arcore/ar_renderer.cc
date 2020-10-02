@@ -100,12 +100,15 @@ void ArRenderer::Draw(int texture_handle, const float (&uv_transform)[16]) {
   glVertexAttribPointer(position_handle_, 2, GL_FLOAT, false, 0, 0);
   glEnableVertexAttribArray(position_handle_);
 
-  // Bind texture. This is a 1:1 pixel copy since the source surface
-  // and renderbuffer destination size are resized to match, so use
-  // GL_NEAREST.
+  // Bind texture. This is not necessarily a 1:1 pixel copy since the
+  // size is modified by framebufferScaleFactor and requestViewportScale,
+  // so use GL_LINEAR.
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_EXTERNAL_OES, texture_handle);
-  vr::SetTexParameters(GL_TEXTURE_EXTERNAL_OES);
+  glTexParameteri(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   glUniform1i(texture_handle_, 0);
 
   glUniformMatrix4fv(uv_transform_, 1, GL_FALSE, &uv_transform[0]);

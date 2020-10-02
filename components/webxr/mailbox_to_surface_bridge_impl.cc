@@ -28,6 +28,7 @@
 #include "gpu/ipc/common/gpu_surface_tracker.h"
 #include "services/viz/public/cpp/gpu/context_provider_command_buffer.h"
 #include "ui/gfx/color_space.h"
+#include "ui/gfx/transform.h"
 #include "ui/gl/android/surface_texture.h"
 
 #include <android/native_window_jni.h>
@@ -43,8 +44,10 @@ const char kQuadCopyVertex[] = SHADER(
     attribute vec4 a_Position;
     attribute vec2 a_TexCoordinate;
     varying highp vec2 v_TexCoordinate;
+    uniform mat4 u_UvTransform;
     void main() {
-      v_TexCoordinate = a_TexCoordinate;
+      highp vec4 uv_in = vec4(a_TexCoordinate.x, a_TexCoordinate.y, 0, 1);
+      v_TexCoordinate = (u_UvTransform * uv_in).xy;
       gl_Position = a_Position;
     }
 );
@@ -291,6 +294,12 @@ void MailboxToSurfaceBridgeImpl::ResizeSurface(int width, int height) {
 
 bool MailboxToSurfaceBridgeImpl::CopyMailboxToSurfaceAndSwap(
     const gpu::MailboxHolder& mailbox) {
+  return CopyMailboxToSurfaceAndSwap(mailbox, gfx::Transform());
+}
+
+bool MailboxToSurfaceBridgeImpl::CopyMailboxToSurfaceAndSwap(
+    const gpu::MailboxHolder& mailbox,
+    const gfx::Transform& uv_transform) {
   if (!IsConnected()) {
     // We may not have a context yet, i.e. due to surface initialization
     // being incomplete. This is not an error, but we obviously can't draw
@@ -316,7 +325,7 @@ bool MailboxToSurfaceBridgeImpl::CopyMailboxToSurfaceAndSwap(
   GLuint sourceTexture = ConsumeTexture(gl_, mailbox);
   gl_->BeginSharedImageAccessDirectCHROMIUM(
       sourceTexture, GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM);
-  DrawQuad(sourceTexture);
+  DrawQuad(sourceTexture, uv_transform);
   gl_->EndSharedImageAccessDirectCHROMIUM(sourceTexture);
   gl_->DeleteTextures(1, &sourceTexture);
   gl_->SwapBuffers(swap_id_++);
@@ -423,6 +432,8 @@ void MailboxToSurfaceBridgeImpl::InitializeRenderer() {
       gl_->GetAttribLocation(program_handle, "a_TexCoordinate");
   GLuint texUniform_handle =
       gl_->GetUniformLocation(program_handle, "u_Texture");
+  uniform_uv_transform_handle_ =
+      gl_->GetUniformLocation(program_handle, "u_UvTransform");
 
   GLuint vertexBuffer = 0;
   gl_->GenBuffers(1, &vertexBuffer);
@@ -466,7 +477,8 @@ void MailboxToSurfaceBridgeImpl::InitializeRenderer() {
   gl_->Uniform1i(texUniform_handle, 0);
 }
 
-void MailboxToSurfaceBridgeImpl::DrawQuad(unsigned int texture_handle) {
+void MailboxToSurfaceBridgeImpl::DrawQuad(unsigned int texture_handle,
+                                          const gfx::Transform& uv_transform) {
   DCHECK(IsConnected());
 
   // We're redrawing over the entire viewport, but it's generally more
@@ -477,6 +489,11 @@ void MailboxToSurfaceBridgeImpl::DrawQuad(unsigned int texture_handle) {
   // it's not supported on older devices such as Nexus 5X.
   gl_->Clear(GL_COLOR_BUFFER_BIT);
 
+  float uv_transform_floats[16];
+  uv_transform.matrix().asColMajorf(uv_transform_floats);
+  gl_->UniformMatrix4fv(uniform_uv_transform_handle_, 1, GL_FALSE,
+                        &uv_transform_floats[0]);
+
   // Configure texture. This is a 1:1 pixel copy since the surface
   // size is resized to match the source canvas, so we can use
   // GL_NEAREST.
@@ -484,7 +501,11 @@ void MailboxToSurfaceBridgeImpl::DrawQuad(unsigned int texture_handle) {
   gl_->TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
   gl_->TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
   gl_->TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-  gl_->TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  if (uv_transform.IsIdentity()) {
+    gl_->TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  } else {
+    gl_->TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  }
   gl_->DrawArrays(GL_TRIANGLE_FAN, 0, 4);
 }
 

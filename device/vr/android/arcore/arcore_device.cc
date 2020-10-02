@@ -276,6 +276,7 @@ void ArCoreDevice::OnCreateSessionCallback(
   session->data_provider = std::move(frame_data_provider);
   session->display_info = std::move(display_info);
   session->submit_frame_sink = std::move(presentation_connection);
+  session->supports_viewport_scaling = true;
 
   std::move(deferred_callback)
       .Run(std::move(session), std::move(session_controller));

@@ -86,7 +86,8 @@ class COMPONENT_EXPORT(VR_ARCORE) ArImageTransport {
                                         const gfx::Transform& uv_transform);
   virtual void WaitSyncToken(const gpu::SyncToken& sync_token);
   virtual void CopyMailboxToSurfaceAndSwap(const gfx::Size& frame_size,
-                                           const gpu::MailboxHolder& mailbox);
+                                           const gpu::MailboxHolder& mailbox,
+                                           const gfx::Transform& uv_transform);
 
   bool UseSharedBuffer() { return shared_buffer_draw_; }
   void SetFrameAvailableCallback(XrFrameCallback on_frame_available);

@@ -225,6 +225,11 @@ class ArCoreGl : public mojom::XRFrameDataProvider,
   // smaller than the camera image if framebufferScaleFactor is < 1.0.
   gfx::Size transfer_size_ = gfx::Size(0, 0);
 
+  // Viewport size to use for new animating frames. Currently in-flight
+  // processing/rendering frames continue using the viewport size stored
+  // in their WebXrFrame state.
+  gfx::RectF viewport_bounds_ = gfx::RectF(0.f, 0.f, 1.f, 1.f);
+
   // The camera image size stays locked to the screen size even if
   // framebufferScaleFactor changes.
   gfx::Size camera_image_size_ = gfx::Size(0, 0);
@@ -234,10 +239,6 @@ class ArCoreGl : public mojom::XRFrameDataProvider,
   // UV transform for drawing the camera texture, this is supplied by ARCore
   // and can include 90 degree rotations or other nontrivial transforms.
   gfx::Transform uv_transform_;
-
-  // UV transform for drawing received WebGL content from a shared buffer's
-  // texture, this is simply an identity.
-  gfx::Transform shared_buffer_transform_;
 
   gfx::Transform projection_;
   gfx::Transform inverse_projection_;

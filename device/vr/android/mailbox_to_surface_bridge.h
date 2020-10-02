@@ -8,6 +8,7 @@
 namespace gfx {
 class ColorSpace;
 class GpuFence;
+class Transform;
 }  // namespace gfx
 
 namespace gl {
@@ -54,6 +55,9 @@ class MailboxToSurfaceBridge {
   // won't get a new frame on the SurfaceTexture.
   virtual bool CopyMailboxToSurfaceAndSwap(
       const gpu::MailboxHolder& mailbox) = 0;
+  virtual bool CopyMailboxToSurfaceAndSwap(
+      const gpu::MailboxHolder& mailbox,
+      const gfx::Transform& uv_transform) = 0;
 
   virtual void GenSyncToken(gpu::SyncToken* out_sync_token) = 0;
 
