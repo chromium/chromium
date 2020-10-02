@@ -240,12 +240,14 @@ mojom::RouteProvider* AgentSchedulingGroupHost::GetRemoteRouteProvider() {
 }
 
 void AgentSchedulingGroupHost::CreateFrame(mojom::CreateFrameParamsPtr params) {
-  SetUpMojoIfNeeded();
+  DCHECK(process_.IsInitializedAndNotDead());
+  DCHECK(mojo_remote_.is_bound());
   mojo_remote_.get()->CreateFrame(std::move(params));
 }
 
 void AgentSchedulingGroupHost::CreateView(mojom::CreateViewParamsPtr params) {
-  SetUpMojoIfNeeded();
+  DCHECK(process_.IsInitializedAndNotDead());
+  DCHECK(mojo_remote_.is_bound());
   mojo_remote_.get()->CreateView(std::move(params));
 }
 
