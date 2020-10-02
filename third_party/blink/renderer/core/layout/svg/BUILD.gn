@@ -44,7 +44,6 @@ blink_core_sources("svg_layout") {
     "layout_svg_resource_marker.h",
     "layout_svg_resource_masker.cc",
     "layout_svg_resource_masker.h",
-    "layout_svg_resource_paint_server.cc",
     "layout_svg_resource_paint_server.h",
     "layout_svg_resource_pattern.cc",
     "layout_svg_resource_pattern.h",

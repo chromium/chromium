@@ -135,8 +135,7 @@ struct SVGPaint {
     return type == other.type &&
            (type != SVG_PAINTTYPE_COLOR || color == other.color);
   }
-  bool HasFallbackColor() const { return type == SVG_PAINTTYPE_URI_COLOR; }
-  bool HasColor() const { return IsColor() || HasFallbackColor(); }
+  bool HasColor() const { return IsColor() || type == SVG_PAINTTYPE_URI_COLOR; }
   bool HasUrl() const { return type >= SVG_PAINTTYPE_URI_NONE; }
   bool HasCurrentColor() const { return HasColor() && color.IsCurrentColor(); }
   StyleSVGResource* Resource() const { return resource.get(); }

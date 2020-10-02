@@ -129,7 +129,7 @@ Canvas log:
         params : {
             paint : {
                 color : "#7F000000"
-                filterLevel : "Low"
+                filterLevel : "None"
                 flags : "AntiAlias"
                 strokeCap : "Butt"
                 strokeJoin : "Miter"

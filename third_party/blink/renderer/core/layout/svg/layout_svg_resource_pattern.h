@@ -47,9 +47,10 @@ class LayoutSVGResourcePattern final : public LayoutSVGResourcePaintServer {
   void RemoveAllClientsFromCache() override;
   bool RemoveClientFromCache(SVGResourceClient&) override;
 
-  SVGPaintServer PreparePaintServer(
-      const SVGResourceClient&,
-      const FloatRect& object_bounding_box) override;
+  bool ApplyShader(const SVGResourceClient&,
+                   const FloatRect& reference_box,
+                   const AffineTransform* additional_transform,
+                   PaintFlags&) override;
 
   static const LayoutSVGResourceType kResourceType = kPatternResourceType;
   LayoutSVGResourceType ResourceType() const override {
