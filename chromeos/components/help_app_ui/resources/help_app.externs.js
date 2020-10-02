@@ -77,12 +77,14 @@ helpApp.SearchResult = function() {};
 /** @type {string} */
 helpApp.SearchResult.prototype.id;
 /**
- * List of positions corresponding to the title. Used in snippet.
+ * List of positions corresponding to the title, sorted by start index. Used in
+ * snippet.
  * @type {?Array<!helpApp.Position>}
  */
 helpApp.SearchResult.prototype.titlePositions;
 /**
- * List of positions corresponding to the body. Used in snippet.
+ * List of positions corresponding to the body sorted by start index. Used in
+ * snippet.
  * @type {?Array<!helpApp.Position>}
  */
 helpApp.SearchResult.prototype.bodyPositions;

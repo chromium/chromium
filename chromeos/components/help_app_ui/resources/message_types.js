@@ -13,5 +13,8 @@
  */
 const Message = {
   OPEN_FEEDBACK_DIALOG: 'open-feedback-dialog',
-  SHOW_PARENTAL_CONTROLS: 'show-parental-controls'
+  SHOW_PARENTAL_CONTROLS: 'show-parental-controls',
+  ADD_OR_UPDATE_SEARCH_INDEX: 'add-or-update-search-index',
+  CLEAR_SEARCH_INDEX: 'clear-search-index',
+  FIND_IN_SEARCH_INDEX: 'find-in-search-index'
 };
