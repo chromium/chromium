@@ -4174,6 +4174,10 @@ test("unit_tests") {
         [ "../browser/android/feed/history/feed_history_helper_unittest.cc" ]
   }
 
+  if (enable_soda) {
+    deps += [ "//chrome/services/speech/soda:unit_tests" ]
+  }
+
   if (is_android) {
     sources += [
       "../browser/android/search_permissions/search_permissions_service_unittest.cc",
