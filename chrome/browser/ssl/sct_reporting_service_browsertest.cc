@@ -230,8 +230,9 @@ IN_PROC_BROWSER_TEST_F(SCTReportingServiceBrowserTest,
 
 // Tests that reports are still sent for opted-in profiles after the network
 // service crashes and is restarted.
+// Disabled due to high flake rate; see https://crbug.com/1131803.
 IN_PROC_BROWSER_TEST_F(SCTReportingServiceBrowserTest,
-                       ReportsSentAfterNetworkServiceRestart) {
+                       DISABLED_ReportsSentAfterNetworkServiceRestart) {
   // This test is only applicable to out-of-process network service because it
   // tests what happens when the network service crashes and restarts.
   if (content::IsInProcessNetworkService()) {
