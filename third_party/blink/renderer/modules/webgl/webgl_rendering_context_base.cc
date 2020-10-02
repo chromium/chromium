@@ -932,6 +932,18 @@ void WebGLRenderingContextBase::CompleteXrCompatiblePromiseIfPending(
     }
 
     make_xr_compatible_resolver_ = nullptr;
+
+    if (IdentifiabilityStudySettings::Get()->IsSurfaceAllowed(
+            IdentifiableSurface::FromTypeAndToken(
+                IdentifiableSurface::Type::kWebFeature,
+                WebFeature::kWebGLRenderingContextMakeXRCompatible))) {
+      if (auto& ukm_params = GetUkmParameters()) {
+        IdentifiabilityMetricBuilder(ukm_params->source_id)
+            .SetWebfeature(WebFeature::kWebGLRenderingContextMakeXRCompatible,
+                           exception_code == DOMExceptionCode::kNoError)
+            .Record(ukm_params->ukm_recorder);
+      }
+    }
   }
 }
 
