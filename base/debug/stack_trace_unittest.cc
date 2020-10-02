@@ -356,11 +356,12 @@ TEST_F(StackTraceTest, MAYBE_TraceStackFramePointers) {
   ExpectStackFramePointers<kDepth>(frames, kDepth, /*copy_stack=*/false);
 }
 
-#if defined(MEMORY_SANITIZER)
 // The test triggers use-of-uninitialized-value errors on MSan bots.
 // This is expected because we're walking and reading the stack, and
 // sometimes we read fp / pc from the place that previously held
 // uninitialized value.
+// TODO(crbug.com/1132511): Enable this test on Fuchsia.
+#if defined(MEMORY_SANITIZER) || defined(OS_FUCHSIA)
 #define MAYBE_TraceStackFramePointersFromBuffer \
   DISABLED_TraceStackFramePointersFromBuffer
 #else
