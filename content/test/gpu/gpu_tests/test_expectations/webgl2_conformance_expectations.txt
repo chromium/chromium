@@ -521,11 +521,6 @@ crbug.com/636648 [ mac amd ] deqp/functional/gles3/shaderindexing/mat_01.html [ 
 crbug.com/644360 [ mac amd ] deqp/functional/gles3/shaderindexing/mat_02.html [ RetryOnFailure ]
 crbug.com/659871 [ mac amd ] deqp/functional/gles3/shaderindexing/tmp.html [ RetryOnFailure ]
 
-# These seem to be provoking intermittent GPU process crashes on
-# the MacBook Pros with AMD GPUs.
-crbug.com/663601 [ mac amd ] deqp/functional/gles3/texturefiltering/* [ RetryOnFailure ]
-crbug.com/663601 [ mac amd ] deqp/functional/gles3/textureshadow/* [ RetryOnFailure ]
-crbug.com/679058 [ mac amd ] deqp/functional/gles3/texturespecification/teximage2d_unpack_params.html [ RetryOnFailure ]
 crbug.com/642822 [ mac amd ] conformance2/rendering/clipping-wide-points.html [ Failure ]
 
 crbug.com/1005593 [ mac amd ] deqp/functional/gles3/shaderstruct.html [ RetryOnFailure ]
