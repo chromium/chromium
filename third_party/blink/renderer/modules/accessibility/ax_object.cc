@@ -510,17 +510,6 @@ HTMLDialogElement* GetActiveDialogElement(Node* node) {
   return node->GetDocument().ActiveModalDialog();
 }
 
-bool HasUninheritedHiddenVisibility(const ComputedStyle* style, Node* node) {
-  // Is this the root of a visibility:hidden or visibility:collapsed subtree?
-  if (style->Visibility() == EVisibility::kVisible)
-    return false;
-  Node* parent = node->parentNode();
-  if (!parent)
-    return true;
-  return !parent->GetComputedStyle() ||
-         parent->GetComputedStyle()->Visibility() == EVisibility::kVisible;
-}
-
 }  // namespace
 
 unsigned AXObject::number_of_live_ax_objects_ = 0;
@@ -1355,19 +1344,8 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded() const {
 
   last_modification_count_ = cache.ModificationCount();
 
-  if (GetElement() && !GetLayoutObject() &&
-      !DisplayLockUtilities::NearestLockedExclusiveAncestor(*GetNode())) {
-    // While it's safe to do so, ensure the computed style for display:none
-    // nodes, so that IsHiddenForTextAlternativeCalculation() can determine
-    // whether the node is directly styled as display:none vs hidden because
-    // of display:none on an ancestor.
-    // If there is no computed style, assume that it may be display:none,
-    // since we can't prove otherwise.
-    const ComputedStyle* style = GetElement()->GetComputedStyle();
-    if (!style || style->IsEnsuredInDisplayNone())
-      GetElement()->EnsureComputedStyle();
-  }
   cached_background_color_ = ComputeBackgroundColor();
+  cached_is_hidden_via_style = ComputeIsHiddenViaStyle();
   cached_is_inert_or_aria_hidden_ = ComputeIsInertOrAriaHidden();
   cached_is_descendant_of_leaf_node_ = !!LeafNodeAncestor();
   cached_is_descendant_of_disabled_node_ = !!DisabledAncestor();
@@ -2157,7 +2135,7 @@ String AXObject::RecursiveTextAlternative(
                                 name_from, nullptr, nullptr);
 }
 
-bool AXObject::IsHiddenViaStyle() const {
+bool AXObject::ComputeIsHiddenViaStyle() const {
   Node* node = GetNode();
   if (!node)
     return false;
@@ -2166,15 +2144,27 @@ bool AXObject::IsHiddenViaStyle() const {
   if (DisplayLockUtilities::NearestLockedExclusiveAncestor(*node))
     return true;
 
+  // Style elements in SVG are not display: none, unlike HTML style elements,
+  // but they are still hidden and thus treated as hidden from style.
+  if (IsA<SVGStyleElement>(node))
+    return true;
+
+  // For elements with layout objects we can get their style directly.
   if (GetLayoutObject())
     return GetLayoutObject()->Style()->Visibility() != EVisibility::kVisible;
 
+  // No layout object: must ensure computed style.
   if (Element* element = DynamicTo<Element>(node)) {
-    const ComputedStyle* style = element->GetComputedStyle();
+    const ComputedStyle* style = element->EnsureComputedStyle();
     return !style || style->IsEnsuredInDisplayNone() ||
            style->Visibility() != EVisibility::kVisible;
   }
   return false;
+}
+
+bool AXObject::IsHiddenViaStyle() const {
+  UpdateCachedAttributeValuesIfNeeded();
+  return cached_is_hidden_via_style;
 }
 
 // Return true if this should be removed from accessible name computations,
@@ -2187,6 +2177,7 @@ bool AXObject::IsHiddenViaStyle() const {
 // hiding styles is problematic because it would prevent name contributions from
 // deeper nodes in hidden aria-labelledby subtrees.
 bool AXObject::IsHiddenForTextAlternativeCalculation() const {
+  // aria-hidden=false allows hidden contents to be used in name from contents.
   if (AOMPropertyOrARIAAttributeIsFalse(AOMBooleanProperty::kHidden))
     return false;
 
@@ -2202,37 +2193,18 @@ bool AXObject::IsHiddenForTextAlternativeCalculation() const {
   if (!document || !document->GetFrame())
     return false;
 
-  if (GetLayoutObject()) {
-    return HasUninheritedHiddenVisibility(GetLayoutObject()->Style(),
-                                          GetNode());
-  } else if (GetNode() && IsA<HTMLNoScriptElement>(GetNode())) {
+  // Do not contribute <noscript> to text alternative of an ancestor.
+  if (IsA<HTMLNoScriptElement>(node))
     return true;
-  }
 
-  // This is an important corner case: if a node has no LayoutObject, that means
-  // it's not rendered, but we still may be exploring it as part of a text
-  // alternative calculation, for example if it was explicitly referenced by
-  // aria-labelledby. So we need to explicitly call the style resolver to check
-  // whether it's invisible or display:none, rather than relying on the style
-  // cached in the LayoutObject.
-  auto* element = DynamicTo<Element>(node);
-  if (element && node->isConnected()) {
-    const ComputedStyle* style = element->GetComputedStyle();
-    if (!style)
-      return false;
+  // Always contribute SVG <title> despite it having a hidden style by default.
+  if (IsA<SVGTitleElement>(node))
+    return false;
 
-    if (style->Display() == EDisplay::kNone ||
-        HasUninheritedHiddenVisibility(style, GetNode())) {
-      return true;
-    }
-
-    // Style elements in SVG are not display: none, unlike HTML style elements,
-    // but they are still hidden from all users.
-    if (IsA<SVGElement>(element))
-      return IsA<SVGStyleElement>(element);
-  }
-
-  return false;
+  // If this is hidden but its parent isn't, then it appears the hiding style
+  // targeted this node directly. Do not recurse into it for name from contents.
+  return IsHiddenViaStyle() &&
+         (!ParentObject() || !ParentObject()->IsHiddenViaStyle());
 }
 
 String AXObject::AriaTextAlternative(bool recursive,
