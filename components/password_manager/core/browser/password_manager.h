@@ -334,7 +334,7 @@ class PasswordManager : public PasswordManagerInterface {
   // could still be provisionally saved on user input or have autofilled data,
   // in this case submission might be considered successful and a save prompt
   // might be shown.
-  void CheckForPotentialSubmission(
+  bool DetectPotentialSubmission(
       PasswordFormManager* form_manager,
       const autofill::FieldDataManager* field_data_manager,
       PasswordManagerDriver* driver);

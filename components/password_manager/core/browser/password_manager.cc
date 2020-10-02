@@ -749,7 +749,7 @@ void PasswordManager::OnPasswordFormRemoved(
       manager->SetDriver(driver->AsWeakPtr());
     // Find a form with corresponding renderer id.
     if (manager->DoesManageAccordingToRendererId(form_id, driver)) {
-      CheckForPotentialSubmission(manager.get(), field_data_manager, driver);
+      DetectPotentialSubmission(manager.get(), field_data_manager, driver);
       return;
     }
   }
@@ -760,9 +760,12 @@ void PasswordManager::OnIframeDetach(
     PasswordManagerDriver* driver,
     const FieldDataManager* field_data_manager) {
   for (auto& manager : form_managers_) {
-    // Find a form with corresponding frame id.
-    if (manager->observed_form().frame_id == frame_id) {
-      CheckForPotentialSubmission(manager.get(), field_data_manager, driver);
+    // Find a form with corresponding frame id. Stop iterating in case the
+    // target form manager was found to avoid crbug.com/1129758 and since only
+    // one password form is being submitted at a time.
+    if (manager->observed_form().frame_id == frame_id &&
+        DetectPotentialSubmission(manager.get(), field_data_manager, driver)) {
+      return;
     }
   }
 }
@@ -1247,7 +1250,7 @@ AutofillAssistantMode PasswordManager::GetAutofillAssistantMode() const {
 }
 
 #if defined(OS_IOS)
-void PasswordManager::CheckForPotentialSubmission(
+bool PasswordManager::DetectPotentialSubmission(
     PasswordFormManager* form_manager,
     const FieldDataManager* field_data_manager,
     PasswordManagerDriver* driver) {
@@ -1260,8 +1263,13 @@ void PasswordManager::CheckForPotentialSubmission(
     form_manager->ProvisionallySave(form_manager->observed_form(), driver,
                                     nullptr);
   }
-  if (form_manager->is_submitted())
+  // If the manager was set to be submitted, either prior to this function call
+  // or on provisional save above, consider submission successful.
+  if (form_manager->is_submitted()) {
     OnLoginSuccessful();
+    return true;
+  }
+  return false;
 }
 #endif
 
