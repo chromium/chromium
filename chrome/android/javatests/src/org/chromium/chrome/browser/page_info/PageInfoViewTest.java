@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.page_info;
 
 import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.Visibility.GONE;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
@@ -25,10 +24,15 @@ import static org.chromium.components.content_settings.PrefNames.COOKIE_CONTROLS
 
 import android.os.Build;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.widget.Button;
 
+import androidx.test.espresso.UiController;
+import androidx.test.espresso.ViewAction;
+import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.filters.MediumTest;
 
+import org.hamcrest.Matcher;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -37,7 +41,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -57,6 +60,7 @@ import org.chromium.components.page_info.PageInfoFeatureList;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.net.test.EmbeddedTestServerRule;
 import org.chromium.net.test.ServerCertificate;
@@ -97,6 +101,31 @@ public class PageInfoViewTest {
         public boolean isSystemLocationSettingEnabled() {
             return mIsSystemLocationSettingEnabled;
         }
+    }
+
+    // Alternative to Espresso's click() that hopefully does not fail with INJECT_EVENTS error.
+    // TODO(dullweber): Move to TouchCommon library if it works.
+    ViewAction click() {
+        return new ViewAction() {
+            @Override
+            public Matcher<View> getConstraints() {
+                return ViewMatchers.isDisplayingAtLeast(90);
+            }
+
+            @Override
+            public String getDescription() {
+                return "TouchCommon.singleClickView()";
+            }
+
+            @Override
+            public void perform(UiController uiController, View view) {
+                TouchCommon.singleClickView(view);
+                // Performing same timeout as espresso.
+                long timeout = (long) ((float) ViewConfiguration.getTapTimeout() * 1.5F
+                        + ViewConfiguration.getPressedStateDuration());
+                uiController.loopMainThreadForAtLeast(timeout);
+            }
+        };
     }
 
     @ClassRule
@@ -225,7 +254,6 @@ public class PageInfoViewTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @DisabledTest(message = "https://crbug.com/1133770")
     public void testShowOnExpiredCertificateWebsite() throws IOException {
         mTestServerRule.setCertificateType(ServerCertificate.CERT_EXPIRED);
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
