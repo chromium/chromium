@@ -17,13 +17,6 @@ import("//third_party/blink/renderer/config.gni")
 import("//third_party/blink/renderer/platform/platform_generated.gni")
 import("//v8/gni/v8.gni")
 
-# This file depends on the legacy global sources assignment filter. It should
-# be converted to check target platform before assigning source files to the
-# sources variable. Remove this import and set_sources_assignment_filter call
-# when the file has been converted. See https://crbug.com/1018739 for details.
-import("//build/config/deprecated_default_sources_assignment_filter.gni")
-set_sources_assignment_filter(deprecated_default_sources_assignment_filter)
-
 # Most targets in this file are private actions so use that as the default.
 visibility = [
   ":*",
@@ -373,8 +366,6 @@ component("platform") {
     "audio/hrtf_panner.h",
     "audio/iir_filter.cc",
     "audio/iir_filter.h",
-    "audio/mac/fft_frame_mac.cc",
-    "audio/mac/vector_math_mac.h",
     "audio/media_multi_channel_resampler.cc",
     "audio/media_multi_channel_resampler.h",
     "audio/panner.cc",
@@ -562,9 +553,6 @@ component("platform") {
     "file_metadata.cc",
     "file_metadata.h",
     "fonts/alternate_font_family.h",
-    "fonts/android/font_cache_android.cc",
-    "fonts/android/font_unique_name_lookup_android.cc",
-    "fonts/android/font_unique_name_lookup_android.h",
     "fonts/bitmap_glyphs_block_list.cc",
     "fonts/bitmap_glyphs_block_list.h",
     "fonts/canvas_rotation_in_vertical.h",
@@ -638,18 +626,6 @@ component("platform") {
     "fonts/generic_font_family_settings.cc",
     "fonts/generic_font_family_settings.h",
     "fonts/glyph_metrics_map.h",
-    "fonts/linux/font_cache_linux.cc",
-    "fonts/linux/font_unique_name_lookup_linux.cc",
-    "fonts/linux/font_unique_name_lookup_linux.h",
-    "fonts/mac/attributed_string_type_converter.h",
-    "fonts/mac/attributed_string_type_converter.mm",
-    "fonts/mac/core_text_font_format_support.cc",
-    "fonts/mac/core_text_font_format_support.h",
-    "fonts/mac/font_cache_mac.mm",
-    "fonts/mac/font_matcher_mac.h",
-    "fonts/mac/font_matcher_mac.mm",
-    "fonts/mac/font_platform_data_mac.h",
-    "fonts/mac/font_platform_data_mac.mm",
     "fonts/ng_text_fragment_paint_info.h",
     "fonts/opentype/font_format_check.cc",
     "fonts/opentype/font_format_check.h",
@@ -737,16 +713,6 @@ component("platform") {
     "fonts/web_font_render_style.cc",
     "fonts/web_font_typeface_factory.cc",
     "fonts/web_font_typeface_factory.h",
-    "fonts/win/dwrite_font_format_support.cc",
-    "fonts/win/dwrite_font_format_support.h",
-    "fonts/win/fallback_family_style_cache_win.cc",
-    "fonts/win/fallback_family_style_cache_win.h",
-    "fonts/win/font_cache_skia_win.cc",
-    "fonts/win/font_fallback_win.cc",
-    "fonts/win/font_fallback_win.h",
-    "fonts/win/font_platform_data_win.cc",
-    "fonts/win/font_unique_name_lookup_win.cc",
-    "fonts/win/font_unique_name_lookup_win.h",
     "geometry/blend.h",
     "geometry/calculation_expression_node.cc",
     "geometry/calculation_expression_node.h",
@@ -1204,16 +1170,6 @@ component("platform") {
     "language.h",
     "link_hash.cc",
     "link_hash.h",
-    "mac/block_exceptions.h",
-    "mac/block_exceptions.mm",
-    "mac/color_mac.h",
-    "mac/color_mac.mm",
-    "mac/graphics_context_canvas.h",
-    "mac/graphics_context_canvas.mm",
-    "mac/local_current_graphics_context.h",
-    "mac/local_current_graphics_context.mm",
-    "mac/web_core_ns_cell_extras.h",
-    "mac/web_core_ns_cell_extras.mm",
     "media/web_audio_source_provider_client.h",
     "media/webaudiosourceprovider_impl.cc",
     "media_capabilities/web_audio_configuration.h",
@@ -1388,16 +1344,10 @@ component("platform") {
     "text/icu_error.h",
     "text/layout_locale.cc",
     "text/layout_locale.h",
-    "text/linux/hyphenation_linux.cc",
     "text/locale_icu.cc",
     "text/locale_icu.h",
-    "text/locale_mac.h",
-    "text/locale_mac.mm",
     "text/locale_to_script_mapping.cc",
     "text/locale_to_script_mapping.h",
-    "text/locale_win.cc",
-    "text/locale_win.h",
-    "text/mac/hyphenation_mac.cc",
     "text/mathml_operator_dictionary.cc",
     "text/mathml_operator_dictionary.h",
     "text/platform_locale.cc",
@@ -1428,7 +1378,6 @@ component("platform") {
     "text/unicode_utilities.h",
     "text/web_entities.cc",
     "text/web_entities.h",
-    "text/win/hyphenation_win.cc",
     "text/writing_direction_mode.cc",
     "text/writing_direction_mode.h",
     "text/writing_mode.cc",
@@ -1561,8 +1510,67 @@ component("platform") {
 
   if (is_android) {
     sources += [
+      "fonts/android/font_cache_android.cc",
+      "fonts/android/font_unique_name_lookup_android.cc",
+      "fonts/android/font_unique_name_lookup_android.h",
       "widget/input/synchronous_compositor_proxy.cc",
       "widget/input/synchronous_compositor_proxy.h",
+    ]
+  }
+
+  if (is_mac) {
+    sources += [
+      "audio/mac/fft_frame_mac.cc",
+      "audio/mac/vector_math_mac.h",
+      "fonts/mac/attributed_string_type_converter.h",
+      "fonts/mac/attributed_string_type_converter.mm",
+      "fonts/mac/core_text_font_format_support.cc",
+      "fonts/mac/core_text_font_format_support.h",
+      "fonts/mac/font_cache_mac.mm",
+      "fonts/mac/font_matcher_mac.h",
+      "fonts/mac/font_matcher_mac.mm",
+      "fonts/mac/font_platform_data_mac.h",
+      "fonts/mac/font_platform_data_mac.mm",
+      "mac/block_exceptions.h",
+      "mac/block_exceptions.mm",
+      "mac/color_mac.h",
+      "mac/color_mac.mm",
+      "mac/graphics_context_canvas.h",
+      "mac/graphics_context_canvas.mm",
+      "mac/local_current_graphics_context.h",
+      "mac/local_current_graphics_context.mm",
+      "mac/web_core_ns_cell_extras.h",
+      "mac/web_core_ns_cell_extras.mm",
+      "text/locale_mac.h",
+      "text/locale_mac.mm",
+      "text/mac/hyphenation_mac.cc",
+    ]
+  }
+
+  if (is_linux || is_chromeos) {
+    sources += [
+      "fonts/linux/font_cache_linux.cc",
+      "fonts/linux/font_unique_name_lookup_linux.cc",
+      "fonts/linux/font_unique_name_lookup_linux.h",
+      "text/linux/hyphenation_linux.cc",
+    ]
+  }
+
+  if (is_win) {
+    sources += [
+      "fonts/win/dwrite_font_format_support.cc",
+      "fonts/win/dwrite_font_format_support.h",
+      "fonts/win/fallback_family_style_cache_win.cc",
+      "fonts/win/fallback_family_style_cache_win.h",
+      "fonts/win/font_cache_skia_win.cc",
+      "fonts/win/font_fallback_win.cc",
+      "fonts/win/font_fallback_win.h",
+      "fonts/win/font_platform_data_win.cc",
+      "fonts/win/font_unique_name_lookup_win.cc",
+      "fonts/win/font_unique_name_lookup_win.h",
+      "text/locale_win.cc",
+      "text/locale_win.h",
+      "text/win/hyphenation_win.cc",
     ]
   }
 
@@ -1896,7 +1904,6 @@ source_set("blink_platform_unittests_sources") {
     "exported/web_screen_info_test.cc",
     "exported/web_string_test.cc",
     "exported/web_vector_test.cc",
-    "fonts/android/font_cache_android_test.cc",
     "fonts/bitmap_glyphs_block_list_test.cc",
     "fonts/cursor_position_test.cc",
     "fonts/font_cache_test.cc",
@@ -1907,8 +1914,6 @@ source_set("blink_platform_unittests_sources") {
     "fonts/font_test.cc",
     "fonts/font_test_utilities.cc",
     "fonts/generic_font_family_settings_test.cc",
-    "fonts/mac/font_matcher_mac_test.mm",
-    "fonts/mac/font_platform_data_mac_test.mm",
     "fonts/opentype/font_settings_test.cc",
     "fonts/opentype/open_type_math_support_test.cc",
     "fonts/opentype/open_type_vertical_data_test.cc",
@@ -2009,7 +2014,6 @@ source_set("blink_platform_unittests_sources") {
     "image-decoders/webp/webp_image_decoder_test.cc",
     "json/json_parser_test.cc",
     "json/json_values_test.cc",
-    "mac/graphics_context_canvas_test.mm",
     "media/webaudiosourceprovider_impl_test.cc",
     "mediastream/media_stream_audio_processor_options_test.cc",
     "mediastream/media_stream_audio_test.cc",
@@ -2085,14 +2089,19 @@ source_set("blink_platform_unittests_sources") {
     "widget/input/scroll_predictor_unittest.cc",
   ]
 
-  if (is_win) {
+  if (is_android) {
+    sources += [ "fonts/android/font_cache_android_test.cc" ]
+  } else if (is_win) {
     sources += [
       "fonts/win/fallback_lru_cache_win_test.cc",
       "text/locale_win_test.cc",
     ]
   } else if (is_mac) {
     sources += [
+      "fonts/mac/font_matcher_mac_test.mm",
+      "fonts/mac/font_platform_data_mac_test.mm",
       "fonts/opentype/open_type_caps_support_test.mm",
+      "mac/graphics_context_canvas_test.mm",
       "text/locale_mac_test.mm",
     ]
   } else if (is_posix || is_fuchsia) {
