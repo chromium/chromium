@@ -55,8 +55,8 @@ struct ResponseInfo {
 };
 
 using PendingResponseMap = std::map<int, std::unique_ptr<ResponseInfo>>;
-static base::LazyInstance<PendingResponseMap>::DestructorAtExit
-    pending_response_map = LAZY_INSTANCE_INITIALIZER;
+base::LazyInstance<PendingResponseMap>::DestructorAtExit
+    g_pending_response_map = LAZY_INSTANCE_INITIALIZER;
 
 }  // namespace
 
@@ -70,7 +70,7 @@ bool AppViewGuest::CompletePendingRequest(
     int guest_instance_id,
     const std::string& guest_extension_id,
     content::RenderProcessHost* guest_render_process_host) {
-  PendingResponseMap* response_map = pending_response_map.Pointer();
+  PendingResponseMap* response_map = g_pending_response_map.Pointer();
   auto it = response_map->find(guest_instance_id);
   // Kill the requesting process if it is not the real guest.
   if (it == response_map->end()) {
@@ -190,11 +190,6 @@ void AppViewGuest::CreateWebContents(const base::DictionaryValue& create_params,
     return;
   }
 
-  pending_response_map.Get().insert(std::make_pair(
-      guest_instance_id(), std::make_unique<ResponseInfo>(
-                               guest_extension, weak_ptr_factory_.GetWeakPtr(),
-                               std::move(callback))));
-
   const LazyContextId context_id(browser_context(), guest_extension->id());
   LazyContextTaskQueue* queue = context_id.GetTaskQueue();
   if (queue->ShouldEnqueueTask(browser_context(), guest_extension)) {
@@ -267,15 +262,21 @@ void AppViewGuest::LaunchAppAndFireEvent(
     return;
   }
 
+  const Extension* const extension =
+      extensions::ExtensionRegistry::Get(context_info->browser_context)
+          ->enabled_extensions()
+          .GetByID(context_info->extension_id);
+
+  g_pending_response_map.Get().insert(std::make_pair(
+      guest_instance_id(),
+      std::make_unique<ResponseInfo>(extension, weak_ptr_factory_.GetWeakPtr(),
+                                     std::move(callback))));
+
   std::unique_ptr<base::DictionaryValue> embed_request(
       new base::DictionaryValue());
   embed_request->SetInteger(appview::kGuestInstanceID, guest_instance_id());
   embed_request->SetString(appview::kEmbedderID, owner_host());
   embed_request->Set(appview::kData, std::move(data));
-  const Extension* const extension =
-      extensions::ExtensionRegistry::Get(context_info->browser_context)
-          ->enabled_extensions()
-          .GetByID(context_info->extension_id);
   AppRuntimeEventRouter::DispatchOnEmbedRequestedEvent(
       browser_context(), std::move(embed_request), extension);
 }
@@ -286,7 +287,7 @@ void AppViewGuest::SetAppDelegateForTest(AppDelegate* delegate) {
 
 std::vector<int> AppViewGuest::GetAllRegisteredInstanceIdsForTesting() {
   std::vector<int> instances;
-  for (const auto& key_value : pending_response_map.Get()) {
+  for (const auto& key_value : g_pending_response_map.Get()) {
     instances.push_back(key_value.first);
   }
   return instances;
