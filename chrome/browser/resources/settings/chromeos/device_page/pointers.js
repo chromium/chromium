@@ -27,6 +27,23 @@ Polymer({
 
     hasTouchpad: Boolean,
 
+    swapPrimaryOptions: {
+      readOnly: true,
+      type: Array,
+      value() {
+        return [
+          {
+            value: false,
+            name: loadTimeData.getString('primaryMouseButtonLeft')
+          },
+          {
+            value: true,
+            name: loadTimeData.getString('primaryMouseButtonRight')
+          },
+        ];
+      },
+    },
+
     /**
      * Interim property for use until we have a separate subsection for pointing
      * sticks. (See crbug.com/1114828)
@@ -101,10 +118,6 @@ Polymer({
     return hasMouse || hasPointingStick;
   },
 
-  // Used to correctly identify when the mouse button has been released.
-  // crbug.com/686949.
-  receivedMouseSwapButtonsDown_: false,
-
   /**
    * @param {!settings.Route} route
    * @param {settings.Route} oldRoute
@@ -127,26 +140,6 @@ Polymer({
    */
   getSubsectionClass_(showMouseSection, hasTouchpad) {
     return showMouseSection && hasTouchpad ? 'subsection' : '';
-  },
-
-  /** @private */
-  onMouseSwapButtonsDown_() {
-    this.receivedMouseSwapButtonsDown_ = true;
-  },
-
-  /** @private */
-  onMouseSwapButtonsUp_() {
-    this.receivedMouseSwapButtonsDown_ = false;
-    /** @type {!SettingsToggleButtonElement} */ (this.$.mouseSwapButton)
-        .sendPrefChange();
-  },
-
-  /** @private */
-  onMouseSwapButtonsChange_() {
-    if (!this.receivedMouseSwapButtonsDown_) {
-      /** @type {!SettingsToggleButtonElement} */ (this.$.mouseSwapButton)
-          .sendPrefChange();
-    }
   },
 
   /**

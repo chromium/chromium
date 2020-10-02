@@ -667,8 +667,6 @@ cr.define('device_page_tests', function() {
       test('mouse', function() {
         expectLT(0, pointersPage.$$('#mouse').offsetHeight);
 
-        expectFalse(pointersPage.$$('#mouse settings-toggle-button').checked);
-
         const slider = assert(pointersPage.$$('#mouse settings-slider'));
         expectEquals(4, slider.pref.value);
         MockInteractions.pressAndReleaseKeyOn(

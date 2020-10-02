@@ -5,6 +5,7 @@
 <link rel="import" href="../deep_linking_behavior.html">
 <link rel="import" href="../localized_link/localized_link.html">
 <link rel="import" href="../../controls/settings_radio_group.html">
+<link rel="import" href="../../controls/settings_dropdown_menu.html">
 <link rel="import" href="../../controls/settings_slider.html">
 <link rel="import" href="../../controls/settings_toggle_button.html">
 <link rel="import" href="../../prefs/prefs_behavior.html">
@@ -40,14 +41,16 @@
       <div class$="[[getSubsectionClass_(showMouseSection_, hasTouchpad)]]">
         <!-- Do not change the mouse button pref before the mouse is released.
              See crbug.com/686949 -->
-        <settings-toggle-button id="mouseSwapButton"
-            pref="{{prefs.settings.mouse.primary_right}}"
-            label="$i18n{mouseSwapButtons}"
-            on-settings-boolean-control-change="onMouseSwapButtonsChange_"
-            on-down="onMouseSwapButtonsDown_" on-up="onMouseSwapButtonsUp_"
-            deep-link-focus-id$="[[Setting.kMouseSwapPrimaryButtons]]"
-            no-set-pref>
-        </settings-toggle-button>
+        <div class="settings-box">
+          <div class="start settings-box-text" id="mouseSwapButtonLabel">
+            $i18n{mouseSwapButtons}
+          </div>
+          <settings-dropdown-menu aria-labeledby="mouseSwapButtonLabel"
+              pref="{{prefs.settings.mouse.primary_right}}"
+              menu-options="[[swapPrimaryOptions]]"
+              deep-link-focus-id$="[[Setting.kMouseSwapPrimaryButtons]]">
+          </settings-dropdown-menu>
+        </div>
         <template is="dom-if" if="[[allowDisableAcceleration_]]">
           <settings-toggle-button id="mouseAcceleration"
               class="hr"
