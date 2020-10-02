@@ -417,17 +417,6 @@ external/wpt/media-source/mediasource-invalid-codec.html [ Skip ]
 [ Mac10.10 ] external/wpt/css/css-text/hyphens/hyphens-manual-inline-012.html [ Skip ]
 [ Mac10.10 ] external/wpt/css/css-text/hyphens/hyphens-none-013.html [ Skip ]
 
-# The spec is not web-compatbile, but no consensus at CSS WG yet.
-# crbug.com/267056
-# https://github.com/w3c/csswg-drafts/issues/1518
-external/wpt/css/css-text/letter-spacing/letter-spacing-100.html [ Skip ]
-external/wpt/css/css-text/letter-spacing/letter-spacing-101.html [ Skip ]
-external/wpt/css/css-text/letter-spacing/letter-spacing-102.html [ Skip ]
-external/wpt/css/css-text/letter-spacing/letter-spacing-103.html [ Skip ]
-external/wpt/css/css-text/letter-spacing/letter-spacing-104.html [ Skip ]
-external/wpt/css/css-text/letter-spacing/letter-spacing-105.html [ Skip ]
-external/wpt/css/css-text/letter-spacing/letter-spacing-106.html [ Skip ]
-
 # No browsers implemented the spec behavior, not web compatible, no consensus.
 # https://github.com/w3c/csswg-drafts/issues/1518
 external/wpt/css/css-text/letter-spacing/letter-spacing-bidi-003.xht [ Skip ]

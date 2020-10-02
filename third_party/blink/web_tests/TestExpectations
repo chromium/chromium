@@ -2637,6 +2637,15 @@ crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-20
 crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-206.xht [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/css/css-text/letter-spacing/letter-spacing-203.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-text/letter-spacing/letter-spacing-201.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-text/letter-spacing/letter-spacing-206.html [ Failure ]
+crbug.com/626703 external/wpt/css/CSS2/text/letter-spacing-080.xht [ Failure ]
+crbug.com/626703 external/wpt/css/css-text/letter-spacing/letter-spacing-205.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-text/letter-spacing/letter-spacing-202.html [ Failure ]
+crbug.com/626703 external/wpt/css/CSS2/text/letter-spacing-079.xht [ Failure ]
+crbug.com/626703 external/wpt/css/css-text/letter-spacing/letter-spacing-200.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-text/letter-spacing/letter-spacing-204.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-backgrounds/border-image-slice-007.htm [ Failure ]
 crbug.com/626703 external/wpt/css/css-backgrounds/border-image-slice-005.htm [ Failure ]
 crbug.com/626703 [ Mac11.0 ] external/wpt/scroll-to-text-fragment/redirects.html [ Timeout ]
