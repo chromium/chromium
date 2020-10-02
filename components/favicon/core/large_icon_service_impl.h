@@ -79,11 +79,6 @@ class LargeIconServiceImpl : public LargeIconService {
   // testing.
   void SetServerUrlForTesting(const GURL& server_url_for_testing);
 
-  // Extracts the organization-identifying domain from |url| which excludes
-  // registrar portion (e.g. final ".com"). Used for logging UMA metrics.
-  // Exposed publicly for testing.
-  static std::string GetOrganizationNameForUma(const GURL& url);
-
  private:
   base::CancelableTaskTracker::TaskId GetLargeIconOrFallbackStyleImpl(
       const GURL& page_url,

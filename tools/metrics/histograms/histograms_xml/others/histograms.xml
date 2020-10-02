@@ -4764,6 +4764,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Favicons.LargeIconService.BlacklistedURLMismatch"
     units="BooleanError" expires_after="M77">
+  <obsolete>
+    Removed in M88.
+  </obsolete>
   <owner>mastiz@chromium.org</owner>
   <summary>
     Records the number of large icons that were fetched from the local cache
