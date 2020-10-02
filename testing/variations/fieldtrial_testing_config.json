@@ -2518,7 +2518,6 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "DownloadLater",
                         "DownloadsAutoResumptionNative"
                     ]
                 }
