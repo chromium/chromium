@@ -41,6 +41,7 @@ SharesheetExpandButton::SharesheetExpandButton(views::ButtonListener* listener)
   label_->SetLineHeight(kLineHeight);
   label_->SetEnabledColor(kLabelColor);
 
+  SetFocusBehavior(View::FocusBehavior::ALWAYS);
   SetDefaultView();
 }
 

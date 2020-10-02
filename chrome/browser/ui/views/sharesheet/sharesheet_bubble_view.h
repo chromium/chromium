@@ -48,6 +48,9 @@ class SharesheetBubbleView : public views::BubbleDialogDelegateView,
   void CloseBubble();
 
  private:
+  // ui::EventHandler overrides:
+  void OnKeyEvent(ui::KeyEvent* event) override;
+
   // views::ButtonListener overrides
   void ButtonPressed(views::Button* sender, const ui::Event& event) override;
 
@@ -79,8 +82,11 @@ class SharesheetBubbleView : public views::BubbleDialogDelegateView,
   bool user_cancelled_ = true;
   bool show_expanded_view_ = false;
 
+  int keyboard_highlighted_target_ = 0;
+
   views::View* root_view_ = nullptr;
   views::View* main_view_ = nullptr;
+  views::View* default_view_ = nullptr;
   views::View* expanded_view_ = nullptr;
   views::View* share_action_view_ = nullptr;
   views::View* parent_view_ = nullptr;

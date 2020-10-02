@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/i18n/rtl.h"
 #include "base/strings/string16.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sharesheet/sharesheet_metrics.h"
@@ -79,6 +80,11 @@ void SetUpTargetColumnSet(views::GridLayout* layout) {
   }
 }
 
+bool IsKeyboardCodeArrow(ui::KeyboardCode key_code) {
+  return key_code == ui::VKEY_UP || key_code == ui::VKEY_DOWN ||
+         key_code == ui::VKEY_RIGHT || key_code == ui::VKEY_LEFT;
+}
+
 }  // namespace
 
 SharesheetBubbleView::SharesheetBubbleView(
@@ -140,6 +146,9 @@ void SharesheetBubbleView::ShowBubble(
       main_layout->AddView(std::make_unique<SharesheetExpandButton>(this));
   main_layout->AddPaddingRow(views::GridLayout::kFixedSize, kShortSpacing);
 
+  main_view_->SetFocusBehavior(View::FocusBehavior::ALWAYS);
+  main_view_->RequestFocus();
+
   views::Widget* widget = views::BubbleDialogDelegateView::CreateBubble(this);
   GetWidget()->GetRootView()->Layout();
   widget->Show();
@@ -147,6 +156,7 @@ void SharesheetBubbleView::ShowBubble(
   if (targets_.size() <= (kMaxRowsForDefaultView * kMaxTargetsPerRow)) {
     width_ = kDefaultBubbleWidth;
     height_ = kNoExtensionBubbleHeight;
+    expand_button_->SetVisible(false);
   } else {
     SetToDefaultBubbleSizing();
   }
@@ -195,7 +205,7 @@ std::unique_ptr<views::View> SharesheetBubbleView::MakeScrollableTargetView() {
       scrollable_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kVertical));
   layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kCenter);
-  scrollable_view->AddChildView(std::move(default_view));
+  default_view_ = scrollable_view->AddChildView(std::move(default_view));
   expanded_view_ = scrollable_view->AddChildView(std::move(expanded_view));
 
   // Expanded view is not visible by default.
@@ -258,7 +268,60 @@ void SharesheetBubbleView::CloseBubble() {
   targets_.clear();
   active_target_ = base::string16();
   intent_.reset();
+  keyboard_highlighted_target_ = 0;
   SetToDefaultBubbleSizing();
+}
+
+void SharesheetBubbleView::OnKeyEvent(ui::KeyEvent* event) {
+  if (!IsKeyboardCodeArrow(event->key_code()) ||
+      event->type() != ui::ET_KEY_RELEASED) {
+    return;
+  }
+
+  int delta = 0;
+  switch (event->key_code()) {
+    case ui::VKEY_UP:
+      delta = -kMaxTargetsPerRow;
+      break;
+    case ui::VKEY_DOWN:
+      delta = kMaxTargetsPerRow;
+      break;
+    case ui::VKEY_LEFT:
+      delta = base::i18n::IsRTL() ? 1 : -1;
+      break;
+    case ui::VKEY_RIGHT:
+      delta = base::i18n::IsRTL() ? -1 : 1;
+      break;
+    default:
+      NOTREACHED();
+      break;
+  }
+
+  keyboard_highlighted_target_ += delta;
+
+  int default_view_max = kMaxTargetsPerRow * kMaxRowsForDefaultView - 1;
+  int max_target_index = targets_.size() - 1;
+  if ((!show_expanded_view_) && (max_target_index > default_view_max)) {
+    max_target_index = default_view_max;
+  }
+
+  if (keyboard_highlighted_target_ > max_target_index) {
+    keyboard_highlighted_target_ = max_target_index;
+  } else if (keyboard_highlighted_target_ < 0) {
+    keyboard_highlighted_target_ = 0;
+  }
+
+  if (keyboard_highlighted_target_ <= default_view_max) {
+    default_view_->children()[keyboard_highlighted_target_]->RequestFocus();
+  } else {
+    DCHECK_LT(keyboard_highlighted_target_ - default_view_max,
+              expanded_view_->children().size());
+    DCHECK(show_expanded_view_);
+    expanded_view_->children()[keyboard_highlighted_target_ - default_view_max]
+        ->RequestFocus();
+  }
+
+  View::OnKeyEvent(event);
 }
 
 void SharesheetBubbleView::ButtonPressed(views::Button* sender,
