@@ -92,19 +92,6 @@
       'Linux FYI GPU TSAN Release',  # crbug.com/950542
     ],
   },
-  'angle_unittests': {
-    'remove_from': [
-      # On Android, these are already run on the main waterfall.
-      'Android FYI Release (Nexus 5X)',
-    ],
-    'modifications': {
-      'Linux ASan LSan Tests (1)': {
-        'swarming': {
-          'shards': 10,
-        },
-      },
-    },
-  },
   'angle_white_box_tests': {
     'remove_from': [
       # https://crbug.com/1035178
@@ -2386,6 +2373,19 @@
         ],
       }
     }
+  },
+  'standalone_angle_unittests': {
+    'remove_from': [
+      # On Android, these are already run on the main waterfall.
+      'Android FYI Release (Nexus 5X)',
+    ],
+    'modifications': {
+      'Linux ASan LSan Tests (1)': {
+        'swarming': {
+          'shards': 10,
+        },
+      },
+    },
   },
   'storage_service_content_browsertests': {
     'modifications': {
