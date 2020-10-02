@@ -49,4 +49,5 @@ lucicfg.generator(_generate_project_pyl)
 ACTIVE_BRANCHES = [
     ("m85", 4183),
     ("m86", 4240),
+    ("m87", 4280),
 ]
