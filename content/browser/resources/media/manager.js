@@ -207,7 +207,7 @@ var Manager = (function() {
                   videoCaptureCapabilities[i]['formats'][j]);
         }
         videoCaptureCapabilities[i]['controlSupport'] =
-            videoCaptureCapabilities[i]['controlSupport'].join(' ');
+            videoCaptureCapabilities[i]['controlSupport'].join(' ') || 'N/A';
       }
 
       // The keys of each device to be shown in order of appearance.
