@@ -126,8 +126,6 @@ class AccountManagerUIHandlerTest
       delete;
 
   void SetUpOnMainThread() override {
-    user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::make_unique<chromeos::FakeChromeUserManager>());
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     TestingProfile::Builder profile_builder;
     profile_builder.SetPath(temp_dir_.GetPath().AppendASCII("TestProfile"));
@@ -138,6 +136,7 @@ class AccountManagerUIHandlerTest
     }
     profile_ = profile_builder.Build();
 
+    auto user_manager = std::make_unique<chromeos::FakeChromeUserManager>();
     const user_manager::User* user;
     if (GetDeviceAccountInfo().user_type ==
         user_manager::UserType::USER_TYPE_ACTIVE_DIRECTORY) {
@@ -156,6 +155,12 @@ class AccountManagerUIHandlerTest
                                          GetDeviceAccountInfo().id),
           true, GetDeviceAccountInfo().user_type, profile_.get());
     }
+    primary_account_id_ = user->GetAccountId();
+    user_manager->LoginUser(primary_account_id_);
+    ProfileHelper::Get()->SetUserToProfileMappingForTesting(user,
+                                                            profile_.get());
+    user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
+        std::move(user_manager));
 
     identity_manager_ = IdentityManagerFactory::GetForProfile(profile_.get());
 
@@ -178,7 +183,9 @@ class AccountManagerUIHandlerTest
 
   void TearDownOnMainThread() override {
     handler_.reset();
+    ProfileHelper::Get()->RemoveUserFromListForTesting(primary_account_id_);
     profile_.reset();
+    base::RunLoop().RunUntilIdle();
     user_manager_enabler_.reset();
   }
 
@@ -223,12 +230,12 @@ class AccountManagerUIHandlerTest
   chromeos::AccountManager* account_manager_ = nullptr;
   signin::IdentityManager* identity_manager_ = nullptr;
   content::TestWebUI web_ui_;
+  AccountId primary_account_id_;
   std::unique_ptr<TestingAccountManagerUIHandler> handler_;
 };
 
-// TODO(https://crbug.com/1131834): Re-enable flaky test.
 IN_PROC_BROWSER_TEST_P(AccountManagerUIHandlerTest,
-                       DISABLED_OnGetAccountsNoSecondaryAccounts) {
+                       OnGetAccountsNoSecondaryAccounts) {
   const std::vector<AccountManager::Account> account_manager_accounts =
       GetAccountsFromAccountManager();
   // Only Primary account.
@@ -271,9 +278,8 @@ IN_PROC_BROWSER_TEST_P(AccountManagerUIHandlerTest,
   }
 }
 
-// TODO(https://crbug.com/1131819): Re-enable flaky test.
 IN_PROC_BROWSER_TEST_P(AccountManagerUIHandlerTest,
-                       DISABLED_OnGetAccountsWithSecondaryAccounts) {
+                       OnGetAccountsWithSecondaryAccounts) {
   UpsertAccount("secondary1@example.com");
   UpsertAccount("secondary2@example.com");
   const std::vector<AccountManager::Account> account_manager_accounts =
