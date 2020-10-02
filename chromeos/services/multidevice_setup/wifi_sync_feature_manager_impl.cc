@@ -101,10 +101,10 @@ void WifiSyncFeatureManagerImpl::OnNewDevicesSynced() {
 
 void WifiSyncFeatureManagerImpl::SetIsWifiSyncEnabled(bool enabled) {
   if (GetCurrentState() == CurrentState::kNoVerifiedHost) {
-    ResetPendingWifiSyncHostNetworkRequest();
     PA_LOG(ERROR)
         << "WifiSyncFeatureManagerImpl::SetIsWifiSyncEnabled:  Network request "
            "not attempted because there is No Verified Host";
+    ResetPendingWifiSyncHostNetworkRequest();
     return;
   }
 
@@ -161,7 +161,6 @@ WifiSyncFeatureManagerImpl::GetCurrentState() {
            ->GetSoftwareFeatureState(
                multidevice::SoftwareFeature::kWifiSyncHost) ==
        multidevice::SoftwareFeatureState::kEnabled);
-
   bool pending_enabled = (GetPendingState() == PendingState::kPendingEnable);
 
   if (pending_enabled == enabled_on_host) {
@@ -224,12 +223,6 @@ void WifiSyncFeatureManagerImpl::OnSetWifiSyncHostStateNetworkRequestFinished(
     device_sync::mojom::NetworkRequestResult result_code) {
   network_request_in_flight_ = false;
 
-  bool has_valid_pending_request =
-      (GetCurrentState() == CurrentState::kValidPendingRequest);
-  if (!has_valid_pending_request) {
-    ResetPendingWifiSyncHostNetworkRequest();
-  }
-
   bool success =
       (result_code == device_sync::mojom::NetworkRequestResult::kSuccess);
 
@@ -242,11 +235,17 @@ void WifiSyncFeatureManagerImpl::OnSetWifiSyncHostStateNetworkRequestFinished(
 
   if (success) {
     PA_LOG(VERBOSE) << ss.str();
+    PendingState pending_state = GetPendingState();
+    if (pending_state == PendingState::kPendingNone) {
+      return;
+    }
+
+    bool pending_enabled = (pending_state == PendingState::kPendingEnable);
     // If the network request was successful but there is still a pending
     // network request then trigger a network request immediately. This could
     // happen if there was a second attempt to set the backend while the first
     // one was still in progress.
-    if (has_valid_pending_request) {
+    if (attempted_to_enable != pending_enabled) {
       AttemptSetWifiSyncHostStateNetworkRequest(false /* is_retry */);
     }
     return;
@@ -257,7 +256,7 @@ void WifiSyncFeatureManagerImpl::OnSetWifiSyncHostStateNetworkRequestFinished(
 
   // If the network request failed and there is still a pending network request,
   // schedule a retry.
-  if (has_valid_pending_request) {
+  if (GetCurrentState() == CurrentState::kValidPendingRequest) {
     timer_->Start(FROM_HERE,
                   base::TimeDelta::FromMinutes(kNumMinutesBetweenRetries),
                   base::BindOnce(&WifiSyncFeatureManagerImpl::
