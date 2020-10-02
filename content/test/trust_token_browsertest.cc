@@ -34,6 +34,7 @@
 #include "services/network/trust_tokens/test/trust_token_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/platform/resource_request_blocked_reason.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 #include "url/url_canon_stdstring.h"
@@ -432,6 +433,76 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, RecordsNetErrorCodes) {
   histograms.ExpectUniqueSample(
       "Net.TrustTokens.NetErrorForTrustTokenOperation.Failure.Redemption",
       net::ERR_TRUST_TOKEN_OPERATION_FAILED, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, RecordsFetchFailureReasons) {
+  // Verify that the Net.TrustTokens.FetchFailedReason.* metrics
+  // record successfully by testing one case with a blocked resource, one case
+  // with a generic net-stack failure, and one case with a Trust Tokens
+  // operation failure.
+  base::HistogramTester histograms;
+
+  ProvideRequestHandlerKeyCommitmentsToNetworkService({"a.test", "b.test"});
+
+  GURL start_url = server_.GetURL("a.test", "/title1.html");
+  ASSERT_TRUE(NavigateToURL(shell(), start_url));
+
+  // This fetch will fail because we set `redirect: 'error'` and the
+  // /cross-site/ URL will redirect the request.
+  EXPECT_EQ("TypeError", EvalJs(shell(),
+                                R"(fetch("/cross-site/b.test/issue", {
+                                     redirect: 'error',
+                                     trustToken: {type: 'token-request'}
+                                   })
+                                   .then(() => "Unexpected success!")
+                                   .catch(err => err.name);)"));
+
+  content::FetchHistogramsFromChildProcesses();
+  histograms.ExpectUniqueSample(
+      "Net.TrustTokens.FetchFailedReason.Issuance",
+      9 /* fetch_manager.cc::FailedReason::kOtherNonBlockReason */,
+      /*expected_count=*/1);
+
+  // Since issuance failed, there should be no tokens to redeem, so redemption
+  // should fail:
+  EXPECT_EQ(
+      "OperationError",
+      EvalJs(shell(),
+             R"(fetch("/redeem", {trustToken: {type: 'srr-token-redemption'}})
+                   .then(() => "Unexpected success!")
+                   .catch(err => err.name);)"));
+
+  content::FetchHistogramsFromChildProcesses();
+  histograms.ExpectUniqueSample(
+      "Net.TrustTokens.FetchFailedReason.Redemption",
+      8 /* fetch_manager.cc::FailedReason::kTrustTokensError */,
+      /*expected_count=*/1);
+
+  // Execute a cross-site b.test -> a.test issuance that would succeed, were it
+  // not for site b requiring CORP headers and none being present on the a.test
+  // issuance response:
+  ASSERT_TRUE(NavigateToURL(
+      shell(),
+      server_.GetURL("b.test",
+                     "/cross-origin-opener-policy_redirect_final.html")));
+  GURL site_a_issuance_url =
+      GURL(IssuanceOriginFromHost("a.test")).Resolve("/issue");
+  EXPECT_THAT(EvalJs(shell(), JsReplace(R"(fetch($1, {
+  mode: 'no-cors',
+                  trustToken: {type: 'token-request'}})
+                   .then(() => "Unexpected success!")
+                   .catch(err => err.message);)",
+                                        site_a_issuance_url))
+                  .ExtractString(),
+              HasSubstr("Failed to fetch"));
+
+  content::FetchHistogramsFromChildProcesses();
+  histograms.ExpectBucketCount(
+      "Net.TrustTokens.FetchFailedReason.Issuance",
+      // fetch_manager.cc::FailedReason::
+      // kCorpNotSameOriginAfterDefaultedToSameOriginByCoep
+      21,
+      /*expected_count=*/1);
 }
 
 // Trust Tokens should require that their executing contexts be secure.

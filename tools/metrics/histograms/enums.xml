@@ -29852,6 +29852,34 @@ Called by update_feature_policy_enum.py.-->
   <int value="2" label="CONTENT_DISMISSED"/>
 </enum>
 
+<enum name="FetchFailedReasonOrResourceRequestBlockedReason">
+  <int value="0" label="kRedirectToDataUrlWithImpermissibleFetchMode"/>
+  <int value="1" label="kContentSecurityPolicyViolation"/>
+  <int value="2" label="kSameOriginModeButUrlNotSameOrigin"/>
+  <int value="3" label="kModeIsNoCorsButRedirectModeIsNotFollow"/>
+  <int value="4" label="kCorsRequestToUrlWithUnsupportedScheme"/>
+  <int value="5" label="kSchemeFetchToUrlWithUnsupportedScheme"/>
+  <int value="6" label="kSubresourceIntegrityVerificationError"/>
+  <int value="7" label="kFailedRedirectCheck"/>
+  <int value="8" label="kTrustTokensError"/>
+  <int value="9" label="kOtherNonBlockReason"/>
+  <int value="10" label="kBlockedBecauseOther"/>
+  <int value="11" label="kBlockedBecauseCSP"/>
+  <int value="12" label="kBlockedBecauseMixedContent"/>
+  <int value="13" label="kBlockedBecauseOrigin"/>
+  <int value="14" label="kBlockedBecauseInspector"/>
+  <int value="15" label="kBlockedBecauseSubresourceFilter"/>
+  <int value="16" label="kBlockedBecauseContentType"/>
+  <int value="17" label="kBlockedBecauseCollapsedByClient"/>
+  <int value="18" label="kBlockedBecauseCoepFrameResourceNeedsCoepHeader"/>
+  <int value="19"
+      label="kBlockedBecauseCoopSandboxedIFrameCannotNavigateToCoopPage"/>
+  <int value="20" label="kBlockedBecauseCorpNotSameOrigin"/>
+  <int value="21"
+      label="kBlockedBecauseCorpNotSameOriginAfterDefaultedToSameOriginByCoep"/>
+  <int value="22" label="kBlockedBecauseCorpNotSameSite"/>
+</enum>
+
 <enum name="FetchFontName">
   <int value="0" label="Other"/>
   <int value="1" label="Google Sans Regular"/>

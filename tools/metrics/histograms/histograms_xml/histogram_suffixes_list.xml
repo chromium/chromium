@@ -19256,6 +19256,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="Issuance" label="Trust token issuance"/>
   <suffix name="Redemption" label="Trust token redemption"/>
   <suffix name="Signing" label="SRR attachment and outgoing request signing"/>
+  <affected-histogram name="Net.TrustTokens.FetchFailedReason"/>
   <affected-histogram
       name="Net.TrustTokens.NetErrorForTrustTokenOperation.Failure"/>
   <affected-histogram

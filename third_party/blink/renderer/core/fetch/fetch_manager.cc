@@ -8,7 +8,9 @@
 
 #include "base/check.h"
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/single_thread_task_runner.h"
+#include "base/strings/strcat.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/request_mode.h"
@@ -86,6 +88,110 @@ bool HasNonEmptyLocationHeader(const FetchHeaderList* headers) {
   if (!headers->Get(http_names::kLocation, value))
     return false;
   return !value.IsEmpty();
+}
+
+// FailedReason enumerates reasons a fetch can return "TypeError: Failed to
+// fetch". This is a temporary measure for debugging a surprisingly high
+// incidence of "TypeError: Failed to fetch" when executing Trust Tokens
+// issuance operations (crbug.com/1128174).
+//
+// Since these values are persisted to histograms, please do not remove or
+// renumber entries.
+//
+// TODO(crbug.com/1133944): Once the investigation of Trust Tokens failures has
+// ended, remove this enum and the associated logging logic.
+enum class FailedReason {
+  kRedirectToDataUrlWithImpermissibleFetchMode = 0,
+  kContentSecurityPolicyViolation = 1,
+  kSameOriginModeButUrlNotSameOrigin = 2,
+  kModeIsNoCorsButRedirectModeIsNotFollow = 3,
+  kCorsRequestToUrlWithUnsupportedScheme = 4,
+  kSchemeFetchToUrlWithUnsupportedScheme = 5,
+  kSubresourceIntegrityVerificationError = 6,
+  kFailedRedirectCheck = 7,
+  kTrustTokensError = 8,
+  // The fetch call failed due to a reason other than any of the above, and the
+  // response was not blocked. (If it was blocked, the histogram will contain a
+  // ResourceRequestBlockedReason value.)
+  kOtherNonBlockReason = 9,
+
+  // The following correspond to the values of ResourceRequestBlockedReason:
+  kBlockedBecauseOther = 10,
+  kBlockedBecauseCSP = 11,
+  kBlockedBecauseMixedContent = 12,
+  kBlockedBecauseOrigin = 13,
+  kBlockedBecauseInspector = 14,
+  kBlockedBecauseSubresourceFilter = 15,
+  kBlockedBecauseContentType = 16,
+  kBlockedBecauseCollapsedByClient = 17,
+  kBlockedBecauseCoepFrameResourceNeedsCoepHeader = 18,
+  kBlockedBecauseCoopSandboxedIFrameCannotNavigateToCoopPage = 19,
+  kBlockedBecauseCorpNotSameOrigin = 20,
+  kBlockedBecauseCorpNotSameOriginAfterDefaultedToSameOriginByCoep = 21,
+  kBlockedBecauseCorpNotSameSite = 22,
+
+  kMaxValue = kBlockedBecauseCorpNotSameSite,
+};
+
+FailedReason ResourceRequestBlockedReasonToFailedReason(
+    ResourceRequestBlockedReason blocked_reason) {
+  switch (blocked_reason) {
+    case ResourceRequestBlockedReason::kOther:
+      return FailedReason::kBlockedBecauseOther;
+    case ResourceRequestBlockedReason::kCSP:
+      return FailedReason::kBlockedBecauseCSP;
+    case ResourceRequestBlockedReason::kMixedContent:
+      return FailedReason::kBlockedBecauseMixedContent;
+    case ResourceRequestBlockedReason::kOrigin:
+      return FailedReason::kBlockedBecauseOrigin;
+    case ResourceRequestBlockedReason::kInspector:
+      return FailedReason::kBlockedBecauseInspector;
+    case ResourceRequestBlockedReason::kSubresourceFilter:
+      return FailedReason::kBlockedBecauseSubresourceFilter;
+    case ResourceRequestBlockedReason::kContentType:
+      return FailedReason::kBlockedBecauseContentType;
+    case ResourceRequestBlockedReason::kCollapsedByClient:
+      return FailedReason::kBlockedBecauseCollapsedByClient;
+    case ResourceRequestBlockedReason::kCoepFrameResourceNeedsCoepHeader:
+      return FailedReason::kBlockedBecauseCoepFrameResourceNeedsCoepHeader;
+    case ResourceRequestBlockedReason::
+        kCoopSandboxedIFrameCannotNavigateToCoopPage:
+      return FailedReason::
+          kBlockedBecauseCoopSandboxedIFrameCannotNavigateToCoopPage;
+    case ResourceRequestBlockedReason::kCorpNotSameOrigin:
+      return FailedReason::kBlockedBecauseCorpNotSameOrigin;
+    case ResourceRequestBlockedReason::
+        kCorpNotSameOriginAfterDefaultedToSameOriginByCoep:
+      return FailedReason::
+          kBlockedBecauseCorpNotSameOriginAfterDefaultedToSameOriginByCoep;
+    case ResourceRequestBlockedReason::kCorpNotSameSite:
+      return FailedReason::kBlockedBecauseCorpNotSameSite;
+  }
+}
+
+// Logs a more descriptive reason why a fetch with Trust Tokens parameters
+// failed. This is a temporary measure for debugging a surprisingly high
+// incidence of "TypeError: Failed to fetch" when executing Trust Tokens
+// issuance operations (crbug.com/1128174).
+void HistogramFetchFailureReasonForTrustTokensOperation(
+    network::mojom::blink::TrustTokenOperationType operation_type,
+    FailedReason reason) {
+  const char* operation_type_name = "";
+  switch (operation_type) {
+    case network::mojom::blink::TrustTokenOperationType::kIssuance:
+      operation_type_name = "Issuance";
+      break;
+    case network::mojom::blink::TrustTokenOperationType::kRedemption:
+      operation_type_name = "Redemption";
+      break;
+    case network::mojom::blink::TrustTokenOperationType::kSigning:
+      operation_type_name = "Signing";
+      break;
+  }
+  base::UmaHistogramEnumeration(
+      base::StrCat(
+          {"Net.TrustTokens.FetchFailedReason", ".", operation_type_name}),
+      reason);
 }
 
 }  // namespace
@@ -193,7 +299,8 @@ class FetchManager::Loader final
           "Unknown error occurred while trying to verify integrity.";
       updater_->Update(
           BytesConsumer::CreateErrored(BytesConsumer::Error(error_message)));
-      loader_->PerformNetworkError(error_message);
+      loader_->PerformNetworkError(
+          error_message, FailedReason::kSubresourceIntegrityVerificationError);
     }
 
     String DebugName() const override { return "SRIVerifier"; }
@@ -223,12 +330,14 @@ class FetchManager::Loader final
 
  private:
   void PerformSchemeFetch();
-  void PerformNetworkError(const String& message);
+  void PerformNetworkError(const String& message, FailedReason reason);
   void PerformHTTPFetch();
   void PerformDataFetch();
   // If |dom_exception| is provided, throws the specified DOMException instead
   // of the usual "Failed to fetch" TypeError.
-  void Failed(const String& message, DOMException* dom_exception);
+  void Failed(const String& message,
+              DOMException* dom_exception,
+              FailedReason reason);
   void NotifyFinished();
   ExecutionContext* GetExecutionContext() { return execution_context_; }
 
@@ -354,10 +463,12 @@ void FetchManager::Loader::DidReceiveResponse(
         case RequestMode::kCors:
         case RequestMode::kCorsWithForcedPreflight:
         case RequestMode::kNavigate:
-          PerformNetworkError("Fetch API cannot load " +
-                              fetch_request_data_->Url().GetString() +
-                              ". Redirects to data: URL are allowed only when "
-                              "mode is \"no-cors\".");
+          PerformNetworkError(
+              "Fetch API cannot load " +
+                  fetch_request_data_->Url().GetString() +
+                  ". Redirects to data: URL are allowed only when "
+                  "mode is \"no-cors\".",
+              FailedReason::kRedirectToDataUrlWithImpermissibleFetchMode);
           return;
       }
     }
@@ -513,15 +624,23 @@ void FetchManager::Loader::DidFail(const ResourceError& error) {
   if (error.TrustTokenOperationError() !=
       network::mojom::blink::TrustTokenOperationStatus::kOk) {
     Failed(String(),
-           TrustTokenErrorToDOMException(error.TrustTokenOperationError()));
+           TrustTokenErrorToDOMException(error.TrustTokenOperationError()),
+           FailedReason::kTrustTokensError);
     return;
   }
 
-  Failed(String(), nullptr);
+  if (base::Optional<ResourceRequestBlockedReason> blocked_reason =
+          error.GetResourceRequestBlockedReason()) {
+    Failed(String(), nullptr,
+           ResourceRequestBlockedReasonToFailedReason(*blocked_reason));
+    return;
+  }
+
+  Failed(String(), nullptr, FailedReason::kOtherNonBlockReason);
 }
 
 void FetchManager::Loader::DidFailRedirectCheck() {
-  Failed(String(), nullptr);
+  Failed(String(), nullptr, FailedReason::kFailedRedirectCheck);
 }
 
 void FetchManager::Loader::Start() {
@@ -554,7 +673,8 @@ void FetchManager::Loader::Start() {
     // "A network error."
     PerformNetworkError(
         "Refused to connect to '" + fetch_request_data_->Url().ElidedString() +
-        "' because it violates the document's Content Security Policy.");
+            "' because it violates the document's Content Security Policy.",
+        FailedReason::kContentSecurityPolicyViolation);
     return;
   }
 
@@ -578,10 +698,11 @@ void FetchManager::Loader::Start() {
   if (fetch_request_data_->Mode() == RequestMode::kSameOrigin) {
     // "A network error."
     PerformNetworkError("Fetch API cannot load " +
-                        fetch_request_data_->Url().GetString() +
-                        ". Request mode is \"same-origin\" but the URL\'s "
-                        "origin is not same as the request origin " +
-                        fetch_request_data_->Origin()->ToString() + ".");
+                            fetch_request_data_->Url().GetString() +
+                            ". Request mode is \"same-origin\" but the URL\'s "
+                            "origin is not same as the request origin " +
+                            fetch_request_data_->Origin()->ToString() + ".",
+                        FailedReason::kSameOriginModeButUrlNotSameOrigin);
     return;
   }
 
@@ -590,10 +711,11 @@ void FetchManager::Loader::Start() {
     // "If |request|'s redirect mode is not |follow|, then return a network
     // error.
     if (fetch_request_data_->Redirect() != RedirectMode::kFollow) {
-      PerformNetworkError("Fetch API cannot load " +
-                          fetch_request_data_->Url().GetString() +
-                          ". Request mode is \"no-cors\" but the redirect mode "
-                          "is not \"follow\".");
+      PerformNetworkError(
+          "Fetch API cannot load " + fetch_request_data_->Url().GetString() +
+              ". Request mode is \"no-cors\" but the redirect mode "
+              "is not \"follow\".",
+          FailedReason::kModeIsNoCorsButRedirectModeIsNotFollow);
       return;
     }
 
@@ -612,7 +734,8 @@ void FetchManager::Loader::Start() {
     // "A network error."
     PerformNetworkError(
         "Fetch API cannot load " + fetch_request_data_->Url().GetString() +
-        ". URL scheme must be \"http\" or \"https\" for CORS request.");
+            ". URL scheme must be \"http\" or \"https\" for CORS request.",
+        FailedReason::kCorsRequestToUrlWithUnsupportedScheme);
     return;
   }
 
@@ -671,13 +794,15 @@ void FetchManager::Loader::PerformSchemeFetch() {
     // FIXME: implement other protocols.
     PerformNetworkError(
         "Fetch API cannot load " + fetch_request_data_->Url().GetString() +
-        ". URL scheme \"" + fetch_request_data_->Url().Protocol() +
-        "\" is not supported.");
+            ". URL scheme \"" + fetch_request_data_->Url().Protocol() +
+            "\" is not supported.",
+        FailedReason::kSchemeFetchToUrlWithUnsupportedScheme);
   }
 }
 
-void FetchManager::Loader::PerformNetworkError(const String& message) {
-  Failed(message, nullptr);
+void FetchManager::Loader::PerformNetworkError(const String& message,
+                                               FailedReason reason) {
+  Failed(message, nullptr, reason);
 }
 
 void FetchManager::Loader::PerformHTTPFetch() {
@@ -819,7 +944,8 @@ void FetchManager::Loader::PerformDataFetch() {
 }
 
 void FetchManager::Loader::Failed(const String& message,
-                                  DOMException* dom_exception) {
+                                  DOMException* dom_exception,
+                                  FailedReason reason) {
   if (failed_ || finished_)
     return;
   failed_ = true;
@@ -830,6 +956,12 @@ void FetchManager::Loader::Failed(const String& message,
         mojom::ConsoleMessageSource::kJavaScript,
         mojom::ConsoleMessageLevel::kError, message));
   }
+
+  if (fetch_request_data_ && fetch_request_data_->TrustTokenParams()) {
+    HistogramFetchFailureReasonForTrustTokensOperation(
+        fetch_request_data_->TrustTokenParams()->type, reason);
+  }
+
   if (resolver_) {
     ScriptState* state = resolver_->GetScriptState();
     ScriptState::Scope scope(state);
