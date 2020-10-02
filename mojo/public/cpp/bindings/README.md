@@ -168,7 +168,7 @@ defines a `BindNewPipeAndPassReceiver` method:
 
 ``` cpp
 mojo::Remote<sample::mojom::Logger> logger;
-auto receiver = logger.BindNewPipeAndPassReceiver());
+auto receiver = logger.BindNewPipeAndPassReceiver();
 ```
 
 This second snippet is equivalent to the first one.
