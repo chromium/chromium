@@ -4858,8 +4858,8 @@ Unknown properties are collapsed to zero. -->
   <int value="1649" label="ADDRESS_HOME_STREET: accepted"/>
   <int value="1664" label="ADDRESS_HOME_HOUSE_NUMBER: edited"/>
   <int value="1665" label="ADDRESS_HOME_HOUSE_NUMBER: accepted"/>
-  <int value="1680" label="ADDRESS_HOME_FLOOR: edited"/>
-  <int value="1681" label="ADDRESS_HOME_FLOOR: accepted"/>
+  <int value="1680" label="ADDRESS_HOME_SUBPREMISE: edited"/>
+  <int value="1681" label="ADDRESS_HOME_SUBPREMISE: accepted"/>
   <int value="1696" label="ADDRESS_HOME_OTHER_SUBUNIT: edited"/>
   <int value="1697" label="ADDRESS_HOME_OTHER_SUBUNIT: accepted"/>
   <int value="1712" label="NAME_LAST_FIRST: edited"/>
@@ -4870,6 +4870,20 @@ Unknown properties are collapsed to zero. -->
   <int value="1745" label="NAME_LAST_SECOND: accepted"/>
   <int value="1760" label="NAME_HONORIFIC_PREFIX: edited"/>
   <int value="1761" label="NAME_HONORIFIC_PREFIX: accepted"/>
+  <int value="1776" label="ADDRESS_HOME_PREMISE_NAME: edited"/>
+  <int value="1777" label="ADDRESS_HOME_PREMISE_NAME: accepted"/>
+  <int value="1792" label="ADDRESS_HOME_DEPENDENT_STREET_NAME: edited"/>
+  <int value="1793" label="ADDRESS_HOME_DEPENDENT_STREET_NAME: accepted"/>
+  <int value="1808"
+      label="ADDRESS_HOME_STREET_AND_DEPENDENT_STREET_NAME: edited"/>
+  <int value="1809"
+      label="ADDRESS_HOME_STREET_AND_DEPENDENT_STREET_NAME: accepted"/>
+  <int value="1824" label="ADDRESS_HOME_ADDRESS: edited"/>
+  <int value="1825" label="ADDRESS_HOME_ADDRESS: accepted"/>
+  <int value="1840" label="ADDRESS_HOME_ADDRESS_WITH_NAME: edited"/>
+  <int value="1841" label="ADDRESS_HOME_ADDRESS_WITH_NAME: accepted"/>
+  <int value="1856" label="ADDRESS_HOME_FLOOR: edited"/>
+  <int value="1857" label="ADDRESS_HOME_FLOOR: accepted"/>
 </enum>
 
 <enum name="AutofillExperimentId">
