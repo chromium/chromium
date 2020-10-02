@@ -11,7 +11,6 @@
 #include "ash/public/cpp/holding_space/holding_space_model_observer.h"
 #include "base/scoped_observer.h"
 #include "base/test/bind_test_util.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/aura/window.h"
@@ -267,14 +266,6 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiScreenshotBrowserTest, AddScreenshot) {
   // Otherwise the screenshot will be taken using the `ChromeScreenshotGrabber`.
   PressAndReleaseKey(ui::VKEY_MEDIA_LAUNCH_APP1,
                      ui::EF_ALT_DOWN | ui::EF_CONTROL_DOWN);
-  // Move the mouse over to the browser window. The reason for that is with
-  // `features::kCaptureMode` enabled, the new capture mode implementation will
-  // not automatically capture the topmost window unless the mouse is hovered
-  // above it.
-  aura::Window* browser_window = browser()->window()->GetNativeWindow();
-  ui::test::EventGenerator event_generator(browser_window->GetRootWindow());
-  event_generator.MoveMouseTo(
-      browser_window->GetBoundsInScreen().CenterPoint());
   PressAndReleaseKey(ui::VKEY_RETURN);
 
   // Bind an observer to watch for updates to the holding space model.

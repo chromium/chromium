@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <memory>
-
 #include "ash/capture_mode/capture_mode_bar_view.h"
 #include "ash/capture_mode/capture_mode_close_button.h"
 #include "ash/capture_mode/capture_mode_controller.h"
@@ -20,7 +18,6 @@
 #include "ash/shell.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/test/ash_test_base.h"
-#include "ash/wm/window_state.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/gfx/geometry/insets.h"
@@ -498,40 +495,6 @@ TEST_F(CaptureModeTest, DimensionsLabelLocation) {
   SelectRegion(capture_region);
   EXPECT_EQ(800 - CaptureModeSession::kSizeLabelYDistanceFromRegionDp,
             dimensions_label_window->bounds().bottom());
-}
-
-TEST_F(CaptureModeTest, WindowCapture) {
-  // Create 2 windows that overlap with each other.
-  const gfx::Rect bounds1(0, 0, 200, 200);
-  std::unique_ptr<aura::Window> window1(CreateTestWindow(bounds1));
-  const gfx::Rect bounds2(150, 150, 200, 200);
-  std::unique_ptr<aura::Window> window2(CreateTestWindow(bounds2));
-
-  auto* controller = CaptureModeController::Get();
-  controller->SetSource(CaptureModeSource::kWindow);
-  controller->SetType(CaptureModeType::kImage);
-  controller->Start();
-  EXPECT_TRUE(controller->IsActive());
-
-  auto* event_generator = GetEventGenerator();
-  event_generator->MoveMouseToCenterOf(window1.get());
-  auto* capture_mode_session = controller->capture_mode_session();
-  EXPECT_EQ(capture_mode_session->GetSelectedWindow(), window1.get());
-  event_generator->MoveMouseToCenterOf(window2.get());
-  EXPECT_EQ(capture_mode_session->GetSelectedWindow(), window2.get());
-
-  // Now move the mouse to the overlapped area.
-  event_generator->MoveMouseTo(gfx::Point(175, 175));
-  EXPECT_EQ(capture_mode_session->GetSelectedWindow(), window2.get());
-  // Close the current selected window should automatically focus to next one.
-  window2.reset();
-  EXPECT_EQ(capture_mode_session->GetSelectedWindow(), window1.get());
-  // Open another one on top also change the selected window.
-  std::unique_ptr<aura::Window> window3(CreateTestWindow(bounds2));
-  EXPECT_EQ(capture_mode_session->GetSelectedWindow(), window3.get());
-  // Minimize the window should also automatically change the selected window.
-  WindowState::Get(window3.get())->Minimize();
-  EXPECT_EQ(capture_mode_session->GetSelectedWindow(), window1.get());
 }
 
 }  // namespace ash
