@@ -261,7 +261,7 @@ Context* GetContext();
 
 template <typename T>
 Context::Storage::Storage(T&& value) {
-  wrapper_ = std::make_unique<StorageWrapper<T>>(std::move(value));
+  wrapper_ = std::make_unique<StorageWrapper<T>>(std::forward<T>(value));
 }
 
 template <typename T>
