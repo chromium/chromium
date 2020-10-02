@@ -436,6 +436,13 @@
                          message:nil
                             rect:self.baseViewController.view.frame
                             view:self.baseViewController.view];
+
+  NSNotificationCenter* defaultCenter = [NSNotificationCenter defaultCenter];
+  [defaultCenter addObserver:self
+                    selector:@selector(applicationDidEnterBackground:)
+                        name:UIApplicationDidEnterBackgroundNotification
+                      object:nil];
+
   self.actionSheetCoordinator.popoverArrowDirection = 0;
   self.actionSheetCoordinator.alertStyle =
       IsIPadIdiom() ? UIAlertControllerStyleAlert
@@ -486,6 +493,12 @@
   [self.delegate tabGrid:self
       shouldFinishWithBrowser:self.regularBrowser
                  focusOmnibox:NO];
+}
+
+#pragma mark - Notification callback
+
+- (void)applicationDidEnterBackground:(NSNotification*)notification {
+  [self.actionSheetCoordinator stop];
 }
 
 #pragma mark - HistoryPresentationDelegate
