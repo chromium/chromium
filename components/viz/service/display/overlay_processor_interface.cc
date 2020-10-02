@@ -92,8 +92,8 @@ OverlayProcessorInterface::CreateOverlayProcessor(
                                                enable_ca_overlay);
 #elif defined(OS_WIN)
   return std::make_unique<OverlayProcessorWin>(
-      output_surface,
-      std::make_unique<DCLayerOverlayProcessor>(debug_settings));
+      output_surface, std::make_unique<DCLayerOverlayProcessor>(
+                          debug_settings, /*allowed_yuv_overlay_count=*/1));
 #elif defined(USE_OZONE)
   if (!features::IsUsingOzonePlatform())
     return std::make_unique<OverlayProcessorStub>();

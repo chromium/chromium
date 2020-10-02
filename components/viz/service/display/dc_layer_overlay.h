@@ -79,8 +79,14 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor
  public:
   // When |skip_initialization_for_testing| is true, object will be isolated
   // for unit tests.
+  // allowed_yuv_overlay_count will be limited to 1 if
+  // |use_overlay_damage_list_| is not supported. This new method produces an
+  // empty root damage rect when the overlay quads are the only damages in the
+  // frames. If |use_overlay_damage_list_| is false, we should not allowed more
+  // than one YUV overlays since non-empty damage rect won't save any power.
   explicit DCLayerOverlayProcessor(
       const DebugRendererSettings* debug_settings,
+      int allowed_yuv_overlay_count,
       bool skip_initialization_for_testing = false);
   virtual ~DCLayerOverlayProcessor();
 
@@ -137,6 +143,11 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor
                                  gfx::Rect* damage_rect);
 
   bool has_overlay_support_;
+  const bool use_overlay_damage_list_;
+  // TODO(magchen@): We are going to support more than one YUV overlay.
+  const int allowed_yuv_overlay_count_;
+  int processed_yuv_overlay_count_ = 0;
+
   // Reference to the global viz singleton.
   const DebugRendererSettings* const debug_settings_;
 

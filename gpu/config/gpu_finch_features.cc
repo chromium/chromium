@@ -52,6 +52,11 @@ const base::Feature kDefaultEnableOopRasterization{
 // Use a high priority for GPU process on Windows.
 const base::Feature kGpuProcessHighPriorityWin{
     "GpuProcessHighPriorityWin", base::FEATURE_ENABLED_BY_DEFAULT};
+
+// Compute the root damage rect from the surface damage list for overlays on
+// Windows.
+const base::Feature kDirectCompositionUseOverlayDamageList{
+    "DirectCompositionUseOverlayDamageList", base::FEATURE_ENABLED_BY_DEFAULT};
 #endif
 
 // Use ThreadPriority::DISPLAY for GPU main, viz compositor and IO threads.

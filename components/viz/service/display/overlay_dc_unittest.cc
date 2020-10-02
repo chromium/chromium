@@ -101,10 +101,11 @@ class OverlayOutputSurface : public OutputSurface {
 class DCTestOverlayProcessor : public OverlayProcessorWin {
  public:
   explicit DCTestOverlayProcessor(OutputSurface* output_surface)
-      : OverlayProcessorWin(
-            output_surface,
-            std::make_unique<DCLayerOverlayProcessor>(&debug_settings_, true)) {
-  }
+      : OverlayProcessorWin(output_surface,
+                            std::make_unique<DCLayerOverlayProcessor>(
+                                &debug_settings_,
+                                /*allowed_yuv_overlay_count=*/1,
+                                true)) {}
   DebugRendererSettings debug_settings_;
 };
 

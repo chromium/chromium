@@ -6,6 +6,7 @@
 
 #include <limits>
 
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
@@ -19,6 +20,7 @@
 #include "components/viz/service/display/display_resource_provider.h"
 #include "components/viz/service/display/overlay_processor_interface.h"
 #include "gpu/GLES2/gl2extchromium.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -71,7 +73,8 @@ DCLayerResult ValidateYUVQuad(
     const YUVVideoDrawQuad* quad,
     const std::vector<gfx::Rect>& backdrop_filter_rects,
     bool has_overlay_support,
-    int current_frame_processed_overlay_count,
+    int allowed_yuv_overlay_count,
+    int processed_yuv_overlay_count,
     DisplayResourceProvider* resource_provider) {
   // Note: Do not override this value based on base::Feature values. It is the
   // result after the GPU blocklist has been consulted.
@@ -97,7 +100,7 @@ DCLayerResult ValidateYUVQuad(
     return DC_LAYER_FAILED_COMPLEX_TRANSFORM;
   }
 
-  if (current_frame_processed_overlay_count > 0)
+  if (processed_yuv_overlay_count >= allowed_yuv_overlay_count)
     return DC_LAYER_FAILED_TOO_MANY_OVERLAYS;
 
   // Rounded corner on overlays are not supported.
@@ -320,8 +323,13 @@ DCLayerOverlay::~DCLayerOverlay() = default;
 
 DCLayerOverlayProcessor::DCLayerOverlayProcessor(
     const DebugRendererSettings* debug_settings,
+    int allowed_yuv_overlay_count,
     bool skip_initialization_for_testing)
     : has_overlay_support_(skip_initialization_for_testing),
+      use_overlay_damage_list_(base::FeatureList::IsEnabled(
+          features::kDirectCompositionUseOverlayDamageList)),
+      allowed_yuv_overlay_count_(
+          use_overlay_damage_list_ ? allowed_yuv_overlay_count : 1),
       debug_settings_(debug_settings),
       viz_task_runner_(skip_initialization_for_testing
                            ? nullptr
@@ -406,6 +414,7 @@ void DCLayerOverlayProcessor::Process(
     gfx::Rect* damage_rect,
     DCLayerOverlayList* dc_layer_overlays) {
   gfx::Rect this_frame_underlay_rect;
+  processed_yuv_overlay_count_ = 0;
 
   // Which render passes have backdrop filters.
   base::flat_set<AggregatedRenderPassId> render_pass_has_backdrop_filters;
@@ -451,11 +460,13 @@ void DCLayerOverlayProcessor::Process(
     DCLayerResult result;
     switch (it->material) {
       case DrawQuad::Material::kYuvVideoContent:
-        result =
-            ValidateYUVQuad(YUVVideoDrawQuad::MaterialCast(*it),
-                            backdrop_filter_rects, has_overlay_support_,
-                            candidate_index_list.size(), resource_provider);
+        result = ValidateYUVQuad(
+            YUVVideoDrawQuad::MaterialCast(*it), backdrop_filter_rects,
+            has_overlay_support_, allowed_yuv_overlay_count_,
+            processed_yuv_overlay_count_, resource_provider);
         yuv_quads_in_quad_list++;
+        if (result == DC_LAYER_SUCCESS)
+          processed_yuv_overlay_count_++;
         break;
       case DrawQuad::Material::kTextureContent:
         result = ValidateTextureQuad(TextureDrawQuad::MaterialCast(*it),
@@ -483,11 +494,17 @@ void DCLayerOverlayProcessor::Process(
 
     candidate_index_list.push_back(index);
   }
+  // A YUV quad might be rejected later due to not allowed as an underlay.
+  // Recount the YUV overlays when they are added to the overlay list
+  // successfully.
+  processed_yuv_overlay_count_ = 0;
 
+  // TODO(magchen@): Revisit this code if allowed_yuv_overlay_count_ > 1.
   // We might not save power if there are more than one videos and only one is
   // promoted to overlay. Skip overlays for this frame unless there are
   // protected video or texture overlays.
-  if (candidate_index_list.size() > 0 && yuv_quads_in_quad_list > 1 &&
+  if (candidate_index_list.size() > 0 &&
+      yuv_quads_in_quad_list > allowed_yuv_overlay_count_ &&
       !has_protected_video_or_texture_overlays) {
     candidate_index_list.clear();
     // In this case, there is only one candidate in the list.
@@ -516,6 +533,12 @@ void DCLayerOverlayProcessor::Process(
     // skipped if they're not underlay compatible.
     const bool requires_overlay = IsProtectedVideo(it);
 
+    // TODO(magchen@): Since we reject underlays here, the max number of YUV
+    // overlays we can promote might not be accurate. We should allow all YUV
+    // quads to be put into candidate_index_list, but only
+    // |allowed_yuv_overlay_count_| YUV quads should be promoted to
+    // overlays/underlays from that list.
+
     // Skip quad if it's an underlay and underlays are not allowed.
     if (!is_overlay && !requires_overlay) {
       DCLayerResult result = IsUnderlayAllowed(it);
@@ -539,15 +562,22 @@ void DCLayerOverlayProcessor::Process(
   // found in this frame, the previous overlay rects would have been handled
   // above and |previous_frame_overlay_rect_union_| becomes empty.
   damage_rect->Union(previous_frame_overlay_rect_union_);
+  damage_rect->Intersect(gfx::ToEnclosingRect(display_rect));
+
   previous_frame_overlay_rect_union_ = current_frame_overlay_rect_union_;
   current_frame_overlay_rect_union_ = gfx::Rect();
   previous_frame_processed_overlay_count_ =
       current_frame_processed_overlay_count_;
   current_frame_processed_overlay_count_ = 0;
-
-  damage_rect->Intersect(gfx::ToEnclosingRect(display_rect));
   previous_display_rect_ = display_rect;
   previous_frame_underlay_rect_ = this_frame_underlay_rect;
+
+  if (!dc_layer_overlays->empty()) {
+    base::UmaHistogramExactLinear(
+        "GPU.DirectComposition.DCLayer.YUVOverlayCount",
+        /*sample=*/processed_yuv_overlay_count_,
+        /*value_max=*/10);
+  }
 
   if (debug_settings_->show_dc_layer_debug_borders &&
       dc_layer_overlays->size() > 0) {
@@ -576,6 +606,7 @@ void DCLayerOverlayProcessor::UpdateDCLayerOverlays(
     case DrawQuad::Material::kYuvVideoContent:
       FromYUVQuad(YUVVideoDrawQuad::MaterialCast(*it),
                   render_pass->transform_to_root_target, &dc_layer);
+      processed_yuv_overlay_count_++;
       break;
     case DrawQuad::Material::kTextureContent:
       FromTextureQuad(TextureDrawQuad::MaterialCast(*it),
@@ -624,7 +655,6 @@ void DCLayerOverlayProcessor::UpdateDCLayerOverlays(
 
   dc_layer_overlays->push_back(dc_layer);
 
-  // Only allow one overlay unless it's hardware protected video.
   current_frame_processed_overlay_count_++;
 }
 

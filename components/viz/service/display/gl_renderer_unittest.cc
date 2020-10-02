@@ -2523,7 +2523,9 @@ TEST_F(MockOutputSurfaceTest, BackbufferDiscard) {
 class MockDCLayerOverlayProcessor : public DCLayerOverlayProcessor {
  public:
   MockDCLayerOverlayProcessor()
-      : DCLayerOverlayProcessor(&debug_settings_, true) {}
+      : DCLayerOverlayProcessor(&debug_settings_,
+                                /*allowed_yuv_overlay_count=*/1,
+                                true) {}
   ~MockDCLayerOverlayProcessor() override = default;
   MOCK_METHOD5(Process,
                void(DisplayResourceProvider* resource_provider,
@@ -3669,7 +3671,8 @@ TEST_F(GLRendererTest, DCLayerOverlaySwitch) {
 
   auto processor = std::make_unique<OverlayProcessorWin>(
       output_surface.get(),
-      std::make_unique<DCLayerOverlayProcessor>(&debug_settings_, true));
+      std::make_unique<DCLayerOverlayProcessor>(
+          &debug_settings_, /*allowed_yuv_overlay_count=*/1, true));
 
   RendererSettings settings;
   settings.partial_swap_enabled = true;
