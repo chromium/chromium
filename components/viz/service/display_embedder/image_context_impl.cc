@@ -12,6 +12,7 @@
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image_factory.h"
 #include "gpu/command_buffer/service/skia_utils.h"
+#include "gpu/command_buffer/service/texture_manager.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkPromiseImageTexture.h"
 
@@ -48,6 +49,11 @@ ImageContextImpl::~ImageContextImpl() {
 }
 
 void ImageContextImpl::OnContextLost() {
+  if (texture_passthrough_) {
+    texture_passthrough_->MarkContextLost();
+    texture_passthrough_.reset();
+  }
+
   if (representation_) {
     representation_->OnContextLost();
     representation_scoped_read_access_.reset();
@@ -144,6 +150,16 @@ void ImageContextImpl::BeginAccessIfNecessary(
     return;
   }
   set_promise_image_texture(SkPromiseImageTexture::Make(backend_texture));
+
+  // Hold onto a reference to legacy GL textures while still in use, see
+  // https://crbug.com/1118166 for why this is necessary.
+  if (texture_base->GetType() == gpu::TextureBase::Type::kPassthrough) {
+    texture_passthrough_ =
+        gpu::gles2::TexturePassthrough::CheckedCast(texture_base);
+  }
+  // TODO(crbug.com/1118166): The case above handles textures with the
+  // passthrough command decoder, verify if something is required for the
+  // validating command decoder as well.
 }
 
 bool ImageContextImpl::BeginAccessIfNecessaryForSharedImage(

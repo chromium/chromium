@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/ref_counted.h"
 #include "base/optional.h"
 #include "components/viz/common/quads/render_pass.h"
 #include "components/viz/common/resources/resource_format.h"
@@ -31,6 +32,9 @@ class MailboxManager;
 class SharedContextState;
 class SharedImageRepresentationFactory;
 class TextureBase;
+namespace gles2 {
+class TexturePassthrough;
+}
 }  // namespace gpu
 
 namespace viz {
@@ -107,6 +111,8 @@ class ImageContextImpl final : public ExternalUseClient::ImageContext {
   gpu::SharedContextState* fallback_context_state_ = nullptr;
   GrBackendTexture fallback_texture_;
 
+  // Only one of the follow should be non-null at the same time.
+  scoped_refptr<gpu::gles2::TexturePassthrough> texture_passthrough_;
   std::unique_ptr<gpu::SharedImageRepresentationSkia> representation_;
 
   // For scoped read accessing |representation|. It is only accessed on GPU
