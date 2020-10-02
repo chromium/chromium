@@ -1933,7 +1933,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.StoreDecryptionResult"
-    enum="PasswordDecryptionResult" expires_after="2020-11-01">
+    enum="PasswordDecryptionResult" expires_after="2021-06-01">
   <owner>cfroussios@chromium.org</owner>
   <owner>jdoerrie@chromium.org</owner>
   <summary>
