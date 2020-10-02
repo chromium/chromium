@@ -39,7 +39,7 @@ buildflag_header("buildflags") {
 
 # External-facing config for dependent code.
 config("skia_config") {
-  defines = []
+  defines = [ "SK_LEGACY_SURFACE_PROPS"  ]
   include_dirs = [ "//third_party/skia" ]
 
   if (!is_ios) {
