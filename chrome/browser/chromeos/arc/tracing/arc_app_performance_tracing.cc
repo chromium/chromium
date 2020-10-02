@@ -5,21 +5,32 @@
 #include "chrome/browser/chromeos/arc/tracing/arc_app_performance_tracing.h"
 
 #include "base/memory/singleton.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/chromeos/arc/tracing/arc_app_performance_tracing_custom_session.h"
 #include "chrome/browser/chromeos/arc/tracing/arc_app_performance_tracing_session.h"
 #include "chrome/browser/chromeos/arc/tracing/arc_app_performance_tracing_uma_session.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs_factory.h"
 #include "components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "components/arc/arc_features.h"
+#include "components/arc/arc_service_manager.h"
 #include "components/arc/arc_util.h"
+#include "components/arc/session/arc_bridge_service.h"
 #include "components/exo/wm_helper.h"
 #include "ui/aura/window.h"
 
 namespace arc {
 
 namespace {
+
+// Tracing delay for jankinees.
+constexpr base::TimeDelta kJankinessTracingTime =
+    base::TimeDelta::FromMinutes(5);
+
+// Minimum number of frames for a jankiness tracing result to be valid.
+constexpr int kMinTotalFramesJankiness = 1000;
 
 // Singleton factory for ArcAppPerformanceTracing.
 class ArcAppPerformanceTracingFactory
@@ -124,6 +135,8 @@ void ArcAppPerformanceTracing::SetCustomSessionReadyCallbackForTesting(
 }
 
 void ArcAppPerformanceTracing::Shutdown() {
+  CancelJankinessTracing();
+
   MaybeStopTracing();
 
   // |session_|. Make sure that |arc_active_window_| is detached.
@@ -160,6 +173,9 @@ void ArcAppPerformanceTracing::OnWindowActivated(ActivationReason reason,
   // Discard any active tracing if any.
   MaybeStopTracing();
 
+  // Stop and report previous active window's jankiness tracing so far.
+  FinalizeJankinessTracing(true /* stopped_early */);
+
   // Detach previous active window if it is set.
   DetachActiveWindow();
 
@@ -170,12 +186,16 @@ void ArcAppPerformanceTracing::OnWindowActivated(ActivationReason reason,
   // Observe active ARC++ window.
   AttachActiveWindow(gained_active);
 
+  StartJankinessTracing();
+
   MaybeStartTracing();
 }
 
 void ArcAppPerformanceTracing::OnWindowDestroying(aura::Window* window) {
   // ARC++ window will be destroyed.
   DCHECK_EQ(arc_active_window_, window);
+
+  CancelJankinessTracing();
 
   MaybeStopTracing();
 
@@ -187,12 +207,115 @@ void ArcAppPerformanceTracing::OnTaskCreated(int32_t task_id,
                                              const std::string& activity,
                                              const std::string& intent) {
   const std::string app_id = ArcAppListPrefs::GetAppId(package_name, activity);
-  task_id_to_app_id_[task_id] = app_id;
+  task_id_to_app_id_[task_id] = std::make_pair(app_id, package_name);
   MaybeStartTracing();
 }
 
 void ArcAppPerformanceTracing::OnTaskDestroyed(int32_t task_id) {
   task_id_to_app_id_.erase(task_id);
+}
+
+void ArcAppPerformanceTracing::StartJankinessTracing() {
+  DCHECK(!jankiness_timer_.IsRunning());
+  jankiness_timer_.Start(
+      FROM_HERE, kJankinessTracingTime,
+      base::BindOnce(&ArcAppPerformanceTracing::FinalizeJankinessTracing,
+                     base::Unretained(this), false /* stopped_early */));
+}
+
+void ArcAppPerformanceTracing::CancelJankinessTracing() {
+  jankiness_timer_.Stop();
+}
+
+void ArcAppPerformanceTracing::FinalizeJankinessTracing(bool stopped_early) {
+  // Never started. Nothing to do.
+  if (!jankiness_timer_.IsRunning() && stopped_early)
+    return;
+
+  jankiness_timer_.Stop();
+
+  // Check if we have all conditions met, ARC++ window is active and information
+  // is available for associated task.
+  if (!arc_active_window_)
+    return;
+
+  const int32_t task_id = arc::GetWindowTaskId(arc_active_window_);
+  DCHECK_GT(task_id, 0);
+
+  const auto it = task_id_to_app_id_.find(task_id);
+  if (it == task_id_to_app_id_.end())
+    // It is normal that information might not be available at this time.
+    return;
+
+  // Test instances might not have Service Manager running.
+  auto* arc_service_manager = ArcServiceManager::Get();
+  if (!arc_service_manager)
+    return;
+
+  auto* instance = ARC_GET_INSTANCE_FOR_METHOD(
+      arc_service_manager->arc_bridge_service()->metrics(), GetGfxMetrics);
+  if (!instance)
+    return;
+
+  const std::string package_name = it->second.second;
+  auto callback = base::BindOnce(&ArcAppPerformanceTracing::OnGfxMetrics,
+                                 base::Unretained(this), package_name);
+  instance->GetGfxMetrics(package_name, std::move(callback));
+
+  // Finalized normally, safe to restart.
+  if (!stopped_early)
+    StartJankinessTracing();
+}
+
+void ArcAppPerformanceTracing::OnGfxMetrics(const std::string& package_name,
+                                            mojom::GfxMetricsPtr metrics) {
+  if (!metrics) {
+    LOG(ERROR) << "Failed to resolve GFX metrics";
+    return;
+  }
+
+  uint64_t framesTotal = metrics->framesTotal;
+  uint64_t framesJanky = metrics->framesJanky;
+  const uint32_t frameTime95 = metrics->frameTimePercentile95;  // in ms.
+
+  const auto it = package_name_to_gfx_metrics_.find(package_name);
+  const bool first_time = it == package_name_to_gfx_metrics_.end();
+
+  // Cached data exists and not outdated. Calculate delta.
+  if (!first_time && it->second.framesTotal <= framesTotal) {
+    framesTotal -= it->second.framesTotal;
+    framesJanky -= it->second.framesJanky;
+  }
+
+  // Update cache.
+  package_name_to_gfx_metrics_[package_name] = *metrics;
+
+  // Not enough data.
+  if (framesTotal < kMinTotalFramesJankiness) {
+    VLOG(1) << "Not enough GFX metrics data collected to report.";
+    return;
+  }
+
+  // We can only calculate real numbers for initial data. Only report if first
+  // time.
+  if (first_time) {
+    const base::TimeDelta frameTime =
+        base::TimeDelta::FromMilliseconds(frameTime95);
+    base::UmaHistogramTimes("Arc.Runtime.Performance.Generic.FrameTime",
+                            frameTime);
+    VLOG(1) << "Total Frames: " << framesTotal << " | "
+            << "Janky Frames: " << framesJanky << " | "
+            << "95 Percentile Frame Time: " << frameTime.InMilliseconds()
+            << "ms";
+  } else {
+    VLOG(1) << "Total Frames: " << framesTotal << " | "
+            << "Janky Frames: " << framesJanky;
+  }
+
+  const int jankiness = (framesJanky * 100) / framesTotal;
+
+  base::UmaHistogramPercentage("Arc.Runtime.Performance.Generic.Jankiness",
+                               jankiness);
 }
 
 bool ArcAppPerformanceTracing::WasReported(const std::string& category) const {
@@ -226,8 +349,8 @@ void ArcAppPerformanceTracing::MaybeStartTracing() {
     return;
   }
 
-  const std::string& category =
-      AppToCategoryMapper::GetInstance().GetCategory(it->second /* app_id */);
+  const std::string& category = AppToCategoryMapper::GetInstance().GetCategory(
+      it->second.first /* app_id */);
 
   if (category.empty()) {
     // App is not recognized as app for tracing, ignore it.

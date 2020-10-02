@@ -15,6 +15,7 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
+#include "components/arc/mojom/metrics.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "ui/aura/window_observer.h"
 #include "ui/wm/public/activation_change_observer.h"
@@ -33,7 +34,7 @@ class ArcAppPerformanceTracingSession;
 class ArcBridgeService;
 
 // Service that monitors ARC++ apps, measures and reports performance metrics
-// for the set of predefined apps.
+// for the set of predefined apps. Also report GFX metrics jankiness results.
 class ArcAppPerformanceTracing : public KeyedService,
                                  public wm::ActivationChangeObserver,
                                  public aura::WindowObserver,
@@ -121,13 +122,35 @@ class ArcAppPerformanceTracing : public KeyedService,
   // |arc_active_window_|.
   void DetachActiveWindow();
 
+  // Starts timer for jankiness tracing. Called by OnWindowActivation() and
+  // FinalizeJankinessTracing().
+  void StartJankinessTracing();
+
+  // Cancels jankiness tracing without reporting partial results.
+  void CancelJankinessTracing();
+
+  // Retrieves and reports jankiness metrics and restarts timer. May be called
+  // early by OnWindowActivation() and OnWindowDestroying().
+  // In this case, |stopped_early| is set to true.
+  void FinalizeJankinessTracing(bool stopped_early);
+
+  // Callback for jankiness results. Reports results to UMA.
+  // Note: Results are cumulative. Uses task_id_to_gfx_metrics_
+  // values for delta calculations.
+  void OnGfxMetrics(const std::string& package_name,
+                    mojom::GfxMetricsPtr metrics_ptr);
+
   // Unowned pointers.
   content::BrowserContext* const context_;
   // Currently active ARC++ app window.
   aura::Window* arc_active_window_ = nullptr;
 
-  // Maps active tasks to app id.
-  std::map<int, std::string> task_id_to_app_id_;
+  // Maps active tasks to app id and package name.
+  std::map<int, std::pair<std::string, std::string>> task_id_to_app_id_;
+
+  // Maps tasks to most recent GFX jankiness results. Used for delta
+  // calculation.
+  std::map<std::string, mojom::GfxMetrics> package_name_to_gfx_metrics_;
 
   // Set of already reported ARC++ apps for the current session. Used to prevent
   // capturing too frequently.
@@ -138,6 +161,9 @@ class ArcAppPerformanceTracing : public KeyedService,
 
   // Callback to call when custom session is ready for testing.
   CustomSessionReadyCallback custom_session_ready_callback_;
+
+  // Timer for jankiness tracing.
+  base::OneShotTimer jankiness_timer_;
 
   DISALLOW_COPY_AND_ASSIGN(ArcAppPerformanceTracing);
 };
