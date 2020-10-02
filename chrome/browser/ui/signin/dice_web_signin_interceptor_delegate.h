@@ -34,6 +34,9 @@ class DiceWebSigninInterceptorDelegate
       Browser* browser,
       const BubbleParameters& bubble_parameters,
       base::OnceCallback<void(bool)> callback);
+
+  // Implemented in profile_customization_bubble_view.cc
+  void ShowProfileCustomizationBubbleInternal(Browser* browser);
 };
 
 #endif  // CHROME_BROWSER_UI_SIGNIN_DICE_WEB_SIGNIN_INTERCEPTOR_DELEGATE_H_

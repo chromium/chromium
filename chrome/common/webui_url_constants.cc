@@ -344,11 +344,6 @@ const char kChromeUIDiscardsHost[] = "discards";
 const char kChromeUIDiscardsURL[] = "chrome://discards/";
 const char kChromeUIHatsHost[] = "hats";
 const char kChromeUIHatsURL[] = "chrome://hats/";
-#if !defined(OS_CHROMEOS)
-const char kChromeUIProfilePickerHost[] = "profile-picker";
-const char kChromeUIProfilePickerUrl[] = "chrome://profile-picker/";
-const char kChromeUIProfilePickerStartupQuery[] = "startup";
-#endif
 #endif
 
 #if !defined(OS_ANDROID)
@@ -369,6 +364,12 @@ const char kChromeUISandboxHost[] = "sandbox";
     (defined(OS_LINUX) && !defined(OS_CHROMEOS))
 const char kChromeUIBrowserSwitchHost[] = "browser-switch";
 const char kChromeUIBrowserSwitchURL[] = "chrome://browser-switch/";
+const char kChromeUIProfileCustomizationHost[] = "profile-customization";
+const char kChromeUIProfileCustomizationURL[] =
+    "chrome://profile-customization";
+const char kChromeUIProfilePickerHost[] = "profile-picker";
+const char kChromeUIProfilePickerUrl[] = "chrome://profile-picker/";
+const char kChromeUIProfilePickerStartupQuery[] = "startup";
 #endif
 
 #if ((defined(OS_LINUX) || defined(OS_CHROMEOS)) && defined(TOOLKIT_VIEWS)) || \

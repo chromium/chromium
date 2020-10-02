@@ -9,6 +9,7 @@ group("closure_compile") {
   if (!is_chromeos) {
     deps += [
       "dice_web_signin_intercept:closure_compile",
+      "profile_customization:closure_compile",
       "profile_picker:closure_compile",
       "signin_email_confirmation:closure_compile",
       "signin_error:closure_compile",
@@ -25,6 +26,7 @@ group("web_components") {
   if (!is_chromeos) {
     public_deps += [
       "dice_web_signin_intercept:web_components",
+      "profile_customization:web_components",
       "signin_email_confirmation:web_components",
       "signin_error:web_components",
       "signin_reauth:web_components",

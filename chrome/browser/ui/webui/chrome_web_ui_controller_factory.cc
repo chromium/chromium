@@ -233,6 +233,7 @@
 #if !defined(OS_CHROMEOS) && !defined(OS_ANDROID)
 #include "chrome/browser/ui/sync/sync_promo_ui.h"
 #include "chrome/browser/ui/webui/browser_switch/browser_switch_ui.h"
+#include "chrome/browser/ui/webui/signin/profile_customization_ui.h"
 #include "chrome/browser/ui/webui/signin/profile_picker_ui.h"
 #include "chrome/browser/ui/webui/signin/signin_email_confirmation_ui.h"
 #include "chrome/browser/ui/webui/signin/signin_error_ui.h"
@@ -785,9 +786,10 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   }
 #endif  // defined(OS_ANDROID)
 #if !defined(OS_CHROMEOS) && !defined(OS_ANDROID)
-  if (url.host_piece() == chrome::kChromeUIProfilePickerHost) {
+  if (url.host_piece() == chrome::kChromeUIProfileCustomizationHost)
+    return &NewWebUI<ProfileCustomizationUI>;
+  if (url.host_piece() == chrome::kChromeUIProfilePickerHost)
     return &NewWebUI<ProfilePickerUI>;
-  }
   if (url.host_piece() == chrome::kChromeUIMdUserManagerHost)
     return &NewWebUI<UserManagerUI>;
   if (url.host_piece() == chrome::kChromeUISigninErrorHost &&

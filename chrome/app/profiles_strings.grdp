@@ -675,6 +675,14 @@
   </if>
 
   <if expr="not chromeos and not is_android">
+    <!-- Profile customization bubble -->
+    <message name="IDS_PROFILE_CUSTOMIZATION_DONE_BUTTON_LABEL" desc="Text for the Done button on the profile customization bubble">
+      Done
+    </message>
+    <message name="IDS_PROFILE_CUSTOMIZATION_PICK_THEME_TITLE" desc="Title of the section of the profile customization bubble where the user can select a theme color for the profile">
+      Pick a theme color
+    </message>
+
     <!-- Profile Picker -->
     <message name="IDS_PROFILE_PICKER_ADD_SPACE_BUTTON" desc="Text for the add space button on the profile picker main view">
       Add

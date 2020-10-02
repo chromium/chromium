@@ -297,9 +297,6 @@ extern const char kChromeUIDiscardsHost[];
 extern const char kChromeUIDiscardsURL[];
 extern const char kChromeUIHatsHost[];
 extern const char kChromeUIHatsURL[];
-extern const char kChromeUIProfilePickerHost[];
-extern const char kChromeUIProfilePickerUrl[];
-extern const char kChromeUIProfilePickerStartupQuery[];
 #endif
 
 #if !defined(OS_ANDROID)
@@ -320,6 +317,11 @@ extern const char kChromeUISandboxHost[];
     (defined(OS_LINUX) && !defined(OS_CHROMEOS))
 extern const char kChromeUIBrowserSwitchHost[];
 extern const char kChromeUIBrowserSwitchURL[];
+extern const char kChromeUIProfileCustomizationHost[];
+extern const char kChromeUIProfileCustomizationURL[];
+extern const char kChromeUIProfilePickerHost[];
+extern const char kChromeUIProfilePickerUrl[];
+extern const char kChromeUIProfilePickerStartupQuery[];
 #endif
 
 #if ((defined(OS_LINUX) || defined(OS_CHROMEOS)) && defined(TOOLKIT_VIEWS)) || \

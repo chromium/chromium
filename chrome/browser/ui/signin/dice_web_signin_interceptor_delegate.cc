@@ -28,6 +28,5 @@ void DiceWebSigninInterceptorDelegate::ShowSigninInterceptionBubble(
 
 void DiceWebSigninInterceptorDelegate::ShowProfileCustomizationBubble(
     Browser* browser) {
-  // TODO(https://crbug.com/1130945): implement the customization bubble.
-  NOTIMPLEMENTED();
+  ShowProfileCustomizationBubbleInternal(browser);
 }

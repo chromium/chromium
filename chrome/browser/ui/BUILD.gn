@@ -2866,6 +2866,8 @@ static_library("ui") {
         "signin/dice_web_signin_interceptor_delegate.h",
         "views/profiles/dice_web_signin_interception_bubble_view.cc",
         "views/profiles/dice_web_signin_interception_bubble_view.h",
+        "views/profiles/profile_customization_bubble_view.cc",
+        "views/profiles/profile_customization_bubble_view.h",
         "webui/signin/dice_turn_sync_on_helper.cc",
         "webui/signin/dice_turn_sync_on_helper.h",
         "webui/signin/dice_turn_sync_on_helper_delegate_impl.cc",
@@ -2874,6 +2876,10 @@ static_library("ui") {
         "webui/signin/dice_web_signin_intercept_handler.h",
         "webui/signin/dice_web_signin_intercept_ui.cc",
         "webui/signin/dice_web_signin_intercept_ui.h",
+        "webui/signin/profile_customization_handler.cc",
+        "webui/signin/profile_customization_handler.h",
+        "webui/signin/profile_customization_ui.cc",
+        "webui/signin/profile_customization_ui.h",
       ]
     }
   }
