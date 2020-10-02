@@ -36,7 +36,6 @@ class MockMediaControlsDelegate
   ~MockMediaControlsDelegate() override = default;
 
   void ShowMediaControls() override { visible_ = true; }
-  void HideMediaControls() override { visible_ = false; }
   MOCK_METHOD0(OnMediaControlsViewClicked, void());
 
   bool IsControlsVisible() { return visible_; }
@@ -128,6 +127,10 @@ class UnifiedMediaControlsControllerTest : public AshTestBase {
       return nullptr;
 
     return static_cast<views::Button*>(*it);
+  }
+
+  bool IsMediaControlsInEmptyState() const {
+    return media_controls_->is_in_empty_state_;
   }
 
   SkPath GetArtworkClipPath() { return media_controls_->GetArtworkClipPath(); }
@@ -364,31 +367,123 @@ TEST_F(UnifiedMediaControlsControllerTest, HideArtwork) {
 }
 
 TEST_F(UnifiedMediaControlsControllerTest,
-       ShowHideControlsOnMediaSessionChanged) {
+       UpdateControlsStateOnMediaSessionChanged) {
   auto request_id = base::UnguessableToken::Create();
 
   EXPECT_FALSE(delegate()->IsControlsVisible());
   controller()->MediaSessionChanged(request_id);
   EXPECT_TRUE(delegate()->IsControlsVisible());
+  EXPECT_FALSE(IsMediaControlsInEmptyState());
 
   controller()->MediaSessionChanged(base::nullopt);
-  EXPECT_TRUE(delegate()->IsControlsVisible());
+  EXPECT_FALSE(IsMediaControlsInEmptyState());
 
-  // Still visible since we are within waiting delay time frame.
+  // Still in normal state since we are within waiting delay time frame.
   task_environment()->FastForwardBy(
       base::TimeDelta::FromMilliseconds(kHideControlsDelay - 1));
-  EXPECT_TRUE(delegate()->IsControlsVisible());
+  EXPECT_FALSE(IsMediaControlsInEmptyState());
 
-  // Session resumes, controls should still be visible.
+  // Session resumes, controls should still be in normal state.
   controller()->MediaSessionChanged(request_id);
   task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(1));
-  EXPECT_TRUE(delegate()->IsControlsVisible());
+  EXPECT_FALSE(IsMediaControlsInEmptyState());
 
-  // Hide controls timer expired, controls should be hidden.
+  // Hide controls timer expired, controls should be in empty state.
   controller()->MediaSessionChanged(base::nullopt);
   task_environment()->FastForwardBy(
       base::TimeDelta::FromMilliseconds(kHideControlsDelay));
+  EXPECT_TRUE(IsMediaControlsInEmptyState());
+  EXPECT_TRUE(delegate()->IsControlsVisible());
+}
+
+TEST_F(UnifiedMediaControlsControllerTest, MediaControlsEmptyState) {
+  CreateWidget();
+
+  // Show media controls.
+  auto request_id = base::UnguessableToken::Create();
+  controller()->MediaSessionChanged(request_id);
+  EXPECT_TRUE(delegate()->IsControlsVisible());
+  EXPECT_FALSE(IsMediaControlsInEmptyState());
+
+  EnableAction(MediaSessionAction::kPlay);
+  EnableAction(MediaSessionAction::kPause);
+  EnableAction(MediaSessionAction::kPreviousTrack);
+  EnableAction(MediaSessionAction::kNextTrack);
+
+  EXPECT_TRUE(artist_label()->GetVisible());
+  EXPECT_FALSE(artwork_view()->GetVisible());
+  for (views::View* button : button_row()->children())
+    EXPECT_TRUE(button->GetEnabled());
+
+  // Media controls should be in empty state after getting empty session.
+  controller()->MediaSessionChanged(base::nullopt);
+  task_environment()->FastForwardBy(
+      base::TimeDelta::FromMilliseconds(kHideControlsDelay));
+
+  EXPECT_TRUE(IsMediaControlsInEmptyState());
+
+  // When in empty state, artist label should be hidden; artwork view
+  // should be hidden since it was hidden before getting into empty
+  // state; all action buttons should be disabled.
+  EXPECT_FALSE(artist_label()->GetVisible());
+  EXPECT_FALSE(artwork_view()->GetVisible());
+  for (views::View* button : button_row()->children())
+    EXPECT_FALSE(button->GetEnabled());
+
+  // Tapping on the media controls when we are in empty state should not
+  // notify delegate.
+  EXPECT_CALL(*delegate(), OnMediaControlsViewClicked).Times(0);
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  generator->MoveMouseTo(
+      media_controls_view()->GetBoundsInScreen().CenterPoint());
+  generator->ClickLeftButton();
+
+  // Media controls should get back to normal state.
+  controller()->MediaSessionChanged(request_id);
+  EXPECT_FALSE(IsMediaControlsInEmptyState());
+
+  EXPECT_TRUE(artist_label()->GetVisible());
+  EXPECT_FALSE(artwork_view()->GetVisible());
+  for (views::View* button : button_row()->children())
+    EXPECT_TRUE(button->GetEnabled());
+
+  // User should be able to tap the controls for detailed view again.
+  EXPECT_CALL(*delegate(), OnMediaControlsViewClicked).Times(1);
+  generator->ClickLeftButton();
+}
+
+TEST_F(UnifiedMediaControlsControllerTest, MediaControlsEmptyStateWithArtwork) {
+  auto request_id = base::UnguessableToken::Create();
+
   EXPECT_FALSE(delegate()->IsControlsVisible());
+  controller()->MediaSessionChanged(request_id);
+  EXPECT_TRUE(delegate()->IsControlsVisible());
+  EXPECT_FALSE(IsMediaControlsInEmptyState());
+
+  // Artwork changed, and artwork view should have an empty background in normal
+  // state.
+  SkBitmap artwork;
+  artwork.allocN32Pixels(40, 40);
+  controller()->MediaControllerImageChanged(
+      media_session::mojom::MediaSessionImageType::kArtwork, artwork);
+  EXPECT_TRUE(artwork_view()->GetVisible());
+  EXPECT_EQ(artwork_view()->background(), nullptr);
+
+  controller()->MediaSessionChanged(base::nullopt);
+  task_environment()->FastForwardBy(
+      base::TimeDelta::FromMilliseconds(kHideControlsDelay));
+
+  // Artwork view should still be visible and have an background in empty state.
+  EXPECT_TRUE(IsMediaControlsInEmptyState());
+  EXPECT_TRUE(artwork_view()->GetVisible());
+  EXPECT_NE(artwork_view()->background(), nullptr);
+
+  // Session and artwork updated, artwotk view should be back in normal state.
+  controller()->MediaSessionChanged(request_id);
+  controller()->MediaControllerImageChanged(
+      media_session::mojom::MediaSessionImageType::kArtwork, artwork);
+  EXPECT_TRUE(artwork_view()->GetVisible());
+  EXPECT_EQ(artwork_view()->background(), nullptr);
 }
 
 TEST_F(UnifiedMediaControlsControllerTest, FreezeControlsWhenUpdateSession) {

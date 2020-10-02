@@ -430,10 +430,6 @@ void UnifiedSystemTrayController::ShowMediaControls() {
   unified_view_->ShowMediaControls();
 }
 
-void UnifiedSystemTrayController::HideMediaControls() {
-  unified_view_->HideMediaControls();
-}
-
 void UnifiedSystemTrayController::OnMediaControlsViewClicked() {
   ShowMediaControlsDetailedView();
 }

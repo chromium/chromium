@@ -43,6 +43,13 @@ class ASH_EXPORT UnifiedMediaControlsView : public views::Button,
       const base::flat_set<media_session::mojom::MediaSessionAction>&
           enabled_actions);
 
+  // Show an empty state representing no media is playing.
+  void ShowEmptyState();
+
+  // Called when receiving new media session, update controls to normal state
+  // if necessary.
+  void OnNewMediaSession();
+
   views::ImageView* artwork_view() { return artwork_view_; }
 
  private:
@@ -65,15 +72,19 @@ class ASH_EXPORT UnifiedMediaControlsView : public views::Button,
     std::unique_ptr<views::InkDropRipple> CreateInkDropRipple() const override;
   };
 
-  SkPath GetArtworkClipPath();
+  SkPath GetArtworkClipPath(
+      base::Optional<gfx::Size> image_size = base::nullopt);
 
   UnifiedMediaControlsController* const controller_ = nullptr;
 
   views::ImageView* artwork_view_ = nullptr;
+  views::ImageView* drop_down_icon_ = nullptr;
   views::Label* title_label_ = nullptr;
   views::Label* artist_label_ = nullptr;
   MediaActionButton* play_pause_button_ = nullptr;
   views::View* button_row_ = nullptr;
+
+  bool is_in_empty_state_ = false;
 };
 
 }  // namespace ash

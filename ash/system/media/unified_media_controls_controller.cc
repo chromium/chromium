@@ -109,9 +109,12 @@ void UnifiedMediaControlsController::MediaSessionChanged(
   // Start hide controls timer if there is no active session, wait to
   // see if we will receive a new session.
   if (!request_id.has_value()) {
+    if (hide_artwork_timer_->IsRunning())
+      hide_artwork_timer_->Stop();
+
     hide_controls_timer_->Start(
         FROM_HERE, kHideControlsDelay,
-        base::BindOnce(&UnifiedMediaControlsController::HideControls,
+        base::BindOnce(&UnifiedMediaControlsController::ShowEmptyState,
                        base::Unretained(this)));
     return;
   }
@@ -119,6 +122,7 @@ void UnifiedMediaControlsController::MediaSessionChanged(
   if (!media_session_id_.has_value())
     delegate_->ShowMediaControls();
   media_session_id_ = request_id;
+  media_controls_->OnNewMediaSession();
 }
 
 void UnifiedMediaControlsController::MediaControllerImageChanged(
@@ -175,9 +179,9 @@ void UnifiedMediaControlsController::PerformAction(
   media_session::PerformMediaSessionAction(action, media_controller_remote_);
 }
 
-void UnifiedMediaControlsController::HideControls() {
+void UnifiedMediaControlsController::ShowEmptyState() {
   media_session_id_ = base::nullopt;
-  delegate_->HideMediaControls();
+  media_controls_->ShowEmptyState();
 }
 
 void UnifiedMediaControlsController::FlushForTesting() {

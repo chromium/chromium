@@ -41,6 +41,7 @@ constexpr int kTrackTitleFontSizeIncrease = 1;
 constexpr gfx::Insets kTrackColumnInsets = gfx::Insets(1, 0, 1, 0);
 constexpr gfx::Insets kMediaControlsViewInsets = gfx::Insets(8, 8, 8, 12);
 
+constexpr gfx::Size kEmptyArtworkIconSize = gfx::Size(20, 20);
 constexpr gfx::Size kArtworkSize = gfx::Size(40, 40);
 constexpr gfx::Size kMediaButtonSize = gfx::Size(32, 32);
 
@@ -116,6 +117,12 @@ void UnifiedMediaControlsView::MediaActionButton::SetAction(
                GetVectorIconForMediaAction(action), kMediaButtonIconSize,
                AshColorProvider::Get()->GetContentLayerColor(
                    AshColorProvider::ContentLayerType::kIconColorPrimary)));
+
+  SetImage(views::Button::STATE_DISABLED,
+           CreateVectorIcon(
+               GetVectorIconForMediaAction(action), kMediaButtonIconSize,
+               AshColorProvider::Get()->GetContentLayerColor(
+                   AshColorProvider::ContentLayerType::kIconColorSecondary)));
 }
 
 std::unique_ptr<views::InkDrop>
@@ -186,7 +193,7 @@ UnifiedMediaControlsView::UnifiedMediaControlsView(
       kUnifiedMenuMoreIcon,
       AshColorProvider::Get()->GetContentLayerColor(
           AshColorProvider::ContentLayerType::kIconColorPrimary)));
-  title_row->AddChildView(std::move(drop_down_icon));
+  drop_down_icon_ = title_row->AddChildView(std::move(drop_down_icon));
 
   title_row_layout->SetFlexForView(title_label_, 1);
   track_column->AddChildView(std::move(title_row));
@@ -223,6 +230,9 @@ UnifiedMediaControlsView::UnifiedMediaControlsView(
 
 void UnifiedMediaControlsView::ButtonPressed(views::Button* sender,
                                              const ui::Event& event) {
+  if (is_in_empty_state_)
+    return;
+
   if (sender == this) {
     controller_->OnMediaControlsViewClicked();
     return;
@@ -286,15 +296,66 @@ void UnifiedMediaControlsView::UpdateActionButtonAvailability(
     button_row_->InvalidateLayout();
 }
 
-SkPath UnifiedMediaControlsView::GetArtworkClipPath() {
+void UnifiedMediaControlsView::ShowEmptyState() {
+  is_in_empty_state_ = true;
+
+  title_label_->SetText(
+      l10n_util::GetStringUTF16(IDS_ASH_GLOBAL_MEDIA_CONTROLS_NO_MEDIA_TEXT));
+  title_label_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kTextColorSecondary));
+  artist_label_->SetVisible(false);
+  drop_down_icon_->SetVisible(false);
+
+  for (views::View* button : button_row_->children())
+    button->SetEnabled(false);
+  InvalidateLayout();
+
+  if (!artwork_view_->GetVisible())
+    return;
+
+  artwork_view_->SetBackground(views::CreateSolidBackground(
+      AshColorProvider::Get()->GetControlsLayerColor(
+          AshColorProvider::ControlsLayerType::
+              kControlBackgroundColorInactive)));
+  artwork_view_->SetImageSize(kEmptyArtworkIconSize);
+  artwork_view_->SetImage(CreateVectorIcon(
+      kMusicNoteIcon, kEmptyArtworkIconSize.width(),
+      AshColorProvider::Get()->GetContentLayerColor(
+          AshColorProvider::ContentLayerType::kIconColorSecondary)));
+
+  artwork_view_->SetClipPath(GetArtworkClipPath(kArtworkSize));
+}
+
+void UnifiedMediaControlsView::OnNewMediaSession() {
+  if (!is_in_empty_state_)
+    return;
+
+  is_in_empty_state_ = false;
+  title_label_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kTextColorPrimary));
+  artist_label_->SetVisible(true);
+  drop_down_icon_->SetVisible(true);
+
+  for (views::View* button : button_row_->children())
+    button->SetEnabled(true);
+  InvalidateLayout();
+
+  if (!artwork_view_->GetVisible())
+    return;
+  artwork_view_->SetBackground(nullptr);
+}
+
+SkPath UnifiedMediaControlsView::GetArtworkClipPath(
+    base::Optional<gfx::Size> image_size) {
   // Calculate image bounds since we might need to draw this when image is
   // not visible (i.e. when quick setting bubble is collapsed).
-  gfx::Size image_size = artwork_view_->GetImageBounds().size();
-  int x = (kArtworkSize.width() - image_size.width()) / 2;
-  int y = (kArtworkSize.height() - image_size.height()) / 2;
+  if (!image_size.has_value())
+    image_size = artwork_view_->GetImageBounds().size();
+  int x = (kArtworkSize.width() - image_size->width()) / 2;
+  int y = (kArtworkSize.height() - image_size->height()) / 2;
   SkPath path;
-  path.addRoundRect(gfx::RectToSkRect(gfx::Rect(x, y, image_size.width(),
-                                                image_size.height())),
+  path.addRoundRect(gfx::RectToSkRect(gfx::Rect(x, y, image_size->width(),
+                                                image_size->height())),
                     kArtworkCornerRadius, kArtworkCornerRadius);
   return path;
 }

@@ -130,9 +130,8 @@ class ASH_EXPORT UnifiedSystemTrayView : public views::View,
   // Settings).
   bool IsDetailedViewShown() const;
 
-  // Show and hide media controls view.
+  // Show media controls view.
   void ShowMediaControls();
-  void HideMediaControls();
 
   // views::View:
   gfx::Size CalculatePreferredSize() const override;

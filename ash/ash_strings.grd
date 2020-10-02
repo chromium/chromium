@@ -2590,6 +2590,10 @@ This file contains the strings for ash.
         Pin to shelf
       </message>
 
+      <message name="IDS_ASH_GLOBAL_MEDIA_CONTROLS_NO_MEDIA_TEXT" desc="Text indicating no media is currently playing.">
+        No media playing
+      </message>
+
       <!-- Power off menu  -->
       <message name="IDS_ASH_POWER_BUTTON_MENU_POWER_OFF_BUTTON" desc="Text shown on power off button in power button menu.">
         Power off

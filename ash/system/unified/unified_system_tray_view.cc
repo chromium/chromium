@@ -292,11 +292,6 @@ void UnifiedSystemTrayView::ShowMediaControls() {
   PreferredSizeChanged();
 }
 
-void UnifiedSystemTrayView::HideMediaControls() {
-  media_controls_container_->SetShouldShowMediaControls(false);
-  PreferredSizeChanged();
-}
-
 void UnifiedSystemTrayView::SetDetailedView(views::View* detailed_view) {
   auto system_tray_size = system_tray_container_->GetPreferredSize();
   system_tray_container_->SetVisible(false);

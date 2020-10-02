@@ -134,7 +134,6 @@ class ASH_EXPORT UnifiedSystemTrayController
 
   // UnifedMediaControlsController::Delegate;
   void ShowMediaControls() override;
-  void HideMediaControls() override;
   void OnMediaControlsViewClicked() override;
 
   UnifiedSystemTrayModel* model() { return model_; }

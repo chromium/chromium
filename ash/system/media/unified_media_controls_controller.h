@@ -30,7 +30,6 @@ class ASH_EXPORT UnifiedMediaControlsController
    public:
     virtual ~Delegate() = default;
     virtual void ShowMediaControls() = 0;
-    virtual void HideMediaControls() = 0;
     virtual void OnMediaControlsViewClicked() = 0;
   };
 
@@ -70,7 +69,7 @@ class ASH_EXPORT UnifiedMediaControlsController
   }
 
  private:
-  void HideControls();
+  void ShowEmptyState();
 
   // Weak ptr, owned by view hierarchy.
   UnifiedMediaControlsView* media_controls_ = nullptr;
