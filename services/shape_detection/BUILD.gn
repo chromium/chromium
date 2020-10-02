@@ -54,6 +54,16 @@ source_set("lib") {
       "text_detection_impl_win.cc",
       "text_detection_impl_win.h",
     ]
+  } else if (is_chromeos && is_chrome_branded) {
+    sources += [
+      "barcode_detection_impl_barhopper.cc",
+      "barcode_detection_impl_barhopper.h",
+      "barcode_detection_provider_barhopper.cc",
+      "barcode_detection_provider_barhopper.h",
+      "face_detection_provider_impl.cc",
+      "face_detection_provider_impl.h",
+      "text_detection_impl.cc",
+    ]
   } else {
     sources += [
       "barcode_detection_provider_impl.cc",
@@ -67,10 +77,15 @@ source_set("lib") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   deps = [
+    "//build:branding_buildflags",
     "//mojo/public/cpp/bindings",
     "//ui/gfx",
     "//ui/gfx/geometry",
   ]
+
+  if (is_chromeos && is_chrome_branded) {
+    deps += [ "//third_party/barhopper:barhopper" ]
+  }
 
   public_deps = [
     "//base",
@@ -137,6 +152,10 @@ source_set("tests") {
     ]
   }
 
+  if (is_chromeos && is_chrome_branded) {
+    sources += [ "barcode_detection_impl_barhopper_unittest.cc" ]
+  }
+
   deps = [
     ":lib",
     "//base",
@@ -149,8 +168,20 @@ source_set("tests") {
     "//ui/gl",
   ]
   data = [
+    "//services/test/data/codabar.png",
+    "//services/test/data/code_39.png",
+    "//services/test/data/code_93.png",
+    "//services/test/data/code_128.png",
+    "//services/test/data/data_matrix.png",
+    "//services/test/data/ean_8.png",
+    "//services/test/data/ean_13.png",
+    "//services/test/data/itf.png",
     "//services/test/data/mona_lisa.jpg",
+    "//services/test/data/pdf417.png",
+    "//services/test/data/qr_code.png",
     "//services/test/data/text_detection.png",
     "//services/test/data/the_beatles.jpg",
+    "//services/test/data/upc_a.png",
+    "//services/test/data/upc_e.png",
   ]
 }
