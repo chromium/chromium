@@ -1006,7 +1006,7 @@
     {
       name: "LayoutNGForControls",
       depends_on: ["LayoutNG"],
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "LayoutNGFragmentItem",
