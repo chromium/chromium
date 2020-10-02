@@ -314,6 +314,7 @@
       <part file="send_tab_to_self_strings.grdp" />
       <part file="sms_strings.grdp" />
       <part file="ssl_errors_strings.grdp" />
+      <part file="subresource_filter_strings.grdp" />
       <part file="sync_ui_strings.grdp" />
       <part file="translate_strings.grdp" />
       <part file="tab_groups_strings.grdp" />
@@ -348,6 +349,9 @@
       </message>
       <message name="IDS_OK" desc="Used for OK on buttons">
         OK
+      </message>
+      <message name="IDS_RELOAD" desc="Used for Reload on buttons">
+        Reload
       </message>
       <message name="IDS_ADD" desc="Used for Add on buttons">
         Add

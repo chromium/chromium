@@ -608,6 +608,7 @@ static_library("ui") {
       "//components/feed/core/v2:feed_core_v2",
       "//components/infobars/content",
       "//components/query_tiles",
+      "//components/resources:android_resources",
       "//components/security_state/content/android",
     ]
   } else {

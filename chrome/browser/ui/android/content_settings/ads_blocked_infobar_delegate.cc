@@ -8,12 +8,11 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/android/android_theme_resources.h"
 #include "chrome/browser/subresource_filter/chrome_subresource_filter_client.h"
 #include "chrome/browser/ui/android/infobars/ads_blocked_infobar.h"
-#include "chrome/grit/generated_resources.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
+#include "components/resources/android/theme_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/subresource_filter/core/browser/subresource_filter_constants.h"
 #include "content/public/browser/web_contents.h"
@@ -73,8 +72,7 @@ int AdsBlockedInfobarDelegate::GetButtons() const {
 
 base::string16 AdsBlockedInfobarDelegate::GetButtonLabel(
     InfoBarButton button) const {
-  return l10n_util::GetStringUTF16((button == BUTTON_OK) ? IDS_OK
-                                                         : IDS_APP_MENU_RELOAD);
+  return l10n_util::GetStringUTF16((button == BUTTON_OK) ? IDS_OK : IDS_RELOAD);
 }
 
 bool AdsBlockedInfobarDelegate::Cancel() {
