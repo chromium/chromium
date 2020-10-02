@@ -82,6 +82,10 @@ Add `target_os = "win"` to your args.gn.  Then just build, e.g.
 
 ## Goma
 
+*** note
+**Warning:** This is unsupported and known to not work at times.
+***
+
 For now, one needs to use the rbe backend, not the borg backend
 (default for Googlers).
 Use cloud backend instead.
