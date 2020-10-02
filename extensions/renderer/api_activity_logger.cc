@@ -56,24 +56,28 @@ void APIActivityLogger::LogAPICall(
 
   ScriptContext* script_context =
       ScriptContextSet::GetContextByV8Context(context);
-  auto value_args = std::make_unique<base::ListValue>();
   std::unique_ptr<content::V8ValueConverter> converter =
       content::V8ValueConverter::Create();
   ActivityLogConverterStrategy strategy;
   converter->SetFunctionAllowed(true);
   converter->SetStrategy(&strategy);
-  value_args->Reserve(arguments.size());
+
+  base::Value::ListStorage value_args;
+  value_args.reserve(arguments.size());
   // TODO(devlin): This doesn't protect against custom properties, so it might
   // not perfectly reflect the passed arguments.
   for (const auto& arg : arguments) {
     std::unique_ptr<base::Value> converted_arg =
         converter->FromV8Value(arg, context);
-    value_args->Append(converted_arg ? std::move(converted_arg)
-                                     : std::make_unique<base::Value>());
+    if (!converted_arg)
+      converted_arg = std::make_unique<base::Value>();
+    value_args.push_back(
+        base::Value::FromUniquePtrValue(std::move(converted_arg)));
   }
 
   LogInternal(APICALL, script_context->GetExtensionID(), call_name,
-              std::move(value_args), std::string());
+              std::make_unique<base::ListValue>(std::move(value_args)),
+              std::string());
 }
 
 void APIActivityLogger::LogEvent(ScriptContext* script_context,
@@ -114,10 +118,10 @@ void APIActivityLogger::LogForJS(
   }
 
   // Get the array of call arguments.
-  auto arguments = std::make_unique<base::ListValue>();
+  base::Value::ListStorage arguments;
   v8::Local<v8::Array> arg_array = v8::Local<v8::Array>::Cast(args[2]);
   if (arg_array->Length() > 0) {
-    arguments->Reserve(arg_array->Length());
+    arguments.reserve(arg_array->Length());
     std::unique_ptr<content::V8ValueConverter> converter =
         content::V8ValueConverter::Create();
     ActivityLogConverterStrategy strategy;
@@ -128,12 +132,15 @@ void APIActivityLogger::LogForJS(
       // actual error handling.
       std::unique_ptr<base::Value> converted_arg = converter->FromV8Value(
           arg_array->Get(context, i).ToLocalChecked(), context);
-      arguments->Append(converted_arg ? std::move(converted_arg)
-                                      : std::make_unique<base::Value>());
+      if (!converted_arg)
+        converted_arg = std::make_unique<base::Value>();
+      arguments.push_back(
+          base::Value::FromUniquePtrValue(std::move(converted_arg)));
     }
   }
 
-  LogInternal(call_type, extension_id, call_name, std::move(arguments), extra);
+  LogInternal(call_type, extension_id, call_name,
+              std::make_unique<base::ListValue>(std::move(arguments)), extra);
 }
 
 // static

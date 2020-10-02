@@ -1442,10 +1442,6 @@ void ListValue::Clear() {
   list().clear();
 }
 
-void ListValue::Reserve(size_t n) {
-  list().reserve(n);
-}
-
 bool ListValue::Set(size_t index, std::unique_ptr<Value> in_value) {
   if (!in_value)
     return false;

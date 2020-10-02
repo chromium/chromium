@@ -669,14 +669,8 @@ void MenuManager::ExecuteCommand(content::BrowserContext* context,
                            webview_guest->view_instance_id());
   }
 
-  auto args = std::make_unique<base::ListValue>();
-  args->Reserve(2);
-  args->Append(std::move(properties));
-  // |properties| is invalidated at this time, which is why |args| needs to be
-  // queried for the pointer. The obtained pointer is guaranteed to stay valid
-  // even after further Appends, because enough storage was reserved above.
-  base::DictionaryValue* raw_properties = nullptr;
-  args->GetDictionary(0, &raw_properties);
+  base::Value::ListStorage args;
+  args.push_back(base::Value::FromUniquePtrValue(std::move(properties)));
 
   // Add the tab info to the argument list.
   // No tab info in a platform app.
@@ -685,7 +679,7 @@ void MenuManager::ExecuteCommand(content::BrowserContext* context,
     if (web_contents) {
       int frame_id = ExtensionApiFrameIdMap::GetFrameId(render_frame_host);
       if (frame_id != ExtensionApiFrameIdMap::kInvalidFrameId)
-        raw_properties->SetInteger("frameId", frame_id);
+        args[0].SetIntKey("frameId", frame_id);
 
       // We intentionally don't scrub the tab data here, since the user chose to
       // invoke the extension on the page.
@@ -693,26 +687,26 @@ void MenuManager::ExecuteCommand(content::BrowserContext* context,
       // on permissions.
       ExtensionTabUtil::ScrubTabBehavior scrub_tab_behavior = {
           ExtensionTabUtil::kDontScrubTab, ExtensionTabUtil::kDontScrubTab};
-      args->Append(ExtensionTabUtil::CreateTabObject(
-                       web_contents, scrub_tab_behavior, extension)
-                       ->ToValue());
+      args.push_back(base::Value::FromUniquePtrValue(
+          ExtensionTabUtil::CreateTabObject(web_contents, scrub_tab_behavior,
+                                            extension)
+              ->ToValue()));
     } else {
-      args->Append(std::make_unique<base::DictionaryValue>());
+      args.push_back(base::DictionaryValue());
     }
   }
 
   if (item->type() == MenuItem::CHECKBOX ||
       item->type() == MenuItem::RADIO) {
     bool was_checked = item->checked();
-    raw_properties->SetBoolean("wasChecked", was_checked);
+    args[0].SetBoolKey("wasChecked", was_checked);
 
     // RADIO items always get set to true when you click on them, but CHECKBOX
     // items get their state toggled.
-    bool checked =
-        (item->type() == MenuItem::RADIO) ? true : !was_checked;
+    bool checked = item->type() == MenuItem::RADIO || !was_checked;
 
     item->SetChecked(checked);
-    raw_properties->SetBoolean("checked", item->checked());
+    args[0].SetBoolKey("checked", item->checked());
 
     if (extension)
       WriteToStorage(extension, item->id().extension_key);
@@ -732,7 +726,7 @@ void MenuManager::ExecuteCommand(content::BrowserContext* context,
         webview_guest ? events::WEB_VIEW_INTERNAL_CONTEXT_MENUS
                       : events::CONTEXT_MENUS,
         webview_guest ? kOnWebviewContextMenus : kOnContextMenus,
-        std::unique_ptr<base::ListValue>(args->DeepCopy()), context);
+        std::make_unique<base::ListValue>(args), context);
     event->user_gesture = EventRouter::USER_GESTURE_ENABLED;
     event_router->DispatchEventToExtension(item->extension_id(),
                                            std::move(event));
@@ -744,7 +738,7 @@ void MenuManager::ExecuteCommand(content::BrowserContext* context,
                       : events::CONTEXT_MENUS_ON_CLICKED,
         webview_guest ? api::chrome_web_view_internal::OnClicked::kEventName
                       : api::context_menus::OnClicked::kEventName,
-        std::move(args), context);
+        std::make_unique<base::ListValue>(std::move(args)), context);
     event->user_gesture = EventRouter::USER_GESTURE_ENABLED;
     if (webview_guest)
       event->filter_info.instance_id = webview_guest->view_instance_id();

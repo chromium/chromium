@@ -500,8 +500,8 @@ APISignature::JSONParseResult APISignature::ConvertArgumentsIgnoringSchema(
       callback = value.As<v8::Function>();
   }
 
-  auto json = std::make_unique<base::ListValue>();
-  json->Reserve(size);
+  base::Value::ListStorage json;
+  json.reserve(size);
 
   std::unique_ptr<content::V8ValueConverter> converter =
       content::V8ValueConverter::Create();
@@ -520,11 +520,11 @@ APISignature::JSONParseResult APISignature::ConvertArgumentsIgnoringSchema(
       // null). Duplicate that behavior here.
       converted = std::make_unique<base::Value>();
     }
-    json->Append(std::move(converted));
+    json.push_back(base::Value::FromUniquePtrValue(std::move(converted)));
   }
 
   JSONParseResult result;
-  result.arguments = std::move(json);
+  result.arguments = std::make_unique<base::ListValue>(std::move(json));
   result.callback = callback;
   result.async_type = callback.IsEmpty()
                           ? binding::AsyncResponseType::kNone

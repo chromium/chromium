@@ -621,10 +621,10 @@ class BASE_EXPORT DictionaryValue : public Value {
   Value* SetString(StringPiece path, StringPiece in_value);
   // DEPRECATED, use Value::SetStringPath().
   Value* SetString(StringPiece path, const string16& in_value);
-  // DEPRECATED, use Value::SetPath() or Value::SetDictPath()
+  // DEPRECATED, use Value::SetPath().
   DictionaryValue* SetDictionary(StringPiece path,
                                  std::unique_ptr<DictionaryValue> in_value);
-  // DEPRECATED, use Value::SetPath() or Value::SetListPath()
+  // DEPRECATED, use Value::SetPath().
   ListValue* SetList(StringPiece path, std::unique_ptr<ListValue> in_value);
 
   // Like Set(), but without special treatment of '.'.  This allows e.g. URLs to
@@ -800,11 +800,6 @@ class BASE_EXPORT ListValue : public Value {
   // Returns whether the list is empty.
   // DEPRECATED, use GetList()::empty() instead.
   bool empty() const { return list().empty(); }
-
-  // Reserves storage for at least |n| values.
-  // DEPRECATED, first construct a base::Value::ListStorage and use
-  // base::Value::ListStorage::reserve() instead.
-  void Reserve(size_t n);
 
   // Sets the list item at the given index to be the Value specified by
   // the value given.  If the index beyond the current end of the list, null

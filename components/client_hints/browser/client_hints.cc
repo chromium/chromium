@@ -110,9 +110,8 @@ void ClientHints::PersistClientHints(
   if (expiration_duration <= base::TimeDelta::FromSeconds(0))
     return;
 
-  std::unique_ptr<base::ListValue> expiration_times_list =
-      std::make_unique<base::ListValue>();
-  expiration_times_list->Reserve(client_hints.size());
+  base::Value::ListStorage expiration_times_list;
+  expiration_times_list.reserve(client_hints.size());
 
   // Use wall clock since the expiration time would be persisted across embedder
   // restarts.
@@ -120,12 +119,12 @@ void ClientHints::PersistClientHints(
       (base::Time::Now() + expiration_duration).ToDoubleT();
 
   for (const auto& entry : client_hints)
-    expiration_times_list->AppendInteger(static_cast<int>(entry));
+    expiration_times_list.push_back(base::Value(static_cast<int>(entry)));
 
   auto expiration_times_dictionary = std::make_unique<base::DictionaryValue>();
-  expiration_times_dictionary->SetList("client_hints",
-                                       std::move(expiration_times_list));
-  expiration_times_dictionary->SetDouble("expiration_time", expiration_time);
+  expiration_times_dictionary->SetKey(
+      "client_hints", base::Value(std::move(expiration_times_list)));
+  expiration_times_dictionary->SetDoubleKey("expiration_time", expiration_time);
 
   // TODO(tbansal): crbug.com/735518. Disable updates to client hints settings
   // when cookies are disabled for |primary_origin|.
