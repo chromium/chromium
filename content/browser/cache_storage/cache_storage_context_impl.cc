@@ -28,17 +28,8 @@ namespace content {
 
 namespace {
 
-// TODO(crbug/960012): Disabled on chromeos for now due to performance
-// regressions that need to be investigated.
 const base::Feature kCacheStorageSequenceFeature{
-  "CacheStorageSequence",
-#if defined(OS_CHROMEOS)
-      base::FEATURE_DISABLED_BY_DEFAULT
-};
-#else
-      base::FEATURE_ENABLED_BY_DEFAULT
-};
-#endif
+    "CacheStorageSequence", base::FEATURE_ENABLED_BY_DEFAULT};
 
 scoped_refptr<base::SequencedTaskRunner> CreateSchedulerTaskRunner() {
   if (!base::FeatureList::IsEnabled(kCacheStorageSequenceFeature))
