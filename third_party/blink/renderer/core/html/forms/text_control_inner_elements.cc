@@ -64,6 +64,10 @@ EditingViewPortElement::CustomStyleForLayoutObject() {
   return style;
 }
 
+bool EditingViewPortElement::TypeShouldForceLegacyLayout() const {
+  return !RuntimeEnabledFeatures::LayoutNGTextFieldEnabled();
+}
+
 // ---------------------------
 
 TextControlInnerEditorElement::TextControlInnerEditorElement(Document& document)
@@ -116,6 +120,12 @@ void TextControlInnerEditorElement::FocusChanged() {
   // for text-overflow. See TextControlElement::ValueForTextOverflow().
   SetNeedsStyleRecalc(kLocalStyleChange, StyleChangeReasonForTracing::Create(
                                              style_change_reason::kControl));
+}
+
+bool TextControlInnerEditorElement::TypeShouldForceLegacyLayout() const {
+  if (OwnerShadowHost()->HasTagName(html_names::kInputTag))
+    return !RuntimeEnabledFeatures::LayoutNGTextFieldEnabled();
+  return !RuntimeEnabledFeatures::LayoutNGTextAreaEnabled();
 }
 
 LayoutObject* TextControlInnerEditorElement::CreateLayoutObject(
@@ -239,6 +249,10 @@ bool SearchFieldCancelButtonElement::WillRespondToMouseClickEvents() {
     return true;
 
   return HTMLDivElement::WillRespondToMouseClickEvents();
+}
+
+bool SearchFieldCancelButtonElement::TypeShouldForceLegacyLayout() const {
+  return !RuntimeEnabledFeatures::LayoutNGTextFieldEnabled();
 }
 
 // ----------------------------

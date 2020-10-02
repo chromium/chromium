@@ -1035,6 +1035,14 @@
       name: "LayoutNGTable",
     },
     {
+      name: "LayoutNGTextArea",
+      depends_on: ["EditingNG"],
+    },
+    {
+      name: "LayoutNGTextField",
+      depends_on: ["EditingNG"],
+    },
+    {
       // Adds the "sources" attribute to the LayoutShift interface for the
       // Layout Instability API (bit.ly/cls-sources).
       name: "LayoutShiftAttribution",

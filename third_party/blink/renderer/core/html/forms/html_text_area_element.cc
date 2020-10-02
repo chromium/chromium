@@ -214,10 +214,16 @@ void HTMLTextAreaElement::ParseAttribute(
   }
 }
 
+bool HTMLTextAreaElement::TypeShouldForceLegacyLayout() const {
+  if (RuntimeEnabledFeatures::LayoutNGTextAreaEnabled())
+    return false;
+  UseCounter::Count(GetDocument(), WebFeature::kLegacyLayoutByTextControl);
+  return true;
+}
+
 LayoutObject* HTMLTextAreaElement::CreateLayoutObject(
     const ComputedStyle& style,
     LegacyLayout legacy) {
-  UseCounter::Count(GetDocument(), WebFeature::kLegacyLayoutByTextControl);
   return LayoutObjectFactory::CreateTextControlMultiLine(*this, style, legacy);
 }
 
