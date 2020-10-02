@@ -4,21 +4,28 @@
 
 #include "chrome/browser/chromeos/crosapi/message_center_ash.h"
 
+#include <memory>
+#include <string>
+
 #include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "chromeos/crosapi/mojom/message_center.mojom-test-utils.h"
 #include "chromeos/crosapi/mojom/message_center.mojom.h"
 #include "chromeos/crosapi/mojom/notification.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
+#include "ui/message_center/public/cpp/notifier_id.h"
 #include "url/gurl.h"
 
 using base::ASCIIToUTF16;
@@ -27,6 +34,16 @@ using gfx::test::AreImagesEqual;
 
 namespace crosapi {
 namespace {
+
+// Creates an ash message center notification.
+std::unique_ptr<message_center::Notification> CreateNotificationWithId(
+    const std::string& id) {
+  return std::make_unique<message_center::Notification>(
+      message_center::NOTIFICATION_TYPE_SIMPLE, id, ASCIIToUTF16("title"),
+      ASCIIToUTF16("message"), /*icon=*/gfx::Image(),
+      /*display_source=*/base::string16(), GURL(), message_center::NotifierId(),
+      message_center::RichNotificationData(), /*delegate=*/nullptr);
+}
 
 class MojoDelegate : public mojom::NotificationDelegate {
  public:
@@ -323,6 +340,21 @@ TEST_F(MessageCenterAshTest, UserActions) {
   message_center_remote_.FlushForTesting();
   EXPECT_FALSE(message_center->FindVisibleNotificationById("test_id"));
   EXPECT_EQ(1, mojo_delegate.closed_count_);
+}
+
+TEST_F(MessageCenterAshTest, GetDisplayedNotifications) {
+  // Create an ash-side notification.
+  auto* message_center = message_center::MessageCenter::Get();
+  message_center->AddNotification(CreateNotificationWithId("id0"));
+  message_center->AddNotification(CreateNotificationWithId("id1"));
+
+  // Get the list of notifications.
+  mojom::MessageCenterAsyncWaiter waiter(message_center_remote_.get());
+  std::vector<std::string> ids;
+  waiter.GetDisplayedNotifications(&ids);
+
+  // The notifications ids are returned. No particular order is specified.
+  EXPECT_THAT(ids, testing::UnorderedElementsAre("id0", "id1"));
 }
 
 }  // namespace

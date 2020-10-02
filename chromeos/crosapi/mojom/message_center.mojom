@@ -20,6 +20,11 @@ interface MessageCenter {
 
   // Closes a notification by the ID provided in |notification| above.
   CloseNotification@1(string id);
+
+  // Returns the IDs of the currently-displayed notifications. Order within the
+  // array is not guaranteed. Mojo does not support sets.
+  [MinVersion=1]
+  GetDisplayedNotifications@2() => (array<string> ids);
 };
 
 // Handles responses to user actions on notifications. Multiple actions may

@@ -4,7 +4,9 @@
 
 #include "chrome/browser/chromeos/crosapi/message_center_ash.h"
 
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/check.h"
@@ -175,6 +177,16 @@ void MessageCenterAsh::DisplayNotification(
 
 void MessageCenterAsh::CloseNotification(const std::string& id) {
   mc::MessageCenter::Get()->RemoveNotification(id, /*by_user=*/false);
+}
+
+void MessageCenterAsh::GetDisplayedNotifications(
+    GetDisplayedNotificationsCallback callback) {
+  mc::NotificationList::Notifications notifications =
+      mc::MessageCenter::Get()->GetNotifications();
+  std::vector<std::string> ids;
+  for (mc::Notification* notification : notifications)
+    ids.push_back(notification->id());
+  std::move(callback).Run(ids);
 }
 
 }  // namespace crosapi

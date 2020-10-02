@@ -95,6 +95,9 @@ class TestMessageCenter : public crosapi::mojom::MessageCenter {
     last_close_id_ = id;
   }
 
+  void GetDisplayedNotifications(
+      GetDisplayedNotificationsCallback callback) override {}
+
   int display_count_ = 0;
   std::string last_display_id_;
   crosapi::mojom::NotificationPtr last_notification_;

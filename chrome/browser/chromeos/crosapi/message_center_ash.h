@@ -27,6 +27,8 @@ class MessageCenterAsh : public mojom::MessageCenter {
       mojom::NotificationPtr notification,
       mojo::PendingRemote<mojom::NotificationDelegate> delegate) override;
   void CloseNotification(const std::string& id) override;
+  void GetDisplayedNotifications(
+      GetDisplayedNotificationsCallback callback) override;
 
  private:
   mojo::Receiver<mojom::MessageCenter> receiver_;
