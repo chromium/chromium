@@ -333,7 +333,6 @@ _NOT_CONVERTED_TO_MODERN_BIND_AND_CALLBACK = '|'.join((
   '^chrome/browser/media/',
   '^chrome/browser/metrics/',
   '^chrome/browser/nacl_host/test/gdb_debug_stub_browsertest.cc',
-  '^chrome/browser/nearby_sharing/client/nearby_share_api_call_flow_impl_unittest.cc', # pylint: disable=line-too-long
   '^chrome/browser/net/',
   '^chrome/browser/notifications/',
   '^chrome/browser/ntp_tiles/ntp_tiles_browsertest.cc',

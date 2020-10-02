@@ -82,12 +82,12 @@ class NearbyShareApiCallFlowImplTest : public testing::Test {
 
   void StartPostRequestApiCallFlowWithSerializedRequest(
       const std::string& serialized_request) {
-    flow_.StartPostRequest(GURL(kRequestUrl), serialized_request,
-                           shared_factory_, kAccessToken,
-                           base::Bind(&NearbyShareApiCallFlowImplTest::OnResult,
-                                      base::Unretained(this)),
-                           base::Bind(&NearbyShareApiCallFlowImplTest::OnError,
-                                      base::Unretained(this)));
+    flow_.StartPostRequest(
+        GURL(kRequestUrl), serialized_request, shared_factory_, kAccessToken,
+        base::BindOnce(&NearbyShareApiCallFlowImplTest::OnResult,
+                       base::Unretained(this)),
+        base::BindOnce(&NearbyShareApiCallFlowImplTest::OnError,
+                       base::Unretained(this)));
     // A pending fetch for the API request should be created.
     CheckNearbySharingClientHttpPostRequest(serialized_request);
   }
@@ -100,10 +100,10 @@ class NearbyShareApiCallFlowImplTest : public testing::Test {
       const std::string& serialized_request) {
     flow_.StartPatchRequest(
         GURL(kRequestUrl), serialized_request, shared_factory_, kAccessToken,
-        base::Bind(&NearbyShareApiCallFlowImplTest::OnResult,
-                   base::Unretained(this)),
-        base::Bind(&NearbyShareApiCallFlowImplTest::OnError,
-                   base::Unretained(this)));
+        base::BindOnce(&NearbyShareApiCallFlowImplTest::OnResult,
+                       base::Unretained(this)),
+        base::BindOnce(&NearbyShareApiCallFlowImplTest::OnError,
+                       base::Unretained(this)));
     // A pending fetch for the API request should be created.
     CheckNearbySharingClientHttpPatchRequest(serialized_request);
   }
@@ -116,12 +116,13 @@ class NearbyShareApiCallFlowImplTest : public testing::Test {
   void StartGetRequestApiCallFlowWithRequestAsQueryParameters(
       const NearbyShareApiCallFlow::QueryParameters&
           request_as_query_parameters) {
-    flow_.StartGetRequest(GURL(kRequestUrl), request_as_query_parameters,
-                          shared_factory_, kAccessToken,
-                          base::Bind(&NearbyShareApiCallFlowImplTest::OnResult,
-                                     base::Unretained(this)),
-                          base::Bind(&NearbyShareApiCallFlowImplTest::OnError,
-                                     base::Unretained(this)));
+    flow_.StartGetRequest(
+        GURL(kRequestUrl), request_as_query_parameters, shared_factory_,
+        kAccessToken,
+        base::BindOnce(&NearbyShareApiCallFlowImplTest::OnResult,
+                       base::Unretained(this)),
+        base::BindOnce(&NearbyShareApiCallFlowImplTest::OnError,
+                       base::Unretained(this)));
     // A pending fetch for the API request should be created.
     CheckNearbySharingClientHttpGetRequest(request_as_query_parameters);
   }
