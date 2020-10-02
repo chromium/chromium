@@ -151,7 +151,7 @@ class BackButtonNode extends SAChildNode {
    */
   static onClick_() {
     if (MenuManager.isMenuOpen()) {
-      MenuManager.exit();
+      ActionManager.exitCurrentMenu();
     } else {
       NavigationManager.exitGroupUnconditionally();
     }

@@ -25,6 +25,7 @@ run_jsbundler("switch_access_copied_files") {
   mode = "copy"
   dest_dir = switch_access_dir
   sources = [
+    "action_manager.js",
     "auto_scan_manager.js",
     "background.js",
     "cache.js",
@@ -130,6 +131,7 @@ js2gtest("switch_access_extjs_tests") {
 
 js_type_check("closure_compile") {
   deps = [
+    ":action_manager",
     ":auto_scan_manager",
     ":back_button_node",
     ":background",
@@ -166,6 +168,15 @@ js_type_check("closure_compile") {
     "../common:repeated_tree_change_handler",
     "../common:tree_walker",
   ]
+}
+
+js_library("action_manager") {
+  deps = [
+    ":switch_access_constants",
+    ":switch_access_node",
+    "../common:array_util",
+  ]
+  externs_list = [ "$externs_path/automation.js" ]
 }
 
 js_library("auto_scan_manager") {
@@ -210,8 +221,8 @@ js_library("combo_box_node") {
 
 js_library("commands") {
   deps = [
+    ":action_manager",
     ":auto_scan_manager",
-    ":menu_manager",
     ":navigation_manager",
   ]
   externs_list = [ "$externs_path/accessibility_private.js" ]
@@ -321,6 +332,7 @@ js_library("modal_dialog_node") {
 
 js_library("navigation_manager") {
   deps = [
+    ":action_manager",
     ":basic_node",
     ":desktop_node",
     ":focus_ring_manager",

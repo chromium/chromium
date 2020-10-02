@@ -45,7 +45,7 @@ const SAConstants = {
     NO_ACTION_TAKEN: -1,
     REMAIN_OPEN: 0,
     CLOSE_MENU: 1,
-    RELOAD_MAIN_MENU: 2,
+    RELOAD_MENU: 2,
     OPEN_TEXT_NAVIGATION_MENU: 3,
   },
 
@@ -77,13 +77,11 @@ const SAConstants = {
   },
 
   /**
-   * IDs of menus that can appear in the menu panel.
-   * This must be kept in sync with the div ID of each menu
-   * in menu_panel.html.
-   * @enum {string}
+   * The different types of menus and sub-menus that can be shown.
+   * @enum {number}
    * @const
    */
-  MenuId: {MAIN: 'main_menu', TEXT_NAVIGATION: 'text_navigation_menu'},
+  MenuType: {MAIN_MENU: 0, TEXT_NAVIGATION: 1},
 
   /**
    * Preferences that are configurable in Switch Access.

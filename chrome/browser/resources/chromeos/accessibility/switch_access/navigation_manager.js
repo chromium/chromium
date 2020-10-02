@@ -141,8 +141,9 @@ class NavigationManager {
     NavigationManager.instance = new NavigationManager(desktop);
   }
 
-  /** @param {AutomationNode} menuNode */
-  static jumpToSwitchAccessMenu(menuNode) {
+  /** Jumps into the Switch Access action menu. */
+  static jumpToSwitchAccessMenu() {
+    const menuNode = MenuManager.menuAutomationNode;
     if (!menuNode) {
       return;
     }
@@ -249,7 +250,7 @@ class NavigationManager {
     }
 
     // Make sure the menu isn't open.
-    MenuManager.exit();
+    ActionManager.exitAllMenus();
 
     const child = navigator.group_.firstValidChild();
     if (groupIsValid && child) {
@@ -310,7 +311,7 @@ class NavigationManager {
       FocusRingManager.setFocusedNode(this.node_);
     }
     this.group_.refresh();
-    MenuManager.refreshMenu();
+    ActionManager.refreshMenu();
   }
 
   /**
@@ -392,7 +393,7 @@ class NavigationManager {
    */
   jumpTo_(group, shouldExitMenu = true) {
     if (shouldExitMenu) {
-      MenuManager.exit();
+      ActionManager.exitAllMenus();
     }
 
     this.history_.save(new FocusData(this.group_, this.node_));
@@ -409,7 +410,7 @@ class NavigationManager {
    * @private
    */
   moveTo_(automationNode) {
-    MenuManager.exit();
+    ActionManager.exitAllMenus();
     if (this.history_.buildFromAutomationNode(automationNode)) {
       this.restoreFromHistory_();
     }

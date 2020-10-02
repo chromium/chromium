@@ -153,25 +153,25 @@ class BasicNode extends SAChildNode {
         if (ancestor.scrollable) {
           ancestor.scrollDown();
         }
-        return SAConstants.ActionResponse.RELOAD_MAIN_MENU;
+        return SAConstants.ActionResponse.RELOAD_MENU;
       case SwitchAccessMenuAction.SCROLL_UP:
         ancestor = this.getScrollableAncestor_();
         if (ancestor.scrollable) {
           ancestor.scrollUp();
         }
-        return SAConstants.ActionResponse.RELOAD_MAIN_MENU;
+        return SAConstants.ActionResponse.RELOAD_MENU;
       case SwitchAccessMenuAction.SCROLL_RIGHT:
         ancestor = this.getScrollableAncestor_();
         if (ancestor.scrollable) {
           ancestor.scrollRight();
         }
-        return SAConstants.ActionResponse.RELOAD_MAIN_MENU;
+        return SAConstants.ActionResponse.RELOAD_MENU;
       case SwitchAccessMenuAction.SCROLL_LEFT:
         ancestor = this.getScrollableAncestor_();
         if (ancestor.scrollable) {
           ancestor.scrollLeft();
         }
-        return SAConstants.ActionResponse.RELOAD_MAIN_MENU;
+        return SAConstants.ActionResponse.RELOAD_MENU;
       default:
         if (Object.values(chrome.automation.ActionType).includes(action)) {
           this.baseNode_.performStandardAction(

@@ -388,7 +388,7 @@ class TextNavigationManager {
     this.clipboardHasData_ = true;
     const node = NavigationManager.currentNode;
     if (node.hasAction(SwitchAccessMenuAction.PASTE)) {
-      MenuManager.reloadActionsForNode(node);
+      ActionManager.refreshMenuForNode(node);
     }
   }
 }

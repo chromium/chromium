@@ -15,7 +15,7 @@ class Commands {
      * @private {!Map<!SwitchAccessCommand, !function(): void>}
      */
     this.commandMap_ = new Map([
-      [SwitchAccessCommand.SELECT, MenuManager.enter],
+      [SwitchAccessCommand.SELECT, ActionManager.onSelect],
       [SwitchAccessCommand.NEXT, NavigationManager.moveForward],
       [SwitchAccessCommand.PREVIOUS, NavigationManager.moveBackward]
     ]);
