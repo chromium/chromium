@@ -32,6 +32,7 @@
 #include "sandbox/linux/seccomp-bpf/sandbox_bpf.h"
 #include "sandbox/linux/seccomp-bpf/syscall.h"
 #include "sandbox/linux/services/syscall_wrappers.h"
+#include "sandbox/linux/system_headers/linux_ptrace.h"
 #include "sandbox/linux/system_headers/linux_syscalls.h"
 #include "sandbox/linux/system_headers/linux_time.h"
 #include "sandbox/linux/tests/unit_tests.h"
@@ -340,6 +341,36 @@ BPF_DEATH_TEST_C(
   ptrace(PTRACE_SETREGSET, getpid(), reinterpret_cast<void*>(NT_PRSTATUS),
          &iov);
 }
+
+#if defined(__aarch64__)
+BPF_DEATH_TEST_C(
+    ParameterRestrictions,
+    ptrace_getregs_nt_arm_paca_keys_blocked,
+    DEATH_SEGV_MESSAGE(sandbox::GetPtraceErrorMessageContentForTests()),
+    RestrictPtracePolicy) {
+  user_regs_struct regs{};
+  iovec iov;
+  iov.iov_base = &regs;
+  iov.iov_len = sizeof(regs);
+  errno = 0;
+  ptrace(PTRACE_GETREGSET, getpid(), reinterpret_cast<void*>(NT_ARM_PACA_KEYS),
+         &iov);
+}
+
+BPF_DEATH_TEST_C(
+    ParameterRestrictions,
+    ptrace_getregs_nt_arm_pacg_keys_blocked,
+    DEATH_SEGV_MESSAGE(sandbox::GetPtraceErrorMessageContentForTests()),
+    RestrictPtracePolicy) {
+  user_regs_struct regs{};
+  iovec iov;
+  iov.iov_base = &regs;
+  iov.iov_len = sizeof(regs);
+  errno = 0;
+  ptrace(PTRACE_GETREGSET, getpid(), reinterpret_cast<void*>(NT_ARM_PACG_KEYS),
+         &iov);
+}
+#endif
 
 }  // namespace
 

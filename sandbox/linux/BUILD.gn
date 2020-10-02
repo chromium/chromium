@@ -434,6 +434,7 @@ source_set("sandbox_services_headers") {
     "system_headers/linux_filter.h",
     "system_headers/linux_futex.h",
     "system_headers/linux_prctl.h",
+    "system_headers/linux_ptrace.h",
     "system_headers/linux_seccomp.h",
     "system_headers/linux_signal.h",
     "system_headers/linux_syscalls.h",
