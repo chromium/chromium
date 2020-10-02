@@ -12202,6 +12202,7 @@ Called by update_net_error_codes.py.-->
   <int value="17" label="Cut text"/>
   <int value="18" label="Paste text"/>
   <int value="19" label="Go to URL"/>
+  <int value="20" label="Copy link to text"/>
 </enum>
 
 <enum name="ContextMenuOptionIOS">
