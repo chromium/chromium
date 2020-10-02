@@ -40,10 +40,8 @@ class FolderHeaderView::FolderNameView : public views::Textfield,
     // Make folder name font size 14px.
     SetFontList(
         ui::ResourceBundle::GetSharedInstance().GetFontListWithDelta(2));
-    SetTextColor(AppListColorProvider::Get()->GetFolderTitleTextColor());
     set_placeholder_text_color(
         AppListColorProvider::Get()->GetFolderHintTextColor());
-    SetNameViewBorderAndBackground(/*is_active=*/false);
     SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
   }
 
@@ -54,18 +52,31 @@ class FolderHeaderView::FolderNameView : public views::Textfield,
                      AppListConfig::instance().folder_header_height());
   }
 
+  void OnThemeChanged() override {
+    Textfield::OnThemeChanged();
+
+    const bool is_active = has_mouse_already_entered_ || HasFocus();
+    AppListColorProvider* color_provider = AppListColorProvider::Get();
+    SetBackground(views::CreateRoundedRectBackground(
+        color_provider->GetFolderNameBackgroundColor(is_active),
+        AppListConfig::instance().folder_name_border_radius()));
+
+    const SkColor text_color = color_provider->GetFolderTitleTextColor();
+    SetTextColor(text_color);
+    SetSelectionTextColor(text_color);
+    SetSelectionBackgroundColor(color_provider->GetFolderNameSelectionColor());
+    SetNameViewBorderAndBackground(is_active);
+  }
+
   void SetNameViewBorderAndBackground(bool is_active) {
     int horizontal_padding = AppListConfig::instance().folder_name_padding();
     SetBorder(views::CreatePaddedBorder(
         views::CreateRoundedRectBorder(
             AppListConfig::instance().folder_name_border_thickness(),
             AppListConfig::instance().folder_name_border_radius(),
-            is_active ? AppListConfig::instance().folder_name_border_color()
-                      : SK_ColorTRANSPARENT),
+            AppListColorProvider::Get()->GetFolderNameBorderColor(is_active)),
         gfx::Insets(0, horizontal_padding)));
-
-    SetBackgroundColor(
-        AppListColorProvider::Get()->GetFolderNameBackgroundColor(is_active));
+    UpdateBackgroundColor(is_active);
   }
 
   void OnFocus() override {
@@ -126,11 +137,8 @@ class FolderHeaderView::FolderNameView : public views::Textfield,
   }
 
   void OnMouseExited(const ui::MouseEvent& event) override {
-    if (!HasFocus()) {
-      SetBackgroundColor(
-          AppListColorProvider::Get()->GetFolderNameBackgroundColor(
-              /*is_active=*/false));
-    }
+    if (!HasFocus())
+      UpdateBackgroundColor(/*is_active=*/false);
 
     has_mouse_already_entered_ = false;
   }
@@ -139,18 +147,13 @@ class FolderHeaderView::FolderNameView : public views::Textfield,
     if (DoesMouseEventActuallyIntersect(event) && !has_mouse_already_entered_) {
       // If this is reached, the mouse is entering the view.
       // Recreate border to have custom corner radius.
-      SetBackground(views::CreateRoundedRectBackground(
-          AppListColorProvider::Get()->GetFolderNameBackgroundColor(
-              /*is_active=*/true),
-          AppListConfig::instance().folder_name_border_radius()));
+      UpdateBackgroundColor(/*is_active=*/true);
       has_mouse_already_entered_ = true;
     } else if (!DoesMouseEventActuallyIntersect(event) &&
                has_mouse_already_entered_ && !HasFocus()) {
       // If this is reached, the mouse is exiting the view on its horizontal
       // edges.
-      SetBackgroundColor(
-          AppListColorProvider::Get()->GetFolderNameBackgroundColor(
-              /*is_active=*/false));
+      UpdateBackgroundColor(/*is_active=*/false);
       has_mouse_already_entered_ = false;
     }
   }
@@ -183,6 +186,12 @@ class FolderHeaderView::FolderNameView : public views::Textfield,
   }
 
  private:
+  void UpdateBackgroundColor(bool is_active) {
+    background()->SetNativeControlColor(
+        AppListColorProvider::Get()->GetFolderNameBackgroundColor(is_active));
+    SchedulePaint();
+  }
+
   // The parent FolderHeaderView, owns this.
   FolderHeaderView* folder_header_view_;
 

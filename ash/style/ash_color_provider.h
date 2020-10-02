@@ -74,6 +74,7 @@ class ASH_EXPORT AshColorProvider : public SessionObserver {
     kControlBackgroundColorAlert,
     kControlBackgroundColorWarning,
     kControlBackgroundColorPositive,
+    kFocusAuraColor,
     kFocusRingColor,
   };
 
