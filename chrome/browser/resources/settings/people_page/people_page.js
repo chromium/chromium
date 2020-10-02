@@ -290,9 +290,9 @@ Polymer({
   updateAccounts_: async function() {
     const /** @type {!Array<{Account}>} */ accounts =
         await AccountManagerBrowserProxyImpl.getInstance().getAccounts();
-    // The user might not have any GAIA accounts (e.g. guest mode, Kerberos,
-    // Active Directory). In these cases the profile row is hidden, so there's
-    // nothing to do.
+    // The user might not have any GAIA accounts (e.g. guest mode or Active
+    // Directory). In these cases the profile row is hidden, so there's nothing
+    // to do.
     if (accounts.length === 0) {
       return;
     }
