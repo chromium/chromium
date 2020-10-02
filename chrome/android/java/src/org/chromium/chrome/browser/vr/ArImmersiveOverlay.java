@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.ScreenOrientationDelegate;
 import org.chromium.content_public.browser.ScreenOrientationProvider;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.display.DisplayAndroidManager;
 import org.chromium.ui.widget.Toast;
 
@@ -57,10 +58,10 @@ public class ArImmersiveOverlay
     private Integer mPrimaryPointerId;
 
     public void show(
-            @NonNull ChromeActivity activity, @NonNull ArCoreJavaUtils caller, boolean useOverlay) {
+            @NonNull WebContents webContents, @NonNull ArCoreJavaUtils caller, boolean useOverlay) {
         if (DEBUG_LOGS) Log.i(TAG, "constructor");
         mArCoreJavaUtils = caller;
-        mActivity = activity;
+        mActivity = ChromeActivity.fromWebContents(webContents);
 
         mPointerIdToData = new HashMap<Integer, PointerData>();
         mPrimaryPointerId = null;

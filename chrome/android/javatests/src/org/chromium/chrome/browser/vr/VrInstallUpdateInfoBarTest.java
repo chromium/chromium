@@ -90,7 +90,8 @@ public class VrInstallUpdateInfoBarTest {
         VrCoreInstallUtils vrCoreInstallUtils = VrCoreInstallUtils.create(0);
         setVrCoreCompatibility(checkerReturnCompatibility);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            vrCoreInstallUtils.requestInstallVrCore(mVrTestRule.getActivity().getActivityTab());
+            vrCoreInstallUtils.requestInstallVrCore(
+                    mVrTestRule.getActivity().getCurrentWebContents());
         });
         View decorView = mVrTestRule.getActivity().getWindow().getDecorView();
         if (checkerReturnCompatibility == VrCoreVersionChecker.VrCoreCompatibility.VR_READY) {

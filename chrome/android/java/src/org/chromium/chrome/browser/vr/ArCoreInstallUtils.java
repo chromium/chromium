@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.vr;
 
 import android.app.Activity;
 
+import org.chromium.base.ActivityState;
+import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
@@ -13,15 +15,15 @@ import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.infobar.InfoBarIdentifier;
-import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.ui.messages.infobar.SimpleConfirmInfoBarBuilder;
+import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.WindowAndroid;
 
 /**
  * Installs AR DFM and ArCore runtimes.
  */
 @JNINamespace("vr")
-public class ArCoreInstallUtils {
+public class ArCoreInstallUtils implements ApplicationStatus.ActivityStateListener {
     private static final String TAG = "ArCoreInstallUtils";
 
     private long mNativeArCoreInstallUtils;
@@ -84,13 +86,40 @@ public class ArCoreInstallUtils {
         return availability != ArCoreShim.Availability.SUPPORTED_INSTALLED;
     }
 
+    @Override
+    public void onActivityStateChange(Activity activity, int newState) {
+        // We only care about activity state changes if we're the ones that have requested an
+        // install, and then only if it's a resume.
+        if (!(sRequestInstallInstance == this && newState == ActivityState.RESUMED)) return;
+
+        onArCoreRequestInstallReturned(activity);
+
+        // After we've gotten resumed, we no longer need to track activity state.
+        sRequestInstallInstance = null;
+        ApplicationStatus.unregisterActivityStateListener(this);
+    }
+
+    private Activity getActivity(final WebContents webContents) {
+        if (webContents == null) return null;
+        WindowAndroid window = webContents.getTopLevelNativeWindow();
+        if (window == null) return null;
+        return window.getActivity().get();
+    }
+
     @CalledByNative
-    private void requestInstallSupportedArCore(final Tab tab) {
+    private void requestInstallSupportedArCore(final WebContents webContents) {
         assert shouldRequestInstallSupportedArCore();
+
+        final Activity activity = getActivity(webContents);
+        if (activity == null) {
+            Log.w(TAG, "Could not get Activity");
+            maybeNotifyNativeOnRequestInstallSupportedArCoreResult(false);
+            return;
+        }
 
         @ArCoreShim.Availability
         int arCoreAvailability = getArCoreInstallStatus();
-        final Activity activity = TabUtils.getActivity(tab);
+
         String infobarText = null;
         String buttonText = null;
         switch (arCoreAvailability) {
@@ -162,9 +191,11 @@ public class ArCoreInstallUtils {
                 return false;
             }
         };
+
+        ApplicationStatus.registerStateListenerForActivity(this, activity);
         // TODO(ijamardo, https://crbug.com/838833): Add icon for AR info bar.
-        SimpleConfirmInfoBarBuilder.create(tab.getWebContents(), listener,
-                InfoBarIdentifier.AR_CORE_UPGRADE_ANDROID, tab.getContext(),
+        SimpleConfirmInfoBarBuilder.create(webContents, listener,
+                InfoBarIdentifier.AR_CORE_UPGRADE_ANDROID, activity,
                 R.drawable.ic_error_outline_googblue_24dp, infobarText, buttonText, null, null,
                 true);
     }
@@ -191,18 +222,6 @@ public class ArCoreInstallUtils {
             maybeNotifyNativeOnRequestInstallSupportedArCoreResult(false);
         } catch (ArCoreShim.UnavailableUserDeclinedInstallationException e) {
             maybeNotifyNativeOnRequestInstallSupportedArCoreResult(false);
-        }
-    }
-
-    /**
-     * This method should be called by the Activity that gets resumed.
-     * We are only interested in the cases where our current Activity got paused
-     * as a result of a call to ArCoreApk.requestInstall() method.
-     */
-    public static void onResumeActivityWithNative(Activity activity) {
-        if (sRequestInstallInstance != null) {
-            sRequestInstallInstance.onArCoreRequestInstallReturned(activity);
-            sRequestInstallInstance = null;
         }
     }
 

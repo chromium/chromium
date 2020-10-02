@@ -4,13 +4,12 @@
 
 #include "chrome/browser/android/vr/android_vr_utils.h"
 
-#include "chrome/browser/android/tab_android.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 
 namespace vr {
 
-base::android::ScopedJavaLocalRef<jobject> GetTabFromRenderer(
+base::android::ScopedJavaLocalRef<jobject> GetJavaWebContents(
     int render_process_id,
     int render_frame_id) {
   content::RenderFrameHost* render_frame_host =
@@ -21,14 +20,7 @@ base::android::ScopedJavaLocalRef<jobject> GetTabFromRenderer(
       content::WebContents::FromRenderFrameHost(render_frame_host);
   DCHECK(web_contents);
 
-  TabAndroid* tab_android = TabAndroid::FromWebContents(web_contents);
-  DCHECK(tab_android);
-
-  base::android::ScopedJavaLocalRef<jobject> j_tab_android =
-      tab_android->GetJavaObject();
-  DCHECK(!j_tab_android.is_null());
-
-  return j_tab_android;
+  return web_contents->GetJavaWebContents();
 }
 
 }  // namespace vr

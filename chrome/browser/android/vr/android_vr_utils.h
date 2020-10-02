@@ -12,7 +12,7 @@
 // chrome/browser/vr/*util.cc|h
 namespace vr {
 
-base::android::ScopedJavaLocalRef<jobject> GetTabFromRenderer(
+base::android::ScopedJavaLocalRef<jobject> GetJavaWebContents(
     int render_process_id,
     int render_frame_id);
 

@@ -79,7 +79,7 @@ void ArCoreInstallHelper::EnsureInstalled(
     // When completed, java will call: OnRequestInstallSupportedArCoreResult
     Java_ArCoreInstallUtils_requestInstallSupportedArCore(
         env, java_install_utils_,
-        GetTabFromRenderer(render_process_id, render_frame_id));
+        GetJavaWebContents(render_process_id, render_frame_id));
     return;
   }
 

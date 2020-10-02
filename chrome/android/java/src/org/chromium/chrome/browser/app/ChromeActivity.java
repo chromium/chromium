@@ -938,10 +938,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             mPictureInPictureController.cleanup(this);
         }
         VrModuleProvider.getDelegate().maybeRegisterVrEntryHook(this);
-        ArDelegate arDelegate = ArDelegateProvider.getDelegate();
-        if (arDelegate != null) {
-            arDelegate.registerOnResumeActivity(this);
-        }
 
         getManualFillingComponent().onResume();
     }

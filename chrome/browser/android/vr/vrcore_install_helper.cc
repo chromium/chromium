@@ -65,7 +65,7 @@ void VrCoreInstallHelper::EnsureInstalled(
     // When completed, java will call: OnInstallResult
     Java_VrCoreInstallUtils_requestInstallVrCore(
         env, java_install_utils_,
-        GetTabFromRenderer(render_process_id, render_frame_id));
+        GetJavaWebContents(render_process_id, render_frame_id));
     return;
   }
 

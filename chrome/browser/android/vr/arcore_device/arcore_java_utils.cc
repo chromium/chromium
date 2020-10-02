@@ -49,7 +49,7 @@ void ArCoreJavaUtils::RequestArSession(
 
   Java_ArCoreJavaUtils_startSession(
       env, j_arcore_java_utils_,
-      GetTabFromRenderer(render_process_id, render_frame_id), use_overlay);
+      GetJavaWebContents(render_process_id, render_frame_id), use_overlay);
 }
 
 void ArCoreJavaUtils::EndSession() {
