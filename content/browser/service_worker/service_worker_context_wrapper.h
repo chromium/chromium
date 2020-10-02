@@ -431,7 +431,8 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
   void DidCheckHasServiceWorker(CheckHasServiceWorkerCallback callback,
                                 content::ServiceWorkerCapability status);
   void DidCheckOfflineCapability(CheckOfflineCapabilityCallback callback,
-                                 content::OfflineCapability status);
+                                 content::OfflineCapability status,
+                                 int64_t registration_id);
 
   void DidFindRegistrationForUpdate(
       blink::ServiceWorkerStatusCode status,

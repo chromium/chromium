@@ -77,7 +77,8 @@ class CONTENT_EXPORT ServiceWorkerContext {
       base::OnceCallback<void(ServiceWorkerCapability capability)>;
 
   using CheckOfflineCapabilityCallback =
-      base::OnceCallback<void(OfflineCapability capability)>;
+      base::OnceCallback<void(OfflineCapability capability,
+                              int64_t registration_id)>;
 
   using CountExternalRequestsCallback =
       base::OnceCallback<void(size_t external_request_count)>;
@@ -208,8 +209,8 @@ class CONTENT_EXPORT ServiceWorkerContext {
       CheckHasServiceWorkerCallback callback) = 0;
 
   // Simulates a navigation request in the offline state and dispatches a fetch
-  // event. Returns OfflineCapability::kSupported if the response's status code
-  // is 200.
+  // event. Returns OfflineCapability::kSupported and the registration id if
+  // the response's status code is 200.
   //
   // This function can be called from any thread, but the callback will always
   // be called on the UI thread.

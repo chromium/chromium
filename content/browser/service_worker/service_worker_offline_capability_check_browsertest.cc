@@ -277,15 +277,21 @@ class ServiceWorkerOfflineCapabilityCheckBrowserTest
     base::Optional<OfflineCapability> out_offline_capability;
     RunOrPostTaskOnThread(
         FROM_HERE, ServiceWorkerContext::GetCoreThreadId(),
-        base::BindOnce(&ServiceWorkerOfflineCapabilityCheckBrowserTest::
-                           CheckOfflineCapabilityOnCoreThread,
-                       base::Unretained(this), path,
-                       base::BindLambdaForTesting(
-                           [&out_offline_capability, &fetch_run_loop](
-                               OfflineCapability offline_capability) {
-                             out_offline_capability = offline_capability;
-                             fetch_run_loop.Quit();
-                           })));
+        base::BindOnce(
+            &ServiceWorkerOfflineCapabilityCheckBrowserTest::
+                CheckOfflineCapabilityOnCoreThread,
+            base::Unretained(this), path,
+            base::BindLambdaForTesting([&out_offline_capability,
+                                        &fetch_run_loop](
+                                           OfflineCapability offline_capability,
+                                           int64_t registration_id) {
+              out_offline_capability = offline_capability;
+              if (offline_capability == OfflineCapability::kSupported) {
+                EXPECT_NE(registration_id,
+                          blink::mojom::kInvalidServiceWorkerRegistrationId);
+              }
+              fetch_run_loop.Quit();
+            })));
     fetch_run_loop.Run();
     DCHECK(out_offline_capability.has_value());
     return *out_offline_capability;

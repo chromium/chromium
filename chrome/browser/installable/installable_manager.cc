@@ -756,7 +756,8 @@ void InstallableManager::OnDidCheckHasServiceWorker(
 
 void InstallableManager::OnDidCheckOfflineCapability(
     base::TimeTicks check_service_worker_start_time,
-    content::OfflineCapability capability) {
+    content::OfflineCapability capability,
+    int64_t service_worker_registration_id) {
   switch (capability) {
     case content::OfflineCapability::kSupported:
       worker_->has_worker = true;

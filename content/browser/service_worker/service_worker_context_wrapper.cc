@@ -735,7 +735,8 @@ void ServiceWorkerContextWrapper::CheckOfflineCapability(
   if (!context_core_) {
     GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
-        base::BindOnce(std::move(callback), OfflineCapability::kUnsupported));
+        base::BindOnce(std::move(callback), OfflineCapability::kUnsupported,
+                       blink::mojom::kInvalidServiceWorkerRegistrationId));
     return;
   }
   context()->CheckOfflineCapability(
@@ -1727,10 +1728,12 @@ void ServiceWorkerContextWrapper::DidCheckHasServiceWorker(
 
 void ServiceWorkerContextWrapper::DidCheckOfflineCapability(
     CheckOfflineCapabilityCallback callback,
-    OfflineCapability capability) {
+    OfflineCapability capability,
+    int64_t registration_id) {
   DCHECK_CURRENTLY_ON(GetCoreThreadId());
   GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), capability));
+      FROM_HERE,
+      base::BindOnce(std::move(callback), capability, registration_id));
 }
 
 void ServiceWorkerContextWrapper::DidFindRegistrationForUpdate(

@@ -12,6 +12,7 @@
 #include "content/browser/service_worker/service_worker_version.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/common/fetch/fetch_request_type_converters.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_database.mojom.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -41,12 +42,14 @@ void ServiceWorkerOfflineCapabilityChecker::DidFindRegistration(
     blink::ServiceWorkerStatusCode status,
     scoped_refptr<ServiceWorkerRegistration> registration) {
   if (status != blink::ServiceWorkerStatusCode::kOk) {
-    std::move(callback_).Run(OfflineCapability::kUnsupported);
+    std::move(callback_).Run(OfflineCapability::kUnsupported,
+                             blink::mojom::kInvalidServiceWorkerRegistrationId);
     return;
   }
 
   if (registration->is_uninstalling() || registration->is_uninstalled()) {
-    std::move(callback_).Run(OfflineCapability::kUnsupported);
+    std::move(callback_).Run(OfflineCapability::kUnsupported,
+                             blink::mojom::kInvalidServiceWorkerRegistrationId);
     return;
   }
 
@@ -56,7 +59,8 @@ void ServiceWorkerOfflineCapabilityChecker::DidFindRegistration(
     preferred_version = registration->waiting_version();
   }
   if (!preferred_version) {
-    std::move(callback_).Run(OfflineCapability::kUnsupported);
+    std::move(callback_).Run(OfflineCapability::kUnsupported,
+                             blink::mojom::kInvalidServiceWorkerRegistrationId);
     return;
   }
 
@@ -66,7 +70,8 @@ void ServiceWorkerOfflineCapabilityChecker::DidFindRegistration(
   DCHECK_NE(existence, ServiceWorkerVersion::FetchHandlerExistence::UNKNOWN);
 
   if (existence != ServiceWorkerVersion::FetchHandlerExistence::EXISTS) {
-    std::move(callback_).Run(OfflineCapability::kUnsupported);
+    std::move(callback_).Run(OfflineCapability::kUnsupported,
+                             preferred_version->registration_id());
     return;
   }
 
@@ -79,7 +84,8 @@ void ServiceWorkerOfflineCapabilityChecker::DidFindRegistration(
     // TODO(hayato): We can do a bit better, such as 1) trigger the activation
     // and wait, or 2) return a value to indicate the service worker is
     // installed but not yet activated.
-    std::move(callback_).Run(OfflineCapability::kUnsupported);
+    std::move(callback_).Run(OfflineCapability::kUnsupported,
+                             preferred_version->registration_id());
     return;
   }
 
@@ -95,7 +101,8 @@ void ServiceWorkerOfflineCapabilityChecker::DidFindRegistration(
   base::WeakPtr<ServiceWorkerContextCore> context =
       preferred_version->context();
   if (!context) {
-    std::move(callback_).Run(OfflineCapability::kUnsupported);
+    std::move(callback_).Run(OfflineCapability::kUnsupported,
+                             preferred_version->registration_id());
     return;
   }
 
@@ -121,18 +128,20 @@ void ServiceWorkerOfflineCapabilityChecker::OnFetchResult(
     blink::mojom::FetchAPIResponsePtr response,
     blink::mojom::ServiceWorkerStreamHandlePtr /* stream */,
     blink::mojom::ServiceWorkerFetchEventTimingPtr /* timing */,
-    scoped_refptr<ServiceWorkerVersion>) {
+    scoped_refptr<ServiceWorkerVersion> version) {
   if (status == blink::ServiceWorkerStatusCode::kOk &&
       result == ServiceWorkerFetchDispatcher::FetchEventResult::kGotResponse &&
       // TODO(hayato): Investigate whether any 2xx should be accepted or not.
       response->status_code == 200) {
-    std::move(callback_).Run(OfflineCapability::kSupported);
+    std::move(callback_).Run(OfflineCapability::kSupported,
+                             version->registration_id());
   } else {
     // TODO(hayato): At present, we return kUnsupported even if the detection
     // failed due to internal errors (disk fialures, timeout, etc). In the
     // future, we might want to return another enum value so that the callside
     // can know whether internal errors happened or not.
-    std::move(callback_).Run(OfflineCapability::kUnsupported);
+    std::move(callback_).Run(OfflineCapability::kUnsupported,
+                             version->registration_id());
   }
 }
 

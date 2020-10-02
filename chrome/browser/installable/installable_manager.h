@@ -218,7 +218,8 @@ class InstallableManager
       content::ServiceWorkerCapability capability);
   void OnDidCheckOfflineCapability(
       base::TimeTicks check_service_worker_start_time,
-      content::OfflineCapability capability);
+      content::OfflineCapability capability,
+      int64_t service_worker_registration_id);
 
   void CheckAndFetchBestIcon(int ideal_icon_size_in_px,
                              int minimum_icon_size_in_px,

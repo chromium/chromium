@@ -821,7 +821,9 @@ void ServiceWorkerContextCore::CheckOfflineCapability(
       base::BindOnce(
           [](std::unique_ptr<ServiceWorkerOfflineCapabilityChecker> checker,
              ServiceWorkerContext::CheckOfflineCapabilityCallback callback,
-             OfflineCapability result) { std::move(callback).Run(result); },
+             OfflineCapability result, int64_t registration_id) {
+            std::move(callback).Run(result, registration_id);
+          },
           std::move(checker), std::move(callback)));
 }
 
