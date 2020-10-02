@@ -121,6 +121,7 @@ class ASH_EXPORT AshColorProvider : public SessionObserver {
   enum class ButtonType {
     kPillButtonWithIcon,
     kCloseButtonWithSmallBase,
+    kIconButtonSmallOrMedium,
   };
 
   // Attributes of ripple, includes the base color, opacity of inkdrop and
@@ -185,6 +186,11 @@ class ASH_EXPORT AshColorProvider : public SessionObserver {
                            ButtonType type,
                            int button_size,
                            const gfx::VectorIcon& icon);
+  void DecorateIconButton(views::ImageButton* button,
+                          ButtonType type,
+                          const gfx::VectorIcon& icon,
+                          bool toggled,
+                          int icon_size);
 
   void AddObserver(ColorModeObserver* observer);
   void RemoveObserver(ColorModeObserver* observer);
