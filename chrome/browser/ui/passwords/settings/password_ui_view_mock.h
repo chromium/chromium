@@ -26,11 +26,13 @@ class MockPasswordUIView : public PasswordUIView {
 
   MOCK_METHOD1(
       SetPasswordList,
-      void(const std::vector<std::unique_ptr<autofill::PasswordForm>>&));
+      void(
+          const std::vector<std::unique_ptr<password_manager::PasswordForm>>&));
 
   MOCK_METHOD1(
       SetPasswordExceptionList,
-      void(const std::vector<std::unique_ptr<autofill::PasswordForm>>&));
+      void(
+          const std::vector<std::unique_ptr<password_manager::PasswordForm>>&));
 
  private:
   Profile* profile_;

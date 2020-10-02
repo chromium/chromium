@@ -50,7 +50,8 @@ class ItemsBubbleControllerTest : public ::testing::Test {
 
   ~ItemsBubbleControllerTest() override = default;
 
-  static std::vector<std::unique_ptr<autofill::PasswordForm>> GetCurrentForms();
+  static std::vector<std::unique_ptr<password_manager::PasswordForm>>
+  GetCurrentForms();
 
   PasswordsModelDelegateMock* delegate() { return mock_delegate_.get(); }
   ItemsBubbleController* controller() { return controller_.get(); }
@@ -76,7 +77,7 @@ class ItemsBubbleControllerTest : public ::testing::Test {
 };
 
 void ItemsBubbleControllerTest::Init() {
-  std::vector<std::unique_ptr<autofill::PasswordForm>> forms =
+  std::vector<std::unique_ptr<password_manager::PasswordForm>> forms =
       GetCurrentForms();
   EXPECT_CALL(*delegate(), GetCurrentForms()).WillOnce(ReturnRef(forms));
 
@@ -99,23 +100,23 @@ void ItemsBubbleControllerTest::DestroyController() {
 }
 
 // static
-std::vector<std::unique_ptr<autofill::PasswordForm>>
+std::vector<std::unique_ptr<password_manager::PasswordForm>>
 ItemsBubbleControllerTest::GetCurrentForms() {
-  autofill::PasswordForm form1;
+  password_manager::PasswordForm form1;
   form1.url = GURL(kSiteOrigin);
   form1.signon_realm = kSiteOrigin;
   form1.username_value = base::ASCIIToUTF16("User1");
   form1.password_value = base::ASCIIToUTF16("123456");
 
-  autofill::PasswordForm form2;
+  password_manager::PasswordForm form2;
   form2.url = GURL(kSiteOrigin);
   form2.signon_realm = kSiteOrigin;
   form2.username_value = base::ASCIIToUTF16("User2");
   form2.password_value = base::ASCIIToUTF16("654321");
 
-  std::vector<std::unique_ptr<autofill::PasswordForm>> forms;
-  forms.push_back(std::make_unique<autofill::PasswordForm>(form1));
-  forms.push_back(std::make_unique<autofill::PasswordForm>(form2));
+  std::vector<std::unique_ptr<password_manager::PasswordForm>> forms;
+  forms.push_back(std::make_unique<password_manager::PasswordForm>(form1));
+  forms.push_back(std::make_unique<password_manager::PasswordForm>(form2));
   return forms;
 }
 
@@ -142,7 +143,7 @@ TEST_F(ItemsBubbleControllerTest, OnManageClicked) {
 TEST_F(ItemsBubbleControllerTest, OnPasswordActionAddPassword) {
   Init();
 
-  autofill::PasswordForm form;
+  password_manager::PasswordForm form;
   form.url = GURL(kSiteOrigin);
   form.signon_realm = kSiteOrigin;
   form.username_value = base::ASCIIToUTF16("User");
@@ -157,7 +158,7 @@ TEST_F(ItemsBubbleControllerTest, OnPasswordActionAddPassword) {
 TEST_F(ItemsBubbleControllerTest, OnPasswordActionRemovePassword) {
   Init();
 
-  autofill::PasswordForm form;
+  password_manager::PasswordForm form;
   form.url = GURL(kSiteOrigin);
   form.signon_realm = kSiteOrigin;
   form.username_value = base::ASCIIToUTF16("User");
@@ -171,9 +172,9 @@ TEST_F(ItemsBubbleControllerTest, OnPasswordActionRemovePassword) {
 
 TEST_F(ItemsBubbleControllerTest, ShouldReturnLocalCredentials) {
   Init();
-  std::vector<autofill::PasswordForm> local_credentials =
+  std::vector<password_manager::PasswordForm> local_credentials =
       controller()->local_credentials();
-  std::vector<std::unique_ptr<autofill::PasswordForm>>
+  std::vector<std::unique_ptr<password_manager::PasswordForm>>
       expected_local_credentials = ItemsBubbleControllerTest::GetCurrentForms();
   EXPECT_EQ(local_credentials.size(), expected_local_credentials.size());
   for (size_t i = 0; i < local_credentials.size(); i++) {

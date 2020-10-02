@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/passwords/bubble_controllers/password_bubble_controller_base.h"
 
 #include "base/memory/weak_ptr.h"
+#include "components/password_manager/core/browser/password_form.h"
 
 class PasswordsModelDelegate;
 
@@ -22,7 +23,7 @@ class AutoSignInBubbleController : public PasswordBubbleControllerBase {
   // to timeout.
   void OnAutoSignInToastTimeout();
 
-  const autofill::PasswordForm& pending_password() const {
+  const password_manager::PasswordForm& pending_password() const {
     return pending_password_;
   }
 
@@ -31,7 +32,7 @@ class AutoSignInBubbleController : public PasswordBubbleControllerBase {
   base::string16 GetTitle() const override;
   void ReportInteractions() override;
 
-  autofill::PasswordForm pending_password_;
+  password_manager::PasswordForm pending_password_;
   // Dismissal reason for a password bubble.
   password_manager::metrics_util::UIDismissalReason dismissal_reason_;
 };

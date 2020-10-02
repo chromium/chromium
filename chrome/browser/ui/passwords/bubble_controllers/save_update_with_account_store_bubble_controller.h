@@ -8,6 +8,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/passwords/bubble_controllers/password_bubble_controller_base.h"
 #include "components/password_manager/core/browser/manage_passwords_referrer.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/statistics_table.h"
 #include "components/password_manager/core/common/password_manager_ui.h"
 
@@ -96,7 +97,7 @@ class SaveUpdateWithAccountStoreBubbleController
 
   password_manager::ui::State state() const { return state_; }
 
-  const autofill::PasswordForm& pending_password() const {
+  const password_manager::PasswordForm& pending_password() const {
     return pending_password_;
   }
 
@@ -125,8 +126,8 @@ class SaveUpdateWithAccountStoreBubbleController
   // Origin of the page from where this bubble was triggered.
   url::Origin origin_;
   password_manager::ui::State state_;
-  autofill::PasswordForm pending_password_;
-  std::vector<autofill::PasswordForm> existing_credentials_;
+  password_manager::PasswordForm pending_password_;
+  std::vector<password_manager::PasswordForm> existing_credentials_;
   password_manager::InteractionsStats interaction_stats_;
   password_manager::metrics_util::UIDisplayDisposition display_disposition_;
 

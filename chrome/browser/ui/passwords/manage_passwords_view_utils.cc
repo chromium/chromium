@@ -21,9 +21,9 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/autofill/core/common/password_form.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_constants.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
@@ -75,7 +75,7 @@ gfx::ImageSkia ScaleImageForAccountAvatar(gfx::ImageSkia skia_image) {
 }
 
 std::pair<base::string16, base::string16> GetCredentialLabelsForAccountChooser(
-    const autofill::PasswordForm& form) {
+    const password_manager::PasswordForm& form) {
   base::string16 federation;
   if (!form.federation_origin.opaque())
     federation = GetDisplayFederation(form);
@@ -149,7 +149,7 @@ base::string16 GetManagePasswordsDialogTitleText(
                       : IDS_MANAGE_PASSWORDS_NO_PASSWORDS_TITLE);
 }
 
-base::string16 GetDisplayUsername(const autofill::PasswordForm& form) {
+base::string16 GetDisplayUsername(const password_manager::PasswordForm& form) {
   return form.username_value.empty()
              ? l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_EMPTY_LOGIN)
              : form.username_value;
@@ -162,7 +162,8 @@ base::string16 GetDisplayUsername(
              : credential.username();
 }
 
-base::string16 GetDisplayFederation(const autofill::PasswordForm& form) {
+base::string16 GetDisplayFederation(
+    const password_manager::PasswordForm& form) {
   return url_formatter::FormatOriginForSecurityDisplay(
       form.federation_origin, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
 }

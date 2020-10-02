@@ -8,6 +8,7 @@
 
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_metrics_recorder.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -32,7 +33,7 @@ SaveUnsyncedCredentialsLocallyBubbleController::
 void SaveUnsyncedCredentialsLocallyBubbleController::OnSaveClicked(
     const std::vector<bool>& was_credential_selected) {
   DCHECK(was_credential_selected.size() == unsynced_credentials_.size());
-  std::vector<autofill::PasswordForm> credentials_to_save;
+  std::vector<password_manager::PasswordForm> credentials_to_save;
   for (size_t i = 0; i < unsynced_credentials_.size(); i++) {
     if (was_credential_selected[i])
       credentials_to_save.push_back(unsynced_credentials_[i]);

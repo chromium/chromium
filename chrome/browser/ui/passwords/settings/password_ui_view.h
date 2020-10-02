@@ -12,11 +12,8 @@
 #include <vector>
 
 #include "build/build_config.h"
+#include "components/password_manager/core/browser/password_form_forward.h"
 #include "ui/gfx/native_widget_types.h"
-
-namespace autofill {
-struct PasswordForm;
-}
 
 class Profile;
 
@@ -34,13 +31,13 @@ class PasswordUIView {
   // |password_list| the list of saved password entries.
   // |show_passwords| true if the passwords should be shown in the UI.
   virtual void SetPasswordList(
-      const std::vector<std::unique_ptr<autofill::PasswordForm>>&
+      const std::vector<std::unique_ptr<password_manager::PasswordForm>>&
           password_list) = 0;
 
   // Updates the list of password exceptions in the UI.
   // |password_exception_list| The list of saved password exceptions.
   virtual void SetPasswordExceptionList(
-      const std::vector<std::unique_ptr<autofill::PasswordForm>>&
+      const std::vector<std::unique_ptr<password_manager::PasswordForm>>&
           password_exception_list) = 0;
 };
 

@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/passwords/credential_manager_dialog_controller_mock.h"
 
-#include "components/autofill/core/common/password_form.h"
+#include "components/password_manager/core/browser/password_form.h"
 
 CredentialManagerDialogControllerMock::CredentialManagerDialogControllerMock() =
     default;

@@ -13,8 +13,8 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/autofill/core/common/form_data.h"
-#include "components/autofill/core/common/password_form.h"
 #include "components/password_manager/core/browser/fake_form_fetcher.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/browser/stub_password_manager_driver.h"
 #include "components/password_manager/core/common/credential_manager_types.h"
@@ -46,7 +46,8 @@ class ManagePasswordsTest : public InProcessBrowserTest {
 
   // Put the controller, icon, and bubble into an auto sign-in state.
   void SetupAutoSignin(
-      std::vector<std::unique_ptr<autofill::PasswordForm>> local_credentials);
+      std::vector<std::unique_ptr<password_manager::PasswordForm>>
+          local_credentials);
 
   // Put the controller, icon, and bubble into the state with 0 compromised
   // passwords saved.
@@ -64,7 +65,7 @@ class ManagePasswordsTest : public InProcessBrowserTest {
   // Get samples for |histogram|.
   std::unique_ptr<base::HistogramSamples> GetSamples(const char* histogram);
 
-  autofill::PasswordForm* test_form() { return &password_form_; }
+  password_manager::PasswordForm* test_form() { return &password_form_; }
 
   // Get the UI controller for the current WebContents.
   ManagePasswordsUIController* GetController();
@@ -75,8 +76,8 @@ class ManagePasswordsTest : public InProcessBrowserTest {
  private:
   std::unique_ptr<password_manager::PasswordFormManager> CreateFormManager();
 
-  autofill::PasswordForm password_form_;
-  autofill::PasswordForm federated_form_;
+  password_manager::PasswordForm password_form_;
+  password_manager::PasswordForm federated_form_;
   autofill::FormData observed_form_;
   autofill::FormData submitted_form_;
   base::HistogramTester histogram_tester_;

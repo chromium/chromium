@@ -13,7 +13,7 @@
 #include "components/password_manager/core/browser/password_manager.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 
-using autofill::PasswordForm;
+using password_manager::PasswordForm;
 using password_manager::PasswordFormManagerForUI;
 
 namespace {
@@ -225,7 +225,7 @@ void ManagePasswordsState::ProcessLoginsChanged(
 }
 
 void ManagePasswordsState::ProcessUnsyncedCredentialsWillBeDeleted(
-    std::vector<autofill::PasswordForm> unsynced_credentials) {
+    std::vector<password_manager::PasswordForm> unsynced_credentials) {
   unsynced_credentials_ = std::move(unsynced_credentials);
   SetState(password_manager::ui::WILL_DELETE_UNSYNCED_ACCOUNT_PASSWORDS_STATE);
 }

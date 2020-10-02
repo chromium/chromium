@@ -40,7 +40,7 @@ class AutoSignInBubbleControllerTest : public ::testing::Test {
   PasswordsModelDelegateMock* delegate() { return mock_delegate_.get(); }
   AutoSignInBubbleController* controller() { return controller_.get(); }
 
-  const autofill::PasswordForm& pending_password() const {
+  const password_manager::PasswordForm& pending_password() const {
     return pending_password_;
   }
 
@@ -50,7 +50,7 @@ class AutoSignInBubbleControllerTest : public ::testing::Test {
  private:
   std::unique_ptr<PasswordsModelDelegateMock> mock_delegate_;
   std::unique_ptr<AutoSignInBubbleController> controller_;
-  autofill::PasswordForm pending_password_;
+  password_manager::PasswordForm pending_password_;
 };
 
 void AutoSignInBubbleControllerTest::Init() {

@@ -76,21 +76,22 @@ class ManagePasswordsUIController
       bool is_update) override;
   void OnHideManualFallbackForSaving() override;
   bool OnChooseCredentials(
-      std::vector<std::unique_ptr<autofill::PasswordForm>> local_credentials,
+      std::vector<std::unique_ptr<password_manager::PasswordForm>>
+          local_credentials,
       const url::Origin& origin,
       ManagePasswordsState::CredentialsCallback callback) override;
   void OnAutoSignin(
-      std::vector<std::unique_ptr<autofill::PasswordForm>> local_forms,
+      std::vector<std::unique_ptr<password_manager::PasswordForm>> local_forms,
       const url::Origin& origin) override;
   void OnPromptEnableAutoSignin() override;
   void OnAutomaticPasswordSave(
       std::unique_ptr<password_manager::PasswordFormManagerForUI> form_manager)
       override;
   void OnPasswordAutofilled(
-      const std::vector<const autofill::PasswordForm*>& password_forms,
+      const std::vector<const password_manager::PasswordForm*>& password_forms,
       const url::Origin& origin,
-      const std::vector<const autofill::PasswordForm*>* federated_matches)
-      override;
+      const std::vector<const password_manager::PasswordForm*>*
+          federated_matches) override;
   void OnCredentialLeak(password_manager::CredentialLeakType leak_dialog_type,
                         const GURL& origin) override;
   void OnShowMoveToAccountBubble(
@@ -98,7 +99,7 @@ class ManagePasswordsUIController
       override;
 
   virtual void NotifyUnsyncedCredentialsWillBeDeleted(
-      std::vector<autofill::PasswordForm> unsynced_credentials);
+      std::vector<password_manager::PasswordForm> unsynced_credentials);
 
   // PasswordStore::Observer:
   void OnLoginsChanged(
@@ -124,13 +125,13 @@ class ManagePasswordsUIController
   password_manager::PasswordFeatureManager* GetPasswordFeatureManager()
       override;
   password_manager::ui::State GetState() const override;
-  const autofill::PasswordForm& GetPendingPassword() const override;
-  const std::vector<autofill::PasswordForm>& GetUnsyncedCredentials()
+  const password_manager::PasswordForm& GetPendingPassword() const override;
+  const std::vector<password_manager::PasswordForm>& GetUnsyncedCredentials()
       const override;
   password_manager::metrics_util::CredentialSourceType GetCredentialSource()
       const override;
-  const std::vector<std::unique_ptr<autofill::PasswordForm>>& GetCurrentForms()
-      const override;
+  const std::vector<std::unique_ptr<password_manager::PasswordForm>>&
+  GetCurrentForms() const override;
   const password_manager::InteractionsStats* GetCurrentInteractionStats()
       const override;
   size_t GetTotalNumberCompromisedPasswords() const override;
@@ -145,12 +146,13 @@ class ManagePasswordsUIController
   void SavePassword(const base::string16& username,
                     const base::string16& password) override;
   void SaveUnsyncedCredentialsInProfileStore(
-      const std::vector<autofill::PasswordForm>& selected_credentials) override;
+      const std::vector<password_manager::PasswordForm>& selected_credentials)
+      override;
   void DiscardUnsyncedCredentials() override;
   void MovePasswordToAccountStore() override;
   void BlockMovingPasswordToAccountStore() override;
   void ChooseCredential(
-      const autofill::PasswordForm& form,
+      const password_manager::PasswordForm& form,
       password_manager::CredentialType credential_type) override;
   void NavigateToPasswordManagerAccountDashboard(
       password_manager::ManagePasswordsReferrer referrer) override;

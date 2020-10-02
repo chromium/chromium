@@ -10,6 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "components/password_manager/core/browser/manage_passwords_referrer.h"
+#include "components/password_manager/core/browser/password_form_forward.h"
 #include "ui/gfx/image/image.h"
 
 class PasswordsModelDelegate;
@@ -30,7 +31,7 @@ class ItemsBubbleController : public PasswordBubbleControllerBase {
 
   // Called by the view code to delete or add a password form to the
   // PasswordStore.
-  void OnPasswordAction(const autofill::PasswordForm& password_form,
+  void OnPasswordAction(const password_manager::PasswordForm& password_form,
                         PasswordAction action);
 
   // Makes a request to the favicon service for the icon of current visible URL.
@@ -40,7 +41,7 @@ class ItemsBubbleController : public PasswordBubbleControllerBase {
       base::OnceCallback<void(const gfx::Image&)> favicon_ready_callback);
 
   // Returns the available credentials which match the current site.
-  const std::vector<autofill::PasswordForm>& local_credentials() const {
+  const std::vector<password_manager::PasswordForm>& local_credentials() const {
     return local_credentials_;
   }
 
@@ -55,7 +56,7 @@ class ItemsBubbleController : public PasswordBubbleControllerBase {
   base::string16 GetTitle() const override;
   void ReportInteractions() override;
 
-  const std::vector<autofill::PasswordForm> local_credentials_;
+  const std::vector<password_manager::PasswordForm> local_credentials_;
 
   // Used to track a requested favicon.
   base::CancelableTaskTracker favicon_tracker_;

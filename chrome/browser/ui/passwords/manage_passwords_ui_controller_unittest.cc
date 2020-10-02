@@ -24,10 +24,10 @@
 #include "chrome/browser/ui/passwords/password_dialog_prompts.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "components/autofill/core/common/password_form.h"
 #include "components/password_manager/core/browser/mock_password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/mock_password_store.h"
 #include "components/password_manager/core/browser/password_bubble_experiment.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_metrics_recorder.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
@@ -47,11 +47,11 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using autofill::PasswordForm;
 using base::ASCIIToUTF16;
 using password_manager::CompromisedCredentials;
 using password_manager::MockPasswordFormManagerForUI;
 using password_manager::MockPasswordStore;
+using password_manager::PasswordForm;
 using ReauthSucceeded =
     password_manager::PasswordManagerClient::ReauthSucceeded;
 using ::testing::_;
@@ -199,10 +199,11 @@ void TestManagePasswordsUIController::HidePasswordBubble() {
   }
 }
 
-autofill::PasswordForm BuildFormFromLoginAndURL(const std::string& username,
-                                                const std::string& password,
-                                                const std::string& url) {
-  autofill::PasswordForm form;
+password_manager::PasswordForm BuildFormFromLoginAndURL(
+    const std::string& username,
+    const std::string& password,
+    const std::string& url) {
+  password_manager::PasswordForm form;
   form.username_value = base::ASCIIToUTF16(username);
   form.password_value = base::ASCIIToUTF16(password);
   form.url = GURL(url);
@@ -315,7 +316,7 @@ ManagePasswordsUIControllerTest::CreateFormManagerWithBestMatches(
       .WillOnce(ReturnRef(*best_matches));
   EXPECT_CALL(*form_manager, GetFederatedMatches())
       .Times(AtMost(1))
-      .WillOnce(Return(std::vector<const autofill::PasswordForm*>()));
+      .WillOnce(Return(std::vector<const password_manager::PasswordForm*>()));
   EXPECT_CALL(*form_manager, GetURL())
       .Times(AtMost(1))
       .WillOnce(ReturnRef(test_local_form_.url));
@@ -632,9 +633,9 @@ TEST_F(ManagePasswordsUIControllerTest,
       .WillOnce(MoveArg<1>(&reauth_callback));
 
   // Unsuccessful reauth should change the default store to profile store.
-  EXPECT_CALL(
-      *client().GetPasswordFeatureManager(),
-      SetDefaultPasswordStore(autofill::PasswordForm::Store::kProfileStore));
+  EXPECT_CALL(*client().GetPasswordFeatureManager(),
+              SetDefaultPasswordStore(
+                  password_manager::PasswordForm::Store::kProfileStore));
 
   // The user clicks save which will invoke the reauth flow.
   controller()->AuthenticateUserForAccountStoreOptInAndSavePassword(
@@ -1401,7 +1402,7 @@ TEST_F(ManagePasswordsUIControllerTest, UpdateBubbleAfterLeakCheck) {
 TEST_F(ManagePasswordsUIControllerTest,
        NotifyUnsyncedCredentialsWillBeDeleted) {
   EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
-  std::vector<autofill::PasswordForm> credentials(2);
+  std::vector<password_manager::PasswordForm> credentials(2);
   credentials[0] =
       BuildFormFromLoginAndURL("user1", "password1", "http://a.com");
   credentials[1] =
@@ -1416,7 +1417,7 @@ TEST_F(ManagePasswordsUIControllerTest,
 }
 
 TEST_F(ManagePasswordsUIControllerTest, SaveUnsyncedCredentialsInProfileStore) {
-  std::vector<autofill::PasswordForm> credentials = {
+  std::vector<password_manager::PasswordForm> credentials = {
       BuildFormFromLoginAndURL("user1", "password1", "http://a.com"),
       BuildFormFromLoginAndURL("user2", "password2", "http://b.com")};
 
@@ -1444,7 +1445,7 @@ TEST_F(ManagePasswordsUIControllerTest, SaveUnsyncedCredentialsInProfileStore) {
 TEST_F(ManagePasswordsUIControllerTest, DiscardUnsyncedCredentials) {
   // Setup state with unsynced credentials.
   EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
-  std::vector<autofill::PasswordForm> credentials = {
+  std::vector<password_manager::PasswordForm> credentials = {
       BuildFormFromLoginAndURL("user", "password", "http://a.com")};
   controller()->NotifyUnsyncedCredentialsWillBeDeleted(std::move(credentials));
 

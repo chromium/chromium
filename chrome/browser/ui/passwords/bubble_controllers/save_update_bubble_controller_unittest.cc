@@ -114,8 +114,10 @@ class SaveUpdateBubbleControllerTest : public ::testing::Test {
 
   SaveUpdateBubbleController* controller() { return controller_.get(); }
 
-  autofill::PasswordForm& pending_password() { return pending_password_; }
-  const autofill::PasswordForm& pending_password() const {
+  password_manager::PasswordForm& pending_password() {
+    return pending_password_;
+  }
+  const password_manager::PasswordForm& pending_password() const {
     return pending_password_;
   }
 
@@ -131,7 +133,8 @@ class SaveUpdateBubbleControllerTest : public ::testing::Test {
       password_manager::metrics_util::UIDismissalReason dismissal_reason);
 
   static password_manager::InteractionsStats GetTestStats();
-  std::vector<std::unique_ptr<autofill::PasswordForm>> GetCurrentForms() const;
+  std::vector<std::unique_ptr<password_manager::PasswordForm>> GetCurrentForms()
+      const;
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -141,7 +144,7 @@ class SaveUpdateBubbleControllerTest : public ::testing::Test {
   std::unique_ptr<content::WebContents> test_web_contents_;
   std::unique_ptr<SaveUpdateBubbleController> controller_;
   std::unique_ptr<PasswordsModelDelegateMock> mock_delegate_;
-  autofill::PasswordForm pending_password_;
+  password_manager::PasswordForm pending_password_;
 };
 
 void SaveUpdateBubbleControllerTest::SetUpWithState(
@@ -166,7 +169,7 @@ void SaveUpdateBubbleControllerTest::PretendPasswordWaiting(
   password_manager::InteractionsStats stats = GetTestStats();
   EXPECT_CALL(*delegate(), GetCurrentInteractionStats())
       .WillOnce(Return(&stats));
-  std::vector<std::unique_ptr<autofill::PasswordForm>> forms =
+  std::vector<std::unique_ptr<password_manager::PasswordForm>> forms =
       GetCurrentForms();
   EXPECT_CALL(*delegate(), GetCurrentForms()).WillOnce(ReturnRef(forms));
   SetUpWithState(password_manager::ui::PENDING_PASSWORD_STATE, reason);
@@ -175,10 +178,10 @@ void SaveUpdateBubbleControllerTest::PretendPasswordWaiting(
 void SaveUpdateBubbleControllerTest::PretendUpdatePasswordWaiting() {
   EXPECT_CALL(*delegate(), GetPendingPassword())
       .WillOnce(ReturnRef(pending_password()));
-  std::vector<std::unique_ptr<autofill::PasswordForm>> forms =
+  std::vector<std::unique_ptr<password_manager::PasswordForm>> forms =
       GetCurrentForms();
   auto current_form =
-      std::make_unique<autofill::PasswordForm>(pending_password());
+      std::make_unique<password_manager::PasswordForm>(pending_password());
   current_form->password_value = base::ASCIIToUTF16("old_password");
   forms.push_back(std::move(current_form));
   EXPECT_CALL(*delegate(), GetCurrentForms()).WillOnce(ReturnRef(forms));
@@ -218,19 +221,20 @@ SaveUpdateBubbleControllerTest::GetTestStats() {
   return result;
 }
 
-std::vector<std::unique_ptr<autofill::PasswordForm>>
+std::vector<std::unique_ptr<password_manager::PasswordForm>>
 SaveUpdateBubbleControllerTest::GetCurrentForms() const {
-  autofill::PasswordForm form(pending_password());
+  password_manager::PasswordForm form(pending_password());
   form.username_value = base::ASCIIToUTF16(kUsernameExisting);
   form.password_value = base::ASCIIToUTF16("123456");
 
-  autofill::PasswordForm preferred_form(pending_password());
+  password_manager::PasswordForm preferred_form(pending_password());
   preferred_form.username_value = base::ASCIIToUTF16("preferred_username");
   preferred_form.password_value = base::ASCIIToUTF16("654321");
 
-  std::vector<std::unique_ptr<autofill::PasswordForm>> forms;
-  forms.push_back(std::make_unique<autofill::PasswordForm>(form));
-  forms.push_back(std::make_unique<autofill::PasswordForm>(preferred_form));
+  std::vector<std::unique_ptr<password_manager::PasswordForm>> forms;
+  forms.push_back(std::make_unique<password_manager::PasswordForm>(form));
+  forms.push_back(
+      std::make_unique<password_manager::PasswordForm>(preferred_form));
   return forms;
 }
 

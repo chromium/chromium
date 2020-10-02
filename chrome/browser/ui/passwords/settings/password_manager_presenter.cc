@@ -35,9 +35,9 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "components/autofill/core/common/form_data.h"
-#include "components/autofill/core/common/password_form.h"
 #include "components/password_manager/core/browser/form_fetcher_impl.h"
 #include "components/password_manager/core/browser/password_feature_manager.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_metrics_recorder.h"
 #include "components/password_manager/core/browser/password_list_sorter.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
@@ -62,11 +62,11 @@ using password_manager::PasswordStore;
 namespace {
 
 // Convenience typedef for the commonly used vector of PasswordForm pointers.
-using FormVector = std::vector<std::unique_ptr<autofill::PasswordForm>>;
+using FormVector = std::vector<std::unique_ptr<password_manager::PasswordForm>>;
 
-base::span<const std::unique_ptr<autofill::PasswordForm>> TryGetPasswordForms(
-    const std::map<std::string, FormVector>& password_form_map,
-    size_t index) {
+base::span<const std::unique_ptr<password_manager::PasswordForm>>
+TryGetPasswordForms(const std::map<std::string, FormVector>& password_form_map,
+                    size_t index) {
   // |index| out of bounds might come from a compromised renderer
   // (http://crbug.com/362054), or the user removed a password while a request
   // to the store is in progress (i.e. |forms| is empty). Don't let it crash
@@ -82,7 +82,7 @@ base::span<const std::unique_ptr<autofill::PasswordForm>> TryGetPasswordForms(
   return base::make_span(forms);
 }
 
-const autofill::PasswordForm* TryGetPasswordForm(
+const password_manager::PasswordForm* TryGetPasswordForm(
     const std::map<std::string, FormVector>& password_form_map,
     size_t index) {
   // |index| out of bounds might come from a compromised renderer
@@ -102,7 +102,8 @@ FormVector GetEntryList(const std::map<std::string, FormVector>& map) {
   result.reserve(map.size());
   for (const auto& pair : map) {
     DCHECK(!pair.second.empty());
-    result.push_back(std::make_unique<autofill::PasswordForm>(*pair.second[0]));
+    result.push_back(
+        std::make_unique<password_manager::PasswordForm>(*pair.second[0]));
   }
 
   return result;
@@ -125,7 +126,7 @@ ConvertPlaintextReason(password_manager::PlaintextReason reason) {
 class RemovePasswordOperation : public UndoOperation {
  public:
   RemovePasswordOperation(PasswordManagerPresenter* page,
-                          const autofill::PasswordForm& form);
+                          const password_manager::PasswordForm& form);
   ~RemovePasswordOperation() override;
 
   // UndoOperation:
@@ -135,14 +136,14 @@ class RemovePasswordOperation : public UndoOperation {
 
  private:
   PasswordManagerPresenter* page_;
-  autofill::PasswordForm form_;
+  password_manager::PasswordForm form_;
 
   DISALLOW_COPY_AND_ASSIGN(RemovePasswordOperation);
 };
 
 RemovePasswordOperation::RemovePasswordOperation(
     PasswordManagerPresenter* page,
-    const autofill::PasswordForm& form)
+    const password_manager::PasswordForm& form)
     : page_(page), form_(form) {}
 
 RemovePasswordOperation::~RemovePasswordOperation() = default;
@@ -162,7 +163,7 @@ int RemovePasswordOperation::GetRedoLabelId() const {
 class AddPasswordOperation : public UndoOperation {
  public:
   AddPasswordOperation(PasswordManagerPresenter* page,
-                       const autofill::PasswordForm& password_form);
+                       const password_manager::PasswordForm& password_form);
   ~AddPasswordOperation() override;
 
   // UndoOperation:
@@ -172,13 +173,14 @@ class AddPasswordOperation : public UndoOperation {
 
  private:
   PasswordManagerPresenter* page_;
-  autofill::PasswordForm form_;
+  password_manager::PasswordForm form_;
 
   DISALLOW_COPY_AND_ASSIGN(AddPasswordOperation);
 };
 
-AddPasswordOperation::AddPasswordOperation(PasswordManagerPresenter* page,
-                                           const autofill::PasswordForm& form)
+AddPasswordOperation::AddPasswordOperation(
+    PasswordManagerPresenter* page,
+    const password_manager::PasswordForm& form)
     : page_(page), form_(form) {}
 
 AddPasswordOperation::~AddPasswordOperation() = default;
@@ -199,7 +201,7 @@ int AddPasswordOperation::GetRedoLabelId() const {
 
 PasswordManagerPresenter::MovePasswordToAccountStoreHelper::
     MovePasswordToAccountStoreHelper(
-        const autofill::PasswordForm& form,
+        const password_manager::PasswordForm& form,
         password_manager::PasswordManagerClient* client,
         base::OnceClosure done_callback)
     : form_(form),
@@ -283,19 +285,19 @@ void PasswordManagerPresenter::UpdatePasswordLists() {
   }
 }
 
-const autofill::PasswordForm* PasswordManagerPresenter::GetPassword(
+const password_manager::PasswordForm* PasswordManagerPresenter::GetPassword(
     size_t index) const {
   return TryGetPasswordForm(password_map_, index);
 }
 
-base::span<const std::unique_ptr<autofill::PasswordForm>>
+base::span<const std::unique_ptr<password_manager::PasswordForm>>
 PasswordManagerPresenter::GetPasswords(size_t index) const {
   return TryGetPasswordForms(password_map_, index);
 }
 
 std::vector<base::string16> PasswordManagerPresenter::GetUsernamesForRealm(
     size_t index) {
-  const autofill::PasswordForm* current_form =
+  const password_manager::PasswordForm* current_form =
       TryGetPasswordForm(password_map_, index);
   FormVector password_forms = GetAllPasswords();
   std::vector<base::string16> usernames;
@@ -310,15 +312,16 @@ FormVector PasswordManagerPresenter::GetAllPasswords() {
   FormVector ret_val;
   for (const auto& pair : password_map_) {
     for (const auto& form : pair.second) {
-      ret_val.push_back(std::make_unique<autofill::PasswordForm>(*form));
+      ret_val.push_back(
+          std::make_unique<password_manager::PasswordForm>(*form));
     }
   }
 
   return ret_val;
 }
 
-const autofill::PasswordForm* PasswordManagerPresenter::GetPasswordException(
-    size_t index) const {
+const password_manager::PasswordForm*
+PasswordManagerPresenter::GetPasswordException(size_t index) const {
   return TryGetPasswordForm(exception_map_, index);
 }
 
@@ -429,7 +432,7 @@ void PasswordManagerPresenter::MovePasswordToAccountStore(
 
   // MovePasswordToAccountStoreHelper takes care of moving the entire
   // equivalence class, so passing the first element is fine.
-  const autofill::PasswordForm& form = *(it->second[0]);
+  const password_manager::PasswordForm& form = *(it->second[0]);
 
   // Insert nullptr first to obtain the iterator passed to the callback.
   MovePasswordToAccountStoreHelperList::iterator helper_it =
@@ -484,7 +487,8 @@ void PasswordManagerPresenter::RequestPlaintextPassword(
 }
 #endif
 
-void PasswordManagerPresenter::AddLogin(const autofill::PasswordForm& form) {
+void PasswordManagerPresenter::AddLogin(
+    const password_manager::PasswordForm& form) {
   PasswordStore* store =
       GetPasswordStore(password_view_->GetProfile(), form.IsUsingAccountStore())
           .get();
@@ -496,7 +500,8 @@ void PasswordManagerPresenter::AddLogin(const autofill::PasswordForm& form) {
   store->AddLogin(form);
 }
 
-void PasswordManagerPresenter::RemoveLogin(const autofill::PasswordForm& form) {
+void PasswordManagerPresenter::RemoveLogin(
+    const password_manager::PasswordForm& form) {
   PasswordStore* store =
       GetPasswordStore(password_view_->GetProfile(), form.IsUsingAccountStore())
           .get();

@@ -40,7 +40,7 @@ class CredentialManagerDialogControllerImpl
   base::string16 GetAutoSigninText() const override;
   bool ShouldShowFooter() const override;
   void OnChooseCredentials(
-      const autofill::PasswordForm& password_form,
+      const password_manager::PasswordForm& password_form,
       password_manager::CredentialType credential_type) override;
   void OnSignInClicked() override;
   void OnAutoSigninOK() override;
@@ -55,7 +55,8 @@ class CredentialManagerDialogControllerImpl
   PasswordsModelDelegate* const delegate_;
   AccountChooserPrompt* account_chooser_dialog_;
   AutoSigninFirstRunPrompt* autosignin_dialog_;
-  std::vector<std::unique_ptr<autofill::PasswordForm>> local_credentials_;
+  std::vector<std::unique_ptr<password_manager::PasswordForm>>
+      local_credentials_;
 
   DISALLOW_COPY_AND_ASSIGN(CredentialManagerDialogControllerImpl);
 };

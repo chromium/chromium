@@ -21,9 +21,9 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-using autofill::PasswordForm;
 using base::ASCIIToUTF16;
 using password_manager::MockPasswordFormManagerForUI;
+using password_manager::PasswordForm;
 using password_manager::PasswordStoreChange;
 using password_manager::PasswordStoreChangeList;
 using ::testing::_;
@@ -602,15 +602,15 @@ TEST_F(ManagePasswordsStateTest, ChooseCredentialLocalWithNonEmptyFederation) {
 TEST_F(ManagePasswordsStateTest, AutofillCausedByInternalFormManager) {
   struct OwningPasswordFormManagerForUI : public MockPasswordFormManagerForUI {
     GURL url;
-    std::vector<const autofill::PasswordForm*> best_matches;
-    std::vector<const autofill::PasswordForm*> federated_matches;
+    std::vector<const password_manager::PasswordForm*> best_matches;
+    std::vector<const password_manager::PasswordForm*> federated_matches;
 
     const GURL& GetURL() const override { return url; }
-    const std::vector<const autofill::PasswordForm*>& GetBestMatches()
+    const std::vector<const password_manager::PasswordForm*>& GetBestMatches()
         const override {
       return best_matches;
     }
-    std::vector<const autofill::PasswordForm*> GetFederatedMatches()
+    std::vector<const password_manager::PasswordForm*> GetFederatedMatches()
         const override {
       return federated_matches;
     }

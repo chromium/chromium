@@ -10,10 +10,7 @@
 #include "base/strings/string16.h"
 #include "components/password_manager/core/browser/manage_passwords_referrer.h"
 #include "components/password_manager/core/browser/origin_credential_store.h"
-
-namespace autofill {
-struct PasswordForm;
-}
+#include "components/password_manager/core/browser/password_form_forward.h"
 
 namespace gfx {
 class ImageSkia;
@@ -43,7 +40,7 @@ gfx::ImageSkia ScaleImageForAccountAvatar(gfx::ImageSkia image_skia);
 // Returns the upper and lower label to be displayed in the account chooser UI
 // for |form|. The lower label can be multiline.
 std::pair<base::string16, base::string16> GetCredentialLabelsForAccountChooser(
-    const autofill::PasswordForm& form);
+    const password_manager::PasswordForm& form);
 
 // Returns the formatted title in the Save Password bubble or the Update
 // Password bubble (depending on |dialog_type|). If the registry controlled
@@ -71,7 +68,7 @@ base::string16 GetManagePasswordsDialogTitleText(
     bool has_credentials);
 
 // Returns an username in the form that should be shown in the bubble.
-base::string16 GetDisplayUsername(const autofill::PasswordForm& form);
+base::string16 GetDisplayUsername(const password_manager::PasswordForm& form);
 
 // Returns either the username or the |IDS_PASSWORD_MANAGER_EMPTY_LOGIN| in case
 // it is empty.
@@ -79,7 +76,7 @@ base::string16 GetDisplayUsername(
     const password_manager::UiCredential& credential);
 
 // Returns |federation_origin| in a human-readable format.
-base::string16 GetDisplayFederation(const autofill::PasswordForm& form);
+base::string16 GetDisplayFederation(const password_manager::PasswordForm& form);
 
 // Check if |profile| syncing the Auto sign-in settings (by checking that user
 // syncs the PRIORITY_PREFERENCE). The view appearance might depend on it.

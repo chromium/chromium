@@ -87,7 +87,7 @@ class PasswordStoreWaiter : public password_manager::PasswordStoreConsumer {
 
  private:
   void OnGetPasswordStoreResults(
-      std::vector<std::unique_ptr<autofill::PasswordForm>>) override;
+      std::vector<std::unique_ptr<password_manager::PasswordForm>>) override;
 
   base::RunLoop run_loop_;
 };
@@ -99,7 +99,7 @@ PasswordStoreWaiter::PasswordStoreWaiter(
 }
 
 void PasswordStoreWaiter::OnGetPasswordStoreResults(
-    std::vector<std::unique_ptr<autofill::PasswordForm>>) {
+    std::vector<std::unique_ptr<password_manager::PasswordForm>>) {
   run_loop_.Quit();
 }
 
@@ -120,7 +120,7 @@ class MockPasswordManagerClient
 };
 
 std::vector<std::pair<std::string, std::string>> GetUsernamesAndPasswords(
-    const std::vector<autofill::PasswordForm>& forms) {
+    const std::vector<password_manager::PasswordForm>& forms) {
   std::vector<std::pair<std::string, std::string>> result;
   result.reserve(forms.size());
   for (const auto& form : forms) {
@@ -131,12 +131,12 @@ std::vector<std::pair<std::string, std::string>> GetUsernamesAndPasswords(
   return result;
 }
 
-autofill::PasswordForm AddPasswordToStore(
+password_manager::PasswordForm AddPasswordToStore(
     password_manager::PasswordStore* store,
     const GURL& url,
     base::StringPiece username,
     base::StringPiece password) {
-  autofill::PasswordForm form;
+  password_manager::PasswordForm form;
   form.url = url;
   form.signon_realm = url.GetOrigin().spec();
   form.username_value = base::ASCIIToUTF16(username);
@@ -145,14 +145,14 @@ autofill::PasswordForm AddPasswordToStore(
   return form;
 }
 
-std::vector<autofill::PasswordForm> GetPasswordsInStoreForRealm(
+std::vector<password_manager::PasswordForm> GetPasswordsInStoreForRealm(
     const password_manager::TestPasswordStore& store,
     base::StringPiece signon_realm) {
   const auto& stored_passwords = store.stored_passwords();
   auto for_realm_it = stored_passwords.find(signon_realm);
   return for_realm_it != stored_passwords.end()
              ? for_realm_it->second
-             : std::vector<autofill::PasswordForm>();
+             : std::vector<password_manager::PasswordForm>();
 }
 
 void SetUpSyncInTransportMode(Profile* profile) {
@@ -218,15 +218,15 @@ class PasswordManagerPresenterTest : public testing::Test {
   }
 
   // TODO(victorvianna): Inline calls to this.
-  autofill::PasswordForm AddPasswordEntry(const GURL& url,
-                                          base::StringPiece username,
-                                          base::StringPiece password) {
+  password_manager::PasswordForm AddPasswordEntry(const GURL& url,
+                                                  base::StringPiece username,
+                                                  base::StringPiece password) {
     return AddPasswordToStore(store_.get(), url, username, password);
   }
 
   // TODO(victorvianna): Move to anonymous namespace taking store as argument.
-  autofill::PasswordForm AddPasswordException(const GURL& url) {
-    autofill::PasswordForm form;
+  password_manager::PasswordForm AddPasswordException(const GURL& url) {
+    password_manager::PasswordForm form;
     form.url = url;
     form.blocked_by_user = true;
     store_->AddLogin(form);
@@ -238,7 +238,7 @@ class PasswordManagerPresenterTest : public testing::Test {
                                     base::StringPiece old_password,
                                     base::StringPiece new_username,
                                     base::StringPiece new_password) {
-    autofill::PasswordForm temp_form;
+    password_manager::PasswordForm temp_form;
     temp_form.url = GURL(url);
     temp_form.signon_realm = temp_form.url.GetOrigin().spec();
     temp_form.username_element = base::ASCIIToUTF16("username");
@@ -264,7 +264,7 @@ class PasswordManagerPresenterTest : public testing::Test {
   MockPasswordUIView& GetUIController() { return mock_controller_; }
 
   // TODO(victorvianna): Inline this.
-  std::vector<autofill::PasswordForm> GetStoredPasswordsForRealm(
+  std::vector<password_manager::PasswordForm> GetStoredPasswordsForRealm(
       base::StringPiece signon_realm) {
     return GetPasswordsInStoreForRealm(*store_, signon_realm);
   }
@@ -504,8 +504,9 @@ TEST_F(PasswordManagerPresenterTest, BlocklistedPasswordsNotExported) {
   EXPECT_CALL(GetUIController(), SetPasswordExceptionList(SizeIs(1u)));
   UpdatePasswordLists();
 
-  std::vector<std::unique_ptr<autofill::PasswordForm>> passwords_for_export =
-      GetUIController().GetPasswordManagerPresenter()->GetAllPasswords();
+  std::vector<std::unique_ptr<password_manager::PasswordForm>>
+      passwords_for_export =
+          GetUIController().GetPasswordManagerPresenter()->GetAllPasswords();
   EXPECT_EQ(1u, passwords_for_export.size());
   EXPECT_THAT(passwords_for_export, Each(IsNotBlocked()));
 }
@@ -521,8 +522,9 @@ TEST_F(PasswordManagerPresenterTest, BlocklistDoesNotPreventExporting) {
   EXPECT_CALL(GetUIController(), SetPasswordExceptionList(SizeIs(1u)));
   UpdatePasswordLists();
 
-  std::vector<std::unique_ptr<autofill::PasswordForm>> passwords_for_export =
-      GetUIController().GetPasswordManagerPresenter()->GetAllPasswords();
+  std::vector<std::unique_ptr<password_manager::PasswordForm>>
+      passwords_for_export =
+          GetUIController().GetPasswordManagerPresenter()->GetAllPasswords();
   ASSERT_EQ(1u, passwords_for_export.size());
   EXPECT_EQ(kSameOrigin, passwords_for_export[0]->url);
 }
@@ -530,7 +532,7 @@ TEST_F(PasswordManagerPresenterTest, BlocklistDoesNotPreventExporting) {
 #if !defined(OS_ANDROID)
 TEST_F(PasswordManagerPresenterTest, TestRequestPlaintextPassword) {
   base::HistogramTester histogram_tester;
-  autofill::PasswordForm form =
+  password_manager::PasswordForm form =
       AddPasswordEntry(GURL(kExampleCom), kUsername, kPassword);
 
   EXPECT_CALL(GetUIController(), SetPasswordList(SizeIs(1)));
@@ -552,7 +554,7 @@ TEST_F(PasswordManagerPresenterTest, TestRequestPlaintextPassword) {
 
 TEST_F(PasswordManagerPresenterTest, TestRequestPlaintextPasswordEdit) {
   base::HistogramTester histogram_tester;
-  autofill::PasswordForm form =
+  password_manager::PasswordForm form =
       AddPasswordEntry(GURL(kExampleCom), kUsername, kPassword);
 
   EXPECT_CALL(GetUIController(), SetPasswordList(SizeIs(1)));
@@ -574,9 +576,9 @@ TEST_F(PasswordManagerPresenterTest, TestRequestPlaintextPasswordEdit) {
 #endif
 
 TEST_F(PasswordManagerPresenterTest, TestPasswordRemovalAndUndo) {
-  autofill::PasswordForm password1 =
+  password_manager::PasswordForm password1 =
       AddPasswordEntry(GURL(kExampleCom), kUsername, kPassword);
-  autofill::PasswordForm password2 =
+  password_manager::PasswordForm password2 =
       AddPasswordEntry(GURL(kExampleCom), kUsername2, kPassword2);
   UpdatePasswordLists();
   ASSERT_THAT(GetUsernamesAndPasswords(GetStoredPasswordsForRealm(kExampleCom)),
@@ -599,8 +601,10 @@ TEST_F(PasswordManagerPresenterTest, TestPasswordRemovalAndUndo) {
 }
 
 TEST_F(PasswordManagerPresenterTest, TestExceptionRemovalAndUndo) {
-  autofill::PasswordForm exception1 = AddPasswordException(GURL(kExampleCom));
-  autofill::PasswordForm exception2 = AddPasswordException(GURL(kExampleOrg));
+  password_manager::PasswordForm exception1 =
+      AddPasswordException(GURL(kExampleCom));
+  password_manager::PasswordForm exception2 =
+      AddPasswordException(GURL(kExampleOrg));
   UpdatePasswordLists();
 
   GetUIController().GetPasswordManagerPresenter()->RemovePasswordExceptions(
@@ -620,9 +624,9 @@ TEST_F(PasswordManagerPresenterTest, TestExceptionRemovalAndUndo) {
 }
 
 TEST_F(PasswordManagerPresenterTest, TestPasswordBatchRemovalAndUndo) {
-  autofill::PasswordForm password1 =
+  password_manager::PasswordForm password1 =
       AddPasswordEntry(GURL(kExampleCom), kUsername, kPassword);
-  autofill::PasswordForm password2 =
+  password_manager::PasswordForm password2 =
       AddPasswordEntry(GURL(kExampleCom), kUsername2, kPassword2);
   UpdatePasswordLists();
   ASSERT_THAT(GetUsernamesAndPasswords(GetStoredPasswordsForRealm(kExampleCom)),
@@ -646,8 +650,10 @@ TEST_F(PasswordManagerPresenterTest, TestPasswordBatchRemovalAndUndo) {
 }
 
 TEST_F(PasswordManagerPresenterTest, TestExceptionBatchRemovalAndUndo) {
-  autofill::PasswordForm exception1 = AddPasswordException(GURL(kExampleCom));
-  autofill::PasswordForm exception2 = AddPasswordException(GURL(kExampleOrg));
+  password_manager::PasswordForm exception1 =
+      AddPasswordException(GURL(kExampleCom));
+  password_manager::PasswordForm exception2 =
+      AddPasswordException(GURL(kExampleOrg));
   UpdatePasswordLists();
 
   GetUIController().GetPasswordManagerPresenter()->RemovePasswordExceptions(
@@ -688,7 +694,7 @@ TEST_F(PasswordManagerPresenterTestWithAccountStore,
   base::HistogramTester histogram_tester;
 
   // Fill the profile store with two entries in the same equivalence class.
-  autofill::PasswordForm password =
+  password_manager::PasswordForm password =
       AddPasswordEntry(GURL(kExampleCom), kUsername, kPassword);
   AddPasswordEntry(GURL(kExampleCom).Resolve("someOtherPath"), kUsername,
                    kPassword);

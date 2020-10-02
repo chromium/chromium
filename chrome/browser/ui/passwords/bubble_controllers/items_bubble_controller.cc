@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/favicon/core/favicon_util.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_metrics_recorder.h"
 #include "components/password_manager/core/browser/password_store.h"
 #include "content/public/browser/web_contents.h"
@@ -19,14 +20,15 @@ namespace metrics_util = password_manager::metrics_util;
 
 namespace {
 
-std::vector<autofill::PasswordForm> DeepCopyForms(
-    const std::vector<std::unique_ptr<autofill::PasswordForm>>& forms) {
-  std::vector<autofill::PasswordForm> result;
+std::vector<password_manager::PasswordForm> DeepCopyForms(
+    const std::vector<std::unique_ptr<password_manager::PasswordForm>>& forms) {
+  std::vector<password_manager::PasswordForm> result;
   result.reserve(forms.size());
-  std::transform(forms.begin(), forms.end(), std::back_inserter(result),
-                 [](const std::unique_ptr<autofill::PasswordForm>& form) {
-                   return *form;
-                 });
+  std::transform(
+      forms.begin(), forms.end(), std::back_inserter(result),
+      [](const std::unique_ptr<password_manager::PasswordForm>& form) {
+        return *form;
+      });
   return result;
 }
 
@@ -56,7 +58,7 @@ void ItemsBubbleController::OnManageClicked(
 }
 
 void ItemsBubbleController::OnPasswordAction(
-    const autofill::PasswordForm& password_form,
+    const password_manager::PasswordForm& password_form,
     PasswordAction action) {
   Profile* profile = GetProfile();
   if (!profile)
