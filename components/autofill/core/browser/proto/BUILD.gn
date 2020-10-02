@@ -14,8 +14,3 @@ fuzzable_proto_library("proto") {
     "strike_data.proto",
   ]
 }
-
-fuzzable_proto_library("test_support") {
-  testonly = true
-  sources = [ "legacy_server_request_response.proto" ]
-}

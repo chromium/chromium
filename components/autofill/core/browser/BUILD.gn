@@ -502,10 +502,7 @@ static_library("test_support") {
     "webdata/mock_autofill_webdata_service.h",
   ]
 
-  public_deps = [
-    ":browser",
-    "//components/autofill/core/browser/proto:test_support",
-  ]
+  public_deps = [ ":browser" ]
 
   deps = [
     ":autofill_address_rewriter_resources",

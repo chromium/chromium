@@ -17,7 +17,6 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/proto/api_v1.pb.h"
-#include "components/autofill/core/browser/proto/legacy_server_request_response.pb.h"
 #include "components/autofill/core/browser/proto/server.pb.h"
 
 class PrefService;
