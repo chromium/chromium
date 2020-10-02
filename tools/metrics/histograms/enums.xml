@@ -24685,6 +24685,7 @@ Called by update_extension_histograms.py.-->
   <int value="1510" label="ACCESSIBILITY_PRIVATE_MOVEMAGNIFIERTORECT"/>
   <int value="1511" label="FILEMANAGERPRIVATE_SINGLEPARTITIONFORMAT"/>
   <int value="1512" label="TABS_REMOVECSS"/>
+  <int value="1513" label="IDENTITY_CLEARALLCACHEDAUTHTOKENS"/>
 </enum>
 
 <enum name="ExtensionIconState">

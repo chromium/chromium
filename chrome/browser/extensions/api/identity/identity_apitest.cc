@@ -11,9 +11,11 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/bind_test_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
@@ -60,12 +62,14 @@
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_source.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_features.h"
 #include "google_apis/gaia/oauth2_mint_token_flow.h"
+#include "net/cookies/cookie_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -3583,6 +3587,111 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowFunctionTest,
             url);
 }
 
+class ClearAllCachedAuthTokensFunctionTest : public AsyncExtensionBrowserTest {
+ public:
+  void SetUpOnMainThread() override {
+    AsyncExtensionBrowserTest::SetUpOnMainThread();
+    base::FilePath manifest_path =
+        test_data_dir_.AppendASCII("platform_apps/oauth2");
+    extension_ = LoadExtension(manifest_path);
+  }
+
+  const Extension* extension() { return extension_; }
+
+  bool RunClearAllCachedAuthTokensFunction() {
+    auto function =
+        base::MakeRefCounted<IdentityClearAllCachedAuthTokensFunction>();
+    function->set_extension(extension_);
+    return utils::RunFunction(function.get(), "[]", browser(),
+                              api_test_utils::NONE);
+  }
+
+  IdentityAPI* id_api() {
+    return IdentityAPI::GetFactoryInstance()->Get(browser()->profile());
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  const Extension* extension_ = nullptr;
+};
+
+IN_PROC_BROWSER_TEST_F(ClearAllCachedAuthTokensFunctionTest,
+                       EraseCachedGaiaId) {
+  id_api()->SetGaiaIdForExtension(extension()->id(), "test_gaia");
+  EXPECT_EQ("test_gaia", id_api()->GetGaiaIdForExtension(extension()->id()));
+  ASSERT_TRUE(RunClearAllCachedAuthTokensFunction());
+  EXPECT_FALSE(id_api()->GetGaiaIdForExtension(extension()->id()).has_value());
+}
+
+IN_PROC_BROWSER_TEST_F(ClearAllCachedAuthTokensFunctionTest,
+                       EraseCachedTokens) {
+  ExtensionTokenKey token_key(extension()->id(), CoreAccountInfo(), {"foo"});
+  id_api()->token_cache()->SetToken(
+      token_key,
+      IdentityTokenCacheValue::CreateToken("access_token", {"foo"},
+                                           base::TimeDelta::FromSeconds(3600)));
+  EXPECT_NE(IdentityTokenCacheValue::CACHE_STATUS_NOTFOUND,
+            id_api()->token_cache()->GetToken(token_key).status());
+  ASSERT_TRUE(RunClearAllCachedAuthTokensFunction());
+  EXPECT_EQ(IdentityTokenCacheValue::CACHE_STATUS_NOTFOUND,
+            id_api()->token_cache()->GetToken(token_key).status());
+}
+
+class ClearAllCachedAuthTokensFunctionTestWithPartitionParam
+    : public ClearAllCachedAuthTokensFunctionTest,
+      public testing::WithParamInterface<WebAuthFlow::Partition> {
+ public:
+  network::mojom::CookieManager* GetCookieManager() {
+    Profile* profile = browser()->profile();
+    return content::BrowserContext::GetStoragePartition(
+               profile,
+               WebAuthFlow::GetWebViewPartitionConfig(GetParam(), profile))
+        ->GetCookieManagerForBrowserProcess();
+  }
+
+  // Returns the list of cookies in the cookie manager.
+  net::CookieList GetCookies() {
+    net::CookieList result;
+    base::RunLoop get_all_cookies_loop;
+    GetCookieManager()->GetAllCookies(base::BindLambdaForTesting(
+        [&get_all_cookies_loop, &result](const net::CookieList& cookie_list) {
+          result = cookie_list;
+          get_all_cookies_loop.Quit();
+        }));
+    get_all_cookies_loop.Run();
+    return result;
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(ClearAllCachedAuthTokensFunctionTestWithPartitionParam,
+                       CleanWebAuthFlowCookies) {
+  net::CanonicalCookie test_cookie(
+      "test_name", "test_value", "test.com", "/", base::Time(), base::Time(),
+      base::Time(), true, false, net::CookieSameSite::NO_RESTRICTION,
+      net::COOKIE_PRIORITY_DEFAULT);
+  base::RunLoop set_cookie_loop;
+  GetCookieManager()->SetCanonicalCookie(
+      test_cookie,
+      net::cookie_util::SimulatedCookieSource(test_cookie, url::kHttpsScheme),
+      net::CookieOptions(),
+      net::cookie_util::AdaptCookieAccessResultToBool(
+          base::BindLambdaForTesting([&](bool include) {
+            set_cookie_loop.Quit();
+            EXPECT_TRUE(include);
+          })));
+  set_cookie_loop.Run();
+
+  EXPECT_FALSE(GetCookies().empty());
+  ASSERT_TRUE(RunClearAllCachedAuthTokensFunction());
+  EXPECT_TRUE(GetCookies().empty());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ClearAllCachedAuthTokensFunctionTestWithPartitionParam,
+    ::testing::Values(WebAuthFlow::Partition::LAUNCH_WEB_AUTH_FLOW,
+                      WebAuthFlow::Partition::GET_AUTH_TOKEN));
+
 class OnSignInChangedEventTest : public IdentityTestWithSignin {
  protected:
   void SetUpOnMainThread() override {
@@ -3751,7 +3860,7 @@ IN_PROC_BROWSER_TEST_F(OnSignInChangedEventTest, FireForSecondaryAccount) {
   EXPECT_FALSE(HasExpectedEvent());
 }
 
-// Tests the chrome.identity API implemented by custom JS bindings .
+// Tests the chrome.identity API implemented by custom JS bindings.
 IN_PROC_BROWSER_TEST_F(ExtensionApiTest, ChromeIdentityJsBindings) {
   ASSERT_TRUE(RunExtensionTest("identity/js_bindings")) << message_;
 }

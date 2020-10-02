@@ -176,6 +176,8 @@ static_library("extensions") {
     "api/identity/gaia_web_auth_flow.h",
     "api/identity/identity_api.cc",
     "api/identity/identity_api.h",
+    "api/identity/identity_clear_all_cached_auth_tokens_function.cc",
+    "api/identity/identity_clear_all_cached_auth_tokens_function.h",
     "api/identity/identity_constants.cc",
     "api/identity/identity_constants.h",
     "api/identity/identity_get_accounts_function.cc",

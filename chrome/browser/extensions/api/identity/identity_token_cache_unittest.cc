@@ -213,6 +213,32 @@ TEST_F(IdentityTokenCacheTest, EraseAllTokens) {
             GetToken(ext_2, scopes_2).status());
 }
 
+TEST_F(IdentityTokenCacheTest, EraseAllTokensForExtension) {
+  std::string token_string = "token";
+  std::set<std::string> scopes_1 = {"foo", "bar"};
+  SetAccessToken(kDefaultExtensionId, token_string, scopes_1);
+
+  std::string remote_consent = "approved";
+  std::set<std::string> scopes_2 = {"foo", "foobar"};
+  SetRemoteConsentApprovedToken(kDefaultExtensionId, remote_consent, scopes_2);
+
+  std::string unrelated_extension = "ext_unrelated";
+  SetAccessToken(unrelated_extension, token_string, scopes_1);
+  SetRemoteConsentApprovedToken(unrelated_extension, remote_consent, scopes_2);
+
+  cache().EraseAllTokensForExtension(kDefaultExtensionId);
+
+  EXPECT_EQ(IdentityTokenCacheValue::CACHE_STATUS_NOTFOUND,
+            GetToken(kDefaultExtensionId, scopes_1).status());
+  EXPECT_EQ(IdentityTokenCacheValue::CACHE_STATUS_NOTFOUND,
+            GetToken(kDefaultExtensionId, scopes_2).status());
+
+  EXPECT_EQ(IdentityTokenCacheValue::CACHE_STATUS_TOKEN,
+            GetToken(unrelated_extension, scopes_1).status());
+  EXPECT_EQ(IdentityTokenCacheValue::CACHE_STATUS_REMOTE_CONSENT_APPROVED,
+            GetToken(unrelated_extension, scopes_2).status());
+}
+
 TEST_F(IdentityTokenCacheTest, GetAccessTokens) {
   std::string ext_1 = "ext_1";
   std::string token_string_1 = "token_1";
