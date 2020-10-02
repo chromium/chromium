@@ -8,6 +8,8 @@
 
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/default_color_constants.h"
+#include "ash/style/default_colors.h"
 #include "ash/system/power/power_button_menu_metrics_type.h"
 #include "ash/system/power/power_button_menu_view.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
@@ -63,8 +65,9 @@ class PowerButtonMenuScreenView::PowerButtonMenuBackgroundView
   PowerButtonMenuBackgroundView(base::RepeatingClosure show_animation_done)
       : show_animation_done_(show_animation_done) {
     SetPaintToLayer(ui::LAYER_SOLID_COLOR);
-    layer()->SetColor(AshColorProvider::Get()->GetShieldLayerColor(
-        AshColorProvider::ShieldLayerType::kShield40));
+    layer()->SetColor(DeprecatedGetShieldLayerColor(
+        AshColorProvider::ShieldLayerType::kShield40,
+        kPowerButtonMenuFullscreenShieldColor));
     layer()->SetOpacity(0.f);
   }
 

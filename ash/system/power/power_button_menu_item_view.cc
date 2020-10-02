@@ -5,6 +5,7 @@
 #include "ash/system/power/power_button_menu_item_view.h"
 
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/scoped_light_mode_as_default.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/font.h"
@@ -46,6 +47,7 @@ PowerButtonMenuItemView::PowerButtonMenuItemView(
   SetFocusBehavior(FocusBehavior::ALWAYS);
   SetFocusPainter(nullptr);
 
+  ScopedLightModeAsDefault scoped_light_mode_as_default;
   const AshColorProvider* color_provider = AshColorProvider::Get();
   icon_view_->SetImage(gfx::CreateVectorIcon(
       icon, color_provider->GetContentLayerColor(
@@ -120,6 +122,7 @@ void PowerButtonMenuItemView::PaintButtonContents(gfx::Canvas* canvas) {
   gfx::Rect bounds = GetLocalBounds();
   bounds.Inset(gfx::Insets(kItemBorderThickness));
   // Stroke.
+  ScopedLightModeAsDefault scoped_light_mode_as_default;
   flags.setColor(AshColorProvider::Get()->GetControlsLayerColor(
       AshColorProvider::ControlsLayerType::kFocusRingColor));
   flags.setStrokeWidth(kItemBorderThickness);
