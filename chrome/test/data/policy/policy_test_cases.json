@@ -4721,8 +4721,7 @@
   },
 
   "EnableDeprecatedWebPlatformFeatures": {
-    "os": ["win", "linux", "mac", "chromeos"],
-    "policy_pref_mapping_test": []
+    "note": "This policy has been removed, as of M88."
   },
 
   "TouchVirtualKeyboardEnabled": {
