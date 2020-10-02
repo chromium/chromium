@@ -6,13 +6,17 @@
 
 #import <UserNotifications/UserNotifications.h>
 
-#include "base/notreached.h"
+#include "base/bind.h"
+#include "base/bind_helpers.h"
+#include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/notifications/notification_platform_bridge_mac_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/cocoa/notifications/unnotification_builder_mac.h"
 #import "chrome/browser/ui/cocoa/notifications/unnotification_response_builder_mac.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "ui/message_center/public/cpp/notification.h"
 
 @class UNMutableNotificationContent;
@@ -131,20 +135,46 @@ void NotificationPlatformBridgeMacUNNotification::Close(
 void NotificationPlatformBridgeMacUNNotification::GetDisplayed(
     Profile* profile,
     GetDisplayedNotificationsCallback callback) const {
-  NOTIMPLEMENTED();
-  std::move(callback).Run(/*notification_ids=*/{}, /*supports_sync=*/false);
+  bool incognito = profile->IsOffTheRecord();
+  NSString* profileId = base::SysUTF8ToNSString(GetProfileId(profile));
+  // Create a copyable version of the OnceCallback because ObjectiveC blocks
+  // copy all referenced variables via copy constructor.
+  auto copyable_callback = base::AdaptCallbackForRepeating(std::move(callback));
+
+  [notification_center_ getDeliveredNotificationsWithCompletionHandler:^(
+                            NSArray<UNNotification*>* _Nonnull notifications) {
+    std::set<std::string> displayedNotifications;
+
+    for (UNNotification* notification in notifications) {
+      NSString* toastProfileId = [[[[notification request] content] userInfo]
+          objectForKey:notification_constants::kNotificationProfileId];
+      bool incognitoNotification = [[[[[notification request] content] userInfo]
+          objectForKey:notification_constants::kNotificationIncognito]
+          boolValue];
+
+      if ([toastProfileId isEqualToString:profileId] &&
+          incognito == incognitoNotification) {
+        displayedNotifications.insert(
+            base::SysNSStringToUTF8([[[[notification request] content] userInfo]
+                objectForKey:notification_constants::kNotificationId]));
+      }
+    }
+    // TODO(crbug/1134570): Query for displayed alerts as well
+
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(copyable_callback, std::move(displayedNotifications),
+                       true /* supports_synchronization */));
+  }];
 }
 
 void NotificationPlatformBridgeMacUNNotification::SetReadyCallback(
     NotificationBridgeReadyCallback callback) {
-  NOTIMPLEMENTED();
   std::move(callback).Run(/*success=*/true);
 }
 
 void NotificationPlatformBridgeMacUNNotification::DisplayServiceShutDown(
-    Profile* profile) {
-  NOTIMPLEMENTED();
-}
+    Profile* profile) {}
 
 void NotificationPlatformBridgeMacUNNotification::RequestPermission() {
   UNAuthorizationOptions authOptions = UNAuthorizationOptionAlert |
