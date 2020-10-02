@@ -33,7 +33,8 @@ class CONTENT_EXPORT VirtualAuthenticator
                        device::FidoTransportProtocol transport,
                        device::AuthenticatorAttachment attachment,
                        bool has_resident_key,
-                       bool has_user_verification);
+                       bool has_user_verification,
+                       bool has_large_blob);
   ~VirtualAuthenticator() override;
 
   void AddReceiver(
@@ -114,6 +115,7 @@ class CONTENT_EXPORT VirtualAuthenticator
   const device::AuthenticatorAttachment attachment_;
   const bool has_resident_key_;
   const bool has_user_verification_;
+  const bool has_large_blob_;
   bool is_user_verified_ = true;
   const std::string unique_id_;
   bool is_user_present_;

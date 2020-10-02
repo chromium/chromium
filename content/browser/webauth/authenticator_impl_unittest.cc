@@ -57,6 +57,7 @@
 #include "device/fido/fido_authenticator.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_test_data.h"
+#include "device/fido/fido_types.h"
 #include "device/fido/hid/fake_hid_impl_for_testing.h"
 #include "device/fido/mock_fido_device.h"
 #include "device/fido/public_key.h"
@@ -1635,45 +1636,6 @@ TEST_F(ExtensionAuthenticatorTest, ChromeExtensions) {
 
     EXPECT_EQ(AuthenticatorGetAssertion(std::move(options)).status,
               AuthenticatorStatus::SUCCESS);
-  }
-}
-
-// Tests that registering a resident credential on a capable authenticator also
-// registers a large blob key when called from an extension.
-TEST_F(ExtensionAuthenticatorTest, MakeCredentialLargeBlobKeyExtension) {
-  base::Optional<device::PublicKeyCredentialDescriptor> credential;
-  device::VirtualCtap2Device::Config config;
-  config.internal_uv_support = true;
-  virtual_device_factory_->mutable_state()->fingerprints_enrolled = true;
-  config.resident_key_support = true;
-
-  for (bool rk_enabled : {false, true}) {
-    SCOPED_TRACE(::testing::Message() << "rk=" << rk_enabled);
-    for (bool large_blob_supported : {false, true}) {
-      SCOPED_TRACE(::testing::Message()
-                   << "largeBlob=" << large_blob_supported);
-      config.large_blob_support = large_blob_supported;
-      virtual_device_factory_->SetCtap2Config(config);
-      PublicKeyCredentialCreationOptionsPtr options =
-          GetTestPublicKeyCredentialCreationOptions();
-      if (rk_enabled) {
-        options->authenticator_selection->SetResidentKeyForTesting(
-            device::ResidentKeyRequirement::kRequired);
-      }
-      options->user.id = {1, 2, 3, 4};
-      options->user.name = "name";
-      options->user.display_name = "displayName";
-
-      MakeCredentialResult make_credential_result =
-          AuthenticatorMakeCredential(std::move(options));
-      EXPECT_EQ(make_credential_result.status, AuthenticatorStatus::SUCCESS);
-
-      auto& registration =
-          *virtual_device_factory_->mutable_state()->registrations.begin();
-      EXPECT_EQ(rk_enabled && large_blob_supported,
-                registration.second.large_blob_key.has_value());
-      virtual_device_factory_->mutable_state()->registrations.clear();
-    }
   }
 }
 
@@ -4958,6 +4920,88 @@ TEST_F(ResidentKeyAuthenticatorImplTest, GetAssertionUVDiscouraged) {
   EXPECT_TRUE(HasUV(result.response));
 }
 
+static const char* BlobSupportDescription(device::LargeBlobSupport support) {
+  switch (support) {
+    case device::LargeBlobSupport::kNotRequested:
+      return "Blob not requested";
+    case device::LargeBlobSupport::kPreferred:
+      return "Blob preferred";
+    case device::LargeBlobSupport::kRequired:
+      return "Blob required";
+  }
+}
+
+TEST_F(ResidentKeyAuthenticatorImplTest, MakeCredentialLargeBlob) {
+  const auto BlobRequired = device::LargeBlobSupport::kRequired;
+  const auto BlobPreferred = device::LargeBlobSupport::kPreferred;
+  const auto BlobNotRequested = device::LargeBlobSupport::kNotRequested;
+
+  constexpr struct {
+    bool large_blob_support;
+    bool rk_required;
+    device::LargeBlobSupport large_blob_enable;
+    bool request_success;
+    bool did_create_large_blob;
+  } kLargeBlobTestCases[] = {
+      // clang-format off
+    // support, rk,    enabled,          success, did create
+    { true,     true,  BlobRequired,     true,    true},
+    { true,     true,  BlobPreferred,    true,    true},
+    { true,     true,  BlobNotRequested, true,    false},
+    { true,     false, BlobRequired,     false,   false},
+    { true,     false, BlobPreferred,    true,    false},
+    { true,     true,  BlobNotRequested, true,    false},
+    { false,    true,  BlobRequired,     false,   false},
+    { false,    true,  BlobPreferred,    true,    false},
+    { true,     true,  BlobNotRequested, true,    false},
+      // clang-format on
+  };
+  for (auto& test : kLargeBlobTestCases) {
+    SCOPED_TRACE(::testing::Message() << "support=" << test.large_blob_support);
+    SCOPED_TRACE(::testing::Message() << "rk_required=" << test.rk_required);
+    SCOPED_TRACE(::testing::Message()
+                 << "enabled="
+                 << BlobSupportDescription(test.large_blob_enable));
+    SCOPED_TRACE(::testing::Message() << "success=" << test.request_success);
+    SCOPED_TRACE(::testing::Message()
+                 << "did create=" << test.did_create_large_blob);
+
+    device::VirtualCtap2Device::Config config;
+    config.pin_support = true;
+    config.resident_key_support = true;
+    config.large_blob_support = test.large_blob_support;
+    virtual_device_factory_->SetCtap2Config(config);
+
+    PublicKeyCredentialCreationOptionsPtr options = make_credential_options(
+        test.rk_required ? device::ResidentKeyRequirement::kRequired
+                         : device::ResidentKeyRequirement::kDiscouraged);
+    options->large_blob_enable = test.large_blob_enable;
+    MakeCredentialResult result =
+        AuthenticatorMakeCredential(std::move(options));
+
+    if (test.request_success) {
+      ASSERT_EQ(AuthenticatorStatus::SUCCESS, result.status);
+      ASSERT_EQ(1u,
+                virtual_device_factory_->mutable_state()->registrations.size());
+      const device::VirtualFidoDevice::RegistrationData& registration =
+          virtual_device_factory_->mutable_state()
+              ->registrations.begin()
+              ->second;
+      EXPECT_EQ(test.did_create_large_blob,
+                registration.large_blob_key.has_value());
+      EXPECT_EQ(test.large_blob_enable != BlobNotRequested,
+                result.response->echo_large_blob);
+      EXPECT_EQ(test.did_create_large_blob,
+                result.response->supports_large_blob);
+    } else {
+      ASSERT_EQ(AuthenticatorStatus::NOT_ALLOWED_ERROR, result.status);
+      ASSERT_EQ(0u,
+                virtual_device_factory_->mutable_state()->registrations.size());
+    }
+    virtual_device_factory_->mutable_state()->registrations.clear();
+  }
+}
+
 static const char* ProtectionPolicyDescription(
     blink::mojom::ProtectionPolicy p) {
   switch (p) {
@@ -5408,104 +5452,132 @@ TEST_F(ResidentKeyAuthenticatorImplTest, PRFExtension) {
 
   const std::vector<uint8_t> salt1(32, 1);
   const std::vector<uint8_t> salt2(32, 2);
+  std::vector<uint8_t> salt1_eval;
+  std::vector<uint8_t> salt2_eval;
 
-  auto prf_value = blink::mojom::PRFValues::New();
-  prf_value->first = salt1;
-  std::vector<blink::mojom::PRFValuesPtr> inputs;
-  inputs.emplace_back(std::move(prf_value));
-  auto result = assertion(std::move(inputs));
-  const std::vector<uint8_t> salt1_eval = std::move(result->first);
+  {
+    auto prf_value = blink::mojom::PRFValues::New();
+    prf_value->first = salt1;
+    std::vector<blink::mojom::PRFValuesPtr> inputs;
+    inputs.emplace_back(std::move(prf_value));
+    auto result = assertion(std::move(inputs));
+    salt1_eval = std::move(result->first);
+  }
 
   // The result should be consistent
-  prf_value = blink::mojom::PRFValues::New();
-  prf_value->first = salt1;
-  inputs.emplace_back(std::move(prf_value));
-  result = assertion(std::move(inputs));
-  ASSERT_EQ(result->first, salt1_eval);
+  {
+    auto prf_value = blink::mojom::PRFValues::New();
+    prf_value->first = salt1;
+    std::vector<blink::mojom::PRFValuesPtr> inputs;
+    inputs.emplace_back(std::move(prf_value));
+    auto result = assertion(std::move(inputs));
+    ASSERT_EQ(result->first, salt1_eval);
+  }
 
   // Should be able to evaluate two points at once.
-  prf_value = blink::mojom::PRFValues::New();
-  prf_value->first = salt1;
-  prf_value->second = salt2;
-  inputs.emplace_back(std::move(prf_value));
-  result = assertion(std::move(inputs));
-  ASSERT_EQ(result->first, salt1_eval);
-  ASSERT_TRUE(result->second);
-  const std::vector<uint8_t> salt2_eval = std::move(*result->second);
-  ASSERT_NE(salt1_eval, salt2_eval);
+  {
+    auto prf_value = blink::mojom::PRFValues::New();
+    prf_value->first = salt1;
+    prf_value->second = salt2;
+    std::vector<blink::mojom::PRFValuesPtr> inputs;
+    inputs.emplace_back(std::move(prf_value));
+    auto result = assertion(std::move(inputs));
+    ASSERT_EQ(result->first, salt1_eval);
+    ASSERT_TRUE(result->second);
+    salt2_eval = std::move(*result->second);
+    ASSERT_NE(salt1_eval, salt2_eval);
+  }
 
   // Should be consistent if swapped.
-  prf_value = blink::mojom::PRFValues::New();
-  prf_value->first = salt2;
-  prf_value->second = salt1;
-  inputs.emplace_back(std::move(prf_value));
-  result = assertion(std::move(inputs));
-  ASSERT_EQ(result->first, salt2_eval);
-  ASSERT_TRUE(result->second);
-  ASSERT_EQ(*result->second, salt1_eval);
+  {
+    auto prf_value = blink::mojom::PRFValues::New();
+    prf_value->first = salt2;
+    prf_value->second = salt1;
+    std::vector<blink::mojom::PRFValuesPtr> inputs;
+    inputs.emplace_back(std::move(prf_value));
+    auto result = assertion(std::move(inputs));
+    ASSERT_EQ(result->first, salt2_eval);
+    ASSERT_TRUE(result->second);
+    ASSERT_EQ(*result->second, salt1_eval);
+  }
 
   // Should still trigger if the credential ID is specified
-  prf_value = blink::mojom::PRFValues::New();
-  prf_value->id.emplace(credential->id());
-  prf_value->first = salt1;
-  prf_value->second = salt2;
-  inputs.emplace_back(std::move(prf_value));
-  result = assertion(std::move(inputs));
-  ASSERT_EQ(result->first, salt1_eval);
-  ASSERT_TRUE(result->second);
-  ASSERT_EQ(*result->second, salt2_eval);
+  {
+    auto prf_value = blink::mojom::PRFValues::New();
+    prf_value->id.emplace(credential->id());
+    prf_value->first = salt1;
+    prf_value->second = salt2;
+    std::vector<blink::mojom::PRFValuesPtr> inputs;
+    inputs.emplace_back(std::move(prf_value));
+    auto result = assertion(std::move(inputs));
+    ASSERT_EQ(result->first, salt1_eval);
+    ASSERT_TRUE(result->second);
+    ASSERT_EQ(*result->second, salt2_eval);
+  }
 
   // And the specified credential ID should override any default inputs.
-  prf_value = blink::mojom::PRFValues::New();
-  prf_value->first = std::vector<uint8_t>(32, 3);
-  inputs.emplace_back(std::move(prf_value));
-  prf_value = blink::mojom::PRFValues::New();
-  prf_value->id.emplace(credential->id());
-  prf_value->first = salt1;
-  prf_value->second = salt2;
-  inputs.emplace_back(std::move(prf_value));
-  result = assertion(std::move(inputs));
-  ASSERT_EQ(result->first, salt1_eval);
-  ASSERT_TRUE(result->second);
-  ASSERT_EQ(*result->second, salt2_eval);
+  {
+    auto prf_value1 = blink::mojom::PRFValues::New();
+    prf_value1->first = std::vector<uint8_t>(32, 3);
+    auto prf_value2 = blink::mojom::PRFValues::New();
+    prf_value2->id.emplace(credential->id());
+    prf_value2->first = salt1;
+    prf_value2->second = salt2;
+    std::vector<blink::mojom::PRFValuesPtr> inputs;
+    inputs.emplace_back(std::move(prf_value1));
+    inputs.emplace_back(std::move(prf_value2));
+    auto result = assertion(std::move(inputs));
+    ASSERT_EQ(result->first, salt1_eval);
+    ASSERT_TRUE(result->second);
+    ASSERT_EQ(*result->second, salt2_eval);
+  }
 
   // ... and that should still be true if there there are lots of dummy entries
   // in the allowlist. Note that the virtual authenticator was configured such
   // that this will cause multiple batches.
-  prf_value = blink::mojom::PRFValues::New();
-  prf_value->id.emplace(credential->id());
-  prf_value->first = salt1;
-  prf_value->second = salt2;
-  inputs.emplace_back(std::move(prf_value));
-  result = assertion(std::move(inputs), /*allowlist_size=*/20);
-  ASSERT_EQ(result->first, salt1_eval);
-  ASSERT_TRUE(result->second);
-  ASSERT_EQ(*result->second, salt2_eval);
+  {
+    auto prf_value = blink::mojom::PRFValues::New();
+    prf_value->id.emplace(credential->id());
+    prf_value->first = salt1;
+    prf_value->second = salt2;
+    std::vector<blink::mojom::PRFValuesPtr> inputs;
+    inputs.emplace_back(std::move(prf_value));
+    auto result = assertion(std::move(inputs), /*allowlist_size=*/20);
+    ASSERT_EQ(result->first, salt1_eval);
+    ASSERT_TRUE(result->second);
+    ASSERT_EQ(*result->second, salt2_eval);
+  }
 
   // Default PRF values should be passed down when the allowlist is empty.
-  prf_value = blink::mojom::PRFValues::New();
-  prf_value->first = salt1;
-  prf_value->second = salt2;
-  inputs.emplace_back(std::move(prf_value));
-  test_client_.expected_accounts = "01020304:name:displayName";
-  test_client_.selected_user_id = {1, 2, 3, 4};
-  result = assertion(std::move(inputs), /*allowlist_size=*/0);
-  ASSERT_EQ(result->first, salt1_eval);
-  ASSERT_TRUE(result->second);
-  ASSERT_EQ(*result->second, salt2_eval);
+  {
+    auto prf_value = blink::mojom::PRFValues::New();
+    prf_value->first = salt1;
+    prf_value->second = salt2;
+    test_client_.expected_accounts = "01020304:name:displayName";
+    test_client_.selected_user_id = {1, 2, 3, 4};
+    std::vector<blink::mojom::PRFValuesPtr> inputs;
+    inputs.emplace_back(std::move(prf_value));
+    auto result = assertion(std::move(inputs), /*allowlist_size=*/0);
+    ASSERT_EQ(result->first, salt1_eval);
+    ASSERT_TRUE(result->second);
+    ASSERT_EQ(*result->second, salt2_eval);
+  }
 
   // And the default PRF values should be used if none of the specific values
   // match.
-  prf_value = blink::mojom::PRFValues::New();
-  prf_value->first = salt1;
-  inputs.emplace_back(std::move(prf_value));
-  prf_value = blink::mojom::PRFValues::New();
-  prf_value->first = std::vector<uint8_t>(32, 3);
-  prf_value->id = std::vector<uint8_t>(32, 4);
-  inputs.emplace_back(std::move(prf_value));
-  result = assertion(std::move(inputs), /*allowlist_size=*/20);
-  ASSERT_EQ(result->first, salt1_eval);
-  ASSERT_FALSE(result->second);
+  {
+    auto prf_value1 = blink::mojom::PRFValues::New();
+    prf_value1->first = salt1;
+    auto prf_value2 = blink::mojom::PRFValues::New();
+    prf_value2->first = std::vector<uint8_t>(32, 3);
+    prf_value2->id = std::vector<uint8_t>(32, 4);
+    std::vector<blink::mojom::PRFValuesPtr> inputs;
+    inputs.emplace_back(std::move(prf_value1));
+    inputs.emplace_back(std::move(prf_value2));
+    auto result = assertion(std::move(inputs), /*allowlist_size=*/20);
+    ASSERT_EQ(result->first, salt1_eval);
+    ASSERT_FALSE(result->second);
+  }
 }
 
 class InternalAuthenticatorImplTest : public AuthenticatorTestBase {

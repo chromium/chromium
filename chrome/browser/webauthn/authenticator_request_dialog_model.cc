@@ -380,6 +380,10 @@ void AuthenticatorRequestDialogModel::OnAuthenticatorMissingUserVerification() {
   SetCurrentStep(Step::kMissingCapability);
 }
 
+void AuthenticatorRequestDialogModel::OnAuthenticatorMissingLargeBlob() {
+  SetCurrentStep(Step::kMissingCapability);
+}
+
 void AuthenticatorRequestDialogModel::OnNoCommonAlgorithms() {
   SetCurrentStep(Step::kMissingCapability);
 }

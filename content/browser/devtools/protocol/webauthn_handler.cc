@@ -155,7 +155,8 @@ Response WebAuthnHandler::AddVirtualAuthenticator(
               ? device::AuthenticatorAttachment::kPlatform
               : device::AuthenticatorAttachment::kCrossPlatform,
           options->GetHasResidentKey(/*default=*/false),
-          options->GetHasUserVerification(/*default=*/false));
+          options->GetHasUserVerification(/*default=*/false),
+          options->GetHasLargeBlob(/*default=*/false));
       break;
     case device::ProtocolVersion::kUnknown:
       NOTREACHED();

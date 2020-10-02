@@ -2008,6 +2008,10 @@
       status: "experimental",
     },
     {
+      name: "WebAuthenticationLargeBlobExtension",
+      status: "experimental",
+    },
+    {
       name: "WebAuthenticationResidentKeyRequirement",
       status: "experimental",
     },

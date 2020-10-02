@@ -106,6 +106,11 @@ struct TypeConverter<blink::mojom::blink::AuthenticatorAttachment,
 };
 
 template <>
+struct TypeConverter<blink::mojom::blink::LargeBlobSupport, String> {
+  static blink::mojom::blink::LargeBlobSupport Convert(const String&);
+};
+
+template <>
 struct TypeConverter<blink::mojom::blink::AuthenticatorSelectionCriteriaPtr,
                      blink::AuthenticatorSelectionCriteria> {
   static blink::mojom::blink::AuthenticatorSelectionCriteriaPtr Convert(
@@ -170,4 +175,4 @@ struct TypeConverter<blink::mojom::blink::PublicKeyCredentialRequestOptionsPtr,
 
 }  // namespace mojo
 
-#endif  // CredentialManagerProxy_h
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_CREDENTIALMANAGER_CREDENTIAL_MANAGER_TYPE_CONVERTERS_H_

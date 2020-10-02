@@ -18,6 +18,8 @@ modules_idl_files = [
 modules_dictionary_idl_files = [
   "authentication_extensions_client_inputs.idl",
   "authentication_extensions_client_outputs.idl",
+  "authentication_extensions_large_blob_inputs.idl",
+  "authentication_extensions_large_blob_outputs.idl",
   "authenticator_selection_criteria.idl",
   "cable_authentication_data.idl",
   "cable_registration_data.idl",

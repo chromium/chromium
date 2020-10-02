@@ -254,6 +254,9 @@ bool ChromeAuthenticatorRequestDelegate::DoesBlockRequestOnFailure(
     case InterestingFailureReason::kAuthenticatorMissingUserVerification:
       weak_dialog_model_->OnAuthenticatorMissingUserVerification();
       break;
+    case InterestingFailureReason::kAuthenticatorMissingLargeBlob:
+      weak_dialog_model_->OnAuthenticatorMissingLargeBlob();
+      break;
     case InterestingFailureReason::kNoCommonAlgorithms:
       weak_dialog_model_->OnNoCommonAlgorithms();
       break;

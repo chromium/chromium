@@ -119,6 +119,14 @@ struct BLINK_COMMON_EXPORT EnumTraits<blink::mojom::UserVerificationRequirement,
 
 template <>
 struct BLINK_COMMON_EXPORT
+    EnumTraits<blink::mojom::LargeBlobSupport, device::LargeBlobSupport> {
+  static blink::mojom::LargeBlobSupport ToMojom(device::LargeBlobSupport input);
+  static bool FromMojom(blink::mojom::LargeBlobSupport input,
+                        device::LargeBlobSupport* output);
+};
+
+template <>
+struct BLINK_COMMON_EXPORT
     StructTraits<blink::mojom::AuthenticatorSelectionCriteriaDataView,
                  device::AuthenticatorSelectionCriteria> {
   static device::AuthenticatorAttachment authenticator_attachment(

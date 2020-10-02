@@ -40,6 +40,9 @@
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/page/frame_tree.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
+#include "third_party/blink/renderer/modules/credentialmanager/authentication_extensions_client_inputs.h"
+#include "third_party/blink/renderer/modules/credentialmanager/authentication_extensions_large_blob_inputs.h"
+#include "third_party/blink/renderer/modules/credentialmanager/authentication_extensions_large_blob_outputs.h"
 #include "third_party/blink/renderer/modules/credentialmanager/authenticator_assertion_response.h"
 #include "third_party/blink/renderer/modules/credentialmanager/authenticator_attestation_response.h"
 #include "third_party/blink/renderer/modules/credentialmanager/credential.h"
@@ -450,6 +453,14 @@ void OnMakePublicKeyCredentialComplete(
       }
       extension_outputs->setCredProps(cred_props_output);
     }
+    if (credential->echo_large_blob) {
+      DCHECK(
+          RuntimeEnabledFeatures::WebAuthenticationLargeBlobExtensionEnabled());
+      AuthenticationExtensionsLargeBlobOutputs* large_blob_outputs =
+          AuthenticationExtensionsLargeBlobOutputs::Create();
+      large_blob_outputs->setSupported(credential->supports_large_blob);
+      extension_outputs->setLargeBlob(large_blob_outputs);
+    }
     resolver->Resolve(MakeGarbageCollected<PublicKeyCredential>(
         credential->info->id, raw_id, authenticator_response,
         extension_outputs));
@@ -820,6 +831,25 @@ ScriptPromise CredentialsContainer::get(
             "a credential"));
         return promise;
       }
+      if (options->publicKey()->extensions()->hasLargeBlob()) {
+        DCHECK(RuntimeEnabledFeatures::
+                   WebAuthenticationLargeBlobExtensionEnabled());
+        if (options->publicKey()->extensions()->largeBlob()->hasSupport()) {
+          resolver->Reject(MakeGarbageCollected<DOMException>(
+              DOMExceptionCode::kNotSupportedError,
+              "The 'largeBlob' extension's 'support' parameter is only valid "
+              "when creating a credential"));
+          return promise;
+        }
+        if (options->publicKey()->extensions()->largeBlob()->hasWrite() &&
+            options->publicKey()->extensions()->largeBlob()->hasRead()) {
+          resolver->Reject(MakeGarbageCollected<DOMException>(
+              DOMExceptionCode::kNotSupportedError,
+              "Only one of the 'largeBlob' extension's 'read' and 'write' "
+              "parameters is allowed at a time"));
+          return promise;
+        }
+      }
     }
 
     if (!options->publicKey()->hasUserVerification()) {
@@ -1064,6 +1094,22 @@ ScriptPromise CredentialsContainer::create(
             "an assertion"));
         return promise;
       }
+      if (options->publicKey()->extensions()->hasLargeBlob()) {
+        if (options->publicKey()->extensions()->largeBlob()->hasRead()) {
+          resolver->Reject(MakeGarbageCollected<DOMException>(
+              DOMExceptionCode::kNotSupportedError,
+              "The 'largeBlob' extension's 'read' parameter is only valid when "
+              "requesting an assertion"));
+          return promise;
+        }
+        if (options->publicKey()->extensions()->largeBlob()->hasWrite()) {
+          resolver->Reject(MakeGarbageCollected<DOMException>(
+              DOMExceptionCode::kNotSupportedError,
+              "The 'largeBlob' extension's 'write' parameter is only valid "
+              "when requesting an assertion"));
+          return promise;
+        }
+      }
     }
 
     if (options->hasSignal()) {
@@ -1099,7 +1145,7 @@ ScriptPromise CredentialsContainer::create(
           MakeGarbageCollected<ConsoleMessage>(
               mojom::blink::ConsoleMessageSource::kJavaScript,
               mojom::blink::ConsoleMessageLevel::kWarning,
-              "Ignoring unknown publicKey.authenticatorSelection.resident_key "
+              "Ignoring unknown publicKey.authenticatorSelection.residentKey "
               "value"));
     }
     auto mojo_options =

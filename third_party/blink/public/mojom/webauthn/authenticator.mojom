@@ -125,6 +125,13 @@ struct MakeCredentialAuthenticatorResponse {
   bool echo_cred_props;
   bool has_cred_props_rk;
   bool cred_props_rk;
+
+  // True if getClientExtensionResults() called on the returned
+  // PublicKeyCredential instance should contain a `largeBlob` extension output.
+  // |supports_large_blob| indicates the value the `supported` member in that
+  // extension output should be.
+  bool echo_large_blob;
+  bool supports_large_blob;
 };
 
 struct GetAssertionAuthenticatorResponse {
@@ -292,6 +299,14 @@ struct PublicKeyCredentialRequestOptions {
   // credential ID match. Otherwise all elements must have an |id| member and
   // must be sorted lexicographically by it.
   array<PRFValues> prf_inputs;
+
+  // If true, attempt to read the large blob associated to the credential.
+  // https://w3c.github.io/webauthn/#dom-authenticationextensionslargeblobinputs-read
+  bool large_blob_read;
+
+  // If present, large blob to be written on the credential.
+  // https://w3c.github.io/webauthn/#dom-authenticationextensionslargeblobinputs-write
+  array<uint8>? large_blob_write;
 };
 
 // See https://w3c.github.io/webauthn/#enumdef-attestationconveyancepreference
@@ -324,6 +339,13 @@ enum ProtectionPolicy {
     NONE,
     UV_OR_CRED_ID_REQUIRED,
     UV_REQUIRED,
+};
+
+// https://w3c.github.io/webauthn#enumdef-largeblobsupport
+enum LargeBlobSupport {
+    NOT_REQUESTED,
+    REQUIRED,
+    PREFERRED,
 };
 
 // See https://w3c.github.io/webauthn/#dictdef-authenticatorselectioncriteria.
@@ -407,6 +429,10 @@ struct PublicKeyCredentialCreationOptions {
   // Whether the credProps extension was requested.
   // https://w3c.github.io/webauthn/#sctn-authenticator-credential-properties-extension
   bool cred_props;
+
+  // The level of largeBlob support requested by the relying party.
+  // https://w3c.github.io/webauthn/#sctn-large-blob-extension
+  LargeBlobSupport large_blob_enable;
 };
 
 enum PublicKeyCredentialType {

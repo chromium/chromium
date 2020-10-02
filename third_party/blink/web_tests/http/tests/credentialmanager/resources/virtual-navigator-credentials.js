@@ -67,6 +67,7 @@ class VirtualAuthenticatorManager {
           attachment: blink.mojom.AuthenticatorAttachment.CROSS_PLATFORM,
           hasResidentKey: true,
           hasUserVerification: true,
+          hasLargeBlob: false,
         },
         options);
     let createAuthenticatorResponse =

@@ -24,6 +24,7 @@
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_request_handler_base.h"
 #include "device/fido/fido_transport_protocol.h"
+#include "device/fido/fido_types.h"
 #include "device/fido/pin.h"
 
 namespace base {
@@ -55,6 +56,7 @@ enum class MakeCredentialStatus {
   // there's no UI support for collecting a PIN. This could
   // be clearer.
   kAuthenticatorMissingUserVerification,
+  kAuthenticatorMissingLargeBlob,
   kNoCommonAlgorithms,
   kStorageFull,
   kWinInvalidStateError,
@@ -112,6 +114,14 @@ class COMPONENT_EXPORT(DEVICE_FIDO) MakeCredentialRequestHandler
     // android_client_data_ext is a compatibility hack to support the Clank
     // caBLEv2 authenticator.
     base::Optional<AndroidClientDataExtensionInput> android_client_data_ext;
+
+    // large_blob_support indicates whether the request should select for
+    // authenticators supporting the largeBlobs extension (kRequired), merely
+    // indicate support on the response (kPreferred), or ignore it
+    // (kNotRequested).
+    // Values other than kNotRequested will attempt to initialize the large blob
+    // on the authenticator.
+    LargeBlobSupport large_blob_support = LargeBlobSupport::kNotRequested;
   };
 
   MakeCredentialRequestHandler(

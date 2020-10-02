@@ -225,6 +225,41 @@ bool EnumTraits<blink::mojom::UserVerificationRequirement,
 }
 
 // static
+blink::mojom::LargeBlobSupport
+EnumTraits<blink::mojom::LargeBlobSupport, device::LargeBlobSupport>::ToMojom(
+    device::LargeBlobSupport input) {
+  switch (input) {
+    case ::device::LargeBlobSupport::kNotRequested:
+      return blink::mojom::LargeBlobSupport::NOT_REQUESTED;
+    case ::device::LargeBlobSupport::kRequired:
+      return blink::mojom::LargeBlobSupport::REQUIRED;
+    case ::device::LargeBlobSupport::kPreferred:
+      return blink::mojom::LargeBlobSupport::PREFERRED;
+  }
+  NOTREACHED();
+  return blink::mojom::LargeBlobSupport::NOT_REQUESTED;
+}
+
+// static
+bool EnumTraits<blink::mojom::LargeBlobSupport, device::LargeBlobSupport>::
+    FromMojom(blink::mojom::LargeBlobSupport input,
+              device::LargeBlobSupport* output) {
+  switch (input) {
+    case blink::mojom::LargeBlobSupport::NOT_REQUESTED:
+      *output = ::device::LargeBlobSupport::kNotRequested;
+      return true;
+    case blink::mojom::LargeBlobSupport::REQUIRED:
+      *output = ::device::LargeBlobSupport::kRequired;
+      return true;
+    case blink::mojom::LargeBlobSupport::PREFERRED:
+      *output = ::device::LargeBlobSupport::kPreferred;
+      return true;
+  }
+  NOTREACHED();
+  return false;
+}
+
+// static
 bool StructTraits<blink::mojom::AuthenticatorSelectionCriteriaDataView,
                   device::AuthenticatorSelectionCriteria>::
     Read(blink::mojom::AuthenticatorSelectionCriteriaDataView data,

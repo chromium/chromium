@@ -4,6 +4,7 @@
 
 #include <stdint.h>
 
+#include <memory>
 #include <vector>
 
 #include "base/bind.h"
@@ -41,12 +42,14 @@
 #include "device/fido/features.h"
 #include "device/fido/fido_discovery_factory.h"
 #include "device/fido/fido_test_data.h"
+#include "device/fido/fido_types.h"
 #include "device/fido/hid/fake_hid_impl_for_testing.h"
 #include "device/fido/mock_fido_device.h"
 #include "device/fido/test_callback_receiver.h"
 #include "device/fido/virtual_fido_device_factory.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
@@ -400,8 +403,7 @@ class WebAuthBrowserTestContentBrowserClient : public ContentBrowserClient {
 // Test fixture base class for common tasks.
 class WebAuthBrowserTestBase : public content::ContentBrowserTest {
  protected:
-  WebAuthBrowserTestBase()
-      : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
+  WebAuthBrowserTestBase() = default;
 
   virtual std::vector<base::Feature> GetFeaturesToEnable() { return {}; }
 
@@ -412,8 +414,8 @@ class WebAuthBrowserTestBase : public content::ContentBrowserTest {
     https_server().ServeFilesFromSourceDirectory(GetTestDataFilePath());
     ASSERT_TRUE(https_server().Start());
 
-    test_client_.reset(
-        new WebAuthBrowserTestContentBrowserClient(&test_state_));
+    test_client_ =
+        std::make_unique<WebAuthBrowserTestContentBrowserClient>(&test_state_);
     old_client_ = SetBrowserClientForTesting(test_client_.get());
 
     EXPECT_TRUE(
@@ -453,7 +455,7 @@ class WebAuthBrowserTestBase : public content::ContentBrowserTest {
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
-  net::EmbeddedTestServer https_server_;
+  net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
   std::unique_ptr<WebAuthBrowserTestContentBrowserClient> test_client_;
   WebAuthBrowserTestState test_state_;
   ContentBrowserClient* old_client_ = nullptr;
@@ -519,7 +521,7 @@ class WebAuthLocalClientBrowserTest : public WebAuthBrowserTestBase {
         /*hmac_create_secret=*/false, /*prf_enable=*/false,
         blink::mojom::ProtectionPolicy::UNSPECIFIED,
         /*enforce_protection_policy=*/false, /*appid_exclude=*/base::nullopt,
-        /*cred_props=*/false);
+        /*cred_props=*/false, device::LargeBlobSupport::kNotRequested);
 
     return mojo_options;
   }
@@ -541,7 +543,8 @@ class WebAuthLocalClientBrowserTest : public WebAuthBrowserTestBase {
         kTestChallenge, base::TimeDelta::FromSeconds(30), "acme.com",
         std::move(credentials), device::UserVerificationRequirement::kPreferred,
         base::nullopt, std::vector<device::CableDiscoveryData>(), /*prf=*/false,
-        /*prf_inputs=*/std::vector<blink::mojom::PRFValuesPtr>());
+        /*prf_inputs=*/std::vector<blink::mojom::PRFValuesPtr>(),
+        /*large_blob_read=*/false, /*large_blob_write=*/base::nullopt);
     return mojo_options;
   }
 

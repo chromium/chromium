@@ -16,4 +16,7 @@ dictionary AuthenticationExtensionsClientOutputs {
 
   // https://w3c.github.io/webauthn/#sctn-authenticator-credential-properties-extension
   CredentialPropertiesOutput credProps;
+
+  // https://w3c.github.io/webauthn/#sctn-large-blob-extension
+  [RuntimeEnabled=WebAuthenticationLargeBlobExtension] AuthenticationExtensionsLargeBlobOutputs largeBlob;
 };

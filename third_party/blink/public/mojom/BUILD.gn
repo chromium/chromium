@@ -733,6 +733,10 @@ mojom("android_mojo_bindings") {
           mojom = "blink.mojom.AttestationConveyancePreference"
           cpp = "::device::AttestationConveyancePreference"
         },
+        {
+          mojom = "blink.mojom.LargeBlobSupport"
+          cpp = "::device::LargeBlobSupport"
+        },
       ]
       traits_headers =
           [ "//content/browser/webauth/authenticator_mojom_traits.h" ]

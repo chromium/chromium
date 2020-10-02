@@ -77,6 +77,7 @@ enum class RequestExtension {
   kHMACSecret,
   kPRF,
   kCredProps,
+  kLargeBlob,
 };
 
 namespace client_data {
@@ -388,6 +389,11 @@ CreateMakeCredentialResponse(
           response->cred_props_rk = *response_data.is_resident_key;
         }
         break;
+      case RequestExtension::kLargeBlob:
+        response->echo_large_blob = true;
+        response->supports_large_blob =
+            response_data.large_blob_key().has_value();
+        break;
       case RequestExtension::kAppID:
         NOTREACHED();
         break;
@@ -478,6 +484,7 @@ blink::mojom::GetAssertionAuthenticatorResponsePtr CreateGetAssertionResponse(
       }
       case RequestExtension::kHMACSecret:
       case RequestExtension::kCredProps:
+      case RequestExtension::kLargeBlob:
         NOTREACHED();
         break;
     }
@@ -941,20 +948,15 @@ void AuthenticatorCommon::MakeCredential(
   if (options->cred_props) {
     requested_extensions_.insert(RequestExtension::kCredProps);
   }
+  if (options->large_blob_enable != device::LargeBlobSupport::kNotRequested) {
+    requested_extensions_.insert(RequestExtension::kLargeBlob);
+  }
+  make_credential_options_->large_blob_support = options->large_blob_enable;
   ctap_make_credential_request_->app_id = std::move(appid_exclude);
   ctap_make_credential_request_->is_incognito_mode =
       browser_context()->IsOffTheRecord();
   // On dual protocol CTAP2/U2F devices, force credential creation over U2F.
   ctap_make_credential_request_->is_u2f_only = origin_is_crypto_token_extension;
-
-  if (make_credential_options_->resident_key ==
-          device::ResidentKeyRequirement::kRequired &&
-      caller_origin.scheme() == "chrome-extension") {
-    // The large blob key extension is set for every request since we cannot
-    // know in advance if the RP will attempt storing a blob on a future
-    // GetAssertion request.
-    ctap_make_credential_request_->large_blob_key = true;
-  }
 
   if (base::FeatureList::IsEnabled(device::kWebAuthPhoneSupport) &&
       !origin_is_crypto_token_extension && !is_cross_origin) {
@@ -1269,6 +1271,13 @@ void AuthenticatorCommon::OnRegisterResponse(
           authenticator,
           AuthenticatorRequestClientDelegate::InterestingFailureReason::
               kAuthenticatorMissingUserVerification,
+          blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR);
+      return;
+    case device::MakeCredentialStatus::kAuthenticatorMissingLargeBlob:
+      SignalFailureToRequestDelegate(
+          authenticator,
+          AuthenticatorRequestClientDelegate::InterestingFailureReason::
+              kAuthenticatorMissingLargeBlob,
           blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR);
       return;
     case device::MakeCredentialStatus::kNoCommonAlgorithms:

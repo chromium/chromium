@@ -129,6 +129,13 @@ MakeCredentialStatus IsCandidateAuthenticatorPostTouch(
     return MakeCredentialStatus::kAuthenticatorMissingUserVerification;
   }
 
+  // The largeBlobs extension only works for resident credentials on CTAP 2.1
+  // authenticators.
+  if (options.large_blob_support == LargeBlobSupport::kRequired &&
+      (!auth_options->supports_large_blobs || !request.resident_key_required)) {
+    return MakeCredentialStatus::kAuthenticatorMissingLargeBlob;
+  }
+
   base::Optional<base::span<const int32_t>> supported_algorithms(
       authenticator->GetAlgorithms());
   if (supported_algorithms) {
@@ -1022,6 +1029,20 @@ void MakeCredentialRequestHandler::SpecializeRequestForAuthenticator(
     }
     case ResidentKeyRequirement::kDiscouraged:
       request->resident_key_required = false;
+      break;
+  }
+
+  switch (options_.large_blob_support) {
+    case LargeBlobSupport::kRequired:
+      request->large_blob_key = true;
+      break;
+    case LargeBlobSupport::kPreferred:
+      request->large_blob_key = auth_options &&
+                                auth_options->supports_large_blobs &&
+                                request->resident_key_required;
+      break;
+    case LargeBlobSupport::kNotRequested:
+      request->large_blob_key = false;
       break;
   }
 

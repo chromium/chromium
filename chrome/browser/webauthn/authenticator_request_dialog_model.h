@@ -297,6 +297,10 @@ class AuthenticatorRequestDialogModel {
   // user verification capability.
   void OnAuthenticatorMissingUserVerification();
 
+  // To be called when the selected authenticator doesn't have the requested
+  // large blob capability.
+  void OnAuthenticatorMissingLargeBlob();
+
   // To be called when the selected authenticator doesn't support any of the
   // COSEAlgorithmIdentifiers requested by the RP.
   void OnNoCommonAlgorithms();

@@ -62,7 +62,8 @@ class CONTENT_EXPORT VirtualAuthenticatorManagerImpl
       device::FidoTransportProtocol transport,
       device::AuthenticatorAttachment attachment,
       bool has_resident_key,
-      bool has_user_verification);
+      bool has_user_verification,
+      bool has_large_blob);
 
   // Returns the authenticator with the given |id|. Returns nullptr if no
   // authenticator matches the ID.
