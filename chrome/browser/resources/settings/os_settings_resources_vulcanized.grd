@@ -97,6 +97,20 @@
                file="${root_gen_dir}\chrome\browser\resources\settings\chromeos\shared.rollup.js"
                type="BINDATA"
                use_base_dir="false" />
+
+      <!-- SVG assets -->
+      <include name="IDR_OS_SETTINGS_ICON_ADD_CIRCLE_SVG"
+               file="chromeos/images/icon_add_circle.svg"
+               type="BINDATA"
+               compress="gzip" />
+      <include name="IDR_OS_SETTINGS_ICON_ADD_WIFI_SVG"
+               file="chromeos/images/icon_add_wifi.svg"
+               type="BINDATA"
+               compress="gzip" />
+      <include name="IDR_OS_SETTINGS_ICON_ADD_CELLULAR_SVG"
+               file="chromeos/images/icon_add_cellular.svg"
+               type="BINDATA"
+               compress="gzip" />
     </includes>
   </release>
 </grit>

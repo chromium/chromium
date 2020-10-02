@@ -1595,6 +1595,15 @@
       <structure name="IDR_OS_SETTINGS_SEARCH_HANDLER_JS"
                  file="chromeos/search_handler.js"
                  compress="false" type="chrome_html" />
+      <structure name="IDR_OS_SETTINGS_ICON_ADD_CIRCLE_SVG"
+                 file="chromeos/images/icon_add_circle.svg"
+                 type="chrome_html" />
+      <structure name="IDR_OS_SETTINGS_ICON_ADD_WIFI_SVG"
+                 file="chromeos/images/icon_add_wifi.svg"
+                 type="chrome_html" />
+      <structure name="IDR_OS_SETTINGS_ICON_ADD_CELLULAR_SVG"
+                 file="chromeos/images/icon_add_cellular.svg"
+                 type="chrome_html" />
     </structures>
   </release>
 </grit>

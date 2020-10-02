@@ -111,6 +111,13 @@ OSSettingsUI::OSSettingsUI(content::WebUI* web_ui)
   RegisterNearbySharedResources(html_source);
 #endif
 
+  html_source->AddResourcePath("images/icon_add_circle.svg",
+                               IDR_OS_SETTINGS_ICON_ADD_CIRCLE_SVG);
+  html_source->AddResourcePath("images/icon_add_wifi.svg",
+                               IDR_OS_SETTINGS_ICON_ADD_WIFI_SVG);
+  html_source->AddResourcePath("images/icon_add_cellular.svg",
+                               IDR_OS_SETTINGS_ICON_ADD_CELLULAR_SVG);
+
   ManagedUIHandler::Initialize(web_ui, html_source);
 
   content::WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
