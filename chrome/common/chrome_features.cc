@@ -379,7 +379,7 @@ const base::Feature kFlashDeprecationWarning{"FlashDeprecationWarning",
 // floc id is first computed for a browsing session or is refreshed due to a
 // long period of time has passed since the last computation.
 const base::Feature kFlocIdComputedEventLogging{
-    "FlocIdComputedEventLogging", base::FEATURE_DISABLED_BY_DEFAULT};
+    "FlocIdComputedEventLogging", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // If enabled, a computed floc will be invalidated if it appears in a blocklist.
 const base::Feature kFlocIdBlocklistFiltering{
