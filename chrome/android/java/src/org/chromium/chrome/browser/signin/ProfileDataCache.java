@@ -32,7 +32,6 @@ import org.chromium.components.browser_ui.util.AvatarGenerator;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.ProfileDataSource;
 import org.chromium.components.signin.base.AccountInfo;
-import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 
 import java.util.ArrayList;
@@ -279,18 +278,6 @@ public class ProfileDataCache implements ProfileDownloader.Observer, ProfileData
                     profileData.getFullName(), profileData.getGivenName()));
         }
     }
-
-    /**
-     * Implements {@link IdentityManager.Observer}.
-     */
-    @Override
-    public void onPrimaryAccountSet(CoreAccountInfo account) {}
-
-    /**
-     * Implements {@link IdentityManager.Observer}.
-     */
-    @Override
-    public void onPrimaryAccountCleared(CoreAccountInfo account) {}
 
     /**
      * Returns a profile data cache object without a badge.The badge is put with respect to

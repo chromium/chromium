@@ -32,14 +32,14 @@ public class IdentityManager {
          * Called when an account becomes the user's primary account.
          * This method is not called during a reauth.
          */
-        void onPrimaryAccountSet(CoreAccountInfo account);
+        default void onPrimaryAccountSet(CoreAccountInfo account) {}
 
         /**
          * Called when the user moves from having a primary account to no longer having a primary
          * account (note that the user may still have an *unconsented* primary account after this
          * event).
          */
-        void onPrimaryAccountCleared(CoreAccountInfo account);
+        default void onPrimaryAccountCleared(CoreAccountInfo account) {}
 
         /**
          * Called when the Gaia cookie has been deleted explicitly by a user action, e.g. from
