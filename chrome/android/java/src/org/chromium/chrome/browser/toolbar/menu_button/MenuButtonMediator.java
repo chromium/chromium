@@ -4,17 +4,21 @@
 
 package org.chromium.chrome.browser.toolbar.menu_button;
 
+import android.animation.Animator;
+import android.animation.AnimatorSet;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
+import org.chromium.base.MathUtils;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.omaha.UpdateMenuItemHelper;
 import org.chromium.chrome.browser.omaha.UpdateMenuItemHelper.MenuButtonState;
@@ -36,7 +40,6 @@ import org.chromium.ui.util.TokenHolder;
  * changes to the property model that backs the MenuButton view.
  */
 class MenuButtonMediator implements AppMenuObserver {
-    private OneshotSupplier<AppMenuCoordinator> mAppMenuCoordinatorSupplier;
     private Callback<AppMenuCoordinator> mAppMenuCoordinatorSupplierObserver;
     private @Nullable AppMenuPropertiesDelegate mAppMenuPropertiesDelegate;
     private AppMenuButtonHelper mAppMenuButtonHelper;
@@ -55,6 +58,9 @@ class MenuButtonMediator implements AppMenuObserver {
     private Supplier<Boolean> mIsInOverviewModeSupplier;
     private boolean mSuppressAppMenuUpdateBadge;
     private Resources mResources;
+    private OneshotSupplier<AppMenuCoordinator> mAppMenuCoordinatorSupplier;
+
+    private final int mUrlFocusTranslationX;
 
     /**
      *  @param appMenuCoordinatorSupplier Supplier for the AppMenuCoordinator, which owns all other
@@ -94,6 +100,9 @@ class MenuButtonMediator implements AppMenuObserver {
         mAppMenuCoordinatorSupplier.onAvailable(mAppMenuCoordinatorSupplierObserver);
         mResources = resources;
         mAppMenuButtonHelperSupplier = new ObservableSupplierImpl<>();
+
+        mUrlFocusTranslationX =
+                mResources.getDimensionPixelSize(R.dimen.toolbar_url_focus_translation_x);
     }
 
     @Override
@@ -268,5 +277,26 @@ class MenuButtonMediator implements AppMenuObserver {
 
     private boolean isUpdateAvailable() {
         return UpdateMenuItemHelper.getInstance().getUiState().buttonState != null;
+    }
+
+    public Animator getUrlFocusingAnimator(boolean isFocusingUrl, boolean isRtl) {
+        float translationX;
+        float alpha;
+        if (isFocusingUrl) {
+            float density = mResources.getDisplayMetrics().density;
+            translationX = MathUtils.flipSignIf(mUrlFocusTranslationX, isRtl) * density;
+            alpha = 0.0f;
+        } else {
+            translationX = 0.0f;
+            alpha = 1.0f;
+        }
+
+        AnimatorSet animatorSet = new AnimatorSet();
+        Animator translationAnimator = PropertyModelAnimatorFactory.ofFloat(
+                mPropertyModel, MenuButtonProperties.TRANSLATION_X, translationX);
+        Animator alphaAnimator = PropertyModelAnimatorFactory.ofFloat(
+                mPropertyModel, MenuButtonProperties.ALPHA, alpha);
+        animatorSet.playTogether(translationAnimator, alphaAnimator);
+        return animatorSet;
     }
 }

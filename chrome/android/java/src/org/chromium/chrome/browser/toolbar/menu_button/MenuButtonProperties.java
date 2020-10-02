@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuButtonHelper;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableFloatPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 class MenuButtonProperties {
@@ -35,6 +36,7 @@ class MenuButtonProperties {
         }
     }
 
+    public static final WritableFloatPropertyKey ALPHA = new WritableFloatPropertyKey();
     public static final WritableObjectPropertyKey<AppMenuButtonHelper> APP_MENU_BUTTON_HELPER =
             new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<String> CONTENT_DESCRIPTION =
@@ -47,8 +49,9 @@ class MenuButtonProperties {
             new WritableObjectPropertyKey(true);
     public static final WritableObjectPropertyKey<ThemeProperty> THEME =
             new WritableObjectPropertyKey<>(true);
+    public static final WritableFloatPropertyKey TRANSLATION_X = new WritableFloatPropertyKey();
 
     public static final PropertyKey[] ALL_KEYS =
-            new PropertyKey[] {APP_MENU_BUTTON_HELPER, CONTENT_DESCRIPTION, IS_CLICKABLE,
-                    IS_HIGHLIGHTING, IS_VISIBLE, SHOW_UPDATE_BADGE, THEME};
+            new PropertyKey[] {ALPHA, APP_MENU_BUTTON_HELPER, CONTENT_DESCRIPTION, IS_CLICKABLE,
+                    IS_HIGHLIGHTING, IS_VISIBLE, SHOW_UPDATE_BADGE, THEME, TRANSLATION_X};
 }

@@ -4,7 +4,12 @@
 
 package org.chromium.chrome.browser.toolbar.menu_button;
 
+import static android.view.View.LAYOUT_DIRECTION_RTL;
+
+import android.animation.Animator;
 import android.app.Activity;
+import android.graphics.Canvas;
+import android.view.View;
 import android.view.View.OnKeyListener;
 
 import androidx.annotation.IdRes;
@@ -20,6 +25,7 @@ import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonProperties.Them
 import org.chromium.chrome.browser.ui.appmenu.AppMenuButtonHelper;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
 import org.chromium.ui.UiUtils;
+import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -201,9 +207,34 @@ public class MenuButtonCoordinator {
      * Set the visibility of the MenuButton controlled by this coordinator.
      * @param visible Visibility state, true for visible and false for hidden.
      */
-
     public void setVisibility(boolean visible) {
         if (mMediator == null) return;
         mMediator.setVisibility(visible);
+    }
+
+    /**
+     * Draws the current visual state of this component for the purposes of rendering the tab
+     * switcher animation, setting the alpha to fade the view by the appropriate amount.
+     * @param root Root view for the menu button; used to position the canvas that's drawn on.
+     * @param canvas Canvas to draw to.
+     * @param alpha Integer (0-255) alpha level to draw at.
+     */
+    public void drawTabSwitcherAnimationOverlay(View root, Canvas canvas, int alpha) {
+        canvas.save();
+        ViewUtils.translateCanvasToView(root, mMenuButton, canvas);
+        mMenuButton.drawTabSwitcherAnimationOverlay(canvas, alpha);
+        canvas.restore();
+    }
+
+    /**
+     * Creates an animator for the MenuButton during the process offocusing or unfocusing the
+     * UrlBar. The animation translate and fades the button into/out of view.
+     * @return The Animator object for the MenuButton.
+     * @param isFocusingUrl Whether the animation is for focusing the URL, meaning the button is
+     *         fading out of view, or un-focusing, meaning it's fading into view.
+     */
+    public Animator getUrlFocusingAnimator(boolean isFocusingUrl) {
+        return mMediator.getUrlFocusingAnimator(isFocusingUrl,
+                mMenuButton != null && mMenuButton.getLayoutDirection() == LAYOUT_DIRECTION_RTL);
     }
 }

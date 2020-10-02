@@ -9,6 +9,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
+import android.content.res.Resources;
 import android.widget.ImageButton;
 
 import org.junit.Before;
@@ -56,6 +57,8 @@ public class MenuButtonCoordinatorTest {
     private Runnable mRequestRenderRunnable;
     @Mock
     ThemeColorProvider mThemeColorProvider;
+    @Mock
+    Resources mResources;
 
     private UpdateMenuItemHelper.MenuUiState mMenuUiState;
     private OneshotSupplierImpl<AppMenuCoordinator> mAppMenuSupplier;
@@ -77,6 +80,10 @@ public class MenuButtonCoordinatorTest {
                 .when(mActivity)
                 .findViewById(org.chromium.chrome.R.id.menu_button_wrapper);
         doReturn(mImageButton).when(mMenuButton).getImageButton();
+        doReturn(mResources).when(mActivity).getResources();
+        doReturn(10)
+                .when(mResources)
+                .getDimensionPixelSize(org.chromium.chrome.R.dimen.toolbar_url_focus_translation_x);
 
         mMenuButtonCoordinator = new MenuButtonCoordinator(mAppMenuSupplier,
                 mControlsVisibilityDelegate, mActivity, mFocusFunction, mRequestRenderRunnable,

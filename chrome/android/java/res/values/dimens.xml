@@ -225,6 +225,7 @@
     <dimen name="toolbar_button_width">48dp</dimen>
     <dimen name="toolbar_identity_disc_size">24dp</dimen>
     <dimen name="toolbar_identity_disc_size_duet">32dp</dimen>
+    <dimen name="toolbar_url_focus_translation_x">10dp</dimen>
 
     <!-- Bottom Toolbar -->
     <dimen name="split_toolbar_button_height">56dp</dimen>

@@ -15,7 +15,9 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor.ViewBinder;
 class MenuButtonViewBinder implements ViewBinder<PropertyModel, MenuButton, PropertyKey> {
     @Override
     public void bind(PropertyModel model, MenuButton view, PropertyKey propertyKey) {
-        if (propertyKey == MenuButtonProperties.APP_MENU_BUTTON_HELPER) {
+        if (propertyKey == MenuButtonProperties.ALPHA) {
+            view.setAlpha(model.get(MenuButtonProperties.ALPHA));
+        } else if (propertyKey == MenuButtonProperties.APP_MENU_BUTTON_HELPER) {
             view.setAppMenuButtonHelper(model.get(MenuButtonProperties.APP_MENU_BUTTON_HELPER));
         } else if (propertyKey == MenuButtonProperties.CONTENT_DESCRIPTION) {
             view.updateContentDescription(model.get(MenuButtonProperties.CONTENT_DESCRIPTION));
@@ -36,6 +38,8 @@ class MenuButtonViewBinder implements ViewBinder<PropertyModel, MenuButton, Prop
         } else if (propertyKey == MenuButtonProperties.THEME) {
             ThemeProperty themeProperty = model.get(MenuButtonProperties.THEME);
             view.onTintChanged(themeProperty.mColorStateList, themeProperty.mUseLightColors);
+        } else if (propertyKey == MenuButtonProperties.TRANSLATION_X) {
+            view.setTranslationX(model.get(MenuButtonProperties.TRANSLATION_X));
         }
     }
 }

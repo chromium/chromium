@@ -68,7 +68,6 @@ import org.chromium.chrome.browser.toolbar.TabCountProvider;
 import org.chromium.chrome.browser.toolbar.TabCountProvider.TabCountObserver;
 import org.chromium.chrome.browser.toolbar.TabSwitcherDrawable;
 import org.chromium.chrome.browser.toolbar.ToolbarColors;
-import org.chromium.chrome.browser.toolbar.menu_button.MenuButton;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator.UrlExpansionObserver;
 import org.chromium.components.browser_ui.styles.ChromeColors;
@@ -94,7 +93,6 @@ public class ToolbarPhone extends ToolbarLayout
     public static final long THEME_COLOR_TRANSITION_DURATION = 250;
 
     public static final int URL_FOCUS_CHANGE_ANIMATION_DURATION_MS = 225;
-    private static final int URL_FOCUS_TOOLBAR_BUTTONS_TRANSLATION_X_DP = 10;
     private static final int URL_FOCUS_TOOLBAR_BUTTONS_DURATION_MS = 100;
     private static final int URL_CLEAR_FOCUS_EXPERIMENTAL_BUTTON_DELAY_MS = 150;
     private static final int URL_CLEAR_FOCUS_TABSTACK_DELAY_MS = 200;
@@ -265,6 +263,7 @@ public class ToolbarPhone extends ToolbarLayout
     private AnimatorSet mOptionalButtonAnimator;
     private boolean mOptionalButtonAnimationRunning;
     private int mOptionalButtonTranslation;
+    private int mUrlFocusTranslationX;
 
     /**
      * The progress fraction for the location bar width change animation that is run when the
@@ -363,6 +362,8 @@ public class ToolbarPhone extends ToolbarLayout
             inflateTabSwitchingResources();
 
             setWillNotDraw(false);
+            mUrlFocusTranslationX =
+                    getResources().getDimensionPixelSize(R.dimen.toolbar_url_focus_translation_x);
         }
     }
 
@@ -1242,14 +1243,14 @@ public class ToolbarPhone extends ToolbarLayout
         mLocationBar.setAlpha(previousAlpha);
 
         // Translate to draw end toolbar buttons.
-        translateCanvasToView(this, mToolbarButtonsContainer, canvas);
+        ViewUtils.translateCanvasToView(this, mToolbarButtonsContainer, canvas);
 
         // Draw the optional button if necessary.
         if (mOptionalButton != null && mOptionalButton.getVisibility() != View.GONE) {
             canvas.save();
             Drawable optionalButtonDrawable = mOptionalButton.getDrawable();
 
-            translateCanvasToView(mToolbarButtonsContainer, mOptionalButton, canvas);
+            ViewUtils.translateCanvasToView(mToolbarButtonsContainer, mOptionalButton, canvas);
 
             int backgroundWidth = mOptionalButton.getDrawable().getIntrinsicWidth();
             int backgroundHeight = mOptionalButton.getDrawable().getIntrinsicHeight();
@@ -1274,7 +1275,8 @@ public class ToolbarPhone extends ToolbarLayout
                 && mUrlExpansionFraction != 1f) {
             // Draw the tab stack button image.
             canvas.save();
-            translateCanvasToView(mToolbarButtonsContainer, mToggleTabStackButton, canvas);
+            ViewUtils.translateCanvasToView(
+                    mToolbarButtonsContainer, mToggleTabStackButton, canvas);
 
             int backgroundWidth = mToggleTabStackButton.getDrawable().getIntrinsicWidth();
             int backgroundHeight = mToggleTabStackButton.getDrawable().getIntrinsicHeight();
@@ -1298,12 +1300,10 @@ public class ToolbarPhone extends ToolbarLayout
         }
 
         // Draw the menu button if necessary.
-        final MenuButton menuButton = getMenuButtonCoordinator().getMenuButton();
-        if (menuButton != null) {
-            canvas.save();
-            translateCanvasToView(mToolbarButtonsContainer, menuButton, canvas);
-            menuButton.drawTabSwitcherAnimationOverlay(canvas, rgbAlpha);
-            canvas.restore();
+        final MenuButtonCoordinator menuButtonCoordinator = getMenuButtonCoordinator();
+        if (menuButtonCoordinator != null) {
+            menuButtonCoordinator.drawTabSwitcherAnimationOverlay(
+                    mToolbarButtonsContainer, canvas, rgbAlpha);
         }
 
         mLightDrawablesUsedForLastTextureCapture = useLight();
@@ -1313,28 +1313,6 @@ public class ToolbarPhone extends ToolbarLayout
         }
 
         canvas.restore();
-    }
-
-    /**
-     * Translates the canvas to ensure the specified view's coordinates are at 0, 0.
-     *
-     * @param from The view the canvas is currently translated to.
-     * @param to The view to translate to.
-     * @param canvas The canvas to be translated.
-     *
-     * @throws IllegalArgumentException if {@code from} is not an ancestor of {@code to}.
-     */
-    private static void translateCanvasToView(View from, View to, Canvas canvas)
-            throws IllegalArgumentException {
-        assert from != null;
-        assert to != null;
-        while (to != from) {
-            canvas.translate(to.getLeft(), to.getTop());
-            if (!(to.getParent() instanceof View)) {
-                throw new IllegalArgumentException("View 'to' was not a desendent of 'from'.");
-            }
-            to = (View) to.getParent();
-        }
     }
 
     @Override
@@ -1984,21 +1962,12 @@ public class ToolbarPhone extends ToolbarLayout
         float density = getContext().getResources().getDisplayMetrics().density;
         boolean isRtl = getLayoutDirection() == LAYOUT_DIRECTION_RTL;
         float toolbarButtonTranslationX =
-                MathUtils.flipSignIf(URL_FOCUS_TOOLBAR_BUTTONS_TRANSLATION_X_DP, isRtl) * density;
+                MathUtils.flipSignIf(mUrlFocusTranslationX, isRtl) * density;
 
-        final View menuButtonWrapper = getMenuButtonCoordinator().getMenuButton();
-        if (menuButtonWrapper != null) {
-            animator = ObjectAnimator.ofFloat(
-                    menuButtonWrapper, TRANSLATION_X, toolbarButtonTranslationX);
-            animator.setDuration(URL_FOCUS_TOOLBAR_BUTTONS_DURATION_MS);
-            animator.setInterpolator(BakedBezierInterpolator.FADE_OUT_CURVE);
-            animators.add(animator);
-
-            animator = ObjectAnimator.ofFloat(menuButtonWrapper, ALPHA, 0);
-            animator.setDuration(URL_FOCUS_TOOLBAR_BUTTONS_DURATION_MS);
-            animator.setInterpolator(BakedBezierInterpolator.FADE_OUT_CURVE);
-            animators.add(animator);
-        }
+        animator = getMenuButtonCoordinator().getUrlFocusingAnimator(true);
+        animator.setDuration(URL_FOCUS_TOOLBAR_BUTTONS_DURATION_MS);
+        animator.setInterpolator(BakedBezierInterpolator.FADE_OUT_CURVE);
+        animators.add(animator);
 
         if (mToggleTabStackButton != null) {
             animator = ObjectAnimator.ofFloat(
@@ -2041,20 +2010,10 @@ public class ToolbarPhone extends ToolbarLayout
         animator.setInterpolator(BakedBezierInterpolator.TRANSFORM_CURVE);
         animators.add(animator);
 
-        final View menuButtonWrapper = getMenuButtonCoordinator().getMenuButton();
-        if (menuButtonWrapper != null) {
-            animator = ObjectAnimator.ofFloat(menuButtonWrapper, TRANSLATION_X, 0);
-            animator.setDuration(URL_FOCUS_TOOLBAR_BUTTONS_DURATION_MS);
-            animator.setStartDelay(URL_CLEAR_FOCUS_MENU_DELAY_MS);
-            animator.setInterpolator(BakedBezierInterpolator.TRANSFORM_CURVE);
-            animators.add(animator);
-
-            animator = ObjectAnimator.ofFloat(menuButtonWrapper, ALPHA, 1);
-            animator.setDuration(URL_FOCUS_TOOLBAR_BUTTONS_DURATION_MS);
-            animator.setStartDelay(URL_CLEAR_FOCUS_MENU_DELAY_MS);
-            animator.setInterpolator(BakedBezierInterpolator.TRANSFORM_CURVE);
-            animators.add(animator);
-        }
+        animator = getMenuButtonCoordinator().getUrlFocusingAnimator(false);
+        animator.setDuration(URL_FOCUS_TOOLBAR_BUTTONS_DURATION_MS);
+        animator.setInterpolator(BakedBezierInterpolator.FADE_OUT_CURVE);
+        animators.add(animator);
 
         if (mToggleTabStackButton != null) {
             animator = ObjectAnimator.ofFloat(mToggleTabStackButton, TRANSLATION_X, 0);
