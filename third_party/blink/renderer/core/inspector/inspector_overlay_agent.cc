@@ -296,8 +296,7 @@ class InspectorOverlayAgent::InspectorPageOverlayDelegate final
   bool FillsBoundsCompletely() const override { return false; }
   size_t GetApproximateUnsharedMemoryUsage() const override { return 0; }
 
-  scoped_refptr<cc::DisplayItemList> PaintContentsToDisplayList(
-      PaintingControlSetting) override {
+  scoped_refptr<cc::DisplayItemList> PaintContentsToDisplayList() override {
     auto display_list = base::MakeRefCounted<cc::DisplayItemList>();
     display_list->StartPaint();
     display_list->push<cc::DrawRecordOp>(

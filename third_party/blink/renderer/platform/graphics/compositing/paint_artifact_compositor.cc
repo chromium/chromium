@@ -1016,8 +1016,8 @@ void SynthesizedClip::UpdateLayer(bool needs_layer,
   path_ = path;
 }
 
-scoped_refptr<cc::DisplayItemList> SynthesizedClip::PaintContentsToDisplayList(
-    PaintingControlSetting) {
+scoped_refptr<cc::DisplayItemList>
+SynthesizedClip::PaintContentsToDisplayList() {
   auto cc_list = base::MakeRefCounted<cc::DisplayItemList>(
       cc::DisplayItemList::kTopLevelDisplayItemList);
   PaintFlags flags;

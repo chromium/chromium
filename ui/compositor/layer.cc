@@ -1300,8 +1300,7 @@ gfx::Rect Layer::PaintableRegion() {
   return gfx::Rect(size());
 }
 
-scoped_refptr<cc::DisplayItemList> Layer::PaintContentsToDisplayList(
-    ContentLayerClient::PaintingControlSetting painting_control) {
+scoped_refptr<cc::DisplayItemList> Layer::PaintContentsToDisplayList() {
   TRACE_EVENT1("ui", "Layer::PaintContentsToDisplayList", "name", name_);
   gfx::Rect local_bounds(bounds().size());
   gfx::Rect invalidation(

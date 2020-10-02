@@ -4724,8 +4724,7 @@ void GetClientDataAndUpdateInvalidation(RecordingSource* recording_source,
                                         gfx::Size layer_bounds) {
   gfx::Rect new_recorded_viewport = client->PaintableRegion();
   scoped_refptr<DisplayItemList> display_list =
-      client->PaintContentsToDisplayList(
-          ContentLayerClient::PAINTING_BEHAVIOR_NORMAL);
+      client->PaintContentsToDisplayList();
   size_t painter_reported_memory_usage =
       client->GetApproximateUnsharedMemoryUsage();
 

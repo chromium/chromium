@@ -131,8 +131,7 @@ TEST_F(DiscardableImageMapTest, GetDiscardableImagesInRectTest) {
   }
 
   scoped_refptr<DisplayItemList> display_list =
-      content_layer_client.PaintContentsToDisplayList(
-          ContentLayerClient::PAINTING_BEHAVIOR_NORMAL);
+      content_layer_client.PaintContentsToDisplayList();
   display_list->GenerateDiscardableImagesMetadata();
   const DiscardableImageMap& image_map = display_list->discardable_image_map();
 
@@ -204,8 +203,7 @@ TEST_F(DiscardableImageMapTest, GetDiscardableImagesInRectNonZeroLayer) {
   }
 
   scoped_refptr<DisplayItemList> display_list =
-      content_layer_client.PaintContentsToDisplayList(
-          ContentLayerClient::PAINTING_BEHAVIOR_NORMAL);
+      content_layer_client.PaintContentsToDisplayList();
   display_list->GenerateDiscardableImagesMetadata();
   const DiscardableImageMap& image_map = display_list->discardable_image_map();
 
@@ -306,8 +304,7 @@ TEST_F(DiscardableImageMapTest, GetDiscardableImagesInRectOnePixelQuery) {
   }
 
   scoped_refptr<DisplayItemList> display_list =
-      content_layer_client.PaintContentsToDisplayList(
-          ContentLayerClient::PAINTING_BEHAVIOR_NORMAL);
+      content_layer_client.PaintContentsToDisplayList();
   display_list->GenerateDiscardableImagesMetadata();
   const DiscardableImageMap& image_map = display_list->discardable_image_map();
 
@@ -342,8 +339,7 @@ TEST_F(DiscardableImageMapTest, GetDiscardableImagesInRectMassiveImage) {
                                       flags);
 
   scoped_refptr<DisplayItemList> display_list =
-      content_layer_client.PaintContentsToDisplayList(
-          ContentLayerClient::PAINTING_BEHAVIOR_NORMAL);
+      content_layer_client.PaintContentsToDisplayList();
   display_list->GenerateDiscardableImagesMetadata();
   const DiscardableImageMap& image_map = display_list->discardable_image_map();
 
@@ -480,8 +476,7 @@ TEST_F(DiscardableImageMapTest, GetDiscardableImagesInRectMaxImage) {
                                       flags);
 
   scoped_refptr<DisplayItemList> display_list =
-      content_layer_client.PaintContentsToDisplayList(
-          ContentLayerClient::PAINTING_BEHAVIOR_NORMAL);
+      content_layer_client.PaintContentsToDisplayList();
   display_list->GenerateDiscardableImagesMetadata();
   const DiscardableImageMap& image_map = display_list->discardable_image_map();
 
@@ -525,8 +520,7 @@ TEST_F(DiscardableImageMapTest, GetDiscardableImagesInRectMaxImageMaxLayer) {
                                       gfx::Point(-10000, 500), flags);
 
   scoped_refptr<DisplayItemList> display_list =
-      content_layer_client.PaintContentsToDisplayList(
-          ContentLayerClient::PAINTING_BEHAVIOR_NORMAL);
+      content_layer_client.PaintContentsToDisplayList();
   display_list->GenerateDiscardableImagesMetadata();
   const DiscardableImageMap& image_map = display_list->discardable_image_map();
 
@@ -575,8 +569,7 @@ TEST_F(DiscardableImageMapTest, GetDiscardableImagesRectInBounds) {
                                       gfx::Point(-100, 500), flags);
 
   scoped_refptr<DisplayItemList> display_list =
-      content_layer_client.PaintContentsToDisplayList(
-          ContentLayerClient::PAINTING_BEHAVIOR_NORMAL);
+      content_layer_client.PaintContentsToDisplayList();
   display_list->GenerateDiscardableImagesMetadata();
   const DiscardableImageMap& image_map = display_list->discardable_image_map();
 
@@ -641,8 +634,7 @@ TEST_F(DiscardableImageMapTest, GetDiscardableImagesInShader) {
   }
 
   scoped_refptr<DisplayItemList> display_list =
-      content_layer_client.PaintContentsToDisplayList(
-          ContentLayerClient::PAINTING_BEHAVIOR_NORMAL);
+      content_layer_client.PaintContentsToDisplayList();
   display_list->GenerateDiscardableImagesMetadata();
   const DiscardableImageMap& image_map = display_list->discardable_image_map();
 
@@ -766,8 +758,7 @@ TEST_F(DiscardableImageMapTest, GathersAnimatedImages) {
                                       gfx::Point(200, 200), flags);
 
   scoped_refptr<DisplayItemList> display_list =
-      content_layer_client.PaintContentsToDisplayList(
-          ContentLayerClient::PAINTING_BEHAVIOR_NORMAL);
+      content_layer_client.PaintContentsToDisplayList();
   display_list->GenerateDiscardableImagesMetadata();
   const auto& animated_images_metadata =
       display_list->discardable_image_map().animated_images_metadata();
@@ -811,8 +802,7 @@ TEST_F(DiscardableImageMapTest, GathersPaintWorklets) {
                                       flags);
 
   scoped_refptr<DisplayItemList> display_list =
-      content_layer_client.PaintContentsToDisplayList(
-          ContentLayerClient::PAINTING_BEHAVIOR_NORMAL);
+      content_layer_client.PaintContentsToDisplayList();
   display_list->GenerateDiscardableImagesMetadata();
 
   const auto& paint_worklet_inputs =
@@ -1010,8 +1000,7 @@ TEST_F(DiscardableImageMapTest, DecodingModeHintsBasic) {
   content_layer_client.add_draw_image(sync_image, gfx::Point(20, 20),
                                       PaintFlags());
   scoped_refptr<DisplayItemList> display_list =
-      content_layer_client.PaintContentsToDisplayList(
-          ContentLayerClient::PAINTING_BEHAVIOR_NORMAL);
+      content_layer_client.PaintContentsToDisplayList();
   display_list->GenerateDiscardableImagesMetadata();
   auto decode_hints = display_list->TakeDecodingModeMap();
   ASSERT_EQ(decode_hints.size(), 3u);
@@ -1082,8 +1071,7 @@ TEST_F(DiscardableImageMapTest, DecodingModeHintsDuplicates) {
   content_layer_client.add_draw_image(sync_image3, gfx::Point(50, 50),
                                       PaintFlags());
   scoped_refptr<DisplayItemList> display_list =
-      content_layer_client.PaintContentsToDisplayList(
-          ContentLayerClient::PAINTING_BEHAVIOR_NORMAL);
+      content_layer_client.PaintContentsToDisplayList();
   display_list->GenerateDiscardableImagesMetadata();
 
   auto decode_hints = display_list->TakeDecodingModeMap();
@@ -1117,8 +1105,7 @@ TEST_F(DiscardableImageMapTest, TracksImageRegions) {
   content_layer_client.add_draw_image(image, gfx::Point(400, 400), flags);
 
   scoped_refptr<DisplayItemList> display_list =
-      content_layer_client.PaintContentsToDisplayList(
-          ContentLayerClient::PAINTING_BEHAVIOR_NORMAL);
+      content_layer_client.PaintContentsToDisplayList();
   display_list->GenerateDiscardableImagesMetadata();
   const auto& image_map = display_list->discardable_image_map();
 
@@ -1154,16 +1141,14 @@ TEST_F(DiscardableImageMapTest, HighBitDepth) {
   content_layer_client.set_bounds(visible_rect.size());
 
   scoped_refptr<DisplayItemList> display_list =
-      content_layer_client.PaintContentsToDisplayList(
-          ContentLayerClient::PAINTING_BEHAVIOR_NORMAL);
+      content_layer_client.PaintContentsToDisplayList();
   display_list->GenerateDiscardableImagesMetadata();
   const DiscardableImageMap& image_map = display_list->discardable_image_map();
   EXPECT_FALSE(image_map.contains_hbd_images());
 
   content_layer_client.add_draw_image(discardable_image, gfx::Point(0, 0),
                                       PaintFlags());
-  display_list = content_layer_client.PaintContentsToDisplayList(
-      ContentLayerClient::PAINTING_BEHAVIOR_NORMAL);
+  display_list = content_layer_client.PaintContentsToDisplayList();
   display_list->GenerateDiscardableImagesMetadata();
   const DiscardableImageMap& image_map2 = display_list->discardable_image_map();
   EXPECT_TRUE(image_map2.contains_hbd_images());
@@ -1176,8 +1161,7 @@ TEST_F(DiscardableImageMapTest, ContentColorUsage) {
   content_layer_client.set_bounds(kVisibleRect.size());
 
   // Empty map should report a color usage of SRGB.
-  auto display_list = content_layer_client.PaintContentsToDisplayList(
-      ContentLayerClient::PAINTING_BEHAVIOR_NORMAL);
+  auto display_list = content_layer_client.PaintContentsToDisplayList();
   display_list->GenerateDiscardableImagesMetadata();
   EXPECT_EQ(display_list->discardable_image_map().content_color_usage(),
             gfx::ContentColorUsage::kSRGB);
@@ -1187,8 +1171,7 @@ TEST_F(DiscardableImageMapTest, ContentColorUsage) {
       kSize, gfx::ColorSpace::CreateSRGB().ToSkColorSpace());
   content_layer_client.add_draw_image(discardable_image_srgb, gfx::Point(0, 0),
                                       PaintFlags());
-  display_list = content_layer_client.PaintContentsToDisplayList(
-      ContentLayerClient::PAINTING_BEHAVIOR_NORMAL);
+  display_list = content_layer_client.PaintContentsToDisplayList();
   display_list->GenerateDiscardableImagesMetadata();
   EXPECT_EQ(display_list->discardable_image_map().content_color_usage(),
             gfx::ContentColorUsage::kSRGB);
@@ -1198,8 +1181,7 @@ TEST_F(DiscardableImageMapTest, ContentColorUsage) {
       kSize, gfx::ColorSpace::CreateDisplayP3D65().ToSkColorSpace());
   content_layer_client.add_draw_image(discardable_image_wcg, gfx::Point(0, 0),
                                       PaintFlags());
-  display_list = content_layer_client.PaintContentsToDisplayList(
-      ContentLayerClient::PAINTING_BEHAVIOR_NORMAL);
+  display_list = content_layer_client.PaintContentsToDisplayList();
   display_list->GenerateDiscardableImagesMetadata();
   EXPECT_EQ(display_list->discardable_image_map().content_color_usage(),
             gfx::ContentColorUsage::kWideColorGamut);
@@ -1209,8 +1191,7 @@ TEST_F(DiscardableImageMapTest, ContentColorUsage) {
       kSize, gfx::ColorSpace::CreateHDR10().ToSkColorSpace());
   content_layer_client.add_draw_image(discardable_image_hdr, gfx::Point(0, 0),
                                       PaintFlags());
-  display_list = content_layer_client.PaintContentsToDisplayList(
-      ContentLayerClient::PAINTING_BEHAVIOR_NORMAL);
+  display_list = content_layer_client.PaintContentsToDisplayList();
   display_list->GenerateDiscardableImagesMetadata();
   EXPECT_EQ(display_list->discardable_image_map().content_color_usage(),
             gfx::ContentColorUsage::kHDR);
@@ -1230,8 +1211,7 @@ TEST_P(DiscardableImageMapColorSpaceTest, ColorSpace) {
   content_layer_client.set_bounds(visible_rect.size());
 
   scoped_refptr<DisplayItemList> display_list =
-      content_layer_client.PaintContentsToDisplayList(
-          ContentLayerClient::PAINTING_BEHAVIOR_NORMAL);
+      content_layer_client.PaintContentsToDisplayList();
   display_list->GenerateDiscardableImagesMetadata();
   const DiscardableImageMap& image_map = display_list->discardable_image_map();
 
@@ -1240,8 +1220,7 @@ TEST_P(DiscardableImageMapColorSpaceTest, ColorSpace) {
 
   content_layer_client.add_draw_image(discardable_image, gfx::Point(0, 0),
                                       PaintFlags());
-  display_list = content_layer_client.PaintContentsToDisplayList(
-      ContentLayerClient::PAINTING_BEHAVIOR_NORMAL);
+  display_list = content_layer_client.PaintContentsToDisplayList();
   display_list->GenerateDiscardableImagesMetadata();
   const DiscardableImageMap& image_map2 = display_list->discardable_image_map();
 

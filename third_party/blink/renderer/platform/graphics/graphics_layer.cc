@@ -727,8 +727,7 @@ void GraphicsLayer::SetContentsLayerState(
   client_.GraphicsLayersDidChange();
 }
 
-scoped_refptr<cc::DisplayItemList> GraphicsLayer::PaintContentsToDisplayList(
-    PaintingControlSetting painting_control) {
+scoped_refptr<cc::DisplayItemList> GraphicsLayer::PaintContentsToDisplayList() {
   DCHECK(!ShouldCreateLayersAfterPaint());
   return cc_display_item_list_;
 }

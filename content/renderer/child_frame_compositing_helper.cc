@@ -90,8 +90,7 @@ gfx::Rect ChildFrameCompositingHelper::PaintableRegion() {
 }
 
 scoped_refptr<cc::DisplayItemList>
-ChildFrameCompositingHelper::PaintContentsToDisplayList(
-    PaintingControlSetting) {
+ChildFrameCompositingHelper::PaintContentsToDisplayList() {
   DCHECK(crash_ui_layer_);
   auto layer_size = crash_ui_layer_->bounds();
   auto display_list = base::MakeRefCounted<cc::DisplayItemList>();

@@ -53,8 +53,7 @@ class CONTENT_EXPORT ChildFrameCompositingHelper
   // cc::ContentLayerClient implementation. Called from the cc::PictureLayer
   // created for the crashed child frame to display the sad image.
   gfx::Rect PaintableRegion() override;
-  scoped_refptr<cc::DisplayItemList> PaintContentsToDisplayList(
-      PaintingControlSetting) override;
+  scoped_refptr<cc::DisplayItemList> PaintContentsToDisplayList() override;
   bool FillsBoundsCompletely() const override;
   size_t GetApproximateUnsharedMemoryUsage() const override;
 

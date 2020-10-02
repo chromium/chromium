@@ -141,8 +141,7 @@ bool PictureLayer::Update() {
     {
       auto old_display_list = std::move(picture_layer_inputs_.display_list);
       picture_layer_inputs_.display_list =
-          picture_layer_inputs_.client->PaintContentsToDisplayList(
-              ContentLayerClient::PAINTING_BEHAVIOR_NORMAL);
+          picture_layer_inputs_.client->PaintContentsToDisplayList();
       if (old_display_list &&
           picture_layer_inputs_.display_list
               ->NeedsAdditionalInvalidationForLCDText(*old_display_list)) {
@@ -190,8 +189,7 @@ sk_sp<SkPicture> PictureLayer::GetPicture() const {
     return nullptr;
 
   scoped_refptr<DisplayItemList> display_list =
-      picture_layer_inputs_.client->PaintContentsToDisplayList(
-          ContentLayerClient::PAINTING_BEHAVIOR_NORMAL);
+      picture_layer_inputs_.client->PaintContentsToDisplayList();
   SkPictureRecorder recorder;
   SkCanvas* canvas =
       recorder.beginRecording(bounds().width(), bounds().height());

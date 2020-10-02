@@ -102,8 +102,7 @@ class CORE_EXPORT LinkHighlightImpl final : public CompositorAnimationDelegate,
    private:
     // cc::ContentLayerClient implementation.
     gfx::Rect PaintableRegion() override;
-    scoped_refptr<cc::DisplayItemList> PaintContentsToDisplayList(
-        PaintingControlSetting painting_control) override;
+    scoped_refptr<cc::DisplayItemList> PaintContentsToDisplayList() override;
     bool FillsBoundsCompletely() const override { return false; }
     size_t GetApproximateUnsharedMemoryUsage() const override { return 0; }
 

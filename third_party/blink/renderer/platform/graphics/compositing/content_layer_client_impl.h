@@ -34,8 +34,7 @@ class PLATFORM_EXPORT ContentLayerClientImpl : public cc::ContentLayerClient,
   gfx::Rect PaintableRegion() override {
     return gfx::Rect(raster_invalidator_.LayerBounds().size());
   }
-  scoped_refptr<cc::DisplayItemList> PaintContentsToDisplayList(
-      PaintingControlSetting) override {
+  scoped_refptr<cc::DisplayItemList> PaintContentsToDisplayList() override {
     return cc_display_item_list_;
   }
   bool FillsBoundsCompletely() const override { return false; }

@@ -37,8 +37,7 @@ gfx::Rect FakeContentLayerClient::PaintableRegion() {
 }
 
 scoped_refptr<DisplayItemList>
-FakeContentLayerClient::PaintContentsToDisplayList(
-    PaintingControlSetting painting_control) {
+FakeContentLayerClient::PaintContentsToDisplayList() {
   auto display_list = base::MakeRefCounted<DisplayItemList>();
 
   for (RectPaintVector::const_iterator it = draw_rects_.begin();

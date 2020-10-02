@@ -4876,8 +4876,7 @@ TEST_P(PaintArtifactCompositorTest, TransformChange) {
              .Build());
   ASSERT_EQ(1u, LayerCount());
   auto* layer = static_cast<cc::PictureLayer*>(LayerAt(0));
-  auto display_item_list = layer->client()->PaintContentsToDisplayList(
-      cc::ContentLayerClient::PAINTING_BEHAVIOR_NORMAL);
+  auto display_item_list = layer->client()->PaintContentsToDisplayList();
 
   // Change t1 but not t2.
   layer->ClearSubtreePropertyChangedForTesting();
@@ -4895,10 +4894,7 @@ TEST_P(PaintArtifactCompositorTest, TransformChange) {
   ASSERT_EQ(1u, LayerCount());
   ASSERT_EQ(layer, LayerAt(0));
   EXPECT_EQ(display_item_list.get(),
-            layer->client()
-                ->PaintContentsToDisplayList(
-                    cc::ContentLayerClient::PAINTING_BEHAVIOR_NORMAL)
-                .get());
+            layer->client()->PaintContentsToDisplayList().get());
   // TODO(wangxianzhu): Probably avoid setting this flag on transform change.
   EXPECT_TRUE(layer->subtree_property_changed());
   // This is set by cc when propagating ancestor change flag to descendants.
@@ -4925,10 +4921,7 @@ TEST_P(PaintArtifactCompositorTest, TransformChange) {
   ASSERT_EQ(1u, LayerCount());
   ASSERT_EQ(layer, LayerAt(0));
   EXPECT_EQ(display_item_list.get(),
-            layer->client()
-                ->PaintContentsToDisplayList(
-                    cc::ContentLayerClient::PAINTING_BEHAVIOR_NORMAL)
-                .get());
+            layer->client()->PaintContentsToDisplayList().get());
   // TODO(wangxianzhu): Probably avoid setting this flag on transform change.
   EXPECT_TRUE(layer->subtree_property_changed());
   EXPECT_TRUE(GetTransformNode(layer).transform_changed);
@@ -4952,10 +4945,7 @@ TEST_P(PaintArtifactCompositorTest, TransformChange) {
   ASSERT_EQ(1u, LayerCount());
   ASSERT_EQ(layer, LayerAt(0));
   EXPECT_EQ(display_item_list.get(),
-            layer->client()
-                ->PaintContentsToDisplayList(
-                    cc::ContentLayerClient::PAINTING_BEHAVIOR_NORMAL)
-                .get());
+            layer->client()->PaintContentsToDisplayList().get());
   // The new transform is decomposited, so there is no transform_changed, but
   // we set subtree_property_changed because offset_from_transform_parent
   // (calculated from the decomposited transforms) changed.
@@ -4975,10 +4965,7 @@ TEST_P(PaintArtifactCompositorTest, TransformChange) {
   ASSERT_EQ(1u, LayerCount());
   ASSERT_EQ(layer, LayerAt(0));
   EXPECT_NE(display_item_list.get(),
-            layer->client()
-                ->PaintContentsToDisplayList(
-                    cc::ContentLayerClient::PAINTING_BEHAVIOR_NORMAL)
-                .get());
+            layer->client()->PaintContentsToDisplayList().get());
 }
 
 TEST_P(PaintArtifactCompositorTest, EffectChange) {

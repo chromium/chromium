@@ -59,8 +59,7 @@ class BlueYellowClient : public ContentLayerClient {
       : size_(size), blue_top_(true) {}
 
   gfx::Rect PaintableRegion() override { return gfx::Rect(size_); }
-  scoped_refptr<DisplayItemList> PaintContentsToDisplayList(
-      PaintingControlSetting painting_status) override {
+  scoped_refptr<DisplayItemList> PaintContentsToDisplayList() override {
     auto display_list = base::MakeRefCounted<DisplayItemList>();
 
     display_list->StartPaint();

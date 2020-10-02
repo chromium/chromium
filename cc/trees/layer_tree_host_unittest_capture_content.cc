@@ -32,8 +32,7 @@ class FakeCaptureContentLayerClient : public FakeContentLayerClient {
     holders_.push_back(holder);
   }
 
-  scoped_refptr<DisplayItemList> PaintContentsToDisplayList(
-      PaintingControlSetting painting_control) override {
+  scoped_refptr<DisplayItemList> PaintContentsToDisplayList() override {
     auto display_list = base::MakeRefCounted<DisplayItemList>();
     for (auto& holder : holders_) {
       display_list->StartPaint();

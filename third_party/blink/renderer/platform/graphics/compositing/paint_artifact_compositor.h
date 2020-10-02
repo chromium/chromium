@@ -99,8 +99,7 @@ class SynthesizedClip : private cc::ContentLayerClient {
   bool FillsBoundsCompletely() const final { return false; }
   size_t GetApproximateUnsharedMemoryUsage() const final { return 0; }
 
-  scoped_refptr<cc::DisplayItemList> PaintContentsToDisplayList(
-      PaintingControlSetting) final;
+  scoped_refptr<cc::DisplayItemList> PaintContentsToDisplayList() final;
 
  private:
   scoped_refptr<cc::PictureLayer> layer_;

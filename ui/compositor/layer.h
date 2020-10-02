@@ -441,8 +441,7 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
 
   // ContentLayerClient implementation.
   gfx::Rect PaintableRegion() override;
-  scoped_refptr<cc::DisplayItemList> PaintContentsToDisplayList(
-      ContentLayerClient::PaintingControlSetting painting_control) override;
+  scoped_refptr<cc::DisplayItemList> PaintContentsToDisplayList() override;
   bool FillsBoundsCompletely() const override;
   size_t GetApproximateUnsharedMemoryUsage() const override;
 

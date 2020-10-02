@@ -18,15 +18,6 @@ namespace cc {
 
 class CC_EXPORT ContentLayerClient {
  public:
-  // TODO(wangxianzhu): Remove.
-  enum PaintingControlSetting {
-    PAINTING_BEHAVIOR_NORMAL,
-    PAINTING_BEHAVIOR_NORMAL_FOR_TEST,
-    DISPLAY_LIST_CACHING_DISABLED,
-    SUBSEQUENCE_CACHING_DISABLED,
-    PARTIAL_INVALIDATION,
-  };
-
   // The paintable region is the rectangular region, within the bounds of the
   // layer this client paints, that the client is capable of painting via
   // paintContents(). Calling paintContents() will return a DisplayItemList
@@ -37,9 +28,7 @@ class CC_EXPORT ContentLayerClient {
   // to the layer itself, into a DisplayItemList that it returns. The
   // PaintingControlSetting enum controls painting to isolate different
   // components in performance tests.
-  // TODO(wangxianzhu): Remove the parameter.
-  virtual scoped_refptr<DisplayItemList> PaintContentsToDisplayList(
-      PaintingControlSetting painting_control) = 0;
+  virtual scoped_refptr<DisplayItemList> PaintContentsToDisplayList() = 0;
 
   // If true the layer may skip clearing the background before rasterizing,
   // because it will cover any uncleared data with content.

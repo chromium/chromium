@@ -81,8 +81,7 @@ class FakeRecordingSource : public RecordingSource {
     Region invalidation;
     gfx::Rect new_recorded_viewport = client_.PaintableRegion();
     scoped_refptr<DisplayItemList> display_list =
-        client_.PaintContentsToDisplayList(
-            ContentLayerClient::PAINTING_BEHAVIOR_NORMAL);
+        client_.PaintContentsToDisplayList();
     size_t painter_reported_memory_usage =
         client_.GetApproximateUnsharedMemoryUsage();
     UpdateAndExpandInvalidation(&invalidation, size_, new_recorded_viewport);
