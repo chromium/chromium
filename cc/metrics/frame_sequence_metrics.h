@@ -150,8 +150,18 @@ class CC_EXPORT FrameSequenceMetrics {
   void AdvanceTrace(base::TimeTicks timestamp);
 
   void ComputeJank(FrameSequenceMetrics::ThreadType thread_type,
+                   uint32_t frame_token,
                    base::TimeTicks presentation_time,
                    base::TimeDelta frame_interval);
+
+  void NotifySubmitForJankReporter(FrameSequenceMetrics::ThreadType thread_type,
+                                   uint32_t frame_token,
+                                   uint32_t sequence_number);
+
+  void NotifyNoUpdateForJankReporter(
+      FrameSequenceMetrics::ThreadType thread_type,
+      uint32_t sequence_number,
+      base::TimeDelta frame_interval);
 
  private:
   const FrameSequenceTrackerType type_;
