@@ -44,6 +44,7 @@
 #if defined(OS_CHROMEOS)
 #include "chrome/browser/chromeos/arc/icon_decode_request.h"
 #include "chrome/browser/ui/app_list/icon_standardizer.h"
+#include "chrome/browser/ui/app_list/md_icon_normalizer.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "components/arc/mojom/intent_helper.mojom.h"
 #endif
@@ -612,6 +613,7 @@ class WebAppIconFactoryTest : public ChromeRenderViewHostTestHarness {
             run_loop.QuitClosure()));
     run_loop.Run();
 
+    extensions::ChromeAppIcon::ResizeFunction resize_function;
 #if defined(OS_CHROMEOS)
     if (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon)) {
       if (purpose == IconPurpose::ANY) {
@@ -621,13 +623,16 @@ class WebAppIconFactoryTest : public ChromeRenderViewHostTestHarness {
       if (purpose == IconPurpose::MASKABLE) {
         output_image_skia = apps::ApplyBackgroundAndMask(output_image_skia);
       }
+    } else {
+      resize_function =
+          base::BindRepeating(&app_list::MaybeResizeAndPadIconForMd);
     }
 #endif
 
     extensions::ChromeAppIcon::ApplyEffects(
-        kSizeInDip, extensions::ChromeAppIcon::ResizeFunction(),
-        true /* app_launchable */, true /* from_bookmark */,
-        extensions::ChromeAppIcon::Badge::kNone, &output_image_skia);
+        kSizeInDip, resize_function, true /* app_launchable */,
+        true /* from_bookmark */, extensions::ChromeAppIcon::Badge::kNone,
+        &output_image_skia);
 
     EnsureRepresentationsLoaded(output_image_skia);
   }
@@ -729,10 +734,17 @@ TEST_F(WebAppIconFactoryTest, LoadNonMaskableIcon) {
                      {{1.0, kIconSize1}, {2.0, kIconSize2}}, src_image_skia);
 
   gfx::ImageSkia dst_image_skia;
-  LoadIconFromWebApp(
-      app_id,
-      apps::IconEffects::kRoundCorners | apps::IconEffects::kCrOsStandardIcon,
-      dst_image_skia);
+  apps::IconEffects icon_effect = apps::IconEffects::kRoundCorners;
+
+#if defined(OS_CHROMEOS)
+  if (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon)) {
+    icon_effect |= apps::IconEffects::kCrOsStandardIcon;
+  } else {
+    icon_effect |= apps::IconEffects::kResizeAndPad;
+  }
+#endif
+
+  LoadIconFromWebApp(app_id, icon_effect, dst_image_skia);
 
   VerifyIcon(src_image_skia, dst_image_skia);
 }
@@ -758,10 +770,17 @@ TEST_F(WebAppIconFactoryTest, LoadNonMaskableCompressedIcon) {
                                src_data);
 
   apps::mojom::IconValuePtr icon;
-  LoadCompressedIconBlockingFromWebApp(
-      app_id,
-      apps::IconEffects::kRoundCorners | apps::IconEffects::kCrOsStandardIcon,
-      icon);
+  apps::IconEffects icon_effect = apps::IconEffects::kRoundCorners;
+
+#if defined(OS_CHROMEOS)
+  if (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon)) {
+    icon_effect |= apps::IconEffects::kCrOsStandardIcon;
+  } else {
+    icon_effect |= apps::IconEffects::kResizeAndPad;
+  }
+#endif
+
+  LoadCompressedIconBlockingFromWebApp(app_id, icon_effect, icon);
 
   VerifyCompressedIcon(src_data, icon);
 }
@@ -783,20 +802,25 @@ TEST_F(WebAppIconFactoryTest, LoadMaskableIcon) {
   RegisterApp(std::move(web_app));
 
 #if defined(OS_CHROMEOS)
-  ASSERT_TRUE(
-      icon_manager().HasIcons(app_id, IconPurpose::MASKABLE, {kIconSize2}));
+  if (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon)) {
+    ASSERT_TRUE(
+        icon_manager().HasIcons(app_id, IconPurpose::MASKABLE, {kIconSize2}));
 
-  gfx::ImageSkia src_image_skia;
-  GenerateWebAppIcon(app_id, IconPurpose::MASKABLE, {kIconSize2},
-                     {{1.0, kIconSize2}, {2.0, kIconSize2}}, src_image_skia);
+    gfx::ImageSkia src_image_skia;
+    GenerateWebAppIcon(app_id, IconPurpose::MASKABLE, {kIconSize2},
+                       {{1.0, kIconSize2}, {2.0, kIconSize2}}, src_image_skia);
 
-  gfx::ImageSkia dst_image_skia;
-  LoadIconFromWebApp(app_id,
-                     apps::IconEffects::kRoundCorners |
-                         apps::IconEffects::kCrOsStandardBackground |
-                         apps::IconEffects::kCrOsStandardMask,
-                     dst_image_skia);
-#else
+    gfx::ImageSkia dst_image_skia;
+    LoadIconFromWebApp(app_id,
+                       apps::IconEffects::kRoundCorners |
+                           apps::IconEffects::kCrOsStandardBackground |
+                           apps::IconEffects::kCrOsStandardMask,
+                       dst_image_skia);
+    VerifyIcon(src_image_skia, dst_image_skia);
+    return;
+  }
+#endif
+
   ASSERT_TRUE(icon_manager().HasIcons(app_id, IconPurpose::ANY, {kIconSize1}));
 
   gfx::ImageSkia src_image_skia;
@@ -805,7 +829,6 @@ TEST_F(WebAppIconFactoryTest, LoadMaskableIcon) {
 
   gfx::ImageSkia dst_image_skia;
   LoadIconFromWebApp(app_id, apps::IconEffects::kRoundCorners, dst_image_skia);
-#endif
 
   VerifyIcon(src_image_skia, dst_image_skia);
 }
@@ -828,30 +851,33 @@ TEST_F(WebAppIconFactoryTest, LoadMaskableCompressedIcon) {
 
   std::vector<uint8_t> src_data;
   apps::mojom::IconValuePtr icon;
+  apps::IconEffects icon_effect = apps::IconEffects::kRoundCorners;
 #if defined(OS_CHROMEOS)
-  ASSERT_TRUE(
-      icon_manager().HasIcons(app_id, IconPurpose::MASKABLE, {kIconSize2}));
+  if (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon)) {
+    icon_effect |= apps::IconEffects::kCrOsStandardBackground |
+                   apps::IconEffects::kCrOsStandardMask;
+    ASSERT_TRUE(
+        icon_manager().HasIcons(app_id, IconPurpose::MASKABLE, {kIconSize2}));
 
-  GenerateWebAppCompressedIcon(app_id, IconPurpose::MASKABLE, {kIconSize2},
-                               {{1.0, kIconSize2}, {2.0, kIconSize2}},
-                               src_data);
+    GenerateWebAppCompressedIcon(app_id, IconPurpose::MASKABLE, {kIconSize2},
+                                 {{1.0, kIconSize2}, {2.0, kIconSize2}},
+                                 src_data);
 
-  LoadCompressedIconBlockingFromWebApp(
-      app_id,
-      apps::IconEffects::kRoundCorners |
-          apps::IconEffects::kCrOsStandardBackground |
-          apps::IconEffects::kCrOsStandardMask,
-      icon);
-#else
+    LoadCompressedIconBlockingFromWebApp(app_id, icon_effect, icon);
+    VerifyCompressedIcon(src_data, icon);
+    return;
+  }
+
+  icon_effect |= apps::IconEffects::kResizeAndPad;
+#endif
+
   ASSERT_TRUE(icon_manager().HasIcons(app_id, IconPurpose::ANY, {kIconSize1}));
 
   GenerateWebAppCompressedIcon(app_id, IconPurpose::ANY, {kIconSize1},
                                {{1.0, kIconSize1}, {2.0, kIconSize1}},
                                src_data);
 
-  LoadCompressedIconBlockingFromWebApp(app_id, apps::IconEffects::kRoundCorners,
-                                       icon);
-#endif
+  LoadCompressedIconBlockingFromWebApp(app_id, icon_effect, icon);
 
   VerifyCompressedIcon(src_data, icon);
 }
@@ -879,10 +905,17 @@ TEST_F(WebAppIconFactoryTest, LoadNonMaskableIconWithMaskableIcon) {
                      {{1.0, kIconSize2}, {2.0, kIconSize2}}, src_image_skia);
 
   gfx::ImageSkia dst_image_skia;
-  LoadIconFromWebApp(
-      app_id,
-      apps::IconEffects::kRoundCorners | apps::IconEffects::kCrOsStandardIcon,
-      dst_image_skia);
+  apps::IconEffects icon_effect = apps::IconEffects::kRoundCorners;
+
+#if defined(OS_CHROMEOS)
+  if (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon)) {
+    icon_effect |= apps::IconEffects::kCrOsStandardIcon;
+  } else {
+    icon_effect |= apps::IconEffects::kResizeAndPad;
+  }
+#endif
+
+  LoadIconFromWebApp(app_id, icon_effect, dst_image_skia);
 
   VerifyIcon(src_image_skia, dst_image_skia);
 }
@@ -944,10 +977,17 @@ TEST_F(WebAppIconFactoryTest, LoadExactSizeIcon) {
                      {{1.0, kIconSize2}, {2.0, kIconSize4}}, src_image_skia);
 
   gfx::ImageSkia dst_image_skia;
-  LoadIconFromWebApp(
-      app_id,
-      apps::IconEffects::kRoundCorners | apps::IconEffects::kCrOsStandardIcon,
-      dst_image_skia);
+  apps::IconEffects icon_effect = apps::IconEffects::kRoundCorners;
+
+#if defined(OS_CHROMEOS)
+  if (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon)) {
+    icon_effect |= apps::IconEffects::kCrOsStandardIcon;
+  } else {
+    icon_effect |= apps::IconEffects::kResizeAndPad;
+  }
+#endif
+
+  LoadIconFromWebApp(app_id, icon_effect, dst_image_skia);
 
   VerifyIcon(src_image_skia, dst_image_skia);
 }

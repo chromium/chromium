@@ -35,6 +35,7 @@
 #include "chrome/browser/ui/app_list/chrome_app_list_item.h"
 #include "chrome/browser/ui/app_list/icon_standardizer.h"
 #include "chrome/browser/ui/app_list/internal_app/internal_app_metadata.h"
+#include "chrome/browser/ui/app_list/md_icon_normalizer.h"
 #include "chrome/browser/ui/app_list/test/fake_app_list_model_updater.h"
 #include "chrome/browser/ui/app_list/test/test_app_list_controller_delegate.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
@@ -281,8 +282,15 @@ class ExtensionAppTest : public AppServiceAppModelBuilderTest {
             &output_image_skia, run_loop.QuitClosure()));
     run_loop.Run();
 
-    if (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon))
+    if (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon)) {
       output_image_skia = app_list::CreateStandardIconImage(output_image_skia);
+    } else {
+      extensions::ChromeAppIcon::ApplyEffects(
+          size_in_dip,
+          base::BindRepeating(&app_list::MaybeResizeAndPadIconForMd),
+          true /* app_launchable */, false /* from_bookmark */,
+          extensions::ChromeAppIcon::Badge::kNone, &output_image_skia);
+    }
   }
 
   void GenerateExtensionAppCompressedIcon(const std::string app_id,
@@ -602,7 +610,7 @@ TEST_P(ExtensionAppTest, LoadCompressedIcon) {
   apps::IconEffects icon_effects =
       (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon))
           ? apps::IconEffects::kCrOsStandardIcon
-          : apps::IconEffects::kNone;
+          : apps::IconEffects::kResizeAndPad;
 
   base::RunLoop run_loop;
   apps::mojom::IconValuePtr dst_icon;
