@@ -13,8 +13,10 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/permission_bubble/permission_prompt_bubble_view.h"
+#include "components/permissions/notification_permission_ui_selector.h"
 #include "components/permissions/permission_request.h"
 #include "components/permissions/permission_request_manager.h"
+#include "components/permissions/permission_uma_util.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 
@@ -110,4 +112,24 @@ permissions::PermissionPrompt::TabSwitchingBehavior
 PermissionPromptImpl::GetTabSwitchingBehavior() {
   return permissions::PermissionPrompt::TabSwitchingBehavior::
       kDestroyPromptButKeepRequestPending;
+}
+
+permissions::PermissionPromptDisposition
+PermissionPromptImpl::GetPromptDisposition() const {
+  switch (prompt_style_) {
+    case PromptStyle::kBubble:
+      return permissions::PermissionPromptDisposition::ANCHORED_BUBBLE;
+    case PromptStyle::kChip:
+      return permissions::PermissionPromptDisposition::LOCATION_BAR_LEFT_CHIP;
+    case PromptStyle::kQuiet: {
+      permissions::PermissionRequestManager* manager =
+          permissions::PermissionRequestManager::FromWebContents(web_contents_);
+      return permissions::NotificationPermissionUiSelector::
+                     ShouldSuppressAnimation(manager->ReasonForUsingQuietUi())
+                 ? permissions::PermissionPromptDisposition::
+                       LOCATION_BAR_RIGHT_STATIC_ICON
+                 : permissions::PermissionPromptDisposition::
+                       LOCATION_BAR_RIGHT_ANIMATED_ICON;
+    }
+  }
 }

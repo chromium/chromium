@@ -30,6 +30,8 @@ class PermissionPromptImpl : public permissions::PermissionPrompt,
   // permissions::PermissionPrompt:
   void UpdateAnchorPosition() override;
   TabSwitchingBehavior GetTabSwitchingBehavior() override;
+  permissions::PermissionPromptDisposition GetPromptDisposition()
+      const override;
 
   PermissionPromptBubbleView* prompt_bubble_for_testing() {
     return prompt_bubble_;

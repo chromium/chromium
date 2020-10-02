@@ -69,7 +69,7 @@ enum class PermissionEmbargoStatus {
 // Enum used in UKMs and UMAs, do not re-order or change values. Deprecated
 // items should only be commented out. New items should be added at the end,
 // and the "PermissionPromptDisposition" histogram suffix needs to be updated to
-// match (tools/metrics/histograms/histograms.xml).
+// match (tools/metrics/histograms/histograms_xml/histogram_suffixes_list.xml).
 enum class PermissionPromptDisposition {
   // Not all permission actions will have an associated permission prompt (e.g.
   // changing permission via the settings page).
@@ -92,6 +92,14 @@ enum class PermissionPromptDisposition {
   // Only used on Android, an initially-collapsed infobar at the bottom of the
   // page.
   MINI_INFOBAR = 5,
+
+  // Only used on desktop, a chip on the left-hand side of the location bar that
+  // shows a bubble when clicked.
+  LOCATION_BAR_LEFT_CHIP = 6,
+
+  // There was no UI being shown. This is usually because the user closed an
+  // inactive tab that had a pending permission request.
+  NONE_VISIBLE = 7,
 };
 
 enum class AdaptiveTriggers {

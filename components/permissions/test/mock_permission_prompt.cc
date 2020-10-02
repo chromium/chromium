@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
+#include "components/permissions/permission_uma_util.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -29,6 +30,14 @@ MockPermissionPrompt::GetTabSwitchingBehavior() {
   return TabSwitchingBehavior::kKeepPromptAlive;
 #else
   return TabSwitchingBehavior::kDestroyPromptButKeepRequestPending;
+#endif
+}
+
+PermissionPromptDisposition MockPermissionPrompt::GetPromptDisposition() const {
+#if defined(OS_ANDROID)
+  return PermissionPromptDisposition::MODAL_DIALOG;
+#else
+  return PermissionPromptDisposition::ANCHORED_BUBBLE;
 #endif
 }
 

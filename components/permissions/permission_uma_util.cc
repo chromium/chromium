@@ -161,6 +161,8 @@ std::string GetPromptDispositionString(
   switch (ui_disposition) {
     case PermissionPromptDisposition::ANCHORED_BUBBLE:
       return "AnchoredBubble";
+    case PermissionPromptDisposition::LOCATION_BAR_LEFT_CHIP:
+      return "LocationBarLeftChip";
     case PermissionPromptDisposition::LOCATION_BAR_RIGHT_ANIMATED_ICON:
       return "LocationBarRightAnimatedIcon";
     case PermissionPromptDisposition::LOCATION_BAR_RIGHT_STATIC_ICON:
@@ -169,6 +171,8 @@ std::string GetPromptDispositionString(
       return "MiniInfobar";
     case PermissionPromptDisposition::MODAL_DIALOG:
       return "ModalDialog";
+    case PermissionPromptDisposition::NONE_VISIBLE:
+      return "NoneVisible";
     case PermissionPromptDisposition::NOT_APPLICABLE:
       return "NotApplicable";
   }

@@ -17,6 +17,8 @@ class WebContents;
 }
 
 namespace permissions {
+enum class PermissionPromptDisposition;
+
 class PermissionRequest;
 
 // This class is the platform-independent interface through which the permission
@@ -74,6 +76,9 @@ class PermissionPrompt {
   // Get the behavior of this prompt when the user switches away from the
   // associated tab.
   virtual TabSwitchingBehavior GetTabSwitchingBehavior() = 0;
+
+  // Get the type of prompt UI shown for metrics.
+  virtual PermissionPromptDisposition GetPromptDisposition() const = 0;
 };
 
 }  // namespace permissions
