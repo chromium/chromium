@@ -64,34 +64,26 @@ class RasterizeAndRecordMicro(legacy_page_test.LegacyPageTest):
     data = tab.EvaluateJavaScript('window.benchmark_results.results')
 
     pixels_recorded = data['pixels_recorded']
-    record_time = data['record_time_ms']
     pixels_rasterized = data['pixels_rasterized']
-    rasterize_time = data['rasterize_time_ms']
     painter_memory_usage = data.get('painter_memory_usage', 0)
     paint_op_memory_usage = data.get('paint_op_memory_usage', 0)
     paint_op_count = data.get('paint_op_count', 0)
 
     results.AddMeasurement('pixels_recorded', 'count', pixels_recorded)
     results.AddMeasurement('pixels_rasterized', 'count', pixels_rasterized)
-    results.AddMeasurement('rasterize_time', 'ms', rasterize_time)
-    results.AddMeasurement('record_time', 'ms', record_time)
     results.AddMeasurement('painter_memory_usage', 'bytes',
                            painter_memory_usage)
     results.AddMeasurement('paint_op_memory_usage', 'bytes',
                            paint_op_memory_usage)
     results.AddMeasurement('paint_op_count', 'count', paint_op_count)
 
-    record_time_caching_disabled = data['record_time_caching_disabled_ms']
-    record_time_subsequence_caching_disabled = \
-        data['record_time_subsequence_caching_disabled_ms']
-    record_time_partial_invalidation = \
-        data['record_time_partial_invalidation_ms']
-    results.AddMeasurement('record_time_caching_disabled', 'ms',
-                           record_time_caching_disabled)
-    results.AddMeasurement('record_time_subsequence_caching_disabled', 'ms',
-                           record_time_subsequence_caching_disabled)
-    results.AddMeasurement('record_time_partial_invalidation', 'ms',
-                           record_time_partial_invalidation)
+    for metric in ('rasterize_time', 'record_time',
+                   'record_time_caching_disabled',
+                   'record_time_subsequence_caching_disabled',
+                   'record_time_partial_invalidation',
+                   'raster_invalidation_and_convert_time',
+                   'paint_artifact_compositor_update_time'):
+      results.AddMeasurement(metric, 'ms', data.get(metric + '_ms', 0))
 
     if self._report_detailed_results:
       for metric in ('pixels_rasterized_with_non_solid_color',

@@ -416,6 +416,11 @@ bool WebViewFrameWidget::UpdateScreenRects(
   return true;
 }
 
+void WebViewFrameWidget::RunPaintBenchmark(int repeat_count,
+                                           cc::PaintBenchmarkResult& result) {
+  web_view_->RunPaintBenchmark(repeat_count, result);
+}
+
 const ScreenInfo& WebViewFrameWidget::GetOriginalScreenInfo() {
   if (device_emulator_)
     return device_emulator_->original_screen_info();

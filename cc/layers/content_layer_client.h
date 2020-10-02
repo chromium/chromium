@@ -18,6 +18,7 @@ namespace cc {
 
 class CC_EXPORT ContentLayerClient {
  public:
+  // TODO(wangxianzhu): Remove.
   enum PaintingControlSetting {
     PAINTING_BEHAVIOR_NORMAL,
     PAINTING_BEHAVIOR_NORMAL_FOR_TEST,
@@ -36,6 +37,7 @@ class CC_EXPORT ContentLayerClient {
   // to the layer itself, into a DisplayItemList that it returns. The
   // PaintingControlSetting enum controls painting to isolate different
   // components in performance tests.
+  // TODO(wangxianzhu): Remove the parameter.
   virtual scoped_refptr<DisplayItemList> PaintContentsToDisplayList(
       PaintingControlSetting painting_control) = 0;
 

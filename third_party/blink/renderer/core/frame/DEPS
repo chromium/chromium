@@ -21,6 +21,7 @@ specific_include_rules = {
     "+ui/gfx/transform.h"
   ],
   "local_frame_view.cc": [
+    "+base/timer/lap_timer.h",
     "+cc/tiles/frame_viewer_instrumentation.h",
     "+components/paint_preview/common/paint_preview_tracker.h",
   ],

@@ -58,6 +58,7 @@
 #include "third_party/skia/include/core/SkRefCnt.h"
 
 namespace cc {
+class DisplayItemList;
 class PictureLayer;
 }  // namespace cc
 
@@ -180,7 +181,8 @@ class PLATFORM_EXPORT GraphicsLayer : public DisplayItemClient,
                                PaintInvalidationReason);
 
   IntRect InterestRect();
-  void PaintRecursively(HashSet<const GraphicsLayer*>& repainted_layers);
+  void PaintRecursively(HashSet<const GraphicsLayer*>& repainted_layers,
+                        PaintBenchmarkMode = PaintBenchmarkMode::kNormal);
   // Returns true if this layer is repainted.
   bool Paint();
 
@@ -297,6 +299,7 @@ class PLATFORM_EXPORT GraphicsLayer : public DisplayItemClient,
 
   scoped_refptr<cc::PictureLayer> layer_;
   scoped_refptr<cc::Layer> contents_layer_;
+  scoped_refptr<cc::DisplayItemList> cc_display_item_list_;
 
   SquashingDisallowedReasons squashing_disallowed_reasons_ =
       SquashingDisallowedReason::kNone;

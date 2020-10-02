@@ -35,6 +35,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/timer/lap_timer.h"
 #include "cc/input/main_thread_scrolling_reason.h"
 #include "cc/layers/picture_layer.h"
 #include "cc/tiles/frame_viewer_instrumentation.h"
@@ -2738,7 +2739,7 @@ bool LocalFrameView::RunPrePaintLifecyclePhase(
   return target_state > DocumentLifecycle::kPrePaintClean;
 }
 
-void LocalFrameView::RunPaintLifecyclePhase() {
+void LocalFrameView::RunPaintLifecyclePhase(PaintBenchmarkMode benchmark_mode) {
   TRACE_EVENT0("blink,benchmark", "LocalFrameView::RunPaintLifecyclePhase");
   // While printing or capturing a paint preview of a document, the paint walk
   // is done into a special canvas. There is no point doing a normal paint step
@@ -2746,12 +2747,21 @@ void LocalFrameView::RunPaintLifecyclePhase() {
   bool is_capturing_layout = frame_->GetDocument()->IsCapturingLayout();
   HashSet<const GraphicsLayer*> repainted_layers;
   if (!is_capturing_layout)
-    PaintTree(repainted_layers);
+    PaintTree(repainted_layers, benchmark_mode);
 
   if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
     if (GetLayoutView()->Compositor()->InCompositingMode()) {
       GetScrollingCoordinator()->UpdateAfterPaint(this);
     }
+  }
+
+  if (benchmark_mode ==
+          PaintBenchmarkMode::kForcePaintArtifactCompositorUpdate ||
+      // TODO(paint-dev): Separate requirement for update for repaint and full
+      // PaintArtifactCompositor update.
+      (RuntimeEnabledFeatures::CompositeAfterPaintEnabled() &&
+       benchmark_mode != PaintBenchmarkMode::kNormal)) {
+    paint_artifact_compositor_->SetNeedsUpdate();
   }
 
   if (!is_capturing_layout) {
@@ -2901,8 +2911,8 @@ static void UpdateLayerDebugInfoRecursively(const GraphicsLayer& root) {
       });
 }
 
-void LocalFrameView::PaintTree(
-    HashSet<const GraphicsLayer*>& repainted_layers) {
+void LocalFrameView::PaintTree(HashSet<const GraphicsLayer*>& repainted_layers,
+                               PaintBenchmarkMode benchmark_mode) {
   SCOPED_UMA_AND_UKM_TIMER(EnsureUkmAggregator(),
                            LocalFrameUkmAggregator::kPaint);
 
@@ -2924,12 +2934,16 @@ void LocalFrameView::PaintTree(
     if (!paint_controller_)
       paint_controller_ = std::make_unique<PaintController>();
 
+    PaintController::ScopedBenchmarkMode scoped_benchmark(*paint_controller_,
+                                                          benchmark_mode);
+
     // TODO(crbug.com/917911): Painting of overlays should not force repainting
     // of the frame contents.
     auto* web_local_frame_impl = WebLocalFrameImpl::FromFrame(frame_);
     bool has_dev_tools_overlays =
         web_local_frame_impl && web_local_frame_impl->HasDevToolsOverlays();
-    if (!GetLayoutView()->Layer()->SelfOrDescendantNeedsRepaint() &&
+    if (!paint_controller_->ShouldForcePaintForBenchmark() &&
+        !GetLayoutView()->Layer()->SelfOrDescendantNeedsRepaint() &&
         !visual_viewport_needs_repaint_ && !has_dev_tools_overlays) {
       paint_controller_->UpdateUMACountsOnFullyCached();
     } else {
@@ -2988,7 +3002,7 @@ void LocalFrameView::PaintTree(
     // the host page and will be painted during painting of the host page.
     if (GraphicsLayer* root_graphics_layer =
             layout_view->Compositor()->PaintRootGraphicsLayer()) {
-      root_graphics_layer->PaintRecursively(repainted_layers);
+      root_graphics_layer->PaintRecursively(repainted_layers, benchmark_mode);
       if (!repainted_layers.IsEmpty()) {
         // If the painted result changed, the recorded hit test data may have
         // changed which will affect the mapped hit test geometry.
@@ -3047,7 +3061,7 @@ void LocalFrameView::PushPaintArtifactToCompositor(
 
   // Skip updating property trees, pushing cc::Layers, and issuing raster
   // invalidations if possible.
-  // TODO(paint-team): In CompositeAfterPaint mode, repainted_layers will always
+  // TODO(paint-dev): In CompositeAfterPaint mode, repainted_layers will always
   // be empty, even if painted output has changed. We need an equivalent signal
   // to indicate that PAC doesn't need to run the layerization algorithm, but it
   // does need to update properties on layers that depend on painted output.
@@ -4802,6 +4816,45 @@ PaintLayer* LocalFrameView::GetFullScreenOverlayLayer() const {
   // Fullscreen overlay video layers are only used for the main frame.
   DCHECK(frame_->IsMainFrame());
   return GetFullScreenOverlayVideoLayer(*doc);
+}
+
+void LocalFrameView::RunPaintBenchmark(int repeat_count,
+                                       cc::PaintBenchmarkResult& result) {
+  DCHECK_EQ(Lifecycle().GetState(), DocumentLifecycle::kPaintClean);
+
+  auto run_benchmark = [&](PaintBenchmarkMode mode) -> double {
+    constexpr int kTimeCheckInterval = 1;
+    constexpr int kWarmupRuns = 0;
+    constexpr base::TimeDelta kTimeLimit = base::TimeDelta::FromMilliseconds(1);
+
+    base::TimeDelta min_time = base::TimeDelta::Max();
+    for (int i = 0; i < repeat_count; i++) {
+      // Run for a minimum amount of time to avoid problems with timer
+      // quantization when the time is very small.
+      base::LapTimer timer(kWarmupRuns, kTimeLimit, kTimeCheckInterval);
+      do {
+        RunPaintLifecyclePhase(mode);
+        timer.NextLap();
+      } while (!timer.HasTimeLimitExpired());
+
+      base::TimeDelta duration = timer.TimePerLap();
+      if (duration < min_time)
+        min_time = duration;
+    }
+    return min_time.InMillisecondsF();
+  };
+
+  result.record_time_ms = run_benchmark(PaintBenchmarkMode::kForcePaint);
+  result.record_time_caching_disabled_ms =
+      run_benchmark(PaintBenchmarkMode::kCachingDisabled);
+  result.record_time_subsequence_caching_disabled_ms =
+      run_benchmark(PaintBenchmarkMode::kSubsequenceCachingDisabled);
+  result.record_time_partial_invalidation_ms =
+      run_benchmark(PaintBenchmarkMode::kPartialInvalidation);
+  result.raster_invalidation_and_convert_time_ms =
+      run_benchmark(PaintBenchmarkMode::kForceRasterInvalidationAndConvert);
+  result.paint_artifact_compositor_update_time_ms =
+      run_benchmark(PaintBenchmarkMode::kForcePaintArtifactCompositorUpdate);
 }
 
 }  // namespace blink

@@ -31,6 +31,18 @@ namespace blink {
 
 static constexpr wtf_size_t kInitialDisplayItemListCapacityBytes = 512;
 
+enum class PaintBenchmarkMode {
+  kNormal,
+  kForceRasterInvalidationAndConvert,
+  kForcePaintArtifactCompositorUpdate,
+  kForcePaint,
+  // The above modes don't additionally invalidate paintings, i.e. during
+  // repeated benchmarking, the PaintController is fully cached.
+  kPartialInvalidation,
+  kSubsequenceCachingDisabled,
+  kCachingDisabled,
+};
+
 // FrameFirstPaint stores first-paint, text or image painted for the
 // corresponding frame. They are never reset to false. First-paint is defined in
 // https://github.com/WICG/paint-timing. It excludes default background paint.
@@ -218,11 +230,29 @@ class PLATFORM_EXPORT PaintController {
     return GetPaintArtifact().PaintChunks();
   }
 
-  // For micro benchmarks of record time.
-  static void SetSubsequenceCachingDisabledForBenchmark();
-  static void SetPartialInvalidationForBenchmark();
-  static bool ShouldForcePaintForBenchmark();
-  static void ClearFlagsForBenchmark();
+  class ScopedBenchmarkMode {
+    STACK_ALLOCATED();
+
+   public:
+    ScopedBenchmarkMode(PaintController& paint_controller,
+                        PaintBenchmarkMode mode)
+        : paint_controller_(paint_controller) {
+      // Nesting is not allowed.
+      DCHECK_EQ(PaintBenchmarkMode::kNormal, paint_controller_.benchmark_mode_);
+      paint_controller.SetBenchmarkMode(mode);
+    }
+    ~ScopedBenchmarkMode() {
+      paint_controller_.SetBenchmarkMode(PaintBenchmarkMode::kNormal);
+    }
+
+   private:
+    PaintController& paint_controller_;
+  };
+
+  PaintBenchmarkMode GetBenchmarkMode() const { return benchmark_mode_; }
+  bool ShouldForcePaintForBenchmark() {
+    return benchmark_mode_ >= PaintBenchmarkMode::kForcePaint;
+  }
 
   void SetFirstPainted();
   void SetTextPainted();
@@ -383,6 +413,10 @@ class PLATFORM_EXPORT PaintController {
 
   void UpdateUMACounts();
 
+  void SetBenchmarkMode(PaintBenchmarkMode);
+  bool ShouldInvalidateDisplayItemForBenchmark();
+  bool ShouldInvalidateSubsequenceForBenchmark();
+
   Usage usage_;
 
   // The last paint artifact after CommitNewDisplayItems().
@@ -451,6 +485,10 @@ class PLATFORM_EXPORT PaintController {
   wtf_size_t last_cached_subsequence_end_ = 0;
 
   wtf_size_t current_fragment_ = 0;
+
+  PaintBenchmarkMode benchmark_mode_ = PaintBenchmarkMode::kNormal;
+  int partial_invalidation_display_item_count_ = 0;
+  int partial_invalidation_subsequence_count_ = 0;
 
   // Accumulated counts for UMA metrics. Updated by UpdateUMACounts() and
   // UpdateUMACountsOnFullyCached(), and reported as UMA metrics and reset by

@@ -115,6 +115,9 @@ class LayerTreeViewDelegate {
   // perform actual painting work.
   virtual void WillBeginMainFrame() = 0;
 
+  virtual void RunPaintBenchmark(int repeat_count,
+                                 cc::PaintBenchmarkResult& result) {}
+
  protected:
   virtual ~LayerTreeViewDelegate() {}
 };

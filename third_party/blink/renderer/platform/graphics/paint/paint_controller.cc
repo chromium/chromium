@@ -35,57 +35,15 @@ PaintController::~PaintController() {
   }
 }
 
-// For micro benchmarks of record time.
-static bool g_subsequence_caching_disabled = false;
-static bool g_partial_invalidation = false;
-static int g_partial_invalidation_display_item_count = 0;
-static int g_partial_invalidation_subsequence_count = 0;
-
-// This is used to invalidate one out of every |kInvalidateDisplayItemInterval|
-// display items for the micro benchmark of record time with partial
-// invalidation.
-static bool ShouldInvalidateDisplayItemForBenchmark() {
-  constexpr int kInvalidateDisplayItemInterval = 8;
-  return g_partial_invalidation &&
-         !(g_partial_invalidation_display_item_count++ %
-           kInvalidateDisplayItemInterval);
-}
-// Similar to the above, but for subsequences.
-static bool ShouldInvalidateSubsequenceForBenchmark() {
-  constexpr int kInvalidateSubsequenceInterval = 2;
-  return g_partial_invalidation &&
-         !(g_partial_invalidation_subsequence_count++ %
-           kInvalidateSubsequenceInterval);
-}
-
-void PaintController::SetSubsequenceCachingDisabledForBenchmark() {
-  g_subsequence_caching_disabled = true;
-}
-
-void PaintController::SetPartialInvalidationForBenchmark() {
-  g_partial_invalidation = true;
-  g_partial_invalidation_display_item_count = 0;
-  g_partial_invalidation_subsequence_count = 0;
-}
-
-bool PaintController::ShouldForcePaintForBenchmark() {
-  return g_subsequence_caching_disabled || g_partial_invalidation;
-}
-
-void PaintController::ClearFlagsForBenchmark() {
-  g_subsequence_caching_disabled = false;
-  g_partial_invalidation = false;
-}
-
 bool PaintController::UseCachedItemIfPossible(const DisplayItemClient& client,
                                               DisplayItem::Type type) {
   if (usage_ == kTransient)
     return false;
 
-  if (!ClientCacheIsValid(client))
+  if (ShouldInvalidateDisplayItemForBenchmark())
     return false;
 
-  if (ShouldInvalidateDisplayItemForBenchmark())
+  if (!ClientCacheIsValid(client))
     return false;
 
   if (RuntimeEnabledFeatures::PaintUnderInvalidationCheckingEnabled() &&
@@ -130,9 +88,6 @@ bool PaintController::UseCachedItemIfPossible(const DisplayItemClient& client,
 bool PaintController::UseCachedSubsequenceIfPossible(
     const DisplayItemClient& client) {
   if (usage_ == kTransient)
-    return false;
-
-  if (g_subsequence_caching_disabled)
     return false;
 
   if (ShouldInvalidateSubsequenceForBenchmark())
@@ -846,6 +801,40 @@ void PaintController::ReportUMACounts() {
   sum_num_cached_items_ = 0;
   sum_num_subsequences_ = 0;
   sum_num_cached_subsequences_ = 0;
+}
+
+bool PaintController::ShouldInvalidateDisplayItemForBenchmark() {
+  if (benchmark_mode_ == PaintBenchmarkMode::kCachingDisabled)
+    return true;
+
+  // For kPartialInvalidation, invalidate one out of every
+  // |kInvalidateDisplayItemInterval| display items for the micro benchmark of
+  // record time with partial invalidation.
+  constexpr int kInvalidateDisplayItemInterval = 8;
+  return benchmark_mode_ == PaintBenchmarkMode::kPartialInvalidation &&
+         !(partial_invalidation_display_item_count_++ %
+           kInvalidateDisplayItemInterval);
+}
+
+bool PaintController::ShouldInvalidateSubsequenceForBenchmark() {
+  if (benchmark_mode_ == PaintBenchmarkMode::kCachingDisabled ||
+      benchmark_mode_ == PaintBenchmarkMode::kSubsequenceCachingDisabled)
+    return true;
+
+  // Similar to the ShouldInvalidateDisplayItemsForBenchmark(), but for
+  // subsequences.
+  constexpr int kInvalidateSubsequenceInterval = 2;
+  return benchmark_mode_ == PaintBenchmarkMode::kPartialInvalidation &&
+         !(partial_invalidation_subsequence_count_++ %
+           kInvalidateSubsequenceInterval);
+}
+
+void PaintController::SetBenchmarkMode(PaintBenchmarkMode mode) {
+  benchmark_mode_ = mode;
+  if (mode == PaintBenchmarkMode::kPartialInvalidation) {
+    partial_invalidation_display_item_count_ = 0;
+    partial_invalidation_subsequence_count_ = 0;
+  }
 }
 
 }  // namespace blink

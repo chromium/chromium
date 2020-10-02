@@ -66,6 +66,15 @@ constexpr ManipulationInfo kManipulationInfoTouch = 1 << 1;
 constexpr ManipulationInfo kManipulationInfoPrecisionTouchPad = 1 << 2;
 constexpr ManipulationInfo kManipulationInfoPinchZoom = 1 << 3;
 
+struct PaintBenchmarkResult {
+  double record_time_ms = 0;
+  double record_time_caching_disabled_ms = 0;
+  double record_time_subsequence_caching_disabled_ms = 0;
+  double record_time_partial_invalidation_ms = 0;
+  double raster_invalidation_and_convert_time_ms = 0;
+  double paint_artifact_compositor_update_time_ms = 0;
+};
+
 // A LayerTreeHost is bound to a LayerTreeHostClient. The main rendering
 // loop (in ProxyMain or SingleThreadProxy) calls methods on the
 // LayerTreeHost, which then handles them and also calls into the equivalent
@@ -171,6 +180,9 @@ class LayerTreeHostClient {
   // RecordEndOfFrameMetrics.
   virtual std::unique_ptr<BeginMainFrameMetrics> GetBeginMainFrameMetrics() = 0;
   virtual void NotifyThroughputTrackerResults(CustomTrackerResults results) = 0;
+
+  virtual void RunPaintBenchmark(int repeat_count,
+                                 PaintBenchmarkResult& result) {}
 
  protected:
   virtual ~LayerTreeHostClient() = default;

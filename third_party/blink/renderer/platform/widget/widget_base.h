@@ -141,6 +141,8 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
   void EndUpdateLayers() override;
   void UpdateVisualState() override;
   void WillBeginMainFrame() override;
+  void RunPaintBenchmark(int repeat_count,
+                         cc::PaintBenchmarkResult& result) override;
 
   cc::AnimationHost* AnimationHost() const;
   cc::LayerTreeHost* LayerTreeHost() const;

@@ -265,12 +265,15 @@ IntRect GraphicsLayer::InterestRect() {
 }
 
 void GraphicsLayer::PaintRecursively(
-    HashSet<const GraphicsLayer*>& repainted_layers) {
-  ForAllPaintingGraphicsLayers(*this,
-                               [&repainted_layers](GraphicsLayer& layer) {
-                                 if (layer.Paint())
-                                   repainted_layers.insert(&layer);
-                               });
+    HashSet<const GraphicsLayer*>& repainted_layers,
+    PaintBenchmarkMode benchmark_mode) {
+  ForAllPaintingGraphicsLayers(
+      *this, [benchmark_mode, &repainted_layers](GraphicsLayer& layer) {
+        PaintController::ScopedBenchmarkMode scoped_benchmark_mode(
+            layer.GetPaintController(), benchmark_mode);
+        if (layer.Paint())
+          repainted_layers.insert(&layer);
+      });
 
 #if DCHECK_IS_ON()
   if (!repainted_layers.IsEmpty()) {
@@ -297,7 +300,9 @@ bool GraphicsLayer::Paint() {
   if (PaintWithoutCommit()) {
     GetPaintController().CommitNewDisplayItems();
     UpdateShouldCreateLayersAfterPaint();
-  } else if (!needs_check_raster_invalidation_) {
+  } else if (!needs_check_raster_invalidation_ &&
+             GetPaintController().GetBenchmarkMode() !=
+                 PaintBenchmarkMode::kForceRasterInvalidationAndConvert) {
     return false;
   }
 
@@ -312,6 +317,22 @@ bool GraphicsLayer::Paint() {
         raster_invalidation_function_,
         GetPaintController().GetPaintArtifactShared(), layer_bounds,
         layer_state_->state.Unalias(), this);
+
+    base::Optional<RasterUnderInvalidationCheckingParams>
+        raster_under_invalidation_params;
+    if (RuntimeEnabledFeatures::PaintUnderInvalidationCheckingEnabled() &&
+        PaintsContentOrHitTest()) {
+      raster_under_invalidation_params.emplace(
+          EnsureRasterInvalidator().EnsureTracking(), InterestRect(),
+          DebugName());
+    }
+
+    cc_display_item_list_ = PaintChunksToCcLayer::Convert(
+        GetPaintController().PaintChunks(), layer_state_->state.Unalias(),
+        gfx::Vector2dF(layer_state_->offset.X(), layer_state_->offset.Y()),
+        GetPaintController().GetPaintArtifact().GetDisplayItemList(),
+        cc::DisplayItemList::kTopLevelDisplayItemList,
+        base::OptionalOrNullptr(raster_under_invalidation_params));
   }
 
   needs_check_raster_invalidation_ = false;
@@ -374,9 +395,9 @@ bool GraphicsLayer::PaintWithoutCommit(const IntRect* interest_rect) {
     interest_rect = &new_interest_rect;
   }
 
-  if (!GetPaintController().ShouldForcePaintForBenchmark() &&
-      !client_.NeedsRepaint(*this) &&
-      !GetPaintController().CacheIsAllInvalid() &&
+  PaintController& paint_controller = GetPaintController();
+  if (!paint_controller.ShouldForcePaintForBenchmark() &&
+      !client_.NeedsRepaint(*this) && !paint_controller.CacheIsAllInvalid() &&
       previous_interest_rect_ == *interest_rect) {
     GetPaintController().UpdateUMACountsOnFullyCached();
     return false;
@@ -384,8 +405,8 @@ bool GraphicsLayer::PaintWithoutCommit(const IntRect* interest_rect) {
 
   GraphicsContext context(GetPaintController());
   DCHECK(layer_state_) << "No layer state for GraphicsLayer: " << DebugName();
-  GetPaintController().UpdateCurrentPaintChunkProperties(nullptr,
-                                                         layer_state_->state);
+  paint_controller.UpdateCurrentPaintChunkProperties(nullptr,
+                                                     layer_state_->state);
 
   previous_interest_rect_ = *interest_rect;
   client_.PaintContents(this, context, painting_phase_, *interest_rect);
@@ -709,45 +730,7 @@ void GraphicsLayer::SetContentsLayerState(
 scoped_refptr<cc::DisplayItemList> GraphicsLayer::PaintContentsToDisplayList(
     PaintingControlSetting painting_control) {
   DCHECK(!ShouldCreateLayersAfterPaint());
-  TRACE_EVENT0("blink,benchmark", "GraphicsLayer::PaintContents");
-
-  if (painting_control == SUBSEQUENCE_CACHING_DISABLED)
-    PaintController::SetSubsequenceCachingDisabledForBenchmark();
-  else if (painting_control == PARTIAL_INVALIDATION)
-    PaintController::SetPartialInvalidationForBenchmark();
-
-  PaintController& paint_controller = GetPaintController();
-  // We also disable caching when Painting or Construction are disabled. In both
-  // cases we would like to compare assuming the full cost of recording, not the
-  // cost of re-using cached content.
-  if (painting_control == DISPLAY_LIST_CACHING_DISABLED)
-    paint_controller.InvalidateAll();
-
-  // Anything other than PAINTING_BEHAVIOR_NORMAL is for testing. In non-testing
-  // scenarios, it is an error to call GraphicsLayer::Paint. Actual painting
-  // occurs in LocalFrameView::PaintTree() which calls GraphicsLayer::Paint();
-  // this method merely copies the painted output to the cc::DisplayItemList.
-  if (painting_control != PAINTING_BEHAVIOR_NORMAL)
-    Paint();
-
-  base::Optional<RasterUnderInvalidationCheckingParams>
-      raster_under_invalidation_params;
-  if (RuntimeEnabledFeatures::PaintUnderInvalidationCheckingEnabled() &&
-      PaintsContentOrHitTest()) {
-    raster_under_invalidation_params.emplace(
-        EnsureRasterInvalidator().EnsureTracking(), InterestRect(),
-        DebugName());
-  }
-
-  PaintController::ClearFlagsForBenchmark();
-
-  DCHECK(layer_state_) << "No layer state for GraphicsLayer: " << DebugName();
-  return PaintChunksToCcLayer::Convert(
-      GetPaintController().PaintChunks(), layer_state_->state.Unalias(),
-      gfx::Vector2dF(layer_state_->offset.X(), layer_state_->offset.Y()),
-      paint_controller.GetPaintArtifact().GetDisplayItemList(),
-      cc::DisplayItemList::kTopLevelDisplayItemList,
-      base::OptionalOrNullptr(raster_under_invalidation_params));
+  return cc_display_item_list_;
 }
 
 size_t GraphicsLayer::GetApproximateUnsharedMemoryUsage() const {

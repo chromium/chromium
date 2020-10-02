@@ -463,6 +463,8 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   // Called when keyboard focus switches to an anchor with the given URL.
   void SetKeyboardFocusURL(const KURL&);
 
+  void RunPaintBenchmark(int repeat_count, cc::PaintBenchmarkResult& result);
+
  private:
   FRIEND_TEST_ALL_PREFIXES(WebFrameTest, DivScrollIntoEditableTest);
   FRIEND_TEST_ALL_PREFIXES(WebFrameTest,

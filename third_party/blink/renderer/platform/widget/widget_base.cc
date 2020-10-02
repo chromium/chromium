@@ -512,6 +512,11 @@ void WidgetBase::WillBeginMainFrame() {
   UpdateTextInputState();
 }
 
+void WidgetBase::RunPaintBenchmark(int repeat_count,
+                                   cc::PaintBenchmarkResult& result) {
+  client_->RunPaintBenchmark(repeat_count, result);
+}
+
 void WidgetBase::SetCompositorVisible(bool visible) {
   if (never_composited_)
     return;

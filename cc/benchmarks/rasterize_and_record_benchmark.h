@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include <map>
+#include <memory>
 #include <utility>
 #include <vector>
 
@@ -42,14 +43,10 @@ class RasterizeAndRecordBenchmark : public MicroBenchmark {
   void RecordRasterResults(std::unique_ptr<base::Value> results);
 
   struct RecordResults {
-    RecordResults();
-    ~RecordResults();
-
     int pixels_recorded = 0;
     size_t painter_memory_usage = 0;
     size_t paint_op_memory_usage = 0;
     size_t paint_op_count = 0;
-    base::TimeDelta total_best_time[RecordingSource::RECORDING_MODE_COUNT];
   };
 
   RecordResults record_results_;

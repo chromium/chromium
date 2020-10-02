@@ -46,6 +46,7 @@
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
 #include "third_party/blink/renderer/platform/graphics/paint/cull_rect.h"
+#include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
 #include "third_party/blink/renderer/platform/graphics/paint_invalidation_reason.h"
 #include "third_party/blink/renderer/platform/graphics/subtree_paint_property_update_reason.h"
 #include "third_party/blink/renderer/platform/timer.h"
@@ -57,8 +58,8 @@ class AnimationHost;
 class Layer;
 class PaintOpBuffer;
 enum class PaintHoldingCommitTrigger;
-
 using PaintRecord = PaintOpBuffer;
+struct PaintBenchmarkResult;
 }
 
 namespace ui {
@@ -729,6 +730,8 @@ class CORE_EXPORT LocalFrameView final
 
   PaintLayer* GetFullScreenOverlayLayer() const;
 
+  void RunPaintBenchmark(int repeat_count, cc::PaintBenchmarkResult& result);
+
  protected:
   void FrameRectsChanged(const IntRect&) override;
   void SelfVisibleChanged() override;
@@ -803,9 +806,10 @@ class CORE_EXPORT LocalFrameView final
       DocumentLifecycle::LifecycleState target_state);
   bool RunPrePaintLifecyclePhase(
       DocumentLifecycle::LifecycleState target_state);
-  void RunPaintLifecyclePhase();
+  void RunPaintLifecyclePhase(PaintBenchmarkMode = PaintBenchmarkMode::kNormal);
 
-  void PaintTree(HashSet<const GraphicsLayer*>& repainted_layers);
+  void PaintTree(HashSet<const GraphicsLayer*>& repainted_layers,
+                 PaintBenchmarkMode);
   void UpdateStyleAndLayoutIfNeededRecursive();
 
   void PushPaintArtifactToCompositor(

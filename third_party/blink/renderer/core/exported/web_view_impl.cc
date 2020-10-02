@@ -4249,4 +4249,11 @@ void WebViewImpl::SetDeviceColorSpaceForTesting(
   web_widget_->SetDeviceColorSpaceForTesting(color_space);
 }
 
+void WebViewImpl::RunPaintBenchmark(int repeat_count,
+                                    cc::PaintBenchmarkResult& result) {
+  DCHECK(MainFrameImpl());
+  if (auto* frame_view = MainFrameImpl()->GetFrameView())
+    frame_view->RunPaintBenchmark(repeat_count, result);
+}
+
 }  // namespace blink

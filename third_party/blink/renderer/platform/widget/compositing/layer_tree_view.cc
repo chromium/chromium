@@ -40,10 +40,6 @@
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 #include "ui/gfx/presentation_feedback.h"
 
-namespace base {
-class Value;
-}
-
 namespace cc {
 class Layer;
 }
@@ -342,6 +338,12 @@ void LayerTreeView::DidObserveFirstScrollDelay(
   }
   delegate_->DidObserveFirstScrollDelay(first_scroll_delay,
                                         first_scroll_timestamp);
+}
+
+void LayerTreeView::RunPaintBenchmark(int repeat_count,
+                                      cc::PaintBenchmarkResult& result) {
+  if (delegate_)
+    delegate_->RunPaintBenchmark(repeat_count, result);
 }
 
 void LayerTreeView::DidScheduleBeginMainFrame() {

@@ -204,6 +204,9 @@ class WidgetBaseClient {
 
   // Inform the widget that it was shown.
   virtual void WasShown(bool was_evicted) {}
+
+  virtual void RunPaintBenchmark(int repeat_count,
+                                 cc::PaintBenchmarkResult& result) {}
 };
 
 }  // namespace blink
