@@ -47,7 +47,8 @@ class LayoutTextControlSingleLine : public LayoutTextControl {
  private:
   bool IsOfType(LayoutObjectType type) const override {
     NOT_DESTROYED();
-    return type == kLayoutObjectTextField || LayoutTextControl::IsOfType(type);
+    return type == kLayoutObjectTextControlSingleLine ||
+           LayoutTextControl::IsOfType(type);
   }
 
   void Paint(const PaintInfo&) const override;

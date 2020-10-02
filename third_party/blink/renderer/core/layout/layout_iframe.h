@@ -47,8 +47,7 @@ class LayoutIFrame final : public LayoutEmbeddedContent {
 
   bool IsOfType(LayoutObjectType type) const override {
     NOT_DESTROYED();
-    return type == kLayoutObjectLayoutIFrame ||
-           LayoutEmbeddedContent::IsOfType(type);
+    return type == kLayoutObjectIFrame || LayoutEmbeddedContent::IsOfType(type);
   }
 
   PaintLayerType LayerTypeRequired() const override;

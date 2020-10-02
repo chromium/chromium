@@ -42,8 +42,7 @@ class LayoutButton final : public LayoutFlexibleBox {
   }
   bool IsOfType(LayoutObjectType type) const override {
     NOT_DESTROYED();
-    return type == kLayoutObjectLayoutButton ||
-           LayoutFlexibleBox::IsOfType(type);
+    return type == kLayoutObjectButton || LayoutFlexibleBox::IsOfType(type);
   }
 
   void AddChild(LayoutObject* new_child,

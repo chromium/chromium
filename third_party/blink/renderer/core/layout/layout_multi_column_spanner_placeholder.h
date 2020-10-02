@@ -19,7 +19,7 @@ class LayoutMultiColumnSpannerPlaceholder final : public LayoutBox {
  public:
   bool IsOfType(LayoutObjectType type) const override {
     NOT_DESTROYED();
-    return type == kLayoutObjectLayoutMultiColumnSpannerPlaceholder ||
+    return type == kLayoutObjectMultiColumnSpannerPlaceholder ||
            LayoutBox::IsOfType(type);
   }
 

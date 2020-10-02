@@ -37,8 +37,7 @@ class LayoutNGCustom final : public LayoutNGBlockFlow {
 
  private:
   bool IsOfType(LayoutObjectType type) const override {
-    return type == kLayoutObjectLayoutNGCustom ||
-           LayoutNGBlockFlow::IsOfType(type);
+    return type == kLayoutObjectNGCustom || LayoutNGBlockFlow::IsOfType(type);
   }
 
   LayoutNGCustomState state_;

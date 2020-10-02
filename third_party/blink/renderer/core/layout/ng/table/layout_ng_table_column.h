@@ -67,7 +67,7 @@ class CORE_EXPORT LayoutNGTableColumn : public LayoutBox {
 
   bool IsOfType(LayoutObjectType type) const override {
     NOT_DESTROYED();
-    return type == kLayoutObjectLayoutTableCol || LayoutBox::IsOfType(type);
+    return type == kLayoutObjectTableCol || LayoutBox::IsOfType(type);
   }
 
  private:

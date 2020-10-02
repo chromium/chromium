@@ -117,7 +117,7 @@ class CORE_EXPORT LayoutImage : public LayoutReplaced {
 
   bool IsOfType(LayoutObjectType type) const override {
     NOT_DESTROYED();
-    return type == kLayoutObjectLayoutImage || LayoutReplaced::IsOfType(type);
+    return type == kLayoutObjectImage || LayoutReplaced::IsOfType(type);
   }
 
   void WillBeDestroyed() override;

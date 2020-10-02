@@ -838,11 +838,11 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
   }
   bool IsLayoutTableCol() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectLayoutTableCol);
+    return IsOfType(kLayoutObjectTableCol);
   }
   bool IsLayoutNGTableCol() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectLayoutNGTableCol);
+    return IsOfType(kLayoutObjectNGTableCol);
   }
   bool IsListItem() const {
     NOT_DESTROYED();
@@ -882,8 +882,7 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
   }
   bool IsButtonIncludingNG() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectLayoutButton) ||
-           IsOfType(kLayoutObjectNGButton);
+    return IsOfType(kLayoutObjectButton) || IsOfType(kLayoutObjectNGButton);
   }
   bool IsLayoutNGButton() const {
     NOT_DESTROYED();
@@ -891,39 +890,39 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
   }
   bool IsLayoutNGCustom() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectLayoutNGCustom);
+    return IsOfType(kLayoutObjectNGCustom);
   }
   bool IsLayoutGrid() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectLayoutGrid);
+    return IsOfType(kLayoutObjectGrid);
   }
   bool IsLayoutIFrame() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectLayoutIFrame);
+    return IsOfType(kLayoutObjectIFrame);
   }
   bool IsLayoutImage() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectLayoutImage);
+    return IsOfType(kLayoutObjectImage);
   }
   bool IsLayoutMultiColumnSet() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectLayoutMultiColumnSet);
+    return IsOfType(kLayoutObjectMultiColumnSet);
   }
   bool IsLayoutMultiColumnSpannerPlaceholder() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectLayoutMultiColumnSpannerPlaceholder);
+    return IsOfType(kLayoutObjectMultiColumnSpannerPlaceholder);
   }
   bool IsLayoutReplaced() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectLayoutReplaced);
+    return IsOfType(kLayoutObjectReplaced);
   }
   bool IsLayoutCustomScrollbarPart() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectLayoutCustomScrollbarPart);
+    return IsOfType(kLayoutObjectCustomScrollbarPart);
   }
   bool IsLayoutView() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectLayoutView);
+    return IsOfType(kLayoutObjectView);
   }
   bool IsRuby() const {
     NOT_DESTROYED();
@@ -967,7 +966,7 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
   }
   bool IsTextAreaIncludingNG() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectTextArea) ||
+    return IsOfType(kLayoutObjectTextControlMultiLine) ||
            IsOfType(kLayoutObjectNGTextControlMultiLine);
   }
   bool IsTextControlIncludingNG() const {
@@ -978,7 +977,7 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
   }
   bool IsTextFieldIncludingNG() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectTextField) ||
+    return IsOfType(kLayoutObjectTextControlSingleLine) ||
            IsOfType(kLayoutObjectNGTextControlSingleLine);
   }
   bool IsVideo() const {
@@ -3273,6 +3272,8 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
   }
 
  protected:
+  // Identifiers for each of LayoutObject subclasses.
+  // The identifier name for blink::LayoutFoo should be kLayoutObjectFoo.
   enum LayoutObjectType {
     kLayoutObjectBr,
     kLayoutObjectCanvas,
@@ -3284,8 +3285,8 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
     kLayoutObjectFrame,
     kLayoutObjectFrameSet,
     kLayoutObjectInsideListMarker,
-    kLayoutObjectLayoutTableCol,
-    kLayoutObjectLayoutNGTableCol,
+    kLayoutObjectTableCol,
+    kLayoutObjectNGTableCol,
     kLayoutObjectListItem,
     kLayoutObjectListMarker,
     kLayoutObjectListMarkerImage,
@@ -3308,19 +3309,16 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
     kLayoutObjectOutsideListMarker,
     kLayoutObjectProgress,
     kLayoutObjectQuote,
-    kLayoutObjectLayoutButton,
-    kLayoutObjectLayoutNGCustom,
-    kLayoutObjectLayoutFlowThread,
-    kLayoutObjectLayoutGrid,
-    kLayoutObjectLayoutIFrame,
-    kLayoutObjectLayoutImage,
-    kLayoutObjectLayoutInline,
-    kLayoutObjectLayoutMultiColumnSet,
-    kLayoutObjectLayoutMultiColumnSpannerPlaceholder,
-    kLayoutObjectLayoutEmbeddedContent,
-    kLayoutObjectLayoutReplaced,
-    kLayoutObjectLayoutCustomScrollbarPart,
-    kLayoutObjectLayoutView,
+    kLayoutObjectButton,
+    kLayoutObjectNGCustom,
+    kLayoutObjectGrid,
+    kLayoutObjectIFrame,
+    kLayoutObjectImage,
+    kLayoutObjectMultiColumnSet,
+    kLayoutObjectMultiColumnSpannerPlaceholder,
+    kLayoutObjectReplaced,
+    kLayoutObjectCustomScrollbarPart,
+    kLayoutObjectView,
     kLayoutObjectRuby,
     kLayoutObjectRubyBase,
     kLayoutObjectRubyRun,
@@ -3331,9 +3329,9 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
     kLayoutObjectTableCellLegacy,
     kLayoutObjectTableRow,
     kLayoutObjectTableSection,
-    kLayoutObjectTextArea,
+    kLayoutObjectTextControlMultiLine,
     kLayoutObjectTextControl,
-    kLayoutObjectTextField,
+    kLayoutObjectTextControlSingleLine,
     kLayoutObjectVideo,
     kLayoutObjectWidget,
 

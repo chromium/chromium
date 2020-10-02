@@ -169,7 +169,7 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
 
   bool IsOfType(LayoutObjectType type) const override {
     NOT_DESTROYED();
-    return type == kLayoutObjectLayoutReplaced || LayoutBox::IsOfType(type);
+    return type == kLayoutObjectReplaced || LayoutBox::IsOfType(type);
   }
 
  private:

@@ -71,7 +71,7 @@ class CORE_EXPORT LayoutCustomScrollbarPart final : public LayoutReplaced {
 
   bool IsOfType(LayoutObjectType type) const override {
     NOT_DESTROYED();
-    return type == kLayoutObjectLayoutCustomScrollbarPart ||
+    return type == kLayoutObjectCustomScrollbarPart ||
            LayoutReplaced::IsOfType(type);
   }
   ScrollableArea* GetScrollableArea() const {

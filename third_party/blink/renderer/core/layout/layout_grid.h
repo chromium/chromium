@@ -146,7 +146,7 @@ class LayoutGrid final : public LayoutBlock {
  private:
   bool IsOfType(LayoutObjectType type) const override {
     NOT_DESTROYED();
-    return type == kLayoutObjectLayoutGrid || LayoutBlock::IsOfType(type);
+    return type == kLayoutObjectGrid || LayoutBlock::IsOfType(type);
   }
   MinMaxSizes ComputeIntrinsicLogicalWidths() const override;
 

@@ -35,7 +35,8 @@ class LayoutTextControlMultiLine final : public LayoutTextControl {
  private:
   bool IsOfType(LayoutObjectType type) const override {
     NOT_DESTROYED();
-    return type == kLayoutObjectTextArea || LayoutTextControl::IsOfType(type);
+    return type == kLayoutObjectTextControlMultiLine ||
+           LayoutTextControl::IsOfType(type);
   }
 
   bool NodeAtPoint(HitTestResult&,
