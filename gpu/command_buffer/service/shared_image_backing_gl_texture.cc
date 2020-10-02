@@ -44,6 +44,7 @@
 #include "ui/gl/gl_image_shared_memory.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_version_info.h"
+#include "ui/gl/progress_reporter.h"
 #include "ui/gl/scoped_binders.h"
 #include "ui/gl/shared_gl_fence_egl.h"
 #include "ui/gl/trace_util.h"
@@ -75,11 +76,13 @@ SharedImageBackingFactoryGLTexture::SharedImageBackingFactoryGLTexture(
     const GpuDriverBugWorkarounds& workarounds,
     const GpuFeatureInfo& gpu_feature_info,
     ImageFactory* image_factory,
-    SharedImageBatchAccessManager* batch_access_manager)
+    SharedImageBatchAccessManager* batch_access_manager,
+    gl::ProgressReporter* progress_reporter)
     : use_passthrough_(gpu_preferences.use_passthrough_cmd_decoder &&
                        gles2::PassthroughCommandDecoderSupported()),
       image_factory_(image_factory),
-      workarounds_(workarounds) {
+      workarounds_(workarounds),
+      progress_reporter_(progress_reporter) {
 #if defined(OS_ANDROID)
   batch_access_manager_ = batch_access_manager;
 #endif
@@ -505,13 +508,22 @@ SharedImageBackingFactoryGLTexture::CreateSharedImageInternal(
   // the internal format in the LevelInfo. https://crbug.com/628064
   GLuint level_info_internal_format = format_info.gl_format;
   bool is_cleared = false;
+
+  // |scoped_progress_reporter| will notify |progress_reporter_| upon
+  // construction and destruction. We limit the scope so that progress is
+  // reported immediately after allocation/upload and before other GL
+  // operations.
   if (use_buffer) {
-    image = image_factory_->CreateAnonymousImage(
-        size, format_info.buffer_format, gfx::BufferUsage::SCANOUT,
-        surface_handle, &is_cleared);
+    {
+      gl::ScopedProgressReporter scoped_progress_reporter(progress_reporter_);
+      image = image_factory_->CreateAnonymousImage(
+          size, format_info.buffer_format, gfx::BufferUsage::SCANOUT,
+          surface_handle, &is_cleared);
+    }
     // Scanout images have different constraints than GL images and might fail
     // to allocate even if GL images can be created.
     if (!image) {
+      gl::ScopedProgressReporter scoped_progress_reporter(progress_reporter_);
       // TODO(dcastagna): Use BufferUsage::GPU_READ_WRITE instead
       // BufferUsage::GPU_READ once we add it.
       image = image_factory_->CreateAnonymousImage(
@@ -546,6 +558,7 @@ SharedImageBackingFactoryGLTexture::CreateSharedImageInternal(
         image, mailbox, format, size, color_space, surface_origin, alpha_type,
         usage, params, attribs, use_passthrough_);
     if (!pixel_data.empty()) {
+      gl::ScopedProgressReporter scoped_progress_reporter(progress_reporter_);
       result->InitializePixels(format_info.adjusted_format, format_info.gl_type,
                                pixel_data.data());
     }
@@ -561,12 +574,16 @@ SharedImageBackingFactoryGLTexture::CreateSharedImageInternal(
     api->glBindTextureFn(target, result->GetGLServiceId());
 
     if (format_info.supports_storage) {
-      api->glTexStorage2DEXTFn(target, 1, format_info.storage_internal_format,
-                               size.width(), size.height());
+      {
+        gl::ScopedProgressReporter scoped_progress_reporter(progress_reporter_);
+        api->glTexStorage2DEXTFn(target, 1, format_info.storage_internal_format,
+                                 size.width(), size.height());
+      }
 
       if (!pixel_data.empty()) {
         ScopedResetAndRestoreUnpackState scoped_unpack_state(
             api, attribs, true /* uploading_data */);
+        gl::ScopedProgressReporter scoped_progress_reporter(progress_reporter_);
         api->glTexSubImage2DFn(target, 0, 0, 0, size.width(), size.height(),
                                format_info.adjusted_format, format_info.gl_type,
                                pixel_data.data());
@@ -574,12 +591,14 @@ SharedImageBackingFactoryGLTexture::CreateSharedImageInternal(
     } else if (format_info.is_compressed) {
       ScopedResetAndRestoreUnpackState scoped_unpack_state(api, attribs,
                                                            !pixel_data.empty());
+      gl::ScopedProgressReporter scoped_progress_reporter(progress_reporter_);
       api->glCompressedTexImage2DFn(
           target, 0, format_info.image_internal_format, size.width(),
           size.height(), 0, pixel_data.size(), pixel_data.data());
     } else {
       ScopedResetAndRestoreUnpackState scoped_unpack_state(api, attribs,
                                                            !pixel_data.empty());
+      gl::ScopedProgressReporter scoped_progress_reporter(progress_reporter_);
       api->glTexImage2DFn(target, 0, format_info.image_internal_format,
                           size.width(), size.height(), 0,
                           format_info.adjusted_format, format_info.gl_type,
