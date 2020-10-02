@@ -130,12 +130,8 @@ class UnpackedDesktopFrame : public webrtc::DesktopFrame {
 // TODO(sergeyu): Move this to a separate file where it can be reused.
 class FakeScreenCapturer : public webrtc::DesktopCapturer {
  public:
-  FakeScreenCapturer()
-      : callback_(nullptr),
-        frame_index_(0),
-        generate_inverted_frames_(false),
-        generate_cropped_frames_(false) {}
-  ~FakeScreenCapturer() override {}
+  FakeScreenCapturer() = default;
+  ~FakeScreenCapturer() override = default;
 
   void set_generate_inverted_frames(bool generate_inverted_frames) {
     generate_inverted_frames_ = generate_inverted_frames;
@@ -143,6 +139,10 @@ class FakeScreenCapturer : public webrtc::DesktopCapturer {
 
   void set_generate_cropped_frames(bool generate_cropped_frames) {
     generate_cropped_frames_ = generate_cropped_frames;
+  }
+
+  void set_run_callback_asynchronously(bool run_callback_asynchronously) {
+    run_callback_asynchronously_ = run_callback_asynchronously;
   }
 
   // VideoFrameCapturer interface.
@@ -164,8 +164,17 @@ class FakeScreenCapturer : public webrtc::DesktopCapturer {
     } else if (generate_cropped_frames_) {
       frame.reset(new UnpackedDesktopFrame(std::move(frame)));
     }
-    callback_->OnCaptureResult(webrtc::DesktopCapturer::Result::SUCCESS,
-                               std::move(frame));
+
+    if (run_callback_asynchronously_) {
+      base::ThreadTaskRunnerHandle::Get()->PostTask(
+          FROM_HERE, base::BindOnce(&FakeScreenCapturer::RunCallback,
+                                    weak_factory_.GetWeakPtr(),
+                                    webrtc::DesktopCapturer::Result::SUCCESS,
+                                    std::move(frame)));
+    } else {
+      callback_->OnCaptureResult(webrtc::DesktopCapturer::Result::SUCCESS,
+                                 std::move(frame));
+    }
   }
 
   bool GetSourceList(SourceList* screens) override { return false; }
@@ -173,10 +182,17 @@ class FakeScreenCapturer : public webrtc::DesktopCapturer {
   bool SelectSource(SourceId id) override { return false; }
 
  private:
-  Callback* callback_;
-  int frame_index_;
-  bool generate_inverted_frames_;
-  bool generate_cropped_frames_;
+  void RunCallback(webrtc::DesktopCapturer::Result result,
+                   std::unique_ptr<webrtc::DesktopFrame> frame) {
+    callback_->OnCaptureResult(result, std::move(frame));
+  }
+
+  Callback* callback_ = nullptr;
+  int frame_index_ = 0;
+  bool generate_inverted_frames_ = false;
+  bool generate_cropped_frames_ = false;
+  bool run_callback_asynchronously_ = false;
+  base::WeakPtrFactory<FakeScreenCapturer> weak_factory_{this};
 };
 
 // Helper used to check that only two specific frame sizes are delivered to the
@@ -545,8 +561,10 @@ class DesktopCaptureDeviceThrottledTest : public DesktopCaptureDeviceTest {
   // Capture frames at kFrameRate for a duration of total_capture_duration and
   // return the throttled frame rate.
   double CaptureFrames() {
-    CreateScreenCaptureDevice(
-        std::unique_ptr<webrtc::DesktopCapturer>(new FakeScreenCapturer()));
+    auto capturer = std::make_unique<FakeScreenCapturer>();
+    capturer->set_run_callback_asynchronously(run_callback_asynchronously_);
+
+    CreateScreenCaptureDevice(std::move(capturer));
 
     FormatChecker format_checker(
         gfx::Size(kTestFrameWidth3, kTestFrameHeight3),
@@ -631,11 +649,31 @@ class DesktopCaptureDeviceThrottledTest : public DesktopCaptureDeviceTest {
 
     return nb_frames / kVirtualTestDurationSeconds.InSecondsF();
   }
+
+  bool run_callback_asynchronously_ = false;
 };
 
 // The test verifies that the capture pipeline is throttled as defined with
 // kDefaultMaximumCpuConsumptionPercentage.
 TEST_F(DesktopCaptureDeviceThrottledTest, ThrottledOn) {
+  const double actual_framerate = CaptureFrames();
+
+  // By default when capturing a frame it is expected to do the actual device
+  // capture for at most half of a capture period. This is to ensure that the
+  // cpu is idle for at least 50% of the time, otherwise it will be throttled
+  // to reach this idle duration.
+  const int expected_framerate = kFrameRate / 2;
+
+  // The test succeeds if the actual framerate is near the expected_framerate.
+  EXPECT_GE(actual_framerate, expected_framerate);
+  EXPECT_LE(actual_framerate, expected_framerate + 0.1);
+}
+
+// Same tests as above but runs callbacks asynchronously to verify that that
+// doesn't disrupt the throttling machinery.
+TEST_F(DesktopCaptureDeviceThrottledTest, ThrottledOn_Async) {
+  run_callback_asynchronously_ = true;
+
   const double actual_framerate = CaptureFrames();
 
   // By default when capturing a frame it is expected to do the actual device

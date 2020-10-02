@@ -78,23 +78,14 @@ void DesktopCapturerLacros::CaptureFrame() {
   EnsureScreenManager();
 
   if (capture_type_ == kScreen) {
-    crosapi::Bitmap snapshot;
-    {
-      // lacros-chrome is allowed to make sync calls to ash-chrome.
-      mojo::SyncCallRestrictions::ScopedAllowSyncCall allow_sync_call;
-      screen_manager_->TakeScreenSnapshot(&snapshot);
-    }
-    DidTakeSnapshot(/*success=*/true, snapshot);
+    screen_manager_->TakeScreenSnapshot(
+        base::BindOnce(&DesktopCapturerLacros::DidTakeSnapshot,
+                       weak_factory_.GetWeakPtr(), /*success*/ true));
   } else {
-    bool success;
-    crosapi::Bitmap snapshot;
-    {
-      // lacros-chrome is allowed to make sync calls to ash-chrome.
-      mojo::SyncCallRestrictions::ScopedAllowSyncCall allow_sync_call;
-      screen_manager_->TakeWindowSnapshot(selected_source_, &success,
-                                          &snapshot);
-    }
-    DidTakeSnapshot(success, snapshot);
+    screen_manager_->TakeWindowSnapshot(
+        selected_source_,
+        base::BindOnce(&DesktopCapturerLacros::DidTakeSnapshot,
+                       weak_factory_.GetWeakPtr()));
   }
 }
 
@@ -122,7 +113,7 @@ void DesktopCapturerLacros::EnsureScreenManager() {
 }
 
 void DesktopCapturerLacros::DidTakeSnapshot(bool success,
-                                            const crosapi::Bitmap& snapshot) {
+                                            crosapi::Bitmap snapshot) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!success) {

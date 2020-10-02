@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_MEDIA_CAPTURE_DESKTOP_CAPTURER_LACROS_H_
 #define CONTENT_BROWSER_MEDIA_CAPTURE_DESKTOP_CAPTURER_LACROS_H_
 
+#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "chromeos/crosapi/mojom/screen_manager.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -52,7 +53,7 @@ class DesktopCapturerLacros : public webrtc::DesktopCapturer {
 
   // Callback for when ash-chrome returns a snapshot of the screen or window as
   // a bitmap.
-  void DidTakeSnapshot(bool success, const crosapi::Bitmap& snapshot);
+  void DidTakeSnapshot(bool success, crosapi::Bitmap snapshot);
 
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -77,6 +78,8 @@ class DesktopCapturerLacros : public webrtc::DesktopCapturer {
 
   // The remote connection to the screen manager.
   mojo::Remote<crosapi::mojom::ScreenManager> screen_manager_;
+
+  base::WeakPtrFactory<DesktopCapturerLacros> weak_factory_{this};
 };
 
 }  // namespace content

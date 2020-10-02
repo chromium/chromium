@@ -124,6 +124,7 @@ class DesktopCaptureDevice::Core : public webrtc::DesktopCapturer::Callback {
 
  private:
   // webrtc::DesktopCapturer::Callback interface.
+  // A side-effect of this method is to schedule the next frame.
   void OnCaptureResult(
     webrtc::DesktopCapturer::Result result,
     std::unique_ptr<webrtc::DesktopFrame> frame) override;
@@ -132,11 +133,12 @@ class DesktopCaptureDevice::Core : public webrtc::DesktopCapturer::Callback {
   // to capture a frame.
   void OnCaptureTimer();
 
-  // Captures a frame and schedules timer for the next one.
-  void CaptureFrameAndScheduleNext();
+  // Captures a frame. Upon completion, schedules the next frame.
+  void CaptureFrame();
 
-  // Captures a single frame.
-  void DoCapture();
+  // Schedules a timer for the next call to |CaptureFrame|. This method assumes
+  // that |CaptureFrame| has already been called at least once before.
+  void ScheduleNextCaptureFrame();
 
   void RequestWakeLock();
 
@@ -157,6 +159,9 @@ class DesktopCaptureDevice::Core : public webrtc::DesktopCapturer::Callback {
 
   // Inverse of the requested frame rate.
   base::TimeDelta requested_frame_duration_;
+
+  // Records time of last call to CaptureFrame.
+  base::TimeTicks capture_start_time_;
 
   // Size of frame most recently captured from the source.
   webrtc::DesktopSize previous_frame_size_;
@@ -258,7 +263,7 @@ void DesktopCaptureDevice::Core::AllocateAndStart(
   // Assume it will be always started successfully for now.
   client_->OnStarted();
 
-  CaptureFrameAndScheduleNext();
+  CaptureFrame();
 }
 
 void DesktopCaptureDevice::Core::SetNotificationWindowId(
@@ -310,7 +315,10 @@ void DesktopCaptureDevice::Core::OnCaptureResult(
       client_->OnError(media::VideoCaptureError::
                            kDesktopCaptureDeviceWebrtcDesktopCapturerHasFailed,
                        FROM_HERE, "The desktop capturer has failed.");
+      return;
     }
+    // Continue capturing frames in the temporary error case.
+    ScheduleNextCaptureFrame();
     return;
   }
   DCHECK(frame);
@@ -437,6 +445,8 @@ void DesktopCaptureDevice::Core::OnCaptureResult(
           requested_frame_rate_, media::PIXEL_FORMAT_ARGB),
       frame_color_space, 0 /* clockwise_rotation */, false /* flip_y */, now,
       now - first_ref_time_);
+
+  ScheduleNextCaptureFrame();
 }
 
 void DesktopCaptureDevice::Core::OnCaptureTimer() {
@@ -445,14 +455,24 @@ void DesktopCaptureDevice::Core::OnCaptureTimer() {
   if (!client_)
     return;
 
-  CaptureFrameAndScheduleNext();
+  CaptureFrame();
 }
 
-void DesktopCaptureDevice::Core::CaptureFrameAndScheduleNext() {
+void DesktopCaptureDevice::Core::CaptureFrame() {
   DCHECK(task_runner_->BelongsToCurrentThread());
-  base::TimeTicks started_time = NowTicks();
-  DoCapture();
-  base::TimeDelta last_capture_duration = NowTicks() - started_time;
+  DCHECK(!capture_in_progress_);
+
+  capture_start_time_ = NowTicks();
+  capture_in_progress_ = true;
+
+  desktop_capturer_->CaptureFrame();
+}
+
+void DesktopCaptureDevice::Core::ScheduleNextCaptureFrame() {
+  // Make sure CaptureFrame() was called at least once before.
+  DCHECK(!capture_start_time_.is_null());
+
+  base::TimeDelta last_capture_duration = NowTicks() - capture_start_time_;
 
   // Limit frame-rate to reduce CPU consumption.
   base::TimeDelta capture_period =
@@ -462,18 +482,6 @@ void DesktopCaptureDevice::Core::CaptureFrameAndScheduleNext() {
   // Schedule a task for the next frame.
   capture_timer_->Start(FROM_HERE, capture_period - last_capture_duration, this,
                         &Core::OnCaptureTimer);
-}
-
-void DesktopCaptureDevice::Core::DoCapture() {
-  DCHECK(task_runner_->BelongsToCurrentThread());
-  DCHECK(!capture_in_progress_);
-
-  capture_in_progress_ = true;
-  desktop_capturer_->CaptureFrame();
-
-  // Currently only synchronous implementations of DesktopCapturer are
-  // supported.
-  DCHECK(!capture_in_progress_);
 }
 
 void DesktopCaptureDevice::Core::RequestWakeLock() {
