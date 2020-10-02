@@ -95,15 +95,16 @@ InstallableParams GetPrimaryIconPreferMaskableAndSplashIconParams() {
 class LazyWorkerInstallableManager : public InstallableManager {
  public:
   LazyWorkerInstallableManager(content::WebContents* web_contents,
-                               base::Closure quit_closure)
-      : InstallableManager(web_contents), quit_closure_(quit_closure) {}
-  ~LazyWorkerInstallableManager() override {}
+                               base::OnceClosure quit_closure)
+      : InstallableManager(web_contents),
+        quit_closure_(std::move(quit_closure)) {}
+  ~LazyWorkerInstallableManager() override = default;
 
  protected:
-  void OnWaitingForServiceWorker() override { quit_closure_.Run(); }
+  void OnWaitingForServiceWorker() override { std::move(quit_closure_).Run(); }
 
  private:
-  base::Closure quit_closure_;
+  base::OnceClosure quit_closure_;
 };
 
 // Used only for testing pages where the manifest URL is changed. This class
@@ -114,7 +115,7 @@ class ResetDataInstallableManager : public InstallableManager {
       : InstallableManager(web_contents) {}
   ~ResetDataInstallableManager() override {}
 
-  void SetQuitClosure(base::Closure quit_closure) {
+  void SetQuitClosure(base::RepeatingClosure quit_closure) {
     quit_closure_ = quit_closure;
   }
 
@@ -125,12 +126,12 @@ class ResetDataInstallableManager : public InstallableManager {
   }
 
  private:
-  base::Closure quit_closure_;
+  base::RepeatingClosure quit_closure_;
 };
 
 class CallbackTester {
  public:
-  explicit CallbackTester(base::Closure quit_closure)
+  explicit CallbackTester(base::RepeatingClosure quit_closure)
       : quit_closure_(quit_closure) {}
 
   void OnDidFinishInstallableCheck(const InstallableData& data) {
@@ -162,7 +163,7 @@ class CallbackTester {
   bool has_worker() const { return has_worker_; }
 
  private:
-  base::Closure quit_closure_;
+  base::RepeatingClosure quit_closure_;
   std::vector<InstallableStatusCode> errors_;
   GURL manifest_url_;
   blink::Manifest manifest_;
@@ -179,8 +180,10 @@ class NestedCallbackTester {
  public:
   NestedCallbackTester(InstallableManager* manager,
                        const InstallableParams& params,
-                       base::Closure quit_closure)
-      : manager_(manager), params_(params), quit_closure_(quit_closure) {}
+                       base::OnceClosure quit_closure)
+      : manager_(manager),
+        params_(params),
+        quit_closure_(std::move(quit_closure)) {}
 
   void Run() {
     manager_->GetData(
@@ -217,13 +220,13 @@ class NestedCallbackTester {
     EXPECT_EQ(manifest_.short_name, data.manifest->short_name);
     EXPECT_EQ(manifest_.display_override, data.manifest->display_override);
 
-    quit_closure_.Run();
+    std::move(quit_closure_).Run();
   }
 
  private:
   InstallableManager* manager_;
   InstallableParams params_;
-  base::Closure quit_closure_;
+  base::OnceClosure quit_closure_;
   std::vector<InstallableStatusCode> errors_;
   GURL manifest_url_;
   blink::Manifest manifest_;
