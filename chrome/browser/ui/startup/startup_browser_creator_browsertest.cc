@@ -1930,7 +1930,12 @@ class StartupBrowserCreatorPickerTest : public InProcessBrowserTest {
 };
 
 // Flaky: https://crbug.com/1126886
-IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorPickerTest, DISABLED_OpensPicker) {
+#if defined(USE_OZONE) || defined(OS_WIN)
+#define MAYBE_OpensPicker DISABLED_OpensPicker
+#else
+#define MAYBE_OpensPicker OpensPicker
+#endif
+IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorPickerTest, MAYBE_OpensPicker) {
   ASSERT_EQ(1u, chrome::GetTotalBrowserCount());
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   StartWithTwoProfiles(command_line);
