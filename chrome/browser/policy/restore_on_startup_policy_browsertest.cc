@@ -13,6 +13,7 @@
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/search/local_ntp_test_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
@@ -167,12 +168,14 @@ IN_PROC_BROWSER_TEST_P(RestoreOnStartupPolicyTest, RunTest) {
   resource_coordinator::WaitForTransitionToLoaded(model);
   for (int i = 0; i < size && i < model->count(); ++i) {
     content::WebContents* web_contents = model->GetWebContentsAt(i);
-    if (blocked_)
+    if (blocked_) {
       CheckURLIsBlockedInWebContents(web_contents, expected_urls_[i]);
-    else if (expected_urls_[i] == GURL(chrome::kChromeUINewTabURL))
-      EXPECT_TRUE(search::IsInstantNTP(web_contents));
-    else
+    } else if (expected_urls_[i] == GURL(chrome::kChromeUINewTabURL)) {
+      EXPECT_EQ(local_ntp_test_utils::GetFinalNtpUrl(browser()->profile()),
+                web_contents->GetURL());
+    } else {
       EXPECT_EQ(expected_urls_[i], web_contents->GetURL());
+    }
   }
 }
 
