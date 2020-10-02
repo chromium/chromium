@@ -8,15 +8,25 @@
  */
 
 Polymer({
-  is: 'supervision-transition-md',
+  is: 'supervision-transition',
 
-  behaviors: [OobeI18nBehavior, OobeDialogHostBehavior],
+  behaviors: [OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior],
 
   properties: {
     /**
      * Flag that determines whether supervision is being removed or added.
      */
     isRemovingSupervision_: Boolean,
+  },
+
+  ready() {
+    this.initializeLoginScreen('SupervisionTransitionScreen', {
+      resetAllowed: false,
+    });
+  },
+
+  onBeforeShow(data) {
+    this.setIsRemovingSupervision(data['isRemovingSupervision']);
   },
 
   setIsRemovingSupervision(is_removing_supervision) {

@@ -20,7 +20,6 @@
 // src="../../../../../ui/login/account_picker/chromeos_user_pod_row.js">
 // <include src="cr_ui.js">
 // <include src="oobe_screen_autolaunch.js">
-// <include src="oobe_screen_supervision_transition.js">
 // <include src="oobe_screen_assistant_optin_flow.js">
 // <include src="oobe_select.js">
 
@@ -61,7 +60,6 @@ cr.define('cr.ui.Oobe', function() {
       login.AppLaunchSplashScreen.register();
       login.FatalErrorScreen.register();
       login.EncryptionMigrationScreen.register();
-      login.SupervisionTransitionScreen.register();
       login.UpdateRequiredScreen.register();
       login.DiscoverScreen.register();
       login.AssistantOptInFlowScreen.register();
