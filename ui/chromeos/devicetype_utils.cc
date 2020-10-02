@@ -37,4 +37,26 @@ int GetChromeOSDeviceTypeResourceId() {
   return IDS_GENERIC_CHROMEOS_DEVICE_NAME;
 }
 
+base::string16 GetChromeOSDeviceNameInPlural() {
+  return l10n_util::GetStringUTF16(GetChromeOSDeviceTypeInPluralResourceId());
+}
+
+int GetChromeOSDeviceTypeInPluralResourceId() {
+  switch (chromeos::GetDeviceType()) {
+    case chromeos::DeviceType::kChromebase:
+      return IDS_CHROMEBASE_DEVICE_NAME_IN_PLURAL;
+    case chromeos::DeviceType::kChromebook:
+      return IDS_CHROMEBOOK_DEVICE_NAME_IN_PLURAL;
+    case chromeos::DeviceType::kChromebox:
+      return IDS_CHROMEBOX_DEVICE_NAME_IN_PLURAL;
+    case chromeos::DeviceType::kChromebit:
+      return IDS_CHROMEBIT_DEVICE_NAME_IN_PLURAL;
+    case chromeos::DeviceType::kUnknown:
+      return IDS_GENERIC_CHROMEOS_DEVICE_NAME_IN_PLURAL;
+  }
+
+  NOTREACHED();
+  return IDS_GENERIC_CHROMEOS_DEVICE_NAME_IN_PLURAL;
+}
+
 }  // namespace ui

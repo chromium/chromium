@@ -495,6 +495,23 @@
         Chrome device
       </message>
 
+      <!-- Generic device type names (plural forms) -->
+      <message name="IDS_CHROMEBASE_DEVICE_NAME_IN_PLURAL" desc="The device name (plural) for Chromebase (versus say Chromeboxes)">
+        Chromebases
+      </message>
+      <message name="IDS_CHROMEBIT_DEVICE_NAME_IN_PLURAL" desc="The device name (plural) for Chromebit (versus say Chromeboxes)">
+        Chromebits
+      </message>
+      <message name="IDS_CHROMEBOOK_DEVICE_NAME_IN_PLURAL" desc="The device name (plural) for Chromebook (versus say Chromeboxes)">
+        Chromebooks
+      </message>
+      <message name="IDS_CHROMEBOX_DEVICE_NAME_IN_PLURAL" desc="The device name (plural) for Chromebox (versus say Chromebooks)">
+        Chromeboxes
+      </message>
+      <message name="IDS_GENERIC_CHROMEOS_DEVICE_NAME_IN_PLURAL" desc="The device name (plural) for generic Chrome device">
+        Chrome devices
+      </message>
+
       <!-- Input method strings. -->
       <message name="IDS_CHROMEOS_IME_INFOLIST_WINDOW_TITLE" desc="The title of the infolist window where the meanings and the usages of words are displayed.">
         Information

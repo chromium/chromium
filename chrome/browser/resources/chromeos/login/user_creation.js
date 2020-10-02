@@ -149,5 +149,9 @@ Polymer({
     }
   },
 
+  onLearnMoreClicked_() {
+    this.$.learnMoreDialog.showDialog();
+  }
+
 });
 })();

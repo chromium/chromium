@@ -772,22 +772,34 @@
     Set up this device for work or personal use
   </message>
   <message name="IDS_OOBE_USER_CREATION_CHILD_BUTTON_LABEL" desc="The label of the button that leads to set up device for child.">
-    Your child
+    A child
   </message>
   <message name="IDS_OOBE_USER_CREATION_CHILD_BUTTON_DESCRIPTION" desc="The description of the button that leads to set up device for child.">
-    Set digital ground rules to help your child learn, play, and explore
+    Set digital ground rules to help children play, explore and do schoolwork at home
   </message>
   <message name="IDS_OOBE_USER_CREATION_CHILD_SIGNIN_TITLE" desc="Title of the screen which allows users to choose signin method for child.">
-    Set up this <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> for your child
+    Set up this <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> for a child
   </message>
   <message name="IDS_OOBE_USER_CREATION_CHILD_SIGNIN_SUBTITLE" desc="Subtitle of the screen which allows users to choose signin method for child.">
-    To set up parental controls, your child must have a Google Account that you'll help manage. You can set screen time limits, approve or block websites, and more with the Family Link app.
+    To set up parental controls, a child must have a Google Account managed by a parent. <ph name="DEVICE_TYPE_PLURAL">$1<ex>Chromebooks</ex></ph> allow parents to set up screen limits, approve or block websites, and do more with the Family Link app. If the child needs to do schoolwork on sites like Google Classroom, a school account can be added later.
+  </message>
+  <message name="IDS_OOBE_USER_CREATION_CHILD_SIGNIN_LEARN_MORE" desc="Learn more link text in child account creation screen.">
+    Learn more
   </message>
   <message name="IDS_OOBE_USER_CREATION_CHILD_ACCOUNT_CREATION_BUTTON_LABEL" desc="The label of the button that leads to child account creation.">
-    Create a Google Account for your child
+    Create a Google Account for a child
   </message>
   <message name="IDS_OOBE_USER_CREATION_CHILD_SIGN_IN_BUTTON_LABEL" desc="The label of the button that leads to child sign in using existing account.">
-    Sign in with your child's Google Account
+    Sign in with a child's Google Account
+  </message>
+  <message name="IDS_OOBE_USER_CREATION_CHILD_SIGN_IN_PARENT_NOTIFICATION_TEXT" desc="Text displayed to parent on child account creation screen.">
+    Parents, the next few steps are for you. You can hand the <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> back to the child after account setup.
+  </message>
+  <message name="IDS_OOBE_USER_CREATION_CHILD_SIGN_IN_LEARN_MORE_DIALOG_TITLE" desc="Title of the learn more dialog on child account creation screen.">
+    Add a school account later
+  </message>
+  <message name="IDS_OOBE_USER_CREATION_CHILD_SIGN_IN_LEARN_MORE_DIALOG_TEXT" desc="Text of the learn more dialog on child account creation screen.">
+    Parental controls are not supported for school accounts. To add a school account to access Google Classroom and other websites for schoolwork at home, sign in with the child's personal account first. You can add the school account later in setup.
   </message>
 
    <!-- Strings for the OOBE demo setup flow -->

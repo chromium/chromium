@@ -21,6 +21,14 @@ UI_CHROMEOS_EXPORT base::string16 GetChromeOSDeviceName();
 // Chromebox).
 UI_CHROMEOS_EXPORT int GetChromeOSDeviceTypeResourceId();
 
+// Returns the name (plural forms) of the Chrome device type (e.g. Chromebooks,
+// Chromeboxes).
+UI_CHROMEOS_EXPORT base::string16 GetChromeOSDeviceNameInPlural();
+
+// Returns the resource ID for the current Chrome device type in plural forms
+// (e.g. Chromebooks, Chromeboxes).
+UI_CHROMEOS_EXPORT int GetChromeOSDeviceTypeInPluralResourceId();
+
 }  // namespace ui
 
 #endif  // UI_CHROMEOS_DEVICETYPE_UTILS_H_

@@ -44,14 +44,18 @@ found in the LICENSE file. -->
         font-size: 16px;
         font-weight: 500;
         line-height: 24px;
-        padding-inline-end: 20px;
-        padding-inline-start: 20px;
+        padding-inline-end: 32px;
+        padding-inline-start: 32px;
         padding-top: 16px;
       }
 
       .card-text {
         color: var(--oobe-text-color);
         line-height: 20px;
+      }
+
+      .help-text {
+        color: var(--oobe-subheader-text-color);
       }
     </style>
     <oobe-dialog id="userCreationDialog" role="dialog" has-buttons
@@ -104,12 +108,19 @@ found in the LICENSE file. -->
       </div>
     </oobe-dialog>
     <oobe-dialog id="childSignInDialog" role="dialog" has-buttons
-        title-key="childSignInTitle" subtitle-key="childSignInSubtitle"
-        aria-label$="[[i18nDynamic(locale, 'childSignInTitle')]]"
-        for-step="child">
+        title-key="childSignInTitle" for-step="child"
+        aria-label$="[[i18nDynamic(locale, 'childSignInTitle')]]">
       <hd-iron-icon icon1x="oobe-32:family" icon2x="oobe-64:family"
         slot="oobe-icon">
       </hd-iron-icon>
+      <div slot="subtitle">
+        <div>
+          [[i18nDynamic(locale, 'childSignInSubtitle')]]
+          <a href="#" class="oobe-local-link" on-tap="onLearnMoreClicked_">
+            [[i18nDynamic(locale, 'childSignInLearnMore')]]
+          </a>
+        </div>
+      </div>
       <div slot="footer" class="footer-container flex layout vertical
           center-justified">
         <cr-radio-group id="childSignInMethod" class="layout horizontal"
@@ -137,6 +148,9 @@ found in the LICENSE file. -->
             </div>
           </cr-card-radio-button>
         </cr-radio-group>
+        <div class="help-text">
+          [[i18nDynamic(locale, 'childSignInParentNotificationText')]]
+        </div>
       </div>
       <div slot="bottom-buttons" class="layout horizontal justified">
         <oobe-back-button id="childBackButton" on-tap="onBackClicked_">
@@ -146,5 +160,11 @@ found in the LICENSE file. -->
         </oobe-next-button>
       </div>
     </oobe-dialog>
+    <oobe-help-dialog id="learnMoreDialog"
+        title-key="childSignInLearnMoreDialogTitle">
+      <div slot="content" class="card-text">
+        [[i18nDynamic(locale, 'childSignInLearnMoreDialogText')]]
+      </div>
+    </oobe-help-dialog>
   </template>
 </dom-module>
