@@ -835,3 +835,7 @@ crbug.com/1099979 [ mac swiftshader passthrough ] conformance/textures/video/tex
 crbug.com/1099979 [ mac swiftshader passthrough ] conformance/textures/video/tex-2d-rgba-rgba-unsigned_short_4_4_4_4.html [ Failure ]
 crbug.com/1099979 [ mac swiftshader passthrough ] conformance/textures/video/tex-2d-rgba-rgba-unsigned_short_5_5_5_1.html [ Failure ]
 crbug.com/1099979 [ mac swiftshader passthrough ] conformance/textures/webgl_canvas/tex-2d-rgba-rgba-unsigned_short_5_5_5_1.html [ Failure ]
+
+crbug.com/1134756 [ mac swiftshader passthrough ] conformance/textures/misc/copy-tex-image-2d-formats.html [ Failure ]
+crbug.com/1134756 [ mac swiftshader passthrough ] conformance/misc/uninitialized-test.html [ Failure ]
+crbug.com/1134756 [ mac swiftshader passthrough ] conformance/textures/misc/copy-tex-image-and-sub-image-2d.html [ Failure ]
