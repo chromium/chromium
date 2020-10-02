@@ -5,13 +5,14 @@
   <div slot="title">
     <div id="cardTitle">[[i18n('cpuTitle')]]</div>
   </div>
+  <!-- TODO(michaelcheco): Add i18n string for percent number format -->
+  <data-point slot="body" id="cpuUsageUser"
+    value="[[computeCurrentlyUsing_(cpuUsage_.percent_usage_system,
+        cpuUsage_.percent_usage_user)]]">
+  </data-point>
+  <!-- TODO(michaelcheco): Investigate whether or not temperature can be
+  localized. -->
   <data-point slot="body" id="cpuTemp"
     value="[[cpuUsage_.cpu_temp_degrees_celcius]]">
-  </data-point>
-  <data-point slot="body" id="cpuUsageUser"
-    value="[[cpuUsage_.percent_usage_user]]">
-  </data-point>
-  <data-point slot="body" id="cpuUsageSystem"
-    value="[[cpuUsage_.percent_usage_system]]">
   </data-point>
 </diagnostics-card>

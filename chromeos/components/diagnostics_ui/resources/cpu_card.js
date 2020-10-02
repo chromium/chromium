@@ -54,4 +54,12 @@ Polymer({
     this.cpuUsage_ = cpuUsage;
   },
 
+  /**
+   * @param {number} percentUsageSystem
+   * @param {number} percentUsageUser
+   * @private
+   */
+  computeCurrentlyUsing_(percentUsageSystem, percentUsageUser) {
+    return percentUsageSystem + percentUsageUser;
+  },
 });

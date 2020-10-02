@@ -59,11 +59,11 @@ suite('CpuCardTest', () => {
     return initializeCpuCard(fakeCpuUsage).then(() => {
       const dataPoints =
           diagnostics_test_utils.getDataPointElements(cpuElement);
-
+      const currentlyUsingValue = fakeCpuUsage[0].percent_usage_user +
+          fakeCpuUsage[0].percent_usage_system;
+      assertEquals(currentlyUsingValue, dataPoints[0].value);
       assertEquals(
-          fakeCpuUsage[0].cpu_temp_degrees_celcius, dataPoints[0].value);
-      assertEquals(fakeCpuUsage[0].percent_usage_user, dataPoints[1].value);
-      assertEquals(fakeCpuUsage[0].percent_usage_system, dataPoints[2].value);
+          fakeCpuUsage[0].cpu_temp_degrees_celcius, dataPoints[1].value);
     });
   });
 });
