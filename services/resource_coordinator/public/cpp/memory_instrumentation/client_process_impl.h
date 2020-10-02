@@ -96,8 +96,9 @@ class COMPONENT_EXPORT(RESOURCE_COORDINATOR_PUBLIC_MEMORY_INSTRUMENTATION)
   mojo::Remote<mojom::Coordinator> coordinator_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
-  // TODO(ssid): This should be moved to coordinator instead of clients once we
-  // have the whole chrome dumps sent via mojo, crbug.com/728199.
+  // TODO(crbug.com/728199): The observer is only used to setup and tear down
+  // MemoryDumpManager in each process. Setting up MemoryDumpManager should
+  // be moved away from TracingObserver.
   std::unique_ptr<TracingObserver> tracing_observer_;
 
   DISALLOW_COPY_AND_ASSIGN(ClientProcessImpl);

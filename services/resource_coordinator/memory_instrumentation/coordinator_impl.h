@@ -190,6 +190,8 @@ class CoordinatorImpl : public mojom::CoordinatorController,
   mojo::Receiver<mojom::HeapProfilerHelper> heap_profiler_helper_receiver_{
       this};
 
+  const bool use_proto_writer_;
+
   THREAD_CHECKER(thread_checker_);
   base::WeakPtrFactory<CoordinatorImpl> weak_ptr_factory_{this};
 

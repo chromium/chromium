@@ -26,6 +26,14 @@
 #define COUNT_RESIDENT_BYTES_SUPPORTED
 #endif
 
+namespace perfetto {
+namespace protos {
+namespace pbzero {
+class MemoryTrackerSnapshot;
+}
+}  // namespace protos
+}  // namespace perfetto
+
 namespace base {
 
 class UnguessableToken;
@@ -223,6 +231,9 @@ class BASE_EXPORT ProcessMemoryDump {
   // Populate the traced value with information about the memory allocator
   // dumps.
   void SerializeAllocatorDumpsInto(TracedValue* value) const;
+
+  void SerializeAllocatorDumpsInto(
+      perfetto::protos::pbzero::MemoryTrackerSnapshot* memory_snapshot) const;
 
   const MemoryDumpArgs& dump_args() const { return dump_args_; }
 

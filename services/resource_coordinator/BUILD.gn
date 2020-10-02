@@ -54,6 +54,7 @@ source_set("tests") {
     "public/cpp/memory_instrumentation/memory_instrumentation_mojom_traits_unittest.cc",
     "public/cpp/memory_instrumentation/os_metrics_unittest.cc",
     "public/cpp/memory_instrumentation/tracing_integration_unittest.cc",
+    "public/cpp/memory_instrumentation/tracing_observer_proto_unittest.cc",
   ]
 
   deps = [
@@ -64,6 +65,7 @@ source_set("tests") {
     "//mojo/public/cpp/bindings",
     "//services/resource_coordinator/public/cpp:resource_coordinator_cpp",
     "//services/resource_coordinator/public/cpp/memory_instrumentation:memory_instrumentation",
+    "//services/tracing:tests",
     "//testing/gmock",
     "//testing/gtest",
   ]

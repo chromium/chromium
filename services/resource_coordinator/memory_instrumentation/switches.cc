@@ -10,6 +10,7 @@ namespace switches {
 // Enable the tracing service.
 const char kEnableChromeTracingComputation[] =
     "enable-chrome-tracing-computation";
+const char kUseMemoryTrackingProtoWriter[] = "use-memory-tracking-proto-writer";
 
 }  // namespace switches
 }  // namespace memory_instrumentation

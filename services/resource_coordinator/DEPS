@@ -3,4 +3,5 @@ include_rules = [
   "+third_party/perfetto",
   "+third_party/smhasher",
   "+services/metrics/public",
+  "+services/tracing/public/cpp",
 ]

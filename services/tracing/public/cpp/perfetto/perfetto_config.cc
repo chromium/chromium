@@ -9,6 +9,7 @@
 
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/trace_config.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -48,6 +49,17 @@ void AddDataSourceConfigs(
     bool convert_to_legacy_json,
     perfetto::protos::gen::ChromeConfig::ClientPriority client_priority) {
   const std::string chrome_config_string = stripped_config.ToString();
+
+  if (stripped_config.IsCategoryGroupEnabled(
+          base::trace_event::MemoryDumpManager::kTraceCategory)) {
+    DCHECK(source_names.empty() ||
+           source_names.count(
+               tracing::mojom::kMemoryInstrumentationDataSourceName));
+    AddDataSourceConfig(perfetto_config,
+                        tracing::mojom::kMemoryInstrumentationDataSourceName,
+                        chrome_config_string, privacy_filtering_enabled,
+                        convert_to_legacy_json, client_priority);
+  }
 
   // Capture actual trace events.
   if (source_names.empty() ||

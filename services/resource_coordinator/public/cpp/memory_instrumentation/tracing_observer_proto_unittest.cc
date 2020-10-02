@@ -1,0 +1,440 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "services/resource_coordinator/public/cpp/memory_instrumentation/tracing_observer_proto.h"
+
+#include <map>
+#include <memory>
+#include <set>
+#include <utility>
+#include <vector>
+
+#include "base/files/file_path.h"
+#include "base/format_macros.h"
+#include "base/strings/stringprintf.h"
+#include "base/test/task_environment.h"
+#include "base/trace_event/memory_dump_manager.h"
+#include "base/trace_event/traced_value.h"
+#include "build/build_config.h"
+#include "services/tracing/public/cpp/perfetto/perfetto_producer.h"
+#include "services/tracing/public/cpp/perfetto/perfetto_traced_process.h"
+#include "services/tracing/public/cpp/perfetto/producer_test_utils.h"
+#include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/perfetto/protos/perfetto/trace/memory_graph.pbzero.h"
+#include "third_party/perfetto/protos/perfetto/trace/profiling/smaps.pbzero.h"
+#include "third_party/perfetto/protos/perfetto/trace/ps/process_stats.pbzero.h"
+#include "third_party/perfetto/protos/perfetto/trace/trace_packet.pbzero.h"
+
+using TrackEvent = perfetto::protos::pbzero::TrackEvent;
+using MemoryTrackerSnapshot = perfetto::protos::MemoryTrackerSnapshot;
+
+namespace tracing {
+
+namespace {
+
+class TracingObserverProtoTest : public testing::Test {
+ public:
+  void SetUp() override {
+    auto perfetto_wrapper = std::make_unique<PerfettoTaskRunner>(
+        task_environment_.GetMainThreadTaskRunner());
+    producer_client_ =
+        std::make_unique<TestProducerClient>(std::move(perfetto_wrapper));
+  }
+
+  void TearDown() override { producer_client_.reset(); }
+
+  TestProducerClient* GetProducerClient() { return producer_client_.get(); }
+
+  void EnableTraceLog() {
+    base::trace_event::TraceLog::GetInstance()->SetEnabled(
+        base::trace_event::TraceConfig(
+            base::trace_event::MemoryDumpManager::kTraceCategory, ""),
+        base::trace_event::TraceLog::RECORDING_MODE);
+  }
+
+  void DisableTraceLog() {
+    base::trace_event::TraceLog::GetInstance()->SetDisabled();
+  }
+
+  base::trace_event::MemoryDumpRequestArgs FillMemoryDumpRequestArgs() {
+    base::trace_event::MemoryDumpRequestArgs args;
+    args.dump_guid = 1;
+    args.dump_type = base::trace_event::MemoryDumpType::EXPLICITLY_TRIGGERED;
+    args.level_of_detail = base::trace_event::MemoryDumpLevelOfDetail::DETAILED;
+    args.determinism = base::trace_event::MemoryDumpDeterminism::FORCE_GC;
+
+    return args;
+  }
+
+  base::trace_event::ProcessMemoryDump FillSamplePmd() {
+    base::trace_event::MemoryDumpArgs dump_args = {
+        base::trace_event::MemoryDumpLevelOfDetail::DETAILED};
+    base::trace_event::ProcessMemoryDump pmd =
+        base::trace_event::ProcessMemoryDump(dump_args);
+    pmd.CreateAllocatorDump("mad1",
+                            base::trace_event::MemoryAllocatorDumpGuid(421));
+    pmd.CreateAllocatorDump("mad2",
+                            base::trace_event::MemoryAllocatorDumpGuid(422));
+    pmd.CreateAllocatorDump("mad3",
+                            base::trace_event::MemoryAllocatorDumpGuid(423));
+    pmd.AddOwnershipEdge(base::trace_event::MemoryAllocatorDumpGuid(421),
+                         base::trace_event::MemoryAllocatorDumpGuid(422));
+    pmd.AddOwnershipEdge(base::trace_event::MemoryAllocatorDumpGuid(422),
+                         base::trace_event::MemoryAllocatorDumpGuid(423));
+
+    return pmd;
+  }
+
+ protected:
+  base::test::TaskEnvironment task_environment_;
+
+  std::unique_ptr<TestProducerClient> producer_client_;
+};
+
+const base::ProcessId kTestPid = 1;
+const int kRegionsCount = 3;
+
+const uint32_t kResidentSetKb = 1;
+const uint32_t kPrivateFootprintKb = 2;
+const uint32_t kSharedFootprintKb = 3;
+
+uint64_t GetFakeAddrForVmRegion(int pid, int region_index) {
+  return 0x100000ul * pid * (region_index + 1);
+}
+
+uint64_t GetFakeSizeForVmRegion(int pid, int region_index) {
+  return 4096 * pid * (region_index + 1);
+}
+
+std::vector<memory_instrumentation::mojom::VmRegionPtr> FillMemoryMap(int pid) {
+  std::vector<memory_instrumentation::mojom::VmRegionPtr> memory_map;
+
+  for (int i = 0; i < kRegionsCount; i++) {
+    memory_instrumentation::mojom::VmRegionPtr vm_region =
+        memory_instrumentation::mojom::VmRegion::New();
+    vm_region->start_address = GetFakeAddrForVmRegion(pid, i);
+    vm_region->size_in_bytes = GetFakeSizeForVmRegion(pid, i);
+    memory_map.push_back(std::move(vm_region));
+  }
+  return memory_map;
+}
+
+memory_instrumentation::mojom::OSMemDump GetFakeOSMemDump(
+    uint32_t resident_set_kb,
+    uint32_t private_footprint_kb,
+    uint32_t shared_footprint_kb) {
+  return memory_instrumentation::mojom::OSMemDump(
+      resident_set_kb, /*peak_resident_set_kb=*/resident_set_kb,
+      /*is_peak_rss_resettable=*/true, private_footprint_kb, shared_footprint_kb
+#if defined(OS_LINUX) || defined(OS_ANDROID)
+      ,
+      0
+#endif
+  );
+}
+
+TEST_F(TracingObserverProtoTest,
+       AddChromeDumpToTraceIfEnabled_When_TraceLog_Disabled) {
+  auto tracing_observer =
+      std::make_unique<memory_instrumentation::TracingObserverProto>(
+          base::trace_event::TraceLog::GetInstance(), nullptr);
+
+  perfetto::DataSourceConfig config;
+  tracing_observer->StartTracing(GetProducerClient(), config);
+
+  DisableTraceLog();
+
+  base::trace_event::MemoryDumpRequestArgs args = FillMemoryDumpRequestArgs();
+
+  base::trace_event::ProcessMemoryDump pmd = FillSamplePmd();
+
+  EXPECT_FALSE(
+      tracing_observer->AddChromeDumpToTraceIfEnabled(args, kTestPid, &pmd));
+
+  EnableTraceLog();
+
+  EXPECT_TRUE(
+      tracing_observer->AddChromeDumpToTraceIfEnabled(args, kTestPid, &pmd));
+
+  tracing_observer->StopTracing();
+}
+
+TEST_F(TracingObserverProtoTest,
+       AddChromeDumpToTraceIfEnabled_When_Before_StartTracing) {
+  auto tracing_observer =
+      std::make_unique<memory_instrumentation::TracingObserverProto>(
+          base::trace_event::TraceLog::GetInstance(), nullptr);
+
+  EnableTraceLog();
+
+  base::trace_event::MemoryDumpRequestArgs args = FillMemoryDumpRequestArgs();
+
+  base::trace_event::ProcessMemoryDump pmd = FillSamplePmd();
+
+  EXPECT_FALSE(
+      tracing_observer->AddChromeDumpToTraceIfEnabled(args, kTestPid, &pmd));
+
+  perfetto::DataSourceConfig config;
+  tracing_observer->StartTracing(GetProducerClient(), config);
+
+  EXPECT_TRUE(
+      tracing_observer->AddChromeDumpToTraceIfEnabled(args, kTestPid, &pmd));
+
+  tracing_observer->StopTracing();
+}
+
+TEST_F(TracingObserverProtoTest,
+       AddOsDumpToTraceIfEnabled_When_TraceLog_Disabled) {
+  auto tracing_observer =
+      std::make_unique<memory_instrumentation::TracingObserverProto>(
+          base::trace_event::TraceLog::GetInstance(), nullptr);
+
+  perfetto::DataSourceConfig config;
+  tracing_observer->StartTracing(GetProducerClient(), config);
+
+  DisableTraceLog();
+
+  base::trace_event::MemoryDumpRequestArgs args = FillMemoryDumpRequestArgs();
+
+  memory_instrumentation::mojom::OSMemDump os_dump = GetFakeOSMemDump(1, 1, 1);
+
+  std::vector<memory_instrumentation::mojom::VmRegionPtr> memory_map =
+      FillMemoryMap(kTestPid);
+  EXPECT_FALSE(tracing_observer->AddOsDumpToTraceIfEnabled(
+      args, kTestPid, os_dump, memory_map));
+
+  EnableTraceLog();
+
+  EXPECT_TRUE(tracing_observer->AddOsDumpToTraceIfEnabled(args, kTestPid,
+                                                          os_dump, memory_map));
+
+  tracing_observer->StopTracing();
+}
+
+TEST_F(TracingObserverProtoTest,
+       AddOsDumpToTraceIfEnabled_Before_StartTracing) {
+  auto tracing_observer =
+      std::make_unique<memory_instrumentation::TracingObserverProto>(
+          base::trace_event::TraceLog::GetInstance(), nullptr);
+
+  EnableTraceLog();
+
+  base::trace_event::MemoryDumpRequestArgs args = FillMemoryDumpRequestArgs();
+
+  memory_instrumentation::mojom::OSMemDump os_dump = GetFakeOSMemDump(1, 1, 1);
+
+  std::vector<memory_instrumentation::mojom::VmRegionPtr> memory_map =
+      FillMemoryMap(kTestPid);
+  EXPECT_FALSE(tracing_observer->AddOsDumpToTraceIfEnabled(
+      args, kTestPid, os_dump, memory_map));
+
+  perfetto::DataSourceConfig config;
+  tracing_observer->StartTracing(GetProducerClient(), config);
+
+  EXPECT_TRUE(tracing_observer->AddOsDumpToTraceIfEnabled(args, kTestPid,
+                                                          os_dump, memory_map));
+
+  tracing_observer->StopTracing();
+}
+
+TEST_F(TracingObserverProtoTest, AddChromeDumpToTraceIfEnabled) {
+  auto tracing_observer =
+      std::make_unique<memory_instrumentation::TracingObserverProto>(
+          base::trace_event::TraceLog::GetInstance(), nullptr);
+
+  perfetto::DataSourceConfig config;
+  tracing_observer->StartTracing(GetProducerClient(), config);
+
+  EnableTraceLog();
+
+  base::trace_event::MemoryDumpRequestArgs args = FillMemoryDumpRequestArgs();
+
+  base::trace_event::ProcessMemoryDump pmd = FillSamplePmd();
+
+  EXPECT_TRUE(
+      tracing_observer->AddChromeDumpToTraceIfEnabled(args, kTestPid, &pmd));
+
+  ASSERT_EQ(1ul, GetProducerClient()->GetFinalizedPacketCount());
+
+  const perfetto::protos::TracePacket* packet =
+      GetProducerClient()->GetFinalizedPacket(0);
+
+  ASSERT_NE(nullptr, packet);
+  EXPECT_TRUE(packet->has_memory_tracker_snapshot());
+
+  const MemoryTrackerSnapshot& snapshot = packet->memory_tracker_snapshot();
+  EXPECT_TRUE(snapshot.has_level_of_detail());
+  EXPECT_EQ(MemoryTrackerSnapshot::DETAIL_FULL, snapshot.level_of_detail());
+  EXPECT_EQ(1, snapshot.process_memory_dumps_size());
+
+  const MemoryTrackerSnapshot::ProcessSnapshot& process_memory_dump =
+      snapshot.process_memory_dumps(0);
+  EXPECT_EQ(3, process_memory_dump.allocator_dumps_size());
+
+  const MemoryTrackerSnapshot::ProcessSnapshot::MemoryNode& dump0 =
+      process_memory_dump.allocator_dumps(0);
+  EXPECT_EQ("mad1", dump0.absolute_name());
+  const MemoryTrackerSnapshot::ProcessSnapshot::MemoryNode& dump1 =
+      process_memory_dump.allocator_dumps(1);
+  EXPECT_EQ("mad2", dump1.absolute_name());
+  const MemoryTrackerSnapshot::ProcessSnapshot::MemoryNode& dump2 =
+      process_memory_dump.allocator_dumps(2);
+  EXPECT_EQ("mad3", dump2.absolute_name());
+
+  EXPECT_EQ(2, process_memory_dump.memory_edges_size());
+
+  const MemoryTrackerSnapshot::ProcessSnapshot::MemoryEdge& edge0 =
+      process_memory_dump.memory_edges(0);
+  EXPECT_EQ(421ul, edge0.source_id());
+  EXPECT_EQ(422ul, edge0.target_id());
+
+  const MemoryTrackerSnapshot::ProcessSnapshot::MemoryEdge& edge1 =
+      process_memory_dump.memory_edges(1);
+  EXPECT_EQ(422ul, edge1.source_id());
+  EXPECT_EQ(423ul, edge1.target_id());
+
+  tracing_observer->StopTracing();
+}
+
+TEST_F(TracingObserverProtoTest, AddOsDumpToTraceIfEnabled) {
+  auto tracing_observer =
+      std::make_unique<memory_instrumentation::TracingObserverProto>(
+          base::trace_event::TraceLog::GetInstance(), nullptr);
+
+  perfetto::DataSourceConfig config;
+  tracing_observer->StartTracing(GetProducerClient(), config);
+
+  EnableTraceLog();
+
+  base::trace_event::MemoryDumpRequestArgs args = FillMemoryDumpRequestArgs();
+
+  memory_instrumentation::mojom::OSMemDump os_dump =
+      GetFakeOSMemDump(kResidentSetKb, kPrivateFootprintKb, kSharedFootprintKb);
+
+  std::vector<memory_instrumentation::mojom::VmRegionPtr> memory_map =
+      FillMemoryMap(kTestPid);
+  EXPECT_TRUE(tracing_observer->AddOsDumpToTraceIfEnabled(args, kTestPid,
+                                                          os_dump, memory_map));
+
+  EXPECT_EQ(2ul, GetProducerClient()->GetFinalizedPacketCount());
+
+  const perfetto::protos::TracePacket* process_stats_trace_packet =
+      GetProducerClient()->GetFinalizedPacket(0);
+  ASSERT_NE(nullptr, process_stats_trace_packet);
+  EXPECT_TRUE(process_stats_trace_packet->has_process_stats());
+  const ::perfetto::protos::ProcessStats& process_stats =
+      process_stats_trace_packet->process_stats();
+  EXPECT_EQ(1, process_stats.processes_size());
+
+  const ::perfetto::protos::ProcessStats::Process& process =
+      process_stats.processes(0);
+
+  EXPECT_TRUE(process.has_chrome_private_footprint_kb());
+  EXPECT_EQ(kPrivateFootprintKb, process.chrome_private_footprint_kb());
+
+  EXPECT_TRUE(process.has_chrome_peak_resident_set_kb());
+  EXPECT_EQ(kResidentSetKb, process.chrome_peak_resident_set_kb());
+
+  EXPECT_TRUE(process.has_is_peak_rss_resettable());
+  EXPECT_TRUE(process.is_peak_rss_resettable());
+
+  const perfetto::protos::TracePacket* smaps_trace_packet =
+      GetProducerClient()->GetFinalizedPacket(1);
+
+  EXPECT_TRUE(smaps_trace_packet->has_smaps_packet());
+  const ::perfetto::protos::SmapsPacket& smaps_packet =
+      smaps_trace_packet->smaps_packet();
+
+  EXPECT_EQ(kRegionsCount, smaps_packet.entries_size());
+
+  for (int i = 0; i < kRegionsCount; i++) {
+    const ::perfetto::protos::SmapsEntry& entry = smaps_packet.entries(i);
+
+    uint64_t start_address = GetFakeAddrForVmRegion(kTestPid, i);
+    EXPECT_EQ(start_address, entry.start_address());
+
+    uint64_t size_kb = GetFakeSizeForVmRegion(kTestPid, i) / 1024;
+    EXPECT_EQ(size_kb, entry.size_kb());
+  }
+
+  tracing_observer->StopTracing();
+}
+
+TEST_F(TracingObserverProtoTest, AsProtoInto) {
+  perfetto::DataSourceConfig config;
+  std::unique_ptr<perfetto::TraceWriter> trace_writer =
+      GetProducerClient()->CreateTraceWriter(config.target_buffer());
+
+  base::trace_event::MemoryDumpArgs dump_args = {
+      base::trace_event::MemoryDumpLevelOfDetail::DETAILED};
+  base::trace_event::ProcessMemoryDump pmd =
+      base::trace_event::ProcessMemoryDump(dump_args);
+
+  base::trace_event::MemoryAllocatorDump* dump = pmd.CreateAllocatorDump(
+      "mad1", base::trace_event::MemoryAllocatorDumpGuid(421));
+  dump->AddScalar("size", "kBytes", 10);
+  dump->AddScalar("one", "kBytes", 1);
+  dump->AddString("two", "kObjects", "one");
+
+  perfetto::TraceWriter::TracePacketHandle handle =
+      trace_writer->NewTracePacket();
+  perfetto::protos::pbzero::MemoryTrackerSnapshot* memory_snapshot =
+      handle->set_memory_tracker_snapshot();
+  perfetto::protos::pbzero::MemoryTrackerSnapshot::ProcessSnapshot*
+      process_snapshot = memory_snapshot->add_process_memory_dumps();
+  perfetto::protos::pbzero::MemoryTrackerSnapshot::ProcessSnapshot::MemoryNode*
+      memory_node = process_snapshot->add_allocator_dumps();
+
+  dump->AsProtoInto(memory_node);
+  handle->Finalize();
+
+  EXPECT_EQ(1ul, GetProducerClient()->GetFinalizedPacketCount());
+
+  const perfetto::protos::TracePacket* packet =
+      GetProducerClient()->GetFinalizedPacket(0);
+  ASSERT_NE(nullptr, packet);
+  EXPECT_TRUE(packet->has_memory_tracker_snapshot());
+
+  const MemoryTrackerSnapshot& snapshot = packet->memory_tracker_snapshot();
+  const MemoryTrackerSnapshot::ProcessSnapshot& process_memory_dump =
+      snapshot.process_memory_dumps(0);
+  EXPECT_EQ(1, process_memory_dump.allocator_dumps_size());
+
+  const MemoryTrackerSnapshot::ProcessSnapshot::MemoryNode& dump0 =
+      process_memory_dump.allocator_dumps(0);
+  EXPECT_TRUE(dump0.has_absolute_name());
+  EXPECT_EQ("mad1", dump0.absolute_name());
+  EXPECT_TRUE(dump0.has_id());
+  EXPECT_EQ(421ul, dump0.id());
+  EXPECT_TRUE(dump0.has_size_bytes());
+  EXPECT_EQ(10ul, dump0.size_bytes());
+  EXPECT_EQ(2, dump0.entries_size());
+
+  const MemoryTrackerSnapshot::ProcessSnapshot::MemoryNode::MemoryNodeEntry&
+      entry0 = dump0.entries(0);
+  const MemoryTrackerSnapshot::ProcessSnapshot::MemoryNode::MemoryNodeEntry&
+      entry1 = dump0.entries(1);
+
+  EXPECT_TRUE(entry0.has_name());
+  EXPECT_EQ("one", entry0.name());
+  EXPECT_TRUE(entry0.has_units());
+  EXPECT_EQ(MemoryTrackerSnapshot::ProcessSnapshot::MemoryNode::
+                MemoryNodeEntry::BYTES,
+            entry0.units());
+  EXPECT_TRUE(entry0.has_value_uint64());
+  EXPECT_EQ(1ul, entry0.value_uint64());
+
+  EXPECT_TRUE(entry1.has_name());
+  EXPECT_EQ("two", entry1.name());
+  EXPECT_TRUE(entry0.has_units());
+  EXPECT_EQ(MemoryTrackerSnapshot::ProcessSnapshot::MemoryNode::
+                MemoryNodeEntry::COUNT,
+            entry1.units());
+  EXPECT_TRUE(entry1.has_value_string());
+  EXPECT_EQ("one", entry1.value_string());
+}
+
+}  // namespace
+
+}  // namespace tracing

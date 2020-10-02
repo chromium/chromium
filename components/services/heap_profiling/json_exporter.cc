@@ -14,7 +14,7 @@
 #include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
-#include "services/resource_coordinator/public/cpp/memory_instrumentation/tracing_observer.h"
+#include "services/resource_coordinator/public/cpp/memory_instrumentation/tracing_observer_traced_value.h"
 
 namespace heap_profiling {
 namespace {
@@ -125,7 +125,7 @@ base::Value BuildAllocatorsSummary(const AllocationMap& allocations) {
 
 base::Value BuildMemoryMaps(const ExportParams& params) {
   base::trace_event::TracedValueJSON traced_value;
-  memory_instrumentation::TracingObserver::MemoryMapsAsValueInto(
+  memory_instrumentation::TracingObserverTracedValue::MemoryMapsAsValueInto(
       params.maps, &traced_value, params.strip_path_from_mapped_files);
   return traced_value.ToBaseValue()->Clone();
 }

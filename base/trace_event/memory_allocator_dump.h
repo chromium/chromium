@@ -21,6 +21,14 @@
 #include "base/unguessable_token.h"
 #include "base/values.h"
 
+namespace perfetto {
+namespace protos {
+namespace pbzero {
+class MemoryTrackerSnapshot_ProcessSnapshot_MemoryNode;
+}
+}  // namespace protos
+}  // namespace perfetto
+
 namespace base {
 namespace trace_event {
 
@@ -100,6 +108,10 @@ class BASE_EXPORT MemoryAllocatorDump {
 
   // Called at trace generation time to populate the TracedValue.
   void AsValueInto(TracedValue* value) const;
+
+  void AsProtoInto(
+      perfetto::protos::pbzero::
+          MemoryTrackerSnapshot_ProcessSnapshot_MemoryNode* memory_node) const;
 
   // Get the size for this dump.
   // The size is the value set with AddScalar(kNameSize, kUnitsBytes, size);
