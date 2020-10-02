@@ -24,6 +24,7 @@ namespace ash {
 
 class CaptureModeBarView;
 class CaptureModeController;
+class CaptureWindowObserver;
 
 // Encapsulates an active capture mode session (i.e. an instance of this class
 // lives as long as capture mode is active). It creates and owns the capture
@@ -170,6 +171,9 @@ class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
   // Caches the old status of mouse warping before the session started to be
   // restored at the end.
   bool old_mouse_warp_status_;
+
+  // Observer to observe the current selected to-be-captured window.
+  std::unique_ptr<CaptureWindowObserver> capture_window_observer_;
 };
 
 }  // namespace ash
