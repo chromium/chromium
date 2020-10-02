@@ -293,7 +293,7 @@ extern const logging::LogSeverity kMinimumSeverityToReportError;
 
 // The minimum channel where Service Worker based extensions can run.
 constexpr version_info::Channel kMinChannelForServiceWorkerBasedExtension =
-    version_info::Channel::DEV;
+    version_info::Channel::STABLE;
 
 // IDs for the Media Router Component Extension.
 extern const char kCastExtensionIdRelease[];

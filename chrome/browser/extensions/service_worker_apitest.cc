@@ -2490,24 +2490,12 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerCheckBindingsTest, BindingsAvailability) {
   ExtensionTestMessageListener result_listener("SUCCESS", false);
   result_listener.set_failure_message("FAILURE");
 
-  // The extension will only load properly if Service Worker-based extensions
-  // are supported in the channel being tested.
-  bool expect_failure =
-      GetParam() > extension_misc::kMinChannelForServiceWorkerBasedExtension;
-  int flags = kFlagEnableFileAccess;
-  if (expect_failure)
-    flags |= kFlagIgnoreManifestWarnings;
-
   scoped_refptr<const Extension> extension =
-      LoadExtensionWithFlags(test_dir.UnpackedPath(), flags);
+      LoadExtension(test_dir.UnpackedPath());
   ASSERT_TRUE(extension.get());
 
-  if (expect_failure) {
-    EXPECT_FALSE(BackgroundInfo::IsServiceWorkerBased(extension.get()));
-  } else {
-    EXPECT_TRUE(BackgroundInfo::IsServiceWorkerBased(extension.get()));
-    EXPECT_TRUE(result_listener.WaitUntilSatisfied());
-  }
+  EXPECT_TRUE(BackgroundInfo::IsServiceWorkerBased(extension.get()));
+  EXPECT_TRUE(result_listener.WaitUntilSatisfied());
 }
 
 INSTANTIATE_TEST_SUITE_P(Unknown,
