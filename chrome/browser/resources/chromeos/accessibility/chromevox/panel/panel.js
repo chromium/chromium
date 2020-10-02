@@ -8,6 +8,7 @@
 
 goog.provide('Panel');
 
+goog.require('AbstractEarcons');
 goog.require('AnnotationsUI');
 goog.require('BackgroundKeyboardHandler');
 goog.require('BrailleCommandData');
@@ -187,6 +188,9 @@ Panel = class {
         'enable-experimental-accessibility-chromevox-tutorial', (enabled) => {
           Panel.iTutorialEnabled_ = enabled;
         });
+
+    /** @private {boolean} */
+    Panel.iTutorialReadyForTesting_ = false;
   }
 
   /**
@@ -1229,6 +1233,14 @@ Panel = class {
       const commandHandler =
           chrome.extension.getBackgroundPage()['CommandHandler'];
       commandHandler.onCommand('fullyDescribe');
+    });
+    $('i-tutorial').addEventListener('requestearcon', (evt) => {
+      const earconId = evt.detail.earconId;
+      chrome.extension
+          .getBackgroundPage()['ChromeVox']['earcons']['playEarcon'](earconId);
+    });
+    $('i-tutorial').addEventListener('readyfortesting', () => {
+      Panel.iTutorialReadyForTesting_ = true;
     });
   }
 

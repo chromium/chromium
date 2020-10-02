@@ -90,6 +90,8 @@ Polymer({
 
     numLessons: {type: Number, value: 0},
 
+    numLoadedLessons: {type: Number, value: 0},
+
     activeScreen: {type: String, observer: 'onActiveScreenChanged'},
 
     interactiveMode: {type: Boolean, value: false},
@@ -436,14 +438,13 @@ Polymer({
 
         {
           title: 'Sounds',
-          content: [
-            'ChromeVox uses sounds to give you essential and additional ' +
-                'information. You can use these sounds to navigate more ' +
-                'quickly by learning what each sound means. Once you get ' +
-                'more comfortable, you can turn off verbose descriptions in ' +
-                'speech and rely on them for essential information about the ' +
-                'page. Here is a complete list of sounds and what they mean',
-          ],
+          content:
+              ['ChromeVox uses sounds to give you essential and additional ' +
+               'information. You can use these sounds to navigate more ' +
+               'quickly by learning what each sound means. Once you get ' +
+               'more comfortable, you can turn off verbose descriptions in ' +
+               'speech and rely on them for essential information about the ' +
+               'page. Here is a complete list of sounds and what they mean'],
           medium: InteractionMedium.KEYBOARD,
           curriculums: [Curriculum.SOUNDS_AND_SETTINGS]
         },
@@ -488,8 +489,16 @@ Polymer({
 
   /** @override */
   ready() {
-    document.addEventListener('keydown', this.onKeyDown.bind(this));
     this.hideAllScreens();
+    document.addEventListener('keydown', this.onKeyDown.bind(this));
+    this.addEventListener('lessonready', () => {
+      this.numLoadedLessons += 1;
+      if (this.numLoadedLessons === this.lessonData.length) {
+        this.buildEarconLesson();
+        this.dispatchEvent(
+            new CustomEvent('readyfortesting', {composed: true}));
+      }
+    });
     this.$.lessonTemplate.addEventListener('dom-change', (evt) => {
       // Executes once all lessons have been added to the dom.
       this.show();
@@ -968,5 +977,45 @@ Polymer({
       // Queue lesson content so it is read after the lesson title.
       this.requestSpeech(text, QueueMode.QUEUE);
     }
+  },
+
+  /**
+   * @private
+   * @suppress {undefinedVars|missingProperties} For referencing
+   * EarconDescription and Msgs, which are defined on the Panel window.
+   */
+  buildEarconLesson() {
+    // Find earcon lesson.
+    let earconLesson;
+    const elements = this.$.lessonContainer.children;
+    for (const element of elements) {
+      if (element.is === 'tutorial-lesson' && element.title === 'Sounds') {
+        earconLesson = element;
+      }
+    }
+
+    if (!earconLesson) {
+      throw new Error('Could not find the earcon lesson.');
+    }
+
+    // Add text and listeners.
+    for (const earconId in EarconDescription) {
+      const msgid = EarconDescription[earconId];
+      const earconElement = document.createElement('p');
+      earconElement.innerText = Msgs.getMsg(msgid);
+      earconElement.setAttribute('tabindex', -1);
+      earconElement.addEventListener(
+          'focus', this.requestEarcon.bind(this, earconId));
+      earconLesson.contentDiv.appendChild(earconElement);
+    }
+  },
+
+  /**
+   * @param {string} earconId
+   * @private
+   */
+  requestEarcon(earconId) {
+    this.dispatchEvent(
+        new CustomEvent('requestearcon', {composed: true, detail: {earconId}}));
   }
 });

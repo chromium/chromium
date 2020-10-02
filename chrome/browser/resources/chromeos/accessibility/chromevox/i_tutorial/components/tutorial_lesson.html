@@ -97,7 +97,8 @@ a {
     <h1 id="title" tabindex="-1">[[ title ]]</h1>
   </template>
   <div id="content">
-    <template is="dom-repeat" items="[[ content ]]" as="text">
+    <template id="contentTemplate" is="dom-repeat" items="[[ content ]]"
+        as="text">
       <p tabindex="-1">[[ text ]]</p>
     </template>
   </div>

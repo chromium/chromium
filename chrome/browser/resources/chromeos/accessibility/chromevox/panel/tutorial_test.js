@@ -82,8 +82,16 @@ ChromeVoxTutorialTest = class extends ChromeVoxNextE2ETest {
             if (mutation.type === 'childList') {
               for (const node of mutation.addedNodes) {
                 if (node.id === 'i-tutorial-container') {
-                  // Resolve once the tutorial has been added to the document.
-                  resolve();
+                  // Once the tutorial has been added to the document, we need
+                  // to wait for the lesson templates to load.
+                  const panel = this.getPanel();
+                  if (panel.iTutorialReadyForTesting_) {
+                    resolve();
+                  } else {
+                    panel.iTutorial.addEventListener('readyfortesting', () => {
+                      resolve();
+                    });
+                  }
                   observer.disconnect();
                 }
               }
@@ -443,5 +451,35 @@ TEST_F('ChromeVoxTutorialTest', 'AutoReadLesson', function() {
             'press the Control key.')
         .expectSpeech('To turn ChromeVox on or off, use Control+Alt+Z.')
         .replay();
+  });
+});
+
+// Tests for correct speech and earcons on the earcons lesson.
+TEST_F('ChromeVoxTutorialTest', 'EarconLesson', function() {
+  const mockFeedback = this.createMockFeedback();
+  this.runWithLoadedTree(this.simpleDoc, async function(root) {
+    await this.launchAndWaitForTutorial();
+    const tutorial = this.getPanel().iTutorial;
+    const nextObjectAndExpectSpeechAndEarcon = (speech, earcon) => {
+      mockFeedback.call(doCmd('nextObject'))
+          .expectSpeech(speech)
+          .expectEarcon(earcon);
+    };
+    mockFeedback.expectSpeech('Choose your tutorial experience')
+        .call(() => {
+          // Show the lesson.
+          tutorial.curriculum = 'sounds_and_settings';
+          tutorial.showLesson(0);
+        })
+        .expectSpeech('Sounds')
+        .call(doCmd('nextObject'))
+        .expectSpeech(new RegExp(
+            'ChromeVox uses sounds to give you essential and additional ' +
+            'information.'));
+    nextObjectAndExpectSpeechAndEarcon('A modal alert', Earcon.ALERT_MODAL);
+    nextObjectAndExpectSpeechAndEarcon(
+        'A non modal alert', Earcon.ALERT_NONMODAL);
+    nextObjectAndExpectSpeechAndEarcon('A button', Earcon.BUTTON);
+    mockFeedback.replay();
   });
 });

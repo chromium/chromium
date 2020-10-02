@@ -51,6 +51,11 @@ export const TutorialLesson = Polymer({
 
   /** @override */
   ready() {
+    this.$.contentTemplate.addEventListener('dom-change', (evt) => {
+      this.dispatchEvent(new CustomEvent('lessonready', {composed: true}));
+    });
+
+
     if (this.practiceFile) {
       this.populatePracticeContent();
       for (const evt of this.events) {
@@ -258,4 +263,9 @@ export const TutorialLesson = Polymer({
 
     return false;
   },
+
+  /** @return {Element} */
+  get contentDiv() {
+    return this.$.content;
+  }
 });
