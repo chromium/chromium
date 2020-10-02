@@ -165,6 +165,7 @@ class TestQuicConnection : public quic::QuicConnection {
                      QuicChromiumAlarmFactory* alarm_factory,
                      quic::QuicPacketWriter* writer)
       : quic::QuicConnection(connection_id,
+                             quic::QuicSocketAddress(),
                              ToQuicSocketAddress(address),
                              helper,
                              alarm_factory,

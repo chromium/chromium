@@ -163,8 +163,8 @@ std::unique_ptr<quic::QuicConnection> CreateQuicConnection(
   dummy_connection_id =
       quic::QuicConnectionId(connection_id_bytes, sizeof(connection_id_bytes));
   return std::make_unique<quic::QuicConnection>(
-      dummy_connection_id, dummy_address, helper, alarm_factory, packet_writer,
-      /* owns_writer */ true, perspective,
+      dummy_connection_id, quic::QuicSocketAddress(), dummy_address, helper,
+      alarm_factory, packet_writer, /* owns_writer */ true, perspective,
       quic::ParsedQuicVersionVector{quic::CurrentSupportedVersions()[0]});
 }
 

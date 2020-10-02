@@ -227,7 +227,8 @@ class QuicProxyClientSocketTest : public ::testing::TestWithParam<TestParams>,
     QuicChromiumPacketWriter* writer = new QuicChromiumPacketWriter(
         socket.get(), base::ThreadTaskRunnerHandle::Get().get());
     quic::QuicConnection* connection = new quic::QuicConnection(
-        connection_id_, net::ToQuicSocketAddress(peer_addr_), helper_.get(),
+        connection_id_, quic::QuicSocketAddress(),
+        net::ToQuicSocketAddress(peer_addr_), helper_.get(),
         alarm_factory_.get(), writer, true /* owns_writer */,
         quic::Perspective::IS_CLIENT, quic::test::SupportedVersions(version_));
     connection->set_visitor(&visitor_);

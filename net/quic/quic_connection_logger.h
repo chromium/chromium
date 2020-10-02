@@ -73,7 +73,9 @@ class NET_EXPORT_PRIVATE QuicConnectionLogger
       quic::EncryptionLevel decryption_level) override;
   void OnDuplicatePacket(quic::QuicPacketNumber packet_number) override;
   void OnProtocolVersionMismatch(quic::ParsedQuicVersion version) override;
-  void OnPacketHeader(const quic::QuicPacketHeader& header) override;
+  void OnPacketHeader(const quic::QuicPacketHeader& header,
+                      quic::QuicTime receive_time,
+                      quic::EncryptionLevel level) override;
   void OnPathChallengeFrame(const quic::QuicPathChallengeFrame& frame) override;
   void OnPathResponseFrame(const quic::QuicPathResponseFrame& frame) override;
   void OnCryptoFrame(const quic::QuicCryptoFrame& frame) override;

@@ -290,8 +290,9 @@ void QuicConnectionLogger::OnProtocolVersionMismatch(
   // TODO(rtenneti): Add logging.
 }
 
-void QuicConnectionLogger::OnPacketHeader(
-    const quic::QuicPacketHeader& header) {
+void QuicConnectionLogger::OnPacketHeader(const quic::QuicPacketHeader& header,
+                                          quic::QuicTime receive_time,
+                                          quic::EncryptionLevel level) {
   if (!first_received_packet_number_.IsInitialized()) {
     first_received_packet_number_ = header.packet_number;
   } else if (header.packet_number < first_received_packet_number_) {
@@ -338,7 +339,7 @@ void QuicConnectionLogger::OnPacketHeader(
     no_packet_received_after_ping_ = false;
   }
   last_received_packet_number_ = header.packet_number;
-  event_logger_.OnPacketHeader(header);
+  event_logger_.OnPacketHeader(header, receive_time, level);
 }
 
 void QuicConnectionLogger::OnStreamFrame(const quic::QuicStreamFrame& frame) {

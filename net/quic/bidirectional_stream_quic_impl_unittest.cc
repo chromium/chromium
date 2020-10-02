@@ -530,8 +530,8 @@ class BidirectionalStreamQuicImplTest
         new QuicChromiumConnectionHelper(&clock_, &random_generator_));
     alarm_factory_.reset(new QuicChromiumAlarmFactory(runner_.get(), &clock_));
     connection_ = new quic::QuicConnection(
-        connection_id_, ToQuicSocketAddress(peer_addr_), helper_.get(),
-        alarm_factory_.get(),
+        connection_id_, quic::QuicSocketAddress(),
+        ToQuicSocketAddress(peer_addr_), helper_.get(), alarm_factory_.get(),
         new QuicChromiumPacketWriter(socket.get(), runner_.get()),
         true /* owns_writer */, quic::Perspective::IS_CLIENT,
         quic::test::SupportedVersions(version_));

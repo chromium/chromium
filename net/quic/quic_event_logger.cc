@@ -642,7 +642,9 @@ void QuicEventLogger::OnDuplicatePacket(quic::QuicPacketNumber packet_number) {
       [&] { return NetLogQuicDuplicatePacketParams(packet_number); });
 }
 
-void QuicEventLogger::OnPacketHeader(const quic::QuicPacketHeader& header) {
+void QuicEventLogger::OnPacketHeader(const quic::QuicPacketHeader& header,
+                                     quic::QuicTime /*receive_time*/,
+                                     quic::EncryptionLevel /*level*/) {
   if (!net_log_.IsCapturing())
     return;
   net_log_.AddEvent(NetLogEventType::QUIC_SESSION_PACKET_AUTHENTICATED);

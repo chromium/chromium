@@ -275,8 +275,9 @@ void QuicTransportClient::CreateConnection() {
       quic::QuicUtils::CreateRandomConnectionId(
           quic_context_->random_generator());
   connection_ = std::make_unique<quic::QuicConnection>(
-      connection_id, ToQuicSocketAddress(server_address),
-      quic_context_->helper(), alarm_factory_.get(),
+      connection_id, quic::QuicSocketAddress(),
+      ToQuicSocketAddress(server_address), quic_context_->helper(),
+      alarm_factory_.get(),
       new QuicChromiumPacketWriter(socket_.get(), task_runner_),
       /* owns_writer */ true, quic::Perspective::IS_CLIENT,
       supported_versions_);

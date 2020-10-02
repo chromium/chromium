@@ -456,3 +456,14 @@ QUIC_FLAG(bool,
 
 // If true, check for NULL before sending a fallback config.
 QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_check_fallback_null, true)
+
+// If true, HTTP/3 sesions will report error and close connection upon receiving
+// HTTP/2 only frames.
+QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_reject_spdy_frames, false)
+
+// If true, QuicConnection will initialize its self address to the self address
+// of the first received packet, for all server connections and client
+// connections that know its own address.
+QUIC_FLAG(bool,
+          FLAGS_quic_reloadable_flag_quic_connection_set_initial_self_address,
+          false)

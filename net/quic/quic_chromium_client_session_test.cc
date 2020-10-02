@@ -181,8 +181,8 @@ class QuicChromiumClientSessionTest
         socket.get(), base::ThreadTaskRunnerHandle::Get().get());
     quic::QuicConnection* connection = new quic::QuicConnection(
         quic::QuicUtils::CreateRandomConnectionId(&random_),
-        ToQuicSocketAddress(kIpEndPoint), &helper_, &alarm_factory_, writer,
-        true, quic::Perspective::IS_CLIENT,
+        quic::QuicSocketAddress(), ToQuicSocketAddress(kIpEndPoint), &helper_,
+        &alarm_factory_, writer, true, quic::Perspective::IS_CLIENT,
         quic::test::SupportedVersions(version_));
     session_.reset(new TestingQuicChromiumClientSession(
         connection, std::move(socket),
