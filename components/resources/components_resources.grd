@@ -14,6 +14,7 @@ dev_ui_components_resources.grd.
   <release seq="1">
     <includes>
       <part file="about_ui_resources.grdp" />
+      <part file="autofill_regex_resources.grdp" />
       <part file="dom_distiller_resources.grdp" />
       <part file="flags_ui_resources.grdp" />
       <part file="management_resources.grdp" />
