@@ -613,8 +613,26 @@ void V4L2ImageProcessorBackend::ProcessJobsTask() {
     }
 
     // We need one input and one output buffer to schedule the job
-    auto input_buffer = input_queue_->GetFreeBuffer();
-    auto output_buffer = output_queue_->GetFreeBuffer();
+    base::Optional<V4L2WritableBufferRef> input_buffer;
+    // If we are using DMABUF frames, try to always obtain the same V4L2 buffer.
+    if (input_memory_type_ == V4L2_MEMORY_DMABUF) {
+      const VideoFrame& input_frame =
+          *(input_job_queue_.front()->input_frame.get());
+      input_buffer = input_queue_->GetFreeBufferForFrame(input_frame);
+    }
+    if (!input_buffer)
+      input_buffer = input_queue_->GetFreeBuffer();
+
+    base::Optional<V4L2WritableBufferRef> output_buffer;
+    // If we are using DMABUF frames, try to always obtain the same V4L2 buffer.
+    if (output_memory_type_ == V4L2_MEMORY_DMABUF) {
+      const VideoFrame& output_frame =
+          *(input_job_queue_.front()->output_frame.get());
+      output_buffer = output_queue_->GetFreeBufferForFrame(output_frame);
+    }
+    if (!output_buffer)
+      output_buffer = output_queue_->GetFreeBuffer();
+
     if (!input_buffer || !output_buffer)
       break;
 
