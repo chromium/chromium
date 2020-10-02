@@ -57,10 +57,15 @@ Lacros bugs can be filed under component: OS>LaCrOs.
 ## Testing
 
 Most test suites require ash-chrome to be running in order to provide a basic
-Wayland server and the crosapi implementation. This requires a special test
-runner:
+Wayland server. This requires a special test runner:
 
 `./build/lacros/test_runner.py test out/lacros/browser_tests --gtest_filter=BrowserTest.Title`
+
+Some test suites require ash-chrome to provide both a Wayland server and a valid
+mojo crosapi connection. This requires the test target
+`lacros_chrome_browsertests`:
+
+`./build/lacros/test_runner.py test out/lacros/lacros_chrome_browsertests --gtest_filter=ScreenManagerLacrosBrowserTest.*`
 
 If you're sshing to your desktop, please prefix the command with
 `./testing/xvfb.py`.
