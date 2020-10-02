@@ -28,7 +28,6 @@ import org.chromium.chrome.browser.compositor.layouts.LayoutManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabImpl;
 import org.chromium.chrome.browser.tab.TabObserver;
-import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Tests for the top toolbar overlay's mediator (composited version of the top toolbar). */
@@ -42,9 +41,6 @@ public class TopToolbarOverlayMediatorTest {
 
     @Mock
     private LayoutManager mLayoutManager;
-
-    @Mock
-    private ControlContainer mControlContainer;
 
     @Mock
     private BrowserControlsStateProvider mBrowserControlsProvider;
@@ -91,9 +87,8 @@ public class TopToolbarOverlayMediatorTest {
                          .with(TopToolbarOverlayProperties.PROGRESS_BAR_INFO, null)
                          .build();
 
-        mMediator =
-                new TopToolbarOverlayMediator(mModel, mContext, mLayoutManager, mControlContainer,
-                        mTabSupplier, mBrowserControlsProvider, mAndroidViewShownSupplier);
+        mMediator = new TopToolbarOverlayMediator(mModel, mContext, mLayoutManager,
+                (info) -> {}, mTabSupplier, mBrowserControlsProvider, mAndroidViewShownSupplier);
 
         // Ensure the observer is added to the initial tab.
         verify(mTabSupplier).addObserverAndTrigger(mActivityTabObserverCaptor.capture());

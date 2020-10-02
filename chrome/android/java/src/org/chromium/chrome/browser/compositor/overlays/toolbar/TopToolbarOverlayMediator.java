@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.compositor.overlays.toolbar;
 import android.content.Context;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
@@ -23,7 +22,6 @@ import org.chromium.chrome.browser.compositor.layouts.phone.StackLayout;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
-import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.browser.toolbar.ToolbarColors;
 import org.chromium.components.browser_ui.widget.ClipDrawableProgressBar;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -45,8 +43,8 @@ public class TopToolbarOverlayMediator {
     /** The observer of changes to the active layout. */
     private final SceneChangeObserver mSceneChangeObserver;
 
-    /** A Layout for browser controls. */
-    private final @Nullable ControlContainer mToolbarContainer;
+    /** A means of populating draw info for the progress bar. */
+    private final Callback<ClipDrawableProgressBar.DrawingInfo> mProgressInfoCallback;
 
     /** Provides current tab. */
     private final ActivityTabProvider mTabSupplier;
@@ -76,12 +74,13 @@ public class TopToolbarOverlayMediator {
     private boolean mLayoutHasOwnToolbar;
 
     TopToolbarOverlayMediator(PropertyModel model, Context context, LayoutManager layoutManager,
-            @Nullable ControlContainer controlContainer, ActivityTabProvider tabSupplier,
+            Callback<ClipDrawableProgressBar.DrawingInfo> progressInfoCallback,
+            ActivityTabProvider tabSupplier,
             BrowserControlsStateProvider browserControlsStateProvider,
             ObservableSupplier<Boolean> androidViewShownSupplier) {
         mContext = context;
         mLayoutManager = layoutManager;
-        mToolbarContainer = controlContainer;
+        mProgressInfoCallback = progressInfoCallback;
         mTabSupplier = tabSupplier;
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mAndroidViewShownSupplier = androidViewShownSupplier;
@@ -205,9 +204,7 @@ public class TopToolbarOverlayMediator {
     /** Update the state of the composited progress bar. */
     private void updateProgress() {
         // Tablets have their own version of a progress "spinner".
-        if (isTablet() || mToolbarContainer == null) {
-            return;
-        }
+        if (isTablet()) return;
 
         if (mModel.get(TopToolbarOverlayProperties.PROGRESS_BAR_INFO) == null) {
             mModel.set(TopToolbarOverlayProperties.PROGRESS_BAR_INFO,
@@ -216,8 +213,7 @@ public class TopToolbarOverlayMediator {
 
         // Update and set the progress info to trigger an update; the PROGRESS_BAR_INFO
         // property skips the object equality check.
-        mToolbarContainer.getProgressBarDrawingInfo(
-                mModel.get(TopToolbarOverlayProperties.PROGRESS_BAR_INFO));
+        mProgressInfoCallback.onResult(mModel.get(TopToolbarOverlayProperties.PROGRESS_BAR_INFO));
         mModel.set(TopToolbarOverlayProperties.PROGRESS_BAR_INFO,
                 mModel.get(TopToolbarOverlayProperties.PROGRESS_BAR_INFO));
     }

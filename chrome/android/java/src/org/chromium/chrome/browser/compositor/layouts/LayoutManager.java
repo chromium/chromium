@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -65,6 +66,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.browser.toolbar.ToolbarColors;
+import org.chromium.components.browser_ui.widget.ClipDrawableProgressBar;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.SPenSupport;
@@ -467,8 +469,12 @@ public class LayoutManager implements LayoutUpdateHost, LayoutProvider,
         // If fullscreen is disabled, don't bother creating this overlay; only the android view will
         // ever be shown.
         if (DeviceClassManager.enableFullscreen()) {
+            Callback<ClipDrawableProgressBar.DrawingInfo> progressInfoCallback = (info) -> {
+                if (controlContainer == null) return;
+                controlContainer.getProgressBarDrawingInfo(info);
+            };
             mToolbarOverlay = new TopToolbarOverlayCoordinator(mContext, mFrameRequestSupplier,
-                    this, controlContainer, tabProvider, getBrowserControlsManager(),
+                    this, progressInfoCallback, tabProvider, getBrowserControlsManager(),
                     mAndroidViewShownSupplier, () -> renderHost.getResourceManager());
             addSceneOverlay(mToolbarOverlay);
         }
