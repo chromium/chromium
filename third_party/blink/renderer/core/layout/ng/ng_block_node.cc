@@ -58,6 +58,8 @@
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table.h"
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_cell.h"
 #include "third_party/blink/renderer/core/layout/ng/table/ng_table_borders.h"
+#include "third_party/blink/renderer/core/layout/ng/table/ng_table_row_layout_algorithm.h"
+#include "third_party/blink/renderer/core/layout/ng/table/ng_table_section_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/shapes/shape_outside_info.h"
 #include "third_party/blink/renderer/core/layout/text_autosizer.h"
 #include "third_party/blink/renderer/core/mathml/mathml_element.h"
@@ -157,6 +159,10 @@ NOINLINE void DetermineAlgorithmAndRun(const NGLayoutAlgorithmParams& params,
   const LayoutBox& box = *params.node.GetLayoutBox();
   if (box.IsLayoutNGFlexibleBox()) {
     CreateAlgorithmAndRun<NGFlexLayoutAlgorithm>(params, callback);
+  } else if (box.IsTableRow()) {
+    CreateAlgorithmAndRun<NGTableRowLayoutAlgorithm>(params, callback);
+  } else if (box.IsTableSection()) {
+    CreateAlgorithmAndRun<NGTableSectionLayoutAlgorithm>(params, callback);
   } else if (box.IsLayoutNGCustom()) {
     CreateAlgorithmAndRun<NGCustomLayoutAlgorithm>(params, callback);
   } else if (box.IsMathML()) {
@@ -1020,6 +1026,14 @@ const NGBoxStrut& NGBlockNode::GetTableBorders() const {
     layout_table->SetCachedTableBorders(table_borders.get());
   }
   return table_borders->TableBorder();
+}
+
+LayoutUnit NGBlockNode::ComputeTableInlineSize(
+    const NGConstraintSpace& space,
+    const NGBoxStrut& border_padding) const {
+  DCHECK(IsNGTable());
+  return LayoutUnit();
+  // TODO(atotic) call NGTableLayoutAlgorithm::ComputeTableInlineSize
 }
 
 bool NGBlockNode::CanUseNewLayout(const LayoutBox& box) {

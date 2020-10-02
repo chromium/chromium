@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/layout/layout_block.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_mixin.h"
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_interface.h"
+#include "third_party/blink/renderer/core/layout/ng/table/ng_table_layout_algorithm_types.h"
 
 namespace blink {
 
@@ -33,7 +34,12 @@ class CORE_EXPORT LayoutNGTable : public LayoutNGMixin<LayoutBlock>,
     return cached_table_borders_.get();
   }
 
-  void SetCachedTableBorders(const NGTableBorders* table_borders);
+  void SetCachedTableBorders(scoped_refptr<const NGTableBorders>);
+
+  const NGTableTypes::Columns* GetCachedTableColumnConstraints();
+
+  void SetCachedTableColumnConstraints(
+      scoped_refptr<const NGTableTypes::Columns>);
 
   // Any borders in table grid have changed.
   void GridBordersChanged();
@@ -55,6 +61,9 @@ class CORE_EXPORT LayoutNGTable : public LayoutNGMixin<LayoutBlock>,
 
   void StyleDidChange(StyleDifference diff,
                       const ComputedStyle* old_style) override;
+
+  LayoutBox* CreateAnonymousBoxWithSameTypeAs(
+      const LayoutObject* parent) const override;
 
   // LayoutBlock methods end.
 
@@ -159,6 +168,10 @@ class CORE_EXPORT LayoutNGTable : public LayoutNGMixin<LayoutBlock>,
 
   // Table borders are cached because computing collapsed borders is expensive.
   scoped_refptr<const NGTableBorders> cached_table_borders_;
+
+  // Table columns do not depend on any outside data (e.g. NGConstraintSpace).
+  // They are cached because computing them is expensive.
+  scoped_refptr<const NGTableTypes::Columns> cached_table_columns_;
 };
 
 // wtf/casting.h helper.

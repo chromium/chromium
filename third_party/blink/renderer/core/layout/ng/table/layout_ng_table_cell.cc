@@ -24,6 +24,14 @@ LayoutNGTableCell::LayoutNGTableCell(Element* element)
   UpdateColAndRowSpanFlags();
 }
 
+void LayoutNGTableCell::InvalidateLayoutResultCacheAfterMeasure() const {
+  if (LayoutBox* row = ParentBox()) {
+    row->ClearLayoutResults();
+    if (LayoutBox* section = ParentBox())
+      section->ClearLayoutResults();
+  }
+}
+
 LayoutNGTable* LayoutNGTableCell::Table() const {
   if (LayoutObject* parent = Parent()) {
     if (LayoutObject* grandparent = parent->Parent()) {

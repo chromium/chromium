@@ -101,6 +101,8 @@ class CORE_EXPORT NGBlockNode final : public NGLayoutInputNode {
 
   bool IsFixedTableLayout() const;
   const NGBoxStrut& GetTableBorders() const;
+  LayoutUnit ComputeTableInlineSize(const NGConstraintSpace&,
+                                    const NGBoxStrut& border_padding) const;
 
   // Return true if this block node establishes an inline formatting context.
   // This will only be the case if there is actual inline content. Empty nodes

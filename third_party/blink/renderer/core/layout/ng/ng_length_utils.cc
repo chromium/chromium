@@ -430,6 +430,11 @@ LayoutUnit ComputeInlineSizeForFragment(
     const MinMaxSizes* override_min_max_sizes_for_test) {
   if (space.IsFixedInlineSize() || space.IsAnonymous())
     return space.AvailableSize().inline_size;
+  if (node.IsBlock()) {
+    NGBlockNode block = To<NGBlockNode>(node);
+    if (block.IsNGTable())
+      return block.ComputeTableInlineSize(space, border_padding);
+  }
 
   const ComputedStyle& style = node.Style();
   Length logical_width = style.LogicalWidth();
@@ -609,12 +614,15 @@ LayoutUnit ComputeBlockSizeForFragment(
     const NGBoxStrut& border_padding,
     LayoutUnit content_size,
     base::Optional<LayoutUnit> inline_size) {
-  // The final block-size of a table-cell is always its intrinsic size.
-  if (constraint_space.IsTableCell() && content_size != kIndefiniteSize)
+  if (constraint_space.IsLegacyTableCell() && content_size != kIndefiniteSize)
     return content_size;
 
   if (constraint_space.IsFixedBlockSize())
     return constraint_space.AvailableSize().block_size;
+
+  if (constraint_space.IsTableCell() && !constraint_space.IsLegacyTableCell() &&
+      content_size != kIndefiniteSize)
+    return content_size;
 
   if (constraint_space.IsAnonymous())
     return content_size;
@@ -1133,7 +1141,6 @@ NGFragmentGeometry CalculateInitialFragmentGeometry(
     const NGConstraintSpace& constraint_space,
     const NGBlockNode& node) {
   const ComputedStyle& style = node.Style();
-
   NGBoxStrut border = ComputeBorders(constraint_space, node);
   NGBoxStrut padding = ComputePadding(constraint_space, style);
   NGBoxStrut scrollbar = ComputeScrollbars(constraint_space, node);
@@ -1221,7 +1228,7 @@ LogicalSize AdjustChildPercentageSize(const NGConstraintSpace& space,
   // their percentages against this.
   if (space.IsFixedBlockSizeIndefinite()) {
     DCHECK(space.IsFixedBlockSize());
-    DCHECK(node.IsFlexItem());
+    DCHECK(node.IsFlexItem() || space.IsTableCell());
     child_percentage_size.block_size = kIndefiniteSize;
     return child_percentage_size;
   }
@@ -1230,8 +1237,16 @@ LogicalSize AdjustChildPercentageSize(const NGConstraintSpace& space,
       space.IsTableCell() && !space.IsFixedBlockSize();
   // A table-cell during the "measure" phase forces its descendants to have an
   // indefinite percentage resolution size.
+  // NOTE: If the Layout and ComputeMinMaxSizes ever get merged, this can be
+  // removed (as we'll need to allow for indefinite %-inline-sizes).
   if (is_table_cell_in_measure_phase) {
-    child_percentage_size.block_size = kIndefiniteSize;
+    // Orthogonal cells need to call layout on the cell to determine
+    // size of the table. Because table's inline size is unknown, percentages
+    // are resolved against 0.
+    if (space.IsOrthogonalWritingModeRoot())
+      child_percentage_size.block_size = LayoutUnit();
+    else
+      child_percentage_size.block_size = kIndefiniteSize;
     return child_percentage_size;
   }
 

@@ -84,6 +84,10 @@ NGTableTypes::Row ComputeMinimumRowBlockSize(
     return builder.ToConstraintSpace();
   };
 
+  // TODO(layout-ng) Scrollbars should be frozen when computing row sizes.
+  // This cannot be done today, because fragments with frozen scrollbars
+  // will be cached. Needs to be fixed in NG framework.
+
   base::Optional<LayoutUnit> max_baseline;
   LayoutUnit max_descent;
   LayoutUnit row_block_size;
@@ -223,7 +227,7 @@ class ColumnConstraintsBuilder {
                             ? colgroup_constraint_->max_inline_size
                             : base::nullopt);
     for (wtf_size_t i = 0; i < span; ++i)
-      column_constraints_->push_back(col_constraint);
+      column_constraints_->data.push_back(col_constraint);
     column.GetLayoutBox()->ClearNeedsLayout();
   }
 
@@ -239,7 +243,7 @@ class ColumnConstraintsBuilder {
                      bool has_children) {
     if (!has_children) {
       for (wtf_size_t i = 0; i < span; ++i)
-        column_constraints_->push_back(*colgroup_constraint_);
+        column_constraints_->data.push_back(*colgroup_constraint_);
     }
     colgroup_constraint_.reset();
     colgroup.GetLayoutBox()->ClearNeedsLayout();

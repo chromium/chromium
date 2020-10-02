@@ -44,8 +44,9 @@ wtf_size_t LayoutNGTable::ColumnCount() const {
   return cached_layout_result->TableColumnCount();
 }
 
-void LayoutNGTable::SetCachedTableBorders(const NGTableBorders* table_borders) {
-  cached_table_borders_ = table_borders;
+void LayoutNGTable::SetCachedTableBorders(
+    scoped_refptr<const NGTableBorders> table_borders) {
+  cached_table_borders_ = std::move(table_borders);
 }
 
 void LayoutNGTable::InvalidateCachedTableBorders() {
@@ -53,6 +54,18 @@ void LayoutNGTable::InvalidateCachedTableBorders() {
   // where fragments can replace only TableBorders, keep the geometry, and
   // repaint.
   cached_table_borders_.reset();
+}
+
+const NGTableTypes::Columns* LayoutNGTable::GetCachedTableColumnConstraints() {
+  if (IsTableColumnsConstraintsDirty())
+    cached_table_columns_.reset();
+  return cached_table_columns_.get();
+}
+
+void LayoutNGTable::SetCachedTableColumnConstraints(
+    scoped_refptr<const NGTableTypes::Columns> columns) {
+  cached_table_columns_ = std::move(columns);
+  SetTableColumnConstraintDirty(false);
 }
 
 void LayoutNGTable::GridBordersChanged() {
@@ -137,6 +150,11 @@ void LayoutNGTable::StyleDidChange(StyleDifference diff,
     GridBordersChanged();
   }
   LayoutNGMixin<LayoutBlock>::StyleDidChange(diff, old_style);
+}
+
+LayoutBox* LayoutNGTable::CreateAnonymousBoxWithSameTypeAs(
+    const LayoutObject* parent) const {
+  return LayoutObjectFactory::CreateAnonymousTableWithParent(*parent);
 }
 
 bool LayoutNGTable::IsFirstCell(const LayoutNGTableCellInterface& cell) const {

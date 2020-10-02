@@ -38,6 +38,14 @@ class CORE_EXPORT LayoutNGTableCell
     intrinsical_logical_widths_border_sizes_ = border_sizes;
   }
 
+  // This method is called after a new *measure* layout-result is set.
+  // Tables are special in that the table accesses the table-cells directly
+  // for computing the size of the table-grid (bypassing the section/row).
+  // Due to this when we set a new measure layout-result, we also invalidate
+  // the layout-result cache of the associated section/row (as the cell
+  // fragment would be in the incorrect state).
+  void InvalidateLayoutResultCacheAfterMeasure() const;
+
   LayoutNGTable* Table() const;
 
   // LayoutBlockFlow methods start.
@@ -51,6 +59,8 @@ class CORE_EXPORT LayoutNGTableCell
   // Currently,  LayoutNGTableCellLegacy is named LayoutNGTableCell for test
   // compat.
   const char* GetName() const final { return "LayoutNGTableCellNew"; }
+
+  bool CreatesNewFormattingContext() const final { return true; }
 
   LayoutBox* CreateAnonymousBoxWithSameTypeAs(
       const LayoutObject* parent) const override;
@@ -88,6 +98,7 @@ class CORE_EXPORT LayoutNGTableCell
 
   unsigned AbsoluteColumnIndex() const final;
 
+  // Guaranteed to be between kMinColSpan and kMaxColSpan.
   unsigned ColSpan() const final;
 
   LayoutNGTableCellInterface* NextCellInterface() const final;

@@ -960,6 +960,10 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
     NOT_DESTROYED();
     return IsOfType(kLayoutObjectTableRow);
   }
+  bool IsLegacyTableRow() const {
+    NOT_DESTROYED();
+    return IsTableRow() && !IsLayoutNGObject();
+  }
   bool IsTableSection() const {
     NOT_DESTROYED();
     return IsOfType(kLayoutObjectTableSection);
@@ -3233,6 +3237,16 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
     return bitfields_.BeingDestroyed();
   }
 
+  bool IsTableColumnsConstraintsDirty() const {
+    NOT_DESTROYED();
+    return bitfields_.IsTableColumnsConstraintsDirty();
+  }
+
+  void SetTableColumnConstraintDirty(bool b) {
+    NOT_DESTROYED();
+    bitfields_.SetIsTableColumnsConstraintsDirty(b);
+  }
+
   DisplayLockContext* GetDisplayLockContext() const {
     NOT_DESTROYED();
     if (!RuntimeEnabledFeatures::CSSContentVisibilityEnabled())
@@ -3690,6 +3704,7 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
           is_html_legend_element_(false),
           has_non_collapsed_border_decoration_(false),
           being_destroyed_(false),
+          is_table_column_constraints_dirty_(false),
           positioned_state_(kIsStaticallyPositioned),
           selection_state_(static_cast<unsigned>(SelectionState::kNone)),
           subtree_paint_property_update_reasons_(
@@ -3974,6 +3989,11 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
     ADD_BOOLEAN_BITFIELD(is_layout_ng_object_for_list_marker_image,
                          IsLayoutNGObjectForListMarkerImage);
 
+    // Column constraints are cached on LayoutNGTable.
+    // When this flag is set, any cached constraints are invalid.
+    ADD_BOOLEAN_BITFIELD(is_table_column_constraints_dirty_,
+                         IsTableColumnsConstraintsDirty);
+
    private:
     // This is the cached 'position' value of this object
     // (see ComputedStyle::position).
@@ -4087,6 +4107,8 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
   void SetNormalChildNeedsLayout(bool b) {
     NOT_DESTROYED();
     bitfields_.SetNormalChildNeedsLayout(b);
+    if (b)
+      bitfields_.SetIsTableColumnsConstraintsDirty(true);
   }
   void SetPosChildNeedsLayout(bool b) {
     NOT_DESTROYED();
@@ -4191,6 +4213,7 @@ inline void LayoutObject::SetNeedsLayout(
                                bitfields_.SelfNeedsLayoutForAvailableSpace();
   SetSelfNeedsLayoutForStyle(true);
   SetNeedsOverflowRecalc();
+  SetTableColumnConstraintDirty(true);
   if (!already_needed_layout) {
     TRACE_EVENT_INSTANT1(
         TRACE_DISABLED_BY_DEFAULT("devtools.timeline.invalidationTracking"),

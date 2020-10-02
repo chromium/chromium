@@ -91,8 +91,7 @@ NGTableTypes::Column NGTableTypes::CreateColumn(
                 percentage_inline_size,
                 LayoutUnit() /* percent_border_padding */,
                 is_constrained,
-                is_collapsed,
-                kIndefiniteSize};
+                is_collapsed};
 }
 
 // Implements https://www.w3.org/TR/css-tables-3/#computing-cell-measures

@@ -5,11 +5,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_TABLE_NG_TABLE_LAYOUT_ALGORITHM_TYPES_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_TABLE_NG_TABLE_LAYOUT_ALGORITHM_TYPES_H_
 
+#include "base/memory/scoped_refptr.h"
 #include "base/optional.h"
 #include "third_party/blink/renderer/core/layout/min_max_sizes.h"
 #include "third_party/blink/renderer/core/layout/ng/geometry/ng_box_strut.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
+#include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -72,12 +74,10 @@ class CORE_EXPORT NGTableTypes {
     // True if any cell for this column is constrained.
     bool is_constrained = false;
     bool is_collapsed = false;
-    // The final inline-size of the column after all constraints have been
-    // applied.
-    LayoutUnit computed_inline_size;
+
     void Encompass(const base::Optional<NGTableTypes::CellInlineConstraint>&);
     LayoutUnit ResolvePercentInlineSize(
-        LayoutUnit percentage_resolution_inline_size) {
+        LayoutUnit percentage_resolution_inline_size) const {
       return std::max(
           min_inline_size.value_or(LayoutUnit()),
           LayoutUnit(*percent * percentage_resolution_inline_size / 100) +
@@ -218,7 +218,8 @@ class CORE_EXPORT NGTableTypes {
       CellBlockConstraint*,
       base::Optional<LayoutUnit> css_block_size);
 
-  using Columns = Vector<Column>;
+  // Columns are cached by LayoutNGTable, and need to be RefCounted.
+  typedef base::RefCountedData<WTF::Vector<Column>> Columns;
   // Inline constraints are optional because we need to distinguish between an
   // empty cell, and a non-existent cell.
   using CellInlineConstraints = Vector<base::Optional<CellInlineConstraint>>;

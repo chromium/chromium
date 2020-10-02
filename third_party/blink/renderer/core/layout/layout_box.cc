@@ -82,6 +82,7 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_length_utils.h"
+#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_cell.h"
 #include "third_party/blink/renderer/core/layout/shapes/shape_outside_info.h"
 #include "third_party/blink/renderer/core/page/autoscroll_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
@@ -3002,6 +3003,8 @@ void LayoutBox::SetCachedLayoutResult(
     // set the "layout" result.
     if (measure_result_)
       InvalidateItems(*measure_result_);
+    if (IsTableCell() && !IsTableCellLegacy())
+      To<LayoutNGTableCell>(this)->InvalidateLayoutResultCacheAfterMeasure();
     measure_result_ = result;
   } else {
     // We have a "layout" result, and we may need to clear the old "measure"
@@ -5882,7 +5885,7 @@ void LayoutBox::ComputeBlockStaticDistance(
   LayoutUnit static_logical_top = child->Layer()->StaticBlockPosition();
   for (LayoutObject* curr = child->Parent(); curr && curr != container_block;
        curr = curr->Container()) {
-    if (!curr->IsBox() || curr->IsTableRow())
+    if (!curr->IsBox() || curr->IsLegacyTableRow())
       continue;
     const LayoutBox& box = *ToLayoutBox(curr);
     static_logical_top +=

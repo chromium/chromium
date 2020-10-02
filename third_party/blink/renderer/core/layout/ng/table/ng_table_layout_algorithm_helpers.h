@@ -31,10 +31,11 @@ class CORE_EXPORT NGTableAlgorithmHelpers {
   // |undistributable_space| is size of space not occupied by cells
   // (borders, border spacing).
   static void ComputeGridInlineMinmax(
-      NGTableTypes::Columns& column_constraints,
+      const NGTableTypes::Columns& column_constraints,
+      LayoutUnit undistributable_space,
       bool is_fixed_layout,
       bool containing_block_expects_minmax_without_percentages,
-      LayoutUnit undistributable_space,
+      bool skip_collapsed_columns,
       MinMaxSizes* minmax_sum);
 
   static void DistributeColspanCellToColumns(
@@ -43,11 +44,11 @@ class CORE_EXPORT NGTableAlgorithmHelpers {
       bool is_fixed_layout,
       NGTableTypes::Columns* column_constraints);
 
-  static void SynchronizeAssignableTableInlineSizeAndColumns(
+  static Vector<LayoutUnit> SynchronizeAssignableTableInlineSizeAndColumns(
       LayoutUnit assignable_table_inline_size,
       LayoutUnit inline_border_spacing,
       bool is_fixed_layout,
-      NGTableTypes::Columns* column_constraints);
+      const NGTableTypes::Columns& column_constraints);
 
   static void DistributeRowspanCellToRows(
       const NGTableTypes::RowspanCell& rowspan_cell,
