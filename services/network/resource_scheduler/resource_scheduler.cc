@@ -1270,10 +1270,6 @@ class ResourceScheduler::Client
         ideal_duration_to_wait);
   }
 
-  // Tracks if the main HTML parser has reached the body which marks the end of
-  // layout-blocking resources.
-  // This is disabled and the is always true when kRendererSideResourceScheduler
-  // is enabled.
   RequestQueue pending_requests_;
   RequestSet in_flight_requests_;
 
