@@ -47,7 +47,7 @@ MojoResult CreateSharedBufferFromRegion(T&& region, MojoHandle* handle) {
   scoped_refptr<SharedBufferDispatcher> buffer;
   MojoResult result =
       SharedBufferDispatcher::CreateFromPlatformSharedMemoryRegion(
-          T::TakeHandleForSerialization(std::move(region)), &buffer);
+          T::TakeHandleForSerialization(std::forward<T>(region)), &buffer);
   if (result != MOJO_RESULT_OK)
     return result;
 
