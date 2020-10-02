@@ -117,6 +117,7 @@
 - (void)finalizeCollectionViewUpdates {
   self.indexPathsOfDeletingItems = @[];
   self.indexPathsOfInsertingItems = @[];
+  [super finalizeCollectionViewUpdates];
 }
 
 @end
