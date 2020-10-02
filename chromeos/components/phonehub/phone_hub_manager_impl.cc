@@ -28,9 +28,7 @@ PhoneHubManagerImpl::PhoneHubManagerImpl(
     multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
     chromeos::secure_channel::SecureChannelClient* secure_channel_client,
     const base::RepeatingClosure& show_multidevice_setup_dialog_callback)
-    : do_not_disturb_controller_(
-          std::make_unique<DoNotDisturbControllerImpl>()),
-      connection_manager_(
+    : connection_manager_(
           std::make_unique<ConnectionManagerImpl>(multidevice_setup_client,
                                                   device_sync_client,
                                                   secure_channel_client)),
@@ -42,6 +40,8 @@ PhoneHubManagerImpl::PhoneHubManagerImpl(
           std::make_unique<MessageReceiverImpl>(connection_manager_.get())),
       message_sender_(
           std::make_unique<MessageSenderImpl>(connection_manager_.get())),
+      do_not_disturb_controller_(
+          std::make_unique<DoNotDisturbControllerImpl>(message_sender_.get())),
       connection_scheduler_(std::make_unique<ConnectionSchedulerImpl>(
           connection_manager_.get(),
           feature_status_provider_.get())),
@@ -117,11 +117,11 @@ void PhoneHubManagerImpl::Shutdown() {
   notification_access_manager_.reset();
   find_my_device_controller_.reset();
   connection_scheduler_.reset();
+  do_not_disturb_controller_.reset();
   message_sender_.reset();
   message_receiver_.reset();
   feature_status_provider_.reset();
   connection_manager_.reset();
-  do_not_disturb_controller_.reset();
 }
 
 }  // namespace phonehub

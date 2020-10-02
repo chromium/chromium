@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "chromeos/components/phonehub/fake_message_sender.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
@@ -39,7 +40,9 @@ class DoNotDisturbControllerImplTest : public testing::Test {
 
   // testing::Test:
   void SetUp() override {
-    controller_ = std::make_unique<DoNotDisturbControllerImpl>();
+    fake_message_sender_ = std::make_unique<FakeMessageSender>();
+    controller_ = std::make_unique<DoNotDisturbControllerImpl>(
+        fake_message_sender_.get());
     controller_->AddObserver(&fake_observer_);
   }
 
@@ -47,17 +50,65 @@ class DoNotDisturbControllerImplTest : public testing::Test {
 
   bool IsDndEnabled() const { return controller_->IsDndEnabled(); }
 
+  void SetDoNotDisturbInternal(bool is_dnd_enabled) {
+    controller_->SetDoNotDisturbStateInternal(is_dnd_enabled);
+  }
+
+  void RequestNewDoNotDisturbState(bool enabled) {
+    controller_->RequestNewDoNotDisturbState(enabled);
+  }
+
+  bool GetRecentUpdateNotificationModeRequest() {
+    return fake_message_sender_->GetRecentUpdateNotificationModeRequest();
+  }
+
+  size_t GetUpdateNotificationModeRequestCallCount() {
+    return fake_message_sender_->GetUpdateNotificationModeRequestCallCount();
+  }
+
   size_t GetNumObserverCalls() const { return fake_observer_.num_calls(); }
 
  private:
   FakeObserver fake_observer_;
-  std::unique_ptr<DoNotDisturbController> controller_;
+  std::unique_ptr<FakeMessageSender> fake_message_sender_;
+  std::unique_ptr<DoNotDisturbControllerImpl> controller_;
 };
 
-// TODO(https://crbug.com/1106937): Remove this test once we have real
-// functionality to test.
-TEST_F(DoNotDisturbControllerImplTest, Initialize) {
+TEST_F(DoNotDisturbControllerImplTest, SetInternalStatesWithObservers) {
   EXPECT_FALSE(IsDndEnabled());
+
+  SetDoNotDisturbInternal(/*is_dnd_enabled=*/true);
+  EXPECT_TRUE(IsDndEnabled());
+  EXPECT_EQ(1u, GetNumObserverCalls());
+
+  SetDoNotDisturbInternal(/*is_dnd_enabled=*/false);
+  EXPECT_FALSE(IsDndEnabled());
+  EXPECT_EQ(2u, GetNumObserverCalls());
+
+  // Setting internal state with the same previous state will not trigger an
+  // observer event.
+  SetDoNotDisturbInternal(/*is_dnd_enabled=*/false);
+  EXPECT_FALSE(IsDndEnabled());
+  EXPECT_EQ(2u, GetNumObserverCalls());
+}
+
+TEST_F(DoNotDisturbControllerImplTest, RequestNewDoNotDisturbState) {
+  RequestNewDoNotDisturbState(/*enabled=*/true);
+  EXPECT_TRUE(GetRecentUpdateNotificationModeRequest());
+  EXPECT_EQ(1u, GetUpdateNotificationModeRequestCallCount());
+  // Simulate receiving a response and setting the internal value.
+  SetDoNotDisturbInternal(/*is_dnd_enabled=*/true);
+
+  RequestNewDoNotDisturbState(/*enabled=*/false);
+  EXPECT_FALSE(GetRecentUpdateNotificationModeRequest());
+  EXPECT_EQ(2u, GetUpdateNotificationModeRequestCallCount());
+  // Simulate receiving a response and setting the internal value.
+  SetDoNotDisturbInternal(/*is_dnd_enabled=*/false);
+
+  // Requesting for a the same state as the currently set state is a no-op.
+  RequestNewDoNotDisturbState(/*enabled=*/false);
+  EXPECT_FALSE(GetRecentUpdateNotificationModeRequest());
+  EXPECT_EQ(2u, GetUpdateNotificationModeRequestCallCount());
 }
 
 }  // namespace phonehub
