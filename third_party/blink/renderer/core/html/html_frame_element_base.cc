@@ -26,8 +26,8 @@
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/binding_security.h"
+#include "third_party/blink/renderer/bindings/core/v8/js_event_handler_for_content_attribute.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_event_listener.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/dom/attribute.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -149,8 +149,8 @@ void HTMLFrameElementBase::ParseAttribute(
     // FIXME: should <frame> elements have beforeunload handlers?
     SetAttributeEventListener(
         event_type_names::kBeforeunload,
-        CreateAttributeEventListener(
-            this, name, value,
+        JSEventHandlerForContentAttribute::Create(
+            GetExecutionContext(), name, value,
             JSEventHandler::HandlerType::kOnBeforeUnloadEventHandler));
   } else {
     HTMLFrameOwnerElement::ParseAttribute(params);

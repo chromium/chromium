@@ -6,31 +6,27 @@
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_JS_EVENT_HANDLER_FOR_CONTENT_ATTRIBUTE_H_
 
 #include "third_party/blink/renderer/bindings/core/v8/js_event_handler.h"
+#include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_position.h"
 
 namespace blink {
+
+class QualifiedName;
 
 // |JSEventHandlerForContentAttribute| supports lazy compilation for content
 // attribute. This performs in the same way as |JSEventHandler| after it gets
 // compiled.
 class JSEventHandlerForContentAttribute final : public JSEventHandler {
  public:
-  JSEventHandlerForContentAttribute(
-      v8::Isolate* isolate,
-      DOMWrapperWorld& world,
-      const AtomicString& function_name,
-      const String& script_body,
-      const String& source_url,
-      const TextPosition& position,
-      HandlerType type = HandlerType::kEventHandler)
-      : JSEventHandler(type),
-        did_compile_(false),
-        function_name_(function_name),
-        script_body_(script_body),
-        source_url_(source_url),
-        position_(position),
-        isolate_(isolate),
-        world_(&world) {}
+  static JSEventHandlerForContentAttribute* Create(
+      ExecutionContext*,
+      const QualifiedName&,
+      const AtomicString& value,
+      JSEventHandler::HandlerType = JSEventHandler::HandlerType::kEventHandler);
+  JSEventHandlerForContentAttribute(ExecutionContext*,
+                                    const QualifiedName&,
+                                    const AtomicString& value,
+                                    JSEventHandler::HandlerType);
 
   // blink::EventListener overrides:
   bool IsEventHandlerForContentAttribute() const override { return true; }
@@ -48,7 +44,15 @@ class JSEventHandlerForContentAttribute final : public JSEventHandler {
     DCHECK(HasCompiledHandler());
     return JSEventHandler::GetScriptState();
   }
-  DOMWrapperWorld& GetWorld() const override { return *world_; }
+
+  // An assumption here is that the content attributes are used only in the main
+  // world or the isolated world for the content scripts, they are never used in
+  // other isolated worlds nor worker/worklets.
+  // In case of the content scripts, Blink runs script in the main world instead
+  // of the isolated world for the content script by design.
+  DOMWrapperWorld& GetWorld() const override {
+    return DOMWrapperWorld::MainWorld();
+  }
 
  private:
   // Implements Step 3. of "get the current value of the event handler".
@@ -68,7 +72,6 @@ class JSEventHandlerForContentAttribute final : public JSEventHandler {
   String source_url_;
   TextPosition position_;
   v8::Isolate* isolate_;
-  scoped_refptr<DOMWrapperWorld> world_;
 };
 
 }  // namespace blink

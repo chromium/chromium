@@ -30,7 +30,7 @@
 #include "base/auto_reset.h"
 #include "base/time/time.h"
 #include "third_party/blink/public/platform/task_type.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_event_listener.h"
+#include "third_party/blink/renderer/bindings/core/v8/js_event_handler_for_content_attribute.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
@@ -527,13 +527,16 @@ void SVGSMILElement::ParseAttribute(const AttributeModificationParams& params) {
     }
   } else if (name == svg_names::kOnbeginAttr) {
     SetAttributeEventListener(event_type_names::kBeginEvent,
-                              CreateAttributeEventListener(this, name, value));
+                              JSEventHandlerForContentAttribute::Create(
+                                  GetExecutionContext(), name, value));
   } else if (name == svg_names::kOnendAttr) {
     SetAttributeEventListener(event_type_names::kEndEvent,
-                              CreateAttributeEventListener(this, name, value));
+                              JSEventHandlerForContentAttribute::Create(
+                                  GetExecutionContext(), name, value));
   } else if (name == svg_names::kOnrepeatAttr) {
     SetAttributeEventListener(event_type_names::kRepeatEvent,
-                              CreateAttributeEventListener(this, name, value));
+                              JSEventHandlerForContentAttribute::Create(
+                                  GetExecutionContext(), name, value));
   } else if (name == svg_names::kRestartAttr) {
     if (value == "never")
       restart_ = kRestartNever;

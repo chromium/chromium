@@ -31,7 +31,6 @@
 #include "third_party/blink/renderer/core/inspector/inspector_dom_debugger_agent.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/js_based_event_listener.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_event_listener.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_event_target.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_node.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"

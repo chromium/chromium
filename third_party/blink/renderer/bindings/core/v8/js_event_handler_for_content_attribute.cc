@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/js_event_handler_for_content_attribute.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/source_location.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
@@ -12,6 +13,35 @@
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 
 namespace blink {
+
+JSEventHandlerForContentAttribute* JSEventHandlerForContentAttribute::Create(
+    ExecutionContext* context,
+    const QualifiedName& name,
+    const AtomicString& value,
+    HandlerType type) {
+  if (!context || !context->CanExecuteScripts(kAboutToExecuteScript))
+    return nullptr;
+  if (value.IsNull())
+    return nullptr;
+  DCHECK(IsA<LocalDOMWindow>(context));
+  return MakeGarbageCollected<JSEventHandlerForContentAttribute>(context, name,
+                                                                 value, type);
+}
+
+JSEventHandlerForContentAttribute::JSEventHandlerForContentAttribute(
+    ExecutionContext* context,
+    const QualifiedName& name,
+    const AtomicString& value,
+    HandlerType type)
+    : JSEventHandler(type),
+      did_compile_(false),
+      function_name_(name.LocalName()),
+      script_body_(value),
+      source_url_(context->Url().GetString()),
+      position_(To<LocalDOMWindow>(context)
+                    ->GetScriptController()
+                    .EventHandlerPosition()),
+      isolate_(context->GetIsolate()) {}
 
 v8::Local<v8::Value> JSEventHandlerForContentAttribute::GetListenerObject(
     EventTarget& event_target) {

@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/core/mathml/mathml_element.h"
 
-#include "third_party/blink/renderer/bindings/core/v8/script_event_listener.h"
+#include "third_party/blink/renderer/bindings/core/v8/js_event_handler_for_content_attribute.h"
 #include "third_party/blink/renderer/core/css/css_property_name.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
@@ -103,8 +103,8 @@ void MathMLElement::ParseAttribute(const AttributeModificationParams& param) {
       HTMLElement::EventNameForAttributeName(param.name);
   if (!event_name.IsNull()) {
     SetAttributeEventListener(
-        event_name,
-        CreateAttributeEventListener(this, param.name, param.new_value));
+        event_name, JSEventHandlerForContentAttribute::Create(
+                        GetExecutionContext(), param.name, param.new_value));
     return;
   }
 

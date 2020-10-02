@@ -26,7 +26,7 @@
 #include "third_party/blink/renderer/core/html/html_element.h"
 
 #include "base/stl_util.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_event_listener.h"
+#include "third_party/blink/renderer/bindings/core/v8/js_event_handler_for_content_attribute.h"
 #include "third_party/blink/renderer/bindings/core/v8/string_or_trusted_script.h"
 #include "third_party/blink/renderer/bindings/core/v8/string_treat_null_as_empty_string_or_trusted_script.h"
 #include "third_party/blink/renderer/core/css/css_color_value.h"
@@ -734,7 +734,8 @@ void HTMLElement::ParseAttribute(const AttributeModificationParams& params) {
   if (triggers->event != g_null_atom) {
     SetAttributeEventListener(
         triggers->event,
-        CreateAttributeEventListener(this, params.name, params.new_value));
+        JSEventHandlerForContentAttribute::Create(
+            GetExecutionContext(), params.name, params.new_value));
   }
 
   if (triggers->web_feature != kNoWebFeature) {

@@ -26,7 +26,7 @@
 
 #include "base/auto_reset.h"
 #include "base/stl_util.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_event_listener.h"
+#include "third_party/blink/renderer/bindings/core/v8/js_event_handler_for_content_attribute.h"
 #include "third_party/blink/renderer/core/animation/document_animations.h"
 #include "third_party/blink/renderer/core/animation/effect_stack.h"
 #include "third_party/blink/renderer/core/animation/element_animations.h"
@@ -623,8 +623,8 @@ void SVGElement::ParseAttribute(const AttributeModificationParams& params) {
       HTMLElement::EventNameForAttributeName(params.name);
   if (!event_name.IsNull()) {
     SetAttributeEventListener(
-        event_name,
-        CreateAttributeEventListener(this, params.name, params.new_value));
+        event_name, JSEventHandlerForContentAttribute::Create(
+                        GetExecutionContext(), params.name, params.new_value));
     return;
   }
 

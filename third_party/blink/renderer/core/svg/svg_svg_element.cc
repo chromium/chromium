@@ -22,7 +22,7 @@
 
 #include "third_party/blink/renderer/core/svg/svg_svg_element.h"
 
-#include "third_party/blink/renderer/bindings/core/v8/script_event_listener.h"
+#include "third_party/blink/renderer/bindings/core/v8/js_event_handler_for_content_attribute.h"
 #include "third_party/blink/renderer/core/css/css_resolution_units.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -166,16 +166,16 @@ void SVGSVGElement::ParseAttribute(const AttributeModificationParams& params) {
     // Only handle events if we're the outermost <svg> element
     if (name == html_names::kOnunloadAttr) {
       GetDocument().SetWindowAttributeEventListener(
-          event_type_names::kUnload,
-          CreateAttributeEventListener(GetDocument().GetFrame(), name, value));
+          event_type_names::kUnload, JSEventHandlerForContentAttribute::Create(
+                                         GetExecutionContext(), name, value));
     } else if (name == html_names::kOnresizeAttr) {
       GetDocument().SetWindowAttributeEventListener(
-          event_type_names::kResize,
-          CreateAttributeEventListener(GetDocument().GetFrame(), name, value));
+          event_type_names::kResize, JSEventHandlerForContentAttribute::Create(
+                                         GetExecutionContext(), name, value));
     } else if (name == html_names::kOnscrollAttr) {
       GetDocument().SetWindowAttributeEventListener(
-          event_type_names::kScroll,
-          CreateAttributeEventListener(GetDocument().GetFrame(), name, value));
+          event_type_names::kScroll, JSEventHandlerForContentAttribute::Create(
+                                         GetExecutionContext(), name, value));
     } else {
       set_listener = false;
     }
@@ -186,13 +186,13 @@ void SVGSVGElement::ParseAttribute(const AttributeModificationParams& params) {
 
   if (name == html_names::kOnabortAttr) {
     GetDocument().SetWindowAttributeEventListener(
-        event_type_names::kAbort,
-        CreateAttributeEventListener(GetDocument().GetFrame(), name, value));
+        event_type_names::kAbort, JSEventHandlerForContentAttribute::Create(
+                                      GetExecutionContext(), name, value));
   } else if (name == html_names::kOnerrorAttr) {
     GetDocument().SetWindowAttributeEventListener(
         event_type_names::kError,
-        CreateAttributeEventListener(
-            GetDocument().GetFrame(), name, value,
+        JSEventHandlerForContentAttribute::Create(
+            GetExecutionContext(), name, value,
             JSEventHandler::HandlerType::kOnErrorEventHandler));
   } else if (SVGZoomAndPan::ParseAttribute(name, value)) {
   } else {

@@ -21,7 +21,7 @@
 #include "third_party/blink/renderer/core/svg/svg_script_element.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/html_script_element_or_svg_script_element.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_event_listener.h"
+#include "third_party/blink/renderer/bindings/core/v8/js_event_handler_for_content_attribute.h"
 #include "third_party/blink/renderer/core/dom/attribute.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
@@ -45,8 +45,8 @@ void SVGScriptElement::ParseAttribute(
   if (params.name == html_names::kOnerrorAttr) {
     SetAttributeEventListener(
         event_type_names::kError,
-        CreateAttributeEventListener(
-            this, params.name, params.new_value,
+        JSEventHandlerForContentAttribute::Create(
+            GetExecutionContext(), params.name, params.new_value,
             JSEventHandler::HandlerType::kOnErrorEventHandler));
   } else {
     SVGElement::ParseAttribute(params);
