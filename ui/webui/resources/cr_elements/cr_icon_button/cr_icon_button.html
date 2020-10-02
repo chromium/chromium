@@ -44,7 +44,12 @@
         --cr-icon-button-margin-start: 0;
       }
 
-      :host-context([dir=rtl]):host(:not([dir=ltr])) {
+      :host-context([dir=rtl]):host(:not([dir=ltr]):not([multiple-icons_])) {
+        transform: scaleX(-1);  /* Invert X: flip on the Y axis (aka mirror). */
+      }
+
+      :host-context([dir=rtl]):host(:not([dir=ltr])[multiple-icons_])
+          iron-icon {
         transform: scaleX(-1);  /* Invert X: flip on the Y axis (aka mirror). */
       }
 

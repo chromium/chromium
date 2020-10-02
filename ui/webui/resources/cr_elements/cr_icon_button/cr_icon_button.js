@@ -75,6 +75,12 @@ Polymer({
     },
 
     /** @private */
+    multipleIcons_: {
+      type: Boolean,
+      reflectToAttribute: true,
+    },
+
+    /** @private */
     rippleShowing_: {
       type: Boolean,
       value: false,
@@ -177,6 +183,7 @@ Polymer({
       return;
     }
     const icons = (this.ironIcon || '').split(',');
+    this.multipleIcons_ = icons.length > 1;
     icons.forEach(icon => {
       const ironIcon = document.createElement('iron-icon');
       ironIcon.icon = icon;
