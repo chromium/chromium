@@ -41,24 +41,31 @@ Polymer({
   behaviors: [OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior],
 
   /** Overridden from LoginScreenBehavior. */
+  // clang-format off
   EXTERNAL_API: [
     'updateA11ySettingsButtonVisibility',
     'updateA11yNavigationButtonToggle',
     'setOptInVisibility',
     'setEmailToggleState'
   ],
+  // clang-format on
 
   /** @override */
   ready() {
     this.initializeLoginScreen('MarketingOptInScreen', {resetAllowed: true});
+  },
+
+  /** Shortcut method to control animation */
+  setAnimationPlay_(played) {
     this.$['marketingOptInOverviewDialog']
         .querySelector('.marketing-animation')
-        .setPlay(true);
+        .setPlay(played);
   },
 
   /** Called when dialog is shown */
   onBeforeShow() {
     this.isAccessibilitySettingsShown_ = false;
+    this.setAnimationPlay_(true);
     this.$.marketingOptInOverviewDialog.show();
   },
 
@@ -67,9 +74,7 @@ Polymer({
    * @private
    */
   onGetStarted_() {
-    this.$['marketingOptInOverviewDialog']
-        .querySelector('.marketing-animation')
-        .setPlay(false);
+    this.setAnimationPlay_(false);
     chrome.send(
         'login.MarketingOptInScreen.onGetStarted',
         [this.$.chromebookUpdatesOption.checked]);
@@ -112,9 +117,7 @@ Polymer({
    */
   onToggleAccessibilityPage_() {
     this.isAccessibilitySettingsShown_ = !this.isAccessibilitySettingsShown_;
-    this.$['marketingOptInOverviewDialog']
-        .querySelector('.marketing-animation')
-        .setPlay(!this.isAccessibilitySettingsShown_);
+    this.setAnimationPlay_(!this.isAccessibilitySettingsShown_);
   },
 
   /**
