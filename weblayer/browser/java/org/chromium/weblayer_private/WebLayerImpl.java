@@ -260,6 +260,7 @@ public final class WebLayerImpl extends IWebLayer.Stub {
                 FirebaseConfig.getFirebaseAppIdForPackage(packageInfo.packageName));
 
         SelectionPopupController.setMustUseWebContentsContext();
+        SelectionPopupController.setShouldGetReadbackViewFromWindowAndroid();
 
         ResourceBundle.setAvailablePakLocales(new String[] {}, ProductConfig.UNCOMPRESSED_LOCALES);
         BundleUtils.setIsBundle(ProductConfig.IS_BUNDLE);

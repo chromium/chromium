@@ -265,6 +265,10 @@ public final class BrowserViewController
         mContentView.setIsObscuredForAccessibility(isObscured);
     }
 
+    public View getViewForMagnifierReadback() {
+        return mContentViewRenderView.getViewForMagnifierReadback();
+    }
+
     @Override
     public void refreshPageHeight() {
         adjustWebContentsHeightIfNecessary();

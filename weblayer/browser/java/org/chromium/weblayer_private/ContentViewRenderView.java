@@ -48,7 +48,8 @@ import java.util.ArrayList;
  * visually seamless.
  */
 @JNINamespace("weblayer")
-public class ContentViewRenderView extends RelativeLayout {
+public class ContentViewRenderView
+        extends RelativeLayout implements WindowAndroid.SelectionHandlesObserver {
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({MODE_SURFACE_VIEW, MODE_TEXTURE_VIEW})
     public @interface Mode {}
@@ -91,6 +92,8 @@ public class ContentViewRenderView extends RelativeLayout {
     private boolean mCompositorHasSurface;
 
     private DisplayAndroid.DisplayAndroidObserver mDisplayAndroidObserver;
+
+    private boolean mSelectionHandlesActive;
 
     // The time stamp when a configuration was detected (if any).
     // This is used along with a timeout to determine if a resize surface resize
@@ -205,6 +208,7 @@ public class ContentViewRenderView extends RelativeLayout {
         private final int mMode;
         private final SurfaceEventListener mListener;
         private final FrameLayout mParent;
+        private final boolean mAllowSurfaceControl;
         private final Runnable mEvict;
 
         private boolean mRanCallbacks;
@@ -244,10 +248,11 @@ public class ContentViewRenderView extends RelativeLayout {
         private ArrayList<Runnable> mSurfaceRedrawNeededCallbacks;
 
         public SurfaceData(@Mode int mode, FrameLayout parent, SurfaceEventListener listener,
-                int backgroundColor, Runnable evict) {
+                int backgroundColor, boolean allowSurfaceControl, Runnable evict) {
             mMode = mode;
             mListener = listener;
             mParent = parent;
+            mAllowSurfaceControl = allowSurfaceControl;
             mEvict = evict;
             if (mode == MODE_SURFACE_VIEW) {
                 mSurfaceView = new SurfaceView(parent.getContext());
@@ -302,6 +307,10 @@ public class ContentViewRenderView extends RelativeLayout {
 
         public @Mode int getMode() {
             return mMode;
+        }
+
+        public boolean getAllowSurfaceControl() {
+            return mAllowSurfaceControl;
         }
 
         public void addCallback(ValueCallback<Boolean> callback) {
@@ -435,6 +444,10 @@ public class ContentViewRenderView extends RelativeLayout {
             }
         }
 
+        public View getView() {
+            return mMode == MODE_SURFACE_VIEW ? mSurfaceView : mTextureView;
+        }
+
         private void destroyPreviousData() {
             if (mPrevSurfaceDataNeedsDestroy != null) {
                 mPrevSurfaceDataNeedsDestroy.destroy();
@@ -467,7 +480,9 @@ public class ContentViewRenderView extends RelativeLayout {
         public void surfaceChanged(Surface surface, boolean canBeUsedWithSurfaceControl, int format,
                 int width, int height) {
             if (mMarkedForDestroy) return;
-            mListener.surfaceChanged(surface, canBeUsedWithSurfaceControl, format, width, height);
+            // Selection magnifier does not work with surface control enabled.
+            mListener.surfaceChanged(surface, canBeUsedWithSurfaceControl && mAllowSurfaceControl,
+                    format, width, height);
             mNumSurfaceViewSwapsUntilVisible = 2;
         }
 
@@ -670,13 +685,17 @@ public class ContentViewRenderView extends RelativeLayout {
             }
         };
         mWindowAndroid.getDisplay().addObserver(mDisplayAndroidObserver);
+        mWindowAndroid.addSelectionHandlesObserver(this);
         updateBackgroundColor();
     }
 
     public void requestMode(@Mode int mode, ValueCallback<Boolean> callback) {
+        boolean allowSurfaceControl = !mSelectionHandlesActive;
         assert mode == MODE_SURFACE_VIEW || mode == MODE_TEXTURE_VIEW;
         assert callback != null;
-        if (mRequested != null && mRequested.getMode() != mode) {
+        if (mRequested != null
+                && (mRequested.getMode() != mode
+                        || mRequested.getAllowSurfaceControl() != allowSurfaceControl)) {
             if (mRequested != mCurrent) {
                 mRequested.markForDestroy(false /* hasNextSurface */);
                 mRequested.destroy();
@@ -686,8 +705,8 @@ public class ContentViewRenderView extends RelativeLayout {
 
         if (mRequested == null) {
             SurfaceEventListenerImpl listener = new SurfaceEventListenerImpl();
-            mRequested = new SurfaceData(
-                    mode, mSurfaceParent, listener, mBackgroundColor, this::evictCachedSurface);
+            mRequested = new SurfaceData(mode, mSurfaceParent, listener, mBackgroundColor,
+                    allowSurfaceControl, this::evictCachedSurface);
             listener.setRequestData(mRequested);
         }
         assert mRequested.getMode() == mode;
@@ -701,6 +720,14 @@ public class ContentViewRenderView extends RelativeLayout {
         if (delta == mWebContentsHeightDelta) return;
         mWebContentsHeightDelta = delta;
         updateWebContentsSize();
+    }
+
+    /**
+     * Return the view used for selection magnifier readback.
+     */
+    public View getViewForMagnifierReadback() {
+        if (mCurrent == null) return null;
+        return mCurrent.getView();
     }
 
     private void updateWebContentsSize() {
@@ -768,6 +795,19 @@ public class ContentViewRenderView extends RelativeLayout {
         ContentViewRenderViewJni.get().updateBackgroundColor(mNativeContentViewRenderView);
     }
 
+    // SelectionHandlesObserver overrides
+    @Override
+    public void onSelectionHandlesStateChanged(boolean active) {
+        if (mSelectionHandlesActive == active) return;
+        mSelectionHandlesActive = active;
+        if (mCurrent == null) return;
+        if (mCurrent.getMode() == MODE_TEXTURE_VIEW) return;
+
+        // requestMode will take into account the updated |mSelectionHandlesActive|
+        // and respond appropriately, even if mode is the same.
+        requestMode(mCurrent.getMode(), (Boolean result) -> {});
+    }
+
     public InsetObserverView getInsetObserverView() {
         return mInsetObserverView;
     }
@@ -792,6 +832,7 @@ public class ContentViewRenderView extends RelativeLayout {
             mWindowAndroid.getDisplay().removeObserver(mDisplayAndroidObserver);
             mDisplayAndroidObserver = null;
         }
+        mWindowAndroid.removeSelectionHandlesObserver(this);
         mWindowAndroid = null;
 
         while (!mPendingRunnables.isEmpty()) {
