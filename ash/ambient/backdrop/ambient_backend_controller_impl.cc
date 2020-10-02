@@ -146,26 +146,60 @@ AmbientModeTopicType ToAmbientModeTopicType(
   }
 }
 
-WeatherInfo ToWeatherInfo(const base::Value& result) {
+base::Optional<std::string> GetStringValue(base::Value::ConstListView values,
+                                           size_t field_number) {
+  if (values.empty() || values.size() < field_number)
+    return base::nullopt;
+
+  const base::Value& v = values[field_number - 1];
+  if (!v.is_string())
+    return base::nullopt;
+
+  return v.GetString();
+}
+
+base::Optional<double> GetDoubleValue(base::Value::ConstListView values,
+                                      size_t field_number) {
+  if (values.empty() || values.size() < field_number)
+    return base::nullopt;
+
+  const base::Value& v = values[field_number - 1];
+  if (!v.is_double() && !v.is_int())
+    return base::nullopt;
+
+  return v.GetDouble();
+}
+
+base::Optional<bool> GetBoolValue(base::Value::ConstListView values,
+                                  size_t field_number) {
+  if (values.empty() || values.size() < field_number)
+    return base::nullopt;
+
+  const base::Value& v = values[field_number - 1];
+  if (v.is_bool())
+    return v.GetBool();
+
+  if (v.is_int())
+    return v.GetInt() > 0;
+
+  return base::nullopt;
+}
+
+base::Optional<WeatherInfo> ToWeatherInfo(const base::Value& result) {
   DCHECK(result.is_list());
+  if (!result.is_list())
+    return base::nullopt;
 
   WeatherInfo weather_info;
   const auto& list_result = result.GetList();
 
-  const base::Value& condition_icon_url_value =
-      list_result[backdrop::WeatherInfo::kConditionIconUrlFieldNumber - 1];
-  if (!condition_icon_url_value.is_none())
-    weather_info.condition_icon_url = condition_icon_url_value.GetString();
-
-  const base::Value& temp_f_value =
-      list_result[backdrop::WeatherInfo::kTempFFieldNumber - 1];
-  if (!temp_f_value.is_none())
-    weather_info.temp_f = temp_f_value.GetDouble();
-
-  const base::Value& show_celsius_value =
-      list_result[backdrop::WeatherInfo::kShowCelsiusFieldNumber - 1];
-  if (!show_celsius_value.is_none())
-    weather_info.show_celsius = show_celsius_value.GetBool();
+  weather_info.condition_icon_url = GetStringValue(
+      list_result, backdrop::WeatherInfo::kConditionIconUrlFieldNumber);
+  weather_info.temp_f =
+      GetDoubleValue(list_result, backdrop::WeatherInfo::kTempFFieldNumber);
+  weather_info.show_celsius =
+      GetBoolValue(list_result, backdrop::WeatherInfo::kShowCelsiusFieldNumber)
+          .value_or(false);
 
   return weather_info;
 }
@@ -388,7 +422,9 @@ void AmbientBackendControllerImpl::FetchWeather(FetchWeatherCallback callback) {
       [](FetchWeatherCallback callback,
          std::unique_ptr<BackdropURLLoader> backdrop_url_loader,
          std::unique_ptr<std::string> response) {
-        if (response && !response->empty()) {
+        constexpr char kJsonPrefix[] = ")]}'\n";
+
+        if (response && response->length() > strlen(kJsonPrefix)) {
           auto json_handler =
               [](FetchWeatherCallback callback,
                  data_decoder::DataDecoder::ValueOrError result) {
@@ -400,7 +436,6 @@ void AmbientBackendControllerImpl::FetchWeather(FetchWeatherCallback callback) {
                 }
               };
 
-          constexpr char kJsonPrefix[] = ")]}'\n";
           data_decoder::DataDecoder::ParseJsonIsolated(
               response->substr(strlen(kJsonPrefix)),
               base::BindOnce(json_handler, std::move(callback)));
