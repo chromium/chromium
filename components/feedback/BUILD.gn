@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//testing/libfuzzer/fuzzer_test.gni")
+
 static_library("feedback") {
   sources = [
     "feedback_common.cc",
@@ -75,4 +77,10 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
+}
+
+fuzzer_test("redaction_tool_fuzzer") {
+  sources = [ "redaction_tool_fuzzer.cc" ]
+  deps = [ ":feedback" ]
+  dict = "redaction_tool_fuzzer.dict"
 }
