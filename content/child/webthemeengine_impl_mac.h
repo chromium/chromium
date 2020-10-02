@@ -19,7 +19,7 @@ class WebThemeEngineMac : public WebThemeEngineDefault {
   void Paint(cc::PaintCanvas* canvas,
              blink::WebThemeEngine::Part part,
              blink::WebThemeEngine::State state,
-             const blink::WebRect& rect,
+             const gfx::Rect& rect,
              const blink::WebThemeEngine::ExtraParams* extra_params,
              blink::ColorScheme color_scheme) override;
 
@@ -28,7 +28,7 @@ class WebThemeEngineMac : public WebThemeEngineDefault {
       cc::PaintCanvas* canvas,
       WebThemeEngine::Part part,
       WebThemeEngine::State state,
-      const blink::WebRect& rect,
+      const gfx::Rect& rect,
       const WebThemeEngine::ExtraParams* extra_params,
       blink::ColorScheme color_scheme);
 

@@ -36,10 +36,10 @@
 #include "build/build_config.h"
 #include "third_party/blink/public/common/css/color_scheme.h"
 #include "third_party/blink/public/common/css/forced_colors.h"
-#include "third_party/blink/public/platform/web_rect.h"
 #include "third_party/blink/public/platform/web_scrollbar_overlay_color_theme.h"
-#include "third_party/blink/public/platform/web_size.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace cc {
 class PaintCanvas;
@@ -214,11 +214,11 @@ class WebThemeEngine {
   // Gets the size of the given theme part. For variable sized items
   // like vertical scrollbar thumbs, the width will be the required width of
   // the track while the height will be the minimum height.
-  virtual WebSize GetSize(Part) { return WebSize(); }
+  virtual gfx::Size GetSize(Part) { return gfx::Size(); }
 
   virtual bool SupportsNinePatch(Part) const { return false; }
-  virtual WebSize NinePatchCanvasSize(Part) const { return WebSize(); }
-  virtual WebRect NinePatchAperture(Part) const { return WebRect(); }
+  virtual gfx::Size NinePatchCanvasSize(Part) const { return gfx::Size(); }
+  virtual gfx::Rect NinePatchAperture(Part) const { return gfx::Rect(); }
 
   struct ScrollbarStyle {
     int thumb_thickness;
@@ -244,7 +244,7 @@ class WebThemeEngine {
   virtual void Paint(cc::PaintCanvas*,
                      Part,
                      State,
-                     const WebRect&,
+                     const gfx::Rect&,
                      const ExtraParams*,
                      blink::ColorScheme) {}
 

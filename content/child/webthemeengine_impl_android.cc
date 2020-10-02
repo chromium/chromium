@@ -8,12 +8,9 @@
 #include "base/system/sys_info.h"
 #include "content/child/webthemeengine_impl_conversions.h"
 #include "skia/ext/platform_canvas.h"
-#include "third_party/blink/public/platform/web_rect.h"
-#include "third_party/blink/public/platform/web_size.h"
 #include "ui/native_theme/native_theme.h"
 
 using blink::ColorScheme;
-using blink::WebRect;
 using blink::WebThemeEngine;
 
 namespace content {
@@ -117,7 +114,7 @@ static void GetNativeThemeExtraParams(
 
 WebThemeEngineAndroid::~WebThemeEngineAndroid() = default;
 
-blink::WebSize WebThemeEngineAndroid::GetSize(WebThemeEngine::Part part) {
+gfx::Size WebThemeEngineAndroid::GetSize(WebThemeEngine::Part part) {
   switch (part) {
     case WebThemeEngine::kPartScrollbarHorizontalThumb:
     case WebThemeEngine::kPartScrollbarVerticalThumb: {
@@ -157,14 +154,14 @@ void WebThemeEngineAndroid::Paint(
     cc::PaintCanvas* canvas,
     WebThemeEngine::Part part,
     WebThemeEngine::State state,
-    const blink::WebRect& rect,
+    const gfx::Rect& rect,
     const WebThemeEngine::ExtraParams* extra_params,
     blink::ColorScheme color_scheme) {
   ui::NativeTheme::ExtraParams native_theme_extra_params;
   GetNativeThemeExtraParams(
       part, state, extra_params, &native_theme_extra_params);
   ui::NativeTheme::GetInstanceForWeb()->Paint(
-      canvas, NativeThemePart(part), NativeThemeState(state), gfx::Rect(rect),
+      canvas, NativeThemePart(part), NativeThemeState(state), rect,
       native_theme_extra_params, NativeColorScheme(color_scheme));
 }
 

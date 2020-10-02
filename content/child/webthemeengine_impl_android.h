@@ -13,13 +13,13 @@ class WebThemeEngineAndroid : public blink::WebThemeEngine {
  public:
   // WebThemeEngine methods:
   ~WebThemeEngineAndroid() override;
-  blink::WebSize GetSize(blink::WebThemeEngine::Part) override;
+  gfx::Size GetSize(blink::WebThemeEngine::Part) override;
   void GetOverlayScrollbarStyle(
       blink::WebThemeEngine::ScrollbarStyle*) override;
   void Paint(cc::PaintCanvas* canvas,
              blink::WebThemeEngine::Part part,
              blink::WebThemeEngine::State state,
-             const blink::WebRect& rect,
+             const gfx::Rect& rect,
              const blink::WebThemeEngine::ExtraParams* extra_params,
              blink::ColorScheme color_scheme) override;
   blink::ForcedColors GetForcedColors() const override;

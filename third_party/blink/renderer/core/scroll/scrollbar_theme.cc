@@ -30,7 +30,6 @@
 #include "cc/input/scrollbar.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/public/platform/web_rect.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme_overlay_mock.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
@@ -124,7 +123,7 @@ void ScrollbarTheme::PaintScrollCorner(
 #else
   Platform::Current()->ThemeEngine()->Paint(
       context.Canvas(), WebThemeEngine::kPartScrollbarCorner,
-      WebThemeEngine::kStateNormal, WebRect(corner_rect), nullptr,
+      WebThemeEngine::kStateNormal, gfx::Rect(corner_rect), nullptr,
       color_scheme);
 #endif
 }

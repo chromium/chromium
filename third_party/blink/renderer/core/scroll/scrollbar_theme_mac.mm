@@ -291,7 +291,7 @@ void ScrollbarThemeMac::PaintTrack(GraphicsContext& context,
           : WebThemeEngine::Part::kPartScrollbarVerticalTrack;
   Platform::Current()->ThemeEngine()->Paint(
       context.Canvas(), track_part, WebThemeEngine::State::kStateNormal,
-      WebRect(bounds), &params, params.scrollbar_extra.scrollbar_theme);
+      gfx::Rect(bounds), &params, params.scrollbar_extra.scrollbar_theme);
   if (opacity != 1)
     context.EndLayer();
 }
@@ -319,7 +319,7 @@ void ScrollbarThemeMac::PaintScrollCorner(GraphicsContext& context,
       GetPaintParams(*vertical_scrollbar, UsesOverlayScrollbars());
   Platform::Current()->ThemeEngine()->Paint(
       context.Canvas(), WebThemeEngine::Part::kPartScrollbarCorner,
-      WebThemeEngine::State::kStateNormal, WebRect(bounds), &params,
+      WebThemeEngine::State::kStateNormal, gfx::Rect(bounds), &params,
       params.scrollbar_extra.scrollbar_theme);
 }
 
@@ -409,7 +409,7 @@ void ScrollbarThemeMac::PaintThumbInternal(GraphicsContext& context,
           : WebThemeEngine::Part::kPartScrollbarVerticalThumb;
   Platform::Current()->ThemeEngine()->Paint(
       context.Canvas(), thumb_part, WebThemeEngine::State::kStateNormal,
-      WebRect(bounds), &params, params.scrollbar_extra.scrollbar_theme);
+      gfx::Rect(bounds), &params, params.scrollbar_extra.scrollbar_theme);
   if (opacity != 1.0f)
     context.EndLayer();
 }

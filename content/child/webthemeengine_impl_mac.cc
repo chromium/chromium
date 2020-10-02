@@ -21,7 +21,7 @@ void WebThemeEngineMac::SetForcedColors(
 void WebThemeEngineMac::Paint(cc::PaintCanvas* canvas,
                               WebThemeEngine::Part part,
                               WebThemeEngine::State state,
-                              const blink::WebRect& rect,
+                              const gfx::Rect& rect,
                               const WebThemeEngine::ExtraParams* extra_params,
                               blink::ColorScheme color_scheme) {
   if (IsScrollbarPart(part)) {
@@ -51,7 +51,7 @@ void WebThemeEngineMac::PaintMacScrollBarParts(
     cc::PaintCanvas* canvas,
     WebThemeEngine::Part part,
     WebThemeEngine::State state,
-    const blink::WebRect& rect,
+    const gfx::Rect& rect,
     const WebThemeEngine::ExtraParams* extra_params,
     blink::ColorScheme color_scheme) {
   ui::NativeTheme::ExtraParams native_theme_extra_params;
@@ -75,7 +75,7 @@ void WebThemeEngineMac::PaintMacScrollBarParts(
   }
 
   ui::NativeTheme::GetInstanceForNativeUi()->Paint(
-      canvas, NativeThemePart(part), NativeThemeState(state), gfx::Rect(rect),
+      canvas, NativeThemePart(part), NativeThemeState(state), rect,
       native_theme_extra_params, NativeColorScheme(color_scheme));
 }
 

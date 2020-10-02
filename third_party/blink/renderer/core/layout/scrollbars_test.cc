@@ -40,14 +40,14 @@ class StubWebThemeEngine : public WebThemeEngine {
  public:
   StubWebThemeEngine() { painted_color_scheme_.fill(ColorScheme::kLight); }
 
-  WebSize GetSize(Part part) override {
+  gfx::Size GetSize(Part part) override {
     switch (part) {
       case kPartScrollbarHorizontalThumb:
-        return blink::WebSize(kMinimumHorizontalLength, 15);
+        return gfx::Size(kMinimumHorizontalLength, 15);
       case kPartScrollbarVerticalThumb:
-        return blink::WebSize(15, kMinimumVerticalLength);
+        return gfx::Size(15, kMinimumVerticalLength);
       default:
-        return WebSize();
+        return gfx::Size();
     }
   }
   void GetOverlayScrollbarStyle(ScrollbarStyle* style) override {
@@ -63,7 +63,7 @@ class StubWebThemeEngine : public WebThemeEngine {
   void Paint(cc::PaintCanvas*,
              Part part,
              State,
-             const WebRect&,
+             const gfx::Rect&,
              const ExtraParams*,
              blink::ColorScheme color_scheme) override {
     // Make  sure we don't overflow the array.

@@ -16,18 +16,18 @@ class WebThemeEngineDefault : public blink::WebThemeEngine {
  public:
   // WebThemeEngine methods:
   ~WebThemeEngineDefault() override;
-  blink::WebSize GetSize(blink::WebThemeEngine::Part) override;
+  gfx::Size GetSize(blink::WebThemeEngine::Part) override;
   void Paint(cc::PaintCanvas* canvas,
              blink::WebThemeEngine::Part part,
              blink::WebThemeEngine::State state,
-             const blink::WebRect& rect,
+             const gfx::Rect& rect,
              const blink::WebThemeEngine::ExtraParams* extra_params,
              blink::ColorScheme color_scheme) override;
   void GetOverlayScrollbarStyle(
       blink::WebThemeEngine::ScrollbarStyle*) override;
   bool SupportsNinePatch(Part part) const override;
-  blink::WebSize NinePatchCanvasSize(Part part) const override;
-  blink::WebRect NinePatchAperture(Part part) const override;
+  gfx::Size NinePatchCanvasSize(Part part) const override;
+  gfx::Rect NinePatchAperture(Part part) const override;
   base::Optional<SkColor> GetSystemColor(blink::WebThemeEngine::SystemThemeColor
                                              system_theme_color) const override;
 #if defined(OS_WIN)

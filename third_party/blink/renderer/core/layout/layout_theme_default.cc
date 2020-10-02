@@ -127,8 +127,8 @@ void LayoutThemeDefault::AdjustSliderThumbSize(ComputedStyle& style) const {
   if (!Platform::Current()->ThemeEngine())
     return;
 
-  IntSize size = Platform::Current()->ThemeEngine()->GetSize(
-      WebThemeEngine::kPartSliderThumb);
+  IntSize size = IntSize(Platform::Current()->ThemeEngine()->GetSize(
+      WebThemeEngine::kPartSliderThumb));
 
   float zoom_level = style.EffectiveZoom();
   if (style.EffectiveAppearance() == kSliderThumbHorizontalPart) {
@@ -177,8 +177,8 @@ void LayoutThemeDefault::SetCheckboxSize(ComputedStyle& style) const {
   if (!style.Width().IsIntrinsicOrAuto() && !style.Height().IsAuto())
     return;
 
-  IntSize size = Platform::Current()->ThemeEngine()->GetSize(
-      WebThemeEngine::kPartCheckbox);
+  IntSize size = IntSize(Platform::Current()->ThemeEngine()->GetSize(
+      WebThemeEngine::kPartCheckbox));
   float zoom_level = style.EffectiveZoom();
   size.SetWidth(size.Width() * zoom_level);
   size.SetHeight(size.Height() * zoom_level);
@@ -191,8 +191,8 @@ void LayoutThemeDefault::SetRadioSize(ComputedStyle& style) const {
   if (!style.Width().IsIntrinsicOrAuto() && !style.Height().IsAuto())
     return;
 
-  IntSize size =
-      Platform::Current()->ThemeEngine()->GetSize(WebThemeEngine::kPartRadio);
+  IntSize size = IntSize(
+      Platform::Current()->ThemeEngine()->GetSize(WebThemeEngine::kPartRadio));
   float zoom_level = style.EffectiveZoom();
   size.SetWidth(size.Width() * zoom_level);
   size.SetHeight(size.Height() * zoom_level);
@@ -202,8 +202,8 @@ void LayoutThemeDefault::SetRadioSize(ComputedStyle& style) const {
 
 void LayoutThemeDefault::AdjustInnerSpinButtonStyle(
     ComputedStyle& style) const {
-  IntSize size = Platform::Current()->ThemeEngine()->GetSize(
-      WebThemeEngine::kPartInnerSpinButton);
+  IntSize size = IntSize(Platform::Current()->ThemeEngine()->GetSize(
+      WebThemeEngine::kPartInnerSpinButton));
 
   float zoom_level = style.EffectiveZoom();
   style.SetWidth(Length::Fixed(size.Width() * zoom_level));
@@ -279,7 +279,7 @@ int LayoutThemeDefault::MenuListArrowWidthInDIP() const {
   int width = Platform::Current()
                   ->ThemeEngine()
                   ->GetSize(WebThemeEngine::kPartScrollbarUpArrow)
-                  .width;
+                  .width();
   return width > 0 ? width : 15;
 }
 

@@ -26,7 +26,6 @@
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme_overlay.h"
 
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/public/platform/web_rect.h"
 #include "third_party/blink/public/platform/web_theme_engine.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
@@ -44,7 +43,7 @@ ScrollbarThemeOverlay& ScrollbarThemeOverlay::GetInstance() {
       (Platform::Current()
            ->ThemeEngine()
            ->GetSize(WebThemeEngine::kPartScrollbarVerticalThumb)
-           .width,
+           .width(),
        0));
   return theme;
 }
@@ -175,8 +174,9 @@ void ScrollbarThemeOverlay::PaintThumb(GraphicsContext& context,
     canvas->scale(-1, 1);
   }
 
-  Platform::Current()->ThemeEngine()->Paint(
-      canvas, part, state, WebRect(rect), &params, scrollbar.UsedColorScheme());
+  Platform::Current()->ThemeEngine()->Paint(canvas, part, state,
+                                            gfx::Rect(rect), &params,
+                                            scrollbar.UsedColorScheme());
 
   if (scrollbar.IsLeftSideVerticalScrollbar())
     canvas->restore();
@@ -208,7 +208,7 @@ IntSize ScrollbarThemeOverlay::NinePatchThumbCanvasSize(
           : WebThemeEngine::kPartScrollbarHorizontalThumb;
 
   DCHECK(Platform::Current()->ThemeEngine());
-  return Platform::Current()->ThemeEngine()->NinePatchCanvasSize(part);
+  return IntSize(Platform::Current()->ThemeEngine()->NinePatchCanvasSize(part));
 }
 
 IntRect ScrollbarThemeOverlay::NinePatchThumbAperture(
@@ -220,7 +220,7 @@ IntRect ScrollbarThemeOverlay::NinePatchThumbAperture(
     part = WebThemeEngine::kPartScrollbarVerticalThumb;
 
   DCHECK(Platform::Current()->ThemeEngine());
-  return Platform::Current()->ThemeEngine()->NinePatchAperture(part);
+  return IntRect(Platform::Current()->ThemeEngine()->NinePatchAperture(part));
 }
 
 int ScrollbarThemeOverlay::MinimumThumbLength(const Scrollbar& scrollbar) {
@@ -228,13 +228,13 @@ int ScrollbarThemeOverlay::MinimumThumbLength(const Scrollbar& scrollbar) {
     return Platform::Current()
         ->ThemeEngine()
         ->GetSize(WebThemeEngine::kPartScrollbarVerticalThumb)
-        .height;
+        .height();
   }
 
   return Platform::Current()
       ->ThemeEngine()
       ->GetSize(WebThemeEngine::kPartScrollbarHorizontalThumb)
-      .width;
+      .width();
 }
 
 }  // namespace blink

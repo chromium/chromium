@@ -25,7 +25,6 @@
 #include "third_party/blink/renderer/core/paint/theme_painter_default.h"
 
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/public/platform/web_rect.h"
 #include "third_party/blink/public/platform/web_theme_engine.h"
 #include "third_party/blink/public/resources/grit/blink_image_resources.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -176,7 +175,7 @@ bool ThemePainterDefault::PaintCheckbox(const Element& element,
 
   Platform::Current()->ThemeEngine()->Paint(
       canvas, WebThemeEngine::kPartCheckbox, GetWebThemeState(element),
-      WebRect(unzoomed_rect), &extra_params, style.UsedColorScheme());
+      gfx::Rect(unzoomed_rect), &extra_params, style.UsedColorScheme());
   return false;
 }
 
@@ -192,7 +191,7 @@ bool ThemePainterDefault::PaintRadio(const Element& element,
 
   Platform::Current()->ThemeEngine()->Paint(
       canvas, WebThemeEngine::kPartRadio, GetWebThemeState(element),
-      WebRect(rect), &extra_params, style.UsedColorScheme());
+      gfx::Rect(rect), &extra_params, style.UsedColorScheme());
   return false;
 }
 
@@ -212,7 +211,7 @@ bool ThemePainterDefault::PaintButton(const Element& element,
   }
   Platform::Current()->ThemeEngine()->Paint(
       canvas, WebThemeEngine::kPartButton, GetWebThemeState(element),
-      WebRect(rect), &extra_params, style.UsedColorScheme());
+      gfx::Rect(rect), &extra_params, style.UsedColorScheme());
   return false;
 }
 
@@ -251,7 +250,7 @@ bool ThemePainterDefault::PaintTextField(const Element& element,
 
   Platform::Current()->ThemeEngine()->Paint(
       canvas, WebThemeEngine::kPartTextField, GetWebThemeState(element),
-      WebRect(rect), &extra_params, style.UsedColorScheme());
+      gfx::Rect(rect), &extra_params, style.UsedColorScheme());
   return false;
 }
 
@@ -285,7 +284,7 @@ bool ThemePainterDefault::PaintMenuList(const Element& element,
   cc::PaintCanvas* canvas = i.context.Canvas();
   Platform::Current()->ThemeEngine()->Paint(
       canvas, WebThemeEngine::kPartMenuList, GetWebThemeState(element),
-      WebRect(rect), &extra_params, style.UsedColorScheme());
+      gfx::Rect(rect), &extra_params, style.UsedColorScheme());
   return false;
 }
 
@@ -304,7 +303,7 @@ bool ThemePainterDefault::PaintMenuListButton(const Element& element,
   cc::PaintCanvas* canvas = paint_info.context.Canvas();
   Platform::Current()->ThemeEngine()->Paint(
       canvas, WebThemeEngine::kPartMenuList, GetWebThemeState(element),
-      WebRect(rect), &extra_params, style.UsedColorScheme());
+      gfx::Rect(rect), &extra_params, style.UsedColorScheme());
   return false;
 }
 
@@ -395,7 +394,7 @@ bool ThemePainterDefault::PaintSliderTrack(const Element& element,
 
   Platform::Current()->ThemeEngine()->Paint(
       canvas, WebThemeEngine::kPartSliderTrack, GetWebThemeState(element),
-      WebRect(unzoomed_rect), &extra_params, o.StyleRef().UsedColorScheme());
+      gfx::Rect(unzoomed_rect), &extra_params, o.StyleRef().UsedColorScheme());
   return false;
 }
 
@@ -424,7 +423,7 @@ bool ThemePainterDefault::PaintSliderThumb(const Element& element,
 
   Platform::Current()->ThemeEngine()->Paint(
       canvas, WebThemeEngine::kPartSliderThumb, GetWebThemeState(element),
-      WebRect(unzoomed_rect), &extra_params, style.UsedColorScheme());
+      gfx::Rect(unzoomed_rect), &extra_params, style.UsedColorScheme());
   return false;
 }
 
@@ -450,7 +449,7 @@ bool ThemePainterDefault::PaintInnerSpinButton(const Element& element,
 
   Platform::Current()->ThemeEngine()->Paint(
       canvas, WebThemeEngine::kPartInnerSpinButton, GetWebThemeState(element),
-      WebRect(rect), &extra_params, style.UsedColorScheme());
+      gfx::Rect(rect), &extra_params, style.UsedColorScheme());
   return false;
 }
 
@@ -475,7 +474,7 @@ bool ThemePainterDefault::PaintProgressBar(const Element& element,
   cc::PaintCanvas* canvas = i.context.Canvas();
   Platform::Current()->ThemeEngine()->Paint(
       canvas, WebThemeEngine::kPartProgressBar, GetWebThemeState(element),
-      WebRect(rect), &extra_params, o.StyleRef().UsedColorScheme());
+      gfx::Rect(rect), &extra_params, o.StyleRef().UsedColorScheme());
   return false;
 }
 
