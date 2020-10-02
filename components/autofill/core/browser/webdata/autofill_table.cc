@@ -3516,7 +3516,7 @@ void AutofillTable::AddMaskedCreditCards(
     masked_insert.BindString(index++, card.bank_name());
     masked_insert.BindString16(index++, card.nickname());
     masked_insert.BindInt(index++, static_cast<int>(card.card_issuer()));
-    masked_insert.BindInt(index++, card.instrument_id());
+    masked_insert.BindInt64(index++, card.instrument_id());
     masked_insert.Run();
     masked_insert.Reset(true);
 
