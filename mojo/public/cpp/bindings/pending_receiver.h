@@ -74,7 +74,7 @@ class PendingReceiver {
                                      Interface>)(T&&)>>::value>* = nullptr>
   PendingReceiver(T&& other)
       : PendingReceiver(PendingReceiverConverter<T>::template To<Interface>(
-            std::move(other))) {}
+            std::forward<T>(other))) {}
 #endif  // !defined(OS_NACL)
 
   ~PendingReceiver() = default;
