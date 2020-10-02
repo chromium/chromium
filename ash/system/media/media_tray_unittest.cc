@@ -99,6 +99,8 @@ class MediaTrayTest : public AshTestBase {
 
   MediaTray* media_tray() { return media_tray_; }
 
+  views::View* empty_state_view() { return media_tray_->empty_state_view_; }
+
  private:
   std::unique_ptr<MockMediaNotificationProvider> provider_;
   MediaTray* media_tray_;
@@ -168,7 +170,7 @@ TEST_F(MediaTrayTest, ShowAndHideBubbleTest) {
   EXPECT_FALSE(media_tray()->is_active());
 }
 
-TEST_F(MediaTrayTest, DialogCloseWhenNoActiveNotificationTest) {
+TEST_F(MediaTrayTest, ShowEmptyStateWhenNoActiveNotification) {
   // Media tray should be visible when there is active notification.
   provider()->SetHasActiveNotifications(true);
   SimulateNotificationListChanged();
@@ -185,11 +187,11 @@ TEST_F(MediaTrayTest, DialogCloseWhenNoActiveNotificationTest) {
   EXPECT_TRUE(media_tray()->is_active());
 
   // Bubble should close if there's no active sessions.
-  EXPECT_CALL(*provider(), OnBubbleClosing());
   provider()->SetHasActiveNotifications(false);
   SimulateNotificationListChanged();
-  EXPECT_EQ(GetBubbleWrapper(), nullptr);
+  EXPECT_NE(GetBubbleWrapper(), nullptr);
   EXPECT_FALSE(media_tray()->GetVisible());
+  EXPECT_NE(empty_state_view(), nullptr);
 }
 
 TEST_F(MediaTrayTest, PinButtonTest) {

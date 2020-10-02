@@ -82,6 +82,8 @@ class ASH_EXPORT MediaTray : public MediaNotificationProviderObserver,
   // Called when global media controls pin pref is changed.
   void OnGlobalMediaControlsPinPrefChanged();
 
+  void ShowEmptyState();
+
   // Ptr to pin button in the dialog, owned by the view hierarchy.
   views::Button* pin_button_ = nullptr;
 
@@ -90,6 +92,9 @@ class ASH_EXPORT MediaTray : public MediaNotificationProviderObserver,
 
   // Weak pointer, will be parented by TrayContainer for its lifetime.
   views::ImageView* icon_;
+
+  views::View* content_view_ = nullptr;
+  views::View* empty_state_view_ = nullptr;
 };
 
 }  // namespace ash

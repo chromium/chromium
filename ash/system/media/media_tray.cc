@@ -31,11 +31,13 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/fill_layout.h"
 
 namespace ash {
 
 namespace {
 
+constexpr int kNoMediaTextFontSizeIncrease = 2;
 constexpr int kTitleFontSizeIncrease = 4;
 constexpr int kTitleViewHeight = 56;
 
@@ -257,7 +259,7 @@ void MediaTray::ShowBubble(bool show_by_click) {
   title_view->layer()->SetFillsBoundsOpaquely(false);
   pin_button_ = title_view->pin_button();
 
-  bubble_view->AddChildView(
+  content_view_ = bubble_view->AddChildView(
       MediaNotificationProvider::Get()->GetMediaNotificationListView(
           AshColorProvider::Get()->GetContentLayerColor(
               AshColorProvider::ContentLayerType::kSeparatorColor),
@@ -272,6 +274,7 @@ void MediaTray::CloseBubble() {
   if (MediaNotificationProvider::Get())
     MediaNotificationProvider::Get()->OnBubbleClosing();
   SetIsActive(false);
+  empty_state_view_ = nullptr;
   bubble_.reset();
   shelf()->UpdateAutoHideState();
 }
@@ -303,19 +306,57 @@ void MediaTray::UpdateDisplayState() {
   if (!MediaNotificationProvider::Get())
     return;
 
-  bool should_show =
-      (MediaNotificationProvider::Get()->HasActiveNotifications() ||
-       MediaNotificationProvider::Get()->HasFrozenNotifications()) &&
-      !Shell::Get()->session_controller()->IsScreenLocked();
-
-  if (!should_show && bubble_)
+  if (bubble_ && Shell::Get()->session_controller()->IsScreenLocked())
     CloseBubble();
 
-  SetVisiblePreferred(should_show && IsPinnedToShelf());
+  bool has_session =
+      MediaNotificationProvider::Get()->HasActiveNotifications() ||
+      MediaNotificationProvider::Get()->HasFrozenNotifications();
+
+  if (bubble_ && !has_session)
+    ShowEmptyState();
+
+  bool should_show = has_session &&
+                     !Shell::Get()->session_controller()->IsScreenLocked() &&
+                     IsPinnedToShelf();
+
+  SetVisiblePreferred(should_show);
 }
 
 void MediaTray::OnGlobalMediaControlsPinPrefChanged() {
   UpdateDisplayState();
+}
+
+void MediaTray::ShowEmptyState() {
+  DCHECK(content_view_);
+  if (empty_state_view_)
+    return;
+
+  // Create and add empty state view containing a label indicating there's no
+  // active session
+  auto empty_state_view = std::make_unique<views::View>();
+  auto* layout =
+      empty_state_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kHorizontal));
+  layout->set_minimum_cross_axis_size(content_view_->bounds().height());
+  layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kCenter);
+
+  auto no_media_label = std::make_unique<views::Label>();
+  no_media_label->SetAutoColorReadabilityEnabled(false);
+  no_media_label->SetSubpixelRenderingEnabled(false);
+  no_media_label->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kTextColorSecondary));
+  no_media_label->SetText(
+      l10n_util::GetStringUTF16(IDS_ASH_GLOBAL_MEDIA_CONTROLS_NO_MEDIA_TEXT));
+  no_media_label->SetFontList(
+      views::Label::GetDefaultFontList().DeriveWithSizeDelta(
+          kNoMediaTextFontSizeIncrease));
+  empty_state_view->AddChildView(std::move(no_media_label));
+
+  empty_state_view->SetPaintToLayer();
+  empty_state_view->layer()->SetFillsBoundsOpaquely(false);
+  empty_state_view_ =
+      bubble_->GetBubbleView()->AddChildView(std::move(empty_state_view));
 }
 
 }  // namespace ash
