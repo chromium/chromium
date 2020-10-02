@@ -1888,9 +1888,7 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::FinishInflow(
   // the spanner to the column layout algorithm, so that it can take care of it.
   if (UNLIKELY(ConstraintSpace().IsInColumnBfc())) {
     if (NGBlockNode spanner_node = layout_result->ColumnSpanner()) {
-      // TODO(mstensho): It would be nice to DCHECK for container_builder_
-      // .HasInflowChildBreakInside() here, but currently quite a few tests
-      // would fail then.
+      DCHECK(container_builder_.HasInflowChildBreakInside());
       container_builder_.SetColumnSpanner(spanner_node);
     }
   }
@@ -2161,22 +2159,8 @@ bool NGBlockLayoutAlgorithm::FinalizeForFragmentation() {
   }
 
   LayoutUnit space_left = kIndefiniteSize;
-  if (ConstraintSpace().HasKnownFragmentainerBlockSize()) {
+  if (ConstraintSpace().HasKnownFragmentainerBlockSize())
     space_left = FragmentainerSpaceAvailable();
-    if (space_left <= LayoutUnit()) {
-      // The amount of space available may be zero, or even negative, if the
-      // border-start edge of this block starts exactly at, or even after the
-      // fragmentainer boundary. We're going to need a break before this block,
-      // because no part of it fits in the current fragmentainer. Due to margin
-      // collapsing with children, this situation is something that we cannot
-      // always detect prior to layout. The fragment produced by this algorithm
-      // is going to be thrown away. The parent layout algorithm will eventually
-      // detect that there's no room for a fragment for this node, and drop the
-      // fragment on the floor. Therefore it doesn't matter how we set up the
-      // container builder, so just return.
-      return true;
-    }
-  }
 
   return FinishFragmentation(Node(), ConstraintSpace(), BreakToken(),
                              BorderPadding().block_end, space_left,

@@ -588,6 +588,9 @@ bool MovePastBreakpoint(const NGConstraintSpace& space,
     return true;
   }
 
+  const auto* break_token =
+      DynamicTo<NGBlockBreakToken>(physical_fragment.BreakToken());
+
   LayoutUnit space_left =
       space.FragmentainerBlockSize() - fragmentainer_block_offset;
 
@@ -598,13 +601,24 @@ bool MovePastBreakpoint(const NGConstraintSpace& space,
 
   // If the child starts past the end of the fragmentainer (probably due to a
   // block-start margin), we must break before it.
-  bool must_break_before = space_left < LayoutUnit();
+  bool must_break_before = false;
+  if (space_left < LayoutUnit()) {
+    must_break_before = true;
+  } else if (space_left == LayoutUnit()) {
+    // If the child starts exactly at the end, we'll allow the child here if the
+    // fragment contains the block-end of the child, or if it's a column
+    // spanner. Otherwise we have to break before it. We don't want empty
+    // fragments with nothing useful inside, if it's to be resumed in the next
+    // fragmentainer.
+    must_break_before = !layout_result.ColumnSpanner() && break_token &&
+                        !break_token->IsAtBlockEnd();
+  }
   if (must_break_before) {
     DCHECK(!refuse_break_before);
     return false;
   }
 
-  if (IsA<NGBlockBreakToken>(physical_fragment.BreakToken())) {
+  if (break_token) {
     // The block child broke inside. We now need to decide whether to keep that
     // break, or if it would be better to break before it.
     NGBreakAppeal appeal_inside = CalculateBreakAppealInside(
