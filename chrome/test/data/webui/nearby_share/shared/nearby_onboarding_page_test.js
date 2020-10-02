@@ -3,8 +3,14 @@
 // found in the LICENSE file.
 
 // clang-format off
+// #import 'chrome://nearby/strings.m.js';
 // #import 'chrome://nearby/shared/nearby_onboarding_page.m.js';
-// #import {assertEquals} from '../../chai_assert.js';
+// #import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+// #import {setContactManagerForTesting} from 'chrome://nearby/shared/nearby_contact_manager.m.js';
+// #import {setNearbyShareSettingsForTesting} from 'chrome://nearby/shared/nearby_share_settings.m.js';
+// #import {FakeNearbyShareSettings} from './fake_nearby_share_settings.m.js';
+// #import {assertEquals, assertTrue, assertFalse} from '../../chai_assert.js';
+// #import {waitAfterNextRender} from '../../test_util.m.js';
 // clang-format on
 
 suite('nearby-onboarding-page', function() {
@@ -12,8 +18,14 @@ suite('nearby-onboarding-page', function() {
   let element;
   /** @type {!string} */
   const deviceName = 'Test\'s Device';
+  /** @type {!nearby_share.FakeNearbyShareSettings} */
+  let fakeSettings;
 
   setup(function() {
+    fakeSettings = new nearby_share.FakeNearbyShareSettings();
+    fakeSettings.setEnabled(true);
+    nearby_share.setNearbyShareSettingsForTesting(fakeSettings);
+
     document.body.innerHTML = '';
 
     element = /** @type {!NearbyOnboardingPageElement} */ (
@@ -32,5 +44,31 @@ suite('nearby-onboarding-page', function() {
     assertEquals('NEARBY-ONBOARDING-PAGE', element.tagName);
     // Verify the device name is shown correctly.
     assertEquals(deviceName, element.$$('#deviceName').value);
+  });
+
+  test('validate device name preference', async () => {
+    loadTimeData.overrideValues({
+      'nearbyShareDeviceNameEmptyError': 'non-empty',
+      'nearbyShareDeviceNameTooLongError': 'non-empty',
+      'nearbyShareDeviceNameInvalidCharactersError': 'non-empty'
+    });
+
+    const input = /** @type {!CrInputElement} */ (element.$$('#deviceName'));
+    const pageTemplate = element.$$('nearby-page-template');
+
+    fakeSettings.setNextDeviceNameResult(
+        nearbyShare.mojom.DeviceNameValidationResult.kErrorEmpty);
+    input.fire('input');
+    // Allow the validation promise to resolve.
+    await test_util.waitAfterNextRender(/** @type {!HTMLElement} */ (input));
+    assertTrue(input.invalid);
+    assertTrue(pageTemplate.actionDisabled);
+
+    fakeSettings.setNextDeviceNameResult(
+        nearbyShare.mojom.DeviceNameValidationResult.kValid);
+    input.fire('input');
+    await test_util.waitAfterNextRender(/** @type {!HTMLElement} */ (input));
+    assertFalse(input.invalid);
+    assertFalse(pageTemplate.actionDisabled);
   });
 });

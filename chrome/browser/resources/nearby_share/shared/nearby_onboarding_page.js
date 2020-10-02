@@ -16,7 +16,13 @@ Polymer({
     /** @type {?nearby_share.NearbySettings} */
     settings: {
       type: Object,
-    }
+    },
+
+    /** @type {string} */
+    errorMessage: {
+      type: String,
+      value: '',
+    },
   },
 
   listeners: {
@@ -27,7 +33,57 @@ Polymer({
    * @private
    */
   onNext_() {
-    this.set('settings.deviceName', this.$.deviceName.value);
-    this.fire('change-page', {page: 'visibility'});
+    nearby_share.getNearbyShareSettings()
+        .setDeviceName(this.$.deviceName.value)
+        .then((result) => {
+          this.updateErrorMessage_(result.result);
+          if (result.result ===
+              nearbyShare.mojom.DeviceNameValidationResult.kValid) {
+            this.fire('change-page', {page: 'visibility'});
+          }
+        });
   },
+
+  /** @private */
+  onDeviceNameInput_() {
+    nearby_share.getNearbyShareSettings()
+        .validateDeviceName(this.$.deviceName.value)
+        .then((result) => {
+          this.updateErrorMessage_(result.result);
+        });
+  },
+
+  /**
+   * @private
+   *
+   * @param {!nearbyShare.mojom.DeviceNameValidationResult} validationResult The
+   *     error status from validating the provided device name.
+   */
+  updateErrorMessage_(validationResult) {
+    switch (validationResult) {
+      case nearbyShare.mojom.DeviceNameValidationResult.kErrorEmpty:
+        this.errorMessage = this.i18n('nearbyShareDeviceNameEmptyError');
+        break;
+      case nearbyShare.mojom.DeviceNameValidationResult.kErrorTooLong:
+        this.errorMessage = this.i18n('nearbyShareDeviceNameTooLongError');
+        break;
+      case nearbyShare.mojom.DeviceNameValidationResult.kErrorNotValidUtf8:
+        this.errorMessage =
+            this.i18n('nearbyShareDeviceNameInvalidCharactersError');
+        break;
+      default:
+        this.errorMessage = '';
+        break;
+    }
+  },
+
+  /**
+   * @private
+   *
+   * @param {!string} errorMessage The error message.
+   * @return {boolean} Whether or not the error message exists.
+   */
+  hasErrorMessage_(errorMessage) {
+    return errorMessage !== '';
+  }
 });
