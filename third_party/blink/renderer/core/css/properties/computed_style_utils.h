@@ -26,6 +26,8 @@ class ComputedStyle;
 class StyleColor;
 class StylePropertyShorthand;
 
+enum class CSSValuePhase { kComputedValue, kUsedValue };
+
 class CORE_EXPORT ComputedStyleUtils {
   STATIC_ONLY(ComputedStyleUtils);
 
@@ -39,7 +41,8 @@ class CORE_EXPORT ComputedStyleUtils {
   }
 
   static CSSValue* CurrentColorOrValidColor(const ComputedStyle&,
-                                            const StyleColor&);
+                                            const StyleColor&,
+                                            CSSValuePhase);
   static const blink::Color BorderSideColor(const ComputedStyle&,
                                             const StyleColor&,
                                             EBorderStyle,
@@ -195,10 +198,12 @@ class CORE_EXPORT ComputedStyleUtils {
   static CSSValue* ValueForSVGResource(const StyleSVGResource*);
   static CSSValue* ValueForShadowData(const ShadowData&,
                                       const ComputedStyle&,
-                                      bool use_spread);
+                                      bool use_spread,
+                                      CSSValuePhase);
   static CSSValue* ValueForShadowList(const ShadowList*,
                                       const ComputedStyle&,
-                                      bool use_spread);
+                                      bool use_spread,
+                                      CSSValuePhase);
   static CSSValue* ValueForFilter(const ComputedStyle&,
                                   const FilterOperations&);
   static CSSValue* ValueForScrollSnapType(const cc::ScrollSnapType&,
@@ -244,6 +249,9 @@ class CORE_EXPORT ComputedStyleUtils {
                                      const ComputedStyle&);
   static CSSValue* ValueForStyleName(const StyleName&);
   static CSSValue* ValueForStyleNameOrKeyword(const StyleNameOrKeyword&);
+  static const CSSValue* ValueForStyleAutoColor(const ComputedStyle&,
+                                                const StyleAutoColor&,
+                                                CSSValuePhase);
   static std::unique_ptr<CrossThreadStyleValue>
   CrossThreadStyleValueFromCSSStyleValue(CSSStyleValue* style_value);
 

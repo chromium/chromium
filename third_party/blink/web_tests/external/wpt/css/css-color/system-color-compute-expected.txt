@@ -1,16 +1,30 @@
 This is a testharness.js-based test.
 FAIL color-scheme property affects Menu system color keyword assert_not_equals: got disallowed value "rgb(247, 247, 247)"
+PASS System color computes to itself on color
+FAIL Inherited system color keyword is observable on color assert_regexp_match: expected object "/menu/i" but got object "rgb(247, 247, 247)"
 PASS System color computes to itself on background-color
+FAIL Inherited system color keyword is observable on background-color assert_regexp_match: expected object "/menu/i" but got object "rgb(247, 247, 247)"
 PASS System color computes to itself on box-shadow
+FAIL Inherited system color keyword is observable on box-shadow assert_regexp_match: expected object "/menu/i" but got object "rgb(247, 247, 247) 2px 2px 0px 0px"
 PASS System color computes to itself on text-shadow
+FAIL Inherited system color keyword is observable on text-shadow assert_regexp_match: expected object "/menu/i" but got object "rgb(247, 247, 247) 2px 2px 0px"
 PASS System color computes to itself on border-left-color
+FAIL Inherited system color keyword is observable on border-left-color assert_regexp_match: expected object "/menu/i" but got object "rgb(247, 247, 247)"
 PASS System color computes to itself on border-top-color
+FAIL Inherited system color keyword is observable on border-top-color assert_regexp_match: expected object "/menu/i" but got object "rgb(247, 247, 247)"
 PASS System color computes to itself on border-right-color
+FAIL Inherited system color keyword is observable on border-right-color assert_regexp_match: expected object "/menu/i" but got object "rgb(247, 247, 247)"
 PASS System color computes to itself on border-bottom-color
+FAIL Inherited system color keyword is observable on border-bottom-color assert_regexp_match: expected object "/menu/i" but got object "rgb(247, 247, 247)"
 PASS System color computes to itself on column-rule-color
+FAIL Inherited system color keyword is observable on column-rule-color assert_regexp_match: expected object "/menu/i" but got object "rgb(247, 247, 247)"
 PASS System color computes to itself on outline-color
+FAIL Inherited system color keyword is observable on outline-color assert_regexp_match: expected object "/menu/i" but got object "rgb(247, 247, 247)"
 PASS System color computes to itself on caret-color
+FAIL Inherited system color keyword is observable on caret-color assert_regexp_match: expected object "/menu/i" but got object "rgb(247, 247, 247)"
 PASS System color computes to itself on fill
+FAIL Inherited system color keyword is observable on fill assert_regexp_match: expected object "/menu/i" but got object "rgb(247, 247, 247)"
 PASS System color computes to itself on stroke
+FAIL Inherited system color keyword is observable on stroke assert_regexp_match: expected object "/menu/i" but got object "rgb(247, 247, 247)"
 Harness: the test ran to completion.
 
