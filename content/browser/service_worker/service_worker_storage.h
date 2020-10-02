@@ -278,12 +278,11 @@ class CONTENT_EXPORT ServiceWorkerStorage {
 
   void Disable();
 
-  // Schedules deleting |resources| from the disk cache and removing their keys
-  // as purgeable resources from the service worker database. It's OK to call
-  // this for resources that don't have purgeable resource keys, like
+  // Schedules deleting `resource_ids` from the disk cache and removing their
+  // keys as purgeable resources from the service worker database. It's OK to
+  // call this for resources that don't have purgeable resource keys, like
   // uncommitted resources, as long as the caller does its own cleanup to remove
   // the uncommitted resource keys.
-  void PurgeResources(const ResourceList& resources);
   void PurgeResources(const std::vector<int64_t>& resource_ids);
 
   // Applies |policy_updates|.

@@ -1064,12 +1064,6 @@ void ServiceWorkerStorage::Disable() {
     disk_cache_->Disable();
 }
 
-void ServiceWorkerStorage::PurgeResources(const ResourceList& resources) {
-  if (!has_checked_for_stale_resources_)
-    DeleteStaleResources();
-  StartPurgingResources(resources);
-}
-
 void ServiceWorkerStorage::PurgeResources(
     const std::vector<int64_t>& resource_ids) {
   if (!has_checked_for_stale_resources_)
