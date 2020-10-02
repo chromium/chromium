@@ -7,6 +7,7 @@
 #include <math.h>
 
 #include "ash/public/cpp/ash_constants.h"
+#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/ash_pref_names.h"
 #include "ash/public/cpp/login_constants.h"
 #include "ash/session/session_controller_impl.h"
@@ -331,7 +332,7 @@ void AshColorProvider::RemoveObserver(ColorModeObserver* observer) {
 }
 
 bool AshColorProvider::IsDarkModeEnabled() const {
-  if (override_light_mode_as_default_)
+  if (!features::IsDarkLightModeEnabled() && override_light_mode_as_default_)
     return false;
 
   if (!active_user_pref_service_)

@@ -233,8 +233,9 @@ class ASH_EXPORT AshColorProvider : public SessionObserver {
   // Default color mode is dark, which is controlled by pref |kDarkModeEnabled|
   // currently. But we can also override it to light through
   // ScopedLightModeAsDefault. This is done to help keeping some of the UI
-  // elements as light by default before launching dark/light mode. This will be
-  // removed once enabling dark/light mode.
+  // elements as light by default before launching dark/light mode. Overriding
+  // only if the kDarkLightMode feature is disabled. This variable will be
+  // removed once enabled dark/light mode.
   bool override_light_mode_as_default_ = false;
 
   base::ObserverList<ColorModeObserver> observers_;
