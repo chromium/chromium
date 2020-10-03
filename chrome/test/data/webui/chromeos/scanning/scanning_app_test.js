@@ -253,10 +253,11 @@ suite('SourceSelectTest', () => {
   });
 
   test('initializeSourceSelect', () => {
-    // Before options are added, the dropdown should be disabled.
+    // Before options are added, the dropdown should be disabled and empty.
     const select = sourceSelect.$$('select');
     assertTrue(!!select);
     assertTrue(select.disabled);
+    assertEquals(0, select.length);
 
     const firstSource = createSource(SourceType.FLATBED, 'platen');
     const secondSource = createSource(SourceType.ADF_SIMPLEX, 'adf simplex');
