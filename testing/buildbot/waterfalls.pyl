@@ -4248,16 +4248,6 @@
           'gpu_telemetry_tests': 'gpu_skia_renderer_dawn_telemetry_tests',
         },
       },
-      'Win10 FYI x64 SkiaRenderer GL (NVIDIA)': {
-        'browser_config': 'release_x64',
-        'os_type': 'win',
-        'mixins': [
-          'win10_nvidia_quadro_p400_stable',
-        ],
-        'test_suites': {
-          'gpu_telemetry_tests': 'gpu_noop_sleep_telemetry_test',
-        },
-      },
      'Win10 FYI x64 dEQP Release (Intel HD 630)': {
         'os_type': 'win',
         'mixins': [
