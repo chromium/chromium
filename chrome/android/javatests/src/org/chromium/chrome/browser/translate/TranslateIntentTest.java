@@ -8,7 +8,6 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.os.Build.VERSION_CODES;
 
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
@@ -25,7 +24,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -136,12 +135,10 @@ public class TranslateIntentTest {
 
     @Test
     @MediumTest
-    @DisableIf.
-    Build(sdk_is_greater_than = VERSION_CODES.LOLLIPOP_MR1, sdk_is_less_than = VERSION_CODES.N,
-            message = "Consistently failing on Marshmallow https://crbug.com/1127786")
+    // TODO(crbug.com/1134812): Remove the reliance on a network connection for these tests.
+    @Restriction(Restriction.RESTRICTION_TYPE_INTERNET)
     @Features.DisableFeatures({ChromeFeatureList.TRANSLATE_INTENT})
-    public void
-    testTranslateIntentDisabled() throws TimeoutException {
+    public void testTranslateIntentDisabled() throws TimeoutException {
         final String url = sActivityTestRule.getTestServer().getURL(TRANSLATE_PAGE);
         // Load a page that triggers the translate recommendation.
         sActivityTestRule.loadUrl(url);
@@ -156,12 +153,9 @@ public class TranslateIntentTest {
 
     @Test
     @MediumTest
-    @DisableIf.
-    Build(sdk_is_greater_than = VERSION_CODES.LOLLIPOP_MR1, sdk_is_less_than = VERSION_CODES.N,
-            message = "Consistently failing on Marshmallow https://crbug.com/1127786")
+    @Restriction(Restriction.RESTRICTION_TYPE_INTERNET)
     @Features.EnableFeatures({ChromeFeatureList.TRANSLATE_INTENT})
-    public void
-    testTranslateIntentOnTranslatePage() throws TimeoutException {
+    public void testTranslateIntentOnTranslatePage() throws TimeoutException {
         final String url = sActivityTestRule.getTestServer().getURL(TRANSLATE_PAGE);
         // Load a page that triggers the translate recommendation.
         sActivityTestRule.loadUrl(url);
@@ -176,12 +170,9 @@ public class TranslateIntentTest {
 
     @Test
     @MediumTest
-    @DisableIf.
-    Build(sdk_is_greater_than = VERSION_CODES.LOLLIPOP_MR1, sdk_is_less_than = VERSION_CODES.N,
-            message = "Consistently failing on Marshmallow https://crbug.com/1127786")
+    @Restriction(Restriction.RESTRICTION_TYPE_INTERNET)
     @Features.EnableFeatures({ChromeFeatureList.TRANSLATE_INTENT})
-    public void
-    testTranslateIntentOnNonTranslatePage() throws TimeoutException {
+    public void testTranslateIntentOnNonTranslatePage() throws TimeoutException {
         final String url = sActivityTestRule.getTestServer().getURL(NON_TRANSLATE_PAGE);
         // Load a page that doesn't trigger the translate recommendation.
         sActivityTestRule.loadUrl(url);
@@ -198,12 +189,10 @@ public class TranslateIntentTest {
 
     @Test
     @MediumTest
-    @DisableIf.
-    Build(sdk_is_greater_than = VERSION_CODES.LOLLIPOP_MR1, sdk_is_less_than = VERSION_CODES.N,
-            message = "Consistently failing on Marshmallow https://crbug.com/1127786")
+    @Restriction(Restriction.RESTRICTION_TYPE_INTERNET)
     @Features.EnableFeatures({ChromeFeatureList.TRANSLATE_INTENT})
-    public void
-    testTranslateIntentWithTargetLanguage() throws TimeoutException, ExecutionException {
+    public void testTranslateIntentWithTargetLanguage()
+            throws TimeoutException, ExecutionException {
         final String url = sActivityTestRule.getTestServer().getURL(NON_TRANSLATE_PAGE);
         // Load a page that doesn't trigger the translate recommendation.
         sActivityTestRule.loadUrl(url);
@@ -229,12 +218,9 @@ public class TranslateIntentTest {
 
     @Test
     @MediumTest
-    @DisableIf.
-    Build(sdk_is_greater_than = VERSION_CODES.LOLLIPOP_MR1, sdk_is_less_than = VERSION_CODES.N,
-            message = "Consistently failing on Marshmallow https://crbug.com/1127786")
+    @Restriction(Restriction.RESTRICTION_TYPE_INTERNET)
     @Features.EnableFeatures({ChromeFeatureList.TRANSLATE_INTENT})
-    public void
-    testTranslateIntentWithUnsupportedTargetLanguage() throws TimeoutException {
+    public void testTranslateIntentWithUnsupportedTargetLanguage() throws TimeoutException {
         final String url = sActivityTestRule.getTestServer().getURL(NON_TRANSLATE_PAGE);
         // Load a page that doesn't trigger the translate recommendation.
         sActivityTestRule.loadUrl(url);
@@ -249,12 +235,9 @@ public class TranslateIntentTest {
 
     @Test
     @MediumTest
-    @DisableIf.
-    Build(sdk_is_greater_than = VERSION_CODES.LOLLIPOP_MR1, sdk_is_less_than = VERSION_CODES.N,
-            message = "Consistently failing on Marshmallow https://crbug.com/1127786")
+    @Restriction(Restriction.RESTRICTION_TYPE_INTERNET)
     @Features.EnableFeatures({ChromeFeatureList.TRANSLATE_INTENT})
-    public void
-    testTranslateIntentOnIncognito() throws TimeoutException {
+    public void testTranslateIntentOnIncognito() throws TimeoutException {
         final String url = sActivityTestRule.getTestServer().getURL(TRANSLATE_PAGE);
         // Load a page that triggers the translate recommendation.
         sActivityTestRule.loadUrlInNewTab(url, /*incognito=*/true);
@@ -273,12 +256,9 @@ public class TranslateIntentTest {
 
     @Test
     @MediumTest
-    @DisableIf.
-    Build(sdk_is_greater_than = VERSION_CODES.LOLLIPOP_MR1, sdk_is_less_than = VERSION_CODES.N,
-            message = "Consistently failing on Marshmallow https://crbug.com/1127786")
+    @Restriction(Restriction.RESTRICTION_TYPE_INTERNET)
     @Features.EnableFeatures({ChromeFeatureList.TRANSLATE_INTENT})
-    public void
-    testTranslateIntentWithUrlMismatch() throws TimeoutException {
+    public void testTranslateIntentWithUrlMismatch() throws TimeoutException {
         final String url = sActivityTestRule.getTestServer().getURL(TRANSLATE_PAGE);
         // Load a page that triggers the translate recommendation.
         sActivityTestRule.loadUrl(url);
@@ -293,12 +273,9 @@ public class TranslateIntentTest {
 
     @Test
     @MediumTest
-    @DisableIf.
-    Build(sdk_is_greater_than = VERSION_CODES.LOLLIPOP_MR1, sdk_is_less_than = VERSION_CODES.N,
-            message = "Consistently failing on Marshmallow https://crbug.com/1127786")
+    @Restriction(Restriction.RESTRICTION_TYPE_INTERNET)
     @Features.EnableFeatures({ChromeFeatureList.TRANSLATE_INTENT})
-    public void
-    testTranslateIntentWithoutExpectedUrl() throws TimeoutException {
+    public void testTranslateIntentWithoutExpectedUrl() throws TimeoutException {
         final String url = sActivityTestRule.getTestServer().getURL(TRANSLATE_PAGE);
         // Load a page that triggers the translate recommendation.
         sActivityTestRule.loadUrl(url);
@@ -313,12 +290,9 @@ public class TranslateIntentTest {
 
     @Test
     @MediumTest
-    @DisableIf.
-    Build(sdk_is_greater_than = VERSION_CODES.LOLLIPOP_MR1, sdk_is_less_than = VERSION_CODES.N,
-            message = "Consistently failing on Marshmallow https://crbug.com/1127786")
+    @Restriction(Restriction.RESTRICTION_TYPE_INTERNET)
     @Features.EnableFeatures({ChromeFeatureList.TRANSLATE_INTENT})
-    public void
-    testTranslateIntentVerifyComponent() throws TimeoutException {
+    public void testTranslateIntentVerifyComponent() throws TimeoutException {
         final String url = sActivityTestRule.getTestServer().getURL(TRANSLATE_PAGE);
         // Load a page that triggers the translate recommendation.
         sActivityTestRule.loadUrl(url);
@@ -339,12 +313,9 @@ public class TranslateIntentTest {
 
     @Test
     @MediumTest
-    @DisableIf.
-    Build(sdk_is_greater_than = VERSION_CODES.LOLLIPOP_MR1, sdk_is_less_than = VERSION_CODES.N,
-            message = "Consistently failing on Marshmallow https://crbug.com/1127786")
+    @Restriction(Restriction.RESTRICTION_TYPE_INTERNET)
     @Features.EnableFeatures({ChromeFeatureList.TRANSLATE_INTENT})
-    public void
-    testTranslateIntentIncorrectComponent() throws TimeoutException {
+    public void testTranslateIntentIncorrectComponent() throws TimeoutException {
         final String url = sActivityTestRule.getTestServer().getURL(TRANSLATE_PAGE);
         // Load a page that triggers the translate recommendation.
         sActivityTestRule.loadUrl(url);
