@@ -4641,6 +4641,7 @@ bool LayoutBox::StretchesToViewportInQuirksMode() const {
     return false;
   return StyleRef().LogicalHeight().IsAuto() &&
          !IsFloatingOrOutOfFlowPositioned() && !IsInline() &&
+         !ShouldComputeLogicalHeightFromAspectRatio() &&
          !FlowThreadContainingBlock();
 }
 
