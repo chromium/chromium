@@ -116,10 +116,12 @@ class DmServerUploadService {
     // Helper function for tracking the highest sequencing information per
     // generation id. Schedules ProcessSuccessfulUploadAddition.
     void AddSuccessfulUpload(
+        base::RepeatingClosure done_cb,
         const SequencingInformation& sequencing_information);
 
     // Processes successful uploads on sequence.
     void ProcessSuccessfulUploadAddition(
+        base::RepeatingClosure done_cb,
         SequencingInformation sequencing_information);
 
     std::unique_ptr<std::vector<EncryptedRecord>> encrypted_records_;

@@ -72,53 +72,46 @@ TEST(DmServerUploadServiceTest, DeniesNullptrProfile) {
 
 class TestCallbackWaiter {
  public:
-  TestCallbackWaiter()
-      : completed_(base::WaitableEvent::ResetPolicy::MANUAL,
-                   base::WaitableEvent::InitialState::NOT_SIGNALED) {}
+  TestCallbackWaiter() : run_loop_(std::make_unique<base::RunLoop>()) {}
 
   void CompleteExpectSuccess(
       DmServerUploadService::CompletionResponse response) {
-    DCHECK(!completed_.IsSignaled());
     EXPECT_TRUE(response.ok());
-    completed_.Signal();
+    run_loop_->Quit();
   }
 
   void CompleteExpectUnimplemented(
       DmServerUploadService::CompletionResponse response) {
-    DCHECK(!completed_.IsSignaled());
     EXPECT_FALSE(response.ok());
     EXPECT_EQ(response.status().error_code(), error::UNIMPLEMENTED);
-    completed_.Signal();
+    run_loop_->Quit();
   }
 
   void CompleteExpectInvalidArgument(
       DmServerUploadService::CompletionResponse response) {
-    DCHECK(!completed_.IsSignaled());
     EXPECT_FALSE(response.ok());
     EXPECT_EQ(response.status().error_code(), error::INVALID_ARGUMENT);
-    completed_.Signal();
+    run_loop_->Quit();
   }
 
   void CompleteExpectFailedPrecondition(
       DmServerUploadService::CompletionResponse response) {
-    DCHECK(!completed_.IsSignaled());
     EXPECT_FALSE(response.ok());
     EXPECT_EQ(response.status().error_code(), error::FAILED_PRECONDITION);
-    completed_.Signal();
+    run_loop_->Quit();
   }
 
   void CompleteExpectDeadlineExceeded(
       DmServerUploadService::CompletionResponse response) {
-    DCHECK(!completed_.IsSignaled());
     EXPECT_FALSE(response.ok());
     EXPECT_EQ(response.status().error_code(), error::DEADLINE_EXCEEDED);
-    completed_.Signal();
+    run_loop_->Quit();
   }
 
-  void Wait() { completed_.Wait(); }
+  void Wait() { run_loop_->Run(); }
 
  private:
-  base::WaitableEvent completed_;
+  std::unique_ptr<base::RunLoop> run_loop_;
 };
 
 class TestRecordHandler : public DmServerUploadService::RecordHandler {
