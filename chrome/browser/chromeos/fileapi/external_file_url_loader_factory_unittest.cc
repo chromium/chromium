@@ -21,6 +21,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "mojo/public/cpp/system/data_pipe_utils.h"
+#include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/redirect_info.h"
 #include "services/network/test/test_url_loader_client.h"
@@ -72,8 +73,8 @@ class ExternalFileURLLoaderFactoryTest : public testing::Test {
                                  kFileSystemId, "Test FileSystem"));
 
     // Create the URLLoaderFactory.
-    url_loader_factory_ = std::make_unique<ExternalFileURLLoaderFactory>(
-        profile, render_process_host_id());
+    url_loader_factory_.Bind(ExternalFileURLLoaderFactory::Create(
+        profile, render_process_host_id()));
   }
 
   virtual int render_process_host_id() {
@@ -106,7 +107,7 @@ class ExternalFileURLLoaderFactoryTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
 
-  std::unique_ptr<ExternalFileURLLoaderFactory> url_loader_factory_;
+  mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory_;
 
   std::unique_ptr<TestingProfileManager> profile_manager_;
   std::unique_ptr<chromeos::FakeChromeUserManager> user_manager_;
@@ -229,8 +230,11 @@ TEST_F(SubresourceExternalFileURLLoaderFactoryTest, SubresourceAllowed) {
 }
 
 TEST_F(SubresourceExternalFileURLLoaderFactoryTest, SubresourceNotAllowed) {
+  mojo::test::BadMessageObserver bad_message_observer;
   network::TestURLLoaderClient client;
-  ASSERT_DEATH(CreateURLLoaderAndStart(&client, CreateRequest(kTestUrl)), "");
+  CreateURLLoaderAndStart(&client, CreateRequest(kTestUrl));
+  EXPECT_EQ("Unauthorized externalfile request",
+            bad_message_observer.WaitForBadMessage());
 }
 
 }  // namespace chromeos
