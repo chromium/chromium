@@ -109,8 +109,9 @@ class SoftwareRendererTest : public testing::Test {
         base::BindOnce(&SoftwareRendererTest::SaveBitmapResult,
                        base::Unretained(&bitmap_result), loop.QuitClosure())));
 
+    SurfaceDamageRectList surface_damage_rect_list;
     renderer()->DrawFrame(list, device_scale_factor, viewport_size,
-                          gfx::DisplayColorSpaces());
+                          gfx::DisplayColorSpaces(), &surface_damage_rect_list);
     loop.Run();
     return bitmap_result;
   }
@@ -529,6 +530,7 @@ TEST_F(SoftwareRendererTest, PartialSwap) {
     // tests.
     AggregatedRenderPassList list;
     AggregatedRenderPassId root_pass_id{1};
+    SurfaceDamageRectList surface_damage_rect_list;
     auto* root_pass =
         AddRenderPass(&list, root_pass_id, gfx::Rect(viewport_size),
                       gfx::Transform(), cc::FilterOperations());
@@ -540,11 +542,12 @@ TEST_F(SoftwareRendererTest, PartialSwap) {
 
     renderer()->DecideRenderPassAllocationsForFrame(list);
     renderer()->DrawFrame(&list, device_scale_factor, viewport_size,
-                          gfx::DisplayColorSpaces());
+                          gfx::DisplayColorSpaces(), &surface_damage_rect_list);
   }
   {
     AggregatedRenderPassList list;
     AggregatedRenderPassId root_pass_id{1};
+    SurfaceDamageRectList surface_damage_rect_list;
     auto* root_pass =
         AddRenderPass(&list, root_pass_id, gfx::Rect(viewport_size),
                       gfx::Transform(), cc::FilterOperations());
@@ -556,7 +559,7 @@ TEST_F(SoftwareRendererTest, PartialSwap) {
 
     renderer()->DecideRenderPassAllocationsForFrame(list);
     renderer()->DrawFrame(&list, device_scale_factor, viewport_size,
-                          gfx::DisplayColorSpaces());
+                          gfx::DisplayColorSpaces(), &surface_damage_rect_list);
 
     // The damage rect should be reported to the SoftwareOutputDevice.
     EXPECT_EQ(gfx::Rect(2, 2, 3, 3), device->damage_rect_at_start());

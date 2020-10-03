@@ -6,6 +6,7 @@
 #define COMPONENTS_VIZ_SERVICE_DISPLAY_OVERLAY_STRATEGY_UNDERLAY_CAST_H_
 
 #include <memory>
+#include <vector>
 
 #include "base/callback.h"
 #include "base/macros.h"
@@ -33,6 +34,7 @@ class VIZ_SERVICE_EXPORT OverlayStrategyUnderlayCast
                    render_pass_backdrop_filters,
                DisplayResourceProvider* resource_provider,
                AggregatedRenderPassList* render_pass,
+               SurfaceDamageRectList* surface_damage_rect_list,
                const PrimaryPlane* primary_plane,
                OverlayCandidateList* candidate_list,
                std::vector<gfx::Rect>* content_bounds) override;

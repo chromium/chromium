@@ -71,11 +71,10 @@ class VIZ_COMMON_EXPORT SharedQuadState {
   // render passes as much as possible.
   bool is_fast_rounded_corner = false;
   // This is for underlay optimization and used only in the SurfaceAggregator
-  // and the OverlayProcessor. This damage rect contains union of damage from
-  // occluding surfaces and is only for quads that are the only quad in
-  // their surface. SetAll() doesn't update this data.
-  base::Optional<gfx::Rect> occluding_damage_rect;
-
+  // and the OverlayProcessor. Do not set the value in CompositorRenderPass.
+  // This index points to the damage rect in the surface damage rect list where
+  // the overlay quad belongs to. SetAll() doesn't update this data.
+  base::Optional<size_t> overlay_damage_index;
   // The amount to skew quads in this layer. For experimental de-jelly effect.
   float de_jelly_delta_y = 0.0f;
 

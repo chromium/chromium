@@ -127,7 +127,6 @@ TEST(RenderPassIOTest, SharedQuadStateList) {
                  gfx::Rect(5, 20, 1000, 200), true, false, 0.5f,
                  SkBlendMode::kDstOver, 101);
     sqs1->is_fast_rounded_corner = true;
-    sqs1->occluding_damage_rect = gfx::Rect(7, 11, 210, 333);
     sqs1->de_jelly_delta_y = 0.7f;
   }
   base::Value dict0 = CompositorRenderPassToDict(*render_pass0);
@@ -150,7 +149,6 @@ TEST(RenderPassIOTest, SharedQuadStateList) {
     EXPECT_EQ(SkBlendMode::kSrcOver, sqs0->blend_mode);
     EXPECT_EQ(0, sqs0->sorting_context_id);
     EXPECT_FALSE(sqs0->is_fast_rounded_corner);
-    EXPECT_FALSE(sqs0->occluding_damage_rect.has_value());
     EXPECT_EQ(0.0f, sqs0->de_jelly_delta_y);
 
     const SharedQuadState* sqs1 =
@@ -171,8 +169,6 @@ TEST(RenderPassIOTest, SharedQuadStateList) {
     EXPECT_EQ(SkBlendMode::kDstOver, sqs1->blend_mode);
     EXPECT_EQ(101, sqs1->sorting_context_id);
     EXPECT_TRUE(sqs1->is_fast_rounded_corner);
-    EXPECT_TRUE(sqs1->occluding_damage_rect.has_value());
-    EXPECT_EQ(gfx::Rect(7, 11, 210, 333), sqs1->occluding_damage_rect.value());
     EXPECT_EQ(0.7f, sqs1->de_jelly_delta_y);
   }
   base::Value dict1 = CompositorRenderPassToDict(*render_pass1);

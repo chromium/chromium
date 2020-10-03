@@ -4,7 +4,9 @@
 
 #include "components/viz/service/display/overlay_processor_android.h"
 
+#include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/synchronization/waitable_event.h"
 #include "components/viz/common/quads/stream_video_draw_quad.h"
@@ -91,7 +93,7 @@ bool OverlayProcessorAndroid::IsOverlaySupported() const {
   return overlay_enabled_;
 }
 
-bool OverlayProcessorAndroid::NeedsSurfaceOccludingDamageRect() const {
+bool OverlayProcessorAndroid::NeedsSurfaceDamageRectList() const {
   return false;
 }
 

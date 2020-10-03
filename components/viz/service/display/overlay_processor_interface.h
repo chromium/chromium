@@ -12,6 +12,7 @@
 #include "base/macros.h"
 #include "build/build_config.h"
 #include "components/viz/common/quads/aggregated_render_pass.h"
+#include "components/viz/service/display/aggregated_frame.h"
 #include "components/viz/service/display/output_surface.h"
 #include "components/viz/service/display/overlay_candidate.h"
 #include "components/viz/service/viz_service_export.h"
@@ -108,7 +109,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorInterface {
       const RendererSettings& renderer_settings,
       const DebugRendererSettings* debug_settings);
 
-  virtual ~OverlayProcessorInterface() {}
+  virtual ~OverlayProcessorInterface() = default;
 
   virtual bool IsOverlaySupported() const = 0;
   // Returns a bounding rectangle of the last set of overlay planes scheduled.
@@ -120,7 +121,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorInterface {
   // Returns true if the platform supports hw overlays and surface occluding
   // damage rect needs to be computed since it will be used by overlay
   // processor.
-  virtual bool NeedsSurfaceOccludingDamageRect() const = 0;
+  virtual bool NeedsSurfaceDamageRectList() const = 0;
 
   // Attempt to replace quads from the specified root render pass with overlays
   // or CALayers. This must be called every frame.
@@ -130,6 +131,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorInterface {
       const SkMatrix44& output_color_matrix,
       const FilterOperationsMap& render_pass_filters,
       const FilterOperationsMap& render_pass_backdrop_filters,
+      SurfaceDamageRectList* surface_damage_rect_list,
       OutputSurfaceOverlayPlane* output_surface_plane,
       CandidateList* overlay_candidates,
       gfx::Rect* damage_rect,

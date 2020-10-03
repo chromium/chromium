@@ -40,7 +40,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorAndroid
 
   bool IsOverlaySupported() const override;
 
-  bool NeedsSurfaceOccludingDamageRect() const override;
+  bool NeedsSurfaceDamageRectList() const override;
 
   void ScheduleOverlays(
       DisplayResourceProvider* display_resource_provider) override;

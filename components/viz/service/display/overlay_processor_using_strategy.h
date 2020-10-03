@@ -6,6 +6,7 @@
 #define COMPONENTS_VIZ_SERVICE_DISPLAY_OVERLAY_PROCESSOR_USING_STRATEGY_H_
 
 #include <memory>
+#include <vector>
 
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
@@ -45,6 +46,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorUsingStrategy
         const FilterOperationsMap& render_pass_backdrop_filters,
         DisplayResourceProvider* resource_provider,
         AggregatedRenderPassList* render_pass_list,
+        SurfaceDamageRectList* surface_damage_rect_list,
         const PrimaryPlane* primary_plane,
         OverlayCandidateList* candidates,
         std::vector<gfx::Rect>* content_bounds) = 0;
@@ -81,6 +83,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorUsingStrategy
       const SkMatrix44& output_color_matrix,
       const FilterOperationsMap& render_pass_filters,
       const FilterOperationsMap& render_pass_backdrop_filters,
+      SurfaceDamageRectList* surface_damage_rect_list,
       OutputSurfaceOverlayPlane* output_surface_plane,
       CandidateList* overlay_candidates,
       gfx::Rect* damage_rect,
@@ -139,6 +142,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorUsingStrategy
           render_pass_backdrop_filters,
       DisplayResourceProvider* resource_provider,
       AggregatedRenderPassList* render_pass_list,
+      SurfaceDamageRectList* surface_damage_rect_list,
       OverlayProcessorInterface::OutputSurfaceOverlayPlane* primary_plane,
       OverlayCandidateList* candidates,
       std::vector<gfx::Rect>* content_bounds);

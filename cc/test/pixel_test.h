@@ -19,6 +19,7 @@
 #include "components/viz/client/client_resource_provider.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/resources/shared_bitmap.h"
+#include "components/viz/service/display/aggregated_frame.h"
 #include "components/viz/service/display/gl_renderer.h"
 #include "components/viz/service/display/output_surface.h"
 #include "components/viz/service/display/skia_renderer.h"
@@ -113,6 +114,7 @@ class PixelTest : public testing::Test {
   viz::DebugRendererSettings debug_settings_;
   gfx::Size device_viewport_size_;
   gfx::DisplayColorSpaces display_color_spaces_;
+  viz::SurfaceDamageRectList surface_damage_rect_list_;
   bool disable_picture_quad_image_filtering_;
   std::unique_ptr<gpu::GpuTaskSchedulerHelper> gpu_task_scheduler_;
   std::unique_ptr<FakeOutputSurfaceClient> output_surface_client_;

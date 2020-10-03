@@ -12,6 +12,7 @@
 #include "build/build_config.h"
 #include "components/viz/common/quads/aggregated_render_pass.h"
 #include "components/viz/common/resources/resource_id.h"
+#include "components/viz/service/display/aggregated_frame.h"
 #include "components/viz/service/viz_service_export.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "ui/gfx/buffer_types.h"
@@ -36,6 +37,7 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
   // Returns true and fills in |candidate| if |draw_quad| is of a known quad
   // type and contains an overlayable resource.
   static bool FromDrawQuad(DisplayResourceProvider* resource_provider,
+                           SurfaceDamageRectList* surface_damage_rect_list,
                            const SkMatrix44& output_color_matrix,
                            const DrawQuad* quad,
                            OverlayCandidate* candidate);
@@ -120,18 +122,24 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
   unsigned gpu_fence_id;
 
  private:
-  static bool FromDrawQuadResource(DisplayResourceProvider* resource_provider,
-                                   const DrawQuad* quad,
-                                   ResourceId resource_id,
-                                   bool y_flipped,
-                                   OverlayCandidate* candidate);
+  static bool FromDrawQuadResource(
+      DisplayResourceProvider* resource_provider,
+      SurfaceDamageRectList* surface_damage_rect_list,
+      const DrawQuad* quad,
+      ResourceId resource_id,
+      bool y_flipped,
+      OverlayCandidate* candidate);
   static bool FromTextureQuad(DisplayResourceProvider* resource_provider,
+                              SurfaceDamageRectList* surface_damage_rect_list,
                               const TextureDrawQuad* quad,
                               OverlayCandidate* candidate);
-  static bool FromStreamVideoQuad(DisplayResourceProvider* resource_provider,
-                                  const StreamVideoDrawQuad* quad,
-                                  OverlayCandidate* candidate);
+  static bool FromStreamVideoQuad(
+      DisplayResourceProvider* resource_provider,
+      SurfaceDamageRectList* surface_damage_rect_list,
+      const StreamVideoDrawQuad* quad,
+      OverlayCandidate* candidate);
   static bool FromVideoHoleQuad(DisplayResourceProvider* resource_provider,
+                                SurfaceDamageRectList* surface_damage_rect_list,
                                 const VideoHoleDrawQuad* quad,
                                 OverlayCandidate* candidate);
 };

@@ -554,7 +554,7 @@ void Display::InitializeRenderer(bool enable_shared_images) {
 
   aggregator_ = std::make_unique<SurfaceAggregator>(
       surface_manager_, resource_provider_.get(), output_partial_list,
-      overlay_processor_->NeedsSurfaceOccludingDamageRect());
+      overlay_processor_->NeedsSurfaceDamageRectList());
 
   aggregator_->set_output_is_secure(output_is_secure_);
   aggregator_->SetDisplayColorSpaces(display_color_spaces_);
@@ -756,7 +756,8 @@ bool Display::DrawAndSwap(base::TimeTicks expected_display_time) {
     draw_timer.emplace();
     renderer_->DecideRenderPassAllocationsForFrame(frame.render_pass_list);
     renderer_->DrawFrame(&frame.render_pass_list, device_scale_factor_,
-                         current_surface_size, display_color_spaces_);
+                         current_surface_size, display_color_spaces_,
+                         &frame.surface_damage_rect_list_);
     switch (output_surface_->type()) {
       case OutputSurface::Type::kSoftware:
         UMA_HISTOGRAM_COUNTS_1M(

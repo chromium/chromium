@@ -100,8 +100,9 @@ class GLRendererTest : public testing::Test {
                  const gfx::Size& viewport_size,
                  const gfx::DisplayColorSpaces& display_color_spaces =
                      gfx::DisplayColorSpaces()) {
+    SurfaceDamageRectList surface_damage_rect_list;
     renderer->DrawFrame(&render_passes_in_draw_order_, 1.f, viewport_size,
-                        display_color_spaces);
+                        display_color_spaces, &surface_damage_rect_list);
   }
 
   static const Program* current_program(GLRenderer* renderer) {
@@ -2492,8 +2493,10 @@ class MockOutputSurfaceTest : public GLRendererTest {
 
     renderer_->DecideRenderPassAllocationsForFrame(
         render_passes_in_draw_order_);
+    SurfaceDamageRectList surface_damage_rect_list;
     renderer_->DrawFrame(&render_passes_in_draw_order_, device_scale_factor,
-                         viewport_size, gfx::DisplayColorSpaces());
+                         viewport_size, gfx::DisplayColorSpaces(),
+                         &surface_damage_rect_list);
   }
 
   RendererSettings settings_;
@@ -2525,11 +2528,12 @@ class MockDCLayerOverlayProcessor : public DCLayerOverlayProcessor {
                                 /*allowed_yuv_overlay_count=*/1,
                                 true) {}
   ~MockDCLayerOverlayProcessor() override = default;
-  MOCK_METHOD5(Process,
+  MOCK_METHOD6(Process,
                void(DisplayResourceProvider* resource_provider,
                     const gfx::RectF& display_rect,
                     AggregatedRenderPassList* render_passes,
                     gfx::Rect* damage_rect,
+                    SurfaceDamageRectList* surface_damage_rect_list,
                     DCLayerOverlayList* dc_layer_overlays));
 
  protected:
@@ -2585,13 +2589,14 @@ class TestOverlayProcessor : public OverlayProcessorUsingStrategy {
     Strategy() = default;
     ~Strategy() override = default;
 
-    MOCK_METHOD7(
+    MOCK_METHOD8(
         Attempt,
         bool(const SkMatrix44& output_color_matrix,
              const OverlayProcessorInterface::FilterOperationsMap&
                  render_pass_backdrop_filters,
              DisplayResourceProvider* resource_provider,
              AggregatedRenderPassList* render_pass_list,
+             SurfaceDamageRectList* surface_damage_rect_list,
              const OverlayProcessorInterface::OutputSurfaceOverlayPlane*
                  primary_surface,
              OverlayCandidateList* candidates,
@@ -2615,7 +2620,7 @@ class TestOverlayProcessor : public OverlayProcessorUsingStrategy {
     return *(static_cast<Strategy*>(strategy));
   }
 
-  MOCK_CONST_METHOD0(NeedsSurfaceOccludingDamageRect, bool());
+  MOCK_CONST_METHOD0(NeedsSurfaceDamageRectList, bool());
   explicit TestOverlayProcessor(OutputSurface* output_surface)
       : OverlayProcessorUsingStrategy() {
     strategies_.push_back(std::make_unique<Strategy>());
@@ -2727,12 +2732,12 @@ TEST_F(GLRendererTest, DontOverlayWithCopyRequests) {
   // any attempt to overlay, which there shouldn't be. We can't use the quad
   // list because the render pass is cleaned up by DrawFrame.
 #if defined(USE_OZONE) || defined(OS_ANDROID)
-  EXPECT_CALL(processor->strategy(), Attempt(_, _, _, _, _, _, _)).Times(0);
+  EXPECT_CALL(processor->strategy(), Attempt(_, _, _, _, _, _, _, _)).Times(0);
 #elif defined(OS_APPLE)
   EXPECT_CALL(*mock_ca_processor, ProcessForCALayerOverlays(_, _, _, _, _, _))
       .Times(0);
 #elif defined(OS_WIN)
-  EXPECT_CALL(*dc_processor, Process(_, _, _, _, _)).Times(0);
+  EXPECT_CALL(*dc_processor, Process(_, _, _, _, _, _)).Times(0);
 #endif
   DrawFrame(&renderer, viewport_size);
 #if defined(USE_OZONE) || defined(OS_ANDROID)
@@ -2759,12 +2764,12 @@ TEST_F(GLRendererTest, DontOverlayWithCopyRequests) {
       SK_ColorTRANSPARENT, vertex_opacity, flipped, nearest_neighbor,
       /*secure_output_only=*/false, gfx::ProtectedVideoType::kClear);
 #if defined(USE_OZONE) || defined(OS_ANDROID)
-  EXPECT_CALL(processor->strategy(), Attempt(_, _, _, _, _, _, _)).Times(1);
+  EXPECT_CALL(processor->strategy(), Attempt(_, _, _, _, _, _, _, _)).Times(1);
 #elif defined(OS_APPLE)
   EXPECT_CALL(*mock_ca_processor, ProcessForCALayerOverlays(_, _, _, _, _, _))
       .Times(1);
 #elif defined(OS_WIN)
-  EXPECT_CALL(*dc_processor, Process(_, _, _, _, _)).Times(1);
+  EXPECT_CALL(*dc_processor, Process(_, _, _, _, _, _)).Times(1);
 #endif
   DrawFrame(&renderer, viewport_size);
 
@@ -2785,7 +2790,7 @@ class SingleOverlayOnTopProcessor : public OverlayProcessorUsingStrategy {
     strategies_.push_back(std::make_unique<OverlayStrategyUnderlay>(this));
   }
 
-  bool NeedsSurfaceOccludingDamageRect() const override { return true; }
+  bool NeedsSurfaceDamageRectList() const override { return true; }
   bool IsOverlaySupported() const override { return true; }
 
   void CheckOverlaySupport(
@@ -3801,6 +3806,7 @@ class ContentBoundsOverlayProcessor : public OverlayProcessorUsingStrategy {
                      render_pass_backdrop_filters,
                  DisplayResourceProvider* resource_provider,
                  AggregatedRenderPassList* render_pass_list,
+                 SurfaceDamageRectList* surface_damage_rect_list,
                  const PrimaryPlane* primary_plane,
                  OverlayCandidateList* candidates,
                  std::vector<gfx::Rect>* content_bounds) override {
@@ -3823,7 +3829,7 @@ class ContentBoundsOverlayProcessor : public OverlayProcessorUsingStrategy {
   Strategy& strategy() { return static_cast<Strategy&>(*strategies_.back()); }
   // Empty mock methods since this test set up uses strategies, which are only
   // for ozone and android.
-  MOCK_CONST_METHOD0(NeedsSurfaceOccludingDamageRect, bool());
+  MOCK_CONST_METHOD0(NeedsSurfaceDamageRectList, bool());
   bool IsOverlaySupported() const override { return true; }
 
   // A list of possible overlay candidates is presented to this function.

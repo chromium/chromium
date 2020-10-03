@@ -41,7 +41,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorWin
   // Returns true if the platform supports hw overlays and surface occluding
   // damage rect needs to be computed since it will be used by overlay
   // processor.
-  bool NeedsSurfaceOccludingDamageRect() const override;
+  bool NeedsSurfaceDamageRectList() const override;
 
   void AdjustOutputSurfaceOverlay(base::Optional<OutputSurfaceOverlayPlane>*
                                       output_surface_plane) override {}
@@ -54,6 +54,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorWin
       const SkMatrix44& output_color_matrix,
       const FilterOperationsMap& render_pass_filters,
       const FilterOperationsMap& render_pass_backdrop_filters,
+      SurfaceDamageRectList* surface_damage_rect_list,
       OutputSurfaceOverlayPlane* output_surface_plane,
       CandidateList* overlay_candidates,
       gfx::Rect* damage_rect,

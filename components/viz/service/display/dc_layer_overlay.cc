@@ -262,6 +262,31 @@ bool HasOccludingQuads(const gfx::RectF& target_quad,
   return false;
 }
 
+gfx::Rect CalculateOccludingDamageRect(
+    const SharedQuadState* shared_quad_state,
+    SurfaceDamageRectList* surface_damage_rect_list,
+    const gfx::Rect& quad_rect_in_root_target_space) {
+  if (!shared_quad_state->overlay_damage_index.has_value())
+    return quad_rect_in_root_target_space;
+
+  size_t overlay_damage_index = shared_quad_state->overlay_damage_index.value();
+  if (overlay_damage_index >= surface_damage_rect_list->size()) {
+    DCHECK(false);
+  }
+
+  // Damage rects in surface_damage_rect_list are arranged from top to bottom.
+  // (*surface_damage_rect_list)[0] is the one on the very top.
+  // (*surface_damage_rect_list)[overlay_damage_index] is the damage rect of
+  // this overlay surface.
+  gfx::Rect occluding_damage_rect;
+  for (size_t i = 0; i < overlay_damage_index; ++i) {
+    occluding_damage_rect.Union((*surface_damage_rect_list)[i]);
+  }
+  occluding_damage_rect.Intersect(quad_rect_in_root_target_space);
+
+  return occluding_damage_rect;
+}
+
 void RecordVideoDCLayerResult(DCLayerResult result,
                               gfx::ProtectedVideoType protected_video_type) {
   switch (protected_video_type) {
@@ -412,6 +437,7 @@ void DCLayerOverlayProcessor::Process(
     const gfx::RectF& display_rect,
     AggregatedRenderPassList* render_pass_list,
     gfx::Rect* damage_rect,
+    SurfaceDamageRectList* surface_damage_rect_list,
     DCLayerOverlayList* dc_layer_overlays) {
   gfx::Rect this_frame_underlay_rect;
   processed_yuv_overlay_count_ = 0;
@@ -520,10 +546,6 @@ void DCLayerOverlayProcessor::Process(
 
     gfx::Rect quad_rectangle_in_target_space =
         gfx::ToEnclosingRect(ClippedQuadRectangle(*it));
-    gfx::Rect occluding_damage_rect =
-        it->shared_quad_state->occluding_damage_rect.has_value()
-            ? it->shared_quad_state->occluding_damage_rect.value()
-            : quad_rectangle_in_target_space;
 
     // Quad is considered an "overlay" if it has no occluders.
     const bool is_overlay = !HasOccludingQuads(
@@ -547,6 +569,14 @@ void DCLayerOverlayProcessor::Process(
         RecordDCLayerResult(result, it);
         continue;
       }
+    }
+
+    // Get the occluding damage rect for underlay.
+    gfx::Rect occluding_damage_rect;
+    if (!is_overlay) {
+      occluding_damage_rect = CalculateOccludingDamageRect(
+          it->shared_quad_state, surface_damage_rect_list,
+          quad_rectangle_in_target_space);
     }
 
     UpdateDCLayerOverlays(
@@ -643,8 +673,8 @@ void DCLayerOverlayProcessor::UpdateDCLayerOverlays(
     (*new_index)++;
   } else {
     ProcessForUnderlay(display_rect, render_pass,
-                       quad_rectangle_in_target_space, it, damage_rect,
-                       this_frame_underlay_rect, &dc_layer);
+                       quad_rectangle_in_target_space, occluding_damage_rect,
+                       it, damage_rect, this_frame_underlay_rect, &dc_layer);
   }
 
   gfx::Rect rect_in_root = cc::MathUtil::MapEnclosingClippedRect(
@@ -681,6 +711,7 @@ void DCLayerOverlayProcessor::ProcessForUnderlay(
     const gfx::RectF& display_rect,
     AggregatedRenderPass* render_pass,
     const gfx::Rect& quad_rectangle,
+    const gfx::Rect& occluding_damage_rect,
     const QuadList::Iterator& it,
     gfx::Rect* damage_rect,
     gfx::Rect* this_frame_underlay_rect,
@@ -741,8 +772,7 @@ void DCLayerOverlayProcessor::ProcessForUnderlay(
       shared_quad_state->quad_to_target_transform.Preserves2dAxisAlignment();
 
   if (current_frame_processed_overlay_count_ == 0 && is_axis_aligned &&
-      is_opaque && !underlay_rect_changed && !display_rect_changed &&
-      shared_quad_state->occluding_damage_rect.has_value()) {
+      is_opaque && !underlay_rect_changed && !display_rect_changed) {
     // If this underlay rect is the same as for last frame, subtract its area
     // from the damage of the main surface, as the cleared area was already
     // cleared last frame. Add back the damage from the occluded area for this
@@ -755,7 +785,7 @@ void DCLayerOverlayProcessor::ProcessForUnderlay(
     // compositor will be empty. If the incoming damage rect is bigger than the
     // video quad, we don't have an oppertunity for power optimization even if
     // no damage on top. The output damage rect will not be empty in this case.
-    damage_rect->Union(shared_quad_state->occluding_damage_rect.value());
+    damage_rect->Union(occluding_damage_rect);
   } else {
     // Entire replacement quad must be redrawn.
     damage_rect->Union(quad_rectangle);

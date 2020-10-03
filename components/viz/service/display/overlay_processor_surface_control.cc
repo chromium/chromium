@@ -45,7 +45,7 @@ bool OverlayProcessorSurfaceControl::IsOverlaySupported() const {
   return overlay_enabled_;
 }
 
-bool OverlayProcessorSurfaceControl::NeedsSurfaceOccludingDamageRect() const {
+bool OverlayProcessorSurfaceControl::NeedsSurfaceDamageRectList() const {
   return true;
 }
 

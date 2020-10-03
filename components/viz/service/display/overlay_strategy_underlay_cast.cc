@@ -4,6 +4,9 @@
 
 #include "components/viz/service/display/overlay_strategy_underlay_cast.h"
 
+#include <utility>
+#include <vector>
+
 #include "base/containers/adapters.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
@@ -51,6 +54,7 @@ bool OverlayStrategyUnderlayCast::Attempt(
         render_pass_backdrop_filters,
     DisplayResourceProvider* resource_provider,
     AggregatedRenderPassList* render_pass_list,
+    SurfaceDamageRectList* surface_damage_rect_list,
     const PrimaryPlane* primary_plane,
     OverlayCandidateList* candidate_list,
     std::vector<gfx::Rect>* content_bounds) {
@@ -79,10 +83,10 @@ bool OverlayStrategyUnderlayCast::Attempt(
       // quad is supposed to be to replace it with a transparent quad to allow
       // the underlay to be visible.
       // VIDEO_HOLE implies it requires overlay.
-      is_underlay =
-          quad->material == DrawQuad::Material::kVideoHole &&
-          OverlayCandidate::FromDrawQuad(resource_provider, output_color_matrix,
-                                         quad, &candidate);
+      is_underlay = quad->material == DrawQuad::Material::kVideoHole &&
+                    OverlayCandidate::FromDrawQuad(
+                        resource_provider, surface_damage_rect_list,
+                        output_color_matrix, quad, &candidate);
       found_underlay = is_underlay;
     }
 
@@ -109,7 +113,8 @@ bool OverlayStrategyUnderlayCast::Attempt(
       OverlayCandidate candidate;
       if (it->material != DrawQuad::Material::kVideoHole ||
           !OverlayCandidate::FromDrawQuad(
-              resource_provider, output_color_matrix, *it, &candidate)) {
+              resource_provider, surface_damage_rect_list, output_color_matrix,
+              *it, &candidate)) {
         continue;
       }
 

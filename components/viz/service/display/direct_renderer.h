@@ -18,6 +18,7 @@
 #include "components/viz/common/delegated_ink_metadata.h"
 #include "components/viz/common/quads/aggregated_render_pass.h"
 #include "components/viz/common/quads/tile_draw_quad.h"
+#include "components/viz/service/display/aggregated_frame.h"
 #include "components/viz/service/display/delegated_ink_point_renderer_base.h"
 #include "components/viz/service/display/display_resource_provider.h"
 #include "components/viz/service/display/overlay_candidate.h"
@@ -72,7 +73,8 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
   void DrawFrame(AggregatedRenderPassList* render_passes_in_draw_order,
                  float device_scale_factor,
                  const gfx::Size& device_viewport_size,
-                 const gfx::DisplayColorSpaces& display_color_spaces);
+                 const gfx::DisplayColorSpaces& display_color_spaces,
+                 SurfaceDamageRectList* surface_damage_rect_list);
 
   // The renderer might expand the damage (e.g: HW overlays were used,
   // invalidation rects on previous buffers). This function returns a

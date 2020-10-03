@@ -1610,10 +1610,6 @@ base::Value SharedQuadStateToDict(const SharedQuadState& sqs) {
   dict.SetStringKey("blend_mode", BlendModeToString(sqs.blend_mode));
   dict.SetIntKey("sorting_context_id", sqs.sorting_context_id);
   dict.SetBoolKey("is_fast_rounded_corner", sqs.is_fast_rounded_corner);
-  if (sqs.occluding_damage_rect) {
-    dict.SetKey("occluding_damage_rect",
-                RectToDict(sqs.occluding_damage_rect.value()));
-  }
   dict.SetDoubleKey("de_jelly_delta_y", sqs.de_jelly_delta_y);
   return dict;
 }
@@ -1676,8 +1672,6 @@ bool SharedQuadStateFromDict(const base::Value& dict, SharedQuadState* sqs) {
       dict.FindIntKey("sorting_context_id");
   base::Optional<bool> is_fast_rounded_corner =
       dict.FindBoolKey("is_fast_rounded_corner");
-  const base::Value* occluding_damage_rect =
-      dict.FindDictKey("occluding_damage_rect");
   base::Optional<double> de_jelly_delta_y =
       dict.FindDoubleKey("de_jelly_delta_y");
 
@@ -1703,11 +1697,6 @@ bool SharedQuadStateFromDict(const base::Value& dict, SharedQuadState* sqs) {
   if (blend_mode_index < 0)
     return false;
   SkBlendMode t_blend_mode = static_cast<SkBlendMode>(blend_mode_index);
-  gfx::Rect t_occluding_damage_rect;
-  if (occluding_damage_rect) {
-    if (!RectFromDict(*occluding_damage_rect, &t_occluding_damage_rect))
-      return false;
-  }
 
   sqs->SetAll(t_quad_to_target_transform, t_quad_layer_rect,
               t_visible_quad_layer_rect, t_rounded_corner_bounds, t_clip_rect,
@@ -1715,8 +1704,6 @@ bool SharedQuadStateFromDict(const base::Value& dict, SharedQuadState* sqs) {
               static_cast<float>(opacity.value()), t_blend_mode,
               sorting_context_id.value());
   sqs->is_fast_rounded_corner = is_fast_rounded_corner.value();
-  if (occluding_damage_rect)
-    sqs->occluding_damage_rect = t_occluding_damage_rect;
   sqs->de_jelly_delta_y = static_cast<float>(de_jelly_delta_y.value());
   return true;
 }

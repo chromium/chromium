@@ -5,6 +5,9 @@
 #ifndef COMPONENTS_VIZ_SERVICE_DISPLAY_OVERLAY_PROCESSOR_OZONE_H_
 #define COMPONENTS_VIZ_SERVICE_DISPLAY_OVERLAY_PROCESSOR_OZONE_H_
 
+#include <memory>
+#include <vector>
+
 #include "components/viz/service/display/overlay_processor_using_strategy.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/ozone/public/overlay_candidates_ozone.h"
@@ -23,7 +26,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorOzone
 
   bool IsOverlaySupported() const override;
 
-  bool NeedsSurfaceOccludingDamageRect() const override;
+  bool NeedsSurfaceDamageRectList() const override;
 
   // Override OverlayProcessorUsingStrategy.
   void SetDisplayTransformHint(gfx::OverlayTransform transform) override {}

@@ -4,6 +4,8 @@
 
 #include "components/viz/service/display/overlay_strategy_underlay.h"
 
+#include <vector>
+
 #include "components/viz/common/quads/draw_quad.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/service/display/display_resource_provider.h"
@@ -25,6 +27,7 @@ bool OverlayStrategyUnderlay::Attempt(
         render_pass_backdrop_filters,
     DisplayResourceProvider* resource_provider,
     AggregatedRenderPassList* render_pass_list,
+    SurfaceDamageRectList* surface_damage_rect_list,
     const PrimaryPlane* primary_plane,
     OverlayCandidateList* candidate_list,
     std::vector<gfx::Rect>* content_bounds) {
@@ -35,8 +38,9 @@ bool OverlayStrategyUnderlay::Attempt(
 
   for (auto it = quad_list.begin(); it != quad_list.end(); ++it) {
     OverlayCandidate candidate;
-    if (!OverlayCandidate::FromDrawQuad(resource_provider, output_color_matrix,
-                                        *it, &candidate) ||
+    if (!OverlayCandidate::FromDrawQuad(resource_provider,
+                                        surface_damage_rect_list,
+                                        output_color_matrix, *it, &candidate) ||
         (opaque_mode_ == OpaqueMode::RequireOpaqueCandidates &&
          !candidate.is_opaque)) {
       continue;

@@ -579,6 +579,14 @@ class SurfaceAggregatorValidSurfaceTest : public SurfaceAggregatorTest {
     support->SubmitCompositorFrame(local_surface_id, std::move(child_frame));
   }
 
+  gfx::Rect DamageListUnion(SurfaceDamageRectList& surface_damage_rect_list) {
+    gfx::Rect damage_rect_union;
+    for (auto damage_rect : surface_damage_rect_list)
+      damage_rect_union.Union(damage_rect);
+
+    return damage_rect_union;
+  }
+
  protected:
   LocalSurfaceId root_local_surface_id_;
   Surface* root_surface_;
@@ -6639,7 +6647,8 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, DamageRectWithInvalidChildFrame) {
   auto* output_root_pass = aggregated_frame.render_pass_list.back().get();
   EXPECT_EQ(gfx::Rect(gfx::Rect(0, 0, 100, 100)),
             output_root_pass->damage_rect);
-  EXPECT_EQ(output_root_pass->damage_rect, aggregated_frame.occluding_damage_);
+  EXPECT_EQ(output_root_pass->damage_rect,
+            DamageListUnion(aggregated_frame.surface_damage_rect_list_));
 
   // Frame # 1 - The primary surface of the child frame is not available.
   {
@@ -6655,9 +6664,9 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, DamageRectWithInvalidChildFrame) {
     // available.
     EXPECT_EQ(gfx::Rect(gfx::Rect(0, 0, 100, 100)),
               output_root_pass->damage_rect);
-    // Make sure |occluding_damage_| is correct.
+    // Make sure |surface_damage_rect_list_| is correct.
     EXPECT_EQ(output_root_pass->damage_rect,
-              aggregated_frame.occluding_damage_);
+              DamageListUnion(aggregated_frame.surface_damage_rect_list_));
   }
 
   // Frame # 2 - The primary surface is available now.
@@ -6688,7 +6697,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, DamageRectWithInvalidChildFrame) {
     EXPECT_EQ(gfx::Rect(gfx::Rect(10, 10, 60, 60)),
               output_root_pass->damage_rect);
     EXPECT_EQ(output_root_pass->damage_rect,
-              aggregated_frame.occluding_damage_);
+              DamageListUnion(aggregated_frame.surface_damage_rect_list_));
   }
   // Frame # 3 - The primary surface is not available, with a different id.
   {
@@ -6718,7 +6727,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, DamageRectWithInvalidChildFrame) {
     EXPECT_EQ(gfx::Rect(gfx::Rect(0, 0, 100, 100)),
               output_root_pass->damage_rect);
     EXPECT_EQ(output_root_pass->damage_rect,
-              aggregated_frame.occluding_damage_);
+              DamageListUnion(aggregated_frame.surface_damage_rect_list_));
   }
 }
 
@@ -6778,16 +6787,23 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, OverlayOccludingDamageRect) {
   // The damage rect of the very first frame is always the full rect.
   auto* output_root_pass = aggregated_frame.render_pass_list.back().get();
   EXPECT_EQ(gfx::Rect(0, 0, 200, 200), output_root_pass->damage_rect);
-  // Make sure |occluding_damage_| is correct.
-  EXPECT_EQ(output_root_pass->damage_rect, aggregated_frame.occluding_damage_);
+  // Make sure |surface_damage_rect_list_| is correct.
+  EXPECT_EQ(output_root_pass->damage_rect,
+            DamageListUnion(aggregated_frame.surface_damage_rect_list_));
 
   const SharedQuadState* video_sqs =
       output_root_pass->quad_list.back()->shared_quad_state;
-  // Occluding damage of the first frame = the whole surface rect on top
-  // intersects the video quad.
-  // (0, 0, 200, 200) intersect with video quad (10, 0, 80, 80) == (10, 0, 80,
-  // 80).
-  EXPECT_EQ(gfx::Rect(10, 0, 80, 80), video_sqs->occluding_damage_rect.value());
+
+  // The whole root surface (0, 0, 200, 200) is damaged.
+  EXPECT_EQ(gfx::Rect(0, 0, 200, 200),
+            aggregated_frame.surface_damage_rect_list_[0]);
+
+  // Video quad(10, 0, 80, 80) is damaged.
+  EXPECT_TRUE(video_sqs->overlay_damage_index.has_value());
+  auto index = video_sqs->overlay_damage_index.value();
+  EXPECT_EQ(1U, index);
+  EXPECT_EQ(gfx::Rect(10, 0, 80, 80),
+            aggregated_frame.surface_damage_rect_list_[index]);
 
   // Frame #1 - Has occluding damage
   {
@@ -6811,14 +6827,20 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, OverlayOccludingDamageRect) {
     // 40).
     EXPECT_EQ(gfx::Rect(10, 0, 90, 80), output_root_pass->damage_rect);
     EXPECT_EQ(output_root_pass->damage_rect,
-              aggregated_frame.occluding_damage_);
+              DamageListUnion(aggregated_frame.surface_damage_rect_list_));
 
     const SharedQuadState* video_sqs =
         output_root_pass->quad_list.back()->shared_quad_state;
-    // The solid quad on top (60, 0, 40, 40) intersects the video quad (10, 0,
-    // 80, 80).
-    EXPECT_EQ(gfx::Rect(60, 0, 30, 40),
-              video_sqs->occluding_damage_rect.value());
+    // The solid quad on top (60, 0, 40, 40) is damaged.
+    EXPECT_EQ(gfx::Rect(60, 0, 40, 40),
+              aggregated_frame.surface_damage_rect_list_[0]);
+
+    // Video quad(10, 0, 80, 80) is damaged.
+    EXPECT_TRUE(video_sqs->overlay_damage_index.has_value());
+    auto index = video_sqs->overlay_damage_index.value();
+    EXPECT_EQ(1U, index);
+    EXPECT_EQ(gfx::Rect(10, 0, 80, 80),
+              aggregated_frame.surface_damage_rect_list_[index]);
   }
   // Frame #2 - No occluding damage, the quad on top doesn't change
   {
@@ -6835,12 +6857,20 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, OverlayOccludingDamageRect) {
     // Only the video quad (10, 0, 80, 80) is damaged.
     EXPECT_EQ(gfx::Rect(10, 0, 80, 80), output_root_pass->damage_rect);
     EXPECT_EQ(output_root_pass->damage_rect,
-              aggregated_frame.occluding_damage_);
+              DamageListUnion(aggregated_frame.surface_damage_rect_list_));
 
     const SharedQuadState* video_sqs =
         output_root_pass->quad_list.back()->shared_quad_state;
+
     // No occluding damage.
-    EXPECT_EQ(gfx::Rect(), video_sqs->occluding_damage_rect.value());
+    // The solid quad on top (60, 0, 40, 40) is not damaged.
+    EXPECT_TRUE(video_sqs->overlay_damage_index.has_value());
+    auto index = video_sqs->overlay_damage_index.value();
+    EXPECT_EQ(0U, index);
+
+    // Video quad(10, 0, 80, 80) is damaged
+    EXPECT_EQ(gfx::Rect(10, 0, 80, 80),
+              aggregated_frame.surface_damage_rect_list_[index]);
   }
   // Frame #3 - The only quad on top is removed
   {
@@ -6877,14 +6907,21 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, OverlayOccludingDamageRect) {
     // the solid quad on top (60, 0, 40, 40).
     EXPECT_EQ(gfx::Rect(10, 0, 90, 80), output_root_pass->damage_rect);
     EXPECT_EQ(output_root_pass->damage_rect,
-              aggregated_frame.occluding_damage_);
+              DamageListUnion(aggregated_frame.surface_damage_rect_list_));
 
     const SharedQuadState* video_sqs =
         output_root_pass->quad_list.back()->shared_quad_state;
-    // The expose damage (60, 0, 40, 40) intersects the video quad (10, 0,
-    // 80, 80).
-    EXPECT_EQ(gfx::Rect(60, 0, 30, 40),
-              video_sqs->occluding_damage_rect.value());
+
+    // The expose damage (60, 0, 40, 40) on top.
+    EXPECT_EQ(gfx::Rect(60, 0, 40, 40),
+              aggregated_frame.surface_damage_rect_list_[0]);
+
+    // Video quad(10, 0, 80, 80) is damaged.
+    EXPECT_TRUE(video_sqs->overlay_damage_index.has_value());
+    auto index = video_sqs->overlay_damage_index.value();
+    EXPECT_EQ(1U, index);
+    EXPECT_EQ(gfx::Rect(10, 0, 80, 80),
+              aggregated_frame.surface_damage_rect_list_[index]);
   }
   // Frame #4 - Has occluding damage and clipping of the video quad is on
   {
@@ -6914,16 +6951,22 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, OverlayOccludingDamageRect) {
     // 40).
     EXPECT_EQ(gfx::Rect(10, 0, 90, 80), output_root_pass->damage_rect);
     EXPECT_EQ(output_root_pass->damage_rect,
-              aggregated_frame.occluding_damage_);
+              DamageListUnion(aggregated_frame.surface_damage_rect_list_));
 
     const SharedQuadState* video_sqs =
         output_root_pass->quad_list.back()->shared_quad_state;
-    // The solid quad on top (60, 0, 40, 40) intersects the clipped video quad
-    // (26, 0, 48, 64).
-    EXPECT_EQ(gfx::Rect(60, 0, 14, 40),
-              video_sqs->occluding_damage_rect.value());
-  }
 
+    // The damaged solid quad on top (60, 0, 40, 40).
+    EXPECT_EQ(gfx::Rect(60, 0, 40, 40),
+              aggregated_frame.surface_damage_rect_list_[0]);
+
+    // Video quad(10, 0, 80, 80) is damaged.
+    EXPECT_TRUE(video_sqs->overlay_damage_index.has_value());
+    auto index = video_sqs->overlay_damage_index.value();
+    EXPECT_EQ(1U, index);
+    EXPECT_EQ(gfx::Rect(10, 0, 80, 80),
+              aggregated_frame.surface_damage_rect_list_[index]);
+  }
   // Frame #5 - Has occluding damage and clipping of surface on top is on
   {
     CompositorFrame child_surface_frame = MakeEmptyCompositorFrame();
@@ -6967,14 +7010,17 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, OverlayOccludingDamageRect) {
     // solid quad on top (60, 0, 80, 70) where the clip rect (80, 0, 40, 30).
     EXPECT_EQ(gfx::Rect(10, 0, 130, 80), output_root_pass->damage_rect);
     EXPECT_EQ(output_root_pass->damage_rect,
-              aggregated_frame.occluding_damage_);
+              DamageListUnion(aggregated_frame.surface_damage_rect_list_));
 
     const SharedQuadState* video_sqs =
         output_root_pass->quad_list.back()->shared_quad_state;
-    // The solid quad damage on top (60, 0, 80, 70) intersects the video quad
-    // (10, 0, 80, 80).
-    EXPECT_EQ(gfx::Rect(60, 0, 30, 70),
-              video_sqs->occluding_damage_rect.value());
+
+    // Video quad(10, 0, 80, 80) is damaged.
+    EXPECT_TRUE(video_sqs->overlay_damage_index.has_value());
+    auto index = video_sqs->overlay_damage_index.value();
+    EXPECT_EQ(1U, index);
+    EXPECT_EQ(gfx::Rect(10, 0, 80, 80),
+              aggregated_frame.surface_damage_rect_list_[index]);
   }
 
   // Add a quad on top of video quad.
@@ -7001,13 +7047,13 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, OverlayOccludingDamageRect) {
     // Only the video quad (10, 0, 80, 80) is damaged.
     EXPECT_EQ(gfx::Rect(10, 0, 80, 80), output_root_pass->damage_rect);
     EXPECT_EQ(output_root_pass->damage_rect,
-              aggregated_frame.occluding_damage_);
+              DamageListUnion(aggregated_frame.surface_damage_rect_list_));
 
     const SharedQuadState* video_sqs =
         output_root_pass->quad_list.back()->shared_quad_state;
     // The underlay optimization doesn't apply with multiple
     // possibly damaged quads.
-    EXPECT_FALSE(video_sqs->occluding_damage_rect.has_value());
+    EXPECT_FALSE(video_sqs->overlay_damage_index.has_value());
   }
   // Frame #7 - Child surface contains an undamaged quad other than the video
   {
@@ -7028,12 +7074,18 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, OverlayOccludingDamageRect) {
     // Only the video quad (10, 0, 80, 80) is damaged.
     EXPECT_EQ(gfx::Rect(10, 0, 80, 80), output_root_pass->damage_rect);
     EXPECT_EQ(output_root_pass->damage_rect,
-              aggregated_frame.occluding_damage_);
+              DamageListUnion(aggregated_frame.surface_damage_rect_list_));
 
     const SharedQuadState* video_sqs =
         output_root_pass->quad_list.back()->shared_quad_state;
     // No occluding damage.
-    EXPECT_EQ(gfx::Rect(), video_sqs->occluding_damage_rect.value());
+    EXPECT_TRUE(video_sqs->overlay_damage_index.has_value());
+    auto index = video_sqs->overlay_damage_index.value();
+    EXPECT_EQ(0U, index);
+
+    // Video quad(10, 0, 80, 80) is damaged.
+    EXPECT_EQ(gfx::Rect(10, 0, 80, 80),
+              aggregated_frame.surface_damage_rect_list_[index]);
   }
 }
 

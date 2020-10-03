@@ -11,6 +11,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/single_thread_task_runner.h"
 #include "components/viz/common/quads/aggregated_render_pass.h"
+#include "components/viz/service/display/aggregated_frame.h"
 #include "components/viz/service/viz_service_export.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -95,6 +96,7 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor
                        const gfx::RectF& display_rect,
                        AggregatedRenderPassList* render_passes,
                        gfx::Rect* damage_rect,
+                       SurfaceDamageRectList* surface_damage_rect_list,
                        DCLayerOverlayList* dc_layer_overlays);
   void ClearOverlayState();
   // This is the damage contribution due to previous frame's overlays which can
@@ -132,6 +134,7 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor
   void ProcessForUnderlay(const gfx::RectF& display_rect,
                           AggregatedRenderPass* render_pass,
                           const gfx::Rect& quad_rectangle,
+                          const gfx::Rect& occluding_damage_rect,
                           const QuadList::Iterator& it,
                           gfx::Rect* damage_rect,
                           gfx::Rect* this_frame_underlay_rect,

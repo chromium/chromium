@@ -4,6 +4,10 @@
 
 #include "components/viz/service/display/overlay_processor_ozone.h"
 
+#include <memory>
+#include <utility>
+#include <vector>
+
 #include "base/logging.h"
 #include "components/viz/common/features.h"
 #include "components/viz/service/display/overlay_strategy_fullscreen.h"
@@ -108,7 +112,7 @@ bool OverlayProcessorOzone::IsOverlaySupported() const {
   return overlay_enabled_;
 }
 
-bool OverlayProcessorOzone::NeedsSurfaceOccludingDamageRect() const {
+bool OverlayProcessorOzone::NeedsSurfaceDamageRectList() const {
   return true;
 }
 

@@ -18,7 +18,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorSurfaceControl
 
   bool IsOverlaySupported() const override;
 
-  bool NeedsSurfaceOccludingDamageRect() const override;
+  bool NeedsSurfaceDamageRectList() const override;
 
   // Override OverlayProcessorUsingStrategy.
   void SetDisplayTransformHint(gfx::OverlayTransform transform) override;

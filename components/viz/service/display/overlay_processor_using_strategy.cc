@@ -60,6 +60,7 @@ void OverlayProcessorUsingStrategy::ProcessForOverlays(
     const OverlayProcessorInterface::FilterOperationsMap& render_pass_filters,
     const OverlayProcessorInterface::FilterOperationsMap&
         render_pass_backdrop_filters,
+    SurfaceDamageRectList* surface_damage_rect_list,
     OutputSurfaceOverlayPlane* output_surface_plane,
     CandidateList* candidates,
     gfx::Rect* damage_rect,
@@ -85,7 +86,8 @@ void OverlayProcessorUsingStrategy::ProcessForOverlays(
   // Only if that fails, attempt hardware overlay strategies.
   bool success = AttemptWithStrategies(
       output_color_matrix, render_pass_backdrop_filters, resource_provider,
-      render_passes, output_surface_plane, candidates, content_bounds);
+      render_passes, surface_damage_rect_list, output_surface_plane, candidates,
+      content_bounds);
 
   if (success) {
     UpdateDamageRect(candidates, previous_frame_underlay_rect_,
@@ -196,14 +198,16 @@ bool OverlayProcessorUsingStrategy::AttemptWithStrategies(
         render_pass_backdrop_filters,
     DisplayResourceProvider* resource_provider,
     AggregatedRenderPassList* render_pass_list,
+    SurfaceDamageRectList* surface_damage_rect_list,
     OverlayProcessorInterface::OutputSurfaceOverlayPlane* primary_plane,
     OverlayCandidateList* candidates,
     std::vector<gfx::Rect>* content_bounds) {
   last_successful_strategy_ = nullptr;
   for (const auto& strategy : strategies_) {
     if (strategy->Attempt(output_color_matrix, render_pass_backdrop_filters,
-                          resource_provider, render_pass_list, primary_plane,
-                          candidates, content_bounds)) {
+                          resource_provider, render_pass_list,
+                          surface_damage_rect_list, primary_plane, candidates,
+                          content_bounds)) {
       // This function is used by underlay strategy to mark the primary plane as
       // enable_blending.
       strategy->AdjustOutputSurfaceOverlay(primary_plane);
