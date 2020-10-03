@@ -885,6 +885,29 @@ TEST_P(ScrollingTest, WindowTouchEventHandlerInvalidation) {
   EXPECT_TRUE(region.IsEmpty());
 }
 
+TEST_P(ScrollingTest, TouchActionChangeWithoutContent) {
+  LoadHTML(R"HTML(
+    <div id="blocking"
+        style="will-change: transform; width: 100px; height: 100px;"></div>
+  )HTML");
+  ForceFullCompositingUpdate();
+
+  // Adding a blocking window event handler should create a touch action region.
+  auto* listener = MakeGarbageCollected<ScrollingTestMockEventListener>();
+  auto* resolved_options =
+      MakeGarbageCollected<AddEventListenerOptionsResolved>();
+  resolved_options->setPassive(false);
+  auto* target_element = GetFrame()->GetDocument()->getElementById("blocking");
+  target_element->addEventListener(event_type_names::kTouchstart, listener,
+                                   resolved_options);
+  ForceFullCompositingUpdate();
+
+  const auto* cc_layer = LayerByDOMElementId("blocking");
+  cc::Region region = cc_layer->touch_action_region().GetRegionForTouchAction(
+      TouchAction::kNone);
+  EXPECT_EQ(region.bounds(), gfx::Rect(0, 0, 100, 100));
+}
+
 // Ensure we don't crash when a plugin becomes a LayoutInline
 TEST_P(ScrollingTest, PluginBecomesLayoutInline) {
   LoadHTML(R"HTML(
