@@ -78,6 +78,14 @@ export class FakeSystemDataProvider {
         batteryChargeStatusList);
   }
 
+  /**
+   * Causes the battery charge status observer to fire.
+   */
+  triggerBatteryChargeStatusObserver() {
+    this.observables_.trigger(
+        'BatteryChargeStatusObserver_onBatteryChargeStatusUpdated');
+  }
+
   /*
    * Implements SystemDataProviderInterface.ObserveBatteryHealth.
    * @param {!BatteryHealthObserver} remote
@@ -98,6 +106,13 @@ export class FakeSystemDataProvider {
   setFakeBatteryHealth(batteryHealthList) {
     this.observables_.setObservableData(
         'BatteryHealthObserver_onBatteryHealthUpdated', batteryHealthList);
+  }
+
+  /**
+   * Causes the battery health observer to fire.
+   */
+  triggerBatteryHealthObserver() {
+    this.observables_.trigger('BatteryHealthObserver_onBatteryHealthUpdated');
   }
 
   /*
@@ -121,6 +136,13 @@ export class FakeSystemDataProvider {
         'CpuUsageObserver_onCpuUsageUpdated', cpuUsageList);
   }
 
+  /**
+   * Causes the CPU usage observer to fire.
+   */
+  triggerCpuUsageObserver() {
+    this.observables_.trigger('CpuUsageObserver_onCpuUsageUpdated');
+  }
+
   /*
    * Implements SystemDataProviderInterface.ObserveMemoryUsage.
    * @param {!MemoryUsageObserver} remote
@@ -141,6 +163,13 @@ export class FakeSystemDataProvider {
   setFakeMemoryUsage(memoryUsageList) {
     this.observables_.setObservableData(
         'MemoryUsageObserver_onMemoryUsageUpdated', memoryUsageList);
+  }
+
+  /**
+   * Causes the memory usage observer to fire.
+   */
+  triggerMemoryUsageObserver() {
+    this.observables_.trigger('MemoryUsageObserver_onMemoryUsageUpdated');
   }
 
   /**

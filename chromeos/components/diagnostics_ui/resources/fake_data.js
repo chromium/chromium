@@ -30,12 +30,20 @@ export const fakeBatteryChargeStatus = [
 ];
 
 /* @type {!Array<!BatteryHealth>} */
-export const fakeBatteryHealth = [{
-  battery_wear_percentage: 7,
-  charge_full_design_milliamp_hours: 6000,
-  charge_full_now_milliamp_hours: 5700,
-  cycle_count: 73,
-}];
+export const fakeBatteryHealth = [
+  {
+    battery_wear_percentage: 7,
+    charge_full_design_milliamp_hours: 6000,
+    charge_full_now_milliamp_hours: 5700,
+    cycle_count: 73,
+  },
+  {
+    battery_wear_percentage: 8,
+    charge_full_design_milliamp_hours: 6000,
+    charge_full_now_milliamp_hours: 5699,
+    cycle_count: 73,
+  }
+];
 
 /* @type {!BatteryInfo} */
 export const fakeBatteryInfo = {

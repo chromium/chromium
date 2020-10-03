@@ -7,6 +7,7 @@ import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 
 import {fakeBatteryChargeStatus, fakeBatteryHealth, fakeBatteryInfo, fakeBatteryInfo2, fakeCpuUsage, fakeMemoryUsage} from 'chrome://diagnostics/fake_data.js';
 import {FakeSystemDataProvider} from 'chrome://diagnostics/fake_system_data_provider.js';
+import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 
 suite('FakeSystemDataProviderTest', () => {
   /** @type {?FakeSystemDataProvider} */
@@ -146,6 +147,164 @@ suite('FakeSystemDataProviderTest', () => {
           return provider.getBatteryInfo().then((batteryInfo) => {
             assertDeepEquals(fakeBatteryInfo2, batteryInfo);
           });
+        });
+  });
+
+  test('ObserveCpuTwiceWithTrigger', () => {
+    // The fake needs to have at least 2 samples.
+    assertTrue(fakeCpuUsage.length >= 2);
+    provider.setFakeCpuUsage(fakeCpuUsage);
+
+    // Keep track of which observation we should get.
+    let whichSample = 0;
+    let firstResolver = new PromiseResolver();
+    let completeResolver = new PromiseResolver();
+
+    /** @type {!CpuUsageObserver} */
+    const cpuObserverRemote = {
+      onCpuUsageUpdated: (cpuUsage) => {
+        // Only expect 2 calls.
+        assertTrue(whichSample >= 0);
+        assertTrue(whichSample <= 1);
+        assertDeepEquals(fakeCpuUsage[whichSample], cpuUsage);
+
+        if (whichSample === 0) {
+          firstResolver.resolve();
+        } else {
+          completeResolver.resolve();
+        }
+        whichSample++;
+      }
+    };
+
+    return provider.observeCpuUsage(cpuObserverRemote)
+        .then(() => {
+          return firstResolver.promise;
+        })
+        .then(() => {
+          // After the observer fires the first time, trigger it to
+          // fire again.
+          provider.triggerCpuUsageObserver();
+          return completeResolver.promise;
+        });
+  });
+
+  test('ObserveMemoryTwiceWithTrigger', () => {
+    // The fake needs to have at least 2 samples.
+    assertTrue(fakeMemoryUsage.length >= 2);
+    provider.setFakeMemoryUsage(fakeMemoryUsage);
+
+    // Keep track of which observation we should get.
+    let whichSample = 0;
+    let firstResolver = new PromiseResolver();
+    let completeResolver = new PromiseResolver();
+
+    /** @type {!MemoryUsageObserver} */
+    const memoryObserverRemote = {
+      onMemoryUsageUpdated: (memoryUsage) => {
+        // Only expect 2 calls.
+        assertTrue(whichSample >= 0);
+        assertTrue(whichSample <= 1);
+        assertDeepEquals(fakeMemoryUsage[whichSample], memoryUsage);
+
+        if (whichSample === 0) {
+          firstResolver.resolve();
+        } else {
+          completeResolver.resolve();
+        }
+        whichSample++;
+      }
+    };
+
+    return provider.observeMemoryUsage(memoryObserverRemote)
+        .then(() => {
+          return firstResolver.promise;
+        })
+        .then(() => {
+          // After the observer fires the first time, trigger it to
+          // fire again.
+          provider.triggerMemoryUsageObserver();
+          return completeResolver.promise;
+        });
+  });
+
+  test('ObserveBatteryHealthTwiceWithTrigger', () => {
+    // The fake needs to have at least 2 samples.
+    assertTrue(fakeBatteryHealth.length >= 2);
+    provider.setFakeBatteryHealth(fakeBatteryHealth);
+
+    // Keep track of which observation we should get.
+    let whichSample = 0;
+    let firstResolver = new PromiseResolver();
+    let completeResolver = new PromiseResolver();
+
+    /** @type {!BatteryHealthObserver} */
+    const batteryHealthObserverRemote = {
+      onBatteryHealthUpdated: (batteryHealth) => {
+        // Only expect 2 calls.
+        assertTrue(whichSample >= 0);
+        assertTrue(whichSample <= 1);
+        assertDeepEquals(fakeBatteryHealth[whichSample], batteryHealth);
+
+        if (whichSample === 0) {
+          firstResolver.resolve();
+        } else {
+          completeResolver.resolve();
+        }
+        whichSample++;
+      }
+    };
+
+    return provider.observeBatteryHealth(batteryHealthObserverRemote)
+        .then(() => {
+          return firstResolver.promise;
+        })
+        .then(() => {
+          // After the observer fires the first time, trigger it to
+          // fire again.
+          provider.triggerBatteryHealthObserver();
+          return completeResolver.promise;
+        });
+  });
+
+  test('ObserveBatteryChargeStatusTwiceWithTrigger', () => {
+    // The fake needs to have at least 2 samples.
+    assertTrue(fakeBatteryChargeStatus.length >= 2);
+    provider.setFakeBatteryChargeStatus(fakeBatteryChargeStatus);
+
+    // Keep track of which observation we should get.
+    let whichSample = 0;
+    let firstResolver = new PromiseResolver();
+    let completeResolver = new PromiseResolver();
+
+    /** @type {!BatteryChargeStatusObserver} */
+    const batteryChargeStatusObserverRemote = {
+      onBatteryChargeStatusUpdated: (batteryChargeStatus) => {
+        // Only expect 2 calls.
+        assertTrue(whichSample >= 0);
+        assertTrue(whichSample <= 1);
+        assertDeepEquals(
+            fakeBatteryChargeStatus[whichSample], batteryChargeStatus);
+
+        if (whichSample === 0) {
+          firstResolver.resolve();
+        } else {
+          completeResolver.resolve();
+        }
+        whichSample++;
+      }
+    };
+
+    return provider
+        .observeBatteryChargeStatus(batteryChargeStatusObserverRemote)
+        .then(() => {
+          return firstResolver.promise;
+        })
+        .then(() => {
+          // After the observer fires the first time, trigger it to
+          // fire again.
+          provider.triggerBatteryChargeStatusObserver();
+          return completeResolver.promise;
         });
   });
 });
