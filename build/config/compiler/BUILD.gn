@@ -656,10 +656,25 @@ config("compiler") {
 
       ldflags += [ "-Wl,--lto-O" + lto_opt_level ]
       if (thin_lto_enable_optimizations) {
+        # TODO(gbiv): We ideally shouldn't need to specify this; ThinLTO
+        # should be able to better manage binary size increases on its own.
+        import_instr_limit = -1
         if (is_android) {
-          # TODO(gbiv): We ideally shouldn't need to specify this; ThinLTO
-          # should be able to better manage binary size increases on its own.
-          ldflags += [ "-Wl,-mllvm,-import-instr-limit=5" ]
+          import_instr_limit = 5
+        } else if (is_chromeos) {
+          # Not much performance difference was noted between the default (100)
+          # and these. ARM was originally set lower than x86 to keep the size
+          # bloat of ThinLTO to <10%, but that's potentially no longer true.
+          # FIXME(inglorion): maybe tune these?
+          if (target_cpu == "arm" || target_cpu == "arm64") {
+            import_instr_limit = 20
+          } else {
+            import_instr_limit = 30
+          }
+        }
+
+        if (import_instr_limit != -1) {
+          ldflags += [ "-Wl,-mllvm,-import-instr-limit=$import_instr_limit" ]
         }
       }
     }
