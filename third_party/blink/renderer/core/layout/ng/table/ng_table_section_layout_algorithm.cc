@@ -13,10 +13,7 @@ namespace blink {
 
 NGTableSectionLayoutAlgorithm::NGTableSectionLayoutAlgorithm(
     const NGLayoutAlgorithmParams& params)
-    : NGLayoutAlgorithm(params) {
-  container_builder_.SetIsNewFormattingContext(
-      params.space.IsNewFormattingContext());
-}
+    : NGLayoutAlgorithm(params) {}
 
 MinMaxSizesResult NGTableSectionLayoutAlgorithm::ComputeMinMaxSizes(
     const MinMaxSizesInput&) const {

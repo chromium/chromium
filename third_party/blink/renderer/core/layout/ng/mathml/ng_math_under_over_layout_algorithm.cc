@@ -141,8 +141,6 @@ NGMathUnderOverLayoutAlgorithm::NGMathUnderOverLayoutAlgorithm(
     const NGLayoutAlgorithmParams& params)
     : NGLayoutAlgorithm(params) {
   DCHECK(params.space.IsNewFormattingContext());
-  container_builder_.SetIsNewFormattingContext(
-      params.space.IsNewFormattingContext());
 }
 
 void NGMathUnderOverLayoutAlgorithm::GatherChildren(NGBlockNode* base,

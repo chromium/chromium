@@ -202,10 +202,7 @@ NGBlockLayoutAlgorithm::NGBlockLayoutAlgorithm(
       is_resuming_(IsResumingLayout(params.break_token)),
       exclusion_space_(params.space.ExclusionSpace()),
       lines_until_clamp_(params.space.LinesUntilClamp()),
-      early_break_(params.early_break) {
-  container_builder_.SetIsNewFormattingContext(
-      params.space.IsNewFormattingContext());
-}
+      early_break_(params.early_break) {}
 
 // Define the destructor here, so that we can forward-declare more in the
 // header.

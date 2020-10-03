@@ -16,10 +16,7 @@ namespace blink {
 
 NGMathPaddedLayoutAlgorithm::NGMathPaddedLayoutAlgorithm(
     const NGLayoutAlgorithmParams& params)
-    : NGLayoutAlgorithm(params) {
-  container_builder_.SetIsNewFormattingContext(
-      params.space.IsNewFormattingContext());
-}
+    : NGLayoutAlgorithm(params) {}
 
 LayoutUnit NGMathPaddedLayoutAlgorithm::RequestedLSpace() const {
   return std::max(LayoutUnit(),

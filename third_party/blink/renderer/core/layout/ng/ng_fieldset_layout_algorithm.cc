@@ -63,8 +63,6 @@ NGFieldsetLayoutAlgorithm::NGFieldsetLayoutAlgorithm(
       consumed_block_size_(BreakToken() ? BreakToken()->ConsumedBlockSize()
                                         : LayoutUnit()) {
   DCHECK(params.fragment_geometry.scrollbar.IsEmpty());
-  container_builder_.SetIsNewFormattingContext(
-      params.space.IsNewFormattingContext());
 
   borders_ = container_builder_.Borders();
   padding_ = container_builder_.Padding();

@@ -89,6 +89,8 @@ class CORE_EXPORT NGLayoutAlgorithm : public NGLayoutAlgorithmOperations {
             &params.node.Style(),
             &params.space,
             {params.space.GetWritingMode(), params.space.Direction()}) {
+    container_builder_.SetIsNewFormattingContext(
+        params.space.IsNewFormattingContext());
     container_builder_.SetInitialFragmentGeometry(params.fragment_geometry);
     if (UNLIKELY(params.space.HasBlockFragmentation())) {
       DCHECK(params.space.IsAnonymous() || !params.node.IsMonolithic());

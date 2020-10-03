@@ -53,8 +53,6 @@ NGMathRowLayoutAlgorithm::NGMathRowLayoutAlgorithm(
     : NGLayoutAlgorithm(params) {
   DCHECK(params.space.IsNewFormattingContext());
   DCHECK(!ConstraintSpace().HasBlockFragmentation());
-  container_builder_.SetIsNewFormattingContext(
-      params.space.IsNewFormattingContext());
 }
 
 void NGMathRowLayoutAlgorithm::LayoutRowItems(

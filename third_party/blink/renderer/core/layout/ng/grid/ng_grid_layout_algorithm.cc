@@ -19,7 +19,6 @@ NGGridLayoutAlgorithm::NGGridLayoutAlgorithm(
       state_(GridLayoutAlgorithmState::kMeasuringItems) {
   DCHECK(params.space.IsNewFormattingContext());
   DCHECK(!params.break_token);
-  container_builder_.SetIsNewFormattingContext(true);
 
   border_box_size_ = container_builder_.InitialBorderBoxSize();
   child_percentage_size_ = CalculateChildPercentageSize(

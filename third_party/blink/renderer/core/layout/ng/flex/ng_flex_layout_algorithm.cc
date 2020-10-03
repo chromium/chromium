@@ -35,9 +35,6 @@ NGFlexLayoutAlgorithm::NGFlexLayoutAlgorithm(
       is_column_(Style().ResolvedIsColumnFlexDirection()),
       is_horizontal_flow_(FlexLayoutAlgorithm::IsHorizontalFlow(Style())),
       is_cross_size_definite_(IsContainerCrossSizeDefinite()) {
-  container_builder_.SetIsNewFormattingContext(
-      params.space.IsNewFormattingContext());
-
   border_box_size_ = container_builder_.InitialBorderBoxSize();
   child_percentage_size_ = CalculateChildPercentageSize(
       ConstraintSpace(), Node(), ChildAvailableSize());
