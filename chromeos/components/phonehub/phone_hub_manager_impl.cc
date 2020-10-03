@@ -4,6 +4,9 @@
 
 #include "chromeos/components/phonehub/phone_hub_manager_impl.h"
 
+#include "chromeos/components/phonehub/browser_tabs_metadata_fetcher.h"
+#include "chromeos/components/phonehub/browser_tabs_model_controller.h"
+#include "chromeos/components/phonehub/browser_tabs_model_provider.h"
 #include "chromeos/components/phonehub/connection_manager_impl.h"
 #include "chromeos/components/phonehub/connection_scheduler_impl.h"
 #include "chromeos/components/phonehub/do_not_disturb_controller_impl.h"
@@ -27,6 +30,7 @@ PhoneHubManagerImpl::PhoneHubManagerImpl(
     device_sync::DeviceSyncClient* device_sync_client,
     multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
     chromeos::secure_channel::SecureChannelClient* secure_channel_client,
+    std::unique_ptr<BrowserTabsModelProvider> browser_tabs_model_provider,
     const base::RepeatingClosure& show_multidevice_setup_dialog_callback)
     : connection_manager_(
           std::make_unique<ConnectionManagerImpl>(multidevice_setup_client,
@@ -67,7 +71,12 @@ PhoneHubManagerImpl::PhoneHubManagerImpl(
           multidevice_setup_client,
           phone_model_.get())),
       tether_controller_(
-          std::make_unique<TetherControllerImpl>(multidevice_setup_client)) {}
+          std::make_unique<TetherControllerImpl>(multidevice_setup_client)),
+      browser_tabs_model_provider_(std::move(browser_tabs_model_provider)),
+      browser_tabs_model_controller_(
+          std::make_unique<BrowserTabsModelController>(
+              browser_tabs_model_provider_.get(),
+              phone_model_.get())) {}
 
 PhoneHubManagerImpl::~PhoneHubManagerImpl() = default;
 
@@ -110,6 +119,8 @@ TetherController* PhoneHubManagerImpl::GetTetherController() {
 // These should be destroyed in the opposite order of how these objects are
 // initialized in the constructor.
 void PhoneHubManagerImpl::Shutdown() {
+  browser_tabs_model_controller_.reset();
+  browser_tabs_model_provider_.reset();
   tether_controller_.reset();
   phone_status_processor_.reset();
   phone_model_.reset();

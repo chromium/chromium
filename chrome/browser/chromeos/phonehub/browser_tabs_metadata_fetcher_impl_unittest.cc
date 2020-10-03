@@ -5,7 +5,8 @@
 #include "chrome/browser/chromeos/phonehub/browser_tabs_metadata_fetcher_impl.h"
 
 #include "base/strings/utf_string_conversions.h"
-#include "components/favicon/core/test/mock_favicon_service.h"
+#include "components/favicon/core/history_ui_favicon_request_handler.h"
+#include "components/favicon_base/favicon_types.h"
 #include "components/sessions/core/serialized_navigation_entry_test_helper.h"
 #include "components/sync_sessions/synced_session.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -26,6 +27,26 @@ const base::Time kTimeC = base::Time::FromDoubleT(3);
 const base::Time kTimeD = base::Time::FromDoubleT(4);
 const base::Time kTimeE = base::Time::FromDoubleT(5);
 
+class MockHistoryUiFaviconRequestHandler
+    : public favicon::HistoryUiFaviconRequestHandler {
+ public:
+  MockHistoryUiFaviconRequestHandler() = default;
+  ~MockHistoryUiFaviconRequestHandler() override = default;
+
+  MOCK_METHOD4(
+      GetRawFaviconForPageURL,
+      void(const GURL& page_url,
+           int desired_size_in_pixel,
+           favicon_base::FaviconRawBitmapCallback callback,
+           favicon::HistoryUiFaviconRequestOrigin request_origin_for_uma));
+
+  MOCK_METHOD3(
+      GetFaviconImageForPageURL,
+      void(const GURL& page_url,
+           favicon_base::FaviconImageCallback callback,
+           favicon::HistoryUiFaviconRequestOrigin request_origin_for_uma));
+};
+
 gfx::Image GetDummyImage() {
   SkBitmap bitmap;
   bitmap.allocN32Pixels(gfx::kFaviconSize, gfx::kFaviconSize);
@@ -44,7 +65,7 @@ favicon_base::FaviconImageResult GetDummyFaviconResult() {
 class BrowserTabsMetadataFetcherImplTest : public testing::Test {
  public:
   BrowserTabsMetadataFetcherImplTest()
-      : browser_tabs_metadata_job_(&favicon_service_),
+      : browser_tabs_metadata_job_(&favicon_request_handler_),
         synced_session_(std::make_unique<sync_sessions::SyncedSession>()) {}
 
   BrowserTabsMetadataFetcherImplTest(
@@ -92,16 +113,18 @@ class BrowserTabsMetadataFetcherImplTest : public testing::Test {
   }
 
   void ExpectFaviconUrlFetchAttempt(const GURL& url) {
-    EXPECT_CALL(favicon_service_, GetFaviconImageForPageURL(url, /*callback=*/_,
-                                                            /*tracker=*/_))
+    EXPECT_CALL(favicon_request_handler_,
+                GetFaviconImageForPageURL(url, /*callback=*/_,
+                                          /*request_origin_for_uma=*/_))
         .WillRepeatedly(
             [&](auto, favicon_base::FaviconImageCallback callback, auto) {
               // Randomize the order in which callbacks may return.
               if (std::rand() % 2)
-                favicon_service_responses_.emplace_front(std::move(callback));
+                favicon_request_handler_responses_.emplace_front(
+                    std::move(callback));
               else
-                favicon_service_responses_.emplace_back(std::move(callback));
-              return base::CancelableTaskTracker::kBadTaskId;
+                favicon_request_handler_responses_.emplace_back(
+                    std::move(callback));
             });
   }
 
@@ -115,9 +138,9 @@ class BrowserTabsMetadataFetcherImplTest : public testing::Test {
 
   void InvokeNextFaviconCallbacks(size_t num_successful_fetches) {
     for (size_t i = 0; i < num_successful_fetches; i++) {
-      std::move(favicon_service_responses_.front())
+      std::move(favicon_request_handler_responses_.front())
           .Run(GetDummyFaviconResult());
-      favicon_service_responses_.pop_front();
+      favicon_request_handler_responses_.pop_front();
     }
   }
 
@@ -139,7 +162,8 @@ class BrowserTabsMetadataFetcherImplTest : public testing::Test {
   }
 
  private:
-  testing::NiceMock<favicon::MockFaviconService> favicon_service_;
+  testing::NiceMock<MockHistoryUiFaviconRequestHandler>
+      favicon_request_handler_;
   BrowserTabsMetadataFetcherImpl browser_tabs_metadata_job_;
   base::Optional<std::vector<BrowserTabsModel::BrowserTabMetadata>>
       actual_browser_tabs_metadata_;
@@ -147,7 +171,8 @@ class BrowserTabsMetadataFetcherImplTest : public testing::Test {
   std::map<SessionID, std::unique_ptr<sync_sessions::SyncedSessionWindow>>
       windows;
   std::unique_ptr<sync_sessions::SyncedSession> synced_session_;
-  std::deque<favicon_base::FaviconImageCallback> favicon_service_responses_;
+  std::deque<favicon_base::FaviconImageCallback>
+      favicon_request_handler_responses_;
 };
 
 TEST_F(BrowserTabsMetadataFetcherImplTest, NewFetchDuringOldFetchInProgress) {

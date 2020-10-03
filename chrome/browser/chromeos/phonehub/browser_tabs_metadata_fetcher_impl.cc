@@ -5,7 +5,8 @@
 #include "chrome/browser/chromeos/phonehub/browser_tabs_metadata_fetcher_impl.h"
 
 #include "base/barrier_closure.h"
-#include "components/favicon/core/favicon_service.h"
+#include "components/favicon/core/history_ui_favicon_request_handler.h"
+#include "components/favicon_base/favicon_types.h"
 #include "components/sync_sessions/synced_session.h"
 
 namespace chromeos {
@@ -55,8 +56,8 @@ GetSortedMetadataWithoutFavicons(const sync_sessions::SyncedSession* session) {
 }  // namespace
 
 BrowserTabsMetadataFetcherImpl::BrowserTabsMetadataFetcherImpl(
-    favicon::FaviconService* favicon_service)
-    : favicon_service_(favicon_service) {}
+    favicon::HistoryUiFaviconRequestHandler* favicon_request_handler)
+    : favicon_request_handler_(favicon_request_handler) {}
 
 BrowserTabsMetadataFetcherImpl::~BrowserTabsMetadataFetcherImpl() = default;
 
@@ -66,7 +67,6 @@ void BrowserTabsMetadataFetcherImpl::Fetch(
   // A new fetch was made, return a base::nullopt to the previous |callback_|.
   if (!callback_.is_null()) {
     weak_ptr_factory_.InvalidateWeakPtrs();
-    favicon_tracker_.TryCancelAll();
     std::move(callback_).Run(base::nullopt);
   }
 
@@ -81,11 +81,11 @@ void BrowserTabsMetadataFetcherImpl::Fetch(
                      weak_ptr_factory_.GetWeakPtr()));
 
   for (size_t i = 0; i < results_.size(); ++i) {
-    favicon_service_->GetFaviconImageForPageURL(
+    favicon_request_handler_->GetFaviconImageForPageURL(
         results_[i].url,
         base::BindOnce(&BrowserTabsMetadataFetcherImpl::OnFaviconReady,
                        weak_ptr_factory_.GetWeakPtr(), i, barrier),
-        &favicon_tracker_);
+        favicon::HistoryUiFaviconRequestOrigin::kRecentTabs);
   }
 }
 

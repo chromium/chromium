@@ -14,12 +14,22 @@ FakeBrowserTabsMetadataFetcher::~FakeBrowserTabsMetadataFetcher() = default;
 void FakeBrowserTabsMetadataFetcher::Fetch(
     const sync_sessions::SyncedSession* session,
     base::OnceCallback<void(BrowserTabsMetadataResponse)> callback) {
+  session_ = session;
   callback_ = std::move(callback);
 }
 
 void FakeBrowserTabsMetadataFetcher::RespondToCurrentFetchAttempt(
     const BrowserTabsMetadataResponse& response) {
   std::move(callback_).Run(response);
+}
+
+bool FakeBrowserTabsMetadataFetcher::DoesPendingCallbackExist() {
+  return !callback_.is_null();
+}
+
+const sync_sessions::SyncedSession* FakeBrowserTabsMetadataFetcher::GetSession()
+    const {
+  return session_;
 }
 
 }  // namespace phonehub

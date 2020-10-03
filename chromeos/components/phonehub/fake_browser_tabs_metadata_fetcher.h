@@ -23,7 +23,12 @@ class FakeBrowserTabsMetadataFetcher : public BrowserTabsMetadataFetcher {
   void RespondToCurrentFetchAttempt(
       const BrowserTabsMetadataResponse& response);
 
+  bool DoesPendingCallbackExist();
+
+  const sync_sessions::SyncedSession* GetSession() const;
+
  private:
+  const sync_sessions::SyncedSession* session_;
   base::OnceCallback<void(BrowserTabsMetadataResponse)> callback_;
 };
 
