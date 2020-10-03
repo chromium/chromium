@@ -1632,8 +1632,8 @@
   <message name="IDS_ONC_IPV4_GATEWAY" desc="ONC Property label for ipv4-Gateway">
     Gateway
   </message>
-  <message name="IDS_ONC_IPV4_ROUTING_PREFIX" desc="ONC Property label for ipv4-RoutingPrefix">
-    Routing prefix
+  <message name="IDS_ONC_IPV4_NETMASK" desc="ONC Property label for ipv4-netmask">
+    Subnet mask
   </message>
   <message name="IDS_ONC_IPV6_ADDRESS" desc="ONC Property label for ipv6-Address">
     IPv6 address

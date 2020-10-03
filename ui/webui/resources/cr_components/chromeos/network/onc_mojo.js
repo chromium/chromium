@@ -1152,13 +1152,14 @@ OncMojo.NetworkStateProperties;
 OncMojo.ManagedProperty;
 
 /**
- * Modified version of mojom.IPConfigProperties to store routingPrefix as a
- * human-readable string instead of as a number. Used in network_ip_config.js.
+ * Modified version of mojom.IPConfigProperties to store routingPrefix as
+ * a human-readable netmask string instead of as a number. Used in
+ * network_ip_config.js.
  * @typedef {{
  *   gateway: (string|undefined),
  *   ipAddress: (string|undefined),
- *   nameServers: (!Array<string>|undefined),
- *   routingPrefix: (string|undefined),
+ *   nameServers: (Array<string>|undefined),
+ *   netmask: (string|undefined),
  *   type: (string|undefined),
  *   webProxyAutoDiscoveryUrl: (string|undefined),
  * }}

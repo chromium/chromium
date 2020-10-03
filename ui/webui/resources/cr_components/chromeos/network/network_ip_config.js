@@ -42,7 +42,7 @@ const getRoutingPrefixAsNetmask = function(prefixLength) {
 
 /**
  * Returns the routing prefix length as a number from the netmask string.
- * @param {string} netmask The netmask string, e.g. 255.255.255.0.
+ * @param {string|undefined} netmask The netmask string, e.g. 255.255.255.0.
  * @return {number} The corresponding netmask or NO_ROUTING_PREFIX if invalid.
  */
 const getRoutingPrefixAsLength = function(netmask) {
@@ -128,7 +128,7 @@ Polymer({
       value() {
         return [
           'ipv4.ipAddress',
-          'ipv4.routingPrefix',
+          'ipv4.netmask',
           'ipv4.gateway',
           'ipv6.ipAddress',
         ];
@@ -207,7 +207,7 @@ Polymer({
       const defaultIpv4 = {
         gateway: '192.168.1.1',
         ipAddress: '192.168.1.1',
-        routingPrefix: '255.255.255.0',
+        netmask: '255.255.255.0',
         type: 'IPv4',
       };
       // Ensure that there is a valid IPConfig object. Copy any set properties
@@ -235,9 +235,9 @@ Polymer({
    * @param {!chromeos.networkConfig.mojom.IPConfigProperties|undefined}
    *     ipconfig
    * @return {!OncMojo.IPConfigUIProperties|undefined} A new
-   *     IPConfigUIProperties object with routingPrefix expressed as a string
-   *     mask instead of a prefix length. Returns undefined if |ipconfig| is not
-   *     defined.
+   *     IPConfigUIProperties object with routingPrefix expressed as a netmask
+   *     string instead of a prefix length. Returns undefined if |ipconfig|
+   *     is not defined.
    * @private
    */
   getIPConfigUIProperties_(ipconfig) {
@@ -245,39 +245,39 @@ Polymer({
       return undefined;
     }
 
-    // Copy |ipconfig| into a new object, |newIpconfig|.
-    const newIpconfig = {};
-    Object.assign(newIpconfig, ipconfig);
+    // Copy |ipconfig| properties into |ipconfigUI|.
+    const ipconfigUI = {};
+    ipconfigUI.gateway = ipconfig.gateway;
+    ipconfigUI.ipAddress = ipconfig.ipAddress;
+    ipconfigUI.nameServers = ipconfig.nameServers;
+    ipconfigUI.type = ipconfig.type;
+    ipconfigUI.webProxyAutoDiscoveryUrl = ipconfig.webProxyAutoDiscoveryUrl;
 
     if (ipconfig.routingPrefix !==
         chromeos.networkConfig.mojom.NO_ROUTING_PREFIX) {
-      const netmask = getRoutingPrefixAsNetmask(ipconfig.routingPrefix);
-      if (netmask !== undefined) {
-        newIpconfig.routingPrefix = netmask;
-      }
+      ipconfigUI.netmask = getRoutingPrefixAsNetmask(ipconfig.routingPrefix);
     }
 
-    return newIpconfig;
+    return ipconfigUI;
   },
 
   /**
-   * @param {!OncMojo.IPConfigUIProperties} ipconfig
+   * @param {!OncMojo.IPConfigUIProperties} ipconfigUI
    * @return {!chromeos.networkConfig.mojom.IPConfigProperties} A new
-   *     IPConfigProperties object with RoutingPrefix expressed as a a prefix
+   *     IPConfigProperties object with netmask expressed as a a prefix
    *     length.
    * @private
    */
-  getIPConfigProperties_(ipconfig) {
-    const result = {};
-    for (const key in ipconfig) {
-      const value = ipconfig[key];
-      if (key === 'routingPrefix') {
-        result.routingPrefix = getRoutingPrefixAsLength(value);
-      } else {
-        result[key] = value;
-      }
-    }
-    return result;
+  getIPConfigProperties_(ipconfigUI) {
+    const ipconfig = {};
+    ipconfig.gateway = ipconfigUI.gateway;
+    ipconfig.ipAddress = ipconfigUI.ipAddress;
+    ipconfig.nameServers = ipconfigUI.nameServers;
+    ipconfig.routingPrefix = getRoutingPrefixAsLength(ipconfigUI.netmask);
+    ipconfig.type = ipconfigUI.type;
+    ipconfig.webProxyAutoDiscoveryUrl = ipconfigUI.webProxyAutoDiscoveryUrl;
+
+    return ipconfig;
   },
 
   /**
@@ -291,11 +291,7 @@ Polymer({
     for (let i = 0; i < this.ipConfigFields_.length; ++i) {
       const key = this.ipConfigFields_[i];
       const value = this.get(key, this.ipConfig_);
-      if (key === 'ipv4.routingPrefix') {
-        if (value !== chromeos.networkConfig.mojom.NO_ROUTING_PREFIX) {
-          return true;
-        }
-      } else if (value !== undefined && value !== '') {
+      if (value !== undefined && value !== '') {
         return true;
       }
     }
@@ -323,8 +319,10 @@ Polymer({
     }
     return {
       'ipv4.ipAddress': this.getIPFieldEditType_(staticIpConfig.ipAddress),
-      'ipv4.routingPrefix':
-          this.getIPFieldEditType_(staticIpConfig.routingPrefix),
+      // Use routingPrefix instead of netmask because getIPFieldEditType_
+      // expects a ManagedProperty and routingPrefix has the same type as
+      // netmask.
+      'ipv4.netmask': this.getIPFieldEditType_(staticIpConfig.routingPrefix),
       'ipv4.gateway': this.getIPFieldEditType_(staticIpConfig.gateway)
     };
   },
