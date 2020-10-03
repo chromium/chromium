@@ -5,6 +5,7 @@
 #include "chrome/updater/policy_service.h"
 
 #include "base/check.h"
+#include "base/strings/string_util.h"
 #include "build/build_config.h"
 
 #if defined(OS_WIN)
@@ -17,19 +18,19 @@ namespace updater {
 
 // Only policy manager that are enterprise managed are used by the policy
 // service.
-PolicyService::PolicyService() : default_policy_manager_(GetPolicyManager()) {
+PolicyService::PolicyService() {
 #if defined(OS_WIN)
   auto group_policy_manager = std::make_unique<GroupPolicyManager>();
   if (group_policy_manager->IsManaged())
-    policy_managers_.emplace_back(std::move(group_policy_manager));
+    policy_managers_.push_back(std::move(group_policy_manager));
 #endif
     // TODO (crbug/1122118): Inject the DMPolicyManager here.
 #if defined(OS_MAC)
   auto mac_policy_manager = CreateManagedPreferencePolicyManager();
   if (mac_policy_manager->IsManaged())
-    policy_managers_.emplace_back(std::move(mac_policy_manager));
+    policy_managers_.push_back(std::move(mac_policy_manager));
 #endif
-  UpdateActivePolicyManager();
+  policy_managers_.push_back(GetPolicyManager());
 }
 
 PolicyService::~PolicyService() = default;
@@ -37,143 +38,164 @@ PolicyService::~PolicyService() = default;
 void PolicyService::SetPolicyManagersForTesting(
     std::vector<std::unique_ptr<PolicyManagerInterface>> managers) {
   policy_managers_ = std::move(managers);
-  UpdateActivePolicyManager();
 }
 
 std::string PolicyService::source() const {
-  return active_policy_manager_->source();
+  // Returns the source combination of all active policy providers, separated
+  // by ';'. For example: "group_policy;device_management". Note that the
+  // default provider is not "managed" and its source will be ignored.
+  std::vector<std::string> sources;
+  for (const std::unique_ptr<PolicyManagerInterface>& policy_manager :
+       policy_managers_) {
+    if (policy_manager->IsManaged())
+      sources.push_back(policy_manager->source());
+  }
+  return base::JoinString(sources, ";");
 }
 
 bool PolicyService::IsManaged() const {
-  return active_policy_manager_->IsManaged();
+  for (const std::unique_ptr<PolicyManagerInterface>& policy_manager :
+       policy_managers_) {
+    if (policy_manager->IsManaged())
+      return true;
+  }
+
+  return false;
 }
 
 bool PolicyService::GetLastCheckPeriodMinutes(int* minutes) const {
-  return active_policy_manager_->GetLastCheckPeriodMinutes(minutes) ||
-         (ShouldFallbackToDefaultManager() &&
-          default_policy_manager_->GetLastCheckPeriodMinutes(minutes));
+  for (const std::unique_ptr<PolicyManagerInterface>& policy_manager :
+       policy_managers_) {
+    if (policy_manager->GetLastCheckPeriodMinutes(minutes))
+      return true;
+  }
+
+  return false;
 }
 
 bool PolicyService::GetUpdatesSuppressedTimes(int* start_hour,
                                               int* start_min,
                                               int* duration_min) const {
-  return active_policy_manager_->GetUpdatesSuppressedTimes(
-             start_hour, start_min, duration_min) ||
-         (ShouldFallbackToDefaultManager() &&
-          default_policy_manager_->GetUpdatesSuppressedTimes(
-              start_hour, start_min, duration_min));
+  for (const std::unique_ptr<PolicyManagerInterface>& policy_manager :
+       policy_managers_) {
+    if (policy_manager->GetUpdatesSuppressedTimes(start_hour, start_min,
+                                                  duration_min)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 bool PolicyService::GetDownloadPreferenceGroupPolicy(
     std::string* download_preference) const {
-  return active_policy_manager_->GetDownloadPreferenceGroupPolicy(
-             download_preference) ||
-         (ShouldFallbackToDefaultManager() &&
-          default_policy_manager_->GetDownloadPreferenceGroupPolicy(
-              download_preference));
+  for (const std::unique_ptr<PolicyManagerInterface>& policy_manager :
+       policy_managers_) {
+    if (policy_manager->GetDownloadPreferenceGroupPolicy(download_preference))
+      return true;
+  }
+  return false;
 }
 
 bool PolicyService::GetPackageCacheSizeLimitMBytes(
     int* cache_size_limit) const {
-  return active_policy_manager_->GetPackageCacheSizeLimitMBytes(
-             cache_size_limit) ||
-         (ShouldFallbackToDefaultManager() &&
-          default_policy_manager_->GetPackageCacheSizeLimitMBytes(
-              cache_size_limit));
+  for (const std::unique_ptr<PolicyManagerInterface>& policy_manager :
+       policy_managers_) {
+    if (policy_manager->GetPackageCacheSizeLimitMBytes(cache_size_limit))
+      return true;
+  }
+  return false;
 }
 
 bool PolicyService::GetPackageCacheExpirationTimeDays(
     int* cache_life_limit) const {
-  return active_policy_manager_->GetPackageCacheExpirationTimeDays(
-             cache_life_limit) ||
-         (ShouldFallbackToDefaultManager() &&
-          default_policy_manager_->GetPackageCacheExpirationTimeDays(
-              cache_life_limit));
+  for (const std::unique_ptr<PolicyManagerInterface>& policy_manager :
+       policy_managers_) {
+    if (policy_manager->GetPackageCacheExpirationTimeDays(cache_life_limit))
+      return true;
+  }
+  return false;
 }
 
 bool PolicyService::GetEffectivePolicyForAppInstalls(
     const std::string& app_id,
     int* install_policy) const {
-  return active_policy_manager_->GetEffectivePolicyForAppInstalls(
-             app_id, install_policy) ||
-         (ShouldFallbackToDefaultManager() &&
-          default_policy_manager_->GetEffectivePolicyForAppInstalls(
-              app_id, install_policy));
+  for (const std::unique_ptr<PolicyManagerInterface>& policy_manager :
+       policy_managers_) {
+    if (policy_manager->GetEffectivePolicyForAppInstalls(app_id,
+                                                         install_policy))
+      return true;
+  }
+  return false;
 }
 
 bool PolicyService::GetEffectivePolicyForAppUpdates(const std::string& app_id,
                                                     int* update_policy) const {
-  return active_policy_manager_->GetEffectivePolicyForAppUpdates(
-             app_id, update_policy) ||
-         (ShouldFallbackToDefaultManager() &&
-          default_policy_manager_->GetEffectivePolicyForAppUpdates(
-              app_id, update_policy));
+  for (const std::unique_ptr<PolicyManagerInterface>& policy_manager :
+       policy_managers_) {
+    if (policy_manager->GetEffectivePolicyForAppUpdates(app_id, update_policy))
+      return true;
+  }
+  return false;
 }
 
 bool PolicyService::GetTargetChannel(const std::string& app_id,
                                      std::string* channel) const {
-  return active_policy_manager_->GetTargetChannel(app_id, channel) ||
-         (ShouldFallbackToDefaultManager() &&
-          default_policy_manager_->GetTargetChannel(app_id, channel));
+  for (const std::unique_ptr<PolicyManagerInterface>& policy_manager :
+       policy_managers_) {
+    if (policy_manager->GetTargetChannel(app_id, channel))
+      return true;
+  }
+  return false;
 }
 
 bool PolicyService::GetTargetVersionPrefix(
     const std::string& app_id,
     std::string* target_version_prefix) const {
-  return active_policy_manager_->GetTargetVersionPrefix(
-             app_id, target_version_prefix) ||
-         (ShouldFallbackToDefaultManager() &&
-          default_policy_manager_->GetTargetVersionPrefix(
-              app_id, target_version_prefix));
+  for (const std::unique_ptr<PolicyManagerInterface>& policy_manager :
+       policy_managers_) {
+    if (policy_manager->GetTargetVersionPrefix(app_id, target_version_prefix))
+      return true;
+  }
+  return false;
 }
 
 bool PolicyService::IsRollbackToTargetVersionAllowed(
     const std::string& app_id,
     bool* rollback_allowed) const {
-  return active_policy_manager_->IsRollbackToTargetVersionAllowed(
-             app_id, rollback_allowed) ||
-         (ShouldFallbackToDefaultManager() &&
-          default_policy_manager_->IsRollbackToTargetVersionAllowed(
-              app_id, rollback_allowed));
+  for (const std::unique_ptr<PolicyManagerInterface>& policy_manager :
+       policy_managers_) {
+    if (policy_manager->IsRollbackToTargetVersionAllowed(app_id,
+                                                         rollback_allowed))
+      return true;
+  }
+  return false;
 }
 
 bool PolicyService::GetProxyMode(std::string* proxy_mode) const {
-  return active_policy_manager_->GetProxyMode(proxy_mode) ||
-         (ShouldFallbackToDefaultManager() &&
-          default_policy_manager_->GetProxyMode(proxy_mode));
+  for (const std::unique_ptr<PolicyManagerInterface>& policy_manager :
+       policy_managers_) {
+    if (policy_manager->GetProxyMode(proxy_mode))
+      return true;
+  }
+  return false;
 }
 
 bool PolicyService::GetProxyPacUrl(std::string* proxy_pac_url) const {
-  return active_policy_manager_->GetProxyPacUrl(proxy_pac_url) ||
-         (ShouldFallbackToDefaultManager() &&
-          default_policy_manager_->GetProxyPacUrl(proxy_pac_url));
+  for (const std::unique_ptr<PolicyManagerInterface>& policy_manager :
+       policy_managers_) {
+    if (policy_manager->GetProxyPacUrl(proxy_pac_url))
+      return true;
+  }
+  return false;
 }
 
 bool PolicyService::GetProxyServer(std::string* proxy_server) const {
-  return active_policy_manager_->GetProxyServer(proxy_server) ||
-         (ShouldFallbackToDefaultManager() &&
-          default_policy_manager_->GetProxyServer(proxy_server));
-}
-
-const PolicyManagerInterface& PolicyService::GetActivePolicyManager() {
-  DCHECK(active_policy_manager_);
-  return *active_policy_manager_;
-}
-
-bool PolicyService::ShouldFallbackToDefaultManager() const {
-  return active_policy_manager_ != default_policy_manager_.get();
-}
-
-void PolicyService::UpdateActivePolicyManager() {
-  // The active policy manager is either the default policy manager or the
-  // manager with the highest level that is managed.
-  active_policy_manager_ = default_policy_manager_.get();
-  for (const auto& manager : policy_managers_) {
-    if (manager->IsManaged()) {
-      active_policy_manager_ = manager.get();
-      return;
-    }
+  for (const std::unique_ptr<PolicyManagerInterface>& policy_manager :
+       policy_managers_) {
+    if (policy_manager->GetProxyServer(proxy_server))
+      return true;
   }
+  return false;
 }
 
 std::unique_ptr<PolicyService> GetUpdaterPolicyService() {

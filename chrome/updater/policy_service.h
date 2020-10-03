@@ -61,17 +61,9 @@ class PolicyService : public PolicyManagerInterface {
   const PolicyManagerInterface& GetActivePolicyManager();
 
  private:
-  bool ShouldFallbackToDefaultManager() const;
-
-  // Sets the policy manager that is managed and has the highest priority as the
-  // active policy manager. If no manager is managed, use the default policy
-  // manager as the active one.
-  void UpdateActivePolicyManager();
   // List of policy managers in descending order of priority. The first policy
   // manager's policies takes precedence over the following.
   std::vector<std::unique_ptr<PolicyManagerInterface>> policy_managers_;
-  std::unique_ptr<PolicyManagerInterface> default_policy_manager_;
-  const PolicyManagerInterface* active_policy_manager_;
 };
 
 std::unique_ptr<PolicyService> GetUpdaterPolicyService();
