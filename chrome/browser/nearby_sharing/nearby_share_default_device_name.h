@@ -11,7 +11,8 @@ class Profile;
 
 // Creates a default device name of the form "<given name>'s <device type>." For
 // example, "Josh's Chromebook." If a given name cannot be found, returns just
-// the device type.
+// the device type. If the resulting name is too long the user's name will be
+// truncated, for example "Mi...'s Chromebook."
 std::string GetNearbyShareDefaultDeviceName(Profile* profile);
 
 #endif  // CHROME_BROWSER_NEARBY_SHARING_NEARBY_SHARE_DEFAULT_DEVICE_NAME_H_

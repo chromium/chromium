@@ -6,7 +6,9 @@
 
 #include "base/optional.h"
 #include "base/strings/string16.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/nearby_sharing/local_device_data/nearby_share_local_device_data_manager.h"
 #include "chrome/browser/nearby_sharing/nearby_share_default_device_name.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -24,6 +26,9 @@ namespace {
 
 const char kFakeGivenName[] = "Josh";
 const char kFakeEmail[] = "fake_account_id@gmail.com";
+const char kFakeTooLongGivenName[] = "this is a 33-byte string in utf-8";
+const char kFakeTooLongTruncatedDeviceName[] =
+    "this is a 33-...'s Chrome device";
 
 }  // namespace
 
@@ -59,5 +64,15 @@ TEST(NearbyShareDefaultDeviceNameTest, DefaultDeviceName) {
   EXPECT_EQ(l10n_util::GetStringFUTF8(IDS_NEARBY_DEFAULT_DEVICE_NAME,
                                       base::UTF8ToUTF16(kFakeGivenName),
                                       ui::GetChromeOSDeviceName()),
+            GetNearbyShareDefaultDeviceName(profile));
+
+  // Make sure that when we use a given name that is very long we truncate
+  // correctly.
+  fake_user_manager->UpdateUserAccountData(
+      id, user_manager::UserManager::UserAccountData(
+              /*display_name=*/base::string16(),
+              /*given_name=*/base::UTF8ToUTF16(kFakeTooLongGivenName),
+              /*locale=*/std::string()));
+  EXPECT_EQ(kFakeTooLongTruncatedDeviceName,
             GetNearbyShareDefaultDeviceName(profile));
 }

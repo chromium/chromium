@@ -15,6 +15,10 @@
 #include "chrome/browser/nearby_sharing/proto/rpc_resources.pb.h"
 #include "chrome/browser/ui/webui/nearby_share/public/mojom/nearby_share_settings.mojom.h"
 
+// The maximum length in bytes allowed for a device name, as encoded in UTF-8 in
+// a std::string, which will not contain a null terminator.
+extern const size_t kNearbyShareDeviceNameMaxLength;
+
 // Manages local device data related to the UpdateDevice RPC such as the device
 // ID, name, and icon url; provides the user's full name and icon URL returned
 // from the Nearby server; and handles uploading contacts and certificates to

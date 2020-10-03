@@ -4,6 +4,8 @@
 
 #include "chrome/browser/nearby_sharing/local_device_data/nearby_share_local_device_data_manager.h"
 
+const size_t kNearbyShareDeviceNameMaxLength = 32;
+
 NearbyShareLocalDeviceDataManager::NearbyShareLocalDeviceDataManager() =
     default;
 
