@@ -28,7 +28,6 @@ blink_platform_sources("scheduler") {
     "common/scheduler_helper.cc",
     "common/scheduler_helper.h",
     "common/scheduling_lifecycle_state.cc",
-    "common/scheduling_policy.cc",
     "common/simple_thread_scheduler.cc",
     "common/simple_thread_scheduler.h",
     "common/single_thread_idle_task_runner.cc",

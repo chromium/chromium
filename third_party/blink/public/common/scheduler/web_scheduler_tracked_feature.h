@@ -115,6 +115,13 @@ BLINK_COMMON_EXPORT constexpr uint64_t FeatureToBit(
   return 1ull << static_cast<uint32_t>(feature);
 }
 
+// Sticky features can't be unregistered and remain active for the rest of the
+// lifetime of the page.
+BLINK_COMMON_EXPORT bool IsFeatureSticky(WebSchedulerTrackedFeature feature);
+
+// All the sticky features in bitmask form.
+BLINK_COMMON_EXPORT uint64_t StickyFeaturesBitmask();
+
 }  // namespace scheduler
 }  // namespace blink
 
