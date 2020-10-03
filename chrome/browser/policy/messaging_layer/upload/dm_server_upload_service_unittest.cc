@@ -158,8 +158,7 @@ class DmServerUploaderTest : public testing::Test {
   policy::MockCloudPolicyClient client_;
 };
 
-// Disabled due to high flakes; see https://crbug.com/1133962.
-TEST_F(DmServerUploaderTest, DISABLED_ProcessesRecord) {
+TEST_F(DmServerUploaderTest, ProcessesRecord) {
   // Add an empty record.
   records_->emplace_back();
 
@@ -176,8 +175,7 @@ TEST_F(DmServerUploaderTest, DISABLED_ProcessesRecord) {
   callback_waiter.Wait();
 }
 
-// Disabled due to high flakes; see https://crbug.com/1133962.
-TEST_F(DmServerUploaderTest, DISABLED_ProcessesRecords) {
+TEST_F(DmServerUploaderTest, ProcessesRecords) {
   for (uint64_t i = 0; i < 10; i++) {
     EncryptedRecord record;
     auto* sequencing_info = record.mutable_sequencing_information();
